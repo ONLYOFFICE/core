@@ -68,5 +68,16 @@ const bool PIVOTRULE::loadContent(BinProcessor& proc)
 	return true;
 }
 
+const bool PIVOTRULE::saveContent(BinProcessor& proc)
+{
+    if(m_SxRule == nullptr)
+        return false;
+    proc.mandatory(*m_SxRule);
+    for(auto i : m_arPRFILTER)
+        if(i != nullptr)
+            proc.mandatory(*i);
+    return true;
+}
+
 } // namespace XLS
 

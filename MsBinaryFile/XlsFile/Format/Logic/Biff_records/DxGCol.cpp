@@ -55,5 +55,10 @@ void DxGCol::readFields(CFRecord& record)
 	record >> dxgCol;
 }
 
+void DxGCol::writeFields(CFRecord& record)
+{
+    record << dxgCol;
+}
+
 } // namespace XLS
 

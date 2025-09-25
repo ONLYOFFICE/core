@@ -93,31 +93,51 @@ void DVParsedFormula::save(CFRecord& record, bool bSave)
 	else
 	{
 		cce = 0;
-		record << cce;
+        _UINT32 cb = 0;
+        record << cce << cb;
 	}
 }
 
 void DVParsedFormula::save(CFRecord& record)
 {
-	auto saving = [&](BiffStructure& rgceORrgb)
+	if (record.getGlobalWorkbookInfo()->Version < 0x0800)
 	{
-		record << cce;
+		auto saving = [&](BiffStructure& rgceORrgb)
+		{
+			record << cce;
 
-		auto rdPtr = record.getRdPtr();
+			auto rdPtr = record.getRdPtr();
 
-		rgceORrgb.save(record);
+			rgceORrgb.save(record);
 
-		cce = record.getRdPtr() - rdPtr;
+			cce = record.getRdPtr() - rdPtr;
 
-		record.RollRdPtrBack(cce + 4);
-		record << cce;
-		record.skipNunBytes(cce);
-	};
+			record.RollRdPtrBack(cce + 4);
+			record << cce;
+			record.skipNunBytes(cce);
+		};
 
-	saving(rgce);
-
-	if (record.getGlobalWorkbookInfo()->Version == 0x0800)
+		saving(rgce);
+	}
+	else 
 	{
+		_UINT32 size = 0;
+		auto saving = [&](BiffStructure& rgceORrgb)
+		{
+			record << size;
+
+			auto rdPtr = record.getRdPtr();
+
+			rgceORrgb.save(record);
+
+			size = record.getRdPtr() - rdPtr;
+
+			record.RollRdPtrBack(size + 4);
+			record << size;
+			record.skipNunBytes(size);
+		};
+
+		saving(rgce);
 		saving(rgcb);
 	}
 }

@@ -89,6 +89,7 @@
 #include "Biff_records/XF.h"
 #include "Biff_records/Format.h"
 #include "Biff_records/Font.h"
+#include "Biff_records/Palette.h"
 
 #include "Biff_structures/ODRAW/OfficeArtDgContainer.h"
 
@@ -618,6 +619,7 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 			case rt_XF_BIFF2:
 			case rt_XF_BIFF3:
 			case rt_XF_BIFF4:
+			case rt_XF:
 			{
 				size_t cell_xf_current_id = 0;
 				size_t style_xf_current_id = 0;
@@ -637,6 +639,15 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 				{
 					XF_BIFF2 xf(cell_xf_current_id, style_xf_current_id);
 					count = proc.repeated(xf, 0, 0);
+				}
+				else
+				{
+					int store = global_info_->Version;
+					global_info_->Version = 0x0600;
+					XF xf(cell_xf_current_id, style_xf_current_id);
+					count = proc.repeated(xf, 0, 0);
+
+					global_info_->Version = store;
 				}
 				XFS* xfs = new XFS();
 				int ind = 0;
@@ -681,24 +692,7 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 
 				while (count > 0)
 				{
-					Format *fmt = dynamic_cast<Format *>(elements_.front().get());
-					if ((fmt) && (fmt->ifmt == 0xffff))
-					{
-						std::map<std::wstring, int>::iterator pFind = global_info_->mapDefaultFormatCode.find(fmt->stFormat);
-						if (pFind != global_info_->mapDefaultFormatCode.end())
-						{
-							fmt->ifmt_used = fmt->ifmt = pFind->second;
-						}
-						else
-						{
-							fmt->ifmt_used = fmt->ifmt = global_info_->last_User_NumFmt++;
-						}
-					}
-					else
-					{
-						fmt->ifmt_used = global_info_->RegisterNumFormat(fmt->ifmt, fmt->stFormat);
-					}
-					global_info_->m_arNumFormats.push_back(elements_.front());
+					global_info_->RegisterNumFormat(elements_.front());
 					elements_.pop_front();
 					count--;
 				} 
@@ -713,6 +707,16 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 					elements_.pop_back();
 				}
 			}break;
+			case rt_Palette:
+			{
+				if (proc.optional<Palette>())
+				{
+					FORMATTING* fmts = dynamic_cast<FORMATTING*>(m_Formating.get());
+					if (fmts)
+						fmts->m_Palette = elements_.back();
+					elements_.pop_back();
+				}
+			}break;
 			default://unknown .... skip					
 			{
 				proc.SkipRecord();	
@@ -722,6 +726,99 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 
 	LoadHFPicture();
 
+	return true;
+}
+
+const bool WorksheetSubstream::saveContent(BinProcessor& proc)
+{
+	auto globInfo = proc.getGlobalWorkbookInfo();
+	{
+		if(globInfo->sheets_info.size() > globInfo->current_sheet)
+			globInfo->sheets_info.at(globInfo->current_sheet).StreamPos = proc.GetRecordPosition();
+
+		BOF bof;
+		bof.dt= 0x0010;
+		proc.mandatory(bof);
+	}
+	if(m_GLOBALS != nullptr)
+		proc.mandatory(*m_GLOBALS);
+	else
+		proc.mandatory<GLOBALS>();
+	if(m_PAGESETUP != nullptr)
+		proc.mandatory(*m_PAGESETUP);
+	else
+		proc.mandatory<PAGESETUP>();
+	if(m_BACKGROUND != nullptr)
+		proc.mandatory(*m_BACKGROUND);
+	if(m_PROTECTION != nullptr)
+		proc.mandatory(*m_PROTECTION);
+
+	if(m_COLUMNS != nullptr)
+		proc.mandatory(*m_COLUMNS);
+	else
+		proc.mandatory<COLUMNS>();
+	if(m_SORTANDFILTER != nullptr)
+		proc.mandatory(*m_SORTANDFILTER);
+	if(m_Dimensions != nullptr)
+		proc.mandatory(*m_Dimensions);
+	else
+		proc.mandatory<Dimensions>();
+
+	if(m_CELLTABLE != nullptr)
+		proc.mandatory(*m_CELLTABLE);
+
+	for(auto i : m_arHFPicture)
+		if( i!= nullptr)
+			proc.mandatory(*i);
+	for(auto i:m_arNote)
+		if(i!= nullptr)
+			proc.mandatory(*i);
+	for(auto i : m_arPIVOTVIEW)
+		if(i != nullptr)
+			proc.mandatory(*i);
+	if(m_DCON != nullptr)
+		proc.mandatory(*m_DCON);
+	if(m_arWINDOW.empty())
+	{
+		proc.mandatory<WINDOW>();
+	}
+	else
+	{
+		for(auto i: m_arWINDOW)
+			if(i != nullptr)
+				proc.mandatory(*i);
+	}
+	for(auto i : m_arCUSTOMVIEW)
+		if(i != nullptr)
+			proc.mandatory(*i);
+	if(m_DxGCol != nullptr)
+		proc.mandatory(*m_DxGCol);
+	for(auto i : m_arMergeCells)
+		if(i != nullptr)
+			proc.mandatory(*i);
+	if(m_LRng != nullptr)
+		proc.mandatory(*m_LRng);
+	for(auto i : m_arQUERYTABLE)
+		if(i != nullptr)
+			proc.mandatory(*i);
+	if(m_CONDFMTS != nullptr)
+		proc.mandatory(*m_CONDFMTS);
+	for(auto i : m_arHLINK)
+		if(i != nullptr)
+			proc.mandatory(*i);
+	if(m_DVAL != nullptr)
+		proc.mandatory(*m_DVAL);
+	if(m_CodeName != nullptr)
+		proc.mandatory(*m_CodeName);
+	if(m_SheetExt != nullptr)
+		proc.mandatory(*m_SheetExt);
+	for(auto i : m_arFEAT)
+		if(i != nullptr)
+			proc.mandatory(*i);
+	for(auto i : m_arRECORD12)
+		if(i != nullptr)
+			proc.mandatory(*i);
+	proc.mandatory<EOF_T>();
 	return true;
 }
 

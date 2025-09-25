@@ -214,6 +214,9 @@ private:
 		
 		void start_level() { _state state;  levels.push_back(state); }
 		void end_level() { if (!levels.empty()) levels.pop_back(); }
+
+		float width = 0;
+		float height = 0;
 	private:
 		std::wstringstream math_stream_;
 		std::wstringstream math_style_stream_;

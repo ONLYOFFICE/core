@@ -40,7 +40,7 @@ namespace PPTX
 		{
 			XmlUtils::CXmlNode oNode;
 
-			if (node.GetNode(_T("p:chart"), oNode))
+			if (node.GetNode(_T("a:chart"), oNode))
 			{
 				XmlMacroReadAttributeBase(oNode, L"bldStep", chartBuildStep);
 				XmlMacroReadAttributeBase(oNode, L"seriesIdx", seriesIdx);
@@ -61,7 +61,7 @@ namespace PPTX
 				oAttr.Write(_T("seriesIdx"), seriesIdx);
 				oAttr.Write(_T("categoryIdx"), categoryIdx);
 
-				return XmlUtils::CreateNode(_T("p:graphicEl"), XmlUtils::CreateNode(_T("p:chart"), oAttr));
+				return XmlUtils::CreateNode(_T("p:graphicEl"), XmlUtils::CreateNode(_T("a:chart"), oAttr));
 			}
 
 			XmlUtils::CAttribute oAttr;

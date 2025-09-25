@@ -60,7 +60,9 @@ namespace DocFileFormat
 		std::shared_ptr<BorderCode> brcHorz;
 		std::shared_ptr<BorderCode> brcVert;
 
-		//delete infos
+		XMLTools::XMLElement* _tcMar = NULL;
+
+	//delete infos
 		RevisionData rev( _rowEndChpx );
 
 		if ( ( _rowEndChpx != NULL ) && ( rev.Type == Deleted ) )
@@ -72,133 +74,162 @@ namespace DocFileFormat
 		XMLTools::XMLElement rowHeight(L"w:trHeight");
 		for ( std::vector<SinglePropertyModifier>::iterator iter = tapx->grpprl->begin(); iter != tapx->grpprl->end(); iter++ )
 		{
-			switch ( iter->OpCode )  
+			switch (iter->OpCode)
 			{
-				case sprmOldTDefTable:
-				case sprmTDefTable:
+			case sprmOldTDefTable:
+			case sprmTDefTable:
+			{
+				//SprmTDefTable tdef = new SprmTDefTable(sprm.Arguments);
+			}break;
+			case sprmOldTTableHeader:
+			case sprmTTableHeader:
+			{						//header row
+
+				bool fHeader = (iter->Arguments[0] != 0) ? (true) : (false);
+
+				if (fHeader)
 				{
-					//SprmTDefTable tdef = new SprmTDefTable(sprm.Arguments);
-				}break;	
-				case sprmOldTTableHeader:
-				case sprmTTableHeader:
-				{						//header row
-
-					bool fHeader = ( iter->Arguments[0] != 0 ) ? (true) : (false);
-
-					if ( fHeader )
-					{
-                        XMLTools::XMLElement header( L"w:tblHeader" );
-						_trPr->AppendChild( header );
-					}
-				}break;	
-				case sprmTWidthAfter:
-				{ //width after
-                    XMLTools::XMLElement wAfter( L"w:wAfter" );
-                    XMLTools::XMLAttribute wAfterValue( L"w:w", FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, 1, iter->argumentsSize ) ) );
-					wAfter.AppendAttribute( wAfterValue );
-
-                    XMLTools::XMLAttribute wAfterType( L"w:type", L"dxa" );
-					wAfter.AppendAttribute( wAfterType );
-					_trPr->AppendChild( wAfter, true );
-				}break;	
-				case sprmTWidthBefore:
-				{ //width before
-					short before = FormatUtils::BytesToInt16( iter->Arguments, 1, iter->argumentsSize );
-
-					if ( before != 0 )
-					{
-                        XMLTools::XMLElement wBefore( L"w:wBefore" );
-                        XMLTools::XMLAttribute wBeforeValue( L"w:w", FormatUtils::IntToWideString( before ) );
-						wBefore.AppendAttribute( wBeforeValue );
-
-                        XMLTools::XMLAttribute wBeforeType( L"w:type", L"dxa" );
-						wBefore.AppendAttribute( wBeforeType );
-						_trPr->AppendChild( wBefore, true );
-					}
-				}break;	
-				case sprmOldTDyaRowHeight:
-				case sprmTDyaRowHeight:
-				{ //row height
-                    XMLTools::XMLAttribute rowHeightVal( L"w:val" );
-                    XMLTools::XMLAttribute rowHeightRule( L"w:hRule" );
-
-					short rH = FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize );
-
-					if ( rH > 0 )
-					{
-                        rowHeightRule.SetValue( L"atLeast" );
-						rowHeightVal.SetValue( FormatUtils::IntToWideString( rH ) );
-						rowHeight.AppendAttribute( rowHeightVal );
-					}
-					else if( rH == 0 )
-					{
-                        rowHeightRule.SetValue( L"auto" );
-					}
-					else
-					{
-                        rowHeightRule.SetValue( L"exact" );
-						rH *= -1;
-						rowHeightVal.SetValue( FormatUtils::IntToWideString( rH ) );
-						rowHeight.AppendAttribute( rowHeightVal );
-					}
-					rowHeight.AppendAttribute( rowHeightRule );
+					XMLTools::XMLElement header(L"w:tblHeader");
+					_trPr->AppendChild(header);
 				}
+			}break;
+			case sprmTWidthAfter:
+			{ //width after
+				XMLTools::XMLElement wAfter(L"w:wAfter");
+				XMLTools::XMLAttribute wAfterValue(L"w:w", FormatUtils::IntToWideString(FormatUtils::BytesToInt16(iter->Arguments, 1, iter->argumentsSize)));
+				wAfter.AppendAttribute(wAfterValue);
+
+				XMLTools::XMLAttribute wAfterType(L"w:type", L"dxa");
+				wAfter.AppendAttribute(wAfterType);
+				_trPr->AppendChild(wAfter, true);
+			}break;
+			case sprmTWidthBefore:
+			{ //width before
+				short before = FormatUtils::BytesToInt16(iter->Arguments, 1, iter->argumentsSize);
+
+				if (before != 0)
+				{
+					XMLTools::XMLElement wBefore(L"w:wBefore");
+					XMLTools::XMLAttribute wBeforeValue(L"w:w", FormatUtils::IntToWideString(before));
+					wBefore.AppendAttribute(wBeforeValue);
+
+					XMLTools::XMLAttribute wBeforeType(L"w:type", L"dxa");
+					wBefore.AppendAttribute(wBeforeType);
+					_trPr->AppendChild(wBefore, true);
+				}
+			}break;
+			case sprmOldTDyaRowHeight:
+			case sprmTDyaRowHeight:
+			{ //row height
+				XMLTools::XMLAttribute rowHeightVal(L"w:val");
+				XMLTools::XMLAttribute rowHeightRule(L"w:hRule");
+
+				short rH = FormatUtils::BytesToInt16(iter->Arguments, 0, iter->argumentsSize);
+
+				if (rH > 0)
+				{
+					rowHeightRule.SetValue(L"atLeast");
+					rowHeightVal.SetValue(FormatUtils::IntToWideString(rH));
+					rowHeight.AppendAttribute(rowHeightVal);
+				}
+				else if (rH == 0)
+				{
+					rowHeightRule.SetValue(L"auto");
+				}
+				else
+				{
+					rowHeightRule.SetValue(L"exact");
+					rH *= -1;
+					rowHeightVal.SetValue(FormatUtils::IntToWideString(rH));
+					rowHeight.AppendAttribute(rowHeightVal);
+				}
+				rowHeight.AppendAttribute(rowHeightRule);
+			}
+			break;
+			case sprmOldTFCantSplit:
+			case sprmTFCantSplit:
 				break;
-				case sprmOldTFCantSplit:
-				case sprmTFCantSplit:
-					break;
-				case sprmTFCantSplit90:
-				{ //can't split
-					if (iter->argumentsSize > 0 && iter->Arguments[0] != 0)
-						appendFlagElement( _trPr, *iter, L"cantSplit", true );
-				}break;	
-				case sprmTIpgp:// = PGPInfo.ipgpSelf (PGPInfo structure describes the border and margin properties)
-				{	//div id
-				}break;
-				case sprmTCellSpacing:
-				case sprmTCellSpacingDefault:
+			case sprmTFCantSplit90:
+			{ //can't split
+				if (iter->argumentsSize > 0 && iter->Arguments[0] != 0)
+					appendFlagElement(_trPr, *iter, L"cantSplit", true);
+			}break;
+			case sprmTIpgp:// = PGPInfo.ipgpSelf (PGPInfo structure describes the border and margin properties)
+			{	//div id
+			}break;
+			case sprmTCellSpacing:
+			case sprmTCellSpacingDefault:
+			{
+				unsigned char grfbrc = iter->Arguments[2];
+				short wSpc = FormatUtils::BytesToInt16(iter->Arguments, 4, iter->argumentsSize);
+				std::wstring strValue = FormatUtils::IntToWideString(wSpc);
+				if (FormatUtils::BitmaskToBool((int)grfbrc, 0x01))
 				{
-					unsigned char grfbrc = iter->Arguments[2];
-					short wSpc = FormatUtils::BytesToInt16(iter->Arguments, 4, iter->argumentsSize);
-					std::wstring strValue = FormatUtils::IntToWideString(wSpc);
-					if (FormatUtils::BitmaskToBool((int)grfbrc, 0x01))
-					{
-						appendDxaElement(_trPr, L"tblCellSpacing", strValue, true);
-					}
-				}break;
-				case sprmTTableBorders80:
+					appendDxaElement(_trPr, L"tblCellSpacing", strValue, true);
+				}
+			}break;
+			case sprmTTableBorders80:
+			{
+				const int size = 4;
+				unsigned char brc80[size];
+
+				memcpy(brc80, iter->Arguments, size);
+				brcTop = std::shared_ptr<BorderCode>(new BorderCode(brc80, size));
+
+				memcpy(brc80, (iter->Arguments + 4), size);
+				brcLeft = std::shared_ptr<BorderCode>(new BorderCode(brc80, size));
+
+				memcpy(brc80, (iter->Arguments + 8), size);
+				brcBottom = std::shared_ptr<BorderCode>(new BorderCode(brc80, size));
+
+				memcpy(brc80, (iter->Arguments + 12), size);
+				brcRight = std::shared_ptr<BorderCode>(new BorderCode(brc80, size));
+
+				memcpy(brc80, (iter->Arguments + 16), size);
+				brcHorz = std::shared_ptr<BorderCode>(new BorderCode(brc80, size));
+
+				memcpy(brc80, (iter->Arguments + 20), size);
+				brcVert = std::shared_ptr<BorderCode>(new BorderCode(brc80, size));
+			}break;
+			case sprmTCellPaddingDefault:
+			case sprmTCellPadding:
+			case sprmTCellPaddingOuter:
+			{
+				unsigned char first = iter->Arguments[0];
+				unsigned char lim = iter->Arguments[1];
+				unsigned char ftsMargin = iter->Arguments[3];
+				short wMargin = FormatUtils::BytesToInt16(iter->Arguments, 4, iter->argumentsSize);
+
+				if (!_tcMar) _tcMar = new XMLTools::XMLElement(L"w:tblCellMar");
+				if (FormatUtils::GetBitFromInt(iter->Arguments[2], 0) == true)
 				{
-					const int size = 4;
-					unsigned char brc80[size];
+					appendDxaElement(_tcMar, L"top", FormatUtils::IntToWideString(wMargin), true);
+				}
 
-					memcpy(brc80, iter->Arguments, size);
-					brcTop = std::shared_ptr<BorderCode>(new BorderCode(brc80, size));
+				if (FormatUtils::GetBitFromInt(iter->Arguments[2], 1) == true)
+				{
+					appendDxaElement(_tcMar, L"left", FormatUtils::IntToWideString(wMargin), true);
+				}
 
-					memcpy(brc80, (iter->Arguments + 4), size);
-					brcLeft = std::shared_ptr<BorderCode>(new BorderCode(brc80, size));
+				if (FormatUtils::GetBitFromInt(iter->Arguments[2], 2) == true)
+				{
+					appendDxaElement(_tcMar, L"bottom", FormatUtils::IntToWideString(wMargin), true);
+				}
 
-					memcpy(brc80, (iter->Arguments + 8), size);
-					brcBottom = std::shared_ptr<BorderCode>(new BorderCode(brc80, size));
-
-					memcpy(brc80, (iter->Arguments + 12), size);
-					brcRight = std::shared_ptr<BorderCode>(new BorderCode(brc80, size));
-
-					memcpy(brc80, (iter->Arguments + 16), size);
-					brcHorz = std::shared_ptr<BorderCode>(new BorderCode(brc80, size));
-
-					memcpy(brc80, (iter->Arguments + 20), size);
-					brcVert = std::shared_ptr<BorderCode>(new BorderCode(brc80, size));
-				}break;
-				default:
-					break;
+				if (FormatUtils::GetBitFromInt(iter->Arguments[2], 3) == true)
+				{
+					appendDxaElement(_tcMar, L"right", FormatUtils::IntToWideString(wMargin), true);
+				}
+			}
+			default:
+				break;
 			}
 		}
 		if (rowHeight.GetAttributeCount() > 0)
 		{
 			_trPr->AppendChild(rowHeight);
 		}
-
-		//set borders
+	//set borders
 		XMLTools::XMLElement* _tblBorders = new XMLTools::XMLElement(L"w:tblBorders");
 		if (brcTop)
 		{
@@ -240,6 +271,10 @@ namespace DocFileFormat
 		{
 			_tblPrEx->AppendChild(*_tblBorders);
 		}
+		if (_tcMar && _tcMar->GetChildCount() > 0)
+		{
+			_tblPrEx->AppendChild(*(_tcMar));
+		}
 //---------------------------------------------------------------------------		
 		if ( _tblPrEx->GetChildCount() > 0 )
 		{
@@ -249,5 +284,7 @@ namespace DocFileFormat
 		{
 			m_pXmlWriter->WriteString( _trPr->GetXMLString() );
 		}
+		
+		RELEASEOBJECT(_tcMar);
 	}
 }

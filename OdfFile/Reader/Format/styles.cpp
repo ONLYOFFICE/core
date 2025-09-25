@@ -41,6 +41,8 @@
 #include "serialize_elements.h"
 #include "odfcontext.h"
 #include "draw_common.h"
+#include "paragraph_elements.h"
+#include "text_elements.h"
 
 namespace cpdoccore { 
 
@@ -86,12 +88,10 @@ std::wstring process_border(const border_style	& borderStyle,
         switch(borderStyle.get_style())
         {
         case border_style::none:        w_val = L"none";    break;
-        case border_style::solid:
-        case border_style::single:
-                                        w_val = L"single";  break;
+		case border_style::solid:		w_val = L"single";  break;
         case border_style::double_:     w_val = L"double";  break;
         case border_style::dotted:      w_val = L"dotted";  break;
-        case border_style::dashed:      w_val = L"dashed";  break;
+        case border_style::dash:		w_val = L"dashed";  break;
         case border_style::groove:      w_val = L"thinThickMediumGap";  break;
         case border_style::ridge:       w_val = L"thickThinMediumGap";  break;
         case border_style::inset:       w_val = L"inset";  break;
@@ -138,7 +138,14 @@ std::wstring process_margin(const _CP_OPT(length_or_percent) & margin, double Mu
 
 style_text_properties * style_content::get_style_text_properties() const
 {
-    return dynamic_cast<style_text_properties *>(style_text_properties_.get());    
+	return dynamic_cast<style_text_properties*>(style_text_properties_.get());
+}
+
+style_text_properties* style_content::get_style_text_properties(bool create)
+{
+	if (!style_text_properties_ && create)
+		style_text_properties_ = boost::make_shared<style_text_properties>();
+	return dynamic_cast<style_text_properties*>(style_text_properties_.get());
 }
 
 style_paragraph_properties * style_content::get_style_paragraph_properties() const
@@ -279,6 +286,8 @@ void style_content::add_child_element( xml::sax * Reader, const std::wstring & N
 	}
 	else if CP_CHECK_NAME(L"style", L"properties")
 	{
+		Context->is_old_version = true;
+
 		office_element_ptr element;
 		CP_CREATE_ELEMENT_SIMPLE(element);
 
@@ -545,7 +554,7 @@ void draw_gradient::add_attributes( const xml::attributes_wc_ptr & Attributes )
 
 void draw_gradient::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
-    CP_NOT_APPLICABLE_ELM();
+	CP_CREATE_ELEMENT(content_);
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * draw_hatch::ns = L"draw";
@@ -586,7 +595,7 @@ void draw_opacity::add_attributes( const xml::attributes_wc_ptr & Attributes )
 
 void draw_opacity::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
-    CP_NOT_APPLICABLE_ELM();
+	CP_CREATE_ELEMENT(content_);
 }
 // style:style
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -863,6 +872,15 @@ void style_columns::add_child_element( xml::sax * Reader, const std::wstring & N
     }
 }
 
+void style_columns::pptx_convert(oox::pptx_conversion_context& Context)
+{
+	if(fo_column_count_)
+		Context.get_slide_context().set_property(odf_reader::_property(L"style_columns_count", (int)fo_column_count_.get()));
+
+	if(fo_column_gap_)
+		Context.get_slide_context().set_property(odf_reader::_property(L"style_columns_gap", (int)fo_column_gap_->get_value_unit(length::emu)));
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * style_column::ns = L"style";
 const wchar_t * style_column::name = L"column";
@@ -1133,17 +1151,17 @@ void style_page_layout_properties_attlist::docx_convert_serialize(std::wostream 
 		if (fo_page_width_)
 		{
 			int val = (int)( 0.5 + 20.0 * fo_page_width_->get_value_unit(length::pt) );
-			if (val > 31680)
-			{
-				//Context.set_settings_property(odf_reader::_property(L"UnormalWidthPage",val));
-				val =31680;//22"
-			}
+			//if (val > 31680)
+			//{
+			//	//Context.set_settings_property(odf_reader::_property(L"UnormalWidthPage",val));
+			//	val =31680;//22"
+			//}
 			w_w = std::to_wstring(val);
 		}
 		if (fo_page_height_)
 		{
 			int val = (int)( 0.5 + 20.0 * fo_page_height_->get_value_unit(length::pt));
-			if (val > 31680) val =31680;//22"
+			//if (val > 31680) val =31680;//22"
 			w_h = std::to_wstring(val);
 
 			height_page = val;
@@ -1431,6 +1449,34 @@ bool style_page_layout_properties::docx_background_serialize(std::wostream & str
 	return true;
 }
 
+int style_page_layout_properties::DetectPageSize(double w, double h)
+{
+	int result = 0;
+
+	if (w > 209.99) // A4 and more
+	{
+		if		(			w < 211 && h > 296 && h < 298) result = 9;	//  pagesizeA4Paper;
+		else if (w > 279 && w < 280 && h > 431 && h < 433) result = 3;	//  pagesizeTabloidPaper;
+		else if (w > 215 && w < 217 && h > 354 && h < 356) result = 5;	//  pagesizeLegalPaper;
+		else if (w > 296 && w < 298 && h > 419 && h < 421) result = 8;	//  pagesizeA3Paper;
+		else if (w > 256 && w < 258 && h > 363 && h < 365) result = 12;	//  pagesizeB4Paper;
+		else if (w > 215 && w < 217 && h > 329 && h < 331) result = 14;	//  pagesizeFolioPaper;
+		else if (w > 228 && w < 230 && h > 323 && h < 325) result = 30;	//  pagesizeC4Envelope;
+		else if (w > 215 && w < 217 && h > 278 && h < 280) result = 1;	//  pagesizeLetterPaper;
+	}
+	else
+	{
+		if		(w > 183 && w < 185 && h > 265 && h < 267) result = 7;	//  pagesizeExecutivePaper;
+		else if (w > 147 && w < 149 && h > 209 && h < 211) result = 11;	//  pagesizeA5Paper;
+		else if (w > 181 && w < 183 && h > 256 && h < 259) result = 13;	//  pagesizeB5Paper;
+		else if (w > 103 && w < 106 && h > 240 && h < 243) result = 20;	//  pagesize10Envelope;
+		else if (w > 109 && w < 111 && h > 219 && h < 221) result = 27;	//  pagesizeDLEnvelope;
+		else if (w > 161 && w < 164 && h > 228 && h < 230) result = 28;	//  pagesizeC5Envelope;
+		else if (w > 97 && w < 100 && h > 189 && h < 192) result = 37;	//  pagesizeMonarchEnvelope;
+	}
+
+	return result;
+}
 
 void style_page_layout_properties::xlsx_serialize(std::wostream & strm, oox::xlsx_conversion_context & Context)
 {
@@ -1472,43 +1518,51 @@ void style_page_layout_properties::xlsx_serialize(std::wostream & strm, oox::xls
 			header	= Context.get_table_context().get_header_page();
 			footer = Context.get_table_context().get_footer_page();
 
+			if (vertical_margins.fo_margin_bottom_ && vertical_margins.fo_margin_bottom_->get_type() == odf_types::length_or_percent::Length)
+			{
+				bottom = vertical_margins.fo_margin_bottom_->get_length().get_value_unit(odf_types::length::inch);
+			}
+			if (vertical_margins.fo_margin_top_ && vertical_margins.fo_margin_top_->get_type() == odf_types::length_or_percent::Length)
+			{
+				top = vertical_margins.fo_margin_top_->get_length().get_value_unit(odf_types::length::inch);
+			}
+			
 			CP_XML_NODE(L"pageMargins")
 			{
 				if (horizontal_margins.fo_margin_left_ && horizontal_margins.fo_margin_left_->get_type() == odf_types::length_or_percent::Length)
 					CP_XML_ATTR(L"left"		, horizontal_margins.fo_margin_left_->get_length().get_value_unit(odf_types::length::inch));
-				else CP_XML_ATTR(L"left", 0);
+				else CP_XML_ATTR(L"left", 0.7875);
 				
 				if (horizontal_margins.fo_margin_right_ && horizontal_margins.fo_margin_right_->get_type() == odf_types::length_or_percent::Length)
 					CP_XML_ATTR(L"right"	, horizontal_margins.fo_margin_right_->get_length().get_value_unit(odf_types::length::inch));
-				else CP_XML_ATTR(L"right", 0);
+				else CP_XML_ATTR(L"right", 0.7875);
 				
-				if (vertical_margins.fo_margin_top_ && vertical_margins.fo_margin_top_->get_type() == odf_types::length_or_percent::Length)
+				if (top)
 				{
-					top = vertical_margins.fo_margin_top_->get_length().get_value_unit(odf_types::length::inch);
-					CP_XML_ATTR(L"top", *top);
+					CP_XML_ATTR(L"top", *top + header.get_value_or(0));
 				}
 				else CP_XML_ATTR(L"top", 1.025);
 
-				if (vertical_margins.fo_margin_bottom_ && vertical_margins.fo_margin_bottom_->get_type() == odf_types::length_or_percent::Length)
+				if (bottom)
 				{
-					bottom = vertical_margins.fo_margin_bottom_->get_length().get_value_unit(odf_types::length::inch);
-					CP_XML_ATTR(L"bottom", *bottom);
+					CP_XML_ATTR(L"bottom", *bottom + footer.get_value_or(0));
 				}
 				else CP_XML_ATTR(L"bottom", 1.025);
 				
 				if (header)
 				{
-					*header = (*header / 72.0) + top.get_value_or(0); 
-					if (*header < 0) *header = 0.7875;
-					CP_XML_ATTR(L"header", *header); // pt -> inch
+					double v = top ? *top : *header;
+					if (v < 0) v = 0.7875;
+					CP_XML_ATTR(L"header", v); 
 				}
 				else CP_XML_ATTR(L"header", 0.7875);
 
 				if (footer)
 				{
-					*footer = (*footer / 72.0) + bottom.get_value_or(0);
-					if (*footer < 0) *footer = 0.7875;
-					CP_XML_ATTR(L"footer", *footer);
+					double v = bottom ? *bottom : *footer;
+					if (v < 0) v = 0.7875;
+
+					CP_XML_ATTR(L"footer", v);
 				}
 				else CP_XML_ATTR(L"footer", 0.7875);
 			}
@@ -1523,14 +1577,26 @@ void style_page_layout_properties::xlsx_serialize(std::wostream & strm, oox::xls
 				if (attlist_.fo_page_height_)
 				{
 					h = attlist_.fo_page_height_->get_value_unit(length::mm);
-					CP_XML_ATTR(L"paperHeight", (int)h);
 				}		
 				if (attlist_.fo_page_width_)
 				{
 					w =  attlist_.fo_page_width_->get_value_unit(length::mm);
-					CP_XML_ATTR(L"paperWidth", (int)w);
 				}
-				CP_XML_ATTR(L"paperUnits", L"mm");
+
+				if (h > 0 && w > 0)
+				{
+					int paperSize = DetectPageSize(w, h);
+					if (0 < paperSize)
+					{
+						CP_XML_ATTR(L"paperSize", paperSize);
+					}
+					else
+					{
+						CP_XML_ATTR(L"paperHeight", (int)h);
+						CP_XML_ATTR(L"paperWidth", (int)w);
+						CP_XML_ATTR(L"paperUnits", L"mm");
+					}
+				}
 
 				if (attlist_.style_scale_to_)
 				{
@@ -1593,7 +1659,7 @@ void style_page_layout_properties::docx_serialize(std::wostream & strm, oox::doc
 			
 			CP_XML_NODE(L"w:type")
 			{				
-				if (change_page_layout)
+				if (change_page_layout && Context.get_page_break()) // check bug 76397
 				{
 					CP_XML_ATTR(L"w:val", L"nextPage");
 				}
@@ -1775,16 +1841,41 @@ void style_master_page::pptx_convert(oox::pptx_conversion_context & Context)
 	if (attlist_.draw_style_name_)
 	{
 		std::wstring style_name = attlist_.draw_style_name_.get();
-		style_instance * style_inst = Context.root()->odf_context().styleContainer().style_by_name(style_name, style_family::DrawingPage, true);
 		
+		graphic_format_properties* default_properties = NULL;
+		
+		if (getContext()->is_old_version)
+		{
+			style_instance* style_inst_def = Context.root()->odf_context().styleContainer().style_by_name(L"standard", style_family::Graphic, true);
+			if ((style_inst_def) && (style_inst_def->content()))
+			{
+				default_properties = style_inst_def->content()->get_graphic_properties();
+			}
+		}
+		else
+		{
+			style_instance* style_inst_def = Context.root()->odf_context().styleContainer().style_default_by_type(odf_types::style_family::Graphic);
+			if ((style_inst_def) && (style_inst_def->content()))
+			{
+				default_properties = style_inst_def->content()->get_graphic_properties();
+			}
+		}
+		style_instance * style_inst = Context.root()->odf_context().styleContainer().style_by_name(style_name, style_family::DrawingPage, true);
 		if ((style_inst) && (style_inst->content()))
 		{
 			style_drawing_page_properties * properties = style_inst->content()->get_style_drawing_page_properties();
 
 			if (properties)
 			{				
+				odf_types::common_draw_fill_attlist calc_props;
+				if (default_properties)
+				{
+					calc_props.apply_from(default_properties->common_draw_fill_attlist_);
+				}
+				calc_props.apply_from(properties->content().common_draw_fill_attlist_);
+
 				oox::_oox_fill fill;
-				Compute_GraphicFill(properties->content().common_draw_fill_attlist_, office_element_ptr(), Context.root(), fill);
+				Compute_GraphicFill(calc_props, office_element_ptr(), Context.root(), fill);
 				Context.get_slide_context().add_background(fill);
 			}
 		}
@@ -2023,11 +2114,27 @@ void header_footer_impl::xlsx_serialize(std::wostream & _Wostream, oox::xlsx_con
 		{
 			region->xlsx_serialize(_Wostream, Context);
 		}
+		else if (typeTextP == content_[i]->get_type())
+		{
+			text::p* p = dynamic_cast<text::p*>(content_[i].get());
+			for (size_t j = 0; p && j < p->paragraph_.content_.size(); j++)
+			{
+				text::paragraph_content_element* paragraph_element = dynamic_cast<text::paragraph_content_element*>(p->paragraph_.content_[j].get());
+				if (paragraph_element)
+				{
+					paragraph_element->xlsx_serialize(_Wostream, Context);
+				}
+				else
+				{
+					CP_SERIALIZE_TEXT(content_[i], true);
+				}
+			}
+		}
 		else
 		{
 			CP_SERIALIZE_TEXT(content_[i], true);
 		}
-    }
+	}
 }
 // text:notes-configuration
 //-------------------------------------------------------------------------------------------------------
@@ -2075,6 +2182,7 @@ void text_linenumbering_configuration::add_attributes(const xml::attributes_wc_p
 	CP_APPLY_ATTR(L"text:number-position", text_number_position_); //inner, left, outer, right
 	CP_APPLY_ATTR(L"text:offset", text_offset_);
 	CP_APPLY_ATTR(L"text:restart-on-page", text_restart_on_page_);
+	CP_APPLY_ATTR(L"text:start", text_start_);
 }
 void text_linenumbering_configuration::add_child_element(xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
@@ -2101,6 +2209,10 @@ void text_linenumbering_configuration::docx_serialize(std::wostream & strm, oox:
 			else
 			{
 				CP_XML_ATTR(L"w:restart", L"continuous");
+			}
+			if (text_start_)
+			{
+				CP_XML_ATTR(L"w:start", *text_start_);
 			}
 			if (text_offset_)
 			{
@@ -2157,6 +2269,28 @@ void style_presentation_page_layout::pptx_convert(oox::pptx_conversion_context &
 		content_[i]->pptx_convert(Context);
 	}
 }
+//--------------------------------------------------------------------------------------------------
+const wchar_t* loext_gradient_stop::ns = L"loext";
+const wchar_t* loext_gradient_stop::name = L"gradient-stop";
+
+void loext_gradient_stop::add_attributes(const xml::attributes_wc_ptr& Attributes)
+{
+	CP_APPLY_ATTR(L"loext:color-type", color_type_);
+	CP_APPLY_ATTR(L"loext:color-value", color_value_);
+	CP_APPLY_ATTR(L"svg:offset", svg_offset_);
+}
+//--------------------------------------------------------------------------------------------------
+const wchar_t* loext_opacity_stop::ns = L"loext";
+const wchar_t* loext_opacity_stop::name = L"opacity-stop";
+
+void loext_opacity_stop::add_attributes(const xml::attributes_wc_ptr& Attributes)
+{
+	CP_APPLY_ATTR(L"svg:stop-opacity", stop_opacity_);
+	CP_APPLY_ATTR(L"svg:offset", svg_offset_);
+	
+	//CP_APPLY_ATTR(L"loext:stop-opacity", stop_opacity_); //?? 
+}
+
 
 }
 }

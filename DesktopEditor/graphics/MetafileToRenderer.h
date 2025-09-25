@@ -35,6 +35,7 @@
 #pragma once
 
 #include "pro/Image.h"
+#include "MetafileToRendererCheck.h"
 
 #ifndef INT32
 typedef int INT32;
@@ -48,7 +49,6 @@ public:
 
 protected:
 	std::wstring m_sTempDir;
-	std::vector<std::wstring> m_arTempFiles;
 
 	std::wstring m_sThemesDir;
 	std::wstring m_sMediaDir;
@@ -179,12 +179,21 @@ namespace NSOnlineOfficeBinToPdf
 		ctLink                          = 161,
 		ctFormField                     = 162,
 		ctDocInfo                       = 163,
+		ctAnnotField                    = 164,
+		ctAnnotFieldDelete              = 165,
+		ctWidgetsInfo                   = 166,
+		ctShapeStart                    = 167,
+		ctShapeEnd                      = 168,
+		ctHeadings                      = 169,
 
 		ctPageWidth                     = 200,
 		ctPageHeight                    = 201,
 
 		ctPageStart                     = 202,
 		ctPageEnd                       = 203,
+
+		ctPageClear                     = 207,
+		ctPageRotate                    = 208,
 
 		// gradients
 

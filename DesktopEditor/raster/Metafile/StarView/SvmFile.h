@@ -82,139 +82,124 @@ class CSvmFile : virtual public IMetaFileBase
 		m_currentCharset		= 0;
 		m_currentLanguage		= 0;
 	}
-	TRect*   GetBounds()
+	const TRectL&   GetBounds()
 	{
-		return &m_oBoundingBox;
+		return m_oBoundingBox;
 	}	
-	TRect* GetDCBounds()
+	const TRectL& GetDCBounds() const override
 	{
-		//if (m_oHeader.mapMode.isSimple)
 		if (m_pDC->m_oMapMode.isSimple)
 		{
-			m_oDCRect  = m_oBoundingBox;
-			return &m_oDCRect;
+			return m_oBoundingBox;
 		}
 		else
 		{
-			return &m_oHeader.boundRect;
+			return m_oHeader.boundRect;
 		}
 	}
-	double GetPixelHeight()
+	double GetPixelHeight()  const override
 	{
 		return m_pDC->m_dPixelHeight;
 	}
-	double GetPixelWidth()
+	double GetPixelWidth() const override
 	{
 		return m_pDC->m_dPixelWidth;
 	}
-	int GetTextColor()
+	int GetTextColor() const override
 	{
-		TSvmColor& oColor = m_pDC->GetTextColor();
-		return METAFILE_RGBA(oColor.r, oColor.g, oColor.b);
+		return m_pDC->GetTextColor().ToInt();
 	}
-	IFont*       GetFont()
+	const IFont* GetFont() const override
 	{
-		CSvmFont* pFont = m_pDC->GetFont();
-		if (!pFont)
-			return NULL;
-
-		return (IFont*)pFont;
+		return m_pDC->GetFont();
 	}
-	IBrush*      GetBrush()
+	const IBrush* GetBrush() const override
 	{
-		CSvmBrush* pBrush = m_pDC->GetBrush();
-		if (!pBrush)
-			return NULL;
-
-		return (IBrush*)pBrush;
+		return m_pDC->GetBrush();
 	}
-	IPen*        GetPen()
+	const IPen* GetPen() const override
 	{
-		CSvmPen* pPen = m_pDC->GetPen();
-		if (!pPen)
-			return NULL;
-
-		return (IPen*)pPen;
+		return m_pDC->GetPen();
 	}
-	unsigned int GetTextAlign()
+	unsigned int GetTextAlign() const override
 	{
 		return m_pDC->GetTextAlign();
 	}
-	unsigned int GetTextBgMode()
+	unsigned int GetTextBgMode() const override
 	{
 		return m_pDC->GetBgMode();
 	}
-	int GetTextBgColor()
+	int GetTextBgColor() const override
 	{
-		TSvmColor& oColor = m_pDC->GetTextBgColor();
-		return METAFILE_RGBA(oColor.r, oColor.g, oColor.b);
+		return m_pDC->GetTextBgColor().ToInt();
 	}
-	unsigned int GetFillMode()
+	unsigned int GetFillMode() const override
 	{
 		return m_pDC->GetFillMode();
 	}
-	TPointD      GetCurPos()
+	TPointD      GetCurPos() const override
 	{
 		TSvmPoint oPoint = m_pDC->GetCurPos();
 		TPointD oRes( oPoint.x,  oPoint.y);
-		TranslatePoint(oPoint.x, oPoint.y, oRes.x, oRes.y);
+		TranslatePoint(oPoint.x, oPoint.y, oRes.X, oRes.Y);
 		return oRes;
 	}
-	TXForm*      GetInverseTransform()
+	const TXForm& GetInverseTransform() const override
 	{
 		return m_pDC->GetInverseTransform();
 	}
-	TXForm*      GetTransform(int iGraphicsMode = GM_ADVANCED)
+	const TXForm& GetTransform(int iGraphicsMode = GM_ADVANCED) override
 	{
 		return m_pDC->GetTransform();
 	}
-	unsigned int GetMiterLimit()
+	unsigned int GetMiterLimit() const override
 	{
 		return m_pDC->GetMiterLimit();
 	}
-	unsigned int GetRop2Mode()
+	unsigned int GetRop2Mode() const override
 	{
 		return m_pDC->GetRop2Mode();
 	}
-	IClip*       GetClip()
+	const CClip*       GetClip() const override
 	{
-		CSvmClip* pClip = m_pDC->GetClip();			
-		if (!pClip)
-			return NULL;
-
-		return (IClip*)pClip;
+		return m_pDC->GetClip();
 	}
-	int          GetCharSpace()
+	int          GetCharSpace() const override
 	{
 		return 0;
 	}
-	bool         IsWindowFlippedY()
+	bool         IsWindowFlippedY() const override
 	{
 		return false;
 	}
-	bool         IsWindowFlippedX()
+	bool         IsWindowFlippedX() const override
 	{
 		return false;
 	}
 
-	unsigned int GetMapMode()
+	unsigned int GetMapMode() const override
 	{
 		return MM_ANISOTROPIC;
 	}
 
-	double GetDpi()
+	USHORT GetDpi() const override
 	{
-		return 96.;
+		return 96;
 	}
 
-	IRegion* GetRegion()
+	const IRegion* GetRegion() const override
 	{
 		return NULL;
 	}
 
-	unsigned int GetArcDirection()
+	unsigned int GetArcDirection() const override
 	{
 		return AD_CLOCKWISE;
+	}
+
+	const CPath* GetPath() const override
+	{
+		return NULL;
 	}
 
  private:
@@ -234,9 +219,7 @@ class CSvmFile : virtual public IMetaFileBase
 	unsigned int		m_unRecordPos;
 	
 	bool				m_bFirstPoint;
-	TRect				m_oBoundingBox;
-	//TRect				m_oRect;
-	TRect				m_oDCRect;
+	TRectL				m_oBoundingBox;
 
 	friend class CSvmPlayer;
 
@@ -281,11 +264,11 @@ class CSvmFile : virtual public IMetaFileBase
 
 	
 //-------------------------------------------------------------------------------------------------------
-	void TranslatePoint(TSvmPoint& oPoint, double& dX, double& dY)
+	void TranslatePoint(TSvmPoint& oPoint, double& dX, double& dY) const
 	{
 		TranslatePoint(oPoint.x, oPoint.y, dX, dY);
 	}
-	void TranslatePoint(int nX, int nY, double& dX, double &dY)
+	void TranslatePoint(int nX, int nY, double& dX, double &dY) const
 	{
 		dX = (double)nX;
 		dY = (double)nY;
@@ -321,7 +304,8 @@ class CSvmFile : virtual public IMetaFileBase
 		BYTE* pBitsBuffer = m_oStream.GetCurPtr();
 		m_oStream.Skip(ulBitsSize);
 
-		MetaFile::ReadImage(pHeaderBuffer, ulHeaderSize, pBitsBuffer, ulBitsSize, ppBgraBuffer, pulWidth, pulHeight);
+		unsigned int unColorUsed;
+		MetaFile::ReadImage(pHeaderBuffer, ulHeaderSize, pBitsBuffer, ulBitsSize, ppBgraBuffer, pulWidth, pulHeight, unColorUsed);
 
 		return true;
 	}
@@ -338,7 +322,7 @@ class CSvmFile : virtual public IMetaFileBase
 			for (int nIndex = 3, nSize = 4 * unImageW * unImageH; nIndex < nSize; nIndex += 4)
 				pImageBuffer[nIndex] = 255;
 
-			m_pOutput->DrawBitmap(dX, dY, dR - dX, dB - dY, pImageBuffer, unImageW, unImageH);
+			m_pOutput->DrawBitmap(dX, dY, dR - dX, dB - dY, pImageBuffer, unImageW, unImageH, BLEND_MODE_DEFAULT);
 		}
 	}
 	void DrawImage(int nX, int nY, int nW, int nH, unsigned int unColorUsage)
@@ -355,7 +339,7 @@ class CSvmFile : virtual public IMetaFileBase
 				TranslatePoint(nX, nY, dX, dY);
 				TranslatePoint(nX + nW, nY + nH, dX1, dY1);
 
-				m_pOutput->DrawBitmap(dX, dY, fabs(dX1 - dX), fabs(dY1 - dY), pBgra, unWidth, unHeight);
+				m_pOutput->DrawBitmap(dX, dY, fabs(dX1 - dX), fabs(dY1 - dY), pBgra, unWidth, unHeight, BLEND_MODE_DEFAULT);
 			}
 
 			if (pBgra)

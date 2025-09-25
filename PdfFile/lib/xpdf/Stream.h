@@ -347,7 +347,7 @@ private:
 class MemStream: public BaseStream {
 public:
 
-  MemStream(char *bufA, Guint startA, Guint lengthA, Object *dictA);
+  MemStream(char *bufA, Guint startA, Guint lengthA, Object *dictA, GBool needFreeA = gFalse);
   virtual ~MemStream();
   virtual Stream *copy();
   virtual Stream *makeSubStream(GFileOffset start, GBool limited,
@@ -364,6 +364,9 @@ public:
   virtual void setPos(GFileOffset pos, int dir = 0);
   virtual GFileOffset getStart() { return start; }
   virtual void moveStart(int delta);
+
+  char* getBufPtr() { return bufPtr; }
+  char* getBufEnd() { return bufEnd; }
 
 private:
 

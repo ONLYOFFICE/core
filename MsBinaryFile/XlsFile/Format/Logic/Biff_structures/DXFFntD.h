@@ -48,28 +48,29 @@ class DXFFntD : public BiffStructure
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(DXFFntD)
 public:
+    DXFFntD();
 	BiffStructurePtr clone();
 
-	static const ElementType	type = typeDXFFntD;
+	static const ElementType type = typeDXFFntD;
 	
 	virtual void load(CFRecord& record);
+    virtual void save(CFRecord& record);
 
-	int serialize(std::wostream & stream);
+	int serialize(std::wostream & stream, bool extOnly = false);
 
-	XLUnicodeStringNoCch stFontName;
+    XLUnicodeStringNoCch stFontName;
 
 	Stxp	stxp;
-    _INT32	icvFore;
+    _INT32	icvFore = 0;
 	
 	Ts		tsNinch;	
 	
-	_UINT32 fSssNinch;
-	_UINT32 fUlsNinch;
-	_UINT32 fBlsNinch;
-    
-	_INT32	ich;
-    _INT32	cch;
-	_UINT16 iFnt;
+	_UINT32 fSssNinch = 0;
+	_UINT32 fUlsNinch = 0;
+	_UINT32 fBlsNinch = 0;
+	_INT32	ich = 0;
+    _INT32	cch = 0;
+	_UINT16 iFnt = 0;
 
 //------------------------------------------------
 	GlobalWorkbookInfoPtr global_info;

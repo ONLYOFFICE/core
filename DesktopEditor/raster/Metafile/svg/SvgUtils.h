@@ -6,11 +6,10 @@
 #include <vector>
 #include <regex>
 #include <map>
+#include <cfloat>
 
 namespace SVG
 {
-	#define ADD_COLOR( COLOR, R, G, B ) m_Table.insert(std::pair<std::wstring, unsigned int>( L##COLOR, ( R << 0 ) | ( G << 8 ) | ( B << 16 ) ))
-
 	enum Metrics
 	{
 		EM,
@@ -26,6 +25,11 @@ namespace SVG
 
 		UNDEFINED
 	};
+
+	inline bool Equals(double dFirst, double dSecond, double dEpsilon = DBL_EPSILON)
+	{
+		return std::abs(dFirst - dSecond) <= dEpsilon;
+	}
 
 	namespace StrUtils
 	{
@@ -47,6 +51,41 @@ namespace SVG
 		inline std::vector<double> ReadDoubleValues(const std::wstring& wsValue)
 		{
 			return ReadDoubleValues(wsValue.begin(), wsValue.end());
+		}
+
+		inline bool ReadDoubleValue(const std::wstring& wsValue, double& dValue)
+		{
+			std::wregex oPattern(LR"([-+]?(\d+(\.\d*)?|\.\d+)([eE][-+]?\d+)?)");
+			std::wsmatch oMatch;
+
+			if (!std::regex_search(wsValue, oMatch, oPattern))
+				return false;
+
+			dValue = std::stod(oMatch[0].str());
+
+			return true;
+		}
+
+		inline bool ReadAngle(const std::wstring& wsValue, double& dValue)
+		{
+			std::wregex oPattern(LR"(([-+]?(\d+(\.\d*)?|\.\d+)([eE][-+]?\d+)?)(deg|rad|grad|turn))");
+			std::wsmatch oMatch;
+
+			if (!std::regex_search(wsValue, oMatch, oPattern))
+				return false;
+
+			const std::wstring wsUnit{oMatch[5].str()};
+
+			dValue = std::stod(oMatch[1].str());
+
+			if (L"grad" == wsUnit)
+				dValue *= 400. / 360.;
+			else if (L"rad" == wsUnit)
+				dValue *= 180. / 3.14159;
+			else if (L"turn" == wsUnit)
+				dValue *= 360.;
+
+			return true;
 		}
 
 		inline std::wstring TrimExtraEnding(const std::wstring& wsString)

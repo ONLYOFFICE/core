@@ -47,19 +47,14 @@ public:
    
 	static const ElementType type = typeDrawShape;
 
-
     virtual void serialize(std::wostream & _Wostream);
     virtual void serialize_attlist(CP_ATTR_NODE);
 	
 	odf_types::common_xlink_attlist		common_xlink_attlist_;
 	
 	_CP_OPT(std::wstring)		draw_id_;//используется для анимашек
-  
-
-	
 
 	int sub_type_;
-
 };
 //----------------------------------------------------------------------------------------------
 class draw_rect_attlist
@@ -316,7 +311,8 @@ public:
 	_CP_OPT(std::wstring)		draw_enhanced_path_;
 	_CP_OPT(std::wstring)		draw_text_areas_;
 	_CP_OPT(std::wstring)		draw_glue_points_;
-	
+	_CP_OPT(std::wstring)		glue_points_leaving_directions_;
+
 	_CP_OPT(std::wstring)		draw_sub_view_size_;
 
 	_CP_OPT(odf_types::Bool)	draw_mirror_vertical_;
@@ -328,6 +324,9 @@ public:
 	_CP_OPT(std::wstring)		draw_text_path_scale_;
 
 	_CP_OPT(int)				draw_text_rotate_angle_;
+
+	_CP_OPT(std::wstring)		draw_path_stretchpoint_x_;
+	_CP_OPT(std::wstring)		draw_path_stretchpoint_y_;
 	
 	void serialize(CP_ATTR_NODE);   
 };

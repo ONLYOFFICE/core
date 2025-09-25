@@ -76,6 +76,8 @@ public:
     // перевод id мастера в индекс темы/шаблона
     std::map<_UINT32, LONG> m_mapMasterToTheme;
 
+    std::map<_UINT32, LONG> m_mapRealUsedMaster;
+
     // original id -> natural id
     std::map<_UINT32, _UINT32>  m_mapMasterOriginalIds;
 
@@ -98,8 +100,7 @@ public:
     bool    m_bHasFooter;
     int     m_nFormatDate;
 
-    CRecordVbaProjectStg*   m_VbaProjectStg;
-    int                     m_lIndexThisUser;
+    int m_lIndexThisUser;
 
     double  m_nWriteSlideTimeOffset;
     double  m_nWriteSlideTime;
@@ -140,10 +141,12 @@ public:
     void LoadSlide(_UINT32 dwSlideID, CSlide* pSlide);
     void LoadNotes(_UINT32 dwNotesID, CSlide* pSlide);
 
+    void TestSlide(_UINT32 dwSlideID);
+
     void LoadMasters();
 
     void LoadNoMainMaster	(_UINT32 dwMasterID);
-    void LoadMainMaster		(_UINT32 dwMasterID);
+    void LoadMainMaster		(_UINT32 dwMasterID, bool alwaysLoad);
 
     void LoadMaster(_typeMaster type, CRecordSlide* pMaster, CSlideInfo *& pMasterWrapper, CThemePtr & pTheme);
 
@@ -157,6 +160,7 @@ public:
 
     void LoadExVideo(CRecordsContainer* pExObject);
     void LoadExAudio(CRecordsContainer* pExObject);
+    void LoadExOleObject(CRecordsContainer* pExObject);
 
     void LoadAutoNumbering(CRecordGroupShapeContainer* pGroupContainer, CTheme* pTheme);
     void LoadBulletBlip(CShapeElement* pShape);

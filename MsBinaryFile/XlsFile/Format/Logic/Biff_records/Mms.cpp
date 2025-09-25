@@ -58,4 +58,11 @@ void Mms::readFields(CFRecord& record)
 	record.skipNunBytes(2); // reserved
 }
 
+
+void Mms::writeFields(CFRecord& record)
+{
+    // This record is reserved and MUST be ignored.
+    record.reserveNunBytes(2); // reserved
+}
+
 } // namespace XLS

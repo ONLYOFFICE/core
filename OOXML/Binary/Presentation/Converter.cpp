@@ -31,7 +31,7 @@
  */
 
 #include "Converter.h"
-#include "../../PPTXFormat/Presentation/SldSz.h"
+#include "../../PPTXFormat/Presentation/PresentationChildElements.h"
 #include "../../PPTXFormat/NotesSlide.h"
 
 namespace PPTX2EditorAdvanced
@@ -254,7 +254,7 @@ namespace PPTX2EditorAdvanced
 		oBinaryWriter.WriteULONG(0);
 
 // App
-		smart_ptr<PPTX::App> app = oFolder.Get(OOX::FileTypes::App).smart_dynamic_cast<PPTX::App>();
+		smart_ptr<OOX::CApp> app = oFolder.Get(OOX::FileTypes::App).smart_dynamic_cast<OOX::CApp>();
 		if (app.is_init())
 		{
 			oBinaryWriter.StartMainRecord(NSBinPptxRW::NSMainTables::App);
@@ -262,7 +262,7 @@ namespace PPTX2EditorAdvanced
 		}
 
 // Core
-		smart_ptr<PPTX::Core> core = oFolder.Get(OOX::FileTypes::Core).smart_dynamic_cast<PPTX::Core>();
+		smart_ptr<OOX::CCore> core = oFolder.Get(OOX::FileTypes::Core).smart_dynamic_cast<OOX::CCore>();
 		if (core.is_init())
 		{
 			oBinaryWriter.StartMainRecord(NSBinPptxRW::NSMainTables::Core);

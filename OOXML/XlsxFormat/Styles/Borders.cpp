@@ -36,7 +36,10 @@
 #include "../../Common/SimpleTypes_Spreadsheet.h"
 
 #include "../../XlsbFormat/Biff12_records/Border.h"
+#include "../../XlsbFormat/Biff12_records/BeginBorders.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BiffStructure.h"
+
+#include "../../XlsbFormat/Biff12_unions/BORDERS.h"
 
 namespace OOX
 {
@@ -134,6 +137,60 @@ namespace OOX
 
 			}
 		}
+		void CBorderProp::toBin(XLS::BiffStructure* obj)
+		{
+			auto ptr = static_cast<XLSB::Blxf*>(obj);
+			if(this == nullptr)
+			{
+				CColor color;
+				ptr->brtColor = color.GetDefaultColor();
+				ptr->dg = 0x00;
+				return;
+			}
+			if(m_oColor.IsInit())
+				ptr->brtColor = m_oColor->toColor();
+			else
+			{
+				ptr->brtColor = m_oColor->GetDefaultColor();
+			}
+
+			if(!m_oStyle.IsInit())
+            {
+                ptr->dg = 0x00;
+				return;
+            }
+
+			if (m_oStyle == SimpleTypes::Spreadsheet::EBorderStyle::borderstyleNone)
+				ptr->dg = 0x00;
+			else if (m_oStyle == SimpleTypes::Spreadsheet::EBorderStyle::borderstyleThin)
+				ptr->dg = 0x01;
+			else if (m_oStyle == SimpleTypes::Spreadsheet::EBorderStyle::borderstyleMedium)
+				ptr->dg = 0x02;
+			else if (m_oStyle == SimpleTypes::Spreadsheet::EBorderStyle::borderstyleDashed)
+				ptr->dg = 0x03;
+			else if (m_oStyle == SimpleTypes::Spreadsheet::EBorderStyle::borderstyleDotted)
+				ptr->dg = 0x04;
+			else if (m_oStyle == SimpleTypes::Spreadsheet::EBorderStyle::borderstyleThick)
+				ptr->dg = 0x05;
+			else if (m_oStyle == SimpleTypes::Spreadsheet::EBorderStyle::borderstyleDouble)
+				ptr->dg = 0x06;
+			else if (m_oStyle == SimpleTypes::Spreadsheet::EBorderStyle::borderstyleHair)
+				ptr->dg = 0x07;
+			else if (m_oStyle == SimpleTypes::Spreadsheet::EBorderStyle::borderstyleMediumDashed)
+				ptr->dg = 0x08;
+			else if (m_oStyle == SimpleTypes::Spreadsheet::EBorderStyle::borderstyleDashDot)
+				ptr->dg = 0x09;
+			else if (m_oStyle == SimpleTypes::Spreadsheet::EBorderStyle::borderstyleMediumDashDot)
+				ptr->dg = 0x0A;
+			else if (m_oStyle == SimpleTypes::Spreadsheet::EBorderStyle::borderstyleDashDotDot)
+				ptr->dg = 0x0B;
+			else if (m_oStyle == SimpleTypes::Spreadsheet::EBorderStyle::borderstyleMediumDashDotDot)
+				ptr->dg = 0x0C;
+			else if (m_oStyle == SimpleTypes::Spreadsheet::EBorderStyle::borderstyleSlantDashDot)
+				ptr->dg = 0x0D;
+            else
+                ptr->dg = 0x00;
+		}
 		bool CBorderProp::IsEmpty()
 		{
 			return !(m_oStyle.IsInit() || m_oColor.IsInit());
@@ -150,7 +207,7 @@ namespace OOX
 				WritingElement_ReadAttributes_Read_else_if(oReader, L"ss:Position", m_oType)
 				WritingElement_ReadAttributes_Read_else_if(oReader, L"ss:Weight", iWeight)
 			WritingElement_ReadAttributes_End(oReader)
-
+			
 			if (sColor.IsInit())
 			{
 				m_oColor.Init(); m_oColor->m_oRgb.Init();
@@ -162,13 +219,21 @@ namespace OOX
 					m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(SimpleTypes::Spreadsheet::borderstyleDotted));
 				else if (*sLineStyle == L"Dash")
 					m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(SimpleTypes::Spreadsheet::borderstyleDashed));
-				else if (*sLineStyle == L"None")
-					m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(SimpleTypes::Spreadsheet::borderstyleNone));
+				else if (*sLineStyle == L"DashDot")
+					m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(SimpleTypes::Spreadsheet::borderstyleDashDot));
+				else if (*sLineStyle == L"DashDotDot")
+					m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(SimpleTypes::Spreadsheet::borderstyleDashDotDot));				
 				else if (*sLineStyle == L"Double")
 					m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(SimpleTypes::Spreadsheet::borderstyleDouble));
+				else if (*sLineStyle == L"None")
+					m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(SimpleTypes::Spreadsheet::borderstyleNone));
+				else if (*sLineStyle == L"SlantDashDot")
+					m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(SimpleTypes::Spreadsheet::borderstyleSlantDashDot));
 				else if (*sLineStyle == L"Continuous")
 				{
-					m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(SimpleTypes::Spreadsheet::borderstyleThin));
+					if (iWeight.IsInit()) m_oStyle.reset();
+					else
+						m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(SimpleTypes::Spreadsheet::borderstyleHair));
 					bBorderContinuous = true;
 				}
 			}
@@ -178,16 +243,28 @@ namespace OOX
 				{
 					case 1:	 //Thin
 					{
-						if (false == sLineStyle.IsInit())
+						if (false == m_oStyle.IsInit())
 							m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(SimpleTypes::Spreadsheet::borderstyleThin));
 					}break;
 					case 3: //Thick
 					{
-						if (false == sLineStyle.IsInit())
+						if (false == m_oStyle.IsInit())
 							m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(SimpleTypes::Spreadsheet::borderstyleThick));
 					}break;
-					default://2: //Medium
+					case 2:
+					default: //Medium
 					{
+						if (false == m_oStyle.IsInit())
+							m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(SimpleTypes::Spreadsheet::borderstyleMedium));
+						else
+						{
+							switch (m_oStyle->GetValue())
+							{
+							case SimpleTypes::Spreadsheet::borderstyleDashed: m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(SimpleTypes::Spreadsheet::borderstyleMediumDashed)); break;
+							case SimpleTypes::Spreadsheet::borderstyleDashDot: m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(SimpleTypes::Spreadsheet::borderstyleMediumDashDot)); break;
+							case SimpleTypes::Spreadsheet::borderstyleDashDotDot: m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(SimpleTypes::Spreadsheet::borderstyleMediumDashDotDot)); break;
+							}
+						}
 					}break;
 				}
 			}
@@ -282,10 +359,26 @@ namespace OOX
 
 					if ((border) && (border->m_oType.IsInit()))
 					{
-						if (*border->m_oType == L"Bottom")		m_oBottom	= border;
-						else if (*border->m_oType == L"Top")	m_oTop		= border;
-						else if (*border->m_oType == L"Left")	m_oStart	= border;
-						else if (*border->m_oType == L"Right")	m_oEnd		= border;
+						if (*border->m_oType == L"Bottom")		m_oBottom = border;
+						else if (*border->m_oType == L"Top")	m_oTop = border;
+						else if (*border->m_oType == L"Left")	m_oStart = border;
+						else if (*border->m_oType == L"Right")	m_oEnd = border;
+						else if (*border->m_oType == L"DiagonalLeft")
+						{
+							if (false == m_oDiagonal.IsInit())
+							{
+								m_oDiagonal = border;
+							}
+							m_oDiagonalUp = true;
+						}
+						else if (*border->m_oType == L"DiagonalRight")
+						{
+							if (false == m_oDiagonal.IsInit())
+							{
+								m_oDiagonal = border;
+							}
+							m_oDiagonalDown = true;
+						}
 
 						if (border->bBorderContinuous)
 							bBorderContinuous = true;
@@ -295,12 +388,32 @@ namespace OOX
 						delete border;
 					}
 				}
-
 			}
 		}
 		void CBorder::fromBin(XLS::BaseObjectPtr& obj)
 		{
 			ReadAttributes(obj);
+		}
+		XLS::BaseObjectPtr CBorder::toBin()
+		{
+			auto ptr(new XLSB::Border);
+			XLS::BaseObjectPtr objectPtr(ptr);
+			
+			m_oBottom->toBin(&ptr->blxfBottom);
+			m_oDiagonal->toBin(&ptr->blxfDiag);
+			m_oTop->toBin(&ptr->blxfTop);
+			m_oStart->toBin(&ptr->blxfLeft);
+			m_oEnd->toBin(&ptr->blxfRight);
+
+            if(m_oDiagonalDown.IsInit())
+                ptr->fBdrDiagDown = m_oDiagonalDown->GetValue();
+            else
+                ptr->fBdrDiagDown = false;
+            if(m_oDiagonalUp.IsInit())
+                ptr->fBdrDiagUp = m_oDiagonalUp->GetValue();
+            else
+                ptr->fBdrDiagUp = false;
+			return objectPtr;
 		}
 		EElementType CBorder::getType () const
 		{
@@ -400,6 +513,17 @@ namespace OOX
 				m_arrItems.push_back(pBorder);
 				m_mapBorders.insert(std::make_pair(index++, pBorder));
 			}
+		}
+		XLS::BaseObjectPtr CBorders::toBin()
+		{
+			auto ptr(new XLSB::BORDERS);
+			auto ptr1(new XLSB::BeginBorders);
+			ptr->m_BrtBeginBorders = XLS::BaseObjectPtr{ptr1};
+			XLS::BaseObjectPtr objectPtr(ptr);
+			for(auto i:m_arrItems)
+				ptr->m_arBrtBorder.push_back(i->toBin());
+			ptr1->cborders = ptr->m_arBrtBorder.size();
+			return objectPtr;
 		}
 		EElementType CBorders::getType () const
 		{

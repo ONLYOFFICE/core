@@ -574,7 +574,6 @@ namespace DocFileFormat
         }
         else if ( nFib < Fib1997 )
         {
-            //throw new UnspportedFileVersionException();
         }
     }
 
@@ -749,7 +748,7 @@ namespace DocFileFormat
       fAutofitLikeWW11 = false;
       fUnderlineTabInNumList = false;
       fHangulWidthLikeWW11 = false;
-      fSplitPgBreakAndParaMark = false;
+      fSplitPgBreakAndParaMark = true;
       fDontVertAlignCellWithSp = false;
       fDontBreakConstrainedForcedTables = false;
       fDontVertAlignInTxbx = false;

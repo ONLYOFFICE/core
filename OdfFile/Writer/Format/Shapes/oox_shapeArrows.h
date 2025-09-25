@@ -57,7 +57,7 @@ public:
 		text_areas		= L"?f12 ?f8 ?f13 ?f9";
 		modifiers		= L"50000 50000";
 		view_box		= L"0 0 0 0";
-		
+
 		add(L"f0", L"min(logwidth,logheight)");
 		add(L"f1", L"100000*logwidth/?f0 ");
 		add(L"f2", L"if(0-$0 ,0,if(100000-$0 ,$0 ,100000))");
@@ -79,12 +79,12 @@ public:
 		h1.position = L"?f13 ?f8";
 		h1.y_minimum = L"0";
 		h1.y_maximum = L"100000";
-		
-		handles.push_back(h1);
 
- 		h2.position = L"?f5 0";
+		h2.position = L"?f5 0";
 		h2.x_minimum = L"0";
 		h2.x_maximum = L"?f1";
+		
+		handles.push_back(h1);
 		handles.push_back(h2);
 	}
 };
@@ -95,39 +95,29 @@ public:
 	{
 		odf_type_name	= L"ooxml-rightArrow";
 
-		enhanced_path	= L"M 0 ?f8 L ?f5 ?f8 ?f5 0 ?f14 ?f7 ?f5 ?f13 ?f5 ?f9 0 ?f9 Z N";
-		text_areas		= L"?f12 ?f8 ?f13 ?f9";
-		modifiers		= L"50000 50000";
-		view_box		= L"0 0 0 0";
-		
-		add(L"f0", L"min(logwidth,logheight)");
-		add(L"f1", L"100000*logwidth/?f0 ");
-		add(L"f2", L"if(0-$0 ,0,if(100000-$0 ,$0 ,100000))");
-		add(L"f3", L"if(0-$1 ,0,if(?f1 -$1 ,$1 ,?f1 ))");
-		add(L"f4", L"?f0 *?f3 /100000");
-		add(L"f5", L"logwidth+0-?f4 ");
-		add(L"f6", L"logheight*?f2 /200000");
-		add(L"f7", L"logheight/2");
-		add(L"f8", L"?f7 +0-?f6 ");
-		add(L"f9", L"?f7 +?f6 -0");
-		add(L"f10", L"logheight/2");
-		add(L"f11", L"?f8 *?f4 /?f10 ");
-		add(L"f12", L"?f5 +?f11 -0");
-		add(L"f13", L"logheight");
-		add(L"f14", L"logwidth");
+		enhanced_path	= L"M 0 ?f0 L ?f1 ?f0 ?f1 0 21600 10800 ?f1 21600 ?f1 ?f2 0 ?f2 Z N";
+		text_areas		= L"0 ?f0 ?f5 ?f2";
+		modifiers		= L"10800 5400";
+		view_box		= L"0 0 21600 21600";
+
+		add(L"f0", L"$1 ");
+		add(L"f1", L"$0 ");
+		add(L"f2", L"21600-$1 ");
+		add(L"f3", L"21600-?f1 ");
+		add(L"f4", L"?f3 *?f0 /10800");
+		add(L"f5", L"?f1 +?f4 ");
+		add(L"f6", L"?f1 *?f0 /10800");
+		add(L"f7", L"?f1 -?f6 ");
 /////////////////////////////////////////////////////////
-		_handle h1, h2;
+		_handle h;
 
-		h1.position = L"0 ?f8";
-		h1.y_minimum = L"0";
-		h1.y_maximum = L"100000";
+		h.position = L"$0 $1";
+		h.x_minimum = L"0";
+		h.x_maximum = L"21600";
+		h.y_minimum = L"0";
+		h.y_maximum = L"10800";
 		
-		handles.push_back(h1);
-
- 		h2.position = L"?f5 0";
-		h2.x_minimum = L"0";
-		h2.x_maximum = L"?f1";
-		handles.push_back(h2);
+		handles.push_back(h);
 	}
 };
 class oox_shape_DownArrow : public oox_shape
@@ -137,39 +127,30 @@ public:
 	{
 		odf_type_name	= L"ooxml-downArrow";
 
-		enhanced_path	= L"M 0 ?f5 L ?f8 ?f5 ?f8 0 ?f9 0 ?f9 ?f5 ?f14 ?f5 ?f7 ?f13 Z N";
-		text_areas		= L"?f8 0 ?f9 ?f12";
-		modifiers		= L"50000 50000";
-		view_box		= L"0 0 0 0";
+		enhanced_path	= L"M ?f0 0 L ?f0 ?f1 0 ?f1 10800 21600 21600 ?f1 ?f2 ?f1 ?f2 0 Z N";
+		text_areas		= L"?f0 0 ?f2 ?f5";
+		modifiers		= L"11405 5400";
+		view_box		= L"0 0 21600 21600";
 		
-		add(L"f0", L"min(logwidth,logheight)");
-		add(L"f1", L"100000*logheight/?f0 ");
-		add(L"f2", L"if(0-$0 ,0,if(100000-$0 ,$0 ,100000))");
-		add(L"f3", L"if(0-$1 ,0,if(?f1 -$1 ,$1 ,?f1 ))");
-		add(L"f4", L"?f0 *?f3 /100000");
-		add(L"f5", L"logheight+0-?f4 ");
-		add(L"f6", L"logwidth*?f2 /200000");
-		add(L"f7", L"logwidth/2");
-		add(L"f8", L"?f7 +0-?f6 ");
-		add(L"f9", L"?f7 +?f6 -0");
-		add(L"f10", L"logwidth/2");
-		add(L"f11", L"?f8 *?f4 /?f10 ");
-		add(L"f12", L"?f5 +?f11 -0");
-		add(L"f13", L"logheight");
-		add(L"f14", L"logwidth");
+		add(L"f0", L"$1 ");
+		add(L"f1", L"$0 ");
+		add(L"f2", L"21600-$1 ");
+		add(L"f3", L"21600-?f1 ");
+		add(L"f4", L"?f3 *?f0 /10800");
+		add(L"f5", L"?f1 +?f4 ");
+		add(L"f6", L"?f1 *?f0 /10800");
+		add(L"f7", L"?f1 -?f6 ");
+
 /////////////////////////////////////////////////////////
-		_handle h1, h2;
+		_handle h;
 
-		h1.position = L"?f8 0";
-		h1.y_minimum = L"0";
-		h1.y_maximum = L"100000";
+		h.position = L"$0 $1";
+		h.x_minimum = L"0";
+		h.x_maximum = L"21600";
+		h.y_minimum = L"0";
+		h.y_maximum = L"10800";
 		
-		handles.push_back(h1);
-
- 		h2.position = L"0 ?f5";
-		h2.x_minimum = L"0";
-		h2.x_maximum = L"?f1";
-		handles.push_back(h2);
+		handles.push_back(h);
 	}
 };
 class oox_shape_UpArrow : public oox_shape
@@ -179,39 +160,29 @@ public:
 	{
 		odf_type_name	= L"ooxml-upArrow";
 
-		enhanced_path	= L"M 0 ?f5 L ?f7 0 ?f14 ?f5 ?f9 ?f5 ?f9 ?f13 ?f8 ?f13 ?f8 ?f5 Z N";
-		text_areas		= L"?f8 ?f12 ?f9 ?f13";
-		modifiers		= L"50000 50000";
-		view_box		= L"0 0 0 0";
+		enhanced_path	= L"M ?f0 21600 L ?f0 ?f1 0 ?f1 10800 0 21600 ?f1 ?f2 ?f1 ?f2 21600 Z N";
+		text_areas		= L"?f0 ?f7 ?f2 21600";
+		modifiers		= L"9450 5400";
+		view_box		= L"0 0 21600 21600";
 		
-		add(L"f0", L"min(logwidth,logheight)");
-		add(L"f1", L"100000*logheight/?f0 ");
-		add(L"f2", L"if(0-$0 ,0,if(100000-$0 ,$0 ,100000))");
-		add(L"f3", L"if(0-$1 ,0,if(?f1 -$1 ,$1 ,?f1 ))");
-		add(L"f4", L"?f0 *?f3 /100000");
-		add(L"f5", L"0+?f4 -0");
-		add(L"f6", L"logwidth*?f2 /200000");
-		add(L"f7", L"logwidth/2");
-		add(L"f8", L"?f7 +0-?f6 ");
-		add(L"f9", L"?f7 +?f6 -0");
-		add(L"f10", L"logwidth/2");
-		add(L"f11", L"?f8 *?f4 /?f10 ");
-		add(L"f12", L"?f5 +0-?f11 ");
-		add(L"f13", L"logheight");
-		add(L"f14", L"logwidth");
+		add(L"f0", L"$1 ");
+		add(L"f1", L"$0 ");
+		add(L"f2", L"21600-$1 ");
+		add(L"f3", L"21600-?f1 ");
+		add(L"f4", L"?f3 *?f0 /10800");
+		add(L"f5", L"?f1 +?f4 ");
+		add(L"f6", L"?f1 *?f0 /10800");
+		add(L"f7", L"?f1 -?f6 ");
 /////////////////////////////////////////////////////////
-		_handle h1, h2;
+		_handle h;
 
-		h1.position = L"?f8 ?f13";
-		h1.x_minimum = L"0";
-		h1.x_maximum = L"100000";
+		h.position = L"$0 $1";
+		h.x_minimum = L"0";
+		h.x_maximum = L"21600";
+		h.y_minimum = L"0";
+		h.y_maximum = L"10800";
 		
-		handles.push_back(h1);
-
- 		h2.position = L"0 ?f5";
-		h2.y_minimum = L"0";
-		h2.y_maximum = L"?f1";
-		handles.push_back(h2);
+		handles.push_back(h);
 	}
 };
 class oox_shape_LeftRightArrow : public oox_shape

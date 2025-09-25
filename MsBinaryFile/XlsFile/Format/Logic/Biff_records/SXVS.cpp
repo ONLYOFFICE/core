@@ -55,5 +55,10 @@ void SXVS::readFields(CFRecord& record)
 	record >> sxvs;
 }
 
+void SXVS::writeFields(CFRecord& record)
+{
+    record << sxvs;
+}
+
 } // namespace XLS
 

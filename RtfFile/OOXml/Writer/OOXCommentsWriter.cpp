@@ -153,7 +153,7 @@ mc:Ignorable=\"w14 w15 wp14\">";
 		for (std::map<std::wstring, _comment>::iterator it = m_mapComments.begin(); it != m_mapComments.end(); ++it)
 		{
 			sResult += L"<w:comment w:id=\"" + std::to_wstring(it->second.nID) + L"\" w:author=\"" + 
-				it->second.author + L"\" w:date=\"" + it->second.date + L"\" w:initials=\"" + it->second.authorId + L"\">";
+				XmlUtils::EncodeXmlString(it->second.author) + L"\" w:date=\"" + it->second.date + L"\" w:initials=\"" + it->second.authorId + L"\">";
 			sResult += it->second.content;
 
 			sResult += L"</w:comment>";

@@ -54,12 +54,10 @@ namespace ComplexTypes
 
 			virtual std::wstring ToString() const;
 
-		private:
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-
-		public:
 			nullable<SimpleTypes::CTwipsMeasure > m_oSpace;
 			nullable<SimpleTypes::CTwipsMeasure > m_oW;
+		private:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
 
 		//--------------------------------------------------------------------------------
@@ -281,10 +279,10 @@ namespace ComplexTypes
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-			nullable<SimpleTypes::CChapterSep      > m_oChapSep;
-			nullable<SimpleTypes::CDecimalNumber   > m_oChapStyle;
-			nullable<SimpleTypes::CNumberFormat    > m_oFmt;
-			nullable<SimpleTypes::CDecimalNumber   > m_oStart;
+			nullable<SimpleTypes::CChapterSep>		m_oChapSep;
+			nullable<SimpleTypes::CDecimalNumber>	m_oChapStyle;
+			nullable<SimpleTypes::CNumberFormat>	m_oFmt;
+			nullable<SimpleTypes::CDecimalNumber>	m_oStart;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -351,23 +349,20 @@ namespace OOX
 			CColumns();
 			virtual ~CColumns();
 
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& oNode);
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
 			virtual std::wstring toXML() const;
 			virtual EElementType getType () const;
 
-		private:
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-
-		public:
 			nullable<SimpleTypes::COnOff             > m_oEqualWidth;
 			nullable<SimpleTypes::CDecimalNumber     > m_oNum;
 			nullable<SimpleTypes::COnOff             > m_oSep;
 			nullable<SimpleTypes::CTwipsMeasure      > m_oSpace;
 
-			std::vector<ComplexTypes::Word::CColumn *> m_arrColumns;
+			std::vector< nullable<ComplexTypes::Word::CColumn>> m_arrColumns;
+		private:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
 
 		//--------------------------------------------------------------------------------
@@ -503,6 +498,7 @@ namespace OOX
             virtual std::wstring toXML() const;
 			virtual EElementType getType() const;
 
+			static const CSectionProperty Merge(const CSectionProperty& oPrev, const CSectionProperty& oCurrent);
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
@@ -518,10 +514,10 @@ namespace OOX
 			nullable<OOX::Logic::CColumns>				m_oCols;
 			nullable<ComplexTypes::Word::CDocGrid>		m_oDocGrid;
 			nullable<OOX::Logic::CEdnProps>				m_oEndnotePr;
-			std::vector<ComplexTypes::Word::CHdrFtrRef*>	m_arrFooterReference;
+			std::vector< nullable<ComplexTypes::Word::CHdrFtrRef>>	m_arrFooterReference;
 			nullable<OOX::Logic::CFtnProps>				m_oFootnotePr;
 			nullable<ComplexTypes::Word::COnOff2>		m_oFormProt;
-			std::vector<ComplexTypes::Word::CHdrFtrRef*>	m_arrHeaderReference;
+			std::vector< nullable<ComplexTypes::Word::CHdrFtrRef>>	m_arrHeaderReference;
 			nullable<ComplexTypes::Word::CLineNumber>	m_oLnNumType;
 			nullable<ComplexTypes::Word::COnOff2>		m_oNoEndnote;
 			nullable<ComplexTypes::Word::CPaperSource>	m_oPaperSrc;

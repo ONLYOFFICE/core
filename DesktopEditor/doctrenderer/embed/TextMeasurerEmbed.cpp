@@ -1,6 +1,7 @@
 #include "./TextMeasurerEmbed.h"
 #include "./PointerEmbed.h"
 #include "./../../fontengine/TextShaper.h"
+#include "./../../fontengine/TextHyphen.h"
 
 #define RAW_POINTER(value) ((CPointerEmbedObject*)value->toObject()->getNative())->Data
 #define POINTER_OBJECT(value) ((CPointerEmbedObject*)value->toObject()->getNative())
@@ -28,6 +29,17 @@ public:
 			NSAllocator::Free(Data, (size_t)Len);
 	}
 };
+
+CTextMeasurerEmbed::CTextMeasurerEmbed()
+{
+	m_hyphen_engine = new NSHyphen::CEngine();
+}
+CTextMeasurerEmbed::~CTextMeasurerEmbed()
+{
+	NSHyphen::CEngine* tmp = (NSHyphen::CEngine*)m_hyphen_engine;
+	delete tmp;
+	m_hyphen_engine = NULL;
+}
 
 JSSmart<CJSValue> CTextMeasurerEmbed::FT_Malloc(JSSmart<CJSValue> typed_array_or_len)
 {
@@ -122,7 +134,11 @@ JSSmart<CJSValue> CTextMeasurerEmbed::FT_Get_Glyph_Render_Params(JSSmart<CJSValu
 JSSmart<CJSValue> CTextMeasurerEmbed::FT_Get_Glyph_Render_Buffer(JSSmart<CJSValue> face, JSSmart<CJSValue> size)
 {
 	void* Data = NSShaper::FT_Get_Glyph_Render_Buffer(RAW_POINTER(face));
-	return CJSContext::createUint8Array((unsigned char*)Data, size->toInt32(), true);
+	int nSize = size->toInt32();
+	int nSizeMax = NSShaper::FT_Get_Glyph_Render_BufferSize(RAW_POINTER(face));
+	if (nSize > nSizeMax)
+		nSize = nSizeMax;
+	return CJSContext::createUint8Array((unsigned char*)Data, nSize, true);
 }
 
 JSSmart<CJSValue> CTextMeasurerEmbed::FT_Set_Transform(JSSmart<CJSValue> face, JSSmart<CJSValue> xx, JSSmart<CJSValue> yx, JSSmart<CJSValue> xy, JSSmart<CJSValue> yy)
@@ -192,3 +208,67 @@ JSSmart<CJSValue> CTextMeasurerEmbed::HB_FontFree(JSSmart<CJSValue> font)
 	return CJSContext::createUndefined();
 }
 #endif
+
+JSSmart<CJSValue> CTextMeasurerEmbed::Hyphen_SetCacheSize(JSSmart<CJSValue> size)
+{
+	((NSHyphen::CEngine*)m_hyphen_engine)->SetCacheSize(size->toInt32());
+	return CJSContext::createUndefined();
+}
+
+inline int GetUtf8SymbolLen(const unsigned char& c)
+{
+	if (0x00 == (c & 0x80))
+		return 1;
+	else if (0x00 == (c & 0x20))
+		return 2;
+	else if (0x00 == (c & 0x10))
+		return 3;
+	else if (0x00 == (c & 0x0F))
+		return 4;
+	else if (0x00 == (c & 0x08))
+		return 4;
+	else if (0x00 == (c & 0x04))
+		return 5;
+	return 6;
+}
+
+JSSmart<CJSValue> CTextMeasurerEmbed::Hyphen_Word(JSSmart<CJSValue> lang, JSSmart<CJSValue> word)
+{
+	std::string sWord = word->toStringA();
+	const char* curUnicode = sWord.c_str();
+	char* result = ((NSHyphen::CEngine*)m_hyphen_engine)->Process(lang->toInt32(), curUnicode, (int)sWord.length());
+
+	if (!result)
+		return CJSContext::createNull();
+
+	int count = 0;
+	int pos = 0;
+
+	while (result[pos] != 0)
+	{
+		if (1 == (result[pos] & 1))
+			++count;
+		++pos;
+	}
+
+	if (0 == count)
+		return CJSContext::createNull();
+
+	CJSArray* ret = CJSContext::createArray(count);
+
+	pos = 0;
+	count = 0;
+	while (result[pos] != 0)
+	{
+		if (1 == (result[pos] & 1))
+			ret->set(count++, CJSContext::createInt(pos + 1));
+		pos++;
+	}
+
+	return ret;
+}
+
+JSSmart<CJSValue> CTextMeasurerEmbed::Hyphen_IsDictionaryExist(JSSmart<CJSValue> lang)
+{
+	return CJSContext::createBool(((NSHyphen::CEngine*)m_hyphen_engine)->IsDictionaryExist(lang->toInt32()));
+}

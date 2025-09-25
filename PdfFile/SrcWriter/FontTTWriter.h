@@ -36,8 +36,22 @@
 
 namespace PdfWriter
 {
-	struct TrueTypeTable;
-	struct TrueTypeCmap;
+	struct TrueTypeTable
+	{
+		unsigned int unTag;
+		unsigned int unChecksum;
+		int          nOffset;
+		int          nOrigOffset;
+		int          nLen;
+	};
+	struct TrueTypeCmap
+	{
+		int nPlatform;
+		int nEncoding;
+		int nOffset;
+		int nLen;
+		int nFormat;
+	};
 	//----------------------------------------------------------------------------------------
 	// CFontFileBase
 	//----------------------------------------------------------------------------------------
@@ -86,12 +100,16 @@ namespace PdfWriter
 		// таблицу 'cmap'.
 		void WriteTTF(CStream* pOutputStream, char *sName = NULL, unsigned short *pCodeToGID = NULL, unsigned int unCodesCount = 0, unsigned char *pUseGlyfs = NULL, long lGlyfsCount = 0);
 		void WriteOTF(CStream* pOutputStream, char *sName = NULL, unsigned short *pCodeToGID = NULL);
+		void WriteCIDFontType0C(CStream* pOutputStream, unsigned short* pCodeToGID = NULL, unsigned int unCodesCount = 0);
 
 		int  GetAscent();
 		int  GetDescent();
 		int  GetCapHeight();
 		int* GetBBox();
 		int  GetWeight();
+		bool GetOpenTypeCFF();
+
+		void SetName(const std::string& sName);
 
 	private:
 
@@ -118,6 +136,7 @@ namespace PdfWriter
 		int            m_nDescent;
 		int            m_nCapHeight;
 		int            m_nWeight;
+		std::string    m_sName;
 					   
 		bool           m_bSuccess;
 	};

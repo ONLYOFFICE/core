@@ -1,10 +1,8 @@
 package lib.x2t.utils
 
-import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.content.Context
-import androidx.annotation.RequiresPermission
 import java.io.File
-import java.util.*
+import java.util.UUID
 
 
 object FileUtils {
@@ -28,7 +26,6 @@ object FileUtils {
         return File(path).let { it.isDirectory && it.exists() || it.mkdirs() }
     }
 
-    @RequiresPermission(WRITE_EXTERNAL_STORAGE)
     @JvmStatic
     fun deletePath(path: File): Int {
         var count = 0
@@ -43,7 +40,6 @@ object FileUtils {
         return count
     }
 
-    @RequiresPermission(WRITE_EXTERNAL_STORAGE)
     @JvmStatic
     fun deletePath(path: String): Int {
         return deletePath(File(path))

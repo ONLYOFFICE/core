@@ -1,6 +1,5 @@
 #include "vlcmedia.h"
 
-#include <iostream>
 #include <QUrl>
 
 CVlcMedia::CVlcMedia(libvlc_instance_t* pVlcInstance, const QString& sFile, bool bEventForwarding)

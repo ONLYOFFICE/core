@@ -47,6 +47,10 @@ void PhRuns::load(CFRecord& record)
 	record >> ichFirst >> ichMom >> cchMom;
 }
 
+void PhRuns::save(CFRecord& record)
+{
+    record << ichFirst << ichMom << cchMom;
+}
 
 } // namespace XLS
 

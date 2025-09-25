@@ -228,7 +228,7 @@ namespace DocFileFormat
 		}
 		if (strLen > 0)
 		{
-			FormatUtils::GetSTLCollectionFromBytes<std::wstring>( &(xst), data + 20, ( strLen ), ENCODING_WINDOWS_1250);
+			FormatUtils::GetWStringFromBytes( xst, data + 20, ( strLen ), ENCODING_WINDOWS_1250);
 		}	
 	}
 	OutlineListDescriptor::~OutlineListDescriptor()
@@ -273,7 +273,7 @@ namespace DocFileFormat
 			}
 			if (strLen > 0)
 			{
-				FormatUtils::GetSTLCollectionFromBytes<std::wstring>( &(xst), data + 20, ( strLen ), ENCODING_WINDOWS_1250);
+				FormatUtils::GetWStringFromBytes( xst, data + 20, ( strLen ), ENCODING_WINDOWS_1250);
 			}	
 		}
 	}

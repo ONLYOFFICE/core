@@ -199,6 +199,16 @@ namespace NSDoctRenderer
 		 * Creates a null value. This method returns the current context and calls its CreateNull method.
 		 */
 		static CDocBuilderValue CreateNull();
+		/**
+		 * Please use CDocBuilderContext::CreateArray
+		 * Creates an array. This method returns the current context and calls its CreateArray method.
+		 */
+		static CDocBuilderValue CreateArray(const int& length);
+		/**
+		 * Please use CDocBuilderContext::CreateObject
+		 * Creates an object. This method returns the current context and calls its CreateObject method.
+		 */
+		static CDocBuilderValue CreateObject();
 
 	public:
 		/**
@@ -352,6 +362,7 @@ namespace NSDoctRenderer
 		/**
 		 * Creates a new file. The type of the file which will be created needs to be set.
 		 * @param type The type of the file to be created set as a hexadecimal integer for the C++ code or docx, xlsx or pptx for the .docbuilder script file (see AVS_OFFICESTUDIO_FILE_XXX values).
+		 * Possible values for wchar_t version: "docx", "pptx", "xlsx", "pdf", "form"
 		 * @return True if the operation is successful
 		 */
 		bool CreateFile(const int& type);
@@ -465,6 +476,13 @@ namespace NSDoctRenderer
 		void SetPropertyW(const wchar_t* param, const wchar_t* value);
 
 		/**
+		 * GetProperty method.
+		 * @param param The parameter name in the Unicode format, the value is always --argument.
+		 * @return int value for property
+		 */
+		int GetPropertyInt(const wchar_t* param);
+
+		/**
 		 * Writes data to the log file. It is used for logs in JS code.
 		 * @param path The path to the file where all the logs will be written.
 		 * @param value The data which will be written to the log file.
@@ -486,9 +504,10 @@ namespace NSDoctRenderer
 
 		/**
 		 * Returns the current JS context.
+		 * @param enterContext Whether returned context should be entered or not.
 		 * @return The current JS context
 		 */
-		CDocBuilderContext GetContext();
+		CDocBuilderContext GetContext(bool enterContext = true);
 
 	public:
 		/**
@@ -514,6 +533,7 @@ namespace NSDoctRenderer
 		CDocBuilder_Private* m_pInternal;
 
 		friend class CBuilderDocumentEmbed;
+		friend class CBuilderEmbed;
 	};
 
 	/**
@@ -541,7 +561,7 @@ namespace NSDoctRenderer
 	 * 3) The builder object methods cannot be called with the JS variables. Wrap them with the jsValue instruction if necessary:
 	 * var jsVar = "123.docx";
 	 * builder.SaveFile("docx", jsVar); // Incorrect
-	 * builder.SaveFile("docx", jsValue(jsVar)); // Correct
+	 * builder.SaveFile("docx", "jsValue(jsVar)"); // Correct
 	 *
 	 * 4) For convenience, format types are replaced with strings.
 	 * For example, builder.CreateFile("docx"); is the same as CDocBuilder.CreateFile(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX);

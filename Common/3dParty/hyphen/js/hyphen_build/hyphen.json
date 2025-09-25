@@ -24,12 +24,17 @@
 		"_hyphenWord"
 	],
 	"include_path": ["../src"],
-	"define": [],
+	"define": ["GRAPHICS_NO_USE_DYNAMIC_LIBRARY", "HYPHEN_ENGINE_DISABLE_FILESYSTEM"],
 	"compile_files_array": [
 	{
-		"name": "s",
+		"name": "h_e",
+		"folder": "../../../../../DesktopEditor/fontengine",
+		"files": ["TextHyphen.cpp"]
+	},
+	{
+		"name": "h_m",
 		"folder": "../src",
-		"files": ["ExportedFunctions.cpp", "HyphenApplication.cpp", "../../hyphen/hnjalloc.c"]
+		"files": ["hyphen.cpp"]
 	}
 	]
 }

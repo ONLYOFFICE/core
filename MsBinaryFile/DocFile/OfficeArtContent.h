@@ -54,7 +54,7 @@ namespace DocFileFormat
 		struct OfficeArtWordDrawing
 		{
 			DrawingType dgglbl;
-			DrawingContainer* container;
+			DrawingContainer* container = NULL;
 		};
 
 	public:

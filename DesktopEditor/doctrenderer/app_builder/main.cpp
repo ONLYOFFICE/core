@@ -33,6 +33,7 @@
 #include "./../common_deploy.h"
 #include "../docbuilder.h"
 #include "../../common/File.h"
+#include "../../common/SystemUtils.h"
 
 #ifdef LINUX
 #include "../../../DesktopEditor/common/File.h"
@@ -78,6 +79,15 @@ void parse_args(NSDoctRenderer::CDocBuilder* builder, int argc, char *argv[])
 	}
 }
 
+bool CheckLicense(const std::wstring& sSrc, const std::wstring& sDst)
+{
+	if (sDst.empty())
+		return false;
+	NSFile::CFileBinary::Remove(sDst);
+	NSFile::CFileBinary::Copy(sSrc, sDst);
+	return NSFile::CFileBinary::Exists(sDst);
+}
+
 #ifdef WIN32
 int wmain(int argc, wchar_t *argv[])
 #else
@@ -89,6 +99,7 @@ int main(int argc, char *argv[])
 
 	bool bIsHelp = false;
 	bool bIsFonts = false;
+	bool bIsLicense = false;
 	for (int i = 0; i < argc; ++i)
 	{
 #ifdef WIN32
@@ -121,6 +132,33 @@ int main(int argc, char *argv[])
 		{
 			bIsFonts = true;
 		}
+		else if (sParam == "-register")
+		{
+			bIsLicense = true;
+		}
+		else
+		{
+			if (bIsLicense)
+			{
+				std::wstring sLicensePathSrc = UTF8_TO_U(sParam);
+				if (!NSFile::CFileBinary::Exists(sLicensePathSrc))
+					return 1;
+
+				std::wstring sLicensePath = NSSystemUtils::GetEnvVariable(L"ONLYOFFICE_BUILDER_LICENSE");
+				if (CheckLicense(sLicensePathSrc, sLicensePath))
+					return 0;
+
+				sLicensePath = NSFile::GetProcessDirectory() + L"/license.xml";
+				if (CheckLicense(sLicensePathSrc, sLicensePath))
+					return 0;
+
+				sLicensePath = NSSystemUtils::GetAppDataDir() + L"/docbuilder/license.xml";
+				if (CheckLicense(sLicensePathSrc, sLicensePath))
+					return 0;
+
+				return 1;
+			}
+		}
 	}
 
 	if (bIsFonts)
@@ -147,6 +185,7 @@ int main(int argc, char *argv[])
 	std::wstring sBuildFile = UTF8_TO_U(sBuildFileA);
 #endif
 
+	bool bResult = true;
 	if (true)
 	{
 		NSDoctRenderer::CDocBuilder oBuilder;
@@ -159,9 +198,9 @@ int main(int argc, char *argv[])
 
 		parse_args(&oBuilder, argc - 1, argv);
 
-		oBuilder.Run(sBuildFile.c_str());
+		bResult = oBuilder.Run(sBuildFile.c_str());
 	}
 
 	NSDoctRenderer::CDocBuilder::Dispose();
-	return 0;
+	return bResult ? 0 : 1;
 }

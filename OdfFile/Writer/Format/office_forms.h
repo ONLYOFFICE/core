@@ -77,14 +77,12 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type = typeFormForm;
-    
+    static const ElementType type = typeFormForm;    
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child_element);
 
     virtual void serialize(std::wostream & _Wostream);
-
 public:
     office_element_ptr_array			content_;
 	office_element_ptr					office_event_listeners_;
@@ -125,8 +123,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type = typeFormProperties;
-    
+    static const ElementType type = typeFormProperties;    
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child_element);
@@ -144,8 +141,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type = typeFormProperty;
-    
+    static const ElementType type = typeFormProperty;    
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element( const office_element_ptr & child_element){}
@@ -164,8 +160,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type = typeFormListProperty;
-    
+    static const ElementType type = typeFormListProperty;    
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
 	virtual void add_child_element( const office_element_ptr & child_element);
@@ -186,8 +181,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type = typeFormListValue;
-    
+    static const ElementType type = typeFormListValue;    
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element( const office_element_ptr & child_element){}
@@ -203,8 +197,7 @@ class form_element : public office_element_impl<form_element>
 {
 public:
     static const wchar_t * ns;
-    static const wchar_t * name;
-    
+    static const wchar_t * name;    
 
     static const ElementType type = typeFormElement;
 
@@ -246,8 +239,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type = typeFormButton;
-    
+    static const ElementType type = typeFormButton;    
 
     virtual void serialize(std::wostream & _Wostream);
 
@@ -273,8 +265,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type = typeFormImageFrame;
-    
+    static const ElementType type = typeFormImageFrame;    
 
     virtual void serialize(std::wostream & _Wostream);
 
@@ -289,8 +280,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type = typeFormText;
-    
+    static const ElementType type = typeFormText;    
 
     virtual void serialize(std::wostream & _Wostream);
 
@@ -309,8 +299,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type = typeFormTextarea;
-    
+    static const ElementType type = typeFormTextarea;    
 
     virtual void serialize(std::wostream & _Wostream);
 
@@ -328,8 +317,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type = typeFormFixedText;
-    
+    static const ElementType type = typeFormFixedText;    
 
     virtual void serialize(std::wostream & _Wostream);
 };
@@ -342,8 +330,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type = typeFormCheckbox;
-    
+    static const ElementType type = typeFormCheckbox;    
 
 	form_checkbox() : current_state_(false), image_position_(L"center") {}
     virtual void serialize(std::wostream & _Wostream);
@@ -363,8 +350,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type = typeFormRadio;
-    
+    static const ElementType type = typeFormRadio;    
 
     virtual void serialize(std::wostream & _Wostream);
 };
@@ -377,8 +363,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type = typeFormCombobox;
-    
+    static const ElementType type = typeFormCombobox;    
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
 	virtual void add_child_element( const office_element_ptr & child_element);
@@ -392,7 +377,6 @@ public:
 	_CP_OPT(std::wstring)		list_source_;
 	
 	//form:auto-complete
-
 };
 CP_REGISTER_OFFICE_ELEMENT2(form_combobox);
 
@@ -403,8 +387,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type = typeFormListbox;
-    
+    static const ElementType type = typeFormListbox;    
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
 	virtual void add_child_element( const office_element_ptr & child_element);
@@ -417,14 +400,12 @@ public:
 	_CP_OPT(std::wstring)		list_source_type_;
 	_CP_OPT(int)				size_;
 
-	office_element_ptr_array	options_;
+	office_element_ptr_array options_;
 	
 	//form:bound-column
 	//form:xforms-list-source
 	//form:multiple
 	//form:listlinkage-type
-
-
 };
 CP_REGISTER_OFFICE_ELEMENT2(form_listbox);
 //-----------------------------------------------------------------------------------------
@@ -435,8 +416,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type = typeFormDate;
-    
+    static const ElementType type = typeFormDate;    
 
     virtual void serialize(std::wostream & _Wostream);
 };
@@ -451,8 +431,7 @@ public:
 	static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type = typeFormValueRange;
-    
+    static const ElementType type = typeFormValueRange;    
 
     virtual void serialize(std::wostream & _Wostream);
 
@@ -472,8 +451,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type = typeFormFrame;
-    
+    static const ElementType type = typeFormFrame;    
 
     virtual void serialize(std::wostream & _Wostream);
 };
@@ -486,8 +464,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type = typeFormItem;
-    
+    static const ElementType type = typeFormItem;    
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element( const office_element_ptr & child_element){}
@@ -498,8 +475,6 @@ public:
 	std::wstring text_;
 };
 CP_REGISTER_OFFICE_ELEMENT2(form_item);
-}
-}
 //<form:connection-resource>7.6.2,  
 //<form:file> 13.5.5,
 //<form:formatted-text> 13.5.6, 
@@ -512,3 +487,50 @@ CP_REGISTER_OFFICE_ELEMENT2(form_item);
 //<form:number> 13.5.7,
 //<form:password> 13.5.4, 
 //<form:time>
+//-----------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------
+//  loext:content-control
+class loext_content_control : public office_element_impl<loext_content_control>
+{
+public:
+	static const wchar_t* ns;
+	static const wchar_t* name;
+
+	static const ElementType type = typeContentControl;
+
+	virtual void create_child_element(const std::wstring& Ns, const std::wstring& Name);
+	virtual void add_child_element(const office_element_ptr& child_element);
+
+	virtual void serialize(std::wostream& _Wostream);
+
+	_CP_OPT(std::wstring) alias;
+	_CP_OPT(std::wstring) tag;
+	_CP_OPT(std::wstring) lock;
+	_CP_OPT(odf_types::Bool) showing_place_holder;
+	_CP_OPT(int) id;
+	_CP_OPT(unsigned int) tab_index;
+	_CP_OPT(odf_types::Bool) checked;
+	_CP_OPT(std::wstring) checked_state;
+	_CP_OPT(std::wstring) unchecked_state;
+	_CP_OPT(std::wstring) date_format;
+	_CP_OPT(std::wstring) date_language;
+	_CP_OPT(std::wstring) current_date;
+	_CP_OPT(std::wstring) date_rfc_language;
+	
+	_CP_OPT(odf_types::Bool) checkbox;
+	_CP_OPT(odf_types::Bool) picture;
+	_CP_OPT(odf_types::Bool) date;
+	_CP_OPT(odf_types::Bool) dropdown;
+	_CP_OPT(odf_types::Bool) combobox;
+	_CP_OPT(odf_types::Bool) plain_text;
+
+	_CP_OPT(std::wstring) text_content;
+	office_element_ptr_array content;
+};
+CP_REGISTER_OFFICE_ELEMENT2(loext_content_control);
+
+}
+}

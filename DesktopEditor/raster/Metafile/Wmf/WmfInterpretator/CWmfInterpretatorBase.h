@@ -33,7 +33,7 @@ namespace MetaFile
 		virtual void HANDLE_META_ARC(short shYEndArc, short shXEndArc, short shYStartArc, short shXStartArc, short shBottom, short shRight, short shTop, short shLeft) = 0;
 		virtual void HANDLE_META_CHORD(short shYEndArc, short shXEndArc, short shYStartArc, short shXStartArc, short shBottom, short shRight, short shTop, short shLeft) = 0;
 		virtual void HANDLE_META_ELLIPSE(short shBottom, short shRight, short shTop, short shLeft) = 0;
-		virtual void HANDLE_META_EXTTEXTOUT(short shY, short shX, short shStringLength, unsigned short ushFwOptions, const TWmfRect& oRectangle, unsigned char* pString, short* pDx) = 0;
+		virtual void HANDLE_META_EXTTEXTOUT(short shY, short shX, short shStringLength, unsigned short ushFwOptions, const TRectL& oRectangle, unsigned char* pString, short* pDx) = 0;
 		virtual void HANDLE_META_FILLREGION(unsigned short ushRegionIndex, unsigned short ushBrushIndex) = 0;
 		virtual void HANDLE_META_FRAMEREGION(unsigned short ushRegionIndex, unsigned short ushBrushIndex, short shHeight, short shWidth) = 0;
 		virtual void HANDLE_META_INVERTREGION(unsigned short ushRegionIndex) = 0;
@@ -41,12 +41,12 @@ namespace MetaFile
 		virtual void HANDLE_META_PAINTREGION(unsigned short ushRegionIndex) = 0;
 		virtual void HANDLE_META_PATBLT(unsigned int unRasterOperation, short shH, short shW, short shY, short shX) = 0;
 		virtual void HANDLE_META_PIE(short shXRadial1, short shYRadial1, short shXRadial2, short shYRadial2, short shB, short shR, short shT, short shL) = 0;
-		virtual void HANDLE_META_POLYLINE(const std::vector<TWmfPointS>& arPoints) = 0;
-		virtual void HANDLE_META_POLYGON(const std::vector<TWmfPointS>& arPoints) = 0;
-		virtual void HANDLE_META_POLYPOLYGON(const std::vector<std::vector<TWmfPointS>>& arPolygons) = 0;
+		virtual void HANDLE_META_POLYLINE(const std::vector<TPointS>& arPoints) = 0;
+		virtual void HANDLE_META_POLYGON(const std::vector<TPointS>& arPoints) = 0;
+		virtual void HANDLE_META_POLYPOLYGON(const std::vector<std::vector<TPointS>>& arPolygons) = 0;
 		virtual void HANDLE_META_RECTANGLE(short shB, short shR, short shT, short shL) = 0;
 		virtual void HANDLE_META_ROUNDRECT(short shH, short shW, short shB, short shR, short shT, short shL) = 0;
-		virtual void HANDLE_META_SETPIXEL(const TWmfColor &oColor, short shY, short shX) = 0;
+		virtual void HANDLE_META_SETPIXEL(const TRGBA &oColor, short shY, short shX) = 0;
 		virtual void HANDLE_META_TEXTOUT(short shStringLength, unsigned char* pString, short shY, short shX) = 0;
 		//-----------------------------------------------------------
 		// 2.3.4 Object records
@@ -75,7 +75,7 @@ namespace MetaFile
 		virtual void HANDLE_META_SAVEDC() = 0;
 		virtual void HANDLE_META_SCALEVIEWPORTEXT(short yDenom, short yNum, short xDenom, short xNum) = 0;
 		virtual void HANDLE_META_SCALEWINDOWEXT(short yDenom, short yNum, short xDenom, short xNum) = 0;
-		virtual void HANDLE_META_SETBKCOLOR(const TWmfColor& oColor) = 0;
+		virtual void HANDLE_META_SETBKCOLOR(const TRGBA& oColor) = 0;
 		virtual void HANDLE_META_SETBKMODE(unsigned short ushMode) = 0;
 		virtual void HANDLE_META_SETLAYOUT(unsigned short ushLayout) = 0;
 		virtual void HANDLE_META_SETMAPMODE(unsigned short ushMapMode) = 0;
@@ -84,7 +84,7 @@ namespace MetaFile
 		virtual void HANDLE_META_SETSTRETCHBLTMODE(unsigned short ushMode) = 0;
 		virtual void HANDLE_META_SETTEXTALIGN(unsigned short ushTextAlign) = 0;
 		virtual void HANDLE_META_SETTEXTCHAREXTRA(unsigned short ushCharSpacing) = 0;
-		virtual void HANDLE_META_SETTEXTCOLOR(const TWmfColor& oColor) = 0;
+		virtual void HANDLE_META_SETTEXTCOLOR(const TRGBA& oColor) = 0;
 		virtual void HANDLE_META_SETTEXTJUSTIFICATION(unsigned short ushBreakCount, unsigned short ushBreakExtra) = 0;
 		virtual void HANDLE_META_SETVIEWPORTEXT(short shX, short shY) = 0;
 		virtual void HANDLE_META_SETVIEWPORTORG(short shX, short shY) = 0;

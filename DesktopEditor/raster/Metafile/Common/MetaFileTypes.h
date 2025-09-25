@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
@@ -33,6 +33,8 @@
 #define _METAFILE_COMMON_METAFILETYPES_H
 
 #include <string>
+#include <cfloat>
+#include <cmath>
 #include "../../../common/StringExt.h"
 
 #ifndef BYTE
@@ -47,7 +49,7 @@ typedef unsigned char BYTE;
 #define NULL 0
 #endif
 
-#define METAFILE_RGBA(r, g, b) ((unsigned int)( ( (unsigned char)(r) )| ( ( (unsigned char)(g) ) << 8 ) | ( ( (unsigned char)(b) ) << 16 ) | ( (unsigned char)(0) << 24 ) ) )
+#define METAFILE_RGBA(r, g, b, a) ((unsigned int)( ( (unsigned char)(r) )| ( ( (unsigned char)(g) ) << 8 ) | ( ( (unsigned char)(b) ) << 16 ) | ( (unsigned char)(a) << 24 ) ) )
 #define INTCOLOR_TO_RGB(color) std::to_wstring(color >> 0 & 0xFF) + L", " + std::to_wstring(color >> 8 & 0xFF) + L", " + std::to_wstring(color >> 16 & 0xFF)
 
 #if !defined (_WIN32) && !defined(_WIN64)
@@ -346,17 +348,25 @@ typedef unsigned char BYTE;
 #define HS_OUTLINEDDIAMOND  51
 #define HS_SOLIDDIAMOND     52
 
+//Blend mode's
+#define BLEND_MODE_SRC_OVER      3
+#define BLEND_MODE_XOR           11
+#define BLEND_MODE_DRAW_ON_BLACK 28
+#define BLEND_MODE_DEFAULT       BLEND_MODE_SRC_OVER
+
 namespace MetaFile
 {
-        enum InterpretatorType
-        {
-                Emf,
-                Wmf,
-                Render,
-                XML,
-                Svg,
-                Array
-        };
+	#define DEFAULT_FONT_SIZE 14
+
+	enum InterpretatorType
+	{
+			Emf,
+			Wmf,
+			Render,
+			XML,
+			Svg,
+			Array
+	};
 
 	enum EMetaFileBitCount
 	{
@@ -369,143 +379,194 @@ namespace MetaFile
 		BI_BITCOUNT_6 = 0x0020
 	};
 
-	struct TEmfPointL;
-	struct TWmfPointS;
-    struct TWmfRect;
-	struct TEmfRectL;
-
-	struct TRect
+	template<typename T>
+	struct TPoint
 	{
-		int  nLeft;
-		int  nTop;
-		int  nRight;
-		int  nBottom;
+		T X;
+		T Y;
 
-		TRect();
-		TRect(int nNewLeft, int nNewTop, int nNewRight, int nNewBottom);
-		TRect(const TWmfRect& oRect);
-		TRect(const TEmfRectL& oRect);
-		TRect& operator=(TWmfRect& oRect);
-		friend bool operator!=(const TRect& oLeftRect, const TRect& oRightRect);
-		friend bool operator==(const TRect& oLeftRect, const TRect& oRightRect);
-    };
+		TPoint() : X(0), Y(0) {}
 
-	struct TRectD
-	{
-		double dLeft;
-		double dTop;
-		double dRight;
-		double dBottom;
+		template<typename U>
+		TPoint(U _X, U _Y) : X(static_cast<T>(_X)), Y(static_cast<T>(_Y)) {}
+		template<typename U>
+		TPoint(const TPoint<U>& oPoint) :  X(static_cast<T>(oPoint.X)), Y(static_cast<T>(oPoint.Y)) {}
 
-		TRectD()
+		template<typename U>
+		TPoint<T> operator=(const TPoint<U>& oPoint)
 		{
-			dLeft   = 0;
-			dTop    = 0;
-			dRight  = 1024;
-			dBottom = 1024;
-		}
-		TRectD(double dNewLeft, double dNewTop, double dNewRight, double dNewBottom)
-		    : dLeft(dNewLeft), dTop(dNewTop), dRight(dNewRight), dBottom(dNewBottom)
-		{}
+			X = static_cast<T>(oPoint.X);
+			Y = static_cast<T>(oPoint.Y);
 
-		TRectD(TRect& oRect)
-		{
-			dLeft   = (double)oRect.nLeft;
-			dTop    = (double)oRect.nTop;
-			dRight  = (double)oRect.nRight;
-			dBottom = (double)oRect.nBottom;
-		}
-        TRectD& operator=(TRect& oRect)
-        {
-            dLeft   = (double)oRect.nLeft;
-            dTop    = (double)oRect.nTop;
-            dRight  = (double)oRect.nRight;
-            dBottom = (double)oRect.nBottom;
-            return *this;
-        }
-        TRectD& operator*=(double& dValue)
-		{
-			dLeft   *= dValue;
-			dTop    *= dValue;
-			dRight  *= dValue;
-			dBottom *= dValue;
 			return *this;
 		}
-		void Update(bool bFlipedX, double bFlipedY)
-		{
-			if ((dTop > dBottom && !bFlipedY) || (dTop < dBottom && bFlipedY))
-			{
-				double dTemp = dBottom;
-				dBottom = dTop;
-				dTop = dTemp;
-			}
 
-			if ((dLeft > dRight && !bFlipedX) || (dLeft < dRight && bFlipedX))
-			{
-				double dTemp = dRight;
-				dRight = dLeft;
-				dLeft = dTemp;
-			}
+		TPoint<T> operator *= (T scale)
+		{
+			X *= scale;
+			Y *= scale;
 		}
-    };
-
-	struct TPointL
-	{
-		int x;
-		int y;
-
-		TPointL();
-		TPointL(TWmfPointS& oPoint);
-		TPointL(TEmfPointL& oPoint);
-		TPointL& operator=(TWmfPointS& oPoint);
-		TPointL& operator=(TEmfPointL& oPoint);
-	};
-
-	struct TPointD
-	{
-		double x;
-		double y;
-
-		TPointD()
+		
+		bool operator==(const TPoint<T>& oPoint) const
 		{
-			x = 0;
-			y = 0;
+			return X == oPoint.X && Y == oPoint.Y;
 		}
-		TPointD(double _x, double _y)
+		
+		bool operator!=(const TPoint<T>& oPoint) const
 		{
-			x = _x;
-			y = _y;
+			return X != oPoint.X || Y != oPoint.Y;
 		}
 	};
 
-	struct TColor
+	template<>
+	bool TPoint<double>::operator==(const TPoint<double>& oPoint) const;
+
+	template<>
+	bool TPoint<double>::operator!=(const TPoint<double>& oPoint) const;
+
+	typedef TPoint<int>    TPointL;
+	typedef TPoint<short>  TPointS;
+	typedef TPoint<double> TPointD;
+
+	typedef TPoint<int>    TSizeL;
+	typedef TPoint<double> TScale;
+
+	template<typename T>
+	struct TRect
+	{
+		T Left;
+		T Top;
+		T Right;
+		T Bottom;
+
+		TRect() : Left(0), Top(0), Right(0), Bottom(0) {}
+		
+		template <typename U>
+		TRect(U _Left, U _Top, U _Right, U _Bottom) :
+			Left  (static_cast<T>(_Left))  ,
+			Top   (static_cast<T>(_Top))   ,
+			Right (static_cast<T>(_Right)) ,
+			Bottom(static_cast<T>(_Bottom))
+		{}
+		
+		template <typename U1, typename U2, typename U3, typename U4>
+		TRect(U1 _Left, U2 _Top, U3 _Right, U4 _Bottom) :
+			Left  (static_cast<T>(_Left))  ,
+			Top   (static_cast<T>(_Top))   ,
+			Right (static_cast<T>(_Right)) ,
+			Bottom(static_cast<T>(_Bottom))
+		{}
+		
+
+		template <typename U>
+		TRect(const TRect<U>& oRect) : 
+			Left  (static_cast<T>(oRect.Left))  ,
+			Top   (static_cast<T>(oRect.Top))   ,
+			Right (static_cast<T>(oRect.Right)) ,
+			Bottom(static_cast<T>(oRect.Bottom))
+		{}
+
+		template <typename U>
+		TRect<T>& operator=(const TRect<U>& oRect)
+		{
+			Left   = static_cast<T>(oRect.Left);
+			Top    = static_cast<T>(oRect.Top);
+			Right  = static_cast<T>(oRect.Right);
+			Bottom = static_cast<T>(oRect.Bottom);
+
+			return *this;
+		}
+
+		TRect<T>& operator*=(T scale)
+		{
+			Left   *= scale;
+			Top    *= scale;
+			Right  *= scale;
+			Bottom *= scale;
+
+			return *this;
+		}
+
+		bool Empty() const
+		{
+			return Left == Top && Top == Right && Right == Bottom;
+		}
+
+		void Update(bool bFlipedX, bool bFlipedY)
+		{
+			if ((Top > Bottom && !bFlipedY) || (Top < Bottom && bFlipedY))
+			{
+				T Temp = Bottom;
+				Bottom = Top;
+				Top = Temp;
+			}
+
+			if ((Left > Right && !bFlipedX) || (Left < Right && bFlipedX))
+			{
+				T Temp = Right;
+				Right = Left;
+				Left = Temp;
+			}
+		}
+
+		void Copy(const TRect<T>* pOther) const
+		{
+			if (NULL == pOther)
+				return;
+			
+			Left   = pOther->Left;
+			Top    = pOther->Top;
+			Right  = pOther->Right;
+			Bottom = pOther->Bottom;
+		}
+		
+		bool operator==(const TRect<T>& oRect) const
+		{
+			return Left  == oRect.Left  && Top    == oRect.Top    &&
+			       Right == oRect.Right && Bottom == oRect.Bottom;
+		}
+		
+		bool operator!=(const TRect<T>& oRect) const
+		{
+			return Left  != oRect.Left  || Top    != oRect.Top    ||
+			       Right != oRect.Right || Bottom != oRect.Bottom;
+		}
+	};
+
+	template<>
+	bool TRect<double>::operator==(const TRect<double>& oRect) const;
+
+	template<>
+	bool TRect<double>::operator!=(const TRect<double>& oRect) const;
+	
+	typedef TRect <int>    TRectL;
+	typedef TRect <short>  TRectS;
+	typedef TRect <double> TRectD;
+
+	struct TRGBA
 	{
 		unsigned char r;
 		unsigned char g;
 		unsigned char b;
+		unsigned char a;
 
-		TColor()
-		{
-			r = 0;
-			g = 0;
-			b = 0;
-		}
-		TColor(int nValue)
-		{
-			r = (nValue & 0xFF);
-			g = (nValue >> 8) & 0xFF;
-			b = (nValue >> 16) & 0xFF;
-		}
-		int ToInt()
-		{
-			return METAFILE_RGBA(r, g, b);
-		}
-		void SwapRGBtoBGR()
-		{
-			unsigned char t = r;
-			r = b;
-			b = t;
-		}
+		TRGBA();
+		TRGBA(const TRGBA& oRGB);
+		TRGBA(unsigned char _r, unsigned char _g, unsigned char _b, unsigned char _a = 0);
+		TRGBA(int nValue);
+
+		void Set(unsigned char _r, unsigned char _g, unsigned char _b, unsigned char _a = 0);
+		void Copy(const TRGBA &oRGBA);
+
+		int ToInt() const;
+		void SwapToBGR();
+
+		unsigned char GetRed()   const;
+		unsigned char GetGreen() const;
+		unsigned char GetBlue()  const;
+		unsigned char GetAlpha() const;
+
+		TRGBA& operator=(const TRGBA& oRGBA);
 	};
 
 	struct TXForm
@@ -517,99 +578,15 @@ namespace MetaFile
 		double Dx;
 		double Dy;
 
-		TXForm()
-		{
-			M11 = 1;
-			M12 = 0;
-			M21 = 0;
-			M22 = 1;
-			Dx  = 0;
-			Dy  = 0;
-		}
+		TXForm();
+		TXForm(const TXForm& oXForm);
+		TXForm(double m11, double m12, double m21, double m22, double dx, double dy);
 
-		TXForm(double m11, double m12, double m21, double m22, double dx, double dy)
-		{
-			M11 = m11;
-			M12 = m12;
-			M21 = m21;
-			M22 = m22;
-			Dx  = dx;
-			Dy  = dy;
-		}
-
-		void Init()
-		{
-			M11 = 1;
-			M12 = 0;
-			M21 = 0;
-			M22 = 1;
-			Dx  = 0;
-			Dy  = 0;
-		}
-
-		void Copy(const TXForm* pOther)
-		{
-			M11 = pOther->M11;
-			M12	= pOther->M12;
-			M21	= pOther->M21;
-			M22	= pOther->M22;
-			Dx	= pOther->Dx;
-			Dy	= pOther->Dy;
-		}
-
-		void Multiply(TXForm &oOther, unsigned int ulMode)
-		{
-			if (MWT_IDENTITY == ulMode)
-				Init();
-			else if (MWT_LEFTMULTIPLY == ulMode)
-			{
-				// oOther слева, текущая матрица справа
-				double dM11 = oOther.M11 * M11 + oOther.M12 * M21;
-				double dM12 = oOther.M11 * M12 + oOther.M12 * M22;
-				double dM21 = oOther.M21 * M11 + oOther.M22 * M21;
-				double dM22 = oOther.M21 * M12 + oOther.M22 * M22;
-
-				double dDx = oOther.Dx * M11 + oOther.Dy * M21 + Dx;
-				double dDy = oOther.Dx * M12 + oOther.Dy * M22 + Dy;
-
-				M11 = dM11;
-				M12	= dM12;
-				M21	= dM21;
-				M22	= dM22;
-				Dx	= dDx;
-				Dy	= dDy;
-			}
-			else if (MWT_RIGHTMULTIPLY == ulMode)
-			{
-				// oOther справа, текущая матрица слева
-				double dM11 = M11 * oOther.M11 + M12 * oOther.M21;
-				double dM12 = M11 * oOther.M12 + M12 * oOther.M22;
-				double dM21 = M21 * oOther.M11 + M22 * oOther.M21;
-				double dM22 = M21 * oOther.M12 + M22 * oOther.M22;
-
-				double dDx = Dx * oOther.M11 + Dy * oOther.M21 + oOther.Dx;
-				double dDy = Dx * oOther.M12 + Dy * oOther.M22 + oOther.Dy;
-
-				M11 = dM11;
-				M12	= dM12;
-				M21	= dM21;
-				M22	= dM22;
-				Dx	= dDx;
-				Dy	= dDy;
-			}
-			else //if (MWT_SET == ulMode)
-			{
-				Copy(&oOther);
-			}
-		}
-		void Apply(double& dX, double& dY)
-		{
-			double _dX = dX;
-			double _dY = dY;
-
-			dX = _dX * M11 + _dY * M21 + Dx;
-			dY = _dX * M12 + _dY * M22 + Dy;
-		}
+		void Init();
+		void Copy(const TXForm* pOther);
+		void Copy(const TXForm& oOther);
+		void Multiply(const TXForm& oOther, unsigned int ulMode);
+		void Apply(double& dX, double& dY) const;
 	};
 }
 

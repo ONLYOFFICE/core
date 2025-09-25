@@ -37,8 +37,6 @@
 #include "SlideLayout.h"
 #include "SlideMaster.h"
 #include "NotesMaster.h"
-#include "App.h"
-#include "Core.h"
 #include "ViewProps.h"
 #include "PresProps.h"
 #include "TableStyles.h"
@@ -69,3 +67,5 @@
 #include "Logic/XmlId.h"
 
 #include "../DocxFormat/CustomXml.h"
+#include "../DocxFormat/App.h"
+#include "../DocxFormat/Core.h"

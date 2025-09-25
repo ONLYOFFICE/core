@@ -33,271 +33,272 @@
 #define _BUILD_APPLICATIONFONTS_H_
 
 #define UNKNOWN_CHARSET 3 // для случаев, когда задано значение DEFAULT_CHARSET, но 
-                          // на самом деле charset не учитывается
+// на самом деле charset не учитывается
 
 #include <vector>
 #include <list>
 #include "FontManager.h"
+#include <set>
 
 namespace NSFonts
 {
-    class CLibrary_private
-    {
-    public:
-        FT_Library m_library;
-    };
+	class CLibrary_private
+	{
+	public:
+		FT_Library m_library;
+	};
 }
 
 class CFontRange
 {
 public:
-    std::wstring Name;
-    int Start;
-    int End;
+	std::wstring Name;
+	int Start;
+	int End;
 };
 
 class CFontListNamePicker
 {
 private:
-    std::map<std::wstring, int>             m_mapNamesToIndex;
-    std::vector<std::vector<std::wstring> > m_listLikes;
+	std::map<std::wstring, int>             m_mapNamesToIndex;
+	std::vector<std::vector<std::wstring> > m_listLikes;
 
 public:
-    CFontListNamePicker()
-    {
-        // 0 [Cambria Math]
-        m_mapNamesToIndex.insert(std::pair<std::wstring, int>(L"Cambria Math", 0));
-        m_mapNamesToIndex.insert(std::pair<std::wstring, int>(L"Asana Math", 0));
-        m_mapNamesToIndex.insert(std::pair<std::wstring, int>(L"XITS Math", 0));
-        m_mapNamesToIndex.insert(std::pair<std::wstring, int>(L"Latin Modern", 0));
+	CFontListNamePicker()
+	{
+		// 0 [Cambria Math]
+		m_mapNamesToIndex.insert(std::pair<std::wstring, int>(L"Cambria Math", 0));
+		m_mapNamesToIndex.insert(std::pair<std::wstring, int>(L"Asana Math", 0));
+		m_mapNamesToIndex.insert(std::pair<std::wstring, int>(L"XITS Math", 0));
+		m_mapNamesToIndex.insert(std::pair<std::wstring, int>(L"Latin Modern", 0));
 
-        std::vector<std::wstring> ar0;
-        ar0.push_back(L"Cambria Math");
-        ar0.push_back(L"Asana Math");
-        ar0.push_back(L"XITS Math");
-        ar0.push_back(L"Latin Modern");
-        m_listLikes.push_back(ar0);
+		std::vector<std::wstring> ar0;
+		ar0.push_back(L"Cambria Math");
+		ar0.push_back(L"Asana Math");
+		ar0.push_back(L"XITS Math");
+		ar0.push_back(L"Latin Modern");
+		m_listLikes.push_back(ar0);
 
-        // 1 [Symbol]
-        m_mapNamesToIndex.insert(std::pair<std::wstring, int>(L"Symbol", 1));
-        m_mapNamesToIndex.insert(std::pair<std::wstring, int>(L"Wingdings", 1));
-        std::vector<std::wstring> ar1;
-        ar1.push_back(L"OpenSymbol");
-        m_listLikes.push_back(ar1);
+		// 1 [Symbol]
+		m_mapNamesToIndex.insert(std::pair<std::wstring, int>(L"Symbol", 1));
+		m_mapNamesToIndex.insert(std::pair<std::wstring, int>(L"Wingdings", 1));
+		std::vector<std::wstring> ar1;
+		ar1.push_back(L"OpenSymbol");
+		m_listLikes.push_back(ar1);
 
-        // 2 [Arial]
-        m_mapNamesToIndex.insert(std::pair<std::wstring, int>(L"Arial", 2));
-        m_mapNamesToIndex.insert(std::pair<std::wstring, int>(L"Liberation Sans", 2));
-        m_mapNamesToIndex.insert(std::pair<std::wstring, int>(L"Helvetica", 2));
-        m_mapNamesToIndex.insert(std::pair<std::wstring, int>(L"Nimbus Sans L", 2));
+		// 2 [Arial]
+		m_mapNamesToIndex.insert(std::pair<std::wstring, int>(L"Arial", 2));
+		m_mapNamesToIndex.insert(std::pair<std::wstring, int>(L"Liberation Sans", 2));
+		m_mapNamesToIndex.insert(std::pair<std::wstring, int>(L"Helvetica", 2));
+		m_mapNamesToIndex.insert(std::pair<std::wstring, int>(L"Nimbus Sans L", 2));
 
-        std::vector<std::wstring> ar2;
-        ar2.push_back(L"Arial");
-        ar2.push_back(L"Liberation Sans");
-        ar2.push_back(L"Helvetica");
-        ar2.push_back(L"Nimbus Sans L");
-        m_listLikes.push_back(ar2);
+		std::vector<std::wstring> ar2;
+		ar2.push_back(L"Arial");
+		ar2.push_back(L"Liberation Sans");
+		ar2.push_back(L"Helvetica");
+		ar2.push_back(L"Nimbus Sans L");
+		m_listLikes.push_back(ar2);
 
-        // 3 [Times New Roman]
-        m_mapNamesToIndex.insert(std::pair<std::wstring, int>(L"Times New Roman", 3));
-        m_mapNamesToIndex.insert(std::pair<std::wstring, int>(L"Liberation Serif", 3));
+		// 3 [Times New Roman]
+		m_mapNamesToIndex.insert(std::pair<std::wstring, int>(L"Times New Roman", 3));
+		m_mapNamesToIndex.insert(std::pair<std::wstring, int>(L"Liberation Serif", 3));
 
-        std::vector<std::wstring> ar3;
-        ar3.push_back(L"Times New Roman");
-        ar3.push_back(L"Liberation Serif");
-        m_listLikes.push_back(ar3);
+		std::vector<std::wstring> ar3;
+		ar3.push_back(L"Times New Roman");
+		ar3.push_back(L"Liberation Serif");
+		m_listLikes.push_back(ar3);
 
-        // 4 [Courier New]
-        m_mapNamesToIndex.insert(std::pair<std::wstring, int>(L"Courier New", 4));
-        m_mapNamesToIndex.insert(std::pair<std::wstring, int>(L"Liberation Mono", 4));
+		// 4 [Courier New]
+		m_mapNamesToIndex.insert(std::pair<std::wstring, int>(L"Courier New", 4));
+		m_mapNamesToIndex.insert(std::pair<std::wstring, int>(L"Liberation Mono", 4));
 
-        std::vector<std::wstring> ar4;
-        ar4.push_back(L"Courier New");
-        ar4.push_back(L"Liberation Mono");
-        m_listLikes.push_back(ar4);
+		std::vector<std::wstring> ar4;
+		ar4.push_back(L"Courier New");
+		ar4.push_back(L"Liberation Mono");
+		m_listLikes.push_back(ar4);
 
-        // 5 [Segoe]
-        m_mapNamesToIndex.insert(std::pair<std::wstring, int>(L"Segoe", 5));
-        m_mapNamesToIndex.insert(std::pair<std::wstring, int>(L"Segoe UI", 5));
+		// 5 [Segoe]
+		m_mapNamesToIndex.insert(std::pair<std::wstring, int>(L"Segoe", 5));
+		m_mapNamesToIndex.insert(std::pair<std::wstring, int>(L"Segoe UI", 5));
 
-        std::vector<std::wstring> ar5;
-        ar5.push_back(L"Segoe");
-        ar5.push_back(L"Segoe UI");
-        m_listLikes.push_back(ar5);
+		std::vector<std::wstring> ar5;
+		ar5.push_back(L"Segoe");
+		ar5.push_back(L"Segoe UI");
+		m_listLikes.push_back(ar5);
 
-        // 6 [Cambria]
-        m_mapNamesToIndex.insert(std::pair<std::wstring, int>(L"Cambria", 6));
-        m_mapNamesToIndex.insert(std::pair<std::wstring, int>(L"Caladea", 6));
+		// 6 [Cambria]
+		m_mapNamesToIndex.insert(std::pair<std::wstring, int>(L"Cambria", 6));
+		m_mapNamesToIndex.insert(std::pair<std::wstring, int>(L"Caladea", 6));
 
-        std::vector<std::wstring> ar6;
-        ar6.push_back(L"Cambria");
-        ar6.push_back(L"Caladea");
-        m_listLikes.push_back(ar6);
-    }
+		std::vector<std::wstring> ar6;
+		ar6.push_back(L"Cambria");
+		ar6.push_back(L"Caladea");
+		m_listLikes.push_back(ar6);
+	}
 
-    bool IsLikeFonts(const std::wstring& name, const std::wstring& req)
-    {
-        std::map<std::wstring, int>::iterator pos = m_mapNamesToIndex.find(req);
-        if (pos == m_mapNamesToIndex.end())
-            return false;
+	bool IsLikeFonts(const std::wstring& name, const std::wstring& req)
+	{
+		std::map<std::wstring, int>::iterator pos = m_mapNamesToIndex.find(req);
+		if (pos == m_mapNamesToIndex.end())
+			return false;
 
-        const std::vector<std::wstring>& names = m_listLikes.at(pos->second);
-        for (std::vector<std::wstring>::const_iterator iter = names.begin(); iter != names.end(); iter++)
-        {
-            if (name == *iter)
-                return true;
-        }
-        return false;
-    }
+		const std::vector<std::wstring>& names = m_listLikes.at(pos->second);
+		for (std::vector<std::wstring>::const_iterator iter = names.begin(); iter != names.end(); iter++)
+		{
+			if (name == *iter)
+				return true;
+		}
+		return false;
+	}
 
-    int CheckEqualsFonts(const std::wstring& name, const std::wstring& req)
-    {
-        int lenName = (int)name.length();
-        int lenReq = (int)req.length();
+	int CheckEqualsFonts(const std::wstring& name, const std::wstring& req)
+	{
+		int lenName = (int)name.length();
+		int lenReq = (int)req.length();
 
-        if (lenName == lenReq)
-        {
-            const wchar_t* name_str = name.c_str();
-            const wchar_t* req_str = req.c_str();
+		if (lenName == lenReq)
+		{
+			const wchar_t* name_str = name.c_str();
+			const wchar_t* req_str = req.c_str();
 
-            int i = 0;
-            wchar_t nameChar = 0;
-            wchar_t reqChar = 0;
-            while (i < lenName)
-            {
-                nameChar = *name_str++;
-                reqChar = *req_str++;
-                if (nameChar >= 'A' && nameChar <= 'Z')
-                    nameChar += ('a' - 'A');
-                if (reqChar >= 'A' && reqChar <= 'Z')
-                    reqChar += ('a' - 'A');
-                if (nameChar != reqChar)
-                    break;
-            }
-            if (i == lenName)
-                return 1500;
-        }
+			int i = 0;
+			wchar_t nameChar = 0;
+			wchar_t reqChar = 0;
+			while (i < lenName)
+			{
+				nameChar = *name_str++;
+				reqChar = *req_str++;
+				if (nameChar >= 'A' && nameChar <= 'Z')
+					nameChar += ('a' - 'A');
+				if (reqChar >= 'A' && reqChar <= 'Z')
+					reqChar += ('a' - 'A');
+				if (nameChar != reqChar)
+					break;
+			}
+			if (i == lenName)
+				return 1500;
+		}
 
-        return IsEqualsFontsAdvanced(name, req) ? 3000 : 10000;
-    }
+		return IsEqualsFontsAdvanced(name, req) ? 3000 : 10000;
+	}
 
-    // не учитываем регистр (латиница) и знаки /-/ /,/
-    static bool IsEqualsFontsAdvanced(const std::wstring& name, const std::wstring& req, bool* bIsOneInAnother = NULL)
-    {
-        int lenName = (int)name.length();
-        int lenReq = (int)req.length();
+	// не учитываем регистр (латиница) и знаки /-/ /,/
+	static bool IsEqualsFontsAdvanced(const std::wstring& name, const std::wstring& req, bool* bIsOneInAnother = NULL)
+	{
+		int lenName = (int)name.length();
+		int lenReq = (int)req.length();
 
-        const wchar_t* name_str = name.c_str();
-        const wchar_t* req_str = req.c_str();
+		const wchar_t* name_str = name.c_str();
+		const wchar_t* req_str = req.c_str();
 
-        int curName = 0;
-        int curReq = 0;
+		int curName = 0;
+		int curReq = 0;
 
-        wchar_t curNameChar = 0;
-        wchar_t curReqChar = 0;
-        while (true)
-        {
-            curNameChar = 0;
-            while (curName < lenName)
-            {
-                curNameChar = *name_str++;
-                ++curName;
-                if (curNameChar == '-' || curNameChar == ' ' || curNameChar == ',')
-                    continue;
+		wchar_t curNameChar = 0;
+		wchar_t curReqChar = 0;
+		while (true)
+		{
+			curNameChar = 0;
+			while (curName < lenName)
+			{
+				curNameChar = *name_str++;
+				++curName;
+				if (curNameChar == '-' || curNameChar == ' ' || curNameChar == ',')
+					continue;
 
-                if (curNameChar >= 'A' && curNameChar <= 'Z')
-                    curNameChar += ('a' - 'A');
-                break;
-            }
+				if (curNameChar >= 'A' && curNameChar <= 'Z')
+					curNameChar += ('a' - 'A');
+				break;
+			}
 
-            curReqChar = 0;
-            while (curReq < lenReq)
-            {
-                curReqChar = *req_str++;
-                ++curReq;
-                if (curReqChar == '-' || curReqChar == ' ' || curReqChar == ',')
-                    continue;
+			curReqChar = 0;
+			while (curReq < lenReq)
+			{
+				curReqChar = *req_str++;
+				++curReq;
+				if (curReqChar == '-' || curReqChar == ' ' || curReqChar == ',')
+					continue;
 
-                if (curReqChar >= 'A' && curReqChar <= 'Z')
-                    curReqChar += ('a' - 'A');
-                break;
-            }
+				if (curReqChar >= 'A' && curReqChar <= 'Z')
+					curReqChar += ('a' - 'A');
+				break;
+			}
 
-            if (curNameChar != curReqChar)
-            {
-                if (bIsOneInAnother)
-                    *bIsOneInAnother = (0 == curNameChar || 0 == curReqChar) ? true : false;
-                return false;
-            }
-            else if (0 == curNameChar)
-                break;
-        }
-        return true;
-    }
+			if (curNameChar != curReqChar)
+			{
+				if (bIsOneInAnother)
+					*bIsOneInAnother = (0 == curNameChar || 0 == curReqChar) ? true : false;
+				return false;
+			}
+			else if (0 == curNameChar)
+				break;
+		}
+		return true;
+	}
 };
 
 class CFontList : public NSFonts::IFontList
 {
 private:
-    std::vector<NSFonts::CFontInfo*>	m_pList;
-    std::wstring                        m_sDirectory;
+	std::vector<NSFonts::CFontInfo*>	m_pList;
+	std::wstring                        m_sDirectory;
 
-    static CFontListNamePicker          m_oPicker;
+	static CFontListNamePicker          m_oPicker;
 
-    CFontRange*             m_pRanges;
-    int                     m_nRangesCount;
+	CFontRange*             m_pRanges;
+	int                     m_nRangesCount;
 
-    std::list<CFontRange>   m_listRanges; // последние использованные (найденные)
+	std::list<CFontRange>   m_listRanges; // последние использованные (найденные)
 
 public:
 	CFontList()
 	{
-        m_pRanges = NULL;
-        m_nRangesCount = 0;
+		m_pRanges = NULL;
+		m_nRangesCount = 0;
 	}
 	~CFontList()
 	{
-        for ( std::vector<NSFonts::CFontInfo*>::iterator iter = m_pList.begin(); iter != m_pList.end(); iter++ )
+		for ( std::vector<NSFonts::CFontInfo*>::iterator iter = m_pList.begin(); iter != m_pList.end(); iter++ )
 		{
-            NSFonts::CFontInfo* pTemp = *iter;
+			NSFonts::CFontInfo* pTemp = *iter;
 			RELEASEOBJECT(pTemp);
 		}
-        m_pList.clear();
+		m_pList.clear();
 
-        RELEASEARRAYOBJECTS(m_pRanges);
+		RELEASEARRAYOBJECTS(m_pRanges);
 	}
 
-    class CFontListToBufferSerializer
-    {
-    public:
-        std::wstring m_strDirectory;
-        bool m_bIsOnlynames;
-        int m_nVersion;
+	class CFontListToBufferSerializer
+	{
+	public:
+		std::wstring m_strDirectory;
+		bool m_bIsOnlynames;
+		int m_nVersion;
 
-    public:
-        CFontListToBufferSerializer(const std::wstring& sDir, const bool& bIsOnlynames, const int& nVer = 2)
-        {
-            m_strDirectory = sDir;
-            m_bIsOnlynames = bIsOnlynames;
-            m_nVersion = nVer;
-        }
-    };
+	public:
+		CFontListToBufferSerializer(const std::wstring& sDir, const bool& bIsOnlynames, const int& nVer = 2)
+		{
+			m_strDirectory = sDir;
+			m_bIsOnlynames = bIsOnlynames;
+			m_nVersion = nVer;
+		}
+	};
 
-    virtual std::vector<NSFonts::CFontInfo*>* GetFonts() { return &m_pList; }
+	virtual std::vector<NSFonts::CFontInfo*>* GetFonts() { return &m_pList; }
 
 private:
-    int GetCharsetPenalty(UINT ulCandRanges[6], unsigned char unReqCharset);
-    int GetSigPenalty(UINT ulCandRanges[6], UINT ulReqRanges[6], double dRangeWeight = 1, double dRangeWeightSuferflouous = 0);
-    int GetFixedPitchPenalty(INT bCandFixed, INT bReqFixed);
-    int GetFaceNamePenalty(const std::wstring& sCandName, const std::wstring& sReqName, bool bIsUseNamePicker = false);
-    int GetFaceNamePenalty2(NSFonts::CFontInfo* pInfo, const std::wstring& sReqName, bool bIsUseNamePicker = false);
+	int GetCharsetPenalty(UINT ulCandRanges[6], unsigned char unReqCharset);
+	int GetSigPenalty(UINT ulCandRanges[6], UINT ulReqRanges[6], double dRangeWeight = 1, double dRangeWeightSuferflouous = 0);
+	int GetFixedPitchPenalty(INT bCandFixed, INT bReqFixed);
+	int GetFaceNamePenalty(const std::wstring& sCandName, const std::wstring& sReqName, bool bIsUseNamePicker = false);
+	int GetFaceNamePenalty2(NSFonts::CFontInfo* pInfo, const std::wstring& sReqName, bool bIsUseNamePicker = false);
 	int GetFamilyUnlikelyPenalty(SHORT nCandFamilyClass, SHORT nReqFamilyClass);
 	int GetFamilyUnlikelyPenalty(int nCandFamilyClass, std::wstring sReqFamilyClass);
 	int GetWidthPenalty(USHORT usCandWidth, USHORT usReqWidth);
 	int GetWeightPenalty(USHORT usCandWeight, USHORT usReqWeight);
-    int GetItalicPenalty(INT bCandItalic, INT bReqItalic);
-    int GetBoldPenalty(INT bCandBold, INT bReqBold);
-    int GetFontFormatPenalty(NSFonts::EFontFormat eCandFormat, NSFonts::EFontFormat eReqFormat);
+	int GetItalicPenalty(INT bCandItalic, INT bReqItalic);
+	int GetBoldPenalty(INT bCandBold, INT bReqBold);
+	int GetFontFormatPenalty(NSFonts::EFontFormat eCandFormat, NSFonts::EFontFormat eReqFormat);
 	int GetPanosePenalty(BYTE *pCandPanose, BYTE *pReqPanose);
 	int GetAvgWidthPenalty(SHORT shCandWidth, SHORT shReqWidth);
 	int GetAscentPenalty(SHORT shCandAscent, SHORT shReqAscent);
@@ -306,22 +307,24 @@ private:
 	int GetXHeightPenalty(SHORT shCandXHeight, SHORT shReqXHeight);
 	int GetCapHeightPenalty(SHORT shCandCapHeight, SHORT shReqCapHeight);
 	bool CheckEmbeddingRights(const USHORT* ushRights, const USHORT& fsType);
+	void Add(FT_Library pLibrary, FT_Parameter* pParams, const std::wstring& sFontPath, CFontStream* pStream, int nFlag);
 
 public:
-    static NSFonts::EFontFormat GetFontFormat(FT_Face pFace);
-    virtual void ToBuffer(BYTE** pDstData, LONG* pLen, NSFonts::CFontListToBufferSerializer& oSerializer);
+	static NSFonts::EFontFormat GetFontFormat(FT_Face pFace);
+	virtual void ToBuffer(BYTE** pDstData, LONG* pLen, NSFonts::CFontListToBufferSerializer& oSerializer);
 
 public:
 	void LoadFromArrayFiles (std::vector<std::wstring>& arrFiles, int nFlag = 0);
 	void LoadFromFolder (const std::wstring& strDirectory);
-    bool CheckLoadFromFolderBin(const std::wstring& strDirectory);
-    void CheckLoadFromSelectionBin(const std::wstring& strDirectory, BYTE* pData, DWORD len);
-    void Add (NSFonts::CFontInfo* pInfo);
-    NSFonts::CFontInfo* GetByParams (NSFonts::CFontSelectFormat& oSelect, bool bIsDictionaryUse = true);
-    std::vector<NSFonts::CFontInfo*> GetAllByName (const std::wstring& strFontName);
+	bool CheckLoadFromFolderBin(const std::wstring& strDirectory);
+	void CheckLoadFromSelectionBin(const std::wstring& strDirectory, BYTE* pData, DWORD len);
+	void Add (const std::wstring& sFontPath, NSFonts::IFontStream* pStream, int nFlag = 0);
+	void Add (NSFonts::CFontInfo* pInfo);
+	NSFonts::CFontInfo* GetByParams (NSFonts::CFontSelectFormat& oSelect, bool bIsDictionaryUse = true);
+	std::vector<NSFonts::CFontInfo*> GetAllByName (const std::wstring& strFontName);
 
-    std::wstring GetFontBySymbol(int symbol);
-    void InitializeRanges(unsigned char* data);
+	std::wstring GetFontBySymbol(int symbol);
+	void InitializeRanges(unsigned char* data);
 };
 
 class CApplicationFonts : public NSFonts::IApplicationFonts
@@ -329,32 +332,36 @@ class CApplicationFonts : public NSFonts::IApplicationFonts
 private:
 	CApplicationFontStreams	m_oStreams;
 	CFontsCache				m_oCache;
-    CFontList				m_oList;
+	CFontList				m_oList;
 
 public:
 	CApplicationFonts();
 	~CApplicationFonts();
 
 public:
-    NSFonts::IFontsCache*				GetCache();
-    NSFonts::IFontList*					GetList();
-    NSFonts::IApplicationFontStreams*	GetStreams();
+	NSFonts::IFontsCache*				GetCache();
+	NSFonts::IFontList*					GetList();
+	NSFonts::IApplicationFontStreams*	GetStreams();
 
-    void InitializeFromFolder(std::wstring strFolder, bool bIsCheckSelection = true);
-    void Initialize(bool bIsCheckSelection = true);
-    void InitializeFromBin(BYTE* pData, unsigned int nLen);
-    void InitializeRanges(unsigned char* data);    
-      
-	std::vector<std::wstring> GetSetupFontFiles();
+	void InitializeFromFolder(std::wstring strFolder, bool bIsCheckSelection = true);
+	void Initialize(bool bIsCheckSelection = true);
+	void InitializeFromBin(BYTE* pData, unsigned int nLen);
+	void InitializeRanges(unsigned char* data);
+
+	std::vector<std::wstring> GetSetupFontFiles(const bool& bIsUseUserFonts = true);
 	void InitializeFromArrayFiles(std::vector<std::wstring>& files, int nFlag = 0);
 
 #if defined(_WIN32) || defined (_WIN64)
 	void InitFromReg();
 #endif
 
-    NSFonts::IFontManager* GenerateFontManager();
+#if defined(_MAC) && !defined(_IOS)
+	std::set<std::wstring> GetInstalledFontsMac();
+#endif
 
-    std::wstring GetFontBySymbol(int symbol);
+	NSFonts::IFontManager* GenerateFontManager();
+
+	std::wstring GetFontBySymbol(int symbol);
 };
 
 #endif

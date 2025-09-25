@@ -60,6 +60,17 @@ void DConnStringSequence::load(CFRecord& record)
 	}
 }
 
+void DConnStringSequence::save(CFRecord& record)
+{
+	record 	<< cst;
+	for(auto i : rgString)
+	{
+		XLUnicodeStringSegmented val;
+		val = i;
+		record << val;
+	}
+}
+
 
 } // namespace XLS
 

@@ -51,7 +51,7 @@ namespace MetaFile
 	{
 	public:
 		CWmfFile() : m_pParser(new CWmfParser)
-        {}
+		{}
 
 		~CWmfFile()
 		{
@@ -71,7 +71,7 @@ namespace MetaFile
 		{
 			if (NULL != m_pParser)
 			{
-                NSFonts::IFontManager* pFont = m_pParser->GetFontManager();
+				NSFonts::IFontManager* pFont = m_pParser->GetFontManager();
 
 				delete m_pParser;
 				m_pParser = new CWmfParser();
@@ -102,7 +102,7 @@ namespace MetaFile
 			m_pParser->Close();
 		}
 
-        void SetFontManager(NSFonts::IFontManager* pFontManager)
+		void SetFontManager(NSFonts::IFontManager* pFontManager)
 		{
 			m_pParser->SetFontManager(pFontManager);
 		}
@@ -131,9 +131,9 @@ namespace MetaFile
 			m_pParser->SetInterpretator(pOutput, wsFilePath);
 		}
 
-		TRectD GetBounds()
+		const TRectL& GetBounds() const
 		{
-			return m_pParser->GetBounds();
+			return m_pParser->GetDCBounds();
 		}
 	private:
 

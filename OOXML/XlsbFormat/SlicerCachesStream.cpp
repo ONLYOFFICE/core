@@ -76,7 +76,7 @@ const bool SlicerCachesStream::loadContent(BinProcessor& proc)
                     proc.SkipRecord();
                 }break;
             }
-	}
+	} 
 
 	return true;
 }

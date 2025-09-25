@@ -83,7 +83,6 @@ SOURCES += \
 	\
 	../../../PPTXFormat/DrawingConverter/ASCOfficeDrawingConverter.cpp \
 	../../../PPTXFormat/DrawingConverter/ASCOfficePPTXFileRealization.cpp \
-	../../../../HtmlRenderer/src/ASCSVGWriter.cpp \
 	\
 	../../../PPTXFormat/ViewProps/CSldViewPr.cpp \
 	../../../PPTXFormat/ViewProps/CViewPr.cpp \
@@ -97,7 +96,6 @@ SOURCES += \
 	../../../PPTXFormat/ViewProps/Ratio.cpp \
 	../../../PPTXFormat/ViewProps/Restored.cpp \
 	../../../PPTXFormat/ViewProps/Scale.cpp \
-	../../../PPTXFormat/ViewProps/Sld.cpp \
 	../../../PPTXFormat/ViewProps/SlideViewPr.cpp \
 	../../../PPTXFormat/ViewProps/SorterViewPr.cpp \
 	\
@@ -106,34 +104,28 @@ SOURCES += \
 	../../../PPTXFormat/Theme/FmtScheme.cpp \
 	../../../PPTXFormat/Theme/FontScheme.cpp \
 	../../../PPTXFormat/Theme/ThemeElements.cpp \
-	\
-	../../../PPTXFormat/ShowPr/ShowPr.cpp \
+        ../../../PPTXFormat/Theme/VisioThemeElements.cpp \
+        \
+        ../../../PPTXFormat/ShowPr/PresentationPr.cpp \
 	../../../PPTXFormat/ShowPr/Present.cpp \
 	../../../PPTXFormat/ShowPr/Kiosk.cpp \
-	../../../PPTXFormat/ShowPr/CustShow.cpp \
+        ../../../PPTXFormat/ShowPr/CustomShowId.cpp \
 	../../../PPTXFormat/ShowPr/Browse.cpp \
 	../../../PPTXFormat/ShowPr/SldRg.cpp \
 	../../../PPTXFormat/ShowPr/SldAll.cpp \
 	\
-	../../../PPTXFormat/Presentation/NotesSz.cpp \
-	../../../PPTXFormat/Presentation/PhotoAlbum.cpp \
-	../../../PPTXFormat/Presentation/EmbeddedFont.cpp \
-	../../../PPTXFormat/Presentation/EmbeddedFontDataId.cpp \
-	../../../PPTXFormat/Presentation/Kinsoku.cpp \
-	../../../PPTXFormat/Presentation/SectionLst.cpp \
-	../../../PPTXFormat/Presentation/SldSz.cpp
+        ../../../PPTXFormat/Presentation/PresentationChildElements.cpp
 
 HEADERS += \
 	pptx_format.h \
 	\
 	../../../Base/Nullable.h \
-	../../../../HtmlRenderer/include/ASCSVGWriter.h \
 	../../../../Common/FileDownloader/FileDownloader.h \
 	\
 	../../../../MsBinaryFile/Common/Vml/Common.h \
 	../../../../MsBinaryFile/Common/Vml/BaseShape.h \
 	../../../../MsBinaryFile/Common/Vml/toVmlConvert.h \
-        ../../../../MsBinaryFile/Common/Vml/VmlPath.h \
+	../../../../MsBinaryFile/Common/Vml/VmlPath.h \
 	../../../../MsBinaryFile/Common/Vml/GraphicsPath.h \	
 	\
 	../../../../MsBinaryFile/Common/Vml/PPTShape/PptShape.h \
@@ -156,18 +148,14 @@ HEADERS += \
 	../../../PPTXFormat/DrawingConverter/ASCOfficeDrawingConverter.h \
 	../../../PPTXFormat/DrawingConverter/ASCOfficePPTXFile.h \	
 	\
-	../../../PPTXFormat/Presentation/EmbeddedFont.h \
-	../../../PPTXFormat/Presentation/EmbeddedFontDataId.h \
-	../../../PPTXFormat/Presentation/Kinsoku.h \
-	../../../PPTXFormat/Presentation/NotesSz.h \
-	../../../PPTXFormat/Presentation/PhotoAlbum.h \
-	../../../PPTXFormat/Presentation/SldSz.h \
+        ../../../PPTXFormat/Presentation/PresentationChildElements.h \
 	\
 	../../../PPTXFormat/Theme/ClrScheme.h \
 	../../../PPTXFormat/Theme/ExtraClrScheme.h \
 	../../../PPTXFormat/Theme/FmtScheme.h \
 	../../../PPTXFormat/Theme/FontScheme.h \
 	../../../PPTXFormat/Theme/ThemeElements.h \
+        ../../../PPTXFormat/Theme/VisioThemeElements.h \
 	\
 	../../../PPTXFormat/ViewProps/CSldViewPr.h \
 	../../../PPTXFormat/ViewProps/CViewPr.h \
@@ -181,7 +169,6 @@ HEADERS += \
 	../../../PPTXFormat/ViewProps/Ratio.h \
 	../../../PPTXFormat/ViewProps/Restored.h \
 	../../../PPTXFormat/ViewProps/Scale.h \
-	../../../PPTXFormat/ViewProps/Sld.h \
 	../../../PPTXFormat/ViewProps/SlideViewPr.h \
 	../../../PPTXFormat/ViewProps/SorterViewPr.h \
 	\
@@ -199,9 +186,9 @@ HEADERS += \
 	../../../Binary/Presentation/DefaultNotesTheme.h \
 	\
 	../../../PPTXFormat/ShowPr/Browse.h \
-	../../../PPTXFormat/ShowPr/CustShow.h \
+        ../../../PPTXFormat/ShowPr/CustomShowId.h \
 	../../../PPTXFormat/ShowPr/Kiosk.h \
 	../../../PPTXFormat/ShowPr/Present.h \
-	../../../PPTXFormat/ShowPr/ShowPr.h \
+        ../../../PPTXFormat/ShowPr/PresentationPr.h \
 	../../../PPTXFormat/ShowPr/SldAll.h \
 	../../../PPTXFormat/ShowPr/SldRg.h

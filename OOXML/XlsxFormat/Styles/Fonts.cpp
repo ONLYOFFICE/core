@@ -34,6 +34,9 @@
 
 #include "../ComplexTypes_Spreadsheet.h"
 #include "../../XlsbFormat/Biff12_records/CommonRecords.h"
+#include "../../XlsbFormat/Biff12_records/BeginFonts.h"
+
+#include "../../XlsbFormat/Biff12_unions/FONTS.h"
 
 namespace OOX
 {
@@ -178,6 +181,116 @@ namespace OOX
 		void CFont::fromBin(XLS::BaseObjectPtr& obj)
 		{
 			ReadAttributes(obj);
+		}
+		XLS::BaseObjectPtr CFont::toBin()
+		{
+			auto ptr(new XLSB::Font);
+			XLS::BaseObjectPtr objectPtr(ptr);
+
+			if(m_oSz.IsInit())
+				ptr->dyHeight = m_oSz->m_oVal->GetValue() * 20;
+
+			if(m_oItalic.IsInit())
+				ptr->fItalic = m_oItalic->ToBool();
+			else
+				ptr->fItalic = false;
+
+			if(m_oStrike.IsInit())
+				ptr->fStrikeOut = m_oStrike->ToBool();
+			else
+				ptr->fStrikeOut = false;
+
+			if(m_oOutline.IsInit())
+				ptr->fOutline = m_oOutline->ToBool();
+			else
+				ptr->fOutline = false;
+
+			if(m_oShadow.IsInit())
+				ptr->fShadow = m_oShadow->ToBool();
+			else
+				ptr->fShadow = false;
+
+			if(m_oCondense.IsInit())
+				ptr->fCondense = m_oCondense->ToBool();
+			else
+				ptr->fCondense = false;
+
+			if(m_oExtend.IsInit())
+				ptr->fExtend = m_oExtend->ToBool();
+			else
+				ptr->fExtend = false;
+			if(m_oBold.IsInit())
+			{
+				if(m_oBold->ToBool())
+					ptr->bls = 0x02BC;
+			}
+			else
+			{
+				ptr->bls = 0x0190;
+			}
+			if(m_oUnderline.IsInit())
+			{
+				if(m_oUnderline->m_oUnderline.IsInit())
+				{
+					if(m_oUnderline->m_oUnderline == SimpleTypes::Spreadsheet::EUnderline::underlineNone)
+						ptr->uls = 0;
+					else if(m_oUnderline->m_oUnderline == SimpleTypes::Spreadsheet::EUnderline::underlineSingle)
+						ptr->uls = 1;
+					else if(m_oUnderline->m_oUnderline == SimpleTypes::Spreadsheet::EUnderline::underlineDouble)
+						ptr->uls = 2;
+					else if(m_oUnderline->m_oUnderline == SimpleTypes::Spreadsheet::EUnderline::underlineSingleAccounting)
+						ptr->uls = 33;
+					else if(m_oUnderline->m_oUnderline == SimpleTypes::Spreadsheet::EUnderline::underlineDoubleAccounting)
+						ptr->uls = 34;
+				}
+			}
+            else
+                ptr->uls = 0;
+
+			if(m_oFamily.IsInit())
+				ptr->bFamily = m_oFamily->m_oFontFamily->GetValue();
+
+			if(m_oCharset.IsInit())
+				ptr->bCharSet = m_oCharset->m_oCharset->GetValue();
+
+			if(m_oColor.IsInit())
+				ptr->brtColor = m_oColor->toColor();
+			else
+			{
+				m_oColor.Init();
+                ptr->brtColor = m_oColor->GetDefaultColor();
+			}
+
+			if(m_oScheme.IsInit())
+			{
+				if(m_oScheme->m_oFontScheme.IsInit())
+				{
+					if(m_oScheme->m_oFontScheme == SimpleTypes::Spreadsheet::EFontScheme::fontschemeNone)
+						ptr->bFontScheme = 0;
+					else if(m_oScheme->m_oFontScheme == SimpleTypes::Spreadsheet::EFontScheme::fontschemeMajor)
+						ptr->bFontScheme = 1;
+					else if(m_oScheme->m_oFontScheme == SimpleTypes::Spreadsheet::EFontScheme::fontschemeMinor)
+						ptr->bFontScheme = 2;
+				}
+			}
+
+
+			if(m_oRFont.IsInit())
+				ptr->fontName = m_oRFont->m_sVal.get();
+			if(m_oVertAlign.IsInit())
+			{
+				if(m_oVertAlign->m_oVerticalAlign.IsInit())
+				{
+					if(m_oVertAlign->m_oVerticalAlign->GetValue() == SimpleTypes::EVerticalAlignRun::verticalalignrunBaseline)
+						ptr->sss = 0;
+					else if(m_oVertAlign->m_oVerticalAlign->GetValue() == SimpleTypes::EVerticalAlignRun::verticalalignrunSuperscript)
+						ptr->sss = 1;
+					else if(m_oVertAlign->m_oVerticalAlign->GetValue() == SimpleTypes::EVerticalAlignRun::verticalalignrunSubscript)
+						ptr->sss = 2;
+				}
+			}
+
+			return objectPtr;
 		}
 		EElementType CFont::getType () const
 		{
@@ -405,6 +518,20 @@ namespace OOX
 				m_arrItems.push_back(pFont);
 				m_mapFonts.insert(std::make_pair(index++, pFont));
 			}
+		}
+		XLS::BaseObjectPtr CFonts::toBin()
+		{
+			auto ptr(new XLSB::FONTS);
+			auto ptr1(new XLSB::BeginFonts);
+			ptr->m_BrtBeginFonts = XLS::BaseObjectPtr{ptr1};
+			XLS::BaseObjectPtr objectPtr(ptr);
+
+			for(auto i:m_arrItems)
+			{
+				ptr->m_arBrtFont.push_back(i->toBin());
+			}
+			ptr1->cfonts = ptr->m_arBrtFont.size();
+			return objectPtr;
 		}
 		EElementType CFonts::getType () const
 		{

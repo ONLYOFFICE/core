@@ -91,7 +91,7 @@ void PtgRefErr3d::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool
 		return;
 	}
 
-	if (ixti != 0xffff)
+    if (ixti != 0xffff && global_info->arXti_External.size() > ixti)
 	{
 		std::wstring link = global_info->arXti_External[ixti].link;
 		if (!link.empty()) 

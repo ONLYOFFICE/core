@@ -36,6 +36,11 @@
 #include "../../Common/SimpleTypes_Spreadsheet.h"
 
 #include "../../XlsbFormat/Biff12_records/CommonRecords.h"
+#include "../../XlsbFormat/Biff12_records/BeginCellStyleXFs.h"
+#include "../../XlsbFormat/Biff12_records/BeginCellXFs.h"
+
+#include "../../XlsbFormat/Biff12_unions/CELLSTYLEXFS.h"
+#include "../../XlsbFormat/Biff12_unions/CELLXFS.h"
 
 namespace OOX
 {
@@ -83,6 +88,66 @@ namespace OOX
 		void CAligment::fromBin(XLS::BaseObjectPtr& obj)
 		{
 			ReadAttributes(obj);
+		}
+		void CAligment::toBin(XLS::BaseObjectPtr& obj)
+		{
+			auto ptr = static_cast<XLS::XF*>(obj.get());
+            if(m_oIndent.IsInit())
+                ptr->cIndent = m_oIndent.get();
+            if(m_oJustifyLastLine.IsInit())
+				ptr->fJustLast = m_oJustifyLastLine->GetValue();
+			else
+				ptr->fJustLast = false;
+            if(m_oReadingOrder.IsInit())
+				ptr->iReadOrder = m_oReadingOrder.get();
+            else if(m_oRelativeIndent.IsInit())
+				ptr->iReadOrder = m_oRelativeIndent.get();
+			else
+				ptr->iReadOrder = 0;
+            if(m_oShrinkToFit.IsInit())
+				ptr->fShrinkToFit = m_oShrinkToFit->GetValue();
+			else
+				ptr->fShrinkToFit = false;
+            if(m_oTextRotation.IsInit())
+				ptr->trot = m_oTextRotation.get();
+			else
+				ptr->trot = 0;
+            if(m_oWrapText.IsInit())
+				ptr->fWrap = m_oWrapText->GetValue();
+			else
+				ptr->fWrap = false;
+			if (m_oHorizontal == SimpleTypes::Spreadsheet::EHorizontalAlignment::horizontalalignmentGeneral)
+				ptr->alc = 0;
+			else if (m_oHorizontal == SimpleTypes::Spreadsheet::EHorizontalAlignment::horizontalalignmentLeft)
+				ptr->alc = 1;
+			else if (m_oHorizontal == SimpleTypes::Spreadsheet::EHorizontalAlignment::horizontalalignmentCenter)
+				ptr->alc = 2;
+			else if (m_oHorizontal == SimpleTypes::Spreadsheet::EHorizontalAlignment::horizontalalignmentRight)
+				ptr->alc = 3;
+			else if (m_oHorizontal == SimpleTypes::Spreadsheet::EHorizontalAlignment::horizontalalignmentFill)
+				ptr->alc = 4;
+			else if (m_oHorizontal == SimpleTypes::Spreadsheet::EHorizontalAlignment::horizontalalignmentJustify)
+				ptr->alc = 5;
+			else if (m_oHorizontal == SimpleTypes::Spreadsheet::EHorizontalAlignment::horizontalalignmentCenterContinuous)
+				ptr->alc = 6;
+			else if (m_oHorizontal == SimpleTypes::Spreadsheet::EHorizontalAlignment::horizontalalignmentDistributed)
+				ptr->alc = 7;
+            else
+                ptr->alc = 0;
+
+			if (m_oVertical == SimpleTypes::Spreadsheet::EVerticalAlignment::verticalalignmentTop)
+				ptr->alcV = 0;
+			else if (m_oVertical == SimpleTypes::Spreadsheet::EVerticalAlignment::verticalalignmentCenter)
+				ptr->alcV = 1;
+			else if (m_oVertical == SimpleTypes::Spreadsheet::EVerticalAlignment::verticalalignmentBottom)
+				ptr->alcV = 2;
+			else if (m_oVertical == SimpleTypes::Spreadsheet::EVerticalAlignment::verticalalignmentJustify)
+				ptr->alcV = 3;
+			else if (m_oVertical == SimpleTypes::Spreadsheet::EVerticalAlignment::verticalalignmentDistributed)
+				ptr->alcV = 4;
+            else
+                ptr->alcV = 2;
+
 		}
 		EElementType CAligment::getType () const
 		{
@@ -220,6 +285,18 @@ namespace OOX
 		{
 			ReadAttributes(obj);
 		}
+		void CProtection::toBin(XLS::BaseObjectPtr& obj)
+		{
+			auto ptr = static_cast<XLSB::XF*>(obj.get());
+			if(m_oHidden.IsInit())
+				ptr->fHidden = m_oHidden->GetValue();
+			else
+				ptr->fHidden = false;
+			if(m_oLocked.IsInit())
+				ptr->fLocked = m_oLocked->GetValue();
+			else
+				ptr->fLocked = true;
+		}
 		EElementType CProtection::getType () const
 		{
 			return et_x_Protection;
@@ -309,6 +386,69 @@ namespace OOX
 
 			m_oAligment     = obj;
 			m_oProtection   = obj;
+		}
+		XLS::BaseObjectPtr CXfs::toBin()
+		{
+            size_t id = 0;
+			auto ptr(new XLSB::XF(id, id));
+			XLS::BaseObjectPtr objectPtr(ptr);
+            if(m_oBorderId.IsInit())
+                ptr->ixBorder = m_oBorderId->GetValue();
+            if(m_oFillId.IsInit())
+                ptr->iFill = m_oFillId->GetValue();
+            if(m_oFontId.IsInit())
+                ptr->font_index = m_oFontId->GetValue();
+            if(m_oNumFmtId.IsInit())
+                ptr->ifmt = m_oNumFmtId->GetValue();
+            if(m_oPivotButton.IsInit())
+                ptr->fsxButton = m_oPivotButton->GetValue();
+            if(m_oQuotePrefix.IsInit())
+                ptr->f123Prefix = m_oQuotePrefix->GetValue();
+
+			if (m_oXfId.IsInit())
+				ptr->ixfParent = m_oXfId->GetValue();
+			else
+				ptr->ixfParent = 65535;
+
+			if(m_oAligment.IsInit())
+			{
+				m_oAligment->toBin(objectPtr);
+			}
+			else
+			{
+				ptr->alc = 0;
+				ptr->alcV = 2;
+			}
+            if(!m_oProtection.IsInit())
+                m_oProtection.Init();
+			m_oProtection->toBin(objectPtr);
+
+			if(m_oApplyAlignment.IsInit())
+                ptr->fAtrAlc = m_oApplyAlignment->GetValue();
+			else
+				ptr->fAtrAlc = false;
+            if(m_oApplyBorder.IsInit())
+                ptr->fAtrBdr = m_oApplyBorder->GetValue();
+			else
+				ptr->fAtrBdr = false;
+            if(m_oApplyFill.IsInit())
+                ptr->fAtrPat = m_oApplyFill->GetValue();
+			else
+				ptr->fAtrPat = false;
+            if(m_oApplyFont.IsInit())
+                ptr->fAtrFnt = m_oApplyFont->GetValue();
+			else
+				ptr->fAtrFnt = false;
+            if(m_oApplyNumberFormat.IsInit())
+                ptr->fAtrNum = m_oApplyNumberFormat->GetValue();
+			else
+				ptr->fAtrNum = false;
+            if(m_oApplyProtection.IsInit())
+                ptr->fAtrProt = m_oApplyProtection->GetValue();
+			else
+				ptr->fAtrProt = false;
+
+			return objectPtr;
 		}
 		void CXfs::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
@@ -410,6 +550,17 @@ namespace OOX
 				m_arrItems.push_back(pXfs);
 			}
 		}
+		XLS::BaseObjectPtr CCellXfs::toBin()
+		{
+			auto ptr(new XLSB::CELLXFS);
+			auto ptr1(new XLSB::BeginCellXFs);
+			ptr->m_BrtBeginCellXFs = XLS::BaseObjectPtr{ptr1};
+			XLS::BaseObjectPtr objectPtr(ptr);
+			for(auto i:m_arrItems)
+				ptr->m_arBrtXF.push_back(i->toBin());
+			ptr1->cxfs = ptr->m_arBrtXF.size();
+			return objectPtr;
+		}
 		EElementType CCellXfs::getType () const
 		{
 			return et_x_CellXfs;
@@ -490,6 +641,18 @@ namespace OOX
 				CXfs *pXfs = new CXfs(xfs);
 				m_arrItems.push_back(pXfs);
 			}
+		}
+		XLS::BaseObjectPtr CCellStyleXfs::toBin()
+		{
+            auto ptr(new XLSB::CELLSTYLEXFS);
+			auto ptr1(new XLSB::BeginCellStyleXFs);
+			ptr->m_BrtBeginCellStyleXFs = XLS::BaseObjectPtr{ptr1};
+			XLS::BaseObjectPtr objectPtr(ptr);
+
+			for(auto i:m_arrItems)
+				ptr->m_arBrtXF.push_back(i->toBin());
+			ptr1->cxfs = ptr->m_arBrtXF.size();
+			return objectPtr;
 		}
 		void CCellStyleXfs::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{

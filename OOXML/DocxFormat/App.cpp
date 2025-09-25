@@ -32,9 +32,9 @@
 #include "App.h"
 #include "Docx.h"
 #include "../XlsxFormat/Xlsx.h"
-#include "../PPTXFormat/App.h"
 #include "../Common/SimpleTypes_Word.h"
 #include "../../DesktopEditor/common/SystemUtils.h"
+#include "../../DesktopEditor/xml/include/xmlutils.h"
 
 namespace OOX
 {
@@ -56,106 +56,6 @@ namespace OOX
 	}
 	CApp::~CApp()
 	{
-	}
-	PPTX::App* CApp::ToPptxApp()
-	{
-		PPTX::App* res = new PPTX::App(NULL);
-		if(m_sTemplate.IsInit())
-			res->Template = m_sTemplate.get();
-		if(m_nTotalTime.IsInit())
-			res->TotalTime = m_nTotalTime.get();
-		if(m_nWords.IsInit())
-			res->Words = m_nWords.get();
-		if(m_sApplication.IsInit())
-			res->Application = m_sApplication.get();
-		if(m_sPresentationForm.IsInit())
-			res->PresentationFormat = m_sPresentationForm.get();
-		if(m_nParagraphs.IsInit())
-			res->Paragraphs = m_nParagraphs.get();
-		if(m_nSlides.IsInit())
-			res->Slides = m_nSlides.get();
-		if(m_nNotes.IsInit())
-			res->Notes = m_nNotes.get();
-		if(m_nHiddenSlides.IsInit())
-			res->HiddenSlides = m_nHiddenSlides.get();
-		if(m_nMMClips.IsInit())
-			res->MMClips = m_nMMClips.get();
-		if(m_bScaleCrop.IsInit())
-			res->ScaleCrop = m_bScaleCrop.get();
-		if(m_sCompany.IsInit())
-			res->Company = m_sCompany.get();
-		if(m_bLinksUpToDate.IsInit())
-			res->LinksUpToDate = m_bLinksUpToDate.get();
-		if(m_bSharedDoc.IsInit())
-			res->SharedDoc = m_bSharedDoc.get();
-		if(m_bHyperlinksChanged.IsInit())
-			res->HyperlinksChanged = m_bHyperlinksChanged.get();
-		if(m_sAppVersion.IsInit())
-			res->AppVersion = m_sAppVersion.get();
-		if(m_nCharacters.IsInit())
-			res->Characters = m_nCharacters.get();
-		if(m_nCharactersWithSpaces.IsInit())
-			res->CharactersWithSpaces = m_nCharactersWithSpaces.get();
-		if(m_nDocSecurity.IsInit())
-			res->DocSecurity = m_nDocSecurity.get();
-		if(m_sHyperlinkBase.IsInit())
-			res->HyperlinkBase = m_sHyperlinkBase.get();
-		if(m_nLines.IsInit())
-			res->Lines = m_nLines.get();
-		if(m_sManager.IsInit())
-			res->Manager = m_sManager.get();
-		if(m_nPages.IsInit())
-			res->Pages = m_nPages.get();
-		return res;
-	}
-	void CApp::FromPptxApp(PPTX::App* pApp)
-	{
-		if(pApp->Template.IsInit())
-			m_sTemplate = pApp->Template.get();
-		if(pApp->TotalTime.IsInit())
-			m_nTotalTime = pApp->TotalTime.get();
-		if(pApp->Words.IsInit())
-			m_nWords = pApp->Words.get();
-		if(pApp->Application.IsInit())
-			m_sApplication = pApp->Application.get();
-		if(pApp->PresentationFormat.IsInit())
-			m_sPresentationForm = pApp->PresentationFormat.get();
-		if(pApp->Paragraphs.IsInit())
-			m_nParagraphs = pApp->Paragraphs.get();
-		if(pApp->Slides.IsInit())
-			m_nSlides = pApp->Slides.get();
-		if(pApp->Notes.IsInit())
-			m_nNotes = pApp->Notes.get();
-		if(pApp->HiddenSlides.IsInit())
-			m_nHiddenSlides = pApp->HiddenSlides.get();
-		if(pApp->MMClips.IsInit())
-			m_nMMClips = pApp->MMClips.get();
-		if(pApp->ScaleCrop.IsInit())
-			m_bScaleCrop = pApp->ScaleCrop.get();
-		if(pApp->Company.IsInit())
-			m_sCompany = pApp->Company.get();
-		if(pApp->LinksUpToDate.IsInit())
-			m_bLinksUpToDate = pApp->LinksUpToDate.get();
-		if(pApp->SharedDoc.IsInit())
-			m_bSharedDoc = pApp->SharedDoc.get();
-		if(pApp->HyperlinksChanged.IsInit())
-			m_bHyperlinksChanged = pApp->HyperlinksChanged.get();
-		if(pApp->AppVersion.IsInit())
-			m_sAppVersion = pApp->AppVersion.get();
-		if(pApp->Characters.IsInit())
-			m_nCharacters = pApp->Characters.get();
-		if(pApp->CharactersWithSpaces.IsInit())
-			m_nCharactersWithSpaces = pApp->CharactersWithSpaces.get();
-		if(pApp->DocSecurity.IsInit())
-			m_nDocSecurity = pApp->DocSecurity.get();
-		if(pApp->HyperlinkBase.IsInit())
-			m_sHyperlinkBase = pApp->HyperlinkBase.get();
-		if(pApp->Lines.IsInit())
-			m_nLines = pApp->Lines.get();
-		if(pApp->Manager.IsInit())
-			m_sManager = pApp->Manager.get();
-		if(pApp->Pages.IsInit())
-			m_nPages = pApp->Pages.get();
 	}
 	void CApp::read(const CPath& oPath)
 	{
@@ -231,176 +131,33 @@ namespace OOX
 
 			if ( oProperties.GetNode( _T("Words"), oItem ) )
 				m_nWords = oItem.GetText();
+			
+			XmlUtils::CXmlNode oHP = oProperties.ReadNode(_T("HeadingPairs"));
+			XmlUtils::CXmlNode oNodeVector1;
+			if (oHP.GetNode(_T("vt:vector"), oNodeVector1))
+			{
+				XmlMacroReadAttributeBase(oNodeVector1, _T("size"), m_Headings);
+				XmlMacroLoadArray(oNodeVector1, _T("vt:variant"), HeadingPairs, PPTX::Logic::HeadingVariant);
+			}
+
+			XmlUtils::CXmlNode oTP = oProperties.ReadNode(_T("TitlesOfParts"));
+			XmlUtils::CXmlNode oNodeVector2;
+			if (oTP.GetNode(_T("vt:vector"), oNodeVector2))
+			{
+				XmlMacroReadAttributeBase(oNodeVector2, _T("size"), m_VectorSize);
+				XmlMacroLoadArray(oNodeVector2, _T("vt:variant"), TitlesOfParts, PPTX::Logic::PartTitle);
+			}
 		}
 	}
 	void CApp::write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
 	{
 		std::wstring sXml;
-		sXml = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><Properties xmlns=\"http://schemas.openxmlformats.org/officeDocument/2006/extended-properties\" xmlns:vt=\"http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes\">");
+		sXml = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
 
-		if ( m_sApplication.IsInit() )
-		{
-			sXml += _T("<Application>");
-			sXml += XmlUtils::EncodeXmlString(m_sApplication.get());
-			if ( m_sAppVersion.IsInit() )
-			{
-				sXml += L"/";
-				sXml += XmlUtils::EncodeXmlString(m_sAppVersion.get());
-			}
-			sXml += _T("</Application>");
-		}
+		NSBinPptxRW::CXmlWriter oWriter;
+		toXmlWriter(&oWriter);
 
-		//if ( m_sAppVersion.IsInit() ) - only for ms editors versions
-		//{
-		//	sXml += _T("<AppVersion>");
-		//	sXml += m_sAppVersion.get(); // error in ms editors - "2.4.510.0"
-		//	sXml += _T("</AppVersion>");
-		//}
-
-		if ( m_nCharacters.IsInit() )
-		{
-			sXml += _T("<Characters>");
-			sXml += std::to_wstring(*m_nCharacters);
-			sXml += _T("</Characters>");
-		}
-
-		if ( m_nCharactersWithSpaces.IsInit() )
-		{
-			sXml += _T("<CharactersWithSpaces>");
-			sXml += std::to_wstring(*m_nCharactersWithSpaces);
-			sXml += _T("</CharactersWithSpaces>");
-		}
-
-		if ( m_sCompany.IsInit() )
-		{
-			sXml += _T("<Company>");
-			sXml += XmlUtils::EncodeXmlString(m_sCompany.get());
-			sXml += _T("</Company>");
-		}
-
-		if ( m_nDocSecurity.IsInit() )
-		{
-			sXml += _T("<DocSecurity>");
-			sXml += std::to_wstring(*m_nDocSecurity);
-			sXml += _T("</DocSecurity>");
-		}
-
-		if ( m_nHiddenSlides.IsInit() )
-		{
-			sXml += _T("<HiddenSlides>");
-			sXml += std::to_wstring(*m_nHiddenSlides);
-			sXml += _T("</HiddenSlides>");
-		}
-
-		if ( m_sHyperlinkBase.IsInit() )
-		{
-			sXml += _T("<HyperlinkBase>");
-			sXml += XmlUtils::EncodeXmlString(m_sHyperlinkBase.get());
-			sXml += _T("</HyperlinkBase>");
-		}
-
-		if ( m_bHyperlinksChanged.IsInit() )
-		{
-			sXml += _T("<HyperlinksChanged>");
-			sXml += *m_bHyperlinksChanged ? L"true" : L"false";
-			sXml += _T("</HyperlinksChanged>");
-		}
-
-		if ( m_nLines.IsInit() )
-		{
-			sXml += _T("<Lines>");
-			sXml += std::to_wstring(*m_nLines);
-			sXml += _T("</Lines>");
-		}
-
-		if ( m_bLinksUpToDate.IsInit() )
-		{
-			sXml += _T("<LinksUpToDate>");
-			sXml += *m_bLinksUpToDate ? L"true" : L"false";;
-			sXml += _T("</LinksUpToDate>");
-		}
-
-		if ( m_sManager.IsInit() )
-		{
-			sXml += _T("<Manager>");
-			sXml += XmlUtils::EncodeXmlString(m_sManager.get());
-			sXml += _T("</Manager>");
-		}
-
-		if ( m_nMMClips.IsInit() )
-		{
-			sXml += _T("<MMClips>");
-			sXml += std::to_wstring(*m_nMMClips);
-			sXml += _T("</MMClips>");
-		}
-
-		if ( m_nNotes.IsInit() )
-		{
-			sXml += _T("<Notes>");
-			sXml += std::to_wstring(*m_nNotes);
-			sXml += _T("</Notes>");
-		}
-
-		if ( m_nPages.IsInit() )
-		{
-			sXml += _T("<Pages>");
-			sXml += std::to_wstring(*m_nPages);
-			sXml += _T("</Pages>");
-		}
-
-		if ( m_nParagraphs.IsInit() )
-		{
-			sXml += _T("<Paragraphs>");
-			sXml += std::to_wstring(*m_nParagraphs);
-			sXml += _T("</Paragraphs>");
-		}
-
-		if ( m_bScaleCrop.IsInit() )
-		{
-			sXml += _T("<ScaleCrop>");
-			sXml += *m_bScaleCrop ? L"true" : L"false";;
-			sXml += _T("</ScaleCrop>");
-		}
-
-		if ( m_bSharedDoc.IsInit() )
-		{
-			sXml += _T("<SharedDoc>");
-			sXml += *m_bSharedDoc ? L"true" : L"false";;
-			sXml += _T("</SharedDoc>");
-		}
-
-		if ( m_nSlides.IsInit() )
-		{
-			SimpleTypes::CDecimalNumber oNum;
-			oNum.SetValue( m_nSlides.get() );
-
-			sXml += _T("<Slides>");
-			sXml += std::to_wstring(*m_nSlides);
-			sXml += _T("</Slides>");
-		}
-
-		if ( m_sTemplate.IsInit() )
-		{
-			sXml += _T("<Template>");
-			sXml += XmlUtils::EncodeXmlString(m_sTemplate.get());
-			sXml += _T("</Template>");
-		}
-
-		if ( m_nTotalTime.IsInit() )
-		{
-			sXml += _T("<TotalTime>");
-			sXml += std::to_wstring(*m_nTotalTime);
-			sXml += _T("</TotalTime>");
-		}
-
-		if ( m_nWords.IsInit() )
-		{
-			sXml += _T("<Words>");
-			sXml += std::to_wstring(*m_nWords);
-			sXml += _T("</Words>");
-		}
-
-		sXml += _T("</Properties>");
+		sXml += oWriter.GetXmlString();
 
 		NSFile::CFileBinary::SaveToFile( oPath.GetPath(), sXml );
 		oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
@@ -440,4 +197,191 @@ namespace OOX
 		m_sApplication = sApplication;
 	}
 
+	void CApp::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+	{
+		pWriter->StartRecord(NSBinPptxRW::NSMainTables::App);
+
+		pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+
+		pWriter->WriteString2(0, m_sTemplate);
+		pWriter->WriteString2(1, m_sApplication);
+		pWriter->WriteString2(2, m_sPresentationForm);
+		pWriter->WriteString2(3, m_sCompany);
+		pWriter->WriteString2(4, m_sAppVersion);
+
+		pWriter->WriteInt2(5, m_nTotalTime);
+		pWriter->WriteInt2(6, m_nWords);
+		pWriter->WriteInt2(7, m_nParagraphs);
+		pWriter->WriteInt2(8, m_nSlides);
+		pWriter->WriteInt2(9, m_nNotes);
+		pWriter->WriteInt2(10, m_nHiddenSlides);
+		pWriter->WriteInt2(11, m_nMMClips);
+
+		pWriter->WriteBool2(12, m_bScaleCrop);
+		pWriter->WriteBool2(13, m_bLinksUpToDate);
+		pWriter->WriteBool2(14, m_bSharedDoc);
+		pWriter->WriteBool2(15, m_bHyperlinksChanged);
+
+		pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+
+		//start new record because new attributes is incompatible with previous versions
+		pWriter->StartRecord(0);
+		pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+
+		pWriter->WriteInt2(16, m_nCharacters);
+		pWriter->WriteInt2(17, m_nCharactersWithSpaces);
+		pWriter->WriteInt2(18, m_nDocSecurity);
+		pWriter->WriteString2(19, m_sHyperlinkBase);
+		pWriter->WriteInt2(20, m_nLines);
+		pWriter->WriteString2(21, m_sManager);
+		pWriter->WriteInt2(22, m_nPages);
+
+		pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+		pWriter->EndRecord();
+
+		pWriter->EndRecord();
+	}
+	void CApp::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+	{
+		pReader->Skip(1); // type
+		LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
+
+		pReader->Skip(1); // start attributes
+
+		while (true)
+		{
+			BYTE _at = pReader->GetUChar_TypeNode();
+			if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+				break;
+
+			switch (_at)
+			{
+			case 0: m_sTemplate = pReader->GetString2(); break;
+			case 1: m_sApplication = pReader->GetString2(); break;
+			case 2: m_sPresentationForm = pReader->GetString2(); break;
+			case 3: m_sCompany = pReader->GetString2(); break;
+			case 4: m_sAppVersion = pReader->GetString2(); break;
+			case 5: m_nTotalTime = pReader->GetULong(); break;
+			case 6: m_nWords = pReader->GetULong(); break;
+			case 7: m_nParagraphs = pReader->GetULong(); break;
+			case 8: m_nSlides = pReader->GetULong(); break;
+			case 9: m_nNotes = pReader->GetULong(); break;
+			case 10: m_nHiddenSlides = pReader->GetULong(); break;
+			case 11: m_nMMClips = pReader->GetULong(); break;
+			case 12: m_bScaleCrop = pReader->GetBool(); break;
+			case 13: m_bLinksUpToDate = pReader->GetBool(); break;
+			case 14: m_bSharedDoc = pReader->GetBool(); break;
+			case 15: m_bHyperlinksChanged = pReader->GetBool(); break;
+			default: break;
+			}
+		}
+		while (pReader->GetPos() < _end_rec)
+		{
+			BYTE _at = pReader->GetUChar();
+			switch (_at)
+			{
+			case 0:
+			{
+				LONG _end_rec2 = pReader->GetPos() + pReader->GetRecordSize() + 4;
+
+				pReader->Skip(1); // start attributes
+
+				while (true)
+				{
+					BYTE _at = pReader->GetUChar_TypeNode();
+					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+						break;
+
+					switch (_at)
+					{
+					case 16: m_nCharacters = pReader->GetULong(); break;
+					case 17: m_nCharactersWithSpaces = pReader->GetULong(); break;
+					case 18: m_nDocSecurity = pReader->GetULong(); break;
+					case 19: m_sHyperlinkBase = pReader->GetString2(); break;
+					case 20: m_nLines = pReader->GetULong(); break;
+					case 21: m_sManager = pReader->GetString2(); break;
+					case 22: m_nPages = pReader->GetULong(); break;
+					default: break;
+					}
+				}
+
+				pReader->Seek(_end_rec2);
+			}
+			break;
+			default:
+			{
+				pReader->SkipRecord();
+				break;
+			}
+			}
+		}
+
+		pReader->Seek(_end_rec);
+	}
+	void CApp::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+	{
+		pWriter->StartNode(_T("Properties"));
+
+		pWriter->StartAttributes();
+
+		pWriter->WriteAttribute(_T("xmlns"), PPTX::g_Namespaces.xmlns.m_strLink);
+		pWriter->WriteAttribute(_T("xmlns:vt"), PPTX::g_Namespaces.vt.m_strLink);
+
+		pWriter->EndAttributes();
+
+		pWriter->WriteNodeValue2(_T("Template"), m_sTemplate);
+		pWriter->WriteNodeValue(_T("TotalTime"), m_nTotalTime);
+		pWriter->WriteNodeValue(_T("Pages"), m_nPages);
+		pWriter->WriteNodeValue(_T("Words"), m_nWords);
+		pWriter->WriteNodeValue(_T("Characters"), m_nCharacters);
+		pWriter->WriteNodeValue(_T("CharactersWithSpaces"), m_nCharactersWithSpaces);
+		pWriter->WriteNodeValue2(_T("Application"), m_sApplication);
+		pWriter->WriteNodeValue(_T("DocSecurity"), m_nDocSecurity);
+		pWriter->WriteNodeValue2(_T("PresentationFormat"), m_sPresentationForm);
+		pWriter->WriteNodeValue(_T("Lines"), m_nLines);
+		pWriter->WriteNodeValue(_T("Paragraphs"), m_nParagraphs);
+		pWriter->WriteNodeValue(_T("Slides"), m_nSlides);
+		pWriter->WriteNodeValue(_T("Notes"), m_nNotes);
+		pWriter->WriteNodeValue(_T("HiddenSlides"), m_nHiddenSlides);
+		pWriter->WriteNodeValue(_T("MMClips"), m_nMMClips);
+		pWriter->WriteNodeValue(_T("ScaleCrop"), m_bScaleCrop);
+
+		pWriter->StartNode(_T("HeadingPairs"));
+		pWriter->EndAttributes();
+
+		pWriter->StartNode(_T("vt:vector"));
+		pWriter->StartAttributes();
+		pWriter->WriteAttribute(_T("size"), (int)HeadingPairs.size());
+		pWriter->WriteAttribute(_T("baseType"), (std::wstring)_T("variant"));
+		pWriter->EndAttributes();
+
+		pWriter->WriteArray2(HeadingPairs);
+
+		pWriter->EndNode(_T("vt:vector"));
+		pWriter->EndNode(_T("HeadingPairs"));
+
+		pWriter->StartNode(_T("TitlesOfParts"));
+		pWriter->EndAttributes();
+
+		pWriter->StartNode(_T("vt:vector"));
+		pWriter->StartAttributes();
+		pWriter->WriteAttribute(_T("size"), (int)TitlesOfParts.size());
+		pWriter->WriteAttribute(_T("baseType"), (std::wstring)_T("lpstr"));
+		pWriter->EndAttributes();
+
+		pWriter->WriteArray2(TitlesOfParts);
+
+		pWriter->EndNode(_T("vt:vector"));
+		pWriter->EndNode(_T("TitlesOfParts"));
+
+		pWriter->WriteNodeValue2(_T("Manager"), m_sManager);
+		pWriter->WriteNodeValue2(_T("Company"), m_sCompany);
+		pWriter->WriteNodeValue(_T("LinksUpToDate"), m_bLinksUpToDate);
+		pWriter->WriteNodeValue(_T("SharedDoc"), m_bSharedDoc);
+		pWriter->WriteNodeValue2(_T("HyperlinkBase"), m_sHyperlinkBase);
+		pWriter->WriteNodeValue(_T("HyperlinksChanged"), m_bHyperlinksChanged);
+		pWriter->WriteNodeValue2(_T("AppVersion"), m_sAppVersion);
+
+		pWriter->EndNode(_T("Properties"));
+	}
 } // namespace OOX

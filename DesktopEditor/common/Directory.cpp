@@ -60,6 +60,10 @@ namespace NSDirectory
 #if !defined(_WIN32) && !defined (_WIN64)
 	static bool is_directory_exist(char* dir)
 	{
+#ifdef __ANDROID__
+		if (0 == strcmp("/storage/emulated", dir))
+			return true;
+#endif
 		struct stat st;
 		bool bRes = (0 == stat(dir, &st)) && S_ISDIR(st.st_mode);
 		return bRes;
@@ -502,7 +506,7 @@ namespace NSDirectory
 		rmdir((char*)pUtf8);
 		delete [] pUtf8;
 
-		if (deleteRoot = false)CreateDirectory(strDirectory);
+		if (deleteRoot == false)CreateDirectory(strDirectory);
 #elif MAC
 		BYTE* pUtf8 = NULL;
 		LONG lLen = 0;
@@ -510,22 +514,31 @@ namespace NSDirectory
 		rmdir((char*)pUtf8);
 		delete [] pUtf8;
 
-		if (deleteRoot = false)CreateDirectory(strDirectory);
+		if (deleteRoot == false)CreateDirectory(strDirectory);
 #endif
 	}
 	std::wstring GetFolderPath(const std::wstring& wsFolderPath)
 	{
-		int n1 = (int)wsFolderPath.rfind('\\');
-		if (n1 < 0)
-		{
-			n1 = (int)wsFolderPath.rfind('/');
-			if (n1 < 0)
-			{
-				return L"";
-			}
-			return wsFolderPath.substr(0, n1);
-		}
-		return wsFolderPath.substr(0, n1);
+#ifdef _WIN32
+        std::wstring::size_type nPos1 = wsFolderPath.rfind('\\');
+#else
+        std::wstring::size_type nPos1 = std::wstring::npos;
+#endif
+        std::wstring::size_type nPos2 = wsFolderPath.rfind('/');
+        std::wstring::size_type nPos = std::wstring::npos;
+
+        if (nPos1 != std::wstring::npos)
+        {
+            nPos = nPos1;
+            if (nPos2 != std::wstring::npos && nPos2 > nPos)
+                nPos = nPos2;
+        }
+        else
+            nPos = nPos2;
+
+        if (nPos == std::wstring::npos)
+            return wsFolderPath;
+        return wsFolderPath.substr(0, nPos);
 	}
 	std::wstring CreateTempFileWithUniqueName (const std::wstring & strFolderPathRoot, std::wstring Prefix)
 	{
@@ -577,11 +590,7 @@ namespace NSDirectory
 	int GetFilesCount(const std::wstring& path, const bool& recursive)
 	{
 		std::vector<std::wstring> arrFiles = NSDirectory::GetFiles(path, recursive);
-#if defined(_WIN32) || defined (_WIN64)
 		return (int)arrFiles.size();
-#endif
-		return (int)arrFiles.size() + 1;
-		// ???
 	}
 	bool PathIsDirectory(const std::wstring& pathName)
 	{

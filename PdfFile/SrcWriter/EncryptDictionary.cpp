@@ -72,6 +72,9 @@ namespace PdfWriter
         SET_BINARY_PARAM("UE", SetUE);
         SET_BINARY_PARAM("Perms", SetPerms);
         SET_BINARY_PARAM("ID", SetID);
+        pObj = Get("ID");
+        if (pObj && pObj->GetType() == object_type_BINARY)
+            m_pEncrypt->m_unIDLength = ((CBinaryObject*)pObj)->GetLength();
         Remove("ID");
 
         SET_NUMBER_PARAM("P", SetPermission);
@@ -205,9 +208,9 @@ namespace PdfWriter
         CBinaryObject* pEncryptPerm = new CBinaryObject(m_pEncrypt->m_anPermEncrypt, 16);
         Add("Perms", pEncryptPerm);
     }
-    void CEncryptDict::UpdateKey(int nCryptAlgorithm)
+    bool CEncryptDict::UpdateKey(int nCryptAlgorithm)
     {
-        m_pEncrypt->MakeFileKey(nCryptAlgorithm);
+        return m_pEncrypt->MakeFileKey(nCryptAlgorithm);
     }
     //----------------------------------------------------------------------------------------
     // CSignatureDict
@@ -254,17 +257,42 @@ namespace PdfWriter
     CSignatureDict::~CSignatureDict()
     {
     }
-    void CSignatureDict::SetByteRange(int nLen1, int nOffset2)
-    {
-        m_nLen1 = nLen1;
-        m_nOffset2 = nOffset2;
-    }
-    void CSignatureDict::ByteRangeOffset(int nBegin, int nEnd)
-    {
-        m_nByteRangeBegin = nBegin;
-        m_nByteRangeEnd   = nEnd;
-    }
-    void CSignatureDict::WriteToStream(CStream* pStream, int nFileEnd)
+	void CSignatureDict::WriteToStream(CStream* pStream, CEncrypt* pEncrypt)
+	{
+		for (auto const &oIter : m_mList)
+		{
+			CObjectBase* pObject = oIter.second;
+			if (!pObject)
+				continue;
+
+			if (pObject->IsHidden())
+			{
+				// ничего не делаем
+			}
+			else
+			{
+				int nBegin, nEnd;
+				pStream->WriteEscapeName(oIter.first.c_str());
+				pStream->WriteChar(' ');
+				nBegin = pStream->Tell();
+				// Цифровая подпись не шифруется
+				pStream->Write(pObject, oIter.first == "Contents" ? NULL : pEncrypt);
+				nEnd = pStream->Tell();
+				pStream->WriteStr("\012");
+				if (oIter.first == "Contents")
+				{
+					m_nLen1  = nBegin;
+					m_nOffset2 = nEnd;
+				}
+				if (oIter.first == "ByteRange")
+				{
+					m_nByteRangeBegin = nBegin;
+					m_nByteRangeEnd   = nEnd;
+				}
+			}
+		}
+	}
+	void CSignatureDict::WriteToStream(CStream* pStream, int nFileEnd)
     {
         // Запись ByteRange
         if (m_nByteRangeBegin > 0 && m_nByteRangeEnd > 0 && m_nByteRangeBegin < m_nByteRangeEnd && m_nByteRangeEnd < nFileEnd)
@@ -322,7 +350,7 @@ namespace PdfWriter
                 return;
             }
 
-            BYTE* pDatatoWrite;
+            BYTE* pDatatoWrite = NULL;
             unsigned int dwLenDatatoWrite;
             m_pCertificate->SignPKCS7(pDataForSignature, dwLenDataForSignature, pDatatoWrite, dwLenDatatoWrite);
             RELEASEARRAYOBJECTS(pDataForSignature);
@@ -369,29 +397,7 @@ namespace PdfWriter
     {
         // M - Дата, Время подписания
         // Значение следует использовать когда время подписания недоступно в подписи
-        char sTemp[DATE_TIME_STR_LEN + 1];
-        char* pTemp = NULL;
 
-        MemSet(sTemp, 0, DATE_TIME_STR_LEN + 1);
-        time_t oTime = time(0);
-        struct tm* oNow = gmtime(&oTime);
-
-        pTemp = (char*)MemCpy((BYTE*)sTemp, (BYTE*)"D:", 2);
-        *pTemp++;
-        *pTemp++;
-        pTemp = ItoA2(pTemp, oNow->tm_year + 1900, 5);
-        pTemp = ItoA2(pTemp, oNow->tm_mon + 1, 3);
-        pTemp = ItoA2(pTemp, oNow->tm_mday, 3);
-        pTemp = ItoA2(pTemp, oNow->tm_hour, 3);
-        pTemp = ItoA2(pTemp, oNow->tm_min, 3);
-        pTemp = ItoA2(pTemp, oNow->tm_sec, 3);
-        *pTemp++ = '+';
-        pTemp = ItoA2(pTemp, 0, 3);
-        *pTemp++ = '\'';
-        pTemp = ItoA2(pTemp, 0, 3);
-        *pTemp++ = '\'';
-        *pTemp = 0;
-
-        Add("M", new CStringObject(sTemp));
+        Add("M", new CStringObject(DateNow().c_str()));
     }
 }

@@ -48,7 +48,7 @@ namespace PdfWriter
 		pOpenFlag->SetHidden();
 
 		Add("_OPENED", pOpenFlag);
-		Add("Type", "Outline");
+		Add("Type", "Outlines");
 	}
 	COutline::COutline(COutline* pParent, const char* sTitle, CXref* pXref)
 	{
@@ -57,7 +57,7 @@ namespace PdfWriter
 
 		pXref->Add(this);
 
-		CStringObject* pString = new CStringObject(sTitle);
+		CStringObject* pString = new CStringObject(sTitle, true);
 		if (!pString)
 			return;
 

@@ -1,0 +1,130 @@
+<<<<<<<
+static hb_bool_t
+hb_ft_get_nominal_glyph (hb_font_t *font,
+			 void *font_data,
+			 hb_codepoint_t unicode,
+			 hb_codepoint_t *glyph,
+			 void *user_data HB_UNUSED)
+{
+  const hb_ft_font_t *ft_font = (const hb_ft_font_t *) font_data;
+  hb_lock_t lock (ft_font->lock);
+  unsigned int g = FT_Get_Char_Index (ft_font->ft_face, unicode);
+
+  if (unlikely (!g))
+  {
+    if (unlikely (ft_font->symbol))
+    {
+      switch ((unsigned) font->face->table.OS2->get_font_page ()) {
+      case OT::OS2::font_page_t::FONT_PAGE_NONE:
+	if (unicode <= 0x00FFu)
+	  /* For symbol-encoded OpenType fonts, we duplicate the
+	   * U+F000..F0FF range at U+0000..U+00FF.  That's what
+	   * Windows seems to do, and that's hinted about at:
+	   * https://docs.microsoft.com/en-us/typography/opentype/spec/recom
+	   * under "Non-Standard (Symbol) Fonts". */
+	  g = FT_Get_Char_Index (ft_font->ft_face, 0xF000u + unicode);
+	break;
+#ifndef HB_NO_OT_SHAPER_ARABIC_FALLBACK
+      case OT::OS2::font_page_t::FONT_PAGE_SIMP_ARABIC:
+	g = FT_Get_Char_Index (ft_font->ft_face, _hb_arabic_pua_simp_map (unicode));
+	break;
+      case OT::OS2::font_page_t::FONT_PAGE_TRAD_ARABIC:
+	g = FT_Get_Char_Index (ft_font->ft_face, _hb_arabic_pua_trad_map (unicode));
+	break;
+#endif
+      default:
+	break;
+      }
+      if (!g)
+	return false;
+    }
+    else
+      return false;
+  }
+
+  *glyph = g;
+  return true;
+}
+=======
+static FT_UInt
+hb_ft_get_index_by_unicode(FT_Face face, FT_ULong charcode)
+{
+  FT_CharMap charmap;
+  FT_UInt gindex = 0;
+  FT_Int charmap_index = 0;
+  FT_Encoding cur_encoding = FT_ENCODING_NONE;
+  bool is_symbol = false;
+  if (face && face->charmap)
+    cur_encoding = face->charmap->encoding;
+
+  while (charmap_index < face->num_charmaps)
+  {
+    charmap = face->charmaps[charmap_index];
+    is_symbol = (0 == charmap->encoding_id && 3 == charmap->platform_id) ? true : false;
+
+    if (0 == FT_Set_Charmap(face, charmap))
+    {
+      gindex = FT_Get_Char_Index(face, charcode);
+
+      if (!gindex && is_symbol)
+        gindex = FT_Get_Char_Index(face, 0xF000);
+
+      if (gindex)
+        return gindex;
+    }
+
+    charmap_index++;
+  }
+
+  FT_Select_Charmap(face, cur_encoding);
+  return gindex;
+}
+
+static hb_bool_t
+hb_ft_get_nominal_glyph (hb_font_t *font,
+			 void *font_data,
+			 hb_codepoint_t unicode,
+			 hb_codepoint_t *glyph,
+			 void *user_data HB_UNUSED)
+{
+  const hb_ft_font_t *ft_font = (const hb_ft_font_t *) font_data;
+  hb_lock_t lock (ft_font->lock);
+  unsigned int g = FT_Get_Char_Index (ft_font->ft_face, unicode);
+
+  if (unlikely (!g))
+  {
+    if (unlikely (ft_font->symbol))
+    {
+      switch ((unsigned) font->face->table.OS2->get_font_page ()) {
+      case OT::OS2::font_page_t::FONT_PAGE_NONE:
+	if (unicode <= 0x00FFu)
+	  /* For symbol-encoded OpenType fonts, we duplicate the
+	   * U+F000..F0FF range at U+0000..U+00FF.  That's what
+	   * Windows seems to do, and that's hinted about at:
+	   * https://docs.microsoft.com/en-us/typography/opentype/spec/recom
+	   * under "Non-Standard (Symbol) Fonts". */
+	  g = FT_Get_Char_Index (ft_font->ft_face, 0xF000u + unicode);
+	break;
+#ifndef HB_NO_OT_SHAPER_ARABIC_FALLBACK
+      case OT::OS2::font_page_t::FONT_PAGE_SIMP_ARABIC:
+	g = FT_Get_Char_Index (ft_font->ft_face, _hb_arabic_pua_simp_map (unicode));
+	break;
+      case OT::OS2::font_page_t::FONT_PAGE_TRAD_ARABIC:
+	g = FT_Get_Char_Index (ft_font->ft_face, _hb_arabic_pua_trad_map (unicode));
+	break;
+#endif
+      default:
+	break;
+      }
+    }
+  }
+
+  if (!g)
+    g = hb_ft_get_index_by_unicode(ft_font->ft_face, unicode);
+  if (!g)
+    return false;
+
+  *glyph = g;
+  return true;
+}
+>>>>>>>

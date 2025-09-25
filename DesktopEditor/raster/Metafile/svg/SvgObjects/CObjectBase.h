@@ -5,6 +5,7 @@
 #include "../../../../../Common/3dParty/html/css/src/StaticFunctions.h"
 #include "../../../../xml/include/xmlutils.h"
 #include "../../../../graphics/IRenderer.h"
+#include "../../../../common/IGrObject.h"
 #include "../SvgTypes.h"
 
 class CSvgFile;
@@ -15,12 +16,18 @@ namespace SVG
 	{
 		SvgColor     m_oFill;
 		TStroke      m_oStroke;
+		SvgDigit     m_oOpacity;
+
+		TSvgStyles& operator+=(const TSvgStyles& oSvgStyles);
+	};
+	
+	struct TSvgTransformation
+	{
 		SvgTransform m_oTransform;
 		TClip        m_oClip;
 		SvgColor     m_oMask;
+		SvgDigit     m_oOpacity;
 		bool         m_bDraw;
-
-		TSvgStyles& operator+=(const TSvgStyles& oSvgStyles);
 	};
 
 	enum ObjectType
@@ -29,7 +36,7 @@ namespace SVG
 		AppliedObject
 	};
 
-	class CObject
+	class CObject : public IGrObject
 	{
 	public:
 		CObject(const NSCSS::CNode& oData);
@@ -42,11 +49,25 @@ namespace SVG
 
 		virtual void SetData(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false) = 0;
 
+		void SetTransform(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false);
+		void SetClip(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false);
+		void SetMask(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false);
+		void SetDisplay(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false);
+		void SetOpacity(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false);
+
 		std::wstring GetId() const;
 		virtual std::vector<NSCSS::CNode> GetFullPath() const;
-
 	private:
+		bool ApplyTransform(IRenderer* pRenderer, const SvgTransform* pTransform, Aggplus::CMatrix& oOldMatrix) const;
+		bool ApplyClip(IRenderer* pRenderer, const TClip* pClip, const CSvgFile *pFile, const TBounds& oBounds) const;
+		bool ApplyMask(IRenderer* pRenderer, const SvgColor* pMask, const CSvgFile *pFile, const TBounds& oBounds) const;
+
+		bool ApplyDef(IRenderer* pRenderer, const CSvgFile *pFile, const std::wstring& wsUrl, const TBounds& oBounds) const;
+
+		void SetNodeData(XmlUtils::CXmlNode& oNode);
+
 		friend class CRenderedObject;
+		friend class CAppliedObject;
 
 		friend class CUse;
 		friend class CLine;
@@ -59,8 +80,12 @@ namespace SVG
 		friend class CPolygon;
 		friend class CEllipse;
 		friend class CPolyline;
+		friend class CGraphicsContainer;
 
-		NSCSS::CNode  m_oXmlNode;
+		friend class CClipPath;
+
+		NSCSS::CNode       m_oXmlNode;
+		TSvgTransformation m_oTransformation;
 	};
 
 	enum CommandeMode
@@ -81,7 +106,7 @@ namespace SVG
 
 		virtual void SetData(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false) override;
 
-		virtual bool Draw(IRenderer* pRenderer, const CSvgFile *pFile, CommandeMode oMode = CommandeModeDraw, const TSvgStyles* pStyles = NULL) const = 0;
+		virtual bool Draw(IRenderer* pRenderer, const CSvgFile *pFile, CommandeMode oMode = CommandeModeDraw, const TSvgStyles* pStyles = NULL, const CRenderedObject* pContextObject = NULL) const = 0;
 
 		virtual TBounds GetBounds() const = 0;
 
@@ -91,23 +116,15 @@ namespace SVG
 
 		void SetStroke(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false);
 		void SetFill(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false);
-		void SetTransform(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false);
-		void SetClip(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false);
-		void SetMask(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false);
-		void SetDisplay(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false);
 
 		bool StartPath(IRenderer* pRenderer, const CSvgFile *pFile, Aggplus::CMatrix& oOldTransform, CommandeMode oMode = CommandeModeDraw) const;
-		void EndPath(IRenderer* pRenderer, const CSvgFile *pFile, const Aggplus::CMatrix& oOldTransform, CommandeMode oMode = CommandeModeDraw, const TSvgStyles* pOtherStyles = NULL) const;
+		void EndPath(IRenderer* pRenderer, const CSvgFile *pFile, const Aggplus::CMatrix& oOldTransform, CommandeMode oMode = CommandeModeDraw, const TSvgStyles* pOtherStyles = NULL, const CRenderedObject* pContextObject = NULL) const;
 
-		virtual void ApplyStyle(IRenderer* pRenderer, const TSvgStyles* pStyles, const CSvgFile *pFile, int& nTypePath) const;
+		virtual void ApplyStyle(IRenderer* pRenderer, const TSvgStyles* pStyles, const CSvgFile *pFile, int& nTypePath, const CRenderedObject* pContextObject = NULL) const;
 
-		bool Apply(IRenderer* pRenderer, const TStroke* pStroke, bool bUseDefault = false) const;
-		bool Apply(IRenderer* pRenderer, const SvgColor* pFill, const CSvgFile *pFile, bool bUseDefault = false) const;
-		bool Apply(IRenderer* pRenderer, const SvgTransform* pTransform, Aggplus::CMatrix& oOldMatrix) const;
-		bool Apply(IRenderer* pRenderer, const TClip* pClip, const CSvgFile *pFile) const;
-
-		bool ApplyMask(IRenderer* pRenderer, const SvgColor* pMask, const CSvgFile *pFile) const;
-		bool ApplyDef(IRenderer* pRenderer, const CSvgFile *pFile, const std::wstring& wsUrl) const;
+		bool ApplyStroke(IRenderer* pRenderer, const TStroke* pStroke, bool bUseDefault = false, const CRenderedObject* pContextObject = NULL) const;
+		bool ApplyFill(IRenderer* pRenderer, const SvgColor* pFill, const CSvgFile *pFile, bool bUseDefault = false, const CRenderedObject* pContextObject = NULL) const;
+		bool ApplyOpacity(IRenderer* pRenderer, const SvgDigit* pOpacity) const;
 
 		friend class CUse;
 		friend class CLine;
@@ -117,6 +134,7 @@ namespace SVG
 		friend class CTSpan;
 		friend class CImage;
 		friend class CCircle;
+		friend class CSwitch;
 		friend class CPolygon;
 		friend class CEllipse;
 		friend class CPolyline;

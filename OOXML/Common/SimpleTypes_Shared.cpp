@@ -722,7 +722,7 @@ namespace SimpleTypes
 	{
 		try
 		{
-			this->m_eValue = XmlUtils::GetInteger(sValue);
+            this->m_eValue = XmlUtils::GetUInteger(sValue);
 			return this->m_eValue;
 		}
 		catch(...)

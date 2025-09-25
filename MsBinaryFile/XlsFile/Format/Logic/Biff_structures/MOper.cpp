@@ -45,16 +45,31 @@ void MOper::load(CFRecord& record)
 {
 	record >> colLast >> rowLast;
 	
-	for(int i = 0; i < (colLast + 1) * (rowLast + 1); ++i)
+	for (int i = 0; i < (colLast + 1) * (rowLast + 1); ++i)
 	{
 		unsigned char rec_type;
 		record >> rec_type;
 		
 		SerArPtr ser(SerAr::createSerAr(rec_type));
-		record >> *ser;
-		
-		extOper.push_back(ser);
+		if (ser)
+		{
+			record >> *ser;
+			extOper.push_back(ser);
+		}
+		else
+		{
+			break;
+		}
 	}
+}
+
+void MOper::save(CFRecord& record)
+{
+    record << colLast << rowLast;
+    for (auto i : extOper)
+    {
+        record << i;
+    }
 }
 
 int MOper::serialize(std::wostream & strm)

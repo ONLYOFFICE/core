@@ -36,6 +36,8 @@
 #include "../../XlsbFormat/Biff12_unions/ACFMT.h"
 
 #include "../../Common/SimpleTypes_Shared.h"
+#include "../../XlsbFormat/Biff12_unions/FMTS.h"
+#include "../../XlsbFormat/Biff12_records/BeginFmts.h"
 
 namespace OOX
 {
@@ -82,6 +84,21 @@ namespace OOX
 		void CNumFmt::fromBin(XLS::BaseObjectPtr& obj)
 		{
 			ReadAttributes(obj);
+		}
+		XLS::BaseObjectPtr CNumFmt::toBin()
+		{
+			auto ptr(new XLSB::Fmt);
+			XLS::BaseObjectPtr objectPtr(ptr);
+			if(m_oFormatCode.IsInit())
+				ptr->stFmtCode = m_oFormatCode.get();
+			else
+				ptr->stFmtCode = L"";
+			if(m_oNumFmtId.IsInit())
+				ptr->ifmt = m_oNumFmtId->GetValue();
+			else
+				ptr->ifmt = 5;
+
+			return objectPtr;
 		}
 		EElementType CNumFmt::getType () const
 		{
@@ -186,6 +203,20 @@ namespace OOX
 				}
 			}
 
+		}
+		XLS::BaseObjectPtr CNumFmts::toBin()
+		{
+			auto fmts(new XLSB::FMTS);
+            auto beginfmt(new XLSB::BeginFmts);
+            fmts->m_BrtBeginFmts = XLS::BaseObjectPtr{beginfmt};
+			XLS::BaseObjectPtr objectPtr(fmts);
+			std::vector<XLS::BaseObjectPtr> objectVector;
+			for(auto i:m_arrItems)
+			{
+                fmts->m_arBrtFmt.push_back(i->toBin());
+			}
+            beginfmt->cfmts = fmts->m_arBrtFmt.size();
+			return objectPtr;
 		}
 		EElementType CNumFmts::getType () const
 		{

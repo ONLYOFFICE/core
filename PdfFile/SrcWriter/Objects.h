@@ -80,7 +80,8 @@ namespace PdfWriter
 		dict_type_EXT_GSTATE   = 0x0A,
 		dict_type_EXT_GSTATE_R = 0x0B,  /* read only object */
 		dict_type_METADATA     = 0x0C,
-		dict_type_SIGNATURE    = 0x0D
+		dict_type_SIGNATURE    = 0x0D,
+		dict_type_STREAM       = 0x0E
 	} EDictType;
 
 	class CObjectBase
@@ -296,8 +297,9 @@ namespace PdfWriter
 	{
 	public:
 		CStringObject(const char* sValue, bool isUTF16 = false, bool isDictValue = false);
+		CStringObject();
 		virtual ~CStringObject();
-		void Set(const char* sValue, bool isUTF16, bool isDictValue);
+		void Set(const char* sValue, bool isUTF16, bool isDictValue, int nMax = LIMIT_MAX_STRING_LEN);
 		const BYTE*  GetString() const
 		{
 			return (const BYTE*)m_pValue;
@@ -337,9 +339,9 @@ namespace PdfWriter
 	class CBinaryObject : public CObjectBase
 	{
 	public:
-		CBinaryObject(const BYTE* pValue, unsigned int unLen);
+		CBinaryObject(BYTE* pValue, unsigned int unLen, bool bCopy = true);
 		~CBinaryObject();
-		void         Set(const BYTE* pValue, unsigned int unLen);
+		void Set(BYTE* pValue, unsigned int unLen, bool bCopy = true);
 		BYTE*        GetValue() const
 		{
 			return m_pValue;
@@ -451,10 +453,11 @@ namespace PdfWriter
 		void         Add(const std::string& sKey, double dReal);
 		void         Add(const std::string& sKey, bool bBool);
 		const char*  GetKey(const CObjectBase* pObject);
-		CStream*     GetStream() const
+		virtual CStream*     GetStream() const
 		{
 			return m_pStream;
 		}
+		virtual void SetStream(CStream* pStream);
 		unsigned int GetFilter() const
 		{
 			return m_unFilter;
@@ -465,27 +468,28 @@ namespace PdfWriter
 		}
 		void         SetFilter(unsigned int unFiler)
 		{
-			m_unFilter = unFiler;
+			m_unFilter |= unFiler;
 		}
-		void         SetStream(CXref* pXref, CStream* pStream);
+		void         SetStream(CXref* pXref, CStream* pStream, bool bThis = true);
 
 		virtual void      BeforeWrite(){}
 		virtual void      Write(CStream* pStream){}
-		virtual void      AfterWrite(){}
+		virtual void      AfterWrite(CStream* pStream){}
 		virtual CObjectBase* Copy(CObjectBase* pOut = NULL) const;
 		virtual EDictType GetDictType() const
 		{
 			return dict_type_UNKNOWN;
 		}
 
-		void WriteToStream(CStream* pStream, CEncrypt* pEncrypt);
-		void WriteSignatureToStream(CStream* pStream, CEncrypt* pEncrypt);
+		virtual void WriteToStream(CStream* pStream, CEncrypt* pEncrypt);
 		unsigned int GetSize() { return m_mList.size(); }
+		std::map<std::string, CObjectBase*> GetDict() { return m_mList; }
 		void FromXml(const std::wstring& sXml);
 
-	private:
-
+	protected:
 		std::map<std::string, CObjectBase*> m_mList;
+
+	private:
 		unsigned int                        m_unFilter;
 		unsigned int                        m_unPredictor;
 		CStream*                            m_pStream;
@@ -505,16 +509,16 @@ namespace PdfWriter
 		CXref(CDocument* pDocument, unsigned int unRemoveId, unsigned int unRemoveGen);
 		~CXref();
 
-		TXrefEntry* GetEntry(unsigned int unIndex) const;
-		TXrefEntry* GetEntryByObjectId(unsigned int unObjectId) const;
-		CXref*      GetXrefByObjectId(unsigned int unObjectId);
-		void        Add(CObjectBase* pObject);		
-		void        WriteToStream(CStream* pStream, CEncrypt* pEncrypt, bool bStream = false);
-		void        SetPrev(CXref* pPrev)
+		TXrefEntry*  GetEntry(unsigned int unIndex) const;
+		TXrefEntry*  GetEntryByObjectId(unsigned int unObjectId) const;
+		CXref*       GetXrefByObjectId(unsigned int unObjectId);
+		void         Add(CObjectBase* pObject, unsigned int unObjectGen = 0);
+		void         WriteToStream(CStream* pStream, CEncrypt* pEncrypt, bool bStream = false);
+		void         SetPrev(CXref* pPrev)
 		{
-			m_pPrev = pPrev;
+			m_pPrev  = pPrev;
 		}
-		void        SetPrevAddr(unsigned int unAddr)
+		void         SetPrevAddr(unsigned int unAddr)
 		{
 			m_unAddr = unAddr;
 		}
@@ -526,15 +530,15 @@ namespace PdfWriter
 		{
 			return m_unStartOffset + m_arrEntries.size();
 		}
-		int         GetCount() const
+		int          GetCount() const
 		{
 			return m_arrEntries.size();
 		}
-		CDictObject*GetTrailer() const
+		CDictObject* GetTrailer() const
 		{
 			return m_pTrailer;
 		}
-		bool        IsPDFA() const;
+		bool         IsPDFA() const;
 
 	private:
 

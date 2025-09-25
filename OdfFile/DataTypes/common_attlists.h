@@ -52,15 +52,19 @@
 #include "anchortype.h"
 #include "linewidth.h"
 #include "presentationclass.h"
+#include "presentationnodetype.h"
 #include "xlink.h"
 #include "drawfill.h"
 #include "clockvalue.h"
+#include "smil_attributename.h"
+#include "smil_fill.h"
 #include "stylerepeat.h"
 #include "officevaluetype.h"
 #include "fillimagerefpoint.h"
 #include "borderstyle.h"
 #include "mathvariant.h"
 #include "textdisplay.h"
+#include "color_mode.h"
 
 #define _CP_APPLY_PROP(A, B) \
     if (B) \
@@ -110,7 +114,7 @@ public:
 	_CP_OPT(length_or_percent)	draw_fill_image_width_;
 	_CP_OPT(length_or_percent)	draw_fill_image_height_;
 
-    _CP_OPT(std::wstring)		draw_color_mode_;
+    _CP_OPT(color_mode) draw_color_mode_;
     _CP_OPT(odf_types::percent)	draw_contrast_;
     _CP_OPT(odf_types::percent)	draw_luminance_;
     _CP_OPT(odf_types::percent)	draw_gamma_;
@@ -578,6 +582,7 @@ public:
 
 struct union_common_draw_attlists
 {
+    //_CP_OPT(std::wstring)                           xml_id_;
     common_draw_shape_with_text_and_styles_attlist	shape_with_text_and_styles_;
     common_draw_position_attlist					position_;
     common_draw_rel_size_attlist					rel_size_;
@@ -592,14 +597,21 @@ public:
     void apply_from		(const common_anim_smil_attlist & Other);
 	void serialize		(CP_ATTR_NODE);
 
-	_CP_OPT(std::wstring)			presentation_node_type_;
+	_CP_OPT(odf_types::presentation_node_type)		presentation_node_type_;
 
-	_CP_OPT(std::wstring)			smil_direction_;
-	_CP_OPT(std::wstring)			smil_restart_;
-	_CP_OPT(odf_types::clockvalue)	smil_dur_;
+	_CP_OPT(std::wstring)			                smil_direction_;
+	_CP_OPT(std::wstring)			                smil_restart_;
+	_CP_OPT(odf_types::clockvalue)	                smil_dur_;
+    _CP_OPT(std::wstring)	                        smil_target_element_;
+    _CP_OPT(odf_types::smil_attribute_name)	        smil_attribute_name_;
+    _CP_OPT(odf_types::smil_fill)	                smil_fill_;
+    _CP_OPT(odf_types::Bool)                        smil_auto_reverse_;
 
-	_CP_OPT(std::wstring)			smil_begin_;
-	_CP_OPT(std::wstring)			smil_end_;
+	_CP_OPT(std::wstring)			                smil_begin_;
+	_CP_OPT(std::wstring)			                smil_end_;
+
+    _CP_OPT(double)			                        smil_accelerate_;
+    _CP_OPT(double)			                        smil_decelerate_;
 };
 
 class section_attlists

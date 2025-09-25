@@ -37,8 +37,8 @@
 
 #include "../../../XlsxFormat/Chart/Chart.h"
 
-#include "../../Sheets/Reader/BinaryWriter.h"
-#include "../../Sheets/Writer/BinaryReader.h"
+#include "../../Sheets/Reader/BinaryWriterS.h"
+#include "../../Sheets/Writer/BinaryReaderS.h"
 #include "../../Presentation/FontPicker.h"
 
 #include "../../../../OfficeUtils/src/OfficeUtils.h"
@@ -93,7 +93,7 @@ namespace BinXlsxRW{
 		NSBinPptxRW::CDrawingConverter oDrawingConverter;
 		
         oDrawingConverter.SetDstPath(sDstPath + FILE_SEPARATOR_STR + L"xl");
-        oDrawingConverter.SetSrcPath(strFileInDir, 2);
+        oDrawingConverter.SetSrcPath(strFileInDir, XMLWRITER_DOC_TYPE_XLSX);
 
 		oDrawingConverter.SetMediaDstPath(sMediaDir);
 		oDrawingConverter.SetEmbedDstPath(sEmbedDir);
@@ -150,7 +150,7 @@ namespace BinXlsxRW{
 		NSBinPptxRW::CDrawingConverter oDrawingConverter;
 
 		oDrawingConverter.SetDstPath(sDstPath + FILE_SEPARATOR_STR + L"xl");
-		oDrawingConverter.SetSrcPath(strFileInDir, 2);
+		oDrawingConverter.SetSrcPath(strFileInDir, XMLWRITER_DOC_TYPE_XLSX);
 		oDrawingConverter.SetFontDir(m_sFontDir);
 		
 		BinXlsxRW::BinaryFileReader oBinaryFileReader;
@@ -286,6 +286,10 @@ namespace BinXlsxRW{
 	{
 		m_bIsMacro = val;
 	}
+	bool CXlsxSerializer::getMacroEnabled()
+	{
+		return m_bIsMacro;
+	}
 
 	bool CXlsxSerializer::writeChartXlsx(const std::wstring& sDstFile, NSCommon::smart_ptr<OOX::File> &file)
 	{
@@ -319,12 +323,5 @@ namespace BinXlsxRW{
 	//clean
 		NSDirectory::DeleteDirectory(sTempDir);
 		return res;
-	}
-	bool CXlsxSerializer::hasPivot(const std::wstring& sSrcPath)
-	{
-		//todo CXlsx
-		std::wstring sData;
-		NSFile::CFileBinary::ReadAllTextUtf8(sSrcPath + FILE_SEPARATOR_STR + L"[Content_Types].xml", sData);
-		return std::wstring::npos != sData.find(OOX::Spreadsheet::FileTypes::PivotTable.OverrideType());
 	}
 };

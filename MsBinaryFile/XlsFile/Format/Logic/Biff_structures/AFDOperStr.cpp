@@ -70,6 +70,17 @@ void AFDOperStr::load(CFRecord& record)
 		record.skipNunBytes(4);
 }
 
+void AFDOperStr::save(CFRecord& record)
+{
+    if (m_bAutoFilter)		// AutoFilter
+        record.reserveNunBytes(4);
+    record << cch << fCompare;
+    record.reserveNunBytes(2);
+
+    if (!m_bAutoFilter)		// AutoFilter12
+        record.reserveNunBytes(4);
+}
+
 
 } // namespace XLS
 

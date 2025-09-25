@@ -64,7 +64,8 @@ namespace odf_writer {
 		bool		 italic = false;
 		bool		 bold = false;
 
-		double		 approx_symbol_size = 0;//in pt
+		double		 approx_symbol_width = 0;//in pt
+		double		 approx_symbol_height = 0;//in pt
 	};
 //----------------------------------------------------------------------
 	class office_element;
@@ -120,12 +121,16 @@ public:
 	virtual odf_text_context		* text_context()		= 0;
 	virtual odf_controls_context	* controls_context()	= 0;
 
+	virtual bool is_child_text_context() = 0;
+
     std::wstring add_image		(const std::wstring & image_file_name, bool bExternal = false);
     std::wstring add_media		(const std::wstring & file_name, bool bExternal = false);
-    std::wstring add_oleobject	(const std::wstring & ole_file_name);
-    std::wstring add_imageobject(const std::wstring & ole_file_name);
+    std::wstring add_oleobject	(const std::wstring & ole_file_name, bool bExternal = false);
+    std::wstring add_imageobject(const std::wstring & ole_file_name, bool bExternal = false);
 	
 	void add_meta(const std::wstring & ns, const std::wstring & name, const std::wstring & content);
+	void add_meta(const office_element_ptr &elm);
+	void add_meta_user_define(const std::wstring& name, const std::wstring& content);
 	
 	virtual odf_style_context_ptr	styles_context();
 	virtual void					set_styles_context(odf_style_context_ptr styles_context);
@@ -141,7 +146,7 @@ public:
 	void start_chart();
 	void end_chart();
 
-	virtual bool start_math();
+	virtual bool start_math(int base_font_size, const std::wstring & base_font_color);
 	virtual void end_math();
 
 	void start_spreadsheet();
@@ -169,9 +174,13 @@ public:
 		void add_tab(_CP_OPT(int) type, _CP_OPT(odf_types::length) length, _CP_OPT(int) leader);
 	void end_tabs();
 
-	void calculate_font_metrix(std::wstring name, double size, bool italic, bool bold);
-	double convert_symbol_width(double val);
+	void calculate_font_metrix(std::wstring name, double size, bool italic, bool bold, bool recalc = false);
+	double convert_symbol_width(double va, bool add_padding = false);
 
+	void add_hyperlink(office_element_ptr& elem, const std::wstring& ref);
+	std::vector<std::pair<office_element_ptr, std::wstring>> get_deferred_hyperlinks();
+
+	std::pair<double, double> font_metrix() { return std::make_pair(font_metrix_.approx_symbol_width, font_metrix_.approx_symbol_height); }
 protected:
 	std::vector<odf_text_context_ptr> text_context_;
 	std::vector<odf_drawing_context_ptr> drawing_context_;
@@ -191,6 +200,8 @@ private:
 	void process_settings	(_object & object, bool isRoot);
 	
 	int	 current_object_;
+
+	std::vector<std::pair<office_element_ptr, std::wstring>> hyperlinks_;
 };
 
 }

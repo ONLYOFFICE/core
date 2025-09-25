@@ -48,11 +48,10 @@ namespace PPTX
 		}
 		void LineEnd::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
-			// Читаем атрибуты
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w"), w )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("type"), type )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("len"), len )
+				WritingElement_ReadAttributes_Read_if     ( oReader, L"w", w )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"type", type )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"len", len )
 			WritingElement_ReadAttributes_End_No_NS( oReader )
 		}
 		void LineEnd::fromXML(XmlUtils::CXmlNode& node)
@@ -66,20 +65,26 @@ namespace PPTX
 		std::wstring LineEnd::toXML() const
 		{
 			XmlUtils::CAttribute oAttr;
-			oAttr.WriteLimitNullable(_T("type"), type);
-			oAttr.WriteLimitNullable(_T("w"), w);
-			oAttr.WriteLimitNullable(_T("len"), len);
+			oAttr.WriteLimitNullable(L"type", type);
+			oAttr.WriteLimitNullable(L"w", w);
+			oAttr.WriteLimitNullable(L"len", len);
 
 			return XmlUtils::CreateNode(m_name, oAttr);
 		}
 		void LineEnd::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 		{
+			if (m_name.empty()) return;
+
+			if (XMLWRITER_DOC_TYPE_WORDART == pWriter->m_lDocType)
+			{				
+				m_name = L"w14" + m_name.substr(1);
+			}
 			pWriter->StartNode(m_name);
 
 			pWriter->StartAttributes();
-			pWriter->WriteAttribute(_T("type"), type);
-			pWriter->WriteAttribute(_T("w"), w);
-			pWriter->WriteAttribute(_T("len"), len);
+			pWriter->WriteAttribute(L"type", type);
+			pWriter->WriteAttribute(L"w", w);
+			pWriter->WriteAttribute(L"len", len);
 			pWriter->EndAttributes();
 
 			pWriter->EndNode(m_name);

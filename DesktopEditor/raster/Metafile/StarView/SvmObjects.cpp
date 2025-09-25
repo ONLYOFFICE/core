@@ -269,8 +269,8 @@ CDataStream& operator>>(CDataStream &stream, SvmHeader &header)
 	stream >> width;
 	stream >> height;
 
-	header.boundRect.nBottom	= height;
-	header.boundRect.nRight		= width;
+	header.boundRect.Bottom = height;
+	header.boundRect.Right  = width;
 
 	stream >> header.actionCount;
 
@@ -319,35 +319,35 @@ CSvmBrush::CSvmBrush(CSvmBrush& oBrush)
 	BrushBounds = oBrush.BrushBounds;
 }
 
-int CSvmBrush::GetColor()
+int CSvmBrush::GetColor() const
 {
-	return METAFILE_RGBA(Color.r, Color.g, Color.b);
+	return Color.ToInt();
 }
-int CSvmBrush::GetColor2()
+int CSvmBrush::GetColor2() const
 {
-	return METAFILE_RGBA(Color2.r, Color2.g, Color2.b);
+	return Color2.ToInt();
 }
-unsigned int CSvmBrush::GetStyleEx()
+unsigned int CSvmBrush::GetStyleEx() const
 {
 	return BrushStyleEx;
 }
-unsigned int CSvmBrush::GetStyle()
+unsigned int CSvmBrush::GetStyle() const
 {
 	return BrushStyle;
 }
-unsigned int CSvmBrush::GetHatch()
+unsigned int CSvmBrush::GetHatch() const
 {
 	return BrushHatch;
 }
-unsigned int CSvmBrush::GetAlpha()
+unsigned int CSvmBrush::GetAlpha() const
 {
 	return 0xff-Color.a;
 }
-unsigned int CSvmBrush::GetAlpha2()
+unsigned int CSvmBrush::GetAlpha2() const
 {
 	return 0xff-Color2.a;
 }
-void CSvmBrush::GetBounds(double& left, double& top, double& width, double& height)
+void CSvmBrush::GetBounds(double& left, double& top, double& width, double& height) const
 {
 	left	= BrushBounds.l;
 	top		= BrushBounds.t;
@@ -355,12 +355,18 @@ void CSvmBrush::GetBounds(double& left, double& top, double& width, double& heig
 	height	= BrushBounds.b - BrushBounds.t;
 }
 
-void CSvmBrush::GetDibPattern(unsigned char **pBuffer, unsigned int &unWidth, unsigned int &unHeight)
+void CSvmBrush::GetDibPattern(unsigned char **pBuffer, unsigned int &unWidth, unsigned int &unHeight) const
 {}
 
-int CSvmPen::GetColor()
+void CSvmBrush::GetGradientColors(std::vector<long>& arColors, std::vector<double>& arPositions) const
 {
-	return METAFILE_RGBA(Color.r, Color.g, Color.b);
+	arColors    = {(long)(GetColor()  + (GetAlpha()  << 24)), (long)(GetColor2() + (GetAlpha2() << 24))};
+	arPositions = {0., 1.};
+}
+
+int CSvmPen::GetColor() const
+{
+	return METAFILE_RGBA(Color.r, Color.g, Color.b, 0);
 }
 TSvmRect::TSvmRect(CDataStream &stream)
 {

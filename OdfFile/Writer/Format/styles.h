@@ -94,6 +94,7 @@ class graphic_format_properties;
 class paragraph_format_properties;
 class chart_format_properties;
 class text_format_properties;
+class drawing_page_properties;
 
 class style_content : noncopyable
 {
@@ -108,6 +109,7 @@ public:
 	paragraph_format_properties*	get_paragraph_properties();
 	chart_format_properties*		get_chart_properties();
 	text_format_properties*			get_text_properties();
+    drawing_page_properties*        get_drawing_page_properties();
 //add & get
 	graphic_format_properties*		add_get_style_graphic_properties();
 	text_format_properties*			add_get_style_text_properties();
@@ -170,11 +172,9 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type = typeStyleDrawGradient;
+    static const ElementType type = typeStyleDrawGradient;    
 
-    
-
-	std::wstring				get_style_name(){return draw_name_.get_value_or(L"");}
+	std::wstring get_style_name(){return draw_name_.get_value_or(L"");}
 
 	_CP_OPT(odf_types::color)			draw_start_color_;
 	_CP_OPT(odf_types::color)			draw_end_color_;
@@ -192,9 +192,12 @@ public:
  	_CP_OPT(std::wstring)				draw_name_;
 	_CP_OPT(std::wstring)				draw_display_name_;
 	
-    virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name);
-    virtual void serialize(std::wostream & strm);
+    office_element_ptr_array content_;
 
+    virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name);
+    virtual void add_child_element(const office_element_ptr& child);
+   
+    virtual void serialize(std::wostream & strm);
 };
 CP_REGISTER_OFFICE_ELEMENT2(draw_gradient)
 
@@ -205,11 +208,9 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type		= typeStyleDrawHatch;
+    static const ElementType type = typeStyleDrawHatch;   
 
-    
-
-	std::wstring	get_style_name(){return draw_name_.get_value_or(L"");}
+	std::wstring get_style_name(){return draw_name_.get_value_or(L"");}
 	
 	_CP_OPT(odf_types::hatch_style)	draw_style_;
 	_CP_OPT(int)					draw_rotation_;
@@ -232,11 +233,9 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type		= typeStyleDrawOpacity;
+    static const ElementType type = typeStyleDrawOpacity;    
 
-    
-
-	std::wstring	get_style_name(){return draw_name_.get_value_or(L"");}
+	std::wstring get_style_name(){return draw_name_.get_value_or(L"");}
 
 	_CP_OPT(odf_types::gradient_style)	draw_style_;//linear, radial, ..
 	_CP_OPT(odf_types::draw_angle)		draw_angle_;
@@ -252,9 +251,12 @@ public:
  	_CP_OPT(std::wstring)			draw_name_;
 	_CP_OPT(std::wstring)			draw_display_name_;
 	
+    office_element_ptr_array content_;
+    
     virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
-	virtual void serialize(std::wostream & strm);
-
+    virtual void add_child_element(const office_element_ptr& child);
+    
+    virtual void serialize(std::wostream & strm);
 };
 CP_REGISTER_OFFICE_ELEMENT2(draw_opacity)
 
@@ -303,9 +305,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type		= typeStyleDrawFillImage;
-
-    
+    static const ElementType type = typeStyleDrawFillImage;   
 
 	std::wstring get_style_name(){return draw_name_.get_value_or(L"");}
 	
@@ -326,17 +326,15 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type		= typeStyleDrawMarker;
-
-    
+    static const ElementType type = typeStyleDrawMarker;      
 
 	std::wstring get_style_name(){return draw_name_.get_value_or(L"");}
 	
-	_CP_OPT(std::wstring)		svg_viewBox_;
-	_CP_OPT(std::wstring)		svg_d_;
+	_CP_OPT(std::wstring) svg_viewBox_;
+	_CP_OPT(std::wstring) svg_d_;
 
- 	_CP_OPT(std::wstring)		draw_name_;
-	_CP_OPT(std::wstring)		draw_display_name_;
+ 	_CP_OPT(std::wstring) draw_name_;
+	_CP_OPT(std::wstring) draw_display_name_;
 
     virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name);
 	virtual void serialize(std::wostream & strm);
@@ -356,8 +354,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type		= typeStyleStyle;
-    
+    static const ElementType type = typeStyleStyle;   
  
     style() : content_(getContext()) {} 
     
@@ -405,7 +402,6 @@ public:
     // number-time-style
     // number-boolean-style
     office_element_ptr_array number_styles_; 
-
 };
 
 class draw_styles
@@ -436,8 +432,7 @@ public:
 
 	void serialize(std::wostream & strm);
 
-	office_element_ptr_array table_templates_;    
-
+	office_element_ptr_array table_templates_;  
 };
 
 class office_automatic_styles : public office_element_impl<office_automatic_styles>
@@ -446,8 +441,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type = typeOfficeAutomaticStyles;
-    
+    static const ElementType type = typeOfficeAutomaticStyles;    
 
     virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child);
@@ -480,11 +474,8 @@ public:
     office_element_ptr			draw_layer_set_;		// необязательно .. так как слои все равно не поддерживаются в мс.
 													// то есть не будут объекты объеденены по признаку слоя
 													// зы. не путать с обычной группировкой
-
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(office_master_styles)
-
 //----------------------------------------------------------------------------------------------------
 class style_master_page_attlist
 {
@@ -510,8 +501,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type = typeStyleMasterPage;
-    
+    static const ElementType type = typeStyleMasterPage;    
 
     virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child);
@@ -546,8 +536,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type = typeOfficeStyles;
-    
+    static const ElementType type = typeOfficeStyles;    
 
     virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child);
@@ -596,8 +585,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type = typeStyleHeader;
-    
+    static const ElementType type = typeStyleHeader;    
 
     virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child);
@@ -616,8 +604,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type = typeStyleFooter;
-    
+    static const ElementType type = typeStyleFooter;    
 
 	virtual void serialize(std::wostream & strm);
 
@@ -625,7 +612,6 @@ public:
     virtual void add_child_element( const office_element_ptr & child);
 
     header_footer_content_common content_;
-
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(style_footer)
@@ -657,8 +643,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type = typeStyleFooterFirst;
-    
+    static const ElementType type = typeStyleFooterFirst;    
 
     virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child);
@@ -677,8 +662,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type = typeStyleHeaderLeft;
-    
+    static const ElementType type = typeStyleHeaderLeft;    
 
     virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child);
@@ -687,7 +671,6 @@ public:
   
 	header_footer_content_common content_;
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(style_header_left)
 
 //----------------------------------------------------------------------------------------------------
@@ -697,8 +680,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type = typeStyleFooterLeft;
-    
+    static const ElementType type = typeStyleFooterLeft;    
 
     virtual void create_child_element(  const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child);
@@ -717,8 +699,7 @@ public:
 	void serialize(CP_ATTR_NODE);
 
 	_CP_OPT(std::wstring)			style_name_;
-    _CP_OPT(odf_types::page_usage)	style_page_usage_; // default All
-        
+    _CP_OPT(odf_types::page_usage)	style_page_usage_; // default All        
 };
 
 //----------------------------------------------------------------------------------------------------
@@ -728,8 +709,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type = typeStyleHeaderStyle;
-    
+    static const ElementType type = typeStyleHeaderStyle;    
 
 	virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name);
 	virtual void add_child_element( const office_element_ptr & child);
@@ -737,7 +717,6 @@ public:
 	virtual void serialize(std::wostream & strm);
 
 	office_element_ptr style_header_footer_properties_;
-
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(style_header_style)
@@ -749,8 +728,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type = typeStyleFooterStyle;
-    
+    static const ElementType type = typeStyleFooterStyle;    
 
     virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child);
@@ -769,8 +747,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type = typeStylePageLayout;
-    
+    static const ElementType type = typeStylePageLayout;    
    
 	style_page_layout_attlist style_page_layout_attlist_;
    
@@ -798,8 +775,7 @@ public:
     _CP_OPT(odf_types::line_style) style_line_style_;
 	_CP_OPT(odf_types::style_type) style_adjustment_; // default Left
 	_CP_OPT(odf_types::length)	style_distance_before_sep_;
-    _CP_OPT(odf_types::length)	style_distance_after_sep_;
-                
+    _CP_OPT(odf_types::length)	style_distance_after_sep_;                
 };
 
 //----------------------------------------------------------------------------------------------------
@@ -809,8 +785,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type = typeStyleFootnoteSep;
-    
+    static const ElementType type = typeStyleFootnoteSep;    
 
     virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
 	virtual void serialize(std::wostream & strm);
@@ -818,7 +793,6 @@ public:
     style_footnote_sep_attlist style_footnote_sep_attlist_;
     
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(style_footnote_sep)
 
 //----------------------------------------------------------------------------------------------------
@@ -828,8 +802,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type = typeTextNotesConfiguration;
-    
+    static const ElementType type = typeTextNotesConfiguration;    
 
     virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name);
 	virtual void serialize(std::wostream & strm){}
@@ -846,8 +819,7 @@ public:
     _CP_OPT(std::wstring) text_footnotes_position_;
 
     office_element_ptr text_note_continuation_notice_forward_;
-    office_element_ptr text_note_continuation_notice_backward_;
-    
+    office_element_ptr text_note_continuation_notice_backward_;    
 };
 CP_REGISTER_OFFICE_ELEMENT2(text_notes_configuration)
 //-------------------------------------------------------------------------------------------------------------------------
@@ -857,8 +829,7 @@ public:
 	static const wchar_t * ns;
 	static const wchar_t * name;
 
-	static const ElementType type = typeTextLinenumberingConfiguration;
-	
+	static const ElementType type = typeTextLinenumberingConfiguration;	
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
 	virtual void serialize(std::wostream & strm);
@@ -870,7 +841,8 @@ public:
 	_CP_OPT(odf_types::Bool)			text_count_empty_lines_;
 	_CP_OPT(odf_types::Bool)			text_count_in_text_boxes_;
 	_CP_OPT(unsigned int)				text_increment_;
-	_CP_OPT(std::wstring)				text_number_position_; //inner, left, outer, right
+    _CP_OPT(unsigned int)				text_start_;
+    _CP_OPT(std::wstring)				text_number_position_; //inner, left, outer, right
 	_CP_OPT(odf_types::length)			text_offset_;
 	_CP_OPT(odf_types::Bool)			text_restart_on_page_;
 
@@ -884,8 +856,7 @@ public:
 	static const wchar_t * ns;
 	static const wchar_t * name;
 
-	static const ElementType type = typeTextLinenumberingSeparator;
-	
+	static const ElementType type = typeTextLinenumberingSeparator;	
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name) {}
 	virtual void serialize(std::wostream & strm);
@@ -904,21 +875,17 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type = typeStylePresentationPageLayout;
-    
+    static const ElementType type = typeStylePresentationPageLayout;    
 
 	virtual void serialize(std::wostream & strm);
     virtual void create_child_element	( const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element		( const office_element_ptr & child);
 
-
 	_CP_OPT(std::wstring) style_name_;
 
 	office_element_ptr_array content_;
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(style_presentation_page_layout)
-
 //----------------------------------------------------------------------------------------------------
 
 //  style:font-face
@@ -928,9 +895,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type = typeStyleFontFace;
-
-    
+    static const ElementType type = typeStyleFontFace;    
 
 	virtual void serialize(std::wostream & strm);
 	virtual void create_child_element	( const std::wstring & Ns, const std::wstring & Name){}
@@ -980,7 +945,6 @@ public:
     office_element_ptr_array		svg_font_face_uri_; 
     office_element_ptr_array		svg_font_face_name_;   
     office_element_ptr				svg_definition_src_;
-
 };
 CP_REGISTER_OFFICE_ELEMENT2(style_font_face);
 
@@ -991,16 +955,13 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type = typeOfficeFontFaceDecls;
-
-    
+    static const ElementType type = typeOfficeFontFaceDecls;    
 
 	virtual void serialize(std::wostream & strm);
     virtual void create_child_element	( const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element		( const office_element_ptr & child);
 
     office_element_ptr_array content_;
-
 };
 CP_REGISTER_OFFICE_ELEMENT2(office_font_face_decls);
 
@@ -1011,8 +972,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type = typeStyleRegionLeft;
-    
+    static const ElementType type = typeStyleRegionLeft;    
 
 	virtual void serialize(std::wostream & strm);
     virtual void create_child_element	( const std::wstring & Ns, const std::wstring & Name);
@@ -1030,17 +990,14 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type = typeStyleRegionRight;
-    
+    static const ElementType type = typeStyleRegionRight;    
 
 	virtual void serialize(std::wostream & strm);
     virtual void create_child_element	( const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element		( const office_element_ptr & child);
 
     office_element_ptr_array content_;
-
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(style_region_right);
 
 
@@ -1052,16 +1009,52 @@ public:
     static const wchar_t * name;
 
     static const ElementType type = typeStyleRegionCenter;
-    
-
-	virtual void serialize(std::wostream & strm);
+   
+    virtual void serialize(std::wostream & strm);
     virtual void create_child_element	( const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element		( const office_element_ptr & child);
 
     office_element_ptr_array content_;
-
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(style_region_center);
+//------------------------------------------------------------------------------------------------
+//  loext:gradient-stop 
+class loext_gradient_stop : public office_element_impl<loext_gradient_stop>
+{
+public:
+    static const wchar_t* ns;
+    static const wchar_t* name;
+
+    static const ElementType type = typeStyleGradientStop;
+
+    _CP_OPT(odf_types::color_type) color_type_;
+    _CP_OPT(odf_types::color) color_value_;
+    _CP_OPT(double) svg_offset_;
+   
+    virtual void serialize(std::wostream& strm);
+
+    virtual void create_child_element(const std::wstring& Ns, const std::wstring& Name) {}
+    virtual void add_child_element(const office_element_ptr& child) {}
+};
+CP_REGISTER_OFFICE_ELEMENT2(loext_gradient_stop);
+//------------------------------------------------------------------------------------------------
+//  loext:opacity-stop 
+class loext_opacity_stop : public office_element_impl<loext_opacity_stop>
+{
+public:
+    static const wchar_t* ns;
+    static const wchar_t* name;
+
+    static const ElementType type = typeStyleOpacityStop;
+
+    _CP_OPT(double) stop_opacity_;
+    _CP_OPT(double) svg_offset_;
+
+    virtual void serialize(std::wostream& strm);
+
+    virtual void create_child_element(const std::wstring& Ns, const std::wstring& Name) {}
+    virtual void add_child_element(const office_element_ptr& child) {}
+};
+CP_REGISTER_OFFICE_ELEMENT2(loext_opacity_stop);
 }
 } 

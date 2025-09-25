@@ -31,16 +31,11 @@
  */
 #pragma once
 
-#include "./MetafileToRendererCheck.h"
 #include "agg_math.h"
+#include "./MetafileToRenderer.h"
 #include "../fontengine/FontManager.h"
 #include "../raster/BgraFrame.h"
 #include "../common/StringExt.h"
-#include "./FormField.h"
-
-#if !defined(_WIN32) && !defined(_WIN64)
-#include "../common/StringExt.h"
-#endif
 
 // этот класс нужно переписать. должно работать как и в js
 // а не просто на каждом символе переключаться, если нужно
@@ -158,13 +153,6 @@ IMetafileToRenderter::IMetafileToRenderter(IRenderer* pRenderer)
 }
 IMetafileToRenderter::~IMetafileToRenderter()
 {
-	for (std::vector<std::wstring>::iterator i = m_arTempFiles.begin(); i != m_arTempFiles.end(); i++)
-	{
-		std::wstring sPath = *i;
-		if (NSFile::CFileBinary::Exists(sPath))
-			NSFile::CFileBinary::Remove(sPath);
-	}
-
 	if (m_pPicker)
 	{
 		CMetafileFontPicker* pPicker = (CMetafileFontPicker*)m_pPicker;
@@ -239,8 +227,6 @@ std::wstring IMetafileToRenderter::GetImagePath(const std::wstring& sPath)
 					oFrame.put_Data(NULL);
 					sImagePath = sTempFile;
 				}
-
-				m_arTempFiles.push_back(sTempFile);
 			}
 
 			RELEASEARRAYOBJECTS(pImageBuffer);
@@ -344,125 +330,6 @@ void IMetafileToRenderter::InitPicker(NSFonts::IApplicationFonts* pFonts)
 
 namespace NSOnlineOfficeBinToPdf
 {
-	inline BYTE ReadByte(BYTE*& pData, int& nOffset)
-	{
-		BYTE ret = *(pData);
-		pData++;
-		nOffset++;
-		return ret;
-	}
-	inline bool ReadBool(BYTE*& pData, int& nOffset)
-	{
-		return ReadByte(pData, nOffset);
-	}
-	inline INT32 ReadInt(BYTE*& pData, int& nOffset)
-	{
-#ifdef _ARM_ALIGN_
-		INT32 ret = 0;
-		memcpy(&ret, pData, sizeof(INT32));
-		pData   += 4;
-		nOffset += 4;
-		return ret;
-#else
-		INT32 ret = *((INT32*)pData);
-		pData   += 4;
-		nOffset += 4;
-		return ret;
-#endif
-	}
-	inline double ReadDouble(BYTE*& pData, int& nOffset)
-	{
-		return ReadInt(pData, nOffset) / 100000.0;
-	}
-	inline void SkipInt(BYTE*& pData, int& nOffset, int nCount = 1)
-	{
-		pData   += (nCount << 2);
-		nOffset += (nCount << 2);
-	}
-	inline void SkipDouble(BYTE*& pData, int& nOffset, int nCount = 1)
-	{
-		SkipInt(pData, nOffset, nCount);
-	}
-
-	inline USHORT ReadUSHORT(BYTE*& pData, int& nOffset)
-	{
-#ifdef _ARM_ALIGN_
-		USHORT ret = 0;
-		memcpy(&ret, pData, sizeof(USHORT));
-		pData   += 2;
-		nOffset += 2;
-		return ret;
-#else
-		USHORT ret = *((USHORT*)pData);
-		pData   += 2;
-		nOffset += 2;
-		return ret;
-#endif
-	}
-	inline void SkipUSHORT(BYTE*& pData, int& nOffset)
-	{
-		pData   += 2;
-		nOffset += 2;
-	}
-
-	inline std::wstring ReadString16(BYTE*& pData, int& nOffset, int nLen)
-	{
-		std::wstring wsTempString;
-#ifdef _ARM_ALIGN_
-
-		if (sizeof(wchar_t) == 4)
-		{
-#if !defined(_WIN32) && !defined(_WIN64)
-			int len = nLen / 2;
-			unsigned short* buf = new unsigned short[len];
-			memcpy(buf, pData, nLen);
-			wsTempString = NSStringExt::CConverter::GetUnicodeFromUTF16((unsigned short*)buf, len);
-			RELEASEARRAYOBJECTS(buf);
-#endif
-		}
-		else
-		{
-			int len = nLen / 2;
-			wchar_t* buf = new wchar_t[len];
-			memcpy(buf, pData, nLen);
-			wsTempString = std::wstring(buf, len);
-			RELEASEARRAYOBJECTS(buf);
-		}
-
-#else
-
-		if (sizeof(wchar_t) == 4)
-		{
-#if !defined(_WIN32) && !defined(_WIN64)
-			wsTempString = NSStringExt::CConverter::GetUnicodeFromUTF16((unsigned short*)pData, nLen / 2);
-#endif
-		}
-		else
-		{
-			wsTempString = std::wstring((wchar_t*)pData, nLen / 2);
-		}
-
-#endif
-		pData += nLen;
-		nOffset += nLen;
-		return wsTempString;
-	}
-	inline void SkipString16(BYTE*& pData, int& nOffset, int nLen)
-	{
-		pData += nLen;
-		nOffset += nLen;
-	}
-	inline std::wstring ReadString(BYTE*& pData, int& nOffset)
-	{
-		int nLen = 2 * ReadUSHORT(pData, nOffset);
-		return ReadString16(pData, nOffset, nLen);
-	}
-	inline void SkipString(BYTE*& pData, int& nOffset)
-	{
-		int nLen = 2 * ReadUSHORT(pData, nOffset);
-		SkipString16(pData, nOffset, nLen);
-	}
-
 	bool ConvertBufferToRenderer(BYTE* pBuffer, LONG lBufferLen, IMetafileToRenderter* pCorrector)
 	{
 		IRenderer* pRenderer = pCorrector->m_pRenderer;
@@ -482,26 +349,22 @@ namespace NSOnlineOfficeBinToPdf
 		CommandType eCommand = ctError;
 
 		bool bIsPathOpened = false;
-		int curindex = 0;
-
 		bool bIsEnableBrushRect = false;
 
-		BYTE* current = pBuffer;
-		while (curindex < lBufferLen)
+		CBufferReader oReader(pBuffer, lBufferLen);
+		while (oReader.Check())
 		{
-			eCommand = (CommandType)(*current);
-			current++;
-			curindex++;
+			eCommand = (CommandType)(oReader.ReadByte());
 			switch (eCommand)
 			{
 			case ctPageWidth:
 			{
-				pRenderer->put_Width(ReadInt(current, curindex) / 100000.0);
+				pRenderer->put_Width(oReader.ReadDouble());
 				break;
 			}
 			case ctPageHeight:
 			{
-				pRenderer->put_Height(ReadInt(current, curindex) / 100000.0);
+				pRenderer->put_Height(oReader.ReadDouble());
 				break;
 			}
 			case ctPageStart:
@@ -532,36 +395,33 @@ namespace NSOnlineOfficeBinToPdf
 			}
 			case ctPenColor:
 			{
-				pRenderer->put_PenColor(ReadInt(current, curindex));
+				pRenderer->put_PenColor(oReader.ReadInt());
 				break;
 			}
 			case ctPenAlpha:
 			{
-				pRenderer->put_PenAlpha(*current);
-				current++;
-				curindex++;
+				pRenderer->put_PenAlpha(oReader.ReadByte());
 				break;
 			}
 			case ctPenSize:
 			{
-				pRenderer->put_PenSize(ReadInt(current, curindex) / 100000.0);
+				pRenderer->put_PenSize(oReader.ReadDouble());
 				break;
 			}
 			case ctPenDashStyle:
 			{
-				BYTE nDashType = *current++;
-				curindex++;
+				BYTE nDashType = oReader.ReadByte();
 				switch (nDashType)
 				{
 				case Aggplus::DashStyleCustom:
 				{
-					int nCountDash = ReadInt(current, curindex);
+					int nCountDash = oReader.ReadInt();
 					if (0 < nCountDash)
 					{
 						double* pDash = new double[nCountDash];
 						for (int nDash = 0; nDash < nCountDash; ++nDash)
 						{
-							pDash[nDash] = ReadInt(current, curindex) / 100000.0;
+							pDash[nDash] = oReader.ReadDouble();
 						}
 
 						pRenderer->PenDashPattern(pDash, nCountDash);
@@ -577,88 +437,74 @@ namespace NSOnlineOfficeBinToPdf
 			}
 			case ctPenLineJoin:
 			{
-				pRenderer->put_PenLineJoin(*current);
-				current++;
-				curindex++;
+				pRenderer->put_PenLineJoin(oReader.ReadByte());
 				break;
 			}
 			case ctBrushType:
 			{
-				pRenderer->put_BrushType(ReadInt(current, curindex));
+				pRenderer->put_BrushType(oReader.ReadInt());
 				break;
 			}
 			case ctBrushColor1:
 			{
-				pRenderer->put_BrushColor1(ReadInt(current, curindex));
+				pRenderer->put_BrushColor1(oReader.ReadInt());
 				break;
 			}
 			case ctBrushAlpha1:
 			{
-				pRenderer->put_BrushAlpha1(*current);
-				current++;
-				curindex++;
+				pRenderer->put_BrushAlpha1(oReader.ReadByte());
 				break;
 			}
 			case ctBrushColor2:
 			{
-				pRenderer->put_BrushColor1(ReadInt(current, curindex));
+				pRenderer->put_BrushColor1(oReader.ReadInt());
 				break;
 			}
 			case ctBrushAlpha2:
 			{
-				pRenderer->put_BrushAlpha2(*current);
-				current++;
-				curindex++;
+				pRenderer->put_BrushAlpha2(oReader.ReadByte());
 				break;
 			}
 			case ctBrushRectable:
 			{
-				double m1 = ReadInt(current, curindex) / 100000.0;
-				double m2 = ReadInt(current, curindex) / 100000.0;
-				double m3 = ReadInt(current, curindex) / 100000.0;
-				double m4 = ReadInt(current, curindex) / 100000.0;
+				double m1 = oReader.ReadDouble();
+				double m2 = oReader.ReadDouble();
+				double m3 = oReader.ReadDouble();
+				double m4 = oReader.ReadDouble();
 				pRenderer->BrushRect(bIsEnableBrushRect ? 1 : 0, m1, m2, m3, m4);
 				break;
 			}
 			case ctBrushRectableEnabled:
 			{
-				bIsEnableBrushRect = (1 == *current) ? true : false;
+				bIsEnableBrushRect = oReader.ReadBool();
 
 				if (!bIsEnableBrushRect)
 					pRenderer->BrushRect(bIsEnableBrushRect ? 1 : 0, 0, 0, 1, 1);
-
-				current += 1;
-				curindex += 1;
 				break;
 			}
 			case ctBrushTexturePathOld:
 			{
-				int nLen = 2 * ReadUSHORT(current, curindex);
-				std::wstring sTempPath = ReadString16(current, curindex, nLen);
-
+				int nLen = 2 * oReader.ReadUShort();
+				std::wstring sTempPath = oReader.ReadString16(nLen);
 				std::wstring sImagePath = pCorrector->GetImagePath(sTempPath);
 				pRenderer->put_BrushTexturePath(sImagePath);
 				break;
 			}
 			case ctBrushTexturePath:
 			{
-				int nLen = ReadInt(current, curindex);
-				std::wstring sTempPath = ReadString16(current, curindex, nLen);
-
+				int nLen = oReader.ReadInt();
+				std::wstring sTempPath = oReader.ReadString16(nLen);
 				std::wstring sImagePath = pCorrector->GetImagePath(sTempPath);
 				pRenderer->put_BrushTexturePath(sImagePath);
 				break;
 			}
 			case ctBrushGradient:
 			{
-				current++;
-				curindex++;
+				oReader.Skip(1);
 
 				while (true)
 				{
-					BYTE _command = *current;
-					current++;
-					curindex++;
+					BYTE _command = oReader.ReadByte();
 
 					if (251 == _command)
 						break;
@@ -667,32 +513,30 @@ namespace NSOnlineOfficeBinToPdf
 					{
 					case 0:
 					{
-						current += 5;
-						curindex += 5;
-						double x0 = ReadInt(current, curindex) / 100000.0;
-						double y0 = ReadInt(current, curindex) / 100000.0;
-						double x1 = ReadInt(current, curindex) / 100000.0;
-						double y1 = ReadInt(current, curindex) / 100000.0;
+						oReader.Skip(5);
+						double x0 = oReader.ReadDouble();
+						double y0 = oReader.ReadDouble();
+						double x1 = oReader.ReadDouble();
+						double y1 = oReader.ReadDouble();
 
 						pCorrector->SetLinearGradiant(x0, y0, x1, y1);
 						break;
 					}
 					case 1:
 					{
-						current++;
-						curindex++;
-						double x0 = ReadInt(current, curindex) / 100000.0;
-						double y0 = ReadInt(current, curindex) / 100000.0;
-						double x1 = ReadInt(current, curindex) / 100000.0;
-						double y1 = ReadInt(current, curindex) / 100000.0;
-						double r0 = ReadInt(current, curindex) / 100000.0;
-						double r1 = ReadInt(current, curindex) / 100000.0;
+						oReader.Skip(1);
+						double x0 = oReader.ReadDouble();
+						double y0 = oReader.ReadDouble();
+						double x1 = oReader.ReadDouble();
+						double y1 = oReader.ReadDouble();
+						double r0 = oReader.ReadDouble();
+						double r1 = oReader.ReadDouble();
 						pCorrector->SetRadialGradiant(x0, y0, r0, x1, y1, r1);
 						break;
 					}
 					case 2:
 					{
-						LONG lColorsCount = (LONG)ReadInt(current, curindex);
+						LONG lColorsCount = (LONG)oReader.ReadInt();
 						if (0 >= lColorsCount)
 						{
 							pRenderer->put_BrushGradientColors(NULL, NULL, 0);
@@ -713,8 +557,8 @@ namespace NSOnlineOfficeBinToPdf
 
 							for (LONG lIndex = 0; lIndex < lColorsCount; lIndex++)
 							{
-								pPositions[lIndex] = ReadInt(current, curindex) / 100000.0;
-								pColors[lIndex] = ReadInt(current, curindex);
+								pPositions[lIndex] = oReader.ReadDouble();
+								pColors[lIndex] = oReader.ReadInt();
 							}
 
 							pRenderer->put_BrushGradientColors(pColors, pPositions, lColorsCount);
@@ -736,30 +580,24 @@ namespace NSOnlineOfficeBinToPdf
 			}
 			case ctBrushTextureMode:
 			{
-				LONG lMode = (LONG)(*current);
+				LONG lMode = (LONG)oReader.ReadByte();
 				pRenderer->put_BrushTextureMode(lMode);
-
-				current += 1;
-				curindex += 1;
 				break;
 			}
 			case ctBrushTextureAlpha:
 			{
-				LONG lAlpha = (LONG)(*current);
+				LONG lAlpha = (LONG)oReader.ReadByte();
 				pRenderer->put_BrushTextureAlpha(lAlpha);
-
-				current += 1;
-				curindex += 1;
 				break;
 			}
 			case ctSetTransform:
 			{
-				double m1 = ReadInt(current, curindex) / 100000.0;
-				double m2 = ReadInt(current, curindex) / 100000.0;
-				double m3 = ReadInt(current, curindex) / 100000.0;
-				double m4 = ReadInt(current, curindex) / 100000.0;
-				double m5 = ReadInt(current, curindex) / 100000.0;
-				double m6 = ReadInt(current, curindex) / 100000.0;
+				double m1 = oReader.ReadDouble();
+				double m2 = oReader.ReadDouble();
+				double m3 = oReader.ReadDouble();
+				double m4 = oReader.ReadDouble();
+				double m5 = oReader.ReadDouble();
+				double m6 = oReader.ReadDouble();
 				pRenderer->SetTransform(m1, m2, m3, m4, m5, m6);
 				break;
 			}
@@ -779,26 +617,26 @@ namespace NSOnlineOfficeBinToPdf
 			}
 			case ctPathCommandMoveTo:
 			{
-				double m1 = ReadInt(current, curindex) / 100000.0;
-				double m2 = ReadInt(current, curindex) / 100000.0;
+				double m1 = oReader.ReadDouble();
+				double m2 = oReader.ReadDouble();
 				pRenderer->PathCommandMoveTo(m1, m2);
 				break;
 			}
 			case ctPathCommandLineTo:
 			{
-				double m1 = ReadInt(current, curindex) / 100000.0;
-				double m2 = ReadInt(current, curindex) / 100000.0;
+				double m1 = oReader.ReadDouble();
+				double m2 = oReader.ReadDouble();
 				pRenderer->PathCommandLineTo(m1, m2);
 				break;
 			}
 			case ctPathCommandCurveTo:
 			{
-				double m1 = ReadInt(current, curindex) / 100000.0;
-				double m2 = ReadInt(current, curindex) / 100000.0;
-				double m3 = ReadInt(current, curindex) / 100000.0;
-				double m4 = ReadInt(current, curindex) / 100000.0;
-				double m5 = ReadInt(current, curindex) / 100000.0;
-				double m6 = ReadInt(current, curindex) / 100000.0;
+				double m1 = oReader.ReadDouble();
+				double m2 = oReader.ReadDouble();
+				double m3 = oReader.ReadDouble();
+				double m4 = oReader.ReadDouble();
+				double m5 = oReader.ReadDouble();
+				double m6 = oReader.ReadDouble();
 				pRenderer->PathCommandCurveTo(m1, m2, m3, m4, m5, m6);
 				break;
 			}
@@ -819,19 +657,19 @@ namespace NSOnlineOfficeBinToPdf
 			}
 			case ctDrawPath:
 			{
-				pRenderer->DrawPath(ReadInt(current, curindex));
+				pRenderer->DrawPath(oReader.ReadInt());
 				break;
 			}
 			case ctDrawImageFromFile:
 			{
-				int nLen = ReadInt(current, curindex);
-				std::wstring sTempPath = ReadString16(current, curindex, nLen);
+				int nLen = oReader.ReadInt();
+				std::wstring sTempPath = oReader.ReadString16(nLen);
 				std::wstring sImagePath = pCorrector->GetImagePath(sTempPath);
 
-				double m1 = ReadInt(current, curindex) / 100000.0;
-				double m2 = ReadInt(current, curindex) / 100000.0;
-				double m3 = ReadInt(current, curindex) / 100000.0;
-				double m4 = ReadInt(current, curindex) / 100000.0;
+				double m1 = oReader.ReadDouble();
+				double m2 = oReader.ReadDouble();
+				double m3 = oReader.ReadDouble();
+				double m4 = oReader.ReadDouble();
 
 				try
 				{
@@ -845,29 +683,28 @@ namespace NSOnlineOfficeBinToPdf
 			}
 			case ctFontName:
 			{
-				int _sLen = 2 * (int)ReadUSHORT(current, curindex);
-				std::wstring wsTempString = ReadString16(current, curindex, _sLen);
+				int nLen = 2 * (int)oReader.ReadUShort();
+				std::wstring wsTempString = oReader.ReadString16(nLen);
 				pRenderer->put_FontName(wsTempString);
 				break;
 			}
 			case ctFontSize:
 			{
-				double m1 = ReadInt(current, curindex) / 100000.0;
-				pRenderer->put_FontSize(m1);
+				pRenderer->put_FontSize(oReader.ReadDouble());
 				break;
 			}
 			case ctFontStyle:
 			{
-				pRenderer->put_FontStyle(ReadInt(current, curindex));
+				pRenderer->put_FontStyle(oReader.ReadInt());
 				break;
 			}
 			case ctDrawText:
 			{
-				int _sLen = 2 * (int)ReadUSHORT(current, curindex);
-				std::wstring wsTempString = ReadString16(current, curindex, _sLen);
+				int nLen = 2 * (int)oReader.ReadUShort();
+				std::wstring wsTempString = oReader.ReadString16(nLen);
 
-				double x = ReadInt(current, curindex) / 100000.0;
-				double y = ReadInt(current, curindex) / 100000.0;
+				double x = oReader.ReadDouble();
+				double y = oReader.ReadDouble();
 
 				if (!pPicker)
 					pRenderer->CommandDrawText(wsTempString, x, y, 0, 0);
@@ -877,14 +714,14 @@ namespace NSOnlineOfficeBinToPdf
 			}
 			case ctDrawTextCodeGid:
 			{
-				unsigned int nGid = (unsigned int)ReadInt(current, curindex);
-				double x = ReadInt(current, curindex) / 100000.0;
-				double y = ReadInt(current, curindex) / 100000.0;
+				unsigned int nGid = (unsigned int)oReader.ReadInt();
+				double x = oReader.ReadDouble();
+				double y = oReader.ReadDouble();
 
-				unsigned int nCountUnicodes = (unsigned int)ReadInt(current, curindex);
+				unsigned int nCountUnicodes = (unsigned int)oReader.ReadInt();
 				unsigned int* pCodePoints = (0 != nCountUnicodes) ? new unsigned int[nCountUnicodes] : NULL;
 				for (unsigned int nCodePointIndex = 0; nCodePointIndex < nCountUnicodes; ++nCodePointIndex)
-					pCodePoints[nCodePointIndex] = ReadInt(current, curindex);
+					pCodePoints[nCodePointIndex] = oReader.ReadInt();
 
 				pRenderer->CommandDrawTextCHAR2(pCodePoints, nCountUnicodes, nGid, x, y, 0, 0);
 
@@ -900,7 +737,7 @@ namespace NSOnlineOfficeBinToPdf
 					pRenderer->EndCommand(4);
 					bIsPathOpened = false;
 				}
-				pRenderer->BeginCommand((DWORD)(ReadInt(current, curindex)));
+				pRenderer->BeginCommand((DWORD)(oReader.ReadInt()));
 				break;
 			}
 			case ctEndCommand:
@@ -910,53 +747,49 @@ namespace NSOnlineOfficeBinToPdf
 					pRenderer->EndCommand(4);
 					bIsPathOpened = false;
 				}
-				pRenderer->EndCommand((DWORD)(ReadInt(current, curindex)));
+				pRenderer->EndCommand((DWORD)(oReader.ReadInt()));
 				pRenderer->PathCommandEnd();
 				break;
 			}
 			case ctGradientFill:
 			{
 				// TODO: Эта команда не должна приходить
-				INT32 gradientType = ReadInt(current, curindex);
+				INT32 gradientType = oReader.ReadInt();
 
 				std::wstring sXml, sXmlStop;
 				if (0 == gradientType)	//	linearGradient
 				{
-					double x1 = ReadInt(current, curindex) / 100000.0;
-					double x2 = ReadInt(current, curindex) / 100000.0;
-					double y1 = ReadInt(current, curindex) / 100000.0;
-					double y2 = ReadInt(current, curindex) / 100000.0;
+					double x1 = oReader.ReadDouble();
+					double x2 = oReader.ReadDouble();
+					double y1 = oReader.ReadDouble();
+					double y2 = oReader.ReadDouble();
 
-					int stops = ReadInt(current, curindex);
+					int stops = oReader.ReadInt();
 
 					for (int i = 0; i < stops; ++i)
 					{
-						INT32 color   = static_cast<INT32>(*current);
-						double opacity = static_cast<double>(static_cast<INT32>(*(current + 1))) / 255.0;
-						double offset  = static_cast<double>(static_cast<INT32>(*(current + 2))) / 255.0;
-
-						current  += 6 * 4; // 4 + 1 + 1
-						curindex += 6 * 4;
+						INT32 color    = static_cast<INT32>(oReader.ReadByte());
+						double opacity = static_cast<double>(static_cast<INT32>(oReader.ReadByte())) / 255.0;
+						double offset  = static_cast<double>(static_cast<INT32>(oReader.ReadByte())) / 255.0;
+						oReader.Skip(6 * 4 - 3);
 					}
 				}
 				else if (1 == gradientType)
 				{
-					double cx = ReadInt(current, curindex) / 100000.0;
-					double cy = ReadInt(current, curindex) / 100000.0;
-					double r  = ReadInt(current, curindex) / 100000.0;
-					double fx = ReadInt(current, curindex) / 100000.0;
-					double fy = ReadInt(current, curindex) / 100000.0;
+					double cx = oReader.ReadDouble();
+					double cy = oReader.ReadDouble();
+					double r  = oReader.ReadDouble();
+					double fx = oReader.ReadDouble();
+					double fy = oReader.ReadDouble();
 
-					int stops = ReadInt(current, curindex);
+					int stops = oReader.ReadInt();
 
 					for (int i = 0; i < stops; ++i)
 					{
-						INT32 color   = static_cast<INT32>(*current);
-						double opacity = static_cast<double>(static_cast<INT32>(*(current + 1))) / 255.0;
-						double offset  = static_cast<double>(static_cast<INT32>(*(current + 2))) / 255.0;
-
-						current  += 6 * 4;		//	4 + 1 + 1
-						curindex += 6 * 4;
+						INT32 color    = static_cast<INT32>(oReader.ReadByte());
+						double opacity = static_cast<double>(static_cast<INT32>(oReader.ReadByte())) / 255.0;
+						double offset  = static_cast<double>(static_cast<INT32>(oReader.ReadByte())) / 255.0;
+						oReader.Skip(6 * 4 - 3);
 					}
 				}
 				break;
@@ -964,50 +797,48 @@ namespace NSOnlineOfficeBinToPdf
 			case ctGradientFillXML:
 			{
 				// TODO: Эта команда не должна приходить
-				INT32 gradientType = ReadInt(current, curindex);
-				int _sLen = ReadInt(current, curindex);
-				std::wstring wsTempString = ReadString16(current, curindex, _sLen);
+				INT32 gradientType = oReader.ReadInt();
+				int nLen = oReader.ReadInt();
+				std::wstring wsTempString = oReader.ReadString16(nLen);
 				break;
 			}
 			case ctGradientStroke:
 			{
 				// TODO: Эта команда не должна приходить
-				INT32 gradientType = ReadInt(current, curindex);
+				INT32 gradientType = oReader.ReadInt();
 				if (0 == gradientType)	//	linearGradient
 				{
-					double x1 = ReadInt(current, curindex) / 100000.0;
-					double x2 = ReadInt(current, curindex) / 100000.0;
-					double y1 = ReadInt(current, curindex) / 100000.0;
-					double y2 = ReadInt(current, curindex) / 100000.0;
-					int stops = ReadInt(current, curindex);
+					double x1 = oReader.ReadDouble();
+					double x2 = oReader.ReadDouble();
+					double y1 = oReader.ReadDouble();
+					double y2 = oReader.ReadDouble();
+
+					int stops = oReader.ReadInt();
 
 					for (int i = 0; i < stops; ++i)
 					{
-						INT32 color   = static_cast<INT32>(*current);
-						double opacity = static_cast<double>(static_cast<INT32>(*(current + 1))) / 255.0;
-						double offset  = static_cast<double>(static_cast<INT32>(*(current + 2))) / 255.0;
-
-						current  += 6 * 4; // 4 + 1 + 1
-						curindex += 6 * 4;
+						INT32 color    = static_cast<INT32>(oReader.ReadByte());
+						double opacity = static_cast<double>(static_cast<INT32>(oReader.ReadByte())) / 255.0;
+						double offset  = static_cast<double>(static_cast<INT32>(oReader.ReadByte())) / 255.0;
+						oReader.Skip(6 * 4 - 3);
 					}
 				}
 				else if (1 == gradientType)
 				{
-					double cx = ReadInt(current, curindex) / 100000.0;
-					double cy = ReadInt(current, curindex) / 100000.0;
-					double r  = ReadInt(current, curindex) / 100000.0;
-					double fx = ReadInt(current, curindex) / 100000.0;
-					double fy = ReadInt(current, curindex) / 100000.0;
-					int stops = ReadInt(current, curindex);
+					double cx = oReader.ReadDouble();
+					double cy = oReader.ReadDouble();
+					double r  = oReader.ReadDouble();
+					double fx = oReader.ReadDouble();
+					double fy = oReader.ReadDouble();
+
+					int stops = oReader.ReadInt();
 
 					for (int i = 0; i < stops; ++i)
 					{
-						INT32 color   = static_cast<INT32>(*current);
-						double opacity = static_cast<double>(static_cast<INT32>(*(current + 1))) / 255.0;
-						double offset  = static_cast<double>(static_cast<INT32>(*(current + 2))) / 255.0;
-
-						current  += 6 * 4; // 4 + 1 + 1
-						curindex += 6 * 4;
+						INT32 color    = static_cast<INT32>(oReader.ReadByte());
+						double opacity = static_cast<double>(static_cast<INT32>(oReader.ReadByte())) / 255.0;
+						double offset  = static_cast<double>(static_cast<INT32>(oReader.ReadByte())) / 255.0;
+						oReader.Skip(6 * 4 - 3);
 					}
 				}
 				break;
@@ -1015,248 +846,123 @@ namespace NSOnlineOfficeBinToPdf
 			case ctGradientStrokeXML:
 			{
 				// TODO: Эта команда не должна приходить
-				INT32 gradientType = ReadInt(current, curindex);
-				int _sLen = (int)ReadInt(current, curindex);
-				std::wstring wsTempString = ReadString16(current, curindex, _sLen);
+				INT32 gradientType = oReader.ReadInt();
+				int nLen = (int)oReader.ReadInt();
+				std::wstring wsTempString = oReader.ReadString16(nLen);
 				break;
 			}
+			// дополнительные команды. из-за совместимости версий не можем менят формат.
+			// но все следующие - должны быть по одной схеме
 			case ctHyperlink:
 			{
-				double dX = ReadDouble(current, curindex);
-				double dY = ReadDouble(current, curindex);
-				double dW = ReadDouble(current, curindex);
-				double dH = ReadDouble(current, curindex);
-
-				std::wstring wsUrl     = ReadString(current, curindex);
-				std::wstring wsTooltip = ReadString(current, curindex);
-
-				pRenderer->AddHyperlink(dX, dY, dW, dH, wsUrl, wsTooltip);
+				if (S_OK == pRenderer->IsSupportAdvancedCommand(IAdvancedCommand::AdvancedCommandType::Hyperlink))
+				{
+					IAdvancedCommand* pCommand = oReader.Read(ctHyperlink, pCorrector);
+					if (pCommand)
+					{
+						pRenderer->AdvancedCommand(pCommand);
+						delete pCommand;
+					}
+				}
+				else
+				{
+					oReader.SkipDouble(4);
+					oReader.SkipString();
+					oReader.SkipString();
+				}
 				break;
 			}
 			case ctLink:
 			{
-				double dX = ReadDouble(current, curindex);
-				double dY = ReadDouble(current, curindex);
-				double dW = ReadDouble(current, curindex);
-				double dH = ReadDouble(current, curindex);
-
-				double dDestX = ReadDouble(current, curindex);
-				double dDestY = ReadDouble(current, curindex);
-				int    nPage  = ReadInt(current, curindex);
-
-				pRenderer->AddLink(dX, dY, dW, dH, dDestX, dDestY, nPage);
-				break;
-			}
-			case ctFormField:
-			{
-				BYTE* nStartPos   = current;
-				int   nStartIndex = curindex;
-
-				int nLen = ReadInt(current, curindex);
-
-				double dX = ReadDouble(current, curindex);
-				double dY = ReadDouble(current, curindex);
-				double dW = ReadDouble(current, curindex);
-				double dH = ReadDouble(current, curindex);
-
-				CFormFieldInfo oInfo;
-				oInfo.SetBounds(dX, dY, dW, dH);
-				oInfo.SetBaseLineOffset(ReadDouble(current, curindex));
-
-				int nFlags = ReadInt(current, curindex);
-
-				if (nFlags & 1)
-					oInfo.SetKey(ReadString(current, curindex));
-
-				if (nFlags & 2)
-					oInfo.SetHelpText(ReadString(current, curindex));
-
-				oInfo.SetRequired(nFlags & 4);
-				oInfo.SetPlaceHolder(nFlags & 8);
-
-				if (nFlags & (1 << 6))
+				if (S_OK == pRenderer->IsSupportAdvancedCommand(IAdvancedCommand::AdvancedCommandType::Link))
 				{
-					int nBorderType = ReadInt(current, curindex);
-					double dBorderSize = ReadDouble(current, curindex);
-					unsigned char unR = ReadByte(current, curindex);
-					unsigned char unG = ReadByte(current, curindex);
-					unsigned char unB = ReadByte(current, curindex);
-					unsigned char unA = ReadByte(current, curindex);
-
-					oInfo.SetBorder(nBorderType, dBorderSize, unR, unG, unB, unA);
-				}
-
-				if (nFlags & (1 << 9))
-				{
-					unsigned char unR = ReadByte(current, curindex);
-					unsigned char unG = ReadByte(current, curindex);
-					unsigned char unB = ReadByte(current, curindex);
-					unsigned char unA = ReadByte(current, curindex);
-					oInfo.SetShd(unR, unG, unB, unA);
-				}
-
-				if (nFlags & (1 << 10))
-				{
-					oInfo.SetJc(ReadByte(current, curindex));
-				}
-
-				oInfo.SetType(ReadInt(current, curindex));
-
-				if (oInfo.IsTextField())
-				{
-					CFormFieldInfo::CTextFormPr* pPr = oInfo.GetTextFormPr();
-					pPr->SetComb(nFlags & (1 << 20));
-
-					if (nFlags & (1 << 21))
-						pPr->SetMaxCharacters(ReadInt(current, curindex));
-
-					if (nFlags & (1 << 22))
-						pPr->SetTextValue(ReadString(current, curindex));
-
-					pPr->SetMultiLine(nFlags & (1 << 23));
-					pPr->SetAutoFit(nFlags & (1 << 24));
-
-					if (nFlags & (1 << 25))
-						pPr->SetPlaceHolder(ReadString(current, curindex));
-
-					if (nFlags & (1 << 26))
+					IAdvancedCommand* pCommand = oReader.Read(ctLink, pCorrector);
+					if (pCommand)
 					{
-						CFormFieldInfo::CTextFormFormat* pFormat = pPr->GetFormat();
-						pFormat->SetType((CFormFieldInfo::EFormatType)ReadByte(current, curindex));
-
-						unsigned int unSymbolsCount = ReadInt(current, curindex);
-						for (unsigned int unSymbolIndex = 0; unSymbolIndex < unSymbolsCount; ++unSymbolIndex)
-						{
-							pFormat->AddSymbol(ReadInt(current, curindex));
-						}
-
-						pFormat->SetValue(ReadString(current, curindex));
+						pRenderer->AdvancedCommand(pCommand);
+						delete pCommand;
 					}
 				}
-				else if (oInfo.IsDropDownList())
+				else
 				{
-					CFormFieldInfo::CDropDownFormPr* pPr = oInfo.GetDropDownFormPr();
-					pPr->SetEditComboBox(nFlags & (1 << 20));
-
-					int nItemsCount = ReadInt(current, curindex);
-					for (int nIndex = 0; nIndex < nItemsCount; ++nIndex)
-					{
-						pPr->AddComboBoxItem(ReadString(current, curindex));
-					}
-
-					int nSelectedIndex = ReadInt(current, curindex);
-
-					if (nFlags & (1 << 22))
-						pPr->SetTextValue(ReadString(current, curindex));
-
-					if (nFlags & (1 << 23))
-						pPr->SetPlaceHolder(ReadString(current, curindex));
+					oReader.SkipDouble(6);
+					oReader.SkipInt();
 				}
-				else if (oInfo.IsCheckBox())
-				{
-					CFormFieldInfo::CCheckBoxFormPr* pPr = oInfo.GetCheckBoxFormPr();
-					pPr->SetChecked(nFlags & (1 << 20));
-					pPr->SetType(ReadInt(current, curindex));
-					pPr->SetCheckedSymbol(ReadInt(current, curindex));
-					pPr->SetCheckedFont(ReadString(current, curindex));
-					pPr->SetUncheckedSymbol(ReadInt(current, curindex));
-					pPr->SetUncheckedFont(ReadString(current, curindex));
-
-					if (nFlags & (1 << 21))
-						pPr->SetGroupKey(ReadString(current, curindex));
-				}
-				else if (oInfo.IsPicture())
-				{
-					CFormFieldInfo::CPictureFormPr* pPr = oInfo.GetPictureFormPr();
-					pPr->SetConstantProportions(nFlags & (1 << 20));
-					pPr->SetRespectBorders(nFlags & (1 << 21));
-					pPr->SetScaleType(CFormFieldInfo::EScaleType((nFlags >> 24) & 0xF));
-					LONG lShiftX = ReadInt(current, curindex);
-					LONG lShiftY = ReadInt(current, curindex);
-					pPr->SetShift(lShiftX, lShiftY);
-
-					if (nFlags & (1 << 22))
-						pPr->SetPicturePath(pCorrector->GetImagePath(ReadString(current, curindex)));
-				}
-				else if (oInfo.IsSignature())
-				{
-					CFormFieldInfo::CSignatureFormPr* pPr = oInfo.GetSignatureFormPr();
-
-					// Поля Настройки подписи
-					// Сведения о подписывающем
-
-					// Имя
-					if (nFlags & (1 << 20))
-						pPr->SetName(ReadString(current, curindex));
-
-					// Должность Игнорируется
-
-					// Адрес электронной почты
-					if (nFlags & (1 << 21))
-						pPr->SetContact(ReadString(current, curindex));
-
-					// Инструкция для подписывающего Игнорируется
-
-					// Показывать дату подписи в строке подписи
-					pPr->SetDate(nFlags & (1 << 22));
-
-					// Цель подписания документа (причина)
-					if (nFlags & (1 << 23))
-						pPr->SetReason(ReadString(current, curindex));
-
-					// Картинка
-					if (nFlags & (1 << 24))
-						pPr->SetPicturePath(pCorrector->GetImagePath(ReadString(current, curindex)));
-
-					// Необходимо передать сертификат, пароль, ключ, пароль ключа
-					if (nFlags & (1 << 25))
-						pPr->SetCert(ReadString(current, curindex));
-				}
-				else if (oInfo.IsDateTime())
-				{
-					CFormFieldInfo::CDateTimeFormPr* pPr = oInfo.GetDateTimeFormPr();
-					
-					if (nFlags & (1 << 22))
-						pPr->SetValue(ReadString(current, curindex));
-					
-					if (nFlags & (1 << 25))
-						pPr->SetPlaceHolder(ReadString(current, curindex));
-					
-					if (nFlags & (1 << 26))
-						pPr->SetFormat(ReadString(current, curindex));
-				}
-
-				if (oInfo.IsValid())
-					pRenderer->AddFormField(&oInfo);
-
-				current  = nStartPos + nLen;
-				curindex = nStartIndex + nLen;
-
 				break;
 			}
 			case ctDocInfo:
 			{
-				int nFlags = ReadInt(current, curindex);
+				if (S_OK == pRenderer->IsSupportAdvancedCommand(IAdvancedCommand::AdvancedCommandType::DocInfo))
+				{
+					IAdvancedCommand* pCommand = oReader.Read(ctDocInfo, pCorrector);
+					pRenderer->AdvancedCommand(pCommand);
+					delete pCommand;
+				}
+				else
+				{
+					int nFlags = oReader.ReadInt();
+					if (nFlags & 1)
+						oReader.SkipString();
+					if (nFlags & 2)
+						oReader.SkipString();
+					if (nFlags & 4)
+						oReader.SkipString();
+					if (nFlags & 8)
+						oReader.SkipString();
+				}
+				break;
+			}
+			case ctFormField:
+			case ctAnnotField:
+			case ctAnnotFieldDelete:
+			case ctWidgetsInfo:
+			case ctShapeStart:
+			case ctShapeEnd:
+			case ctPageClear:
+			case ctPageRotate:
+			case ctHeadings:
+			{
+				IAdvancedCommand::AdvancedCommandType eAdvancedCommandType = IAdvancedCommand::AdvancedCommandType::Undefined;
+				switch (eCommand)
+				{
+				case ctFormField:        eAdvancedCommandType = IAdvancedCommand::AdvancedCommandType::FormField;   break;
+				case ctAnnotField:       eAdvancedCommandType = IAdvancedCommand::AdvancedCommandType::Annotaion;   break;
+				case ctAnnotFieldDelete: eAdvancedCommandType = IAdvancedCommand::AdvancedCommandType::DeleteAnnot; break;
+				case ctWidgetsInfo:      eAdvancedCommandType = IAdvancedCommand::AdvancedCommandType::WidgetsInfo; break;
+				case ctShapeStart:       eAdvancedCommandType = IAdvancedCommand::AdvancedCommandType::ShapeStart;  break;
+				case ctShapeEnd:         eAdvancedCommandType = IAdvancedCommand::AdvancedCommandType::ShapeEnd;    break;
+				case ctPageClear:        eAdvancedCommandType = IAdvancedCommand::AdvancedCommandType::PageClear;   break;
+				case ctPageRotate:       eAdvancedCommandType = IAdvancedCommand::AdvancedCommandType::PageRotate;  break;
+				case ctHeadings:         eAdvancedCommandType = IAdvancedCommand::AdvancedCommandType::Headings;    break;
+				default:
+					break;
+				}
 
-				std::wstring wsTitle, wsCreator, wsSubject, wsKeywords;
-				if (nFlags & 1)
-					wsTitle    = ReadString(current, curindex);
-				if (nFlags & 2)
-					wsCreator  = ReadString(current, curindex);
-				if (nFlags & 4)
-					wsSubject  = ReadString(current, curindex);
-				if (nFlags & 8)
-					wsKeywords = ReadString(current, curindex);
+				BYTE* cur = oReader.GetCurrentBuffer();
+				int nLen = oReader.ReadInt();
 
-				pRenderer->DocInfo(wsTitle, wsCreator, wsSubject, wsKeywords);
+				if ((IAdvancedCommand::AdvancedCommandType::Undefined != eAdvancedCommandType) &&
+					(S_OK == pRenderer->IsSupportAdvancedCommand(eAdvancedCommandType)))
+				{
+					IAdvancedCommand* pCommand = oReader.Read(eCommand, pCorrector);
+					if (pCommand)
+					{
+						pRenderer->AdvancedCommand(pCommand);
+						delete pCommand;
+					}
+				}
+
+				oReader.SetCurrentBuffer(cur + nLen);
 				break;
 			}
 			default:
 			{
+				BYTE* cur = oReader.GetCurrentBuffer();
+				oReader.SetCurrentBuffer(cur + oReader.ReadInt());
 				break;
 			}
 			}; // switch (eCommand)
-		} // while (curindex < len)
+		}
 
 		return true;
 	}
@@ -1266,30 +972,26 @@ namespace NSOnlineOfficeBinToPdf
 		CommandType eCommand = ctError;
 
 		bool bIsPathOpened = false;
-		int curindex = 0;
-
-		BYTE* current = pBuffer;
-		while (curindex < lBufferLen)
+		CBufferReader oReader(pBuffer, lBufferLen);
+		while (oReader.Check())
 		{
-			eCommand = (CommandType)(*current);
-			current++;
-			curindex++;
+			eCommand = (CommandType)(oReader.ReadByte());
 			switch (eCommand)
 			{
 			case ctPageWidth:
 			{
-				arSizes[PagesCount - 1].width = (ReadInt(current, curindex) / 100000.0);
+				arSizes[PagesCount - 1].width = oReader.ReadDouble();
 				break;
 			}
 			case ctPageHeight:
 			{
-				arSizes[PagesCount - 1].height = (ReadInt(current, curindex) / 100000.0);
+				arSizes[PagesCount - 1].height = oReader.ReadDouble();
 				break;
 			}
 			case ctPageStart:
 			{
 				AddPage();
-				arSizes[PagesCount - 1].data = current;
+				arSizes[PagesCount - 1].data = oReader.GetCurrentBuffer();
 				break;
 			}
 			case ctPageEnd:
@@ -1298,33 +1000,29 @@ namespace NSOnlineOfficeBinToPdf
 			}
 			case ctPenColor:
 			{
-				SkipInt(current, curindex);
+				oReader.SkipInt();
 				break;
 			}
 			case ctPenAlpha:
 			{
-				current++;
-				curindex++;
+				oReader.Skip(1);
 				break;
 			}
 			case ctPenSize:
 			{
-				SkipInt(current, curindex);
+				oReader.SkipInt();
 				break;
 			}
 			case ctPenDashStyle:
 			{
-				BYTE nDashType = *current++;
-				curindex++;
+				BYTE nDashType = oReader.ReadByte();
 				switch (nDashType)
 				{
 				case Aggplus::DashStyleCustom:
 				{
-					int nCountDash = ReadInt(current, curindex);
+					int nCountDash = oReader.ReadInt();
 					if (0 < nCountDash)
-					{
-						SkipInt(current, curindex, nCountDash);
-					}
+						oReader.SkipInt(nCountDash);
 				}
 				default:
 					break;
@@ -1334,71 +1032,63 @@ namespace NSOnlineOfficeBinToPdf
 			}
 			case ctPenLineJoin:
 			{
-				current++;
-				curindex++;
+				oReader.Skip(1);
 				break;
 			}
 			case ctBrushType:
 			{
-				SkipInt(current, curindex);
+				oReader.SkipInt();
 				break;
 			}
 			case ctBrushColor1:
 			{
-				SkipInt(current, curindex);
+				oReader.SkipInt();
 				break;
 			}
 			case ctBrushAlpha1:
 			{
-				current++;
-				curindex++;
+				oReader.Skip(1);
 				break;
 			}
 			case ctBrushColor2:
 			{
-				SkipInt(current, curindex);
+				oReader.SkipInt();
 				break;
 			}
 			case ctBrushAlpha2:
 			{
-				current++;
-				curindex++;
+				oReader.Skip(1);
 				break;
 			}
 			case ctBrushRectable:
 			{
-				SkipInt(current, curindex, 4);
+				oReader.SkipInt(4);
 				break;
 			}
 			case ctBrushRectableEnabled:
 			{
-				current += 1;
-				curindex += 1;
+				oReader.Skip(1);
 				break;
 			}
 			case ctBrushTexturePathOld:
 			{
-				int nLen = 2 * ReadUSHORT(current, curindex);
-				SkipString16(current, curindex, nLen);
+				int nLen = 2 * oReader.ReadUShort();
+				oReader.SkipString16(nLen);
 				break;
 			}
 			case ctBrushTexturePath:
 			{
-				int nLen = ReadInt(current, curindex);
-				SkipString16(current, curindex, nLen);
+				int nLen = oReader.ReadInt();
+				oReader.SkipString16(nLen);
 				break;
 			}
 			case ctBrushGradient:
 			{
-				current++;
-				curindex++;
+				oReader.Skip(1);
 
 				while (true)
 				{
-					BYTE _command = *current;
-					current++;
-					curindex++;
-
+					BYTE _command = oReader.ReadByte();
 					if (251 == _command)
 						break;
 
@@ -1406,26 +1096,19 @@ namespace NSOnlineOfficeBinToPdf
 					{
 					case 0:
 					{
-						current += 5;
-						curindex += 5;
-						SkipInt(current, curindex, 4);
+						oReader.Skip(5 + (4 * 4));
 						break;
 					}
 					case 1:
 					{
-						current++;
-						curindex++;
-						SkipInt(current, curindex, 6);
+						oReader.Skip(1 + (6 * 4));
 						break;
 					}
 					case 2:
 					{
-						LONG lColorsCount = (LONG)ReadInt(current, curindex);
+						LONG lColorsCount = (LONG)oReader.ReadInt();
 						if (0 <= lColorsCount)
-						{
-							SkipInt(current, curindex, 2 * lColorsCount);
-						}
-
+							oReader.SkipInt(2 * lColorsCount);
 						break;
 					}
 					default:
@@ -1439,19 +1122,17 @@ namespace NSOnlineOfficeBinToPdf
 			}
 			case ctBrushTextureMode:
 			{
-				current += 1;
-				curindex += 1;
+				oReader.Skip(1);
 				break;
 			}
 			case ctBrushTextureAlpha:
 			{
-				current += 1;
-				curindex += 1;
+				oReader.Skip(1);
 				break;
 			}
 			case ctSetTransform:
 			{
-				SkipInt(current, curindex, 6);
+				oReader.SkipInt(6);
 				break;
 			}
 			case ctPathCommandStart:
@@ -1460,17 +1141,17 @@ namespace NSOnlineOfficeBinToPdf
 			}
 			case ctPathCommandMoveTo:
 			{
-				SkipInt(current, curindex, 2);
+				oReader.SkipInt(2);
 				break;
 			}
 			case ctPathCommandLineTo:
 			{
-				SkipInt(current, curindex, 2);
+				oReader.SkipInt(2);
 				break;
 			}
 			case ctPathCommandCurveTo:
 			{
-				SkipInt(current, curindex, 6);
+				oReader.SkipInt(6);
 				break;
 			}
 			case ctPathCommandClose:
@@ -1483,57 +1164,55 @@ namespace NSOnlineOfficeBinToPdf
 			}
 			case ctDrawPath:
 			{
-				SkipInt(current, curindex);
+				oReader.SkipInt();
 				break;
 			}
 			case ctDrawImageFromFile:
 			{
-				int nLen = ReadInt(current, curindex);
-				SkipString16(current, curindex, nLen);
-
-				SkipInt(current, curindex, 4);
+				int nLen = oReader.ReadInt();
+				oReader.SkipString16(nLen);
+				oReader.SkipInt(4);
 				break;
 			}
 			case ctFontName:
 			{
-				int nLen = 2 * (int)ReadUSHORT(current, curindex);
-				SkipString16(current, curindex, nLen);
+				int nLen = 2 * (int)oReader.ReadUShort();
+				oReader.SkipString16(nLen);
 				break;
 			}
 			case ctFontSize:
 			{
-				SkipInt(current, curindex);
+				oReader.SkipInt();
 				break;
 			}
 			case ctFontStyle:
 			{
-				SkipInt(current, curindex);
+				oReader.SkipInt();
 				break;
 			}
 			case ctDrawText:
 			{
-				int nLen = 2 * (int)ReadUSHORT(current, curindex);
-				SkipString16(current, curindex, nLen);
-
-				SkipInt(current, curindex, 2);
+				int nLen = 2 * (int)oReader.ReadUShort();
+				oReader.SkipString16(nLen);
+				oReader.SkipInt(2);
 				break;
 			}
 			case ctDrawTextCodeGid:
 			{
-				SkipInt(current, curindex);
-				SkipDouble(current, curindex, 2);
-				int nCountUnicodes = ReadInt(current, curindex);
-				SkipInt(current, curindex, nCountUnicodes);
+				oReader.SkipInt();
+				oReader.SkipDouble(2);
+				int nCountUnicodes = oReader.ReadInt();
+				oReader.SkipInt(nCountUnicodes);
 				break;
 			}
 			case ctBeginCommand:
 			{
-				SkipInt(current, curindex);
+				oReader.SkipInt();
 				break;
 			}
 			case ctEndCommand:
 			{
-				SkipInt(current, curindex);
+				oReader.SkipInt();
 				break;
 			}
 			case ctGradientFill:
@@ -1546,45 +1225,43 @@ namespace NSOnlineOfficeBinToPdf
 			}
 			case ctHyperlink:
 			{
-				SkipDouble(current, curindex, 4);
-				SkipString(current, curindex);
-				SkipString(current, curindex);
+				oReader.SkipDouble(4);
+				oReader.SkipString();
+				oReader.SkipString();
 				break;
 			}
 			case ctLink:
 			{
-				SkipDouble(current, curindex, 6);
-				SkipInt(current, curindex);
-				break;
-			}
-			case ctFormField:
-			{
-				BYTE* nStartPos   = current;
-				int   nStartIndex = curindex;
-
-				int nLen = ReadInt(current, curindex);
-
-				current  = nStartPos + nLen;
-				curindex = nStartIndex + nLen;
+				oReader.SkipDouble(6);
+				oReader.SkipInt();
 				break;
 			}
 			case ctDocInfo:
 			{
-				int nFlags = ReadInt(current, curindex);
+				int nFlags = oReader.ReadInt();
 
-				std::wstring wsTitle, wsCreator, wsSubject, wsKeywords;
 				if (nFlags & 1)
-					SkipString(current, curindex);
+					oReader.SkipString();
 				if (nFlags & 2)
-					SkipString(current, curindex);
+					oReader.SkipString();
 				if (nFlags & 4)
-					SkipString(current, curindex);
+					oReader.SkipString();
 				if (nFlags & 8)
-					SkipString(current, curindex);
+					oReader.SkipString();
 				break;
 			}
+			case ctFormField:
+			case ctAnnotField:
+			case ctAnnotFieldDelete:
+			case ctWidgetsInfo:
+			case ctShapeStart:
+			case ctShapeEnd:
+			case ctPageRotate:
+			case ctHeadings:
 			default:
 			{
+				BYTE* cur = oReader.GetCurrentBuffer();
+				oReader.SetCurrentBuffer(cur + oReader.ReadInt());
 				break;
 			}
 			}; // switch (eCommand)

@@ -34,8 +34,7 @@
 
 #include "Objects.h"
 #include "Types.h"
-#include "Annotation.h"
-#include "../../DesktopEditor/graphics/FormField.h"
+#include "../../DesktopEditor/graphics/commands/FormField.h"
 
 namespace PdfWriter
 {
@@ -49,6 +48,71 @@ namespace PdfWriter
 	class CImageDict;
 	class CFontCidTrueType;
 	class CSignatureDict;
+	class CAnnotation;
+
+	enum EBorderSubtype
+	{
+		border_subtype_Solid,
+		border_subtype_Beveled,
+		border_subtype_Dashed,
+		border_subtype_Inset,
+		border_subtype_Underlined
+	};
+	enum EAnnotType
+	{
+		AnnotUnknown        = -1,
+		AnnotText           = 0,
+		AnnotLink           = 1,
+		AnnotSound          = 2,
+		AnnotFreeText       = 3,
+		AnnotStamp          = 4,
+		AnnotSquare         = 5,
+		AnnotCircle         = 6,
+		AnnotStrikeOut      = 7,
+		AnnotHighLight      = 8,
+		AnnotUnderline      = 9,
+		AnnotInk            = 10,
+		AnnotFileAttachment = 11,
+		AnnotPopup          = 12,
+		AnnotLine           = 13,
+		AnnotSquiggly       = 14,
+		AnnotPolygon        = 15,
+		AnnotPolyLine       = 16,
+		AnnotCaret          = 17,
+		AnnotWidget         = 18
+	};
+	enum EWidgetType
+	{
+		WidgetUnknown     = 26,
+		WidgetPushbutton  = 27,
+		WidgetRadiobutton = 28,
+		WidgetCheckbox    = 29,
+		WidgetText        = 30,
+		WidgetCombobox    = 31,
+		WidgetListbox     = 32,
+		WisgetSignature   = 33
+	};
+	enum EAnnotHighlightMode
+	{
+		AnnotNoHighlight = 0,
+		AnnotInvertBox,
+		AnnotInvertBorder,
+		AnnotDownAppearance,
+		AnnotHighlightModeEOF
+	};
+	enum EAnnotIcon
+	{
+		AnnotIconComment      = 0,
+		AnnotIconKey          = 1,
+		AnnotIconNote         = 2,
+		AnnotIconHelp         = 3,
+		AnnotIconNewParagraph = 4,
+		AnnotIconParagraph    = 5,
+		AnnotIconInsert       = 6,
+
+		AnnotIconMin          = 0,
+		AnnotIconMax          = 6
+	};
 
 	class CFieldBase : public CDictObject
 	{
@@ -101,7 +165,7 @@ namespace PdfWriter
 		const TRgb& GetNormalColor();
 		const TRgb& GetPlaceHolderColor();
 		void SetFormat(const CFormFieldInfo::CTextFormFormat* pFormat);
-
+		CFontDict* GetFont();
 
 	protected:
 
@@ -130,6 +194,7 @@ namespace PdfWriter
 		TRgb              m_oPlaceHolderColor;
 		CDictObject*      m_pFocus;
 		CDictObject*      m_pBlur;
+		CFontDict*        m_pFont;
 	};
 
 	class CTextField : public CFieldBase
@@ -277,11 +342,12 @@ namespace PdfWriter
 	class CAnnotAppearance : public CDictObject
 	{
 	public:
-		CAnnotAppearance(CXref* pXRef, CFieldBase* pField);
+		CAnnotAppearance(CXref* pXRef, CFieldBase*  pField);
+		CAnnotAppearance(CXref* pXRef, CAnnotation* pAnnot);
 
-		CAnnotAppearanceObject* GetNormal();
-		CAnnotAppearanceObject* GetRollover();
-		CAnnotAppearanceObject* GetDown();
+		CAnnotAppearanceObject* GetNormal(CResourcesDict* pResources = NULL);
+		CAnnotAppearanceObject* GetRollover(CResourcesDict* pResources = NULL);
+		CAnnotAppearanceObject* GetDown(CResourcesDict* pResources = NULL);
 
 	private:
 
@@ -290,12 +356,14 @@ namespace PdfWriter
 		CAnnotAppearanceObject* m_pRollover;
 		CAnnotAppearanceObject* m_pDown;
 		CFieldBase*             m_pField;
+		CAnnotation*            m_pAnnot;
 	};
 
 	class CCheckBoxAnnotAppearance : public CDictObject
 	{
 	public:
 		CCheckBoxAnnotAppearance(CXref* pXref, CFieldBase* pField, const char* sYesName = NULL);
+		CCheckBoxAnnotAppearance(CXref* pXref, CAnnotation* pAnnot, const char* sYesName = NULL);
 		
 		CAnnotAppearanceObject* GetYesN();
 		CAnnotAppearanceObject* GetOffN();
@@ -305,7 +373,6 @@ namespace PdfWriter
 	private:
 
 		CXref*                  m_pXref;
-		CFieldBase*             m_pField;
 		CAnnotAppearanceObject* m_pYesN;
 		CAnnotAppearanceObject* m_pOffN;
 		CAnnotAppearanceObject* m_pYesD;
@@ -315,24 +382,67 @@ namespace PdfWriter
 	class CAnnotAppearanceObject : public CDictObject
 	{
 	public:
-		CAnnotAppearanceObject(CXref* pXRef, CFieldBase* pField);
+		CAnnotAppearanceObject(CXref* pXRef, CFieldBase*  pField);
+		CAnnotAppearanceObject(CXref* pXRef, CAnnotation* pAnnot, CResourcesDict* pResources = NULL);
 		void DrawSimpleText(const std::wstring& wsText, unsigned short* pCodes, unsigned int unCount, CFontDict* pFont, double dFontSize = 10.0, double dX = 0.0, double dY = 0.0, double dR = 0.0, double dG = 0.0, double dB = 0.0, const char* sExtGrStateName = NULL, double dW = 1.0, double dH = 1.0, CFontCidTrueType** ppFonts = NULL, double* pShifts = NULL);
 		void DrawPicture(const char* sImageName = NULL, const double& dX = 0.0, const double& dY = 0.0, const double& dW = 0.0, const double& dH = 0.0, const bool& bRespectBorder = false);
 		void StartDrawText(CFontDict* pFont, const double& dFontSize, const double& dR, const double& dG, const double& dB, const char* sExtGStateName, const double& dWidth, const double& dHeight);
 		void DrawTextLine(const double& dX, const double& dY, const unsigned short* pCodes, const unsigned int& unCount, CFontCidTrueType** ppFonts, const double* pShifts);
 		void DrawTextLine(const double &dX, const double &dY, const std::wstring& wsText);
 		void EndDrawText();
+		void AddBBox(double dX, double dY, double dW, double dH);
+		void AddMatrix(double sx, double shy, double shx, double sy, double tx, double ty);
+
+		void StartDraw(const double& dWidth, const double& dHeight);
+		void StartText(CFontDict* pFont, const double& dFontSize);
+		void DrawPictureInline(const double& dWidth, const double& dHeight,const char* sImageName, const double& dX, const double& dY, const double& dW, const double& dH, const bool& bRespectBorder);
+		void EndText();
+		void EndDraw();
+
+		void DrawTextCommentN(const std::string& sColor);
+		void DrawTextCommentR(const std::string& sColor);
+		void DrawTextCheck(const std::string& sColor);
+		void DrawTextCheckmark();
+		void DrawTextCircle(const std::string& sColor);
+		void DrawTextCross(const std::string& sColor);
+		void DrawTextCrossHairs(const std::string& sColor);
+		void DrawTextHelp(const std::string& sColor);
+		void DrawTextInsert(const std::string& sColor);
+		void DrawTextKey(const std::string& sColor);
+		void DrawTextNewParagraph(const std::string& sColor);
+		void DrawTextNote(const std::string& sColor);
+		void DrawTextParagraph(const std::string& sColor);
+		void DrawTextRightArrow(const std::string& sColor);
+		void DrawTextRightPointer(const std::string& sColor);
+		void DrawTextStar(const std::string& sColor);
+		void DrawTextUpArrow(const std::string& sColor);
+		void DrawTextUpLeftArrow(const std::string& sColor);
+
+		void DrawLine();
+
+		void DrawCheckBoxCircle(int nRotate, bool bSet, bool bN);
+		void DrawCheckBoxSquare(int nRotate, bool bSet, bool bN);
+
+		CStream* GetStream() const { return m_pStream; }
+		CFontDict* GetFont() { return m_pFont; }
+
+		bool        m_bStart;
 
 	private:
+		void Init(CXref* pXref, CResourcesDict* pResources);
+
+		void DrawBackground(const double& dWidth, const double& dHeight);
+		void DrawBorder(const double& dWidth, const double& dHeight);
 
 		CXref*      m_pXref;
 		CStream*    m_pStream;
 		CFieldBase* m_pField;
 		double      m_dCurX;
 		double      m_dCurY;
-		bool        m_bStart;
 		CFontDict*  m_pFont;
 		double      m_dFontSize;
+
+		CAnnotation* m_pAnnot;
 	};
 
 }

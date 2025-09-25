@@ -914,14 +914,14 @@ void FileStream::moveStart(int delta) {
 // MemStream
 //------------------------------------------------------------------------
 
-MemStream::MemStream(char *bufA, Guint startA, Guint lengthA, Object *dictA):
+MemStream::MemStream(char *bufA, Guint startA, Guint lengthA, Object *dictA, GBool needFreeA):
     BaseStream(dictA) {
   buf = bufA;
   start = startA;
   length = lengthA;
   bufEnd = buf + start + length;
   bufPtr = buf + start;
-  needFree = gFalse;
+  needFree = needFreeA;
 }
 
 MemStream::~MemStream() {
@@ -989,7 +989,9 @@ void MemStream::setPos(GFileOffset pos, int dir) {
   } else {
     i = (Guint)(start + length - pos);
   }
-  if (i < start) {
+  if (dir < 0 && start + length < pos) {
+    i = 0;
+  } else if (i < start) {
     i = start;
   } else if (i > start + length) {
     i = start + length;
@@ -1438,7 +1440,7 @@ GBool LZWStream::processNextCode() {
   totalOut += seqLength;
 
   // check for a 'decompression bomb'
-  if (totalOut > 50000000 && totalIn < totalOut / 250) {
+  if (totalOut > 500000000 && totalIn < totalOut / 250) {
     error(errSyntaxError, getPos(), "Decompression bomb in flate stream");
     eof = gTrue;
     return gFalse;
@@ -5250,7 +5252,7 @@ void FlateStream::readSome() {
   totalOut += remain;
 
   // check for a 'decompression bomb'
-  if (totalOut > 50000000 && totalIn < totalOut / 250) {
+  if (totalOut > 500000000 && totalIn < totalOut / 250) {
     error(errSyntaxError, getPos(), "Decompression bomb in flate stream");
     endOfBlock = eof = gTrue;
     remain = 0;

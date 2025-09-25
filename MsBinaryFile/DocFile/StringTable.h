@@ -60,15 +60,10 @@ namespace DocFileFormat
 			for ( size_t i = 0; i < Data.size(); ++i )
 			{
 				RELEASEOBJECT( Data[i] );
-
-				if (false == DataExtra.empty())
-				{
-					if (DataExtra[i])
-					{
-						delete []DataExtra[i];
-						DataExtra[i] = NULL;
-					}	
-				}
+			}
+			for (size_t i = 0; i < DataExtra.size(); ++i)
+			{
+				RELEASEOBJECT(DataExtra[i]);
 			}
 		}
 		StringTable( VirtualStreamReader *reader, int code_page_ ) 

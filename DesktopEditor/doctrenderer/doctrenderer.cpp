@@ -39,8 +39,9 @@
 #include "embed/Default.h"
 #include "embed/NativeControlEmbed.h"
 #include "embed/GraphicsEmbed.h"
+#include "embed/DrawingFileEmbed.h"
 
-#include "./config.h"
+#include "./editors.h"
 #include <iostream>
 
 namespace NSDoctRenderer
@@ -99,9 +100,8 @@ namespace NSDoctRenderer
 		std::wstring m_sJsonParams;
 		int m_nLcid;
 
-		std::wstring m_sScriptsCacheDirectory;
-
 		std::vector<int> m_arThemesThumbnailsParams;
+
 	public:
 		CExecuteParams() : m_arChanges()
 		{
@@ -123,7 +123,6 @@ namespace NSDoctRenderer
 			m_nMailMergeIndexEnd = -1;
 
 			m_nLcid = -1;
-			m_sScriptsCacheDirectory = L"";
 		}
 		~CExecuteParams()
 		{
@@ -152,13 +151,13 @@ namespace NSDoctRenderer
 			{
 				m_nCountChangesItems = oNodeChanges.ReadAttributeInt(L"TopItem", -1);
 
-                std::vector<XmlUtils::CXmlNode> oNodes;
+				std::vector<XmlUtils::CXmlNode> oNodes;
 				oNodeChanges.GetNodes(L"Change", oNodes);
 
-                size_t nCount = oNodes.size();
-                for (size_t i = 0; i < nCount; ++i)
+				size_t nCount = oNodes.size();
+				for (size_t i = 0; i < nCount; ++i)
 				{
-                    XmlUtils::CXmlNode & _node = oNodes[i];
+					XmlUtils::CXmlNode& _node = oNodes[i];
 					m_arChanges.push_back(_node.GetText());
 				}
 			}
@@ -175,8 +174,6 @@ namespace NSDoctRenderer
 			m_nLcid = oNode.ReadValueInt(L"Lcid", -1);
 			m_sJsonParams = oNode.ReadValueString(L"JsonParams");
 
-			m_sScriptsCacheDirectory = oNode.ReadValueString(L"ScriptsCacheDirectory", L"");
-
 			m_arThemesThumbnailsParams.clear();
 			std::wstring sThemesThumbnailsParams = oNode.ReadValueString(L"ThemesThumbnailsParams");
 			if (!sThemesThumbnailsParams.empty())
@@ -190,21 +187,21 @@ namespace NSDoctRenderer
 			return true;
 		}
 	};
-}
+} // namespace NSDoctRenderer
 
 namespace NSDoctRenderer
 {
 	std::wstring string_replaceAll(std::wstring str, const std::wstring& from, const std::wstring& to)
 	{
 		size_t start_pos = 0;
-		while((start_pos = str.find(from, start_pos)) != std::wstring::npos)
+		while ((start_pos = str.find(from, start_pos)) != std::wstring::npos)
 		{
 			str.replace(start_pos, from.length(), to);
 			start_pos += to.length();
 		}
 		return str;
 	}
-}
+} // namespace NSDoctRenderer
 
 namespace NSDoctRenderer
 {
@@ -236,14 +233,16 @@ namespace NSDoctRenderer
 
 		std::vector<std::wstring> m_arImagesInChanges;
 
+		IOfficeDrawingFile* m_pDrawingFile;
+
 	public:
 		CDoctRenderer_Private(const std::wstring& sAllFontsPath = L"") : CDoctRendererConfig()
 		{
 			LoadConfig(NSFile::GetProcessDirectory(), sAllFontsPath);
+			m_pDrawingFile = NULL;
 		}
 		~CDoctRenderer_Private()
 		{
-
 		}
 		void LoadConfig(const std::wstring& sConfigDir, const std::wstring& sAllFontsPath = L"")
 		{
@@ -256,7 +255,6 @@ namespace NSDoctRenderer
 		}
 
 	public:
-
 		static void _LOGGING_ERROR_(const std::wstring& strType, const std::wstring& strError)
 		{
 #if 0
@@ -281,15 +279,11 @@ namespace NSDoctRenderer
 		}
 
 		static bool Doct_renderer_SaveFile(CExecuteParams* pParams,
-										   NSNativeControl::CNativeControl* pNative,
-										   JSSmart<CJSContext> context,
-										   JSSmart<CJSValue>* args,
-										   std::wstring& strError,
-										   JSSmart<CJSObject>& api_js_maybe_null,
-										   bool bIsPdfBase64 = false)
+										   NSNativeControl::CNativeControl* pNative, JSSmart<CJSContext> context,
+										   JSSmart<CJSValue>* args, std::wstring& strError, JSSmart<CJSObject>& api_js_maybe_null)
 		{
 			JSSmart<CJSTryCatch> try_catch = context->GetExceptions();
-			JSSmart<CJSObject>   global_js = context->GetGlobal();
+			JSSmart<CJSObject> global_js = context->GetGlobal();
 
 			JSSmart<CJSObject> js_objectApi = api_js_maybe_null;
 			if (!js_objectApi.IsInit() || js_objectApi->isUndefined())
@@ -313,7 +307,7 @@ namespace NSDoctRenderer
 			case DoctRendererFormat::XLST:
 			{
 				JSSmart<CJSValue> js_result2 = js_objectApi->call_func("asc_nativeGetFileData", 1, args);
-				if(try_catch->Check())
+				if (try_catch->Check())
 				{
 					strError = L"code=\"save\"";
 					bIsBreak = true;
@@ -362,14 +356,14 @@ namespace NSDoctRenderer
 				}
 
 				JSSmart<CJSValue> js_result1 = js_objectApi->call_func("asc_nativeCalculateFile", 1, args);
-				if(try_catch->Check())
+				if (try_catch->Check())
 				{
 					strError = L"code=\"calculate\"";
 					bIsBreak = true;
 				}
 
 				JSSmart<CJSValue> js_result2 = js_objectApi->call_func("asc_nativeGetHtml", 1, args);
-				if(try_catch->Check())
+				if (try_catch->Check())
 				{
 					strError = L"code=\"save\"";
 					bIsBreak = true;
@@ -401,7 +395,7 @@ namespace NSDoctRenderer
 				}
 
 				JSSmart<CJSValue> js_result2 = js_objectApi->call_func("asc_nativeCalculateFile", 1, args);
-				if(try_catch->Check())
+				if (try_catch->Check())
 				{
 					strError = L"code=\"calculate\"";
 					bIsBreak = true;
@@ -412,7 +406,7 @@ namespace NSDoctRenderer
 				if (!bIsBreak)
 				{
 					JSSmart<CJSValue> js_result1 = js_objectApi->call_func("asc_nativePrintPagesCount", 1, args);
-					if(try_catch->Check())
+					if (try_catch->Check())
 					{
 						strError = L"code=\"calculate\"";
 						bIsBreak = true;
@@ -422,8 +416,7 @@ namespace NSDoctRenderer
 				}
 
 				// RENDER
-				if (!bIsBreak &&
-					(DoctRendererFormat::PDF == pParams->m_eDstFormat || DoctRendererFormat::IMAGE == pParams->m_eDstFormat))
+				if (!bIsBreak && (DoctRendererFormat::PDF == pParams->m_eDstFormat || DoctRendererFormat::IMAGE == pParams->m_eDstFormat))
 				{
 					if (pParams->m_sJsonParams.empty())
 					{
@@ -447,33 +440,22 @@ namespace NSDoctRenderer
 					}
 
 					JSSmart<CJSValue> js_result2 = js_objectApi->call_func("asc_nativeGetPDF", 1, args);
-					if(try_catch->Check())
+					if (try_catch->Check())
 					{
 						strError = L"code=\"save\"";
 						bIsBreak = true;
 					}
-					else
+					else if (!js_result2->isNull())
 					{
 						JSSmart<CJSTypedArray> typedArray = js_result2->toTypedArray();
 						NSJSBase::CJSDataBuffer oBuffer = typedArray->getData();
 
+						DWORD bufferSize = (pNative->m_nSaveBinaryLen == 0) ? (DWORD)oBuffer.Len : (DWORD)pNative->m_nSaveBinaryLen;
+
 						NSFile::CFileBinary oFile;
 						if (true == oFile.CreateFileW(pParams->m_strDstFilePath))
 						{
-							if (!bIsPdfBase64)
-							{
-								oFile.WriteFile(oBuffer.Data, (DWORD)pNative->m_nSaveBinaryLen);
-							}
-							else
-							{
-								char* pDataDst = NULL;
-								int nDataDst = 0;
-								if (NSFile::CBase64Converter::Encode(oBuffer.Data, pNative->m_nSaveBinaryLen, pDataDst, nDataDst))
-								{
-									oFile.WriteFile((BYTE*)pDataDst, (DWORD)nDataDst);
-									RELEASEARRAYOBJECTS(pDataDst);
-								}
-							}
+							oFile.WriteFile(oBuffer.Data, bufferSize);
 							oFile.CloseFile();
 						}
 
@@ -500,7 +482,7 @@ namespace NSDoctRenderer
 						js_result2 = js_objectApi->call_func("asc_nativeGetThemeThumbnail", 1, args);
 					}
 
-					if(try_catch->Check())
+					if (try_catch->Check())
 					{
 						strError = L"code=\"save\"";
 						bIsBreak = true;
@@ -540,32 +522,66 @@ namespace NSDoctRenderer
 				}
 				break;
 			}
+			case DoctRendererFormat::WATERMARK:
+			{
+				if (!pParams->m_sJsonParams.empty())
+				{
+					std::string sTmp = U_TO_UTF8((pParams->m_sJsonParams));
+					args[0] = context->JSON_Parse(sTmp.c_str());
+
+					JSSmart<CJSValue> js_watermark = js_objectApi->call_func("asc_nativeGetWatermark", 1, args);
+					if (!try_catch->Check() && js_watermark->isString())
+					{
+						std::string sWatermark = js_watermark->toStringA();
+						std::string::size_type pos = sWatermark.find(',');
+						if (pos != std::string::npos)
+						{
+							int nInputSize = (int)(sWatermark.length() - pos) - 1;
+							char* pInput = (char*)(sWatermark.c_str() + pos + 1);
+
+							int nOutputSize = 0;
+							BYTE* pOutput = NULL;
+
+							if (NSFile::CBase64Converter::Decode(pInput, nInputSize, pOutput, nOutputSize))
+							{
+								NSFile::CFileBinary oFileWatermark;
+								if (oFileWatermark.CreateFileW(pParams->m_strDstFilePath))
+								{
+									oFileWatermark.WriteFile(pOutput, nOutputSize);
+									oFileWatermark.CloseFile();
+								}
+
+								RELEASEARRAYOBJECTS(pOutput);
+							}
+						}
+					}
+				}
+				break;
+			}
 			default:
 				break;
 			}
 			return bIsBreak;
 		}
 
-		bool ExecuteScript(const std::string& strScript, const std::wstring& sCachePath, std::wstring& strError, std::wstring& strReturnParams)
+		bool ExecuteScript(NSDoctRenderer::DoctRendererEditorType& editorType, std::wstring& strError, std::wstring& strReturnParams)
 		{
-			if (strScript.empty() && sCachePath.empty()) return true;
-
 			LOGGER_SPEED_START();
 
 			bool bIsBreak = false;
-			JSSmart<CJSContext> context = new CJSContext();
+			JSSmart<CJSContext> context = NSDoctRenderer::CreateEditorContext(editorType, this);
 
 			if (true)
 			{
 				CJSContextScope scope(context);
 				CJSContext::Embed<CNativeControlEmbed>(false);
-				CJSContext::Embed<CGraphicsEmbed>();
 				NSJSBase::CreateDefaults();
 
-				JSSmart<CJSTryCatch>         try_catch = context->GetExceptions();
+				JSSmart<CJSTryCatch> try_catch = context->GetExceptions();
 
 				JSSmart<CJSObject> global_js = context->GetGlobal();
 				global_js->set("window", global_js);
+				global_js->set("self", global_js);
 
 				JSSmart<CJSObject> oNativeCtrl = CJSContext::createEmbedObject("CNativeControlEmbed");
 				global_js->set("native", oNativeCtrl);
@@ -575,8 +591,12 @@ namespace NSDoctRenderer
 
 				LOGGER_SPEED_LAP("compile");
 
-				JSSmart<CJSValue> res = context->runScript(strScript, try_catch, sCachePath);
-				if(try_catch->Check())
+				NSDoctRenderer::RunEditor(editorType, context, try_catch, this);
+
+				if (editorType == DoctRendererEditorType::PDF && m_pDrawingFile)
+					EmbedDrawingFile(context, m_pDrawingFile);
+
+				if (try_catch->Check())
 				{
 					strError = L"code=\"run\"";
 					bIsBreak = true;
@@ -606,27 +626,20 @@ namespace NSDoctRenderer
 				// Api object
 				JSSmart<CJSObject> js_objectApi;
 
-				// OPEN
+				bool bIsWatermark = (m_oParams.m_eDstFormat == NSDoctRenderer::DoctRendererFormat::WATERMARK) ? true : false;
+				JSSmart<CJSValue> openOptions;
+
 				if (!bIsBreak)
 				{
-					CChangesWorker oWorkerLoader;
-					int nVersion = oWorkerLoader.OpenNative(pNative->GetFilePath());
-
-					JSSmart<CJSValue> args_open[4];
-					args_open[0] = oWorkerLoader.GetDataFull()->toValue();
-					args_open[1] = CJSContext::createInt(nVersion);
-					std::wstring sXlsx = NSFile::GetDirectoryName(pNative->GetFilePath()) + L"/Editor.xlsx";
-					args_open[2] = NSFile::CFileBinary::Exists(sXlsx) ? CJSContext::createString(sXlsx) : CJSContext::createUndefined();
-
 					if (!m_oParams.m_sJsonParams.empty())
 					{
 						std::string sTmp = U_TO_UTF8((m_oParams.m_sJsonParams));
-						args_open[3] = context->JSON_Parse(sTmp.c_str());
+						openOptions = context->JSON_Parse(sTmp.c_str());
 
 						if (0 < m_oParams.m_nLcid)
 						{
-							if (args_open[3]->isObject())
-								args_open[3]->toObject()->set("locale", CJSContext::createInt(m_oParams.m_nLcid));
+							if (openOptions->isObject())
+								openOptions->toObject()->set("locale", CJSContext::createInt(m_oParams.m_nLcid));
 						}
 					}
 					else
@@ -634,10 +647,40 @@ namespace NSDoctRenderer
 						JSSmart<CJSObject> optionsParams = CJSContext::createObject();
 						if (0 < m_oParams.m_nLcid)
 							optionsParams->set("locale", CJSContext::createInt(m_oParams.m_nLcid));
-						args_open[3] = optionsParams->toValue();
+						openOptions = optionsParams->toValue();
+					}
+				}
+
+				// OPEN
+				if (!bIsBreak)
+				{
+					if (!bIsWatermark)
+					{
+						CChangesWorker oWorkerLoader;
+						int nVersion = 0;
+
+						if (editorType == DoctRendererEditorType::PDF)
+							nVersion = -1;
+						else
+							nVersion = oWorkerLoader.OpenNative(pNative->GetFilePath());
+
+						JSSmart<CJSValue> args_open[4];
+						args_open[0] = (nVersion != -1) ? oWorkerLoader.GetDataFull()->toValue() : CJSContext::createUndefined();
+						args_open[1] = CJSContext::createInt(nVersion);
+						std::wstring sXlsx = NSFile::GetDirectoryName(pNative->GetFilePath()) + L"/Editor.xlsx";
+						args_open[2] = NSFile::CFileBinary::Exists(sXlsx) ? CJSContext::createString(sXlsx) : CJSContext::createUndefined();
+						args_open[3] = openOptions;
+
+						global_js->call_func("NativeOpenFileData", 4, args_open);
+					}
+					else
+					{
+						JSSmart<CJSValue> args_open[1];
+						args_open[0] = openOptions;
+
+						global_js->call_func("NativeCreateApi", 1, args_open);
 					}
 
-					global_js->call_func("NativeOpenFileData", 4, args_open);
 					if (try_catch->Check())
 					{
 						strError = L"code=\"open\"";
@@ -655,7 +698,7 @@ namespace NSDoctRenderer
 				LOGGER_SPEED_LAP("open");
 
 				// CHANGES
-				if (!bIsBreak)
+				if (!bIsBreak && !bIsWatermark)
 				{
 					if (m_oParams.m_arChanges.size() != 0)
 					{
@@ -694,8 +737,7 @@ namespace NSDoctRenderer
 						// images in changes
 						if (NULL != pNative)
 						{
-							for (std::map<std::wstring, bool>::const_iterator iter = pNative->m_mapImagesInChanges.begin();
-								 iter != pNative->m_mapImagesInChanges.end(); iter++)
+							for (std::map<std::wstring, bool>::const_iterator iter = pNative->m_mapImagesInChanges.begin(); iter != pNative->m_mapImagesInChanges.end(); iter++)
 							{
 								m_arImagesInChanges.push_back(iter->first);
 							}
@@ -706,9 +748,7 @@ namespace NSDoctRenderer
 				LOGGER_SPEED_LAP("changes");
 
 				bool bIsMailMerge = false;
-				if (!m_oParams.m_strMailMergeDatabasePath.empty() &&
-						m_oParams.m_nMailMergeIndexEnd >= m_oParams.m_nMailMergeIndexStart &&
-						m_oParams.m_nMailMergeIndexEnd >= 0)
+				if (!m_oParams.m_strMailMergeDatabasePath.empty() && m_oParams.m_nMailMergeIndexEnd >= m_oParams.m_nMailMergeIndexStart && m_oParams.m_nMailMergeIndexEnd >= 0)
 				{
 					bIsMailMerge = true;
 				}
@@ -765,11 +805,10 @@ namespace NSDoctRenderer
 
 						if (!bIsBreak)
 						{
-							std::string sFieldUtf8 = NSFile::CUtf8Converter::GetUtf8StringFromUnicode2(m_oParams.m_strMailMergeField.c_str(),
-																									   (LONG)m_oParams.m_strMailMergeField.length());
+							std::string sFieldUtf8 = NSFile::CUtf8Converter::GetUtf8StringFromUnicode2(m_oParams.m_strMailMergeField.c_str(), (LONG)m_oParams.m_strMailMergeField.length());
 
 							strReturnParams += L"<MailMergeFields>";
-							for (int nIndexMM  = m_oParams.m_nMailMergeIndexStart; nIndexMM <= m_oParams.m_nMailMergeIndexEnd && !bIsBreak; ++nIndexMM)
+							for (int nIndexMM = m_oParams.m_nMailMergeIndexStart; nIndexMM <= m_oParams.m_nMailMergeIndexEnd && !bIsBreak; ++nIndexMM)
 							{
 								JSSmart<CJSValue> args_changes[1];
 								args_changes[0] = CJSContext::createInt(nIndexMM);
@@ -881,7 +920,7 @@ namespace NSDoctRenderer
 		m_pInternal->m_oParams.FromXml(strXml);
 		m_pInternal->m_arImagesInChanges.clear();
 
-		std::vector<std::wstring>* arSdkFiles = NULL;
+		NSDoctRenderer::DoctRendererEditorType editorType = NSDoctRenderer::DoctRendererEditorType::INVALID;
 		switch (m_pInternal->m_oParams.m_eSrcFormat)
 		{
 		case DoctRendererFormat::DOCT:
@@ -892,8 +931,9 @@ namespace NSDoctRenderer
 			case DoctRendererFormat::PDF:
 			case DoctRendererFormat::IMAGE:
 			case DoctRendererFormat::HTML:
+			case DoctRendererFormat::WATERMARK:
 			{
-				arSdkFiles = &m_pInternal->m_arDoctSDK;
+				editorType = NSDoctRenderer::DoctRendererEditorType::WORD;
 				m_pInternal->m_strEditorType = L"document";
 				break;
 			}
@@ -911,7 +951,7 @@ namespace NSDoctRenderer
 			case DoctRendererFormat::IMAGE:
 			case DoctRendererFormat::PPTX_THEME_THUMBNAIL:
 			{
-				arSdkFiles = &m_pInternal->m_arPpttSDK;
+				editorType = NSDoctRenderer::DoctRendererEditorType::SLIDE;
 				m_pInternal->m_strEditorType = L"presentation";
 				break;
 			}
@@ -928,7 +968,7 @@ namespace NSDoctRenderer
 			case DoctRendererFormat::PDF:
 			case DoctRendererFormat::IMAGE:
 			{
-				arSdkFiles = &m_pInternal->m_arXlstSDK;
+				editorType = NSDoctRenderer::DoctRendererEditorType::CELL;
 				m_pInternal->m_strEditorType = L"spreadsheet";
 				break;
 			}
@@ -937,6 +977,39 @@ namespace NSDoctRenderer
 			}
 			break;
 		}
+		case DoctRendererFormat::VSDT:
+		{
+			switch (m_pInternal->m_oParams.m_eDstFormat)
+			{
+			case DoctRendererFormat::VSDT:
+			case DoctRendererFormat::PDF:
+			case DoctRendererFormat::IMAGE:
+			{
+				editorType = NSDoctRenderer::DoctRendererEditorType::VISIO;
+				m_pInternal->m_strEditorType = L"visio";
+				break;
+			}
+			default:
+				return false;
+			}
+			break;
+		}
+		case DoctRendererFormat::PDF:
+		{
+			switch (m_pInternal->m_oParams.m_eDstFormat)
+			{
+			case DoctRendererFormat::PDF:
+			{
+				editorType = NSDoctRenderer::DoctRendererEditorType::PDF;
+				m_pInternal->m_strEditorType = L"pdf";
+				break;
+			}
+			default:
+				return false;
+			}
+			break;
+		}
+
 		default:
 			return false;
 		}
@@ -953,48 +1026,8 @@ namespace NSDoctRenderer
 
 		m_pInternal->m_strFilePath = strFileName;
 
-		std::string strScript = "";
-		for (size_t i = 0; i < m_pInternal->m_arrFiles.size(); ++i)
-		{
-			strScript += m_pInternal->ReadScriptFile(m_pInternal->m_arrFiles[i]);
-			strScript += "\n\n";
-		}
-
-		std::wstring sCachePath = L"";
-		if (arSdkFiles && (0 < arSdkFiles->size()))
-		{
-			if (m_pInternal->m_oParams.m_sScriptsCacheDirectory.empty())
-			{
-				sCachePath = NSFile::GetDirectoryName(*arSdkFiles->begin()) + L"/sdk-all.cache";
-			}
-			else if (m_pInternal->m_oParams.m_sScriptsCacheDirectory != L"empty")
-			{
-				sCachePath = m_pInternal->m_oParams.m_sScriptsCacheDirectory;
-				wchar_t lastSymbol = sCachePath.back();
-				if (lastSymbol != '\\' && lastSymbol != '/')
-					sCachePath += L"/";
-
-				wchar_t editorFirst = m_pInternal->m_strEditorType.at(0);
-				if (editorFirst == 'd')
-					sCachePath += L"word";
-				else if (editorFirst == 'p')
-					sCachePath += L"slide";
-				else
-					sCachePath += L"cell";
-			}
-
-			for (std::vector<std::wstring>::iterator i = arSdkFiles->begin(); i != arSdkFiles->end(); i++)
-			{
-				strScript += m_pInternal->ReadScriptFile(*i);
-				strScript += "\n\n";
-			}
-		}
-
-		if (m_pInternal->m_strEditorType == L"spreadsheet")
-			strScript += "\n$.ready();";
-
 		std::wstring sReturnParams = L"";
-		bool bResult = m_pInternal->ExecuteScript(strScript, sCachePath, strError, sReturnParams);
+		bool bResult = m_pInternal->ExecuteScript(editorType, strError, sReturnParams);
 
 		if (strError.length() != 0)
 		{
@@ -1018,95 +1051,73 @@ namespace NSDoctRenderer
 #ifndef JS_ENGINE_JAVASCRIPTCORE
 		LoadConfig(NSFile::GetProcessDirectory(), sAllFontsPath);
 
-		std::wstring sCacheDirectory = sCacheDir;
-		if (sCacheDirectory.empty() && m_pInternal->m_arDoctSDK.size() > 0)
+		std::vector<NSDoctRenderer::DoctRendererEditorType> editors;
+		editors.push_back(NSDoctRenderer::DoctRendererEditorType::WORD);
+		editors.push_back(NSDoctRenderer::DoctRendererEditorType::SLIDE);
+		editors.push_back(NSDoctRenderer::DoctRendererEditorType::CELL);
+		editors.push_back(NSDoctRenderer::DoctRendererEditorType::VISIO);
+		editors.push_back(NSDoctRenderer::DoctRendererEditorType::PDF);
+
+		for (std::vector<NSDoctRenderer::DoctRendererEditorType>::const_iterator i = editors.begin(); i != editors.end(); i++)
 		{
-			sCacheDirectory = NSFile::GetDirectoryName(m_pInternal->m_arDoctSDK[0]);
-			sCacheDirectory = NSFile::GetDirectoryName(sCacheDirectory);
-		}
-
-		if (sCacheDirectory.empty())
-			return;
-
-		std::string strScriptAll = "";
-		for (size_t i = 0; i < m_pInternal->m_arrFiles.size(); ++i)
-		{
-			strScriptAll += m_pInternal->ReadScriptFile(m_pInternal->m_arrFiles[i]);
-			strScriptAll += "\n\n";
-		}
-
-		for (int i = 0; i < 3; ++i)
-		{
-			std::string strScript = strScriptAll;
-			std::wstring sCachePath = sCacheDirectory;
-
-			std::vector<std::wstring>* arSdkFiles = NULL;
-
-			switch (i)
-			{
-			case 0:
-			{
-				arSdkFiles = &m_pInternal->m_arDoctSDK;
-				sCachePath += L"/word/sdk-all.cache";
-				break;
-			}
-			case 1:
-			{
-				arSdkFiles = &m_pInternal->m_arPpttSDK;
-				sCachePath += L"/slide/sdk-all.cache";
-				break;
-			}
-			case 2:
-			{
-				arSdkFiles = &m_pInternal->m_arXlstSDK;
-				sCachePath += L"/cell/sdk-all.cache";
-				break;
-			}
-			default:
-				break;
-			}
-
-			if (NSFile::CFileBinary::Exists(sCachePath))
-				NSFile::CFileBinary::Remove(sCachePath);
-
-			for (std::vector<std::wstring>::iterator i = arSdkFiles->begin(); i != arSdkFiles->end(); i++)
-			{
-				strScript += m_pInternal->ReadScriptFile(*i);
-				strScript += "\n\n";
-			}
-
-			if (2 == i)
-				strScript += "\n$.ready();";
-
 			JSSmart<CJSContext> context = new CJSContext();
 
 			if (true)
 			{
 				CJSContextScope scope(context);
 				CJSContext::Embed<CNativeControlEmbed>();
-				CJSContext::Embed<CGraphicsEmbed>();
 				NSJSBase::CreateDefaults();
 
 				JSSmart<CJSObject> global = context->GetGlobal();
 				global->set("window", global);
+				global->set("self", global);
 				global->set("native", CJSContext::createEmbedObject("CNativeControlEmbed"));
 
 				JSSmart<CJSTryCatch> try_catch = context->GetExceptions();
 
-				context->runScript(strScript, try_catch, sCachePath);
+				NSDoctRenderer::RunEditor(*i, context, try_catch, m_pInternal);
 			}
 
 			context->Dispose();
 		}
 #endif
 	}
-}
 
-bool Doct_renderer_SaveFile_ForBuilder(int nFormat, const std::wstring& strDstFile,
-									   NSNativeControl::CNativeControl* pNative,
-									   JSSmart<CJSContext> context,
-									   JSSmart<CJSValue>* args,
-									   std::wstring& strError, const std::wstring& jsonParams)
+	void CDoctrenderer::CreateSnapshots()
+	{
+#ifdef V8_SUPPORT_SNAPSHOTS
+		std::vector<NSDoctRenderer::DoctRendererEditorType> editors;
+		editors.push_back(NSDoctRenderer::DoctRendererEditorType::WORD);
+		editors.push_back(NSDoctRenderer::DoctRendererEditorType::SLIDE);
+		editors.push_back(NSDoctRenderer::DoctRendererEditorType::CELL);
+		editors.push_back(NSDoctRenderer::DoctRendererEditorType::VISIO);
+		editors.push_back(NSDoctRenderer::DoctRendererEditorType::PDF);
+
+		// initialize v8
+		JSSmart<CJSContext> context = new CJSContext();
+
+		for (std::vector<NSDoctRenderer::DoctRendererEditorType>::const_iterator i = editors.begin(); i != editors.end(); i++)
+		{
+			NSDoctRenderer::GenerateEditorSnapshot(*i, m_pInternal);
+		}
+#endif
+	}
+
+	void CDoctrenderer::SetAdditionalParam(const AdditionalParamType& type, void* data)
+	{
+		switch (type)
+		{
+		case AdditionalParamType::DRAWINGFILE:
+			m_pInternal->m_pDrawingFile = (IOfficeDrawingFile*)data;
+			break;
+		default:
+			break;
+		}
+	}
+} // namespace NSDoctRenderer
+
+bool Doct_renderer_SaveFile_ForBuilder(
+	int nFormat, const std::wstring& strDstFile, NSNativeControl::CNativeControl* pNative, JSSmart<CJSContext> context, JSSmart<CJSValue>* args, std::wstring& strError, const std::wstring& jsonParams)
 {
 	NSDoctRenderer::CExecuteParams oParams;
 	oParams.m_eDstFormat = (NSDoctRenderer::DoctRendererFormat::FormatFile)nFormat;
@@ -1114,6 +1125,5 @@ bool Doct_renderer_SaveFile_ForBuilder(int nFormat, const std::wstring& strDstFi
 	oParams.m_sJsonParams = jsonParams;
 
 	JSSmart<CJSObject> js_objectApi; // empty
-	return NSDoctRenderer::CDoctRenderer_Private::Doct_renderer_SaveFile(&oParams,
-																		 pNative, context, args, strError, js_objectApi, false);
+	return NSDoctRenderer::CDoctRenderer_Private::Doct_renderer_SaveFile(&oParams, pNative, context, args, strError, js_objectApi);
 }

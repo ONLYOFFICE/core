@@ -16,7 +16,7 @@ namespace SVG
 	// IpathElement
 	TBounds IPathElement::GetBounds() const
 	{
-		TBounds oBounds{0., 0., 0., 0.};
+		TBounds oBounds{DBL_MAX, DBL_MAX, -DBL_MAX, -DBL_MAX};
 
 		for (const Point& oPoint : m_arPoints)
 		{
@@ -27,6 +27,11 @@ namespace SVG
 		}
 
 		return oBounds;
+	}
+
+	UINT IPathElement::GetPointCount() const
+	{
+		return m_arPoints.size();
 	}
 
 	Point IPathElement::operator[](int nIndex) const
@@ -55,7 +60,7 @@ namespace SVG
 	CMoveElement *CMoveElement::CreateFromArray(std::vector<double> &arValues, bool bRelativeCoordinate, IPathElement *pPrevElement)
 	{
 		if (arValues.size() < 2)
-				return NULL;
+			return NULL;
 
 		Point oTranslatePoint{0., 0.};
 
@@ -94,7 +99,7 @@ namespace SVG
 	CLineElement *CLineElement::CreateFromArray(std::vector<double> &arValues, bool bRelativeCoordinate, IPathElement *pPrevElement)
 	{
 		if (arValues.size() < 2)
-				return NULL;
+			return NULL;
 
 		Point oTranslatePoint{0., 0.};
 
@@ -255,6 +260,8 @@ namespace SVG
 		{
 			oSecondPoint = Point{arValues[arValues.size() - 2], arValues[arValues.size() - 1]};
 
+			arValues.erase(arValues.end() - 2, arValues.end());
+
 			return new CLineElement(oSecondPoint + oTranslatePoint);
 		}
 
@@ -269,23 +276,30 @@ namespace SVG
 
 	std::vector<IPathElement *> CCBezierElement::CreateFromArc(std::vector<double> &arValues, bool bRelativeCoordinate, IPathElement *pPrevElement)
 	{
-		if (arValues.size() < 7)
+		if (arValues.size() < 7 || Equals(0., arValues[0]) || Equals(0.,  arValues[1]))
 			return std::vector<IPathElement *>();
-
-		std::vector<IPathElement *> arCurves;
 
 		Point oTranslatePoint{0., 0.};
 
 		if (bRelativeCoordinate && NULL != pPrevElement)
 			oTranslatePoint = (*pPrevElement)[-1];
 
-		Point oRadius{arValues[0], arValues[1]};
 		Point oSrartPoint{(*pPrevElement)[-1]};
+		Point oSecondPoint{arValues[5] + oTranslatePoint.dX, arValues[6] + oTranslatePoint.dY};
 
+		if (oSrartPoint == oSecondPoint)
+		{
+			arValues.erase(arValues.begin(), arValues.begin() + 7);
+			return std::vector<IPathElement *>();
+		}
+
+		std::vector<IPathElement *> arCurves;
+
+		Point oRadius{arValues[0], arValues[1]};
 		Point oCenter{0, 0};
 		double dAngle = 0, dSweep = 0;
 
-		CalculateArcData(oSrartPoint, Point{arValues[5], arValues[6]} + oTranslatePoint, oRadius, oCenter, arValues[2], (1 == arValues[3]) ? true : false, (1 == arValues[4]) ? true : false, dAngle, dSweep);
+		CalculateArcData(oSrartPoint, oSecondPoint, oRadius, oCenter, arValues[2],  Equals(1., arValues[3]) ? true : false, Equals(1., arValues[4]) ? true : false, dAngle, dSweep);
 
 		double dStartAngle = dAngle;
 		double dEndAngle;
@@ -297,8 +311,12 @@ namespace SVG
 			if ((int)(dStartAngle / 90.) == dStartAngle / 90.)
 				dEndAngle = dStartAngle + ((dSweep > 0.) ? 90. : -90.);
 			else
-				dEndAngle = (int)(dStartAngle / 90.) * ((dSweep > 0.) ? 90. : -90.);
+			{
+				dEndAngle = copysign(ceil(std::abs(dStartAngle) / 90.), dStartAngle) * ((dSweep > 0. || dStartAngle < 0.) ? 90. : -90.);
 
+				if (dStartAngle < 0. && dSweep > 0.)
+					dEndAngle += 90.;
+			}
 			if (std::abs(dAngle - dEndAngle) > std::abs(dSweep))
 				dEndAngle = dAngle + dSweep;
 
@@ -347,8 +365,15 @@ namespace SVG
 				return;
 
 		pRenderer->PathCommandCurveTo(m_arPoints[0].dX, m_arPoints[0].dY,
-									  m_arPoints[1].dX, m_arPoints[1].dY,
-				m_arPoints[2].dX, m_arPoints[2].dY);
+		                              m_arPoints[1].dX, m_arPoints[1].dY,
+		                              m_arPoints[2].dX, m_arPoints[2].dY);
+	}
+
+	inline double ClampSinCos(const double& d)
+	{
+		if (d < -1) return -1;
+		if (d > 1)  return 1;
+		return d;
 	}
 
 	void CCBezierElement::CalculateArcData(const Point &oFirst, const Point &oSecond, Point &oRadius, Point &oCenter, double dAngle, bool bLargeArc, bool bSweep, double &dStartAngle, double &dSweep)
@@ -377,8 +402,11 @@ namespace SVG
 
 		oCenter = Point{dCpx * std::cos(dAngle) - dCpy * std::sin(dAngle) + (oFirst.dX + oSecond.dX) / 2., dCpx * std::sin(dAngle) + dCpy * std::cos(dAngle) + (oFirst.dY + oSecond.dY) / 2.};
 
-		dStartAngle = std::acos(((dXp - dCpx) / oRadius.dX) / std::sqrt(std::pow((dXp - dCpx) / oRadius.dX, 2) + std::pow((dYp - dCpy) / oRadius.dY, 2))) * 180. / M_PI;
-		dSweep      = std::acos((((dXp - dCpx) / oRadius.dX * (-dXp - dCpx) / oRadius.dX) + ((dYp - dCpy) / oRadius.dY * (-dYp - dCpy) / oRadius.dY)) / (std::sqrt(std::pow((dXp - dCpx) / oRadius.dX, 2) + std::pow((dYp - dCpy) / oRadius.dY, 2)) * std::sqrt(std::pow((-dXp - dCpx) / oRadius.dX, 2) + std::pow((-dYp - dCpy) / oRadius.dY, 2)))) * 180. / M_PI;
+		double dStartAngleCos = ((dXp - dCpx) / oRadius.dX) / std::sqrt(std::pow((dXp - dCpx) / oRadius.dX, 2) + std::pow((dYp - dCpy) / oRadius.dY, 2));
+		dStartAngle = std::acos(ClampSinCos(dStartAngleCos)) * 180. / M_PI;
+
+		double dSweepAngleCos = (((dXp - dCpx) / oRadius.dX * (-dXp - dCpx) / oRadius.dX) + ((dYp - dCpy) / oRadius.dY * (-dYp - dCpy) / oRadius.dY)) / (std::sqrt(std::pow((dXp - dCpx) / oRadius.dX, 2) + std::pow((dYp - dCpy) / oRadius.dY, 2)) * std::sqrt(std::pow((-dXp - dCpx) / oRadius.dX, 2) + std::pow((-dYp - dCpy) / oRadius.dY, 2)));
+		dSweep = std::acos(ClampSinCos(dSweepAngleCos)) * 180. / M_PI;
 
 		if (((dYp - dCpy) / oRadius.dY) < 0)
 			dStartAngle *= -1;
@@ -436,6 +464,7 @@ namespace SVG
 
 		SetStroke(mAttributes, ushLevel, bHardMode);
 		SetFill(mAttributes, ushLevel, bHardMode);
+		SetOpacity(mAttributes, ushLevel, bHardMode);
 		SetMarker(mAttributes, ushLevel, bHardMode);
 
 		std::map<std::wstring, std::wstring>::const_iterator oIter = mAttributes.find(L"fill-rule");
@@ -447,7 +476,7 @@ namespace SVG
 		}
 	}
 
-	bool CPath::Draw(IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode, const TSvgStyles *pOtherStyles) const
+	bool CPath::Draw(IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode, const TSvgStyles *pOtherStyles, const CRenderedObject* pContexObject) const
 	{
 		Aggplus::CMatrix oOldTransform;
 
@@ -457,7 +486,7 @@ namespace SVG
 		for (const IPathElement* oElement : m_arElements)
 			oElement->Draw(pRenderer);
 
-		EndPath(pRenderer, pFile, oOldTransform, oMode, pOtherStyles);
+		EndPath(pRenderer, pFile, oOldTransform, oMode, pOtherStyles, pContexObject);
 
 		DrawMarkers(pRenderer, pFile, oMode);
 
@@ -472,16 +501,16 @@ namespace SVG
 		return m_arElements[(nIndex >= 0) ? nIndex : m_arElements.size() + nIndex];
 	}
 
-	void CPath::ApplyStyle(IRenderer *pRenderer, const TSvgStyles *pStyles, const CSvgFile *pFile, int &nTypePath) const
-	{	
-		if (Apply(pRenderer, &pStyles->m_oStroke))
+	void CPath::ApplyStyle(IRenderer *pRenderer, const TSvgStyles *pStyles, const CSvgFile *pFile, int &nTypePath, const CRenderedObject* pContexObject) const
+	{
+		if (ApplyStroke(pRenderer, &pStyles->m_oStroke, false, pContexObject))
 			nTypePath += c_nStroke;
 
-		if (Apply(pRenderer, &pStyles->m_oFill, pFile))
+		if (ApplyFill(pRenderer, &pStyles->m_oFill, pFile, true, pContexObject))
 			nTypePath += (m_bEvenOddRule) ? c_nEvenOddFillMode : c_nWindingFillMode;
 	}
 
-	bool CPath::DrawMarkers(IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode) const
+	bool CPath::DrawMarkers(IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode, const TSvgStyles* pOtherStyles, const CRenderedObject* pContexObject) const
 	{
 		if (NULL == pRenderer || NULL == pFile || m_arElements.empty() || m_oStyles.m_oStroke.m_oWidth.Zero() ||
 			(m_oMarkers.m_oStart.Empty() && m_oMarkers.m_oMid.Empty() && m_oMarkers.m_oEnd.Empty()))
@@ -492,7 +521,9 @@ namespace SVG
 		if (!StartPath(pRenderer, pFile, oOldMatrix, oMode))
 			return false;
 
-		double dStrokeWidth = (m_oStyles.m_oStroke.m_oWidth.Empty()) ? 1. : m_oStyles.m_oStroke.m_oWidth.ToDouble(NSCSS::Pixel);
+		const double dStrokeWidth = (m_oStyles.m_oStroke.m_oWidth.Empty()) ? 1. : m_oStyles.m_oStroke.m_oWidth.ToDouble(NSCSS::Pixel);
+
+		#define CALCULATE_ANGLE(firstPoint, secondPoint) std::atan2(secondPoint.dY - firstPoint.dY, secondPoint.dX - firstPoint.dX) * 180. / M_PI
 
 		if (!m_oMarkers.m_oStart.Empty() && NSCSS::NSProperties::ColorType::ColorUrl == m_oMarkers.m_oStart.GetType())
 		{
@@ -500,8 +531,36 @@ namespace SVG
 
 			if (NULL != pStartMarker)
 			{
-				pStartMarker->Update(pFile);
-				pStartMarker->Draw(pRenderer, {(*m_arElements.front())[0]}, dStrokeWidth);
+				TMarkerExternData oExternalData;
+				oExternalData.m_dStroke = dStrokeWidth;
+				oExternalData.m_pPoints = new std::vector<TPointData>(1);
+
+				int unIndex = FindIndexFirstNotEmpty();
+
+				if (0 <= unIndex)
+				{
+					const IPathElement* pFirstElement{m_arElements[unIndex]};
+
+					(*oExternalData.m_pPoints)[0].m_oPoint = (*pFirstElement)[0];
+
+					if (pStartMarker->NeedExternalAngle())
+					{
+						Point oCurent{(*pFirstElement)[0]};
+						Point oNext;
+
+						if (pFirstElement->GetPointCount() > 1)
+							oNext = (*pFirstElement)[1];
+						else if (unIndex < m_arElements.size() - 1 && EPathElement::Close != m_arElements[unIndex + 1]->GetType() && EPathElement::Move != m_arElements[unIndex + 1]->GetType())
+							oNext = (*m_arElements[unIndex + 1])[0];
+
+						(*oExternalData.m_pPoints)[0].m_dAngle = CALCULATE_ANGLE(oCurent, oNext);
+
+						if (EMarkerOrient::Auto_start_reverse == pStartMarker->GetOrientType())
+							(*oExternalData.m_pPoints)[0].m_dAngle += 180.;
+					}
+
+					pStartMarker->Draw(pRenderer, pFile, oExternalData, oMode, pOtherStyles, this);
+				}
 			}
 		}
 
@@ -509,15 +568,27 @@ namespace SVG
 		{
 			CMarker *pMidMarker = dynamic_cast<CMarker*>(pFile->GetMarkedObject(m_oMarkers.m_oMid.ToWString()));
 
-			std::vector<Point> arPoints(m_arElements.size() - 2);
-
-			for (unsigned int unIndex = 1; unIndex < m_arElements.size() - 1; ++unIndex)
-				arPoints[unIndex - 1] = (*m_arElements[unIndex])[-1];
-
 			if (NULL != pMidMarker)
 			{
-				pMidMarker->Update(pFile);
-				pMidMarker->Draw(pRenderer, arPoints, dStrokeWidth);
+				TMarkerExternData oExternalData;
+				oExternalData.m_dStroke = dStrokeWidth;
+				oExternalData.m_pPoints = new std::vector<TPointData>(m_arElements.size() - 2);
+
+				for (unsigned int unIndex = 1; unIndex < m_arElements.size() - 1; ++unIndex)
+				{
+					if (EPathElement::Close != m_arElements[unIndex]->GetType())
+						(*oExternalData.m_pPoints)[unIndex - 1].m_oPoint = (*m_arElements[unIndex])[-1];
+
+					if (pMidMarker->NeedExternalAngle())
+					{
+						const Point oCurrent{(*m_arElements[unIndex])[0]};
+						const Point oPrev{(*m_arElements[unIndex + 1])[-1]};
+
+						(*oExternalData.m_pPoints)[unIndex - 1].m_dAngle = CALCULATE_ANGLE(oCurrent, oPrev);
+					}
+				}
+
+				pMidMarker->Draw(pRenderer, pFile, oExternalData, oMode, pOtherStyles, this);
 			}
 		}
 
@@ -527,12 +598,37 @@ namespace SVG
 
 			if (NULL != pEndMarker)
 			{
-				pEndMarker->Update(pFile);
-				pEndMarker->Draw(pRenderer, {(*m_arElements.back())[-1]}, dStrokeWidth);
+				TMarkerExternData oExternalData;
+				oExternalData.m_dStroke = dStrokeWidth;
+				oExternalData.m_pPoints = new std::vector<TPointData>(1);
+
+				int unIndex = FindIndexFirstNotEmpty(true);
+
+				if (0 <= unIndex)
+				{
+					const IPathElement* pLastElement{m_arElements[unIndex]};
+
+					(*oExternalData.m_pPoints)[0].m_oPoint = (*pLastElement)[-1];
+
+					if (pEndMarker->NeedExternalAngle())
+					{
+						Point oCurent{(*pLastElement)[-1]};
+						Point oPrev;
+
+						if (pLastElement->GetPointCount() > 1)
+							oPrev = (*pLastElement)[-2];
+						else if (unIndex > 0 && EPathElement::Close != m_arElements[unIndex - 1]->GetType() && EPathElement::Move != m_arElements[unIndex - 1]->GetType())
+							oPrev = (*m_arElements[unIndex - 1])[0];
+
+						(*oExternalData.m_pPoints)[0].m_dAngle = CALCULATE_ANGLE(oPrev, oCurent);
+					}
+
+					pEndMarker->Draw(pRenderer, pFile, oExternalData, oMode, pOtherStyles, this);
+				}
 			}
 		}
 
-		EndPath(pRenderer, pFile, oOldMatrix, oMode);
+		EndPath(pRenderer, pFile, oOldMatrix, oMode, pOtherStyles, pContexObject);
 
 		return true;
 	}
@@ -547,23 +643,48 @@ namespace SVG
 
 		if (mAttributes.end() != mAttributes.find(L"marker-end"))
 			m_oMarkers.m_oEnd.SetValue(mAttributes.at(L"marker-end"), ushLevel, bHardMode);
+
+		if (mAttributes.end() != mAttributes.find(L"marker"))
+		{
+			m_oMarkers.m_oStart.SetValue(mAttributes.at(L"marker"), ushLevel, bHardMode);
+			m_oMarkers.m_oMid  .SetValue(mAttributes.at(L"marker"), ushLevel, bHardMode);
+			m_oMarkers.m_oEnd  .SetValue(mAttributes.at(L"marker"), ushLevel, bHardMode);
+		}
 	}
 
 	TBounds CPath::GetBounds() const
 	{
-		TBounds oBounds{0., 0., 0., 0.}, oTempBounds;
+		TBounds oBounds{DBL_MAX, DBL_MAX, -DBL_MAX, -DBL_MAX}, oTempBounds;
 
 		for (const IPathElement* oElement : m_arElements)
 		{
 			oTempBounds = oElement->GetBounds();
 
-			oBounds.m_dLeft   = std::min(oBounds.m_dLeft, oTempBounds.m_dLeft);
-			oBounds.m_dTop    = std::min(oBounds.m_dTop, oTempBounds.m_dTop);
-			oBounds.m_dRight  = std::max(oBounds.m_dRight, oTempBounds.m_dRight);
+			oBounds.m_dLeft   = std::min(oBounds.m_dLeft,   oTempBounds.m_dLeft);
+			oBounds.m_dTop    = std::min(oBounds.m_dTop,    oTempBounds.m_dTop);
+			oBounds.m_dRight  = std::max(oBounds.m_dRight,  oTempBounds.m_dRight);
 			oBounds.m_dBottom = std::max(oBounds.m_dBottom, oTempBounds.m_dBottom);
 		}
 
 		return oBounds;
+	}
+
+	const int CPath::FindIndexFirstNotEmpty(bool bReverseSearch) const
+	{
+		if (!bReverseSearch)
+		{
+			std::vector<IPathElement*>::const_iterator itFound = std::find_if(m_arElements.cbegin(), m_arElements.cend(), [](const IPathElement* pElement){ return EPathElement::Close != pElement->GetType(); });
+			if (m_arElements.cend() != itFound)
+				return itFound - m_arElements.cbegin();
+		}
+		else
+		{
+			std::vector<IPathElement*>::const_reverse_iterator itFound = std::find_if(m_arElements.crbegin(), m_arElements.crend(), [](const IPathElement* pElement){ return EPathElement::Close != pElement->GetType(); });
+			if (m_arElements.crend() != itFound)
+				return itFound.base() - m_arElements.cbegin() - 1;
+		}
+
+		return -1;
 	}
 
 	void CPath::ReadFromString(const std::wstring &wsValue)
@@ -705,7 +826,7 @@ namespace SVG
 	}
 
 	CMovingPath::CMovingPath(const CPath *pPath)
-	    : m_pPath(pPath), m_oPosition{DBL_MIN, DBL_MIN}
+	    : m_pPath(pPath), m_oPosition{0., 0.}
 	{
 		ToStart();
 	}

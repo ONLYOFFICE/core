@@ -143,6 +143,10 @@ public:
     {
         m_bNeedDoBold = bBold;
     }
+	inline void           SetPUA(const std::string& sPUA)
+	{
+		m_sPUA = sPUA;
+	}
     inline PdfWriter::CFontDict*     GetFont() const
     {
         return m_pFont;
@@ -179,6 +183,10 @@ public:
     {
         return m_bNeedDoBold;
     }
+	inline std::string    GetPUA() const
+	{
+		return m_sPUA;
+	}
 
 private:
 
@@ -196,6 +204,7 @@ private:
     double         m_dCharSpace;
     int            m_nMode;
     double         m_dHorScaling;
+	std::string    m_sPUA;
 };
 struct TFontInfo
 {
@@ -434,12 +443,12 @@ public:
         m_oColor.Set(0);
         m_dSize  = 0;
         m_nAlpha = 255;
-        m_nStartCapStyle = Aggplus::LineCapRound;
-        m_nEndCapStyle   = Aggplus::LineCapRound;
-        m_nJoinStyle     = Aggplus::LineJoinRound;
+        m_nStartCapStyle = Aggplus::LineCapFlat;
+        m_nEndCapStyle   = Aggplus::LineCapFlat;
+        m_nJoinStyle     = Aggplus::LineJoinMiter;
 
         m_lAlign = 0;
-        m_dMiter = 0;
+        m_dMiter = 3.527778;
 
         m_nDashStyle       = Aggplus::DashStyleSolid;
         m_lDashPatternSize = 0;

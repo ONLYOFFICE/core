@@ -44,12 +44,13 @@ public:
 	SerBool(const std::wstring& word); // Accepts only "TRUE" or "FALSE"
 	BiffStructurePtr clone();
 	virtual void load(CFRecord& record);
+    virtual void save(CFRecord& record);
 
 	virtual const std::wstring toString() const;
 
 private:
 
-    unsigned char f;
+    unsigned char f = false;
 };
 
 } // namespace XLS

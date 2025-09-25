@@ -447,7 +447,8 @@ namespace DocFileFormat
 			border->AppendAttribute( space );
 			
 			XMLTools::XMLAttribute color( L"w:color" );
-            color.SetValue( RGBColor( brc->cv, RedFirst ).SixDigitHexCode);
+			color.SetValue(brc->getColor());
+
 			border->AppendAttribute( color );
 
 			if ( brc->fShadow )

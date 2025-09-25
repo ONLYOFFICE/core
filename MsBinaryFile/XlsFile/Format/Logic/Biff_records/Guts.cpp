@@ -56,5 +56,11 @@ void Guts::readFields(CFRecord& record)
 	record >> iLevelRwMac >> iLevelColMac;
 }
 
+void Guts::writeFields(CFRecord& record)
+{
+    record.reserveNunBytes(4); // unused
+    record << iLevelRwMac << iLevelColMac;
+}
+
 } // namespace XLS
 

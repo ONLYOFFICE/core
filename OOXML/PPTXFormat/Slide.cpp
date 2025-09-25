@@ -57,10 +57,50 @@ namespace PPTX
 	Slide::~Slide()
 	{
 	}
+	void Slide::fromXML(XmlUtils::CXmlNode& node)
+	{
+		std::vector<XmlUtils::CXmlNode> oNodes;
+		if (node.GetNodes(L"*", oNodes))
+		{
+			size_t nCount = oNodes.size();
+			for (size_t i = 0; i < nCount; ++i)
+			{
+				XmlUtils::CXmlNode& oNode = oNodes[i];
+
+				std::wstring strName = XmlUtils::GetNameNoNS(oNode.GetName());
+				if (L"cSld" == strName)
+				{
+					cSld = oNode;
+				}
+				else if (L"clrMapOvr" == strName)
+				{
+					clrMapOvr = oNode;
+				}
+				else if (L"transition" == strName)
+				{
+					transition = oNode;
+				}
+				else if (L"timing" == strName)
+				{
+					timing = oNode;
+				}
+				else if (L"AlternateContent" == strName)
+				{
+					XmlUtils::CXmlNode oNodeChoice;
+					if (false == oNode.GetNode(L"mc:Choice", oNodeChoice))
+					{
+						oNode.GetNode(L"mc:Fallback", oNodeChoice);
+					}
+					if (oNode.IsValid())
+					{
+						fromXML(oNodeChoice);
+					}
+				}
+			}
+		}
+	}
 	void Slide::read(const OOX::CPath& filename, FileMap& map)
 	{
-		//FileContainer::read(filename);
-
 		XmlUtils::CXmlNode oNode;
 		oNode.FromXmlFile(filename.m_strFilename);
 
@@ -68,45 +108,16 @@ namespace PPTX
 		XmlMacroReadAttributeBase(oNode, L"showMasterPhAnim", showMasterPhAnim);
 		XmlMacroReadAttributeBase(oNode, L"showMasterSp", showMasterSp);
 
-		cSld		= oNode.ReadNode(_T("p:cSld"));
+		fromXML(oNode);
+
 		if (cSld.IsInit())
 			cSld->SetParentFilePointer(this);
 
-		clrMapOvr	= oNode.ReadNode(_T("p:clrMapOvr"));
 		if (clrMapOvr.IsInit())
 			clrMapOvr->SetParentFilePointer(this);
 
-		transition	= oNode.ReadNode(_T("p:transition"));
-
-		if (!transition.IsInit())
-		{
-			XmlUtils::CXmlNode oNodeMSAlternate;
-			if (oNode.GetNode(_T("mc:AlternateContent"), oNodeMSAlternate))
-			{
-				XmlUtils::CXmlNode oNodeFallback;
-				if (oNodeMSAlternate.GetNode(_T("mc:Choice"), oNodeFallback))
-				{
-					transition = oNodeFallback.ReadNode(_T("p:transition"));
-				}
-			}
-		}
-
 		if (transition.IsInit())
 			transition->SetParentFilePointer(this);
-
-		timing		= oNode.ReadNode(_T("p:timing"));
-		if (!timing.IsInit())
-		{
-			XmlUtils::CXmlNode oAlternate;
-			if (oNode.GetNode(_T("mc:AlternateContent"), oAlternate))
-			{
-				XmlUtils::CXmlNode oChoice;
-				if (oAlternate.GetNode(_T("mc:Choice"), oChoice))
-				{
-					timing	=	oChoice.ReadNode(_T("p:timing"));
-				}
-			}
-		}
 
 		if (timing.IsInit())
 			timing->SetParentFilePointer(this);
@@ -181,18 +192,19 @@ namespace PPTX
 	}
 	void Slide::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 	{
-		pWriter->StartNode(_T("p:sld"));
+		pWriter->StartNode(L"p:sld");
 
 		pWriter->StartAttributes();
-		pWriter->WriteAttribute(_T("xmlns:a"), PPTX::g_Namespaces.a.m_strLink);
-		pWriter->WriteAttribute(_T("xmlns:r"), PPTX::g_Namespaces.r.m_strLink);
-		pWriter->WriteAttribute(_T("xmlns:p"), PPTX::g_Namespaces.p.m_strLink);
-		pWriter->WriteAttribute(_T("xmlns:m"), PPTX::g_Namespaces.m.m_strLink);
-		pWriter->WriteAttribute(_T("xmlns:w"), PPTX::g_Namespaces.w.m_strLink);
+		pWriter->WriteAttribute(L"xmlns:a", PPTX::g_Namespaces.a.m_strLink);
+		pWriter->WriteAttribute(L"xmlns:r", PPTX::g_Namespaces.r.m_strLink);
+		pWriter->WriteAttribute(L"xmlns:p", PPTX::g_Namespaces.p.m_strLink);
+		pWriter->WriteAttribute(L"xmlns:m", PPTX::g_Namespaces.m.m_strLink);
+		pWriter->WriteAttribute(L"xmlns:w", PPTX::g_Namespaces.w.m_strLink);
+		pWriter->WriteAttribute(L"xmlns:mc", L"http://schemas.openxmlformats.org/markup-compatibility/2006");
 
-		pWriter->WriteAttribute(_T("showMasterPhAnim"), showMasterPhAnim);
-		pWriter->WriteAttribute(_T("showMasterSp"), showMasterSp);
-		pWriter->WriteAttribute(_T("show"), show);
+		pWriter->WriteAttribute(L"showMasterPhAnim", showMasterPhAnim);
+		pWriter->WriteAttribute(L"showMasterSp", showMasterSp);
+		pWriter->WriteAttribute(L"show", show);
 		pWriter->EndAttributes();
 
 		pWriter->Write(cSld);
@@ -200,12 +212,21 @@ namespace PPTX
 		if (clrMapOvr.is_init())
 			pWriter->Write(clrMapOvr);
 		else
-			pWriter->WriteString(_T("<p:clrMapOvr><a:masterClrMapping/></p:clrMapOvr>"));
+			pWriter->WriteString(L"<p:clrMapOvr><a:masterClrMapping/></p:clrMapOvr>");
 
 		pWriter->Write(transition);
 		pWriter->Write(timing);
 
-		pWriter->EndNode(_T("p:sld"));
+
+		if (ridModernComment.IsInit())
+		{ 
+			pWriter->WriteString(L"<p:extLst>");
+				pWriter->WriteString(L"<p:ext uri=\"{6950BFC3-D8DA-4A85-94F7-54DA5524770B}\"><p188:commentRel \
+xmlns:p188=\"http://schemas.microsoft.com/office/powerpoint/2018/8/main\" r:id=\"" + *ridModernComment + L"\"/></p:ext>");
+			pWriter->WriteString(L"</p:extLst>");
+		}
+
+		pWriter->EndNode(L"p:sld");
 	}
 	void Slide::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 	{
@@ -279,6 +300,11 @@ namespace PPTX
 		Note		= FileContainer::Get(OOX::Presentation::FileTypes::NotesSlide).smart_dynamic_cast<PPTX::NotesSlide>();
 		comments	= FileContainer::Get(OOX::Presentation::FileTypes::SlideComments).smart_dynamic_cast<PPTX::Comments>();
 
+		if (false == comments.IsInit())
+		{
+			comments = FileContainer::Get(OOX::Presentation::FileTypes::ModernComments).smart_dynamic_cast<PPTX::Comments>();
+		}
+
 		if (Layout.IsInit())
 		{
 			Master	= Layout->Master;
@@ -298,7 +324,7 @@ namespace PPTX
 	{
 		if(Vml.is_init() && !spid.empty())
 		{
-			boost::unordered_map<std::wstring, OOX::CVmlDrawing::_vml_shape>::iterator pPair = Vml->m_mapShapes.find(spid);
+			std::map<std::wstring, OOX::CVmlDrawing::_vml_shape>::iterator pPair = Vml->m_mapShapes.find(spid);
 			if (Vml->m_mapShapes.end() != pPair)
 			{
 				pPair->second.bUsed = true;

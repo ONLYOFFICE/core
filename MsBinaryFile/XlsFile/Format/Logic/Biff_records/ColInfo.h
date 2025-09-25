@@ -51,9 +51,9 @@ public:
 	static const ElementType	type = typeColInfo;
 
 //-----------------------------
-    _UINT32		colFirst;
-    _UINT32		colLast;
-    _UINT32		coldx;
+    _UINT32		colFirst = 0;
+    _UINT32		colLast = 0;
+    _UINT32		coldx = 0;
 	IXFCell		ixfe = 0xffff;
     _UINT32     ixfeXLSB = 0xffffffff;
 

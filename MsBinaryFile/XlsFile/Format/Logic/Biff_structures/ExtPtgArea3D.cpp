@@ -60,7 +60,11 @@ void ExtPtgArea3D::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, boo
 {
 	std::wstring strRange;
 
-	std::wstring range_ref = area.toString();
+	std::wstring range_ref;
+	if (global_info->Version < 0x0800)
+		range_ref = area.toString();
+	else
+		range_ref = area.toString(true, true);
 	
 	if(-1 == iTabs.itabFirst)
 	{

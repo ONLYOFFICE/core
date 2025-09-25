@@ -17,7 +17,7 @@ namespace MetaFile
 		void            PlayFile()                                  override;
 		void            Scan()                                      override;
 
-		WmfParserType   GetType()				                    override;
+		WmfParserType   GetType()                             const override;
 		void            SetStream(BYTE* pBuf, unsigned int unSize);
 
 	private:

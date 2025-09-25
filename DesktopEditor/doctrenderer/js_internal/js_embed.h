@@ -10,6 +10,7 @@
 
 @protocol JSEmbedObjectProtocol
 -(void*) getNative;
+-(void) freeNative;
 @end
 
 #if __has_feature(objc_arc)
@@ -41,6 +42,10 @@
 -(void*) getNative								\
 {                                               \
 	return m_internal;                          \
+}                                               \
+-(void) freeNative                              \
+{                                               \
+	RELEASEOBJECT(m_internal);                  \
 }
 
 namespace NSJSBase

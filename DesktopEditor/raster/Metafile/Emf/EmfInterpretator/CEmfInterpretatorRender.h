@@ -19,7 +19,7 @@ namespace MetaFile
 		void Begin() override;
 		void End() override;
 
-		void DrawBitmap(double dX, double dY, double dW, double dH, BYTE* pBuffer, unsigned int unWidth, unsigned int unHeight) override;
+		void DrawBitmap(double dX, double dY, double dW, double dH, BYTE* pBuffer, unsigned int unWidth, unsigned int unHeight, unsigned int unBlendMode) override;
 
 		void DrawString(std::wstring& wsText, unsigned int unCharsCount, double dX, double dY, double* pDx,
 						int iGraphicsMode = 1, double dXScale = 1, double dYScale = 1) override;
@@ -38,7 +38,7 @@ namespace MetaFile
 		void ResetClip() override;
 		void IntersectClip(const TRectD& oClip) override;
 		void ExcludeClip(const TRectD& oClip, const TRectD& oBB) override;
-		void PathClip(IPath* pPath, int nClipMode, TXForm* pTransform = NULL) override;
+		void PathClip(const CPath& oPath, int nClipMode, TXForm *pTransform = NULL) override;
 		void StartClipPath(unsigned int unMode, int nFillMode = -1) override;
 		void EndClipPath(unsigned int unMode) override;
 
@@ -48,6 +48,8 @@ namespace MetaFile
 
 		CMetaFileRenderer* GetRenderer() const;
 
+		double GetScaleX() const;
+		double GetScaleY() const;
 	private:
 		CMetaFileRenderer *m_pMetaFileRenderer;
 
@@ -61,11 +63,11 @@ namespace MetaFile
 		void HANDLE_EMR_STRETCHBLT(const TEmfStretchBLT& oTEmfStretchBLT, CDataStream &oDataStream) override {};
 		void HANDLE_EMR_EOF() override {};
 		void HANDLE_EMR_SAVEDC() override {};
-		void HANDLE_EMR_RESTOREDC(const int &nIndexDC) override {};
+		void HANDLE_EMR_RESTOREDC(const int &nIndexDC) override;
 		void HANDLE_EMR_MODIFYWORLDTRANSFORM(const TEmfXForm& oXForm, const unsigned int& unMode) override {};
 		void HANDLE_EMR_SETWORLDTRANSFORM(const TEmfXForm& oXForm) override {};
 		void HANDLE_EMR_CREATEBRUSHINDIRECT(const unsigned int& unBrushIndex, const CEmfLogBrushEx* pBrush) override {};
-		void HANDLE_EMR_SETTEXTCOLOR(const TEmfColor& oColor) override {};
+		void HANDLE_EMR_SETTEXTCOLOR(const TRGBA& oColor) override {};
 		void HANDLE_EMR_SELECTOBJECT(const unsigned int& unObjectIndex) override {};
 		void HANDLE_EMR_EXTCREATEFONTINDIRECTW(const unsigned int& unIndex, CEmfLogFont* oLogFont) override {};
 		void HANDLE_EMR_SETTEXTALIGN(const unsigned int &unAlign) override {};
@@ -81,85 +83,85 @@ namespace MetaFile
 		void HANDLE_EMR_FLATTENPATH() override {};
 		void HANDLE_EMR_WIDENPATH() override {};
 		void HANDLE_EMR_ABORTPATH() override {};
-		void HANDLE_EMR_MOVETOEX(const TEmfPointL& oPoint) override {};
+		void HANDLE_EMR_MOVETOEX(const TPointL& oPoint) override {};
 		void HANDLE_EMR_SETARCDIRECTION(const unsigned int& unDirection) override {};
-		void HANDLE_EMR_FILLPATH(const TEmfRectL& oBounds) override {};
+		void HANDLE_EMR_FILLPATH(const TRectL& oBounds) override {};
 		void HANDLE_EMR_SETMAPMODE(const unsigned int& unMapMode) override {};
-		void HANDLE_EMR_SETWINDOWORGEX(const TEmfPointL& oOrigin) override {};
-		void HANDLE_EMR_SETWINDOWEXTEX(const TEmfSizeL& oExtent) override {};
+		void HANDLE_EMR_SETWINDOWORGEX(const TPointL& oOrigin) override {};
+		void HANDLE_EMR_SETWINDOWEXTEX(const TSizeL& oExtent) override {};
 		void HANDLE_EMR_SCALEWINDOWEXTEX(int nXNum, int nXDenom, int nYNum, int nYDenom) override {};
-		void HANDLE_EMR_SETVIEWPORTORGEX(const TEmfPointL& oOrigin) override {};
-		void HANDLE_EMR_SETVIEWPORTEXTEX(const TEmfSizeL& oExtent) override {};
+		void HANDLE_EMR_SETVIEWPORTORGEX(const TPointL& oOrigin) override {};
+		void HANDLE_EMR_SETVIEWPORTEXTEX(const TSizeL& oExtent) override {};
 		void HANDLE_EMR_SCALEVIEWPORTEXTEX(int nXNum, int nXDenom, int nYNum, int nYDenom) override {};
 		void HANDLE_EMR_SETSTRETCHBLTMODE(const unsigned int& unStretchMode) override {};
 		void HANDLE_EMR_SETICMMODE(const unsigned int& unICMMode) override {};
 		void HANDLE_EMR_CREATEMONOBRUSH(const unsigned int& unBrushIndex, const TEmfDibPatternBrush& oDibBrush, CDataStream &oDataStream) override {};
 		void HANDLE_EMR_CREATEDIBPATTERNBRUSHPT(const unsigned int& unBrushIndex, const TEmfDibPatternBrush& oDibBrush, CDataStream &oDataStream) override {};
-		void HANDLE_EMR_SELECTCLIPPATH(const unsigned int& unRegionMode) override {};
-		void HANDLE_EMR_SETBKCOLOR(const TEmfColor& oColor) override {};
-		void HANDLE_EMR_EXCLUDECLIPRECT(const TEmfRectL& oClip) override {};
-		void HANDLE_EMR_EXTSELECTCLIPRGN(const unsigned int& unRgnDataSize, const unsigned int& unRegionMode, CDataStream &oDataStream) override {};
-		void HANDLE_EMR_SETMETARGN() override {};
+		void HANDLE_EMR_SELECTCLIPPATH(const unsigned int& unRegionMode) override;
+		void HANDLE_EMR_SETBKCOLOR(const TRGBA& oColor) override {};
+		void HANDLE_EMR_EXCLUDECLIPRECT(const TRectL& oClip) override;
+		void HANDLE_EMR_EXTSELECTCLIPRGN(const unsigned int& unRgnDataSize, const unsigned int& unRegionMode, CDataStream &oDataStream) override;
+		void HANDLE_EMR_SETMETARGN() override;
 		void HANDLE_EMR_SETROP2(const unsigned int& unRop2Mode) override {};
 		void HANDLE_EMR_CREATEPALETTE(const unsigned int& unPaletteIndex, const CEmfLogPalette* oEmfLogPalette) override {};
 		void HANDLE_EMR_SELECTPALETTE(const unsigned int& unPaletteIndex) override {};
 		void HANDLE_EMR_REALIZEPALETTE() override {};
-		void HANDLE_EMR_INTERSECTCLIPRECT(const TEmfRectL& oClip) override {};
+		void HANDLE_EMR_INTERSECTCLIPRECT(const TRectL& oClip) override;
 		void HANDLE_EMR_SETLAYOUT(const unsigned int& unLayoutMode) override {};
-		void HANDLE_EMR_SETBRUSHORGEX(const TEmfPointL& oOrigin) override {};
-		void HANDLE_EMR_ANGLEARC(const TEmfPointL& oCenter, const unsigned int& unRadius, const double& dStartAngle, const double& dSweepAngle) override {};
-		void HANDLE_EMR_ARC(const TEmfRectL& oBox, const TEmfPointL& oStart, const TEmfPointL& oEnd) override {};
-		void HANDLE_EMR_ARCTO(const TEmfRectL& oBox, const TEmfPointL& oStart, const TEmfPointL& oEnd) override {};
-		void HANDLE_EMR_CHORD(const TEmfRectL& oBox, const TEmfPointL& oStart, const TEmfPointL& oEnd) override {};
-		void HANDLE_EMR_ELLIPSE(const TEmfRectL& oBox) override {};
+		void HANDLE_EMR_SETBRUSHORGEX(const TPointL& oOrigin) override {};
+		void HANDLE_EMR_ANGLEARC(const TPointL& oCenter, const unsigned int& unRadius, const double& dStartAngle, const double& dSweepAngle) override {};
+		void HANDLE_EMR_ARC(const TRectL& oBox, const TPointL& oStart, const TPointL& oEnd) override {};
+		void HANDLE_EMR_ARCTO(const TRectL& oBox, const TPointL& oStart, const TPointL& oEnd) override {};
+		void HANDLE_EMR_CHORD(const TRectL& oBox, const TPointL& oStart, const TPointL& oEnd) override {};
+		void HANDLE_EMR_ELLIPSE(const TRectL& oBox) override {};
 		void HANDLE_EMR_EXTTEXTOUTA(const TEmfExtTextoutA& oTEmfExtTextoutA) override {};
 		void HANDLE_EMR_EXTTEXTOUTW(const TEmfExtTextoutW& oTEmfExtTextoutW) override {};
-		void HANDLE_EMR_LINETO(const TEmfPointL& oPoint) override {};
-		void HANDLE_EMR_PIE(const TEmfRectL& oBox, const TEmfPointL& oStart, const TEmfPointL& oEnd) override {};
-		void HANDLE_EMR_POLYBEZIER(const TEmfRectL& oBounds, const std::vector<TEmfPointL>& arPoints) override {};
-		void HANDLE_EMR_POLYBEZIER(const TEmfRectL& oBounds, const std::vector<TEmfPointS>& arPoints) override {};
-		void HANDLE_EMR_POLYBEZIERTO(const TEmfRectL& oBounds, const std::vector<TEmfPointL>& arPoints) override {};
-		void HANDLE_EMR_POLYBEZIERTO(const TEmfRectL& oBounds, const std::vector<TEmfPointS>& arPoints) override {};
-		void HANDLE_EMR_POLYDRAW(const TEmfRectL &oBounds, TEmfPointL *arPoints, const unsigned int &unCount, const unsigned char *pAbTypes) override {};
-		void HANDLE_EMR_POLYDRAW(const TEmfRectL &oBounds, TEmfPointS *arPoints, const unsigned int &unCount, const unsigned char *pAbTypes) override {};
-		void HANDLE_EMR_POLYGON(const TEmfRectL& oBounds, const std::vector<TEmfPointL>& arPoints) override {};
-		void HANDLE_EMR_POLYGON(const TEmfRectL& oBounds, const std::vector<TEmfPointS>& arPoints) override {};
-		void HANDLE_EMR_POLYLINE(const TEmfRectL& oBounds, const std::vector<TEmfPointL>& arPoints) override {};
-		void HANDLE_EMR_POLYLINE(const TEmfRectL& oBounds, const std::vector<TEmfPointS>& arPoints) override {};
-		void HANDLE_EMR_POLYLINETO(const TEmfRectL& oBounds, const std::vector<TEmfPointL>& arPoints) override {};
-		void HANDLE_EMR_POLYLINETO(const TEmfRectL& oBounds, const std::vector<TEmfPointS>& arPoints) override {};
-		void HANDLE_EMR_POLYPOLYGON(const TEmfRectL& oBounds, const std::vector<std::vector<TEmfPointL>>& arPoints) override {};
-		void HANDLE_EMR_POLYPOLYGON(const TEmfRectL& oBounds, const std::vector<std::vector<TEmfPointS>>& arPoints) override {};
-		void HANDLE_EMR_POLYPOLYLINE(const TEmfRectL& oBounds, const std::vector<std::vector<TEmfPointL>>& arPoints) override {};
-		void HANDLE_EMR_POLYPOLYLINE(const TEmfRectL& oBounds, const std::vector<std::vector<TEmfPointS>>& arPoints) override {};
+		void HANDLE_EMR_LINETO(const TPointL& oPoint) override {};
+		void HANDLE_EMR_PIE(const TRectL& oBox, const TPointL& oStart, const TPointL& oEnd) override {};
+		void HANDLE_EMR_POLYBEZIER(const TRectL& oBounds, const std::vector<TPointL>& arPoints) override {};
+		void HANDLE_EMR_POLYBEZIER(const TRectL& oBounds, const std::vector<TPointS>& arPoints) override {};
+		void HANDLE_EMR_POLYBEZIERTO(const TRectL& oBounds, const std::vector<TPointL>& arPoints) override {};
+		void HANDLE_EMR_POLYBEZIERTO(const TRectL& oBounds, const std::vector<TPointS>& arPoints) override {};
+		void HANDLE_EMR_POLYDRAW(const TRectL &oBounds, TPointL *arPoints, const unsigned int &unCount, const unsigned char *pAbTypes) override {};
+		void HANDLE_EMR_POLYDRAW(const TRectL &oBounds, TPointS *arPoints, const unsigned int &unCount, const unsigned char *pAbTypes) override {};
+		void HANDLE_EMR_POLYGON(const TRectL& oBounds, const std::vector<TPointL>& arPoints) override {};
+		void HANDLE_EMR_POLYGON(const TRectL& oBounds, const std::vector<TPointS>& arPoints) override {};
+		void HANDLE_EMR_POLYLINE(const TRectL& oBounds, const std::vector<TPointL>& arPoints) override {};
+		void HANDLE_EMR_POLYLINE(const TRectL& oBounds, const std::vector<TPointS>& arPoints) override {};
+		void HANDLE_EMR_POLYLINETO(const TRectL& oBounds, const std::vector<TPointL>& arPoints) override {};
+		void HANDLE_EMR_POLYLINETO(const TRectL& oBounds, const std::vector<TPointS>& arPoints) override {};
+		void HANDLE_EMR_POLYPOLYGON(const TRectL& oBounds, const std::vector<std::vector<TPointL>>& arPoints) override {};
+		void HANDLE_EMR_POLYPOLYGON(const TRectL& oBounds, const std::vector<std::vector<TPointS>>& arPoints) override {};
+		void HANDLE_EMR_POLYPOLYLINE(const TRectL& oBounds, const std::vector<std::vector<TPointL>>& arPoints) override {};
+		void HANDLE_EMR_POLYPOLYLINE(const TRectL& oBounds, const std::vector<std::vector<TPointS>>& arPoints) override {};
 		//TODO: Реализовать сохранение полигонов в полигоне
-		void HANDLE_EMR_RECTANGLE(const TEmfRectL& oBox) override {};
-		void HANDLE_EMR_ROUNDRECT(const TEmfRectL& oBox, const TEmfSizeL& oCorner) override {};
-		void HANDLE_EMR_SETPIXELV(const TEmfPointL& oPoint, const TEmfColor& oColor) override {};
+		void HANDLE_EMR_RECTANGLE(const TRectL& oBox) override {};
+		void HANDLE_EMR_ROUNDRECT(const TRectL& oBox, const TSizeL& oCorner) override {};
+		void HANDLE_EMR_SETPIXELV(const TPointL& oPoint, const TRGBA& oColor) override {};
 		void HANDLE_EMR_SMALLTEXTOUT(const TEmfSmallTextout& oText) override {};
-		void HANDLE_EMR_STROKEANDFILLPATH(const TEmfRectL& oBounds) override {};
-		void HANDLE_EMR_STROKEPATH(const TEmfRectL& oBounds) override {};
+		void HANDLE_EMR_STROKEANDFILLPATH(const TRectL& oBounds) override {};
+		void HANDLE_EMR_STROKEPATH(const TRectL& oBounds) override {};
 		void HANDLE_EMR_GRADIENTFILL(const std::vector<TTriVertex>& arVertex, const std::vector<std::pair<int, int>>& arIndexes, unsigned int unFillMode) override {};
 
 		void HANDLE_EMR_UNKNOWN(CDataStream &oDataStream) override {};
-		void HANDLE_EMR_FILLRGN(const TEmfRectL& oBounds, unsigned int unIhBrush, const TRegionDataHeader& oRegionDataHeader, const std::vector<TEmfRectL>& arRects) override {};
-		void HANDLE_EMR_PAINTRGN(const TEmfRectL& oBounds, const TRegionDataHeader& oRegionDataHeader, const std::vector<TEmfRectL>& arRects) override {};
-		void HANDLE_EMR_FRAMERGN(const TEmfRectL& oBounds, unsigned int unIhBrush, int nWidth, int nHeight, const TRegionDataHeader& oRegionDataHeader, const std::vector<TEmfRectL>& arRects) override {};
+		void HANDLE_EMR_FILLRGN(const TRectL& oBounds, unsigned int unIhBrush, const TRegionDataHeader& oRegionDataHeader, const std::vector<TRectL>& arRects) override {};
+		void HANDLE_EMR_PAINTRGN(const TRectL& oBounds, const TRegionDataHeader& oRegionDataHeader, const std::vector<TRectL>& arRects) override {};
+		void HANDLE_EMR_FRAMERGN(const TRectL& oBounds, unsigned int unIhBrush, int nWidth, int nHeight, const TRegionDataHeader& oRegionDataHeader, const std::vector<TRectL>& arRects) override {};
 
 		// Emf+
 		// 2.3.1 Clipping Record Types
-		void HANDLE_EMFPLUS_OFFSETCLIP(double, double) override {};
-		void HANDLE_EMFPLUS_RESETCLIP() override {};
-		void HANDLE_EMFPLUS_SETCLIPPATH(short, const CEmfPlusPath*) override {};
-		void HANDLE_EMFPLUS_SETCLIPRECT(short, const TEmfPlusRectF&) override {};
-		void HANDLE_EMFPLUS_SETCLIPREGION(short, short, const CEmfPlusRegion*) override {};
+		void HANDLE_EMFPLUS_OFFSETCLIP(double, double) override;
+		void HANDLE_EMFPLUS_RESETCLIP() override;
+		void HANDLE_EMFPLUS_SETCLIPPATH(short, const CEmfPlusPath*) override;
+		void HANDLE_EMFPLUS_SETCLIPRECT(short, const TEmfPlusRectF&) override;
+		void HANDLE_EMFPLUS_SETCLIPREGION(short, short, const CEmfPlusRegion*) override;
 
 		// 2.3.2 Comment Record Types
 		void HANDLE_EMFPLUS_COMMENT(CDataStream &, unsigned int) override {};
 
 		// 2.3.3 Control Record Types
-		void HANDLE_EMFPLUS_ENDOFFILE() override {};
-		void HANDLE_EMFPLUS_GETDC() override {};
+		void HANDLE_EMFPLUS_ENDOFFILE() override;
+		void HANDLE_EMFPLUS_GETDC() override;
 		void HANDLE_EMFPLUS_HEADER(unsigned int, unsigned int, unsigned int) override {};
 
 		// 2.3.4 Drawing Record Types
@@ -173,7 +175,7 @@ namespace MetaFile
 		void HANDLE_EMFPLUS_DRAWIMAGE(short, unsigned int, const TEmfPlusRectF&, const TEmfPlusRectF&) override {};
 		void HANDLE_EMFPLUS_DRAWIMAGEPOINTS(short, unsigned int, const TEmfPlusRectF&, const TEmfPlusRectF&) override {};
 		void HANDLE_EMFPLUS_DRAWLINES(short, const std::vector<TEmfPlusPointF>&) override {};
-		void HANDLE_EMFPLUS_DRAWPATH(short, unsigned int, const CEmfPath*) override {};
+		void HANDLE_EMFPLUS_DRAWPATH(short, unsigned int, const CPath*) override {};
 		void HANDLE_EMFPLUS_DRAWPIE(short, double, double, const TEmfPlusRectF&) override {};
 		void HANDLE_EMFPLUS_DRAWRECTS(short, const std::vector<TEmfPlusRectF>&) override {};
 		void HANDLE_EMFPLUS_DRAWSTRING(short, unsigned int, unsigned int, const std::wstring&, const TEmfPlusRectF&) override {};
@@ -203,7 +205,7 @@ namespace MetaFile
 		void HANDLE_EMFPLUS_BEGINCONTAINER(short, const TEmfPlusRectF&, const TEmfPlusRectF&, unsigned int) override {};
 		void HANDLE_EMFPLUS_BEGINCONTAINERNOPARAMS(unsigned int) override {};
 		void HANDLE_EMFPLUS_ENDCONTAINER(unsigned int) override {};
-		void HANDLE_EMFPLUS_RESTORE(unsigned int) override {};
+		void HANDLE_EMFPLUS_RESTORE(unsigned int) override;
 		void HANDLE_EMFPLUS_SAVE(unsigned int) override {};
 
 		// 2.3.8 Terminal Server Record Types

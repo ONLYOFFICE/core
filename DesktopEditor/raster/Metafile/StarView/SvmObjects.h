@@ -53,7 +53,7 @@ namespace MetaFile
 	public:
 		CSvmObjectBase(){}
 		virtual ~CSvmObjectBase(){}
-		virtual ESvmObjectType GetType()
+		virtual ESvmObjectType GetType() const
 		{
 			return SVM_OBJECT_UNKNOWN;
 		}
@@ -156,7 +156,7 @@ struct SvmHeader
     VersionCompat	versionCompat;
     unsigned int	compressionMode;
     TSvmMapMode		mapMode;
-	TRect			boundRect;
+    TRectL			boundRect;
     unsigned int	actionCount;
 };
 
@@ -241,6 +241,10 @@ struct TSvmColor
 		r = oColor.r;		g = oColor.g;		b = oColor.b;		a = oColor.a; color = oColor.color;
 		return *this;
 	}
+	int ToInt() const
+	{
+		return METAFILE_RGBA(r, g, b, 0);
+	}
 };
 
 struct TSvmLineInfo
@@ -279,23 +283,24 @@ public:
 	CSvmBrush();
 	CSvmBrush(CSvmBrush& oBrush);
 	virtual ~CSvmBrush(){}
-	virtual ESvmObjectType GetType()
+	virtual ESvmObjectType GetType() const override
 	{
 		return SVM_OBJECT_BRUSH;
 	}
 	// IBrush
-	int          GetColor();
-	int          GetColor2();
-	unsigned int GetStyleEx();
-	unsigned int GetStyle();
-	unsigned int GetHatch();
-	unsigned int GetAlpha();
-	unsigned int GetAlpha2();
-	std::wstring GetDibPatterPath(){ return L""; }
-	void GetCenterPoint(double& dX, double& dY){}
-	void GetBounds(double& left, double& top, double& width, double& height);
-	void GetDibPattern(unsigned char** pBuffer, unsigned int &unWidth, unsigned int &unHeight);
+	int          GetColor() const override;
+	int          GetColor2() const override;
+	unsigned int GetStyleEx() const override;
+	unsigned int GetStyle() const override;
+	unsigned int GetHatch() const override;
+	unsigned int GetAlpha() const override;
+	unsigned int GetAlpha2() const override;
+	std::wstring GetDibPatterPath() const override { return L""; }
+	void GetCenterPoint(double& dX, double& dY) const override {}
+	void GetBounds(double& left, double& top, double& width, double& height) const override;
+	void GetDibPattern(unsigned char** pBuffer, unsigned int &unWidth, unsigned int &unHeight) const override;
 
+	void GetGradientColors(std::vector<long>& arColors, std::vector<double>& arPositions) const override;
 public:
 	unsigned short	BrushStyleEx;  //angle, or ....
 	unsigned short	BrushStyle;
@@ -331,45 +336,45 @@ public:
 	{
 	}
 
-	virtual ESvmObjectType GetType()
+	virtual ESvmObjectType GetType() const override
 	{
 		return SVM_OBJECT_FONT;
 	}
 
 	// IFont
-	double          GetHeight()
+	double          GetHeight() const override
 	{
 		return (double)SizeHeight;
 	}
-	std::wstring GetFaceName()
+	std::wstring GetFaceName() const override
 	{
 		return sFamilyName;
 	}
-	int          GetWeight()
+	int          GetWeight() const override
 	{
 		return (int)Weight;
 	}
-	bool         IsItalic()
+	bool         IsItalic() const override
 	{
 		return (0x01 == Italic ? true : false);
 	}
-	bool         IsStrikeOut()
+	bool         IsStrikeOut() const override
 	{
 		return (0x01 == StrikeOut ? true : false);
 	}
-	bool         IsUnderline()
+	bool         IsUnderline() const override
 	{
 		return (0x01 == Underline ? true : false);
 	}
-	int          GetEscapement()
+	int          GetEscapement() const override
 	{
 		return 0;//(int)Escapement;
 	}
-	int          GetCharSet()
+	int          GetCharSet() const override
 	{
 		return (int)CharSet;
 	}
-	int          GetOrientation()
+	int          GetOrientation() const override
 	{
 		return (int)Orientation;
 	}
@@ -412,37 +417,45 @@ public:
 	{
 
 	}
-	virtual ESvmObjectType GetType()
+	virtual ESvmObjectType GetType() const override
 	{
 		return SVM_OBJECT_PEN;
 	}
 
 	// IPen
-	int          GetColor();
-	unsigned int GetStyle()
+	int          GetColor() const override;
+	unsigned int GetStyle() const override
 	{
 		return (unsigned int)PenStyle;
 	}
-	double GetWidth()
+	double GetWidth() const override
 	{
 		return (double)Width;
 	}
-	unsigned int GetAlpha()
+	unsigned int GetAlpha() const override
 	{
 		return 255;
 	}
-	double GetMiterLimit()
+	double GetMiterLimit() const override
 	{
 		return 0;
 	}
-	double GetDashOffset()
+	double GetDashOffset() const override
 	{
 		return 0;
 	}
-	void GetDashData(double*& arDatas, unsigned int& unSize)
+	void GetDashData(double*& arDatas, unsigned int& unSize) const override
 	{
 		arDatas = NULL;
 		unSize  = 0;
+	}
+	const ILineCap* GetStartLineCap() const override
+	{
+		return NULL;
+	}
+	const ILineCap* GetEndLineCap()   const override
+	{
+		return NULL;
 	}
 public:
 	unsigned short	PenStyle;

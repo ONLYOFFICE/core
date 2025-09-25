@@ -485,6 +485,36 @@ namespace DocFileFormat
 				}
 			}
 		}
+		if (_doc->nWordVersion > 0)
+		{
+			if (false == m_sAsciiFont.empty())
+			{
+				if (m_sEastAsiaFont.empty())
+				{
+					m_sEastAsiaFont = m_sAsciiFont;
+					XMLTools::XMLAttribute* eastAsia = new XMLTools::XMLAttribute(L"w:eastAsia");
+					eastAsia->SetValue(FormatUtils::XmlEncode(m_sEastAsiaFont));
+					rFonts->AppendAttribute(*eastAsia);
+					RELEASEOBJECT(eastAsia);
+				}
+				if (m_shAnsiFont.empty())
+				{
+					m_shAnsiFont = m_sAsciiFont;
+					XMLTools::XMLAttribute* ansi = new XMLTools::XMLAttribute(L"w:hAnsi");
+					ansi->SetValue(FormatUtils::XmlEncode(m_shAnsiFont));
+					rFonts->AppendAttribute(*ansi);
+					RELEASEOBJECT(ansi);
+				}
+				if (m_sCsFont.empty())
+				{
+					m_sCsFont = m_sAsciiFont;
+					XMLTools::XMLAttribute* cs = new XMLTools::XMLAttribute(L"w:cs");
+					cs->SetValue(FormatUtils::XmlEncode(m_sCsFont, true));
+					rFonts->AppendAttribute(*cs);
+					RELEASEOBJECT(cs);
+				}
+			}
+		}
 		if ( lang->GetAttributeCount() > 0 )
 		{
 			parent->AppendChild( *lang );
@@ -556,7 +586,9 @@ namespace DocFileFormat
 				if ( _styleChpx )
 				{
 					StyleSheetDescription* thisStyle = _doc->Styles->Styles->at( styleId );
-					styleId = (unsigned short)thisStyle->istdBase;
+
+					if (thisStyle)
+						styleId = (unsigned short)thisStyle->istdBase;
 				}
 
 				//build the style hierarchy

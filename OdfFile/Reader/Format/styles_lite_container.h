@@ -64,6 +64,7 @@ public:
 
 	void add_user_defined(const std::wstring & name, const std::wstring & value);
 	std::wstring get_user_defined(const std::wstring & name);
+	std::wstring dump_user_defined();
 	
 	std::wstring dc_creator_;
 	std::wstring dc_date_;
@@ -109,6 +110,9 @@ public:
 	void end_table_view ();
 	
 	void add_view (const std::wstring & name, const std::wstring & value);
+
+	void set_tab_distance(double pt);
+	_CP_OPT(double) get_tab_distance();
 
 private:
     class Impl;

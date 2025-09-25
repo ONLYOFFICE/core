@@ -68,8 +68,8 @@ void CUserEdit::FromAtom(CRecordUserEditAtom *pAtom)
 
 CCurrentUser::CCurrentUser()
 {
-    m_bIsEncrypt			= false;
-    m_nOffsetToCurrentEdit	= 0;
+    m_bIsEncrypt = false;
+    m_nOffsetToCurrentEdit = 0;
 }
 
 CCurrentUser::~CCurrentUser()

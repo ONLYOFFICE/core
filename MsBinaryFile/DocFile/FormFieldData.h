@@ -77,7 +77,7 @@ namespace DocFileFormat
 			std::wstring	guid;
 			_UINT64			fileTime = 0;
 
-			void read(VirtualStreamReader* reader);
+			void read(VirtualStreamReader* reader, int size);
 		};
 		struct _FFData
 		{
@@ -106,7 +106,7 @@ namespace DocFileFormat
 			std::wstring	xstzExitMcr;
 
 			//STTB			hsttbDropList;
-			void read(VirtualStreamReader* reader);
+			void read(VirtualStreamReader* reader, int size);
 		};
 		FormFieldData( int type, const CharacterPropertyExceptions* chpx, POLE::Stream* stream, int nWordVersion );
 		virtual ~FormFieldData() {}

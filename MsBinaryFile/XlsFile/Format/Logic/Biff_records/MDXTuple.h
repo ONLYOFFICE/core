@@ -49,13 +49,15 @@ public:
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
+	void writeFields(CFRecord& record);
+
 
 	static const ElementType	type = typeMDXTuple;
 
 //-----------------------------
-	_INT32					istrConnName;
-	unsigned char			tfnSrc;
-	_INT32					cistr;
+	_INT32					istrConnName = 0;
+	unsigned char			tfnSrc = 0;
+	_INT32					cistr = 0;
 	BiffStructurePtrVector	rgistr;
 	FrtHeader				frtHeader;
 };

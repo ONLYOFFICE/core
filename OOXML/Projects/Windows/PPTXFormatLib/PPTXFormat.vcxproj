@@ -289,10 +289,8 @@
     <ClInclude Include="..\..\..\Binary\Presentation\imagemanager.h" />
     <ClInclude Include="..\..\..\Binary\Presentation\pptxwriter.h" />
     <ClInclude Include="..\..\..\Binary\Presentation\WMFToImageConverter.h" />
-    <ClInclude Include="..\..\..\PPTXFormat\App.h" />
     <ClInclude Include="..\..\..\PPTXFormat\CommentAuthors.h" />
     <ClInclude Include="..\..\..\PPTXFormat\Comments.h" />
-    <ClInclude Include="..\..\..\PPTXFormat\Core.h" />
     <ClInclude Include="..\..\..\PPTXFormat\DrawingConverter\ASCOfficeDrawingConverter.h" />
     <ClInclude Include="..\..\..\PPTXFormat\DrawingConverter\ASCOfficePPTXFile.h" />
     <ClInclude Include="..\..\..\PPTXFormat\FileContainer.h" />
@@ -623,21 +621,14 @@
     <ClInclude Include="..\..\..\PPTXFormat\NotesMaster.h" />
     <ClInclude Include="..\..\..\PPTXFormat\NotesSlide.h" />
     <ClInclude Include="..\..\..\PPTXFormat\PPTX.h" />
-    <ClInclude Include="..\..\..\PPTXFormat\PPTXEvent.h" />
     <ClInclude Include="..\..\..\PPTXFormat\Presentation.h" />
-    <ClInclude Include="..\..\..\PPTXFormat\Presentation\EmbeddedFont.h" />
-    <ClInclude Include="..\..\..\PPTXFormat\Presentation\EmbeddedFontDataId.h" />
-    <ClInclude Include="..\..\..\PPTXFormat\Presentation\Kinsoku.h" />
-    <ClInclude Include="..\..\..\PPTXFormat\Presentation\NotesSz.h" />
-    <ClInclude Include="..\..\..\PPTXFormat\Presentation\PhotoAlbum.h" />
-    <ClInclude Include="..\..\..\PPTXFormat\Presentation\SectionLst.h" />
-    <ClInclude Include="..\..\..\PPTXFormat\Presentation\SldSz.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Presentation\PresentationChildElements.h" />
     <ClInclude Include="..\..\..\PPTXFormat\PresProps.h" />
     <ClInclude Include="..\..\..\PPTXFormat\ShowPr\Browse.h" />
-    <ClInclude Include="..\..\..\PPTXFormat\ShowPr\CustShow.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\ShowPr\CustomShowId.h" />
     <ClInclude Include="..\..\..\PPTXFormat\ShowPr\Kiosk.h" />
     <ClInclude Include="..\..\..\PPTXFormat\ShowPr\Present.h" />
-    <ClInclude Include="..\..\..\PPTXFormat\ShowPr\ShowPr.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\ShowPr\PresentationPr.h" />
     <ClInclude Include="..\..\..\PPTXFormat\ShowPr\SldAll.h" />
     <ClInclude Include="..\..\..\PPTXFormat\ShowPr\SldRg.h" />
     <ClInclude Include="..\..\..\PPTXFormat\Slide.h" />
@@ -650,6 +641,7 @@
     <ClInclude Include="..\..\..\PPTXFormat\Theme\FmtScheme.h" />
     <ClInclude Include="..\..\..\PPTXFormat\Theme\FontScheme.h" />
     <ClInclude Include="..\..\..\PPTXFormat\Theme\ThemeElements.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Theme\VisioThemeElements.h" />
     <ClInclude Include="..\..\..\PPTXFormat\ViewProps.h" />
     <ClInclude Include="..\..\..\PPTXFormat\ViewProps\CSldViewPr.h" />
     <ClInclude Include="..\..\..\PPTXFormat\ViewProps\CViewPr.h" />
@@ -663,7 +655,6 @@
     <ClInclude Include="..\..\..\PPTXFormat\ViewProps\Ratio.h" />
     <ClInclude Include="..\..\..\PPTXFormat\ViewProps\Restored.h" />
     <ClInclude Include="..\..\..\PPTXFormat\ViewProps\Scale.h" />
-    <ClInclude Include="..\..\..\PPTXFormat\ViewProps\Sld.h" />
     <ClInclude Include="..\..\..\PPTXFormat\ViewProps\SlideViewPr.h" />
     <ClInclude Include="..\..\..\PPTXFormat\ViewProps\SorterViewPr.h" />
     <ClInclude Include="..\..\..\PPTXFormat\WrapperFile.h" />
@@ -671,7 +662,6 @@
     <ClInclude Include="..\..\..\PPTXFormat\WritingVector.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\HtmlRenderer\src\ASCSVGWriter.cpp" />
     <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Base\XmlTools.cpp" />
     <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\BaseShape.cpp" />
     <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\GraphicsPath.cpp" />
@@ -922,10 +912,8 @@
     <ClCompile Include="..\..\..\Binary\Presentation\FontPicker.cpp" />
     <ClCompile Include="..\..\..\Binary\Presentation\imagemanager.cpp" />
     <ClCompile Include="..\..\..\Binary\Presentation\PPTXWriter.cpp" />
-    <ClCompile Include="..\..\..\PPTXFormat\App.cpp" />
     <ClCompile Include="..\..\..\PPTXFormat\CommentAuthors.cpp" />
     <ClCompile Include="..\..\..\PPTXFormat\Comments.cpp" />
-    <ClCompile Include="..\..\..\PPTXFormat\Core.cpp" />
     <ClCompile Include="..\..\..\PPTXFormat\DrawingConverter\ASCOfficeDrawingConverter.cpp" />
     <ClCompile Include="..\..\..\PPTXFormat\DrawingConverter\ASCOfficePPTXFileRealization.cpp" />
     <ClCompile Include="..\..\..\PPTXFormat\FileContainer.cpp" />
@@ -1258,19 +1246,13 @@
     <ClCompile Include="..\..\..\PPTXFormat\NotesMaster.cpp" />
     <ClCompile Include="..\..\..\PPTXFormat\NotesSlide.cpp" />
     <ClCompile Include="..\..\..\PPTXFormat\Presentation.cpp" />
-    <ClCompile Include="..\..\..\PPTXFormat\Presentation\EmbeddedFont.cpp" />
-    <ClCompile Include="..\..\..\PPTXFormat\Presentation\EmbeddedFontDataId.cpp" />
-    <ClCompile Include="..\..\..\PPTXFormat\Presentation\Kinsoku.cpp" />
-    <ClCompile Include="..\..\..\PPTXFormat\Presentation\NotesSz.cpp" />
-    <ClCompile Include="..\..\..\PPTXFormat\Presentation\PhotoAlbum.cpp" />
-    <ClCompile Include="..\..\..\PPTXFormat\Presentation\SectionLst.cpp" />
-    <ClCompile Include="..\..\..\PPTXFormat\Presentation\SldSz.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Presentation\PresentationChildElements.cpp" />
     <ClCompile Include="..\..\..\PPTXFormat\PresProps.cpp" />
     <ClCompile Include="..\..\..\PPTXFormat\ShowPr\Browse.cpp" />
-    <ClCompile Include="..\..\..\PPTXFormat\ShowPr\CustShow.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\ShowPr\CustomShowId.cpp" />
     <ClCompile Include="..\..\..\PPTXFormat\ShowPr\Kiosk.cpp" />
     <ClCompile Include="..\..\..\PPTXFormat\ShowPr\Present.cpp" />
-    <ClCompile Include="..\..\..\PPTXFormat\ShowPr\ShowPr.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\ShowPr\PresentationPr.cpp" />
     <ClCompile Include="..\..\..\PPTXFormat\ShowPr\SldAll.cpp" />
     <ClCompile Include="..\..\..\PPTXFormat\ShowPr\SldRg.cpp" />
     <ClCompile Include="..\..\..\PPTXFormat\Slide.cpp" />
@@ -1283,6 +1265,7 @@
     <ClCompile Include="..\..\..\PPTXFormat\Theme\FmtScheme.cpp" />
     <ClCompile Include="..\..\..\PPTXFormat\Theme\FontScheme.cpp" />
     <ClCompile Include="..\..\..\PPTXFormat\Theme\ThemeElements.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Theme\VisioThemeElements.cpp" />
     <ClCompile Include="..\..\..\PPTXFormat\ViewProps.cpp" />
     <ClCompile Include="..\..\..\PPTXFormat\ViewProps\CSldViewPr.cpp" />
     <ClCompile Include="..\..\..\PPTXFormat\ViewProps\CViewPr.cpp" />
@@ -1296,7 +1279,6 @@
     <ClCompile Include="..\..\..\PPTXFormat\ViewProps\Ratio.cpp" />
     <ClCompile Include="..\..\..\PPTXFormat\ViewProps\Restored.cpp" />
     <ClCompile Include="..\..\..\PPTXFormat\ViewProps\Scale.cpp" />
-    <ClCompile Include="..\..\..\PPTXFormat\ViewProps\Sld.cpp" />
     <ClCompile Include="..\..\..\PPTXFormat\ViewProps\SlideViewPr.cpp" />
     <ClCompile Include="..\..\..\PPTXFormat\ViewProps\SorterViewPr.cpp" />
     <ClCompile Include="..\..\..\PPTXFormat\WrapperFile.cpp" />

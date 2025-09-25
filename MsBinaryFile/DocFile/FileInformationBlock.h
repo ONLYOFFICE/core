@@ -506,6 +506,8 @@ namespace DocFileFormat
 	public:
 		int				m_nWordVersion;
 		int				m_CodePage;
+		int				m_CodePageSaved;
+
 		FibBase			m_FibBase;
 		
 		RgW97			m_RgW97;

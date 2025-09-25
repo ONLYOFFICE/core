@@ -31,6 +31,7 @@
  */
 
 #include "math_elements.h"
+#include "../Converter/StarMath2OOXML/cconversionsmtoooxml.h"
 
 namespace cpdoccore { 
 
@@ -61,12 +62,12 @@ void office_math::add_child_element( xml::sax * Reader, const std::wstring & Ns,
 }
 
 
-void office_math::oox_convert(oox::math_context & Context)
+void office_math::oox_convert(oox::math_context & Context, int iTypeConversion)
 {
 	if (semantics_)
 	{
 		office_math_element* math_element = dynamic_cast<office_math_element*>(semantics_.get());
-		math_element->oox_convert(Context);
+		math_element->oox_convert(Context,iTypeConversion);
 	}
 }
 
@@ -93,10 +94,55 @@ void math_semantics::add_child_element( xml::sax * Reader, const std::wstring & 
 
 void math_semantics::oox_convert(oox::math_context & Context)
 {
-	for (size_t i = 0 ; i < content_.size(); i++)
+    this->oox_convert(Context,0);
+}
+void math_semantics::oox_convert(oox::math_context &Context, int iTypeConversion)
+{
+    math_annotation* annotation = dynamic_cast<math_annotation*>(annotation_.get());
+    math_annotation_xml* annotation_xml = dynamic_cast<math_annotation_xml*>(annotation_.get());
+   
+    std::wstring annotation_text;
+    if ((annotation) && (annotation->text_)) annotation_text = *annotation->text_;
+    else if ((annotation_xml) && (annotation_xml->text_)) annotation_text = *annotation_xml->text_;
+
+    bool result = false;
+    if (!annotation_text.empty())
     {
-		office_math_element* math_element = dynamic_cast<office_math_element*>(content_[i].get());
-        math_element->oox_convert(Context);
+        result = true;
+        StarMath::CParserStarMathString parser;
+        StarMath::CConversionSMtoOOXML converter;
+       
+        parser.SetBaseFont(Context.base_font_name_);
+        parser.SetBaseSize(Context.base_font_size_);
+        parser.SetBaseAlignment(Context.base_alignment_);
+        parser.SetBaseItalic(Context.base_font_italic_);
+        parser.SetBaseBold(Context.base_font_bold_);
+
+        converter.StartConversion(parser.Parse(annotation_text,iTypeConversion),parser.GetAlignment());
+
+        auto sizes = parser.GetFormulaSize();
+
+        for (;!sizes.empty(); sizes.pop())
+        {
+            if (sizes.front().m_iWidth > Context.width)
+                Context.width = sizes.front().m_iWidth;
+
+            Context.height += sizes.front().m_iHeight;
+        }
+        Context.output_stream() << converter.GetOOXML();
+    }
+
+    if (!result)
+    {
+ 		Context.output_stream() << L"<m:oMathPara xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\">";
+        Context.output_stream() << L"<m:oMath xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\">";
+        for (size_t i = 0; i < content_.size(); i++)
+        {
+            office_math_element* math_element = dynamic_cast<office_math_element*>(content_[i].get());
+            math_element->oox_convert(Context);
+        }
+        Context.output_stream() << L"</m:oMath>";
+        Context.output_stream() << L"</m:oMathPara>";
     }
 }
 
@@ -126,11 +172,6 @@ void math_annotation::add_text(const std::wstring & Text)
     text_ = Text;
 }
 
-void math_annotation::oox_convert(oox::math_context & Context)
-{
-
-}
-
 //----------------------------------------------------------------------------------------------------
 const wchar_t * math_annotation_xml::ns = L"math";
 const wchar_t * math_annotation_xml::name = L"annotation-xml";
@@ -157,10 +198,6 @@ void math_annotation_xml::add_text(const std::wstring & Text)
     text_ = Text;
 }
 
-void math_annotation_xml::oox_convert(oox::math_context & Context)
-{
-
-}
 //----------------------------------------------------------------------------------------------------
 
 }

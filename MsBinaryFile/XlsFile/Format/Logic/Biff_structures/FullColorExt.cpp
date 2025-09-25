@@ -49,6 +49,12 @@ void FullColorExt::load(CFRecord& record)
 	record.skipNunBytes(8); //unused
 }
 
+void FullColorExt::save(CFRecord& record)
+{
+    record << xclrType << nTintShade << xclrValue;
+    record.reserveNunBytes(8); //unused
+}
+
 int FullColorExt::serialize(std::wostream & stream, const std::wstring &node_name)
 {
 	if (xclrType > 3) return 0;//not set
@@ -62,8 +68,14 @@ int FullColorExt::serialize(std::wostream & stream, const std::wstring &node_nam
 			case 0: CP_XML_ATTR(L"auto", 1);		break;
 			case 1: CP_XML_ATTR(L"indexed", xclrValue);	break;
 			case 3: CP_XML_ATTR(L"theme", xclrValue);	break;
-			default:
-				CP_XML_ATTR(L"rgb", xclrValue);	break;
+			default:			
+				{
+					BYTE r = GETBITS(xclrValue, 0, 7);
+					BYTE g = GETBITS(xclrValue, 8, 15);
+					BYTE b = GETBITS(xclrValue, 16, 23);
+					BYTE a = GETBITS(xclrValue, 24, 31);
+					CP_XML_ATTR(L"rgb", STR::toARGB(r, g, b, a));	
+				}break;
 			}
 			if (nTintShade != 0)
 			{

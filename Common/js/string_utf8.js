@@ -4,6 +4,9 @@
 		undefined !== String.prototype.toUtf8)
 		return;
 
+	var STRING_UTF8_BUFFER_LENGTH = 1024;
+	var STRING_UTF8_BUFFER = new ArrayBuffer(STRING_UTF8_BUFFER_LENGTH);
+
 	/**
 	 * Read string from utf8
 	 * @param {Uint8Array} buffer
@@ -54,10 +57,10 @@
 	 * Convert string to utf8 array
 	 * @returns {Uint8Array}
 	 */
-	String.prototype.toUtf8 = function(isNoEndNull) {
+	String.prototype.toUtf8 = function(isNoEndNull, isUseBuffer) {
 		var inputLen = this.length;
 		var testLen  = 6 * inputLen + 1;
-		var tmpStrings = new ArrayBuffer(testLen);
+		var tmpStrings = (isUseBuffer && testLen < STRING_UTF8_BUFFER_LENGTH) ? STRING_UTF8_BUFFER : new ArrayBuffer(testLen);
 
 		var code  = 0;
 		var index = 0;
@@ -129,7 +132,7 @@
 	};
 
 	String.prototype.toUtf8Pointer = function(isNoEndNull) {
-		var tmp = this.toUtf8(isNoEndNull);
+		var tmp = this.toUtf8(isNoEndNull, true);
 		var pointer = Module["_malloc"](tmp.length);
 		if (0 == pointer)
 			return null;

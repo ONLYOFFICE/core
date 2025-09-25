@@ -136,17 +136,17 @@ void table_table_row::docx_convert(oox::docx_conversion_context & Context)
 
 void table_table_rows::docx_convert(oox::docx_conversion_context & Context)
 {
- 	for (size_t i = 0; i < table_table_row_.size(); i++)
+ 	for (size_t i = 0; i < content_.size(); i++)
     {
-        table_table_row_[i]->docx_convert(Context);
+        content_[i]->docx_convert(Context);
     }
 }
 
 void table_table_header_rows::docx_convert(oox::docx_conversion_context & Context)
 {
- 	for (size_t i = 0; i < table_table_row_.size(); i++)
+ 	for (size_t i = 0; i < content_.size(); i++)
     {
-        table_table_row_[i]->docx_convert(Context);
+        content_[i]->docx_convert(Context);
     }
 }
 
@@ -248,9 +248,9 @@ void table_columns::docx_convert(oox::docx_conversion_context & Context)
 
 void table_table_columns::docx_convert(oox::docx_conversion_context & Context)
 {
-	for (size_t i = 0; i < table_table_column_.size(); i++)
+	for (size_t i = 0; i < content_.size(); i++)
     {
-        table_table_column_[i]->docx_convert(Context);
+        content_[i]->docx_convert(Context);
     }
 }
 
@@ -278,9 +278,9 @@ void table_columns_and_groups::docx_convert(oox::docx_conversion_context & Conte
 
 void table_table_header_columns::docx_convert(oox::docx_conversion_context & Context)
 {
-	for (size_t i = 0; i < table_table_column_.size(); i++)
+	for (size_t i = 0; i < content_.size(); i++)
     {
-        table_table_column_[i]->docx_convert(Context);
+        content_[i]->docx_convert(Context);
     }    
 }
 
@@ -292,16 +292,16 @@ void table_table_column_group::docx_convert(oox::docx_conversion_context & Conte
 void table_table_column::docx_convert(oox::docx_conversion_context & Context)
 {
     std::wostream & _Wostream = Context.output_stream();
-    const unsigned int columnsRepeated = table_table_column_attlist_.table_number_columns_repeated_;
-    const std::wstring defaultCellStyle = table_table_column_attlist_.table_default_cell_style_name_.get_value_or(L"");
+    const unsigned int columnsRepeated = attlist_.table_number_columns_repeated_;
+    const std::wstring defaultCellStyle = attlist_.table_default_cell_style_name_.get_value_or(L"");
     Context.get_table_context().start_column(columnsRepeated, defaultCellStyle);
 
     for (unsigned int i = 0; i < columnsRepeated; ++i)
     {
 		bool bAddWidth = false;
-        if (table_table_column_attlist_.table_style_name_)
+        if (attlist_.table_style_name_)
         {
-            const std::wstring colStyleName = table_table_column_attlist_.table_style_name_.get();
+            const std::wstring colStyleName = attlist_.table_style_name_.get();
             if (style_instance * inst = 
                 Context.root()->odf_context().styleContainer().style_by_name( colStyleName , style_family::TableColumn, Context.process_headers_footers_ ))
             {

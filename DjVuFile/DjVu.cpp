@@ -93,7 +93,7 @@ void CDjVuFile::GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, d
 	if (m_pImplementation)
 		m_pImplementation->GetPageInfo(nPageIndex, pdWidth, pdHeight, pdDpiX, pdDpiY);
 }
-void CDjVuFile::DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak)
+void CDjVuFile::DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak, COfficeDrawingPageParams* pParams)
 {
 	if (m_pImplementation)
 		m_pImplementation->DrawPageOnRenderer(pRenderer, nPageIndex, pBreak);
@@ -120,4 +120,16 @@ BYTE* CDjVuFile::GetLinks (int nPageIndex)
     if (m_pImplementation)
         return m_pImplementation->GetPageLinks(nPageIndex);
     return NULL;
+}
+
+unsigned char* CDjVuFile::ConvertToPixels(
+	int nPageIndex,
+	int nRasterW, int nRasterH, bool bIsFlip,
+	NSFonts::IFontManager* pFonts,
+	int nBackgroundColor, bool bIsDarkMode,
+	int nBackgroundOpacity)
+{
+	if (m_pImplementation)
+		return m_pImplementation->ConvertToPixels(nPageIndex, nRasterW, nRasterH, !bIsFlip);
+	return NULL;
 }

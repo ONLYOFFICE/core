@@ -16,7 +16,15 @@
 static tsize_t 
 _tiffReadProcEx(thandle_t fd, tdata_t buf, tsize_t size)
 {
-	return (tsize_t)((CxFile*)fd)->Read(buf, 1, size);
+	tsize_t nReadCount = (tsize_t)((CxFile*)fd)->Read(buf, 1, size);
+
+	if (nReadCount < size)
+	{
+		memset(static_cast<char*>(buf) + nReadCount, 0, size - nReadCount);
+		return size;
+	}
+
+	return nReadCount;
 }
 
 static tsize_t

@@ -293,7 +293,7 @@ int FontInfo::serialize(std::wostream & stream)
 				}
 			}
 
-			if (uls > 0)
+			if (uls > 0 && uls < 0xff)
 			{
 				CP_XML_NODE(L"u")
 				{

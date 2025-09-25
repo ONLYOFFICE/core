@@ -41,11 +41,19 @@
 #include <sys/wait.h>
 #include <sys/resource.h>
 #include <stdio.h>
+#include <unistd.h>
+#ifdef _MAC
+extern char **environ;
+#endif
 #endif
 
 namespace NSX2T
 {
-	int Convert(const std::wstring& sConverterDirectory, const std::wstring sXmlPath, unsigned long nTimeout = 0, bool *bOutIsTimeout = nullptr)
+	int Convert(const std::wstring& sConverterDirectory,
+		const std::wstring sXmlPath,
+		unsigned long nTimeout = 0,
+		bool *bOutIsTimeout = nullptr,
+		bool bIsSaveEnvironment = false)
 	{
 		int nReturnCode = 0;
 		std::wstring sConverterExe = sConverterDirectory + L"/x2t";
@@ -86,8 +94,16 @@ namespace NSX2T
 
 		PROCESS_INFORMATION processinfo;
 		ZeroMemory(&processinfo,sizeof(PROCESS_INFORMATION));
+
+		LPTCH env = NULL;
+		if(!bIsSaveEnvironment)
+		{
+			env = new wchar_t[1];
+			env[0] = 0;
+		}
+
 		BOOL bResult = CreateProcessW(sConverterExe.c_str(), pCommandLine,
-									  NULL, NULL, TRUE, CREATE_NO_WINDOW, NULL, NULL, &sturtupinfo, &processinfo);
+									  NULL, NULL, TRUE, CREATE_NO_WINDOW, env, NULL, &sturtupinfo, &processinfo);
 
 		if (bResult && ghJob)
 		{
@@ -95,13 +111,13 @@ namespace NSX2T
 		}
 
 		if(nTimeout == 0)
-				nTimeout = INFINITE;
+			nTimeout = INFINITE;
 
 		DWORD nWaitResult = WaitForSingleObject(processinfo.hProcess, nTimeout * 1000);
 
 		// true if timeout
 		if(bOutIsTimeout != nullptr)
-				*bOutIsTimeout = (WAIT_TIMEOUT == nWaitResult);
+			*bOutIsTimeout = (WAIT_TIMEOUT == nWaitResult);
 
 		RELEASEARRAYOBJECTS(pCommandLine);
 
@@ -120,6 +136,8 @@ namespace NSX2T
 			CloseHandle(ghJob);
 			ghJob = NULL;
 		}
+		if(!bIsSaveEnvironment)
+			delete[] env;
 
 #endif
 
@@ -154,16 +172,6 @@ namespace NSX2T
 			nargs[1] = sXmlA.c_str();
 			nargs[2] = NULL;
 
-#ifndef _MAC
-			const char* nenv[2];
-			nenv[0] = sLibraryDir.c_str();
-			nenv[1] = NULL;
-#else
-			const char* nenv[3];
-			nenv[0] = sLibraryDir.c_str();
-			nenv[1] = sPATH.c_str();
-			nenv[2] = NULL;
-#endif
 			if(nTimeout != 0)
 			{
 				// 5 secs to send signal etc...
@@ -171,9 +179,35 @@ namespace NSX2T
 				setrlimit(RLIMIT_CPU, &limit);
 			}
 
+			char** penv;
+#ifndef _MAC
+			char* nenv[2];
+			nenv[0] = &sLibraryDir[0];
+			nenv[1] = NULL;
+			penv = nenv;
+
+			if(bIsSaveEnvironment)
+			{
+				putenv(&sLibraryDir[0]);
+				penv = environ;
+			}
+#else
+			char* nenv[3];
+			nenv[0] = &sLibraryDir[0];
+			nenv[1] = &sPATH[0];
+			nenv[2] = NULL;
+			penv = nenv;
+
+			if(bIsSaveEnvironment)
+			{
+				putenv(&sLibraryDir[0]);
+				putenv(&sPATH[0]);
+				penv = environ;
+			}
+#endif
 			execve(sProgramm.c_str(),
 				   (char * const *)nargs,
-				   (char * const *)nenv);
+				   (char * const *)penv);
 			exit(EXIT_SUCCESS);
 			break;
 		}

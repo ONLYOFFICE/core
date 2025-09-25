@@ -48,25 +48,26 @@ public:
 	BaseObjectPtr clone();
 	
 	void readFields (CFRecord& record);
+	void writeFields (CFRecord& record);
 	int serialize (std::wostream & _stream);
 
 	static const ElementType type = typeCrtLayout12A;
 
 	FrtHeader	frtheader;
-	_UINT32		dwCheckSum;
+	_UINT32		dwCheckSum = 0;
 
-	bool		fLayoutTargetInner;
+	bool		fLayoutTargetInner = false;
 
-	short		xTL;
-	short		yTL;
-	short		xBR;
-	short		yBR;
+	short		xTL = 0;
+	short		yTL = 0;
+	short		xBR = 0;
+	short		yBR = 0;
 
-	CrtLayout12Mode	wXMode;
-	CrtLayout12Mode	wYMode;
+	CrtLayout12Mode	wXMode = 0;
+	CrtLayout12Mode	wYMode = 0;
 
-	CrtLayout12Mode	wWidthMode;
-	CrtLayout12Mode	wHeightMode;
+	CrtLayout12Mode	wWidthMode = 0;
+	CrtLayout12Mode	wHeightMode = 0;
 	
 	Xnum			x;
 	Xnum			y;

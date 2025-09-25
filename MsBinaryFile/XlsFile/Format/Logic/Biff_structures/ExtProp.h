@@ -47,10 +47,11 @@ public:
 	BiffStructurePtr clone();
 
 	virtual void load(CFRecord& record);
+    virtual void save(CFRecord& record);
 
-	static const ElementType	type = typeExtProp;
+	static const ElementType type = typeExtProp;
 
-	unsigned short cb;
+    unsigned short cb = 0;
 
 	enum _type
 	{
@@ -72,8 +73,8 @@ public:
 	{
 		FullColorExt	color;
 		XFExtGradient	gradient_fill;
-		unsigned char	font_scheme;
-		unsigned short	indent_level;
+		unsigned char	font_scheme = 0;
+		unsigned short	indent_level = 0;
 
 	} extPropData;
 };

@@ -94,12 +94,19 @@ struct _color
 	int				index = -1;
 	bool			bScheme = false;
 
-	void SetRGB(unsigned char nR, unsigned char  nG, unsigned char  nB);
+	void SetRGB(unsigned char nR, unsigned char  nG, unsigned char  nB)
+	{
+		nRGB = (nR << 16) | (nG << 8) | nB;
+		sRGB = STR::toRGB(nR, nG, nB);
+
+		index = -1;
+	}
 
 	unsigned char  GetB() { return (unsigned char )(nRGB);}
 	unsigned char  GetG() { return (unsigned char )(nRGB>>8);}
 	unsigned char  GetR() { return (unsigned char )(nRGB>>16);}
 
+	double			opacity = 0;
 };
 
 struct _rect
@@ -272,8 +279,6 @@ public:
 		}
 		_color			color;
 		_color			color2;
-		double			opacity = 0;
-		double			opacity2 = 0;
 		_fill_type		type = fillSolid; 
 
 		int				focus = 0;
@@ -290,6 +295,8 @@ public:
 		_CP_OPT(bool)	grayscale;
 		_CP_OPT(int)	biLevel;
 
+		std::wstring	name;
+
 		std::vector<std::pair<double, _color>> colorsPosition;
 	}fill;
 
@@ -297,7 +304,8 @@ public:
 	{
 		fill.type = fillSolid; 
 		fill.color.SetRGB(0xff, 0xff, 0xff);
-		fill.angle = fill.opacity = fill.opacity2 = fill.focus = 0; 
+		fill.color.opacity = 0;
+		fill.angle = fill.focus = 0; 
 		memset(fill.texture_crop, 0, 4 * sizeof(double));
 		fill.texture_crop_enabled = false;
 		fill.colorsPosition.clear();

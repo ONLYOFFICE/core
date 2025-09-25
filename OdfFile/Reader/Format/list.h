@@ -49,32 +49,23 @@ public:
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeTextNumber;
     CPDOCCORE_DEFINE_VISITABLE();
-
-public:
+    
     virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
-
-public:
+   
     number() {}
-
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes ) {};
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name) {} ;
     virtual void add_text(const std::wstring & Text);
 
 private:
-    std::wstring string_;
-    
+    std::wstring string_;    
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(number);
 
 
 // text:list-item
 //////////////////////////////////////////////////////////////////////////////////////////////////
-
-class list_item;
-typedef shared_ptr<list_item>::Type list_item_ptr;
-typedef std::vector<list_item_ptr> list_item_ptr_array;
 
 class list_item : public office_element_impl<list_item>
 {
@@ -87,10 +78,8 @@ public:
 
     void docx_convert(oox::docx_conversion_context & Context);
     void pptx_convert(oox::pptx_conversion_context & Context);
-
-public:
+   
     virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
-public:
     list_item() {} 
 
 private:
@@ -101,18 +90,13 @@ private:
 private:
     optional<unsigned int>::Type text_start_value_;
 
-    office_element_ptr          text_number_;
-    office_element_ptr_array    content_;
-
+    office_element_ptr text_number_;
+    office_element_ptr_array content_;
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(list_item);
 
 // text:list-header
 //////////////////////////////////////////////////////////////////////////////////////////////////
-
-class list_header;
-typedef shared_ptr<list_header>::Type list_header_ptr;
 
 class list_header : public office_element_impl<list_header>
 {
@@ -126,10 +110,8 @@ public:
     void docx_convert(oox::docx_conversion_context & Context);
     void pptx_convert(oox::pptx_conversion_context & Context);
 
-public:
     virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
 
-public:
     list_header() {} 
 
 private:
@@ -138,14 +120,38 @@ private:
     virtual void add_text(const std::wstring & Text) {} ;
 
 private:
-    office_element_ptr          text_number_;
-    office_element_ptr_array    content_;
-
-
+    office_element_ptr text_number_;
+    office_element_ptr_array content_;
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(list_header);
 
+// text:ordered-list
+//---------------------------------------------------------------------------------------
+class ordered_list : public office_element_impl<ordered_list>
+{
+public:
+    static const wchar_t* ns;
+    static const wchar_t* name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeTextOrderedList;
+    CPDOCCORE_DEFINE_VISITABLE();
+
+    void docx_convert(oox::docx_conversion_context& Context);
+    void pptx_convert(oox::pptx_conversion_context& Context);
+
+    virtual std::wostream& text_to_stream(std::wostream& _Wostream, bool bXmlEncode = true) const;
+    ordered_list() {}
+
+private:
+    virtual void add_attributes(const xml::attributes_wc_ptr& Attributes);
+    virtual void add_child_element(xml::sax* Reader, const std::wstring& Ns, const std::wstring& Name);
+    virtual void add_text(const std::wstring& Text) {};
+
+private:
+    office_element_ptr_array content_;
+    _CP_OPT(std::wstring) style_name_;
+};
+CP_REGISTER_OFFICE_ELEMENT2(ordered_list);
 }
 }
 }

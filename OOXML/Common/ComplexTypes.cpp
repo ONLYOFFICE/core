@@ -116,6 +116,10 @@ namespace Word
 	}
 	std::wstring CBorder::ToString() const
 	{
+		return ToString(true);
+	}
+	std::wstring CBorder::ToString(bool noAlpha) const
+	{
 		std::wstring sResult;
 
 		if (m_oVal.IsInit())
@@ -127,7 +131,7 @@ namespace Word
 		if ( m_oColor.IsInit() )
 		{
 			sResult += L"w:color=\"";
-			sResult += m_oColor->ToStringNoAlpha();
+			sResult += noAlpha ? m_oColor->ToStringNoAlpha() : m_oColor->ToString();
 			sResult += L"\" ";
 		}
 		if (m_oThemeColor.IsInit())
@@ -438,6 +442,10 @@ namespace Word
 	}
 	std::wstring CShading::ToString() const
 	{
+		return ToString(true);
+	}
+	std::wstring CShading::ToString(bool noAlpha) const
+	{
 		std::wstring sResult;
 
 		if (m_oVal.IsInit())
@@ -446,13 +454,13 @@ namespace Word
 			sResult += m_oVal->ToString();
 			sResult += L"\" ";
 		}
-		if ( m_oColor.IsInit() )
+		if (m_oColor.IsInit())
 		{
 			sResult += L"w:color=\"";
-			sResult += m_oColor->ToStringNoAlpha();
+			sResult += noAlpha ? m_oColor->ToStringNoAlpha() : m_oColor->ToString();
 			sResult += L"\" ";
 		}
-		if ( m_oThemeColor.IsInit() )
+		if (m_oThemeColor.IsInit())
 		{
 			sResult += L"w:themeColor=\"";
 			sResult += m_oThemeColor->ToString();
@@ -496,7 +504,6 @@ namespace Word
 		}
 		return sResult;
 	}
-
 	void CShading::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{
 		WritingElement_ReadAttributes_Start( oReader )
@@ -2366,6 +2373,15 @@ namespace Word
 		WritingElement_ReadAttributes_Read_else_if(oReader, L"w:xAlign", m_oXAlign)
 		WritingElement_ReadAttributes_Read_else_if(oReader, L"w:y", m_oY)
 		WritingElement_ReadAttributes_Read_else_if(oReader, L"w:yAlign", m_oYAlign)
+//2003
+		WritingElement_ReadAttributes_Read_else_if(oReader, L"w:x-align", m_oXAlign)
+		WritingElement_ReadAttributes_Read_else_if(oReader, L"w:y-align", m_oYAlign)
+		WritingElement_ReadAttributes_Read_else_if(oReader, L"w:hanchor", m_oHAnchor)
+		WritingElement_ReadAttributes_Read_else_if(oReader, L"w:vanchor", m_oVAnchor)
+		WritingElement_ReadAttributes_Read_else_if(oReader, L"w:hspace", m_oHSpace)
+		WritingElement_ReadAttributes_Read_else_if(oReader, L"w:vspace", m_oVSpace)
+		WritingElement_ReadAttributes_Read_else_if(oReader, L"w:hrule", m_oHRule)
+
 		WritingElement_ReadAttributes_End(oReader)
 	}
 

@@ -32,10 +32,10 @@
 #ifndef _METAFILE_COMMON_METAFILE_H
 #define _METAFILE_COMMON_METAFILE_H
 
+#include "CClip.h"
 #include "MetaFileTypes.h"
 #include "MetaFileUtils.h"
 #include "MetaFileObjects.h"
-#include "MetaFileClip.h"
 
 #include "../../../graphics/pro/Fonts.h"
 
@@ -45,11 +45,8 @@ namespace MetaFile
 	{
 	public:
 		IMetaFileBase()
+		    : m_pOutput(NULL), m_pParent(NULL), m_pBufferData(NULL), m_bIsExternalBuffer(false), m_bError(false)
 		{
-			m_pBufferData = NULL;
-			m_bIsExternalBuffer = false;
-			m_bError      = false;
-			m_pOutput     = NULL;
 			m_oStream.SetStream(NULL, 0);
 		}
 		virtual ~IMetaFileBase()
@@ -57,32 +54,46 @@ namespace MetaFile
 			this->Close();
 		}
 		
-		virtual void         PlayMetaFile() = 0;
-		virtual void         ClearFile() {/*Нельзя делать чисто виртуальной, потому что вызывается в деструкторе*/}
-		virtual TRect*       GetDCBounds() = 0;
-		virtual double       GetPixelHeight() = 0;
-		virtual double       GetPixelWidth() = 0;
-		virtual int          GetTextColor() = 0;
-		virtual IFont*       GetFont() = 0;
-		virtual IBrush*      GetBrush() = 0;
-		virtual IPen*        GetPen() = 0;
-		virtual unsigned int GetTextAlign() = 0;
-		virtual unsigned int GetTextBgMode() = 0;
-		virtual int          GetTextBgColor() = 0;
-		virtual unsigned int GetFillMode() = 0;
-		virtual TPointD      GetCurPos() = 0;
-		virtual TXForm*      GetInverseTransform() = 0;
-		virtual TXForm*      GetTransform(int iGraphicsMode = GM_ADVANCED) = 0;
-		virtual unsigned int GetMiterLimit() = 0;
-		virtual unsigned int GetRop2Mode() = 0;
-		virtual IClip*       GetClip() = 0;
-		virtual int          GetCharSpace() = 0;
-		virtual bool         IsWindowFlippedY() = 0;
-		virtual bool         IsWindowFlippedX() = 0;
-		virtual unsigned int GetMapMode() = 0;
-		virtual double       GetDpi() = 0;
-		virtual IRegion*     GetRegion() = 0;
-		virtual unsigned int GetArcDirection() = 0;
+		virtual void           PlayMetaFile() = 0;
+		virtual void           ClearFile() {/*Нельзя делать чисто виртуальной, потому что вызывается в деструкторе*/}
+		virtual const TRectL&  GetDCBounds() const = 0;
+		virtual const CClip*   GetClip() const = 0;
+		virtual double         GetPixelHeight() const = 0;
+		virtual double         GetPixelWidth() const = 0;
+		virtual int            GetTextColor() const = 0;
+		virtual const IFont*   GetFont() const = 0;
+		virtual const IBrush*  GetBrush() const = 0;
+		virtual const IPen*    GetPen() const = 0;
+		virtual unsigned int   GetTextAlign() const = 0;
+		virtual unsigned int   GetTextBgMode() const = 0;
+		virtual int            GetTextBgColor() const = 0;
+		virtual unsigned int   GetFillMode() const = 0;
+		virtual TPointD        GetCurPos() const = 0;
+		virtual const TXForm&  GetInverseTransform() const = 0;
+		virtual const TXForm&  GetTransform(int iGraphicsMode = GM_ADVANCED) = 0;
+		virtual unsigned int   GetMiterLimit() const = 0;
+		virtual unsigned int   GetRop2Mode() const = 0;
+		virtual int            GetCharSpace() const = 0;
+		virtual bool           IsWindowFlippedY() const = 0;
+		virtual bool           IsWindowFlippedX() const = 0;
+		virtual unsigned int   GetMapMode() const = 0;
+		virtual USHORT         GetDpi() const = 0;
+		virtual const IRegion* GetRegion() const = 0;
+		virtual unsigned int   GetArcDirection() const = 0;
+		virtual const CPath*   GetPath() const = 0;
+
+		virtual TXForm         CalculateCurrentTransform() const
+		{
+			return TXForm{};
+		}
+
+		virtual const TRectL& GetOriginalDCBounds() const
+		{
+			if (NULL != m_pParent)
+				return m_pParent->GetOriginalDCBounds();
+
+			return GetDCBounds();
+		}
 
 		bool ReadFromBuffer(BYTE* pBuffer, unsigned int unSize, const bool& bIsExternal = true)
 		{
@@ -140,7 +151,7 @@ namespace MetaFile
 
 			this->ClearFile();
 		}
-		NSFonts::IFontManager* GetFontManager()
+		NSFonts::IFontManager* GetFontManager() const
 		{
 			return m_pFontManager;
 		}
@@ -156,16 +167,21 @@ namespace MetaFile
 		{
 			m_bError = true;
 		}
-		bool CheckError()
+		bool CheckError() const
 		{
 			return m_bError;
 		}
 
+		void SetParent(const IMetaFileBase* pParent)
+		{
+			m_pParent = pParent;
+		}
 	protected:
 
 		CDataStream    m_oStream;
 		IOutputDevice* m_pOutput;
 
+		const IMetaFileBase* m_pParent;
 	private:
 		NSFonts::IFontManager*  m_pFontManager;
 

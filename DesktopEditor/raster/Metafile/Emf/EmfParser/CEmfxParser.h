@@ -18,7 +18,7 @@ namespace MetaFile
 		void            PlayFile()                                  override;
 		void            Scan()                                      override;
 
-		EmfParserType   GetType()				                    override;
+		EmfParserType   GetType()                             const override;
 
 	private:
 		bool ReadImage(unsigned int offBmi, unsigned int cbBmi, unsigned int offBits, unsigned int cbBits, unsigned int ulSkip, BYTE **ppBgraBuffer, unsigned int *pulWidth, unsigned int *pulHeight) override;
@@ -78,7 +78,7 @@ namespace MetaFile
 		void Read_EMR_SETLAYOUT();
 		void Read_EMR_SETBRUSHORGEX();
 		void Read_EMR_ANGLEARC();
-		void Read_EMR_ARC_BASE(TEmfRectL& oBox, TEmfPointL& oStart, TEmfPointL& oEnd);
+		void Read_EMR_ARC_BASE(TRectL& oBox, TPointL& oStart, TPointL& oEnd);
 		void Read_EMR_ARC();
 		void Read_EMR_ARCTO();
 		void Read_EMR_CHORD();

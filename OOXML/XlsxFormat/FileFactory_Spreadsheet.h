@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef OOX_XLSXFILE_FACTORY_INCLUDE_H_
-#define OOX_XLSXFILE_FACTORY_INCLUDE_H_
 
 #include "../Base/SmartPtr.h"
 #include "../SystemUtility/SystemUtility.h"
@@ -53,5 +51,3 @@ namespace OOX
         NSCommon::smart_ptr<OOX::File> CreateFile(const OOX::CPath& oRootPath, const OOX::CPath& oPath,  OOX::Rels::CRelationShip* pRelation, OOX::Document *pMain);
 	}
 } // namespace OOX
-
-#endif // OOX_XLSXFILE_FACTORY_INCLUDE_H_

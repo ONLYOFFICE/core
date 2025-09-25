@@ -57,17 +57,17 @@ public:
 
 	int serialize(std::wostream & stream);
 
-    PaneType	pnn;//4 byte in biff12
+	PaneType	pnn;//4 byte in biff12
 
     //R_RwU			rwAct;
-    UncheckedRw     rwAct;
+	UncheckedRw     rwAct = 0;
     //ColU			colAct;
-    UncheckedCol    colAct;
+	UncheckedCol    colAct = 0;
     //_INT16			irefAct;
-    _UINT32			irefAct; //dwRfxAct in biff12
+	_UINT32			irefAct = 0; //dwRfxAct in biff12
 	
-	std::wstring	sqref;
-    std::wstring	activeCell;
+	std::wstring	sqref = L"A1";
+	std::wstring	activeCell = L"A1";
 
     //biff12
     _UINT32                 pnn_xlsb;    

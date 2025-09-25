@@ -65,12 +65,49 @@ namespace PPTX
 		}
 		unsigned char DgmBuildType::GetBYTECode() const
 		{
-			//not using yet
+			if (L"allAtOnce" == m_strValue)		return 0;
+			if (L"breadthByLvl" == m_strValue)	return 1;
+			if (L"breadthByNode" == m_strValue)	return 2;
+			if (L"ccw" == m_strValue)			return 3;
+			if (L"ccwIn" == m_strValue)			return 4;
+			if (L"ccwOut" == m_strValue)		return 5;
+			if (L"cust" == m_strValue)			return 6;
+			if (L"cw" == m_strValue)			return 7;
+			if (L"cwIn" == m_strValue)			return 8;
+			if (L"cwOut" == m_strValue)			return 9;
+			if (L"depthByBranch" == m_strValue)	return 10;
+			if (L"depthByNode" == m_strValue)	return 11;
+			if (L"down" == m_strValue)			return 12;
+			if (L"inByRing" == m_strValue)		return 13;
+			if (L"outByRing" == m_strValue)		return 14;
+			if (L"up" == m_strValue)			return 15;
+			if (L"whole" == m_strValue)			return 16;
+
 			return 0;
 		}
 		void DgmBuildType::SetBYTECode(const unsigned char& src)
 		{
-			//not using yet
+			switch (src)
+			{
+			case 0:		m_strValue = L"allAtOnce";		break;
+			case 1:		m_strValue = L"breadthByLvl";	break;
+			case 2:		m_strValue = L"breadthByNode";	break;
+			case 3:		m_strValue = L"ccw";			break;
+			case 4:		m_strValue = L"ccwIn";			break;
+			case 5:		m_strValue = L"ccwOut";			break;
+			case 6:		m_strValue = L"cust";			break;
+			case 7:		m_strValue = L"cw";				break;
+			case 8:		m_strValue = L"cwIn";			break;
+			case 9:		m_strValue = L"cwOut";			break;
+			case 10:	m_strValue = L"depthByBranch";	break;
+			case 11:	m_strValue = L"depthByNode";	break;
+			case 12:	m_strValue = L"down";			break;
+			case 13:	m_strValue = L"inByRing";		break;
+			case 14:	m_strValue = L"outByRing";		break;
+			case 15:	m_strValue = L"up";				break;
+			case 16:	m_strValue = L"whole";			break;
+			default:	m_strValue = L"allAtOnce";
+			}
 		}
 	} // namespace Limit
 } // namespace PPTX

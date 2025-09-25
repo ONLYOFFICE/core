@@ -74,6 +74,8 @@ void BOF::readFields(CFRecord& record)
 	
 	if (type_id_ == rt_BOF_BIFF8)
 	{
+		if (vers > 0x0700) vers = 0x0600;
+
 		record >> rupBuild >> rupYear;  // biff 5 - 8
 		
 		if ( record.checkFitReadSafe(8)) // biff 8
@@ -112,9 +114,9 @@ void BOF::readFields(CFRecord& record)
 	}
 	else
 	{
+		short not_used = 0;
 		if (type_id_ == rt_BOF_BIFF3 || type_id_ == rt_BOF_BIFF4)
 		{
-			short not_used;
 			record >> not_used;
 		}
 
@@ -128,6 +130,29 @@ void BOF::readFields(CFRecord& record)
 			break;
 		}		 
 	}
+}
+
+void BOF::writeFields(CFRecord& record)
+{
+    record << vers << dt << rupBuild << rupYear;
+    _UINT32 flags = 0;
+
+    SETBIT(flags, 0, fWin);
+    SETBIT(flags, 1, fRisc);
+    SETBIT(flags, 2, fBeta);
+    SETBIT(flags, 3, fWinAny);
+    SETBIT(flags, 4, fMacAny);
+    SETBIT(flags, 5, fBetaAny);
+    SETBIT(flags, 8, fRiscAny);
+    SETBIT(flags, 9, fOOM);
+    SETBIT(flags, 10, fGlJmp);
+    SETBIT(flags, 13, fFontLimit);
+
+    SETBITS(flags, 14, 17, verXLHigh);
+
+    record << flags;
+    record << verLowestBiff << verLastXLSaved;
+    record.reserveNunBytes(2);// reserved
 }
 
 unsigned short BOF::getSubstreamType()

@@ -32,8 +32,8 @@ DEFINES += UNICODE \
 
 DEFINES += PDFFILE_USE_DYNAMIC_LIBRARY
 DEFINES += XPS_USE_DYNAMIC_LIBRARY
+DEFINES += OFD_USE_DYNAMIC_LIBRARY
 DEFINES += DJVU_USE_DYNAMIC_LIBRARY
-DEFINES += HTMLRENDERER_USE_DYNAMIC_LIBRARY
 DEFINES += HTMLFILE_USE_DYNAMIC_LIBRARY
 DEFINES += UNICODECONVERTER_USE_DYNAMIC_LIBRARY
 DEFINES += FILE_FORMAT_CHECKER_WITH_MACRO
@@ -62,13 +62,46 @@ DEPENDPATH += $$PWD/../../../OOXML/Binary/Document
 
 ##############################################################################################################
 
-SOURCES +=  ../../src/cextracttools.cpp \
-            ../../../Common/OfficeFileFormatChecker2.cpp \
-            ../../src/ASCConverters.cpp
-HEADERS +=  ../../src/cextracttools.h \
-            ../../../Common/OfficeFileFormatChecker.h \
-            ../../src/ASCConverters.h
+SOURCES += \
+	../../../Common/OfficeFileFormatChecker2.cpp \
+	../../src/cextracttools.cpp \
+	../../src/ASCConverters.cpp
 
+HEADERS += \
+	../../../Common/OfficeFileFormatChecker.h \
+	../../src/cextracttools.h \
+	../../src/ASCConverters.h
+
+HEADERS += \
+	../../src/lib/common.h \
+	\
+	../../src/lib/crypt.h \
+	\
+	../../src/lib/docx.h \
+	../../src/lib/pptx.h \
+	../../src/lib/xlsx.h \
+	\
+	../../src/lib/doc.h \
+	../../src/lib/rtf.h \
+	../../src/lib/txt.h \
+	\
+	../../src/lib/ppt.h \
+	\
+	../../src/lib/xls.h \
+	../../src/lib/csv.h \
+	\
+	../../src/lib/html.h \
+	\
+	../../src/lib/odf.h \
+	\
+	../../src/lib/pdf_image.h \
+	../../src/lib/pdf_oform.h \
+	\
+	../../src/lib/iwork.h \
+	\
+	../../src/lib/vsdx.h \
+	\
+	../../src/lib/hwp.h
 
 #vbaformat
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lVbaFormatLib
@@ -100,8 +133,7 @@ LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lCryptoPPLib
 
 #All dynamic libs
 
-ADD_DEPENDENCY(graphics, kernel, UnicodeConverter, kernel_network, Fb2File, PdfFile, HtmlFile2, EpubFile, XpsFile, DjVuFile, HtmlRenderer, doctrenderer, DocxRenderer)
-
+ADD_DEPENDENCY(graphics, kernel, UnicodeConverter, kernel_network, Fb2File, PdfFile, HtmlFile2, EpubFile, XpsFile, OFDFile, DjVuFile, doctrenderer, DocxRenderer, IWorkFile, HWPFile)
 
 #####################################################
 # внешнее подключение сторонних библиотек

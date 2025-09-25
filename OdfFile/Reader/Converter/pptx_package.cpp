@@ -46,8 +46,11 @@ pptx_content_types_file::pptx_content_types_file()
     content()->add_default(L"rels",  L"application/vnd.openxmlformats-package.relationships+xml");
     content()->add_default(L"xml",   L"application/xml");
 
-    content()->add_default(L"jpg",     L"image/jpeg");
-    content()->add_default(L"png",     L"image/png");
+    content()->add_default(L"jpg",      L"image/jpeg");
+    content()->add_default(L"png",      L"image/png");
+    
+    content()->add_default(L"mp3",      L"audio/mpeg");
+    content()->add_default(L"wav",      L"audio/wav");
  
 	content()->add_override(L"/_rels/.rels",			L"application/vnd.openxmlformats-package.relationships+xml");
     
@@ -511,7 +514,9 @@ void ppt_files::add_notesMaster(slide_content_ptr slide)
 }
 void ppt_files::set_media(mediaitems_ptr & _mediaitems)
 {
-	if (_mediaitems->count_image + _mediaitems->count_media > 0)
+	if (_mediaitems->count_image + 
+        _mediaitems->count_media + 
+        _mediaitems->count_audio > 0)
 	{
 		media_ = element_ptr( new media(_mediaitems, _mediaitems->applicationFonts()) );
 	}

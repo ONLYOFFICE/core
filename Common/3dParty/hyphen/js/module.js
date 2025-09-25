@@ -28,54 +28,50 @@
 	/**
 	 * 
 	 * @param {Number} app 
-	 * @param {arraybuffer} dict 
-	 * @param {String} lang
+	 * @param {Number} lang
+	 * @param {arraybuffer} dict
 	 * @returns {Boolean} isSuccess
 	 */
-	function hyphenLoadDictionary(dict, lang) {
-		if (!isModuleLoaded) {
+	function hyphenLoadDictionary(lang, dict) 
+	{
+		if (!isModuleLoaded)
 			return;
-		}
 
 		let dictSize = dict.byteLength;
 		let dictPointer = Module._malloc(dictSize);
 		Module.HEAP8.set(new Uint8ClampedArray(dict), dictPointer);
 
-		let langPointer = lang.toUtf8Pointer();
+		let result = Module._hyphenLoadDictionary(application, lang, dictPointer, dictSize);
 
-		let result = Module._hyphenLoadDictionary(application, dictPointer, dictSize, langPointer.ptr);
-
-		langPointer.free();
 		Module._free(dictPointer);
 		
-		return (result === 1) ? true : false;
+		return (result === 0) ? true : false;
 	}
 
 	/**
 	 * 
+	 * @param {Number} lang 
 	 * @param {String} word 
-	 * @param {String} lang 
 	 * @returns {Array}
 	 * Returns hyphen vector of word
 	 */
-	function hyphenWord(word, lang) {
-		if (!isModuleLoaded) {
+	function hyphenWord(lang, word) 
+	{
+		if (!isModuleLoaded)
 			return;
-		}
 
 		let wordPointer = word.toUtf8Pointer();
-		let langPointer = lang.toUtf8Pointer();
+		let wordLen = wordPointer.length;
 		let hyphens = [];
 
-		if (wordPointer && langPointer) {
-			const ptr = Module._hyphenWord(application, wordPointer.ptr, langPointer.ptr);
-
-			let vector = new Uint8ClampedArray(Module.HEAP8.buffer, ptr, wordPointer.length + 5);
-
+		if (wordPointer) 
+		{
+			const ptr = Module._hyphenWord(application, lang, wordPointer.ptr, wordLen);
 			wordPointer.free();
-			langPointer.free();
 
-			for (let i = 0; vector[i] != 0; i++) {
+			let vector = new Uint8ClampedArray(Module.HEAP8.buffer, ptr, wordLen + 5);
+			for (let i = 0; vector[i] != 0; i++) 
+			{
 				if (1 == (vector[i] & 1))
 					hyphens.push((i + 1));
 			}

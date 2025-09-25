@@ -126,6 +126,7 @@ enum ElementType
     typeTextList,
     typeTextListItem,
     typeTextListHeader,
+	typeTextOrderedList,
     typeTextNumber,
     typeTextSoftPageBreak,
     typeTextSection,
@@ -285,6 +286,9 @@ enum ElementType
     typeStyleMap,
 	typeStylePageMaster, // openoffice xml 1.0
 
+	typeStyleGradientStop,
+	typeStyleOpacityStop,
+
 	typeTableTemplate,
 	typeTableTemplateElement,
 	typeTableBodyTemplate,
@@ -303,6 +307,7 @@ enum ElementType
 
     typeStyleFontFace,
 
+	typeSvgTitle,
     typeSvgDesc,
     typeSvgFontFaceUri,
     typeSvgFontFaceFormat,
@@ -529,6 +534,9 @@ enum ElementType
 	typeFormItem,
 	typeFormOption,
 
+	typeContentControl,
+	typeListItem,
+
 	typeDrawPage,    
 	typePresentationFooterDecl,
 	typePresentationDateTimeDecl,
@@ -540,6 +548,11 @@ enum ElementType
 	typeAnimAudio,
 	typeAnimCommand,
 	typeAnimIterate,
+	typeAnimSet,
+	typeAnimAnimate,
+	typeAnimAnimateTransform,
+	typeAnimAnimateMotion,
+	typeAnimAnimateColor,
 
 	typeStyleGraphicPropertis,
 	typeStyleDrawGradient,
@@ -562,6 +575,8 @@ enum ElementType
 	typeOfficeScripts,
 	typeOfficeScript,
 	typeOfficePresentation,
+	typeOfficeDrawing,
+	typeOfficeGraphics,
 	typeOfficeChart,
 	typeOfficeEventListeners,
   

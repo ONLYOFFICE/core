@@ -58,7 +58,7 @@ namespace OOX
 			return;
 
 		std::wstring sName1 = XmlUtils::GetNameNoNS(oReader.GetName());
-		if ( _T("xml") == sName1 )
+		if ( L"xml" == sName1 )
 		{
 			ReadAttributes( oReader );
 
@@ -96,7 +96,7 @@ namespace OOX
 								switch ( wChar2 )
 								{
 								case 'a':
-									if ( _T("v:arc") == sName )
+									if ( L"v:arc" == sName )
 									{
 										AssignPtrXmlContent(pItem, OOX::Vml::CArc, oSubReader)
 										bReadyElement = true;
@@ -104,66 +104,66 @@ namespace OOX
 									}
 									break;
 								case 'c':
-									if ( _T("v:curve") == sName )
+									if ( L"v:curve" == sName )
 									{
 										AssignPtrXmlContent(pItem, OOX::Vml::CCurve, oSubReader)
 										bReadyElement = true;
 									}
 									break;
 								case 'g':
-									if ( _T("v:group") == sName )
+									if ( L"v:group" == sName )
 									{
 										AssignPtrXmlContent(pItem, OOX::Vml::CGroup, oSubReader)
 										bReadyElement = true;
 									}
 									break;
 								case 'i':
-									if ( _T("v:image") == sName )
+									if ( L"v:image" == sName )
 									{
 										AssignPtrXmlContent(pItem, OOX::Vml::CImage, oSubReader)
 										bReadyElement = true;
 									}
 									break;
 								case 'l':
-									if ( _T("v:line") == sName )
+									if ( L"v:line" == sName )
 									{
 										AssignPtrXmlContent(pItem, OOX::Vml::CLine, oSubReader)
 										bReadyElement = true;
 									}
 									break;
 								case 'o':
-									if ( _T("v:oval") == sName )
+									if ( L"v:oval" == sName )
 									{
 										AssignPtrXmlContent(pItem, OOX::Vml::COval, oSubReader)
 										bReadyElement = true;
 									}
 									break;
 								case 'p':
-									if ( _T("v:polyline") == sName )
+									if ( L"v:polyline" == sName )
 									{
 										AssignPtrXmlContent(pItem, OOX::Vml::CPolyLine, oSubReader)
 										bReadyElement = true;
 									}
 									break;
 								case 'r':
-									if ( _T("v:rect") == sName )
+									if ( L"v:rect" == sName )
 									{
 										AssignPtrXmlContent(pItem, OOX::Vml::CRect, oSubReader)
 										bReadyElement = true;
 									}
-									else if ( _T("v:roundrect") == sName )
+									else if ( L"v:roundrect" == sName )
 									{
 										AssignPtrXmlContent(pItem, OOX::Vml::CRoundRect, oSubReader)
 										bReadyElement = true;
 									}
 									break;
 								case 's':
-									if ( _T("v:shape") == sName )
+									if ( L"v:shape" == sName )
 									{
 										AssignPtrXmlContent(pItem, OOX::Vml::CShape, oSubReader)
 										bReadyElement = true;
 									}
-									else if ( _T("v:shapetype") == sName )
+									else if ( L"v:shapetype" == sName )
 									{
 										AssignPtrXmlContent(pItem, OOX::Vml::CShapeType, oSubReader)
 									}
@@ -204,10 +204,10 @@ namespace OOX
 							{
 								_vml_shape element;
 								
-								element.nId			= (int)m_arrItems.size()-1;
-								element.sXml		= elementContent;
-								element.pElement	= pItem;
-                                element.bUsed       = bComment;
+								element.nId = (int)m_arrItems.size()-1;
+								element.sXml = elementContent;
+								element.pElement = pItem;
+								element.bComment = bComment;
 
 								m_mapShapes.insert(std::make_pair(sSpid, element));
 							}
@@ -257,21 +257,21 @@ namespace OOX
 		{
 			// элементы вида <br> без </br>
 			// test_vml4.xlsx
-			XmlUtils::replace_all(m_sFileContent, _T("<br>"), _T(""));
+			XmlUtils::replace_all(m_sFileContent, L"<br>", L"");
 
 
 			// элементы вида <![if ...]>, <![endif]>
 			// Zigmunds.pptx
 			while(true)
 			{
-				int res1 = (int)m_sFileContent.find(_T("<!["));
-				if (res1 < 0) break;
+				size_t res1 = m_sFileContent.find(L"<![");
+				if (res1 == std::wstring::npos) break;
 
-				int res2 = (int)m_sFileContent.find(_T(">"), res1);
+				size_t res2 = m_sFileContent.find(L">", res1);
 
-				if (res1 >=0 && res2>=0)
+				if (res1 != std::wstring::npos && res2 != std::wstring::npos)
 				{
-					m_sFileContent = m_sFileContent.erase(res1 ,res2 - res1 + 1);
+					m_sFileContent = m_sFileContent.erase(res1, res2 - res1 + 1);
 				}
 			}
 			read(m_sFileContent);
@@ -419,7 +419,7 @@ xmlns:x=\"urn:schemas-microsoft-com:office:excel\">");
 	{
 		smart_ptr<OOX::WritingElement> oElement;
 		
-		boost::unordered_map<std::wstring, OOX::CVmlDrawing::_vml_shape>::iterator pFind = m_mapShapes.find(spid);
+		std::map<std::wstring, OOX::CVmlDrawing::_vml_shape>::iterator pFind = m_mapShapes.find(spid);
 		
 		if (pFind != m_mapShapes.end())
 		{

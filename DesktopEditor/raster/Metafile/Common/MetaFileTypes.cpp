@@ -30,87 +30,208 @@
  *
  */
 #include "MetaFileTypes.h"
-#include "../Emf/EmfTypes.h"
-#include "../Wmf/WmfTypes.h"
 
 namespace MetaFile
 {
-	TRect::TRect()
-	{
-		nLeft   = 0;
-		nTop    = 0;
-		nRight  = 1024;
-		nBottom = 1024;
-	}
-
-	TRect::TRect(int nNewLeft, int nNewTop, int nNewRight, int nNewBottom)
-	    : nLeft(nNewLeft), nTop(nNewTop), nRight(nNewRight), nBottom(nNewBottom)
+	TRGBA::TRGBA() : r(0), g(0), b(0), a(0)
 	{}
 
-	TRect::TRect(const TWmfRect &oRect)
+	TRGBA::TRGBA(const TRGBA &oRGB)
+		: r(oRGB.r), g(oRGB.g), b(oRGB.b), a(oRGB.a)
+	{}
+
+	TRGBA::TRGBA(unsigned char _r, unsigned char _g, unsigned char _b, unsigned char _a)
+		: r(_r), g(_g), b(_b), a(_a)
+	{}
+
+	TRGBA::TRGBA(int nValue)
+		: r((nValue >> 0)  & 0xFF), g((nValue >> 8)  & 0xFF), b((nValue >> 16)  & 0xFF), a((nValue >> 24)  & 0xFF)
+	{}
+
+	void TRGBA::Set(unsigned char _r, unsigned char _g, unsigned char _b, unsigned char _a)
 	{
-		nLeft   = oRect.Left;
-		nTop    = oRect.Top;
-		nRight  = oRect.Right;
-		nBottom = oRect.Bottom;
+		r = _r;
+		g = _g;
+		b = _b;
 	}
 
-	TRect::TRect(const TEmfRectL &oRect)
+	void TRGBA::Copy(const TRGBA &oRGBA)
 	{
-		nLeft   = oRect.lLeft;
-		nTop    = oRect.lTop;
-		nRight  = oRect.lRight;
-		nBottom = oRect.lBottom;
-	}
-	TRect& TRect::operator=(TWmfRect& oRect)
-	{
-		nLeft   = oRect.Left;
-		nTop    = oRect.Top;
-		nRight  = oRect.Right;
-		nBottom = oRect.Bottom;
-		return *this;
-	}
-	bool operator!=(const TRect& oLeftRect, const TRect& oRightRect)
-	{
-		return (oLeftRect.nLeft   != oRightRect.nLeft  &&
-		        oLeftRect.nTop    != oRightRect.nTop   &&
-		        oLeftRect.nRight  != oRightRect.nRight &&
-		        oLeftRect.nBottom != oRightRect.nBottom);
-	}
-	bool operator==(const TRect& oLeftRect, const TRect& oRightRect)
-	{
-		return (oLeftRect.nLeft   == oRightRect.nLeft  &&
-		        oLeftRect.nTop    == oRightRect.nTop   &&
-		        oLeftRect.nRight  == oRightRect.nRight &&
-		        oLeftRect.nBottom == oRightRect.nBottom);
+		r = oRGBA.r;
+		g = oRGBA.g;
+		b = oRGBA.b;
+		a = oRGBA.a;
 	}
 
+	int TRGBA::ToInt() const
+	{
+		return METAFILE_RGBA(r, g, b, a);
+	}
 
-	TPointL::TPointL()
+	void TRGBA::SwapToBGR()
 	{
-		x = 0;
-		y = 0;
+		unsigned char t = r;
+		r = b;
+		b = t;
 	}
-	TPointL::TPointL(TEmfPointL& oPoint)
+
+	unsigned char TRGBA::GetRed() const
 	{
-		x = oPoint.x;
-		y = oPoint.y;
+		return r;
 	}
-	TPointL::TPointL(TWmfPointS& oPoint)
+
+	unsigned char TRGBA::GetGreen() const
 	{
-		x = oPoint.x;
-		y = oPoint.y;
+		return g;
 	}
-	TPointL& TPointL::operator=(TWmfPointS& oPoint)
+
+	unsigned char TRGBA::GetBlue() const
 	{
-		x = oPoint.x;
-		y = oPoint.y;
+		return b;
+	}
+
+	unsigned char TRGBA::GetAlpha() const
+	{
+		return a;
+	}
+
+	TRGBA& TRGBA::operator=(const TRGBA& oRGBA)
+	{
+		r = oRGBA.r;
+		g = oRGBA.g;
+		b = oRGBA.b;
+		a = oRGBA.a;
+
 		return *this;
 	}
-	TPointL& TPointL::operator=(TEmfPointL& oPoint)
+
+	TXForm::TXForm()
+		: M11(1), M12(0), M21(0), M22(1), Dx(0), Dy(0)
+	{}
+
+	TXForm::TXForm(const TXForm &oXForm) 
+		: M11(oXForm.M11), M12(oXForm.M12), M21(oXForm.M21), M22(oXForm.M22), Dx(oXForm.Dx), Dy(oXForm.Dy)
+	{}
+
+	TXForm::TXForm(double m11, double m12, double m21, double m22, double dx, double dy)
+		: M11(m11), M12(m12), M21(m21), M22(m22), Dx(dx), Dy(dy)
+	{}
+
+	void TXForm::Init()
 	{
-		x = oPoint.x;
-		y = oPoint.y;
-		return *this;
+		M11 = 1;
+		M12 = 0;
+		M21 = 0;
+		M22 = 1;
+		Dx  = 0;
+		Dy  = 0;
+	}
+
+	void TXForm::Copy(const TXForm *pOther)
+	{
+		if (NULL == pOther)
+			return;
+
+		M11 = pOther->M11;
+		M12 = pOther->M12;
+		M21 = pOther->M21;
+		M22 = pOther->M22;
+		Dx  = pOther->Dx;
+		Dy  = pOther->Dy;
+	}
+
+	void TXForm::Copy(const TXForm& oOther)
+	{
+		M11 = oOther.M11;
+		M12 = oOther.M12;
+		M21 = oOther.M21;
+		M22 = oOther.M22;
+		Dx  = oOther.Dx;
+		Dy  = oOther.Dy;
+	}
+
+	void TXForm::Multiply(const TXForm &oOther, unsigned int ulMode)
+	{
+		if (MWT_IDENTITY == ulMode)
+			Init();
+		else if (MWT_LEFTMULTIPLY == ulMode)
+		{
+			// oOther слева, текущая матрица справа
+			double dM11 = oOther.M11 * M11 + oOther.M12 * M21;
+			double dM12 = oOther.M11 * M12 + oOther.M12 * M22;
+			double dM21 = oOther.M21 * M11 + oOther.M22 * M21;
+			double dM22 = oOther.M21 * M12 + oOther.M22 * M22;
+
+			double dDx = oOther.Dx * M11 + oOther.Dy * M21 + Dx;
+			double dDy = oOther.Dx * M12 + oOther.Dy * M22 + Dy;
+
+			M11 = dM11;
+			M12 = dM12;
+			M21 = dM21;
+			M22 = dM22;
+			Dx  = dDx;
+			Dy  = dDy;
+		}
+		else if (MWT_RIGHTMULTIPLY == ulMode)
+		{
+			// oOther справа, текущая матрица слева
+			double dM11 = M11 * oOther.M11 + M12 * oOther.M21;
+			double dM12 = M11 * oOther.M12 + M12 * oOther.M22;
+			double dM21 = M21 * oOther.M11 + M22 * oOther.M21;
+			double dM22 = M21 * oOther.M12 + M22 * oOther.M22;
+
+			double dDx = Dx * oOther.M11 + Dy * oOther.M21 + oOther.Dx;
+			double dDy = Dx * oOther.M12 + Dy * oOther.M22 + oOther.Dy;
+
+			M11 = dM11;
+			M12 = dM12;
+			M21 = dM21;
+			M22 = dM22;
+			Dx  = dDx;
+			Dy  = dDy;
+		}
+		else //if (MWT_SET == ulMode)
+		{
+			Copy(&oOther);
+		}
+	}
+
+	void TXForm::Apply(double &dX, double &dY) const
+	{
+		double _dX = dX;
+		double _dY = dY;
+
+		dX = _dX * M11 + _dY * M21 + Dx;
+		dY = _dX * M12 + _dY * M22 + Dy;
+	}
+
+	template<>
+	bool TPoint<double>::operator==(const TPoint<double>& oPoint) const
+	{
+		return std::abs(X - oPoint.X) <= DBL_EPSILON && std::abs(Y - oPoint.Y) <= DBL_EPSILON;
+	}
+
+	template<>
+	bool TPoint<double>::operator!=(const TPoint<double>& oPoint) const
+	{
+		return std::abs(X - oPoint.X) > DBL_EPSILON || std::abs(Y - oPoint.Y) > DBL_EPSILON;
+	}
+
+	template<>
+	bool TRect<double>::operator==(const TRect<double>& oRect) const
+	{
+		return std::abs(Left   - oRect.Right)  <= DBL_EPSILON &&
+			   std::abs(Top    - oRect.Top)    <= DBL_EPSILON &&
+			   std::abs(Right  - oRect.Right)  <= DBL_EPSILON &&
+			   std::abs(Bottom - oRect.Bottom) <= DBL_EPSILON;
+	}
+
+	template<>
+	bool TRect<double>::operator!=(const TRect<double>& oRect) const
+	{
+		return std::abs(Left   - oRect.Right)  > DBL_EPSILON ||
+			   std::abs(Top    - oRect.Top)    > DBL_EPSILON ||
+			   std::abs(Right  - oRect.Right)  > DBL_EPSILON ||
+			   std::abs(Bottom - oRect.Bottom) > DBL_EPSILON;
 	}
 }

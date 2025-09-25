@@ -58,6 +58,8 @@ namespace odf_writer
 		fieldDropDown,
 		fieldDate,
 		fieldTime,
+		fieldRef,
+		fieldUserDefined,
 
 		fieldBibliography = 0xff + 1,
 		fieldIndex,
@@ -78,8 +80,8 @@ class odf_text_context: boost::noncopyable
 public:
 	odf_text_context	(odf_conversion_context *odf_context, odf_style_context_ptr styles_context);
     ~odf_text_context	();
-public:
- 	odf_style_context_ptr	get_styles_context();//для embedded
+
+	odf_style_context_ptr	get_styles_context();//для embedded
 	void					set_styles_context(odf_style_context_ptr styles_context);//для embedded
 		
 	void clear_params();
@@ -97,6 +99,8 @@ public:
 	void add_text_file_name	(const std::wstring &text);
  	void add_text_sheet_name(const std::wstring &text);
    
+	std::wstring get_current_style_name();
+
 	void set_symbol_font	(const std::wstring & font);
  	void set_symbol_text	(int sym);
    
@@ -106,14 +110,16 @@ public:
 
 	void start_element		(office_element_ptr & elm, office_element_ptr style_elm = office_element_ptr(),std::wstring style_name = L"");
     void end_element		();
+	int get_last_level		();
 
 	void add_element_in_span_or_par(office_element_ptr & elm);
  	
-	bool start_field		(int type, const std::wstring& value, const std::wstring& format);
-	void end_field			();
+	office_element_ptr start_field(int type, const std::wstring& value, const std::wstring& format);
+	void end_field();
 
-	void start_span			(bool styled = false); 
-    void end_span			();
+	void start_span (bool styled = false); 
+    void end_span ();
+	bool in_span();
 
 	void start_list_item	();
 	void end_list_item		();
@@ -145,6 +151,9 @@ public:
 	int		current_outline_;
 	bool	in_field_;
 
+	bool is_hyperlink_;
+	int level_hyperlink_;
+
 	std::vector<odf_element_state>	current_level_;			//постоянно меняющийся список уровней наследования
 	std::vector<odf_element_state>	text_elements_list_;	//параграфы, списки , ... 
 	struct _list_state
@@ -155,6 +164,7 @@ public:
 		int					prevNumID = -1;
 	}list_state_;
 	bool					single_paragraph_;
+	odf_conversion_context	*odf_context_;
 private:
 	bool					keep_next_paragraph_;
 
@@ -164,7 +174,6 @@ private:
 	text_format_properties		*text_properties_;		//хранилка-опознавалка что свойства приписаны другому, не текстовому, объекту
 
 	odf_style_context_ptr styles_context_;
-	odf_conversion_context	*odf_context_;
 
 	std::wstring			parent_span_style_;
 	std::wstring			parent_paragraph_style_;

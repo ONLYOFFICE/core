@@ -646,7 +646,7 @@ AcroFormField *AcroFormField::load(AcroForm *acroFormA, Object *fieldRefA) {
 
   if (fieldObjA.dictLookup("Ff", &obj1)->isInt()) {
     flagsA = (Guint)obj1.getInt();
-    haveFlags = gTrue;
+    haveFlags = flagsA ? gTrue : gFalse;
   } else {
     flagsA = 0;
     haveFlags = gFalse;
@@ -677,7 +677,8 @@ AcroFormField *AcroFormField::load(AcroForm *acroFormA, Object *fieldRefA) {
     if (!haveFlags) {
       if (parentObj.dictLookup("Ff", &obj1)->isInt()) {
 	flagsA = (Guint)obj1.getInt();
-	haveFlags = gTrue;
+    if (flagsA)
+      haveFlags = gTrue;
       }
       obj1.free();
     }
@@ -724,11 +725,12 @@ AcroFormField *AcroFormField::load(AcroForm *acroFormA, Object *fieldRefA) {
 
   //----- check for a radio button
 
+  // BUG
   // this is a kludge: if we see a Btn-type field with kids, and the
   // Ff entry is missing, assume the kids are radio buttons
-  if (typeFromParentA && !typeStr->cmp("Btn") && !haveFlags) {
-    flagsA = acroFormFlagRadio;
-  }
+  // if (typeFromParentA && !typeStr->cmp("Btn") && !haveFlags) {
+  //   flagsA = acroFormFlagRadio;
+  // }
 
   //----- determine field type
 
@@ -1062,6 +1064,48 @@ void AcroFormField::getColor(double *red, double *green, double *blue) {
   daObj.free();
 }
 
+GList* AcroFormField::getColorSpace(int *nElements)
+{
+    Object daObj;
+    GList *daToks, *arrRes;
+    int i;
+
+    arrRes = new GList();
+
+    if (fieldLookup("DA", &daObj)->isString()) {
+
+      // parse the default appearance string
+      daToks = tokenize(daObj.getString());
+      for (i = 1; i < daToks->getLength(); ++i) {
+
+        // handle the g operator
+        if (!((GString *)daToks->get(i))->cmp("g")) {
+      arrRes->append(new double(atof(((GString *)daToks->get(i - 1))->getCString())));
+      break;
+
+        // handle the rg operator
+        } else if (i >= 3 && !((GString *)daToks->get(i))->cmp("rg")) {
+      arrRes->append(new double(atof(((GString *)daToks->get(i - 3))->getCString())));
+      arrRes->append(new double(atof(((GString *)daToks->get(i - 2))->getCString())));
+      arrRes->append(new double(atof(((GString *)daToks->get(i - 1))->getCString())));
+      break;
+        } else if (i >= 4 && !((GString *)daToks->get(i))->cmp("k")) {
+      arrRes->append(new double(atof(((GString *)daToks->get(i - 4))->getCString())));
+      arrRes->append(new double(atof(((GString *)daToks->get(i - 3))->getCString())));
+      arrRes->append(new double(atof(((GString *)daToks->get(i - 2))->getCString())));
+      arrRes->append(new double(atof(((GString *)daToks->get(i - 1))->getCString())));
+      break;
+        }
+      }
+
+      deleteGList(daToks, GString);
+    }
+
+    daObj.free();
+    *nElements = arrRes->getLength();
+    return arrRes;
+}
+
 int AcroFormField::getMaxLen() {
   Object obj;
   int len;
@@ -1095,7 +1139,8 @@ void AcroFormField::draw(int pageNum, Gfx *gfx, GBool printing) {
 }
 
 void AcroFormField::drawAnnot(int pageNum, Gfx *gfx, GBool printing,
-			      Object *annotRef, Object *annotObj) {
+				  Object *annotRef, Object *annotObj,
+				  const char* AP, const char* AS, GBool hide) {
   Object obj1, obj2;
   double xMin, yMin, xMax, yMax, t;
   int annotFlags;
@@ -1121,9 +1166,9 @@ void AcroFormField::drawAnnot(int pageNum, Gfx *gfx, GBool printing,
     annotFlags = 0;
   }
   obj1.free();
-  if ((annotFlags & annotFlagHidden) ||
+  if (hide && ((annotFlags & annotFlagHidden) ||
       (printing && !(annotFlags & annotFlagPrint)) ||
-      (!printing && (annotFlags & annotFlagNoView))) {
+      (!printing && (annotFlags & annotFlagNoView)))) {
     return;
   }
 
@@ -1188,7 +1233,7 @@ void AcroFormField::drawAnnot(int pageNum, Gfx *gfx, GBool printing,
 		      xMin, yMin, xMax, yMax);
   } else {
     drawExistingAppearance(gfx, annotObj->getDict(),
-			   xMin, yMin, xMax, yMax);
+			   xMin, yMin, xMax, yMax, AP, AS);
   }
 }
 
@@ -1196,15 +1241,20 @@ void AcroFormField::drawAnnot(int pageNum, Gfx *gfx, GBool printing,
 // attached to this field.
 void AcroFormField::drawExistingAppearance(Gfx *gfx, Dict *annot,
 					   double xMin, double yMin,
-					   double xMax, double yMax) {
+					   double xMax, double yMax,
+					   const char* AP, const char* AS) {
   Object apObj, asObj, appearance, obj1;
 
   //----- get the appearance stream
 
-  if (annot->lookup("AP", &apObj)->isDict()) {
-    apObj.dictLookup("N", &obj1);
+  if (!strcmp("MK", AP) && annot->lookup("MK", &apObj)->isDict()) {
+    apObj.dictLookupNF(AS, &appearance);
+  } else if (annot->lookup("AP", &apObj)->isDict()) {
+    apObj.dictLookup(AP, &obj1);
     if (obj1.isDict()) {
-      if (annot->lookup("AS", &asObj)->isName()) {
+      if (AS) {
+    obj1.dictLookupNF(AS, &appearance);
+      } else if (annot->lookup("AS", &asObj)->isName()) {
 	obj1.dictLookupNF(asObj.getName(), &appearance);
       } else if (obj1.dictGetLength() == 1) {
 	obj1.dictGetValNF(0, &appearance);
@@ -1213,7 +1263,7 @@ void AcroFormField::drawExistingAppearance(Gfx *gfx, Dict *annot,
       }
       asObj.free();
     } else {
-      apObj.dictLookupNF("N", &appearance);
+      apObj.dictLookupNF(AP ? AP : "N", &appearance);
     }
     obj1.free();
   }
@@ -3122,7 +3172,11 @@ Object *AcroFormField::fieldLookup(Dict *dict, const char *key, Object *obj) {
   int depth;
 
   if (!dict->lookup(key, obj)->isNull()) {
-    return obj;
+    if (obj->isDict()) {
+      if (obj->dictGetLength())
+          return obj;
+    } else
+      return obj;
   }
   obj->free();
 

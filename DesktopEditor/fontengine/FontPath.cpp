@@ -69,13 +69,13 @@ CFontPath::CFontPath(CFontPath *pPath) : NSFonts::IFontPath()
 
 	m_nCurSubpath = pPath->m_nCurSubpath;
 
-	if ( pPath->m_pHints ) 
+	if ( pPath->m_pHints )
 	{
 		m_nHintsCount = m_nHintsSize = pPath->m_nHintsCount;
 		m_pHints = (TPathHint *)malloc( m_nHintsSize * sizeof(TPathHint) );
 		memcpy( m_pHints, pPath->m_pHints, m_nHintsCount * sizeof(TPathHint) );
-	} 
-	else 
+	}
+	else
 	{
 		m_pHints = NULL;
 	}
@@ -90,13 +90,13 @@ CFontPath::~CFontPath()
 
 void CFontPath::Resize(int nPointsCount) 
 {
-	if ( m_nPointsCount + nPointsCount > m_nSize ) 
+	if ( m_nPointsCount + nPointsCount > m_nSize )
 	{
-		if ( m_nSize == 0 ) 
+		if ( m_nSize == 0 )
 		{
 			m_nSize = 32;
 		}
-		while ( m_nSize < m_nPointsCount + nPointsCount ) 
+		while ( m_nSize < m_nPointsCount + nPointsCount )
 		{
 			m_nSize *= 2;
 		}
@@ -110,7 +110,7 @@ void CFontPath::Append(CFontPath *pPath)
 	m_nCurSubpath = m_nPointsCount + pPath->m_nCurSubpath;
 	Resize( pPath->m_nPointsCount );
 
-	for ( int nIndex = 0; nIndex < pPath->m_nPointsCount; ++nIndex ) 
+	for ( int nIndex = 0; nIndex < pPath->m_nPointsCount; ++nIndex )
 	{
 		m_pPoints[m_nPointsCount] = pPath->m_pPoints[nIndex];
 		m_pFlags[m_nPointsCount]  = pPath->m_pFlags[nIndex];
@@ -120,7 +120,7 @@ void CFontPath::Append(CFontPath *pPath)
 
 int CFontPath::MoveTo(double dX, double dY) 
 {
-	if ( OnePointSubpath() ) 
+	if ( OnePointSubpath() )
 	{
 		return -1;
 	}
@@ -135,7 +135,7 @@ int CFontPath::MoveTo(double dX, double dY)
 
 int CFontPath::LineTo(double dX, double dY) 
 {
-	if ( NoCurrentPoint() ) 
+	if ( NoCurrentPoint() )
 	{
 		return -1;
 	}
@@ -180,11 +180,11 @@ int CFontPath::CurveTo(double dX1, double dY1, double dX2, double dY2, double dX
 
 int CFontPath::Close() 
 {
-	if ( NoCurrentPoint() ) 
+	if ( NoCurrentPoint() )
 	{
 		return -1;
 	}
-	if ( m_nCurSubpath == m_nPointsCount - 1 || m_pPoints[m_nPointsCount - 1].dX != m_pPoints[m_nCurSubpath].dX || m_pPoints[m_nPointsCount - 1].dY != m_pPoints[m_nCurSubpath].dY ) 
+	if ( m_nCurSubpath == m_nPointsCount - 1 || m_pPoints[m_nPointsCount - 1].dX != m_pPoints[m_nCurSubpath].dX || m_pPoints[m_nPointsCount - 1].dY != m_pPoints[m_nCurSubpath].dY )
 	{
 		LineTo( m_pPoints[m_nCurSubpath].dX, m_pPoints[m_nCurSubpath].dY );
 	}
@@ -198,7 +198,7 @@ int CFontPath::Close()
 
 void CFontPath::AddStrokeAdjustHint(int nFirstControl, int nSecondControl, int nFirstPoint, int nLastPoint) 
 {
-	if ( m_nHintsCount == m_nHintsSize ) 
+	if ( m_nHintsCount == m_nHintsSize )
 	{
 		m_nHintsSize = m_nHintsCount ? 2 * m_nHintsCount : 8;
 		m_pHints = (TPathHint *)realloc( m_pHints, m_nHintsSize * sizeof(TPathHint) );
@@ -213,7 +213,7 @@ void CFontPath::AddStrokeAdjustHint(int nFirstControl, int nSecondControl, int n
 
 void CFontPath::Offset(double dDx, double dDy) 
 {
-	for ( int nIndex = 0; nIndex < m_nPointsCount; ++nIndex ) 
+	for ( int nIndex = 0; nIndex < m_nPointsCount; ++nIndex )
 	{
 		m_pPoints[nIndex].dX += dDx;
 		m_pPoints[nIndex].dY += dDy;
@@ -222,7 +222,7 @@ void CFontPath::Offset(double dDx, double dDy)
 
 void CFontPath::Reverse()
 {
-	for ( int nIndex = 0; nIndex < m_nPointsCount; ++nIndex ) 
+	for ( int nIndex = 0; nIndex < m_nPointsCount; ++nIndex )
 	{
 		m_pPoints[nIndex].dY = -m_pPoints[nIndex].dY;
 	}
@@ -230,7 +230,7 @@ void CFontPath::Reverse()
 
 void CFontPath::ToMM(double dHorDpi, double dVerDpi) 
 {
-	for ( int nIndex = 0; nIndex < m_nPointsCount; ++nIndex ) 
+	for ( int nIndex = 0; nIndex < m_nPointsCount; ++nIndex )
 	{
 		m_pPoints[nIndex].dX *= 25.4 / dHorDpi;
 		m_pPoints[nIndex].dY *= 25.4 / dVerDpi;
@@ -239,7 +239,7 @@ void CFontPath::ToMM(double dHorDpi, double dVerDpi)
 
 INT CFontPath::GetCurPoint(double *pdX, double *pdY) 
 {
-	if ( NoCurrentPoint() ) 
+	if ( NoCurrentPoint() )
 	{
 		return FALSE;
 	}

@@ -1,18 +1,18 @@
 ﻿#ifndef _METAFILE_EMF_EMFPLUSOBJECTS_H
 #define _METAFILE_EMF_EMFPLUSOBJECTS_H
 
-#include "EmfPath.h"
 #include "EmfObjects.h"
 #include "EmfPlusTypes.h"
 #include "../../../common/File.h"
 #include "../Common/MetaFileObjects.h"
-
-#include "../../../../OOXML/Base/Types_32.h"
+#include "../Common/CPath.h"
+#include "../Common/CClip.h"
+#include <stdint.h>
 
 #ifndef MININT32
-#define MAXUINT32   ((_UINT32)~((_UINT32)0))
-#define MAXINT32    ((_INT32)(MAXUINT32 >> 1))
-#define MININT32    ((_INT32)~MAXINT32)
+#define MAXUINT32   ((uint32_t)~((uint32_t)0))
+#define MAXINT32    ((int32_t)(MAXUINT32 >> 1))
+#define MININT32    ((int32_t)~MAXINT32)
 #endif
 
 namespace MetaFile
@@ -93,7 +93,7 @@ namespace MetaFile
 		CEmfPlusObject(){};
 		virtual ~CEmfPlusObject(){};
 
-		virtual EEmfPlusObjectType GetObjectType()
+		virtual EEmfPlusObjectType GetObjectType() const
 		{
 			return ObjectTypeInvalid;
 		}
@@ -171,224 +171,90 @@ namespace MetaFile
 	class CEmfPlusBrush : public CEmfPlusObject, public IBrush
 	{
 	public:
-		CEmfPlusBrush() : CEmfPlusObject(), Style(BS_SOLID), Hatch(0), Angle(0) {};
-		virtual ~CEmfPlusBrush() {};
-		virtual EEmfObjectType GetType() override
-		{
-			return EMF_OBJECT_BRUSH;
-		}
+		CEmfPlusBrush();
+		virtual ~CEmfPlusBrush();
+		virtual EEmfObjectType GetType()           const override;
+		virtual EEmfPlusObjectType GetObjectType() const override;
 
-		virtual EEmfPlusObjectType GetObjectType() override
-		{
-				return ObjectTypeBrush;
-		}
+		// IBrush
+		int          GetColor()         const override;
+		int          GetColor2()        const override;
+		unsigned int GetStyle()         const override;
+		unsigned int GetStyleEx()       const override;
+		unsigned int GetHatch()         const override;
+		unsigned int GetAlpha()         const override;
+		unsigned int GetAlpha2()        const override;
+		std::wstring GetDibPatterPath() const override;
+		void         GetDibPattern(unsigned char** pBuffer, unsigned int &unWidth, unsigned int &unHeight) const override;
+		void         GetCenterPoint(double& dX, double& dY) const override;
+		void         GetBounds(double& left, double& top, double& width, double& height) const override;
 
-		int GetColor()
-		{
-			return METAFILE_RGBA(Color.chRed, Color.chGreen, Color.chBlue);
-		}
+		void GetGradientColors(std::vector<long>& arColors, std::vector<double>& arPositions) const override;
+	public:
+		TEmfPlusARGB   oColor;
+		TEmfPlusARGB   oColorBack;
+		unsigned int   unStyle;
+		unsigned int   unHatch;
+		TEmfPlusRectF  oRectF;
+		TEmfPlusPointF oCenterPoint;
+		unsigned int   unAngle;
+		std::wstring   wsDibPatternPath;
 
-		int GetColor2()
-		{
-			return METAFILE_RGBA(ColorBack.chRed, ColorBack.chGreen, ColorBack.chBlue);
-		}
-
-		unsigned int GetStyle()
-		{
-			return Style;
-		}
-
-		unsigned int GetStyleEx()
-		{
-			return Angle;
-		}
-
-		unsigned int GetHatch()
-		{
-			return Hatch;
-		}
-
-		unsigned int GetAlpha()
-		{
-			return Color.chAlpha;
-		}
-
-		unsigned int GetAlpha2()
-		{
-			return ColorBack.chAlpha;
-		}
-
-		std::wstring GetDibPatterPath()
-		{
-			return DibPatternPath;
-		}
-
-		void GetDibPattern(unsigned char** pBuffer, unsigned int &unWidth, unsigned int &unHeight)
-		{
-
-		}
-
-		void GetCenterPoint(double& dX, double& dY)
-		{
-			dX = CenterPoint.X;
-			dY = CenterPoint.Y;
-		}
-
-		void GetBounds(double& left, double& top, double& width, double& height)
-		{
-			left   = RectF.dX;
-			top    = RectF.dY;
-			width  = RectF.dWidth;
-			height = RectF.dHeight;
-		};
-
-		TEmfPlusARGB   Color;
-		TEmfPlusARGB   ColorBack;
-		unsigned int   Style;
-		unsigned int   Hatch;
-		TEmfPlusRectF  RectF;
-		TEmfPlusPointF CenterPoint;
-		unsigned int   Angle;
-		std::wstring   DibPatternPath;
+		std::vector<std::pair<TEmfPlusARGB, double>> arGradientColors;
 	};
 
 	class CEmfPlusPen: public CEmfPlusObject, public IPen
 	{
 	public:
-		CEmfPlusPen() : Style(PS_SOLID), Width(1), Color(0, 0, 0),
-		                Brush(NULL), MiterLimit(0), DashOffset(0),
-		                DataDash(NULL), SizeDash(0), LineStartCapData(NULL), LineEndCapData(NULL) {}
-		virtual ~CEmfPlusPen() { RELEASEOBJECT(Brush)
-			                     RELEASEARRAYOBJECTS(DataDash)
-			                     RELEASEOBJECT(LineStartCapData)
-			                     RELEASEOBJECT(LineEndCapData)}
-		virtual EEmfObjectType GetType()
-		{
-			return EMF_OBJECT_PEN;
-		}
+		CEmfPlusPen();
+		virtual ~CEmfPlusPen();
+		virtual EEmfObjectType GetType()           const override;
+		virtual EEmfPlusObjectType GetObjectType() const override;
 
-		virtual EEmfPlusObjectType GetObjectType() override
-		{
-			return ObjectTypePen;
-		}
+		// IPen
+		int             GetColor()        const override;
+		unsigned int    GetStyle()        const override;
+		double          GetWidth()        const override;
+		unsigned int    GetAlpha()        const override;
+		double          GetMiterLimit()   const override;
+		double          GetDashOffset()   const override;
+		void            GetDashData(double*& arDatas, unsigned int& unSize) const override;
+		const ILineCap* GetStartLineCap() const override;
+		const ILineCap* GetEndLineCap()   const override;
+	public:
+		unsigned int   unStyle;
+		double         dWidth;
+		TEmfPlusARGB   oColor;
+		CEmfPlusBrush *pBrush;
+		double         dMiterLimit;
+		double         dDashOffset;
+		double*        pDataDash;
+		unsigned int   unSizeDash;
 
-		int GetColor()
-		{
-			if (NULL != Brush)
-				return Brush->GetColor();
-
-			return METAFILE_RGBA(Color.chRed, Color.chGreen, Color.chBlue);
-		};
-
-		unsigned int GetStyle()
-		{
-			return Style;
-		}
-
-		double GetWidth()
-		{
-			if (Width < 0)
-				return 1;
-
-			return Width;
-		}
-
-		unsigned int GetAlpha()
-		{
-			if (NULL != Brush)
-				return Brush->Color.chAlpha;
-
-			return 255;
-		}
-
-		double GetMiterLimit()
-		{
-			return MiterLimit;
-		}
-
-		double GetDashOffset()
-		{
-			return DashOffset;
-		}
-
-		void GetDashData(double*& arDatas, unsigned int& unSize)
-		{
-			arDatas = DataDash;
-			unSize  = SizeDash;
-		}
-
-		unsigned int  Style;
-		double        Width;
-		TEmfPlusARGB  Color;
-		CEmfPlusBrush *Brush;
-		double        MiterLimit;
-		double        DashOffset;
-		double*       DataDash;
-		unsigned int  SizeDash;
-
-		CLineCapData  *LineStartCapData;
-		CLineCapData  *LineEndCapData;
+		CLineCapData  *pLineStartCapData;
+		CLineCapData  *pLineEndCapData;
 	};
 
 	class CEmfPlusFont : public CEmfPlusObject, public IFont
 	{
 	public:
-		CEmfPlusFont() : m_dEmSize(18), m_unSizeUnit(0), m_bBold(false),
-		                 m_bItalic(false), m_bUnderline(false), m_bStrikeout(false),
-		                 m_wsFamilyName(L""){}
-		virtual ~CEmfPlusFont() {}
+		CEmfPlusFont();
+		virtual ~CEmfPlusFont();
+		virtual EEmfObjectType GetType()           const override;
+		virtual EEmfPlusObjectType GetObjectType() const override;
 
-		virtual EEmfObjectType GetType() override
-		{
-			return EMF_OBJECT_FONT;
-		}
+		// IFont
+		double       GetHeight()      const override;
+		std::wstring GetFaceName()    const override;
+		int          GetWeight()      const override;
+		bool         IsItalic()       const override;
+		bool         IsStrikeOut()    const override;
+		bool         IsUnderline()    const override;
+		int          GetEscapement()  const override;
+		int          GetCharSet()     const override;
+		int          GetOrientation() const override;
 
-		virtual EEmfPlusObjectType GetObjectType() override
-		{
-			return ObjectTypeFont;
-		}
-
-		double	GetHeight()
-		{
-			return m_dEmSize;
-		}
-
-		std::wstring GetFaceName()
-		{
-			return m_wsFamilyName;
-		}
-
-		int GetWeight()
-		{
-			return (m_bBold) ? 700 : 400;
-		}
-
-		bool IsItalic()
-		{
-			return m_bItalic;
-		}
-
-		bool IsStrikeOut()
-		{
-			return m_bStrikeout;
-		}
-		bool IsUnderline()
-		{
-			return m_bUnderline;
-		}
-		int GetEscapement()
-		{
-			return 0;
-		}
-		int GetCharSet()
-		{
-			return 0;
-		}
-		int GetOrientation()
-		{
-			return 0;
-		}
-
+	public:
 		double       m_dEmSize;
 		unsigned int m_unSizeUnit;
 		bool         m_bBold;
@@ -408,58 +274,15 @@ namespace MetaFile
 	class CEmfPlusBuffer : public CEmfPlusObject
 	{
 	public:
-		CEmfPlusBuffer() : m_pBuffer(NULL), m_ulPosition(0), m_ulFullSize(0)
-		{}
-		~CEmfPlusBuffer()
-		{
-			if (NULL != m_pBuffer)
-				delete m_pBuffer;
-		}
+		CEmfPlusBuffer();
+		virtual ~CEmfPlusBuffer();
+		virtual EEmfPlusObjectType GetObjectType() const override;
 
-		virtual EEmfPlusObjectType GetObjectType() override
-		{
-			return ObjectTypeBuffer;
-		}
-
-		void SetSize(unsigned int unSize)
-		{
-			if (NULL != m_pBuffer)
-				delete [] m_pBuffer;
-
-			m_pBuffer = new BYTE[unSize];
-			m_ulFullSize   = unSize;
-		}
-
-		unsigned int GetSize() const
-		{
-			return m_ulFullSize;
-		}
-
-		void AddData(BYTE *pData, unsigned int unSize)
-		{
-			if (NULL == m_pBuffer && 0 == m_ulFullSize && 0 < unSize)
-				SetSize(unSize);
-			else if (0 == m_ulFullSize)
-				    return;
-
-			if (unSize + m_ulPosition > m_ulFullSize)
-				unSize = m_ulFullSize - m_ulPosition;
-
-			memcpy(m_pBuffer + m_ulPosition * sizeof (BYTE), pData, unSize);
-
-			m_ulPosition += unSize;
-		}
-
-		unsigned int GetUnreadSize() const
-		{
-			return (m_ulFullSize - m_ulPosition);
-		}
-
-		void GetData(BYTE*& pBuffer, unsigned int& unSize) const
-		{
-			pBuffer = m_pBuffer;
-			unSize = m_ulPosition;
-		}
+		void         SetSize(unsigned int unSize);
+		unsigned int GetSize() const;
+		void         AddData(BYTE *pData, unsigned int unSize);
+		unsigned int GetUnreadSize() const;
+		void         GetData(BYTE*& pBuffer, unsigned int& unSize) const;
 	private:
 		BYTE* m_pBuffer;
 		ULONG m_ulPosition;
@@ -468,63 +291,16 @@ namespace MetaFile
 		friend class CEmfPlusImage;
 	};
 
-	class CEmfPlusPath : public CEmfPlusObject, public CEmfPath
+	class CEmfPlusPath : public CEmfPlusObject, public CPath
 	{
 	public:
-		CEmfPlusPath() : CEmfPlusObject(), CEmfPath() {};
-		CEmfPlusPath(CEmfPlusPath* pPath) : CEmfPlusObject(), CEmfPath(pPath) {};
+		CEmfPlusPath();
+		CEmfPlusPath(CEmfPlusPath* pPath);
+		virtual ~CEmfPlusPath();
+		virtual EEmfPlusObjectType GetObjectType() const override;
 
-		virtual EEmfPlusObjectType GetObjectType() override
-		{
-			return ObjectTypePath;
-		}
-
-		void Clear()
-		{
-			CEmfPath::Clear();
-		}
-
-		TRectD ConvertToRect() const
-		{
-			TRectD oRect;
-
-			oRect.dRight = oRect.dBottom = MININT32;
-			oRect.dLeft  = oRect.dTop    = MAXINT32;
-
-			for (unsigned int ulIndex = 0; ulIndex < m_pCommands.size(); ulIndex++)
-			{
-				CEmfPathCommandBase* pCommand = m_pCommands.at(ulIndex);
-				switch (pCommand->GetType())
-				{
-					case EMF_PATHCOMMAND_MOVETO:
-					{
-						CEmfPathMoveTo* pMoveTo = (CEmfPathMoveTo*)pCommand;
-
-						oRect.dLeft   = std::min(oRect.dLeft,	pMoveTo->x);
-						oRect.dTop    = std::min(oRect.dTop,    pMoveTo->y);
-						oRect.dRight  = std::max(oRect.dRight,  pMoveTo->x);
-						oRect.dBottom = std::max(oRect.dBottom, pMoveTo->y);
-
-						break;
-					}
-					case EMF_PATHCOMMAND_LINETO:
-					{
-						CEmfPathLineTo* pLineTo = (CEmfPathLineTo*)pCommand;
-
-						oRect.dLeft   = std::min(oRect.dLeft,	pLineTo->x);
-						oRect.dTop    = std::min(oRect.dTop,    pLineTo->y);
-						oRect.dRight  = std::max(oRect.dRight,  pLineTo->x);
-						oRect.dBottom = std::max(oRect.dBottom, pLineTo->y);
-
-						break;
-					}
-					case EMF_PATHCOMMAND_CLOSE: return oRect;
-				}
-			}
-			return oRect;
-		}
+		TRectD GetBounds() const;
 	};
-
 
 	typedef  enum
 	{
@@ -538,13 +314,10 @@ namespace MetaFile
 	class CEmfPlusImageAttributes : public CEmfPlusObject
 	{
 	public:
-		CEmfPlusImageAttributes() : CEmfPlusObject() {};
+		CEmfPlusImageAttributes();
+		virtual EEmfPlusObjectType GetObjectType() const override;
 
-		virtual EEmfPlusObjectType GetObjectType() override
-		{
-			return ObjectTypeImageAttributes;
-		}
-
+	public:
 		EEmfPlusWrapMode eWrapMode;
 		TEmfPlusARGB     oClampColor;
 		int              nObjectClamp;
@@ -559,57 +332,16 @@ namespace MetaFile
 	class CEmfPlusImage : public CEmfPlusBuffer
 	{
 	public:
-		CEmfPlusImage() : m_eImageDataType(ImageDataTypeUnknown),
-		                  m_eMetafileDataType(MetafileDataTypeUnknown),
-		                  m_unWidth(0), m_unHeight(0){};
+		CEmfPlusImage();
+		virtual EEmfPlusObjectType GetObjectType() const override;
 
-		virtual EEmfPlusObjectType GetObjectType() override
-		{
-			return ObjectTypeImage;
-		}
+		void                     SetImageDataType(unsigned int unImageDataType);
+		EEmfPlusImageDataType    GetImageDataType() const;
+		bool                     SetMetafileType(unsigned int unType);
+		EEmfPlusMetafileDataType GetMetafileType()  const;
 
-		void SetImageDataType(unsigned int unImageDataType)
-		{
-			if (ImageDataTypeBitmap == unImageDataType)
-				m_eImageDataType = ImageDataTypeBitmap;
-			else if (ImageDataTypeMetafile == unImageDataType)
-				m_eImageDataType = ImageDataTypeMetafile;
-		}
-
-		EEmfPlusImageDataType GetImageDataType() const
-		{
-			return m_eImageDataType;
-		}
-
-		bool SetMetafileType(unsigned int unType)
-		{
-			switch (unType)
-			{
-				case 1: m_eMetafileDataType = MetafileDataTypeWmf;              return true;
-				case 2: m_eMetafileDataType = MetafileDataTypeWmfPlaceable;     return true;
-				case 3: m_eMetafileDataType = MetafileDataTypeEmf;              return true;
-				case 4: m_eMetafileDataType = MetafileDataTypeEmfPlusOnly;      return true;
-				case 5: m_eMetafileDataType = MetafileDataTypeEmfPlusDual;      return true;
-				default:m_eMetafileDataType = MetafileDataTypeUnknown;          return false;
-			}
-		}
-
-		EEmfPlusMetafileDataType GetMetafileType() const
-		{
-			return m_eMetafileDataType;
-		}
-
-		void SetImageSize(unsigned int unWidth, unsigned int unHeight)
-		{
-			m_unWidth  = unWidth;
-			m_unHeight = unHeight;
-		}
-
-		void GetImageSize(unsigned int &unWidth, unsigned int &unHeight)
-		{
-			unWidth  = m_unWidth;
-			unHeight = m_unHeight;
-		}
+		void SetImageSize(unsigned int unWidth, unsigned int unHeight);
+		void GetImageSize(unsigned int &unWidth, unsigned int &unHeight);
 	private:
 
 		EEmfPlusImageDataType    m_eImageDataType;
@@ -643,224 +375,68 @@ namespace MetaFile
 	class CEmfPlusRegionNode
 	{
 	public:
-		CEmfPlusRegionNode() {};
-		virtual ~CEmfPlusRegionNode() {};
+		CEmfPlusRegionNode();
+		virtual ~CEmfPlusRegionNode();
 
-		EEmfPlusRegionNodeDataType GetType() const
-		{
-			return eType;
-		}
+		virtual EEmfPlusRegionNodeDataType GetType()     const;
+		virtual EEmfPLusRegionNodeType     GetNodeType() const;
 
-		EEmfPLusRegionNodeType GetNodeType() const
-		{
-			return EmfPLusRegionNodeTypeEmpty;
-		}
-
+	public:
 		EEmfPlusRegionNodeDataType eType;
 	};
 
 	class CEmfPlusRegionNodePath : public CEmfPlusRegionNode
 	{
 	public:
-		CEmfPlusRegionNodePath() : pPath(NULL) {};
-		virtual ~CEmfPlusRegionNodePath()
-		{
-			RELEASEOBJECT(pPath);
-		}
+		CEmfPlusRegionNodePath();
+		virtual ~CEmfPlusRegionNodePath();
 
-		EEmfPLusRegionNodeType GetNodeType()
-		{
-			return EmfPLusRegionNodeTypePath;
-		}
+		EEmfPLusRegionNodeType GetNodeType() const override;
 
-		bool Empty() const
-		{
-			return (NULL == pPath);
-		}
+		bool          Empty() const;
+		CEmfPlusPath* GetPath() const;
 
-		CEmfPlusPath* GetPath() const
-		{
-			return pPath;
-		}
-
+	public:
 		CEmfPlusPath *pPath;
 	};
 
 	class CEmfPlusRegionNodeRectF : public CEmfPlusRegionNode
 	{
 	public:
-		CEmfPlusRegionNodeRectF() : pRect(NULL) {}
-		virtual ~CEmfPlusRegionNodeRectF()
-		{
-			RELEASEOBJECT(pRect);
-		}
+		CEmfPlusRegionNodeRectF();
+		virtual ~CEmfPlusRegionNodeRectF();
+		
+		EEmfPLusRegionNodeType GetNodeType() const override;
 
-		EEmfPLusRegionNodeType GetNodeType()
-		{
-			return EmfPLusRegionNodeTypeRectF;
-		}
+		bool           Empty()   const;
+		TEmfPlusRectF* GetRect() const;
 
-		bool Empty() const
-		{
-			return NULL == pRect;
-		}
-
-		TEmfPlusRectF* GetRect() const
-		{
-			return pRect;
-		}
-
+	public:
 		TEmfPlusRectF* pRect;
 	};
 
 	class CEmfPlusRegionNodeChild : public CEmfPlusRegionNode
 	{
 	public:
-		CEmfPlusRegionNodeChild() : pLeft(NULL), pRigth(NULL) {};
-		virtual ~CEmfPlusRegionNodeChild()
-		{
-			RELEASEOBJECT(pLeft);
-			RELEASEOBJECT(pRigth);
-		}
+		CEmfPlusRegionNodeChild();
+		virtual ~CEmfPlusRegionNodeChild();
 
-		EEmfPLusRegionNodeType GetNodeType()
-		{
-			return EmfPLusRegionNodeTypeChild;
-		}
-
-		void ClipRegionOnRenderer(IOutputDevice* pOutput, TRect* pOutRect = NULL)
-		{
-			if (NULL == pOutput)
-				return;
-
-			unsigned int unType;
-
-			switch (eType)
-			{
-				case RegionNodeDataTypeAnd:
-				case RegionNodeDataTypeExclude:
-				case RegionNodeDataTypeComplement:
-				{
-					unType = RGN_AND;
-					break;
-				}
-				case RegionNodeDataTypeOr:
-				{
-					unType = RGN_OR;
-					break;
-				}
-				case RegionNodeDataTypeXor:
-				{
-					unType = RGN_XOR;
-					break;
-				}
-				default: return;
-			}
-
-			pOutput->StartClipPath(unType, ALTERNATE);
-
-			for (CEmfPlusRegionNode *pNode : std::vector<CEmfPlusRegionNode*>{pLeft, pRigth})
-			{
-				switch (pNode->GetNodeType())
-				{
-					case EmfPLusRegionNodeTypeEmpty:
-					{
-						if (NULL != pOutRect)
-						{
-							pOutput->MoveTo(pOutRect->nLeft,  pOutRect->nTop);
-							pOutput->LineTo(pOutRect->nRight, pOutRect->nTop);
-							pOutput->LineTo(pOutRect->nRight, pOutRect->nBottom);
-							pOutput->LineTo(pOutRect->nLeft,  pOutRect->nBottom);
-							pOutput->ClosePath();
-						}
-						break;
-					}
-					case EmfPLusRegionNodeTypePath:
-					{
-						CEmfPlusRegionNodePath *pRegionNodePath = (CEmfPlusRegionNodePath*)pNode;
-
-						if (!pRegionNodePath->Empty())
-						{
-							for (unsigned int ulIndex = 0; ulIndex < pRegionNodePath->GetPath()->m_pCommands.size(); ulIndex++)
-							{
-								CEmfPathCommandBase* pCommand = pRegionNodePath->GetPath()->m_pCommands.at(ulIndex);
-								switch (pCommand->GetType())
-								{
-									case EMF_PATHCOMMAND_MOVETO:
-									{
-										CEmfPathMoveTo* pMoveTo = (CEmfPathMoveTo*)pCommand;
-										pOutput->MoveTo(pMoveTo->x, pMoveTo->y);
-										break;
-									}
-									case EMF_PATHCOMMAND_LINETO:
-									{
-										CEmfPathLineTo* pLineTo = (CEmfPathLineTo*)pCommand;
-										pOutput->LineTo(pLineTo->x, pLineTo->y);
-										break;
-									}
-									case EMF_PATHCOMMAND_CURVETO:
-									{
-										CEmfPathCurveTo* pCurveTo = (CEmfPathCurveTo*)pCommand;
-										pOutput->CurveTo(pCurveTo->x1, pCurveTo->y1, pCurveTo->x2, pCurveTo->y2, pCurveTo->xE, pCurveTo->yE);
-										break;
-									}
-									case EMF_PATHCOMMAND_ARCTO:
-									{
-										CEmfPathArcTo* pArcTo = (CEmfPathArcTo*)pCommand;
-										pOutput->ArcTo(pArcTo->left, pArcTo->top, pArcTo->right, pArcTo->bottom, pArcTo->start, pArcTo->sweep);
-										break;
-									}
-									case EMF_PATHCOMMAND_CLOSE:
-									{
-										pOutput->ClosePath();
-										break;
-									}
-								}
-							}
-						}
-					}
-					case EmfPLusRegionNodeTypeRectF:
-					{
-						CEmfPlusRegionNodeRectF *pRegionNodeRectF = (CEmfPlusRegionNodeRectF*)pNode;
-
-						if (!pRegionNodeRectF->Empty())
-						{
-							TRectD oRect = pRegionNodeRectF->GetRect()->GetRectD();
-
-							pOutput->MoveTo(oRect.dLeft,  oRect.dTop);
-							pOutput->LineTo(oRect.dRight, oRect.dTop);
-							pOutput->LineTo(oRect.dRight, oRect.dBottom);
-							pOutput->LineTo(oRect.dLeft,  oRect.dBottom);
-							pOutput->ClosePath();
-						}
-					}
-					default: break;
-				}
-			}
-
-			pOutput->EndClipPath(unType);
-		}
-
+		EEmfPLusRegionNodeType GetNodeType() const override;
+		
+		void DrawOnClip(CClip& oClip, const TXForm& oTransform, const TRectL* pOutRect = NULL);
+	public:
 		CEmfPlusRegionNode *pLeft, *pRigth;
 	};
 
 	class CEmfPlusRegion : public CEmfPlusObject
 	{
 	public:
-		CEmfPlusRegion() : CEmfPlusObject() {};
-		virtual ~CEmfPlusRegion()
-		{
-			for (CEmfPlusRegionNode* pNode : arNodes)
-				delete pNode;
+		CEmfPlusRegion();
+		virtual ~CEmfPlusRegion();
 
-			arNodes.clear();
-		};
+		virtual EEmfPlusObjectType GetObjectType() const override;
 
-		virtual EEmfPlusObjectType GetObjectType() override
-		{
-			return ObjectTypeRegion;
-		}
-
+	public:
 		std::vector<CEmfPlusRegionNode*> arNodes;
 	};
 
@@ -892,11 +468,8 @@ namespace MetaFile
 	class CEmfPlusStringFormat : public CEmfPlusObject
 	{
 	public:
-		CEmfPlusStringFormat() : CEmfPlusObject() {};
-		virtual EEmfPlusObjectType GetObjectType() override
-		{
-			return ObjectTypeStringFormat;
-		}
+		CEmfPlusStringFormat();
+		virtual EEmfPlusObjectType GetObjectType() const override;
 
 		unsigned int unStringFormatFlags;
 		unsigned int unStringAlignment;

@@ -95,14 +95,12 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type		= typeOfficeChangeInfo;
-    
+    static const ElementType type = typeOfficeChangeInfo;    
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child_element);
 
     virtual void serialize(std::wostream & _Wostream);
-
 private:
     office_element_ptr		dc_date_;
     office_element_ptr		dc_creator_;

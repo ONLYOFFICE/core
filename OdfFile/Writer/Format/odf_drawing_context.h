@@ -53,6 +53,7 @@ class odf_text_context;
 
 class graphic_format_properties;
 class paragraph_format_properties;
+class text_format_properties;
 
 class style_text_properties;
 class style_graphic_properties;
@@ -74,7 +75,8 @@ public:
 	void clear				();
 	void set_styles_context	(odf_style_context_ptr styles_context);//для embedded 
 
-	void set_parent_style	(std::wstring style_name);
+	void set_parent_style(std::wstring style_name);
+	void set_parent_text_style(std::wstring style_name);
 
 	void set_header_state		(bool Val);
 	void set_footer_state		(bool Val);
@@ -116,6 +118,7 @@ public:
 	void end_drawing_background(odf_types::common_draw_fill_attlist & common_draw_attlist);
 	
 	void set_anchor_drawing();
+	void set_anchor_drawing(graphic_format_properties* graphic_properties);
 
 	size_t	get_group_level();
 	void start_group();		
@@ -123,6 +126,7 @@ public:
 		void set_group_flip_V	(bool bVal);
 		void set_group_z_order	(int Val);
 		void set_group_name		(const std::wstring & name);
+		void set_group_xml_id	(const std::wstring& xml_id);
 
 		void set_group_rotate	(int iVal);
 		void set_group_size		(_CP_OPT(double) cx, _CP_OPT(double) cy, _CP_OPT(double) change_cx, _CP_OPT(double) change_cy);
@@ -147,12 +151,20 @@ public:
 	bool change_text_box_2_wordart();
 	bool is_wordart();
 	bool is_text_box();
+	bool is_placeholder();
+	void placeholder_replacing(bool replacing);
+	bool placeholder_replacing();
 	
 	graphic_format_properties* get_graphic_properties();
+	text_format_properties* get_text_properties();
 
 	void set_graphic_properties		(style_graphic_properties *graphic_properties);	
+	void set_graphic_properties		(graphic_format_properties* graphic_properties);
 	void set_paragraph_properties	(paragraph_format_properties *paragraph_properties);
 	void set_text_properties		(style_text_properties *text_properties);
+	void set_text_properties		(text_format_properties* text_properties);
+
+	void set_placeholder_style(const std::wstring& style_name);
 	
 	void start_text_box					();
 		void set_text_box_min_size		(bool val);
@@ -193,6 +205,8 @@ public:
 	bool is_exist_content();
 	bool is_current_empty();
 //////////////////////////////////////////////////////////////////////////////////////
+	int get_formulas_count();
+
 	void set_path			(std::wstring path_string);
 	void add_path_element	(std::wstring command, std::wstring elm);
 	void add_modifier		(std::wstring modifier);
@@ -200,6 +214,7 @@ public:
 	void set_textarea		(std::wstring l, std::wstring t, std::wstring r, std::wstring b);
 	void add_handle			(std::wstring x, std::wstring y, std::wstring refX, std::wstring refY,
 							std::wstring minX, std::wstring maxX, std::wstring minY, std::wstring maxY);
+	void set_draw_type		(const std::wstring& draw_type);
 	
 	void set_viewBox		(double W, double H);
 
@@ -267,6 +282,7 @@ public:
 
 	void set_placeholder_id			(std::wstring val);
 	void set_placeholder_type		(int val);
+	void set_xml_id					(const std::wstring& xml_id);
 //////////////////////////////////////////////////////////////////////////////////////
 	void start_gradient_style	();
 		void set_gradient_type	(odf_types::gradient_style::type style);
@@ -275,6 +291,7 @@ public:
 		void set_gradient_rect(	double l, double t, double r,double b);
 		void set_gradient_center(double cx, double cy);
 		void set_gradient_angle	(double angle);
+		void set_gradient_stop(std::wstring hexColor, int pos);
 	void end_gradient_style		();
 ////////////////////////////////////////////////////////////////////////////////////////
 	void start_opacity_style	();
@@ -283,6 +300,7 @@ public:
 		void set_opacity_end	(double val);
 		void set_opacity_rect	(double l, double t, double r,double b);
 		void set_opacity_angle	(double angle);
+		void set_opacity_stop(_CP_OPT(double)& val, int pos);
 	void end_opacity_style		();
 //////////////////////////////////////////////////////////////////////////////////////
 	void start_hatch_style();
@@ -309,6 +327,10 @@ public:
 		void add_sound	(std::wstring href);
 		void add_link	(std::wstring href);
 	void end_action();
+
+	void start_style_columns(int cols, int gap);
+		void add_style_column();
+	void end_style_columns();
 
 private:
     class Impl;

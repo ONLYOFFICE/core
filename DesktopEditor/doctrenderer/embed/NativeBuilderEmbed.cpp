@@ -8,7 +8,22 @@ JSSmart<CJSValue> CBuilderEmbed::OpenFile(JSSmart<CJSValue> sPath, JSSmart<CJSVa
 {
 	std::wstring Path = sPath->toStringW();
 	std::wstring Params = sParams->toStringW();
+
+	// Since we now use snapshots, and we can't always determine which editor is needed
+	// (since the code may be BEFORE opening the file). And if the opening came from
+	// builderJS.OpenFile - in this case we skip reopening.
+	NSDoctRenderer::CDocBuilder_Private* pPrivate = GetPrivate();
+	if (pPrivate->m_pWorker->IsSimpleJSInstance())
+		pPrivate->m_bIsOpenedFromSimpleJS = true;
+
 	int ret = m_pBuilder->OpenFile(Path.c_str(), Params.c_str());
+
+	if (pPrivate->m_pWorker->IsSimpleJSInstance())
+	{
+		JSSmart<CJSContext> current = CJSContext::GetCurrent();
+		current->runScript("throw 0;");
+	}
+
 	return CJSContext::createInt(ret);
 }
 
@@ -20,7 +35,21 @@ JSSmart<CJSValue> CBuilderEmbed::CreateFile(JSSmart<CJSValue> type)
 	else
 		nFormat = type->toInt32();
 
+	// Since we now use snapshots, and we can't always determine which editor is needed
+	// (since the code may be BEFORE opening the file). And if the opening came from
+	// builderJS.OpenFile - in this case we skip reopening.
+	NSDoctRenderer::CDocBuilder_Private* pPrivate = GetPrivate();
+	if (pPrivate->m_pWorker->IsSimpleJSInstance())
+		pPrivate->m_bIsOpenedFromSimpleJS = true;
+
 	bool ret = m_pBuilder->CreateFile(nFormat);
+
+	if (pPrivate->m_pWorker->IsSimpleJSInstance())
+	{
+		JSSmart<CJSContext> current = CJSContext::GetCurrent();
+		current->runScript("throw 0;");
+	}
+
 	return CJSContext::createBool(ret);
 }
 
@@ -41,7 +70,7 @@ JSSmart<CJSValue> CBuilderEmbed::SaveFile(JSSmart<CJSValue> type, JSSmart<CJSVal
 
 	std::wstring sPath = path->toStringW();
 	std::wstring sParams = params->toStringW();
-	int ret = m_pBuilder->SaveFile(nFormat, sPath.c_str(), sParams.empty() ? NULL : sParams.c_str());
+	int ret = GetPrivate()->SaveFile(nFormat, sPath.c_str(), sParams.empty() ? NULL : sParams.c_str(), false);
 	return CJSContext::createInt(ret);
 }
 
@@ -59,6 +88,7 @@ JSSmart<CJSValue> CBuilderEmbed::OpenTmpFile(JSSmart<CJSValue> path, JSSmart<CJS
 	JSSmart<CJSObject> oBuilderTmpDoc = CJSContext::createEmbedObject("CBuilderDocumentEmbed");
 	CBuilderDocumentEmbed* pBuilderTmpDocNative = static_cast<CBuilderDocumentEmbed*>(oBuilderTmpDoc->getNative());
 	pBuilderTmpDocNative->m_pBuilder = m_pBuilder;
+	pBuilderTmpDocNative->SetExternalize(true);
 	pBuilderTmpDocNative->_OpenFile(sPath, sParams);
 	return oBuilderTmpDoc->toValue();
 }

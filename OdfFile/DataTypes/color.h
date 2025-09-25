@@ -35,33 +35,58 @@
 #include <string>
 #include "odfattributes.h"
 
+namespace cpdoccore {
+    namespace odf_types {
 
-namespace cpdoccore { namespace odf_types { 
+        class color
+        {
+        public:
+            color() {};
 
-class color
-{
-public:
-    color() {};
-    
-    color(const std::wstring & _Color) : color_(_Color) {};
-    
-    const std::wstring & get_color() const 
-    { 
-        return color_; 
-    };
+            color(const std::wstring& _Color) : color_(_Color) {};
 
-    const std::wstring get_hex_value(bool alfa = false) const;
+            const std::wstring& get_color() const
+            {
+                return color_;
+            };
 
-    static color parse(const std::wstring & Str);
+            const std::wstring get_hex_value(bool alfa = false) const;
 
-private:
-    std::wstring color_;
-};
+            static color parse(const std::wstring& Str);
 
-std::wostream & operator << (std::wostream & _Wostream, const color & _Color);
-bool            operator== (const color & c1, const color & c2);
-} 
+        private:
+            std::wstring color_;
+        };
+        std::wostream& operator << (std::wostream& _Wostream, const color& _Color);
+        bool            operator== (const color& c1, const color& c2);
+        //----------------------------------------------------------------------------------------------------------
+        class color_type
+        {
+        public:
+            enum type
+            {
+                rgb,
+                theme
+            };
 
+            color_type() {}
+
+            color_type(type _Type) : type_(_Type)
+            {}
+
+            type get_type() const
+            {
+                return type_;
+            };
+
+            static color_type parse(const std::wstring& Str);
+        private:
+            type type_;
+        };
+        std::wostream& operator << (std::wostream& _Wostream, const color_type& _Val);
+    }
+
+APPLY_PARSE_XML_ATTRIBUTES(odf_types::color_type);
 APPLY_PARSE_XML_ATTRIBUTES(odf_types::color);
 
 }

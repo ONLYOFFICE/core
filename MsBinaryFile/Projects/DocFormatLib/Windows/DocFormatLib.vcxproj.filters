@@ -505,6 +505,7 @@
     <ClInclude Include="..\..\..\DocFile\VMLShapeTypeMapping.h">
       <Filter>Converter</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Common\Base\FormatUtils.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\DocFile\OfficeDrawing\Record.cpp">
@@ -870,5 +871,6 @@
       <Filter>OfficeDrawing</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Common\Base\XmlTools.cpp" />
+    <ClCompile Include="..\..\..\Common\Base\FormatUtils.cpp" />
   </ItemGroup>
 </Project>

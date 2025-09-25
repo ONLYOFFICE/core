@@ -43,25 +43,36 @@
 class CMediaManager
 {
 private:
-	std::map<std::wstring, std::wstring>	m_mapMedia;
+    std::map<std::wstring, std::wstring>	m_mapMedia;
 
-	long									m_lIndexNextAudio;
-	long									m_lIndexNextVideo;
-	long									m_lIndexNextImage;
+    long									m_lIndexNextAudio;
+    long									m_lIndexNextVideo;
+    long									m_lIndexNextImage;
+    long                                    m_lIndexNextOleObject;
 
-	std::wstring							m_strDstMedia;
+    std::wstring							m_strDstMedia;
+    std::wstring							m_strTempMedia;
+    std::wstring							m_strDstEmbeddings;
 
 public:
     CMediaManager();
     ~CMediaManager();
     void Clear();
     std::wstring FindMedia(const std::wstring& strInput);
+
+    void SetDstEmbeddings(const std::wstring& strDst);
     void SetDstMedia(const std::wstring& strDst);
-    std::wstring GenerateVideo(const std::wstring& strInput);
-    std::wstring GenerateAudio(const std::wstring& strInput);
+    void SetTempMedia(const std::wstring& strSrc);
+
+    std::wstring GenerateVideo(const std::wstring& strInput, const std::wstring& strExt = L"");
+    std::wstring GenerateAudio(const std::wstring& strInput, const std::wstring& strExt = L"");
+    std::wstring GenerateOleObject(const std::wstring& strInput);
     std::wstring GenerateImage(const std::wstring& strInput);
     std::wstring GenerateImageJPEG(const std::wstring& strInput);
-    std::wstring GenerateMedia(const std::wstring& strInput, const std::wstring& Template, long & Indexer, const std::wstring& strDefaultExt);
+
+    std::wstring GenerateMedia(const std::wstring& strInput, const std::wstring& Template, long& Indexer, const std::wstring& strDefaultExt);
+    std::wstring GenerateEmbedding(const std::wstring& strInput, const std::wstring& Template, long& Indexer, const std::wstring& strDefaultExt);
+
     void WriteAudioCollection(const std::vector<PPT::CExFilesInfo>& audioCont);
     bool IsNeedDownload(const std::wstring& strFile);
 };
@@ -70,11 +81,11 @@ std::wstring CorrectXmlString3(const std::wstring & str);
 class CRelsGenerator
 {
 private:
-	PPT::CStringWriter               m_oWriter;
-	int										m_lNextRelsID;
-	std::map<std::wstring, int>				m_mapMediaRelsID;
-	CMediaManager*							m_pManager;
-	std::map<std::wstring, std::wstring>	m_mapHyperlinks;
+    PPT::CStringWriter               m_oWriter;
+    int										m_lNextRelsID;
+    std::map<std::wstring, int>				m_mapMediaRelsID;
+    CMediaManager* m_pManager;
+    std::map<std::wstring, std::wstring>	m_mapHyperlinks;
 
 public:
     CRelsGenerator(CMediaManager* pManager);
@@ -88,20 +99,21 @@ public:
     void StartNotes(int nIndexSlide, bool bMaster);
     void StartSlide(int nIndexLayout, int nIndexNotes);
     void CloseRels();
-    void SaveRels(const std::wstring &strFile);
-    std::wstring WriteHyperlink(const std::wstring &strHyperlink, bool isExternal = false);
+    void SaveRels(const std::wstring& strFile);
+    std::wstring WriteHyperlink(const std::wstring& strHyperlink, bool isExternal = false);
     void StartLayout(int nIndexTheme);
-
 
     std::wstring WriteHyperlinkMedia(const std::wstring& strMedia, bool bExternal = true, bool newRIdAlways = false, std::wstring strRelsType = L"http://schemas.microsoft.com/office/2007/relationships/media");
     std::wstring WriteHyperlinkImage(const std::wstring& strImage, bool bExternal = true);
     std::wstring WriteHyperlinkAudio(const std::wstring& strImage, bool bExternal = true);
     std::wstring WriteHyperlinkVideo(const std::wstring& strImage, bool bExternal = true);
+    std::wstring WriteHyperlinkOleObject(const std::wstring& strImage, bool bExternal = true);
     std::wstring WriteMedia(const std::wstring& strMediaPath);
     std::wstring WriteImage(const std::wstring& strImagePath);
     std::wstring WriteSlideRef(const std::wstring& strLocation);
-    std::wstring WriteAudio(const std::wstring& strAudioPath, bool & bExternal);
-    std::wstring WriteVideo(const std::wstring& strVideoPath, bool & bExternal);
+    std::wstring WriteAudio(const std::wstring& strAudioPath, bool& bExternal);
+    std::wstring WriteVideo(const std::wstring& strVideoPath, bool& bExternal);
+    std::wstring WriteOleObject(const std::wstring& strOleObjectPath);
 
     int getRId()const { return m_lNextRelsID; }
 };

@@ -32,7 +32,7 @@ public:
 
   // Create a string from <lengthA> chars at <sA>.  This string
   // can contain null characters.
-  GString(const char *sA, int lengthA);
+  GString(const char *sA, int lengthA, bool _bBinary = false);
 
   // Create a string from <lengthA> chars at <idx> in <str>.
   GString(GString *str, int idx, int lengthA);
@@ -120,8 +120,11 @@ public:
   int cmp(const char *sA);
   int cmpN(const char *sA, int n);
 
+  bool isBinary() { return bBinary; }
+
 private:
 
+  bool bBinary;
   int length;
   char *s;
 

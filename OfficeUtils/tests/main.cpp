@@ -1,5 +1,7 @@
 #include <iostream>
 #include <algorithm>
+#include <cmath>
+#include <cstdlib>
 
 #include "gtest/gtest.h"
 
@@ -53,6 +55,7 @@ public:
 	std::wstring zipDirectory;
 	std::wstring unzipDirectory;
 	std::wstring wsep;
+	std::wstring tempDirectory;
 
 	std::vector<std::wstring> expected_general;
 	std::vector<std::wstring> expected_general_no_folder;
@@ -70,9 +73,13 @@ public:
 		workDirectory = NSFile::GetProcessDirectory();
 		unzipDirectory = workDirectory + wsep + L".." + wsep + L"unzip";
 		zipDirectory = workDirectory + wsep + L".." + wsep + L"zip";
+		tempDirectory = workDirectory + wsep + L".." + wsep + L"temp";
 
 		if(!NSDirectory::Exists(unzipDirectory))
 			NSDirectory::CreateDirectories(unzipDirectory);
+
+		if(!NSDirectory::Exists(tempDirectory))
+			NSDirectory::CreateDirectories(tempDirectory);
 
 		// general
 		expected_general.push_back(L"1.txt");
@@ -380,3 +387,112 @@ TEST_F(COfficeUtilsTest, other_win)
 	ASSERT_EQ(error_code, S_OK);
 	EXPECT_EQ(wstr, L"123 321");
 }
+
+TEST_F(COfficeUtilsTest, time_file)
+{
+	// creating file
+	std::wstring filename = L"time_file_test.txt";
+	std::wstring file_path = tempDirectory + wsep + filename;
+
+	std::wstring zip_filename =  L"time_file_test.zip";
+	std::wstring zip_path = tempDirectory + wsep + zip_filename;
+
+	std::wstring unzip_folder = tempDirectory + wsep + L"time_file_test";
+	std::wstring unzip_path = unzip_folder + wsep + filename;
+
+	// folder for unzip files
+	if (NSDirectory::Exists(unzip_folder))
+		NSDirectory::DeleteDirectory(unzip_folder);
+
+	NSDirectory::CreateDirectories(unzip_folder);
+
+	// create file to zip, then unzip it
+	if (NSFile::CFileBinary::Exists(file_path))
+		NSFile::CFileBinary::Remove(file_path);
+
+	NSFile::CFileBinary file;
+	file.CreateFileW(file_path);
+	file.WriteStringUTF8(L"some text");
+	file.CloseFile();
+
+	struct tm edit_time_before{};
+	bool result_get_time_before = NSFile::CFileBinary::GetTime(file_path, &edit_time_before);
+	ASSERT_EQ(result_get_time_before, true);
+
+	HRESULT error_code = utils.CompressFileOrDirectory(file_path, zip_path);
+	ASSERT_EQ(error_code, S_OK);
+
+	error_code = utils.ExtractToDirectory(zip_path, unzip_folder, NULL, false);
+	ASSERT_EQ(error_code, S_OK);
+
+	struct tm edit_time_after{};
+	bool result_get_time_after = NSFile::CFileBinary::GetTime(unzip_path, &edit_time_after);
+	ASSERT_EQ(result_get_time_after, true);
+
+	EXPECT_EQ(edit_time_before.tm_sec, edit_time_after.tm_sec);
+	EXPECT_EQ(edit_time_before.tm_min, edit_time_after.tm_min);
+	EXPECT_EQ(edit_time_before.tm_hour, edit_time_after.tm_hour);
+	EXPECT_EQ(edit_time_before.tm_mday, edit_time_after.tm_mday);
+	EXPECT_EQ(edit_time_before.tm_mon, edit_time_after.tm_mon);
+	EXPECT_EQ(edit_time_before.tm_year, edit_time_after.tm_year);
+}
+
+TEST_F(COfficeUtilsTest, time_folder)
+{
+	std::wstring file_folder = tempDirectory + wsep + L"time_file_test_folder";
+
+	// creating file
+	std::wstring filename = L"time_file_test.txt";
+	std::wstring file_path = file_folder + wsep + filename;
+
+	std::wstring zip_filename =  L"time_file_test.zip";
+	std::wstring zip_path = tempDirectory + wsep + zip_filename;
+
+	std::wstring unzip_folder = tempDirectory + wsep + L"time_file_test";
+	std::wstring unzip_path = unzip_folder + wsep + filename;
+
+	// folder for unzip files
+	if (NSDirectory::Exists(unzip_folder))
+		NSDirectory::DeleteDirectory(unzip_folder);
+
+	NSDirectory::CreateDirectories(unzip_folder);
+
+	// folder for zip files
+	if (NSDirectory::Exists(file_folder))
+		NSDirectory::DeleteDirectory(file_folder);
+
+	NSDirectory::CreateDirectories(file_folder);
+
+	// create file to zip, then unzip it
+	if (NSFile::CFileBinary::Exists(file_path))
+		NSFile::CFileBinary::Remove(file_path);
+
+	NSFile::CFileBinary file;
+	file.CreateFileW(file_path);
+	file.WriteStringUTF8(L"some text");
+	file.CloseFile();
+
+	struct tm edit_time_before{};
+	bool result_get_time_before = NSFile::CFileBinary::GetTime(file_path, &edit_time_before);
+	ASSERT_EQ(result_get_time_before, true);
+
+	HRESULT error_code = utils.CompressFileOrDirectory(file_folder, zip_path);
+	ASSERT_EQ(error_code, S_OK);
+
+	error_code = utils.ExtractToDirectory(zip_path, unzip_folder, NULL, false);
+	ASSERT_EQ(error_code, S_OK);
+
+	struct tm edit_time_after{};
+	bool result_get_time_after = NSFile::CFileBinary::GetTime(unzip_path, &edit_time_after);
+	ASSERT_EQ(result_get_time_after, true);
+
+	// the 2-second precision
+	EXPECT_LE(std::abs(edit_time_before.tm_sec - edit_time_after.tm_sec), 1);
+
+	EXPECT_EQ(edit_time_before.tm_min, edit_time_after.tm_min);
+	EXPECT_EQ(edit_time_before.tm_hour, edit_time_after.tm_hour);
+	EXPECT_EQ(edit_time_before.tm_mday, edit_time_after.tm_mday);
+	EXPECT_EQ(edit_time_before.tm_mon, edit_time_after.tm_mon);
+	EXPECT_EQ(edit_time_before.tm_year, edit_time_after.tm_year);
+}
+

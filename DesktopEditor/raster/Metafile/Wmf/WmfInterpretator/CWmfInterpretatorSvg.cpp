@@ -28,52 +28,51 @@ namespace MetaFile
 		m_pXmlWriter->WriteAttribute(L"xmlns", L"http://www.w3.org/2000/svg");
 		m_pXmlWriter->WriteAttribute(L"xmlns:xlink", L"http://www.w3.org/1999/xlink");
 
-		TRect *pBounds = m_pParser->GetDCBounds();
+		const TRectL& oBounds{m_pParser->GetDCBounds()};
 
-		m_oViewport.dLeft	= pBounds->nLeft;
-		m_oViewport.dTop	= pBounds->nTop;
-		m_oViewport.dRight	= pBounds->nRight;
-		m_oViewport.dBottom = pBounds->nBottom;
+		m_oViewport.dLeft   = std::min(oBounds.Left, oBounds.Right );
+		m_oViewport.dTop    = std::min(oBounds.Top,  oBounds.Bottom);
+		m_oViewport.dRight  = std::max(oBounds.Left, oBounds.Right );
+		m_oViewport.dBottom = std::max(oBounds.Top,  oBounds.Bottom);
 
 		UpdateSize();
 
+		double dXScale = 1., dYScale = 1.;
+
+		if (0 != m_oSizeWindow.X)
+			dXScale = m_oSizeWindow.X / m_oViewport.GetWidth();
+
+		if (0 != m_oSizeWindow.Y)
+			dYScale = m_oSizeWindow.Y / m_oViewport.GetHeight();
+
 		if (m_oViewport.GetWidth() != 0)
-			m_pXmlWriter->WriteAttribute(L"width", ConvertToWString(m_oViewport.GetWidth()));
+			m_pXmlWriter->WriteAttribute(L"width", ConvertToWString(m_oViewport.GetWidth() * dXScale));
 
 		if (m_oViewport.GetHeight() != 0)
-			m_pXmlWriter->WriteAttribute(L"height", ConvertToWString(m_oViewport.GetHeight()));
-
-		double dXScale = 1, dYScale = 1, dXTranslate = 0, dYTranslate = 0;
-
-		if (0 != m_oSizeWindow.x)
-		{
-			dXScale = m_oSizeWindow.x / m_oViewport.GetWidth();
-			dXTranslate = (m_oViewport.GetWidth()) / 2 * std::abs(dXScale - 1);
-
-			if (dXScale < 1)
-				dXTranslate = -dXTranslate;
-		}
-
-		if (0 != m_oSizeWindow.y)
-		{
-			dYScale = m_oSizeWindow.y / m_oViewport.GetHeight();
-			dYTranslate = (m_oViewport.GetHeight()) / 2 * std::abs(dYScale - 1);
-
-			if (dYScale < 1)
-				dYTranslate = -dYTranslate;
-		}
-
-		if (1 != dXScale || 1 != dYScale)
-			m_pXmlWriter->WriteAttribute(L"transform", L"matrix(" + std::to_wstring(dXScale) + L",0,0," + std::to_wstring(dYScale) + L',' + ConvertToWString(dXTranslate) + L',' + ConvertToWString(dYTranslate) + L')');
+			m_pXmlWriter->WriteAttribute(L"height", ConvertToWString(m_oViewport.GetHeight() * dYScale));
 
 		m_pXmlWriter->WriteNodeEnd(L"svg", true, false);
+
+		if (!Equals(1., dXScale) || !Equals(1., dYScale))
+		{
+			m_pXmlWriter->WriteNodeBegin(L"g", true);
+
+			m_pXmlWriter->WriteAttribute(L"transform", L"scale(" + ConvertToWString(dXScale) + L',' + ConvertToWString(dYScale) + L')');
+
+			m_pXmlWriter->WriteNodeEnd(L"g", true, false);
+		}
 	}
 
 	void CWmfInterpretatorSvg::HANDLE_META_EOF()
 	{
-		ResetClip();
+		CloseClip();
+
 		if (!m_wsDefs.empty())
 			m_pXmlWriter->WriteString(L"<defs>" + m_wsDefs + L"</defs>");
+
+		if (!Equals(m_oSizeWindow.X, m_oViewport.GetWidth()) || !Equals(m_oSizeWindow.Y, m_oViewport.GetHeight()))
+			m_pXmlWriter->WriteNodeEnd(L"g", false, false);
+
 		m_pXmlWriter->WriteNodeEnd(L"svg", false, false);
 	}
 
@@ -81,16 +80,16 @@ namespace MetaFile
 	{
 		TRectD oNewRect;
 
-		oNewRect.dLeft   = shLeft;
-		oNewRect.dTop    = shTop;
-		oNewRect.dRight  = shRight;
-		oNewRect.dBottom = shBottom;
+		oNewRect.Left   = shLeft;
+		oNewRect.Top    = shTop;
+		oNewRect.Right  = shRight;
+		oNewRect.Bottom = shBottom;
 
-		double dXRadius = std::fabs(oNewRect.dRight - oNewRect.dLeft) / 2;
-		double dYRadius = std::fabs(oNewRect.dBottom - oNewRect.dTop) / 2;
+		double dXRadius = std::fabs(oNewRect.Right - oNewRect.Left) / 2;
+		double dYRadius = std::fabs(oNewRect.Bottom - oNewRect.Top) / 2;
 
-		double dStartAngle = GetEllipseAngle(oNewRect.dLeft, oNewRect.dTop, oNewRect.dRight, oNewRect.dBottom, shXStartArc, shYStartArc) / 180. * M_PI;
-		double dEndAngle   = GetEllipseAngle(oNewRect.dLeft, oNewRect.dTop, oNewRect.dRight, oNewRect.dBottom, shXEndArc, shYEndArc) / 180. * M_PI;
+		double dStartAngle = GetEllipseAngle(oNewRect.Left, oNewRect.Top, oNewRect.Right, oNewRect.Bottom, shXStartArc, shYStartArc) / 180. * M_PI;
+		double dEndAngle   = GetEllipseAngle(oNewRect.Left, oNewRect.Top, oNewRect.Right, oNewRect.Bottom, shXEndArc, shYEndArc) / 180. * M_PI;
 
 		double dX1 = std::cos(dStartAngle) * dXRadius;
 		double dY1 = std::sin(dStartAngle) * dXRadius;
@@ -111,6 +110,7 @@ namespace MetaFile
 
 		AddStroke(arAttributes);
 		AddNoneFill(arAttributes);
+		AddShapeRendering(arAttributes);
 		AddTransform(arAttributes);
 		AddClip();
 
@@ -126,87 +126,44 @@ namespace MetaFile
 	{
 		TRectD oNewRect;
 
-		oNewRect.dLeft   = shLeft;
-		oNewRect.dTop    = shTop;
-		oNewRect.dRight  = shRight;
-		oNewRect.dBottom = shBottom;
+		oNewRect.Left   = shLeft;
+		oNewRect.Top    = shTop;
+		oNewRect.Right  = shRight;
+		oNewRect.Bottom = shBottom;
 
-		NodeAttributes arAttributes = {{L"cx", ConvertToWString((oNewRect.dLeft   + oNewRect.dRight)  / 2)},
-		                               {L"cy", ConvertToWString((oNewRect.dTop    + oNewRect.dBottom) / 2)},
-		                               {L"rx", ConvertToWString((oNewRect.dRight  - oNewRect.dLeft)   / 2)},
-		                               {L"ry", ConvertToWString((oNewRect.dBottom - oNewRect.dTop)    / 2)}};
+		NodeAttributes arAttributes = {{L"cx", ConvertToWString((oNewRect.Left   + oNewRect.Right)  / 2)},
+		                               {L"cy", ConvertToWString((oNewRect.Top    + oNewRect.Bottom) / 2)},
+		                               {L"rx", ConvertToWString((oNewRect.Right  - oNewRect.Left)   / 2)},
+		                               {L"ry", ConvertToWString((oNewRect.Bottom - oNewRect.Top)    / 2)}};
 		AddStroke(arAttributes);
 		AddFill(arAttributes);
+		AddShapeRendering(arAttributes);
 		AddTransform(arAttributes);
 		AddClip();
 
 		WriteNode(L"ellipse", arAttributes);
 	}
 
-	void CWmfInterpretatorSvg::HANDLE_META_EXTTEXTOUT(short shY, short shX, short shStringLength, unsigned short ushFwOptions, const TWmfRect &oRectangle, unsigned char *pString, short *pDx)
+	void CWmfInterpretatorSvg::HANDLE_META_EXTTEXTOUT(short shY, short shX, short shStringLength, unsigned short ushFwOptions, const TRectL &oRectangle, unsigned char *pString, short *pDx)
 	{
-		IFont* pFont = NULL;
+		const IFont* pFont = NULL;
 
 		if (NULL != m_pParser)
 			pFont = m_pParser->GetFont();
 
-		NSStringExt::CConverter::ESingleByteEncoding eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_DEFAULT;;
-		if (pFont)
+		const std::wstring wsText{ConvertToUnicode(pString, (long)shStringLength, (NULL != pFont) ? pFont->GetCharSet() : DEFAULT_CHARSET)};
+
+		TPointD oScale(1, 1);
+
+		if (NULL != m_pParser)
 		{
-			// Соответствие Charset -> Codepage: http://support.microsoft.com/kb/165478
-			// http://msdn.microsoft.com/en-us/library/cc194829.aspx
-			//  Charset Name       Charset Value(hex)  Codepage number
-			//  ------------------------------------------------------
-			//
-			//  DEFAULT_CHARSET           1 (x01)
-			//  SYMBOL_CHARSET            2 (x02)
-			//  OEM_CHARSET             255 (xFF)
-			//  ANSI_CHARSET              0 (x00)            1252
-			//  RUSSIAN_CHARSET         204 (xCC)            1251
-			//  EASTEUROPE_CHARSET      238 (xEE)            1250
-			//  GREEK_CHARSET           161 (xA1)            1253
-			//  TURKISH_CHARSET         162 (xA2)            1254
-			//  BALTIC_CHARSET          186 (xBA)            1257
-			//  HEBREW_CHARSET          177 (xB1)            1255
-			//  ARABIC _CHARSET         178 (xB2)            1256
-			//  SHIFTJIS_CHARSET        128 (x80)             932
-			//  HANGEUL_CHARSET         129 (x81)             949
-			//  GB2313_CHARSET          134 (x86)             936
-			//  CHINESEBIG5_CHARSET     136 (x88)             950
-			//  THAI_CHARSET            222 (xDE)             874
-			//  JOHAB_CHARSET	        130 (x82)            1361
-			//  VIETNAMESE_CHARSET      163 (xA3)            1258
-
-			switch (pFont->GetCharSet())
-			{
-			default:
-			case DEFAULT_CHARSET:       eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_DEFAULT; break;
-			case SYMBOL_CHARSET:        eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_DEFAULT; break;
-			case ANSI_CHARSET:          eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1252; break;
-			case RUSSIAN_CHARSET:       eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1251; break;
-			case EASTEUROPE_CHARSET:    eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1250; break;
-			case GREEK_CHARSET:         eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1253; break;
-			case TURKISH_CHARSET:       eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1254; break;
-			case BALTIC_CHARSET:        eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1257; break;
-			case HEBREW_CHARSET:        eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1255; break;
-			case ARABIC_CHARSET:        eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1256; break;
-			case SHIFTJIS_CHARSET:      eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP932; break;
-			case HANGEUL_CHARSET:       eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP949; break;
-			case 134/*GB2313_CHARSET*/: eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP936; break;
-			case CHINESEBIG5_CHARSET:   eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP950; break;
-			case THAI_CHARSET:          eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP874; break;
-			case JOHAB_CHARSET:         eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1361; break;
-			case VIETNAMESE_CHARSET:    eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1258; break;
-			}
+			oScale.X = m_pParser->IsWindowFlippedX() ? -1 : 1;
+			oScale.Y = m_pParser->IsWindowFlippedY() ? -1 : 1;
 		}
-
-		std::wstring wsText = NSStringExt::CConverter::GetUnicodeFromSingleByteString((const unsigned char*)pString, (long)shStringLength, eCharSet);
-
-		TPointD oScale((m_pParser->IsWindowFlippedX()) ? -1 : 1, (m_pParser->IsWindowFlippedY()) ? -1 : 1);
 
 		std::vector<double> arDx(0);
 
-		if (NULL != pDx)
+		if (NULL != pDx && shStringLength == wsText.length())
 			arDx = std::vector<double>(pDx, pDx + wsText.length());
 
 		WriteText(wsText, TPointD(shX, shY), oRectangle, oScale, arDx);
@@ -214,32 +171,33 @@ namespace MetaFile
 
 	void CWmfInterpretatorSvg::HANDLE_META_FILLREGION(unsigned short ushRegionIndex, unsigned short ushBrushIndex)
 	{
-		CWmfRegion *pRegion = dynamic_cast<CWmfRegion*>(m_pParser->GetRegion());
+		const CWmfRegion *pRegion = dynamic_cast<const CWmfRegion*>(m_pParser->GetRegion());
 
 		if (NULL == pRegion)
 			return;
 
 		std::wstring wsValue;
 
-		for (unsigned int unScanIndex = 0; unScanIndex < pRegion->ScanCount; ++unScanIndex)
+		for (unsigned int unScanIndex = 0; unScanIndex < pRegion->shScanCount; ++unScanIndex)
 		{
-			TWmfScanObject *pScanObject = &pRegion->aScans[unScanIndex];
+			TWmfScanObject *pScanObject = &pRegion->pScans[unScanIndex];
 
-			if (pScanObject->Count == 0) continue;
+			if (pScanObject->ushCount == 0) continue;
 
-			for (unsigned int unIndex = 0; unIndex < pScanObject->Count >> 1; ++unIndex)
+			for (unsigned int unIndex = 0; unIndex < pScanObject->ushCount >> 1; ++unIndex)
 			{
-				wsValue += L"M " + ConvertToWString(std::max((short)pScanObject->ScanLines[unIndex].Left, (short)pRegion->BoundingRectangle.Left)) + L',' +  ConvertToWString(std::max((short)pScanObject->Top, (short)pRegion->BoundingRectangle.Top)) + L' ' +
-				           ConvertToWString(std::min((short)pScanObject->ScanLines[unIndex].Right, (short)pRegion->BoundingRectangle.Right)) + L',' + ConvertToWString(std::max((short)pScanObject->Top, (short)pRegion->BoundingRectangle.Top)) + L' ' +
-				           ConvertToWString(std::min((short)pScanObject->ScanLines[unIndex].Right, (short)pRegion->BoundingRectangle.Right)) + L',' + ConvertToWString(std::min((short)pScanObject->Bottom, (short)pRegion->BoundingRectangle.Bottom)) + L' ' +
-				           ConvertToWString(std::max((short)pScanObject->ScanLines[unIndex].Left, (short)pRegion->BoundingRectangle.Left)) + L',' + ConvertToWString(std::min((short)pScanObject->Bottom, (short)pRegion->BoundingRectangle.Bottom)) + L' ' +
-				           ConvertToWString(std::max((short)pScanObject->ScanLines[unIndex].Left, (short)pRegion->BoundingRectangle.Left)) + L',' + ConvertToWString(std::max((short)pScanObject->Top, (short)pRegion->BoundingRectangle.Top)) + L' ';
+				wsValue += L"M " + ConvertToWString(std::max((short)pScanObject->pScanLines[unIndex].ushLeft, (short)pRegion->oBoundingRectangle.Left)) + L',' +  ConvertToWString(std::max((short)pScanObject->ushTop, (short)pRegion->oBoundingRectangle.Top)) + L' ' +
+				           ConvertToWString(std::min((short)pScanObject->pScanLines[unIndex].ushRight, (short)pRegion->oBoundingRectangle.Right)) + L',' + ConvertToWString(std::max((short)pScanObject->ushTop, (short)pRegion->oBoundingRectangle.Top)) + L' ' +
+				           ConvertToWString(std::min((short)pScanObject->pScanLines[unIndex].ushRight, (short)pRegion->oBoundingRectangle.Right)) + L',' + ConvertToWString(std::min((short)pScanObject->ushBottom, (short)pRegion->oBoundingRectangle.Bottom)) + L' ' +
+				           ConvertToWString(std::max((short)pScanObject->pScanLines[unIndex].ushLeft, (short)pRegion->oBoundingRectangle.Left)) + L',' + ConvertToWString(std::min((short)pScanObject->ushBottom, (short)pRegion->oBoundingRectangle.Bottom)) + L' ' +
+				           ConvertToWString(std::max((short)pScanObject->pScanLines[unIndex].ushLeft, (short)pRegion->oBoundingRectangle.Left)) + L',' + ConvertToWString(std::max((short)pScanObject->ushTop, (short)pRegion->oBoundingRectangle.Top)) + L' ';
 			}
 		}
 
 		NodeAttributes arAttributes = {{L"d", wsValue}};
 
 		AddFill(arAttributes);
+		AddShapeRendering(arAttributes);
 		AddTransform(arAttributes);
 		AddClip();
 
@@ -260,12 +218,13 @@ namespace MetaFile
 	{
 		TPointD oCurPos = GetCutPos();
 
-		NodeAttributes arAttributes = {{L"x1", ConvertToWString(oCurPos.x)},
-		                               {L"y1", ConvertToWString(oCurPos.y)},
+		NodeAttributes arAttributes = {{L"x1", ConvertToWString(oCurPos.X)},
+		                               {L"y1", ConvertToWString(oCurPos.Y)},
 		                               {L"x2", ConvertToWString(shX)},
 		                               {L"y2", ConvertToWString(shY)}};
 
 		AddStroke(arAttributes);
+		AddShapeRendering(arAttributes);
 		AddTransform(arAttributes);
 		AddClip();
 
@@ -281,12 +240,13 @@ namespace MetaFile
 	{
 		TRectD oNewRect;
 
-		NodeAttributes arAttributes = {{L"x",		ConvertToWString(shX)},
-		                               {L"y",		ConvertToWString(shY)},
-		                               {L"width",	ConvertToWString(shW)},
-		                               {L"height",	ConvertToWString(shH)}};
+		NodeAttributes arAttributes = {{L"x",      ConvertToWString(shX)},
+		                               {L"y",      ConvertToWString(shY)},
+		                               {L"width",  ConvertToWString(shW)},
+		                               {L"height", ConvertToWString(shH)}};
 
 		AddFill(arAttributes);
+		AddShapeRendering(arAttributes);
 		AddTransform(arAttributes);
 		AddClip();
 
@@ -311,97 +271,97 @@ namespace MetaFile
 
 		AddStroke(arAttributes);
 		AddFill(arAttributes);
+		AddShapeRendering(arAttributes);
 		AddTransform(arAttributes);
 		AddClip();
 
 		WriteNode(L"path", arAttributes);
 	}
 
-	void CWmfInterpretatorSvg::HANDLE_META_POLYLINE(const std::vector<TWmfPointS> &arPoints)
+	void CWmfInterpretatorSvg::HANDLE_META_POLYLINE(const std::vector<TPointS> &arPoints)
 	{
 		if (arPoints.empty())
 			return;
 
 		std::wstring wsValue;
 
-		for (const TWmfPointS& oPoint : arPoints)
-			wsValue += ConvertToWString(oPoint.x) + L',' + ConvertToWString(oPoint.y) + L' ';
+		for (const TPointS& oPoint : arPoints)
+			wsValue += ConvertToWString(oPoint.X) + L',' + ConvertToWString(oPoint.Y) + L' ';
 
 		NodeAttributes arAttributes = {{L"points", wsValue}};
 
 		AddStroke(arAttributes);
 		AddNoneFill(arAttributes);
+		AddShapeRendering(arAttributes);
 		AddTransform(arAttributes);
 		AddClip();
 
 		WriteNode(L"polyline", arAttributes);
 	}
 
-	void CWmfInterpretatorSvg::HANDLE_META_POLYGON(const std::vector<TWmfPointS> &arPoints)
+	void CWmfInterpretatorSvg::HANDLE_META_POLYGON(const std::vector<TPointS> &arPoints)
 	{
 		if (arPoints.empty())
 			return;
 
 		std::wstring wsValue;
 
-		for (const TWmfPointS& oPoint : arPoints)
-			wsValue += ConvertToWString(oPoint.x) + L',' + ConvertToWString(oPoint.y) + L' ';
+		for (const TPointS& oPoint : arPoints)
+			wsValue += ConvertToWString(oPoint.X) + L',' + ConvertToWString(oPoint.Y) + L' ';
 
 		NodeAttributes arAttributes = {{L"points", wsValue}};
 
 		AddStroke(arAttributes);
 		AddFill(arAttributes);
+		AddShapeRendering(arAttributes);
 		AddTransform(arAttributes);
 		AddClip();
 
 		WriteNode(L"polygon", arAttributes);
 	}
 
-	void CWmfInterpretatorSvg::HANDLE_META_POLYPOLYGON(const std::vector<std::vector<TWmfPointS>> &arPolygons)
+	void CWmfInterpretatorSvg::HANDLE_META_POLYPOLYGON(const std::vector<std::vector<TPointS>> &arPolygons)
 	{
 		std::wstring wsValue;
 
-		for (const std::vector<TWmfPointS>& oPolygon : arPolygons)
+		for (const std::vector<TPointS>& oPolygon : arPolygons)
 		{
 			if (oPolygon.size() < 2)
 				continue;
 
-			wsValue += L"M " + ConvertToWString(oPolygon[0].x) + L',' +  ConvertToWString(oPolygon[0].y) + L' ';
+			wsValue += L"M " + ConvertToWString(oPolygon[0].X) + L',' +  ConvertToWString(oPolygon[0].Y) + L' ';
 
-			for (const TWmfPointS& oPoint : oPolygon)
-				wsValue += ConvertToWString(oPoint.x) + L',' + ConvertToWString(oPoint.y) + L' ';
+			for (const TPointS& oPoint : oPolygon)
+				wsValue += ConvertToWString(oPoint.X) + L',' + ConvertToWString(oPoint.Y) + L' ';
 
-			wsValue += ConvertToWString(oPolygon[0].x) + L',' +  ConvertToWString(oPolygon[0].y) + L' ';
+			wsValue += ConvertToWString(oPolygon[0].X) + L',' +  ConvertToWString(oPolygon[0].Y) + L' ';
 		}
 
 		NodeAttributes arAttributes = {{L"d", wsValue}};
 
 		AddStroke(arAttributes);
 		AddFill(arAttributes);
+		AddShapeRendering(arAttributes);
 		AddTransform(arAttributes);
 		AddClip();
 
-		arAttributes.push_back({L"fill-rule", L"evenodd"});
+		arAttributes.Add(L"fill-rule", L"evenodd");
 
 		WriteNode(L"path", arAttributes);
 	}
 
 	void CWmfInterpretatorSvg::HANDLE_META_RECTANGLE(short shB, short shR, short shT, short shL)
 	{
-		TRectD oNewRect;
+		TRectD oNewRect = TranslateRect({shL, shT, shR, shB});
 
-		oNewRect.dLeft   = shL;
-		oNewRect.dTop    = shT;
-		oNewRect.dRight  = shR;
-		oNewRect.dBottom = shB;
-
-		NodeAttributes arAttributes = {{L"x",		ConvertToWString(oNewRect.dLeft)},
-		                               {L"y",		ConvertToWString(oNewRect.dTop)},
-		                               {L"width",	ConvertToWString(oNewRect.dRight - oNewRect.dLeft)},
-		                               {L"height",	ConvertToWString(oNewRect.dBottom - oNewRect.dTop)}};
+		NodeAttributes arAttributes = {{L"x",      ConvertToWString(oNewRect.Left)},
+		                               {L"y",      ConvertToWString(oNewRect.Top)},
+		                               {L"width",  ConvertToWString(oNewRect.Right - oNewRect.Left)},
+		                               {L"height", ConvertToWString(oNewRect.Bottom - oNewRect.Top)}};
 
 		AddStroke(arAttributes);
 		AddFill(arAttributes);
+		AddShapeRendering(arAttributes);
 		AddTransform(arAttributes);
 		AddClip();
 
@@ -410,36 +370,32 @@ namespace MetaFile
 
 	void CWmfInterpretatorSvg::HANDLE_META_ROUNDRECT(short shH, short shW, short shB, short shR, short shT, short shL)
 	{
-		TRectD oNewRect;
+		TRectD oNewRect = TranslateRect({shL, shT, shR, shB});
 
-		oNewRect.dLeft   = shL;
-		oNewRect.dTop    = shT;
-		oNewRect.dRight  = shR;
-		oNewRect.dBottom = shB;
-
-		NodeAttributes arAttributes = {{L"x",		ConvertToWString(oNewRect.dLeft)},
-		                               {L"y",		ConvertToWString(oNewRect.dTop)},
-		                               {L"width",	ConvertToWString(oNewRect.dRight - oNewRect.dLeft)},
-		                               {L"height",	ConvertToWString(oNewRect.dBottom - oNewRect.dTop)},
-		                               {L"rx",		ConvertToWString((double)shW / 2.)},
-		                               {L"ry",		ConvertToWString((double)shH / 2.)}};
+		NodeAttributes arAttributes = {{L"x",      ConvertToWString(oNewRect.Left)},
+		                               {L"y",      ConvertToWString(oNewRect.Top)},
+		                               {L"width",  ConvertToWString(oNewRect.Right - oNewRect.Left)},
+		                               {L"height", ConvertToWString(oNewRect.Bottom - oNewRect.Top)},
+		                               {L"rx",     ConvertToWString((double)shW / 2.)},
+		                               {L"ry",     ConvertToWString((double)shH / 2.)}};
 
 		AddStroke(arAttributes);
 		AddFill(arAttributes);
+		AddShapeRendering(arAttributes);
 		AddTransform(arAttributes);
 		AddClip();
 
 		WriteNode(L"rect", arAttributes);
 	}
 
-	void CWmfInterpretatorSvg::HANDLE_META_SETPIXEL(const TWmfColor &oColor, short shY, short shX)
+	void CWmfInterpretatorSvg::HANDLE_META_SETPIXEL(const TRGBA &oColor, short shY, short shX)
 	{
 		//TODO:: реализовать
 	}
 
 	void CWmfInterpretatorSvg::HANDLE_META_TEXTOUT(short shStringLength, unsigned char *pString, short shX, short shY)
 	{
-		IFont* pFont = NULL;
+		const IFont* pFont = NULL;
 
 		if (NULL != m_pParser)
 			pFont = m_pParser->GetFont();
@@ -501,79 +457,22 @@ namespace MetaFile
 
 	void CWmfInterpretatorSvg::HANDLE_META_EXCLUDECLIPRECT(short shLeft, short shTop, short shRight, short shBottom)
 	{
-		CInterpretatorSvgBase::ResetClip();
+		m_bUpdatedClip = false;
 	}
 
 	void CWmfInterpretatorSvg::HANDLE_META_INTERSECTCLIPRECT(short shLeft, short shTop, short shRight, short shBottom)
 	{
-		CInterpretatorSvgBase::ResetClip();
+		m_bUpdatedClip = false;
 	}
 
 	void CWmfInterpretatorSvg::HANDLE_META_RESTOREDC()
 	{
-		CInterpretatorSvgBase::ResetClip();
+		m_bUpdatedClip = false;
 	}
 
-	void CWmfInterpretatorSvg::DrawBitmap(double dX, double dY, double dW, double dH, BYTE* pBuffer, unsigned int unWidth, unsigned int unHeight)
+	void CWmfInterpretatorSvg::DrawBitmap(double dX, double dY, double dW, double dH, BYTE *pBuffer, unsigned int unWidth, unsigned int unHeight, unsigned int unBlendMode)
 	{
-		if (NULL == pBuffer || 0 == dW || 0 == dH || 0 == unWidth || 0 == unHeight)
-			return;
-
-		if (1 == unWidth && 1 == unHeight)
-		{
-			NodeAttributes arAttributes = {{L"x",      ConvertToWString(dX)},
-			                               {L"y",      ConvertToWString(dY)},
-			                               {L"width",  ConvertToWString(dW)},
-			                               {L"height", ConvertToWString(dH)},
-			                               {L"fill", L"rgb(" + std::to_wstring(pBuffer[2]) + L',' + std::to_wstring(pBuffer[1]) + L',' + std::to_wstring(pBuffer[0]) + L',' + std::to_wstring(pBuffer[3]) + L')'}};
-
-			AddTransform(arAttributes);
-
-			WriteNode(L"rect", arAttributes);
-
-			return;
-		}
-
-		CBgraFrame  oFrame;
-
-		oFrame.put_Data(pBuffer);
-		oFrame.put_Width(unWidth);
-		oFrame.put_Height(unHeight);
-
-		BYTE* pNewBuffer = NULL;
-		int nNewSize = 0;
-
-		oFrame.Encode(pNewBuffer, nNewSize, 4);
-		oFrame.put_Data(NULL);
-
-		if (0 < nNewSize)
-		{
-			int nImageSize = NSBase64::Base64EncodeGetRequiredLength(nNewSize);
-			unsigned char* ucValue = new unsigned char[nImageSize];
-
-			if (NULL == ucValue)
-				return;
-
-			NSBase64::Base64Encode(pNewBuffer, nNewSize, ucValue, &nImageSize);
-			std::wstring wsValue(ucValue, ucValue + nImageSize);
-
-			RELEASEARRAYOBJECTS(ucValue);
-
-			NodeAttributes arAttributes = {{L"x",      ConvertToWString(dX)},
-			                               {L"y",      ConvertToWString(dY)},
-			                               {L"width",  ConvertToWString(dW)},
-			                               {L"height", ConvertToWString(dH)},
-			                               {L"preserveAspectRatio", L"xMinYMin slice"},
-			                               {L"xlink:href", L"data:image/png;base64," + wsValue}};
-
-			AddTransform(arAttributes);
-			AddClip();
-
-			WriteNode(L"image", arAttributes);
-		}
-
-		if (NULL != pNewBuffer)
-			delete [] pNewBuffer;
+		CInterpretatorSvgBase::DrawBitmap(dX, dY, dW, dH, pBuffer, unWidth, unHeight, unBlendMode);
 	}
 
 	void CWmfInterpretatorSvg::ResetClip()

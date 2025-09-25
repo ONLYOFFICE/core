@@ -101,6 +101,7 @@ public:
 //-----------------------------------------------------------------------
 	ods_table_state_ptr & current_table() { return table_context_.state();}
 //-----------------------------------------------------------------------
+	virtual bool is_child_text_context();
 
 	virtual odf_drawing_context		* drawing_context();
 	virtual odf_text_context		* text_context();
@@ -129,7 +130,7 @@ public:
 	void end_pivot_table();
 
 	void start_conditional_formats();
-	void end_conditional_formats(){}
+	void end_conditional_formats();
 
 	void start_table_view(int view_id);
 	void end_table_view();
@@ -139,7 +140,9 @@ private:
 	ods_table_context table_context_;	
 	office_spreadsheet* root_spreadsheet_;
 	bool repeat_at_lasts_ = true;
-	bool header_row_ = false;
+	
+	bool in_header_row_ = false;
+	bool in_rows_ = false;
 };
 
 

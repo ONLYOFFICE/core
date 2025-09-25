@@ -45,8 +45,8 @@ namespace DocFileFormat
 			short cch = reader->ReadByte();
 		
 			unsigned char *chars = reader->ReadBytes(cch, true);
-			FormatUtils::GetSTLCollectionFromBytes<std::wstring>( &(newObject->m_UserInitials), chars,  cch , ENCODING_WINDOWS_1250);
-			
+			FormatUtils::GetWStringFromBytes(newObject->m_UserInitials, chars, cch , ENCODING_WINDOWS_1250);
+
 			newObject->m_AuthorIndex = reader->ReadUInt16();
 			newObject->m_BookmarkId = reader->ReadInt16();
 			
@@ -59,19 +59,17 @@ namespace DocFileFormat
 		else
 		{
 			short cch = reader->ReadInt16(); 
-
-
 			unsigned char *chars = reader->ReadBytes(18, true);
 
-			FormatUtils::GetSTLCollectionFromBytes<std::wstring>( &(newObject->m_UserInitials), chars, ( cch * 2 ), ENCODING_UTF16);
-			
+			newObject->m_UserInitials = NSFile::CUtf8Converter::GetWStringFromUTF16((unsigned short*)(chars), cch);
+			RELEASEARRAYOBJECTS(chars);
+
 			newObject->m_AuthorIndex = reader->ReadUInt16();
 
 			//skip 4 bytes
 			unsigned int skip = reader->ReadUInt32();
 
 			newObject->m_BookmarkId = reader->ReadInt32(); //-1 - comment is on a length zero text range in the Main Document
-			RELEASEARRAYOBJECTS(chars);
 		}
 
 

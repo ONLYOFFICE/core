@@ -55,12 +55,29 @@ namespace PPTX
 		}
 		unsigned char AlbumLayout::GetBYTECode() const
 		{
-			//not using yet
+			if (L"1pic" == m_strValue)			return 0;
+			if (L"1picTitle" == m_strValue)		return 1;
+			if (L"2pic" == m_strValue)			return 2;
+			if (L"2picTitle" == m_strValue)		return 3;
+			if (L"4pic" == m_strValue)			return 4;
+			if (L"4picTitle" == m_strValue)		return 5;
+			if (L"fitToSlide" == m_strValue)	return 6;
+
 			return 0;
 		}
 		void AlbumLayout::SetBYTECode(const unsigned char& src)
 		{
-			//not using yet
+			switch (src)
+			{
+			case 0:		m_strValue = L"1pic";			break;
+			case 1:		m_strValue = L"1picTitle";		break;
+			case 2:		m_strValue = L"2pic";			break;
+			case 3:		m_strValue = L"2picTitle";		break;
+			case 4:		m_strValue = L"4pic";			break;
+			case 5:		m_strValue = L"4picTitle";		break;
+			case 6:		m_strValue = L"fitToSlide";		break;
+			default:	m_strValue = L"1pic";
+			}
 		}
 	} // namespace Limit
 } // namespace PPTX

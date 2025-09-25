@@ -68,6 +68,11 @@ const bool COLUMNS::loadContent(BinProcessor& proc)
 	}
 	int count = (global_info_->Version == 0x0200) ? proc.repeated<ColWidth>(0, 255) : proc.repeated<ColInfo>(0, 255);
 
+	if (count < 1)
+	{//version 0x0400 ???? ColWidth 
+		count = (global_info_->Version == 0x0200) ? proc.repeated<ColInfo>(0, 255) : proc.repeated<ColWidth>(0, 255);
+	}
+
 	int last_add = 0;
 
 	for (std::list<XLS::BaseObjectPtr>::iterator it = elements_.begin(); it != elements_.end(); ++it)
@@ -87,7 +92,25 @@ const bool COLUMNS::loadContent(BinProcessor& proc)
 
 	return def_ok || (count > 0);
 }
-
+const bool COLUMNS::saveContent(BinProcessor& proc)
+{
+    if(m_DefColWidth != nullptr)
+        proc.mandatory(*m_DefColWidth);
+    else
+        proc.mandatory<DefColWidth>();
+	/*if(global_info_ && global_info_->sheets_info.size() > global_info_->current_sheet)
+    {
+        for(auto i:global_info_->sheets_info[global_info_->current_sheet - 1].customColumnsWidth)
+        {
+            ColInfo column_info;
+            column_info.colFirst = i.first;
+            column_info.colLast = i.first;
+            column_info.coldx = i.second * 256;
+            proc.mandatory(column_info);
+        }
+	}*/
+    return true;
+}
 int COLUMNS::serialize(std::wostream & stream)
 {
 	if (elements_.size() < 1) return 0;

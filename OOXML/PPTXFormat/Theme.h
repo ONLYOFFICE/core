@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef PPTX_THEME_FILE_INCLUDE_H_
-#define PPTX_THEME_FILE_INCLUDE_H_
 
 #include "FileContainer.h"
 #include "WrapperFile.h"
@@ -58,6 +56,7 @@ namespace PPTX
 		Theme(OOX::Document *pMain, const std::string &contentTheme);
 		Theme(OOX::Document *pMain, const OOX::CPath& filename);
 		Theme(OOX::Document *pMain, const OOX::CPath& filename, FileMap& map);
+		virtual ~Theme();
 
 		void read(const std::string &contentTheme, FileMap& map);
 		virtual void read(const OOX::CPath& filename, FileMap& map);
@@ -107,5 +106,3 @@ namespace PPTX
 		Logic::ClrMap const* m_map;
 	};
 } // namespace PPTX
-
-#endif // PPTX_THEME_FILE_INCLUDE_H_

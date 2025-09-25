@@ -164,12 +164,12 @@ namespace PPTX
 			std::wstring strName;
 			if (XMLWRITER_DOC_TYPE_WORDART == pWriter->m_lDocType)
 			{
-				sAttrNamespace = _T("w14:");
-				strName = _T("w14:gradFill");
+				sAttrNamespace = L"w14:";
+				strName = L"w14:gradFill";
 			}
 			else
 			{
-				strName = m_namespace.empty() ? _T("gradFill") : (m_namespace + _T(":gradFill"));
+				strName = m_namespace.empty() ? L"gradFill" : (m_namespace + L":gradFill");
 			}
 
 			pWriter->StartNode(strName);
@@ -180,9 +180,9 @@ namespace PPTX
 			pWriter->EndAttributes();
 
 			if (XMLWRITER_DOC_TYPE_WORDART == pWriter->m_lDocType)
-				pWriter->WriteArray(_T("w14:gsLst"), GsLst);
+				pWriter->WriteArray(L"w14:gsLst", GsLst);
 			else
-				pWriter->WriteArray(_T("a:gsLst"), GsLst);
+				pWriter->WriteArray(L"a:gsLst", GsLst);
 			pWriter->Write(path);
 			pWriter->Write(lin);
 			pWriter->Write(tileRect);

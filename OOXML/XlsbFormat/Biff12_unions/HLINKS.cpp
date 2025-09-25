@@ -93,7 +93,7 @@ namespace XLSB
             count--;
         }
 
-        return count > 0;
+        return m_arHlinks.size() > 0;
     }
 
 	const bool HLINKS::saveContent(BinProcessor& proc)

@@ -99,6 +99,11 @@ namespace PPTX
 			nullable_bool						m_oSizeWithCells;
 
 			nullable_string						m_sAlternateContenteXml;
+		private:
+			bool ReadVsdxBin(NSBinPptxRW::CBinaryFileReader* pReader, const std::wstring& sDstEmbedded, BYTE* pData, long length);
+			bool ReadXlsxBin(NSBinPptxRW::CBinaryFileReader* pReader, const std::wstring& sDstEmbedded, BYTE* pData, long length);
+			bool ReadDocxBin(NSBinPptxRW::CBinaryFileReader* pReader, const std::wstring& sDstEmbedded, BYTE* pData, long length);			
+			bool ReadOoxmlZip(NSBinPptxRW::CBinaryFileReader* pReader, const std::wstring& sDstEmbedded, BYTE* pData, long length);
 		};
 
 		class Pic : public WrapperWritingElement

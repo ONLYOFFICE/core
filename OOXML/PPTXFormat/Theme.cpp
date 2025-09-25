@@ -87,6 +87,9 @@ namespace PPTX
 			docx->m_pTheme = this;
 		}
 	}
+	Theme::~Theme()
+	{
+	}
 	void Theme::read(const std::string &contentTheme, FileMap& map)
 	{
 		isThemeOverride = false;
@@ -111,6 +114,8 @@ namespace PPTX
 	}
 	void Theme::read(XmlUtils::CXmlNode &oNode, FileMap& map)
 	{
+		extraClrSchemeLst.clear();
+
 		std::wstring strNodeName = XmlUtils::GetNameNoNS(oNode.GetName());
 		if (_T("themeOverride") == strNodeName)
 		{
@@ -143,7 +148,6 @@ namespace PPTX
 				txDef->SetParentFilePointer(this);
 		}
 
-		extraClrSchemeLst.clear();
 		XmlUtils::CXmlNode oNodeList;
 		if (oNode.GetNode(_T("a:extraClrSchemeLst"), oNodeList))
 		{

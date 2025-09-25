@@ -36,6 +36,7 @@
 #include "../../DataTypes/noteclass.h"
 
 #include <boost/unordered_map.hpp>
+#include <unordered_map>
 #include <boost/shared_ptr.hpp>
 #include <list>
 
@@ -66,6 +67,7 @@ namespace cpdoccore {
 		class style_columns;
 		class form_element;
 		class text_linenumbering_configuration;
+		class text_list_style;
 
 		namespace text
 		{
@@ -803,6 +805,7 @@ public:
 	std::wstring  dump_settings_document();
 	std::wstring  dump_settings_app();
 	std::wstring  dump_settings_core();
+	std::wstring  dump_settings_custom();
 
  	bool next_dump_page_properties_;
 	bool next_dump_section_;
@@ -882,7 +885,7 @@ public:
 	void last_dump_page_properties			(bool val);
 	bool is_last_dump_page_properties		();
 
-    void set_master_page_name(const std::wstring & MasterPageName);
+    bool set_master_page_name(const std::wstring & MasterPageName);
     const std::wstring & get_master_page_name() const;
 
     void start_text_list_style	(const std::wstring & StyleName);
@@ -895,7 +898,11 @@ public:
     void end_list				();
     void start_list_item		(bool restart = false);
     void end_list_item	();
-    
+
+	size_t get_list_style_level() { return list_style_stack_.size(); }
+	size_t get_list_style_occurances(const std::wstring& styleName) { return list_styles_occurances_[styleName]; }
+	const std::vector<std::wstring>& get_list_style_stack() const { return list_style_stack_; }
+
 	void serialize_list_properties(std::wostream & strm);
 	void serialize_paragraph_style(std::wostream & strm, const std::wstring & ParentId, bool in_styles = false);
    
@@ -977,6 +984,9 @@ public:
 	void add_alphabetical_index_text (odf_reader::office_element_ptr & elem);
 
 	void set_process_headers_footers(bool Val)				{ process_headers_footers_ = Val; }
+
+	void set_next_master_page_name(_CP_OPT(std::wstring) masterPageName) { next_master_page_name_ = masterPageName; }
+	_CP_OPT(std::wstring) get_next_master_page_name() { return next_master_page_name_; }
    
 	headers_footers			& get_headers_footers()			{ return headers_footers_; }
 	header_footer_context	& get_header_footer_context()	{ return header_footer_context_; }
@@ -992,7 +1002,13 @@ public:
 
 	void		add_jsaProject(const std::string &content);
 
+    void set_implicit_end( bool _flag );
+
+    bool get_implicit_end() const;
+
 private:
+
+    bool flag_implicit_end = false;
 
 	struct _context_state
 	{
@@ -1085,6 +1101,11 @@ private:
 	std::map<std::wstring, std::vector<odf_reader::office_element_ptr>> mapAlphabeticals;
 
 	std::vector<std::wstring>											arBibliography;
+
+	std::vector<_CP_PTR(odf_reader::text_list_style)>					restarted_list_styles;
+	std::unordered_map<std::wstring, size_t>							list_styles_occurances_;
+
+	_CP_OPT(std::wstring) next_master_page_name_;
 };
 
 }

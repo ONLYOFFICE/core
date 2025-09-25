@@ -143,6 +143,41 @@ namespace DocFileFormat
 		return result;
 	}
 
+	std::vector<std::pair<int, int>> DocumentMapping::get_subsequence( int cpStart, int cpEnd, int fcStars, int fcEnd )
+	{
+		std::vector<std::pair<int, int>> outptu;
+
+		int currentFc      = fcStars;
+		int currentCp      = cpStart;
+		int oldElem        = fcStars;
+		int currentStart   = fcStars;
+		int currentStartcp = cpStart;
+
+		while ( cpEnd > currentCp)
+		{
+			currentCp ++;
+			currentFc = m_document->FindFileCharPos(currentCp);
+			if (currentFc < oldElem)
+			{
+				currentStart = currentFc;
+				outptu.emplace_back(currentStartcp, currentCp - 1);
+				currentStartcp = currentCp;
+			}
+			/*else if (currentFc > oldElem)
+			{
+			}
+			else
+			{
+				// -1 //че-нить в лог написать
+			}*/
+
+			oldElem = currentFc;
+		}
+		outptu.emplace_back(currentStartcp, currentCp);
+
+		return outptu;
+	}
+
 	// Writes a Paragraph that starts at the given cp and 
 	// ends at the next paragraph end mark or section end mark
 
@@ -178,13 +213,49 @@ namespace DocFileFormat
 				bool sectionEnd = isSectionEnd(cpParaEnd);
 				cpParaEnd++;
 				
-				return writeParagraph(cp, cpParaEnd, sectionEnd);
+				return writeParagraph(cp, cpParaEnd, sectionEnd, false, START_END_PARAGRAPH);
 			}
 			else
 			{
 				cpParaEnd++;
-				
-                return writeParagraph(cp, (std::min)(cpEnd, cpParaEnd), false);
+
+				int inpCpEnd = ( std::min )( cpEnd, cpParaEnd );
+				int	fc		 = m_document->FindFileCharPos( cp );
+				int	fcEnd	 = m_document->FindFileCharPos( inpCpEnd );
+
+				if ( fc < 0 || fcEnd < 0 || fc == fcEnd )
+					return -1;
+
+				std::vector<std::pair<int, int>> cpStartEnd = get_subsequence( cp, inpCpEnd, fc, fcEnd );
+				if (cpStartEnd.empty())
+				{
+					return -1;
+				} 
+				if ( cpStartEnd.size() == 1 )
+				{
+					return writeParagraph(cpStartEnd.front().first, cpStartEnd.front().second, false, false, START_END_PARAGRAPH);
+				}
+
+				int retCp = cpParaEnd;
+				for (auto elem : cpStartEnd)
+				{
+					int curCpStart = elem.first;
+					int curCpEnd  = elem.second;
+
+					if (elem == cpStartEnd.front())
+					{
+						retCp = writeParagraph(curCpStart, curCpEnd, false, false, START_PARAGRAPH);
+					}
+					else if (elem == cpStartEnd.back())
+					{
+						retCp = writeParagraph(curCpStart, curCpEnd, false, false, END_PARAGRAPH);
+					}
+					else
+					{
+						retCp = writeParagraph(curCpStart, curCpEnd, false, false, NOSTART_NOEND_PARAGRAPH);
+					}
+				}
+				return retCp;
 			}
 		}
 
@@ -194,28 +265,20 @@ namespace DocFileFormat
 	// Writes a Paragraph that starts at the given cpStart and 
 	// ends at the given cpEnd
 	
-	int DocumentMapping::writeParagraph (int initialCp, int cpEnd, bool sectionEnd, bool lastBad)
+	int DocumentMapping::writeParagraph( int initialCp, int cpEnd, bool sectionEnd, bool lastBad, int paragraphState )
 	{
 		int		cp							=	initialCp;
 		int		fc							=	m_document->FindFileCharPos(cp); 
 		int		fcEnd						=	m_document->FindFileCharPos(cpEnd);
 
-		if (fc < 0 || fcEnd < 0 || fc == fcEnd) 
-			return -1;
-		
 		ParagraphPropertyExceptions* papx	=	findValidPapx(fc);
 
 		// get all CHPX between these boundaries to determine the count of runs
-		
+
 		std::vector<CharacterPropertyExceptions*>* chpxs = m_document->GetCharacterPropertyExceptions(fc, fcEnd);
 		std::vector<int>* chpxFcs = m_document->GetFileCharacterPositions(fc, fcEnd);
 
 		CharacterPropertyExceptions* paraEndChpx = NULL;
-
-		if (chpxFcs)
-		{
-			chpxFcs->push_back(fcEnd);
-		}
 
 		if (chpxs)
 		{
@@ -224,7 +287,8 @@ namespace DocFileFormat
 		}
 
 		// start paragraph
-		
+		if ( paragraphState & START_PARAGRAPH )
+		{
         m_pXmlWriter->WriteNodeBegin(L"w:p", true);
 
 		if (false == _paraId.empty())
@@ -232,6 +296,8 @@ namespace DocFileFormat
 			m_pXmlWriter->WriteAttribute(L"w14:paraId", _paraId);
 		}
 		writeParagraphRsid(papx);
+		}
+
 
 // ----------- check for section properties
 		bool isBidi = false;
@@ -247,8 +313,8 @@ namespace DocFileFormat
 		{
 			// this is the last paragraph of this section
 			// write properties with section properties
-			
-			if (papx)
+
+			if ( papx && ( paragraphState & START_PARAGRAPH ) )
 			{
 				ParagraphPropertiesMapping oMapping(m_pXmlWriter, m_context, m_document, paraEndChpx, isBidi, findValidSepx(cpEnd), _sectionNr);
 				papx->Convert(&oMapping);
@@ -261,8 +327,8 @@ namespace DocFileFormat
 		else
 		{
 			// write properties
-			
-			if (papx)
+
+			if ( papx && ( paragraphState & START_PARAGRAPH ) )
 			{
 				ParagraphPropertiesMapping oMapping(m_pXmlWriter, m_context, m_document, paraEndChpx, isBidi);
 				papx->Convert(&oMapping);
@@ -278,7 +344,7 @@ namespace DocFileFormat
 			{
 				//get the FC range for this run
 
-				int fcChpxStart	=	chpxFcs ? chpxFcs->at(i) : fc;
+				int fcChpxStart	=	((chpxFcs) && (i < chpxFcs->size())) ? chpxFcs->at(i) : fc;
 				int fcChpxEnd	=	fcEnd;
 				
 				if ((chpxFcs) && ( i < chpxFcs->size() - 1))
@@ -372,18 +438,18 @@ namespace DocFileFormat
 			}
 
 			//end paragraph
-            m_pXmlWriter->WriteNodeEnd(L"w:p");
+			if ( paragraphState & END_PARAGRAPH ) m_pXmlWriter->WriteNodeEnd( L"w:p" );
 		}
 		else
 		{
 			//end paragraph
-            m_pXmlWriter->WriteNodeEnd(L"w:p");
+			if ( paragraphState & END_PARAGRAPH ) m_pXmlWriter->WriteNodeEnd( L"w:p" );
 		}
 
 		RELEASEOBJECT(chpxFcs);
 		RELEASEOBJECT(chpxs);
 		
-		return cpEnd++;
+		return cpEnd;
 
 		return (std::max)(cp, cpEnd); //ralph_scovile.doc
 	}
@@ -668,7 +734,7 @@ namespace DocFileFormat
 				_skipRuns = 5; //with separator
 			}
 		}
-		else if ( bEMBED ||	(bLINK && !bHYPERLINK)|| bQUOTE)						
+		else if ( bEMBED ||	(bLINK && !bHYPERLINK)/*|| bQUOTE*/)						
 		{
 			int cpPic		=	searchNextTextMark(m_document->Text, cpFieldStart,	TextMark::Picture);
 			int cpFieldSep	=	searchNextTextMark(m_document->Text, cpFieldStart,	TextMark::FieldSeparator);
@@ -1441,7 +1507,7 @@ namespace DocFileFormat
 					case sprmPFInnerTableCell:
 					case sprmPFInnerTtp:
 					{
-						fEndNestingLevel = ( iter->Arguments[0] == 1 && (nestingLevel == iTap_current)) ? (true) : (false);
+						fEndNestingLevel = ( iter->Arguments[0] == 1 ) ? (true) : (false);
 					}break;
 
 					case sprmOldPFInTable:
@@ -1453,6 +1519,8 @@ namespace DocFileFormat
 						break;
 				}
 			}
+			fEndNestingLevel == (nestingLevel == iTap_current) ? fEndNestingLevel : false;
+			
 			if (nestingLevel == iTap_current)
 			{ 
 				bool bPresent = false; //118854.doc
@@ -1485,7 +1553,7 @@ namespace DocFileFormat
 					}
 				}
 			}
-			if ((nestingLevel != iTap_current || fEndNestingLevel) && !mapBoundaries.empty())
+			if ((nestingLevel != iTap_current && fEndNestingLevel) && !mapBoundaries.empty())
 				break;
 	//get the next papx
 			papx = findValidPapx( fcRowEnd );

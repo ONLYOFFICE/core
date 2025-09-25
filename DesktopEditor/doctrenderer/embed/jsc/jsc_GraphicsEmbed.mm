@@ -108,6 +108,8 @@
 -(JSValue*) DrawPath : (JSValue*)path;
 -(JSValue*) CoordTransformOffset : (JSValue*)tx : (JSValue*)ty;
 -(JSValue*) GetTransform;
+-(JSValue*) CreateLayer : (JSValue*)opacity;
+-(JSValue*) BlendLayer;
 @end
 
 @interface CJSCGraphicsEmbed : NSObject<IJSCGraphicsEmbed, JSEmbedObjectProtocol>
@@ -223,6 +225,8 @@ FUNCTION_WRAPPER_JS_0(GetlineWidth, GetlineWidth)
 FUNCTION_WRAPPER_JS_1(DrawPath, DrawPath)
 FUNCTION_WRAPPER_JS_2(CoordTransformOffset, CoordTransformOffset)
 FUNCTION_WRAPPER_JS_0(GetTransform, GetTransform)
+FUNCTION_WRAPPER_JS_1(CreateLayer, CreateLayer)
+FUNCTION_WRAPPER_JS_0(BlendLayer, BlendLayer)
 @end
 
 class CGraphicsEmbedAdapter : public CJSEmbedObjectAdapterJSC

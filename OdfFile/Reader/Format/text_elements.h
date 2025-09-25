@@ -73,6 +73,8 @@ public:
     void pptx_convert (oox::pptx_conversion_context & Context) ;
 
 	size_t drop_cap_docx_convert(oox::docx_conversion_context & Context);
+    
+    void process_list_bullet_style(oox::docx_conversion_context& Context);
 
 	paragraph_attrs				attrs_;
 
@@ -179,6 +181,7 @@ private:
 
     std::wstring				style_name_;
     _CP_OPT(bool)				continue_numbering_;
+    _CP_OPT(std::wstring)		continue_list_;
 
 	office_element_ptr          list_header_;
     office_element_ptr_array    list_items_;

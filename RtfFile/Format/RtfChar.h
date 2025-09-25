@@ -142,6 +142,8 @@ public:
     static std::wstring renderRtfText( std::wstring& sText, void* poDocument, RtfCharProperty* oCharProperty = NULL, bool bMarker = false);
     static std::wstring renderRtfText( std::wstring& sText, void* poDocument, int nCodePage, bool bMarker = false );
 
+	static std::wstring renderRtfText(const std::wstring& sText);
+
     std::wstring RenderToRtf(RenderParameter oRenderParameter);
 
 private: 

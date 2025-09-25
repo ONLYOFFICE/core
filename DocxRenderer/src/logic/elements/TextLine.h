@@ -1,57 +1,61 @@
 #pragma once
 #include "ContText.h"
+#include "BaseItem.h"
 
 namespace NSDocxRenderer
 {
-    class CTextLine : public CBaseItem
-    {
-        public:
-            enum AssumedTextAlignmentType
-            {
-                atatUnknown,
-                atatByLeftEdge,
-                atatByCenter,
-                atatByRightEdge,
-                atatByWidth
-            };
+	class CTextLine : public CBaseItem, public IOoxmlItem
+	{
+	public:
+		enum AssumedTextAlignmentType
+		{
+			atatUnknown,
+			atatByLeftEdge,
+			atatByCenter,
+			atatByRightEdge,
+			atatByWidth
+		};
 
-            std::vector<CContText*> m_arConts;
+		std::vector<std::shared_ptr<CContText>> m_arConts;
 
-            AssumedTextAlignmentType m_eAlignmentType {atatUnknown};
+		AssumedTextAlignmentType m_eAlignmentType{atatUnknown};
+		eVertAlignType m_eVertAlignType          {eVertAlignType::vatUnknown};
 
-            eVertAlignType m_eVertAlignType {eVertAlignType::vatUnknown};
+		std::shared_ptr<CTextLine> m_pLine;
+		std::shared_ptr<CShape>  m_pDominantShape {nullptr};
 
-            const CShape* m_pDominantShape {nullptr};
+		UINT m_iNumDuplicates {0};
 
-            UINT m_iNumDuplicates {0};
-        public:
-            CTextLine();
-            void Clear() override final;
+		double m_dTopWithMaxAscent{0};
+		double m_dBotWithMaxDescent{0};
 
-            ~CTextLine();
+		double m_dFirstWordWidth{0.0};
 
-            void AddCont(CContText *pCont);
-            bool IsBigger(const CBaseItem* oSrc) override final;
-            bool IsBiggerOrEqual(const CBaseItem* oSrc) override final;
-            void SortConts();
+		bool m_bIsPossibleVerSplit = false;
 
-            //Объединяем слова из двух строк
-            void Merge(CTextLine* pLine);
-            bool IsForceBlock();
-            void ToXml(NSStringUtils::CStringBuilder& oWriter) override final;
+	public:
+		CTextLine() = default;
+		virtual ~CTextLine();
+		virtual void Clear();
+		virtual void ToXml(NSStringUtils::CStringBuilder& oWriter) const override final;
+		virtual void ToXmlPptx(NSStringUtils::CStringBuilder& oWriter) const override final;
+		virtual void ToBin(NSWasm::CData& oWriter) const override final;
+		virtual void RecalcWithNewItem(const CContText* pCont);
+		virtual eVerticalCrossingType GetVerticalCrossingType(const CTextLine* pLine) const noexcept;
 
-            void MergeConts();
-            //Вычисляем ширину сложной строки
-            void CalculateWidth();
-            //Пытаемся понять тип выравнивания для текущей строки
-            void DetermineAssumedTextAlignmentType(double dWidthOfPage);
-            //Определяем на основании выравнивания подходят ли текущая и следующая строки для добавления в параграф
-            bool AreAlignmentsAppropriate(const CTextLine* pLine);
+		void AddCont(const std::shared_ptr<CContText>& pCont);
+		void AddConts(const std::vector<std::shared_ptr<CContText>>& arConts);
+		void MergeConts();
+		void CalcFirstWordWidth();
+		void RecalcSizes();
+		void SetVertAlignType(const eVertAlignType& oType);
 
-            void SetVertAlignType(const eVertAlignType& oType);
+		bool IsShadingPresent(const CTextLine* pLine) const noexcept;
+		bool IsCanBeDeleted() const;
 
-            //Вычисляем
-            double CalculateBeforeSpacing(double dPreviousStringBaseline);
-            double CalculateRightBorder(const double& dPageWidth);
-    };
+		double GetLeftNoEnum() const noexcept;
+
+		size_t GetLength() const;
+		void GetNextSym(size_t& nContPos, size_t& nSymPos) const noexcept;
+	};
 }

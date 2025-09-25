@@ -31,6 +31,8 @@
  */
 #include "Utils.h"
 #include <vector>
+#include <ctime>
+#include <cwctype>
 
 namespace PdfWriter
 {
@@ -240,5 +242,78 @@ namespace PdfWriter
 			nValue ^= unBitNum;
 		else
 			nValue |= unBitNum;
+	}
+	std::string DateNow()
+	{
+		char sTemp[DATE_TIME_STR_LEN + 1];
+		char* pTemp = NULL;
+
+		MemSet(sTemp, 0, DATE_TIME_STR_LEN + 1);
+		time_t oTime = time(0);
+		struct tm* oNow = gmtime(&oTime);
+
+		pTemp = (char*)MemCpy((BYTE*)sTemp, (BYTE*)"D:", 2);
+		*pTemp++;
+		*pTemp++;
+		pTemp = ItoA2(pTemp, oNow->tm_year + 1900, 5);
+		pTemp = ItoA2(pTemp, oNow->tm_mon + 1, 3);
+		pTemp = ItoA2(pTemp, oNow->tm_mday, 3);
+		pTemp = ItoA2(pTemp, oNow->tm_hour, 3);
+		pTemp = ItoA2(pTemp, oNow->tm_min, 3);
+		pTemp = ItoA2(pTemp, oNow->tm_sec, 3);
+		*pTemp++ = '+';
+		pTemp = ItoA2(pTemp, 0, 3);
+		*pTemp++ = '\'';
+		pTemp = ItoA2(pTemp, 0, 3);
+		*pTemp++ = '\'';
+		*pTemp = 0;
+
+		std::string sRes(sTemp);
+		return sRes;
+	}
+	std::wstring NormalizeWhitespace(const std::wstring& s)
+	{
+		std::wstring sRes;
+		sRes.reserve(s.size());
+
+		for (wchar_t c : s)
+		{
+			switch(c)
+			{
+			/*
+			case 0x0009:   // Character tabulation
+			case 0x000A:   // Line feed
+			case 0x000B:   // Line tabulation
+			case 0x000C:   // Form feed
+			case 0x000D:   // Carriage return
+			*/
+			case 0x00A0:   // No-break space
+			case 0x1680:   // Ogham space mark
+			case 0x2000:   // En quad
+			case 0x2001:   // Em quad
+			case 0x2002:   // En space
+			case 0x2003:   // Em space
+			case 0x2004:   // Three-per-em space
+			case 0x2005:   // Four-per-em space
+			case 0x2006:   // Six-per-em space
+			case 0x2007:   // Figure space
+			case 0x2008:   // Punctuation space
+			case 0x2009:   // Thin space
+			case 0x200A:   // Hair space
+			case 0x2028:   // Line separator
+			case 0x2029:   // Paragraph separator
+			case 0x202F:   // Narrow no-break space
+			case 0x205F:   // Medium mathematical space
+			case 0x2060:   // Word joiner
+			case 0x3000:   // Ideographic space
+			case 0xFEFF:   // Zero width no-break space
+				sRes += L' ';
+				break;
+			default:
+				sRes += c;
+			}
+		}
+
+		return sRes;
 	}
 }

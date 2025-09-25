@@ -62,6 +62,8 @@ enum __ENUM_CXIMAGE_FORMATS
 	_CXIMAGE_FORMAT_WB = 22,
 	_CXIMAGE_FORMAT_SVM = 23,
 	_CXIMAGE_FORMAT_SVG = 24,
+    _CXIMAGE_FORMAT_PIC = 25,
+	_CXIMAGE_FORMAT_HEIF = 26,
 };
 
 class GRAPHICS_DECL CImageFileFormatChecker
@@ -70,17 +72,18 @@ public:
 	__ENUM_CXIMAGE_FORMATS eFileType;
 	
 	CImageFileFormatChecker();
-	CImageFileFormatChecker(std::wstring sFileName);
+	CImageFileFormatChecker(const std::wstring& sFileName);
 	CImageFileFormatChecker(BYTE* pBuffer, DWORD dwBytes);
 
-	bool isImageFileInZip(std::wstring& fileName);
+	bool isImageFileInZip(const std::wstring& fileName);
 	
-	bool isImageFile(std::wstring& fileName);
-	bool isPngFile(std::wstring& fileName);
-	bool isSvmFile(std::wstring& fileName);
+	bool isImageFile(const std::wstring& fileName);
+	bool isPngFile(const std::wstring& fileName);
+	bool isSvmFile(const std::wstring& fileName);
 
-	bool isRawFile(std::wstring& fileName);
-	bool isSvgFile(std::wstring& fileName);
+	bool isRawFile(const std::wstring& fileName);
+	bool isSvgFile(const std::wstring& fileName);
+	bool isHeifFile(const std::wstring& fileName);
 
 	bool isImageFile(BYTE* pBuffer,DWORD dwBytes);
 	bool isBmpFile(BYTE* pBuffer,DWORD dwBytes);
@@ -109,6 +112,8 @@ public:
 	bool isPgxFile(BYTE* pBuffer,DWORD dwBytes);
 	bool isSvgFile(BYTE* pBuffer,DWORD dwBytes);
 	bool isRawFile(BYTE* pBuffer,DWORD dwBytes);
+    bool isPicFile(BYTE* pBuffer,DWORD dwBytes);
+	bool isHeifFile(BYTE* pBuffer, DWORD dwBytes);
 
 	std::wstring DetectFormatByData(BYTE *Data, int DataSize);
 

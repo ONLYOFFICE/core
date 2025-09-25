@@ -36,70 +36,72 @@
 #include <vector>
 #include "../graphics/pro/Fonts.h"
 
-#define ONLYOFFICE_FONTS_VERSION     10
+#define ONLYOFFICE_FONTS_VERSION     14
 #define ONLYOFFICE_ALL_FONTS_VERSION 2
 
 class CApplicationFontsWorkerBreaker
 {
 public:
-    virtual bool IsFontsWorkerRunned() { return true; }
+	virtual bool IsFontsWorkerRunned() { return true; }
 };
 
 class CApplicationFontsWorker_private;
 class GRAPHICS_DECL CApplicationFontsWorker
 {
 public:
-    // использовать ли системные шрифты
-    bool                        m_bIsUseSystemFonts;
-    // дополнительные папки с шрифтами
-    std::vector<std::wstring>   m_arAdditionalFolders;
+	// использовать ли системные шрифты
+	bool                        m_bIsUseSystemFonts;
+	bool                        m_bIsUseSystemUserFonts;
 
-    // рабоча директория (сюда скидываем все артефакты)
-    std::wstring                m_sDirectory;
+	// дополнительные папки с шрифтами
+	std::vector<std::wstring>   m_arAdditionalFolders;
 
-    // поддерживать ли opentype шрифты
-    bool                        m_bIsUseOpenType;
+	// рабоча директория (сюда скидываем все артефакты)
+	std::wstring                m_sDirectory;
 
-    // поддерживать ли все версии AllFonts.js
-    bool                        m_bIsUseAllVersions;
+	// поддерживать ли opentype шрифты
+	bool                        m_bIsUseOpenType;
 
-    // нужны ли табнейлы
-    bool                        m_bIsNeedThumbnails;
-    // какой-то табнейл уже есть - нудно ли все равно удалить и перегенерировать?
-    bool                        m_bIsRemoveOldThumbnails;
-    // генерим табнейлы отдельно
-    bool                        m_bSeparateThumbnails;
-    // какие масштабы нужны для табнейлов
-    std::vector<double>         m_arThumbnailsScales;
-    bool                        m_bIsGenerateThumbnailsEA;
+	// поддерживать ли все версии AllFonts.js
+	bool                        m_bIsUseAllVersions;
 
-    // WEB версия ----
-    std::wstring                m_sThumbnailsDirectory;
+	// нужны ли табнейлы
+	bool                        m_bIsNeedThumbnails;
+	// какой-то табнейл уже есть - нудно ли все равно удалить и перегенерировать?
+	bool                        m_bIsRemoveOldThumbnails;
+	// генерим табнейлы отдельно
+	bool                        m_bSeparateThumbnails;
+	// какие масштабы нужны для табнейлов
+	std::vector<double>         m_arThumbnailsScales;
+	bool                        m_bIsGenerateThumbnailsEA;
 
-    std::wstring                m_sAllFontsJSPath;
-    std::wstring                m_sWebAllFontsJSPath;
+	// WEB версия ----
+	std::wstring                m_sThumbnailsDirectory;
 
-    std::wstring                m_sWebFontsDirectory;
-    // ---------------
+	std::wstring                m_sAllFontsJSPath;
+	std::wstring                m_sWebAllFontsJSPath;
 
-    bool                        m_bIsCleanDirectory;
+	std::wstring                m_sWebFontsDirectory;
+	// ---------------
+
+	bool                        m_bIsCleanDirectory;
 
 private:
-    CApplicationFontsWorker_private* m_pInternal;
+	CApplicationFontsWorker_private* m_pInternal;
 
 public:
-    CApplicationFontsWorker();
-    ~CApplicationFontsWorker();
-    
-    NSFonts::IApplicationFonts* Check();
-    void CheckThumbnails();
+	CApplicationFontsWorker();
+	~CApplicationFontsWorker();
 
-    void SetBreaker(CApplicationFontsWorkerBreaker* pChecker);
+	NSFonts::IApplicationFonts* Check();
+	void CheckThumbnails();
 
-    std::string GetAllFonts();
+	void SetBreaker(CApplicationFontsWorkerBreaker* pChecker);
 
-    static std::vector<std::wstring> GetFontNames(NSFonts::IApplicationFonts* pFonts);
-    static std::vector<std::wstring> GetFontNamesWithExcludes(NSFonts::IApplicationFonts* pFonts, std::vector<std::wstring> arExcludes);
+	std::string GetAllFonts();
+
+	static std::vector<std::wstring> GetFontNames(NSFonts::IApplicationFonts* pFonts);
+	static std::vector<std::wstring> GetFontNamesWithExcludes(NSFonts::IApplicationFonts* pFonts, std::vector<std::wstring> arExcludes);
 };
 
 #endif // _BUILD_APPLICATIONFONTSWORKER_H_

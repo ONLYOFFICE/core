@@ -10,9 +10,10 @@ CONFIG -= app_bundle
 CORE_ROOT_DIR = $$PWD/../..
 PWD_ROOT_DIR = $$PWD
 include($$CORE_ROOT_DIR/Common/base.pri)
+include($$CORE_ROOT_DIR/Common/3dParty/googletest/googletest.pri)
 include($$CORE_ROOT_DIR/Common/3dParty/icu/icu.pri)
 
-ADD_DEPENDENCY(UnicodeConverter, kernel, graphics, PdfFile, ooxmlsignature)
+ADD_DEPENDENCY(UnicodeConverter, kernel, graphics, PdfFile, DjVuFile, ooxmlsignature)
 
 SOURCES += test.cpp
 

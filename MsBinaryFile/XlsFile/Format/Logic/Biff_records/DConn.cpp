@@ -158,5 +158,86 @@ void DConn::readFields(CFRecord& record)
 	record.skipNunBytes(skip);
 }
 
+void DConn::writeFields(CFRecord& record)
+{
+	frtHeaderOld.rt = rt_DConn;
+	record << frtHeaderOld << dbt;
+
+	{
+		unsigned short flags1 = 0;
+		SETBIT(flags1, 0, fSavePwd)
+		SETBIT(flags1, 1, fTablesOnlyHtml)
+		SETBIT(flags1, 2, fTableNames)
+		SETBIT(flags1, 3, fDeleted)
+		SETBIT(flags1, 4, fStandAlone)
+		SETBIT(flags1, 5, fAlwaysUseConnectionFile)
+		SETBIT(flags1, 6, fBackgroundQuery)
+		SETBIT(flags1, 7, fRefreshOnLoad)
+		SETBIT(flags1, 8, fSaveData)
+		record << flags1 << cParams;
+	}
+	record.reserveNunBytes(2);
+	{
+		unsigned short flags1 = 0;
+		SETBIT(flags1, 0, fMaintain)
+		SETBIT(flags1, 1, fNewQuery)
+		SETBIT(flags1, 2, fImportXmlSource)
+		SETBIT(flags1, 3, fSPListSrc)
+		SETBIT(flags1, 4, fSPListReinitCache)
+		SETBIT(flags1, 7, fSrcIsXml)
+		record << flags1;
+	}
+
+	if(grbitDbt != nullptr && (dbt== 4 || dbt == 5 || dbt == 7))
+		record << *grbitDbt;
+	else
+		record.reserveNunBytes(2);
+	record << bVerDbqueryEdit << bVerDbqueryRefreshed << bVerDbqueryRefreshableMin << wRefreshInterval << wHtmlFmt << rcc << credMethod;
+	record.reserveNunBytes(1);
+	if (dbt == 5)
+	{
+		record << rgchSourceDataFile;
+	}
+	record << rgchSourceConnectionFile << rgchConnectionName << rgchConnectionDesc;
+	if (dbt == 1 || dbt == 5)
+	{
+		record << rgchSSOApplicationID;
+	}
+	if (fTableNames)
+	{
+		record << tableNames;
+	}
+	if(fStandAlone != 0)
+	{
+		for(auto i : params)
+		{
+			i.save(record);
+		}
+	}
+	if(dbt == 1 || dbt == 4 || dbt == 5 || dbt == 6)
+	{
+		if (connection)
+		{
+			connection->save(record);
+		}
+	}
+	if (dbt == 1 || dbt == 5)
+	{
+		record << rgbSQL;
+	}
+
+	if (dbt == 1)//7183958.xls
+	{
+		record << rgbSQLSav;
+	}
+
+	if (dbt == 4 )
+	{
+		record << rgbEditWebPage;
+	}
+
+	record << id;
+}
+
 } // namespace XLS
 

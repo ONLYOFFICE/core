@@ -30,6 +30,9 @@ namespace NSTextMeasurerEmbed
 	FUNCTION_WRAPPER_V8_2(_FT_SetCMapForCharCode, FT_SetCMapForCharCode)
 	FUNCTION_WRAPPER_V8_3(_FT_GetKerningX, FT_GetKerningX)
 	FUNCTION_WRAPPER_V8_1(_FT_GetFaceMaxAdvanceX, FT_GetFaceMaxAdvanceX)
+	FUNCTION_WRAPPER_V8_1(_Hyphen_SetCacheSize, Hyphen_SetCacheSize)
+	FUNCTION_WRAPPER_V8_2(_Hyphen_Word, Hyphen_Word)
+	FUNCTION_WRAPPER_V8_1(_Hyphen_IsDictionaryExist, Hyphen_IsDictionaryExist)
 
 	v8::Handle<v8::ObjectTemplate> CreateTemplate(v8::Isolate* isolate)
 	{
@@ -59,6 +62,9 @@ namespace NSTextMeasurerEmbed
 		NSV8Objects::Template_Set(result, "FT_SetCMapForCharCode",	_FT_SetCMapForCharCode);
 		NSV8Objects::Template_Set(result, "FT_GetKerningX",	_FT_GetKerningX);
 		NSV8Objects::Template_Set(result, "FT_GetFaceMaxAdvanceX",	_FT_GetFaceMaxAdvanceX);
+		NSV8Objects::Template_Set(result, "Hyphen_SetCacheSize",	_Hyphen_SetCacheSize);
+		NSV8Objects::Template_Set(result, "Hyphen_Word",	_Hyphen_Word);
+		NSV8Objects::Template_Set(result, "Hyphen_IsDictionaryExist",	_Hyphen_IsDictionaryExist);
 
 		return handle_scope.Escape(result);
 	}

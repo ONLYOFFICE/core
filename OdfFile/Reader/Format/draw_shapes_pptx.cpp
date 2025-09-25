@@ -43,6 +43,7 @@
 #include <xml/xmlchar.h>
 #include "odf_document.h"
 
+#include "office_forms.h"
 #include "serialize_elements.h"
 
 #include "style_graphic_properties.h"
@@ -70,9 +71,11 @@ void draw_shape::common_pptx_convert(oox::pptx_conversion_context & Context)
     const unsigned int z_index		= common_draw_attlist_.draw_z_index_.get_value_or(0);
     const std::wstring name			= common_draw_attlist_.draw_name_.get_value_or(L"");
     const std::wstring textStyleName = common_draw_attlist_.draw_text_style_name_.get_value_or(L"");
+	const std::wstring xmlId		= common_draw_attlist_.draw_id_.get_value_or(L"");
 
  ///////////////////////////////////////////	
 	Context.get_slide_context().set_name(name);
+	Context.get_slide_context().set_id(xmlId);
 	
 	const _CP_OPT(length) svg_widthVal =  common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_width_;    
     const _CP_OPT(length) svg_heightVal = common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_height_;
@@ -106,14 +109,14 @@ void draw_shape::common_pptx_convert(oox::pptx_conversion_context & Context)
 /////////////////////////////////////////////////////////////////////////////////
 	std::vector<const odf_reader::style_instance *> instances;
 
-	const std::wstring grStyleName		= common_draw_attlist_.draw_style_name_.get_value_or(L"");
-	const std::wstring baseStyleName	= common_draw_attlists_.shape_with_text_and_styles_.common_presentation_attlist_.presentation_style_name_.get_value_or(L"");
+	const std::wstring drawStyleName		= common_draw_attlist_.draw_style_name_.get_value_or(L"");
+	const std::wstring presentationStyleName	= common_draw_attlists_.shape_with_text_and_styles_.common_presentation_attlist_.presentation_style_name_.get_value_or(L"");
 
 	odf_reader::style_instance* grStyleInst = 
-		Context.root()->odf_context().styleContainer().style_by_name(grStyleName, odf_types::style_family::Graphic,Context.process_masters_);
+		Context.root()->odf_context().styleContainer().style_by_name(drawStyleName, odf_types::style_family::Graphic,Context.process_masters_);
 	
 	odf_reader::style_instance* baseStyleInst = 
-		Context.root()->odf_context().styleContainer().style_by_name(baseStyleName, odf_types::style_family::Presentation,Context.process_masters_);
+		Context.root()->odf_context().styleContainer().style_by_name(presentationStyleName, odf_types::style_family::Presentation,Context.process_masters_);
 
 	if (baseStyleInst)//векторная фигура презентаций
 	{
@@ -137,6 +140,12 @@ void draw_shape::common_pptx_convert(oox::pptx_conversion_context & Context)
 	{
 		properties->apply_to(Context.get_slide_context().get_properties());
 		Compute_GraphicFill(properties->common_draw_fill_attlist_, properties->style_background_image_, Context.root(), fill);
+
+		if (properties->fo_clip_)
+		{
+			std::wstring strRectClip = properties->fo_clip_.get();
+			fill.clipping = strRectClip.length() > 6 ? strRectClip.substr(5, strRectClip.length() - 6) : L"";
+		}
 	}
  	for (size_t i = 0; i < additional_.size(); i++)
 	{
@@ -181,7 +190,7 @@ void draw_shape::common_pptx_convert(oox::pptx_conversion_context & Context)
 
 	if (!text_content_.empty())
 	{
-		Context.get_slide_context().set_property(_property(L"text-content",text_content_));
+		Context.get_slide_context().set_property(_property(L"text-content", text_content_));
 	}
 }
 void draw_rect::pptx_convert(oox::pptx_conversion_context & Context)
@@ -293,6 +302,8 @@ void draw_connector::reset_svg_attributes()
 	{
 		common_draw_attlists_.position_.svg_x_	 = draw_line_attlist_.svg_x2_;
 		common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_width_ = length(x1-x2, length::pt);
+
+		additional_.push_back(_property(L"flipH", true));
 		
 	}else
 	{
@@ -304,12 +315,23 @@ void draw_connector::reset_svg_attributes()
 		common_draw_attlists_.position_.svg_y_	 = draw_line_attlist_.svg_y2_;
 		common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_height_ = length(y1-y2, length::pt);
 
+		additional_.push_back(_property(L"flipV", true));
+
 	}else
 	{
 		common_draw_attlists_.position_.svg_y_	 = draw_line_attlist_.svg_y1_;
 		common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_height_ = length(y2-y1, length::pt);
 	}
 }
+
+int pptx_convert_glue_point(int gluePoint)
+{
+	if (gluePoint < 4)
+		return 4 - gluePoint;
+
+	return gluePoint - 4;
+}
+
 void draw_connector::pptx_convert(oox::pptx_conversion_context & Context)
 {
 	if (draw_connector_attlist_.draw_type_)
@@ -326,7 +348,47 @@ void draw_connector::pptx_convert(oox::pptx_conversion_context & Context)
 	Context.get_slide_context().start_shape(sub_type_);
 
 	common_pptx_convert(Context);
+
+	if(draw_connector_attlist_.draw_start_shape_)
+		Context.get_slide_context().set_connector_start_shape(draw_connector_attlist_.draw_start_shape_.value());
+	if (draw_connector_attlist_.draw_end_shape_)
+		Context.get_slide_context().set_connector_end_shape(draw_connector_attlist_.draw_end_shape_.value());
+	if(draw_connector_attlist_.draw_start_glue_point_)
+		Context.get_slide_context().set_connector_start_glue_point(pptx_convert_glue_point(draw_connector_attlist_.draw_start_glue_point_.value()));
+	if (draw_connector_attlist_.draw_end_glue_point_)
+		Context.get_slide_context().set_connector_end_glue_point(pptx_convert_glue_point(draw_connector_attlist_.draw_end_glue_point_.value()));
+
+
+	int connector_size = 5;
+	if (draw_connector_attlist_.svg_d_)
+	{
+		std::vector<::svg_path::_polyline> polylines;
+		bool closed, stroked;
+		::svg_path::parseSvgD(polylines, draw_connector_attlist_.svg_d_.value(), false, closed, stroked);
+
+		const int v = polylines.size() - 1;
+		const int min = 2;
+		const int max = 5;
+		connector_size = v < min ? min : (v > max ? max : v); // clamp(v, min, max)
+	}
 	
+	std::wstring drawType = draw_connector_attlist_.draw_type_.get_value_or(L"standart");
+	std::wstring pptx_prst;
+
+	if (drawType == L"curve")
+		pptx_prst = L"curvedConnector" + std::to_wstring(connector_size);
+	else if (drawType == L"lines")
+		pptx_prst = L"bentConnector" + std::to_wstring(connector_size);
+	else if (drawType == L"line")
+		pptx_prst = L"straightConnector1";
+	else if (drawType == L"standart")
+		pptx_prst = L"bentConnector" + std::to_wstring(connector_size);
+	else
+		pptx_prst = L"straightConnector1";
+
+	Context.get_slide_context().set_connector_draw_type(pptx_prst);
+		
+
 //перебъем заливку .. 
 	oox::_oox_fill fill;
 	fill.type = 0;
@@ -336,119 +398,8 @@ void draw_connector::pptx_convert(oox::pptx_conversion_context & Context)
 }
 void draw_enhanced_geometry::pptx_convert(oox::pptx_conversion_context & Context) 
 {
-	find_draw_type_oox();
+	bool set_shape = oox_convert(Context.get_slide_context().get_properties());	
 
-	bool set_shape = false;
-
-	if (attlist_.draw_mirror_horizontal_)
-	{
-		Context.get_slide_context().set_property(_property(L"flipH", *attlist_.draw_mirror_horizontal_));
-	}
-	if (attlist_.draw_mirror_vertical_)
-	{
-		Context.get_slide_context().set_property(_property(L"flipV", *attlist_.draw_mirror_vertical_));
-	}
-	if (draw_type_oox_index_)
-	{
-		Context.get_slide_context().set_property(_property(L"oox-geom-index", draw_type_oox_index_.get()));	
-		Context.get_slide_context().set_property(_property(L"oox-geom", bOoxType_));	
-		
-		if (word_art_ == true)
-			Context.get_slide_context().set_property(_property(L"wordArt", true));	
-
-		set_shape = true;
-	}
-	if (sub_type_)
-	{
-		Context.get_slide_context().start_shape(sub_type_.get());
-		set_shape = true;
-	}
-
-	if (!odf_path_.empty())
-	{
-		std::vector<::svg_path::_polyline> o_Polyline;
-	
-		bool res = false;
-		bool bClosed = false, bStroked = true;
-		
-		try
-		{
-			res = ::svg_path::parseSvgD(o_Polyline, odf_path_, true, bClosed, bStroked);
-		}
-		catch(...)
-		{
-			res = false; 
-		}
-		//if (!bClosed) lined_shape_ = true;
-		
-		if (o_Polyline.size() > 1 && res )
-		{
-			//сформируем xml-oox сдесь ... а то придется плодить массивы в drawing .. хоть и не красиво..
-			std::wstringstream output_;   
-            ::svg_path::oox_serialize(output_, o_Polyline);
-			Context.get_slide_context().set_property(odf_reader::_property(L"custom_path", output_.str()));
-
-			set_shape = true;
-
-			if (false == bStroked)
-			{
-				Context.get_slide_context().set_property(odf_reader::_property(L"custom_path_s", false));
-			}
-			if (attlist_.drawooo_sub_view_size_)
-			{
-				std::vector< std::wstring > splitted;			    
-				boost::algorithm::split(splitted, *attlist_.drawooo_sub_view_size_, boost::algorithm::is_any_of(L" "), boost::algorithm::token_compress_on);
-				
-				if (splitted.size() == 2)
-				{
-					int w = boost::lexical_cast<int>(splitted[0]);
-					int h = boost::lexical_cast<int>(splitted[1]);
-					
-					Context.get_slide_context().set_property(odf_reader::_property(L"custom_path_w", w));
-					Context.get_slide_context().set_property(odf_reader::_property(L"custom_path_h", h));
-				}
-				else if (splitted.size() == 4)
-				{///???? rect ???
-					int l = boost::lexical_cast<int>(splitted[0]);
-					int t = boost::lexical_cast<int>(splitted[1]);
-					int r = boost::lexical_cast<int>(splitted[2]);
-					int b = boost::lexical_cast<int>(splitted[3]);
-
-				}
-			}
-			else if (svg_viewbox_)
-			{
-				std::vector< std::wstring > splitted;			    
-				boost::algorithm::split(splitted, *svg_viewbox_, boost::algorithm::is_any_of(L" "), boost::algorithm::token_compress_on);
-				
-				if (splitted.size() == 4)
-				{
-					int w = boost::lexical_cast<int>(splitted[2]);
-					int h = boost::lexical_cast<int>(splitted[3]);
-					
-					Context.get_slide_context().set_property(odf_reader::_property(L"custom_path_w", w));
-					Context.get_slide_context().set_property(odf_reader::_property(L"custom_path_h", h));
-				}
-			}
-		}
-	}
-	if (attlist_.draw_modifiers_)
-	{
-		if (bOoxType_)
-			Context.get_slide_context().set_property(_property(L"oox-draw-modifiers", attlist_.draw_modifiers_.get()));	
-		else
-		{
-		}
-
-		//if (draw_handle_geometry_.size()>0)
-		//{
-		//	if (draw_handle_geometry_[0].min < draw_handle_geometry_[0].max)
-		//	{
-		//		Context.get_slide_context().set_property(_property(L"draw-modifiers-min",draw_handle_geometry_[0].min));	
-		//		Context.get_slide_context().set_property(_property(L"draw-modifiers-max",draw_handle_geometry_[0].max));	
-		//	}
-		//}
-	}
 	if (!set_shape)
 	{
 		Context.get_slide_context().start_shape(1); //restart type shape
@@ -475,5 +426,128 @@ void dr3d_sphere::pptx_convert(oox::pptx_conversion_context & Context)
 {
 	Context.get_slide_context().start_shape(sub_type_); //reset type
 }
+void draw_control::pptx_convert(oox::pptx_conversion_context& Context)
+{
+	if (!control_id_) return;
+
+	oox::forms_context::_state& state = Context.get_forms_context().get_state_element(*control_id_);
+	if (state.id.empty()) return;
+
+	form_element* control = dynamic_cast<form_element*>(state.element);
+	if (!control) return;
+
+	if (state.ctrlPropId.empty())
+	{
+		std::wstring target;
+		state.ctrlPropId = Context.get_mediaitems()->add_control_props(target);
+
+		//std::wstringstream strm;
+		//control->serialize_control_props(strm);
+
+		//Context.add_control_props(state.ctrlPropId, target, strm.str());
+	}
+
+	Context.get_slide_context().start_control(state.ctrlPropId, control->object_type_);
+
+	common_pptx_convert(Context);
+
+	if (control->linked_cell_)
+	{
+		Context.get_slide_context().set_property(_property(L"linked_cell", control->linked_cell_.get()));
+	}
+	if (control->disabled_)
+	{
+		Context.get_slide_context().set_property(_property(L"disabled", control->disabled_->get()));
+	}
+	if (control->value_)
+	{
+		Context.get_slide_context().set_property(_property(L"value", control->value_.get()));
+	}
+	else if (control->current_value_)
+	{
+		Context.get_slide_context().set_property(_property(L"value", control->current_value_.get()));
+	}
+	if (control->label_)
+	{
+		Context.get_slide_context().set_property(_property(L"label", control->label_.get()));
+
+		Context.get_text_context().start_object();
+		Context.get_text_context().add_text(control->label_.get());
+		
+		std::wstring text_content_ = Context.get_text_context().end_object();
+
+		if (!text_content_.empty())
+		{
+			Context.get_slide_context().set_property(_property(L"text-content", text_content_));
+		}
+	}
+	//if (control->name_)
+	//{
+	//	Context.get_drawing_context().set_name(control->name_.get());
+	//}
+	form_value_range* value_range = dynamic_cast<form_value_range*>(control);
+
+	if (value_range)
+	{
+		if (value_range->min_value_)
+		{
+			Context.get_slide_context().set_property(_property(L"min_value", value_range->min_value_.get()));
+		}
+		if (value_range->max_value_)
+		{
+			Context.get_slide_context().set_property(_property(L"max_value", value_range->max_value_.get()));
+		}
+		if (value_range->step_size_)
+		{
+			Context.get_slide_context().set_property(_property(L"step", value_range->step_size_.get()));
+		}
+		if (value_range->page_step_size_)
+		{
+			Context.get_slide_context().set_property(_property(L"page_step", value_range->page_step_size_.get()));
+		}
+		if (value_range->orientation_)
+		{
+			Context.get_slide_context().set_property(_property(L"orientation", value_range->orientation_.get()));
+		}
+	}
+	form_combobox* combobox = dynamic_cast<form_combobox*>(control);
+
+	if (combobox)
+	{
+		//items_;
+		if (combobox->source_cell_range_)
+		{
+			Context.get_slide_context().set_property(_property(L"cell_range", combobox->source_cell_range_.get()));
+		}
+		if (combobox->list_source_)
+		{
+			Context.get_slide_context().set_property(_property(L"list_source", combobox->list_source_.get()));
+		}
+	}
+	form_listbox* listbox = dynamic_cast<form_listbox*>(control);
+	if (listbox)
+	{
+		if (listbox->source_cell_range_)
+		{
+			Context.get_slide_context().set_property(_property(L"cell_range", listbox->source_cell_range_.get()));
+		}
+		if (listbox->list_source_)
+		{
+			Context.get_slide_context().set_property(_property(L"list_source", listbox->list_source_.get()));
+		}
+	}
+	form_checkbox* checkbox = dynamic_cast<form_checkbox*>(control);
+	if (checkbox)
+	{
+		Context.get_slide_context().set_property(_property(L"checkbox_state", checkbox->current_state_));
+	}
+
+	//_CP_OPT(std::wstring)		label_;
+	//_CP_OPT(std::wstring)		title_;
+	//_CP_OPT(odf_types::Bool)	dropdown_;
+
+	Context.get_slide_context().end_control();
+}
+
 }
 }

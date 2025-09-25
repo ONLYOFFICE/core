@@ -80,14 +80,19 @@ namespace PdfWriter
 		const char *sKey = m_pFonts->GetKey(pFont);
 		if (!sKey)
 		{
-			// ���� ���� �� ��������������� � ��������, ����� ������������ ���
+			// если фонт не зарегистрирован в ресурсах, тогда регистрируем его
 			char sFontName[LIMIT_MAX_NAME_LEN + 1];
 			char *pPointer = NULL;
 			char *pEndPointer = sFontName + LIMIT_MAX_NAME_LEN;
 
+			while (++m_unFontsCount < LIMIT_MAX_DICT_ELEMENT)
+			{
+				if (!m_pFonts->Get("F" + std::to_string(m_unFontsCount)))
+					break;
+			}
+
 			pPointer = (char*)StrCpy(sFontName, "F", pEndPointer);
-			ItoA(pPointer, m_unFontsCount + 1, pEndPointer);
-			m_unFontsCount++;
+			ItoA(pPointer, m_unFontsCount, pEndPointer);
 			m_pFonts->Add(sFontName, pFont);
 			sKey = m_pFonts->GetKey(pFont);
 		}
@@ -108,21 +113,26 @@ namespace PdfWriter
 		const char* sKey = m_pExtGStates->GetKey(pState);
 		if (!sKey)
 		{
-			// ���� ExtGState �� ��������������� � Resource, ������������
+			// Если ExtGState не зарегистрирован в Resource, регистрируем.
 			char sExtGrStateName[LIMIT_MAX_NAME_LEN + 1];
 			char *pPointer;
 			char *pEndPointer = sExtGrStateName + LIMIT_MAX_NAME_LEN;
 
+			while (++m_unExtGStatesCount < LIMIT_MAX_DICT_ELEMENT)
+			{
+				if (!m_pExtGStates->Get("E" + std::to_string(m_unExtGStatesCount)))
+					break;
+			}
+
 			pPointer = (char*)StrCpy(sExtGrStateName, "E", pEndPointer);
-			ItoA(pPointer, m_unExtGStatesCount + 1, pEndPointer);
-			m_unExtGStatesCount++;
+			ItoA(pPointer, m_unExtGStatesCount, pEndPointer);
 			m_pExtGStates->Add(sExtGrStateName, pState);
 			sKey = m_pExtGStates->GetKey(pState);
 		}
 
 		return sKey;
 	}
-	const char* CResourcesDict::GetXObjectName(CXObject* pObject)
+	const char* CResourcesDict::GetXObjectName(CObjectBase* pObject)
 	{
 		if (!m_pXObjects)
 		{
@@ -140,9 +150,14 @@ namespace PdfWriter
 			char *pPointer;
 			char *pEndPointer = sXObjName + LIMIT_MAX_NAME_LEN;
 
+			while (++m_unXObjectsCount < LIMIT_MAX_DICT_ELEMENT)
+			{
+				if (!m_pXObjects->Get("X" + std::to_string(m_unXObjectsCount)))
+					break;
+			}
+
 			pPointer = (char*)StrCpy(sXObjName, "X", pEndPointer);
-			ItoA(pPointer, m_unXObjectsCount + 1, pEndPointer);
-			m_unXObjectsCount++;
+			ItoA(pPointer, m_unXObjectsCount, pEndPointer);
 			m_pXObjects->Add(sXObjName, pObject);
 			sKey = m_pXObjects->GetKey(pObject);
 		}
@@ -161,5 +176,31 @@ namespace PdfWriter
 		}
 
 		m_pXObjects->Add(sXObjName, pObject);
+	}
+	void CResourcesDict::Fix()
+	{
+		// Инициализация текущего fonts
+		CObjectBase* pFonts = Get("Font");
+		if (pFonts && pFonts->GetType() == object_type_DICT)
+		{
+			m_pFonts = (CDictObject*)pFonts;
+			m_unFontsCount = 0;
+		}
+
+		// Инициализация текущего ExtGStates
+		CObjectBase* pExtGStates = Get("ExtGState");
+		if (pExtGStates && pExtGStates->GetType() == object_type_DICT)
+		{
+			m_pExtGStates = (CDictObject*)pExtGStates;
+			m_unExtGStatesCount = 0;
+		}
+
+		// Инициализация текущего XObject
+		CObjectBase* pXObject = Get("XObject");
+		if (pXObject && pXObject->GetType() == object_type_DICT)
+		{
+			m_pXObjects = (CDictObject*)pXObject;
+			m_unXObjectsCount = 0;
+		}
 	}
 }

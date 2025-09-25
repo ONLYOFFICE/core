@@ -57,7 +57,12 @@ namespace XLSB
 
 	void CFVO14::writeFields(XLS::CFRecord& record)
 	{
-		record << FRTheader << iType << numParam << fSaveGTE << fGTE << cbFmla;
+        record << FRTheader << iType << numParam << fSaveGTE << fGTE;
+        if(FRTheader.fFormula && !FRTheader.rgFormulas.array.empty())
+        {
+            cbFmla = FRTheader.rgFormulas.array.at(0).formula.cce;
+        }
+        record << cbFmla;
 	}
 
 } // namespace XLSB

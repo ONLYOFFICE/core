@@ -57,6 +57,18 @@ const EVP_MD* Get_EVP_MD(int nAlg)
 	{
 		return NULL;
 	}
+	case OOXML_HASH_ALG_ECDSA_256:
+	{
+		return EVP_sha256();
+	}
+	case OOXML_HASH_ALG_ECDSA_384:
+	{
+		return EVP_sha384();
+	}
+	case OOXML_HASH_ALG_ECDSA_512:
+	{
+		return EVP_sha512();
+	}
 	default:
 		break;
 	}
@@ -87,6 +99,12 @@ void X509_FREE(X509*& cert)
 		cert = NULL;
 	}
 }
+void x509_add_ext(X509V3_CTX* ctx, X509* cert, int nid, const char* value)
+{
+	X509_EXTENSION* ext = X509V3_EXT_conf_nid(NULL, ctx, nid, value);
+	X509_add_ext(cert, ext, -1);
+	X509_EXTENSION_free(ext);
+}
 
 class CCertificate_openssl : public ICertificate
 {
@@ -109,6 +127,7 @@ public:
 			g_is_initialize = true;
 			ERR_load_crypto_strings();
 			OpenSSL_add_all_algorithms();
+			OPENSSL_config(NULL);
 		}
 
 		m_cert = NULL;
@@ -123,6 +142,13 @@ public:
 			X509_FREE(m_cert);
 		if (NULL != m_key)
 			EVP_PKEY_FREE(m_key);
+		if (g_is_initialize)
+		{
+			g_is_initialize = false;
+			EVP_cleanup();
+			CRYPTO_cleanup_all_ex_data();
+			ERR_free_strings();
+		}
 	}
 
 	bool Generate(const std::string& key_alg, const std::map<std::wstring, std::wstring>& props = std::map<std::wstring, std::wstring>())
@@ -139,6 +165,44 @@ public:
 		{
 			pctx = EVP_PKEY_CTX_new_id(EVP_PKEY_X25519, NULL);
 			m_alg = OOXML_HASH_ALG_ED448;
+		}
+		else if (0 == key_alg.find("ecdsa"))
+		{
+			std::string sKeyLen = key_alg.substr(5);
+			int nKeyLen = 256;
+			if (!sKeyLen.empty())
+				nKeyLen = std::stoi(sKeyLen);
+
+			int crypto_nid = NID_X9_62_prime256v1;
+			m_alg = OOXML_HASH_ALG_ECDSA_256;
+
+			if (nKeyLen == 384)
+			{
+				crypto_nid = NID_secp384r1;
+				m_alg = OOXML_HASH_ALG_ECDSA_384;
+			}
+			else if (nKeyLen == 512)
+			{
+				crypto_nid = NID_secp521r1;
+				m_alg = OOXML_HASH_ALG_ECDSA_512;
+			}
+
+			EC_GROUP* group = EC_GROUP_new_by_curve_name(crypto_nid);
+
+			EC_GROUP_set_asn1_flag(group, OPENSSL_EC_NAMED_CURVE);
+			EC_GROUP_set_point_conversion_form(group, POINT_CONVERSION_UNCOMPRESSED);
+
+			EC_KEY* ec = EC_KEY_new();
+			EC_KEY_set_group(ec, group);
+			EC_KEY_generate_key(ec);
+
+			EVP_PKEY* tmp = EVP_PKEY_new();
+
+			EVP_PKEY_assign(tmp, EVP_PKEY_EC, ec);
+			pctx = EVP_PKEY_CTX_new(tmp, NULL);
+
+			EVP_PKEY_free(tmp);
+			EC_GROUP_free(group);
 		}
 		else if (0 == key_alg.find("rsa"))
 		{
@@ -219,6 +283,17 @@ public:
 
 		X509_set_issuer_name(m_cert, name_record);
 
+		X509V3_CTX ctx;
+		X509V3_set_ctx_nodb(&ctx);
+		X509V3_set_ctx(&ctx, m_cert, m_cert, NULL, NULL, 0);
+
+		x509_add_ext(&ctx, m_cert, NID_basic_constraints, "critical,CA:FALSE");
+		x509_add_ext(&ctx, m_cert, NID_key_usage, "critical,digitalSignature");
+		// x509_add_ext(&ctx, m_cert, NID_ext_key_usage, "critical,serverAuth,clientAuth");
+		// x509_add_ext(&ctx, m_cert, NID_subject_key_identifier, "hash");
+		// x509_add_ext(&ctx, m_cert, NID_netscape_cert_type, "client,server");
+		// x509_add_ext(&ctx, m_cert, NID_netscape_comment, "Auto-Cert");
+
 		if (!props.empty())
 		{
 			std::string sAdditions = "";
@@ -231,18 +306,21 @@ public:
 				string_replace(sKey, "=", "&#61;");
 				string_replace(sValue, ";", "&#59;");
 
-				sAdditions += (sKey + "=" + sValue + ";");
+				if (sKey != "DNS" && sKey != "email")
+					continue;
+
+				sAdditions += (sKey + ":" + sValue + ",");
 			}
 
 			if (!sAdditions.empty())
 			{
-				//const int nid_user = OBJ_create("1.2.3", "key", "value");
-				ASN1_OCTET_STRING* oDataAdditions = ASN1_OCTET_STRING_new();
-				int nError = ASN1_OCTET_STRING_set(oDataAdditions, (unsigned const char*)sAdditions.c_str(), (int)sAdditions.length());
-				X509_EXTENSION* ext = X509_EXTENSION_create_by_NID(nullptr, NID_subject_alt_name, false, oDataAdditions);
-				nError = X509_add_ext(m_cert, ext, -1);
-				X509_EXTENSION_free(ext);
+				sAdditions.pop_back();
+				x509_add_ext(&ctx, m_cert, NID_subject_alt_name, sAdditions.c_str());
 			}
+
+			// int nid = OBJ_create("1.2.3.4", "short", "long");
+			// X509V3_EXT_add_alias(nid, NID_netscape_comment);
+			// x509_add_ext(&ctx, m_cert, nid, "value");
 		}
 
 		const EVP_MD* pDigest = Get_EVP_MD(this->GetHashAlg());
@@ -251,6 +329,7 @@ public:
 
 		if (X509_sign(m_cert, m_key, pDigest) == 0)
 		{
+			std::string sErr(ERR_error_string(ERR_get_error(), NULL));
 			if (NULL != m_cert)
 				X509_free(m_cert);
 			m_cert = NULL;
@@ -510,20 +589,39 @@ public:
 	virtual bool SignPKCS7(unsigned char* pData, unsigned int nSize,
 						   unsigned char*& pDataDst, unsigned int& nSizeDst)
 	{
-		ERR_load_crypto_strings();
-		OpenSSL_add_all_algorithms();
-
 		BIO* inputbio = BIO_new(BIO_s_mem());
 		BIO_write(inputbio, pData, nSize);
-		PKCS7* pkcs7 = PKCS7_sign(m_cert, m_key, NULL, inputbio, PKCS7_DETACHED | PKCS7_BINARY);
-		BIO_free(inputbio);
+		PKCS7* pkcs7 = PKCS7_sign(m_cert, m_key, NULL, inputbio, PKCS7_DETACHED | PKCS7_BINARY | PKCS7_PARTIAL);
+
 		if (!pkcs7)
+		{
+			std::string sErr(ERR_error_string(ERR_get_error(), NULL));
 			return false;
+		}
+
+		const EVP_MD* evp = NULL;
+		if (m_alg == OOXML_HASH_ALG_ECDSA_512)
+			evp = EVP_sha512();
+		else if (m_alg == OOXML_HASH_ALG_ECDSA_384)
+			evp = EVP_sha384();
+
+		if (!PKCS7_sign_add_signer(pkcs7, m_cert, m_key, evp, 0))
+		{
+			std::string sErr(ERR_error_string(ERR_get_error(), NULL));
+			return false;
+		}
+
+		if (PKCS7_final(pkcs7, inputbio, PKCS7_DETACHED | PKCS7_BINARY) <= 0)
+		{
+			std::string sErr(ERR_error_string(ERR_get_error(), NULL));
+			return false;
+		}
 
 		BIO* outputbio = BIO_new(BIO_s_mem());
 		i2d_PKCS7_bio(outputbio, pkcs7);
 		BUF_MEM* mem = NULL;
 		BIO_get_mem_ptr(outputbio, &mem);
+
 		if (mem && mem->data && mem->length)
 		{
 			nSizeDst = mem->length;
@@ -531,12 +629,86 @@ public:
 			pDataDst = new BYTE[nSizeDst];
 			memcpy(pDataDst, mem->data, nSizeDst);
 		}
+
+		BIO_free(inputbio);
 		BIO_free(outputbio);
 		PKCS7_free(pkcs7);
 
-		EVP_cleanup();
-
 		return true;
+	}
+
+
+	virtual int VerifyPKCS7(unsigned char* pPKCS7Data, unsigned int nPKCS7Size,
+							unsigned char* pData, unsigned int nSize)
+	{
+		int nRes = 0;
+
+		BIO* outputbio = BIO_new_mem_buf(pPKCS7Data, nPKCS7Size);
+
+		PKCS7* pkcs7 = d2i_PKCS7_bio(outputbio, NULL);
+
+		if (pkcs7 == NULL || !PKCS7_type_is_signed(pkcs7))
+			return nRes;
+
+		int type = OBJ_obj2nid(pkcs7->type);
+		std::string sType = OBJ_nid2ln(type);
+
+		BIO* inputbio = BIO_new_mem_buf(pData, nSize);
+
+		BIO* out_verify = BIO_new(BIO_s_mem());
+
+		X509_STORE* x509_store = X509_STORE_new();
+		X509_STORE_add_cert(x509_store, m_cert);
+		// Нужно ли доверять сертификату, если нет доступа к локальному хранилищу сертификатов?
+		// X509_STORE_set_flags(x509_store, X509_V_FLAG_PARTIAL_CHAIN);
+
+		// Получала X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT_LOCALLY
+		if (PKCS7_verify(pkcs7, NULL, x509_store, inputbio, out_verify, PKCS7_NOCHAIN | PKCS7_NOSIGS) == 1)
+		{
+			nRes |= (1 << 0); // NOT CHANGED
+			nRes |= (1 << 1); // VERIFIED
+		}
+		else
+		{
+			// std::string sError = GetOpenSslErrors();
+			BIO_free(out_verify);
+			out_verify = BIO_new(BIO_s_mem());
+
+			if (PKCS7_verify(pkcs7, NULL, x509_store, inputbio, out_verify, PKCS7_NOCHAIN | PKCS7_NOSIGS | PKCS7_NOVERIFY) == 1)
+			{
+				nRes |= (1 << 0); // NOT CHANGED
+			}
+		}
+
+		/* Извлечение сертификата из подписи. Работает
+		PKCS7 *p7enc = d2i_PKCS7_bio(out_verify, NULL);
+		BIO* csr_bio = BIO_new(BIO_s_mem());
+		if (PKCS7_decrypt(p7enc, m_key, m_cert, csr_bio, 0))
+		{
+			X509_REQ *csr = d2i_X509_REQ_bio(csr_bio, NULL);
+			BIO* csr_pem = BIO_new(BIO_s_mem());
+			PEM_write_bio_X509_REQ(csr_pem, csr);
+
+			BUF_MEM *bptr_csr;
+			BIO_get_mem_ptr(csr_pem, &bptr_csr);
+
+			char* data = bptr_csr->data;
+			int length = bptr_csr->length;
+
+			X509_REQ_free(csr);
+		}
+
+		PKCS7_free(p7enc);
+		BIO_free(csr_bio);
+		*/
+
+		BIO_free(inputbio);
+		BIO_free(outputbio);
+		BIO_free(out_verify);
+		PKCS7_free(pkcs7);
+		X509_STORE_free(x509_store);
+
+		return nRes;
 	}
 
 	virtual std::string GetHash(unsigned char* pData, unsigned int nSize, int nAlg)
@@ -738,6 +910,15 @@ public:
 			break;
 		case NID_ED448:
 			algs.push_back(OOXML_HASH_ALG_ED448);
+			break;
+		case NID_ecdsa_with_SHA256:
+			algs.push_back(OOXML_HASH_ALG_ECDSA_256);
+			break;
+		case NID_ecdsa_with_SHA384:
+			algs.push_back(OOXML_HASH_ALG_ECDSA_384);
+			break;
+		case NID_ecdsa_with_SHA512:
+			algs.push_back(OOXML_HASH_ALG_ECDSA_512);
 			break;
 		default:
 			break;

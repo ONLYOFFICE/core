@@ -173,9 +173,6 @@ private:
     int m_lIndexSrc;
     int m_lIndexDst;
 
-    LONG m_lWidth;
-    LONG m_lHeight;
-
     LONG m_lX;
     LONG m_lY;
 
@@ -197,6 +194,9 @@ private:
     int m_lMaxAdjUse;
 
 public:
+    LONG m_lWidth;
+    LONG m_lHeight;
+    
     // все в одно не получится, формулы появляются и при конвертации path/adj и т.д.
     NSBinPptxRW::CXmlWriter m_oGuidsRes;
     NSBinPptxRW::CXmlWriter m_oPathRes;

@@ -47,12 +47,6 @@
 
 #include "../../Base/Unit.h"
 
-// как все протестируем - уберем
-#define SUPPORT_OLD_SVG_CONVERTATION
-#ifdef SUPPORT_OLD_SVG_CONVERTATION
-#include "../../../HtmlRenderer/include/ASCSVGWriter.h"
-#endif
-
 namespace NSShapeImageGen
 {
 	const long c_nMaxImageSize = 2000;
@@ -266,6 +260,15 @@ namespace NSShapeImageGen
 				OOX::CPath pathSaveItem =  m_strDstMedia + FILE_SEPARATOR_STR + oInfo.GetPath2();
 				CDirectory::CopyFile(strFileSrc, pathSaveItem.GetPath());
 				
+				result = true;
+			}
+			else if (checker.eFileType == _CXIMAGE_FORMAT_GIF)
+			{
+				oInfo.m_eType = itGIF;
+
+				OOX::CPath pathSaveItem = m_strDstMedia + FILE_SEPARATOR_STR + oInfo.GetPath2();
+				CDirectory::CopyFile(strFileSrc, pathSaveItem.GetPath());
+
 				result = true;
 			}
 			else if (checker.eFileType == _CXIMAGE_FORMAT_PNG)
@@ -518,16 +521,14 @@ namespace NSShapeImageGen
 				CDirectory::CopyFile(strFileName, pathSaveItem.GetPath());
 
 				::MetaFile::IMetaFile* pMetafile = MetaFile::Create(m_pFontManager->GetApplication());
+
 				if (pMetafile->LoadFromFile(strFileName.c_str()))
 				{
 					// пробуем сохранить в svg напрямую из метафайлов
-					std::wstring sInternalSvg = pMetafile->ConvertToSvg();
+					std::wstring sInternalSvg = pMetafile->ConvertToSvg(lWidth, lHeight);
 
 					if (!sInternalSvg.empty())
 					{
-						// тут размер не проверяем. сохраняем как есть
-						oInfo.m_eType = itSVG;
-
 						NSFile::CFileBinary::SaveToFile(strSaveItemWE + L".svg", sInternalSvg);
 						m_mapMediaFiles.insert(std::make_pair(sMapKey, oInfo));
 
@@ -535,80 +536,8 @@ namespace NSShapeImageGen
 						return oInfo;
 					}
 
-					double x = 0, y = 0, w = 0, h = 0;
-					pMetafile->GetBounds(&x, &y, &w, &h);
-
-					// ограничиваем размеры
-					int nMaxSize = 1000;
-					int nMinSize = 10;
-					double dKoef = (double)nMaxSize / ((w >= h) ? w : h);
-
-					int nPixW = (int)(dKoef * w + 0.5);
-					int nPixH = (int)(dKoef * h + 0.5);
-
-				#ifdef SUPPORT_OLD_SVG_CONVERTATION
-					// пробуем сохранить в svg. большие/сложные файлы
-					// сохраняем в растр
-					NSHtmlRenderer::CASCSVGWriter oWriterSVG;
-					oWriterSVG.SetFontManager(m_pFontManager);
-					oWriterSVG.put_Width(nPixW);
-					oWriterSVG.put_Height(nPixH);
-
-					bool bRes = true;					
-					try
-					{
-						bRes = pMetafile->DrawOnRenderer(&oWriterSVG, 0, 0, nPixW, nPixH);
-					}
-					catch (...)
-					{
-						bRes = false;
-					}
-
-					if (bRes)
-					{
-						bool bIsComplex = false;
-
-						// растровые - сложные
-						oWriterSVG.IsRaster(&bIsComplex);
-
-						if (!bIsComplex)
-						{
-							LONG lSvgDataSize = 0;
-							oWriterSVG.GetSVGDataSize(&lSvgDataSize);
-
-							// больше 5 метров - сложные
-							bIsComplex = (lSvgDataSize > 5 * 1024 * 1024);
-						}
-
-						if (!bIsComplex)
-						{
-							oInfo.m_eType = itSVG;
-
-							oWriterSVG.SaveFile(strSaveItemWE + L".svg");
-							m_mapMediaFiles.insert(std::make_pair(sMapKey, oInfo));
-
-							RELEASEOBJECT(pMetafile);
-							return oInfo;
-						}
-					}
-				#endif
-
-					// не смогли (или не захотели? (SUPPORT_OLD_SVG_CONVERTATION)) сконвертировать в svg.
+					// не смогли сконвертировать в svg.
 					// пробуем в png
-					if (lWidth <= 0 || lHeight <= 0)
-					{
-						// ограничиваем размеры в растре.
-						if ((nMinSize <= w && w <= nMaxSize) && (nMinSize <= h && h <= nMaxSize))
-						{
-							lWidth = -1;
-							lHeight = -1;
-						}
-						else
-						{
-							lWidth = nPixW;
-							lHeight = nPixH;
-						}
-					}
 
 					std::wstring strSaveItem = strSaveItemWE + L".png";
 					pMetafile->ConvertToRaster(strSaveItem.c_str(), 4 /*CXIMAGE_FORMAT_PNG*/,  lWidth, lHeight);

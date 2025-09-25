@@ -35,6 +35,8 @@
 #include "Biff12_records/CommonRecords.h"
 #include "Biff12_records/BeginSheet.h""
 #include "Biff12_unions/COLINFOS.h"
+#include "Biff12_records/BeginColInfos.h"
+#include "Biff12_records/EndColInfos.h"
 #include "Biff12_records/WsDim.h"
 #include "Biff12_records/Drawing.h""
 #include "Biff12_records/LegacyDrawing.h"
@@ -182,13 +184,13 @@ const bool WorkSheetStream::loadContent(BinProcessor& proc)
 			}*/
 			m_SheetaDataPosition = proc.GetRecordPosition();
 			while (proc.getNextRecordType() != rt_EndSheetData)
-				proc.SkipRecord();
+				proc.SkipRecord(false);
 		}break;
 
 		case rt_BeginUserShViews:
 		{
 			while (proc.getNextRecordType() != rt_EndUserShViews)
-				proc.SkipRecord();
+				proc.SkipRecord(false);
 		}break;
 
 		case rt_WsFmtInfo:
@@ -453,13 +455,86 @@ const bool WorkSheetStream::saveContent(XLS::BinProcessor & proc)
 {
 	proc.mandatory<BeginSheet>();		 
 
-	for (auto &item : m_arCOLINFOS)
-	{
-		proc.mandatory(*item);
-	}
+    if (m_BrtWsProp != nullptr)
+        proc.mandatory(*m_BrtWsProp);
 
-	if (m_BrtWsDim != nullptr)
-		proc.mandatory(*m_BrtWsDim);
+    if (m_BrtWsDim != nullptr)
+        proc.mandatory(*m_BrtWsDim);
+
+    if (m_WSVIEWS2 != nullptr)
+        proc.mandatory(*m_WSVIEWS2);
+
+    if (m_BrtWsFmtInfo != nullptr)
+        proc.mandatory(*m_BrtWsFmtInfo);
+
+	if(!m_arCOLINFOS.empty())
+	{
+		proc.mandatory<BeginColInfos>();
+		for (auto &item : m_arCOLINFOS)
+		{
+			proc.mandatory(*item);
+		}
+		proc.mandatory<EndColInfos>();
+	}
+    if (m_CELLTABLE != nullptr)
+        proc.mandatory(*m_CELLTABLE);
+
+    if (m_BrtSheetProtectionIso != nullptr)
+        proc.mandatory(*m_BrtSheetProtectionIso);
+
+    if (m_BrtSheetProtection != nullptr)
+        proc.mandatory(*m_BrtSheetProtection);
+
+    for (auto &item : m_arBrtRangeProtectionIso)
+    {
+        proc.mandatory(*item);
+    }
+
+    for (auto &item : m_arBrtRangeProtection)
+    {
+        proc.mandatory(*item);
+    }
+
+    if (m_AUTOFILTER != nullptr)
+        proc.mandatory(*m_AUTOFILTER);
+
+    if (m_SORTSTATE != nullptr)
+        proc.mandatory(*m_SORTSTATE);
+
+    if (m_DCON != nullptr)
+        proc.mandatory(*m_DCON);
+
+    if (m_MERGECELLS != nullptr)
+        proc.mandatory(*m_MERGECELLS);
+
+    for (auto &item : m_arCONDITIONALFORMATTING)
+    {
+        proc.mandatory(*item);
+    }
+
+    if (m_DVALS != nullptr)
+        proc.mandatory(*m_DVALS);
+
+    if (m_HLINKS != nullptr)
+        proc.mandatory(*m_HLINKS);
+
+    if (m_BrtPrintOptions != nullptr)
+        proc.mandatory(*m_BrtPrintOptions);
+
+    if (m_BrtMargins != nullptr)
+        proc.mandatory(*m_BrtMargins);
+
+    if (m_BrtPageSetup != nullptr)
+        proc.mandatory(*m_BrtPageSetup);
+
+    if (m_HEADERFOOTER != nullptr)
+        proc.mandatory(*m_HEADERFOOTER);
+
+    if (m_RWBRK != nullptr)
+        proc.mandatory(*m_RWBRK);
+
+    if (m_COLBRK != nullptr)
+        proc.mandatory(*m_COLBRK);
 
 	if (m_BrtDrawing != nullptr)
 		proc.mandatory(*m_BrtDrawing);
@@ -470,86 +545,17 @@ const bool WorkSheetStream::saveContent(XLS::BinProcessor & proc)
 	if (m_BrtLegacyDrawingHF != nullptr)
 		proc.mandatory(*m_BrtLegacyDrawingHF);
 
-	if (m_HLINKS != nullptr)
-		proc.mandatory(*m_HLINKS);
+    if (m_BrtBkHim != nullptr)
+        proc.mandatory(*m_BrtBkHim);
 
-	if (m_MERGECELLS != nullptr)
-		proc.mandatory(*m_MERGECELLS);
+    if (m_OLEOBJECTS != nullptr)
+        proc.mandatory(*m_OLEOBJECTS);
 
-	if (m_CELLTABLE != nullptr)
-		proc.mandatory(*m_CELLTABLE);
-
-	if (m_BrtWsFmtInfo != nullptr)
-		proc.mandatory(*m_BrtWsFmtInfo);
-
-	if (m_WSVIEWS2 != nullptr)
-		proc.mandatory(*m_WSVIEWS2);
-
-	if (m_BrtMargins != nullptr)
-		proc.mandatory(*m_BrtMargins);
-
-	if (m_BrtPageSetup != nullptr)
-		proc.mandatory(*m_BrtPageSetup);
-
-	if (m_BrtPrintOptions != nullptr)
-		proc.mandatory(*m_BrtPrintOptions);
-
-	if (m_HEADERFOOTER != nullptr)
-		proc.mandatory(*m_HEADERFOOTER);
-	
-	if (m_BrtSheetProtectionIso != nullptr)
-		proc.mandatory(*m_BrtSheetProtectionIso);
-
-	if (m_BrtSheetProtection != nullptr)
-		proc.mandatory(*m_BrtSheetProtection);
+    if (m_ACTIVEXCONTROLS != nullptr)
+        proc.mandatory(*m_ACTIVEXCONTROLS);
 
 	if (m_LISTPARTS != nullptr)
 		proc.mandatory(*m_LISTPARTS);
-
-	if (m_AUTOFILTER != nullptr)
-		proc.mandatory(*m_AUTOFILTER);
-
-	if (m_SORTSTATE != nullptr)
-		proc.mandatory(*m_SORTSTATE);
-
-	for (auto &item : m_arCONDITIONALFORMATTING)
-	{
-		proc.mandatory(*item);
-	}
-
-	if (m_DVALS != nullptr)
-		proc.mandatory(*m_DVALS);
-
-	if (m_OLEOBJECTS != nullptr)
-		proc.mandatory(*m_OLEOBJECTS);
-
-	if (m_ACTIVEXCONTROLS != nullptr)
-		proc.mandatory(*m_ACTIVEXCONTROLS);
-
-	if (m_BrtWsProp != nullptr)
-		proc.mandatory(*m_BrtWsProp);
-
-	if (m_BrtBkHim != nullptr)
-		proc.mandatory(*m_BrtBkHim);
-
-	if (m_RWBRK != nullptr)
-		proc.mandatory(*m_RWBRK);
-
-	if (m_COLBRK != nullptr)
-		proc.mandatory(*m_COLBRK);
-
-	for (auto &item : m_arBrtRangeProtectionIso)
-	{
-		proc.mandatory(*item);
-	}
-
-	for (auto &item : m_arBrtRangeProtection)
-	{
-		proc.mandatory(*item);
-	}
-
-	if (m_DCON != nullptr)
-		proc.mandatory(*m_DCON);
 
 	if (m_FRTWORKSHEET != nullptr)
 		proc.mandatory(*m_FRTWORKSHEET);

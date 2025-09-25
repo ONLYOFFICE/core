@@ -32,6 +32,9 @@
 #pragma once
 
 #include "Workbook.h"
+#include "../Worksheets/Worksheet.h"
+
+#include "../../XlsbFormat/Xlsb.h"
 
 #include "../../XlsbFormat/WorkBookStream.h"
 
@@ -40,18 +43,29 @@
 #include "../../XlsbFormat/Biff12_unions/EXTERNALS.h"
 #include "../../XlsbFormat/Biff12_unions/PIVOTCACHEIDS.h"
 #include "../../XlsbFormat/Biff12_unions/PIVOTCACHEID.h"
+#include "../../XlsbFormat/Biff12_unions/SLICERCACHESPIVOTCACHEIDS.h"
+#include "../../XlsbFormat/Biff12_unions/SLICERCACHESPIVOTCACHEID.h"
 #include "../../XlsbFormat/Biff12_records/FileVersion.h"
 #include "../../XlsbFormat/Biff12_records/BeginPivotCacheID.h"
+#include "../../XlsbFormat/Biff12_unions/SUP.h"
+#include "../../XlsbFormat/Biff12_records/SupSelf.h"
+#include "../../XlsbFormat/Biff12_records/CommonRecords.h"
+#include "../../XlsbFormat/Biff12_records/BundleSh.h"
+#include "../../XlsbFormat/Biff12_records/BeginSlicerCachesPivotCacheID.h"
+#include "../../XlsbFormat/Biff12_unions/FRTWORKBOOK.h"
+
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/GlobalWorkbookInfo.h"
 
 #include "../../Common/SimpleTypes_Shared.h"
 #include "../../Common/SimpleTypes_Spreadsheet.h"
 #include "../../DocxFormat/Drawing/DrawingExt.h"
 
+#include "../../Binary/XlsbFormat/FileTypes_SpreadsheetBin.h"
+
 namespace OOX
 {
 	namespace Spreadsheet
-	{	
+	{
 		CWorkbookPivotCache::CWorkbookPivotCache()
 		{
 		}
@@ -84,6 +98,47 @@ namespace OOX
 				ReadAttributes(ptr->m_BrtBeginPivotCacheID);
 			}
 		}
+        void CWorkbookPivotCache::fromBin14(XLS::BaseObjectPtr& obj)
+        {
+            auto ptr1 = static_cast<XLSB::SLICERCACHESPIVOTCACHEID*>(obj.get());
+            if(ptr1 == nullptr)
+                return;
+            auto ptr = static_cast<XLSB::BeginSlicerCachesPivotCacheID*>(ptr1->m_BrtBeginSlicerCachesPivotCacheID.get());
+            m_oRid =  ptr->FRTheader.relID.relId.value();
+        }
+		XLS::BaseObjectPtr CWorkbookPivotCache::toBin()
+		{
+			auto ptr(new XLSB::PIVOTCACHEID);
+			XLS::BaseObjectPtr objectPtr(ptr);
+			auto ptr1(new XLSB::BeginPivotCacheID);
+			ptr->m_BrtBeginPivotCacheID = XLS::BaseObjectPtr{ptr1};
+
+			if(m_oCacheId.IsInit())
+				ptr1->idSx = m_oCacheId->GetValue();
+			else
+				ptr1->idSx = 0;
+			if(m_oRid.IsInit())
+				ptr1->irstcacheRelID.value = m_oRid->GetValue();
+			else
+				ptr1->irstcacheRelID.value.setSize(0xFFFFFFFF);
+			return objectPtr;
+		}
+        XLS::BaseObjectPtr CWorkbookPivotCache::toBin14()
+        {
+            auto ptr(new XLSB::SLICERCACHESPIVOTCACHEID);
+            XLS::BaseObjectPtr objectPtr(ptr);
+            auto ptr1(new XLSB::BeginSlicerCachesPivotCacheID);
+            ptr->m_BrtBeginSlicerCachesPivotCacheID = XLS::BaseObjectPtr{ptr1};
+
+            if(m_oRid.IsInit())
+            {
+                ptr1->FRTheader.relID.relId = m_oRid->GetValue();
+                ptr1->FRTheader.fRelID = true;
+            }
+            else
+                ptr1->FRTheader.relID.relId.setSize(0xFFFFFFFF);
+            return objectPtr;
+        }
 		EElementType CWorkbookPivotCache::getType() const
 		{
 			return et_x_WorkbookPivotCache;
@@ -125,7 +180,10 @@ namespace OOX
 		{
 			if (m_arrItems.empty()) return;
 
-			writer.WriteString(L"<pivotCaches>");
+            if(!pivotCaches14)
+                writer.WriteString(L"<pivotCaches>");
+            else
+                writer.WriteString(L"<x14:pivotCaches>");
 
 			for (size_t i = 0; i < m_arrItems.size(); ++i)
 			{
@@ -134,20 +192,21 @@ namespace OOX
 					m_arrItems[i]->toXML(writer);
 				}
 			}
-
-			writer.WriteString(L"</pivotCaches>");
+            if(!pivotCaches14)
+                writer.WriteString(L"</pivotCaches>");
+            else
+                writer.WriteString(L"</x14:pivotCaches>");
 		}
 		void CWorkbookPivotCaches::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			if (oReader.IsEmptyNode())
 				return;
-
 			int nCurDepth = oReader.GetDepth();
 			while (oReader.ReadNextSiblingNode(nCurDepth))
 			{
 				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-				if (L"pivotCaches" == sName)
+                if (L"pivotCache" == sName)
 				{
 					CWorkbookPivotCache *pPivotCache = new CWorkbookPivotCache();
 					m_arrItems.push_back(pPivotCache);
@@ -166,6 +225,40 @@ namespace OOX
 			}
 
 		}
+        void CWorkbookPivotCaches::fromBin14(XLS::BaseObjectPtr& obj)
+        {
+            auto ptr = static_cast<XLSB::SLICERCACHESPIVOTCACHEIDS*>(obj.get());
+            if(ptr != nullptr)
+            {
+                for(auto &item : ptr->m_arSLICERCACHESPIVOTCACHEID)
+                {
+                    auto bookPivotCache = new CWorkbookPivotCache;
+                    bookPivotCache->fromBin14(item);
+                    m_arrItems.push_back(bookPivotCache);
+                }
+            }
+
+        }
+		XLS::BaseObjectPtr CWorkbookPivotCaches::toBin()
+		{
+			auto ptr(new XLSB::PIVOTCACHEIDS);
+			XLS::BaseObjectPtr objectPtr(ptr);
+
+			for(auto i:m_arrItems)
+				ptr->m_arPIVOTCACHEID.push_back(i->toBin());
+
+			return objectPtr;
+		}
+        XLS::BaseObjectPtr CWorkbookPivotCaches::toBin14()
+        {
+            auto ptr(new XLSB::SLICERCACHESPIVOTCACHEIDS);
+            XLS::BaseObjectPtr objectPtr(ptr);
+
+            for(auto i:m_arrItems)
+                ptr->m_arSLICERCACHESPIVOTCACHEID.push_back(i->toBin14());
+
+            return objectPtr;
+        }
 		EElementType CWorkbookPivotCaches::getType() const
 		{
 			return et_x_WorkbookPivotCaches;
@@ -237,8 +330,34 @@ namespace OOX
 						m_oAppName = static_cast<XLSB::FileVersion*>(workBookStream->m_BrtFileVersion.get())->stAppName.value();
 
 					if (workBookStream->m_FRTWORKBOOK != nullptr)
+                    {
 						m_oExtLst = workBookStream->m_FRTWORKBOOK;
-					
+                        auto frtWorkbook = static_cast<XLSB::FRTWORKBOOK*>(workBookStream->m_FRTWORKBOOK.get());
+                        if(frtWorkbook->m_SLICERCACHESPIVOTCACHEIDS!= nullptr && m_oExtLst.IsInit())
+                        {
+                            auto pivotCacheid = 0;
+                            if(m_oPivotCaches.IsInit())
+                            {
+                                for(auto i:m_oPivotCaches->m_arrItems)
+                                {
+                                    if(i->m_oCacheId.IsInit() && i->m_oCacheId->GetValue() >= pivotCacheid)
+                                        pivotCacheid = i->m_oCacheId->GetValue() + 1;
+                                }
+                            }
+                            for(auto ext : m_oExtLst->m_arrExt)
+                            {
+                                if(ext->m_oWorkbookPivotCaches.IsInit())
+                                {
+                                    for( auto cache : ext->m_oWorkbookPivotCaches->m_arrItems)
+                                    {
+                                        cache->m_oCacheId = pivotCacheid;
+                                        pivotCacheid++;
+                                    }
+                                }
+
+                            }
+                    	}
+					}
 					if (workBookStream->m_BrtFileSharingIso != nullptr)
 						m_oFileSharing = workBookStream->m_BrtFileSharingIso;
 					else if (workBookStream->m_BrtFileSharing != nullptr)
@@ -248,6 +367,79 @@ namespace OOX
 				//workBookStream.reset();
 
 			}
+		}
+
+		XLS::BaseObjectPtr CWorkbook::WriteBin() const
+		{
+			XLSB::WorkBookStreamPtr workBookStream(new XLSB::WorkBookStream);
+
+            if (m_oBookViews.IsInit())
+            {
+                auto viewPtr(new XLSB::BOOKVIEWS);
+                viewPtr->m_arBrtBookView = m_oBookViews->toBin();
+				workBookStream->m_BOOKVIEWS = XLS::BaseObjectPtr{viewPtr};
+			}
+			if (m_oCalcPr.IsInit())
+                workBookStream->m_BrtCalcProp = m_oCalcPr->toBin();
+			if (m_oSheets.IsInit())
+			{
+				auto ptr(new XLSB::BUNDLESHS);
+				ptr->m_arBrtBundleSh = m_oSheets->toBin();
+                workBookStream->m_BUNDLESHS = XLS::BaseObjectPtr{ptr};
+			}
+			if (m_oWorkbookPr.IsInit())
+				workBookStream->m_BrtWbProp = m_oWorkbookPr->toBin();
+			if (m_oPivotCaches.IsInit())
+				workBookStream->m_PIVOTCACHEIDS = m_oPivotCaches->toBin();
+			if (m_oDefinedNames.IsInit())
+			{
+                workBookStream->m_arBrtName = m_oDefinedNames->toBin();
+			}
+			else
+			{
+				workBookStream->m_arBrtName = m_oDefinedNames->AddFutureFunctions(0);
+			}
+			if (m_oWorkbookProtection.IsInit())
+				workBookStream->m_BrtBookProtection = m_oWorkbookProtection->toBin();
+
+            workBookStream->m_EXTERNALS = WriteXtiRefs();
+			if (m_oExternalReferences.IsInit())
+			{
+				auto ptr = static_cast<XLSB::EXTERNALS*>(workBookStream->m_EXTERNALS.get());
+				auto sups = m_oExternalReferences->toBin();
+				if(!sups.empty())
+					ptr->m_arSUP.insert(ptr->m_arSUP.end(), sups.begin(), sups.end());
+			}
+
+
+			/* 
+            if (m_oAppName.IsInit())
+			{
+				auto ptr(new XLSB::FileVersion);
+				ptr->stAppName = m_oAppName.get();
+				ptr->stLastEdited = L"";
+				ptr->stLowestEdited = L"";
+				ptr->stRupBuild = L"";
+				workBookStream->m_BrtFileVersion = XLS::BaseObjectPtr{ptr};
+			}*/
+
+			if (m_oExtLst.IsInit())
+				workBookStream->m_FRTWORKBOOK = m_oExtLst->toBinWorkBook();
+
+			if (m_oFileSharing.IsInit())
+            {
+                auto sharingVector = m_oFileSharing->toBin();
+                if(sharingVector.size() == 2)
+                {
+                    workBookStream->m_BrtFileSharingIso = sharingVector.at(0);
+                    workBookStream->m_BrtFileSharing = sharingVector.at(1);
+                }
+                else if(sharingVector.size() == 1)
+                {
+                    workBookStream->m_BrtFileSharing = sharingVector.at(0);
+                }
+            }
+			return workBookStream;
 		}
 		void CWorkbook::read(const CPath& oPath)
 		{
@@ -292,15 +484,43 @@ namespace OOX
 			IFileContainer::Read(oRootPath, oPath); //в данном случае порядок считывания важен для xlsb
 
 			CXlsx* xlsx = dynamic_cast<CXlsx*>(File::m_pMainDocument);
-			if ((xlsx) && (xlsx->m_pVbaProject))
+			if (xlsx)
 			{
-				m_bMacroEnabled = true;
+				if (xlsx->m_pVbaProject)
+				{
+					m_bMacroEnabled = true;
+				}
+				//дубли листов
+				for (auto elm : this->m_mapContainer)
+				{
+					if (elm.second->type() == OOX::Spreadsheet::FileTypes::Chartsheets || elm.second->type() == OOX::Spreadsheet::FileTypes::Worksheet)
+					{
+						if (xlsx->m_mapWorksheets.end() == xlsx->m_mapWorksheets.find(elm.first))
+						{
+							CWorksheet* sheet = dynamic_cast<CWorksheet*>(elm.second.GetPointer());
+							xlsx->m_arWorksheets.push_back(sheet);
+							xlsx->m_mapWorksheets.insert(std::make_pair(elm.first, sheet));
+						}
+
+					}
+				}
 			}
+
 		}
 		void CWorkbook::toXML(NSStringUtils::CStringBuilder& writer) const
 		{
-			writer.WriteString(L"<workbook xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" \
-xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">");
+			writer.WriteString(L"<workbook \
+xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" \
+xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" \
+xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" \
+mc:Ignorable=\"x15 xr xr6 xr10 xr2\" \
+xmlns:x14=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main\" \
+xmlns:x15=\"http://schemas.microsoft.com/office/spreadsheetml/2010/11/main\" \
+xmlns:xr=\"http://schemas.microsoft.com/office/spreadsheetml/2014/revision\" \
+xmlns:xr6=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision6\" \
+xmlns:xr10=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision10\" \
+xmlns:xr2=\"http://schemas.microsoft.com/office/spreadsheetml/2015/revision2\"\
+>");
 
 			if (m_oFileSharing.IsInit())
 				m_oFileSharing->toXML(writer);
@@ -371,7 +591,7 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">
 						WritingElement_ReadAttributes_Start(oReader)
 							WritingElement_ReadAttributes_Read_if(oReader, L"appName", m_oAppName)
 						WritingElement_ReadAttributes_End(oReader)
-					}		
+					}
 					else if (L"WindowHeight" == sName)
 					{
 					}
@@ -388,20 +608,33 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">
 		}
 		void CWorkbook::write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
 		{
-			NSStringUtils::CStringBuilder sXml;
+			CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
+			if ((xlsb) && (xlsb->m_bWriteToXlsb))
+			{
+				XLS::BaseObjectPtr object = WriteBin();
+				xlsb->WriteBin(oPath, object.get());
+			}
+			else
+			{
+				NSStringUtils::CStringBuilder sXml;
 
-			sXml.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
+				sXml.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
 
-			toXML(sXml);
+				toXML(sXml);
 
-			std::wstring sPath = oPath.GetPath();
-			NSFile::CFileBinary::SaveToFile(sPath.c_str(), sXml.GetData());
-
+				std::wstring sPath = oPath.GetPath();
+				NSFile::CFileBinary::SaveToFile(sPath.c_str(), sXml.GetData());
+			}
 			oContent.Registration(type().OverrideType(), oDirectory, oPath.GetFilename());
 			IFileContainer::Write(oPath, oDirectory, oContent);
 		}
 		const OOX::FileType CWorkbook::type() const
 		{
+			CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
+			if ((xlsb) && (xlsb->m_bWriteToXlsb))
+			{
+				return OOX::SpreadsheetBin::FileTypes::WorkbookBin;
+			}
 			if (m_bMacroEnabled)	return OOX::Spreadsheet::FileTypes::WorkbookMacro;
 			else					return OOX::Spreadsheet::FileTypes::Workbook;
 		}
@@ -411,7 +644,17 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">
 		}
 		const CPath CWorkbook::DefaultFileName() const
 		{
-			return type().DefaultFileName();
+			CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
+			if ((xlsb) && (xlsb->m_bWriteToXlsb))
+			{
+				CPath name = type().DefaultFileName();
+				name.SetExtention(L"bin");
+				return name;
+			}
+			else
+			{
+				return type().DefaultFileName();
+			}
 		}
 		EElementType CWorkbook::getType () const
 		{
@@ -478,6 +721,33 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">
 				}
 			}
 			return lActiveSheet;
+		}
+
+		XLS::BaseObjectPtr CWorkbook::WriteXtiRefs() const
+		{
+			auto ptr(new XLSB::EXTERNALS);
+
+
+			auto externSheet(new XLSB::ExternSheet);
+			ptr->m_BrtExternSheet = XLS::BaseObjectPtr{externSheet};
+
+			for(auto i:XLS::GlobalWorkbookInfo::arXti_External_static)
+			{	
+				auto sup(new XLSB::SUP);
+				auto supSelf(new XLSB::SupSelf);
+				sup->m_source = XLS::BaseObjectPtr{supSelf};
+				ptr->m_arSUP.push_back(XLS::BaseObjectPtr{sup});
+
+				auto xti(new XLS::XTI);
+				xti->iSupBook = i.iSup;
+				xti->itabFirst = i.itabFirst;
+				xti->itabLast = i.itabLast;
+				
+				auto biffStructPtr = XLS::BiffStructurePtr(xti);
+				externSheet->rgXTI.push_back(biffStructPtr);
+			}
+            externSheet->cXTI = externSheet->rgXTI.size();
+			return XLS::BaseObjectPtr{ptr};
 		}
 
 	} //Spreadsheet

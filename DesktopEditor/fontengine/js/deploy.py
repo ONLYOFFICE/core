@@ -23,3 +23,5 @@ base.copy_file(src_dir + "fonts_ie.js",                dst_dir + "fonts_ie.js")
 base.copy_file(src_dir + "../engine/module_native.js", dst_dir + "fonts_native.js")
 base.copy_file(src_dir + "fonts.wasm",                 dst_dir + "fonts.wasm")
 base.copy_file(src_dir + "../module.js",               dst_dir + "../engine.js")
+
+base.replaceInFileUtf8(dst_dir + "../engine.js", "// BASE FILE FOR GENERATION", "// THIS FILE WAS GENERATED AUTOMATICALLY. DO NOT CHANGE IT!")

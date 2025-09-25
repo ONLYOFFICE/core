@@ -144,12 +144,17 @@ namespace PdfWriter
 		m_unLen  = 0;
 		Set(sValue, isUTF16, isDictValue);
 	}
+	CStringObject::CStringObject()
+	{
+		m_pValue = NULL;
+		m_unLen  = 0;
+	}
 	CStringObject::~CStringObject()
 	{
 		if (m_pValue)
 			delete[] m_pValue;
 	}
-	void CStringObject::Set(const char* sValue, bool isUTF16, bool isDictValue)
+	void CStringObject::Set(const char* sValue, bool isUTF16, bool isDictValue, int nMax)
 	{
 		if (m_pValue)
 		{
@@ -157,7 +162,7 @@ namespace PdfWriter
 			m_unLen = 0;
 		}
 
-		unsigned int unLen = StrLen(sValue, LIMIT_MAX_STRING_LEN);
+		unsigned int unLen = StrLen(sValue, nMax);
 		m_pValue = new BYTE[unLen + 1];
 		StrCpy((char*)m_pValue, (char*)sValue, (char*)(m_pValue + unLen));
 		m_unLen = unLen;
@@ -167,18 +172,18 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	// CBinaryObject
 	//----------------------------------------------------------------------------------------
-	CBinaryObject::CBinaryObject(const BYTE* pValue, unsigned int unLen)
+	CBinaryObject::CBinaryObject(BYTE* pValue, unsigned int unLen, bool bCopy)
 	{
 		m_pValue = NULL;
 		m_unLen  = 0;
-		Set(pValue, unLen);
+		Set(pValue, unLen, bCopy);
 	}
 	CBinaryObject::~CBinaryObject()
 	{
 		if (m_pValue)
 			delete[] m_pValue;
 	}
-	void CBinaryObject::Set(const BYTE* pValue, unsigned int unLen)
+	void CBinaryObject::Set(BYTE* pValue, unsigned int unLen, bool bCopy)
 	{
         unLen = std::min((unsigned int)LIMIT_MAX_STRING_LEN, unLen);
 		if (m_pValue)
@@ -192,9 +197,13 @@ namespace PdfWriter
 			return;
 
 		m_unLen  = unLen;
-		m_pValue = new BYTE[unLen];
-
-		MemCpy(m_pValue, pValue, unLen);
+		if (bCopy)
+		{
+			m_pValue = new BYTE[unLen];
+			MemCpy(m_pValue, pValue, unLen);
+		}
+		else
+			m_pValue = pValue;
 	}
 	//----------------------------------------------------------------------------------------
 	// CProxyObject
@@ -317,10 +326,7 @@ namespace PdfWriter
 		for (int nIndex = 0, nCount = m_arrList.size(); nIndex < nCount; nIndex++)
 		{
 			CObjectBase* pObjectItem = m_arrList.at(nIndex);
-			if (object_type_PROXY == pObjectItem->GetType())
-				pObjectItem = ((CProxyObject*)pObjectItem)->Get();
-
-			if (pObjectItem == pTarget)
+			if (pObjectItem == pTarget || (object_type_PROXY == pObjectItem->GetType() && ((CProxyObject*)pObjectItem)->Get() == pTarget))
 			{
 				if (bReplace)
 				{
@@ -542,7 +548,7 @@ namespace PdfWriter
 		if (m_pStream)
 			delete m_pStream;
 	}
-	CObjectBase*  CDictObject::Get(const std::string& sKey) const
+	CObjectBase* CDictObject::Get(const std::string& sKey) const
 	{
 		std::map<std::string, CObjectBase*>::const_iterator oIter = m_mList.find(sKey);
 		if (m_mList.end() != oIter)
@@ -615,7 +621,7 @@ namespace PdfWriter
 	{
 		Add(sKey, new CBoolObject(bBool));
 	}
-	const char*   CDictObject::GetKey(const CObjectBase* pObject)
+	const char* CDictObject::GetKey(const CObjectBase* pObject)
 	{
 		for (auto const &oIter : m_mList)
 		{
@@ -651,36 +657,11 @@ namespace PdfWriter
 			}
 		}
 	}
-    void CDictObject::WriteSignatureToStream(CStream* pStream, CEncrypt* pEncrypt)
+	void CDictObject::SetStream(CStream* pStream)
 	{
-		for (auto const &oIter : m_mList)
-		{
-			CObjectBase* pObject = oIter.second;
-			if (!pObject)
-				continue;
-
-			if (pObject->IsHidden())
-			{
-				// ничего не делаем
-			}
-			else
-			{
-				int nBegin, nEnd;
-				pStream->WriteEscapeName(oIter.first.c_str());
-				pStream->WriteChar(' ');
-				nBegin = pStream->Tell();
-				// Цифровая подпись не шифруется
-				pStream->Write(pObject, oIter.first == "Contents" ? NULL : pEncrypt);
-				nEnd = pStream->Tell();
-				pStream->WriteStr("\012");
-				if (oIter.first == "Contents")
-					((CSignatureDict*)this)->SetByteRange(nBegin, nEnd);
-				if (oIter.first == "ByteRange")
-					((CSignatureDict*)this)->ByteRangeOffset(nBegin, nEnd);
-			}
-		}
+		m_pStream = pStream;
 	}
-    void CDictObject::SetStream(CXref* pXref, CStream* pStream)
+	void CDictObject::SetStream(CXref* pXref, CStream* pStream, bool bThis)
 	{
 		if (m_pStream)
 			delete m_pStream;
@@ -690,10 +671,11 @@ namespace PdfWriter
 			CNumberObject* pLength = new CNumberObject(0);
 
 			// Только stream object добавляются в таблицу xref автоматически
-			pXref->Add((CObjectBase*)this);
+			if (bThis)
+				pXref->Add((CObjectBase*)this);
 			pXref->Add((CObjectBase*)pLength);
 
-			Add("Length", (CObjectBase*)pLength);
+			Add("Length", pLength);
 		}
 
 		m_pStream = pStream;
@@ -842,7 +824,7 @@ namespace PdfWriter
 
 		return NULL;
 	}
-    void CXref::Add(CObjectBase* pObject)
+	void CXref::Add(CObjectBase* pObject, unsigned int unObjectGen)
 	{
 		if (!pObject)
 			return;
@@ -856,7 +838,6 @@ namespace PdfWriter
 			return;
 		}
 
-
 		// В случае ошибки r объектe нужно применить dispose
 		TXrefEntry* pEntry = new TXrefEntry;
 		if (NULL == pEntry)
@@ -869,7 +850,7 @@ namespace PdfWriter
 
 		pEntry->nEntryType   = IN_USE_ENTRY;
 		pEntry->unByteOffset = 0;
-		pEntry->unGenNo      = 0;
+		pEntry->unGenNo      = unObjectGen;
 		pEntry->pObject      = pObject;
 		pObject->SetRef(m_unStartOffset + m_arrEntries.size() - 1, pEntry->unGenNo);
 		pObject->SetIndirect();
@@ -882,7 +863,7 @@ namespace PdfWriter
 		unsigned int unMaxObjId = m_pPrev ? pPrev->m_arrEntries.size() + pPrev->m_unStartOffset : m_arrEntries.size() + m_unStartOffset;
 
 		m_pTrailer->Add("Size", unMaxObjId);
-		if (m_pPrev)
+		if (m_pPrev && pPrev->m_unAddr)
 			m_pTrailer->Add("Prev", pPrev->m_unAddr);
 
 		pStream->WriteStr("trailer\012");
@@ -907,7 +888,7 @@ namespace PdfWriter
 				if (pEntry->nEntryType == FREE_ENTRY)
 				{
 					if (pNextFreeObj)
-						pNextFreeObj->unByteOffset = pXref->m_unStartOffset;
+						pNextFreeObj->unByteOffset = pXref->m_unStartOffset + unIndex;
 					pNextFreeObj = pEntry;
 				}
 				else
@@ -946,13 +927,21 @@ namespace PdfWriter
 			CDictObject* pTrailer = m_pTrailer;
 			pTrailer->Add("Type", "XRef");
 			pTrailer->Add("Size", unMaxObjId + 1);
-			if (m_pPrev)
+			if (m_pPrev && pPrev->m_unAddr)
 				pTrailer->Add("Prev", pPrev->m_unAddr);
+			int nStreamOffset = pStream->Tell();
+			int nOffsetSize = 1;
+			if (nStreamOffset > 1 << 24)
+				nOffsetSize = 4;
+			else if (nStreamOffset > 1 << 16)
+				nOffsetSize = 3;
+			else if (nStreamOffset > 1 << 8)
+				nOffsetSize = 2;
 			CArrayObject* pW = new CArrayObject();
-			pTrailer->Add("W",  pW);
 			pW->Add(1);
-			pW->Add(3);
+			pW->Add(nOffsetSize);
 			pW->Add(2);
+			pTrailer->Add("W",  pW);
 			CArrayObject* pIndex = new CArrayObject();
 			pTrailer->Add("Index",  pIndex);
 			CNumberObject* pLength = new CNumberObject(0);
@@ -984,7 +973,6 @@ namespace PdfWriter
 
 			// Записываем поток
 			pXref = out;
-			int nStreamOffset = pStream->Tell();
 			pXref->m_unAddr = nStreamOffset;
 			CStream* pTrailerStream = new CMemoryStream();
 			unsigned int unEntries = 0, unEntriesSize = 0;
@@ -1011,9 +999,8 @@ namespace PdfWriter
 						pTrailerStream->WriteChar('\000');
 					else if (pEntry->nEntryType == IN_USE_ENTRY)
 						pTrailerStream->WriteChar('\001');
-					pTrailerStream->WriteChar((unsigned char)(pEntry->unByteOffset >> 16));
-					pTrailerStream->WriteChar((unsigned char)(pEntry->unByteOffset >> 8));
-					pTrailerStream->WriteChar((unsigned char)(pEntry->unByteOffset));
+					for (int i = nOffsetSize - 1; i >= 0; --i)
+						pTrailerStream->WriteChar((pEntry->unByteOffset >> (8 * i)) & 0xFF);
 					pTrailerStream->WriteChar((unsigned char)(pEntry->unGenNo >> 8));
 					pTrailerStream->WriteChar((unsigned char)(pEntry->unGenNo));
 				}
@@ -1025,9 +1012,8 @@ namespace PdfWriter
 			pIndex->Add(unEntries);
 			pIndex->Add(unEntriesSize);
 			pTrailerStream->WriteChar('\001');
-			pTrailerStream->WriteChar((unsigned char)(nStreamOffset >> 16));
-			pTrailerStream->WriteChar((unsigned char)(nStreamOffset >> 8));
-			pTrailerStream->WriteChar((unsigned char)(nStreamOffset));
+			for (int i = nOffsetSize - 1; i >= 0; --i)
+				pTrailerStream->WriteChar((nStreamOffset >> (8 * i)) & 0xFF);
 			pTrailerStream->WriteChar('\000');
 			pTrailerStream->WriteChar('\000');
 

@@ -53,7 +53,7 @@ public:
 
 	static const ElementType type = typeExternSheet;
 
-    _UINT32						cXTI;
+    _UINT32						cXTI = 0;
 	BiffStructurePtrVector		rgXTI;
 //------------------------------------------------
 	std::wstring				name; //biff5

@@ -1,7 +1,6 @@
 #include "CCssCalculator.h"
 #include "CCssCalculator_Private.h"
 
-
 namespace NSCSS
 {
 	CCssCalculator::CCssCalculator()
@@ -14,14 +13,19 @@ namespace NSCSS
 		delete m_pInternal;
 	}
 
-	CCompiledStyle CCssCalculator::GetCompiledStyle(const std::vector<CNode> &arSelectors, const bool& bIsSettings, const UnitMeasure& unitMeasure) const
+	bool CCssCalculator::CalculateCompiledStyle(std::vector<CNode>& arSelectors) const
 	{
-		return m_pInternal->GetCompiledStyle(arSelectors, bIsSettings, unitMeasure);
+		return m_pInternal->CalculateCompiledStyle(arSelectors);
 	}
 
-	bool CCssCalculator::GetCompiledStyle(CCompiledStyle &oStyle, const std::vector<CNode> &arSelectors, const bool &bIsSettings, const UnitMeasure &unitMeasure) const
+	std::wstring CCssCalculator::CalculateStyleId(const CNode& oNode)
 	{
-		return m_pInternal->GetCompiledStyle(oStyle, arSelectors, bIsSettings, unitMeasure);
+		return m_pInternal->CalculateStyleId(oNode);
+	}
+
+	bool CCssCalculator::CalculatePageStyle(NSProperties::CPage& oPageData, const std::vector<CNode> &arSelectors)
+	{
+		return m_pInternal->CalculatePageStyle(oPageData, arSelectors);
 	}
 
 	void CCssCalculator::AddStyles(const std::string &sStyle)
@@ -39,44 +43,9 @@ namespace NSCSS
 		m_pInternal->AddStylesFromFile(wsFileName);
 	}
 
-	void CCssCalculator::SetUnitMeasure(const UnitMeasure& nType)
-	{
-		m_pInternal->SetUnitMeasure(nType);
-	}
-
 	void CCssCalculator::SetDpi(const unsigned short int& nValue)
 	{
 		m_pInternal->SetDpi(nValue);
-	}
-
-	void CCssCalculator::SetBodyTree(const CTree &oTree)
-	{
-		m_pInternal->SetBodyTree(oTree);
-	}
-
-	void CCssCalculator::SetSizeSourceWindow(const CSizeWindow &oSizeWindow)
-	{
-		m_pInternal->SetSizeSourceWindow(oSizeWindow);
-	}
-
-	void CCssCalculator::SetSizeDeviceWindow(const CSizeWindow &oSizeWindow)
-	{
-		m_pInternal->SetSizeDeviceWindow(oSizeWindow);
-	}
-
-	CSizeWindow CCssCalculator::GetSizeSourceWindow() const
-	{
-		return m_pInternal->GetSizeSourceWindow();
-	}
-
-	CSizeWindow CCssCalculator::GetSizeDeviceWindow() const
-	{
-		return m_pInternal->GetSizeDeviceWindow();
-	}
-
-	UnitMeasure CCssCalculator::GetUnitMeasure() const
-	{
-		return m_pInternal->GetUnitMeasure();
 	}
 
 	std::wstring CCssCalculator::GetEncoding() const
@@ -87,6 +56,31 @@ namespace NSCSS
 	unsigned short int CCssCalculator::GetDpi() const
 	{
 		return m_pInternal->GetDpi();
+	}
+
+	bool CCssCalculator::HaveStylesById(const std::wstring& wsId) const
+	{
+		return m_pInternal->HaveStylesById(wsId);
+	}
+
+	void CCssCalculator::ClearPageData()
+	{
+		m_pInternal->ClearPageData();
+	}
+
+	void CCssCalculator::ClearEmbeddedStyles()
+	{
+		m_pInternal->ClearEmbeddedStyles();
+	}
+
+	void CCssCalculator::ClearAllowedStyleFiles()
+	{
+		m_pInternal->ClearAllowedStyleFiles();
+	}
+
+	void CCssCalculator::ClearStylesFromFile(const std::wstring& wsFilePath)
+	{
+		m_pInternal->ClearStylesFromFile(wsFilePath);
 	}
 
 	void CCssCalculator::Clear()

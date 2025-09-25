@@ -98,12 +98,8 @@ namespace NSJSBase
 					if (pCacheData)
 					{
 						// save cache to file
-						NSFile::CFileBinary oFileTest;
-						if (oFileTest.CreateFileW(Path))
-						{
-							oFileTest.WriteFile(pCacheData->data, (DWORD)pCacheData->length);
-							oFileTest.CloseFile();
-						}
+						oFileTest.WriteFile(pCacheData->data, (DWORD)pCacheData->length);
+						oFileTest.CloseFile();
 					}
 				}
 
@@ -192,12 +188,25 @@ namespace NSJSBase
 		return new CV8TryCatch();
 	}
 
-	void CJSContext::Initialize()
+	void CJSContext::Initialize(const std::wstring& snapshotPath)
 	{
 		if (m_internal->m_isolate == NULL)
 		{
+#ifdef V8_SUPPORT_SNAPSHOTS
+			if (!snapshotPath.empty())
+			{
+				BYTE* data = NULL;
+				DWORD dataLength = 0;
+				if (NSFile::CFileBinary::ReadAllBytes(snapshotPath, &data, dataLength))
+				{
+					m_internal->m_startup_data.data = reinterpret_cast<const char*>(data);
+					m_internal->m_startup_data.raw_size = (int)dataLength;
+				}
+			}
+#endif
+
 			// get new isolate
-			v8::Isolate* isolate = CV8Worker::getInitializer().CreateNew();
+			v8::Isolate* isolate = CV8Worker::getInitializer().CreateNew(m_internal->m_startup_data.data ? &m_internal->m_startup_data : nullptr);
 			m_internal->m_isolate = isolate;
 			// get new context
 			v8::Isolate::Scope iscope(isolate);
@@ -205,12 +214,41 @@ namespace NSJSBase
 			m_internal->m_contextPersistent.Reset(isolate, v8::Context::New(isolate));
 			// create temporary local handle to context
 			m_internal->m_context = v8::Local<v8::Context>::New(isolate, m_internal->m_contextPersistent);
-			// insert CreateEmbedObject() function to global object of this context
+			// insert embed functions to global object of this context
 			m_internal->InsertToGlobal("CreateEmbedObject", CreateEmbedNativeObject);
+			m_internal->InsertToGlobal("FreeEmbedObject", FreeNativeObject);
 			// clear temporary local handle
 			m_internal->m_context.Clear();
 		}
 	}
+
+	class WeakHandleVisitor : public v8::PersistentHandleVisitor
+	{
+	private:
+		WeakHandleVisitor() = default;
+
+	public:
+		void VisitPersistentHandle(v8::Persistent<v8::Value>* value, uint16_t class_id) override
+		{
+			if (class_id == CJSEmbedObjectPrivate::kWeakHandleId)
+			{
+				v8::Isolate* isolate = v8::Isolate::GetCurrent();
+				v8::HandleScope scope(isolate);
+				v8::Local<v8::Object> handle = value->Get(isolate).As<v8::Object>();
+				v8::Local<v8::External> field = v8::Local<v8::External>::Cast(handle->GetInternalField(0));
+				CJSEmbedObject* native = static_cast<CJSEmbedObject*>(field->Value());
+				delete native;
+			}
+		}
+
+	public:
+		static WeakHandleVisitor* getInstance()
+		{
+			static WeakHandleVisitor visitor;
+			return &visitor;
+		}
+	};
+
 	void CJSContext::Dispose()
 	{
 #ifdef V8_INSPECTOR
@@ -219,8 +257,19 @@ namespace NSJSBase
 #endif
 
 		m_internal->m_contextPersistent.Reset();
-		m_internal->m_isolate->Dispose();
+		// destroy native object in the weak handles before isolate disposal
+		v8::Isolate* isolate = m_internal->m_isolate;
+		{
+			v8::Isolate::Scope scope(isolate);
+			isolate->VisitHandlesWithClassIds(WeakHandleVisitor::getInstance());
+		}
+		isolate->Dispose();
 		m_internal->m_isolate = NULL;
+	}
+
+	bool CJSContext::isSnapshotUsed()
+	{
+		return m_internal->m_startup_data.data != NULL;
 	}
 
 	JSSmart<CJSObject> CJSContext::GetGlobal()
@@ -241,6 +290,8 @@ namespace NSJSBase
 		m_internal->m_context = v8::Local<v8::Context>::New(isolate, m_internal->m_contextPersistent);
 		if (!m_internal->m_context.IsEmpty())
 			m_internal->m_context->Enter();
+
+		m_internal->m_entered = true;
 	}
 
 	void CJSContext::Exit()
@@ -257,6 +308,13 @@ namespace NSJSBase
 		else
 			m_internal->m_context = m_internal->m_isolate->GetCurrentContext();
 		m_internal->m_isolate->Exit();
+
+		m_internal->m_entered = false;
+	}
+
+	bool CJSContext::IsEntered()
+	{
+		return m_internal->m_entered;
 	}
 
 	CJSValue* CJSContext::createUndefined()
@@ -395,6 +453,50 @@ namespace NSJSBase
 		return _return;
 	}
 
+	bool CJSContext::generateSnapshot(const std::string& script, const std::wstring& snapshotPath)
+	{
+#ifdef V8_SUPPORT_SNAPSHOTS
+		bool result = false;
+		// Snapshot creator should be in its own scope, because it handles entering, exiting and disposing the isolate
+		v8::SnapshotCreator snapshotCreator;
+		v8::Isolate* isolate = snapshotCreator.GetIsolate();
+		{
+			v8::HandleScope handle_scope(isolate);
+			// Create a new context
+			v8::Local<v8::Context> context = v8::Context::New(isolate);
+			v8::Context::Scope context_scope(context);
+
+			// Handle compile & run errors
+			v8::Local<v8::Object> global = context->Global();
+			global->Set(context, v8::String::NewFromUtf8Literal(isolate, "window"), global).Check();
+			global->Set(context, v8::String::NewFromUtf8Literal(isolate, "self"), global).Check();
+			global->Set(context, v8::String::NewFromUtf8Literal(isolate, "native"), v8::Undefined(isolate)).Check();
+
+			// Compile and run
+			v8::Local<v8::String> source = v8::String::NewFromUtf8(isolate, script.c_str()).ToLocalChecked();
+			v8::Local<v8::Script> script = v8::Script::Compile(context, source).ToLocalChecked();
+
+			script->Run(context).IsEmpty();
+			snapshotCreator.SetDefaultContext(context);
+		}
+		v8::StartupData data = snapshotCreator.CreateBlob(v8::SnapshotCreator::FunctionCodeHandling::kKeep);
+		// Save snapshot to file
+		NSFile::CFileBinary snapshotFile;
+		if (data.data && snapshotFile.CreateFile(snapshotPath))
+		{
+			snapshotFile.WriteFile(data.data, (DWORD)data.raw_size);
+			snapshotFile.CloseFile();
+			result = true;
+		}
+
+		delete[] data.data;
+
+		return result;
+#else
+		return false;
+#endif
+	}
+
 	JSSmart<CJSContext> CJSContext::GetCurrent()
 	{
 		CJSContext* ret = new CJSContext(false);
@@ -413,9 +515,42 @@ namespace NSJSBase
 		else
 			_value->doUndefined();
 #else
+		// TODO: Use MaybeLocal version
 		_value->value = v8::JSON::Parse(CreateV8String(CV8Worker::GetCurrent(), sTmp));
 #endif
 		return _value;
+	}
+
+	std::string CJSContext::JSON_Stringify(JSSmart<CJSValue> value)
+	{
+		// if don't return an empty string explicitly, V8 will return "undefined", which is incorrect
+		if (value->isUndefined())
+			return "";
+
+		CJSValueV8* _value = static_cast<CJSValueV8*>(value.GetPointer());
+		v8::MaybeLocal<v8::String> result;
+#ifndef V8_OS_XP
+#ifdef V8_VERSION_89_PLUS
+		result = v8::JSON::Stringify(m_internal->m_context, _value->value);
+#else
+		v8::MaybeLocal<v8::Object> json_object = _value->value->ToObject(m_internal->m_context);
+		if (json_object.IsEmpty())
+			// in case of null and other non-object values
+			result = _value->value->ToString(m_internal->m_context);
+		else
+			result = v8::JSON::Stringify(m_internal->m_context, json_object.ToLocalChecked());
+#endif
+#else
+		// there is no built-in stringifier in V8_XP, so use JSON.stringify() from JS
+		v8::Local<v8::Object> json = m_internal->m_context->Global()->Get(CreateV8String(m_internal->m_isolate, "JSON"))->ToObject();
+		v8::Local<v8::Function> stringify = json->Get(CreateV8String(m_internal->m_isolate, "stringify")).As<v8::Function>();
+		result = stringify->Call(json, 1, &_value->value)->ToString(m_internal->m_context);
+#endif
+		if (result.IsEmpty())
+			return "";
+
+		v8::String::Utf8Value data(V8IsolateFirstArg result.ToLocalChecked());
+		return std::string((char*)(*data), data.length());
 	}
 
 	void CJSContext::MoveToThread(ASC_THREAD_ID* id)
@@ -554,5 +689,23 @@ namespace NSJSBase
 
 		NSJSBase::CJSEmbedObjectPrivate::CreateWeaker(obj);
 		args.GetReturnValue().Set(obj);
+	}
+
+	void FreeNativeObject(const v8::FunctionCallbackInfo<v8::Value>& args)
+	{
+		v8::Isolate* isolate = args.GetIsolate();
+		v8::HandleScope scope(isolate);
+
+		if (args.Length() != 1)
+		{
+			args.GetReturnValue().Set(v8::Undefined(isolate));
+			return;
+		}
+
+		v8::Local<v8::Object> obj = args[0].As<v8::Object>();
+		v8::Local<v8::External> field = v8::Local<v8::External>::Cast(obj->GetInternalField(0));
+		CJSEmbedObject* native = static_cast<CJSEmbedObject*>(field->Value());
+		delete native;
+		// weak persistent handle will be cleared and removed in CJSEmbedObjectPrivate destructor
 	}
 }

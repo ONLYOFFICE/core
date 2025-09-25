@@ -50,7 +50,8 @@ namespace docbuilder_net
 			TXT = MASK + 0x0005,
 			DOTX = MASK + 0x000c,
 			OTT = MASK + 0x000f,
-			HTML = MASK + 0x0012
+			HTML = MASK + 0x0012,
+			OFORM_PDF = MASK + 0x0017
 		};
 
 		public enum class Spreadsheet : int
@@ -136,6 +137,10 @@ namespace docbuilder_net
 	bool CDocBuilderValue::IsUndefined()
 	{
 		return m_internal->IsUndefined();
+	}
+	bool CDocBuilderValue::IsBool()
+	{
+		return m_internal->IsBool();
 	}
 	bool CDocBuilderValue::IsInt()
 	{
@@ -244,6 +249,16 @@ namespace docbuilder_net
 		m_internal = new NSDoctRenderer::CDocBuilderValue(StringToStdString(value));
 	}
 
+	CDocBuilderValue::CDocBuilderValue(array<CDocBuilderValue^>^ values)
+	{
+		int length = values->Length;
+		m_internal = new NSDoctRenderer::CDocBuilderValue(NSDoctRenderer::CDocBuilderValue::CreateArray(length));
+		for (int i = 0; i < length; i++)
+		{
+			Set(i, values[i]);
+		}
+	}
+
 	CDocBuilderValue::operator CDocBuilderValue ^ (bool value)
 	{
 		return gcnew CDocBuilderValue(value);
@@ -263,6 +278,11 @@ namespace docbuilder_net
 	CDocBuilderValue::operator CDocBuilderValue ^ (String^ value)
 	{
 		return gcnew CDocBuilderValue(value);
+	}
+
+	CDocBuilderValue::operator CDocBuilderValue ^ (array<CDocBuilderValue^>^ values)
+	{
+		return gcnew CDocBuilderValue(values);
 	}
 
 	CDocBuilderValue^ CDocBuilderValue::CreateUndefined()
@@ -522,4 +542,3 @@ namespace docbuilder_net
 		return m_internal->IsError();
 	}
 }
-

@@ -48,9 +48,10 @@ public:
 	static const ElementType type = typeTxtWf;
 	
 	virtual void load(CFRecord& record);
+	virtual void save(CFRecord& record);
 
-	_UINT32 fieldType; 
-	_UINT32 fieldStart;
+	_UINT32 fieldType = 0;
+	_UINT32 fieldStart = 0;
 };
 
 } // namespace XLS

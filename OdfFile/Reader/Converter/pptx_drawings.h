@@ -36,6 +36,8 @@
 #include <CPSharedPtr.h>
 #include <xml/attributes.h>
 #include "mediaitems.h"
+#include <vector>
+#include "pptx_drawing.h"
 
 namespace cpdoccore {
 namespace oox {
@@ -67,6 +69,8 @@ public:
     bool empty() const;
 
     void dump_rels(rels & Rels);
+
+    std::vector<_pptx_drawing>& get_drawings();
 
 	void serialize(std::wostream & _Wostream);    
     

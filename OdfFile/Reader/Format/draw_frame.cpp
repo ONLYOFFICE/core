@@ -82,8 +82,9 @@ void draw_chart_attlist::add_attributes( const xml::attributes_wc_ptr & Attribut
 {
     //CP_APPLY_ATTR(L"draw:filter-name", draw_filter_name_);
 }
+//------------------------------------------------------------------------------------------------------------
 // draw:image
-//////////////////////////////////////////////////////////////////////////////////////////////////
+//------------------------------------------------------------------------------------------------------------
 const wchar_t * draw_image::ns = L"draw";
 const wchar_t * draw_image::name = L"image";
 
@@ -100,7 +101,6 @@ void draw_image::add_attributes( const xml::attributes_wc_ptr & Attributes )
 	draw_image_attlist_.add_attributes(Attributes);
     xlink_attlist_.add_attributes(Attributes);
 }
-
 void draw_image::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     if CP_CHECK_NAME(L"office", L"binary-data")
@@ -116,8 +116,9 @@ std::wostream & draw_image::text_to_stream(std::wostream & _Wostream, bool bXmlE
 {
     return _Wostream;
 }
+//------------------------------------------------------------------------------------------------------------
 // draw:chart
-////////////////////////////////////////////////////////////////////////////////////////////////////
+//------------------------------------------------------------------------------------------------------------
 const wchar_t * draw_chart::ns = L"draw";
 const wchar_t * draw_chart::name = L"chart";
 
@@ -145,8 +146,9 @@ void draw_chart::add_child_element( xml::sax * Reader, const std::wstring & Ns, 
 }
 
 
+//------------------------------------------------------------------------------------------------------------
 // draw:g
-//////////////////////////////////////////////////////////////////////////////////////////////////
+//------------------------------------------------------------------------------------------------------------
 const wchar_t * draw_g::ns = L"draw";
 const wchar_t * draw_g::name = L"g";
 void draw_g::add_attributes( const xml::attributes_wc_ptr & Attributes )
@@ -242,8 +244,9 @@ std::wostream & draw_g::text_to_stream(std::wostream & _Wostream, bool bXmlEncod
     return _Wostream;
 }
 
+//------------------------------------------------------------------------------------------------------------
 // draw:frame
-//////////////////////////////////////////////////////////////////////////////////////////////////
+//------------------------------------------------------------------------------------------------------------
 const wchar_t * draw_frame::ns = L"draw";
 const wchar_t * draw_frame::name = L"frame";
 
@@ -252,7 +255,6 @@ std::wostream & draw_frame::text_to_stream(std::wostream & _Wostream, bool bXmlE
     CP_SERIALIZE_TEXT(content_, bXmlEncode);
     return _Wostream;
 }
-
 void draw_frame::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
  	idx_in_owner = -1;
@@ -263,11 +265,10 @@ void draw_frame::add_attributes( const xml::attributes_wc_ptr & Attributes )
     
 	draw_frame_attlist_.add_attributes(Attributes);
 }
-
 void draw_frame::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     if (CP_CHECK_NAME(L"draw", L"text-box") ||
-        CP_CHECK_NAME(L"draw", L"image")	||//копия объекта в виде картинки ну.. или просто картинка
+        CP_CHECK_NAME(L"draw", L"image")	||
         CP_CHECK_NAME(L"table", L"table")	||
         CP_CHECK_NAME(L"draw", L"object-ole")||
         CP_CHECK_NAME(L"draw", L"applet")	||
@@ -299,12 +300,19 @@ void draw_frame::add_child_element( xml::sax * Reader, const std::wstring & Ns, 
     {
         CP_CREATE_ELEMENT(draw_contour_);        
     }
+	else if (CP_CHECK_NAME(L"svg", L"title"))
+	{
+		CP_CREATE_ELEMENT(svg_title_);
+	}
+	else if (CP_CHECK_NAME(L"svg", L"desc"))
+	{
+		CP_CREATE_ELEMENT(svg_desc_);
+	}
     else
     {
         CP_NOT_APPLICABLE_ELM();
     }
 }
-
 
 ///////////////////////
 
@@ -318,8 +326,9 @@ void draw_text_box_attlist::add_attributes( const xml::attributes_wc_ptr & Attri
     CP_APPLY_ATTR(L"fo:max-height", fo_max_height_);
 }
 
+//------------------------------------------------------------------------------------------------------------
 // draw:text-box
-//////////////////////////////////////////////////////////////////////////////////////////////////
+//------------------------------------------------------------------------------------------------------------
 const wchar_t * draw_text_box::ns = L"draw";
 const wchar_t * draw_text_box::name = L"text-box";
 
@@ -345,8 +354,9 @@ void draw_text_box::add_child_element( xml::sax * Reader, const std::wstring & N
     CP_CREATE_ELEMENT(content_); 
 }
 
+//------------------------------------------------------------------------------------------------------------
 // draw:object
-//////////////////////////////////////////////////////////////////////////////////////////////////
+//------------------------------------------------------------------------------------------------------------
 const wchar_t * draw_object::ns = L"draw";
 const wchar_t * draw_object::name = L"object";
 
@@ -372,8 +382,9 @@ void draw_object::add_child_element( xml::sax * Reader, const std::wstring & Ns,
     }
 }
 
+//------------------------------------------------------------------------------------------------------------
 // draw:object-ole
-//////////////////////////////////////////////////////////////////////////////////////////////////
+//------------------------------------------------------------------------------------------------------------
 const wchar_t * draw_object_ole::ns = L"draw";
 const wchar_t * draw_object_ole::name = L"object-ole";
 
@@ -437,7 +448,8 @@ void draw_object_ole::detectObject(const std::wstring &fileName, std::wstring &p
 		COfficeFileFormatChecker checker(fileName);
 		switch(checker.nFileType)
 		{
-		case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC:		extension = L".doc"; prog = L"Word"; rels = oox::typeOleObject; break;
+		case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC:
+		case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC_FLAT:	extension = L".doc"; prog = L"Word"; rels = oox::typeOleObject; break;
 		case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX:		extension = L".docx"; prog = L"Word"; rels = oox::typeMsObject; break; 
 
 		case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLS:		extension = L".xls"; prog = L"Excel"; rels = oox::typeOleObject; break;
@@ -510,8 +522,9 @@ std::wstring draw_object::office_convert(odf_document_ptr odfDocument, int type)
 	
 	return href_result;
 }
+//------------------------------------------------------------------------------------------------------------
 // draw:param
-//////////////////////////////////////////////////////////////////////////////////////////////////
+//------------------------------------------------------------------------------------------------------------
 const wchar_t * draw_param::ns = L"draw";
 const wchar_t * draw_param::name = L"param";
 
@@ -525,8 +538,9 @@ void draw_param::add_child_element( xml::sax * Reader, const std::wstring & Ns, 
 {
     CP_NOT_APPLICABLE_ELM(); 
 }
+//------------------------------------------------------------------------------------------------------------
 // draw:plugin
-//////////////////////////////////////////////////////////////////////////////////////////////////
+//------------------------------------------------------------------------------------------------------------
 const wchar_t * draw_plugin::ns = L"draw";
 const wchar_t * draw_plugin::name = L"plugin";
 

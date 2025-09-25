@@ -32,14 +32,58 @@
 
 #include "font_face.h"
 
+#include "draw_frame.h"
+
 #include <xml/xmlchar.h>
 #include "serialize_elements.h"
 
 namespace cpdoccore { 
 namespace odf_reader {
 
+// svg:title
+//---------------------------------------------------------------------------------------
+const wchar_t* svg_title::ns = L"svg";
+const wchar_t* svg_title::name = L"title";
+
+void svg_title::docx_convert(oox::docx_conversion_context& Context)
+{
+    odf_reader::draw_frame* current_frame = Context.get_drawing_context().get_current_frame();
+
+    if (current_frame && current_frame->oox_drawing_)
+    {
+        current_frame->oox_drawing_->additional.push_back(odf_reader::_property(L"svg:title", text_));
+    }
+}
+
+std::wostream& svg_title::text_to_stream(std::wostream& _Wostream, bool bXmlEncode) const
+{
+	_Wostream << text_;
+	return _Wostream;
+}
+
+void svg_title::add_text(const std::wstring& Text)
+{
+	text_ += Text;
+}
+void svg_title::add_space(const std::wstring& Text)
+{
+	text_ += Text;
+}
+// svg:desc
+//---------------------------------------------------------------------------------------
+
 const wchar_t * svg_desc::ns	= L"svg";
 const wchar_t * svg_desc::name	= L"desc";
+
+void svg_desc::docx_convert(oox::docx_conversion_context& Context)
+{
+	odf_reader::draw_frame* current_frame = Context.get_drawing_context().get_current_frame();
+
+	if (current_frame && current_frame->oox_drawing_)
+	{
+		current_frame->oox_drawing_->additional.push_back(odf_reader::_property(L"svg:desc", text_));
+	}
+}
 
 std::wostream & svg_desc::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {

@@ -67,5 +67,19 @@ void SxFilt::readFields(CFRecord& record)
 	fSelected	= GETBIT(flags2, 10);
 }
 
+void SxFilt::writeFields(CFRecord& record)
+{
+    unsigned short flags1 = 0, flags2 = 0;
+    SETBIT(flags1, 0, sxaxisRw)
+    SETBIT(flags1, 1, sxaxisCol)
+    SETBIT(flags1, 2, sxaxisPage)
+    SETBIT(flags1, 3, sxaxisData)
+    SETBITS(flags1, 6, 15, iDim)
+
+    SETBITS(flags2, 0, 9, isxvd)
+    SETBIT(flags2, 10, fSelected)
+    record << flags1 << flags2 << grbitSbt << cisxvi;
+}
+
 } // namespace XLS
 

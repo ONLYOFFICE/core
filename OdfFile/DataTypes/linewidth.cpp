@@ -41,25 +41,25 @@ std::wostream & operator << (std::wostream & _Wostream, const line_width & _Val)
     switch(_Val.get_type())
     {
     case line_width::Auto:
-        _Wostream << "auto";
+        _Wostream << L"auto";
         break;
     case line_width::Normal:
-        _Wostream << "normal";
+        _Wostream << L"normal";
         break;
     case line_width::Bold:
-        _Wostream << "bold";
+        _Wostream << L"bold";
         break;
     case line_width::Thin:
-        _Wostream << "thin";
+        _Wostream << L"thin";
         break;
     case line_width::Dash:
-        _Wostream << "dash";
+        _Wostream << L"dash";
         break;
     case line_width::Medium:
-        _Wostream << "medium";
+        _Wostream << L"medium";
         break;
     case line_width::Thick:
-        _Wostream << "thick";
+        _Wostream << L"thick";
         break;
     case line_width::PositiveInteger:
         _Wostream << _Val.get_positive_integer();

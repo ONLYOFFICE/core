@@ -130,14 +130,12 @@ public:
 
     virtual void serialize(std::wostream & _Wostream);
 
-	_CP_OPT(std::wstring)			text_style_name_;
-    _CP_OPT(odf_types::Bool)				text_continue_numbering_;
+	_CP_OPT(std::wstring) text_style_name_;
+    _CP_OPT(odf_types::Bool) text_continue_numbering_;
 
     office_element_ptr          text_list_header_;
     office_element_ptr_array    text_list_items_;
-
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(text_list);
 
 //---------------------------------------------------------------------------------------------------
@@ -147,15 +145,13 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type = typeTextSoftPageBreak;
-    
+    static const ElementType type = typeTextSoftPageBreak;    
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element( const office_element_ptr & child_element){}
 
     virtual void serialize(std::wostream & _Wostream);
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(text_soft_page_break);
 
 class text_section_attr
@@ -178,7 +174,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type		= typeTextSection;
+    static const ElementType type = typeTextSection;
     
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -190,9 +186,7 @@ public:
     
 	office_element_ptr			text_section_source_;
     office_element_ptr_array	content_;          
-
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(text_section);
 
 class text_section_source_attr
@@ -215,7 +209,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type		= typeTextSectionSource;
+    static const ElementType type = typeTextSectionSource;
     
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -234,7 +228,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type		= typeTextTableOfContent;
+    static const ElementType type = typeTextTableOfContent;
     
 	
     
@@ -266,8 +260,7 @@ public:
 
     virtual void serialize(std::wostream & _Wostream);
 
-    office_element_ptr_array index_content_main_;
-    
+    office_element_ptr_array index_content_main_;    
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(text_index_body);
@@ -288,8 +281,7 @@ public:
     virtual void serialize(std::wostream & _Wostream);
 
 	text_section_attr			text_section_attr_;
-    office_element_ptr_array	index_content_main_;
-    
+    office_element_ptr_array	index_content_main_;    
 };
 CP_REGISTER_OFFICE_ELEMENT2(text_index_title);
 
@@ -300,9 +292,7 @@ public:
 	static const wchar_t * ns;
     static const wchar_t * name;   	
 
-    static const ElementType type		= typeTextUnknownChange;
-
-    
+    static const ElementType type = typeTextUnknownChange;    
     
 	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element		( const office_element_ptr & child_element);
@@ -321,11 +311,10 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type		= typeTextInsertion;
+    static const ElementType type = typeTextInsertion;
 
     virtual void serialize(std::wostream & _Wostream);
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(text_insertion);
 
 //---------------------------------------------------------------------------------------------------
@@ -335,11 +324,10 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type		= typeTextDeletion;
+    static const ElementType type = typeTextDeletion;
   
 	virtual void serialize(std::wostream & _Wostream);
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(text_deletion);
 
 //---------------------------------------------------------------------------------------------------
@@ -349,12 +337,11 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type		= typeTextFormatChange;
+    static const ElementType type = typeTextFormatChange;
 
 	virtual void serialize(std::wostream & _Wostream);
 
 	_CP_OPT(std::wstring)	text_style_name_; //не по снецификации ... но КАК сохранить то что было изменено в формате?????
-
 };
 CP_REGISTER_OFFICE_ELEMENT2(text_format_change);
 
@@ -365,8 +352,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type		= typeTextTrackedChanges;
-    
+    static const ElementType type = typeTextTrackedChanges;    
     
 	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element		( const office_element_ptr & child_element);
@@ -385,8 +371,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type		= typeTextChangedRegion;
-    
+    static const ElementType type = typeTextChangedRegion;    
     
 	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element		( const office_element_ptr & child_element);
@@ -403,19 +388,16 @@ class text_add_change : public office_element_impl<text_add_change>
 {
 public:
  	static const wchar_t * ns;
-    static const wchar_t * name;   	
+    static const wchar_t * name;  
 
-
-    static const ElementType type		= typeTextChange;
-   
-	
+    static const ElementType type = typeTextChange; 
     
-	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name){}
-	virtual void add_child_element		( const office_element_ptr & child_element)			{}
+	virtual void create_child_element (const std::wstring & Ns, const std::wstring & Name){}
+	virtual void add_child_element ( const office_element_ptr & child_element)			{}
 
     virtual void serialize(std::wostream & _Wostream) = 0;
 
-	_CP_OPT(std::wstring)	text_change_id_;    
+	_CP_OPT(std::wstring) text_change_id_;    
 };
 
 //---------------------------------------------------------------------------------------------------
@@ -425,7 +407,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type		= typeTextChange;  
+    static const ElementType type = typeTextChange;  
    
 	virtual void serialize(std::wostream & _Wostream);
 };
@@ -438,7 +420,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type		= typeTextChangeStart;
+    static const ElementType type = typeTextChangeStart;
 
 	virtual void serialize(std::wostream & _Wostream);
 };
@@ -451,7 +433,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type		= typeTextChangeEnd;
+    static const ElementType type = typeTextChangeEnd;
   
 	virtual void serialize(std::wostream & _Wostream);
 };
@@ -465,9 +447,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType	type		= typeTextTableIndex;
-    
-	
+    static const ElementType type = typeTextTableIndex;  
     
 	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element		( const office_element_ptr & child_element);
@@ -489,9 +469,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType	type		= typeTextIllustrationIndex;
-    
-	
+    static const ElementType type = typeTextIllustrationIndex;  
   
 	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element		( const office_element_ptr & child_element);
@@ -513,9 +491,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType	type		= typeTextAlphabeticalIndex;
-    
-	
+    static const ElementType type = typeTextAlphabeticalIndex;  
     
 	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element		( const office_element_ptr & child_element);
@@ -523,8 +499,8 @@ public:
     virtual void serialize(std::wostream & _Wostream);
 
 	odf_types::section_attlists	section_attr_;
-    office_element_ptr			alphabetical_index_source_;
-    office_element_ptr			index_body_;
+    office_element_ptr alphabetical_index_source_;
+    office_element_ptr index_body_;
 
 };
 CP_REGISTER_OFFICE_ELEMENT2(text_alphabetical_index);
@@ -537,9 +513,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType	type		= typeTextUserIndex;
-    
-	
+    static const ElementType	type = typeTextUserIndex;  
   
 	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element		( const office_element_ptr & child_element);
@@ -547,8 +521,8 @@ public:
     virtual void serialize(std::wostream & _Wostream);
 
 	odf_types::section_attlists	section_attr_;
-    office_element_ptr			user_index_source_;
-    office_element_ptr			index_body_;
+    office_element_ptr user_index_source_;
+    office_element_ptr index_body_;
 
 };
 CP_REGISTER_OFFICE_ELEMENT2(text_user_index);
@@ -561,9 +535,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType	type		= typeTextBibliography;
-    
-	
+    static const ElementType	type = typeTextBibliography;   
     
 	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element		( const office_element_ptr & child_element);
@@ -571,8 +543,8 @@ public:
     virtual void serialize(std::wostream & _Wostream);
 
     odf_types::section_attlists	section_attr_;
-    office_element_ptr			bibliography_source_;
-    office_element_ptr			index_body_;
+    office_element_ptr bibliography_source_;
+    office_element_ptr index_body_;
 };
 CP_REGISTER_OFFICE_ELEMENT2(text_bibliography);
 //------------------------------------------------------------------------------------------------------------
@@ -603,8 +575,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type		= typeTextCommonEntryTemplate;
-    
+    static const ElementType type = typeTextCommonEntryTemplate;    
     
 	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element		( const office_element_ptr & child_element);
@@ -624,8 +595,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type		= typeTextBibliographyEntryTemplate;
-    
+    static const ElementType type = typeTextBibliographyEntryTemplate;    
     
     virtual void serialize(std::wostream & _Wostream);
 
@@ -639,8 +609,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type = typeTextIndexTitleTemplate;
-    
+    static const ElementType type = typeTextIndexTitleTemplate;    
   	
 	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element		( const office_element_ptr & child_element){}
@@ -660,8 +629,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type		= typeTextSequenceDecl;
-    
+    static const ElementType type = typeTextSequenceDecl;    
     
 	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element		( const office_element_ptr & child_element){}
@@ -682,8 +650,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type		= typeTextSequenceDecls;
-    
+    static const ElementType type = typeTextSequenceDecls;    
     
 	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element		( const office_element_ptr & child_element);
@@ -702,8 +669,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type		= typeTextTableOfContentSource;
-    
+    static const ElementType type = typeTextTableOfContentSource;    
     
 	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element		( const office_element_ptr & child_element);
@@ -732,8 +698,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type		= typeTextTableOfContentEntryTemplate;
-    
+    static const ElementType type = typeTextTableOfContentEntryTemplate;    
 };
 CP_REGISTER_OFFICE_ELEMENT2(text_table_of_content_entry_template);
 //---------------------------------------------------------------------------------------------------
@@ -745,7 +710,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type		= typeTextIndexEntryBibliography;
+    static const ElementType type = typeTextIndexEntryBibliography;
     
     
 	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name){}
@@ -753,8 +718,8 @@ public:
 
     virtual void serialize(std::wostream & _Wostream);
 
-	_CP_OPT(std::wstring)		style_name_;
-	_CP_OPT(std::wstring)		bibliography_data_field_;
+	_CP_OPT(std::wstring) style_name_;
+	_CP_OPT(std::wstring) bibliography_data_field_;
 };
 CP_REGISTER_OFFICE_ELEMENT2(text_index_entry_bibliography);
 //---------------------------------------------------------------------------------------------------
@@ -766,8 +731,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type		= typeTextIndexEntryChapter;
-    
+    static const ElementType type = typeTextIndexEntryChapter;    
     
 	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element		( const office_element_ptr & child_element){}
@@ -784,8 +748,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type		= typeTextIndexEntryLinkEnd;
-    
+    static const ElementType type = typeTextIndexEntryLinkEnd;    
     
 	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element		( const office_element_ptr & child_element){}
@@ -802,8 +765,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type		= typeTextIndexEntryLinkStart;
-    
+    static const ElementType type = typeTextIndexEntryLinkStart;    
     
 	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element		( const office_element_ptr & child_element){}
@@ -820,8 +782,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type		= typeTextIndexEntryPageNumber;
-    
+    static const ElementType type = typeTextIndexEntryPageNumber;    
 
 	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element		( const office_element_ptr & child_element){}
@@ -838,8 +799,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type		= typeTextIndexEntrySpan;
-    
+    static const ElementType type = typeTextIndexEntrySpan;    
     
 	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element		( const office_element_ptr & child_element){}
@@ -856,11 +816,10 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type		= typeTextIndexEntryTabStop;
+    static const ElementType type = typeTextIndexEntryTabStop;    
     
-    
-	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name){}
-	virtual void add_child_element		( const office_element_ptr & child_element){}
+	virtual void create_child_element (const std::wstring & Ns, const std::wstring & Name){}
+	virtual void add_child_element ( const office_element_ptr & child_element){}
 
     virtual void serialize(std::wostream & _Wostream);
 };
@@ -874,11 +833,10 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type		= typeTextIndexEntryText;
+    static const ElementType type = typeTextIndexEntryText;    
     
-    
-	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name){}
-	virtual void add_child_element		( const office_element_ptr & child_element){}
+	virtual void create_child_element (const std::wstring & Ns, const std::wstring & Name){}
+	virtual void add_child_element ( const office_element_ptr & child_element){}
 
     virtual void serialize(std::wostream & _Wostream);
 };
@@ -892,16 +850,15 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type		= typeTextIllustrationIndexSource;
+    static const ElementType type = typeTextIllustrationIndexSource;    
     
-    
-	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name);
-    virtual void add_child_element		( const office_element_ptr & child_element);
+	virtual void create_child_element (const std::wstring & Ns, const std::wstring & Name);
+    virtual void add_child_element ( const office_element_ptr & child_element);
 
     virtual void serialize(std::wostream & _Wostream);
 	
-	_CP_OPT(std::wstring)		caption_sequence_name_;
-	_CP_OPT(std::wstring)		caption_sequence_format_;
+	_CP_OPT(std::wstring) caption_sequence_name_;
+	_CP_OPT(std::wstring) caption_sequence_format_;
 
 	_CP_OPT(odf_types::Bool)	relative_tab_stop_position_;
 	_CP_OPT(odf_types::Bool)	use_caption_;
@@ -920,8 +877,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type		= typeTextIllustrationIndexEntryTemplate;
-    
+    static const ElementType type = typeTextIllustrationIndexEntryTemplate;    
 };
 CP_REGISTER_OFFICE_ELEMENT2(text_illustration_index_entry_template);
 //---------------------------------------------------------------------------------------------------
@@ -933,8 +889,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type		= typeTextUserIndexSource;
-    
+    static const ElementType type = typeTextUserIndexSource;    
     
 	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element		( const office_element_ptr & child_element);
@@ -968,8 +923,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type		= typeTextUserIndexEntryTemplate;
-    
+    static const ElementType type = typeTextUserIndexEntryTemplate;    
 };
 CP_REGISTER_OFFICE_ELEMENT2(text_user_index_entry_template);
 //---------------------------------------------------------------------------------------------------
@@ -1020,7 +974,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type		= typeTextAlphabeticalIndexEntryTemplate;
+    static const ElementType type = typeTextAlphabeticalIndexEntryTemplate;
     
 };
 CP_REGISTER_OFFICE_ELEMENT2(text_alphabetical_index_entry_template);
@@ -1033,7 +987,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type		= typeTextTableIndexSource;
+    static const ElementType type = typeTextTableIndexSource;
     
     
 	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name);
@@ -1061,7 +1015,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type		= typeTextTableIndexEntryTemplate;
+    static const ElementType type = typeTextTableIndexEntryTemplate;
     
 };
 CP_REGISTER_OFFICE_ELEMENT2(text_table_index_entry_template);

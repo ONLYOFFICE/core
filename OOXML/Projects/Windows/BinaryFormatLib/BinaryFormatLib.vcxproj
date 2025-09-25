@@ -31,24 +31,28 @@
     <ClCompile Include="..\..\..\Binary\Document\BinReader\MediaWriter.cpp" />
     <ClCompile Include="..\..\..\Binary\Document\BinReader\NumberingWriter.cpp" />
     <ClCompile Include="..\..\..\Binary\Document\BinReader\ReaderClasses.cpp" />
-    <ClCompile Include="..\..\..\Binary\Document\BinReader\Readers.cpp" />
+    <ClCompile Include="..\..\..\Binary\Document\BinReader\BinaryReaderD.cpp" />
     <ClCompile Include="..\..\..\Binary\Document\BinReader\SettingWriter.cpp" />
     <ClCompile Include="..\..\..\Binary\Document\BinReader\StylesWriter.cpp" />
     <ClCompile Include="..\..\..\Binary\Document\BinReader\webSettingsWriter.cpp" />
     <ClCompile Include="..\..\..\Binary\Document\BinWriter\BinEquationWriter.cpp" />
-    <ClCompile Include="..\..\..\Binary\Document\BinWriter\BinWriters.cpp" />
+    <ClCompile Include="..\..\..\Binary\Document\BinWriter\BinaryWriterD.cpp" />
     <ClCompile Include="..\..\..\Binary\Document\DocWrapper\ChartSerializer.cpp" />
     <ClCompile Include="..\..\..\Binary\Document\DocWrapper\DocxSerializer.cpp" />
     <ClCompile Include="..\..\..\Binary\Document\DocWrapper\FontProcessor.cpp" />
+    <ClCompile Include="..\..\..\Binary\Document\DocWrapper\VsdxSerializer.cpp" />
     <ClCompile Include="..\..\..\Binary\Document\DocWrapper\XlsxSerializer.cpp" />
+    <ClCompile Include="..\..\..\Binary\Draw\BinaryReaderV.cpp" />
+    <ClCompile Include="..\..\..\Binary\Draw\BinaryWriterV.cpp" />
     <ClCompile Include="..\..\..\Binary\MathEquation\MathEquation.cpp" />
     <ClCompile Include="..\..\..\Binary\Presentation\XmlWriter.cpp" />
     <ClCompile Include="..\..\..\Binary\Sheets\Common\Common.cpp" />
-    <ClCompile Include="..\..\..\Binary\Sheets\Reader\BinaryWriter.cpp" />
+    <ClCompile Include="..\..\..\Binary\Sheets\Reader\BinaryWriterS.cpp" />
     <ClCompile Include="..\..\..\Binary\Sheets\Reader\CellFormatController\CellFormatController.cpp" />
     <ClCompile Include="..\..\..\Binary\Sheets\Reader\CellFormatController\CurrencyReader.cpp" />
     <ClCompile Include="..\..\..\Binary\Sheets\Reader\CellFormatController\DateReader.cpp" />
     <ClCompile Include="..\..\..\Binary\Sheets\Reader\CellFormatController\DigitReader.cpp" />
+    <ClCompile Include="..\..\..\Binary\Sheets\Reader\CellFormatController\LocalInfo.cpp" />
     <ClCompile Include="..\..\..\Binary\Sheets\Reader\ChartFromToBinary.cpp" />
     <ClCompile Include="..\..\..\Binary\Sheets\Reader\CommonWriter.cpp" />
     <ClCompile Include="..\..\..\Binary\Sheets\Reader\CSVReader.cpp" />
@@ -59,7 +63,7 @@
     <ClCompile Include="..\..\..\Binary\Sheets\Reader\XMLReader\XMLMap.cpp" />
     <ClCompile Include="..\..\..\Binary\Sheets\Reader\XMLReader\XMLReader.cpp" />
     <ClCompile Include="..\..\..\Binary\Sheets\Reader\XMLReader\XMLReader2.cpp" />
-    <ClCompile Include="..\..\..\Binary\Sheets\Writer\BinaryReader.cpp" />
+    <ClCompile Include="..\..\..\Binary\Sheets\Writer\BinaryReaderS.cpp" />
     <ClCompile Include="..\..\..\Binary\Sheets\Writer\CSVWriter.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -75,17 +79,20 @@
     <ClInclude Include="..\..\..\Binary\Document\BinReader\MediaWriter.h" />
     <ClInclude Include="..\..\..\Binary\Document\BinReader\NumberingWriter.h" />
     <ClInclude Include="..\..\..\Binary\Document\BinReader\ReaderClasses.h" />
-    <ClInclude Include="..\..\..\Binary\Document\BinReader\readers.h" />
+    <ClInclude Include="..\..\..\Binary\Document\BinReader\BinaryReaderD.h" />
     <ClInclude Include="..\..\..\Binary\Document\BinReader\SettingWriter.h" />
     <ClInclude Include="..\..\..\Binary\Document\BinReader\StylesWriter.h" />
     <ClInclude Include="..\..\..\Binary\Document\BinReader\webSettingsWriter.h" />
     <ClInclude Include="..\..\..\Binary\Document\BinWriter\BinEquationWriter.h" />
     <ClInclude Include="..\..\..\Binary\Document\BinWriter\BinReaderWriterDefines.h" />
-    <ClInclude Include="..\..\..\Binary\Document\BinWriter\BinWriters.h" />
-    <ClInclude Include="..\..\..\Binary\Document\DocWrapper\ChartWriter.h" />
+    <ClInclude Include="..\..\..\Binary\Document\BinWriter\BinaryWriterD.h" />
     <ClInclude Include="..\..\..\Binary\Document\DocWrapper\DocxSerializer.h" />
     <ClInclude Include="..\..\..\Binary\Document\DocWrapper\FontProcessor.h" />
+    <ClInclude Include="..\..\..\Binary\Document\DocWrapper\VsdxSerializer.h" />
     <ClInclude Include="..\..\..\Binary\Document\DocWrapper\XlsxSerializer.h" />
+    <ClInclude Include="..\..\..\Binary\Draw\BinaryReaderV.h" />
+    <ClInclude Include="..\..\..\Binary\Draw\BinaryWriterV.h" />
+    <ClInclude Include="..\..\..\Binary\Draw\BinReaderWriterDefines.h" />
     <ClInclude Include="..\..\..\Binary\MathEquation\LEStream.h" />
     <ClInclude Include="..\..\..\Binary\MathEquation\MathEquation.h" />
     <ClInclude Include="..\..\..\Binary\MathEquation\OutputDev.h" />
@@ -95,11 +102,12 @@
     <ClInclude Include="..\..\..\Binary\Presentation\XmlWriter.h" />
     <ClInclude Include="..\..\..\Binary\Sheets\Common\BinReaderWriterDefines.h" />
     <ClInclude Include="..\..\..\Binary\Sheets\Common\Common.h" />
-    <ClInclude Include="..\..\..\Binary\Sheets\Reader\BinaryWriter.h" />
+    <ClInclude Include="..\..\..\Binary\Sheets\Reader\BinaryWriterS.h" />
     <ClInclude Include="..\..\..\Binary\Sheets\Reader\CellFormatController\CellFormatController.h" />
     <ClInclude Include="..\..\..\Binary\Sheets\Reader\CellFormatController\CurrencyReader.h" />
     <ClInclude Include="..\..\..\Binary\Sheets\Reader\CellFormatController\DateReader.h" />
     <ClInclude Include="..\..\..\Binary\Sheets\Reader\CellFormatController\DigitReader.h" />
+    <ClInclude Include="..\..\..\Binary\Sheets\Reader\CellFormatController\LocalInfo.h" />
     <ClInclude Include="..\..\..\Binary\Sheets\Reader\ChartFromToBinary.h" />
     <ClInclude Include="..\..\..\Binary\Sheets\Reader\CommonWriter.h" />
     <ClInclude Include="..\..\..\Binary\Sheets\Reader\CSVReader.h" />
@@ -110,7 +118,7 @@
     <ClInclude Include="..\..\..\Binary\Sheets\Reader\XMLReader\XMLMap.h" />
     <ClInclude Include="..\..\..\Binary\Sheets\Reader\XMLReader\XMLReader.h" />
     <ClInclude Include="..\..\..\Binary\Sheets\Writer\BinaryCommonReader.h" />
-    <ClInclude Include="..\..\..\Binary\Sheets\Writer\BinaryReader.h" />
+    <ClInclude Include="..\..\..\Binary\Sheets\Writer\BinaryReaderS.h" />
     <ClInclude Include="..\..\..\Binary\Sheets\Writer\CSVWriter.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

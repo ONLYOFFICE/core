@@ -70,6 +70,7 @@
 #include "../../../OOXML/PPTXFormat/Logic/Effects/AlphaModFix.h"
 #include "../../../OOXML/PPTXFormat/Logic/Effects/Grayscl.h"
 #include "../../../OOXML/PPTXFormat/Logic/Effects/Duotone.h"
+#include "../../../OOXML/PPTXFormat/Logic/HeadingVariant.h"
 
 #include "../../../OOXML/XlsxFormat/Worksheets/Sparkline.h"
 #include "../../../OfficeCryptReader/source/CryptTransform.h"
@@ -360,6 +361,66 @@ void OoxConverter::convert_meta(OOX::CApp *app, OOX::CCore *core)
 			odf_context()->add_meta(L"dc", L"language", *core->m_sLanguage);
 	}
 }
+void OoxConverter::convert_customs(OOX::IFileContainer* container)
+{
+	if (!container) return;
+	smart_ptr<PPTX::CustomProperties> customProperties = container->Find(OOX::FileTypes::CustomProperties).smart_dynamic_cast<PPTX::CustomProperties>();
+
+	if (false == customProperties.IsInit()) return;
+
+	for (auto prop : customProperties->m_arProperties)
+	{
+		if (prop.m_strName.IsInit())
+		{
+			std::wstring content;
+			if (prop.m_oContent.IsInit())
+			{
+				switch (prop.m_oContent->getVariantType())
+				{
+				case PPTX::Logic::vtLpstr:
+				case PPTX::Logic::vtLpwstr:
+				case PPTX::Logic::vtBstr:
+				{
+					if (prop.m_oContent->m_strContent.IsInit())
+						content = *prop.m_oContent->m_strContent;
+				}break;
+				case PPTX::Logic::vtI1:
+				case PPTX::Logic::vtI2:
+				case PPTX::Logic::vtI4:
+				case PPTX::Logic::vtI8:
+				case PPTX::Logic::vtDecimal:
+				case PPTX::Logic::vtInt:
+				{
+					if (prop.m_oContent->m_iContent.IsInit())
+						content = std::to_wstring(*prop.m_oContent->m_iContent);
+				}break;
+				case PPTX::Logic::vtUi1:
+				case PPTX::Logic::vtUi2:
+				case PPTX::Logic::vtUi4:
+				case PPTX::Logic::vtUi8:
+				{
+					if (prop.m_oContent->m_uContent.IsInit())
+						content = std::to_wstring(*prop.m_oContent->m_uContent);
+				}break;
+				case PPTX::Logic::vtR4:
+				{
+					if (prop.m_oContent->m_dContent.IsInit())
+						content = std::to_wstring(*prop.m_oContent->m_dContent);
+				}break;
+				case PPTX::Logic::vtBool:
+				{
+					if (prop.m_oContent->m_bContent.IsInit())
+						content = std::to_wstring(*prop.m_oContent->m_bContent);
+				}break;
+				}
+			}
+			odf_context()->add_meta_user_define(*prop.m_strName, content);
+
+		}
+		//nullable_string m_strFmtid;
+		//nullable_string m_strLinkTarget;
+	}
+}
 void OoxConverter::convert(OOX::WritingElement  *oox_unknown)
 {
 	try
@@ -512,7 +573,7 @@ void OoxConverter::convert(OOX::WritingElement  *oox_unknown)
 			}break;
 			case OOX::et_v_shape:
 			{
-				convert(dynamic_cast<OOX::Vml::CShape*>(oox_unknown));
+				convert(dynamic_cast<OOX::Vml::CShape*>(oox_unknown), NULL);
 			}break;
 			case OOX::et_v_oval:
 			{
@@ -558,11 +619,7 @@ void OoxConverter::convert(OOX::WritingElement  *oox_unknown)
 			{
 				convert(dynamic_cast<OOX::Vml::CBackground*>(oox_unknown));
 			}break;
-			case OOX::et_v_path:
-			{
-				convert(dynamic_cast<OOX::Vml::CPath*>(oox_unknown));
-			}break;	
-				case OOX::et_v_textpath:
+			case OOX::et_v_textpath:
 			{
 				convert(dynamic_cast<OOX::Vml::CTextPath*>(oox_unknown));
 			}break;	
@@ -573,10 +630,6 @@ void OoxConverter::convert(OOX::WritingElement  *oox_unknown)
 			case OOX::et_v_stroke:
 			{
 				convert(dynamic_cast<OOX::Vml::CStroke*>(oox_unknown));
-			}break;
-			case OOX::et_v_formulas:
-			{
-				convert(dynamic_cast<OOX::Vml::CFormulas*>(oox_unknown));
 			}break;
 			case OOX::et_v_shadow:
 			{
@@ -878,7 +931,7 @@ std::wstring OoxConverter::find_link_by (smart_ptr<OOX::File> & oFile, int type,
 		if (pOleObject)
 		{
 			ref = pOleObject->filename().GetPath();
-			bExternal = pOleObject->IsExternal();
+			bExternal = dynamic_cast<OOX::Media*>(pOleObject)->IsExternal();
 		}
 	}
 	return ref;

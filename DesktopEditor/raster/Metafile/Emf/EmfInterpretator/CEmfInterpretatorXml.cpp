@@ -57,7 +57,7 @@ namespace MetaFile
 		m_pOutputXml->WriteNodeBegin(L"EMR_ALPHABLEND");
 		m_pOutputXml->WriteNode(L"", oTEmfAlphaBlend);
 
-		unsigned int unSize = oTEmfAlphaBlend.cbBitsSrc + oTEmfAlphaBlend.cbBmiSrc;
+		unsigned int unSize = oTEmfAlphaBlend.unCbBitsSrc + oTEmfAlphaBlend.unCbBmiSrc;
 
 		if (unSize > 0)
 			m_pOutputXml->WriteNode(L"Buffer", oDataStream, unSize);
@@ -70,7 +70,7 @@ namespace MetaFile
 		m_pOutputXml->WriteNodeBegin(L"EMR_STRETCHDIBITS");
 		m_pOutputXml->WriteNode(L"", oTEmfStretchDIBITS);
 
-		unsigned int unSize = oTEmfStretchDIBITS.cbBitsSrc + oTEmfStretchDIBITS.cbBmiSrc;
+		unsigned int unSize = oTEmfStretchDIBITS.unCbBitsSrc + oTEmfStretchDIBITS.unCbBmiSrc;
 
 		if (unSize > 0)
 			m_pOutputXml->WriteNode(L"Buffer", oDataStream, unSize);
@@ -83,7 +83,7 @@ namespace MetaFile
 		m_pOutputXml->WriteNodeBegin(L"EMR_BITBLT");
 		m_pOutputXml->WriteNode(L"", oTEmfBitBlt);
 
-		unsigned int unSize = oTEmfBitBlt.cbBitsSrc + oTEmfBitBlt.cbBmiSrc;
+		unsigned int unSize = oTEmfBitBlt.unCbBitsSrc + oTEmfBitBlt.unCbBmiSrc;
 
 		if (unSize > 0)
 			m_pOutputXml->WriteNode(L"Buffer", oDataStream, unSize);
@@ -96,7 +96,7 @@ namespace MetaFile
 		m_pOutputXml->WriteNodeBegin(L"EMR_SETDIBITSTODEVICE");
 		m_pOutputXml->WriteNode(L"", oTEmfSetDiBitsToDevice);
 
-		unsigned int unSize = oTEmfSetDiBitsToDevice.cbBitsSrc + oTEmfSetDiBitsToDevice.cbBmiSrc;
+		unsigned int unSize = oTEmfSetDiBitsToDevice.unCbBitsSrc + oTEmfSetDiBitsToDevice.unCbBmiSrc;
 
 		if (unSize > 0)
 			m_pOutputXml->WriteNode(L"Buffer", oDataStream, unSize);
@@ -109,7 +109,7 @@ namespace MetaFile
 		m_pOutputXml->WriteNodeBegin(L"EMR_STRETCHBLT");
 		m_pOutputXml->WriteNode(L"", oTEmfStretchBLT);
 
-		unsigned int unSize = oTEmfStretchBLT.cbBitsSrc + oTEmfStretchBLT.cbBmiSrc;
+		unsigned int unSize = oTEmfStretchBLT.unCbBitsSrc + oTEmfStretchBLT.unCbBmiSrc;
 
 		if (unSize > 0)
 			m_pOutputXml->WriteNode(L"Buffer", oDataStream, unSize);
@@ -164,7 +164,7 @@ namespace MetaFile
 		m_pOutputXml->WriteNodeEnd(L"EMR_CREATEBRUSHINDIRECT");
 	}
 
-	void CEmfInterpretatorXml::HANDLE_EMR_SETTEXTCOLOR(const TEmfColor &oColor)
+	void CEmfInterpretatorXml::HANDLE_EMR_SETTEXTCOLOR(const TRGBA &oColor)
 	{
 		m_pOutputXml->WriteNodeBegin(L"EMR_SETTEXTCOLOR");
 		m_pOutputXml->WriteNode(L"Color", oColor);
@@ -225,15 +225,15 @@ namespace MetaFile
 		m_pOutputXml->WriteNodeBegin(L"EMR_EXTCREATEPEN");
 		m_pOutputXml->WriteNode(L"ihPen",   unPenIndex);
 		m_pOutputXml->WriteNodeBegin(L"LogPenEx");
-		m_pOutputXml->WriteNode(L"PenStyle",            pPen->PenStyle);
-		m_pOutputXml->WriteNode(L"Width",               pPen->Width);
+		m_pOutputXml->WriteNode(L"PenStyle",            pPen->unPenStyle);
+		m_pOutputXml->WriteNode(L"Width",               pPen->unWidth);
 		m_pOutputXml->WriteNode(L"BrushStyle",          arUnused[0]);
-		m_pOutputXml->WriteNode(L"ColorRef",            pPen->Color);
+		m_pOutputXml->WriteNode(L"ColorRef",            pPen->oColor);
 		m_pOutputXml->WriteNode(L"BrushHatch",          arUnused[1]);
-		m_pOutputXml->WriteNode(L"NumStyleEntries",     pPen->NumStyleEntries);
+		m_pOutputXml->WriteNode(L"NumStyleEntries",     pPen->unNumStyleEntries);
 
-		for (unsigned int ulIndex = 0; ulIndex < pPen->NumStyleEntries; ulIndex++)
-			m_pOutputXml->WriteNode(L"StyleEntry" + std::to_wstring(ulIndex + 1),  pPen->StyleEntry[ulIndex]);
+		for (unsigned int ulIndex = 0; ulIndex < pPen->unNumStyleEntries; ulIndex++)
+			m_pOutputXml->WriteNode(L"StyleEntry" + std::to_wstring(ulIndex + 1),  pPen->pStyleEntry[ulIndex]);
 
 		m_pOutputXml->WriteNodeEnd(L"LogPenEx");
 		m_pOutputXml->WriteNodeEnd(L"EMR_EXTCREATEPEN");
@@ -248,10 +248,10 @@ namespace MetaFile
 		m_pOutputXml->WriteNodeBegin(L"EMR_CREATEPEN");
 		m_pOutputXml->WriteNode(L"ihPen", unPenIndex);
 		m_pOutputXml->WriteNodeBegin(L"LogPen");
-		m_pOutputXml->WriteNode(L"PenStyle", pPen->PenStyle);
+		m_pOutputXml->WriteNode(L"PenStyle", pPen->unPenStyle);
 		m_pOutputXml->WriteNode(L"Width", unWidthX);
 		m_pOutputXml->WriteNodeEnd(L"LogPen");
-		m_pOutputXml->WriteNode(L"COLORREF", pPen->Color);
+		m_pOutputXml->WriteNode(L"COLORREF", pPen->oColor);
 		m_pOutputXml->WriteNodeEnd(L"EMR_CREATEPEN");
 	}
 
@@ -292,7 +292,7 @@ namespace MetaFile
 		m_pOutputXml->WriteNode(L"EMR_ABORTPATH");
 	}
 
-	void CEmfInterpretatorXml::HANDLE_EMR_MOVETOEX(const TEmfPointL &oPoint)
+	void CEmfInterpretatorXml::HANDLE_EMR_MOVETOEX(const TPointL &oPoint)
 	{
 		m_pOutputXml->WriteNodeBegin(L"EMR_MOVETOEX");
 		m_pOutputXml->WriteNode(L"Offset", oPoint);
@@ -306,7 +306,7 @@ namespace MetaFile
 		m_pOutputXml->WriteNodeEnd(L"EMR_SETARCDIRECTION");
 	}
 
-	void CEmfInterpretatorXml::HANDLE_EMR_FILLPATH(const TEmfRectL &oBounds)
+	void CEmfInterpretatorXml::HANDLE_EMR_FILLPATH(const TRectL &oBounds)
 	{
 		m_pOutputXml->WriteNodeBegin(L"EMR_FILLPATH");
 		m_pOutputXml->WriteNode(L"Bounds", oBounds);
@@ -320,14 +320,14 @@ namespace MetaFile
 		m_pOutputXml->WriteNodeEnd(L"EMR_SETMAPMODE");
 	}
 
-	void CEmfInterpretatorXml::HANDLE_EMR_SETWINDOWORGEX(const TEmfPointL &oOrigin)
+	void CEmfInterpretatorXml::HANDLE_EMR_SETWINDOWORGEX(const TPointL &oOrigin)
 	{
 		m_pOutputXml->WriteNodeBegin(L"EMR_SETWINDOWORGEX");
 		m_pOutputXml->WriteNode(L"Origin", oOrigin);
 		m_pOutputXml->WriteNodeEnd(L"EMR_SETWINDOWORGEX");
 	}
 
-	void CEmfInterpretatorXml::HANDLE_EMR_SETWINDOWEXTEX(const TEmfSizeL &oExtent)
+	void CEmfInterpretatorXml::HANDLE_EMR_SETWINDOWEXTEX(const TSizeL &oExtent)
 	{
 		m_pOutputXml->WriteNodeBegin(L"EMR_SETWINDOWEXTEX");
 		m_pOutputXml->WriteNode(L"Extent", oExtent);
@@ -344,14 +344,14 @@ namespace MetaFile
 		m_pOutputXml->WriteNodeEnd(L"EMR_SCALEWINDOWEXTEX");
 	}
 
-	void CEmfInterpretatorXml::HANDLE_EMR_SETVIEWPORTORGEX(const TEmfPointL &oOrigin)
+	void CEmfInterpretatorXml::HANDLE_EMR_SETVIEWPORTORGEX(const TPointL &oOrigin)
 	{
 		m_pOutputXml->WriteNodeBegin(L"EMR_SETVIEWPORTORGEX");
 		m_pOutputXml->WriteNode(L"Origin", oOrigin);
 		m_pOutputXml->WriteNodeEnd(L"EMR_SETVIEWPORTORGEX");
 	}
 
-	void CEmfInterpretatorXml::HANDLE_EMR_SETVIEWPORTEXTEX(const TEmfSizeL &oExtent)
+	void CEmfInterpretatorXml::HANDLE_EMR_SETVIEWPORTEXTEX(const TSizeL &oExtent)
 	{
 		m_pOutputXml->WriteNodeBegin(L"EMR_SETVIEWPORTEXTEX");
 		m_pOutputXml->WriteNode(L"Extent", oExtent);
@@ -388,8 +388,8 @@ namespace MetaFile
 		m_pOutputXml->WriteNode(L"ihBrush", unBrushIndex);
 		m_pOutputXml->WriteNode(L"", oDibBrush);
 
-		unsigned int unSize = oDibBrush.cbBmi + oDibBrush.cbBits;
-		unsigned int unSkip = oDibBrush.offBmi - 32;
+		unsigned int unSize = oDibBrush.unCbBmi + oDibBrush.unCbBits;
+		unsigned int unSkip = oDibBrush.unOffBmi - 32;
 
 		oDataStream.Skip(unSkip);
 
@@ -408,8 +408,8 @@ namespace MetaFile
 		m_pOutputXml->WriteNode(L"ihBrush", unBrushIndex);
 		m_pOutputXml->WriteNode(L"", oDibBrush);
 
-		unsigned int unSize = oDibBrush.cbBmi + oDibBrush.cbBits;
-		unsigned int unSkip = oDibBrush.offBmi - 32;
+		unsigned int unSize = oDibBrush.unCbBmi + oDibBrush.unCbBits;
+		unsigned int unSkip = oDibBrush.unOffBmi - 32;
 
 		oDataStream.Skip(unSkip);
 
@@ -428,22 +428,21 @@ namespace MetaFile
 		m_pOutputXml->WriteNodeEnd(L"EMR_SELECTCLIPPATH");
 	}
 
-	void CEmfInterpretatorXml::HANDLE_EMR_SETBKCOLOR(const TEmfColor &oColor)
+	void CEmfInterpretatorXml::HANDLE_EMR_SETBKCOLOR(const TRGBA &oColor)
 	{
 		m_pOutputXml->WriteNodeBegin(L"EMR_SETBKCOLOR");
 		m_pOutputXml->WriteNode(L"Color", oColor);
 		m_pOutputXml->WriteNodeEnd(L"EMR_SETBKCOLOR");
 	}
 
-	void CEmfInterpretatorXml::HANDLE_EMR_EXCLUDECLIPRECT(const TEmfRectL &oClip)
+	void CEmfInterpretatorXml::HANDLE_EMR_EXCLUDECLIPRECT(const TRectL &oClip)
 	{
 		m_pOutputXml->WriteNodeBegin(L"EMR_EXCLUDECLIPRECT");
 		m_pOutputXml->WriteNode(L"Clip", oClip);
 		m_pOutputXml->WriteNodeEnd(L"EMR_EXCLUDECLIPRECT");
 	}
 
-	void CEmfInterpretatorXml::HANDLE_EMR_EXTSELECTCLIPRGN(const unsigned int &unRgnDataSize, const unsigned int &unRegionMode,
-														   CDataStream &oDataStream)
+	void CEmfInterpretatorXml::HANDLE_EMR_EXTSELECTCLIPRGN(const unsigned int &unRgnDataSize, const unsigned int &unRegionMode, CDataStream &oDataStream)
 	{
 		m_pOutputXml->WriteNodeBegin(L"EMR_EXTSELECTCLIPRGN");
 		m_pOutputXml->WriteNode(L"RgnDataSize", unRgnDataSize);
@@ -492,7 +491,7 @@ namespace MetaFile
 		m_pOutputXml->WriteNode(L"EMR_REALIZEPALETTE");
 	}
 
-	void CEmfInterpretatorXml::HANDLE_EMR_INTERSECTCLIPRECT(const TEmfRectL &oClip)
+	void CEmfInterpretatorXml::HANDLE_EMR_INTERSECTCLIPRECT(const TRectL &oClip)
 	{
 		m_pOutputXml->WriteNodeBegin(L"EMR_INTERSECTCLIPRECT");
 		m_pOutputXml->WriteNode(L"Clip", oClip);
@@ -506,14 +505,14 @@ namespace MetaFile
 		m_pOutputXml->WriteNodeEnd(L"EMR_SETLAYOUT");
 	}
 
-	void CEmfInterpretatorXml::HANDLE_EMR_SETBRUSHORGEX(const TEmfPointL &oOrigin)
+	void CEmfInterpretatorXml::HANDLE_EMR_SETBRUSHORGEX(const TPointL &oOrigin)
 	{
 		m_pOutputXml->WriteNodeBegin(L"EMR_SETBRUSHORGEX");
 		m_pOutputXml->WriteNode(L"Origin", oOrigin);
 		m_pOutputXml->WriteNodeEnd(L"EMR_SETBRUSHORGEX");
 	}
 
-	void CEmfInterpretatorXml::HANDLE_EMR_ANGLEARC(const TEmfPointL &oCenter, const unsigned int &unRadius,
+	void CEmfInterpretatorXml::HANDLE_EMR_ANGLEARC(const TPointL &oCenter, const unsigned int &unRadius,
 												   const double &dStartAngle, const double &dSweepAngle)
 	{
 		m_pOutputXml->WriteNodeBegin(L"EMR_ANGLEARC");
@@ -524,7 +523,7 @@ namespace MetaFile
 		m_pOutputXml->WriteNodeEnd(L"EMR_ANGLEARC");
 	}
 
-	void CEmfInterpretatorXml::HANDLE_EMR_ARC(const TEmfRectL &oBox, const TEmfPointL &oStart, const TEmfPointL &oEnd)
+	void CEmfInterpretatorXml::HANDLE_EMR_ARC(const TRectL &oBox, const TPointL &oStart, const TPointL &oEnd)
 	{
 		m_pOutputXml->WriteNodeBegin(L"EMR_ARC");
 		m_pOutputXml->WriteNode(L"Rectangle", oBox);
@@ -533,7 +532,7 @@ namespace MetaFile
 		m_pOutputXml->WriteNodeEnd(L"EMR_ARC");
 	}
 
-	void CEmfInterpretatorXml::HANDLE_EMR_ARCTO(const TEmfRectL &oBox, const TEmfPointL &oStart, const TEmfPointL &oEnd)
+	void CEmfInterpretatorXml::HANDLE_EMR_ARCTO(const TRectL &oBox, const TPointL &oStart, const TPointL &oEnd)
 	{
 		m_pOutputXml->WriteNodeBegin(L"EMR_ARCTO");
 		m_pOutputXml->WriteNode(L"Rectangle", oBox);
@@ -542,7 +541,7 @@ namespace MetaFile
 		m_pOutputXml->WriteNodeEnd(L"EMR_ARCTO");
 	}
 
-	void CEmfInterpretatorXml::HANDLE_EMR_CHORD(const TEmfRectL &oBox, const TEmfPointL &oStart, const TEmfPointL &oEnd)
+	void CEmfInterpretatorXml::HANDLE_EMR_CHORD(const TRectL &oBox, const TPointL &oStart, const TPointL &oEnd)
 	{
 		m_pOutputXml->WriteNodeBegin(L"EMR_CHORD");
 		m_pOutputXml->WriteNode(L"Rectangle", oBox);
@@ -551,7 +550,7 @@ namespace MetaFile
 		m_pOutputXml->WriteNodeEnd(L"EMR_CHORD");
 	}
 
-	void CEmfInterpretatorXml::HANDLE_EMR_ELLIPSE(const TEmfRectL &oBox)
+	void CEmfInterpretatorXml::HANDLE_EMR_ELLIPSE(const TRectL &oBox)
 	{
 		m_pOutputXml->WriteNodeBegin(L"EMR_ELLIPSE");
 		m_pOutputXml->WriteNode(L"Rectangle", oBox);
@@ -568,14 +567,14 @@ namespace MetaFile
 		m_pOutputXml->WriteNode(L"EMR_EXTTEXTOUTW", oTEmfExtTextoutW);
 	}
 
-	void CEmfInterpretatorXml::HANDLE_EMR_LINETO(const TEmfPointL &oPoint)
+	void CEmfInterpretatorXml::HANDLE_EMR_LINETO(const TPointL &oPoint)
 	{
 		m_pOutputXml->WriteNodeBegin(L"EMR_LINETO");
 		m_pOutputXml->WriteNode(L"Point", oPoint);
 		m_pOutputXml->WriteNodeEnd(L"EMR_LINETO");
 	}
 
-	void CEmfInterpretatorXml::HANDLE_EMR_PIE(const TEmfRectL &oBox, const TEmfPointL &oStart, const TEmfPointL &oEnd)
+	void CEmfInterpretatorXml::HANDLE_EMR_PIE(const TRectL &oBox, const TPointL &oStart, const TPointL &oEnd)
 	{
 		m_pOutputXml->WriteNodeBegin(L"EMR_PIE");
 		m_pOutputXml->WriteNode(L"Rectangle",	oBox);
@@ -584,96 +583,96 @@ namespace MetaFile
 		m_pOutputXml->WriteNodeEnd(L"EMR_PIE");
 	}
 
-	void CEmfInterpretatorXml::HANDLE_EMR_POLYBEZIER(const TEmfRectL &oBounds, const std::vector<TEmfPointL>& arPoints)
+	void CEmfInterpretatorXml::HANDLE_EMR_POLYBEZIER(const TRectL &oBounds, const std::vector<TPointL>& arPoints)
 	{
-		Save_EMR_POLY_BASE<TEmfPointL>(RecordData(L"EMR_POLYBEZIER", EMR_POLYBEZIER, oBounds), arPoints);
+		Save_EMR_POLY_BASE<TPointL>(RecordData(L"EMR_POLYBEZIER", EMR_POLYBEZIER, oBounds), arPoints);
 	}
 
-	void CEmfInterpretatorXml::HANDLE_EMR_POLYBEZIER(const TEmfRectL &oBounds, const std::vector<TEmfPointS>& arPoints)
+	void CEmfInterpretatorXml::HANDLE_EMR_POLYBEZIER(const TRectL &oBounds, const std::vector<TPointS>& arPoints)
 	{
-		Save_EMR_POLY_BASE<TEmfPointS>(RecordData(L"EMR_POLYBEZIER16", EMR_POLYBEZIER16, oBounds), arPoints);
+		Save_EMR_POLY_BASE<TPointS>(RecordData(L"EMR_POLYBEZIER16", EMR_POLYBEZIER16, oBounds), arPoints);
 	}
 
-	void CEmfInterpretatorXml::HANDLE_EMR_POLYBEZIERTO(const TEmfRectL &oBounds, const std::vector<TEmfPointL>& arPoints)
+	void CEmfInterpretatorXml::HANDLE_EMR_POLYBEZIERTO(const TRectL &oBounds, const std::vector<TPointL>& arPoints)
 	{
-		Save_EMR_POLY_BASE<TEmfPointL>(RecordData(L"EMR_POLYBEZIERTO", EMR_POLYBEZIERTO, oBounds), arPoints);
+		Save_EMR_POLY_BASE<TPointL>(RecordData(L"EMR_POLYBEZIERTO", EMR_POLYBEZIERTO, oBounds), arPoints);
 	}
 
-	void CEmfInterpretatorXml::HANDLE_EMR_POLYBEZIERTO(const TEmfRectL &oBounds, const std::vector<TEmfPointS>& arPoints)
+	void CEmfInterpretatorXml::HANDLE_EMR_POLYBEZIERTO(const TRectL &oBounds, const std::vector<TPointS>& arPoints)
 	{
-		Save_EMR_POLY_BASE<TEmfPointS>(RecordData(L"EMR_POLYBEZIERTO16", EMR_POLYBEZIERTO16, oBounds), arPoints);
+		Save_EMR_POLY_BASE<TPointS>(RecordData(L"EMR_POLYBEZIERTO16", EMR_POLYBEZIERTO16, oBounds), arPoints);
 	}
 
-	void CEmfInterpretatorXml::HANDLE_EMR_POLYDRAW(const TEmfRectL &oBounds, TEmfPointL *arPoints,
+	void CEmfInterpretatorXml::HANDLE_EMR_POLYDRAW(const TRectL &oBounds, TPointL *arPoints,
 												   const unsigned int &unCount, const unsigned char *pAbTypes)
 	{
-		Save_EMR_POLYDRAW_BASE<TEmfPointL>(oBounds, arPoints, unCount, pAbTypes);
+		Save_EMR_POLYDRAW_BASE<TPointL>(oBounds, arPoints, unCount, pAbTypes);
 	}
 
-	void CEmfInterpretatorXml::HANDLE_EMR_POLYDRAW(const TEmfRectL &oBounds, TEmfPointS *arPoints,
+	void CEmfInterpretatorXml::HANDLE_EMR_POLYDRAW(const TRectL &oBounds, TPointS *arPoints,
 												   const unsigned int &unCount, const unsigned char *pAbTypes)
 	{
-		Save_EMR_POLYDRAW_BASE<TEmfPointS>(oBounds, arPoints, unCount, pAbTypes);
+		Save_EMR_POLYDRAW_BASE<TPointS>(oBounds, arPoints, unCount, pAbTypes);
 	}
 
-	void CEmfInterpretatorXml::HANDLE_EMR_POLYGON(const TEmfRectL &oBounds, const std::vector<TEmfPointL> &arPoints)
+	void CEmfInterpretatorXml::HANDLE_EMR_POLYGON(const TRectL &oBounds, const std::vector<TPointL> &arPoints)
 	{
-		Save_EMR_POLY_BASE<TEmfPointL>(RecordData(L"EMR_POLYGON", EMR_POLYGON, oBounds), arPoints);
+		Save_EMR_POLY_BASE<TPointL>(RecordData(L"EMR_POLYGON", EMR_POLYGON, oBounds), arPoints);
 	}
 
-	void CEmfInterpretatorXml::HANDLE_EMR_POLYGON(const TEmfRectL &oBounds, const std::vector<TEmfPointS> &arPoints)
+	void CEmfInterpretatorXml::HANDLE_EMR_POLYGON(const TRectL &oBounds, const std::vector<TPointS> &arPoints)
 	{
-		Save_EMR_POLY_BASE<TEmfPointS>(RecordData(L"EMR_POLYGON16", EMR_POLYGON16, oBounds), arPoints);
+		Save_EMR_POLY_BASE<TPointS>(RecordData(L"EMR_POLYGON16", EMR_POLYGON16, oBounds), arPoints);
 	}
 
-	void CEmfInterpretatorXml::HANDLE_EMR_POLYLINE(const TEmfRectL &oBounds, const std::vector<TEmfPointL> &arPoints)
+	void CEmfInterpretatorXml::HANDLE_EMR_POLYLINE(const TRectL &oBounds, const std::vector<TPointL> &arPoints)
 	{
-		Save_EMR_POLY_BASE<TEmfPointL>(RecordData(L"EMR_POLYLINE", EMR_POLYLINE, oBounds), arPoints);
+		Save_EMR_POLY_BASE<TPointL>(RecordData(L"EMR_POLYLINE", EMR_POLYLINE, oBounds), arPoints);
 	}
 
-	void CEmfInterpretatorXml::HANDLE_EMR_POLYLINE(const TEmfRectL &oBounds, const std::vector<TEmfPointS> &arPoints)
+	void CEmfInterpretatorXml::HANDLE_EMR_POLYLINE(const TRectL &oBounds, const std::vector<TPointS> &arPoints)
 	{
-		Save_EMR_POLY_BASE<TEmfPointS>(RecordData(L"EMR_POLYLINE16", EMR_POLYLINE16, oBounds), arPoints);
+		Save_EMR_POLY_BASE<TPointS>(RecordData(L"EMR_POLYLINE16", EMR_POLYLINE16, oBounds), arPoints);
 	}
 
-	void CEmfInterpretatorXml::HANDLE_EMR_POLYLINETO(const TEmfRectL &oBounds, const std::vector<TEmfPointL> &arPoints)
+	void CEmfInterpretatorXml::HANDLE_EMR_POLYLINETO(const TRectL &oBounds, const std::vector<TPointL> &arPoints)
 	{
-		Save_EMR_POLY_BASE<TEmfPointL>(RecordData(L"EMR_POLYLINETO", EMR_POLYLINETO, oBounds), arPoints);
+		Save_EMR_POLY_BASE<TPointL>(RecordData(L"EMR_POLYLINETO", EMR_POLYLINETO, oBounds), arPoints);
 	}
 
-	void CEmfInterpretatorXml::HANDLE_EMR_POLYLINETO(const TEmfRectL &oBounds, const std::vector<TEmfPointS> &arPoints)
+	void CEmfInterpretatorXml::HANDLE_EMR_POLYLINETO(const TRectL &oBounds, const std::vector<TPointS> &arPoints)
 	{
-		Save_EMR_POLY_BASE<TEmfPointS>(RecordData(L"EMR_POLYLINETO16", EMR_POLYLINETO16, oBounds), arPoints);
+		Save_EMR_POLY_BASE<TPointS>(RecordData(L"EMR_POLYLINETO16", EMR_POLYLINETO16, oBounds), arPoints);
 	}
 
-	void CEmfInterpretatorXml::HANDLE_EMR_POLYPOLYGON(const TEmfRectL &oBounds, const std::vector<std::vector<TEmfPointL>> &arPoints)
+	void CEmfInterpretatorXml::HANDLE_EMR_POLYPOLYGON(const TRectL &oBounds, const std::vector<std::vector<TPointL>> &arPoints)
 	{
-		Save_EMR_POLYPOLY_BASE<TEmfPointL>(RecordData(L"EMR_POLYPOLYGON", EMR_POLYPOLYGON, oBounds), arPoints);
+		Save_EMR_POLYPOLY_BASE<TPointL>(RecordData(L"EMR_POLYPOLYGON", EMR_POLYPOLYGON, oBounds), arPoints);
 	}
 
-	void CEmfInterpretatorXml::HANDLE_EMR_POLYPOLYGON(const TEmfRectL &oBounds, const std::vector<std::vector<TEmfPointS>> &arPoints)
+	void CEmfInterpretatorXml::HANDLE_EMR_POLYPOLYGON(const TRectL &oBounds, const std::vector<std::vector<TPointS>> &arPoints)
 	{
-		Save_EMR_POLYPOLY_BASE<TEmfPointS>(RecordData(L"EMR_POLYPOLYGON16", EMR_POLYPOLYGON16, oBounds), arPoints);
+		Save_EMR_POLYPOLY_BASE<TPointS>(RecordData(L"EMR_POLYPOLYGON16", EMR_POLYPOLYGON16, oBounds), arPoints);
 	}
 
-	void CEmfInterpretatorXml::HANDLE_EMR_POLYPOLYLINE(const TEmfRectL &oBounds, const std::vector<std::vector<TEmfPointL>> &arPoints)
+	void CEmfInterpretatorXml::HANDLE_EMR_POLYPOLYLINE(const TRectL &oBounds, const std::vector<std::vector<TPointL>> &arPoints)
 	{
-		Save_EMR_POLYPOLY_BASE<TEmfPointL>(RecordData(L"EMR_POLYPOLYLINE", EMR_POLYPOLYLINE, oBounds), arPoints);
+		Save_EMR_POLYPOLY_BASE<TPointL>(RecordData(L"EMR_POLYPOLYLINE", EMR_POLYPOLYLINE, oBounds), arPoints);
 	}
 
-	void CEmfInterpretatorXml::HANDLE_EMR_POLYPOLYLINE(const TEmfRectL &oBounds, const std::vector<std::vector<TEmfPointS>> &arPoints)
+	void CEmfInterpretatorXml::HANDLE_EMR_POLYPOLYLINE(const TRectL &oBounds, const std::vector<std::vector<TPointS>> &arPoints)
 	{
-		Save_EMR_POLYPOLY_BASE<TEmfPointS>(RecordData(L"EMR_POLYPOLYLINE16", EMR_POLYPOLYLINE16, oBounds), arPoints);
+		Save_EMR_POLYPOLY_BASE<TPointS>(RecordData(L"EMR_POLYPOLYLINE16", EMR_POLYPOLYLINE16, oBounds), arPoints);
 	}
 
-	void CEmfInterpretatorXml::HANDLE_EMR_RECTANGLE(const TEmfRectL& oBox)
+	void CEmfInterpretatorXml::HANDLE_EMR_RECTANGLE(const TRectL& oBox)
 	{
 		m_pOutputXml->WriteNodeBegin(L"EMR_RECTANGLE");
 		m_pOutputXml->WriteNode(L"Rectangle", oBox);
 		m_pOutputXml->WriteNodeEnd(L"EMR_RECTANGLE");
 	}
 
-	void CEmfInterpretatorXml::HANDLE_EMR_ROUNDRECT(const TEmfRectL &oBox, const TEmfSizeL &oCorner)
+	void CEmfInterpretatorXml::HANDLE_EMR_ROUNDRECT(const TRectL &oBox, const TSizeL &oCorner)
 	{
 		m_pOutputXml->WriteNodeBegin(L"EMR_ROUNDRECT");
 		m_pOutputXml->WriteNode(L"Rectangle",   oBox);
@@ -681,7 +680,7 @@ namespace MetaFile
 		m_pOutputXml->WriteNodeEnd(L"EMR_ROUNDRECT");
 	}
 
-	void CEmfInterpretatorXml::HANDLE_EMR_SETPIXELV(const TEmfPointL &oPoint, const TEmfColor &oColor)
+	void CEmfInterpretatorXml::HANDLE_EMR_SETPIXELV(const TPointL &oPoint, const TRGBA &oColor)
 	{
 		m_pOutputXml->WriteNodeBegin(L"EMR_SETPIXELV");
 		m_pOutputXml->WriteNode(L"Pixel", oPoint);
@@ -694,14 +693,14 @@ namespace MetaFile
 		m_pOutputXml->WriteNode(L"EMR_SMALLTEXTOUT", oText);
 	}
 
-	void CEmfInterpretatorXml::HANDLE_EMR_STROKEANDFILLPATH(const TEmfRectL &oBounds)
+	void CEmfInterpretatorXml::HANDLE_EMR_STROKEANDFILLPATH(const TRectL &oBounds)
 	{
 		m_pOutputXml->WriteNodeBegin(L"EMR_STROKEANDFILLPATH");
 		m_pOutputXml->WriteNode(L"Bounds", oBounds);
 		m_pOutputXml->WriteNodeEnd(L"EMR_STROKEANDFILLPATH");
 	}
 
-	void CEmfInterpretatorXml::HANDLE_EMR_STROKEPATH(const TEmfRectL &oBounds)
+	void CEmfInterpretatorXml::HANDLE_EMR_STROKEPATH(const TRectL &oBounds)
 	{
 		m_pOutputXml->WriteNodeBegin(L"EMR_STROKEPATH");
 		m_pOutputXml->WriteNode(L"Bounds", oBounds);
@@ -727,7 +726,7 @@ namespace MetaFile
 		m_pOutputXml->WriteNodeEnd(L"EMR_UNKNOWN");
 	}
 
-	void CEmfInterpretatorXml::HANDLE_EMR_FILLRGN(const TEmfRectL &oBounds, unsigned int unIhBrush, const TRegionDataHeader &oRegionDataHeader, const std::vector<TEmfRectL> &arRects)
+	void CEmfInterpretatorXml::HANDLE_EMR_FILLRGN(const TRectL &oBounds, unsigned int unIhBrush, const TRegionDataHeader &oRegionDataHeader, const std::vector<TRectL> &arRects)
 	{
 		m_pOutputXml->WriteNodeBegin(L"EMR_FILLRGN");
 		m_pOutputXml->WriteNode(L"Bounds",  oBounds);
@@ -736,7 +735,7 @@ namespace MetaFile
 		m_pOutputXml->WriteNodeEnd(L"EMR_FILLRGN");
 	}
 
-	void CEmfInterpretatorXml::HANDLE_EMR_PAINTRGN(const TEmfRectL &oBounds, const TRegionDataHeader &oRegionDataHeader, const std::vector<TEmfRectL> &arRects)
+	void CEmfInterpretatorXml::HANDLE_EMR_PAINTRGN(const TRectL &oBounds, const TRegionDataHeader &oRegionDataHeader, const std::vector<TRectL> &arRects)
 	{
 		m_pOutputXml->WriteNodeBegin(L"EMR_PAINTRGN");
 		m_pOutputXml->WriteNode(L"Bounds",  oBounds);
@@ -744,7 +743,7 @@ namespace MetaFile
 		m_pOutputXml->WriteNodeEnd(L"EMR_PAINTRGN");
 	}
 
-	void CEmfInterpretatorXml::HANDLE_EMR_FRAMERGN(const TEmfRectL &oBounds, unsigned int unIhBrush, int nWidth, int nHeight, const TRegionDataHeader &oRegionDataHeader, const std::vector<TEmfRectL> &arRects)
+	void CEmfInterpretatorXml::HANDLE_EMR_FRAMERGN(const TRectL &oBounds, unsigned int unIhBrush, int nWidth, int nHeight, const TRegionDataHeader &oRegionDataHeader, const std::vector<TRectL> &arRects)
 	{
 		m_pOutputXml->WriteNodeBegin(L"EMR_FRAMERGN");
 		m_pOutputXml->WriteNode(L"Bounds",  oBounds);
@@ -814,7 +813,7 @@ namespace MetaFile
 	}
 
 	template<typename T>
-	void CEmfInterpretatorXml::Save_EMR_POLYDRAW_BASE(const TEmfRectL &oBounds, T *arPoints,
+	void CEmfInterpretatorXml::Save_EMR_POLYDRAW_BASE(const TRectL &oBounds, T *arPoints,
 													  const unsigned int &unCount, const unsigned char *pAbTypes)
 	{
 		if (NULL == arPoints || NULL == pAbTypes)
@@ -823,12 +822,12 @@ namespace MetaFile
 		std::wstring wsRecordName;
 		unsigned int unRecordId;
 
-		if (typeid (T).name() == "TEmfPointL")
+		if (typeid (T).name() == "TPointL")
 		{
 			wsRecordName = L"EMR_POLYDRAW";
 			unRecordId = EMR_POLYDRAW;
 		}
-		else if(typeid (T).name() == "TEmfPointS")
+		else if(typeid (T).name() == "TPointS")
 		{
 			wsRecordName = L"EMR_POLYDRAW16";
 			unRecordId = EMR_POLYDRAW16;

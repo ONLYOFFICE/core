@@ -8,6 +8,8 @@
 #include <iostream>
 #include "../ConstValues.h"
 
+#define DEFAULTFONTNAME L"Times New Roman"
+
 CXmlElement::CXmlElement()
 {}
 
@@ -25,7 +27,7 @@ CXmlElement::CXmlElement(const std::wstring& sNameDefaultElement)
 
 bool CXmlElement::Empty() const
 {
-	return m_mBasicValues.empty() && m_mPStyleValues.empty() && m_mRStyleValues.empty();
+	return m_mPStyleValues.empty() && m_mRStyleValues.empty() && GetBasedOn().empty();
 }
 
 void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
@@ -33,7 +35,19 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
 	if (!Empty())
 		Clear();
 
-	if (sNameDefaultElement == L"li")
+/*	if (sNameDefaultElement == L"p")
+	{
+		AddBasicProperties(CSSProperties::BasicProperties::B_Type, L"paragraph");
+		AddBasicProperties(CSSProperties::BasicProperties::B_StyleId, L"p");
+		AddBasicProperties(CSSProperties::BasicProperties::B_Name, L"Normal (Web)");
+		AddBasicProperties(CSSProperties::BasicProperties::B_BasedOn, L"normal");
+		AddBasicProperties(CSSProperties::BasicProperties::B_UiPriority, L"99");
+		AddBasicProperties(CSSProperties::BasicProperties::B_UnhideWhenUsed, L"true");
+		AddBasicProperties(CSSProperties::BasicProperties::B_SemiHidden, L"true");
+
+//		AddPropertiesInP(CSSProperties::ParagraphProperties::P_Spacing, L"w:before=\"100\" w:beforeAutospacing=\"1\" w:after=\"100\" w:afterAutospacing=\"1\"");
+	}
+	else */if (sNameDefaultElement == L"li")
 	{
 		AddBasicProperties(CSSProperties::BasicProperties::B_Type, L"paragraph");
 		AddBasicProperties(CSSProperties::BasicProperties::B_StyleId, L"li");
@@ -53,7 +67,7 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
 		AddBasicProperties(CSSProperties::BasicProperties::B_Link, L"h1-c");
 
 		AddPropertiesInP(CSSProperties::ParagraphProperties::P_OutlineLvl, L"0");
-		AddPropertiesInP(CSSProperties::ParagraphProperties::P_Spacing, L"w:after=\"0\" w:before=\"480\"");
+//		AddPropertiesInP(CSSProperties::ParagraphProperties::P_Spacing, L"w:before=\"100\" w:beforeAutospacing=\"1\" w:after=\"100\" w:afterAutospacing=\"1\"");
 	}
 	else if (sNameDefaultElement == L"h2")
 	{
@@ -64,7 +78,7 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
 		AddBasicProperties(CSSProperties::BasicProperties::B_Link, L"h2-c");
 
 		AddPropertiesInP(CSSProperties::ParagraphProperties::P_OutlineLvl, L"1");
-		AddPropertiesInP(CSSProperties::ParagraphProperties::P_Spacing, L"w:after=\"0\" w:before=\"400\"");
+//		AddPropertiesInP(CSSProperties::ParagraphProperties::P_Spacing, L"w:before=\"100\" w:beforeAutospacing=\"1\" w:after=\"100\" w:afterAutospacing=\"1\"");
 	}
 	else if (sNameDefaultElement == L"h3")
 	{
@@ -75,7 +89,7 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
 		AddBasicProperties(CSSProperties::BasicProperties::B_Link, L"h3-c");
 
 		AddPropertiesInP(CSSProperties::ParagraphProperties::P_OutlineLvl, L"2");
-		AddPropertiesInP(CSSProperties::ParagraphProperties::P_Spacing, L"w:after=\"0\" w:before=\"360\"");
+//		AddPropertiesInP(CSSProperties::ParagraphProperties::P_Spacing, L"w:before=\"100\" w:beforeAutospacing=\"1\" w:after=\"100\" w:afterAutospacing=\"1\"");
 	}
 	else if (sNameDefaultElement == L"h4")
 	{
@@ -86,7 +100,7 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
 		AddBasicProperties(CSSProperties::BasicProperties::B_Link, L"h4-c");
 
 		AddPropertiesInP(CSSProperties::ParagraphProperties::P_OutlineLvl, L"3");
-		AddPropertiesInP(CSSProperties::ParagraphProperties::P_Spacing, L"w:after=\"0\" w:before=\"320\"");
+//		AddPropertiesInP(CSSProperties::ParagraphProperties::P_Spacing, L"w:before=\"100\" w:beforeAutospacing=\"1\" w:after=\"100\" w:afterAutospacing=\"1\"");
 	}
 	else if (sNameDefaultElement == L"h5")
 	{
@@ -97,7 +111,7 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
 		AddBasicProperties(CSSProperties::BasicProperties::B_Link, L"h5-c");
 
 		AddPropertiesInP(CSSProperties::ParagraphProperties::P_OutlineLvl, L"4");
-		AddPropertiesInP(CSSProperties::ParagraphProperties::P_Spacing, L"w:after=\"0\" w:before=\"280\"");
+//		AddPropertiesInP(CSSProperties::ParagraphProperties::P_Spacing, L"w:before=\"100\" w:beforeAutospacing=\"1\" w:after=\"100\" w:afterAutospacing=\"1\"");
 
 	}
 	else if (sNameDefaultElement == L"h6")
@@ -109,7 +123,7 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
 		AddBasicProperties(CSSProperties::BasicProperties::B_Link, L"h6-c");
 
 		AddPropertiesInP(CSSProperties::ParagraphProperties::P_OutlineLvl, L"5");
-		AddPropertiesInP(CSSProperties::ParagraphProperties::P_Spacing, L"w:after=\"0\" w:before=\"280\"");
+//		AddPropertiesInP(CSSProperties::ParagraphProperties::P_Spacing, L"w:before=\"100\" w:beforeAutospacing=\"1\" w:after=\"100\" w:afterAutospacing=\"1\"");
 	}
 	else if (sNameDefaultElement == L"h1-c")
 	{
@@ -120,9 +134,9 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
 		AddBasicProperties(CSSProperties::BasicProperties::B_UiPriority, L"9");
 		AddBasicProperties(CSSProperties::BasicProperties::B_Link, L"h1");
 
-		AddPropertiesInR(CSSProperties::RunnerProperties::R_RFonts, L"Times New Roman");
 		AddPropertiesInR(CSSProperties::RunnerProperties::R_B, L"bold");
-		AddPropertiesInR(CSSProperties::RunnerProperties::R_Sz, L"44");
+		AddPropertiesInR(CSSProperties::RunnerProperties::R_Sz, L"48");
+		AddPropertiesInR(CSSProperties::RunnerProperties::R_Kern, L"36");
 	}
 	else if (sNameDefaultElement == L"h2-c")
 	{
@@ -134,9 +148,8 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
 		AddBasicProperties(CSSProperties::BasicProperties::B_UnhideWhenUsed, L"true");
 		AddBasicProperties(CSSProperties::BasicProperties::B_Link, L"h2");
 
-		AddPropertiesInR(CSSProperties::RunnerProperties::R_RFonts, L"Times New Roman");
 		AddPropertiesInR(CSSProperties::RunnerProperties::R_B, L"bold");
-		AddPropertiesInR(CSSProperties::RunnerProperties::R_Sz, L"33");
+		AddPropertiesInR(CSSProperties::RunnerProperties::R_Sz, L"36");
 	}
 	else if (sNameDefaultElement == L"h3-c")
 	{
@@ -148,9 +161,8 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
 		AddBasicProperties(CSSProperties::BasicProperties::B_UnhideWhenUsed, L"true");
 		AddBasicProperties(CSSProperties::BasicProperties::B_Link, L"h3");
 
-		AddPropertiesInR(CSSProperties::RunnerProperties::R_RFonts, L"Times New Roman");
 		AddPropertiesInR(CSSProperties::RunnerProperties::R_B, L"bold");
-		AddPropertiesInR(CSSProperties::RunnerProperties::R_Sz, L"26");
+		AddPropertiesInR(CSSProperties::RunnerProperties::R_Sz, L"27");
 	}
 	else if (sNameDefaultElement == L"h4-c")
 	{
@@ -162,9 +174,8 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
 		AddBasicProperties(CSSProperties::BasicProperties::B_UnhideWhenUsed, L"true");
 		AddBasicProperties(CSSProperties::BasicProperties::B_Link, L"h4");
 
-		AddPropertiesInR(CSSProperties::RunnerProperties::R_RFonts, L"Times New Roman");
+		AddPropertiesInR(CSSProperties::RunnerProperties::R_Sz, L"24");
 		AddPropertiesInR(CSSProperties::RunnerProperties::R_B, L"bold");
-		AddPropertiesInR(CSSProperties::RunnerProperties::R_Sz, L"22");
 	}
 	else if (sNameDefaultElement == L"h5-c")
 	{
@@ -176,9 +187,8 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
 		AddBasicProperties(CSSProperties::BasicProperties::B_UnhideWhenUsed, L"true");
 		AddBasicProperties(CSSProperties::BasicProperties::B_Link, L"h5");
 
-		AddPropertiesInR(CSSProperties::RunnerProperties::R_RFonts, L"Times New Roman");
+		AddPropertiesInR(CSSProperties::RunnerProperties::R_Sz, L"20");
 		AddPropertiesInR(CSSProperties::RunnerProperties::R_B, L"bold");
-		AddPropertiesInR(CSSProperties::RunnerProperties::R_Sz, L"18");
 	}
 	else if (sNameDefaultElement == L"h6-c")
 	{
@@ -190,38 +200,16 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
 		AddBasicProperties(CSSProperties::BasicProperties::B_UnhideWhenUsed, L"true");
 		AddBasicProperties(CSSProperties::BasicProperties::B_Link, L"h6");
 
-		AddPropertiesInR(CSSProperties::RunnerProperties::R_RFonts, L"Times New Roman");
-		AddPropertiesInR(CSSProperties::RunnerProperties::R_B, L"bold");
 		AddPropertiesInR(CSSProperties::RunnerProperties::R_Sz, L"15");
+		AddPropertiesInR(CSSProperties::RunnerProperties::R_B, L"bold");
 	}
-	else if (sNameDefaultElement == L"p-c")
-	{
-		AddBasicProperties(CSSProperties::BasicProperties::B_Type, L"character");
-		AddBasicProperties(CSSProperties::BasicProperties::B_StyleId, L"p-c");
-		AddBasicProperties(CSSProperties::BasicProperties::B_CustomStyle, L"1");
-		AddBasicProperties(CSSProperties::BasicProperties::B_Name, L"Paragraph character");
-		AddBasicProperties(CSSProperties::BasicProperties::B_Link, L"p");
-
-		AddPropertiesInR(CSSProperties::RunnerProperties::R_RFonts, L"Times New Roman");
-	}
-	else if (sNameDefaultElement == L"p")
-	{
-		AddBasicProperties(CSSProperties::BasicProperties::B_Type, L"paragraph");
-		AddBasicProperties(CSSProperties::BasicProperties::B_StyleId, L"p");
-		AddBasicProperties(CSSProperties::BasicProperties::B_CustomStyle, L"1");
-		AddBasicProperties(CSSProperties::BasicProperties::B_Name, L"Paragraph");
-		AddBasicProperties(CSSProperties::BasicProperties::B_BasedOn, L"normal");
-		AddBasicProperties(CSSProperties::BasicProperties::B_Link, L"p-c");
-	}
-	else if (sNameDefaultElement == L"div-c")
+	/*else if (sNameDefaultElement == L"div-c")
 	{
 		AddBasicProperties(CSSProperties::BasicProperties::B_Type, L"character");
 		AddBasicProperties(CSSProperties::BasicProperties::B_StyleId, L"div-c");
 		AddBasicProperties(CSSProperties::BasicProperties::B_CustomStyle, L"1");
 		AddBasicProperties(CSSProperties::BasicProperties::B_Name, L"Div character");
 		AddBasicProperties(CSSProperties::BasicProperties::B_Link, L"div");
-
-		AddPropertiesInR(CSSProperties::RunnerProperties::R_RFonts, L"Times New Roman");
 	}
 	else if (sNameDefaultElement == L"div")
 	{
@@ -231,7 +219,7 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
 		AddBasicProperties(CSSProperties::BasicProperties::B_Name, L"Div paragraph");
 		AddBasicProperties(CSSProperties::BasicProperties::B_BasedOn, L"normal");
 		AddBasicProperties(CSSProperties::BasicProperties::B_Link, L"div-c");
-	}
+	}*/
 	else if (sNameDefaultElement == L"a-c")
 	{
 		AddBasicProperties(CSSProperties::BasicProperties::B_Type, L"character");
@@ -240,9 +228,9 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
 		AddBasicProperties(CSSProperties::BasicProperties::B_UiPriority, L"99");
 		AddBasicProperties(CSSProperties::BasicProperties::B_UnhideWhenUsed, L"true");
 
+		AddPropertiesInR(CSSProperties::RunnerProperties::R_Sz, L"24");
 		AddPropertiesInR(CSSProperties::RunnerProperties::R_Color, L"0000FF");
 		AddPropertiesInR(CSSProperties::RunnerProperties::R_U, L"single");
-		AddPropertiesInR(CSSProperties::RunnerProperties::R_RFonts, L"Times New Roman");
 	}
 	else if (sNameDefaultElement == L"a")
 	{
@@ -289,13 +277,13 @@ CXmlElement& CXmlElement::operator+=(const CXmlElement& oElement)
 	if (oElement.Empty())
 		return *this;
 
-	for (const std::map<CSSProperties::BasicProperties, std::wstring>::value_type& oBasicElement : oElement.m_mBasicValues)
+	for (const BPropertiesMap::value_type& oBasicElement : oElement.m_mBasicValues)
 		m_mBasicValues[oBasicElement.first] = oBasicElement.second;
 
-	for (const std::map<CSSProperties::ParagraphProperties, std::wstring>::value_type& oPElement : oElement.m_mPStyleValues)
+	for (const PPropertiesMap::value_type& oPElement : oElement.m_mPStyleValues)
 		m_mPStyleValues[oPElement.first] = oPElement.second;
 
-	for (const std::map<CSSProperties::RunnerProperties, std::wstring>::value_type& oRElement : oElement.m_mRStyleValues)
+	for (const RPropertiesMap::value_type& oRElement : oElement.m_mRStyleValues)
 		m_mRStyleValues[oRElement.first] = oRElement.second;
 
 	return *this;
@@ -310,14 +298,14 @@ CXmlElement& CXmlElement::operator=(const CXmlElement& oElement)
 	return *this;
 }
 
-bool CXmlElement::operator==(const CXmlElement &oElement)
+bool CXmlElement::operator==(const CXmlElement &oElement) const
 {
 	return m_mBasicValues == oElement.m_mBasicValues &&
 	       m_mPStyleValues == oElement.m_mPStyleValues &&
 	       m_mRStyleValues == oElement.m_mRStyleValues;
 }
 
-std::wstring CXmlElement::ConvertPStyle() const
+std::wstring CXmlElement::ConvertPStyle(bool bIsLite) const
 {
 	if (m_mPStyleValues.empty())
 		return std::wstring();
@@ -325,7 +313,7 @@ std::wstring CXmlElement::ConvertPStyle() const
 	std::wstring sPPr;
 	std::wstring sPBdr;
 
-	for (const std::map<CSSProperties::ParagraphProperties, std::wstring>::value_type& oItem : m_mPStyleValues)
+	for (const PPropertiesMap::value_type& oItem : m_mPStyleValues)
 	{
 		switch (oItem.first)
 		{
@@ -362,22 +350,22 @@ std::wstring CXmlElement::ConvertPStyle() const
 
 			case CSSProperties::ParagraphProperties::P_TopBorder:
 			{
-				sPBdr += L"<w:top" + oItem.second + L"/>";
+				sPBdr += L"<w:top " + oItem.second + L"/>";
 				break;
 			}
 			case CSSProperties::ParagraphProperties::P_LeftBorder:
 			{
-				sPBdr += L"<w:left" + oItem.second + L"/>";
+				sPBdr += L"<w:left " + oItem.second + L"/>";
 				break;
 			}
 			case CSSProperties::ParagraphProperties::P_BottomBorder:
 			{
-				sPBdr += L"<w:bottom" + oItem.second + L"/>";
+				sPBdr += L"<w:bottom " + oItem.second + L"/>";
 				break;
 			}
 			case CSSProperties::ParagraphProperties::P_RightBorder:
 			{
-				sPBdr += L"<w:right" + oItem.second + L"/>";
+				sPBdr += L"<w:right " + oItem.second + L"/>";
 				break;
 			}
 			case CSSProperties::ParagraphProperties::P_KeepLines:
@@ -398,35 +386,37 @@ std::wstring CXmlElement::ConvertPStyle() const
 	if (!sPBdr.empty())
 		sPPr += L"<w:pBdr>" + sPBdr + L"</w:pBdr>";
 
+	if (bIsLite)
+		return sPPr;
+
 	return L"<w:pPr>" + sPPr + L"</w:pPr>";
 }
 
-std::wstring CXmlElement::ConvertRStyle() const
+std::wstring CXmlElement::ConvertRStyle(bool bIsLite) const
 {
 	if (m_mRStyleValues.empty())
 		return std::wstring();
 
 	std::wstring sRStyle;
 
-	for (const std::map<CSSProperties::RunnerProperties, std::wstring>::value_type& oItem : m_mRStyleValues)
+	for (const RPropertiesMap::value_type& oItem : m_mRStyleValues)
 	{
 		switch (oItem.first)
 		{
 			case CSSProperties::RunnerProperties::R_RFonts:
 			{
-				std::wstring wsFontFamily = L"Times New Roman";
+				std::wstring wsFontFamily = (oItem.second.empty() || L"\"inherit\"" == oItem.second) ?  DEFAULTFONTNAME : oItem.second;
 
-				sRStyle += (oItem.second != L"\"inherit\"") ? L"<w:rFonts w:ascii=\"" + wsFontFamily + L'\"' +
-														  L" w:hAnsi=\"" + wsFontFamily + L'\"' +
-														  L" w:cs=\"" + wsFontFamily + L'\"' +
-														  L" w:eastAsia=\"" + wsFontFamily + L"\"/>"
-														: L"<w:rFonts w:ascii=\"Arial\" w:hAnsi=\"Arial\" w:cs=\"Arial\" w:eastAsia=\"Arial\"/>";
+				sRStyle += L"<w:rFonts w:ascii=\"" + wsFontFamily + L'\"' +
+				           L" w:hAnsi=\"" + wsFontFamily + L'\"' +
+				           L" w:cs=\"" + wsFontFamily + L'\"' +
+				           L" w:eastAsia=\"" + wsFontFamily + L"\"/>";
 				break;
 			}
 			case CSSProperties::RunnerProperties::R_Sz:
 			{
-				sRStyle += L"<w:sz w:val=\"" + oItem.second +
-				           L"\"/>" + L"<w:szCs w:val=\"" + oItem.second + L"\"/>";
+				sRStyle += L"<w:sz w:val=\""   + oItem.second + L"\"/>" + 
+				           L"<w:szCs w:val=\"" + oItem.second + L"\"/>";
 				break;
 			}
 			case CSSProperties::RunnerProperties::R_B:
@@ -458,11 +448,18 @@ std::wstring CXmlElement::ConvertRStyle() const
 					sRStyle += L"<w:u w:val=\"" + oItem.second + L"\"/>";
 				break;
 			}
-//			case CSSProperties::RunnerProperties::R_Highlight:
-//			{
-//				sRStyle += L"<w:highlight w:val=\"" + oItem.second + L"\"/>";
-//				break;
-//			}
+			case CSSProperties::RunnerProperties::R_Highlight:
+			{
+				if (!oItem.second.empty())
+					sRStyle += L"<w:highlight w:val=\"" + oItem.second + L"\"/>";
+				break;
+			}
+			case CSSProperties::RunnerProperties::R_Shd:
+			{
+				if (!oItem.second.empty())
+					sRStyle += L"<w:shd w:val=\"clear\" w:color=\"auto\" w:fill=\"" + oItem.second + L"\"/>";
+				break;
+			}
 			case CSSProperties::RunnerProperties::R_SmallCaps:
 			{
 				if (oItem.second == L"smallCaps")
@@ -471,10 +468,18 @@ std::wstring CXmlElement::ConvertRStyle() const
 					sRStyle += L"<w:smallCaps w:val=\"false\"/>";
 				break;
 			}
+			case CSSProperties::RunnerProperties::R_Kern:
+			{
+				sRStyle += L"<w:kern w:val=\"" + oItem.second + L"\"/>";
+				break;
+			}
 			default:
 				break;
 		}
 	}
+
+	if (bIsLite)
+		return sRStyle;
 
 	return L"<w:rPr>" + sRStyle + L"</w:rPr>";
 }
@@ -486,7 +491,7 @@ std::wstring CXmlElement::ConvertBasicInfoStyle() const
 
 	std::wstring sBasicInfo;
 
-	for (const std::map<CSSProperties::BasicProperties, std::wstring>::value_type& oItem : m_mBasicValues)
+	for (const BPropertiesMap::value_type& oItem : m_mBasicValues)
 	{
 		switch (oItem.first)
 		{
@@ -512,12 +517,19 @@ std::wstring CXmlElement::ConvertBasicInfoStyle() const
 			}
 			case CSSProperties::BasicProperties::B_UnhideWhenUsed:
 			{
-				sBasicInfo += L"<w:unhideWhenUsed/>";
+				if (L"true" == oItem.second)
+					sBasicInfo += L"<w:unhideWhenUsed/>";
 				break;
 			}
 			case CSSProperties::BasicProperties::B_UiPriority:
 			{
 				sBasicInfo += L"<w:uiPriority w:val=\"" + oItem.second + L"\"/>";
+				break;
+			}
+			case CSSProperties::BasicProperties::B_SemiHidden:
+			{
+				if (L"true" == oItem.second)
+					sBasicInfo += L"<w:semiHidden/>";
 				break;
 			}
 			default:
@@ -528,174 +540,96 @@ std::wstring CXmlElement::ConvertBasicInfoStyle() const
 	return sBasicInfo;
 }
 
-std::wstring CXmlElement::GetStyle() const
+std::wstring CXmlElement::GetStyleArguments() const
 {
-	if (Empty())
-		return std::wstring();
-
-	std::wstring sStyle = L"<w:style";
-
-	for (const std::map<CSSProperties::BasicProperties, std::wstring>::value_type& oItem : m_mBasicValues)
+	std::wstring wsStyleArguments;
+	
+	for (const BPropertiesMap::value_type& oItem : m_mBasicValues)
 	{
 		switch (oItem.first)
 		{
 			case CSSProperties::BasicProperties::B_CustomStyle:
 			{
-				sStyle += L" w:customStyle=\"" + oItem.second + L"\"";
+				wsStyleArguments += L" w:customStyle=\"" + oItem.second + L"\"";
 				break;
 			}
 			case CSSProperties::BasicProperties::B_StyleId:
 			{
-				sStyle += L" w:styleId=\"" + oItem.second + L"\"";
+				wsStyleArguments += L" w:styleId=\"" + oItem.second + L"\"";
 				break;
 			}
 			case CSSProperties::BasicProperties::B_Type:
 			{
-				sStyle += L" w:type=\"" + oItem.second + L"\"";
+				wsStyleArguments += L" w:type=\"" + oItem.second + L"\"";
 				break;
 			}
 			case CSSProperties::BasicProperties::B_Default:
 			{
-				sStyle += L" w:default=\"" + oItem.second + L"\"";
+				wsStyleArguments += L" w:default=\"" + oItem.second + L"\"";
 				break;
 			}
 			default:
 				break;
 		}
 	}
-	sStyle += L">";
-	sStyle += ConvertBasicInfoStyle();
-	sStyle += ConvertPStyle();
-	sStyle += ConvertRStyle();
-	sStyle += L"</w:style>";
-
-	return sStyle.length() > 19 ? sStyle : std::wstring();
+	
+	return wsStyleArguments;
 }
 
-std::wstring CXmlElement::GetLitePStyle() const
+std::wstring CXmlElement::GetStyle(bool bGetBasedInfo, bool bGetPInfo, bool bGetRInfo) const
 {
 	if (Empty())
 		return std::wstring();
 
-	const std::wstring &sLitePStyle = ConvertPStyle();
+	std::wstring wsStyleArguments = GetStyleArguments();
+	std::wstring wsStyleValue;
 
-	return (sLitePStyle.empty()) ? sLitePStyle : sLitePStyle.substr(7, sLitePStyle.length() - 15);
-}
+	if (bGetBasedInfo)
+		wsStyleValue += ConvertBasicInfoStyle();
+	
+	if (bGetPInfo)
+		wsStyleValue += ConvertPStyle();
+	
+	if (bGetRInfo)
+		wsStyleValue += ConvertRStyle();
 
-std::wstring CXmlElement::GetLiteRStyle() const
-{
-	if (Empty())
+	if (wsStyleArguments.empty() && wsStyleValue.empty())
 		return std::wstring();
 
-	const std::wstring &sLiteRStyle = ConvertRStyle();
-
-	return (sLiteRStyle.empty()) ? sLiteRStyle : sLiteRStyle.substr(7, sLiteRStyle.length() - 15);
+	return L"<w:style" + wsStyleArguments + L">" + wsStyleValue + L"</w:style>";
 }
 
-std::wstring CXmlElement::GetPStyle() const
+std::wstring CXmlElement::GetPStyle(bool bIsLite) const
 {
-	if (m_mBasicValues.empty() && m_mPStyleValues.empty())
-		return std::wstring();
+	if (bIsLite)
+		return ConvertPStyle(true);
 
-	std::wstring sPStyle = L"<w:style";
-
-	for (const std::map<CSSProperties::BasicProperties, std::wstring>::value_type& oItem : m_mBasicValues)
-	{
-		switch (oItem.first)
-		{
-			case CSSProperties::BasicProperties::B_CustomStyle:
-			{
-				sPStyle += L" w:customStyle=\"" + oItem.second + L"\"";
-				break;
-			}
-			case CSSProperties::BasicProperties::B_StyleId:
-			{
-				sPStyle += L" w:styleId=\"" + oItem.second + L"\"";
-				break;
-			}
-			case CSSProperties::BasicProperties::B_Type:
-			{
-				sPStyle += L" w:type=\"" + oItem.second + L"\"";
-				break;
-			}
-			case CSSProperties::BasicProperties::B_Default:
-			{
-				sPStyle += L" w:default=\"" + oItem.second + L"\"";
-				break;
-			}
-			default:
-				break;
-		}
-	}
-
-	sPStyle += L">";
-	sPStyle += ConvertBasicInfoStyle();
-	sPStyle += ConvertPStyle();
-	sPStyle += L"</w:style>";
-
-	return sPStyle;
+	return GetStyle(true, true, false);
 }
 
-std::wstring CXmlElement::GetRStyle() const
+std::wstring CXmlElement::GetRStyle(bool bIsLite) const
 {
-	if (m_mBasicValues.empty() && m_mRStyleValues.empty())
-		return std::wstring();
+	if (bIsLite)
+		return ConvertRStyle(true);
 
-	std::wstring sRStyle = L"<w:style ";
-
-	for (const std::map<CSSProperties::BasicProperties, std::wstring>::value_type& oItem : m_mBasicValues)
-	{
-		switch (oItem.first)
-		{
-			case CSSProperties::BasicProperties::B_CustomStyle:
-			{
-				sRStyle += L" w:customStyle=\"" + oItem.second + L"\"";
-				break;
-			}
-			case CSSProperties::BasicProperties::B_StyleId:
-			{
-				sRStyle += L" w:styleId=\"" + oItem.second + L"\"";
-				break;
-			}
-			case CSSProperties::BasicProperties::B_Type:
-			{
-				sRStyle += L" w:type=\"" + oItem.second + L"\"";
-				break;
-			}
-
-			case CSSProperties::BasicProperties::B_Default:
-			{
-				sRStyle += L" w:default=\"" + oItem.second + L"\"";
-				break;
-			}
-
-			default:
-				break;
-		}
-	}
-	sRStyle += L">";
-	sRStyle += ConvertBasicInfoStyle();
-	sRStyle += ConvertRStyle();
-	sRStyle += L"</w:style>";
-
-	return sRStyle.length() > 22 ? sRStyle : std::wstring();
+	return GetStyle(true, false, true);
 }
 
 std::wstring CXmlElement::GetBasedOn() const
 {
-	std::map<CSSProperties::BasicProperties, std::wstring>::const_iterator posBasedOn = m_mBasicValues.find(CSSProperties::BasicProperties::B_BasedOn);
+	BPropertiesMap::const_iterator posBasedOn = m_mBasicValues.find(CSSProperties::BasicProperties::B_BasedOn);
 	return  (posBasedOn != m_mBasicValues.end()) ? posBasedOn->second : std::wstring();
 }
 
 std::wstring CXmlElement::GetStyleId() const
 {
-	std::map<CSSProperties::BasicProperties, std::wstring>::const_iterator posStyleId = m_mBasicValues.find(CSSProperties::BasicProperties::B_StyleId);
+	BPropertiesMap::const_iterator posStyleId = m_mBasicValues.find(CSSProperties::BasicProperties::B_StyleId);
 	return  (posStyleId != m_mBasicValues.end()) ? posStyleId->second : std::wstring();
 }
 
 std::wstring CXmlElement::GetName() const
 {
-	std::map<CSSProperties::BasicProperties, std::wstring>::const_iterator posName = m_mBasicValues.find(CSSProperties::BasicProperties::B_Name);
+	BPropertiesMap::const_iterator posName = m_mBasicValues.find(CSSProperties::BasicProperties::B_Name);
 	return  (posName != m_mBasicValues.end()) ? posName->second : std::wstring();
 }
 

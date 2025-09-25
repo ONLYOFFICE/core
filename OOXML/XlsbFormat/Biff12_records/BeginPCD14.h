@@ -54,11 +54,11 @@ namespace XLSB
             //static const XLS::ElementType	type = XLS::typeBeginPCD14;
 
             FRTBlank            FRTheader;
-            bool                fSlicerData;
-            bool                fSrvSupportSubQueryCalcMem;
-            bool                fSrvSupportSubQueryNonVisual;
-            bool                fSrvSupportAddCalcMems;
-            _INT32              icacheId;
+            bool                fSlicerData = false;
+            bool                fSrvSupportSubQueryCalcMem = false;
+            bool                fSrvSupportSubQueryNonVisual = false;
+            bool                fSrvSupportAddCalcMems = false;
+            _INT32              icacheId = 0;
     };
 
 } // namespace XLSB

@@ -230,67 +230,6 @@
 
 namespace MetaFile
 {
-	struct TEmfColor
-	{
-		unsigned char r;
-		unsigned char g;
-		unsigned char b;
-		unsigned char a; //Reserved Must be 0x00
-
-		TEmfColor()
-		{
-			r = 0;
-			g = 0;
-			b = 0;
-		}
-
-		TEmfColor(unsigned char _r, unsigned char _g, unsigned char _b)
-		{
-			r = _r;
-			g = _g;
-			b = _b;
-		}
-
-		void Set(unsigned char _r, unsigned char _g, unsigned char _b)
-		{
-			r = _r;
-			g = _g;
-			b = _b;
-		}
-
-		void Init()
-		{
-			r = 0;
-			g = 0;
-			b = 0;
-			a = 0;
-		}
-
-		void InitWhite()
-		{
-			r = 255;
-			g = 255;
-			b = 255;
-			a = 0;
-		}
-
-		void Copy(TEmfColor* pOther)
-		{
-			r = pOther->r;
-			g = pOther->g;
-			b = pOther->b;
-			a = pOther->a;
-		}
-	};
-
-	struct TEmfRect
-	{
-		short shLeft;
-		short shTop;
-		short shRight;
-		short shBottom;
-	};
-
 	struct TEmfWindow
 	{
 		int lX;
@@ -315,98 +254,12 @@ namespace MetaFile
 		}
 	};
 
-	struct TEmfRectL
-	{
-		TEmfRectL()
-		{
-			lLeft   = 0;
-			lTop    = 0;
-			lRight  = 0;
-			lBottom = 0;
-		}
-		TEmfRectL(const TRect& oRect)
-		{
-			lLeft   = oRect.nLeft;
-			lTop    = oRect.nTop;
-			lRight  = oRect.nRight;
-			lBottom = oRect.nBottom;
-		}
-
-		void Update(bool bFlipedX, bool bFlipedY)
-		{
-			if (lTop > lBottom && bFlipedY)
-			{
-				int nTemp = lBottom;
-				lBottom = lTop;
-				lTop = nTemp;
-			}
-
-			if (lLeft < lRight && bFlipedX)
-			{
-				int nTemp = lRight;
-				lRight = lLeft;
-				lLeft = nTemp;
-			}
-		}
-
-		int lLeft;
-		int lTop;
-		int lRight;
-		int lBottom;		
-	};
-
-	struct TEmfPointL
-	{
-		int x;
-		int y;
-
-		TEmfPointL& operator=(const TEmfPointL& oPoint)
-		{
-			x = oPoint.x;
-			y = oPoint.y;
-
-			return *this;
-		}
-
-		bool operator==(const TEmfPointL& oPoint)
-		{
-			return ((x == oPoint.x) && (y == oPoint.y));
-		}
-	};
-
-	struct TEmfPointS
-	{
-		short x;
-		short y;
-	};
-
-	struct TEmfPointD
-	{
-		double x;
-		double y;
-	};
-
-	struct TEmfSizeL
-	{
-		int cx;
-		int cy;
-	};
-
-	struct TEmfScale
-	{
-		double dX;
-		double dY;
-
-		TEmfScale(double dXScale, double dYScale)
-			: dX(dXScale), dY(dYScale){}
-	};
-
 	struct TEmfHeader
 	{
 		TEmfHeader() : ulSignature(0), ulVersion(0), ulRecords(0), ushObjects(0), ulSize(0), ulPalEntries(0), ulOffsetDescription(0),ulSizeDescription(0) {}
 		
-		TEmfRectL      oBounds;
-		TEmfRectL      oFrame;
+		TRectL         oBounds;
+		TRectL         oFrame;
 		unsigned int   ulSignature;
 		unsigned int   ulVersion;
 		unsigned int   ulSize;
@@ -416,29 +269,29 @@ namespace MetaFile
 		unsigned int   ulSizeDescription;
 		unsigned int   ulOffsetDescription;
 		unsigned int   ulPalEntries;
-		TEmfSizeL      oDevice;
-		TEmfSizeL      oMillimeters;
-		TRect          oFrameToBounds;
-		TEmfRectL      oFramePx;
+		TSizeL         oDevice;
+		TSizeL         oMillimeters;
+		TRectL         oFrameToBounds;
+		TRectL         oFramePx;
 	};
 
 	struct TEmfStretchDIBITS
 	{
-		TEmfRectL    Bounds;
-		int          xDest;
-		int          yDest;
-		int          xSrc;
-		int          ySrc;
-		int          cxSrc;
-		int          cySrc;
-		unsigned int offBmiSrc;
-		unsigned int cbBmiSrc;
-		unsigned int offBitsSrc;
-		unsigned int cbBitsSrc;
-		unsigned int UsageSrc;
-		unsigned int BitBltRasterOperation;
-		int          cxDest;
-		int          cyDest;
+		TRectL       oBounds;
+		int          nXDest;
+		int          nYDest;
+		int          nXSrc;
+		int          nYSrc;
+		int          nCxSrc;
+		int          nCySrc;
+		unsigned int unOffBmiSrc;
+		unsigned int unCbBmiSrc;
+		unsigned int unOffBitsSrc;
+		unsigned int unCbBitsSrc;
+		unsigned int unUsageSrc;
+		unsigned int unBitBltRasterOperation;
+		int          nCxDest;
+		int          nCyDest;
 	};
 
 	struct TRegionDataHeader
@@ -447,377 +300,230 @@ namespace MetaFile
 		unsigned int unType;
 		unsigned int unCountRects;
 		unsigned int unRgnSize;
-		TEmfRectL    oBounds;
+		TRectL       oBounds;
 	};
 
-#define TEmfXForm TXForm
-	//struct TEmfXForm
-	//{
-	//	double M11;
-	//	double M12;
-	//	double M21;
-	//	double M22;
-	//	double Dx;
-	//	double Dy;
-
-	//	void Init()
-	//	{
-	//		M11 = 1;
-	//		M12 = 0;
-	//		M21 = 0;
-	//		M22 = 1;
-	//		Dx  = 0;
-	//		Dy  = 0;
-	//	}
-
-	//	void Copy(TEmfXForm* pOther)
-	//	{
-	//		M11 = pOther->M11;
-	//		M12	= pOther->M12;
-	//		M21	= pOther->M21;
-	//		M22	= pOther->M22;
-	//		Dx	= pOther->Dx;
-	//		Dy	= pOther->Dy;
-	//	}
-
-	//	void Multiply(TEmfXForm &oOther, unsigned int ulMode)
-	//	{
-	//		if (MWT_IDENTITY == ulMode)
-	//			Init();
-	//		else if (MWT_LEFTMULTIPLY == ulMode)
-	//		{
-	//			// oOther слева, текущая матрица справа
-	//			double dM11 = oOther.M11 * M11 + oOther.M12 * M21;
-	//			double dM12 = oOther.M11 * M21 + oOther.M12 * M22;
-	//			double dM21 = oOther.M21 * M11 + oOther.M22 * M21;
-	//			double dM22 = oOther.M21 * M21 + oOther.M22 * M22;
-
-	//			double dDx = oOther.Dx * M11 + oOther.Dy * M21 + Dx;
-	//			double dDy = oOther.Dx * M21 + oOther.Dy * M22 + Dy;
-
-	//			M11 = dM11;
-	//			M12	= dM12;
-	//			M21	= dM21;
-	//			M22	= dM22;
-	//			Dx	= dDx;
-	//			Dy	= dDy;
-	//		}
-	//		else if (MWT_RIGHTMULTIPLY == ulMode)
-	//		{
-	//			// oOther справа, текущая матрица слева
-	//			double dM11 = M11 * oOther.M11 + M12 * oOther.M21;
-	//			double dM12 = M11 * oOther.M21 + M12 * oOther.M22;
-	//			double dM21 = M21 * oOther.M11 + M22 * oOther.M21;
-	//			double dM22 = M21 * oOther.M21 + M22 * oOther.M22;
-
-	//			double dDx = Dx * oOther.M11 + Dy * oOther.M21 + oOther.Dx;
-	//			double dDy = Dx * oOther.M21 + Dy * oOther.M22 + oOther.Dy;
-
-	//			M11 = dM11;
-	//			M12	= dM12;
-	//			M21	= dM21;
-	//			M22	= dM22;
-	//			Dx	= dDx;
-	//			Dy	= dDy;
-	//		}
-	//		else //if (MWT_SET == ulMode)
-	//		{
-	//			Copy(&oOther);
-	//		}
-	//	}
-	//	void Apply(double& dX, double& dY)
-	//	{
-	//		double _dX = dX;
-	//		double _dY = dY;
-
-	//		dX = _dX * M11 + _dY * M21 + Dx;
-	//		dY = _dX * M12 + _dY * M22 + Dy;
-	//	}
-	//};
+	#define TEmfXForm TXForm
 
 	struct TEmfStretchBLT
 	{
-		TEmfRectL    Bounds;
-		int          xDest;
-		int          yDest;
-		int          cxDest;
-		int          cyDest;
-		unsigned int BitBltRasterOperation;
-		int          xSrc;
-		int          ySrc;
-		TXForm       XformSrc;
-		TEmfColor    BkColorSrc;
-		unsigned int UsageSrc;
-		unsigned int offBmiSrc;
-		unsigned int cbBmiSrc;
-		unsigned int offBitsSrc;
-		unsigned int cbBitsSrc;
-		int          cxSrc;
-		int          cySrc;
+		TRectL       oBounds;
+		int          nXDest;
+		int          nYDest;
+		int          nCxDest;
+		int          nCyDest;
+		unsigned int unBitBltRasterOperation;
+		int          nXSrc;
+		int          nYSrc;
+		TXForm       oXformSrc;
+		TRGBA        oBkColorSrc;
+		unsigned int unUsageSrc;
+		unsigned int unOffBmiSrc;
+		unsigned int unCbBmiSrc;
+		unsigned int unOffBitsSrc;
+		unsigned int unCbBitsSrc;
+		int          nCxSrc;
+		int          nCySrc;
 	};
 
-	struct TEmfEmrText
+	template<typename T>
+	struct TEmrText
 	{
-		TEmfPointL    Reference;
-		unsigned int  Chars;
-		unsigned int  offString;
-		unsigned int  Options;
-		TEmfRectL     Rectangle;
-		unsigned int  offDx;
-		void*         OutputString; // unsinged short* либо unsigned char*
-		unsigned int* OutputDx;		
-
-		TEmfEmrText()
+		TPointL       oReference;
+		unsigned int  unChars;
+		unsigned int  unOffString;
+		unsigned int  unOptions;
+		TRectL        oRectangle;
+		unsigned int  unOffDx;
+		T*            pOutputString; // unsinged short* либо unsigned char*
+		unsigned int* pOutputDx;
+		
+		TEmrText() : pOutputString(NULL), pOutputDx(NULL){}
+		void Free()
 		{
-			OutputString = NULL;
-			OutputDx     = NULL;
-		}
-
-		void FreeA()
-		{
-			if (OutputString)
+			if (pOutputString)
 			{
-				unsigned char* pString = (unsigned char*)OutputString;
+				T* pString = (T*)pOutputString;
 				delete[] pString;
-				OutputString = NULL;
+				pOutputString = NULL;
 			}
 
-			if (OutputDx)
-			{
-				delete[] OutputDx;
-				OutputDx = NULL;
-			}
-		}
-
-		void FreeW()
-		{
-			if (OutputString)
-			{
-				unsigned short* pString = (unsigned short*)OutputString;
-				delete[] pString;
-				OutputString = NULL;
-			}
-
-			if (OutputDx)
-			{
-				delete[] OutputDx;
-				OutputDx = NULL;
-			}
+			RELEASEOBJECT(pOutputDx);
 		}
 	};
-
-	struct TEmfExtTextoutW
+	
+	typedef TEmrText<unsigned char>  TEmrTextA;
+	typedef TEmrText<unsigned short> TEmrTextW;
+	
+	template<typename T>
+	struct TExtTextout
 	{
-		TEmfRectL     Bounds;
-		unsigned int  iGraphicsMode;
-		double        exScale;
-		double        eyScale;
-		TEmfEmrText   wEmrText;
+		TRectL        oBounds;
+		unsigned int  unIGraphicsMode;
+		double        dExScale;
+		double        dEyScale;
+		TEmrText<T>   oEmrText;
 
-		~TEmfExtTextoutW()
+		~TExtTextout()
 		{
 			Free();
 		}
 
 		void Free()
 		{
-			wEmrText.FreeW();
+			oEmrText.Free();
 		}
 	};
+	
+	typedef TExtTextout<unsigned char>  TEmfExtTextoutA;
+	typedef TExtTextout<unsigned short> TEmfExtTextoutW;
 
-	struct TEmfExtTextoutA
+	template<typename T>
+	struct TPolyTextout
 	{
-		TEmfRectL     Bounds;
-		unsigned int  iGraphicsMode;
-		double        exScale;
-		double        eyScale;
-		TEmfEmrText   aEmrText;
+		TRectL       oBounds;
+		unsigned int unIGraphicsMode;
+		double       dExScale;
+		double       dEyScale;
+		unsigned int unCStrings;
+		TEmrText<T>* arEmrText;
 
-		~TEmfExtTextoutA()
-		{
-			Free();
-		}
+		TPolyTextout() : arEmrText(NULL)
+		{}
 
-		void Free()
+		~TPolyTextout()
 		{
-			aEmrText.FreeA();
-		}
-	};
-
-	struct TEmfPolyTextoutA
-	{
-		TEmfRectL    Bounds;
-		unsigned int iGraphicsMode;
-		double       exScale;
-		double       eyScale;
-		unsigned int cStrings;
-		TEmfEmrText* aEmrText;
-
-		TEmfPolyTextoutA()
-		{
-			aEmrText = NULL;
-		}
-		~TEmfPolyTextoutA()
-		{
-			if (aEmrText)
+			if (NULL != arEmrText)
 			{
-				for (unsigned int unIndex = 0; unIndex < cStrings; unIndex++)
-				{
-					aEmrText[unIndex].FreeA();
-				}
-				delete[] aEmrText;
-				aEmrText = NULL;
+				for (unsigned int unIndex = 0; unIndex < unCStrings; unIndex++)
+					arEmrText[unIndex].Free();
+
+				RELEASEARRAYOBJECTS(arEmrText);
 			}
 		}
 	};
-
-	struct TEmfPolyTextoutW
-	{
-		TEmfRectL    Bounds;
-		unsigned int iGraphicsMode;
-		double       exScale;
-		double       eyScale;
-		unsigned int cStrings;
-		TEmfEmrText* wEmrText;
-
-		TEmfPolyTextoutW()
-		{
-			wEmrText = NULL;
-		}
-		~TEmfPolyTextoutW()
-		{
-			if (wEmrText)
-			{
-				for (unsigned int unIndex = 0; unIndex < cStrings; unIndex++)
-				{
-					wEmrText[unIndex].FreeW();
-				}
-				delete[] wEmrText;
-				wEmrText = NULL;
-			}
-		}
-	};
+	
+	typedef TPolyTextout<unsigned char>  TPolyTextoutA;
+	typedef TPolyTextout<unsigned short> TPolyTextoutW;
 
 	struct TEmfLogFont
-	{				   
-		int            Height;
-		int            Width;
-		int            Escapement;
-		int            Orientation;
-		int            Weight;
-		unsigned char  Italic;
-		unsigned char  Underline;
-		unsigned char  StrikeOut;
-		unsigned char  CharSet;
-		unsigned char  OutPrecision;
-		unsigned char  ClipPrecision;
-		unsigned char  Quality;
-		unsigned char  PitchAndFamily;
-		unsigned short FaceName[32];
+	{
+		int            nHeight;
+		int            nWidth;
+		int            nEscapement;
+		int            nOrientation;
+		int            nWeight;
+		unsigned char  uchItalic;
+		unsigned char  uchUnderline;
+		unsigned char  uchStrikeOut;
+		unsigned char  uchCharSet;
+		unsigned char  uchOutPrecision;
+		unsigned char  uchClipPrecision;
+		unsigned char  uchQuality;
+		unsigned char  uchPitchAndFamily;
+		unsigned short ushFaceName[32];
 	};
 
 	struct TEmfLogFontEx
 	{
-		TEmfLogFont    LogFont;
-		unsigned short FullName[64];
-		unsigned short Style[32];
-		unsigned short Script[32];
+		TEmfLogFont    oLogFont;
+		unsigned short ushFullName[64];
+		unsigned short ushStyle[32];
+		unsigned short ushScript[32];
 	};
 
 	struct TEmfDesignVector
 	{
-		unsigned int Signature;
-		unsigned int NumAxes;
-		int*         Values;
+		unsigned int unSignature;
+		unsigned int unNumAxes;
+		int*         pValues;
 	};
 
 	struct TEmfBitBlt
 	{
-		TEmfRectL    Bounds;
-		int          xDest;
-		int          yDest;
-		int          cxDest;
-		int          cyDest;
-		unsigned int BitBltRasterOperation;
-		int          xSrc;
-		int          ySrc;
-		TEmfXForm    XfromSrc;
-		TEmfColor    BkColorSrc;
-		unsigned int UsageSrc;
-		unsigned int offBmiSrc;
-		unsigned int cbBmiSrc;
-		unsigned int offBitsSrc;
-		unsigned int cbBitsSrc;
+		TRectL       oBounds;
+		int          nXDest;
+		int          nYDest;
+		int          nCxDest;
+		int          nCyDest;
+		unsigned int unBitBltRasterOperation;
+		int          nXSrc;
+		int          nYSrc;
+		TEmfXForm    oXfromSrc;
+		TRGBA        oBkColorSrc;
+		unsigned int unUsageSrc;
+		unsigned int unOffBmiSrc;
+		unsigned int unCbBmiSrc;
+		unsigned int unOffBitsSrc;
+		unsigned int unCbBitsSrc;
 	};
 
 	struct TEmfSetDiBitsToDevice
 	{
-		TEmfRectL    Bounds;
-		int          xDest;
-		int          yDest;
-		int          xSrc;
-		int          ySrc;
-		int          cxSrc;
-		int          cySrc;
-		unsigned int offBmiSrc;
-		unsigned int cbBmiSrc;
-		unsigned int offBitsSrc;
-		unsigned int cbBitsSrc;
-		unsigned int UsageSrc;
-		unsigned int iStartScan;
-		unsigned int cScans;
+		TRectL       oBounds;
+		int          nXDest;
+		int          nYDest;
+		int          nXSrc;
+		int          nYSrc;
+		int          nCxSrc;
+		int          nCySrc;
+		unsigned int unOffBmiSrc;
+		unsigned int unCbBmiSrc;
+		unsigned int unOffBitsSrc;
+		unsigned int unCbBitsSrc;
+		unsigned int unUsageSrc;
+		unsigned int unIStartScan;
+		unsigned int unCScans;
 	};
 
 	struct TEmfDibPatternBrush
 	{
-		unsigned int Usage;
-		unsigned int offBmi;
-		unsigned int cbBmi;
-		unsigned int offBits;
-		unsigned int cbBits;
+		unsigned int unUsage;
+		unsigned int unOffBmi;
+		unsigned int unCbBmi;
+		unsigned int unOffBits;
+		unsigned int unCbBits;
 	};
 
 	struct TEmfLogPaletteEntry
 	{
-		unsigned char Reserved;
-		unsigned char Blue;
-		unsigned char Green;
-		unsigned char Red;
+		unsigned char uchReserved;
+		unsigned char uchBlue;
+		unsigned char uchGreen;
+		unsigned char uchRed;
 	};
 
 	struct TEmfSmallTextout
 	{
-		int             x;
-		int             y;
-		unsigned int    cChars;
-		unsigned int    fuOptions;
-		unsigned int    iGraphicsMode;
-		double          exScale;
-		double          eyScale;
-		TEmfRectL       Bounds;
-		unsigned short* TextString;
+		int             nX;
+		int             nY;
+		unsigned int    unCChars;
+		unsigned int    unFuOptions;
+		unsigned int    unIGraphicsMode;
+		double          dExScale;
+		double          dEyScale;
+		TRectL          oBounds;
+		unsigned short* pTextString;
 
-		TEmfSmallTextout()
-		{
-			TextString = NULL;
-		}
+		TEmfSmallTextout() : pTextString(NULL)
+		{}
+		
 		~TEmfSmallTextout()
 		{
-			if (TextString)
-				delete[] TextString;
+			RELEASEOBJECT(pTextString);
 		}
 
 		unsigned int GetSize()
 		{
 			unsigned int unSize = 28;
 
-			if (!(fuOptions & ETO_NO_RECT))
+			if (!(unFuOptions & ETO_NO_RECT))
 				unSize += 16;
 
-			if (fuOptions & ETO_SMALL_CHARS)
-				unSize += cChars;
+			if (unFuOptions & ETO_SMALL_CHARS)
+				unSize += unCChars;
 			else
-				unSize += 2 * cChars;
+				unSize += 2 * unCChars;
 
 			return unSize;
 		}
@@ -825,26 +531,26 @@ namespace MetaFile
 
 	struct TEmfAlphaBlend
 	{
-		TEmfRectL     Bounds;
-		int           xDest;
-		int           yDest;
-		int           cxDest;
-		int           cyDest;
-		unsigned char BlendOperation;
-		unsigned char BlendFlags;
-		unsigned char SrcConstantAlpha;
-		unsigned char AlphaFormat;
-		int           xSrc;
-		int           ySrc;
-		TEmfXForm     XformSrc;
-		TEmfColor     BkColor;
-		unsigned int  UsageSrc;
-		unsigned int  offBmiSrc;
-		unsigned int  cbBmiSrc;
-		unsigned int  offBitsSrc;
-		unsigned int  cbBitsSrc;
-		int           cxSrc;
-		int           cySrc;
+		TRectL        oBounds;
+		int           nXDest;
+		int           nYDest;
+		int           nCxDest;
+		int           nCyDest;
+		unsigned char uchBlendOperation;
+		unsigned char uchBlendFlags;
+		unsigned char uchSrcConstantAlpha;
+		unsigned char uchAlphaFormat;
+		int           nXSrc;
+		int           nYSrc;
+		TEmfXForm     oXformSrc;
+		TRGBA         oBkColor;
+		unsigned int  unUsageSrc;
+		unsigned int  unOffBmiSrc;
+		unsigned int  unCbBmiSrc;
+		unsigned int  unOffBitsSrc;
+		unsigned int  unCbBitsSrc;
+		int           nCxSrc;
+		int           nCySrc;
 	};
 
 	struct TTriVertex

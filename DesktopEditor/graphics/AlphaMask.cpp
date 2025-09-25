@@ -1,69 +1,88 @@
-#include "AlphaMask.h"
-#include "AlphaMask_private.h"
+#include "AlphaMask_p.h"
 
 namespace Aggplus
 {
 	CAlphaMask::CAlphaMask()
-		: m_internal(new CAlphaMask_private())
+		: m_pBuffer(NULL)
+	{}
+
+	CAlphaMask::CAlphaMask(BYTE *pBuffer, EMaskDataType eDataType, bool bExternalBuffer)
+		: m_pBuffer(pBuffer), m_enDataType(eDataType), m_bExternalBuffer(bExternalBuffer)
 	{}
 
 	CAlphaMask::~CAlphaMask()
 	{
-		RELEASEOBJECT(m_internal)
+		if (!m_bExternalBuffer)
+			RELEASEARRAYOBJECTS(m_pBuffer);
 	}
 
-	void CAlphaMask::Clear()
+	BYTE *CAlphaMask::GetBuffer()
 	{
-		m_internal->Clear();
+		return m_pBuffer;
 	}
 
-	StatusAlphaMask CAlphaMask::GetStatus() const
+	EMaskDataType CAlphaMask::GetDataType() const
 	{
-		return m_internal->GetStatus();
-	}
-	AMaskDataType CAlphaMask::GetDataType() const
-	{
-		return m_internal->GetDataType();
+		return m_enDataType;
 	}
 
-	Status CAlphaMask::CreateImageBuffer(UINT unWidth, UINT unHeight)
+	UINT CAlphaMask::GetStep() const
 	{
-		return m_internal->Create(unWidth, unHeight, ImageBuffer);
+		switch(m_enDataType)
+		{
+		case EMaskDataType::ImageBuffer: return 4;
+		case EMaskDataType::AlphaBuffer: return 1;
+		}
 	}
 
-	Status CAlphaMask::CreateAlphaBuffer(UINT unWidth, UINT unHeight)
+	Status CAlphaMask::Create(UINT unWidth, UINT unHeight, EMaskDataType eDataType)
 	{
-		return m_internal->Create(unWidth, unHeight, AlphaBuffer);
+		if (0 == unWidth || 0 == unHeight)
+			return InvalidParameter;
+
+		m_enDataType      = eDataType;
+		m_bExternalBuffer = false;
+
+		UINT unSize = unWidth * unHeight * GetStep();
+		
+		m_pBuffer = new BYTE[unSize];
+
+		if (NULL == m_pBuffer)
+			return OutOfMemory;
+
+		memset(m_pBuffer, 0x00, unSize);
+
+		return Ok;
 	}
 
-	Status CAlphaMask::LoadFromAlphaBuffer(BYTE *pBuffer, UINT unWidth, UINT unHeight, bool bExternalBuffer)
+	Status CAlphaMask::LoadFromBuffer(BYTE *pBuffer, EMaskDataType eDataType, bool bExternalBuffer)
 	{
-		return m_internal->LoadFromBuffer(pBuffer, unWidth, unHeight, AlphaBuffer, bExternalBuffer);
+		m_pBuffer = pBuffer;
+		m_enDataType = eDataType;
+		m_bExternalBuffer = bExternalBuffer;
+		return Ok;
 	}
 
-	Status CAlphaMask::LoadFromImageBuffer(BYTE *pBuffer, UINT unWidth, UINT unHeight, bool bExternalBuffer)
+	CSoftMask::CSoftMask(BYTE* pBuffer, unsigned int unWidth, unsigned int unHeight, bool bFlip, bool bRGB, bool bAlpha)
 	{
-		return m_internal->LoadFromBuffer(pBuffer, unWidth, unHeight, ImageBuffer, bExternalBuffer);
+		if (bAlpha)
+			m_pInternal = new CSoftMaskAlpha(pBuffer, unWidth, unHeight, false, bFlip);
+		else
+		{
+			if (bRGB)
+				m_pInternal = new CSoftMaskBGRAgray(pBuffer, unWidth, unHeight, false, bFlip);
+			else
+				m_pInternal = new CSoftMaskRGBAgray(pBuffer, unWidth, unHeight, false, bFlip);
+		}
+	}
+	CSoftMask::~CSoftMask()
+	{
+		RELEASEOBJECT(m_pInternal);
 	}
 
-	Status CAlphaMask::LoadFromFile(const std::wstring &wsFilePath)
-	{
-		return m_internal->LoadFromFile(wsFilePath);
-	}
-
-	Status CAlphaMask::LoadFromImage(IGrObject *pGrObject, bool bCopy)
-	{
-		return m_internal->LoadFromImage(pGrObject, bCopy);
-	}
-
-	BYTE *CAlphaMask::GetMask()
-	{
-		return m_internal->GetMask();
-	}
-
-	CAlphaMask &CAlphaMask::operator=(const CAlphaMask &oAlphaMask)
-	{
-		*m_internal = *oAlphaMask.m_internal;
-		return *this;
-	}
+	unsigned int CSoftMask::GetStep() const { return m_pInternal->GetStep(); }
+	unsigned int CSoftMask::GetWidth() const { return m_pInternal->GetWidth(); }
+	unsigned int CSoftMask::GetHeight() const { return m_pInternal->GetHeight(); }
+	BYTE* CSoftMask::GetBuffer() { return m_pInternal->GetBuffer(); }
+	ESoftMaskType CSoftMask::GetDataType() { return m_pInternal->GetDataType(); }
 }

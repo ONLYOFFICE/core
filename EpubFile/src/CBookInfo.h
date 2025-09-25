@@ -30,6 +30,7 @@ public:
     const std::wstring GetCreators() const;
     const std::wstring GetPublishers() const;
     const std::wstring GetLanguages() const;
+    const std::wstring GetLanguage() const;
     const std::wstring GetContibutors() const;
     const std::wstring GetDescriptions() const;
     const std::wstring GetSubjects() const;

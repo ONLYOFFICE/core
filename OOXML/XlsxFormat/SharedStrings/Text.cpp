@@ -64,6 +64,10 @@ namespace OOX
 			checkBufferSize(NSFile::CUtf8Converter::GetUnicodeStringFromUTF8BufferSize(nLen));
 			NSFile::CUtf8Converter::GetUnicodeStringFromUTF8WithHHHH((const BYTE*)sVal, nLen, m_sBuffer, m_nLen);
 		}
+		LONG CStringXLSB::getUTF16Size()
+		{
+			return NSFile::CUtf8Converter::GetUtf16SizeFromUnicode(m_sBuffer, m_nLen);
+		}
 		void CStringXLSB::checkBufferSize(_UINT32 nRequired)
 		{
 			if(nRequired > m_nSize)
@@ -207,20 +211,22 @@ namespace OOX
 		void CText::toXML(NSStringUtils::CStringBuilder& writer) const
 		{
 			writer.WriteString(_T("<t"));
-			if(std::wstring::npos != m_sText.find(' ') || std::wstring::npos != m_sText.find('\n'))
+			if(std::wstring::npos != m_sText.find('\x20') || std::wstring::npos != m_sText.find('\n') || std::wstring::npos != m_sText.find('\x9'))
 				writer.WriteString(_T(" xml:space=\"preserve\""));
 			writer.WriteString(_T(">"));
-			writer.WriteEncodeXmlStringHHHH(m_sText);
+			if (!m_sText.empty())
+				writer.WriteEncodeXmlStringHHHH(m_sText);
 			writer.WriteString(_T("</t>"));
 		}
 		void CText::toXML2(NSStringUtils::CStringBuilder& writer, const wchar_t* name) const
 		{
 			writer.WriteString(_T("<"));
 			writer.WriteString(name);
-			if(std::wstring::npos != m_sText.find(' ') || std::wstring::npos != m_sText.find('\n'))
+			if ((std::wstring::npos != m_sText.find('\x20') || std::wstring::npos != m_sText.find('\n') || std::wstring::npos != m_sText.find('\x9')))
 				writer.WriteString(_T(" xml:space=\"preserve\""));
 			writer.WriteString(_T(">"));
-			writer.WriteEncodeXmlStringHHHH(m_sText);
+			if (!m_sText.empty())
+				writer.WriteEncodeXmlStringHHHH(m_sText);
 			writer.WriteString(_T("</"));
 			writer.WriteString(name);
 			writer.WriteString(_T(">"));
@@ -236,7 +242,10 @@ namespace OOX
 			XmlUtils::XmlNodeType eNodeType = XmlUtils::XmlNodeType_EndElement;
 			while (oReader.Read(eNodeType) && oReader.GetDepth() >= nDepth && XmlUtils::XmlNodeType_EndElement != eNodeType)
 			{
-				if (eNodeType == XmlUtils::XmlNodeType_Text || eNodeType == XmlUtils::XmlNodeType_Whitespace || eNodeType == XmlUtils::XmlNodeType_SIGNIFICANT_WHITESPACE)
+				if (eNodeType == XmlUtils::XmlNodeType_Text ||
+					eNodeType == XmlUtils::XmlNodeType_Whitespace || 
+					eNodeType == XmlUtils::XmlNodeType_SIGNIFICANT_WHITESPACE ||
+					eNodeType == XmlUtils::XmlNodeType_CDATA)
 				{
 					std::string sTemp = oReader.GetTextA();
 					wchar_t* pUnicodes = NULL;
@@ -290,7 +299,7 @@ namespace OOX
 		}
 		void CText::trimString(std::wstring& sVal, SimpleTypes::EXmlSpace eSpace)
 		{
-			NSStringExt::Replace(sVal, L"\t", L"");
+			//NSStringExt::Replace(sVal, L"\t", L"");
 			if(SimpleTypes::xmlspacePreserve != eSpace)
 			{
 				//trim ' ', '\r', '\n'
@@ -301,7 +310,7 @@ namespace OOX
 				for(int i = nStartIndex; i < nLength; ++i)
 				{
 					wchar_t cElem = sVal[i];
-					if(' ' == cElem || '\n' == cElem || '\r' == cElem)
+					if(' ' == cElem || '\n' == cElem || '\r' == cElem || '\t' == cElem)
 						nStartIndex++;
 					else
 						break;

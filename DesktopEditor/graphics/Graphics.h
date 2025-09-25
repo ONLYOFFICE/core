@@ -64,13 +64,15 @@
 
 #include "Color.h"
 #include "Matrix.h"
+#include "GraphicsLayerBlend.h"
 #include "GraphicsPath.h"
-#include "AlphaMask.h"
+#include "AlphaMask_p.h"
 #include "Clip.h"
 #include "Brush.h"
 #include "Image.h"
 #include "../fontengine/FontManager.h"
 
+#include <stack>
 #include <vector>
 
 #if defined(_WIN32) || defined (_WIN64)
@@ -280,6 +282,9 @@ protected:
 	CClipMulti  m_oClip;
 
 	CAlphaMask* m_pAlphaMask;
+	CSoftMask* m_pSoftMask;
+
+	std::stack<CGraphicsLayer*> m_arLayers;
 
 	agg::svg::frame_buffer_rgba<blender_type>       m_frame_buffer;
 	agg::svg::rasterizer                            m_rasterizer;
@@ -355,8 +360,8 @@ public:
 	Status SetClip(CGraphicsPath* pPath);
 	Status ResetClip();
 	Status ExclugeClip(CGraphicsPath* pPath);
-	Status CombineClip(CGraphicsPath* pPath, agg::sbool_op_e op);
-    Status InternalClip(CGraphicsPath* pPath, CMatrix* pTransform, agg::sbool_op_e op);
+	Status CombineClip(CGraphicsPath* pPath, agg::sbool_op_e op, NSStructures::CPen* pPen = NULL);
+    Status InternalClip(CGraphicsPath* pPath, CMatrix* pTransform, agg::sbool_op_e op, NSStructures::CPen* pPen = NULL);
 
 	// измерение текста
 	INT MeasureString(const std::wstring& strText, CFontManager* pManager, double* lWidth, double* lHeight);
@@ -398,9 +403,21 @@ public:
 
 	//Работа с альфа-маской
 	Status SetAlphaMask(CAlphaMask* pAlphaMask);
-	Status CreateAlphaMask();
+	Status StartCreatingAlphaMask();
+	Status EndCreatingAlphaMask();
 	Status ResetAlphaMask();
-	Status StartApplyingAlphaMask();
+
+	CSoftMask* CreateSoftMask(bool bAlpha);
+	Status SetSoftMask(CSoftMask* pSoftMask);
+
+	//Работа со слоями
+	Status AddLayer(CGraphicsLayer* pGraphicsLayer);
+	Status CreateLayer();
+	Status BlendLayer();
+	Status RemoveLayer();
+	
+	Status SetLayerSettings(const TGraphicsLayerSettings& oSettings);
+	Status SetLayerOpacity(double dOpacity);
 
 	void CalculateFullTransform();
 	bool IsClip();
@@ -416,12 +433,11 @@ protected:
 	template<class Renderer>
 	void render_scanlines(Renderer& ren);
 	template<class Rasterizer, class Renderer>
-	void render_scanlines(Rasterizer& ras, Renderer& ren);
+	void render_scanlines_2(Rasterizer& ras, Renderer& ren);
     template<class Renderer>
     void render_scanlines_alpha(Renderer& ren, BYTE Alpha);
-
-	agg::rendering_buffer& GetRenderingBuffer();
-	base_renderer_type&    GetRendererBase();
+	template<class Rasterizer, class Renderer, class Scanline>
+	void render_scanlines_3(Rasterizer& ras, Renderer& ren, Scanline& sl);
 
 	void DoFillPathSolid(CColor dwColor);
 	void DoFillPathGradient(CBrushLinearGradient *pBrush);
@@ -437,6 +453,8 @@ protected:
     void DoFillPathTextureClampSz3(const CMatrix &mImgMtx, const void *pImgBuff, DWORD dwImgWidth, DWORD dwImgHeight, int nImgStride, Aggplus::WrapMode wrapmode, BYTE Alpha = 255);
     
 	void DoFillPath(const CBrush* Brush);
+	template<class Rasterizer>
+	agg::trans_affine* DoStrokePath(NSStructures::CPen* pPen, CGraphicsPath* pPath, Rasterizer* ras);
 
 	// text methods
 	int FillGlyph2(int nX, int nY, TGlyph* pGlyph, Aggplus::CBrush* pBrush);

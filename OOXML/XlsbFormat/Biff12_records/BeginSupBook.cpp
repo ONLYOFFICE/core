@@ -97,7 +97,7 @@ namespace XLSB
 				RelID relID;
 				XLNullableWideString str;
 				relID.value = string1;
-				str = string2;
+				str.setSize(0xFFFFFFFF);
 				record << relID << str;
 				break;
 			}

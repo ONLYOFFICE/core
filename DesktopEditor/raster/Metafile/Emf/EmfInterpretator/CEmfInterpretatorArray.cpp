@@ -73,10 +73,10 @@ namespace MetaFile
 			pInterpretator->End();
 	}
 
-	void CEmfInterpretatorArray::DrawBitmap(double dX, double dY, double dW, double dH, BYTE *pBuffer, unsigned int unWidth, unsigned int unHeight)
+	void CEmfInterpretatorArray::DrawBitmap(double dX, double dY, double dW, double dH, BYTE *pBuffer, unsigned int unWidth, unsigned int unHeight, unsigned int unBlendMode)
 	{
 		for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
-			pInterpretator->DrawBitmap(dX, dY, dW, dH, pBuffer, unWidth, unHeight);
+			pInterpretator->DrawBitmap(dX, dY, dW, dH, pBuffer, unWidth, unHeight, unBlendMode);
 	}
 
 	void CEmfInterpretatorArray::DrawString(std::wstring &wsText, unsigned int unCharsCount, double dX, double dY, double *pDx,
@@ -158,10 +158,10 @@ namespace MetaFile
 			pInterpretator->ExcludeClip(oClip, oBB);
 	}
 
-	void CEmfInterpretatorArray::PathClip(IPath* pPath, int nClipMode, TXForm* pTransform)
+	void CEmfInterpretatorArray::PathClip(const CPath &oPath, int nClipMode, TXForm* pTransform)
 	{
 		for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
-			pInterpretator->PathClip(pPath, nClipMode, pTransform);
+			pInterpretator->PathClip(oPath, nClipMode, pTransform);
 	}
 
 	void CEmfInterpretatorArray::StartClipPath(unsigned int unMode, int nFillMode)
@@ -266,7 +266,7 @@ namespace MetaFile
 			pInterpretator->HANDLE_EMR_CREATEBRUSHINDIRECT(unBrushIndex, pBrush);
 	}
 
-	void CEmfInterpretatorArray::HANDLE_EMR_SETTEXTCOLOR(const TEmfColor &oColor)
+	void CEmfInterpretatorArray::HANDLE_EMR_SETTEXTCOLOR(const TRGBA &oColor)
 	{
 		for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
 			pInterpretator->HANDLE_EMR_SETTEXTCOLOR(oColor);
@@ -362,7 +362,7 @@ namespace MetaFile
 			pInterpretator->HANDLE_EMR_ABORTPATH();
 	}
 
-	void CEmfInterpretatorArray::HANDLE_EMR_MOVETOEX(const TEmfPointL &oPoint)
+	void CEmfInterpretatorArray::HANDLE_EMR_MOVETOEX(const TPointL &oPoint)
 	{
 		for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
 			pInterpretator->HANDLE_EMR_MOVETOEX(oPoint);
@@ -374,7 +374,7 @@ namespace MetaFile
 			pInterpretator->HANDLE_EMR_SETARCDIRECTION(unDirection);
 	}
 
-	void CEmfInterpretatorArray::HANDLE_EMR_FILLPATH(const TEmfRectL &oBounds)
+	void CEmfInterpretatorArray::HANDLE_EMR_FILLPATH(const TRectL &oBounds)
 	{
 		for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
 			pInterpretator->HANDLE_EMR_FILLPATH(oBounds);
@@ -386,13 +386,13 @@ namespace MetaFile
 			pInterpretator->HANDLE_EMR_SETMAPMODE(unMapMode);
 	}
 
-	void CEmfInterpretatorArray::HANDLE_EMR_SETWINDOWORGEX(const TEmfPointL &oOrigin)
+	void CEmfInterpretatorArray::HANDLE_EMR_SETWINDOWORGEX(const TPointL &oOrigin)
 	{
 		for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
 			pInterpretator->HANDLE_EMR_SETWINDOWORGEX(oOrigin);
 	}
 
-	void CEmfInterpretatorArray::HANDLE_EMR_SETWINDOWEXTEX(const TEmfSizeL &oExtent)
+	void CEmfInterpretatorArray::HANDLE_EMR_SETWINDOWEXTEX(const TSizeL &oExtent)
 	{
 		for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
 			pInterpretator->HANDLE_EMR_SETWINDOWEXTEX(oExtent);
@@ -404,13 +404,13 @@ namespace MetaFile
 			pInterpretator->HANDLE_EMR_SCALEWINDOWEXTEX(nXNum, nXDenom, nYNum, nYDenom);
 	}
 
-	void CEmfInterpretatorArray::HANDLE_EMR_SETVIEWPORTORGEX(const TEmfPointL &oOrigin)
+	void CEmfInterpretatorArray::HANDLE_EMR_SETVIEWPORTORGEX(const TPointL &oOrigin)
 	{
 		for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
 			pInterpretator->HANDLE_EMR_SETVIEWPORTORGEX(oOrigin);
 	}
 
-	void CEmfInterpretatorArray::HANDLE_EMR_SETVIEWPORTEXTEX(const TEmfSizeL &oExtent)
+	void CEmfInterpretatorArray::HANDLE_EMR_SETVIEWPORTEXTEX(const TSizeL &oExtent)
 	{
 		for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
 			pInterpretator->HANDLE_EMR_SETVIEWPORTEXTEX(oExtent);
@@ -452,13 +452,13 @@ namespace MetaFile
 			pInterpretator->HANDLE_EMR_SELECTCLIPPATH(unRegionMode);
 	}
 
-	void CEmfInterpretatorArray::HANDLE_EMR_SETBKCOLOR(const TEmfColor &oColor)
+	void CEmfInterpretatorArray::HANDLE_EMR_SETBKCOLOR(const TRGBA &oColor)
 	{
 		for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
 			pInterpretator->HANDLE_EMR_SETBKCOLOR(oColor);
 	}
 
-	void CEmfInterpretatorArray::HANDLE_EMR_EXCLUDECLIPRECT(const TEmfRectL &oClip)
+	void CEmfInterpretatorArray::HANDLE_EMR_EXCLUDECLIPRECT(const TRectL &oClip)
 	{
 		for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
 			pInterpretator->HANDLE_EMR_EXCLUDECLIPRECT(oClip);
@@ -500,7 +500,7 @@ namespace MetaFile
 			pInterpretator->HANDLE_EMR_REALIZEPALETTE();
 	}
 
-	void CEmfInterpretatorArray::HANDLE_EMR_INTERSECTCLIPRECT(const TEmfRectL &oClip)
+	void CEmfInterpretatorArray::HANDLE_EMR_INTERSECTCLIPRECT(const TRectL &oClip)
 	{
 		for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
 			pInterpretator->HANDLE_EMR_INTERSECTCLIPRECT(oClip);
@@ -512,37 +512,37 @@ namespace MetaFile
 			pInterpretator->HANDLE_EMR_SETLAYOUT(unLayoutMode);
 	}
 
-	void CEmfInterpretatorArray::HANDLE_EMR_SETBRUSHORGEX(const TEmfPointL &oOrigin)
+	void CEmfInterpretatorArray::HANDLE_EMR_SETBRUSHORGEX(const TPointL &oOrigin)
 	{
 		for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
 			pInterpretator->HANDLE_EMR_SETBRUSHORGEX(oOrigin);
 	}
 
-	void CEmfInterpretatorArray::HANDLE_EMR_ANGLEARC(const TEmfPointL &oCenter, const unsigned int &unRadius, const double &dStartAngle, const double &dSweepAngle)
+	void CEmfInterpretatorArray::HANDLE_EMR_ANGLEARC(const TPointL &oCenter, const unsigned int &unRadius, const double &dStartAngle, const double &dSweepAngle)
 	{
 		for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
 			pInterpretator->HANDLE_EMR_ANGLEARC(oCenter, unRadius, dStartAngle, dSweepAngle);
 	}
 
-	void CEmfInterpretatorArray::HANDLE_EMR_ARC(const TEmfRectL &oBox, const TEmfPointL &oStart, const TEmfPointL &oEnd)
+	void CEmfInterpretatorArray::HANDLE_EMR_ARC(const TRectL &oBox, const TPointL &oStart, const TPointL &oEnd)
 	{
 		for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
 			pInterpretator->HANDLE_EMR_ARC(oBox, oStart, oEnd);
 	}
 
-	void CEmfInterpretatorArray::HANDLE_EMR_ARCTO(const TEmfRectL &oBox, const TEmfPointL &oStart, const TEmfPointL &oEnd)
+	void CEmfInterpretatorArray::HANDLE_EMR_ARCTO(const TRectL &oBox, const TPointL &oStart, const TPointL &oEnd)
 	{
 		for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
 			pInterpretator->HANDLE_EMR_ARCTO(oBox, oStart, oEnd);
 	}
 
-	void CEmfInterpretatorArray::HANDLE_EMR_CHORD(const TEmfRectL &oBox, const TEmfPointL &oStart, const TEmfPointL &oEnd)
+	void CEmfInterpretatorArray::HANDLE_EMR_CHORD(const TRectL &oBox, const TPointL &oStart, const TPointL &oEnd)
 	{
 		for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
 			pInterpretator->HANDLE_EMR_CHORD(oBox, oStart, oEnd);
 	}
 
-	void CEmfInterpretatorArray::HANDLE_EMR_ELLIPSE(const TEmfRectL &oBox)
+	void CEmfInterpretatorArray::HANDLE_EMR_ELLIPSE(const TRectL &oBox)
 	{
 		for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
 			pInterpretator->HANDLE_EMR_ELLIPSE(oBox);
@@ -560,127 +560,127 @@ namespace MetaFile
 			pInterpretator->HANDLE_EMR_EXTTEXTOUTW(oTEmfExtTextoutW);
 	}
 
-	void CEmfInterpretatorArray::HANDLE_EMR_LINETO(const TEmfPointL &oPoint)
+	void CEmfInterpretatorArray::HANDLE_EMR_LINETO(const TPointL &oPoint)
 	{
 		for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
 			pInterpretator->HANDLE_EMR_LINETO(oPoint);
 	}
 
-	void CEmfInterpretatorArray::HANDLE_EMR_PIE(const TEmfRectL &oBox, const TEmfPointL &oStart, const TEmfPointL &oEnd)
+	void CEmfInterpretatorArray::HANDLE_EMR_PIE(const TRectL &oBox, const TPointL &oStart, const TPointL &oEnd)
 	{
 		for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
 			pInterpretator->HANDLE_EMR_PIE(oBox, oStart ,oEnd);
 	}
 
-	void CEmfInterpretatorArray::HANDLE_EMR_POLYBEZIER(const TEmfRectL &oBounds, const std::vector<TEmfPointL> &arPoints)
+	void CEmfInterpretatorArray::HANDLE_EMR_POLYBEZIER(const TRectL &oBounds, const std::vector<TPointL> &arPoints)
 	{
 		for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
 			pInterpretator->HANDLE_EMR_POLYBEZIER(oBounds, arPoints);
 	}
 
-	void CEmfInterpretatorArray::HANDLE_EMR_POLYBEZIER(const TEmfRectL &oBounds, const std::vector<TEmfPointS> &arPoints)
+	void CEmfInterpretatorArray::HANDLE_EMR_POLYBEZIER(const TRectL &oBounds, const std::vector<TPointS> &arPoints)
 	{
 		for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
 			pInterpretator->HANDLE_EMR_POLYBEZIER(oBounds, arPoints);
 	}
 
-	void CEmfInterpretatorArray::HANDLE_EMR_POLYBEZIERTO(const TEmfRectL &oBounds, const std::vector<TEmfPointL> &arPoints)
+	void CEmfInterpretatorArray::HANDLE_EMR_POLYBEZIERTO(const TRectL &oBounds, const std::vector<TPointL> &arPoints)
 	{
 		for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
 			pInterpretator->HANDLE_EMR_POLYBEZIERTO(oBounds, arPoints);
 	}
 
-	void CEmfInterpretatorArray::HANDLE_EMR_POLYBEZIERTO(const TEmfRectL &oBounds, const std::vector<TEmfPointS> &arPoints)
+	void CEmfInterpretatorArray::HANDLE_EMR_POLYBEZIERTO(const TRectL &oBounds, const std::vector<TPointS> &arPoints)
 	{
 		for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
 			pInterpretator->HANDLE_EMR_POLYBEZIERTO(oBounds, arPoints);
 	}
 
-	void CEmfInterpretatorArray::HANDLE_EMR_POLYDRAW(const TEmfRectL &oBounds, TEmfPointL *arPoints, const unsigned int &unCount, const unsigned char *pAbTypes)
+	void CEmfInterpretatorArray::HANDLE_EMR_POLYDRAW(const TRectL &oBounds, TPointL *arPoints, const unsigned int &unCount, const unsigned char *pAbTypes)
 	{
 		for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
 			pInterpretator->HANDLE_EMR_POLYDRAW(oBounds, arPoints, unCount, pAbTypes);
 	}
 
-	void CEmfInterpretatorArray::HANDLE_EMR_POLYDRAW(const TEmfRectL &oBounds, TEmfPointS *arPoints, const unsigned int &unCount, const unsigned char *pAbTypes)
+	void CEmfInterpretatorArray::HANDLE_EMR_POLYDRAW(const TRectL &oBounds, TPointS *arPoints, const unsigned int &unCount, const unsigned char *pAbTypes)
 	{
 		for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
 			pInterpretator->HANDLE_EMR_POLYDRAW(oBounds, arPoints, unCount, pAbTypes);
 	}
 
-	void CEmfInterpretatorArray::HANDLE_EMR_POLYGON(const TEmfRectL &oBounds, const std::vector<TEmfPointL> &arPoints)
+	void CEmfInterpretatorArray::HANDLE_EMR_POLYGON(const TRectL &oBounds, const std::vector<TPointL> &arPoints)
 	{
 		for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
 			pInterpretator->HANDLE_EMR_POLYGON(oBounds, arPoints);
 	}
 
-	void CEmfInterpretatorArray::HANDLE_EMR_POLYGON(const TEmfRectL &oBounds, const std::vector<TEmfPointS> &arPoints)
+	void CEmfInterpretatorArray::HANDLE_EMR_POLYGON(const TRectL &oBounds, const std::vector<TPointS> &arPoints)
 	{
 		for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
 			pInterpretator->HANDLE_EMR_POLYGON(oBounds, arPoints);
 	}
 
-	void CEmfInterpretatorArray::HANDLE_EMR_POLYLINE(const TEmfRectL &oBounds, const std::vector<TEmfPointL> &arPoints)
+	void CEmfInterpretatorArray::HANDLE_EMR_POLYLINE(const TRectL &oBounds, const std::vector<TPointL> &arPoints)
 	{
 		for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
 			pInterpretator->HANDLE_EMR_POLYLINE(oBounds, arPoints);
 	}
 
-	void CEmfInterpretatorArray::HANDLE_EMR_POLYLINE(const TEmfRectL &oBounds, const std::vector<TEmfPointS> &arPoints)
+	void CEmfInterpretatorArray::HANDLE_EMR_POLYLINE(const TRectL &oBounds, const std::vector<TPointS> &arPoints)
 	{
 		for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
 			pInterpretator->HANDLE_EMR_POLYLINE(oBounds, arPoints);
 	}
 
-	void CEmfInterpretatorArray::HANDLE_EMR_POLYLINETO(const TEmfRectL &oBounds, const std::vector<TEmfPointL> &arPoints)
+	void CEmfInterpretatorArray::HANDLE_EMR_POLYLINETO(const TRectL &oBounds, const std::vector<TPointL> &arPoints)
 	{
 		for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
 			pInterpretator->HANDLE_EMR_POLYLINETO(oBounds, arPoints);
 	}
 
-	void CEmfInterpretatorArray::HANDLE_EMR_POLYLINETO(const TEmfRectL &oBounds, const std::vector<TEmfPointS> &arPoints)
+	void CEmfInterpretatorArray::HANDLE_EMR_POLYLINETO(const TRectL &oBounds, const std::vector<TPointS> &arPoints)
 	{
 		for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
 			pInterpretator->HANDLE_EMR_POLYLINETO(oBounds, arPoints);
 	}
 
-	void CEmfInterpretatorArray::HANDLE_EMR_POLYPOLYGON(const TEmfRectL &oBounds, const std::vector<std::vector<TEmfPointL>> &arPoints)
+	void CEmfInterpretatorArray::HANDLE_EMR_POLYPOLYGON(const TRectL &oBounds, const std::vector<std::vector<TPointL>> &arPoints)
 	{
 		for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
 			pInterpretator->HANDLE_EMR_POLYPOLYGON(oBounds, arPoints);
 	}
 
-	void CEmfInterpretatorArray::HANDLE_EMR_POLYPOLYGON(const TEmfRectL &oBounds, const std::vector<std::vector<TEmfPointS>> &arPoints)
+	void CEmfInterpretatorArray::HANDLE_EMR_POLYPOLYGON(const TRectL &oBounds, const std::vector<std::vector<TPointS>> &arPoints)
 	{
 		for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
 			pInterpretator->HANDLE_EMR_POLYPOLYGON(oBounds, arPoints);
 	}
 
-	void CEmfInterpretatorArray::HANDLE_EMR_POLYPOLYLINE(const TEmfRectL &oBounds, const std::vector<std::vector<TEmfPointL>> &arPoints)
+	void CEmfInterpretatorArray::HANDLE_EMR_POLYPOLYLINE(const TRectL &oBounds, const std::vector<std::vector<TPointL>> &arPoints)
 	{
 		for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
 			pInterpretator->HANDLE_EMR_POLYPOLYLINE(oBounds, arPoints);
 	}
 
-	void CEmfInterpretatorArray::HANDLE_EMR_POLYPOLYLINE(const TEmfRectL &oBounds, const std::vector<std::vector<TEmfPointS>> &arPoints)
+	void CEmfInterpretatorArray::HANDLE_EMR_POLYPOLYLINE(const TRectL &oBounds, const std::vector<std::vector<TPointS>> &arPoints)
 	{
 		for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
 			pInterpretator->HANDLE_EMR_POLYPOLYLINE(oBounds, arPoints);
 	}
 
-	void CEmfInterpretatorArray::HANDLE_EMR_RECTANGLE(const TEmfRectL &oBox)
+	void CEmfInterpretatorArray::HANDLE_EMR_RECTANGLE(const TRectL &oBox)
 	{
 		for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
 			pInterpretator->HANDLE_EMR_RECTANGLE(oBox);
 	}
 
-	void CEmfInterpretatorArray::HANDLE_EMR_ROUNDRECT(const TEmfRectL &oBox, const TEmfSizeL &oCorner)
+	void CEmfInterpretatorArray::HANDLE_EMR_ROUNDRECT(const TRectL &oBox, const TSizeL &oCorner)
 	{
 		for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
 			pInterpretator->HANDLE_EMR_ROUNDRECT(oBox, oCorner);
 	}
 
-	void CEmfInterpretatorArray::HANDLE_EMR_SETPIXELV(const TEmfPointL &oPoint, const TEmfColor &oColor)
+	void CEmfInterpretatorArray::HANDLE_EMR_SETPIXELV(const TPointL &oPoint, const TRGBA &oColor)
 	{
 		for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
 			pInterpretator->HANDLE_EMR_SETPIXELV(oPoint, oColor);
@@ -692,13 +692,13 @@ namespace MetaFile
 			pInterpretator->HANDLE_EMR_SMALLTEXTOUT(oText);
 	}
 
-	void CEmfInterpretatorArray::HANDLE_EMR_STROKEANDFILLPATH(const TEmfRectL &oBounds)
+	void CEmfInterpretatorArray::HANDLE_EMR_STROKEANDFILLPATH(const TRectL &oBounds)
 	{
 		for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
 			pInterpretator->HANDLE_EMR_STROKEANDFILLPATH(oBounds);
 	}
 
-	void CEmfInterpretatorArray::HANDLE_EMR_STROKEPATH(const TEmfRectL &oBounds)
+	void CEmfInterpretatorArray::HANDLE_EMR_STROKEPATH(const TRectL &oBounds)
 	{
 		for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
 			pInterpretator->HANDLE_EMR_STROKEPATH(oBounds);
@@ -716,19 +716,19 @@ namespace MetaFile
 			pInterpretator->HANDLE_EMR_UNKNOWN(oDataStream);
 	}
 
-	void CEmfInterpretatorArray::HANDLE_EMR_FILLRGN(const TEmfRectL &oBounds, unsigned int unIhBrush, const TRegionDataHeader &oRegionDataHeader, const std::vector<TEmfRectL> &arRects)
+	void CEmfInterpretatorArray::HANDLE_EMR_FILLRGN(const TRectL &oBounds, unsigned int unIhBrush, const TRegionDataHeader &oRegionDataHeader, const std::vector<TRectL> &arRects)
 	{
 		for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
 			pInterpretator->HANDLE_EMR_FILLRGN(oBounds, unIhBrush, oRegionDataHeader, arRects);
 	}
 
-	void CEmfInterpretatorArray::HANDLE_EMR_PAINTRGN(const TEmfRectL &oBounds, const TRegionDataHeader &oRegionDataHeader, const std::vector<TEmfRectL> &arRects)
+	void CEmfInterpretatorArray::HANDLE_EMR_PAINTRGN(const TRectL &oBounds, const TRegionDataHeader &oRegionDataHeader, const std::vector<TRectL> &arRects)
 	{
 		for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
 			pInterpretator->HANDLE_EMR_PAINTRGN(oBounds, oRegionDataHeader, arRects);
 	}
 
-	void CEmfInterpretatorArray::HANDLE_EMR_FRAMERGN(const TEmfRectL &oBounds, unsigned int unIhBrush, int nWidth, int nHeight, const TRegionDataHeader &oRegionDataHeader, const std::vector<TEmfRectL> &arRects)
+	void CEmfInterpretatorArray::HANDLE_EMR_FRAMERGN(const TRectL &oBounds, unsigned int unIhBrush, int nWidth, int nHeight, const TRegionDataHeader &oRegionDataHeader, const std::vector<TRectL> &arRects)
 	{
 		for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
 			pInterpretator->HANDLE_EMR_FRAMERGN(oBounds, unIhBrush, nWidth, nHeight, oRegionDataHeader, arRects);
@@ -846,7 +846,7 @@ namespace MetaFile
 			pInterpretator->HANDLE_EMFPLUS_DRAWLINES(shOgjectIndex, arPoints);
 	}
 
-	void CEmfInterpretatorArray::HANDLE_EMFPLUS_DRAWPATH(short shOgjectIndex, unsigned int unPenId, const CEmfPath* pPath)
+	void CEmfInterpretatorArray::HANDLE_EMFPLUS_DRAWPATH(short shOgjectIndex, unsigned int unPenId, const CPath *pPath)
 	{
 		for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
 			pInterpretator->HANDLE_EMFPLUS_DRAWPATH(shOgjectIndex, unPenId, pPath);

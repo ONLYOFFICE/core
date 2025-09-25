@@ -51,234 +51,132 @@ namespace MetaFile
 		WMF_OBJECT_PALETTE = 0x04,
 		WMF_OBJECT_REGION  = 0x05
 	} EWmfObjectType;
+
 	class CWmfObjectBase
 	{
 	public:
-		CWmfObjectBase(){}
-		virtual ~CWmfObjectBase(){}
-		virtual EWmfObjectType GetType()
-		{
-			return WMF_OBJECT_UNKNOWN;
-		}
+		CWmfObjectBase();
+		virtual ~CWmfObjectBase();
+		virtual EWmfObjectType GetType() const;
 	};
+	
 	class CWmfBrush : public CWmfObjectBase, public IBrush
 	{
 	public:
 		CWmfBrush();
-		CWmfBrush(TWmfLogBrush& oBrush);
+		CWmfBrush(const TWmfLogBrush &oBrush);
 		virtual ~CWmfBrush();
-		virtual EWmfObjectType GetType()
-		{
-			return WMF_OBJECT_BRUSH;
-		}
+		virtual EWmfObjectType GetType() const override;
+		
 		void SetDibPattern(unsigned char* pBuffer, unsigned int unWidth, unsigned int unHeight);
 
 		// IBrush
-		int          GetColor();
-		int          GetColor2()
-		{
-			return 0;
-		}
-		unsigned int GetStyle();
-		unsigned int GetStyleEx()
-		{
-			return 0;
-		}
-		unsigned int GetHatch();
-		unsigned int GetAlpha();
-		unsigned int GetAlpha2()
-		{
-			return 0xff;
-		}
-		std::wstring GetDibPatterPath();
-		void GetBounds(double& left, double& top, double& width, double& height) {}
-		void GetCenterPoint(double& dX, double& dY) {}
+		int          GetColor()         const override;
+		int          GetColor2()        const override;
+		unsigned int GetStyle()         const override;
+		unsigned int GetStyleEx()       const override;
+		unsigned int GetHatch()         const override;
+		unsigned int GetAlpha()         const override;
+		unsigned int GetAlpha2()        const override;
+		std::wstring GetDibPatterPath() const override;
+		void GetBounds(double& left, double& top, double& width, double& height) const override;
+		void GetCenterPoint(double& dX, double& dY) const override;
+		void GetDibPattern(unsigned char** pBuffer, unsigned int &unWidth, unsigned int &unHeight) const override;
 
-		void GetDibPattern(unsigned char** pBuffer, unsigned int &unWidth, unsigned int &unHeight)
-		{
-			*pBuffer	= DibBuffer;
-			unWidth		= DibWidth;
-			unHeight	= DibHeigth;
-		}
-
+		void GetGradientColors(std::vector<long>& arColors, std::vector<double>& arPositions) const override;
 	public:
 
-		unsigned short BrushStyle;
-		TWmfColor      Color;
-		unsigned short BrushHatch;
-		std::wstring   DibPatternPath;
-		unsigned char* DibBuffer;
-		unsigned int   DibWidth;
-		unsigned int   DibHeigth;
+		unsigned short ushBrushStyle;
+		TRGBA          oColor;
+		unsigned short ushBrushHatch;
+		std::wstring   wsDibPatternPath;
+		unsigned char* pDibBuffer;
+		unsigned int   unDibWidth;
+		unsigned int   unDibHeigth;
 	};
 	class CWmfFont : public CWmfObjectBase, public IFont
 	{
 	public:
+		CWmfFont();
+		virtual ~CWmfFont();
 
-		CWmfFont()
-		{
-            memset(Facename, 0x00, 32);
-		}
-		~CWmfFont()
-		{
-
-		}
-
-		virtual EWmfObjectType GetType()
-		{
-			return WMF_OBJECT_FONT;
-		}
+		virtual EWmfObjectType GetType() const override;
 
 		// IFont
-		double          GetHeight()
-		{
-			return (double)Height;
-		}
-		std::wstring GetFaceName()
-		{
-			return std::wstring(NSStringExt::CConverter::GetUnicodeFromSingleByteString((const unsigned char*)Facename, 32).c_str());
-		}
-		int          GetWeight()
-		{
-			return (int)Weight;
-		}
-		bool         IsItalic()
-		{
-			return (0x01 == Italic ? true : false);
-		}
-		bool         IsStrikeOut()
-		{
-			return (0x01 == StrikeOut ? true : false);
-		}
-		bool         IsUnderline()
-		{
-			return (0x01 == Underline ? true : false);
-		}
-		int          GetEscapement()
-		{
-			return (int)Escapement;
-		}
-		int          GetCharSet()
-		{
-			return (int)CharSet;
-		}
-		int          GetOrientation()
-		{
-			return (int)Orientation;
-		}
-
+		double       GetHeight()      const override;
+		std::wstring GetFaceName()    const override;
+		int          GetWeight()      const override;
+		bool         IsItalic()       const override;
+		bool         IsStrikeOut()    const override;
+		bool         IsUnderline()    const override;
+		int          GetEscapement()  const override;
+		int          GetCharSet()     const override;
+		int          GetOrientation() const override;
 	public:
 
-		short         Height;
-		short         Width;
-		short         Escapement;
-		short         Orientation;
-		short         Weight;
-		unsigned char Italic;
-		unsigned char Underline;
-		unsigned char StrikeOut;
-		unsigned char CharSet;
-		unsigned char OutPrecision;
-		unsigned char ClipPrecision;
-		unsigned char Quality;
-		unsigned char PitchAndFamily;
-		unsigned char Facename[32]; // Согласно спецификации длина имени не должна превышать 32 знака с учетом нулевого символа в конце
+		short         shHeight;
+		short         shWidth;
+		short         shEscapement;
+		short         shOrientation;
+		short         shWeight;
+		unsigned char uchItalic;
+		unsigned char uchUnderline;
+		unsigned char uchStrikeOut;
+		unsigned char uchCharSet;
+		unsigned char uchOutPrecision;
+		unsigned char uchClipPrecision;
+		unsigned char uchQuality;
+		unsigned char uchPitchAndFamily;
+		unsigned char uchFacename[32]; // Согласно спецификации длина имени не должна превышать 32 знака с учетом нулевого символа в конце
 	};
 	class CWmfPalette : public CWmfObjectBase
 	{
 	public:
-		CWmfPalette()
-		{
-			aPaletteEntries = NULL;
-			NumberOfEntries = 0;
-		}
-		~CWmfPalette()
-		{
-			if (aPaletteEntries)
-				delete[] aPaletteEntries;
-		}
-		virtual EWmfObjectType GetType()
-		{
-			return WMF_OBJECT_PALETTE;
-		}
+		CWmfPalette();
+		virtual ~CWmfPalette();
+		virtual EWmfObjectType GetType() const override;
 	public:
-		unsigned short    Start;
-		unsigned short    NumberOfEntries;
-		TWmfPaletteEntry* aPaletteEntries;
+		unsigned short    ushStart;
+		unsigned short    ushNumberOfEntries;
+		TWmfPaletteEntry* pPaletteEntries;
 	};
 	class CWmfPen : public CWmfObjectBase, public IPen
 	{
 	public:
-		CWmfPen()
-		{
-
-		}
-		~CWmfPen()
-		{
-
-		}
-		virtual EWmfObjectType GetType()
-		{
-			return WMF_OBJECT_PEN;
-		}
+		CWmfPen();
+		virtual ~CWmfPen();
+		virtual EWmfObjectType GetType() const override;
 
 		// IPen
-		int          GetColor();
-		unsigned int GetStyle()
-		{
-			return (unsigned int)PenStyle;
-		}
-		double GetWidth()
-		{
-			return (double)Width.x;
-		}
-		unsigned int GetAlpha()
-		{
-			return 255;
-		}
-		double GetMiterLimit()
-		{
-			return 0;
-		}
-		double GetDashOffset()
-		{
-			return 0;
-		}
-		void GetDashData(double*& arDatas, unsigned int& unSize)
-		{
-			arDatas = NULL;
-			unSize  = 0;
-		}
-
+		int             GetColor()        const override;
+		unsigned int    GetStyle()        const override;
+		double          GetWidth()        const override;
+		unsigned int    GetAlpha()        const override;
+		double          GetMiterLimit()   const override;
+		double          GetDashOffset()   const override;
+		void            GetDashData(double*& arDatas, unsigned int& unSize) const override;
+		const ILineCap* GetStartLineCap() const override;
+		const ILineCap* GetEndLineCap()   const override;
 	public:
-		unsigned short PenStyle;
-		TWmfPointS     Width;
-		TWmfColor      Color;
+		unsigned short ushPenStyle;
+		TPointS        oWidth;
+		TRGBA          oColor;
 	};
 	class CWmfRegion : public CWmfObjectBase, public IRegion
 	{
 	public:
-		CWmfRegion()
-		{
-
-		}
-		~CWmfRegion()
-		{
-
-		}
-		virtual EWmfObjectType GetType()
-		{
-			return WMF_OBJECT_REGION;
-		}
+		CWmfRegion();
+		virtual ~CWmfRegion();
+		virtual EWmfObjectType GetType() const override;
 	public:
-		short           nextInChain; // не используется
-		short           ObjectType;  // не используется
-		int             ObjectCount; // не используется
-		short           RegionSize;
-		short           ScanCount;
-		short           MaxScan;
-		TWmfRect        BoundingRectangle;
-		TWmfScanObject* aScans;
+		short           shNextInChain; // не используется
+		short           shObjectType;  // не используется
+		int             shObjectCount; // не используется
+		short           shRegionSize;
+		short           shScanCount;
+		short           shMaxScan;
+		TRectS          oBoundingRectangle;
+		TWmfScanObject* pScans;
 	};
 }
 

@@ -251,6 +251,7 @@
     <ClCompile Include="..\..\Reader\Converter\oox_types_chart.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\pptx_animation_context.cpp" />
     <ClCompile Include="..\..\Reader\Converter\pptx_comments.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
@@ -281,6 +282,10 @@
     <ClCompile Include="..\..\Reader\Converter\pptx_text_context.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\SMCustomShape2OOXML\customshape.cpp" />
+    <ClCompile Include="..\..\Reader\Converter\SMCustomShape2OOXML\smcustomshapepars.cpp" />
+    <ClCompile Include="..\..\Reader\Converter\StarMath2OOXML\cconversionsmtoooxml.cpp" />
+    <ClCompile Include="..\..\Reader\Converter\StarMath2OOXML\cstarmathpars.cpp" />
     <ClCompile Include="..\..\Reader\Converter\xlsxconversioncontext.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
@@ -509,6 +514,7 @@
     <ClCompile Include="..\..\Reader\Format\office_document.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
+    <ClCompile Include="..\..\Reader\Format\office_drawing.cpp" />
     <ClCompile Include="..\..\Reader\Format\office_elements_create.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
@@ -550,6 +556,7 @@
     </ClCompile>
     <ClCompile Include="..\..\Reader\Format\styles.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ClCompile Include="..\..\Reader\Format\styles_list.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
@@ -662,6 +669,7 @@
     <ClInclude Include="..\..\Reader\Converter\oox_rels.h" />
     <ClInclude Include="..\..\Reader\Converter\oox_title.h" />
     <ClInclude Include="..\..\Reader\Converter\oox_types_chart.h" />
+    <ClInclude Include="..\..\Reader\Converter\pptx_animation_context.h" />
     <ClInclude Include="..\..\Reader\Converter\pptx_comments.h" />
     <ClInclude Include="..\..\Reader\Converter\pptx_comments_context.h" />
     <ClInclude Include="..\..\Reader\Converter\pptx_conversion_context.h" />
@@ -673,6 +681,13 @@
     <ClInclude Include="..\..\Reader\Converter\pptx_slide_context.h" />
     <ClInclude Include="..\..\Reader\Converter\pptx_table_context.h" />
     <ClInclude Include="..\..\Reader\Converter\pptx_text_context.h" />
+    <ClInclude Include="..\..\Reader\Converter\SMCustomShape2OOXML\customshape.h" />
+    <ClInclude Include="..\..\Reader\Converter\SMCustomShape2OOXML\smcustomshapepars.h" />
+    <ClInclude Include="..\..\Reader\Converter\StarMath2OOXML\cconversionsmtoooxml.h" />
+    <ClInclude Include="..\..\Reader\Converter\StarMath2OOXML\cstarmathpars.h" />
+    <ClInclude Include="..\..\Reader\Converter\StarMath2OOXML\fontType.h" />
+    <ClInclude Include="..\..\Reader\Converter\StarMath2OOXML\typeConversion.h" />
+    <ClInclude Include="..\..\Reader\Converter\StarMath2OOXML\typeselements.h" />
     <ClInclude Include="..\..\Reader\Converter\xlsxconversioncontext.h" />
     <ClInclude Include="..\..\Reader\Converter\xlsx_alignment.h" />
     <ClInclude Include="..\..\Reader\Converter\xlsx_border.h" />
@@ -745,6 +760,7 @@
     <ClInclude Include="..\..\Reader\Format\office_body.h" />
     <ClInclude Include="..\..\Reader\Format\office_chart.h" />
     <ClInclude Include="..\..\Reader\Format\office_document.h" />
+    <ClInclude Include="..\..\Reader\Format\office_drawing.h" />
     <ClInclude Include="..\..\Reader\Format\office_elements.h" />
     <ClInclude Include="..\..\Reader\Format\office_elements_create.h" />
     <ClInclude Include="..\..\Reader\Format\office_event_listeners.h" />

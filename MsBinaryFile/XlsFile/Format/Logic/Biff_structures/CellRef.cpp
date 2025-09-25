@@ -73,22 +73,34 @@ BiffStructurePtr CellRef::clone()
 	return BiffStructurePtr(new CellRef(*this));
 }
 
-const std::wstring CellRef::toString() const
+const std::wstring CellRef::toString(const bool xlsb) const
 {
 	if (to_string_cache.empty())
-	{
-		int row_norm = AUX::normalizeRow(row);
-		int column_norm = AUX::normalizeColumn(column);
+	{	
+		int maxRow = 0;
+		int maxCol = 0;
+		if(xlsb)
+		{
+			maxRow = 1048575;
+			maxCol = 16383;
+		}
+		else
+		{
+			maxRow = 65535;
+			maxCol = 255;
+		}
+        int row_norm = AUX::normalizeRow(row, xlsb);
+        int column_norm = AUX::normalizeColumn(column, xlsb);
 
-		if (0 == row_norm && 65535 == row_norm) // whole column or range of columns
+		if (0 == row_norm && maxRow == row_norm) // whole column or range of columns
 		{
-			row_norm = 1048575;
+			row_norm = maxRow;
 		}
-		if (0 == column_norm && 255 == column_norm) // whole row or range of rows
+		if (0 == column_norm && maxCol == column_norm) // whole row or range of rows
 		{
-			column_norm = 16383;
+			column_norm = maxCol;
 		}
-		return to_string_cache = AUX::loc2str(row_norm, rowRelative, column_norm, colRelative);
+        return to_string_cache = AUX::loc2str(row_norm, rowRelative, column_norm, colRelative, xlsb);
 	}
 	return to_string_cache;
 

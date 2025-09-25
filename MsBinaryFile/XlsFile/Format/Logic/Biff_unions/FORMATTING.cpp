@@ -94,24 +94,8 @@ const bool FORMATTING::loadContent(BinProcessor& proc)
 	count = proc.repeated<Format>(0, 218); // Originally: proc.repeated<Format>(8, 218);
 	while(count > 0)
 	{
-		Format *fmt = dynamic_cast<Format *>(elements_.back().get());
-		if ((fmt) && (fmt->ifmt == 0xffff))
-		{
-			std::map<std::wstring, int>::iterator pFind = global_info->mapDefaultFormatCode.find(fmt->stFormat);
-			if (pFind != global_info->mapDefaultFormatCode.end())
-			{
-				fmt->ifmt_used = fmt->ifmt = pFind->second;
-			}
-			else
-			{
-				fmt->ifmt_used = fmt->ifmt = global_info->last_User_NumFmt++;
-			}
-		}
-		else
-		{
-			fmt->ifmt_used = global_info->RegisterNumFormat(fmt->ifmt, fmt->stFormat);
-		}
-		global_info->m_arNumFormats.insert(global_info->m_arNumFormats.begin(), elements_.back());
+		global_info->RegisterNumFormat(elements_.back());
+
 		elements_.pop_back();
 		count--;
 	}
@@ -170,6 +154,36 @@ const bool FORMATTING::loadContent(BinProcessor& proc)
 
 	return true;
 }
+const bool FORMATTING::saveContent(BinProcessor& proc)
+{
+	global_info = proc.getGlobalWorkbookInfo();
+	for(auto i:global_info->m_arFonts)
+		proc.mandatory(*i);
+	if(global_info->m_arFonts.empty())
+		proc.mandatory<Font>();
+	for(auto i:global_info->m_mapNumFormats)
+		proc.mandatory(*i.second);
+	if(global_info->m_mapNumFormats.empty())
+	{
+		proc.mandatory<Format>();
+	}
+	if(m_XFS != nullptr)
+		proc.mandatory(*m_XFS);
+	else
+		proc.mandatory<XFS>();
+	if(m_Styles != nullptr)
+		proc.mandatory(*m_Styles);
+	else
+		proc.mandatory<STYLES>();
+	if(m_TABLESTYLES != nullptr)
+		proc.mandatory(*m_TABLESTYLES);
+	if(m_Palette != nullptr)
+		proc.mandatory(*m_Palette);
+	if(m_ClrtClient != nullptr)
+		proc.mandatory(*m_ClrtClient);
+	return true;
+}
+
 void FORMATTING::update_xfs()
 {
 	STYLES * st = dynamic_cast<STYLES*>(m_Styles.get());
@@ -212,6 +226,9 @@ void FORMATTING::update_xfs()
 		}
 	}
 	xfs->RegisterFillBorder();
+	
+	global_info->cellXfs_count = xfs->m_arCellXFs.size();
+	global_info->cellStyleXfs_count = xfs->m_arCellStyles.size();
 }
 void FORMATTING::concatinate(FORMATTING* ext)
 {

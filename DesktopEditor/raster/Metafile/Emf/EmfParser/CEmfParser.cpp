@@ -1,4 +1,4 @@
-#include "CEmfParser.h"
+#include "../../Common/CPath.h"
 #include "CEmfPlusParser.h"
 
 #include "../EmfInterpretator/CEmfInterpretator.h"
@@ -14,9 +14,157 @@
 
 #include "../../Wmf/WmfParser/CWmfParser.h"
 
+#define PRINT_EMF_RECORD(type) do {} while(false)
+
+#ifdef _DEBUG
+	#ifdef LOG_EMF_RECORDS
+	#if 1 == LOG_EMF_RECORDS
+	#ifdef PRINTING_EMF_RECORDS
+	#if 1 == PRINTING_EMF_RECORDS
+		static const struct ActionNamesEmf
+		{
+			int          actionNumber;
+			std::wstring actionName;
+		} actionNamesEmf[] =
+		{
+		{ 0,                           L"Unknown"},
+		{ EMR_HEADER,                  L"EMR_HEADER"},
+		{ EMR_POLYBEZIER,              L"EMR_POLYBEZIER"},
+		{ EMR_POLYGON,                 L"EMR_POLYGON"},
+		{ EMR_POLYLINE,                L"EMR_POLYLINE"},
+		{ EMR_POLYBEZIERTO,            L"EMR_POLYBEZIERTO"},
+		{ EMR_POLYLINETO,              L"EMR_POLYLINETO"},
+		{ EMR_POLYPOLYLINE,            L"EMR_POLYPOLYLINE"},
+		{ EMR_POLYPOLYGON,             L"EMR_POLYPOLYGON"},
+		{ EMR_SETWINDOWEXTEX,          L"EMR_SETWINDOWEXTEX"},
+		{ EMR_SETWINDOWORGEX,          L"EMR_SETWINDOWORGEX"},
+		{ EMR_SETVIEWPORTEXTEX,        L"EMR_SETVIEWPORTEXTEX"},
+		{ EMR_SETVIEWPORTORGEX,        L"EMR_SETVIEWPORTORGEX"},
+		{ EMR_SETBRUSHORGEX,           L"EMR_SETBRUSHORGEX"},
+		{ EMR_EOF,                     L"EMR_EOF"},
+		{ EMR_SETPIXELV,               L"EMR_SETPIXELV"},
+		{ EMR_SETMAPPERFLAGS,          L"EMR_SETMAPPERFLAGS"},
+		{ EMR_SETMAPMODE,              L"EMR_SETMAPMODE"},
+		{ EMR_SETBKMODE,               L"EMR_SETBKMODE"},
+		{ EMR_SETPOLYFILLMODE,         L"EMR_SETPOLYFILLMODE"},
+		{ EMR_SETROP2,                 L"EMR_SETROP2"},
+		{ EMR_SETSTRETCHBLTMODE,       L"EMR_SETSTRETCHBLTMODE"},
+		{ EMR_SETTEXTALIGN,            L"EMR_SETTEXTALIGN"},
+		{ EMR_SETCOLORADJUSTMENT,      L"EMR_SETCOLORADJUSTMENT"},
+		{ EMR_SETTEXTCOLOR,            L"EMR_SETTEXTCOLOR"},
+		{ EMR_SETBKCOLOR,              L"EMR_SETBKCOLOR"},
+		{ EMR_OFFSETCLIPRGN,           L"EMR_OFFSETCLIPRGN"},
+		{ EMR_MOVETOEX,                L"EMR_MOVETOEX"},
+		{ EMR_SETMETARGN,              L"EMR_SETMETARGN"},
+		{ EMR_EXCLUDECLIPRECT,         L"EMR_EXCLUDECLIPRECT"},
+		{ EMR_INTERSECTCLIPRECT,       L"EMR_INTERSECTCLIPRECT"},
+		{ EMR_SCALEVIEWPORTEXTEX,      L"EMR_SCALEVIEWPORTEXTEX"},
+		{ EMR_SCALEWINDOWEXTEX,        L"EMR_SCALEWINDOWEXTEX"},
+		{ EMR_SAVEDC,                  L"EMR_SAVEDC"},
+		{ EMR_RESTOREDC,               L"EMR_RESTOREDC"},
+		{ EMR_SETWORLDTRANSFORM,       L"EMR_SETWORLDTRANSFORM"},
+		{ EMR_MODIFYWORLDTRANSFORM,    L"EMR_MODIFYWORLDTRANSFORM"},
+		{ EMR_SELECTOBJECT,            L"EMR_SELECTOBJECT"},
+		{ EMR_CREATEPEN,               L"EMR_CREATEPEN"},
+		{ EMR_CREATEBRUSHINDIRECT,     L"EMR_CREATEBRUSHINDIRECT"},
+		{ EMR_DELETEOBJECT,            L"EMR_DELETEOBJECT"},
+		{ EMR_ANGLEARC,                L"EMR_ANGLEARC"},
+		{ EMR_ELLIPSE,                 L"EMR_ELLIPSE"},
+		{ EMR_RECTANGLE,               L"EMR_RECTANGLE"},
+		{ EMR_ROUNDRECT,               L"EMR_ROUNDRECT"},
+		{ EMR_ARC,                     L"EMR_ARC"},
+		{ EMR_CHORD,                   L"EMR_CHORD"},
+		{ EMR_PIE,                     L"EMR_PIE"},
+		{ EMR_SELECTPALETTE,           L"EMR_SELECTPALETTE"},
+		{ EMR_CREATEPALETTE,           L"EMR_CREATEPALETTE"},
+		{ EMR_SETPALETTEENTRIES,       L"EMR_SETPALETTEENTRIES"},
+		{ EMR_RESIZEPALETTE,           L"EMR_RESIZEPALETTE"},
+		{ EMR_REALIZEPALETTE,          L"EMR_REALIZEPALETTE"},
+		{ EMR_EXTFLOODFILL,            L"EMR_EXTFLOODFILL"},
+		{ EMR_LINETO,                  L"EMR_LINETO"},
+		{ EMR_ARCTO,                   L"EMR_ARCTO"},
+		{ EMR_POLYDRAW,                L"EMR_POLYDRAW"},
+		{ EMR_SETARCDIRECTION,         L"EMR_SETARCDIRECTION"},
+		{ EMR_SETMITERLIMIT,           L"EMR_SETMITERLIMIT"},
+		{ EMR_BEGINPATH,               L"EMR_BEGINPATH"},
+		{ EMR_ENDPATH,                 L"EMR_ENDPATH"},
+		{ EMR_CLOSEFIGURE,             L"EMR_CLOSEFIGURE"},
+		{ EMR_FILLPATH,                L"EMR_FILLPATH"},
+		{ EMR_STROKEANDFILLPATH,       L"EMR_STROKEANDFILLPATH"},
+		{ EMR_STROKEPATH,              L"EMR_STROKEPATH"},
+		{ EMR_FLATTENPATH,             L"EMR_FLATTENPATH"},
+		{ EMR_WIDENPATH,               L"EMR_WIDENPATH"},
+		{ EMR_SELECTCLIPPATH,          L"EMR_SELECTCLIPPATH"},
+		{ EMR_ABORTPATH,               L"EMR_ABORTPATH"},
+		{ 69,                          L"Unknown"},
+		{ EMR_GDICOMMENT,              L"EMR_GDICOMMENT"},
+		{ EMR_FILLRGN,                 L"EMR_FILLRGN"},
+		{ EMR_FRAMERGN,                L"EMR_FRAMERGN"},
+		{ EMR_INVERTRGN,               L"EMR_INVERTRGN"},
+		{ EMR_PAINTRGN,                L"EMR_PAINTRGN"},
+		{ EMR_EXTSELECTCLIPRGN,        L"EMR_EXTSELECTCLIPRGN"},
+		{ EMR_BITBLT,                  L"EMR_BITBLT"},
+		{ EMR_STRETCHBLT,              L"EMR_STRETCHBLT"},
+		{ EMR_MASKBLT,                 L"EMR_MASKBLT"},
+		{ EMR_PLGBLT,                  L"EMR_PLGBLT"},
+		{ EMR_SETDIBITSTODEVICE,       L"EMR_SETDIBITSTODEVICE"},
+		{ EMR_STRETCHDIBITS,           L"EMR_STRETCHDIBITS"},
+		{ EMR_EXTCREATEFONTINDIRECTW,  L"EMR_EXTCREATEFONTINDIRECTW"},
+		{ EMR_EXTTEXTOUTA,             L"EMR_EXTTEXTOUTA"},
+		{ EMR_EXTTEXTOUTW,             L"EMR_EXTTEXTOUTW"},
+		{ EMR_POLYBEZIER16,            L"EMR_POLYBEZIER16"},
+		{ EMR_POLYGON16,               L"EMR_POLYGON16"},
+		{ EMR_POLYLINE16,              L"EMR_POLYLINE16"},
+		{ EMR_POLYBEZIERTO16,          L"EMR_POLYBEZIERTO16"},
+		{ EMR_POLYLINETO16,            L"EMR_POLYLINETO16"},
+		{ EMR_POLYPOLYLINE16,          L"EMR_POLYPOLYLINE16"},
+		{ EMR_POLYPOLYGON16,           L"EMR_POLYPOLYGON16"},
+		{ EMR_POLYDRAW16,              L"EMR_POLYDRAW16"},
+		{ EMR_CREATEMONOBRUSH,         L"EMR_CREATEMONOBRUSH"},
+		{ EMR_CREATEDIBPATTERNBRUSHPT, L"EMR_CREATEDIBPATTERNBRUSHPT"},
+		{ EMR_EXTCREATEPEN,            L"EMR_EXTCREATEPEN"},
+		{ EMR_POLYTEXTOUTA,            L"EMR_POLYTEXTOUTA"},
+		{ EMR_POLYTEXTOUTW,            L"EMR_POLYTEXTOUTW"},
+		{ EMR_SETICMMODE,              L"EMR_SETICMMODE"},
+		{ EMR_CREATECOLORSPACE,        L"EMR_CREATECOLORSPACE"},
+		{ EMR_SETCOLORSPACE,           L"EMR_SETCOLORSPACE"},
+		{ EMR_DELETECOLORSPACE,        L"EMR_DELETECOLORSPACE"},
+		{ EMR_GLSRECORD,               L"EMR_GLSRECORD"},
+		{ EMR_GLSBOUNDEDRECORD,        L"EMR_GLSBOUNDEDRECORD"},
+		{ EMR_PIXELFORMAT,             L"EMR_PIXELFORMAT"},
+		{ EMR_RESERVED_105,            L"EMR_RESERVED_105"},
+		{ EMR_RESERVED_106,            L"EMR_RESERVED_106"},
+		{ EMR_RESERVED_107,            L"EMR_RESERVED_107"},
+		{ EMR_RESERVED_108,            L"EMR_RESERVED_108"},
+		{ EMR_RESERVED_109,            L"EMR_RESERVED_109"},
+		{ EMR_RESERVED_110,            L"EMR_RESERVED_110"},
+		{ EMR_COLORCORRECTPALETTE,     L"EMR_COLORCORRECTPALETTE"},
+		{ EMR_SETICMPROFILEA,          L"EMR_SETICMPROFILEA"},
+		{ EMR_SETICMPROFILEW,          L"EMR_SETICMPROFILEW"},
+		{ EMR_ALPHABLEND,              L"EMR_ALPHABLEND"},
+		{ EMR_SETLAYOUT,               L"EMR_SETLAYOUT"},
+		{ EMR_TRANSPARENTBLT,          L"EMR_TRANSPARENTBLT"},
+		{ EMR_RESERVED_117,            L"EMR_RESERVED_117"},
+		{ EMR_GRADIENTFILL,            L"EMR_GRADIENTFILL"},
+		{ EMR_RESERVED_119,            L"EMR_RESERVED_119"},
+		{ EMR_RESERVED_120,            L"EMR_RESERVED_120"},
+		{ EMR_COLORMATCHTOTARGETW,     L"EMR_COLORMATCHTOTARGETW"},
+		{ EMR_CREATECOLORSPACEW,       L"EMR_CREATECOLORSPACEW"}
+		};
+
+		#define PRINT_EMF_RECORD(type) \
+			if (0 <= type && type <= EMR_CREATECOLORSPACEW) \
+				std::wcout << L"LEVEL [" << unFileLevel << L"] EMF Record: " << actionNamesEmf[type].actionName << std::endl
+	#endif
+	#endif
+	#endif
+	#endif
+#endif
+
 namespace MetaFile
 {
-	CEmfParser::CEmfParser() : m_pEmfPlusParser(NULL){}
+	CEmfParser::CEmfParser()
+	    : m_pEmfPlusParser(NULL) {}
 
 	CEmfParser::~CEmfParser()
 	{
@@ -37,6 +185,9 @@ namespace MetaFile
 	{
 		if (!m_oStream.IsValid())
 			SetError();
+
+		if (NULL != m_pInterpretator)
+			GO_UP_LEVEL;
 
 		unsigned int ulSize, ulType;
 
@@ -63,6 +214,8 @@ namespace MetaFile
 			m_ulRecordPos	= m_oStream.Tell();
 			m_ulRecordSize	= ulSize - 8;
 
+			m_oStream.SetCurrentBlockSize(m_ulRecordSize);
+
 			if (ulType < EMR_MIN || ulType > EMR_MAX)
 			{
 				if (ENHMETA_SIGNATURE != m_oHeader.ulSignature || 0x00010000 != m_oHeader.ulVersion)
@@ -73,6 +226,9 @@ namespace MetaFile
 
 			if (0 == ulRecordIndex && EMR_HEADER != ulType)
 				return SetError();
+
+			if (NULL != m_pInterpretator && (!BanEMFProcesses()|| ulType == EMR_HEADER || ulType == EMR_EOF || ulType == EMR_GDICOMMENT))
+				PRINT_EMF_RECORD(ulType);
 
 			switch (ulType)
 			{
@@ -211,8 +367,13 @@ namespace MetaFile
 
 			int need_skip = m_ulRecordSize - (m_oStream.Tell() - m_ulRecordPos);
 			m_oStream.Skip(need_skip);
+
+			if (0 != need_skip && NULL != m_pInterpretator)
+				PRINT_LOG(L"SKIP BYTES: " << need_skip);
+
 			ulRecordIndex++;
 
+			m_oStream.ClearCurrentBlockSize();
 		} while (!CheckError());
 
 		if (!CheckError())
@@ -220,6 +381,9 @@ namespace MetaFile
 
 		if (!m_bEof)
 			HANDLE_EMR_EOF();
+
+		if (NULL != m_pInterpretator)
+			GO_DOWN_LEVEL_BELOW;
 
 		ClearFile();
 	}
@@ -239,7 +403,7 @@ namespace MetaFile
 		CEmfParserBase::ClearFile();
 	}
 
-	EmfParserType CEmfParser::GetType()
+	EmfParserType CEmfParser::GetType() const
 	{
 		return EmfParserType::EmfParser;
 	}
@@ -249,11 +413,9 @@ namespace MetaFile
 		m_oStream.SetStream(pBuf, unSize);
 	}
 
-	void CEmfParser::SetInterpretator(IOutputDevice* pOutput)
+	bool CEmfParser::BanEMFProcesses() const
 	{
-		CEmfParserBase::SetInterpretator(pOutput);
-		if (m_pEmfPlusParser)
-			RELEASEOBJECT(m_pEmfPlusParser);
+		return NULL != m_pEmfPlusParser && m_pEmfPlusParser->GetBanEMFProcesses();
 	}
 
 	bool CEmfParser::ReadImage(unsigned int offBmi, unsigned int cbBmi, unsigned int offBits, unsigned int cbBits, unsigned int ulSkip, BYTE **ppBgraBuffer, unsigned int *pulWidth, unsigned int *pulHeight)
@@ -287,8 +449,9 @@ namespace MetaFile
 
 		unsigned int ulBitsSizeSkip = 0 == ulBitsSize ? 0 : ((int)(((double)ulBitsSize - 0.5) / 4) + 1) * 4;
 		m_oStream.Skip(ulBitsSizeSkip);
+		unsigned int unColorUsed;
 
-		MetaFile::ReadImage(pHeaderBuffer, ulHeaderSize, pBitsBuffer, ulBitsSize, ppBgraBuffer, pulWidth, pulHeight);
+		MetaFile::ReadImage(pHeaderBuffer, ulHeaderSize, pBitsBuffer, ulBitsSize, ppBgraBuffer, pulWidth, pulHeight, unColorUsed);
 
 		return true;
 	}
@@ -318,7 +481,7 @@ namespace MetaFile
 
 		m_oStream >> oBitmap;
 
-		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+		if (!BanEMFProcesses())
 			HANDLE_EMR_ALPHABLEND(oBitmap);
 	}
 
@@ -328,7 +491,7 @@ namespace MetaFile
 
 		m_oStream >> oBitmap;
 
-		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+		if (!BanEMFProcesses())
 			HANDLE_EMR_STRETCHDIBITS(oBitmap);
 	}
 
@@ -338,7 +501,7 @@ namespace MetaFile
 
 		m_oStream >> oBitmap;
 
-		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+		if (!BanEMFProcesses())
 			HANDLE_EMR_BITBLT(oBitmap);
 	}
 
@@ -348,7 +511,7 @@ namespace MetaFile
 
 		m_oStream >> oBitmap;
 
-		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+		if (!BanEMFProcesses())
 			HANDLE_EMR_SETDIBITSTODEVICE(oBitmap);
 	}
 
@@ -358,7 +521,7 @@ namespace MetaFile
 
 		m_oStream >> oBitmap;
 
-		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+		if (!BanEMFProcesses())
 			HANDLE_EMR_STRETCHBLT(oBitmap);
 	}
 
@@ -383,7 +546,7 @@ namespace MetaFile
 
 	void CEmfParser::Read_EMR_SAVEDC()
 	{
-		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+		if (!BanEMFProcesses())
 			HANDLE_EMR_SAVEDC();
 	}
 
@@ -393,7 +556,7 @@ namespace MetaFile
 
 		m_oStream >> lSavedDC;
 
-		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+		if (!BanEMFProcesses())
 			HANDLE_EMR_RESTOREDC(lSavedDC);
 	}
 
@@ -405,7 +568,7 @@ namespace MetaFile
 		m_oStream >> oXForm;
 		m_oStream >> ulMode;
 
-		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+		if (!BanEMFProcesses())
 			HANDLE_EMR_MODIFYWORLDTRANSFORM(oXForm, ulMode);
 	}
 
@@ -415,7 +578,7 @@ namespace MetaFile
 
 		m_oStream >> oXForm;
 
-		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+		if (!BanEMFProcesses())
 			HANDLE_EMR_SETWORLDTRANSFORM(oXForm);
 	}
 
@@ -429,17 +592,19 @@ namespace MetaFile
 		m_oStream >> ulBrushIndex;
 		m_oStream >> *pBrush;
 
-		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+		if (!BanEMFProcesses())
 			HANDLE_EMR_CREATEBRUSHINDIRECT(ulBrushIndex, pBrush);
+		else
+			delete pBrush;
 	}
 
 	void CEmfParser::Read_EMR_SETTEXTCOLOR()
 	{
-		TEmfColor oColor;
+		TRGBA oColor;
 
 		m_oStream >> oColor;
 
-		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+		if (!BanEMFProcesses())
 			HANDLE_EMR_SETTEXTCOLOR(oColor);
 	}
 
@@ -449,7 +614,7 @@ namespace MetaFile
 
 		m_oStream >> ulObjectIndex;
 
-		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+		if (!BanEMFProcesses())
 			HANDLE_EMR_SELECTOBJECT(ulObjectIndex);
 	}
 
@@ -466,8 +631,10 @@ namespace MetaFile
 		m_oStream >> ulIndex;
 		m_oStream >> *pFont;
 
-		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+		if (!BanEMFProcesses())
 			HANDLE_EMR_EXTCREATEFONTINDIRECTW(ulIndex, pFont);
+		else
+			delete pFont;
 	}
 
 	void CEmfParser::Read_EMR_SETTEXTALIGN()
@@ -476,7 +643,7 @@ namespace MetaFile
 
 		m_oStream >> ulAlign;
 
-		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+		if (!BanEMFProcesses())
 			HANDLE_EMR_SETTEXTALIGN(ulAlign);
 	}
 
@@ -486,7 +653,7 @@ namespace MetaFile
 
 		m_oStream >> ulBgMode;
 
-		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+		if (!BanEMFProcesses())
 			HANDLE_EMR_SETBKMODE(ulBgMode);
 	}
 
@@ -496,7 +663,7 @@ namespace MetaFile
 
 		m_oStream >> ulIndex;
 
-		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+		if (!BanEMFProcesses())
 			HANDLE_EMR_DELETEOBJECT(ulIndex);
 	}
 
@@ -506,7 +673,7 @@ namespace MetaFile
 
 		m_oStream >> ulMiterLimit;
 
-		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+		if (!BanEMFProcesses())
 			HANDLE_EMR_SETMITERLIMIT(ulMiterLimit);
 	}
 
@@ -528,38 +695,40 @@ namespace MetaFile
 
 		std::vector<unsigned int> arUnused(2);
 
-		m_oStream >> pPen->PenStyle;
-		m_oStream >> pPen->Width;
+		m_oStream >> pPen->unPenStyle;
+		m_oStream >> pPen->unWidth;
 		m_oStream >> arUnused[0]; // BrushStyle
-		m_oStream >> pPen->Color;
+		m_oStream >> pPen->oColor;
 		m_oStream >> arUnused[1]; // BrushHatch
 
-		m_oStream >> pPen->NumStyleEntries;
+		m_oStream >> pPen->unNumStyleEntries;
 
 		current_size -= 24;
-		if (pPen->NumStyleEntries > 0)
+		if (pPen->unNumStyleEntries > 0)
 		{
-			current_size -= pPen->NumStyleEntries * 4;
-			pPen->StyleEntry = new unsigned int[pPen->NumStyleEntries];
-			if (!pPen->StyleEntry)
+			current_size -= pPen->unNumStyleEntries * 4;
+			pPen->pStyleEntry = new unsigned int[pPen->unNumStyleEntries];
+			if (!pPen->pStyleEntry)
 			{
 				delete pPen;
 				return SetError();
 			}
 
-			for (unsigned int ulIndex = 0; ulIndex < pPen->NumStyleEntries; ulIndex++)
-				m_oStream >> pPen->StyleEntry[ulIndex];
+			for (unsigned int ulIndex = 0; ulIndex < pPen->unNumStyleEntries; ulIndex++)
+				m_oStream >> pPen->pStyleEntry[ulIndex];
 		}
 		else
 		{
-			pPen->StyleEntry = NULL;
+			pPen->pStyleEntry = NULL;
 		}
 
 		// Пропускаем часть с картинкой, если она была
 		m_oStream.Skip(current_size);
 
-		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+		if (!BanEMFProcesses())
 			HANDLE_EMR_EXTCREATEPEN(ulPenIndex, pPen, arUnused);
+		else
+			delete pPen;
 	}
 
 	void CEmfParser::Read_EMR_CREATEPEN()
@@ -572,16 +741,18 @@ namespace MetaFile
 		if (!pPen)
 			return SetError();
 
-		m_oStream >> pPen->PenStyle;
+		m_oStream >> pPen->unPenStyle;
 
 		unsigned int widthX, widthY;
 
 		m_oStream >> widthX;
 		m_oStream >> widthY;
-		m_oStream >> pPen->Color;
+		m_oStream >> pPen->oColor;
 
-		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+		if (!BanEMFProcesses())
 			HANDLE_EMR_CREATEPEN(ulPenIndex, widthX, pPen);
+		else
+			delete pPen;
 	}
 
 	void CEmfParser::Read_EMR_SETPOLYFILLMODE()
@@ -590,53 +761,53 @@ namespace MetaFile
 
 		m_oStream >> ulFillMode;
 
-		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+		if (!BanEMFProcesses())
 			HANDLE_EMR_SETPOLYFILLMODE(ulFillMode);
 	}
 
 	void CEmfParser::Read_EMR_BEGINPATH()
 	{
-		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+		if (!BanEMFProcesses())
 			HANDLE_EMR_BEGINPATH();
 	}
 
 	void CEmfParser::Read_EMR_ENDPATH()
 	{
-		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+		if (!BanEMFProcesses())
 			HANDLE_EMR_ENDPATH();
 	}
 
 	void CEmfParser::Read_EMR_CLOSEFIGURE()
 	{
-		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+		if (!BanEMFProcesses())
 			HANDLE_EMR_CLOSEFIGURE();
 	}
 
 	void CEmfParser::Read_EMR_FLATTENPATH()
 	{
-		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+		if (!BanEMFProcesses())
 			HANDLE_EMR_FLATTENPATH();
 	}
 
 	void CEmfParser::Read_EMR_WIDENPATH()
 	{
-		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+		if (!BanEMFProcesses())
 			HANDLE_EMR_WIDENPATH();
 	}
 
 	void CEmfParser::Read_EMR_ABORTPATH()
 	{
-		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+		if (!BanEMFProcesses())
 			HANDLE_EMR_ABORTPATH();
 	}
 
 	void CEmfParser::Read_EMR_MOVETOEX()
 	{
-		TEmfPointL oPoint;
+		TPointL oPoint;
 
 		m_oStream >> oPoint;
 
-		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+		if (!BanEMFProcesses())
 			HANDLE_EMR_MOVETOEX(oPoint);
 	}
 
@@ -646,17 +817,17 @@ namespace MetaFile
 
 		m_oStream >> unDirection;
 
-		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+		if (!BanEMFProcesses())
 			HANDLE_EMR_SETARCDIRECTION(unDirection);
 	}
 
 	void CEmfParser::Read_EMR_FILLPATH()
 	{
-		TEmfRectL oBounds;
+		TRectL oBounds;
 
 		m_oStream >> oBounds;
 
-		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+		if (!BanEMFProcesses())
 			HANDLE_EMR_FILLPATH(oBounds);
 	}
 
@@ -666,27 +837,27 @@ namespace MetaFile
 
 		m_oStream >> ulMapMode;
 
-		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+		if (!BanEMFProcesses())
 			HANDLE_EMR_SETMAPMODE(ulMapMode);
 	}
 
 	void CEmfParser::Read_EMR_SETWINDOWORGEX()
 	{
-		TEmfPointL oOrigin;
+		TPointL oOrigin;
 
 		m_oStream >> oOrigin;
 
-		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+		if (!BanEMFProcesses())
 			HANDLE_EMR_SETWINDOWORGEX(oOrigin);
 	}
 
 	void CEmfParser::Read_EMR_SETWINDOWEXTEX()
 	{
-		TEmfSizeL oExtent;
+		TSizeL oExtent;
 
 		m_oStream >> oExtent;
 
-		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+		if (!BanEMFProcesses())
 			HANDLE_EMR_SETWINDOWEXTEX(oExtent);
 	}
 
@@ -699,27 +870,27 @@ namespace MetaFile
 		m_oStream >> nYNum;
 		m_oStream >> nYDenom;
 
-		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+		if (!BanEMFProcesses())
 			HANDLE_EMR_SCALEWINDOWEXTEX(nXNum, nXDenom, nYNum, nYDenom);
 	}
 
 	void CEmfParser::Read_EMR_SETVIEWPORTORGEX()
 	{
-		TEmfPointL oOrigin;
+		TPointL oOrigin;
 
 		m_oStream >> oOrigin;
 
-		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+		if (!BanEMFProcesses())
 			HANDLE_EMR_SETVIEWPORTORGEX(oOrigin);
 	}
 
 	void CEmfParser::Read_EMR_SETVIEWPORTEXTEX()
 	{
-		TEmfSizeL oExtent;
+		TSizeL oExtent;
 
 		m_oStream >> oExtent;
 
-		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+		if (!BanEMFProcesses())
 			HANDLE_EMR_SETVIEWPORTEXTEX(oExtent);
 	}
 
@@ -732,7 +903,7 @@ namespace MetaFile
 		m_oStream >> nYNum;
 		m_oStream >> nYDenom;
 
-		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+		if (!BanEMFProcesses())
 			HANDLE_EMR_SCALEVIEWPORTEXTEX(nXNum, nXDenom, nYNum, nYDenom);
 	}
 
@@ -742,7 +913,7 @@ namespace MetaFile
 
 		m_oStream >> ulStretchMode;
 
-		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+		if (!BanEMFProcesses())
 			HANDLE_EMR_SETSTRETCHBLTMODE(ulStretchMode);
 	}
 
@@ -752,7 +923,7 @@ namespace MetaFile
 
 		m_oStream >> ulICMMode;
 
-		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+		if (!BanEMFProcesses())
 			HANDLE_EMR_SETICMMODE(ulICMMode);
 	}
 
@@ -764,7 +935,7 @@ namespace MetaFile
 		m_oStream >> ulBrushIndex;
 		m_oStream >> oDibBrush;
 
-		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+		if (!BanEMFProcesses())
 			HANDLE_EMR_CREATEDIBPATTERNBRUSHPT(ulBrushIndex, oDibBrush);
 	}
 
@@ -776,7 +947,7 @@ namespace MetaFile
 		m_oStream >> ulBrushIndex;
 		m_oStream >> oDibBrush;
 
-		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+		if (!BanEMFProcesses())
 			HANDLE_EMR_CREATEMONOBRUSH(ulBrushIndex, oDibBrush);
 	}
 
@@ -786,28 +957,28 @@ namespace MetaFile
 
 		m_oStream >> unRegionMode;
 
-		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+		if (!BanEMFProcesses())
 			HANDLE_EMR_SELECTCLIPPATH(unRegionMode);
 	}
 
 	void CEmfParser::Read_EMR_SETBKCOLOR()
 	{
-		TEmfColor oColor;
+		TRGBA oColor;
 
 		m_oStream >> oColor;
 
-		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+		if (!BanEMFProcesses())
 			HANDLE_EMR_SETBKCOLOR(oColor);
 	}
 
 	void CEmfParser::Read_EMR_EXCLUDECLIPRECT()
 	{
 		// TODO: Проверить как найдется файл
-		TEmfRectL oClip;
+		TRectL oClip;
 
 		m_oStream >> oClip;
 
-		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+		if (!BanEMFProcesses())
 			HANDLE_EMR_EXCLUDECLIPRECT(oClip);
 	}
 
@@ -818,7 +989,7 @@ namespace MetaFile
 		m_oStream >> ulRgnDataSize;
 		m_oStream >> ulRegionMode;
 
-		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+		if (!BanEMFProcesses())
 			HANDLE_EMR_EXTSELECTCLIPRGN(ulRgnDataSize, ulRegionMode);
 	}
 
@@ -833,7 +1004,7 @@ namespace MetaFile
 
 		m_oStream >> ulRop2Mode;
 
-		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+		if (!BanEMFProcesses())
 			HANDLE_EMR_SETROP2(ulRop2Mode);
 	}
 
@@ -847,8 +1018,10 @@ namespace MetaFile
 		m_oStream >> ulPaletteIndex;
 		m_oStream >> *pPalette;
 
-		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+		if (!BanEMFProcesses())
 			HANDLE_EMR_CREATEPALETTE(ulPaletteIndex, pPalette);
+		else
+			delete pPalette;
 	}
 
 	void CEmfParser::Read_EMR_SELECTPALETTE()
@@ -857,23 +1030,23 @@ namespace MetaFile
 
 		m_oStream >> ulIndex;
 
-		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+		if (!BanEMFProcesses())
 			HANDLE_EMR_SELECTPALETTE(ulIndex);
 	}
 
 	void CEmfParser::Read_EMR_REALIZEPALETTE()
 	{
-		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+		if (!BanEMFProcesses())
 			HANDLE_EMR_REALIZEPALETTE();
 	}
 
 	void CEmfParser::Read_EMR_INTERSECTCLIPRECT()
 	{
-		TEmfRectL oClip;
+		TRectL oClip;
 
 		m_oStream >> oClip;
 
-		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+		if (!BanEMFProcesses())
 			HANDLE_EMR_INTERSECTCLIPRECT(oClip);
 	}
 
@@ -883,24 +1056,24 @@ namespace MetaFile
 
 		m_oStream >> ulLayoutMode;
 
-		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+		if (!BanEMFProcesses())
 			HANDLE_EMR_SETLAYOUT(ulLayoutMode);
 	}
 
 	void CEmfParser::Read_EMR_SETBRUSHORGEX()
 	{
-		TEmfPointL oOrigin;
+		TPointL oOrigin;
 
 		m_oStream >> oOrigin;
 
-		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+		if (!BanEMFProcesses())
 			HANDLE_EMR_SETBRUSHORGEX(oOrigin);
 	}
 
 	void CEmfParser::Read_EMR_ANGLEARC()
 	{
 		// TODO: Как найдутся файлы проверить данную запись.
-		TEmfPointL oCenter;
+		TPointL oCenter;
 		unsigned int unRadius;
 		double dStartAngle, dSweepAngle;
 
@@ -910,18 +1083,18 @@ namespace MetaFile
 		m_oStream >> dStartAngle;
 		m_oStream >> dSweepAngle;
 
-		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+		if (!BanEMFProcesses())
 			HANDLE_EMR_ANGLEARC(oCenter, unRadius, dStartAngle, dSweepAngle);
 	}
 
-	void CEmfParser::Read_EMR_ARC_BASE(TEmfRectL& oBox, TEmfPointL& oStart, TEmfPointL& oEnd, double& dStartAngle, double& dSweepAngle)
+	void CEmfParser::Read_EMR_ARC_BASE(TRectL &oBox, TPointL &oStart, TPointL &oEnd, double& dStartAngle, double& dSweepAngle)
 	{
 		m_oStream >> oBox;
 		m_oStream >> oStart;
 		m_oStream >> oEnd;
 
-		dStartAngle = GetEllipseAngle(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, oStart.x, oStart.y);
-		dSweepAngle = GetEllipseAngle(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, oEnd.x, oEnd.y) - dStartAngle;
+		dStartAngle = GetEllipseAngle(oBox.Left, oBox.Top, oBox.Right, oBox.Bottom, oStart.X, oStart.Y);
+		dSweepAngle = GetEllipseAngle(oBox.Left, oBox.Top, oBox.Right, oBox.Bottom, oEnd.X, oEnd.Y) - dStartAngle;
 
 		// TODO: Проверить здесь
 		if (dSweepAngle < 0.001)
@@ -936,49 +1109,49 @@ namespace MetaFile
 
 	void CEmfParser::Read_EMR_ARC()
 	{
-		TEmfRectL oBox;
-		TEmfPointL oStart, oEnd;
+		TRectL oBox;
+		TPointL oStart, oEnd;
 		double dStartAngle, dSweep;
 
 		Read_EMR_ARC_BASE(oBox, oStart, oEnd, dStartAngle, dSweep);
 
-		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+		if (!BanEMFProcesses())
 			HANDLE_EMR_ARC(oBox, oStart, oEnd);
 	}
 
 	void CEmfParser::Read_EMR_ARCTO()
 	{
 		// TODO: Как найдутся файлы проверить данную запись.
-		TEmfRectL oBox;
-		TEmfPointL oStart, oEnd;
+		TRectL oBox;
+		TPointL oStart, oEnd;
 		double dStartAngle, dSweep;
 
 		Read_EMR_ARC_BASE(oBox, oStart, oEnd, dStartAngle, dSweep);
 
-		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+		if (!BanEMFProcesses())
 			HANDLE_EMR_ARCTO(oBox, oStart, oEnd);
 	}
 
 	void CEmfParser::Read_EMR_CHORD()
 	{
 		// TODO: Как найдутся файлы проверить данную запись.
-		TEmfRectL oBox;
-		TEmfPointL oStart, oEnd;
+		TRectL oBox;
+		TPointL oStart, oEnd;
 		double dStartAngle, dSweep;
 
 		Read_EMR_ARC_BASE(oBox, oStart, oEnd, dStartAngle, dSweep);
 
-		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+		if (!BanEMFProcesses())
 			HANDLE_EMR_CHORD(oBox, oStart, oEnd);
 	}
 
 	void CEmfParser::Read_EMR_ELLIPSE()
 	{
-		TEmfRectL oBox;
+		TRectL oBox;
 
 		m_oStream >> oBox;
 
-		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+		if (!BanEMFProcesses())
 			HANDLE_EMR_ELLIPSE(oBox);
 	}
 
@@ -989,7 +1162,7 @@ namespace MetaFile
 
 		m_oStream >> oText;
 
-		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+		if (!BanEMFProcesses())
 			HANDLE_EMR_EXTTEXTOUTA(oText);
 	}
 
@@ -999,46 +1172,46 @@ namespace MetaFile
 
 		m_oStream >> oText;
 
-		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+		if (!BanEMFProcesses())
 			HANDLE_EMR_EXTTEXTOUTW(oText);
 	}
 
 	void CEmfParser::Read_EMR_LINETO()
 	{
-		TEmfPointL oPoint;
+		TPointL oPoint;
 
 		m_oStream >> oPoint;
 
-		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+		if (!BanEMFProcesses())
 			HANDLE_EMR_LINETO(oPoint);
 	}
 
 	void CEmfParser::Read_EMR_PIE()
 	{
 		// TODO: Как найдутся файлы проверить данную запись.
-		TEmfRectL oBox;
-		TEmfPointL oStart, oEnd;
+		TRectL oBox;
+		TPointL oStart, oEnd;
 		double dStartAngle, dSweep;
 
 		Read_EMR_ARC_BASE(oBox, oStart, oEnd, dStartAngle, dSweep);
 
-		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+		if (!BanEMFProcesses())
 			HANDLE_EMR_PIE(oBox, oStart, oEnd);
 	}
 
 	void CEmfParser::Read_EMR_POLYBEZIER()
 	{
-		Read_EMR_POLYBEZIER_BASE<TEmfPointL>();
+		Read_EMR_POLYBEZIER_BASE<TPointL>();
 	}
 
 	void CEmfParser::Read_EMR_POLYBEZIER16()
 	{
-		Read_EMR_POLYBEZIER_BASE<TEmfPointS>();
+		Read_EMR_POLYBEZIER_BASE<TPointS>();
 	}
 
 	template<typename T>void CEmfParser::Read_EMR_POLYBEZIER_BASE()
 	{
-		TEmfRectL oBounds;
+		TRectL oBounds;
 		unsigned int ulCount;
 
 		m_oStream >> oBounds;
@@ -1058,23 +1231,23 @@ namespace MetaFile
 			m_oStream >> arPoints[ulIndex + 2];
 		}
 
-		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+		if (!BanEMFProcesses())
 			HANDLE_EMR_POLYBEZIER(oBounds, arPoints);
 	}
 
 	void CEmfParser::Read_EMR_POLYBEZIERTO()
 	{
-		Read_EMR_POLYBEZIERTO_BASE<TEmfPointL>();
+		Read_EMR_POLYBEZIERTO_BASE<TPointL>();
 	}
 
 	void CEmfParser::Read_EMR_POLYBEZIERTO16()
 	{
-		Read_EMR_POLYBEZIERTO_BASE<TEmfPointS>();
+		Read_EMR_POLYBEZIERTO_BASE<TPointS>();
 	}
 
 	template<typename T>void CEmfParser::Read_EMR_POLYBEZIERTO_BASE()
 	{
-		TEmfRectL oBounds;
+		TRectL oBounds;
 		unsigned int ulCount;
 
 		m_oStream >> oBounds;
@@ -1092,18 +1265,18 @@ namespace MetaFile
 			m_oStream >> arPoints[ulIndex + 2];
 		}
 
-		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+		if (!BanEMFProcesses())
 			HANDLE_EMR_POLYBEZIERTO_BASE(oBounds, arPoints);
 	}
 
 	void CEmfParser::Read_EMR_POLYDRAW()
 	{
-		Read_EMR_POLYDRAW_BASE<TEmfPointL>();
+		Read_EMR_POLYDRAW_BASE<TPointL>();
 	}
 
 	void CEmfParser::Read_EMR_POLYDRAW16()
 	{
-		Read_EMR_POLYDRAW_BASE<TEmfPointS>();
+		Read_EMR_POLYDRAW_BASE<TPointS>();
 	}
 
 	template<typename T>void CEmfParser::Read_EMR_POLYDRAW_BASE()
@@ -1111,7 +1284,7 @@ namespace MetaFile
 		// TODO: Как найдутся файлы проверить данную запись.
 		//bug #35006 - не прочитывается весь рекорд ... выравнивание?
 
-		TEmfRectL oBounds;
+		TRectL oBounds;
 		unsigned int unCount;
 
 		m_oStream >> oBounds;
@@ -1137,7 +1310,7 @@ namespace MetaFile
 		for (unsigned int unIndex = 0; unIndex < unCount; unIndex++)
 			m_oStream >> pAbTypes[unIndex];
 
-		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+		if (!BanEMFProcesses())
 			HANDLE_EMR_POLYDRAW_BASE(oBounds, pPoints, unCount, pAbTypes);
 
 		delete[] pPoints;
@@ -1146,17 +1319,17 @@ namespace MetaFile
 
 	void CEmfParser::Read_EMR_POLYGON()
 	{
-		Read_EMR_POLYGON_BASE<TEmfPointL>();
+		Read_EMR_POLYGON_BASE<TPointL>();
 	}
 
 	void CEmfParser::Read_EMR_POLYGON16()
 	{
-		Read_EMR_POLYGON_BASE<TEmfPointS>();
+		Read_EMR_POLYGON_BASE<TPointS>();
 	}
 
 	template<typename T>void CEmfParser::Read_EMR_POLYGON_BASE()
 	{
-		TEmfRectL oBounds;
+		TRectL oBounds;
 		unsigned int ulCount;
 
 		m_oStream >> oBounds;
@@ -1170,23 +1343,23 @@ namespace MetaFile
 		for (unsigned int ulIndex = 0; ulIndex < ulCount; ulIndex++)
 			m_oStream >> arPoints[ulIndex];
 
-		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+		if (!BanEMFProcesses())
 			HANDLE_EMR_POLYGON_BASE(oBounds, arPoints);
 	}
 
 	void CEmfParser::Read_EMR_POLYLINE()
 	{
-		Read_EMR_POLYLINE_BASE<TEmfPointL>();
+		Read_EMR_POLYLINE_BASE<TPointL>();
 	}
 
 	void CEmfParser::Read_EMR_POLYLINE16()
 	{
-		Read_EMR_POLYLINE_BASE<TEmfPointS>();
+		Read_EMR_POLYLINE_BASE<TPointS>();
 	}
 
 	template<typename T>void CEmfParser::Read_EMR_POLYLINE_BASE()
 	{
-		TEmfRectL oBounds;
+		TRectL oBounds;
 		unsigned int ulCount;
 
 		m_oStream >> oBounds;
@@ -1200,23 +1373,23 @@ namespace MetaFile
 		for (unsigned int ulIndex = 0; ulIndex < ulCount; ulIndex++)
 			m_oStream >> arPoints[ulIndex];
 
-		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+		if (!BanEMFProcesses())
 			HANDLE_EMR_POLYLINE_BASE(oBounds, arPoints);
 	}
 
 	void CEmfParser::Read_EMR_POLYLINETO()
 	{
-		Read_EMR_POLYLINETO_BASE<TEmfPointL>();
+		Read_EMR_POLYLINETO_BASE<TPointL>();
 	}
 
 	void CEmfParser::Read_EMR_POLYLINETO16()
 	{
-		Read_EMR_POLYLINETO_BASE<TEmfPointS>();
+		Read_EMR_POLYLINETO_BASE<TPointS>();
 	}
 
 	template<typename T>void CEmfParser::Read_EMR_POLYLINETO_BASE()
 	{
-		TEmfRectL oBounds;
+		TRectL oBounds;
 		unsigned int ulCount;
 
 		m_oStream >> oBounds;
@@ -1227,23 +1400,23 @@ namespace MetaFile
 		for (unsigned int ulIndex = 0; ulIndex < ulCount; ulIndex++)
 			m_oStream >> arPoints[ulIndex];
 
-		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+		if (!BanEMFProcesses())
 			HANDLE_EMR_POLYLINETO_BASE(oBounds, arPoints);
 	}
 
 	void CEmfParser::Read_EMR_POLYPOLYGON()
 	{
-		Read_EMR_POLYPOLYGON_BASE<TEmfPointL>();
+		Read_EMR_POLYPOLYGON_BASE<TPointL>();
 	}
 
 	void CEmfParser::Read_EMR_POLYPOLYGON16()
 	{
-		Read_EMR_POLYPOLYGON_BASE<TEmfPointS>();
+		Read_EMR_POLYPOLYGON_BASE<TPointS>();
 	}
 
 	template<typename T>void CEmfParser::Read_EMR_POLYPOLYGON_BASE()
 	{
-		TEmfRectL oBounds;
+		TRectL oBounds;
 		unsigned int ulNumberOfPolygons;
 		unsigned int ulTotalPointsCount;
 
@@ -1269,7 +1442,7 @@ namespace MetaFile
 			for (unsigned int unPointIndex = 0; unPointIndex < arPoints[unPolygonIndex].size(); ++unPointIndex)
 				m_oStream >> arPoints[unPolygonIndex][unPointIndex];
 
-		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+		if (!BanEMFProcesses())
 			HANDLE_EMR_POLYPOLYGON(oBounds, arPoints);
 
 		delete[] pPolygonPointCount;
@@ -1277,17 +1450,17 @@ namespace MetaFile
 
 	void CEmfParser::Read_EMR_POLYPOLYLINE()
 	{
-		Read_EMR_POLYPOLYLINE_BASE<TEmfPointL>();
+		Read_EMR_POLYPOLYLINE_BASE<TPointL>();
 	}
 
 	void CEmfParser::Read_EMR_POLYPOLYLINE16()
 	{
-		Read_EMR_POLYPOLYLINE_BASE<TEmfPointS>();
+		Read_EMR_POLYPOLYLINE_BASE<TPointS>();
 	}
 
 	template<typename T>void CEmfParser::Read_EMR_POLYPOLYLINE_BASE()
 	{
-		TEmfRectL oBounds;
+		TRectL oBounds;
 		unsigned int ulNumberOfPolylines;
 		unsigned int ulTotalPointsCount;
 
@@ -1317,7 +1490,7 @@ namespace MetaFile
 			for (unsigned int unPointIndex = 0; unPointIndex < arPoints[unPolylineIndex].size(); ++unPointIndex)
 				m_oStream >> arPoints[unPolylineIndex][unPointIndex];
 
-		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+		if (!BanEMFProcesses())
 			HANDLE_EMR_POLYPOLYLINE(oBounds, arPoints);
 
 		delete[] pPolylinePointCount;
@@ -1326,23 +1499,23 @@ namespace MetaFile
 	void CEmfParser::Read_EMR_POLYTEXTOUTA()
 	{
 		// TODO: Как найдутся файлы проверить данную запись.
-		TEmfPolyTextoutA oText;
+		TPolyTextoutA oText;
 
 		//TODO: сделать сохранение в XML
 
 		m_oStream >> oText;
 
-		if (0 == oText.cStrings)
+		if (0 == oText.unCStrings)
 			return;
 
-		if (!oText.aEmrText)
+		if (!oText.arEmrText)
 			return SetError();
 
-		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+		if (!BanEMFProcesses())
 		{
-			for (unsigned int unIndex = 0; unIndex < oText.cStrings; unIndex++)
+			for (unsigned int unIndex = 0; unIndex < oText.unCStrings; unIndex++)
 			{
-				DrawTextA(oText.aEmrText[unIndex], oText.iGraphicsMode);
+				DrawTextA(oText.arEmrText[unIndex], oText.unIGraphicsMode);
 			}
 		}
 	}
@@ -1350,57 +1523,57 @@ namespace MetaFile
 	void CEmfParser::Read_EMR_POLYTEXTOUTW()
 	{
 		// TODO: Как найдутся файлы проверить данную запись.
-		TEmfPolyTextoutW oText;
+		TPolyTextoutW oText;
 
 		//TODO: сделать сохранение в XML
 		m_oStream >> oText;
 
-		if (0 == oText.cStrings)
+		if (0 == oText.unCStrings)
 			return;
 
-		if (!oText.wEmrText)
+		if (!oText.arEmrText)
 			return SetError();
 
-		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+		if (!BanEMFProcesses())
 		{
-			for (unsigned int unIndex = 0; unIndex < oText.cStrings; unIndex++)
+			for (unsigned int unIndex = 0; unIndex < oText.unCStrings; unIndex++)
 			{
-				DrawTextA(oText.wEmrText[unIndex], oText.iGraphicsMode);
+				DrawTextW(oText.arEmrText[unIndex], oText.unIGraphicsMode);
 			}
 		}
 	}
 
 	void CEmfParser::Read_EMR_RECTANGLE()
 	{
-		TEmfRectL oBox;
+		TRectL oBox;
 
 		m_oStream >> oBox;
 
-		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+		if (!BanEMFProcesses())
 			HANDLE_EMR_RECTANGLE(oBox);
 	}
 
 	void CEmfParser::Read_EMR_ROUNDRECT()
 	{
-		TEmfRectL oBox;
-		TEmfSizeL oCorner;
+		TRectL oBox;
+		TSizeL oCorner;
 
 		m_oStream >> oBox;
 		m_oStream >> oCorner;
 
-		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+		if (!BanEMFProcesses())
 			HANDLE_EMR_ROUNDRECT(oBox, oCorner);
 	}
 
 	void CEmfParser::Read_EMR_SETPIXELV()
 	{
-		TEmfPointL oPoint;
-		TEmfColor oColor;
+		TPointL oPoint;
+		TRGBA oColor;
 
 		m_oStream >> oPoint;
 		m_oStream >> oColor;
 
-		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+		if (!BanEMFProcesses())
 			HANDLE_EMR_SETPIXELV(oPoint, oColor);
 	}
 
@@ -1410,33 +1583,33 @@ namespace MetaFile
 
 		m_oStream >> oText;
 
-		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+		if (!BanEMFProcesses())
 			HANDLE_EMR_SMALLTEXTOUT(oText);
 	}
 
 	void CEmfParser::Read_EMR_STROKEANDFILLPATH()
 	{
-		TEmfRectL oBounds;
+		TRectL oBounds;
 
 		m_oStream >> oBounds;
 
-		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+		if (!BanEMFProcesses())
 			HANDLE_EMR_STROKEANDFILLPATH(oBounds);
 	}
 
 	void CEmfParser::Read_EMR_STROKEPATH()
 	{
-		TEmfRectL oBounds;
+		TRectL oBounds;
 
 		m_oStream >> oBounds;
 
-		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+		if (!BanEMFProcesses())
 			HANDLE_EMR_STROKEPATH(oBounds);
 	}
 
 	void CEmfParser::Read_EMR_GRADIENTFILL()
 	{
-		TEmfRectL oBounds;
+		TRectL oBounds;
 		unsigned int unVer, unTri, unMode;
 
 		m_oStream >> oBounds;
@@ -1463,7 +1636,7 @@ namespace MetaFile
 		if (4 == unVer)
 			m_oStream.Skip(unTri * 4);
 
-		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+		if (!BanEMFProcesses())
 			HANDLE_EMR_GRADIENTFILL(arVertex, arVertexIndexes, unMode);
 	}
 
@@ -1476,10 +1649,13 @@ namespace MetaFile
 
 		if (sType == "EMF+" && NULL != m_pInterpretator)
 		{
+			SaveDC();
+
 			if (NULL == m_pEmfPlusParser)
 			{
 				m_pEmfPlusParser = new CEmfPlusParser(m_pInterpretator, m_oHeader);
 				m_pEmfPlusParser->SetFontManager(GetFontManager());
+				m_pEmfPlusParser->SetParent(this);
 			}
 
 			m_pEmfPlusParser->SetStream(m_oStream.GetCurPtr(), m_ulRecordSize - 8);
@@ -1491,14 +1667,18 @@ namespace MetaFile
 			m_pInterpretator->ChangeConditional();
 
 			m_oStream.Skip(m_ulRecordSize - 8);
+
+			RestoreDC(-1);
 		}
-		else if (sType == "GDIC")
+		else if (sType == "GDIC" && NULL != m_pInterpretator)
 		{
 			unsigned int unPublicCommentIdentifier;
 
 			m_oStream >> unPublicCommentIdentifier;
 
-			if (EMR_COMMENT_WINDOWS_METAFILE == unPublicCommentIdentifier)
+			// At the moment, we are disabling support for embedded MWF files (in bug #71100 - The plus-minus symbol is not displayed correctly)
+			// From the tests, it became clear that the embedded WMF files are ignored
+			if (EMR_COMMENT_WINDOWS_METAFILE == unPublicCommentIdentifier && false)
 			{
 				m_oStream.Skip(12); // Version, Reserved, Checksum, Flags
 
@@ -1513,6 +1693,7 @@ namespace MetaFile
 
 				oWmfParser.SetFontManager(GetFontManager());
 				oWmfParser.SetStream(m_oStream.GetCurPtr(), unWinMetafileSize);
+				oWmfParser.SetParent(this);
 				oWmfParser.Scan();
 
 				if (oWmfParser.CheckError())
@@ -1522,38 +1703,40 @@ namespace MetaFile
 					HANDLE_EMR_EOF();
 				else if (InterpretatorType::Render == m_pInterpretator->GetType())
 				{
-						CMetaFileRenderer oWmfOut(&oWmfParser, ((CEmfInterpretatorRender*)m_pInterpretator)->GetRenderer());
-						oWmfParser.SetInterpretator(&oWmfOut);
+					CMetaFileRenderer oWmfOut(&oWmfParser, ((CEmfInterpretatorRender*)m_pInterpretator)->GetRenderer());
+					oWmfParser.SetInterpretator(&oWmfOut);
 
-						oWmfParser.PlayFile();
+					oWmfParser.PlayFile();
 
-						HANDLE_EMR_EOF();
+					HANDLE_EMR_EOF();
 				}
 				else if (NULL != m_pInterpretator && InterpretatorType::Svg == m_pInterpretator->GetType())
 				{
-					double dWidth, dHeight;
-
-					((CEmfInterpretatorSvg*)m_pInterpretator)->GetSize(dWidth, dHeight);
-
-					((CWmfParserBase*)&oWmfParser)->SetInterpretator(InterpretatorType::Svg, dWidth, dHeight);
+					((CWmfParserBase*)&oWmfParser)->SetInterpretator(InterpretatorType::Svg);
 
 					XmlUtils::CXmlWriter *pXmlWriter = ((CEmfInterpretatorSvg*)m_pInterpretator)->GetXmlWriter();
 
-					TRectD oWmfRect = oWmfParser.GetBounds();
-					TEmfRectL *pCuurentRect = GetBounds();
+					const TRectL& oWmfRect{oWmfParser.GetDCBounds()};
+					const TRectL& oCurentRect{GetDCBounds()};
 
-					double dScaleX = std::abs((pCuurentRect->lRight - pCuurentRect->lLeft) / (oWmfRect.dRight - oWmfRect.dLeft));
-					double dScaleY = std::abs((pCuurentRect->lBottom - pCuurentRect->lTop) / (oWmfRect.dBottom - oWmfRect.dTop));
+					const double dScaleX = std::abs((double)(oCurentRect.Right  - oCurentRect.Left) / (double)(oWmfRect.Right  - oWmfRect.Left));
+					const double dScaleY = std::abs((double)(oCurentRect.Bottom - oCurentRect.Top)  / (double)(oWmfRect.Bottom - oWmfRect.Top));
 
-					pXmlWriter->WriteNodeBegin(L"g", true);
-					pXmlWriter->WriteAttribute(L"transform", L"scale(" + std::to_wstring(dScaleX) + L',' + std::to_wstring(dScaleY) + L')');
-					pXmlWriter->WriteNodeEnd(L"g", true, false);
+					const bool bAddGElement = !Equals(1., dScaleX) || !Equals(1., dScaleY);
+
+					if (bAddGElement)
+					{
+						pXmlWriter->WriteNodeBegin(L"g", true);
+						pXmlWriter->WriteAttribute(L"transform", L"scale(" + ConvertToWString(dScaleX) + L',' + ConvertToWString(dScaleY) + L')');
+						pXmlWriter->WriteNodeEnd(L"g", true, false);
+					}
 
 					((CWmfInterpretatorSvg*)oWmfParser.GetInterpretator())->SetXmlWriter(pXmlWriter);
 
 					oWmfParser.PlayFile();
 
-					pXmlWriter->WriteNodeEnd(L"g", false, false);
+					if (bAddGElement)
+						pXmlWriter->WriteNodeEnd(L"g", false, false);
 
 					HANDLE_EMR_EOF();
 				}
@@ -1565,7 +1748,7 @@ namespace MetaFile
 
 	void CEmfParser::Read_EMR_FILLRGN()
 	{
-		TEmfRectL oBounds;
+		TRectL oBounds;
 		unsigned int unRgnDataSize, unIhBrush;
 
 		m_oStream >> oBounds;
@@ -1582,18 +1765,18 @@ namespace MetaFile
 		if (0x00000020 != oRegionDataHeader.unSize || 0x00000001 != oRegionDataHeader.unType || 0 == oRegionDataHeader.unCountRects)
 			return;
 
-		std::vector<TEmfRectL> arRects(oRegionDataHeader.unCountRects);
+		std::vector<TRectL> arRects(oRegionDataHeader.unCountRects);
 
-		for (TEmfRectL &oRect : arRects)
+		for (TRectL &oRect : arRects)
 			m_oStream >> oRect;
 
-		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+		if (!BanEMFProcesses())
 			HANDLE_EMR_FILLRGN(oBounds, unIhBrush, oRegionDataHeader, arRects);
 	}
 
 	void CEmfParser::Read_EMR_PAINTRGN()
 	{
-		TEmfRectL oBounds;
+		TRectL oBounds;
 		unsigned int unRgnDataSize;
 
 		m_oStream >> oBounds;
@@ -1609,18 +1792,18 @@ namespace MetaFile
 		if (0x00000020 != oRegionDataHeader.unSize || 0x00000001 != oRegionDataHeader.unType || 0 == oRegionDataHeader.unCountRects)
 			return;
 
-		std::vector<TEmfRectL> arRects(oRegionDataHeader.unCountRects);
+		std::vector<TRectL> arRects(oRegionDataHeader.unCountRects);
 
-		for (TEmfRectL &oRect : arRects)
+		for (TRectL &oRect : arRects)
 			m_oStream >> oRect;
 
-		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+		if (!BanEMFProcesses())
 			HANDLE_EMR_PAINTRGN(oBounds, oRegionDataHeader, arRects);
 	}
 
 	void CEmfParser::Read_EMR_FRAMERGN()
 	{
-		TEmfRectL oBounds;
+		TRectL oBounds;
 		unsigned int unRgnDataSize, unIhBrush;
 		int nWidth, nHeight;
 
@@ -1641,12 +1824,12 @@ namespace MetaFile
 		if (0x00000020 != oRegionDataHeader.unSize || 0x00000001 != oRegionDataHeader.unType || 0 == oRegionDataHeader.unCountRects)
 			return;
 
-		std::vector<TEmfRectL> arRects(oRegionDataHeader.unCountRects);
+		std::vector<TRectL> arRects(oRegionDataHeader.unCountRects);
 
-		for (TEmfRectL &oRect : arRects)
+		for (TRectL &oRect : arRects)
 			m_oStream >> oRect;
 
-		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+		if (!BanEMFProcesses())
 			HANDLE_EMR_FRAMERGN(oBounds, unIhBrush, nWidth, nHeight, oRegionDataHeader, arRects);
 	}
 }

@@ -51,6 +51,9 @@
 #include "../../XlsxFormat/Drawing/CellAnchor.h"
 #include "../../XlsxFormat/Drawing/FromTo.h"
 
+#include "../../../MsBinaryFile/Common/Vml/PPTShape/CustomGeomShape.h"
+#include "../../../MsBinaryFile/Common/Vml/PPTShape/Ppt2PptxShapeConverter.h"
+
 #include "../../../DesktopEditor/raster/ImageFileFormatChecker.h"
 
 namespace OOX
@@ -192,14 +195,10 @@ namespace OOX
 						if (docx_flat)
 						{
 							smart_ptr<OOX::Image> pImageFile = smart_ptr<OOX::Image>(new OOX::Image(document, true));
-
-							int dstLen = Base64::Base64DecodeGetRequiredLength((int)oBinData.m_sData->size());
-							pImageFile->m_Data.resize(dstLen);
-							Base64::Base64Decode(oBinData.m_sData->c_str(), (int)oBinData.m_sData->size(), pImageFile->m_Data.data(), &dstLen);
-							pImageFile->m_Data.resize(dstLen);
+							pImageFile->m_Data = oBinData.GetBytes();
 
 							CImageFileFormatChecker fileChecker;
-							std::wstring ext = fileChecker.DetectFormatByData(pImageFile->m_Data.data(), dstLen);
+							std::wstring ext = fileChecker.DetectFormatByData(pImageFile->m_Data.data(), pImageFile->m_Data.size());
 							if (false == ext.empty())
 							{
 								OOX::CPath filename(L"image." + ext);
@@ -311,7 +310,7 @@ namespace OOX
 							else if (L"o:bullet"            == wsName ) m_oBullet            = oReader.GetText();
 							else if (L"o:button"            == wsName ) m_oButton            = oReader.GetText();
 							else if (L"o:bwmode"            == wsName ) m_oBwMode            = oReader.GetText();
-							else if (L"o:bwnormal"          == wsName ) m_oBwNormal           = oReader.GetText();
+							else if (L"o:bwnormal"          == wsName ) m_oBwNormal          = oReader.GetText();
 							else if (L"o:bwpure"            == wsName ) m_oBwPure            = oReader.GetText();
 							break;
 						case 'c':  
@@ -554,7 +553,7 @@ namespace OOX
 			if (m_oOleIcon.get_value_or(false))
 				sResult += L"o:oleicon=\"t\" ";
 
-			if (m_oOle.get_value_or(false))
+			if (m_oOle.IsInit())
 				sResult += L"o:ole=\"t\" ";
 
 			if (m_oPreferRelative.get_value_or(false))
@@ -1114,13 +1113,6 @@ namespace OOX
 		}
 		void CShadow::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Выставляем значения по умолчанию
-				m_oColor.SetRGB( 128, 128, 128 );
-				m_oColor2.SetRGB( 203, 203, 203 );
-				m_oOffset.SetValue_Points( 2, 2 );
-				m_oOffset2.SetValue_Points( -2, -2 );
-				m_oOrigin.SetValue( 0, 0 );
-
 				if ( oReader.GetAttributesCount() <= 0 )
 					return;
 
@@ -1268,6 +1260,117 @@ namespace OOX
 			CVmlCommonElements::mergeFrom(shape_type);
 		}
 
+		void CShape::ConvertToPptx(double width, double height)
+		{
+			NSGuidesVML::CFormulasManager oManager;
+			NSGuidesVML::CFormulaConverter oFormulaConverter;
+			std::vector<ODRAW::CHandle_> arHandles;
+			std::vector<long> arAdjustments;
+
+			ODRAW::CPath oPath;
+
+			if (m_oCoordSize.IsInit())
+			{
+				oFormulaConverter.m_lWidth = m_oCoordSize->GetX();
+				oFormulaConverter.m_lHeight = m_oCoordSize->GetY();
+
+				oPath.SetCoordsize(m_oCoordSize->GetX(), m_oCoordSize->GetY());
+			}
+
+			NSGuidesVML::CFormParam pParamCoef;
+			pParamCoef.m_eType = NSGuidesVML::ptValue;
+			pParamCoef.m_lParam = 65536;
+			pParamCoef.m_lCoef = 65536;
+
+			oFormulaConverter.ConvertCoef(pParamCoef);
+
+			if (m_sAdj.IsInit())
+			{
+				std::vector<std::wstring> arAdj;
+				boost::algorithm::split(arAdj, *m_sAdj, boost::algorithm::is_any_of(L","), boost::algorithm::token_compress_on);
+
+				for (size_t i = 0; i < arAdj.size(); ++i)
+				{
+					if (arAdj.empty()) arAdjustments.push_back(0);
+					else arAdjustments.push_back(XmlUtils::GetInteger(arAdj[i]));
+				}
+			}
+			for (size_t i = 0; i < m_arrItems.size(); ++i)
+			{
+				switch (m_arrItems[i]->getType())
+				{
+				case OOX::et_v_formulas:
+				{
+					OOX::Vml::CFormulas* formulas = dynamic_cast<OOX::Vml::CFormulas*>(m_arrItems[i]);
+					for (auto formula : formulas->m_arrItems)
+					{
+						oManager.AddFormula(formula->m_sEqn);
+					}
+					oManager.CalculateResults();
+				}break;
+				case OOX::et_v_path:
+				{
+
+				}break;
+				case OOX::et_v_handles:
+				{
+					OOX::Vml::CHandles* handles = dynamic_cast<OOX::Vml::CHandles*>(m_arrItems[i]);
+					for (auto handle : handles->m_arrItems)
+					{
+						CHandle_ oH;
+						if (handle->m_oPolar.IsInit()) oH.polar = handle->m_oPolar->ToString();
+						oH.position = handle->m_oPosition.ToString();
+						oH.radiusrange = handle->m_oRadiusRange.ToString();
+						oH.switchHandle = handle->m_oSwitch.ToString();
+						oH.xrange = handle->m_oXRange.ToString();
+						oH.yrange = handle->m_oYRange.ToString();
+
+						arHandles.push_back(oH);
+					}
+				}break;
+				}
+			}
+			oFormulaConverter.ConvertFormula(oManager.m_arFormulas);
+
+			std::wstring vml_path = m_oPath->GetValue();
+			oFormulaConverter.ConvertPath(vml_path, oPath);
+			oFormulaConverter.ConvertHandle(arHandles, arAdjustments, PPTShapes::sptNotPrimitive);
+			oFormulaConverter.SetTextRectDefault();
+	//---------------------------------------------------------------------------------------------------------------------	
+			std::wstring strXmlPPTX = L"<a:custGeom xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\"\>";
+
+			if (oFormulaConverter.m_oAdjRes.GetSize() == 0)
+				strXmlPPTX += L"<a:avLst/>";
+			else
+				strXmlPPTX += L"<a:avLst>" + oFormulaConverter.m_oAdjRes.GetXmlString() + L"</a:avLst>";
+
+			if (oFormulaConverter.m_oGuidsRes.GetSize() == 0)
+				strXmlPPTX += L"<a:gdLst>" + oFormulaConverter.m_oCoef.GetXmlString() + L"</a:gdLst>";
+			else
+				strXmlPPTX += L"<a:gdLst>" + oFormulaConverter.m_oCoef.GetXmlString() + oFormulaConverter.m_oGuidsRes.GetXmlString() + L"</a:gdLst>";
+
+			if (oFormulaConverter.m_oHandleRes.GetSize() == 0)
+				strXmlPPTX += L"<a:ahLst/>";
+			else
+				strXmlPPTX += L"<a:ahLst>" + oFormulaConverter.m_oHandleRes.GetXmlString() + L"</a:ahLst>";
+
+			strXmlPPTX += L"<a:cxnLst/>";
+
+			if (oFormulaConverter.m_oTextRect.GetSize() != 0)
+				strXmlPPTX += oFormulaConverter.m_oTextRect.GetXmlString();
+
+			strXmlPPTX += L"<a:pathLst>";
+			strXmlPPTX += oFormulaConverter.m_oPathRes.GetXmlString();
+			strXmlPPTX += L"</a:pathLst>";
+			strXmlPPTX += L"</a:custGeom>";
+		
+			XmlUtils::CXmlNode oNode;
+			if (oNode.FromXmlString(strXmlPPTX))
+			{
+				m_oCustGeom.Init();
+				m_oCustGeom->fromXML(oNode);
+			}
+		}
 		//--------------------------------------------------------------------------------
 		// CShapeType 14.1.2.20 (Part4)
 		//--------------------------------------------------------------------------------	
@@ -1733,12 +1836,13 @@ namespace OOX
 
 			sResult += L">";
 
-			if ( m_oTxtbxContent.IsInit() )
-				sResult += m_oTxtbxContent->toXML();
-
 			if (m_oText.IsInit())
 			{
 				sResult += L"<div>" + *m_oText + L"</div>";
+			}
+			else if (m_oTxtbxContent.IsInit())
+			{
+				sResult += m_oTxtbxContent->toXML(); //???
 			}
 
 			sResult += L"</v:textbox>";
@@ -1912,9 +2016,6 @@ namespace OOX
 		}
 		void CFill::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
-			std::wstring sColors;
-
-			// Читаем атрибуты
 			if ( oReader.GetAttributesCount() <= 0 )
 				return;
 			
@@ -1936,7 +2037,7 @@ namespace OOX
 				case 'c':
 					if      (L"color"  == wsName ) m_oColor   = oReader.GetText();
 					else if (L"color2" == wsName ) m_oColor2  = oReader.GetText();
-					else if (L"colors" == wsName ) sColors    = oReader.GetText();
+					else if (L"colors" == wsName ) m_oColors    = oReader.GetText();
 					break;
 
 				case 'i':
@@ -1992,8 +2093,6 @@ namespace OOX
 				wsName = oReader.GetName();
 			}
 			oReader.MoveToElement();
-
-			// TO DO: сделать парсер цветов CFill::m_arrColors
 		}
 		std::wstring CFill::toXML() const
 		{
@@ -2009,18 +2108,19 @@ namespace OOX
 				sResult += L"opacity=\"" + m_oOpacity->ToString() + L"\" ";
 
 			ComplexTypes_WriteAttribute (L"color=\"", m_oColor);
-			ComplexTypes_WriteAttribute (L"color2=\"",	  m_oColor2);
-			ComplexTypes_WriteAttribute3(L"src=\"",       m_sSrc );
-			ComplexTypes_WriteAttribute3(L"o:href=\"",    m_sHref );
+			ComplexTypes_WriteAttribute (L"color2=\"", m_oColor2);
+			ComplexTypes_WriteAttribute3(L"src=\"", m_sSrc );
+			ComplexTypes_WriteAttribute3(L"o:href=\"", m_sHref );
 			ComplexTypes_WriteAttribute3(L"o:althref=\"", m_sAltHref );
-			ComplexTypes_WriteAttribute (L"size=\"",      m_oSize );
-			ComplexTypes_WriteAttribute (L"origin=\"",    m_oOrigin );
-			ComplexTypes_WriteAttribute (L"position=\"",  m_oPosition );
+			ComplexTypes_WriteAttribute (L"size=\"", m_oSize );
+			ComplexTypes_WriteAttribute (L"origin=\"", m_oOrigin );
+			ComplexTypes_WriteAttribute (L"position=\"", m_oPosition );
 
 			if ((m_oAspect.IsInit()) && (SimpleTypes::imageaspectIgnore != m_oAspect->GetValue() ))
 				sResult += L"aspect=\"" + m_oAspect->ToString() + L"\" ";
 
-			// TO DO: Сделать запись m_arrColors
+			if (m_oColors.IsInit())
+				sResult += L"colors=\"" + *m_oColors + L"\" ";
 
 			ComplexTypes_WriteAttribute (L"angle=\"", m_oAngle );
 
@@ -2040,7 +2140,7 @@ namespace OOX
 				sResult += L"method=\"" + m_oMethod->ToString() + L"\" ";
 
 			ComplexTypes_WriteAttribute (L"o:detectmouseclick=\"", m_oDetectMouseClick );
-			ComplexTypes_WriteAttribute3(L"o:title=\"",            m_sTitle );
+			ComplexTypes_WriteAttribute3(L"o:title=\"", m_sTitle );
 
 			if ( m_oOpacity2.IsInit() )
 				sResult += L"o:opacity2=\"" + m_oOpacity2->ToString() + L"\" ";
@@ -2051,7 +2151,7 @@ namespace OOX
 			if (( m_oRotate.IsInit()) && m_oRotate->GetBool())
 				sResult += L"rotate=\"true\" ";
 
-			ComplexTypes_WriteAttribute (L"r:id=\"",    m_rId );
+			ComplexTypes_WriteAttribute (L"r:id=\"", m_rId );
 			ComplexTypes_WriteAttribute (L"o:relid=\"", m_oRelId );
 
 			sResult += L">";

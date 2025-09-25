@@ -55,6 +55,9 @@ void RtfDocumentProperty::SetDefaultOOX()
 }
 void RtfDocumentProperty::SetDefault()
 {
+	m_sDefFontName = L"Times New Roman";
+	m_nDefFontSize = 24;
+
 	m_eCodePage					= cp_ansi;
 	m_nTabWidth					= 720; //todo -1
 	m_nDefFont					= PROP_DEF;
@@ -1000,7 +1003,7 @@ std::wstring RtfSectionProperty::RenderToOOX(RenderParameter oRenderParameter)
 		RenderParameter oRenderParameterNew = oRenderParameter;
 		oRenderParameterNew.nType = RENDER_TO_OOX_PARAM_UNKNOWN;
 		
-		sResult += L"<w:sectPrChange w:date=\"" + sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
+		sResult += L"<w:sectPrChange w:date=\"" + sDate +  L"\" w:author=\"" + XmlUtils::EncodeXmlString(sAuthor) + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
 			sResult += m_pOldSectionProp->RenderToOOX(oRenderParameterNew);
 		sResult += L"</w:sectPrChange>";
 	}

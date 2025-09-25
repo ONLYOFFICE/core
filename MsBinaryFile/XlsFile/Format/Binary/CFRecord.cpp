@@ -37,7 +37,7 @@
 namespace XLS
 {
 
-char CFRecord::intData[MAX_RECORD_SIZE];
+char CFRecord::intData[MAX_RECORD_SIZE_XLSB];
 
 // Create a record and read its data from the stream
 CFRecord::CFRecord(CFStreamPtr stream, GlobalWorkbookInfoPtr global_info)
@@ -90,11 +90,12 @@ CFRecord::CFRecord(NSFile::CFileBinary &file, GlobalWorkbookInfoPtr global_info)
 :	rdPtr(0),
 	size_(0),
 	data_(NULL),
+	type_id_(rt_EOF),
 	global_info_(global_info)
 {
 	file_ptr = file.GetFilePosition();
 	
-	if (file.GetFilePosition() + 4 < file.GetFileSize())
+	if (file.GetFilePosition() + 4 <= file.GetFileSize())
 	{
 		unsigned short size_short;
 		DWORD size_read = 0;
@@ -133,7 +134,8 @@ CFRecord::CFRecord(NSBinPptxRW::CBinaryFileReader &reader, GlobalWorkbookInfoPtr
 :	rdPtr(0),
     size_(0),
     data_(NULL),
-    global_info_(global_info)
+	type_id_(rt_EOF),
+	global_info_(global_info)
 {
     file_ptr = reinterpret_cast<std::uintptr_t>(reader.GetPointer(0)) ;
     BYTE lenght = 0;
@@ -260,6 +262,10 @@ const BYTE CFRecord::getSizeOfRecordTypeRecordLength() const
 
 const size_t CFRecord::getMaxRecordSize() const
 {
+	if(global_info_ && (global_info_.get()->Version == 0x0800))
+	{
+		return MAX_RECORD_SIZE_XLSB;
+	}
 	return MAX_RECORD_SIZE;
 }
 
@@ -300,6 +306,11 @@ void CFRecord::appendRawDataToStatic(const unsigned char *raw_data, const size_t
         memcpy(&intData[rdPtr], raw_data, size);
         rdPtr += size;
     }
+	else if(global_info_ && (global_info_.get()->Version == 0x0800) && (MAX_RECORD_SIZE_XLSB - rdPtr > size))
+	{
+		memcpy(&intData[rdPtr], raw_data, size);
+		rdPtr += size;
+	}
 
 }
 void CFRecord::appendRawDataToStatic(const wchar_t *raw_data, const size_t size)
@@ -309,6 +320,11 @@ void CFRecord::appendRawDataToStatic(const wchar_t *raw_data, const size_t size)
         for(int i = 0; i < size; ++i)
             storeAnyData(raw_data[i]);
     }
+	else if(global_info_ && (global_info_.get()->Version == 0x0800) && (MAX_RECORD_SIZE_XLSB - rdPtr > size))
+	{
+		for(int i = 0; i < size; ++i)
+		storeAnyData(raw_data[i]);
+	}
 
 }
 
@@ -385,6 +401,8 @@ const bool CFRecord::checkFitReadSafe(const size_t size) const
 
 const bool CFRecord::checkFitWriteSafe(const size_t size) const
 {
+	if(global_info_ && (global_info_.get()->Version == 0x0800))
+		return (rdPtr + size <= MAX_RECORD_SIZE_XLSB);
     return (rdPtr + size <= MAX_RECORD_SIZE);
 }
 
@@ -430,6 +448,12 @@ void CFRecord::reserveNunBytes(const size_t n)
 	if (rdPtr + n < MAX_RECORD_SIZE)
 		for (size_t i = 0; i < n; ++i)
 			intData[rdPtr++] = 0;
+	else if(global_info_ && (global_info_.get()->Version == 0x0800) && (rdPtr + n < MAX_RECORD_SIZE_XLSB))
+	{
+		for (size_t i = 0; i < n; ++i)
+			intData[rdPtr++] = 0;
+	}
+
 }
 
 
@@ -452,6 +476,13 @@ void CFRecord::save(NSBinPptxRW::CXlsbBinaryWriter& writer)
 {
 	writer.XlsbStartRecord(type_id_, rdPtr);
 	writer.WriteBYTEArray((BYTE*)&intData[0], rdPtr);
+}
+
+void CFRecord::save(CFStreamPtr& writer)
+{
+	writer->write(&type_id_, 2);
+	writer->write(&rdPtr, 2);
+	writer->write(&intData[0], rdPtr);
 }
 
 CFRecord& CFRecord::operator >> (bool& val)

@@ -1503,9 +1503,8 @@ namespace SimpleTypes
 
 		SimpleTypes_DefaultString(CVml_Vector2D_Units)
 
-		private:
-
-			double m_dX; // В пунктах
+	private:
+		double m_dX; // В пунктах
 		double m_dY; // В пунктах
 	};
 
@@ -1529,8 +1528,8 @@ namespace SimpleTypes
 
 		SimpleTypes_DefaultString(CVml_Vector2D_Percentage)
 
-		private:
-			double m_dX; //
+	private:
+		double m_dX; //
 		double m_dY; //
 	};
 
@@ -1554,8 +1553,8 @@ namespace SimpleTypes
 
 		SimpleTypes_DefaultString(CVml_Vector2D_1_65536)
 
-		private:
-			double m_dX; //
+	private:
+		double m_dX; //
 		double m_dY; //
 	};
 
@@ -1639,8 +1638,8 @@ namespace SimpleTypes
 		std::wstring m_sIdX;  // Значение для типа Formula иди AdjValue
 		std::wstring m_sIdY;  //
 
-		double					m_dX;    // Значение для типа Constant
-		double					m_dY;    //
+		double m_dX;    // Значение для типа Constant
+		double m_dY;    //
 	};
 
 	//--------------------------------------------------------------------------------
@@ -1698,12 +1697,11 @@ namespace SimpleTypes
 		void   SetPercentage(double dValue);
 
 		virtual double FromString(const std::wstring &sValue);
-		virtual std::wstring ToString  () const;
+		virtual std::wstring ToString() const;
 
 		SimpleTypes_DefaultD(CVml_1_65536_Or_Percentage)
 
-		private:
-			double m_dValue;
+		double m_dValue;
 	};
 
 	//--------------------------------------------------------------------------------
@@ -1719,20 +1717,10 @@ namespace SimpleTypes
 		CVml_Matrix &operator =(const std::wstring& wsStr);
 
 		void ResetMatrix();
-		void SetMatrix(double dSxx, double dSxy, double dSyx, double dSyy, double dPx, double dPy);
-
-		double Get_Sxx() const;
-		double Get_Sxy() const;
-		double Get_Syx() const;
-		double Get_Syy() const;
-
-		double Get_Px() const;
-		double Get_Py() const;
 
 		virtual double FromString(const std::wstring &sValue);
-		virtual std::wstring ToString  () const;
+		virtual std::wstring ToString () const;
 
-	private:
 		double m_dSxx;
 		double m_dSxy;
 		double m_dSyx;
@@ -1762,11 +1750,11 @@ namespace SimpleTypes
 		SimpleTypes_DefaultString(CVml_Vector2D_Units_Or_Percentage)
 
 		private:
-			double m_dX; //
-		double m_dY; //
+			double m_dX;
+			double m_dY;
 
-		bool   m_bUnitsX;
-		bool   m_bUnitsY;
+			bool   m_bUnitsX;
+			bool   m_bUnitsY;
 	};
 
 	//--------------------------------------------------------------------------------
@@ -1789,8 +1777,8 @@ namespace SimpleTypes
 
 		SimpleTypes_DefaultString(CVml_TextBoxInset)
 
-		private:
-			double m_dLeft;
+	private:
+		double m_dLeft;
 		double m_dTop;
 		double m_dRight;
 		double m_dBottom;

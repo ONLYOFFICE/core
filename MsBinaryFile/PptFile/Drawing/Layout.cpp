@@ -32,7 +32,7 @@
 #include "Layout.h"
 
 
-void PPT::CorrectPlaceholderType(int &type)
+void PPT::CorrectPlaceholderType(int& type)
 {
     switch (type)
     {
@@ -83,20 +83,20 @@ void PPT::CLayout::Clear()
     m_arElements.clear();
     m_mapPlaceholders.clear();
 
-    m_bIsTitleMaster	= false;
+    m_bIsTitleMaster = false;
 
-    m_bHasDate			= false;
-    m_bHasSlideNumber	= false;
-    m_bHasFooter		= false;
-    m_nFormatDate		= 1;
+    m_bHasDate = false;
+    m_bHasSlideNumber = false;
+    m_bHasFooter = false;
+    m_nFormatDate = 1;
 
-    for (int i = 0 ; i < 3 ; i++)
+    for (int i = 0; i < 3; i++)
         m_PlaceholdersReplaceString[i].clear();
 
-    m_bUseThemeColorScheme	= true;
-    m_bShowMasterShapes		= true;
-    m_strLayoutType			= _T("obj");
-    m_bIsBackground			= false;
+    m_bUseThemeColorScheme = true;
+    m_bShowMasterShapes = true;
+    m_strLayoutType = L"obj";
+    m_bIsBackground = false;
 }
 
 void PPT::CLayout::CreateDublicateElements()
@@ -145,7 +145,7 @@ LONG PPT::CLayout::GetCountPlaceholderWithType(LONG lType)
     return lFound;
 }
 
-ODRAW::CColor PPT::CLayout::GetColor(const LONG &lIndexScheme)
+ODRAW::CColor PPT::CLayout::GetColor(const LONG& lIndexScheme)
 {
     if (lIndexScheme < (LONG)m_arColorScheme.size())
     {
@@ -154,14 +154,14 @@ ODRAW::CColor PPT::CLayout::GetColor(const LONG &lIndexScheme)
     return ODRAW::CColor();
 }
 
-void PPT::CLayout::CheckPlaceholderStyle(std::wstring strStyleName, LONG &lType, LONG &lLevel, LONG &lTypeStyle)
+void PPT::CLayout::CheckPlaceholderStyle(std::wstring strStyleName, LONG& lType, LONG& lLevel, LONG& lTypeStyle)
 {
-    size_t		nLen  = strStyleName.length();
-    wchar_t*    pData = (wchar_t*)strStyleName.c_str();
+    size_t		nLen = strStyleName.length();
+    wchar_t* pData = (wchar_t*)strStyleName.c_str();
 
-    lType		= 0;
-    lLevel		= 0;
-    lTypeStyle	= -1;
+    lType = 0;
+    lLevel = 0;
+    lTypeStyle = -1;
 
     wchar_t* pDataEnd = pData + nLen;
     wchar_t* pDataMem = pData + 1;

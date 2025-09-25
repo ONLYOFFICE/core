@@ -41,8 +41,12 @@ public:
 	BOOL1 m_nCantLockServer;
 	BOOL1 m_nNoSizeToServer;
 	BOOL1 m_nIsTable;
-
-
     virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream) override;
+};
+
+class CRecordExOleEmbedContainer : public CRecordsContainer
+{
+public:
+	virtual void ReadFromStream(SRecordHeader& oHeader, POLE::Stream* pStream) override;
 };
 }

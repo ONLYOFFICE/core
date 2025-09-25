@@ -70,5 +70,22 @@ void SheetExt::readFields(CFRecord& record)
 	}
 }
 
+void SheetExt::writeFields(CFRecord& record)
+{
+    FrtHeader frtHeader(rt_SheetExt);
+    record << frtHeader;
+    if(sheetExtOptional.bEnabled)
+        cb = 0x00000028;
+    else
+        cb = 0x00000014;
+    record << cb;
+
+    _UINT32 flags = 0;
+    SETBITS(flags, 0, 6, icvPlain)
+    record << flags;
+    if(sheetExtOptional.bEnabled)
+        record << sheetExtOptional;
+}
+
 } // namespace XLS
 

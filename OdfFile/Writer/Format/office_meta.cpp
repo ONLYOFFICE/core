@@ -229,14 +229,12 @@ void meta_user_defined::serialize(std::wostream & _Wostream)
 		CP_XML_NODE_SIMPLE()
 		{
 			CP_XML_ATTR(L"meta:name", meta_name_);
+			CP_XML_ATTR_OPT(L"meta:value-type", meta_value_type_);
 
 			CP_XML_STREAM() << XmlUtils::EncodeXmlString(content_);
 		}
 	}
 }
-void meta_user_defined::add_text(const std::wstring & text)
-{
-    content_ = text;
-}
+
 }
 }

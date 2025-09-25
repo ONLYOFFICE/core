@@ -31,8 +31,6 @@
  */
 #include "ASCOfficePPTXFile.h"
 
-#include "../PPTXEvent.h"
-
 #if defined(_WIN32) || defined (_WIN64)
     #include <windows.h>
     #include <shellapi.h>
@@ -45,8 +43,6 @@
 #endif
 
 #include "../../Binary/Presentation/PPTXWriter.h"
-
-#include "../PPTXEvent.h"
 #include "../../../Common/OfficeFileErrorDescription.h"
 
 CPPTXFile::CPPTXFile()
@@ -176,6 +172,10 @@ void CPPTXFile::SetMacroEnabled(bool val)
 {
 	m_bIsMacro = val;
 }
+bool CPPTXFile::GetMacroEnabled()
+{
+	return m_bIsMacro;
+}
 _UINT32 CPPTXFile::OpenFileToPPTY(std::wstring bsInput, std::wstring bsOutput)
 {
 	if (m_strTempDir.empty()) m_strTempDir = NSDirectory::GetTempPath();
@@ -261,7 +261,7 @@ _UINT32 CPPTXFile::ConvertPPTYToPPTX(std::wstring bsInput, std::wstring bsOutput
 		BYTE* pSrcBuffer = new BYTE[lFileSize];
 		oFileBinary.ReadFile(pSrcBuffer, (DWORD)lFileSize);
 	oFileBinary.CloseFile();
-	
+
 	std::wstring strBsInput = bsInput;
     std::wstring srcFolder = NSDirectory::GetFolderPath(strBsInput);
 
@@ -275,8 +275,8 @@ _UINT32 CPPTXFile::ConvertPPTYToPPTX(std::wstring bsInput, std::wstring bsOutput
 	{
 		hRes = S_FALSE;
 	}
-	
 	RELEASEARRAYOBJECTS(pSrcBuffer);
 	
+	m_bIsMacro = oWriter.GetMacroEnabled();
 	return hRes;
 }

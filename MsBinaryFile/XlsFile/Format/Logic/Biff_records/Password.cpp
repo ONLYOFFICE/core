@@ -31,6 +31,7 @@
  */
 
 #include "Password.h"
+#include <sstream>
 
 namespace XLS
 {
@@ -55,6 +56,17 @@ void Password::readFields(CFRecord& record)
 	record >> wPassword_num;
 
 	wPassword = STR::int2hex_wstr(wPassword_num, sizeof(wPassword_num));
+}
+
+void Password::writeFields(CFRecord& record)
+{
+    if(wPassword_num == 0 && !wPassword.empty())
+    {
+        std::wstringstream ss;
+        ss << std::hex << wPassword;
+        ss >> wPassword_num;
+    }
+    record << wPassword_num;
 }
 
 } // namespace XLS

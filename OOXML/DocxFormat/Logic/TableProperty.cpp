@@ -68,7 +68,7 @@ namespace ComplexTypes
 			if ( m_sAuthor.IsInit() )
 			{
 				sResult += L"w:author=\"";
-				sResult += m_sAuthor.get2();
+				sResult += XmlUtils::EncodeXmlString(m_sAuthor.get2());
 				sResult += L"\" ";
 			}
 
@@ -1004,7 +1004,7 @@ namespace OOX
 			if ( m_sAuthor.IsInit() )
 			{
 				sResult += _T("w:author=\"");
-				sResult += m_sAuthor.get2();
+				sResult += XmlUtils::EncodeXmlString(m_sAuthor.get2());
 				sResult += _T("\" ");
 			}
 
@@ -1140,27 +1140,27 @@ namespace OOX
 		{
 			std::wstring sResult = L"<w:tblPr>";
 
-			WritingElement_WriteNode_1( L"<w:bidiVisual ",          m_oBidiVisual );
-			WritingElement_WriteNode_1( L"<w:jc ",                  m_oJc );
-			WritingElement_WriteNode_1( L"<w:shd ",                 m_oShade );
-			WritingElement_WriteNode_2( m_oTblBorders );
-			WritingElement_WriteNode_1( L"<w:tblCaption ",          m_oTblCaption );
-			WritingElement_WriteNode_2( m_oTblCellMar );
-			WritingElement_WriteNode_1( L"<w:tblCellSpacing ",      m_oTblCellSpacing );
-			WritingElement_WriteNode_1( L"<w:tblDescription ",      m_oTblDescription );
-			WritingElement_WriteNode_1( L"<w:tblInd ",              m_oTblInd );
-			WritingElement_WriteNode_1( L"<w:tblLayout ",           m_oTblLayout );
-			WritingElement_WriteNode_1( L"<w:tblLook ",             m_oTblLook );
-			WritingElement_WriteNode_1( L"<w:tblOverlap ",          m_oTblOverlap );
-			WritingElement_WriteNode_1( L"<w:tblpPr ",              m_oTblpPr );
+			WritingElement_WriteNode_1(L"<w:tblStyle ", m_oTblStyle);
+			WritingElement_WriteNode_1(L"<w:bidiVisual ", m_oBidiVisual);
+			WritingElement_WriteNode_1(L"<w:jc ", m_oJc);
+			WritingElement_WriteNode_1(L"<w:shd ", m_oShade);
+			WritingElement_WriteNode_2(m_oTblBorders);
+			WritingElement_WriteNode_1(L"<w:tblCaption ", m_oTblCaption);
+			WritingElement_WriteNode_2(m_oTblCellMar);
+			WritingElement_WriteNode_1(L"<w:tblCellSpacing ", m_oTblCellSpacing);
+			WritingElement_WriteNode_1(L"<w:tblDescription ", m_oTblDescription);
+			WritingElement_WriteNode_1(L"<w:tblInd ", m_oTblInd);
+			WritingElement_WriteNode_1(L"<w:tblLayout ", m_oTblLayout);
+			WritingElement_WriteNode_1(L"<w:tblLook ", m_oTblLook);
+			WritingElement_WriteNode_1(L"<w:tblOverlap ", m_oTblOverlap);
+			WritingElement_WriteNode_1(L"<w:tblpPr ", m_oTblpPr);
 
 			if ( !m_bTblPrChange )
 				WritingElement_WriteNode_2( m_oTblPrChange );
 
-			WritingElement_WriteNode_1( L"<w:tblStyle ",            m_oTblStyle );
-			WritingElement_WriteNode_1( L"<w:tblStyleColBandSize ", m_oTblStyleColBandSize );
-			WritingElement_WriteNode_1( L"<w:tblStyleRowBandSize ", m_oTblStyleRowBandSize );
-			WritingElement_WriteNode_1( L"<w:tblW ",                m_oTblW );
+			WritingElement_WriteNode_1(L"<w:tblStyleColBandSize ", m_oTblStyleColBandSize);
+			WritingElement_WriteNode_1(L"<w:tblStyleRowBandSize ", m_oTblStyleRowBandSize);
+			WritingElement_WriteNode_1(L"<w:tblW ", m_oTblW);
 
 			sResult += L"</w:tblPr>";
 
@@ -1263,9 +1263,9 @@ namespace OOX
 
 			if ( m_sAuthor.IsInit() )
 			{
-				sResult += _T("w:author=\"");
-				sResult += m_sAuthor.get2();
-				sResult += _T("\" ");
+				sResult += L"w:author=\"";
+				sResult += XmlUtils::EncodeXmlString(m_sAuthor.get2());
+				sResult += L"\" ";
 			}
 
 			if ( m_oDate.IsInit() )
@@ -1742,9 +1742,9 @@ namespace OOX
 
 			if ( m_sAuthor.IsInit() )
 			{
-				sResult += _T("w:author=\"");
-				sResult += m_sAuthor.get2();
-				sResult += _T("\" ");
+				sResult += L"w:author=\"";
+				sResult += XmlUtils::EncodeXmlString(m_sAuthor.get2());
+				sResult += L"\" ";
 			}
 
 			if ( m_oDate.IsInit() )

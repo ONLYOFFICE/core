@@ -51,13 +51,14 @@ public:
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record) override;
 
 	static const ElementType	type = typeFileSharing;
 
-    Boolean<unsigned short>     fReadOnlyRec;
-    unsigned short              wResPassNum;
+    Boolean<unsigned short>     fReadOnlyRec = false;
+    unsigned short              wResPassNum = 0;
     std::wstring                wResPass;
-    _UINT16                     iNoResPass;
+    _UINT16                     iNoResPass = 0;
     XLUnicodeString             stUNUsername;
     XLSB::XLNullableWideString	stUserName;
 };

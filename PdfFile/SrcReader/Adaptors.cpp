@@ -32,12 +32,8 @@
 #include "Adaptors.h"
 #include "../lib/xpdf/NameToCharCode.h"
 #include "../lib/xpdf/TextString.h"
+#include "../../DesktopEditor/graphics/pro/js/wasm/src/serialize.h"
 
-
-void GlobalParamsAdaptor::SetFontManager(NSFonts::IFontManager *pFontManager)
-{
-    m_pFontManager = pFontManager;
-}
 void GlobalParamsAdaptor::SetCMapFolder(const std::wstring &wsFolder)
 {
     m_wsCMapFolder = wsFolder;
@@ -188,7 +184,7 @@ bool GlobalParamsAdaptor::GetCMap(const char* sName, char*& pData, unsigned int&
 
 bool operator==(const Ref &a, const Ref &b)
 {
-    return a.gen == b.gen && a.num == b.gen;
+	return a.gen == b.gen && a.num == b.num;
 }
 
 bool operator<(const Ref &a, const Ref &b)

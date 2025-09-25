@@ -151,10 +151,11 @@ void style_table_column_properties_attlist::serialize(std::wostream & _Wostream,
     {
 		CP_XML_NODE_SIMPLE()
         {
-			CP_XML_ATTR_OPT(L"style:column-width",				style_column_width_);
-			CP_XML_ATTR_OPT(L"style:rel-column-width",			style_rel_column_width_);
-			CP_XML_ATTR_OPT(L"style:use-optimal-column-width",	style_use_optimal_column_width_);
-			
+			CP_XML_ATTR_OPT(L"style:column-width", style_column_width_);
+			CP_XML_ATTR_OPT(L"style:rel-column-width", style_rel_column_width_);
+			CP_XML_ATTR_OPT(L"style:use-optimal-column-width", style_use_optimal_column_width_);
+			CP_XML_ATTR_OPT(L"loext:column-width-sym", loext_column_width_sym_);
+
 			common_break_attlist_.serialize(CP_GET_XML_NODE());
 		}
 	}
@@ -170,7 +171,7 @@ void style_table_column_properties::create_child_element(  const std::wstring & 
 }
 void style_table_column_properties::serialize(std::wostream & strm)
 {
-    style_table_column_properties_attlist_.serialize(strm,ns,name);
+    attlist_.serialize(strm,ns,name);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////

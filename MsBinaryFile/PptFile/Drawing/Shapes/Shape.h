@@ -206,7 +206,7 @@ public:
 
 	virtual bool LoadFromXML(XmlUtils::CXmlNode& root)
 	{
-		if(_T("ooxml-shape") == root.GetName())
+		if(L"ooxml-shape" == root.GetName())
 		{
 			m_pShape = CBaseShapePtr(new CPPTXShape());
 			
@@ -214,7 +214,7 @@ public:
 			
 			return pptx_shape ? pptx_shape->LoadFromXML(root) : false;
 		}
-		else if(_T("shape") == root.GetName())
+		else if(L"shape" == root.GetName())
 		{
 			m_pShape = CBaseShapePtr(new CPPTShape());
 
@@ -264,23 +264,23 @@ public:
 	void SetPen(XmlUtils::CXmlNode& oNodePict)
 	{
 		XmlUtils::CXmlNode oNodeTemplate;
-		if (oNodePict.GetNode(_T("stroke"), oNodeTemplate))
+		if (oNodePict.GetNode(L"stroke", oNodeTemplate))
 		{
-			std::wstring strColor = oNodeTemplate.GetAttributeOrValue(_T("strokecolor"));
-			//if (strColor != _T(""))
+			std::wstring strColor = oNodeTemplate.GetAttributeOrValue(L"strokecolor");
+			//if (strColor != L""))
 			//	m_oPen.Color.FromString(strColor);
-			//std::wstring strSize = oNodeTemplate.GetAttributeOrValue(_T("strokeweight"));
-			//if (strSize != _T(""))
+			//std::wstring strSize = oNodeTemplate.GetAttributeOrValue(L"strokeweight"));
+			//if (strSize != L""))
 			//	m_oPen.Size = XmlUtils::GetDouble(strSize);
-			//std::wstring strStroke = oNodeTemplate.GetAttributeOrValue(_T("stroked"));
-			//if (strStroke != _T(""))
+			//std::wstring strStroke = oNodeTemplate.GetAttributeOrValue(L"stroked"));
+			//if (strStroke != L""))
 			//	m_oPen.Alpha = 0;
 
 		}
-		if (oNodePict.GetNode(_T("v:stroke"), oNodeTemplate))
+		if (oNodePict.GetNode(L"v:stroke", oNodeTemplate))
 		{
-			std::wstring strColor = oNodeTemplate.GetAttributeOrValue(_T("dashstyle"));
-			//if (strColor != _T(""))
+			std::wstring strColor = oNodeTemplate.GetAttributeOrValue(L"dashstyle");
+			//if (strColor != L""))
 			//	m_oPen.DashStyle = XmlUtils::GetInteger(strColor);
 		}		
 	}
@@ -288,22 +288,22 @@ public:
 	void SetBrush(XmlUtils::CXmlNode& oNodePict)
 	{
 		XmlUtils::CXmlNode oNodeTemplate;
-		if (oNodePict.GetNode(_T("fillcolor"), oNodeTemplate))
+		if (oNodePict.GetNode(L"fillcolor", oNodeTemplate))
 		{
-			std::wstring strColor = oNodeTemplate.GetAttributeOrValue(_T("val"));
-			//if (strColor != _T(""))
+			std::wstring strColor = oNodeTemplate.GetAttributeOrValue(L"val");
+			//if (strColor != L""))
 			//	m_oBrush.Color1.FromString(strColor);				
 		}
 	}
 
 	void SetCoordPos(XmlUtils::CXmlNode& oNodePict)
 	{
-		if (_T("shape") == oNodePict.GetName())
+		if (L"shape" == oNodePict.GetName())
 		{
 			XmlUtils::CXmlNode oNodeTemplate;
-			if (oNodePict.GetNode(_T("coordorigin"), oNodeTemplate))
+			if (oNodePict.GetNode(L"coordorigin", oNodeTemplate))
 			{
-				std::wstring strCoordSize = oNodeTemplate.GetAttributeOrValue(_T("val"));
+				std::wstring strCoordSize = oNodeTemplate.GetAttributeOrValue(L"val");
 				if (!strCoordSize.empty())
 				{
 					std::vector<std::wstring> oArray;
@@ -315,8 +315,8 @@ public:
 			}
 			else
 			{
-				std::wstring id = oNodePict.GetAttributeOrValue(_T("type"));
-				if (id != _T(""))
+				std::wstring id = oNodePict.GetAttributeOrValue(L"type");
+				if (id != L"")
 				{
 					m_dXLogic = 0;
 					m_dYLogic = 0;
@@ -324,9 +324,9 @@ public:
 				else
 				{
 					XmlUtils::CXmlNode oNodeTemplate;
-					if (oNodePict.GetNode(_T("template"), oNodeTemplate))
+					if (oNodePict.GetNode(L"template", oNodeTemplate))
 					{
-						std::wstring strCoordSize = oNodeTemplate.GetAttributeOrValue(_T("coordorigin"));
+						std::wstring strCoordSize = oNodeTemplate.GetAttributeOrValue(L"coordorigin");
 						if (!strCoordSize.empty())
 						{
 							std::vector<std::wstring> oArray;
@@ -342,13 +342,13 @@ public:
 	}
 	void SetCoordSize(XmlUtils::CXmlNode& oNodePict)
 	{
-		if (_T("shape") == oNodePict.GetName())
+		if (L"shape" == oNodePict.GetName())
 		{
 			XmlUtils::CXmlNode oNodeTemplate;
-			if (oNodePict.GetNode(_T("coordsize"), oNodeTemplate))
+			if (oNodePict.GetNode(L"coordsize", oNodeTemplate))
 			{
-				std::wstring strCoordSize = oNodeTemplate.GetAttributeOrValue(_T("val"));
-				if (strCoordSize != _T(""))
+				std::wstring strCoordSize = oNodeTemplate.GetAttributeOrValue(L"val");
+				if (strCoordSize != L"")
 				{
 					std::vector<std::wstring> oArray;
 					boost::algorithm::split(oArray, strCoordSize, boost::algorithm::is_any_of(L","), boost::algorithm::token_compress_on);
@@ -359,8 +359,8 @@ public:
 			}
 			else
 			{
-				std::wstring id = oNodePict.GetAttributeOrValue(_T("type"));
-				if (id != _T(""))
+				std::wstring id = oNodePict.GetAttributeOrValue(L"type");
+				if (id != L"")
 				{
 					m_dWidthLogic  = 21600;
 					m_dHeightLogic = 21600;
@@ -368,10 +368,10 @@ public:
 				else
 				{
 					XmlUtils::CXmlNode oNodeTemplate;
-					if (oNodePict.GetNode(_T("template"), oNodeTemplate))
+					if (oNodePict.GetNode(L"template", oNodeTemplate))
 					{
-						std::wstring strCoordSize = oNodeTemplate.GetAttributeOrValue(_T("coordsize"));
-						if (strCoordSize != _T(""))
+						std::wstring strCoordSize = oNodeTemplate.GetAttributeOrValue(L"coordsize");
+						if (strCoordSize != L"")
 						{
 							std::vector<std::wstring> oArray;
 							boost::algorithm::split(oArray, strCoordSize, boost::algorithm::is_any_of(L","), boost::algorithm::token_compress_on);

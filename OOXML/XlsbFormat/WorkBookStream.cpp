@@ -492,6 +492,7 @@ void WorkBookStream::UpdateXti(XLS::GlobalWorkbookInfo* global_info_)
         {
             XTI* xti = dynamic_cast<XTI*>(extern_sheet->rgXTI[i].get());
             if (!xti) continue;
+            if(externals->m_arSUP.size() <= xti->iSupBook) continue;
 
             SUP* index_book = dynamic_cast<SUP*>(externals->m_arSUP[xti->iSupBook].get());
             if (!index_book) continue;
@@ -501,7 +502,9 @@ void WorkBookStream::UpdateXti(XLS::GlobalWorkbookInfo* global_info_)
             GlobalWorkbookInfo::_xti val_1;
 
             val_1.iSup		= xti->iSupBook;
-            val_1.pNames	= &index_book->arNames;
+            auto namesVector = new std::vector<std::wstring>();
+            *namesVector = index_book->arNames;
+            val_1.pNames	= namesVector;
 
             if(index_book->m_source->get_type() == XLS::typeSupBookSrc)
             {
@@ -519,7 +522,7 @@ void WorkBookStream::UpdateXti(XLS::GlobalWorkbookInfo* global_info_)
                 else if (xti->itabFirst < global_info_->sheets_info.size())
                 {
                     strRange = XMLSTUFF::name2sheet_name(global_info_->sheets_info[xti->itabFirst].name, L"");
-                    if (xti->itabFirst != xti->itabLast)
+                    if (xti->itabFirst != xti->itabLast && xti->itabLast < global_info_->sheets_info.size())
                     {
                         strRange += std::wstring(L":") + XMLSTUFF::name2sheet_name(global_info_->sheets_info[xti->itabLast].name, L"");
                     }
@@ -602,7 +605,8 @@ void WorkBookStream::UpdateDefineNames(XLS::GlobalWorkbookInfo* global_info_)
                 if (name != L"CHISQDIST" &&
                     name != L"CHISQINV" &&
                     name != L"CURRENT" &&
-                    name != L"EFFECTIVE")
+                    name != L"EFFECTIVE" &&
+                    name.substr(0, 6) != L"_xlfn.")
                 name = L"_xludf." + name;
             }
         }

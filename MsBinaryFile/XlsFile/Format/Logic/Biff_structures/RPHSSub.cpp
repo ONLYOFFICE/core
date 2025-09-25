@@ -52,6 +52,11 @@ void RPHSSub::load(CFRecord& record)
 	record >> st;
 }
 
+void RPHSSub::save(CFRecord& record)
+{
+    unsigned short cch = st.getSize();
+    record << crun << cch << st;
+}
 
 const size_t RPHSSub::getSize() const
 {

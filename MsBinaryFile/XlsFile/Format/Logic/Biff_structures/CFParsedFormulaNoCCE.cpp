@@ -54,6 +54,10 @@ void CFParsedFormulaNoCCE::load(CFRecord& record, const unsigned short cce)
 	rgce.load(record, cce);
 }
 
+void CFParsedFormulaNoCCE::save(CFRecord& record)
+{
+    rgce.save(record);
+}
 
 } // namespace XLS
 

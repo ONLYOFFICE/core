@@ -48,6 +48,7 @@ namespace OOX
 			void Clean();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader, bool bPreserve);
 			void fromStringA(const char* sVal);
+			LONG getUTF16Size();
 
 		public:
 			WCHAR* m_sBuffer;

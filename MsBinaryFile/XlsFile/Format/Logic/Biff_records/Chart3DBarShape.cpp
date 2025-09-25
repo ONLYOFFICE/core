@@ -55,6 +55,11 @@ void Chart3DBarShape::readFields(CFRecord& record)
 	record >> riser >> taper;
 }
 
+void Chart3DBarShape::writeFields(CFRecord& record)
+{
+	record << riser << taper;
+}
+
 int Chart3DBarShape::serialize(std::wostream & _stream)
 {
 	CP_XML_WRITER(_stream)    

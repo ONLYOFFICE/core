@@ -38,6 +38,8 @@
 #include <libkern/OSAtomic.h>
 #endif
 
+#define UNUSED_VARIABLE(x) (void)((x))
+
 class IGrObject
 {
 protected:

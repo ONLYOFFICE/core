@@ -60,6 +60,19 @@ void CFDatabar::load(CFRecord& record)
 	cfvoDB2.load(record);
 }
 
+void CFDatabar::save(CFRecord& record)
+{
+    record.reserveNunBytes(3); // unused
+
+    unsigned char flags = 0;
+    SETBIT(flags, 0, fRightToLeft);
+    SETBIT(flags, 1, fShowValue);
+    record << flags;
+    record << iPercentMin << iPercentMax << color;
+    cfvoDB1.save(record);
+    cfvoDB2.save(record);
+}
+
 int CFDatabar::serialize(std::wostream & stream)
 {
 	CP_XML_WRITER(stream)    

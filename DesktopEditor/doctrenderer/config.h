@@ -32,30 +32,64 @@
 #ifndef DOC_BUILDER_CONFIG
 #define DOC_BUILDER_CONFIG
 
-#include "../xml/include/xmlutils.h"
-#include "../common/File.h"
 #include "../common/Directory.h"
+#include "../common/File.h"
 #include "../common/SystemUtils.h"
+#include "../xml/include/xmlutils.h"
+#include "../fontengine/TextHyphen.h"
+
+#define VALUE_TO_STRING(x) #x
+#define VALUE(x) VALUE_TO_STRING(x)
 
 namespace NSDoctRenderer
 {
+	class CAdditionalData
+	{
+	public:
+		CAdditionalData() {}
+		virtual ~CAdditionalData() {}
+		virtual std::string getParam(const std::wstring& name) { return ""; }
+	};
+
+	class CDocBuilderParams
+	{
+	public:
+		CDocBuilderParams() :
+			  m_bCheckFonts(false),
+			  m_sWorkDir(L""),
+			  m_bSaveWithDoctrendererMode(false),
+			  m_sArgumentJSON(""),
+			  m_bIsSystemFonts(true)
+		{
+		}
+
+	public:
+		bool m_bCheckFonts;
+		std::wstring m_sWorkDir;
+		bool m_bSaveWithDoctrendererMode;
+		std::string m_sArgumentJSON;
+
+		bool m_bIsSystemFonts;
+		std::vector<std::wstring> m_arFontDirs;
+	};
+
 	class CDoctRendererConfig
 	{
 	public:
-		std::vector<std::wstring> m_arrFiles;
+		std::wstring m_strSdkPath;
 
-		std::vector<std::wstring> m_arDoctSDK;
-		std::vector<std::wstring> m_arPpttSDK;
-		std::vector<std::wstring> m_arXlstSDK;
+		std::vector<std::wstring> m_arrFiles;
 
 		std::wstring m_strAllFonts;
 		bool m_bIsNotUseConfigAllFontsDir;
+
+		bool m_bIsUseCache;
 
 		std::wstring m_sConsoleLogFile;
 		std::wstring m_sErrorsLogFile;
 
 	public:
-		CDoctRendererConfig() : m_bIsNotUseConfigAllFontsDir(false)
+		CDoctRendererConfig() : m_bIsNotUseConfigAllFontsDir(false), m_bIsUseCache(true)
 		{
 		}
 
@@ -68,20 +102,19 @@ namespace NSDoctRenderer
 		}
 		void private_LoadSDK_scripts(XmlUtils::CXmlNode& oNode, std::vector<std::wstring>& files, const std::wstring& sConfigDir)
 		{
-            std::vector<XmlUtils::CXmlNode> oNodes;
+			std::vector<XmlUtils::CXmlNode> oNodes;
 			if (oNode.GetNodes(L"file", oNodes))
 			{
-                size_t nCount = oNodes.size();
+				size_t nCount = oNodes.size();
 				XmlUtils::CXmlNode node;
-                for (size_t i = 0; i < nCount; ++i)
+				for (size_t i = 0; i < nCount; ++i)
 				{
-                    files.push_back(private_GetFile(sConfigDir, oNodes[i].GetText()));
+					files.push_back(private_GetFile(sConfigDir, oNodes[i].GetText()));
 				}
 			}
 		}
 
 	public:
-
 		void SetAllFontsExternal(const std::wstring& sFilePath)
 		{
 			m_strAllFonts = private_GetFile(NSFile::GetProcessDirectory() + L"/", sFilePath);
@@ -91,9 +124,6 @@ namespace NSDoctRenderer
 		void Parse(const std::wstring& sWorkDir)
 		{
 			m_arrFiles.clear();
-			m_arDoctSDK.clear();
-			m_arPpttSDK.clear();
-			m_arXlstSDK.clear();
 
 			std::wstring sConfigDir = sWorkDir + L"/";
 			std::wstring sConfigPath = sConfigDir + L"DoctRenderer.config";
@@ -101,24 +131,40 @@ namespace NSDoctRenderer
 			XmlUtils::CXmlNode oNode;
 			if (oNode.FromXmlFile(sConfigPath))
 			{
-                std::vector<XmlUtils::CXmlNode> oNodes;
+				std::vector<XmlUtils::CXmlNode> oNodes;
 				if (oNode.GetNodes(L"file", oNodes))
 				{
-                    size_t nCount = oNodes.size();
+					size_t nCount = oNodes.size();
 					XmlUtils::CXmlNode node;
-                    for (size_t i = 0; i < nCount; ++i)
+					for (size_t i = 0; i < nCount; ++i)
 					{
-                        m_arrFiles.push_back(private_GetFile(sConfigDir, oNodes[i].GetText()));
+						m_arrFiles.push_back(private_GetFile(sConfigDir, oNodes[i].GetText()));
 					}
 				}
 
-				bool bIsAbsoluteFontsPath = false;
+				XmlUtils::CXmlNode oNodeDict;
+				if (oNode.GetNode(L"dictionaries", oNodeDict))
+				{
+					NSHyphen::CEngine::Init(private_GetFile(sConfigDir, oNodeDict.GetText()));
+				}
+
 				if (!m_bIsNotUseConfigAllFontsDir)
 				{
 					std::wstring sAllFontsPath = oNode.ReadNodeText(L"allfonts");
 					if (!sAllFontsPath.empty())
 					{
-						m_strAllFonts = private_GetFile(sConfigDir, sAllFontsPath);
+						if (NSFile::CFileBinary::Exists(sConfigDir + sAllFontsPath))
+							m_strAllFonts = sConfigDir + sAllFontsPath;
+						else if (NSFile::CFileBinary::Exists(sAllFontsPath))
+							m_strAllFonts = sAllFontsPath;
+						else
+						{
+							std::wstring sAllFontsDir = NSFile::GetDirectoryName(sAllFontsPath);
+							if (NSDirectory::Exists(sConfigDir + sAllFontsDir))
+								m_strAllFonts = sConfigDir + sAllFontsPath;
+							else
+								m_strAllFonts = sAllFontsPath;
+						}
 
 						// на папку может не быть прав
 						if (!NSFile::CFileBinary::Exists(m_strAllFonts))
@@ -130,47 +176,23 @@ namespace NSDoctRenderer
 								if (NSDirectory::CreateDirectory(sAppDir + L"/docbuilder"))
 								{
 									m_strAllFonts = sAppDir + L"/docbuilder/AllFonts.js";
-									// файл может не существовать пока - и тогда private_GetFile не учтет его
-									bIsAbsoluteFontsPath = true;
 								}
 							}
 							else
 							{
 								fclose(pFileNative);
+								NSFile::CFileBinary::Remove(m_strAllFonts);
 							}
 						}
 					}
 				}
-				m_arrFiles.push_back(bIsAbsoluteFontsPath ? m_strAllFonts : private_GetFile(sConfigDir, m_strAllFonts));
 			}
 
-			std::wstring sSdkPath = oNode.ReadNodeText(L"sdkjs");
-			if (!sSdkPath.empty())
+			m_strSdkPath = oNode.ReadNodeText(L"sdkjs");
+			if (!m_strSdkPath.empty())
 			{
-				if (!NSDirectory::Exists(sSdkPath))
-					sSdkPath = sConfigDir + sSdkPath;
-
-				std::wstring sFontsPath = sSdkPath + L"/common/libfont/engine";
-				if (!sFontsPath.empty())
-				{
-#ifdef SUPPORT_HARFBUZZ_SHAPER
-					sFontsPath += L"/fonts_native.js";
-#else
-					sFontsPath += L"/fonts_ie.js";
-#endif
-				}
-
-				m_arDoctSDK.push_back(sSdkPath + L"/word/sdk-all-min.js");
-				m_arDoctSDK.push_back(sFontsPath);
-				m_arDoctSDK.push_back(sSdkPath + L"/word/sdk-all.js");
-
-				m_arPpttSDK.push_back(sSdkPath + L"/slide/sdk-all-min.js");
-				m_arPpttSDK.push_back(sFontsPath);
-				m_arPpttSDK.push_back(sSdkPath + L"/slide/sdk-all.js");
-
-				m_arXlstSDK.push_back(sSdkPath + L"/cell/sdk-all-min.js");
-				m_arXlstSDK.push_back(sFontsPath);
-				m_arXlstSDK.push_back(sSdkPath + L"/cell/sdk-all.js");
+				if (0 == m_strSdkPath.find(L"./") || !NSDirectory::Exists(m_strSdkPath))
+					m_strSdkPath = sConfigDir + m_strSdkPath;
 			}
 
 			m_sConsoleLogFile = oNode.ReadNodeText(L"LogFileConsoleLog");
@@ -180,6 +202,20 @@ namespace NSDoctRenderer
 				m_sConsoleLogFile = private_GetFile(sConfigDir, m_sConsoleLogFile);
 			if (!m_sErrorsLogFile.empty())
 				m_sErrorsLogFile = private_GetFile(sConfigDir, m_sErrorsLogFile);
+		}
+
+		char* GetVersion()
+		{
+			std::string sVersion = VALUE(INTVER);
+
+			size_t sSrcLen = sVersion.size();
+			if (sSrcLen == 0)
+				return NULL;
+
+			char* sRet = new char[sSrcLen + 1];
+			memcpy(sRet, sVersion.c_str(), sSrcLen);
+			sRet[sSrcLen] = '\0';
+			return sRet;
 		}
 	};
 }

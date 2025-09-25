@@ -51,7 +51,8 @@ BiffStructurePtr PtgParen::clone()
 
 void PtgParen::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref)
 {
-	ptg_stack.top() = L'(' + ptg_stack.top() + L')';
+    if(!ptg_stack.empty())
+        ptg_stack.top() = L'(' + ptg_stack.top() + L')';
 }
 
 

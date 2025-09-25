@@ -115,6 +115,8 @@ public:
     
 	void apply_from(const style_table_column_properties_attlist & Other);
 	
+    _CP_OPT(double) loext_column_width_sym_;
+
 	_CP_OPT(odf_types::length)		style_column_width_;
     _CP_OPT(odf_types::length)		style_rel_column_width_;
     _CP_OPT(bool)					style_use_optimal_column_width_;
@@ -141,8 +143,7 @@ private:
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
 public:
-    style_table_column_properties_attlist attlist_;
-        
+    style_table_column_properties_attlist attlist_;        
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(style_table_column_properties);

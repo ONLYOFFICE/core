@@ -207,6 +207,7 @@ public:
 	static int Twips2Emu(int pt);
 	static int Emu2Twips(int pt);
 	static float Emu2Pt(int emu);
+	static int Pt2Emu(int emu);
 	static void WriteDataToFileBinary(std::wstring& sFilename, BYTE* pbData, size_t nLength);
 	static void WriteDataToFile(std::wstring& sFilename, std::wstring& sData);
 	static void DecodeHexString( std::string sHexText, BYTE *&pData );

@@ -314,33 +314,34 @@ public:
 	{
 		odf_type_name	=L"ooxml-mathPlus";
 
-		enhanced_path	= L"M ?f6 ?f12 L ?f7 ?f12 ?f7 ?f11 ?f8 ?f11 ?f8 ?f12 ?f9 ?f12 ?f9 ?f13 ?f8 ?f13 ?f8 ?f14 ?f7 ?f14 ?f7 ?f13 ?f6 ?f13 Z N";
-		text_areas		= L"?f6 ?f12 ?f9 ?f13";
-		view_box		= L"0 0 0 0";
+		enhanced_path	= L"M ?f15 ?f20 L ?f16 ?f20 ?f16 ?f19 ?f17 ?f19 ?f17 ?f20 ?f18 ?f20 ?f18 ?f21 ?f17 ?f21 ?f17 ?f22 ?f16 ?f22 ?f16 ?f21 ?f15 ?f21 Z N";
+		text_areas		= L"?f15 ?f20 ?f18 ?f21";
+		view_box		= L"0 0 21600 21600";
 		modifiers		= L"23520";
 		
-		add(L"f0", L"if(0-$0 ,0,if(73490-$0 ,$0 ,73490))");
-		add(L"f1", L"logwidth*73490/200000");
-		add(L"f2", L"logheight*73490/200000");
-		add(L"f3", L"min(logwidth,logheight)");
-		add(L"f4", L"?f3 *?f0 /200000");
-		add(L"f5", L"logwidth/2");
-		add(L"f6", L"?f5 +0-?f1 ");
-		add(L"f7", L"?f5 +0-?f4 ");
-		add(L"f8", L"?f5 +?f4 -0");
-		add(L"f9", L"?f5 +?f1 -0");
-		add(L"f10", L"logheight/2");
-		add(L"f11", L"?f10 +0-?f2 ");
-		add(L"f12", L"?f10 +0-?f4 ");
-		add(L"f13", L"?f10 +?f4 -0");
-		add(L"f14", L"?f10 +?f2 -0");
-
-/////////////////////////////////////////////////////////
-		_handle h;
-		h.position = L"0 ?f12";
-		h.y_maximum= L"73490";
-		h.y_minimum= L"0";
-		handles.push_back(h);
+		add(L"f0", L"left");
+		add(L"f1", L"right");
+		add(L"f2", L"top");
+		add(L"f3", L"bottom");
+		add(L"f4", L"?f3 - ?f2");
+		add(L"f5", L"?f4 / 2");
+		add(L"f6", L"?f2 + ?f5");
+		add(L"f7", L"?f1 - ?f0");
+		add(L"f8", L"?f7 / 2");
+		add(L"f9", L"?f0 + ?f8");
+		add(L"f10", L"min(?f7, ?f4)");
+		add(L"f11", L"$0");
+		add(L"f12", L"?f7 * 73490 / 200000");
+		add(L"f13", L"?f4 * 73490 / 200000");
+		add(L"f14", L"?f10 * ?f11 / 200000");
+		add(L"f15", L"?f9 - ?f12");
+		add(L"f16", L"?f9 - ?f14");
+		add(L"f17", L"?f9 + ?f14");
+		add(L"f18", L"?f9 + ?f12");
+		add(L"f19", L"?f6 - ?f13");
+		add(L"f20", L"?f6 - ?f14");
+		add(L"f21", L"?f6 + ?f14");
+		add(L"f22", L"?f6 + ?f13");
 	}
 };
 

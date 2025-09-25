@@ -1,47 +1,38 @@
 #pragma once
-#include "../DesktopEditor/common/Types.h"
-#include "../DesktopEditor/common/StringUTF32.h"
+#include <type_traits>
+#include <limits>
+#include <algorithm>
+
+#include "../../../DesktopEditor/common/Types.h"
 
 inline LONG ConvertColorBGRToRGB(LONG lBGR)
 {
-    return (0x00FFFFFF & (((lBGR & 0xFF) << 16) | (lBGR & 0x0000FF00) | ((lBGR >> 16) & 0xFF)));
+	return (0x00FFFFFF & (((lBGR & 0xFF) << 16) | (lBGR & 0x0000FF00) | ((lBGR >> 16) & 0xFF)));
 }
 
-inline bool IsSpaceUtf32(const uint32_t& c)
+template<typename It>
+It MoveNullptr(It start, It end)
 {
-    return (0x20 == c ||        //пробел
-            0xA0 == c ||        //неразрывный пробел
-            0x2003 == c         //Em пробел
-            ) ? true : false;
-}
-inline bool IsSpaceUtf32(const NSStringUtils::CStringUTF32& oText)
-{
-    if (1 != oText.length())
-        return false;
-    return IsSpaceUtf32(oText.ToStdWString()[0]);
-}
+	if (end <= start) return start;
+	It left = start, right = end - 1;
+	for (;;)
+	{
+		while (!*right && left < right) right--;
+		while (*left && left < right) left++;
+		if (left >= right) break;
+		std::swap(*left, *right);
+	}
+	if (*right)
+		++right;
 
-inline bool IsUnicodeSymbol(const int& symbol )
-{
-    if ( ( 0x0009 == symbol ) || ( 0x000A == symbol ) || ( 0x000D == symbol ) ||
-       ( ( 0x0020 <= symbol ) && ( 0xD7FF >= symbol ) ) || ( ( 0xE000 <= symbol ) && ( symbol <= 0xFFFD ) ) ||
-       ( ( 0x10000 <= symbol ) && symbol ) )
-    {
-        return true;
-    }
-    return false;
+	return right;
 }
 
-// 2-byte number
-inline short little_endian_2_big_endian( short s )
+template <class T, class Cmp = std::less<T>>
+bool CmpOrEqual(const T& val1,
+                const T& val2,
+                const T& eps = std::numeric_limits<T>::epsilon(),
+                const Cmp& cmp = Cmp())
 {
-    return ( ( s >> 8) & 0xff ) + ( ( s << 8 ) & 0xff00 );
-}
-
-/*========================================================================================================*/
-
-// 4-byte number
-inline int little_endian_2_big_endian( int i )
-{
-    return ( ( i & 0xff ) << 24 ) + ( ( i & 0xff00 ) << 8 ) + ( ( i & 0xff0000 ) >> 8 ) + ( ( i >> 24 ) & 0xff );
+	return std::abs(val1 - val2) < eps || cmp(val1, val2);
 }

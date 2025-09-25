@@ -108,7 +108,10 @@ namespace PdfWriter
 		if (m_pFontFile && m_pFontFileDict)
 		{
 			CStream* pStream = m_pFontFileDict->GetStream();
-			m_pFontFile->WriteTTF(pStream);
+			if (m_pFontFile->GetOpenTypeCFF())
+				m_pFontFile->WriteOTF(pStream);
+			else
+				m_pFontFile->WriteTTF(pStream);
 			m_pFontFileDict->Add("Length1", pStream->Size());
 			m_pFontFileDict->SetFilter(STREAM_FILTER_FLATE_DECODE);
 		}
@@ -176,6 +179,13 @@ namespace PdfWriter
 
 		m_nLineHeight = yMax - yMin;
 		m_nAscent     = yMax;
+
+		m_dHeight  = pFace->height;
+		m_dDescent = pFace->descender;
+		m_dAscent  = pFace->ascender;
+		m_dUnitsPerEm = pFace->units_per_EM;
+		m_dMaxY = pFace->bbox.yMax;
+		m_dMinY = pFace->bbox.yMin;
 
 		CArrayObject* pBBox = new CArrayObject();
 		pBBox->Add(xMin);

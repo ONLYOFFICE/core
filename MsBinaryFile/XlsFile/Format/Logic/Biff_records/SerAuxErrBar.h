@@ -48,15 +48,16 @@ public:
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
+	void writeFields(CFRecord& record);
 
 	static const ElementType type = typeSerAuxErrBar;
 
 //-----------------------------
-	unsigned char	sertm;
-	unsigned char	ebsrc;
-	unsigned char	fTeeTop;
+	unsigned char	sertm = 0;
+	unsigned char	ebsrc = 0;
+	unsigned char	fTeeTop = 0;
 	Xnum			numValue;
-	_UINT16			cnum;
+	_UINT16			cnum = 0;
 
 };
 

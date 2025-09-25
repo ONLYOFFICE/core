@@ -129,6 +129,10 @@ namespace PPTX
 					{
 						link_svg = oNode.GetAttribute(L"r:embed");
 					}
+					else if (L"creationId" == strName)
+					{
+						creationId = oNode.GetAttribute(L"id");
+					}
 				}
 			}
 		}
@@ -194,6 +198,22 @@ namespace PPTX
 					pWriter->EndAttributes();
 
 					sectionLst->toXmlWriter(pWriter);
+				pWriter->EndNode(namespace_ext + L":ext");
+			}
+			if (creationId.IsInit())
+			{
+				pWriter->StartNode(namespace_ext + L":creationId");
+				pWriter->StartAttributes();
+				pWriter->WriteAttribute(L"uri", std::wstring(L"{FF2B5EF4-FFF2-40B4-BE49-F238E27FC236}"));
+				pWriter->EndAttributes();
+
+				pWriter->StartNode(L"a16:creationId");
+				pWriter->StartAttributes();
+				pWriter->WriteAttribute(L"xmlns:a16", std::wstring(L"http://schemas.microsoft.com/office/drawing/2014/main"));
+				pWriter->WriteAttribute(L"id", *creationId);
+				pWriter->EndAttributes();
+				pWriter->EndNode(L"a16:creationId");
+
 				pWriter->EndNode(namespace_ext + L":ext");
 			}
 		}

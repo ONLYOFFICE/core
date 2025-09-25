@@ -1,0 +1,46 @@
+Fixes for build 12.1 version for android with use_custom_libcxx:
+
+1) src/build/config/BUILD.gn
+
+group("common_deps") { ... }
+
+if (use_custom_libcxx) {
+    public_deps += [ "//buildtools/third_party/libc++" ]
+}
+
+=>
+
+if (use_custom_libcxx) {
+    public_deps += [ "//buildtools/third_party/libc++" ]
+} else {
+  # ONLYOFFICE-HACK
+  public_deps += [ "//buildtools/third_party/libunwind" ]
+}
+
+2) src/buildtools/third_party/libunbind/BUILD.gn
+
+visibility = [ "//buildtools/third_party/libc++abi" ]
+
+=>
+visibility = [ "//buildtools/third_party/libc++abi" ]
+# ONLYOFFICE-HACK
+visibility += ["//build/config:common_deps"]
+
+3) src/zone/zone.h
+
+all records:
+static_assert(alignof(T) <= kAlignmentInBytes);
+
+=>
+
+// ONLYOFFICE-HACK
+//static_assert(alignof(T) <= kAlignmentInBytes);
+
+Fixes for link static library WITH custom libc++:
+
+v8.pri:
+v8_custom_libcxx {
+  LIBS += $$CORE_V8_PATH_LIBS/third_party/libc++/libc++/*.o
+  LIBS += $$CORE_V8_PATH_LIBS/third_party/libc++abi/libc++abi/*.o
+  LIBS += $$CORE_V8_PATH_LIBS/third_party/libunwind/libunwind/*.o
+}

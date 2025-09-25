@@ -570,7 +570,26 @@ namespace XmlUtils
 	}
 	unsigned int GetUInteger(const std::wstring& string)
 	{
-        return (unsigned int)GetInteger(string);
+        if (string.empty()) return 0;
+
+        unsigned int iVal = 0;
+        try
+        {
+            iVal = std::stod(string);
+        }
+        catch(...)
+        {
+            try
+            {
+                iVal = std::wcstoll(string.c_str(), NULL, 10);
+            }
+            catch(...)
+            {
+                return 0;
+            }
+        }
+
+        return iVal;
 	}
 	double GetDouble(const std::wstring& string)
 	{

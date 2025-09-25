@@ -50,6 +50,7 @@ public:
 
 	
 	void readFields(CFRecord& record);
+	void writeFields(CFRecord& record);
 //-----------------------------
 	LPWideString	st;
 	FrtHeader		frtHeader;

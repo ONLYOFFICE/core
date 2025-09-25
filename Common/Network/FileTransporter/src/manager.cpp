@@ -32,8 +32,8 @@
 
 #include <list>
 #include "./../include/manager.h"
-#include "./../../../core/DesktopEditor/graphics/TemporaryCS.h"
-#include "./../../../core/DesktopEditor/graphics/BaseThread.h"
+#include "./../../../../DesktopEditor/graphics/TemporaryCS.h"
+#include "./../../../../DesktopEditor/graphics/BaseThread.h"
 
 namespace ASC
 {

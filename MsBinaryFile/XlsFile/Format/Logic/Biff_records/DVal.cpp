@@ -62,9 +62,13 @@ void DVal::readFields(CFRecord& record)
 void DVal::writeFields(CFRecord& record)
 {
 	_UINT16 flags = 0;
+	_UINT32 reserved = 0;
 
 	SETBIT(flags, 0, fWnClosed);
-	record << flags << xLeft << yTop << idObj << idvMac;
+	if(record.getGlobalWorkbookInfo()->Version < 0x0800)
+		record << flags << xLeft << yTop << idObj << idvMac;
+	else
+		record << flags << xLeft << yTop << reserved << idvMac;
 }
 
 } // namespace XLS

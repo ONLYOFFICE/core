@@ -460,7 +460,6 @@ public:
 class draw_enhanced_geometry : public office_element_impl<draw_enhanced_geometry>
 {
 public:
-
     static const wchar_t * ns;
     static const wchar_t * name;
 	
@@ -480,23 +479,24 @@ public:
 
 	_CP_OPT(std::wstring)				svg_viewbox_;
 		
-	office_element_ptr_array			draw_handle_;
-	office_element_ptr_array			draw_equation_;
+	office_element_ptr_array			draw_handles_;
+	office_element_ptr_array			draw_equations_;
 
 //-------------------------------------------------
 	static int parsing(_CP_OPT(std::wstring) val);
-
 	void find_draw_type_oox();
+	bool oox_convert(std::vector<odf_reader::_property>& props);
 	
-	std::map<std::wstring, std::wstring> map_draw_equation_;
 	//std::vector<draw_handle_geometry>	draw_handle_geometry_; 
 	
-	_CP_OPT(int)			sub_type_;
-	_CP_OPT(int)			draw_type_oox_index_;
+	_CP_OPT(int) sub_type_;
+	_CP_OPT(int) draw_type_oox_index_;
 
-	bool					word_art_;
-	bool					bOoxType_;
-	std::wstring			odf_path_;
+	bool word_art_ = false;
+	bool bOoxType_ = false;
+	std::wstring odf_path_;
+
+	draw_shape* owner_shape = NULL;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(draw_enhanced_geometry);
@@ -536,9 +536,14 @@ class draw_connector_attlist
 {
 public:
  	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-	_CP_OPT(std::wstring) svg_d_;
-	_CP_OPT(std::wstring) svg_viewbox_;
-	_CP_OPT(std::wstring) draw_type_;
+	_CP_OPT(std::wstring)	svg_d_;
+	_CP_OPT(std::wstring)	svg_viewbox_;
+	_CP_OPT(std::wstring)	draw_type_;
+
+	_CP_OPT(std::wstring)	draw_start_shape_;
+	_CP_OPT(std::wstring)	draw_end_shape_;
+	_CP_OPT(int)			draw_start_glue_point_;
+	_CP_OPT(int)			draw_end_glue_point_;
 
 };
 /////////////////////////////////////////////////////////////////////////
@@ -708,7 +713,7 @@ public:
 
 	virtual void docx_convert(oox::docx_conversion_context & Context);
 	virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
-    virtual void pptx_convert(oox::pptx_conversion_context & Context){}
+	virtual void pptx_convert(oox::pptx_conversion_context& Context);
 
 	_CP_OPT(std::wstring)	xml_id_;
 	_CP_OPT(std::wstring)	caption_id_;

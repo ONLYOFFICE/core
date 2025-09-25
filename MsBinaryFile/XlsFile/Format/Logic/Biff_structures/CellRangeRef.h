@@ -58,7 +58,7 @@ public:
 
 	static const ElementType	type = typeCellRangeRef;
 
-	const std::wstring	toString(const bool useShortForm = true) const;
+	const std::wstring	toString(const bool useShortForm = true, const bool xlsb = false) const;
 	void				fromString(const std::wstring& str);
 	operator std::wstring  () const;
 
@@ -83,14 +83,14 @@ public:
     void load(CFRecord& record) override {}
 	void save(CFRecord& record) override {}
 
-    int		rowFirst;
-    int		rowLast;
-	bool	rowFirstRelative;
-	bool	rowLastRelative;
-    int		columnFirst;
-    int		columnLast;
-	bool	columnFirstRelative;
-	bool	columnLastRelative;
+    int		rowFirst = 0;
+    int		rowLast = 0;
+    bool	rowFirstRelative = 0;
+    bool	rowLastRelative = 0;
+    int		columnFirst = 0;
+    int		columnLast = 0;
+    bool	columnFirstRelative = 0;
+    bool	columnLastRelative = 0;
 
 	mutable std::wstring to_string_cache;
 
@@ -110,7 +110,16 @@ template<class NameProducer, class RwType, class ColType, RELATIVE_INFO rel_info
 class CellRangeRef_T : public CellRangeRef
 {
 public:
-    CellRangeRef_T(const std::wstring & str_ref) : CellRangeRef(str_ref) {}
+    CellRangeRef_T(const std::wstring & str_ref) : CellRangeRef(str_ref)
+	{
+        if(sizeof(RwType) < 4)
+        {
+            columnFirst = AUX::normalizeColumn(columnFirst);
+			columnLast = AUX::normalizeColumn(columnLast);
+            rowFirst = AUX::normalizeRow(rowFirst);
+			rowLast = AUX::normalizeRow(rowLast);
+        }
+    }
     CellRangeRef_T() {}
 
 	template<class otherNameProducer, class otherRwType, class otherColType, RELATIVE_INFO otherRel_info>
@@ -160,44 +169,69 @@ public:
 		switch(rel_info)
 		{
 			case rel_Present:
-				columnFirst = (colFirst << 2) >> 2;
-				columnLast = (colLast << 2) >> 2;
-				rowFirstRelative = 0 != (colFirst & (1 << (sizeof(ColType) * 8 - 1)));
-				columnFirstRelative = 0 != (colFirst & (1 << (sizeof(ColType) * 8 - 2)));
-				rowLastRelative = 0 != (colLast & (1 << (sizeof(ColType) * 8 - 1)));
-				columnLastRelative = 0 != (colLast & (1 << (sizeof(ColType) * 8 - 2)));
-				break;
+			{
+				columnFirst = GETBITS(colFirst, 0, sizeof(ColType) * 8 - 3);
+				columnLast = GETBITS(colLast, 0, sizeof(ColType) * 8 - 3);
+
+				columnFirstRelative = GETBIT(colFirst, sizeof(ColType) * 8 - 2);
+				rowFirstRelative = GETBIT(colFirst, sizeof(ColType) * 8 - 1);
+
+				columnLastRelative = GETBIT(colLast, sizeof(ColType) * 8 - 2);
+				rowLastRelative = GETBIT(colLast, sizeof(ColType) * 8 - 1);
+			}break;
 			case rel_Absent:
+			{
 				columnFirst = colFirst;
 				columnLast = colLast;
+				
 				rowFirstRelative = true;
 				columnFirstRelative = true;
 				rowLastRelative = true;
 				columnLastRelative = true;
-				break;
+			}break;
 		}
 	}
 
 	void save(CFRecord& record) override
 	{
-		RwType rwFirst;
-		RwType rwLast;
-		ColType colFirst;
-		ColType colLast;
+        RwType rwFirst = rowFirst;
+        RwType rwLast = rowLast;
+        ColType colFirst = 0;
+        ColType colLast = 0;
+		
+		auto version = record.getGlobalWorkbookInfo()->Version;
 
-		rwFirst = rowFirst;
-		rwLast = rowLast;
-
-		switch (rel_info)
+		if (version < 0x0800)
 		{
-		case rel_Present:
-			colFirst = (columnFirst >> 2) << 2;
-			colLast = (columnLast >> 2) << 2;
-			break;
-		case rel_Absent:
-			colFirst = columnFirst;
-			colLast = columnLast;
-			break;
+			switch (rel_info)
+			{
+			case rel_Present:
+				colFirst = (columnFirst >> 2) << 2;
+				colLast = (columnLast >> 2) << 2;
+				break;
+			case rel_Absent:
+				colFirst = columnFirst;
+				colLast = columnLast;
+				break;
+			}
+		}
+		else
+		{
+			if(rel_info == rel_Present)
+			{
+				SETBITS(colFirst, 0, 13, columnFirst);
+				SETBIT(colFirst, 14, columnFirstRelative);
+				SETBIT(colFirst, 15, rowFirstRelative);
+
+				SETBITS(colLast, 0, 13, columnLast);
+				SETBIT(colLast, 14, columnLastRelative);
+				SETBIT(colLast, 15, rowLastRelative);
+			}
+			else if(rel_info == rel_Absent)
+			{
+				colFirst = columnFirst;
+				colLast = columnLast;
+			}
 		}
 		record << rwFirst << rwLast << colFirst << colLast;
 	}
@@ -209,8 +243,10 @@ typedef CellRangeRef_T<Ref_name, unsigned short, unsigned char, rel_Absent> Ref;
 typedef CellRangeRef_T<Ref8_name, unsigned short, unsigned short, rel_Absent> Ref8;
 typedef CellRangeRef_T<Ref8U_name, unsigned short, unsigned short, rel_Absent> Ref8U;
 typedef CellRangeRef_T<RefU_name, unsigned short, unsigned char, rel_Absent> RefU;
-typedef CellRangeRef_T<Ref8U2007_name, unsigned int, unsigned int, rel_Absent> Ref8U2007;
-typedef CellRangeRef_T<RFX_name, int, int, rel_Absent> RFX;
+
+typedef CellRangeRef_T<Ref8U2007_name, _UINT32, _UINT32, rel_Absent> Ref8U2007;
+typedef CellRangeRef_T<RFX_name, _INT32, _INT32, rel_Absent> RFX;
+
 typedef CellRangeRef_T<RgceArea_name, unsigned short, unsigned short, rel_Present> RgceArea;
 typedef CellRangeRef_T<RgceAreaRel_name, short, short, rel_Present> RgceAreaRel;
 

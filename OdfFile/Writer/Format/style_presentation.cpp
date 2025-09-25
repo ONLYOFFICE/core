@@ -58,7 +58,7 @@ void presentation_placeholder::serialize(std::wostream & strm)
 			CP_XML_ATTR_OPT(L"svg:width", svg_width_);
 			CP_XML_ATTR_OPT(L"svg:x", svg_x_);
 			CP_XML_ATTR_OPT(L"svg:y", svg_y_);
-
+			CP_XML_ATTR_OPT(L"draw:text-style-name", text_style_name_);
 		}
 	}
 }
@@ -99,6 +99,8 @@ void drawing_page_properties::serialize(std::wostream & strm, const wchar_t * ns
 			CP_XML_ATTR_OPT(L"presentation:display-page-number",presentation_display_page_number_);
 			CP_XML_ATTR_OPT(L"presentation:display-date-time",	presentation_display_date_time_);
 			CP_XML_ATTR_OPT(L"presentation:display-header",		presentation_display_header_);
+
+			CP_XML_ATTR_OPT(L"presentation:visibility", presentation_visibility_);
 
 			if (presentation_sound_)
 				presentation_sound_->serialize(CP_XML_STREAM());

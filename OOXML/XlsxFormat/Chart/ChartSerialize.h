@@ -2040,9 +2040,8 @@ namespace OOX
 		{
 		public:
 			nullable_string m_name;
-			nullableUintVal m_fmtId;
+			nullableIntVal m_fmtId; 
 			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
-
 
 			CT_PivotSource();
 			~CT_PivotSource();

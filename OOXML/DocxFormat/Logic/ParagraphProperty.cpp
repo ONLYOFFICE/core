@@ -310,7 +310,7 @@ namespace OOX
 			if ( m_sAuthor.IsInit() )
 			{
 				sResult += L"w:author=\"";
-                sResult += m_sAuthor.get2();
+                sResult += XmlUtils::EncodeXmlString(m_sAuthor.get2());
 				sResult += L"\" ";
 			}
 
@@ -654,10 +654,10 @@ namespace OOX
 							doc->m_arrSections.push_back(section);
 						}
 						doc->m_arrSections.back().sect = m_oSectPr.GetPointer();
-						doc->m_arrSections.back().end_elm = doc->m_arrItems.size(); 
+						doc->m_arrSections.back().end_elm = doc->m_arrItems.size() + 1;  // порядок выше - сначала читаем, потом добавляем
 						
 						OOX::CDocument::_section section;
-						section.start_elm = doc->m_arrItems.size(); 
+						section.start_elm = doc->m_arrItems.size() + 1;
 						doc->m_arrSections.push_back(section);
 					}
 //------------------------------------------------------------------------------------
@@ -939,7 +939,10 @@ namespace OOX
 			oProperties.m_oPPrChange = Merge(oPrev.m_oPPrChange, oCurrent.m_oPPrChange);
 			oProperties.m_oPStyle = Merge(oPrev.m_oPStyle, oCurrent.m_oPStyle);
 			oProperties.m_oRPr = Merge(oPrev.m_oRPr, oCurrent.m_oRPr);
-			oProperties.m_oSectPr = Merge(oPrev.m_oSectPr, oCurrent.m_oSectPr);
+			if (oCurrent.m_oSectPr.IsInit() && oPrev.m_oSectPr.IsInit())
+				oProperties.m_oSectPr = OOX::Logic::CSectionProperty::Merge(oPrev.m_oSectPr.get(), oCurrent.m_oSectPr.get());
+			else
+				oProperties.m_oSectPr = Merge(oPrev.m_oSectPr, oCurrent.m_oSectPr);
 			oProperties.m_oShd = Merge(oPrev.m_oShd, oCurrent.m_oShd);
 			oProperties.m_oSnapToGrid = Merge(oPrev.m_oSnapToGrid, oCurrent.m_oSnapToGrid);
 

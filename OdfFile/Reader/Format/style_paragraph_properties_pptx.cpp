@@ -35,6 +35,8 @@
 #include <xml/simple_xml_writer.h>
 
 #include "../../Reader/Converter/pptx_conversion_context.h"
+#include "../../Reader/Format/odf_document.h"
+#include "../../Reader/Format/odfcontext.h"
 #include "../../DataTypes/borderstyle.h"
 
 namespace cpdoccore { 
@@ -78,11 +80,10 @@ std::wstring process_border(border_style	& borderStyle,
         switch(borderStyle.get_style())
         {
 			case border_style::none:        w_val = L"none";				break;
-			case border_style::solid:
-			case border_style::single:		w_val = L"single";				break;
+			case border_style::solid:		w_val = L"single";				break;
 			case border_style::double_:     w_val = L"double";				break;
 			case border_style::dotted:      w_val = L"dotted";				break;
-			case border_style::dashed:      w_val = L"dashed";				break;
+			case border_style::dash:		w_val = L"dashed";				break;
 			case border_style::groove:      w_val = L"thinThickMediumGap";  break;
 			case border_style::ridge:       w_val = L"thickThinMediumGap";  break;
 			case border_style::inset:       w_val = L"inset";				break;
@@ -452,16 +453,38 @@ void paragraph_format_properties::pptx_convert(oox::pptx_conversion_context & Co
 				}
 			}	
 		}
-		if (fo_margin_top_/* || fo_margin_*/)
+		if (fo_margin_top_)
 		{
+			style_instance* last_paragraph_style = Context.root()->odf_context().styleContainer().style_by_name(
+				Context.get_text_context().get_last_paragraph_style_name(),
+				style_family::Paragraph,
+				false
+			);
+
 			CP_XML_NODE(L"a:spcBef")
 			{
 				if (fo_margin_top_->get_type() == length_or_percent::Length)
 				{
-                    std::wstring w_before = pptx_process_margin(fo_margin_top_, length::pt, 100.0);
+					_CP_OPT(length_or_percent) margin_top = fo_margin_top_;
+					if (last_paragraph_style)
+					{
+						const style_paragraph_properties* last_style_paragraph_props = last_paragraph_style->content()->get_style_paragraph_properties();
+						if (last_style_paragraph_props)
+						{
+							const paragraph_format_properties& last_paragraph_props = last_style_paragraph_props->content_;
+							length_or_percent last_margin_bottom = last_paragraph_props.fo_margin_bottom_.get_value_or(length_or_percent(length(0.0, length::cm)));
+
+							if (fo_margin_top_->get_length().get_value_unit(length::cm) > last_margin_bottom.get_length().get_value_unit(length::cm))
+								margin_top = _CP_OPT(length_or_percent)(length(fo_margin_top_->get_length().get_value_unit(length::cm) - last_margin_bottom.get_length().get_value_unit(length::cm), length::cm));
+							else
+								margin_top = _CP_OPT(length_or_percent)(length(0.0, length::cm));
+						}
+					}
+					
+                    std::wstring w_before = pptx_process_margin(margin_top, length::pt, 100.0);
 					CP_XML_NODE(L"a:spcPts")
 					{
-						CP_XML_ATTR(L"val",w_before);
+						CP_XML_ATTR(L"val", w_before);
 					}
 				}
 				else
@@ -475,16 +498,16 @@ void paragraph_format_properties::pptx_convert(oox::pptx_conversion_context & Co
 				}
 			}
 		}
-		if (fo_margin_bottom_/* || fo_margin_*/)
+		if (fo_margin_bottom_)
 		{
 			CP_XML_NODE(L"a:spcAft")
 			{
 				if (fo_margin_bottom_->get_type() == length_or_percent::Length)
 				{
-                    std::wstring w_after = pptx_process_margin(fo_margin_bottom_, length::pt, 100.0);
+					std::wstring w_after = pptx_process_margin(fo_margin_bottom_, length::pt, 100.0);
 					CP_XML_NODE(L"a:spcPts")
 					{
-						CP_XML_ATTR(L"val",w_after);
+						CP_XML_ATTR(L"val", w_after);
 					}
 				}
 				else
@@ -498,6 +521,7 @@ void paragraph_format_properties::pptx_convert(oox::pptx_conversion_context & Co
 				}
 			}
 		}
+		
 		//if (style_punctuation_wrap_)
 		//{
 		//	std::wstring w_val;

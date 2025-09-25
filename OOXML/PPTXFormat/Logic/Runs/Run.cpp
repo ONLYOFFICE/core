@@ -135,6 +135,10 @@ namespace PPTX
 		{
 			return text.get_value_or(_T(""));
 		}
+		bool Run::HasText() const
+		{
+			return text.IsInit();
+		}
 		void Run::SetText(const std::wstring& srcText)
 		{
 			text = srcText;

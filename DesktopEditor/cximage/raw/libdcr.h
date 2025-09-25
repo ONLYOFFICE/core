@@ -58,7 +58,7 @@
 
 #ifdef __ANDROID__
 #include <unistd.h>
-#if __ANDROID_API__ < 28
+#if __ANDROID_API__ < 22
 static void swab(const char* __src, char* __dst, ssize_t __byte_count)
 {
     ssize_t len = __byte_count;

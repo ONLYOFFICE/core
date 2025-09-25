@@ -63,6 +63,7 @@ namespace NSCommon
 	class nullable_uint;
 	class nullable_double;
 	class nullable_sizet;
+	class nullable_astring;
 }
 namespace NSStringUtils
 {
@@ -100,7 +101,7 @@ namespace NSBinPptxRW
 
 	struct _imageManager2Info
 	{
-		std::wstring sFilepathAdditional;
+		std::vector<std::wstring> sFilepathAdditionals;
 		std::wstring sFilepathImage;
 	};
 
@@ -219,10 +220,10 @@ namespace NSBinPptxRW
 		int IsDisplayedImage(const std::wstring& strInput);
 
 		_imageManager2Info GenerateMedia(const std::wstring& strInput);
-		_imageManager2Info GenerateImage(const std::wstring& strInput, NSCommon::smart_ptr<OOX::File> & additionalFile, const std::wstring& oleData, std::wstring strBase64Image);
+		_imageManager2Info GenerateImage(const std::wstring& strInput, std::vector<NSCommon::smart_ptr<OOX::File>>& additionalFiles, const std::wstring& oleData, std::wstring strBase64Image);
 		
 		_imageManager2Info GenerateMediaExec(const std::wstring& strInput);
-		_imageManager2Info GenerateImageExec(const std::wstring& strInput, const std::wstring& strExts, const std::wstring& strAdditionalImage, int & nAdditionalType, const std::wstring& oleData);
+		_imageManager2Info GenerateImageExec(const std::wstring& strInput, const std::wstring& strExts, std::vector<std::pair<std::wstring, int>> & additional, const std::wstring& oleData);
 
 		bool SaveImageAsPng(const std::wstring& strFileSrc, const std::wstring& strFileDst);
 		bool SaveImageAsJPG(const std::wstring& strFileSrc, const std::wstring& strFileDst);
@@ -273,11 +274,13 @@ namespace NSBinPptxRW
 		std::vector<CSeekTableEntry> m_arMainTables;
 
 	public:
-		_INT32	m_lCxCurShape;	//emu
-		_INT32	m_lCyCurShape;
+		double	m_dCxCurShape;	//emu
+		double	m_dCyCurShape;
 
-		_INT32	m_lXCurShape;
-		_INT32	m_lYCurShape;
+		double	m_dXCurShape;
+		double	m_dYCurShape;
+
+		bool m_bInGroup = false;
 
 		BYTE*	GetBuffer();
 		virtual _UINT32	GetPosition();
@@ -313,7 +316,6 @@ namespace NSBinPptxRW
 		void WriteDoubleReal(const double& dValue);
 		
 		void WriteBYTEArray	(const BYTE* pBuffer, size_t len);
-		void WriteStringA	(std::string& sBuffer);
 		
 		void WriteStringW	(const std::wstring& sBuffer);
         void WriteStringW2	(const std::wstring& sBuffer);
@@ -340,6 +342,13 @@ namespace NSBinPptxRW
 		void WriteString2	(int type, const NSCommon::nullable_string& val);
 		void WriteString	(const std::wstring& val);
 		void WriteStringData(const WCHAR* pData, _UINT32 len);
+
+		void WriteString1	(int type, const std::string& val);
+		void WriteString2	(int type, const NSCommon::nullable_astring& val);
+		void WriteStringA	(std::string& val);
+
+		void WriteStringUtf8(int type, const NSCommon::nullable_string& val);
+		void WriteStringUtf8(int type, const NSCommon::nullable_astring& val);
 
 		void WriteString1Data(int type, const WCHAR* pData, _UINT32 len);
 
@@ -437,7 +446,11 @@ namespace NSBinPptxRW
         bool GetSafearray(BYTE **ppArray, size_t& szCount);
 	private:
 		_INT32	_WriteString(const WCHAR* sBuffer, _UINT32 lCount);
+		_INT32	_WriteString(const char* sBuffer, _UINT32 lCount);
+		_INT32	_WriteStringUtf8(const WCHAR* sBuffer, _UINT32 lCount);
 		void	_WriteStringWithLength(const WCHAR* sBuffer, _UINT32 lCount, bool bByte);
+		void	_WriteStringWithLength(const char* sBuffer, _UINT32 lCount);
+		void	_WriteStringUtf8WithLength(const WCHAR* sBuffer, _UINT32 lCount);
 	};
 
 	class CStreamBinaryWriter : public NSFile::CFileBinary, public CBinaryFileWriter
@@ -468,7 +481,7 @@ namespace NSBinPptxRW
 	{
 	private:
 		NSStringUtils::CStringBuilder*				m_pWriter;
-		std::map<std::wstring, _relsGeneratorInfo>	m_mapImages;
+		std::map<std::wstring, _relsGeneratorInfo>	m_mapRelsImages;
 		std::map<std::wstring, unsigned int>		m_mapLinks;
 	public:
 		unsigned int								m_lNextRelsID;
@@ -487,54 +500,59 @@ namespace NSBinPptxRW
 		void StartNotes	(int nIndexSlide);
 		void StartThemeNotesMaster(int nIndexTheme);
 		
-		void WriteMasters (int nCount);
 		void WriteThemes (int nCount);
-		void WriteSlides (int nCount);
 		void WriteNotesMaster();
 
-		void WriteSlideComments	(int nComment);
-		void WritePresentationComments	(int nComment);
+		std::wstring WriteCustom(const std::wstring& file_name);
+		std::wstring WriteMaster(int nIndex);
+		std::wstring WriteSlide(int nIndex);
 
-		void WriteCustoms(int nCount);
-		
 		unsigned int WriteRels (const std::wstring& bsType, const std::wstring& bsTarget, const std::wstring& bsTargetMode);
 		unsigned int WriteHyperlink	(const std::wstring& strLink, const bool& bIsActionInit);		
 	
-		void EndPresentationRels (bool bIsCommentsAuthors = false, bool bIsVbaProject = false, bool bIsJsaProject = false  );
+		void EndPresentationRels (bool bIsVbaProject = false, bool bIsJsaProject = false  );
 		void CloseRels ();
 
 		void AddRels (const std::wstring& strRels);
 		void SaveRels (const std::wstring& strFile);
 
-		_relsGeneratorInfo WriteImage (const std::wstring& strImage, NSCommon::smart_ptr<OOX::File>& additionalFile, const std::wstring& oleData, std::wstring strBase64Image);
+		_relsGeneratorInfo WriteImage (const std::wstring& strImage, std::vector<NSCommon::smart_ptr<OOX::File>>& additionalFiles, const std::wstring& oleData, std::wstring strBase64Image);
 		_relsGeneratorInfo WriteMedia (const std::wstring& strMedia, int type = 0);
 	};
 
 	class CBinaryFileReader
 	{
 	protected:
-		BYTE*	m_pData;
+
+		BYTE*	m_pData = NULL;
 		LONG	m_lSize;
 		LONG	m_lPos;
-		BYTE*	m_pDataCur;
+		BYTE*	m_pDataCur = NULL;
 
 		_INT32 m_lNextId;
 
-		std::vector<CRelsGenerator*>	m_stackRels;
-		int								m_nCurrentRelsStack;
+		std::vector<CRelsGenerator*> m_stackRels;
+		int m_nCurrentRelsStack;
+		NSCommon::smart_ptr<OOX::IFileContainer>* m_pCurrentContainer = NULL;
 	public:
-		CRelsGenerator*					m_pRels;
+		void SetRels(NSCommon::smart_ptr<OOX::IFileContainer> container);
+		void SetRels(OOX::IFileContainer* container);
+		NSCommon::smart_ptr<OOX::IFileContainer> GetRels();
+
+		CRelsGenerator*					m_pRels = NULL;
 
 		std::wstring					m_strFolder;
 		std::wstring					m_strFolderThemes;
 		std::wstring					m_strFolderExternalThemes;
 
+		_INT32							m_nCountImage = 1;
 		_INT32							m_nCountEmbedded = 1;
 		_INT32							m_nCountCharts = 1;
 		_INT32							m_nCountDiagram = 1;
 		_INT32							m_nCountActiveX = 1;
+		_INT32							m_nThemeOverrideCount = 1;
 
-		BinDocxRW::CDocxSerializer*		m_pMainDocument;
+		BinDocxRW::CDocxSerializer*		m_pMainDocument = NULL;
 		int								m_nDocumentType;
 	
 		CBinaryFileReader();
@@ -576,9 +594,11 @@ namespace NSBinPptxRW
 		std::wstring GetString2(bool bDeleteZero = false);
 		std::wstring GetString3(_INT32 len, bool bDeleteZero = false);
 		std::wstring GetString4(_INT32 len);
+		std::wstring GetStringUtf8(_INT32 len);
 
         bool GetArray(BYTE *pBuffer, _INT32 len);
 
+		std::wstring GetStringUtf8();
 		std::string GetString2A();
 		void SkipRecord();
 

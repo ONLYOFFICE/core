@@ -38,13 +38,14 @@ namespace PPT
 {
 enum ElementType
 {
-    etGroup		 = 0,
-    etVideo		 = 1,
-    etAudio		 = 2,
-    etPicture    = 3,
-    etShape      = 4,
-    etText		 = 5,
-    etTable      = 6
+    etGroup     = 0,
+    etVideo     = 1,
+    etAudio     = 2,
+    etPicture   = 3,
+    etShape     = 4,
+    etText      = 5,
+    etTable     = 6,
+    etOleObject = 7
 };
 
 class CTheme;

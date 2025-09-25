@@ -3710,6 +3710,12 @@ void GlobalParams::setDrawFormFields(GBool draw) {
   unlockGlobalParams;
 }
 
+void GlobalParams::setDrawAnnotations(GBool draw) {
+  lockGlobalParams;
+  drawAnnotations = draw;
+  unlockGlobalParams;
+}
+
 void GlobalParams::setOverprintPreview(GBool preview) {
   lockGlobalParams;
   overprintPreview = preview;

@@ -48,11 +48,12 @@ public:
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 	
 	static const ElementType type = typeSheetExt;
 
 //-----------------------------
-	_UINT32	cb;
+    _UINT32	cb = 0;
 	unsigned char	icvPlain;
 	
 	SheetExtOptional sheetExtOptional;

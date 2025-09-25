@@ -9,12 +9,20 @@ namespace SVG
 		: CRenderedObject(NSCSS::CNode(wsName, L"", L""))
 	{}
 
+	CGraphicsContainer::~CGraphicsContainer()
+	{
+		for (CRenderedObject* pObject : m_arObjects)
+			pObject->m_pParent = NULL;
+	}
+
 	void CGraphicsContainer::SetData(XmlUtils::CXmlNode &oNode)
 	{
+		SetNodeData(oNode);
+
 		m_oWindow.m_oX     .SetValue(oNode.GetAttribute(L"x"));
 		m_oWindow.m_oY     .SetValue(oNode.GetAttribute(L"y"));
-		m_oWindow.m_oWidth .SetValue(oNode.GetAttribute(L"width"));
-		m_oWindow.m_oHeight.SetValue(oNode.GetAttribute(L"height"));
+		m_oWindow.m_oWidth .SetValue(oNode.GetAttribute(L"width"), 0, true);
+		m_oWindow.m_oHeight.SetValue(oNode.GetAttribute(L"height"), 0, true);
 
 		const std::wstring wsViewBox = oNode.GetAttribute(L"viewBox");
 
@@ -29,6 +37,8 @@ namespace SVG
 				m_oViewBox.m_oHeight = arValues[3];
 			}
 		}
+		else
+			m_oViewBox = m_oWindow;
 	}
 
 	CGraphicsContainer::CGraphicsContainer(XmlUtils::CXmlNode& oNode, CRenderedObject *pParent)
@@ -41,17 +51,17 @@ namespace SVG
 		: CRenderedObject(oNode, pParent), m_oWindow{0, 0, dWidth, dHeight}
 	{}
 
-	bool CGraphicsContainer::Draw(IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode, const TSvgStyles *pOtherStyles) const
+	bool CGraphicsContainer::Draw(IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode, const TSvgStyles *pOtherStyles, const CRenderedObject* pContexObject) const
 	{
 		Aggplus::CMatrix oOldTransform;
 
-		if (!StartPath(pRenderer, pFile, oOldTransform, oMode))
+		if (!StartPath(pRenderer, pFile, oOldTransform, CommandeModeDraw))
 			return false;
 
 		for (const CRenderedObject* pObject : m_arObjects)
-			pObject->Draw(pRenderer, pFile, oMode, pOtherStyles);
+			pObject->Draw(pRenderer, pFile, oMode, pOtherStyles, pContexObject);
 
-		EndPath(pRenderer, pFile, oOldTransform, oMode, pOtherStyles);
+		EndPath(pRenderer, pFile, oOldTransform, CommandeModeDraw, pOtherStyles, pContexObject);
 
 		return true;
 	}

@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef PPTX_PRESPROPS_FILE_INCLUDE_H_
-#define PPTX_PRESPROPS_FILE_INCLUDE_H_
 
 #include "WrapperFile.h"
 #include "FileContainer.h"
@@ -41,9 +39,10 @@
 
 namespace PPTX
 {
-	namespace nsShowPr
+	namespace nsPresentation
 	{
 		class ShowPr;
+		class PrintPr;
 	}
 
 	class PresProps : public WrapperFile, public PPTX::FileContainer
@@ -53,7 +52,6 @@ namespace PPTX
 		PresProps(OOX::Document* pMain, const OOX::CPath& filename, FileMap& map);
 		virtual ~PresProps();
 
-	public:
 		virtual void read(const OOX::CPath& filename, FileMap& map);
 		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, OOX::CContentTypes& content) const;
 
@@ -61,16 +59,12 @@ namespace PPTX
 		virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 		virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
-	public:
 		virtual const OOX::FileType type() const;
 		virtual const OOX::CPath DefaultDirectory() const;
 		virtual const OOX::CPath DefaultFileName() const;
 
-	public:
-		std::vector<Logic::UniColor>	ClrMru;
-		nullable<nsShowPr::ShowPr>	showPr;
-		//prnPr (Printing Properties)
+		std::vector<Logic::UniColor> ClrMru;
+		nullable<nsPresentation::ShowPr>	showPr;
+		nullable<nsPresentation::PrintPr>	printPr;
 	};
 } // namespace PPTX
-
-#endif // PPTX_PRESPROPS_FILE_INCLUDE_H_

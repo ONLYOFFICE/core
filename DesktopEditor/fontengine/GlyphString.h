@@ -60,9 +60,9 @@ public:
 
 enum EGlyphState
 {
-    glyphstateNormal = 0,  // символ отрисовался в нужном шрифте
-    glyphstateDefault,     // символ отрисовался в дефолтовом шрифте
-    glyphstateMiss         // символ не отрисовался
+	glyphstateNormal = 0,  // символ отрисовался в нужном шрифте
+	glyphstateDefault,     // символ отрисовался в дефолтовом шрифте
+	glyphstateMiss         // символ не отрисовался
 };
 
 struct TMetrics
@@ -82,7 +82,7 @@ struct TMetrics
 class TGlyph
 {
 public:
-    unsigned int lUnicode; // Юникод
+	unsigned int lUnicode; // Юникод
 	float        fX;       // Позиция глифа
 	float        fY;       // на BaseLine
 
@@ -160,8 +160,8 @@ public:
 	CGlyphString(const std::wstring& wsString, float fX = 0, float fY = 0);
 	~CGlyphString();
 	void SetString(const std::wstring& wsString, float fX = 0, float fY = 0);
-    void SetString(const unsigned int* pGids, const unsigned int& nGidsCount, float fX = 0, float fY = 0);
-    void SetStringGID(const unsigned int& gid, float fX = 0, float fY = 0);
+	void SetString(const unsigned int* pGids, const unsigned int& nGidsCount, float fX = 0, float fY = 0);
+	void SetStringGID(const unsigned int& gid, float fX = 0, float fY = 0);
 	void Reset();
 	int  GetLength();
 	void SetBBox(int nIndex, float fLeft, float fTop, float fRight, float fBottom);

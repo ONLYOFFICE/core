@@ -2,6 +2,7 @@
 #include "./../docbuilder_p.h"
 
 #include "../../common/Directory.h"
+#include "../server.h"
 
 JSSmart<CJSValue> CBuilderDocumentEmbed::IsValid()
 {
@@ -68,13 +69,23 @@ void CBuilderDocumentEmbed::_OpenFile(const std::wstring& sFile, const std::wstr
 	int nConvertResult = pBuilder->ConvertToInternalFormat(m_sFolder, sFileCopy, sParams);
 
 	if (0 == nConvertResult)
+	{
+		if (CServerInstance::getInstance().IsEnable())
+			CServerInstance::getInstance().AddTmpFile(m_sFolder);
 		m_bIsValid = true;
+	}
 }
 
 void CBuilderDocumentEmbed::_CloseFile()
 {
 	if (!m_sFolder.empty())
+	{
 		NSDirectory::DeleteDirectory(m_sFolder);
+
+		if (m_bIsValid && CServerInstance::getInstance().IsEnable())
+			CServerInstance::getInstance().RemoveTmpFile(m_sFolder);
+	}
+
 	m_bIsValid = false;
 	m_sFolder = L"";
 }

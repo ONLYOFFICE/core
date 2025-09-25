@@ -101,7 +101,7 @@ namespace XLSB
 		else
 			m_bBrtEndWsView = false;
 
-        return m_BrtBeginWsView && (!m_arBrtSel.empty() || m_BrtPane) && m_bBrtEndWsView;
+        return m_BrtBeginWsView && m_bBrtEndWsView;
     }
 
 	const bool WSVIEW2::saveContent(BinProcessor& proc)

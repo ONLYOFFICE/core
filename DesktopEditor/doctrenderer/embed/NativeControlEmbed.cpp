@@ -1,4 +1,5 @@
 #include "NativeControlEmbed.h"
+#include "../server.h"
 
 JSSmart<CJSValue> CNativeControlEmbed::SetFilePath(JSSmart<CJSValue> path)
 {
@@ -24,7 +25,17 @@ JSSmart<CJSValue> CNativeControlEmbed::GetFileId()
 
 JSSmart<CJSValue> CNativeControlEmbed::GetFileBinary(JSSmart<CJSValue> file)
 {
-	return CJSContext::createUint8Array(file->toStringW());
+	std::wstring sFilePath = file->toStringW();
+
+	if (CServerInstance::getInstance().IsEnable())
+	{
+		std::wstring sFileFolder = NSFile::GetDirectoryName(m_pInternal->GetFilePath());
+		if (0 == sFilePath.find(sFileFolder))
+			return CJSContext::createUint8Array(sFilePath);
+		return CJSContext::createNull();
+	}
+
+	return CJSContext::createUint8Array(sFilePath);
 }
 
 JSSmart<CJSValue> CNativeControlEmbed::GetFontBinary(JSSmart<CJSValue> file)
@@ -59,6 +70,8 @@ JSSmart<CJSValue> CNativeControlEmbed::GetFontsDirectory()
 
 JSSmart<CJSValue> CNativeControlEmbed::GetFileString(JSSmart<CJSValue> file)
 {
+	if (CServerInstance::getInstance().IsEnable())
+		return CJSContext::createNull();
 	return CJSContext::createUint8Array(file->toStringW());
 }
 

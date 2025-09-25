@@ -32,45 +32,49 @@
 #ifndef STRINGUTF32_HPP
 #define STRINGUTF32_HPP
 
+#include <stdint.h>
 #include <string>
 #include <vector>
-#include <stdint.h>
-#include "StringExt.h"
+#include "../../Common/kernel_config.h"
 
 namespace NSStringUtils
 {
-    class KERNEL_DECL CStringUTF32
-    {
-        std::vector<uint32_t> m_vec;
-    public:
-        CStringUTF32();
-        CStringUTF32(const CStringUTF32 &other);
-        CStringUTF32(const wchar_t *other);
-        CStringUTF32(const std::wstring &other);
-        CStringUTF32(const std::vector<uint32_t> &other);
-        CStringUTF32(const uint32_t* data, const size_t& count);
-        virtual ~CStringUTF32();
+	class KERNEL_DECL CStringUTF32
+	{
+		std::vector<uint32_t> m_vec;
 
-        bool empty() const;
-        size_t length() const;
+	public:
+		CStringUTF32();
+		CStringUTF32(const CStringUTF32 &other);
+		CStringUTF32(const wchar_t *other);
+		CStringUTF32(const std::wstring &other);
+		CStringUTF32(const std::vector<uint32_t> &other);
+		CStringUTF32(const uint32_t *data, const size_t &count);
+		virtual ~CStringUTF32();
 
-        std::wstring ToStdWString() const;
+		bool empty() const;
+		size_t length() const;
 
-        bool        operator  == (const CStringUTF32 &right) const;
-        bool        operator  != (const CStringUTF32 &right) const;
-        uint32_t    &operator [] (size_t index);
+		std::wstring ToStdWString() const;
 
-        CStringUTF32 &operator  = (const CStringUTF32 &right);
-        CStringUTF32 &operator  = (const wchar_t *right);
-        CStringUTF32 &operator  = (const std::wstring &right);
-        CStringUTF32 &operator  = (const std::vector<uint32_t> &right);
+		bool operator==(const CStringUTF32 &right) const;
+		bool operator!=(const CStringUTF32 &right) const;
+		uint32_t &operator[](size_t index);
 
-        CStringUTF32 operator   + (const CStringUTF32 &right) const;
-        CStringUTF32 &operator += (const CStringUTF32 &right);
-        CStringUTF32 &operator += (const uint32_t& symbol);
+		CStringUTF32 &operator=(const CStringUTF32 &right);
+		CStringUTF32 &operator=(const wchar_t *right);
+		CStringUTF32 &operator=(const std::wstring &right);
+		CStringUTF32 &operator=(const std::vector<uint32_t> &right);
 
-        CStringUTF32 substr(size_t start, size_t count) const;
-    };
-}
+		CStringUTF32 operator+(const CStringUTF32 &right) const;
+		CStringUTF32 &operator+=(const CStringUTF32 &right);
+		CStringUTF32 &operator+=(const uint32_t &symbol);
+
+		CStringUTF32 substr(size_t start, size_t count) const;
+
+		const uint32_t &at(size_t index) const;
+		uint32_t &at(size_t index);
+	};
+} // namespace NSStringUtils
 
 #endif // STRINGUTF32_HPP

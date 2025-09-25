@@ -48,15 +48,17 @@
 namespace cpdoccore {
 namespace oox {
 
-void xlsx_data_range::serialize_autofilter (std::wostream & _Wostream)
+void xlsx_data_range::serialize_autofilter(std::wostream& _Wostream)
 {
-	if (!filter) return;
+	if (!filter_button && filter_conditions.empty()) return;
 
 	CP_XML_WRITER(_Wostream)
-	{			
+	{
 		CP_XML_NODE(L"autoFilter")
 		{
 			CP_XML_ATTR(L"ref", ref);
+
+			serialize_filterColumn(CP_XML_STREAM(), 0);
 		}
 	}
 }
@@ -64,61 +66,117 @@ void xlsx_data_range::serialize_sort (std::wostream & _Wostream)
 {
 	if (bySort.empty()) return;
 
-	if (byRow) return;
-
 	CP_XML_WRITER(_Wostream)
 	{			
 		CP_XML_NODE(L"sortState")
 		{
 			CP_XML_ATTR(L"ref", ref);
+			CP_XML_ATTR(L"xmlns:xlrd2", "http://schemas.microsoft.com/office/spreadsheetml/2017/richdata2");
 
 			if (!byRow)
 				CP_XML_ATTR(L"columnSort", true);
 
-			for (size_t i = 0 ; i < bySort.size(); i++)
+			std::wstring ref_base, ref2, ref1;
+			size_t col_base, row_base, col_2, row_2;
+
+			size_t pos = ref.find(L":");
+			if (pos != std::wstring::npos)
+			{
+				ref_base = ref.substr(0, pos);
+				ref2 = ref.substr(pos + 1);
+			}
+			bool bSplit = getCellAddressInv(ref_base, col_base, row_base) && getCellAddressInv(ref2, col_2, row_2);
+			
+			for (size_t i = 0 ; bSplit && i < bySort.size(); i++)
 			{
 				bool in_range = true;
-				std::wstring ref1, ref2;
-				size_t col_1, row_1, col_2, row_2;
-
-				size_t pos = ref.find(L":");
-				if (pos != std::wstring::npos)
+				if (byRow)
 				{
-					ref1 = ref.substr(0, pos );
-					ref2 = ref.substr(pos + 1);
+					if (col_base + bySort[i].first > col_2)	in_range = false;
+
+					ref1 = getCellAddress(col_base + bySort[i].first + (withHeader ? 1 : 0), row_base);
+					ref2 = getCellAddress(col_base + bySort[i].first + (withHeader ? 1 : 0), row_2);
 				}
-
-				if (getCellAddressInv(ref1, col_1, row_1) &&
-					getCellAddressInv(ref2, col_2, row_2))
+				else
 				{
-					if (byRow)
+					if ( bySort[i].first > row_2)	in_range = false;
+
+					ref1 = getCellAddress(col_base, row_base + bySort[i].first + (withHeader ? 1 : 0));
+					ref2 = getCellAddress(col_2, row_base + bySort[i].first + (withHeader ? 1 : 0));
+				}
+				if (in_range)
+				{
+					CP_XML_NODE(L"sortCondition")
 					{
-						if (bySort[i].first < col_1 || bySort[i].first > col_2)	in_range = false;
+						CP_XML_ATTR(L"ref", ref1 + L":" + ref2);
 
-						ref1 = getCellAddress(bySort[i].first + (withHeader ? 1 : 0), row_1);
-						ref2 = getCellAddress(bySort[i].first + (withHeader ? 1 : 0), row_2);
+						if (bySort[i].second)
+							CP_XML_ATTR(L"descending", 1);
 					}
-					else
-					{
-						if (bySort[i].first < row_1 || bySort[i].first > row_2)	in_range = false;
 
-						ref1 = getCellAddress(col_1, bySort[i].first + (withHeader ? 1 : 0));
-						ref2 = getCellAddress(col_2, bySort[i].first + (withHeader ? 1 : 0));
-					}
-					if (in_range)
-					{
-						CP_XML_NODE(L"sortCondition")
-						{
-							CP_XML_ATTR(L"ref", ref1 + L":" + ref2);
-
-							if (bySort[i].second)
-								CP_XML_ATTR(L"descending", 1);
-						}
-
-					}
 				}
 			}
 		}	
+	}
+}
+void xlsx_data_range::serialize_filterColumn(std::wostream& _Wostream, int indexCol)
+{
+	CP_XML_WRITER(_Wostream)
+	{
+		CP_XML_NODE(L"filterColumn")
+		{
+			CP_XML_ATTR(L"colId", indexCol);
+			if (bFilterAndOr && filter_conditions.size() > 1)
+			{
+				CP_XML_NODE(L"customFilters")
+				{
+					if (*bFilterAndOr)
+						CP_XML_ATTR(L"and", 1);
+					else
+						CP_XML_ATTR(L"and", 0);
+					for (size_t i = 0; i < filter_conditions.size(); ++i)
+					{
+						CP_XML_NODE(L"customFilter")
+						{
+							switch (filter_conditions[i].operator_)
+							{
+							case 15: // !empty
+							case 0: CP_XML_ATTR(L"operator", L"notEqual"); break;
+							case 14: // empty
+							case 1: CP_XML_ATTR(L"operator", L"equal"); break;
+							case 2: CP_XML_ATTR(L"operator", L"LessThan"); break;
+							case 3: CP_XML_ATTR(L"operator", L"greaterThan"); break;
+							case 13: // bottom values
+							case 4: CP_XML_ATTR(L"operator", L"lessThanOrEqual"); break;
+							case 17: // top values
+							case 5: CP_XML_ATTR(L"operator", L"greaterThanOrEqual"); break;
+							}
+							CP_XML_ATTR(L"val", filter_conditions[i].value);
+						}
+					}
+				}
+			}
+			else if (1 == filter_conditions.size())
+			{
+				if (filter_conditions[0].type == 3/*odf_types::table_data_type::background_color*/ ||
+					filter_conditions[0].type == 4/*odf_types::table_data_type::text_color*/)
+				{
+					CP_XML_NODE(L"colorFilter")
+					{
+						if (filter_conditions[0].type == 3)
+							CP_XML_ATTR(L"cellColor", L"1");
+						CP_XML_ATTR(L"dxfId", filter_conditions[0].value);
+					}
+				}
+				else if (filter_conditions[0].operator_ == 17/*odf_types::table_operator::TopValues*/)
+				{
+					CP_XML_NODE(L"top10")
+					{
+						CP_XML_ATTR(L"val", filter_conditions[0].value);
+					}
+				}
+			}
+		}
 	}
 }
 //-------------------------------------------------------------------------------------------------------------------------
@@ -160,10 +218,22 @@ xlsx_table_state::xlsx_table_state(xlsx_conversion_context * Context, std::wstri
 	}
 }
     
-void xlsx_table_state::start_column(unsigned int repeated, const std::wstring & defaultCellStyleName)
+void xlsx_table_state::start_column(unsigned int repeated, const std::wstring & defaultCellStyleName, bool bHeader)
 {
     for (unsigned int i = 0; i < repeated; ++i)
         column_default_cell_style_name_.push_back(defaultCellStyleName);
+	
+	if (bHeader)
+	{
+		if ((false == columnsHeaders_.empty()) && (columnsHeaders_.back().first + columnsHeaders_.back().second == columns_count_))
+		{
+			columnsHeaders_.back().second += repeated;
+		}
+		else
+		{
+			columnsHeaders_.push_back(std::make_pair(columns_count_, repeated));
+		}
+	}
 
     columns_count_ += repeated;
     columns_.push_back(repeated);
@@ -238,16 +308,41 @@ void xlsx_table_state::end_table_column_group()
 {
 	group_columns_.pop_back();
 }
-void xlsx_table_state::add_empty_row(int count)
+void xlsx_table_state::add_empty_row(int count, bool bHeader)
 {
+	if (bHeader)
+	{
+		if ((false == rowsHeaders_.empty()) && (rowsHeaders_.back().first + rowsHeaders_.back().second == current_table_row_))
+		{
+			rowsHeaders_.back().second += count;
+		}
+		else
+		{
+			rowsHeaders_.push_back(std::make_pair(current_table_row_ + 1, count));
+		}
+	}
 	current_table_row_ += count;
 }
-void xlsx_table_state::start_row(const std::wstring & StyleName, const std::wstring & defaultCellStyleName)
+void xlsx_table_state::start_row(const std::wstring & StyleName, const std::wstring & defaultCellStyleName, bool bHeader)
 {
     empty_row_ = true;
     // reset column num, column spanned style
-    current_table_column_ = -1; 
+
     current_table_row_++;
+	
+	if (bHeader)
+	{
+		if ((false == rowsHeaders_.empty()) && (rowsHeaders_.back().first + rowsHeaders_.back().second == current_table_row_))
+		{
+			rowsHeaders_.back().second += 1;
+		}
+		else
+		{
+			rowsHeaders_.push_back(std::make_pair(current_table_row_, 1));
+		}
+	}
+    
+	current_table_column_ = -1; 
     columns_spanned_style_ = L"";
     row_default_cell_style_name_ = defaultCellStyleName;
         
@@ -298,7 +393,8 @@ std::wstring xlsx_table_state::default_column_cell_style() const
 
 void xlsx_table_state::end_row()
 {
-    table_row_style_ = L"";
+	in_cell = false;
+	table_row_style_ = L"";
 }
 
 std::wstring xlsx_table_state::current_row_style() const
@@ -480,8 +576,8 @@ void xlsx_table_state::serialize_header_footer (std::wostream & strm)
 			{
 				CP_XML_ATTR(L"differentOddEven",  1);
 			}
-			if ((header_first && header_first->attlist_.style_display_ && !header_first->content_.empty()) ||
-				(footer_first && footer_first->attlist_.style_display_ && !footer_first->content_.empty()))
+			if ((header_first && header_first->attlist_.style_display_ /*&& !header_first->content_.empty()*/) ||
+				(footer_first && footer_first->attlist_.style_display_/* && !footer_first->content_.empty()*/))
 			{
 				CP_XML_ATTR(L"differentFirst",  1);
 			}
@@ -736,9 +832,13 @@ void xlsx_table_state::serialize_hyperlinks(std::wostream & strm)
 {
     return xlsx_hyperlinks_.xlsx_serialize(strm);
 }
-void xlsx_table_state::serialize_conditionalFormatting(std::wostream & strm)
+void xlsx_table_state::serialize_condFormatting(std::wostream & strm)
 {
     return xlsx_conditionalFormatting_context_.serialize(strm);
+}
+void xlsx_table_state::serialize_condFormattingEx(std::wostream& strm)
+{
+	return xlsx_conditionalFormatting_context_.serializeEx(strm);
 }
 void xlsx_table_state::dump_rels_hyperlinks(rels & Rels)
 {

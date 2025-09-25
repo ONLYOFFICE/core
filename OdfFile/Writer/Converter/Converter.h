@@ -31,7 +31,8 @@
  */
 #pragma once
 
-#include <CPOptional.h>
+#include "../../Common/CPOptional.h"
+
 #include "../../../OOXML/Base/SmartPtr.h"
 #include "../../../OOXML/DocxFormat/Math/oMathContent.h"
 #include "../../../OOXML/DocxFormat/Logic/VmlWord.h"
@@ -483,6 +484,8 @@ public:
 		
 		bool encrypt_document (const std::wstring &password, const std::wstring & srcPath, const std::wstring & dstPath);
 		bool encrypt_file (const std::wstring &password, const std::wstring & srcPath, const std::wstring & dstPath, std::wstring &encrypt_info, int &size);
+		
+		std::vector<double> current_font_size;
 
 //.......................................................................................................................
 		virtual OOX::IFileContainer								*current_document() = 0;
@@ -498,6 +501,7 @@ public:
 		
 		OOX::IFileContainer							*oox_current_child_document;
 		
+		void convert_customs(OOX::IFileContainer* container);
 		void convert_meta(OOX::CApp *app, OOX::CCore *core);
 		void convert (OOX::JsaProject *jsaProject);
 		void convert (double oox_font_size, _CP_OPT(cpdoccore::odf_types::font_size) & odf_font_size);	
@@ -542,6 +546,7 @@ public:
 		void convert(PPTX::Logic::NvPr							*oox_nvPr);
 		void convert(PPTX::Logic::Paragraph						*oox_para, PPTX::Logic::TextListStyle *oox_list_style = NULL);		
 		void convert(PPTX::Logic::TextListStyle					*oox_list_style);
+		void convert(PPTX::Logic::Hyperlink						*oox_hyperlink);
 		
 		void convert_list_level	(PPTX::Logic::TextParagraphPr	*oox_para_props, int level);
 
@@ -651,7 +656,7 @@ public:
 		void convert(OOX::Spreadsheet::ChartEx::CPlotArea		*oox_plot_area);
 //.vml............................................................................................................................
 		void convert(OOX::Vml::CShapeType				*vml_shape_type);
-		void convert(OOX::Vml::CShape					*vml_shape);
+		void convert(OOX::Vml::CShape					*vml_shape, OOX::VmlOffice::COLEObject* vml_object);
 		void convert(OOX::Vml::CImage					*vml_image);
 		void convert(OOX::Vml::CImageData				*vml_image_data);
 		void convert(OOX::Vml::CArc						*vml_arc);
@@ -660,7 +665,6 @@ public:
 		void convert(OOX::Vml::CFill					*vml_fill);
 		void convert(OOX::Vml::CLine					*vml_line);
 		void convert(OOX::Vml::COval					*vml_oval);
-		void convert(OOX::Vml::CPath					*vml_path);
 		void convert(OOX::Vml::CPolyLine				*vml_polyline);
 		void convert(OOX::Vml::CRect					*vml_rect);
 		void convert(OOX::Vml::CRoundRect				*vml_roundrect);
@@ -672,7 +676,6 @@ public:
 		void convert(OOX::VmlWord::CWrap				*vml_wrap);
 		void convert(OOX::Vml::CGroup					*vml_group);
 		void convert(OOX::Vml::CVmlCommonElements		*vml_attr);
-		void convert(OOX::Vml::CFormulas				*vml_formulas);
 
 		void convert(OOX::Drawing::COfficeArtExtensionList		*ext_list);
 		void convert(OOX::Drawing::COfficeArtExtension			*art_ext);
@@ -680,8 +683,7 @@ public:
 		std::vector<std::vector<std::wstring>>& brackets();
 		int& lvl_of_me();
 		std::vector<int>& end_counter();
-		std::wstring& annotation();
-		bool& annotation_flag();
+
 		void lvl_up_counter_increace(double val);
 		void lvl_up_counter_decreace(double val);
 		void lvl_down_counter_increace(double val);

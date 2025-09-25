@@ -42,17 +42,25 @@ namespace NSDoctRenderer
 	{
 		enum FormatFile
 		{
-			DOCT	= 0,
-			XLST	= 1,
-			PPTT	= 2,
-			PDF		= 3,
-			HTML    = 4,
+			DOCT      = 0,
+			XLST      = 1,
+			PPTT      = 2,
+			PDF       = 3,
+			HTML      = 4,
 			PPTX_THEME_THUMBNAIL = 5,
-			IMAGE   = 6,
+			IMAGE     = 6,
+			VSDT      = 7,
+			WATERMARK = 8,
 
 			INVALID = 255
 		};
 	}
+
+	enum class AdditionalParamType
+	{
+		DRAWINGFILE = 0,
+		INVALID = 255
+	};
 }
 
 namespace NSDoctRenderer
@@ -69,6 +77,9 @@ namespace NSDoctRenderer
 		bool Execute(const std::wstring& strXml, std::wstring& strError);
 		std::vector<std::wstring> GetImagesInChanges();
 		void CreateCache(const std::wstring& sAllFontsPath, const std::wstring& sCacheDir);
+		void CreateSnapshots();
+
+		void SetAdditionalParam(const AdditionalParamType& type, void* data);
 
 	private:
 		CDoctRenderer_Private* m_pInternal;

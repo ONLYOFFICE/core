@@ -138,16 +138,41 @@ void xlsx_conversion_context::end_document()
 
 	if (sheets_.empty())
 	{ // owncloud new document  ... oO
-		start_table(L"Sheet1", L"");
+		start_table(L"Sheet1", L"", L"");
 		current_sheet().cols() << L"<col min=\"1\" max=\"1024\" width=\"11.6\" customWidth=\"0\"/>";
 		end_table();
 	}
 
+	std::map<std::wstring, std::vector<std::pair<std::wstring, std::wstring>>> map_external_sheets;
+
+	int sheet_id = 1;
 	for (size_t i = 0; i < sheets_.size(); i++)
     {
 		xlsx_xml_worksheet_ptr& sheet = sheets_[i];
+
+		std::wstring external_ref = sheet->external_ref();
+
+		if (false == external_ref.empty())
+		{
+			std::wstringstream external_content;
+			sheet->write_external_to(external_content);
+
+			std::map<std::wstring, std::vector<std::pair<std::wstring, std::wstring>>>::iterator pFind = map_external_sheets.find(external_ref);
+			if (pFind != map_external_sheets.end())
+			{
+
+				pFind->second.push_back(std::make_pair(sheet->name(), external_content.str()));
+			}
+			else
+			{
+				std::vector<std::pair<std::wstring, std::wstring>> ext_sheet;
+				ext_sheet.push_back(std::make_pair(sheet->name(), external_content.str()));
+				map_external_sheets.insert(std::make_pair(sheet->external_ref(), ext_sheet));
+			}
+			continue;
+		}
 		
-		const std::wstring id = std::wstring(L"sId") + std::to_wstring(i + 1);
+		const std::wstring id = std::wstring(L"sId") + std::to_wstring(sheet_id++);
 
         package::sheet_content_ptr content = package::sheet_content::create();
  ////////////////////////////////////////////////////////////////////////////////////////////       
@@ -218,7 +243,7 @@ void xlsx_conversion_context::end_document()
 
     {
         std::wstringstream strm;
-        xlsx_text_context_.serialize_shared_strings(strm);
+		get_text_context()->serialize_shared_strings(strm);
         output_document_->get_xl_files().set_sharedStrings( package::simple_element::create(L"sharedStrings.xml", strm.str()) );
     }
 
@@ -299,10 +324,39 @@ void xlsx_conversion_context::end_document()
 									CP_XML_NODE(L"externalLink")
 									{
 										CP_XML_ATTR(L"xmlns", L"http://schemas.openxmlformats.org/spreadsheetml/2006/main");
+										CP_XML_ATTR(L"xmlns:mc", L"http://schemas.openxmlformats.org/markup-compatibility/2006");
+										
 										CP_XML_NODE(L"externalBook")
 										{
 											CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
 											CP_XML_ATTR(L"r:id", L"rId1");
+											
+											std::map<std::wstring, std::vector<std::pair<std::wstring, std::wstring>>>::iterator pFind = map_external_sheets.find(it->first);
+
+											if (pFind != map_external_sheets.end())
+											{
+												CP_XML_NODE(L"sheetNames")
+												{
+													for (auto ex : pFind->second)
+													{
+														CP_XML_NODE(L"sheetName")
+														{
+															CP_XML_ATTR(L"val", ex.first);
+														}
+													}
+												}
+												CP_XML_NODE(L"sheetDataSet")
+												{
+													for (size_t x = 0; x < pFind->second.size(); ++x)
+													{
+														CP_XML_NODE(L"sheetData")
+														{
+															CP_XML_ATTR(L"sheetId", x);
+															CP_XML_STREAM() << pFind->second[x].second;
+														}
+													}
+												}
+											}
 										}
 									}
 								}
@@ -409,9 +463,10 @@ void xlsx_conversion_context::serialize_bookViews(std::wostream & strm)
 					{
 						for (size_t i = 0; i < sheets_.size(); i++)
 						{
-							if (sheets_[i]->name() == *sActiveTable)
+							if (sheets_[i]->external_ref().empty() && sheets_[i]->name() == *sActiveTable)
 							{
 								CP_XML_ATTR(L"activeTab", i);
+								break;
 							}
 						}		
 					}
@@ -474,23 +529,40 @@ int xlsx_conversion_context::find_sheet_by_name(std::wstring tableName)
 	}
 	for (size_t i = 0; i < sheets_.size(); i++)
 	{
-		if (sheets_[i]->name() == tableName)
+		if (false == sheets_[i]->external_ref().empty() && sheets_[i]->name() == tableName)
 			return i;
 	}
 	return -1;
 }
 
-bool xlsx_conversion_context::start_table(std::wstring tableName, std::wstring tableStyleName)
+bool xlsx_conversion_context::start_table(const std::wstring& tableName, const std::wstring& tableStyleName, const std::wstring& externalRef)
 {
-	get_table_context().start_table(tableName, tableStyleName, sheets_.size() - 1);
+	get_table_context().start_table(tableName, tableStyleName, sheets_.size());
 
-    sheets_.push_back(xlsx_xml_worksheet::create(tableName, get_table_context().state()->get_table_hidden()));
+    sheets_.push_back(xlsx_xml_worksheet::create(tableName, get_table_context().state()->get_table_hidden(), externalRef));
 	current_sheet().cols() << L"<cols>";
-    return true;
+
+	return true;
 }
 
 void xlsx_conversion_context::end_table()
 {
+	if (false == get_table_context().state()->rowsHeaders_.empty())
+	{//first only ??? 
+		int header_start = get_table_context().state()->rowsHeaders_.front().first + 1;
+		int header_end = get_table_context().state()->rowsHeaders_.front().first + get_table_context().state()->rowsHeaders_.front().second;
+
+		std::wstring ref = L"'" + get_table_context().state()->tableName_ + L"'!$" + std::to_wstring(header_start) + L":$" + std::to_wstring(header_end); 
+		get_table_context().set_print_titles(ref);
+	}
+
+	const std::wstring external_ref = current_sheet().external_ref();
+
+	if (false == external_ref.empty())
+	{
+		return;
+	}
+
     const double lastWidht = table_column_last_width();
     if (lastWidht > 0.0)
     {
@@ -510,7 +582,7 @@ void xlsx_conversion_context::end_table()
 					CP_XML_ATTR(L"min", cMin);
 					//CP_XML_ATTR(L"style", 0);
 					CP_XML_ATTR(L"width", lastWidht);
-					CP_XML_ATTR(L"customWidth", 0);
+					CP_XML_ATTR(L"customWidth", 1);
 				}
 			}
 		}
@@ -520,7 +592,8 @@ void xlsx_conversion_context::end_table()
 	get_table_context().serialize_table_format			(current_sheet().sheetFormat());
 	get_table_context().serialize_page_properties		(current_sheet().page_properties());
 	get_table_context().serialize_header_footer			(current_sheet().header_footer());
-	get_table_context().serialize_conditionalFormatting	(current_sheet().conditionalFormatting());
+	get_table_context().serialize_condFormattingEx		(current_sheet().conditionalFormattingEx());
+	get_table_context().serialize_condFormatting		(current_sheet().conditionalFormatting());
     get_table_context().serialize_tableParts			(current_sheet().tableParts(), current_sheet().sheet_rels());
     get_table_context().serialize_autofilter			(current_sheet().autofilter());
     get_table_context().serialize_sort					(current_sheet().sort());
@@ -586,20 +659,7 @@ void xlsx_conversion_context::end_table()
     }    
     get_table_context().end_table();
 }
-//int xlsx_conversion_context::add_external_link(const std::wstring & external)
-//{
-//	std::unordered_map<std::wstring, int>::iterator pFind = mapExternalLink_.find(external);
-//	if ( pFind == mapExternalLink_.end())
-//	{
-//		int id = (int)mapExternalLink_.size() + 1;
-//		mapExternalLink_.insert(std::make_pair(external, id));
-//		return id;
-//	}
-//	else
-//	{
-//		return pFind->second;
-//	}
-//}
+
 void xlsx_conversion_context::add_control_props(const std::wstring & rid, const std::wstring & target, const std::wstring & props)
 {
 	if (rid.empty()) return;
@@ -612,10 +672,10 @@ void xlsx_conversion_context::add_control_props(const std::wstring & rid, const 
 			L"../ctrlProps/" + target));
 }
 
-void xlsx_conversion_context::start_table_column(unsigned int repeated, const std::wstring & defaultCellStyleName, int & cMin, int & cMax)
+void xlsx_conversion_context::start_table_column(unsigned int repeated, const std::wstring & defaultCellStyleName, int & cMin, int & cMax, bool bHeader)
 {
     cMin = get_table_context().columns_count();
-    get_table_context().start_column(repeated, defaultCellStyleName);
+    get_table_context().start_column(repeated, defaultCellStyleName, bHeader);
     cMax = get_table_context().columns_count();
 }
 
@@ -660,12 +720,12 @@ void xlsx_conversion_context::end_office_spreadsheet()
 
 void xlsx_conversion_context::start_paragraph(const std::wstring & styleName)
 {
-    xlsx_text_context_.start_paragraph(styleName);
+	get_text_context()->start_paragraph(styleName);
 }
 
 void xlsx_conversion_context::end_paragraph()
 {
-	if (xlsx_text_context_.is_drawing_context())
+	if (get_text_context()->is_drawing_context())
 	{
 		get_drawing_context().process_objects(get_table_metrics());
 
@@ -674,25 +734,25 @@ void xlsx_conversion_context::end_paragraph()
 			std::wstringstream strm;
 			get_drawing_context().serialize(strm, L"a", true);
 
-			xlsx_text_context_.add_paragraph(strm.str());
+			get_text_context()->add_paragraph(strm.str());
 		}
 	}
-    xlsx_text_context_.end_paragraph();
+	get_text_context()->end_paragraph();
 }
 
 void xlsx_conversion_context::start_span(const std::wstring & styleName)
 {
-    xlsx_text_context_.start_span(styleName);
+	get_text_context()->start_span(styleName);
 }
 
 void xlsx_conversion_context::end_span()
 {
-    xlsx_text_context_.end_span();
+	get_text_context()->end_span();
 }
 
-void xlsx_conversion_context::start_table_cell(const std::wstring & formula, size_t columnsSpanned, size_t rowsSpanned)
+void xlsx_conversion_context::start_table_cell(size_t columnsSpanned, size_t rowsSpanned)
 {
-    get_table_context().start_cell(formula, columnsSpanned, rowsSpanned);
+    get_table_context().start_cell(columnsSpanned, rowsSpanned);
 }
 
 bool xlsx_conversion_context::in_table_cell()
@@ -723,6 +783,35 @@ void xlsx_conversion_context::set_current_cell_style_id(unsigned int xfId)
 int xlsx_conversion_context::get_current_cell_style_id()
 {
     return get_table_context().get_current_cell_style_id();
+}
+int xlsx_conversion_context::add_dxfId_style(const std::wstring& color, bool cellColor)
+{
+	int dxfId = -1;
+	odf_reader::style_instance* instStyle =
+		root()->odf_context().styleContainer().style_default_by_type(odf_types::style_family::TableCell);
+
+	if (instStyle)
+	{
+		odf_reader::text_format_properties_ptr textFormats = calc_text_properties_content(instStyle);
+		odf_reader::graphic_format_properties_ptr graphicFormats = calc_graphic_properties_content(instStyle);
+		odf_reader::style_table_cell_properties_attlist	cellFormats = calc_table_cell_properties(instStyle);
+
+		odf_types::color odf_color(color);
+		if (cellColor)
+		{
+			cellFormats.common_background_color_attlist_.fo_background_color_ = odf_color;
+		}
+		else
+		{
+			if (!textFormats)
+				textFormats = odf_reader::text_format_properties_ptr(new odf_reader::text_format_properties());
+
+			textFormats->fo_color_ = odf_color;
+		}
+
+		dxfId = get_style_manager().dxfId(textFormats, graphicFormats, &cellFormats);
+	}
+	return dxfId;
 }
 int xlsx_conversion_context::get_dxfId_style(const std::wstring &style_name)
 {
@@ -884,6 +973,29 @@ void xlsx_conversion_context::add_jsaProject(const std::string &content)
 	
 	output_document_->get_xl_files().add_jsaProject(content);
 	output_document_->get_content_types_file().add_or_find_default(L"bin");
+}
+void xlsx_conversion_context::start_text_context()
+{
+	minor_text_contexts_.push_back(new xlsx_text_context(odf_document_->odf_context()));
+}
+void xlsx_conversion_context::end_text_context()
+{
+	if (false == minor_text_contexts_.empty())
+	{
+		delete minor_text_contexts_.back();
+		minor_text_contexts_.pop_back();
+	}
+}
+xlsx_text_context* xlsx_conversion_context::get_text_context()
+{
+	if (false == minor_text_contexts_.empty())
+	{
+		return minor_text_contexts_.back();
+	}
+	else
+	{
+		return &xlsx_text_context_;
+	}
 }
 
 }

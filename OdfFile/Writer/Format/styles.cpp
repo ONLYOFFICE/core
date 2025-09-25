@@ -109,6 +109,13 @@ text_format_properties* style_content::get_text_properties()
 		return &(style_text->content_);
 	return NULL;
 }
+drawing_page_properties* style_content::get_drawing_page_properties()
+{
+	style_drawing_page_properties* style_page  = dynamic_cast<style_drawing_page_properties*>(style_drawing_page_properties_.get());
+	if (style_page)
+		return &(style_page->content_);
+	return NULL;
+}
 graphic_format_properties * style_content::add_get_style_graphic_properties()
 {
 	if (!style_graphic_properties_)
@@ -247,17 +254,17 @@ void style_content::create_child_element( const std::wstring & Ns, const std::ws
 }
 void style_content::serialize(std::wostream & strm)
 {
-	if (style_text_properties_)		style_text_properties_->serialize(strm);
-    if (style_paragraph_properties_)style_paragraph_properties_->serialize(strm);
-    if (style_section_properties_)	style_section_properties_->serialize(strm);
-    if (style_ruby_properties_)		style_ruby_properties_->serialize(strm);
-    if (style_table_properties_)	style_table_properties_->serialize(strm);
-    if (style_table_column_properties_)style_table_column_properties_->serialize(strm);
-    if (style_table_row_properties_)style_table_row_properties_->serialize(strm);
-    if (style_chart_properties_)	style_chart_properties_->serialize(strm);
-    if (style_graphic_properties_)	style_graphic_properties_->serialize(strm);
-    if (style_table_cell_properties_)style_table_cell_properties_->serialize(strm);
-	if (style_drawing_page_properties_)style_drawing_page_properties_->serialize(strm);
+	if (style_table_cell_properties_)	style_table_cell_properties_->serialize(strm);
+	if (style_graphic_properties_)		style_graphic_properties_->serialize(strm);
+	if (style_paragraph_properties_)	style_paragraph_properties_->serialize(strm);
+    if (style_section_properties_)		style_section_properties_->serialize(strm);
+    if (style_ruby_properties_)			style_ruby_properties_->serialize(strm);
+    if (style_table_properties_)		style_table_properties_->serialize(strm);
+    if (style_table_column_properties_)	style_table_column_properties_->serialize(strm);
+    if (style_table_row_properties_)	style_table_row_properties_->serialize(strm);
+    if (style_chart_properties_)		style_chart_properties_->serialize(strm);
+	if (style_drawing_page_properties_)	style_drawing_page_properties_->serialize(strm);
+	if (style_text_properties_)			style_text_properties_->serialize(strm);
 }
 
 // style:default-style
@@ -332,9 +339,13 @@ void draw_marker::serialize(std::wostream & strm)
 const wchar_t * draw_gradient::ns = L"draw";
 const wchar_t * draw_gradient::name = L"gradient";
 
-void draw_gradient::create_child_element(  const std::wstring & Ns, const std::wstring & Name)
+void draw_gradient::add_child_element(const office_element_ptr& child)
 {
-    CP_NOT_APPLICABLE_ELM();
+	content_.push_back(child);
+}
+void draw_gradient::create_child_element(const std::wstring& Ns, const std::wstring& Name)
+{
+	CP_CREATE_ELEMENT(content_);
 }
 void draw_gradient::serialize(std::wostream & strm)
 {
@@ -357,6 +368,11 @@ void draw_gradient::serialize(std::wostream & strm)
 
 			CP_XML_ATTR_OPT_ENCODE_STRING(L"draw:name",	draw_name_);
 			CP_XML_ATTR_OPT_ENCODE_STRING(L"draw:display_name", draw_display_name_);
+			
+			for (size_t i = 0; i < content_.size(); i++)
+			{
+				content_[i]->serialize(CP_XML_STREAM());
+			}
 		}
 	}
 }
@@ -389,9 +405,13 @@ void draw_hatch::serialize(std::wostream & strm)
 const wchar_t * draw_opacity::ns = L"draw";
 const wchar_t * draw_opacity::name = L"opacity";
 
-void draw_opacity::create_child_element(  const std::wstring & Ns, const std::wstring & Name)
+void draw_opacity::add_child_element(const office_element_ptr& child)
 {
-    CP_NOT_APPLICABLE_ELM();
+	content_.push_back(child);
+}
+void draw_opacity::create_child_element(const std::wstring& Ns, const std::wstring& Name)
+{
+	CP_CREATE_ELEMENT(content_);
 }
 void draw_opacity::serialize(std::wostream & strm)
 {
@@ -411,6 +431,11 @@ void draw_opacity::serialize(std::wostream & strm)
 
 			CP_XML_ATTR_OPT_ENCODE_STRING(L"draw:name",			draw_name_);
 			CP_XML_ATTR_OPT_ENCODE_STRING(L"draw:display_name",	draw_display_name_);
+			
+			for (size_t i = 0; i < content_.size(); i++)
+			{
+				content_[i]->serialize(CP_XML_STREAM());
+			}
 		}
 	}
 }
@@ -1398,6 +1423,7 @@ void text_linenumbering_configuration::serialize(std::wostream & strm)
 			CP_XML_ATTR_OPT(L"text:count-empty-lines", text_count_empty_lines_);
 			CP_XML_ATTR_OPT(L"text:count-in-text-boxes", text_count_in_text_boxes_);
 			CP_XML_ATTR_OPT(L"text:increment", text_increment_);
+			CP_XML_ATTR_OPT(L"text:start", text_start_);
 			CP_XML_ATTR_OPT(L"text:number-position", text_number_position_); //inner, left, outer, right
 			CP_XML_ATTR_OPT(L"text:offset", text_offset_);
 			CP_XML_ATTR_OPT(L"text:restart-on-page", text_restart_on_page_);
@@ -1627,6 +1653,38 @@ void style_region_center::serialize(std::wostream & strm)
 		}
 	}
 }
+//--------------------------------------------------------------------------------------------------
+const wchar_t* loext_gradient_stop::ns = L"loext";
+const wchar_t* loext_gradient_stop::name = L"gradient-stop";
 
+void loext_gradient_stop::serialize(std::wostream& strm)
+{
+	CP_XML_WRITER(strm)
+	{
+		CP_XML_NODE_SIMPLE()
+		{
+			CP_XML_ATTR_OPT(L"loext:color-type", color_type_);
+			CP_XML_ATTR_OPT(L"loext:color-value", color_value_);
+			CP_XML_ATTR_OPT(L"svg:offset", svg_offset_);
+		}
+	}
+}
+//--------------------------------------------------------------------------------------------------
+const wchar_t* loext_opacity_stop::ns = L"loext";
+const wchar_t* loext_opacity_stop::name = L"opacity-stop";
+
+void loext_opacity_stop::serialize(std::wostream& strm)
+{
+	CP_XML_WRITER(strm)
+	{
+		CP_XML_NODE_SIMPLE()
+		{
+			CP_XML_ATTR_OPT(L"svg:stop-opacity", stop_opacity_);
+			CP_XML_ATTR_OPT(L"svg:offset", svg_offset_);
+
+			//CP_XML_ATTR_OPT(L"loext:stop-opacity", stop_opacity_); //?? 
+		}
+	}
+}
 }
 }

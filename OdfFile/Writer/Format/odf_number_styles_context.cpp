@@ -228,7 +228,9 @@ static const def_language_code LanguageCodeTable[] =
 	{L"Vietnamese",			L"", L"",	0x042A},
 	{L"Welsh",				L"", L"",	0x0452},
 	{L"Xhosa",				L"", L"",	0x0434},
-	{L"Zulu",				L"", L"",	0x0435}
+	{L"Zulu",				L"", L"",	0x0435},
+	{L"",					L"PL", L"pl",	0x019F },
+	{L"",					L"IR", L"fa",	0x00160429}
 };
 
 odf_number_styles_context::odf_number_styles_context()
@@ -340,7 +342,7 @@ void odf_number_styles_context::create_default(int oox_num_fmt, std::wstring for
 	}
     boost::algorithm::split(state.format_code, formatCode, boost::algorithm::is_any_of(L";"), boost::algorithm::token_compress_on);
 
-	if (state.format_code.size()>1 && state.format_code[state.format_code.size()-1].find(L"@")>=0)
+	if (state.format_code.size() > 1 && state.format_code[state.format_code.size()-1].find(L"@") >= 0)
 	{
 		state.format_code.pop_back();
 	}
@@ -421,19 +423,20 @@ void odf_number_styles_context::create_number_style(number_format_state & state,
 		create_numbers(state, elm, root_elm);
 	}
 }
-void odf_number_styles_context::create_numbers(number_format_state & state, office_element_ptr & elm, office_element_ptr & root_elm)
+void odf_number_styles_context::create_numbers(number_format_state& state, office_element_ptr& elm, office_element_ptr& root_elm)
 {
 	_CP_OPT(int) min_digit, min_decimal;
+	_CP_OPT(int) separate;
 
-	switch(state.ods_type)
+	switch (state.ods_type)
 	{
-		case office_value_type::Currency:
-		case office_value_type::Percentage:
-		case office_value_type::Float:		create_element(L"number", L"number", elm, odf_context_); break;
-		case office_value_type::Scientific:	create_element(L"number", L"scientific-number", elm, odf_context_); break;
-		case office_value_type::Fraction:	create_element(L"number", L"fraction", elm, odf_context_); break;
+	case office_value_type::Currency:
+	case office_value_type::Percentage:
+	case office_value_type::Float:		create_element(L"number", L"number", elm, odf_context_); break;
+	case office_value_type::Scientific:	create_element(L"number", L"scientific-number", elm, odf_context_); break;
+	case office_value_type::Fraction:	create_element(L"number", L"fraction", elm, odf_context_); break;
 	}
-	
+
 	office_element_ptr elm_text;
 
 	bool bText = false;
@@ -471,74 +474,90 @@ void odf_number_styles_context::create_numbers(number_format_state & state, offi
 		if (indNumber < 0)
 			indNumber = 0;
 
-		std::wstring str1,str2;
-		boost::wregex re1(L"([^0-9.,]+)");
-		boost::wsmatch result;
-		boost::wregex re2(L"([^#.,]+)");
-		
+		// split by space, find #0 - use it ... ???? 
+		std::wstring str1;
+		boost::wregex re1(L"([^#0.,]+)");
+
 		str1 = boost::regex_replace(splits[indNumber], re1, L"", boost::match_default | boost::format_all);
-		str2 = boost::regex_replace(splits[indNumber], re2, L"", boost::match_default | boost::format_all);
 
-		if (str1.length() < str2.length()) str1 = str2;
+		size_t pos_separate_1000 = str1.find(L",");
+		size_t pos_separate_decimal = str1.find(L".");
 
-		std::vector<std::wstring> numbers;
-		boost::algorithm::split(numbers, str1, boost::algorithm::is_any_of(L".,"), boost::algorithm::token_compress_on);
-
-		int ind = 1;//
-		for (size_t i = 0; i < numbers.size(); i++)
+		if (pos_separate_decimal != std::wstring::npos)
 		{
-			if (numbers[i].empty())continue;
+			std::wstring str2;
+			boost::wregex re2(L"([^0]+)");
 
-			if (ind == 1) min_digit = numbers[i].length();
-			if (ind == 2) min_decimal = numbers[i].length();
-			ind++;
+			str2 = boost::regex_replace(str1.substr(pos_separate_decimal), re2, L"", boost::match_default | boost::format_all);
+
+			if (false == str2.empty())
+				min_decimal = str2.length();
+
+			str1 = str1.substr(0, pos_separate_decimal);
+		}
+		else
+		{
+			min_decimal = 0;
+		}
+		{
+			std::wstring str2;
+			boost::wregex re2(L"([^0]+)");
+
+			str2 = boost::regex_replace(str1, re2, L"", boost::match_default | boost::format_all);
+
+			if (false == str2.empty())
+				min_digit = str2.length();
+		}
+		if (pos_separate_1000 != std::wstring::npos)
+		{
+			separate = str1.length() - pos_separate_1000 - 1;
 		}
 
 		if (bText && root_elm)
 		{
-			int res1 = (int) splits[indText].find(L"\""); 
-			int res2 = (int) splits[indText].find(L"\"", res1 + 1);
+			int res1 = (int)splits[indText].find(L"\"");
+			int res2 = (int)splits[indText].find(L"\"", res1 + 1);
 
 			if (res2 > 0)
 			{
 				std::wstring text = splits[indText].substr(res1 + 1, res2 - res1 - 1);
 
 				if (!text.empty())
-				{					
+				{
 					if (indText < indNumber) text = text + L" ";
 					else					 text = L" " + text;
 
 					create_element(L"number", L"text", elm_text, odf_context_);
 					number_text* number_text_ = dynamic_cast<number_text*>(elm_text.get());
-					
+
 					if (number_text_)
-						number_text_->add_text(text); 
+						number_text_->add_text(text);
 				}
 			}
 		}
 	}
-			
+
 	number_number* number_ = dynamic_cast<number_number*>(elm.get());
 	if (number_)
 	{
-		number_->number_min_integer_digits_	= min_digit;
-		number_->number_decimal_places_		= min_digit ? min_decimal.get_value_or(0) : min_decimal;
+		number_->number_min_integer_digits_ = min_digit;
+		number_->number_decimal_places_ = min_decimal.get_value_or(0);
 
-		if (root_elm && bText)
+		if (separate)
 			number_->number_grouping_ = true;
 	}
 	number_scientific_number* scientific_ = dynamic_cast<number_scientific_number*>(elm.get());
 	if (scientific_)
 	{
-		scientific_->number_min_integer_digits_	= min_digit;
-		scientific_->number_decimal_places_		= min_decimal;
-		scientific_->number_min_exponent_digits_= min_digit;
-		scientific_->number_min_decimal_places_	= min_decimal;
+		scientific_->number_min_integer_digits_ = min_digit;
+		scientific_->number_decimal_places_ = min_decimal;
+		scientific_->number_min_exponent_digits_ = min_digit;
+		scientific_->number_min_decimal_places_ = min_decimal;
 		scientific_->number_forced_exponent_sign_ = true;
-		
-		if (root_elm && bText)
+
+		if (separate)
 			scientific_->number_grouping_ = true;
-	}	
+	}
 	number_fraction* fraction_ = dynamic_cast<number_fraction*>(elm.get());
 	if (fraction_)
 	{
@@ -546,7 +565,7 @@ void odf_number_styles_context::create_numbers(number_format_state & state, offi
 		fraction_->number_min_numerator_digits_ = min_digit;
 		fraction_->number_min_denominator_digits_ = min_digit;
 
-		if (root_elm && bText)
+		if (separate)
 			fraction_->number_grouping_ = true;
 	}
 	if (root_elm)
@@ -613,7 +632,29 @@ void odf_number_styles_context::create_currency_style(number_format_state & stat
 				}
 			}
 		}
+		std::wstring number_country, number_language;
 
+		for (long i = 0; state.language_code > 0 && i < sizeof(LanguageCodeTable) / sizeof(def_language_code); i++)
+		{
+			if (LanguageCodeTable[i].id == state.language_code)
+			{
+				number_country = LanguageCodeTable[i].country_code;
+				number_language = LanguageCodeTable[i].language_code;
+				break;
+			}
+		}
+		//number_currency_style* currency_style_ = dynamic_cast<number_currency_style*>(root_elm.get());
+		//if (currency_style_)
+		//{
+		//	if (false == number_country.empty())
+		//	{
+		//		currency_style_->common_data_style_attlist_.number_country_ = number_country;
+		//	}
+		//	if (number_language.length() > 0)
+		//	{
+		//		currency_style_->common_data_style_attlist_.number_language_ = number_language;
+		//	}
+		//}
 		office_element_ptr elm_symbol;
 		create_element(L"number", L"currency-symbol", elm_symbol, odf_context_);
 		styles_elments.push_back(elm_symbol);
@@ -621,18 +662,6 @@ void odf_number_styles_context::create_currency_style(number_format_state & stat
 		number_currency_symbol* number_currency_symbol_ = dynamic_cast<number_currency_symbol*>(elm_symbol.get());
 		if (number_currency_symbol_)
 		{
-			std::wstring number_country,number_language;
-
-			for (long i = 0; state.language_code > 0 && i < sizeof(LanguageCodeTable)/sizeof(def_language_code); i++)
-			{
-				if (LanguageCodeTable[i].id == state.language_code)
-				{
-					number_country = LanguageCodeTable[i].country_code;
-					number_language = LanguageCodeTable[i].language_code;
-					break;
-				}
-			}
-
 			if (false == number_country.empty())
 			{
 				number_currency_symbol_->number_country_ = number_country;
@@ -672,9 +701,28 @@ void odf_number_styles_context::create_currency_style(number_format_state & stat
 void odf_number_styles_context::create_date_style(number_format_state & state, office_element_ptr & root_elm)
 {
 	create_element(L"number", L"date-style", root_elm, odf_context_);
+	number_date_style *date_ = dynamic_cast<number_date_style*>(root_elm.get());
 
-	//state.language_code == L"F800" System long date format
-	
+	std::wstring number_country, number_language;
+
+	for (long i = 0; state.language_code > 0 && i < sizeof(LanguageCodeTable) / sizeof(def_language_code); i++)
+	{
+		if (LanguageCodeTable[i].id == state.language_code)
+		{
+			number_country = LanguageCodeTable[i].country_code;
+			number_language = LanguageCodeTable[i].language_code;
+			break;
+		}
+	}
+	if (false == number_country.empty())
+	{
+		date_->common_data_style_attlist_.number_country_ = number_country;
+	}
+	if (number_language.length() > 0)
+	{
+		date_->common_data_style_attlist_.number_language_ = number_language;
+	}
+//---------------------------------------------------------------------------------
 	std::wstring s = state.format_code[0];
 	
 	boost::wregex re(L"([mMdDyYhHsS^(AM)^(PM)^(am)^(pm)]+)([^m^M^d^D^y^Y^h^H^s^S^(AM)^(PM)^(am)^(pm)]+)");
@@ -893,41 +941,55 @@ void odf_number_styles_context::detect_format(number_format_state & state)
 	if (state.ods_type != office_value_type::Custom) return;
 	if (state.format_code.empty()) return;
 
-	boost::wregex re_unwanted(L"([\"'])(.+?)\\1");
+	boost::wregex re_unwanted(L"(\\\\.{1})");
 	
-	std::wstring strFormatCode = boost::regex_replace(state.format_code[0], re_unwanted, &replace_unwanted,	boost::match_default | boost::format_all);
+	std::wstring strFormatCode = boost::regex_replace(state.format_code[0], re_unwanted, &replace_unwanted,	boost::match_any | boost::format_all);
 
  	//find [$<Currency String>-<language info>].
-	boost::wregex re(L"(?:\\[)(?:\\$)(\\S+)?\-(\\S+)(?:\\])");
-	boost::wsmatch result;
-	bool b = boost::regex_search(strFormatCode, result, re);
+	boost::wregex re(L"(\\[\\$.*\-[\\w\\d]+\\])");
 	
-	if (b && result.size() >= 3)
-	{
-		state.currency_str = result[1];
-		int code = -1; 
-		try
-		{
-			std::wstringstream ss;
-			ss << std::hex << result[2];
-			ss >> state.language_code;
-		}catch(...){}
+	std::vector<std::wstring> result;
+	std::wstring tmp = strFormatCode;
+	bool b = boost::regex_split(std::back_inserter(result), tmp, re);
 
-		//state.format_code[0] = boost::regex_replace( state.format_code[0],re,L"");
+	if (b && result.size() > 0)
+	{//split Currency String		
+		tmp = result[0].substr(1, result[0].size() - 2);
+		size_t sep = tmp.find(L"-");
+		if (sep != std::wstring::npos)
+		{
+			state.currency_str = tmp.substr(1, sep - 1);
+			
+			try
+			{
+				std::wstringstream ss;
+				ss << std::hex << tmp.substr(sep + 1);
+				ss >> state.language_code;
+			}
+			catch (...) {}
+		}
+		if (false == state.currency_str.empty())
+		{
+			size_t pos_digit = (std::min)(strFormatCode.find(L"0"), strFormatCode.find(L"#"));
+			size_t pos_currency = strFormatCode.find(state.currency_str);
+
+			if (pos_digit != std::wstring::npos) state.currency_pos = pos_digit < pos_currency ? 1 : 2;
+		}
+		XmlUtils::replace_all(strFormatCode, result[0], L"");
 	}
 
 	if (state.format_code.size() > 0) //any
 	{
-		boost::wregex re1(L"([mMhH{2,}sS{2,}]+)");
-		boost::wregex re2(L"([mMdD{1,}yY{2,}]+)");
+		boost::wregex re1(L"([mM]{2,}|[hH]{1,}|[sS]{2,})");
+		boost::wregex re2(L"([M]{2,}|[m]{1,}|[dD]{1,}|[yY]{2,})");
 
-		std::wstring tmp = strFormatCode;
+		tmp = strFormatCode;
 		
-		std::list<std::wstring> result1;
+		std::vector<std::wstring> result1;
 		bool b1 = boost::regex_split(std::back_inserter(result1), tmp, re1);
 
 		tmp = strFormatCode;
-		std::list<std::wstring> result2;
+		std::vector<std::wstring> result2;
 		bool b2 = boost::regex_split(std::back_inserter(result2), tmp, re2);
 		
 		if (b1 && b2 && result1.size() > 2 && result2.size() > 2)

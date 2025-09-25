@@ -32,7 +32,6 @@
 
 #include "../../DesktopEditor/common/Directory.h"
 #include "../../DesktopEditor/graphics/pro/Fonts.h"
-#include "../../DesktopEditor/graphics/pro/Graphics.h"
 #include "../../DesktopEditor/fontengine/ApplicationFontsWorker.h"
 
 #include "../../PdfFile/PdfFile.h"
@@ -41,8 +40,12 @@
 #include "../DocxRenderer.h"
 #include "../../Common/OfficeFileFormatChecker.h"
 
+#include "TextCommandRenderer/TextCommandRenderer.h"
+
+#include <fstream>
+
 #ifdef TEST_FOR_HTML_RENDERER_TEXT
-#include "../../HtmlRenderer/include/HTMLRendererText.h"
+#include "../../DesktopEditor/graphics/pro/js/wasm/src/HTMLRendererText.h"
 #endif
 
 //#define LOAD_FILE_AS_BINARY
@@ -74,6 +77,8 @@ int main(int argc, char *argv[])
 	oWorker.m_sDirectory = NSFile::GetProcessDirectory() + L"/fonts_cache";
 	oWorker.m_bIsNeedThumbnails = false;
 
+    // oWorker.m_arAdditionalFolders.push_back(L"");
+
 	if (!NSDirectory::Exists(oWorker.m_sDirectory))
 		NSDirectory::CreateDirectory(oWorker.m_sDirectory);
 
@@ -87,26 +92,25 @@ int main(int argc, char *argv[])
 	if (!NSDirectory::Exists(sTempDirOut))
 		NSDirectory::CreateDirectory(sTempDirOut);
 
-	//Добавляем все файлы из определенного каталога
-	//std::vector<std::wstring> sSourceFiles = NSDirectory::GetFiles(L"C:\\Folder");
-	std::vector<std::wstring> sSourceFiles;
-	//Или добавляем любой нужный файл
-	sSourceFiles.push_back(L"");
+	std::vector<std::wstring> sSourceFiles = NSDirectory::GetFiles(L"");
+	//sSourceFiles.push_back(L"");
 
-	std::wstring sTextDirOut = NSFile::GetProcessDirectory() + L"/text";
+	std::wstring sTextDirOut = NSFile::GetProcessDirectory() + L"/output";
 	if (!NSDirectory::Exists(sTextDirOut))
 		NSDirectory::CreateDirectory(sTextDirOut);
 
 	IOfficeDrawingFile* pReader = NULL;
 
 	COfficeFileFormatChecker oChecker;
-	int	                	 nFileType = 0;
+	int nFileType = 0;
 
 	CDocxRenderer oDocxRenderer(pFonts);
 	oDocxRenderer.SetTempFolder(sTempDirOut);
 
 	for (size_t nIndex = 0; nIndex < sSourceFiles.size(); nIndex++)
 	{
+		// нужно скинуть тип, чтобы не определялся как OOXML всегда (см чеккер).
+		oChecker.nFileType = 0;
 		if (oChecker.isOfficeFile(sSourceFiles[nIndex]))
 		{
 			nFileType = oChecker.nFileType;
@@ -127,10 +131,7 @@ int main(int argc, char *argv[])
 		}
 
 		if (!pReader)
-		{
-			pFonts->Release();
-			return 0;
-		}
+			continue;
 
 		pReader->SetTempDirectory(sTempDir);
 
@@ -164,20 +165,30 @@ int main(int argc, char *argv[])
 		std::wstring sDocx = L"/" + sFileName + L".docx";
 		std::wstring sZip = L"/" + sFileName + L".zip";
 
-		// проверить все режимы
 		NSDocxRenderer::TextAssociationType taType;
-		//taType = NSDocxRenderer::tatBlockChar;
-		//taType = NSDocxRenderer::tatBlockLine;
-		//taType = NSDocxRenderer::tatPlainLine;
-		//taType = NSDocxRenderer::tatShapeLine;
-		taType = NSDocxRenderer::tatPlainParagraph;
+		//taType = NSDocxRenderer::TextAssociationType::tatPlainLine;
+		//taType = NSDocxRenderer::TextAssociationType::tatShapeLine;
+		//taType = NSDocxRenderer::TextAssociationType::tatPlainParagraph;
+		taType = NSDocxRenderer::TextAssociationType::tatParagraphToShape;
+
+		NSDocxRenderer::IImageStorage* pExternalImagheStorage = NSDocxRenderer::CreateWasmImageStorage();
+		//oDocxRenderer.SetExternalImageStorage(pExternalImagheStorage);
 
 		oDocxRenderer.SetTextAssociationType(taType);
 		oDocxRenderer.Convert(pReader, sTextDirOut+sDocx);
-		//Если сразу нужен zip-архив
-		//oDocxRenderer.Convert(pReader, sPlainParagraphDirOut+sZip);
+
+//		std::wstring test_txt_file = L"";
+//		std::ofstream fin(test_txt_file);
+//		auto shapes = oDocxRenderer.ScanPagePptx(pReader, 0);
+//		for (auto& s : shapes)
+//			fin << U_TO_UTF8(s);
+
+		CTextCommandRenderer oTextCommandRenderer(pFonts);
+		oTextCommandRenderer.Do(pReader);
+
 #endif
-		delete pReader;
+		RELEASEOBJECT(pReader);
+		RELEASEOBJECT(pExternalImagheStorage);
 	}
 
 	pFonts->Release();

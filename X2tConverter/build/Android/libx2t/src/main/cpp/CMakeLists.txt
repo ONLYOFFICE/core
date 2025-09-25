@@ -47,13 +47,6 @@ elseif (NOT EXISTS ${ARG_PATH_LIB_BUILD_TOOLS})
     message(STATUS "Destination 3dParty path doesn't exist, created!")
 endif()
 
-# X2t destination path
-if (NOT DEFINED ARG_PATH_LIB_DST)
-    message(FATAL_ERROR "You must set argument \"ARG_PATH_LIB_DST\" with path to x2t.so destination...")
-elseif (NOT EXISTS ${ARG_PATH_LIB_DST})
-    file(MAKE_DIRECTORY ${ARG_PATH_LIB_DST})
-    message(STATUS "Destination library path doesn't exist, created!")
-endif()
 
 # Core source path
 if (NOT DEFINED ARG_PATH_SRC_CORE)
@@ -72,14 +65,13 @@ set(LIB_NAME_X2T_CONVERTER ${ARG_NAME_LIB})
 # ---------- Paths sources  ----------
 # Core src dir path
 set(CORE_DIR ${ARG_PATH_SRC_CORE})
-set(X2T_CONVERTER_DEST ${ARG_PATH_LIB_DST}/${ANDROID_ABI})
-message(STATUS "X2t Converter destination path: ${X2T_CONVERTER_DEST}")
 
 # Prebuild libraries path
 set(X2T_CONVERTER_LIBS ${ARG_PATH_LIB_BUILD_TOOLS}/${ANDROID_ABI})
 message(STATUS "Prebuild libraries path: ${X2T_CONVERTER_LIBS}")
 
-FILE(GLOB new_list "${X2T_CONVERTER_LIBS}/*.so")
+SET(new_list libUnicodeConverter.so libkernel.so libkernel_network.so libgraphics.so libPdfFile.so libDjVuFile.so libXpsFile.so libHtmlFile2.so libFb2File.so libEpubFile.so libIWorkFile.so libDocxRenderer.so libdoctrenderer.so libx2t.so libHWPFile.so libOFDFile.so)
+
 SET(libs_list "")
 FOREACH(file_path ${new_list})
     GET_FILENAME_COMPONENT(file_path ${file_path} NAME)
@@ -147,8 +139,6 @@ link_libraries(
 # Add target library
 add_library(${LIB_NAME_X2T_CONVERTER}
     SHARED
-        ${CORE_DIR}/DesktopEditor/fontengine/FontsAssistant.cpp
-        ${CORE_DIR}/DesktopEditor/fontengine/ApplicationFontsWorker.cpp
         jni/X2t.cpp
 )
 
@@ -158,12 +148,6 @@ FOREACH(lib ${libs_list})
             ${X2T_CONVERTER_LIBS}/${lib})
 ENDFOREACH()
 
-
-# Export lib to common libs path
-set_target_properties(${LIB_NAME_X2T_CONVERTER}
-    PROPERTIES LIBRARY_OUTPUT_DIRECTORY
-        ${X2T_CONVERTER_DEST}
-)
 # Searches for a specified prebuilt library and stores the path as a
 # variable. Because CMake includes system libraries in the search path by
 # default, you only need to specify the name of the public NDK library

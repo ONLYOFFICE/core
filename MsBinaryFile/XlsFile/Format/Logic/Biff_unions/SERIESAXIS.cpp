@@ -129,12 +129,27 @@ const bool SERIESAXIS::loadContent(BinProcessor& proc)
 	}
 	return true;
 }
+
+const bool SERIESAXIS::saveContent(BinProcessor& proc)
+{
+	if(m_Axis == nullptr)
+		return false;
+	proc.mandatory(*m_Axis);
+	proc.mandatory<Begin>();
+	if(m_CatSerRange != nullptr)
+		proc.mandatory(*m_CatSerRange);
+	if(m_AXS != nullptr)
+		proc.mandatory(*m_AXS);
+	proc.mandatory<End>();
+	return true;
+}
+
 int SERIESAXIS::serialize(std::wostream & _stream)
 {
 	CatSerRange * cat_ser_range = dynamic_cast<CatSerRange*>(m_CatSerRange.get());
 	Axis		* axis			= dynamic_cast<Axis*>		(m_Axis.get());
 
-	int axes_type = axis->wType + 1;
+	int axes_type = axis ? axis->wType + 1 : 0;
 
 	CP_XML_WRITER(_stream)    
 	{
@@ -145,7 +160,7 @@ int SERIESAXIS::serialize(std::wostream & _stream)
 		
 		CP_XML_NODE(L"c:scaling")
 		{
-			if (cat_ser_range->fReversed)
+			if (cat_ser_range && cat_ser_range->fReversed)
 			{
 				CP_XML_NODE(L"c:orientation"){  CP_XML_ATTR(L"val", L"maxMin"); }
 			}else
@@ -175,8 +190,10 @@ int SERIESAXIS::serialize(std::wostream & _stream)
 			}
 		}
 //-----------------------------------------------------------------------------------
-		m_AXS->serialize(_stream);
-
+		if (m_AXS)
+		{
+			m_AXS->serialize(_stream);
+		}
 		if (cat_ser_range)
 		{
 			CP_XML_NODE(L"c:crosses")
@@ -184,6 +201,20 @@ int SERIESAXIS::serialize(std::wostream & _stream)
 				if (cat_ser_range->fMaxCross == true)	CP_XML_ATTR(L"val", L"max");
 				else									CP_XML_ATTR(L"val", L"autoZero");
 			}	
+			if (cat_ser_range->catLabel > 1 && cat_ser_range->catLabel < 32000)
+			{
+				CP_XML_NODE(L"c:tickLblSkip")
+				{
+					CP_XML_ATTR(L"val", cat_ser_range->catLabel);
+				}
+			}
+			if (cat_ser_range->catMark > 1 && cat_ser_range->catMark < 32000)
+			{
+				CP_XML_NODE(L"c:tickMarkSkip")
+				{
+					CP_XML_ATTR(L"val", cat_ser_range->catMark);
+				}
+			}
 		}
 	}
 	

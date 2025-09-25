@@ -82,5 +82,13 @@ namespace XLSB
             rgbData.push_back(val);
         }
     }
+    void LPByteBuf::save(XLS::CFRecord& record)
+    {
+        record << cbLength;
+        for(auto i:rgbData)
+        {
+            record << i;
+        }
+    }
 } // namespace XLSB
 

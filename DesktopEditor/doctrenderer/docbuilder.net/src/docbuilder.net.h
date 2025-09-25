@@ -72,6 +72,9 @@ namespace docbuilder_net
 		/// <returns> True if this object is undefined. </returns>
 		bool IsUndefined();
 
+		/// <returns> True if this object is a boolean value. </returns>
+		bool IsBool();
+
 		/// <returns> True if this object is an integer. </returns>
 		bool IsInt();
 
@@ -165,12 +168,14 @@ namespace docbuilder_net
 		CDocBuilderValue(unsigned int value);
 		CDocBuilderValue(double value);
 		CDocBuilderValue(String^ value);
+		CDocBuilderValue(array<CDocBuilderValue^>^ values);
 
 		static operator CDocBuilderValue^ (bool value);
 		static operator CDocBuilderValue^ (int value);
 		static operator CDocBuilderValue^ (unsigned int value);
 		static operator CDocBuilderValue^ (double value);
 		static operator CDocBuilderValue^ (String^ value);
+		static operator CDocBuilderValue^ (array<CDocBuilderValue^>^ values);
 
 		/// <summary>
 		/// Please use CDocBuilderContext.CreateUndefined.

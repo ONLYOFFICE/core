@@ -36,10 +36,6 @@ namespace PPTX
 {
 	namespace Logic
 	{
-		bool LineJoin::is_init() const
-		{
-			return (type==JoinEmpty);
-		}
 		void LineJoin::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			std::wstring name = XmlUtils::GetNameNoNS(oReader.GetName());
@@ -74,30 +70,6 @@ namespace PPTX
 			WritingElement_ReadAttributes_Start_No_NS ( oReader )
 				WritingElement_ReadAttributes_Read_if ( oReader, _T("lim"), lim )
 			WritingElement_ReadAttributes_End_No_NS ( oReader )
-		}
-		void LineJoin::GetJoinFrom(XmlUtils::CXmlNode& element)
-		{
-			type = JoinEmpty;
-			XmlUtils::CXmlNode oNode = element.ReadNodeNoNS(_T("round"));
-			if (oNode.IsValid())
-				type = JoinRound;
-			else
-			{
-				oNode = element.ReadNodeNoNS(_T("bevel"));
-				if (oNode.IsValid())
-					type = JoinBevel;
-				else
-				{
-					oNode = element.ReadNodeNoNS(_T("miter"));
-					if (oNode.IsValid())
-					{
-						type = JoinMiter;
-						XmlMacroReadAttributeBase(oNode, L"lim", lim);
-					}
-				}
-			}
-
-			Normalize();
 		}
 		void LineJoin::fromXML(XmlUtils::CXmlNode& node)
 		{

@@ -112,6 +112,7 @@ void CFVOParsedFormula::save(CFRecord& record)
 		};
 
 		saving(rgce);
+        cce = size;
 		saving(rgcb);
 	}
 }

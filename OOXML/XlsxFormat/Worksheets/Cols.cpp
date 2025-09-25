@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
@@ -37,6 +37,7 @@
 #include "../../XlsbFormat/Biff12_records/CommonRecords.h"
 
 #include "../../Common/SimpleTypes_Shared.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Binary/CFStreamCacheWriter.h"
 
 namespace OOX
 {
@@ -81,6 +82,101 @@ namespace OOX
 			{
 				ReadAttributes(obj);
 			}
+			XLS::BaseObjectPtr CCol::toBin()
+			{
+				auto castedPtr = new XLSB::ColInfo;
+				XLS::BaseObjectPtr ptr(castedPtr);
+				if(m_oBestFit.IsInit())
+					castedPtr->fBestFit = m_oBestFit->ToBool();
+				else
+					castedPtr->fBestFit = false;
+				if(m_oCollapsed.IsInit())
+					castedPtr->fCollapsed = m_oCollapsed->ToBool();
+				else
+					castedPtr->fCollapsed = false;
+				if(m_oCustomWidth.IsInit())
+					castedPtr->fUserSet = m_oCustomWidth->ToBool();
+				else
+					castedPtr->fUserSet = false;
+				if(m_oHidden.IsInit())
+					castedPtr->fHidden = m_oHidden->ToBool();
+				else
+					castedPtr->fHidden = false;
+				if(m_oMax.IsInit())
+					castedPtr->colLast = m_oMax->m_eValue - 1;
+				else
+                    castedPtr->colLast = 16383;
+				if(m_oMin.IsInit())
+					castedPtr->colFirst  = m_oMin->m_eValue - 1;
+				else
+					castedPtr->colFirst = 0;
+				if(m_oOutlineLevel.IsInit())
+					castedPtr->iOutLevel =  m_oOutlineLevel->m_eValue;
+				else
+					castedPtr->iOutLevel = false;
+				if(m_oPhonetic.IsInit())
+					castedPtr->fPhonetic = m_oPhonetic->ToBool();
+				else
+					castedPtr->fPhonetic = false;
+				if(m_oStyle.IsInit())
+					castedPtr->ixfeXLSB = m_oStyle->m_eValue;
+                else
+                    castedPtr->ixfeXLSB = 0;
+
+				if (m_oWidth.IsInit())
+				{
+					if(m_oWidth->GetValue() > 0)
+						castedPtr->coldx           = m_oWidth->GetValue() * 256;
+				}
+				else
+					castedPtr->coldx = 2304; ///standart col width(9) * 256
+				return ptr;
+			}
+            void CCol::toBin(XLS::StreamCacheWriterPtr& writer)
+            {
+                auto record = writer->getNextRecord(XLSB::rt_ColInfo);
+                {
+                    _UINT32 colNum = 0;
+                    if(m_oMin.IsInit())
+                        colNum  = m_oMin->m_eValue - 1;
+                    *record << colNum;
+                    if(m_oMax.IsInit())
+                        colNum = m_oMax->m_eValue - 1;
+                    else
+                        colNum = 16383;
+                    *record << colNum;
+                }
+                {
+                    _UINT32 coldx = 2304; ///standart col width(9) * 256
+                    if (m_oWidth.IsInit())
+                        if(m_oWidth->GetValue() > 0)
+                            coldx = m_oWidth->GetValue() * 256;
+                    *record << coldx;
+                }
+                {
+                    _UINT32 ixfe = 0;
+                    if(m_oStyle.IsInit())
+                        ixfe = m_oStyle->m_eValue;
+                    *record << ixfe;
+                }
+                {
+                    _UINT16		flags = 0;
+                    if(m_oHidden.IsInit())
+                        SETBIT(flags, 0, m_oHidden->ToBool())
+                    if(m_oCustomWidth.IsInit())
+                        SETBIT(flags, 1, m_oCustomWidth->ToBool())
+                    if(m_oBestFit.IsInit())
+                        SETBIT(flags, 2, m_oBestFit->ToBool())
+                    if(m_oPhonetic.IsInit())
+                        SETBIT(flags, 3, m_oPhonetic->ToBool())
+                    if(m_oOutlineLevel.IsInit())
+                        SETBITS(flags, 8, 10, m_oOutlineLevel->m_eValue)
+                    if(m_oCollapsed.IsInit())
+                        SETBIT(flags, 12, m_oCollapsed->ToBool())
+                    *record << flags;
+                }
+                writer->storeNextRecord(record);
+            }
 			EElementType CCol::getType() const
 			{
 				return et_x_Col;
@@ -230,6 +326,30 @@ namespace OOX
 					}
 				}
 			}
+			std::vector<XLS::BaseObjectPtr> CCols::toBin()
+			{
+				std::vector<XLS::BaseObjectPtr> ptrVector;
+				for(auto i:m_arrItems)
+				{
+					ptrVector.push_back(i->toBin());
+				}
+				return ptrVector;
+			}
+            void CCols::toBin(XLS::StreamCacheWriterPtr& writer)
+            {
+                {
+                    auto begin = writer->getNextRecord(XLSB::rt_BeginColInfos);
+                    writer->storeNextRecord(begin);
+                }
+                for(auto i:m_arrItems)
+                {
+                    i->toBin(writer);
+                }
+                {
+                    auto end = writer->getNextRecord(XLSB::rt_EndColInfos);
+                    writer->storeNextRecord(end);
+                }
+            }
 			EElementType CCols::getType () const
 			{
 				return et_x_Cols;

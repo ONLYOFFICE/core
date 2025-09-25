@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
@@ -35,6 +35,8 @@
 #include "../../../../Base/Base.h"
 #include "../../../../XlsxFormat/Worksheets/Worksheet.h"
 #include "../../../../XlsxFormat/Styles/Styles.h"
+#include "DateReader.h"
+#include "DigitReader.h"
 
 
 /// @brief класс определяющий и корректирующий тип данных, помещаемых в ячейки таблицы
@@ -44,18 +46,28 @@ class CellFormatController
 public:
     /// @brief конструктор
     /// @param styles стили из таблицы
-    CellFormatController(OOX::Spreadsheet::CStyles *styles);
+    CellFormatController(OOX::Spreadsheet::CStyles *styles, _INT32 lcid);
 
     /// @brief обрабатывает вставляемые в ячейку таблицы данные, переводя их в нужный тип, и заполняет ими ячейку
     /// @param pCell указатель на ячейку
     /// @param value вставляемые в ячейку данные в строковом типе
-    void ProcessCellType(OOX::Spreadsheet::CCell *pCell, const std::wstring &value, bool bIsWrap = false);
+    int ProcessCellType(OOX::Spreadsheet::CCell *pCell, const std::wstring &value, bool bIsWrap = false);
+
+
+	/// @brief указатель на лист документа
+	OOX::Spreadsheet::CWorksheet *m_pWorksheet = nullptr;
 
 private:
-
+    bool isFormula(const std::wstring& formula);
+    std::wstring ConvertFormulaArguments(const std::wstring& formula);
     /// @brief создание стиля для указанного формата
     /// @param format формат значения
     void createFormatStyle(const std::wstring &format);
+
+	/// @brief Добавление кастомной ширины столбца для ячейки
+	/// @param pCell ячейка для которой будет добавлена ширина
+	/// @param width значение ширины которое будет установлено для столбца, если оно больше текущего
+	void addCustomColWidth(OOX::Spreadsheet::CCell *pCell, double width);
 
     /// @brief указатель на ячейку с которой ведется работа
     OOX::Spreadsheet::CCell *pCell_;
@@ -69,4 +81,9 @@ private:
     /// @brief указатель на полученное строковое значение
     const std::wstring *value_;
 
+    /// @brief идентификатор локали
+    _INT32 lcid_;
+
+    DigitReader digitReader_;
+    DateReader dateReader_;
 };

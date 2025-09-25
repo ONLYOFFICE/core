@@ -35,6 +35,7 @@
 
 #include "styles_lite_container.h"
 #include "office_settings.h"
+#include "../../Common/xml/simple_xml_writer.h"
 
 namespace cpdoccore { 
 
@@ -107,6 +108,29 @@ std::wstring doc_props_container::get_user_defined(const std::wstring & name)
 
 	return pFind != impl_->map_user_defineds.end() ? pFind->second : L"";
 }
+std::wstring doc_props_container::dump_user_defined()
+{
+	std::wstringstream output;
+
+	CP_XML_WRITER(output)
+	{
+		int pid = 2;
+		for (std::map<std::wstring, std::wstring>::iterator it = impl_->map_user_defineds.begin(); it != impl_->map_user_defineds.end(); ++it)
+		{
+			CP_XML_NODE(L"property")
+			{
+				CP_XML_ATTR(L"fmtid", L"{D5CDD505-2E9C-101B-9397-08002B2CF9AE}");
+				CP_XML_ATTR(L"pid", pid++);
+				CP_XML_ATTR(L"name", XmlUtils::EncodeXmlString(it->first));
+				CP_XML_NODE(L"vt:lpwstr")
+				{
+					CP_XML_STREAM() << XmlUtils::EncodeXmlString(it->second);
+				}
+			}
+		}
+	}
+	return output.str();
+}
 
 //----------------------------------------------------------------------------------
 struct settings_value
@@ -139,6 +163,8 @@ public:
 
 	bool inViewTable;
 	bool inView;
+
+	_CP_OPT(double) tab_distance_;
 
 	std::map<std::wstring, std::wstring> map_user_defineds;
 };
@@ -231,6 +257,17 @@ void settings_container::add_view(const std::wstring & name, const std::wstring 
 		impl_->common_view.map_[name] = impl_->common_view.array_.size() - 1;    
 	}
 }
+
+void settings_container::set_tab_distance(double pt)
+{
+	impl_->tab_distance_ = pt * 20;
+}
+
+_CP_OPT(double) settings_container::get_tab_distance()
+{
+	return impl_->tab_distance_;
+}
+
 std::pair<std::wstring, std::wstring> settings_container::get_table_view(int index_view, const std::wstring & table_name, int index)
 {
 	std::pair<std::wstring, std::wstring> value;

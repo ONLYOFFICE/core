@@ -233,8 +233,10 @@ namespace Oox2Odf
 		void convert(OOX::Spreadsheet::CSheetProtection				*oox_prot);
 		void convert(OOX::Spreadsheet::CDataValidations				*oox_validations);
 		void convert(OOX::Spreadsheet::CDataValidation				*oox_validation);
-		void convert(OOX::Spreadsheet::CConditionalFormatting		*oox_cond_fmt);
-		void convert(OOX::Spreadsheet::CConditionalFormattingRule	*oox_cond_rule);
+		void convert(OOX::Spreadsheet::CConditionalFormatting		*oox_cond_fmtc,
+							std::map<std::wstring, OOX::Spreadsheet::CConditionalFormattingRule*>& mapCFRuleEx, bool isExt);
+		void convert(OOX::Spreadsheet::CConditionalFormattingRule	*oox_cond_rule,
+							std::map<std::wstring, OOX::Spreadsheet::CConditionalFormattingRule*>& mapCFRuleEx, bool isExt);
 		void convert(OOX::Spreadsheet::CAutofilter					*oox_filter);
 		void convert(OOX::Spreadsheet::CFilterColumn				*oox_filter_column);
 		void convert(OOX::Spreadsheet::CDataBar						*oox_cond_databar);

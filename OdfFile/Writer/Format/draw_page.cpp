@@ -88,14 +88,27 @@ void draw_page::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         {
+			office_element_ptr_array deffer_serialization;
+
 			attlist_.serialize(CP_GET_XML_NODE());
 			for (int i = 0; i < content_.size(); i++)
 			{
+				presentation_notes* presentation_notes_ = dynamic_cast<presentation_notes*>(content_[i].get());
+
+				if (presentation_notes_)
+				{
+					deffer_serialization.push_back(content_[i]);
+					continue;
+				}
+				
 				content_[i]->serialize(CP_XML_STREAM());
 			}
 
 			if (animation_)
 				animation_->serialize(CP_XML_STREAM());
+
+			for (size_t i = 0; i < deffer_serialization.size(); i++)
+				deffer_serialization[i]->serialize(CP_XML_STREAM());
 		}
 	}
 }

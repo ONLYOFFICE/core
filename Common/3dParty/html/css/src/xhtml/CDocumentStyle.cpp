@@ -1,10 +1,20 @@
 #include "CDocumentStyle.h"
 
 #include <iostream>
+#include <unordered_set>
 #include <wchar.h>
 #include <math.h>
+#include <cmath>
 #include <algorithm>
 #include <list>
+
+#define DEFAULT_LINEHEIGHT 240
+#define LINEHEIGHTSCALE 10 // Значение LineHeight в OOXML должно быть в 10 раз больше чем указано в стиле
+
+#define VALUE_TO_INT(value, unit_measure) \
+	(NSCSS::UnitMeasure::None != value.GetUnitMeasure()) ? \
+		value.ToInt(unit_measure) : \
+		static_cast<int>(NSCSS::CUnitMeasureConverter::ConvertPx(value.ToDouble(), unit_measure, 96) + 0.5)
 
 namespace NSCSS
 {
@@ -12,23 +22,54 @@ namespace NSCSS
 		: m_oStyle(oStyle), m_bIsPStyle(bIsPStyle)
 	{}
 
+	bool CheckArrays(const std::vector<std::wstring>& arInitial, const std::set<std::wstring>& arFirst, const std::set<std::wstring>& arSecond)
+	{
+		std::unordered_set<std::wstring> arInitialSet(arInitial.begin(), arInitial.end());
+
+		std::vector<std::wstring> arCommonElements1;
+		std::vector<std::wstring> arCommonElements2;
+
+		for (const std::wstring& wsValue : arFirst)
+		{
+			if (arInitialSet.count(wsValue) > 0)
+				arCommonElements1.push_back(wsValue);
+		}
+
+		for (const std::wstring& wsValue : arSecond)
+		{
+			if (arInitialSet.count(wsValue) > 0)
+				arCommonElements2.push_back(wsValue);
+		}
+
+		if (arCommonElements1.size() != arCommonElements2.size())
+			return false;
+
+		std::sort(arCommonElements1.begin(), arCommonElements1.end());
+		std::sort(arCommonElements2.begin(), arCommonElements2.end());
+
+		return arCommonElements1 == arCommonElements2;
+	}
+
 	bool CStyleUsed::operator==(const CStyleUsed &oUsedStyle) const
 	{
-		return (m_bIsPStyle == oUsedStyle.m_bIsPStyle) && (m_oStyle == oUsedStyle.m_oStyle);
+		return m_bIsPStyle == oUsedStyle.m_bIsPStyle &&
+		       CheckArrays(Names_Standard_Styles, m_oStyle.GetParentsNamesSet(), oUsedStyle.m_oStyle.GetParentsNamesSet()) &&
+		       m_oStyle == oUsedStyle.m_oStyle;
 	}
 
 	std::wstring CStyleUsed::getId()
 	{
-		return m_sId;
+		if (m_bIsPStyle)
+			return m_oStyle.GetId();
+
+		return m_oStyle.GetId() + L"-c";
 	}
 
-	void CStyleUsed::setId(const std::wstring &sId)
+	CDocumentStyle::CDocumentStyle() : m_arStandardStyles(Names_Standard_Styles)
 	{
-		m_sId = sId;
+		for (const std::wstring& oNameStandardStyle : Names_Standard_Styles)
+			m_arStandardStyles.push_back(oNameStandardStyle + L"-c");
 	}
-
-	CDocumentStyle::CDocumentStyle() : m_arStandardStyles({L"a", L"li", L"h1", L"h2", L"h3", L"h4", L"h5", L"h6", L"h1-c",
-	    L"h2-c", L"h3-c", L"h4-c", L"h5-c", L"h6-c", L"p-c", L"p", L"div-c", L"div", L"a-c"}) {}
 
 	CDocumentStyle::~CDocumentStyle()
 	{
@@ -99,8 +140,8 @@ namespace NSCSS
 		}
 		sId.pop_back();
 
-		oElement.AddBasicProperties(NSConstValues::NSProperties::BasicProperties::B_Name, sId);
-		oElement.AddBasicProperties(NSConstValues::NSProperties::BasicProperties::B_StyleId, sId);
+		oElement.AddBasicProperties(BProperties::B_Name, sId);
+		oElement.AddBasicProperties(BProperties::B_StyleId, sId);
 	}
 
 	void CDocumentStyle::CreateStandardStyle(const std::wstring& sNameStyle, CXmlElement& oElement)
@@ -148,11 +189,12 @@ namespace NSCSS
 
 			if (!oParentStyle.Empty())
 			{
-				oParentStyle.AddBasicProperties(NSConstValues::NSProperties::BasicProperties::B_StyleId, L"(" + oParentStyle.GetStyleId() + L")");
+				oParentStyle.AddBasicProperties(BProperties::B_BasedOn, L"normal");
+				oParentStyle.AddBasicProperties(BProperties::B_StyleId, L"(" + oParentStyle.GetStyleId() + L")");
 				if (!bIsPStyle)
 				{
-					oParentStyle.AddBasicProperties(NSConstValues::NSProperties::BasicProperties::B_StyleId, oParentStyle.GetStyleId() + L"-c");
-					oParentStyle.AddBasicProperties(NSConstValues::NSProperties::BasicProperties::B_Type, L"character");
+					oParentStyle.AddBasicProperties(BProperties::B_StyleId, oParentStyle.GetStyleId() + L"-c");
+					oParentStyle.AddBasicProperties(BProperties::B_Type, L"character");
 				}
 			}
 		}
@@ -168,7 +210,7 @@ namespace NSCSS
 			{
 				if (bIsPStyle)
 				{
-					oParentStyle.AddBasicProperties(NSConstValues::NSProperties::BasicProperties::B_QFormat, L"true");
+					oParentStyle.AddBasicProperties(BProperties::B_QFormat, L"true");
 					m_sStyle += oParentStyle.GetPStyle();
 				}
 				else
@@ -182,7 +224,7 @@ namespace NSCSS
 				return;
 			}
 
-			oElement.AddBasicProperties(NSConstValues::NSProperties::BasicProperties::B_BasedOn, sParentsStyleID);
+			oElement.AddBasicProperties(BProperties::B_BasedOn, sParentsStyleID);
 		}
 		else if (!oStandardXmlElement.Empty() && !oParentStyle.Empty())
 		{
@@ -194,18 +236,18 @@ namespace NSCSS
 					m_sId = sStandPlusParent;
 					return;
 				}
-				oElement.AddBasicProperties(NSConstValues::NSProperties::BasicProperties::B_BasedOn, sStandPlusParent);
+				oElement.AddBasicProperties(BProperties::B_BasedOn, sStandPlusParent);
 			}
 			else
 			{
 				CXmlElement oTempElement = oParentStyle;
 				oTempElement += oStandardXmlElement;
 
-				oTempElement.AddBasicProperties(NSConstValues::NSProperties::BasicProperties::B_StyleId, sStandPlusParent);
+				oTempElement.AddBasicProperties(BProperties::B_StyleId, sStandPlusParent);
 
 				if (bIsPStyle)
 				{
-					oTempElement.AddBasicProperties(NSConstValues::NSProperties::BasicProperties::B_QFormat, L"true");
+					oTempElement.AddBasicProperties(BProperties::B_QFormat, L"true");
 					m_sStyle += oTempElement.GetPStyle();
 				}
 				else
@@ -218,7 +260,7 @@ namespace NSCSS
 					m_sId = sStandPlusParent;
 					return;
 				}
-				oElement.AddBasicProperties(NSConstValues::NSProperties::BasicProperties::B_BasedOn, oTempElement.GetStyleId());
+				oElement.AddBasicProperties(BProperties::B_BasedOn, oTempElement.GetStyleId());
 			}
 		}
 		else if (!oStandardXmlElement.Empty() && oParentStyle.Empty())
@@ -228,7 +270,7 @@ namespace NSCSS
 			{
 				if (bIsPStyle)
 				{
-					oStandardXmlElement.AddBasicProperties(NSConstValues::NSProperties::BasicProperties::B_QFormat, L"true");
+					oStandardXmlElement.AddBasicProperties(BProperties::B_QFormat, L"true");
 					m_sStyle += oStandardXmlElement.GetPStyle();
 				}
 				else
@@ -241,7 +283,7 @@ namespace NSCSS
 				m_sId = sStandartStyleID;
 				return;
 			}
-			oElement.AddBasicProperties(NSConstValues::NSProperties::BasicProperties::B_BasedOn, sStandartStyleID);
+			oElement.AddBasicProperties(BProperties::B_BasedOn, sStandartStyleID);
 		}
 
 		if (oStyle.Empty() && oElement.Empty())
@@ -254,242 +296,313 @@ namespace NSCSS
 		if(!bIsPStyle)
 			m_sId += L"-c";
 		else
-			oElement.AddBasicProperties(NSConstValues::NSProperties::BasicProperties::B_QFormat, L"true");
+			oElement.AddBasicProperties(BProperties::B_QFormat, L"true");
 
-		oElement.AddBasicProperties(NSConstValues::NSProperties::BasicProperties::B_StyleId, m_sId);
-		oElement.AddBasicProperties(NSConstValues::NSProperties::BasicProperties::B_Name, m_sId);
-		oElement.AddBasicProperties(NSConstValues::NSProperties::BasicProperties::B_Type, bIsPStyle ? L"paragraph" : L"character");
-		oElement.AddBasicProperties(NSConstValues::NSProperties::BasicProperties::B_CustomStyle, L"1");
+		oElement.AddBasicProperties(BProperties::B_StyleId, m_sId);
+		oElement.AddBasicProperties(BProperties::B_Name, m_sId);
+		oElement.AddBasicProperties(BProperties::B_Type, bIsPStyle ? L"paragraph" : L"character");
+		oElement.AddBasicProperties(BProperties::B_CustomStyle, L"1");
 	}
 
-	void CDocumentStyle::SetPStyle   (const NSCSS::CCompiledStyle& oStyle, CXmlElement& oXmlElement)
+	void CDocumentStyle::SetPStyle   (const NSCSS::CCompiledStyle& oStyle, CXmlElement& oXmlElement, bool bIsLite)
 	{
-		ConvertStyle(oStyle, oXmlElement, true);
-		if (oStyle.Empty() && oXmlElement.Empty())
+		if (!bIsLite)
+			ConvertStyle(oStyle, oXmlElement, true);
+
+		if (oStyle.Empty())
 			return;
 
-		oXmlElement.AddPropertiesInP(NSConstValues::NSProperties::ParagraphProperties::P_Jc, oStyle.m_oText.GetAlign().ToWString());
+		const bool bInTable{oStyle.HaveThisParent(L"table")};
+
+		std::wstring wsTextAlign{oStyle.m_oText.GetAlign().ToWString()};
+
+		if (wsTextAlign.empty())
+			wsTextAlign = oStyle.m_oDisplay.GetHAlign().ToWString();
+
+		oXmlElement.AddPropertiesInP(PProperties::P_Jc, wsTextAlign);
 
 		std::wstring sInfValue;
 		sInfValue.reserve(64);
 
-		//TODO:: проверить Permission в Margin
-		if (!oStyle.m_oMargin.Empty() || !oStyle.m_oPadding.Empty() /*&& oStyle.m_oMargin.GetPermission()*/)
-		{
-			const std::wstring& sLeftSide  = (oStyle.m_oMargin.GetLeft()  + oStyle.m_oPadding.GetLeft()) .ToWString();
-			const std::wstring& sRightSide = (oStyle.m_oMargin.GetRight() + oStyle.m_oPadding.GetRight()).ToWString();
+		if (!oStyle.m_oMargin.GetLeft().Empty() && !oStyle.m_oMargin.GetLeft().Zero())
+			sInfValue += L"w:left=\""   + std::to_wstring(oStyle.m_oMargin.GetLeft().ToInt(NSCSS::Twips)) + L"\" ";
 
-			if (!sLeftSide.empty())
-				sInfValue += L"w:left=\""  + sLeftSide + L"\" ";
-			if (!sRightSide.empty())
-				sInfValue += L"w:right=\"" + sRightSide + L"\" ";
-		}
+		if (!oStyle.m_oMargin.GetRight().Empty() && !oStyle.m_oMargin.GetRight().Zero())
+			sInfValue += L"w:right=\""  + std::to_wstring(oStyle.m_oMargin.GetRight().ToInt(NSCSS::Twips)) + L"\" ";
 
-		const std::wstring& sIndent = oStyle.m_oText.GetIndent().ToWString();
-		if (!sIndent.empty())
-			sInfValue += L"w:firstLine=\"" + sIndent + L"\" ";
+		const int nIndent = oStyle.m_oText.GetIndent().ToInt(NSCSS::Twips);
 
-		oXmlElement.AddPropertiesInP(NSConstValues::NSProperties::ParagraphProperties::P_Ind, sInfValue);
+		if (0 != nIndent)
+			sInfValue += L"w:firstLine=\"" + std::to_wstring(nIndent) + L"\" ";
+
+		oXmlElement.AddPropertiesInP(PProperties::P_Ind, sInfValue);
 
 		std::wstring sSpacingValue;
 		sSpacingValue.reserve(128);
 
-		//TODO:: проверить Permission в Margin
-		if (!oStyle.m_oMargin.Empty() || !oStyle.m_oPadding.Empty() /*&& oStyle.m_oMargin.GetPermission()*/)
-		{
-			sSpacingValue += L"w:afterAutospacing=\"1\" w:after=\""   + (oStyle.m_oMargin.GetBottom() + oStyle.m_oPadding.GetBottom()).ToWString() + L"\" ";
-			sSpacingValue += L"w:beforeAutospacing=\"1\" w:before=\"" + (oStyle.m_oMargin.GetTop()    + oStyle.m_oPadding.GetTop())   .ToWString() + L"\" ";
-		}
-		else/* if (!oStyle.m_pBorder.Empty() || !oStyle.m_oMargin.GetPermission())*/
-			    sSpacingValue += L"w:after=\"0\" w:before=\"0\"";
+		if (!oStyle.m_oMargin.GetTop().Empty() && !oStyle.m_oMargin.GetTop().Zero())
+			sSpacingValue += L"w:before=\""  + std::to_wstring(VALUE_TO_INT(oStyle.m_oMargin.GetTop(), NSCSS::Twips))    + L"\" w:beforeAutospacing=\"0\"";
+		else if (oStyle.m_oMargin.GetBottom().Zero() || bInTable)
+			sSpacingValue += L"w:before=\"0\" w:beforeAutospacing=\"0\"";
 
-		const std::wstring &sLineHeight = oStyle.m_oFont.GetLineHeight().ToWString();
-		if (!sLineHeight.empty())
+		if (!oStyle.m_oMargin.GetBottom().Empty() && !oStyle.m_oMargin.GetBottom().Zero())
+			sSpacingValue += L" w:after=\""   + std::to_wstring(VALUE_TO_INT(oStyle.m_oMargin.GetBottom(), NSCSS::Twips)) + L"\" w:afterAutospacing=\"0\"";
+		else if (oStyle.m_oMargin.GetBottom().Zero() || bInTable)
+			sSpacingValue += L" w:after=\"0\" w:afterAutospacing=\"0\"";
+
+		if (!oStyle.m_oFont.GetLineHeight().Empty() && !oStyle.m_oFont.GetLineHeight().Zero())
 		{
-			    sSpacingValue += L" w:line=\"" + sLineHeight + L"\" w:lineRule=\"auto\"";
+			const std::wstring wsLine{std::to_wstring(oStyle.m_oFont.GetLineHeight().ToInt(NSCSS::Twips, DEFAULT_LINEHEIGHT))};
+			const std::wstring wsLineRule{(NSCSS::Percent == oStyle.m_oFont.GetLineHeight().GetUnitMeasure() ? L"auto" : L"atLeast")};
+
+			sSpacingValue += L" w:line=\"" + wsLine + L"\" w:lineRule=\"" + wsLineRule + L"\"";
 		}
-		else if (!oStyle.m_oBorder.Empty())
-		{
-				sSpacingValue += L" w:line=\"" + std::to_wstring(static_cast<short int>(oStyle.m_oFont.GetSize().ToDouble() * 12 + 0.5f)) + L"\" w:lineRule=\"auto\"";
-		}
-		else if (!oStyle.m_oBorder.Empty())
-			    sSpacingValue += L"w:line=\"240\" w:lineRule=\"auto\" ";
+		else if (oStyle.m_oFont.GetLineHeight().Zero() || bInTable)
+			sSpacingValue += L" w:lineRule=\"auto\" w:line=\"240\"";
 
 		if (!sSpacingValue.empty())
-		{
-			oXmlElement.AddPropertiesInP(NSConstValues::NSProperties::ParagraphProperties::P_Spacing, sSpacingValue);
-			oXmlElement.AddPropertiesInP(NSConstValues::NSProperties::ParagraphProperties::P_ContextualSpacing, L"true");
-		}
+			oXmlElement.AddPropertiesInP(PProperties::P_Spacing, sSpacingValue);
 
-		if (!oStyle.m_oBackground.Empty())
-		{
-			const std::wstring wsColor = oStyle.m_oBackground.GetColor().ToWString();
-			if (wsColor != L"ffffff")
-				oXmlElement.AddPropertiesInP(NSConstValues::NSProperties::ParagraphProperties::P_Shd, wsColor);
-		}
+		if (!oStyle.m_oBackground.Empty() && !bInTable)
+			oXmlElement.AddPropertiesInP(PProperties::P_Shd, oStyle.m_oBackground.IsNone() ? L"auto" : oStyle.m_oBackground.GetColor().ToWString());
 
-		if (!oStyle.m_oBorder.Empty())
+		if (!oStyle.m_oBorder.Empty() && !bInTable)
 		{
 			if (oStyle.m_oBorder.EqualSides())
 			{
-				const std::wstring sBorderColor = oStyle.m_oBorder.GetLeftBorder().GetColor().ToWString();
-				const std::wstring sBorderStyle = oStyle.m_oBorder.GetLeftBorder().GetStyle().ToWString();
-				const std::wstring sBorderWidth = oStyle.m_oBorder.GetLeftBorder().GetWidth().ToWString();
-
-				const std::wstring sBorder = L" w:color=\"" + sBorderColor + L"\" w:space=\"0\" w:sz=\"" +
-				        sBorderWidth + L"\" w:val=\"" + sBorderStyle + L"\"";
-
-				oXmlElement.AddPropertiesInP(NSConstValues::NSProperties::ParagraphProperties::P_TopBorder, sBorder);
-				oXmlElement.AddPropertiesInP(NSConstValues::NSProperties::ParagraphProperties::P_LeftBorder, sBorder);
-				oXmlElement.AddPropertiesInP(NSConstValues::NSProperties::ParagraphProperties::P_BottomBorder, sBorder);
-				oXmlElement.AddPropertiesInP(NSConstValues::NSProperties::ParagraphProperties::P_RightBorder, sBorder);
+				SetBorderStyle(oStyle, oXmlElement, PProperties::P_TopBorder);
+				SetBorderStyle(oStyle, oXmlElement, PProperties::P_LeftBorder);
+				SetBorderStyle(oStyle, oXmlElement, PProperties::P_BottomBorder);
+				SetBorderStyle(oStyle, oXmlElement, PProperties::P_RightBorder);
 			}
 			else
 			{
 				if (!oStyle.m_oBorder.GetTopBorder().Empty())
-				{
-					const std::wstring sBorderColor = oStyle.m_oBorder.GetTopBorder().GetColor().ToWString();
-					const std::wstring sBorderStyle = oStyle.m_oBorder.GetTopBorder().GetStyle().ToWString();
-					const std::wstring sBorderWidth = oStyle.m_oBorder.GetTopBorder().GetWidth().ToWString();
-
-					const std::wstring sBorder = L" w:color=\"" + sBorderColor + L"\" w:space=\"4\" w:sz=\"" +
-					        sBorderWidth + L"\" w:val=\"" + sBorderStyle + L"\"";
-
-					oXmlElement.AddPropertiesInP(NSConstValues::NSProperties::ParagraphProperties::P_TopBorder, sBorder);
-				}
+					SetBorderStyle(oStyle, oXmlElement, PProperties::P_TopBorder);
 
 				if (!oStyle.m_oBorder.GetRightBorder().Empty())
-				{
-					const std::wstring sBorderColor = oStyle.m_oBorder.GetRightBorder().GetColor().ToWString();
-					const std::wstring sBorderStyle = oStyle.m_oBorder.GetRightBorder().GetStyle().ToWString();
-					const std::wstring sBorderWidth = oStyle.m_oBorder.GetRightBorder().GetWidth().ToWString();
-
-					const std::wstring sBorder = L" w:color=\"" + sBorderColor + L"\" w:space=\"4\" w:sz=\"" +
-					        sBorderWidth + L"\" w:val=\"" + sBorderStyle + L"\"";
-
-					oXmlElement.AddPropertiesInP(NSConstValues::NSProperties::ParagraphProperties::P_RightBorder, sBorder);
-				}
+					SetBorderStyle(oStyle, oXmlElement, PProperties::P_RightBorder);
 
 				if (!oStyle.m_oBorder.GetBottomBorder().Empty())
-				{
-					const std::wstring sBorderColor = oStyle.m_oBorder.GetBottomBorder().GetColor().ToWString();
-					const std::wstring sBorderStyle = oStyle.m_oBorder.GetBottomBorder().GetStyle().ToWString();
-					const std::wstring sBorderWidth = oStyle.m_oBorder.GetBottomBorder().GetWidth().ToWString();
-
-					const std::wstring sBorder = L" w:color=\"" + sBorderColor + L"\" w:space=\"4\" w:sz=\"" +
-					        sBorderWidth + L"\" w:val=\"" + sBorderStyle + L"\"";
-
-					oXmlElement.AddPropertiesInP(NSConstValues::NSProperties::ParagraphProperties::P_BottomBorder, sBorder);
-				}
+					SetBorderStyle(oStyle, oXmlElement, PProperties::P_BottomBorder);
 
 				if (!oStyle.m_oBorder.GetLeftBorder().Empty())
-				{
-					const std::wstring sBorderColor = oStyle.m_oBorder.GetLeftBorder().GetColor().ToWString();
-					const std::wstring sBorderStyle = oStyle.m_oBorder.GetLeftBorder().GetStyle().ToWString();
-					const std::wstring sBorderWidth = oStyle.m_oBorder.GetLeftBorder().GetWidth().ToWString();
-
-					const std::wstring sBorder = L" w:color=\"" + sBorderColor + L"\" w:space=\"4\" w:sz=\"" +
-					        sBorderWidth + L"\" w:val=\"" + sBorderStyle + L"\"";
-
-					oXmlElement.AddPropertiesInP(NSConstValues::NSProperties::ParagraphProperties::P_LeftBorder, sBorder);
-				}
+					SetBorderStyle(oStyle, oXmlElement, PProperties::P_LeftBorder);
 			}
 		}
 	}
 
-	void CDocumentStyle::SetRStyle(const NSCSS::CCompiledStyle& oStyle, CXmlElement& oXmlElement)
+	void CDocumentStyle::SetBorderStyle(const CCompiledStyle &oStyle, CXmlElement &oXmlElement, const PProperties &enBorderProperty)
 	{
-		ConvertStyle(oStyle, oXmlElement, false);
+		const NSCSS::NSProperties::CBorderSide* pBorder = NULL;
+		const NSCSS::NSProperties::CDigit* pPadding = NULL;
+
+		switch(enBorderProperty)
+		{
+			case PProperties::P_BottomBorder:
+			{
+				pBorder  = &oStyle.m_oBorder.GetBottomBorder();
+				pPadding = &oStyle.m_oPadding.GetBottom();
+				break;
+			}
+			case PProperties::P_LeftBorder:
+			{
+				pBorder = &oStyle.m_oBorder.GetLeftBorder();
+				pPadding = &oStyle.m_oPadding.GetLeft();
+				break;
+			}
+			case PProperties::P_RightBorder:
+			{
+				pBorder = &oStyle.m_oBorder.GetRightBorder();
+				pPadding = &oStyle.m_oPadding.GetRight();
+				break;
+			}
+			case PProperties::P_TopBorder:
+			{
+				pBorder = &oStyle.m_oBorder.GetTopBorder();
+				pPadding = &oStyle.m_oPadding.GetTop();
+				break;
+			}
+			default:
+				return;
+		}
+
+		oXmlElement.AddPropertiesInP(enBorderProperty, CalculateBorderStyle(*pBorder, pPadding));
+	}
+
+	std::wstring CDocumentStyle::CalculateBorderStyle(const NSProperties::CBorderSide &oBorder, const NSProperties::CDigit *pPadding)
+	{
+		if (oBorder.Empty())
+			return L"";
+
+		std::wstring wsColor = oBorder.GetColor().ToWString();
+		std::wstring wsStyle = oBorder.GetStyle().ToWString();
+
+		int nWidth = static_cast<int>(std::round(oBorder.GetWidth().ToDouble(Point) * 8.));
+
+		if (L"double" == wsStyle)
+			nWidth /= 3; // в ooxml double граница формируется из трёх линий
+
+		if (nWidth <= 3)
+			nWidth = 2;
+		else if (nWidth <= 5)
+			nWidth = 4;
+		else if (nWidth <= 7)
+			nWidth = 6;
+		else if (nWidth <= 9)
+			nWidth = 8;
+		else if (nWidth <= 15)
+			nWidth = 12;
+		else if (nWidth <= 21)
+			nWidth = 18;
+		else if (nWidth <= 29)
+			nWidth = 24;
+		else if (nWidth <= 41)
+			nWidth = 36;
+		else
+			nWidth = 48;
+
+		if (wsColor.empty())
+			wsColor = L"auto";
+
+		if (wsStyle.empty())
+			wsStyle = L"single";
+
+		int nSpace{0};
+
+		return  L"w:val=\"" + wsStyle + L"\" w:sz=\"" + std::to_wstring(nWidth) + + L"\" w:space=\"" + std::to_wstring(nSpace) + L"\" w:color=\"" + wsColor + L"\"";
+	}
+
+	void CDocumentStyle::SetRStyle(const NSCSS::CCompiledStyle& oStyle, CXmlElement& oXmlElement, bool bIsLite)
+	{
+		if (!bIsLite)
+			ConvertStyle(oStyle, oXmlElement, false);
+
 		if (oStyle.Empty() && oXmlElement.Empty())
 			return;
 
-		oXmlElement.AddPropertiesInR(NSConstValues::NSProperties::RunnerProperties::R_Highlight, oStyle.m_oBackground.GetColor().ToWString());
-		oXmlElement.AddPropertiesInR(NSConstValues::NSProperties::RunnerProperties::R_Color, oStyle.m_oText.GetColor().ToWString());
-		oXmlElement.AddPropertiesInR(NSConstValues::NSProperties::RunnerProperties::R_U, (oStyle.m_oText.GetDecoration().m_oLine.Underline()) ? L"underline" : L"");
-		oXmlElement.AddPropertiesInR(NSConstValues::NSProperties::RunnerProperties::R_Sz, oStyle.m_oFont.GetSize().ToWString());
-		oXmlElement.AddPropertiesInR(NSConstValues::NSProperties::RunnerProperties::R_RFonts, oStyle.m_oFont.GetFamily().ToWString());
-		oXmlElement.AddPropertiesInR(NSConstValues::NSProperties::RunnerProperties::R_I, oStyle.m_oFont.GetStyle().ToWString());
-		oXmlElement.AddPropertiesInR(NSConstValues::NSProperties::RunnerProperties::R_B, oStyle.m_oFont.GetWeight().ToWString());
-		oXmlElement.AddPropertiesInR(NSConstValues::NSProperties::RunnerProperties::R_SmallCaps, oStyle.m_oFont.GetVariant().ToWString());
+		if (!oStyle.m_oFont.GetSize().Empty())
+			oXmlElement.AddPropertiesInR(RProperties::R_Sz, std::to_wstring(static_cast<int>(oStyle.m_oFont.GetSize().ToDouble(NSCSS::Point) * 2. * oStyle.m_oTransform.GetMatrix().GetFinalValue().sy() + 0.5))); // Значения шрифта увеличивает на 2
+
+		if (oStyle.m_oText.GetDecoration().m_oLine.Underline())
+			oXmlElement.AddPropertiesInR(RProperties::R_U, (!oStyle.m_oText.GetDecoration().m_oStyle.Empty()) ? oStyle.m_oText.GetDecoration().m_oStyle.ToWString() : L"single");
+
+		if (!oStyle.m_oBackground.GetColor().Empty() && !oStyle.m_oBackground.GetColor().None() && !oStyle.m_oBackground.GetColor().Url())
+			oXmlElement.AddPropertiesInR(RProperties::R_Shd, oStyle.m_oBackground.GetColor().ToWString());
+
+		const std::wstring wsHighlight{oStyle.m_oText.GetHighlight().EquateToColor({{{0,   0,   0},   L"black"},    {{0,   0,   255}, L"blue"},      {{0,   255, 255}, L"cyan"},
+		                                                                            {{0,   255, 0},   L"green"},    {{255, 0,   255}, L"magenta"},   {{255, 0,   0},   L"red"},
+		                                                                            {{255, 255, 0},   L"yellow"},   {{255, 255, 255}, L"white"},     {{0,   0,   139}, L"darkBlue"},
+		                                                                            {{0,   139, 139}, L"darkCyan"}, {{0,   100, 0},   L"darkGreen"}, {{139, 0,   139}, L"darkMagenta"},
+		                                                                            {{139, 0,   0},   L"darkRed"},  {{128, 128, 0},   L"darkYellow"},{{169, 169, 169}, L"darkGray"},
+		                                                                            {{211, 211, 211}, L"lightGray"}})};
+
+		if (L"none" != wsHighlight)
+			oXmlElement.AddPropertiesInR(RProperties::R_Highlight, wsHighlight);
+
+		oXmlElement.AddPropertiesInR(RProperties::R_Color, oStyle.m_oText.GetColor().ToWString());
+
+		std::wstring wsFontFamily{oStyle.m_oFont.GetFamily().ToWString()};
+
+		if (L"sans-serif" == wsFontFamily)
+			wsFontFamily = L"Arial";
+		else if (L"serif" == wsFontFamily)
+			wsFontFamily = L"Times New Roman";
+
+		oXmlElement.AddPropertiesInR(RProperties::R_RFonts, oStyle.m_oFont.GetFamily().ToWString());
+		oXmlElement.AddPropertiesInR(RProperties::R_I, oStyle.m_oFont.GetStyle().ToWString());
+		oXmlElement.AddPropertiesInR(RProperties::R_B, oStyle.m_oFont.GetWeight().ToWString());
+		oXmlElement.AddPropertiesInR(RProperties::R_SmallCaps, oStyle.m_oFont.GetVariant().ToWString());
 	}
 
-	void CDocumentStyle::WriteRStyle (const NSCSS::CCompiledStyle& oStyle)
+	bool CDocumentStyle::WriteRStyle(const NSCSS::CCompiledStyle& oStyle)
 	{
+		Clear();
+
 		if(oStyle.GetId().empty())
-		{
-			m_sId = L"normal";
-			return;
-		}
+			return false;
 
 		CStyleUsed structStyle(oStyle, false);
 
-		std::list<CStyleUsed>::iterator oItem = std::find(m_arStyleUsed.begin(), m_arStyleUsed.end(), structStyle);
+		std::vector<CStyleUsed>::iterator oItem = std::find(m_arStyleUsed.begin(), m_arStyleUsed.end(), structStyle);
 
 		if (oItem != m_arStyleUsed.end())
 		{
 			m_sId = (*oItem).getId();
-			return;
+			return true;
 		}
-		CXmlElement oXmlElement;
-		SetRStyle(oStyle, oXmlElement);
-
-		if (!oStyle.Empty() || !oXmlElement.Empty())
-		{
-			structStyle.setId(oXmlElement.GetStyleId());
-			m_arStyleUsed.push_back(structStyle);
-			m_sStyle += oXmlElement.GetRStyle();
-		}
-	}
-
-	void CDocumentStyle::WriteLitePStyle(const CCompiledStyle &oStyle)
-	{
-		if (oStyle.Empty())
-			return;
-
-		CXmlElement oXmlElement;
-		SetPStyle(oStyle, oXmlElement);
-
-		if (!oXmlElement.Empty())
-			m_sStyle += oXmlElement.GetLitePStyle();
-	}
-
-	void CDocumentStyle::WriteLiteRStyle(const CCompiledStyle &oStyle)
-	{
-		if (oStyle.Empty())
-			return;
 
 		CXmlElement oXmlElement;
 		SetRStyle(oStyle, oXmlElement);
 
-		if (!oXmlElement.Empty())
-			m_sStyle += oXmlElement.GetLiteRStyle();
+		if (oXmlElement.Empty())
+			return false;
+
+		m_arStyleUsed.push_back(structStyle);
+		m_sStyle += oXmlElement.GetRStyle();
+
+		return true;
 	}
 
-	void CDocumentStyle::WritePStyle (const NSCSS::CCompiledStyle& oStyle)
+	bool CDocumentStyle::WriteLitePStyle(const CCompiledStyle &oStyle)
 	{
+		Clear();
+
+		if (oStyle.Empty())
+			return false;
+
+		CXmlElement oXmlElement;
+		SetPStyle(oStyle, oXmlElement, true);
+
+		if (oXmlElement.Empty())
+			return false;
+
+		m_sStyle += oXmlElement.GetPStyle(true);
+		return true;
+	}
+
+	bool CDocumentStyle::WriteLiteRStyle(const CCompiledStyle &oStyle)
+	{
+		Clear();
+
+		if (oStyle.Empty())
+			return false;
+
+		CXmlElement oXmlElement;
+		SetRStyle(oStyle, oXmlElement, true);
+
+		if (oXmlElement.Empty())
+			return false;
+
+		m_sStyle += oXmlElement.GetRStyle(true);
+		return true;
+	}
+
+	bool CDocumentStyle::WritePStyle(const NSCSS::CCompiledStyle& oStyle)
+	{
+		Clear();
+
 		if(oStyle.GetId().empty())
-		{
-			m_sId = L"normal";
-			return;
-		}
+			return false;
 
 		CStyleUsed structStyle(oStyle, true);
-		std::list<CStyleUsed>::iterator oItem = std::find(m_arStyleUsed.begin(), m_arStyleUsed.end(), structStyle);
+		std::vector<CStyleUsed>::iterator oItem = std::find(m_arStyleUsed.begin(), m_arStyleUsed.end(), structStyle);
 
 		if (oItem != m_arStyleUsed.end())
 		{
 			m_sId = (*oItem).getId();
-			return;
+			return true;
 		}
 
 		CXmlElement oXmlElement;
 		SetPStyle(oStyle, oXmlElement);
 
-		if (!oStyle.Empty() || !oXmlElement.Empty())
-		{
-			structStyle.setId(oXmlElement.GetStyleId());
-			m_arStyleUsed.push_back(structStyle);
-			m_sStyle += oXmlElement.GetPStyle();
-		}
+		if (oXmlElement.Empty())
+			return false;
+
+		m_arStyleUsed.push_back(structStyle);
+		m_sStyle += oXmlElement.GetPStyle();
+
+		return true;
 	}
 }

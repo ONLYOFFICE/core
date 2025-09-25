@@ -191,6 +191,16 @@ namespace Aggplus
 	{
 	}
 
+	CClipMulti::clip_rasterizer* CClipMulti::GetRasterizer()
+	{
+		if (!m_bIsClip)
+		{
+			m_rasterizer.reset();
+			return &m_rasterizer;
+		}
+		return NULL;
+	}
+
 	void CClipMulti::Create(LONG width, LONG height)
 	{
 		m_lWidth = width;
@@ -212,62 +222,52 @@ namespace Aggplus
 
 		typedef agg::conv_curve<trans_type> conv_crv_type;
 		conv_crv_type c_c_path(trans);
-			 
+
 		m_rasterizer.add_path(c_c_path);
-		m_rasterizer.filling_rule(pPath->m_internal->m_bEvenOdd ? agg::fill_even_odd : agg::fill_non_zero);
+
+		GenerateClip2(pPath->m_internal->m_bEvenOdd);
+	}
+
+	void CClipMulti::GenerateClip2(bool bEvenOdd)
+	{
+		m_rasterizer.filling_rule(bEvenOdd ? agg::fill_even_odd : agg::fill_non_zero);
 
 		m_bIsClip = true;
 		m_bIsClip2 = false;
 	}
 	
-	void CClipMulti::Combine(CGraphicsPath* pPath, CMatrix* pMatrix, agg::sbool_op_e op)
+	void CClipMulti::Combine(bool bEvenOdd, agg::sbool_op_e op, clip_rasterizer* pRasterizer)
 	{
+		if (!pRasterizer)
+			return;
+
 		if (!m_bIsClip)
-			return GenerateClip(pPath, pMatrix);
+			return GenerateClip2(bEvenOdd);
 
 		if (!m_bIsClip2)
 		{
 			// смешивать надо с растерайзером
-			agg::rasterizer_scanline_aa<> rasterizer;
-			rasterizer.clip_box(0, 0, m_lWidth, m_lHeight);
-
-			typedef agg::conv_transform<agg::path_storage> trans_type;
-			trans_type trans(pPath->m_internal->m_agg_ps, pMatrix->m_internal->m_agg_mtx);
-
-			typedef agg::conv_curve<trans_type> conv_crv_type;
-			conv_crv_type c_c_path(trans);
-				 
-			rasterizer.add_path(c_c_path);
-			rasterizer.filling_rule(pPath->m_internal->m_bEvenOdd ? agg::fill_even_odd : agg::fill_non_zero);
+			pRasterizer->filling_rule(bEvenOdd ? agg::fill_even_odd : agg::fill_non_zero);
 
 			scanline_type sl1; 
 			scanline_type sl2;
 			scanline_type sl;
 
-			agg::sbool_combine_shapes_aa(op, m_rasterizer, rasterizer, sl1, sl2, sl, m_storage1);
+			agg::sbool_combine_shapes_aa(op, m_rasterizer, *pRasterizer, sl1, sl2, sl, m_storage1);
 
 			m_lCurStorage = 1;
 		}
 		else
 		{
 			// надо смешивать со стораджем
-			agg::rasterizer_scanline_aa<> rasterizer;
-			rasterizer.clip_box(0, 0, m_lWidth, m_lHeight);
 
-			typedef agg::conv_transform<agg::path_storage> trans_type;
-			trans_type trans(pPath->m_internal->m_agg_ps, pMatrix->m_internal->m_agg_mtx);
-
-			typedef agg::conv_curve<trans_type> conv_crv_type;
-			conv_crv_type c_c_path(trans);
-				 
-			rasterizer.add_path(c_c_path);
-			rasterizer.filling_rule(pPath->m_internal->m_bEvenOdd ? agg::fill_even_odd : agg::fill_non_zero);
+			pRasterizer->filling_rule(op ? agg::fill_even_odd : agg::fill_non_zero);
 
 			scanline_type sl1; 
 			scanline_type sl2;
 			scanline_type sl; 
 
-			agg::sbool_combine_shapes_aa(op, rasterizer, (m_lCurStorage == 1) ? m_storage1 : m_storage2, sl1, sl2, sl, 
+			agg::sbool_combine_shapes_aa(op, *pRasterizer, (m_lCurStorage == 1) ? m_storage1 : m_storage2, sl1, sl2, sl,
 														(m_lCurStorage == 1) ? m_storage2 : m_storage1);
 
 			if (1 == m_lCurStorage)

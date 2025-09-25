@@ -46,6 +46,8 @@
 #include "Settings/Settings.h"
 #include "Logic/SectionProperty.h"
 
+#include "../../OfficeUtils/src/OfficeUtils.h"
+
 namespace OOX
 {
 	CDocxFlat::CDocxFlat() : File(dynamic_cast<Document*>(this))
@@ -53,19 +55,21 @@ namespace OOX
 	}
 	CDocxFlat::CDocxFlat(const CPath& oFilePath) : File(dynamic_cast<Document*>(this))
 	{
-		read( oFilePath );
+		read(oFilePath);
 	}
 	CDocxFlat::~CDocxFlat()
 	{
 	}
 	void CDocxFlat::read(const CPath& oFilePath)
 	{
+		m_sDocumentPath = oFilePath.GetPath();
+		
 		XmlUtils::CXmlLiteReader oReader;
 
-		if ( !oReader.FromFile( oFilePath.GetPath() ) )
+		if (!oReader.FromFile(oFilePath.GetPath()))
 			return;
 
-		if ( !oReader.ReadNextNode() )
+		if (!oReader.ReadNextNode())
 			return;
 
 		fromXML(oReader);
@@ -96,15 +100,15 @@ namespace OOX
 	}
 	void CDocxFlat::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{
-		WritingElement_ReadAttributes_Start( oReader )
-		WritingElement_ReadAttributes_Read_if	( oReader, L"xml:space", m_oSpace )
-		WritingElement_ReadAttributes_End( oReader )
+		WritingElement_ReadAttributes_Start(oReader)
+			WritingElement_ReadAttributes_Read_if(oReader, L"xml:space", m_oSpace)
+		WritingElement_ReadAttributes_End(oReader)
 	}
 	void CDocxFlat::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	{
-		ReadAttributes( oReader );
+		ReadAttributes(oReader);
 
-		if ( oReader.IsEmptyNode() )
+		if (oReader.IsEmptyNode())
 			return;
 
 		m_pComments = new OOX::CComments(this);
@@ -112,24 +116,25 @@ namespace OOX
 		m_pEndnotes = new OOX::CEndnotes(this);
 
 		int nDepth = oReader.GetDepth();
-		while ( oReader.ReadNextSiblingNode(nDepth) )
+		while (oReader.ReadNextSiblingNode(nDepth))
 		{
 			std::wstring sName = oReader.GetName();
 
-			if ( L"w:body" == sName )
+			if (L"w:body" == sName)
 			{
 				m_pDocument = new CDocument(dynamic_cast<Document*>(this));
 				m_currentContainer = dynamic_cast<OOX::IFileContainer*>(m_pDocument.GetPointer());
 				m_pDocument->fromXML(oReader);
+				m_pDocument->m_bMacroEnabled = false;
 			}
-			else if ( L"w:fonts" == sName )
+			else if (L"w:fonts" == sName)
 				m_pFontTable = oReader;
 			else if (L"w:lists" == sName)
 			{
 				m_pNumbering = new CNumbering(dynamic_cast<Document*>(this));
 				m_pNumbering->fromXML(oReader);
 			}
-			else if ( L"w:styles" == sName )
+			else if (L"w:styles" == sName)
 				m_pStyles = oReader;
 			else if (L"w:docPr" == sName)
 			{
@@ -145,8 +150,39 @@ namespace OOX
 			{
 				ReadDocumentProperties(oReader);
 			}
+			else if (L"w:docOleData" == sName && !oReader.IsEmptyNode())
+			{
+				m_oDocOleData = new OOX::Logic::CDocSuppData(WritingElement::m_pMainDocument);
+				m_oDocOleData->fromXML(oReader);
+				
+				ParsingOleData();
+			}
+			else if (L"w:docSuppData" == sName && !oReader.IsEmptyNode())
+			{
+				//m_oDocSuppData = new OOX::Logic::CDocSuppData(WritingElement::m_pMainDocument);
+				//m_oDocSuppData->fromXML(oReader);
+				//
+				//ParsingSuppData();
+			}
+			//CustomDocumentProperties
 		}
 
+		if (!m_sCompatibilityMode.IsInit() && m_pCore.IsInit() && (m_pCore->m_sVersion.IsInit()))
+		{
+			if (false == m_pSettings.IsInit()) m_pSettings = new CSettings(this);
+			if (m_pSettings->m_oCompat.IsInit()) m_pSettings->m_oCompat.Init();
+
+			Settings::CCompatSetting* pSett = new Settings::CCompatSetting();
+			pSett->m_sName = L"compatibilityMode";
+			pSett->m_sUri = L"http://schemas.microsoft.com/office/word";
+			pSett->m_sVal = m_pCore->m_sVersion;
+			m_pSettings->m_oCompat->m_arrCompatSettings.push_back(pSett);
+		}
+
+		if ((m_oDocSuppData.IsInit()) && (m_oDocSuppData->m_oBinData.IsInit()) && (m_pDocument.IsInit()))
+		{
+			m_pDocument->m_bMacroEnabled = true;
+		}
 		if (false == m_pStyles->m_oDocDefaults.IsInit())
 			m_pStyles->m_oDocDefaults.Init();
 
@@ -211,7 +247,7 @@ namespace OOX
 	{
 		if (oReader.IsEmptyNode())
 			return;
-		
+
 		m_pApp = new OOX::CApp(this);
 		m_pCore = new OOX::CCore(this);
 
@@ -296,7 +332,7 @@ namespace OOX
 				m_pApp->m_nWords = oReader.GetText2();
 		}
 	}
-	OOX::CHdrFtr *CDocxFlat::GetHeaderOrFooter(const OOX::RId& rId) const
+	OOX::CHdrFtr* CDocxFlat::GetHeaderOrFooter(const OOX::RId& rId) const
 	{
 		OOX::IFileContainer* pDocumentContainer = (OOX::IFileContainer*)m_pDocument.GetPointer();
 
@@ -307,4 +343,68 @@ namespace OOX
 			return NULL;
 	}
 
+	void CDocxFlat::ParsingOleData()
+	{
+		if (false == m_oDocOleData.IsInit()) return;
+		if (false == m_oDocOleData->m_oBinData.IsInit()) return;
+
+		std::vector<BYTE> pData = m_oDocOleData->m_oBinData->GetBytes();
+
+		NSFile::CFileBinary fileTest;
+
+		std::wstring tempOleData = m_sTempPath + FILE_SEPARATOR_STR + L"DocOleData.bin";
+
+		if (false == fileTest.CreateFileW(tempOleData)) return;
+		
+		fileTest.WriteFile(pData.data(), pData.size());
+		fileTest.CloseFile();
+
+		POLE::Storage storage(tempOleData.c_str());
+		if (false == storage.open()) return;
+
+		std::list<std::wstring> msoStores = storage.entries();
+
+		int index = 0;
+		for (std::list<std::wstring>::iterator it = msoStores.begin(); it != msoStores.end(); ++it)
+		{
+			POLE::Stream stream(&storage, *it);
+			if (stream.fail()) continue;
+		
+			smart_ptr<OOX::OleObject> pOleObjectFile = smart_ptr<OOX::OleObject>(new OOX::OleObject(this, false, true));
+			OOX::CPath filename(L"oleObject.bin");
+			pOleObjectFile->set_filename(filename, false, true);
+
+			pOleObjectFile->m_Data.resize(stream.size());
+			_UINT64 size = stream.read(pOleObjectFile->m_Data.data(), stream.size());
+			pOleObjectFile->m_Data.resize(size);
+
+			COfficeUtils oCOfficeUtils(NULL);
+			if (oCOfficeUtils.IsArchive(pOleObjectFile->m_Data.data(), pOleObjectFile->m_Data.size()))
+			{//gzip
+				ULONG nBytesUncompress = (std::max)((_UINT32)pOleObjectFile->m_Data.size() * 10, ((_UINT32*)pOleObjectFile->m_Data.data())[0]);
+				BYTE* pDataUncompress = new BYTE[nBytesUncompress];
+				
+				if (S_OK == oCOfficeUtils.Uncompress(pDataUncompress, &nBytesUncompress, pOleObjectFile->m_Data.data() + 4, pOleObjectFile->m_Data.size() - 4))
+				{
+					pOleObjectFile->m_Data.resize(nBytesUncompress);
+					memcpy(pOleObjectFile->m_Data.data(), pDataUncompress, nBytesUncompress);
+					delete[]pDataUncompress;
+				}
+			}
+
+			NSCommon::smart_ptr<OOX::File> file = pOleObjectFile.smart_dynamic_cast<OOX::File>();
+			m_mapOleData[*it] = file;
+		}
+
+	}
+	void CDocxFlat::ParsingSuppData()
+	{
+		if (false == m_oDocSuppData.IsInit()) return;
+		if (false == m_oDocSuppData->m_oBinData.IsInit()) return;
+
+		std::vector<BYTE> pData = m_oDocSuppData->m_oBinData->GetBytes();
+		//COfficeUtils oCOfficeUtils(NULL);
+	
+
+	}
 }

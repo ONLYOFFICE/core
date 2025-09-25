@@ -37,7 +37,9 @@
 //#include "Vml.h"
 #include "VmlOfficeDrawing.h"
 
+#include "../../../OfficeUtils/src/OfficeUtils.h"
 #include "../../../DesktopEditor/raster/ImageFileFormatChecker.h"
+#include "../../../OOXML/PPTXFormat/DrawingConverter/ASCOfficeDrawingConverter.h"
 
 namespace OOX
 {
@@ -102,6 +104,31 @@ namespace OOX
 			}
 
 			oReader.MoveToElement();
+		}
+		std::vector<BYTE> CBinData::GetBytes()
+		{
+			std::vector<BYTE> result;
+			if (!m_sData.IsInit()) return result;
+			
+			int dstLen = Base64::Base64DecodeGetRequiredLength((int)m_sData->size());
+			result.resize(dstLen);
+			Base64::Base64Decode(m_sData->c_str(), (int)m_sData->size(), result.data(), &dstLen);
+			result.resize(dstLen);
+			
+			//COfficeUtils oCOfficeUtils(NULL);
+			//if (oCOfficeUtils.IsArchive(result.data(), result.size()))
+			//{//gzip
+			//	ULONG nBytesUncompress = result.size() * 10;
+			//	BYTE* pDataUncompress = new BYTE[nBytesUncompress];
+			//	if (S_OK == oCOfficeUtils.Uncompress(pDataUncompress, &nBytesUncompress, result.data(), result.size()))
+			//	{
+			//		result.resize(nBytesUncompress);
+			//		memcpy(result.data(), pDataUncompress, nBytesUncompress);
+			//		delete[]pDataUncompress;
+			//	}
+			//}
+
+			return result;
 		}
 
 		CControl::CControl(OOX::Document *pMain) : WritingElement(pMain) {}
@@ -205,83 +232,84 @@ namespace OOX
 					switch (wChar2)
 					{
 					case 'b':
-						if (_T("o:bottom") == sName)
+						if (L"o:bottom" == sName)
 							pItem = new OOX::VmlOffice::CStrokeChild(m_pMainDocument);
 
 						break;
 
 					case 'c':
-						if (_T("o:callout") == sName)
+						if (L"o:callout" == sName)
 							pItem = new OOX::VmlOffice::CCallout(m_pMainDocument);
-						else if (_T("o:clippath") == sName)
+						else if (L"o:clippath" == sName)
 							pItem = new OOX::VmlOffice::CClipPath(m_pMainDocument);
-						else if (_T("o:column") == sName)
+						else if (L"o:column" == sName)
 							pItem = new OOX::VmlOffice::CStrokeChild(m_pMainDocument);
-						else if (_T("o:complex") == sName)
+						else if (L"o:complex" == sName)
 							pItem = new OOX::VmlOffice::CComplex(m_pMainDocument);
 
 						break;
 
 					case 'd':
-						if (_T("o:diagram") == sName)
+						if (L"o:diagram" == sName)
 							pItem = new OOX::VmlOffice::CDiagram(m_pMainDocument);
 
 						break;
 
 					case 'e':
-						if (_T("o:equationxml") == sName)
+						if (L"o:equationxml" == sName)
 							pItem = new OOX::VmlOffice::CEquationXml(m_pMainDocument);
-						else if (_T("o:extrusion") == sName)
+						else if (L"o:extrusion" == sName)
 							pItem = new OOX::VmlOffice::CExtrusion(m_pMainDocument);
 
 						break;
 
 					case 'f':
-						if (_T("o:fill") == sName)
+						if (L"o:fill" == sName)
 							pItem = new OOX::VmlOffice::CFill(m_pMainDocument);
 
 						break;
 
 					case 'i':
-						if (_T("o:ink") == sName)
+						if (L"o:ink" == sName)
 							pItem = new OOX::VmlOffice::CInk(m_pMainDocument);
 
 						break;
 
 					case 'l':
-						if (_T("o:left") == sName)
+						if (L"o:left" == sName)
 							pItem = new OOX::VmlOffice::CStrokeChild(m_pMainDocument);
-						else if (_T("o:lock") == sName)
+						else if (L"o:lock" == sName)
 							pItem = new OOX::VmlOffice::CLock(m_pMainDocument);
 
 						break;
 
 					case 'O':
-						if (_T("o:OLEObject") == sName)
-							pItem = new OOX::VmlOffice::COLEObject(m_pMainDocument);
-
-						break;
+						if (L"o:OLEObject" == sName)
+						{
+							m_oOLEObject = new OOX::VmlOffice::COLEObject(m_pMainDocument);
+							m_oOLEObject->fromXML(oSubReader);
+						}break;
 
 					case 'r':
-						if (_T("o:right") == sName)
+						if (L"o:right" == sName)
 							pItem = new OOX::VmlOffice::CStrokeChild(m_pMainDocument);
 
 						break;
 
 					case 's':
-						if (_T("o:shapedefaults") == sName)
+						if (L"o:shapedefaults" == sName)
 							pItem = new OOX::VmlOffice::CShapeDefaults(m_pMainDocument);
-						else if (_T("o:shapelayout") == sName)
+						else if (L"o:shapelayout" == sName)
 							pItem = new OOX::VmlOffice::CShapeLayout(m_pMainDocument);
-						else if (_T("o:signatureline") == sName)
+						else if (L"o:signatureline" == sName)
 							pItem = new OOX::VmlOffice::CSignatureLine(m_pMainDocument);
-						else if (_T("o:skew") == sName)
+						else if (L"o:skew" == sName)
 							pItem = new OOX::VmlOffice::CSkew(m_pMainDocument);
 
 						break;
 
 					case 't':
-						if (_T("o:top") == sName)
+						if (L"o:top" == sName)
 							pItem = new OOX::VmlOffice::CStrokeChild(m_pMainDocument);
 
 						break;
@@ -296,59 +324,59 @@ namespace OOX
 					switch (wChar2)
 					{
 					case 'a':
-						if (_T("v:arc") == sName)
+						if (L"v:arc" == sName)
 						{
 							m_oShapeElement = new OOX::Vml::CArc(m_pMainDocument);
 							m_oShapeElement->fromXML(oSubReader);
 						}break;
 
 					case 'b':
-						if (_T("v:background") == sName)
+						if (L"v:background" == sName)
 							pItem = new OOX::Vml::CBackground(m_pMainDocument);
 
 						break;
 
 					case 'c':
-						if (_T("v:curve") == sName)
+						if (L"v:curve" == sName)
 						{
 							m_oShapeElement = new OOX::Vml::CCurve(m_pMainDocument);//???
 							m_oShapeElement->fromXML(oSubReader);
 						}break;
 					case 'f':
-						if (_T("v:fill") == sName)
+						if (L"v:fill" == sName)
 							pItem = new OOX::Vml::CFill(m_pMainDocument);
-						else if (_T("v:formulas") == sName)
+						else if (L"v:formulas" == sName)
 							pItem = new OOX::Vml::CFormulas(m_pMainDocument);
 
 						break;
 
 					case 'g':
-						if (_T("v:group") == sName)
+						if (L"v:group" == sName)
 						{
 							m_oShapeElement = new OOX::Vml::CGroup(m_pMainDocument);
 							m_oShapeElement->fromXML(oSubReader);
 						}break;
 
 					case 'h':
-						if (_T("v:handles") == sName)
+						if (L"v:handles" == sName)
 							pItem = new OOX::Vml::CHandles(m_pMainDocument);
 
 						break;
 
 					case 'i':
-						if (_T("v:image") == sName)
+						if (L"v:image" == sName)
 						{
 							m_oShapeElement = new OOX::Vml::CImage(m_pMainDocument);
 							m_oShapeElement->fromXML(oSubReader);
 						}
-						else if (_T("v:imagedata") == sName)
+						else if (L"v:imagedata" == sName)
 						{
 							pItem = pImageData = new OOX::Vml::CImageData(m_pMainDocument);
 						}
 						break;
 
 					case 'l':
-						if (_T("v:line") == sName)
+						if (L"v:line" == sName)
 						{
 							m_oShapeElement = new OOX::Vml::CLine(m_pMainDocument);
 							m_oShapeElement->fromXML(oSubReader);
@@ -356,7 +384,7 @@ namespace OOX
 						break;
 
 					case 'o':
-						if (_T("v:oval") == sName)
+						if (L"v:oval" == sName)
 						{
 							m_oShapeElement = new OOX::Vml::COval(m_pMainDocument);
 							m_oShapeElement->fromXML(oSubReader);
@@ -364,9 +392,9 @@ namespace OOX
 						break;
 
 					case 'p':
-						if (_T("v:path") == sName)
+						if (L"v:path" == sName)
 							pItem = new OOX::Vml::CPath(m_pMainDocument);
-						else if (_T("v:polyline") == sName)
+						else if (L"v:polyline" == sName)
 						{
 							m_oShapeElement = new OOX::Vml::CPolyLine(m_pMainDocument);
 							m_oShapeElement->fromXML(oSubReader);
@@ -375,12 +403,12 @@ namespace OOX
 						break;
 
 					case 'r':
-						if (_T("v:rect") == sName)
+						if (L"v:rect" == sName)
 						{
 							m_oShapeElement = new OOX::Vml::CRect(m_pMainDocument);
 							m_oShapeElement->fromXML(oSubReader);
 						}
-						else if (_T("v:roundrect") == sName)
+						else if (L"v:roundrect" == sName)
 						{
 							m_oShapeElement = new OOX::Vml::CRoundRect(m_pMainDocument);
 							m_oShapeElement->fromXML(oSubReader);
@@ -388,27 +416,27 @@ namespace OOX
 						break;
 
 					case 's':
-						if (_T("v:shadow") == sName)
+						if (L"v:shadow" == sName)
 							pItem = new OOX::Vml::CShadow(m_pMainDocument);
-						else if (_T("v:shape") == sName)
+						else if (L"v:shape" == sName)
 						{
 							m_oShapeElement = new OOX::Vml::CShape(m_pMainDocument);
 							m_oShapeElement->fromXML(oSubReader);
 						}
-						else if (_T("v:shapetype") == sName)
+						else if (L"v:shapetype" == sName)
 						{
 							m_oShapeType = new OOX::Vml::CShapeType(m_pMainDocument);
 							m_oShapeType->fromXML(oSubReader);
 						}
-						else if (_T("v:stroke") == sName)
+						else if (L"v:stroke" == sName)
 							pItem = new OOX::Vml::CStroke(m_pMainDocument);
 
 						break;
 
 					case 't':
-						if (_T("v:textbox") == sName)
+						if (L"v:textbox" == sName)
 							pItem = new OOX::Vml::CTextbox(m_pMainDocument);
-						else if (_T("v:textpath") == sName)
+						else if (L"v:textpath" == sName)
 							pItem = new OOX::Vml::CTextPath(m_pMainDocument);
 
 						break;
@@ -432,19 +460,36 @@ namespace OOX
 							if (docx_flat)
 							{
 								smart_ptr<OOX::Image> pImageFile = smart_ptr<OOX::Image>(new OOX::Image(m_pMainDocument, true));
-
-								int dstLen = Base64::Base64DecodeGetRequiredLength((int)m_oBinData->m_sData->size());
-								pImageFile->m_Data.resize(dstLen);
-								Base64::Base64Decode(m_oBinData->m_sData->c_str(), (int)m_oBinData->m_sData->size(), pImageFile->m_Data.data(), &dstLen);
-								pImageFile->m_Data.resize(dstLen);
+								pImageFile->m_Data = m_oBinData->GetBytes();
 
 								CImageFileFormatChecker fileChecker;
-								std::wstring ext = fileChecker.DetectFormatByData(pImageFile->m_Data.data(), dstLen);
+								std::wstring ext = fileChecker.DetectFormatByData(pImageFile->m_Data.data(), pImageFile->m_Data.size());
+
+								if (ext.empty())
+								{
+									COfficeUtils oCOfficeUtils(NULL);
+									if (oCOfficeUtils.IsArchive(pImageFile->m_Data.data(), pImageFile->m_Data.size()))
+									{//gzip
+										ULONG nBytesUncompress = pImageFile->m_Data.size() * 10;
+										BYTE* pDataUncompress = new BYTE[nBytesUncompress];
+										if (S_OK == oCOfficeUtils.Uncompress(pDataUncompress, &nBytesUncompress, pImageFile->m_Data.data(), pImageFile->m_Data.size()))
+										{
+											ext = fileChecker.DetectFormatByData(pDataUncompress, nBytesUncompress);
+
+											if (false == ext.empty())
+											{
+												pImageFile->m_Data.resize(nBytesUncompress);
+												memcpy(pImageFile->m_Data.data(), pDataUncompress, nBytesUncompress);
+												delete []pDataUncompress;
+											}
+										}
+									}
+								}
 								if (false == ext.empty())
 								{
 									OOX::CPath filename(L"image." + ext);
 									pImageFile->set_filename(filename, false, true);
-									
+
 									NSCommon::smart_ptr<OOX::File> file = pImageFile.smart_dynamic_cast<OOX::File>();
 									const OOX::RId rId = docx_flat->m_currentContainer->Add(file);
 
@@ -456,7 +501,6 @@ namespace OOX
 							}
 						}
 					}
-
 					break;
 				}
 
@@ -469,7 +513,7 @@ namespace OOX
 		}
 		std::wstring CPicture::toXML() const
 		{
-			std::wstring sResult = _T("<w:pict>");
+			std::wstring sResult = m_oOLEObject.IsInit() ? L"<w:object>" : L"<w:pict>";
 
 			for (size_t i = 0; i < m_arrItems.size(); ++i)
 			{
@@ -487,10 +531,12 @@ namespace OOX
 			if (m_oControl.IsInit())
 				sResult += m_oControl->toXML();
 
-			//if (m_oBinData.IsInit())
-			//	sResult += m_oBinData->toXML();
+			if (m_oOLEObject.IsInit())
+			{
+				sResult += m_oOLEObject->toXML();
+			}
 
-			sResult += _T("</w:pict>");
+			sResult += m_oOLEObject.IsInit() ? L"</w:object>" : L"</w:pict>";
 
 			return sResult;
 		}
@@ -498,7 +544,7 @@ namespace OOX
 		{
 			return et_w_pict;
 		}
-
+//--------------------------------------------------------------------------------------------------------------------------
 		CObject::CObject(OOX::Document *pMain) : WritingElementWithChilds<>(pMain) {}
 		CObject::~CObject()
 		{
@@ -516,9 +562,24 @@ namespace OOX
 
 												//альтернатива pptx
 			std::wstring sXml; //??? + ole наверно что то (лень ...)
-			sXml += _T("<root xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\">");
+			sXml += L"<root \
+xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" \
+xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" \
+xmlns:o=\"urn:schemas-microsoft-com:office:office\" \
+xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" \
+xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" \
+xmlns:v=\"urn:schemas-microsoft-com:vml\" \
+xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" \
+xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" \
+xmlns:w10=\"urn:schemas-microsoft-com:office:word\" \
+xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" \
+xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" \
+xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" \
+xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" \
+xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" \
+xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\">";
 			sXml += m_sXml.get();
-			sXml += _T("</root>");
+			sXml += L"</root>";
 
 			XmlUtils::CXmlLiteReader oSubReader;
 			oSubReader.FromString(sXml);
@@ -543,79 +604,79 @@ namespace OOX
 					switch (wChar2)
 					{
 					case 'b':
-						if (_T("o:bottom") == sName)
+						if (L"o:bottom" == sName)
 							AssignPtrXmlContent(pItem, OOX::VmlOffice::CStrokeChild, oSubReader)
 						break;
 
 					case 'c':
-						if (_T("o:callout") == sName)
+						if (L"o:callout" == sName)
 							AssignPtrXmlContent(pItem, OOX::VmlOffice::CCallout, oSubReader)
-						else if (_T("o:clippath") == sName)
+						else if (L"o:clippath" == sName)
 							AssignPtrXmlContent(pItem, OOX::VmlOffice::CClipPath, oSubReader)
-						else if (_T("o:column") == sName)
+						else if (L"o:column" == sName)
 							AssignPtrXmlContent(pItem, OOX::VmlOffice::CStrokeChild, oSubReader)
-						else if (_T("o:complex") == sName)
+						else if (L"o:complex" == sName)
 							AssignPtrXmlContent(pItem, OOX::VmlOffice::CComplex, oSubReader)
 
 						break;
 
 					case 'd':
-						if (_T("o:diagram") == sName)
+						if (L"o:diagram" == sName)
 							AssignPtrXmlContent(pItem, OOX::VmlOffice::CDiagram, oSubReader)
 
 						break;
 
 					case 'e':
-						if (_T("o:equationxml") == sName)
+						if (L"o:equationxml" == sName)
 							AssignPtrXmlContent(pItem, OOX::VmlOffice::CEquationXml, oSubReader)
-						else if (_T("o:extrusion") == sName)
+						else if (L"o:extrusion" == sName)
 							AssignPtrXmlContent(pItem, OOX::VmlOffice::CExtrusion, oSubReader)
 
 						break;
 
 					case 'f':
-						if (_T("o:fill") == sName)
+						if (L"o:fill" == sName)
 							AssignPtrXmlContent(pItem, OOX::VmlOffice::CFill, oSubReader)
 
 						break;
 
 					case 'i':
-						if (_T("o:ink") == sName)
+						if (L"o:ink" == sName)
 							AssignPtrXmlContent(pItem, OOX::VmlOffice::CInk, oSubReader)
 
 						break;
 
 					case 'l':
-						if (_T("o:left") == sName)
+						if (L"o:left" == sName)
 							AssignPtrXmlContent(pItem, OOX::VmlOffice::CStrokeChild, oSubReader)
-						else if (_T("o:lock") == sName)
+						else if (L"o:lock" == sName)
 							AssignPtrXmlContent(pItem, OOX::VmlOffice::CLock, oSubReader)
 
 						break;
 
 					case 'O':// собственно это и есть самый главный под-объект
-						if (_T("o:OLEObject") == sName)
+						if (L"o:OLEObject" == sName)
 							m_oOleObject = oSubReader;
 						break;
 
 					case 'r':
-						if (_T("o:right") == sName)
+						if (L"o:right" == sName)
 							AssignPtrXmlContent(pItem, OOX::VmlOffice::CStrokeChild, oSubReader)
 						break;
 
 					case 's':
-						if (_T("o:shapedefaults") == sName)
+						if (L"o:shapedefaults" == sName)
 							AssignPtrXmlContent(pItem, OOX::VmlOffice::CShapeDefaults, oSubReader)
-						else if (_T("o:shapelayout") == sName)
+						else if (L"o:shapelayout" == sName)
 							AssignPtrXmlContent(pItem, OOX::VmlOffice::CShapeLayout, oSubReader)
-						else if (_T("o:signatureline") == sName)
+						else if (L"o:signatureline" == sName)
 							AssignPtrXmlContent(pItem, OOX::VmlOffice::CSignatureLine, oSubReader)
-						else if (_T("o:skew") == sName)
+						else if (L"o:skew" == sName)
 							AssignPtrXmlContent(pItem, OOX::VmlOffice::CSkew, oSubReader)
 						break;
 
 					case 't':
-						if (_T("o:top") == sName)
+						if (L"o:top" == sName)
 							AssignPtrXmlContent(pItem, OOX::VmlOffice::CStrokeChild, oSubReader)
 						break;
 					}
@@ -629,51 +690,51 @@ namespace OOX
 					switch (wChar2)
 					{
 					case 'b':
-						if (_T("v:background") == sName)
+						if (L"v:background" == sName)
 							AssignPtrXmlContent(pItem, OOX::Vml::CBackground, oSubReader)
 						break;
 
 					case 'f':
-						if (_T("v:fill") == sName)
+						if (L"v:fill" == sName)
 							AssignPtrXmlContent(pItem, OOX::Vml::CFill, oSubReader)
-						else if (_T("v:formulas") == sName)
+						else if (L"v:formulas" == sName)
 							AssignPtrXmlContent(pItem, OOX::Vml::CFormulas, oSubReader)
 						break;
 
 					case 'h':
-						if (_T("v:handles") == sName)
+						if (L"v:handles" == sName)
 							AssignPtrXmlContent(pItem, OOX::Vml::CHandles, oSubReader)
 						break;
 
 					case 'i':
-						if (_T("v:image") == sName)
+						if (L"v:image" == sName)
 							AssignPtrXmlContent(pItem, OOX::Vml::CImage, oSubReader)
-						else if (_T("v:imagedata") == sName)
+						else if (L"v:imagedata" == sName)
 							AssignPtrXmlContent(pItem, OOX::Vml::CImageData, oSubReader)
 						break;
 					case 'p':
-						if (_T("v:path") == sName)
+						if (L"v:path" == sName)
 							AssignPtrXmlContent(pItem, OOX::Vml::CPath, oSubReader)
 						break;
 					case 'r':
-						if (_T("v:rect") == sName)
+						if (L"v:rect" == sName)
 							m_oShape = oSubReader;
 						break;
 					case 's':
-						if (_T("v:shadow") == sName)
+						if (L"v:shadow" == sName)
 							AssignPtrXmlContent(pItem, OOX::Vml::CShadow, oSubReader)
-						else if (_T("v:shape") == sName)
+						else if (L"v:shape" == sName)
 							m_oShape = oSubReader;
-						else if (_T("v:shapetype") == sName)
+						else if (L"v:shapetype" == sName)
 							m_oShapeType = oSubReader;
-						else if (_T("v:stroke") == sName)
+						else if (L"v:stroke" == sName)
 							AssignPtrXmlContent(pItem, OOX::Vml::CStroke, oSubReader)
 						break;
 
 					case 't':
-						if (_T("v:textbox") == sName)
+						if (L"v:textbox" == sName)
 							AssignPtrXmlContent(pItem, OOX::Vml::CTextbox, oSubReader)
-						else if (_T("v:textpath") == sName)
+						else if (L"v:textpath" == sName)
 							AssignPtrXmlContent(pItem, OOX::Vml::CTextPath, oSubReader)
 						break;
 					}
@@ -698,7 +759,7 @@ namespace OOX
 		}
 		std::wstring CObject::toXML() const
 		{
-			return _T("<w:object/>");
+			return L"<w:object/>";
 		}	
 		EElementType CObject::getType() const
 		{

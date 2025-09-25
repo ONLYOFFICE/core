@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
@@ -34,7 +34,9 @@
 
 #include "../../Common/SimpleTypes_Shared.h"
 #include "../../XlsbFormat/Biff12_records/MergeCell.h"
-
+#include "../../XlsbFormat/Biff12_records/BeginMergeCells.h"
+#include "../../XlsbFormat/Biff12_unions/MERGECELLS.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Binary/CFStreamCacheWriter.h"
 namespace OOX
 {
 	namespace Spreadsheet
@@ -69,6 +71,22 @@ namespace OOX
 		{
 			ReadAttributes(obj);
 		}
+		XLS::BaseObjectPtr CMergeCell::toBin()
+		{
+			auto castedPtr(new XLSB::MergeCell);
+			XLS::BaseObjectPtr ptr(castedPtr);
+			castedPtr->rfx = m_oRef.get();
+			return ptr;
+		}
+        void CMergeCell::toBin(XLS::StreamCacheWriterPtr& writer)
+        {
+            auto record = writer->getNextRecord(XLSB::rt_MergeCell);
+            XLSB::UncheckedRfX rfx;
+            if(m_oRef.IsInit())
+                rfx.fromString(m_oRef.get());
+            *record << rfx;
+            writer->storeNextRecord(record);
+        }
 		EElementType CMergeCell::getType () const
 		{
 			return et_x_MergeCell;
@@ -82,7 +100,7 @@ namespace OOX
 		void CMergeCell::ReadAttributes(XLS::BaseObjectPtr& obj)
 		{
 			auto ptr = static_cast<XLSB::MergeCell*>(obj.get());
-			m_oRef  = ptr->rfx.toString();
+			m_oRef  = ptr->rfx.toString(true, true);
 		}
 
 		CMergeCells::CMergeCells(OOX::Document *pMain) : WritingElementWithChilds<CMergeCell>(pMain)
@@ -152,6 +170,36 @@ namespace OOX
 				pMergeCell->fromBin(mergeCell);
 			}
 		}
+		XLS::BaseObjectPtr CMergeCells::toBin()
+		{
+			auto castedPtr(new XLSB::MERGECELLS);
+            auto beginCells(new XLSB::BeginMergeCells);
+            castedPtr->m_BrtBeginMergeCells = XLS::BaseObjectPtr{beginCells};
+			XLS::BaseObjectPtr ptr(castedPtr);
+			for(auto i:m_arrItems)
+			{
+				castedPtr->m_arBrtMergeCell.push_back(i->toBin());
+			}
+            beginCells->cmcs = castedPtr->m_arBrtMergeCell.size();
+			return ptr;
+		}
+        void CMergeCells::toBin(XLS::StreamCacheWriterPtr& writer)
+        {
+            {
+                auto begin = writer->getNextRecord(XLSB::rt_BeginMergeCells);
+                _UINT32 cmcs = m_arrItems.size();
+                *begin << cmcs;
+                writer->storeNextRecord(begin);
+            }
+            for(auto i:m_arrItems)
+            {
+                i->toBin(writer);
+            }
+            {
+                auto end = writer->getNextRecord(XLSB::rt_EndMergeCells);
+                writer->storeNextRecord(end);
+            }
+        }
 		EElementType CMergeCells::getType () const
 		{
 			return et_x_MergeCells;

@@ -53,11 +53,13 @@ class calcext_data_bar_attr
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
-	_CP_OPT(odf_types::color) axis_color_;
-	_CP_OPT(odf_types::color) positive_color_;
-	_CP_OPT(odf_types::color) negative_color_;
-	_CP_OPT(int) max_length_;
-	_CP_OPT(int) min_length_;
+    _CP_OPT(odf_types::color) axis_color_;
+    _CP_OPT(odf_types::color) positive_color_;
+    _CP_OPT(odf_types::color) negative_color_;
+    _CP_OPT(std::wstring) axis_position_;
+    _CP_OPT(bool) gradient_;
+    _CP_OPT(unsigned int) min_length_;
+    _CP_OPT(unsigned int) max_length_;
 };
 
 class calcext_condition_attr
@@ -68,6 +70,7 @@ public:
 	_CP_OPT(std::wstring) base_cell_address_;
 	_CP_OPT(std::wstring) apply_style_name_;
 	_CP_OPT(std::wstring) value_;
+    _CP_OPT(int) loext_stdDev_;
 };
 
 class calcext_icon_set_attr
@@ -76,7 +79,6 @@ public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
 	_CP_OPT(odf_types::iconset_type) icon_set_type_;
-
 };
 
 class calcext_date_is_attr
@@ -165,6 +167,7 @@ public:
 
 	_CP_OPT(std::wstring) value_;
 	_CP_OPT(odf_types::calcext_type) type_;
+    _CP_OPT(bool)  show_value_;
 
 };
 CP_REGISTER_OFFICE_ELEMENT2(calcext_formatting_entry);

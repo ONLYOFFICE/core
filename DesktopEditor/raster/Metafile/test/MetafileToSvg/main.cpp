@@ -29,35 +29,33 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-//#include <QCoreApplication>
+// #include <QCoreApplication>
 
+#include "../../../../fontengine/ApplicationFontsWorker.h"
 #include "../../../../graphics/pro/Fonts.h"
 #include "../../../../graphics/pro/Graphics.h"
-#include "../../../../fontengine/ApplicationFontsWorker.h"
 
-#include "../../../../raster/BgraFrame.h"
 #include "../../../../common/Directory.h"
+#include "../../../../raster/BgraFrame.h"
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
-    // Check system fonts
-    CApplicationFontsWorker oWorker;
-    oWorker.m_sDirectory = NSFile::GetProcessDirectory() + L"/fonts_cache";
-    oWorker.m_bIsNeedThumbnails = false;
+	// Check system fonts
+	CApplicationFontsWorker oWorker;
+	oWorker.m_sDirectory = NSFile::GetProcessDirectory() + L"/fonts_cache";
+	oWorker.m_bIsNeedThumbnails = false;
 
-    if (!NSDirectory::Exists(oWorker.m_sDirectory))
-        NSDirectory::CreateDirectory(oWorker.m_sDirectory);
+	if (!NSDirectory::Exists(oWorker.m_sDirectory))
+		NSDirectory::CreateDirectory(oWorker.m_sDirectory);
 
-    NSFonts::IApplicationFonts* pFonts = oWorker.Check();
+	NSFonts::IApplicationFonts* pFonts = oWorker.Check();
 
-    MetaFile::IMetaFile* pMetafile = MetaFile::Create(pFonts);
-    pMetafile->LoadFromFile(L"PATH_TO_METAFILE");
+	MetaFile::IMetaFile* pMetafile = MetaFile::Create(pFonts);
+	pMetafile->LoadFromFile(L"D:/image1.wmf");
 
-	std::wstring wsData;
-
-	pMetafile->ConvertToSvg(wsData);
+	std::wstring wsData = pMetafile->ConvertToSvg();
 	pMetafile->Release();
 
-    pFonts->Release();
-    return 0;
+	pFonts->Release();
+	return 0;
 }

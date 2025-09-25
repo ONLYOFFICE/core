@@ -55,9 +55,9 @@ namespace XLSB
 
             FRTBlank			FRTheader;
 			XLS::KPISets14		iSet;
-            bool				fCustom;
-            bool				fIcon;
-            bool				fReverse;
+            bool				fCustom = false;
+            bool				fIcon = false;
+            bool				fReverse = false;
     };
 
 } // namespace XLSB

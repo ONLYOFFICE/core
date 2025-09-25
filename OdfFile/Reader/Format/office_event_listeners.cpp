@@ -33,6 +33,8 @@
 #include "office_event_listeners.h"
 #include "serialize_elements.h"
 
+#include "boost/algorithm/string.hpp"
+
 #include <xml/xmlchar.h>
 
 namespace cpdoccore { 
@@ -96,17 +98,42 @@ void presentation_event_listener::add_child_element( xml::sax * Reader, const st
         CP_NOT_APPLICABLE_ELM();
 }
 void presentation_event_listener::pptx_convert(oox::pptx_conversion_context & Context)
-{
-	Context.get_slide_context().start_action(attlist_.presentation_action_.get_value_or(L""));
-	
+{	
 	if (attlist_.xlink_attlist_.href_)
-		Context.get_slide_context().set_link(*attlist_.xlink_attlist_.href_);
-
-	if (presentation_sound_)
 	{
-		presentation_sound_->pptx_convert(Context);
+		std::wstring href = *attlist_.xlink_attlist_.href_;
+		if (boost::algorithm::starts_with(href, L"#"))
+			href = href.substr(1); // Remove '#' character
+
+		const std::vector<std::wstring>& page_names = Context.get_page_names();
+		
+		bool found = false;
+		for (size_t i = 0; i < page_names.size(); i++)
+		{
+			if (href == page_names[i])
+			{
+				std::wstring pptx_slide_name = L"slides/slide" + std::to_wstring(i + 1) + L".xml";
+
+				Context.get_slide_context().set_link(pptx_slide_name, oox::_rels_type::typeSlide);
+				found = true;
+				break;
+			}
+		}
+
+		if (!found)
+		{
+			Context.get_slide_context().start_action(attlist_.presentation_action_.get_value_or(L""));
+
+			if (boost::algorithm::starts_with(href, L"../"))
+				href = href.substr(std::wstring(L"../").size());
+			Context.get_slide_context().set_link(href, oox::_rels_type::typeHyperlink);
+
+			if (presentation_sound_)
+				presentation_sound_->pptx_convert(Context);
+
+			Context.get_slide_context().end_action();
+		}			
 	}
-	Context.get_slide_context().end_action();
 }
 
 // script:event-listener

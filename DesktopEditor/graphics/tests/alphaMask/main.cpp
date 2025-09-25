@@ -71,7 +71,9 @@ int main(int argc, char *argv[])
 		{
 			Aggplus::CAlphaMask* pAlphaMask = new Aggplus::CAlphaMask();
 
-			BYTE* pAlphaBuffer = new BYTE[unWidth * unHeight];
+			pAlphaMask->Create(unWidth, unHeight, Aggplus::EMaskDataType::AlphaBuffer);
+			
+			BYTE* pAlphaBuffer = pAlphaMask->GetBuffer();
 
 			BYTE uchAlphaValue = 0;
 
@@ -83,8 +85,6 @@ int main(int argc, char *argv[])
 				if (0 != unRow && 0 == unRow % 100)
 					uchAlphaValue += 25;
 			}
-
-			pAlphaMask->LoadFromAlphaBuffer(pAlphaBuffer, unWidth, unHeight, false);
 
 			pRasterRenderer->SetAlphaMask(pAlphaMask);
 

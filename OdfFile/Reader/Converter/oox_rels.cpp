@@ -52,7 +52,7 @@ std::wostream & relationship::xml_to_stream(std::wostream & _Wostream) const
             CP_XML_ATTR(L"Type", type());
             CP_XML_ATTR(L"Target", target());
 
-            if (!target_mode().empty())
+            if (!target_mode().empty() && type() != L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slide")
                 CP_XML_ATTR(L"TargetMode", target_mode());
         }    
     }

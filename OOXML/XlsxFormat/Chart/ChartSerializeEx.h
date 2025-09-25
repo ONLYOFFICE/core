@@ -60,6 +60,7 @@ namespace ComplexTypes
 	{
 		class CParentLabelLayout;
 		class CRegionLabelLayout;
+		class CDouble;
 	}
 }
 
@@ -294,8 +295,8 @@ namespace ChartEx
 
 		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
-		nullable_double		m_binSize;
-		nullable_int		m_binCount;
+		nullable<ComplexTypes::Spreadsheet::CDouble> m_binSize;
+		nullable<ComplexTypes::CDecimalNumber> m_binCount;
 
 		nullable<SimpleTypes::Spreadsheet::CIntervalClosedSide>		m_intervalClosed;
         nullable<SimpleTypes::Spreadsheet::CDoubleOrAutomatic<SimpleTypes::Spreadsheet::typeAuto>>	m_underflow;
@@ -333,7 +334,7 @@ namespace ChartEx
 		virtual std::wstring toXML() const { return L""; }
 		virtual EElementType getType () const;
 
-		std::vector<unsigned int>	m_arIdx;
+		std::vector<unsigned int> m_arIdx;
 	};
 //------------------------------------------------------------------------------
 	class CSeriesLayoutProperties : public WritingElement

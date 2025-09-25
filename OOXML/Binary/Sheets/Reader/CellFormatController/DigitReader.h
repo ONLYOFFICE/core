@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
@@ -40,15 +40,25 @@
 class DigitReader
 {
 public:
-    /// @brief проверка постфикса на валидность валюте
+    /// @brief считывание числа
     /// @param value считываемое текстовое значение
     /// @param digit строка с числовым значением
     /// @param format строка с форматом числа
-    /// @return true значение преобразуется в число, иначе falsew
+    /// @return true значение преобразуется в число, иначе false
     bool ReadDigit(const std::wstring &value, std::wstring &digit, std::wstring &format);
 
+    /// @brief считывание числа в формате scientific
+    /// @param value считываемое текстовое значение
+    /// @param digit строка с числовым значением
+    /// @param format строка с форматом числа
+    /// @return true значение преобразуется в число, иначе false
+    bool ReadScientific(const std::wstring &value, std::wstring &digit, std::wstring &format);
+
 private:
-    std::wstring createFractionFormat(const std::wstring &value, wchar_t *endPtr);
+    std::wstring createFractionFormat(const std::wstring &value, const std::wstring &postfix);
 
     bool checkCommonFractionFormat(const double &numerator, const std::wstring &postfix, double &dvalue, std::wstring &format);
+
+    bool scientificFound_ = false;
+    _UINT16 nonscientificCellsCounter_ = 0;
 };

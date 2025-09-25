@@ -42,31 +42,31 @@
 
 namespace ASC
 {
-    class GRAPHICS_DECL CFontsAssistant
-    {
-    public:
-        CFontsAssistant(const std::vector<std::wstring>& arFontsPaths, const std::wstring& sDataFontsPath);
-        
-        void Check();
-        NSFonts::IApplicationFonts* Load();
-        
-        std::vector<std::wstring> GetAvailableFonts();
-        std::string GetScriptData();
-        
-        void AddExcludeFont(const std::wstring& sFontName);
-    
-    private:
-        static std::wstring GetSystemFontPath();
-        
-    private:
-        std::vector<std::wstring> m_arFontsPaths;
-        std::wstring m_sDataFontsPath;
-        
-        std::vector<std::wstring> m_arAvailableFonts;
-        std::string m_sScriptData;
-        
-        std::vector<std::wstring> m_arExcludeFonts;
-    };
+	class GRAPHICS_DECL CFontsAssistant
+	{
+	public:
+		CFontsAssistant(const std::vector<std::wstring>& arFontsPaths, const std::wstring& sDataFontsPath);
+
+		void Check();
+		NSFonts::IApplicationFonts* Load();
+
+		std::vector<std::wstring> GetAvailableFonts();
+		std::string GetScriptData();
+
+		void AddExcludeFont(const std::wstring& sFontName);
+
+	private:
+		static std::wstring GetSystemFontPath();
+
+	private:
+		std::vector<std::wstring> m_arFontsPaths;
+		std::wstring m_sDataFontsPath;
+
+		std::vector<std::wstring> m_arAvailableFonts;
+		std::string m_sScriptData;
+
+		std::vector<std::wstring> m_arExcludeFonts;
+	};
 }
 
 #endif /* FONTS_ASSISTANT_H */

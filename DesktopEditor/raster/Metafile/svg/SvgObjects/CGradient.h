@@ -8,8 +8,8 @@ namespace SVG
 {
 	typedef enum
 	{
-		ObjectBoundingBox,
-		UserSpaceOnUse
+		GradU_ObjectBoundingBox,
+		GradU_UserSpaceOnUse
 	}GradientUnits;
 
 	typedef enum
@@ -37,13 +37,18 @@ namespace SVG
 
 	class CGradient : public CContainer<CStopElement>, public CAppliedObject
 	{
+		friend class CLinearGradient;
+		friend class CRadialGradient;
 	public:
 		CGradient(XmlUtils::CXmlNode& oNode);
 
 		void SetData(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false) override;
 
 		bool Apply(IRenderer* pRenderer, const CSvgFile *pFile, const TBounds &oObjectBounds) override;
+		void ApplyTransform(IRenderer *pRenderer, const TBounds& oBounds, double& dAngle) const;
 	private:
+		CGradient* GetRefGradient(const CSvgFile *pFile) const;
+		bool ApplyRefGradient(IRenderer *pRenderer, const CSvgFile *pFile, const TBounds &oObjectBounds) const;
 
 		std::wstring  m_wsXlinkHref;
 		GradientUnits m_enGradientUnits;

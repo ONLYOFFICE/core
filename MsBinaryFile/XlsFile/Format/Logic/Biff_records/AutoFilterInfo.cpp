@@ -56,5 +56,10 @@ void AutoFilterInfo::readFields(CFRecord& record)
 	record >> cEntries;
 }
 
+void AutoFilterInfo::writeFields(CFRecord& record)
+{
+    record << cEntries;
+}
+
 } // namespace XLS
 

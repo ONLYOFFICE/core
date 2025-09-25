@@ -40,6 +40,13 @@
 #include "../WritingElement.h"
 #include "VmlOfficeDrawing.h"
 
+namespace PPTX
+{
+	namespace Logic
+	{
+		class CustGeom;
+	}
+}
 namespace OOX
 {
 	namespace Spreadsheet
@@ -247,7 +254,8 @@ namespace OOX
 			nullable<SimpleTypes::CImageAspect>									m_oAspect;
 			nullable<SimpleTypes::CColorType>									m_oColor;
 			nullable<SimpleTypes::CColorType>									m_oColor2;
-			std::vector<TIntermediateColor*>									m_arrColors;
+			nullable_string														m_oColors;
+			std::vector<TIntermediateColor*>									m_arrColors; // parsing m_oColors - todooo
 			nullable<SimpleTypes::CTrueFalse>									m_oDetectMouseClick;
 			nullable<SimpleTypes::CFixedPercentage >							m_oFocus;
 			nullable<SimpleTypes::Vml::CVml_Vector2D_Percentage>				m_oFocusPosition;
@@ -684,6 +692,8 @@ namespace OOX
 
 			void mergeFrom(CShapeType* shape_type);
 
+			void ConvertToPptx(double width, double height);
+
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
@@ -693,6 +703,8 @@ namespace OOX
             nullable<SimpleTypes::Vml::CVmlPath>	m_oPath;
             nullable_string							m_sGfxData;
             nullable_string							m_sEquationXML;
+//--------------------------------------------------------------------------
+			nullable<PPTX::Logic::CustGeom>			m_oCustGeom;
 		};
 
 		class CClientData : public WritingElement

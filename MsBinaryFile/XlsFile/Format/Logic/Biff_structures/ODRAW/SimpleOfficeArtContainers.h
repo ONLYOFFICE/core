@@ -43,14 +43,18 @@ public:
 	OfficeArtDggContainer(const OfficeArtClientAnchorType anchor_type) : OfficeArtContainer(0x0F, DggContainer, anchor_type) {}
 	XLS::BiffStructurePtr clone() { return XLS::BiffStructurePtr(new OfficeArtDggContainer(*this)); }
 
+	static const XLS::ElementType type = XLS::typeOfficeArtDggContainer;
+
 	void loadFields(XLS::CFRecord& record);
 
 	OfficeArtRecordPtr		m_OfficeArtBStoreContainer;
 	OfficeArtRecordPtr		m_OfficeArtColorMRUContainer;
 	OfficeArtRecordPtr		m_OfficeArtSplitMenuColorContainer;
 	OfficeArtRecordPtr		m_OfficeArtFDGGBlock;
+
 	//+ OfficeArtFOPT + OfficeArtTertiaryFOPT
 };
+typedef boost::shared_ptr<OfficeArtDggContainer> OfficeArtDggContainerPtr;
 
 class OfficeArtSpgrContainer : public OfficeArtContainer
 {
@@ -61,9 +65,9 @@ public:
 
 	void loadFields(XLS::CFRecord& record);
 
-	static const XLS::ElementType	type = XLS::typeOfficeArtSpgrContainer;
+	static const XLS::ElementType type = XLS::typeOfficeArtSpgrContainer;
 
-	std::vector<OfficeArtContainerPtr>		m_OfficeArtSpgrContainerFileBlock;
+	std::vector<OfficeArtContainerPtr> m_OfficeArtSpgrContainerFileBlock;
 };
 
 class OfficeArtSolverContainer : public OfficeArtRecord

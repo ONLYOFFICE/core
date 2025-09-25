@@ -55,5 +55,10 @@ void Fbi::readFields(CFRecord& record)
 	record >> dmixBasis >> dmiyBasis >> twpHeightBasis >> scab >> ifnt;
 }
 
+void Fbi::writeFields(CFRecord& record)
+{
+    record << dmixBasis << dmiyBasis << twpHeightBasis << scab << ifnt;
+}
+
 } // namespace XLS
 

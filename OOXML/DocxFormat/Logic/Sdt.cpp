@@ -335,33 +335,30 @@ namespace ComplexTypes
 
 			if ( m_sPrefixMappings.IsInit() )
 			{
-				sResult += L"w:prefixMappings=\"";
-				sResult += m_sPrefixMappings.get2();
-				sResult += L"\" ";
+				sResult += L" w:prefixMappings=\"" + *m_sPrefixMappings + L"\"";
 			}
-
 			if ( m_sXPath.IsInit() )
 			{
-				sResult += L"w:xpath=\"";
-				sResult += m_sXPath.get2();
-				sResult += L"\" ";
+				sResult += L" w:xpath=\"" + *m_sXPath + L"\"";
 			}
-
 			if ( m_sStoreItemID.IsInit() )
 			{
-				sResult += L"w:storeItemID=\"";
-				sResult += m_sStoreItemID.get2();
-				sResult += L"\" ";
+				sResult += L" w:storeItemID=\"" + *m_sStoreItemID + L"\"";
+			}
+			if (m_sStoreItemChecksum.IsInit())
+			{
+				sResult += L" w16sdtdh:storeItemChecksum=\"" + *m_sStoreItemChecksum + L"\"";
 			}
 			return sResult;
 		}
 		void CDataBinding::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
-			WritingElement_ReadAttributes_Start( oReader )
-			WritingElement_ReadAttributes_Read_if     ( oReader, L"w:prefixMappings", m_sPrefixMappings )
-			WritingElement_ReadAttributes_Read_else_if( oReader, L"w:storeItemID",    m_sStoreItemID )
-			WritingElement_ReadAttributes_Read_else_if( oReader, L"w:xpath",          m_sXPath )
-			WritingElement_ReadAttributes_End( oReader )
+			WritingElement_ReadAttributes_Start_No_NS(oReader )
+				WritingElement_ReadAttributes_Read_if     ( oReader, L"prefixMappings", m_sPrefixMappings )
+				WritingElement_ReadAttributes_Read_else_if (oReader, L"storeItemID", m_sStoreItemID )
+				WritingElement_ReadAttributes_Read_else_if (oReader, L"xpath", m_sXPath )
+				WritingElement_ReadAttributes_Read_else_if (oReader, L"storeItemChecksum", m_sStoreItemChecksum)
+			WritingElement_ReadAttributes_End_No_NS(oReader )
 		}
 //----------------------------------------------------------------------------------------------------
 		CSdtListItem::CSdtListItem()
@@ -1321,6 +1318,10 @@ namespace OOX
 			}
 			if (oNode.GetNode(L"w15:color", oChild))
 				m_oColor = oChild;
+			if (oNode.GetNode(L"w:border", oChild))
+				m_oBorder = oChild;
+			if (oNode.GetNode(L"w:shd", oChild))
+				m_oShd = oChild;
 
 			if (oNode.GetNode(L"w:dataBinding", oChild))
 				m_oDataBinding = oChild;
@@ -1420,36 +1421,40 @@ namespace OOX
 			int nParentDepth = oReader.GetDepth();
 			while (oReader.ReadNextSiblingNode(nParentDepth))
 			{
-				std::wstring sName = oReader.GetName();
+				std::wstring sName = oReader.GetNameNoNS();
 
-				if (L"w:alias" == sName)
+				if (L"alias" == sName)
 					m_oAlias = oReader;
-				else if (L"w15:appearance" == sName)
+				else if (L"appearance" == sName)
 					m_oAppearance = oReader;
-				else if (L"w:bibliography" == sName)
+				else if (L"bibliography" == sName)
 					m_eType = sdttypeBibliography;
-				else if (sdttypeUnknown == m_eType && L"w:citation" == sName)
+				else if (sdttypeUnknown == m_eType && L"citation" == sName)
 					m_eType = sdttypeCitation;
-				else if (sdttypeUnknown == m_eType && L"w:comboBox" == sName)
+				else if (sdttypeUnknown == m_eType && L"comboBox" == sName)
 				{
 					m_oComboBox = oReader;
 					m_eType = sdttypeComboBox;
 				}
-				else if (L"w15:color" == sName)
+				else if (L"color" == sName)
 					m_oColor = oReader;
-				else if (L"w:dataBinding" == sName)
+				else if (L"border" == sName)
+					m_oBorder = oReader;
+				else if (L"shd" == sName)
+					m_oShd = oReader;
+				else if (L"dataBinding" == sName)
 					m_oDataBinding = oReader;
-				else if (sdttypeUnknown == m_eType && L"w:date" == sName)
+				else if (sdttypeUnknown == m_eType && L"date" == sName)
 				{
 					m_oDate = oReader;
 					m_eType = sdttypeDate;
 				}
-				else if (sdttypeUnknown == m_eType && L"w:docPartList" == sName)
+				else if (sdttypeUnknown == m_eType && L"docPartList" == sName)
 				{
 					m_oDocPartList = oReader;
 					m_eType = sdttypeDocPartList;
 				}
-				else if (sdttypeUnknown == m_eType && L"w:docPartObj" == sName)
+				else if (sdttypeUnknown == m_eType && L"docPartObj" == sName)
 				{
 					m_oDocPartObj = oReader;
 					m_eType = sdttypeDocPartObj;
@@ -1460,55 +1465,55 @@ namespace OOX
 							m_eType = sdttypeBibliography;
 					}
 				}
-				else if (sdttypeUnknown == m_eType && L"w:dropDownList" == sName)
+				else if (sdttypeUnknown == m_eType && L"dropDownList" == sName)
 				{
 					m_oDropDownList = oReader;
 					m_eType = sdttypeDropDownList;
 				}
-				else if (sdttypeUnknown == m_eType && L"w:equation" == sName)
+				else if (sdttypeUnknown == m_eType && L"equation" == sName)
 					m_eType = sdttypeEquation;
-				else if (sdttypeUnknown == m_eType && L"w:group" == sName)
+				else if (sdttypeUnknown == m_eType && L"group" == sName)
 					m_eType = sdttypeGroup;
-				else if (L"w:id" == sName)
+				else if (L"id" == sName)
 					m_oId = oReader;
-				else if (L"w:label" == sName)
+				else if (L"label" == sName)
 					m_oLabel = oReader;
-				else if (L"w:lock" == sName)
+				else if (L"lock" == sName)
 					m_oLock = oReader;
-				else if (sdttypeUnknown == m_eType && L"w:picture" == sName)
+				else if (sdttypeUnknown == m_eType && L"picture" == sName)
 				{
 					m_oPicture = oReader;
 					m_eType = sdttypePicture;
 				}
-				else if (L"w:placeholder" == sName)
+				else if (L"placeholder" == sName)
 					m_oPlaceHolder = oReader;
-				else if (sdttypeUnknown == m_eType && L"w:richText" == sName)
+				else if (sdttypeUnknown == m_eType && L"richText" == sName)
 					m_eType = sdttypeRichText;
-				else if (L"w:rPr" == sName)
+				else if (L"rPr" == sName)
 					m_oRPr = oReader;
-				else if (L"w:showingPlcHdr" == sName)
+				else if (L"showingPlcHdr" == sName)
 					m_oShowingPlcHdr = oReader;
-				else if (L"w:tabIndex" == sName)
+				else if (L"tabIndex" == sName)
 					m_oTabIndex = oReader;
-				else if (L"w:tag" == sName)
+				else if (L"tag" == sName)
 					m_oTag = oReader;
-				else if (L"w:temporary" == sName)
+				else if (L"temporary" == sName)
 					m_oTemporary = oReader;
-				else if (L"w:formPr" == sName)
+				else if (L"formPr" == sName)
 					m_oFormPr = oReader;
-				else if (L"w:textFormPr" == sName)
+				else if (L"textFormPr" == sName)
 					m_oTextFormPr = oReader;
-				else if (sdttypeUnknown == m_eType && L"w:text" == sName)
+				else if (sdttypeUnknown == m_eType && L"text" == sName)
 				{
 					m_oText = oReader;
 					m_eType = sdttypeText;
 				}
-				else if (sdttypeUnknown == m_eType && L"w14:checkbox" == sName)
+				else if (sdttypeUnknown == m_eType && L"checkbox" == sName)
 				{
 					m_oCheckbox = oReader;
 					m_eType = sdttypeCheckBox;
 				}
-				else if (L"w:complexFormPr" == sName)
+				else if (L"complexFormPr" == sName)
 					m_oComplexFormPr = oReader;
 			}
 		}
@@ -1526,7 +1531,18 @@ namespace OOX
 			WritingElement_WriteNode_1(L"<w:lock ", m_oLock);
 			WritingElement_WriteNode_2(m_oPlaceHolder);
 			WritingElement_WriteNode_1(L"<w:showingPlcHdr ", m_oShowingPlcHdr);
-			WritingElement_WriteNode_1(L"<w:dataBinding ", m_oDataBinding);
+
+			if (m_oDataBinding.IsInit())
+			{ 
+				if (m_oDataBinding->m_sStoreItemChecksum.IsInit())
+				{
+					WritingElement_WriteNode_1(L"<w15:dataBinding", m_oDataBinding);
+				}
+				else
+				{
+					WritingElement_WriteNode_1(L"<w:dataBinding", m_oDataBinding);
+				}
+			}
 			WritingElement_WriteNode_1(L"<w:temporary ", m_oTemporary);
 			WritingElement_WriteNode_1(L"<w:tag ", m_oTag);
 
@@ -1619,6 +1635,8 @@ namespace OOX
 			WritingElement_WriteNode_2(m_oFormPr);
 			WritingElement_WriteNode_2(m_oTextFormPr);
 			WritingElement_WriteNode_2(m_oComplexFormPr);
+			WritingElement_WriteNode_3(L"<w:border ", m_oBorder);
+			WritingElement_WriteNode_3(L"<w:shd ", m_oShd);
 
 			return sResult;
 		}
@@ -1714,6 +1732,7 @@ namespace OOX
 			XmlMacroReadAttributeBase(oNode, L"w:respectBorders", m_oRespectBorders);
 			XmlMacroReadAttributeBase(oNode, L"w:shiftX", m_oShiftX);
 			XmlMacroReadAttributeBase(oNode, L"w:shiftY", m_oShiftY);
+			XmlMacroReadAttributeBase(oNode, L"w:signature", m_oSignature);
 		}
 		void CSdtPicture::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
@@ -1723,6 +1742,7 @@ namespace OOX
 				WritingElement_ReadAttributes_Read_else_if(oReader, L"w:respectBorders", m_oRespectBorders)
 				WritingElement_ReadAttributes_Read_else_if(oReader, L"w:shiftX", m_oShiftX)
 				WritingElement_ReadAttributes_Read_else_if(oReader, L"w:shiftY", m_oShiftY)
+				WritingElement_ReadAttributes_Read_else_if(oReader, L"w:signature", m_oSignature);
 			WritingElement_ReadAttributes_End(oReader)
 		}
 		void CSdtPicture::fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -1755,6 +1775,10 @@ namespace OOX
 			{
 				sResult += L" w:shiftY=\"" + std::to_wstring(*m_oShiftY) + L"\"";
 			}
+			if (m_oSignature.IsInit())
+			{
+				sResult += L" w:signature=\"" + std::wstring(*m_oSignature ? L"1" : L"0") + L"\"";
+			}
 			sResult += L"/>";
 			return sResult;
 		}
@@ -1785,7 +1809,7 @@ namespace OOX
 		void CSdt::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			if ( oReader.IsEmptyNode() )
-				return;
+				return; 
 
 			int nParentDepth = oReader.GetDepth();
 			

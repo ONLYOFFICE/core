@@ -67,6 +67,53 @@ namespace OOX
 		{
 			ReadAttributes(obj);
 		}
+		void CPhonetic::toBin(XLS::BiffStructure* obj)
+		{
+			auto ptr = static_cast<XLSB::PhRun*>(obj);
+			if(m_oAlignment.IsInit())
+			{
+				if(m_oAlignment == SimpleTypes::Spreadsheet::phoneticalignmentNoControl)
+				{
+					ptr->alcH = 0;
+				}
+				else if(m_oAlignment == SimpleTypes::Spreadsheet::phoneticalignmentLeft)
+				{
+					ptr->alcH = 1;
+				}
+				else if(m_oAlignment == SimpleTypes::Spreadsheet::phoneticalignmentCenter)
+				{
+					ptr->alcH = 2;
+				}
+				else if(m_oAlignment == SimpleTypes::Spreadsheet::phoneticalignmentDistributed)
+				{
+					ptr->alcH = 3;
+				}
+			}
+			if(m_oType.IsInit())
+			{
+				if(m_oType == SimpleTypes::Spreadsheet::phonetictypeHalfwidthKatakana)
+				{
+					ptr->phType = 0;
+				}
+				else if(m_oType == SimpleTypes::Spreadsheet::phonetictypeFullwidthKatakana)
+				{
+					ptr->phType = 1;
+				}
+				else if(m_oType == SimpleTypes::Spreadsheet::phonetictypeHiragana)
+				{
+					ptr->phType = 2;
+				}
+				else if(m_oType == SimpleTypes::Spreadsheet::phonetictypeNoConversion)
+				{
+					ptr->phType = 3;
+				}
+			}
+
+			if(m_oFontId.IsInit())
+			{
+				ptr->ifnt = m_oFontId->GetValue();
+			}
+		}
 		EElementType CPhonetic::getType () const
 		{
 			return et_x_PhoneticPr;
@@ -166,6 +213,20 @@ namespace OOX
 			ptr->fromBin(str);
 			m_arrItems.push_back(ptr);
 			ReadAttributes(obj);
+		}
+		std::wstring CRPh::toBin(XLS::BiffStructure* obj)
+		{
+			auto ptr = static_cast<XLSB::PhRun*>(obj);
+			std::wstring result;
+			if(!m_arrItems.empty())
+			{
+				result = m_arrItems.back()->ToString();
+			}
+			if(m_oEb.IsInit())
+				ptr->ichMom = m_oEb->GetValue();
+			if(m_oSb.IsInit())
+				ptr->ichFirst = m_oSb->GetValue();
+			return result;
 		}
 		EElementType CRPh::getType () const
 		{

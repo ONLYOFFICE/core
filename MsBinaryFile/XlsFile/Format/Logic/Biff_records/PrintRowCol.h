@@ -50,12 +50,13 @@ public:
 
 	
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 
 	static const ElementType	type = typePrintRowCol;
 
 
 //-----------------------------
-	Boolean<unsigned short> printRwCol;
+    Boolean<unsigned short> printRwCol = false;
 
 };
 

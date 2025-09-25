@@ -64,7 +64,7 @@ std::pair<double, double> GetMaxDigitSizePixelsImpl(const std::wstring & fontNam
 		//if (FALSE == (hr = pFontManager->LoadString2( std::to_wstring(i), 0, 0)))
 		//	return std::pair<float, float>(7,8);
 
-		if (FALSE == (hr = pFontManager->LoadString2( L"0123456789abcdefghijklmnopqrstuvwxyz" , 0, 0)))//
+		if (FALSE == (hr = pFontManager->LoadString2( L"0123456789" , 0, 0)))//
 			return std::pair<double, double>(7., 8.);
 
 		TBBox box;
@@ -87,7 +87,7 @@ std::pair<double, double> GetMaxDigitSizePixelsImpl(const std::wstring & fontNam
         if (box.fMaxY - box.fMinY < minHeight)  minHeight = box.fMaxY - box.fMinY;
     }
 
-    double width = (minWidth + 2 * maxWidth) /36. /3.;
+    double width = (minWidth + 2 * maxWidth) /10. /3.;
 	//double width = (minWidth + 2 * maxWidth) / 5./*/36.*/ /3.;
 
 	if (width > 0.01 && maxHeight > 0.01)

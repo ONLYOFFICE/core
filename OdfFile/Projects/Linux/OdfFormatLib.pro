@@ -19,6 +19,9 @@ include(../../../Common/base.pri)
 #BOOST
 include($$PWD/../../../Common/3dParty/boost/boost.pri)
 
+include($$PWD/../../Reader/Converter/StarMath2OOXML/StarMath2OOXML.pri)
+include($$PWD/../../Reader/Converter/SMCustomShape2OOXML/SMCustomShape2OOXML.pri)
+
 DEFINES +=  UNICODE \
             _UNICODE \
             DONT_WRITE_EMBEDDED_FONTS
@@ -40,8 +43,10 @@ SOURCES += \
 
 core_debug {
 SOURCES += \    
-	../../DataTypes/mathvariant.cpp \
+        ../../DataTypes/referenceformat.cpp \
+        ../../DataTypes/mathvariant.cpp \
 	../../DataTypes/anchortype.cpp \
+	../../DataTypes/animation_attlists.cpp \
 	../../DataTypes/backgroundcolor.cpp \
 	../../DataTypes/bool.cpp \
 	../../DataTypes/bordermodel.cpp \
@@ -95,12 +100,21 @@ SOURCES += \
 	../../DataTypes/percent.cpp \
 	../../DataTypes/percentorscale.cpp \
 	../../DataTypes/presentationclass.cpp \
+	../../DataTypes/presentationnodetype.cpp \
+	../../DataTypes/presentationvisibility.cpp \
+	../../DataTypes/presetclass.cpp \
+	../../DataTypes/presetid.cpp \
 	../../DataTypes/punctuationwrap.cpp \
 	../../DataTypes/rotationalign.cpp \
 	../../DataTypes/runthrough.cpp \
 	../../DataTypes/scripttype.cpp \
 	../../DataTypes/shadowtype.cpp \
+	../../DataTypes/smil_additive.cpp \
+	../../DataTypes/smil_attributename.cpp \
+	../../DataTypes/smil_fill.cpp \
+	../../DataTypes/smil_keytimes.cpp \
 	../../DataTypes/smil_transitiontype.cpp \
+	../../DataTypes/smil_values.cpp \
 	../../DataTypes/stylefamily.cpp \
 	../../DataTypes/stylehorizontalpos.cpp \
 	../../DataTypes/stylehorizontalrel.cpp \
@@ -113,6 +127,7 @@ SOURCES += \
 	../../DataTypes/styleverticalrel.cpp \
 	../../DataTypes/stylewrap.cpp \
 	../../DataTypes/stylewrapcontourmode.cpp \
+	../../DataTypes/svg_type.cpp \
 	../../DataTypes/stylenumformat.cpp \
 	../../DataTypes/tablealign.cpp \
 	../../DataTypes/tablecentering.cpp \
@@ -137,6 +152,8 @@ SOURCES += \
 	../../DataTypes/grandtotal.cpp \
 	../../DataTypes/membertype.cpp \
 	../../DataTypes/tabletype.cpp \
+        ../../DataTypes/tabledatatype.cpp \
+        ../../DataTypes/tableoperator.cpp \
 	../../DataTypes/tableorientation.cpp \
 	../../DataTypes/tablefunction.cpp \
 	../../DataTypes/tableorder.cpp \
@@ -150,6 +167,7 @@ SOURCES += \
 	../../DataTypes/messagetype.cpp \
 	../../DataTypes/stylecellprotect.cpp \
         ../../DataTypes/sparklines.cpp \
+        ../../DataTypes/color_mode.cpp \
         \
 	../../Reader/Format/abstract_xml.cpp \
 	../../Reader/Format/anim_elements.cpp \
@@ -189,7 +207,8 @@ SOURCES += \
 	../../Reader/Format/office_settings.cpp \
 	../../Reader/Format/office_spreadsheet.cpp \
 	../../Reader/Format/office_text.cpp \
-	../../Reader/Format/office_meta.cpp \
+        ../../Reader/Format/office_drawing.cpp \
+        ../../Reader/Format/office_meta.cpp \
 	../../Reader/Format/paragraph_elements.cpp \
 	../../Reader/Format/ruby.cpp \
 	../../Reader/Format/search_table_cell.cpp \
@@ -256,6 +275,7 @@ SOURCES += \
 	../../Reader/Converter/oox_title.cpp \
 	../../Reader/Converter/oox_types_chart.cpp \
 	../../Reader/Converter/oox_rels.cpp \
+	../../Reader/Converter/pptx_animation_context.cpp \
 	../../Reader/Converter/pptx_comments.cpp \
 	../../Reader/Converter/pptx_comments_context.cpp \
 	../../Reader/Converter/pptx_conversion_context.cpp \
@@ -431,8 +451,10 @@ HEADERS += \
 	../../Common/xml/xmlchar.h \
 	../../Common/xml/xmlelement.h \
 	\
-	../../DataTypes/mathvariant.h \
+        ../../DataTypes/referenceformat.h \
+        ../../DataTypes/mathvariant.h \
 	../../DataTypes/anchortype.h \
+	../../DataTypes/animation_attlists.h \
 	../../DataTypes/backgroundcolor.h \
 	../../DataTypes/bool.h \
 	../../DataTypes/bordermodel.h \
@@ -487,12 +509,21 @@ HEADERS += \
 	../../DataTypes/percent.h \
 	../../DataTypes/percentorscale.h \
 	../../DataTypes/presentationclass.h \
+	../../DataTypes/presentationnodetype.h \
+	../../DataTypes/presentationvisibility.h \
+	../../DataTypes/presetclass.h \
+	../../DataTypes/presetid.h \
 	../../DataTypes/punctuationwrap.h \
 	../../DataTypes/rotationalign.h \
 	../../DataTypes/runthrough.h \
 	../../DataTypes/scripttype.h \
 	../../DataTypes/shadowtype.h \
+	../../DataTypes/smil_additive.h \
+	../../DataTypes/smil_attributename.h \
+	../../DataTypes/smil_fill.h \
+	../../DataTypes/smil_keytimes.h \
 	../../DataTypes/smil_transitiontype.h \
+	../../DataTypes/smil_values.h \
 	../../DataTypes/stylefamily.h \
 	../../DataTypes/stylehorizontalpos.h \
 	../../DataTypes/stylehorizontalrel.h \
@@ -506,6 +537,7 @@ HEADERS += \
 	../../DataTypes/stylewrap.h \
 	../../DataTypes/stylenumformat.h \
 	../../DataTypes/stylewrapcontourmode.h \
+	../../DataTypes/svg_type.h \
 	../../DataTypes/tablealign.h \
 	../../DataTypes/tablecentering.h \
 	../../DataTypes/tablemode.h \
@@ -533,7 +565,9 @@ HEADERS += \
 	../../DataTypes/timeperiod.h \
 	../../DataTypes/messagetype.h \
 	../../DataTypes/stylecellprotect.h \
-	\
+        ../../DataTypes/tabledatatype.h \
+        ../../DataTypes/tableoperator.h \
+        \
 	../../Formulas/formulasconvert.h \
 	../../Reader/Format/odf_document.h \
 	../../Reader/Format/abstract_xml.h \
@@ -565,6 +599,7 @@ HEADERS += \
 	../../Reader/Format/office_elements_type.h \
 	../../Reader/Format/office_event_listeners.h \
 	../../Reader/Format/office_presentation.h \
+	../../Reader/Format/office_drawing.h \
 	../../Reader/Format/office_scripts.h \
 	../../Reader/Format/office_forms.h \
 	../../Reader/Format/office_settings.h \
@@ -634,6 +669,7 @@ HEADERS += \
 	../../Reader/Converter/oox_title.h \
 	../../Reader/Converter/oox_types_chart.h \
 	../../Reader/Converter/oox_rels.h \
+	../../Reader/Converter/pptx_animation_context.h \
 	../../Reader/Converter/pptx_comments.h \
 	../../Reader/Converter/pptx_comments_context.h \
 	../../Reader/Converter/pptx_conversion_context.h \

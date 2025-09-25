@@ -141,6 +141,7 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\Common\Base\FormatUtils.h" />
     <ClInclude Include="..\..\..\DocFile\AbstractOpenXmlMapping.h" />
     <ClInclude Include="..\..\..\DocFile\AnnotationOwnerList.h" />
     <ClInclude Include="..\..\..\DocFile\AnnotationReferenceDescriptor.h" />
@@ -308,6 +309,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\Common\3dParty\pole\pole.cpp" />
+    <ClCompile Include="..\..\..\Common\Base\FormatUtils.cpp" />
     <ClCompile Include="..\..\..\Common\Base\XmlTools.cpp" />
     <ClCompile Include="..\..\..\DocFile\AbstractOpenXmlMapping.cpp" />
     <ClCompile Include="..\..\..\DocFile\AnnotationOwnerList.cpp" />

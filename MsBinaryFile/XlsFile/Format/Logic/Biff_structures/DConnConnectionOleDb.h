@@ -48,9 +48,10 @@ public:
 	static const ElementType type = typeDConnConnectionOleDb;
 	
 	virtual void load(CFRecord& record);
+	virtual void save(CFRecord& record);
 
-	_UINT32									nDrillthroughRows;
-	unsigned short							cOleDb;
+	_UINT32									nDrillthroughRows = 0;
+	unsigned short							cOleDb = 0;
 	std::vector<unsigned short>				rgIOleDbValid;
 	//rgIOleDbInvalid; //size in bytes = 2 * (4 – cOleDb)
 	std::vector<XLUnicodeStringSegmented>	rgConn;

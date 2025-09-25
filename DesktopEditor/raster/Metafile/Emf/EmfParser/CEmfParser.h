@@ -20,14 +20,12 @@ namespace MetaFile
 
 		void            ClearFile()                                 override;
 
-		EmfParserType   GetType()				                    override;
+		EmfParserType   GetType()                                   const override;
 		void            SetStream(BYTE* pBuf, unsigned int unSize);
-
-	public:
-		virtual void SetInterpretator(IOutputDevice* pOutput) override;
-
 	private:
 		CEmfPlusParser  *m_pEmfPlusParser;
+
+		bool BanEMFProcesses() const;
 
 		bool ReadImage(unsigned int offBmi, unsigned int cbBmi, unsigned int offBits, unsigned int cbBits, unsigned int ulSkip, BYTE **ppBgraBuffer, unsigned int *pulWidth, unsigned int *pulHeight) override;
 		void Read_EMR_HEADER();
@@ -86,7 +84,7 @@ namespace MetaFile
 		void Read_EMR_SETLAYOUT();
 		void Read_EMR_SETBRUSHORGEX();
 		void Read_EMR_ANGLEARC();
-		void Read_EMR_ARC_BASE(TEmfRectL& oBox, TEmfPointL& oStart, TEmfPointL& oEnd, double& dStartAngle, double& dSweepAngle);
+		void Read_EMR_ARC_BASE(TRectL& oBox, TPointL& oStart, TPointL& oEnd, double& dStartAngle, double& dSweepAngle);
 		void Read_EMR_ARC();
 		void Read_EMR_ARCTO();
 		void Read_EMR_CHORD();

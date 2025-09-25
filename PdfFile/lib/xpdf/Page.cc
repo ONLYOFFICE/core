@@ -337,6 +337,7 @@ void Page::displaySlice(OutputDev *out, double hDPI, double vDPI,
   Object obj;
   Annots *annotList;
   AcroForm *form;
+  GString* sType;
   int i;
 
   if (!out->checkPageSlice(this, hDPI, vDPI, rotate, useMediaBox, crop,
@@ -379,7 +380,7 @@ void Page::displaySlice(OutputDev *out, double hDPI, double vDPI,
   obj.free();
 
   // draw (non-form) annotations
-  if (globalParams->getDrawAnnotations()) {
+  if (true) {
     annotList = new Annots(doc, getAnnots(&obj));
     obj.free();
     annotList->generateAnnotAppearances();
@@ -391,6 +392,10 @@ void Page::displaySlice(OutputDev *out, double hDPI, double vDPI,
 	if (abortCheckCbk && (*abortCheckCbk)(abortCheckCbkData)) {
 	  break;
 	}
+	sType = annotList->getAnnot(i)->getType();
+	if (globalParams->getDrawAnnotations() || sType->cmp("Link") == 0 || sType->cmp("FileAttachment") == 0 ||
+		sType->cmp("Sound") == 0 || sType->cmp("Movie") == 0 || sType->cmp("Screen") == 0 || sType->cmp("PrinterMark") == 0 ||
+		sType->cmp("TrapNet") == 0 || sType->cmp("Watermark") == 0 || sType->cmp("3D") == 0)
 	annotList->getAnnot(i)->draw(gfx, printing);
       }
     }

@@ -57,6 +57,7 @@ void CSlide::Clear()
     m_dEndTime			= 0.0;
     m_dDuration			= 30000.0;
 
+    m_bHidden = false;
     m_bShowMasterShapes = true;
     m_strComment.clear();
     m_sName.clear();
@@ -91,6 +92,7 @@ CSlide::CSlide(const CSlide &oSrc)
     m_bIsBackground		= oSrc.m_bIsBackground;
     m_oBackground		= oSrc.m_oBackground;
 
+    m_bHidden = oSrc.m_bHidden;
     m_bShowMasterShapes = oSrc.m_bShowMasterShapes;
 
     for (int i = 0 ; i < 3 ; i++) m_PlaceholdersReplaceString[i] = oSrc.m_PlaceholdersReplaceString[i];

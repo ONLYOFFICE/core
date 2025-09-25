@@ -32,15 +32,29 @@
 #ifndef _PDF_READER_H
 #define _PDF_READER_H
 
-#include "../../DesktopEditor/graphics/pro/Fonts.h"
-#include "../../DesktopEditor/graphics/IRenderer.h"
+#include "../DesktopEditor/graphics/pro/Fonts.h"
+#include "../DesktopEditor/graphics/pro/officedrawingfile.h"
+#include "../DesktopEditor/xmlsec/src/include/Certificate.h"
 #include "SrcReader/RendererOutputDev.h"
 
+#include <map>
+#include <vector>
+
 class PDFDoc;
+struct CPdfReaderContext
+{
+	PDFDoc* m_pDocument;
+	PdfReader::CPdfFontList* m_pFontList;
+	unsigned int m_nStartID;
+	std::string m_sPrefixForm;
+
+	CPdfReaderContext() : m_pDocument(NULL), m_pFontList(NULL), m_nStartID(0) {}
+	~CPdfReaderContext();
+};
+
 class CPdfReader
 {
 public:
-
 	CPdfReader(NSFonts::IApplicationFonts* pAppFonts);
 	~CPdfReader();
 
@@ -48,7 +62,9 @@ public:
 	bool LoadFromMemory(NSFonts::IApplicationFonts* pAppFonts, BYTE* data, DWORD length, const std::wstring& owner_password = L"", const std::wstring& user_password = L"");
 
 	void Close();
+	void CleanUp();
 
+	void SetParams(COfficeDrawingPageParams* pParams);
 	std::wstring GetTempDirectory();
 	void SetTempDirectory(const std::wstring& directory);
 
@@ -57,27 +73,51 @@ public:
 	void SetCMapFolder(const std::wstring& sFolder);
 	void SetCMapFile(const std::wstring& sFile);
 
+	int GetError();
+	int GetRotate(int nPageIndex);
+	int GetMaxRefID();
+	int GetNumPages();
+	bool ValidMetaData();
+	// Захватывает полученную память malloc data
+	bool MergePages(BYTE* pData, DWORD nLength, const std::wstring& wsPassword = L"", int nMaxID = 0, const std::string& sPrefixForm = "");
+	bool MergePages(const std::wstring& wsFile, const std::wstring& wsPassword = L"", int nMaxID = 0, const std::string& sPrefixForm = "");
+	bool UnmergePages();
 	void GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY);
 	void DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak);
 	std::wstring GetInfo();
-
-	int          GetError();
+	std::wstring GetFontPath(const std::wstring& wsFontName, bool bSave = true);
+	std::wstring ToXml(const std::wstring& wsXmlPath, bool isPrintStreams = false);
+	void ChangeLength(DWORD nLength) { m_nFileLength = nLength; }
 
 	NSFonts::IFontManager* GetFontManager() { return m_pFontManager; }
-	std::wstring ToXml(const std::wstring& wsXmlPath, bool isPrintStreams = false);
-	PDFDoc* GetPDFDocument() { return m_pPDFDocument; }
-	void ChangeLength(DWORD nLength);
+	PDFDoc* GetLastPDFDocument();
+	PDFDoc* GetPDFDocument(int PDFIndex);
+	int GetStartRefID(PDFDoc* pDoc);
+	int GetNumPagesBefore(PDFDoc* pDoc);
+	int FindRefNum(int nObjID, PDFDoc** pDoc = NULL, int* nStartRefID = NULL);
+	int GetPageIndex(int nPageIndex, PDFDoc** pDoc = NULL, PdfReader::CPdfFontList** pFontList = NULL, int* nStartRefID = NULL);
 
 	BYTE* GetStructure();
 	BYTE* GetLinks(int nPageIndex);
+	BYTE* GetWidgets();
+	BYTE* GetFonts(bool bStandart);
+	BYTE* GetAnnots(int nPageIndex = -1);
+	BYTE* VerifySign(const std::wstring& sFile, ICertificate* pCertificate, int nWidget = -1);
+	BYTE* GetAPWidget  (int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nWidget  = -1, const char* sView  = NULL, const char* sBView = NULL);
+	BYTE* GetAPAnnots  (int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nAnnot   = -1, const char* sView  = NULL);
+	BYTE* GetButtonIcon(int nBackgroundColor, int nPageIndex, bool bBase64 = false, int nBWidget = -1, const char* sIView = NULL);
+	BYTE* StreamToCData(BYTE* pSteam, int nLength);
+	const std::map<std::wstring, std::wstring>& GetFonts() { return m_mFonts; }
 
 private:
-	PDFDoc*            m_pPDFDocument;
-	std::wstring       m_wsTempFolder;
+	void Clear();
+
+	std::wstring           m_wsTempFolder;
 	NSFonts::IFontManager* m_pFontManager;
-	PdfReader::CFontList*  m_pFontList;
-	DWORD              m_nFileLength;
-	int                m_eError;
+	DWORD                  m_nFileLength;
+	int                    m_eError;
+	std::vector<CPdfReaderContext*> m_vPDFContext;
+	std::map<std::wstring, std::wstring> m_mFonts;
 };
 
 #endif // _PDF_READER_H

@@ -40,13 +40,15 @@
 #include "anim_elements.h"
 
 #include "../../DataTypes/common_attlists.h"
+#include "../../DataTypes/animation_attlists.h"
 #include "../../DataTypes/presentationclass.h"
+#include "../../DataTypes/presentationvisibility.h"
 #include "../../DataTypes/drawfill.h"
 
 namespace cpdoccore { 
 namespace odf_writer {
 
-class presentation_placeholder : public office_element_impl<presentation_placeholder>
+class presentation_placeholder : public office_element_impl<presentation_placeholder> //draw_base ??
 {
 public:
     static const wchar_t * ns;
@@ -54,22 +56,20 @@ public:
 
     static const ElementType type = typeStylePresentationPlaceholder;
 
-    
-
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element( const office_element_ptr & child){}
 
 	virtual void serialize(std::wostream & strm);
- 
-	_CP_OPT(odf_types::length) svg_x_;
-    _CP_OPT(odf_types::length) svg_y_;
-    _CP_OPT(odf_types::length) svg_width_;
-    _CP_OPT(odf_types::length) svg_height_;
+
+	_CP_OPT(odf_types::length)	svg_x_;
+    _CP_OPT(odf_types::length)	svg_y_;
+    _CP_OPT(odf_types::length)	svg_width_;
+    _CP_OPT(odf_types::length)	svg_height_;
 
 	_CP_OPT(odf_types::presentation_class) presentation_object_;
-
+//additional
+	_CP_OPT(std::wstring) text_style_name_;
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(presentation_placeholder);
 
 //----------------------------------------------------------------------------------
@@ -101,8 +101,8 @@ public:
 	
 	void serialize(std::wostream & strm, const wchar_t * ns, const wchar_t * name );
 
-	odf_types::common_draw_fill_attlist		common_draw_fill_attlist_;
-	anim_transition_filter_attlist			anim_transition_filter_attlist_;
+	odf_types::common_draw_fill_attlist			common_draw_fill_attlist_;
+	odf_types::anim_transition_filter_attlist	anim_transition_filter_attlist_;
 
 	_CP_OPT(odf_types::length_or_percent)	draw_fill_image_height_;
 	_CP_OPT(odf_types::length_or_percent)	draw_fill_image_width_;
@@ -119,12 +119,13 @@ public:
 	_CP_OPT(bool)							presentation_display_header_;
 	_CP_OPT(odf_types::clockvalue)			presentation_page_duration_;
 
+	_CP_OPT(odf_types::presentation_visibility)		presentation_visibility_;
+
 	office_element_ptr						presentation_sound_;
 	
 	//presentation:background-objects-visible
 	//presentation:background-visible
 	//style:repeat
-	//presentation:visibility
 	//draw:background-size
 
 };

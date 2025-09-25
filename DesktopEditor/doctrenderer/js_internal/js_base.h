@@ -194,9 +194,17 @@ namespace NSJSBase
 		 */
 		virtual CJSEmbedObjectAdapterBase* getAdapter();
 
+		/**
+		 * Use the externalize flag if you are monitoring the object's destruction yourself.
+		 */
+		virtual void SetExternalize(const bool& isExternalize = true);
+		virtual bool GetExternalize();
+
 	protected:
 		CJSEmbedObjectPrivateBase* embed_native_internal;
 		CJSEmbedObjectAdapterBase* m_pAdapter;
+
+		bool m_isExternalize;
 
 		friend class CJSEmbedObjectPrivateBase;
 		friend class CJSEmbedObjectPrivate;
@@ -215,19 +223,22 @@ namespace NSJSBase
 		 * Returns specified property of the object.
 		 * @param name The name of a property.
 		 */
-		virtual JSSmart<CJSValue> get(const char* name)                 = 0;
+		virtual JSSmart<CJSValue> get(const char* name)         = 0;
 		/**
 		 * Sets a property of the object.
 		 * @param name The name of a property.
 		 * @param value The value of a property.
 		 */
-		virtual void set(const char* name, CJSValue* value)     = 0;
+		virtual void set(const char* name, JSSmart<CJSValue> value) = 0;
 		virtual void set(const char* name, const int& value)    = 0;
 		virtual void set(const char* name, const double& value) = 0;
-		// Common funcs
-		void set(const char* name, JSSmart<CJSValue> value);
+		// Common function
 		void set(const char* name, JSSmart<CJSObject> value);
 
+		/**
+		 * Returns a vector containing the names of the properties of this object as strings, including properties from prototype objects.
+		 */
+		virtual std::vector<std::string> getPropertyNames()     = 0;
 		/**
 		 * Returns a pointer to the native embedded object.
 		 */
@@ -269,8 +280,7 @@ namespace NSJSBase
 		 * @param index The index of the array value.
 		 * @param value The array value to be set.
 		 */
-		virtual void set(const int& index, CJSValue* value)     = 0;
-		virtual void set(const int& index, const bool& value)   = 0;
+		virtual void set(const int& index, JSSmart<CJSValue> value) = 0;
 		virtual void set(const int& index, const int& value)    = 0;
 		virtual void set(const int& index, const double& value) = 0;
 
@@ -278,7 +288,7 @@ namespace NSJSBase
 		 * Add the specified value to the array.
 		 * @param value The value to be added.
 		 */
-		virtual void add(CJSValue* value)                       = 0;
+		virtual void add(JSSmart<CJSValue> value)               = 0;
 		/**
 		 * Add null to the array.
 		 */
@@ -384,6 +394,14 @@ namespace NSJSBase
 		 * Converts the typed array to a value.
 		 */
 		virtual JSSmart<CJSValue> toValue() = 0;
+
+		/**
+		 * Detaches this ArrayBuffer and all its views (typed arrays).
+		 * Detaching sets the byte length of the buffer and all typed arrays to zero,
+		 * preventing JavaScript from ever accessing underlying backing store.
+		 * ArrayBuffer should have been externalized.
+		 */
+		virtual void Detach() = 0;
 	};
 
 	/**
@@ -438,13 +456,20 @@ namespace NSJSBase
 		/**
 		 * Initializes the JS context.
 		 * By default it happens automatically when creating a CJSConext instance.
+		 * @param snapshotPath Path to snapshot file.
 		 */
-		void Initialize();
+		void Initialize(const std::wstring& snapshotPath = L"");
 		/**
 		 * Releases any resources taken by the JS context.
 		 * Generally there is no need to call it manually, cause this method called when CJSConext is being destructed.
 		 */
 		void Dispose();
+
+		/**
+		 * Get information about snapshot
+		 * @return Returns true if snapshot was used on Initialize method
+		 */
+		bool isSnapshotUsed();
 
 		/**
 		 * Creates and returns the pointer to an object for tracking exceptions during code execution in current JS context.
@@ -467,6 +492,12 @@ namespace NSJSBase
 		void Exit();
 
 		/**
+		 * Сheck if context is current.
+		 * This method is not safe.
+		 */
+		bool IsEntered();
+
+		/**
 		 * Embeds specified class in JS contexts.
 		 * @tparam T Embedded class name.
 		 * @param isAllowedInJS If true, user can create the embedded object instance from JS code using CreateEmbedObject().
@@ -477,6 +508,14 @@ namespace NSJSBase
 		{
 			AddEmbedCreator(T::getName(), T::getCreator, isAllowedInJS);
 		}
+
+		/**
+		 * Generate snapshot by script.
+		 * @param script The script to be executed.
+		 * @param snapshotPath The path to the snapshot
+		 * @return Returns true whether a snapshot has been created.
+		 */
+		static bool generateSnapshot(const std::string& script, const std::wstring& snapshotPath);
 
 		/**
 		 * Run the script in the current JS context.
@@ -493,6 +532,12 @@ namespace NSJSBase
 		 * @return The pointer to resulted JS value after parsing.
 		 */
 		JSSmart<CJSValue> JSON_Parse(const char* json_content);
+		/**
+		 * Creates a string that contains the JSON-serialized representation of a JS value.
+		 * @param value The JS value to serialize.
+		 * @return The string that contains the result of serialization, or empty string in case of errors.
+		 */
+		std::string JSON_Stringify(JSSmart<CJSValue> value);
 		/**
 		 * Do not use this function. It is for internal needs.
 		 * Associates current context with the specifed thread id.
@@ -673,7 +718,7 @@ namespace NSJSBase
  *
  * NOTE: If you don't want to export certain functions from your embedded class for some reason,
  *       then add the inline comment "[noexport]" at the start of a function declaration.
- *       Also you can use `#ifdef ... #endif` blocks (see doctrenderer/test/internal/Embed.h for an example).
+ *       Also you can use `#ifdef ... #endif` blocks (see doctrenderer/test/embed/external/Embed.h for an example).
  */
 
 #endif // _CORE_EXT_JS_BASE_H_

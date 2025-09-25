@@ -40,6 +40,9 @@
 #include "office_elements.h"
 #include "office_elements_create.h"
 
+#include "../../DataTypes/common_attlists.h"
+#include "../../DataTypes/officevaluetype.h"
+
 namespace cpdoccore { 
 namespace odf_writer {
 
@@ -67,6 +70,10 @@ public:
     static const wchar_t * name;
     static const ElementType type = typeOfficeMetaInitialCreator;
 	
+	virtual ElementType get_type() const
+	{
+		return type;
+	}
 	virtual void serialize(std::wostream & _Wostream);
 };
 CP_REGISTER_OFFICE_ELEMENT2(meta_initial_creator);
@@ -78,6 +85,10 @@ public:
 	static const wchar_t * name;
 	static const ElementType type = typeOfficeMetaKeyword;
 
+	virtual ElementType get_type() const
+	{
+		return type;
+	}
 	virtual void serialize(std::wostream & _Wostream);
 };
 CP_REGISTER_OFFICE_ELEMENT2(meta_keyword);
@@ -89,6 +100,10 @@ public:
 	static const wchar_t * name;
 	static const ElementType type = typeOfficeMetaCreationDate;
 
+	virtual ElementType get_type() const
+	{
+		return type;
+	}
 	virtual void serialize(std::wostream & _Wostream);
 };
 CP_REGISTER_OFFICE_ELEMENT2(meta_creation_date);
@@ -100,6 +115,10 @@ public:
 	static const wchar_t * name;
 	static const ElementType type = typeOfficeMetaGenerator;
 
+	virtual ElementType get_type() const
+	{
+		return type;
+	}
 	virtual void serialize(std::wostream & _Wostream);
 };
 CP_REGISTER_OFFICE_ELEMENT2(meta_generator);
@@ -111,6 +130,10 @@ public:
 	static const wchar_t * name;
 	static const ElementType type = typeOfficeMetaTemplate;
 
+	virtual ElementType get_type() const
+	{
+		return type;
+	}
 	virtual void serialize(std::wostream & _Wostream);
 };
 CP_REGISTER_OFFICE_ELEMENT2(meta_template);
@@ -122,6 +145,10 @@ public:
 	static const wchar_t * name;
 	static const ElementType type = typeOfficeMetaEditingCycles;
 
+	virtual ElementType get_type() const
+	{
+		return type;
+	}
 	virtual void serialize(std::wostream & _Wostream);
 };
 CP_REGISTER_OFFICE_ELEMENT2(meta_editing_cycles);
@@ -134,6 +161,10 @@ public:
 	static const wchar_t * name;
 	static const ElementType type = typeDcCreator;
 
+	virtual ElementType get_type() const
+	{
+		return type;
+	}
 	virtual void serialize(std::wostream & _Wostream);
 };
 CP_REGISTER_OFFICE_ELEMENT2(dc_creator);
@@ -145,6 +176,10 @@ public:
 	static const wchar_t * name;
 	static const ElementType type = typeDcDescription;
 
+	virtual ElementType get_type() const
+	{
+		return type;
+	}
 	virtual void serialize(std::wostream & _Wostream);
 };
 CP_REGISTER_OFFICE_ELEMENT2(dc_description);
@@ -156,6 +191,10 @@ public:
 	static const wchar_t * name;
 	static const ElementType type = typeDcLanguage;
 
+	virtual ElementType get_type() const
+	{
+		return type;
+	}
 	virtual void serialize(std::wostream & _Wostream);
 };
 CP_REGISTER_OFFICE_ELEMENT2(dc_language);
@@ -167,6 +206,10 @@ public:
 	static const wchar_t * name;
 	static const ElementType type = typeDcDate;
 
+	virtual ElementType get_type() const
+	{
+		return type;
+	}
 	virtual void serialize(std::wostream & _Wostream);
 };
 CP_REGISTER_OFFICE_ELEMENT2(dc_date);
@@ -178,6 +221,10 @@ public:
 	static const wchar_t * name;
 	static const ElementType type = typeDcTitle;
 
+	virtual ElementType get_type() const
+	{
+		return type;
+	}
 	virtual void serialize(std::wostream & _Wostream);
 };
 CP_REGISTER_OFFICE_ELEMENT2(dc_title);
@@ -189,6 +236,10 @@ public:
 	static const wchar_t * name;
 	static const ElementType type = typeDcSubject;
 
+	virtual ElementType get_type() const
+	{
+		return type;
+	}
 	virtual void serialize(std::wostream & _Wostream);
 };
 CP_REGISTER_OFFICE_ELEMENT2(dc_subject);
@@ -219,7 +270,8 @@ public:
 	_CP_OPT(int)	syllable_count_;
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name) {}
-	virtual void add_child_element(const office_element_ptr & child_element) {}	virtual void serialize(std::wostream & _Wostream);
+	virtual void add_child_element(const office_element_ptr & child_element) {}	
+	virtual void serialize(std::wostream & _Wostream);
 };
 CP_REGISTER_OFFICE_ELEMENT2(meta_document_statistic);
 
@@ -233,10 +285,11 @@ public:
     static const ElementType type = typeOfficeMetaUserDefined;
 
 	std::wstring meta_name_;
- 	std::wstring content_;
+	std::wstring content_;
+	_CP_OPT(odf_types::office_value_type) meta_value_type_;
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name) {}
-	virtual void add_child_element(const office_element_ptr & child_element) {}	virtual void add_text(const std::wstring & Text);
+	virtual void add_child_element(const office_element_ptr & child_element) {}	
 	virtual void serialize(std::wostream & _Wostream);
 };
 CP_REGISTER_OFFICE_ELEMENT2(meta_user_defined);

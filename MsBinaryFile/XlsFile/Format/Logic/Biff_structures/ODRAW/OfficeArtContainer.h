@@ -54,8 +54,8 @@ public:
 
 	static OfficeArtRecordPtr loadAnyArtRecord(XLS::CFRecord& record);
 
-	OfficeArtClientAnchorType			anchor_type_;
-	std::vector<OfficeArtRecordPtr>		child_records;
+	OfficeArtClientAnchorType anchor_type_;
+	std::vector<OfficeArtRecordPtr> child_records;
 
 private:
 	OfficeArtRecordPtr CreateOfficeArt(unsigned short type);

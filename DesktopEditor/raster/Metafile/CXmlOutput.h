@@ -55,12 +55,12 @@ namespace MetaFile
 
 		void WriteNode(const std::wstring& wsNameNode,  const TXForm&                   oNodeValue);
 
-		void WriteNode(const std::wstring& wsNameNode,  const TEmfRectL&                oNodeValue);
+		void WriteNode(const std::wstring& wsNameNode,  const TRectL&                   oNodeValue);
 		void WriteNode(const std::wstring& wsNameNode,  const TEmfPlusRect&             oNodeValue);
 		void WriteNode(const std::wstring& wsNameNode,  const TEmfPlusRectF&            oNodeValue);
-		void WriteNode(const std::wstring& wsNameNode,  const TEmfSizeL&                oNodeValue);
+		void WriteNode(const std::wstring& wsNameNode,  const TSizeL&                   oNodeValue);
 		void WriteNode(const std::wstring& wsNameNode,  const TEmfAlphaBlend&           oNodeValue);
-		void WriteNode(const std::wstring& wsNameNode,  const TEmfColor&                oNodeValue);
+		void WriteNode(const std::wstring& wsNameNode,  const TRGBA&                    oNodeValue);
 		void WriteNode(const std::wstring& wsNameNode,  const TEmfPlusARGB&             oNodeValue);
 		void WriteNode(const std::wstring& wsNameNode,  const TEmfStretchDIBITS&        oNodeValue);
 		void WriteNode(const std::wstring& wsNameNode,  const TEmfBitBlt&               oNodeValue);
@@ -68,11 +68,11 @@ namespace MetaFile
 		void WriteNode(const std::wstring& wsNameNode,  const TEmfStretchBLT&           oNodeValue);
 		void WriteNode(const std::wstring& wsNameNode,  const TEmfDibPatternBrush&      oNodeValue);
 		void WriteNode(const std::wstring& wsNameNode,  const TEmfExtTextoutA&          oNodeValue);
-		void WriteNode(const std::wstring& wsNameNode,  const TEmfPointL&               oNodeValue);
-		void WriteNode(const std::wstring& wsNameNode,  const TEmfPointS&               oNodeValue);
-		void WriteNode(const std::wstring& wsNameNode,  const TEmfPlusPointR&           oNodeValue);
+//		void WriteNode(const std::wstring& wsNameNode,  const TPointL&                  oNodeValue);
+		void WriteNode(const std::wstring& wsNameNode,  const TPointS&                  oNodeValue);
 		void WriteNode(const std::wstring& wsNameNode,  const TEmfPlusPointF&           oNodeValue);
-		void WriteNode(const std::wstring& wsNameNode,  const TEmfEmrText&              oNodeValue);
+		void WriteNode(const std::wstring& wsNameNode,  const TEmrTextW&                oNodeValue);
+		void WriteNode(const std::wstring& wsNameNode,  const TEmrTextA&                oNodeValue);
 		void WriteNode(const std::wstring& wsNameNode,  const TEmfExtTextoutW&          oNodeValue);
 		void WriteNode(const std::wstring& wsNameNode,  const TEmfSmallTextout&         oNodeValue);
 
@@ -82,19 +82,19 @@ namespace MetaFile
 		void WriteNode(const std::wstring& wsNameNode,  const CEmfLogPalette&           oNodeValue);
 
 		void WriteNode(const std::wstring& wsNameNode, const std::vector<TEmfPlusPointF>& arValues);
-		void WriteNode(const std::wstring& wsNameNode, const TRegionDataHeader& oRegionDataHeader, const std::vector<TEmfRectL>& arRects);
+		void WriteNode(const std::wstring& wsNameNode, const TRegionDataHeader& oRegionDataHeader, const std::vector<TRectL>& arRects);
 
 	private:
 		XmlUtils::CXmlWriter        *m_pXmlWriter;
 
 		void WriteTXForm                (const TXForm&                  oTXForm);
 
-		void WriteTEmfRectL             (const TEmfRectL&               oTEmfRectL);
+		void WriteTRectL                (const TRectL&                  oTRectL);
 		void WriteTEmfPlusRect          (const TEmfPlusRect&            oTEmfPlusRect);
 		void WriteTEmfPlusRectF         (const TEmfPlusRectF&           oTEmfPlusRectF);
-		void WriteTEmfSizeL             (const TEmfSizeL&               oTEmfSizeL);
+		void WriteTSizeL                (const TSizeL&                  oTSizeL);
 		void WriteTEmfAlphaBlend        (const TEmfAlphaBlend&          oTEmfAlphaBlend);
-		void WriteTEmfColor             (const TEmfColor&               oTEmfColor);
+		void WriteTRGBA                 (const TRGBA&                   oTRGBA);
 		void WriteARGB                  (const TEmfPlusARGB&            oTEmfPlusARGB);
 		void WriteTEmfStretchDIBITS     (const TEmfStretchDIBITS&       oTEmfStretchDIBITS);
 		void WriteTEmfBitBlt            (const TEmfBitBlt&              oTEmfBitBlt);
@@ -102,10 +102,10 @@ namespace MetaFile
 		void WriteTEmfStretchBLT        (const TEmfStretchBLT&          oTEmfStretchBLT);
 		void WriteTEmfDibPatternBrush   (const TEmfDibPatternBrush&     oTEmfDibPatternBrush);
 		void WriteTEmfExtTextoutA       (const TEmfExtTextoutA&         oTEmfExtTextoutA);
-		void WriteTEmfEmrText           (const TEmfEmrText&             oTEmfEmrText);
-		void WriteTEmfPointL            (const TEmfPointL&              oTEmfPointL);
-		void WriteTEmfPointS            (const TEmfPointS&              oTEmfPointS);
-		void WriteTEmfPlusPointR        (const TEmfPlusPointR&          oTEmfPlusPointR);
+		void WriteTEmrText              (const TEmrTextW&               oTEmfEmrText);
+		void WriteTEmrText              (const TEmrTextA&               oTEmfEmrText);
+		void WriteTPointL               (const TPointL&                 oTPointL);
+		void WriteTPointS               (const TPointS&                 oTPointS);
 		void WriteTEmfPlusPointF        (const TEmfPlusPointF&          oTEmfPlusPointF);
 		void WriteTEmfExtTextoutW       (const TEmfExtTextoutW&         oTEmfExtTextoutW);
 		void WriteTEmfSmallTextout      (const TEmfSmallTextout&        oTEmfSmallTextout);
@@ -143,23 +143,24 @@ namespace MetaFile
 		void operator>>(TEmfExtTextoutW&        oTEmfExtTextoutW);
 		void operator>>(TEmfExtTextoutA&        oTEmfExtTextoutA);
 		void operator>>(TEmfSmallTextout&       oTEmfSmallTextout);
-		void operator>>(TEmfEmrText&            oTEmfEmrText);
+		void operator>>(TEmrTextW&              oTEmrText);
+		void operator>>(TEmrTextA&              oTEmrText);
 		void operator>>(TEmfDibPatternBrush&    oTEmfDibPatternBrush);
 		void operator>>(CEmfLogPalette&         oCEmfLogPalette);
 		void operator>>(CDataStream&            oCDataStream);
 
-		void operator>>(TXForm&         oTXForm);
-		void operator>>(TEmfColor&      oTEmfColor);
-		void operator>>(TEmfPointL&     oTEmfPointL);
-		void operator>>(TEmfPointS&     oTEmfPointS);
-		void operator>>(TEmfSizeL&      oTEmfSizeL);
-		void operator>>(TEmfRectL&      oTEmfRectL);
+		void operator>>(TXForm&      oTXForm);
+		void operator>>(TRGBA&       oTRGBA);
+		void operator>>(TPointL&     oTPointL);
+		void operator>>(TPointS&     oTPointS);
+//		void operator>>(TSizeL&      oTSizeL);
+		void operator>>(TRectL&      oTRectL);
 
-		void operator>>(std::vector<TEmfPointL> &arPoints);
-		void operator>>(std::vector<TEmfPointS> &arPoints);
-		void operator>>(std::vector<TEmfRectL>  &arRects);
-		void operator>>(std::vector<std::vector<TEmfPointL>>& arPoints);
-		void operator>>(std::vector<std::vector<TEmfPointS>>& arPoints);
+		void operator>>(std::vector<TPointL> &arPoints);
+		void operator>>(std::vector<TPointS> &arPoints);
+		void operator>>(std::vector<TRectL>  &arRects);
+		void operator>>(std::vector<std::vector<TPointL>>& arPoints);
+		void operator>>(std::vector<std::vector<TPointS>>& arPoints);
 
 		void operator>>(unsigned short& ushValue);
 		void operator>>(unsigned char&  ucValue);
@@ -170,7 +171,6 @@ namespace MetaFile
 	private:
 		XmlUtils::CXmlLiteReader    *m_pXmlLiteReader;
 
-		void operator>>(TRect&              oTRect);
 		void operator>>(TEmfLogFontEx&      oTEmfLogFontEx);
 		void operator>>(TEmfLogFont&        oTEmfLogFont);
 		void operator>>(TEmfDesignVector&   oTEmfDesignVector);
@@ -178,11 +178,12 @@ namespace MetaFile
 
 		void operator>>(short&          shValue);
 		void operator>>(unsigned short  arushValue[]);
+		void operator>>(unsigned char   aruchValue[]);
 		void operator>>(std::wstring&   wsValue);
 		void operator>>(std::string&    sValue);
 
-		void ReadPoint(TEmfPointL& oPoint);
-		void ReadPoint(TEmfPointS& oPoint);
+		void ReadPoint(TPointL& oPoint);
+		void ReadPoint(TPointS& oPoint);
 		void ReadDx(unsigned int  arunValue[], const unsigned int& unCount);
 	};
 }

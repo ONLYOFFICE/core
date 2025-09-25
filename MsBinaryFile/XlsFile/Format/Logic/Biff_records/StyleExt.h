@@ -52,17 +52,18 @@ public:
 	BaseObjectPtr clone();
 
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 
 	static const ElementType type = typeStyleExt;
 
 	int serialize(std::wostream & stream);
 
 //-----------------------------
-	bool			fBuiltIn;
-	bool			fHidden;
-	bool			fCustom;
+    bool			fBuiltIn = false;
+    bool			fHidden = false;
+    bool			fCustom = false;
 
-	unsigned char	iCategory;
+    unsigned char	iCategory = 0;
 	BuiltInStyle	builtInData;
 	LPWideString	stName;
 	XFProps			xfProps;

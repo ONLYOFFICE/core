@@ -54,16 +54,16 @@ namespace XLSB
             static const XLS::ElementType	type = XLS::typeBeginDatabar14;
 
             FRTBlank                    FRTheader;
-            BYTE                        bLenMin;
-            BYTE                        bLenMax;
-            XLS::Boolean<unsigned char> fShowValue;
-            BYTE                        bDirection;
-            BYTE                        bAxisPosType;
+            BYTE                        bLenMin = 0;
+            BYTE                        bLenMax = 100;
+            XLS::Boolean<unsigned char> fShowValue = 1;
+            BYTE                        bDirection = 0;
+            BYTE                        bAxisPosType = 0;
 
-            bool                        fBorder;
-            bool                        fGradient;
-            bool                        fCustomNegativeFillColor;
-            bool                        fCustomNegativeBorderColor;
+            bool                        fBorder = false;
+            bool                        fGradient = false;
+            bool                        fCustomNegativeFillColor = false;
+            bool                        fCustomNegativeBorderColor = false;
     };
 
 } // namespace XLSB

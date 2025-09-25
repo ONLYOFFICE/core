@@ -57,16 +57,4 @@ public:
     virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream);
 };
 
-class CRecordVbaProjectStg : public CUnknownRecord
-{
-public:
-	std::wstring m_sFileName;
-	std::wstring m_strTmpDirectory;
-	
-
-    CRecordVbaProjectStg(std::wstring strTemp);
-    ~CRecordVbaProjectStg();
-
-    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream) override;
-};
 }

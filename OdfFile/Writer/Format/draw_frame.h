@@ -155,7 +155,8 @@ public:
 
     virtual void serialize(std::wostream & _Wostream);
 
-	odf_types::union_common_draw_attlists  common_draw_attlists_;  
+	odf_types::union_common_draw_attlists   common_draw_attlists_;  
+    _CP_OPT(std::wstring)                   xml_id_;
 
     office_element_ptr_array content_;
 };

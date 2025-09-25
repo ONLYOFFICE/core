@@ -35,7 +35,7 @@ namespace MetaFile
 		void HANDLE_META_ARC(short shYEndArc, short shXEndArc, short shYStartArc, short shXStartArc, short shBottom, short shRight, short shTop, short shLeft) override;
 		void HANDLE_META_CHORD(short shYEndArc, short shXEndArc, short shYStartArc, short shXStartArc, short shBottom, short shRight, short shTop, short shLeft) override;
 		void HANDLE_META_ELLIPSE(short shBottom, short shRight, short shTop, short shLeft) override;
-		void HANDLE_META_EXTTEXTOUT(short shY, short shX, short shStringLength, unsigned short ushFwOptions, const TWmfRect& oRectangle, unsigned char* pString, short* pDx) override;
+		void HANDLE_META_EXTTEXTOUT(short shY, short shX, short shStringLength, unsigned short ushFwOptions, const TRectL& oRectangle, unsigned char* pString, short* pDx) override;
 		void HANDLE_META_FILLREGION(unsigned short ushRegionIndex, unsigned short ushBrushIndex) override;
 		void HANDLE_META_FRAMEREGION(unsigned short ushRegionIndex, unsigned short ushBrushIndex, short shHeight, short shWidth) override;
 		void HANDLE_META_INVERTREGION(unsigned short ushRegionIndex) override;
@@ -43,12 +43,12 @@ namespace MetaFile
 		void HANDLE_META_PAINTREGION(unsigned short ushRegionIndex) override;
 		void HANDLE_META_PATBLT(unsigned int unRasterOperation, short shH, short shW, short shY, short shX) override;
 		void HANDLE_META_PIE(short shXRadial1, short shYRadial1, short shXRadial2, short shYRadial2, short shB, short shR, short shT, short shL) override;
-		void HANDLE_META_POLYLINE(const std::vector<TWmfPointS>& arPoints) override;
-		void HANDLE_META_POLYGON(const std::vector<TWmfPointS>& arPoints) override;
-		void HANDLE_META_POLYPOLYGON(const std::vector<std::vector<TWmfPointS>>& arPolygons) override;
+		void HANDLE_META_POLYLINE(const std::vector<TPointS>& arPoints) override;
+		void HANDLE_META_POLYGON(const std::vector<TPointS>& arPoints) override;
+		void HANDLE_META_POLYPOLYGON(const std::vector<std::vector<TPointS>>& arPolygons) override;
 		void HANDLE_META_RECTANGLE(short shB, short shR, short shT, short shL) override;
 		void HANDLE_META_ROUNDRECT(short shH, short shW, short shB, short shR, short shT, short shL) override;
-		void HANDLE_META_SETPIXEL(const TWmfColor& oColor, short shY, short shX) override;
+		void HANDLE_META_SETPIXEL(const TRGBA& oColor, short shY, short shX) override;
 		void HANDLE_META_TEXTOUT(short shStringLength, unsigned char* pString, short shX, short shY) override;
 		//-----------------------------------------------------------
 		// 2.3.4 Object records
@@ -77,7 +77,7 @@ namespace MetaFile
 		void HANDLE_META_SAVEDC() override {};
 		void HANDLE_META_SCALEVIEWPORTEXT(short yDenom, short yNum, short xDenom, short xNum) override {};
 		void HANDLE_META_SCALEWINDOWEXT(short yDenom, short yNum, short xDenom, short xNum) override {};
-		void HANDLE_META_SETBKCOLOR(const TWmfColor& oColor) override {};
+		void HANDLE_META_SETBKCOLOR(const TRGBA& oColor) override {};
 		void HANDLE_META_SETBKMODE(unsigned short ushMode) override {};
 		void HANDLE_META_SETLAYOUT(unsigned short ushLayout) override {};
 		void HANDLE_META_SETMAPMODE(unsigned short ushMapMode) override {};
@@ -86,7 +86,7 @@ namespace MetaFile
 		void HANDLE_META_SETSTRETCHBLTMODE(unsigned short ushMode) override {};
 		void HANDLE_META_SETTEXTALIGN(unsigned short ushTextAlign) override {};
 		void HANDLE_META_SETTEXTCHAREXTRA(unsigned short ushCharSpacing) override {};
-		void HANDLE_META_SETTEXTCOLOR(const TWmfColor& oColor) override {};
+		void HANDLE_META_SETTEXTCOLOR(const TRGBA& oColor) override {};
 		void HANDLE_META_SETTEXTJUSTIFICATION(unsigned short ushBreakCount, unsigned short ushBreakExtra) override {};
 		void HANDLE_META_SETVIEWPORTEXT(short shX, short shY) override {};
 		void HANDLE_META_SETVIEWPORTORG(short shX, short shY) override {};
@@ -102,7 +102,7 @@ namespace MetaFile
 		void HANDLE_META_UNKNOWN(CDataStream& oDataStream) override {};
 
 	public:
-		void DrawBitmap(double dX, double dY, double dW, double dH, BYTE* pBuffer, unsigned int unWidth, unsigned int unHeight) override;
+		void DrawBitmap(double dX, double dY, double dW, double dH, BYTE* pBuffer, unsigned int unWidth, unsigned int unHeight, unsigned int unBlendMode) override;
 
 		//Следующие методы ничего не делают
 		void Begin() override {};
@@ -125,7 +125,7 @@ namespace MetaFile
 		void ResetClip() override;
 		void IntersectClip(const TRectD& oClip) override;
 		void ExcludeClip(const TRectD& oClip, const TRectD& oBB) override;
-		void PathClip(IPath* pPath, int nClipMode, TXForm* pTransform = NULL) override {};
+		void PathClip(const CPath& oPath, int nClipMode, TXForm* pTransform = NULL) override {};
 		void StartClipPath(unsigned int unMode, int nFillMode = -1) override {};
 		void EndClipPath(unsigned int unMode) override {};
 

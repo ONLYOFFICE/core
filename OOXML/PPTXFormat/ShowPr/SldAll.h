@@ -30,21 +30,18 @@
  *
  */
 #pragma once
-#ifndef PPTX_SHOWPR_SLDALL_INCLUDE_H_
-#define PPTX_SHOWPR_SLDALL_INCLUDE_H_
 
 #include "./../WrapperWritingElement.h"
 
 namespace PPTX
 {
-	namespace nsShowPr
+	namespace nsPresentation
 	{
 		class SldAll : public WrapperWritingElement
 		{
 		public:
 			PPTX_LOGIC_BASE(SldAll)
 
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual std::wstring toXML() const;
 
@@ -54,7 +51,5 @@ namespace PPTX
 		protected:
 			virtual void FillParentPointersForChilds();
 		};
-	} // namespace nsShowPr
+	} // namespace nsPresentation
 } // namespace PPTX
-
-#endif // PPTX_SHOWPR_SLDALL_INCLUDE_H_

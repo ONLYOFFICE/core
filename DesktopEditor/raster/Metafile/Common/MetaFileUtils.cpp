@@ -44,11 +44,16 @@
     #define DIB_RGB_COLORS  0x00
 #endif
 
-#define MINACCURACY 2
+#define MINACCURACY 5
 #define MAXACCURACY 10
 
 namespace MetaFile
 {
+	bool Equals(double dFirst, double dSecond, double dEpsilon)
+	{
+		return std::abs(dFirst - dSecond) <= dEpsilon;
+	}
+
 	unsigned char GetLowestBit(unsigned int ulValue)
 	{
 		if (0 == ulValue)
@@ -88,7 +93,7 @@ namespace MetaFile
 
 		return false;
 	}
-	bool ReadImageInfoHeader(BYTE* pHeaderBuffer, unsigned int ulHeaderBufferLen, BYTE* pImageBuffer, unsigned int ulImageBufferLen, BYTE** ppDstBuffer, unsigned int* pulWidth, unsigned int* pulHeight)
+	bool ReadImageInfoHeader(BYTE* pHeaderBuffer, unsigned int ulHeaderBufferLen, BYTE* pImageBuffer, unsigned int ulImageBufferLen, BYTE** ppDstBuffer, unsigned int* pulWidth, unsigned int* pulHeight, unsigned int& unColorUsed)
 	{
 		CDataStream oHeaderStream;
 		oHeaderStream.SetStream(pHeaderBuffer, ulHeaderBufferLen);
@@ -103,7 +108,6 @@ namespace MetaFile
 		unsigned int unImageSize;
 		unsigned int unXPelsPerMeter;
 		unsigned int unYPelsPerMeter;
-		unsigned int unColorUsed;
 		unsigned int unColorImportant;
 
 		oHeaderStream >> nWidth;
@@ -141,6 +145,10 @@ namespace MetaFile
 		{
 			if (BI_JPEG != unCompression || BI_PNG != unCompression)
 				return false;
+
+#ifdef METAFILE_DISABLE_FILESYSTEM
+			return false;
+#endif
 
 			std::wstring wsTempFileName = GetTempFilename();
 			if (wsTempFileName.empty())
@@ -228,7 +236,9 @@ namespace MetaFile
 					}
 					for (int nAddIndex = 0; nAddIndex < nAdditBytes; nAddIndex++)
 					{
-						int nByte = *pBuffer; pBuffer++; lBufLen--;
+						// int nByte = *pBuffer;
+						++pBuffer;
+						--lBufLen;
 					}
 				}
 			}
@@ -262,7 +272,9 @@ namespace MetaFile
 					}
 					for (int nAddIndex = 0; nAddIndex < nAdditBytes; nAddIndex++)
 					{
-						int nByte = *pBuffer; pBuffer++; lBufLen--;
+						// int nByte = *pBuffer;
+						++pBuffer;
+						--lBufLen;
 					}
 				}
 			}
@@ -481,7 +493,12 @@ namespace MetaFile
 			}
 
 			if (lBufLen < (nWidth + nAdd) * abs(nHeight))
+			{
+				if (pUncompressedBuffer)
+					delete[] pUncompressedBuffer;
+
 				return false;
+			}
 
 			pBgraBuffer = new BYTE[nWidth * abs(nHeight) * 4 * sizeof(BYTE)];
 			if (NULL == pBgraBuffer)
@@ -634,7 +651,7 @@ namespace MetaFile
 			*pulWidth    = ulWidth;
 			*pulHeight   = ulHeight;
 
-			return false;
+			return true;
 		}
 		else if (BI_BITCOUNT_5 == ushBitCount)
 		{
@@ -799,7 +816,7 @@ namespace MetaFile
 
 		return false;
 	}
-	void ReadImage(BYTE* pHeaderBuffer, unsigned int ulHeaderBufferLen, BYTE* pImageBuffer, unsigned int ulImageBufferLen, BYTE** ppDstBuffer, unsigned int* pulWidth, unsigned int* pulHeight)
+	void ReadImage(BYTE* pHeaderBuffer, unsigned int ulHeaderBufferLen, BYTE* pImageBuffer, unsigned int ulImageBufferLen, BYTE** ppDstBuffer, unsigned int* pulWidth, unsigned int* pulHeight, unsigned int& unColorUsed)
 	{
 		if (ulHeaderBufferLen <= 0 || NULL == pHeaderBuffer || NULL == pImageBuffer || ulImageBufferLen < 0)
 			return;
@@ -816,9 +833,9 @@ namespace MetaFile
 		else if (0x0000000C == ulHeaderSize) // BitmapCoreHeader
 			ReadImageCoreHeader(pHeaderBuffer + 4, ulHeaderBufferLen - 4, pImageBuffer, ulImageBufferLen, ppDstBuffer, pulWidth, pulHeight);
 		else // BitmapInfoHeader
-			ReadImageInfoHeader(pHeaderBuffer + 4, ulHeaderBufferLen - 4, pImageBuffer, ulImageBufferLen, ppDstBuffer, pulWidth, pulHeight);
+			ReadImageInfoHeader(pHeaderBuffer + 4, ulHeaderBufferLen - 4, pImageBuffer, ulImageBufferLen, ppDstBuffer, pulWidth, pulHeight, unColorUsed);
 	}
-	void ReadImage(BYTE* pImageBuffer, unsigned int unBufferLen, unsigned int unColorUsage, BYTE** ppDstBuffer, unsigned int* punWidth, unsigned int* punHeight)
+	void ReadImage(BYTE* pImageBuffer, unsigned int unBufferLen, unsigned int unColorUsage, BYTE** ppDstBuffer, unsigned int* punWidth, unsigned int* punHeight, unsigned int& unColorUsed)
 	{
 		if (unBufferLen <= 0 || NULL == pImageBuffer)
 			return;
@@ -848,7 +865,7 @@ namespace MetaFile
 			unsigned int unImageSize;
 			unsigned int unXPelsPerMeter;
 			unsigned int unYPelsPerMeter;
-			unsigned int unColorUsed;
+			// unsigned int unColorUsed;
 			unsigned int unColorImportant;
 
 			oHeaderStream >> nWidth;
@@ -879,7 +896,7 @@ namespace MetaFile
 				}
 
 				unHeaderSize += 4 * unColorUsed; // RGBQuad
-				ReadImageInfoHeader(pImageBuffer + 4, unHeaderSize - 4, pImageBuffer + unHeaderSize, unBufferLen - unHeaderSize, ppDstBuffer, punWidth, punHeight);
+				ReadImageInfoHeader(pImageBuffer + 4, unHeaderSize - 4, pImageBuffer + unHeaderSize, unBufferLen - unHeaderSize, ppDstBuffer, punWidth, punHeight, unColorUsed);
 			}
 			else
 			{
@@ -964,44 +981,6 @@ namespace MetaFile
 			for (unsigned int unIndex = 3; unIndex < unWidth * 4 * unHeight; unIndex += 4)
 				pBgra[unIndex] = 0xff;
 		}
-		else if (0x00660046 == unRasterOperation) //SRCINVERT
-		{
-			BYTE* pCur = pBgra;
-
-			for (unsigned int unY = 0; unY < unHeight; unY++)
-			{
-				for (unsigned int unX = 0; unX < unWidth; unX++)
-				{
-					unsigned int unIndex = (unY * unWidth + unX) * 4;
-
-					if (0x00 == pCur[unIndex + 0] && 0x00 == pCur[unIndex + 1] && 0x00 == pCur[unIndex + 2])
-						pCur[unIndex + 3] = 0;
-				}
-			}
-		}
-	}
-
-	std::wstring ascii_to_unicode(const char *src)
-	{
-		size_t nSize = mbstowcs(0, src, 0);
-		wchar_t* pBuffer = new wchar_t[nSize];
-		nSize = mbstowcs(pBuffer, src, nSize);
-		std::wstring sRes;
-		if (nSize != (size_t)-1)
-			sRes = std::wstring(pBuffer, nSize);
-		delete[] pBuffer;
-		return sRes;
-	}
-	std::string unicode_to_ascii(const wchar_t *src)
-	{
-		size_t nSize = wcstombs(0, src, 0);
-		char* pBuffer = new char[nSize];
-		nSize = wcstombs(pBuffer, src, nSize);
-		std::string sRes;
-		if (nSize != (size_t)-1)
-			sRes = std::string(pBuffer, nSize);
-		delete[] pBuffer;
-		return sRes;
 	}
 
 	std::wstring GetTempFilename(const std::wstring& sFolder)
@@ -1061,54 +1040,105 @@ namespace MetaFile
 #endif
 	}
 
-	static int GetMinAccuracy(double dValue)
-	{
-		if (dValue == (int)dValue)
-			return 0;
-
-		if (dValue < 0.)
-			dValue = -dValue;
-
-		if (dValue > 1.)
-			return MINACCURACY;
-
-		unsigned int unAccuracy = 0;
-
-		while (unAccuracy < MAXACCURACY)
-		{
-			dValue *= 10;
-
-			if (dValue >= 1.)
-				break;
-
-			++unAccuracy;
-		}
-
-		if (MAXACCURACY == unAccuracy)
-			return 0;
-		else
-			return unAccuracy + 3;
-	}
-
 	std::wstring ConvertToWString(double dValue, int nAccuracy)
 	{
-		int nNewAccuracy = (-1 != nAccuracy) ? nAccuracy : GetMinAccuracy(dValue);
+		const double dAbsValue {std::abs(dValue)};
+		const double dRemainder{dAbsValue - std::floor(dAbsValue)};
+
+		if (Equals(0., dRemainder))
+			return std::to_wstring(static_cast<int>(dValue));
+
+		if (nAccuracy < 0)
+		{
+			if (dAbsValue < 1.)
+				nAccuracy = MAXACCURACY;
+			else
+				nAccuracy = MINACCURACY;
+		}
 
 		std::wstringstream owsStream;
-		owsStream << std::fixed << std::setprecision(nNewAccuracy) << dValue;
+		owsStream << std::fixed << std::setprecision(nAccuracy) << dValue;
 
-		return owsStream.str();
+		std::wstring wsValue{owsStream.str()};
+
+		const size_t unDotPosition{wsValue.find_first_of(L'.')};
+
+		if (std::wstring::npos == unDotPosition)
+			return wsValue;
+
+		const size_t unFirstPosition{wsValue.find_first_not_of(L'0', unDotPosition + 1)};
+
+		if (std::wstring::npos == unFirstPosition)
+			return wsValue.substr(0, unDotPosition);
+
+		const size_t unLastPosition = wsValue.find_last_not_of(L'0', unFirstPosition + MINACCURACY - 1);
+
+		return wsValue.substr(0, unLastPosition + 1);
 	}
 
 	std::wstring ConvertToWString(const std::vector<double>& arValues, int nAccuracy)
 	{
-		std::wstringstream owsStream;
+		std::wstring wsValue;
 
 		for (double dValue : arValues)
-			owsStream << std::fixed << std::setprecision((-1 != nAccuracy) ? nAccuracy : GetMinAccuracy(dValue)) << dValue << L" ";
+			wsValue += ConvertToWString(dValue, nAccuracy) + L' ';
 
-		owsStream.seekp(-1, std::ios_base::end);
+		wsValue.pop_back();
 
-		return owsStream.str();
+		return wsValue;
 	}
+
+	std::wstring ConvertToUnicode(const unsigned char* pText, unsigned long unLength, unsigned short uchCharSet)
+	{
+		NSStringExt::CConverter::ESingleByteEncoding eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_DEFAULT;;
+
+		// Соответствие Charset -> Codepage: http://support.microsoft.com/kb/165478
+		// http://msdn.microsoft.com/en-us/library/cc194829.aspx
+		//  Charset Name       Charset Value(hex)  Codepage number
+		//  ------------------------------------------------------
+		//
+		//  DEFAULT_CHARSET           1 (x01)
+		//  SYMBOL_CHARSET            2 (x02)
+		//  OEM_CHARSET             255 (xFF)
+		//  ANSI_CHARSET              0 (x00)            1252
+		//  RUSSIAN_CHARSET         204 (xCC)            1251
+		//  EASTEUROPE_CHARSET      238 (xEE)            1250
+		//  GREEK_CHARSET           161 (xA1)            1253
+		//  TURKISH_CHARSET         162 (xA2)            1254
+		//  BALTIC_CHARSET          186 (xBA)            1257
+		//  HEBREW_CHARSET          177 (xB1)            1255
+		//  ARABIC _CHARSET         178 (xB2)            1256
+		//  SHIFTJIS_CHARSET        128 (x80)             932
+		//  HANGEUL_CHARSET         129 (x81)             949
+		//  GB2313_CHARSET          134 (x86)             936
+		//  CHINESEBIG5_CHARSET     136 (x88)             950
+		//  THAI_CHARSET            222 (xDE)             874
+		//  JOHAB_CHARSET	        130 (x82)            1361
+		//  VIETNAMESE_CHARSET      163 (xA3)            1258
+
+		switch (uchCharSet)
+		{
+		default:
+		case DEFAULT_CHARSET:       eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_DEFAULT; break;
+		case SYMBOL_CHARSET:        eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_DEFAULT; break;
+		case ANSI_CHARSET:          eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1252; break;
+		case RUSSIAN_CHARSET:       eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1251; break;
+		case EASTEUROPE_CHARSET:    eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1250; break;
+		case GREEK_CHARSET:         eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1253; break;
+		case TURKISH_CHARSET:       eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1254; break;
+		case BALTIC_CHARSET:        eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1257; break;
+		case HEBREW_CHARSET:        eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1255; break;
+		case ARABIC_CHARSET:        eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1256; break;
+		case SHIFTJIS_CHARSET:      eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP932; break;
+		case HANGEUL_CHARSET:       eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP949; break;
+		case 134/*GB2313_CHARSET*/: eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP936; break;
+		case CHINESEBIG5_CHARSET:   eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP950; break;
+		case THAI_CHARSET:          eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP874; break;
+		case JOHAB_CHARSET:         eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1361; break;
+		case VIETNAMESE_CHARSET:    eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1258; break;
+		}
+
+		return NSStringExt::CConverter::GetUnicodeFromSingleByteString(pText, unLength, eCharSet);
+	}
+
 }

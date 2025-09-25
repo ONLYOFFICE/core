@@ -71,6 +71,22 @@ namespace PPTX
 		class TcTxStyle;
 		class TimeNodeBase;
 		class CTn;
+		class Cond;
+		class Anim;
+		class AnimClr;
+		class AnimEffect;
+		class AnimMotion;
+		class AnimRot;
+		class AnimScale;
+		class Audio;
+		class Cmd;
+		class Excl;
+		class Set;
+		class Video;
+		class CBhvr;
+		class TgtEl;
+		class AnimVariant;
+		class AttrName;
 		class EmptyTransition;
 		class OrientationTransition;
 		class EightDirectionTransition;
@@ -80,6 +96,12 @@ namespace PPTX
 		class WheelTransition;
 		class SplitTransition;
 		class ZoomTransition;
+	}
+
+	namespace Limit
+	{
+		class TLNodeType;
+		class TLPresetClass;
 	}
 }
 
@@ -95,6 +117,10 @@ namespace cpdoccore
 		class odf_conversion_context;
 		class odt_conversion_context;
 		class odp_conversion_context;
+
+		class graphic_format_properties;
+		class style_table_cell_properties;
+		class paragraph_format_properties;
 	}
 }
 
@@ -139,6 +165,22 @@ namespace Oox2Odf
 		void convert(PPTX::Logic::Transition			*oox_transition);
 		void convert(PPTX::Logic::TimeNodeBase			*oox_base_time);
 		void convert(PPTX::Logic::CTn					*oox_common_time);
+		void convert(PPTX::Logic::Cond					*oox_condition); 
+		void convert(PPTX::Logic::Anim					*oox_anim);
+		void convert(PPTX::Logic::AnimClr				*oox_anim_color);
+		void convert(PPTX::Logic::AnimEffect			*oox_anim_effect);
+		void convert(PPTX::Logic::AnimMotion			*oox_anim_motion);
+		void convert(PPTX::Logic::AnimRot				*oox_anim_rot);
+		void convert(PPTX::Logic::AnimScale				*oox_anim_scale);
+		void convert(PPTX::Logic::Audio					*oox_audio);
+		void convert(PPTX::Logic::Cmd					*oox_cmd);
+		void convert(PPTX::Logic::Excl					*oox_excl);
+		void convert(PPTX::Logic::Set					*oox_set);
+		void convert(PPTX::Logic::Video					*oox_video);
+		void convert(PPTX::Logic::CBhvr					*oox_cbhvr);
+		void convert(PPTX::Logic::TgtEl					*oox_tgt_el);
+		void convert(PPTX::Logic::AnimVariant			*oox_anim_variant);	
+		void convert(PPTX::Logic::AttrName				*oox_attr_name);
 		
 		void convert(PPTX::Logic::Table					*oox_table);
 		void convert(PPTX::Logic::TableRow				*oox_table_row);
@@ -171,6 +213,12 @@ private:
 		void convert(PPTX::Logic::SplitTransition			*oox_transition);
 		void convert(PPTX::Logic::ZoomTransition			*oox_transition);
 
+		void convert(const PPTX::Limit::TLNodeType&			oox_note_type);
+		void convert(const PPTX::Limit::TLPresetClass&		oox_preset_class);
+		void convert(const PPTX::Limit::TLPresetClass&		oox_preset_class, int preset_id);
+		void convert(odf_writer::graphic_format_properties* graphic_props, odf_writer::style_table_cell_properties* table_cell_props);
+		void convert(odf_writer::paragraph_format_properties* paragraph_props, odf_writer::style_table_cell_properties* table_cell_props);
+
 		PPTX::Document									*pptx_document;
 		PPTX::Presentation								*presentation;
 		
@@ -183,13 +231,21 @@ private:
 
 		std::map<std::wstring, std::wstring>			m_mapMasters;
 		std::map<std::wstring, std::wstring>			m_mapLayouts;
-		
-		void convert_slides		();
-		void convert_styles		();
-		void convert_settings	();
-		void convert_layouts	();
-		void convert_common		();
 
+		std::wstring									interactive_animation_element_id;
+		
+		void convert_slides ();
+		void convert_styles ();
+		void convert_settings ();
+		void convert_layouts ();
+		void convert_common	 ();
+		void convert_masters_and_layouts();
+
+		std::wstring convert_animation_formula(std::wstring formula);
+		std::wstring convert_animation_scale_values(int x, int y);
+
+		std::wstring get_page_name(PPTX::Logic::CSld* oox_slide, _typePages type);
+		void fill_in_deferred_hyperlinks();
 		
 //--------------------------------------------------------------------------------
 	};

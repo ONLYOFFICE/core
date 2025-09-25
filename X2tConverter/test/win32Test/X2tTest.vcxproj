@@ -74,7 +74,7 @@
     <LibraryPath>..\..\..\Common\3dParty\boost\build\win_32\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>../../../build/lib/win_64/debug/</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>..\..\..\Common\3dParty\boost\build\win_64\include;$(IncludePath)</IncludePath>
@@ -177,11 +177,26 @@
   <ItemGroup>
     <ClInclude Include="..\..\src\ASCConverters.h" />
     <ClInclude Include="..\..\src\cextracttools.h" />
+    <ClInclude Include="..\..\src\lib\common.h" />
+    <ClInclude Include="..\..\src\lib\crypt.h" />
+    <ClInclude Include="..\..\src\lib\csv.h" />
+    <ClInclude Include="..\..\src\lib\doc.h" />
+    <ClInclude Include="..\..\src\lib\docx.h" />
+    <ClInclude Include="..\..\src\lib\html.h" />
+    <ClInclude Include="..\..\src\lib\hwp.h" />
+    <ClInclude Include="..\..\src\lib\iwork.h" />
+    <ClInclude Include="..\..\src\lib\odf.h" />
+    <ClInclude Include="..\..\src\lib\pdf_image.h" />
+    <ClInclude Include="..\..\src\lib\pdf_oform.h" />
+    <ClInclude Include="..\..\src\lib\ppt.h" />
+    <ClInclude Include="..\..\src\lib\pptx.h" />
+    <ClInclude Include="..\..\src\lib\rtf.h" />
+    <ClInclude Include="..\..\src\lib\txt.h" />
+    <ClInclude Include="..\..\src\lib\vsdx.h" />
+    <ClInclude Include="..\..\src\lib\xls.h" />
+    <ClInclude Include="..\..\src\lib\xlsx.h" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Common\3dParty\cryptopp\vs2019\cryptlib.vcxproj">
-      <Project>{c39f4b46-6e89-4074-902e-ca57073044d2}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\Common\cfcpp\CompoundFileLib.vcxproj">
       <Project>{fa22bab4-e93e-459d-8a5f-16764fbbed40}</Project>
     </ProjectReference>
@@ -217,9 +232,6 @@
     </ProjectReference>
     <ProjectReference Include="..\..\..\OdfFile\Projects\Windows\Oox2OdfConverter.vcxproj">
       <Project>{bee01b53-244a-44e6-8947-ed9342d9247e}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\OfficeCryptReader\win32\ECMACryptReader.vcxproj">
-      <Project>{c27e9a9f-3a17-4482-9c5f-bf15c01e747c}</Project>
     </ProjectReference>
     <ProjectReference Include="..\..\..\OOXML\Projects\Windows\BinaryFormatLib\BinaryFormatLib.vcxproj">
       <Project>{cd359215-e183-4ea7-b986-42868b10d8b8}</Project>

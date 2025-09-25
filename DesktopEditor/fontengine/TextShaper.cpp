@@ -356,6 +356,12 @@ namespace NSShaper
 		return ((FT_Face)face)->glyph->bitmap.buffer;
 	}
 
+	int FT_Get_Glyph_Render_BufferSize(void* face)
+	{
+		FT_GlyphSlot slot = ((FT_Face)face)->glyph;
+		return slot->bitmap.pitch * slot->bitmap.rows;
+	}
+
 	bool FT_Get_Glyph_Render_Params(void* face, int render_mode, CExternalPointer* result)
 	{
 		FT_GlyphSlot slot = ((FT_Face)face)->glyph;
@@ -445,7 +451,7 @@ namespace NSShaper
 		CheckUnicodeFaceName(face, family_name, family_name_len);
 
 		unsigned int nLen1 = (unsigned int)family_name_len;
-		unsigned int nLen2 = (unsigned int)strlen(face->style_name);
+		unsigned int nLen2 = (unsigned int)((face->style_name != NULL) ? strlen(face->style_name) : 0);
 
 		unsigned int nLen = 28 + nLen1 + 1 + nLen2 + 1 + 1 + (int)face->num_fixed_sizes;
 
@@ -685,6 +691,13 @@ namespace NSShaper
 				g_userfeatures[nTag].end = HB_FEATURE_GLOBAL_END;
 			}
 			g_userfeatures_init = true;
+		}
+
+		// Turn on ligatures on arabic script
+		if (nScript == HB_SCRIPT_ARABIC ||
+			nScript == HB_SCRIPT_SYRIAC)
+		{
+			nFeatures |= 1;
 		}
 
 		// font

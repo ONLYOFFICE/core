@@ -83,32 +83,48 @@ namespace DocFileFormat
 
 		if (_ctx->_doc->FIB->m_FibBase.fWriteReservation)
 		{
-			m_oXmlWriter.WriteNodeBegin( L"w:writeProtection",  TRUE );
-			WideString* passw = static_cast<WideString*>(_ctx->_doc->AssocNames->operator[]( 17 ));
+			CRYPT::_ecmaWriteProtectData data;
+
+			WideString* passw = static_cast<WideString*>(_ctx->_doc->AssocNames->operator[]( 17 ));			
 			if (passw && false == passw->empty())
 			{
-				CRYPT::_ecmaWriteProtectData data;
-				
 				CRYPT::ECMAWriteProtect protect;
 				protect.SetCryptData(data);
 				protect.SetPassword(*passw);
 
 				protect.Generate();
 				protect.GetCryptData(data);
+			}
 
+			m_oXmlWriter.WriteNodeBegin(L"w:writeProtection", TRUE);
+			if (false == data.saltValue.empty())
+			{
 				//m_oXmlWriter.WriteAttribute	( L"w:cryptProviderType", L"rsaAES");
 				//m_oXmlWriter.WriteAttribute	( L"w:cryptAlgorithmSid", 14); //sha-512
 				//m_oXmlWriter.WriteAttribute	( L"w:cryptAlgorithmType", L"typeAny");
 				//m_oXmlWriter.WriteAttribute	( L"w:cryptAlgorithmClass", L"hash");
-				//m_oXmlWriter.WriteAttribute	( L"w:cryptSpinCount", data.spinCount);
-				//m_oXmlWriter.WriteAttribute	( L"w:hash", EncodeBase64(data.hashValue));
-				//m_oXmlWriter.WriteAttribute	( L"w:salt", EncodeBase64(data.saltValue));
+
 				m_oXmlWriter.WriteAttribute	( L"w:algorithmName", L"SHA-512");
 				m_oXmlWriter.WriteAttribute	( L"w:spinCount", data.spinCount);
 				m_oXmlWriter.WriteAttribute	( L"w:hashValue", EncodeBase64(data.hashValue));
-				m_oXmlWriter.WriteAttribute	( L"w:saltValue", EncodeBase64(data.saltValue));
+				m_oXmlWriter.WriteAttribute	( L"w:saltValue", EncodeBase64(data.saltValue));				
 			}
 			m_oXmlWriter.WriteNodeEnd( L"",  TRUE, TRUE );
+			if (false == data.saltValue.empty())
+			{
+				m_oXmlWriter.WriteNodeBegin(L"w:documentProtection", TRUE);
+					m_oXmlWriter.WriteAttribute(L"w:edit", L"readOnly");
+					m_oXmlWriter.WriteAttribute(L"w:enforcement", L"1");
+					m_oXmlWriter.WriteAttribute(L"w:cryptProviderType", L"rsaAES");
+					m_oXmlWriter.WriteAttribute(L"w:cryptAlgorithmClass", L"hash");
+					m_oXmlWriter.WriteAttribute(L"w:cryptAlgorithmType", L"typeAny");
+					m_oXmlWriter.WriteAttribute(L"w:cryptAlgorithmSid", 14); //sha-512
+					m_oXmlWriter.WriteAttribute(L"w:cryptSpinCount", data.spinCount);
+					m_oXmlWriter.WriteAttribute(L"w:spinCount", data.spinCount);
+					m_oXmlWriter.WriteAttribute(L"w:hash", EncodeBase64(data.hashValue));
+					m_oXmlWriter.WriteAttribute(L"w:salt", EncodeBase64(data.saltValue));
+				m_oXmlWriter.WriteNodeEnd(L"", TRUE, TRUE);
+			}
 		}
 		//zoom
 		m_oXmlWriter.WriteNodeBegin	( L"w:zoom",  TRUE );

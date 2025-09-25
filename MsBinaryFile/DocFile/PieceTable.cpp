@@ -38,8 +38,10 @@ namespace DocFileFormat
 	{
 		if (fib->m_FibWord97.lcbClx < 1/* || !fib->m_FibBase.fComplex*/) return;
 
+		int streamSize = wordStream->size();
+
 		// Read the bytes of complex file information
-		unsigned char* clx	=	new unsigned char[fib->m_FibWord97.lcbClx];
+		unsigned char* clx = new unsigned char[fib->m_FibWord97.lcbClx];
 
 		if (tableStream)
 		{
@@ -47,7 +49,7 @@ namespace DocFileFormat
 			tableStream->read(clx, (int)fib->m_FibWord97.lcbClx);
 		}
 
-		Pieces					= std::list<PieceDescriptor>();
+		Pieces = std::list<PieceDescriptor>();
 		FileCharacterPositions	= new std::map<int, int>();
 		CharacterPositions		= new std::map<int, int>();
 
@@ -85,6 +87,11 @@ namespace DocFileFormat
 						//read the next CP
 						int indexCpNext = (i+1) * 4;
 						int cpNext = FormatUtils::BytesToInt32(piecetable, indexCpNext, lcb);
+
+						if (cpNext > streamSize)
+						{
+							cpNext = streamSize;
+						}
 
 						//read the PCD
 						int indexPcd = ((n + 1) * 4) + (i * 8);
@@ -180,6 +187,8 @@ namespace DocFileFormat
 			pcdFcEnd += (int)pcd.fc;
 
 			int cb = pcdFcEnd - (int)pcd.fc;
+			if (cb < 0)
+				break;
 
 			unsigned char *bytes = new unsigned char[cb];
 
@@ -188,7 +197,7 @@ namespace DocFileFormat
 			stream->seek(pcd.fc);
 			stream->read(bytes, cb);
 
-			FormatUtils::GetSTLCollectionFromBytes<std::vector<wchar_t> >(piecePairs, bytes, cb, pcd.code_page);
+			FormatUtils::GetSTLCollectionFromBytes(piecePairs, bytes, cb, pcd.code_page);
 
 			RELEASEARRAYOBJECTS(bytes);
 		}
@@ -234,7 +243,7 @@ namespace DocFileFormat
 				wordStream->read( bytes, cb);
 
 				//get the chars
-				FormatUtils::GetSTLCollectionFromBytes<std::vector<wchar_t>>( encodingChars, bytes, cb, pcd.code_page );
+				FormatUtils::GetSTLCollectionFromBytes( encodingChars, bytes, cb, pcd.code_page );
 
 				RELEASEARRAYOBJECTS( bytes );
 			}
@@ -253,7 +262,7 @@ namespace DocFileFormat
 				wordStream->read( bytes, cb);
 
 				//get the chars
-				FormatUtils::GetSTLCollectionFromBytes<std::vector<wchar_t>>( encodingChars, bytes, cb, pcd.code_page );
+				FormatUtils::GetSTLCollectionFromBytes( encodingChars, bytes, cb, pcd.code_page );
 
 				RELEASEARRAYOBJECTS( bytes );
 			}
@@ -272,7 +281,7 @@ namespace DocFileFormat
 				wordStream->read( bytes, cb);
 
 				//get the chars
-				FormatUtils::GetSTLCollectionFromBytes<std::vector<wchar_t>>(encodingChars, bytes, cb, pcd.code_page);
+				FormatUtils::GetSTLCollectionFromBytes(encodingChars, bytes, cb, pcd.code_page);
 
 				RELEASEARRAYOBJECTS(bytes);
 
@@ -295,7 +304,7 @@ namespace DocFileFormat
 				wordStream->read( bytes, cb );
 
 				//get the chars
-				FormatUtils::GetSTLCollectionFromBytes<std::vector<wchar_t>>( encodingChars, bytes, cb, pcd.code_page );
+				FormatUtils::GetSTLCollectionFromBytes( encodingChars, bytes, cb, pcd.code_page );
 
 				RELEASEARRAYOBJECTS( bytes );
 
@@ -484,7 +493,7 @@ namespace DocFileFormat
 		word->read(bytes, size);
 
 
-        FormatUtils::GetSTLCollectionFromBytes<std::vector<wchar_t>>(encodingChars, bytes, size, coding);
+        FormatUtils::GetSTLCollectionFromBytes(encodingChars, bytes, size, coding);
 
         RELEASEARRAYOBJECTS(bytes);
 

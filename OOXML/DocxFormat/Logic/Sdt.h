@@ -81,9 +81,12 @@ namespace ComplexTypes
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-			nullable<std::wstring > m_sPrefixMappings;
-			nullable<std::wstring > m_sStoreItemID;
-			nullable<std::wstring > m_sXPath;
+			nullable_string m_sPrefixMappings;
+			nullable_string m_sStoreItemID;
+			nullable_string m_sXPath;
+//ext w15
+			nullable_string m_sStoreItemChecksum;
+
 		};
 
 		//--------------------------------------------------------------------------------
@@ -513,6 +516,7 @@ namespace OOX
 			nullable_bool m_oRespectBorders;
 			nullable_double m_oShiftX;
 			nullable_double m_oShiftY;
+			nullable_bool m_oSignature;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -552,8 +556,6 @@ namespace OOX
 			virtual std::wstring toXML() const;
 			virtual EElementType getType() const;
 
-		public:
-
 			ESdtType m_eType;
 
 			nullable<ComplexTypes::Word::String> m_oAlias;
@@ -581,6 +583,8 @@ namespace OOX
 			nullable<CTextFormPr> m_oTextFormPr; //Not from specification
 			nullable<CSdtPicture> m_oPicture; //Not from specification
 			nullable<CComplexFormPr> m_oComplexFormPr; // Not from specification
+			nullable<ComplexTypes::Word::CBorder> m_oBorder; // Not from specification
+			nullable<ComplexTypes::Word::CShading> m_oShd; // Not from specification
 		};
 
 		//--------------------------------------------------------------------------------

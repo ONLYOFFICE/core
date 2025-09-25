@@ -48,13 +48,14 @@ public:
 	static const ElementType type = typeConnGrbitDbtWeb;
 	
 	virtual void load(CFRecord& record);
+	virtual void save(CFRecord& record);
 
-	bool fParsePreFormatted;
-	bool fConsecDelim;
-	bool fSameSettings;
-	bool fXL97Format;
-	bool fNoDateRecog;
-	bool fRefreshedInXl9;
+	bool fParsePreFormatted = false;
+	bool fConsecDelim = false;
+	bool fSameSettings = false;
+	bool fXL97Format = false;
+	bool fNoDateRecog = false;
+	bool fRefreshedInXl9 = false;
 
 };
 

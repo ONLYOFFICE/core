@@ -1,6 +1,0 @@
-rootProject.name='androidTest'
-// Include x2t gui module
-include ':x2t'
-// Include x2t lib module
-settings.createProjectDescriptor(settings.rootProject, 'libx2t', file('../../build/Android/libx2t'))
-include ':libx2t'

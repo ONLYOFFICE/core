@@ -44,6 +44,7 @@ public:
 	SerNum(const std::wstring& word);
 	BiffStructurePtr clone();
 	virtual void load(CFRecord& record);
+    virtual void save(CFRecord& record);
 
 	virtual const std::wstring toString() const;
 

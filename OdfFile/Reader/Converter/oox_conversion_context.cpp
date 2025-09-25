@@ -113,7 +113,18 @@ void tabs_context::add(const odf_reader::office_element_ptr & element, double ma
 	{
 		tab_stop->margin_left = margin_left;
 		
-		double pos = margin_left + tab_stop->style_position_.get_value_unit(odf_types::length::pt);
+		auto type = tab_stop->style_type_ ? tab_stop->style_type_->get_type() : odf_types::style_type::Left;
+
+		double pos;
+
+		if( type == odf_types::style_type::Right )
+		{
+			pos = tab_stop->style_position_.get_value_unit(odf_types::length::pt);
+		}
+		else
+		{
+			pos = margin_left + tab_stop->style_position_.get_value_unit(odf_types::length::pt);
+		}
 
 		std::map<int, odf_reader::office_element_ptr>::iterator pFind = clear_tabs.find((int)pos);
 
@@ -261,23 +272,13 @@ math_context::math_context(odf_reader::fonts_container & fonts, bool graphic) :
 }
 void math_context::start()
 {
+	width = 0;
+	height = 0;
+
 	text_properties_ = odf_reader::style_text_properties_ptr(new odf_reader::style_text_properties());
 	
 	text_properties_->content_.fo_font_family_ = base_font_name_.empty() ? L"Cambria Math" : base_font_name_;
 	text_properties_->content_.fo_font_size_ = odf_types::length(base_font_size_, odf_types::length::pt);
-
-	math_stream_ << L"<m:oMathParaPr><m:jc m:val=\"";
-	switch (base_alignment_)
-	{
-		case 0: math_stream_ << L"left"; break;
-		case 2: math_stream_ << L"right"; break;
-		case 1:
-		default:
-			math_stream_ << L"center"; break;
-	}
-	math_stream_ << L"\"/></m:oMathParaPr>";
-
-	math_stream_ << L"<m:oMath xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\">";
 	
 	start_level();
 }
@@ -285,7 +286,6 @@ std::wstring math_context::end()
 {
 	end_level();
 	
-	math_stream_ << L"</m:oMath>";
 	std::wstring math = math_stream_.str();
 	
 	math_stream_.str( std::wstring() );

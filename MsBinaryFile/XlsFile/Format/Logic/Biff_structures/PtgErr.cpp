@@ -57,6 +57,10 @@ void PtgErr::loadFields(CFRecord& record)
 	record >> err;
 }
 
+void PtgErr::writeFields(CFRecord& record)
+{
+	record << err;
+}
 
 void PtgErr::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref)
 {

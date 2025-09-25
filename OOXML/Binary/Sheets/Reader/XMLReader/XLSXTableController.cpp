@@ -41,7 +41,7 @@
 
 constexpr auto SheetName = L"Sheet";
 
-XLSXTableController::XLSXTableController(OOX::Spreadsheet::CXlsx &book)
+XLSXTableController::XLSXTableController(OOX::Spreadsheet::CXlsx &book, _INT32 lcid)
 : book_{&book}
 {
     book_->CreateWorkbook();
@@ -51,7 +51,7 @@ XLSXTableController::XLSXTableController(OOX::Spreadsheet::CXlsx &book)
     // Создадим стили
 	book_->CreateStyles();
 
-    formates_ = std::make_shared<CellFormatController>(book_->m_pStyles);
+    formates_ = std::make_shared<CellFormatController>(book_->m_pStyles, lcid);
 }
 
 

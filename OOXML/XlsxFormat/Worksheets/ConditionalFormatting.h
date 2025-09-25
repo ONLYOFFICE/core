@@ -33,6 +33,7 @@
 
 #include "../WritingElement.h"
 #include "../../Base/Nullable.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/CellRef.h"
 
 namespace SimpleTypes
 {
@@ -106,6 +107,9 @@ namespace OOX
 
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
             void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin(const bool isIcon = false);
+            void toBin(XLS::StreamCacheWriterPtr& writer, const bool isIcon = false);
+            XLS::BaseObjectPtr toBin14(const bool isIcon = false);
 
 			virtual EElementType getType () const;
 			bool isExtended ();
@@ -137,7 +141,7 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			void toXML2(NSStringUtils::CStringBuilder& writer, bool bExtendedWrite) const;
 
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+            virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
             void fromBin(XLS::BaseObjectPtr& obj);
 
             void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
@@ -166,6 +170,9 @@ namespace OOX
 
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
             void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
+            void toBin(XLS::StreamCacheWriterPtr& writer);
+			XLS::BaseObjectPtr toBin14();
 
 			virtual EElementType getType () const;
 
@@ -199,6 +206,9 @@ namespace OOX
 
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
             void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
+            void toBin(XLS::StreamCacheWriterPtr& writer);
+			XLS::BaseObjectPtr toBin14();
 
 			virtual EElementType getType () const;
 
@@ -214,7 +224,7 @@ namespace OOX
 			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oMaxLength;
 			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oMinLength;
 			nullable<SimpleTypes::COnOff>					m_oShowValue;
-			
+
 			nullable<CColor>								m_oColor;
 
 			std::vector<nullable<CConditionalFormatValueObject>> m_arrValues;
@@ -229,7 +239,7 @@ namespace OOX
 
 			nullable<CColor>								m_oAxisColor;
 			nullable<CColor>								m_oBorderColor;
-			
+
 			nullable<CColor>								m_oNegativeFillColor;
 			nullable<CColor>								m_oNegativeBorderColor;
 		};
@@ -251,6 +261,9 @@ namespace OOX
 
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
             void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
+            void toBin(XLS::StreamCacheWriterPtr& writer);
+            XLS::BaseObjectPtr toBin14();
 
 			virtual EElementType getType () const;
 
@@ -295,6 +308,9 @@ namespace OOX
 
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
             void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin(const  XLS::CellRef &cellRef);
+            void toBin(XLS::StreamCacheWriterPtr& writer, const  XLS::CellRef &cellRef);
+            XLS::BaseObjectPtr toBin14(const  XLS::CellRef &cellRef);
 
 			virtual EElementType getType () const;
 			bool isValid () const;
@@ -306,6 +322,9 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
             void ReadAttributes(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr WriteAttributes(const  XLS::CellRef &cellRef);
+            void WriteAttributes(XLS::CFRecordPtr& record, const  XLS::CellRef &cellRef);
+			XLS::BaseObjectPtr WriteAttributes14(const  XLS::CellRef &cellRef);
 
 		public:
 			nullable<CDxf>										m_oDxf;
@@ -323,7 +342,7 @@ namespace OOX
 			nullable<std::wstring>								m_oText;
 			nullable<SimpleTypes::Spreadsheet::ST_TimePeriod>	m_oTimePeriod;
 			nullable<SimpleTypes::Spreadsheet::ST_CfType>		m_oType;
-			
+
 			nullable<OOX::Drawing::COfficeArtExtensionList>		m_oExtLst;
 			nullable_string										m_oExtId;
 
@@ -353,10 +372,14 @@ namespace OOX
 
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
             void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
+            void toBin(XLS::StreamCacheWriterPtr& writer);
+			XLS::BaseObjectPtr toBin14();
+
 
 			virtual EElementType getType () const;
 			bool IsUsage();
-		
+
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
             void ReadAttributes(XLS::BaseObjectPtr& obj);

@@ -1,8 +1,6 @@
 #ifndef CEMFPLUSPARSER_H
 #define CEMFPLUSPARSER_H
 
-//#include "../../Common/MetaFileUtils.h"
-//#include "../../Common/MetaFile.h"
 #include "../EmfPlusObjects.h"
 #include "CEmfParserBase.h"
 #include "../EmfPlusTypes.h"
@@ -21,13 +19,12 @@ namespace MetaFile
 
 		void            PlayFile()                                  override;
 		void            Scan()                                      override;
-		double          GetDpi()                                    override;
+		USHORT          GetDpi()                                    const override;
 
-		EmfParserType   GetType()				    override;
+		EmfParserType   GetType()                                   const override;
 
 		void   SetStream(BYTE *pBytes, unsigned int unSize);
 		bool   GetBanEMFProcesses();
-
 	private:
 		void RegisterObject(CEmfPlusObject* pObject, unsigned int unIndex);
 
@@ -77,7 +74,8 @@ namespace MetaFile
 		void DrawLines(std::vector<TEmfPlusPointF> arPoints, bool bCloseFigure);
 
 		void DrawImagePoints(unsigned int unImageIndex, unsigned int unImageAttributeIndex, const TEmfPlusRectF& oSrcRect, const std::vector<TEmfPlusPointF>& arPoints);
-		void DrawMetafile(BYTE* pBuffer, unsigned int unSize, const TEmfPlusRectF& oSrcRect, const std::vector<TEmfPlusPointF>& arPoints, EEmfPlusMetafileDataType eMetafileType, unsigned int unImageAttributeIndex);
+		template <typename MetafileType>
+		void DrawMetafile(BYTE* pBuffer, unsigned int unSize, const TEmfPlusRectF& oSrcRect, const std::vector<TEmfPlusPointF>& arPoints);
 		void DrawBitmap(BYTE* pBuffer, unsigned int unSize, unsigned int unWidth, unsigned int unHeight, const TEmfPlusRectF& oSrcRect, const std::vector<TEmfPlusPointF>& arPoints);
 
 		TEmfPlusARGB ApplyImageAttributes(TEmfPlusRectF& oRectangle, const CEmfPlusImageAttributes& oImageAttributes);
@@ -86,7 +84,7 @@ namespace MetaFile
 		template<typename T> std::vector<TEmfPlusPointF> GetConvertedPoints(std::vector<T>arPoints);
 		template<typename T> TEmfPlusRectF GetConvertedRectangle(T oRectangle);
 
-		void UpdateMatrix(TEmfPlusXForm& oMatrix);
+		double GetUnitToPixel(const double& dDpi, EEmfPlusUnitType eUnitType) const;
 
 		bool SaveImage(const CEmfPlusImage& oImage, std::wstring& wsPathToImage);
 
@@ -175,7 +173,8 @@ namespace MetaFile
 		unsigned int    m_unLogicalDpiX;
 		unsigned int    m_unLogicalDpiY;
 
-		double          m_dUnitKoef;
+		double          m_dPageTransformX;
+		double          m_dPageTransformY;
 
 		typedef std::map<unsigned int, CEmfPlusObject*> EmfPlusObjects;
 

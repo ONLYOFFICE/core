@@ -82,7 +82,7 @@ std::wstring RtfOle::RenderToOOX(RenderParameter oRenderParameter)
             std::wstring sAuthor = poRtfDocument->m_oRevisionTable.GetAuthor(pCharProps->m_nRevauth);
             std::wstring sDate(RtfUtility::convertDateTime(pCharProps->m_nRevdttm).c_str());
 			
-			sResult += L"<w:ins w:date=\"" + sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
+			sResult += L"<w:ins w:date=\"" + sDate +  L"\" w:author=\"" + XmlUtils::EncodeXmlString(sAuthor) + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
 			pCharProps->m_nRevised = PROP_DEF;
 		}
 		if (pCharProps->m_nDeleted != PROP_DEF)
@@ -92,7 +92,7 @@ std::wstring RtfOle::RenderToOOX(RenderParameter oRenderParameter)
             std::wstring sAuthor = poRtfDocument->m_oRevisionTable.GetAuthor(pCharProps->m_nRevauthDel);
             std::wstring sDate(RtfUtility::convertDateTime(pCharProps->m_nRevdttmDel).c_str());
 			
-			sResult += L"<w:del w:date=\"" + sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
+			sResult += L"<w:del w:date=\"" + sDate +  L"\" w:author=\"" + XmlUtils::EncodeXmlString(sAuthor) + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
 			pCharProps->m_nDeleted = PROP_DEF;
 		}
 //----------
@@ -111,7 +111,7 @@ std::wstring RtfOle::RenderToOOX(RenderParameter oRenderParameter)
                           L"\" w:dyaOrig=\"" + std::to_wstring(m_nHeight) + L"\">";
 		
 		RenderParameter oNewRenderParameter = oRenderParameter;
-		oNewRenderParameter.nType = RENDER_TO_OOX_PARAM_SHAPE_WSHAPE2;
+		oNewRenderParameter.nType = RENDER_TO_OOX_PARAM_SHAPE_CHILD;
 
 		if (m_oResultShape)
 		{
@@ -172,6 +172,7 @@ std::wstring RtfOle::RenderToOOXOnlyOle(RenderParameter oRenderParameter)
 				sRelsType = L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/package";
 			}break;
 			case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC:
+			case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC_FLAT:
 			{
 				sExtension = L"doc";
 				sMime = L"application/msword";

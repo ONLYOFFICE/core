@@ -91,10 +91,11 @@ public:
 	void SetHeader(BYTE* pHeader, LONG lSize);
 
 	void SetData(BYTE* pCompress, LONG lCompressSize, LONG lUncompressSize, bool bIsCompressed);
+	void AddData(BYTE* pBuf, LONG lBuf);
 
 	int ToBuffer(BYTE *& Data);
-
 	void ToFile(NSFile::CFileBinary* pFile);
+	bool isWMV();
 };
 
 

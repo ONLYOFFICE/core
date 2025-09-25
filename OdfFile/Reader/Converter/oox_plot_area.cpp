@@ -102,7 +102,7 @@ namespace cpdoccore {
 			charts_.push_back(chart);
 		}
 
-		void oox_plot_area::add_axis(int type, odf_reader::chart::axis & content)
+		void oox_plot_area::add_axis(int type, odf_reader::chart::axis& content)
 		{
 			unsigned int id = axis_id_++;
 			oox_axis_content_ptr ax = oox_axis_content::create(type, id);
@@ -114,7 +114,7 @@ namespace cpdoccore {
 		{
 			no_used_local_tables_ = val;
 		}
-		void oox_plot_area::set_data_table(odf_reader::chart::simple & content)
+		void oox_plot_area::set_data_table(odf_reader::chart::simple& content)
 		{
 			data_table_content_ = content;
 		}
@@ -142,12 +142,14 @@ namespace cpdoccore {
 				}
 			}
 		}
-		void oox_plot_area::oox_serialize_view3D(std::wostream & _Wostream)
+		void oox_plot_area::oox_serialize_view3D(std::wostream& _Wostream)
 		{
 			_CP_OPT(std::wstring)	strVal;
 			_CP_OPT(double)			doubleVal;
+			_CP_OPT(bool)			perspective;
 
 			odf_reader::GetProperty(properties_, L"transform", strVal);
+			odf_reader::GetProperty(properties_, L"perspective", perspective);
 
 			if (!strVal) return;
 
@@ -202,13 +204,20 @@ namespace cpdoccore {
 
 			theta_z /= DEG2RAD;
 
+			if (this->current_chart_->type_ == CHART_TYPE_RADAR ||
+				this->current_chart_->type_ == CHART_TYPE_PIE ||
+				this->current_chart_->type_ == CHART_TYPE_DOUGHNUT)
+			{
+				theta_x += 90;
+			}
+			else theta_x = (std::abs)(theta_x);
 			CP_XML_WRITER(_Wostream)
 			{
 				CP_XML_NODE(L"c:view3D")
 				{
 					CP_XML_NODE(L"c:rotX")
 					{
-						CP_XML_ATTR(L"val", (int)(theta_x + 90.5));
+						CP_XML_ATTR(L"val", (int)(theta_x + 0.5));
 					}
 					CP_XML_NODE(L"c:rotY")
 					{
@@ -218,25 +227,27 @@ namespace cpdoccore {
 					{
 						CP_XML_ATTR(L"val", 100);
 					}
-					if (theta_z == 0)
+					if (theta_z > 0 || (perspective && *perspective))
 					{
 						CP_XML_NODE(L"c:rAngAx")
 						{
-							CP_XML_ATTR(L"val", 1);
+							CP_XML_ATTR(L"val", 0);
+						}
+						if (theta_z > 0)
+						{
+							CP_XML_NODE(L"c:perspective")
+							{
+								CP_XML_ATTR(L"val", (int)(theta_z * 2 + 0.5));
+							}
 						}
 					}
 					else
 					{
 						CP_XML_NODE(L"c:rAngAx")
 						{
-							CP_XML_ATTR(L"val", 0);
-						}
-						CP_XML_NODE(L"c:perspective")
-						{
-							CP_XML_ATTR(L"val", (int)(theta_z * 2 + 0.5));
+							CP_XML_ATTR(L"val", 1);
 						}
 					}
-
 				}
 			}
 		}

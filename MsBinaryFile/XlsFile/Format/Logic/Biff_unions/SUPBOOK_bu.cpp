@@ -175,6 +175,28 @@ const bool SUPBOOK::loadContent(BinProcessor& proc)
 	}
 	return true;
 }
+
+const bool SUPBOOK::saveContent(BinProcessor& proc)
+{
+    if(m_SupBook == nullptr)
+        return false;
+    proc.mandatory(*m_SupBook);
+    for(auto i : m_arExternName)
+        if(i != nullptr)
+            proc.mandatory(*i);
+    for(auto i : m_arXCT)
+        if(i.m_XCT != nullptr)
+        {
+            proc.mandatory(*i.m_XCT);
+            for(auto j : i.m_arCRN)
+                if(j != nullptr)
+                    proc.mandatory(*j);
+        }
+    if(m_ExternSheet != nullptr)
+        proc.mandatory(*m_ExternSheet);
+    return true;
+}
+
 bool SUPBOOK::IsExternal()
 {
 	SupBook *book = dynamic_cast<SupBook*>(m_SupBook.get());
@@ -198,7 +220,7 @@ int SUPBOOK::serialize(std::wostream & strm)
 		return 0;
 	}
 
-	if (book->bOleLink)
+	if (book->bOleLink && book->ctab == 0)
 	{
 		serialize_dde(strm);
 	}
@@ -387,7 +409,8 @@ int SUPBOOK::serialize_dde(std::wostream & strm)
 		{
 			CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships"); 
 			CP_XML_ATTR(L"ddeService", book->virtPath[0]); 
-			CP_XML_ATTR(L"ddeTopic", book->virtPath[1]); 
+			if (book->virtPath.size() > 1)
+				CP_XML_ATTR(L"ddeTopic", book->virtPath[1]); 
 
 			CP_XML_NODE(L"ddeItems")
 			{ 	
@@ -409,6 +432,15 @@ int SUPBOOK::serialize_dde(std::wostream & strm)
 						}
 					}
 					//ole items in oleLink
+					ExternDocName* oleDocName = dynamic_cast<ExternDocName*>(external_name->body.get());
+					if (oleDocName)
+					{
+						CP_XML_NODE(L"ddeItem")
+						{
+							CP_XML_ATTR(L"name", oleDocName->extName.value());
+							CP_XML_ATTR(L"advise", external_name->fWantAdvise);
+						}
+					}
 				}
 			}
 		}

@@ -49,7 +49,8 @@ class CSVReader
 public:
 	CSVReader();
 	~CSVReader();
-	_UINT32 Read(const std::wstring &sFileName, OOX::Spreadsheet::CXlsx &oXlsx, _UINT32 nCodePage, const std::wstring& wcDelimiter);
+    _UINT32 Read(const std::wstring &sFileName, OOX::Spreadsheet::CXlsx &oXlsx, _UINT32 nCodePage, const std::wstring& wcDelimiter, _INT32 lcid);
+    bool readToxmlCache_ = false;
 private:
 	class Impl;
 	boost::shared_ptr<Impl> impl_;

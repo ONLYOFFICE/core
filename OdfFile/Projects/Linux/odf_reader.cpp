@@ -62,6 +62,7 @@
 #include "../../Reader/Format/office_elements_create.cpp"
 #include "../../Reader/Format/office_event_listeners.cpp"
 #include "../../Reader/Format/office_presentation.cpp"
+#include "../../Reader/Format/office_drawing.cpp"
 #include "../../Reader/Format/office_scripts.cpp"
 #include "../../Reader/Format/office_forms.cpp"
 #include "../../Reader/Format/office_settings.cpp"

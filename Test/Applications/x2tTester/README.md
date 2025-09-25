@@ -1,7 +1,9 @@
 CONFIGURATION
 =============
 
-You need to create an xml configuration file. It must contain:
+## Default conversion
+
+You need to create an xml configuration file. It contains:
 
 	# root of xml
 	<settings> </settings>
@@ -29,6 +31,9 @@ You need to create an xml configuration file. It must contain:
 
 	# (non-required) trough conversion (format) -> (*t format) -> (output formats) (default - 0). Directory with *t files - outputDirectory/_t.
 	<troughConversion> </troughConversion>
+
+	# (non-required) save environment vars to x2t (for example "X2T_MEMORY_LIMIT") (default - 0). 
+	<saveEnvironment> </saveEnvironment>
 
 	# (non-required) timestamp in report file name (default - 1)
 	<timestamp> </timestamp>
@@ -92,8 +97,23 @@ You need to create an xml configuration file. It must contain:
 	<input> docx txt pptx xlsx<input>
 	<output> txt doc pdf</output>
 	
+## Extraction
+x2ttester can extract files with the required output extension instead of default x2t conversion. Set extraction mode:
 
-You can use the following templates:
+	(non-required) sets extraction mode (default - "0")
+	<extract> </extract>
+
+When `extract` is "1", you can set the `output` parameter to determine which exts will be extracted. Default `output` is `emf wmf`.
+Params `input`, `inputDirectory`, `outputDirectory`, `cores` works the same.
+
+Extract mode has additional options:
+
+	(non-required) converts non-zip office files into docx (e.g. pdf) (default - "0").
+	<convertBeforeExtract> </convertBeforeExtract>
+
+The conversion params in `convertBeforeExtract` are the same as the default conversion.
+
+## Templates
 
 	# main xml config
 

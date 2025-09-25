@@ -251,7 +251,13 @@ void OOX::Spreadsheet::CXlsx::CreateStyles ()
 	m_pStyles = new CStyles(NULL);
 	bDeleteStyles = true;
 }
-
+bool OOX::Spreadsheet::CXlsx::hasPivot()
+{
+	if (!m_pWorkbook) return false;
+	
+	smart_ptr<OOX::File> filePivotCacheDefinition = m_pWorkbook->Find(FileTypes::PivotCacheDefinition.RelationType());
+	return filePivotCacheDefinition.IsInit();
+}
 PPTX::Theme* OOX::Spreadsheet::CXlsx::GetTheme () const
 {
 	return (PPTX::Theme  *)(m_pTheme.GetPointer());

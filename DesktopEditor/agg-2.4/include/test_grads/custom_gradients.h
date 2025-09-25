@@ -847,40 +847,10 @@ namespace agg
 			if (calculate_tensor_coefs)
 				calculate_tensor();
 
-			float minxres = m_oGradientInfo.shading.patch[0][0].x;
-			float minyres = m_oGradientInfo.shading.patch[0][0].y;
-			float maxxres = m_oGradientInfo.shading.patch[0][0].x;
-			float maxyres = m_oGradientInfo.shading.patch[0][0].y;
-			for (int i = 0; i < 4; i++)
-			{
-				for (int j = 0; j < 4; j++)
-				{
-					if (m_oGradientInfo.shading.patch[i][j].x > maxxres)
-					{
-						maxxres = m_oGradientInfo.shading.patch[i][j].x;
-					}
-					if (m_oGradientInfo.shading.patch[i][j].y > maxyres)
-					{
-						maxyres = m_oGradientInfo.shading.patch[i][j].y;
-					}
-					if (m_oGradientInfo.shading.patch[i][j].x < minxres)
-					{
-						minxres = m_oGradientInfo.shading.patch[i][j].x;
-					}
-					if (m_oGradientInfo.shading.patch[i][j].y < minyres)
-					{
-						minyres = m_oGradientInfo.shading.patch[i][j].y;
-					}
-				}
-			}
-
-			RES = std::max(1.0f, std::max(maxxres - minxres, maxyres - minyres) / 3);
-			float delta = 1.0 / RES;
 			float u = 0, v = 0;
 			auto start_p = get_p_curve(u, v);
 			xmax_curve = xmin_curve = start_p.x;
 			ymax_curve = ymin_curve = start_p.y;
-			precalc = std::vector<std::vector<ColorT>>(RES, std::vector<ColorT>(RES, {0, 0, 0, 0}));
 
 			/*
 			 * Небольшая оптимизация основанная на том, что данная фигура не выходит за границы своих опорных точек.
@@ -918,7 +888,7 @@ namespace agg
 				RES = nRES;
 			}
 			precalc = std::vector<std::vector<ColorT>>(RES, std::vector<ColorT>(RES, {0, 0, 0, 0}));
-			delta = 1.0f / RES;
+			float delta = 1.0f / RES;
 			std::vector<std::pair<int, int>> next_indexes(RES + 1);
 			u = 0;
 			for (int i = 0; i < RES; ++i)
@@ -956,8 +926,6 @@ namespace agg
 		}
 		ColorT ifswapRGB(const ColorT &c)
 		{
-
-
 			if (m_bSwapRGB) {
 				return c;
 			}
@@ -1032,7 +1000,17 @@ namespace agg
 				{
 					if (i < RES && j < RES)
 					{
-						precalc[i][j] = c;
+						if (m_oGradientInfo.luminocity)
+						{
+							ColorT fillC;
+							fillC.r = m_oGradientInfo.shading.fill_color.r * c.r / 255 + 255 - c.r;
+							fillC.g = m_oGradientInfo.shading.fill_color.g * c.g / 255 + 255 - c.g;
+							fillC.b = m_oGradientInfo.shading.fill_color.b * c.b / 255 + 255 - c.b;
+							fillC.a = 255;
+							precalc[i][j] = fillC;
+						}
+						else
+							precalc[i][j] = c;
 					}
 				}
 			}

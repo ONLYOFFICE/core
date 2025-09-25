@@ -81,7 +81,10 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
+			XLS::BaseObjectPtr toBin();
+            XLS::BaseObjectPtr toBin14();
 			void fromBin(XLS::BaseObjectPtr& obj);
+            void fromBin14(XLS::BaseObjectPtr& obj);
 			virtual EElementType getType() const;
 
 			void ReadAttributes(XLS::BaseObjectPtr& obj);
@@ -106,8 +109,13 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
+			XLS::BaseObjectPtr toBin();
+            XLS::BaseObjectPtr toBin14();
+            void fromBin14(XLS::BaseObjectPtr& obj);
 			void fromBin(XLS::BaseObjectPtr& obj);
 			virtual EElementType getType() const;
+
+            bool pivotCaches14 = false;
 		};
 
 //-----------------------------------------------------------------------------------------------------------
@@ -120,6 +128,7 @@ namespace OOX
 			virtual ~CWorkbook();
 
 			void readBin(const CPath& oPath);
+			XLS::BaseObjectPtr WriteBin() const;
 			virtual void read(const CPath& oPath);
 			virtual void read(const CPath& oRootPath, const CPath& oPath);
 			virtual void fromXML(XmlUtils::CXmlNode& node);
@@ -138,6 +147,7 @@ namespace OOX
 
 			void PrepareToWrite();
 			LONG GetActiveSheetIndex();
+			XLS::BaseObjectPtr WriteXtiRefs() const;
 
 			CPath											m_oReadPath;
 
@@ -154,7 +164,7 @@ namespace OOX
 			nullable<OOX::Spreadsheet::CWorkbookPivotCaches>m_oPivotCaches;
 			nullable<std::wstring>							m_oPivotCachesXml;
 			nullable<OOX::Spreadsheet::CFileSharing>		m_oFileSharing;
-			
+
 			CPersonList*									m_pPersonList;
 			bool											m_bMacroEnabled;
 		};

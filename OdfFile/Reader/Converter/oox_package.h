@@ -203,6 +203,7 @@ public:
 
 	void set_app(element_ptr Element);
 	void set_core(element_ptr Element);
+    void set_custom(element_ptr Element);
 
 	virtual void write(const std::wstring & RootPath);
 
@@ -212,6 +213,7 @@ private:
 
 	element_ptr core_;
 	element_ptr app_;
+    element_ptr custom_;
 };
 class document : public element
 {

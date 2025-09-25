@@ -69,11 +69,18 @@ public:
 
     virtual int GetPagesCount();
     virtual void GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY);
-    virtual void DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak);
+    virtual void DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak, COfficeDrawingPageParams* pParams = NULL);
     virtual std::wstring GetInfo();
 
     void ConvertToPdf(const std::wstring& path);
 
     virtual BYTE* GetStructure();
     virtual BYTE* GetLinks (int nPageIndex);
+
+    virtual unsigned char* ConvertToPixels(
+        int nPageIndex,
+        int nRasterW, int nRasterH, bool bIsFlip = false,
+        NSFonts::IFontManager* pFonts = NULL,
+        int nBackgroundColor = 0xFFFFFF, bool bIsDarkMode = false,
+        int nBackgroundOpacity = 0xFF);
 };

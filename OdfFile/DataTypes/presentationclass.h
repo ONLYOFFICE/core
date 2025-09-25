@@ -56,8 +56,9 @@ public:
 		header,
 		footer,
 		date_time,
-		page_number
+		page_number,
 
+        body
     };
 
     presentation_class() {}

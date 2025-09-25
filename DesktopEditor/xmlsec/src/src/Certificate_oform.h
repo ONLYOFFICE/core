@@ -101,6 +101,12 @@ public:
 		return false;
 	}
 
+	virtual int VerifyPKCS7(unsigned char* pPKCS7Data, unsigned int nPKCS7Size,
+							unsigned char* pData, unsigned int nSize)
+	{
+		return 0;
+	}
+
 	virtual std::string GetHash(unsigned char* pData, unsigned int nSize, int nAlg)
 	{
 		unsigned int nBufLen = 64;

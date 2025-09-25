@@ -3,8 +3,8 @@
 
 namespace SVG
 {
-	CUse::CUse(XmlUtils::CXmlNode &oNode, CRenderedObject *pParent, const CSvgFile* pFile)
-	: CRenderedObject(oNode, pParent), m_pFile(pFile)
+	CUse::CUse(XmlUtils::CXmlNode &oNode, CRenderedObject *pParent)
+		: CRenderedObject(oNode, pParent)
 	{
 		m_wsHref = oNode.GetAttribute(L"href", oNode.GetAttribute(L"xlink:href"));
 
@@ -25,32 +25,43 @@ namespace SVG
 		SetFill(mAttributes, ushLevel, bHardMode);
 	}
 
-	bool CUse::Draw(IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode, const TSvgStyles* pOtherStyles) const
+	bool CUse::Draw(IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode, const TSvgStyles* pOtherStyles, const CRenderedObject* pContexObject) const
 	{
-		if (NULL == pRenderer || !m_oStyles.m_bDraw)
+		if (NULL == pRenderer || !m_oTransformation.m_bDraw)
 			return false;
 
-		double dM11, dM12, dM21, dM22, dRx, dRy;
-		pRenderer->GetTransform(&dM11, &dM12, &dM21, &dM22, &dRx, &dRy);
+		Aggplus::CMatrix oOldTransform;
 
-		pRenderer->SetTransform(dM11, dM12, dM21, dM22, dRx + m_oX.ToDouble(NSCSS::Pixel) * dM11, dRy + m_oY.ToDouble(NSCSS::Pixel) * dM22);
+		if (!StartPath(pRenderer, pFile, oOldTransform))
+			return false;
 
-		const CRenderedObject *pFoundObj = dynamic_cast<CRenderedObject*>(m_pFile->GetMarkedObject(m_wsHref));
+		double dM11, dM12, dM21, dM22, dDx, dDy;
+		pRenderer->GetTransform(&dM11, &dM12, &dM21, &dM22, &dDx, &dDy);
 
-		if (NULL != pFoundObj)
+		Aggplus::CMatrix oNewTransform(dM11, dM12, dM21, dM22, dDx, dDy);
+		oNewTransform.Translate(m_oX.ToDouble(NSCSS::Pixel), m_oY.ToDouble(NSCSS::Pixel));
+
+		pRenderer->SetTransform(oNewTransform.sx(), oNewTransform.shy(), oNewTransform.shx(), oNewTransform.sy(), oNewTransform.tx(), oNewTransform.ty());
+
+		const CRenderedObject *pFoundObj = dynamic_cast<CRenderedObject*>(pFile->GetMarkedObject(m_wsHref));
+
+		bool bResult = false;
+
+		if (NULL != pFoundObj && this != pFoundObj)
 		{
 			if (NULL != pOtherStyles)
 			{
 				TSvgStyles oNewStyles(m_oStyles);
 				oNewStyles += *pOtherStyles;
-				pFoundObj->Draw(pRenderer, pFile, oMode, &oNewStyles);
+				bResult = pFoundObj->Draw(pRenderer, pFile, oMode, &oNewStyles, this);
 			}
 			else
-				pFoundObj->Draw(pRenderer, pFile, oMode, &m_oStyles);
+				bResult = pFoundObj->Draw(pRenderer, pFile, oMode, &m_oStyles, this);
 		}
-		pRenderer->SetTransform(dM11, dM12, dM21, dM22, dRx, dRy);
 
-		return true;
+		EndPath(pRenderer, pFile, oOldTransform);
+
+		return bResult;
 	}
 
 	TBounds CUse::GetBounds() const

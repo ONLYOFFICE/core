@@ -32,9 +32,8 @@
 
 #include "PresProps.h"
 
-#include "ShowPr/ShowPr.h"
+#include "ShowPr/PresentationPr.h"
 #include "ShowPr/Browse.h"
-#include "ShowPr/CustShow.h"
 #include "ShowPr/Kiosk.h"
 #include "ShowPr/Present.h"
 #include "ShowPr/SldAll.h"
@@ -55,16 +54,21 @@ namespace PPTX
 	void PresProps::read(const OOX::CPath& filename, FileMap& map)
 	{
 		XmlUtils::CXmlNode oNode;
-		oNode.FromXmlFile(filename.m_strFilename);
+		oNode.FromXmlFile(filename.m_strFilename); // 
 
 		ClrMru.clear();
 		XmlUtils::CXmlNode oNodeClr;
-		if (oNode.GetNode(_T("p:clrMru"), oNodeClr))
-			XmlMacroLoadArray(oNodeClr, _T("*"), ClrMru, Logic::UniColor);
+		if (oNode.GetNode(L"p:clrMru", oNodeClr))
+			XmlMacroLoadArray(oNodeClr, L"*", ClrMru, Logic::UniColor);
 
-		showPr = oNode.ReadNode(_T("p:showPr"));
+		showPr = oNode.ReadNode(L"p:showPr");
+		printPr = oNode.ReadNode(L"p:printPr");
+		
 		if(showPr.is_init())
 			showPr->SetParentFilePointer(this);
+		
+		if (printPr.is_init())
+			printPr->SetParentFilePointer(this);
 	}
 	void PresProps::write(const OOX::CPath& filename, const OOX::CPath& directory, OOX::CContentTypes& content)const
 	{
@@ -77,25 +81,27 @@ namespace PPTX
 
 		pWriter->WriteRecordArray(0, 0, ClrMru);
 		pWriter->WriteRecord2(1, showPr);
+		pWriter->WriteRecord2(2, printPr);
 
 		pWriter->EndRecord();
 	}
 	void PresProps::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 	{
-		pWriter->StartNode(_T("p:presentationPr"));
+		pWriter->StartNode(L"p:presentationPr");
 
 		pWriter->StartAttributes();
 
-		pWriter->WriteAttribute(_T("xmlns:a"), PPTX::g_Namespaces.a.m_strLink);
-		pWriter->WriteAttribute(_T("xmlns:r"), PPTX::g_Namespaces.r.m_strLink);
-		pWriter->WriteAttribute(_T("xmlns:p"), PPTX::g_Namespaces.p.m_strLink);
+		pWriter->WriteAttribute(L"xmlns:a", PPTX::g_Namespaces.a.m_strLink);
+		pWriter->WriteAttribute(L"xmlns:r", PPTX::g_Namespaces.r.m_strLink);
+		pWriter->WriteAttribute(L"xmlns:p", PPTX::g_Namespaces.p.m_strLink);
 
 		pWriter->EndAttributes();
 
-		pWriter->WriteArray(_T("p:clrMru"), ClrMru);
+		pWriter->WriteArray(L"p:clrMru", ClrMru);
 		pWriter->Write(showPr);
+		pWriter->Write(printPr);
 
-		pWriter->EndNode(_T("p:presentationPr"));
+		pWriter->EndNode(L"p:presentationPr");
 	}
 	void PresProps::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 	{
@@ -130,15 +136,18 @@ namespace PPTX
 								ClrMru.pop_back();
 							}
 						}
-					}
-					break;
-				}
+					}					
+				}break;
 				case 1:
 				{
-					showPr = new nsShowPr::ShowPr();
-					showPr->fromPPTY(pReader);
-					break;
-				}
+					showPr = new nsPresentation::ShowPr();
+					showPr->fromPPTY(pReader);					
+				}break;
+				case 2:
+				{
+					printPr = new nsPresentation::PrintPr();
+					printPr->fromPPTY(pReader);
+				}break;
 				default:
 				{
 					pReader->SkipRecord();

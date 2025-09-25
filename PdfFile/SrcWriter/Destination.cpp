@@ -30,19 +30,19 @@
  *
  */
 #include "Destination.h"
-#include "Pages.h"
 
 namespace PdfWriter
 {
 	//----------------------------------------------------------------------------------------
 	// CDestination
 	//----------------------------------------------------------------------------------------
-	CDestination::CDestination(CPage* pPage, CXref* pXref)
+	CDestination::CDestination(CObjectBase* pPage, CXref* pXref, bool bInline)
 	{
-		pXref->Add(this);
+		if (!bInline)
+			pXref->Add(this);
 
 		// Первый элемент массива должен быть страницей, которой принадлежит объект
-		Add((CObjectBase*)pPage);
+		Add(pPage);
 		Add("Fit"); // Значение по умолчанию Fit
 	}
 	bool CDestination::IsValid() const
@@ -50,21 +50,28 @@ namespace PdfWriter
 		if (m_arrList.size() < 2)
 			return false;
 
-		CObjectBase* pObject = Get(0, false);
-		if ((object_type_DICT != pObject->GetType() || dict_type_PAGE != ((CDictObject*)pObject)->GetDictType()) &&
-				(object_type_PROXY != pObject->GetType() || object_type_DICT != ((CProxyObject*)pObject)->Get()->GetType() || dict_type_PAGE != ((CDictObject*)((CProxyObject*)pObject)->Get())->GetDictType()))
-			return false;
+		// Проверка, что объект является страницей. Но это может быть ссылка на нередактируемую страницу
+		// CObjectBase* pObject = Get(0, false);
+		// if ((object_type_DICT != pObject->GetType() || dict_type_PAGE != ((CDictObject*)pObject)->GetDictType()) &&
+		// 		(object_type_PROXY != pObject->GetType() || object_type_DICT != ((CProxyObject*)pObject)->Get()->GetType() || dict_type_PAGE != ((CDictObject*)((CProxyObject*)pObject)->Get())->GetDictType()))
+		// 	return false;
 
 		return true;
 	}
 	void CDestination::PrepareArray()
 	{
-		CPage* pPage = (CPage*)Get(0);
-
 		if (m_arrList.size() > 1)
 		{
+			CObjectBase* pPage = Get(0);
+			if (pPage->GetType() != object_type_DICT)
+			{
+				CObjectBase* pCopy = pPage->Copy();
+				pCopy->SetRef(pPage->GetObjId(), pPage->GetGenNo());
+				pPage = new CProxyObject(pCopy, true);
+			}
+
 			Clear();
-			Add((CObjectBase*)pPage);
+			Add(pPage);
 		}
 	}
 	void CDestination::SetXYZ(float fLeft, float fTop, float fZoom)

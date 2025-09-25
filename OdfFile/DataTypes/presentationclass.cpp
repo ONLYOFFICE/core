@@ -57,6 +57,7 @@ std::wostream & operator << (std::wostream & _Wostream, const presentation_class
 		case presentation_class::handout:		_Wostream << L"handout";	break;
         case presentation_class::outline:		_Wostream << L"outline";	break;
 		case presentation_class::text:			_Wostream << L"text";		break;
+		case presentation_class::body:			_Wostream << L"body";		break;
 	}
     return _Wostream;
 }
@@ -81,6 +82,7 @@ presentation_class presentation_class::parse(const std::wstring & Str)
     else if (tmp == L"footer")		return presentation_class( footer );
     else if (tmp == L"date-time")	return presentation_class( date_time );
     else if (tmp == L"page-number")	return presentation_class( page_number );
+	else if (tmp == L"body")		return presentation_class( body );
 	else
     {
         return presentation_class( page );
@@ -95,14 +97,14 @@ std::wstring presentation_class::get_type_ms()
         case title:
 			res = L"title";
 			break;
-   //     case subtitle:
-			//res = L"subTitle";
+        case subtitle:
+			res = L"body";
 			break;
 		case graphic:
 			res = L"body";
 			break;
 		case object:
-			res = L"obj";
+			res = L"body";
 			break;
 		case chart:
 			res = L"chart";
@@ -125,15 +127,15 @@ std::wstring presentation_class::get_type_ms()
 		case page_number:
 			res = L"sldNum";
 			break;
-        case subtitle:
 		case notes:
 		case handout:
-        case outline:
+		case outline:
+		case body:
 		case text:
 			res = L"body";
 			break;
 		case page:
-			res = L"sldImg";
+			res = L"pic";
 			break;
 	}
 	return res;

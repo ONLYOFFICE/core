@@ -6,40 +6,16 @@ import org.apache.tools.ant.taskdefs.condition.Os
 plugins {
     id("com.android.library")
     kotlin("android")
-    id("maven-publish")
 }
 
 apply {
     from("../extras/gradle/common.gradle")
 }
 
-val keystore = extra.get("getKeystore") as org.codehaus.groovy.runtime.MethodClosure
-
-publishing {
-    publications {
-        create<MavenPublication>("maven") {
-            groupId = PublishEditors.groupId
-            artifactId = PublishEditors.x2tId
-            version = PublishEditors.version
-            artifact("$buildDir/outputs/aar/lib${artifactId}-release.aar")
-        }
-    }
-    repositories {
-        maven {
-            name = "GitHubPackages"
-            url = uri("${PublishEditors.publishUrl}/")
-            credentials {
-                username = (keystore() as? java.util.Properties)?.getProperty("git_user_name") ?: ""
-                password = (keystore() as? java.util.Properties)?.getProperty("git_token") ?: ""
-            }
-        }
-    }
-}
-
 android {
 
-    buildToolsVersion = AppDependency.BUILD_TOOLS_VERSION
-    compileSdk = AppDependency.COMPILE_SDK_VERSION
+    namespace = "lib.x2t"
+    compileSdk = libs.versions.compileSdk.get().toInt()
     ndkVersion = rootProject.extra.get("NDK_VERSION").toString()
 
     publishing {
@@ -48,9 +24,7 @@ android {
     }
 
     defaultConfig {
-        minSdk = AppDependency.MIN_SDK_VERSION
-        targetSdk = AppDependency.TARGET_SDK_VERSION
-
+        minSdk = libs.versions.minSdk.get().toInt()
 
         buildConfigField("String", "LIB_X2T", "\"${extra.get("NAME_LIB")}\"")
 
@@ -58,18 +32,13 @@ android {
             cmake {
                 arguments(
                     "-DANDROID_TOOLCHAIN=clang",
-                    "-DANDROID_STL=c++_static",
+                    "-DANDROID_STL=c++_shared",
                     "-DANDROID_ARM_NEON=TRUE",
                     "-DARG_PATH_LIB_BUILD_TOOLS=${getProjectPath(extra.get("PATH_LIB_BUILD_TOOLS") as String)}",
-                    "-DARG_PATH_LIB_DST=${getProjectPath(extra.get("PATH_LIB_DST") as String, true)}",
                     "-DARG_PATH_SRC_CORE=${getProjectPath(extra.get("PATH_SRC_CORE") as String)}",
                     "-DARG_NAME_LIB=${extra.get("NAME_LIB")}"
                 )
             }
-        }
-
-        ndk {
-            abiFilters.addAll(arrayOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64"))
         }
     }
 
@@ -77,21 +46,19 @@ android {
         release {
             isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            ndk {
+                abiFilters.addAll(arrayOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64"))
+            }
         }
         debug {
             isJniDebuggable = true
-        }
-    }
-
-    sourceSets {
-        getByName("main") {
-            java.srcDir("src/main/java")
-            jniLibs.srcDirs(
-                arrayOf(
-                    extra.get("PATH_LIB_DST") as String,
-                    extra.get("PATH_LIB_BUILD_TOOLS") as String
-                )
-            )
+            ndk {
+                if (System.getProperty("os.arch") == "aarch64") {
+                    abiFilters.add("arm64-v8a")
+                } else {
+                    abiFilters.addAll(arrayOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64"))
+                }
+            }
         }
     }
 
@@ -102,32 +69,30 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility(JavaVersion.VERSION_11)
-        targetCompatibility(JavaVersion.VERSION_11)
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "17"
     }
 
-    packagingOptions {
-        jniLibs.useLegacyPackaging = true
-        arrayOf("armeabi-v7a", "x86", "arm64-v8a", "x86_64").forEach { abi ->
-            val dh = file("${extra.get("PATH_LIB_BUILD_TOOLS")}/$abi")
-            dh.listFiles()?.forEach {
-                if (it.name.contains(".so"))
-                    jniLibs.pickFirsts.add("lib/$abi/${it.name}")
-            }
-            jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB")}.so")
-            jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB_KERNEL_NETWORK")}.so")
+    buildFeatures {
+        buildConfig = true
+    }
+
+    packaging {
+        jniLibs {
+            pickFirsts.add("lib/armeabi-v7a/libc++_shared.so")
+            pickFirsts.add("lib/x86/libc++_shared.so")
+            pickFirsts.add("lib/arm64-v8a/libc++_shared.so")
+            pickFirsts.add("lib/x86_64/libc++_shared.so")
         }
     }
 }
 
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
-    implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:${rootProject.extra.get("kotlin_version")}")
 }
 
 
@@ -155,7 +120,7 @@ fun getProjectPath(path: String, isRelativeCreate: Boolean = true): String {
     throw GradleException("getProjectPath($path) - path doesn't exist...")
 }
 
-tasks.create("copyIcuDatFiles") {
+tasks.register("copyIcuDatFiles") {
     doLast {
 
         println()

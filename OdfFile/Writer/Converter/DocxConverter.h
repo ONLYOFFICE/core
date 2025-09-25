@@ -127,6 +127,10 @@ namespace ComplexTypes
 		class CShading;
 	}
 }
+namespace NSBinPptxRW
+{
+	class CDrawingConverter;
+}
 namespace cpdoccore 
 {
 	namespace odf_writer 
@@ -163,18 +167,21 @@ namespace Oox2Odf
 		void			convert		(OOX::WritingElement *oox_unknown);		
 		std::wstring	dump_text	(OOX::WritingElement *oox_unknown);
     private:
+		bool current_bidi_set = false;
 		struct _section
 		{
-            OOX::Logic::CSectionProperty    *props = NULL;
-            size_t							start_para = 0;
-            size_t							end_para = 0;
-			bool							bContinue = false;
-		}												*current_section_properties;
-		OOX::CDocx										*docx_document;
-		OOX::CDocxFlat									*docx_flat_document;
+            OOX::Logic::CSectionProperty *props = NULL;
+            size_t start_para = 0;
+            size_t end_para = 0;
+			bool bContinue = false;
+		} *current_section_properties;
+
+		OOX::CDocx *docx_document;
+		OOX::CDocxFlat *docx_flat_document;
 		
-		odf_writer::odt_conversion_context				*odt_context;
-        OOX::Logic::CSectionProperty					*last_section_properties;
+		NSBinPptxRW::CDrawingConverter *drawingConverter;
+		odf_writer::odt_conversion_context *odt_context;
+        OOX::Logic::CSectionProperty *last_section_properties;
 
 		void apply_HF_from(OOX::Logic::CSectionProperty *props, OOX::Logic::CSectionProperty *other);
 		
@@ -235,7 +242,7 @@ namespace Oox2Odf
 		void convert(SimpleTypes::CUniversalMeasure		*oox_size,		_CP_OPT(odf_types::length)			& odf_size);
 		void convert(SimpleTypes::CUniversalMeasure		*oox_size,		_CP_OPT(odf_types::length_or_percent) & odf_size);
 		void convert(ComplexTypes::Word::CTblWidth		*oox_size,		_CP_OPT(odf_types::length)			& odf_size);
-		void convert(ComplexTypes::Word::CJc			*oox_jc,		_CP_OPT(odf_types::text_align)		& align);
+		void convert(ComplexTypes::Word::CJc			*oox_jc, bool bidi, _CP_OPT(odf_types::text_align)		& align);
 		void convert(ComplexTypes::Word::CBorder		*borderProp,	std::wstring & odf_border_prop);
 		void convert(ComplexTypes::Word::CPageBorder	*borderProp,	std::wstring & odf_border_prop);
 		

@@ -93,6 +93,7 @@ public:
 	graphic_format_properties*		get_graphic_properties()const;
   
 	style_text_properties*			get_style_text_properties()	const;
+    style_text_properties*          get_style_text_properties(bool create);
     style_paragraph_properties*		get_style_paragraph_properties()const;
     style_table_properties*			get_style_table_properties()const;
     style_section_properties*		get_style_section_properties()const;
@@ -104,6 +105,8 @@ public:
 
 	office_element_ptr text_list_style_;
 	odf_types::style_family style_family_;
+
+    bool bDefault = false;
 private:
     office_element_ptr		style_text_properties_;
     office_element_ptr		style_paragraph_properties_;
@@ -128,6 +131,10 @@ public:
     static const ElementType type = typeStyleDefaultStyle;
     CPDOCCORE_DEFINE_VISITABLE();
 
+    default_style() 
+    {
+        content_.bDefault = true;  
+    }
     virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
 
     style_content content_;
@@ -174,7 +181,7 @@ public:
 
     CPDOCCORE_DEFINE_VISITABLE();
 
-	std::wstring	get_style_name(){return draw_name_.get_value_or(L"");}
+	std::wstring get_style_name(){return draw_name_.get_value_or(L"");}
 
 	_CP_OPT(odf_types::length_or_percent)	draw_distance_; 
 	_CP_OPT(odf_types::length_or_percent)	draw_dots1_length_; 
@@ -205,7 +212,7 @@ public:
 
     CPDOCCORE_DEFINE_VISITABLE();
 
-	std::wstring	get_style_name(){return draw_name_.get_value_or(L"");}
+	std::wstring get_style_name(){return draw_name_.get_value_or(L"");}
 
 	_CP_OPT(odf_types::color)		draw_start_color_;
 	_CP_OPT(odf_types::color)		draw_end_color_;
@@ -220,17 +227,17 @@ public:
 	_CP_OPT(odf_types::draw_angle)	draw_angle_;
 	_CP_OPT(odf_types::gradient_style)		draw_style_;
 
-
  	_CP_OPT(std::wstring) draw_name_;
 	_CP_OPT(std::wstring) draw_display_name_;
 	
+    office_element_ptr_array content_;
 private:
 	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
  
 };
 CP_REGISTER_OFFICE_ELEMENT2(draw_gradient);
-/////////////////////////////////////////////////////////////////////////////////////////////////
+//------------------------------------------------------------------------------------------------
 //  draw:hatch
 class draw_hatch : public office_element_impl<draw_hatch>
 {
@@ -242,7 +249,7 @@ public:
 
     CPDOCCORE_DEFINE_VISITABLE();
 
-	std::wstring	get_style_name(){return draw_name_.get_value_or(L"");}
+	std::wstring get_style_name(){return draw_name_.get_value_or(L"");}
 	
 	_CP_OPT(odf_types::hatch_style)	draw_style_;
 	_CP_OPT(int) draw_rotation_;
@@ -254,11 +261,10 @@ public:
  
 private:
 	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
- 
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name); 
 };
 CP_REGISTER_OFFICE_ELEMENT2(draw_hatch);
-/////////////////////////////////////////////////////////////////////////////////////////////////
+//------------------------------------------------------------------------------------------------
 //  style_draw_gradient
 class draw_opacity : public office_element_impl<draw_opacity>
 {
@@ -275,20 +281,21 @@ public:
 	_CP_OPT(odf_types::gradient_style)	draw_style_;//linear, radial, ..
 	_CP_OPT(odf_types::draw_angle)		draw_angle_;
 
-	_CP_OPT(odf_types::percent)		draw_start_;
-	_CP_OPT(odf_types::percent)		draw_end_;
+	_CP_OPT(odf_types::percent) draw_start_;
+	_CP_OPT(odf_types::percent) draw_end_;
 	
-	_CP_OPT(odf_types::percent)		draw_border_;
+	_CP_OPT(odf_types::percent) draw_border_;
 
  	_CP_OPT(std::wstring) draw_name_;
 	_CP_OPT(std::wstring) draw_display_name_;
 
+    office_element_ptr_array content_;
 private:
 	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
- 
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name); 
 };
 CP_REGISTER_OFFICE_ELEMENT2(draw_opacity);
+//------------------------------------------------------------------------------------------------
 
 //  style_draw_fill_image
 class draw_fill_image : public office_element_impl<draw_fill_image>
@@ -312,7 +319,7 @@ private:
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 };
 CP_REGISTER_OFFICE_ELEMENT2(draw_fill_image);
-/////////////////////////////////////////////////////////////////////////////////////////////////
+//------------------------------------------------------------------------------------------------
 class style;
 typedef shared_ptr<style>::Type style_ptr;
 typedef weak_ptr<style>::Type style_weak_ptr;
@@ -675,6 +682,8 @@ public:
     static const ElementType type = typeStyleColumns;
     CPDOCCORE_DEFINE_VISITABLE();
 
+    virtual void pptx_convert(oox::pptx_conversion_context& Context);
+
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
@@ -966,6 +975,8 @@ private:
 
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
+
+    int DetectPageSize(double w, double h);
 };
 CP_REGISTER_OFFICE_ELEMENT2(style_page_layout_properties);
 //-------------------------------------------------------------------------------------------------------------------------
@@ -1021,7 +1032,8 @@ public:
 	_CP_OPT(bool)						text_count_empty_lines_;
 	_CP_OPT(bool)						text_count_in_text_boxes_;
 	_CP_OPT(unsigned int)				text_increment_;
-	_CP_OPT(std::wstring)				text_number_position_; //inner, left, outer, right
+    _CP_OPT(unsigned int)				text_start_;
+    _CP_OPT(std::wstring)				text_number_position_; //inner, left, outer, right
 	_CP_OPT(odf_types::length)			text_offset_;
 	_CP_OPT(bool)						text_restart_on_page_;
 
@@ -1072,8 +1084,45 @@ private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);   
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(style_presentation_page_layout);
+//------------------------------------------------------------------------------------------------
+//  loext:gradient-stop 
+class loext_gradient_stop : public office_element_impl<loext_gradient_stop>
+{
+public:
+    static const wchar_t* ns;
+    static const wchar_t* name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeStyleGradientStop;
 
+    CPDOCCORE_DEFINE_VISITABLE();
+
+    _CP_OPT(odf_types::color_type) color_type_;
+    _CP_OPT(odf_types::color) color_value_;
+    _CP_OPT(double) svg_offset_;
+private:
+    virtual void add_attributes(const xml::attributes_wc_ptr& Attributes);
+    virtual void add_child_element(xml::sax* Reader, const std::wstring& Ns, const std::wstring& Name) {}
+};
+CP_REGISTER_OFFICE_ELEMENT2(loext_gradient_stop);
+//------------------------------------------------------------------------------------------------
+//  loext:opacity-stop 
+class loext_opacity_stop : public office_element_impl<loext_opacity_stop>
+{
+public:
+    static const wchar_t* ns;
+    static const wchar_t* name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeStyleOpacityStop;
+
+    CPDOCCORE_DEFINE_VISITABLE();
+
+    _CP_OPT(double) stop_opacity_;
+    _CP_OPT(double) svg_offset_;
+private:
+    virtual void add_attributes(const xml::attributes_wc_ptr& Attributes);
+    virtual void add_child_element(xml::sax* Reader, const std::wstring& Ns, const std::wstring& Name) {}
+};
+CP_REGISTER_OFFICE_ELEMENT2(loext_opacity_stop);
 } // namespace odf_reader
 } // namespace cpdoccore

@@ -71,12 +71,13 @@ namespace BinXlsxRW {
         void setEmbeddedFontsDir(const std::wstring& sEmbeddedFontsDir);
 		void setDrawingConverter(NSBinPptxRW::CDrawingConverter* pDrawingConverter);
 		void setIsNoBase64		(bool val);
+		
 		void setMacroEnabled	(bool val);
+		bool getMacroEnabled	();
 
 		_UINT32 xml2Xlsx		(const std::wstring& sSrcFileName, const std::wstring& sDstPath, const std::wstring& sXMLOptions);
 		
 		bool saveChart          (NSBinPptxRW::CBinaryFileReader* pReader, long lLength, NSCommon::smart_ptr<OOX::File> &file);
 		bool writeChartXlsx     (const std::wstring& sDstFile, NSCommon::smart_ptr<OOX::File> &file);
-		bool hasPivot			(const std::wstring& sSrcPath);
 	};
 }

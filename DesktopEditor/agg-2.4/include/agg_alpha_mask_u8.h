@@ -30,7 +30,7 @@ namespace agg
     {
         static unsigned calculate(const int8u* p) { return *p; }
     };
-    
+
 
     //=====================================================rgb_to_gray_mask_u8
     template<unsigned R, unsigned G, unsigned B>

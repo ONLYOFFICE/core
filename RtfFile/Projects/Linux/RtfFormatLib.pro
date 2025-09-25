@@ -23,6 +23,9 @@ DEFINES += UNICODE _UNICODE \
         DONT_WRITE_EMBEDDED_FONTS \
         AVS_USE_CONVERT_PPTX_TOCUSTOM_VML
 
+# see bug 57050
+#DEFINES += USE_STYLE_COLOR
+
 INCLUDEPATH += ../../../OdfFile/include
 
 core_release {

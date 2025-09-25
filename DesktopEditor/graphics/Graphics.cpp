@@ -32,7 +32,6 @@
 #include "Graphics.h"
 #include <algorithm>
 #include "../fontengine/FontFile.h"
-#include "AlphaMask_private.h"
 
 namespace Aggplus
 {
@@ -69,6 +68,7 @@ namespace Aggplus
 		m_dDpiTile = -1;
 
 		m_pAlphaMask = NULL;
+		m_pSoftMask  = NULL;
 
 		m_nTextRenderMode = FT_RENDER_MODE_NORMAL;
 		m_nBlendMode = agg::comp_op_src_over;
@@ -105,7 +105,10 @@ namespace Aggplus
 #endif
 
 		m_dDpiTile = -1;
-		
+
+		m_pAlphaMask = NULL;
+		m_pSoftMask  = NULL;
+
 		m_nTextRenderMode = FT_RENDER_MODE_NORMAL;
 		m_nBlendMode = agg::comp_op_src_over;
 
@@ -146,7 +149,10 @@ namespace Aggplus
 #endif
 
 		m_dDpiTile = -1;
-		
+
+		m_pAlphaMask = NULL;
+		m_pSoftMask  = NULL;
+
 		m_nTextRenderMode = FT_RENDER_MODE_NORMAL;
 		m_nBlendMode = agg::comp_op_src_over;
 
@@ -161,6 +167,13 @@ namespace Aggplus
 #endif
 
 		RELEASEINTERFACE(m_pAlphaMask);
+		RELEASEINTERFACE(m_pSoftMask);
+
+		while (!m_arLayers.empty())
+		{
+			RELEASEINTERFACE(m_arLayers.top());
+			m_arLayers.pop();
+		}
 	}
 
 	INT CGraphics::IsDib()
@@ -453,7 +466,7 @@ namespace Aggplus
 		m_rasterizer.get_rasterizer().reset_clipping();
 		m_rasterizer.get_rasterizer().clip_box(m_dClipLeft, m_dClipTop, m_dClipWidth + m_dClipLeft, m_dClipHeight + m_dClipTop);
 
-		GetRendererBase().clip_box((int)m_dClipLeft, (int)m_dClipTop, (int)(m_dClipWidth + m_dClipLeft), (int)(m_dClipHeight + m_dClipTop));
+		m_frame_buffer.ren_base().clip_box((int)m_dClipLeft, (int)m_dClipTop, (int)(m_dClipWidth + m_dClipLeft), (int)(m_dClipHeight + m_dClipTop));
 
 		m_oClip.Reset();
 		
@@ -489,18 +502,41 @@ namespace Aggplus
 		return Ok;
 	}
 
-	Status CGraphics::CombineClip(CGraphicsPath* pPath, agg::sbool_op_e op)
+	Status CGraphics::CombineClip(CGraphicsPath* pPath, agg::sbool_op_e op, NSStructures::CPen* pPen)
 	{
 		Aggplus::CMatrix m;
-		return InternalClip(pPath, (m_bIntegerGrid || pPath->m_internal->m_pTransform != NULL) ? &m : &m_oFullTransform, op);
+		return InternalClip(pPath, (m_bIntegerGrid || pPath->m_internal->m_pTransform != NULL) ? &m : &m_oFullTransform, op, pPen);
 	}
 
-	Status CGraphics::InternalClip(CGraphicsPath* pPath, CMatrix* pTransform, agg::sbool_op_e op)
+	Status CGraphics::InternalClip(CGraphicsPath* pPath, CMatrix* pTransform, agg::sbool_op_e op, NSStructures::CPen* pPen)
 	{
 		if (NULL == pPath)
 			return InvalidParameter;
 
-		m_oClip.Combine(pPath, pTransform, op);
+		bool bTempRasterizer = false;
+		CClipMulti::clip_rasterizer* pRasterizer = m_oClip.GetRasterizer();
+		if (!pRasterizer)
+		{
+			pRasterizer = new CClipMulti::clip_rasterizer();
+			pRasterizer->clip_box(0, 0, m_oClip.m_lWidth, m_oClip.m_lHeight);
+			bTempRasterizer = true;
+		}
+
+		agg::trans_affine* pAffine = NULL;
+		if (pPen)
+			pAffine = DoStrokePath(pPen, pPath, pRasterizer);
+		else
+		{
+			typedef agg::conv_transform<agg::path_storage> trans_type;
+			trans_type trans(pPath->m_internal->m_agg_ps, pTransform->m_internal->m_agg_mtx);
+
+			typedef agg::conv_curve<trans_type> conv_crv_type;
+			conv_crv_type c_c_path(trans);
+
+			pRasterizer->add_path(c_c_path);
+		}
+
+		m_oClip.Combine(pPath->m_internal->m_bEvenOdd, op, pRasterizer);
 
 		// write to clips history
 		CGraphics_ClipStateRecord* pRecord = new CGraphics_ClipStateRecord();
@@ -508,6 +544,11 @@ namespace Aggplus
 		pRecord->Transform = (NULL != pTransform) ? new CMatrix(*pTransform) : new CMatrix();
 		pRecord->Operation = op;
 		m_oClipState.AddRecord(pRecord);
+
+		if (pAffine)
+			delete pAffine;
+		if (bTempRasterizer)
+			delete pRasterizer;
 
 		return Ok;
 	}
@@ -597,173 +638,7 @@ namespace Aggplus
 
 		m_rasterizer.get_rasterizer().reset();
 
-		agg::line_join_e LineJoin = agg::round_join;
-		switch(pPen->LineJoin)
-		{
-		case LineJoinMiter			: LineJoin = agg::miter_join_revert; break;
-		case LineJoinBevel			: LineJoin = agg::bevel_join; break;
-		case LineJoinRound			: LineJoin = agg::round_join; break;
-		case LineJoinMiterClipped	: LineJoin = agg::miter_join_revert; break;
-		default:	break;
-		}
-		agg::line_cap_e LineCap = agg::round_cap;
-		switch(pPen->LineStartCap)
-		{
-		case LineCapFlat         : LineCap = agg::butt_cap; break;
-		case LineCapRound        : LineCap = agg::round_cap; break;
-		case LineCapSquare       : LineCap = agg::square_cap; break;
-		default:	break;
-		}
-
-		double dWidth		 = pPen->Size;
-		double dWidthMinSize = 1.0 / sqrt(m_oCoordTransform.m_internal->m_agg_mtx.determinant());
-
-		if ((0 == dWidth && !m_bIntegerGrid) || dWidth < dWidthMinSize)
-		{
-			if (m_bIs0PenWidthAs1px)
-				dWidth = dWidthMinSize;
-		}
-		
-		double dblMiterLimit = pPen->MiterLimit;
-		
-		agg::path_storage path_copy(pPath->m_internal->m_agg_ps);
-		bool bIsUseIdentity = m_bIntegerGrid;
-		if (!bIsUseIdentity)
-		{
-			agg::trans_affine* full_trans = &m_oFullTransform.m_internal->m_agg_mtx;
-			double dDet = full_trans->determinant();
-
-			if (fabs(dDet) < 0.0001)
-			{
-				path_copy.transform_all_paths(m_oFullTransform.m_internal->m_agg_mtx);
-				dWidth *= sqrt(dDet);
-
-				bIsUseIdentity = true;
-			}
-		}
-
-		typedef agg::conv_curve<agg::path_storage> conv_crv_type;
-
-		conv_crv_type c_c_path(path_copy);
-		c_c_path.approximation_scale(25.0);
-		c_c_path.approximation_method(agg::curve_inc);
-		DashStyle eStyle = (DashStyle)pPen->DashStyle;
-
-		if (DashStyleCustom == eStyle)
-		{
-			if (0 == pPen->Count || NULL == pPen->DashPattern)
-			{
-				eStyle = DashStyleSolid;
-			}
-			else
-			{
-				bool bFoundNormal = false;
-				for (int i = 0; i < pPen->Count; i++)
-				{
-					if (fabs(pPen->DashPattern[i]) > 0.0001)
-					{
-						bFoundNormal = true;
-						break;
-					}
-				}
-				if (!bFoundNormal)
-					eStyle = DashStyleSolid;
-			}
-		}
-
-		agg::trans_affine* pAffine = &m_oFullTransform.m_internal->m_agg_mtx;
-		if (bIsUseIdentity)
-			pAffine = new agg::trans_affine();
-
-		if (DashStyleSolid == eStyle)
-		{
-			typedef agg::conv_stroke<conv_crv_type> Path_Conv_StrokeN;
-			Path_Conv_StrokeN pgN(c_c_path);
-
-			//pgN.line_join(agg::miter_join_revert);
-
-			pgN.line_cap(LineCap);
-			
-			pgN.line_join(LineJoin);
-			pgN.inner_join(agg::inner_round);
-			
-			pgN.miter_limit(dblMiterLimit);
-			pgN.width(dWidth);
-
-			pgN.approximation_scale(25.0);
-
-			typedef agg::conv_transform<Path_Conv_StrokeN> transStroke;
-
-			transStroke trans(pgN, *pAffine);
-			m_rasterizer.get_rasterizer().add_path(trans);
-		}
-		else
-		{
-			typedef agg::conv_dash<conv_crv_type> Path_Conv_Dash;
-			Path_Conv_Dash poly2_dash(c_c_path);
-
-			typedef agg::conv_stroke<Path_Conv_Dash> Path_Conv_StrokeD;
-			Path_Conv_StrokeD pgD(poly2_dash);
-
-			switch (eStyle)
-			{
-			case DashStyleDash:
-				poly2_dash.add_dash(3.00*dWidth, dWidth);
-				break;
-			case DashStyleDot:
-				poly2_dash.add_dash(dWidth, dWidth);
-				break;
-			case DashStyleDashDot:
-				poly2_dash.add_dash(3.00*dWidth, dWidth);
-				poly2_dash.add_dash(dWidth, dWidth);
-				break;
-			case DashStyleDashDotDot:
-				poly2_dash.add_dash(3.00*dWidth, dWidth);
-				poly2_dash.add_dash(dWidth, dWidth);
-				poly2_dash.add_dash(dWidth, dWidth);
-				break;
-			default:
-			case DashStyleCustom:
-			{
-				double offset	= pPen->DashOffset;
-				double* params	= pPen->DashPattern;
-				LONG lCount		= pPen->Count;
-				LONG lCount2	= lCount / 2;
-
-				double dKoef = 1.0;
-
-				for (LONG i = 0; i < lCount2; ++i)
-				{
-					if (0 == i)
-					{
-						poly2_dash.add_dash((params[i * 2]) * dKoef, params[i * 2 + 1] * dKoef);
-					}
-					else
-					{
-						poly2_dash.add_dash(params[i * 2] * dKoef, params[i * 2 + 1] * dKoef);
-					}
-				}
-				if (1 == (lCount % 2))
-				{
-					poly2_dash.add_dash(params[lCount - 1] * dKoef, 0);
-				}
-				poly2_dash.dash_start(offset * dKoef);
-
-				break;
-			}
-			}
-
-			if ((0 == dWidth && !m_bIntegerGrid) || dWidth < dWidthMinSize)
-				dWidth = dWidthMinSize;
-
-			pgD.line_cap(LineCap);
-			pgD.line_join(LineJoin);
-			pgD.miter_limit(dblMiterLimit);
-			pgD.width(dWidth);
-
-			agg::conv_transform<Path_Conv_StrokeD> trans(pgD, *pAffine);
-			m_rasterizer.get_rasterizer().add_path(trans);
-		}
+		agg::trans_affine* pAffine = DoStrokePath(pPen, pPath, &m_rasterizer.get_rasterizer());
 
 		CColor oColor((BYTE)(pPen->Alpha * m_dGlobalAlpha), pPen->Color, m_bSwapRGB);
 		CBrushSolid oBrush(oColor);
@@ -778,8 +653,7 @@ namespace Aggplus
 		if (gamma >= 0)
 			m_rasterizer.gamma(1.0);
 
-		if (bIsUseIdentity)
-			RELEASEOBJECT(pAffine);
+		RELEASEOBJECT(pAffine);
 
 		return Ok;
 	}
@@ -996,7 +870,7 @@ namespace Aggplus
 
 		if(width == 0.00 || height == 0.00)
 			return InvalidParameter;
-		
+
 		CGraphicsPath oPath;
 		oPath.MoveTo(x, y);
 		oPath.LineTo(x+width, y);
@@ -1212,34 +1086,247 @@ namespace Aggplus
 		return TRUE;
 	}
 
-	Status CGraphics::SetAlphaMask(CAlphaMask* pAlphaMask)
+	Status CGraphics::SetAlphaMask(CAlphaMask *pAlphaMask)
 	{
 		RELEASEINTERFACE(m_pAlphaMask);
 		m_pAlphaMask = pAlphaMask;
+
 		if (m_pAlphaMask)
-		{
 			m_pAlphaMask->AddRef();
-			m_pAlphaMask->m_internal->StartApplying();
-		}
-		return Ok;
+
+		return CreateLayer();
 	}
 
-	Status CGraphics::CreateAlphaMask()
+	Status CGraphics::StartCreatingAlphaMask()
 	{
+		return CreateLayer();
+	}
+
+	Status CGraphics::EndCreatingAlphaMask()
+	{
+		if (m_arLayers.empty())
+			return WrongState;
+
+		CGraphicsLayer *pCurrentGraphicsLayer = m_arLayers.top();
+		m_arLayers.pop();
+
+		if (pCurrentGraphicsLayer->Empty())
+			return GenericError;
+
+		BYTE* pBuffer = pCurrentGraphicsLayer->GetBuffer();
+
+		pCurrentGraphicsLayer->ClearBuffer(false);
+
+		RELEASEINTERFACE(pCurrentGraphicsLayer);
 		RELEASEINTERFACE(m_pAlphaMask);
-		m_pAlphaMask = new CAlphaMask();
-		return m_pAlphaMask->CreateImageBuffer(m_frame_buffer.width(), m_frame_buffer.height());
+
+		m_pAlphaMask = new CAlphaMask(pBuffer, EMaskDataType::ImageBuffer, false);
+		return CreateLayer();
 	}
 
 	Status CGraphics::ResetAlphaMask()
 	{
+		BlendLayer();
 		RELEASEINTERFACE(m_pAlphaMask);
 		return Ok;
 	}
 
-	Status CGraphics::StartApplyingAlphaMask()
+	CSoftMask* CGraphics::CreateSoftMask(bool bAlpha)
 	{
-		m_pAlphaMask->m_internal->StartApplying();
+		if (m_arLayers.empty())
+			return NULL;
+
+		CGraphicsLayer *pCurrentGraphicsLayer = m_arLayers.top();
+		m_arLayers.pop();
+
+		if (pCurrentGraphicsLayer->Empty())
+		{
+			RELEASEINTERFACE(pCurrentGraphicsLayer);
+			return NULL;
+		}
+
+		BYTE* pBuffer = pCurrentGraphicsLayer->GetBuffer();
+		pCurrentGraphicsLayer->ClearBuffer(false);
+
+		RELEASEINTERFACE(pCurrentGraphicsLayer);
+		RELEASEINTERFACE(m_pSoftMask);
+
+		unsigned int unWidth = m_frame_buffer.ren_buf().width(), unHeight = m_frame_buffer.ren_buf().height();
+		bool bFlip = m_frame_buffer.ren_buf().stride() < 0;
+		m_pSoftMask = new CSoftMask(pBuffer, unWidth, unHeight, bFlip, m_bSwapRGB, bAlpha);
+
+		pBuffer = m_arLayers.empty() ? m_pPixels : m_arLayers.top()->GetBuffer();
+		if (!pBuffer)
+		{
+			RELEASEINTERFACE(pCurrentGraphicsLayer);
+			return NULL;
+		}
+
+		m_frame_buffer.ren_buf().attach(pBuffer, unWidth, unHeight, m_frame_buffer.ren_buf().stride());
+
+		return m_pSoftMask;
+	}
+
+	Status CGraphics::SetSoftMask(CSoftMask* pSoftMask)
+	{
+		if (m_pSoftMask == pSoftMask)
+			return Ok;
+
+		RELEASEINTERFACE(m_pSoftMask);
+		m_pSoftMask = pSoftMask;
+
+		if (m_pSoftMask)
+			m_pSoftMask->AddRef();
+
+		return Ok;
+	}
+
+	Status CGraphics::AddLayer(CGraphicsLayer *pGraphicsLayer)
+	{
+		if (NULL == pGraphicsLayer || pGraphicsLayer->Empty())
+			return InvalidParameter;
+
+		m_arLayers.push(pGraphicsLayer);
+		pGraphicsLayer->AddRef();
+
+		int nStride                 = m_frame_buffer.ren_buf().stride();
+		const unsigned int unWidth  = m_frame_buffer.ren_buf().width();
+		const unsigned int unHeight = m_frame_buffer.ren_buf().height();
+
+		m_frame_buffer.create(unWidth, unHeight, nStride < 0, nStride, pGraphicsLayer->GetBuffer());
+
+		return Ok;
+	}
+
+	Status CGraphics::CreateLayer()
+	{
+		int nStride                 = m_frame_buffer.ren_buf().stride();
+		const unsigned int unWidth  = m_frame_buffer.ren_buf().width();
+		const unsigned int unHeight = m_frame_buffer.ren_buf().height();
+
+		UINT unSize = unWidth * unHeight * m_frame_buffer.pix_size;
+
+		BYTE *pBuffer = new BYTE[unSize];
+
+		memset(pBuffer, 0x00, unSize);
+
+		m_frame_buffer.create(unWidth, unHeight, nStride < 0, nStride, pBuffer);
+
+		m_arLayers.push(new CGraphicsLayer(pBuffer, false));
+		return Ok;
+	}
+
+	Status CGraphics::BlendLayer()
+	{
+		if (m_arLayers.empty())
+			return WrongState;
+
+		CGraphicsLayer *pCurrentGraphicsLayer = m_arLayers.top();
+		m_arLayers.pop();
+
+		BYTE* pBuffer = NULL;
+
+		if (!m_arLayers.empty())
+			pBuffer = m_arLayers.top()->GetBuffer();
+		else
+			pBuffer = m_pPixels;
+
+		if (NULL == pBuffer)
+		{
+			RELEASEINTERFACE(pCurrentGraphicsLayer);
+			return WrongState;
+		}
+
+		m_frame_buffer.ren_buf().attach(pBuffer, m_frame_buffer.ren_buf().width(), m_frame_buffer.ren_buf().height(), m_frame_buffer.ren_buf().stride());
+
+		if (m_pAlphaMask)
+		{
+			switch(m_pAlphaMask->GetDataType())
+			{
+			case EMaskDataType::ImageBuffer:
+			{
+				Aggplus::BlendTo<agg::rgb_to_gray_mask_u8<2, 1, 0>>(pCurrentGraphicsLayer, m_frame_buffer.pixfmt(), m_pAlphaMask->GetBuffer(), m_pAlphaMask->GetStep());
+				break;
+			}
+			case EMaskDataType::AlphaBuffer:
+			{
+				Aggplus::BlendTo<agg::one_component_mask_u8>(pCurrentGraphicsLayer, m_frame_buffer.pixfmt(), m_pAlphaMask->GetBuffer(), m_pAlphaMask->GetStep());
+				break;
+			}
+			}
+		}
+		else if (m_pSoftMask)
+		{
+			ESoftMaskType nType = m_pSoftMask->GetDataType();
+			if (nType == ESoftMaskType::RGBGrayBuffer)
+				Aggplus::BlendTo<agg::rgb_to_gray_mask_u8<0, 1, 2>>(pCurrentGraphicsLayer, m_frame_buffer.pixfmt(), m_pSoftMask->GetBuffer(), m_pSoftMask->GetStep());
+			else if (nType == ESoftMaskType::BGRGrayBuffer)
+				Aggplus::BlendTo<agg::rgb_to_gray_mask_u8<2, 1, 0>>(pCurrentGraphicsLayer, m_frame_buffer.pixfmt(), m_pSoftMask->GetBuffer(), m_pSoftMask->GetStep());
+			else if (nType == ESoftMaskType::Alpha4Buffer)
+				Aggplus::BlendTo<agg::one_component_mask_u8>(pCurrentGraphicsLayer, m_frame_buffer.pixfmt(), m_pSoftMask->GetBuffer() + 3, m_pSoftMask->GetStep());
+		}
+		else
+		{
+			if (m_nBlendMode != agg::comp_op_src_over)
+			{
+				pixfmt_type_comp pixfmt(m_frame_buffer.ren_buf(), m_nBlendMode);
+				Aggplus::BlendTo(pCurrentGraphicsLayer, pixfmt, m_nBlendMode);
+			}
+			else
+				Aggplus::BlendTo(pCurrentGraphicsLayer, m_frame_buffer.pixfmt());
+		}
+
+		RELEASEINTERFACE(pCurrentGraphicsLayer);
+		return Ok;
+	}
+	
+	Status CGraphics::RemoveLayer()
+	{
+		if (m_arLayers.empty())
+			return WrongState;
+
+		CGraphicsLayer *pCurrentGraphicsLayer = m_arLayers.top();
+		m_arLayers.pop();
+
+		BYTE* pBuffer = NULL;
+
+		if (!m_arLayers.empty())
+			pBuffer = m_arLayers.top()->GetBuffer();
+		else
+			pBuffer = m_pPixels;
+
+		if (NULL == pBuffer)
+		{
+			RELEASEINTERFACE(pCurrentGraphicsLayer);
+			return WrongState;
+		}
+
+		m_frame_buffer.ren_buf().attach(pBuffer, m_frame_buffer.ren_buf().width(), m_frame_buffer.ren_buf().height(), m_frame_buffer.ren_buf().stride());
+
+		RELEASEINTERFACE(pCurrentGraphicsLayer);
+		return Ok;
+	}
+	
+	Status CGraphics::SetLayerSettings(const TGraphicsLayerSettings &oSettings)
+	{
+		if (m_arLayers.empty())
+			return WrongState;
+
+		m_arLayers.top()->SetSettings(oSettings);
+
+		return Ok;
+	}
+
+	Status CGraphics::SetLayerOpacity(double dOpacity)
+	{
+		if (dOpacity < 0. || dOpacity > 1.)
+			return InvalidParameter;
+
+		if (m_arLayers.empty())
+			return WrongState;
+
+		m_arLayers.top()->SetOpacity(dOpacity);
+
 		return Ok;
 	}
 
@@ -1254,64 +1341,41 @@ namespace Aggplus
 		return m_oClip.IsClip();
 	}
 
-	agg::rendering_buffer& CGraphics::GetRenderingBuffer()
-	{
-		if (m_pAlphaMask && GenerationAlphaMask == m_pAlphaMask->m_internal->GetStatus())
-			return m_pAlphaMask->m_internal->GetRenderingBuffer();
-
-		return m_frame_buffer.ren_buf();
-	}
-
-	base_renderer_type& CGraphics::GetRendererBase()
-	{
-		if (m_pAlphaMask && GenerationAlphaMask == m_pAlphaMask->GetStatus() && ImageBuffer == m_pAlphaMask->GetDataType())
-			return (base_renderer_type&)m_pAlphaMask->m_internal->GetRendererBaseImage();
-
-		return m_frame_buffer.ren_base();
-	}
-
-	template<class Renderer>
-	void CGraphics::render_scanlines(Renderer& ren)
+	template<class Rasterizer, class Renderer, class Scanline>
+	void CGraphics::render_scanlines_3(Rasterizer& ras, Renderer& ren, Scanline& sl)
 	{
 		if (!m_oClip.IsClip())
 		{
-			if (m_pAlphaMask && ApplyingAlphaMask == m_pAlphaMask->GetStatus())
-			{
-				if (ImageBuffer == m_pAlphaMask->GetDataType())
-					return agg::render_scanlines(m_rasterizer.get_rasterizer(), m_pAlphaMask->m_internal->GetScanlineImage(), ren);
-				else if (AlphaBuffer == m_pAlphaMask->GetDataType())
-					return agg::render_scanlines(m_rasterizer.get_rasterizer(), m_pAlphaMask->m_internal->GetScanlineABuffer(), ren);
-			}
-
-			return agg::render_scanlines(m_rasterizer.get_rasterizer(), m_rasterizer.get_scanline(), ren);
+			agg::render_scanlines(ras, sl, ren);
 		}
 		else
 		{
 			if (!m_oClip.IsClip2())
 			{
-				typedef agg::scanline_p8                               sbool_scanline_type;
+				typedef agg::scanline_p8 sbool_scanline_type;
 
-				sbool_scanline_type sl_result;
 				sbool_scanline_type sl1;
 				sbool_scanline_type sl2;
 
-				agg::sbool_combine_shapes_aa(agg::sbool_and, m_rasterizer.get_rasterizer(), m_oClip.m_rasterizer,
-											 sl1, sl2, sl_result, ren);
+				agg::sbool_combine_shapes_aa(agg::sbool_and, ras, m_oClip.m_rasterizer, sl1, sl2, sl, ren);
 			}
 			else
 			{
-				typedef agg::scanline_p8                               sbool_scanline_type;
 
-				sbool_scanline_type sl_result;
+				typedef agg::scanline_p8 sbool_scanline_type;
+
 				sbool_scanline_type sl1;
 				sbool_scanline_type sl2;
 
-				sbool_scanline_type sl;
-
-				agg::sbool_combine_shapes_aa(agg::sbool_and, m_rasterizer.get_rasterizer(),
-											 (1 == m_oClip.m_lCurStorage) ? m_oClip.m_storage1 :	m_oClip.m_storage2,	sl1, sl2, sl_result, ren);
+				agg::sbool_combine_shapes_aa(agg::sbool_and, ras, (1 == m_oClip.m_lCurStorage) ? m_oClip.m_storage1 : m_oClip.m_storage2, sl1, sl2, sl, ren);
 			}
 		}
+	}
+
+	template<class Renderer>
+	void CGraphics::render_scanlines(Renderer& ren)
+	{
+		render_scanlines_2(m_rasterizer.get_rasterizer(), ren);
 	}
 
 	template<class Renderer>
@@ -1331,47 +1395,19 @@ namespace Aggplus
 	}
 
 	template<class Rasterizer, class Renderer>
-	void CGraphics::render_scanlines(Rasterizer& ras, Renderer& ren)
+	void CGraphics::render_scanlines_2(Rasterizer& ras, Renderer& ren)
 	{
-		if (!m_oClip.IsClip())
+		if (m_pSoftMask)
 		{
-			if (m_pAlphaMask && ApplyingAlphaMask == m_pAlphaMask->GetStatus())
-			{
-				if (ImageBuffer == m_pAlphaMask->GetDataType())
-					return agg::render_scanlines(ras, m_pAlphaMask->m_internal->GetScanlineImage(), ren);
-				else if (AlphaBuffer == m_pAlphaMask->GetDataType())
-					return agg::render_scanlines(ras, m_pAlphaMask->m_internal->GetScanlineABuffer(), ren);
-			}
-
-			return agg::render_scanlines(ras, m_rasterizer.get_scanline(), ren);
+			ESoftMaskType nType = m_pSoftMask->GetDataType();
+			if (nType == ESoftMaskType::RGBGrayBuffer)
+				return render_scanlines_3(ras, ren, ((CSoftMaskRGBAgray*)m_pSoftMask->m_pInternal)->GetScanline());
+			if (nType == ESoftMaskType::BGRGrayBuffer)
+				return render_scanlines_3(ras, ren, ((CSoftMaskBGRAgray*)m_pSoftMask->m_pInternal)->GetScanline());
+			if (nType == ESoftMaskType::Alpha4Buffer)
+				return render_scanlines_3(ras, ren, ((CSoftMaskAlpha*)m_pSoftMask->m_pInternal)->GetScanline());
 		}
-		else
-		{
-			if (!m_oClip.IsClip2())
-			{
-				typedef agg::scanline_p8                               sbool_scanline_type;
-
-				sbool_scanline_type sl_result;
-				sbool_scanline_type sl1;
-				sbool_scanline_type sl2;
-
-				agg::sbool_combine_shapes_aa(agg::sbool_and, ras, m_oClip.m_rasterizer,
-											 sl1, sl2, sl_result, ren);
-			}
-			else
-			{
-				typedef agg::scanline_p8                               sbool_scanline_type;
-
-				sbool_scanline_type sl_result;
-				sbool_scanline_type sl1;
-				sbool_scanline_type sl2;
-
-				sbool_scanline_type sl;
-
-				agg::sbool_combine_shapes_aa(agg::sbool_and, ras,
-											 (1 == m_oClip.m_lCurStorage) ? m_oClip.m_storage1 :	m_oClip.m_storage2,	sl1, sl2, sl_result, ren);
-			}
-		}
+		render_scanlines_3(ras, ren, m_rasterizer.get_scanline());
 	}
 
 	void CGraphics::DoFillPathSolid(CColor dwColor)
@@ -1381,10 +1417,8 @@ namespace Aggplus
 			typedef agg::renderer_scanline_aa_solid<comp_renderer_type> solid_comp_renderer_type;
 			solid_comp_renderer_type ren_solid;
 			comp_renderer_type ren_base;
-			pixfmt_type_comp pixfmt;
+			pixfmt_type_comp pixfmt(m_frame_buffer.ren_buf(), m_nBlendMode);
 
-			pixfmt.attach(GetRenderingBuffer());
-			pixfmt.comp_op(m_nBlendMode);
 			ren_base.attach(pixfmt);
 			ren_solid.attach(ren_base);
 
@@ -1394,7 +1428,7 @@ namespace Aggplus
 		else
 		{
 			typedef agg::renderer_scanline_aa_solid<base_renderer_type> solid_renderer_type;
-			solid_renderer_type ren_fine(GetRendererBase());
+			solid_renderer_type ren_fine(m_frame_buffer.ren_base());
 			ren_fine.color(dwColor.GetAggColor());
 
 			render_scanlines(ren_fine);
@@ -1465,7 +1499,7 @@ namespace Aggplus
 		gradient_span_alloc span_alloc;
 
 		typedef agg::renderer_scanline_aa<base_renderer_type, gradient_span_alloc, gradient_span_gen> renderer_gradient_type;
-		renderer_gradient_type ren_gradient( GetRendererBase(), span_alloc, span_gen );
+		renderer_gradient_type ren_gradient( m_frame_buffer.ren_base(), span_alloc, span_gen );
 
 		if (fabs(m_dGlobalAlpha - 1.0) < FLT_EPSILON)
 		{
@@ -1546,7 +1580,7 @@ namespace Aggplus
 		gradient_span_alloc span_alloc;
 
 		typedef agg::renderer_scanline_aa<base_renderer_type, gradient_span_alloc, gradient_span_gen> renderer_gradient_type;
-		renderer_gradient_type ren_gradient( GetRendererBase(), span_alloc, span_gen );
+		renderer_gradient_type ren_gradient( m_frame_buffer.ren_base(), span_alloc, span_gen );
 
 		if (fabs(m_dGlobalAlpha - 1.0) < FLT_EPSILON)
 		{
@@ -1605,7 +1639,7 @@ namespace Aggplus
 		hatch_span_alloc span_alloc;
 
 		typedef agg::renderer_scanline_aa<base_renderer_type, hatch_span_alloc, hatch_span_gen> renderer_hatch_type;
-		renderer_hatch_type ren_hatch( GetRendererBase(), span_alloc, span_gen );
+		renderer_hatch_type ren_hatch( m_frame_buffer.ren_base(), span_alloc, span_gen );
 
 		if (fabs(m_dGlobalAlpha - 1.0) < FLT_EPSILON)
 		{
@@ -1647,7 +1681,7 @@ namespace Aggplus
 		pixfmt          img_pixf(PatRendBuff);
 		img_source_type img_src(img_pixf);
 		span_gen_type sg(img_src, interpolator);
-		renderer_type ri(GetRendererBase(), span_allocator, sg);
+		renderer_type ri(m_frame_buffer.ren_base(), span_allocator, sg);
 		
 		if (fabs(m_dGlobalAlpha - 1.0) < FLT_EPSILON)
 		{
@@ -1685,7 +1719,7 @@ namespace Aggplus
 			pixfmt          img_pixf(PatRendBuff);
 			img_source_type img_src(img_pixf, agg::rgba(0, 0, 0, 0));
 			span_gen_type sg(img_src, interpolator);
-			renderer_type ri(GetRendererBase(), span_allocator, sg);
+			renderer_type ri(m_frame_buffer.ren_base(), span_allocator, sg);
 			//agg::render_scanlines(m_rasterizer.get_rasterizer(), m_rasterizer.get_scanline(), ri);
 			render_scanlines(ri);
 		}
@@ -1717,7 +1751,7 @@ namespace Aggplus
 				typedef agg::span_image_filter_rgba_nn<img_source_type, interpolator_type_linear> span_gen_type;
 				typedef agg::renderer_scanline_aa<base_renderer_type, span_alloc_type, span_gen_type> renderer_type;
 				span_gen_type sg(img_src, interpolator);
-				renderer_type ri(GetRendererBase(), span_allocator, sg);
+				renderer_type ri(m_frame_buffer.ren_base(), span_allocator, sg);
 				render_scanlines_alpha(ri, Alpha);
 				break;
 			}
@@ -1726,7 +1760,7 @@ namespace Aggplus
 				typedef agg::span_image_filter_rgba_bilinear<img_source_type, interpolator_type_linear> span_gen_type;
 				typedef agg::renderer_scanline_aa<base_renderer_type, span_alloc_type, span_gen_type> renderer_type;
 				span_gen_type sg(img_src, interpolator);
-				renderer_type ri(GetRendererBase(), span_allocator, sg);
+				renderer_type ri(m_frame_buffer.ren_base(), span_allocator, sg);
 				render_scanlines_alpha(ri, Alpha);
 				break;
 			}
@@ -1737,7 +1771,7 @@ namespace Aggplus
 				agg::image_filter_lut filter;
 				filter.calculate(agg::image_filter_bicubic(), false);
 				span_gen_type sg(img_src, interpolator, filter);
-				renderer_type ri(GetRendererBase(), span_allocator, sg);
+				renderer_type ri(m_frame_buffer.ren_base(), span_allocator, sg);
 				render_scanlines_alpha(ri, Alpha);
 				break;
 			}
@@ -1748,7 +1782,7 @@ namespace Aggplus
 				agg::image_filter_lut filter;
 				filter.calculate(agg::image_filter_spline16(), false);
 				span_gen_type sg(img_src, interpolator, filter);
-				renderer_type ri(GetRendererBase(), span_allocator, sg);
+				renderer_type ri(m_frame_buffer.ren_base(), span_allocator, sg);
 				render_scanlines_alpha(ri, Alpha);
 				break;
 			}
@@ -1759,7 +1793,7 @@ namespace Aggplus
 				agg::image_filter_lut filter;
 				filter.calculate(agg::image_filter_blackman256(), false);
 				span_gen_type sg(img_src, interpolator, filter);
-				renderer_type ri(GetRendererBase(), span_allocator, sg);
+				renderer_type ri(m_frame_buffer.ren_base(), span_allocator, sg);
 				render_scanlines_alpha(ri, Alpha);
 				break;
 			}
@@ -1770,7 +1804,7 @@ namespace Aggplus
 				agg::image_filter_lut filter;
 				filter.calculate(agg::image_filter_bilinear(), false);
 				span_gen_type sg(img_src, interpolator, filter);
-				renderer_type ri(GetRendererBase(), span_allocator, sg);
+				renderer_type ri(m_frame_buffer.ren_base(), span_allocator, sg);
 				render_scanlines_alpha(ri, Alpha);
 				break;
 			}
@@ -1793,7 +1827,7 @@ namespace Aggplus
 				typedef agg::span_image_filter_rgba_nn<img_source_type, interpolator_type_linear> span_gen_type;
 				typedef agg::renderer_scanline_aa<base_renderer_type, span_alloc_type, span_gen_type> renderer_type;
 				span_gen_type sg(img_src, interpolator);
-				renderer_type ri(GetRendererBase(), span_allocator, sg);
+				renderer_type ri(m_frame_buffer.ren_base(), span_allocator, sg);
 				render_scanlines_alpha(ri, Alpha);
 				break;
 			}
@@ -1802,7 +1836,7 @@ namespace Aggplus
 				typedef agg::span_image_filter_rgba_bilinear<img_source_type, interpolator_type_linear> span_gen_type;
 				typedef agg::renderer_scanline_aa<base_renderer_type, span_alloc_type, span_gen_type> renderer_type;
 				span_gen_type sg(img_src, interpolator);
-				renderer_type ri(GetRendererBase(), span_allocator, sg);
+				renderer_type ri(m_frame_buffer.ren_base(), span_allocator, sg);
 				render_scanlines_alpha(ri, Alpha);
 				break;
 			}
@@ -1813,7 +1847,7 @@ namespace Aggplus
 				agg::image_filter_lut filter;
 				filter.calculate(agg::image_filter_bicubic(), false);
 				span_gen_type sg(img_src, interpolator, filter);
-				renderer_type ri(GetRendererBase(), span_allocator, sg);
+				renderer_type ri(m_frame_buffer.ren_base(), span_allocator, sg);
 				render_scanlines_alpha(ri, Alpha);
 				break;
 			}
@@ -1824,7 +1858,7 @@ namespace Aggplus
 				agg::image_filter_lut filter;
 				filter.calculate(agg::image_filter_spline16(), false);
 				span_gen_type sg(img_src, interpolator, filter);
-				renderer_type ri(GetRendererBase(), span_allocator, sg);
+				renderer_type ri(m_frame_buffer.ren_base(), span_allocator, sg);
 				render_scanlines_alpha(ri, Alpha);
 				break;
 			}
@@ -1835,7 +1869,7 @@ namespace Aggplus
 				agg::image_filter_lut filter;
 				filter.calculate(agg::image_filter_blackman256(), false);
 				span_gen_type sg(img_src, interpolator, filter);
-				renderer_type ri(GetRendererBase(), span_allocator, sg);
+				renderer_type ri(m_frame_buffer.ren_base(), span_allocator, sg);
 				render_scanlines_alpha(ri, Alpha);
 				break;
 			}
@@ -1846,7 +1880,7 @@ namespace Aggplus
 				agg::image_filter_lut filter;
 				filter.calculate(agg::image_filter_bilinear(), false);
 				span_gen_type sg(img_src, interpolator, filter);
-				renderer_type ri(GetRendererBase(), span_allocator, sg);
+				renderer_type ri(m_frame_buffer.ren_base(), span_allocator, sg);
 				render_scanlines_alpha(ri, Alpha);
 				break;
 			}
@@ -1888,7 +1922,7 @@ namespace Aggplus
 			pixfmt          img_pixf(PatRendBuff);
 			img_source_type img_src(img_pixf);
 			span_gen_type sg(img_src, interpolator);
-			renderer_type ri(GetRendererBase(), span_allocator, sg);
+			renderer_type ri(m_frame_buffer.ren_base(), span_allocator, sg);
 
 			double dAlpha = m_dGlobalAlpha * Alpha / 255.0;
 			if (fabs(dAlpha - 1.0) < FLT_EPSILON)
@@ -1914,7 +1948,7 @@ namespace Aggplus
 			pixfmt          img_pixf(PatRendBuff);
 			img_source_type img_src(img_pixf);
 			span_gen_type sg(img_src, interpolator);
-			renderer_type ri(GetRendererBase(), span_allocator, sg);
+			renderer_type ri(m_frame_buffer.ren_base(), span_allocator, sg);
 
 			double dAlpha = m_dGlobalAlpha * Alpha / 255.0;
 			if (fabs(dAlpha - 1.0) < FLT_EPSILON)
@@ -1940,7 +1974,7 @@ namespace Aggplus
 			pixfmt          img_pixf(PatRendBuff);
 			img_source_type img_src(img_pixf);
 			span_gen_type sg(img_src, interpolator);
-			renderer_type ri(GetRendererBase(), span_allocator, sg);
+			renderer_type ri(m_frame_buffer.ren_base(), span_allocator, sg);
 
 			double dAlpha = m_dGlobalAlpha * Alpha / 255.0;
 			if (fabs(dAlpha - 1.0) < FLT_EPSILON)
@@ -1966,7 +2000,7 @@ namespace Aggplus
 			pixfmt          img_pixf(PatRendBuff);
 			img_source_type img_src(img_pixf);
 			span_gen_type sg(img_src, interpolator);
-			renderer_type ri(GetRendererBase(), span_allocator, sg);
+			renderer_type ri(m_frame_buffer.ren_base(), span_allocator, sg);
 
 			double dAlpha = m_dGlobalAlpha * Alpha / 255.0;
 			if (fabs(dAlpha - 1.0) < FLT_EPSILON)
@@ -2063,6 +2097,186 @@ namespace Aggplus
 			break;
 		}
 	}
+	template<class Rasterizer>
+	agg::trans_affine* CGraphics::DoStrokePath(NSStructures::CPen* pPen, CGraphicsPath* pPath, Rasterizer* pRasterizer)
+	{
+		agg::line_join_e LineJoin = agg::round_join;
+		switch(pPen->LineJoin)
+		{
+		case LineJoinMiter			: LineJoin = agg::miter_join_revert; break;
+		case LineJoinBevel			: LineJoin = agg::bevel_join; break;
+		case LineJoinRound			: LineJoin = agg::round_join; break;
+		case LineJoinMiterClipped	: LineJoin = agg::miter_join_revert; break;
+		default:	break;
+		}
+		agg::line_cap_e LineCap = agg::round_cap;
+		switch(pPen->LineStartCap)
+		{
+		case LineCapFlat         : LineCap = agg::butt_cap; break;
+		case LineCapRound        : LineCap = agg::round_cap; break;
+		case LineCapSquare       : LineCap = agg::square_cap; break;
+		default:	break;
+		}
+
+		double dWidth = pPen->Size;
+		if (!m_bIntegerGrid && m_bIs0PenWidthAs1px)
+		{
+			double dWidthMinSize, dSqrtDet = sqrt(abs(m_oFullTransform.m_internal->m_agg_mtx.determinant()));
+			if (0 == dWidth)
+			{
+				double dX = 0.72, dY = 0.72;
+				agg::trans_affine invert = ~m_oFullTransform.m_internal->m_agg_mtx;
+				invert.transform_2x2(&dX, &dY);
+				dWidth = std::min(abs(dX), abs(dY));
+			}
+			else if (0 != dSqrtDet && dWidth < (dWidthMinSize = 1.0 / dSqrtDet))
+				dWidth = dWidthMinSize;
+		}
+
+		double dblMiterLimit = pPen->MiterLimit;
+
+		agg::path_storage path_copy(pPath->m_internal->m_agg_ps);
+		bool bIsUseIdentity = m_bIntegerGrid;
+		if (!bIsUseIdentity)
+		{
+			agg::trans_affine* full_trans = &m_oFullTransform.m_internal->m_agg_mtx;
+			double dDet = full_trans->determinant();
+
+			if (fabs(dDet) < 0.0001)
+			{
+				path_copy.transform_all_paths(m_oFullTransform.m_internal->m_agg_mtx);
+				dWidth *= sqrt(fabs(dDet));
+
+				bIsUseIdentity = true;
+			}
+		}
+
+		typedef agg::conv_curve<agg::path_storage> conv_crv_type;
+
+		conv_crv_type c_c_path(path_copy);
+		c_c_path.approximation_scale(25.0);
+		c_c_path.approximation_method(agg::curve_inc);
+		DashStyle eStyle = (DashStyle)pPen->DashStyle;
+
+		if (DashStyleCustom == eStyle)
+		{
+			if (0 == pPen->Count || NULL == pPen->DashPattern)
+			{
+				eStyle = DashStyleSolid;
+			}
+			else
+			{
+				bool bFoundNormal = false;
+				for (int i = 0; i < pPen->Count; i++)
+				{
+					if (fabs(pPen->DashPattern[i]) > 0.0001)
+					{
+						bFoundNormal = true;
+						break;
+					}
+				}
+				if (!bFoundNormal)
+					eStyle = DashStyleSolid;
+			}
+		}
+
+		agg::trans_affine* pAffine = &m_oFullTransform.m_internal->m_agg_mtx;
+		if (bIsUseIdentity)
+			pAffine = new agg::trans_affine();
+
+		if (DashStyleSolid == eStyle)
+		{
+			typedef agg::conv_stroke<conv_crv_type> Path_Conv_StrokeN;
+			Path_Conv_StrokeN pgN(c_c_path);
+
+			//pgN.line_join(agg::miter_join_revert);
+
+			pgN.line_cap(LineCap);
+
+			pgN.line_join(LineJoin);
+			pgN.inner_join(agg::inner_round);
+
+			pgN.miter_limit(dblMiterLimit);
+			pgN.width(dWidth);
+
+			pgN.approximation_scale(25.0);
+
+			typedef agg::conv_transform<Path_Conv_StrokeN> transStroke;
+
+			transStroke trans(pgN, *pAffine);
+			pRasterizer->add_path(trans);
+		}
+		else
+		{
+			typedef agg::conv_dash<conv_crv_type> Path_Conv_Dash;
+			Path_Conv_Dash poly2_dash(c_c_path);
+
+			typedef agg::conv_stroke<Path_Conv_Dash> Path_Conv_StrokeD;
+			Path_Conv_StrokeD pgD(poly2_dash);
+
+			switch (eStyle)
+			{
+			case DashStyleDash:
+				poly2_dash.add_dash(3.00*dWidth, dWidth);
+				break;
+			case DashStyleDot:
+				poly2_dash.add_dash(dWidth, dWidth);
+				break;
+			case DashStyleDashDot:
+				poly2_dash.add_dash(3.00*dWidth, dWidth);
+				poly2_dash.add_dash(dWidth, dWidth);
+				break;
+			case DashStyleDashDotDot:
+				poly2_dash.add_dash(3.00*dWidth, dWidth);
+				poly2_dash.add_dash(dWidth, dWidth);
+				poly2_dash.add_dash(dWidth, dWidth);
+				break;
+			default:
+			case DashStyleCustom:
+			{
+				double offset	= pPen->DashOffset;
+				double* params	= pPen->DashPattern;
+				LONG lCount		= pPen->Count;
+				LONG lCount2	= lCount / 2;
+
+				double dKoef = 1.0;
+
+				for (LONG i = 0; i < lCount2; ++i)
+				{
+					if (0 == i)
+					{
+						poly2_dash.add_dash((params[i * 2]) * dKoef, params[i * 2 + 1] * dKoef);
+					}
+					else
+					{
+						poly2_dash.add_dash(params[i * 2] * dKoef, params[i * 2 + 1] * dKoef);
+					}
+				}
+				if (1 == (lCount % 2))
+				{
+					poly2_dash.add_dash(params[lCount - 1] * dKoef, 0);
+				}
+				poly2_dash.dash_start(offset * dKoef);
+
+				break;
+			}
+			}
+
+			double dWidthMinSize = 1.0 / sqrt(abs(m_oCoordTransform.m_internal->m_agg_mtx.determinant()));
+			if ((0 == dWidth && !m_bIntegerGrid) || dWidth < dWidthMinSize)
+				dWidth = dWidthMinSize;
+
+			pgD.line_cap(LineCap);
+			pgD.line_join(LineJoin);
+			pgD.miter_limit(dblMiterLimit);
+			pgD.width(dWidth);
+
+			agg::conv_transform<Path_Conv_StrokeD> trans(pgD, *pAffine);
+			pRasterizer->add_path(trans);
+		}
+
+		return bIsUseIdentity ? pAffine : NULL;
+	}
 	// text methods
 	int CGraphics::FillGlyph2(int nX, int nY, TGlyph* pGlyph, Aggplus::CBrush* pBrush)
 	{
@@ -2107,11 +2321,11 @@ namespace Aggplus
 			((CBrushSolid*)pBrush)->GetColor(&clr);
 			
 			typedef agg::renderer_scanline_aa_solid<base_renderer_type> solid_renderer_type;
-			solid_renderer_type ren_fine(GetRendererBase());
+			solid_renderer_type ren_fine(m_frame_buffer.ren_base());
 			ren_fine.color(clr.GetAggColor());
 
 			//agg::render_scanlines(storage, m_rasterizer.get_scanline(), ren_fine);
-			render_scanlines(storage, ren_fine);
+			render_scanlines_2(storage, ren_fine);
 		}
 		
 		return 0;
@@ -2122,7 +2336,7 @@ namespace Aggplus
 		((CBrushSolid*)pBrush)->GetColor(&clr);
 
 		typedef agg::renderer_scanline_aa_solid<base_renderer_type> solid_renderer_type;
-		solid_renderer_type ren_fine(GetRendererBase());
+		solid_renderer_type ren_fine(m_frame_buffer.ren_base());
 		ren_fine.color(clr.GetAggColor());
 
 		if (m_nTextRenderMode == FT_RENDER_MODE_LCD)
@@ -2255,7 +2469,7 @@ namespace Aggplus
 		gradient_span_alloc span_alloc;
 
 		typedef agg::renderer_scanline_aa<base_renderer_type, gradient_span_alloc, gradient_span_gen> renderer_gradient_type;
-		renderer_gradient_type ren_gradient( GetRendererBase(), span_alloc, span_gen );
+		renderer_gradient_type ren_gradient( m_frame_buffer.ren_base(), span_alloc, span_gen );
 
 		if (fabs(m_dGlobalAlpha - 1.0) < FLT_EPSILON)
 		{

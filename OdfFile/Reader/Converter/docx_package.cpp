@@ -461,7 +461,7 @@ void comments_elements::write(const std::wstring & RootPath)
         {
             content << L"<w:comment w:id=\"" << elm.id << "\" ";
 			if (elm.author.length()>0)
-				content << L"w:author=\""<< elm.author << "\" ";
+				content << L"w:author=\""<< XmlUtils::EncodeXmlString(elm.author) << "\" ";
 			if (elm.date.length()>0)
 				content << L"w:date=\""<< elm.date << "\" ";
 			content<< L">";

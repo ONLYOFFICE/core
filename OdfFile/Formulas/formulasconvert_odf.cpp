@@ -55,7 +55,7 @@ namespace formulasconvert {
 
 		void split_distance_by(const std::wstring& expr, const std::wstring& by, std::vector<std::wstring>& out);
 		
-		void replace_cells_range(std::wstring& expr, bool withTableName, bool bAbsoluteAlways = false);
+		std::wstring replace_cells_range(std::wstring expr, bool withTableName, bool bAbsoluteAlways = false);
 		bool check_formula(std::wstring& expr);
 		void replace_semicolons(std::wstring& expr, bool del_quotes = false);
 		void replace_tilda(std::wstring& expr);
@@ -67,7 +67,7 @@ namespace formulasconvert {
 		std::wstring convert_named_expr(const std::wstring& expr, bool withTableName, bool bAbsoluteAlways);
 		
 		static std::wstring replace_named_ref_formater(boost::wsmatch const & what);
-		static std::wstring replace_named_ref_formater1(boost::wsmatch const & what);
+		static std::wstring replace_named_ref_formater_2(boost::wsmatch const & what);
 		//static std::wstring replace_cell_range_formater(boost::wsmatch const & what);
 		
 		void replace_named_formula(std::wstring & expr, bool w = true);
@@ -79,7 +79,7 @@ namespace formulasconvert {
 		static bool				convert_with_absolute;
 		static bool				convert_with_TableName;
 		static std::wstring		table_name_;
-
+		static std::vector<std::map<std::wstring, std::wstring>> mapReplacements;
 //-------------------------------------------------------------------------------------------------------------
 		static std::wstring replace_apersand_formater(boost::wsmatch const & what)
 		{
@@ -146,75 +146,29 @@ namespace formulasconvert {
 
 		static void replace_tmp_back(std::wstring &expr)
 		{
-			XmlUtils::replace_all( expr, L"ТОСHKA", L".");
-			XmlUtils::replace_all( expr, L"VOSKL", L"!");
-
-			XmlUtils::replace_all( expr, L"SCOBCAIN", L"(");
-			XmlUtils::replace_all( expr, L"SCOBCAOUT", L")");
-
-			//XmlUtils::replace_all( expr, L"KVADRATIN", L"[");
-			//XmlUtils::replace_all( expr, L"KVADRATOUT", L"]");
-			
-			XmlUtils::replace_all( expr, L"PROBEL", L" ");
-			//XmlUtils::replace_all( expr, L"APOSTROF", L"'");	
-			//XmlUtils::replace_all( expr, L"KAVYCHKA", L"\"");
-			XmlUtils::replace_all(expr, L"APERSAND", L"&");
+			for (auto key : mapReplacements.back())
+			{
+				XmlUtils::replace_all(expr, key.first, key.second);
+			}
 		}
 		static void replace_tmp(std::wstring &expr)
 		{
-		//	XmlUtils::replace_all( expr, L".", L"ТОСHKA");
-		//	XmlUtils::replace_all( expr, L"!", L"VOSKL");
+			//std::random_device genSource;
+			//std::uniform_int_distribution<> generator(0, 23);
+			//for (int index = 0; index < 5; index++)
+			//{
+			//	key += wchar_t(L'a' + generator(genSource));
+			//}
 
-		//	XmlUtils::replace_all( expr, L"(", L"SCOBCAIN");
-		//	XmlUtils::replace_all( expr, L")", L"SCOBCAOUT");
-
-		//	//XmlUtils::replace_all( expr, L"[", L"KVADRATIN");
-		//	//XmlUtils::replace_all( expr, L"]", L"KVADRATOUT");
-		//	
-		//	XmlUtils::replace_all( expr, L" ", L"PROBEL");
-		////	XmlUtils::replace_all( expr, L"'", L"APOSTROF");	
-		////	XmlUtils::replace_all( expr, L"\"", L"KAVYCHKA");
-
-			std::wstring result;
-
-			size_t pos = 0, size = expr.length();
-
-			while(pos < size)
+			std::wstring key = L"aaaaaaaaaaaaaaaaaaaaaaaa";
+			for (unsigned i = 0; i < 23; ++i)
 			{
-				switch(expr[pos])
-				{
-					case '.':
-					{	
-						result += L"ТОСHKA";
-					}break;
-					case '!':
-					{
-						result += L"VOSKL";
-					}break;
-					case '(':
-					{
-						result += L"SCOBCAIN";
-					}break;
-					case ')':
-					{
-						result += L"SCOBCAOUT";
-					}break;
-					case ' ':
-					{
-						result += L"PROBEL";
-					}break;
-					case '&':
-					{
-						result += L"APERSAND";
-					}break;
-					default:
-					{
-						result += expr[pos];
-					}break;
-				}
-				pos++;
+				unsigned j = rand() % (i + 1);
+				key[i] = key[j];
+				key[j] = wchar_t(L'a' + i);
 			}
-		expr = result;
+			mapReplacements.back().insert(std::make_pair(key, expr));
+			expr = key;
 		}
 		static std::wstring convert_scobci(boost::wsmatch const & what)
 		{
@@ -278,12 +232,16 @@ namespace formulasconvert {
 	bool			odf2oox_converter::Impl::convert_with_TableName = true;
 	std::wstring	odf2oox_converter::Impl::table_name_			= L"";
 	bool			odf2oox_converter::Impl::convert_with_absolute	= false;
-	
+	std::vector<std::map<std::wstring, std::wstring>> odf2oox_converter::Impl::mapReplacements;
+
 	std::unordered_map<std::wstring, int> &odf2oox_converter::Impl::mapExternalLink_ = oox::xlsx_conversion_context::mapExternalLink_;
 
 	bool odf2oox_converter::Impl::find_first_last_ref(std::wstring const & expr, std::wstring & table,std::wstring & ref_first,std::wstring & ref_last)
 	{	
 		std::wstring workstr = expr;
+		
+		mapReplacements.emplace_back();
+
 		workstr = boost::regex_replace(
 			workstr,
 			boost::wregex(L"('.*?')|(\".*?\")"),
@@ -317,6 +275,7 @@ namespace formulasconvert {
 		}
 		replace_tmp_back( table );
 
+		mapReplacements.pop_back();
 		return res;
 	}
 
@@ -391,6 +350,9 @@ namespace formulasconvert {
 			replace_tmp_back(external);
 
 			int id = -1;//add_external_link(external);
+
+			if (external[0] == L'\'') external = external.substr(1, external.size() - 2);
+
 			std::unordered_map<std::wstring, int>::iterator pFind = mapExternalLink_.find(external);
 			if ( pFind == mapExternalLink_.end())
 			{
@@ -405,6 +367,9 @@ namespace formulasconvert {
 			{
 				sheet1 = sheet1.substr(1, sheet1.length() - 2);
 			}
+			replace_tmp_back(sheet1);
+			if (sheet1[0] == L'\'') sheet1 = sheet1.substr(1, sheet1.size() - 2);
+
 			sheet1 = L"'[" + std::to_wstring(id) + L"]" + sheet1 + L"'";
 		}
 		else if (std::wstring::npos != sheet1.find(L" "))
@@ -440,19 +405,54 @@ namespace formulasconvert {
 			return ref1 + (ref2.empty() ? L"" : (L":" + ref2) );
 		}
 	}
-	std::wstring odf2oox_converter::Impl::replace_named_ref_formater1(boost::wsmatch const & what)
+	std::wstring odf2oox_converter::Impl::replace_named_ref_formater_2(boost::wsmatch const & what)
 	{
-		boost::wregex complexRef(L"(?:\'([^\']*)\'#){0,1}\\${0,1}([^\\.]+?){0,1}\\.(\\${0,1}[\\w^0-9]+\\${0,1}\\d+)(?::\\.(\\${0,1}[\\w^0-9]+\\${0,1}\\d+)){0,1}");
-//									  'external'#  $   Sheet2         . A1								 : ( $   Sheet2)? . B5   
-		std::wstring expr = what[1].str();
-		const std::wstring res = boost::regex_replace(
-			expr,
-			complexRef,
-			&replace_named_ref_formater,
-			boost::match_default | boost::format_all);
-		expr = res; 
+		const size_t sz = what.size();
 
-		return expr;
+		//if (sz < 6) return what[0].str();
+
+		std::wstring c0 = what[0].str();
+		std::wstring sheet1 = what[1].str();
+		std::wstring ref1 = what[2].str();
+		std::wstring ref2 = what[3].str();
+
+		XmlUtils::replace_all(sheet1, L"$", L"");
+		XmlUtils::replace_all(ref2, L":", L"");
+
+		std::wstring result;
+
+		if (std::wstring::npos != sheet1.find(L" "))
+		{
+			if (sheet1[0] != L'\'')
+			{
+				sheet1 = L"'" + sheet1 + L"'";
+			}
+		}
+
+		table_name_ = sheet1;
+
+		if (convert_with_absolute)
+		{
+			size_t col = 0, row = 0;
+			oox::getCellAddressInv(ref1, col, row);
+
+			ref1 = oox::getCellAddress(col, row, true);
+
+			if (false == ref2.empty())
+			{
+				oox::getCellAddressInv(ref2, col, row);
+				ref2 = oox::getCellAddress(col, row, true);
+			}
+		}
+
+		if (convert_with_TableName)
+		{
+			return (sheet1.empty() ? L"" : (sheet1 + L"!")) + ref1 + (ref2.empty() ? L"" : (L":" + ref2));
+		}
+		else
+		{
+			return ref1 + (ref2.empty() ? L"" : (L":" + ref2));
+		}
 	}
 
 
@@ -462,8 +462,10 @@ namespace formulasconvert {
 	// [Sheet2.A1:B5] -> Sheet2!A1:B5
 	// [Sheet2.A1] -> Sheet2!A1
 	// [$'Sheet2 A'.$B2] -> 'Sheet2 A'!$B2
-	void odf2oox_converter::Impl::replace_cells_range(std::wstring& expr, bool withTableName, bool bAbsoluteAlways)
+	std::wstring odf2oox_converter::Impl::replace_cells_range(std::wstring expr, bool withTableName, bool bAbsoluteAlways)
 	{
+		if (expr.empty()) return L"";
+
 		XmlUtils::replace_all( expr, L"#REF !", L"#REF!");
 		XmlUtils::replace_all( expr, L"#REF!#REF!", L"#REF!");
 		XmlUtils::replace_all( expr, L"$#REF!$#REF!", L"#REF!");
@@ -472,18 +474,34 @@ namespace formulasconvert {
 		convert_with_absolute = bAbsoluteAlways;
 
 		//boost::wregex complexRef(L"\\[(?:\'([^\']*)\'#){0,1}\\[{0,1}(?:\\$){0,1}([^\\.]+?){0,1}\\.(\\${0,1}[\\w^0-9]*\\${0,1}\\d*)(?::(\\${0,1}[^\\.]+?){0,1}\\.(\\${0,1}[\\w^0-9]*\\${0,1}\\d*)){0,1}\\]{0,1}");
-		boost::wregex complexRef(L"(?:(?:(?:(?:\\[\'([^\']*)\'#)|(?:\'([^\']*)\'#\\[)))|(?:\\[))\
+		boost::wregex complexRef(L"(?:(?:(?:(?:\\[(.*)#)|(?:(.*)#\\[)))|(?:\\[))\
 (?:\\$){0,1}([^\\.]+?){0,1}\\.(\\${0,1}[\\w^0-9]*\\${0,1}\\d*)(?::(\\${0,1}[^\\.]+?){0,1}\\.(\\${0,1}[\\w^0-9]*\\${0,1}\\d*)){0,1}\\]");
-//									 [ 'external'#  [  $   Sheet2         . A1								 : ( $   Sheet2)? . B5                    ]
+//									 [ external#  [  $   Sheet2         . A1								 : ( $   Sheet2)? . B5                    ]
 
-		expr = boost::regex_replace(
+		std::wstring result = boost::regex_replace(
   			expr,
 			complexRef,
 			&replace_named_ref_formater,
 			boost::match_default | boost::format_all);
+
+		if (result == expr)
+		{
+			//bad formula ???
+			boost::wregex complexRef_2(L"\\$([^\\.]+?)?\\.(\\$[a-zA-Z]*\\d*)(\\:\\$[a-zA-Z]*\\d*)?");
+			//	$ Sheet2  . $ A1		 : ( $   Sheet2)? . $ B5   
+
+			result = boost::regex_replace(
+				expr,
+				complexRef_2,
+				&replace_named_ref_formater_2,
+				boost::match_default | boost::format_all);
+		}
+		return result;
 	}
 	void odf2oox_converter::Impl::replace_named_ref(std::wstring & expr, bool withTableName, bool bAbsoluteAlways)
 	{
+		if (expr.empty()) return;
+
 		XmlUtils::replace_all( expr, L"#REF !", L"#REF!");
 		XmlUtils::replace_all( expr, L"#REF!#REF!", L"#REF!");
 		XmlUtils::replace_all( expr, L"$#REF!$#REF!", L"#REF!");
@@ -492,8 +510,8 @@ namespace formulasconvert {
 		convert_with_absolute = bAbsoluteAlways;
 		
 		//boost::wregex complexRef(L"\\${0,1}([^\\.]+?){0,1}\\.(\\${0,1}[a-zA-Z]+\\${0,1}\\d+)(?::\\.(\\${0,1}[a-zA-Z]+\\${0,1}\\d+)){0,1}");
-		boost::wregex complexRef(L"\\[{0,1}(?:\'([^\']*)\'#){0,1}\\${0,1}([^\\.\\s]+?){0,1}\\.(\\${0,1}[\\w^0-9]*\\${0,1}\\d*)(?::\\${0,1}([^\\.\\s]+?){0,1}\\.(\\${0,1}[\\w^0-9]*\\${0,1}\\d*)){0,1}\\]{0,1}");
-//									  'external'#  $   Sheet2         . A1								 : ( $   Sheet2)? . B5   
+		boost::wregex complexRef(L"\\[{0,1}(?:(.*)#){0,1}\\${0,1}([^\\.\\s]+?){0,1}\\.(\\${0,1}[\\w^0-9]*\\${0,1}\\d*)(?::\\${0,1}([^\\.\\s]+?){0,1}\\.(\\${0,1}[\\w^0-9]*\\${0,1}\\d*)){0,1}\\]{0,1}");
+//									  external#  $   Sheet2         . A1								 : ( $   Sheet2)? . B5   
 	
 		const std::wstring res = boost::regex_replace(
 			expr,
@@ -507,6 +525,8 @@ namespace formulasconvert {
 	// of:=(Formula) -> (Formula)
 	bool odf2oox_converter::Impl::check_formula(std::wstring& expr)
 	{
+		if (expr.empty()) return false;
+
 		boost::match_results<std::wstring::const_iterator> res;
 		if (boost::regex_search(expr, res, boost::wregex(L"^(?:[\\w]+:)?=(.+)"), boost::match_default))
 		{
@@ -582,11 +602,13 @@ namespace formulasconvert {
 		bool isFormula = check_formula(workstr);
 
 //экранирование
-		workstr = boost::regex_replace(workstr,			
+		mapReplacements.emplace_back();
+
+		workstr = boost::regex_replace(workstr,
 			boost::wregex(L"('.*?')|(\".*?\")"),
 			&convert_scobci, boost::match_default | boost::format_all);
 
-		replace_cells_range	(workstr, true);
+		workstr = replace_cells_range	(workstr, true);
 		replace_semicolons	(workstr);
 		replace_tilda		(workstr);
 		replace_vertical	(workstr);
@@ -616,11 +638,14 @@ namespace formulasconvert {
 	//-----------------------------------------------------------
 		replace_tmp_back(workstr);
 
+		mapReplacements.pop_back();
 		return workstr;
 	}
 
 	void odf2oox_converter::Impl::split_distance_by(const std::wstring& expr, const std::wstring& by, std::vector<std::wstring>& out)
 	{
+		mapReplacements.emplace_back();
+
 		std::wstring workstr = boost::regex_replace(
 			expr,
 			boost::wregex(L"('.*?')|(\".*?\")"),
@@ -632,6 +657,7 @@ namespace formulasconvert {
 		{
 			replace_tmp_back(out[i]);
 		}
+		mapReplacements.pop_back();
 	}
 
 	//Sheet2.C3:Sheet2.C19 Sheet2.L29:Sheet2.L36
@@ -646,6 +672,8 @@ namespace formulasconvert {
 
 	std::wstring odf2oox_converter::Impl::convert_chart_distance(const std::wstring& expr)
 	{
+		mapReplacements.emplace_back();
+
 		std::wstring workstr = boost::regex_replace(
 			is_forbidden(expr),
 			boost::wregex(L"('.*?')|(\".*?\")"),
@@ -703,6 +731,7 @@ namespace formulasconvert {
 		}
  		replace_tmp_back( result );
 		
+		mapReplacements.pop_back();
 		return result.substr(0, result.size() - 1);// минус последняя лишняя запятая
 	}
 	std::wstring odf2oox_converter::Impl::convert_named_ref(const std::wstring& expr, bool withTableName, std::wstring separator, bool bAbsoluteAlways)
@@ -710,6 +739,8 @@ namespace formulasconvert {
 		boost::wregex complexRef(L"('(?!\\s\\'){0,1}.*?')");// поиск того что в апострофах и замена там
 
 		std::wstring workstr = expr;
+
+		mapReplacements.emplace_back();
 
 		workstr = boost::regex_replace(
 			workstr,
@@ -729,6 +760,7 @@ namespace formulasconvert {
 		{
 			replace_tmp_back( table_name_ );
 		}
+		mapReplacements.pop_back();
 		return workstr;
 	}
 	std::wstring odf2oox_converter::Impl::convert_named_expr(const std::wstring& expr, bool withTableName, bool bAbsoluteAlways)
@@ -743,14 +775,14 @@ namespace formulasconvert {
 		}
 		else
 		{
+			mapReplacements.emplace_back();
 
 			workstr = boost::regex_replace(
 				workstr,
 				boost::wregex(L"('.*?')|(\".*?\")"),
 				&convert_scobci, boost::match_default | boost::format_all);
-
 		   
-			replace_cells_range(workstr, withTableName, bAbsoluteAlways);
+			workstr = replace_cells_range(workstr, withTableName, bAbsoluteAlways);
 			replace_semicolons(workstr);
 			replace_vertical(workstr);
 
@@ -767,6 +799,7 @@ namespace formulasconvert {
 			{
 				replace_tmp_back(table_name_);
  			}
+			mapReplacements.pop_back();
 		}
 		return workstr;
 	}
@@ -812,8 +845,7 @@ namespace formulasconvert {
 	std::wstring odf2oox_converter::convert_ref(std::wstring const & expr)
 	{
 		std::wstring workstr = L"[" + expr + L"]";
-		impl_->replace_cells_range(workstr, true);
-		return workstr;
+		return impl_->replace_cells_range(workstr, true);
 	}
 	std::wstring odf2oox_converter::convert_spacechar(std::wstring expr)
 	{

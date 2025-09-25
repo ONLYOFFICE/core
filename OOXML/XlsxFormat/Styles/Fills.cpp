@@ -36,7 +36,10 @@
 #include "../../Common/SimpleTypes_Spreadsheet.h"
 
 #include "../../XlsbFormat/Biff12_records/Fill.h"
+#include "../../XlsbFormat/Biff12_records/BeginFills.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BiffStructure.h"
+
+#include "../../XlsbFormat/Biff12_unions/FILLS.h"
 
 namespace OOX
 {
@@ -75,11 +78,9 @@ namespace OOX
 				else if(m_oFgColor.IsInit())
 				{
 					m_oFgColor->toXMLWithNS(writer, child_ns, L"fgColor", child_ns);
-					m_oFgColor->toXMLWithNS(writer, child_ns, L"bgColor", child_ns);
 				}
 				else if(m_oBgColor.IsInit())
 				{
-					m_oBgColor->toXMLWithNS(writer, child_ns, L"fgColor", child_ns);
 					m_oBgColor->toXMLWithNS(writer, child_ns, L"bgColor", child_ns);
 				}
 
@@ -109,6 +110,69 @@ namespace OOX
 		void CPatternFill::fromBin(XLS::BaseObjectPtr& obj)
 		{
 			ReadAttributes(obj);
+		}
+		void CPatternFill::toBin(XLS::BaseObjectPtr obj)
+		{
+			auto ptr = static_cast<XLSB::Fill*>(obj.get());
+			if(m_oPatternType.IsInit())
+			{
+				if (m_oPatternType == SimpleTypes::Spreadsheet::EPatternType::patterntypeNone)
+					ptr->fls = 0x00;
+				else if (m_oPatternType == SimpleTypes::Spreadsheet::EPatternType::patterntypeSolid)
+					ptr->fls = 0x01;
+				else if (m_oPatternType == SimpleTypes::Spreadsheet::EPatternType::patterntypeMediumGray)
+					ptr->fls = 0x02;
+				else if (m_oPatternType == SimpleTypes::Spreadsheet::EPatternType::patterntypeDarkGray)
+					ptr->fls = 0x03;
+				else if (m_oPatternType == SimpleTypes::Spreadsheet::EPatternType::patterntypeLightGray)
+					ptr->fls = 0x04;
+				else if (m_oPatternType == SimpleTypes::Spreadsheet::EPatternType::patterntypeDarkHorizontal)
+					ptr->fls = 0x05;
+				else if (m_oPatternType == SimpleTypes::Spreadsheet::EPatternType::patterntypeDarkVertical)
+					ptr->fls = 0x06;
+				else if (m_oPatternType == SimpleTypes::Spreadsheet::EPatternType::patterntypeDarkDown)
+					ptr->fls = 0x07;
+				else if (m_oPatternType == SimpleTypes::Spreadsheet::EPatternType::patterntypeDarkUp)
+					ptr->fls = 0x08;
+				else if (m_oPatternType == SimpleTypes::Spreadsheet::EPatternType::patterntypeDarkGrid)
+					ptr->fls = 0x09;
+				else if (m_oPatternType == SimpleTypes::Spreadsheet::EPatternType::patterntypeDarkTrellis)
+					ptr->fls = 0x0A;
+				else if (m_oPatternType == SimpleTypes::Spreadsheet::EPatternType::patterntypeLightHorizontal)
+					ptr->fls = 0x0B;
+				else if (m_oPatternType == SimpleTypes::Spreadsheet::EPatternType::patterntypeLightVertical)
+					ptr->fls = 0x0C;
+				else if (m_oPatternType == SimpleTypes::Spreadsheet::EPatternType::patterntypeLightDown)
+					ptr->fls = 0x0D;
+				else if (m_oPatternType == SimpleTypes::Spreadsheet::EPatternType::patterntypeLightUp)
+					ptr->fls = 0x0E;
+				else if (m_oPatternType == SimpleTypes::Spreadsheet::EPatternType::patterntypeLightGrid)
+					ptr->fls = 0x0F;
+				else if (m_oPatternType == SimpleTypes::Spreadsheet::EPatternType::patterntypeLightTrellis)
+					ptr->fls = 0x10;
+				else if (m_oPatternType == SimpleTypes::Spreadsheet::EPatternType::patterntypeGray125)
+					ptr->fls = 0x11;
+				else if (m_oPatternType == SimpleTypes::Spreadsheet::EPatternType::patterntypeGray0625)
+					ptr->fls = 0x12;
+				else
+					ptr->fls = 0x00;
+			}
+			else
+					ptr->fls = 0x00;
+
+			if(m_oBgColor.IsInit())
+				ptr->brtColorBack = m_oBgColor->toColor();
+            else
+            {   m_oBgColor.Init();
+                ptr->brtColorBack = m_oBgColor->GetDefaultColor();
+            }
+			if(m_oFgColor.IsInit())
+				ptr->brtColorFore = m_oFgColor->toColor();
+            else
+            {
+                m_oFgColor.Init();
+                ptr->brtColorFore = m_oFgColor->GetDefaultColor();
+            }
 		}
 		EElementType CPatternFill::getType () const
 		{
@@ -230,6 +294,21 @@ namespace OOX
 				m_oColor->fromBin(dynamic_cast<XLS::BaseObject*>(&ptr->brtColor));
 			}
 		}
+		void CGradientStop::toBin(XLS::BaseObjectPtr obj)
+		{
+			auto ptr = static_cast<XLSB::Fill*>(obj.get());
+			XLSB::GradientStop stop;
+			if(m_oPosition.IsInit())
+				stop.xnumPosition.data.value = m_oPosition->GetValue();
+			else
+				stop.xnumPosition.data.value = 0;
+			if(m_oColor.IsInit())
+			{
+				stop.brtColor = m_oColor->toColor();
+			}
+			ptr->xfillGradientStop.push_back(stop);
+		}
+
 		EElementType CGradientStop::getType () const
 		{
 			return et_x_GradientStop;
@@ -309,6 +388,40 @@ namespace OOX
 					ptrGradStop->fromBin(ptrBiffStruct);
 					m_arrItems.push_back(ptrGradStop);
 				}
+			}
+		}
+		void CGradientFill::toBin(XLS::BaseObjectPtr obj)
+		{
+			auto ptr = static_cast<XLSB::Fill*>(obj.get());
+
+			if(m_oType.IsInit())
+				ptr->iGradientType = m_oType->GetValue();
+			else
+				ptr->iGradientType = 0;
+			if(m_oDegree.IsInit())
+				ptr->xnumDegree.data.value = m_oDegree->GetValue();
+			else
+				ptr->xnumDegree.data.value = 0;
+			if(m_oLeft.IsInit())
+				ptr->xnumFillToLeft.data.value = m_oLeft->GetValue();
+			else
+				ptr->xnumFillToLeft.data.value = 0;
+			if(m_oRight.IsInit())
+				ptr->xnumFillToRight.data.value = m_oRight->GetValue();
+			else
+				ptr->xnumFillToRight.data.value = 0;
+			if(m_oTop .IsInit())
+				ptr->xnumFillToTop.data.value = m_oTop->GetValue();
+			else
+				ptr->xnumFillToTop.data.value = 0;
+			if(m_oBottom.IsInit())
+				ptr->xnumFillToBottom.data.value = m_oBottom->GetValue();
+			else
+				ptr->xnumFillToBottom.data.value = 0;
+
+			for(auto i:m_arrItems)
+			{
+				i->toBin(obj);
 			}
 
 
@@ -396,6 +509,34 @@ namespace OOX
 
 			if ((m_oGradientFill.IsInit()) && (false == m_oGradientFill->m_oType.IsInit()))
 				m_oGradientFill.reset();
+		}
+		XLS::BaseObjectPtr CFill::toBin()
+		{
+			auto ptr(new XLSB::Fill);
+			XLS::BaseObjectPtr objectPtr(ptr);
+
+			if(m_oPatternFill.IsInit())
+			{
+				m_oPatternFill->toBin(objectPtr);
+			}
+            else
+            {
+                CColor color;
+                ptr->fls = 0;
+                ptr->brtColorBack = color.GetDefaultColor();
+                ptr->brtColorFore = color.GetDefaultColor();
+            }
+
+			if(m_oGradientFill.IsInit())
+			{
+				m_oGradientFill->toBin(objectPtr);
+			}
+            else
+            {
+                ptr->iGradientType = 0;
+            }
+            ptr->cNumStop = 0;
+			return objectPtr;
 		}
 		EElementType CFill::getType () const
 		{
@@ -499,6 +640,19 @@ namespace OOX
 				m_arrItems.push_back(pFill);
 				m_mapFills.insert(std::make_pair(index++, pFill));
 			}
+		}
+		XLS::BaseObjectPtr CFills::toBin()
+		{
+			auto ptr(new XLSB::FILLS);
+			auto ptr1(new XLSB::BeginFills);
+			ptr->m_BrtBeginFills = XLS::BaseObjectPtr{ptr1};
+
+			XLS::BaseObjectPtr objectPtr(ptr);
+			for(auto i : m_arrItems)
+				ptr->m_arBrtFill.push_back(i->toBin());
+			ptr1->cfills = ptr->m_arBrtFill.size();
+			return objectPtr;
+
 		}
 		EElementType CFills::getType () const
 		{

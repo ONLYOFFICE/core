@@ -46,6 +46,7 @@
 
 #include "serialize_elements.h"
 #include "style_graphic_properties.h"
+#include "text_elements.h"
 
 #include "odfcontext.h"
 
@@ -130,8 +131,19 @@ void draw_shape::common_docx_convert(oox::docx_conversion_context & Context)
 
 	for (size_t i = 0; i < content_.size(); i++)
     {
+		ElementType type = content_[i]->get_type();
+		if (type == typeTextP)
+		{
+			auto _p = dynamic_cast<text::p*>(content_[i].get());
+			if (_p)
+			{
+				if(!_p->paragraph_.content_.size() && _p->paragraph_.attrs_.text_style_name_.empty())
+					continue;
+			}
+		}
+
 		content_[i]->docx_convert(Context);
-    }
+	}
 
 	Context.back_context_state();
 
@@ -197,7 +209,7 @@ void draw_line::docx_convert(oox::docx_conversion_context & Context)
 }
 
 void draw_path::docx_convert(oox::docx_conversion_context & Context)
-{
+{	
 	//if (Context.get_drawing_context().get_current_level() >0 )return;
  	if (Context.get_drawing_context().get_current_level() > 0 && !Context.get_drawing_context().in_group() )
 	{ 
@@ -279,130 +291,8 @@ void draw_caption::docx_convert(oox::docx_conversion_context & Context)
 }
 void draw_enhanced_geometry::docx_convert(oox::docx_conversion_context & Context)
 {
-	find_draw_type_oox();
-
-	draw_shape * shape = Context.get_drawing_context().get_current_shape();//owner
-
-	shape->word_art_ = word_art_;
-
-	bool set_shape = false;
-
-	if (attlist_.draw_mirror_horizontal_)
-	{
-		shape->additional_.push_back(_property(L"flipH", *attlist_.draw_mirror_horizontal_));
-	}
-	if (attlist_.draw_mirror_vertical_)
-	{
-		shape->additional_.push_back(_property(L"flipV", *attlist_.draw_mirror_vertical_));
-	}
-	if (draw_type_oox_index_)
-	{
-		shape->additional_.push_back(_property(L"oox-geom-index", draw_type_oox_index_.get()));	
-		shape->additional_.push_back(_property(L"oox-geom", bOoxType_));	
-
-		if (shape->word_art_ == true)
-			shape->additional_.push_back(_property(L"wordArt", true));
-
-		set_shape = true;
-	}
-
-	if (sub_type_)
-	{
-		shape->sub_type_ = sub_type_.get();
-		set_shape = true;
-	}
-	
-	if (!odf_path_.empty())
-	{
-		std::vector<::svg_path::_polyline> o_Polyline;
-	
-		bool res = false;
-		bool bClosed = false, bStroked = true;
-		
-		try
-		{
-			res = ::svg_path::parseSvgD(o_Polyline, odf_path_, true, bClosed, bStroked);
-		}
-		catch(...)
-		{
-			res = false; 
-		}
-		//if (!bClosed) lined_shape_ = true;
-		
-		if (!o_Polyline.empty() && res )
-		{
-			//сформируем xml-oox сдесь ... а то придется плодить массивы в drawing .. хоть и не красиво..
-			std::wstringstream output_;   
-            
-			::svg_path::oox_serialize(output_, o_Polyline);
-			shape->additional_.push_back(odf_reader::_property(L"custom_path", output_.str()));
-			
-			set_shape = true;
-			int w = 0;
-			int h = 0;
-
-			if (false == bStroked)
-			{
-				shape->additional_.push_back(odf_reader::_property(L"custom_path_s", false));
-			}
-			if (attlist_.drawooo_sub_view_size_)
-			{
-				std::vector< std::wstring > splitted;			    
-				boost::algorithm::split(splitted, *attlist_.drawooo_sub_view_size_, boost::algorithm::is_any_of(L" "), boost::algorithm::token_compress_on);
-				
-				if (splitted.size() == 2)
-				{
-					w = boost::lexical_cast<int>(splitted[0]);
-					h = boost::lexical_cast<int>(splitted[1]);
-					
-					shape->additional_.push_back(odf_reader::_property(L"custom_path_w", w));
-					shape->additional_.push_back(odf_reader::_property(L"custom_path_h", h));
-				}
-				else if (splitted.size() == 4)
-				{///???? rect ???
-					int l = boost::lexical_cast<int>(splitted[0]);
-					int t = boost::lexical_cast<int>(splitted[1]);
-					int r = boost::lexical_cast<int>(splitted[2]);
-					int b = boost::lexical_cast<int>(splitted[3]);
-
-				}
-
-				//if (shape->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_width_)
-				//{
-				//	int w_shape = shape->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_width_->get_value();
-				//	if (w_shape < 1) shape->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_width_ = length(1, length::pt);
-				//}
-				//if (shape->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_height_)
-				//{
-				//	int h_shape = shape->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_height_->get_value();
-				//	if (h_shape < 1) shape->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_height_ = length(1, length::pt);
-				//}
-			}
-			else if (svg_viewbox_)
-			{
-				std::vector< std::wstring > splitted;			    
-				boost::algorithm::split(splitted, *svg_viewbox_, boost::algorithm::is_any_of(L" "), boost::algorithm::token_compress_on);
-				
-				if (splitted.size() == 4)
-				{
-					int w = boost::lexical_cast<int>(splitted[2]);
-					int h = boost::lexical_cast<int>(splitted[3]);
-					
-					shape->additional_.push_back(odf_reader::_property(L"custom_path_w", w));
-					shape->additional_.push_back(odf_reader::_property(L"custom_path_h", h));
-				}
-			}
-		}
-	}
-
-	if (attlist_.draw_modifiers_)
-	{
-		if (bOoxType_)
-			shape->additional_.push_back(_property(L"oox-draw-modifiers", attlist_.draw_modifiers_.get()));	
-		else
-		{
-		}
-	}
+	draw_shape *shape = Context.get_drawing_context().get_current_shape();//owner
+	bool set_shape = oox_convert(shape->additional_);
 
 	if (!set_shape)
 	{
@@ -412,7 +302,6 @@ void draw_enhanced_geometry::docx_convert(oox::docx_conversion_context & Context
 
 void dr3d_scene::docx_convert(oox::docx_conversion_context & Context)
 {
-	//if (Context.get_drawing_context().get_current_level() >0 )return;
  	if (Context.get_drawing_context().get_current_level() > 0 && !Context.get_drawing_context().in_group() )
 	{ 
 		if(Context.delayed_converting_ == false)

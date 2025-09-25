@@ -71,6 +71,8 @@ void draw_base::serialize(std::wostream & strm)
 }
 void draw_base::serialize_attlist(CP_ATTR_NODE)
 {
+	CP_XML_ATTR_OPT(L"xml:id", xml_id_);
+	CP_XML_ATTR_OPT(L"draw:id", xml_id_);
 	common_draw_attlists_.serialize(CP_GET_XML_NODE());
 }
 

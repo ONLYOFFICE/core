@@ -11,16 +11,7 @@ open_ssl_common {
 OPENSSL_LIBS_DIRECTORY = $$PWD/build/$$OPEN_SSL_PLATFORM/lib
 
 core_android {
-
-    OPENSSL_ABI_PATH = $$replace(CORE_BUILDS_PLATFORM_PREFIX, "android_", "")
-	contains(OPENSSL_ABI_PATH, "armv7" ) {
-	    OPENSSL_ABI_PATH = $$replace(OPENSSL_ABI_PATH, "armv7", "armeabi-v7a")
-	}
-	contains(OPENSSL_ABI_PATH, "arm64_v8a" ) {
-	    OPENSSL_ABI_PATH = $$replace(OPENSSL_ABI_PATH, "arm64_v8a", "arm64-v8a")
-	}
-
-    OPENSSL_LIBS_DIRECTORY = $$PWD/build/android/$$OPENSSL_ABI_PATH/lib
+    OPENSSL_LIBS_DIRECTORY = $$PWD/build/android/$$CORE_BUILDS_PLATFORM_PREFIX_DST/lib
 }
 
 core_ios {

@@ -191,6 +191,7 @@ namespace MetaFile
 			case EMF_OBJECT_BRUSH: m_pDC->SetBrush((CEmfLogBrushEx*)pObject); break;
 			case EMF_OBJECT_FONT: m_pDC->SetFont((CEmfLogFont*)pObject); break;
 			case EMF_OBJECT_PEN: m_pDC->SetPen((CEmfLogPen*)pObject); break;
+			default: break;
 			}
 		}
 	}
@@ -222,6 +223,7 @@ namespace MetaFile
 				case EMF_OBJECT_BRUSH: m_pDC->RemoveBrush((CEmfLogBrushEx*)pObject); break;
 				case EMF_OBJECT_FONT: m_pDC->RemoveFont((CEmfLogFont*)pObject); break;
 				case EMF_OBJECT_PEN: m_pDC->RemovePen((CEmfLogPen*)pObject); break;
+				default: break;
 			}
 
 			for (std::pair<int, CEmfDC*> oElement : m_mDCs)
@@ -233,6 +235,7 @@ namespace MetaFile
 					case EMF_OBJECT_BRUSH: pDC->RemoveBrush((CEmfLogBrushEx*)pObject); break;
 					case EMF_OBJECT_FONT: pDC->RemoveFont((CEmfLogFont*)pObject); break;
 					case EMF_OBJECT_PEN: pDC->RemovePen((CEmfLogPen*)pObject); break;
+					default: break;
 				}
 			}
 
@@ -262,11 +265,11 @@ namespace MetaFile
 			return;
 
 		if (bNull)
-			pBrush->BrushStyle = BS_NULL;
+			pBrush->unBrushStyle = BS_NULL;
 		else
 		{
-			pBrush->BrushStyle = BS_SOLID;
-			pBrush->Color.Set(r, g, b);
+			pBrush->unBrushStyle = BS_SOLID;
+			pBrush->oColor.Set(r, g, b);
 		}
 
 		RegisterObject(ulIndex, (CEmfObjectBase*)pBrush);
@@ -278,11 +281,11 @@ namespace MetaFile
 			return;
 
 		if (bNull)
-			pPen->PenStyle = PS_NULL;
+			pPen->unPenStyle = PS_NULL;
 		else
 		{
-			pPen->PenStyle = PS_COSMETIC | PS_SOLID;
-			pPen->Color.Set(r, g, b);
+			pPen->unPenStyle = PS_COSMETIC | PS_SOLID;
+			pPen->oColor.Set(r, g, b);
 		}
 
 		RegisterObject(ulIndex, (CEmfObjectBase*)pPen);
@@ -297,9 +300,9 @@ namespace MetaFile
 		m_pFont     = NULL;
 		m_oTransform.Init();
 		m_oInverseTransform.Init();
-		m_oTextColor.Init();
+		m_oTextColor.Set(0, 0, 0);
 		m_oFinalTransform.Init();
-		m_oBgColor.InitWhite();
+		m_oBgColor.Set(255, 255, 255);
 		m_ulTextAlign   = TA_TOP | TA_LEFT | TA_NOUPDATECP;
 		m_ulBgMode      = TRANSPARENT;
 		m_ulMiterLimit  = 0;
@@ -309,33 +312,33 @@ namespace MetaFile
 		m_oViewport.Init();
 		m_dPixelHeight = 1;
 		m_dPixelWidth  = 1;
-		m_oCurPos.x = 0;
-		m_oCurPos.y = 0;
+		m_oCurPos.X = 0;
+		m_oCurPos.Y = 0;
 		m_unArcDirection = AD_COUNTERCLOCKWISE;
 
-		m_oDefaultFont.LogFontEx.LogFont.FaceName[0] = 'A';
-		m_oDefaultFont.LogFontEx.LogFont.FaceName[1] = 'r';
-		m_oDefaultFont.LogFontEx.LogFont.FaceName[2] = 'i';
-		m_oDefaultFont.LogFontEx.LogFont.FaceName[3] = 'a';
-		m_oDefaultFont.LogFontEx.LogFont.FaceName[4] = 'l';
-		m_oDefaultFont.LogFontEx.LogFont.FaceName[5] = '\0';
+		m_oDefaultFont.oLogFontEx.oLogFont.ushFaceName[0] = 'A';
+		m_oDefaultFont.oLogFontEx.oLogFont.ushFaceName[1] = 'r';
+		m_oDefaultFont.oLogFontEx.oLogFont.ushFaceName[2] = 'i';
+		m_oDefaultFont.oLogFontEx.oLogFont.ushFaceName[3] = 'a';
+		m_oDefaultFont.oLogFontEx.oLogFont.ushFaceName[4] = 'l';
+		m_oDefaultFont.oLogFontEx.oLogFont.ushFaceName[5] = '\0';
 
-		m_oDefaultFont.LogFontEx.LogFont.CharSet = 1;
-		m_oDefaultFont.LogFontEx.LogFont.ClipPrecision = 0;
-		m_oDefaultFont.LogFontEx.LogFont.Escapement = 0;
-		m_oDefaultFont.LogFontEx.LogFont.Height = -18;
-		m_oDefaultFont.LogFontEx.LogFont.Italic = 0;
-		m_oDefaultFont.LogFontEx.LogFont.Orientation = 0;
-		m_oDefaultFont.LogFontEx.LogFont.OutPrecision = 4;
-		m_oDefaultFont.LogFontEx.LogFont.PitchAndFamily = 2;
-		m_oDefaultFont.LogFontEx.LogFont.Quality = 0;
-		m_oDefaultFont.LogFontEx.LogFont.StrikeOut = 0;
-		m_oDefaultFont.LogFontEx.LogFont.Underline = 0;
-		m_oDefaultFont.LogFontEx.LogFont.Weight = 400;
-		m_oDefaultFont.LogFontEx.LogFont.Width = 0;
+		m_oDefaultFont.oLogFontEx.oLogFont.uchCharSet = 1;
+		m_oDefaultFont.oLogFontEx.oLogFont.uchClipPrecision = 0;
+		m_oDefaultFont.oLogFontEx.oLogFont.nEscapement = 0;
+		m_oDefaultFont.oLogFontEx.oLogFont.nHeight = -18;
+		m_oDefaultFont.oLogFontEx.oLogFont.uchItalic = 0;
+		m_oDefaultFont.oLogFontEx.oLogFont.nOrientation = 0;
+		m_oDefaultFont.oLogFontEx.oLogFont.uchOutPrecision = 4;
+		m_oDefaultFont.oLogFontEx.oLogFont.uchPitchAndFamily = 2;
+		m_oDefaultFont.oLogFontEx.oLogFont.uchQuality = 0;
+		m_oDefaultFont.oLogFontEx.oLogFont.uchStrikeOut = 0;
+		m_oDefaultFont.oLogFontEx.oLogFont.uchUnderline = 0;
+		m_oDefaultFont.oLogFontEx.oLogFont.nWeight = 400;
+		m_oDefaultFont.oLogFontEx.oLogFont.nWidth = 0;
 
-		m_oDefaultFont.DesignVector.Values = NULL;
-		m_oDefaultFont.DesignVector.NumAxes = 0;
+		m_oDefaultFont.oDesignVector.pValues = NULL;
+		m_oDefaultFont.oDesignVector.unNumAxes = 0;
 	}
 	CEmfDC::~CEmfDC()
 	{
@@ -346,6 +349,7 @@ namespace MetaFile
 		if (!pNewDC)
 			return NULL;
 
+		pNewDC->m_oClip.Copy(m_oClip);
 		pNewDC->m_ulMapMode      = m_ulMapMode;
 		pNewDC->m_pBrush         = m_pBrush;
 		pNewDC->m_pPen           = m_pPen;
@@ -355,8 +359,8 @@ namespace MetaFile
 		pNewDC->m_oInverseTransform.Copy(&m_oInverseTransform);
 		pNewDC->m_oFinalTransform.Copy(&m_oFinalTransform);
 		pNewDC->m_oFinalTransform2.Copy(&m_oFinalTransform2);
-		pNewDC->m_oTextColor.Copy(&m_oTextColor);
-		pNewDC->m_oBgColor.Copy(&m_oBgColor);
+		pNewDC->m_oTextColor.Copy(m_oTextColor);
+		pNewDC->m_oBgColor.Copy(m_oBgColor);
 		pNewDC->m_ulTextAlign    = m_ulTextAlign;
 		pNewDC->m_ulBgMode       = m_ulBgMode;
 		pNewDC->m_ulMiterLimit   = m_ulMiterLimit;
@@ -368,11 +372,16 @@ namespace MetaFile
 		pNewDC->m_oWindow.Copy(&m_oWindow);
 		pNewDC->m_oViewport.Copy(&m_oViewport);
 		pNewDC->m_oCurPos        = m_oCurPos;
-		pNewDC->m_oClip          = m_oClip;
 		pNewDC->m_unArcDirection = m_unArcDirection;
 
 		return pNewDC;
 	}
+
+	CClip *CEmfDC::GetClip()
+	{
+		return &m_oClip;
+	}
+
 	void CEmfDC::SetMapMode(unsigned int ulMapMode)
 	{
 		m_ulMapMode = ulMapMode;
@@ -429,7 +438,7 @@ namespace MetaFile
 
 		UpdateFinalTransform();
 	}
-	unsigned int CEmfDC::GetMapMode()
+	unsigned int CEmfDC::GetMapMode() const
 	{
 		return m_ulMapMode;
 	}
@@ -439,20 +448,20 @@ namespace MetaFile
 		m_oTransform.Init();
 		UpdateFinalTransform();
 	}
-	TEmfXForm* CEmfDC::GetTransform()
+	const TEmfXForm& CEmfDC::GetTransform() const
 	{
-		return &m_oTransform;
+		return m_oTransform;
 	}
-	TEmfXForm* CEmfDC::GetInverseTransform()
+	const TEmfXForm& CEmfDC::GetInverseTransform() const
 	{
-		return &m_oInverseTransform;
+		return m_oInverseTransform;
 	}
-	TEmfXForm* CEmfDC::GetFinalTransform(int iGraphicsMode)
+	const TEmfXForm& CEmfDC::GetFinalTransform(int iGraphicsMode) const
 	{
 		if (GM_COMPATIBLE == iGraphicsMode)
-			return &m_oFinalTransform2;
+			return m_oFinalTransform2;
 
-		return &m_oFinalTransform;
+		return m_oFinalTransform;
 	}
 	void CEmfDC::MultiplyTransform(TEmfXForm& oForm, unsigned int ulMode)
 	{
@@ -460,8 +469,8 @@ namespace MetaFile
 
 		// Обновляем обратную матрицу
 		TEmfXForm* pT = &m_oTransform;
-		double dDet = pT->M11 * pT->M22 - pT->M12 * pT->M21;
-		if (dDet < 0.0001 && dDet > 0.0001)
+		const double dDet = pT->M11 * pT->M22 - pT->M12 * pT->M21;
+		if (Equals(0., dDet, 0.0001))
 		{
 			m_oInverseTransform.M11 = 1;
 			m_oInverseTransform.M12 = 0;
@@ -470,21 +479,23 @@ namespace MetaFile
 			m_oInverseTransform.Dx  = 0;
 			m_oInverseTransform.Dy  = 0;
 		}
-
-		m_oInverseTransform.M11 = pT->M22 / dDet;
-		m_oInverseTransform.M12 = -pT->M12 / dDet;
-		m_oInverseTransform.M21 = -pT->M21 / dDet;
-		m_oInverseTransform.M22 = pT->M22 / dDet;
-		m_oInverseTransform.Dx  = pT->Dy * pT->M21 / dDet - pT->Dx * pT->M22 / dDet;
-		m_oInverseTransform.Dy  = pT->Dx * pT->M12 / dDet - pT->Dy * pT->M11 / dDet;
+		else
+		{
+			m_oInverseTransform.M11 = pT->M22 / dDet;
+			m_oInverseTransform.M12 = -pT->M12 / dDet;
+			m_oInverseTransform.M21 = -pT->M21 / dDet;
+			m_oInverseTransform.M22 = pT->M22 / dDet;
+			m_oInverseTransform.Dx  = pT->Dy * pT->M21 / dDet - pT->Dx * pT->M22 / dDet;
+			m_oInverseTransform.Dy  = pT->Dx * pT->M12 / dDet - pT->Dy * pT->M11 / dDet;
+		}
 
 		UpdateFinalTransform();
 	}
-	void CEmfDC::SetTextColor(TEmfColor& oColor)
+	void CEmfDC::SetTextColor(const TRGBA& oColor)
 	{
-		m_oTextColor.Copy(&oColor);
+		m_oTextColor.Copy(oColor);
 	}
-	TEmfColor& CEmfDC::GetTextColor()
+	const TRGBA& CEmfDC::GetTextColor() const
 	{
 		return m_oTextColor;
 	}
@@ -497,7 +508,7 @@ namespace MetaFile
 		if (pBrush == m_pBrush)
 			m_pBrush = NULL;
 	}
-	IBrush* CEmfDC::GetBrush()
+	const IBrush* CEmfDC::GetBrush() const
 	{
 		return m_pBrush;
 	}
@@ -510,7 +521,7 @@ namespace MetaFile
 		if (pFont == m_pFont)
 			m_pFont = NULL;
 	}
-	IFont* CEmfDC::GetFont()
+	const IFont* CEmfDC::GetFont() const
 	{
 		return (NULL != m_pFont) ? m_pFont : &m_oDefaultFont;
 	}
@@ -518,7 +529,7 @@ namespace MetaFile
 	{
 		m_ulTextAlign = ulAlign;
 	}
-	unsigned int CEmfDC::GetTextAlign()
+	unsigned int CEmfDC::GetTextAlign() const
 	{
 		return m_ulTextAlign;
 	}
@@ -526,23 +537,23 @@ namespace MetaFile
 	{
 		m_ulBgMode = ulBgMode;
 	}
-	unsigned int CEmfDC::GetBgMode()
+	unsigned int CEmfDC::GetBgMode() const
 	{
 		return m_ulBgMode;
 	}
-	void CEmfDC::SetBgColor(TEmfColor& oColor)
+	void CEmfDC::SetBgColor(TRGBA& oColor)
 	{
-		m_oBgColor.Copy(&oColor);
+		m_oBgColor.Copy(oColor);
 	}
-	TEmfColor& CEmfDC::GetBgColor()
+	const TRGBA* CEmfDC::GetBgColor() const
 	{
-		return m_oBgColor;
+		return &m_oBgColor;
 	}
 	void CEmfDC::SetMiterLimit(unsigned int ulMiter)
 	{
 		m_ulMiterLimit = ulMiter;
 	}
-	unsigned int CEmfDC::GetMiterLimit()
+	unsigned int CEmfDC::GetMiterLimit() const
 	{
 		return m_ulMiterLimit;
 	}
@@ -550,7 +561,7 @@ namespace MetaFile
 	{
 		m_ulFillMode = ulFillMode;
 	}
-	unsigned int CEmfDC::GetFillMode()
+	unsigned int CEmfDC::GetFillMode() const
 	{
 		return m_ulFillMode;
 	}
@@ -563,7 +574,7 @@ namespace MetaFile
 		if (pPen == m_pPen)
 			m_pPen = NULL;
 	}
-	IPen* CEmfDC::GetPen()
+	const IPen* CEmfDC::GetPen() const
 	{
 		return m_pPen;
 	}
@@ -571,15 +582,15 @@ namespace MetaFile
 	{
 		m_ulStretchMode = oMode;
 	}
-	unsigned int CEmfDC::GetStretchMode()
+	unsigned int CEmfDC::GetStretchMode() const
 	{
 		return m_ulStretchMode;
 	}
-	double CEmfDC::GetPixelWidth()
+	double CEmfDC::GetPixelWidth() const
 	{
 		return m_dPixelWidth;
 	}
-	double CEmfDC::GetPixelHeight()
+	double CEmfDC::GetPixelHeight() const
 	{
 		return m_dPixelHeight;
 	}
@@ -591,22 +602,22 @@ namespace MetaFile
 	{
 		m_dPixelHeight = dPixelH;
 	}
-	void CEmfDC::SetWindowOrigin(TEmfPointL& oPoint)
+	void CEmfDC::SetWindowOrigin(const TPointL& oPoint)
 	{
-		m_oWindow.lX = oPoint.x;
-		m_oWindow.lY = oPoint.y;
+		m_oWindow.lX = oPoint.X;
+		m_oWindow.lY = oPoint.Y;
 		UpdatePixelMetrics();
 		UpdateFinalTransform();
 	}
-	void CEmfDC::SetWindowExtents(TEmfSizeL& oPoint)
+	void CEmfDC::SetWindowExtents(const TSizeL& oPoint)
 	{
-		m_oWindow.ulW = oPoint.cx;
-		m_oWindow.ulH = oPoint.cy;
+		m_oWindow.ulW = oPoint.X;
+		m_oWindow.ulH = oPoint.Y;
 
 		if (0 == m_oViewport.ulW || 0 == m_oViewport.ulH)
 		{
-			m_oViewport.ulW = oPoint.cx;
-			m_oViewport.ulH = oPoint.cy;
+			m_oViewport.ulW = oPoint.X;
+			m_oViewport.ulH = oPoint.Y;
 		}
 
 		if (MM_ISOTROPIC == m_ulMapMode)
@@ -616,7 +627,7 @@ namespace MetaFile
 		UpdateFinalTransform();
 	}
 
-	void CEmfDC::ScaleWindow(double dXScale, double dYScale)
+	void CEmfDC::ScaleWindow(const double& dXScale, const double& dYScale)
 	{
 		m_oWindow.ulW = (int)(m_oWindow.ulW * dXScale);
 		m_oWindow.ulH = (int)(m_oWindow.ulH * dYScale);
@@ -628,26 +639,26 @@ namespace MetaFile
 		UpdateFinalTransform();
 	}
 
-	TEmfWindow* CEmfDC::GetWindow()
+	const TEmfWindow& CEmfDC::GetWindow() const
 	{
-		return &m_oWindow;
+		return m_oWindow;
 	}
-	void CEmfDC::SetViewportOrigin(TEmfPointL& oPoint)
+	void CEmfDC::SetViewportOrigin(const TPointL& oPoint)
 	{
-		m_oViewport.lX = oPoint.x;
-		m_oViewport.lY = oPoint.y;
+		m_oViewport.lX = oPoint.X;
+		m_oViewport.lY = oPoint.Y;
 		UpdatePixelMetrics();
 		UpdateFinalTransform();
 	}
-	void CEmfDC::SetViewportExtents(TEmfSizeL& oPoint)
+	void CEmfDC::SetViewportExtents(const TSizeL& oPoint)
 	{
-		m_oViewport.ulW = oPoint.cx;
-		m_oViewport.ulH = oPoint.cy;
+		m_oViewport.ulW = oPoint.X;
+		m_oViewport.ulH = oPoint.Y;
 
 		if (0 == m_oWindow.ulW || 0 == m_oWindow.ulH)
 		{
-			m_oWindow.ulW = oPoint.cx;
-			m_oWindow.ulH = oPoint.cy;
+			m_oWindow.ulW = oPoint.X;
+			m_oWindow.ulH = oPoint.Y;
 		}
 
 		if (MM_ISOTROPIC == m_ulMapMode)
@@ -657,7 +668,7 @@ namespace MetaFile
 		UpdateFinalTransform();
 	}
 
-	void CEmfDC::ScaleViewport(double dXScale, double dYScale)
+	void CEmfDC::ScaleViewport(const double& dXScale, const double& dYScale)
 	{
 		m_oViewport.ulW = (int)(m_oViewport.ulW * dXScale);
 		m_oViewport.ulH = (int)(m_oViewport.ulH * dYScale);
@@ -669,9 +680,9 @@ namespace MetaFile
 		UpdateFinalTransform();
 	}
 
-	TEmfWindow* CEmfDC::GetViewport()
+	const TEmfWindow& CEmfDC::GetViewport() const
 	{
-		return &m_oViewport;
+		return m_oViewport;
 	}
 	bool CEmfDC::UpdatePixelMetrics()
 	{
@@ -702,23 +713,23 @@ namespace MetaFile
 	}
 	void CEmfDC::UpdateFinalTransform()
 	{
-		TEmfWindow* pWindow   = GetWindow();
-		TEmfWindow* pViewPort = GetViewport();
+		const TEmfWindow& oWindow{GetWindow()};
+		const TEmfWindow& oViewPort{GetViewport()};
 
-		double dM11 = (pViewPort->ulW >= 0) ? 1 : -1;
-		double dM22 = (pViewPort->ulH >= 0) ? 1 : -1;
+		double dM11 = ((oViewPort.ulW >= 0) ? 1. : -1.) * GetPixelWidth();
+		double dM22 = ((oViewPort.ulH >= 0) ? 1. : -1.) * GetPixelHeight();
 
-		TEmfXForm oWindowXForm(1, 0, 0, 1, -(pWindow->lX * GetPixelWidth() * dM11), -(pWindow->lY * GetPixelHeight() * dM22));
-		TEmfXForm oViewportXForm(GetPixelWidth() * dM11, 0, 0, GetPixelHeight() * dM22, pViewPort->lX, pViewPort->lY);
+		TEmfXForm oWindowXForm(1, 0, 0, 1, -(oWindow.lX *  dM11), -(oWindow.lY * dM22));
+		TEmfXForm oViewportXForm(dM11, 0, 0, dM22, oViewPort.lX, oViewPort.lY);
 
 		m_oFinalTransform.Init();
-		m_oFinalTransform.Multiply(oViewportXForm, MWT_RIGHTMULTIPLY);
 		m_oFinalTransform.Multiply(m_oTransform, MWT_RIGHTMULTIPLY);
+		m_oFinalTransform.Multiply(oViewportXForm, MWT_RIGHTMULTIPLY);
 		m_oFinalTransform.Multiply(oWindowXForm, MWT_RIGHTMULTIPLY);
 
 		m_oFinalTransform2.Init();
+		// m_oFinalTransform2.Multiply(m_oTransform, MWT_RIGHTMULTIPLY);
 		m_oFinalTransform2.Multiply(oViewportXForm, MWT_RIGHTMULTIPLY);
-		m_oFinalTransform2.Multiply(m_oTransform, MWT_RIGHTMULTIPLY);
 		m_oFinalTransform2.Multiply(oWindowXForm, MWT_RIGHTMULTIPLY);
 	}
 
@@ -740,11 +751,11 @@ namespace MetaFile
 			if (!m_oViewport.ulH) m_oViewport.ulH = nMinCy;
 		}
 	}
-	void CEmfDC::SetRop2Mode(unsigned int& nMode)
+	void CEmfDC::SetRop2Mode(unsigned int nMode)
 	{
 		m_ulRop2Mode = nMode;
 	}
-	unsigned int CEmfDC::GetRop2Mode()
+	unsigned int CEmfDC::GetRop2Mode() const
 	{
 		return m_ulRop2Mode;
 	}
@@ -757,36 +768,28 @@ namespace MetaFile
 		if (m_pPalette == pPalette)
 			m_pPalette = NULL;
 	}
-	CEmfLogPalette* CEmfDC::GetPalette()
+	const CEmfLogPalette* CEmfDC::GetPalette() const
 	{
 		return m_pPalette;
 	}
-	void CEmfDC::SetCurPos(TEmfPointL& oPoint)
+	void CEmfDC::SetCurPos(const TPointL& oPoint)
 	{
-		SetCurPos(oPoint.x, oPoint.y);
+		SetCurPos(oPoint.X, oPoint.Y);
 	}
 	void CEmfDC::SetCurPos(int lX, int lY)
 	{
-		m_oCurPos.x = lX;
-		m_oCurPos.y = lY;
+		m_oCurPos.X = lX;
+		m_oCurPos.Y = lY;
 	}
-	TEmfPointL& CEmfDC::GetCurPos()
+	const TPointL& CEmfDC::GetCurPos() const
 	{
 		return m_oCurPos;
-	}
-	CEmfClip* CEmfDC::GetClip()
-	{
-		return &m_oClip;
-	}
-	void CEmfDC::ClipToPath(CEmfPath* pPath, unsigned int unMode, TEmfXForm* pTransform)
-	{
-		m_oClip.SetPath(pPath, unMode, pTransform);
 	}
 	void CEmfDC::SetArcDirection(unsigned int unDirection)
 	{
 		m_unArcDirection = unDirection;
 	}
-	unsigned int CEmfDC::GetArcDirection()
+	unsigned int CEmfDC::GetArcDirection() const
 	{
 		return m_unArcDirection;
 	}

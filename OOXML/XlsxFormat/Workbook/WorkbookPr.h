@@ -56,7 +56,7 @@ namespace OOX
 		public:
 			WritingElement_AdditionMethods(CWorkbookPr)
             WritingElement_XlsbConstructors(CWorkbookPr)
-			
+
 			CWorkbookPr();
 			virtual ~CWorkbookPr();
 
@@ -67,6 +67,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
 			void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
 			virtual EElementType getType () const;
 
 		private:
@@ -98,7 +99,7 @@ namespace OOX
 		public:
 			WritingElement_AdditionMethods(CWorkbookProtection)
 			WritingElement_XlsbConstructors(CWorkbookProtection)
-			
+
 			CWorkbookProtection();
 			virtual ~CWorkbookProtection();
 
@@ -109,6 +110,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
 			void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
 			virtual EElementType getType() const;
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
@@ -135,7 +137,7 @@ namespace OOX
 		public:
             WritingElement_AdditionMethods(CFileSharing)
             WritingElement_XlsbConstructors(CFileSharing)
-			
+
 			CFileSharing();
 			virtual ~CFileSharing();
 
@@ -146,6 +148,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
 			void fromBin(XLS::BaseObjectPtr& obj);
+            std::vector<XLS::BaseObjectPtr> toBin();
 			virtual EElementType getType() const;
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
@@ -153,7 +156,7 @@ namespace OOX
 
 			nullable_bool									m_oReadOnlyRecommended;
 			nullable_string									m_oUserName;
-			
+
 			nullable<SimpleTypes::CCryptAlgoritmName>		m_oAlgorithmName;
 			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oSpinCount;
 			nullable_string									m_oHashValue;

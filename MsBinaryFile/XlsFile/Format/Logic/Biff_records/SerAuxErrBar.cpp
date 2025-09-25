@@ -57,5 +57,13 @@ void SerAuxErrBar::readFields(CFRecord& record)
 	record >> numValue >> cnum;
 }
 
+void SerAuxErrBar::writeFields(CFRecord& record)
+{
+	record << sertm << ebsrc << fTeeTop;
+	unsigned char reserv = 1;
+	record << reserv;
+	record << numValue << cnum;
+}
+
 } // namespace XLS
 

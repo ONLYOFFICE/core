@@ -60,20 +60,31 @@ namespace OOX
                 init();
             }
             ~CXlsb();
-
+            
             bool ReadBin(const CPath& oFilePath, XLS::BaseObject* objStream);
 			bool WriteBin(const CPath& oFilePath, XLS::BaseObject* objStream);
+
+            bool WriteBin(const CPath& oDirPath, OOX::CContentTypes& oContentTypes);
+
             XLS::GlobalWorkbookInfo* GetGlobalinfo();
             void PrepareSi();
             void PrepareTableFormula();
+            void LinkTables();
             void ReadSheetData();
+            void WriteSheetData();
+            void PrepareRichStr();
             void SetPropForWriteSheet(const std::wstring &sPath, OOX::CContentTypes& oContentTypes);
             void WriteSheet(CWorksheet* worksheet);
 
 			bool IsWriteToXlsx();
 			void WriteToXlsx(bool isXlsx);
-
+            XLS::StreamCacheReaderPtr GetFileReader(const CPath& oFilePath, BYTE* &streamBuf);
+            XLS::StreamCacheWriterPtr GetFileWriter(const CPath& oFilePath);
+            bool WriteSreamCache(XLS::StreamCacheWriterPtr writer);
+            
             std::unordered_map<std::wstring, _UINT32> m_mapSheetNameSheetData;
+            
+            bool m_bWriteToXlsb = false;
         private:
 
             void init();
@@ -85,8 +96,7 @@ namespace OOX
             std::wstring m_sPath;
             OOX::CContentTypes m_oContentTypes;
 
-			bool				m_bWriteToXlsx;
-
+			bool m_bWriteToXlsx = false;
         };
 
     } //Spreadsheet

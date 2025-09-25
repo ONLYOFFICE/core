@@ -1,4 +1,4 @@
-QT       -= core gui
+QT -= core gui
 
 TARGET = graphics
 TEMPLATE = lib
@@ -7,12 +7,12 @@ CONFIG += graphics_dynamic_library
 
 DEFINES += _QT
 graphics_dynamic_library {
-    CONFIG += shared
+	CONFIG += shared
 	CONFIG += plugin
 
-    DEFINES += GRAPHICS_USE_DYNAMIC_LIBRARY_BUILDING
+	DEFINES += GRAPHICS_USE_DYNAMIC_LIBRARY_BUILDING
 } else {
-    DEFINES += GRAPHICS_NO_USE_DYNAMIC_LIBRARY
+	DEFINES += GRAPHICS_NO_USE_DYNAMIC_LIBRARY
 	CONFIG += static
 }
 
@@ -23,7 +23,7 @@ include(../../../Common/base.pri)
 ADD_DEPENDENCY(UnicodeConverter, kernel)
 
 core_windows {
-    LIBS += -lAdvapi32
+	LIBS += -lAdvapi32
 	LIBS += -lShell32
 }
 
@@ -32,39 +32,49 @@ HEADERS += ./../config.h
 GRAPHICS_AGG_PATH = $$PWD/../../agg-2.4
 
 INCLUDEPATH += \
-    $$GRAPHICS_AGG_PATH/include
+	$$GRAPHICS_AGG_PATH/include
 
 # matrix
 HEADERS += \
-    $$GRAPHICS_AGG_PATH/include/test_grads/custom_gradients.h \
-    ./../Matrix_private.h \
+	$$GRAPHICS_AGG_PATH/include/test_grads/custom_gradients.h \
+	./../Matrix_private.h \
 	./../Matrix.h
 
 SOURCES += \
-    ./../Matrix.cpp
+	./../Matrix.cpp
 
 SOURCES += \
-    $$GRAPHICS_AGG_PATH/src/agg_trans_affine.cpp
+	$$GRAPHICS_AGG_PATH/src/agg_trans_affine.cpp
 
 # paths
 HEADERS += \
-    ./../GraphicsPath_private.h \
-	./../GraphicsPath.h
+	./../GraphicsPath_private.h \
+	./../GraphicsPath.h \
+	./../BooleanOperations.h \
+	./../boolean_operations_math.h
 
 SOURCES += \
-    ./../GraphicsPath.cpp
+	./../GraphicsPath.cpp \
+	./../BooleanOperations.cpp
 
 # alpha mask
 HEADERS += \
-    ./../AlphaMask_private.h \
-	./../AlphaMask.h
+	./../AlphaMask.h \
+	./../AlphaMask_p.h
 
 SOURCES += \
-    ./../AlphaMask_private.cpp \
 	./../AlphaMask.cpp
 
+# grapgics layer
+HEADERS += \
+	./../GraphicsLayer.h \
+	./../GraphicsLayerBlend.h
+
 SOURCES += \
-    $$GRAPHICS_AGG_PATH/src/agg_arc.cpp \
+	./../GraphicsLayer.cpp
+
+SOURCES += \
+	$$GRAPHICS_AGG_PATH/src/agg_arc.cpp \
 	$$GRAPHICS_AGG_PATH/src/agg_bezier_arc.cpp \
 	$$GRAPHICS_AGG_PATH/src/agg_curves.cpp \
 	$$GRAPHICS_AGG_PATH/src/agg_bspline.cpp \
@@ -76,9 +86,9 @@ include(raster.pri)
 
 #CONFIG += graphics_disable_metafile
 graphics_disable_metafile {
-    DEFINES += GRAPHICS_DISABLE_METAFILE
+	DEFINES += GRAPHICS_DISABLE_METAFILE
 } else {
-    include(metafile.pri)
+	include(metafile.pri)
 }
 
 CONFIG += support_font_converter
@@ -90,7 +100,7 @@ SOURCES += ./officedrawingfile.cpp
 
 # graphics
 SOURCES += \
-    $$GRAPHICS_AGG_PATH/src/agg_arrowhead.cpp \
+	$$GRAPHICS_AGG_PATH/src/agg_arrowhead.cpp \
 	$$GRAPHICS_AGG_PATH/src/agg_image_filters.cpp \
 	$$GRAPHICS_AGG_PATH/src/agg_line_aa_basics.cpp \
 	$$GRAPHICS_AGG_PATH/src/agg_line_profile_aa.cpp \
@@ -99,17 +109,13 @@ SOURCES += \
 	$$GRAPHICS_AGG_PATH/src/agg_vcgen_smooth_poly1.cpp
 
 HEADERS += \
-    ./../ArrowHead.h \
+	./../ArrowHead.h \
 	./../Brush.h \
 	./../Clip.h \
 	./../Color.h \
 	./../Defines.h \
 	./../Graphics.h \
 	./../ImageFilesCache.h \
-	./../MetafileToRenderer.h \
-	./../MetafileToRendererCheck.h \
-	./../MetafileToGraphicsRenderer.h \
-	./../FormField.h \
 	./../structures.h \
 	./../shading_info.h \
 	./../Graphics.h \
@@ -119,14 +125,30 @@ HEADERS += \
 	./Image.h
 
 SOURCES += \
-    ./../ArrowHead.cpp \
+	./../ArrowHead.cpp \
 	./../Brush.cpp \
 	./../Clip.cpp \
 	./../Graphics.cpp \
 	./../GraphicsRenderer.cpp \
-	./../MetafileToRenderer.cpp \
-	./../MetafileToGraphicsRenderer.cpp \
-	./../FormField.cpp \
 	\
 	./pro_Image.cpp \
 	./pro_Graphics.cpp
+
+HEADERS += \
+	./../MetafileToRenderer.h \
+	./../MetafileToRendererCheck.h \
+	./../MetafileToRendererReader.h \
+	./../MetafileToGraphicsRenderer.h \
+	\
+	./../commands/FormField.h \
+	./../commands/AnnotField.h \
+	./../commands/DocInfo.h
+
+SOURCES += \
+	./../MetafileToRenderer.cpp \
+	./../MetafileToRendererReader.cpp \
+	./../MetafileToGraphicsRenderer.cpp \
+	\
+	./../commands/FormField.cpp \
+	./../commands/AnnotField.cpp \
+	./../commands/DocInfo.cpp

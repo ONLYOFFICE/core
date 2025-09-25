@@ -47,6 +47,7 @@
 #include "number_style.h"
 #include "calcs_styles.h"
 #include "chart_build_oox.h"
+#include "../Converter/measuredigits.h"
 
 #include "../../DataTypes/length.h"
 #include "../../DataTypes/borderstyle.h"
@@ -74,6 +75,17 @@ typedef shared_ptr<const office_element>::Type office_element_ptr_const;
                 VAL[ii]->accept(*this); \
         }
 
+static double convert_symbol_size(double val, double metrix, bool add_padding)
+{
+	//if (add_padding)
+	{
+		val = ((int)((val * metrix + 5) / metrix * 256)) / 256.;
+	}
+
+	double pixels = (int)(((256. * val + ((int)(128. / metrix))) / 256.) * metrix); //in pixels
+
+	return pixels * 0.75; //* 9525. * 72.0 / (360000.0 * 2.54);
+}
 
 // Класс для конструирования чартов
 using namespace chart;
@@ -209,7 +221,7 @@ void object_odf_context::xlsx_convert(oox::xlsx_conversion_context & Context)
 		Context.get_math_context().base_font_bold_ = baseFontBold_;
 		
 		Context.get_math_context().start();
-		office_math_->oox_convert(Context.get_math_context());
+		office_math_->oox_convert(Context.get_math_context(),3);
 	}
 	else if(object_type_ == 4 && office_spreadsheet_)
 	{
@@ -247,6 +259,7 @@ void object_odf_context::docx_convert(oox::docx_conversion_context & Context)
 	}
 	else if (object_type_ == 3 && office_math_)
 	{
+		bool in_draw_frame = Context.get_drawing_state_content();
 		oox::StreamsManPtr prev = Context.get_stream_man();
 		
 		std::wstringstream temp_stream(Context.get_drawing_context().get_text_stream_frame());
@@ -256,14 +269,28 @@ void object_odf_context::docx_convert(oox::docx_conversion_context & Context)
 
 		Context.get_math_context().base_font_size_ = baseFontHeight_;	
 		Context.get_math_context().base_font_name_ = baseFontName_;
-		Context.get_math_context().base_alignment_ = baseAlignment_;
+		Context.get_math_context().base_alignment_ = in_draw_frame ? 0 : baseAlignment_;
 		Context.get_math_context().base_font_italic_ = baseFontItalic_;
 		Context.get_math_context().base_font_bold_ = baseFontBold_;
 
 		Context.start_math_formula();
-			office_math_->oox_convert(Context.get_math_context());
+		office_math_->oox_convert(Context.get_math_context(), 2);
 		Context.end_math_formula();
 
+		if (Context.get_drawing_context().get_current_frame() && 
+			Context.get_drawing_context().get_current_frame()->oox_drawing_)
+		{
+			std::pair<double, double> maxDigitSize_ = utils::GetMaxDigitSizePixels(baseFontName_, baseFontHeight_, 96., 0, Context.get_mediaitems()->applicationFonts());
+
+			double cx = get_value_emu(convert_symbol_size(1.76 * Context.get_math_context().width, maxDigitSize_.first, false));
+			double cy = get_value_emu(convert_symbol_size(1.76 * Context.get_math_context().height, maxDigitSize_.second, false));
+			
+			if (cx > Context.get_drawing_context().get_current_frame()->oox_drawing_->cx)
+				Context.get_drawing_context().get_current_frame()->oox_drawing_->cx = cx;
+			
+			if (cy > Context.get_drawing_context().get_current_frame()->oox_drawing_->cy)
+				Context.get_drawing_context().get_current_frame()->oox_drawing_->cy = cy;
+		}
 		Context.get_drawing_context().get_text_stream_frame() = temp_stream.str();
 		
 		Context.set_stream_man(prev);
@@ -307,7 +334,7 @@ void object_odf_context::pptx_convert(oox::pptx_conversion_context & Context)
 		Context.get_math_context().base_font_bold_ = baseFontBold_;
 
 		Context.get_math_context().start();
-		office_math_->oox_convert(Context.get_math_context());
+		office_math_->oox_convert(Context.get_math_context(), 1);
 	}
 	else if(object_type_ == 4 && office_spreadsheet_)
 	{
@@ -737,6 +764,8 @@ void process_build_object::ApplyChartProperties(std::wstring style, chart_format
 		}
 		if (!properties) return;
 
+		propertiesOut->common_rotation_angle_attlist_.apply_from(properties->content_.common_rotation_angle_attlist_);
+
 		for (size_t i = 0; i < properties->content_.size(); i++)
 		{
 			propertiesOut->push_back(properties->content_[i]);
@@ -871,6 +900,7 @@ void process_build_object::visit(chart_title& val)
 	}
 	ApplyTextProperties(val.attlist_.common_attlist_.chart_style_name_.get_value_or(L""), t.text_properties_);
 	ApplyGraphicProperties(val.attlist_.common_attlist_.chart_style_name_.get_value_or(L""), t.graphic_properties_, t.fill_);
+	ApplyChartProperties(val.attlist_.common_attlist_.chart_style_name_.get_value_or(L""), t.properties_);
 
 ///////////////////////////////////////////////////////////////////////////////////////
 	if (val.attlist_.common_draw_position_attlist_.svg_x_)
@@ -964,6 +994,7 @@ void process_build_object::visit(chart_plot_area& val)
 	if (attr_3d.transform_)		object_odf_context_.plot_area_.properties_->push_back(_property(L"transform", attr_3d.transform_.get()) );
 	if (attr_3d.distance_)		object_odf_context_.plot_area_.properties_->push_back(_property(L"distance", attr_3d.distance_->get_value_unit(length::pt)) );
 	if (attr_3d.focal_length_)	object_odf_context_.plot_area_.properties_->push_back(_property(L"focal", attr_3d.focal_length_->get_value_unit(length::pt)) );
+	if (attr_3d.projection_)	object_odf_context_.plot_area_.properties_->push_back(_property(L"perspective", *attr_3d.projection_ == L"perspective"));
 }
 
 void process_build_object::visit(chart_axis& val)
@@ -1147,7 +1178,7 @@ void process_build_object::visit(table_table& val)
 }   
 void process_build_object::visit(table_table_rows& val)
 {        
-    ACCEPT_ALL_CONTENT(val.table_table_row_);
+    ACCEPT_ALL_CONTENT(val.content_);
 }
 
 void process_build_object::visit(table_table_row & val)
@@ -1158,7 +1189,7 @@ void process_build_object::visit(table_table_row & val)
 }
 void process_build_object::visit(table_table_column& val)
 {
-    const unsigned int columnsRepeated = val.table_table_column_attlist_.table_number_columns_repeated_;
+    const unsigned int columnsRepeated = val.attlist_.table_number_columns_repeated_;
   
 	visit_column(columnsRepeated);
 }
@@ -1172,7 +1203,7 @@ void process_build_object::visit(table_table_column_group& val)
 }
 void process_build_object::visit(table_table_columns& val)
 {
-    ACCEPT_ALL_CONTENT(val.table_table_column_);
+    ACCEPT_ALL_CONTENT(val.content_);
 }
 void process_build_object::visit(table_columns_no_group& val)
 {
@@ -1257,11 +1288,11 @@ void process_build_object::visit(table_covered_table_cell& val)
 }
 void process_build_object::visit(table_table_header_columns& val)
 {
-    ACCEPT_ALL_CONTENT(val.table_table_column_);
+    ACCEPT_ALL_CONTENT(val.content_);
 }
 void process_build_object::visit(table_table_header_rows& val)
 {        
-    ACCEPT_ALL_CONTENT(val.table_table_row_);
+    ACCEPT_ALL_CONTENT(val.content_);
 }
 }
 }

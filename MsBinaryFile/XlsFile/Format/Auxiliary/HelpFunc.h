@@ -42,12 +42,12 @@ namespace XLS
 
 namespace AUX
 {
-	const int			normalizeColumn	(const int column);
-	const int			normalizeRow	(const int row);
+	const int			normalizeColumn	(const int column, const bool xlsb = false);
+	const int			normalizeRow	(const int row, const bool xlsb = false);
 
-	const std::wstring	column2str		(const int column, const bool col_rel);
-	const std::wstring	row2str			(const int row, const bool row_rel);
-    const std::wstring	loc2str			(const int row, const bool row_rel, const int column, const bool col_rel);
+	const std::wstring	column2str		(const int column, const bool col_rel, const bool xlsb = false);
+	const std::wstring	row2str			(const int row, const bool row_rel, const bool xlsb = false);
+    const std::wstring	loc2str			(const int row, const bool row_rel, const int column, const bool col_rel, const bool xlsb = false);
    
 	void				str2loc			(const std::wstring& str, int& row, bool& row_rel, int& column, bool& col_rel);
     void				str2loc			(std::wstring::const_iterator& str_begin, std::wstring::const_iterator& str_end, int& row, bool& row_rel, int& column, bool& col_rel);
@@ -87,13 +87,14 @@ namespace STR
 };
 
 namespace XMLSTUFF
-{;
-
+{
 const std::wstring name2sheet_name(std::wstring name, const std::wstring prefix);
 const std::wstring xti_indexes2sheet_name(const short tabFirst, const short tabLast, std::vector<std::wstring>& names, const std::wstring prefix = L"");
 unsigned short sheetsnames2ixti(std::wstring name);
 unsigned int definenames2index(std::wstring name);
 bool isTableFmla(const std::wstring& tableName, _UINT32& listIndex);
 bool isColumn(const std::wstring& columnName, _UINT32 listIndex, _UINT16& indexColumn);
+unsigned short AddMultysheetXti(const std::wstring& name, const _INT32& firstIxti, const _INT32& secondIxti);
+unsigned int AddDefinedName(const std::wstring& name);
 }
 

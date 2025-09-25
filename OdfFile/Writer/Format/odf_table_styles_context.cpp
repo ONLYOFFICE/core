@@ -439,6 +439,8 @@ void odf_table_styles_context::get_text_properties (int col, int row, text_forma
 }
 bool odf_table_styles_context::is_styled(int col, int row)
 {
+	if (current_used_.empty()) return false;
+
 	table_format_state & state = table_format_array_[current_used_.back().table_style_];
 
 	int col_shift = 0;

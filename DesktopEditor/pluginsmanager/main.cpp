@@ -255,6 +255,7 @@ private:
 
 	std::wstring m_sPluginsDir;
 	std::wstring m_sMarketplaceUrl;
+	std::wstring m_sMarketplaceRepo;
 
 	std::wstring m_sSettingsDir;
 	std::wstring m_sSettingsFile;
@@ -267,6 +268,7 @@ public:
 	{
 		m_sPluginsDir = L"";
 		m_sMarketplaceUrl = L"https://onlyoffice.github.io";
+		m_sMarketplaceRepo = L"https://github.com/ONLYOFFICE/onlyoffice.github.io";
 
 		m_sSettingsDir = NSSystemUtils::GetAppDataDir() + L"/pluginsmanager";
 
@@ -323,7 +325,28 @@ public:
 
 		if ( sUrl.length() )
 		{
-			m_sMarketplaceUrl = sUrl;
+			if (0 == sUrl.find(L"https://onlyoffice.github.io"))
+			{
+				m_sMarketplaceUrl = L"https://onlyoffice.github.io";
+				m_sMarketplaceRepo = L"https://github.com/ONLYOFFICE/onlyoffice.github.io";
+			}
+			else if (0 == sUrl.find(L"https://onlyoffice-plugins.github.io/onlyoffice.github.io"))
+			{
+				m_sMarketplaceUrl = L"https://onlyoffice-plugins.github.io/onlyoffice.github.io";
+				m_sMarketplaceRepo = L"https://github.com/ONLYOFFICE-PLUGINS/onlyoffice.github.io";
+			}
+			else
+			{
+				m_sMarketplaceUrl = sUrl;
+				m_sMarketplaceRepo = L"";
+				std::wstring::size_type posDelimeter = m_sMarketplaceUrl.find(';');
+				if (posDelimeter != std::wstring::npos)
+				{
+					m_sMarketplaceUrl = sUrl.substr(0, posDelimeter);
+					m_sMarketplaceRepo = sUrl.substr(posDelimeter + 1);
+				}
+			}
+
 			bResult = true;
 		}
 
@@ -758,6 +781,8 @@ private:
 			if (pPlugin)
 			{
 				sPackageUrl = m_sMarketplaceUrl + L"/sdkjs-plugins/content/" + pPlugin->m_sName + L"/deploy/" + pPlugin->m_sName + L".plugin";
+				if (!m_sMarketplaceRepo.empty())
+					sPackageUrl = m_sMarketplaceRepo + L"/releases/latest/download/" + pPlugin->m_sName + L".plugin";
 			}
 			else if (IsNeedDownload(sPlugin))
 			{
@@ -790,7 +815,8 @@ private:
 
 				// Archive
 				COfficeUtils oOfficeUtils(NULL);
-				if (S_OK == oOfficeUtils.ExtractToDirectory(sTmpFile, sTempDirExt, NULL, 0))
+				if (S_OK == oOfficeUtils.IsArchive(sTmpFile) &&
+					S_OK == oOfficeUtils.ExtractToDirectory(sTmpFile, sTempDirExt, NULL, 0))
 				{
 					std::wstring sConfigFile = sTempDirExt + L"/config.json";
 
@@ -806,34 +832,37 @@ private:
 					}
 
 					CPluginInfo* pPluginInfo = ReadPluginInfo(sConfigFile);
-					CPluginInfo* pInstalled = FindLocalPlugin(pPluginInfo->m_sGuid);
-
-					if ( pInstalled )
+					if ( pPluginInfo )
 					{
-						sPrintInfo = L"Already installed";
-						bResult = true;
-					}
-					else if ( pPluginInfo )
-					{
-						std::wstring sPluginDir = m_sPluginsDir + L"/" + (bDirGuid ? pPluginInfo->m_sGuid : pPluginInfo->m_sName);
+						CPluginInfo* pInstalled = FindLocalPlugin(pPluginInfo->m_sGuid);
 
-						// Check settings
-						// Can install if user hasn't deleted the plugin before
-						CPluginInfo* pRemoved = FindLocalPlugin(pPluginInfo->m_sGuid, Removed);
-						if ( !pRemoved )
+						if ( pInstalled )
 						{
-							if ( NSDirectory::Exists(sPluginDir) )
-								NSDirectory::DeleteDirectory(sPluginDir);
-							NSDirectory::CreateDirectory(sPluginDir);
-
-							NSDirectory::CopyDirectory(sTempDirExt, sPluginDir);
-
+							sPrintInfo = L"Already installed";
 							bResult = true;
 						}
-						else
+						else if ( pPluginInfo )
 						{
-							sPrintInfo = L"Installation cancelled. The plugin has been removed before.\n" \
-								L"Use --reset option to reset settings";
+							std::wstring sPluginDir = m_sPluginsDir + L"/" + (bDirGuid ? pPluginInfo->m_sGuid : pPluginInfo->m_sName);
+
+							// Check settings
+							// Can install if user hasn't deleted the plugin before
+							CPluginInfo* pRemoved = FindLocalPlugin(pPluginInfo->m_sGuid, Removed);
+							if ( !pRemoved )
+							{
+								if ( NSDirectory::Exists(sPluginDir) )
+									NSDirectory::DeleteDirectory(sPluginDir);
+								NSDirectory::CreateDirectory(sPluginDir);
+
+								NSDirectory::CopyDirectory(sTempDirExt, sPluginDir);
+
+								bResult = true;
+							}
+							else
+							{
+								sPrintInfo = L"Installation cancelled. The plugin has been removed before.\n" \
+									L"Use --reset option to reset settings";
+							}
 						}
 					}
 				}
@@ -1224,20 +1253,28 @@ private:
 	{
 		// [ "...", "...", "..." ]
 		std::wstring sJson = L"";
-		if (NSFile::CFileBinary::Exists(sFile) && NSFile::CFileBinary::ReadAllTextUtf8(sFile, sJson))
+
+		try
 		{
-			std::wstring sDelim = L"\"";
-			std::wstring::size_type pos1 = sJson.find(sDelim);
-
-			while ( pos1 != std::wstring::npos )
+			if (NSFile::CFileBinary::Exists(sFile) && NSFile::CFileBinary::ReadAllTextUtf8(sFile, sJson))
 			{
-				std::wstring::size_type pos2 = sJson.find(sDelim, pos1 + 1);
+				std::wstring sDelim = L"\"";
+				std::wstring::size_type pos1 = sJson.find(sDelim);
 
-				if (pos1 != std::wstring::npos && pos2 > pos1)
-					arrOutput.push_back(sJson.substr(pos1 + 1, pos2 - pos1 - 1));
+				while ( pos1 != std::wstring::npos )
+				{
+					std::wstring::size_type pos2 = sJson.find(sDelim, pos1 + 1);
 
-				pos1 = sJson.find(sDelim, pos2 + 1);
+					if (pos1 != std::wstring::npos && pos2 > pos1)
+						arrOutput.push_back(sJson.substr(pos1 + 1, pos2 - pos1 - 1));
+
+					pos1 = sJson.find(sDelim, pos2 + 1);
+				}
 			}
+		}
+		catch(...)
+		{
+			Message(L"Can't read file: " + sFile, L"", true);
 		}
 
 		return arrOutput.size() > 0;

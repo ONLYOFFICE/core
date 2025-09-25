@@ -56,8 +56,15 @@ typedef _CP_PTR(xlsx_data_range) xlsx_data_range_ptr;
 
 class xlsx_data_range
 {
+	struct filter_condition
+	{
+		int field_number = 0;
+		int type = 0;
+		std::wstring value;
+		int operator_ = 0;
+	};
 public:
-	xlsx_data_range() : byRow(true), filter(false), bTablePart(true), withHeader(false), cell_start(0,0), cell_end(0,0) {}
+	xlsx_data_range() : byRow(true), filter_button(false), bTablePart(true), withHeader(false), cell_start(0,0), cell_end(0,0) {}
 
 	std::wstring	table_name;
 	std::wstring	name;
@@ -67,16 +74,20 @@ public:
 	std::pair<int, int> cell_start;
 	std::pair<int, int> cell_end;
 
-	bool			bTablePart;
-	bool			byRow;
-	bool			filter;
-	bool			withHeader;
+	bool bTablePart = true;
+	bool byRow = true;
+	bool filter_button = false;
+	bool withHeader = false;
 
 	std::vector<std::pair<size_t, bool>> bySort;  //field + order
 	
-	void serialize_sort			(std::wostream & _Wostream);
-	void serialize_autofilter	(std::wostream & _Wostream);
+	_CP_OPT(bool) bFilterAndOr;
+	std::vector<filter_condition> filter_conditions;
 	
+	void serialize_sort (std::wostream & _Wostream);
+	void serialize_autofilter (std::wostream & _Wostream);
+	void serialize_filterColumn(std::wostream& _Wostream, int indexCol);
+
 	std::vector<std::wstring> header_values;
 
 	void set_header(size_t row, size_t col1, size_t col2)
@@ -135,8 +146,8 @@ public:
 	void set_protection_delete_columns(bool val);
 	void set_protection_delete_rows(bool val);
 
-	void start_column	(unsigned int repeated, const std::wstring & defaultCellStyleName);
-    void start_row		(const std::wstring & StyleName, const std::wstring & defaultCellStyleName);
+	void start_column	(unsigned int repeated, const std::wstring & defaultCellStyleName, bool bHeader = false);
+    void start_row		(const std::wstring & StyleName, const std::wstring & defaultCellStyleName, bool bHeader = false);
 
 	void set_column_break_before();
 	void set_column_break_after();
@@ -148,7 +159,7 @@ public:
     bool is_empty_row	() const;
     void end_row		();
 
-	void add_empty_row(int count);
+	void add_empty_row(int count, bool bHeader = false);
 
 	void set_end_table(){ bEndTable = true; }
 	bool get_end_table(){ return bEndTable; }
@@ -192,7 +203,8 @@ public:
 
 	void set_background (std::wstring rId) { tableBackground_ = rId; }
 
-	void serialize_conditionalFormatting	(std::wostream & _Wostream);
+	void serialize_condFormatting			(std::wostream & _Wostream);
+	void serialize_condFormattingEx			(std::wostream& _Wostream);
 	void serialize_table_format				(std::wostream & _Wostream);
 	void serialize_merge_cells				(std::wostream & _Wostream);
     void serialize_hyperlinks				(std::wostream & _Wostream);
@@ -257,9 +269,13 @@ private:
     std::wstring						columns_spanned_style_;
    
 	std::vector<xlsx_row_spanned>		rows_spanned_;
+
     std::vector<unsigned int>			columns_;
     unsigned int						columns_count_;
     double								table_column_last_width_;
+	
+	std::vector<std::pair<unsigned int, unsigned int>> columnsHeaders_; // start, repeate
+	std::vector<std::pair<unsigned int, unsigned int>> rowsHeaders_;
     
     std::vector<unsigned int>			column_breaks_;
     std::vector<unsigned int>			row_breaks_;

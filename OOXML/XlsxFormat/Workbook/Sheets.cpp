@@ -69,6 +69,35 @@ namespace OOX
 			if ( !oReader.IsEmptyNode() )
 				oReader.ReadTillEnd();
 		}
+		XLS::BaseObjectPtr CSheet::toBin()
+		{
+			auto ptr(new XLSB::BundleSh);
+			XLS::BaseObjectPtr objectPtr(ptr);
+
+            if(m_oRid.IsInit())
+				ptr->strRelID.value = m_oRid->GetValue();
+			else
+				ptr->strRelID.value.setSize(0xFFFFFFFF);
+            if(m_oName.IsInit())
+				ptr->strName = m_oName.get();
+			else
+				ptr->strName = L"";
+            if(m_oSheetId.IsInit())
+				ptr->iTabID = m_oSheetId->GetValue();
+			else
+				ptr->iTabID = 0;
+
+			if(m_oState == SimpleTypes::Spreadsheet::EVisibleType::visibleVisible)
+				ptr->hsState = XLSB::BundleSh::ST_SheetState::VISIBLE;
+			else if(m_oState == SimpleTypes::Spreadsheet::EVisibleType::visibleHidden)
+				ptr->hsState = XLSB::BundleSh::ST_SheetState::HIDDEN;
+			else if(m_oState == SimpleTypes::Spreadsheet::EVisibleType::visibleVeryHidden)
+				ptr->hsState = XLSB::BundleSh::ST_SheetState::VERYHIDDEN;
+            else
+                ptr->hsState = XLSB::BundleSh::ST_SheetState::VISIBLE;
+
+			return objectPtr;
+		}
 		void CSheet::fromBin(XLS::BaseObjectPtr& obj)
 		{
 			ReadAttributes(obj);
@@ -79,13 +108,12 @@ namespace OOX
 		}
 		void CSheet::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
-			WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, (L"r:id"),				m_oRid )
-				WritingElement_ReadAttributes_Read_else_if( oReader, (L"relationships:id"),	m_oRid )
-				WritingElement_ReadAttributes_Read_else_if( oReader, (L"name"),				m_oName )
-				WritingElement_ReadAttributes_Read_else_if( oReader, (L"sheetId"),			m_oSheetId )
-				WritingElement_ReadAttributes_Read_else_if( oReader, (L"state"),			m_oState )
-			WritingElement_ReadAttributes_End( oReader )
+			WritingElement_ReadAttributes_Start_No_NS( oReader )
+				WritingElement_ReadAttributes_Read_if     ( oReader, L"id",		m_oRid )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"name",		m_oName )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"sheetId",	m_oSheetId )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"state",	m_oState )
+			WritingElement_ReadAttributes_End_No_NS( oReader )
 		}
 		void CSheet::ReadAttributes(XLS::BaseObjectPtr& obj)
 		{
@@ -158,6 +186,12 @@ namespace OOX
 				}
 
 			}
+			auto sheetIndex = 0;
+			for(auto i:m_arrItems)
+			{	if(i->m_oName.IsInit())
+					AddSheetRef(i->m_oName.get(), sheetIndex);
+				sheetIndex++;
+			}
 		}
 		void CSheets::fromBin(std::vector<XLS::BaseObjectPtr>& obj)
 		{
@@ -171,6 +205,13 @@ namespace OOX
 				m_arrItems.push_back(new CSheet(sheet));
 			}
 		}
+		std::vector<XLS::BaseObjectPtr> CSheets::toBin()
+		{
+			std::vector<XLS::BaseObjectPtr> objectVector;
+			for(auto i: m_arrItems)
+				objectVector.push_back(i->toBin());
+			return objectVector;
+		}
 		EElementType CSheets::getType () const
 		{
 			return et_x_Sheets;
@@ -178,6 +219,16 @@ namespace OOX
 		void CSheets::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 			}
+		void CSheets::AddSheetRef(const std::wstring& link, const _INT32&  sheetIndex)
+		{
+			XLS::GlobalWorkbookInfo::_xti val_1;
+			val_1.iSup		= sheetIndex;
+			val_1.itabFirst = sheetIndex;
+			val_1.itabLast = sheetIndex;
+			val_1.link = link;
+				
+			XLS::GlobalWorkbookInfo::arXti_External_static.push_back(val_1);
+		}
 
 	} //Spreadsheet
 } // namespace OOX

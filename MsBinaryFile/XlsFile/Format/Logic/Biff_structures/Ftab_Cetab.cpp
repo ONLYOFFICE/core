@@ -521,18 +521,18 @@ Ftab_Cetab::ValuesDetermination::ValuesDetermination()
     params_fixed.insert(ParamsFixed(0x01D6, 4, L"ACCRINTM"));
     params_fixed.insert(ParamsFixed(0x01D7, 2, L"WORKDAY"));
     params_fixed.insert(ParamsFixed(0x01D8, 2, L"NETWORKDAYS"));
-    params_fixed.insert(ParamsFixed(0x01D9, 1, L"GCD"));
+    params_fixed.insert(ParamsFixed(0x01D9, -1, L"GCD"));
     params_fixed.insert(ParamsFixed(0x01DA, 1, L"MULTINOMIAL"));
-    params_fixed.insert(ParamsFixed(0x01DB, 1, L"LCM"));
+    params_fixed.insert(ParamsFixed(0x01DB, -1, L"LCM"));
     params_fixed.insert(ParamsFixed(0x01DC, 2, L"FVSCHEDULE"));
     params_fixed.insert(ParamsFixed(0x01DD, 3, L"CUBEKPIMEMBER"));
     params_fixed.insert(ParamsFixed(0x01DE, 1, L"CUBESET"));
     params_fixed.insert(ParamsFixed(0x01DF, 1, L"CUBESETCOUNT"));
     params_fixed.insert(ParamsFixed(0x01E0, 2, L"IFERROR"));
-    params_fixed.insert(ParamsFixed(0x01E1, 2, L"COUNTIFS"));
+    params_fixed.insert(ParamsFixed(0x01E1, -1, L"COUNTIFS"));
     params_fixed.insert(ParamsFixed(0x01E2, 3, L"SUMIFS"));
-    params_fixed.insert(ParamsFixed(0x01E3, 2, L"AVERAGEIF"));
-    params_fixed.insert(ParamsFixed(0x01E4, 3, L"AVERAGEIFS"));
+    params_fixed.insert(ParamsFixed(0x01E3, -1, L"AVERAGEIF"));
+    params_fixed.insert(ParamsFixed(0x01E4, -1, L"AVERAGEIFS"));
 
 // Cetab values
 	params_fixed.insert(ParamsFixed(0x8000, -1, L"BEEP"));

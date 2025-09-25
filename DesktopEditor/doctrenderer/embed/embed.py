@@ -37,9 +37,9 @@ def parseHeader(header_file):
 		content = file.read()
 
 		# Extract the class name
-		match = re.search(r'class\s+(\w+)\s*:\s*public\s+CJSEmbedObject', content)
+		match = re.search(r'class\s+(JS_DECL\s+)?(\w+)\s*:\s*public\s+CJSEmbedObject', content)
 		if match:
-			class_name = match.group(1)
+			class_name = match.group(2)
 		else:
 			print("No class derived from CJSEmbedObject was found")
 			sys.exit(1)

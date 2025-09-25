@@ -64,7 +64,7 @@ void anim_par::add_child_element( const office_element_ptr & child_element)
 	ElementType type_ = child_element->get_type();
 
 	if (type_ == typeAnimPar)
-		anim_par_ = child_element;
+		anim_par_.push_back(child_element);
 	else if (type_ == typeAnimSeq)
 		anim_seq_array_.push_back(child_element);
 	else
@@ -77,10 +77,13 @@ void anim_par::serialize(std::wostream & _Wostream)
 		CP_XML_NODE_SIMPLE()
         {   
 			attlist_.serialize(CP_GET_XML_NODE());
+			par_attlist_.serialize(CP_GET_XML_NODE());
 
-			if (anim_par_)
-				anim_par_->serialize(CP_XML_STREAM());
-			
+			for (size_t i = 0; i < anim_par_.size(); i++)
+			{
+				anim_par_[i]->serialize(CP_XML_STREAM());
+			}
+
 			for (size_t i = 0; i < anim_seq_array_.size(); i++)
 			{
 				anim_seq_array_[i]->serialize(CP_XML_STREAM());
@@ -122,19 +125,6 @@ void anim_seq::add_child_element( const office_element_ptr & child)
 	anim_par_array_.push_back(child);
 }
 ////////////////////////////////////////////////////////////////
-void anim_transition_filter_attlist::serialize(CP_ATTR_NODE)
-{
-    CP_XML_ATTR_OPT(L"smil:subtype",	smil_subtype_);
-    CP_XML_ATTR_OPT(L"smil:type",		smil_type_);
-	CP_XML_ATTR_OPT(L"smil:fadeColor",	smil_fadeColor_);
-	CP_XML_ATTR_OPT(L"smil:mode",		smil_mode_);
-
-}
-void anim_audio_attlist::serialize(CP_ATTR_NODE)
-{
-	CP_XML_ATTR_OPT_ENCODE_STRING(L"xlink:href",		xlink_href_);
-	CP_XML_ATTR_OPT(L"anim:audio-level",anim_audio_level_);
-}
 const wchar_t * anim_transitionFilter::ns	= L"anim";
 const wchar_t * anim_transitionFilter::name = L"transitionFilter";
 
@@ -161,6 +151,83 @@ void anim_audio::serialize(std::wostream & _Wostream)
         {   
 			common_attlist_.serialize(CP_GET_XML_NODE());
 			audio_attlist_.serialize(CP_GET_XML_NODE());
+		}
+	}
+}
+//------------------------------------------------------------------------------------------------
+const wchar_t* anim_set::ns = L"anim";
+const wchar_t* anim_set::name = L"set";
+
+void anim_set::serialize(std::wostream& _Wostream)
+{
+	CP_XML_WRITER(_Wostream)
+	{
+		CP_XML_NODE_SIMPLE()
+		{
+			common_attlist_.serialize(CP_GET_XML_NODE());
+			set_attlist_.serialize(CP_GET_XML_NODE());
+		}
+	}
+}
+//------------------------------------------------------------------------------------------------
+const wchar_t* anim_animate::ns = L"anim";
+const wchar_t* anim_animate::name = L"animate";
+
+void anim_animate::serialize(std::wostream& _Wostream)
+{
+	CP_XML_WRITER(_Wostream)
+	{
+		CP_XML_NODE_SIMPLE()
+		{
+			common_attlist_.serialize(CP_GET_XML_NODE());
+			animate_attlist_.serialize(CP_GET_XML_NODE());
+		}
+	}
+}
+//------------------------------------------------------------------------------------------------
+const wchar_t* anim_animate_motion::ns = L"anim";
+const wchar_t* anim_animate_motion::name = L"animateMotion";
+
+void anim_animate_motion::serialize(std::wostream& _Wostream)
+{
+	CP_XML_WRITER(_Wostream)
+	{
+		CP_XML_NODE_SIMPLE()
+		{
+			common_attlist_.serialize(CP_GET_XML_NODE());
+			animate_motion_attlist_.serialize(CP_GET_XML_NODE());
+		}
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+const wchar_t* anim_animate_color::ns = L"anim";
+const wchar_t* anim_animate_color::name = L"animateColor";
+
+void anim_animate_color::serialize(std::wostream& _Wostream)
+{
+	CP_XML_WRITER(_Wostream)
+	{
+		CP_XML_NODE_SIMPLE()
+		{
+			common_attlist_.serialize(CP_GET_XML_NODE());
+			color_attlist_.serialize(CP_GET_XML_NODE());
+		}
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+const wchar_t* anim_animate_transform::ns = L"anim";
+const wchar_t* anim_animate_transform::name = L"animateTransform";
+
+void anim_animate_transform::serialize(std::wostream& _Wostream)
+{
+	CP_XML_WRITER(_Wostream)
+	{
+		CP_XML_NODE_SIMPLE()
+		{
+			common_attlist_.serialize(CP_GET_XML_NODE());
+			animate_transform_attlist_.serialize(CP_GET_XML_NODE());
 		}
 	}
 }

@@ -64,5 +64,11 @@ void SxTbpg::readFields(CFRecord& record)
 
 }
 
+void SxTbpg::writeFields(CFRecord& record)
+{
+    for(auto i : rgiitem)
+        record << i;
+}
+
 } // namespace XLS
 

@@ -91,8 +91,11 @@ void odf_settings_context::end_table()
 {
 	current_table_ = -1;
 }
-void odf_settings_context::set_modify_info(const std::wstring& algorithm, const std::wstring& solt, const std::wstring& hash, int iteration_count)
+void odf_settings_context::set_modify_info(const std::wstring& crypt, const std::wstring& algorithm, const std::wstring& solt, const std::wstring& hash, int iteration_count)
 {
+	if (algorithm.empty() && solt.empty() && hash.empty())
+		return;
+
 	office_element_ptr elm_item_set;
 	create_element(L"config", L"config-item-set", elm_item_set, odf_context_);
 	config_content_.push_back(elm_item_set);
@@ -100,9 +103,13 @@ void odf_settings_context::set_modify_info(const std::wstring& algorithm, const 
 	settings_config_item_set *item_set = dynamic_cast<settings_config_item_set*>(elm_item_set.get());
 	if (item_set)
 	{
-		item_set->config_name_ = L"ModifyPasswordInfo";
+		item_set->config_name_ = (algorithm != L"PBKDF2") ? L"OOXMLModifyPasswordInfo" : L"ModifyPasswordInfo";
 
 		office_element_ptr prop;
+		if (false == crypt.empty())
+		{
+			prop = create_property(L"crypt-name", L"string", crypt);							elm_item_set->add_child_element(prop);
+		}
 		prop = create_property(L"algorithm-name", L"string", algorithm);						elm_item_set->add_child_element(prop);
 		prop = create_property(L"salt", L"base64Binary", solt);									elm_item_set->add_child_element(prop);
 		prop = create_property(L"iteration-count", L"int", std::to_wstring(iteration_count));	elm_item_set->add_child_element(prop);

@@ -103,6 +103,8 @@
 #define META_CREATEBRUSHINDIRECT     0x02FC
 #define META_CREATEREGION            0x06FF
 
+#include "../Common/MetaFileTypes.h"
+
 namespace MetaFile
 {
 #define META_EOF 0x0000
@@ -171,125 +173,44 @@ namespace MetaFile
 		WMF_SPCLPASSTHROUGH2 = 0x11D8
 	} MetafileEscapes;
 
-	struct TWmfColor
-	{
-		unsigned char r;
-		unsigned char g;
-		unsigned char b;
-		unsigned char a; //Reserved Must be 0x00
-
-		TWmfColor()
-		{
-			r = 0;
-			g = 0;
-			b = 0;
-		}
-
-		TWmfColor(unsigned char _r, unsigned char _g, unsigned char _b)
-		{
-			r = _r;
-			g = _g;
-			b = _b;
-		}
-
-		void Set(unsigned char _r, unsigned char _g, unsigned char _b)
-		{
-			r = _r;
-			g = _g;
-			b = _b;
-		}
-
-		void Init()
-		{
-			r = 0;
-			g = 0;
-			b = 0;
-			a = 0;
-		}
-
-		void Copy(TWmfColor& oOther)
-		{
-			r = oOther.r;
-			g = oOther.g;
-			b = oOther.b;
-			a = oOther.a;
-		}
-
-		TWmfColor& operator=(TWmfColor& oColor)
-		{
-			r = oColor.r;
-			g = oColor.g;
-			b = oColor.b;
-			a = oColor.a;
-			return *this;
-		}
-	};
 	struct TWmfPaletteEntry
 	{
-		unsigned char Values;
-		unsigned char Blue;
-		unsigned char Green;
-		unsigned char Red;
-	};
-	struct TWmfPointS
-	{
-		short x;
-		short y;
-
-		void Set(short _x, short _y)
-		{
-			x = _x;
-			y = _y;
-		}
-	};
-	struct TWmfRect
-	{
-		short Left;
-		short Top;
-		short Right;
-		short Bottom;
-
-		TWmfRect()
-		{
-			Left = Top = Right = Bottom = 0;
-		}
-
-		bool Empty() const
-		{
-			return (0 == Left) && (0 == Top) && (0 == Right) && (0 == Bottom);
-		}
+		unsigned char uchValues;
+		unsigned char uchBlue;
+		unsigned char uchGreen;
+		unsigned char uchRed;
 	};
 	struct TWmfPlaceable
 	{
-		unsigned int   Key;
-		unsigned short HWmf;
-		TWmfRect       BoundingBox;
-		unsigned short Inch;
-		unsigned int   Reserved;
-		unsigned short Checksum;
+		unsigned int   unKey;
+		unsigned short ushHWmf;
+		TRectS         oBoundingBox;
+		unsigned short ushInch;
+		unsigned int   unReserved;
+		unsigned short ushChecksum;
 	};
 	struct TWmfHeader
 	{
-		unsigned short Type;
-		unsigned short HeaderSize;
-		unsigned short Version;
-		unsigned int   Size;
-		unsigned short NumberOfObjects;
-		unsigned int   MaxRecord;
-		unsigned short NumberOfMembers;
+		unsigned short ushType;
+		unsigned short ushHeaderSize;
+		unsigned short ushVersion;
+		unsigned int   unSize;
+		unsigned short ushNumberOfObjects;
+		unsigned int   unMaxRecord;
+		unsigned short ushNumberOfMembers;
 	};
 	struct TWmfScanLine
 	{
-		unsigned short Left;
-		unsigned short Right;
+		unsigned short ushLeft;
+		unsigned short ushRight;
 	};
 	struct TWmfScanObject
 	{
-		unsigned short  Count;
-		unsigned short  Top;
-		unsigned short  Bottom;
-		TWmfScanLine*   ScanLines;
-		unsigned short  Count2;
+		unsigned short  ushCount;
+		unsigned short  ushTop;
+		unsigned short  ushBottom;
+		TWmfScanLine*   pScanLines;
+		unsigned short  ushCount2;
 	};
 	struct TWmfWindow
 	{
@@ -309,7 +230,7 @@ namespace MetaFile
 			h = 1;
 		}
 
-		void Copy(TWmfWindow& oOther)
+		void Copy(const TWmfWindow& oOther)
 		{
 			x = oOther.x;
 			y = oOther.y;
@@ -322,66 +243,66 @@ namespace MetaFile
 	};
 	struct TWmfLogBrush
 	{
-		unsigned short BrushStyle;
-		TWmfColor      Color;
-		unsigned short BurshHatch;
+		unsigned short ushBrushStyle;
+		TRGBA          oColor;
+		unsigned short ushBrushHatch;
 	};
 	struct TWmfBitmap16
 	{
-		short          Type;
-		short          Width;
-		short          Height;
-		short          WidthBytes;
-		unsigned char  Planes;
-		unsigned char  BitsPixel;
-		unsigned char* Bits;
+		short          shType;
+		short          shWidth;
+		short          shHeight;
+		short          shWidthBytes;
+		unsigned char  uchPlanes;
+		unsigned char  uchBitsPixel;
+		unsigned char* pBits;
 	};
 	struct TWmfBitBlt
 	{
-		unsigned int RasterOperation;
-		short        YSrc;
-		short        XSrc;
-		short        Height;
-		short        Width;
-		short        YDest;
-		short        XDest;
+		unsigned int unRasterOperation;
+		short        shYSrc;
+		short        shXSrc;
+		short        shHeight;
+		short        shWidth;
+		short        shYDest;
+		short        shXDest;
 	};
 	struct TWmfSetDibToDev
 	{
-		unsigned short ColorUsage;
-		unsigned short ScanCount;
-		unsigned short StartScan;
-		unsigned short yDib;
-		unsigned short xDib;
-		unsigned short Height;
-		unsigned short Width;
-		unsigned short yDest;
-		unsigned short xDest;
+		unsigned short ushColorUsage;
+		unsigned short ushScanCount;
+		unsigned short ushStartScan;
+		unsigned short ushYDib;
+		unsigned short ushXDib;
+		unsigned short ushHeight;
+		unsigned short ushWidth;
+		unsigned short ushYDest;
+		unsigned short ushXDest;
 	};
 	struct TWmfStretchBlt
 	{
-		unsigned int RasterOperation;
-		short        SrcHeight;
-		short        SrcWidth;
-		short        YSrc;
-		short        XSrc;
-		short        DestHeight;
-		short        DestWidth;
-		short        YDest;
-		short        XDest;
+		unsigned int unRasterOperation;
+		short        shSrcHeight;
+		short        shSrcWidth;
+		short        shYSrc;
+		short        shXSrc;
+		short        shDestHeight;
+		short        shDestWidth;
+		short        shYDest;
+		short        shXDest;
 	};
 	struct TWmfStretchDib
 	{
-		unsigned int   RasterOperation;
-		unsigned short ColorUsage;
-		short          SrcHeight;
-		short          SrcWidth;
-		short          YSrc;
-		short          XSrc;
-		short          DestHeight;
-		short          DestWidth;
-		short          yDst;
-		short          xDst;
+		unsigned int   unRasterOperation;
+		unsigned short ushColorUsage;
+		short          shSrcHeight;
+		short          shSrcWidth;
+		short          shYSrc;
+		short          shXSrc;
+		short          shDestHeight;
+		short          shDestWidth;
+		short          shYDst;
+		short          shXDst;
 	};
 	class CWmfEscapeBuffer
 	{

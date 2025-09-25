@@ -131,7 +131,7 @@ void draw_frame::xlsx_convert(oox::xlsx_conversion_context & Context)
     const std::wstring textStyleName = common_draw_attlist_.common_shape_draw_attlist_.draw_text_style_name_.get_value_or(L"");
 
 //////////////////////////////////////////////////////////////////////////
-	if (Context.get_text_context().is_drawing_context())
+	if (Context.get_text_context()->is_drawing_context())
 	{
 		Context.get_drawing_context().set_text_box();
 	}
@@ -198,7 +198,16 @@ void draw_frame::xlsx_convert(oox::xlsx_conversion_context & Context)
 			if (properties->fo_clip_)
 			{
 				std::wstring strRectClip = properties->fo_clip_.get();
-				Context.get_drawing_context().set_clipping(strRectClip.substr(5, strRectClip.length() - 6));
+				fill.clipping = strRectClip.length() > 6 ? strRectClip.substr(5, strRectClip.length() - 6) : L"";
+			}
+
+			if (properties->style_mirror_)
+			{
+				bool flipV = properties->style_mirror_->find(L"vertical") != std::wstring::npos;
+				bool flipH = properties->style_mirror_->find(L"horizontal") != std::wstring::npos;
+
+				Context.get_drawing_context().set_property(odf_reader::_property(L"flipV", flipV));
+				Context.get_drawing_context().set_property(odf_reader::_property(L"flipH", flipH));
 			}
 		}
 
@@ -258,14 +267,14 @@ void draw_image::xlsx_convert(oox::xlsx_conversion_context & Context)
 	Context.get_drawing_context().set_image(href);
 
 ////////////////////////////////////в принципе достаточно общая часть ...
-	Context.get_text_context().start_drawing_content(); //...  если в объекте есть текст он привяжется к объекту - иначе к ячейке
+	Context.get_text_context()->start_drawing_content(); //...  если в объекте есть текст он привяжется к объекту - иначе к ячейке
 	Context.start_drawing_context();
 
 	for (size_t i = 0 ; i < content_.size(); i++)
     {
 		content_[i]->xlsx_convert(Context);
     }
-	std::wstring text_content_ = Context.get_text_context().end_drawing_content();
+	std::wstring text_content_ = Context.get_text_context()->end_drawing_content();
 	Context.end_drawing_context();
 
 	if (!text_content_.empty())
@@ -304,7 +313,7 @@ void draw_text_box::xlsx_convert(oox::xlsx_conversion_context & Context)
 //---------------------------------------------------------------------------------------------------------------
 	Context.get_drawing_context().set_text_box();
 
-	Context.get_text_context().start_drawing_content();
+	Context.get_text_context()->start_drawing_content();
 	Context.start_drawing_context();
 
 	for (size_t i = 0 ; i < content_.size(); i++)
@@ -312,7 +321,7 @@ void draw_text_box::xlsx_convert(oox::xlsx_conversion_context & Context)
 		content_[i]->xlsx_convert(Context);
     }
 
-	std::wstring text_content_ = Context.get_text_context().end_drawing_content();
+	std::wstring text_content_ = Context.get_text_context()->end_drawing_content();
 	Context.end_drawing_context();
 
 	if (!text_content_.empty())
@@ -340,19 +349,22 @@ void draw_object::xlsx_convert(oox::xlsx_conversion_context & Context)
 	try 
 	{
 		std::wstring href = xlink_attlist_.href_.get_value_or(L"");
-		
+		std::wstring tempPath = Context.root()->get_temp_folder();
+
 		if (!odf_document_ && false == href.empty())
 		{			
 			if (href[0] == L'#') href = href.substr(1);
-
-			std::wstring tempPath	= Context.root()->get_temp_folder();
+				
 			std::wstring folderPath = Context.root()->get_folder();
-			std::wstring objectPath = folderPath + FILE_SEPARATOR_STR + href;
+			if (Context.get_mediaitems()->is_internal_path(href, folderPath))
+			{
+				std::wstring objectPath = folderPath + FILE_SEPARATOR_STR + href;
 
-			// normalize path ???? todooo
-			XmlUtils::replace_all( objectPath, FILE_SEPARATOR_STR + std::wstring(L"./"), FILE_SEPARATOR_STR);
+				// normalize path ???? todooo
+				XmlUtils::replace_all(objectPath, FILE_SEPARATOR_STR + std::wstring(L"./"), FILE_SEPARATOR_STR);
 
-            odf_document_ = odf_document_ptr(new odf_document(objectPath, tempPath, L""));
+				odf_document_ = odf_document_ptr(new odf_document(objectPath, tempPath, L""));
+			}
 		}
 		office_element *contentSubDoc = odf_document_ ? odf_document_->get_impl()->get_content() : NULL;
 		if (!contentSubDoc)
@@ -401,18 +413,18 @@ void draw_object::xlsx_convert(oox::xlsx_conversion_context & Context)
 			if (!math_content.empty())
 			{
 				std::wstring text_content = L"<a:p><a14:m xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\">";
-				text_content += L"<m:oMathPara xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\">";
 				text_content += math_content;
-				text_content += L"</m:oMathPara></a14:m></a:p>";
+				text_content += L"</a14:m></a:p>";
 
 				if (bNewObject)
 				{
 					Context.get_drawing_context().set_property(_property(L"fit-to-size", true));
 					Context.get_drawing_context().set_property(_property(L"text-content", text_content));
+					Context.get_drawing_context().set_property(_property(L"auto-grow-width", true));
 				}
 				else
 				{
-					Context.get_text_context().add_paragraph(text_content);
+					Context.get_text_context()->add_paragraph(text_content);
 				}
 			}
 		}
@@ -439,11 +451,13 @@ void draw_object_ole::xlsx_convert(oox::xlsx_conversion_context & Context)
 	Context.get_drawing_context().set_use_image_replacement();
 
 	std::wstring href		= xlink_attlist_.href_.get_value_or(L"");
-	std::wstring folderPath = Context.root()->get_folder();
-	std::wstring objectPath = folderPath + FILE_SEPARATOR_STR + href;
+	if (href.empty()) return;
 
-	if (!href.empty()) 
+	std::wstring folderPath = Context.root()->get_folder();
+	if (Context.get_mediaitems()->is_internal_path(href, folderPath))
 	{
+		std::wstring objectPath = folderPath + FILE_SEPARATOR_STR + href;
+
 		std::wstring prog, extension;
 		oox::_rels_type relsType;
 		detectObject(objectPath, prog, extension, relsType);
@@ -454,6 +468,10 @@ void draw_object_ole::xlsx_convert(oox::xlsx_conversion_context & Context)
 			Context.get_drawing_context().set_ms_object(href + extension, prog);
 		else
 			Context.get_drawing_context().set_ole_object(href + extension, prog);
+	}
+	else
+	{
+		Context.get_drawing_context().set_ole_object(href, L"");
 	}
 }
 

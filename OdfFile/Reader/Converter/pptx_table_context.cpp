@@ -53,7 +53,10 @@ pptx_table_state::pptx_table_state(pptx_conversion_context & Context,
     const std::wstring & StyleName) : context_(Context),
     table_style_(StyleName),
     current_table_column_(-1),
-    columns_spanned_num_(0)
+    columns_spanned_num_(0),
+	rows_(0),
+	current_row_(0),
+	total_columns_(0)
 {        
 }
 
@@ -75,6 +78,18 @@ std::wstring pptx_table_state::get_default_cell_style_row()
     return default_row_cell_style_name_;
 }
 
+void pptx_table_state::set_default_cell_style_row(const std::wstring& style_name)
+{
+	default_row_cell_style_name_ = style_name;
+}
+
+void pptx_table_state::set_default_cell_style_col(unsigned int column, const std::wstring style_name)
+{
+	if (column >= columnsDefaultCellStyleName_.size())
+		return;
+
+	columnsDefaultCellStyleName_[column] = style_name;
+}
 
 void pptx_table_state::start_row(const std::wstring & StyleName, const std::wstring & defaultCellStyleName)
 {
@@ -82,6 +97,7 @@ void pptx_table_state::start_row(const std::wstring & StyleName, const std::wstr
     columns_spanned_style_ = L"";
     table_row_style_stack_.push_back(StyleName);
     default_row_cell_style_name_ = defaultCellStyleName;
+	current_row_++;
 }
 
 void pptx_table_state::end_row()
@@ -225,6 +241,41 @@ unsigned int pptx_table_state::current_rows_spanned(unsigned int Column) const
     }
 }
 
+void pptx_table_state::set_rows(int rows)
+{
+	rows_ = rows;
+}
+
+int pptx_table_state::get_rows() const
+{
+	return rows_;
+}
+
+int pptx_table_state::get_current_row() const
+{
+	return current_row_;
+}
+
+void pptx_table_state::set_columns(int cols)
+{
+	total_columns_ = cols;
+}
+
+int pptx_table_state::get_columns() const
+{
+	return total_columns_;
+}
+
+void pptx_table_state::set_template_row_style_name(const std::wstring style_name)
+{
+	template_row_style_name_ = style_name;
+}
+
+std::wstring pptx_table_state::get_template_row_style_name() const
+{
+	return template_row_style_name_;
+}
+
 struct pptx_border_edge
 {
 	bool present = false;
@@ -248,13 +299,13 @@ void convert_border_style(const odf_types::border_style& borderStyle, pptx_borde
 
         switch(borderStyle.get_style())
         {
-            case odf_types::border_style::none:              border.none = true;				break;
-            case odf_types::border_style::double_:           border.cmpd = L"dbl";              break;
-            case odf_types::border_style::dotted:            border.prstDash = L"dot";          break;
-            case odf_types::border_style::dashed:            border.prstDash = L"dash";         break;
-            case odf_types::border_style::long_dash:         border.prstDash = L"lgDash";       break;
-            case odf_types::border_style::dot_dash:          border.prstDash = L"dashDot";      break;
-            case odf_types::border_style::dot_dot_dash:      border.prstDash = L"lgDashDotDot"; break;
+            case odf_types::border_style::none:				border.none = true;				break;
+            case odf_types::border_style::double_:			border.cmpd = L"dbl";              break;
+            case odf_types::border_style::dotted:			border.prstDash = L"dot";          break;
+            case odf_types::border_style::dash:				border.prstDash = L"dash";         break;
+            case odf_types::border_style::long_dash:		border.prstDash = L"lgDash";       break;
+            case odf_types::border_style::dot_dash:			border.prstDash = L"dashDot";      break;
+            case odf_types::border_style::dot_dot_dash:		border.prstDash = L"lgDashDotDot"; break;
         }
 	}
 }
@@ -265,17 +316,18 @@ void convert_border_style(const odf_types::border_style& borderStyle, pptx_borde
 //tri (Thin Thick Thin Triple Lines) Three lines: thin, thick, thin
 void process_border(pptx_border_edge & borderEdge, _CP_OPT(odf_types::border_style) & borderStyle)
 {
-	borderEdge.present = false;
+	borderEdge.present = true;
     if (borderStyle)
     {
- 		borderEdge.present = true;
-
-
         borderEdge.color = borderStyle->get_color().get_hex_value();
 		borderEdge.width = boost::lexical_cast<int>(borderStyle->get_length().get_value_unit(odf_types::length::emu));
         
 		convert_border_style(*borderStyle, borderEdge);
-   }
+	}
+	else
+	{
+		borderEdge.none = true;
+	}
 }
 void oox_serialize_border(std::wostream & strm, std::wstring Node, pptx_border_edge & content)
 {
@@ -320,52 +372,89 @@ void oox_serialize_tcPr(std::wostream & strm, std::vector<const odf_reader::styl
 			if (instances.size() > 0)
 			{
 				odf_reader::style_table_cell_properties_attlist style_cell_attlist = odf_reader::calc_table_cell_properties(instances);
+				odf_reader::graphic_format_properties_ptr graphic_props = odf_reader::calc_graphic_properties_content(instances);
 
-				if (style_cell_attlist.style_vertical_align_)
+				if (style_cell_attlist.style_vertical_align_ || (graphic_props && graphic_props->draw_textarea_vertical_align_))
 				{
+					odf_types::vertical_align::type algn = style_cell_attlist.style_vertical_align_ ? style_cell_attlist.style_vertical_align_->get_type() :
+						graphic_props->draw_textarea_vertical_align_->get_type();
+					
 					std::wstring vAlign;
-					switch(style_cell_attlist.style_vertical_align_->get_type())
+					switch(algn)
 					{
-					case odf_types::vertical_align::Baseline: 
-					case odf_types::vertical_align::Top:      vAlign = L"t"; break;
-					case odf_types::vertical_align::Middle:   vAlign = L"ctr"; break;
-					case odf_types::vertical_align::Bottom:   vAlign = L"b"; break;
-					case odf_types::vertical_align::Auto:  break;
+						case odf_types::vertical_align::Baseline: 
+						case odf_types::vertical_align::Top:      vAlign = L"t"; break;
+						case odf_types::vertical_align::Middle:   vAlign = L"ctr"; break;
+						case odf_types::vertical_align::Bottom:   vAlign = L"b"; break;
+						case odf_types::vertical_align::Auto: 
+							break;
 					}
-					if (!vAlign.empty())
+					if (false == vAlign.empty())
 						CP_XML_ATTR(L"anchor",  vAlign );      
 				}
+
+				double padding_common = -1;
 				if (style_cell_attlist.common_padding_attlist_.fo_padding_)
 				{
-					double padding = style_cell_attlist.common_padding_attlist_.fo_padding_->get_value_unit(odf_types::length::emu);
+					padding_common = style_cell_attlist.common_padding_attlist_.fo_padding_->get_value_unit(odf_types::length::emu);
+				}
+				else if (graphic_props && graphic_props->common_padding_attlist_.fo_padding_)
+				{
+					padding_common = graphic_props->common_padding_attlist_.fo_padding_->get_value_unit(odf_types::length::emu);
+				}
+
+				if (style_cell_attlist.common_padding_attlist_.fo_padding_top_)
+				{
+					double padding = style_cell_attlist.common_padding_attlist_.fo_padding_top_->get_value_unit(odf_types::length::emu);
 					CP_XML_ATTR(L"marT", (long)padding);
+				}
+				else if (graphic_props && graphic_props->common_padding_attlist_.fo_padding_top_)
+				{
+					double padding = graphic_props->common_padding_attlist_.fo_padding_top_->get_value_unit(odf_types::length::emu);
+					CP_XML_ATTR(L"marT", (long)padding);
+				}
+				else if (padding_common > 0)
+					CP_XML_ATTR(L"marT", (long)padding_common);
+
+				if (style_cell_attlist.common_padding_attlist_.fo_padding_bottom_)
+				{
+					double padding = style_cell_attlist.common_padding_attlist_.fo_padding_bottom_->get_value_unit(odf_types::length::emu);
 					CP_XML_ATTR(L"marB", (long)padding);
+				}
+				else if (graphic_props && graphic_props->common_padding_attlist_.fo_padding_bottom_)
+				{
+					double padding = graphic_props->common_padding_attlist_.fo_padding_bottom_->get_value_unit(odf_types::length::emu);
+					CP_XML_ATTR(L"marB", (long)padding);
+				}
+				else if (padding_common > 0)
+					CP_XML_ATTR(L"marB", (long)padding_common);
+
+				if (style_cell_attlist.common_padding_attlist_.fo_padding_left_)
+				{
+					double padding = style_cell_attlist.common_padding_attlist_.fo_padding_left_->get_value_unit(odf_types::length::emu);
 					CP_XML_ATTR(L"marL", (long)padding);
+				}
+				else if (graphic_props && graphic_props->common_padding_attlist_.fo_padding_left_)
+				{
+					double padding = graphic_props->common_padding_attlist_.fo_padding_left_->get_value_unit(odf_types::length::emu);
+					CP_XML_ATTR(L"marL", (long)padding);
+				}
+				else if (padding_common > 0)
+					CP_XML_ATTR(L"marL", (long)padding_common);
+
+				if (style_cell_attlist.common_padding_attlist_.fo_padding_right_)
+				{
+					double padding = style_cell_attlist.common_padding_attlist_.fo_padding_right_->get_value_unit(odf_types::length::emu);
 					CP_XML_ATTR(L"marR", (long)padding);
 				}
-				else
+				else if (graphic_props && graphic_props->common_padding_attlist_.fo_padding_right_)
 				{
-					if (style_cell_attlist.common_padding_attlist_.fo_padding_top_)
-					{
-						double padding = style_cell_attlist.common_padding_attlist_.fo_padding_top_->get_value_unit(odf_types::length::emu);
-						CP_XML_ATTR(L"marT", (long)padding);            
-					}
-					if (style_cell_attlist.common_padding_attlist_.fo_padding_bottom_)
-					{
-						double padding = style_cell_attlist.common_padding_attlist_.fo_padding_bottom_->get_value_unit(odf_types::length::emu);
-						CP_XML_ATTR(L"marB", (long)padding);                        
-					}
-					if (style_cell_attlist.common_padding_attlist_.fo_padding_left_)
-					{
-						double padding = style_cell_attlist.common_padding_attlist_.fo_padding_left_->get_value_unit(odf_types::length::emu);
-						CP_XML_ATTR(L"marL", (long)padding);
-					}
-					if (style_cell_attlist.common_padding_attlist_.fo_padding_right_)
-					{
-						double padding = style_cell_attlist.common_padding_attlist_.fo_padding_right_->get_value_unit(odf_types::length::emu);
-						CP_XML_ATTR(L"marR", (long)padding);            
-					}
-				}			
+					double padding = graphic_props->common_padding_attlist_.fo_padding_right_->get_value_unit(odf_types::length::emu);
+					CP_XML_ATTR(L"marR", (long)padding);
+				}
+				else if (padding_common > 0)
+					CP_XML_ATTR(L"marR", (long)padding_common);
+
 				//vert //
 				//style_cell_attlist.pptx_serialize(Context, CP_XML_STREAM());    //nodes        
 
@@ -385,8 +474,6 @@ void oox_serialize_tcPr(std::wostream & strm, std::vector<const odf_reader::styl
 				//диагональных в оо нет.
 	////////////////////////////////////////////////////////////////////////////////////////////////			
 				oox::_oox_fill fill;
-
-				odf_reader::graphic_format_properties_ptr graphic_props = odf_reader::calc_graphic_properties_content(instances);
 				
 				if (graphic_props)
 				{

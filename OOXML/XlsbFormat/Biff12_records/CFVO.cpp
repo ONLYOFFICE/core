@@ -62,8 +62,16 @@ namespace XLSB
 	{
 		record << iType << numParam << fSaveGTE << fGTE << cbFmla;
 
-		if (cbFmla)
-			record << formula;
+        if (cbFmla)
+        {
+            auto rdPtr = record.getRdPtr();
+            record << formula;
+            auto size = record.getRdPtr() - rdPtr;
+            record.RollRdPtrBack(size + 4);
+            _UINT32 cce = formula.cce;
+            record << cce;
+            record.skipNunBytes(size);
+        }
 	}
 
 } // namespace XLSB

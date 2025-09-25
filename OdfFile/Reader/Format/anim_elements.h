@@ -35,11 +35,10 @@
 #include "office_elements_create.h"
 
 #include "../../DataTypes/common_attlists.h"
-#include "../../DataTypes/smil_transitiontype.h"
+#include "../../DataTypes/animation_attlists.h"
 
 namespace cpdoccore { 
 namespace odf_reader {
-
 
 //anim:par
 class anim_par : public office_element_impl<anim_par>//Параллельные анимации
@@ -51,9 +50,11 @@ public:
     static const ElementType type = typeAnimPar;
     CPDOCCORE_DEFINE_VISITABLE();
 
-	odf_types::common_anim_smil_attlist		attlist_;
+	odf_types::common_anim_smil_attlist		common_attlist_;
+	odf_types::anim_par_attlist				par_attlist_;
+
   	
-	office_element_ptr						anim_par_;
+	office_element_ptr_array				anim_par_array_; 
 	office_element_ptr_array				anim_seq_array_;
 	office_element_ptr_array				content_;
 
@@ -63,6 +64,7 @@ private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
 	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
+	boost::optional<int> pptx_convert_preset_id();
 };
 CP_REGISTER_OFFICE_ELEMENT2(anim_par);
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -91,24 +93,7 @@ CP_REGISTER_OFFICE_ELEMENT2(anim_seq);
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //anim:iterate 
 //-------------------------------------------------------------------------------
-class anim_audio_attlist
-{
-public:
-    void add_attributes( const xml::attributes_wc_ptr & Attributes );
-	
-	_CP_OPT(std::wstring)						xlink_href_;
-	_CP_OPT(std::wstring)						anim_audio_level_; 
-};
-class anim_transition_filter_attlist
-{
-public:
-    void add_attributes( const xml::attributes_wc_ptr & Attributes );
-	
-	_CP_OPT(std::wstring)						smil_subtype_; 
-	_CP_OPT(odf_types::smil_transition_type)	smil_type_;
-	_CP_OPT(std::wstring)						smil_mode_;
-	_CP_OPT(odf_types::color)					smil_fadeColor_;
-};
+
 class anim_transitionFilter : public office_element_impl<anim_transitionFilter>
 {
 public:
@@ -120,11 +105,15 @@ public:
 
 	virtual void pptx_convert(oox::pptx_conversion_context & Context);
 
-	odf_types::common_anim_smil_attlist		common_attlist_;
-	anim_transition_filter_attlist			filter_attlist_;
+	odf_types::common_anim_smil_attlist				common_attlist_;
+	odf_types::anim_transition_filter_attlist		filter_attlist_;
+
 private:
 	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+
+	std::wstring	convert_filter();
+	void			convert_slide_transition_filter(oox::pptx_conversion_context& Context);
 
 
 };
@@ -142,7 +131,7 @@ public:
 	virtual void pptx_convert(oox::pptx_conversion_context & Context);
 
 	odf_types::common_anim_smil_attlist		common_attlist_;
-	anim_audio_attlist						audio_attlist_;
+	odf_types::anim_audio_attlist			audio_attlist_;
 private:
 	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
@@ -152,5 +141,112 @@ private:
 CP_REGISTER_OFFICE_ELEMENT2(anim_audio);
 //anim:command
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// anim:set
+
+class anim_set : public office_element_impl<anim_set>
+{
+public:
+	static const wchar_t* ns;
+	static const wchar_t* name;
+	static const xml::NodeType xml_type = xml::typeElement;
+	static const ElementType type = typeAnimSet;
+	CPDOCCORE_DEFINE_VISITABLE();
+
+	virtual void pptx_convert(oox::pptx_conversion_context& Context);
+
+	odf_types::common_anim_smil_attlist		common_attlist_;
+	odf_types::anim_set_attlist				set_attlist_;
+private:
+	virtual void add_child_element(xml::sax* Reader, const std::wstring& Ns, const std::wstring& Name) {}
+	virtual void add_attributes(const xml::attributes_wc_ptr& Attributes);
+};
+CP_REGISTER_OFFICE_ELEMENT2(anim_set);
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// anim:animateMotion
+class anim_animate_motion : public office_element_impl<anim_animate_motion>
+{
+public:
+	static const wchar_t* ns;
+	static const wchar_t* name;
+	static const xml::NodeType xml_type = xml::typeElement;
+	static const ElementType type = typeAnimAnimateMotion;
+	CPDOCCORE_DEFINE_VISITABLE();
+
+	virtual void pptx_convert(oox::pptx_conversion_context& Context);
+
+	odf_types::common_anim_smil_attlist			common_attlist_;
+	odf_types::anim_animate_motion_attlist		animate_motion_attlist_;
+private:
+	virtual void add_child_element(xml::sax* Reader, const std::wstring& Ns, const std::wstring& Name) {}
+	virtual void add_attributes(const xml::attributes_wc_ptr& Attributes);
+};
+CP_REGISTER_OFFICE_ELEMENT2(anim_animate_motion);
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// anim:animateColor
+class anim_animate_color : public office_element_impl<anim_animate_color>
+{
+public:
+	static const wchar_t* ns;
+	static const wchar_t* name;
+	static const xml::NodeType xml_type = xml::typeElement;
+	static const ElementType type = typeAnimAnimateColor;
+	CPDOCCORE_DEFINE_VISITABLE();
+
+	virtual void pptx_convert(oox::pptx_conversion_context& Context);
+
+	odf_types::common_anim_smil_attlist			common_attlist_;
+	odf_types::anim_animate_color_attlist		animate_color_attlist_;
+private:
+	virtual void add_child_element(xml::sax* Reader, const std::wstring& Ns, const std::wstring& Name) {}
+	virtual void add_attributes(const xml::attributes_wc_ptr& Attributes);
+};
+CP_REGISTER_OFFICE_ELEMENT2(anim_animate_color);
+
+//////////////////////////////////////////////////////////////////////////
+// anim:animate
+class anim_animate : public office_element_impl<anim_animate>
+{
+public:
+	static const wchar_t* ns;
+	static const wchar_t* name;
+	static const xml::NodeType xml_type = xml::typeElement;
+	static const ElementType type = typeAnimAnimate;
+	CPDOCCORE_DEFINE_VISITABLE();
+
+	virtual void pptx_convert(oox::pptx_conversion_context& Context);
+
+	odf_types::common_anim_smil_attlist			common_attlist_;
+	odf_types::anim_animate_attlist				animate_attlist_;
+
+private:
+	virtual void add_child_element(xml::sax* Reader, const std::wstring& Ns, const std::wstring& Name) {}
+	virtual void add_attributes(const xml::attributes_wc_ptr& Attributes);
+};
+CP_REGISTER_OFFICE_ELEMENT2(anim_animate);
+
+//////////////////////////////////////////////////////////////////////////
+// anim:animateTransform
+class anim_animate_transform : public office_element_impl<anim_animate_transform>
+{
+public:
+	static const wchar_t* ns;
+	static const wchar_t* name;
+	static const xml::NodeType xml_type = xml::typeElement;
+	static const ElementType type = typeAnimAnimateTransform;
+	CPDOCCORE_DEFINE_VISITABLE();
+
+	virtual void pptx_convert(oox::pptx_conversion_context& Context);
+
+	odf_types::common_anim_smil_attlist				common_attlist_;
+	odf_types::anim_animate_transform_attlist		animate_transform_attlist_;
+
+private:
+	virtual void add_child_element(xml::sax* Reader, const std::wstring& Ns, const std::wstring& Name) {}
+	virtual void add_attributes(const xml::attributes_wc_ptr& Attributes);
+};
+CP_REGISTER_OFFICE_ELEMENT2(anim_animate_transform);
 }
 }

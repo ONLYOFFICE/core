@@ -67,17 +67,18 @@ namespace OOX
 		public:
 			WritingElement_AdditionMethods(CExternalSheetNames)
             WritingElement_XlsbConstructors(CExternalSheetNames)
-			
+
 			CExternalSheetNames();
 			virtual ~CExternalSheetNames();
 
 			virtual void fromXML(XmlUtils::CXmlNode& oNode);
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			
+
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual std::wstring toXML() const;
 
-			void fromBin(XLS::BaseObjectPtr& obj);			
+			void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
 			virtual EElementType getType() const;
 		};
 		class CAlternateUrls : public WritingElement
@@ -103,7 +104,7 @@ namespace OOX
 
 			nullable<SimpleTypes::CRelationshipId> m_oAbsoluteUrlRid;
 			nullable<SimpleTypes::CRelationshipId> m_oRelativeUrlRid;
-			
+
 			nullable_string m_oDriveId;
 			nullable_string m_oItemId;
 		};
@@ -122,6 +123,7 @@ namespace OOX
 			virtual std::wstring toXML() const;
 
 			void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
 
 			virtual EElementType getType() const;
 			void ReadAttributes(XLS::BaseObjectPtr& obj);
@@ -145,6 +147,7 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual std::wstring toXML() const;
 			void fromBin(std::vector<XLS::BaseObjectPtr>& obj);
+			std::vector<XLS::BaseObjectPtr> toBin();
 			virtual EElementType getType() const;
 		};
 
@@ -162,16 +165,17 @@ namespace OOX
 			virtual std::wstring toXML() const;
 
 			void fromBin(XLS::BaseObjectPtr& obj);
-
+			XLS::BaseObjectPtr toBin();
+			
 			virtual EElementType getType() const;
 			void ReadAttributes(XLS::BaseObjectPtr& obj);
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-		
-			nullable<std::wstring>								m_oRef;
-			nullable<SimpleTypes::Spreadsheet::CCellTypeType>	m_oType;
-			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oValueMetadata;
 
-			nullable<CText>		m_oValue;
+			nullable_string m_oRef;
+			nullable<SimpleTypes::Spreadsheet::CCellTypeType> m_oType;
+			nullable_uint m_oValueMetadata;
+
+			nullable<CText> m_oValue;
 		};
 
 		class CExternalRow : public WritingElementWithChilds<CExternalCell>
@@ -188,6 +192,7 @@ namespace OOX
 			virtual std::wstring toXML() const;
 
 			void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
 
 			virtual EElementType getType() const;
 			void ReadAttributes(XLS::BaseObjectPtr& obj);
@@ -210,6 +215,7 @@ namespace OOX
 			virtual std::wstring toXML() const;
 
 			void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
 
 			virtual EElementType getType() const;
 			void ReadAttributes(XLS::BaseObjectPtr& obj);
@@ -233,7 +239,7 @@ namespace OOX
 			virtual std::wstring toXML() const;
 
 			void fromBin(std::vector<XLS::BaseObjectPtr>& obj);
-
+			std::vector<XLS::BaseObjectPtr> toBin();
 			virtual EElementType getType() const;
 		};
 
@@ -251,6 +257,7 @@ namespace OOX
 			virtual std::wstring toXML() const;
 
 			void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
 
 			virtual EElementType getType() const;
 			void ReadAttributes(XLS::BaseObjectPtr& obj);
@@ -278,6 +285,7 @@ namespace OOX
 			virtual std::wstring toXML() const;
 
 			void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
 
 			virtual EElementType getType() const;
 			void ReadAttributes(XLS::BaseObjectPtr& obj);
@@ -301,6 +309,7 @@ namespace OOX
 			virtual std::wstring toXML() const;
 
 			void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
 			virtual EElementType getType() const;
 
 			void ReadAttributes(XLS::BaseObjectPtr& obj);
@@ -324,6 +333,7 @@ namespace OOX
 			virtual std::wstring toXML() const;
 
 			void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
 
 			virtual EElementType getType() const;
 			void ReadAttributes(XLS::BaseObjectPtr& obj);
@@ -353,6 +363,7 @@ namespace OOX
 			virtual std::wstring toXML() const;
 
 			void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
 			virtual EElementType getType() const;
 		};
 
@@ -371,6 +382,7 @@ namespace OOX
 			virtual std::wstring toXML() const;
 
 			void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
 
 			virtual EElementType getType() const;
 			void ReadAttributes(XLS::BaseObjectPtr& obj);
@@ -396,6 +408,7 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual std::wstring toXML() const;
 			void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
 
 			virtual EElementType getType() const;
 			void ReadAttributes(XLS::BaseObjectPtr& obj);
@@ -420,6 +433,7 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual std::wstring toXML() const;
 			void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
 			virtual EElementType getType() const;
 		};
 
@@ -437,6 +451,7 @@ namespace OOX
 			virtual std::wstring toXML() const;
 
 			void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
 			virtual EElementType getType() const;
 			void ReadAttributes(XLS::BaseObjectPtr& obj);
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
@@ -454,7 +469,9 @@ namespace OOX
 			CExternalLink(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath, const std::wstring & rId);
 			virtual ~CExternalLink();
 
+			XLS::BaseObjectPtr writeBin() const;
 			void readBin(const CPath& oPath);
+
 			virtual void read(const CPath& oPath);
 			virtual void read(const CPath& oRootPath, const CPath& oPath);
 			virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const;

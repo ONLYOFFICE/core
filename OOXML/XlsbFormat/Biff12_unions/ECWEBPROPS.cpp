@@ -76,7 +76,7 @@ namespace XLSB
 		else
 			m_bBrtEndECWebProps = false;
 
-        return m_BrtBeginECWebProps && m_ECWPTABLES && m_bBrtEndECWebProps;
+        return m_BrtBeginECWebProps && m_bBrtEndECWebProps;
     }
 
 	const bool ECWEBPROPS::saveContent(XLS::BinProcessor & proc)

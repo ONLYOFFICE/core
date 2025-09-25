@@ -71,10 +71,30 @@ void SerStr::load(CFRecord& record)
     }
 }
 
+void SerStr::save(CFRecord& record)
+{
+    char serType;
+    if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+    {
+        serType = 2;
+        record << serType << string_;
+    }
+    else
+    {
+        serType = 1;
+        rgch = string_;
+        cch = string_.getSize();
+        record <<serType << cch;
+        for(auto i:rgch)
+        {
+            record.storeAnyData(i);
+        }
+    }
+}
 
 const std::wstring SerStr::toString() const
 {
-	return L"\"" + boost::algorithm::replace_all_copy(std::wstring(string_), L"\"", L"\"\"") + L"\"";
+    return L"\"" + boost::algorithm::replace_all_copy(std::wstring(rgch), L"\"", L"\"\"") + L"\"";
 }
 
 

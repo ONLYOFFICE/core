@@ -56,17 +56,20 @@ namespace odf_writer
 
 odf_text_context::odf_text_context(odf_conversion_context *odf_context, odf_style_context_ptr styles_context)
 {
-	odf_context_				= odf_context;
-	styles_context_				= styles_context;
-	
-	single_paragraph_			= false;
-	paragraph_properties_		= NULL;
-	text_properties_			= NULL;
+	odf_context_ = odf_context;
+	styles_context_ = styles_context;
 
-	current_outline_			= -1;
-	in_field_					= false;	
-	keep_next_paragraph_		= false;	
-	list_state_.started_list	= false;
+	single_paragraph_ = false;
+	paragraph_properties_ = NULL;
+	text_properties_ = NULL;
+
+	current_outline_ = -1;
+	in_field_ = false;
+	keep_next_paragraph_ = false;
+	list_state_.started_list = false;
+
+	is_hyperlink_ = false;
+	level_hyperlink_ = 0;
 }
 odf_text_context::~odf_text_context()
 {
@@ -269,6 +272,12 @@ void odf_text_context::start_paragraph(bool styled)
 	start_paragraph(paragr_elm, styled);
 
 }
+std::wstring odf_text_context::get_current_style_name()
+{
+	if (current_level_.empty()) return L"";
+
+	return current_level_.back().style_name;
+}
 void odf_text_context::start_paragraph(office_element_ptr & elm, bool styled)
 {
 	size_t level = current_level_.size();
@@ -376,6 +385,10 @@ void odf_text_context::end_element()
 		int t = 0;
 	}
 }
+int odf_text_context::get_last_level()
+{
+	return (int)current_level_.size();
+}
 void odf_text_context::start_span(bool styled)
 {
 	if (styles_context_ == NULL || single_paragraph_)return;
@@ -422,7 +435,13 @@ void odf_text_context::start_span(bool styled)
 
 	current_level_.push_back(state);
 }
+bool odf_text_context::in_span()
+{
+	if (false == current_level_.empty() && dynamic_cast<text_span*>(current_level_.back().elm.get()))
+		return true;
 
+	return false;
+}
 void odf_text_context::end_span()
 {
 	if (styles_context_ == NULL || single_paragraph_)return;
@@ -522,11 +541,11 @@ void odf_text_context::end_list()
 }
 //------------------------------------------------------------------------------------------  LIST
 
-bool odf_text_context::start_field(int type, const std::wstring& value, const std::wstring& format)
+office_element_ptr odf_text_context::start_field(int type, const std::wstring& value, const std::wstring& format)
 {
-	if (single_paragraph_ == true) return false;
-
 	office_element_ptr elm;
+
+	if (single_paragraph_ == true) return elm;
 
 	switch(type)
 	{
@@ -596,6 +615,27 @@ bool odf_text_context::start_field(int type, const std::wstring& value, const st
 		{
 			create_element(L"text", L"text-input", elm, odf_context_);
 		}break;
+		case fieldRef:
+		{
+			create_element(L"text", L"bookmark-ref", elm, odf_context_);
+			text_bookmark_ref* ref = dynamic_cast<text_bookmark_ref*>(elm.get());
+			if (ref)
+			{
+				if (false == value.empty()) ref->ref_name_ = value;
+
+				ref->reference_format_ = odf_types::reference_format::parse(format.empty() ? L"text" : format);
+
+			}
+		}break;
+		case fieldUserDefined:
+		{
+			create_element(L"text", L"user-defined", elm, odf_context_);
+			text_user_defined* user_defined = dynamic_cast<text_user_defined*>(elm.get());
+			if (user_defined)
+			{
+				if (false == value.empty()) user_defined->text_name_ = value;
+			}
+		}break;
 	}
 
 	if (elm)
@@ -604,10 +644,8 @@ bool odf_text_context::start_field(int type, const std::wstring& value, const st
 		start_element(elm);
 
 		current_level_.back().type = 3;
-	
-		return true;
-	}
-	return false;
+		}
+	return elm;
 }
 
 void odf_text_context::end_field()
@@ -663,9 +701,14 @@ void odf_text_context::add_hyperlink (const std::wstring & link, const std::wstr
 	if (!display.empty())
 		hyperlink->add_text(display);
 ////////////////////////////
-
-	hyperlink->common_xlink_attlist_.href_	= link + (location.empty() ? L"" : (L"#" + location));
-	hyperlink->common_xlink_attlist_.type_	= xlink_type::Simple;
+	
+	if (!link.empty())
+	{
+		hyperlink->common_xlink_attlist_.href_ = link + (location.empty() ? L"" : (L"#" + location));
+		hyperlink->common_xlink_attlist_.type_ = xlink_type::Simple;
+	}
+	else 
+		odf_context_->add_hyperlink(elm, location);
 	
 	if (false == current_level_.empty())
 		current_level_.back().elm->add_child_element(elm);
@@ -729,7 +772,7 @@ bool odf_text_context::set_type_break(int type, int clear)//todooo clear ???
 	{
 		need_break_		= boost::none;
 	}
-	else if (type == 0)//brtypeColumn 
+	else if (type == 0)//brtypeColumn
 	{
 		need_break_		= fo_break(fo_break::Column);
 		need_restart	= true;
@@ -737,13 +780,13 @@ bool odf_text_context::set_type_break(int type, int clear)//todooo clear ???
 	else if (type == 1)//brtypePage
 	{
 		office_element_ptr elm;
-		create_element(L"text", L"soft-page-break", elm, odf_context_);	
+		create_element(L"text", L"soft-page-break", elm, odf_context_);
 		
 		start_element(elm);
 		end_element();
 		
 		need_break_		= fo_break(fo_break::Page);
-		need_restart	= true;
+		need_restart	= clear != 0; // brclearAll = 0,
 	}
 	else //brtypeTextWrapping
 	{
@@ -751,8 +794,9 @@ bool odf_text_context::set_type_break(int type, int clear)//todooo clear ???
 		create_element(L"text", L"line-break", elm, odf_context_);
 
 		if (current_level_.size() > 0)
-			current_level_.back().elm->add_child_element(elm);	
+			current_level_.back().elm->add_child_element(elm);
 	}
+
 	return need_restart;
 }
 

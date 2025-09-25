@@ -40,7 +40,20 @@ enum OfficeDrawingFileType
     odftPDF = 0,
     odftXPS = 1,
     odftDJVU = 2,
+    odftOFD = 3,
     odftUndefined = 255
+};
+
+struct COfficeDrawingPageParams
+{
+	bool m_bNeedDrawAnnotation;
+
+	COfficeDrawingPageParams() : m_bNeedDrawAnnotation(true){}
+
+	void SetDrawAnnotation(bool bDraw)
+	{
+		m_bNeedDrawAnnotation = bDraw;
+	}
 };
 
 class GRAPHICS_DECL IOfficeDrawingFile
@@ -70,19 +83,21 @@ public:
     // Pages info/draw
     virtual int GetPagesCount() = 0;
     virtual void GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY) = 0;
-    virtual void DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak) = 0;
+    virtual void DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak, COfficeDrawingPageParams* pParams = NULL) = 0;
 
     // Common methods/wrappers on GetPageInfo + DrawPageOnRenderer
     virtual unsigned char* ConvertToPixels(int nPageIndex, int nRasterW, int nRasterH,
                                            bool bIsFlip = false,
                                            NSFonts::IFontManager* pFonts = NULL,
                                            int nBackgroundColor = 0xFFFFFF,
-                                           bool bIsDarkMode = false);
+                                           bool bIsDarkMode = false,
+                                           int nBackgroundOpacity = 0xFF);
     virtual void ConvertToRaster(int nPageIndex, const std::wstring& path, int nImageType, const int nRasterW = -1, const int nRasterH = -1,
                                  bool bIsFlip = false,
                                  NSFonts::IFontManager* pFonts = NULL,
                                  int nBackgroundColor = 0xFFFFFF,
-                                 bool bIsDarkMode = false);
+                                 bool bIsDarkMode = false,
+                                 int nBackgroundOpacity = 0xFF);
 
     // Common methods for viewer
     virtual std::wstring GetInfo() = 0;

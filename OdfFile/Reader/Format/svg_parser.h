@@ -36,30 +36,39 @@
 #include <string>
 #include <vector>
 
-#include <boost/regex.hpp>
-
 #include "../../Common/CPOptional.h"
 
 namespace svg_path
 {
 	struct _point
 	{
-		_point(double _x,double _y){x=_x; y=_y;}
-		
+		_point() {}
+		_point(double _x, double _y) { x = _x; y = _y; }
+
 		_CP_OPT(double) x;
 		_CP_OPT(double) y;
-		
 	};
 	struct _polyline
 	{
 		std::wstring command;
-		std::vector<_point> points; //будем бить строку пути по количеству точек в буковках
+		std::vector<_point> points;
+	};
+	struct _pointS
+	{
+		_pointS(const std::wstring& _x, const std::wstring& _y) { x = _x; y = _y; }
 
+		_CP_OPT(std::wstring) x;
+		_CP_OPT(std::wstring) y;
+	};
+	struct _polylineS
+	{
+		std::wstring command;
+		std::vector<_pointS> points;
 	};
 
-	bool parseVml(std::vector<_polyline> & Polyline, const std::wstring &  path);
-	bool parseSvgD(std::vector<_polyline> & Polyline, const std::wstring &  path, bool bWrongPositionAfterZ, bool & bIsClosed, bool & bIsStroked);
-	bool parsePolygon(std::vector<_polyline> & Polyline, const std::wstring &  path, bool bWrongPositionAfterZ, bool closed);
+	bool parseVml(std::vector<_polyline>& Polyline, const std::wstring& path);
+	bool parseSvgD(std::vector<_polyline>& Polyline, const std::wstring& path, bool bWrongPositionAfterZ, bool& bIsClosed, bool& bIsStroked);
+	bool parsePolygon(std::vector<_polyline>& Polyline, const std::wstring& path, bool bWrongPositionAfterZ, bool closed);
+
+	bool parseSvgS(std::vector<_polylineS>& Polyline, const std::wstring& path, bool bWrongPositionAfterZ, bool& bIsClosed, bool& bIsStroked, std::wstring& wsNewFormula, std::wstring &wsH, std::wstring &wsW);
 }
-
-

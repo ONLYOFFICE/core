@@ -30,6 +30,7 @@
  *
  */
 #include "CSVWriter.h"
+#include "../Reader/CellFormatController/LocalInfo.h"
 #include "../../../../UnicodeConverter/UnicodeConverter.h"
 #include "../../../../UnicodeConverter/UnicodeConverter_Encodings.h"
 #include "../../../../DesktopEditor/common/StringBuilder.h"
@@ -57,7 +58,7 @@
 class CSVWriter::Impl
 {
 public:
-	Impl(OOX::Spreadsheet::CXlsx &oXlsx, unsigned int m_nCodePage, const std::wstring& sDelimiter, bool m_bJSON);
+    Impl(OOX::Spreadsheet::CXlsx &oXlsx, unsigned int m_nCodePage, const std::wstring& sDelimiter, int Lcid, bool m_bJSON);
 	~Impl();
 
 	bool Start(const std::wstring &sFileDst);
@@ -73,8 +74,10 @@ private:
 	NSFile::CFileBinary m_oFile;
 	OOX::Spreadsheet::CXlsx& m_oXlsx;
 	unsigned int m_nCodePage;
+    int m_nLcid;
 	const std::wstring& m_sDelimiter;
-	bool m_bJSON;
+	bool m_bJSON = false;
+	bool m_bShowFormulas = false;
 
 	MS_LCID_converter m_lcidConverter;
 
@@ -120,13 +123,13 @@ CSVWriter::CSVWriter()
 CSVWriter::~CSVWriter()
 {
 }
-void CSVWriter::Init(OOX::Spreadsheet::CXlsx &oXlsx, unsigned int nCodePage, const std::wstring& sDelimiter, bool bJSON)
+void CSVWriter::Init(OOX::Spreadsheet::CXlsx &oXlsx, unsigned int nCodePage, const std::wstring& sDelimiter, int Lcid, bool bJSON)
 {
-	impl_ = boost::shared_ptr<Impl>(new CSVWriter::Impl(oXlsx, nCodePage, sDelimiter, bJSON));
+    impl_ = boost::shared_ptr<Impl>(new CSVWriter::Impl(oXlsx, nCodePage, sDelimiter, Lcid, bJSON));
 }
-void CSVWriter::Xlsx2Csv(const std::wstring &sFileDst, OOX::Spreadsheet::CXlsx &oXlsx, unsigned int nCodePage, const std::wstring& sDelimiter, bool bJSON)
+void CSVWriter::Xlsx2Csv(const std::wstring &sFileDst, OOX::Spreadsheet::CXlsx &oXlsx, unsigned int nCodePage, const std::wstring& sDelimiter, int Lcid, bool bJSON)
 {
-	Init(oXlsx, nCodePage, sDelimiter, bJSON);
+    Init(oXlsx, nCodePage, sDelimiter, Lcid, bJSON);
 
 	impl_->Start(sFileDst);
 
@@ -332,21 +335,77 @@ std::wstring CSVWriter::Impl::convert_date_time(const std::wstring & sValue, std
 
 			if (bDate)
 			{
-				std::wstringstream wss;
-				wss.imbue(loc_);
-
+                //std::wstringstream wss;
+                //wss.imbue(loc_);
 
 				std::time_t now = std::time(nullptr);
     			std::tm* currentTime = std::localtime(&now);
+                currentTime->tm_year = date_.year();
+                currentTime->tm_mon = date_.month();
+                currentTime->tm_mday = date_.day();
 
-				currentTime->tm_year = date_.year() - 1900;  // Устанавливаем год
-				currentTime->tm_mon = date_.month() - 1;     // Устанавливаем месяц (от 0 до 11)
-				currentTime->tm_mday = date_.day();          // Устанавливаем день
+                auto locInf = lcInfo::getLocalInfo(m_nLcid);
+                for(auto part: locInf.ShortDatePattern)
+                {
+                    switch(part)
+                    {
+                        case L'0':
+                        {
+                            date_str += std::to_wstring(currentTime->tm_mday);
+                            break;
+                        }
+                        case L'1':
+                        {
+                            if(currentTime->tm_mday < 10)
+                                date_str+= L'0';
+                            date_str += std::to_wstring(currentTime->tm_mday);
+                            break;
+                        }
+                        case L'2':
+                        {
+                            date_str += std::to_wstring(currentTime->tm_mon);
+                            break;
+                        }
+                        case L'3':
+                        {
+                            if(currentTime->tm_mon < 10)
+                                date_str+= L'0';
+                            date_str += std::to_wstring(currentTime->tm_mon);
+                            break;
+                        }
+                        case L'4':
+                        {
+                            if (currentTime->tm_year >= 1000)
+                            {
+                                auto sringYear = std::to_wstring(currentTime->tm_year);
+                                auto lastTwoChars = sringYear.substr(sringYear.length() - 2);
+                                date_str += sringYear;
+                            }
+                            else
+                                date_str += std::to_wstring(currentTime->tm_year);
+                            break;
+                        }
+                        case L'5':
+                        {
+                            date_str += std::to_wstring(currentTime->tm_year);
+                            break;
+                        }
+                        default:
+                            break;
+                    }
+                    if(part != locInf.ShortDatePattern.back())
+                        date_str += locInf.DateSeparator;
+
+                }
+
+                //currentTime->tm_year = date_.year() - 1900;  // Устанавливаем год
+                //currentTime->tm_mon = date_.month() - 1;     // Устанавливаем месяц (от 0 до 11)
+                //currentTime->tm_mday = date_.day();          // Устанавливаем день
 
 
-				wss << std::put_time(currentTime, L"%x");  // Формат "%x" - формат даты для текущей локали
+                //wss << std::put_time(currentTime, L"%x");  // Формат "%x" - формат даты для текущей локали
 
-				date_str = wss.str();
+                //date_str = wss.str();
 			}
 
 			if (bTime)
@@ -411,8 +470,8 @@ std::wstring CSVWriter::Impl::convert_date_time(const std::wstring & sValue, std
 
 				switch (format_code[i])
 				{
-				case L'\\': continue;
-				case L'/': output += L"."; break;
+                case L'\\': continue;//
+                //case L'/': output += L"."; break;
 				case L'a': output += sAferTime; break;
 				case L'd':
 				case L'D':
@@ -454,6 +513,20 @@ std::wstring CSVWriter::Impl::convert_date_time(const std::wstring & sValue, std
 						{
 							output += std::to_wstring(month);
 						}
+                        else if(m_nLcid > 0)
+                        {
+
+                            auto locInf = lcInfo::getLocalInfo(m_nLcid);
+                            if(symbol_size == 3)
+                            {
+                                output+= locInf.GetLocMonthName(month-1, true);
+
+                            }
+                            else
+                            {
+                                output+= locInf.GetLocMonthName(month-1);
+                            }
+                        }
 						else
 						{
 							std::shared_ptr<boost::gregorian::date_facet> df;
@@ -616,7 +689,7 @@ void WriteFile(NSFile::CFileBinary *pFile, wchar_t **pWriteBuffer, int &nCurrent
 		nCurrentIndex += (int)nCountChars;
 	}
 }
-CSVWriter::Impl::Impl(OOX::Spreadsheet::CXlsx &m_oXlsx, unsigned int m_nCodePage, const std::wstring& m_sDelimiter, bool m_bJSON) : m_oXlsx(m_oXlsx), m_nCodePage(m_nCodePage), m_sDelimiter(m_sDelimiter), m_bJSON(m_bJSON), loc_("")
+CSVWriter::Impl::Impl(OOX::Spreadsheet::CXlsx &m_oXlsx, unsigned int m_nCodePage, const std::wstring& m_sDelimiter, int Lcid,  bool m_bJSON) : m_oXlsx(m_oXlsx), m_nCodePage(m_nCodePage), m_sDelimiter(m_sDelimiter), m_bJSON(m_bJSON), loc_(""), m_nLcid(Lcid)
 {
 	m_pWriteBuffer = NULL;
 	m_nCurrentIndex = 0;
@@ -627,6 +700,8 @@ CSVWriter::Impl::Impl(OOX::Spreadsheet::CXlsx &m_oXlsx, unsigned int m_nCodePage
 	m_bIsWriteCell = false;
 	m_bStartRow = true;
 	m_bStartCell = true;
+
+	m_bShowFormulas = false;
 
 	m_nColDimension = 1;
 }
@@ -664,6 +739,15 @@ void CSVWriter::Impl::WriteSheetStart(OOX::Spreadsheet::CWorksheet* pWorksheet)
 	if (m_bJSON)
 	{
 		WriteFile(&m_oFile, &m_pWriteBuffer, m_nCurrentIndex, g_sBkt, m_nCodePage);
+	}
+	
+	if (pWorksheet && pWorksheet->m_oSheetViews.IsInit() && false == pWorksheet->m_oSheetViews->m_arrItems.empty())
+	{
+		if (pWorksheet->m_oSheetViews->m_arrItems[0]->m_oShowFormulas.IsInit() &&
+			pWorksheet->m_oSheetViews->m_arrItems[0]->m_oShowFormulas->ToBool())
+		{
+			m_bShowFormulas = true;
+		}
 	}
 }
 void CSVWriter::Impl::WriteRowStart(OOX::Spreadsheet::CRow *pRow)
@@ -731,7 +815,12 @@ void CSVWriter::Impl::WriteCell(OOX::Spreadsheet::CCell *pCell)
 	//}
 	//else
 	bool bString = false;
-	if (pCell->m_oValue.IsInit())
+	
+	if (m_bShowFormulas && pCell->m_oFormula.IsInit())
+	{
+		sCellValue = L"=" + pCell->m_oFormula->m_sText;
+	}
+	else if (pCell->m_oValue.IsInit())
 	{
 		sCellValue = pCell->m_oValue->ToString();
 
@@ -793,8 +882,11 @@ void CSVWriter::Impl::WriteCell(OOX::Spreadsheet::CCell *pCell)
 				}
 			}
 			sCellValue = ConvertValueCellToString(sCellValue, format_type, format_code);
-
 		}
+	}
+	if (pCell->m_oFormula.IsInit() && sCellValue.empty())
+	{
+		sCellValue = L"=" + pCell->m_oFormula->m_sText;
 	}
 
 	// Escape cell value
@@ -870,16 +962,63 @@ void CSVWriter::Impl::GetDefaultFormatCode(int numFmt, std::wstring & format_cod
 	case 12:	format_code = L"# ?/?";				format_type = SimpleTypes::Spreadsheet::celltypeFraction; break;
 	case 13:	format_code = L"# ??/??";			format_type = SimpleTypes::Spreadsheet::celltypeFraction; break;
 
-	case 14:	format_code = L"mm-dd-yy";			format_type = SimpleTypes::Spreadsheet::celltypeDate; break;
-	case 15:	format_code = L"d-mmm-yy";			format_type = SimpleTypes::Spreadsheet::celltypeDate; break;
-	case 16:	format_code = L"d-mmm";				format_type = SimpleTypes::Spreadsheet::celltypeDate; break;
-	case 17:	format_code = L"mmm-yy";			format_type = SimpleTypes::Spreadsheet::celltypeDate; break;
+    case 14:
+        if(m_nLcid <= 0)
+            format_code = L"mm-dd-yy";
+        else
+        {
+            auto locInf = lcInfo::getLocalInfo(m_nLcid);
+            format_code = locInf.GetShortDateFormat();
+        }
+        format_type = SimpleTypes::Spreadsheet::celltypeDate; break;
+
+    case 15:
+        if(m_nLcid <= 0)
+            format_code = L"d-mmm-yy";
+        else
+        {
+            auto locInf = lcInfo::getLocalInfo(m_nLcid);
+            format_code = L"d";
+            if(locInf.ShortDatePattern.find(L"1") != std::wstring::npos)
+                format_code += L"d";
+            format_code += locInf.DateSeparator + L"mmm" + locInf.DateSeparator + L"yy";
+        }
+        format_type = SimpleTypes::Spreadsheet::celltypeDate; break;
+    case 16:
+        if(m_nLcid <= 0)
+            format_code = L"d-mmm";
+        else
+        {
+            auto locInf = lcInfo::getLocalInfo(m_nLcid);
+            format_code = L"d";
+            if(locInf.ShortDatePattern.find(L"1") != std::wstring::npos)
+                format_code += L"d";
+            format_code += locInf.DateSeparator + L"mmm";
+        }
+        format_type = SimpleTypes::Spreadsheet::celltypeDate; break;
+    case 17:
+        if(m_nLcid <= 0)
+            format_code = L"mmm-yy";
+        else
+        {
+            auto locInf = lcInfo::getLocalInfo(m_nLcid);
+            format_code = L"mmm" + locInf.DateSeparator + L"yy";
+        }
+        format_type = SimpleTypes::Spreadsheet::celltypeDate; break;
 
 	case 18:	format_code = L"h:mm AM/PM";		format_type = SimpleTypes::Spreadsheet::celltypeTime; break;
 	case 19:	format_code = L"h:mm:ss AM/PM";		format_type = SimpleTypes::Spreadsheet::celltypeTime; break;
 	case 20:	format_code = L"h:mm";				format_type = SimpleTypes::Spreadsheet::celltypeTime; break;
 	case 21:	format_code = L"h:mm:ss";			format_type = SimpleTypes::Spreadsheet::celltypeTime; break;
-	case 22:	format_code = L"m/d/yy h:mm";		format_type = SimpleTypes::Spreadsheet::celltypeDateTime; break;
+    case 22:
+        if(m_nLcid <= 0)
+        format_code = L"m/d/yy h:mm";
+        else
+        {
+            auto locInf = lcInfo::getLocalInfo(m_nLcid);
+            format_code = locInf.GetShortDateFormat() + L" h:mm";
+        }
+        format_type = SimpleTypes::Spreadsheet::celltypeDateTime; break;
 
 	case 37:	format_code = L"#,##0 ;(#,##0)";		format_type = SimpleTypes::Spreadsheet::celltypeNumber; break;
 	case 38:	format_code = L"#,##0 ;[Red](#,##0)";	format_type = SimpleTypes::Spreadsheet::celltypeNumber; break;

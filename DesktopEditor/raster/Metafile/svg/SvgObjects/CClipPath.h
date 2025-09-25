@@ -5,6 +5,12 @@
 
 namespace SVG
 {
+	typedef enum
+	{
+		ClipU_ObjectBoundingBox,
+		ClipU_UserSpaceOnUse
+	}ClipUnits;
+
 	class CClipPath : public CAppliedObject
 	{
 	public:
@@ -19,6 +25,7 @@ namespace SVG
 		friend class CMask;
 
 		CContainer<CRenderedObject> m_oContainer;
+		ClipUnits m_enUnits;
 	};
 }
 

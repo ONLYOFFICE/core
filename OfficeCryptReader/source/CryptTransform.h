@@ -40,12 +40,14 @@ namespace CRYPT_METHOD
 {
 	enum _hashAlgorithm
 	{
+        None,
 		MD5,
 		SHA1,
 		SHA224,
 		SHA256,
 		SHA384,
-		SHA512
+        SHA512,
+        PBKDF2
 	};
 
 	enum _cipherAlgorithm
@@ -81,6 +83,7 @@ struct _ecmaWriteProtectData
 	std::string saltValue;
 	std::string hashValue;
 };
+typedef _ecmaWriteProtectData _odfWriteProtectData;
 struct _ecmaCryptData
 {
 //default ms2010		
@@ -162,21 +165,22 @@ private:
 };
 
 //---------------------------------------------------------------------------------------------------
-class odfWriteProtect
+class ODFWriteProtect
 {
 public:
-	odfWriteProtect() : hash(CRYPT_METHOD::SHA1) {}
+    ODFWriteProtect(){}
+    virtual ~ODFWriteProtect(){}
 
-	void SetPassword (const std::wstring & password);
-	void SetProtectKey (const std::string & protect_key);
-	void SetProtectAlgorithm (const CRYPT_METHOD::_hashAlgorithm & hash);
+    void SetPassword (const std::wstring &password);
+
+    void SetCryptData(_odfWriteProtectData &data);
+    void GetCryptData(_odfWriteProtectData &data);
 
 	void Generate();
 	bool Verify();
 private:
-	std::wstring password;
-	CRYPT_METHOD::_hashAlgorithm hash;
-	std::string protect_key;
+    std::wstring			password;
+    _odfWriteProtectData	data;
 };
 //---------------------------------------------------------------------------------------------------
 class ECMAEncryptor 

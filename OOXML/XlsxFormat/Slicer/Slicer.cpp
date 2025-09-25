@@ -38,6 +38,8 @@
 
 #include "../../DocxFormat/Drawing/DrawingExt.h"
 
+#include "../../Binary/XlsbFormat/FileTypes_SpreadsheetBin.h"
+
 namespace OOX
 {
 namespace Spreadsheet
@@ -71,6 +73,14 @@ void CSlicers::fromBin(XLS::BaseObjectPtr& obj)
         for(auto &slicer : ptr->m_arSLICER)
             m_oSlicer.push_back(CSlicer(slicer));
     }
+}
+XLS::BaseObjectPtr CSlicers::toBin()
+{
+	auto ptr(new XLSB::SLICERS);
+	XLS::BaseObjectPtr objectPtr(ptr);
+	for(auto i:m_oSlicer)
+		ptr->m_arSLICER.push_back(i.toBin());
+	return objectPtr;
 }
 void CSlicers::toXML(NSStringUtils::CStringBuilder& writer, const std::wstring& sName) const
 {
@@ -169,6 +179,62 @@ void CSlicer::fromBin(XLS::BaseObjectPtr& obj)
     {
         ReadAttributes(ptr->m_BrtBeginSlicer);
     }
+}
+XLS::BaseObjectPtr CSlicer::toBin()
+{
+	auto ptr1(new XLSB::SLICER);
+	XLS::BaseObjectPtr objectPtr(ptr1);
+	auto ptr(new XLSB::BeginSlicer);
+	ptr1->m_BrtBeginSlicer = XLS::BaseObjectPtr{ptr};
+
+	if(m_oStartItem.IsInit())
+		ptr->dwStartSlicerItem = m_oStartItem.get();
+	else
+		ptr->dwStartSlicerItem = 0;
+	if(m_oColumnCount.IsInit())
+		ptr->dwColumnCount = m_oColumnCount.get();
+	else
+		ptr->dwColumnCount = 1;
+	if(m_oShowCaption.IsInit())
+		ptr->fCaptionVisible = m_oShowCaption.get();
+	if(m_oLevel.IsInit())
+		ptr->dwLevel = m_oLevel.get();
+	else
+	 	ptr->dwLevel = 0;
+	if(m_oLockedPosition.IsInit())
+		ptr->fLockedPosition = m_oLockedPosition.get();
+    else
+        ptr->fLockedPosition = false;
+	if(m_oRowHeight.IsInit())
+		ptr->dxRowHeight = m_oRowHeight.get();
+
+    if(m_oName.IsInit())
+		ptr->stName = m_oName.get();
+	else if(m_oUid.IsInit())
+		ptr->stName = m_oUid.get();
+	else
+        ptr->stName = 0xFFFFFFFF;
+	if(m_oCache.IsInit())
+		ptr->stSlicerCacheName = m_oCache.get();
+	else
+		ptr->stSlicerCacheName = 0xFFFFFFFF;
+	if(m_oCaption.IsInit())
+		ptr->stCaption = m_oCaption.get();
+	else
+	{
+		ptr->stCaption = 0xFFFFFFFF;
+		ptr->fCaptionVisible = false;
+		ptr->fHasCaption = false;
+	}
+
+	if(m_oStyle.IsInit())
+		ptr->stStyle = m_oStyle.get();
+	else
+	{
+		ptr->stStyle = 0xFFFFFFFF;
+		ptr->fHasStyle = false;
+	}
+	return objectPtr;
 }
 void CSlicer::ReadAttributes(XLS::BaseObjectPtr& obj)
 {
@@ -345,6 +411,15 @@ void CSlicerFile::readBin(const CPath& oPath)
     }
 }
 
+XLS::BaseObjectPtr CSlicerFile::WriteBin() const
+{
+	XLSB::SlicersStreamPtr slicersStream(new XLSB::SlicersStream);
+	XLS::BaseObjectPtr objectPtr(slicersStream);
+	if(m_oSlicers.IsInit())
+		slicersStream->m_SLICERS = m_oSlicers->toBin();
+	return objectPtr;
+}
+
 void CSlicerFile::read(const CPath& oRootPath, const CPath& oPath)
 {
 	m_oReadPath = oPath;
@@ -370,17 +445,34 @@ void CSlicerFile::write(const CPath& oPath, const CPath& oDirectory, CContentTyp
 {
 	if(!m_oSlicers.IsInit())
 		return;
+	CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
+	if ((xlsb) && (xlsb->m_bWriteToXlsb))
+	{
+		XLS::BaseObjectPtr object = WriteBin();
+		xlsb->WriteBin(oPath, object.get());
+	}
+	else
+	{
+		NSStringUtils::CStringBuilder sXml;
 
-	NSStringUtils::CStringBuilder sXml;
+		sXml.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
+		m_oSlicers->toXML(sXml, L"slicers");
 
-	sXml.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
-	m_oSlicers->toXML(sXml, L"slicers");
-
-	std::wstring sPath = oPath.GetPath();
-	NSFile::CFileBinary::SaveToFile(sPath, sXml.GetData());
-
+		std::wstring sPath = oPath.GetPath();
+		NSFile::CFileBinary::SaveToFile(sPath, sXml.GetData());
+	}
 	oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
 	IFileContainer::Write( oPath, oDirectory, oContent );
+}
+
+const OOX::FileType CSlicerFile::type() const
+{
+	CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
+			if ((xlsb) && (xlsb->m_bWriteToXlsb))
+			{
+				return OOX::SpreadsheetBin::FileTypes::SlicerBin;
+			}
+	return OOX::Spreadsheet::FileTypes::Slicer;
 }
 
 } //Spreadsheet

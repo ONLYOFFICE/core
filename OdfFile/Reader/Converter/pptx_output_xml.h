@@ -63,12 +63,19 @@ public:
 
     static pptx_xml_slide_ptr create(std::wstring const & name,int id);
 
+    // NOTE: Temp solution
+    // TODO: remove this method
+    void remove_timing_redundant_space();
+    
+    void set_show(bool show_);
+
 private:
 	std::wstring name_;
     std::wstringstream  strmData_;
     std::wstringstream  strmBackground_;
     std::wstringstream  strmTiming_;
 	std::wstring rId_;
+    bool show;
 
 	rels rels_;
 };
@@ -144,12 +151,14 @@ public:
 	//slideTiming
     
     void write_to(std::wostream & strm);
+    void set_name(const std::wstring& layout_name);
 
     static pptx_xml_slideLayout_ptr create(int id);
 
 private:
     std::wstringstream  strmData_;
 	std::wstring rId_;
+    std::wstring name;
 
 	rels rels_;
 };

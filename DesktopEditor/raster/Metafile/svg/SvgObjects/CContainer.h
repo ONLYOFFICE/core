@@ -3,8 +3,6 @@
 
 #include "CObjectBase.h"
 
-#include "../../../graphics/pro/Fonts.h"
-
 class CSvgFile;
 
 namespace SVG
@@ -16,20 +14,22 @@ namespace SVG
 	{
 	public:
 		CContainer(){}
-		~CContainer()
+		virtual ~CContainer()
 		{
 			Clear();
 		}
 
-		void Clear()
+		virtual void Clear()
 		{
 			for (TypeObject* pObject : m_arObjects)
-				delete pObject;
+				RELEASEINTERFACE(pObject);
+
+			m_arObjects.clear();
 		}
 
 		bool Empty() const
 		{
-		return m_arObjects.empty();
+			return m_arObjects.empty();
 		}
 
 		virtual bool AddObject(TypeObject* pObject)
@@ -68,10 +68,12 @@ namespace SVG
 		friend class CMask;
 		friend class CTSpan;
 		friend class CMarker;
+		friend class CSwitch;
 		friend class CPattern;
 		friend class CGradient;
 		friend class CClipPath;
 		friend class CTextPath;
+		friend class CLinearGradient;
 		friend class CGraphicsContainer;
 	};
 
@@ -81,11 +83,12 @@ namespace SVG
 		CGraphicsContainer(const std::wstring& wsName = L"GraphicsContainer");
 		CGraphicsContainer(XmlUtils::CXmlNode& oNode, CRenderedObject* pParent = NULL);
 		CGraphicsContainer(double dWidth, double dHeight, XmlUtils::CXmlNode& oNode, CRenderedObject* pParent = NULL);
-		CGraphicsContainer(const CGraphicsContainer& oGraphicsContainer);
+
+		virtual ~CGraphicsContainer();
 
 		void SetData(XmlUtils::CXmlNode& oNode);
 
-		bool Draw(IRenderer* pRenderer, const CSvgFile *pFile, CommandeMode oMode = CommandeModeDraw, const TSvgStyles* pOtherStyles = NULL) const override;
+		bool Draw(IRenderer* pRenderer, const CSvgFile *pFile, CommandeMode oMode = CommandeModeDraw, const TSvgStyles* pOtherStyles = NULL, const CRenderedObject* pContexObject = NULL) const override;
 
 		TRect GetWindow() const;
 		TRect GetViewBox() const;

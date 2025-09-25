@@ -61,10 +61,28 @@ void Formula::readFields(CFRecord& record)
 	fShrFmla		= GETBIT(flags, 3);
 	fClearErrors	= GETBIT(flags, 5);
 	
-	_UINT32 chn = 0;
-	record >> chn; // cache
+	if (bBiff_3_4 && record.getGlobalWorkbookInfo()->Version < 0x0600)
+	{
+	}
+	else
+	{
+		_UINT32 chn = 0;
+		record >> chn; // cache
+	}
 	
 	formula.load(record);
+}
+
+void Formula::writeFields(CFRecord& record)
+{
+    unsigned short flags = 0;
+    SETBIT(flags, 0, fAlwaysCalc);
+    SETBIT(flags, 2, fFill);
+    SETBIT(flags, 3, fShrFmla);
+    SETBIT(flags, 5, fClearErrors);
+    record << cell << val << flags;
+    record.reserveNunBytes(4);
+    formula.save(record);
 }
 
 const CellRef Formula::getLocation() const

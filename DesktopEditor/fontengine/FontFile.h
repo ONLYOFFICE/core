@@ -49,31 +49,31 @@
 
 static std::wstring GetCorrectSfntName(const char* name)
 {
-    if (NULL == name)
-        return L"";
-    const char* name_cur = name;
-    int name_len = 0;
-    while (*name_cur++)
-        ++name_len;
+	if (NULL == name)
+		return L"";
+	const char* name_cur = name;
+	int name_len = 0;
+	while (*name_cur++)
+		++name_len;
 
-    name_cur = name;
-    bool isUtf8 = false;
-    if (6 < name_len)
-    {
-        if ('<' == name[0] && 'u' == name[1] && 't' == name[2] &&
-            'f' == name[3] && '8' == name[4] && '>' == name[5])
-        {
-            name_cur = name + 6;
-            name_len -= 6;
-            isUtf8 = true;
-        }
-    }
+	name_cur = name;
+	bool isUtf8 = false;
+	if (6 < name_len)
+	{
+		if ('<' == name[0] && 'u' == name[1] && 't' == name[2] &&
+				'f' == name[3] && '8' == name[4] && '>' == name[5])
+		{
+			name_cur = name + 6;
+			name_len -= 6;
+			isUtf8 = true;
+		}
+	}
 
-    if (isUtf8)
-    {
-        return NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)name_cur, (LONG)name_len);
-    }
-    return NSFile::CUtf8Converter::GetUnicodeFromCharPtr(name_cur, (LONG)name_len);
+	if (isUtf8)
+	{
+		return NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)name_cur, (LONG)name_len);
+	}
+	return NSFile::CUtf8Converter::GetUnicodeFromCharPtr(name_cur, (LONG)name_len);
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------
@@ -92,7 +92,7 @@ public:
 
 	int			GID;
 
-	float		fAdvanceX; 
+	float		fAdvanceX;
 	float		fAdvanceY;
 
 	TBBox		oBBox;
@@ -127,8 +127,8 @@ public:
 class CVectorWorker
 {
 public:
-    FT_Outline_Funcs*  func_interface;
-    void*              user;
+	FT_Outline_Funcs*  func_interface;
+	void*              user;
 };
 
 class CFontFile;
@@ -161,28 +161,28 @@ class CFontFile : public NSFonts::IFontFile
 {
 public:
 	double m_arrdFontMatrix[6];
-    double m_arrdTextMatrix[6];
+	double m_arrdTextMatrix[6];
 
-    bool m_bAntiAliasing;
-    bool m_bUseKerning;
+	bool m_bAntiAliasing;
+	bool m_bUseKerning;
 
-    double m_dSize;			// Размер шрифта
-    double m_unHorDpi;		// Горизонтальное разрешение
-    double m_unVerDpi;		// Вертикальное разрешение
+	double m_dSize;			// Размер шрифта
+	double m_unHorDpi;		// Горизонтальное разрешение
+	double m_unVerDpi;		// Вертикальное разрешение
 
-    INT m_bNeedDoItalic;
-    INT m_bNeedDoBold;
+	INT m_bNeedDoItalic;
+	INT m_bNeedDoBold;
 
-    double m_dCharSpacing;
+	double m_dCharSpacing;
 
-    int m_nMinX;		//
-    int m_nMinY;        // Glyph BBox
-    int m_nMaxX;        //
-    int m_nMaxY;        //
-    
+	int m_nMinX;		//
+	int m_nMinY;        // Glyph BBox
+	int m_nMaxX;        //
+	int m_nMaxY;        //
+
 	CFontStream*	m_pStream;
 	std::wstring	m_sFileName;
-    int				m_lFaceIndex;
+	int				m_lFaceIndex;
 	
 	FT_Face m_pFace;
 	
@@ -191,27 +191,27 @@ public:
 	int m_nSymbolic;
 	double m_dTextScale;
 
-    INT m_bStringGID;
+	INT m_bStringGID;
 	
 	FT_Matrix m_oFontMatrix;
 	FT_Matrix m_oTextMatrix;
 	
 	int m_nNum_charmaps;
 
-    int m_lAscender;
-    int m_lDescender;
-    int m_lLineHeight;
-    int m_lUnits_Per_Em;
+	int m_lAscender;
+	int m_lDescender;
+	int m_lLineHeight;
+	int m_lUnits_Per_Em;
 
-    INT		m_bUseDefaultFont;
+	INT		m_bUseDefaultFont;
 	CFontFile*	m_pDefaultFont;
 
-    INT		m_bIsNeedUpdateMatrix12;
+	INT		m_bIsNeedUpdateMatrix12;
 
 	CFontManager* m_pFontManager;
-    INT m_bHintsSupport;
+	INT m_bHintsSupport;
 
-    std::wstring m_sName;
+	std::wstring m_sName;
 
 	CCacheGlyphs m_oCache;
 
@@ -223,78 +223,78 @@ public:
 	void SetDefaultFont(CFontFile* pDefFont);
 	void LoadDefaultCharAndSymbolicCmapIndex();
 	
-	void ResetFontMatrix();	
+	void ResetFontMatrix();
 	void ResetTextMatrix();
 
-    void CheckTextMatrix();
+	void CheckTextMatrix();
 	
 	void UpdateMatrix0();
-    void UpdateMatrix1();
-    void UpdateMatrix2();
+	void UpdateMatrix1();
+	void UpdateMatrix2();
 	
 	void SetSizeAndDpi(double dSize, double unHorDpi, double unVerDpi);
 	
 	void ClearCache();
 	void ClearCacheNoAttack(bool bIsFree = false);
-    void Destroy();
+	void Destroy();
 
 	bool SetTextMatrix(const double& fA, const double& fB, const double& fC, const double fD, double fE, double fF);
-    void SetFontMatrix(const double& fA, const double& fB, const double& fC, const double fD, double fE, double fF);
-    
-    TFontCacheSizes CacheGlyph(const int& code, const bool& isRaster, CVectorWorker* pWorker = NULL, const bool& isFromPicker = false);
+	void SetFontMatrix(const double& fA, const double& fB, const double& fC, const double fD, double fE, double fF);
+
+	TFontCacheSizes CacheGlyph(const int& code, const bool& isRaster, CVectorWorker* pWorker = NULL, const bool& isFromPicker = false);
 
 	INT GetString(CGlyphString& oString);
 	INT GetString2(CGlyphString& oString);
-    INT GetString2C(CGlyphString& oString);
+	INT GetString2C(CGlyphString& oString);
 	TFontCacheSizes GetChar(LONG lUnicode);
 	
 	int SetCMapForCharCode(long lUnicode, int *pnCMapIndex);
 	int SetCMapForCharCode2(long lUnicode);
 
-    double GetCharWidth(int gid);
+	double GetCharWidth(int gid);
 
-    int GetGIDByUnicode(int code);
+	int GetGIDByUnicode(int code);
 
-    int GetKerning(FT_UInt unPrevGID, FT_UInt unGID);
-    void SetStringGID(const INT& bGID);
-    INT GetStringGID();
-    void SetUseDefaultFont(const INT& bUse);
-    INT GetUseDefaultFont();
-    void SetCharSpacing(const double& dCharSpacing);
-    double GetCharSpacing();
-    std::string GetStyleName();
-    void GetPanose(BYTE* pData);
+	int GetKerning(FT_UInt unPrevGID, FT_UInt unGID);
+	void SetStringGID(const INT& bGID);
+	INT GetStringGID();
+	void SetUseDefaultFont(const INT& bUse);
+	INT GetUseDefaultFont();
+	void SetCharSpacing(const double& dCharSpacing);
+	double GetCharSpacing();
+	std::string GetStyleName();
+	void GetPanose(BYTE* pData);
 
-    bool IsFixedWidth();
+	bool IsFixedWidth();
 
-    int IsUnicodeRangeAvailable(unsigned long ulBit, unsigned int un4ByteIndex);
-    
+	int IsUnicodeRangeAvailable(unsigned long ulBit, unsigned int un4ByteIndex);
+
 	void UpdateStyles(const INT& bBold, const INT& bItalic);
-    
+
 	void SetItalic(const INT& value);
-    void SetNeedBold(const INT& value);
-    
+	void SetNeedBold(const INT& value);
+
 	int GetAscender();
-    int GetDescender();
-    int GetHeight();
-    int Units_Per_Em();
+	int GetDescender();
+	int GetHeight();
+	int Units_Per_Em();
 
-    void CheckHintsSupport();
+	void CheckHintsSupport();
 
-    std::wstring GetFontFormat();
+	std::wstring GetFontFormat();
 	unsigned int GetNameIndex(const std::wstring& wsName) const;
 
 	// path
-    NSFonts::IFontPath* GetGlyphPath(int nCode);
+	NSFonts::IFontPath* GetGlyphPath(int nCode);
 
-    virtual bool IsItalic();
-    virtual bool IsBold();
+	virtual bool IsItalic();
+	virtual bool IsBold();
 
-    virtual bool IsSymbolic(bool bIsOS2Check = false);
+	virtual bool IsSymbolic(bool bIsOS2Check = false);
 
-    static NSFonts::EFontFormat GetFontFormatType(FT_Face pFace);
-    virtual int GetEmbeddingLicenceType();
-    virtual void FillFontSelectFormat(NSFonts::CFontSelectFormat& oFormat);
+	static NSFonts::EFontFormat GetFontFormatType(FT_Face pFace);
+	virtual int GetEmbeddingLicenceType();
+	virtual void FillFontSelectFormat(NSFonts::CFontSelectFormat& oFormat);
 };
 
 

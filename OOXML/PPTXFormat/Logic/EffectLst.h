@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef PPTX_LOGIC_EFFECTLST_INCLUDE_H_
-#define PPTX_LOGIC_EFFECTLST_INCLUDE_H_
 
 #include "./../WrapperWritingElement.h"
 #include "Effects/Blur.h"
@@ -61,10 +59,6 @@ namespace PPTX
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-			}
-			
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 
             virtual std::wstring toXML() const;
@@ -72,6 +66,9 @@ namespace PPTX
 
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+
+			void Merge(EffectLst& effectLst) const;
+
 		public:
 			nullable<Blur>			blur;
 			nullable<FillOverlay>	fillOverlay;
@@ -87,5 +84,3 @@ namespace PPTX
 		};
 	} // namespace Logic
 } // namespace PPTX
-
-#endif // PPTX_LOGIC_EFFECTLST_INCLUDE_H_

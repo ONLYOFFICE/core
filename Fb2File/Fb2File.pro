@@ -18,6 +18,9 @@ include($$CORE_ROOT_DIR/Common/3dParty/html/gumbo.pri)
 
 ADD_DEPENDENCY(kernel, UnicodeConverter, graphics)
 
+CONFIG += core_boost_regex
+include($$CORE_ROOT_DIR/Common/3dParty/boost/boost.pri)
+
 SOURCES += Fb2File.cpp
 
 HEADERS += Fb2File.h

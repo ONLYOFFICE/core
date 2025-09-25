@@ -56,6 +56,6 @@ namespace XLSB
 
         ExternalReferenceType sbt;
     };
-
+    typedef boost::shared_ptr<DDEOLEITEM> DDEOLEITEMPtr;
 } // namespace XLSB
 

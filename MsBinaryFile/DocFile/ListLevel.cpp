@@ -93,7 +93,7 @@ namespace DocFileFormat
 		if (strLen > 0)//file(14).doc
 		{
 			bytes = reader->ReadBytes( ( strLen * 2 ), true );
-			FormatUtils::GetSTLCollectionFromBytes<std::wstring>( &(xst), bytes, ( strLen * 2 ), ENCODING_UTF16 );
+			xst = NSFile::CUtf8Converter::GetWStringFromUTF16((unsigned short*)(bytes), strLen);
 			RELEASEARRAYOBJECTS( bytes );
 		}
 	}

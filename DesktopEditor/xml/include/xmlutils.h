@@ -85,6 +85,7 @@ namespace XmlUtils
 		bool FromString	(const wchar_t* sXml);
 		bool FromString	(const std::wstring& sXml);
 		bool FromStringA(const std::string& sXml);
+        bool FromStringA(const char* sXml, int size);
 
 		bool MoveToStart();
 
@@ -168,6 +169,7 @@ namespace XmlUtils
 		void Clear();
 
 		std::wstring GetName();
+		std::string GetNameA();
 		std::wstring GetText();
 		std::string GetTextA();
 
@@ -249,7 +251,7 @@ namespace XmlUtils
 	std::vector<XmlUtils::CXmlNode> oNodes;         \
 	if (node.GetNodes(name, oNodes))                \
 	{                                               \
-		int nCount = oNodes.size();                 \
+		size_t nCount = oNodes.size();              \
 		for (size_t i = 0; i < nCount; ++i)         \
 		{                                           \
 			XmlUtils::CXmlNode & oItem = oNodes[i]; \

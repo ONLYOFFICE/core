@@ -1,5 +1,6 @@
 #include "graphics.h"
 #include "../common/Base64.h"
+#include "../raster/Metafile/MetaFileCommon.h"
 
 #include <string>
 #include <iostream>
@@ -9,21 +10,39 @@
 #define M_PI 3.14159265358979323846
 #endif
 
+#ifdef _DEBUG
+//#define ENABLE_GR_LOGS
+#endif
+
 namespace NSGraphics
 {
-	void CGraphics::init(NSNativeControl::CNativeControl* oNative, double width_px, double height_px, double width_mm, double height_mm)
+	void CGraphics::init(double width_px, double height_px, double width_mm, double height_mm)
 	{
-		m_sApplicationImagesDirectory = oNative->m_strImagesDirectory;
-		m_sApplicationFontsDirectory  = oNative->m_strFontsDirectory;
-#ifdef _DEBUG
-		std::wcout << L"init "<< m_sApplicationImagesDirectory << L"  " << m_sApplicationFontsDirectory << L"  " << width_px << L"  " << height_px << L"  " << width_mm << L"  " << height_mm << std::endl;
+		if (!m_pAppImage)
+			return;
+
+		if (NULL == m_pAppImage->GetFonts())
+		{
+			NSFonts::IApplicationFonts* pFonts = NSFonts::NSApplication::Create();
+			std::wstring sFontsDir = m_pAppImage->GetFontsDirectory();
+			pFonts->InitializeFromFolder(sFontsDir.empty() ? NSFile::GetProcessDirectory() : sFontsDir);
+			m_pAppImage->SetFonts(pFonts);
+			RELEASEINTERFACE(pFonts);
+		}
+
+		NSFonts::IFontManager* pManager = m_pAppImage->GetFonts()->GenerateFontManager();
+
+#ifdef ENABLE_GR_LOGS
+		std::wcout << L"init "<<
+			m_pAppImage->GetImagesDirectory() << L"  " <<
+			m_pAppImage->GetFontsDirectory() << L"  " <<
+			width_px << L"  " << height_px << L"  " <<
+			width_mm << L"  " << height_mm << std::endl;
 #endif
-		m_pApplicationFonts = NSFonts::NSApplication::Create();
-		m_pApplicationFonts->InitializeFromFolder(m_sApplicationFontsDirectory.empty() ? NSFile::GetProcessDirectory() : m_sApplicationFontsDirectory);
-		NSFonts::IFontManager* pManager = m_pApplicationFonts->GenerateFontManager();
 
 		m_pRenderer = NSGraphics::Create();
 		m_pRenderer->SetFontManager(pManager);
+		RELEASEINTERFACE(pManager);
 
 		int nRasterW = (int)width_px;
 		int nRasterH = (int)height_px;
@@ -41,7 +60,19 @@ namespace NSGraphics
 			if (nRasterH < 1) nRasterH = 0;
 		}
 
-		BYTE* pData = new BYTE[4 * nRasterW * nRasterH];
+		int nExistW = 0;
+		int nExistH = 0;
+		BYTE* pData =  m_pAppImage->GetBits(nExistW, nExistH);
+		if (pData != NULL)
+		{
+			nRasterW = nExistW;
+			nRasterH = nExistH;
+		}
+		else
+		{
+			pData = m_pAppImage->AllocBits(nRasterW, nRasterH);
+		}
+
 		unsigned int back = 0xffffff;
 		unsigned int* pData32 = (unsigned int*)pData;
 		unsigned int* pData32End = pData32 + nRasterW * nRasterH;
@@ -54,21 +85,21 @@ namespace NSGraphics
 		m_oFrame.put_Stride(4 * nRasterW);
 
 		m_pRenderer->CreateFromBgraFrame(&m_oFrame);
-		m_pRenderer->SetSwapRGB(false);
+		m_pRenderer->SetSwapRGB(m_pAppImage->GetRgba());
 
 		m_pRenderer->put_Width(width_mm);
 		m_pRenderer->put_Height(height_mm);
 	}
 	void CGraphics::put_GlobalAlpha(bool enable, double alpha)
 	{
-#ifdef _DEBUG
+#ifdef ENABLE_GR_LOGS
 		std::cout << "put_GlobalAlpha " << enable << "  " << alpha << std::endl;
 #endif
 		m_pRenderer->put_GlobalAlphaEnabled(enable, alpha);
 	}
 	void CGraphics::End_GlobalAlpha()
 	{
-#ifdef _DEBUG
+#ifdef ENABLE_GR_LOGS
 		std::cout << "End_GlobalAlpha " << std::endl;
 #endif
 		bool bIsInteger = m_pRenderer->get_IntegerGrid();
@@ -85,7 +116,7 @@ namespace NSGraphics
 	}
 	void CGraphics::p_color(int r, int g, int b, int a)
 	{
-#ifdef _DEBUG
+#ifdef ENABLE_GR_LOGS
 		std::cout << "p_color " << r << "  " << g << "  " << b << "  " << a << std::endl;
 #endif
 		m_pRenderer->put_PenColor(r | (g << 8) | (b << 16));
@@ -93,14 +124,14 @@ namespace NSGraphics
 	}
 	void CGraphics::p_width(double w)
 	{
-#ifdef _DEBUG
+#ifdef ENABLE_GR_LOGS
 		std::cout << "p_width " << w  << std::endl;
 #endif
 		m_pRenderer->put_PenSize(w / 1000.0);
 	}
 	void CGraphics::p_dash(size_t length, double* dash)
 	{
-#ifdef _DEBUG
+#ifdef ENABLE_GR_LOGS
 		std::cout << "p_dash " << length << std::endl;
 #endif
 		if(length > 0)
@@ -118,7 +149,7 @@ namespace NSGraphics
 	}
 	void CGraphics::b_color1(int r, int g, int b, int a)
 	{
-#ifdef _DEBUG
+#ifdef ENABLE_GR_LOGS
 		std::cout << "b_color1 " << r << "  " << g << "  " << b << "  " << a << std::endl;
 #endif
 		m_pRenderer->put_BrushType(c_BrushTypeSolid);
@@ -127,7 +158,7 @@ namespace NSGraphics
 	}
 	void CGraphics::b_color2(int r, int g, int b, int a)
 	{
-#ifdef _DEBUG
+#ifdef ENABLE_GR_LOGS
 		std::cout << "b_color2 " << r << "  " << g << "  " << b << "  " << a << std::endl;
 #endif
 		m_pRenderer->put_BrushColor2(r | (g << 8) | (b << 16));
@@ -135,42 +166,42 @@ namespace NSGraphics
 	}
 	void CGraphics::transform(double sx, double shy, double shx, double sy, double tx, double ty)
 	{
-#ifdef _DEBUG
+#ifdef ENABLE_GR_LOGS
 		std::cout << "transform " << sx << "  " << shy << "  " << shx << "  " << sy << "  " << tx << "  " << ty << std::endl;
 #endif
 		m_pRenderer->SetTransform(sx, shy, shx, sy, tx, ty);
 	}
 	void CGraphics::CalculateFullTransform()
 	{
-#ifdef _DEBUG
+#ifdef ENABLE_GR_LOGS
 		std::cout << "CalculateFullTransform " << std::endl;
 #endif
 		m_pRenderer->CalculateFullTransform();
 	}
 	void CGraphics::_s()
 	{
-#ifdef _DEBUG
+#ifdef ENABLE_GR_LOGS
 		std::cout << "_s " << std::endl;
 #endif
 		m_pRenderer->PathCommandEnd();
 	}
 	void CGraphics::_e()
 	{
-#ifdef _DEBUG
+#ifdef ENABLE_GR_LOGS
 		std::cout << "_e " << std::endl;
 #endif
 		m_pRenderer->PathCommandEnd();
 	}
 	void CGraphics::_z()
 	{
-#ifdef _DEBUG
+#ifdef ENABLE_GR_LOGS
 		std::cout << "_z " << std::endl;
 #endif
 		m_pRenderer->PathCommandClose();
 	}
 	void CGraphics::_m(double x, double y)
 	{
-#ifdef _DEBUG
+#ifdef ENABLE_GR_LOGS
 		std::cout << "_m " << x << "  " << y << std::endl;
 #endif
 		if (!m_pRenderer->get_IntegerGrid())
@@ -183,7 +214,7 @@ namespace NSGraphics
 	}
 	void CGraphics::_l(double x, double y)
 	{
-#ifdef _DEBUG
+#ifdef ENABLE_GR_LOGS
 		std::cout << "_l " << x << "  " << y << std::endl;
 #endif
 		if (!m_pRenderer->get_IntegerGrid())
@@ -196,7 +227,7 @@ namespace NSGraphics
 	}
 	void CGraphics::_c (double x1, double y1, double x2, double y2, double x3, double y3)
 	{
-#ifdef _DEBUG
+#ifdef ENABLE_GR_LOGS
 		std::cout << "_c " << x1 << "  " << y1 << "  " << x2 << "  " << y2 << "  " << x3 << "  " << y3 << std::endl;
 #endif
 		if (!m_pRenderer->get_IntegerGrid())
@@ -211,7 +242,7 @@ namespace NSGraphics
 	}
 	void CGraphics::_c2(double x1, double y1, double x2, double y2)
 	{
-#ifdef _DEBUG
+#ifdef ENABLE_GR_LOGS
 		std::cout << "_c2 " << x1 << "  " << y1 << "  " << x2 << "  " << y2 << std::endl;
 #endif
 		if (!m_pRenderer->get_IntegerGrid())
@@ -225,28 +256,28 @@ namespace NSGraphics
 	}
 	void CGraphics::ds()
 	{
-#ifdef _DEBUG
+#ifdef ENABLE_GR_LOGS
 		std::cout << "ds " << std::endl;
 #endif
 		m_pRenderer->Stroke();
 	}
 	void CGraphics::df()
 	{
-#ifdef _DEBUG
+#ifdef ENABLE_GR_LOGS
 		std::cout << "df " << std::endl;
 #endif
 		m_pRenderer->Fill();
 	}
 	void CGraphics::save()
 	{
-#ifdef _DEBUG
+#ifdef ENABLE_GR_LOGS
 		std::cout << "save " << std::endl;
 #endif
-		m_oFrame.SaveFile(m_sApplicationImagesDirectory + L"/img.png", _CXIMAGE_FORMAT_PNG);
+		m_oFrame.SaveFile(m_pAppImage->GetImagesDirectory() + L"/img.png", _CXIMAGE_FORMAT_PNG);
 	}
 	void CGraphics::restore()
 	{
-#ifdef _DEBUG
+#ifdef ENABLE_GR_LOGS
 		std::cout << "restore " << std::endl;
 #endif
 		m_pRenderer->BeginCommand(c_nResetClipType);
@@ -254,7 +285,7 @@ namespace NSGraphics
 	}
 	void CGraphics::clip()
 	{
-#ifdef _DEBUG
+#ifdef ENABLE_GR_LOGS
 		std::cout << "clip " << std::endl;
 #endif
 		m_pRenderer->BeginCommand(c_nClipType);
@@ -262,43 +293,46 @@ namespace NSGraphics
 	}
 	void CGraphics::reset()
 	{
-#ifdef _DEBUG
+#ifdef ENABLE_GR_LOGS
 		std::cout << "reset " << std::endl;
 #endif
 		m_pRenderer->ResetTransform();
 	}
 	void CGraphics::FreeFont()
 	{
-#ifdef _DEBUG
+#ifdef ENABLE_GR_LOGS
 		std::cout << "FreeFont " << std::endl;
 #endif
 		m_pRenderer->CloseFont();
 	}
 	void CGraphics::ClearLastFont()
 	{
-#ifdef _DEBUG
+#ifdef ENABLE_GR_LOGS
 		std::cout << "ClearLastFont " << std::endl;
 #endif
 		m_pRenderer->ClearInstallFont();
 	}
 	void CGraphics::drawImage(const std::wstring& img, double x, double y, double w, double h, BYTE alpha)
 	{
-		std::wstring strImage = (0 == img.find(L"theme") ? m_sApplicationThemesDirectory : m_sApplicationImagesDirectory) + L'/' + img;
-#ifdef _DEBUG
+		std::wstring strImage = img;
+		if (!NSFile::CFileBinary::Exists(img))
+			strImage = (0 == img.find(L"theme") ? m_pAppImage->GetThemesDirectory() : m_pAppImage->GetImagesDirectory()) + L'/' + img;
+
+#ifdef ENABLE_GR_LOGS
 		std::wcout << L"drawImage " << strImage << L"  " << x << "  " << y << L"  " << w << L"  " << h << L"  " << alpha << std::endl;
 #endif
 		m_pRenderer->DrawImageFromFile(strImage, x, y, w, h, alpha);
 	}
 	std::wstring CGraphics::GetFont()
 	{
-#ifdef _DEBUG
+#ifdef ENABLE_GR_LOGS
 		std::cout << "GetFont " << std::endl;
 #endif
 		return m_pRenderer->GetFontManager()->GetName();
 	}
 	void CGraphics::SetFont(const std::wstring& name, int face, double size, int style)
 	{
-#ifdef _DEBUG
+#ifdef ENABLE_GR_LOGS
 		std::wcout << L"SetFont " << name << L"  " << face << L"  " << size << L"  " << style << std::endl;
 #endif
 		double DpiX, DpiY;
@@ -313,21 +347,21 @@ namespace NSGraphics
 	}
 	void CGraphics::FillText(double x, double y, int text)
 	{
-#ifdef _DEBUG
+#ifdef ENABLE_GR_LOGS
 		std::wcout << L"FillText " << (wchar_t)text << L"  " << x << L"  " << y << std::endl;
 #endif
 		m_pRenderer->CommandDrawTextCHAR(text, x, y, 0, 0);
 	}
 	void CGraphics::t(double x, double y, const std::wstring& text)
 	{
-#ifdef _DEBUG
+#ifdef ENABLE_GR_LOGS
 		std::wcout << L"t " << text << L"  " << x << L"  " << y << std::endl;
 #endif
 		m_pRenderer->CommandDrawText(text, x, y, 0, 0);
 	}
 	void CGraphics::tg(int text, double x, double y)
 	{
-#ifdef _DEBUG
+#ifdef ENABLE_GR_LOGS
 		std::wcout << L"tg " << text << L"  " << x << L"  " << y << std::endl;
 #endif
 		m_pRenderer->put_FontStringGID(TRUE);
@@ -336,21 +370,21 @@ namespace NSGraphics
 	}
 	void CGraphics::SetIntegerGrid(bool param)
 	{
-#ifdef _DEBUG
+#ifdef ENABLE_GR_LOGS
 		std::cout << "SetIntegerGrid " << param << std::endl;
 #endif
 		m_pRenderer->put_IntegerGrid(param);
 	}
 	bool CGraphics::GetIntegerGrid()
 	{
-#ifdef _DEBUG
+#ifdef ENABLE_GR_LOGS
 		std::cout << "GetIntegerGrid " << std::endl;
 #endif
 		return m_pRenderer->get_IntegerGrid();
 	}
 	void CGraphics::DrawStringASCII (const std::wstring& text, double x, double y)
 	{
-#ifdef _DEBUG
+#ifdef ENABLE_GR_LOGS
 		std::wcout << L"DrawStringASCII " << text << L"  " << x << L"  " << y << std::endl;
 #endif
 		double DpiY;
@@ -372,7 +406,7 @@ namespace NSGraphics
 	}
 	void CGraphics::DrawHeaderEdit(double yPos)
 	{
-#ifdef _DEBUG
+#ifdef ENABLE_GR_LOGS
 		std::cout << "DrawHeaderEdit " << std::endl;
 #endif
 		m_pRenderer->PathCommandEnd();
@@ -415,7 +449,7 @@ namespace NSGraphics
 	}
 	void CGraphics::DrawFooterEdit(double yPos)
 	{
-#ifdef _DEBUG
+#ifdef ENABLE_GR_LOGS
 		std::cout << "DrawFooterEdit " << std::endl;
 #endif
 		m_pRenderer->PathCommandEnd();
@@ -458,7 +492,7 @@ namespace NSGraphics
 	}
 	void CGraphics::DrawLockParagraph (double x,  double y1, double y2)
 	{
-#ifdef _DEBUG
+#ifdef ENABLE_GR_LOGS
 		std::cout << "DrawLockParagraph " << std::endl;
 #endif
 		m_pRenderer->PathCommandEnd();
@@ -530,7 +564,7 @@ namespace NSGraphics
 	}
 	void CGraphics::DrawLockObjectRect(double x,  double y,  double w,  double h)
 	{
-#ifdef _DEBUG
+#ifdef ENABLE_GR_LOGS
 		std::cout << "DrawLockObjectRect " << std::endl;
 #endif
 		m_pRenderer->PathCommandEnd();
@@ -556,7 +590,7 @@ namespace NSGraphics
 	}
 	void CGraphics::DrawEmptyTableLine(double x1, double y1, double x2, double y2)
 	{
-#ifdef _DEBUG
+#ifdef ENABLE_GR_LOGS
 		std::cout << "DrawEmptyTableLine " << std::endl;
 #endif
 		m_pRenderer->PathCommandEnd();
@@ -641,7 +675,7 @@ namespace NSGraphics
 	}
 	void CGraphics::DrawSpellingLine  (double y0, double x0, double x1, double w)
 	{
-#ifdef _DEBUG
+#ifdef ENABLE_GR_LOGS
 		std::cout << "DrawSpellingLine " << std::endl;
 #endif
 		Aggplus::CMatrix* pMatrix = m_pRenderer->GetTransformMatrix();
@@ -987,7 +1021,7 @@ namespace NSGraphics
 	}
 	void CGraphics::SaveGrState()
 	{
-#ifdef _DEBUG
+#ifdef ENABLE_GR_LOGS
 		std::cout << "SaveGrState " << std::endl;
 #endif
 		CGrStateState* pState = new CGrStateState();
@@ -1003,7 +1037,7 @@ namespace NSGraphics
 	}
 	void CGraphics::RestoreGrState()
 	{
-#ifdef _DEBUG
+#ifdef ENABLE_GR_LOGS
 		std::cout << "RestoreGrState " << std::endl;
 #endif
 		if (m_oGrState.States.empty())
@@ -1067,14 +1101,14 @@ namespace NSGraphics
 	}
 	void CGraphics::StartClipPath()
 	{
-#ifdef _DEBUG
+#ifdef ENABLE_GR_LOGS
 		std::cout << "StartClipPath " << std::endl;
 #endif
 		m_pRenderer->BeginCommand(c_nClipType);
 	}
 	void CGraphics::EndClipPath()
 	{
-#ifdef _DEBUG
+#ifdef ENABLE_GR_LOGS
 		std::cout << "EndClipPath " << std::endl;
 #endif
 		m_pRenderer->EndCommand(c_nClipType);
@@ -1132,28 +1166,30 @@ namespace NSGraphics
 	}
 	std::string CGraphics::toDataURL(std::wstring type)
 	{
-		std::wstring sPath = NSFile::CFileBinary::CreateTempFileWithUniqueName(m_sApplicationImagesDirectory, L"img");
-#ifdef _DEBUG
-		std::wcout << "toDataURL " << sPath << std::endl;
+#ifdef ENABLE_GR_LOGS
+		std::wcout << "toDataURL " << type << std::endl;
 #endif
-		m_oFrame.SaveFile(sPath, _CXIMAGE_FORMAT_PNG);
+		std::wstring sFormat = (type.length() > 6) ? type.substr(6) : type;
 
-		NSFile::CFileBinary oReader;
-		if (oReader.OpenFile(sPath))
+		BYTE* pDataImage = NULL;
+		int nDataImageSize = 0;
+		int nImageFormat = _CXIMAGE_FORMAT_PNG;
+		if ((L"jpg" == sFormat) ||(L"jpeg" == sFormat))
+			nImageFormat = _CXIMAGE_FORMAT_JPG;
+
+		std::string sRes = "";
+		if (m_oFrame.Encode(pDataImage, nDataImageSize, nImageFormat))
 		{
-			DWORD dwFileSize = oReader.GetFileSize();
-			BYTE* pFileContent = new BYTE[dwFileSize];
-			DWORD dwReaded;
-			oReader.ReadFile(pFileContent, dwFileSize, dwReaded);
-			oReader.CloseFile();
-
-			NSFile::CFileBinary::Remove(sPath);
-			int nEncodeLen = NSBase64::Base64EncodeGetRequiredLength(dwFileSize);
-			BYTE* pImageData = new BYTE[nEncodeLen];
-			if (TRUE == NSBase64::Base64Encode(pFileContent, dwFileSize, pImageData, &nEncodeLen))
-				return "data:" + U_TO_UTF8(type) + ";base64, " + std::string((char*)pImageData, nEncodeLen);
+			char* cData64 = NULL;
+			int nData64Dst = 0;
+			if (NSFile::CBase64Converter::Encode(pDataImage, nDataImageSize, cData64, nData64Dst, NSBase64::B64_BASE64_FLAG_NOCRLF))
+			{
+				sRes = ("data:" + U_TO_UTF8(type) + ";base64," + std::string(cData64, nData64Dst));
+			}
+			RELEASEARRAYOBJECTS(cData64);
 		}
-		return "";
+		RELEASEARRAYOBJECTS(pDataImage);
+		return sRes;
 	}
 	CColor CGraphics::GetPenColor()
 	{
@@ -1175,11 +1211,11 @@ namespace NSGraphics
 	{
 		if (src.find(L"data:") == 0)
 		{
-			std::wstring strImage = m_sApplicationImagesDirectory + L"/texture.png";
+			std::wstring strImage = m_pAppImage->GetImagesDirectory() + L"/texture.png";
 			bool bIsOnlyOfficeHatch = false;
 			if(src.find(L"onlyoffice_hatch") != std::wstring::npos)
 				bIsOnlyOfficeHatch = true;
-#ifdef _DEBUG
+#ifdef ENABLE_GR_LOGS
 			std::wcout << L"put_brushTexture " << src << L"  "  << type << std::endl;
 #endif
 			src.erase(0, src.find(L',') + 1);
@@ -1218,7 +1254,10 @@ namespace NSGraphics
 		}
 		else
 		{
-			std::wstring strImage = (0 == src.find(L"theme") ? m_sApplicationThemesDirectory : m_sApplicationImagesDirectory) + L'/' + src;
+			std::wstring strImage = src;
+			if (!NSFile::CFileBinary::Exists(src))
+				strImage = (0 == src.find(L"theme") ? m_pAppImage->GetThemesDirectory() : m_pAppImage->GetImagesDirectory()) + L'/' + src;
+
 			std::wstring sName = strImage.substr(0, strImage.rfind(L'.') + 1);
 			std::wstring sExt = src.substr(src.rfind(L'.') + 1);
 			if (sExt == L"svg")
@@ -1228,20 +1267,20 @@ namespace NSGraphics
 				else if (NSFile::CFileBinary::Exists(sName + L"emf") && src.find(L"display") == 0)
 					strImage = sName + L"emf";
 
-				MetaFile::IMetaFile* pMetafile = MetaFile::Create(m_pApplicationFonts);
+				MetaFile::IMetaFile* pMetafile = MetaFile::Create(m_pAppImage->GetFonts());
 				pMetafile->LoadFromFile(strImage.c_str());
 
 				double x = 0, y = 0, w = 0, h = 0;
 				pMetafile->GetBounds(&x, &y, &w, &h);
 
 				sName += L"png";
-				pMetafile->ConvertToRaster(sName.c_str(), 4, 1000);
+				MetaFile::ConvertToRasterMaxSize(pMetafile, sName.c_str(), 4, 1000);
 
 				RELEASEOBJECT(pMetafile);
 			}
 			else
 				sName += sExt;
-#ifdef _DEBUG
+#ifdef ENABLE_GR_LOGS
 			std::wcout << L"put_brushTexture " << sName << L"  " << type << std::endl;
 #endif
 			m_pRenderer->put_BrushType(c_BrushTypeTexture);
@@ -1251,21 +1290,21 @@ namespace NSGraphics
 	}
 	void CGraphics::put_brushTextureMode(int mode)
 	{
-#ifdef _DEBUG
+#ifdef ENABLE_GR_LOGS
 		std::cout << "put_brushTextureMode " << mode << std::endl;
 #endif
 		m_pRenderer->put_BrushTextureMode(mode);
 	}
 	void CGraphics::put_BrushTextureAlpha(int a)
 	{
-#ifdef _DEBUG
+#ifdef ENABLE_GR_LOGS
 		std::cout << "put_BrushTextureAlpha " << a << std::endl;
 #endif
 		m_pRenderer->put_BrushTextureAlpha(a == 0 ? 255 : a);
 	}
 	void CGraphics::put_BrushGradient(LONG* pColors, double* pPositions, size_t nCount, double x0, double y0, double x1, double y1, double r0, double r1)
 	{
-#ifdef _DEBUG
+#ifdef ENABLE_GR_LOGS
 		std::cout << "put_BrushGradient " << nCount << "  " << x0 << "  " << y0 << "  " << x1 << "  " << y1 << "  " << r0 << "  " << r1 << std::endl;
 		for (size_t i = 0; i < nCount; i++)
 			std::cout << pPositions[i] << "  " << pColors[i] << "  ";
@@ -1290,7 +1329,7 @@ namespace NSGraphics
 	}
 	double CGraphics::TransformPointX(double x, double y)
 	{
-#ifdef _DEBUG
+#ifdef ENABLE_GR_LOGS
 		std::cout << "TransformPointX " << std::endl;
 #endif
 		m_pRenderer->GetFullTransform()->TransformPoint(x, y);
@@ -1298,7 +1337,7 @@ namespace NSGraphics
 	}
 	double CGraphics::TransformPointY(double x, double y)
 	{
-#ifdef _DEBUG
+#ifdef ENABLE_GR_LOGS
 		std::cout << "TransformPointY " << std::endl;
 #endif
 		m_pRenderer->GetFullTransform()->TransformPoint(x, y);
@@ -1306,14 +1345,14 @@ namespace NSGraphics
 	}
 	void CGraphics::put_LineJoin(int nJoin)
 	{
-#ifdef _DEBUG
+#ifdef ENABLE_GR_LOGS
 		std::cout << "put_LineJoin " << std::endl;
 #endif
 		m_pRenderer->put_PenLineJoin(nJoin);
 	}
 	int CGraphics::GetLineJoin()
 	{
-#ifdef _DEBUG
+#ifdef ENABLE_GR_LOGS
 		std::cout << "GetLineJoin " << std::endl;
 #endif
 		BYTE nRes;
@@ -1322,7 +1361,7 @@ namespace NSGraphics
 	}
 	void CGraphics::put_TextureBounds(double x, double y, double w, double h)
 	{
-#ifdef _DEBUG
+#ifdef ENABLE_GR_LOGS
 		std::cout << "put_TextureBounds " << x << "  " << y << "  " << w << "  " << h << std::endl;
 #endif
 		if(m_pRenderer->get_IntegerGrid())
@@ -1338,7 +1377,7 @@ namespace NSGraphics
 	}
 	double CGraphics::GetlineWidth()
 	{
-#ifdef _DEBUG
+#ifdef ENABLE_GR_LOGS
 		std::cout << "GetlineWidth " << std::endl;
 #endif
 		double nRes;
@@ -1347,7 +1386,7 @@ namespace NSGraphics
 	}
 	void CGraphics::DrawPath(int path)
 	{
-#ifdef _DEBUG
+#ifdef ENABLE_GR_LOGS
 		std::cout << "DrawPath " << path << std::endl;
 #endif
 		if(path == 257)
@@ -1360,7 +1399,7 @@ namespace NSGraphics
 	}
 	void CGraphics::CoordTransformOffset(double tx, double ty)
 	{
-#ifdef _DEBUG
+#ifdef ENABLE_GR_LOGS
 		std::cout << "CoordTransformOffset " << tx << "  " << ty << std::endl;
 #endif
 		m_pRenderer->SetCoordTransformOffset(tx, ty);
@@ -1370,5 +1409,15 @@ namespace NSGraphics
 		CTransform oRes;
 		m_pRenderer->GetTransform(&oRes.sx, &oRes.shy, &oRes.shx, &oRes.sy, &oRes.tx, &oRes.ty);
 		return oRes;
+	}
+
+	void CGraphics::CreateLayer(double opacity)
+	{
+		m_pRenderer->BeginCommand(c_nLayerType);
+		m_pRenderer->put_LayerOpacity(opacity);
+	}
+	void CGraphics::BlendLayer()
+	{
+		m_pRenderer->EndCommand(c_nLayerType);
 	}
 }

@@ -67,13 +67,15 @@ namespace PPTX
 			return OOX::et_p_ShapeTree;
 		}
 		void SpTree::FillParentPointersForChilds()
-	{
-		nvGrpSpPr.SetParentPointer(this);
-		grpSpPr.SetParentPointer(this);
+		{
+			nvGrpSpPr.SetParentPointer(this);
+			grpSpPr.SetParentPointer(this);
 
-		for (size_t i = 0; i < SpTreeElems.size(); ++i)
-			SpTreeElems[i].SetParentPointer(this);
-	}
+			for (size_t i = 0; i < SpTreeElems.size(); ++i)
+			{
+				SpTreeElems[i].SetParentPointer(this);
+			}
+		}
 		void SpTree::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			m_namespace = XmlUtils::GetNamespace(oReader.GetName());
@@ -186,7 +188,7 @@ namespace PPTX
 
 			return XmlUtils::CreateNode(name_, oValue);
 		}
-		void SpTree::toXmlWriterVML(NSBinPptxRW::CXmlWriter *pWriter, NSCommon::smart_ptr<PPTX::Theme>& oTheme, NSCommon::smart_ptr<PPTX::Logic::ClrMap>& oClrMap, bool in_group)
+		void SpTree::toXmlWriterVML(NSBinPptxRW::CXmlWriter *pWriter, NSCommon::smart_ptr<PPTX::Theme>& oTheme, NSCommon::smart_ptr<PPTX::Logic::ClrMap>& oClrMap, NSCommon::smart_ptr<OOX::IFileContainer>& pContainer, bool in_group)
 		{
 			pWriter->StartNode(_T("v:group"));
 			pWriter->StartAttributes();
@@ -309,7 +311,7 @@ namespace PPTX
 			{
 				if (SpTreeElems[i].is<PPTX::Logic::Shape>())
 				{
-					SpTreeElems[i].as<PPTX::Logic::Shape>().toXmlWriterVML(pWriter, oTheme, oClrMap, true);
+					SpTreeElems[i].as<PPTX::Logic::Shape>().toXmlWriterVML(pWriter, oTheme, oClrMap, pContainer, true);
 				}
 				else if (SpTreeElems[i].is<PPTX::Logic::Pic>())
 				{
@@ -317,7 +319,7 @@ namespace PPTX
 				}
 				else if (SpTreeElems[i].is<PPTX::Logic::SpTree>())
 				{
-					SpTreeElems[i].as<PPTX::Logic::SpTree>().toXmlWriterVML(pWriter, oTheme, oClrMap, true);
+					SpTreeElems[i].as<PPTX::Logic::SpTree>().toXmlWriterVML(pWriter, oTheme, oClrMap, pContainer, true);
 				}				
 			}
 
@@ -400,8 +402,25 @@ namespace PPTX
 
 			pWriter->WriteRecord1(0, nvGrpSpPr);
 			pWriter->WriteRecord1(1, grpSpPr);
-			pWriter->WriteRecordArray(2, 0, SpTreeElems);
+//---------------------------------------------------------------------------------------			
+			//pWriter->WriteRecordArray(2, 0, SpTreeElems);
+				pWriter->StartRecord(2);
 
+					_UINT32 len = (_UINT32)SpTreeElems.size();
+					pWriter->WriteULONG(len);
+
+					double oldCxCurShape = pWriter->m_dCxCurShape;
+					double oldCyCurShape = pWriter->m_dCyCurShape;
+
+					for (_UINT32 i = 0; i < len; ++i)
+					{
+						pWriter->WriteRecord1(0, SpTreeElems[i]);
+					
+						pWriter->m_dCxCurShape = oldCxCurShape;
+						pWriter->m_dCyCurShape = oldCyCurShape;
+					}
+				pWriter->EndRecord();
+//---------------------------------------------------------------------------------------			
 			pWriter->EndRecord();
 		}
 		void SpTree::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
@@ -415,47 +434,45 @@ namespace PPTX
 				BYTE _at = pReader->GetUChar();
 				switch (_at)
 				{
-				case 0:
-				{
-					nvGrpSpPr.fromPPTY(pReader);
-					break;
-				}
-				case 1:
-				{
-					grpSpPr.fromPPTY(pReader);
-					break;
-				}
-				case 2:
-				{
-					pReader->Skip(4); // len
-					ULONG _c = pReader->GetULong();
-
-					for (ULONG i = 0; i < _c; ++i)
+					case 0:
 					{
-						pReader->Skip(1); // type (0)
-						LONG nElemLength = pReader->GetLong(); // len
-															   //SpTreeElem::fromPPTY сразу делает GetChar, а toPPTY ничего не пишет если не инициализирован
-						if (nElemLength > 0)
-						{
-							SpTreeElem elm;
-							elm.fromPPTY(pReader);
+						nvGrpSpPr.fromPPTY(pReader);						
+					}break;
+					case 1:
+					{
+						grpSpPr.fromPPTY(pReader);						
+					}break;
+					case 2:
+					{
+						pReader->Skip(4); // len
+						ULONG _c = pReader->GetULong();
 
-							if (elm.is_init())
+						for (ULONG i = 0; i < _c; ++i)
+						{
+							pReader->Skip(1); // type (0)
+							LONG nElemLength = pReader->GetLong(); // len
+																   //SpTreeElem::fromPPTY сразу делает GetChar, а toPPTY ничего не пишет если не инициализирован
+							if (nElemLength > 0)
 							{
-								if (elm.getType() == OOX::et_p_ShapeTree)
+								SpTreeElem elm;
+								elm.fromPPTY(pReader);
+
+								if (elm.is_init())
 								{
-									smart_ptr<SpTree> e = elm.GetElem().smart_dynamic_cast<SpTree>();
-									e->m_lGroupIndex = m_lGroupIndex + 1;
+									if (elm.getType() == OOX::et_p_ShapeTree)
+									{
+										smart_ptr<SpTree> e = elm.GetElem().smart_dynamic_cast<SpTree>();
+										e->m_lGroupIndex = m_lGroupIndex + 1;
+									}
+									SpTreeElems.push_back(elm);
 								}
-								SpTreeElems.push_back(elm);
 							}
 						}
-					}
-				}
-				default:
-				{
-					break;
-				}
+					}break;
+					default:
+					{
+						pReader->SkipRecord();
+					}break;
 				}
 			}
 			pReader->Seek(_end_rec);

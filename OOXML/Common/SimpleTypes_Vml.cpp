@@ -1224,9 +1224,9 @@ namespace SimpleTypes
 	{
 		switch (this->m_eValue)
 		{
-		case oletypeEmbed	: return L"embed";
-		case oletypeLink	: return L"link";
-		default				: return L"embed";
+		case oletypeEmbed	: return L"Embed";
+		case oletypeLink	: return L"Link";
+		default				: return L"Embed";
 		}
 	}
 
@@ -3664,39 +3664,6 @@ namespace SimpleTypes
 			m_dSyx = 0; m_dSyy = 1;
 			m_dPx  = 0; m_dPy  = 0;
 		}
-		void CVml_Matrix::SetMatrix(double dSxx, double dSxy, double dSyx, double dSyy, double dPx, double dPy)
-		{
-			m_dSxx = dSxx; m_dSxy = dSxy;
-			m_dSyx = dSyx; m_dSyy = dSyy;
-			m_dPx  =  dPx; m_dPy  =  dPy;
-		}
-
-		double CVml_Matrix::Get_Sxx() const
-		{
-			return m_dSxx;
-		}
-		double CVml_Matrix::Get_Sxy() const
-		{
-			return m_dSxy;
-		}
-		double CVml_Matrix::Get_Syx() const
-		{
-			return m_dSyx;
-		}
-		double CVml_Matrix::Get_Syy() const
-		{
-			return m_dSyy;
-		}
-
-		double CVml_Matrix::Get_Px() const
-		{
-			return m_dPx;
-		}
-		double CVml_Matrix::Get_Py() const
-		{
-			return m_dPy;
-		}
-
 		double CVml_Matrix::FromString(const std::wstring &sValue)
 		{
 			ResetMatrix();
@@ -3796,8 +3763,8 @@ namespace SimpleTypes
 		{
 			m_dX = 0;
 			m_dY = 0;
-			m_bUnitsX = true;
-			m_bUnitsY = true;
+			m_bUnitsX = false;
+			m_bUnitsY = false;
 		}
 
 		double CVml_Vector2D_Units_Or_Percentage::GetX() const
@@ -3829,15 +3796,15 @@ namespace SimpleTypes
 		{
 			m_dX = 0;
 			m_dY = 0;
-			m_bUnitsX = true;
-			m_bUnitsY = true;
+			m_bUnitsX = false;
+			m_bUnitsY = false;
 
-			int nLen = (int)sValue.length();
-			if ( nLen < 1)
+			size_t nLen = sValue.length();
+			if ( nLen == std::wstring::npos)
 				return 0;
 
-			int nPos = (int)sValue.find( L"," );
-			if ( -1 == nPos )
+			size_t nPos = sValue.find( L"," );
+			if (nPos == std::wstring::npos)
 				return 0;
 
 			std::wstring sTemp = sValue.substr( 0, nPos );
@@ -3845,7 +3812,6 @@ namespace SimpleTypes
 			{
 				SimpleTypes::CPercentage oPerc = sTemp;
 				m_dX = oPerc.GetValue();
-				m_bUnitsX = false;
 			}
 			else
 			{
@@ -3859,7 +3825,6 @@ namespace SimpleTypes
 			{
 				SimpleTypes::CPercentage oPerc = sTemp;
 				m_dY = oPerc.GetValue();
-				m_bUnitsY = false;
 			}
 			else
 			{

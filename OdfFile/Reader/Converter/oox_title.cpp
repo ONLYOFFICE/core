@@ -36,6 +36,7 @@
 #include <xml/simple_xml_writer.h>
 #include "../Format/odfcontext.h"
 #include "../Format/style_text_properties.h"
+#include "../Format/style_chart_properties.h"
 
 namespace cpdoccore {
 namespace oox {
@@ -43,6 +44,12 @@ namespace oox {
 void oox_title::oox_content_serialize(std::wostream & _Wostream, odf_reader::chart::title & content)
 {
 	if (content_.content_.empty()) return;
+
+	_CP_OPT(int) rotateVal;
+	if (content.properties_)
+	{
+		rotateVal = content.properties_->common_rotation_angle_attlist_.style_rotation_angle_;
+	}
 
 	CP_XML_WRITER(_Wostream)
     {
@@ -57,7 +64,9 @@ void oox_title::oox_content_serialize(std::wostream & _Wostream, odf_reader::cha
 				//odf_reader::fonts_container & fonts = context.fontContainer();
 				odf_reader::fonts_container fonts;
 				if (content.text_properties_)
+				{
 					content.text_properties_->oox_serialize(CP_XML_STREAM(), true, fonts);
+				}
 
 				CP_XML_NODE(L"a:t")
 				{
@@ -72,6 +81,12 @@ void oox_title::oox_serialize(std::wostream & _Wostream)
 {
 	if (!content_.bEnabled && !sub_.bEnabled) return;
 	
+	_CP_OPT(int) rotateVal;
+	if (content_.properties_)
+	{
+		rotateVal = content_.properties_->common_rotation_angle_attlist_.style_rotation_angle_;
+	}
+
 	CP_XML_WRITER(_Wostream)
     {
 		CP_XML_NODE(L"c:title")
@@ -82,7 +97,13 @@ void oox_title::oox_serialize(std::wostream & _Wostream)
 				{
 					CP_XML_NODE(L"c:rich")
 					{
-						CP_XML_NODE(L"a:bodyPr"){}
+						CP_XML_NODE(L"a:bodyPr")
+						{
+							if (rotateVal)
+							{
+								CP_XML_ATTR(L"rot", -(int)(*rotateVal * 60000));
+							}
+						}
 						CP_XML_NODE(L"a:lstStyle"){}
 						
 						oox_content_serialize(CP_XML_STREAM(), content_);
@@ -94,7 +115,14 @@ void oox_title::oox_serialize(std::wostream & _Wostream)
 			{
 				CP_XML_NODE(L"c:txPr")
 				{
-					CP_XML_NODE(L"a:bodyPr"){}
+					CP_XML_NODE(L"a:bodyPr")
+					{
+						if (rotateVal)
+						{
+							double d = 360 - (*rotateVal) * 180. / 3.14159265358979323846;
+							CP_XML_ATTR(L"rot", (int)(d * 60000));
+						}
+					}
 					CP_XML_NODE(L"a:lstStyle"){}
 					
 					CP_XML_NODE(L"a:p")

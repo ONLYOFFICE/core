@@ -38,7 +38,6 @@
 
 #include "EmfTypes.h"
 #include "EmfPlayer.h"
-#include "EmfPath.h"
 
 #if defined(DrawText)
 #undef DrawText
@@ -118,7 +117,7 @@ namespace MetaFile
 			m_pParser->SetFontManager(pFontManager);
 		}
 
-		bool CheckError()
+		bool CheckError() const
 		{
 			return m_pParser->CheckError();
 		}
@@ -143,7 +142,7 @@ namespace MetaFile
 			m_pParser->SetInterpretator(oInterpretatorType, unWidth, unHeight);
 		}
 
-		TEmfRectL* GetBounds()
+		const TRectL& GetBounds() const
 		{
 			return m_pParser->GetBounds();
 		}

@@ -25,7 +25,8 @@
 
 #if !defined (_RWSTD_NO_SETRLIMIT)
 
-#  include <sys/resource.h>   // for setrlimit()
+#include <stddef.h>
+#include <sys/resource.h>   // for setrlimit()
 
 void limit_memory (size_t limit)
 {

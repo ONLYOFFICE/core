@@ -105,7 +105,7 @@ graphic_format_properties_ptr calc_graphic_properties_content(const std::vector<
     return result;
 }
 
-graphic_format_properties_ptr calc_graphic_properties_content(const style_instance * styleInstance)
+graphic_format_properties_ptr calc_graphic_properties_content(const style_instance * styleInstance, bool noParentStandard)
 {
 	if (!styleInstance) return graphic_format_properties_ptr();
 	
@@ -118,12 +118,12 @@ graphic_format_properties_ptr calc_graphic_properties_content(const style_instan
                 graphicProps.insert(graphicProps.begin(), graphicProp);
 			}
 		
-        styleInstance = styleInstance->parent();
+        styleInstance = (noParentStandard && L"standard" == XmlUtils::GetLower(styleInstance->parent_name())) ? NULL : styleInstance->parent();
 	}
     return calc_graphic_properties_content(graphicProps);
 }
 
-graphic_format_properties_ptr calc_graphic_properties_content(const std::vector<const style_instance *> & styleInstances)
+graphic_format_properties_ptr calc_graphic_properties_content(const std::vector<const style_instance *> & styleInstances, bool noParentStandard)
 {
 	if (styleInstances.empty()) return graphic_format_properties_ptr();
 
@@ -131,7 +131,7 @@ graphic_format_properties_ptr calc_graphic_properties_content(const std::vector<
 	
 	for (size_t i = 0; i < styleInstances.size(); i++)
 	{
-		graphic_format_properties_ptr f = calc_graphic_properties_content(styleInstances[i]);
+		graphic_format_properties_ptr f = calc_graphic_properties_content(styleInstances[i], noParentStandard);
 		result->apply_from(f.get());
     }
     return result;
@@ -209,15 +209,15 @@ void calc_tab_stops(const style_instance * styleInstance, oox::tabs_context & co
 		if (parProps[i]->content_.fo_margin_left_)
 			margin_left = 20.0 * parProps[i]->content_.fo_margin_left_->get_length().get_value_unit(odf_types::length::pt);
 		
-		if (parProps[i]->content_.style_tab_stops_)
-		{
-			style_tab_stops *tab_stops = dynamic_cast<style_tab_stops*>(parProps[i]->content_.style_tab_stops_.get());
-			context.reset();
-			for (size_t j = 0; j < tab_stops->content_.size(); j++)
-			{
-				context.add(tab_stops->content_[j], margin_left);
-			}
-		}
+        if ( parProps[i]->content_.style_tab_stops_ )
+        {
+            style_tab_stops *tab_stops = dynamic_cast<style_tab_stops*>(parProps[i]->content_.style_tab_stops_.get());
+            context.reset();
+            for (size_t j = 0; j < tab_stops->content_.size(); j++)
+            {
+                context.add(tab_stops->content_[j], margin_left);
+            }
+        }
 	}
 }
 

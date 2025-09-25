@@ -243,7 +243,15 @@ bool ProtoTable::fillCells(std::vector<CElementPtr> &arrCells)
             if (top == m_arrTop[posRow]) break;
         for (; posCol < countCol; posCol++)
             if (left == m_arrLeft[posCol]) break;
-        TCell* pParent = &m_table[posRow][posCol];
+        TCell* pParent = NULL;
+        
+        if (posRow < m_table.size())
+        {
+            if (posCol < m_table[posRow].size())
+            {
+                pParent = &m_table[posRow][posCol];
+            }
+        }
 
         UINT posRightCol = 0, posBottomRow = 0;
         for (; posBottomRow < countRow; posBottomRow++)
@@ -263,9 +271,11 @@ bool ProtoTable::fillCells(std::vector<CElementPtr> &arrCells)
                 if (posRow == cRow)
                     tCell.setRowSpan(posBottomRow - cRow);
             }
-        pParent->setPParent(nullptr);
-        pParent->setPShape(ptrCell);
-
+        if (pParent)
+        {
+            pParent->setPParent(nullptr);
+            pParent->setPShape(ptrCell);
+        }
         //        pParent->setGridSpan(posRightCol - posCol);
         //        pParent->setRowSpan(posBottomRow - posRow);
     }
@@ -562,7 +572,7 @@ bool TCell::isRealCell() const
     return true;
 }
 
-void TCell::FillTxBody(PPTX::Logic::TxBody &oTxBody, CTextCFRun* pLastCF)
+void TCell::FillTxBody(PPTX::Logic::TxBody& oTxBody, CTextCFRun* pLastCF)
 {
     TxBodyConverter txBodyConverter(m_ptrSpElCell, m_pRels, pLastCF);
     txBodyConverter.FillTxBody(oTxBody);
@@ -570,6 +580,8 @@ void TCell::FillTxBody(PPTX::Logic::TxBody &oTxBody, CTextCFRun* pLastCF)
 
 void TCell::FillTcPr(PPTX::Logic::TableCellProperties &oTcPr)
 {
+    if (!m_ptrSpElCell) return;
+
     auto pShapeEl = static_cast<CShapeElement*>(m_ptrSpElCell.get());
     auto pShape = pShapeEl->m_pShape;
     //anchor
@@ -732,7 +744,8 @@ void TCell::FillLn(PPTX::Logic::Ln &Ln, TCell::eBorderPossition eBP, CElementPtr
     pLineEnd->len = new PPTX::Limit::LineEndSize;
     Ln.tailEnd = pLineEnd;
 
-    Ln.Join.type = PPTX::Logic::eJoin::JoinRound;
+    Ln.join.Init();
+    Ln.join->type = PPTX::Logic::eJoin::JoinRound;
 }
 
 void TCell::SetLnName(PPTX::Logic::Ln &Ln, eBorderPossition eBP) const

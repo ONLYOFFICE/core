@@ -89,7 +89,7 @@ public:
 	const size_t	RegisterFontId		(const FontInfo& font);
 	const int		RegistrDxfn			(const std::wstring& dx_style);
 	_UINT16			RegisterNumFormat	(_UINT16 ifmt, const std::wstring & format_code);
-
+	void			RegisterNumFormat	(BaseObjectPtr element);
 	void			RegisterPaletteColor(int id, const std::wstring & argb);
     
 	void			GetDigitFontSizePixels();
@@ -114,7 +114,6 @@ public:
 	std::map<int, int>						fonts_charsets;
 	std::map<int,  std::wstring>			colors_palette;
 
-	std::vector<BaseObjectPtr>				m_arNumFormats;
 	std::vector<BaseObjectPtr>				m_arFonts;
 	PPTX::ThemePtr							m_pTheme;
 	
@@ -183,8 +182,9 @@ public:
 		
 		double						defaultColumnWidth = 8.0;
 		double						defaultRowHeight = 14.4;
-
 		std::map<int, _row_info>	mapRows;
+		size_t						StreamPos = 0; // pose in stream for writing
+		size_t						BoundSheetPos = 0; // pose of related BoundSheet8's lbPlyPos field
 	};
 	std::vector<_sheet_info>		sheets_info;
 	std::vector<std::wstring>		external_sheets_info; //current
@@ -202,8 +202,11 @@ public:
 	int								cellStyleXfs_count;
 	int								cellStyleDxfs_count;
 
-	std::map<std::wstring, int>		mapDefaultFormatCode;
+	std::map<std::wstring, _UINT16>	mapDefaultFormatCode;
+	std::map<_UINT16, std::wstring>	mapDefaultFormatCodeNum;
+
 	std::map<_UINT16, _UINT16>		mapUsedFormatCode; //original, used
+	std::map<_UINT16, BaseObjectPtr> m_mapNumFormats;
 
 	std::map<std::wstring, int>		mapUserDxfs;
 	std::vector<std::wstring>		arrUserDxfs;
@@ -219,6 +222,7 @@ public:
 	static std::unordered_map<int, std::wstring>		mapTableNames_static;
 	static std::unordered_map<int, std::vector<std::wstring>>	mapTableColumnNames_static;
     std::unordered_map<std::wstring, int>		mapTableGuidsIndex;
+	static std::unordered_map<int, std::vector<int>>		mapXtiTables_static;
 
     std::unordered_map<int, std::vector<XLS::ElementType>> pivotCacheRecordType;
     int currentPivotCacheRecord;

@@ -56,6 +56,7 @@
 #include "../../../DesktopEditor/common/Types.h"
 #include "../../../OOXML/Base/unicode_util.h"
 #include "../../../UnicodeConverter/UnicodeConverter.h"
+#include "../../../DesktopEditor/common/File.h"
 
 #include <boost/format.hpp>
 
@@ -493,157 +494,8 @@ namespace DocFileFormat
 			}
             return true;
 		}
-
-		template<class T> static bool GetSTLCollectionFromUtf8( T *STLCollection, unsigned char *bytes, int size)
-		{
-			if ( ( STLCollection == NULL ) || ( bytes == NULL ) )
-			{
-				return false;
-			}
-			if (sizeof(wchar_t) == 2)//utf8 -> utf16
-			{
-				unsigned int nLength = size;
-
-				UTF16 *pStrUtf16 = new UTF16 [nLength+1];
-				memset ((void *) pStrUtf16, 0, sizeof (UTF16) * (nLength+1));
-
-				UTF8 *pStrUtf8 = (UTF8 *) bytes;
-
-				// this values will be modificated
-				const UTF8 *pStrUtf8_Conv	= pStrUtf8;
-				UTF16 *pStrUtf16_Conv		= pStrUtf16;
-
-				ConversionResult eUnicodeConversionResult = ConvertUTF8toUTF16 (&pStrUtf8_Conv,	 &pStrUtf8[nLength]
-						, &pStrUtf16_Conv, &pStrUtf16 [nLength]
-						, strictConversion);
-
-				if (conversionOK != eUnicodeConversionResult)
-				{
-					delete [] pStrUtf16;
-					return GetSTLCollectionFromLocale(STLCollection, bytes,size);
-				}
-				for (unsigned int i = 0; i < nLength; i++)
-				{
-					STLCollection->push_back(pStrUtf16[i]);
-				}
-				delete [] pStrUtf16;
-				return true;
-			}
-			else //utf8 -> utf32
-			{
-				unsigned int nLength = size;
-
-				UTF32 *pStrUtf32 = new UTF32 [nLength+1];
-				memset ((void *) pStrUtf32, 0, sizeof (UTF32) * (nLength+1));
-
-
-				UTF8 *pStrUtf8 = (UTF8 *) bytes;
-
-				// this values will be modificated
-				const UTF8 *pStrUtf8_Conv = pStrUtf8;
-				UTF32 *pStrUtf32_Conv = pStrUtf32;
-
-				ConversionResult eUnicodeConversionResult = ConvertUTF8toUTF32 (&pStrUtf8_Conv, &pStrUtf8[nLength]
-						, &pStrUtf32_Conv, &pStrUtf32 [nLength]
-						, strictConversion);
-
-				if (conversionOK != eUnicodeConversionResult)
-				{
-					delete [] pStrUtf32;
-					return GetSTLCollectionFromLocale(STLCollection, bytes, size);
-				}
-				for (unsigned int i = 0; i < nLength; i++)
-				{
-					STLCollection->push_back(pStrUtf32[i]);
-				}
-				delete [] pStrUtf32;
-				return true;
-			}
-		}
-
-		template<class T> static bool GetSTLCollectionFromBytes( T *STLCollection, unsigned char *bytes, int size, int code_page )
-		{
-			if ( ( STLCollection == NULL ) || ( bytes == NULL ) )
-			{
-				return false;
-			}
-
-			if (code_page == ENCODING_UTF8)
-			{
-				return GetSTLCollectionFromUtf8(STLCollection, bytes, size);
-			}
-			else if (code_page == ENCODING_UTF16)
-			{
-				int i = 0;
-#if !defined(_WIN32) && !defined(_WIN64)
-               size /= 2;
-               ConversionResult eUnicodeConversionResult;
-               UTF32 *pStrUtf32 = new UTF32 [size + 1];
-
-               memset ((void *) pStrUtf32, 0, sizeof (UTF32) * (size + 1));
-
-               const   UTF16 *pStrUtf16_Conv = (const UTF16 *) bytes;
-                       UTF32 *pStrUtf32_Conv =                 pStrUtf32;
-
-    eUnicodeConversionResult = ConvertUTF16toUTF32 ( &pStrUtf16_Conv
-                                               , &pStrUtf16_Conv[size]
-                                               , &pStrUtf32_Conv
-                                               , &pStrUtf32 [size]
-                                               , strictConversion);
-
-                if (conversionOK != eUnicodeConversionResult)
-                {
-                    delete [] pStrUtf32; pStrUtf32 = NULL;
-                    return false;
-                }
-                for (long i=0; i < size; i++)
-                {
-                    STLCollection->push_back(pStrUtf32[i]);
-                }
-                if (pStrUtf32) delete [] pStrUtf32;
-#else
-                while ( i < size )
-				{
-					STLCollection->push_back( FormatUtils::BytesToUInt16( bytes, i, size ) );
-
-					i += 2;
-                }
-#endif
-			}
-			else if (code_page == ENCODING_WINDOWS_1250)
-			{
-				wchar_t wch = 0;
-				int i = 0;
-				while ( i < size )
-				{
-					wch = MapByteToWChar( bytes[i++] );
-
-					STLCollection->push_back( wch );
-				}
-			}
-			else
-            {
-				std::string sCodePage;
-				std::map<int, std::string>::const_iterator pFind = NSUnicodeConverter::mapEncodingsICU.find(code_page);
-				if (pFind != NSUnicodeConverter::mapEncodingsICU.end())
-				{
-					sCodePage = pFind->second;
-				}
-
-				if (sCodePage.empty())
-					sCodePage = "CP1250"/* + std::to_string(code_page)*/;
-
-				NSUnicodeConverter::CUnicodeConverter oConverter;
-                std::wstring unicode_string = oConverter.toUnicode((char*)bytes, (unsigned int)size, sCodePage.c_str());
-			
-				for (size_t i = 0; i < unicode_string.size(); i++)
-				{
-					STLCollection->push_back(unicode_string[i]);
-				}
-			}
-
-			return true;
-		}
+		static bool GetWStringFromBytes(std::wstring & string, unsigned char* bytes, int size, int code_page);
+		static bool GetSTLCollectionFromBytes(std::vector<wchar_t>* STLCollection, unsigned char* bytes, int size, int code_page);
 
 		static int BitmaskToInt( int value, int mask )
 		{

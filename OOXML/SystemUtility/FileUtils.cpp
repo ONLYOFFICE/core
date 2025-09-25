@@ -123,6 +123,7 @@ namespace StreamUtils
 
 	std::string ReadStringA(POLE::Stream* pStream, LONG lLen)
 	{
+		if (lLen < 0) return ("");
 		if (pStream == NULL) return ("");
 
 		char* pData = new char[lLen + 1];

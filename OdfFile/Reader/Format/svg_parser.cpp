@@ -32,8 +32,12 @@
 #pragma once   
 
 #include "svg_parser.h"
+
+#include "../../../OOXML/Base/Unit.h"
+
 #include <boost/algorithm/string.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/regex.hpp>
 
 namespace svg_path
 {
@@ -67,16 +71,74 @@ namespace svg_path
 		const bool bPredicate	((L'0' <= aChar && L'9' >= aChar)
 								|| (bSignAllowed && L'+' == aChar)
 							    || (bSignAllowed && L'-' == aChar)
-							    || (L'.' == aChar) );
+							    || (L'.' == aChar) || (L'?' == aChar));
 
 		return bPredicate;
 	}
 
 	inline bool isOnNumberChar(const std::wstring& rStr, const int nPos, bool bSignAllowed = true)
 	{
-		return isOnNumberChar(rStr[nPos],bSignAllowed);
+		return isOnNumberChar(rStr[nPos], bSignAllowed);
 	}
+    bool getStringChar(std::wstring& o_fRetval, int& io_rPos, const std::wstring& rStr)
+    {
+        wchar_t aChar(rStr[io_rPos]);
+        std::wstring  sNumberString;
+        std::wstring  tmpString;
 
+        if (wchar_t(L'?') == aChar)
+        {
+            aChar = rStr[++io_rPos];
+            while (wchar_t(L' ') != aChar && io_rPos < rStr.length())
+            {
+                tmpString = rStr[io_rPos];
+
+                XmlUtils::replace_all(tmpString, L"f", L"gd");
+                sNumberString.append(tmpString);
+                aChar = rStr[++io_rPos];
+            }
+        }
+        else
+        {
+            bool separator_seen = false;
+            if (wchar_t(L'+') == aChar || wchar_t(L'-') == aChar)
+            {
+                tmpString = rStr[io_rPos];
+                sNumberString.append(tmpString);
+                aChar = rStr[++io_rPos];
+            }
+
+            while (((wchar_t(L'0') <= aChar && wchar_t(L'9') >= aChar)
+                || (!separator_seen && wchar_t(L'.') == aChar)) && io_rPos < rStr.length())
+            {
+                if (wchar_t(L'.') == aChar) separator_seen = true;
+                tmpString = rStr[io_rPos];
+                sNumberString.append(tmpString);
+                aChar = rStr[++io_rPos];
+            }
+            if (wchar_t(L'e') == aChar || wchar_t(L'E') == aChar)
+            {
+                sNumberString.append(&rStr[io_rPos], 1);
+                aChar = rStr[++io_rPos];
+
+                if (wchar_t(L'+') == aChar || wchar_t(L'-') == aChar)
+                {
+                    tmpString = rStr[io_rPos];
+                    sNumberString.append(tmpString);
+                    aChar = rStr[++io_rPos];
+                }
+
+                while (wchar_t(L'0') <= aChar && wchar_t(L'9') >= aChar && io_rPos < rStr.length())
+                {
+                    tmpString = rStr[io_rPos];
+                    sNumberString.append(tmpString);
+                    aChar = rStr[++io_rPos];
+                }
+            }
+        }
+        o_fRetval = sNumberString;
+        return true;
+    }
 	bool getDoubleChar(double&  o_fRetval,int &  io_rPos, const std::wstring& rStr)
 	{
 		wchar_t aChar( rStr[io_rPos] );
@@ -146,6 +208,17 @@ namespace svg_path
 
 		return true;
 	}
+    bool importStringAndSpaces(std::wstring& o_fRetval, int& io_rPos, const std::wstring& rStr, const int nLen)
+    {
+        o_fRetval = L"";
+
+        if (!getStringChar(o_fRetval, io_rPos, rStr))
+            return false;
+
+        skipSpacesAndCommas(io_rPos, rStr, nLen);
+
+        return true;
+    }
 	bool importDoubleAndSpacesVml(double& o_fRetval, int& io_rPos, const std::wstring& rStr, const int nLen)
 	{
 		o_fRetval = 0;
@@ -494,6 +567,39 @@ namespace svg_path
                     }                    
                 }break;
 
+                case 'Q':
+                {
+					nPos++;
+					skipSpaces(nPos, rSvgDStatement, nLen);
+
+                    while (nPos < nLen && isOnNumberChar(rSvgDStatement, nPos))
+                    {
+                        double nX, nY;
+                        double nX1, nY1;
+
+						if (!importDoubleAndSpaces(nX1, nPos, rSvgDStatement, nLen))	return false;
+						if (!importDoubleAndSpaces(nY1, nPos, rSvgDStatement, nLen))	return false;
+						if (!importDoubleAndSpaces(nX, nPos, rSvgDStatement, nLen))	    return false;
+						if (!importDoubleAndSpaces(nY, nPos, rSvgDStatement, nLen))	    return false;
+
+                        aCurrPoly.command = L"a:quadBezTo";
+
+						aCurrPoly.points.push_back(_point(nX1, nY1));
+						aCurrPoly.points.push_back(_point(nX, nY));
+
+						Polyline.push_back(aCurrPoly);
+						aCurrPoly.points.clear();
+                        
+						// set last position
+						nLastX = nX;
+						nLastY = nY;
+
+						//keep control point
+						nLastControlX = nX1;
+						nLastControlY = nY1;
+                    }
+                }break;
+
 				case 'G':
 				{
                     nPos++;
@@ -532,6 +638,15 @@ namespace svg_path
 						nLastControlY = nY;
                     }                    
 				}break;
+                case 'a':
+                {
+                    bRelative = true;
+                }
+                case 'A':
+                {
+                    skipSpaces(nPos, rSvgDStatement, nLen);
+                    return false;
+                }break;
                 default:
                 {
                      ++nPos;
@@ -746,6 +861,426 @@ namespace svg_path
         return true;
     }
 
+	bool parseSvgS(std::vector<_polylineS>& Polyline, const std::wstring& rSvgDStatement, bool bWrongPositionAfterZ, bool& bIsClosed, bool& bStroked, std::wstring &wsNewFormula, std::wstring &wsH, std::wstring &wsW)
+    {
+        Polyline.clear();
+        const int nLen(rSvgDStatement.length());
+        int nPos(0);
+
+        std::wstring nLastX;
+        std::wstring nLastY;
+
+        std::wstring nLastControlX;
+        std::wstring nLastControlY;
+
+		unsigned int iCountFormul(1);
+
+        _polylineS aCurrPoly;
+
+        bIsClosed = false;
+        bStroked = true;
+
+        // skip initial whitespace
+        skipSpaces(nPos, rSvgDStatement, nLen);
+
+        while (nPos < nLen)
+        {
+            bool bRelative(false);
+            bool bMoveTo(false);
+            const wchar_t aCurrChar(rSvgDStatement[nPos]);
+
+            aCurrPoly.command.clear();
+
+            switch (aCurrChar)
+            {
+            case 'z':
+            case 'Z':
+            {
+                nPos++;
+                skipSpaces(nPos, rSvgDStatement, nLen);
+
+                bIsClosed = true;
+
+                if (aCurrPoly.points.size() > 0 && !bWrongPositionAfterZ)
+                {
+                    const _pointS aFirst(aCurrPoly.points[0]);
+                    nLastX = aFirst.x.get();
+                    nLastY = aFirst.y.get();
+                }
+
+                aCurrPoly.command = L"a:close";
+                Polyline.push_back(aCurrPoly);
+
+            } break;
+            case 'm':
+            case 'M':
+            {
+                bMoveTo = true;
+            }
+            case 'l':
+            case 'L':
+            {
+                if ('m' == aCurrChar || 'l' == aCurrChar)
+                {
+                    bRelative = true;
+                }
+
+                if (aCurrPoly.points.size() > 0)
+                {
+                    if (bIsClosed)
+                    {
+                        //closeWithGeometryChange(aCurrPoly);
+                    }
+                    Polyline.push_back(aCurrPoly);
+
+                    bIsClosed = false;
+                    if (bMoveTo)	aCurrPoly.command = L"a:moveTo";
+                    else		aCurrPoly.command = L"a:lnTo";
+                    aCurrPoly.points.clear();
+                }
+                nPos++;
+                skipSpaces(nPos, rSvgDStatement, nLen);
+                aCurrPoly.command.clear();
+
+                while (nPos < nLen && isOnNumberChar(rSvgDStatement, nPos))
+                {
+                    std::wstring nX, nY;
+
+                    if (!importStringAndSpaces(nX, nPos, rSvgDStatement, nLen)) return false;
+                    if (!importStringAndSpaces(nY, nPos, rSvgDStatement, nLen)) return false;
+
+                    if (bRelative)
+                    {
+                        nX += L"+" + nLastX;
+                        nY += L"+" + nLastY;
+                    }
+
+                    nLastX = nX;
+                    nLastY = nY;
+
+                    if (bMoveTo) aCurrPoly.command = L"a:moveTo";
+                    else aCurrPoly.command = L"a:lnTo";
+
+                    aCurrPoly.points.push_back(_pointS(nX, nY));
+                    Polyline.push_back(aCurrPoly);
+                    aCurrPoly.points.clear();
+                }
+            }break;
+            case 'h':
+            {
+                bRelative = true;
+            }
+            case 'H'://горизонт линия
+            {
+                nPos++;
+                skipSpaces(nPos, rSvgDStatement, nLen);
+
+                while (nPos < nLen && isOnNumberChar(rSvgDStatement, nPos))
+                {
+                    std::wstring nX, nY(nLastY);
+
+                    if (!importStringAndSpaces(nX, nPos, rSvgDStatement, nLen)) return false;
+
+                    if (bRelative)
+                    {
+                        nX += L"+" + nLastX;
+                    }
+
+                    nLastX = nX;
+
+                    aCurrPoly.command = L"a:lnTo";
+                    aCurrPoly.points.push_back(_pointS(nX, nY));
+                    Polyline.push_back(aCurrPoly);
+                    aCurrPoly.points.clear();
+                }
+                break;
+            }
+
+            case 'v':
+            {
+                bRelative = true;
+            }
+            case 'V'://вертикальная линия
+            {
+                nPos++;
+                skipSpaces(nPos, rSvgDStatement, nLen);
+
+                while (nPos < nLen && isOnNumberChar(rSvgDStatement, nPos))
+                {
+                    std::wstring nX(nLastX), nY;
+
+                    if (!importStringAndSpaces(nY, nPos, rSvgDStatement, nLen)) return false;
+
+                    if (bRelative)
+                    {
+                        nY += L"+" + nLastY;
+                    }
+
+                    nLastY = nY;
+
+                    aCurrPoly.command = L"a:lnTo";
+                    aCurrPoly.points.push_back(_pointS(nX, nY));
+                    Polyline.push_back(aCurrPoly);
+                    aCurrPoly.points.clear();
+                }                
+            }break;
+
+            case 's':
+            {
+                bRelative = true;
+            }
+            case 'S':
+            {
+                nPos++;
+                skipSpaces(nPos, rSvgDStatement, nLen);
+
+                bool bPresentNumber = false;
+                while (nPos < nLen && isOnNumberChar(rSvgDStatement, nPos))
+                {
+                    bPresentNumber = true;
+                    std::wstring nX, nY;
+                    std::wstring nX2, nY2;
+                    std::wstring nX1, nY1;
+
+                    if (!importStringAndSpaces(nX2, nPos, rSvgDStatement, nLen)) return false;
+                    if (!importStringAndSpaces(nY2, nPos, rSvgDStatement, nLen)) return false;
+                    if (!importStringAndSpaces(nX, nPos, rSvgDStatement, nLen))	return false;
+                    if (!importStringAndSpaces(nY, nPos, rSvgDStatement, nLen))	return false;
+
+                    if (bRelative)
+                    {
+                        nX2 += L"+" + nLastX;
+                        nY2 += L"+" + nLastY;
+                        nX += L"+" + nLastX;
+                        nY += L"+" + nLastY;
+                    }
+                    aCurrPoly.command = L"a:quadBezTo";
+
+                    aCurrPoly.points.push_back(_pointS(nX2, nY2));
+                    aCurrPoly.points.push_back(_pointS(nX, nY));
+
+                    Polyline.push_back(aCurrPoly);
+                    aCurrPoly.points.clear();
+
+                    nLastX = nX;
+                    nLastY = nY;
+
+                    nLastControlX = nX2;
+                    nLastControlY = nY2;
+                }
+                if (false == bPresentNumber)
+                {
+                    bStroked = false;
+                }
+            }break;
+
+            case 'c':
+            {
+                bRelative = true;
+            }
+            case 'C':
+            {
+                nPos++;
+                skipSpaces(nPos, rSvgDStatement, nLen);
+
+                while (nPos < nLen && isOnNumberChar(rSvgDStatement, nPos))
+                {
+                    std::wstring nX, nY;
+                    std::wstring nX1, nY1;
+                    std::wstring nX2, nY2;
+
+                    if (!importStringAndSpaces(nX1, nPos, rSvgDStatement, nLen))	return false;
+                    if (!importStringAndSpaces(nY1, nPos, rSvgDStatement, nLen))	return false;
+                    if (!importStringAndSpaces(nX2, nPos, rSvgDStatement, nLen))	return false;
+                    if (!importStringAndSpaces(nY2, nPos, rSvgDStatement, nLen))	return false;
+                    if (!importStringAndSpaces(nX, nPos, rSvgDStatement, nLen))	return false;
+                    if (!importStringAndSpaces(nY, nPos, rSvgDStatement, nLen))	return false;
+
+                    if (bRelative)
+                    {
+                        nX1 += L"+" + nLastX;
+                        nY1 += L"+" + nLastY;
+                        nX2 += L"+" + nLastX;
+                        nY2 += L"+" + nLastY;
+                        nX += L"+" + nLastX;
+                        nY += L"+" + nLastY;
+                    }
+
+                    aCurrPoly.command = L"a:cubicBezTo";
+                    // append curved edge
+                    aCurrPoly.points.push_back(_pointS(nX1, nY1));
+                    aCurrPoly.points.push_back(_pointS(nX2, nY2));
+                    aCurrPoly.points.push_back(_pointS(nX, nY));
+
+                    Polyline.push_back(aCurrPoly);
+                    aCurrPoly.points.clear();
+
+                    nLastX = nX;
+                    nLastY = nY;
+
+                    nLastControlX = nX2;
+                    nLastControlY = nY2;
+                }
+            }break;
+
+            case 'G':
+            {
+                nPos++;
+                skipSpaces(nPos, rSvgDStatement, nLen);
+
+                while (nPos < nLen && isOnNumberChar(rSvgDStatement, nPos))
+                {
+                    std::wstring nX, nY;
+                    std::wstring A1, A2;
+
+                    if (!importStringAndSpaces(nX, nPos, rSvgDStatement, nLen))	return false;
+                    if (!importStringAndSpaces(nY, nPos, rSvgDStatement, nLen))	return false;
+                    if (!importStringAndSpaces(A1, nPos, rSvgDStatement, nLen))	return false;
+                    if (!importStringAndSpaces(A2, nPos, rSvgDStatement, nLen))	return false;
+
+                    if (bRelative)
+                    {
+                        nX += L"+" + nLastX;
+                        nY += L"+" + nLastY;
+                    }
+
+                    aCurrPoly.command = L"a:arcTo";
+                    // append curved edge
+                    aCurrPoly.points.push_back(_pointS(nX, nY));
+                    aCurrPoly.points.push_back(_pointS(A1, A2));
+
+                    Polyline.push_back(aCurrPoly);
+                    aCurrPoly.points.clear();
+
+                    nLastX = nX;
+                    nLastY = nY;
+
+                    nLastControlX = nX;
+                    nLastControlY = nY;
+                }
+            }break;
+            case 'a':
+            {
+                bRelative = true;
+            }
+            case 'A':
+			case 'W':
+            {
+				nPos++;
+                skipSpaces(nPos, rSvgDStatement, nLen);
+				while(nPos < nLen && isOnNumberChar(rSvgDStatement,nPos))
+				{
+					std::wstring wsX1,wsY1,wsX2,wsY2;
+					std::wstring wsAngleStartX,wsAngleStartY,wsAngleEndX,wsAngleEndY;
+
+					if(!importStringAndSpaces(wsX1,nPos,rSvgDStatement,nLen)) return false;
+					if(!importStringAndSpaces(wsY1,nPos,rSvgDStatement,nLen)) return false;
+					if(!importStringAndSpaces(wsX2,nPos,rSvgDStatement,nLen)) return false;
+					if(!importStringAndSpaces(wsY2,nPos,rSvgDStatement,nLen)) return false;
+					if(aCurrChar == L'A')
+					{
+						if(!importStringAndSpaces(wsAngleEndX,nPos,rSvgDStatement,nLen)) return false;
+						if(!importStringAndSpaces(wsAngleEndY,nPos,rSvgDStatement,nLen)) return false;
+						if(!importStringAndSpaces(wsAngleStartX,nPos,rSvgDStatement,nLen)) return false;
+						if(!importStringAndSpaces(wsAngleStartY,nPos,rSvgDStatement,nLen)) return false;
+					}
+					else
+					{
+						if(!importStringAndSpaces(wsAngleStartX,nPos,rSvgDStatement,nLen)) return false;
+						if(!importStringAndSpaces(wsAngleStartY,nPos,rSvgDStatement,nLen)) return false;
+						if(!importStringAndSpaces(wsAngleEndX,nPos,rSvgDStatement,nLen)) return false;
+						if(!importStringAndSpaces(wsAngleEndY,nPos,rSvgDStatement,nLen)) return false;
+					}
+
+
+					std::wstring wsKoefHeight{L"af" + std::to_wstring(iCountFormul++)},
+								wsKoefWidth{L"af" + std::to_wstring(iCountFormul++)},
+								wsHeight{L"af" + std::to_wstring(iCountFormul++)},
+								wsWidth{L"af" + std::to_wstring(iCountFormul++)},
+								wsNewFirstAngleX{L"af" + std::to_wstring(iCountFormul++)},
+								wsNewFirstAngleY{L"af" + std::to_wstring(iCountFormul++)},
+								wsDifferenceX_FirstAngle{L"af" + std::to_wstring(iCountFormul++)},
+								wsDifferenceY_FirsAngle{L"af" + std::to_wstring(iCountFormul++)},
+								wsNewSecondAngleX{L"af" + std::to_wstring(iCountFormul++)},
+								wsNewSecondAngleY{L"af" + std::to_wstring(iCountFormul++)},
+								wsDifferenceX_SecondAngle{L"af" + std::to_wstring(iCountFormul++)},
+								wsDifferenceY_SecondAngle{L"af" + std::to_wstring(iCountFormul++)},
+								wsArcTangensFirst{L"af" + std::to_wstring(iCountFormul++)},
+								wsArcTangensSecond{L"af" + std::to_wstring(iCountFormul++)},
+								wsConversionToDegreesStAngle{L"af" + std::to_wstring(iCountFormul++)},
+								wsConversionToDegreesSecondAngle{L"af" + std::to_wstring(iCountFormul++)},
+								wsDifferenceBetweenAngles{L"af" + std::to_wstring(iCountFormul++)},
+								wsStAngle{L"af" + std::to_wstring(iCountFormul++)},
+								wsSwAngleNegative{L"af" + std::to_wstring(iCountFormul++)},
+								wsSwAngle{L"af" + std::to_wstring(iCountFormul++)};
+
+
+					{/*...*/}
+
+					/* implemented without taking into account the left offset*/
+					if(wsH.empty())
+						wsH = L"h";
+					if(wsW.empty())
+						wsW = L"w";
+
+					wsNewFormula += L"<a:gd name=\""+ wsKoefHeight + L"\" fmla=\"*/ h 1 " + wsH + L"\"/>";
+					wsNewFormula += L"<a:gd name=\""+ wsKoefWidth + L"\" fmla=\"*/ w 1 " + wsW + L"\"/>";
+					// }
+					wsNewFormula += L"<a:gd name=\""+ wsHeight + L"\" fmla=\"*/ vc " + wsH + L" h\"/>";
+					wsNewFormula += L"<a:gd name=\""+ wsWidth + L"\" fmla=\"*/ wd2 " + wsW + L" w\"/>";
+
+
+					wsNewFormula += L"<a:gd name=\""+ wsNewFirstAngleX + L"\" fmla=\"*/ "+ wsAngleStartX +L" " + wsKoefWidth + L" 1\"/>";
+					wsNewFormula += L"<a:gd name=\""+ wsNewFirstAngleY + L"\" fmla=\"*/ "+ wsAngleStartY +L" " + wsKoefHeight + L" 1\"/>";
+					wsNewFormula += L"<a:gd name=\""+ wsDifferenceX_FirstAngle + L"\" fmla=\"+- 0 " + wsNewFirstAngleX + L" wd2\"/>";
+					wsNewFormula += L"<a:gd name=\""+ wsDifferenceY_FirsAngle + L"\" fmla=\"+- 0 " + wsNewFirstAngleY + L" vc\"/>";
+					wsNewFormula += L"<a:gd name=\""+ wsNewSecondAngleX + L"\" fmla=\"*/ "+ wsAngleEndX +L" " + wsKoefWidth + L" 1\"/>";
+					wsNewFormula += L"<a:gd name=\""+ wsNewSecondAngleY + L"\" fmla=\"*/ "+ wsAngleEndY +L" " + wsKoefHeight + L" 1\"/>";
+					wsNewFormula += L"<a:gd name=\""+ wsDifferenceX_SecondAngle + L"\" fmla=\"+- 0 " + wsNewSecondAngleX + L" wd2\"/>";
+					wsNewFormula += L"<a:gd name=\""+ wsDifferenceY_SecondAngle + L"\" fmla=\"+- 0 " + wsNewSecondAngleY + L" vc\"/>";
+
+					wsNewFormula += L"<a:gd name=\""+ wsArcTangensFirst + L"\" fmla=\"at2 " + wsDifferenceX_FirstAngle + L" " + wsDifferenceY_FirsAngle + L"\"/>";
+					wsNewFormula += L"<a:gd name=\""+ wsArcTangensSecond + L"\" fmla=\"at2 " + wsDifferenceX_SecondAngle + L" " + wsDifferenceY_SecondAngle + L"\"/>";
+
+					wsNewFormula += L"<a:gd name=\""+ wsDifferenceBetweenAngles + L"\" fmla=\"+- 0 " + wsArcTangensSecond + L" " + wsArcTangensFirst + L"\"/>";
+					wsNewFormula += L"<a:gd name=\""+ wsStAngle + L"\" fmla=\"val " + wsArcTangensFirst + L"\"/>";
+					wsNewFormula += L"<a:gd name=\""+ wsSwAngleNegative + L"\" fmla=\"+- 21600000 " + wsDifferenceBetweenAngles + L" 0 \"/>";
+
+					wsNewFormula += L"<a:gd name=\""+ wsSwAngle +L"\" fmla=\"?: " + wsDifferenceBetweenAngles + L" " + wsDifferenceBetweenAngles + L" " + wsSwAngleNegative +L"\"/>";
+
+					aCurrPoly.command = L"a:moveTo";
+					aCurrPoly.points.push_back(_pointS(wsAngleStartX,wsAngleStartY));
+					Polyline.push_back(aCurrPoly);
+					aCurrPoly.points.clear();
+
+					aCurrPoly.command = L"a:arcTo";
+					aCurrPoly.points.push_back(_pointS(wsWidth,wsHeight));
+					aCurrPoly.points.push_back(_pointS(wsStAngle,wsSwAngle));
+					Polyline.push_back(aCurrPoly);
+					aCurrPoly.points.clear();
+
+					nLastX = wsAngleEndX;
+					nLastY = wsAngleEndY;
+
+					nLastControlX = wsAngleEndX;
+					nLastControlY = wsAngleEndY;
+				}
+            }break;
+            default:
+            {
+                ++nPos;
+                break;
+            }
+            }
+        }
+
+        if ((aCurrPoly.points.size() > 0/* || !bIsClosed*/) && !aCurrPoly.command.empty() && aCurrPoly.command != L"a:cubicBezTo")
+        {
+            Polyline.push_back(aCurrPoly);
+        }
+
+        return true;
+    }
 
 
 }

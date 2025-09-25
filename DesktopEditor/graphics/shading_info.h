@@ -35,6 +35,7 @@
 
 #include "../agg-2.4/include/agg_color_rgba.h"
 #include "../graphics/aggplustypes.h"
+#include "../graphics/Matrix.h"
 
 #ifndef	M_PI
 #define	M_PI		3.14159265358979323846
@@ -100,6 +101,23 @@ namespace NSStructures
 					values[j][i] = ColorT(255, 0, 0, 255);
 				}
 			}
+		}
+
+		void set_x_min(float x_min)
+		{
+			x_domain_min = x_min;
+		}
+		void set_x_max(float x_max)
+		{
+			x_domain_max = x_max;
+		}
+		void set_y_min(float y_min)
+		{
+			y_domain_min = y_min;
+		}
+		void set_y_max(float y_max)
+		{
+			y_domain_max = y_max;
 		}
 
 		float get_x_min()
@@ -353,6 +371,7 @@ namespace NSStructures
 		 *
 		 * Наверное напишу адаптор который переводит порядок точек из 6 типа в общий.
 		 */
+		agg::rgba8 fill_color;
 		std::vector<std::vector<Point>> patch;
 		std::vector<std::vector<agg::rgba8>> patch_colors; // 2 на 2 цвета по углам
 		std::vector<std::vector<float>> patch_parameters; // 2 на 2 параметра
@@ -370,8 +389,8 @@ namespace NSStructures
 			xsize(1.0f), ysize(1.0f),
 			linstretch(1.0f), linoffset(0.0f),
 			continue_shading_f(false),
-			continue_shading_b(false)
-
+			continue_shading_b(false),
+			luminocity(false)
 		{
 		}
 		void setAngleDegrees(float deg)
@@ -385,6 +404,140 @@ namespace NSStructures
 		void setStepByNum(int n) // recommended to use
 		{
 			discrete_step = 1.0f / n;
+		}
+		bool checkLuminosity() const
+		{
+			if (shading.patch_colors.empty())
+				return false;
+
+			for (const auto& ar : shading.patch_colors)
+				for (const auto& c : ar)
+					if (c.r != c.g || c.g != c.b)
+						return false;
+
+			return true;
+		}
+		bool colorEqual(const agg::rgba8& c1, const agg::rgba8& c2) const
+		{
+			return	c1.r == c2.r &&
+					c1.g == c2.g &&
+					c1.b == c2.b &&
+					c1.a == c2.a;
+		}
+		bool isOneColor() const
+		{
+			switch (shading.shading_type)
+			{
+			case ShadingInfo::FunctionOnly:
+			case ShadingInfo::Parametric:
+				return false;
+			case ShadingInfo::TriangleInterpolation:
+				return	colorEqual(shading.triangle_colors[0], shading.triangle_colors[1]) &&
+						colorEqual(shading.triangle_colors[1], shading.triangle_colors[2]);
+			case ShadingInfo::CurveInterpolation:
+			case ShadingInfo::TensorCurveInterpolation:
+				return	colorEqual(shading.patch_colors[0][0], shading.patch_colors[0][1]) &&
+						colorEqual(shading.patch_colors[0][1], shading.patch_colors[1][0]) &&
+						colorEqual(shading.patch_colors[1][0], shading.patch_colors[1][1]);
+			default:
+				return false;
+			}
+		}
+		agg::rgba8 getFillColor() const
+		{
+			if (!shading.triangle_colors.empty())
+				return shading.triangle_colors[0];
+			if (!shading.patch_colors.empty())
+				return shading.patch_colors[0][0];
+			return agg::rgba8(0, 0, 0);
+		}
+		void setFillColor(const agg::rgba8& color)
+		{
+			shading.fill_color = color;
+			luminocity = true;
+		}
+		void transform(const Aggplus::CMatrix& matrix)
+		{
+			// shading transform
+			auto& point1 = shading.point1;
+			auto& point2 = shading.point2;
+
+			double point1_x = static_cast<double>(point1.x);
+			double point1_y = static_cast<double>(point1.y);
+			double point2_x = static_cast<double>(point2.x);
+			double point2_y = static_cast<double>(point2.y);
+
+			matrix.TransformPoint(point1_x, point1_y);
+			matrix.TransformPoint(point2_x, point2_y);
+
+			point1.x = static_cast<float>(point1_x);
+			point1.y = static_cast<float>(point1_y);
+			point2.x = static_cast<float>(point2_x);
+			point2.y = static_cast<float>(point2_y);
+
+			// triangle transform
+			for (auto& p : shading.triangle)
+			{
+				double triangle_x = static_cast<double>(p.x);
+				double triangle_y = static_cast<double>(p.y);
+
+				matrix.TransformPoint(triangle_x, triangle_y);
+
+				p.x = static_cast<float>(triangle_x);
+				p.y = static_cast<float>(triangle_y);
+			}
+
+			// domains transform
+			double x_domain_min = static_cast<double>(shading.function.get_x_min());
+			double y_domain_min = static_cast<double>(shading.function.get_y_min());
+			double x_domain_max = static_cast<double>(shading.function.get_x_max());
+			double y_domain_max = static_cast<double>(shading.function.get_y_max());
+
+			matrix.TransformPoint(x_domain_min, y_domain_min);
+			matrix.TransformPoint(x_domain_max, y_domain_max);
+
+			shading.function.set_x_min(static_cast<float>(x_domain_min));
+			shading.function.set_y_min(static_cast<float>(y_domain_min));
+			shading.function.set_x_max(static_cast<float>(x_domain_max));
+			shading.function.set_y_max(static_cast<float>(y_domain_max));
+
+			// center transform
+			double center_x = static_cast<double>(centerX);
+			double center_y = static_cast<double>(centerY);
+
+			matrix.TransformPoint(center_x, center_y);
+
+			double p0_x = static_cast<double>(p0.x);
+			double p0_y = static_cast<double>(p0.y);
+			double p1_x = static_cast<double>(p1.x);
+			double p1_y = static_cast<double>(p1.y);
+
+			matrix.TransformPoint(p0_x, p0_y);
+			matrix.TransformPoint(p1_x, p1_y);
+
+			p0.x = static_cast<float>(p0_x);
+			p0.y = static_cast<float>(p0_y);
+			p1.x = static_cast<float>(p1_x);
+			p1.y = static_cast<float>(p1_y);
+
+			for (size_t i = 0; i < shading.patch.size(); ++i)
+			{
+				for (size_t j = 0; j < shading.patch[i].size(); ++j)
+				{
+					double patch_x = static_cast<double>(shading.patch[i][j].x);
+					double patch_y = static_cast<double>(shading.patch[i][j].y);
+
+					matrix.TransformPoint(patch_x, patch_y);
+
+					shading.patch[i][j].x = static_cast<float>(patch_x);
+					shading.patch[i][j].y = static_cast<float>(patch_y);
+				}
+			}
+
+			// sizes scale
+			double sqrt_det = sqrt(fabs(matrix.Determinant()));
+			r0 *= sqrt_det;
+			r1 *= sqrt_det;
 		}
 
 		Point p0, p1;
@@ -401,6 +554,7 @@ namespace NSStructures
 		float linstretch; // stretch linear gradient, can be negative (eq angle = 180) can not be zero
 		float linoffset;  // offset relative to image size
 		float continue_shading_b, continue_shading_f;
+		bool luminocity;
 		ShadingInfo shading;
 	};
 
@@ -468,14 +622,14 @@ namespace NSStructures
 		{
 			GradientInfo ginfo;
 			ginfo.shading.triangle = points;
+			ginfo.shading.shading_type = ShadingInfo::Parametric;
+			ginfo.shading.function = ColorFunction<agg::rgba8>(256, t0, t1);
+			ginfo.continue_shading_f = false;
+			ginfo.continue_shading_b = false;
 			if (parametric)
 			{
 				ginfo.shading.triangle_parameters = params;
-				ginfo.shading.f_type = ShadingInfo::UseNew;
-				ginfo.shading.function = ColorFunction<agg::rgba8>(256, t0, t1);
 				ginfo.shading.shading_type = ShadingInfo::Parametric;
-				ginfo.continue_shading_f = false;
-				ginfo.continue_shading_b = false;
 			}
 			else
 			{
@@ -513,7 +667,10 @@ namespace NSStructures
 			ginfo.shading.patch[2][0] = curve_points[10];
 			ginfo.shading.patch[1][0] = curve_points[11];
 
-
+			ginfo.shading.f_type = ShadingInfo::UseNew;
+			ginfo.shading.function = ColorFunction<agg::rgba8>(256, t0, t1);
+			ginfo.continue_shading_f = false;
+			ginfo.continue_shading_b = false;
 
 			if (parametric)
 			{
@@ -522,11 +679,7 @@ namespace NSStructures
 				ginfo.shading.patch_parameters[0][1] = curve_parametrs[1];
 				ginfo.shading.patch_parameters[1][0] = curve_parametrs[3];
 				ginfo.shading.patch_parameters[1][1] = curve_parametrs[2];
-				ginfo.shading.f_type = ShadingInfo::UseNew;
-				ginfo.shading.function = ColorFunction<agg::rgba8>(256, t0, t1);
 				ginfo.shading.shading_type = ShadingInfo::Parametric;
-				ginfo.continue_shading_f = false;
-				ginfo.continue_shading_b = false;
 			}
 			else
 			{
@@ -543,20 +696,23 @@ namespace NSStructures
 											 const std::vector<std::vector<float>> &curve_parametrs,
 											 const std::vector<std::vector<agg::rgba8>> &curve_colors,
 											 bool parametric,
+											 bool luminosity = false,
 											 float t0 = 0.0f, float t1 = 1.0f)
 		{
 			GradientInfo ginfo;
 
 			ginfo.shading.patch = curve_poits;
 
+			ginfo.shading.f_type = ShadingInfo::UseNew;
+			ginfo.shading.function = ColorFunction<agg::rgba8>(256, t0, t1);
+			ginfo.luminocity = luminosity;
+			ginfo.continue_shading_f = false;
+			ginfo.continue_shading_b = false;
+
 			if (parametric)
 			{
 				ginfo.shading.patch_parameters = curve_parametrs;
-				ginfo.shading.f_type = ShadingInfo::UseNew;
-				ginfo.shading.function = ColorFunction<agg::rgba8>(256, t0, t1);
 				ginfo.shading.shading_type = ShadingInfo::Parametric;
-				ginfo.continue_shading_f = false;
-				ginfo.continue_shading_b = false;
 			}
 			else
 			{

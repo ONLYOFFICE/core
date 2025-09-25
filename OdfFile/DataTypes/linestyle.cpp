@@ -41,28 +41,28 @@ std::wostream & operator << (std::wostream & _Wostream, const line_style & _Val)
     switch(_Val.get_type())
     {
     case line_style::None:
-        _Wostream << "none";
+        _Wostream << L"none";
         break;
     case line_style::Solid:
-        _Wostream << "solid";
+        _Wostream << L"solid";
         break;
     case line_style::Dotted:
-        _Wostream << "dotted";
+        _Wostream << L"dotted";
         break;
     case line_style::Dash:
-        _Wostream << "dash";
+        _Wostream << L"dash";
         break;
     case line_style::LongDash:
-        _Wostream << "long-dash";
+        _Wostream << L"long-dash";
         break;
     case line_style::DotDash:
-        _Wostream << "dot-dash";
+        _Wostream << L"dot-dash";
         break;
     case line_style::DotDotDash:
-        _Wostream << "dot-dot-dash";
+        _Wostream << L"dot-dot-dash";
         break;
     case line_style::Wave:
-        _Wostream << "wave";
+        _Wostream << L"wave";
         break;
     default:
         break;

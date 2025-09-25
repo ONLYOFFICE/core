@@ -643,35 +643,35 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\""
 				m_valScaling = new CValScaling;
 				m_valScaling->fromXML(oReader);
 			}
-			//else if(_T("majorGridlines") == sName)
-			//{
-			//	m_majorGridlines = new CT_ChartLines;
-			//	m_majorGridlines->fromXML(oReader);
-			//}
-			//else if(_T("minorGridlines") == sName)
-			//{
-			//	m_minorGridlines = new CT_ChartLines;
-			//	m_minorGridlines->fromXML(oReader);
-			//}
+			else if(_T("majorGridlines") == sName)
+			{
+				m_majorGridlines = new CGridlines;
+				m_majorGridlines->fromXML(oReader);
+			}
+			else if(_T("minorGridlines") == sName)
+			{
+				m_minorGridlines = new CGridlines;
+				m_minorGridlines->fromXML(oReader);
+			}
 			else if(_T("title") == sName)
 			{
 				m_title = oReader;
 			}
-			//else if(_T("numFmt") == sName)
-			//{
-			//	m_numFmt = new CT_NumFmt;
-			//	m_numFmt->fromXML(oReader);
-			//}
-			//else if(_T("majorTickMark") == sName)
-			//{
-			//	m_majorTickMark = new CT_TickMark;
-			//	m_majorTickMark->fromXML(oReader);
-			//}
-			//else if(_T("minorTickMark") == sName)
-			//{
-			//	m_minorTickMark = new CT_TickMark;
-			//	m_minorTickMark->fromXML(oReader);
-			//}
+			else if(_T("numFmt") == sName)
+			{
+				m_numFmt = new CNumberFormat;
+				m_numFmt->fromXML(oReader);
+			}
+			else if(_T("majorTickMark") == sName)
+			{
+				m_majorTickMarks = new CTickMarks;
+				m_majorTickMarks->fromXML(oReader);
+			}
+			else if(_T("minorTickMark") == sName)
+			{
+				m_minorTickMarks = new CTickMarks;
+				m_minorTickMarks->fromXML(oReader);
+			}
 			else if(_T("tickLabels") == sName)
 			{
 				m_tickLabels = true;
@@ -876,8 +876,8 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\""
 		writer.WriteString(L"<cx:valScaling");
 			WritingStringNullableAttrString(L"min", m_min, m_min->ToString())
 			WritingStringNullableAttrString(L"max", m_max, m_max->ToString())
-			WritingStringNullableAttrString(L"majorUnit", m_max, m_majorUnit->ToString())
-			WritingStringNullableAttrString(L"minorUnit", m_max, m_minorUnit->ToString())
+			WritingStringNullableAttrString(L"majorUnit", m_majorUnit, m_majorUnit->ToString())
+			WritingStringNullableAttrString(L"minorUnit", m_minorUnit, m_minorUnit->ToString())
 		writer.WriteString(L"/>");
 
 	}
@@ -962,8 +962,11 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\""
 			}
 			else if( L"axisId" == sName)
 			{
-				std::wstring s = oReader.GetText3(); 
-				m_arAxisId.push_back(XmlUtils::GetInteger(s));
+				nullableUintVal val = oReader;
+				if (val.IsInit())
+				{
+					m_arAxisId.push_back(*val);
+				}
 			}
 		}
 	}
@@ -1000,11 +1003,8 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\""
 		}
 		for (size_t i = 0; i < m_arAxisId.size(); i++)
 		{
-			writer.WriteString(L"<cx:axisId>");
-			writer.WriteString(std::to_wstring(m_arAxisId[i]));
-			writer.WriteString(L"</cx:axisId>");
+			writer.WriteString(L"<cx:axisId val=\"" + std::to_wstring(m_arAxisId[i]) + L"\"/>");
 		}
-
 		if (m_spPr.IsInit())
 		{
 			m_spPr->m_namespace = L"cx";
@@ -1405,13 +1405,11 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\""
 			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 			if( L"binSize" == sName)
 			{
-				std::wstring s = oReader.GetText3();
-				m_binSize = XmlUtils::GetDouble(s);
+				m_binSize = oReader;
 			}
 			else if( L"binCount" == sName)
 			{
-				std::wstring s = oReader.GetText3();
-				m_binCount = XmlUtils::GetInteger(s);
+				m_binCount = oReader;
 			}
 		}
 	}
@@ -1432,15 +1430,15 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\""
 		writer.WriteString(L">");
 			if (m_binCount.IsInit())
 			{
-				writer.WriteString(L"<cx:binCount>");
-					writer.WriteString(XmlUtils::ToString(*m_binCount));
-				writer.WriteString(L"</cx:binCount>");
+				writer.WriteString(L"<cx:binCount ");
+				writer.WriteString(m_binCount->ToString());
+				writer.WriteString(L"/>");
 			}
 			else if (m_binSize.IsInit())
 			{
-				writer.WriteString(L"<cx:binSize>");
-					writer.WriteString(std::to_wstring(*m_binSize));
-				writer.WriteString(L"</cx:binSize>");
+				writer.WriteString(L"<cx:binSize ");
+					writer.WriteString(m_binSize->ToString());
+				writer.WriteString(L"/>");
 			}
 		writer.WriteString(L"</cx:binning>");
 	}
@@ -1478,8 +1476,11 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\""
 			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 			if( L"idx" == sName)
 			{
-				std::wstring s = oReader.GetText3();
-				m_arIdx.push_back(XmlUtils::GetInteger(s));
+				nullableUintVal val = oReader;
+				if (val.IsInit())
+				{
+					m_arIdx.push_back(*val);
+				}
 			}
 		}
 	}
@@ -1489,9 +1490,7 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\""
 
 		for (size_t i= 0; i < m_arIdx.size(); i++)
 		{
-			writer.WriteString(L"<cx:idx>");
-			writer.WriteString(std::to_wstring(m_arIdx[i]));
-			writer.WriteString(L"</cx:idx>");
+			writer.WriteString(L"<cx:idx val=\"" + std::to_wstring(m_arIdx[i]) + L"\"/>");
 		}
 		writer.WriteString(L"</cx:subtotals>");
 	}

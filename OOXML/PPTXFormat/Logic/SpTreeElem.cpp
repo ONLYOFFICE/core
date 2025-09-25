@@ -38,6 +38,7 @@
 #include "SpTree.h"
 #include "GraphicFrame.h"
 #include "Effects/AlphaModFix.h"
+#include "Effects/Duotone.h"
 
 #include "../SlideMaster.h"
 
@@ -63,7 +64,7 @@ namespace PPTX
 		}
 
 		void CalculateFill(BYTE lDocType, PPTX::Logic::SpPr& oSpPr, nullable<ShapeStyle>& pShapeStyle, NSCommon::smart_ptr<PPTX::Theme>& oTheme,
-			NSCommon::smart_ptr<PPTX::Logic::ClrMap>& oClrMap, std::wstring& strAttr, std::wstring& strNode, bool bOle, bool bSignature)
+			NSCommon::smart_ptr<PPTX::Logic::ClrMap>& oClrMap, NSCommon::smart_ptr<OOX::IFileContainer>& pContainer, std::wstring& strAttr, std::wstring& strNode, bool bOle, bool bSignature)
 		{
 			PPTX::Logic::UniFill fill;
 			DWORD ARGB = 0;
@@ -90,11 +91,13 @@ namespace PPTX
 
 				if (oBlip.blip.is_init() && oBlip.blip->embed.is_init())
 				{
+					std::wstring color2;
 					std::wstring fopacity;
+					std::wstring sType = oBlip.tile.IsInit() ? L"tile" : L"frame";
+					
 					size_t eff_count = oBlip.blip->Effects.size();
 					for (size_t eff = 0; eff < eff_count; ++eff)
 					{
-
 						if (oBlip.blip->Effects[eff].is<PPTX::Logic::AlphaModFix>())
 						{
 							PPTX::Logic::AlphaModFix& oAlpha = oBlip.blip->Effects[eff].as<PPTX::Logic::AlphaModFix>();
@@ -111,11 +114,32 @@ namespace PPTX
 
 								fopacity = L" opacity=\"" + std::to_wstring(nA) + L"f\"";
 							}
-							break;
+						}
+						else if (oBlip.blip->Effects[eff].is<PPTX::Logic::Duotone>())
+						{
+							PPTX::Logic::Duotone& oDuotone = oBlip.blip->Effects[eff].as<PPTX::Logic::Duotone>();
+							if (oDuotone.Colors.size() > 1)
+							{
+								sType = L"pattern";
+								ARGB = oDuotone.Colors[0].GetRGBColor(oTheme, oClrMap, ARGB);
+								color2 = L" color2=\"" + GetHexColor(ARGB) + L"\"";
+
+								ARGB = oDuotone.Colors[1].GetRGBColor(oTheme, oClrMap, ARGB);
+								strAttr += L" fillcolor=\"" + GetHexColor(ARGB) + L"\"";
+							}
 						}
 					}
-
 					std::wstring strId = oBlip.blip->embed->ToString();
+					
+					NSCommon::smart_ptr<OOX::Image> pImageFileVml(new OOX::Image(NULL, false));
+					pImageFileVml->set_filename(oBlip.blip->imageFilepath, false);
+
+					smart_ptr<OOX::File> pFileVml = pImageFileVml.smart_dynamic_cast<OOX::File>();
+
+					if (pContainer.IsInit())
+					{
+						pContainer->Add(strId, pFileVml);
+					}
 					if (XMLWRITER_DOC_TYPE_XLSX == lDocType)
 					{
 						strId = L"o:relid=\"" + strId + L"\"";
@@ -131,10 +155,7 @@ namespace PPTX
 					}
 					else
 					{
-						if (oBlip.tile.is_init())
-							strNode = L"<v:fill " + strId + L" o:title=\"\" type=\"tile\"" + fopacity + L"/>";
-						else
-							strNode = L"<v:fill " + strId + L" o:title=\"\" type=\"frame\"" + fopacity + L"/>";
+						strNode = L"<v:fill " + strId + L" o:title=\"\" type=\"" + sType + L"\"" + fopacity + color2 + L"/>";
 					}
 				}
 			}
@@ -146,25 +167,130 @@ namespace PPTX
 				BYTE A = (BYTE)((ARGB >> 24) & 0xFF);
 				if (A != 255)
 				{
-					int fopacity = 100 - (int)(((double)A / 255.0) * 65536);
+					int fopacity = (int)((double)A / 255. * 65536.);
 					strNode = L"<v:fill opacity=\"" + std::to_wstring(fopacity) + L"f\" />";
 				}
 			}
 			else if (fill.is<GradFill>())
 			{
 				GradFill& oGrad = fill.as<GradFill>();
-				if (oGrad.GsLst.size() > 0)
+
+				std::wstring sType = L"gradient";
+				std::wstring sColors;
+				std::wstring sColor;
+				std::wstring sColor2;
+				std::wstring sOpacity;
+				std::wstring sOpacity2;
+				std::wstring sAngle;
+				std::wstring sFocus = L"100%";
+				std::wstring sFocusPosition = L"";
+				std::wstring sFillNode;
+
+				if (oGrad.lin.IsInit())
 				{
-					ARGB = oGrad.GsLst[0].color.GetRGBColor(oTheme, oClrMap, ARGB);
-					strAttr = L" fillcolor=\"" + GetHexColor(ARGB) + L"\"";
+					if (oGrad.lin->ang.IsInit())
+					{
+						int ang = *oGrad.lin->ang / 60000;
+						sAngle = std::to_wstring(ang > 180 ? ang - 360 : ang);
+					}
+					if (oGrad.lin->scaled.IsInit())
+					{
+
+					}
+				}
+				else if (oGrad.path.IsInit())
+				{
+					sType = L"gradientRadial";
+
+					double focusposition_x = 0.5, focusposition_y = 0.5;
+					if (oGrad.path->rect.IsInit())
+					{
+						double l = XmlUtils::GetInteger(oGrad.path->rect->l.get_value_or(L"")) / 100.;
+						double r = XmlUtils::GetInteger(oGrad.path->rect->r.get_value_or(L"")) / 100.;
+						double t = XmlUtils::GetInteger(oGrad.path->rect->t.get_value_or(L"")) / 100.;
+						double b = XmlUtils::GetInteger(oGrad.path->rect->b.get_value_or(L"")) / 100.;
+						
+						focusposition_y += (t - b) / 2.;
+						focusposition_x += (l - r) / 2.;
+					}
+					sFocusPosition = XmlUtils::DoubleToString(focusposition_x, L"%.2f") + L"," + XmlUtils::DoubleToString(focusposition_y, L"%.2f");
+
+					sFillNode = L"<o:fill v:ext=\"view\" type=\"gradientCenter\"/>";
+				}
+
+				for (size_t i = 0; i < oGrad.GsLst.size(); ++i)
+				{
+					std::wstring col, op, pos;
+					ARGB = oGrad.GsLst[i].color.GetRGBColor(oTheme, oClrMap, ARGB);
+					col = GetHexColor(ARGB);
 
 					BYTE A = (BYTE)((ARGB >> 24) & 0xFF);
 					if (A != 255)
 					{
-						int fopacity = 100 - (int)(((double)A / 255.0) * 65536);
-						strNode = L"<v:fill opacity=\"" + std::to_wstring(fopacity) + L"f\" />";
+						int fopacity = (int)((double)A / 255. * 65536.);
+						op = std::to_wstring(fopacity) + L"f";
 					}
+
+					pos = std::to_wstring((int)(oGrad.GsLst[i].pos / 100000. * 65536)) + L"f";
+
+					if (i == 0)
+					{
+						sColor = col;
+						sOpacity = op;
+					}
+					if (i == oGrad.GsLst.size() - 1)
+					{
+						sColor2 = col;
+						sOpacity2 = op;
+					}
+					sColors += pos + L" " + col + L";";
 				}
+
+				if (false == sColor.empty())
+				{
+					strAttr = L" fillcolor=\"" + sColor + L"\"";
+				}
+
+				strNode += L"<v:fill";
+				if (false == sColor2.empty())
+				{
+					strNode += L" color2=\"" + sColor2 + L"\"";
+				}
+				if (false == sOpacity.empty())
+				{
+					strNode += L" opacity=\"" + sOpacity + L"\"";
+				}
+				if (false == sOpacity2.empty())
+				{
+					strNode += L" opacity2=\"" + sOpacity2 + L"\"";
+				}
+				if (false == sColors.empty())
+				{
+					strNode += L" colors=\"" + sColors + L"\"";
+				}
+				if (false == sAngle.empty())
+				{
+					strNode += L" angle=\"" + sAngle + L"\"";
+				}
+				if (false == sFocusPosition.empty())
+				{
+					strNode += L" focusposition=\"" + sFocusPosition + L"\"";
+				}
+				if (false == sFocus.empty())
+				{
+					strNode += L" focus=\"" + sFocus + L"\"";
+				}
+				if (false == sType.empty())
+				{
+					strNode += L" type=\"" + sType + L"\"";
+				}
+
+				if (false == sFillNode.empty())
+				{
+					strNode += L">" + sFillNode + L"</v:fill>";
+				}
+				else
+					strNode += L"/>";
 			}
 			else if (fill.is<NoFill>() || !fill.is_init())
 			{
@@ -178,18 +304,9 @@ namespace PPTX
 				if (A != 255)
 				{
 					int fopacity = (int)(((double)A / 255.0) * 65536);
-					strNode = L"<v:fill opacity=\"" + std::to_wstring(fopacity) + L"f\" />";
+					strNode = L"<v:fill opacity=\"" + std::to_wstring(fopacity) + L"f\"/>";
 				}
 			}
-
-			/*
-			BYTE alpha = (BYTE)((ARGB >> 24) & 0xFF);
-			if (alpha < 255)
-			{
-				std::wstring strA =  = std::to_string( alpha);
-				strAttr += _T(" opacity=\"") + strA + _T("\"");
-			}
-			*/
 		}
 		void CalculateLine(BYTE lDocType, PPTX::Logic::SpPr& oSpPr, nullable<ShapeStyle>& pShapeStyle, NSCommon::smart_ptr<PPTX::Theme>& oTheme,
 			NSCommon::smart_ptr<PPTX::Logic::ClrMap>& oClrMap, std::wstring& strAttr, std::wstring& strNode, bool bOle)
@@ -283,15 +400,30 @@ namespace PPTX
 			std::wstring name = XmlUtils::GetNameNoNS(oReader.GetName());
 
 			if (name == L"sp" || name == L"wsp")
-				m_elem.reset(new Logic::Shape(oReader));
+			{
+				if (m_bAlternative)
+					m_elem_alternative.reset(new Logic::Shape(oReader));
+				else
+					m_elem.reset(new Logic::Shape(oReader));
+			}
 			else if (name == L"pic")
-				m_elem.reset(new Logic::Pic(oReader));
+			{
+				if (m_bAlternative)
+					m_elem_alternative.reset(new Logic::Pic(oReader));
+				else
+					m_elem.reset(new Logic::Pic(oReader));
+			}
 			else if (name == L"cxnSp")
 				m_elem.reset(new Logic::CxnSp(oReader));
 			else if (name == L"lockedCanvas")
 				m_elem.reset(CreatePtrXmlContent<Logic::LockedCanvas>(oReader));
 			else if (name == L"grpSp" || name == L"wgp" || name == L"spTree" || name == L"wpc")
-				m_elem.reset(CreatePtrXmlContent<Logic::SpTree>(oReader));
+			{
+				if (m_bAlternative)
+					m_elem_alternative.reset(CreatePtrXmlContent<Logic::SpTree>(oReader));
+				else
+					m_elem.reset(CreatePtrXmlContent<Logic::SpTree>(oReader));
+			}
 			else if (name == L"graphicFrame")
 			{
 				Logic::GraphicFrame *pGraphic = new Logic::GraphicFrame();
@@ -299,7 +431,12 @@ namespace PPTX
 				pGraphic->fromXML(oReader);
 
 				if (pGraphic && pGraphic->IsEmpty() == false)
-					m_elem.reset(pGraphic);
+				{
+					if (m_bAlternative)
+						m_elem_alternative.reset(pGraphic);
+					else
+						m_elem.reset(pGraphic);
+				}
 				else
 					RELEASEOBJECT(pGraphic);
 			}
@@ -318,12 +455,15 @@ namespace PPTX
 					if (strName == L"mc:Choice")
 					{
 						ReadAttributesRequires(oReader);
+
 						oReader.ReadNextSiblingNode(nCurDepth + 1);
 
-						fromXML(oReader);
+						fromXML(oReader);						
 						
+						m_bAlternative = (L"cx1" == m_sRequires || L"cx2" == m_sRequires);
 						m_sRequires = L"";
-						if (m_elem.is_init())
+
+						if (m_elem.is_init() && !m_bAlternative)
 							break;
 					}
 					else if (strName == L"mc:Fallback")
@@ -333,24 +473,44 @@ namespace PPTX
 					}
 				}
 			}
+
+			m_bAlternative = false;
 		}
 		void SpTreeElem::fromXML(XmlUtils::CXmlNode& node)
 		{
 			std::wstring name = XmlUtils::GetNameNoNS(node.GetName());
 
 			if (name == L"sp" || name == L"wsp")
-				m_elem.reset(new Logic::Shape(node));
+			{
+				if (m_bAlternative)
+					m_elem_alternative.reset(new Logic::Shape(node));
+				else
+					m_elem.reset(new Logic::Shape(node));
+			}
 			else if (name == L"pic")
-				m_elem.reset(new Logic::Pic(node));
+			{
+				if (m_bAlternative)
+					m_elem_alternative.reset(new Logic::Pic(node));
+				else
+					m_elem.reset(new Logic::Pic(node));
+			}
 			else if (name == L"cxnSp")
 				m_elem.reset(new Logic::CxnSp(node));
 			else if (name == L"lockedCanvas")
 				m_elem.reset(CreatePtrXmlContent<Logic::LockedCanvas>(node));
 			else if (name == L"grpSp" || name == L"wgp" || name == L"spTree" || name == L"wpc")
-				m_elem.reset(CreatePtrXmlContent<Logic::SpTree>(node));
+			{
+				if (m_bAlternative)
+					m_elem_alternative.reset(CreatePtrXmlContent<Logic::SpTree>(node));
+				else
+					m_elem.reset(CreatePtrXmlContent<Logic::SpTree>(node));
+			}
 			else if (name == L"graphicFrame")
 			{
-				m_elem.reset(new Logic::GraphicFrame(node));
+				if (m_bAlternative)
+					m_elem_alternative.reset(new Logic::GraphicFrame(node));
+				else
+					m_elem.reset(new Logic::GraphicFrame(node));
 
 				Logic::GraphicFrame *graphic_frame = dynamic_cast<Logic::GraphicFrame*>(m_elem.GetPointer());
 				if (graphic_frame)
@@ -362,18 +522,21 @@ namespace PPTX
 			else if (name == L"AlternateContent")
 			{
 				bool isEmpty = true;
+				
 				XmlUtils::CXmlNode oNodeChoice;
 				if (node.GetNode(L"mc:Choice", oNodeChoice))
 				{
 					XmlUtils::CXmlNode oNodeFall;
 					std::vector<XmlUtils::CXmlNode> oNodesC;
-					std::wstring sRequires;
+					
 					//todo better check (a14 can be math, slicer)
-					if(oNodeChoice.GetAttributeIfExist(L"Requires", sRequires) && (L"a14" == sRequires || L"cx1" == sRequires))
+					oNodeChoice.GetAttributeIfExist(L"Requires", m_sRequires);
+
+					if (L"a14" == m_sRequires || L"cx1" == m_sRequires || L"cx2" == m_sRequires)
 					{
 						oNodeChoice.GetNodes(L"*", oNodesC);
 
-						if (1 == oNodesC.size())
+						if (oNodesC.size() > 0)
 						{
 							XmlUtils::CXmlNode & oNodeC = oNodesC[0];
 
@@ -382,11 +545,12 @@ namespace PPTX
 							isEmpty = (false == m_elem.IsInit());
 						}
 					}
-					if (isEmpty && node.GetNode(L"mc:Fallback", oNodeFall))
+					m_bAlternative = (L"cx1" == m_sRequires || L"cx2" == m_sRequires);
+					if ((isEmpty || m_bAlternative) && node.GetNode(L"mc:Fallback", oNodeFall))
 					{
 						oNodeFall.GetNodes(L"*", oNodesC);
 
-						if (1 == oNodesC.size())
+						if (oNodesC.size() > 0)
 						{
 							XmlUtils::CXmlNode & oNodeC = oNodesC[0];
 
@@ -395,7 +559,7 @@ namespace PPTX
 						}
 					}	
 				}
-				if(isEmpty)
+				if (isEmpty)
 				{
 					m_elem.reset();	
 				}
@@ -406,6 +570,8 @@ namespace PPTX
 				m_binaryData = node;
 			}
 			else m_elem.reset();
+
+			m_bAlternative = false;
 		}
 		void SpTreeElem::ReadAttributesRequires(XmlUtils::CXmlLiteReader& oReader)
 		{
@@ -459,12 +625,14 @@ namespace PPTX
 					if (_type == SPTREE_TYPE_AUDIO)	
 					{
 						OOX::Audio *pAudio = new OOX::Audio(NULL, pReader->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX);
-						p->blipFill.additionalFile = smart_ptr<OOX::File>(dynamic_cast<OOX::File*>(pAudio));
+						p->blipFill.additionalFiles.emplace_back();
+						p->blipFill.additionalFiles.back() = smart_ptr<OOX::File>(dynamic_cast<OOX::File*>(pAudio));
 					}
 					else if (_type == SPTREE_TYPE_VIDEO)
 					{
 						OOX::Video* pVideo = new OOX::Video(NULL, pReader->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX);
-						p->blipFill.additionalFile = smart_ptr<OOX::File>(dynamic_cast<OOX::File*>(pVideo));
+						p->blipFill.additionalFiles.emplace_back();
+						p->blipFill.additionalFiles.back() = smart_ptr<OOX::File>(dynamic_cast<OOX::File*>(pVideo));
 					}
 					
 					p->fromPPTY(pReader);
@@ -519,6 +687,13 @@ namespace PPTX
 		{
 			if (m_elem.is_init())
 				m_elem->toPPTY(pWriter);
+
+			if (m_elem_alternative.is_init())
+			{
+				pWriter->StartRecord(SPTREE_TYPE_ALTERNATIVE);
+					m_elem_alternative->toPPTY(pWriter);
+				pWriter->EndRecord();
+			}
 		}
 		void SpTreeElem::InitElem(WrapperWritingElement* pElem)
 		{
@@ -530,7 +705,7 @@ namespace PPTX
 				return m_elem->toXML();
 			return L"";
 		}
-		void SpTreeElem::toXmlWriterVML	(NSBinPptxRW::CXmlWriter* pWriter, smart_ptr<PPTX::Theme>& oTheme, smart_ptr<PPTX::Logic::ClrMap>& oClrMap) const
+		void SpTreeElem::toXmlWriterVML	(NSBinPptxRW::CXmlWriter* pWriter, smart_ptr<PPTX::Theme>& oTheme, smart_ptr<PPTX::Logic::ClrMap>& oClrMap, NSCommon::smart_ptr<OOX::IFileContainer>& pContainer) const
 		{
 			if (m_elem.IsInit() == false) return;
 
@@ -539,7 +714,7 @@ namespace PPTX
 				case OOX::et_a_Shape:
 				{
 					smart_ptr<PPTX::Logic::Shape> oShape = m_elem.smart_dynamic_cast<PPTX::Logic::Shape>();
-					if (oShape.IsInit()) oShape->toXmlWriterVML(pWriter, oTheme, oClrMap);
+					if (oShape.IsInit()) oShape->toXmlWriterVML(pWriter, oTheme, oClrMap, pContainer);
 				}break;
 				case OOX::et_pic:
 				{
@@ -550,7 +725,7 @@ namespace PPTX
 				case OOX::et_lc_LockedCanvas:
 				{
 					smart_ptr<PPTX::Logic::SpTree> oSpTree = m_elem.smart_dynamic_cast<PPTX::Logic::SpTree>();
-					if (oSpTree.IsInit()) oSpTree->toXmlWriterVML(pWriter, oTheme, oClrMap);
+					if (oSpTree.IsInit()) oSpTree->toXmlWriterVML(pWriter, oTheme, oClrMap, pContainer);
 				}break;
 				default:
 					break;
@@ -581,10 +756,17 @@ namespace PPTX
 		{
 			return m_elem;
 		}
+		smart_ptr<WrapperWritingElement> SpTreeElem::GetElemAlternative()
+		{
+			return m_elem_alternative;
+		}
 		void SpTreeElem::SetParentPointer(const WrapperWritingElement* pParent)
 		{
-			if (is_init())
+			if (m_elem.is_init())
 				m_elem->SetParentPointer(pParent);
+
+			if (m_elem_alternative.is_init())
+				m_elem_alternative->SetParentPointer(pParent);
 		}
 		void SpTreeElem::FillParentPointersForChilds(){}
 	} // namespace Logic

@@ -167,23 +167,23 @@ namespace OOX
 
 		const FileType Image			(L"media", L"image", 
 												L"", 
-												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image", L"image", true);
+												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image", L"image", true, true);
 
 		const FileType Audio			(L"media", L"audio", 
 												L"", 
-												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/audio", L"audio", true);
+												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/audio", L"audio", true, true);
 
 		const FileType Video			(L"media", L"video", 
 												L"", 
-												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/video", L"video", true);
+												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/video", L"video", true, true);
 
 		const FileType Media			(L"media", L"media", 
 												L"", 
-												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/media", L"media", true);
+												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/media", L"media", true, true);
 
 		const FileType SvgBlip			(L"media", L"image",
 												L"",
-												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image", L"image", true);
+												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image", L"image", true, true);
 		
 
 		const FileType DiagramData		(L"diagrams", L"data.xml",
@@ -279,7 +279,7 @@ namespace OOX
 
 		const FileType MicrosoftOfficeUnknown(L"embeddings", L"",
 												L"",
-												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/package");
+												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/package", L"embeddings/package", true, true);
 
 		const FileType MicrosoftOfficeExcelWorksheet(L"embeddings", L"Microsoft_Office_Excel_Worksheet.xlsx",
 												L"",
@@ -346,7 +346,7 @@ namespace OOX
 
 		const FileType OleObject			(L"embeddings", L"oleObject.bin",
 												L"",
-												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/oleObject");
+												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/oleObject", L"embeddings/oleObject", true, true);
 		
 		const FileType VmlDrawing			(L"drawings", L"vmlDrawing.vml",
 												L"application/vnd.openxmlformats-officedocument.vmlDrawing",

@@ -41,11 +41,11 @@
 #endif
 
 #ifndef M_PI
-#define M_PI       3.14159265358979323846
+#define M_PI 3.14159265358979323846
 #endif
 
 #ifndef xpsUnitToMM
-#define xpsUnitToMM(x) ((x) * 25.4 / 96)
+#define xpsUnitToMM(x) ((x)*25.4 / 96)
 #endif
 
 namespace XPS
@@ -92,7 +92,7 @@ namespace XPS
 	{
 		std::map<CWString, CWString>::iterator oIter = m_mTransforms.find(wsKey);
 		if (oIter != m_mTransforms.end())
-		{			
+		{
 			wsTransform = oIter->second;
 			return true;
 		}
@@ -108,17 +108,14 @@ namespace XPS
 		{
 			wsNodeName = oReader.GetNameNoNS();
 			if (wsNodeName == L"PathGeometry")
-			{				
+			{
 				CWString wsKey, wsValue, wsTrasform;
-				ReadPathGeometry(oReader, wsValue, wsTrasform, &wsKey);				
+				ReadPathGeometry(oReader, wsValue, wsTrasform, &wsKey);
 
 				if (!wsKey.empty() && !wsValue.empty())
 					AddFigure(wsKey, wsValue);
 			}
-			else if (wsNodeName == L"SolidColorBrush"
-					 || wsNodeName == L"ImageBrush"
-					 || wsNodeName == L"LinearGradientBrush"
-					 || wsNodeName == L"RadialGradientBrush")
+			else if (wsNodeName == L"SolidColorBrush" || wsNodeName == L"ImageBrush" || wsNodeName == L"LinearGradientBrush" || wsNodeName == L"RadialGradientBrush")
 			{
 				CWString wsKey;
 				CBrush* pBrush = ReadBrushNode(oReader, 1.0, &wsKey);
@@ -159,6 +156,15 @@ namespace XPS
 			return false;
 
 		std::wstring wsPath = m_wsPath.c_stdstr();
+
+		if (!m_wsRoot->exists(wsPath))
+		{
+			IFolder::CBuffer* buffer = NULL;;
+			m_wsRoot->readFileWithChunks(wsPath, buffer);
+			if (buffer)
+				delete buffer;
+		}
+
 		if (!m_wsRoot->exists(wsPath))
 		{
 			wsPath = m_wsPage.c_stdstr() + m_wsPath.c_stdstr();
@@ -167,16 +173,18 @@ namespace XPS
 		}
 
 #ifndef BUILDING_WASM_MODULE
-        pRenderer->put_BrushType(c_BrushTypeTexture);
-        pRenderer->put_BrushTexturePath(m_wsRoot->getFullFilePath(wsPath));
-        return true;
+		pRenderer->put_BrushType(c_BrushTypeTexture);
+		pRenderer->put_BrushTexturePath(m_wsRoot->getFullFilePath(wsPath));
+		return true;
 #endif
 
 		IFolder::CBuffer* buffer = NULL;
-		m_wsRoot->read(wsPath, buffer);
+		m_wsRoot->readFileWithChunks(wsPath, buffer);
+		if (!buffer)
+			return false;
 		int nBase64BufferLen = NSBase64::Base64EncodeGetRequiredLength(buffer->Size);
 		BYTE* pbBase64Buffer = new BYTE[nBase64BufferLen + 64];
-		if (true == NSBase64::Base64Encode(buffer->Buffer, buffer->Size, pbBase64Buffer, &nBase64BufferLen))
+		if (TRUE == NSBase64::Base64Encode(buffer->Buffer, buffer->Size, pbBase64Buffer, &nBase64BufferLen))
 		{
 			pRenderer->put_BrushType(c_BrushTypeTexture);
 			pRenderer->put_BrushTexturePath(L"data:," + NSFile::CUtf8Converter::GetUnicodeStringFromUTF8(pbBase64Buffer, nBase64BufferLen));
@@ -233,7 +241,7 @@ namespace XPS
 		{
 			CPdfFile* pPdf = (CPdfFile*)pRenderer;
 			pPdf->put_BrushGradientColors(m_pColors, m_pPositions, m_lCount);
-            pPdf->SetRadialGradient(m_dXo, m_dYo, 0, m_dXc, m_dYc, std::max(m_dRadX, m_dRadY));
+			pPdf->SetRadialGradient(m_dXo, m_dYo, 0, m_dXc, m_dYc, std::max(m_dRadX, m_dRadY));
 		}
 		else
 #endif
@@ -288,7 +296,7 @@ namespace XPS
 				{
 					if (wsAttrName == L"ImageSource")
 					{
-                        pBrush = new CImageBrush(oReader.GetText().c_str());
+						pBrush = new CImageBrush(oReader.GetText().c_str());
 					}
 					else if (wsAttrName == L"x:Key" && pwsKey)
 					{
@@ -402,8 +410,7 @@ namespace XPS
 				while (oReader.ReadNextSiblingNode(nGrDepth))
 				{
 					wsNodeName = oReader.GetNameNoNS();
-					if ((wsNodeName == L"LinearGradientBrush.GradientStops" && bLinearGradient)
-						|| (wsNodeName == L"RadialGradientBrush.GradientStops" && !bLinearGradient))
+					if ((wsNodeName == L"LinearGradientBrush.GradientStops" && bLinearGradient) || (wsNodeName == L"RadialGradientBrush.GradientStops" && !bLinearGradient))
 					{
 						ReadGradientStops(oReader, vColors, vPositions, dOpacity * dCurOpacity);
 					}
@@ -462,11 +469,11 @@ namespace XPS
 		}
 
 		return pBrush;
-	}	
+	}
 	CBrush* ReadBrush(const wchar_t* wsBrush, const double& dCurOpacity)
 	{
 		int nBgr, nAlpha;
 		ReadSTColor(wsBrush, nBgr, nAlpha);
 		return new CSolidBrush(nBgr, nAlpha * dCurOpacity);
 	}
-}
+} // namespace XPS

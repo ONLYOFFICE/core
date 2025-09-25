@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef PPTX_LOGIC_STRETCH_INCLUDE_H_
-#define PPTX_LOGIC_STRETCH_INCLUDE_H_
 
 #include "./../../WrapperWritingElement.h"
 #include "./../Rect.h"
@@ -56,8 +54,8 @@ namespace PPTX
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
-		public:
 			nullable<Rect> fillRect;
 
 		protected:
@@ -65,5 +63,3 @@ namespace PPTX
 		};
 	} // namespace Logic
 } // namespace PPTX
-
-#endif // PPTX_LOGIC_STRETCH_INCLUDE_H_

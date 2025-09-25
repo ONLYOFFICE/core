@@ -8,37 +8,36 @@ namespace MetaFile
 	CPathConverter::~CPathConverter()
 	{}
 
-	void CPathConverter::GetUpdatedPath(CEmfPath &oNewPath, CEmfPath &oLineCapPath, const CEmfPath &oPath, const CEmfPlusPen &oPen)
+	void CPathConverter::GetUpdatedPath(CPath &oNewPath, CPath &oLineCapPath, const CPath &oPath, const CEmfPlusPen &oPen)
 	{
 		TEmfPlusPointF oLastPoint(0, 0);
 
-		for (const CEmfPathCommandBase* pCommand : oPath.m_pCommands)
+		for (const CPathCommandBase* pCommand : oPath.GetCommands())
 		{
 			switch (pCommand->GetType())
 			{
-				case EMF_PATHCOMMAND_UNKNOWN: break;
-				case EMF_PATHCOMMAND_MOVETO:
+				case PATH_COMMAND_MOVETO:
 				{
-					CEmfPathMoveTo *pCommandMoveTo = (CEmfPathMoveTo*)pCommand;
-					oNewPath.MoveTo(pCommandMoveTo->x, pCommandMoveTo->y);
+					CPathCommandMoveTo *pCommandMoveTo = (CPathCommandMoveTo*)pCommand;
+					oNewPath.MoveTo(pCommandMoveTo->GetX(), pCommandMoveTo->GetY());
 
-					oLastPoint.X = pCommandMoveTo->x;
-					oLastPoint.Y = pCommandMoveTo->y;
+					oLastPoint.X = pCommandMoveTo->GetX();
+					oLastPoint.Y = pCommandMoveTo->GetY();
 
 					break;
 				}
-				case EMF_PATHCOMMAND_LINETO:
+				case PATH_COMMAND_LINETO:
 				{
-					CEmfPathLineTo *pCommandLineTo = (CEmfPathLineTo*)pCommand;
+					CPathCommandLineTo *pCommandLineTo = (CPathCommandLineTo*)pCommand;
 
-					double dAngle = -90 + (atan((pCommandLineTo->y - oLastPoint.Y) /
-					                            (pCommandLineTo->x - oLastPoint.X)) * 180 / 3.14);
+					double dAngle = -90 + (atan((pCommandLineTo->GetY() - oLastPoint.Y) /
+					                            (pCommandLineTo->GetX() - oLastPoint.X)) * 180 / 3.14);
 
 					if (AddLineStartCap(oLineCapPath, oPen, oLastPoint.X, oLastPoint.Y, dAngle + 180))
 						oNewPath.MoveTo(oLastPoint.X, oLastPoint.Y);
 
-					oLastPoint.X = pCommandLineTo->x;
-					oLastPoint.Y = pCommandLineTo->y;
+					oLastPoint.X = pCommandLineTo->GetX();
+					oLastPoint.Y = pCommandLineTo->GetY();
 
 					AddLineEndCap(oLineCapPath, oPen, oLastPoint.X, oLastPoint.Y, dAngle);
 
@@ -46,63 +45,64 @@ namespace MetaFile
 
 					break;
 				}
-				case EMF_PATHCOMMAND_CURVETO:
+				case PATH_COMMAND_CURVETO:
 				{
-					CEmfPathCurveTo *pCommandCurveTo = (CEmfPathCurveTo*)pCommand;
+					CPathCommandCurveTo *pCommandCurveTo = (CPathCommandCurveTo*)pCommand;
 
-					oNewPath.CurveTo(pCommandCurveTo->x1, pCommandCurveTo->y1,
-					                 pCommandCurveTo->x2, pCommandCurveTo->y2,
-					                 pCommandCurveTo->xE, pCommandCurveTo->yE);
+					oNewPath.CurveTo(pCommandCurveTo->GetX1(), pCommandCurveTo->GetY1(),
+					                 pCommandCurveTo->GetX2(), pCommandCurveTo->GetY2(),
+					                 pCommandCurveTo->GetXE(), pCommandCurveTo->GetYE());
 
 					break;
 				}
-				case EMF_PATHCOMMAND_ARCTO:
+				case PATH_COMMAND_ARCTO:
 				{
-					CEmfPathArcTo *pCommandArcTo = (CEmfPathArcTo*)pCommand;
+					CPathCommandArcTo *pCommandArcTo = (CPathCommandArcTo*)pCommand;
 
-					oNewPath.ArcTo(pCommandArcTo->left,  pCommandArcTo->top,
-					               pCommandArcTo->right, pCommandArcTo->bottom,
-					               pCommandArcTo->start, pCommandArcTo->sweep);
+					oNewPath.ArcTo(pCommandArcTo->GetLeft(),       pCommandArcTo->GetTop(),
+					               pCommandArcTo->GetRight(),      pCommandArcTo->GetBottom(),
+					               pCommandArcTo->GetStartAngle(), pCommandArcTo->GetSweepAngle());
 
 					break;
 				}
-				case EMF_PATHCOMMAND_CLOSE:
+				case PATH_COMMAND_CLOSE:
 				{
 					oNewPath.Close();
 					break;
 				}
+				case PATH_COMMAND_UNKNOWN: break;
 			}
 		}
 
 	}
 
-	bool CPathConverter::AddLineStartCap(CEmfPath &oPath, const CEmfPlusPen &oPen, double& dX, double& dY, double dAngle)
+	bool CPathConverter::AddLineStartCap(CPath &oPath, const CEmfPlusPen &oPen, double& dX, double& dY, double dAngle)
 	{
-		if (NULL != oPen.LineStartCapData)
+		if (NULL != oPen.pLineStartCapData)
 		{
-			if (CustomLineCapDataTypeDefault == oPen.LineStartCapData->GetType() && NULL != ((TEmfPlusCustomLineCapData*)oPen.LineStartCapData)->pPath)
+			if (CustomLineCapDataTypeDefault == oPen.pLineStartCapData->GetType() && NULL != ((TEmfPlusCustomLineCapData*)oPen.pLineStartCapData)->pPath)
 			{
-				return AddLineCap(oPath, ((TEmfPlusCustomLineCapData*)oPen.LineStartCapData)->pPath, dX, dY, dAngle, oPen.Width);
+				return AddLineCap(oPath, *(((TEmfPlusCustomLineCapData*)oPen.pLineStartCapData)->pPath), dX, dY, dAngle, oPen.dWidth);
 			}
 		}
 
 		return false;
 	}
 
-	bool CPathConverter::AddLineEndCap(CEmfPath &oPath, const CEmfPlusPen &oPen, double &dX, double &dY, double dAngle)
+	bool CPathConverter::AddLineEndCap(CPath &oPath, const CEmfPlusPen &oPen, double &dX, double &dY, double dAngle)
 	{
-		if (NULL != oPen.LineEndCapData)
+		if (NULL != oPen.pLineEndCapData)
 		{
-			if (CustomLineCapDataTypeDefault == oPen.LineEndCapData->GetType() && NULL != ((TEmfPlusCustomLineCapData*)oPen.LineEndCapData)->pPath)
+			if (CustomLineCapDataTypeDefault == oPen.pLineEndCapData->GetType() && NULL != ((TEmfPlusCustomLineCapData*)oPen.pLineEndCapData)->pPath)
 			{
-				return AddLineCap(oPath, ((TEmfPlusCustomLineCapData*)oPen.LineEndCapData)->pPath, dX, dY, dAngle, oPen.Width);
+				return AddLineCap(oPath, *((TEmfPlusCustomLineCapData*)oPen.pLineEndCapData)->pPath, dX, dY, dAngle, oPen.dWidth);
 			}
 		}
 
 		return false;
 	}
 
-	bool CPathConverter::AddLineCap(CEmfPath &oPath, const CEmfPath &oLineCapPath, double &dX, double &dY, double dAngle, double dPenWidth)
+	bool CPathConverter::AddLineCap(CPath &oPath, const CPath &oLineCapPath, double &dX, double &dY, double dAngle, double dPenWidth)
 	{
 		double dNewX = 0;
 		double dNewY = 0;
@@ -110,17 +110,18 @@ namespace MetaFile
 		double dSin = sin(dAngle * 3.14 / 180);
 		double dCos = cos(dAngle * 3.14 / 180);
 
-		for (const CEmfPathCommandBase* pCommand : oLineCapPath.m_pCommands)
+		const std::vector<CPathCommandBase*> arCommands(oLineCapPath.GetCommands());
+		
+		for (const CPathCommandBase* pCommand : arCommands)
 		{
 			switch (pCommand->GetType())
 			{
-			case EMF_PATHCOMMAND_UNKNOWN: break;
-			case EMF_PATHCOMMAND_MOVETO:
+			case PATH_COMMAND_MOVETO:
 			{
-				CEmfPathMoveTo *pCommandMoveTo = (CEmfPathMoveTo*)pCommand;
+				CPathCommandMoveTo *pCommandMoveTo = (CPathCommandMoveTo*)pCommand;
 
-				double dTempX = pCommandMoveTo->x * dPenWidth * dCos - pCommandMoveTo->y * dPenWidth * dSin;
-				double dTempY = pCommandMoveTo->x * dPenWidth * dSin + pCommandMoveTo->y * dPenWidth * dCos;
+				double dTempX = pCommandMoveTo->GetX() * dPenWidth * dCos - pCommandMoveTo->GetY() * dPenWidth * dSin;
+				double dTempY = pCommandMoveTo->GetX() * dPenWidth * dSin + pCommandMoveTo->GetY() * dPenWidth * dCos;
 
 				dNewX += dTempX;
 				dNewY += dTempY;
@@ -128,12 +129,12 @@ namespace MetaFile
 				oPath.MoveTo(dX + dTempX, dY + dTempY);
 				break;
 			}
-			case EMF_PATHCOMMAND_LINETO:
+			case PATH_COMMAND_LINETO:
 			{
-				CEmfPathLineTo *pCommandLineTo = (CEmfPathLineTo*)pCommand;
+				CPathCommandLineTo *pCommandLineTo = (CPathCommandLineTo*)pCommand;
 
-				double dTempX = pCommandLineTo->x * dPenWidth * dCos - pCommandLineTo->y * dPenWidth * dSin;
-				double dTempY = pCommandLineTo->x * dPenWidth * dSin + pCommandLineTo->y * dPenWidth * dCos;
+				double dTempX = pCommandLineTo->GetX() * dPenWidth * dCos - pCommandLineTo->GetY() * dPenWidth * dSin;
+				double dTempY = pCommandLineTo->GetX() * dPenWidth * dSin + pCommandLineTo->GetY() * dPenWidth * dCos;
 
 				dNewX += dTempX;
 				dNewY += dTempY;
@@ -141,26 +142,27 @@ namespace MetaFile
 				oPath.LineTo(dX + dTempX, dY + dTempY);
 				break;
 			}
-			case EMF_PATHCOMMAND_CURVETO:
+			case PATH_COMMAND_CURVETO:
 			{
 				break;
 			}
-			case EMF_PATHCOMMAND_ARCTO:
+			case PATH_COMMAND_ARCTO:
 			{
 				break;
 			}
-			case EMF_PATHCOMMAND_CLOSE:
+			case PATH_COMMAND_CLOSE:
 			{
 				oPath.Close();
 				break;
 			}
+			case PATH_COMMAND_UNKNOWN: break;
 			}
 		}
 
-		if (oPath.m_pCommands.size() > 1)
+		if (arCommands.size() > 1)
 		{
-			dX = dX + dNewX / (oPath.m_pCommands.size() - 1);
-			dY = dY + dNewY / (oPath.m_pCommands.size() - 1);
+			dX = dX + dNewX / (arCommands.size() - 1);
+			dY = dY + dNewY / (arCommands.size() - 1);
 
 			return true;
 		}

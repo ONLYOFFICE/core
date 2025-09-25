@@ -76,17 +76,17 @@ void PtgStr::loadFields(CFRecord& record)
         }
     }
 
-	
+
 	int pos1 = string_.find(L"\"");
 	int pos2 = string_.rfind(L"\"");
-	
+
 	if (pos1 == 0 && pos2 >= string_.length() - 1)
 	{
 		string_ = string_.substr(1, string_.length() - 2);
 	}
-	else if (pos1 > 0 && pos1 != pos2)
+    else if (pos1 > -1)
 	{//012_JKH.OPEN.INFO.PRICE.VO...
-		boost::algorithm::replace_all(string_, L"\"", L"\"\""); 
+		boost::algorithm::replace_all(string_, L"\"", L"\"\"");
 	}
 
 	string_ = L"\"" + string_ + L"\"";

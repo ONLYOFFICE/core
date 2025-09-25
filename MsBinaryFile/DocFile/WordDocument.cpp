@@ -102,6 +102,7 @@ namespace DocFileFormat
 		bDocumentCodePage	= false;
 		nDocumentCodePage	= ENCODING_WINDOWS_1250;
 		nFontsCodePage		= ENCODING_WINDOWS_1250;
+		nDocumentCodePageInfo = 0;
 	}
 
 	WordDocument::~WordDocument()
@@ -147,7 +148,7 @@ namespace DocFileFormat
 //-------------------------------------------------------------------------------------------------------------------
 		FIB	 =	new FileInformationBlock(VirtualStreamReader(WordDocumentStream, 0, false ));
 
-		if (FIB->m_FibBase.nFib)
+		if (FIB->m_FibBase.nFib > 0)
 		{
             if (FIB->m_FibBase.nFib <= Fib1995)
 			{
@@ -171,6 +172,12 @@ namespace DocFileFormat
 				}
 			}
 		}
+
+		if (FIB->m_FibBase.nFibBack != 0x00BF && FIB->m_FibBase.nFibBack != 0x00C1)
+		{
+			bErrorFile = true;
+		}
+
 		bool res = false;
 
 		if (FIB->m_FibBase.fWhichTblStm)
@@ -256,7 +263,7 @@ namespace DocFileFormat
 			
 			if (document_code_page1 > 0)
 			{
-				nDocumentCodePage = document_code_page1;		
+				nDocumentCodePageInfo = nDocumentCodePage = document_code_page1;
 				bDocumentCodePage = true;
 			}
 		}
@@ -269,18 +276,25 @@ namespace DocFileFormat
 
 			if (document_code_page2 > 0)
 			{
-				nDocumentCodePage = document_code_page2;
+				nDocumentCodePageInfo = nDocumentCodePage = document_code_page2;
 				bDocumentCodePage = true;
 			}
 		}
-		if (nWordVersion == 0)
+		if (TableStream)
+		{
+			DocProperties = new WordDocumentProperties(FIB, TableStream);
+			if (DocProperties && DocProperties->cpgText > 0)
+			{
+				FIB->m_CodePageSaved = DocProperties->cpgText;
+			}
+		}
+		if (nWordVersion == 0 && !bErrorFile)
 		{
 			nDocumentCodePage = ENCODING_UTF16;
 			bDocumentCodePage = true;
 		}
-
+		
 		FIB->m_CodePage =  nDocumentCodePage;
-
 		if (!bDocumentCodePage && m_nUserLCID > 0)
 		{
 			int user_codepage = m_lcidConverter.get_codepage(m_nUserLCID);
@@ -440,7 +454,6 @@ namespace DocFileFormat
 // Read custom tables
 		if (TableStream)
 		{
-			DocProperties			=	new WordDocumentProperties	(FIB, TableStream);
 			Styles					=	new StyleSheet				(FIB, TableStream, DataStream);
 			listTable				=	new ListTable				(FIB, TableStream);
 			listFormatOverrideTable	=	new ListFormatOverrideTable	(FIB, TableStream);
@@ -480,8 +493,8 @@ namespace DocFileFormat
 		{
 			FIB->m_FibBase.fComplex = true;
 			// Parse the piece table and construct a list that contains all chars
-			m_PieceTable	= new PieceTable (FIB, TableStream, WordDocumentStream );
-			Text			= m_PieceTable->GetAllEncodingText (WordDocumentStream);
+			m_PieceTable = new PieceTable (FIB, TableStream, WordDocumentStream );
+			Text = m_PieceTable->GetAllEncodingText (WordDocumentStream);
 		}
 		
         if (FIB->m_FibWord97.lcbClx < 1 || ((Text) && (Text->empty())))
@@ -499,8 +512,13 @@ namespace DocFileFormat
 				RELEASEOBJECT(Text);
 				Text = new std::vector<wchar_t>();
 
-				FormatUtils::GetSTLCollectionFromBytes<std::vector<wchar_t>>(Text, bytes, cb, nFontsCodePage != ENCODING_WINDOWS_1250 ? nFontsCodePage : nDocumentCodePage);
+				int coding = nFontsCodePage != ENCODING_WINDOWS_1250 ? nFontsCodePage : (nWordVersion < 1 ? nDocumentCodePage : ENCODING_WINDOWS_1250);
 
+				FormatUtils::GetSTLCollectionFromBytes(Text, bytes, cb, coding);
+
+				//std::wstring strTest1 = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8(bytes, cb);
+				//std::wstring strTest2;
+				//FormatUtils::GetWStringFromBytes(strTest2, bytes, cb, ENCODING_WINDOWS_1250);
 				RELEASEARRAYOBJECTS(bytes);
 			}
 		}
@@ -639,17 +657,12 @@ namespace DocFileFormat
 		}
 		m_sTempDecryptFileName	= m_sTempFolder + FILE_SEPARATOR_STR + L"~tempFile.doc";
 		
-		POLE::Storage *storageIn	= m_pStorage->GetStorage();
-		POLE::Storage *storageOut	= new POLE::Storage(m_sTempDecryptFileName.c_str());
+		POLE::Storage *storageIn = m_pStorage->GetStorage();
+		CFCPP::CompoundFile* storageOut = new CFCPP::CompoundFile(CFCPP::Ver_3, CFCPP::Default);
 
 		if (!storageOut || !storageIn) return false;
 		
-		if (!storageOut->open(true, true))
-		{
-			delete storageOut;
-			return false;
-		}
-		DecryptStream( 0, L"/", storageIn, storageOut, Decryptor);
+		DecryptStream( 0, L"/", storageIn, storageOut->RootStorage(), Decryptor);
 
 		//std::list<std::string> listStream = storageIn->entries();
 
@@ -671,7 +684,8 @@ namespace DocFileFormat
 
 		//}
 
-		storageOut->close();
+		bool result = storageOut->Save(m_sTempDecryptFileName);
+		storageOut->Close();
 		delete storageOut;
 
 //reset streams
@@ -690,10 +704,10 @@ namespace DocFileFormat
 		{
 			if (!m_pStorage->GetStream (L"0Table", &TableStream))	m_pStorage->GetStream (L"1Table", &TableStream);
 		}
-		return true;
+		return result;
 	}
 
-	void WordDocument::DecryptStream( int level, std::wstring path, POLE::Storage * storageIn, POLE::Storage * storageOut, CRYPT::Decryptor* Decryptor)
+	void WordDocument::DecryptStream( int level, std::wstring path, POLE::Storage* storageIn, std::shared_ptr<CFCPP::CFStorage> storageOut, CRYPT::Decryptor* Decryptor)
 	{
 		std::list<std::wstring> entries, entries_files, entries_dir;
 		entries = storageIn->entries_with_prefix( path );
@@ -716,7 +730,8 @@ namespace DocFileFormat
 		{
 			std::wstring fullname = path + *it;
 	       
-			DecryptStream( level + 1, fullname + L"/", storageIn, storageOut, Decryptor );
+			std::shared_ptr<CFCPP::CFStorage> storageOutNew = storageOut->AddStorage(*it);
+			DecryptStream( level + 1, fullname + L"/", storageIn, storageOutNew, Decryptor );
 
 		}    
 	//if (bSortFiles)
@@ -724,8 +739,6 @@ namespace DocFileFormat
 
 		for( std::list<std::wstring>::iterator it = entries_files.begin(); it != entries_files.end(); ++it )
 		{
-			std::wstring fullname_create = path + *it;
-
 			if (it->at(0) < 32)
 			{
 				*it = it->substr(1);  // without prefix
@@ -743,10 +756,10 @@ namespace DocFileFormat
 			{
 				bDecrypt = true;
 			}	
-			DecryptStream(fullname_open, storageIn, fullname_create, storageOut, Decryptor, bDecrypt);
+			DecryptStream(fullname_open, storageIn, *it, storageOut, Decryptor, bDecrypt);
 		}  
 	}
-	bool WordDocument::DecryptStream(std::wstring streamName_open, POLE::Storage * storageIn, std::wstring streamName_create, POLE::Storage * storageOut, CRYPT::Decryptor* Decryptor, bool bDecrypt)
+	bool WordDocument::DecryptStream(std::wstring streamName_open, POLE::Storage* storageIn, std::wstring streamName_create, std::shared_ptr<CFCPP::CFStorage> storageOut, CRYPT::Decryptor* Decryptor, bool bDecrypt)
 	{
 		POLE::Stream *stream = new POLE::Stream(storageIn, streamName_open);
 		if (!stream) return false;
@@ -754,7 +767,7 @@ namespace DocFileFormat
 		stream->seek(0);
 		POLE::uint64 size_stream = stream->size();
 		
-		POLE::Stream *streamNew = new POLE::Stream(storageOut, streamName_create, true, size_stream);
+		std::shared_ptr<CFCPP::CFStream> streamNew = storageOut->AddStream(streamName_create);
 		if (!streamNew) return false;
 
 		unsigned char* data_stream = new unsigned char[size_stream];
@@ -789,14 +802,11 @@ namespace DocFileFormat
 		if (data_store)
 			memcpy(data_stream, data_store, size_data_store);
 
-		streamNew->write(data_stream, size_stream);
+		streamNew->Write((char*)data_stream, 0, size_stream);
 
 		RELEASEARRAYOBJECTS(data_store);
 		RELEASEARRAYOBJECTS(data_stream);
 
-		streamNew->flush();
-				
-		delete streamNew;
 		delete stream;
 		
 		return true;
@@ -953,6 +963,10 @@ namespace DocFileFormat
 		{
 			RELEASEOBJECT( intVector );
 		}
+		else 
+		{
+			intVector->push_back(fcMax);
+		}
 
 		return intVector;
 	}
@@ -1032,14 +1046,40 @@ namespace DocFileFormat
 			return encodingChars;
 		}
 	}
-	void WordDocument::CorrectColor(ODRAW::OfficeArtCOLORREF & color)
+	void WordDocument::CorrectColor(ODRAW::OfficeArtCOLORREF & color, int base_color, int type)
 	{
-#if 0
+		struct _color
+		{
+			_color(unsigned char nR, unsigned char  nG, unsigned char  nB)
+			{
+				SetRGB(nR, nG, nB);
+			}
+			_color() {}
+			int				nRGB = 0;
+			std::wstring	sRGB;
+			int				index = -1;
+			bool			bScheme = false;
+
+			void SetRGB(unsigned char nR, unsigned char  nG, unsigned char  nB)
+			{
+				nRGB = (nR << 16) | (nG << 8) | nB;
+				sRGB = STR::toRGB(nR, nG, nB);
+
+				index = -1;
+			}
+
+			unsigned char  GetB() { return (unsigned char)(nRGB); }
+			unsigned char  GetG() { return (unsigned char)(nRGB >> 8); }
+			unsigned char  GetR() { return (unsigned char)(nRGB >> 16); }
+
+			double			opacity = 0;
+		};
+
 		if (false == color.sColorRGB.empty()) return;
 
 		if (color.fSysIndex)
 		{
-			oox::_color sys_color;
+			_color sys_color;
 			_UINT32 nColorCode = color.index;
 
 			unsigned short nParameter = (unsigned short)((nColorCode >> 16) & 0x00ff);  // the HiByte of nParameter is not zero, an exclusive AND is helping :o
@@ -1048,17 +1088,50 @@ namespace DocFileFormat
 			unsigned short nColorIndex = (unsigned short)(nColorCode & 0x00ff);
 			unsigned short nPropColor = 0;
 
-			_UINT32 systemColors[25] = 
+			_UINT32 systemColors[35] =
 			{
-				0xc0c0c0, 0x008080, 0x000080, 0x808080, 0xc0c0c0, 0xffffff, 0x000000,
-				0x000000, 0x000000, 0xffffff, 0xc0c0c0, 0xc0c0c0, 0x808080, 0x000080,
-				0xffffff, 0xc0c0c0, 0x808080, 0x808080, 0x000000, 0xc0c0c0, 0xffffff,
-				0x000000, 0xc0c0c0, 0x000000, 0xffffc0
+				0xc0c0c0, //COLOR_SCROLLBAR
+				0x008080, //COLOR_BACKGROUND
+				0x000080, //COLOR_ACTIVECAPTION
+				0x808080, //COLOR_INACTIVECAPTION
+				0xc0c0c0, //COLOR_MENU
+				0xffffff, //COLOR_WINDOW
+				0x000000, //COLOR_WINDOWFRAME
+				0x000000, //COLOR_MENUTEXT 
+				0x000000, //COLOR_WINDOWTEXT
+				0xffffff, //COLOR_CAPTIONTEXT
+				0xc0c0c0, //COLOR_ACTIVEBORDER
+				0xc0c0c0, //COLOR_INACTIVEBORDER
+				0x808080, //COLOR_APPWORKSPACE
+				0x000080, //COLOR_HIGHLIGHT
+				0xffffff, //COLOR_HIGHLIGHTTEXT
+				0xc0c0c0, //COLOR_3DFACE
+				0x808080, //COLOR_3DSHADOW
+				0x808080, //COLOR_GRAYTEXT 
+				0x000000, //COLOR_BTNTEXT
+				0xc0c0c0, //COLOR_INACTIVECAPTIONTEXT
+				0xffffff, //COLOR_3DHIGHLIGHT
+				0x000000, //COLOR_3DDKSHADOW
+				0xc0c0c0, //COLOR_3DLIGHT
+				0xffffff, //COLOR_INFOTEXT
+				0xffffc0, //COLOR_INFOBK
+				0xb8b4b8, //COLOR_ALTERNATEBTNFACE 
+				0x0000ff, //COLOR_HOTLIGHT
+				0x1020d0, //COLOR_GRADIENTACTIVECAPTION
+				0xb8b4b8, //COLOR_GRADIENTINACTIVECAPTION
+				0x000000, //COLOR_MENUHILIGHT
+				0x000000 //COLOR_MENUBAR
 			};
-
-			if (nColorIndex < 25)
+			if (nColorIndex == 0xf0)
 			{
-				sys_color.SetRGB((unsigned char)(systemColors[nColorIndex]>>16), (unsigned char)(systemColors[nColorIndex]>>8), (unsigned char)(systemColors[nColorIndex]));
+				sys_color.SetRGB((unsigned char)(base_color), (unsigned char)(base_color >> 8), (unsigned char)(base_color >> 16));
+			}
+			else if (nColorIndex < 25)
+			{
+				if (type != 4 && (nColorIndex == 7 || nColorIndex == 8 || nColorIndex == 9 || nColorIndex == 14 || 
+					nColorIndex == 17 || nColorIndex == 18 || nColorIndex == 19 || nColorIndex == 23)) return;
+
+				sys_color.SetRGB((unsigned char)(systemColors[nColorIndex] >> 16), (unsigned char)(systemColors[nColorIndex] >> 8), (unsigned char)(systemColors[nColorIndex]));
 			}
 			else return;
 
@@ -1086,7 +1159,7 @@ namespace DocFileFormat
 				BYTE B = static_cast<BYTE>((nInvParameter + (nParameter * sys_color.GetB())) >> 8);
 
 				sys_color.SetRGB(R, G, B);
-			}break;			
+			}break;
 			case 0x03:     // add grey level RGB(p,p,p)
 			{
 				short nR = (short)sys_color.GetR() + (short)nParameter;
@@ -1098,7 +1171,7 @@ namespace DocFileFormat
 				if (nB > 0x00ff)	nB = 0x00ff;
 
 				sys_color.SetRGB((BYTE)nR, (BYTE)nG, (BYTE)nB);
-			}break;		
+			}break;
 			case 0x04:     // substract grey level RGB(p,p,p)
 			{
 				short nR = (short)sys_color.GetR() - (short)nParameter;
@@ -1108,7 +1181,7 @@ namespace DocFileFormat
 				if (nG < 0) nG = 0;
 				if (nB < 0) nB = 0;
 				sys_color.SetRGB((BYTE)nR, (BYTE)nG, (BYTE)nB);
-			}	break;		
+			}	break;
 			case 0x05:     // substract from gray level RGB(p,p,p)
 			{
 				short nR = (short)nParameter - (short)sys_color.GetR();
@@ -1118,7 +1191,7 @@ namespace DocFileFormat
 				if (nG < 0) nG = 0;
 				if (nB < 0) nB = 0;
 				sys_color.SetRGB((BYTE)nR, (BYTE)nG, (BYTE)nB);
-			}break;			
+			}break;
 			case 0x06:     // per component: black if < p, white if >= p
 			{
 				BYTE R = sys_color.GetR() < nParameter ? 0x00 : 0xff;
@@ -1126,7 +1199,7 @@ namespace DocFileFormat
 				BYTE B = sys_color.GetB() < nParameter ? 0x00 : 0xff;
 
 				sys_color.SetRGB(R, G, B);
-			}break;			
+			}break;
 			}
 			if (nAdditionalFlags & 0x40)                  // top-bit invert
 				sys_color.SetRGB(sys_color.GetR() ^ 0x80, sys_color.GetG() ^ 0x80, sys_color.GetB() ^ 0x80);
@@ -1144,7 +1217,6 @@ namespace DocFileFormat
 		//		color.sColorRGB = it->second;
 		//	}
 		//}
-#endif
 	}
 
 }

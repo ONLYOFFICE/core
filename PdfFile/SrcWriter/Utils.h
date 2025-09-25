@@ -49,6 +49,12 @@
                             c == '{' || \
                             c == '}')  \
 
+#define NEEDS_ESCAPE_STR(c) (c < 0x20 || \
+							c > 0x7e || \
+							c == '\\' || \
+							c == '(' || \
+							c == ')')  \
+
 #define NEEDS_ESCAPE_DICTVALUE(c) (c != 0x9 && \
                             c != 0xA && \
                            (c < 0x20 || \
@@ -132,6 +138,9 @@ namespace PdfWriter
 
 	void  UIntChangeBit(unsigned int& nValue, short nBit);
 	void  UIntChangeBit2(unsigned int& nValue, short nBit);
+
+	std::string DateNow();
+	std::wstring NormalizeWhitespace(const std::wstring& s);
 }
 
 #endif // _PDF_WRITER_SRC_UTILS_H

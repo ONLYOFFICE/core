@@ -50,10 +50,11 @@ public:
 
     void start_table(const std::wstring &tableName, const std::wstring & tableStyleName, int id);
 		void set_protection(bool val, const std::wstring &key, const std::wstring &algorithm);
-    void end_table();
+		void set_print_area(const std::wstring& range);
+		void set_print_titles(const std::wstring& range);
+	void end_table();
 
-    void start_cell(const std::wstring & formula,
-                    size_t columnsSpanned,
+    void start_cell(size_t columnsSpanned,
                     size_t rowsSpanned);
 
     void end_cell();
@@ -73,7 +74,7 @@ public:
     int current_column();
     int current_row();
 
-    void start_column(unsigned int repeated, const std::wstring & defaultCellStyleName);
+    void start_column(unsigned int repeated, const std::wstring & defaultCellStyleName, bool bHeader = false);
 
 	unsigned int columns_count();
 
@@ -88,7 +89,8 @@ public:
 	void serialize_autofilter			(std::wostream & _Wostream);
     void serialize_merge_cells			(std::wostream & _Wostream);
 	void serialize_table_format			(std::wostream & _Wostream);
-	void serialize_conditionalFormatting(std::wostream & _Wostream);
+	void serialize_condFormatting		(std::wostream & _Wostream);
+	void serialize_condFormattingEx		(std::wostream& _Wostream);
 	void serialize_hyperlinks			(std::wostream & _Wostream);
 	void serialize_ole_objects			(std::wostream & _Wostream);
 	void serialize_controls				(std::wostream & _Wostream);
@@ -118,10 +120,16 @@ public:
 	void dump_rels_ole_objects	(rels & Rels);
 
 	bool start_database_range(const std::wstring &table_name, const std::wstring &ref, bool bNamedRangeOnly);
-		void set_database_orientation	(bool val);
-		void set_database_header		(bool val);
-		void set_database_filter		(bool val);
-		void add_database_sort	(int field_number, int order);
+		void set_database_source_ref(const std::wstring& ref);
+		void set_database_orientation (bool val);
+		void set_database_header (bool val);
+		void set_database_filter_button(bool val);
+		void add_database_filter_conditional(int field_number, int type, const std::wstring & value, int operator_);
+		void add_database_sort	(int field_number, int order, int type);
+		void start_filters_or();
+		void start_filters_and();
+		void end_filters_or();
+		void end_filters_and();
 	void end_database_range();
 		
 	int in_database_range();

@@ -15,6 +15,7 @@ command_prefix = "" if ("windows" == base.host_platform()) else "./"
 if not base.is_dir("emsdk"):
   base.cmd("git", ["clone", "https://github.com/emscripten-core/emsdk.git"])
   os.chdir("emsdk")
+  base.cmd("git", ["checkout", "f677ef915645c09794f0ae88f21d3cba2886459f"])
   base.cmd(command_prefix + "emsdk", ["install", "latest"])
   base.cmd(command_prefix + "emsdk", ["activate", "latest"])
   os.chdir("../")
@@ -32,7 +33,13 @@ def exec_wasm(data, work, compiler_flags, wasm):
     compiler_flags.append("-DBUILDING_ASMJS_MODULE")
     compiler_flags.append("-D_ARM_ALIGN_")
 
+  compiler_flags.append("-Wno-deprecated-non-prototype")
   compiler_flags.append("-Wno-deprecated-register")
+  compiler_flags.append("-Wno-register")
+
+  compiler_flags.append("-fvisibility=hidden")
+  #compiler_flags.append("-Wl,--no-entry")
+  #compiler_flags.append("-Wl,--strip-all")
 
   # arguments
   arguments = ""
@@ -50,8 +57,12 @@ def exec_wasm(data, work, compiler_flags, wasm):
     run_file.append("source " + cur_dir + "/emsdk/emsdk_env.sh")
 
   libs = ""
+  cur_folder_index = 0
   for compile_files in data["compile_files_array"]:
-    base.create_dir("./o/" + compile_files["name"])
+    compile_files_name_folder = str(cur_folder_index)
+    cur_folder_index += 1
+    compile_files_name_folder_all = "all_" + compile_files_name_folder + ".o"
+    base.create_dir("./o/" + compile_files_name_folder)
 
     temp_arguments = ""
     if "include_path" in compile_files and compile_files["include_path"]:
@@ -64,14 +75,14 @@ def exec_wasm(data, work, compiler_flags, wasm):
     temp_libs = ""
     for item in compile_files["files"]:
       file_name = os.path.splitext(os.path.basename(item))[0]
-      if not base.is_file("./o/" + compile_files["name"] + "/" + file_name + ".o"):
-        run_file.append(prefix_call + "emcc -o o/" + compile_files["name"] + "/" + file_name + ".o -c " + arguments + temp_arguments + os.path.join(compile_files["folder"], item))
-      temp_libs += ("o/" + compile_files["name"] + "/" + file_name + ".o ")
+      if not base.is_file("./o/" + compile_files_name_folder + "/" + file_name + ".o"):
+        run_file.append(prefix_call + "emcc -o o/" + compile_files_name_folder + "/" + file_name + ".o -c " + arguments + temp_arguments + os.path.join(compile_files["folder"], item))
+      temp_libs += ("o/" + compile_files_name_folder + "/" + file_name + ".o ")
 
     if len(compile_files["files"]) > 10:
-      if not base.is_file("./o/" + compile_files["name"] + "/" + compile_files["name"] + ".o"):
-        run_file.append(prefix_call + "emcc -o o/" + compile_files["name"] + "/" + compile_files["name"] + ".o -r " + arguments + temp_arguments + temp_libs)
-      libs += ("o/" + compile_files["name"] + "/" + compile_files["name"] + ".o ")
+      if not base.is_file("./o/" + compile_files_name_folder + "/" + compile_files_name_folder_all):
+        run_file.append(prefix_call + "emcc -o o/" + compile_files_name_folder + "/" + compile_files_name_folder_all + " -r " + arguments + temp_arguments + temp_libs)
+      libs += ("o/" + compile_files_name_folder + "/" + compile_files_name_folder_all + " ")
     else:
       libs += temp_libs
 
@@ -101,6 +112,11 @@ def exec_wasm(data, work, compiler_flags, wasm):
   engine_js_content = engine_js_content.replace("//desktop_fetch", desktop_fetch_content)
   if not wasm:
     engine_js_content = engine_js_content.replace("//polyfill", polyfill_js_content)
+
+  if "replaces" in data:
+    for item in data["replaces"]:
+      replace_file_content = base.readFile(data["replaces"][item])      
+      engine_js_content = engine_js_content.replace("//" + item, replace_file_content)
 
   # write new version
   base.writeFile(data["res_folder"] + "/" + data["name"] + ("" if wasm else "_ie") + ".js", engine_js_content)
@@ -142,7 +158,10 @@ for param in argv:
   if json_data["asm"]:
     flags = json_data["compiler_flags"][:]
     flags.append("-s WASM=0")
+    flags.append("--closure 0")
     flags.append("-s MIN_IE_VERSION=11")
+    # do it in min.py
+    #flags.append("--closure-args=--language_out=ECMASCRIPT5_STRICT")
     if "embed_mem_file" in json_data and (json_data["embed_mem_file"]):
       flags.append("--memory-init-file 0")
     exec_wasm(json_data, work_dir, flags, False)

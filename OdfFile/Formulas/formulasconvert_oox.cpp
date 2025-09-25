@@ -36,6 +36,7 @@
 
 #include"../../OOXML/Base/Unit.h"
 #include "boost/lexical_cast.hpp"
+//#include <random>
 
 namespace cpdoccore {
 namespace formulasconvert {
@@ -64,7 +65,7 @@ public:
 	std::wstring convert_formula(const std::wstring& expr);
 	std::wstring convert_conditional_formula(const std::wstring& expr);
 
-	std::wstring convert_chart_distance(const std::wstring& expr);
+	std::wstring convert_ref_distances(std::wstring const& expr, std::wstring const& separator_in, std::wstring const& separator_out);
     static void replace_cells_range(std::wstring& expr, bool bSelect = true);
   
 	static void replace_semicolons(std::wstring& expr);
@@ -76,6 +77,8 @@ public:
 	static std::wstring replace_arguments(boost::wsmatch const & what);
 	static std::wstring convert_scobci(boost::wsmatch const & what);
 	
+	static std::vector<std::map<std::wstring, std::wstring>> mapReplacements;
+
 	static std::wstring replace_tilda_formater(boost::wsmatch const & what)
 	{
 		if (what[1].matched)
@@ -132,227 +135,37 @@ public:
 
 		return L"";
 	}
-	static void oox_replace_tmp_back(std::wstring &expr)
+	static void oox_replace_tmp_back(std::wstring& expr)
 	{
-		std::wstring result;
-
-		size_t pos = 0, size = expr.length();
-
-		while(pos < size)
+		for (auto key : mapReplacements.back())
 		{
-			if (pos + 5 >= size)
-			{
-				result += expr[pos++];
-				continue;
-			}
-			switch(expr[pos])
-			{
-				case 'M':
-				{
-					if ((pos + 5 <= size) && (expr.substr(pos, 5) == L"MINYS"))
-					{
-						result += L"-"; pos += 5;
-					}
-					else
-					{
-						result += expr[pos++];
-					}
-				}break;
-				case 'T':
-				{	
-					if ((pos + 6 <= size) && (expr.substr(pos, 6) == L"TОСHKA"))
-					{
-						result += L"."; pos += 6;
-					}
-					else
-					{
-						result += expr[pos++];
-					}
-				}break;
-				case 'V':
-				{
-					if ((pos + 5 <= size) && (expr.substr(pos, 5) == L"VOSKL"))
-					{
-						result += L"!"; pos += 5;
-					}
-					else
-					{
-						result += expr[pos++];
-					}
-				}break;
-				case 'S':
-				{
-					if ((pos + 8 <= size) && (expr.substr(pos, 8) == L"SCOBCAIN"))
-					{
-						result += L"("; pos += 8;
-					}
-					else if ((pos + 9 <= size) && (expr.substr(pos, 9) == L"SCOBCAOUT"))
-					{
-						result += L")"; pos += 9;
-					}
-					else
-					{
-						result += expr[pos++];
-					}
-				}break;
-				case 'K':
-				{
-					if ((pos + 9 <= size) && (expr.substr(pos, 9) == L"KVADRATIN"))
-					{
-						result += L"["; pos += 9;
-					}
-					else if ((pos + 10 <= size) && (expr.substr(pos, 10) == L"KVADRATOUT"))
-					{
-						result += L"]"; pos += 10;
-					}
-					else if ((pos + 8 <= size) && (expr.substr(pos, 8) == L"KAVYCHKA"))
-					{
-						result += L"\""; pos += 8;
-					}
-					else
-					{
-						result += expr[pos++];
-					}
-				}break;
-				case 'P':
-				{
-					if ((pos + 6 <= size) && (expr.substr(pos, 6) == L"PROBEL"))
-					{
-						result += L" "; pos += 6;
-					}
-					else
-					{
-						result += expr[pos++];
-					}
-				}break;
-				case 'A':
-				{
-					if ((pos + 8 <= size) && (expr.substr(pos, 8) == L"APOSTROF"))
-					{
-						result += L"'"; pos += 8;
-					}
-					else if ((pos + 8 <= size) && (expr.substr(pos, 8) == L"APERSAND"))
-					{
-						result += L"&"; pos += 8;
-					}
-					else
-					{
-						result += expr[pos++];
-					}
-				}break;
-				case 'Z':
-				{
-					if ((pos + 9 <= size) && (expr.substr(pos, 9) == L"ZAPYATAYA"))
-					{
-						result += L","; pos += 9;
-					}
-					else
-					{
-						result += expr[pos++];
-					}
-				}break;
-				default:
-				{
-					result += expr[pos++];
-				}break;
-			}
+			XmlUtils::replace_all(expr, key.first, key.second);
 		}
-		expr = result;
-		//XmlUtils::replace_all( expr, L"MINYS", L"-");
-		//XmlUtils::replace_all( expr, L"TОСHKA", L".");
-		//XmlUtils::replace_all( expr, L"VOSKL", L"!");
 
-		//XmlUtils::replace_all( expr, L"SCOBCAIN", L"(");
-		//XmlUtils::replace_all( expr, L"SCOBCAOUT", L")");
+		XmlUtils::replace_all(expr, L"KVADRATIN", L"[");
+		XmlUtils::replace_all(expr, L"KVADRATOUT", L"]");
 
-		//XmlUtils::replace_all( expr, L"KVADRATIN", L"[");
-		//XmlUtils::replace_all( expr, L"KVADRATOUT", L"]");
-		//
-		//XmlUtils::replace_all( expr, L"PROBEL", L" ");
-		//XmlUtils::replace_all( expr, L"APOSTROF", L"'");	
-		//XmlUtils::replace_all( expr, L"KAVYCHKA", L"\"");
+		return;
 	}
 
 	static void oox_replace_tmp(std::wstring &expr)
 	{
-		std::wstring result;
+		//std::random_device genSource;
+		//std::uniform_int_distribution<> generator(0, 23);
+		//for (int index = 0; index < 5; index++)
+		//{
+		//	key += wchar_t(L'a' + generator(genSource));
+		//}
 
-		size_t pos = 0, size = expr.length();
-
-		while(pos < size)
+		std::wstring key = L"aaaaaaaaaaaaaaaaaaaaaaaa";
+		for (unsigned i = 0; i < 23; ++i)
 		{
-			switch(expr[pos])
-			{
-				case '-':
-				{
-					result += L"MINYS";
-				}break;
-				case '.':
-				{	
-					result += L"TОСHKA";
-				}break;
-				case ',':
-				{
-					result += L"ZAPYATAYA";
-				}break;
-				case '!':
-				{
-					result += L"VOSKL";
-				}break;
-				case '(':
-				{
-					result += L"SCOBCAIN";
-				}break;
-				case ')':
-				{
-					result += L"SCOBCAOUT";
-				}break;
-				case '[':
-				{
-					result += L"KVADRATIN";
-				}break;
-				case ']':
-				{
-					result += L"KVADRATOUT";
-				}break;
-				case ' ':
-				{
-					result += L"PROBEL";
-				}break;
-				case '\'':
-				{
-					result += L"APOSTROF";
-				}break;
-				case '\"':
-				{
-					result += L"KAVYCHKA";
-				}break;
-				case '&':
-				{
-					result += L"APERSAND";
-				}break;
-				default:
-				{
-					result += expr[pos];
-				}break;
-			}
-			pos++;
+			unsigned j = rand() % (i + 1);
+			key[i] = key[j];
+			key[j] = wchar_t(L'a' + i);
 		}
-		expr = result;
-
-		//XmlUtils::replace_all( expr, L"-", L"MINYS");
-		//XmlUtils::replace_all( expr, L".", L"TОСHKA");
-		//XmlUtils::replace_all( expr, L"!", L"VOSKL");
-
-		//XmlUtils::replace_all( expr, L"(", L"SCOBCAIN");
-		//XmlUtils::replace_all( expr, L")", L"SCOBCAOUT");
-
-		//XmlUtils::replace_all( expr, L"[", L"KVADRATIN");
-		//XmlUtils::replace_all( expr, L"]", L"KVADRATOUT");
-		//
-		//XmlUtils::replace_all( expr, L" ", L"PROBEL");
-		//XmlUtils::replace_all( expr, L"'", L"APOSTROF");	
-		//XmlUtils::replace_all( expr, L"\"", L"KAVYCHKA");
+		mapReplacements.back().insert(std::make_pair(key, expr));
+		expr = key;
 	}
 
 	static bool is_forbidden1(const std::wstring & formula)
@@ -375,12 +188,10 @@ public:
 
 bool			oox2odf_converter::Impl::isFindBaseCell_ = false;
 std::wstring	oox2odf_converter::Impl::table_name_ = L"";
+std::vector<std::map<std::wstring, std::wstring>> oox2odf_converter::Impl::mapReplacements;
 
 void oox2odf_converter::Impl::replace_cells_range(std::wstring& expr, bool bSelect)
 {
-	if ((0 == expr.find(L"KAVYCHKA")) && (expr.length() - 8 == expr.rfind(L"KAVYCHKA") ))
-		return;
-
 	boost::wregex re(L"(([:$!])+)|(\\S+\\d+)");
 
 	boost::wsmatch result;
@@ -493,11 +304,7 @@ std::wstring oox2odf_converter::Impl::replace_cells_range_formater1(boost::wsmat
         std::wstring c1 = what[2].str(); 
         std::wstring c2 = what[3].str(); 
 
-		if ((0 == c1.find(L"KAVYCHKA")) && (c1.length() - 8 == c1.rfind(L"KAVYCHKA") ))
-		{
-			return c1;
-		}
-		else if (!c1.empty() || !c2.empty() || !sheet.empty())
+		if (!c1.empty() || !c2.empty() || !sheet.empty())
 		{      
 			XmlUtils::replace_all( sheet, L"!", L"");
 
@@ -551,11 +358,7 @@ std::wstring oox2odf_converter::Impl::replace_cells_range_formater2(boost::wsmat
         std::wstring c1 = what[2].str(); 
         std::wstring c2 = what[3].str(); 
 
-		if ((0 == c1.find(L"KAVYCHKA")) && (c1.length() - 8 == c1.rfind(L"KAVYCHKA") ))
-		{
-			return c1;
-		}
-		else if (!c1.empty() || !c2.empty() || !sheet.empty())
+		if (!c1.empty() || !c2.empty() || !sheet.empty())
 		{      
 			XmlUtils::replace_all( sheet, L"!", L"");
 
@@ -612,7 +415,9 @@ void oox2odf_converter::Impl::replace_named_ref(std::wstring & expr)
 	
 	isFindBaseCell_ = true;
 	std::wstring workstr = expr, out;
-   
+	
+	mapReplacements.emplace_back();
+
 	replace_vertical(workstr);
 	replace_semicolons(workstr);		
 	
@@ -644,6 +449,7 @@ void oox2odf_converter::Impl::replace_named_ref(std::wstring & expr)
 	{
 		oox_replace_tmp_back(table_name_);
 	}
+	mapReplacements.pop_back();
 }
 
 
@@ -699,7 +505,7 @@ std::wstring oox2odf_converter::Impl::convert_scobci(boost::wsmatch const & what
     if (what[1].matched)
     {
         std::wstring inner = what[1].str();
-        oox_replace_tmp(inner);
+		oox_replace_tmp(inner);
 		return inner;
 	}
     else if (what[2].matched)
@@ -761,19 +567,20 @@ std::wstring oox2odf_converter::Impl::convert(const std::wstring& expr)
     return workstr;
 }
 // (Formula) -> of:=(Formula) 
+
 std::wstring oox2odf_converter::Impl::convert_formula(const std::wstring & expr)
-{
-	
+{	
     std::wstring workstr = expr;
 
+	mapReplacements.emplace_back();
 	std::wstring res1 = boost::regex_replace(
-        workstr,
+        workstr,    
 		boost::wregex(L"('.*?')|(\".*?\")"),
 		&oox2odf_converter::Impl::convert_scobci, boost::match_default | boost::format_all);
 	
 	std::wstring res = boost::regex_replace(
 		res1,
-		boost::wregex(L"(?!([А-Яа-яÀ-ÿ\\w^0-9]+\\d*\\())(([[А-Яа-яÀ-ÿ\\w^0-9]+\\!)?\\$?[\\w^0-9]*\\$?\\d*(\\:\\$?[\\w^0-9]*\\$?\\d*){0,1})"),
+		boost::wregex(L"(?!([[:Unicode:]\\w^0-9]+\\d*\\())(((\[[0-9]+\])?[[[:Unicode:]\\w^0-9]+\\!)?\\$?[\\w^0-9]*\\$?\\d*(\\:\\$?[\\w^0-9]*\\$?\\d*){0,1})"),
 		&oox2odf_converter::Impl::replace_arguments, boost::match_default | boost::format_all);
 
 	//SUBTOTAL(109,Expense31[Amount])
@@ -782,7 +589,7 @@ std::wstring oox2odf_converter::Impl::convert_formula(const std::wstring & expr)
 
 	if (res1 == res)
 	{
-		XmlUtils::replace_all( res1, L"KAVYCHKA", L"\""); //IMCONJUGATE_emb.xlsx
+		//IMCONJUGATE_emb.xlsx
 	
 		res = boost::regex_replace(
 			res1,	
@@ -796,12 +603,12 @@ std::wstring oox2odf_converter::Impl::convert_formula(const std::wstring & expr)
 	replace_vertical(res);   
 	replace_semicolons(res);
 
-	XmlUtils::replace_all( res, L"PROBEL", L" ");
-
 	if (table_name_.empty() == false)
 	{
 		oox_replace_tmp_back(table_name_);
 	}
+
+	mapReplacements.pop_back();
 
     return std::wstring(L"of:=") + res;
 
@@ -809,6 +616,8 @@ std::wstring oox2odf_converter::Impl::convert_formula(const std::wstring & expr)
 std::wstring oox2odf_converter::Impl::convert_conditional_formula(const std::wstring & expr)
 {
     std::wstring workstr = expr;
+
+	mapReplacements.emplace_back();
 
 	std::wstring res1 = boost::regex_replace(
         workstr,
@@ -829,13 +638,14 @@ std::wstring oox2odf_converter::Impl::convert_conditional_formula(const std::wst
 	     
 	}
 
-	XmlUtils::replace_all(res, L"&", L"&amp;");
+	//XmlUtils::replace_all(res, L"&", L"&amp;");
     oox_replace_tmp_back( res);
 
 	replace_vertical(res);
 	replace_semicolons(res);
     
-	XmlUtils::replace_all( res, L"PROBEL", L" ");
+	mapReplacements.pop_back();
+	//XmlUtils::replace_all( res, L"PROBEL", L" ");
    
 	return res;
 
@@ -844,21 +654,21 @@ std::wstring oox2odf_converter::Impl::convert_conditional_formula(const std::wst
 //в
 //Sheet2.C3:Sheet2.C19 Sheet2.L29:Sheet2.L36
 //todooo
-std::wstring oox2odf_converter::Impl::convert_chart_distance(const std::wstring& expr1)
+std::wstring oox2odf_converter::Impl::convert_ref_distances(std::wstring const& expr1, std::wstring const& separator_in, std::wstring const& separator_out)
 {
 	std::wstring expr = expr1;
-	int res = expr.find(L"(");
-	if (res ==0) expr = expr.substr(res + 1, expr.size()-1);
+	size_t res = expr.find(L"(");
+	if (res == 0) expr = expr.substr(res + 1, expr.size()-1);
 
 	res= expr.rfind(L")");
 	if (res ==expr.size()-2) expr = expr.substr(0, res);
 
-	//распарсить по диапазонам - одф-пробел, ик-эль-запятая
+	//распарсить по диапазонам - пробел -> separator
 
 	std::vector<std::wstring> distance_inp;
 	std::vector<std::wstring> distance_out;
 	
-	boost::algorithm::split(distance_inp,expr, boost::algorithm::is_any_of(L","), boost::algorithm::token_compress_on);
+	boost::algorithm::split(distance_inp,expr, boost::algorithm::is_any_of(separator_in), boost::algorithm::token_compress_on);
 
 	for (size_t i = 0; i < distance_inp.size(); i++)
 	{
@@ -902,7 +712,7 @@ std::wstring oox2odf_converter::Impl::convert_chart_distance(const std::wstring&
 	for (size_t i = 0 ; i < distance_out.size(); i++)
 	{
 		result += distance_out[i];
-		result += L" ";
+		result += separator_out;
 	}
 	return result.substr(0, result.size()-1);
 }
@@ -926,9 +736,9 @@ std::wstring oox2odf_converter::convert_formula(const std::wstring& expr)
 {
     return impl_->convert_formula(expr);
 }
-std::wstring oox2odf_converter::convert_chart_distance(const std::wstring& expr)
+std::wstring oox2odf_converter::convert_ref_distances(std::wstring const& expr, std::wstring const& separator_in, std::wstring const& separator_out)
 {
-    return impl_->convert_chart_distance(expr);
+    return impl_->convert_ref_distances(expr, separator_in, separator_out);
 }
 std::wstring oox2odf_converter::convert_named_ref(const std::wstring& expr)
 {
@@ -946,7 +756,10 @@ bool oox2odf_converter::is_simple_ref(std::wstring const & expr)
 {
 	return impl_->is_simple_ref(expr);
 }
-
+void oox2odf_converter::set_table_name(std::wstring const& val)
+{
+	impl_->table_name_ = val;
+}
 std::wstring oox2odf_converter::get_table_name()
 {
     return impl_->table_name_;

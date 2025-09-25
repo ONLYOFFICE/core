@@ -44,7 +44,7 @@ SharedParsedFormula::SharedParsedFormula(const bool is_part_of_a_revision, const
 
 SharedParsedFormula& SharedParsedFormula::operator=(const std::wstring& value)
 {
-	ParsedFormula::operator = (value);
+	parseStringFormula(value, L"SharedParsedFormula");
 	return *this;
 }
 

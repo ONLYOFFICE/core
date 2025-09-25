@@ -5,6 +5,7 @@
 #include <cmath>
 
 #include "../../../Common/3dParty/html/css/src/StyleProperties.h"
+#include "SvgUtils.h"
 
 namespace SVG
 {
@@ -13,6 +14,7 @@ namespace SVG
 	#define SvgDigit     NSCSS::NSProperties::CDigit
 	#define SvgString    NSCSS::NSProperties::CString
 	#define SvgColor     NSCSS::NSProperties::CColor
+	#define SvgURL       NSCSS::NSProperties::CURL
 	#define SvgEnum      NSCSS::NSProperties::CEnum
 
 	#define SvgTransform NSCSS::NSProperties::CTransform
@@ -50,7 +52,7 @@ namespace SVG
 
 		bool operator==(const Point& oPoint)
 		{
-			return dX == oPoint.dX && dY == oPoint.dY;
+			return Equals(dX, oPoint.dX) && Equals(dY,  oPoint.dY);
 		}
 
 		Point& operator+=(const Point& oPoint)

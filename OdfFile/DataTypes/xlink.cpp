@@ -55,11 +55,11 @@ std::wostream & operator << (std::wostream & _Wostream, const xlink_actuate & _A
     switch (_Actuate.get_type())
     {
     case xlink_actuate::OnLoad:
-        _Wostream << "onLoad";   
+        _Wostream << L"onLoad";   
 		break;
 	default:
     case xlink_actuate::OnRequest:
-        _Wostream << "onRequest";
+        _Wostream << L"onRequest";
         break;
     }
     return _Wostream;

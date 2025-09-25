@@ -1,128 +1,234 @@
 ﻿#pragma once
-#include "../DesktopEditor/graphics/pro/Graphics.h"
-#include "elements/OldShape.h"
+
 #include "elements/Paragraph.h"
+#include "elements/Table.h"
 #include "elements/Shape.h"
-#include "managers/StyleManager.h"
+#include "managers/ImageManager.h"
+#include "managers/FontStyleManager.h"
+#include "managers/ParagraphStyleManager.h"
+#include "../../convert_params.h"
 
 namespace NSDocxRenderer
 {
-    class CPage
-    {
-    public:
-        NSStructures::CFont*		m_pFont {nullptr};
-        NSStructures::CPen*			m_pPen {nullptr};
-        NSStructures::CBrush*		m_pBrush {nullptr};
-        NSStructures::CShadow*		m_pShadow {nullptr};
-        NSStructures::CEdgeText*	m_pEdgeText {nullptr};
+	class CPage
+	{
+	public:
+		struct CManagers
+		{
+			CManagers() = default;
+			CManagers(const CManagers& other) = default;
+			~CManagers() = default;
 
-        Aggplus::CMatrix*			m_pTransform {nullptr};
-        Aggplus::CGraphicsPathSimpleConverter* m_pSimpleGraphicsConverter {nullptr};
+			CImageManager*          pImageManager;
+			CFontStyleManager*      pFontStyleManager;
+			CParagraphStyleManager* pParagraphStyleManager;
+			CFontManager*           pFontManager;
+			CFontSelector*			pFontSelector;
+		};
 
-        CStyleManager*              m_pStyleManager {nullptr};
+		double m_dWidth {0.0};
+		double m_dHeight{0.0};
 
-        CVectorGraphics				m_oVector;
+		LONG m_lCurrentCommand{0};
+		LONG m_lClipMode      {0};
 
-        double m_dWidth {0.0};
-        double m_dHeight {0.0};
+		TextAssociationType         m_eTextAssociationType{TextAssociationType::tatPlainParagraph};
+		NSFonts::IApplicationFonts* m_pAppFonts{nullptr};
+		NSStructures::CFont         m_oFont{};
+		NSStructures::CPen          m_oPen{};
+		NSStructures::CBrush        m_oBrush{};
+		NSStructures::CShadow       m_oShadow{};
+		NSStructures::CEdgeText     m_oEdgeText{};
+		Aggplus::CMatrix            m_oTransform{};
 
-        LONG						m_lCurrentCommand {0};
+		bool m_bIsDeleteTextClipPage   {true};
+		bool m_bIsRecalcFontSize	   {true};
+		bool m_bIsGradient			   {false};
+		bool m_bUseDefaultFont		   {false};
+		bool m_bWriteStyleRaw		   {false};
+		bool m_bIsBuildTables		   {false};
+		bool m_bIsLuminosityShapesFiled{false};
 
-        std::vector<CShape*>     m_arImages;
-        std::vector<CContText*>  m_arSymbol ;
-        std::vector<CTextLine*>  m_arTextLine;
-        std::vector<CShape*>	 m_arShapes;
-        std::vector<CParagraph*> m_arParagraphs;
+		CPage(NSFonts::IApplicationFonts* pAppFonts, const CManagers& oManagers);
+		~CPage();
 
-        CTextLine* m_pCurrentLine {nullptr};
+		void BeginCommand(DWORD lType);
+		void EndCommand(DWORD lType);
 
-        CFontManager		m_oFontManager;
-        CFontManagerLight	m_oFontManagerLight;
+		void Clear();
 
-        TextAssociationType m_eTextAssociationType {tatPlainLine};
+		void WriteImage(const std::shared_ptr<CImageInfo> pInfo, double& fX, double& fY, double& fWidth, double& fHeight);
 
-        bool m_bIsDeleteTextClipPage {true};
+		void PathMoveTo(double& dX, double& dY);
+		void PathLineTo(double& dX, double& dY);
+		void PathCurveTo(double& dX1, double& dY1, double& dX2, double& dY2, double& dX3, double& dY3);
+		void PathStart();
+		void PathEnd();
+		void PathClose();
+		void DrawPath(LONG lType, const std::shared_ptr<CImageInfo> pInfo);
 
-        double m_dLastTextX {-1};
-        double m_dLastTextY {-1};
-        double m_dLastTextX_block {-1};
+		void AddText(
+		        const PUINT pUnicodes,
+		        const PUINT pGids,
+		        const UINT& nCount,
+		        const double& fX,
+		        const double& fY,
+		        const double& fWidth,
+		        const double& fHeight,
+		        const double& fBaseLineOffset);
 
-    public:
-        CPage(NSFonts::IApplicationFonts* pFonts);
-        ~CPage();
-        void Init(NSStructures::CFont* pFont, NSStructures::CPen* pPen, NSStructures::CBrush* pBrush,
-            NSStructures::CShadow* pShadow, NSStructures::CEdgeText* pEdge, Aggplus::CMatrix* pMatrix,
-            Aggplus::CGraphicsPathSimpleConverter* pSimple, CStyleManager* pStyleManager);
+		void Analyze();
+		void Record(NSStringUtils::CStringBuilder& oWriter, bool bIsLastPage);
 
-        void Clear();
-        void ClearImages();
-        void ClearTextData();
-        void ClearTextLines();
-        void ClearShapes();
-        void ClearParagraphs();
+		std::vector<std::wstring> GetXmlShapes();
+		std::vector<std::wstring> GetXmlShapesPptx();
+		NSWasm::CData GetShapesBin();
 
-        void SelectCurrentLine(const CContText* pCont);
-        //удаляем то, что выходит за границы страницы
-        void DeleteTextClipPage();
+		void AddCompleteXml(const std::wstring& oXml);
+		void AddCompleteBinBase64(const std::string& oBase64);
 
-        // image commands
-        //набивается содержимым вектор m_arImages
-        void WriteImage(const std::shared_ptr<CImageInfo> pInfo, double& fX, double& fY, double& fWidth, double& fHeight);
+	private:
+		using shape_ptr_t = std::shared_ptr<CShape>;
+		using cont_ptr_t = std::shared_ptr<CContText>;
+		using text_line_ptr_t = std::shared_ptr<CTextLine>;
+		using base_item_ptr_t = std::shared_ptr<CBaseItem>;
+		using ooxml_item_ptr_t = std::shared_ptr<IOoxmlItem>;
+		using paragraph_ptr_t = std::shared_ptr<CParagraph>;
+		using table_ptr_t = std::shared_ptr<CTable>;
 
-        // path commands
-        void MoveTo(double& dX, double& dY);
-        void LineTo(double& dX, double& dY);
-        void CurveTo(double& x1, double& y1, double& x2, double& y2, double& x3, double& y3);
-        void Start();
-        void End();
-        void Close();
-        //набивается содержимым вектор m_arShapes
-        void DrawPath(LONG lType, const std::shared_ptr<CImageInfo> pInfo);
+		using graphical_cell_ptr_t = std::shared_ptr<CGraphicalCell>;
+		using text_cell_ptr_t = std::shared_ptr<CTextCell>;
+		using cell_ptr_t = std::shared_ptr<CTable::CCell>;
 
-        //набивается содержимым вектор m_arTextData
-        void CollectTextData(const PUINT pUnicodes, const PUINT pGids, const UINT& nCount,
-                             const double& fX, const double& fY, const double& fWidth, const double& fHeight,
-                             const double& fBaseLineOffset, const bool& bIsPDFAnalyzer);
+		using text_line_group_ptr_t = std::shared_ptr<CBaseItemGroup<CTextLine>>;
+		using text_cell_group_ptr_t = std::shared_ptr<CBaseItemGroup<CTextCell>>;
+		using cell_group_ptr_t = std::shared_ptr<CBaseItemGroup<CTable::CCell>>;
 
-        void AnalyzeCollectedShapes();
-        void DetermineLinesType();
+		// returns std::vector of conts with diac. symbols and remove it from m_arConts
+		std::vector<cont_ptr_t> MoveDiacriticalSymbols();
 
-        //Собранные для текущей страницы данные нужно проанализировать и сгруппировать, лишнее удалить
-        void AnalyzeCollectedSymbols();
-        void DetermineStrikeoutsUnderlinesHighlights();
-        bool IsLineCrossingText(const CShape* pGraphicItem, CContText* pCont, const eHorizontalCrossingType& eHType);
-        bool IsLineBelowText(const CShape* pGraphicItem, CContText* pCont, const eHorizontalCrossingType& eHType);
-        bool IsItHighlightingBackground(CShape* pGraphicItem, CContText* pCont, const eHorizontalCrossingType& eHType);
+		// returns std::vector of text lines builded from m_arConts
+		std::vector<text_line_ptr_t> BuildTextLines(const std::vector<cont_ptr_t>& arConts);
 
-        //набивается содержимым вектор m_arTextLine
-        void AnalyzeLines();
-        void BuildLines();
-        void CollectDublicateLines(const CContText *pCont);
-        void MergeLinesByVertAlignType();
-        void DetermineDominantGraphics();
+		// build text line groups
+		std::vector<text_line_group_ptr_t> BuildTextLineGroups();
 
-        void BuildByType();
-        void BuildByTypeBlockChar();
-        void BuildByTypeBlockLine();
-        void BuildByTypePlainLine();
-        void BuildByTypeShapeLine();
-        void BuildByTypePlainParagraph();
+		// returns std::vector of paragraphs builded from m_arTextLines
+		std::vector<paragraph_ptr_t> BuildParagraphs(const std::vector<text_line_group_ptr_t>& arTextLineGroups);
 
-        //Объединяем строки, которые находятся на расстроянии не большем dAffinity
-        void Merge(double dAffinity);
+		// return groups of text cells
+		std::vector<text_cell_group_ptr_t> BuildTextCellGroups(const std::vector<text_line_group_ptr_t>& arTextLineGroups);
 
-        //конвертим m_arImages, m_arShapes, m_arParagraphs в xml-строку
-        void ToXml(NSStringUtils::CStringBuilder& oWriter);
+		// returns std::vector of tables builded from shapes and paragraphes
+		std::vector<table_ptr_t> BuildTables(const std::vector<text_line_group_ptr_t>& arTextLineGroups);
 
-        void WriteSectionToFile(bool bLastPage, NSStringUtils::CStringBuilder& oWriter);
+		// return std::vector of graphical cells (from shapes)
+		std::vector<graphical_cell_ptr_t> BuildGraphicalCells();
 
-        void CreateSingleLineParagraph(CTextLine *pLine, const double *pRight, const double *pBeforeSpacing);
-        void CreateSingleLineOldShape(CTextLine *pLine);
-        void CreateSingleLineShape(CTextLine *pLine);
+		// returns std::vector of base items builded from m_arParagraphs
+		std::vector<ooxml_item_ptr_t> BuildOutputObjects();
 
-        bool IsShadingPresent(const CTextLine* pLine1, const CTextLine* pLine2);
+		// analyze shapes (set lines type)
+		void AnalyzeShapes();
 
-    private:
-        CTextLine* GetNextTextLine(size_t& nCurrentIndex, size_t* pIndexForCheking = nullptr);
-    };
+		// analyze type of lines (double, wave, etc.)
+		void AnalyzeLinesType();
+
+		// analyze m_arTextLines and add effects, adds diac, super-sub scripts etc.
+		void AnalyzeTextLines();
+
+		// analyze drop caps (creates shapes)
+		void AnalyzeDropCaps();
+
+		// analyze conts in text lines
+		void AnalyzeConts();
+
+		// strikeouts, underlines, highlights, outline
+		void AnalyzeEffects();
+
+		// adds diacritical symbols in conts
+		void AddDiacriticalSymbols(const std::vector<cont_ptr_t>& arDiac);
+
+		// super-sub scripts line merge
+		void MergeTextLinesByVatType();
+
+		// remove out of bounds text lines
+		void DeleteTextClipPage();
+
+		// merging conts in text lines
+		void MergeConts();
+
+		// get horizontal and vertical lines from shapes
+		void GetHorVerLines();
+
+		// set dominant shapes
+		void DetermineDominantGraphics();
+
+		// split lines by graphics
+		void SplitLines();
+
+		// creates shapes from overlapping text lines
+		void AnalyzeOverlapLines();
+
+		// calc selected sizes of conts
+		void CalcSelected();
+
+		// merge shapes with each other
+		void MergeShapes();
+
+		// calc true shapes rotation for ooxml format
+		void CalcShapesRotation();
+
+		// for drawingml is no tag behind-doc - so we need to reorder shapes
+		void ReorderShapesForPptx();
+
+		bool IsLineCrossingText(shape_ptr_t pShape, cont_ptr_t pCont) const noexcept;
+		bool IsLineBelowText(shape_ptr_t pShape, cont_ptr_t pCont) const noexcept;
+		bool IsHighlight(shape_ptr_t pShape, cont_ptr_t pCont) const noexcept;
+		bool IsOutline(shape_ptr_t pShape, cont_ptr_t pCont) const noexcept;
+
+		bool IsVerticalLineBetween(base_item_ptr_t pFirst, base_item_ptr_t pSecond) const noexcept;
+		bool IsHorizontalLineBetween(base_item_ptr_t pFirst, base_item_ptr_t pSecond) const noexcept;
+
+		bool IsVerticalLineBetween(text_line_ptr_t pFirst, text_line_ptr_t pSecond) const noexcept;
+		bool IsHorizontalLineBetween(text_line_ptr_t pFirst, text_line_ptr_t pSecond) const noexcept;
+
+		bool IsVerticalLineTrough(base_item_ptr_t pFirst) const noexcept;
+		bool IsHorizontalLineTrough(base_item_ptr_t pFirst) const noexcept;
+
+		void ToXml(NSStringUtils::CStringBuilder& oWriter) const noexcept;
+		void WriteSectionToFile(bool bLastPage, NSStringUtils::CStringBuilder& oWriter) const noexcept;
+
+		static shape_ptr_t CreateSingleLineShape(text_line_ptr_t& pLine);
+		static shape_ptr_t CreateSingleParagraphShape(paragraph_ptr_t& pParagraph);
+
+		void DrawImage(shape_ptr_t pShape, std::shared_ptr<CImageInfo> oImg, CVectorGraphics& imageVector);
+		void DrawGradient(shape_ptr_t pShape);
+
+		agg::rgba8 GetFillColor();
+		void FillLuminosityShapes();
+
+		CManagers m_oManagers;
+
+		CVectorGraphics m_oCurrVectorGraphics;
+		CVectorGraphics m_oClipVectorGraphics;
+
+		CContTextBuilder      m_oContBuilder;
+		CHorVerLinesCollector m_oHorVerLinesCollector;
+
+		std::vector<shape_ptr_t>      m_arShapes;
+		std::vector<text_line_ptr_t>  m_arTextLines;
+		std::vector<paragraph_ptr_t>  m_arParagraphs;
+		std::vector<table_ptr_t>      m_arTables;
+		std::vector<ooxml_item_ptr_t> m_arOutputObjects;
+
+		std::vector<std::wstring> m_arCompleteObjectsXml;
+		std::vector<std::string>  m_arCompleteObjectsBinBase64;
+
+		// save the luminosity shapes for later filling
+		std::vector<shape_ptr_t> m_arLuminosityShapes;
+		std::vector<shape_ptr_t> m_arOneColorGradientShape;
+
+		size_t m_nShapeOrder = 0;
+	};
 }

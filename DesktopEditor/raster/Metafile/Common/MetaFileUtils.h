@@ -46,6 +46,11 @@
 
 namespace MetaFile
 {
+	bool Equals(double dFirst, double dSecond, double dEpsilon = DBL_EPSILON);
+	std::wstring ConvertToUnicode(const unsigned char* pText, unsigned long unLength, unsigned short uchCharSet);
+	std::wstring ConvertToWString(double dValue, int nAccuracy = -1);
+	std::wstring ConvertToWString(const std::vector<double>& arValues, int nAccuracy = -1);
+
 	struct TRgbQuad
 	{
 		unsigned char r;
@@ -66,32 +71,53 @@ namespace MetaFile
 		double dRight;
 		double dBottom;
 
-		TSvgViewport() : dLeft(DBL_MAX), dTop(DBL_MAX), dRight(DBL_MIN), dBottom(DBL_MIN) {}
+		TSvgViewport() : dLeft(DBL_MAX), dTop(DBL_MAX), dRight(-DBL_MAX), dBottom(-DBL_MAX) {}
 
 		bool Empty() const
 		{
-			return DBL_MAX == dLeft || DBL_MAX == dTop || DBL_MIN == dRight || DBL_MIN == dBottom || dRight == dLeft || dBottom == dTop;
+			return Equals(DBL_MAX, dLeft) || Equals(DBL_MAX, dTop) || Equals(-DBL_MAX, dRight) || Equals(-DBL_MAX, dBottom) || Equals(dRight, dLeft) || Equals(dBottom, dTop);
 		}
 
 		double GetWidth() const
 		{
-			return (DBL_MAX == dLeft || DBL_MIN == dRight) ? 0 : dRight - dLeft;
+			return (Equals(DBL_MAX, dLeft) || Equals(-DBL_MAX, dRight)) ? 0 : dRight - dLeft;
 		}
 
 		double GetHeight() const
 		{
-			return (DBL_MAX == dTop || DBL_MIN == dBottom) ? 0 : dBottom - dTop;
+			return (Equals(DBL_MAX, dTop) || Equals(-DBL_MAX, dBottom)) ? 0 : dBottom - dTop;
 		}
 	};
 
 	typedef std::pair<const std::wstring, std::wstring>     NodeAttribute;
-	typedef std::vector<NodeAttribute>                      NodeAttributes;
+	// typedef std::vector<NodeAttribute>                      NodeAttributes;
+
+	class NodeAttributes : public std::vector<NodeAttribute>
+	{
+	public:
+		using std::vector<NodeAttribute>::vector;
+
+		void Add(const std::wstring& wsNameArgument, const std::wstring& wsValueArgument)
+		{
+			emplace_back(NodeAttribute{wsNameArgument, wsValueArgument});
+		}
+
+		void Add(const std::wstring& wsNameArgument, const double& dValueArgument, int nAccuracy = -1)
+		{
+			emplace_back(NodeAttribute{wsNameArgument, ConvertToWString(dValueArgument, nAccuracy)});
+		}
+
+		void Add(const std::wstring& wsNameArgument, const int& nValueArgument)
+		{
+			emplace_back(NodeAttribute{wsNameArgument, std::to_wstring(nValueArgument)});
+		}
+	};
 
 	class CDataStream
 	{
 	public:
 
-		CDataStream() : pBuffer(NULL)
+		CDataStream() : pBuffer(NULL), pBufferEnd(NULL), pCur(NULL), pEnd(NULL)
 		{
 		}
 
@@ -101,10 +127,25 @@ namespace MetaFile
 
 		void SetStream(BYTE* pBuf, unsigned int unSize)
 		{
-			pBuffer = pBuf;
-			pCur    = pBuf;
-			pEnd    = pBuf + unSize;
-		};
+			pBuffer       = pBuf;
+			pCur          = pBuf;
+			pBufferEnd    = pBuf + unSize;
+			pEnd          = pBufferEnd;
+		}
+
+		void SetCurrentBlockSize(unsigned int unSize)
+		{
+			if (pCur + unSize >= pBufferEnd)
+				pEnd = pBufferEnd;
+			else
+				pEnd = pCur + unSize;
+		}
+
+		void ClearCurrentBlockSize()
+		{
+			pEnd = pBufferEnd;
+		}
+
 		BYTE* GetCurPtr()
 		{
 			return pCur;
@@ -118,7 +159,7 @@ namespace MetaFile
 			unsigned char unResult = pCur[0];
 			pCur++;
 			return unResult;
-		};
+		}
 		unsigned short ReadUShort()
 		{
 			if (pCur + 1 >= pEnd)
@@ -127,7 +168,7 @@ namespace MetaFile
 			unsigned short ushResult = (pCur[0]) | ((pCur[1]) << 8);
 			pCur += 2;
 			return ushResult;
-		};
+		}
 		unsigned int   ReadULong()
 		{
 			if (pCur + 3 >= pEnd)
@@ -136,7 +177,7 @@ namespace MetaFile
 			unsigned int unResult = (unsigned int)((pCur[0] << 0) | ((pCur[1]) << 8) | ((pCur[2]) << 16) | ((pCur[3]) << 24));
 			pCur += 4;
 			return unResult;
-		};
+		}
 		double         ReadDouble()
 		{
 			if (pCur + 3 >= pEnd)
@@ -157,19 +198,19 @@ namespace MetaFile
 			int lFracValue = (int)(pCur[3]);
 			pCur += 4;
 			return (double)(lIntValue + (lFracValue / 16.0));
-		};
+		}
 		char           ReadChar()
 		{
 			return (char)ReadUChar();
-		};
+		}
 		short          ReadShort()
 		{
 			return (short)ReadUShort();
-		};
+		}
 		int            ReadLong()
 		{
 			return (int)ReadULong();
-		};
+		}
 		void           ReadBytes(unsigned char*  pBuffer, unsigned int ulSize)
 		{
 			size_t ulRemainSize = (pEnd - pCur);
@@ -179,7 +220,7 @@ namespace MetaFile
 			{
 				pBuffer[ulIndex] = ReadChar();
 			}
-		};
+		}
 		void           ReadBytes(unsigned short* pBuffer, unsigned int ulSize)
 		{
 			size_t ulRemainSize = (pEnd - pCur) / 2;
@@ -260,41 +301,25 @@ namespace MetaFile
 			nValue = ReadLong();
 			return *this;
 		}
-		CDataStream& operator>>(TRectD& oRect)
+		template<typename T>
+		CDataStream& operator>>(TRect<T>& oRect)
 		{
-			*this >> oRect.dLeft;
-			*this >> oRect.dTop;
-			*this >> oRect.dRight;
-			*this >> oRect.dBottom;
+			*this >> oRect.Left;
+			*this >> oRect.Top;
+			*this >> oRect.Right;
+			*this >> oRect.Bottom;
 
 			return *this;
 		}
-		CDataStream& operator>>(TEmfRect& oRect)
+		template<typename T>
+		CDataStream& operator>>(TPoint<T>& oPoint)
 		{
-			*this >> oRect.shLeft;
-			*this >> oRect.shTop;
-			*this >> oRect.shRight;
-			*this >> oRect.shBottom;
-
+			*this >> oPoint.X;
+			*this >> oPoint.Y;
+			
 			return *this;
 		}
-		CDataStream& operator>>(TEmfRectL& oRect)
-		{
-			*this >> oRect.lLeft;
-			*this >> oRect.lTop;
-			*this >> oRect.lRight;
-			*this >> oRect.lBottom;
-
-			return *this;
-		}
-		CDataStream& operator>>(TEmfSizeL& oSize)
-		{
-			*this >> oSize.cx;
-			*this >> oSize.cy;
-
-			return *this;
-		}
-		CDataStream& operator>>(TEmfColor& oColor)
+		CDataStream& operator>>(TRGBA& oColor)
 		{
 			*this >> oColor.r;
 			*this >> oColor.g;
@@ -305,110 +330,81 @@ namespace MetaFile
 		}
 		CDataStream& operator>>(CEmfLogBrushEx& oBrush)
 		{
-			*this >> oBrush.BrushStyle;
-			*this >> oBrush.Color;
-			*this >> oBrush.BrushHatch;
+			*this >> oBrush.unBrushStyle;
+			*this >> oBrush.oColor;
+			*this >> oBrush.unBrushHatch;
 
 			return *this;
 		}
-		CDataStream& operator>>(TEmfPointL& oPoint)
+		template<typename T>
+		CDataStream& operator>>(TEmrText<T>& oText)
 		{
-			*this >> oPoint.x;
-			*this >> oPoint.y;
+			*this >> oText.oReference;
+			*this >> oText.unChars;
+			*this >> oText.unOffString;
+			*this >> oText.unOptions;
+			*this >> oText.oRectangle;
+			*this >> oText.unOffDx;
+
+			oText.pOutputString = NULL;
+			oText.pOutputDx     = NULL;
 
 			return *this;
 		}
-		CDataStream& operator>>(TEmfPointS& oPoint)
+		template<typename T> 
+		CDataStream& operator>>(TExtTextout<T>& oText)
 		{
-			*this >> oPoint.x;
-			*this >> oPoint.y;
-
-			return *this;
-		}
-		CDataStream& operator>>(TEmfPointD& oPoint)
-		{
-			*this >> oPoint.x;
-			*this >> oPoint.y;
-
-			return *this;
-		}
-		CDataStream& operator>>(TEmfEmrText& oText)
-		{
-			*this >> oText.Reference;
-			*this >> oText.Chars;
-			*this >> oText.offString;
-			*this >> oText.Options;
-			*this >> oText.Rectangle;
-			*this >> oText.offDx;
-
-			oText.OutputString = NULL;
-			oText.OutputDx     = NULL;
-
-			return *this;
-		}
-		CDataStream& operator>>(TEmfExtTextoutW& oText)
-		{
-			*this >> oText.Bounds;
-			*this >> oText.iGraphicsMode;
-			*this >> oText.exScale;
-			*this >> oText.eyScale;
-			ReadEmrTextW(oText.wEmrText, 36); // 8 + 28 (8 - тип и размер, 28 - размер данной структуры)
-
-			return *this;
-		}
-		CDataStream& operator>>(TEmfExtTextoutA& oText)
-		{
-			*this >> oText.Bounds;
-			*this >> oText.iGraphicsMode;
-			*this >> oText.exScale;
-			*this >> oText.eyScale;
-			ReadEmrTextA(oText.aEmrText, 36); // 8 + 28 (8 - тип и размер, 28 - размер данной структуры)
+			*this >> oText.oBounds;
+			*this >> oText.unIGraphicsMode;
+			*this >> oText.dExScale;
+			*this >> oText.dEyScale;
+			ReadEmrText(oText.oEmrText, 36); // 8 + 28 (8 - тип и размер, 28 - размер данной структуры)
 
 			return *this;
 		}
 		CDataStream& operator>>(TEmfLogFont& oFont)
 		{
-			*this >> oFont.Height;
-			*this >> oFont.Width;
-			*this >> oFont.Escapement;
-			*this >> oFont.Orientation;
-			*this >> oFont.Weight;
-			*this >> oFont.Italic;
-			*this >> oFont.Underline;
-			*this >> oFont.StrikeOut;
-			*this >> oFont.CharSet;
-			*this >> oFont.OutPrecision;
-			*this >> oFont.ClipPrecision;
-			*this >> oFont.Quality;
-			*this >> oFont.PitchAndFamily;
-			ReadBytes(oFont.FaceName, 32);
+			*this >> oFont.nHeight;
+			*this >> oFont.nWidth;
+			*this >> oFont.nEscapement;
+			*this >> oFont.nOrientation;
+			*this >> oFont.nWeight;
+			*this >> oFont.uchItalic;
+			*this >> oFont.uchUnderline;
+			*this >> oFont.uchStrikeOut;
+			*this >> oFont.uchCharSet;
+			*this >> oFont.uchOutPrecision;
+			*this >> oFont.uchClipPrecision;
+			*this >> oFont.uchQuality;
+			*this >> oFont.uchPitchAndFamily;
+			ReadBytes(oFont.ushFaceName, 32);
 
 			return *this;
 		}
 		CDataStream& operator>>(TEmfLogFontEx& oFont)
 		{
-			*this >> oFont.LogFont;
-			ReadBytes(oFont.FullName, 64);
-			ReadBytes(oFont.Style, 32);
-			ReadBytes(oFont.Script, 32);
+			*this >> oFont.oLogFont;
+			ReadBytes(oFont.ushFullName, 64);
+			ReadBytes(oFont.ushStyle, 32);
+			ReadBytes(oFont.ushScript, 32);
 
 			return *this;
 		}
 		CDataStream& operator>>(TEmfDesignVector& oVector)
 		{
-			*this >> oVector.Signature;
-			*this >> oVector.NumAxes;
+			*this >> oVector.unSignature;
+			*this >> oVector.unNumAxes;
 
-			oVector.Values = NULL;
-			if (oVector.Signature != 0x08007664 || oVector.NumAxes > 16 || oVector.NumAxes <= 0)
+			oVector.pValues = NULL;
+			if (oVector.unSignature != 0x08007664 || oVector.unNumAxes > 16 || oVector.unNumAxes <= 0)
 				return *this;
 
-			oVector.Values = new int[oVector.NumAxes];
-			if (!oVector.Values)
+			oVector.pValues = new int[oVector.unNumAxes];
+			if (!oVector.pValues)
 				return *this;
 
-			for (unsigned int ulIndex = 0; ulIndex < oVector.NumAxes; ulIndex++)
-				*this >> oVector.Values[ulIndex];
+			for (unsigned int ulIndex = 0; ulIndex < oVector.unNumAxes; ulIndex++)
+				*this >> oVector.pValues[ulIndex];
 
 			return *this;
 		}
@@ -416,36 +412,36 @@ namespace MetaFile
 		{
 			if (oFont.IsFixedLength())
 			{
-				*this >> oFont.LogFontEx.LogFont;
-				ReadBytes(oFont.LogFontEx.FullName, 64);
-				ReadBytes(oFont.LogFontEx.Style, 32);
-				ReadBytes(oFont.LogFontEx.Script, 18);
+				*this >> oFont.oLogFontEx.oLogFont;
+				ReadBytes(oFont.oLogFontEx.ushFullName, 64);
+				ReadBytes(oFont.oLogFontEx.ushStyle, 32);
+				ReadBytes(oFont.oLogFontEx.ushScript, 18);
 			}
 			else
 			{
-				*this >> oFont.LogFontEx;
-				*this >> oFont.DesignVector;
+				*this >> oFont.oLogFontEx;
+				*this >> oFont.oDesignVector;
 			}
 
 			return *this;
 		}
 		CDataStream& operator>>(TEmfBitBlt& oBitBtl)
 		{
-			*this >> oBitBtl.Bounds;
-			*this >> oBitBtl.xDest;
-			*this >> oBitBtl.yDest;
-			*this >> oBitBtl.cxDest;
-			*this >> oBitBtl.cyDest;
-			*this >> oBitBtl.BitBltRasterOperation;
-			*this >> oBitBtl.xSrc;
-			*this >> oBitBtl.ySrc;
-			*this >> oBitBtl.XfromSrc;
-			*this >> oBitBtl.BkColorSrc;
-			*this >> oBitBtl.UsageSrc;
-			*this >> oBitBtl.offBmiSrc;
-			*this >> oBitBtl.cbBmiSrc;
-			*this >> oBitBtl.offBitsSrc;
-			*this >> oBitBtl.cbBitsSrc;
+			*this >> oBitBtl.oBounds;
+			*this >> oBitBtl.nXDest;
+			*this >> oBitBtl.nYDest;
+			*this >> oBitBtl.nCxDest;
+			*this >> oBitBtl.nCyDest;
+			*this >> oBitBtl.unBitBltRasterOperation;
+			*this >> oBitBtl.nXSrc;
+			*this >> oBitBtl.nYSrc;
+			*this >> oBitBtl.oXfromSrc;
+			*this >> oBitBtl.oBkColorSrc;
+			*this >> oBitBtl.unUsageSrc;
+			*this >> oBitBtl.unOffBmiSrc;
+			*this >> oBitBtl.unCbBmiSrc;
+			*this >> oBitBtl.unOffBitsSrc;
+			*this >> oBitBtl.unCbBitsSrc;
 
 			return *this;
 		}
@@ -462,81 +458,81 @@ namespace MetaFile
 		}
 		CDataStream& operator>>(TEmfStretchDIBITS& oBitmap)
 		{
-			*this >> oBitmap.Bounds;
-			*this >> oBitmap.xDest;
-			*this >> oBitmap.yDest;
-			*this >> oBitmap.xSrc;
-			*this >> oBitmap.ySrc;
-			*this >> oBitmap.cxSrc;
-			*this >> oBitmap.cySrc;
-			*this >> oBitmap.offBmiSrc;
-			*this >> oBitmap.cbBmiSrc;
-			*this >> oBitmap.offBitsSrc;
-			*this >> oBitmap.cbBitsSrc;
-			*this >> oBitmap.UsageSrc;
-			*this >> oBitmap.BitBltRasterOperation;
-			*this >> oBitmap.cxDest;
-			*this >> oBitmap.cyDest;
+			*this >> oBitmap.oBounds;
+			*this >> oBitmap.nXDest;
+			*this >> oBitmap.nYDest;
+			*this >> oBitmap.nXSrc;
+			*this >> oBitmap.nYSrc;
+			*this >> oBitmap.nCxSrc;
+			*this >> oBitmap.nCySrc;
+			*this >> oBitmap.unOffBmiSrc;
+			*this >> oBitmap.unCbBmiSrc;
+			*this >> oBitmap.unOffBitsSrc;
+			*this >> oBitmap.unCbBitsSrc;
+			*this >> oBitmap.unUsageSrc;
+			*this >> oBitmap.unBitBltRasterOperation;
+			*this >> oBitmap.nCxDest;
+			*this >> oBitmap.nCyDest;
 
 			return *this;
 		}
 		CDataStream& operator>>(TEmfStretchBLT& oBitmap)
 		{
-			*this >> oBitmap.Bounds;
-			*this >> oBitmap.xDest;
-			*this >> oBitmap.yDest;
-			*this >> oBitmap.cxDest;
-			*this >> oBitmap.cyDest;
-			*this >> oBitmap.BitBltRasterOperation;
-			*this >> oBitmap.xSrc;
-			*this >> oBitmap.ySrc;
-			*this >> oBitmap.XformSrc;
-			*this >> oBitmap.BkColorSrc;
-			*this >> oBitmap.UsageSrc;
-			*this >> oBitmap.offBmiSrc;
-			*this >> oBitmap.cbBmiSrc;
-			*this >> oBitmap.offBitsSrc;
-			*this >> oBitmap.cbBitsSrc;
-			*this >> oBitmap.cxSrc;
-			*this >> oBitmap.cySrc;
+			*this >> oBitmap.oBounds;
+			*this >> oBitmap.nXDest;
+			*this >> oBitmap.nYDest;
+			*this >> oBitmap.nCxDest;
+			*this >> oBitmap.nCyDest;
+			*this >> oBitmap.unBitBltRasterOperation;
+			*this >> oBitmap.nXSrc;
+			*this >> oBitmap.nYSrc;
+			*this >> oBitmap.oXformSrc;
+			*this >> oBitmap.oBkColorSrc;
+			*this >> oBitmap.unUsageSrc;
+			*this >> oBitmap.unOffBmiSrc;
+			*this >> oBitmap.unCbBmiSrc;
+			*this >> oBitmap.unOffBitsSrc;
+			*this >> oBitmap.unCbBitsSrc;
+			*this >> oBitmap.nCxSrc;
+			*this >> oBitmap.nCySrc;
 
 			return *this;
 		}
 		CDataStream& operator>>(TEmfSetDiBitsToDevice& oBitmap)
 		{
-			*this >> oBitmap.Bounds;
-			*this >> oBitmap.xDest;
-			*this >> oBitmap.yDest;
-			*this >> oBitmap.xSrc;
-			*this >> oBitmap.ySrc;
-			*this >> oBitmap.cxSrc;
-			*this >> oBitmap.cySrc;
-			*this >> oBitmap.offBmiSrc;
-			*this >> oBitmap.cbBmiSrc;
-			*this >> oBitmap.offBitsSrc;
-			*this >> oBitmap.cbBitsSrc;
-			*this >> oBitmap.UsageSrc;
-			*this >> oBitmap.iStartScan;
-			*this >> oBitmap.cScans;
+			*this >> oBitmap.oBounds;
+			*this >> oBitmap.nXDest;
+			*this >> oBitmap.nYDest;
+			*this >> oBitmap.nXSrc;
+			*this >> oBitmap.nYSrc;
+			*this >> oBitmap.nCxSrc;
+			*this >> oBitmap.nCySrc;
+			*this >> oBitmap.unOffBmiSrc;
+			*this >> oBitmap.unCbBmiSrc;
+			*this >> oBitmap.unOffBitsSrc;
+			*this >> oBitmap.unCbBitsSrc;
+			*this >> oBitmap.unUsageSrc;
+			*this >> oBitmap.unIStartScan;
+			*this >> oBitmap.unCScans;
 
 			return *this;
 		}
 		CDataStream& operator>>(TEmfDibPatternBrush& oBitmap)
 		{
-			*this >> oBitmap.Usage;
-			*this >> oBitmap.offBmi;
-			*this >> oBitmap.cbBmi;
-			*this >> oBitmap.offBits;
-			*this >> oBitmap.cbBits;
+			*this >> oBitmap.unUsage;
+			*this >> oBitmap.unOffBmi;
+			*this >> oBitmap.unCbBmi;
+			*this >> oBitmap.unOffBits;
+			*this >> oBitmap.unCbBits;
 
 			return *this;
 		}
 		CDataStream& operator>>(TEmfLogPaletteEntry& oEntry)
 		{
-			*this >> oEntry.Reserved;
-			*this >> oEntry.Blue;
-			*this >> oEntry.Green;
-			*this >> oEntry.Red;
+			*this >> oEntry.uchReserved;
+			*this >> oEntry.uchBlue;
+			*this >> oEntry.uchGreen;
+			*this >> oEntry.uchRed;
 			return *this;
 		}
 		CDataStream& operator>>(TRegionDataHeader& oRegionDataHeader)
@@ -554,25 +550,25 @@ namespace MetaFile
 			unsigned short ushVersion;
 
 			*this >> ushVersion;
-			*this >> oPalette.NumberOfEntries;
+			*this >> oPalette.ushNumberOfEntries;
 
-			if (oPalette.NumberOfEntries > 0)
+			if (oPalette.ushNumberOfEntries > 0)
 			{
-				oPalette.PaletteEntries = new TEmfLogPaletteEntry[oPalette.NumberOfEntries];
-				if (!oPalette.PaletteEntries)
+				oPalette.pPaletteEntries = new TEmfLogPaletteEntry[oPalette.ushNumberOfEntries];
+				if (!oPalette.pPaletteEntries)
 				{
-					oPalette.NumberOfEntries = 0;
-					oPalette.PaletteEntries  = NULL;
+					oPalette.ushNumberOfEntries = 0;
+					oPalette.pPaletteEntries  = NULL;
 					return *this;
 				}
 
-				for (unsigned short ushIndex = 0; ushIndex < oPalette.NumberOfEntries; ushIndex++)
+				for (unsigned short ushIndex = 0; ushIndex < oPalette.ushNumberOfEntries; ushIndex++)
 				{
-					*this >> oPalette.PaletteEntries[ushIndex];
+					*this >> oPalette.pPaletteEntries[ushIndex];
 				}
 			}
 			else
-				oPalette.PaletteEntries = NULL;
+				oPalette.pPaletteEntries = NULL;
 
 			return *this;
 		}
@@ -585,95 +581,68 @@ namespace MetaFile
 
 			return *this;
 		}
-		CDataStream& operator>>(TEmfPolyTextoutA& oText)
+		template<typename T>
+		CDataStream& operator>>(TPolyTextout<T>& oText)
 		{
-			*this >> oText.Bounds;
-			*this >> oText.iGraphicsMode;
-			*this >> oText.exScale;
-			*this >> oText.eyScale;
-			*this >> oText.cStrings;
+			*this >> oText.oBounds;
+			*this >> oText.unIGraphicsMode;
+			*this >> oText.dExScale;
+			*this >> oText.dEyScale;
+			*this >> oText.unCStrings;
 
-			if (0 != oText.cStrings)
+			if (0 != oText.unCStrings)
 			{
-				oText.aEmrText = new TEmfEmrText[oText.cStrings];
-				if (!oText.aEmrText)
+				oText.arEmrText = new TEmrText<T>[oText.unCStrings];
+				if (!oText.arEmrText)
 					return *this;
 
 				unsigned int nStartPos = Tell();
-				for (unsigned int unIndex = 0; unIndex < oText.cStrings; unIndex++)
+				for (unsigned int unIndex = 0; unIndex < oText.unCStrings; unIndex++)
 				{
 					unsigned int nCurPos = Tell();
-					ReadEmrTextA(oText.aEmrText[unIndex], nCurPos - nStartPos + 36); // 8 + 28 (8 - тип и размер, 28 - размер данной структуры)
+					ReadEmrText(oText.arEmrText[unIndex], nCurPos - nStartPos + 36); // 8 + 28 (8 - тип и размер, 28 - размер данной структуры)
 				}
 			}
 			else
 			{
-				oText.aEmrText = NULL;
-			}
-
-			return *this;
-		}
-		CDataStream& operator>>(TEmfPolyTextoutW& oText)
-		{
-			*this >> oText.Bounds;
-			*this >> oText.iGraphicsMode;
-			*this >> oText.exScale;
-			*this >> oText.eyScale;
-			*this >> oText.cStrings;
-
-			if (0 != oText.cStrings)
-			{
-				oText.wEmrText = new TEmfEmrText[oText.cStrings];
-				if (!oText.wEmrText)
-					return *this;
-
-				unsigned int nStartPos = Tell();
-				for (unsigned int unIndex = 0; unIndex < oText.cStrings; unIndex++)
-				{
-					unsigned int nCurPos = Tell();
-					ReadEmrTextW(oText.wEmrText[unIndex], nCurPos - nStartPos + 36); // 8 + 28 (8 - тип и размер, 28 - размер данной структуры)
-				}
-			}
-			else
-			{
-				oText.wEmrText = NULL;
+				oText.arEmrText = NULL;
 			}
 
 			return *this;
 		}
 		CDataStream& operator>>(TEmfSmallTextout& oText)
 		{
-			*this >> oText.x;
-			*this >> oText.y;
-			*this >> oText.cChars;
-			*this >> oText.fuOptions;
-			*this >> oText.iGraphicsMode;
-			*this >> oText.exScale;
-			*this >> oText.eyScale;
+			*this >> oText.nX;
+			*this >> oText.nY;
+			*this >> oText.unCChars;
+			*this >> oText.unFuOptions;
+			*this >> oText.unIGraphicsMode;
+			*this >> oText.dExScale;
+			*this >> oText.dEyScale;
 
-			if (!(oText.fuOptions & ETO_NO_RECT))
-				*this >> oText.Bounds;
+			if (!(oText.unFuOptions & ETO_NO_RECT))
+				*this >> oText.oBounds;
 
-			oText.TextString = NULL;
-			if (oText.cChars)
+			oText.pTextString = NULL;
+			if (oText.unCChars)
 			{
 				unsigned short* pUnicode = NULL;
-				if (oText.fuOptions & ETO_SMALL_CHARS)
+				if (oText.unFuOptions & ETO_SMALL_CHARS)
 				{
-					unsigned char* pString = new unsigned char[oText.cChars];
+					unsigned char* pString = new unsigned char[oText.unCChars];
 					if (!pString)
 						return *this;
 
-					ReadBytes(pString, oText.cChars);
+					ReadBytes(pString, oText.unCChars);
 
-					pUnicode = new unsigned short[oText.cChars];
+					pUnicode = new unsigned short[oText.unCChars];
 					if (!pUnicode)
 					{
 						delete[] pString;
 						return *this;
 					}
 
-					for (unsigned int unIndex = 0; unIndex < oText.cChars; unIndex++)
+					for (unsigned int unIndex = 0; unIndex < oText.unCChars; unIndex++)
 					{
 						pUnicode[unIndex] = pString[unIndex];
 					}
@@ -681,39 +650,39 @@ namespace MetaFile
 				}
 				else
 				{
-					pUnicode = new unsigned short[oText.cChars];
+					pUnicode = new unsigned short[oText.unCChars];
 					if (!pUnicode)
 						return *this;
 
-					ReadBytes(pUnicode, oText.cChars);
+					ReadBytes(pUnicode, oText.unCChars);
 				}
-				oText.TextString = pUnicode;
+				oText.pTextString = pUnicode;
 			}
 
 			return *this;
 		}
 		CDataStream& operator>>(TEmfAlphaBlend& oBitmap)
 		{
-			*this >> oBitmap.Bounds;
-			*this >> oBitmap.xDest;
-			*this >> oBitmap.yDest;
-			*this >> oBitmap.cxDest;
-			*this >> oBitmap.cyDest;
-			*this >> oBitmap.BlendOperation;
-			*this >> oBitmap.BlendFlags;
-			*this >> oBitmap.SrcConstantAlpha;
-			*this >> oBitmap.AlphaFormat;
-			*this >> oBitmap.xSrc;
-			*this >> oBitmap.ySrc;
-			*this >> oBitmap.XformSrc;
-			*this >> oBitmap.BkColor;
-			*this >> oBitmap.UsageSrc;
-			*this >> oBitmap.offBmiSrc;
-			*this >> oBitmap.cbBmiSrc;
-			*this >> oBitmap.offBitsSrc;
-			*this >> oBitmap.cbBitsSrc;
-			*this >> oBitmap.cxSrc;
-			*this >> oBitmap.cySrc;
+			*this >> oBitmap.oBounds;
+			*this >> oBitmap.nXDest;
+			*this >> oBitmap.nYDest;
+			*this >> oBitmap.nCxDest;
+			*this >> oBitmap.nCyDest;
+			*this >> oBitmap.uchBlendOperation;
+			*this >> oBitmap.uchBlendFlags;
+			*this >> oBitmap.uchSrcConstantAlpha;
+			*this >> oBitmap.uchAlphaFormat;
+			*this >> oBitmap.nXSrc;
+			*this >> oBitmap.nYSrc;
+			*this >> oBitmap.oXformSrc;
+			*this >> oBitmap.oBkColor;
+			*this >> oBitmap.unUsageSrc;
+			*this >> oBitmap.unOffBmiSrc;
+			*this >> oBitmap.unCbBmiSrc;
+			*this >> oBitmap.unOffBitsSrc;
+			*this >> oBitmap.unCbBitsSrc;
+			*this >> oBitmap.nCxSrc;
+			*this >> oBitmap.nCySrc;
 
 			return *this;
 		}
@@ -753,11 +722,6 @@ namespace MetaFile
 			*this >> oARGB.chRed;
 			*this >> oARGB.chAlpha;
 
-			return *this;
-		}
-		CDataStream& operator>>(TEmfPlusPointR &oPoint)
-		{
-			//TODO: реализовать
 			return *this;
 		}
 		CDataStream& operator>>(TEmfPlusPointF &oPoint)
@@ -881,181 +845,156 @@ namespace MetaFile
 
 			return *this;
 		}
-		CDataStream& operator>>(TWmfRect& oRect)
-		{
-			*this >> oRect.Left;
-			*this >> oRect.Top;
-			*this >> oRect.Right;
-			*this >> oRect.Bottom;
-
-			return *this;
-		}
-		CDataStream& operator>>(TWmfColor& oColor)
-		{
-			*this >> oColor.r;
-			*this >> oColor.g;
-			*this >> oColor.b;
-			*this >> oColor.a;
-
-			return *this;
-		}
-		CDataStream& operator>>(TWmfPointS& oPoint)
-		{
-			*this >> oPoint.x;
-			*this >> oPoint.y;
-
-			return *this;
-		}
 		CDataStream& operator>>(TWmfLogBrush& oBrush)
 		{
-			*this >> oBrush.BrushStyle;
-			*this >> oBrush.Color;
-			*this >> oBrush.BurshHatch;
+			*this >> oBrush.ushBrushStyle;
+			*this >> oBrush.oColor;
+			*this >> oBrush.ushBrushHatch;
 
 			return *this;
 		}
 		CDataStream& operator>>(CWmfFont* pFont)
 		{
-			*this >> pFont->Height;
-			*this >> pFont->Width;
-			*this >> pFont->Escapement;
-			*this >> pFont->Orientation;
-			*this >> pFont->Weight;
-			*this >> pFont->Italic;
-			*this >> pFont->Underline;
-			*this >> pFont->StrikeOut;
-			*this >> pFont->CharSet;
-			*this >> pFont->OutPrecision;
-			*this >> pFont->ClipPrecision;
-			*this >> pFont->Quality;
-			*this >> pFont->PitchAndFamily;
+			*this >> pFont->shHeight;
+			*this >> pFont->shWidth;
+			*this >> pFont->shEscapement;
+			*this >> pFont->shOrientation;
+			*this >> pFont->shWeight;
+			*this >> pFont->uchItalic;
+			*this >> pFont->uchUnderline;
+			*this >> pFont->uchStrikeOut;
+			*this >> pFont->uchCharSet;
+			*this >> pFont->uchOutPrecision;
+			*this >> pFont->uchClipPrecision;
+			*this >> pFont->uchQuality;
+			*this >> pFont->uchPitchAndFamily;
 
 			// Читаем до тех пор пока не встретим нулевой символ
 			unsigned char unIndex = 0;
-			*this >> pFont->Facename[unIndex];
-			while (0x00 != pFont->Facename[unIndex])
+			*this >> pFont->uchFacename[unIndex];
+			while (0x00 != pFont->uchFacename[unIndex])
 			{
 				unIndex++;
 				if (32 == unIndex)
 					break;
 
-				*this >> pFont->Facename[unIndex];
+				*this >> pFont->uchFacename[unIndex];
 			}
 
 			return *this;
 		}
 		CDataStream& operator>>(TWmfPaletteEntry& oEntry)
 		{
-			*this >> oEntry.Values;
-			*this >> oEntry.Blue;
-			*this >> oEntry.Green;
-			*this >> oEntry.Red;
+			*this >> oEntry.uchValues;
+			*this >> oEntry.uchBlue;
+			*this >> oEntry.uchGreen;
+			*this >> oEntry.uchRed;
 			return *this;
 		}
 		CDataStream& operator>>(CWmfPalette* pPalette)
 		{
-			*this >> pPalette->Start;
-			*this >> pPalette->NumberOfEntries;
+			*this >> pPalette->ushStart;
+			*this >> pPalette->ushNumberOfEntries;
 
-			if (pPalette->NumberOfEntries > 0)
+			if (pPalette->ushNumberOfEntries > 0)
 			{
-				pPalette->aPaletteEntries = new TWmfPaletteEntry[pPalette->NumberOfEntries];
-				if (!pPalette->aPaletteEntries)
+				pPalette->pPaletteEntries = new TWmfPaletteEntry[pPalette->ushNumberOfEntries];
+				if (!pPalette->pPaletteEntries)
 				{
-					pPalette->aPaletteEntries = NULL;
-					pPalette->NumberOfEntries = 0;
+					pPalette->pPaletteEntries = NULL;
+					pPalette->ushNumberOfEntries = 0;
 					return *this;
 				}
 
-				for (unsigned short ushIndex = 0; ushIndex < pPalette->NumberOfEntries; ushIndex++)
+				for (unsigned short ushIndex = 0; ushIndex < pPalette->ushNumberOfEntries; ushIndex++)
 				{
-					*this >> pPalette->aPaletteEntries[ushIndex];
+					*this >> pPalette->pPaletteEntries[ushIndex];
 				}
 			}
 			else
 			{
-				pPalette->aPaletteEntries = NULL;
+				pPalette->pPaletteEntries = NULL;
 			}
 
 			return *this;
 		}
-		CDataStream& operator>>(CWmfPen* pPen)
+		CDataStream& operator>>(CWmfPen& oPen)
 		{
-			*this >> pPen->PenStyle;
-			*this >> pPen->Width;
-			*this >> pPen->Color;
+			*this >> oPen.ushPenStyle;
+			*this >> oPen.oWidth;
+			*this >> oPen.oColor;
 
 			return *this;
 		}
 		CDataStream& operator>>(TWmfScanLine& oLine)
 		{
-			*this >> oLine.Left;
-			*this >> oLine.Right;
+			*this >> oLine.ushLeft;
+			*this >> oLine.ushRight;
 
 			return *this;
 		}
 		CDataStream& operator>>(TWmfScanObject& oScan)
 		{
-			*this >> oScan.Count;
-			*this >> oScan.Top;
-			*this >> oScan.Bottom;
+			*this >> oScan.ushCount;
+			*this >> oScan.ushTop;
+			*this >> oScan.ushBottom;
 
-			if (oScan.Count > 0 && !(oScan.Count & 1)) // Должно делиться на 2
+			if (oScan.ushCount > 0 && !(oScan.ushCount & 1)) // Должно делиться на 2
 			{
-				unsigned short ushCount = oScan.Count >> 1;
-				oScan.ScanLines = new TWmfScanLine[ushCount];
-				if (oScan.ScanLines)
+				unsigned short ushCount = oScan.ushCount >> 1;
+				oScan.pScanLines = new TWmfScanLine[ushCount];
+				if (oScan.pScanLines)
 				{
 					for (unsigned short ushIndex = 0; ushIndex < ushCount; ushIndex++)
 					{
-						*this >> oScan.ScanLines[ushIndex];
+						*this >> oScan.pScanLines[ushIndex];
 					}
 				}
 				else
 				{
-					oScan.ScanLines = NULL;
-					oScan.Count = 0;
+					oScan.pScanLines = NULL;
+					oScan.ushCount = 0;
 				}
 			}
 			else
 			{
-				oScan.ScanLines = NULL;
+				oScan.pScanLines = NULL;
 			}
-			*this >> oScan.Count2;
+			*this >> oScan.ushCount2;
 
 			return *this;
 		}
 		CDataStream& operator>>(CWmfRegion* pRegion)
 		{
-			*this >> pRegion->nextInChain;
-			*this >> pRegion->ObjectType;
+			*this >> pRegion->shNextInChain;
+			*this >> pRegion->shObjectType;
 
-			if (0x0006 != pRegion->ObjectType)
+			if (0x0006 != pRegion->shObjectType)
 				return *this;
 
-			*this >> pRegion->ObjectCount;
-			*this >> pRegion->RegionSize;
-			*this >> pRegion->ScanCount;
-			*this >> pRegion->MaxScan;
-			*this >> pRegion->BoundingRectangle;
+			*this >> pRegion->shObjectCount;
+			*this >> pRegion->shRegionSize;
+			*this >> pRegion->shScanCount;
+			*this >> pRegion->shMaxScan;
+			*this >> pRegion->oBoundingRectangle;
 
-			if (pRegion->ScanCount > 0)
+			if (pRegion->shScanCount > 0)
 			{
-				pRegion->aScans = new TWmfScanObject[pRegion->ScanCount];
-				if (!pRegion->aScans)
+				pRegion->pScans = new TWmfScanObject[pRegion->shScanCount];
+				if (!pRegion->pScans)
 				{
-					pRegion->aScans = NULL;
-					pRegion->ScanCount = 0;
+					pRegion->pScans = NULL;
+					pRegion->shScanCount = 0;
 					return *this;
 				}
-				for (unsigned short ushIndex = 0; ushIndex < pRegion->ScanCount; ushIndex++)
+				for (unsigned short ushIndex = 0; ushIndex < pRegion->shScanCount; ushIndex++)
 				{
-					*this >> pRegion->aScans[ushIndex];
+					*this >> pRegion->pScans[ushIndex];
 				}
 			}
 			else
 			{
-				pRegion->aScans = NULL;
+				pRegion->shScanCount = NULL;
 			}
 
 
@@ -1063,76 +1002,76 @@ namespace MetaFile
 		}
 		CDataStream& operator>>(TWmfStretchBlt& oBitmap)
 		{
-			*this >> oBitmap.RasterOperation;
-			*this >> oBitmap.SrcHeight;
-			*this >> oBitmap.SrcWidth;
-			*this >> oBitmap.YSrc;
-			*this >> oBitmap.XSrc;
-			*this >> oBitmap.DestHeight;
-			*this >> oBitmap.DestWidth;
-			*this >> oBitmap.YDest;
-			*this >> oBitmap.XDest;
+			*this >> oBitmap.unRasterOperation;
+			*this >> oBitmap.shSrcHeight;
+			*this >> oBitmap.shSrcWidth;
+			*this >> oBitmap.shYSrc;
+			*this >> oBitmap.shXSrc;
+			*this >> oBitmap.shDestHeight;
+			*this >> oBitmap.shDestWidth;
+			*this >> oBitmap.shYDest;
+			*this >> oBitmap.shXDest;
 			return *this;
 		}
 		CDataStream& operator>>(TWmfBitmap16& oBitmap)
 		{
-			*this >> oBitmap.Type;
-			*this >> oBitmap.Width;
-			*this >> oBitmap.Height;
-			*this >> oBitmap.WidthBytes;
-			*this >> oBitmap.Planes;
-			*this >> oBitmap.BitsPixel;
+			*this >> oBitmap.shType;
+			*this >> oBitmap.shWidth;
+			*this >> oBitmap.shHeight;
+			*this >> oBitmap.shWidthBytes;
+			*this >> oBitmap.uchPlanes;
+			*this >> oBitmap.uchBitsPixel;
 
-			unsigned int unBitsCount = (((oBitmap.Width * oBitmap.BitsPixel + 15) >> 4) << 1) * oBitmap.Height;
+			unsigned int unBitsCount = (((oBitmap.shWidth * oBitmap.uchBitsPixel + 15) >> 4) << 1) * oBitmap.shHeight;
 			if (CanRead() >= unBitsCount)
 			{
 				//oBitmap.Bits = new unsigned char[unBitsCount];
 			}
 			else
 			{
-				oBitmap.Bits   = NULL;
-				oBitmap.Width  = 0;
-				oBitmap.Height = 0;
+				oBitmap.pBits   = NULL;
+				oBitmap.shWidth  = 0;
+				oBitmap.shHeight = 0;
 			}
 
 			return *this;
 		}
 		CDataStream& operator>>(TWmfBitBlt& oBitmap)
 		{
-			*this >> oBitmap.RasterOperation;
-			*this >> oBitmap.YSrc;
-			*this >> oBitmap.XSrc;
-			*this >> oBitmap.Height;
-			*this >> oBitmap.Width;
-			*this >> oBitmap.YDest;
-			*this >> oBitmap.XDest;
+			*this >> oBitmap.unRasterOperation;
+			*this >> oBitmap.shYSrc;
+			*this >> oBitmap.shXSrc;
+			*this >> oBitmap.shHeight;
+			*this >> oBitmap.shWidth;
+			*this >> oBitmap.shYDest;
+			*this >> oBitmap.shXDest;
 			return *this;
 		}
 		CDataStream& operator>>(TWmfSetDibToDev& oBitmap)
 		{
-			*this >> oBitmap.ColorUsage;
-			*this >> oBitmap.ScanCount;
-			*this >> oBitmap.StartScan;
-			*this >> oBitmap.yDib;
-			*this >> oBitmap.xDib;
-			*this >> oBitmap.Height;
-			*this >> oBitmap.Width;
-			*this >> oBitmap.yDest;
-			*this >> oBitmap.xDest;
+			*this >> oBitmap.ushColorUsage;
+			*this >> oBitmap.ushScanCount;
+			*this >> oBitmap.ushStartScan;
+			*this >> oBitmap.ushYDib;
+			*this >> oBitmap.ushXDib;
+			*this >> oBitmap.ushHeight;
+			*this >> oBitmap.ushWidth;
+			*this >> oBitmap.ushYDest;
+			*this >> oBitmap.ushXDest;
 			return *this;
 		}
 		CDataStream& operator>>(TWmfStretchDib& oBitmap)
 		{
-			*this >> oBitmap.RasterOperation;
-			*this >> oBitmap.ColorUsage;
-			*this >> oBitmap.SrcHeight;
-			*this >> oBitmap.SrcWidth;
-			*this >> oBitmap.YSrc;
-			*this >> oBitmap.XSrc;
-			*this >> oBitmap.DestHeight;
-			*this >> oBitmap.DestWidth;
-			*this >> oBitmap.yDst;
-			*this >> oBitmap.xDst;
+			*this >> oBitmap.unRasterOperation;
+			*this >> oBitmap.ushColorUsage;
+			*this >> oBitmap.shSrcHeight;
+			*this >> oBitmap.shSrcWidth;
+			*this >> oBitmap.shYSrc;
+			*this >> oBitmap.shXSrc;
+			*this >> oBitmap.shDestHeight;
+			*this >> oBitmap.shDestWidth;
+			*this >> oBitmap.shYDst;
+			*this >> oBitmap.shXDst;
 			return *this;
 		}
 
@@ -1147,20 +1086,23 @@ namespace MetaFile
 
 		bool IsEof() const
 		{
-			if (pCur >= pEnd)
+			if (pCur >= pBufferEnd)
 				return true;
 
 			return false;
 		}
 
-		unsigned int Tell()
+		unsigned int Tell() const
 		{
 			return (unsigned int)(pCur - pBuffer);
 		}
 
 		void Skip(unsigned int ulSkip)
 		{
-			pCur += ulSkip;
+			if (pCur + ulSkip >= pEnd)
+				pCur = pEnd;
+			else
+				pCur += ulSkip;
 		}
 
 		void SeekBack(unsigned int ulSkipBack)
@@ -1171,68 +1113,74 @@ namespace MetaFile
 		void SeekToStart()
 		{
 			pCur = pBuffer;
+			ClearCurrentBlockSize();
 		}
 
-		unsigned int CanRead()
+		unsigned int CanRead() const
 		{
 			return (unsigned int)(pEnd - pCur);
 		}
 
 	private:
 
-		template<typename T>void ReadEmrTextBase(TEmfEmrText& oText, unsigned int unOffset)
+		template<typename T>void ReadEmrTextBase(TEmrText<T>& oText, unsigned int unOffset)
 		{
 			*this >> oText;
 
 			// Читаем OutputString
-			const unsigned int unCharsCount = oText.Chars;
-			int nSkip = oText.offString - (unOffset + 40); // 40 - размер структуры TEmfEmrText
-			Skip(nSkip);
-			T* pString = new T[unCharsCount + 1];
+			oText.unChars = std::min(oText.unChars, (UINT)(CanRead() / sizeof(T)));
+
+			if (0 == oText.unChars)
+				return;
+
+			if (oText.unOffString - 40 > unOffset)
+				Skip(oText.unOffString - (unOffset + 40)); // 40 - размер структуры TEmfEmrText
+
+			T* pString = new T[oText.unChars + 1];
 			if (pString)
 			{
-				pString[unCharsCount] = 0x00;
-				ReadBytes(pString, unCharsCount);
-				oText.OutputString = (void*)pString;
+				pString[oText.unChars] = 0x00;
+				ReadBytes(pString, oText.unChars);
+				oText.pOutputString = pString;
 			}
 
 			// Читаем OutputDx
-			nSkip = oText.offDx - oText.offString - 2 * unCharsCount;
-			Skip(nSkip);
-			const unsigned int unDxCount = oText.Options & ETO_PDY ? 2 * unCharsCount : unCharsCount;
+			if (oText.unChars < (UINT32_MAX / 2) && (oText.unOffDx > oText.unOffString) && (oText.unOffDx - oText.unOffString > 2 * oText.unChars))
+				Skip(oText.unOffDx - oText.unOffString - 2 * oText.unChars);
+
+			const unsigned int unDxCount = (oText.unOptions & ETO_PDY ? 2 * oText.unChars : oText.unChars);
+
+			if ((CanRead() / 4) < unDxCount || 0 == unDxCount)
+				return;
+
 			unsigned int* pDx = new unsigned int[unDxCount];
 			if (pDx)
 			{
 				ReadBytes(pDx, unDxCount);
-				oText.OutputDx = pDx;
+				oText.pOutputDx = pDx;
 			}
 		}
-		void ReadEmrTextA(TEmfEmrText& oText, unsigned int unOffset)
+		
+		template<typename T>
+		void ReadEmrText(TEmrText<T>& oText, unsigned int unOffset)
 		{
-			ReadEmrTextBase<unsigned char>(oText, unOffset);
+			ReadEmrTextBase<T>(oText, unOffset);
 		}
-		void ReadEmrTextW(TEmfEmrText& oText, unsigned int unOffset)
-		{
-			ReadEmrTextBase<unsigned short>(oText, unOffset);
-		}
-
 	private:
 
 		BYTE *pBuffer;
+		BYTE *pBufferEnd;
 		BYTE *pCur;
 		BYTE *pEnd;
 	};
 
-	void ReadImage(BYTE* pHeaderBuffer, unsigned int ulHeaderBufferLen, BYTE* pImageBuffer, unsigned int ulImageBufferLen, BYTE** ppDstBuffer, unsigned int* pulWidth, unsigned int* pulHeight);
-	void ReadImage(BYTE* pImageBuffer, unsigned int unBufferLen, unsigned int unColorUsage, BYTE** ppDstBuffer, unsigned int* punWidth, unsigned int* punHeight);
+	void ReadImage(BYTE* pHeaderBuffer, unsigned int ulHeaderBufferLen, BYTE* pImageBuffer, unsigned int ulImageBufferLen, BYTE** ppDstBuffer, unsigned int* pulWidth, unsigned int* pulHeight, unsigned int& unColorUsed);
+	void ReadImage(BYTE* pImageBuffer, unsigned int unBufferLen, unsigned int unColorUsage, BYTE** ppDstBuffer, unsigned int* punWidth, unsigned int* punHeight, unsigned int& unColorUsed);
 	double GetEllipseAngle(int nL, int nT, int nR, int nB, int nX, int nY);
 	void ProcessRasterOperation(unsigned int unRasterOperation, BYTE** ppBgra, unsigned int unWidth, unsigned int unHeight);
 	std::wstring GetTempFilename(const std::wstring& sFolder = L"");
 
 	std::wstring StringNormalization(const std::wstring& wsString);
 	bool StringEquals(const std::wstring& wsFirstString, const std::wstring& wsSecondString);
-
-	std::wstring ConvertToWString(double dValue, int nAccuracy = -1);
-	std::wstring ConvertToWString(const std::vector<double>& arValues, int nAccuracy = -1);
 };
 #endif // _METAFILE_COMMON_METAFILEUTILS_H

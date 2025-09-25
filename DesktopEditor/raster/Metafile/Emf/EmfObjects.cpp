@@ -30,7 +30,6 @@
  *
  */
 #include "../../../raster/ImageFileFormatChecker.h"
-#include "../../../graphics/Image.h"
 
 #include "../Common/MetaFileUtils.h"
 
@@ -40,31 +39,39 @@
 
 namespace MetaFile
 {
-	CEmfLogBrushEx::CEmfLogBrushEx() : Color(255, 255, 255)
+	CEmfObjectBase::CEmfObjectBase()
+	{}
+
+	CEmfObjectBase::~CEmfObjectBase()
+	{}
+
+	EEmfObjectType CEmfObjectBase::GetType() const
 	{
-		BrushStyle     = BS_SOLID;
-		BrushHatch     = HS_HORIZONTAL;
-		DibPatternPath = L"";
-		BrushAlpha     = 255;
-		DibBuffer      = NULL;
-		DibWidth       = 0;
-		DibHeigth      = 0;
+		return EMF_OBJECT_UNKNOWN;
 	}
+
+	CEmfLogBrushEx::CEmfLogBrushEx() 
+		: unBrushStyle(BS_SOLID), oColor(255, 255, 255, 255), unBrushHatch(HS_HORIZONTAL), pDibBuffer(NULL), unDibWidth(0), unDibHeigth(0)
+	{}
+
 	CEmfLogBrushEx::~CEmfLogBrushEx()
 	{
-		if (BS_DIBPATTERN == BrushStyle && L"" != DibPatternPath)
-        {
-            NSFile::CFileBinary::Remove(DibPatternPath);
-        }
+		if (BS_DIBPATTERN == unBrushStyle && !wsDibPatternPath.empty())
+			NSFile::CFileBinary::Remove(wsDibPatternPath);
 
-		if (DibBuffer)
-			delete[] DibBuffer;
+		RELEASEOBJECT(pDibBuffer);
 	}
+	
+	EEmfObjectType CEmfLogBrushEx::GetType() const
+	{
+		return EMF_OBJECT_BRUSH;
+	}
+
 	void CEmfLogBrushEx::SetDibPattern(unsigned char* pBuffer, unsigned int ulWidth, unsigned int ulHeight)
 	{
-		DibBuffer = pBuffer;
-		DibWidth  = ulWidth;
-		DibHeigth = ulHeight;		
+		pDibBuffer = pBuffer;
+		unDibWidth  = ulWidth;
+		unDibHeigth = ulHeight;		
 
 		if (ulWidth <= 0 || ulHeight <= 0)
 			return;
@@ -86,19 +93,232 @@ namespace MetaFile
 
 		if (oBgraFrame.SaveFile(wsTempFileName, _CXIMAGE_FORMAT_PNG))
 		{
-			BrushStyle     = BS_DIBPATTERN;
-			DibPatternPath = wsTempFileName;
+			unBrushStyle     = BS_DIBPATTERN;
+			wsDibPatternPath = wsTempFileName;
 		}
 
 		oBgraFrame.put_Data(NULL);
 	#endif
 	}
-	int  CEmfLogBrushEx::GetColor()
+
+	int CEmfLogBrushEx::GetColor() const
 	{
-		return METAFILE_RGBA(Color.r, Color.g, Color.b);
+		return METAFILE_RGBA(oColor.r, oColor.g, oColor.b, 0);
 	}
-	int  CEmfLogPen::GetColor()
+
+	int CEmfLogBrushEx::GetColor2() const
 	{
-		return METAFILE_RGBA(Color.r, Color.g, Color.b);
+		return 0;
+	}
+
+	unsigned int CEmfLogBrushEx::GetStyle() const
+	{
+		return unBrushStyle;
+	}
+
+	unsigned int CEmfLogBrushEx::GetStyleEx() const
+	{
+		return 0;
+	}
+
+	unsigned int CEmfLogBrushEx::GetHatch() const
+	{
+		return unBrushHatch;
+	}
+
+	unsigned int CEmfLogBrushEx::GetAlpha() const
+	{
+		return 0xff;
+	}
+
+	unsigned int CEmfLogBrushEx::GetAlpha2() const
+	{
+		return 0xff;
+	}
+
+	std::wstring CEmfLogBrushEx::GetDibPatterPath() const
+	{
+		return wsDibPatternPath;
+	}
+
+	void CEmfLogBrushEx::GetBounds(double &left, double &top, double &width, double &height) const
+	{}
+
+	void CEmfLogBrushEx::GetCenterPoint(double &dX, double &dY) const
+	{}
+
+	void CEmfLogBrushEx::GetDibPattern(unsigned char **pBuffer, unsigned int &unWidth, unsigned int &unHeight) const
+	{
+		*pBuffer = pDibBuffer;
+		unWidth  = unDibWidth;
+		unHeight = unDibHeigth;
+	}
+
+	void CEmfLogBrushEx::GetGradientColors(std::vector<long>& arColors, std::vector<double>& arPositions) const
+	{
+		arColors    = {(long)(GetColor()  + (GetAlpha()  << 24)), (long)(GetColor2() + (GetAlpha2() << 24))};
+		arPositions = {0., 1.};
+	}
+
+	CEmfLogFont::CEmfLogFont(bool bFixedLength)
+	    : m_bFixedLength(bFixedLength)
+	{
+		oDesignVector.pValues = NULL;
+
+		oLogFontEx.oLogFont.nHeight           = DEFAULT_FONT_SIZE;
+		oLogFontEx.oLogFont.nWidth            = 0;
+		oLogFontEx.oLogFont.nEscapement       = 0;
+		oLogFontEx.oLogFont.nOrientation      = 0;
+		oLogFontEx.oLogFont.nWeight           = 400;
+		oLogFontEx.oLogFont.uchItalic         = 0x00;
+		oLogFontEx.oLogFont.uchUnderline      = 0x00;
+		oLogFontEx.oLogFont.uchStrikeOut      = 0x00;
+		oLogFontEx.oLogFont.uchCharSet        = 0x01;
+		oLogFontEx.oLogFont.uchOutPrecision   = 0x00;
+		oLogFontEx.oLogFont.uchClipPrecision  = 0x00;
+		oLogFontEx.oLogFont.uchQuality        = 0x00;
+		oLogFontEx.oLogFont.uchPitchAndFamily = 0x00;
+
+		memset(oLogFontEx.oLogFont.ushFaceName, 0x00, 32);
+
+		oLogFontEx.oLogFont.ushFaceName[0] = 'A';
+		oLogFontEx.oLogFont.ushFaceName[1] = 'r';
+		oLogFontEx.oLogFont.ushFaceName[2] = 'i';
+		oLogFontEx.oLogFont.ushFaceName[3] = 'a';
+		oLogFontEx.oLogFont.ushFaceName[4] = 'l';
+	}
+
+	CEmfLogFont::~CEmfLogFont()
+	{
+		RELEASEOBJECT(oDesignVector.pValues);
+	}
+
+	EEmfObjectType CEmfLogFont::GetType() const
+	{
+		return EMF_OBJECT_FONT;
+	}
+
+	double CEmfLogFont::GetHeight() const
+	{
+		return (double)oLogFontEx.oLogFont.nHeight;
+	}
+
+	std::wstring CEmfLogFont::GetFaceName() const
+	{
+		const std::wstring wsFaceName{NSFile::CUtf8Converter::GetWStringFromUTF16(oLogFontEx.oLogFont.ushFaceName, 32)};
+		return wsFaceName.substr(0, wsFaceName.find(L'\0'));
+	}
+	
+	int CEmfLogFont::GetWeight() const
+	{
+		return oLogFontEx.oLogFont.nWeight;
+	}
+
+	bool CEmfLogFont::IsItalic() const
+	{
+		return 0x01 == oLogFontEx.oLogFont.uchItalic;
+	}
+
+	bool CEmfLogFont::IsStrikeOut() const
+	{
+		return 0x01 == oLogFontEx.oLogFont.uchStrikeOut;
+	}
+
+	bool CEmfLogFont::IsUnderline() const
+	{
+		return 0x01 == oLogFontEx.oLogFont.uchUnderline ;
+	}
+
+	int CEmfLogFont::GetEscapement() const
+	{
+		return oLogFontEx.oLogFont.nEscapement;
+	}
+
+	int CEmfLogFont::GetCharSet() const
+	{
+		return oLogFontEx.oLogFont.uchCharSet;
+	}
+
+	bool CEmfLogFont::IsFixedLength() const
+	{
+		return m_bFixedLength;
+	}
+
+	int CEmfLogFont::GetOrientation() const
+	{
+		return oLogFontEx.oLogFont.nOrientation;
+	}
+
+	CEmfLogPen::CEmfLogPen()
+		: unPenStyle(PS_SOLID), unWidth(1), oColor(0, 0, 0), unNumStyleEntries(0), pStyleEntry(NULL)
+	{}
+
+	CEmfLogPen::~CEmfLogPen()
+	{
+		RELEASEOBJECT(pStyleEntry);
+	}
+
+	EEmfObjectType CEmfLogPen::GetType() const
+	{
+		return EMF_OBJECT_PEN;
+	}
+
+	int  CEmfLogPen::GetColor() const
+	{
+		return METAFILE_RGBA(oColor.r, oColor.g, oColor.b, oColor.a);
+	}
+
+	unsigned int CEmfLogPen::GetStyle() const
+	{
+		return unPenStyle;
+	}
+
+	double CEmfLogPen::GetWidth() const
+	{
+		return (double)unWidth;
+	}
+
+	unsigned int CEmfLogPen::GetAlpha() const
+	{
+		return 0xff;
+	}
+
+	double CEmfLogPen::GetMiterLimit() const
+	{
+		return 0;
+	}
+
+	double CEmfLogPen::GetDashOffset() const
+	{
+		return 0;
+	}
+
+	void CEmfLogPen::GetDashData(double *&arDatas, unsigned int &unSize) const
+	{
+		arDatas = NULL;
+		unSize  = 0;
+	}
+
+	const ILineCap* CEmfLogPen::GetStartLineCap() const
+	{
+		return NULL;
+	}
+
+	const ILineCap* CEmfLogPen::GetEndLineCap() const
+	{
+		return NULL;
+	}
+
+	CEmfLogPalette::CEmfLogPalette() : ushNumberOfEntries(0), pPaletteEntries(NULL)
+	{}
+
+	CEmfLogPalette::~CEmfLogPalette()
+	{
+		RELEASEOBJECT(pPaletteEntries);
+	}
+
+	EEmfObjectType CEmfLogPalette::GetType() const
+	{
+		return EMF_OBJECT_PALETTE;
 	}
 }

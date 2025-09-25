@@ -99,7 +99,7 @@ namespace MetaFile
 			return ((CEmfInterpretatorSvg*)m_oEmfFile.GetEmfParser()->GetInterpretator())->GetFile();
 		}
 	#endif
-        return L"";
+		return L"";
 	}
 
 #ifdef METAFILE_SUPPORT_WMF_EMF
@@ -145,7 +145,7 @@ namespace MetaFile
 		double dWidth  = 25.4 * nWidth / 96;
 		double dHeight = 25.4 * nHeight / 96;
 
-		BYTE* pBgraData = new BYTE[nWidth * nHeight * 4];
+		BYTE* pBgraData = new(std::nothrow) BYTE[nWidth * nHeight * 4];
 		if (!pBgraData)
 			return;
 
@@ -448,6 +448,37 @@ namespace MetaFile
 		return false;
 	}
 
+	bool CMetaFile::LoadFromString(const std::wstring& data)
+	{
+#ifdef METAFILE_SUPPORT_SVG
+		RELEASEINTERFACE(m_pFontManager);
+
+		if (m_pAppFonts)
+		{
+			m_pFontManager = m_pAppFonts->GenerateFontManager();
+			NSFonts::IFontsCache* pMeasurerCache = NSFonts::NSFontCache::Create();
+			pMeasurerCache->SetStreams(m_pAppFonts->GetStreams());
+			m_pFontManager->SetOwnerCache(pMeasurerCache);
+		}
+
+		m_oSvgFile.SetFontManager(m_pFontManager);
+
+		if (m_oSvgFile.ReadFromWString(data) == true)
+		{
+			m_lType = c_lMetaSvg;
+			return true;
+		}
+#endif
+		return false;
+	}
+
+	void CMetaFile::SetTempDirectory(const std::wstring& dir)
+	{
+#ifdef METAFILE_SUPPORT_SVG
+		m_oSvgFile.SetWorkingDirectory(dir);
+#endif
+	}
+
 	bool CMetaFile::DrawOnRenderer(IRenderer* pRenderer, double dX, double dY, double dWidth, double dHeight)
 	{
 		if (NULL == pRenderer)
@@ -508,10 +539,6 @@ namespace MetaFile
 		m_oSvmFile.Close();
 	#endif
 
-	#ifdef METAFILE_SUPPORT_SVG
-		m_oSvgFile.Close();
-	#endif
-
 		m_lType  = 0;
 	}
 
@@ -527,31 +554,31 @@ namespace MetaFile
 		#ifdef METAFILE_SUPPORT_WMF_EMF
 			case c_lMetaWmf:
 			{
-				const TRectD& oRect = m_oWmfFile.GetBounds();
-				*pdX = oRect.dLeft;
-				*pdY = oRect.dTop;
-				*pdW = oRect.dRight - oRect.dLeft;
-				*pdH = oRect.dBottom - oRect.dTop;
+				const TRectL& oRect{m_oWmfFile.GetBounds()};
+				*pdX = oRect.Left;
+				*pdY = oRect.Top;
+				*pdW = oRect.Right  - oRect.Left;
+				*pdH = oRect.Bottom - oRect.Top;
 				break;
 			}
 			case c_lMetaEmf:
 			{
-				TEmfRectL* pRect = m_oEmfFile.GetBounds();
-				*pdX = pRect->lLeft;
-				*pdY = pRect->lTop;
-				*pdW = pRect->lRight - pRect->lLeft;
-				*pdH = pRect->lBottom - pRect->lTop;
+				const TRectL& oRect{m_oEmfFile.GetBounds()};
+				*pdX = oRect.Left;
+				*pdY = oRect.Top;
+				*pdW = oRect.Right  - oRect.Left;
+				*pdH = oRect.Bottom - oRect.Top;
 				break;
 			}
 		#endif
 		#ifdef METAFILE_SUPPORT_SVM
 			case c_lMetaSvm:
 			{
-				TRect* pRect = m_oSvmFile.GetBounds();
-				*pdX = pRect->nLeft;
-				*pdY = pRect->nTop;
-				*pdW = pRect->nRight - pRect->nLeft;
-				*pdH = pRect->nBottom - pRect->nTop;
+				const TRectL& oRect{m_oSvmFile.GetBounds()};
+				*pdX = oRect.Left;
+				*pdY = oRect.Top;
+				*pdW = oRect.Right  - oRect.Left;
+				*pdH = oRect.Bottom - oRect.Top;
 
 				if (*pdW > 10000 || *pdH > 10000)
 				{
@@ -584,6 +611,9 @@ namespace MetaFile
 
 	void CMetaFile::ConvertToRaster(const wchar_t* wsOutFilePath, unsigned int unFileType, int nWidth, int nHeight)
 	{
+		if (nWidth == 0 || nHeight == 0)
+			return;
+
 		NSGraphics::IGraphicsRenderer* pGrRenderer = NSGraphics::Create();
 
 		NSFonts::IFontManager* pFontManager = m_pAppFonts->GenerateFontManager();

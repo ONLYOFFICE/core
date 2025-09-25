@@ -34,22 +34,32 @@
 
 namespace DocFileFormat
 {	
-	BorderCode::BorderCode(): cv(0), dptLineWidth(0), brcType(0), ico( Global::ColorNameIdentifier[0] ), dptSpace(0), fShadow(false), fFrame(false), fNil(false)
+	BorderCode::BorderCode(): dptLineWidth(0), brcType(0), ico( Global::ColorIdentifier[0] ), dptSpace(0), fShadow(false), fFrame(false), fNil(false)
 	{
 	}
 
 	/// Parses the unsigned char for a BRC
 	BorderCode::BorderCode( unsigned char* bytes, int size ):
-	cv(0), dptLineWidth(0), brcType(0), ico( Global::ColorNameIdentifier[0] ), dptSpace(0), fShadow(false), fFrame(false), fNil(false)
+	dptLineWidth(0), brcType(0), ico( Global::ColorIdentifier[0] ), dptSpace(0), fShadow(false), fFrame(false), fNil(false)
 	{
 		if ( FormatUtils::ArraySum( bytes, size ) ==  ( size * 255 ) )
 		{
 			fNil = true;
 		}
 		else if ( size == 8 )
-		{
-			//it's a border code of Word 2000/2003
+		{ //it's a border code of Word 2000/2003			
 			cv = FormatUtils::BytesToInt32( bytes, 0, size );
+			BYTE auto_ = GETBITS(*cv, 24, 31);
+
+			if (auto_ == 0)
+			{
+				BYTE B = GETBITS(*cv, 0, 7);
+				BYTE G = GETBITS(*cv, 8, 15);
+				BYTE R = GETBITS(*cv, 16, 23);
+				cv = (B << 16) + (G << 8) + (R);
+			}
+			else cv = boost::none;
+
 			ico = std::wstring( Global::ColorIdentifier[0] );
 
 			dptLineWidth = bytes[4];
@@ -71,7 +81,7 @@ namespace DocFileFormat
 
 			val = FormatUtils::BytesToUInt16( bytes, 2, size );
 
-			ico = FormatUtils::MapValueToWideString( ( val & 0x00FF ), &Global::ColorNameIdentifier[0][0], 17, 12 );
+			ico = FormatUtils::MapValueToWideString( ( val & 0x00FF ), &Global::ColorIdentifier[0][0], 17, 12 );
 			dptSpace = ( val & 0x1F00 ) >> 8;
 		}
 		else if (size == 2)
@@ -81,7 +91,7 @@ namespace DocFileFormat
 			dptLineWidth	= GETBITS(val, 0, 2);
 			brcType			= GETBITS(val, 3, 4);
 			fShadow			= GETBIT(val, 5);
-			ico				= FormatUtils::MapValueToWideString(GETBITS(val, 6, 10), &Global::ColorNameIdentifier[0][0], 17, 12 );
+			ico				= FormatUtils::MapValueToWideString(GETBITS(val, 6, 10), &Global::ColorIdentifier[0][0], 17, 12 );
 			dptSpace		= GETBITS(val, 11, 15);
 
 		}
@@ -100,11 +110,22 @@ namespace DocFileFormat
 			fNil			= bc.fNil;
 		}
 	}
-
+	std::wstring BorderCode::getColor()
+	{
+		if (cv)
+		{
+			return FormatUtils::IntToFormattedWideString(*cv, L"#%06x");
+		}
+		else if (false == ico.empty())
+		{
+			return ico;
+		}
+		else return L"auto";
+	}
 	bool BorderCode::operator == ( const BorderCode& bc )
 	{
 		if ( ( cv == bc.cv ) && ( dptLineWidth == bc.dptLineWidth ) && ( brcType == bc.brcType ) &&
-			( ico == bc.ico ) && ( dptSpace == bc.dptSpace ) && ( fShadow == bc.fShadow ) &&
+			(ico == bc.ico ) && ( dptSpace == bc.dptSpace ) && ( fShadow == bc.fShadow ) &&
 			( fFrame == bc.fFrame ) && ( fNil == bc.fNil ) )
 		{
 			return true;

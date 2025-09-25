@@ -54,9 +54,9 @@ namespace XLSB
             //static const XLS::ElementType	type = XLS::typeBeginPCDFGRange;
 
             BYTE                    iByType;
-            bool                    fAutoStart;
-            bool                    fAutoEnd;
-            bool                    fDates;
+            bool                    fAutoStart = false;
+            bool                    fAutoEnd = false;
+            bool                    fDates = false;
             XLS::Xnum               xnumStart;
             XLS::Xnum               xnumEnd;
             XLS::Xnum               xnumBy;

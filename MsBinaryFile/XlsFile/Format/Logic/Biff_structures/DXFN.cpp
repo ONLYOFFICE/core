@@ -116,15 +116,85 @@ void DXFN::load(CFRecord& record)
 	}
 }
 
+void DXFN::save(CFRecord& record)
+{
+    _UINT32 flags = 0;
+    SETBIT(flags, 0, alchNinch);
+    SETBIT(flags, 1, alcvNinch);
+    SETBIT(flags, 2, wrapNinch);
+    SETBIT(flags, 3, trotNinch);
+    SETBIT(flags, 4, kintoNinch);
+    SETBIT(flags, 5, cIndentNinch);
+    SETBIT(flags, 6, fShrinkNinch);
+    SETBIT(flags, 7, fMergeCellNinch);
+
+    SETBIT(flags, 8, lockedNinch);
+    SETBIT(flags, 9, hiddenNinch);
+
+    SETBIT(flags, 10, glLeftNinch);
+    SETBIT(flags, 11, glRightNinch);
+    SETBIT(flags, 12, glTopNinch);
+    SETBIT(flags, 13, glBottomNinch);
+    SETBIT(flags, 14, glDiagDownNinch);
+    SETBIT(flags, 15, glDiagUpNinch);
+
+    SETBIT(flags, 16, flsNinch);
+    SETBIT(flags, 17, icvFNinch);
+    SETBIT(flags, 18, icvBNinch);
+
+    SETBIT(flags, 19, ifmtNinch);
+    SETBIT(flags, 20, fIfntNinch);
+
+    SETBIT(flags, 25, ibitAtrNum);
+    SETBIT(flags, 26, ibitAtrFnt);
+    SETBIT(flags, 27, ibitAtrAlc);
+    SETBIT(flags, 28, ibitAtrBdr);
+    SETBIT(flags, 29, ibitAtrPat);
+    SETBIT(flags, 30, ibitAtrProt);
+
+    SETBIT(flags, 31, iReadingOrderNinch);
+    record << flags;
+
+    unsigned short flags2 = 0;
+
+    SETBIT(flags2, 0, fIfmtUser);
+    SETBIT(flags2, 2, fNewBorder);
+    SETBIT(flags2, 15, fZeroInited);
+
+    record << flags2;
+
+    if(ibitAtrNum)
+    {
+        dxfnum.parent = this;
+        record << dxfnum;
+    }
+    if(ibitAtrFnt)
+    {
+        record << dxffntd;
+    }
+    if(ibitAtrAlc)
+    {
+        record << dxfalc;
+    }
+    if(ibitAtrBdr)
+    {
+        record << dxfbdr;
+    }
+    if(ibitAtrProt)
+    {
+        record << dxfprot;
+    }
+}
+
 int DXFN::serialize(std::wostream & stream)
 {
 	CP_XML_WRITER(stream)    
 	{
 		CP_XML_NODE(L"dxf")
 		{
-			if(ibitAtrFnt)
+			if (ibitAtrFnt || (xfext && (xfext->mapRgExt.end() != xfext->mapRgExt.find(ExtProp::FontScheme))))
 			{
-				dxffntd.serialize(CP_XML_STREAM());
+				dxffntd.serialize(CP_XML_STREAM(), ibitAtrFnt == false);
 			}
 			if(ibitAtrNum)
 			{

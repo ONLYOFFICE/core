@@ -66,6 +66,7 @@
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\BeginDXF14s.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\BeginDXFs.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\BeginDXFs15.cpp" />
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\BeginDynamicArrayPr.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\BeginECDbProps.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\BeginECOlapProps.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\BeginECParam.cpp" />
@@ -78,6 +79,11 @@
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\BeginECTxtWiz15.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\BeginECWebProps.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\BeginEcWpTables.cpp" />
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\BeginEsfmd.cpp" />
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\BeginEsmdb.cpp" />
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\BeginEsmdtinfo.cpp" />
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\BeginEsmdx.cpp" />
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\BeginEsstr.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\BeginExtConn14.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\BeginExtConn15.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\BeginExtConnection.cpp" />
@@ -86,6 +92,7 @@
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\BeginFills.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\BeginFilterColumn.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\BeginFilters.cpp" />
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\BeginFmd.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\BeginFmts.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\BeginFnGroup.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\BeginFonts.cpp" />
@@ -105,7 +112,13 @@
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\BeginListParts.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\BeginListXmlCPr.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\BeginMap.cpp" />
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\BeginMdx.cpp" />
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\BeginMdxKpi.cpp" />
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\BeginMdxMbrProp.cpp" />
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\BeginMdxSet.cpp" />
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\BeginMdxTuple.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\BeginMergeCells.cpp" />
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\BeginMetadata.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\BeginMG.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\BeginMGMaps.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\BeginMGs.cpp" />
@@ -178,6 +191,7 @@
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\BeginRichFilterColumn.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\BeginRichFilters.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\BeginRichSortCondition.cpp" />
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\BeginRichValueBlock.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\BeginRwBrk.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\BeginSheet.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\BeginSheetData.cpp" />
@@ -335,6 +349,7 @@
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\EndDXF14s.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\EndDXFs.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\EndDXFs15.cpp" />
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\EndDynamicArrayPr.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\EndECDbProps.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\EndECOlapProps.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\EndECParam.cpp" />
@@ -345,6 +360,11 @@
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\EndECTxtWiz15.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\EndECWebProps.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\EndECWPTables.cpp" />
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\EndEsfmd.cpp" />
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\EndEsmdb.cpp" />
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\EndEsmdtinfo.cpp" />
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\EndEsmdx.cpp" />
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\EndEsstr.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\EndExtConn14.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\EndExtConn15.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\EndExtConnection.cpp" />
@@ -353,6 +373,7 @@
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\EndFills.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\EndFilterColumn.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\EndFilters.cpp" />
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\EndFmd.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\EndFmts.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\EndFnGroup.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\EndFonts.cpp" />
@@ -372,7 +393,13 @@
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\EndListParts.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\EndListXmlCPr.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\EndMap.cpp" />
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\EndMdx.cpp" />
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\EndMdxKpi.cpp" />
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\EndMdxMbrProp.cpp" />
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\EndMdxSet.cpp" />
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\EndMdxTuple.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\EndMergeCells.cpp" />
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\EndMetadata.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\EndMG.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\EndMGMaps.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\EndMGs.cpp" />
@@ -447,6 +474,7 @@
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\EndRichFilterColumn.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\EndRichFilters.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\EndRichSortCondition.cpp" />
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\EndRichValueBlock.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\EndRwBrk.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\EndSheet.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\EndSheetData.cpp" />
@@ -564,6 +592,9 @@
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\ListPart.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\ListTrFmla.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\Margins.cpp" />
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\Mdb.cpp" />
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\Mdtinfo.cpp" />
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\MdxMbrIstr.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\MergeCell.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\MRUColor.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\OleObject.cpp" />
@@ -610,6 +641,7 @@
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\SlicerStyleElement.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\Sparkline.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\SSTItem.cpp" />
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\Str.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\Style.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\SupAddin.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\SupBookSrc.cpp" />
@@ -679,6 +711,7 @@
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\ListTotalRowFunction.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\ListType.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\LPByteBuf.cpp" />
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\Mdir.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\OLEItemProperties.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\ParameterParsedFormula.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\PCDCalcMemCommon.cpp" />
@@ -698,6 +731,7 @@
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\SlicerCacheNativeItemStruct.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\SlicerCachePivotTable.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\SrvFmtCV.cpp" />
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\SrvFmtData.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\StrRun.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\SXET.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\SXMA.cpp" />
@@ -765,6 +799,7 @@
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_unions\DXF14S.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_unions\DXFS.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_unions\DXFS15.cpp" />
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_unions\DYNAMICARRAYMETADATA.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_unions\ECDBPROPS.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_unions\ECOLAPPROPS.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_unions\ECPARAM.cpp" />
@@ -775,6 +810,11 @@
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_unions\ECTXTWIZ15.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_unions\ECWEBPROPS.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_unions\ECWPTABLES.cpp" />
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_unions\ESFMD.cpp" />
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_unions\ESMDB.cpp" />
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_unions\ESMDTINFO.cpp" />
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_unions\ESMDX.cpp" />
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_unions\ESSTR.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_unions\EXTCONN14.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_unions\EXTCONN15.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_unions\EXTCONNECTION.cpp" />
@@ -790,6 +830,7 @@
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_unions\FILLS.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_unions\FILTERCOLUMN.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_unions\FILTERS.cpp" />
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_unions\FMD.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_unions\FMLACELL.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_unions\FMTS.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_unions\FNGROUP_bu.cpp" />
@@ -832,6 +873,11 @@
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_unions\LISTPARTS.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_unions\LISTXMLCPR.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_unions\MAP.cpp" />
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_unions\MDX.cpp" />
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_unions\MDXKPI.cpp" />
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_unions\MDXMBRPROP.cpp" />
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_unions\MDXSET.cpp" />
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_unions\MDXTUPLE.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_unions\MERGECELLS.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_unions\MG.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_unions\MGMAPS.cpp" />
@@ -921,6 +967,7 @@
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_unions\QSIF.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_unions\QSIFS.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_unions\QSIR.cpp" />
+    <ClCompile Include="..\..\..\XlsbFormat\Biff12_unions\RICHDATAMETADATA.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_unions\RICHFILTERCONTENT.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_unions\RICHFILTERS.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_unions\RICHSORTCONDITION.cpp" />
@@ -1021,6 +1068,7 @@
     <ClCompile Include="..\..\..\XlsbFormat\CommentsStream.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\ConnectionsStream.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\ExternalLinkStream.cpp" />
+    <ClCompile Include="..\..\..\XlsbFormat\MetadataStream.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\PivotCacheDefStream.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\PivotCacheRecordsStream.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\PivotTableStream.cpp" />
@@ -1082,6 +1130,7 @@
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\BeginDXF14s.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\BeginDXFs.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\BeginDXFs15.h" />
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\BeginDynamicArrayPr.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\BeginECDbProps.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\BeginECOlapProps.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\BeginECParam.h" />
@@ -1094,6 +1143,11 @@
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\BeginECTxtWiz15.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\BeginECWebProps.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\BeginEcWpTables.h" />
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\BeginEsfmd.h" />
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\BeginEsmdb.h" />
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\BeginEsmdtinfo.h" />
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\BeginEsmdx.h" />
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\BeginEsstr.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\BeginExtConn14.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\BeginExtConn15.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\BeginExtConnection.h" />
@@ -1102,6 +1156,7 @@
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\BeginFills.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\BeginFilterColumn.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\BeginFilters.h" />
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\BeginFmd.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\BeginFmts.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\BeginFnGroup.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\BeginFonts.h" />
@@ -1121,7 +1176,13 @@
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\BeginListParts.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\BeginListXmlCPr.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\BeginMap.h" />
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\BeginMdx.h" />
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\BeginMdxKpi.h" />
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\BeginMdxMbrProp.h" />
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\BeginMdxSet.h" />
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\BeginMdxTuple.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\BeginMergeCells.h" />
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\BeginMetadata.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\BeginMG.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\BeginMGMaps.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\BeginMGs.h" />
@@ -1194,6 +1255,7 @@
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\BeginRichFilterColumn.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\BeginRichFilters.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\BeginRichSortCondition.h" />
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\BeginRichValueBlock.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\BeginRwBrk.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\BeginSheet.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\BeginSheetData.h" />
@@ -1353,6 +1415,7 @@
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\EndDXF14s.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\EndDXFs.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\EndDXFs15.h" />
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\EndDynamicArrayPr.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\EndECDbProps.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\EndECOlapProps.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\EndECParam.h" />
@@ -1363,6 +1426,11 @@
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\EndECTxtWiz15.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\EndECWebProps.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\EndECWPTables.h" />
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\EndEsfmd.h" />
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\EndEsmdb.h" />
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\EndEsmdtinfo.h" />
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\EndEsmdx.h" />
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\EndEsstr.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\EndExtConn14.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\EndExtConn15.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\EndExtConnection.h" />
@@ -1371,6 +1439,7 @@
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\EndFills.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\EndFilterColumn.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\EndFilters.h" />
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\EndFmd.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\EndFmts.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\EndFnGroup.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\EndFonts.h" />
@@ -1390,7 +1459,13 @@
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\EndListParts.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\EndListXmlCPr.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\EndMap.h" />
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\EndMdx.h" />
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\EndMdxKpi.h" />
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\EndMdxMbrProp.h" />
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\EndMdxSet.h" />
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\EndMdxTuple.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\EndMergeCells.h" />
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\EndMetadata.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\EndMG.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\EndMGMaps.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\EndMGs.h" />
@@ -1465,6 +1540,7 @@
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\EndRichFilterColumn.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\EndRichFilters.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\EndRichSortCondition.h" />
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\EndRichValueBlock.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\EndRwBrk.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\EndSheet.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\EndSheetData.h" />
@@ -1584,6 +1660,9 @@
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\ListPart.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\ListTrFmla.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\Margins.h" />
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\Mdb.h" />
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\Mdtinfo.h" />
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\MdxMbrIstr.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\MergeCell.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\MRUColor.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\OleObject.h" />
@@ -1630,6 +1709,7 @@
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\SlicerStyleElement.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\Sparkline.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\SSTItem.h" />
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\Str.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\Style.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\SupAddin.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\SupBookSrc.h" />
@@ -1700,6 +1780,7 @@
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\ListTotalRowFunction.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\ListType.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\LPByteBuf.h" />
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\Mdir.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\OLEItemProperties.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\ParameterParsedFormula.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\PCDCalcMemCommon.h" />
@@ -1719,6 +1800,7 @@
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\SlicerCacheNativeItemStruct.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\SlicerCachePivotTable.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\SrvFmtCV.h" />
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\SrvFmtData.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\StrRun.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\SXET.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\SXMA.h" />
@@ -1786,6 +1868,7 @@
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_unions\DXF14S.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_unions\DXFS.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_unions\DXFS15.h" />
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_unions\DYNAMICARRAYMETADATA.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_unions\ECDBPROPS.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_unions\ECOLAPPROPS.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_unions\ECPARAM.h" />
@@ -1796,6 +1879,11 @@
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_unions\ECTXTWIZ15.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_unions\ECWEBPROPS.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_unions\ECWPTABLES.h" />
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_unions\ESFMD.h" />
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_unions\ESMDB.h" />
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_unions\ESMDTINFO.h" />
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_unions\ESMDX.h" />
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_unions\ESSTR.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_unions\EXTCONN14.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_unions\EXTCONN15.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_unions\EXTCONNECTION.h" />
@@ -1811,6 +1899,7 @@
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_unions\FILLS.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_unions\FILTERCOLUMN.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_unions\FILTERS.h" />
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_unions\FMD.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_unions\FMLACELL.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_unions\FMTS.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_unions\FNGROUP.h" />
@@ -1853,6 +1942,11 @@
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_unions\LISTPARTS.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_unions\LISTXMLCPR.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_unions\MAP.h" />
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_unions\MDX.h" />
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_unions\MDXKPI.h" />
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_unions\MDXMBRPROP.h" />
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_unions\MDXSET.h" />
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_unions\MDXTUPLE.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_unions\MERGECELLS.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_unions\MG.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_unions\MGMAPS.h" />
@@ -1942,6 +2036,7 @@
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_unions\QSIF.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_unions\QSIFS.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_unions\QSIR.h" />
+    <ClInclude Include="..\..\..\XlsbFormat\Biff12_unions\RICHDATAMETADATA.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_unions\RICHFILTERCONTENT.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_unions\RICHFILTERS.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_unions\RICHSORTCONDITION.h" />
@@ -2042,6 +2137,7 @@
     <ClInclude Include="..\..\..\XlsbFormat\CommentsStream.h" />
     <ClInclude Include="..\..\..\XlsbFormat\ConnectionsStream.h" />
     <ClInclude Include="..\..\..\XlsbFormat\ExternalLinkStream.h" />
+    <ClInclude Include="..\..\..\XlsbFormat\MetadataStream.h" />
     <ClInclude Include="..\..\..\XlsbFormat\PivotCacheDefStream.h" />
     <ClInclude Include="..\..\..\XlsbFormat\PivotCacheRecordsStream.h" />
     <ClInclude Include="..\..\..\XlsbFormat\PivotTableStream.h" />

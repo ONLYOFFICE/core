@@ -54,7 +54,7 @@ namespace oox {
 	
 class xlsx_conversion_context;
 
-class xlsx_text_context: boost::noncopyable
+class xlsx_text_context
 {
 public:
 	xlsx_text_context	(odf_reader::odf_read_context & odfContext);

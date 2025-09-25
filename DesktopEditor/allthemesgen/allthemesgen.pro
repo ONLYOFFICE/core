@@ -15,7 +15,7 @@ TARGET = allthemesgen
 
 DEFINES += KERNEL_USE_DYNAMIC_LIBRARY
 DEFINES += GRAPHICS_USE_DYNAMIC_LIBRARY
-ADD_DEPENDENCY(graphics, kernel, kernel_network, UnicodeConverter, doctrenderer)
+ADD_DEPENDENCY(graphics, kernel, kernel_network, UnicodeConverter, doctrenderer, PdfFile, XpsFile, DjVuFile, DocxRenderer)
 
 core_windows {
     DEFINES -= UNICODE

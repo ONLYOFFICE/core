@@ -64,6 +64,16 @@ void SerNum::load(CFRecord& record)
 	record >> xnum;
 }
 
+void SerNum::save(CFRecord& record)
+{
+    char serType;
+    if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+        serType = 1;
+    else
+        serType = 0;
+
+    record << serType << xnum;
+}
 
 const std::wstring SerNum::toString() const
 {

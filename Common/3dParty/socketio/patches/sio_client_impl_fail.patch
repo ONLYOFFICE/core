@@ -1,0 +1,22 @@
+<<<<<<<
+        if (m_con_state == con_closing) {
+            LOG("Connection failed while closing." << endl);
+            this->close();
+            return;
+        }
+
+        m_con.reset();
+        m_con_state = con_closed;
+        this->sockets_invoke_void(&sio_no_tls::socket::on_disconnect);
+=======
+        con_state con_state_old = m_con_state;
+        m_con.reset();
+        m_con_state = con_closed;
+        this->sockets_invoke_void(&sio::socket::on_disconnect);
+
+        if (con_state_old == con_closing) {
+            LOG("Connection failed while closing." << endl);
+            this->close();
+            return;
+        }
+>>>>>>>

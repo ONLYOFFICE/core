@@ -42,14 +42,14 @@ namespace POLE
 class COfficeFileFormatChecker
 {
 public:
-	int				nFileType;
-	bool			bMacroEnabled;
-	std::wstring	sDocumentID;
-	
+	int nFileType;
+	bool bMacroEnabled;
+	std::wstring sDocumentID;
+
 	COfficeFileFormatChecker()
 	{
-		nFileType		= AVS_OFFICESTUDIO_FILE_UNKNOWN;
-		bMacroEnabled	= false;
+		nFileType = AVS_OFFICESTUDIO_FILE_UNKNOWN;
+		bMacroEnabled = false;
 	}
 	COfficeFileFormatChecker(std::wstring sFileName)
 	{
@@ -57,53 +57,58 @@ public:
 
 		isOfficeFile(sFileName);
 	}
-	
-	bool isOfficeFile(const std::wstring & fileName);	
-	bool isVbaProjectFile(const std::wstring & fileName);
 
-	std::wstring GetFormatExtension(const std::wstring & fileName);
+	bool isOfficeFile(const std::wstring& fileName);
+	bool isVbaProjectFile(const std::wstring& fileName);
+
+	std::wstring GetFormatExtension(const std::wstring& fileName);
 	std::wstring GetExtensionByType(int type);
 	static int GetFormatByExtension(const std::wstring& ext);
 
-	bool isOOXFormatFile		(const std::wstring & fileName, bool unpacked = false);
-	bool isOpenOfficeFormatFile	(const std::wstring & fileName, std::wstring & documentID);
-	bool isOnlyOfficeFormatFile	(const std::wstring & fileName);
+	bool isOOXFormatFile(const std::wstring& fileName, bool unpacked = false);
+	bool isOpenOfficeFormatFile(const std::wstring& fileName, std::wstring& documentID);
+	bool isOnlyOfficeFormatFile(const std::wstring& fileName);
+	bool isMacFormatFile(const std::wstring& fileName);
 
-	bool isDocFormatFile	(const std::wstring & fileName);
-	bool isXlsFormatFile	(const std::wstring & fileName);
+	bool isDocFormatFile(const std::wstring& fileName);
+	bool isXlsFormatFile(const std::wstring& fileName);
 
-	bool isDocFormatFile	(POLE::Storage *storage);
-	bool isXlsFormatFile	(POLE::Storage *storage);
-	bool isPptFormatFile	(POLE::Storage *storage);
 	bool isCompoundFile     (POLE::Storage* storage);
-    bool isMS_OFFICECRYPTOFormatFile(POLE::Storage * storage, std::wstring & documentID);
-	bool isMS_MITCRYPTOFormatFile(POLE::Storage * storage, std::wstring & documentID);
-	bool isVbaProjectFile(POLE::Storage * storage);
-	bool isMS_OFFCRYPTOFormatFile	(const std::wstring & fileName, std::wstring & documentID);
+	bool isOleObjectFile(POLE::Storage* storage);
+	bool isDocFormatFile(POLE::Storage* storage);
+	bool isXlsFormatFile(POLE::Storage* storage);
+	bool isPptFormatFile(POLE::Storage* storage);
+	bool isMS_OFFICECRYPTOFormatFile(POLE::Storage* storage, std::wstring& documentID);
+	bool isMS_MITCRYPTOFormatFile(POLE::Storage* storage, std::wstring& documentID);
+	bool isVbaProjectFile(POLE::Storage* storage);
+	bool isMS_OFFCRYPTOFormatFile(const std::wstring& fileName, std::wstring& documentID);
+	bool isHwpFile(POLE::Storage* storage);
 
-	bool iXmlFile(const std::wstring & fileName);
+	bool iXmlFile(const std::wstring& fileName);
 
-    std::wstring getDocumentID		(const std::wstring & fileName);
-	
-	bool isOOXFlatFormatFile(unsigned char* pBuffer,int dwBytes);
-	
-	bool isDocFlatFormatFile(unsigned char* pBuffer,int dwBytes);
-	
+	std::wstring getDocumentID(const std::wstring& fileName);
+
+	bool isOOXFlatFormatFile(unsigned char* pBuffer, int dwBytes);
+
+	bool isDocFlatFormatFile(unsigned char* pBuffer, int dwBytes);
+
 	bool isXlsFlatFormatFile(unsigned char* pBuffer, int dwBytes);
 
-	bool isRtfFormatFile	(unsigned char* pBuffer,int dwBytes);
-	bool isHtmlFormatFile	(unsigned char* pBuffer,int dwBytes, bool testCloseTag);
+	bool isRtfFormatFile(unsigned char* pBuffer, int dwBytes);
+	bool isHtmlFormatFile(unsigned char* pBuffer, int dwBytes, bool testCloseTag);
 	bool isMultiPartsHtmlFormatFile(unsigned char* pBuffer, int dwBytes);
-	bool isPdfFormatFile	(unsigned char* pBuffer,int dwBytes, std::wstring & documentID);
-	bool isOpenOfficeFlatFormatFile(unsigned char* pBuffer,int dwBytes);
+	bool isPdfFormatFile(unsigned char* pBuffer, int dwBytes, std::wstring& documentID);
+	bool isPdfOformFormatFile(unsigned char* pBuffer, int dwBytes);
+	bool isOpenOfficeFlatFormatFile(unsigned char* pBuffer, int dwBytes);
 
-	bool isBinaryDoctFormatFile	(unsigned char* pBuffer,int dwBytes);
-	bool isBinaryXlstFormatFile	(unsigned char* pBuffer,int dwBytes);
-	bool isBinaryPpttFormatFile	(unsigned char* pBuffer,int dwBytes);
+	bool isBinaryDoctFormatFile(unsigned char* pBuffer, int dwBytes);
+	bool isBinaryXlstFormatFile(unsigned char* pBuffer, int dwBytes);
+	bool isBinaryPpttFormatFile(unsigned char* pBuffer, int dwBytes);
+	bool isBinaryVsdtFormatFile(unsigned char* pBuffer, int dwBytes);
 
-    bool isDjvuFormatFile(unsigned char* pBuffer,int dwBytes);
-    bool isMobiFormatFile(unsigned char* pBuffer,int dwBytes);
-    bool isFB2FormatFile(unsigned char* pBuffer,int dwBytes);
-    bool isXpsFile(const std::wstring & fileName);
-
+	bool isDjvuFormatFile(unsigned char* pBuffer, int dwBytes);
+	bool isMobiFormatFile(unsigned char* pBuffer, int dwBytes);
+	bool isFB2FormatFile(unsigned char* pBuffer, int dwBytes);
+	bool isXpsFile(const std::wstring& fileName);
+	bool isOFDFile(const std::wstring& fileName);
 };

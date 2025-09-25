@@ -51,36 +51,37 @@ public:
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
+	void writeFields(CFRecord& record);
 
 	static const ElementType type = typeDConn;
 
 	FrtHeaderOld	frtHeaderOld;
-	unsigned short	dbt;
-	bool			fSavePwd;
-	bool			fTablesOnlyHtml;
-	bool			fTableNames;
-	bool			fDeleted;
-	bool			fStandAlone;
-	bool			fAlwaysUseConnectionFile;
-	bool			fBackgroundQuery;
-	bool			fRefreshOnLoad;
-	bool			fSaveData;
-	unsigned short	cParams;
-	bool			fMaintain;
-	bool			fNewQuery;
-	bool			fImportXmlSource;
-	bool			fSPListSrc;
-	bool			fSPListReinitCache;
-	bool			fSrcIsXml;
+	unsigned short	dbt = 0;
+	bool			fSavePwd = false;
+	bool			fTablesOnlyHtml = false;
+	bool			fTableNames = false;
+	bool			fDeleted = false;
+	bool			fStandAlone = false;
+	bool			fAlwaysUseConnectionFile = false;
+	bool			fBackgroundQuery = false;
+	bool			fRefreshOnLoad = false;
+	bool			fSaveData = false;
+	unsigned short	cParams = 0;
+	bool			fMaintain = false;
+	bool			fNewQuery = false;
+	bool			fImportXmlSource = false;
+	bool			fSPListSrc = false;
+	bool			fSPListReinitCache = false;
+	bool			fSrcIsXml = false;
 
 	BiffStructurePtr	grbitDbt;
-	unsigned char		bVerDbqueryEdit;
-	unsigned char		bVerDbqueryRefreshed;
-	unsigned char		bVerDbqueryRefreshableMin;
-	unsigned short		wRefreshInterval;
-	unsigned short		wHtmlFmt;
-	_UINT32				rcc;
-	unsigned char		credMethod;
+	unsigned char		bVerDbqueryEdit = 0;
+	unsigned char		bVerDbqueryRefreshed = 0;
+	unsigned char		bVerDbqueryRefreshableMin = 0;
+	unsigned short		wRefreshInterval = 0;
+	unsigned short		wHtmlFmt = 0;
+	_UINT32				rcc = 0;
+	unsigned char		credMethod = 0;
 
 	XLUnicodeStringSegmented	rgchSourceDataFile;
 	XLUnicodeStringSegmented	rgchSourceConnectionFile;

@@ -226,11 +226,10 @@ namespace NSStringExt
 
         return sRet;
     }
-    std::string CConverter::GetUtf8FromUTF32(const unsigned int* pUnicodes, long lCount)
+    void CConverter::GetUtf8FromUTF32(const unsigned int* pUnicodes, long lCount, unsigned char*& pOutputData, long& lOutputCount)
     {
-        unsigned char* pData = new unsigned char[6 * lCount + 3 + 1];
-        unsigned char* pCodesCur = pData;
-        long lOutputCount = 0;
+        pOutputData = new unsigned char[6 * lCount + 3 + 1];
+        unsigned char* pCodesCur = pOutputData;
 
         for (int i = 0; i < lCount; i++)
         {
@@ -277,8 +276,16 @@ namespace NSStringExt
             }
         }
 
-        lOutputCount = (long)(pCodesCur - pData);
+        lOutputCount = (long)(pCodesCur - pOutputData);
         *pCodesCur++ = 0;
+    }
+    std::string CConverter::GetUtf8FromUTF32(const unsigned int* pUnicodes, long lCount)
+    {
+        unsigned char* pData;
+        long lOutputCount = 0;
+
+        GetUtf8FromUTF32(pUnicodes, lCount, pData, lOutputCount);
+
         std::string s((char*)pData, lOutputCount);
         delete [] pData;
         return s;

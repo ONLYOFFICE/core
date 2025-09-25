@@ -15,6 +15,11 @@ namespace SVG
 
 		m_oRx.SetValue(oNode.GetAttribute(L"rx"));
 		m_oRy.SetValue(oNode.GetAttribute(L"ry"));
+
+		if (m_oRx.Empty() && !m_oRy.Empty())
+			m_oRx = m_oRy;
+		else if (!m_oRx.Empty() && m_oRy.Empty())
+			m_oRy = m_oRx;
 	}
 
 	CRect::~CRect()
@@ -28,7 +33,7 @@ namespace SVG
 		SetFill(mAttributes, ushLevel, bHardMode);
 	}
 
-	bool CRect::Draw(IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode, const TSvgStyles *pOtherStyles) const
+	bool CRect::Draw(IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode, const TSvgStyles *pOtherStyles, const CRenderedObject* pContexObject) const
 	{
 		Aggplus::CMatrix oOldTransform;
 
@@ -75,17 +80,17 @@ namespace SVG
 			pRenderer->PathCommandClose();
 		}
 
-		EndPath(pRenderer, pFile, oOldTransform, oMode);
+		EndPath(pRenderer, pFile, oOldTransform, oMode, pOtherStyles, pContexObject);
 
 		return true;
 	}
 
-	void CRect::ApplyStyle(IRenderer *pRenderer, const TSvgStyles *pStyles, const CSvgFile *pFile, int &nTypePath) const
+	void CRect::ApplyStyle(IRenderer *pRenderer, const TSvgStyles *pStyles, const CSvgFile *pFile, int &nTypePath, const CRenderedObject* pContexObject) const
 	{
-		if (Apply(pRenderer, &pStyles->m_oStroke))
+		if (ApplyStroke(pRenderer, &pStyles->m_oStroke, false, pContexObject))
 			nTypePath += c_nStroke;
 
-		if (Apply(pRenderer, &pStyles->m_oFill, pFile, true))
+		if (ApplyFill(pRenderer, &pStyles->m_oFill, pFile, true, pContexObject))
 			nTypePath += c_nWindingFillMode;
 	}
 

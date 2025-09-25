@@ -985,7 +985,7 @@ void DirTree::load( unsigned char* buffer, uint64 size )
 
 	std::wstring name;
 
-	if (name_len > 0)
+	if (name_len > 1)
 	{
 		if (sizeof(wchar_t) == 2)
 		{

@@ -5025,6 +5025,7 @@ namespace SimpleTypes
 		else if (L"w" == sValue) this->m_eValue = constraintType_w;
 		else if (L"wArH" == sValue) this->m_eValue = constraintType_wArH;
 		else if (L"wOff" == sValue) this->m_eValue = constraintType_wOff;
+		else if (L"hOff" == sValue) this->m_eValue = constraintType_hOff;
 		else this->m_eValue = constraintType_none;
 
 		return this->m_eValue;
@@ -5097,6 +5098,7 @@ namespace SimpleTypes
 		case constraintType_w: return L"w";
 		case constraintType_wArH: return L"wArH";
 		case constraintType_wOff: return L"wOff";
+		case constraintType_hOff: return L"hOff";
 		default: return L"none";
 		}
 	}
@@ -5324,13 +5326,13 @@ namespace SimpleTypes
 
 	EHierBranch CHierBranch::FromString(const std::wstring &sValue)
 	{
-		if (L"none" == sValue) this->m_eValue = hierBranch_hang;
+		if (L"hang" == sValue) this->m_eValue = hierBranch_hang;
 		else if (L"init" == sValue) this->m_eValue = hierBranch_init;
 		else if (L"l" == sValue) this->m_eValue = hierBranch_l;
 		else if (L"r" == sValue) this->m_eValue = hierBranch_r;
 		else if (L"l" == sValue) this->m_eValue = hierBranch_l;
 		else if (L"std" == sValue) this->m_eValue = hierBranch_std;
-		else this->m_eValue = hierBranch_hang;
+		else this->m_eValue = hierBranch_std;
 		return this->m_eValue;
 	}
 

@@ -1,5 +1,5 @@
 diff --git a/extras/package/macosx/build.sh b/extras/package/macosx/build.sh
-index fa5a8ff3eb..3fbff53784 100755
+index fa5a8ff3eb..caf60c022b 100755
 --- a/extras/package/macosx/build.sh
 +++ b/extras/package/macosx/build.sh
 @@ -9,7 +9,7 @@ info()
@@ -20,25 +20,26 @@ index fa5a8ff3eb..3fbff53784 100755
  
  # Select avcodec flavor to compile contribs with
  export USE_FFMPEG=1
-@@ -250,7 +250,7 @@ export XCODE_FLAGS="MACOSX_DEPLOYMENT_TARGET=$MINIMAL_OSX_VERSION -sdk macosx WA
+@@ -250,7 +250,8 @@ export XCODE_FLAGS="MACOSX_DEPLOYMENT_TARGET=$MINIMAL_OSX_VERSION -sdk macosx WA
  info "Building contribs"
  spushd "${vlcroot}/contrib"
  mkdir -p contrib-$HOST_TRIPLET && cd contrib-$HOST_TRIPLET
 -../bootstrap --build=$BUILD_TRIPLET --host=$HOST_TRIPLET > $out
-+../bootstrap --build=$BUILD_TRIPLET --host=$HOST_TRIPLET --disable-bluray --disable-breakpad --disable-growl > $out
++CONTRIBFLAGS="--disable-disc --disable-net --disable-sout --disable-a52 --disable-asdcplib --disable-chromaprint --disable-gcrypt --disable-gme --disable-goom --disable-jpeg --disable-libarchive --disable-nfs --disable-png --disable-postproc --disable-sidplay2 --disable-dvbpsi --disable-SDL_image --disable-caca --disable-libxml2 --disable-lua --disable-luac --disable-modplug --disable-mpcdec --disable-openjpeg --disable-projectM --disable-tiff --disable-zlib --disable-zvbi --disable-fluidlite --disable-aribb24 --disable-aribb25 --disable-breakpad --disable-growl"
++../bootstrap --build=$BUILD_TRIPLET --host=$HOST_TRIPLET $CONTRIBFLAGS > $out
  if [ "$REBUILD" = "yes" ]; then
      make clean
  fi
-@@ -310,7 +310,7 @@ fi
+@@ -310,7 +311,7 @@ fi
  # vlc/configure
  #
  
 -CONFIGFLAGS=""
-+CONFIGFLAGS="--disable-vlc --disable-qt --disable-chromecast --disable-bluray"
++CONFIGFLAGS="--disable-sout --disable-lua --disable-vlm --disable-addonmanagermodules --disable-dbus --disable-archive --disable-live555 --disable-dc1394 --disable-dv1394 --disable-linsys --disable-dvdread --disable-dvdnav --disable-nfs --disable-v4l2 --disable-vcd --disable-libcddb --disable-screen --disable-smbclient --disable-freerdp --disable-realrtsp --disable-macosx-avfoundation --disable-asdcp --disable-dvbpsi --disable-gme --disable-sid --disable-mod --disable-mpc --disable-swscale --disable-postproc --disable-twolame --disable-a52 --disable-png --disable-jpeg --disable-x264 --disable-x26410b --disable-mfx --disable-fluidsynth --disable-fluidlite  --disable-zvbi --disable-aribsub --disable-aribb25 --disable-telx --disable-sdl-image --disable-svg --disable-caca --disable-svgdec --disable-chromaprint --disable-chromecast --disable-qt --disable-skins2 --disable-macosx --disable-sparkle --disable-ncurses --disable-goom --disable-projectm --disable-vsxu --disable-avahi --disable-udev --disable-mtp --disable-upnp --disable-microdns --disable-libxml2 --disable-libgcrypt --disable-gnutls --disable-secret --disable-kwallet --disable-update-check --disable-vlc"
  if [ ! -z "$BREAKPAD" ]; then
       CONFIGFLAGS="$CONFIGFLAGS --with-breakpad=$BREAKPAD"
  fi
-@@ -338,8 +338,8 @@ fi
+@@ -338,8 +339,8 @@ fi
  info "Running make -j$JOBS"
  make -j$JOBS
  

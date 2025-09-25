@@ -83,6 +83,8 @@ public:
 
 	_CP_OPT(odf_types::marker_style)		draw_marker_end_;
 	_CP_OPT(odf_types::marker_style)		draw_marker_start_;
+    _CP_OPT(odf_types::length)              draw_marker_start_width_;
+    _CP_OPT(odf_types::length)              draw_marker_end_width_;
 
 	_CP_OPT(odf_types::text_align)			draw_textarea_horizontal_align_;
 	_CP_OPT(odf_types::vertical_align)		draw_textarea_vertical_align_;
@@ -95,6 +97,8 @@ public:
 	_CP_OPT(bool)							draw_fit_to_size_; // draw:fit-to-size="shrink-to-fit" style:shrink-to-fit="true" - cebre_1.odp
 	_CP_OPT(bool)							draw_fit_to_contour_;
 	_CP_OPT(std::wstring)					draw_wrap_influence_on_position_;
+
+    _CP_OPT(unsigned int)					draw_ole_draw_aspect_;
 
 	odf_types::common_draw_rel_size_attlist			common_draw_rel_size_attlist_;
 	odf_types::common_draw_fill_attlist				common_draw_fill_attlist_;  
@@ -131,6 +135,7 @@ public:
     _CP_OPT(odf_types::wrap_option)			fo_wrap_option_;
     
     office_element_ptr		style_background_image_;        
+    office_element_ptr      style_columns_;
 };
 typedef boost::shared_ptr<graphic_format_properties> graphic_format_properties_ptr;
 

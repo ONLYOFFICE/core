@@ -32,7 +32,7 @@
 #include "MathParaWrapper.h"
 
 #include "../../../DocxFormat/Math/oMathPara.h"
-#include "../../../Binary/Document/BinWriter/BinWriters.h"
+#include "../../../Binary/Document/BinWriter/BinaryWriterD.h"
 #include "../../../Binary/Document/BinReader/FileWriter.h"
 #include "../../DrawingConverter/ASCOfficeDrawingConverter.h"
 #include "../../../Binary/Presentation/BinaryFileReaderWriter.h"

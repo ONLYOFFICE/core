@@ -32,7 +32,7 @@
 #ifndef DOC_BUILDER_PRIVATE
 #define DOC_BUILDER_PRIVATE
 
-#include "./config.h"
+#include "./editors.h"
 #include "docbuilder.h"
 #include "doctrenderer.h"
 
@@ -60,6 +60,10 @@
 
 #include "../fontengine/ApplicationFontsWorker.h"
 #include "../../OfficeUtils/src/OfficeUtils.h"
+
+#include "../common/ProcessEnv.h"
+
+#include "docbuilder_addon.h"
 
 #ifdef CreateFile
 #undef CreateFile
@@ -100,6 +104,16 @@ namespace NSDoctRenderer
 			nFormat = AVS_OFFICESTUDIO_FILE_IMAGE_JPG;
 		else if (L"png" == sExt)
 			nFormat = AVS_OFFICESTUDIO_FILE_IMAGE_PNG;
+		else if (L"vsdx" == sExt)
+			nFormat = AVS_OFFICESTUDIO_FILE_DRAW_VSDX;
+		else if (L"docxf" == sExt)
+			nFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCXF;
+		else if (L"oform" == sExt)
+			nFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM;
+		else if (L"html" == sExt)
+			nFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML_IN_CONTAINER;
+		else if (L"form" == sExt)
+			nFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM_PDF;
 		return nFormat;
 	}
 }
@@ -118,12 +132,12 @@ namespace NSDoctRenderer
 		}
 		~CString_Private()
 		{
-			if (m_data)
-				delete [] m_data;
+			delete[] m_data;
 		}
 
 		void Attach(wchar_t* data)
 		{
+			delete[] m_data;
 			m_data = data;
 		}
 
@@ -131,7 +145,7 @@ namespace NSDoctRenderer
 		{
 			if (copy->m_data)
 			{
-				delete [] copy->m_data;
+				delete[] copy->m_data;
 				copy->m_data = NULL;
 			}
 
@@ -141,6 +155,13 @@ namespace NSDoctRenderer
 			size_t len = wcslen(m_data);
 			copy->m_data = new wchar_t[len + 1];
 			memcpy(copy->m_data, m_data, (len + 1) * sizeof(wchar_t));
+		}
+
+		void MakeEmpty()
+		{
+			delete[] m_data;
+			m_data = new wchar_t[1];
+			m_data[0] = '\0';
 		}
 	};
 }
@@ -388,6 +409,11 @@ public:
 	{
 		m_scopes.push_back(scope);
 	}
+
+	void AddNewScope(NSDoctRenderer::CDocBuilderContextScopeWrap* scope)
+	{
+		m_scopes.emplace_back(scope);
+	}
 };
 
 class CV8RealTimeWorker
@@ -398,52 +424,34 @@ public:
 	int m_nFileType;
 	std::string m_sUtf8ArgumentJSON;
 	std::string m_sGlobalVariable;
+	std::string m_sJSCodeStart;
 
 	CJSContextData m_oContextData;
 
 public:
 
-	CV8RealTimeWorker(NSDoctRenderer::CDocBuilder* pBuilder);
+	CV8RealTimeWorker(NSDoctRenderer::CDocBuilder* pBuilder, const NSDoctRenderer::DoctRendererEditorType& type, NSDoctRenderer::CDoctRendererConfig* config);
 	~CV8RealTimeWorker();
 
 public:
 
 	static void _LOGGING_ERROR_(const std::wstring& strType, const std::wstring& strError);
 
-	bool ExecuteCommand(const std::wstring& command, NSDoctRenderer::CDocBuilderValue* retValue = NULL);
+	bool ExecuteCommand(const std::wstring& command, NSDoctRenderer::CDocBuilderValue* retValue = NULL, const bool& isEnterContext = true);
 
 	std::string GetGlobalVariable();
 	std::wstring GetJSVariable(std::wstring sParam);
 
-	bool OpenFile(const std::wstring& sBasePath, const std::wstring& path, const std::string& sString, const std::wstring& sCachePath, CV8Params* pParams = NULL);
-	bool SaveFileWithChanges(int type, const std::wstring& _path, const std::wstring& sJsonParams = L"");
+	bool OpenFile(const std::wstring& sBasePath, const std::wstring& path, const NSDoctRenderer::DoctRendererEditorType& editorType, NSDoctRenderer::CDoctRendererConfig* config, CV8Params* pParams = NULL);
+	bool SaveFileWithChanges(int type, const std::wstring& _path, const std::wstring& sJsonParams = L"", const bool& isEnterContext = true);
+	bool InitVariables();
+
+	bool NewSimpleJSInstance();
+	bool IsSimpleJSInstance();
 };
 
 namespace NSDoctRenderer
 {
-	class CAdditionalData
-	{
-	public:
-		CAdditionalData() {}
-		virtual ~CAdditionalData() {}
-		virtual std::string getParam(const std::wstring& name) { return ""; }
-	};
-
-	class CDocBuilderParams
-	{
-	public:
-		CDocBuilderParams() : m_bCheckFonts(false), m_sWorkDir(L""), m_bSaveWithDoctrendererMode(false), m_sArgumentJSON(""), m_bIsSystemFonts(true) {}
-
-	public:
-		bool m_bCheckFonts;
-		std::wstring m_sWorkDir;
-		bool m_bSaveWithDoctrendererMode;
-		std::string m_sArgumentJSON;
-
-		bool m_bIsSystemFonts;
-		std::vector<std::wstring> m_arFontDirs;
-	};
-
 	class CDocBuilder_Private : public CDoctRendererConfig
 	{
 	public:
@@ -453,7 +461,8 @@ namespace NSDoctRenderer
 		std::wstring m_sTmpFolder;
 		std::wstring m_sFileDir;
 		int m_nFileType;
-		bool m_bJavascriptBeforeEditor;
+
+		std::wstring m_sCommandsBeforeContextCreated;
 
 		std::wstring m_sX2tPath;
 
@@ -464,8 +473,6 @@ namespace NSDoctRenderer
 		CDocBuilderParams m_oParams;
 		bool m_bIsInit;
 
-		bool m_bIsCacheScript;
-
 		bool m_bIsServerSafeVersion;
 		std::wstring m_sFolderForSaveOnlyUseNames;
 
@@ -474,11 +481,13 @@ namespace NSDoctRenderer
 
 		NSDoctRenderer::CDocBuilder* m_pParent;
 
+		bool m_bIsOpenedFromSimpleJS;
+
 		static std::wstring m_sExternalDirectory;
 	public:
 		CDocBuilder_Private() : CDoctRendererConfig(), m_sTmpFolder(NSFile::CFileBinary::GetTempPath()), m_nFileType(-1),
-			m_pWorker(NULL), m_pAdditionalData(NULL), m_bIsInit(false), m_bIsCacheScript(true), m_bIsServerSafeVersion(false),
-			m_sGlobalVariable(""), m_bIsGlobalVariableUse(false), m_pParent(NULL), m_bJavascriptBeforeEditor(false)
+			m_pWorker(NULL), m_pAdditionalData(NULL), m_bIsInit(false), m_bIsServerSafeVersion(false),
+			  m_sGlobalVariable(""), m_bIsGlobalVariableUse(false), m_pParent(NULL), m_sCommandsBeforeContextCreated(L""), m_bIsOpenedFromSimpleJS(false)
 		{
 		}
 
@@ -538,6 +547,7 @@ namespace NSDoctRenderer
 			CApplicationFontsWorker oWorker;
 			oWorker.m_bIsUseSystemFonts = m_oParams.m_bIsSystemFonts;
 			oWorker.m_arAdditionalFolders = m_oParams.m_arFontDirs;
+			oWorker.m_arAdditionalFolders.push_back(NSFile::GetProcessDirectory() + L"/fonts");
 			oWorker.m_bIsNeedThumbnails = false;
 			oWorker.m_sDirectory = sDirectory;
 			// это не рабочая папка, где только шрифты
@@ -590,6 +600,11 @@ namespace NSDoctRenderer
 				sEmptyPath = sEmptyPath + L"xlsx.bin";
 				m_nFileType = 2;
 			}
+			else if (type & AVS_OFFICESTUDIO_FILE_DRAW)
+			{
+				sEmptyPath = sEmptyPath + L"vsdx.bin";
+				m_nFileType = 7;
+			}
 			else
 				return false;
 
@@ -603,7 +618,10 @@ namespace NSDoctRenderer
 
 			if (type & AVS_OFFICESTUDIO_FILE_DOCUMENT)
 			{
-				sEmptyPath = sEmptyPath + L"new.docx";
+				if (type == AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM_PDF)
+					sEmptyPath = sEmptyPath + L"new.pdf";
+				else
+					sEmptyPath = sEmptyPath + L"new.docx";
 				m_nFileType = 0;
 			}
 			else if (type & AVS_OFFICESTUDIO_FILE_PRESENTATION)
@@ -616,6 +634,11 @@ namespace NSDoctRenderer
 				sEmptyPath = sEmptyPath + L"new.xlsx";
 				m_nFileType = 2;
 			}
+			else if (type & AVS_OFFICESTUDIO_FILE_DRAW)
+			{
+				sEmptyPath = sEmptyPath + L"new.vsdx";
+				m_nFileType = 7;
+			}
 			else
 				return false;
 
@@ -624,10 +647,14 @@ namespace NSDoctRenderer
 			{
 				NSDirectory::CreateDirectory(m_sFileDir + L"/media");
 				NSDirectory::CreateDirectory(m_sFileDir + L"/changes");
-			}
 
-			if (m_bJavascriptBeforeEditor)
-				CheckWorkerAfterOpen();
+				if (m_pWorker && m_pWorker->IsSimpleJSInstance() && !m_bIsOpenedFromSimpleJS)
+				{
+					RELEASEOBJECT(m_pWorker);
+					CheckWorker();
+				}
+				return bRet;
+			}
 
 			return bRet;
 #else
@@ -638,6 +665,8 @@ namespace NSDoctRenderer
 				sPath += L"pptx";
 			else if (type & AVS_OFFICESTUDIO_FILE_SPREADSHEET)
 				sPath += L"xlsx";
+			else if (type & AVS_OFFICESTUDIO_FILE_DRAW)
+				sPath += L"vsdx";
 			return this->OpenFile(sPath, L"");
 #endif
 		}
@@ -713,26 +742,22 @@ namespace NSDoctRenderer
 			oBuilder.WriteEncodeXmlString(sFolder);
 			oBuilder.WriteString(L"/Editor.bin</m_sFileTo><m_nFormatTo>8192</m_nFormatTo>");
 
-			if (!m_bIsNotUseConfigAllFontsDir)
-			{
-				oBuilder.WriteString(L"<m_sFontDir>");
-				oBuilder.WriteEncodeXmlString(m_sX2tPath + L"/sdkjs/common");
-				oBuilder.WriteString(L"</m_sFontDir>");
-			}
-			else
-			{
-				oBuilder.WriteString(L"<m_sFontDir>");
-				oBuilder.WriteEncodeXmlString(NSFile::GetDirectoryName(m_strAllFonts));
-				oBuilder.WriteString(L"</m_sFontDir>");
+			oBuilder.WriteString(L"<m_sFontDir>");
+			oBuilder.WriteEncodeXmlString(NSFile::GetDirectoryName(m_strAllFonts));
+			oBuilder.WriteString(L"</m_sFontDir>");
 
-				oBuilder.WriteString(L"<m_sAllFontsPath>");
-				oBuilder.WriteEncodeXmlString(m_strAllFonts);
-				oBuilder.WriteString(L"</m_sAllFontsPath>");
-			}
+			oBuilder.WriteString(L"<m_sAllFontsPath>");
+			oBuilder.WriteEncodeXmlString(m_strAllFonts);
+			oBuilder.WriteString(L"</m_sAllFontsPath>");
 
 			oBuilder.WriteString(L"<m_bIsNoBase64>true</m_bIsNoBase64>");
 			oBuilder.WriteString(L"<m_sThemeDir>./sdkjs/slide/themes</m_sThemeDir><m_bDontSaveAdditional>true</m_bDontSaveAdditional>");
 			oBuilder.WriteString(sParams);
+
+			std::string sOptions = NSProcessEnv::Save();
+			if (!sOptions.empty())
+				oBuilder.WriteString(UTF8_TO_U(sOptions));
+
 			oBuilder.WriteString(L"</TaskQueueDataConvert>");
 
 			std::wstring sXmlConvert = oBuilder.GetData();
@@ -903,7 +928,7 @@ namespace NSDoctRenderer
 
 			COfficeFileFormatChecker oChecker;
 			if (!oChecker.isOfficeFile(sFileCopy))
-				return false;
+				return 1;
 
 			if (oChecker.nFileType & AVS_OFFICESTUDIO_FILE_DOCUMENT)
 				m_nFileType = 0;
@@ -911,6 +936,8 @@ namespace NSDoctRenderer
 				m_nFileType = 1;
 			if (oChecker.nFileType & AVS_OFFICESTUDIO_FILE_SPREADSHEET)
 				m_nFileType = 2;
+			if (oChecker.nFileType & AVS_OFFICESTUDIO_FILE_DRAW)
+				m_nFileType = 7;
 
 			int nReturnCode = ConvertToInternalFormat(m_sFileDir, sFileCopy, params);
 
@@ -918,8 +945,11 @@ namespace NSDoctRenderer
 
 			if (0 == nReturnCode)
 			{
-				if (m_bJavascriptBeforeEditor)
-					CheckWorkerAfterOpen();
+				if (m_pWorker && m_pWorker->IsSimpleJSInstance() && !m_bIsOpenedFromSimpleJS)
+				{
+					RELEASEOBJECT(m_pWorker);
+					CheckWorker();
+				}
 				return 0;
 			}
 
@@ -968,9 +998,15 @@ namespace NSDoctRenderer
 			return _path;
 		}
 
-		int SaveFile(const int& type, const std::wstring& path, const wchar_t* params = NULL)
+		int SaveFile(const int& type, const std::wstring& path, const wchar_t* params = NULL, const bool& isEnterContext = true)
 		{
 			Init();
+
+			CDocBuilderAddon oSaveAddon(m_sX2tPath);
+
+			int nPreSaveError = oSaveAddon.GetX2tPreSaveError(m_pParent, m_nFileType);
+			if (0 != nPreSaveError)
+				return nPreSaveError;
 
 			if (-1 == m_nFileType)
 			{
@@ -1010,7 +1046,7 @@ namespace NSDoctRenderer
 					}
 				}
 
-				this->m_pWorker->SaveFileWithChanges(type, m_sFileDir + L"/Editor2.bin", sJsonParams);
+				this->m_pWorker->SaveFileWithChanges(type, m_sFileDir + L"/Editor2.bin", sJsonParams, isEnterContext);
 				sFileBin = L"/Editor2.bin";
 			}
 
@@ -1032,22 +1068,13 @@ namespace NSDoctRenderer
 				oBuilder.WriteString(L"</m_sThemeDir><m_bFromChanges>true</m_bFromChanges><m_bDontSaveAdditional>true</m_bDontSaveAdditional>");
 			oBuilder.WriteString(L"<m_nCsvTxtEncoding>46</m_nCsvTxtEncoding><m_nCsvDelimiter>4</m_nCsvDelimiter>");
 
-			if (!m_bIsNotUseConfigAllFontsDir)
-			{
-				oBuilder.WriteString(L"<m_sFontDir>");
-				oBuilder.WriteEncodeXmlString(m_sX2tPath + L"/sdkjs/common");
-				oBuilder.WriteString(L"</m_sFontDir>");
-			}
-			else
-			{
-				oBuilder.WriteString(L"<m_sFontDir>");
-				oBuilder.WriteEncodeXmlString(NSFile::GetDirectoryName(m_strAllFonts));
-				oBuilder.WriteString(L"</m_sFontDir>");
+			oBuilder.WriteString(L"<m_sFontDir>");
+			oBuilder.WriteEncodeXmlString(NSFile::GetDirectoryName(m_strAllFonts));
+			oBuilder.WriteString(L"</m_sFontDir>");
 
-				oBuilder.WriteString(L"<m_sAllFontsPath>");
-				oBuilder.WriteEncodeXmlString(m_strAllFonts);
-				oBuilder.WriteString(L"</m_sAllFontsPath>");
-			}
+			oBuilder.WriteString(L"<m_sAllFontsPath>");
+			oBuilder.WriteEncodeXmlString(m_strAllFonts);
+			oBuilder.WriteString(L"</m_sAllFontsPath>");
 
 			if (!sConvertionParams.empty())
 			{
@@ -1059,6 +1086,12 @@ namespace NSDoctRenderer
 			oBuilder.WriteString(L"<m_sTempDir>");
 			oBuilder.WriteEncodeXmlString(sDstTmpDir);
 			oBuilder.WriteString(L"</m_sTempDir>");
+
+			std::string sOptions = NSProcessEnv::Save();
+			if (!sOptions.empty())
+				oBuilder.WriteString(UTF8_TO_U(sOptions));
+
+			oBuilder.WriteString(oSaveAddon.GetX2tSaveAddon(m_pParent, m_nFileType));
 
 			oBuilder.WriteString(L"</TaskQueueDataConvert>");
 
@@ -1212,203 +1245,105 @@ namespace NSDoctRenderer
 		{
 			if (NULL == m_pWorker)
 			{
-				m_pWorker = new CV8RealTimeWorker(m_pParent);
+				NSDoctRenderer::DoctRendererEditorType editorType = GetEditorType();
+				m_pWorker = new CV8RealTimeWorker(m_pParent, editorType, this);
 				m_pWorker->m_sUtf8ArgumentJSON = m_oParams.m_sArgumentJSON;
 				m_pWorker->m_sGlobalVariable = m_sGlobalVariable;
+				m_pWorker->m_sJSCodeStart = U_TO_UTF8(m_sCommandsBeforeContextCreated);
 
-				return CheckWorkerAfterOpen();
+				m_pWorker->m_nFileType = m_nFileType;
+
+				if (-1 != m_nFileType)
+					m_sCommandsBeforeContextCreated = L"";
+				else
+				{
+					m_pWorker->NewSimpleJSInstance();
+					return true;
+				}
+
+				CV8Params oParams;
+				oParams.IsServerSaveVersion = m_bIsServerSafeVersion;
+				oParams.DocumentDirectory = m_sFileDir;
+
+				return m_pWorker->OpenFile(m_sX2tPath, m_sFileDir, editorType, this, &oParams);
 			}
 			return true;
 		}
 
-		bool CheckWorkerAfterOpen()
-		{
-			if (!m_pWorker)
-				return false;
-
-			m_pWorker->m_nFileType = m_nFileType;
-			if (-1 == m_nFileType)
-			{
-				m_bJavascriptBeforeEditor = true;
-				return false;
-			}
-
-			m_bJavascriptBeforeEditor = false;
-			std::wstring sCachePath = L"";
-			if (m_bIsCacheScript)
-				sCachePath = GetScriptCache();
-
-			CV8Params oParams;
-			oParams.IsServerSaveVersion = m_bIsServerSafeVersion;
-			oParams.DocumentDirectory = m_sFileDir;
-
-			return m_pWorker->OpenFile(m_sX2tPath, m_sFileDir, GetScript(), sCachePath, &oParams);
-		}
-
 		int SaveFile(const std::wstring& ext, const std::wstring& path, const wchar_t* params = NULL)
 		{
-			int nType = -1;
-			if (L"docx" == ext)
-				nType = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX;
-			else if (L"doc" == ext)
-				nType = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC;
-			else if (L"odt" == ext)
-				nType = AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT;
-			else if (L"rtf" == ext)
-				nType = AVS_OFFICESTUDIO_FILE_DOCUMENT_RTF;
-			else if (L"txt" == ext)
-				nType = AVS_OFFICESTUDIO_FILE_DOCUMENT_TXT;
-			else if (L"pptx" == ext)
-				nType = AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX;
-			else if (L"odp" == ext)
-				nType = AVS_OFFICESTUDIO_FILE_PRESENTATION_ODP;
-			else if (L"xlsx" == ext)
-				nType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX;
-			else if (L"xls" == ext)
-				nType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLS;
-			else if (L"ods" == ext)
-				nType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_ODS;
-			else if (L"csv" == ext)
-				nType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV;
-			else if (L"pdf" == ext)
-				nType = AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF;
-			else if (L"image" == ext)
-				nType = AVS_OFFICESTUDIO_FILE_IMAGE;
-			else if (L"jpg" == ext)
-				nType = AVS_OFFICESTUDIO_FILE_IMAGE;
-			else if (L"png" == ext)
-				nType = AVS_OFFICESTUDIO_FILE_IMAGE;
-			else if (L"html" == ext)
-				nType = AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML_IN_CONTAINER;
-
+			int nType = GetFormatByTexExtention(ext);
 			return SaveFile(nType, path, params);
 		}
 
-		bool ExecuteCommand(const std::wstring& command, CDocBuilderValue* retValue = NULL)
+		bool ExecuteCommand(const std::wstring& command, CDocBuilderValue* retValue = NULL, const bool& forceExecute = false, const bool& isEnterContext = true)
 		{
 			if (command.length() < 7 && !retValue) // minimum command (!!!)
 				return true;
 
+			if (m_nFileType == -1 && !forceExecute)
+			{
+				m_sCommandsBeforeContextCreated += command;
+				return true;
+			}
+
 			Init();
 
-			CheckWorker();
-			return m_pWorker->ExecuteCommand(command, retValue);
-		}
-
-		CDocBuilderContext GetContext()
-		{
-			CDocBuilderContext ctx;
-
-			CheckWorker();
-
-			ctx.m_internal->m_context = m_pWorker->m_context;
-			ctx.m_internal->m_context_data = &m_pWorker->m_oContextData;
-			return ctx;
-		}
-
-		std::string GetScript()
-		{
-			std::vector<std::wstring>* arSdkFiles = NULL;
-
-			switch (m_nFileType)
+			if (CheckWorker())
 			{
-			case 0:
-			{
-				arSdkFiles = &m_arDoctSDK;
-				break;
-			}
-			case 1:
-			{
-				arSdkFiles = &m_arPpttSDK;
-				break;
-			}
-			case 2:
-			{
-				arSdkFiles = &m_arXlstSDK;
-				break;
-			}
-			default:
-				return "";
-			}
-
-			std::string strScript = "";
-			for (size_t i = 0; i < m_arrFiles.size(); ++i)
-			{
-				strScript += ReadScriptFile(m_arrFiles[i]);
-				strScript += "\n\n";
-			}
-
-			if (NULL != arSdkFiles)
-			{
-				for (const std::wstring& i : *arSdkFiles)
+				bool bIsOpenedFromSimpleJSOld = m_bIsOpenedFromSimpleJS;
+				bool bResult = m_pWorker->ExecuteCommand(command, retValue, isEnterContext);
+				if (!bResult && !bIsOpenedFromSimpleJSOld && m_bIsOpenedFromSimpleJS)
 				{
-					strScript += ReadScriptFile(i);
-					strScript += "\n\n";
+					RELEASEOBJECT(m_pWorker);
+					CheckWorker();
+					return m_pWorker->ExecuteCommand(command, retValue, isEnterContext);
+				}
+				else
+				{
+					return bResult;
 				}
 			}
 
-			if (m_nFileType == 2)
-				strScript += "\n$.ready();";
-
-			return strScript;
+			return false;
 		}
 
-		std::wstring GetScriptCache()
+		CDocBuilderContext GetContext(bool enterContext)
 		{
-			std::vector<std::wstring>* arSdkFiles = NULL;
+			CDocBuilderContext ctx;
+
+			if (!CheckWorker())
+				return ctx;
+
+			ctx.m_internal->m_context = m_pWorker->m_context;
+			ctx.m_internal->m_context_data = &m_pWorker->m_oContextData;
+
+			if (enterContext)
+			{
+				CDocBuilderContextScopeWrap* scopeWrap = new CDocBuilderContextScopeWrap();
+				scopeWrap->m_scope = new CJSContextScope(m_pWorker->m_context);
+				m_pWorker->m_oContextData.AddNewScope(scopeWrap);
+			}
+
+			return ctx;
+		}
+
+		NSDoctRenderer::DoctRendererEditorType GetEditorType()
+		{
 			switch (m_nFileType)
 			{
 			case 0:
-			{
-				arSdkFiles = &m_arDoctSDK;
-				break;
-			}
+				return NSDoctRenderer::DoctRendererEditorType::WORD;
 			case 1:
-			{
-				arSdkFiles = &m_arPpttSDK;
-				break;
-			}
+				return NSDoctRenderer::DoctRendererEditorType::SLIDE;
 			case 2:
-			{
-				arSdkFiles = &m_arXlstSDK;
+				return NSDoctRenderer::DoctRendererEditorType::CELL;
+			case 7:
+				return NSDoctRenderer::DoctRendererEditorType::VISIO;
+			default:
 				break;
 			}
-			default:
-				return L"";
-			}
-
-			if (0 < arSdkFiles->size())
-			{
-				return NSFile::GetDirectoryName(*arSdkFiles->begin()) + L"/sdk-all.cache";
-			}
-			return L"";
-		}
-
-		std::string ReadScriptFile(const std::wstring& strFile)
-		{
-			NSFile::CFileBinary oFile;
-
-			if (!oFile.OpenFile(strFile))
-				return "";
-
-			int nSize = (int)oFile.GetFileSize();
-			if (nSize < 3)
-				return "";
-
-			BYTE* pData = new BYTE[nSize];
-			DWORD dwReadSize = 0;
-			oFile.ReadFile(pData, (DWORD)nSize, dwReadSize);
-
-			int nOffset = 0;
-			if (pData[0] == 0xEF && pData[1] == 0xBB && pData[2] == 0xBF)
-			{
-				nOffset = 3;
-			}
-
-			std::string sReturn((char*)(pData + nOffset), nSize - nOffset);
-
-			RELEASEARRAYOBJECTS(pData);
-			return sReturn;
+			return NSDoctRenderer::DoctRendererEditorType::INVALID;
 		}
 
 		void WriteData(const wchar_t* path, const wchar_t* value, const bool& append)

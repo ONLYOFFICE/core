@@ -57,6 +57,12 @@ namespace OOX
 		class CT_DLbl;
 		class CSeriesFiltering;
 		class CUserProtectedRanges;
+		class CTimelineRefs;
+		class CTimelineCacheRefs;
+		class CTimelineStyles;
+		class CDynamicArrayProperties;
+		class CRichValueBlock;
+        class CWorkbookPivotCaches;
 	}
 
 	namespace Drawing
@@ -105,7 +111,7 @@ namespace OOX
 
 		//--------------------------------------------------------------------------------
 		// COfficeArtExtension 20.1.2.2.14 (Part 1)
-		//--------------------------------------------------------------------------------	
+		//--------------------------------------------------------------------------------
 
 		class COfficeArtExtension : public WritingElement
 		{
@@ -145,13 +151,21 @@ namespace OOX
             nullable<OOX::Spreadsheet::CSlicerCaches>               m_oSlicerCachesExt;
             nullable<OOX::Spreadsheet::CSlicerStyles>               m_oSlicerStyles;
 
+			nullable<OOX::Spreadsheet::CTimelineRefs>				m_oTimelineRefs;
+			nullable<OOX::Spreadsheet::CTimelineCacheRefs>			m_oTimelineCacheRefs;
+			nullable<OOX::Spreadsheet::CTimelineStyles>				m_oTimelineStyles;
+
             nullable<OOX::Spreadsheet::CPivotCacheDefinitionExt>    m_oPivotCacheDefinitionExt;
+            nullable<OOX::Spreadsheet::CWorkbookPivotCaches>        m_oWorkbookPivotCaches;
 
 			std::vector<OOX::Spreadsheet::CSlicerCachePivotTable*>	m_oSlicerCachePivotTables;
             nullable<OOX::Spreadsheet::CTableSlicerCache>           m_oTableSlicerCache;
             nullable<OOX::Spreadsheet::CSlicerCacheHideNoData>      m_oSlicerCacheHideItemsWithNoData;
-			
+
 			std::vector<OOX::Spreadsheet::CConditionalFormatting*>	m_arrConditionalFormatting;
+
+			nullable < OOX::Spreadsheet::CDynamicArrayProperties>	m_oDynamicArrayProperties;
+			nullable < OOX::Spreadsheet::CRichValueBlock>			m_oRichValueBlock;
 
 			nullable<OOX::CPresenceInfo> m_oPresenceInfo;
 
@@ -169,7 +183,7 @@ namespace OOX
 
 		//--------------------------------------------------------------------------------
 		// COfficeArtExtensionList 20.1.2.2.15 (Part 1)
-		//--------------------------------------------------------------------------------	
+		//--------------------------------------------------------------------------------
 
 		class COfficeArtExtensionList : public WritingElement
 		{
@@ -187,6 +201,14 @@ namespace OOX
 			virtual std::wstring toXML() const;
 			std::wstring toXMLWithNS(const std::wstring& sNamespace) const;
             void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBinWorksheet();
+			XLS::BaseObjectPtr toBinWorkBook();
+			XLS::BaseObjectPtr toBinStyles();
+			XLS::BaseObjectPtr toBinTable();
+			XLS::BaseObjectPtr toBinSlicerCache();
+			XLS::BaseObjectPtr toBinPivotCache();
+			XLS::BaseObjectPtr toBinConnections();
+			XLS::BaseObjectPtr toBinMetadata();
 			virtual EElementType getType() const;
 
             std::vector<OOX::Drawing::COfficeArtExtension*> m_arrExt;

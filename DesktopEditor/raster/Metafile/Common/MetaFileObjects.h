@@ -33,8 +33,7 @@
 #define _METAFILE_COMMON_METAFILEOBJECTS_H
 
 #include <string>
-
-#include "IOutputDevice.h"
+#include <vector>
 
 namespace MetaFile
 {
@@ -44,15 +43,15 @@ namespace MetaFile
 		IFont(){}
 		virtual ~IFont(){}
 
-		virtual double	     GetHeight() = 0;
-		virtual std::wstring GetFaceName() = 0;
-		virtual int          GetWeight() = 0;
-		virtual bool         IsItalic() = 0;
-		virtual bool         IsStrikeOut() = 0;
-		virtual bool         IsUnderline() = 0;
-		virtual int          GetEscapement() = 0;
-		virtual int          GetCharSet() = 0;
-		virtual int          GetOrientation() = 0;
+		virtual double       GetHeight()      const = 0;
+		virtual std::wstring GetFaceName()    const = 0;
+		virtual int          GetWeight()      const = 0;
+		virtual bool         IsItalic()       const = 0;
+		virtual bool         IsStrikeOut()    const = 0;
+		virtual bool         IsUnderline()    const = 0;
+		virtual int          GetEscapement()  const = 0;
+		virtual int          GetCharSet()     const = 0;
+		virtual int          GetOrientation() const = 0;
 	};
 
 	class IBrush
@@ -61,40 +60,44 @@ namespace MetaFile
 		IBrush(){}
 		virtual ~IBrush(){}
 
-		virtual int          GetColor()			= 0;
-		virtual int          GetColor2()		= 0;
-		virtual unsigned int GetStyle()			= 0;
-		virtual unsigned int GetStyleEx()		= 0;
-		virtual unsigned int GetHatch()			= 0;
-		virtual unsigned int GetAlpha()			= 0;
-		virtual unsigned int GetAlpha2()		= 0;
-		virtual std::wstring GetDibPatterPath() = 0;
-		virtual void         GetBounds(double& left, double& top, double& width, double& height) = 0;
-		virtual void         GetCenterPoint(double& dX, double& dY) = 0;
+		virtual int          GetColor()         const = 0;
+		virtual int          GetColor2()        const = 0;
+		virtual unsigned int GetStyle()         const = 0;
+		virtual unsigned int GetStyleEx()       const = 0;
+		virtual unsigned int GetHatch()         const = 0;
+		virtual unsigned int GetAlpha()         const = 0;
+		virtual unsigned int GetAlpha2()        const = 0;
+		virtual std::wstring GetDibPatterPath() const = 0;
+		virtual void         GetBounds(double& left, double& top, double& width, double& height) const = 0;
+		virtual void         GetCenterPoint(double& dX, double& dY) const = 0;
 
-		virtual void         GetDibPattern(unsigned char** pBuffer, unsigned int &unWidth, unsigned int &unHeight) = 0;
+		virtual void GetGradientColors(std::vector<long>& arColors, std::vector<double>& arPositions) const = 0;
+
+		virtual void         GetDibPattern(unsigned char** pBuffer, unsigned int &unWidth, unsigned int &unHeight) const = 0;
 	};
+
+	class ILineCap
+	{
+	public:
+		ILineCap(){}
+		virtual ~ILineCap(){}
+	};
+
 	class IPen
 	{
 	public:
 		IPen(){}
 		virtual ~IPen(){}
 
-		virtual int          GetColor()	= 0;
-		virtual unsigned int GetStyle()	= 0;
-		virtual double       GetWidth()	= 0;
-		virtual unsigned int GetAlpha()	= 0;
-		virtual double       GetMiterLimit() = 0;
-		virtual double       GetDashOffset() = 0;
-		virtual void         GetDashData(double*&, unsigned int&) = 0;
-	};
-	class IPath
-	{
-	public:
-		IPath(){}
-		virtual ~IPath(){}
-
-		virtual void Draw(IOutputDevice* pOutput, bool bStroke, bool bFill, int nClipMode = -1) = 0;
+		virtual int             GetColor()        const = 0;
+		virtual unsigned int    GetStyle()        const = 0;
+		virtual double          GetWidth()        const = 0;
+		virtual unsigned int    GetAlpha()        const = 0;
+		virtual double          GetMiterLimit()   const = 0;
+		virtual double          GetDashOffset()   const = 0;
+		virtual void            GetDashData(double*&, unsigned int&) const = 0;
+		virtual const ILineCap* GetStartLineCap() const = 0;
+		virtual const ILineCap* GetEndLineCap()   const = 0;
 	};
 
 	class IRegion

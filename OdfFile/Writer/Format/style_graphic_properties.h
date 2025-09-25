@@ -38,6 +38,7 @@
 #include <xml/nodetype.h>
 
 #include "office_elements_create.h"
+#include "style_section_properties.h"
 
 #include "../../DataTypes/common_attlists.h"
 #include "../../DataTypes/lengthorpercent.h"
@@ -65,6 +66,8 @@ class graphic_format_properties
 public:
 	graphic_format_properties(); //for defaults set
     void apply_from(const graphic_format_properties & Other);
+
+	void add_child_element(xml::sax* Reader, const std::wstring& Ns, const std::wstring& Name);
 
 	void serialize(std::wostream & strm, const wchar_t * ns, const wchar_t * name );
 
@@ -140,8 +143,10 @@ public:
 	_CP_OPT(std::wstring)					style_mirror_;
 
     _CP_OPT(std::wstring)					fo_clip_;
+
 //-------------------------------------------------------------------------------------
 	office_element_ptr						style_background_image_;        
+	style_columns_ptr						style_columns_;
 };
 typedef boost::shared_ptr<graphic_format_properties> graphic_format_properties_ptr;
 

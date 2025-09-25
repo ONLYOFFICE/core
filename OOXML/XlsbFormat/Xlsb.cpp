@@ -30,6 +30,8 @@
  *
  */
 #include "Xlsb.h"
+#include "../DocxFormat/App.h"
+#include "../DocxFormat/Core.h"
 
 #include "../XlsxFormat/Workbook/Workbook.h"
 #include "../XlsxFormat/SharedStrings/SharedStrings.h"
@@ -60,12 +62,12 @@ using namespace XLS;
 OOX::Spreadsheet::CXlsb::~CXlsb()
 {
 
-}	
+}
 void OOX::Spreadsheet::CXlsb::init()
 {
 	workbook_code_page = XLS::WorkbookStreamObject::DefaultCodePage;
 	xls_global_info = boost::shared_ptr<XLS::GlobalWorkbookInfo>(new XLS::GlobalWorkbookInfo(workbook_code_page, nullptr));
-	xls_global_info->Version = 0x0800;    
+	xls_global_info->Version = 0x0800;
     m_binaryReader = boost::shared_ptr<NSBinPptxRW::CBinaryFileReader>(new NSBinPptxRW::CBinaryFileReader);
 	m_binaryWriter = boost::shared_ptr<NSBinPptxRW::CXlsbBinaryWriter>(new NSBinPptxRW::CXlsbBinaryWriter);
 	m_bWriteToXlsx = false;
@@ -93,7 +95,55 @@ bool OOX::Spreadsheet::CXlsb::ReadBin(const CPath& oFilePath, XLS::BaseObject* o
 
     return true;
 }
+XLS::StreamCacheReaderPtr OOX::Spreadsheet::CXlsb::GetFileReader(const CPath& oFilePath, BYTE* &streamBuf)
+{
+    NSFile::CFileBinary oFile;
+    if (oFile.OpenFile(oFilePath.GetPath()) == false)
+        return nullptr;
 
+    auto m_lStreamLen = (LONG)oFile.GetFileSize();
+    streamBuf = new BYTE[m_lStreamLen];
+    DWORD dwRead = 0;
+    oFile.ReadFile(streamBuf, (DWORD)m_lStreamLen, dwRead);
+    oFile.CloseFile();
+
+    m_binaryReader->Init(streamBuf, 0, dwRead);
+
+    XLS::StreamCacheReaderPtr reader(new XLS::BinaryStreamCacheReader(m_binaryReader, xls_global_info));
+    return reader;
+}
+XLS::StreamCacheWriterPtr OOX::Spreadsheet::CXlsb::GetFileWriter(const CPath& oFilePath)
+{
+    if (m_binaryWriter->CreateFileW(oFilePath.GetPath()) == false)
+        return nullptr;
+
+    XLS::StreamCacheWriterPtr writer(new XLS::BinaryStreamCacheWriter(m_binaryWriter, xls_global_info));
+    return writer;
+}
+bool OOX::Spreadsheet::CXlsb::WriteSreamCache(XLS::StreamCacheWriterPtr writer)
+{
+    auto writeSucced = m_binaryWriter->WriteFile(m_binaryWriter->GetBuffer(), (static_cast<NSBinPptxRW::CBinaryFileWriter*>(m_binaryWriter.get()))->GetPosition());
+    if(writeSucced)
+        (static_cast<NSBinPptxRW::CBinaryFileWriter*>(m_binaryWriter.get()))->SetPosition(0);
+    m_binaryWriter->CloseFile();
+    return writeSucced;
+}
+bool OOX::Spreadsheet::CXlsb::WriteBin(const CPath& oDirPath, OOX::CContentTypes& oContentTypes)
+{
+    if (NULL == m_pWorkbook)
+        return false;
+
+    m_bWriteToXlsb = true;
+    if(!m_oContentTypes.m_mapDefaults.empty() && !m_oContentTypes.m_mapOverrides.empty())
+    {
+        oContentTypes.Merge(&m_oContentTypes);
+    }
+
+    IFileContainer::Write(oDirPath / L"", OOX::CPath(_T("")), oContentTypes);
+
+    oContentTypes.Write(oDirPath);
+    return true;
+}
 bool OOX::Spreadsheet::CXlsb::WriteBin(const CPath& oFilePath, XLS::BaseObject* objStream)
 {
 	if (m_binaryWriter->CreateFileW(oFilePath.GetPath()) == false)
@@ -102,10 +152,29 @@ bool OOX::Spreadsheet::CXlsb::WriteBin(const CPath& oFilePath, XLS::BaseObject* 
 	XLS::StreamCacheWriterPtr writer(new XLS::BinaryStreamCacheWriter(m_binaryWriter, xls_global_info));
 	XLS::BinWriterProcessor proc(writer, objStream);
 	proc.mandatory(*objStream);
-	m_binaryWriter->WriteFile(m_binaryWriter->GetBuffer(), (static_cast<NSBinPptxRW::CBinaryFileWriter*>(m_binaryWriter.get()))->GetPosition());
+
+    auto writeSucced = m_binaryWriter->WriteFile(m_binaryWriter->GetBuffer(), (static_cast<NSBinPptxRW::CBinaryFileWriter*>(m_binaryWriter.get()))->GetPosition());
+    if(writeSucced)
+        (static_cast<NSBinPptxRW::CBinaryFileWriter*>(m_binaryWriter.get()))->SetPosition(0);
 	m_binaryWriter->CloseFile();
 
 	return true;
+}
+
+void OOX::Spreadsheet::CXlsb::WriteSheetData()
+{
+    for(auto &worksheet : m_arWorksheets)
+    {
+
+        //для оптимизации по памяти сразу записываем в файл все листы
+        if(m_bWriteToXlsb)
+        {
+            WriteSheet(worksheet);
+        }//
+
+        //cell_table_temlate.reset();
+        //reader.reset();
+    }
 }
 
 XLS::GlobalWorkbookInfo* OOX::Spreadsheet::CXlsb::GetGlobalinfo()
@@ -158,6 +227,41 @@ void OOX::Spreadsheet::CXlsb::PrepareSi()
         }*/
     }
 }
+
+//подготовка шрифтов в richString для конвертации в xlsb
+void OOX::Spreadsheet::CXlsb::PrepareRichStr()
+{
+    if(m_pStyles && m_pStyles->m_oFonts.IsInit())
+    {
+        auto lambdaSi = [&](OOX::Spreadsheet::CSi* si) 
+        {
+            for(size_t i = 0, length = si->m_arrItems.size(); i < length; ++i)
+            {
+                OOX::Spreadsheet::WritingElement* we = si->m_arrItems[i];
+                if(OOX::et_x_r == we->getType())
+                {
+                    OOX::Spreadsheet::CRun* pRun = static_cast<OOX::Spreadsheet::CRun*>(we);
+                    if(pRun->m_oRPr.IsInit() && !pRun->m_oRPr->m_nFontIndex.IsInit())
+                    {
+                        auto font = pRun->m_oRPr->toFont();
+                        m_pStyles->m_oFonts->AddFont(font);
+                        pRun->m_oRPr->m_nFontIndex.Init();
+                        pRun->m_oRPr->m_nFontIndex = m_pStyles->m_oFonts->m_arrItems.size() - 1;
+
+                    }
+                }
+            }
+        };
+
+        if(m_pSharedStrings)
+        {
+            for(auto &si : m_pSharedStrings->m_arrItems)
+            {
+                lambdaSi(si);
+            }
+        }
+    }
+}
 //отложенный парсинг SheetData
 void OOX::Spreadsheet::CXlsb::ReadSheetData()
 {
@@ -168,7 +272,7 @@ void OOX::Spreadsheet::CXlsb::ReadSheetData()
 
 		if(dataFindPair != m_mapSheetNameSheetData.end())
 			dataPosition = dataFindPair->second;
-		else 
+		else
 			continue;
 
         NSFile::CFileBinary oFile;
@@ -176,6 +280,8 @@ void OOX::Spreadsheet::CXlsb::ReadSheetData()
             continue;
 
         auto m_lStreamLen = (LONG)oFile.GetFileSize();
+        if(dataPosition > m_lStreamLen)
+            continue;
         auto m_pStream = new BYTE[m_lStreamLen];
         DWORD dwRead = 0;
         oFile.ReadFile(m_pStream, (DWORD)m_lStreamLen, dwRead);
@@ -186,16 +292,16 @@ void OOX::Spreadsheet::CXlsb::ReadSheetData()
         XLS::BaseObjectPtr cell_table_temlate = XLS::BaseObjectPtr(new XLSB::CELLTABLE());
 
         XLS::StreamCacheReaderPtr reader(new XLS::BinaryStreamCacheReader(m_binaryReader, xls_global_info));
-        XLS::BinReaderProcessor proc(reader, cell_table_temlate.get(), true);
+        //XLS::BinReaderProcessor proc(reader, cell_table_temlate.get(), true);
 
-        proc.SetRecordPosition(dataPosition);
+        reader->SetRecordPosition(dataPosition);
 
-        proc.mandatory(*cell_table_temlate.get());
-        delete[] m_pStream;
+        //proc.mandatory(*cell_table_temlate.get());
+
 
         //auto base = boost::static_pointer_cast<BaseObject>(cell_table_temlate);
-        worksheet->m_oSheetData->fromBin(cell_table_temlate);
-
+        worksheet->m_oSheetData->fromBin(reader);
+        delete[] m_pStream;
         //для оптимизации по памяти сразу записываем в файл все листы
         if(m_bWriteToXlsx)
         {
@@ -234,11 +340,9 @@ void OOX::Spreadsheet::CXlsb::WriteSheet(CWorksheet* worksheet)
 }
 void OOX::Spreadsheet::CXlsb::PrepareTableFormula()
 {
-    for(auto &worksheet : m_arWorksheets)
-    {
-        auto lambdaFormula = [&](std::wstring& formula) {
+    auto lambdaFormula = [&](std::wstring& formula) {
             auto str = STR::guidFromStr(formula);
-            if(!str.empty())
+            while(!str.empty())
             {
                 auto guidTableIndex = this->xls_global_info->mapTableGuidsIndex.find(str);
                 if (guidTableIndex != this->xls_global_info->mapTableGuidsIndex.end())
@@ -249,10 +353,16 @@ void OOX::Spreadsheet::CXlsb::PrepareTableFormula()
                         auto tableName = tableIndex->second;
                         formula.replace(formula.find(str), str.size(), tableName);
                     }
+                    else
+                    {
+                        formula.replace(formula.find(str), str.size(), L"#NAME?");
+                    }
                 }
+                str = STR::guidFromStr(formula);
             }
         };
-
+    for(auto &worksheet : m_arWorksheets)
+    {
         if(worksheet->m_oTableParts.IsInit())
         {
             for(size_t i = 0, length = worksheet->m_oTableParts->m_arrItems.size(); i < length; ++i)
@@ -273,10 +383,10 @@ void OOX::Spreadsheet::CXlsb::PrepareTableFormula()
 
                                 for(size_t i = 0, length = oTableColumns->m_arrItems.size(); i < length; ++i)
                                 {
-                                    auto& oTableColumn = oTableColumns->m_arrItems[i];                                   
+                                    auto& oTableColumn = oTableColumns->m_arrItems[i];
 
                                     if(oTableColumn->m_oCalculatedColumnFormula.IsInit())
-                                    {                                       
+                                    {
                                        lambdaFormula(oTableColumn->m_oCalculatedColumnFormula.get());
                                     }
                                     if(oTableColumn->m_oTotalsRowFormula.IsInit())
@@ -311,7 +421,78 @@ void OOX::Spreadsheet::CXlsb::PrepareTableFormula()
             }*/
         }
     }
+    if(m_pWorkbook && m_pWorkbook->m_oDefinedNames.IsInit())
+    {
+        for(auto defName:m_pWorkbook->m_oDefinedNames->m_arrItems)
+        {
+            if(defName->m_oRef.IsInit())
+            {
+                lambdaFormula(defName->m_oRef.get());
+            }
+        }
+    }
 }
+
+void OOX::Spreadsheet::CXlsb::LinkTables()
+{
+    {
+        bool tablesExist = false;
+        for(auto worksheet:m_arWorksheets)
+        {
+            if(worksheet->m_oTableParts.IsInit())
+            tablesExist = true;
+        }
+        if(!tablesExist)
+            return;
+    }
+    for(auto xti:XLS::GlobalWorkbookInfo::arXti_External_static)
+    {
+        if(xti.itabFirst != xti.itabLast)
+        {
+            continue;
+        }
+        auto sheetName = xti.link;
+        if(!m_pWorkbook || !m_pWorkbook->m_oSheets.IsInit())
+            continue;
+        OOX::Spreadsheet::CSheet * bundle;
+        for(auto i:m_pWorkbook->m_oSheets->m_arrItems)
+        {
+            if(i->m_oName.IsInit() && i->m_oName.get() == sheetName)
+            {
+                bundle = i;
+            }
+        }
+        if(!bundle || !bundle->m_oRid.IsInit())
+            continue;
+        auto FilePtr =  m_pWorkbook->Find(bundle->m_oRid->GetValue());
+        if(!FilePtr.IsInit() || !(OOX::Spreadsheet::FileTypes::Worksheet == FilePtr->type()))
+            continue;
+        auto WorksheetFile = static_cast<OOX::Spreadsheet::CWorksheet*>(FilePtr.GetPointer());
+        if(!WorksheetFile->m_oTableParts.IsInit())
+            continue;
+        for(auto tablePart : WorksheetFile->m_oTableParts->m_arrItems)
+        {
+            if(tablePart->m_oRId.IsInit())
+            {
+                auto tableFilePtr = WorksheetFile->Find(tablePart->m_oRId->GetValue());
+                if(tableFilePtr.IsInit() && OOX::Spreadsheet::FileTypes::Table == tableFilePtr->type())
+                {
+                    auto tableFile = static_cast<OOX::Spreadsheet::CTableFile*>(tableFilePtr.GetPointer());
+                    if(tableFile->m_oTable.IsInit() && tableFile->m_oTable->m_oId.IsInit())
+                    {
+                        if(!XLS::GlobalWorkbookInfo::mapXtiTables_static.count(xti.itabFirst))
+                        {
+                            XLS::GlobalWorkbookInfo::mapXtiTables_static.emplace(xti.itabFirst, std::vector<int>());
+                        }
+                        XLS::GlobalWorkbookInfo::mapXtiTables_static.at(xti.itabFirst).push_back(tableFile->m_oTable->m_oId->GetValue());
+
+                    }
+                }
+            }
+        }
+    }
+}
+
 
 
 

@@ -1275,24 +1275,28 @@ void MSOPATHINFO::load(IBinaryReader* reader)
 	case 0x09:
 		{
 			m_eRuler = ODRAW::rtQuadrBesier;
-			break;
-		}
+			
+		}break;
 	case 0x0A:
 		{
 			m_eRuler = ODRAW::rtNoFill;
-			break;
-		}
+			
+		}break;
 	case 0x0B:
 		{
 			m_eRuler = ODRAW::rtNoStroke;
-			break;
-		}
-	case 0x0C:
-	case 0x10:
+			
+		}break;
+	case 0x0C: //msopathEscapeAutoLine
 		{
 			m_eRuler = ODRAW::rtLineTo;
-			break;
-		}
+			mem = 2;
+		}break;
+	case 0x10: // msopathEscapeSmoothLine
+		{
+			m_eRuler = ODRAW::rtLineTo;
+			
+		}break;
 	case 0x0D:
 	case 0x0E:
 	case 0x0F:
@@ -1301,9 +1305,8 @@ void MSOPATHINFO::load(IBinaryReader* reader)
 	case 0x13:
 	case 0x14:
 		{
-			m_eRuler = ODRAW::rtCurveTo;
-			break;
-		}
+			m_eRuler = ODRAW::rtCurveTo;			
+		}break;
 	case 0x15:
 		{
 			m_eRuler = ODRAW::rtFillColor;
@@ -1504,6 +1507,9 @@ XLS::BiffStructurePtr ADJH::clone()
 
 void ADJH::load(IBinaryReader* reader)
 {
+	unsigned long pos = reader->GetPosition();
+	unsigned long pos_end = reader->GetPosition() + cbElement;
+
 	_UINT32 flag = reader->ReadUInt32();
 	
 	fahInverseX			= GETBIT(flag, 31);
@@ -1549,6 +1555,8 @@ void ADJH::load(IBinaryReader* reader)
 	if (fahxMax)	xMax =  reader->ReadInt16(); 
 	if (fahyMin)	yMin =  reader->ReadInt16(); 
 	if (fahyMax)	yMax =  reader->ReadInt16(); 
+
+	reader->Seek(pos_end, 0);
 }
 
 void ADJH::load(XLS::CFRecord& record)

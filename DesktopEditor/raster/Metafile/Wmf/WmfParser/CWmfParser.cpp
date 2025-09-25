@@ -27,14 +27,11 @@ namespace MetaFile
 
 		unsigned int unSize;
 		unsigned short ushType;
-		unsigned int ulNumber = 0;
 
 		if (NULL != m_pInterpretator)
 			m_pInterpretator->Begin();
 
 		Read_META_HEADER();
-
-		unsigned int unRecordIndex = 1;
 
 		while (!CheckError())
 		{
@@ -45,12 +42,17 @@ namespace MetaFile
 
 			m_oStream >> unSize;
 
-			if (unSize > m_oStream.CanRead())
-				SetError();
+			if (unSize - 1 > m_oStream.CanRead())
+				return  SetError();
 
 			m_oStream >> ushType;
 
 			m_unRecordSize = unSize * 2; // Размер указан в WORD
+
+			m_oStream.SetCurrentBlockSize(m_unRecordSize);
+
+			if (NULL != m_pInterpretator)
+				PRINT_WMF_RECORD(ushType);
 
 			switch (ushType)
 			{
@@ -147,13 +149,10 @@ namespace MetaFile
 				//-----------------------------------------------------------
 				default:
 				{
-					//std::cout << ushType << " ";
 					Read_META_UNKNOWN();
 					break;
 				}
 			}
-
-			unRecordIndex++;
 
 			if (m_bEof)
 				break;
@@ -161,6 +160,7 @@ namespace MetaFile
 			// Пропускаем лишние байты, которые могли быть в записи
 			int need_skip = m_unRecordSize - (m_oStream.Tell() - m_unRecordPos);
 			m_oStream.Skip(need_skip);
+			m_oStream.ClearCurrentBlockSize();
 		};
 
 		if (!m_bEof)
@@ -180,11 +180,12 @@ namespace MetaFile
 		CWmfInterpretatorBase *pInterpretator = m_pInterpretator;
 		m_pInterpretator = NULL;
 		PlayFile();
+		UpdateDCRect();
 		m_pInterpretator = pInterpretator;
 		this->ClearFile();
 	}
 
-	WmfParserType CWmfParser::GetType()
+	WmfParserType CWmfParser::GetType() const
 	{
 		return WmfParserType::WmfParser;
 	}
@@ -196,38 +197,38 @@ namespace MetaFile
 
 	void CWmfParser::Read_META_HEADER()
 	{
-		m_oStream >> m_oPlaceable.Key;
-		if (0x9AC6CDD7 == m_oPlaceable.Key)
+		m_oStream >> m_oPlaceable.unKey;
+		if (0x9AC6CDD7 == m_oPlaceable.unKey)
 		{
-			m_oStream >> m_oPlaceable.HWmf;
-			m_oStream >> m_oPlaceable.BoundingBox;
-			m_oStream >> m_oPlaceable.Inch;
-			m_oStream >> m_oPlaceable.Reserved;
-			m_oStream >> m_oPlaceable.Checksum;
+			m_oStream >> m_oPlaceable.ushHWmf;
+			m_oStream >> m_oPlaceable.oBoundingBox;
+			m_oStream >> m_oPlaceable.ushInch;
+			m_oStream >> m_oPlaceable.unReserved;
+			m_oStream >> m_oPlaceable.ushChecksum;
 
 			SkipVoid();
 		}
 		else
 		{
 			m_oStream.SeekBack(m_oStream.Tell());
-			m_oPlaceable.Key                = 0;
-			m_oPlaceable.HWmf               = 0;
-			m_oPlaceable.BoundingBox.Left   = 0;
-			m_oPlaceable.BoundingBox.Top    = 0;
-			m_oPlaceable.BoundingBox.Right  = 0;
-			m_oPlaceable.BoundingBox.Bottom = 0;
-			m_oPlaceable.Inch               = 0;
-			m_oPlaceable.Reserved           = 0;
-			m_oPlaceable.Checksum           = 0;
+			m_oPlaceable.unKey               = 0;
+			m_oPlaceable.ushHWmf             = 0;
+			m_oPlaceable.oBoundingBox.Left   = 0;
+			m_oPlaceable.oBoundingBox.Top    = 0;
+			m_oPlaceable.oBoundingBox.Right  = 0;
+			m_oPlaceable.oBoundingBox.Bottom = 0;
+			m_oPlaceable.ushInch             = 0;
+			m_oPlaceable.unReserved          = 0;
+			m_oPlaceable.ushChecksum         = 0;
 		}
 
-		m_oStream >> m_oHeader.Type;
-		m_oStream >> m_oHeader.HeaderSize;
-		m_oStream >> m_oHeader.Version;
-		m_oStream >> m_oHeader.Size;
-		m_oStream >> m_oHeader.NumberOfObjects;
-		m_oStream >> m_oHeader.MaxRecord;
-		m_oStream >> m_oHeader.NumberOfMembers;
+		m_oStream >> m_oHeader.ushType;
+		m_oStream >> m_oHeader.ushHeaderSize;
+		m_oStream >> m_oHeader.ushVersion;
+		m_oStream >> m_oHeader.unSize;
+		m_oStream >> m_oHeader.ushNumberOfObjects;
+		m_oStream >> m_oHeader.unMaxRecord;
+		m_oStream >> m_oHeader.ushNumberOfMembers;
 
 		HANDLE_META_HEADER();
 	}
@@ -254,8 +255,8 @@ namespace MetaFile
 			}
 			else
 			{
-				RegisterPoint(oBitmap.XDest, oBitmap.YDest);
-				RegisterPoint(oBitmap.XDest + oBitmap.Width, oBitmap.YDest + oBitmap.Height);
+				RegisterPoint(oBitmap.shXDest, oBitmap.shYDest);
+				RegisterPoint(oBitmap.shXDest + oBitmap.shWidth, oBitmap.shYDest + oBitmap.shHeight);
 			}
 
 
@@ -297,7 +298,7 @@ namespace MetaFile
 		m_oStream >> oBitmap;
 
 		unsigned int unRecordSizeDWORD = m_unRecordSize >> 1;
-		unsigned int unValue = (META_STRETCHBLT >> 8) + 3;
+		// unsigned int unValue = (META_STRETCHBLT >> 8) + 3;
 
 		if (unRecordSizeDWORD == ((META_STRETCHBLT >> 8) + 3))
 		{
@@ -314,8 +315,8 @@ namespace MetaFile
 			}
 			else
 			{
-				RegisterPoint(oBitmap.XDest, oBitmap.YDest);
-				RegisterPoint(oBitmap.XDest + oBitmap.DestWidth, oBitmap.YDest + oBitmap.DestHeight);
+				RegisterPoint(oBitmap.shXDest, oBitmap.shYDest);
+				RegisterPoint(oBitmap.shXDest + oBitmap.shDestWidth, oBitmap.shYDest + oBitmap.shDestHeight);
 			}
 
 			int nRemainingBytes = GetRecordRemainingBytesCount();
@@ -367,15 +368,15 @@ namespace MetaFile
 	{
 		short shY, shX, shStringLength;
 		unsigned short ushFwOptions;
-		TWmfRect oRectangle;
+		TRectS oRectangle;
 		m_oStream >> shY >> shX >> shStringLength >> ushFwOptions;
-
+		
 		if (shStringLength <= 0)
 			return;
 
 		if (ushFwOptions & ETO_CLIPPED || ushFwOptions & ETO_OPAQUE)
 			m_oStream >> oRectangle;
-
+		
 		unsigned char* pString = new unsigned char[shStringLength + 1];
 		if (!pString)
 			return SetError();
@@ -483,7 +484,7 @@ namespace MetaFile
 		if (shNumberOfPoints < 1)
 			return;
 
-		std::vector<TWmfPointS> arPoints(shNumberOfPoints);
+		std::vector<TPointS> arPoints(shNumberOfPoints);
 
 		m_oStream >> arPoints[0];
 
@@ -500,7 +501,7 @@ namespace MetaFile
 		if (shNumberOfPoints < 1)
 			return;
 
-		std::vector<TWmfPointS> arPoints(shNumberOfPoints);
+		std::vector<TPointS> arPoints(shNumberOfPoints);
 
 		for (short shIndex = 0; shIndex < shNumberOfPoints; shIndex++)
 			m_oStream >> arPoints[shIndex];
@@ -515,7 +516,7 @@ namespace MetaFile
 		if (ushNumberOfPolygons <= 0)
 			return;
 
-		std::vector<std::vector<TWmfPointS>> arPolygons(ushNumberOfPolygons);
+		std::vector<std::vector<TPointS>> arPolygons(ushNumberOfPolygons);
 
 		unsigned short ushSizePolygon;
 
@@ -561,7 +562,7 @@ namespace MetaFile
 
 	void CWmfParser::Read_META_SETPIXEL()
 	{
-		TWmfColor oColor;
+		TRGBA oColor;
 		short shX, shY;
 		m_oStream >> oColor >> shY >> shX;
 
@@ -648,7 +649,7 @@ namespace MetaFile
 		if (!pPen)
 			return SetError();
 
-		m_oStream >> pPen;
+		m_oStream >> *pPen;
 
 		HANDLE_META_CREATEPENINDIRECT(*pPen);
 	}
@@ -779,7 +780,7 @@ namespace MetaFile
 
 	void CWmfParser::Read_META_SETBKCOLOR()
 	{
-		TWmfColor oColor;
+		TRGBA oColor;
 		m_oStream >> oColor;
 
 		HANDLE_META_SETBKCOLOR(oColor);
@@ -851,7 +852,7 @@ namespace MetaFile
 
 	void CWmfParser::Read_META_SETTEXTCOLOR()
 	{
-		TWmfColor oColor;
+		TRGBA oColor;
 		m_oStream >> oColor;
 
 		HANDLE_META_SETTEXTCOLOR(oColor);

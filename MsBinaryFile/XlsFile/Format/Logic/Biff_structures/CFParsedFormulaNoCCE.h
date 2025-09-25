@@ -43,6 +43,7 @@ public:
 	CFParsedFormulaNoCCE(const CellRef& cell_base_ref_init);
 	BiffStructurePtr clone();
 	void load(CFRecord& record, const unsigned short cce);
+    void save(CFRecord& record);
 
 private:
 	// stub to make the class non-abstract

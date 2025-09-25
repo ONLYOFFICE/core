@@ -60,6 +60,8 @@ namespace OOX
 
 			extern const FileType Table;
 
+			extern const FileType TableSingleCells;
+
 			extern const FileType QueryTable;
 
 			extern const FileType Connections;
@@ -89,6 +91,19 @@ namespace OOX
 
 			extern const FileType SpreadsheetFlat;
 
+			extern const FileType Timeline;
+
+			extern const FileType TimelineCache;
+
+			extern const FileType Metadata;
+
+			extern const FileType RdRichValue;
+
+			extern const FileType RdRichValueStructure;
+
+			extern const FileType RdRichValueTypes;
+			
+			extern const FileType XmlMaps;
 		} // namespace FileTypes
 	}
 } // namespace OOX

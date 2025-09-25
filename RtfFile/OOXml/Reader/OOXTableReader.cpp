@@ -33,6 +33,7 @@
 #include "OOXTableRowReader.h"
 #include "OOXTableReader.h"
 #include "OOXParagraphReader.h"
+#include "OOXTextItemReader.h"
 
 #include "../../../OOXML/DocxFormat/Logic/Table.h"
 #include "../../../OOXML/DocxFormat/Logic/Paragraph.h"
@@ -305,26 +306,8 @@ bool OOXTableCellReader::Parse( ReaderParameter oParam ,RtfTableCell& oOutputCel
     {
         switch((*it)->getType())
         {
-            case OOX::et_w_p:
-            {
-                OOX::Logic::CParagraph * pParagraph = dynamic_cast<OOX::Logic::CParagraph*>(*it);
-
-                RtfParagraphPtr oNewParagraph( new RtfParagraph() );
-                //применяем к новому параграфу default property
-                oNewParagraph->m_oProperty = oParam.oRtf->m_oDefaultParagraphProp;
-                oNewParagraph->m_oProperty.m_oCharProperty = oParam.oRtf->m_oDefaultCharProp;
-
-                OOXParagraphReader oParagraphReader(pParagraph);
-                oParagraphReader.Parse( oParam, (*oNewParagraph), oConditionalTableStyle );
-
-                //ставим стиль таблицы
-                if( NULL != oParam.poTableStyle )
-                    oNewParagraph->m_oProperty.m_nTableStyle = oParam.poTableStyle->m_nID;
-                oNewParagraph->m_oProperty.m_nItap = oParam.oReader->m_nCurItap;
-                oNewParagraph->m_oProperty.m_bInTable = 1;
-
-                oOutputCell.AddItem( oNewParagraph );
-            }break;
+			case OOX::et_w_tcPr:
+				break;
             case OOX::et_w_tbl:
             {
                 OOX::Logic::CTbl * pTbl = dynamic_cast<OOX::Logic::CTbl*>(*it);
@@ -336,13 +319,23 @@ bool OOXTableCellReader::Parse( ReaderParameter oParam ,RtfTableCell& oOutputCel
                 oOutputCell.AddItem( oNewTabel );
                 oParam.oReader->m_nCurItap -- ;
             }break;
-            default:
+			default:
             {
-                //todooo - универсальный риадер
-                //OOXElementReader oElementReader((*it));
-                //ITextItemPtr *rtfElement = oElementReader.Parse( oParam);
-                //oOutputCell.AddItem( rtfElement );
-            }break;
+				oParam.oReader->m_bInTable = true;
+				
+				OOXTextItemReader oElementReader;
+				if (oElementReader.Parse(*it, oParam))
+				{
+					if (oElementReader.m_oTextItems)
+					{
+						for (auto elm : oElementReader.m_oTextItems->m_aArray)
+						{
+							oOutputCell.AddItem(elm);
+						}
+					}
+				}
+				oParam.oReader->m_bInTable = false;
+			}break;
         }
     }
     return true;

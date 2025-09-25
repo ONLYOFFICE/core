@@ -65,6 +65,8 @@ public:
 	virtual void start_document();
 	virtual void end_document();
 
+	virtual bool is_child_text_context();
+
 	virtual odf_drawing_context		* drawing_context();
 	virtual odf_text_context		* text_context();
 	virtual odf_controls_context	* controls_context();
@@ -79,7 +81,7 @@ public:
 	virtual void start_drawing_context();
 	virtual void end_drawing_context();
 
-	virtual bool start_math();
+	virtual bool start_math(int base_font_size, const std::wstring& base_font_color);
 	virtual void end_math();
 
 	void add_text_content	(const std::wstring & text);
@@ -100,6 +102,9 @@ public:
 
 	void start_drop_down();
 	void end_drop_down();
+
+	void start_user_defined();
+	void end_user_defined();
 
 	void start_table_of_content ();
 	void end_table_of_content ();
@@ -137,7 +142,7 @@ public:
 	void end_run			();
 
 	void	add_section					(bool continuous);
-	void	add_section_columns			(int count, double space_pt, bool separator );
+	void	add_section_columns			(int count, double space_pt, bool separator, bool flag );
 	void	add_section_column			(std::vector<std::pair<double,double>> width_space);
 	int		get_current_section_columns	();
 	void	flush_section				();
@@ -197,6 +202,9 @@ public:
 
 	bool empty() {return current_root_elements_.empty();}
 
+	int m_pendingBreakType = -1;
+	bool pendingBreakType = false;
+
 private:
 	void start_table_header_rows();
 	void end_table_header_rows	();
@@ -216,13 +224,14 @@ private:
 
 	std::wstring	current_master_page_;
 	
-	odf_controls_context					controls_context_;	
+	odf_controls_context				controls_context_;	
 
 	std::vector<odf_element_state>		current_root_elements_; // for section, if needed
 	std::vector<odt_section_state>		sections_;
 
 	std::map<std::wstring, int>			mapSequenceDecls;
 	std::map<int, std::wstring>			mapBookmarks;
+	std::map<std::wstring, std::wstring>mapUserDefineds;
 
 	void add_to_root();
 
@@ -237,6 +246,8 @@ private:
 		std::wstring	instrText;
 
 		_CP_OPT(color)	color_;
+
+		office_element_ptr elm;
 
 		short			status = 0;//0, 1, 2, 3 - init, prapare, start, finish
 		bool			in_span = false;
@@ -262,8 +273,6 @@ private:
 	}text_changes_state_;
 
 	bool table_row_header_state_ = false;
-
-	bool is_hyperlink_;
 
 	struct _drop_cap_state
 	{

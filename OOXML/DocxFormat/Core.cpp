@@ -33,7 +33,6 @@
 #include "Core.h"
 #include "Docx.h"
 #include "../XlsxFormat/Xlsx.h"
-#include "../PPTXFormat/Core.h"
 
 #include "../../DesktopEditor/common/SystemUtils.h"
 
@@ -270,73 +269,152 @@ xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">");
 	{
 		m_sLastModifiedBy = sVal;
 	}
+	void CCore::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+	{
+		pWriter->StartRecord(NSBinPptxRW::NSMainTables::Core);
 
-	PPTX::Core* CCore::ToPptxCore()
-	{
-		PPTX::Core* res = new PPTX::Core(NULL);
-		if (m_sCategory.IsInit())
-			res->category = m_sCategory.get();
-		if (m_sContentStatus.IsInit())
-			res->contentStatus = m_sContentStatus.get();
-		if (m_sCreated.IsInit())
-			res->created = m_sCreated.get();
-		if (m_sCreator.IsInit())
-			res->creator = m_sCreator.get();
-		if (m_sDescription.IsInit())
-			res->description = m_sDescription.get();
-		if (m_sIdentifier.IsInit())
-			res->identifier = m_sIdentifier.get();
-		if (m_sKeywords.IsInit())
-			res->keywords = m_sKeywords.get();
-		if (m_sLanguage.IsInit())
-			res->language = m_sLanguage.get();
-		if (m_sLastModifiedBy.IsInit())
-			res->lastModifiedBy = m_sLastModifiedBy.get();
-		if (m_sLastPrinted.IsInit())
-			res->lastPrinted = m_sLastPrinted.get();
-		if (m_sModified.IsInit())
-			res->modified = m_sModified.get();
-		if (m_sRevision.IsInit())
-			res->revision = m_sRevision.get();
-		if (m_sSubject.IsInit())
-			res->subject = m_sSubject.get();
-		if (m_sTitle.IsInit())
-			res->title = m_sTitle.get();
-		if (m_sVersion.IsInit())
-			res->version = m_sVersion.get();
-		return res;
+		pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+
+		pWriter->WriteString2(0, m_sTitle);
+		pWriter->WriteString2(1, m_sCreator);
+		pWriter->WriteString2(2, m_sLastModifiedBy);
+		pWriter->WriteString2(3, m_sRevision);
+		pWriter->WriteString2(4, m_sCreated);
+		pWriter->WriteString2(5, m_sModified);
+
+		pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+
+		//start new record because new attributes is incompatible with previous versions
+		pWriter->StartRecord(0);
+		pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+
+		pWriter->WriteString2(6, m_sCategory);
+		pWriter->WriteString2(7, m_sContentStatus);
+		pWriter->WriteString2(8, m_sDescription);
+		pWriter->WriteString2(9, m_sIdentifier);
+		pWriter->WriteString2(10, m_sKeywords);
+		pWriter->WriteString2(11, m_sLanguage);
+		pWriter->WriteString2(12, m_sLastPrinted);
+		pWriter->WriteString2(13, m_sSubject);
+		pWriter->WriteString2(14, m_sVersion);
+
+		pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+		pWriter->EndRecord();
+
+		pWriter->EndRecord();
 	}
-	void CCore::FromPptxCore(PPTX::Core* pCore)
+	void CCore::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 	{
-		if(pCore->category.IsInit())
-			m_sCategory = pCore->category.get();
-		if(pCore->contentStatus.IsInit())
-			m_sContentStatus = pCore->contentStatus.get();
-		if(pCore->created.IsInit())
-			m_sCreated = pCore->created.get();
-		if(pCore->creator.IsInit())
-			m_sCreator = pCore->creator.get();
-		if(pCore->description.IsInit())
-			m_sDescription = pCore->description.get();
-		if(pCore->identifier.IsInit())
-			m_sIdentifier = pCore->identifier.get();
-		if(pCore->keywords.IsInit())
-			m_sKeywords = pCore->keywords.get();
-		if(pCore->language.IsInit())
-			m_sLanguage = pCore->language.get();
-		if(pCore->lastModifiedBy.IsInit())
-			m_sLastModifiedBy = pCore->lastModifiedBy.get();
-		if(pCore->lastPrinted.IsInit())
-			m_sLastPrinted = pCore->lastPrinted.get();
-		if(pCore->modified.IsInit())
-			m_sModified = pCore->modified.get();
-		if(pCore->revision.IsInit())
-			m_sRevision = pCore->revision.get();
-		if(pCore->subject.IsInit())
-			m_sSubject = pCore->subject.get();
-		if(pCore->title.IsInit())
-			m_sTitle = pCore->title.get();
-		if(pCore->version.IsInit())
-			m_sVersion = pCore->version.get();
+		pReader->Skip(1); // type
+		LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
+
+		pReader->Skip(1); // start attributes
+
+		while (true)
+		{
+			BYTE _at = pReader->GetUChar_TypeNode();
+			if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+				break;
+
+			switch (_at)
+			{
+			case 0: m_sTitle = pReader->GetString2(); break;
+			case 1: m_sCreator = pReader->GetString2(); break;
+			case 2: m_sLastModifiedBy = pReader->GetString2(); break;
+			case 3: m_sRevision = pReader->GetString2(); break;
+			case 4: m_sCreated = pReader->GetString2(); break;
+			case 5: m_sModified = pReader->GetString2(); break;
+			default: break;
+			}
+		}
+		while (pReader->GetPos() < _end_rec)
+		{
+			BYTE _at = pReader->GetUChar();
+			switch (_at)
+			{
+			case 0:
+			{
+				LONG _end_rec2 = pReader->GetPos() + pReader->GetRecordSize() + 4;
+
+				pReader->Skip(1); // start attributes
+
+				while (true)
+				{
+					BYTE _at = pReader->GetUChar_TypeNode();
+					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+						break;
+
+					switch (_at)
+					{
+					case 6: m_sCategory = pReader->GetString2(); break;
+					case 7: m_sContentStatus = pReader->GetString2(); break;
+					case 8: m_sDescription = pReader->GetString2(); break;
+					case 9: m_sIdentifier = pReader->GetString2(); break;
+					case 10: m_sKeywords = pReader->GetString2(); break;
+					case 11: m_sLanguage = pReader->GetString2(); break;
+					case 12: m_sLastPrinted = pReader->GetString2(); break;
+					case 13: m_sSubject = pReader->GetString2(); break;
+					case 14: m_sVersion = pReader->GetString2(); break;
+					}
+				}
+
+				pReader->Seek(_end_rec2);
+			}
+			break;
+			default:
+			{
+				pReader->SkipRecord();
+				break;
+			}
+			}
+		}
+
+		pReader->Seek(_end_rec);
+	}
+	void CCore::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+	{
+		pWriter->StartNode(_T("cp:coreProperties"));
+
+		pWriter->StartAttributes();
+
+		pWriter->WriteAttribute(_T("xmlns:cp"), PPTX::g_Namespaces.cp.m_strLink);
+		pWriter->WriteAttribute(_T("xmlns:dc"), PPTX::g_Namespaces.dc.m_strLink);
+		pWriter->WriteAttribute(_T("xmlns:dcterms"), PPTX::g_Namespaces.dcterms.m_strLink);
+		pWriter->WriteAttribute(_T("xmlns:dcmitype"), PPTX::g_Namespaces.dcmitype.m_strLink);
+		pWriter->WriteAttribute(_T("xmlns:xsi"), PPTX::g_Namespaces.xsi.m_strLink);
+
+		pWriter->EndAttributes();
+
+		pWriter->WriteNodeValue2(_T("dc:title"), m_sTitle);
+		pWriter->WriteNodeValue2(_T("dc:subject"), m_sSubject);
+		pWriter->WriteNodeValue2(_T("dc:creator"), m_sCreator);
+		pWriter->WriteNodeValue2(_T("cp:keywords"), m_sKeywords);
+		pWriter->WriteNodeValue2(_T("dc:description"), m_sDescription);
+		pWriter->WriteNodeValue2(_T("dc:identifier"), m_sIdentifier);
+		pWriter->WriteNodeValue2(_T("dc:language"), m_sLanguage);
+		pWriter->WriteNodeValue2(_T("cp:lastModifiedBy"), m_sLastModifiedBy);
+		pWriter->WriteNodeValue2(_T("cp:revision"), m_sRevision);
+
+		if ((m_sLastPrinted.IsInit()) && (false == m_sLastPrinted->empty()))
+		{
+			pWriter->WriteNodeValue2(_T("cp:lastPrinted"), m_sLastPrinted);
+		}
+		if ((m_sCreated.IsInit()) && (false == m_sCreated->empty()))
+		{
+			pWriter->WriteNodeBegin(_T("dcterms:created xsi:type=\"dcterms:W3CDTF\""));
+			pWriter->WriteStringXML(*m_sCreated);
+			pWriter->WriteNodeEnd(_T("dcterms:created"));
+		}
+		if ((m_sModified.IsInit()) && (false == m_sModified->empty()))
+		{
+			pWriter->WriteNodeBegin(_T("dcterms:modified xsi:type=\"dcterms:W3CDTF\""));
+			pWriter->WriteStringXML(*m_sModified);
+			pWriter->WriteNodeEnd(_T("dcterms:modified"));
+		}
+		pWriter->WriteNodeValue2(_T("cp:category"), m_sCategory);
+		pWriter->WriteNodeValue2(_T("cp:contentStatus"), m_sContentStatus);
+		pWriter->WriteNodeValue2(_T("cp:version"), m_sVersion);
+
+		pWriter->EndNode(_T("cp:coreProperties"));
 	}
 } // namespace OOX

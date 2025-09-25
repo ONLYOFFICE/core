@@ -127,7 +127,6 @@ bool OleObject::processLinkInfoStream( const std::wstring& linkStream )
 			VirtualStreamReader reader( pLinkStream, 0, false);
 			processLinkInfoStream(reader);
 
-			delete pLinkStream;
 			res = true;
 		}
 		if (pLinkStream) delete pLinkStream;
@@ -172,7 +171,8 @@ bool OleObject::processPackageStream(const std::wstring& packageStream)
 		POLE::Stream* pPackageStream = new POLE::Stream(oleStorage, packageStream);
 
 		if ((pPackageStream) && (false == pPackageStream->fail()))
-		{
+		{ 
+// AVS_OFFICESTUDIO_FILE_OTHER_PACKAGE_IN_OLE
 			VirtualStreamReader reader(pPackageStream, 0, false);
 
 			size_t sz = reader.GetSize();
@@ -356,7 +356,7 @@ void OleObject::processLinkInfoStream( VirtualStreamReader& reader )
 {
 	short cch = reader.ReadInt16();
 	unsigned char* str = reader.ReadBytes( cch, true );
-	FormatUtils::GetSTLCollectionFromBytes<std::wstring>( &this->Link, str, cch, ENCODING_WINDOWS_1250 );
+	FormatUtils::GetWStringFromBytes( this->Link, str, cch, ENCODING_WINDOWS_1250 );
 	RELEASEARRAYOBJECTS( str );
     
 	//skip the terminating zero of the ANSI string
@@ -371,7 +371,8 @@ void OleObject::processLinkInfoStream( VirtualStreamReader& reader )
 
 	cch = reader.ReadInt16();
 	str = reader.ReadBytes( ( cch * 2 ), true );
-	FormatUtils::GetSTLCollectionFromBytes<std::wstring>( &this->Link, str, ( cch * 2 ), ENCODING_UTF16 );
+
+	this->Link = NSFile::CUtf8Converter::GetWStringFromUTF16((unsigned short*)(str), cch);
 	RELEASEARRAYOBJECTS( str );
 
 	//skip the terminating zero of the Unicode string

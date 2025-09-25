@@ -132,8 +132,8 @@ public:
 
     virtual void visit(const table_table_column& val)
     {
-        const unsigned int columnsRepeated = val.table_table_column_attlist_.table_number_columns_repeated_;
-        const std::wstring defaultCellStyleName = val.table_table_column_attlist_.table_default_cell_style_name_.get_value_or(L"");
+        const unsigned int columnsRepeated = val.attlist_.table_number_columns_repeated_;
+        const std::wstring defaultCellStyleName = val.attlist_.table_default_cell_style_name_.get_value_or(L"");
         visit_column(columnsRepeated, defaultCellStyleName);
     }
     virtual void visit(const table_calculation_settings & val)
@@ -143,12 +143,12 @@ public:
 
     virtual void visit(const table_table_columns& val)
     {
-        ACCEPT_ALL_CONTENT_CONST(val.table_table_column_, stop_);
+        ACCEPT_ALL_CONTENT_CONST(val.content_, stop_);
     }
 
     virtual void visit(const table_table_header_columns& val)
     {
-        ACCEPT_ALL_CONTENT_CONST(val.table_table_column_, stop_);
+        ACCEPT_ALL_CONTENT_CONST(val.content_, stop_);
     }
 
     virtual void visit(const table_table_column_group& val)
@@ -191,12 +191,12 @@ public:
 
     virtual void visit(const table_table_header_rows& val)
     {        
-        ACCEPT_ALL_CONTENT_CONST(val.table_table_row_, stop_);
+        ACCEPT_ALL_CONTENT_CONST(val.content_, stop_);
     }
 
     virtual void visit(const table_table_rows& val)
     {        
-        ACCEPT_ALL_CONTENT_CONST(val.table_table_row_, stop_);
+        ACCEPT_ALL_CONTENT_CONST(val.content_, stop_);
     }
 
     virtual void visit(const table_table_row& val)

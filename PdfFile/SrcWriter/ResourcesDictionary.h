@@ -48,8 +48,9 @@ namespace PdfWriter
 
 		const char* GetFontName(CFontDict* pFont);
 		const char* GetExtGrStateName(CExtGrState* pState);
-		const char* GetXObjectName(CXObject* pXObject);
+		const char* GetXObjectName(CObjectBase* pXObject);
 		void        AddXObjectWithName(const char* sXObjectName, CXObject* pXObject);
+		void Fix();
 
 	private:
 

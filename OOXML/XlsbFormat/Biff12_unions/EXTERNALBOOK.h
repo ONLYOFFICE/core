@@ -57,6 +57,7 @@ namespace XLSB
 
         ExternalReferenceType sbt;
     };
+    typedef boost::shared_ptr<EXTERNALBOOK> EXTERNALBOOKPtr;
 
 } // namespace XLSB
 

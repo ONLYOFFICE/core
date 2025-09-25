@@ -33,7 +33,7 @@
 
 using namespace PPT;
 
-CPPTDocumentInfo::CPPTDocumentInfo() : m_oCurrentUser(), m_bMacros(true)
+CPPTDocumentInfo::CPPTDocumentInfo() : m_oCurrentUser(), m_bMacroEnabled(true), m_pStream(NULL)
 {
 }
 
@@ -57,6 +57,7 @@ void CPPTDocumentInfo::Clear()
 
 bool CPPTDocumentInfo::ReadFromStream(CRecordCurrentUserAtom *pCurrentUser, POLE::Stream *pStream)
 {
+    m_pStream = pStream;
     m_oCurrentUser.FromAtom(pCurrentUser);
 
     _UINT32 offsetToEdit = m_oCurrentUser.m_nOffsetToCurrentEdit;
@@ -78,14 +79,13 @@ bool CPPTDocumentInfo::ReadFromStream(CRecordCurrentUserAtom *pCurrentUser, POLE
 
         pInfo->m_pDocumentInfo      = this;
 
-        pInfo->m_bEncrypt			= m_oCurrentUser.m_bIsEncrypt;
-        pInfo->m_strPassword		= m_strPassword;
-        pInfo->m_bMacros			= m_bMacros;
+        pInfo->m_bEncrypt = m_oCurrentUser.m_bIsEncrypt;
+        pInfo->m_strPassword = m_strPassword;
+        pInfo->m_bMacroEnabled = m_bMacroEnabled;
 
         bool bResult = pInfo->ReadFromStream(&oUserAtom, pStream);
 
-        m_bMacros					= pInfo->m_bMacros;
-        offsetToEdit				= pInfo->m_oUser.m_nOffsetLastEdit;
+        offsetToEdit = pInfo->m_oUser.m_nOffsetLastEdit;
         m_oCurrentUser.m_bIsEncrypt = pInfo->m_bEncrypt;
 
         if (bResult == false)
@@ -105,8 +105,35 @@ bool CPPTDocumentInfo::ReadFromStream(CRecordCurrentUserAtom *pCurrentUser, POLE
 
         pInfo = NULL;
     }
-
     return true;
+}
+std::wstring CPPTDocumentInfo::GetBinFromStg(const std::wstring& name, _UINT32 nRef)
+{
+    for (size_t i = 0; i < m_arUsers.size(); ++i)
+    {
+        std::map<_UINT32, _UINT32>::iterator nIndexPsrRef = m_arUsers[i]->m_mapOffsetInPIDs.find(nRef);
+        if (m_arUsers[i]->m_mapOffsetInPIDs.end() != nIndexPsrRef)
+        {
+            std::wstring result;
+            _UINT32 offset_stream = nIndexPsrRef->second;
+            StreamUtils::StreamSeek(offset_stream, m_pStream);
+
+            SRecordHeader oHeader;
+            oHeader.ReadFromStream(m_pStream);
+
+            CRecordExObjStg* pExObjStg = new CRecordExObjStg(name, m_pCommonInfo->tempPath);
+
+            if (pExObjStg)
+            {
+                pExObjStg->ReadFromStream(oHeader, m_pStream);
+                result = pExObjStg->m_sFileName;
+
+                RELEASEOBJECT(pExObjStg);
+            }
+            return result;
+        }
+    }
+    return L"";
 }
 
 bool CPPTDocumentInfo::LoadDocument()
@@ -115,8 +142,10 @@ bool CPPTDocumentInfo::LoadDocument()
 
     try
     {
-        m_arUsers[0]->ReadExtenalObjects();
+        m_arUsers[0]->ReadExtenalObjects(); // todooo ???? прочитать по всем (см 66864)
         m_arUsers[0]->FromDocument();
+
+        m_bMacroEnabled = m_arUsers[0]->m_bMacroEnabled;
     }
     catch(int) //error code
     {

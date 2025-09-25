@@ -88,7 +88,7 @@ class CFontPath : public NSFonts::IFontPath
 public:
 
 	CFontPath();
-    virtual ~CFontPath();
+	virtual ~CFontPath();
 
 	void Append(CFontPath *pPath);
 
@@ -106,15 +106,15 @@ public:
 
 	void ToMM(double dHorDpi, double dVerDpi);
 
-	int GetCount() 
-	{ 
-		return m_nPointsCount; 
+	int GetCount()
+	{
+		return m_nPointsCount;
 	}
 	void GetPoint(int nIndex, double *pdX, double *pdY, unsigned char *punFlag)
-    { 
-		*pdX = m_pPoints[nIndex].dX; 
-		*pdY = m_pPoints[nIndex].dY; 
-		*punFlag = m_pFlags[nIndex]; 
+	{
+		*pdX = m_pPoints[nIndex].dX;
+		*pdY = m_pPoints[nIndex].dY;
+		*punFlag = m_pFlags[nIndex];
 	}
 
 	INT GetCurPoint(double *pdX, double *pdY);
@@ -122,37 +122,37 @@ public:
 	// Добавляем флаг StrokeAdjust.
 	void AddStrokeAdjustHint(int nFirstControl, int nSecondControl, int nFirstPoint, int nLastPoint);
 	
-    virtual int ToInterface(NSFonts::ISimpleGraphicsPath* pPath);
+	virtual int ToInterface(NSFonts::ISimpleGraphicsPath* pPath);
 
 private:
 
 	CFontPath(CFontPath *pPath);
 	void Resize(int nPointsCount);
-	INT NoCurrentPoint() 
-	{ 
-		return m_nCurSubpath == m_nPointsCount; 
+	INT NoCurrentPoint()
+	{
+		return m_nCurSubpath == m_nPointsCount;
 	}
-	INT OnePointSubpath() 
-	{ 
-		return m_nCurSubpath == m_nPointsCount - 1; 
+	INT OnePointSubpath()
+	{
+		return m_nCurSubpath == m_nPointsCount - 1;
 	}
-	INT OpenSubpath() 
-	{ 
-		return m_nCurSubpath < m_nPointsCount - 1; 
+	INT OpenSubpath()
+	{
+		return m_nCurSubpath < m_nPointsCount - 1;
 	}
 
 private:
 
 	TPathPoint    *m_pPoints;      // Массив точек
 	unsigned char *m_pFlags;       // Массив флагов, указыающих значение точки в SubPath
-	int            m_nPointsCount; // Количество точек 
+	int            m_nPointsCount; // Количество точек
 	int            m_nSize;        // Непосредственный размер массива
 	
 	int            m_nCurSubpath;  // Номер первой точки последнего SubPath
 
 	TPathHint     *m_pHints;       //
 	int            m_nHintsCount;
-	int            m_nHintsSize;   
+	int            m_nHintsSize;
 };
 
 #endif /* _PATH_H */

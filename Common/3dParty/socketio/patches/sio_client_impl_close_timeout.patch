@@ -1,0 +1,7 @@
+<<<<<<<
+        m_packet_mgr.set_encode_callback(std::bind(&client_impl::on_encode,this,_1,_2));
+=======
+        m_packet_mgr.set_encode_callback(std::bind(&client_impl::on_encode,this,_1,_2));
+
+        m_client.set_close_handshake_timeout(1);
+>>>>>>>

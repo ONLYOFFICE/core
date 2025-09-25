@@ -681,7 +681,7 @@ namespace BinDocxRW {
 		{
 			std::wstring sUserName = XmlUtils::EncodeXmlString(pComment->UserName);
 			sRes += L" w:author=\"";
-			sRes += (sUserName);
+			sRes += XmlUtils::EncodeXmlString(sUserName);
 			sRes += L"\"";
 		}
 		if (false == pComment->Date.empty())
@@ -1253,40 +1253,16 @@ allowOverlap=\"1\">";
 
 	bool CWiterTblPr::IsEmpty()
 	{
-		return Jc.empty() && TableInd.empty() && TableW.empty() && TableCellMar.empty() && TableBorders.empty() && Shd.empty() && tblpPr.empty()&& Style.empty() && Look.empty() && tblPrChange.empty() && TableCellSpacing.empty() && RowBandSize.empty() && ColBandSize.empty();
+		return Style.empty() && Props.empty() && tblPrChange.empty() && Caption.empty() && Description.empty();
 	}
 	std::wstring CWiterTblPr::Write()
 	{
 		std::wstring sRes;
 		sRes += L"<w:tblPr>";
-		if (false == Style.empty())
-			sRes += (Style);
-		if (false == tblpPr.empty())
-			sRes += (tblpPr);
-		if (!RowBandSize.empty())
-			sRes += (RowBandSize);
-		if (!ColBandSize.empty())
-			sRes += (ColBandSize);
-		if (!Overlap.empty())
-			sRes += (Overlap);
-		if (false == TableW.empty())
-			sRes += (TableW);
-		if (false == Jc.empty())
-			sRes += (Jc);
-		if (false == TableCellSpacing.empty())
-			sRes += (TableCellSpacing);
-		if (false == TableInd.empty())
-			sRes += (TableInd);
-		if (false == TableBorders.empty())
-			sRes += (TableBorders);
-		if (false == Shd.empty())
-			sRes += (Shd);
-		if (false == Layout.empty())
-			sRes += (Layout);
-		if (false == TableCellMar.empty())
-			sRes += (TableCellMar);
-		if (false == Look.empty())
-			sRes += (Look);
+		
+		sRes += Style; // first
+		sRes += Props;
+
 		if (!Caption.empty())
 		{
 			sRes += L"<w:tblCaption w:val=\"";
@@ -1299,8 +1275,8 @@ allowOverlap=\"1\">";
 			sRes += XmlUtils::EncodeXmlString(Description);
 			sRes += L"\"/>";
 		}
-		if (!tblPrChange.empty())
-			sRes += (tblPrChange);
+
+		sRes += tblPrChange;
 		sRes += L"</w:tblPr>";
 		return sRes;
 	}

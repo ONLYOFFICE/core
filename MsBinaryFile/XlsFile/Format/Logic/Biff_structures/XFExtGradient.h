@@ -47,13 +47,14 @@ public:
 	BiffStructurePtr clone();
 
 	virtual void load(CFRecord& record);
+    virtual void save(CFRecord& record);
 
 	int serialize(std::wostream & stream);
 
 	static const ElementType	type = typeXFExtGradient;
 
 	XFPropGradient			gradient;
-	_UINT32					cGradStops;
+	_UINT32					cGradStops = 0;
 	std::vector<GradStop>	rgGradStops;
 };
 

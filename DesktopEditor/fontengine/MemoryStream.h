@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
@@ -38,22 +38,24 @@
 #ifdef _DEBUG
 #define _LOGGING_NATIVE_
 #else
-//#define _LOGGING_NATIVE_
+// #define _LOGGING_NATIVE_
 #endif
 
 #ifdef _LINUX
 #include <stdlib.h>
 #endif
 
+#ifndef _ARM_ALIGN_
 #define _ARM_ALIGN_
+#endif
 
 static void LOGGING(const std::string& strFile, const std::wstring& strMessage)
 {
 #ifdef _LOGGING_NATIVE_
 	FILE* f = fopen(strFile.c_str(), "a+");
-			
+
 	BYTE* pData = NULL;
-	LONG lLen	= 0;
+	LONG lLen = 0;
 	NSFile::CUtf8Converter::GetUtf8StringFromUnicode(strMessage.c_str(), (LONG)strMessage.length(), pData, lLen);
 	pData[lLen] = 0;
 
@@ -79,10 +81,10 @@ namespace NSMemoryStream
 	public:
 		CMemoryStream()
 		{
-			m_pBuffer		= NULL;
-			m_pBufferMem	= NULL;
+			m_pBuffer = NULL;
+			m_pBufferMem = NULL;
 
-			m_lSize			= 0;
+			m_lSize = 0;
 		}
 		virtual ~CMemoryStream()
 		{
@@ -100,10 +102,10 @@ namespace NSMemoryStream
 
 		inline void Clear()
 		{
-			m_lSize		= 0;
+			m_lSize = 0;
 
-			m_pBuffer		= NULL;
-			m_pBufferMem	= NULL;
+			m_pBuffer = NULL;
+			m_pBufferMem = NULL;
 		}
 
 		inline void ClearNoAttack()
@@ -133,17 +135,17 @@ namespace NSMemoryStream
 					BYTE* pNew = new BYTE[m_lSize];
 					memcpy(pNew, m_pBuffer, m_pBufferMem - m_pBuffer);
 
-					m_pBufferMem	= pNew + (m_pBufferMem - m_pBuffer);
+					m_pBufferMem = pNew + (m_pBufferMem - m_pBuffer);
 
 					RELEASEARRAYOBJECTS(m_pBuffer);
-					m_pBuffer		= pNew;
+					m_pBuffer = pNew;
 				}
 			}
 			else
 			{
-				m_lSize			= 1000;
-				m_pBuffer		= new BYTE[m_lSize];
-				m_pBufferMem	= m_pBuffer;
+				m_lSize = 1000;
+				m_pBuffer = new BYTE[m_lSize];
+				m_pBufferMem = m_pBuffer;
 
 				CheckBufferSize(lPlus);
 			}
@@ -166,23 +168,34 @@ namespace NSMemoryStream
 		}
 		inline void WriteLONG(const LONG& lValue)
 		{
-            CheckBufferSize(sizeof(INT));
+			CheckBufferSize(sizeof(INT));
 #ifdef _ARM_ALIGN_
-            INT v = lValue;
-            memcpy(m_pBufferMem, &v, sizeof(INT));
+			INT v = lValue;
+			memcpy(m_pBufferMem, &v, sizeof(INT));
 #else
-            *((INT*)(m_pBufferMem)) = (INT)lValue;
+			*((INT*)(m_pBufferMem)) = (INT)lValue;
 #endif
-            m_pBufferMem += sizeof(INT);
+			m_pBufferMem += sizeof(INT);
+		}
+		inline void WriteUSHORT(const USHORT& lValue)
+		{
+			CheckBufferSize(sizeof(USHORT));
+#ifdef _ARM_ALIGN_
+			USHORT v = lValue;
+			memcpy(m_pBufferMem, &v, sizeof(USHORT));
+#else
+			*((USHORT*)(m_pBufferMem)) = (USHORT)lValue;
+#endif
+			m_pBufferMem += sizeof(USHORT);
 		}
 		inline void WriteDouble(const double& dValue)
 		{
 			CheckBufferSize(sizeof(double));
 #ifdef _ARM_ALIGN_
-            double v = dValue;
-            memcpy(m_pBufferMem, &v, sizeof(double));
+			double v = dValue;
+			memcpy(m_pBufferMem, &v, sizeof(double));
 #else
-            *((double*)(m_pBufferMem)) = dValue;
+			*((double*)(m_pBufferMem)) = dValue;
 #endif
 			m_pBufferMem += sizeof(double);
 		}
@@ -202,112 +215,50 @@ namespace NSMemoryStream
 		}
 		inline void WriteStringA2(const char* pData, int nLen)
 		{
-            CheckBufferSize(nLen + sizeof(INT));
+			CheckBufferSize(nLen + sizeof(INT));
 
 #ifdef __ANDROID__
 			memcpy(m_pBufferMem, &nLen, sizeof(INT));
 #else
 			*((INT*)(m_pBufferMem)) = (INT)nLen;
 #endif
-            m_pBufferMem += sizeof(INT);
+			m_pBufferMem += sizeof(INT);
 
 			memcpy(m_pBufferMem, pData, nLen);
 			m_pBufferMem += nLen;
 		}
 
+		inline void WriteStringTruncate2(const wchar_t* pData, int nLenDouble)
+		{
+			if (sizeof(wchar_t) == 2)
+			{
+				memcpy(m_pBufferMem, pData, nLenDouble);
+			}
+			else
+			{
+				int len = nLenDouble >> 1;
+				USHORT* mass = new USHORT[len];
+				for (int i = 0; i < len; ++i)
+					mass[i] = (USHORT)pData[i];
+				memcpy(m_pBufferMem, mass, nLenDouble);
+				RELEASEARRAYOBJECTS(mass);
+			}
+			m_pBufferMem += nLenDouble;
+		}
+
 		inline void WriteString(const wchar_t* pData, int nLen)
 		{
-#ifdef _ARM_ALIGN_
-            CheckBufferSize(nLen + sizeof(USHORT));
-            USHORT v = (USHORT)(nLen);
-			memcpy(m_pBufferMem, &v, sizeof(USHORT));
-			m_pBufferMem += sizeof(USHORT);
-
 			int nLen2 = nLen << 1;
-
-            if (sizeof(wchar_t) == 2)
-            {
-                memcpy(m_pBufferMem, pData, nLen2);
-            }
-            else
-            {
-                int len = nLen >> 1;
-                USHORT* mass = new USHORT[len];
-                for (int i = 0; i < len; ++i)
-                    mass[i] = (USHORT)pData[i];
-                memcpy(m_pBufferMem, mass, nLen2);
-                RELEASEARRAYOBJECTS(mass);
-            }
-			m_pBufferMem += nLen2;
-#else
-			CheckBufferSize(nLen + sizeof(USHORT));
-			*((USHORT*)(m_pBufferMem)) = (USHORT)nLen;
-			m_pBufferMem += sizeof(USHORT);
-            
-			int nLen2 = nLen << 1;
-            
-            if (sizeof(wchar_t) == 2)
-            {
-                memcpy(m_pBufferMem, pData, nLen2);
-            }
-            else
-            {
-                int len = nLen >> 1;
-                USHORT* mass = new USHORT[len];
-                for (int i = 0; i < len; ++i)
-                    mass[i] = (USHORT)pData[i];
-                memcpy(m_pBufferMem, mass, nLen2);
-                RELEASEARRAYOBJECTS(mass);
-            }
-			m_pBufferMem += nLen2;
-#endif
+			CheckBufferSize(nLen2 + sizeof(USHORT));
+			WriteUSHORT((USHORT)(nLen));
+			WriteStringTruncate2(pData, nLen2);
 		}
 		inline void WriteString2(const wchar_t* pData, int nLen)
 		{
-#ifdef _ARM_ALIGN_
-            int nLen2 = nLen << 1;
-            
-            CheckBufferSize(nLen2 + sizeof(INT));
-            INT v = (INT)(nLen2);
-			memcpy(m_pBufferMem, &v, sizeof(INT));
-			m_pBufferMem += sizeof(INT);
-            
-            if (sizeof(wchar_t) == 2)
-            {
-                memcpy(m_pBufferMem, pData, nLen2);
-            }
-            else
-            {
-                USHORT* mass = new USHORT[nLen];
-                for (int i = 0; i < nLen; ++i)
-                    mass[i] = (USHORT)pData[i];
-                memcpy(m_pBufferMem, mass, nLen2);
-                RELEASEARRAYOBJECTS(mass);
-            }
-            
-			m_pBufferMem += nLen2;
-#else
 			int nLen2 = nLen << 1;
-
-            CheckBufferSize(nLen2 + sizeof(INT));
-            *((INT*)(m_pBufferMem)) = (INT)nLen2;
-            m_pBufferMem += sizeof(INT);
-
-            if (sizeof(wchar_t) == 2)
-            {
-                memcpy(m_pBufferMem, pData, nLen2);
-            }
-            else
-            {
-                USHORT* mass = new USHORT[nLen];
-                for (int i = 0; i < nLen; ++i)
-                    mass[i] = (USHORT)pData[i];
-                memcpy(m_pBufferMem, mass, nLen2);
-                RELEASEARRAYOBJECTS(mass);
-            }
-
-			m_pBufferMem += nLen2;
-#endif
+			CheckBufferSize(nLen2 + sizeof(INT));
+			WriteLONG(nLen2);
+			WriteStringTruncate2(pData, nLen2);
 		}
 
 		inline void __WriteBYTE(const BYTE& lValue)
@@ -326,20 +277,20 @@ namespace NSMemoryStream
 		inline void __WriteLONG(const LONG& lValue)
 		{
 #ifdef _ARM_ALIGN_
-            INT v = (INT)lValue;
-            memcpy(m_pBufferMem, &v, sizeof(INT));
+			INT v = (INT)lValue;
+			memcpy(m_pBufferMem, &v, sizeof(INT));
 #else
-            *((INT*)(m_pBufferMem)) = (INT)lValue;
+			*((INT*)(m_pBufferMem)) = (INT)lValue;
 #endif
-            m_pBufferMem += sizeof(INT);
+			m_pBufferMem += sizeof(INT);
 		}
 		inline void __WriteDouble(const double& dValue)
 		{
 #ifdef _ARM_ALIGN_
-            double v = dValue;
-            memcpy(m_pBufferMem, &v, sizeof(double));
+			double v = dValue;
+			memcpy(m_pBufferMem, &v, sizeof(double));
 #else
-            *((double*)(m_pBufferMem)) = dValue;
+			*((double*)(m_pBufferMem)) = dValue;
 #endif
 			m_pBufferMem += sizeof(double);
 		}
@@ -350,7 +301,7 @@ namespace NSMemoryStream
 			memcpy(m_pBufferMem, pData, len);
 			m_pBufferMem += len;
 		}
-	};	
-}
+	};
+} // namespace NSMemoryStream
 
 #endif // _BUILD_MEMORYSTREAM_H_

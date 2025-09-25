@@ -2440,6 +2440,9 @@
     <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BIFF12\SxSu.cpp">
       <Filter>Logic\Biff_structures\BIFF12</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\FutureFunctionParser.cpp">
+      <Filter>Logic\Biff_structures</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\XlsFile\Format\Logging\Log.h">
@@ -4892,6 +4895,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BIFF12\SxSu.h">
       <Filter>Logic\Biff_structures\BIFF12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\FutureFunctionParser.h">
+      <Filter>Logic\Biff_structures</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

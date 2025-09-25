@@ -33,9 +33,7 @@
 #define _BUILD_METAFILE_TO_IRENDERER_CHECK_H_
 
 #pragma once
-
-#include "MetafileToRenderer.h"
-#include "../common/Array.h"
+#include "MetafileToRendererReader.h"
 
 namespace NSOnlineOfficeBinToPdf
 {

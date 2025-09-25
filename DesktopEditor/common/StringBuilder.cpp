@@ -319,7 +319,14 @@ namespace NSStringUtils
 	{
 		WriteEncodeXmlString(sString.c_str(), (int)sString.length());
 	}
-
+	void CStringBuilder::WriteEncodeXmlString(const std::string& sString)
+	{
+		WriteEncodeXmlString(std::wstring(sString.begin(), sString.end()));
+	}
+	void CStringBuilder::WriteUtf8EncodeXmlString(const std::string& sString)
+    {
+        WriteEncodeXmlString(NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)sString.c_str(), sString.size()));
+	}
 	void CStringBuilder::WriteEncodeXmlString(const wchar_t* pString, int nCount)
 	{
 		if (sizeof(wchar_t) == 2)
@@ -648,7 +655,7 @@ namespace NSStringUtils
 	}
 	void CStringBuilder::AddInt(int val)
 	{
-		AddSize(10);
+		AddSize(11);
 		AddIntNoCheck(val);
 	}
 	void CStringBuilder::AddUInt(unsigned int val)
@@ -682,7 +689,11 @@ namespace NSStringUtils
 		}
 		if (val < 0)
 		{
-			val = -val;
+			if (val == -2147483648)
+				val = 2147483647;
+			else
+				val = -val;
+
 			*m_pDataCur++ = (wchar_t)'-';
 			++m_lSizeCur;
 		}

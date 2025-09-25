@@ -33,15 +33,22 @@
 #include "mediaitems.h"
 
 #include <boost/regex.hpp>
+#include <boost/algorithm/string.hpp>
 
 #include <xml/utils.h>
 
 #include "../../../OOXML/Base/Base.h"
 #include "../../../OOXML/SystemUtility/File.h"
+#include "../../../OOXML/SystemUtility/SystemUtility.h"
 
 #include "../../../DesktopEditor/common/Directory.h"
 #include "../../../DesktopEditor/raster/ImageFileFormatChecker.h"
+#include "../../../Common/OfficeFileFormatChecker.h"
 #include "../../../DesktopEditor/graphics/pro/Fonts.h"
+
+#include "../../../DesktopEditor/graphics/MetafileToGraphicsRenderer.h"
+#include "../../../DesktopEditor/graphics/Image.h"
+#include "../../../PdfFile/PdfFile.h"
 
 namespace cpdoccore { 
 namespace oox {
@@ -56,7 +63,13 @@ bool is_internal(const std::wstring & uri, const std::wstring & packetRoot)
 
 	std::wstring  resultPath = packetRoot + FILE_SEPARATOR_STR + mediaPath;
 
-	return NSFile::CFileBinary::Exists(resultPath) || NSDirectory::Exists(mediaPath);
+	OOX::CPath pathRoot(packetRoot);
+	OOX::CPath pathFile(resultPath);
+
+	std::wstring testRoot = pathRoot.GetPath();
+	std::wstring testFile = pathFile.GetPath();
+
+	return (NSFile::CFileBinary::Exists(testFile) || NSDirectory::Exists(testFile)) && (std::wstring::npos != testFile.find(testRoot));
 }
 
 mediaitems::item::item(std::wstring const & _href,_rels_type _type, std::wstring const & _outputName,
@@ -81,7 +94,7 @@ mediaitems::mediaitems(const std::wstring & odfPacket) : odf_packet_(odfPacket)
 	count_activeX	= 0;	
 	count_control	= 0;	
 
-	applicationFonts_	= NSFonts::NSApplication::Create();
+	applicationFonts_ = NSFonts::NSApplication::Create();
 }
 mediaitems::~mediaitems()
 {
@@ -90,14 +103,71 @@ mediaitems::~mediaitems()
 }
 void mediaitems::set_font_directory(std::wstring pathFonts)
 {
-    if (applicationFonts_)
-        applicationFonts_->InitializeFromFolder(pathFonts);
+	if (applicationFonts_)
+	{
+		if (pathFonts.empty())
+			applicationFonts_->Initialize();
+		else
+			applicationFonts_->InitializeFromFolder(pathFonts);
+	}
+}
+bool mediaitems::is_internal_path(const std::wstring& uri, const std::wstring& packetRoot)
+{
+	return 	is_internal(uri, packetRoot);
 }
 
 std::wstring mediaitems::add_or_find(const std::wstring & href, _rels_type type, bool & isInternal, _rels_type_place type_place)
 {
     std::wstring ref;
     return add_or_find(href, type, isInternal, ref, type_place);
+}
+
+std::wstring mediaitems::add_or_find_anim_audio(const std::wstring& href, bool& isInternal, std::wstring& ref)
+{
+	std::wstring sub_path = L"media/";
+	int number = count_audio + 1;
+
+	bool isAudioInternal;
+	const std::wstring inputFileName = create_file_name(href, _rels_type::typeAudio, isAudioInternal, number);
+
+	isInternal = is_internal(href, odf_packet_);
+
+	std::wstring inputPath = isInternal ? (odf_packet_ + FILE_SEPARATOR_STR + href) : href;
+	std::wstring outputPath = sub_path + inputFileName;
+
+	std::wstring id;
+	for (size_t i = 0; i < items_.size(); i++)
+	{
+		if (items_[i].type_place != _rels_type_place::document_place) 
+			continue;
+
+		if ((items_[i].href == inputPath && !inputPath.empty()) || (items_[i].type == _rels_type::typeAudio && inputPath.empty()))
+		{
+			id = items_[i].Id;
+			outputPath = items_[i].outputName;
+
+			items_[i].count_add++;
+			break;
+		}
+	}
+
+	if (id.empty())
+	{
+		id = std::wstring(L"aId") + std::to_wstring(count_audio + 1);
+		count_audio++;
+		
+		items_.push_back(item(
+			inputPath, 
+			_rels_type::typeAudio, 
+			XmlUtils::EncodeXmlString(outputPath), 
+			false, 
+			id, 
+			_rels_type_place::document_place
+		));
+	}
+
+	ref = outputPath;
+	return id;
 }
 
 std::wstring static get_default_file_name(_rels_type type)
@@ -111,6 +181,7 @@ std::wstring static get_default_file_name(_rels_type type)
     case typeMsObject:
        return L"msObject";
 	case typeOleObject:
+	case typePDF:
        return L"oleObject";
     case typeMedia:
         return L"media";
@@ -123,7 +194,7 @@ std::wstring static get_default_file_name(_rels_type type)
 	case typeControl:
         return L"control";
 	case typeControlProps:
-        return L"controlProps";
+        return L"controlProps"; 
 	default:
         return L"";
     }
@@ -167,6 +238,8 @@ std::wstring mediaitems::create_file_name(const std::wstring & uri, _rels_type t
 		sExt = L".bin";
 	else if ( type == typeChart)
 		sExt = L".xml";
+	else if ( type == typePDF)
+		sExt = L".bin";
    
 	return get_default_file_name(type) + std::to_wstring(Num) + sExt;
 }
@@ -186,6 +259,16 @@ std::wstring mediaitems::detectImageFileExtension(const std::wstring &fileName)
 		CImageFileFormatChecker image_checker;
 		sExt = image_checker.DetectFormatByData(buffer, buffer_size);
 
+		if (sExt.empty())
+		{
+			std::wstring documentID;
+			COfficeFileFormatChecker office_checker;
+
+			if (office_checker.isPdfFormatFile(buffer, buffer_size, documentID))
+			{
+				sExt = L"pdf";
+			}
+		}
 		if (sExt.empty())
 		{
 			size_t n = fileName.rfind(L".");
@@ -208,8 +291,9 @@ std::wstring mediaitems::add_or_find(const std::wstring & href, _rels_type type,
 	{
 		sub_path = L"charts/";
 	}
-	else if ( type == typeMsObject || type == typeOleObject)
+	else if ( type == typeMsObject || type == typeOleObject || type == typePDF)
 	{
+		isMediaInternal = is_internal(href, odf_packet_);
 		sub_path = L"embeddings/";
 	}
 	else if ( type == typeControlProps)
@@ -232,8 +316,9 @@ std::wstring mediaitems::add_or_find(const std::wstring & href, _rels_type type,
 	else if ( type == typeAudio)		number = count_audio	+ 1;
 	else if ( type == typeVideo)		number = count_video	+ 1;
 	else if ( type == typeSlide)		number = count_slide	+ 1;
-	else if ( type == typeMsObject ||
-			  type == typeOleObject)	number = count_object	+ 1;
+	else if ( type == typeMsObject  ||
+			  type == typeOleObject || 
+			  type == typePDF)			number = count_object	+ 1;
 	else if ( type == typeControl)		number = count_control	+ 1;
 	else
 		number = items_.size() + 1;
@@ -281,7 +366,7 @@ std::wstring mediaitems::add_or_find(const std::wstring & href, _rels_type type,
 			id = std::wstring(L"picId") + std::to_wstring(count_image + 1);
 			count_image++;
 		}
-		else if ( type == typeMsObject || type == typeOleObject)
+		else if ( type == typeMsObject || type == typeOleObject || type == typePDF)
 		{
 			id = std::wstring(L"objId") + std::to_wstring(count_object + 1);
 			count_object++;
@@ -352,6 +437,71 @@ void mediaitems::dump_rels(rels & Rels, _rels_type_place type_place)
                 );
 		items_[i].count_used++;
 	}        
+}
+bool mediaitems::pdf2image(const std::wstring& pdf_file_name, const std::wstring& image_file_name)
+{
+	_UINT32 nRes = 0;
+	IOfficeDrawingFile* pReader = new CPdfFile(applicationFonts_);
+	if (!pReader) return false;
+
+	bool bResult = pReader->LoadFromFile(pdf_file_name.c_str(), L"");
+
+	if (bResult)
+	{
+		// default as in CMetafileToRenderterRaster
+		int nRasterFormat = 4;
+		int nSaveType = 2;
+		bool bIsOnlyFirst = true;
+		bool bIsZip = true;
+		int nRasterW = 100;
+		int nRasterH = 100;
+
+		int nSaveFlags = (nSaveType & 0xF0) >> 4;
+		nSaveType = nSaveType & 0x0F;
+
+		int nPagesCount = 1;
+
+		{
+			int nRasterWCur = nRasterW;
+			int nRasterHCur = nRasterH;
+
+			double dPageDpiX, dPageDpiY;
+			double dWidth, dHeight;
+			pReader->GetPageInfo(0, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
+
+			if (nSaveFlags & 0x0F)
+			{
+				if (((dWidth < dHeight) && (nRasterWCur > nRasterHCur)) ||
+					((dWidth > dHeight) && (nRasterWCur < nRasterHCur)))
+				{
+					int nTmp = nRasterWCur;
+					nRasterWCur = nRasterHCur;
+					nRasterHCur = nTmp;
+				}
+			}
+
+			if (1 == nSaveType)
+			{
+				double dKoef1 = nRasterWCur / dWidth;
+				double dKoef2 = nRasterHCur / dHeight;
+				if (dKoef1 > dKoef2)
+					dKoef1 = dKoef2;
+
+				nRasterWCur = (int)(dWidth * dKoef1 + 0.5);
+				nRasterHCur = (int)(dHeight * dKoef1 + 0.5);
+			}
+			else if (2 == nSaveType)
+			{
+				nRasterWCur = -1;
+				nRasterHCur = -1;
+			}
+
+			pReader->ConvertToRaster(0, image_file_name, nRasterFormat, nRasterWCur, nRasterHCur);
+		}
+	}
+
+	delete pReader;
+	return bResult;
 }
 
 

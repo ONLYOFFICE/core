@@ -66,16 +66,45 @@ void Label::readFields(CFRecord& record)
 	}
 	else if (global_info_->Version < 0x0600)
 	{
-		LPAnsiString name;
-		record >> name;
+		unsigned short test;
+		record >> test;
+		record.RollRdPtrBack(2);
 		
-		st = name;
+		if (test > record.getDataSize())
+		{
+			//wrong version !! 
+			record.RollRdPtrBack(record.getRdPtr());
+
+			int store = global_info_->Version;
+			global_info_->Version = 0x0200;
+
+			ShortXLAnsiString name;
+
+			record >> cell >> name;
+			st = name;
+
+			global_info_->Version = store;
+		}
+		else
+		{
+			LPAnsiString name;
+			record >> name;
+
+			st = name;
+		}
 	}
 	else
+	{
 		record >> st;
+	}
 
     isst_ = global_info_->startAddedSharedStrings + global_info_->arAddedSharedStrings.size() ;
 	global_info_->arAddedSharedStrings.push_back(st.value());
+}
+
+void Label::writeFields(CFRecord& record)
+{
+    record << cell << st;
 }
 
 int Label::serialize(std::wostream & stream)

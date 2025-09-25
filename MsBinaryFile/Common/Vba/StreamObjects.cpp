@@ -41,6 +41,8 @@ namespace VBA
 
 bool DirStreamObject::loadContent()
 {
+	if (!reader) return false;
+		
 	InformationRecord = boost::make_shared<PROJECTINFORMATION>(reader);
 	ReferencesRecord = boost::make_shared<PROJECTREFERENCES>(reader);
 	ModulesRecord = boost::make_shared<PROJECTMODULES>(reader);
@@ -50,12 +52,16 @@ bool DirStreamObject::loadContent()
 
 bool ModuleStreamObject::loadContent()
 {
-    SourceCode = convert_string_icu((char*)reader->getData(), (unsigned int)reader->getDataSize(), reader->CodePage);
+	if (!reader) return false;
+	
+	SourceCode = convert_string_icu((char*)reader->getData(), (unsigned int)reader->getDataSize(), reader->CodePage);
 
 	return true;
 }
 bool ProjectStreamObject::loadContent()
 {
+	if (!reader) return false;
+
 	std::string strProps((char*)reader->getData(), reader->getDataSize());
 
 	std::vector<std::string> arrProps;
@@ -72,6 +78,8 @@ bool ProjectStreamObject::loadContent()
 }
 bool VBFrameObject::loadContent()
 {
+	if (!reader) return false;
+
 	std::wstring strProps = convert_string_icu((char*)reader->getData(), (unsigned int)reader->getDataSize(), reader->CodePage);
 
 	std::vector<std::wstring> arrProps;
@@ -94,6 +102,8 @@ bool VBFrameObject::loadContent()
 
 bool FormControlStream::loadContent()
 {
+	if (!reader) return false;
+
 	unsigned char MinorVersion, MajorVersion;
 	_UINT16 cbForm;
 	

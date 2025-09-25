@@ -181,6 +181,7 @@ namespace PPTX
 		}
 		std::wstring Blip::GetFullPicName(OOX::IFileContainer* pRels)const
 		{
+			std::wstring result;
 			for (size_t i = 0; i < ExtLst.size(); ++i)
 			{
 				if (ExtLst[i].link_svg.IsInit())
@@ -189,13 +190,21 @@ namespace PPTX
 					{
 						smart_ptr<OOX::Image> p = pRels->Get<OOX::Image>(*ExtLst[i].link_svg);
 						if (p.is_init())
-							return p->filename().m_strFilename;
+						{
+							result = p->filename().m_strFilename;
+							break;
+						}
 					}
 
 					if (parentFileIs<FileContainer>())
-						return parentFileAs<FileContainer>().GetImagePathNameFromRId(*ExtLst[i].link_svg);
+					{
+						result = parentFileAs<FileContainer>().GetImagePathNameFromRId(*ExtLst[i].link_svg);
+						break;
+					}
 				}
 			}
+			if (false == result.empty()) return result;
+			
 			if (embed.IsInit())
 			{
 				if (pRels != NULL)
@@ -246,7 +255,13 @@ namespace PPTX
 		}
 		void Blip::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 		{
-			std::wstring strName = m_namespace.empty() ? L"blip" : (m_namespace + L":blip");
+			std::wstring strName;
+
+			if (XMLWRITER_DOC_TYPE_WORDART == pWriter->m_lDocType)
+				strName = L"w14:blip";
+			else
+				strName = m_namespace.empty() ? L"blip" : (m_namespace + L":blip");
+
 			pWriter->StartNode(strName);
 
 			pWriter->StartAttributes();
@@ -322,7 +337,7 @@ namespace PPTX
 			{
 				oId = pWriter->m_pCommon->m_pMediaManager->WriteImage(dataFilepathImageA, dX, dY, dW, dH, additionalPath, additionalType);
 			}
-			if (!dataFilepathImage.empty())
+			else if (!dataFilepathImage.empty())
 			{
 				oId = pWriter->m_pCommon->m_pMediaManager->WriteImage(dataFilepathImage, dX, dY, dW, dH, additionalPath, additionalType);
 			}
@@ -439,8 +454,8 @@ namespace PPTX
 						}	
 						if (false == strImagePath.empty())
 						{
-							smart_ptr<OOX::File> additionalFile;
-							NSBinPptxRW::_relsGeneratorInfo oRelsGeneratorInfo = pReader->m_pRels->WriteImage(strImagePath, additionalFile, L"", L"");
+							std::vector<smart_ptr<OOX::File>> additionalFiles;
+							NSBinPptxRW::_relsGeneratorInfo oRelsGeneratorInfo = pReader->m_pRels->WriteImage(strImagePath, additionalFiles, L"", L"");
 
 							if (oRelsGeneratorInfo.nImageRId > 0)
 							{

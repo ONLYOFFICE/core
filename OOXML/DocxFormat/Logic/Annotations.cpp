@@ -1393,7 +1393,9 @@ namespace OOX
 					AssignPtrXmlContent(pItem, CSdt, oReader)
 				else if ( _T("w:smartTag") == sName )
 					AssignPtrXmlContent(pItem, CSmartTag, oReader)
-				//else if ( _T("w:subDoc") == sName )
+				else if (_T("w:p") == sName)
+					AssignPtrXmlContent(pItem, CParagraph, oReader)
+					//else if ( _T("w:subDoc") == sName )
 				//	pItem = new CSubDoc( oReader );
 
 				if ( pItem )

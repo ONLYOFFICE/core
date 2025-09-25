@@ -55,10 +55,10 @@ namespace XLSB
             static const XLS::ElementType	type = XLS::typeBeginExtConn15;
 
             FRTBlank             FRTheader;
-            bool                 fSandbox;
-            bool                 fExcludeFromRefreshAll;
-            bool                 fAutoDelete;
-            bool                 fUsedByAddin;
+            bool                 fSandbox = false;
+            bool                 fExcludeFromRefreshAll = false;
+            bool                 fAutoDelete = false;
+            bool                 fUsedByAddin = false;
             XLNullableWideString irstId;
     };
 

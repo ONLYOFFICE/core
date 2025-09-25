@@ -76,8 +76,7 @@ namespace XmlUtils
 				return;
 			Write(strName, value->get());
 		}
-		
-	public:
+
 		void Write(const std::wstring& strName, const nullable_int& value);
 		void Write(const std::wstring& strName, const nullable_uint& value);
 		void Write(const std::wstring& strName, const nullable_sizet& value);
@@ -85,8 +84,8 @@ namespace XmlUtils
 		void Write(const std::wstring& strName, const nullable_string& value);
 		void Write(const std::wstring& strName, const nullable_bool& value);
 		void Write2(const std::wstring& strName, const nullable_bool& value);
+		void Write2(const std::wstring& strName, const nullable_string& value);
 
-	public:
 		CAttribute(const CAttribute& oSrc);
 		CAttribute& operator=(const CAttribute& oSrc);
 	};
@@ -96,7 +95,6 @@ namespace XmlUtils
 	public:
 		std::wstring m_strValue;
 
-	public:
 		CNodeValue();
 
 		template <typename T>

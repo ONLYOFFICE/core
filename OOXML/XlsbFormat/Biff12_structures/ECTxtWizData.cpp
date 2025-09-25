@@ -88,6 +88,7 @@ namespace XLSB
 		SETBIT(flags, 16, fSemiColon)
 		SETBIT(flags, 17, fConsecutive)
 		SETBITS(flags, 18, 19, fTextDelim)
+        SETBIT(flags, 20, 1)
 		SETBIT(flags, 21, fPromptForFile)
 		SETBIT(flags, 22, fCustom)
 

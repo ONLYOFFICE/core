@@ -30,7 +30,7 @@
  *
  */
 
-#include "../Writer/BinaryReader.h"
+#include "../Writer/BinaryReaderS.h"
 
 #include "../../Presentation/BinReaderWriterDefines.h"
 #include "../../Document/BinReader/DefaultThemeWriter.h"
@@ -47,16 +47,10 @@ using namespace OOX::Spreadsheet;
 
 namespace BinXlsxRW
 {
-	SaveParams::SaveParams(const std::wstring& _sDrawingsPath, const std::wstring& _sEmbeddingsPath, const std::wstring& _sThemePath, OOX::CContentTypes* _pContentTypes, CSVWriter* _pCSVWriter, bool bMacro)
+	SaveParams::SaveParams(const std::wstring& _sDrawingsPath, const std::wstring& _sEmbeddingsPath, const std::wstring& _sThemePath, OOX::CContentTypes* _pContentTypes, CSVWriter* _pCSVWriter, bool bMacro) :
+		bMacroEnabled(bMacro), pContentTypes(_pContentTypes), sThemePath(_sThemePath), 
+		sDrawingsPath(_sDrawingsPath), sEmbeddingsPath(_sEmbeddingsPath), pCSVWriter(_pCSVWriter)
 	{
-		bMacroEnabled = bMacro;
-		pContentTypes = _pContentTypes;
-        sThemePath = _sThemePath;
-		sDrawingsPath = _sDrawingsPath;
-		sEmbeddingsPath = _sEmbeddingsPath;
-
-		nThemeOverrideCount = 1;
-		pCSVWriter = _pCSVWriter;
 	}
 
 	const BYTE c_oserct_extlstEXT = 0;
@@ -80,6 +74,7 @@ namespace BinXlsxRW
 	const BYTE c_oserct_chartspaceSTYLES = 17;
 	const BYTE c_oserct_chartspaceCOLORS = 18;
 	const BYTE c_oserct_chartspaceXLSXEXTERNAL = 19;
+	const BYTE c_oserct_chartspaceXLSXZIP = 20;
 
 	const BYTE c_oserct_usershapes_COUNT = 0;
 	const BYTE c_oserct_usershapes_SHAPE_REL = 1;
@@ -836,6 +831,7 @@ namespace BinXlsxRW
 	const BYTE c_oserct_chartExSpaceSTYLES = c_oserct_chartspaceSTYLES;/* = 17*/
 	const BYTE c_oserct_chartExSpaceCOLORS = c_oserct_chartspaceCOLORS;/* = 18*/
 	const BYTE c_oserct_chartExSpaceXLSXEXTERNAL = c_oserct_chartspaceXLSXEXTERNAL;/* = 19*/
+	const BYTE c_oserct_chartExSpaceXLSXZIP = c_oserct_chartspaceXLSXZIP;/* = 19*/
 
 	const BYTE c_oserct_chartExDATA = 0;
 	const BYTE c_oserct_chartExEXTERNALDATA = 1;
@@ -1132,7 +1128,7 @@ namespace BinXlsxRW
 		}
 		else if (c_oserct_chartspaceTHEMEOVERRIDE == type)
 		{
-            std::wstring sThemeOverrideName      = L"themeOverride" + std::to_wstring(m_oSaveParams.nThemeOverrideCount++) + L".xml";
+            std::wstring sThemeOverrideName      = L"themeOverride" + std::to_wstring(m_oBufferedStream.m_nThemeOverrideCount++) + L".xml";
             std::wstring sThemeOverrideRelsPath  = L"../theme/" + sThemeOverrideName;
 
             OOX::CPath pathThemeOverrideFile = m_oSaveParams.sThemePath + FILE_SEPARATOR_STR + sThemeOverrideName;
@@ -1174,13 +1170,13 @@ namespace BinXlsxRW
 			OOX::CChartDrawing* pChartDrawing = new OOX::CChartDrawing(NULL);
 			READ1_DEF(length, res, this->ReadCT_userShapes, pChartDrawing);
 
-			OOX::CPath pathDrawingsRels = pathDrawingsRelsDir.GetPath() + FILE_SEPARATOR_STR + pChartDrawing->m_sOutputFilename + _T(".rels");
-			m_pOfficeDrawingConverter->SaveDstContentRels(pathDrawingsRels.GetPath());
-
 			if (res == c_oSerConstants::ReadOk)
 			{
 				NSCommon::smart_ptr<OOX::File> pDrawingFile(pChartDrawing);
 				pChart->Add(pDrawingFile);
+
+				OOX::CPath pathDrawingsRels = pathDrawingsRelsDir.GetPath() + FILE_SEPARATOR_STR + pChartDrawing->m_sOutputFilename + _T(".rels");
+				m_pOfficeDrawingConverter->SaveDstContentRels(pathDrawingsRels.GetPath());
 
 				unsigned int rId = 0;
 				m_pOfficeDrawingConverter->WriteRels(L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/chartUserShapes", L"../drawings/" + pChartDrawing->m_sOutputFilename, std::wstring(), &rId);
@@ -1211,7 +1207,8 @@ namespace BinXlsxRW
 			pChart->m_oChartSpace.m_externalData->m_id = new std::wstring;
 			*pChart->m_oChartSpace.m_externalData->m_id = OOX::RId(rId).ToString();
 		}
-		else if (c_oserct_chartspaceXLSX == type)
+		else if (c_oserct_chartspaceXLSX	== type || 
+				 c_oserct_chartspaceXLSXZIP == type)
 		{			
 			OOX::CSystemUtility::CreateDirectories(m_oSaveParams.sEmbeddingsPath);
 
@@ -1221,8 +1218,15 @@ namespace BinXlsxRW
 			m_pOfficeDrawingConverter->SetDstContentRels();
 
 			NSCommon::smart_ptr<OOX::Media> pXlsxFile;			
-			ReadCT_Xlsx(m_oBufferedStream.GetPointer(0), length, pXlsxFile);
-
+			
+			if (c_oserct_chartspaceXLSXZIP == type)
+			{
+				ReadCT_XlsxZip(m_oBufferedStream.GetPointer(0), length, pXlsxFile);
+			}
+			else
+			{
+				ReadCT_XlsxBin(m_oBufferedStream.GetPointer(0), length, pXlsxFile);
+			}
 			m_oBufferedStream.Skip(length);
 
 			if (pXlsxFile.IsInit())
@@ -1277,7 +1281,30 @@ namespace BinXlsxRW
 			res = c_oSerConstants::ReadUnknown;
 		return res;
 	}
-	int BinaryChartReader::ReadCT_Xlsx(BYTE *pData, long length, NSCommon::smart_ptr<OOX::Media> & file)
+	int BinaryChartReader::ReadCT_XlsxZip(BYTE* pData, long length, NSCommon::smart_ptr<OOX::Media>& fileOut)
+	{
+		if (length < 1 || !pData)
+			return c_oSerConstants::ReadUnknown;
+		
+		fileOut = new OOX::OleObject(NULL, true, m_pOfficeDrawingConverter->m_pReader->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX);
+		
+		int id = m_pOfficeDrawingConverter->m_pReader->m_nCountEmbedded++;
+
+		bool bMacroEnabled = false;
+		std::wstring sXlsxFilename = L"Microsoft_Excel_Worksheet" + std::to_wstring(id) + (bMacroEnabled ? L".xlsm" : L".xlsx");
+
+		NSFile::CFileBinary file;
+		if (file.CreateFileW(m_oSaveParams.sEmbeddingsPath + FILE_SEPARATOR_STR + sXlsxFilename))
+		{
+			file.WriteFile(pData, length);
+			file.WriteFile(pData, length);
+			file.CloseFile();
+		}
+		fileOut->set_filename(m_oSaveParams.sEmbeddingsPath + FILE_SEPARATOR_STR + sXlsxFilename, false);
+
+		m_pOfficeDrawingConverter->m_pReader->m_pRels->m_pManager->m_pContentTypes->AddDefault(bMacroEnabled ? L"xlsm" : L"xlsx");
+	}
+	int BinaryChartReader::ReadCT_XlsxBin(BYTE *pData, long length, NSCommon::smart_ptr<OOX::Media> & file)
 	{
 		if (length < 1 || !pData)
 			return c_oSerConstants::ReadUnknown;
@@ -1300,7 +1327,7 @@ namespace BinXlsxRW
 			std::wstring sThemePath = sDstEmbeddedTemp + FILE_SEPARATOR_STR + L"xl" + FILE_SEPARATOR_STR + L"theme";
 			std::wstring sEmbeddingsPath = sDstEmbeddedTemp + FILE_SEPARATOR_STR + L"xl" + FILE_SEPARATOR_STR + L"embeddings";
 
-			BinXlsxRW::SaveParams oSaveParams(sDrawingsPath, sEmbeddingsPath, sThemePath, oDrawingConverter.GetContentTypes(), NULL, true);
+			BinXlsxRW::SaveParams oSaveParams(sDrawingsPath, sEmbeddingsPath, sThemePath, oDrawingConverter.GetContentTypes(), NULL, false);
 
 			std::wstring sXmlOptions, sMediaPath, sEmbedPath;
 			BinXlsxRW::CXlsxSerializer::CreateXlsxFolders(sXmlOptions, sDstEmbeddedTemp, sMediaPath, sEmbedPath);
@@ -1312,7 +1339,7 @@ namespace BinXlsxRW
 			oDrawingConverter.m_pReader->Init(pData, 0, length);
 
 			oDrawingConverter.SetDstPath(sDstEmbeddedTemp + FILE_SEPARATOR_STR + L"xl");
-			oDrawingConverter.SetSrcPath(m_pOfficeDrawingConverter->m_pReader->m_strFolder, 2);
+			oDrawingConverter.SetSrcPath(m_pOfficeDrawingConverter->m_pReader->m_strFolder, XMLWRITER_DOC_TYPE_XLSX);
 
 			oDrawingConverter.SetMediaDstPath(sMediaPath);
 			oDrawingConverter.SetEmbedDstPath(sEmbedPath);
@@ -6243,7 +6270,8 @@ namespace BinXlsxRW
 
 			pChart->m_oChartSpace.m_chartData.m_externalData->m_id = OOX::RId(rId).ToString();
 		}
-		else if (c_oserct_chartspaceXLSX == type)
+		else if (c_oserct_chartspaceXLSX == type || 
+				c_oserct_chartspaceXLSXZIP == type)
 		{
 			OOX::CSystemUtility::CreateDirectories(m_oSaveParams.sEmbeddingsPath);
 
@@ -6253,7 +6281,15 @@ namespace BinXlsxRW
 			m_pOfficeDrawingConverter->SetDstContentRels();
 
 			NSCommon::smart_ptr<OOX::Media> pXlsxFile;
-			ReadCT_Xlsx(m_oBufferedStream.GetPointer(0), length, pXlsxFile);
+
+			if (c_oserct_chartspaceXLSXZIP == type)
+			{
+				ReadCT_XlsxZip(m_oBufferedStream.GetPointer(0), length, pXlsxFile);
+			}
+			else
+			{
+				ReadCT_XlsxBin(m_oBufferedStream.GetPointer(0), length, pXlsxFile);
+			}
 
 			m_oBufferedStream.Skip(length);
 
@@ -6646,15 +6682,15 @@ namespace BinXlsxRW
 			pLegend->m_spPr->m_namespace = L"cx";
 			res = ReadCT_PptxElement(0, length, pLegend->m_spPr.GetPointer());
 		}
-		else if (c_oserct_chartExTitlePOS == type)
+		else if (c_oserct_chartExLegendPOS == type)
 		{
 			pLegend->m_pos = (SimpleTypes::Spreadsheet::ESidePos)m_oBufferedStream.GetUChar();
 		}
-		else if (c_oserct_chartExTitleALIGN == type)
+		else if (c_oserct_chartExLegendALIGN == type)
 		{
 			pLegend->m_align = (SimpleTypes::Spreadsheet::EPosAlign)m_oBufferedStream.GetUChar();
 		}
-		else if (c_oserct_chartExTitleOVERLAY == type)
+		else if (c_oserct_chartExLegendOVERLAY == type)
 		{
 			pLegend->m_overlay = m_oBufferedStream.GetBool();
 		}
@@ -6877,7 +6913,7 @@ namespace BinXlsxRW
 			pDataLabel->m_spPr->m_namespace = L"cx";
 			res = ReadCT_PptxElement(0, length, pDataLabel->m_spPr.GetPointer());
 		}
-		else if (c_oserct_chartExDataLabelsVISABILITIES == type)
+		else if (c_oserct_chartExDataLabelVISABILITIES == type)
 		{
 			pDataLabel->m_visibility.Init();
 			READ1_DEF(length, res, this->ReadCT_ChartExDataLabelVisibilities, pDataLabel->m_visibility.GetPointer());
@@ -6895,7 +6931,7 @@ namespace BinXlsxRW
 		int res = c_oSerConstants::ReadOk;
 		OOX::Spreadsheet::ChartEx::CDataLabelHidden *pDataLabelHidden = static_cast<OOX::Spreadsheet::ChartEx::CDataLabelHidden*>(poResult);
 
-		if (c_oserct_chartExDATA == type)
+		if (c_oserct_chartExDataLabelHiddenIDX == type)
 		{
 			pDataLabelHidden->m_idx = m_oBufferedStream.GetLong();
 		}
@@ -6991,11 +7027,13 @@ namespace BinXlsxRW
 
 		if (c_oserct_chartExBinningBINSIZE == type)
 		{
-			pBinning->m_binSize = m_oBufferedStream.GetDoubleReal();
+			pBinning->m_binSize.Init();
+			pBinning->m_binSize->m_oVal = m_oBufferedStream.GetDoubleReal();
 		}
 		else if (c_oserct_chartExBinningBINCOUNT == type)
 		{
-			pBinning->m_binCount = m_oBufferedStream.GetLong();
+			pBinning->m_binCount.Init();
+			pBinning->m_binCount->m_oVal = m_oBufferedStream.GetLong();
 		}
 		else if (c_oserct_chartExBinningINTERVAL == type)
 		{
@@ -7026,7 +7064,7 @@ namespace BinXlsxRW
 		int res = c_oSerConstants::ReadOk;
 		OOX::Spreadsheet::ChartEx::CStatistics *pStatistics = static_cast<OOX::Spreadsheet::ChartEx::CStatistics*>(poResult);
 
-		if (c_oserct_chartExDATA == type)
+		if (c_oserct_chartExStatisticsMETHOD == type)
 		{
 			pStatistics->m_quartileMethod = (SimpleTypes::Spreadsheet::EQuartileMethod)m_oBufferedStream.GetUChar();
 		}
@@ -7132,7 +7170,7 @@ namespace BinXlsxRW
 			pAxis->m_majorGridlines->m_name = L"cx:majorGridlines";
 			READ1_DEF(length, res, this->ReadCT_ChartExGridlines, pAxis->m_majorGridlines.GetPointer());
 		}
-		else if (c_oserct_chartExAxisMAJORGRID == type)
+		else if (c_oserct_chartExAxisMINORGRID == type)
 		{
 			pAxis->m_minorGridlines.Init();
 			pAxis->m_minorGridlines->m_name = L"cx:minorGridlines";
@@ -7148,7 +7186,7 @@ namespace BinXlsxRW
 			pAxis->m_txPr->m_name = L"cx:txPr";
 			res = ReadCT_PptxElement(0, length, pAxis->m_txPr.GetPointer());
 		}
-		else if (c_oserct_chartExDataLabelSPPR == type)
+		else if (c_oserct_chartExAxisSPPR == type)
 		{
 			pAxis->m_spPr = new PPTX::Logic::SpPr;
 			pAxis->m_spPr->m_namespace = L"cx";
@@ -7349,6 +7387,7 @@ namespace BinXlsxRW
 			int nCurPos = m_oBcw.WriteItemStart(c_oserct_chartspaceCHART);
 			WriteCT_Chart(*oVal.m_chart);
 			m_oBcw.WriteItemEnd(nCurPos);
+
 		}
 		if (oVal.m_spPr.IsInit())
 		{
@@ -12562,16 +12601,16 @@ namespace BinXlsxRW
 	}
 	void BinaryChartWriter::WriteCT_ChartExBinning(OOX::Spreadsheet::ChartEx::CBinning *pVal)
 	{
-		if (pVal->m_binSize.IsInit())
+		if ((pVal->m_binSize.IsInit()) && (pVal->m_binSize->m_oVal.IsInit()))
 		{
 			int nCurPos = m_oBcw.WriteItemStart(c_oserct_chartExBinningBINSIZE);
-			m_oBcw.m_oStream.WriteDoubleReal(*pVal->m_binSize);
+			m_oBcw.m_oStream.WriteDoubleReal(pVal->m_binSize->m_oVal->GetValue());
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		if (pVal->m_binCount.IsInit())
+		if ((pVal->m_binCount.IsInit()) && (pVal->m_binCount->m_oVal.IsInit()))
 		{
 			int nCurPos = m_oBcw.WriteItemStart(c_oserct_chartExBinningBINCOUNT);
-			m_oBcw.m_oStream.WriteLONG(*pVal->m_binCount);
+			m_oBcw.m_oStream.WriteLONG(*pVal->m_binCount->m_oVal);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
 		if (pVal->m_intervalClosed.IsInit())
@@ -12597,7 +12636,7 @@ namespace BinXlsxRW
 		}
 		if (pVal->m_overflow.IsInit())
 		{
-			if (pVal->m_underflow->GetValue() == SimpleTypes::Spreadsheet::typeAuto)
+			if (pVal->m_overflow->GetValue() == SimpleTypes::Spreadsheet::typeAuto)
 			{
 				int nCurPos = m_oBcw.WriteItemStart(c_oserct_chartExBinningOVERAUTO);
 				m_oBcw.m_oStream.WriteBYTE(pVal->m_overflow->GetValue());

@@ -73,54 +73,19 @@ namespace DocFileFormat
 		friend class VMLPictureMapping;
 
 	private:
-		/// 24-bit border color
-		int cv;
-		/// Width of a single line in 1/8pt, max of 32pt
+		boost::optional<_UINT32> cv;
 		unsigned char dptLineWidth;
-		/// Border type code:
-		/// 0 none
-		/// 1 single
-		/// 2 thick
-		/// 3 double
-		/// 5 hairline
-		/// 6 dot
-		/// 7 dash large gap
-		/// 8 dot dash
-		/// 9 dot dot dash
-		/// 10 triple
-		/// 11 thin-thick small gap
-		/// 12 tick-thin small gap
-		/// 13 thin-thick-thin small gap
-		/// 14 thin-thick medium gap
-		/// 15 thick-thin medium gap
-		/// 16 thin-thick-thin medium gap
-		/// 17 thin-thick large gap
-		/// 18 thick-thin large gap
-		/// 19 thin-thick-thin large gap
-		/// 20 wave
-		/// 21 double wave
-		/// 22 dash small gap
-		/// 23 dash dot stroked
-		/// 24 emboss 3D
-		/// 25 engrave 3D
 		unsigned char brcType;
-		/// The color of the Border.
-		/// Unused if cv is set.
 		std::wstring ico;
-		/// Width of space to maintain between border and text within border
 		int dptSpace;
-		/// When true, border is drawn with shadow. Must be false when BRC is substructure of the TC
 		bool fShadow;
-		/// When true, don't reverse the border
 		bool fFrame;
-		/// It's a nil BRC, bytes are FFFF.
 		bool fNil;
 
 	public:
-		/// Creates a new BorderCode with default values
+		std::wstring getColor();
 		BorderCode();
 
-		/// Parses the unsigned char for a BRC
 		BorderCode( unsigned char* bytes, int size );
 		BorderCode( const BorderCode& bc );
 

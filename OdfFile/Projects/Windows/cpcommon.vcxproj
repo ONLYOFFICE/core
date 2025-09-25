@@ -143,6 +143,7 @@
     </ClCompile>
     <Lib>
       <OutputFile>$(OutDir)$(ProjectName)-static.lib</OutputFile>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\..\..\..\Common\3dParty\boost\build\win_32\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -180,6 +181,7 @@
     <ClInclude Include="..\..\Common\utils.h" />
     <ClInclude Include="..\..\Common\writedocelement.h" />
     <ClInclude Include="..\..\DataTypes\anchortype.h" />
+    <ClInclude Include="..\..\DataTypes\animation_attlists.h" />
     <ClInclude Include="..\..\DataTypes\backgroundcolor.h" />
     <ClInclude Include="..\..\DataTypes\bibliography.h" />
     <ClInclude Include="..\..\DataTypes\bool.h" />
@@ -200,6 +202,7 @@
     <ClInclude Include="..\..\DataTypes\charttimeunit.h" />
     <ClInclude Include="..\..\DataTypes\clockvalue.h" />
     <ClInclude Include="..\..\DataTypes\color.h" />
+    <ClInclude Include="..\..\DataTypes\color_mode.h" />
     <ClInclude Include="..\..\DataTypes\commandtype.h" />
     <ClInclude Include="..\..\DataTypes\common_attlists.h" />
     <ClInclude Include="..\..\DataTypes\custom_shape_types_convert.h" />
@@ -246,12 +249,22 @@
     <ClInclude Include="..\..\DataTypes\percent.h" />
     <ClInclude Include="..\..\DataTypes\percentorscale.h" />
     <ClInclude Include="..\..\DataTypes\presentationclass.h" />
+    <ClInclude Include="..\..\DataTypes\presentationnodetype.h" />
+    <ClInclude Include="..\..\DataTypes\presentationvisibility.h" />
+    <ClInclude Include="..\..\DataTypes\presetclass.h" />
+    <ClInclude Include="..\..\DataTypes\presetid.h" />
     <ClInclude Include="..\..\DataTypes\punctuationwrap.h" />
+    <ClInclude Include="..\..\DataTypes\referenceformat.h" />
     <ClInclude Include="..\..\DataTypes\rotationalign.h" />
     <ClInclude Include="..\..\DataTypes\runthrough.h" />
     <ClInclude Include="..\..\DataTypes\scripttype.h" />
     <ClInclude Include="..\..\DataTypes\shadowtype.h" />
+    <ClInclude Include="..\..\DataTypes\smil_additive.h" />
+    <ClInclude Include="..\..\DataTypes\smil_attributename.h" />
+    <ClInclude Include="..\..\DataTypes\smil_fill.h" />
+    <ClInclude Include="..\..\DataTypes\smil_keytimes.h" />
     <ClInclude Include="..\..\DataTypes\smil_transitiontype.h" />
+    <ClInclude Include="..\..\DataTypes\smil_values.h" />
     <ClInclude Include="..\..\DataTypes\sparklines.h" />
     <ClInclude Include="..\..\DataTypes\stylecellprotect.h" />
     <ClInclude Include="..\..\DataTypes\stylefamily.h" />
@@ -268,10 +281,13 @@
     <ClInclude Include="..\..\DataTypes\stylewrap.h" />
     <ClInclude Include="..\..\DataTypes\stylewrapcontourmode.h" />
     <ClInclude Include="..\..\DataTypes\style_ref.h" />
+    <ClInclude Include="..\..\DataTypes\svg_type.h" />
     <ClInclude Include="..\..\DataTypes\tablealign.h" />
     <ClInclude Include="..\..\DataTypes\tablecentering.h" />
+    <ClInclude Include="..\..\DataTypes\tabledatatype.h" />
     <ClInclude Include="..\..\DataTypes\tablefunction.h" />
     <ClInclude Include="..\..\DataTypes\tablemode.h" />
+    <ClInclude Include="..\..\DataTypes\tableoperator.h" />
     <ClInclude Include="..\..\DataTypes\tableorder.h" />
     <ClInclude Include="..\..\DataTypes\tableorientation.h" />
     <ClInclude Include="..\..\DataTypes\tabletype.h" />
@@ -300,6 +316,7 @@
     <ClCompile Include="..\..\Common\readdocelement.cpp" />
     <ClCompile Include="..\..\Common\utils.cpp" />
     <ClCompile Include="..\..\DataTypes\anchortype.cpp" />
+    <ClCompile Include="..\..\DataTypes\animation_attlists.cpp" />
     <ClCompile Include="..\..\DataTypes\backgroundcolor.cpp" />
     <ClCompile Include="..\..\DataTypes\bibliography.cpp" />
     <ClCompile Include="..\..\DataTypes\bool.cpp" />
@@ -320,6 +337,7 @@
     <ClCompile Include="..\..\DataTypes\charttimeunit.cpp" />
     <ClCompile Include="..\..\DataTypes\clockvalue.cpp" />
     <ClCompile Include="..\..\DataTypes\color.cpp" />
+    <ClCompile Include="..\..\DataTypes\color_mode.cpp" />
     <ClCompile Include="..\..\DataTypes\commandtype.cpp" />
     <ClCompile Include="..\..\DataTypes\common_attlists.cpp" />
     <ClCompile Include="..\..\DataTypes\dategroup.cpp" />
@@ -363,12 +381,22 @@
     <ClCompile Include="..\..\DataTypes\percent.cpp" />
     <ClCompile Include="..\..\DataTypes\percentorscale.cpp" />
     <ClCompile Include="..\..\DataTypes\presentationclass.cpp" />
+    <ClCompile Include="..\..\DataTypes\presentationnodetype.cpp" />
+    <ClCompile Include="..\..\DataTypes\presentationvisibility.cpp" />
+    <ClCompile Include="..\..\DataTypes\presetclass.cpp" />
+    <ClCompile Include="..\..\DataTypes\presetid.cpp" />
     <ClCompile Include="..\..\DataTypes\punctuationwrap.cpp" />
+    <ClCompile Include="..\..\DataTypes\referenceformat.cpp" />
     <ClCompile Include="..\..\DataTypes\rotationalign.cpp" />
     <ClCompile Include="..\..\DataTypes\runthrough.cpp" />
     <ClCompile Include="..\..\DataTypes\scripttype.cpp" />
     <ClCompile Include="..\..\DataTypes\shadowtype.cpp" />
+    <ClCompile Include="..\..\DataTypes\smil_additive.cpp" />
+    <ClCompile Include="..\..\DataTypes\smil_attributename.cpp" />
+    <ClCompile Include="..\..\DataTypes\smil_fill.cpp" />
+    <ClCompile Include="..\..\DataTypes\smil_keytimes.cpp" />
     <ClCompile Include="..\..\DataTypes\smil_transitiontype.cpp" />
+    <ClCompile Include="..\..\DataTypes\smil_values.cpp" />
     <ClCompile Include="..\..\DataTypes\sparklines.cpp" />
     <ClCompile Include="..\..\DataTypes\stylecellprotect.cpp" />
     <ClCompile Include="..\..\DataTypes\stylefamily.cpp" />
@@ -385,10 +413,13 @@
     <ClCompile Include="..\..\DataTypes\stylewrap.cpp" />
     <ClCompile Include="..\..\DataTypes\stylewrapcontourmode.cpp" />
     <ClCompile Include="..\..\DataTypes\style_ref.cpp" />
+    <ClCompile Include="..\..\DataTypes\svg_type.cpp" />
     <ClCompile Include="..\..\DataTypes\tablealign.cpp" />
     <ClCompile Include="..\..\DataTypes\tablecentering.cpp" />
+    <ClCompile Include="..\..\DataTypes\tabledatatype.cpp" />
     <ClCompile Include="..\..\DataTypes\tablefunction.cpp" />
     <ClCompile Include="..\..\DataTypes\tablemode.cpp" />
+    <ClCompile Include="..\..\DataTypes\tableoperator.cpp" />
     <ClCompile Include="..\..\DataTypes\tableorder.cpp" />
     <ClCompile Include="..\..\DataTypes\tableorientation.cpp" />
     <ClCompile Include="..\..\DataTypes\tabletype.cpp" />

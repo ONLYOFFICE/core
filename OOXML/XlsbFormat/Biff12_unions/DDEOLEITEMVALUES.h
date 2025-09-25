@@ -55,6 +55,6 @@ namespace XLSB
 		bool			                m_bBrtSupNameValueEnd;
 
     };
-
+    typedef boost::shared_ptr<DDEOLEITEMVALUES> DDEOLEITEMVALUESPtr;
 } // namespace XLSB
 

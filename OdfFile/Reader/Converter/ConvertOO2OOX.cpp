@@ -120,6 +120,7 @@ _UINT32 ConvertODF2OOXml(const std::wstring & srcPath, const std::wstring & dstP
 			break;
 		case 3:
 		case 6:
+		case 7:
 			nResult = ConvertOdp2Pptx(inputOdf, dstPath, fontsPath);
 			break;
 		}

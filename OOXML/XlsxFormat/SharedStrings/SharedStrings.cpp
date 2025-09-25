@@ -38,6 +38,8 @@
 #include "../../XlsbFormat/Biff12_unions/SHAREDSTRINGS.h"
 #include "../../XlsbFormat/Biff12_records/SSTItem.h"
 
+#include "../../Binary/XlsbFormat/FileTypes_SpreadsheetBin.h"
+
 namespace OOX
 {
 	namespace Spreadsheet
@@ -102,6 +104,25 @@ namespace OOX
 			}
 
 		}
+		XLS::BaseObjectPtr CSharedStrings::WriteBin() const
+		{
+			XLSB::SharedStringsStreamPtr sharedStringsStream(new XLSB::SharedStringsStream);
+			auto ptr(new XLSB::SHAREDSTRINGS);
+			XLS::BaseObjectPtr objectPtr(ptr);
+
+			auto atribPtr(new XLSB::BeginSst);
+			ptr->m_BrtBeginSst = XLS::BaseObjectPtr{atribPtr};
+			if(m_oCount.IsInit())
+				atribPtr->cstTotal = m_oCount->GetValue();
+			if(m_oUniqueCount.IsInit())
+				atribPtr->cstUnique = m_oUniqueCount->GetValue();
+
+			for(auto i:m_arrItems)
+			{
+				ptr->m_arBrtSSTItem.push_back(i->toBin());
+			}
+			return objectPtr;
+		}
 		void CSharedStrings::read(const CPath& oPath)
 		{
 			//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)
@@ -161,25 +182,38 @@ namespace OOX
 		}
 		void CSharedStrings::write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
 		{
-			NSStringUtils::CStringBuilder writer;
-			writer.WriteString(_T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><sst xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\""));
-			WritingStringNullableAttrInt(L"count", m_oCount, m_oCount->GetValue());
-			WritingStringNullableAttrInt(L"uniqueCount", m_oUniqueCount, m_oUniqueCount->GetValue());
-			writer.WriteString(_T(">"));
-
-			for(size_t i = 0; i < m_arrItems.size(); i++)
+			CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
+			if ((xlsb) && (xlsb->m_bWriteToXlsb))
 			{
-				m_arrItems[i]->toXML(writer);
+				XLS::BaseObjectPtr object = WriteBin();
+				xlsb->WriteBin(oPath, object.get());
 			}
+			else
+			{
+				NSStringUtils::CStringBuilder writer;
+				writer.WriteString(_T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><sst xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\""));
+				WritingStringNullableAttrInt(L"count", m_oCount, m_oCount->GetValue());
+				WritingStringNullableAttrInt(L"uniqueCount", m_oUniqueCount, m_oUniqueCount->GetValue());
+				writer.WriteString(_T(">"));
 
-			writer.WriteString(_T("</sst>"));
-			std::wstring sPath = oPath.GetPath();
-			NSFile::CFileBinary::SaveToFile(sPath.c_str(), writer.GetData());
+				for(size_t i = 0; i < m_arrItems.size(); i++)
+				{
+					m_arrItems[i]->toXML(writer);
+				}
 
+				writer.WriteString(_T("</sst>"));
+				std::wstring sPath = oPath.GetPath();
+				NSFile::CFileBinary::SaveToFile(sPath.c_str(), writer.GetData());
+			}
 			oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
 		}
 		const OOX::FileType CSharedStrings::type() const
 		{
+			CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
+			if ((xlsb) && (xlsb->m_bWriteToXlsb))
+			{
+				return OOX::SpreadsheetBin::FileTypes::SharedStringsBin;
+			}
 			return OOX::Spreadsheet::FileTypes::SharedStrings;
 		}
 		const CPath CSharedStrings::DefaultDirectory() const
@@ -188,7 +222,18 @@ namespace OOX
 		}
 		const CPath CSharedStrings::DefaultFileName() const
 		{
-			return type().DefaultFileName();
+			CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
+			if ((xlsb) && (xlsb->m_bWriteToXlsb))
+			{
+				CPath name = type().DefaultFileName();
+
+				name.SetExtention(L"bin");
+				return name;
+			}
+			else
+			{
+				return type().DefaultFileName();
+			}
 		}
 		const CPath& CSharedStrings::GetReadPath()
 		{

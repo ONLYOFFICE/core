@@ -36,7 +36,7 @@
 
 namespace MetaFile
 {
-	class IPath;
+	class CPath;
 
 	class IOutputDevice
 	{
@@ -50,10 +50,10 @@ namespace MetaFile
 		virtual void End() = 0;
 
 		// pBuffer - BGRA картинка размерами ulWidth, ulHeight, которую надо нарисовать в заданном ректе
-		virtual void DrawBitmap(double dX, double dY, double dW, double dH, BYTE* pBuffer, unsigned int unWidth, unsigned int unHeight) = 0;
+		virtual void DrawBitmap(double dX, double dY, double dW, double dH, BYTE* pBuffer, unsigned int unWidth, unsigned int unHeight, unsigned int nBlendMode) = 0;
 
 		virtual void DrawString(std::wstring& wsText, unsigned int unCharsCount, double dX, double dY, double* pDx,
-					int iGraphicsMode = 1, double dXScale = 1, double dYScale = 1) = 0;
+		                        int iGraphicsMode = 1, double dXScale = 1, double dYScale = 1) = 0;
 
 		virtual void DrawDriverString(const std::wstring& wsString, const std::vector<TPointD>& arPoints) = 0;
 
@@ -69,7 +69,7 @@ namespace MetaFile
 		virtual void ResetClip() = 0;
 		virtual void IntersectClip(const TRectD& oClip) = 0;
 		virtual void ExcludeClip(const TRectD& oClip, const TRectD& oBB) = 0;
-		virtual void PathClip(IPath* pPath, int nClipMode, TXForm* pTransform = NULL) = 0;
+		virtual void PathClip(const CPath& oPath, int nClipMode, TXForm *pTransform = NULL) = 0;
 		virtual void StartClipPath(unsigned int unMode, int nFillMode = -1) = 0;
 		virtual void EndClipPath(unsigned int unMode) = 0;
 

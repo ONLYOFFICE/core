@@ -1,11 +1,8 @@
 package lib.x2t
 
-import android.Manifest.permission.READ_EXTERNAL_STORAGE
-import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Xml
-import androidx.annotation.RequiresPermission
 import lib.x2t.data.Encoding
 import lib.x2t.utils.FileUtils
 import org.xmlpull.v1.XmlSerializer
@@ -47,7 +44,6 @@ class X2t private constructor() {
         @JvmStatic
         external fun setFonts(fontsPaths: Array<String?>, cacheFontsPath: String?)
 
-        @RequiresPermission(allOf = [READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE])
         @JvmStatic
         external fun convertFile(pathXml: String): Int
 
@@ -56,6 +52,9 @@ class X2t private constructor() {
          * */
         @JvmStatic
         external fun setIcuDataPath(icuDataPath: String?)
+
+        @JvmStatic
+        external fun getFileFormat(path: String): Int
 
         /*
          * Builder for converter
@@ -148,10 +147,10 @@ class X2t private constructor() {
         var formatFrom: Int = 0
 
         var formatTo: Int = 0
-        var isNoBase64:Boolean = false
-        var isFromChange:Boolean = false
-        var isPaid:Boolean = false
-        var isTemplate:Boolean = false
+        var isNoBase64: Boolean = false
+        var isFromChange: Boolean = false
+        var isPaid: Boolean = false
+        var isTemplate: Boolean = false
     }
 
 
@@ -239,8 +238,6 @@ class X2t private constructor() {
 
     }
 
-
-    @RequiresPermission(allOf = [READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE])
     fun convert(context: Context): ConvertResult {
         val result = ConvertResult()
 
@@ -278,7 +275,7 @@ class X2t private constructor() {
                     delimiterCode.equals(
                         InputParams.DELIMITER_CODE_NONE
                     ).let {
-                        if(it)
+                        if (it)
                             null
                         else
                             delimiterCode.toString()
@@ -286,11 +283,11 @@ class X2t private constructor() {
                     encoding.equals(
                         0
                     ).let {
-                        if(it)
+                        if (it)
                             null
                         else
                             encoding.toString()
-                    } )
+                    })
                 result.code = convertFile(xml!!)
             }
 
@@ -305,12 +302,17 @@ class X2t private constructor() {
     }
 
     @Throws(IOException::class)
-    private fun insertParam(xmlSerializer: XmlSerializer, startTag: String, text: String?, atrr: HashMap<String, String>? = null, endTag: String = startTag)
-    {
+    private fun insertParam(
+        xmlSerializer: XmlSerializer,
+        startTag: String,
+        text: String?,
+        atrr: HashMap<String, String>? = null,
+        endTag: String = startTag
+    ) {
         xmlSerializer.startTag(null, startTag)
         atrr?.let {
-            it.forEach {
-                    (key, value) -> xmlSerializer.attribute(null, key, value)
+            it.forEach { (key, value) ->
+                xmlSerializer.attribute(null, key, value)
             }
         }
         text?.let {
@@ -319,19 +321,20 @@ class X2t private constructor() {
         xmlSerializer.endTag(null, endTag)
     }
 
-    private fun createXmlFileTransform(xmlDirectory: String?,
-                                        key: String?,
-                                        format: String?,
-                                        from: String?,
-                                        to: String?,
-                                        temp: String?,
-                                        fonts: String?,
-                                        themes: String?,
-                                        password: String?,
-                                        delimiter: String?,
-                                        delimiterChar: String?,
-                                        encoding: String?)
-    {
+    private fun createXmlFileTransform(
+        xmlDirectory: String?,
+        key: String?,
+        format: String?,
+        from: String?,
+        to: String?,
+        temp: String?,
+        fonts: String?,
+        themes: String?,
+        password: String?,
+        delimiter: String?,
+        delimiterChar: String?,
+        encoding: String?
+    ) {
         try {
             val fileOutputStream = FileOutputStream(xmlDirectory)
             val xmlSerializer: XmlSerializer = Xml.newSerializer()
@@ -340,49 +343,49 @@ class X2t private constructor() {
             xmlSerializer.setOutput(writer)
             xmlSerializer.startDocument("UTF-8", null)
             xmlSerializer.startTag(null, "TaskQueueDataConvert")
-            xmlSerializer.attribute(null,"xmlns:xsi","""http://www.w3.org/2001/XMLSchema-instance""")
-            xmlSerializer.attribute(null,"xmlns:xsd", """http://www.w3.org/2001/XMLSchema""")
+            xmlSerializer.attribute(null, "xmlns:xsi", """http://www.w3.org/2001/XMLSchema-instance""")
+            xmlSerializer.attribute(null, "xmlns:xsd", """http://www.w3.org/2001/XMLSchema""")
 
-            insertParam(xmlSerializer,"m_sKey", key )
-            insertParam(xmlSerializer,"m_nFormatTo", format )
-            insertParam(xmlSerializer,"m_sFileFrom", from )
-            insertParam(xmlSerializer,"m_sFileTo", to )
-            insertParam(xmlSerializer,"m_sTempDir", temp )
-            insertParam(xmlSerializer,"m_sFontDir", fonts )
-            insertParam(xmlSerializer,"m_sThemeDir", themes )
+            insertParam(xmlSerializer, "m_sKey", key)
+            insertParam(xmlSerializer, "m_nFormatTo", format)
+            insertParam(xmlSerializer, "m_sFileFrom", from)
+            insertParam(xmlSerializer, "m_sFileTo", to)
+            insertParam(xmlSerializer, "m_sTempDir", temp)
+            insertParam(xmlSerializer, "m_sFontDir", fonts)
+            insertParam(xmlSerializer, "m_sThemeDir", themes)
 
-            password?.let{
-                insertParam(xmlSerializer,"m_sPassword", password )
+            password?.let {
+                insertParam(xmlSerializer, "m_sPassword", password)
                 if (isSave && password.isNotEmpty()) {
-                    insertParam(xmlSerializer,"m_sSavePassword", password)
+                    insertParam(xmlSerializer, "m_sSavePassword", password)
                 }
             }
 
-            insertParam(xmlSerializer,"m_bIsPDFA", null, hashMapOf("xsi:nil" to """true"""))
+            insertParam(xmlSerializer, "m_bIsPDFA", null, hashMapOf("xsi:nil" to """true"""))
 
-            delimiter?.let{
-                insertParam(xmlSerializer,"m_nCsvDelimiter", delimiter)
+            delimiter?.let {
+                insertParam(xmlSerializer, "m_nCsvDelimiter", delimiter)
             } ?: run {
-                insertParam(xmlSerializer,"m_nCsvDelimiter", null, hashMapOf("xsi:nil" to """false"""))
+                insertParam(xmlSerializer, "m_nCsvDelimiter", null, hashMapOf("xsi:nil" to """false"""))
             }
 
-            delimiterChar?.let{
-                insertParam(xmlSerializer,"m_nCsvDelimiterChar", delimiterChar)
+            delimiterChar?.let {
+                insertParam(xmlSerializer, "m_nCsvDelimiterChar", delimiterChar)
             } ?: run {
-                insertParam(xmlSerializer,"m_nCsvDelimiterChar", null, hashMapOf("xsi:nil" to """false"""))
+                insertParam(xmlSerializer, "m_nCsvDelimiterChar", null, hashMapOf("xsi:nil" to """false"""))
             }
 
-            encoding?.let{
-                insertParam(xmlSerializer,"m_nCsvTxtEncoding", encoding)
+            encoding?.let {
+                insertParam(xmlSerializer, "m_nCsvTxtEncoding", encoding)
             } ?: run {
-                insertParam(xmlSerializer,"m_nCsvTxtEncoding", null, hashMapOf("xsi:nil" to """false"""))
+                insertParam(xmlSerializer, "m_nCsvTxtEncoding", null, hashMapOf("xsi:nil" to """false"""))
             }
 
-            insertParam(xmlSerializer,"m_bPaid", null, hashMapOf("xsi:nil" to """true"""))
-            insertParam(xmlSerializer,"m_bEmbeddedFonts", "false")
-            insertParam(xmlSerializer,"m_bFromChanges", null, hashMapOf("xsi:nil" to """false"""))
-            insertParam(xmlSerializer,"m_nDoctParams", null, hashMapOf("xsi:nil" to """false"""))
-            insertParam(xmlSerializer,"m_bIsNoBase64", "true" )
+            insertParam(xmlSerializer, "m_bPaid", null, hashMapOf("xsi:nil" to """true"""))
+            insertParam(xmlSerializer, "m_bEmbeddedFonts", "false")
+            insertParam(xmlSerializer, "m_bFromChanges", null, hashMapOf("xsi:nil" to """false"""))
+            insertParam(xmlSerializer, "m_nDoctParams", null, hashMapOf("xsi:nil" to """false"""))
+            insertParam(xmlSerializer, "m_bIsNoBase64", "true")
 
 
             xmlSerializer.endTag(null, "TaskQueueDataConvert")
@@ -391,8 +394,7 @@ class X2t private constructor() {
             val dataWrite: String = writer.toString()
             fileOutputStream.write(dataWrite.toByteArray())
             fileOutputStream.close()
-        }
-        catch (e: FileNotFoundException) {
+        } catch (e: FileNotFoundException) {
             e.printStackTrace()
 
         } catch (e: IllegalArgumentException) {

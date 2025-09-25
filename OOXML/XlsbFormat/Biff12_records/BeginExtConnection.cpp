@@ -107,6 +107,7 @@ namespace XLSB
 		SETBIT(flags, 16, fLoadSourceDataFile)
 		SETBIT(flags, 17, fLoadSourceConnectionFile)
 		SETBIT(flags, 18, fLoadConnectionDesc)
+        SETBIT(flags, 19, 1)
 		SETBIT(flags, 20, fLoadSSOApplicationID)
 
 		record << wInterval << flags;

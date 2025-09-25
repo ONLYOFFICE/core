@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
@@ -39,6 +39,7 @@
 
 #include "../../XlsbFormat/Biff12_unions/OLEOBJECTS.h"
 #include "../../XlsbFormat/Biff12_records/OleObject.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Binary/CFStreamCacheWriter.h"
 
 namespace OOX
 {
@@ -293,6 +294,109 @@ namespace OOX
 		{
 			ReadAttributes(obj);
 		}
+		XLS::BaseObjectPtr COleObject::toBin()
+		{
+			auto ptr(new XLSB::OleObject);
+			XLS::BaseObjectPtr objectPtr(ptr);
+			if(m_oDvAspect.IsInit())
+			{
+				if(m_oDvAspect == SimpleTypes::Spreadsheet::EDvAspect::Content)
+					ptr->dwAspect = 0x00000001;
+				else if(m_oDvAspect == SimpleTypes::Spreadsheet::EDvAspect::Icon)
+					ptr->dwAspect = 0x00000004;
+			}
+			if(m_oOleUpdate.IsInit())
+			{
+				if(m_oOleUpdate == SimpleTypes::Spreadsheet::EOleUpdate::Always)
+					ptr->dwOleUpdate = 0x00000001;
+				else if(m_oOleUpdate == SimpleTypes::Spreadsheet::EOleUpdate::OnCall)
+					ptr->dwOleUpdate = 0x00000003;
+			}
+
+			if(m_oShapeId.IsInit())
+				ptr->shapeId = m_oShapeId->GetValue();
+            if(m_oAutoLoad.IsInit())
+                ptr->fAutoLoad =  m_oAutoLoad->GetValue();
+            else
+                ptr->fAutoLoad = false;
+
+			if(m_oProgId.IsInit())
+				ptr->strProgID =  m_oProgId.get();
+			else
+				ptr->strProgID.setSize(0);
+
+			if(m_oLink.IsInit())
+			{
+				ptr->fLinked = true;
+				ptr->link =  m_oLink.get();
+			}
+			else
+				ptr->fLinked = false;
+
+			if(m_oRid.IsInit())
+				ptr->strRelID.value =  m_oRid->GetValue();
+			else
+				ptr->strRelID.value.setSize(0);
+
+			return objectPtr;
+		}
+        void COleObject::toBin(XLS::StreamCacheWriterPtr& writer)
+        {
+            auto record = writer->getNextRecord(XLSB::rt_OleObject);
+            {
+                _UINT32 dwAspect = 1;
+                _UINT32 dwOleUpdate = 0x00000001;
+                _UINT32 shapeId = 1;
+                if(m_oDvAspect.IsInit())
+                {
+                    if(m_oDvAspect == SimpleTypes::Spreadsheet::EDvAspect::Content)
+                        dwAspect = 0x00000001;
+                    else if(m_oDvAspect == SimpleTypes::Spreadsheet::EDvAspect::Icon)
+                        dwAspect = 0x00000004;
+                }
+                if(m_oOleUpdate.IsInit())
+                {
+                    if(m_oOleUpdate == SimpleTypes::Spreadsheet::EOleUpdate::Always)
+                        dwOleUpdate = 0x00000001;
+                    else if(m_oOleUpdate == SimpleTypes::Spreadsheet::EOleUpdate::OnCall)
+                        dwOleUpdate = 0x00000003;
+                }
+                if(m_oShapeId.IsInit())
+                    shapeId = m_oShapeId->GetValue();
+                *record << dwAspect << dwOleUpdate << shapeId;
+            }
+            {
+                XLS::ObjectParsedFormula link;
+                XLSB::XLWideString strProgID;
+                _UINT16 flags = 0;
+                if(m_oLink.IsInit())
+                {
+                    SETBIT(flags, 0, 1)
+                    link =  m_oLink.get();
+                }
+                if(m_oAutoLoad.IsInit())
+                    SETBIT(flags, 1, m_oAutoLoad->GetValue())
+                *record << flags;
+                if(m_oProgId.IsInit())
+                    strProgID =  m_oProgId.get();
+                else
+                    strProgID.setSize(0);
+                *record << strProgID;
+                if(m_oLink.IsInit())
+                    *record << link;
+                else
+                {
+                    XLSB::RelID strRelID;
+                    if(m_oRid.IsInit())
+                        strRelID.value =  m_oRid->GetValue();
+                    else
+                        strRelID.value.setSize(0);
+                    *record << strRelID;
+                }
+            }
+
+            writer->storeNextRecord(record);
+        }
 		EElementType COleObject::getType () const
 		{
 			return et_x_OleObject;
@@ -455,6 +559,29 @@ namespace OOX
 				}
 			}
 		}
+		XLS::BaseObjectPtr COleObjects::toBin()
+		{
+			auto ptr(new XLSB::OLEOBJECTS);
+			XLS::BaseObjectPtr objectPtr(ptr);
+			for(auto i:m_mapOleObjects)
+			{
+				ptr->m_arBrtOleObject.push_back(i.second->toBin());
+			}
+			return objectPtr;
+		}
+        void COleObjects::toBin(XLS::StreamCacheWriterPtr& writer)
+        {
+            {
+                auto begin = writer->getNextRecord(XLSB::rt_BeginOleObjects);
+                writer->storeNextRecord(begin);
+            }
+            for(auto i:m_mapOleObjects)
+                i.second->toBin(writer);
+            {
+                auto end = writer->getNextRecord(XLSB::rt_EndOleObjects);
+                writer->storeNextRecord(end);
+            }
+        }
 		EElementType COleObjects::getType () const
 		{
 			return et_x_OleObjects;

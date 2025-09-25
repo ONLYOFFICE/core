@@ -44,6 +44,7 @@
 #include "../../DesktopEditor/common/File.h"
 #include "../../DesktopEditor/common/Directory.h"
 #include <string>
+#include <vector>
 
 #include "../lib/goo/GList.h"
 #include "../lib/goo/GHash.h"
@@ -57,14 +58,17 @@ class GlobalParamsAdaptor : public GlobalParams
 
     BYTE* m_bCMapData;
     DWORD m_nCMapDataLength;
+
+    bool m_bDrawFormField;
+
 public:
-    NSFonts::IFontManager *m_pFontManager;
     GlobalParamsAdaptor(const char *filename) : GlobalParams(filename)
     {
         m_bCMapData = NULL;
         m_nCMapDataLength = 0;
+        m_bDrawFormField = false;
     }
-    ~GlobalParamsAdaptor()
+    virtual ~GlobalParamsAdaptor()
     {
         RELEASEARRAYOBJECTS(m_bCMapData);
     }
@@ -80,10 +84,14 @@ public:
         m_wsTempFolder = folder;
     }
 
+    bool IsNeedCMap() { return !m_bCMapData; }
     void SetCMapFolder(const std::wstring &wsFolder);
     void SetCMapFile(const std::wstring &wsFile);
     void SetCMapMemory(BYTE* pData, DWORD nSizeData);
     bool GetCMap(const char* sName, char*& pData, unsigned int& nSize);
+
+	void setDrawFormField(bool bDrawFormField) { m_bDrawFormField = bDrawFormField; }
+    bool getDrawFormField() { return m_bDrawFormField; }
 private:
 
 	void AddNameToUnicode(const char* sFile);

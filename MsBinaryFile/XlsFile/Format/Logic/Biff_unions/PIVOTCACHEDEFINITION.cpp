@@ -99,6 +99,17 @@ const bool PIVOTCACHEDEFINITION::loadContent(BinProcessor& proc)
 
 	return true;
 }
+const bool PIVOTCACHEDEFINITION::saveContent(BinProcessor& proc)
+{
+    if(m_SXStreamID == nullptr || m_SXVS == nullptr)
+        return false;
+    proc.mandatory(*m_SXStreamID);
+    proc.mandatory(*m_SXVS);
+    if(m_SXSRC != nullptr)
+        proc.mandatory(*m_SXSRC);
+    return true;
+}
+
 int PIVOTCACHEDEFINITION::serialize_definitions(std::wostream & strm)
 {
 	SXStreamID* streamId = dynamic_cast<SXStreamID*>(m_SXStreamID.get());
@@ -168,7 +179,7 @@ int PIVOTCACHEDEFINITION::serialize_definitions(std::wostream & strm)
 					FDB *field = dynamic_cast<FDB *>(pivot_cache->m_arFDB[i].get());
 					if (!field) continue;
 					
-					if (olap_view)
+					if ((olap_view) && (i < olap_view->m_arPIVOTVDTEX.size()))
 					{
 						PIVOTVDTEX *ex = dynamic_cast<PIVOTVDTEX*>(olap_view->m_arPIVOTVDTEX[i].get());
 						
@@ -187,7 +198,10 @@ int PIVOTCACHEDEFINITION::serialize_definitions(std::wostream & strm)
 
 					for (size_t i = 0; i < pivot_cache->m_arSXFORMULA.size(); i++)
 					{
-						pivot_cache->m_arSXFORMULA[i]->serialize(CP_XML_STREAM());
+						if (pivot_cache->m_arSXFORMULA[i])
+						{
+							pivot_cache->m_arSXFORMULA[i]->serialize(CP_XML_STREAM());
+						}
 					}
 				}
 			}

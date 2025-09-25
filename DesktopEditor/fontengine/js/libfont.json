@@ -44,21 +44,82 @@
 		
 		"_ASC_HB_LanguageFromString",
 		"_ASC_HB_ShapeText",
-		"_ASC_HB_FontFree"
+		"_ASC_HB_FontFree",
+		
+		"_hyphenCreateApplication",
+		"_hyphenDestroyApplication",
+		"_hyphenLoadDictionary",
+		"_hyphenCheckDictionary",
+		"_hyphenWord",
+
+		"_Zlib_Malloc",
+		"_Zlib_Free",
+		"_Zlib_Create",
+		"_Zlib_Open",
+		"_Zlib_Close",
+		"_Zlib_AddFile",
+		"_Zlib_RemoveFile",
+		"_Zlib_GetPaths",
+		"_Zlib_GetFile",
+		"_Zlib_Save",
+
+		"_Raster_DecodeFile",
+		"_Raster_GetDecodedBuffer",
+		"_Raster_GetHeight",
+		"_Raster_GetWidth",
+		"_Raster_GetStride",
+		"_Raster_Destroy",
+		"_Raster_EncodeImageData",
+		"_Raster_Encode",
+		"_Raster_GetEncodedBuffer",
+		"_Raster_GetEncodedSize",
+		"_Raster_DestroyEncodedData",
+		"_Image_GetFormat"
 	],
 	"include_path": [
 		"./../../graphics/pro/js/freetype-2.10.4/include", 
 		"./../../graphics/pro/js/freetype-2.10.4/include/freetype", 
 		"./../../graphics/pro/js/freetype-2.10.4/include/freetype/internal", 
-		"./../../../Common/3dParty/harfbuzz/harfbuzz/src",
 		"./../../graphics/pro/js/wasm/src/lib",
+
+		"./../../../Common/3dParty/harfbuzz/harfbuzz/src",
+		"./../../../Common/3dParty/brotli/brotli/c/include",
+		
 		"./../../../OfficeUtils/src",
-		"./../../../OfficeUtils/src/zlib-1.2.11"
+		"./../../../OfficeUtils/src/zlib-1.2.11",
+
+		"./../../cximage/jasper/include", 
+		"./../../cximage/jpeg", 
+		"./../../cximage/png", 
+		"./../../agg-2.4/include"
 	],
-	"define": ["__linux__", "_LINUX", "UNIX", "NDEBUG", "_LIB", "_CRT_SECURE_NO_WARNINGS", "FT2_BUILD_LIBRARY", "HAVE_FREETYPE", "FT_CONFIG_OPTION_SYSTEM_ZLIB"],
+	"define": [
+		"__linux__", "_LINUX", "UNIX", "_QT",
+		"NDEBUG", "_LIB", "_CRT_SECURE_NO_WARNINGS",
+		"FT2_BUILD_LIBRARY",
+		"HAVE_FREETYPE",
+		"FT_CONFIG_OPTION_SYSTEM_ZLIB",
+		"GRAPHICS_NO_USE_DYNAMIC_LIBRARY",
+		"HYPHEN_ENGINE_DISABLE_FILESYSTEM",
+		"METAFILE_DISABLE_FILESYSTEM",
+
+		"HAVE_UNISTD_H", "HAVE_FCNTL_H", "_ARM_ALIGN_",
+		"METAFILE_SUPPORT_WMF_EMF",
+		"CXIMAGE_DISABLE_SUPPORT_MNG",
+		"CXIMAGE_DISABLE_SUPPORT_ADDITIONS",
+		"_tcsnicmp=strncmp",
+		"_lseek=lseek",
+		"_getcwd=getcwd",
+		"NO_CONSOLE_IO",
+		"BUILD_ZLIB_AS_SOURCES",
+		"IMAGE_CHECKER_DISABLE_XML",
+
+		"FT_CONFIG_OPTION_USE_BROTLI",
+
+		"BUILDING_WASM_MODULE"
+	],
 	"compile_files_array": [
 	{
-		"name": "f",
 		"folder": "./../../graphics/pro/js/freetype-2.10.4/src",
 		"files": [
 			"base/ftdebug.c",
@@ -103,7 +164,6 @@
 		]
 	},
 	{
-		"name": "h",
 		"folder": "./../../../Common/3dParty/harfbuzz/harfbuzz/src",
 		"files": [
 			"hb-aat-layout.cc",
@@ -112,10 +172,13 @@
 			"hb-buffer-serialize.cc",
 			"hb-buffer-verify.cc",
 			"hb-buffer.cc",
+			"hb-cairo-utils.cc",
+			"hb-cairo.cc",
 			"hb-common.cc",
 			"hb-coretext.cc",
 			"hb-directwrite.cc",
 			"hb-draw.cc",
+			"hb-face-builder.cc",
 			"hb-face.cc",
 			"hb-fallback-shape.cc",
 			"hb-font.cc",
@@ -138,23 +201,26 @@
 			"hb-ot-meta.cc",
 			"hb-ot-metrics.cc",
 			"hb-ot-name.cc",
-			"hb-ot-shape-complex-arabic.cc",
-			"hb-ot-shape-complex-default.cc",
-			"hb-ot-shape-complex-hangul.cc",
-			"hb-ot-shape-complex-hebrew.cc",
-			"hb-ot-shape-complex-indic-table.cc",
-			"hb-ot-shape-complex-indic.cc",
-			"hb-ot-shape-complex-khmer.cc",
-			"hb-ot-shape-complex-myanmar.cc",
-			"hb-ot-shape-complex-syllabic.cc",
-			"hb-ot-shape-complex-thai.cc",
-			"hb-ot-shape-complex-use.cc",
-			"hb-ot-shape-complex-vowel-constraints.cc",
 			"hb-ot-shape-fallback.cc",
 			"hb-ot-shape-normalize.cc",
 			"hb-ot-shape.cc",
+			"hb-ot-shaper-arabic.cc",
+			"hb-ot-shaper-default.cc",
+			"hb-ot-shaper-hangul.cc",
+			"hb-ot-shaper-hebrew.cc",
+			"hb-ot-shaper-indic-table.cc",
+			"hb-ot-shaper-indic.cc",
+			"hb-ot-shaper-khmer.cc",
+			"hb-ot-shaper-myanmar.cc",
+			"hb-ot-shaper-syllabic.cc",
+			"hb-ot-shaper-thai.cc",
+			"hb-ot-shaper-use.cc",
+			"hb-ot-shaper-vowel-constraints.cc",
 			"hb-ot-tag.cc",
 			"hb-ot-var.cc",
+			"hb-outline.cc",
+			"hb-paint-extents.cc",
+			"hb-paint.cc",
 			"hb-set.cc",
 			"hb-shape-plan.cc",
 			"hb-shape.cc",
@@ -165,27 +231,147 @@
 			"hb-subset-cff1.cc",
 			"hb-subset-cff2.cc",
 			"hb-subset-input.cc",
+			"hb-subset-instancer-solver.cc",
 			"hb-subset-plan.cc",
+			"hb-subset-repacker.cc",
 			"hb-subset.cc",
 			"hb-ucd.cc",
 			"hb-unicode.cc",
-			"hb-uniscribe.cc"
+			"hb-uniscribe.cc",
+			"hb-wasm-api.cc",
+			"hb-wasm-shape.cc",
+			"graph/gsubgpos-context.cc"
 		]
 	},
 	{
-		"name": "z",
 		"folder": "../../../OfficeUtils/src/zlib-1.2.11/",
 		"files": ["adler32.c", "crc32.c", "deflate.c", "infback.c", "inffast.c", "inflate.c", "inftrees.c", "trees.c", "zutil.c", "compress.c"]
-	},
+	},	
 	{
-		"name": "own",
 		"folder": "cpp",
 		"files": ["text.cpp"]
 	},
 	{
-		"name": "w",
 		"folder": "./../../graphics/pro/js/wasm/src/lib",
 		"files": ["wasm_jmp.cpp"]
+	},
+	{
+		"folder": "../../../OfficeUtils/src/zlib-1.2.11/contrib/minizip/",
+		"files": ["unzip.c", "ioapi.c", "zip.c", "ioapibuf.c"]
+	},
+	{
+		"folder": "../../../OfficeUtils/js",
+		"files": ["../src/ZipBuffer.cpp", "wasm/src/base.cpp", "../src/zlib_addon.c"]
+	},
+	{
+		"folder": "../../",
+		"files": ["graphics/Image.cpp", "raster/BgraFrame.cpp", "raster/ImageFileFormatChecker.cpp", "graphics/Matrix.cpp"]
+	},
+	{
+		"folder": "../../agg-2.4/src/",
+		"files": ["agg_trans_affine.cpp"]
+	},
+	{
+		"folder": "../../raster/",
+		"files": ["PICT/PICFile.cpp", "PICT/pic.cpp"]
+	},
+	{
+		"folder": "../../graphics/pro/js/qt/raster",
+		"files": ["pro_Fonts_empty.cpp", "pro_Graphics_empty.cpp", "raster.cpp"]
+	},
+	{
+		"folder": "../../cximage/CxImage/",
+		"files": ["ximaenc.cpp", "ximaexif.cpp", "ximage.cpp", "ximainfo.cpp", "ximajpg.cpp", "ximalpha.cpp", "ximapal.cpp", "ximasel.cpp", "xmemfile.cpp", "ximapng.cpp", "ximabmp.cpp", "ximatran.cpp", "ximatif.cpp", "tif_xfile.cpp", "ximajas.cpp", "ximagif.cpp", "ximaico.cpp", "ximatga.cpp", "ximapcx.cpp", "ximawbmp.cpp", "ximamng.cpp", "ximapsd.cpp", "ximaska.cpp", "ximaraw.cpp"]
+	},
+	{
+		"folder": "../../cximage/jpeg/",
+		"files": ["jerror.c", "jdmarker.c", "jdapimin.c", "jdmaster.c", "jdapistd.c", "jcomapi.c", "jutils.c", "jdinput.c", "jdmainct.c", "jmemmgr.c", "jquant1.c", "jquant2.c", "jdmerge.c", "jdcolor.c", "jdsample.c", "jdpostct.c", "jddctmgr.c", "jdarith.c", "jdhuff.c", "jdcoefct.c", "jmemnobs.c", "jidctint.c", "jidctfst.c", "jidctflt.c", "jaricom.c", "jcapimin.c", "jcparam.c", "jcapistd.c", "jcinit.c", "jcmaster.c", "jccolor.c", "jcmarker.c", "jcsample.c", "jcprepct.c", "jcdctmgr.c", "jcarith.c", "jchuff.c", "jccoefct.c", "jcmainct.c", "jfdctint.c", "jfdctfst.c", "jfdctflt.c"]
+	},
+	{
+		"folder": "../../cximage/png/",
+		"files": ["pngread.c", "pngmem.c", "pngerror.c", "png.c", "pngrio.c", "pngtrans.c", "pngget.c", "pngrutil.c", "pngrtran.c", "pngset.c", "pngwrite.c", "pngwio.c", "pngwutil.c", "pngwtran.c"]
+	},
+	{
+		"folder": "../../cximage/tiff/",
+		"files": ["tif_close.c", "tif_dir.c", "tif_aux.c", "tif_getimage.c", "tif_strip.c", "tif_open.c", "tif_tile.c", "tif_error.c", "tif_read.c", "tif_flush.c", "tif_dirinfo.c", "tif_compress.c", "tif_warning.c", "tif_swab.c", "tif_color.c", "tif_dirread.c", "tif_write.c", "tif_codec.c", "tif_luv.c", "tif_dirwrite.c", "tif_dumpmode.c", "tif_fax3.c", "tif_ojpeg.c", "tif_jpeg.c", "tif_next.c", "tif_thunder.c", "tif_packbits.c", "tif_lzw.c", "tif_zip.c", "tif_fax3sm.c", "tif_predict.c"]
+	},	
+	{
+		"folder": "../../raster/Metafile/",
+		"files": [
+			"MetaFile.cpp", 
+			"Common/MetaFileTypes.cpp", 
+			"Common/MetaFileUtils.cpp", 
+			"Common/CPathConverter.cpp",
+			"Common/CPath.cpp",
+			"Common/CClip.cpp"
+		]
+	},
+	{
+		"folder": "../../raster/Metafile/Emf/",
+		"files": [
+			"EmfInterpretator/CEmfInterpretator.cpp",
+			"EmfInterpretator/CEmfInterpretatorArray.cpp",
+			"EmfInterpretator/CEmfInterpretatorRender.cpp",
+			"EmfInterpretator/CEmfInterpretatorSvg.cpp",
+			"EmfParser/CEmfParser.cpp",
+			"EmfParser/CEmfParserBase.cpp",
+			"EmfParser/CEmfPlusParser.cpp",
+			"EmfObjects.cpp",
+			"EmfPlusObjects.cpp",
+			"EmfPlayer.cpp",
+			"EmfFile.cpp"
+		]
+	},
+	{
+		"folder": "../../raster/Metafile/Wmf/",
+		"files": [
+			"WmfInterpretator/CInterpretatorSvgBase.cpp",
+			"WmfInterpretator/CWmfInterpretatorSvg.cpp",
+			"WmfInterpretator/CWmfInterpretatorRender.cpp",
+			"WmfInterpretator/CWmfInterpretator.cpp",
+			"WmfParser/CWmfParser.cpp",
+			"WmfParser/CWmfParserBase.cpp",
+			"WmfObjects.cpp",
+			"WmfPlayer.cpp"
+		]
+	},
+	{
+		"folder": "../../common/",
+		"files": [
+			"File.cpp",
+			"Base64.cpp",
+			"StringExt.cpp",
+			"StringBuilder.cpp",
+			"../xml/src/xmlwriter.cpp"
+		]
+	},
+	{
+		"folder": "./..",
+		"files": ["TextHyphen.cpp"]
+	},
+	{
+		"folder": "./../../../Common/3dParty/hyphen/js/src",
+		"files": ["hyphen.cpp"]
+	},
+	{
+		"folder": "./../../../Common/3dParty/brotli/brotli/c/common",
+		"files": [
+			"constants.c",
+			"context.c",
+			"dictionary.c",
+			"platform.c",
+			"shared_dictionary.c",
+			"transform.c"
+		]
+	},
+	{
+		"folder": "./../../../Common/3dParty/brotli/brotli/c/dec",
+		"files": [
+			"bit_reader.c",
+			"decode.c",
+			"huffman.c",
+			"state.c"
+		]
 	}
 	]
 }

@@ -105,7 +105,7 @@ void table_database_range::xlsx_convert(oox::xlsx_conversion_context & Context)
 	if (Context.get_table_context().start_database_range(name, *table_target_range_address_, content_.empty()))
 	{	
 		if (table_display_filter_buttons_)
-			Context.get_table_context().set_database_filter(table_display_filter_buttons_->get());
+			Context.get_table_context().set_database_filter_button(table_display_filter_buttons_->get());
 
 		if (table_orientation_)
 			Context.get_table_context().set_database_orientation(table_orientation_->get_type() == table_orientation::row ? true : false);
@@ -142,13 +142,16 @@ void table_sort::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
 	for (size_t i = 0; i < content_.size(); i++)
 	{
-		table_sort_by * sort_by = dynamic_cast<table_sort_by*>(content_[i].get());
+		table_sort_by *sort_by = dynamic_cast<table_sort_by*>(content_[i].get());
+		if (!sort_by) continue;
 
 		int descending = 1;
 		if ((sort_by->table_order_) && (sort_by->table_order_->get_type() == table_order::descending))
 			descending = 2;
 
-		Context.get_table_context().add_database_sort(sort_by->table_field_number_, descending); 
+		int type = sort_by->table_data_type_ ? sort_by->table_data_type_->get_type() : 0;
+
+		Context.get_table_context().add_database_sort(sort_by->table_field_number_, descending, type);
 	}
 }
 //--------------------------------------------------------------------------------------------------
@@ -161,6 +164,10 @@ void table_sort_by::add_attributes(xml::attributes_wc_ptr const & Attributes)
 	CP_APPLY_ATTR(L"table:data-type"	, table_data_type_);
 	CP_APPLY_ATTR(L"table:order"		, table_order_);
 
+	if (!table_data_type_)
+	{
+		CP_APPLY_ATTR(L"loext:data-type", table_data_type_);
+	}
 }
 //--------------------------------------------------------------------------------------------------
 const wchar_t * table_filter::ns	= L"table";
@@ -181,6 +188,10 @@ void table_filter::add_child_element( xml::sax * Reader, const std::wstring & Ns
 
 void table_filter::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
+	if (table_condition_source_range_address_)
+	{
+		Context.get_table_context().set_database_source_ref(*table_condition_source_range_address_);
+	}
 	for (size_t i = 0; i < content_.size(); i++)
 	{
 		content_[i]->xlsx_convert(Context);
@@ -197,10 +208,12 @@ void table_filter_or::add_child_element( xml::sax * Reader, const std::wstring &
 
 void table_filter_or::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
+	Context.get_table_context().start_filters_or();
 	for (size_t i = 0; i < content_.size(); i++)
 	{
 		content_[i]->xlsx_convert(Context);
 	}
+	Context.get_table_context().end_filters_or();
 }
 //--------------------------------------------------------------------------------------------------
 const wchar_t * table_filter_and::ns	= L"table";
@@ -213,10 +226,12 @@ void table_filter_and::add_child_element( xml::sax * Reader, const std::wstring 
 
 void table_filter_and::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
+	Context.get_table_context().start_filters_and();
 	for (size_t i = 0; i < content_.size(); i++)
 	{
 		content_[i]->xlsx_convert(Context);
 	}
+	Context.get_table_context().end_filters_and();
 }
 //--------------------------------------------------------------------------------------------------
 const wchar_t * table_filter_condition::ns		= L"table";
@@ -229,6 +244,11 @@ void table_filter_condition::add_attributes(xml::attributes_wc_ptr const & Attri
 	CP_APPLY_ATTR(L"table:field-number",	table_field_number_);
 	CP_APPLY_ATTR(L"table:operator",		table_operator_);
 	CP_APPLY_ATTR(L"table:value",			table_value_);
+
+	if (!table_data_type_)
+	{
+		CP_APPLY_ATTR(L"loext:data-type", table_data_type_);
+	}
 }
 
 void table_filter_condition::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
@@ -238,10 +258,19 @@ void table_filter_condition::add_child_element( xml::sax * Reader, const std::ws
 
 void table_filter_condition::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
-	for (size_t i = 0; i < content_.size(); i++)
+	int type = table_data_type_ ? table_data_type_->get_type() : 0;
+	int field_number = table_field_number_.get_value_or(0);
+	int operator_ = table_operator_ ? table_operator_->get_type() : 0;
+
+	std::wstring value = table_value_.get_value_or(L"");
+	
+	if (type == odf_types::table_data_type::background_color ||
+		type == odf_types::table_data_type::text_color)
 	{
-		content_[i]->xlsx_convert(Context);
+		int dxfId = Context.add_dxfId_style(value, type == odf_types::table_data_type::background_color);
+		value = dxfId >= 0 ? std::to_wstring(dxfId) : L"";
 	}
+	Context.get_table_context().add_database_filter_conditional(field_number, type, value, operator_);
 }
 //--------------------------------------------------------------------------------------------------
 const wchar_t * table_filter_set_item::ns	= L"table";

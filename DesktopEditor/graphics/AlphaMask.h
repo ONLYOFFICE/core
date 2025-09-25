@@ -1,52 +1,61 @@
 #ifndef _BUILD_ALPHAMASK_H_
 #define _BUILD_ALPHAMASK_H_
 
-#include <string>
 #include "aggplustypes.h"
 #include "../common/IGrObject.h"
 #include "./config.h"
 
 namespace Aggplus
 {
-	enum StatusAlphaMask
-	{
-		EmptyAlphaMask,
-		GenerationAlphaMask,
-		ApplyingAlphaMask
-	};
-
-	enum AMaskDataType
+	enum class EMaskDataType
 	{
 		ImageBuffer,
 		AlphaBuffer
 	};
 
-	class CAlphaMask_private;
 	class GRAPHICS_DECL CAlphaMask : public IGrObject
 	{
 	public:
 		CAlphaMask();
+		CAlphaMask(BYTE* pBuffer, EMaskDataType eDataType, bool bExternalBuffer = true);
 		virtual ~CAlphaMask();
 
-		StatusAlphaMask GetStatus()   const;
-		AMaskDataType   GetDataType() const;
+		BYTE*         GetBuffer();
+		EMaskDataType GetDataType() const;
+		UINT          GetStep() const;
 
-		void Clear();
+		Status Create(UINT unWidth, UINT unHeight, EMaskDataType eDataType);
+		Status LoadFromBuffer(BYTE* pBuffer, EMaskDataType eDataType, bool bExternalBuffer = true);
+	private:
+		BYTE         *m_pBuffer;
+		EMaskDataType m_enDataType;
+		bool          m_bExternalBuffer;
+	};
 
-		Status CreateImageBuffer(UINT unWidth, UINT unHeight);
-		Status CreateAlphaBuffer(UINT unWidth, UINT unHeight);
+	enum class ESoftMaskType
+	{
+		RGBGrayBuffer,
+		BGRGrayBuffer,
+		Alpha4Buffer
+	};
 
-		Status LoadFromAlphaBuffer(BYTE* pBuffer, UINT unWidth, UINT unHeight, bool bExternalBuffer = true);
-		Status LoadFromImageBuffer(BYTE* pBuffer, UINT unWidth, UINT unHeight, bool bExternalBuffer = true);
-
-		Status LoadFromFile(const std::wstring& wsFilePath);
-		Status LoadFromImage(IGrObject* pGrObject, bool bCopy = true);
-
-		BYTE* GetMask();
-
-		CAlphaMask& operator=(const CAlphaMask& oAlphaMask);
+	class CSoftMask_private;
+	class GRAPHICS_DECL CSoftMask : public IGrObject
+	{
 	public:
-		CAlphaMask_private *m_internal;
+		CSoftMask(BYTE* pBuffer, unsigned int unWidth, unsigned int unHeight, bool bFlip, bool bRGB, bool bAlpha);
+		~CSoftMask();
+
+		unsigned int GetStep() const;
+		unsigned int GetWidth() const;
+		unsigned int GetHeight() const;
+		BYTE* GetBuffer();
+		ESoftMaskType GetDataType();
+
+	private:
+		CSoftMask_private* m_pInternal;
+
+		friend class CGraphics;
 	};
 }
 

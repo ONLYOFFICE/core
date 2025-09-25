@@ -61,7 +61,10 @@ const size_t Ptg::getSizeOfStruct() const
 
 void Ptg::addFuncWrapper(AssemblerStack& ptg_stack, const std::wstring& func_name)
 {
-	ptg_stack.top() = func_name + L'(' + ptg_stack.top() + L')';
+	if (false == ptg_stack.empty())
+	{
+		ptg_stack.top() = func_name + L'(' + ptg_stack.top() + L')';
+	}
 }
 
 void Ptg::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref)

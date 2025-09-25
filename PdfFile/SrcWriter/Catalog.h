@@ -45,7 +45,7 @@ namespace PdfWriter
 	{
 	public:
 		CCatalog(CXref* pXref);
-		CCatalog(CXref* pXref, bool bEmpty);
+		CCatalog();
 		CPageTree*   GetRoot() const;
 		EPageLayout  GetPageLayout() const;
 		void         SetPageLayout(EPageLayout eLayout);

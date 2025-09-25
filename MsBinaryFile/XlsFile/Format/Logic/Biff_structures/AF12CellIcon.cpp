@@ -50,6 +50,10 @@ void AF12CellIcon::load(CFRecord& record)
 	record >> iIconSet >> iIcon;
 }
 
+void AF12CellIcon::save(CFRecord& record)
+{
+	record << iIconSet << iIcon;
+}
 
 } // namespace XLS
 

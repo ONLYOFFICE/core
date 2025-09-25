@@ -30,21 +30,18 @@
  *
  */
 #pragma once
-#ifndef PPTX_SHOWPR_KIOSK_INCLUDE_H_
-#define PPTX_SHOWPR_KIOSK_INCLUDE_H_
 
 #include "./../WrapperWritingElement.h"
 
 namespace PPTX
 {
-	namespace nsShowPr
+	namespace nsPresentation
 	{
 		class Kiosk : public WrapperWritingElement
 		{
 		public:
 			PPTX_LOGIC_BASE(Kiosk)
 
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual std::wstring toXML() const;
 
@@ -52,13 +49,10 @@ namespace PPTX
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
-		public:
-			nullable_int			restart;
+			nullable_int restart;
 
 		protected:
 			virtual void FillParentPointersForChilds();
 		};
-	} // namespace nsShowPr
+	} // namespace nsPresentation
 } // namespace PPTX
-
-#endif // PPTX_SHOWPR_KIOSK_INCLUDE_H_

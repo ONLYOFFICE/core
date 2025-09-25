@@ -52,11 +52,12 @@ public:
 	static const ElementType	type = typeExtRst;
 	
 	virtual void load(CFRecord& record);
+    virtual void save(CFRecord& record);
 
 
 	const size_t getSize() const;
 
-	unsigned short cb;
+    unsigned short cb = 0;
 	Phs phs;
 	RPHSSub rphssub;
 	std::vector<PhRuns> rgphruns;

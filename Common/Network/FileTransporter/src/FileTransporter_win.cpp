@@ -31,8 +31,11 @@
  */
 
 #include "FileTransporter_private.h"
+#include "../../../../DesktopEditor/common/StringExt.h"
 
 #include <wininet.h>
+#include <objbase.h>
+#include <urlmon.h>
 #pragma comment(lib, "Wininet")
 #pragma comment(lib, "Ole32.lib")
 
@@ -441,20 +444,48 @@ namespace NSNetwork
 				std::function<void(int)> func_onProgress = nullptr;
 			};
 
+			void EscapeQuotesPS(std::wstring& command, bool isPath)
+			{
+				/*
+				var symbols = [0x22, 0x27, 0x2018, 0x2019, 0x201a, 0x201b, 0x201c, 0x201d, 0x201e, 0x201f];
+				var output = "";
+				for (let i = 0; i < symbols.length; i++) output += (" " + encodeURI(String.fromCharCode(symbols[i])));
+				console.log(output);
 
-			bool DownloadFilePS(const std::wstring& sFileURL, const std::wstring& strFileOutput)
+				result:
+				"%22 %27 %E2%80%98 %E2%80%99 %E2%80%9A %E2%80%9B %E2%80%9C %E2%80%9D %E2%80%9E %E2%80%9F"
+				*/
+
+				std::wstring sTmp = L" ";
+
+				if (isPath)
+				{
+					sTmp[0] = (wchar_t)'\\';   NSStringExt::Replace(command, sTmp, L"/");
+				}
+
+				sTmp[0] = (wchar_t)0x22;   NSStringExt::Replace(command, sTmp, L"%22");
+				sTmp[0] = (wchar_t)0x27;   NSStringExt::Replace(command, sTmp, L"%27");
+				sTmp[0] = (wchar_t)0x2018; NSStringExt::Replace(command, sTmp, L"%E2%80%98");
+				sTmp[0] = (wchar_t)0x2019; NSStringExt::Replace(command, sTmp, L"%E2%80%99");
+				sTmp[0] = (wchar_t)0x201a; NSStringExt::Replace(command, sTmp, L"%E2%80%9A");
+				sTmp[0] = (wchar_t)0x201b; NSStringExt::Replace(command, sTmp, L"%E2%80%9B");
+				sTmp[0] = (wchar_t)0x201c; NSStringExt::Replace(command, sTmp, L"%E2%80%9C");
+				sTmp[0] = (wchar_t)0x201d; NSStringExt::Replace(command, sTmp, L"%E2%80%9D");
+				sTmp[0] = (wchar_t)0x201e; NSStringExt::Replace(command, sTmp, L"%E2%80%9E");
+				sTmp[0] = (wchar_t)0x201f; NSStringExt::Replace(command, sTmp, L"%E2%80%9F");
+			}
+
+			bool DownloadFilePS(const std::wstring& sFileURLOriginal, const std::wstring& strFileOutput)
 			{
 				STARTUPINFO sturtupinfo;
 				ZeroMemory(&sturtupinfo,sizeof(STARTUPINFO));
 				sturtupinfo.cb = sizeof(STARTUPINFO);
 
 				std::wstring sFileDst = strFileOutput;
-				size_t posn = 0;
-				while (std::wstring::npos != (posn = sFileDst.find('\\', posn)))
-				{
-					sFileDst.replace(posn, 1, L"/");
-					posn += 1;
-				}
+				std::wstring sFileURL = sFileURLOriginal;
+
+				EscapeQuotesPS(sFileDst, true);
+				EscapeQuotesPS(sFileURL, false);
 
 				std::wstring sApp = L"powershell.exe –c \"(new-object System.Net.WebClient).DownloadFile('" + sFileURL + L"','" + sFileDst + L"')\"";
 				wchar_t* pCommandLine = new wchar_t[sApp.length() + 1];

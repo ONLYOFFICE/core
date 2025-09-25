@@ -94,7 +94,7 @@ namespace DocFileFormat
 		}
 
 		bool bPresentDefTable = false;
-		for (std::vector<SinglePropertyModifier>::reverse_iterator iter = tapx->grpprl->rbegin(); iter != tapx->grpprl->rend(); ++iter)
+		for (std::vector<SinglePropertyModifier>::iterator iter = tapx->grpprl->begin(); iter != tapx->grpprl->end(); ++iter)
 		{
 			switch (iter->OpCode)
 			{				
@@ -114,7 +114,7 @@ namespace DocFileFormat
 						  // Технические_Требования_1_287_ДИТ.DOC
 							if (tdef.rgTc80[j].horzMerge == 0 && tdef.rgTc80[j].wWidth < 1)
 							{
-								bUseWidth = false; 
+								//bUseWidth = false; 
 								break;
 							}
 						}
@@ -289,6 +289,61 @@ namespace DocFileFormat
 					}
 				}
 				break;
+				case sprmTTableBorders80:
+				{
+					const int size = 4;
+					unsigned char brc80[size];
+
+					memcpy(brc80, iter->Arguments, size);
+					if (!_brcTop)
+						_brcTop = std::shared_ptr<BorderCode>(new BorderCode(brc80, size));
+
+					memcpy(brc80, (iter->Arguments + 4), size);
+					if (!_brcLeft)
+						_brcLeft = std::shared_ptr<BorderCode>(new BorderCode(brc80, size));
+
+					memcpy(brc80, (iter->Arguments + 8), size);
+					if (!_brcBottom)
+						_brcBottom = std::shared_ptr<BorderCode>(new BorderCode(brc80, size));
+
+					memcpy(brc80, (iter->Arguments + 12), size);
+					if (!_brcRight)
+						_brcRight = std::shared_ptr<BorderCode>(new BorderCode(brc80, size));
+
+					//memcpy(brc80, (iter->Arguments + 16), size);
+					//_brcHorz = std::shared_ptr<BorderCode>(new BorderCode(brc80, size));
+
+					//memcpy(brc80, (iter->Arguments + 20), size);
+					//_brcVert = std::shared_ptr<BorderCode>(new BorderCode(brc80, size));
+				}break;
+				case sprmOldTTableBorders:
+				case sprmTTableBorders:
+				{
+					const int size = 8;
+					unsigned char brc[size];
+
+					memcpy(brc, iter->Arguments, size);
+					if (!_brcTop)
+						_brcTop = std::shared_ptr<BorderCode>(new BorderCode(brc, size));
+
+					memcpy(brc, (iter->Arguments + 8), size);
+					if (!_brcLeft)
+						_brcLeft = std::shared_ptr<BorderCode>(new BorderCode(brc, size));
+
+					memcpy(brc, (iter->Arguments + 16), size);
+					if (!_brcBottom)
+						_brcBottom = std::shared_ptr<BorderCode>(new BorderCode(brc, size));
+
+					memcpy(brc, (iter->Arguments + 24), size);
+					if (!_brcRight)
+						_brcRight = std::shared_ptr<BorderCode>(new BorderCode(brc, size));
+
+					//memcpy(brc, (iter->Arguments + 32), size);
+					//_brcHorz = std::shared_ptr<BorderCode>(new BorderCode(brc, size));
+
+					//memcpy(brc, (iter->Arguments + 40), size);
+					//_brcVert = std::shared_ptr<BorderCode>(new BorderCode(brc, size));
+				}break;
 				case sprmOldTSetBrc:
 				case sprmTSetBrc:
 				{ //borders (cell definition)

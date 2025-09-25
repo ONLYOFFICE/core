@@ -31,50 +31,48 @@
  */
 #include "OnlineOfficeBinToPdf.h"
 
-#include "../../DesktopEditor/common/File.h"
 #include "../../DesktopEditor/common/Directory.h"
-#include "../../DesktopEditor/common/Base64.h"
 #include "../../DesktopEditor/graphics/MetafileToRenderer.h"
 
 namespace NSOnlineOfficeBinToPdf
 {
-    class CMetafileToRenderterPDF : public IMetafileToRenderter
-    {
-    public:
-        CMetafileToRenderterPDF(IRenderer* pRenderer) : IMetafileToRenderter(pRenderer)
-        {
-        }
+	class CMetafileToRenderterPDF : public IMetafileToRenderter
+	{
+	public:
+		CMetafileToRenderterPDF(IRenderer* pRenderer) : IMetafileToRenderter(pRenderer)
+		{
+		}
 
 	public:
-        virtual void SetLinearGradiant(const double& x0, const double& y0, const double& x1, const double& y1)
-        {
-            ((CPdfFile*)m_pRenderer)->SetLinearGradient(x0, y0, x1, y1);
-        }
+		virtual void SetLinearGradiant(const double& x0, const double& y0, const double& x1, const double& y1)
+		{
+			((CPdfFile*)m_pRenderer)->SetLinearGradient(x0, y0, x1, y1);
+		}
 
-        virtual void SetRadialGradiant(const double& dX0, const double& dY0, const double& dR0, const double& dX1, const double& dY1, const double& dR1)
-        {
-            ((CPdfFile*)m_pRenderer)->SetRadialGradient(dX0, dY0, dR0, dX1, dY1, dR1);
-        }
-    };
+		virtual void SetRadialGradiant(const double& dX0, const double& dY0, const double& dR0, const double& dX1, const double& dY1, const double& dR1)
+		{
+			((CPdfFile*)m_pRenderer)->SetRadialGradient(dX0, dY0, dR0, dX1, dY1, dR1);
+		}
+	};
 
-    static bool ConvertBufferToPdf(CPdfFile* pPdf, BYTE* pBuffer, LONG lBufferLen, CConvertFromBinParams* pParams)
-    {
-        CMetafileToRenderterPDF oCorrector(pPdf);
-        oCorrector.SetTempDirectory(pPdf->GetTempDirectory());
-        if (pParams)
-        {
-            oCorrector.SetMediaDirectory(pParams->m_sMediaDirectory);
-            oCorrector.SetInternalMediaDirectory(pParams->m_sInternalMediaDirectory);
-            oCorrector.SetThemesDirectory(pParams->m_sThemesDirectory);
+	static bool ConvertBufferToPdf(CPdfFile* pPdf, BYTE* pBuffer, LONG lBufferLen, CConvertFromBinParams* pParams)
+	{
+		CMetafileToRenderterPDF oCorrector(pPdf);
+		oCorrector.SetTempDirectory(pPdf->GetTempDirectory());
+		if (pParams)
+		{
+			oCorrector.SetMediaDirectory(pParams->m_sMediaDirectory);
+			oCorrector.SetInternalMediaDirectory(pParams->m_sInternalMediaDirectory);
+			oCorrector.SetThemesDirectory(pParams->m_sThemesDirectory);
 
-            if (pParams->m_bIsUsePicker)
-                oCorrector.InitPicker(pPdf->GetFonts());
-        }
-        NSOnlineOfficeBinToPdf::ConvertBufferToRenderer(pBuffer, lBufferLen, &oCorrector);
+			if (pParams->m_bIsUsePicker)
+				oCorrector.InitPicker(pPdf->GetFonts());
+		}
+		NSOnlineOfficeBinToPdf::ConvertBufferToRenderer(pBuffer, lBufferLen, &oCorrector);
 
-        return true;
-    }
-    bool ConvertBinToPdf(CPdfFile* pPdf, const std::wstring& wsSrcFile, const std::wstring& wsDstFile, bool bBinary, CConvertFromBinParams* pParams)
+		return true;
+	}
+	bool ConvertBinToPdf(CPdfFile* pPdf, const std::wstring& wsSrcFile, const std::wstring& wsDstFile, bool bBinary, CConvertFromBinParams* pParams)
 	{
 		NSFile::CFileBinary oFile;
 		if (!oFile.OpenFile(wsSrcFile))
@@ -105,8 +103,8 @@ namespace NSOnlineOfficeBinToPdf
 		}
 		else
 		{
-			int   nBufferLen = NSBase64::Base64DecodeGetRequiredLength(dwFileSize);
-			BYTE* pBuffer    = new BYTE[nBufferLen];
+			int nBufferLen = NSBase64::Base64DecodeGetRequiredLength(dwFileSize);
+			BYTE* pBuffer = new BYTE[nBufferLen];
 			if (!pBuffer)
 			{
 				RELEASEARRAYOBJECTS(pFileContent);
@@ -141,6 +139,114 @@ namespace NSOnlineOfficeBinToPdf
 		{
 			if (0 != pPdf->SaveToFile(wsDstFile))
 				return false;
+		}
+
+		return true;
+	}
+
+	enum class AddCommandType
+	{
+		EditPage   = 0,
+		AddPage    = 1,
+		RemovePage = 2,
+		WidgetInfo = 3,
+		MovePage   = 4,
+		MergePages = 5,
+		Undefined  = 255
+	};
+
+	bool AddBinToPdf(CPdfFile* pPdf, BYTE* pBuffer, unsigned int nBufferLen, CConvertFromBinParams* pParams)
+	{
+		CMetafileToRenderterPDF oCorrector(pPdf);
+		oCorrector.SetTempDirectory(pPdf->GetTempDirectory());
+		if (pParams)
+		{
+			oCorrector.SetMediaDirectory(pParams->m_sMediaDirectory);
+			oCorrector.SetInternalMediaDirectory(pParams->m_sInternalMediaDirectory);
+			oCorrector.SetThemesDirectory(pParams->m_sThemesDirectory);
+
+			if (pParams->m_bIsUsePicker)
+				oCorrector.InitPicker(pPdf->GetFonts());
+		}
+
+		NSOnlineOfficeBinToPdf::CBufferReader oReader(pBuffer, (int)nBufferLen);
+
+		while (oReader.Check())
+		{
+			int nLen = oReader.ReadInt();
+			AddCommandType CommandType = (AddCommandType)oReader.ReadByte();
+			int nPageNum = 0;
+			if (CommandType != AddCommandType::WidgetInfo && CommandType != AddCommandType::MergePages)
+				nPageNum = oReader.ReadInt();
+
+			if (nPageNum < 0)
+				return false;
+
+			switch (CommandType)
+			{
+			case AddCommandType::EditPage:
+			{
+				if (!pPdf->EditPage(nPageNum))
+				{
+					oReader.Skip(nLen - 9);
+					break;
+				}
+
+				NSOnlineOfficeBinToPdf::ConvertBufferToRenderer(oReader.GetCurrentBuffer(), (LONG)(nLen - 9) , &oCorrector);
+				oReader.Skip(nLen - 9);
+				break;
+			}
+			case AddCommandType::AddPage:
+			{
+				if (!pPdf->AddPage(nPageNum))
+				{
+					oReader.Skip(nLen - 9);
+					break;
+				}
+
+				NSOnlineOfficeBinToPdf::ConvertBufferToRenderer(oReader.GetCurrentBuffer(), (LONG)(nLen - 9) , &oCorrector);
+				oReader.Skip(nLen - 9);
+				break;
+			}
+			case AddCommandType::MovePage:
+			{
+				int nPos = oReader.ReadInt();
+				pPdf->MovePage(nPageNum, nPos);
+				break;
+			}
+			case AddCommandType::RemovePage:
+			{
+				pPdf->DeletePage(nPageNum);
+				break;
+			}
+			case AddCommandType::MergePages:
+			{
+				std::wstring wsPath = NSFile::CFileBinary::CreateTempFileWithUniqueName(pPdf->GetTempDirectory(), L"PDF");
+				int nLength = oReader.ReadInt();
+				BYTE* pFile = oReader.GetCurrentBuffer();
+				oReader.Skip(nLength);
+				if (!wsPath.empty())
+				{
+					NSFile::CFileBinary oFile;
+					if (oFile.CreateFileW(wsPath))
+						oFile.WriteFile(pFile, nLength);
+					oFile.CloseFile();
+				}
+
+				int nMaxID = oReader.ReadInt();
+				std::wstring wsPrefix = oReader.ReadString();
+				pPdf->MergePages(wsPath, nMaxID, wsPrefix);
+				break;
+			}
+			case AddCommandType::WidgetInfo:
+			{
+				NSOnlineOfficeBinToPdf::ConvertBufferToRenderer(oReader.GetCurrentBuffer(), (LONG)(nLen - 5) , &oCorrector);
+				oReader.Skip(nLen - 5);
+				break;
+			}
+			default:
+				return false;
+			}
 		}
 
 		return true;

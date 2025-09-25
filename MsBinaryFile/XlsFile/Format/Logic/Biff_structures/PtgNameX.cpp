@@ -126,7 +126,7 @@ void PtgNameX::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool fu
 	}
 	if (name.empty())
 	{
-		if (nameindex <= global_info->arDefineNames.size())
+        if (global_info && nameindex && nameindex <= global_info->arDefineNames.size())
 		{
 			name = global_info->arDefineNames[nameindex - 1];
 

@@ -724,39 +724,33 @@ class oox_shape_roundRect : public oox_shape
 public:
 	oox_shape_roundRect()
 	{
-		odf_type_name	=L"ooxml-roundRect";
+		odf_type_name	=L"round-rectangle";
 		
-		enhanced_path	= L"M 0 ?f2 G ?f2 ?f2 ?f12 ?f13 L ?f3 0 G ?f2 ?f2 ?f14 ?f15 L ?f11 ?f4 G ?f2 ?f2 ?f16 ?f17 L ?f2 ?f10 G ?f2 ?f2 ?f18 ?f19 Z N";
-		text_areas		= L"?f5 ?f5 ?f6 ?f7";
-		view_box		= L"0 0 0 0";
-		modifiers		= L"16667";
+		enhanced_path	= L"M ?f7 0 X 0 ?f8 L 0 ?f9 Y ?f7 21600 L ?f10 21600 X 21600 ?f9 L 21600 ?f8 Y ?f10 0 Z N";
+		text_areas		= L"?f3 ?f4 ?f5 ?f6";
+		view_box		= L"0 0 21600 21600";
+		modifiers		= L"3600";
+        path_stretchpoint_x = L"10800";
+        path_stretchpoint_y = L"10800";
 		
-		add(L"f0", L"if(0-$0 ,0,if(50000-$0 ,$0 ,50000))");
-		add(L"f1", L"min(logwidth,logheight)");
-		add(L"f2", L"?f1 *?f0 /100000");
-		add(L"f3", L"logwidth+0-?f2 ");
-		add(L"f4", L"logheight+0-?f2 ");
-		add(L"f5", L"?f2 *29289/100000");
-		add(L"f6", L"logwidth+0-?f5 ");
-		add(L"f7", L"logheight+0-?f5 ");
-		add(L"f8", L"logwidth/2");
-		add(L"f9", L"logheight/2");
-		add(L"f10", L"logheight");
-		add(L"f11", L"logwidth");
-		add(L"f12", L"(10800000)/60000.0");
-		add(L"f13", L"(5400000)/60000.0");
-		add(L"f14", L"(16200000)/60000.0");
-		add(L"f15", L"(5400000)/60000.0");
-		add(L"f16", L"(0)/60000.0");
-		add(L"f17", L"(5400000)/60000.0");
-		add(L"f18", L"(5400000)/60000.0");
-		add(L"f19", L"(5400000)/60000.0");
+		add(L"f0", L"45");
+		add(L"f1", L"$0 *sin(?f0 *(pi/180))");
+		add(L"f2", L"?f1 *3163/7636 ");
+		add(L"f3", L"left+?f2 ");
+		add(L"f4", L"top+?f2 ");
+		add(L"f5", L"right-?f2 ");
+		add(L"f6", L"bottom-?f2 ");
+		add(L"f7", L"left+$0 ");
+		add(L"f8", L"top+$0 ");
+		add(L"f9", L"bottom-$0 ");
+		add(L"f10", L"right-$0 ");
 //-----------------------------------------------------------------		
 		_handle h1;
 		
-		h1.position = L"?f2 0";
-		h1.x_maximum= L"50000";
-		h1.x_minimum= L"0";
+		h1.position = L"$0 top";
+        h1.x_minimum = L"0";
+        h1.x_maximum = L"10800";
+        h1.handle_swiched = true;
 		handles.push_back(h1);
 	}
 };

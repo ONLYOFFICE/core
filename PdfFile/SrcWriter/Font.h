@@ -51,6 +51,10 @@ namespace PdfWriter
 		{
 			return fontUnknownType;
 		}
+		virtual unsigned int GetWidth(unsigned short ushCode)
+		{
+			return 0;
+		}
 
 	protected:
 

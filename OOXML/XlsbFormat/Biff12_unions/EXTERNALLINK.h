@@ -56,8 +56,8 @@ namespace XLSB
         XLS::BaseObjectPtr              m_DDEOLELINK;
         std::vector<XLS::BaseObjectPtr>	m_arFRT;
 		bool			                m_bBrtEndSupBook;
-
     };
+    typedef boost::shared_ptr<EXTERNALLINK> EXTERNALLINKPtr;
 
 } // namespace XLSB
 

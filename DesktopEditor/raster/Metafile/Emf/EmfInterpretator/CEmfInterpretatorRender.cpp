@@ -34,14 +34,14 @@ namespace MetaFile
 			m_pMetaFileRenderer->End();
 	}
 
-	void CEmfInterpretatorRender::DrawBitmap(double dX, double dY, double dW, double dH, BYTE *pBuffer, unsigned int unWidth, unsigned int unHeight)
+	void CEmfInterpretatorRender::DrawBitmap(double dX, double dY, double dW, double dH, BYTE *pBuffer, unsigned int unWidth, unsigned int unHeight, unsigned int unBlendMode)
 	{
 		if (NULL != m_pMetaFileRenderer)
-			m_pMetaFileRenderer->DrawBitmap(dX, dY, dW, dH, pBuffer, unWidth, unHeight);
+			m_pMetaFileRenderer->DrawBitmap(dX, dY, dW, dH, pBuffer, unWidth, unHeight, unBlendMode);
 	}
 
 	void CEmfInterpretatorRender::DrawString(std::wstring &wsText, unsigned int unCharsCount, double dX, double dY, double *pDx,
-											 int iGraphicsMode, double dXScale, double dYScale)
+	                                         int iGraphicsMode, double dXScale, double dYScale)
 	{
 		if (NULL != m_pMetaFileRenderer)
 			m_pMetaFileRenderer->DrawString(wsText, unCharsCount, dX, dY, pDx, iGraphicsMode, dXScale, dYScale);
@@ -119,10 +119,10 @@ namespace MetaFile
 			m_pMetaFileRenderer->ExcludeClip(oClip, oBB);
 	}
 
-	void CEmfInterpretatorRender::PathClip(IPath *pPath, int nClipMode, TXForm* pTransform)
+	void CEmfInterpretatorRender::PathClip(const CPath &oPath, int nClipMode, TXForm *pTransform)
 	{
 		if (NULL != m_pMetaFileRenderer)
-			m_pMetaFileRenderer->PathClip(pPath, nClipMode, pTransform);
+			m_pMetaFileRenderer->PathClip(oPath, nClipMode, pTransform);
 	}
 
 	void CEmfInterpretatorRender::StartClipPath(unsigned int unMode, int nFillMode)
@@ -158,5 +158,105 @@ namespace MetaFile
 	CMetaFileRenderer *CEmfInterpretatorRender::GetRenderer() const
 	{
 		return m_pMetaFileRenderer;
+	}
+	
+	double CEmfInterpretatorRender::GetScaleX() const
+	{
+		if (NULL == m_pMetaFileRenderer)
+			return 1.;
+
+		return m_pMetaFileRenderer->GetScaleX();
+	}
+
+	double CEmfInterpretatorRender::GetScaleY() const
+	{
+		if (NULL == m_pMetaFileRenderer)
+			return 1.;
+
+		return m_pMetaFileRenderer->GetScaleY();
+	}
+
+	void CEmfInterpretatorRender::HANDLE_EMR_RESTOREDC(const int &nIndexDC)
+	{
+		if (NULL != m_pMetaFileRenderer)
+			m_pMetaFileRenderer->NeedUpdateClip();
+	}
+	
+	void CEmfInterpretatorRender::HANDLE_EMR_SELECTCLIPPATH(const unsigned int &unRegionMode)
+	{
+		if (NULL != m_pMetaFileRenderer)
+			m_pMetaFileRenderer->NeedUpdateClip();
+	}
+	
+	void CEmfInterpretatorRender::HANDLE_EMR_EXCLUDECLIPRECT(const TRectL &oClip)
+	{
+		if (NULL != m_pMetaFileRenderer)
+			m_pMetaFileRenderer->NeedUpdateClip();
+	}
+	
+	void CEmfInterpretatorRender::HANDLE_EMR_EXTSELECTCLIPRGN(const unsigned int &unRgnDataSize, const unsigned int &unRegionMode, CDataStream &oDataStream)
+	{
+		if (NULL != m_pMetaFileRenderer)
+			m_pMetaFileRenderer->NeedUpdateClip();
+	}
+	
+	void CEmfInterpretatorRender::HANDLE_EMR_SETMETARGN()
+	{
+		if (NULL != m_pMetaFileRenderer)
+			m_pMetaFileRenderer->NeedUpdateClip();
+	}
+	
+	void CEmfInterpretatorRender::HANDLE_EMR_INTERSECTCLIPRECT(const TRectL &oClip)
+	{
+		if (NULL != m_pMetaFileRenderer)
+			m_pMetaFileRenderer->NeedUpdateClip();
+	}
+	
+	void CEmfInterpretatorRender::HANDLE_EMFPLUS_OFFSETCLIP(double, double)
+	{
+		if (NULL != m_pMetaFileRenderer)
+			m_pMetaFileRenderer->NeedUpdateClip();
+	}
+	
+	void CEmfInterpretatorRender::HANDLE_EMFPLUS_RESETCLIP()
+	{
+		if (NULL != m_pMetaFileRenderer)
+			m_pMetaFileRenderer->NeedUpdateClip();
+	}
+	
+	void CEmfInterpretatorRender::HANDLE_EMFPLUS_SETCLIPPATH(short, const CEmfPlusPath *)
+	{
+		if (NULL != m_pMetaFileRenderer)
+			m_pMetaFileRenderer->NeedUpdateClip();
+	}
+	
+	void CEmfInterpretatorRender::HANDLE_EMFPLUS_SETCLIPRECT(short, const TEmfPlusRectF &)
+	{
+		if (NULL != m_pMetaFileRenderer)
+			m_pMetaFileRenderer->NeedUpdateClip();
+	}
+	
+	void CEmfInterpretatorRender::HANDLE_EMFPLUS_SETCLIPREGION(short, short, const CEmfPlusRegion *)
+	{
+		if (NULL != m_pMetaFileRenderer)
+			m_pMetaFileRenderer->NeedUpdateClip();
+	}
+	
+	void CEmfInterpretatorRender::HANDLE_EMFPLUS_ENDOFFILE()
+	{
+		if (NULL != m_pMetaFileRenderer)
+			m_pMetaFileRenderer->NeedUpdateClip();
+	}
+	
+	void CEmfInterpretatorRender::HANDLE_EMFPLUS_GETDC()
+	{
+		if (NULL != m_pMetaFileRenderer)
+			m_pMetaFileRenderer->NeedUpdateClip();
+	}
+	
+	void CEmfInterpretatorRender::HANDLE_EMFPLUS_RESTORE(unsigned int)
+	{
+		if (NULL != m_pMetaFileRenderer)
+			m_pMetaFileRenderer->NeedUpdateClip();
 	}
 }

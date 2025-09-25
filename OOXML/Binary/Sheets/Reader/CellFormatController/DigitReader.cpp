@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
@@ -34,8 +34,11 @@
 #include "CurrencyReader.h"
 
 #include <cmath>
+#include <regex>
+#include <sstream>
 
 const std::wstring DefaultPercentFormat = L"0.0%";
+const auto NonDigitcellLimit = 1000;
 
 bool DigitReader::ReadDigit(const std::wstring &value, std::wstring &digit, std::wstring &format)
 {
@@ -49,7 +52,7 @@ bool DigitReader::ReadDigit(const std::wstring &value, std::wstring &digit, std:
 		return false;
     }
 
-	if ((0 == *pEndPtr) || (pEndPtr != value.c_str() && (value.c_str() + length  - pEndPtr) < 3))
+    if ((0 == *pEndPtr) || (pEndPtr != value.c_str() && (value.c_str() + length  - pEndPtr) <= 4))
 	{
 	std::wstring postfix;
 	auto length = value.length();
@@ -71,7 +74,7 @@ bool DigitReader::ReadDigit(const std::wstring &value, std::wstring &digit, std:
 			}
 		}
 
-        auto data_format = createFractionFormat(value, pEndPtr);
+        auto data_format = createFractionFormat(value, postfix);
 		double fractionValue = 0;
 
 		if (0 != *pEndPtr)
@@ -103,10 +106,10 @@ bool DigitReader::ReadDigit(const std::wstring &value, std::wstring &digit, std:
 					if (dotPos != std::wstring::npos)
 					{
 						size_t lastNonZeroPos = digit.find_last_not_of(L'0');
-						digit.erase(lastNonZeroPos + 2);
+                        if(lastNonZeroPos+3 < digit.size())
+                            digit.erase(lastNonZeroPos + 2);
 					}
-
-					data_format = createFractionFormat(digit, pEndPtr);
+                    data_format = createFractionFormat(digit, L"");
 					for (size_t i = 0; i < postfix.size(); ++i)
 					{
 						data_format += std::wstring(L"\\") + postfix[i];
@@ -114,10 +117,17 @@ bool DigitReader::ReadDigit(const std::wstring &value, std::wstring &digit, std:
 					format = data_format;
 				}
 			}
+			else
+			{
+				digit = std::to_wstring(dValue);
+				format = data_format;
+			}
 		}
 		else
-        {
-			digit = std::to_wstring(dValue);
+        {   if(value.find(L'.') == std::wstring::npos)
+                digit = std::to_wstring((_INT64)dValue);
+            else
+                digit = std::to_wstring(dValue);
             format = data_format;
         }
         return true;
@@ -125,19 +135,19 @@ bool DigitReader::ReadDigit(const std::wstring &value, std::wstring &digit, std:
     return false;
 }
 
-std::wstring DigitReader::createFractionFormat(const std::wstring &value, wchar_t *pEndPtr)
+std::wstring DigitReader::createFractionFormat(const std::wstring &value, const std::wstring &postfix)
 {
     size_t pos = value.find(L".");
     auto length = value.length();
     std::wstring data_format = L"";
-		if (pos != std::wstring::npos)
+        if (pos != std::wstring::npos && pos < (value.size() - postfix.size() - 1))
 		{
-			size_t fraction = length - pos - ((0 != *pEndPtr) ? 2 : 1);
+            size_t fraction = length - pos - 1 - postfix.size();
 			for (size_t i = 0; i < fraction && fraction != std::wstring::npos; ++i)
 				data_format += L"0";
 		}
 		if (false == data_format.empty()) data_format = L"." + data_format;
-		if(pos != std::string::npos)
+        if(pos != std::string::npos && pos < (value.size() - postfix.size() - 1))
 		{
             std::wstring wholePart(pos, '0');
 			data_format = wholePart + data_format;
@@ -161,4 +171,45 @@ bool DigitReader::checkCommonFractionFormat(const double &numerator, const std::
     }
     format = L"?/?";
 	dvalue = numerator/denominator;
+}
+
+bool DigitReader::ReadScientific(const std::wstring &value, std::wstring &digit, std::wstring &format)
+{
+    if(nonscientificCellsCounter_ > NonDigitcellLimit && !scientificFound_)
+        return false;
+    {
+        std::wregex scientificRegex(L"(^[+-]?(\\d+\\.?\\d*)([eE][+-]?\\d+))$");
+        if(std::regex_search(value, scientificRegex))
+        {
+            try
+            {
+                auto doubleVal = std::stod(value);
+
+                std::wstringstream ss;
+                _INT32 MainPartSize = value.find(L"E");
+                if(MainPartSize < 1)
+                    MainPartSize = value.find(L"e");
+                ss.precision(MainPartSize); // Установить точность
+                ss.setf(std::ios::scientific);
+                ss << doubleVal;
+                digit = ss.str();
+
+                format = L"0.0";
+                if(MainPartSize > 3)
+                format += std::wstring(MainPartSize - 3, L'0');
+                format +=L"E+00";
+                scientificFound_ = true;
+                return true;
+
+            }
+            catch (std::exception)
+            {
+                nonscientificCellsCounter_++;
+                return false;
+            }
+
+        }
+    }
+    nonscientificCellsCounter_++;
+	return false;
 }

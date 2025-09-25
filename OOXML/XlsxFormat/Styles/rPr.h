@@ -33,6 +33,7 @@
 
 #include "../WritingElement.h"
 #include "../../Base/Nullable.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BIFF12/Color.h"
 
 namespace NSBinPptxRW
 {
@@ -55,7 +56,7 @@ namespace SimpleTypes
 		class CFontCharset;
 		class CFontFamily;
 		class CFontScheme;
-		class CUnderline;		
+		class CUnderline;
 	}
 }
 
@@ -65,7 +66,7 @@ namespace ComplexTypes
 	{
 		class COnOff2;
 		class String;
-		class CDouble;		
+		class CDouble;
 	}
 }
 
@@ -87,6 +88,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
 			void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
 			virtual EElementType getType () const;
 
 		private:
@@ -98,7 +100,7 @@ namespace OOX
 		public:
 			nullable<SimpleTypes::Spreadsheet::CHexColor> m_oRgb;
 		};
-		
+
 		class CIndexedColors : public WritingElementWithChilds<CRgbColor>
 		{
 		public:
@@ -114,6 +116,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
 			void fromBin(std::vector<XLS::BaseObjectPtr>& obj);
+			std::vector<XLS::BaseObjectPtr> toBin();
 			virtual EElementType getType () const;
 
 			static bool GetDefaultRGBAByIndex(int index, unsigned char& unR, unsigned char& unG, unsigned char& unB, unsigned char& unA);
@@ -144,6 +147,11 @@ namespace OOX
 
 			void fromBin(XLS::BaseObjectPtr& obj);
 			void fromBin(XLS::BaseObject* obj);
+			XLS::BaseObjectPtr toBin();
+            void toBin(XLS::StreamCacheWriterPtr& writer);
+            XLS::BaseObjectPtr toBin14();
+			XLSB::Color toColor();
+			XLSB::Color GetDefaultColor();
 
 			virtual EElementType getType () const;
 
@@ -175,6 +183,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
 			void fromBin(std::vector<XLS::BaseObjectPtr>& obj);
+			std::vector<XLS::BaseObjectPtr> toBin();
 			virtual EElementType getType () const;
 
 		private:
@@ -296,6 +305,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
             void fromFont(CFont* font);
+            CFont* toFont();
 			void fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nType);
 			void toXLSB (NSBinPptxRW::CXlsbBinaryWriter& oStream) const;
 			_UINT32 getXLSBSize() const;

@@ -62,9 +62,9 @@ namespace OOX
 			virtual std::wstring toXML() const;
 			virtual EElementType getType() const;
 
+			std::vector<BYTE> GetBytes();
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-
 		public:
             nullable<std::wstring>		m_sName;
 			nullable<std::string>		m_sData;
@@ -119,8 +119,9 @@ namespace OOX
 			nullable<OOX::Logic::CControl>	m_oControl;
 			nullable<OOX::Logic::CBinData>	m_oBinData;
 
-			nullable<OOX::Vml::CShapeType>	m_oShapeType;
-			nullable<OOX::WritingElement>	m_oShapeElement;
+			nullable<OOX::Vml::CShapeType> m_oShapeType;
+			nullable<OOX::WritingElement> m_oShapeElement;
+			nullable<OOX::VmlOffice::COLEObject> m_oOLEObject;
 			
 			// TO DO: Добавить класс, читающий movie
 		};

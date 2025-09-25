@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2024
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -35,7 +35,7 @@
 window['AscFonts'] = window['AscFonts'] || {};
 var AscFonts = window['AscFonts'];
 
-var g_native_engine = CreateNativeTextMeasurer();
+var g_native_engine = null;
 
 function CReturnObject()
 {
@@ -52,6 +52,11 @@ g_return_obj_count.count = 0;
 AscFonts.CopyStreamToMemory = function(data, size)
 {
 	return data;
+};
+
+AscFonts.GetUint8ArrayFromPointer = function(pointer, size)
+{
+	return pointer;
 };
 
 function CShapeString(size)
@@ -206,7 +211,31 @@ AscFonts.HB_ShapeText = function(fontFile, text, features, script, direction, la
 	return g_return_obj_count;
 };
 
+AscFonts.Hyphen_Init = function()
+{
+	// none
+};
+AscFonts.Hyphen_Destroy = function()
+{
+	// GC
+};
+AscFonts.Hyphen_CheckDictionary = function(lang)
+{
+	return g_native_engine["Hyphen_IsDictionaryExist"](lang);
+};
+AscFonts.Hyphen_LoadDictionary = function(lang, data)
+{
+	return false;
+};
+AscFonts.Hyphen_Word = function(lang, word)
+{
+	let ret = g_native_engine["Hyphen_Word"](lang, word);
+	return ret ? ret : [];
+};
+
 AscFonts.onLoadModule();
 AscFonts.onLoadModule();
+
+window["InitNativeTextMeasurer"] = function() { g_native_engine = CreateEmbedObject("CTextMeasurerEmbed"); };
 
 })(window, undefined);

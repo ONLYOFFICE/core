@@ -55,5 +55,10 @@ void WinProtect::readFields(CFRecord& record)
 	record >> fLockWn;
 }
 
+void WinProtect::writeFields(CFRecord& record)
+{
+    record << fLockWn;
+}
+
 } // namespace XLS
 

@@ -673,7 +673,7 @@ bool OOXShapeReader::ParseVmlChild( ReaderParameter oParam , RtfShapePtr& pOutpu
 //    }
 //	return result;
 //}
-//void OOXShapeReader::Parse(ReaderParameter oParam, OOX::Drawing::CSchemeColor *oox_ShemeClr, unsigned int & nColor, _CP_OPT(double) &opacity)
+//void OOXShapeReader::Parse(ReaderParameter oParam, OOX::Drawing::CSchemeColor *oox_ShemeClr, unsigned long & nColor, _CP_OPT(double) &opacity)
 //{
 //	if (!oox_ShemeClr)return;
 //
@@ -692,28 +692,30 @@ bool OOXShapeReader::ParseVmlChild( ReaderParameter oParam , RtfShapePtr& pOutpu
 //	}
 //}
 //
-void OOXShapeReader::Parse(ReaderParameter oParam, PPTX::Logic::ColorBase *oox_color, unsigned int & nColor , _CP_OPT(double) &opacity)
+void OOXShapeReader::Parse(ReaderParameter oParam, PPTX::Logic::ColorBase *oox_color, unsigned long & nColor , _CP_OPT(double) &opacity)
 {
 	if (!oox_color) return;
 
-	oox_color->SetParentFilePointer(oParam.oDocx->m_pTheme);
+	PPTX::Logic::ClrMap* pClrMap = oParam.oDocx->m_oMain.settings ? oParam.oDocx->m_oMain.settings->m_oClrSchemeMapping.GetPointer() : NULL;
 
-	BYTE alpha = oox_color->alpha;
-	if (alpha != 0xff)
-		opacity = alpha;
-	nColor = (oox_color->blue << 16) + (oox_color->green << 8) + oox_color->red;
-	//switch( oox_color->m_eType )
-	//{
-	//	case OOX::Drawing::colorSheme:	Parse(oParam, &oox_color->m_oShemeClr,	nColor, opacity);		break;
-	//	case OOX::Drawing::colorHsl:	Parse(oParam, &oox_color->m_oHslClr,	nColor, opacity);		break;
-	//	case OOX::Drawing::colorPrst:	Parse(oParam, &oox_color->m_oPrstClr,	nColor, opacity);		break;
-	//	case OOX::Drawing::colorScRgb:	Parse(oParam, &oox_color->m_oScrgbClr,	nColor, opacity);		break;
-	//	case OOX::Drawing::colorSRgb:	Parse(oParam, &oox_color->m_oSrgbClr,	nColor, opacity);		break;
-	//	case OOX::Drawing::colorSys:	Parse(oParam, &oox_color->m_oSysClr,	nColor, opacity);		break;
-	//       default: break;
-	//   }
+	smart_ptr<PPTX::Logic::ClrMap>	clrMap(pClrMap); clrMap.AddRef();
+	smart_ptr<PPTX::Theme>			theme(oParam.oDocx->m_pTheme); theme.AddRef();
+
+	nColor = oox_color->GetRGBColor(theme, clrMap, 0); // ARGB
+
+	if ((nColor >> 24) != 0xff)
+	{
+		opacity = ((nColor >> 24) / 255.) * 100.;
+	}	
+	nColor = nColor & 0x00ffffff;
+
+	BYTE b = (nColor & 0xFF);
+	BYTE g = (nColor & 0xFF00) >> 8;
+	BYTE r = (nColor & 0xFF0000) >> 16;
+	
+	nColor = (b << 16) + (g << 8) + r;
 }
-//void OOXShapeReader::Parse(ReaderParameter oParam, OOX::Drawing::Colors::CColorTransform *oox_Clr, unsigned int & nColor, _CP_OPT(double) &opacity)
+//void OOXShapeReader::Parse(ReaderParameter oParam, OOX::Drawing::Colors::CColorTransform *oox_Clr, unsigned long & nColor, _CP_OPT(double) &opacity)
 //{
 //	if (!oox_Clr)return;
 //	BYTE ucA=0, ucG=0, ucB=0, ucR =0;
@@ -722,7 +724,7 @@ void OOXShapeReader::Parse(ReaderParameter oParam, PPTX::Logic::ColorBase *oox_c
 //	nColor = RGB(ucR,  ucG, ucB);
 //	if (ucA !=255)opacity = (ucA/255.)* 100.;
 //}
-void OOXShapeReader::Parse(ReaderParameter oParam, PPTX::Logic::SolidFill *oox_solid_fill, unsigned int & nColor , _CP_OPT(double) &opacity)
+void OOXShapeReader::Parse(ReaderParameter oParam, PPTX::Logic::SolidFill *oox_solid_fill, unsigned long & nColor , _CP_OPT(double) &opacity)
 {
 	if (!oox_solid_fill) return;
 	Parse(oParam, oox_solid_fill->Color.Color.operator ->(), nColor, opacity);
@@ -742,13 +744,17 @@ void OOXShapeReader::Parse(ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::L
 {
 	if (!oox_solid_fill) return;
 
-	unsigned int nColor = 0xffffff; //white
+	unsigned long nColor = 0xffffff; //white
 	_CP_OPT(double) opacity;
 	
 	if (change_color && oox_solid_fill->Color.getType() == OOX::et_a_schemeClr)
 	{
 		nColor = oParam.oDocx->m_pTheme->themeElements.clrScheme.GetABGRFromScheme(change_color->val.get());
-		opacity = nColor & 0xff000000;
+
+		if ((nColor >> 24) != 0xff)
+		{
+			opacity = ((nColor >> 24) / 255.) * 100.;
+		}
 		nColor = nColor & 0x00ffffff;
 	}
 	else
@@ -921,13 +927,16 @@ void OOXShapeReader::Parse(ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::L
 		
 		for (size_t i = 0; i < oox_grad_fill->GsLst.size(); i++)
 		{
-			unsigned int nColor;
+			unsigned long nColor;
 			_CP_OPT(double) opacity;
 
 			if (change_color && oox_grad_fill->GsLst[i].color.getType() == OOX::et_a_schemeClr)
 			{
 				nColor = oParam.oDocx->m_pTheme->themeElements.clrScheme.GetABGRFromScheme(change_color->val.get());
-				opacity = nColor & 0xff000000;
+				if ((nColor >> 24) != 0xff)
+				{
+					opacity = ((nColor >> 24) / 255.) * 100.;
+				}
 				nColor = nColor & 0x00ffffff;
 			}
 			else
@@ -977,12 +986,15 @@ void OOXShapeReader::Parse(ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::L
 		}
 		else if (fill.IsInit())
 		{
-			unsigned int nColor = 0; //black
+			unsigned long nColor = 0; //black
 			_CP_OPT(double) opacity;
 			if (change_color && fill->Color.getType() == OOX::et_a_schemeClr)
 			{
 				nColor = oParam.oDocx->m_pTheme->themeElements.clrScheme.GetABGRFromScheme(change_color->val.get());
-				opacity = nColor & 0xff000000;
+				if ((nColor >> 24) != 0xff)
+				{
+					opacity = ((nColor >> 24) / 255.) * 100.;
+				}
 				nColor = nColor & 0x00ffffff;
 			}
 			else
@@ -1250,11 +1262,11 @@ bool OOXShapeReader::ParseShape( ReaderParameter oParam, RtfShapePtr& pOutput)
 	if ((oox_sp_style) && (oox_sp_style->fontRef.idx.IsInit()))
 	{
 		std::wstring font_name;
-		if (oox_sp_style->fontRef.idx->GetBYTECode() == 0)
+		if (oParam.oDocx->m_pTheme && oox_sp_style->fontRef.idx->GetBYTECode() == 0)
 		{
 			font_name = oParam.oDocx->m_pTheme->themeElements.fontScheme.majorFont.latin.typeface;
 		}
-		else if (oox_sp_style->fontRef.idx->GetBYTECode() == 1)
+		else if (oParam.oDocx->m_pTheme && oox_sp_style->fontRef.idx->GetBYTECode() == 1)
 		{
 			font_name = oParam.oDocx->m_pTheme->themeElements.fontScheme.minorFont.latin.typeface;
 		}
@@ -1274,7 +1286,7 @@ bool OOXShapeReader::ParseShape( ReaderParameter oParam, RtfShapePtr& pOutput)
 		}
 		if (oox_sp_style->fontRef.Color.is_init())
 		{
-			unsigned int nColor = 0; //black
+			unsigned long nColor = 0; //black
 			_CP_OPT(double) opacity;
 			
 			OOXShapeReader::Parse(oParam, oox_sp_style->fontRef.Color.Color.operator ->(), nColor, opacity);
@@ -2022,7 +2034,7 @@ bool OOXShapeReader::WriteDataToPicture( std::wstring sPath, RtfPicture& pOutput
 	}
 	return true;
 }
-void OOXShapeReader::Parse(ReaderParameter oParam, PPTX::Logic::UniFill *uni_fill, unsigned int & nColor, _CP_OPT(double) &opacity)
+void OOXShapeReader::Parse(ReaderParameter oParam, PPTX::Logic::UniFill *uni_fill, unsigned long & nColor, _CP_OPT(double) &opacity)
 {
 	if (!uni_fill) return;
 
@@ -2040,7 +2052,7 @@ void OOXShapeReader::Parse(ReaderParameter oParam, PPTX::Logic::UniFill *uni_fil
 	{
 		NSCommon::smart_ptr<PPTX::Logic::GradFill> fill = uni_fill->Fill.smart_dynamic_cast<PPTX::Logic::GradFill>();
 
-		unsigned int nColor = 0; //black
+		unsigned long nColor = 0; //black
 		_CP_OPT(double) opacity;
 
 		if (!fill->GsLst.empty())
@@ -2326,6 +2338,12 @@ bool OOXShapeGroupReader::Parse( ReaderParameter oParam , RtfShapePtr& pOutput)
 				pOutput->m_nGroupRight	= (pOutput->m_nGroupLeft != PROP_DEF  ? pOutput->m_nGroupLeft : 0) + (int)m_ooxGroup->grpSpPr.xfrm->chExtX.get();
 				pOutput->m_nGroupBottom = (pOutput->m_nGroupTop != PROP_DEF  ? pOutput->m_nGroupTop : 0) + (int)m_ooxGroup->grpSpPr.xfrm->chExtY.get();
 			}
+			else if (m_ooxGroup->grpSpPr.xfrm->extX.IsInit() && m_ooxGroup->grpSpPr.xfrm->extY.IsInit())
+			{
+				pOutput->m_nGroupRight = (pOutput->m_nGroupLeft != PROP_DEF ? pOutput->m_nGroupLeft : 0) + (int)m_ooxGroup->grpSpPr.xfrm->extX.get();
+				pOutput->m_nGroupBottom = (pOutput->m_nGroupTop != PROP_DEF ? pOutput->m_nGroupTop : 0) + (int)m_ooxGroup->grpSpPr.xfrm->extY.get();
+			}
+
 			if (pOutput->m_bInGroup)
 			{
 				if (m_ooxGroup->grpSpPr.xfrm->offX.IsInit() && m_ooxGroup->grpSpPr.xfrm->offY.IsInit())

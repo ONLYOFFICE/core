@@ -59,7 +59,7 @@ namespace XLSB
         fAutoEnd                = GETBIT(flags, 1);
         fDates                  = GETBIT(flags, 2);
 
-        record >> xnumStart >> xnumBy >> xnumEnd;
+        record >> xnumStart >> xnumEnd >> xnumBy;
     }
 
 	void BeginPCDFGRange::writeFields(XLS::CFRecord& record)
@@ -71,7 +71,7 @@ namespace XLSB
 		SETBIT(flags, 2, fDates)
 
 		record << iByType << flags;
-		record << xnumStart << xnumBy << xnumEnd;
+        record << xnumStart << xnumEnd << xnumBy;
 	}
 
 } // namespace XLSB

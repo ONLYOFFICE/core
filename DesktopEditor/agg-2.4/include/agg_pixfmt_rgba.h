@@ -207,9 +207,9 @@ namespace agg
 			}
 
 			p[Order::A] = (value_type)((alpha + a) - ((alpha * a + base_mask) >> base_shift));
-			p[Order::R] = (value_type)((alpha * cr + a * r - ((a * r * alpha + base_mask) >> base_shift)) / p[Order::A]);
-			p[Order::G] = (value_type)((alpha * cg + a * g - ((a * g * alpha + base_mask) >> base_shift)) / p[Order::A]);
-			p[Order::B] = (value_type)((alpha * cb + a * b - ((a * b * alpha + base_mask) >> base_shift)) / p[Order::A]);
+			if (r != cr) p[Order::R] = (value_type)((alpha * cr + a * r - ((a * r * alpha + base_mask) >> base_shift)) / p[Order::A]);
+			if (g != cg) p[Order::G] = (value_type)((alpha * cg + a * g - ((a * g * alpha + base_mask) >> base_shift)) / p[Order::A]);
+			if (b != cb) p[Order::B] = (value_type)((alpha * cb + a * b - ((a * b * alpha + base_mask) >> base_shift)) / p[Order::A]);
 		}
 
 		static AGG_INLINE void blend_pix_subpix(value_type* p,
@@ -1465,7 +1465,29 @@ namespace agg
         }
     };
 
+    template<class ColorT, class Order> struct comp_op_rgba_draw_on_black
+    {
+        typedef ColorT color_type;
+        typedef Order order_type;
+        typedef typename color_type::value_type value_type;
+        typedef typename color_type::calc_type calc_type;
+        enum base_scale_e
+        {
+            base_shift = color_type::base_shift,
+            base_mask  = color_type::base_mask
+        };
 
+        static AGG_INLINE void blend_pix(value_type* p,
+                                         unsigned sr, unsigned sg, unsigned sb,
+                                         unsigned sa, unsigned cover)
+        {
+
+            if (0x00 != p[Order::R] || 0x00 != p[Order::G] || 0x00 != p[Order::B])
+                return;
+
+            comp_op_rgba_src_over   <ColorT,Order>::blend_pix(p, sr, sg, sb, sa, cover);
+        }
+    };
 
 
 
@@ -1515,6 +1537,9 @@ namespace agg
         comp_op_rgba_contrast   <ColorT,Order>::blend_pix,
         comp_op_rgba_invert     <ColorT,Order>::blend_pix,
         comp_op_rgba_invert_rgb <ColorT,Order>::blend_pix,
+
+        //Custom function
+        comp_op_rgba_draw_on_black<ColorT,Order>::blend_pix,
         0
     };
 
@@ -1550,6 +1575,9 @@ namespace agg
         comp_op_contrast,      //----comp_op_contrast
         comp_op_invert,        //----comp_op_invert
         comp_op_invert_rgb,    //----comp_op_invert_rgb
+
+        //Custom modes
+        comp_op_draw_on_black, //----comp_op_draw_on_black
 
         end_of_comp_op_e
     };

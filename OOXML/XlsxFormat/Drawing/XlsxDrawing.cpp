@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
@@ -31,6 +31,8 @@
  */
 
 #include "Drawing.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Binary/CFStreamCacheWriter.h"
+#include "../../PPTXFormat/Logic/Shape.h"
 
 namespace OOX
 {
@@ -72,6 +74,28 @@ namespace OOX
 		{
 			ReadAttributes(obj);
 		}
+		XLS::BaseObjectPtr CDrawingWorksheet::toBin()
+		{
+			auto castedPtr(new XLSB::Drawing);
+			XLS::BaseObjectPtr ptr(castedPtr);
+				if(m_oId.IsInit())
+				{
+					if(!m_oId->GetValue().empty())
+						castedPtr->stRelId.value = m_oId->GetValue();
+				}
+			return ptr;
+		}
+        void CDrawingWorksheet::toBin(XLS::StreamCacheWriterPtr& writer)
+        {
+            auto record = writer->getNextRecord(XLSB::rt_Drawing);
+            XLSB::RelID stRelId;
+            if(m_oId.IsInit())
+                stRelId = m_oId->GetValue();
+            else
+                stRelId.value.setSize(0xFFFFFFFF);
+            *record << stRelId;
+            writer->storeNextRecord(record);
+        }
 		EElementType CDrawingWorksheet::getType () const
 		{
 			return et_x_FromTo;
@@ -199,8 +223,15 @@ namespace OOX
 							nCurDepth--;
 						}
 
-						if ( pItem )
-							m_arrItems.push_back( pItem );
+						if (pItem)
+						{
+							m_arrItems.push_back(pItem);
+
+							if (pItem->m_nId.IsInit() && pItem->m_oElement.is_init())
+							{
+								m_mapShapes.insert(std::make_pair(*pItem->m_nId, pItem->m_oElement->GetElem().GetPointer()));
+							}
+						}
 					}
 				}
 			}
@@ -243,17 +274,17 @@ namespace OOX
 		{
 		}
 		void CDrawing::ClearItems()
+		{
+			m_mapShapes.clear();
+			for ( unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
 			{
-				for ( unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
-				{
-					if ( m_arrItems[nIndex] )
-						delete m_arrItems[nIndex];
-
-					m_arrItems[nIndex] = NULL;
-				}
-
-				m_arrItems.clear();
+				if ( m_arrItems[nIndex] )
+					delete m_arrItems[nIndex];
+				
+				m_arrItems[nIndex] = NULL;
 			}
+			m_arrItems.clear();
+		}
 
 	} //Spreadsheet
 } // namespace OOX

@@ -55,16 +55,21 @@ void Window1::readFields(CFRecord& record)
 {
     if (record.getGlobalWorkbookInfo()->Version < 0x0800)
     {
-		unsigned short flags;
-        _INT16 xWn_2b;
-        _INT16 yWn_2b;
-        _INT16 dxWn_2b;
-        _INT16 dyWn_2b;
-        _UINT16 itabCur_2b;
-        _UINT16 itabFirst_2b;
-        _UINT16 wTabRatio_2b;
+        BYTE flags = 0, reserved;
+        _INT16 xWn_2b = 0;
+        _INT16 yWn_2b = 0;
+        _INT16 dxWn_2b = 0;
+        _INT16 dyWn_2b = 0;
+        _UINT16 itabCur_2b = 0;
+        _UINT16 itabFirst_2b = 0;
+        _UINT16 wTabRatio_2b = 0;
 
-        record >> xWn_2b >> yWn_2b >> dxWn_2b >> dyWn_2b >> flags >> itabCur_2b >> itabFirst_2b >> ctabSel >> wTabRatio_2b;
+        record >> xWn_2b >> yWn_2b >> dxWn_2b >> dyWn_2b >> flags;
+
+        if (record.getGlobalWorkbookInfo()->Version > 0x0400)
+        {
+            record >> reserved >> itabCur_2b >> itabFirst_2b >> ctabSel >> wTabRatio_2b;
+        }
 
         fHidden			= GETBIT(flags, 0);
         fIconic			= GETBIT(flags, 1);
@@ -100,11 +105,27 @@ void Window1::readFields(CFRecord& record)
 
 void Window1::writeFields(CFRecord& record)
 {
-	unsigned short flags;
+    unsigned short flags = 0;
 
 	if (record.getGlobalWorkbookInfo()->Version < 0x0800)
 	{
-		//stub
+        _UINT16 flags = 0;
+        _INT16 xWn_2b = xWn;
+        _INT16 yWn_2b = yWn;
+        _INT16 dxWn_2b = dxWn;
+        _INT16 dyWn_2b =  dyWn;
+        _UINT16 itabCur_2b = itabCur;
+        _UINT16 itabFirst_2b = itabFirst;
+        _UINT16 wTabRatio_2b = wTabRatio;
+        record << xWn_2b << yWn_2b << dxWn_2b << dyWn_2b;
+        SETBIT(flags, 0, fHidden)
+        SETBIT(flags, 1, fIconic)
+        SETBIT(flags, 2, fVeryHidden)
+        SETBIT(flags, 3, fDspHScroll)
+        SETBIT(flags, 4, fDspVScroll)
+        SETBIT(flags, 5, fBotAdornment)
+        SETBIT(flags, 6, fNoAFDateGroup)
+        record << flags << itabCur_2b << itabFirst_2b << ctabSel << wTabRatio_2b;
 	}
 
 	else

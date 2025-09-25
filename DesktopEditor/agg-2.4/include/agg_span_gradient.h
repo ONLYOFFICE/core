@@ -185,8 +185,8 @@ namespace agg
 			if (t1 >= 1 || t2 >= 1)
 			{
 				if (t1 > t2)
-					return 0;
-				return 1;
+					return 1;
+				return 0;
 			}
 			return t1;
 		}

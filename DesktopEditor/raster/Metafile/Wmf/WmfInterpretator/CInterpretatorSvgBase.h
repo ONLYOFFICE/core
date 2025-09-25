@@ -15,11 +15,11 @@ namespace MetaFile
 		void SetSize(double dWidth, double dHeight);
 		void SetStyleId(unsigned int unStyleId, unsigned int unNumber);
 		void SetStroke(double dWidth, int nColor, unsigned char chAlpha = 255);
-		void SetBKColor(int nColor);
+		void SetBackground(int nColor, unsigned char chAlpha = 255);
 
 		bool GenerateHatch();
 
-		std::wstring GetPatternId();
+		std::wstring GetPatternId() const;
 		std::wstring GetPattern();
 	private:
 		void AddLine(const TPointD& oPoint1, const TPointD& oPoint2);
@@ -28,20 +28,21 @@ namespace MetaFile
 		void AddPoints(const std::vector<TPointD>& arPoints);
 
 		bool GenerateStartPattern();
-		void GenerateBK();
+		void GenerateBackground();
 		void GenerateEndPattern();
 
 		int          m_nHatchStyle;
 		unsigned int m_unNumber;
 
-		double m_dStrokeWidth;
-		int    m_nStrokeColor;
-		unsigned char m_chAlpha;
+		double        m_dStrokeWidth;
+		int           m_nStrokeColor;
+		unsigned char m_chStrokeAlpha;
 
 		double m_dWidth;
 		double m_dHeight;
 
-		int    m_nBKColor;
+		int           m_nBackgroundColor;
+		unsigned char m_chBackgroundAlpha;
 
 		NSStringUtils::CStringBuilder m_oStringBuilder;
 	};
@@ -56,20 +57,32 @@ namespace MetaFile
 		void BeginClip();
 		void CloseClip();
 
-		bool StartClip() const;
-		bool EndClip()   const;
-		bool Empty()     const;
+		bool StartedClip() const;
+		bool Empty()       const;
 
 		void AddClipValue(const std::wstring& wsId, const std::wstring& wsValue, int nClipMode = RGN_AND);
 
 		std::wstring GetClip()   const;
 		std::wstring GetClipId() const;
 	private:
-		typedef std::vector< std::tuple<std::wstring, std::wstring, int> > ClipValue;
-		ClipValue m_arValues;
+		struct TClipValue
+		{
+			std::wstring m_wsId;
+			std::wstring m_wsValue;
+			int          m_nClipMode;
+		};
+
+		std::vector<TClipValue> m_arValues;
 
 		bool m_bStartClip;
-		bool m_bEndClip;
+	};
+
+	enum class EShapeRendering
+	{
+		Auto,
+		OptimizeSpeed,
+		CrispEdges,
+		GeometricPrecision
 	};
 
 	class CInterpretatorSvgBase : public IOutputDevice
@@ -85,34 +98,45 @@ namespace MetaFile
 		void SetXmlWriter(XmlUtils::CXmlWriter* pXmlWriter);
 		XmlUtils::CXmlWriter* GetXmlWriter();
 
+		void SetShapeRendering(EShapeRendering eShapeRenderingType);
+
 		std::wstring GetFile();
 		void IncludeSvg(const std::wstring& wsSvg, const TRectD& oRect, const TRectD& oClipRect, TXForm *pTransform);
 	private:
 		void WriteNode(const std::wstring& wsNodeName, const NodeAttributes& arAttributes, const std::wstring& wsValueNode = L"");
 		void WriteNodeBegin(const std::wstring& wsNodeName, const NodeAttributes& arAttributes);
 		void WriteNodeEnd(const std::wstring& wsNodeName);
-		void WriteText(const std::wstring& wsText, const TPointD& oCoord, const TRect& oBounds = TRect(), const TPointD& oScale = TPointD(1, 1), const std::vector<double>& arDx = {});
+		void WriteText(const std::wstring& wsText, const TPointD& oCoord, const TRectL& oBounds = TRectL(), const TPointD& oScale = TPointD(1, 1), const std::vector<double>& arDx = {});
+
+		void DrawBitmap(double dX, double dY, double dW, double dH, BYTE* pBuffer, unsigned int unWidth, unsigned int unHeight, unsigned int unBlendMode) override;
 
 		void ResetClip() override;
 		void IntersectClip(const TRectD& oClip) override;
 		void ExcludeClip(const TRectD& oClip, const TRectD& oBB) override;
+		void PathClip(const CPath& oPath, int nClipMode, TXForm* pTransform = NULL) override;
+		void StartClipPath(unsigned int unMode, int nFillMode = -1) override {};
+		void EndClipPath(unsigned int unMode) override {};
 
 		void AddStroke(NodeAttributes &arAttributes) const;
 		void AddFill(NodeAttributes &arAttributes, double dWidth = 0, double dHeight = 0);
 		void AddTransform(NodeAttributes &arAttributes, TXForm* pTransform = NULL) const;
 		void AddClip();
-		void UpdateClip();
+		bool OpenClip();
+		void CloseClip();
 
 		void AddNoneFill(NodeAttributes &arAttributes) const;
+		void AddShapeRendering(NodeAttributes &arAttributes) const;
+
+		void AddLineCaps(NodeAttributes &arAttributes, const CPath* pMainPath);
 
 		TPointD GetCutPos() const;
 
-		std::wstring CreatePath(const IPath* pPath = NULL, const TXForm* pTransform = NULL);
+		std::wstring CreatePath(const CPath& oPath, const TXForm* pTransform = NULL) const;
 		std::wstring CreateHatchStyle(unsigned int unHatchStyle, double dWidth, double dHeight);
-		std::wstring CreateDibPatternStyle(IBrush *pBrush);
-		std::wstring CreatePatternStyle(IBrush *pBrush);
-		std::wstring CreateGradient(IBrush *pBrush);
-
+		std::wstring CreateDibPatternStyle(const IBrush* pBrush);
+		std::wstring CreatePatternStyle(const IBrush* pBrush);
+		std::wstring CreateGradient(const IBrush *pBrush);
+		std::wstring CreateLineCap(const CLineCapData* pLineCap, const double& dAngle);
 	private:
 		TSvgViewport         m_oViewport;
 		TPointD              m_oSizeWindow;
@@ -125,11 +149,20 @@ namespace MetaFile
 		XmlUtils::CXmlWriter *m_pXmlWriter;
 		bool                 m_bExternXmlWriter;
 
+		bool                 m_bUpdatedClip;
 		CSvgClip             m_oClip;
+
+		EShapeRendering      m_eShapeRendering;
 
 		friend class CEmfInterpretatorSvg;
 		friend class CWmfInterpretatorSvg;
 	};
+
+	std::wstring CalculateColor(unsigned int unColor);
+	std::wstring CalculateColor(unsigned int unColor, BYTE uchAlpha);
+	std::wstring CalculateColor(BYTE uchRed, BYTE uchGreen, BYTE uchBlue, BYTE uchAlpha);
+	void NormalizeRect(TRectD& oRect);
+	TRectD TranslateRect(const TRectL &oRect);
 }
 
 #endif // CINTERPRETATORSVGBASE_H

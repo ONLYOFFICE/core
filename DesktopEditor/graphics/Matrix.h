@@ -52,10 +52,10 @@ namespace Aggplus
         void Shear(double shearX, double shearY, MatrixOrder order = MatrixOrderPrepend);
         double Determinant() const;
 
-        void TransformVectors(PointF* pts, int count);
-        void TransformPoints(PointF* pts, int count);
-        void TransformPoint(double& x, double& y);
-        void TransformPoints(PointF* dst, const PointF* src, int count);
+        void TransformVectors(PointF* pts, int count) const;
+        void TransformPoints(PointF* pts, int count) const;
+        void TransformPoint(double& x, double& y) const;
+        void TransformPoints(PointF* dst, const PointF* src, int count) const;
 
         void Rotate(double angle, MatrixOrder order = MatrixOrderPrepend);
         void RotateAt(double angle, const PointF &center, MatrixOrder order = MatrixOrderPrepend);

@@ -268,7 +268,7 @@ std::wstring odf_chart_context::Impl::convert_formula(std::wstring oox_ref)
 			return L"";
 		}
 	}
-	std::wstring odf_ref = formulas_converter_chart.convert_chart_distance(oox_ref);
+	std::wstring odf_ref = formulas_converter_chart.convert_ref_distances(oox_ref, L",", L" ");
 	
 	//XmlUtils::replace_all( odf_ref, L"$", L"");
 	return odf_ref;
@@ -642,6 +642,11 @@ void odf_chart_context::set_view3D(int rotX, int rotY, int depthPercent, int per
 		if (impl_->current_level_.back().chart_properties)
 		{
 			impl_->current_level_.back().chart_properties->right_angled_axes_ = angAx;
+
+			if (!angAx)
+			{
+				plot_area->chart_plot_area_attlist_.common_dr3d_attlist_.projection_ = L"perspective";
+			}
 		}
 	}
 }
@@ -1941,8 +1946,8 @@ int odf_chart_context::Impl::create_local_table_rows(int curr_row, ods_table_sta
             table_state->add_row(row_elm, cells[i].row - curr_row - 1, style_null);
 			table_state->set_row_hidden(true);
 			
-			create_element(L"table", L"table-row", row_elm, odf_context_);
-            table_state->add_row(row_elm, 1, style_null);			
+			//create_element(L"table", L"table-row", row_elm, odf_context_);
+   //         table_state->add_row(row_elm, 1, style_null);			
 			
 			curr_row =  cells[i].row - 1;
 			add = true;
@@ -1981,10 +1986,10 @@ void odf_chart_context::Impl::create_local_table()
 	std::vector<_cell_cash> cells_cash_label;
 
 	std::wstring	table_name	= L"local-table";
-	int				max_columns	= 0;
+	int max_columns	= 0;
 
-	bool			col_header	= false;
-	bool			row_header	= false;
+	bool col_header	= false;
+	bool row_header	= false;
 
 	int min_col = 0xffff;
 	int min_row = 0xffff;
@@ -2041,6 +2046,8 @@ void odf_chart_context::Impl::create_local_table()
 		if (row2 < 1 || row1 < 1 || col1 < 1 || col2 < 1)
 			continue;
 
+		row_header = col_header = false;
+
 		if (cash_[i].categories || cash_[i].label) 
 		{
 			if (col2 - col1 == 0 && cash_[i].label)
@@ -2080,8 +2087,23 @@ void odf_chart_context::Impl::create_local_table()
 			if (c.col > max_columns && c.col < 10000) max_columns = c.col;
 		}
 	}
-	std::sort(cells_cash.begin()		, cells_cash.end()			,sort_cells);
-	std::sort(cells_cash_label.begin()	, cells_cash_label.end()	,sort_cells);
+	std::sort(cells_cash_label.begin(), cells_cash_label.end(), sort_cells);
+
+	int row_header_ind = -1;
+	for (size_t i = 0; i < cells_cash_label.size(); ++i)
+	{
+		if (cells_cash_label[i].row < row_header_ind || row_header_ind < 0) row_header_ind = cells_cash_label[i].row;
+	}
+	for (int i = 0; row_header_ind >= 0  && i < (int)cells_cash_label.size(); ++i)
+	{
+		if (cells_cash_label[i].row > row_header_ind)
+		{
+			cells_cash.push_back(cells_cash_label[i]);
+			cells_cash_label.erase(cells_cash_label.begin() + i, cells_cash_label.begin() + i + 1);
+			i--;
+		}
+	}
+	std::sort(cells_cash.begin(), cells_cash.end(), sort_cells);
 
 
 /////////////////////////
@@ -2142,19 +2164,19 @@ void odf_chart_context::Impl::create_local_table()
 				r2 = cells_cash[0].row;
 				c2 = cells_cash[0].col;
 			}
-			if ((std::min)(r1, r2) > min_row)	min_row = (std::min)(r1, r2);
-			if ((std::min)(c1, c2) > min_col)	min_col = (std::min)(c1, c2);
+			//if ((std::min)(r1, r2) > min_row)	min_row = (std::min)(r1, r2);
+			//if ((std::min)(c1, c2) > min_col)	min_col = (std::min)(c1, c2);
 
-			for (size_t i = 0 ; i < cells_cash_label.size(); i++)
-			{
-				cells_cash_label[i].row -= min_row - 1;
-				cells_cash_label[i].col -= min_col - 1;
-			}
-			for (size_t i = 0 ; i < cells_cash.size(); i++)
-			{
-				cells_cash[i].row -= min_row - 1;
-				cells_cash[i].col -= min_col - 1;
-			}
+			//for (size_t i = 0 ; i < cells_cash_label.size(); i++)
+			//{
+			//	cells_cash_label[i].row -= min_row - 1;
+			//	cells_cash_label[i].col -= min_col - 1;
+			//}
+			//for (size_t i = 0 ; i < cells_cash.size(); i++)
+			//{
+			//	cells_cash[i].row -= min_row - 1;
+			//	cells_cash[i].col -= min_col - 1;
+			//}
 		}
 		
 		if (cells_cash_label.size() > 0 || cells_cash.size() > 0)

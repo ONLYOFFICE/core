@@ -96,6 +96,7 @@ namespace XLSB
         }
 		else
 			m_bBrtEndPCDField = false;
+        global_info = proc.getGlobalWorkbookInfo();
 
         return m_BrtBeginPCDField && m_bBrtEndPCDField;
     }

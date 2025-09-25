@@ -39,7 +39,7 @@ Window2::Window2(bool isChart)
 {
 	is_contained_in_chart_substream = false;
 	
-	fSelected		= false;
+	/*fSelected		= false;
 	fDspFmlaRt		= false;
 	fDspGridRt		= false;
 	fDspRwColRt		= false;
@@ -50,7 +50,7 @@ Window2::Window2(bool isChart)
 	fDspGuts		= false;
 	fFrozenNoSplit	= false;
 	fPaged			= false;
-	fSLV			= false;
+	fSLV			= false;*/
 
 	wScaleSLV = wScaleNormal = 0;
 
@@ -152,7 +152,7 @@ void Window2::readFields(CFRecord& record)
 
             record >> xlView >> rwTop >> colLeft;
 
-            topLeftCell = static_cast<std::wstring >(CellRef(rwTop, colLeft, true, true));
+            topLeftCell = CellRef(rwTop, colLeft, true, true).toString(true);
 
             BYTE	icvHdr_1b;
             record >> icvHdr_1b;
@@ -202,6 +202,7 @@ void Window2::writeFields(CFRecord& record)
 		record.reserveNunBytes(2); // reserved
 
 		record << wScaleSLV << wScaleNormal;
+        record.reserveNunBytes(4); // must be ignored
 	}
 
 	else

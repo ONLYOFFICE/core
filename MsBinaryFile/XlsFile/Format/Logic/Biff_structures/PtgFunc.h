@@ -57,6 +57,8 @@ public:
 
     const int getParametersNum() const;
 	
+	const unsigned short getFuncIndex() const;
+	
 	static const unsigned short fixed_id = 0x01;
 private:
 	Ftab_Cetab iftab;

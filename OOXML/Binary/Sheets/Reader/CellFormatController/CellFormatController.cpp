@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
@@ -31,8 +31,6 @@
  */
 
 #include "CellFormatController.h"
-#include "DateReader.h"
-#include "DigitReader.h"
 
 #include "../../../../XlsxFormat/Styles/NumFmts.h"
 #include "../../../../XlsxFormat/Styles/Xfs.h"
@@ -41,13 +39,64 @@
 #include <chrono>
 #include <iomanip>
 #include <cctype>
+#include <boost/regex.hpp>
 
 const std::wstring DefaultDateFormat = L"dd.mm.yyyy";
+const std::wstring DefaultTimeFormat = L"h:mm";
+const std::wstring DefaultDateTimeFormat = L"m/d/yy h:mm";
 const std::wstring DefaultPercentFormat = L"0.0%";
 const std::wstring DefaultDollarFormat = L"#,##0.00$";
 
-CellFormatController::CellFormatController(OOX::Spreadsheet::CStyles *styles):
-	m_pStyles{styles}
+std::map<std::wstring, std::uint16_t> defaultDataFormats
+{
+	{DefaultDateFormat, 14},
+	{L"d-mmm-yy", 15},
+	{L"d-mmm", 16},
+	{L"mmm-yy", 17},
+    {DefaultDateTimeFormat, 22},
+    {DefaultTimeFormat, 20}
+};
+
+class FormulaController
+{
+public:
+	static std::wstring shielding_text(boost::wsmatch const& what);
+	static std::vector<std::map<std::wstring, std::wstring>> mapReplacements;
+
+	static void replace_text_back(std::wstring& expr)
+	{
+		for (auto key : mapReplacements.back())
+		{
+			XmlUtils::replace_all(expr, key.first, key.second);
+		}
+		return;
+	}
+	static void replace_text(std::wstring& expr)
+	{
+		//std::random_device genSource;
+		//std::uniform_int_distribution<> generator(0, 23);
+		//for (int index = 0; index < 5; index++)
+		//{
+		//	key += wchar_t(L'a' + generator(genSource));
+		//}
+
+		std::wstring key = L"aaaaaaaaaaaaaaaaaaaaaaaa";
+		for (unsigned i = 0; i < 23; ++i)
+		{
+			unsigned j = rand() % (i + 1);
+			key[i] = key[j];
+			key[j] = wchar_t(L'a' + i);
+		}
+		mapReplacements.back().insert(std::make_pair(key, expr));
+		expr = key;
+	}
+};
+std::vector<std::map<std::wstring, std::wstring>> FormulaController::mapReplacements;
+
+//---------------------------------------------------------------------------------------------------------------------
+
+CellFormatController::CellFormatController(OOX::Spreadsheet::CStyles *styles, _INT32 lcid):
+    m_pStyles{styles}, lcid_{lcid}, dateReader_{lcid_}
 {
 	// Добавим стили для wrap-а
 	m_pStyles->m_oCellXfs.Init();
@@ -76,12 +125,15 @@ CellFormatController::CellFormatController(OOX::Spreadsheet::CStyles *styles):
 	m_pStyles->m_oCellXfs->m_arrItems.push_back(pXfs);
 
 	createFormatStyle(DefaultDateFormat);
+    createFormatStyle(DefaultDateTimeFormat);
+    createFormatStyle(DefaultTimeFormat);
 	createFormatStyle(DefaultPercentFormat);
 }
 
-void CellFormatController::ProcessCellType(OOX::Spreadsheet::CCell *pCell, const std::wstring &value, bool bIsWrap)
+int CellFormatController::ProcessCellType(OOX::Spreadsheet::CCell *pCell, const std::wstring &value, bool bIsWrap)
 {
-
+	int result = 0; // ok
+	const auto maxCustomWidthRow = 40;
 	pCell_ = pCell;
 	/// формат для булева значения в верхнем регистре
 	if(value == L"true" || value == L"false")
@@ -92,19 +144,55 @@ void CellFormatController::ProcessCellType(OOX::Spreadsheet::CCell *pCell, const
 		auto tempValue = value;
 		std::transform(tempValue.begin(), tempValue.end(), tempValue.begin(),
                  [](unsigned char c) { return std::toupper(c); });
+		
 		pText->m_sText = tempValue;
 		pCell_->m_oRichText->m_arrItems.push_back(pText);
-		return;
+		
+		return result;
 	}
-	DigitReader digits = {};
 	std::wstring digitFormat = {};
 	std::wstring digitValue = {};
-	if(digits.ReadDigit(value, digitValue, digitFormat))
+	
+    if(digitReader_.ReadScientific(value, digitValue, digitFormat))
 	{
 		if(!pCell_->m_oValue.IsInit())
 		{
 			pCell_->m_oValue.Init();
+        }//
+		pCell_->m_oValue->m_sText = digitValue;
+		std::map<std::wstring, unsigned int>::iterator pFind = mapDataNumber_.find(digitFormat);
+		if (pFind != mapDataNumber_.end())
+		{
+			pCell_->m_oStyle = pFind->second;
 		}
+		else
+		{
+			if (!m_pStyles->m_oNumFmts.IsInit())
+			{
+				m_pStyles->m_oNumFmts.Init();
+			}
+			if(!digitFormat.empty())
+			{
+				createFormatStyle(digitFormat);
+				pCell_->m_oStyle = mapDataNumber_.at(digitFormat);
+			}
+		}
+		if (bIsWrap)
+		{
+			pCell_->m_oStyle = 1;
+		}
+		if(pCell->m_oRow.IsInit() && pCell->m_oRow.get() <= maxCustomWidthRow)
+		{
+			addCustomColWidth(pCell, digitFormat.size()+1);
+		}
+		return result;
+	}
+    else if(digitReader_.ReadDigit(value, digitValue, digitFormat))
+	{
+		if(!pCell_->m_oValue.IsInit())
+		{
+			pCell_->m_oValue.Init();
+        }
 		pCell_->m_oValue->m_sText = digitValue;
 		std::map<std::wstring, unsigned int>::iterator pFind = mapDataNumber_.find(digitFormat);
 		if (pFind != mapDataNumber_.end())
@@ -128,35 +216,85 @@ void CellFormatController::ProcessCellType(OOX::Spreadsheet::CCell *pCell, const
 		{
 			pCell_->m_oStyle = 1;
 		}
-		return;
+		if(pCell->m_oRow.IsInit() && pCell->m_oRow.get() <= maxCustomWidthRow)
+		{
+			if(!digitFormat.empty())
+				addCustomColWidth(pCell, digitFormat.size()+1);
+			else
+				addCustomColWidth(pCell, digitValue.size()+1);
+		}
+		return result;
 	}
 
-	DateReader dateReader = {};
-	_INT32 digitalDate  = 0;
-	auto validDate = dateReader.GetDigitalDate(value, digitalDate);
-	if(validDate)
+    double digitalDate  = 0;
+    bool hasDate = false;
+    bool hasTime = false;
+   
+    auto validDate = dateReader_.GetDigitalDate(value, digitalDate, hasDate, hasTime);
+	if (validDate)
 	{
 		if(!pCell_->m_oValue.IsInit())
 		{
 			pCell_->m_oValue.Init();
 		}
-		pCell_->m_oValue->m_sText = std::to_wstring(digitalDate);
-		std::map<std::wstring, unsigned int>::iterator pFind = mapDataNumber_.find(DefaultDateFormat);
-		pCell_->m_oStyle = pFind->second;
+        if(hasDate && !hasTime)
+        {
+            pCell_->m_oValue->m_sText = std::to_wstring((_INT32)digitalDate);
+            std::map<std::wstring, unsigned int>::iterator pFind = mapDataNumber_.find(DefaultDateFormat);
+            pCell_->m_oStyle = pFind->second;
+			if(pCell->m_oRow.IsInit() && pCell->m_oRow.get() <= maxCustomWidthRow)
+			{
+				addCustomColWidth(pCell, DefaultDateFormat.size() +2);
+			}
+        }
+        else if(!hasDate && hasTime)
+        {
+            pCell_->m_oValue->m_sText = std::to_wstring(digitalDate);
+			std::map<std::wstring, unsigned int>::iterator pFind = mapDataNumber_.find(DefaultTimeFormat);
+            pCell_->m_oStyle = pFind->second;
+			if(pCell->m_oRow.IsInit() && pCell->m_oRow.get() <= maxCustomWidthRow)
+			{
+				addCustomColWidth(pCell, DefaultTimeFormat.size());
+			}
+        }
+        else if(hasDate && hasTime)
+        {
+            pCell_->m_oValue->m_sText = std::to_wstring(digitalDate);
+            std::map<std::wstring, unsigned int>::iterator pFind = mapDataNumber_.find(DefaultDateTimeFormat);
+            pCell_->m_oStyle = pFind->second;
+			if(pCell->m_oRow.IsInit() && pCell->m_oRow.get() <= maxCustomWidthRow)
+			{
+				addCustomColWidth(pCell, DefaultDateTimeFormat.size() + 4);
+			}
+        }
 	}
 	else
 	{
+		std::wstring sFormula;
 		if (value[0] == L'='/* && bCalcFormulas*/)
 		{
-			pCell_->m_oFormula.Init();
-			pCell_->m_oFormula->m_sText = value;
+			sFormula = ConvertFormulaArguments(value.substr(1));
+		}
+		if (false == sFormula.empty())
+		{
+			pCell_->m_oFormula.Init(); 
+			pCell_->m_oFormula->m_sText = sFormula;
 		}
 		else
 		{
 			pCell_->m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeInlineStr);
 			pCell_->m_oRichText.Init();
 			OOX::Spreadsheet::CText *pText = new OOX::Spreadsheet::CText();
-			pText->m_sText = value;
+			
+			if (value.length() > 32767)
+			{
+				pText->m_sText = value.substr(0, 32767);
+				result = 1; // limit
+			}
+			else
+			{
+				pText->m_sText = value;
+			}
 			pCell_->m_oRichText->m_arrItems.push_back(pText);
 		}
 	}
@@ -165,31 +303,119 @@ void CellFormatController::ProcessCellType(OOX::Spreadsheet::CCell *pCell, const
 	{
 		pCell_->m_oStyle = 1;
 	}
-
+	return result;
 }
+std::wstring FormulaController::shielding_text(boost::wsmatch const& what)
+{
+	if (what[1].matched)
+	{
+		std::wstring inner = what[1].str();
+		replace_text(inner);
+		return inner;
+	}
+	else if (what[2].matched)
+	{
+		std::wstring inner = what[2].str();
+		replace_text(inner);
+		return inner;
+	}
+	else if (what[3].matched)
+		return what[3].str();
 
+	return L"";
+}
+bool CellFormatController::isFormula(const std::wstring& formula)
+{
+	if (std::wstring::npos != formula.find(L"=")) return false;
+
+	// ...
+	return true;
+}
+std::wstring CellFormatController::ConvertFormulaArguments(const std::wstring& formula)
+{
+	FormulaController controller;
+	controller.mapReplacements.emplace_back();
+
+	std::wstring res = boost::regex_replace(
+		formula,
+		boost::wregex(L"('.*?')|(\".*?\")"),
+		&FormulaController::shielding_text, boost::match_default | boost::format_all);
+
+	if (true == isFormula(res))
+	{
+		XmlUtils::replace_all(res, L";", L","); // in {} ? ->shielding
+
+		controller.replace_text_back(res);
+	}
+	else
+	{
+		res.clear();
+	}
+
+	controller.mapReplacements.pop_back();
+	return res;
+}
 void CellFormatController::createFormatStyle(const std::wstring &format)
 {
-	if (!m_pStyles->m_oNumFmts.IsInit())
+	auto prepareFormat = defaultDataFormats.find(format);
+	if(prepareFormat == defaultDataFormats.end())
 	{
-		m_pStyles->m_oNumFmts.Init();
+		if (!m_pStyles->m_oNumFmts.IsInit())
+		{
+			m_pStyles->m_oNumFmts.Init();
+		}
+		m_pStyles->m_oNumFmts->m_arrItems.push_back(new OOX::Spreadsheet::CNumFmt());
+		m_pStyles->m_oNumFmts->m_arrItems.back()->m_oFormatCode = format;
+		m_pStyles->m_oNumFmts->m_arrItems.back()->m_oNumFmtId.Init();
+		m_pStyles->m_oNumFmts->m_arrItems.back()->m_oNumFmtId->SetValue(164 + m_pStyles->m_oNumFmts->m_arrItems.size());
 	}
-	m_pStyles->m_oNumFmts->m_arrItems.push_back(new OOX::Spreadsheet::CNumFmt());
-	m_pStyles->m_oNumFmts->m_arrItems.back()->m_oFormatCode = format;
-	m_pStyles->m_oNumFmts->m_arrItems.back()->m_oNumFmtId.Init();
-	m_pStyles->m_oNumFmts->m_arrItems.back()->m_oNumFmtId->SetValue(164 + m_pStyles->m_oNumFmts->m_arrItems.size());
-
 	// Normal + data format
 	OOX::Spreadsheet::CXfs* pXfs = new OOX::Spreadsheet::CXfs();
 
 	pXfs->m_oBorderId.Init();	pXfs->m_oBorderId->SetValue(0);
 	pXfs->m_oFillId.Init();		pXfs->m_oFillId->SetValue(0);
 	pXfs->m_oFontId.Init();		pXfs->m_oFontId->SetValue(0);
-	pXfs->m_oNumFmtId.Init();	pXfs->m_oNumFmtId->SetValue(m_pStyles->m_oNumFmts->m_arrItems.back()->m_oNumFmtId->GetValue());
-
+	pXfs->m_oNumFmtId.Init();
+	if(prepareFormat == defaultDataFormats.end())
+		pXfs->m_oNumFmtId->SetValue(m_pStyles->m_oNumFmts->m_arrItems.back()->m_oNumFmtId->GetValue());
+	else
+		pXfs->m_oNumFmtId->SetValue(prepareFormat->second);
 	m_pStyles->m_oCellXfs->m_arrItems.push_back(pXfs);
 
 	auto styleNum = (unsigned int)(m_pStyles->m_oCellXfs->m_arrItems.size() - 1);
 	mapDataNumber_.insert(std::make_pair(format, styleNum));
+}
+
+void CellFormatController::addCustomColWidth(OOX::Spreadsheet::CCell *pCell, double width)
+{
+	if(m_pWorksheet == nullptr || pCell == nullptr || !pCell->m_oCol.IsInit())
+		return;
+	//не сужаем колонки, только расширяем
+	if(m_pWorksheet->m_oSheetFormatPr.IsInit() && m_pWorksheet->m_oSheetFormatPr->m_oBaseColWidth.IsInit() &&
+		m_pWorksheet->m_oSheetFormatPr->m_oBaseColWidth.get() > width)
+		return;
+	auto colNumber = pCell->m_oCol.get() + 1;
+	if(!m_pWorksheet->m_oCols.IsInit())
+	{
+		m_pWorksheet->m_oCols.Init();
+	}
+	for(auto i : m_pWorksheet->m_oCols->m_arrItems)
+	{
+		if(i->m_oMin.IsInit() && i->m_oMin->GetValue() == colNumber)
+		{
+			if(!i->m_oWidth.IsInit() ||  (i->m_oWidth.IsInit() && i->m_oWidth->GetValue() < width))
+			{
+				i->m_oWidth = width;
+			}
+			return;
+		}
+	}
+	OOX::Spreadsheet::CCol* CustomCol = new OOX::Spreadsheet::CCol;
+	CustomCol->m_oMin = colNumber;
+	CustomCol->m_oMax = colNumber;
+	CustomCol->m_oWidth = width;
+	CustomCol->m_oCustomWidth = true;
+	CustomCol->m_oBestFit = true;
+	m_pWorksheet->m_oCols->m_arrItems.push_back(CustomCol);
 }
 

@@ -96,7 +96,7 @@ namespace Aggplus
 		}
 	}
 
-	void CMatrix::TransformVectors(PointF* pts, int count)
+	void CMatrix::TransformVectors(PointF* pts, int count) const
 	{
 		// Store matrix to an array [6] of double
         double M[6]; m_internal->m_agg_mtx.store_to(M);
@@ -111,7 +111,7 @@ namespace Aggplus
 		}
 	}
 
-	void CMatrix::TransformPoints(PointF* pts, int count)
+	void CMatrix::TransformPoints(PointF* pts, int count) const
 	{
         for (int i = 0; i < count; ++i)
 		{
@@ -123,7 +123,7 @@ namespace Aggplus
 		}
 	}
 
-	void CMatrix::TransformPoint(double& x, double& y)
+	void CMatrix::TransformPoint(double& x, double& y) const
 	{
         m_internal->m_agg_mtx.transform(&x, &y);
 	}
@@ -281,7 +281,7 @@ namespace Aggplus
         return agg::rad2deg(m_internal->m_agg_mtx.rotation());
 	}
 
-    void CMatrix::TransformPoints( PointF* dst, const PointF* src, int count )
+    void CMatrix::TransformPoints( PointF* dst, const PointF* src, int count ) const
 	{
         agg::trans_affine& m = m_internal->m_agg_mtx;
 		for(int i = 0; i < count; ++i)
@@ -312,14 +312,14 @@ namespace Aggplus
         agg::trans_affine& m1 = mm1->m_internal->m_agg_mtx;
         agg::trans_affine& m2 = mm2->m_internal->m_agg_mtx;
 
-        bool bMain = (fabs(m1.sx  - m2.sx) < eps &&
-                      fabs(m1.sy  - m2.sy) < eps &&
-                      fabs(m1.shx - m2.shx) < eps &&
-                      fabs(m1.shy - m2.shy) < eps) ? true : false;
+        bool bMain = fabs(m1.sx  - m2.sx)  < eps &&
+                     fabs(m1.sy  - m2.sy)  < eps &&
+                     fabs(m1.shx - m2.shx) < eps &&
+                     fabs(m1.shy - m2.shy) < eps;
 
         if (!bMain || bIsOnlyMain)
             return bMain;
 
-        return (fabs(m1.tx - m2.tx) < eps && fabs(m1.ty - m2.ty) < eps) ? true : false;
+        return fabs(m1.tx - m2.tx) < eps && fabs(m1.ty - m2.ty) < eps;
     }
 }

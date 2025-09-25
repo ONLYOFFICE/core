@@ -105,7 +105,7 @@ namespace PPTX
 		void GrpSpPr::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
 			WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_ReadSingle( oReader, _T("bwMode"), bwMode )
+				WritingElement_ReadAttributes_ReadSingle( oReader, L"bwMode", bwMode )
 			WritingElement_ReadAttributes_End( oReader )
 		}
 		void GrpSpPr::fromXML(XmlUtils::CXmlNode& node)
@@ -115,7 +115,7 @@ namespace PPTX
 			XmlMacroReadAttributeBase(node, L"bwMode", bwMode);
 
 			std::vector<XmlUtils::CXmlNode> oNodes;
-			if (node.GetNodes(_T("*"), oNodes))
+			if (node.GetNodes(L"*", oNodes))
 			{
 				size_t count = oNodes.size();
 				for (size_t i = 0; i < count; ++i)
@@ -123,28 +123,39 @@ namespace PPTX
 					XmlUtils::CXmlNode& oNode = oNodes[i];
 
 					std::wstring strName = XmlUtils::GetNameNoNS(oNode.GetName());
-					if (_T("xfrm") == strName)
+					if (L"xfrm" == strName)
 					{
 						if (!xfrm.IsInit())
 							xfrm = oNode;
 					}
-					else if (_T("scene3d") == strName)
+					else if (L"blipFill" == strName ||
+						L"gradFill" == strName ||
+						L"grpFill" == strName ||
+						L"noFill" == strName ||
+						L"pattFill" == strName ||
+						L"solidFill" == strName)
+					{
+						Fill.fromXML(oNode);
+					}
+					else if (L"scene3d" == strName)
 					{
 						if (!scene3d.IsInit())
 							scene3d = oNode;
 					}
+					else if (L"effectDag" == strName ||
+							L"effectLst" == strName)
+					{
+						EffectList.fromXML(oNode);
+					}
 				}
 			}
-
-			Fill.GetFillFrom(node);
-			EffectList.GetEffectListFrom(node);
 
 			FillParentPointersForChilds();
 		}
 		std::wstring GrpSpPr::toXML() const
 		{
 			XmlUtils::CAttribute oAttr;
-			oAttr.WriteLimitNullable(_T("bwMode"), bwMode);
+			oAttr.WriteLimitNullable(L"bwMode", bwMode);
 
 			XmlUtils::CNodeValue oValue;
 			oValue.WriteNullable(xfrm);
@@ -168,7 +179,7 @@ namespace PPTX
 			pWriter->StartNode(namespace_ + L":grpSpPr");
 
 			pWriter->StartAttributes();
-			pWriter->WriteAttribute(_T("bwMode"), bwMode);
+			pWriter->WriteAttribute(L"bwMode", bwMode);
 			pWriter->EndAttributes();
 
 			pWriter->Write(xfrm);
@@ -183,6 +194,9 @@ namespace PPTX
 			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
 			pWriter->WriteLimit2(0, bwMode);
 			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+
+			pWriter->m_dCxCurShape = pWriter->m_dCyCurShape = 1;
+			pWriter->m_bInGroup = true;
 
 			pWriter->WriteRecord2(0, xfrm);
 			pWriter->WriteRecord1(1, Fill);

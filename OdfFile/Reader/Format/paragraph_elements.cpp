@@ -91,6 +91,31 @@ void paragraph_content_element::docx_serialize_field(const std::wstring & field_
 	   strm << L"<w:r><w:fldChar w:fldCharType=\"end\"/></w:r>";
 	}
 }
+
+void paragraph_content_element::docx_serialize_field(const std::wstring& field_name, office_element_ptr_array& content,
+	oox::docx_conversion_context& Context, bool bLock)
+{
+	std::wostream& strm = Context.output_stream();
+	Context.finish_run();
+
+	if (false == field_name.empty())
+	{
+		strm << L"<w:r><w:fldChar w:fldCharType=\"begin\"";
+		if (bLock)
+		{
+			strm << L" w:fldLock=\"1\"";
+		}
+		strm << L"/></w:r>";
+		strm << L"<w:r><w:instrText>" << field_name << L"</w:instrText></w:r><w:r><w:fldChar w:fldCharType=\"separate\"/></w:r>";
+	}
+
+	docx_serialize_run(content, Context);
+
+	if (false == field_name.empty())
+	{
+		strm << L"<w:r><w:fldChar w:fldCharType=\"end\"/></w:r>";
+	}
+}
 void paragraph_content_element::docx_serialize_sdt_placeholder(const std::wstring & name, office_element_ptr & text, oox::docx_conversion_context & Context)
 {
 	std::wostream & strm = Context.output_stream();
@@ -105,7 +130,20 @@ void paragraph_content_element::docx_serialize_sdt_placeholder(const std::wstrin
 
 	strm << L"</w:sdtContent></w:sdt>";
 }
+void paragraph_content_element::docx_serialize_sdt_placeholder(const std::wstring& name, office_element_ptr_array& content, oox::docx_conversion_context& Context)
+{
+	std::wostream& strm = Context.output_stream();
+	Context.finish_run();
 
+	strm << L"<w:sdt><w:sdtPr><w:alias w:val=\"";
+	strm << name;
+	strm << L"\"/><w:temporary/>";
+	strm << L"<w:showingPlcHdr/><w:text/></w:sdtPr><w:sdtContent>";
+
+	docx_serialize_run(content, Context);
+
+	strm << L"</w:sdtContent></w:sdt>";
+}
 void paragraph_content_element::docx_serialize_run(office_element_ptr & text, oox::docx_conversion_context & Context)
 {
 	Context.add_new_run();
@@ -115,7 +153,23 @@ void paragraph_content_element::docx_serialize_run(office_element_ptr & text, oo
 	}
 	Context.finish_run();
 }
-
+void paragraph_content_element::docx_serialize_run(office_element_ptr_array& content, oox::docx_conversion_context& Context)
+{
+	for (size_t i = 0; i < content.size(); ++i)
+	{
+		docx_serialize_run(content[i], Context);
+	}
+}
+void paragraph_content_element::xlsx_serialize(std::wostream& _Wostream, oox::xlsx_conversion_context& Context)
+{
+	std::wstringstream val;
+	text_to_stream(val, true);
+	std::wstring val_text = val.str();
+	if (val_text != L"???")
+	{
+		_Wostream << val_text;
+	}
+}
 //------------------------------------------------------------------------------------------------------------
 const wchar_t * text::ns = L"";
 const wchar_t * text::name = L"";
@@ -196,11 +250,11 @@ void text::docx_convert(oox::docx_conversion_context & Context)
 
 void text::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
-    Context.get_text_context().add_text(text_);
+    Context.get_text_context()->add_text(text_);
 }
 void text::pptx_convert(oox::pptx_conversion_context & Context)
 {
-    Context.get_text_context().add_text(text_);
+	Context.get_text_context().add_text(text_);
 }
 office_element_ptr text::create(const std::wstring & Text)
 {
@@ -255,7 +309,7 @@ void s::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
     std::wstringstream val;
     this->text_to_stream(val);
-    Context.get_text_context().add_text(val.str());
+    Context.get_text_context()->add_text(val.str());
 }
 void s::pptx_convert(oox::pptx_conversion_context & Context)
 {
@@ -292,7 +346,7 @@ void tab::docx_convert(oox::docx_conversion_context & Context)
 
 void tab::xlsx_convert(oox::xlsx_conversion_context & Context) 
 {
-    Context.get_text_context().add_text(L"\t");
+    Context.get_text_context()->add_text(L"\t");
 }
 void tab::pptx_convert(oox::pptx_conversion_context & Context) 
 {
@@ -329,7 +383,7 @@ void line_break::docx_convert(oox::docx_conversion_context & Context)
 }
 void line_break::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
-    Context.get_text_context().add_text(L"\n");
+    Context.get_text_context()->add_text(L"\n");
 }
 void line_break::pptx_convert(oox::pptx_conversion_context & Context)
 {
@@ -396,7 +450,26 @@ void bookmark_ref::add_attributes( const xml::attributes_wc_ptr & Attributes )
 }
 void bookmark_ref::add_text(const std::wstring & Text)
 {
-    content_ = Text;
+	office_element_ptr elm = text::create(Text);
+    content_.push_back( elm );
+}
+void bookmark_ref::add_child_element(xml::sax* Reader, const std::wstring& Ns, const std::wstring& Name)
+{
+	CP_CREATE_ELEMENT(content_);
+}
+void bookmark_ref::docx_convert(oox::docx_conversion_context& Context)
+{
+	std::wstring field_name = (ref_name_ ? L"REF " + *ref_name_ : L"REF") + L" \\h";
+
+	if (reference_format_)
+	{
+		switch (reference_format_->get_type())
+		{
+		case reference_format::direction: field_name += L" \\p"; break;
+		case reference_format::number: field_name += L" \\n"; break;
+		}
+	}
+	docx_serialize_field(field_name, content_, Context);
 }
 // text:reference-ref
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -543,7 +616,7 @@ void span::docx_convert(oox::docx_conversion_context & Context)
 					style_text_properties *text_props = styleContent->get_style_text_properties();
 					std::wstring parent = styleInst->parent_name();
 
-					if (false == parent.empty())
+					if (text_props && false == parent.empty())
 					{
 						text_props->content_.r_style_ = Context.styles_map_.get(parent, styleInst->type());
 					}
@@ -676,16 +749,16 @@ void a::add_space(const std::wstring & Text)
 }
 void a::docx_convert(oox::docx_conversion_context & Context)
 {
-    bool pushed_style = false;
-    
-	bool addNewRun = false;
-    Context.finish_run();
-    
-    std::wostream & _Wostream = Context.output_stream();
-
 	std::wstring ref = xlink_attlist_.href_.get_value_or(L"");
+	if (ref.empty()) return;
+    
+	bool pushed_style = false;    
+	bool addNewRun = false;
+   
+	Context.finish_run();    
 	
-	if (Context.is_table_content())
+	std::wostream& _Wostream = Context.output_stream();
+	if (Context.is_table_content() || office_target_frame_name_ || ref[0] == L'#')
 	{
 		size_t pos_outline = ref.find(L"|outline");
 		if (std::wstring::npos != pos_outline)//без #
@@ -702,11 +775,14 @@ void a::docx_convert(oox::docx_conversion_context & Context)
 		{
 			ref = XmlUtils::EncodeXmlString(ref.substr(1));
 		}
-
 		_Wostream << L"<w:hyperlink w:anchor=\"" << ref << L"\" w:history=\"1\">"; 
-		int type = Context.get_table_content_context().get_type_current_content_template_index();
-		//type == 3 (LinkStart)
-		Context.get_table_content_context().next_level_index();
+
+		if (Context.is_table_content())
+		{
+			int type = Context.get_table_content_context().get_type_current_content_template_index();
+			//type == 3 (LinkStart)
+			Context.get_table_content_context().next_level_index();
+		}
 	}
 	else
 	{
@@ -778,6 +854,27 @@ void a::xlsx_convert(oox::xlsx_conversion_context & Context)
     }
     Context.end_hyperlink(xlink_attlist_.href_.get_value_or(L""));
 }
+
+static std::wstring convert_href(oox::pptx_conversion_context& Context, const std::wstring& href)
+{
+	std::wstring result = href;
+
+	if (boost::algorithm::starts_with(href, L"#"))
+		result = href.substr(1);
+
+	const auto& page_names = Context.get_page_names();
+	for (size_t i = 0; i < page_names.size(); i++)
+	{
+		if (result == page_names[i])
+		{
+			result = std::wstring(L"slide") + std::to_wstring(i + 1) + std::wstring(L".xml");
+			return result;
+		}
+	}
+
+	return std::wstring();
+}
+
 void a::pptx_convert(oox::pptx_conversion_context & Context)
 {
 	Context.get_text_context().start_hyperlink();
@@ -786,9 +883,20 @@ void a::pptx_convert(oox::pptx_conversion_context & Context)
         content_[i]->pptx_convert(Context);
     }
 	
-	std::wstring hId = Context.get_slide_context().add_hyperlink(xlink_attlist_.href_.get_value_or(L""));
-	Context.get_text_context().end_hyperlink(hId);
+	std::wstring href = xlink_attlist_.href_.get_value_or(L"");
 
+	if (boost::algorithm::starts_with(href, L"#"))
+	{
+		href = convert_href(Context, href);
+		if(!href.empty())
+			Context.get_text_context().set_action(L"ppaction://hlinksldjump");
+	}
+	
+	std::wstring hId = Context.get_slide_context().add_hyperlink(href);
+	
+	Context.get_text_context().set_rel_id(hId);
+
+	Context.get_text_context().end_hyperlink();
 }
 //------------------------------------------------------------------------------------------------------------
 const wchar_t * endnote::ns = L"text";
@@ -891,11 +999,17 @@ void note::docx_convert(oox::docx_conversion_context & Context)
 
     if (text_note_class_.get_type() == noteclass::Footnote)
     {
-	   Context.output_stream() << "<w:footnoteReference w:id=\"" << Context.get_notes_context().next_id() << "\"/>";
+		Context.output_stream() << L"<w:rPr>";
+		Context.output_stream() << L"<w:vertAlign w:val=\"superscript\"/>";
+		Context.output_stream() << L"</w:rPr>";
+
+		Context.output_stream() << "<w:footnoteReference w:id=\"" << Context.get_notes_context().next_id() << "\"/>";
+		Context.add_new_run();
     }
     else 
     {
 		Context.output_stream() << "<w:endnoteReference w:id=\"" << Context.get_notes_context().next_id() << "\"/>";
+		Context.add_new_run();
     }
 
     if (text_note_citation_)
@@ -970,7 +1084,26 @@ void title::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
     std::wstringstream val;
     text_to_stream(val);
-    Context.get_text_context().add_text(val.str());
+	std::wstring _title = val.str();
+	if (_title != L"???")
+	{
+		Context.get_text_context()->add_text(_title);
+	}
+}
+void title::xlsx_serialize(std::wostream& _Wostream, oox::xlsx_conversion_context& Context)
+{
+	std::wstringstream val;
+	text_to_stream(val);
+	std::wstring _title = val.str();
+
+	if (_title == L"???")
+	{
+		_Wostream << L"&amp;F";
+	}
+	else
+	{
+		_Wostream << _title;
+	}
 }
 void title::pptx_convert(oox::pptx_conversion_context & Context)
 {
@@ -1004,11 +1137,15 @@ void subject::docx_convert(oox::docx_conversion_context & Context)
  	docx_serialize_field(L"SUBJECT", text_, Context);
 }
 
-void subject::xlsx_convert(oox::xlsx_conversion_context & Context)
+void subject::xlsx_convert(oox::xlsx_conversion_context& Context)
 {
-    std::wstringstream val;
-    this->text_to_stream(val);
-    Context.get_text_context().add_text(val.str());
+	std::wstringstream val;
+	this->text_to_stream(val);
+	std::wstring _subject = val.str();
+	if (_subject != L"???")
+	{
+		Context.get_text_context()->add_text(_subject);
+	}
 }
 void subject::pptx_convert(oox::pptx_conversion_context & Context)
 {
@@ -1043,7 +1180,11 @@ void chapter::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
     std::wstringstream val;
     this->text_to_stream(val);
-    Context.get_text_context().add_text(val.str());
+	std::wstring _chapter = val.str();
+	if (_chapter != L"???")
+	{
+		Context.get_text_context()->add_text(_chapter);
+	}
 }
 void chapter::pptx_convert(oox::pptx_conversion_context & Context)
 {
@@ -1056,30 +1197,32 @@ void chapter::pptx_convert(oox::pptx_conversion_context & Context)
 const wchar_t * text_placeholder::ns = L"text";
 const wchar_t * text_placeholder::name = L"placeholder";
 
-std::wostream & text_placeholder::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
-{
-    CP_SERIALIZE_TEXT(text_, bXmlEncode);
-    return _Wostream;
-}
-
 void text_placeholder::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
 }
+std::wostream & text_placeholder::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
+{
+	CP_SERIALIZE_TEXT(content_, bXmlEncode);
+	return _Wostream;
+}
+void text_placeholder::add_child_element(xml::sax* Reader, const std::wstring& Ns, const std::wstring& Name)
+{
+	CP_CREATE_ELEMENT(content_);
+}
 void text_placeholder::add_text(const std::wstring & Text)
 {
-    text_ = text::create(Text) ;
+	office_element_ptr text = text::create(Text) ;
+	content_.push_back(text);
 }
-
 void text_placeholder::docx_convert(oox::docx_conversion_context & Context)
 {
-	docx_serialize_sdt_placeholder(L"Click placeholder and overwrite", text_, Context);
+	docx_serialize_sdt_placeholder(L"Click placeholder and overwrite", content_, Context);
 }
-
 void text_placeholder::pptx_convert(oox::pptx_conversion_context & Context)
 {
-    if (text_)
+    for (size_t i = 0; i < content_.size(); ++i)
     {
-        text_->pptx_convert(Context);
+        content_[i]->pptx_convert(Context);
     }
 }
 
@@ -1392,18 +1535,18 @@ void sequence::add_attributes( const xml::attributes_wc_ptr & Attributes )
 }
 std::wostream & sequence::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
-    CP_SERIALIZE_TEXT(text_, bXmlEncode);
+    CP_SERIALIZE_TEXT(content_, bXmlEncode);
     return _Wostream;
 }
 void sequence::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
-    CP_CREATE_ELEMENT(text_);
+    CP_CREATE_ELEMENT(content_);
 }
 
 void sequence::add_text(const std::wstring & Text)
 {
     office_element_ptr elm = text::create(Text) ;
-    text_.push_back( elm );
+	content_.push_back( elm );
 }
 
 void sequence::docx_convert(oox::docx_conversion_context & Context) 
@@ -1453,9 +1596,9 @@ void sequence::docx_convert(oox::docx_conversion_context & Context)
 		Context.start_bookmark(name);
 		Context.output_stream() << L"<w:fldSimple w:instr=\" SEQ " << XmlUtils::EncodeXmlString(sequence) << L" \\* " << num_format << L" \">";
 		Context.add_new_run();
-		for (size_t i = 0; i < text_.size(); i++)
+		for (size_t i = 0; i < content_.size(); i++)
 		{
-			text_[i]->docx_convert(Context);
+			content_[i]->docx_convert(Context);
 		}
 		Context.finish_run();
 
@@ -1470,9 +1613,9 @@ void sequence::docx_convert(oox::docx_conversion_context & Context)
 }
 void sequence::pptx_convert(oox::pptx_conversion_context & Context) 
 {
-	for (size_t i = 0; i < text_.size(); i++)
+	for (size_t i = 0; i < content_.size(); i++)
     {
-        text_[i]->pptx_convert(Context);
+        content_[i]->pptx_convert(Context);
     }
 }
 //------------------------------------------------------------------------------------------------------------
@@ -1842,7 +1985,10 @@ void text_user_defined::docx_convert(oox::docx_conversion_context & Context)
 	if (!value.empty())
 		text_ = text::create(value) ;
 	
-	docx_serialize_run(text_, Context);
+	if (text_name_)
+		docx_serialize_field(XmlUtils::EncodeXmlString(L"DOCPROPERTY \"" + *text_name_ + L"\""), text_, Context, false);
+	else
+		docx_serialize_run(text_, Context);
 }
 //-----------------------------------------------------------------------------------------------
 // text:bibliography-mark

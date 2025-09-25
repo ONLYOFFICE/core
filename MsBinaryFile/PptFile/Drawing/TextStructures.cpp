@@ -46,53 +46,53 @@ if (oSrc.##EXIST_PARAM)						\
     PARAM = oSrc.##PARAM;					\
 }
 
-std::wstring ToNode(const NSCommon::nullable_base<WORD> &prop, const std::wstring &strName)
+std::wstring ToNode(const NSCommon::nullable_base<WORD>& prop, const std::wstring& strName)
 {
     if (!prop.is_init()) return L"";
 
-    return _T("<") + strName + _T(">") + std::to_wstring( (int)prop.get() ) + _T("</") + strName + _T(">");
+    return L"<" + strName + L">" + std::to_wstring((int)prop.get()) + L"</" + strName + L">";
 }
 
-std::wstring ToNode(const NSCommon::nullable_base<LONG> &prop, const std::wstring &strName)
+std::wstring ToNode(const NSCommon::nullable_base<LONG>& prop, const std::wstring& strName)
 {
     if (!prop.is_init()) return L"";
 
-    return _T("<") + strName + _T(">") + std::to_wstring( (int)prop.get() ) + _T("</") + strName + _T(">");
+    return L"<" + strName + L">" + std::to_wstring((int)prop.get()) + L"</" + strName + L">";
 }
 
-std::wstring ToNode(const NSCommon::nullable_base<_UINT32> &prop, const std::wstring &strName)
+std::wstring ToNode(const NSCommon::nullable_base<_UINT32>& prop, const std::wstring& strName)
 {
     if (!prop.is_init()) return L"";
 
-    return _T("<") + strName + _T(">") + std::to_wstring((int)prop.get()) + _T("</") + strName + _T(">");
+    return L"<" + strName + L">" + std::to_wstring((int)prop.get()) + L"</" + strName + L">";
 }
 
-std::wstring ToNode(const NSCommon::nullable_base<double> &prop, const std::wstring &strName)
+std::wstring ToNode(const NSCommon::nullable_base<double>& prop, const std::wstring& strName)
 {
     if (!prop.is_init()) return L"";
 
-    return _T("<") + strName + _T(">") + XmlUtils::ToString(prop.get()) + _T("</") + strName + _T(">");
+    return L"<" + strName + L">" + XmlUtils::ToString(prop.get()) + L"</" + strName + L">";
 }
 
-std::wstring ToNode(const NSCommon::nullable_base<ODRAW::CColor> &prop, const std::wstring &strName)
+std::wstring ToNode(const NSCommon::nullable_base<ODRAW::CColor>& prop, const std::wstring& strName)
 {
     if (!prop.is_init()) return L"";
 
-    return _T("<") + strName + _T(">") + std::to_wstring((unsigned int)prop->GetLONG()) + _T("</") + strName + _T(">");
+    return L"<" + strName + L">" + std::to_wstring((unsigned int)prop->GetLONG()) + L"</" + strName + L">";
 }
 
 PPT::CFontProperty::CFontProperty() : PitchFamily(0), Charset(0) {}
 
-PPT::CFontProperty::CFontProperty(const CFontProperty &oSrc)
+PPT::CFontProperty::CFontProperty(const CFontProperty& oSrc)
 {
     *this = oSrc;
 }
 
-PPT::CFontProperty &PPT::CFontProperty::operator=(const CFontProperty &oSrc)
+PPT::CFontProperty& PPT::CFontProperty::operator=(const CFontProperty& oSrc)
 {
-    Name		= oSrc.Name;
-    PitchFamily	= oSrc.PitchFamily;
-    Charset		= oSrc.Charset;
+    Name = oSrc.Name;
+    PitchFamily = oSrc.PitchFamily;
+    Charset = oSrc.Charset;
 
     return *this;
 }
@@ -113,7 +113,7 @@ bool PPT::CFontProperty::IsValidCharset(int value)
     if (value <= 0 || value > 255)
         return false;
 
-    std::set<int> BLCharset = {128, 136, 129};
+    std::set<int> BLCharset = { 128, 136, 129 };
     return BLCharset.find(value) == BLCharset.end();
 }
 
@@ -122,28 +122,28 @@ bool PPT::CFontProperty::IsValidPitchFamily(int value)
     if (value <= 0 || value > 255)
         return false;
 
-    std::set<int> BLPitchFamily = { 0x00, 0x01, 0x02, 0x10, 0x11, 0x12, 0x20, 0x21, 0x22, 0x30, 0x31, 0x32, 0x40, 0x41, 0x42, 0x50, 0x51, 0x52};
+    std::set<int> BLPitchFamily = { 0x00, 0x01, 0x02, 0x10, 0x11, 0x12, 0x20, 0x21, 0x22, 0x30, 0x31, 0x32, 0x40, 0x41, 0x42, 0x50, 0x51, 0x52 };
     return BLPitchFamily.find(value) != BLPitchFamily.end();
 }
 
 bool PPT::CBulletAutoNum::isDefault() const
 {
     return type.get_value_or(L"arabicPeriod") == L"arabicPeriod" &&
-            (startAt.is_init() ? *startAt == 1 : true);
+        (startAt.is_init() ? *startAt == 1 : true);
 }
 PPT::CFontProperties::CFontProperties()
 {
 }
-PPT::CFontProperties::CFontProperties(const CFontProperties &oSrc)
+PPT::CFontProperties::CFontProperties(const CFontProperties& oSrc)
 {
     *this = oSrc;
 }
-PPT::CFontProperties &PPT::CFontProperties::operator=(const CFontProperties &oSrc)
+PPT::CFontProperties& PPT::CFontProperties::operator=(const CFontProperties& oSrc)
 {
-    font	= oSrc.font;
-    ansi	= oSrc.ansi;
-    ea		= oSrc.ea;
-    sym		= oSrc.sym;
+    font = oSrc.font;
+    ansi = oSrc.ansi;
+    ea = oSrc.ea;
+    sym = oSrc.sym;
 
     return *this;
 }
@@ -152,37 +152,37 @@ PPT::CTextCFRun::CTextCFRun()
 {
 }
 
-PPT::CTextCFRun::CTextCFRun(const CTextCFRun &oSrc)
+PPT::CTextCFRun::CTextCFRun(const CTextCFRun& oSrc)
 {
     *this = oSrc;
 }
 
-PPT::CTextCFRun &PPT::CTextCFRun::operator=(const CTextCFRun &oSrc)
+PPT::CTextCFRun& PPT::CTextCFRun::operator=(const CTextCFRun& oSrc)
 {
-    FontBold		= oSrc.FontBold;
-    FontItalic		= oSrc.FontItalic;
-    FontUnderline	= oSrc.FontUnderline;
-    FontStrikeout	= oSrc.FontStrikeout;
-    FontShadow		= oSrc.FontShadow;
+    FontBold = oSrc.FontBold;
+    FontItalic = oSrc.FontItalic;
+    FontUnderline = oSrc.FontUnderline;
+    FontStrikeout = oSrc.FontStrikeout;
+    FontShadow = oSrc.FontShadow;
 
-    fontRef			= oSrc.fontRef;
-    eaFontRef		= oSrc.eaFontRef;
-    ansiFontRef		= oSrc.ansiFontRef;
-    symbolFontRef	= oSrc.symbolFontRef;
-    pp9rt           = oSrc.pp9rt;
-    BaseLineOffset	= oSrc.BaseLineOffset;
+    fontRef = oSrc.fontRef;
+    eaFontRef = oSrc.eaFontRef;
+    ansiFontRef = oSrc.ansiFontRef;
+    symbolFontRef = oSrc.symbolFontRef;
+    pp9rt = oSrc.pp9rt;
+    BaseLineOffset = oSrc.BaseLineOffset;
 
-    Color			= oSrc.Color;
-    Size			= oSrc.Size;
+    Color = oSrc.Color;
+    Size = oSrc.Size;
 
-    font		= oSrc.font;
-    font.ea		= oSrc.font.ea;
-    font.ansi	= oSrc.font.ansi;
-    font.sym	= oSrc.font.sym;
+    font = oSrc.font;
+    font.ea = oSrc.font.ea;
+    font.ansi = oSrc.font.ansi;
+    font.sym = oSrc.font.sym;
 
-    Cap				= oSrc.Cap;
+    Cap = oSrc.Cap;
 
-    Language		= oSrc.Language;
+    Language = oSrc.Language;
     return *this;
 }
 
@@ -190,7 +190,7 @@ PPT::CTextCFRun::~CTextCFRun()
 {
 }
 
-void PPT::CTextCFRun::ApplyBefore(const CTextCFRun &oSrc)
+void PPT::CTextCFRun::ApplyBefore(const CTextCFRun& oSrc)
 {
     if (!FontBold.is_init()) 		FontBold = oSrc.FontBold;
     if (!FontItalic.is_init())		FontItalic = oSrc.FontItalic;
@@ -208,15 +208,15 @@ void PPT::CTextCFRun::ApplyBefore(const CTextCFRun &oSrc)
     if (!Size.is_init())			Size = oSrc.Size;
     if (!Cap.is_init())				Cap = oSrc.Cap;
 
-    if (!font.font.is_init())		font.font	= oSrc.font.font;
-    if (!font.ansi.is_init())		font.ansi	= oSrc.font.ansi;
-    if (!font.ea.is_init())			font.ea		= oSrc.font.ea;
-    if (!font.sym.is_init())		font.sym	= oSrc.font.sym;
+    if (!font.font.is_init())		font.font = oSrc.font.font;
+    if (!font.ansi.is_init())		font.ansi = oSrc.font.ansi;
+    if (!font.ea.is_init())			font.ea = oSrc.font.ea;
+    if (!font.sym.is_init())		font.sym = oSrc.font.sym;
 
     if (!Language.is_init())		Language = oSrc.Language;
 }
 
-void PPT::CTextCFRun::ApplyAfter(const CTextCFRun &oSrc)
+void PPT::CTextCFRun::ApplyAfter(const CTextCFRun& oSrc)
 {
     if (oSrc.FontBold.is_init())			FontBold = oSrc.FontBold;
     if (oSrc.FontItalic.is_init())			FontItalic = oSrc.FontItalic;
@@ -258,59 +258,59 @@ PPT::CTextPFRun::CTextPFRun() : bIsOneLine(false)
 {
 }
 
-PPT::CTextPFRun::CTextPFRun(const CTextPFRun &oSrc)
+PPT::CTextPFRun::CTextPFRun(const CTextPFRun& oSrc)
 {
     *this = oSrc;
 }
 
-PPT::CTextPFRun &PPT::CTextPFRun::operator =(const CTextPFRun &oSrc)
+PPT::CTextPFRun& PPT::CTextPFRun::operator =(const CTextPFRun& oSrc)
 {
-    hasBullet			= oSrc.hasBullet;
+    hasBullet = oSrc.hasBullet;
 
-    bulletFontRef		= oSrc.bulletFontRef;
-    bulletSize			= oSrc.bulletSize;
-    bulletChar			= oSrc.bulletChar;
-    bulletColor			= oSrc.bulletColor;
+    bulletFontRef = oSrc.bulletFontRef;
+    bulletSize = oSrc.bulletSize;
+    bulletChar = oSrc.bulletChar;
+    bulletColor = oSrc.bulletColor;
     bulletFontProperties = oSrc.bulletFontProperties;
-    bulletAutoNum       = oSrc.bulletAutoNum;
+    bulletAutoNum = oSrc.bulletAutoNum;
 
-    textAlignment		= oSrc.textAlignment;
-    lineSpacing			= oSrc.lineSpacing;
-    spaceBefore			= oSrc.spaceBefore;
-    spaceAfter			= oSrc.spaceAfter;
-    leftMargin			= oSrc.leftMargin;
-    indent				= oSrc.indent;
-    defaultTabSize		= oSrc.defaultTabSize;
+    textAlignment = oSrc.textAlignment;
+    lineSpacing = oSrc.lineSpacing;
+    spaceBefore = oSrc.spaceBefore;
+    spaceAfter = oSrc.spaceAfter;
+    leftMargin = oSrc.leftMargin;
+    indent = oSrc.indent;
+    defaultTabSize = oSrc.defaultTabSize;
 
-    tabStops			= oSrc.tabStops;
+    tabStops = oSrc.tabStops;
 
-    fontAlign			= oSrc.fontAlign;
-    textDirection		= oSrc.textDirection;
-    wrapFlags			= oSrc.wrapFlags;
+    fontAlign = oSrc.fontAlign;
+    textDirection = oSrc.textDirection;
+    wrapFlags = oSrc.wrapFlags;
 
-    bIsOneLine			= oSrc.bIsOneLine;
+    bIsOneLine = oSrc.bIsOneLine;
 
     return *this;
 }
 
-void PPT::CTextPFRun::ApplyBefore(const CTextPFRun &oSrc)
+void PPT::CTextPFRun::ApplyBefore(const CTextPFRun& oSrc)
 {
     if (!hasBullet.is_init())
     {
-        hasBullet			= oSrc.hasBullet;
+        hasBullet = oSrc.hasBullet;
     }
     if (!bulletSize.is_init())
     {
-        bulletSize			= oSrc.bulletSize;
+        bulletSize = oSrc.bulletSize;
     }
     if (!bulletChar.is_init())//master style (78).ppt
     {
-        bulletChar			= oSrc.bulletChar;
-        bulletFontRef		= oSrc.bulletFontRef;
+        bulletChar = oSrc.bulletChar;
+        bulletFontRef = oSrc.bulletFontRef;
     }
     if (!bulletColor.is_init())
     {
-        bulletColor			= oSrc.bulletColor;
+        bulletColor = oSrc.bulletColor;
     }
     bulletFontProperties.reset();
     bulletAutoNum.reset();
@@ -333,34 +333,34 @@ void PPT::CTextPFRun::ApplyBefore(const CTextPFRun &oSrc)
     }
 }
 
-void PPT::CTextPFRun::ApplyAfter(const CTextPFRun &oSrc)
+void PPT::CTextPFRun::ApplyAfter(const CTextPFRun& oSrc)
 {
     if (oSrc.hasBullet.is_init())
     {
         hasBullet = oSrc.hasBullet;
 
         bulletSize = oSrc.bulletSize;
-        bulletChar		= oSrc.bulletChar;
-        bulletFontRef	= oSrc.bulletFontRef;
-        bulletColor		= oSrc.bulletColor;
+        bulletChar = oSrc.bulletChar;
+        bulletFontRef = oSrc.bulletFontRef;
+        bulletColor = oSrc.bulletColor;
 
         bulletFontProperties.reset();
         bulletAutoNum.reset();
     }
 
-    if (oSrc.textAlignment.is_init())		textAlignment	= oSrc.textAlignment;
-    if (oSrc.lineSpacing.is_init())			lineSpacing		= oSrc.lineSpacing;
-    if (oSrc.spaceBefore.is_init())			spaceBefore		= oSrc.spaceBefore;
-    if (oSrc.spaceAfter.is_init())			spaceAfter		= oSrc.spaceAfter;
-    if (oSrc.leftMargin.is_init())			leftMargin		= oSrc.leftMargin;
-    if (oSrc.indent.is_init())				indent			= oSrc.indent;
-    if (oSrc.defaultTabSize.is_init())		defaultTabSize	= oSrc.defaultTabSize;
+    if (oSrc.textAlignment.is_init())		textAlignment = oSrc.textAlignment;
+    if (oSrc.lineSpacing.is_init())			lineSpacing = oSrc.lineSpacing;
+    if (oSrc.spaceBefore.is_init())			spaceBefore = oSrc.spaceBefore;
+    if (oSrc.spaceAfter.is_init())			spaceAfter = oSrc.spaceAfter;
+    if (oSrc.leftMargin.is_init())			leftMargin = oSrc.leftMargin;
+    if (oSrc.indent.is_init())				indent = oSrc.indent;
+    if (oSrc.defaultTabSize.is_init())		defaultTabSize = oSrc.defaultTabSize;
 
-    if (oSrc.fontAlign.is_init())			fontAlign		= oSrc.fontAlign;
-    if (oSrc.textDirection.is_init())		textDirection	= oSrc.textDirection;
-    if (oSrc.wrapFlags.is_init())			wrapFlags		= oSrc.wrapFlags;
+    if (oSrc.fontAlign.is_init())			fontAlign = oSrc.fontAlign;
+    if (oSrc.textDirection.is_init())		textDirection = oSrc.textDirection;
+    if (oSrc.wrapFlags.is_init())			wrapFlags = oSrc.wrapFlags;
 
-    if (!oSrc.tabStops.empty())				tabStops		= oSrc.tabStops;
+    if (!oSrc.tabStops.empty())				tabStops = oSrc.tabStops;
 }
 
 std::wstring PPT::CTextPFRun::ToString(LONG lCount)
@@ -372,16 +372,16 @@ PPT::CTextRuler::CTextRuler()
 {
 }
 
-PPT::CTextRuler::CTextRuler(const CTextRuler &oSrc)
+PPT::CTextRuler::CTextRuler(const CTextRuler& oSrc)
 {
     *this = oSrc;
 }
 
-PPT::CTextRuler &PPT::CTextRuler::operator =(const CTextRuler &oSrc)
+PPT::CTextRuler& PPT::CTextRuler::operator =(const CTextRuler& oSrc)
 {
-    DefaultTabSize	= oSrc.DefaultTabSize;
-    CLevels			= oSrc.CLevels;
-    TabStops		= oSrc.TabStops;
+    DefaultTabSize = oSrc.DefaultTabSize;
+    CLevels = oSrc.CLevels;
+    TabStops = oSrc.TabStops;
 
     LeftMargin1 = oSrc.LeftMargin1;
     LeftMargin2 = oSrc.LeftMargin2;
@@ -405,10 +405,10 @@ PPT::CTextRuler::~CTextRuler()
     tabsStops.clear();
 }
 
-void PPT::CTextRuler::ApplyBefore(const CTextRuler &oSrc)
+void PPT::CTextRuler::ApplyBefore(const CTextRuler& oSrc)
 {
     if (!DefaultTabSize.is_init())			DefaultTabSize = oSrc.DefaultTabSize;
-    if (!CLevels.is_init())					CLevels		= oSrc.CLevels;
+    if (!CLevels.is_init())					CLevels = oSrc.CLevels;
 
     if (!LeftMargin1.is_init())				LeftMargin1 = oSrc.LeftMargin1;
     if (!LeftMargin2.is_init())				LeftMargin2 = oSrc.LeftMargin2;
@@ -433,7 +433,7 @@ std::wstring PPT::CTextRuler::ToString()
 PPT::CTextSIRun::CTextSIRun()
 {
     bIsExt = true;
-    lCount  = 0;
+    lCount = 0;
 
     bSpell = false;
     bLang = false;
@@ -453,39 +453,39 @@ PPT::CTextSIRun::CTextSIRun()
     bGramma = false;
 }
 
-PPT::CTextSIRun::CTextSIRun(const CTextSIRun &oSrc)
+PPT::CTextSIRun::CTextSIRun(const CTextSIRun& oSrc)
 {
     *this = oSrc;
 }
 
-PPT::CTextSIRun &PPT::CTextSIRun::operator =(const CTextSIRun &oSrc)
+PPT::CTextSIRun& PPT::CTextSIRun::operator =(const CTextSIRun& oSrc)
 {
-    bIsExt		= oSrc.bIsExt;
-    lCount		= oSrc.lCount;
+    bIsExt = oSrc.bIsExt;
+    lCount = oSrc.lCount;
 
-    bSpell		= oSrc.bSpell;
-    bLang		= oSrc.bLang;
-    bAltLang	= oSrc.bAltLang;
+    bSpell = oSrc.bSpell;
+    bLang = oSrc.bLang;
+    bAltLang = oSrc.bAltLang;
 
-    bPp10ext	= oSrc.bPp10ext;
-    bBidi		= oSrc.bBidi;
-    bSmartTag	= oSrc.bSmartTag;
+    bPp10ext = oSrc.bPp10ext;
+    bBidi = oSrc.bBidi;
+    bSmartTag = oSrc.bSmartTag;
 
-    Spell		= oSrc.Spell;
-    Lang		= oSrc.Lang;
-    AltLang		= oSrc.AltLang;
+    Spell = oSrc.Spell;
+    Lang = oSrc.Lang;
+    AltLang = oSrc.AltLang;
 
-    Bidi		= oSrc.Bidi;
-    pp10runid	= oSrc.pp10runid;
+    Bidi = oSrc.Bidi;
+    pp10runid = oSrc.pp10runid;
 
-    bGramma		= oSrc.bGramma;
+    bGramma = oSrc.bGramma;
 
     arSmartTags = oSrc.arSmartTags;
 
     return *this;
 }
 
-void PPT::CTextSIRun::ApplyBefore(const CTextSIRun &oSrc)
+void PPT::CTextSIRun::ApplyBefore(const CTextSIRun& oSrc)
 {
     /*
              * gcc 4.8 doesn't understand this construction:
@@ -538,17 +538,17 @@ PPT::CSpan::CSpan() : m_bField(false), m_bBreak(false)
 {
 }
 
-PPT::CSpan::CSpan(const CSpan &oSrc)
+PPT::CSpan::CSpan(const CSpan& oSrc)
 {
     *this = oSrc;
 }
 
-PPT::CSpan &PPT::CSpan::operator=(const CSpan &oSrc)
+PPT::CSpan& PPT::CSpan::operator=(const CSpan& oSrc)
 {
-    m_oRun		= oSrc.m_oRun;
-    m_strText	= oSrc.m_strText;
-    m_bField	= oSrc.m_bField;
-    m_bBreak	= oSrc.m_bBreak;
+    m_oRun = oSrc.m_oRun;
+    m_strText = oSrc.m_strText;
+    m_bField = oSrc.m_bField;
+    m_bBreak = oSrc.m_bBreak;
     m_arrInteractive = oSrc.m_arrInteractive;
 
     return *this;
@@ -562,26 +562,26 @@ PPT::CTextStyleLevel::CTextStyleLevel()
 {
 }
 
-PPT::CTextStyleLevel::CTextStyleLevel(const CTextStyleLevel &oSrc)
+PPT::CTextStyleLevel::CTextStyleLevel(const CTextStyleLevel& oSrc)
 {
     *this = oSrc;
 }
 
-PPT::CTextStyleLevel &PPT::CTextStyleLevel::operator=(const CTextStyleLevel &oSrc)
+PPT::CTextStyleLevel& PPT::CTextStyleLevel::operator=(const CTextStyleLevel& oSrc)
 {
-    m_oPFRun	= oSrc.m_oPFRun;
-    m_oCFRun	= oSrc.m_oCFRun;
+    m_oPFRun = oSrc.m_oPFRun;
+    m_oCFRun = oSrc.m_oCFRun;
 
     return *this;
 }
 
-void PPT::CTextStyleLevel::ApplyAfter(const CTextStyleLevel &oSrc)
+void PPT::CTextStyleLevel::ApplyAfter(const CTextStyleLevel& oSrc)
 {
     m_oPFRun.ApplyAfter(oSrc.m_oPFRun);
     m_oCFRun.ApplyAfter(oSrc.m_oCFRun);
 }
 
-void PPT::CTextStyleLevel::ApplyBefore(const CTextStyleLevel &oSrc)
+void PPT::CTextStyleLevel::ApplyBefore(const CTextStyleLevel& oSrc)
 {
     m_oPFRun.ApplyBefore(oSrc.m_oPFRun);
     m_oCFRun.ApplyBefore(oSrc.m_oCFRun);
@@ -595,12 +595,12 @@ PPT::CTextStyles::CTextStyles()
     }
 }
 
-PPT::CTextStyles::CTextStyles(const CTextStyles &oSrc)
+PPT::CTextStyles::CTextStyles(const CTextStyles& oSrc)
 {
     *this = oSrc;
 }
 
-PPT::CTextStyles &PPT::CTextStyles::operator=(const CTextStyles &oSrc)
+PPT::CTextStyles& PPT::CTextStyles::operator=(const CTextStyles& oSrc)
 {
     for (int i = 0; i < 10; ++i)
     {
@@ -609,7 +609,7 @@ PPT::CTextStyles &PPT::CTextStyles::operator=(const CTextStyles &oSrc)
     return *this;
 }
 
-void PPT::CTextStyles::SetStyles(CTextStyles *pStyles)
+void PPT::CTextStyles::SetStyles(CTextStyles* pStyles)
 {
     for (int i = 0; i < 10; ++i)
     {
@@ -617,7 +617,7 @@ void PPT::CTextStyles::SetStyles(CTextStyles *pStyles)
     }
 }
 
-void PPT::CTextStyles::SetLanguage(nullable<WORD> &language)
+void PPT::CTextStyles::SetLanguage(nullable<WORD>& language)
 {
     if (!language.is_init()) return;
 
@@ -630,7 +630,7 @@ void PPT::CTextStyles::SetLanguage(nullable<WORD> &language)
     }
 }
 
-void PPT::CTextStyles::ApplyAfter(const CTextStyles &oSrc)
+void PPT::CTextStyles::ApplyAfter(const CTextStyles& oSrc)
 {
     for (int i = 0; i < 10; ++i)
     {
@@ -646,7 +646,7 @@ void PPT::CTextStyles::ApplyAfter(const CTextStyles &oSrc)
     }
 }
 
-void PPT::CTextStyles::ApplyBefore(const CTextStyles &oSrc)
+void PPT::CTextStyles::ApplyBefore(const CTextStyles& oSrc)
 {
     for (int i = 0; i < 10; ++i)
     {
@@ -664,25 +664,25 @@ void PPT::CTextStyles::ApplyBefore(const CTextStyles &oSrc)
 
 PPT::CParagraph::CParagraph()
 {
-    m_lTextType			= -1;
-    m_lTextLevel		= 0;
-    m_lStyleThemeIndex	= -1;
+    m_lTextType = -1;
+    m_lTextLevel = 0;
+    m_lStyleThemeIndex = -1;
 }
 
-PPT::CParagraph::CParagraph(const CParagraph &oSrc)
+PPT::CParagraph::CParagraph(const CParagraph& oSrc)
 {
     *this = oSrc;
 }
 
-PPT::CParagraph &PPT::CParagraph::operator=(const CParagraph &oSrc)
+PPT::CParagraph& PPT::CParagraph::operator=(const CParagraph& oSrc)
 {
-    m_lTextLevel		= oSrc.m_lTextLevel;
-    m_lTextType			= oSrc.m_lTextType;
-    m_lStyleThemeIndex	= oSrc.m_lStyleThemeIndex;
+    m_lTextLevel = oSrc.m_lTextLevel;
+    m_lTextType = oSrc.m_lTextType;
+    m_lStyleThemeIndex = oSrc.m_lStyleThemeIndex;
 
-    m_oPFRun			= oSrc.m_oPFRun;
+    m_oPFRun = oSrc.m_oPFRun;
 
-    m_arSpans			= oSrc.m_arSpans;
+    m_arSpans = oSrc.m_arSpans;
 
     return *this;
 }
@@ -701,7 +701,7 @@ void PPT::CParagraph::CheckErrors()
     size_t nCountS = m_arSpans.size();
     for (size_t i = 0; i < nCountS; ++i)
     {
-        std::replace( m_arSpans[i].m_strText.begin(), m_arSpans[i].m_strText.end(), (wchar_t)(11), (wchar_t)(13));
+        std::replace(m_arSpans[i].m_strText.begin(), m_arSpans[i].m_strText.end(), (wchar_t)(11), (wchar_t)(13));
     }
 }
 

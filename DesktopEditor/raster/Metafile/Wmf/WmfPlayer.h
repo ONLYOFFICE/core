@@ -32,8 +32,9 @@
 #ifndef _METAFILE_WMF_WMFPLAYER_H
 #define _METAFILE_WMF_WMFPLAYER_H
 
+#include "../Common/CClip.h"
+
 #include "WmfObjects.h"
-#include "WmfClip.h"
 
 #include <map>
 #include <vector>
@@ -66,7 +67,7 @@ namespace MetaFile
 
 		CWmfDC*                     m_pDC;
 		std::vector<CWmfDC*>        m_vDCStack;
-		CWmfParserBase*		    m_pParser;
+		CWmfParserBase*             m_pParser;
 		CWmfObjectMap               m_mObjects;
 		unsigned short              m_ushIndex;
 		std::vector<unsigned short> m_vAvailableIndexes;
@@ -77,62 +78,62 @@ namespace MetaFile
 	public:
 		CWmfDC();
 		~CWmfDC();
-		CWmfDC*        Copy();
-		void           SetBrush(CWmfBrush* pBrush);
-		void           RemoveBrush(CWmfBrush* pBrush);
-		CWmfBrush*     GetBrush();				     
-		void           SetPen(CWmfPen* pPen);
-		void           RemovePen(CWmfPen* pPen);
-		CWmfPen*       GetPen();
-		void           SetPalette(CWmfPalette* pPalette);
-		void           RemovePalette(CWmfPalette* pPalette);
-		CWmfPalette*   GetPalette();
-		void           SetFont(CWmfFont* pFont);
-		void           RemoveFont(CWmfFont* pFont);
-		CWmfFont*      GetFont();
-		void           SetRegion(CWmfRegion* pRegion);
-		void           RemoveRegion(CWmfRegion* pRegion);
-		CWmfRegion*    GetRegion();
-		void           SetMapMode(unsigned short ushMapMode);
-		unsigned int   GetMapMode();
-		double         GetPixelWidth();
-		double         GetPixelHeight();
-		TWmfWindow*    GetWindow();
-		void           SetWindowOrg(short shX, short shY);
-		void           SetWindowExt(short shW, short shH);
-		void           SetWindowOff(short shX, short shY);
-		void           SetWindowScale(double dX, double dY);
-		TWmfWindow*    GetViewport();
-		void           SetViewportOrg(short shX, short shY);
-		void           SetViewportExt(short shW, short shH);
-		void           SetViewportOff(short shX, short shY);
-		void           SetViewportScale(double dX, double dY);
-		void           SetTextColor(TWmfColor& oColor);
-		TWmfColor&     GetTextColor();
-		void           SetTextBgColor(TWmfColor& oColor);
-		TWmfColor&     GetTextBgColor();
-		TWmfPointS&    GetCurPos();
-		void           SetCurPos(TWmfPointS& oPoint);
-		void           SetCurPos(short shX, short shY);
-		void           SetTextBgMode(unsigned short ushMode);
-		unsigned short GetTextBgMode();
-		void           SetLayout(unsigned short ushLayout);
-		unsigned short GetLayout();
-		void           SetPolyFillMode(unsigned short ushMode);
-		unsigned short GetPolyFillMode();
-		void           SetRop2Mode(unsigned short ushMode);
-		unsigned short GetRop2Mode();
-		void           SetStretchBltMode(unsigned short ushMode);
-		unsigned short GetStretchBltMode();
-		void           SetTextAlign(unsigned short ushTextAlign);
-		unsigned short GetTextAlign();
-		void           SetCharSpacing(unsigned short ushCharSpacing);
-		unsigned short GetCharSpacing();
-		TXForm*        GetTransform();
-		TXForm*        GetInverseTransform();
-		TXForm*        GetFinalTransform(int iGraphicsMode);
-		unsigned int   GetMiterLimit();
-		CWmfClip*      GetClip();
+		CWmfDC*            Copy() const;
+		CClip*             GetClip();
+		void               SetBrush(CWmfBrush* pBrush);
+		void               RemoveBrush(CWmfBrush* pBrush);
+		const CWmfBrush*   GetBrush() const;
+		void               SetPen(CWmfPen* pPen);
+		void               RemovePen(CWmfPen* pPen);
+		const CWmfPen*     GetPen() const;
+		void               SetPalette(CWmfPalette* pPalette);
+		void               RemovePalette(CWmfPalette* pPalette);
+		const CWmfPalette* GetPalette() const;
+		void               SetFont(CWmfFont* pFont);
+		void               RemoveFont(CWmfFont* pFont);
+		const CWmfFont*    GetFont() const;
+		void               SetRegion(CWmfRegion* pRegion);
+		void               RemoveRegion(CWmfRegion* pRegion);
+		const CWmfRegion*  GetRegion() const;
+		void               SetMapMode(unsigned short ushMapMode);
+		unsigned int       GetMapMode() const;
+		double             GetPixelWidth() const;
+		double             GetPixelHeight() const;
+		const TWmfWindow&  GetWindow() const;
+		void               SetWindowOrg(short shX, short shY);
+		void               SetWindowExt(short shW, short shH);
+		void               SetWindowOff(short shX, short shY);
+		void               SetWindowScale(double dX, double dY);
+		const TWmfWindow&  GetViewport() const;
+		void               SetViewportOrg(short shX, short shY);
+		void               SetViewportExt(short shW, short shH);
+		void               SetViewportOff(short shX, short shY);
+		void               SetViewportScale(double dX, double dY);
+		void               SetTextColor(TRGBA& oColor);
+		const TRGBA&       GetTextColor() const;
+		void               SetTextBgColor(TRGBA& oColor);
+		const TRGBA&       GetTextBgColor() const;
+		const TPointS&     GetCurPos() const;
+		void               SetCurPos(TPointS& oPoint);
+		void               SetCurPos(short shX, short shY);
+		void               SetTextBgMode(unsigned short ushMode);
+		unsigned short     GetTextBgMode() const;
+		void               SetLayout(unsigned short ushLayout);
+		unsigned short     GetLayout() const;
+		void               SetPolyFillMode(unsigned short ushMode);
+		unsigned short     GetPolyFillMode() const;
+		void               SetRop2Mode(unsigned short ushMode);
+		unsigned short     GetRop2Mode() const;
+		void               SetStretchBltMode(unsigned short ushMode);
+		unsigned short     GetStretchBltMode() const;
+		void               SetTextAlign(unsigned short ushTextAlign);
+		unsigned short     GetTextAlign() const;
+		void               SetCharSpacing(unsigned short ushCharSpacing);
+		unsigned short     GetCharSpacing() const;
+		const TXForm&      GetTransform() const;
+		const TXForm&      GetInverseTransform() const;
+		const TXForm&      GetFinalTransform(int iGraphicsMode) const;
+		unsigned int       GetMiterLimit() const;
 
 	private:
 
@@ -144,7 +145,9 @@ namespace MetaFile
 
 	private:
 
+		CClip          m_oClip;
 		CWmfBrush      m_oDefaultBrush;
+		CWmfFont       m_oDefaultFont;
 		CWmfPen        m_oDefaultPen;
 		CWmfBrush*     m_pBrush;
 		CWmfPen*       m_pPen;
@@ -156,9 +159,9 @@ namespace MetaFile
 		double         m_dPixelHeight;
 		TWmfWindow     m_oWindow;
 		TWmfWindow     m_oViewport;
-		TWmfColor      m_oTextColor;
-		TWmfColor      m_oTextBgColor;
-		TWmfPointS     m_oCurPos;
+		TRGBA          m_oTextColor;
+		TRGBA          m_oTextBgColor;
+		TPointS        m_oCurPos;
 		unsigned short m_ushTextBgMode;
 		unsigned short m_ushLayout;
 		unsigned short m_ushPolyFillMode;
@@ -169,7 +172,6 @@ namespace MetaFile
 		TXForm         m_oTransform;
 		TXForm         m_oFinalTransform;
 		TXForm         m_oFinalTransform2;
-		CWmfClip       m_oClip;
 	};
 }
 

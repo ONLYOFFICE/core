@@ -40,6 +40,14 @@
 #include "JBig2/source/JBig2File.h"
 #endif
 
+#if CXIMAGE_SUPPORT_PIC
+#include "PICT/PICFile.h"
+#endif
+
+#if CXIMAGE_SUPPORT_HEIF
+#include "heif/heif.h"
+#endif
+
 #include <cmath>
 #define BGRA_FRAME_CXIMAGE_MAX_MEMORY 67108864 // 256Mb (*4 channel)
 
@@ -421,7 +429,7 @@ void CBgraFrame::put_Palette(BYTE* pDataColors, const int& colors)
 	memcpy(m_pPalette, pDataColors, colors * 4);
 }
 
-bool CBgraFrame::OpenFile(const std::wstring& strFileName, unsigned int nFileType)
+bool CBgraFrame::OpenFile(const std::wstring& strFileName, unsigned int nFileType, const bool& bIsOrientationRemove)
 {
 	m_nFileType = nFileType;
 
@@ -439,6 +447,21 @@ bool CBgraFrame::OpenFile(const std::wstring& strFileName, unsigned int nFileTyp
 	}
 #endif
 
+#if CXIMAGE_SUPPORT_PIC
+	if (CXIMAGE_FORMAR_PIC == m_nFileType)
+	{
+		PICT::CPictFile PIC;
+		return PIC.Open(this, strFileName, !m_bIsRGBA);
+	}
+#endif
+
+#if CXIMAGE_SUPPORT_HEIF
+	if (CXIMAGE_FORMAT_HEIF == m_nFileType)
+	{
+		return NSHeif::CHeifFile::Open(this,	strFileName, m_bIsRGBA);
+	}
+#endif
+
 	NSFile::CFileBinary oFile;
 	if (!oFile.OpenFile(strFileName))
 		return false;
@@ -447,6 +470,13 @@ bool CBgraFrame::OpenFile(const std::wstring& strFileName, unsigned int nFileTyp
 
 	if (!img->Decode(oFile.GetFileNative(), m_nFileType))
 		return false;
+
+#if CXIMAGE_SUPPORT_EXIF
+#if CXIMAGE_SUPPORT_TRANSFORMATION
+	if (bIsOrientationRemove)
+		img->RotateExif(0);
+#endif
+#endif
 
 	CxImage* imgResample = NULL;
 
@@ -507,6 +537,21 @@ bool CBgraFrame::Decode(BYTE* pBuffer, int nSize, unsigned int nFileType)
 	}
 #endif
 
+#if CXIMAGE_SUPPORT_PIC
+    if (CXIMAGE_FORMAR_PIC == m_nFileType)
+    {
+        PICT::CPictFile PIC;
+        return PIC.Open(this, pBuffer, nSize, !m_bIsRGBA);
+    }
+#endif
+
+#if CXIMAGE_SUPPORT_HEIF
+	if (CXIMAGE_FORMAT_HEIF == m_nFileType)
+	{
+		return NSHeif::CHeifFile::Open(this, pBuffer, nSize, m_bIsRGBA);
+	}
+#endif
+
 	CxImage img;
 
 	if (!img.Decode(pBuffer, nSize, m_nFileType))
@@ -535,34 +580,38 @@ bool CBgraFrame::SaveFile(const std::wstring& strFileName, unsigned int nFileTyp
 
 		return res;
 	}
-	else
 #endif
+#if CXIMAGE_SUPPORT_HEIF
+	if (CXIMAGE_FORMAT_HEIF == nFileType)
 	{
-		NSFile::CFileBinary oFile;
-		if (!oFile.CreateFileW(strFileName))
-			return false;
-		
-		CxImage img;
-
-		if (!img.CreateFromArray(m_pData, m_lWidth, m_lHeight, lBitsPerPixel * 8, lStride, (m_lStride >= 0) ? true : false, !m_bIsRGBA))
-			return false;
-
-		if (m_pPalette)
-		{
-			img.SetPalette((RGBQUAD*)m_pPalette, m_lPaletteColors);
-		}
-
-		if (!img.Encode(oFile.GetFileNative(), nFileType))
-			return false;
-
-		oFile.CloseFile();
+		return NSHeif::CHeifFile::Save(m_pData, m_lWidth, m_lHeight, m_lStride, strFileName, m_bIsRGBA);
 	}
+#endif
+
+	NSFile::CFileBinary oFile;
+	if (!oFile.CreateFileW(strFileName))
+		return false;
+		
+	CxImage img;
+
+	if (!img.CreateFromArray(m_pData, m_lWidth, m_lHeight, lBitsPerPixel * 8, lStride, (m_lStride >= 0) ? true : false, !m_bIsRGBA))
+		return false;
+
+	if (m_pPalette)
+	{
+		img.SetPalette((RGBQUAD*)m_pPalette, m_lPaletteColors);
+	}
+
+	if (!img.Encode(oFile.GetFileNative(), nFileType))
+		return false;
+
+	oFile.CloseFile();
 	return true;
 }
 bool CBgraFrame::Encode(BYTE*& pBuffer, int& nSize, unsigned int nFileType)
 {
 	CxImage oCxImage;
-	if (!oCxImage.CreateFromArray(m_pData, m_lWidth, m_lHeight, 32, 4 * m_lWidth, (m_lStride >= 0) ? true : false))
+	if (!oCxImage.CreateFromArray(m_pData, m_lWidth, m_lHeight, 32, 4 * m_lWidth, (m_lStride >= 0) ? true : false, !m_bIsRGBA))
 		return false;
 
 	if (CXIMAGE_FORMAT_JPG == nFileType && -1 != m_dJpegSaveQuality)
@@ -652,4 +701,62 @@ void CBgraFrame::FromImage(IGrObject* pGrObject, bool bIsCopy)
 			m_pData = pImage->GetData();
 		}
 	}
+}
+
+bool CBgraFrame::RemoveOrientation(const std::wstring& strFileName)
+{
+	CImageFileFormatChecker checker(strFileName);
+	__ENUM_CXIMAGE_FORMATS imageType = checker.eFileType;
+
+	switch (imageType)
+	{
+	case _CXIMAGE_FORMAT_JPG:
+	case _CXIMAGE_FORMAT_PNG:
+	{
+		NSFile::CFileBinary oFile;
+		if (!oFile.OpenFile(strFileName))
+			return false;
+
+		CxImage* img = new CxImage();
+		if (!img->Decode(oFile.GetFileNative(), imageType))
+		{
+			delete img;
+			return false;
+		}
+
+#if CXIMAGE_SUPPORT_EXIF
+#if CXIMAGE_SUPPORT_TRANSFORMATION
+		int32_t orientation = img->GetExifInfo()->Orientation;
+
+		switch (orientation)
+		{
+		case 3:
+		case 6:
+		case 8:
+		case 5:
+		{
+			delete img;
+			oFile.CloseFile();
+
+			CBgraFrame oFrame;
+			oFrame.OpenFile(strFileName, imageType, true);
+
+			NSFile::CFileBinary::Remove(strFileName);
+			oFrame.SaveFile(strFileName, imageType);
+
+			return true;
+		}
+		default:
+			return false;
+		}
+
+#endif
+#endif
+		break;
+	}
+	default:
+		break;
+	}
+
+	return false;
 }

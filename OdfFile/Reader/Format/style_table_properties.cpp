@@ -152,6 +152,14 @@ void table_format_properties::docx_convert(oox::docx_conversion_context & Contex
         _tblPr << L"<w:shd w:val=\"clear\" w:color=\"auto\" w:fill=\"" << w_fill << "\"/>";
     }
 
+    if (common_writing_mode_attlist_.style_writing_mode_)
+    {
+        bool rtl = common_writing_mode_attlist_.style_writing_mode_->get_type() == odf_types::writing_mode::RlTb;
+
+        if (rtl)
+            _tblPr << L"<w:bidiVisual/>";
+    }
+
 }
 
 // style:table-properties
@@ -180,6 +188,7 @@ void style_table_properties::docx_convert(oox::docx_conversion_context & Context
 void style_table_column_properties_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
    CP_APPLY_ATTR(L"style:column-width", style_column_width_);
+   CP_APPLY_ATTR(L"loext:column-width-sym", loext_column_width_sym_);
    CP_APPLY_ATTR(L"style:rel-column-width", style_rel_column_width_);
    CP_APPLY_ATTR(L"style:use-optimal-column-width", style_use_optimal_column_width_);
    common_break_attlist_.add_attributes(Attributes);

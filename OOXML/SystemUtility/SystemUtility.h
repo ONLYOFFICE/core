@@ -42,7 +42,6 @@ namespace OOX
 		//флаг введен, чтобы отличать относительные и абсолютные пути в rels
 		bool m_bIsRoot;
 
-	public:
 		CPath();
 		CPath(const std::wstring&	sName, bool bIsNorm = true);
 		CPath(const char*&			sName, bool bIsNorm = true);
@@ -69,6 +68,8 @@ namespace OOX
 		std::wstring GetDirectory(bool bIsSlash = true) const;
 		std::wstring GetPath() const;
 		std::wstring GetFilename() const;
+
+		void SetExtention(const std::wstring & ext);
 
 		void Normalize();
 

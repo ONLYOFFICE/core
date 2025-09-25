@@ -158,11 +158,11 @@ void xlsx_text_context::Impl::start_paragraph(const std::wstring & styleName)
 {
     if (paragraphs_cout_++ > 0)
     {	
-		if ( in_comment || only_text)
+		if ( in_comment || only_text/* || in_cell_content*/)
 		{
-		// конец предыдущего абзаца и начало следующего
-		//text_ << L"&#10;";
-			text_ << L"\n"; 
+			//text_ << L"&#10;";
+			// конец предыдущего абзаца и начало следующего
+			text_ << L"\n"; // &#xA;
 		}
 		else/* (paragraph_style_name_ != styleName)*/
 		{

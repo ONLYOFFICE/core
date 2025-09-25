@@ -70,10 +70,18 @@ const wchar_t * draw_page::name = L"page";
 
 void draw_page::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
-	if	CP_CHECK_NAME(L"anim", L"par") 
+	if	CP_CHECK_NAME(L"anim", L"par")
+	{
 		CP_CREATE_ELEMENT(animation_);
-    else if (L"presentation" == Ns && L"notes" == Name)
-        CP_CREATE_ELEMENT(presentation_notes_); 
+	}
+	else if (L"presentation" == Ns && L"notes" == Name)
+	{
+		CP_CREATE_ELEMENT(presentation_notes_);
+	}
+	else if CP_CHECK_NAME(L"office", L"forms")
+	{
+		CP_CREATE_ELEMENT(office_forms_);
+	}
 	else
 		CP_CREATE_ELEMENT(content_);
 }
@@ -88,9 +96,9 @@ void draw_page::pptx_convert_placeHolder(oox::pptx_conversion_context & Context,
 	office_element_ptr elm = Context.root()->odf_context().drawStyles().find_by_style_name(styleName);
 	//todooo если это элемент datatime -нужно вытащить формат поля
 
-	if (!elm)return;
+	if (!elm) return;
 
-	int index=-1;
+	int index = -1;
 
     const std::wstring masterName = attlist_.master_page_name_.get_value_or(L"");
 	style_master_page * master = Context.root()->odf_context().pageLayoutContainer().master_page_by_name(masterName);
@@ -98,9 +106,13 @@ void draw_page::pptx_convert_placeHolder(oox::pptx_conversion_context & Context,
 	if (master)
 		index = master->find_placeHolderIndex(PresentationClass, Context.last_idx_placeHolder);
 
-
 	Context.get_slide_context().start_shape(1);
-	Context.get_slide_context().set_placeHolder_type(presentation_class(PresentationClass).get_type_ms());
+	
+	std::wstring placeholder_type = presentation_class(PresentationClass).get_type_ms();
+	if (Context.get_slide_context().processing_notes() && placeholder_type == L"pic")
+		placeholder_type = L"sldImg";
+	Context.get_slide_context().set_placeHolder_type(placeholder_type);
+	
 	Context.get_slide_context().set_placeHolder_idx(index);
 	
 	Context.get_text_context().start_object();
@@ -114,11 +126,11 @@ void draw_page::pptx_convert_placeHolder(oox::pptx_conversion_context & Context,
 	
 	std::wstring text_content_ = Context.get_text_context().end_object();
 
-	if (text_content_.length()>0)
+	if (false == text_content_.empty())
 	{
-		Context.get_slide_context().set_property(_property(L"text-content",text_content_));
+		Context.get_slide_context().set_property(_property(L"text-content", text_content_));
 	}
-	Context.get_slide_context().set_property(_property(L"no_rect",true));
+	Context.get_slide_context().set_property(_property(L"no_rect", true));
 	Context.get_slide_context().end_shape();
 
 }
@@ -132,11 +144,15 @@ void draw_page::pptx_convert(oox::pptx_conversion_context & Context)
 
     _CP_LOG << L"[info][pptx] process page(slide) \"" << pageName /*L"" */<< L"\"" << std::endl;
 
-    Context.start_page(pageName, pageStyleName, layoutName,masterName);
+    Context.start_page(pageName, pageStyleName, layoutName, masterName);
 
+	if (office_forms_)
+	{
+		office_forms_->pptx_convert(Context);
+	}
 	if (attlist_.draw_style_name_)
 	{
-		style_instance * style_inst = Context.root()->odf_context().styleContainer().style_by_name(pageStyleName,style_family::DrawingPage,false);
+		style_instance * style_inst = Context.root()->odf_context().styleContainer().style_by_name(pageStyleName,style_family::DrawingPage, false);
 
 		if ((style_inst) && (style_inst->content()))
 		{
@@ -146,7 +162,11 @@ void draw_page::pptx_convert(oox::pptx_conversion_context & Context)
 			{				
 				oox::_oox_fill fill;
 				Compute_GraphicFill(properties->content().common_draw_fill_attlist_, office_element_ptr(), Context.root(), fill);
+
 				Context.get_slide_context().add_background(fill);
+
+				bool is_page_visible = properties->content().presentation_visibility_.get_value_or(presentation_visibility::visible).get_type() == presentation_visibility::visible;
+				Context.current_slide().set_show(is_page_visible);
 			
 				//часть свойств переходов между слайдами тута
 				
@@ -165,52 +185,61 @@ void draw_page::pptx_convert(oox::pptx_conversion_context & Context)
 				}
 
 	////////////////////////////////////////////////
-				if ((properties->content().presentation_display_footer_) && (*properties->content().presentation_display_footer_))
-					Context.get_slide_context().set_footer();
+				if (properties->content().presentation_display_footer_)
+					Context.get_slide_context().set_footer(*properties->content().presentation_display_footer_);
 					
-				if ((properties->content().presentation_display_header_) && (*properties->content().presentation_display_header_))
-					Context.get_slide_context().set_header();			
+				if (properties->content().presentation_display_header_)
+					Context.get_slide_context().set_header(*properties->content().presentation_display_header_);
 				
-				if ((properties->content().presentation_display_page_number_) && (*properties->content().presentation_display_page_number_))
-					Context.get_slide_context().set_page_number();
+				if (properties->content().presentation_display_page_number_)
+					Context.get_slide_context().set_page_number(*properties->content().presentation_display_page_number_);
 				
-				if ((properties->content().presentation_display_date_time_) && (*properties->content().presentation_display_date_time_))
-					Context.get_slide_context().set_date_time();			
+				if (properties->content().presentation_display_date_time_)
+					Context.get_slide_context().set_date_time(*properties->content().presentation_display_date_time_);
 			}
 		}
 	}
-	//сначала анимашки .. потому что объекты используют анимацию не нанапрямую (как бы ) а с общей кучи
-	//animation_context на slide_context завести
-	if (animation_)
-	{
-		animation_->pptx_convert(Context);
-	}
+	
 /////////////////////////
 	for (size_t i = 0; i < content_.size(); i++)
     {
 		content_[i]->pptx_convert(Context);
 	}
 
-	if (attlist_.use_footer_name_)//from master_page
+	if (attlist_.use_footer_name_ && Context.get_slide_context().get_footer())//from master_page
 	{
 		std::wstring name = L"footer:" + *attlist_.use_footer_name_;
 		pptx_convert_placeHolder(Context, name, presentation_class::footer);
 	}
-	if (attlist_.use_date_time_name_)//from master_page
+	if (attlist_.use_date_time_name_ && Context.get_slide_context().get_date_time())//from master_page
 	{
 		std::wstring name = L"datetime:" + *attlist_.use_date_time_name_;
 		pptx_convert_placeHolder(Context, name, presentation_class::date_time);
 	}
-	
+
+	Context.get_slide_context().process_drawings();
+
+	if (animation_)
+	{
+		animation_->pptx_convert(Context);
+	}
+
 	Context.end_page();
 
  	if (presentation_notes_)
 	{
 		Context.start_page_notes();
 		presentation_notes_->pptx_convert(Context);
+		Context.get_slide_context().process_drawings();
 		Context.end_page_notes();
 	}  
 }
+
+std::wstring draw_page::get_draw_name() const
+{
+	return attlist_.draw_name_.get_value_or(L"");
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * presentation_footer_decl::ns = L"presentation";
 const wchar_t * presentation_footer_decl::name = L"footer-decl";
@@ -282,9 +311,12 @@ void presentation_notes::pptx_convert_placeHolder(oox::pptx_conversion_context &
 	//if (master)
 	//	index = master->find_placeHolderIndex(PresentationClass, Context.last_idx_placeHolder);
 
+	std::wstring placeholder_type = presentation_class(PresentationClass).get_type_ms();
+	if (Context.get_slide_context().processing_notes() && placeholder_type == L"pic")
+		placeholder_type = L"sldImg";
 
 	Context.get_slide_context().start_shape(1);
-	Context.get_slide_context().set_placeHolder_type(presentation_class(PresentationClass).get_type_ms());
+	Context.get_slide_context().set_placeHolder_type(placeholder_type);
 	Context.get_slide_context().set_placeHolder_idx(index);
 	
 	Context.get_text_context().start_object();
@@ -298,17 +330,19 @@ void presentation_notes::pptx_convert_placeHolder(oox::pptx_conversion_context &
 	
 	std::wstring text_content_ = Context.get_text_context().end_object();
 
-	if (text_content_.length()>0)
+	if (false == text_content_.empty())
 	{
-		Context.get_slide_context().set_property(_property(L"text-content",text_content_));
+		Context.get_slide_context().set_property(_property(L"text-content", text_content_));
 	}
-	Context.get_slide_context().set_property(_property(L"no_rect",true));
+	Context.get_slide_context().set_property(_property(L"no_rect", true));
 	Context.get_slide_context().end_shape();
 
 }
 
 void presentation_notes::pptx_convert(oox::pptx_conversion_context & Context)
 {
+	Context.get_slide_context().processing_notes(true);
+
 	const std::wstring pageStyleName	= attlist_.draw_style_name_.get_value_or(L"");
     const std::wstring layoutName		= attlist_.page_layout_name_.get_value_or(L"");
     const std::wstring masterName		= attlist_.master_page_name_.get_value_or(L"");
@@ -330,17 +364,17 @@ void presentation_notes::pptx_convert(oox::pptx_conversion_context & Context)
 				Context.get_slide_context().add_background(fill);
 			
 	////////////////////////////////////////////////
-				if ((properties->content().presentation_display_footer_) && (*properties->content().presentation_display_footer_))
-					Context.get_slide_context().set_footer();
+				if (properties->content().presentation_display_footer_)
+					Context.get_slide_context().set_footer(*properties->content().presentation_display_footer_);
 					
-				if ((properties->content().presentation_display_header_) && (*properties->content().presentation_display_header_))
-					Context.get_slide_context().set_header();			
+				if (properties->content().presentation_display_header_)
+					Context.get_slide_context().set_header(*properties->content().presentation_display_header_);
 				
-				if ((properties->content().presentation_display_page_number_) && (*properties->content().presentation_display_page_number_))
-					Context.get_slide_context().set_page_number();
+				if (properties->content().presentation_display_page_number_)
+					Context.get_slide_context().set_page_number(*properties->content().presentation_display_page_number_);
 				
-				if ((properties->content().presentation_display_date_time_) && (*properties->content().presentation_display_date_time_))
-					Context.get_slide_context().set_date_time();			
+				if (properties->content().presentation_display_date_time_)
+					Context.get_slide_context().set_date_time(*properties->content().presentation_display_date_time_);
 			}
 		}
 	}
@@ -351,16 +385,18 @@ void presentation_notes::pptx_convert(oox::pptx_conversion_context & Context)
 		content_[i]->pptx_convert(Context);
 	}
 
-	if (attlist_.use_footer_name_)//from master_page_notes
+	if (attlist_.use_footer_name_ && Context.get_slide_context().get_footer())//from master_page_notes
 	{
 		std::wstring name = L"footer:" + *attlist_.use_footer_name_;
 		pptx_convert_placeHolder(Context, name, presentation_class::footer);
 	}
-	if (attlist_.use_date_time_name_)//from master_page_notes
+	if (attlist_.use_date_time_name_ && Context.get_slide_context().get_date_time())//from master_page_notes
 	{
 		std::wstring name = L"datetime:" + *attlist_.use_date_time_name_;
 		pptx_convert_placeHolder(Context, name, presentation_class::date_time);
 	}
+
+	Context.get_slide_context().processing_notes(false);
 
 }
 

@@ -405,6 +405,59 @@ const bool ChartSheetSubstream::loadContent(BinProcessor& proc)
 	return true;
 }
 
+const bool ChartSheetSubstream::saveContent(BinProcessor& proc)
+{
+    {
+        BOF bof;
+        bof.dt= 0x0020;
+        proc.mandatory(bof);
+    }
+    if(m_WriteProtect != nullptr)
+        proc.mandatory(*m_WriteProtect);
+    if(m_SheetExt != nullptr)
+        proc.mandatory(*m_SheetExt);
+    for(auto i : m_arHFPicture)
+        if(i != nullptr)
+            proc.mandatory(*i);
+    if(m_PAGESETUP != nullptr)
+        proc.mandatory(*m_PAGESETUP);
+    if(m_PrintSize != nullptr)
+        proc.mandatory(*m_PrintSize);
+	if(!m_arRECORD12.empty())
+		if(m_arRECORD12[0] != nullptr)
+			proc.mandatory(*m_arRECORD12[0]);
+    if(m_BACKGROUND != nullptr)
+        proc.mandatory(*m_BACKGROUND);
+    for(auto i : m_arFbi)
+        if(i != nullptr)
+            proc.mandatory(*i);
+    if(m_PROTECTION != nullptr)
+        proc.mandatory(*m_PROTECTION);
+    if(m_Palette != nullptr)
+        proc.mandatory(*m_Palette);
+    if(m_SXViewLink != nullptr)
+        proc.mandatory(*m_SXViewLink);
+    if(m_PivotChartBits != nullptr)
+        proc.mandatory(*m_PivotChartBits);
+    if(m_SBaseRef != nullptr)
+        proc.mandatory(*m_SBaseRef);
+    proc.mandatory<Units>();
+    if(m_CHARTFORMATS != nullptr)
+        proc.mandatory(*m_CHARTFORMATS);
+    if(m_SERIESDATA != nullptr)
+        proc.mandatory(*m_SERIESDATA);
+    for(auto i : m_arWINDOW)
+        if(i != nullptr)
+            proc.mandatory(*i);
+    for(auto i : m_arCUSTOMVIEW)
+        if(i != nullptr)
+            proc.mandatory(*i);
+    if(m_CodeName != nullptr)
+        proc.mandatory(*m_CodeName);
+    proc.mandatory<EOF_T>();
+    return true;
+}
+
 void ChartSheetSubstream::recalc(CHARTFORMATS* charts)
 {
 	if (charts == NULL) return;
@@ -428,7 +481,7 @@ void ChartSheetSubstream::recalc(CHARTFORMATS* charts)
 		if (series == NULL) continue;
 
 		SerParent *parent = dynamic_cast<SerParent*>(series->m_SerParent.get());
-		if ( parent )
+		if ( (parent) && (parent->series > 0 && parent->series <= charts->m_arSERIESFORMAT.size()))
 		{
 			SERIESFORMAT *series_owner = dynamic_cast<SERIESFORMAT *>(charts->m_arSERIESFORMAT[parent->series - 1].get());
 			if (series_owner)
@@ -817,7 +870,11 @@ int ChartSheetSubstream::serialize_legend (std::wostream & _stream, const std::w
 	while (it != m_mapTypeChart.end())
 	{
 		CRT * crt = dynamic_cast<CRT*>(parent0->m_arCRT[it->first].get());
-
+		if (crt == NULL)
+		{
+			++it;
+			continue;
+		}
 		LD * ld = dynamic_cast<LD*>(crt->m_LD.get());
 		if (ld == NULL)
 		{
@@ -953,7 +1010,10 @@ int ChartSheetSubstream::serialize_plot_area (std::wostream & _stream)
 							CP_XML_NODE(L"c:idx")	{ CP_XML_ATTR (L"val" , series_id); }
 							CP_XML_NODE(L"c:order")	{ CP_XML_ATTR (L"val" , series_order++); }
 							
-							series->m_arAI[0]->serialize(CP_XML_STREAM());
+							if (!series->m_arAI.empty())
+							{
+								series->m_arAI[0]->serialize(CP_XML_STREAM());
+							}
 							
 							series_ss->serialize(CP_XML_STREAM(), crt->m_iChartType, -1);
 
@@ -962,23 +1022,26 @@ int ChartSheetSubstream::serialize_plot_area (std::wostream & _stream)
 /*							if (arPivotData.empty() == false)
 							{
 								series->set_ref(arPivotData,  i * 2);
-							}*/				
-							
-							if (crt->m_iChartType == CHART_TYPE_Scatter || 
-								crt->m_iChartType == CHART_TYPE_Bubble)
-							{
-								serialize_ser(L"c:xVal", CP_XML_STREAM(), series_id, series->m_arAI[2], ser->sdtX, ser->cValx);
-								serialize_ser(L"c:yVal", CP_XML_STREAM(), series_id, series->m_arAI[1], ser->sdtY, ser->cValy);
+							}*/			
 
-								if (crt->m_iChartType == CHART_TYPE_Bubble)
-									serialize_ser(L"c:bubbleSize", CP_XML_STREAM(), series_id, series->m_arAI[3], ser->sdtBSize, ser->cValBSize);
+							if (series->m_arAI.size() > 1)
+							{
+								if (crt->m_iChartType == CHART_TYPE_Scatter ||
+									crt->m_iChartType == CHART_TYPE_Bubble)
+								{
+									serialize_ser(L"c:xVal", CP_XML_STREAM(), series_id, series->m_arAI[2], ser->sdtX, ser->cValx);
+									serialize_ser(L"c:yVal", CP_XML_STREAM(), series_id, series->m_arAI[1], ser->sdtY, ser->cValy);
+
+									if (crt->m_iChartType == CHART_TYPE_Bubble && series->m_arAI.size() > 2)
+										serialize_ser(L"c:bubbleSize", CP_XML_STREAM(), series_id, series->m_arAI[3], ser->sdtBSize, ser->cValBSize);
+								}
+								else
+								{
+
+									serialize_ser(L"c:cat", CP_XML_STREAM(), series_id, series->m_arAI[2], ser->sdtX, ser->cValx);
+									serialize_ser(L"c:val", CP_XML_STREAM(), series_id, series->m_arAI[1], ser->sdtY, ser->cValy);
+								}
 							}
-							else
-							{
-
-								serialize_ser(L"c:cat", CP_XML_STREAM(), series_id, series->m_arAI[2], ser->sdtX, ser->cValx);
-								serialize_ser(L"c:val", CP_XML_STREAM(), series_id, series->m_arAI[1], ser->sdtY, ser->cValy);
-							}							
 //-----------------------------------------------------------------------------------------------------------------------------------------
 							series->serialize_parent(CP_XML_STREAM(), chart_formats);
 //-----------------------------------------------------------------------------------------------------------------------------------------
@@ -1046,12 +1109,12 @@ int ChartSheetSubstream::serialize_plot_area (std::wostream & _stream)
 			for (size_t i = 0; i < chart_formats->m_arAXISPARENT.size(); i++)
 			{
 				AXISPARENT* parent		= dynamic_cast<AXISPARENT*>	(chart_formats->m_arAXISPARENT[i].get());
-				AxisParent* ax_parent	= dynamic_cast<AxisParent*>	(parent->m_AxisParent.get());
-				AXES*		axes		= dynamic_cast<AXES*>		(parent->m_AXES.get());
+				AxisParent* ax_parent	= parent ? dynamic_cast<AxisParent*>(parent->m_AxisParent.get()) : NULL;
+				AXES*		axes		= parent ? dynamic_cast<AXES*>(parent->m_AXES.get()) : NULL;
 
 				if (axes)
 				{
-					axes->serialize(CP_XML_STREAM(), (ax_parent->iax!=0) ); //secondary
+					axes->serialize(CP_XML_STREAM(), ax_parent ? (ax_parent->iax != 0) : false); //secondary
 				}
 				//else error complex_29s.xls
 			}
@@ -1170,7 +1233,7 @@ int ChartSheetSubstream::serialize_dLbls (std::wostream & _stream, int id, CRT *
 	SS				*series_ss		= dynamic_cast<SS *>(series->m_SS.get());	
 	DataFormat		*series_df		= dynamic_cast<DataFormat *>(series_ss->m_DataFormat.get());
 
-	bool is_area = (crt->m_iChartType == CHART_TYPE_Area || crt->m_iChartType == CHART_TYPE_RadarArea);
+	bool is_area = (crt->m_iChartType == CHART_TYPE_Area || crt->m_iChartType == CHART_TYPE_RadarArea || crt->m_iChartType == CHART_TYPE_Bar);
 	int series_id = series_df->iss;
 	
 	std::vector<std::pair<int, BaseObjectPtr>>	labels = chart_formats->find_labels ( 4, id);
@@ -1228,7 +1291,7 @@ int ChartSheetSubstream::serialize_dLbls (std::wostream & _stream, int id, CRT *
 		
 		if (text)
 		{
-			if (text->dlp > 0 && text->dlp < 9)
+			if (text->dlp > 0 && text->dlp < 9 && !crt->m_Chart3d)
 			{
 				CP_XML_NODE(L"c:dLblPos")
 				{

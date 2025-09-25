@@ -63,10 +63,10 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual std::wstring toXML() const;
 
-			void toXML2(NSStringUtils::CStringBuilder& writer, bool bExtendedWrite) const;			
+			void toXML2(NSStringUtils::CStringBuilder& writer, bool bExtendedWrite) const;
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);				
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			virtual EElementType getType () const;
 
 			std::wstring m_sNodeName;
@@ -84,12 +84,16 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual std::wstring toXML() const;
 
+			void CreateElements(XmlUtils::CXmlLiteReader& oReader, int Depth);
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			void toXML2(NSStringUtils::CStringBuilder& writer, bool bExtendedWrite) const;
 
 			bool IsExtended();
             void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
+            void toBin(XLS::StreamCacheWriterPtr& writer);
 			virtual EElementType getType () const;
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
@@ -111,7 +115,7 @@ namespace OOX
 			nullable<SimpleTypes::COnOff>									m_oShowInputMessage;
 
 			nullable_string									m_oSqRef; // ToDo переделать на тип "sqref" (18.18.76) - последовательность "ref", разделенные пробелом
-
+			nullable_string									m_oList;
 			mutable nullable_string							m_oUuid;
 			nullable<CDataValidationFormula>				m_oFormula1;
 			nullable<CDataValidationFormula>				m_oFormula2;
@@ -133,6 +137,8 @@ namespace OOX
 					void toXML2(NSStringUtils::CStringBuilder& writer, bool bExtendedWrite) const;
 
             void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
+            void toBin(XLS::StreamCacheWriterPtr& writer);
 			virtual EElementType getType () const;
 
 		private:

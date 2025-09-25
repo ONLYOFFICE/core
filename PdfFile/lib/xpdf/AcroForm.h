@@ -41,6 +41,7 @@ public:
   AcroFormField *getField(int idx);
   AcroFormField *findField(int pg, double x, double y);
   int findFieldIdx(int pg, double x, double y);
+  Object* getAcroFormObj() { return &acroFormObj; }
 
 private:
 
@@ -89,7 +90,9 @@ public:
   void getBBox(double *llx, double *lly, double *urx, double *ury);
   void getFont(Ref *fontID, double *fontSize);
   void getColor(double *red, double *green, double *blue);
+  GList* getColorSpace(int *nElements);
   int getMaxLen();
+  Guint getFlags() { return flags; }
 
   Object *getResources(Object *res);
 
@@ -97,7 +100,11 @@ public:
   Object *getFieldRef(Object *ref);
   Object *getValueObj(Object *val);
   Object *getParentRef(Object *parent);
+  Object *fieldLookup(const char *key, Object *obj);
   GBool getTypeFromParent() { return typeFromParent; }
+  void drawAnnot(int pageNum, Gfx *gfx, GBool printing,
+		 Object *annotRef, Object *annotObj,
+		 const char* AP = "N", const char* AS = 0, GBool hide = gTrue);
 
 private:
 
@@ -106,11 +113,10 @@ private:
 		Guint flagsA, GBool typeFromParentA, XFAField *xfaFieldA);
   Ref findFontName(char *fontTag);
   void draw(int pageNum, Gfx *gfx, GBool printing);
-  void drawAnnot(int pageNum, Gfx *gfx, GBool printing,
-		 Object *annotRef, Object *annotObj);
   void drawExistingAppearance(Gfx *gfx, Dict *annot,
 			      double xMin, double yMin,
-			      double xMax, double yMax);
+			      double xMax, double yMax,
+			      const char* AP, const char* AS);
   void drawNewAppearance(Gfx *gfx, Dict *annot,
 			 double xMin, double yMin,
 			 double xMax, double yMax);
@@ -142,7 +148,6 @@ private:
   Object *getAnnotObj(Object *annotObj);
   Object *getAnnotResources(Dict *annot, Object *res);
   void buildDefaultResourceDict(Object *dr);
-  Object *fieldLookup(const char *key, Object *obj);
   Object *fieldLookup(Dict *dict, const char *key, Object *obj);
   Unicode *utf8ToUnicode(GString *s, int *unicodeLength);
   GString *unicodeToLatin1(Unicode *u, int unicodeLength);

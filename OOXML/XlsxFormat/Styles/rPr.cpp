@@ -35,8 +35,10 @@
 #include "Fonts.h"
 
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BIFF12/Color.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Binary/CFStreamCacheWriter.h"
 #include "../../XlsbFormat/Biff12_records/IndexedColor.h"
 #include "../../XlsbFormat/Biff12_records/MRUColor.h"
+#include "../../XlsbFormat/Biff12_records/Color14.h"
 
 #include "../ComplexTypes_Spreadsheet.h"
 
@@ -67,6 +69,24 @@ namespace OOX
 			{
 				 m_oRgb = SimpleTypes::Spreadsheet::CHexColor(ptr->bRed, ptr->bGreen, ptr->bBlue);
 			}
+		}
+		XLS::BaseObjectPtr CRgbColor::toBin()
+		{
+			auto ptr(new XLSB::IndexedColor);
+			XLS::BaseObjectPtr objectPtr(ptr);
+			if(m_oRgb.IsInit())
+			{
+				ptr->bRed = m_oRgb->Get_R();
+				ptr->bGreen = m_oRgb->Get_G();
+				ptr->bBlue = m_oRgb->Get_B();
+			}
+			else
+			{
+				ptr->bRed = 0;
+				ptr->bGreen = 0;
+				ptr->bBlue = 0;
+			}
+			return objectPtr;
 		}
 		EElementType CRgbColor::getType () const
 		{
@@ -135,6 +155,13 @@ namespace OOX
 				mapIndexedColors.insert(std::make_pair(index++, pRgbColor));
 				m_arrItems.push_back(pRgbColor);
 			}
+		}
+		std::vector<XLS::BaseObjectPtr> CIndexedColors::toBin()
+		{
+			std::vector<XLS::BaseObjectPtr> objectVector;
+			for(auto i : m_arrItems)
+				objectVector.push_back(i->toBin());
+			return objectVector;
 		}
 		EElementType CIndexedColors::getType () const
 		{
@@ -429,6 +456,203 @@ namespace OOX
 		{
 			ReadAttributes(obj);
 		}
+		XLSB::Color CColor::GetDefaultColor()
+		{
+			XLSB::Color ptr;
+
+			ptr.bAlpha = 0;
+            ptr.bBlue = 0;
+            ptr.bGreen = 0;
+            ptr.bRed = 0;
+
+			ptr.xColorType = 0;
+			ptr.nTintAndShade = 0;
+			ptr.index = 0;
+			ptr.fValidRGB = 0;
+
+			return ptr;
+		}
+		XLSB::Color CColor::toColor()
+		{
+			XLSB::Color ptr;
+
+            ptr.bAlpha = 255;
+            ptr.bBlue = 0;
+            ptr.bGreen = 0;
+            ptr.bRed = 0;
+            ptr.fValidRGB = false;
+			ptr.index = 0;
+
+			if(m_oAuto.IsInit())
+			{
+				if(m_oAuto->GetValue())
+					ptr.xColorType = 0;
+			}
+			else if(m_oIndexed.IsInit())
+			{
+					ptr.index = m_oIndexed->GetValue();
+					ptr.xColorType = 1;
+			}
+			else if(m_oThemeColor.IsInit())
+			{
+					ptr.index = m_oThemeColor->GetValue();
+					ptr.xColorType = 3;
+			}
+            else if(m_oRgb.IsInit())
+			{
+				ptr.bAlpha = m_oRgb->Get_A();
+				ptr.bBlue = m_oRgb->Get_B();
+				ptr.bGreen = m_oRgb->Get_G();
+				ptr.bRed = m_oRgb->Get_R();
+                ptr.xColorType = 2;
+                ptr.fValidRGB = true;
+			}
+            else
+                ptr.xColorType = 0;
+
+
+			if ( m_oTint.IsInit())
+			{
+				ptr.nTintAndShade = m_oTint->GetValue() * 32767.0;
+			}
+            else
+                ptr.nTintAndShade = 0;
+			return ptr;
+		}
+		XLS::BaseObjectPtr CColor::toBin()
+		{
+			auto ptr(new XLSB::Color);
+
+			XLS::BaseObjectPtr objectPtr(ptr);
+
+            ptr->bAlpha = 0;
+            ptr->bRed = 0;
+            ptr->bGreen = 0;
+            ptr->bBlue = 0;
+            ptr->index = 0;
+            ptr->fValidRGB = false;
+
+			if(m_oAuto.IsInit())
+			{
+				if(m_oAuto->GetValue())
+					ptr->xColorType = 0;
+			}
+			else if(m_oIndexed.IsInit())
+			{
+					ptr->index = m_oIndexed->GetValue();
+					ptr->xColorType = 1;
+			}
+			else if(m_oThemeColor.IsInit())
+			{
+					ptr->index = m_oThemeColor->GetValue();
+					ptr->xColorType = 3;
+			}
+			else
+			{
+				ptr->bAlpha = m_oRgb->Get_A();
+				ptr->bBlue = m_oRgb->Get_B();
+				ptr->bGreen = m_oRgb->Get_G();
+				ptr->bRed = m_oRgb->Get_R();
+                ptr->xColorType = 2;
+                ptr->fValidRGB = true;
+			}
+
+			if ( m_oTint.IsInit())
+			{
+				ptr->nTintAndShade = m_oTint->GetValue() * 32767.0;
+			}
+            else
+                ptr->nTintAndShade = 0;
+			return objectPtr;
+		}
+        void CColor::toBin(XLS::StreamCacheWriterPtr& writer)
+        {
+            auto record = writer->getNextRecord(XLSB::rt_Color);
+            BYTE flags = 0;
+            BYTE index = 0;
+            BYTE bRed = 0;
+            BYTE bGreen = 0;
+            BYTE bBlue = 0;
+            BYTE bAlpha = 255;
+            if(m_oAuto.IsInit())
+            {
+                if(m_oAuto->GetValue())
+                    SETBITS(flags, 1, 7, 0);
+            }
+            else if(m_oIndexed.IsInit())
+            {
+                    index = m_oIndexed->GetValue();
+                    SETBITS(flags, 1, 7, 1);
+            }
+            else if(m_oThemeColor.IsInit())
+            {
+                    index = m_oThemeColor->GetValue();
+                    SETBITS(flags, 1, 7, 3);
+            }
+            else
+            {
+                if(m_oRgb.IsInit())
+                {
+                    bAlpha = m_oRgb->Get_A();
+                    bBlue = m_oRgb->Get_B();
+                    bGreen = m_oRgb->Get_G();
+                    bRed = m_oRgb->Get_R();
+                }
+                SETBITS(flags, 1, 7, 2);
+                SETBIT(flags, 0, 1);
+            }
+            _INT16 nTintAndShade = 0;
+            if ( m_oTint.IsInit())
+                nTintAndShade = m_oTint->GetValue() * 32767.0;
+            *record << flags << index << nTintAndShade << bRed << bGreen << bBlue << bAlpha;
+            writer->storeNextRecord(record);
+        }
+        XLS::BaseObjectPtr CColor::toBin14()
+        {
+            auto ptr(new XLSB::Color14);
+
+            XLS::BaseObjectPtr objectPtr(ptr);
+
+            ptr->color.bAlpha = 0;
+            ptr->color.bRed = 0;
+            ptr->color.bGreen = 0;
+            ptr->color.bBlue = 0;
+            ptr->color.index = 0;
+            ptr->color.fValidRGB = false;
+
+            if(m_oAuto.IsInit())
+            {
+                if(m_oAuto->GetValue())
+                    ptr->color.xColorType = 0;
+            }
+            else if(m_oIndexed.IsInit())
+            {
+                    ptr->color.index = m_oIndexed->GetValue();
+                    ptr->color.xColorType = 1;
+            }
+            else if(m_oThemeColor.IsInit())
+            {
+                    ptr->color.index = m_oThemeColor->GetValue();
+                    ptr->color.xColorType = 3;
+            }
+            else
+            {
+                ptr->color.bAlpha = m_oRgb->Get_A();
+                ptr->color.bBlue = m_oRgb->Get_B();
+                ptr->color.bGreen = m_oRgb->Get_G();
+                ptr->color.bRed = m_oRgb->Get_R();
+                ptr->color.xColorType = 2;
+                ptr->color.fValidRGB = true;
+            }
+
+            if ( m_oTint.IsInit())
+            {
+                ptr->color.nTintAndShade = m_oTint->GetValue() * 32767.0;
+            }
+            else
+                ptr->color.nTintAndShade = 0;
+            return objectPtr;
+        }
 		EElementType CColor::getType () const
 		{
 			return et_x_Color;
@@ -567,6 +791,13 @@ namespace OOX
 				m_arrItems.push_back(color);
 			}
 		}
+		std::vector<XLS::BaseObjectPtr> CMruColors::toBin()
+		{
+			std::vector<XLS::BaseObjectPtr> objectVector;
+			for(auto i:m_arrItems)
+				objectVector.push_back(i->toBin());
+			return objectVector;
+		}
 		EElementType CMruColors::getType () const
 		{
 			return et_x_MruColors;
@@ -702,6 +933,10 @@ namespace OOX
 
 			if ( !oReader.IsEmptyNode() )
 				oReader.ReadTillEnd();
+            if(!m_oUnderline.IsInit())
+              {
+                m_oUnderline.Init();
+              }
 		}
 		std::wstring CUnderline::toXML() const
 		{
@@ -1270,7 +1505,11 @@ namespace OOX
 		_UINT32 CRPr::getXLSBSize() const
 		{
 			_UINT32 nLen = 2 + 2 + 2 + 2 + 1 + 1 + 1 + 1 + 1 + 1 + 2 + 4 + 1;
-			nLen += 4 + 2 * (m_oRFont.IsInit() && m_oRFont->m_sVal.IsInit() ? m_oRFont->m_sVal->length() : 0);
+			nLen += 4;
+			if (m_oRFont.IsInit() && m_oRFont->m_sVal.IsInit())
+			{
+				nLen += NSFile::CUtf8Converter::GetUtf16SizeFromUnicode(m_oRFont->m_sVal->c_str(), m_oRFont->m_sVal->length());
+			}
 			return nLen;
 		}
 		void CRPr::fromFont(CFont* font)
@@ -1291,6 +1530,26 @@ namespace OOX
 			m_oUnderline      = font->m_oUnderline;
 			m_oVertAlign      = font->m_oVertAlign;
 
+		}
+		CFont* CRPr::toFont()
+		{
+            auto font(new CFont);
+            font->m_oBold = m_oBold;
+            font->m_oCharset = m_oCharset;
+            font->m_oColor = m_oColor;
+            font->m_oCondense = m_oCondense;
+            font->m_oExtend = m_oExtend;
+            font->m_oFamily = m_oFamily;
+            font->m_oItalic = m_oItalic;
+            font->m_oOutline = m_oOutline;
+            font->m_oRFont = m_oRFont;
+            font->m_oScheme = m_oScheme;
+            font->m_oShadow = m_oShadow;
+            font->m_oStrike = m_oStrike;
+            font->m_oSz = m_oSz;
+            font->m_oUnderline = m_oUnderline;
+            font->m_oVertAlign = m_oVertAlign;
+			return font;
 		}
 
 	} //Spreadsheet

@@ -189,6 +189,42 @@ void text_bookmark_end::serialize(std::wostream & _Wostream)
 	}
 }
 //----------------------------------------------------------------------------------
+// text:bookmark-ref
+//----------------------------------------------------------------------------------
+const wchar_t* text_bookmark_ref::ns = L"text";
+const wchar_t* text_bookmark_ref::name = L"bookmark-ref";
+
+void text_bookmark_ref::create_child_element(const std::wstring& Ns, const std::wstring& Name)
+{
+	CP_CREATE_ELEMENT(content_);
+}
+void text_bookmark_ref::add_child_element(const office_element_ptr& child_element)
+{
+	content_.push_back(child_element);
+}
+void text_bookmark_ref::add_text(const std::wstring& Text)
+{
+	office_element_ptr elm = text_text::create(Text);
+	content_.push_back(elm);
+}
+void text_bookmark_ref::serialize(std::wostream& _Wostream)
+{
+	CP_XML_WRITER(_Wostream)
+	{
+		CP_XML_NODE_SIMPLE()
+		{
+			CP_XML_ATTR_OPT_ENCODE_STRING(L"text:ref-name", ref_name_);
+			CP_XML_ATTR_OPT(L"text:reference-format", reference_format_);
+			
+			for (size_t i = 0; i < content_.size(); i++)
+			{
+				content_[i]->serialize(CP_XML_STREAM());
+			}
+		}
+	}
+}
+
+//----------------------------------------------------------------------------------
 // text:reference-mark
 //----------------------------------------------------------------------------------
 const wchar_t * text_reference_mark::ns = L"text";
@@ -1153,6 +1189,50 @@ void text_label::serialize(std::wostream & _Wostream)
 			
 			if (text_)
 				CP_XML_CONTENT(*text_);
+		}
+	}
+}
+//----------------------------------------------------------------------------------
+// text:user-defined
+//----------------------------------------------------------------------------------
+const wchar_t* text_user_defined::ns = L"text";
+const wchar_t* text_user_defined::name = L"user-defined";
+
+void text_user_defined::add_child_element(const office_element_ptr& child_element)
+{
+	if (!child_element) return;
+
+	content_.push_back(child_element);
+}
+std::wstring text_user_defined::get_text_content()
+{
+	std::wstringstream strm;
+	for (size_t i = 0; i < content_.size(); i++)
+	{
+		content_[i]->text_to_stream(strm);
+	}
+	return strm.str();
+}
+
+void text_user_defined::add_text(const std::wstring& Text)
+{
+	text_ = Text;
+}
+void text_user_defined::serialize(std::wostream& _Wostream)
+{
+	CP_XML_WRITER(_Wostream)
+	{
+		CP_XML_NODE_SIMPLE()
+		{
+			CP_XML_ATTR_OPT(L"text:name", text_name_);
+
+			if (text_)
+				CP_XML_CONTENT(*text_);
+			
+			for (size_t i = 0; i < content_.size(); i++)
+			{
+				content_[i]->text_to_stream(CP_XML_STREAM());
+			}
 		}
 	}
 }

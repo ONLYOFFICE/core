@@ -31,6 +31,7 @@ namespace NSJSBase {
 	{
 		embed_native_internal = nullptr;
 		m_pAdapter = nullptr;
+		m_isExternalize = false;
 	}
 
 	CJSEmbedObject::~CJSEmbedObject()
@@ -42,6 +43,16 @@ namespace NSJSBase {
 	void* CJSEmbedObject::getObject()
 	{
 		return nullptr;
+	}
+
+	void CJSEmbedObject::SetExternalize(const bool& isExternalize)
+	{
+		m_isExternalize = isExternalize;
+	}
+
+	bool CJSEmbedObject::GetExternalize()
+	{
+		return m_isExternalize;
 	}
 
 	CJSEmbedObjectAdapterBase* CJSEmbedObject::getAdapter()
@@ -65,14 +76,9 @@ namespace NSJSBase {
 	{
 	}
 
-	void CJSObject::set(const char* name, JSSmart<CJSValue> value)
-	{
-		this->set(name, value.GetPointer());
-	}
 	void CJSObject::set(const char* name, JSSmart<CJSObject> obj)
 	{
-		JSSmart<CJSValue> value = obj->toValue();
-		this->set(name, value.GetPointer());
+		this->set(name, obj->toValue());
 	}
 
 	CJSArray::CJSArray()

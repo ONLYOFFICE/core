@@ -918,4 +918,87 @@ namespace NSCommon
 
 		std::wstring& get()const { return  *m_pPointer; }
 	};
+	class nullable_astring : public nullable_base<std::string>
+	{
+	public:
+		nullable_astring() : nullable_base<std::string>()
+		{
+		}
+		nullable_astring(const nullable_astring& oOther)
+		{
+			if (NULL == oOther.m_pPointer)
+				m_pPointer = NULL;
+			else
+				m_pPointer = new std::string(*oOther.m_pPointer);
+		}
+		void operator=(const std::string& value)
+		{
+			RELEASEOBJECT(m_pPointer);
+			m_pPointer = new std::string(value);
+		}
+		void operator+=(const std::string& value)
+		{
+			if (NULL == m_pPointer)
+				m_pPointer = new std::string(value);
+			else
+				*m_pPointer += value;
+		}
+		void operator=(std::string* value)
+		{
+			RELEASEOBJECT(m_pPointer);
+			m_pPointer = value;
+		}
+		nullable_astring& operator=(const nullable_astring& oSrc)
+		{
+			RELEASEOBJECT(m_pPointer);
+
+			if (NULL != oSrc.m_pPointer)
+				m_pPointer = new std::string(*oSrc);
+			return *this;
+		}
+		const bool operator==(const nullable_astring& oOther) const
+		{
+			if (!this->m_pPointer)
+				return false;
+
+			return (*this->m_pPointer) == *oOther;
+		}
+		const bool operator==(const std::string& oOther) const
+		{
+			if (!this->m_pPointer)
+				return false;
+
+			return (*this->m_pPointer) == oOther;
+		}
+		std::string get_value_or(const std::string& value) const
+		{
+			if (NULL == m_pPointer)
+			{
+				std::string ret = value;
+				return ret;
+			}
+			return *m_pPointer;
+		}
+		std::string ToAttribute(const std::string& name)  const
+		{
+			if (m_pPointer)
+			{
+				return name + "=\"" + (*m_pPointer) + "\" ";
+			}
+			return "";
+		}
+		std::string* GetPointerEmptyNullable()
+		{
+			std::string* pOldPointer = this->m_pPointer;
+			this->m_pPointer = NULL;
+			return pOldPointer;
+		}
+		std::string& operator*() { return *m_pPointer; }
+		std::string* operator->() { return  m_pPointer; }
+
+		std::string& operator*() const { return *m_pPointer; }
+		std::string* operator->() const { return  m_pPointer; }
+
+		std::string& get()const { return  *m_pPointer; }
+	};
 }

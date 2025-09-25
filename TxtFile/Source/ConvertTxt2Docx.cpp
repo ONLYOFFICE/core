@@ -211,11 +211,11 @@ namespace Txt2Docx
 				}
 				while(line.find(_T("\x09")) != line.npos)
 				{
-					int pos = line.find(_T("\x09"));
+					size_t pos = line.find(_T("\x09"));
 					
-					if (pos > 0)
+					if (pos != std::wstring::npos)
 					{
-						std::wstring s = line.substr(0, pos - 1);
+						std::wstring s = line.substr(0, pos);
 						if (!s.empty())
 						{
 							OOX::Logic::CRunProperty *rPr_	= new OOX::Logic::CRunProperty();

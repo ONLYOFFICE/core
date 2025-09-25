@@ -30,14 +30,12 @@
  *
  */
 #pragma once
-#ifndef PPTX_SHOWPR_BROWSE_INCLUDE_H_
-#define PPTX_SHOWPR_BROWSE_INCLUDE_H_
 
 #include "./../WrapperWritingElement.h"
 
 namespace PPTX
 {
-	namespace nsShowPr
+	namespace nsPresentation
 	{
 		class Browse : public WrapperWritingElement
 		{
@@ -52,13 +50,11 @@ namespace PPTX
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
-		public:
-			nullable_bool			showScrollbar;
+			nullable_bool showScrollbar;
 
 		protected:
 			virtual void FillParentPointersForChilds();
 		};
-	} // namespace nsShowPr
+	} // namespace nsPresentation
 } // namespace PPTX
 
-#endif // PPTX_SHOWPR_BROWSE_INCLUDE_H_

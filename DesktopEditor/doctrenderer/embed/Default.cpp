@@ -4,6 +4,7 @@
 #include "./MemoryStreamEmbed.h"
 #include "./TextMeasurerEmbed.h"
 #include "./HashEmbed.h"
+#include "./GraphicsEmbed.h"
 
 namespace NSJSBase
 {
@@ -13,5 +14,6 @@ namespace NSJSBase
 		CJSContext::Embed<CMemoryStreamEmbed>();
 		CJSContext::Embed<CTextMeasurerEmbed>();
 		CJSContext::Embed<CHashEmbed>();
+		CJSContext::Embed<CGraphicsEmbed>();
 	}
 }

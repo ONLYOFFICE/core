@@ -124,8 +124,8 @@ public:
     virtual void SetSwapRGB(bool bValue){ if (m_pRenderer) m_pRenderer->m_bSwapRGB = bValue; }
     virtual void SetTileImageDpi(const double& dDpi) { if (m_pRenderer) m_pRenderer->m_dDpiTile = dDpi; }
 
-    void Save();
-    void Restore();
+    virtual void Save();
+    virtual void Restore();
 
 public:
 // тип рендерера-----------------------------------------------------------------------------
@@ -163,9 +163,9 @@ public:
 	virtual HRESULT PenDashPattern(double* pPattern, LONG lCount);
 
 // brush ------------------------------------------------------------------------------------
-    virtual void put_BrushGradInfo(const NSStructures::GradientInfo &_ginfo) override {
-        m_oBrush.m_oGradientInfo = _ginfo;
-    }
+	virtual void put_BrushGradInfo(void* pGradInfo) override {
+		m_oBrush.m_oGradientInfo = *((NSStructures::GradientInfo*)pGradInfo);
+	}
 
 	virtual HRESULT get_BrushType(LONG* lType);
 	virtual HRESULT put_BrushType(const LONG& lType);
@@ -278,7 +278,7 @@ public:
 	{
 		_SetFont();
 	}
-	virtual void put_BlendMode(const unsigned int nBlendMode) override;
+	virtual void put_BlendMode(const unsigned int& nBlendMode) override;
 
 public:
     virtual void CloseFont()
@@ -351,6 +351,11 @@ public:
 
 	// alpha mask methods
 	void SetAlphaMask(Aggplus::CAlphaMask* pAlphaMask);
+	virtual Aggplus::CSoftMask* CreateSoftMask(bool bAlpha) override;
+	virtual void SetSoftMask(Aggplus::CSoftMask* pSoftMask) override;
+
+	// layer methods
+	virtual HRESULT put_LayerOpacity(double dValue) override;
 
 	// smart methods
 	void drawHorLine(BYTE align, double y, double x, double r, double penW)

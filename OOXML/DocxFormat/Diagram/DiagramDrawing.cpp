@@ -33,23 +33,34 @@
 
 #include "DiagramDrawing.h"
 
+#include "../Document.h"
+#include "../../XlsxFormat/Xlsx.h"
+
 #include "../../PPTXFormat/Logic/SpTree.h"
 #include "../../Binary/Presentation/BinaryFileReaderWriter.h"
 #include "../Logic/Pict.h"
 
 namespace OOX
 {
-	CDiagramDrawing::CDiagramDrawing(OOX::Document* pMain) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
+	CDiagramDrawing::CDiagramDrawing(OOX::Document* pMain, bool bDocument) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
 	{
+		m_bDocument = bDocument;
+		m_bSpreadsheets = (NULL != dynamic_cast<OOX::Spreadsheet::CXlsx*>(pMain));
 	}
 
 	CDiagramDrawing::CDiagramDrawing(OOX::Document* pMain, const CPath& uri) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
 	{
+		m_bDocument = (NULL != dynamic_cast<OOX::CDocument*>(pMain));
+		m_bSpreadsheets = (NULL != dynamic_cast<OOX::Spreadsheet::CXlsx*>(pMain));
+
 		read(uri.GetDirectory(), uri);
 	}
 
 	CDiagramDrawing::CDiagramDrawing(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
 	{
+		m_bDocument = (NULL != dynamic_cast<OOX::CDocument*>(pMain));
+		m_bSpreadsheets = (NULL != dynamic_cast<OOX::Spreadsheet::CXlsx*>(pMain));
+
 		read( oRootPath, oPath );
 	}
 
@@ -95,7 +106,10 @@ namespace OOX
 	}
 	const CPath CDiagramDrawing::DefaultDirectory() const
 	{
-		return type().DefaultDirectory();
+		if (m_bDocument)
+			return type().DefaultDirectory();
+		else
+			return L"../" + type().DefaultDirectory();
 	}
 	const CPath CDiagramDrawing::DefaultFileName() const
 	{

@@ -31,6 +31,7 @@
  */
 
 #include "PtgList.h"
+#include "PtgExtraList.h"
 #include "../../../../../OOXML/Base/Unit.h"
 
 namespace XLS
@@ -98,6 +99,11 @@ void PtgList::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool ful
     {
         tableName = tableIndex->second;
     }
+    else if(nonresident && !extra_data.empty())
+    {
+        auto extraList = static_cast<PtgExtraList*>(extra_data.front().get());
+        tableName = extraList->table;
+    }
     else
     {
         tableName = XmlUtils::GenerateGuid();
@@ -117,7 +123,6 @@ void PtgList::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool ful
     {
         switch (rowType)
         {
-            case 0x00:
             case 0x04: formula += L"[#Data]"; break;
             case 0x01: formula += L"[#All]"; break;
             case 0x02: formula += L"[#Headers]"; break;
@@ -135,7 +140,14 @@ void PtgList::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool ful
                 case 0x00: break;
                 case 0x01:
                 case 0x02:
-                formula += L",[" + arrColumn->second[colFirst] + L"]"; if(columns == 0x01) break;
+                if(colFirst >= arrColumn->second.size())
+                    break;
+                if(rowType != 0x00)
+                    formula += L",";
+                formula += L"['" + arrColumn->second[colFirst] + L"]";
+                if(columns == 0x01) break;
+                if(colLast >= arrColumn->second.size())
+                    break;
                 formula += L":[" + arrColumn->second[colLast] + L"]"; break;
             }
         }

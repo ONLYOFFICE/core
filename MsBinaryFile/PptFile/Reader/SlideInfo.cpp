@@ -104,7 +104,7 @@ std::wstring CSlideInfo::GetFileNamePicture(_UINT32 lIndex)
     {
         return pic->second;
     }
-    return _T("");
+    return L"";
 }
 
 int CSlideInfo::GetIndexPicture(int lIndex)

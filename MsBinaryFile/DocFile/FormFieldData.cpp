@@ -36,42 +36,65 @@
 
 namespace DocFileFormat
 {
-std::wstring readXstz(VirtualStreamReader *reader)
+std::wstring readXstz(VirtualStreamReader *reader, bool bWide)
 {
 	if (!reader) return L"";
 
 	unsigned short flags, cch, chTerm;
-
-	cch = reader->ReadUInt16();
-
 	std::wstring ret;
 
-	if (cch > 0 && cch < 0x0fff)
+	if (bWide)
 	{
-		std::shared_ptr<unsigned char>data = std::shared_ptr<unsigned char>(reader->ReadBytes(cch * 2, true));	
+		cch = reader->ReadUInt16();
+
+		if (cch > 0 && cch < 0x0fff)
+		{
+			std::shared_ptr<unsigned char>data = std::shared_ptr<unsigned char>(reader->ReadBytes(cch * 2, true));
 #if defined(_WIN32) || defined(_WIN64)
-        ret = std::wstring((wchar_t*)data.get(), cch );
+			ret = std::wstring((wchar_t*)data.get(), cch);
 #else
-        ret = convertUtf16ToWString((UTF16*)data.get(), cch );
+			ret = convertUtf16ToWString((UTF16*)data.get(), cch);
 #endif
+		}
+		chTerm = reader->ReadUInt16();
 	}
-	chTerm  = reader->ReadUInt16();
+	else
+	{
+		short cch = reader->ReadByte();
+
+		unsigned char* chars = reader->ReadBytes(cch, true);
+		FormatUtils::GetWStringFromBytes(ret, chars, cch, ENCODING_WINDOWS_1250);
+
+		RELEASEARRAYOBJECTS(chars);
+	}
 
 	return ret;
 };
-void FormFieldData::_HFD::read(VirtualStreamReader *reader)
+void FormFieldData::_HFD::read(VirtualStreamReader *reader, int size)
 {
 	if (!reader) return;
 }
-void FormFieldData::_FFData::read(VirtualStreamReader *reader)
+void FormFieldData::_FFData::read(VirtualStreamReader *reader, int size)
 {
 	if (!reader) return;
 
 	bExist = true;
 	
-	unsigned short flags;
+	unsigned short flags, version;
+	bool bWide = true;
 
-	version		= reader->ReadUInt32();
+	if (0xff == reader->ReadByte())
+	{
+		version = 0xFFFFFFFF; //must be 0xFFFFFFFF
+		reader->ReadBytes(3, false);
+	}
+	else
+	{
+		reader->ReadBytes(1, false);
+		version = 0;
+		bWide = false;
+	}
+
 	flags		= reader->ReadUInt16();
 
 	iType		= GETBITS(flags, 0, 1);
@@ -87,22 +110,22 @@ void FormFieldData::_FFData::read(VirtualStreamReader *reader)
 	cch_field	= reader->ReadUInt16();
 	hps			= reader->ReadUInt16();
 
-	xstzName	= readXstz(reader);
-	
+	xstzName	= readXstz(reader, bWide);
+
 	if (iType == 0)
 	{
-		xstzTextDef = readXstz(reader);
+		xstzTextDef = readXstz(reader, bWide);
 	}
 	else if (iType == 1 || iType == 2)
 	{
 		wDef = reader->ReadUInt16();
 	}
 	
-	xstzTextFormat	= readXstz(reader);
-	xstzHelpText	= readXstz(reader);
-	xstzStatText	= readXstz(reader);
-	xstzEntryMcr	= readXstz(reader);
-	xstzExitMcr		= readXstz(reader);
+	xstzTextFormat	= readXstz(reader, bWide);
+	xstzHelpText	= readXstz(reader, bWide);
+	xstzStatText	= readXstz(reader, bWide);
+	xstzEntryMcr	= readXstz(reader, bWide);
+	xstzExitMcr		= readXstz(reader, bWide);
 
 	if (iType == 2) 
 	{
@@ -185,18 +208,25 @@ FormFieldData::FormFieldData( int type, const CharacterPropertyExceptions* chpx,
 		//ignored
 		reader.ReadBytes(62, false);
 
+		_UINT32 pos = reader.GetPosition();
+
 		switch(type)
 		{
-		case 1:
-			HFD.read(&reader);
-		case 2:
-			FFData.read(&reader);
-			break;
-		default:
-			binary_data_size = lcb - cbHeader;
-			binary_data = std::shared_ptr<unsigned char>(reader.ReadBytes(binary_data_size, true));
-			break;
+			case 1:
+			{
+				HFD.read(&reader, lcb - cbHeader);
+			}break;
+			case 2:
+			{
+				FFData.read(&reader, lcb - cbHeader);
+			}break;
+			default:
+			{
+				binary_data_size = lcb - cbHeader;
+				binary_data = std::shared_ptr<unsigned char>(reader.ReadBytes(binary_data_size, true));
+			}break;
 		}
+		reader.Seek(pos + (lcb - cbHeader), 0);
 	}
 }
 

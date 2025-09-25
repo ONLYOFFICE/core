@@ -113,7 +113,7 @@ void PtgRef::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full
     }
     else
     {
-        ptg_stack.push(loc_xlsb.toString());
+        ptg_stack.push(loc_xlsb.toString(true));
     }
 
 }

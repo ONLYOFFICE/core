@@ -111,6 +111,8 @@ namespace NSGraphicsEmbed
 	FUNCTION_WRAPPER_V8_1(_DrawPath, DrawPath)
 	FUNCTION_WRAPPER_V8_2(_CoordTransformOffset, CoordTransformOffset)
 	FUNCTION_WRAPPER_V8_0(_GetTransform, GetTransform)
+	FUNCTION_WRAPPER_V8_1(_CreateLayer, CreateLayer)
+	FUNCTION_WRAPPER_V8_0(_BlendLayer, BlendLayer)
 
 	v8::Handle<v8::ObjectTemplate> CreateTemplate(v8::Isolate* isolate)
 	{
@@ -221,6 +223,8 @@ namespace NSGraphicsEmbed
 		NSV8Objects::Template_Set(result, "DrawPath",	_DrawPath);
 		NSV8Objects::Template_Set(result, "CoordTransformOffset",	_CoordTransformOffset);
 		NSV8Objects::Template_Set(result, "GetTransform",	_GetTransform);
+		NSV8Objects::Template_Set(result, "CreateLayer",	_CreateLayer);
+		NSV8Objects::Template_Set(result, "BlendLayer",	_BlendLayer);
 
 		return handle_scope.Escape(result);
 	}

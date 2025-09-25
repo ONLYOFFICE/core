@@ -70,5 +70,39 @@ void FileSharing::readFields(CFRecord& record)
     }
 }
 
+void FileSharing::writeFields(CFRecord& record)
+{
+    if(record.getGlobalWorkbookInfo()->Version == 0x0800)
+    {
+        auto readOnlyrec = fReadOnlyRec.value();
+        if(readOnlyrec.is_initialized() &&(readOnlyrec.get() == 1 ||  readOnlyrec.get() == 0))
+            record << fReadOnlyRec;
+        else
+            {
+                _UINT16 defaulTRec = 0;
+                record << defaulTRec;
+            }
+        if(!wResPass.empty())
+        {
+            try
+            {
+                wResPassNum = std::stoi(wResPass, nullptr, 16);
+            }
+            catch(const std::exception&)
+            {
+                wResPassNum = 0;
+            }
+        }
+        record << wResPassNum << stUserName;
+    }
+    else
+    {
+        record << fReadOnlyRec << wResPassNum;
+        if(wResPassNum == 0)
+            record.reserveNunBytes(2);
+        record << stUNUsername;
+
+    }
+}
 } // namespace XLS
 

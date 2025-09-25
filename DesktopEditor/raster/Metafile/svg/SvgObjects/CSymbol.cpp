@@ -6,7 +6,7 @@ namespace SVG
 		: CGraphicsContainer(oNode)
 	{}
 
-	bool CSymbol::Draw(IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode, const TSvgStyles *pOtherStyles) const
+	bool CSymbol::Draw(IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode, const TSvgStyles *pOtherStyles, const CRenderedObject* pContexObject) const
 	{
 		if (NULL == pRenderer)
 			return false;
@@ -31,7 +31,7 @@ namespace SVG
 
 		pRenderer->SetTransform(oMatrix.sx(), oMatrix.shy(), oMatrix.shx(), oMatrix.sy(), oMatrix.tx(), oMatrix.ty());
 
-		CGraphicsContainer::Draw(pRenderer, pFile, oMode, pOtherStyles);
+		CGraphicsContainer::Draw(pRenderer, pFile, oMode, pOtherStyles, pContexObject);
 
 		pRenderer->SetTransform(dM11, dM12, dM21, dM22, dDx, dDy);
 

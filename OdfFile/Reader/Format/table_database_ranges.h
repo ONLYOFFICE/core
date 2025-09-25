@@ -39,6 +39,8 @@
 #include "../../DataTypes/common_attlists.h"
 #include "../../DataTypes/tableorientation.h"
 #include "../../DataTypes/tableorder.h"
+#include "../../DataTypes/tabledatatype.h"
+#include "../../DataTypes/tableoperator.h"
 
 #include "../../Reader/Converter/xlsxconversioncontext.h"
 
@@ -51,7 +53,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
-    static const ElementType type		= typeTableDatabaseRanges;
+    static const ElementType type = typeTableDatabaseRanges;
 
     CPDOCCORE_DEFINE_VISITABLE()
 
@@ -61,9 +63,7 @@ public:
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
 
     office_element_ptr_array content_;
-
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(table_database_ranges);
 //-------------------------------------------------------------------------------------------------------------
 
@@ -73,7 +73,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
-    static const ElementType type		= typeTableDatabaseRange;
+    static const ElementType type = typeTableDatabaseRange;
 
     CPDOCCORE_DEFINE_VISITABLE()
 
@@ -89,7 +89,7 @@ public:
 	_CP_OPT(odf_types::table_orientation)	table_orientation_;
 //table:refresh-delay
 
-	office_element_ptr_array	content_;
+	office_element_ptr_array content_;
 //"table-database-source-sql"
 //"table-database-source-table"
 //"table-database-source-query"
@@ -104,7 +104,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
-    static const ElementType type		= typeTableSort;
+    static const ElementType type = typeTableSort;
 
     CPDOCCORE_DEFINE_VISITABLE()
 
@@ -130,16 +130,16 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
-    static const ElementType type		= typeTableSortBy;
+    static const ElementType type = typeTableSortBy;
 
     CPDOCCORE_DEFINE_VISITABLE()
 
 	virtual void add_attributes		( const xml::attributes_wc_ptr & Attributes );
 	virtual void add_child_element	( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
 
-	int								table_field_number_;
-	_CP_OPT(std::wstring)			table_data_type_;
-	_CP_OPT(odf_types::table_order)	table_order_;
+	int								    table_field_number_;
+	_CP_OPT(odf_types::table_data_type) table_data_type_;
+	_CP_OPT(odf_types::table_order)	    table_order_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(table_sort_by);
@@ -151,7 +151,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
-    static const ElementType type		= typeTableFilter;
+    static const ElementType type = typeTableFilter;
 
     CPDOCCORE_DEFINE_VISITABLE()
 
@@ -176,7 +176,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
-    static const ElementType type		= typeTableFilterAnd;
+    static const ElementType type = typeTableFilterAnd;
 
     CPDOCCORE_DEFINE_VISITABLE()
 
@@ -185,7 +185,7 @@ public:
 
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
 
-	office_element_ptr_array	content_;
+	office_element_ptr_array content_;
 };
 CP_REGISTER_OFFICE_ELEMENT2(table_filter_and);
 //-------------------------------------------------------------------------------------------------------------
@@ -196,7 +196,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
-    static const ElementType type		= typeTableFilterOr;
+    static const ElementType type = typeTableFilterOr;
 
     CPDOCCORE_DEFINE_VISITABLE()
 
@@ -205,7 +205,7 @@ public:
 
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
 
-	office_element_ptr_array	content_;
+	office_element_ptr_array content_;
 };
 CP_REGISTER_OFFICE_ELEMENT2(table_filter_or);
 //-------------------------------------------------------------------------------------------------------------
@@ -216,7 +216,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
-    static const ElementType type		= typeTableFilterCondition;
+    static const ElementType type = typeTableFilterCondition;
 
     CPDOCCORE_DEFINE_VISITABLE()
 
@@ -225,13 +225,13 @@ public:
 
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
 
-	_CP_OPT(std::wstring)	table_case_sensitive_;
-	_CP_OPT(std::wstring)	table_data_type_;
-	_CP_OPT(unsigned int)	table_field_number_;
-	_CP_OPT(std::wstring)	table_operator_;
-	_CP_OPT(std::wstring)	table_value_;
+	_CP_OPT(std::wstring)	            table_case_sensitive_;
+	_CP_OPT(odf_types::table_data_type)	table_data_type_;
+	_CP_OPT(unsigned int)	            table_field_number_;
+	_CP_OPT(odf_types::table_operator)  table_operator_;
+	_CP_OPT(std::wstring)               table_value_;
 	
-	office_element_ptr_array	content_;
+	office_element_ptr_array content_;
 };
 CP_REGISTER_OFFICE_ELEMENT2(table_filter_condition);
 //-------------------------------------------------------------------------------------------------------------
@@ -242,7 +242,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
-    static const ElementType type		= typeTableFilterSetItem;
+    static const ElementType type = typeTableFilterSetItem;
 
     CPDOCCORE_DEFINE_VISITABLE()
 

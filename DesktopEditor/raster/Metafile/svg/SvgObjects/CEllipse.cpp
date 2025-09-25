@@ -22,7 +22,7 @@ namespace SVG
 		SetFill(mAttributes, ushLevel, bHardMode);
 	}
 
-	bool CEllipse::Draw(IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode, const TSvgStyles *pOtherStyles) const
+	bool CEllipse::Draw(IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode, const TSvgStyles *pOtherStyles, const CRenderedObject* pContexObject) const
 	{
 		Aggplus::CMatrix oOldTransform;
 
@@ -42,17 +42,17 @@ namespace SVG
 		pRenderer->PathCommandMoveTo(dX + dRx, dY);
 		pRenderer->PathCommandArcTo(dX - dRx, dY - dRy, dRx * 2.0, dRy * 2.0, 0, 360);
 
-		EndPath(pRenderer, pFile, oOldTransform, oMode, pOtherStyles);
+		EndPath(pRenderer, pFile, oOldTransform, oMode, pOtherStyles, pContexObject);
 
 		return true;
 	}
 
-	void CEllipse::ApplyStyle(IRenderer *pRenderer, const TSvgStyles *pStyles, const CSvgFile *pFile, int &nTypePath) const
+	void CEllipse::ApplyStyle(IRenderer *pRenderer, const TSvgStyles *pStyles, const CSvgFile *pFile, int &nTypePath, const CRenderedObject* pContexObject) const
 	{
-		if (Apply(pRenderer, &pStyles->m_oStroke))
+		if (ApplyStroke(pRenderer, &pStyles->m_oStroke, false, pContexObject))
 			nTypePath += c_nStroke;
 
-		if (Apply(pRenderer, &pStyles->m_oFill, pFile, true))
+		if (ApplyFill(pRenderer, &pStyles->m_oFill, pFile, true, pContexObject))
 			nTypePath += c_nWindingFillMode;
 	}
 

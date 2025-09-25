@@ -53,7 +53,7 @@ namespace XLSB
 
             //static const XLS::ElementType	type = XLS::typeBeginPCDHGLGMember;
 
-            XLS::Boolean<_UINT32>          fGroup;
+            XLS::Boolean<_UINT32>          fGroup = false;
             XLWideString                   stUnique;
     };
 

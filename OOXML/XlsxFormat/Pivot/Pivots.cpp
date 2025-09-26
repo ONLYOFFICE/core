@@ -2120,6 +2120,54 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
             ptr->itmtype = XLSB::PivotItemType::PITDATA;
 		return objectPtr;
 	}
+	XLS::BaseObjectPtr CFieldItem::toXLS()
+	{
+		auto ptr = new XLS::SXVI;
+		if(m_oItemType.IsInit())
+		{
+			if(m_oItemType == SimpleTypes::Spreadsheet::EPivotItemType::typeData)
+				ptr->itmType = XLSB::PivotItemType::PITDATA;
+			else if (m_oItemType == SimpleTypes::Spreadsheet::EPivotItemType::typeDefault)
+				ptr->itmType = XLSB::PivotItemType::PITDEFAULT;
+			else if (m_oItemType == SimpleTypes::Spreadsheet::EPivotItemType::typeSum)
+				ptr->itmType = XLSB::PivotItemType::PITSUM;
+			else if (m_oItemType == SimpleTypes::Spreadsheet::EPivotItemType::typeCountA)
+				ptr->itmType = XLSB::PivotItemType::PITCOUNTA;
+			else if (m_oItemType == SimpleTypes::Spreadsheet::EPivotItemType::typeAverage)
+				ptr->itmType = XLSB::PivotItemType::PITAVG;
+			else if (m_oItemType == SimpleTypes::Spreadsheet::EPivotItemType::typeMax)
+				ptr->itmType = XLSB::PivotItemType::PITMAX;
+			else if (m_oItemType == SimpleTypes::Spreadsheet::EPivotItemType::typeMin)
+				ptr->itmType = XLSB::PivotItemType::PITMIN;
+			else if (m_oItemType == SimpleTypes::Spreadsheet::EPivotItemType::typeProduct)
+				ptr->itmType = XLSB::PivotItemType::PITPRODUCT;
+			else if (m_oItemType == SimpleTypes::Spreadsheet::EPivotItemType::typeCount)
+				ptr->itmType = XLSB::PivotItemType::PITCOUNT;
+			else if (m_oItemType == SimpleTypes::Spreadsheet::EPivotItemType::typeStdDev)
+				ptr->itmType = XLSB::PivotItemType::PITSTDDEV;
+			else if (m_oItemType == SimpleTypes::Spreadsheet::EPivotItemType::typeStdDevP)
+				ptr->itmType = XLSB::PivotItemType::PITSTDDEVP;
+			else if (m_oItemType == SimpleTypes::Spreadsheet::EPivotItemType::typeVar)
+				ptr->itmType = XLSB::PivotItemType::PITVAR;
+			else if (m_oItemType == SimpleTypes::Spreadsheet::EPivotItemType::typeVarP)
+				ptr->itmType = XLSB::PivotItemType::PITVARP;
+		}
+		else
+			ptr->itmType = XLSB::PivotItemType::PITDATA;
+		if(m_oHidden.IsInit())
+			ptr->fHidden = m_oHidden.get();
+		if(m_oHideDetails.IsInit())
+			ptr->fHideDetail = m_oHideDetails.get();
+		if(m_oCalculated.IsInit())
+			ptr->fFormula = m_oCalculated.get();
+		if(m_oMissing.IsInit())
+			ptr->fMissing = m_oMissing.get();
+		if(m_oItemIndex.IsInit())
+			ptr->iCache = m_oItemIndex->GetValue();
+		if(m_oUserCaption.IsInit())
+			ptr->stName = m_oUserCaption.get();
+		return XLS::BaseObjectPtr(ptr);
+	}
     void CFieldItem::fromBin(XLS::BaseObjectPtr& obj)
     {
         auto ptr = static_cast<XLSB::SXVI*>(obj.get());
@@ -2413,6 +2461,9 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 	{
 		auto ptr = new XLS::PIVOTVD;
 		ptr->m_Sxvd = writeAttributesXLS();
+		if(m_oItems.IsInit())
+			for(auto i : m_oItems->m_arrItems)
+				ptr->m_arSXVI.push_back(i->toXLS());
 		return XLS::BaseObjectPtr(ptr);
 	}
 	XLS::BaseObjectPtr CPivotField::writeAttributes()

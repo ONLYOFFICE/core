@@ -150,7 +150,11 @@
 #include "../../../MsBinaryFile/XlsFile/Format/Binary/CFStreamCacheWriter.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/PIVOTVIEW.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/PIVOTCORE.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/PIVOTVD.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/SxView.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Sxvd.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/SXVI.h"
+
 namespace OOX
 {
 namespace Spreadsheet
@@ -526,6 +530,11 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		ptr1->m_PIVOTCORE = XLS::BaseObjectPtr(ptr);
 
 		ptr->m_SxView = writeAttributesXLS();
+		if(m_oPivotFields.IsInit())
+			{
+				for(auto i : m_oPivotFields->m_arrItems)
+					ptr->m_arPIVOTVD.push_back(i->toXLS());
+			}
 		return XLS::BaseObjectPtr(ptr1);
 	}
 	XLS::BaseObjectPtr CPivotTableDefinition::writeAttributes()
@@ -2400,6 +2409,12 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			ptr->m_AUTOSORTSCOPE = m_oAutoSortScope->toBin();
 		return objectPtr;
 	}
+	XLS::BaseObjectPtr CPivotField::toXLS()
+	{
+		auto ptr = new XLS::PIVOTVD;
+		ptr->m_Sxvd = writeAttributesXLS();
+		return XLS::BaseObjectPtr(ptr);
+	}
 	XLS::BaseObjectPtr CPivotField::writeAttributes()
 	{
 		auto ptr(new XLSB::BeginSXVD);
@@ -2657,6 +2672,86 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		}
 
 		return objectPtr;
+	}
+	XLS::BaseObjectPtr CPivotField::writeAttributesXLS()
+	{
+		auto ptr = new XLS::Sxvd;
+		if(m_oAxis.IsInit())
+		{
+			if(m_oAxis == SimpleTypes::Spreadsheet::EPivotAxisType::axisCol)
+				ptr->sxaxis.bCol = true;
+			else if(m_oAxis == SimpleTypes::Spreadsheet::EPivotAxisType::axisPage)
+				ptr->sxaxis.bPage = true;
+			else if(m_oAxis == SimpleTypes::Spreadsheet::EPivotAxisType::axisRow)
+				ptr->sxaxis.bRw = true;
+			else if(m_oAxis == SimpleTypes::Spreadsheet::EPivotAxisType::axisValues)
+				ptr->sxaxis.bData = true;
+		}
+		if(m_oDefaultSubtotal.IsInit() && m_oDefaultSubtotal.get())
+		{
+			ptr->cSub++;
+			ptr->fDefault = true;
+		}
+		if(m_oSumSubtotal.IsInit() && m_oSumSubtotal.get())
+		{
+			ptr->cSub++;
+			ptr->fSum = true;
+		}
+		if(m_oCountASubtotal.IsInit() && m_oCountASubtotal.get())
+		{
+			ptr->cSub++;
+			ptr->fCounta = true;
+		}
+		if(m_oCountSubtotal.IsInit() && m_oCountSubtotal.get())
+		{
+			ptr->cSub++;
+			ptr->fCount = true;
+		}
+		if(m_oAvgSubtotal.IsInit() && m_oAvgSubtotal.get())
+		{
+			ptr->cSub++;
+			ptr->fAverage = true;
+		}
+		if(m_oMaxSubtotal.IsInit() && m_oMaxSubtotal.get())
+		{
+			ptr->cSub++;
+			ptr->fMax = true;
+		}
+		if(m_oMinSubtotal.IsInit() && m_oMinSubtotal.get())
+		{
+			ptr->cSub++;
+			ptr->fMin = true;
+		}
+		if(m_oProductSubtotal.IsInit() && m_oProductSubtotal.get())
+		{
+			ptr->cSub++;
+			ptr->fProduct = true;
+		}
+		if(m_oStdDevSubtotal.IsInit() && m_oStdDevSubtotal.get())
+		{
+			ptr->cSub++;
+			ptr->fStdev = true;
+		}
+		if(m_oStdDevPSubtotal.IsInit() && m_oStdDevPSubtotal.get())
+		{
+			ptr->cSub++;
+			ptr->fStdevp = true;
+		}
+		if(m_oVarSubtotal.IsInit() && m_oVarSubtotal.get())
+		{
+			ptr->cSub++;
+			ptr->fVariance = true;
+		}
+		if(m_oVarPSubtotal.IsInit() && m_oVarPSubtotal.get())
+		{
+			ptr->cSub++;
+			ptr->fVariancep = true;
+		}
+		if(m_oItems.IsInit())
+			ptr->cItm  = m_oItems->m_arrItems.size();
+		if(m_oName.IsInit())
+			ptr->stName = m_oName.get();
+		return XLS::BaseObjectPtr(ptr);
 	}
     void CPivotField::ReadAttributes(XLS::BaseObjectPtr& obj)
     {

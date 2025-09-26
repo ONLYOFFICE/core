@@ -35,6 +35,7 @@
 
 namespace PPTX
 {
+	class Presentation;
 	class Document : public OOX::Document, public PPTX::FileContainer
 	{
 	public:
@@ -46,6 +47,8 @@ namespace PPTX
 		void createFromTemplate(const OOX::CPath& path);
 
 		const bool isValid(const OOX::CPath& path) const;
+
+		Presentation* main = NULL;
 
 	private:
 		long CountFiles(const OOX::CPath& path);

@@ -32,6 +32,7 @@
 #pragma once
 
 #include "../../OOXML/PPTXFormat/DrawingConverter/ASCOfficePPTXFile.h"
+#include "../../../TxtFile/Source/PptxTxtConverter.h"
 #include "common.h"
 
 namespace NExtractTools
@@ -248,5 +249,9 @@ namespace NExtractTools
 	{
 		return NSCommon::ooxmlm2ooml_dir(sFrom, sTo, params, convertParams, NSCommon::OOXML_DOCUMENT_TYPE::Slide, NSCommon::OOXML_DOCUMENT_SUBTYPE::Template);
 	}
-
+	_UINT32 pptx_dir2txt(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
+	{
+		CPptxTxtConverter oPptxTxtConverter;
+		return oPptxTxtConverter.Convert(sFrom, sTo);
+	}
 }

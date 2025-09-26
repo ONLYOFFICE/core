@@ -96,6 +96,7 @@ SOURCES += ./../DesktopEditor/common/ProcessEnv.cpp
 core_windows {
 	LIBS += -lRpcrt4
 	LIBS += -lShell32
+	!build_xp:LIBS += -lole32
 }
 
 core_ios {

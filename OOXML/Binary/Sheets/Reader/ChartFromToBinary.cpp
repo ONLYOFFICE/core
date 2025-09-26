@@ -1290,7 +1290,7 @@ namespace BinXlsxRW
 		
 		int id = m_pOfficeDrawingConverter->m_pReader->m_nCountEmbedded++;
 
-		bool bMacroEnabled = false; //todooo detect
+		bool bMacroEnabled = false;
 		std::wstring sXlsxFilename = L"Microsoft_Excel_Worksheet" + std::to_wstring(id) + (bMacroEnabled ? L".xlsm" : L".xlsx");
 
 		NSFile::CFileBinary file;
@@ -1327,7 +1327,7 @@ namespace BinXlsxRW
 			std::wstring sThemePath = sDstEmbeddedTemp + FILE_SEPARATOR_STR + L"xl" + FILE_SEPARATOR_STR + L"theme";
 			std::wstring sEmbeddingsPath = sDstEmbeddedTemp + FILE_SEPARATOR_STR + L"xl" + FILE_SEPARATOR_STR + L"embeddings";
 
-			BinXlsxRW::SaveParams oSaveParams(sDrawingsPath, sEmbeddingsPath, sThemePath, oDrawingConverter.GetContentTypes(), NULL, true);
+			BinXlsxRW::SaveParams oSaveParams(sDrawingsPath, sEmbeddingsPath, sThemePath, oDrawingConverter.GetContentTypes(), NULL, false);
 
 			std::wstring sXmlOptions, sMediaPath, sEmbedPath;
 			BinXlsxRW::CXlsxSerializer::CreateXlsxFolders(sXmlOptions, sDstEmbeddedTemp, sMediaPath, sEmbedPath);

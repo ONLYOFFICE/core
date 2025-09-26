@@ -10,13 +10,13 @@ namespace NSHeif {
 		static bool isHeif(const std::wstring& fileName);
 		static bool isHeif(BYTE* buffer, DWORD size);
 
-		static bool Open(CBgraFrame* frame, const std::wstring& fileName);
-		static bool Open(CBgraFrame* frame, BYTE* buffer, DWORD size);
-		static bool Save(const BYTE* source, int width, int height, int sourceStride, const std::wstring& dstPath);
+		static bool Open(CBgraFrame* frame, const std::wstring& fileName, bool isRGBA);
+		static bool Open(CBgraFrame* frame, BYTE* buffer, DWORD size, bool isRGBA);
+		static bool Save(const BYTE* source, int width, int height, int sourceStride, const std::wstring& dstPath, bool isRGBA);
 
 	private:
 		static bool IsError(heif_error err);
-		static bool Decode(heif_context* ctx, CBgraFrame* frame);
+		static bool Decode(heif_context* ctx, CBgraFrame* frame, bool isRGBA);
 		static NSUnicodeConverter::CUnicodeConverter m_oConverter;
 	};
 }

@@ -185,14 +185,6 @@ mac {
 	}
 }
 
-gcc {
-	COMPILER_VERSION = $$system($$QMAKE_CXX " -dumpversion")
-	COMPILER_MAJOR_VERSION_ARRAY = $$split(COMPILER_VERSION, ".")
-	COMPILER_MAJOR_VERSION = $$member(COMPILER_MAJOR_VERSION_ARRAY, 0)
-	lessThan(COMPILER_MAJOR_VERSION, 5): CONFIG += build_gcc_less_5
-	lessThan(COMPILER_MAJOR_VERSION, 6): CONFIG += build_gcc_less_6
-}
-
 # DEFINES
 core_windows {
 	DEFINES += WIN32 _WIN32
@@ -229,6 +221,15 @@ core_linux {
 		}
 	}
 }
+
+gcc {
+    COMPILER_VERSION = $$system($$QMAKE_CXX " -dumpversion")
+	COMPILER_MAJOR_VERSION_ARRAY = $$split(COMPILER_VERSION, ".")
+	COMPILER_MAJOR_VERSION = $$member(COMPILER_MAJOR_VERSION_ARRAY, 0)
+	lessThan(COMPILER_MAJOR_VERSION, 5): CONFIG += build_gcc_less_5
+	lessThan(COMPILER_MAJOR_VERSION, 6): CONFIG += build_gcc_less_6
+}
+
 core_linux_host_arm64 {
 	message("build on arm64")
 	DEFINES += _ARM_ALIGN_

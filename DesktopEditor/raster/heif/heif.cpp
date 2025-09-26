@@ -31,25 +31,25 @@ namespace NSHeif {
 		return !IsError(heif_context_read_from_memory_without_copy(ctx, buffer, size, nullptr));
 	}
 
-	bool CHeifFile::Open(CBgraFrame *frame, const std::wstring& fileName)
+	bool CHeifFile::Open(CBgraFrame *frame, const std::wstring& fileName, bool isRGBA)
 	{
 		heif_context* ctx = heif_context_alloc();
 		defer(heif_context_free(ctx););
 		if (IsError(heif_context_read_from_file(ctx, m_oConverter.fromUnicode(fileName, "UTF-8").c_str(), nullptr)))
 			return false;
-		return Decode(ctx, frame);
+		return Decode(ctx, frame, isRGBA);
 	}
 
-	bool CHeifFile::Open(CBgraFrame *frame, BYTE* buffer, DWORD size)
+	bool CHeifFile::Open(CBgraFrame *frame, BYTE* buffer, DWORD size, bool isRGBA)
 	{
 		heif_context* ctx = heif_context_alloc();
 		defer(heif_context_free(ctx););
 		if (IsError(heif_context_read_from_memory_without_copy(ctx, buffer, size, nullptr)))
 			return false;
-		return Decode(ctx, frame);
+		return Decode(ctx, frame, isRGBA);
 	}
 
-	bool CHeifFile::Save(const BYTE* source, int width, int height, int sourceStride, const std::wstring& dstPath)
+	bool CHeifFile::Save(const BYTE* source, int width, int height, int sourceStride, const std::wstring& dstPath, bool isRGBA)
 	{
 		if (!source)
 			return false;
@@ -74,9 +74,9 @@ namespace NSHeif {
 			const BYTE* row = source + (height - i - 1) * (sourceStride < 0 ? -sourceStride : sourceStride);
 			for (size_t j = 0; j < width; ++j)
 			{
-				data[(i * width + j) * 3 + 0] = row[(width - j - 1) * 4 + 2];
+				data[(i * width + j) * 3 + (isRGBA ? 0 : 2)] = row[(width - j - 1) * 4 + 0];
 				data[(i * width + j) * 3 + 1] = row[(width - j - 1) * 4 + 1];
-				data[(i * width + j) * 3 + 2] = row[(width - j - 1) * 4 + 0];
+				data[(i * width + j) * 3 + (isRGBA ? 2 : 0)] = row[(width - j - 1) * 4 + 2];
 			}
 		}
 
@@ -103,7 +103,7 @@ namespace NSHeif {
 		return err.code != heif_error_Ok;
 	}
 
-	inline bool CHeifFile::Decode(heif_context* ctx, CBgraFrame* frame)
+	inline bool CHeifFile::Decode(heif_context* ctx, CBgraFrame* frame, bool isRGBA)
 	{
 		heif_image_handle* handle;
 		defer(heif_image_handle_release(handle););
@@ -142,9 +142,9 @@ namespace NSHeif {
 			const BYTE* row_B = source_B + i * stride_B;
 			for (size_t j = 0; j < width; ++j)
 			{
-				data[(i * width + j) * 4 + 0] = row_B[j];
+				data[(i * width + j) * 4 + (isRGBA ? 0 : 2)] = row_R[j];
 				data[(i * width + j) * 4 + 1] = row_G[j];
-				data[(i * width + j) * 4 + 2] = row_R[j];
+				data[(i * width + j) * 4 + (isRGBA ? 2 : 0)] = row_B[j];
 				data[(i * width + j) * 4 + 3] = 255;
 			}
 		}

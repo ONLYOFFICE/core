@@ -2939,6 +2939,7 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 						if (pKid->NeedAP_N_Yes())
 							pKid->SetAP_N_Yes((bRadiosInUnison || nType == PdfWriter::WidgetCheckbox) ? mNameAP_N_Yes[sOptI] : std::to_wstring(i));
 
+						pKid->Remove("V");
 						if (((bRadiosInUnison || nType == PdfWriter::WidgetCheckbox) && sOptI == sOpt) || (!bRadiosInUnison && i == nOptIndex))
 						{
 							if (i == nOptIndex)
@@ -2971,6 +2972,7 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 							pKid->SetAP_N_Yes(mNameAP_N_Yes[sOpt]);
 						}
 
+						pKid->Remove("V");
 						if (pKid->GetAP_N_Yes() == sV)
 							sV = pKid->Yes();
 						else

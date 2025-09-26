@@ -52,14 +52,14 @@ public class NativeLibraryLoader {
             Path libDirPath = getLibPath();
             // load icu libraries
             if (OSChecker.isWindows()) {
-                System.load(libDirPath.resolve("icudt58.dll").toString());
-                System.load(libDirPath.resolve("icuuc58.dll").toString());
+                System.load(libDirPath.resolve("icudt74.dll").toString());
+                System.load(libDirPath.resolve("icuuc74.dll").toString());
             } else if (OSChecker.isMac()) {
-                loadIfExist(libDirPath.resolve("libicudata.58.dylib").toString());
-                loadIfExist(libDirPath.resolve("libicuuc.58.dylib").toString());
+                loadIfExist(libDirPath.resolve("libicudata.74.dylib").toString());
+                loadIfExist(libDirPath.resolve("libicuuc.74.dylib").toString());
             } else if (OSChecker.isLinux()) {
-                System.load(libDirPath.resolve("libicudata.so.58").toString());
-                System.load(libDirPath.resolve("libicuuc.so.58").toString());
+                System.load(libDirPath.resolve("libicudata.so.74").toString());
+                System.load(libDirPath.resolve("libicuuc.so.74").toString());
             } else {
                 throw new RuntimeException("Unsupported OS");
             }

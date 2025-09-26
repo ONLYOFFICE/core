@@ -344,7 +344,10 @@ namespace PPTX
 			}break;
 			case 6:
 			{
-				commentAuthors = new PPTX::Authors(File::m_pMainDocument);
+				if (false == commentAuthors.IsInit())
+				{
+					commentAuthors = new PPTX::Authors(File::m_pMainDocument);
+				}
 				commentAuthors->fromPPTY(pReader);
 			}break;
 			case 7:

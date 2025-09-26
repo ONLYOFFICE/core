@@ -5,10 +5,9 @@
 #include "../../../DesktopEditor/common/File.h"
 #include "../../../DesktopEditor/common/Directory.h"
 #include "../../../DesktopEditor/common/SystemUtils.h"
-#include "../../../DesktopEditor/raster/BgraFrame.h"
 #include "../../../OfficeUtils/src/OfficeUtils.h"
 
-#include "../../../DesktopEditor/graphics/pro/Graphics.h"
+#include "../../../DesktopEditor/graphics/pro/Image.h"
 
 #include "../Paragraph/ParaText.h"
 #include "../Paragraph/CtrlTable.h"
@@ -1293,8 +1292,8 @@ void CConverter2OOXML::WriteSectionSettings(TConversionState& oState)
 	else
 	{
 		m_oDocXml.WriteString(L"<w:pgSz w:w=\"" + std::to_wstring(Transform::HWPUINT2Twips(pPage->GetWidth())) + L"\" w:h=\"" + std::to_wstring(Transform::HWPUINT2Twips(pPage->GetHeight())) + L"\"/>");
-		m_oDocXml.WriteString(L"<w:pgMar w:top=\"" + std::to_wstring(Transform::HWPUINT2Twips(pPage->GetMarginTop())) + L"\" w:right=\"" + std::to_wstring(Transform::HWPUINT2Twips(pPage->GetMarginRight())) + L"\" w:bottom=\"" +
-		                        std::to_wstring(Transform::HWPUINT2Twips(pPage->GetMarginBottom())) + L"\"  w:left=\"" + std::to_wstring(Transform::HWPUINT2Twips(pPage->GetMarginRight())) + L"\" w:header=\"" +
+		m_oDocXml.WriteString(L"<w:pgMar w:top=\"" + std::to_wstring(Transform::HWPUINT2Twips(pPage->GetMarginTop() + pPage->GetMarginHeader())) + L"\" w:right=\"" + std::to_wstring(Transform::HWPUINT2Twips(pPage->GetMarginRight())) + L"\" w:bottom=\"" +
+		                        std::to_wstring(Transform::HWPUINT2Twips(pPage->GetMarginBottom() + pPage->GetMarginFooter())) + L"\"  w:left=\"" + std::to_wstring(Transform::HWPUINT2Twips(pPage->GetMarginRight())) + L"\" w:header=\"" +
 		                        std::to_wstring(Transform::HWPUINT2Twips(pPage->GetMarginHeader())) + L"\"  w:footer=\"" + std::to_wstring(Transform::HWPUINT2Twips(pPage->GetMarginFooter())) + L"\"  w:gutter=\"" +
 		                        std::to_wstring(Transform::HWPUINT2Twips(pPage->GetMarginGutter())) + L"\"/>");
 	}
@@ -1647,13 +1646,13 @@ void CConverter2OOXML::WriteShapeExtent(const CCtrlObjElement* pCtrlShape, NSStr
 	if (nullptr == pCtrlShape)
 		return;
 
-	int nFinalWidth  = pCtrlShape->GetCurWidth();
-	int nFinalHeight = pCtrlShape->GetCurHeight();
+	int nFinalWidth  = std::abs(pCtrlShape->GetWidth());
+	int nFinalHeight = std::abs(pCtrlShape->GetHeight());
 
 	if (0 == nFinalWidth || 0 == nFinalHeight)
 	{
-		nFinalWidth = std::abs(pCtrlShape->GetWidth());
-		nFinalHeight = std::abs(pCtrlShape->GetHeight());
+		nFinalWidth = pCtrlShape->GetCurWidth();
+		nFinalHeight = pCtrlShape->GetCurHeight();
 	}
 
 	if (nullptr != pWidth)
@@ -2026,7 +2025,11 @@ void CConverter2OOXML::WriteAutoNumber(const CCtrlAutoNumber* pAutoNumber, short
 			return;
 		}
 		case ENumType::TOTAL_PAGE:
-			ushValue = m_ushPageCount; break;
+		{
+			OpenParagraph(shParaShapeID, shParaStyleID, oBuilder, oState);
+			oBuilder.WriteString(L"<w:fldSimple w:instr=\"NUMPAGES \\* ARABIC\"><w:r><w:t>1</w:t></w:r></w:fldSimple>");
+			return;
+		}
 		case ENumType::FOOTNOTE:
 		{
 			OpenParagraph(shParaShapeID, shParaStyleID, oBuilder, oState);

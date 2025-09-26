@@ -88,6 +88,16 @@ int main(int argc, char** argv)
 	oBuilder.WriteString(fonts_dir + L"/AllFonts.js");
 	oBuilder.WriteString(L"</m_sAllFontsPath>");
 
+	if (false)
+	{
+		oBuilder.WriteString(L"<m_sDefaultFontName>");
+		oBuilder.WriteEncodeXmlString(L"Arial");
+		oBuilder.WriteString(L"</m_sDefaultFontName>");
+		oBuilder.WriteString(L"<m_nDefaultFontSize>");
+		oBuilder.WriteEncodeXmlString(L"12");
+		oBuilder.WriteString(L"</m_nDefaultFontSize>");
+	}
+
 	// temp directory
 	oBuilder.WriteString(L"<m_sTempDir>");
 	oBuilder.WriteEncodeXmlString(tmp_dir);

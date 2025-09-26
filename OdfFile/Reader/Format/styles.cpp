@@ -639,7 +639,7 @@ void style::add_attributes( const xml::attributes_wc_ptr & Attributes )
 	{
 		if (sTest->empty())
 		{
-			style_default_outline_level_ = 9;
+			//style_default_outline_level_ = 9;
 		}
 		else
 			style_default_outline_level_= XmlUtils::GetInteger(*sTest);
@@ -1659,7 +1659,7 @@ void style_page_layout_properties::docx_serialize(std::wostream & strm, oox::doc
 			
 			CP_XML_NODE(L"w:type")
 			{				
-				if (change_page_layout)
+				if (change_page_layout && Context.get_page_break()) // check bug 76397
 				{
 					CP_XML_ATTR(L"w:val", L"nextPage");
 				}

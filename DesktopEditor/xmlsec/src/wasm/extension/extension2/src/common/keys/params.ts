@@ -1,6 +1,6 @@
 import {
     type AesKeyGenLength,
-    type AesType,
+    type AesType, aesTypes,
     type AlgorithmType,
     algorithmTypes,
     type DigestType,
@@ -32,6 +32,9 @@ export class AlgorithmParams<TName extends AlgorithmType = AlgorithmType> {
     fromJSON(json: {name: TName}) {
         this.name = json.name;
     }
+    getImportParams() {
+        return new AlgorithmParams(this.name);
+    }
 }
 
 export class RSAImportParams extends AlgorithmParams<RsaType> {
@@ -60,16 +63,13 @@ export class RSAKeyGenParams extends RSAImportParams {
         this.modulusLength = modulusLength;
         this.publicExponent = publicExponent;
     }
-}
-export class Ed25519KeyGenParams {
-    name = algorithmTypes.ED25519;
-    toJSON() {
-        return {
-            name: this.name
-        }
+    override getImportParams() {
+        return new RSAImportParams(this.name, this.hash);
     }
-    fromJSON(_json: ReturnType<Ed25519KeyGenParams["toJSON"]>) {
-
+}
+export class Ed25519ImportParams extends AlgorithmParams {
+    constructor() {
+        super(algorithmTypes.ED25519);
     }
 }
 
@@ -106,9 +106,22 @@ export class AesGcmParams {
 
 export class AesKeyGenParams extends AesImportParams {
     length: AesKeyGenLength;
-    constructor(name , length: AesKeyGenLength) {
+    constructor(name: AesType, length: AesKeyGenLength) {
         super(name);
         this.length = length;
+    }
+    override getImportParams() {
+        return new AesImportParams(this.name);
+    }
+}
+export class AesGcmGenParams extends AesKeyGenParams {
+    constructor() {
+        super(aesTypes.AES_GCM, 256);
+    }
+}
+export class Ed25519KeyGenParams extends Ed25519ImportParams {
+    override getImportParams() {
+        return new Ed25519ImportParams();
     }
 }
 

@@ -1,4 +1,11 @@
-import {Ed25519KeyGenParams, type RSAImportParams} from "./params.ts";
+import {
+    AesGcmParams,
+    AesImportParams,
+    AesKeyGenParams, Ed25519ImportParams,
+    Ed25519KeyGenParams,
+    type RSAImportParams,
+    RSAKeyGenParams
+} from "./params.ts";
 
 export const exportKeyFormats = {
     pkcs8: "pkcs8",
@@ -47,6 +54,14 @@ export const pairKeyTypes = {
     public: "public",
 } as const;
 
+export const signAlgorithms = {
+    ED25519: algorithmTypes.ED25519
+}
+
+export const cryptAlgorithms = {
+    ...aesTypes,
+    RSA_OAEP: algorithmTypes.RSA_OAEP
+}
 
 export const isRsaAlgorithm = (name: AlgorithmType): name is RsaType => {
     return Object.values(rsaTypes).includes(name as RsaType);
@@ -55,9 +70,12 @@ export const isRsaAlgorithm = (name: AlgorithmType): name is RsaType => {
 export type RSAJSONType = ReturnType<RSAImportParams["toJSON"]>;
 export type JSONAesGcmParams = ReturnType<AesGcmParams["toJSON"]>;
 export type AesKeyGenLength = 128 | 192 | 256;
-export type KeyParams = RSAImportParams | Ed25519KeyGenParams;
+export type KeyParams = RSAImportParams | AesImportParams | Ed25519ImportParams;
+export type KeyGenParams = RSAKeyGenParams | Ed25519KeyGenParams | AesKeyGenParams;
 export type DigestType = typeof digestTypes[keyof typeof digestTypes];
 export type AesType = typeof aesTypes[keyof typeof aesTypes];
 export type RsaType = typeof rsaTypes[keyof typeof rsaTypes];
 export type AlgorithmType = typeof algorithmTypes[keyof typeof algorithmTypes];
 export type ExportKeyFormat = typeof exportKeyFormats[keyof typeof exportKeyFormats];
+export type SignAlgorithm = typeof signAlgorithms[keyof typeof signAlgorithms];
+export type CryptAlgorithm = typeof cryptAlgorithms[keyof typeof cryptAlgorithms];

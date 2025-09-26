@@ -1,22 +1,24 @@
 import {getGUID} from "../../background/utils.ts";
-import {ab2base64, base642ui} from "../utils.ts";
-import {exportKeyFormats, type KeyParams, keyTypes, pairKeyTypes} from "./key-types.ts";
+import {ab2base64, base642ui, str2ui} from "../utils.ts";
+import {type ExportKeyFormat, exportKeyFormats, type KeyParams, keyTypes, pairKeyTypes} from "./key-types.ts";
 import getCrypto from "../crypto.ts";
 import {AesGcmParams, getKeyParamsFromJson} from "./params.ts";
 
-export class Key<T extends KeyParams> {
+export class Key {
     guid;
     params: KeyParams;
     key;
-    constructor(key: ArrayBuffer, params: T, guid: string = getGUID()) {
+    exportFormat;
+    constructor(key: ArrayBuffer, params: KeyParams, guid: string = getGUID(), exportFormat: ExportKeyFormat) {
         this.key = key;
         this.params = params;
         this.guid = guid;
+        this.exportFormat = exportFormat;
     }
-    static async fromJSON<P extends KeyParams>(json: Awaited<ReturnType<Key<P>["toJSON"]>>, _masterPassword?: string) {
+    static async fromJSON(json: Awaited<ReturnType<Key["toJSON"]>>, _masterPassword?: string) {
         const params = getKeyParamsFromJson(json.params);
         const key = base642ui(json.key);
-        return new this(key, params, json.guid);
+        return new this(key, params, json.guid, exportKeyFormats.raw);
     }
     async toJSON(_masterPassword?: string) {
         const key = ab2base64(this.key);
@@ -27,21 +29,21 @@ export class Key<T extends KeyParams> {
         };
     }
 }
-export class SymmetricKey<T extends KeyParams = KeyParams> extends Key<T> {
+export class SymmetricKey extends Key {
     type = keyTypes.symmetric;
-    constructor(key: ArrayBuffer, params: T, guid?: string) {
-        super(key, params, guid);
+    constructor(key: ArrayBuffer, params: KeyParams, guid?: string) {
+        super(key, params, guid, exportKeyFormats.raw);
     }
 }
-export class PublicKey<T extends KeyParams = KeyParams> extends Key<T> {
+export class PublicKey extends Key {
     type = pairKeyTypes.public;
-    constructor(key: ArrayBuffer, params: T, guid?: string) {
-        super(key, params, guid);
+    constructor(key: ArrayBuffer, params: KeyParams, guid?: string) {
+        super(key, params, guid, exportKeyFormats.spki);
     }
-    static override async fromJSON<P extends KeyParams>(json: Awaited<ReturnType<PublicKey<P>["toJSON"]>>) {
+    static override async fromJSON(json: Awaited<ReturnType<PublicKey["toJSON"]>>) {
         const params = getKeyParamsFromJson(json.params);
         const key = base642ui(json.key);
-        return new PublicKey<typeof params>(key, params, json.guid);
+        return new PublicKey(key, params, json.guid);
     }
     override async toJSON() {
         const params = this.params.toJSON();
@@ -55,15 +57,15 @@ export class PublicKey<T extends KeyParams = KeyParams> extends Key<T> {
     }
 }
 
-export class PrivateKey<T extends KeyParams = KeyParams> extends Key<T> {
+export class PrivateKey extends Key {
     type = pairKeyTypes.private;
     salt;
-    constructor(key: ArrayBuffer, params: T, salt: string, guid?: string) {
-        super(key, params, guid);
+    constructor(key: ArrayBuffer, params: KeyParams, salt: ArrayBuffer, guid?: string) {
+        super(key, params, guid, exportKeyFormats.pkcs8);
         this.salt = salt;
     }
-    static override async fromJSON<P extends KeyParams>(json: Awaited<ReturnType<PrivateKey<P>["toJSON"]>>, masterPassword: string) {
-        const salt = atob(json.salt);
+    static override async fromJSON(json: Awaited<ReturnType<PrivateKey["toJSON"]>>, masterPassword: string) {
+        const salt = base642ui(json.salt);
         const params = getKeyParamsFromJson(json.params);
         const guid = json.guid;
         const crypto = getCrypto();
@@ -71,22 +73,22 @@ export class PrivateKey<T extends KeyParams = KeyParams> extends Key<T> {
         const wrapKey = base642ui(strWrapKey);
         const wrapParams = new AesGcmParams();
         wrapParams.fromJSON(json.wrapParams);
-        const key = await crypto.unwrapKey(exportKeyFormats.pkcs8, wrapKey, masterPassword, salt, wrapParams, params);
+        const key = await crypto.unwrapKey(exportKeyFormats.pkcs8, wrapKey, str2ui(masterPassword), salt, wrapParams, params, json.keyUsage);
 
-        return new PrivateKey<typeof params>(key, params, salt, guid);
+        return new PrivateKey(key, params, salt, guid);
     }
     override async toJSON(masterPassword: string) {
         const crypto = getCrypto();
         const iv = crypto.getRandomValues(12);
         const aesParams = new AesGcmParams(iv);
-        const wrapKey = await crypto.wrapKey(exportKeyFormats.pkcs8, this.key, masterPassword, this.salt, aesParams);
+        const wrapKey = await crypto.wrapKey(this.exportFormat, this, str2ui(masterPassword), this.salt, aesParams);
         const base64WrapKey = ab2base64(wrapKey);
         const params = this.params.toJSON();
         const wrapParams = aesParams.toJSON();
         return {
-            format: exportKeyFormats.pkcs8,
+            format: this.exportFormat,
             key: base64WrapKey,
-            salt: btoa(this.salt),
+            salt: ab2base64(this.salt),
             params,
             wrapParams,
             guid: this.guid
@@ -94,18 +96,18 @@ export class PrivateKey<T extends KeyParams = KeyParams> extends Key<T> {
     }
 }
 
-export class KeyPair<T extends KeyParams = KeyParams> {
+export class KeyPair {
     privateKey;
     publicKey;
     date;
     type = keyTypes.pair;
-    static async fromJSON<P extends KeyParams>(json: Awaited<ReturnType<KeyPair<P>["toJSON"]>>, masterPassword: string) {
-        const publicKey = await PublicKey.fromJSON<P>(json.publicKey);
-        const privateKey = await PrivateKey.fromJSON<P>(json.privateKey, masterPassword);
+    static async fromJSON(json: Awaited<ReturnType<KeyPair["toJSON"]>>, masterPassword: string) {
+        const publicKey = await PublicKey.fromJSON(json.publicKey);
+        const privateKey = await PrivateKey.fromJSON(json.privateKey, masterPassword);
         const date = new Date(json.date);
         return new KeyPair(publicKey, privateKey, date);
     }
-    constructor(publicKey: PublicKey<T>, privateKey: PrivateKey<T>, date = new Date()) {
+    constructor(publicKey: PublicKey, privateKey: PrivateKey, date = new Date()) {
         this.privateKey = privateKey;
         this.publicKey = publicKey;
         this.date = date;

@@ -36,8 +36,8 @@
 
 #include "../lib/xpdf/GfxFont.h"
 #include "../lib/xpdf/XRef.h"
-#include "../lib/pathkit/include/core/SkPath.h"
-#include "../lib/pathkit/include/pathops/SkPathOps.h"
+// Skia PathOps #include "../lib/pathkit/include/core/SkPath.h"
+// Skia PathOps #include "../lib/pathkit/include/pathops/SkPathOps.h"
 
 #include "../../DesktopEditor/graphics/GraphicsPath.h"
 
@@ -738,6 +738,7 @@ void RedactOutputDev::clearSoftMask(GfxState *pGState)
 
 }
 
+/* Skia PathOps
 // Конвертирует conic в массив квадратичных Безье (минимум 1 сегмент)
 void ConvertConicToQuads(const pk::SkPoint& p0, const pk::SkPoint& p1, const pk::SkPoint& p2, pk::SkScalar w, pk::SkPoint pts[], int pow2) {
 	const pk::SkScalar k = 0.5f; // Фактор дробления (можно адаптировать)
@@ -770,6 +771,7 @@ void ConvertConicToQuads(const pk::SkPoint& p0, const pk::SkPoint& p1, const pk:
 	std::copy(left, left + 3, pts);
 	std::copy(right + 1, right + 3, pts + 3);
 }
+*/
 bool SkipPath(const std::vector<CSegment>& arrForStroke, const CPoint& P1, const CPoint& P2)
 {
 	for (int i = 0; i < arrForStroke.size(); ++i)
@@ -890,7 +892,6 @@ void RedactOutputDev::DoPathRedact(GfxState* pGState, GfxPath* pPath, double* pC
 		oPathRedact.Reset();
 		oPath = oPathResult;
 	}
-	//oPathResult = Aggplus::CalcBooleanOperation(oPath, oPathRedact, Aggplus::BooleanOpType::Subtraction);
 
 	size_t length = oPathResult.GetPointCount(), compound = oPathResult.GetCloseCount();
 	std::vector<Aggplus::PointD> points = oPathResult.GetPoints(0, length + compound);
@@ -990,6 +991,7 @@ void RedactOutputDev::DoPathRedact(GfxState* pGState, GfxPath* pPath, double* pC
 
 	return;
 
+	/* Skia PathOps
 	pk::SkPath skPath, skPathRedact, skPathRes;
 	if (bEoFill)
 		skPath.setFillType(pk::SkPathFillType::kEvenOdd);
@@ -1231,6 +1233,7 @@ void RedactOutputDev::DoPathRedact(GfxState* pGState, GfxPath* pPath, double* pC
 			break;
 		}
 	}
+	*/
 }
 void RedactOutputDev::DoPath(GfxState* pGState, GfxPath* pPath, double* pCTM)
 {

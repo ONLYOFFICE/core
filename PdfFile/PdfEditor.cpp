@@ -3298,6 +3298,10 @@ bool CPdfEditor::EditWidgets(IAdvancedCommand* pCommand)
 	if (m_nMode == Mode::Unknown && !IncrementalUpdates())
 		return false;
 
+	WriteRedact({});
+	m_pWriter->AddRedact({});
+	m_arrRedact.clear();
+
 	CWidgetsInfo* pFieldInfo = (CWidgetsInfo*)pCommand;
 	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
 

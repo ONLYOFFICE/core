@@ -1334,7 +1334,6 @@ HRESULT CPdfFile::AdvancedCommand(IAdvancedCommand* command)
 			m_pInternal->pEditor->AddShapeXML(pCommand->GetShapeXML());
 			arrRedact = m_pInternal->pEditor->WriteRedact(pCommand->GetRedactID());
 		}
-		// TODO Здесь необходимо наложить на рендер области редактов
 		return m_pInternal->pWriter->AddRedact(arrRedact);
 	}
 	case IAdvancedCommand::AdvancedCommandType::ShapeEnd:

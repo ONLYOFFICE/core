@@ -946,7 +946,7 @@ namespace NSOnlineOfficeBinToPdf
 				if ((IAdvancedCommand::AdvancedCommandType::Undefined != eAdvancedCommandType) &&
 					(S_OK == pRenderer->IsSupportAdvancedCommand(eAdvancedCommandType)))
 				{
-					IAdvancedCommand* pCommand = oReader.Read(eCommand, pCorrector);
+					IAdvancedCommand* pCommand = oReader.Read(eCommand, pCorrector, nLen);
 					if (pCommand)
 					{
 						pRenderer->AdvancedCommand(pCommand);

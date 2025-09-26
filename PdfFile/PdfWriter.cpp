@@ -903,6 +903,9 @@ HRESULT CPdfWriter::DrawPath(NSFonts::IApplicationFonts* pAppFonts, const std::w
 		UpdateBrush(pAppFonts, wsTempDirectory);
 	}
 
+	if (!m_arrRedact.empty())
+		m_oPath.Redact(m_oTransform, m_arrRedact);
+
 	if (!m_pShading)
 	{
 		m_oPath.Draw(m_pPage, bStroke, bFill, bEoFill);
@@ -1076,25 +1079,8 @@ HRESULT CPdfWriter::DrawImage(IGrObject* pImage, const double& dX, const double&
 {
 	m_oCommandManager.Flush();
 
-	if (!IsPageValid() || !pImage)
+	if (!IsPageValid() || !pImage || SkipRedact(dX, dY, dW, dH))
 		return S_OK;
-
-	if (!m_arrRedact.empty())
-	{
-		double dXmin = MM_2_PT(dX), dYmin = MM_2_PT(m_dPageHeight - dY - dH), dXmax = MM_2_PT(dX + dW), dYmax = MM_2_PT(m_dPageHeight - dY);
-		m_oTransform.Transform(dXmin, dYmin, &dXmin, &dYmin);
-		m_oTransform.Transform(dXmax, dYmax, &dXmax, &dYmax);
-		for (int i = 0; i < m_arrRedact.size(); i += 4)
-		{
-			double xMin = m_arrRedact[i + 0];
-			double yMin = m_arrRedact[i + 1];
-			double xMax = m_arrRedact[i + 2];
-			double yMax = m_arrRedact[i + 3];
-
-			if (!(dXmax < xMin || dXmin > xMax || dYmax < yMin || dYmin > yMax))
-				return S_OK;
-		}
-	}
 
 	if (!DrawImage((Aggplus::CImage*)pImage, dX, dY, dW, dH, 255))
 		return S_FALSE;
@@ -1105,25 +1091,8 @@ HRESULT CPdfWriter::DrawImageFromFile(NSFonts::IApplicationFonts* pAppFonts, con
 {
 	m_oCommandManager.Flush();
 
-	if (!IsPageValid())
+	if (!IsPageValid() || SkipRedact(dX, dY, dW, dH))
 		return S_OK;
-
-	if (!m_arrRedact.empty())
-	{
-		double dXmin = MM_2_PT(dX), dYmin = MM_2_PT(m_dPageHeight - dY - dH), dXmax = MM_2_PT(dX + dW), dYmax = MM_2_PT(m_dPageHeight - dY);
-		m_oTransform.Transform(dXmin, dYmin, &dXmin, &dYmin);
-		m_oTransform.Transform(dXmax, dYmax, &dXmax, &dYmax);
-		for (int i = 0; i < m_arrRedact.size(); i += 4)
-		{
-			double xMin = m_arrRedact[i + 0];
-			double yMin = m_arrRedact[i + 1];
-			double xMax = m_arrRedact[i + 2];
-			double yMax = m_arrRedact[i + 3];
-
-			if (!(dXmax < xMin || dXmin > xMax || dYmax < yMin || dYmin > yMax))
-				return S_OK;
-		}
-	}
 
 	if (m_pDocument->HasImage(wsImagePathSrc, nAlpha))
 	{
@@ -2653,6 +2622,8 @@ HRESULT CPdfWriter::AddMetaData(const std::wstring& sMetaName, BYTE* pMetaData, 
 HRESULT CPdfWriter::AddRedact(const std::vector<double>& arrRedact)
 {
 	m_arrRedact.clear();
+	if (arrRedact.empty())
+		return S_OK;
 	m_arrRedact = arrRedact;
 
 	PdfWriter::CArrayObject* pPageBox = (PdfWriter::CArrayObject*)m_pPage->Get("CropBox");
@@ -2705,25 +2676,8 @@ HRESULT CPdfWriter::DrawImage1bpp(NSImages::CPixJbig2* pImageBuffer, const unsig
 {
 	m_oCommandManager.Flush();
 
-	if (!IsPageValid() || !pImageBuffer)
+	if (!IsPageValid() || !pImageBuffer || SkipRedact(dX, dY, dW, dH))
 		return S_OK;
-
-	if (!m_arrRedact.empty())
-	{
-		double dXmin = MM_2_PT(dX), dYmin = MM_2_PT(m_dPageHeight - dY - dH), dXmax = MM_2_PT(dX + dW), dYmax = MM_2_PT(m_dPageHeight - dY);
-		m_oTransform.Transform(dXmin, dYmin, &dXmin, &dYmin);
-		m_oTransform.Transform(dXmax, dYmax, &dXmax, &dYmax);
-		for (int i = 0; i < m_arrRedact.size(); i += 4)
-		{
-			double xMin = m_arrRedact[i + 0];
-			double yMin = m_arrRedact[i + 1];
-			double xMax = m_arrRedact[i + 2];
-			double yMax = m_arrRedact[i + 3];
-
-			if (!(dXmax < xMin || dXmin > xMax || dYmax < yMin || dYmin > yMax))
-				return S_OK;
-		}
-	}
 
 	m_pPage->GrSave();
 	UpdateTransform();
@@ -2756,25 +2710,8 @@ HRESULT CPdfWriter::DrawImageWith1bppMask(IGrObject* pImage, NSImages::CPixJbig2
 {
 	m_oCommandManager.Flush();
 
-	if (!IsPageValid() || !pMaskBuffer || !pImage)
+	if (!IsPageValid() || !pMaskBuffer || !pImage || SkipRedact(dX, dY, dW, dH))
 		return S_OK;
-
-	if (!m_arrRedact.empty())
-	{
-		double dXmin = MM_2_PT(dX), dYmin = MM_2_PT(m_dPageHeight - dY - dH), dXmax = MM_2_PT(dX + dW), dYmax = MM_2_PT(m_dPageHeight - dY);
-		m_oTransform.Transform(dXmin, dYmin, &dXmin, &dYmin);
-		m_oTransform.Transform(dXmax, dYmax, &dXmax, &dYmax);
-		for (int i = 0; i < m_arrRedact.size(); i += 4)
-		{
-			double xMin = m_arrRedact[i + 0];
-			double yMin = m_arrRedact[i + 1];
-			double xMax = m_arrRedact[i + 2];
-			double yMax = m_arrRedact[i + 3];
-
-			if (!(dXmax < xMin || dXmin > xMax || dYmax < yMin || dYmin > yMax))
-				return S_OK;
-		}
-	}
 
 	PdfWriter::CImageDict* pPdfImage = LoadImage((Aggplus::CImage*)pImage, 255);
 	if (!pPdfImage)
@@ -3224,6 +3161,25 @@ void CPdfWriter::Sign(const double& dX, const double& dY, const double& dW, cons
 //----------------------------------------------------------------------------------------
 // Внутренние функции
 //----------------------------------------------------------------------------------------
+bool CPdfWriter::SkipRedact(const double& dX, const double& dY, const double& dW, const double& dH)
+{
+	if (m_arrRedact.empty())
+		return false;
+	double dXmin = MM_2_PT(dX), dYmin = MM_2_PT(m_dPageHeight - dY - dH), dXmax = MM_2_PT(dX + dW), dYmax = MM_2_PT(m_dPageHeight - dY);
+	m_oTransform.Transform(dXmin, dYmin, &dXmin, &dYmin);
+	m_oTransform.Transform(dXmax, dYmax, &dXmax, &dYmax);
+	for (int i = 0; i < m_arrRedact.size(); i += 4)
+	{
+		double xMin = m_arrRedact[i + 0];
+		double yMin = m_arrRedact[i + 1];
+		double xMax = m_arrRedact[i + 2];
+		double yMax = m_arrRedact[i + 3];
+
+		if (!(dXmax < xMin || dXmin > xMax || dYmax < yMin || dYmin > yMax))
+			return true;
+	}
+	return false;
+}
 PdfWriter::CImageDict* CPdfWriter::LoadImage(Aggplus::CImage* pImage, BYTE nAlpha)
 {
 	TColor oColor;

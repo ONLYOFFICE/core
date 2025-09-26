@@ -303,6 +303,16 @@ static inline void UpdateMaxMinPoints(double& dMinX, double& dMinY, double& dMax
     if (dY > dMaxY)
         dMaxY = dY;
 }
+void CPath::Redact(const CTransform& oTransform, const std::vector<double>& arrRedact)
+{
+	Aggplus::CGraphicsPath oPath;
+	for (int nIndex = 0, nCount = m_vCommands.size(); nIndex < nCount; nIndex++)
+	{
+		CPathCommandBase* pCommand = m_vCommands.at(nIndex);
+		// CPath to CGraphicsPath
+		pCommand->ToCGraphicsPath(oTransform, oPath);
+	}
+}
 void CPath::Draw(PdfWriter::CPage* pPage, bool bStroke, bool bFill, bool bEoFill)
 {
     for (int nIndex = 0, nCount = m_vCommands.size(); nIndex < nCount; nIndex++)
@@ -381,6 +391,12 @@ void CPath::CPathMoveTo::UpdateBounds(double& dL, double& dT, double& dR, double
 {
     UpdateMaxMinPoints(dL, dT, dR, dB, x, y);
 }
+void CPath::CPathMoveTo::ToCGraphicsPath(const CTransform& oTransform, Aggplus::CGraphicsPath& oPath)
+{
+	double dX, dY;
+	oTransform.Transform(x, y, &dX, &dY);
+	oPath.MoveTo(dX, dY);
+}
 void CPath::CPathLineTo::Draw(PdfWriter::CPage* pPage)
 {
     pPage->LineTo(x, y);
@@ -388,6 +404,12 @@ void CPath::CPathLineTo::Draw(PdfWriter::CPage* pPage)
 void CPath::CPathLineTo::UpdateBounds(double& dL, double& dT, double& dR, double& dB)
 {
     UpdateMaxMinPoints(dL, dT, dR, dB, x, y);
+}
+void CPath::CPathLineTo::ToCGraphicsPath(const CTransform& oTransform, Aggplus::CGraphicsPath& oPath)
+{
+	double dX, dY;
+	oTransform.Transform(x, y, &dX, &dY);
+	oPath.LineTo(dX, dY);
 }
 void CPath::CPathCurveTo::Draw(PdfWriter::CPage* pPage)
 {
@@ -398,6 +420,14 @@ void CPath::CPathCurveTo::UpdateBounds(double& dL, double& dT, double& dR, doubl
     UpdateMaxMinPoints(dL, dT, dR, dB, x1, y1);
     UpdateMaxMinPoints(dL, dT, dR, dB, x2, y2);
     UpdateMaxMinPoints(dL, dT, dR, dB, xe, ye);
+}
+void CPath::CPathCurveTo::ToCGraphicsPath(const CTransform& oTransform, Aggplus::CGraphicsPath& oPath)
+{
+	double dX1, dY1, dX2, dY2, dX3, dY3;
+	oTransform.Transform(x1, y1, &dX1, &dY1);
+	oTransform.Transform(x2, y2, &dX2, &dY2);
+	oTransform.Transform(xe, ye, &dX3, &dY3);
+	oPath.CurveTo(dX1, dY1, dX2, dY2, dX3, dY3);
 }
 void CPath::CPathArcTo::Draw(PdfWriter::CPage* pPage)
 {
@@ -411,12 +441,20 @@ void CPath::CPathArcTo::UpdateBounds(double& dL, double& dT, double& dR, double&
     UpdateMaxMinPoints(dL, dT, dR, dB, x, y);
     UpdateMaxMinPoints(dL, dT, dR, dB, x + w, y + h);
 }
+void CPath::CPathArcTo::ToCGraphicsPath(const CTransform& oTransform, Aggplus::CGraphicsPath& oPath)
+{
+
+}
 void CPath::CPathClose::Draw(PdfWriter::CPage* pPage)
 {
     pPage->ClosePath();
 }
 void CPath::CPathClose::UpdateBounds(double& dL, double& dT, double& dR, double& dB)
 {
+}
+void CPath::CPathClose::ToCGraphicsPath(const CTransform& oTransform, Aggplus::CGraphicsPath& oPath)
+{
+	oPath.CloseFigure();
 }
 void CPath::CPathText::Draw(PdfWriter::CPage* pPage)
 {
@@ -431,6 +469,11 @@ void CPath::CPathText::Draw(PdfWriter::CPage* pPage)
 void CPath::CPathText::UpdateBounds(double& dL, double& dT, double& dR, double& dB)
 {
     UpdateMaxMinPoints(dL, dT, dR, dB, x, y);
+}
+void CPath::CPathText::ToCGraphicsPath(const CTransform& oTransform, Aggplus::CGraphicsPath& oPath)
+{
+	// Весь текст проверяется в CPdfWriter::PathCommandDrawText
+	// Эта функция не должна быть вызвана
 }
 void CBrushState::Reset()
 {

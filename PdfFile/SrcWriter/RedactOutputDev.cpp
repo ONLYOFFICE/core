@@ -788,7 +788,7 @@ bool SkipPath(const std::vector<CSegment>& arrForStroke, const CPoint& P1, const
 		double check2 = A * P2.x + B * P2.y + C;
 
 		// Если обе проверки близки к нулю (в пределах эпсилон), то лежит
-		if ((std::abs(check1) < 0.004) && (std::abs(check2) < 0.004))
+		if ((std::abs(check1) < 0.006) && (std::abs(check2) < 0.006))
 			return true;
 	}
 	return false;
@@ -809,17 +809,10 @@ void RedactOutputDev::DoPathRedact(GfxState* pGState, GfxPath* pPath, double* pC
 	CMatrix oMatrix(m_arrMatrix[0], m_arrMatrix[1], m_arrMatrix[2], m_arrMatrix[3], m_arrMatrix[4], m_arrMatrix[5]);
 	CMatrix oInverse = oMatrix.Inverse();
 
+	std::vector<CSegment> arrForStroke;
 	Aggplus::CGraphicsPath oPath, oPathRedact, oPathResult;
-	for (int i = 0; i < m_arrQuadPoints.size(); i += 4)
-	{
-		oPathRedact.StartFigure();
-		oPathRedact.MoveTo(m_arrQuadPoints[i + 0], m_arrQuadPoints[i + 1]);
-		oPathRedact.LineTo(m_arrQuadPoints[i + 0], m_arrQuadPoints[i + 3]);
-		oPathRedact.LineTo(m_arrQuadPoints[i + 2], m_arrQuadPoints[i + 3]);
-		oPathRedact.LineTo(m_arrQuadPoints[i + 2], m_arrQuadPoints[i + 1]);
-		oPathRedact.CloseFigure();
-	}
-
+	if (bEoFill)
+		oPath.SetRuler(true);
 	for (int nSubPathIndex = 0, nSubPathCount = pPath->getNumSubpaths(); nSubPathIndex < nSubPathCount; ++nSubPathIndex)
 	{
 		GfxSubpath* pSubpath = pPath->getSubpath(nSubPathIndex);
@@ -829,6 +822,7 @@ void RedactOutputDev::DoPathRedact(GfxState* pGState, GfxPath* pPath, double* pC
 
 		double dX = pSubpath->getX(0), dY = pSubpath->getY(0);
 		oMatrix.Apply(dX, dY);
+		double dXStart = dX, dYStart = dY, dXCur = dX, dYCur = dY;
 		oPath.MoveTo(dX, dY);
 
 		int nCurPointIndex = 1;
@@ -845,6 +839,7 @@ void RedactOutputDev::DoPathRedact(GfxState* pGState, GfxPath* pPath, double* pC
 				double dX3 = pSubpath->getX(nCurPointIndex + 2);
 				double dY3 = pSubpath->getY(nCurPointIndex + 2);
 				oMatrix.Apply(dX3, dY3);
+				dXCur = dX3; dYCur = dY3;
 				oPath.CurveTo(dX, dY, dX2, dY2, dX3, dY3);
 				nCurPointIndex += 3;
 			}
@@ -853,12 +848,15 @@ void RedactOutputDev::DoPathRedact(GfxState* pGState, GfxPath* pPath, double* pC
 				dX = pSubpath->getX(nCurPointIndex);
 				dY = pSubpath->getY(nCurPointIndex);
 				oMatrix.Apply(dX, dY);
+				dXCur = dX; dYCur = dY;
 				oPath.LineTo(dX, dY);
 				++nCurPointIndex;
 			}
 		}
 		if (pSubpath->isClosed())
 			oPath.CloseFigure();
+		else if (bStroke && (std::abs(dXCur - dXStart) > EPS || std::abs(dYCur - dYStart) > EPS))
+			arrForStroke.push_back(CSegment(CPoint(dXCur, dYCur), CPoint(dXStart, dYStart)));
 	}
 
 	//size_t length1 = oPath.GetPointCount(), compound1 = oPath.GetCloseCount();
@@ -870,7 +868,29 @@ void RedactOutputDev::DoPathRedact(GfxState* pGState, GfxPath* pPath, double* pC
 	//}
 	//std::cout <<std::endl;
 
-	oPathResult = Aggplus::CalcBooleanOperation(oPath, oPathRedact, Aggplus::BooleanOpType::Subtraction);
+	for (int i = 0; i < m_arrQuadPoints.size(); i += 4)
+	{
+		oPathRedact.StartFigure();
+		oPathRedact.MoveTo(m_arrQuadPoints[i + 0], m_arrQuadPoints[i + 1]);
+		oPathRedact.LineTo(m_arrQuadPoints[i + 0], m_arrQuadPoints[i + 3]);
+		oPathRedact.LineTo(m_arrQuadPoints[i + 2], m_arrQuadPoints[i + 3]);
+		oPathRedact.LineTo(m_arrQuadPoints[i + 2], m_arrQuadPoints[i + 1]);
+		oPathRedact.CloseFigure();
+
+		if (bStroke)
+		{
+			arrForStroke.push_back(CSegment(CPoint(m_arrQuadPoints[i + 0], m_arrQuadPoints[i + 1]), CPoint(m_arrQuadPoints[i + 0], m_arrQuadPoints[i + 3])));
+			arrForStroke.push_back(CSegment(CPoint(m_arrQuadPoints[i + 0], m_arrQuadPoints[i + 3]), CPoint(m_arrQuadPoints[i + 2], m_arrQuadPoints[i + 3])));
+			arrForStroke.push_back(CSegment(CPoint(m_arrQuadPoints[i + 2], m_arrQuadPoints[i + 3]), CPoint(m_arrQuadPoints[i + 2], m_arrQuadPoints[i + 1])));
+			arrForStroke.push_back(CSegment(CPoint(m_arrQuadPoints[i + 2], m_arrQuadPoints[i + 1]), CPoint(m_arrQuadPoints[i + 0], m_arrQuadPoints[i + 1])));
+		}
+
+		oPathResult = Aggplus::CalcBooleanOperation(oPath, oPathRedact, Aggplus::BooleanOpType::Subtraction);
+		oPath.Reset();
+		oPathRedact.Reset();
+		oPath = oPathResult;
+	}
+	//oPathResult = Aggplus::CalcBooleanOperation(oPath, oPathRedact, Aggplus::BooleanOpType::Subtraction);
 
 	size_t length = oPathResult.GetPointCount(), compound = oPathResult.GetCloseCount();
 	std::vector<Aggplus::PointD> points = oPathResult.GetPoints(0, length + compound);
@@ -883,6 +903,8 @@ void RedactOutputDev::DoPathRedact(GfxState* pGState, GfxPath* pPath, double* pC
 
 	m_pRenderer->m_oPath.Clear();
 
+	double dXStart = -1, dYStart = -1, dXCur = -1, dYCur = -1;
+	bool bBreak = false;
 	for (size_t i = 0; i < length + compound; i++)
 	{
 		if (oPathResult.IsCurvePoint(i))
@@ -895,6 +917,14 @@ void RedactOutputDev::DoPathRedact(GfxState* pGState, GfxPath* pPath, double* pC
 			oInverse.Apply(dX2, dY2);
 			double dX3 = points[i + 2].X;
 			double dY3 = points[i + 2].Y;
+			if (bBreak)
+			{
+				bBreak = false;
+				double dXCI = dXCur, dYCI = dYCur;
+				oInverse.Apply(dXCI, dYCI);
+				m_pRenderer->m_oPath.MoveTo(dXCI, dYCI);
+			}
+			dXCur = dX3; dYCur = dY3;
 			oInverse.Apply(dX3, dY3);
 			m_pRenderer->m_oPath.CurveTo(dX, dY, dX2, dY2, dX3, dY3);
 
@@ -903,22 +933,63 @@ void RedactOutputDev::DoPathRedact(GfxState* pGState, GfxPath* pPath, double* pC
 		else if (oPathResult.IsMovePoint(i))
 		{
 			double dX = points[i].X, dY = points[i].Y;
-			oInverse.Apply(dX, dY);
-			m_pRenderer->m_oPath.MoveTo(dX, dY);
+			dXStart = dX; dYStart = dY; dXCur = dX; dYCur = dY;
+			if (bStroke)
+				bBreak = true;
+			else
+			{
+				oInverse.Apply(dX, dY);
+				m_pRenderer->m_oPath.MoveTo(dX, dY);
+			}
 		}
 		else if (oPathResult.IsLinePoint(i))
 		{
 			double dX = points[i].X, dY = points[i].Y;
+			if (bStroke && SkipPath(arrForStroke, CPoint(dXCur, dYCur), CPoint(dX, dY)))
+			{
+				dXCur = dX; dYCur = dY;
+				bBreak = true;
+				continue;
+			}
+			if (bBreak)
+			{
+				bBreak = false;
+				double dXCI = dXCur, dYCI = dYCur;
+				oInverse.Apply(dXCI, dYCI);
+				m_pRenderer->m_oPath.MoveTo(dXCI, dYCI);
+			}
+			dXCur = dX; dYCur = dY;
 			oInverse.Apply(dX, dY);
 			m_pRenderer->m_oPath.LineTo(dX, dY);
 		}
 		else if (oPathResult.IsClosePoint(i))
-			m_pRenderer->m_oPath.Close();
+		{
+			if (bStroke && (std::abs(dXCur - dXStart) > EPS || std::abs(dYCur - dYStart) > EPS) && SkipPath(arrForStroke, CPoint(dXCur, dYCur), CPoint(dXStart, dYStart)))
+			{
+				dXCur = dXStart; dYCur = dYStart;
+				bBreak = true;
+				continue;
+			}
+			if (bStroke || bBreak)
+			{
+				if (std::abs(dXCur - dXStart) > EPS || std::abs(dYCur - dYStart) > EPS)
+				{
+					bBreak = false;
+					double dXCI = dXCur, dYCI = dYCur;
+					oInverse.Apply(dXCI, dYCI);
+					double dXSI = dXStart, dYSI = dYStart;
+					oInverse.Apply(dXSI, dYSI);
+					m_pRenderer->m_oPath.MoveTo(dXCI, dYCI);
+					m_pRenderer->m_oPath.LineTo(dXSI, dYSI);
+				}
+			}
+			else
+				m_pRenderer->m_oPath.Close();
+		}
 	}
 
 	return;
 
-	std::vector<CSegment> arrForStroke;
 	pk::SkPath skPath, skPathRedact, skPathRes;
 	if (bEoFill)
 		skPath.setFillType(pk::SkPathFillType::kEvenOdd);
@@ -985,14 +1056,14 @@ void RedactOutputDev::DoPathRedact(GfxState* pGState, GfxPath* pPath, double* pC
 
 	pk::Op(skPath, skPathRedact, pk::SkPathOp::kDifference_SkPathOp, &skPathRes);
 
-	pk::SkPath::Iter iter(skPathRes, false); // false - не сохранять контуры
+	pk::SkPath::Iter iter(skPathRes, bStroke); // false - не сохранять контуры
 	pk::SkPoint pts[4];
 	pk::SkPath::Verb verb;
 
 	m_pRenderer->m_oPath.Clear();
 
-	double dXStart = -1, dYStart = -1, dXCur = -1, dYCur = -1;
-	bool bBreak = false;
+	double dXStart2 = -1, dYStart2 = -1, dXCur2 = -1, dYCur2 = -1;
+	bool bBreak2 = false;
 	while ((verb = iter.next(pts)) != pk::SkPath::kDone_Verb)
 	{
 		switch (verb)
@@ -1000,9 +1071,9 @@ void RedactOutputDev::DoPathRedact(GfxState* pGState, GfxPath* pPath, double* pC
 		case pk::SkPath::kMove_Verb:
 		{
 			double dX = pts[0].x(), dY = pts[0].y();
-			dXStart = dX; dYStart = dY; dXCur = dX; dYCur = dY;
+			dXStart2 = dX; dYStart2 = dY; dXCur2 = dX; dYCur2 = dY;
 			if (bStroke)
-				bBreak = true;
+				bBreak2 = true;
 			else
 			{
 				oInverse.Apply(dX, dY);
@@ -1013,20 +1084,20 @@ void RedactOutputDev::DoPathRedact(GfxState* pGState, GfxPath* pPath, double* pC
 		case pk::SkPath::kLine_Verb:
 		{
 			double dX = pts[1].x(), dY = pts[1].y();
-			if (bStroke && SkipPath(arrForStroke, CPoint(dXCur, dYCur), CPoint(dX, dY)))
+			if (bStroke && SkipPath(arrForStroke, CPoint(dXCur2, dYCur2), CPoint(dX, dY)))
 			{
-				dXCur = dX; dYCur = dY;
-				bBreak = true;
+				dXCur2 = dX; dYCur2 = dY;
+				bBreak2 = true;
 				continue;
 			}
-			if (bBreak)
+			if (bBreak2)
 			{
-				bBreak = false;
-				double dXCI = dXCur, dYCI = dYCur;
+				bBreak2 = false;
+				double dXCI = dXCur2, dYCI = dYCur2;
 				oInverse.Apply(dXCI, dYCI);
 				m_pRenderer->m_oPath.MoveTo(dXCI, dYCI);
 			}
-			dXCur = dX; dYCur = dY;
+			dXCur2 = dX; dYCur2 = dY;
 			oInverse.Apply(dX, dY);
 			m_pRenderer->m_oPath.LineTo(dX, dY);
 			break;
@@ -1054,14 +1125,14 @@ void RedactOutputDev::DoPathRedact(GfxState* pGState, GfxPath* pPath, double* pC
 			oInverse.Apply(dX2, dY2);
 			double dX3 = cubic[3].x();
 			double dY3 = cubic[3].y();
-			if (bBreak)
+			if (bBreak2)
 			{
-				bBreak = false;
-				double dXCI = dXCur, dYCI = dYCur;
+				bBreak2 = false;
+				double dXCI = dXCur2, dYCI = dYCur2;
 				oInverse.Apply(dXCI, dYCI);
 				m_pRenderer->m_oPath.MoveTo(dXCI, dYCI);
 			}
-			dXCur = dX3; dYCur = dY3;
+			dXCur2 = dX3; dYCur2 = dY3;
 			oInverse.Apply(dX3, dY3);
 			m_pRenderer->m_oPath.CurveTo(dX, dY, dX2, dY2, dX3, dY3);
 			break;
@@ -1076,14 +1147,14 @@ void RedactOutputDev::DoPathRedact(GfxState* pGState, GfxPath* pPath, double* pC
 			oInverse.Apply(dX2, dY2);
 			double dX3 = pts[3].x();
 			double dY3 = pts[3].y();
-			if (bBreak)
+			if (bBreak2)
 			{
-				bBreak = false;
-				double dXCI = dXCur, dYCI = dYCur;
+				bBreak2 = false;
+				double dXCI = dXCur2, dYCI = dYCur2;
 				oInverse.Apply(dXCI, dYCI);
 				m_pRenderer->m_oPath.MoveTo(dXCI, dYCI);
 			}
-			dXCur = dX3; dYCur = dY3;
+			dXCur2 = dX3; dYCur2 = dY3;
 			oInverse.Apply(dX3, dY3);
 			m_pRenderer->m_oPath.CurveTo(dX, dY, dX2, dY2, dX3, dY3);
 			break;
@@ -1118,14 +1189,14 @@ void RedactOutputDev::DoPathRedact(GfxState* pGState, GfxPath* pPath, double* pC
 				oInverse.Apply(dX2, dY2);
 				double dX3 = cubic[3].x();
 				double dY3 = cubic[3].y();
-				if (bBreak)
+				if (bBreak2)
 				{
-					bBreak = false;
-					double dXCI = dXCur, dYCI = dYCur;
+					bBreak2 = false;
+					double dXCI = dXCur2, dYCI = dYCur2;
 					oInverse.Apply(dXCI, dYCI);
 					m_pRenderer->m_oPath.MoveTo(dXCI, dYCI);
 				}
-				dXCur = dX3; dYCur = dY3;
+				dXCur2 = dX3; dYCur2 = dY3;
 				oInverse.Apply(dX3, dY3);
 				m_pRenderer->m_oPath.CurveTo(dX, dY, dX2, dY2, dX3, dY3);
 			}
@@ -1133,20 +1204,20 @@ void RedactOutputDev::DoPathRedact(GfxState* pGState, GfxPath* pPath, double* pC
 		}
 		case pk::SkPath::kClose_Verb:
 		{
-			if (bStroke && (std::abs(dXCur - dXStart) > EPS || std::abs(dYCur - dYStart) > EPS) && SkipPath(arrForStroke, CPoint(dXCur, dYCur), CPoint(dXStart, dYStart)))
+			if (bStroke && (std::abs(dXCur2 - dXStart2) > EPS || std::abs(dYCur2 - dYStart2) > EPS) && SkipPath(arrForStroke, CPoint(dXCur2, dYCur2), CPoint(dXStart2, dYStart2)))
 			{
-				dXCur = dXStart; dYCur = dYStart;
-				bBreak = true;
+				dXCur2 = dXStart2; dYCur2 = dYStart2;
+				bBreak2 = true;
 				continue;
 			}
-			if (bStroke || bBreak)
+			if (bStroke || bBreak2)
 			{
-				if (std::abs(dXCur - dXStart) > EPS || std::abs(dYCur - dYStart) > EPS)
+				if (std::abs(dXCur2 - dXStart2) > EPS || std::abs(dYCur2 - dYStart2) > EPS)
 				{
-					bBreak = false;
-					double dXCI = dXCur, dYCI = dYCur;
+					bBreak2 = false;
+					double dXCI = dXCur2, dYCI = dYCur2;
 					oInverse.Apply(dXCI, dYCI);
-					double dXSI = dXStart, dYSI = dYStart;
+					double dXSI = dXStart2, dYSI = dYStart2;
 					oInverse.Apply(dXSI, dYSI);
 					m_pRenderer->m_oPath.MoveTo(dXCI, dYCI);
 					m_pRenderer->m_oPath.LineTo(dXSI, dYSI);

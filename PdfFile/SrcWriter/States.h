@@ -34,6 +34,7 @@
 
 #include "../../DesktopEditor/common/Types.h"
 #include "../../DesktopEditor/graphics/AggPlusEnums.h"
+#include "../../DesktopEditor/graphics/GraphicsPath.h"
 #include "Types.h"
 
 #include <string>
@@ -1261,6 +1262,64 @@ private:
 	double       m_dWordSpace;
 	double m_dHorizontalScaling;
 };
+struct CTransform
+{
+	CTransform()
+	{
+		Reset();
+	}
+	void operator=(const CTransform& oT)
+	{
+		m11 = oT.m11;
+		m12 = oT.m12;
+		m21 = oT.m21;
+		m22 = oT.m22;
+		dx  = oT.dx;
+		dy  = oT.dy;
+	}
+	void Reset()
+	{
+		m11 = 1.0;
+		m12 = 0.0;
+		m21 = 0.0;
+		m22 = 1.0;
+		dx  = 0;
+		dy  = 0;
+	}
+	bool IsIdentity() const
+	{
+		if (fabs(m11 - 1) < 0.001
+			&& fabs(m12) < 0.001
+			&& fabs(m21) < 0.001
+			&& fabs(m22 - 1) < 0.001
+			&& fabs(dx) < 0.001
+			&& fabs(dy) < 0.001)
+			return true;
+
+		return false;
+	}
+	void Set(const double& dM11, const double& dM12, const double& dM21, const double& dM22, const double& dX, const double& dY)
+	{
+		m11 = dM11;
+		m12 = dM12;
+		m21 = dM21;
+		m22 = dM22;
+		dx  = dX;
+		dy  = dY;
+	}
+	void Transform(double dUserX, double dUserY, double* pdDeviceX, double* pdDeviceY) const
+	{
+		*pdDeviceX = dUserX * m11 + dUserY * m21 + dx;
+		*pdDeviceY = dUserX * m12 + dUserY * m22 + dy;
+	}
+
+	double m11;
+	double m12;
+	double m21;
+	double m22;
+	double dx;
+	double dy;
+};
 class CPath
 {
 private:
@@ -1291,6 +1350,7 @@ private:
         virtual void UpdateBounds(double& dL, double& dT, double& dR, double& dB) = 0;
         virtual void GetLastPoint(double& dX, double& dY) = 0;
         virtual EPathCommandType GetType() = 0;
+		virtual void ToCGraphicsPath(const CTransform& oTransform, Aggplus::CGraphicsPath& oPath) = 0;
     };
     class CPathMoveTo : public CPathCommandBase
     {
@@ -1311,6 +1371,7 @@ private:
         {
             return rendererpathcommand_MoveTo;
         }
+		void ToCGraphicsPath(const CTransform& oTransform, Aggplus::CGraphicsPath& oPath);
 
     public:
 
@@ -1336,6 +1397,7 @@ private:
         {
             return rendererpathcommand_LineTo;
         }
+		void ToCGraphicsPath(const CTransform& oTransform, Aggplus::CGraphicsPath& oPath);
 
     public:
 
@@ -1365,6 +1427,7 @@ private:
         {
             return rendererpathcommand_CurveTo;
         }
+		void ToCGraphicsPath(const CTransform& oTransform, Aggplus::CGraphicsPath& oPath);
 
     public:
 
@@ -1399,6 +1462,7 @@ private:
         {
             return rendererpathcommand_ArcTo;
         }
+		void ToCGraphicsPath(const CTransform& oTransform, Aggplus::CGraphicsPath& oPath);
 
     public:
 
@@ -1427,6 +1491,7 @@ private:
         {
             return rendererpathcommand_Close;
         }
+		void ToCGraphicsPath(const CTransform& oTransform, Aggplus::CGraphicsPath& oPath);
     };
     class CPathText : public CPathCommandBase
     {
@@ -1456,6 +1521,7 @@ private:
         {
             return rendererpathcommand_Text;
         }
+		void ToCGraphicsPath(const CTransform& oTransform, Aggplus::CGraphicsPath& oPath);
 
     public:
 
@@ -1531,6 +1597,7 @@ public:
     void Draw(PdfWriter::CPage* pPage, bool bStroke, bool bFill, bool bEoFill);
     void Clip(PdfWriter::CPage* pPage, bool bEvenOdd = false);
     void GetBounds(double& dL, double& dT, double& dR, double& dB);
+	void Redact(const CTransform& oTransform, const std::vector<double>& arrRedact);
 
 private:
 
@@ -1550,64 +1617,7 @@ public:
     std::vector<CPathCommandBase*> m_vCommands;
     bool                           m_bIsMoveTo;
 };
-struct CTransform
-{
-    CTransform()
-    {
-        Reset();
-    }
-    void operator=(const CTransform& oT)
-    {
-        m11 = oT.m11;
-        m12 = oT.m12;
-        m21 = oT.m21;
-        m22 = oT.m22;
-        dx  = oT.dx;
-        dy  = oT.dy;
-    }
-    void Reset()
-    {
-        m11 = 1.0;
-        m12 = 0.0;
-        m21 = 0.0;
-        m22 = 1.0;
-        dx  = 0;
-        dy  = 0;
-    }
-    bool IsIdentity() const
-    {
-        if (fabs(m11 - 1) < 0.001
-            && fabs(m12) < 0.001
-            && fabs(m21) < 0.001
-            && fabs(m22 - 1) < 0.001
-            && fabs(dx) < 0.001
-            && fabs(dy) < 0.001)
-            return true;
 
-        return false;
-    }
-    void Set(const double& dM11, const double& dM12, const double& dM21, const double& dM22, const double& dX, const double& dY)
-    {
-        m11 = dM11;
-        m12 = dM12;
-        m21 = dM21;
-        m22 = dM22;
-        dx  = dX;
-        dy  = dY;
-    }
-	void Transform(double dUserX, double dUserY, double* pdDeviceX, double* pdDeviceY)
-	{
-		*pdDeviceX = dUserX * m11 + dUserY * m21 + dx;
-		*pdDeviceY = dUserX * m12 + dUserY * m22 + dy;
-	}
-
-    double m11;
-    double m12;
-    double m21;
-    double m22;
-    double dx;
-    double dy;
-};
 class CCommandManager
 {
 public:

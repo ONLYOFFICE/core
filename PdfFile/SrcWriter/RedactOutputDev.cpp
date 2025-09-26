@@ -448,10 +448,10 @@ void RedactOutputDev::drawChar(GfxState *pGState, double dX, double dY, double d
 	double dDiff = dX + dDx / 2.0;
 	for (int i = 0; i < m_arrQuadPoints.size(); i += 4)
 	{
-		double xMin = m_arrQuadPoints[i * 4 + 0];
-		double yMin = m_arrQuadPoints[i * 4 + 1];
-		double xMax = m_arrQuadPoints[i * 4 + 2];
-		double yMax = m_arrQuadPoints[i * 4 + 3];
+		double xMin = m_arrQuadPoints[i + 0];
+		double yMin = m_arrQuadPoints[i + 1];
+		double xMax = m_arrQuadPoints[i + 2];
+		double yMax = m_arrQuadPoints[i + 3];
 
 		if (xMin < dDiff && dDiff < xMax && yMin < dY && dY < yMax)
 			return;
@@ -606,10 +606,10 @@ void RedactOutputDev::drawForm(GfxState *pGState, Ref id, const char* name)
 
 	for (int i = 0; i < m_arrQuadPoints.size(); i += 4)
 	{
-		double xMin = m_arrQuadPoints[i * 4 + 0];
-		double yMin = m_arrQuadPoints[i * 4 + 1];
-		double xMax = m_arrQuadPoints[i * 4 + 2];
-		double yMax = m_arrQuadPoints[i * 4 + 3];
+		double xMin = m_arrQuadPoints[i + 0];
+		double yMin = m_arrQuadPoints[i + 1];
+		double xMax = m_arrQuadPoints[i + 2];
+		double yMax = m_arrQuadPoints[i + 3];
 
 		if (!(dXmax < xMin || dXmin > xMax || dYmax < yMin || dYmin > yMax))
 			return;
@@ -690,10 +690,10 @@ void RedactOutputDev::drawImage(GfxState *pGState, Ref id, const char* name)
 
 	for (int i = 0; i < m_arrQuadPoints.size(); i += 4)
 	{
-		double xMin = m_arrQuadPoints[i * 4 + 0];
-		double yMin = m_arrQuadPoints[i * 4 + 1];
-		double xMax = m_arrQuadPoints[i * 4 + 2];
-		double yMax = m_arrQuadPoints[i * 4 + 3];
+		double xMin = m_arrQuadPoints[i + 0];
+		double yMin = m_arrQuadPoints[i + 1];
+		double xMax = m_arrQuadPoints[i + 2];
+		double yMax = m_arrQuadPoints[i + 3];
 
 		if (!(dXmax < xMin || dXmin > xMax || dYmax < yMin || dYmin > yMax))
 			return;
@@ -813,10 +813,10 @@ void RedactOutputDev::DoPathRedact(GfxState* pGState, GfxPath* pPath, double* pC
 	for (int i = 0; i < m_arrQuadPoints.size(); i += 4)
 	{
 		oPathRedact.StartFigure();
-		oPathRedact.MoveTo(m_arrQuadPoints[i * 4 + 0], m_arrQuadPoints[i * 4 + 1]);
-		oPathRedact.LineTo(m_arrQuadPoints[i * 4 + 0], m_arrQuadPoints[i * 4 + 3]);
-		oPathRedact.LineTo(m_arrQuadPoints[i * 4 + 2], m_arrQuadPoints[i * 4 + 3]);
-		oPathRedact.LineTo(m_arrQuadPoints[i * 4 + 2], m_arrQuadPoints[i * 4 + 1]);
+		oPathRedact.MoveTo(m_arrQuadPoints[i + 0], m_arrQuadPoints[i + 1]);
+		oPathRedact.LineTo(m_arrQuadPoints[i + 0], m_arrQuadPoints[i + 3]);
+		oPathRedact.LineTo(m_arrQuadPoints[i + 2], m_arrQuadPoints[i + 3]);
+		oPathRedact.LineTo(m_arrQuadPoints[i + 2], m_arrQuadPoints[i + 1]);
 		oPathRedact.CloseFigure();
 	}
 
@@ -924,18 +924,18 @@ void RedactOutputDev::DoPathRedact(GfxState* pGState, GfxPath* pPath, double* pC
 		skPath.setFillType(pk::SkPathFillType::kEvenOdd);
 	for (int i = 0; i < m_arrQuadPoints.size(); i += 4)
 	{
-		skPathRedact.moveTo(m_arrQuadPoints[i * 4 + 0], m_arrQuadPoints[i * 4 + 1]);
-		skPathRedact.lineTo(m_arrQuadPoints[i * 4 + 0], m_arrQuadPoints[i * 4 + 3]);
-		skPathRedact.lineTo(m_arrQuadPoints[i * 4 + 2], m_arrQuadPoints[i * 4 + 3]);
-		skPathRedact.lineTo(m_arrQuadPoints[i * 4 + 2], m_arrQuadPoints[i * 4 + 1]);
+		skPathRedact.moveTo(m_arrQuadPoints[i + 0], m_arrQuadPoints[i + 1]);
+		skPathRedact.lineTo(m_arrQuadPoints[i + 0], m_arrQuadPoints[i + 3]);
+		skPathRedact.lineTo(m_arrQuadPoints[i + 2], m_arrQuadPoints[i + 3]);
+		skPathRedact.lineTo(m_arrQuadPoints[i + 2], m_arrQuadPoints[i + 1]);
 		skPathRedact.close();
 
 		if (bStroke)
 		{
-			arrForStroke.push_back(CSegment(CPoint(m_arrQuadPoints[i * 4 + 0], m_arrQuadPoints[i * 4 + 1]), CPoint(m_arrQuadPoints[i * 4 + 0], m_arrQuadPoints[i * 4 + 3])));
-			arrForStroke.push_back(CSegment(CPoint(m_arrQuadPoints[i * 4 + 0], m_arrQuadPoints[i * 4 + 3]), CPoint(m_arrQuadPoints[i * 4 + 2], m_arrQuadPoints[i * 4 + 3])));
-			arrForStroke.push_back(CSegment(CPoint(m_arrQuadPoints[i * 4 + 2], m_arrQuadPoints[i * 4 + 3]), CPoint(m_arrQuadPoints[i * 4 + 2], m_arrQuadPoints[i * 4 + 1])));
-			arrForStroke.push_back(CSegment(CPoint(m_arrQuadPoints[i * 4 + 2], m_arrQuadPoints[i * 4 + 1]), CPoint(m_arrQuadPoints[i * 4 + 0], m_arrQuadPoints[i * 4 + 1])));
+			arrForStroke.push_back(CSegment(CPoint(m_arrQuadPoints[i + 0], m_arrQuadPoints[i + 1]), CPoint(m_arrQuadPoints[i + 0], m_arrQuadPoints[i + 3])));
+			arrForStroke.push_back(CSegment(CPoint(m_arrQuadPoints[i + 0], m_arrQuadPoints[i + 3]), CPoint(m_arrQuadPoints[i + 2], m_arrQuadPoints[i + 3])));
+			arrForStroke.push_back(CSegment(CPoint(m_arrQuadPoints[i + 2], m_arrQuadPoints[i + 3]), CPoint(m_arrQuadPoints[i + 2], m_arrQuadPoints[i + 1])));
+			arrForStroke.push_back(CSegment(CPoint(m_arrQuadPoints[i + 2], m_arrQuadPoints[i + 1]), CPoint(m_arrQuadPoints[i + 0], m_arrQuadPoints[i + 1])));
 		}
 	}
 

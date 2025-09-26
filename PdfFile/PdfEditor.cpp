@@ -3549,11 +3549,11 @@ void CPdfEditor::Redact(IAdvancedCommand* _pCommand)
 			std::vector<double> arrQuads = { pRedact->arrQuadPoints[i * 4 + 0], pRedact->arrQuadPoints[i * 4 + 1], pRedact->arrQuadPoints[i * 4 + 2], pRedact->arrQuadPoints[i * 4 + 3] };
 			m_arrRedact.back().arrQuads.insert(m_arrRedact.back().arrQuads.end(), arrQuads.begin(), arrQuads.end());
 
-			arrQuads[i * 4 + 0] += cropBox->x1;
-			double dQ = arrQuads[i * 4 + 1];
-			arrQuads[i * 4 + 1] = cropBox->y2 - arrQuads[i * 4 + 3];
-			arrQuads[i * 4 + 2] += cropBox->x1;
-			arrQuads[i * 4 + 3] = cropBox->y2 - dQ;
+			arrQuads[0] += cropBox->x1;
+			double dQ = arrQuads[1];
+			arrQuads[1] = cropBox->y2 - arrQuads[3];
+			arrQuads[2] += cropBox->x1;
+			arrQuads[3] = cropBox->y2 - dQ;
 			arrAllQuads.insert(arrAllQuads.end(), arrQuads.begin(), arrQuads.end());
 		}
 		int nFlags = pRedact->nFlag;
@@ -3618,14 +3618,14 @@ std::vector<double> CPdfEditor::WriteRedact(const std::vector<std::wstring>& arr
 		double B = ret / 100000.0;
 		LONG lColor = (LONG)(((LONG)(R * 255)) | ((LONG)(G * 255) << 8) | ((LONG)(B * 255) << 16) | ((LONG)255 << 24));
 
-		for (int i = 0; i < oRedact.arrQuads.size() / 4; ++i)
+		for (int i = 0; i < oRedact.arrQuads.size(); i += 4)
 		{
 			m_pWriter->PathCommandEnd();
 			m_pWriter->put_BrushColor1(lColor);
-			m_pWriter->PathCommandMoveTo(PdfReader::PDFCoordsToMM(oRedact.arrQuads[i * 4 + 0]), PdfReader::PDFCoordsToMM(oRedact.arrQuads[i * 4 + 1]));
-			m_pWriter->PathCommandLineTo(PdfReader::PDFCoordsToMM(oRedact.arrQuads[i * 4 + 0]), PdfReader::PDFCoordsToMM(oRedact.arrQuads[i * 4 + 3]));
-			m_pWriter->PathCommandLineTo(PdfReader::PDFCoordsToMM(oRedact.arrQuads[i * 4 + 2]), PdfReader::PDFCoordsToMM(oRedact.arrQuads[i * 4 + 3]));
-			m_pWriter->PathCommandLineTo(PdfReader::PDFCoordsToMM(oRedact.arrQuads[i * 4 + 2]), PdfReader::PDFCoordsToMM(oRedact.arrQuads[i * 4 + 1]));
+			m_pWriter->PathCommandMoveTo(PdfReader::PDFCoordsToMM(oRedact.arrQuads[i + 0]), PdfReader::PDFCoordsToMM(oRedact.arrQuads[i + 1]));
+			m_pWriter->PathCommandLineTo(PdfReader::PDFCoordsToMM(oRedact.arrQuads[i + 0]), PdfReader::PDFCoordsToMM(oRedact.arrQuads[i + 3]));
+			m_pWriter->PathCommandLineTo(PdfReader::PDFCoordsToMM(oRedact.arrQuads[i + 2]), PdfReader::PDFCoordsToMM(oRedact.arrQuads[i + 3]));
+			m_pWriter->PathCommandLineTo(PdfReader::PDFCoordsToMM(oRedact.arrQuads[i + 2]), PdfReader::PDFCoordsToMM(oRedact.arrQuads[i + 1]));
 			m_pWriter->PathCommandClose();
 			m_pWriter->DrawPath(NULL, L"", c_nWindingFillMode);
 			m_pWriter->PathCommandEnd();

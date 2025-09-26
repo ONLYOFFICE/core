@@ -802,6 +802,16 @@ void CBooleanOperations::TraceBoolean()
 			TraceAllOverlap();
 			return;
 		}
+		if (IsOneCurvePath(1))
+		{
+			TraceOneCurvePath1();
+			return;
+		}
+		if (IsOneCurvePath(2))
+		{
+			TraceOneCurvePath2();
+			return;
+		}
 	}
 
 	SetWinding();
@@ -1006,6 +1016,100 @@ void CBooleanOperations::TraceAllOverlap()
 			if (Close1 && Close2) Result.CloseFigure();
 		}
 	}
+}
+
+void CBooleanOperations::TraceOneCurvePath1()
+{
+	if (Op == Intersection)
+	{
+		Result.StartFigure();
+		for (const auto& s : Segments1)
+		{
+			if (s.Inters && Result.GetPointCount() == 0)
+			{
+				Result.MoveTo(s.P.X, s.P.Y);
+				Segment s2 = GetNextSegment(s);
+				if (s2.IsCurve)
+					Result.CurveTo(s2.HI.X + s2.P.X, s2.HI.Y + s2.P.Y,
+								   s2.HO.X + s2.P.X, s2.HO.Y + s2.P.Y,
+								   s2.P.X, s2.P.Y);
+				else
+					Result.LineTo(s2.P.X, s2.P.Y);
+				break;
+			}
+		}
+	}
+	else if (Op == Union)
+	{
+		Result.AddPath(Path2);
+		for (size_t i = 0; i < Segments1.size(); i++)
+		{
+			if (i % 2 == 0)
+				Result.MoveTo(Segments1[i].P.X, Segments1[i].P.Y);
+			else if (Segments1[i].IsCurve)
+				Result.CurveTo(Segments1[i].HI.X + Segments1[i].P.X, Segments1[i].HI.Y + Segments1[i].P.Y,
+							   Segments1[i].HO.X + Segments1[i].P.X, Segments1[i].HO.Y + Segments1[i].P.Y,
+							   Segments1[i].P.X, Segments1[i].P.Y);
+			else
+				Result.LineTo(Segments1[i].P.X, Segments1[i].P.Y);
+		}
+	}
+	else
+	{
+		Result.StartFigure();
+
+		for (size_t i = 0; i < Segments1.size(); i++)
+		{
+			if (i % 2 == 0)
+				Result.MoveTo(Segments1[i].P.X, Segments1[i].P.Y);
+			else if (Segments1[i].IsCurve)
+				Result.CurveTo(Segments1[i].HI.X + Segments1[i].P.X, Segments1[i].HI.Y + Segments1[i].P.Y,
+							   Segments1[i].HO.X + Segments1[i].P.X, Segments1[i].HO.Y + Segments1[i].P.Y,
+							   Segments1[i].P.X, Segments1[i].P.Y);
+			else
+				Result.LineTo(Segments1[i].P.X, Segments1[i].P.Y);
+		}
+	}
+}
+
+void CBooleanOperations::TraceOneCurvePath2()
+{
+	if (Op == Intersection)
+	{
+		Result.StartFigure();
+		for (const auto& s : Segments2)
+		{
+			if (s.Inters && Result.GetPointCount() == 0)
+			{
+				Result.MoveTo(s.P.X, s.P.Y);
+				Segment s2 = GetNextSegment(s);
+				if (s2.IsCurve)
+					Result.CurveTo(s2.HI.X + s2.P.X, s2.HI.Y + s2.P.Y,
+								   s2.HO.X + s2.P.X, s2.HO.Y + s2.P.Y,
+								   s2.P.X, s2.P.Y);
+				else
+					Result.LineTo(s2.P.X, s2.P.Y);
+				break;
+			}
+		}
+	}
+	else if (Op == Union)
+	{
+		Result.AddPath(Path1);
+		for (size_t i = 0; i < Segments2.size(); i++)
+		{
+			if (i % 2 == 0)
+				Result.MoveTo(Segments2[i].P.X, Segments2[i].P.Y);
+			else if (Segments2[i].IsCurve)
+				Result.CurveTo(Segments2[i].HI.X + Segments2[i].P.X, Segments2[i].HI.Y + Segments2[i].P.Y,
+							   Segments2[i].HO.X + Segments2[i].P.X, Segments2[i].HO.Y + Segments2[i].P.Y,
+							   Segments2[i].P.X, Segments2[i].P.Y);
+			else
+				Result.LineTo(Segments2[i].P.X, Segments2[i].P.Y);
+		}
+	}
+	else
+		Result = std::move(Path1);
 }
 
 void CBooleanOperations::TracePaths()
@@ -1888,6 +1992,12 @@ bool CBooleanOperations::AllInters(const std::vector<Segment>& segments) const n
 	return true;
 }
 
+bool CBooleanOperations::IsOneCurvePath(int pathIndex) const noexcept
+{
+	return Locations.size() == 4 && pathIndex == 1 ? (OriginCurves1.size() == 1 && OriginCurves2.size() != 1)
+												   : (OriginCurves2.size() == 1 && OriginCurves1.size() != 1);
+}
+
 void CBooleanOperations::AddLocation(Curve curve1, Curve curve2, double t1,
 									 double t2, bool overlap, bool filter, bool ends)
 {
@@ -1938,16 +2048,32 @@ CGraphicsPath CalcBooleanOperation(const CGraphicsPath& path1,
 								paths2 = path2.GetSubPaths(),
 								paths;
 
-	for (const auto& p1 : paths1)
+	if (op == Subtraction)
 	{
 		for (const auto& p2 : paths2)
 		{
-			CBooleanOperations operation(p1, p2, op, fillType, isLuminosity);
-			paths.push_back(operation.GetResult());
+			for (const auto& p1 : paths1)
+			{
+				CBooleanOperations operation(p1, p2, op, fillType, isLuminosity);
+				paths.push_back(operation.GetResult());
+			}
+			paths1 = CGraphicsPath(paths).GetSubPaths();
+			paths.clear();
+		}
+	}
+	else
+	{
+		for (const auto& p1 : paths1)
+		{
+			for (const auto& p2 : paths2)
+			{
+				CBooleanOperations operation(p1, p2, op, fillType, isLuminosity);
+				paths.push_back(operation.GetResult());
+			}
 		}
 	}
 
-	return CGraphicsPath(paths);
+	return op == Subtraction ? CGraphicsPath(paths1) : CGraphicsPath(paths);
 }
 
 //For unit-tests

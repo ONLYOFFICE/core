@@ -701,10 +701,47 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		}
 		if(m_oCacheId.IsInit())
 			ptr->iCache = m_oCacheId->GetValue();
+		ptr->sxaxis4Data.bCol = true;
 		if(m_oDataPosition.IsInit())
 			ptr->ipos4Data = m_oDataPosition->GetValue();
 		if(m_oPivotFields.IsInit())
 			ptr->cDim = m_oPivotFields->m_arrItems.size();
+		if(m_oColFields.IsInit())
+			ptr->cDimCol = m_oColFields->m_arrItems.size();
+		if(m_oRowFields.IsInit())
+			ptr->cDimRw = m_oRowFields->m_arrItems.size();
+		if(m_oPageFields.IsInit())
+			ptr->cDimPg = m_oPageFields->m_arrItems.size();
+		if(m_oDataFields.IsInit())
+			ptr->cDimData = m_oDataFields->m_arrItems.size();
+		if(m_oColItems.IsInit())
+			ptr->cCol = m_oColItems->m_arrItems.size();
+		if(m_oRowItems.IsInit())
+			ptr->cRw = m_oRowItems->m_arrItems.size();
+		if(m_oColGrandTotals.IsInit())
+			ptr->fColGrand  = m_oColGrandTotals.get();
+		if(m_oRowGrandTotals.IsInit())
+			ptr->fRwGrand = m_oRowGrandTotals.get();
+		if(m_oUseAutoFormatting.IsInit())
+			ptr->fAutoFormat = m_oUseAutoFormatting.get();
+		if(m_oApplyNumberFormats.IsInit())
+			ptr->fAtrNum = m_oApplyNumberFormats.get();
+		if(m_oApplyFontFormats.IsInit())
+			ptr->fAtrFnt = m_oApplyFontFormats.get();
+		if(m_oApplyAlignmentFormats.IsInit())
+			ptr->fAtrAlc = m_oApplyAlignmentFormats.get();
+		if(m_oApplyBorderFormats.IsInit())
+			ptr->fAtrBdr = m_oApplyBorderFormats.get();
+		if(m_oApplyPatternFormats.IsInit())
+			ptr->fAtrPat = m_oApplyPatternFormats.get();
+		if(m_oApplyWidthHeightFormats.IsInit())
+			ptr->fAtrProc = m_oApplyWidthHeightFormats.get();
+		if(m_oAutoFormatId.IsInit())
+			ptr->itblAutoFmt = m_oAutoFormatId->GetValue();
+		if(m_oName.IsInit())
+			ptr->stTable = m_oName.get();
+		if(m_oDataCaption.IsInit())
+			ptr->stData = m_oDataCaption.get();
 		return XLS::BaseObjectPtr(ptr);
 	}
     void CPivotTableDefinition::fromBin(XLS::BaseObjectPtr& obj)

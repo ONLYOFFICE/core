@@ -1,6 +1,7 @@
 #ifndef PAGEBORDERFILL_H
 #define PAGEBORDERFILL_H
 
+#include "../HanType.h"
 #include "../HWPStream.h"
 #include "../Common/XMLReader.h"
 
@@ -19,7 +20,7 @@ class CPageBorderFill
 	short m_shBorderFill;
 public:
 	CPageBorderFill();
-	CPageBorderFill(CXMLReader& oReader);
+	CPageBorderFill(CXMLReader& oReader, EHanType eType);
 
 	static CPageBorderFill* Parse(int nLevel, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 };

@@ -82,12 +82,14 @@ CCtrlObjElement::CCtrlObjElement(const HWP_STRING& sCtrlID, CXMLReader& oReader,
 
 void CCtrlObjElement::ParseChildren(CXMLReader& oReader, EHanType eType)
 {
-	switch (eType)
-	{
-		case EHanType::HWPML: ParseHWPMLElement(oReader); return;
-		case EHanType::HWPX:  ParseHWPXChildren(oReader); return;
-		default: break;
-	}
+	const std::string sNodeName{oReader.GetName()};
+
+	if (EHanType::HWPML == eType && "SHAPECOMPONENT" == sNodeName)
+		ParseHWPMLElement(oReader);
+	else if (EHanType::HWPX == eType)
+		ParseHWPXChildren(oReader);
+	else
+		CCtrlCommon::ParseChildren(oReader, eType);
 }
 
 void CCtrlObjElement::ParseRotationInfo(CXMLReader &oReader, EHanType eType)

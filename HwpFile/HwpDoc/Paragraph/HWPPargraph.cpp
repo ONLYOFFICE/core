@@ -96,7 +96,7 @@ bool CHWPPargraph::ParseHWPParagraph(CXMLReader& oReader, int nCharShapeID, EHan
 	const std::string sNodeName{oReader.GetName()};
 
 	if (GetNodeName(ENode::SectionDef, eType) == sNodeName)
-		m_arP.push_back(new CCtrlSectionDef(L"dces", oReader));
+		m_arP.push_back(new CCtrlSectionDef(L"dces", oReader, eType));
 	else if (GetNodeName(ENode::Char, eType) == sNodeName)
 	{
 		if (oReader.IsEmptyNode())

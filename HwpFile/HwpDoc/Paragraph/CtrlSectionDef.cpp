@@ -40,60 +40,69 @@ CCtrlSectionDef::CCtrlSectionDef(const HWP_STRING& sCtrlID, int nSize, CHWPStrea
 	m_bFullFilled = true;
 }
 
-CCtrlSectionDef::CCtrlSectionDef(const HWP_STRING& sCtrlID, CXMLReader& oReader)
+CCtrlSectionDef::CCtrlSectionDef(const HWP_STRING& sCtrlID, CXMLReader& oReader, EHanType eType)
 	: CCtrl(sCtrlID), m_pPage(nullptr)
 {
 	std::string sType;
 
 	START_READ_ATTRIBUTES(oReader)
 	{
-		if ("textDirection" == sAttributeName)
+		if (GetAttributeName(EAttribute::TextDirection, eType) == sAttributeName)
 		{
-			sType = oReader.GetTextA();
+			if (EHanType::HWPX == eType)
+			{
+				sType = oReader.GetTextA();
 
-			if ("HORIZONTAL" == sType)
-				m_chTextDirection = 0;
-			else if ("VERTICAL" == sType)
-				m_chTextDirection = 1;
+				if ("HORIZONTAL" == sType)
+					m_chTextDirection = 0;
+				else if ("VERTICAL" == sType)
+					m_chTextDirection = 1;
+			}
+			else
+				m_chTextDirection = oReader.GetInt();
 		}
-		else if ("spaceColumns" == sAttributeName)
+		else if (GetAttributeName(EAttribute::SpaceColumns, eType) == sAttributeName)
 			m_shSpaceColumns = oReader.GetInt();
-		else if ("tabStop" == sAttributeName)
+		else if (GetAttributeName(EAttribute::TabStop, eType) == sAttributeName)
 			m_nTabStop = oReader.GetInt();
-		else if ("outlineShapeIDRef" == sAttributeName)
+		else if (GetAttributeName(EAttribute::OutlineShapeId, eType) == sAttributeName)
 			m_nOutlineNumberingID = oReader.GetInt();
+		else if (EHanType::HWPML == eType && "LineGrid" == sAttributeName)
+			m_shLineGrid = oReader.GetInt();
+		else if (EHanType::HWPML == eType && "CharGrid" == sAttributeName)
+			m_shCharGrid = oReader.GetInt();
 	}
 	END_READ_ATTRIBUTES(oReader)
 
 	WHILE_READ_NEXT_NODE_WITH_NAME(oReader)
 	{
-		if ("hp:startNum" == sNodeName)
+		if (GetNodeName(ENode::StartNumber, eType) == sNodeName)
 		{
 			START_READ_ATTRIBUTES(oReader)
 			{
-				if ("pageStartsOn" == sAttributeName)
+				if (GetAttributeName(EAttribute::PageStartsOn, eType) == sAttributeName)
 				{
 					sType = oReader.GetTextA();
 
-					if ("BOTH" == sType)
+					if (GetValueName(EValue::Both, eType) == sType)
 						m_chPageStartOn = 0;
-					else if ("EVEN" == sType)
+					else if (GetValueName(EValue::Even, eType) == sType)
 						m_chPageStartOn = 1;
-					else if ("ODD" == sType)
+					else if (GetValueName(EValue::Odd, eType) == sType)
 						m_chPageStartOn = 2;
 				}
-				else if ("page" == sAttributeName)
+				else if (GetAttributeName(EAttribute::Page, eType) == sAttributeName)
 					m_shPageNum = oReader.GetInt();
-				else if ("pic" == sAttributeName)
+				else if (GetAttributeName(EAttribute::Figure, eType) == sAttributeName)
 					m_shFigure = oReader.GetInt();
-				else if ("tbl" == sAttributeName)
+				else if (GetAttributeName(EAttribute::Table, eType) == sAttributeName)
 					m_shTable = oReader.GetInt();
-				else if ("equation" == sAttributeName)
+				else if (GetAttributeName(EAttribute::Equation, eType) == sAttributeName)
 					m_shEquation = oReader.GetInt();
 			}
 			END_READ_ATTRIBUTES(oReader)
 		}
-		else if ("hp:grid" == sNodeName)
+		else if (EHanType::HWPX == eType && "hp:grid" == sNodeName)
 		{
 			START_READ_ATTRIBUTES(oReader)
 			{
@@ -104,71 +113,87 @@ CCtrlSectionDef::CCtrlSectionDef(const HWP_STRING& sCtrlID, CXMLReader& oReader)
 			}
 			END_READ_ATTRIBUTES(oReader)
 		}
-		else if ("hp:visibility" == sNodeName)
+		else if (GetNodeName(ENode::Hide, eType) == sNodeName)
 		{
 			START_READ_ATTRIBUTES(oReader)
 			{
-				if ("hideFirstHeader" == sAttributeName)
+				if (GetAttributeName(EAttribute::HideHeader, eType) == sAttributeName)
 					m_bHideHeader = oReader.GetBool();
-				else if ("hideFirstFooter" == sAttributeName)
+				else if (GetAttributeName(EAttribute::HideFooter, eType) == sAttributeName)
 					m_bHideFooter = oReader.GetBool();
-				else if ("hideFirstMasterPage" == sAttributeName)
+				else if (GetAttributeName(EAttribute::HideMasterPage, eType) == sAttributeName)
 					m_bHideMasterPage = oReader.GetBool();
-				else if ("border" == sAttributeName)
+				else if (GetAttributeName(EAttribute::HideBorder, eType) == sAttributeName)
 				{
-					sType = oReader.GetTextA();
+					if (EHanType::HWPX == eType)
+					{
+						sType = oReader.GetTextA();
 
-					if ("HIDE_FIRST" == sType)
-					{
-						m_bHideBorder = true;
-						m_bShowFirstBorder = false;
+						if ("HIDE_FIRST" == sType)
+						{
+							m_bHideBorder = true;
+							m_bShowFirstBorder = false;
+						}
+						else if ("SHOW_FIRST" == sType)
+						{
+							m_bHideBorder = true;
+							m_bShowFirstBorder = true;
+						}
+						else if ("SHOW_ALL" == sType)
+						{
+							m_bHideBorder = false;
+							m_bShowFirstBorder = false;
+						}
 					}
-					else if ("SHOW_FIRST" == sType)
+					else
 					{
-						m_bHideBorder = true;
-						m_bShowFirstBorder = true;
-					}
-					else if ("SHOW_ALL" == sType)
-					{
-						m_bHideBorder = false;
-						m_bShowFirstBorder = false;
+						m_bHideBorder = oReader.GetBool();
+						m_bShowFirstBorder = m_bHideBorder;
 					}
 				}
-				else if ("fill" == sAttributeName)
+				else if (GetAttributeName(EAttribute::HideFill, eType) == sAttributeName)
 				{
-					sType = oReader.GetTextA();
+					if (EHanType::HWPX == eType)
+					{
+						sType = oReader.GetTextA();
 
-					if ("HIDE_FIRST" == sType)
-					{
-						m_bHideFill = true;
-						m_bShowFirstFill = false;
+						if ("HIDE_FIRST" == sType)
+						{
+							m_bHideFill = true;
+							m_bShowFirstFill = false;
+						}
+						else if ("SHOW_FIRST" == sType)
+						{
+							m_bHideFill = true;
+							m_bShowFirstFill = true;
+						}
+						else if ("SHOW_ALL" == sType)
+						{
+							m_bHideFill = false;
+							m_bShowFirstFill = false;
+						}
 					}
-					else if ("SHOW_FIRST" == sType)
+					else
 					{
-						m_bHideFill = true;
-						m_bShowFirstFill = true;
-					}
-					else if ("SHOW_ALL" == sType)
-					{
-						m_bHideFill = false;
-						m_bShowFirstFill = false;
+						m_bHideFill = oReader.GetBool();
+						m_bShowFirstFill = m_bHideBorder;
 					}
 				}
-				else if ("hp:visibility" == sAttributeName)
+				else if (GetAttributeName(EAttribute::HidePageNumPos, eType) == sAttributeName)
 					m_bHidePageNumPos = oReader.GetBool();
-				else if ("hideFirstEmptyLine" == sAttributeName)
+				else if (GetAttributeName(EAttribute::HideEmptyLine, eType) == sAttributeName)
 					m_bHideEmptyLine = oReader.GetBool();
 			}
 			END_READ_ATTRIBUTES(oReader)
 		}
-		else if ("hp:pagePr" == sNodeName)
-			m_pPage = new CPage(oReader);
-		else if ("hp:footNotePr" == sNodeName ||
-		         "hp:endNotePr"  == sNodeName)
-			m_arNoteShapes.push_back(new CNoteShape(oReader));
-		else if ("hp:pageBorderFill" == sNodeName)
-			m_arBorderFills.push_back(new CPageBorderFill(oReader));
-		else if ("hp:masterPage" == sNodeName)
+		else if (GetNodeName(ENode::PagePropertie, eType) == sNodeName)
+			m_pPage = new CPage(oReader, eType);
+		else if (GetNodeName(ENode::FootNotePropertie, eType) == sNodeName ||
+		         GetNodeName(ENode::EndNotePropertie, eType)  == sNodeName)
+			m_arNoteShapes.push_back(new CNoteShape(oReader, eType));
+		else if (GetNodeName(ENode::PageBorderFill, eType) == sNodeName)
+			m_arBorderFills.push_back(new CPageBorderFill(oReader, eType));
+		else if (GetNodeName(ENode::MasterPage, eType) == sNodeName)
 		{
 			//TODO:: добавить реализацию
 		}

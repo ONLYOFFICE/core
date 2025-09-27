@@ -17,8 +17,10 @@ ENoteNumbering GetNoteNumbering(int nValue)
 CNoteShape::CNoteShape()
 {}
 
-CNoteShape::CNoteShape(CXMLReader& oReader)
-{}
+CNoteShape::CNoteShape(CXMLReader& oReader, EHanType eType)
+{
+	//TODO:: реализовать
+}
 
 CNoteShape* CNoteShape::Parse(int nLevel, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 {

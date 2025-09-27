@@ -121,6 +121,15 @@ enum class ENode
 	Script,
 	Point,
 	Segment,
+	StartNumber,
+	Hide,
+	PagePropertie,
+		PageMargin,
+	FootNotePropertie,
+	EndNotePropertie,
+	PageBorderFill,
+		PageOffset,
+	MasterPage,
 
 	//Only hwpx
 	Lineseg,
@@ -134,7 +143,7 @@ enum class ENode
 };
 
 #define MAX_TYPES 2
-#define MAX_NODES 117
+#define MAX_NODES 126
 
 static constexpr const char* NODE_NAMES[MAX_TYPES][MAX_NODES] = 
 {
@@ -160,7 +169,7 @@ static constexpr const char* NODE_NAMES[MAX_TYPES][MAX_NODES] =
 						"hc:color",
 					"hc:imgBrush",
 						"hc:img",
-		"h:charProperties",           //20
+		"hh:charProperties",           //20
 			"hh:charPr",
 				"hh:fontRef",
 				"hh:ratio",
@@ -253,6 +262,15 @@ static constexpr const char* NODE_NAMES[MAX_TYPES][MAX_NODES] =
 		"hp:script",
 		"hc:pt",
 		"hp:seg",
+		"hp:startNum",
+		"hp:visibility",
+		"hp:pagePr",
+			"hp:margin",
+		"hp:footNotePr",
+		"hp:endNotePr",
+		"hp:pageBorderFill",
+			"hp:offset",
+		"hp:masterPage",
 
 		"hp:lineseg",
 		"hp:linesegarray",
@@ -377,6 +395,15 @@ static constexpr const char* NODE_NAMES[MAX_TYPES][MAX_NODES] =
 		"SCRIPT",
 		"POINT",
 		"SEGMENT",
+		"STARTNUMBER",
+		"HIDE",
+		"PAGEDEF",
+			"PAGEMARGIN",
+		"FOOTNOTESHAPE",
+		"ENDNOTESHAPE",
+		"PAGEBORDERFILL",
+			"PAGEOFFSET",
+		"MASTERPAGE",
 
 		"",
 		"",
@@ -586,12 +613,37 @@ enum class EAttribute
 	TextShape,
 	Spacing,
 	Style,
+	TextDirection,
+	SpaceColumns,
+	TabStop,
+	OutlineShapeId,
+	PageStartsOn,
+	Page,
+	Figure,
+	Table,
+	Equation,
+	HideHeader,
+	HideFooter,
+	HideMasterPage,
+	HideBorder,
+	HideFill,
+	HidePageNumPos,
+	HideEmptyLine,
+	Landscape,
+	GutterType,
+	Header,
+	Footer,
+	Gutter,
+	TextBorder,
+	HeaderInside,
+	FooterInside,
+	FillArea,
 
 	PageBreak,
 	ColumnBreak,
 };
 
-#define MAX_ATTRIBUTES 177
+#define MAX_ATTRIBUTES 202
 
 //TODO:: добавить все аргументы
 static constexpr const char* ATTRUBUTE_NAMES[MAX_TYPES][MAX_ATTRIBUTES] = 
@@ -773,9 +825,34 @@ static constexpr const char* ATTRUBUTE_NAMES[MAX_TYPES][MAX_ATTRIBUTES] =
 		"textShape",
 		"spacing",
 		"style",
+		"textDirection",
+		"spaceColumns",
+		"tabStop",
+		"outlineShapeIDRef",
+		"pageStartsOn",
+		"page",
+		"pic",
+		"tbl",
+		"equation",
+		"hideFirstHeader",
+		"hideFirstFooter",
+		"hideFirstMasterPage",
+		"border",
+		"fill",
+		"hideFirstPageNum",
+		"hideFirstEmptyLine",
+		"landscape",
+		"gutterType",
+		"header",
+		"footer",
+		"gutter",
+		"textBorder",
+		"headerInside",
+		"footerInside",
+		"fillArea",
 
 		"pageBreak",
-		"columnBreak",
+		"columnBreak"
 	},
 // HWPML
 	{
@@ -954,6 +1031,31 @@ static constexpr const char* ATTRUBUTE_NAMES[MAX_TYPES][MAX_ATTRIBUTES] =
 		"TextShape",
 		"Spacing",
 		"Style",
+		"TextDirection",
+		"SpaceColumns",
+		"TabStop",
+		"OutlineShape",
+		"PageStartsOn",
+		"Page",
+		"Figure",
+		"Table",
+		"Equation",
+		"Header",
+		"Footer",
+		"MasterPage",
+		"Border",
+		"Fill",
+		"PageNumPos",
+		"EmptyLine",
+		"Landscape",
+		"GutterType",
+		"Header",
+		"Footer",
+		"Gutter",
+		"TextBorder",
+		"HeaderInside",
+		"FooterInside",
+		"FillArea",
 
 		"PageBreak",
 		"ColumnBreak"
@@ -1093,10 +1195,16 @@ enum class EValue
 	TopOuter,
 	BottomOuter,
 	TopInner,              //110
-	BottomInner
+	BottomInner,
+	Both,
+	Even,
+	Odd,
+	LeftRight,
+	TopBottom,
+	Border
 };
 
-#define MAX_VALUES 111
+#define MAX_VALUES 117
 
 static constexpr const char* VALUE_NAMES[MAX_TYPES][MAX_VALUES] = 
 {
@@ -1212,7 +1320,13 @@ static constexpr const char* VALUE_NAMES[MAX_TYPES][MAX_VALUES] =
 		"TOP_OUTER",
 		"BOTTOM_OUTER",
 		"TOP_INNER",
-		"BOTTOM_INNER"
+		"BOTTOM_INNER",
+		"BOTH",
+		"EVEN",
+		"ODD",
+		"LEFT_RIGHT",
+		"TOP_BOTTOM",
+		"BORDER"
 	},
 //HWPML
 	{
@@ -1326,7 +1440,13 @@ static constexpr const char* VALUE_NAMES[MAX_TYPES][MAX_VALUES] =
 		"TopOuter",
 		"BottomOuter",
 		"TopInner",
-		"BottomInner"
+		"BottomInner",
+		"Both",
+		"Even",
+		"Odd",
+		"LeftRight",
+		"TopBottom",
+		"Border"
 	}
 };
 

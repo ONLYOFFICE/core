@@ -1,5 +1,4 @@
-import browser, {Storage} from "webextension-polyfill";
-import StorageChange = Storage.StorageChange;
+import browser from "webextension-polyfill";
 import getCrypto from "../common/crypto.ts";
 
 export const initCheckOpenedPopup = () => {

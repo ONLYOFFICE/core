@@ -1,5 +1,5 @@
 export function ab2str(buf: ArrayBuffer) {
-    return String.fromCharCode.apply(null, Array.from(new Uint8Array(buf)));
+    return String.fromCharCode(...new Uint8Array(buf));
 }
 export function ab2base64(buf: ArrayBuffer) {
     const str = ab2str(buf);
@@ -10,6 +10,9 @@ export function base642ui(base64: string) {
     return str2ui(str);
 }
 export function str2ui(str: string) {
-    const encoder = new TextEncoder();
-    return encoder.encode(str);
+    const ui = new Uint8Array(str.length);
+    for (let i = 0; i < str.length; i++) {
+        ui[i] = str.charCodeAt(i);
+    }
+    return ui;
 }

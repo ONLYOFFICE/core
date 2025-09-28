@@ -3,10 +3,10 @@ import {
     AesImportParams,
     AesKeyGenParams, Ed25519ImportParams,
     Ed25519KeyGenParams,
-    type RSAImportParams,
+    type RsaImportParams,
     RSAKeyGenParams
 } from "./params.ts";
-
+import {Key, KeyPair, PrivateKey, PublicKey} from "./keys.ts";
 export const exportKeyFormats = {
     pkcs8: "pkcs8",
     spki: "spki",
@@ -63,14 +63,26 @@ export const cryptAlgorithms = {
     RSA_OAEP: algorithmTypes.RSA_OAEP
 }
 
-export const isRsaAlgorithm = (name: AlgorithmType): name is RsaType => {
+export const isRSAJson = (obj: JSONKeyParams): obj is RsaJSONType => {
+    const name = obj.name;
     return Object.values(rsaTypes).includes(name as RsaType);
 }
+export const isEd25519Json = (obj: JSONKeyParams): obj is Ed25519JSONParams => {
+    const name = obj.name;
+    return name === algorithmTypes.ED25519;
+};
+export const isAesJson = (obj: JSONKeyParams): obj is AesJSONType => {
+    const name = obj.name;
+    return Object.values(aesTypes).includes(name as AesType);
+}
 
-export type RSAJSONType = ReturnType<RSAImportParams["toJSON"]>;
+export type RsaJSONType = ReturnType<RsaImportParams["toJSON"]>;
+export type AesJSONType = ReturnType<AesImportParams["toJSON"]>;
+export type Ed25519JSONParams = ReturnType<Ed25519ImportParams["toJSON"]>;
 export type JSONAesGcmParams = ReturnType<AesGcmParams["toJSON"]>;
 export type AesKeyGenLength = 128 | 192 | 256;
-export type KeyParams = RSAImportParams | AesImportParams | Ed25519ImportParams;
+export type KeyParams = RsaImportParams | AesImportParams | Ed25519ImportParams;
+export type JSONKeyParams = RsaJSONType | AesJSONType | Ed25519JSONParams;
 export type KeyGenParams = RSAKeyGenParams | Ed25519KeyGenParams | AesKeyGenParams;
 export type DigestType = typeof digestTypes[keyof typeof digestTypes];
 export type AesType = typeof aesTypes[keyof typeof aesTypes];
@@ -79,3 +91,8 @@ export type AlgorithmType = typeof algorithmTypes[keyof typeof algorithmTypes];
 export type ExportKeyFormat = typeof exportKeyFormats[keyof typeof exportKeyFormats];
 export type SignAlgorithm = typeof signAlgorithms[keyof typeof signAlgorithms];
 export type CryptAlgorithm = typeof cryptAlgorithms[keyof typeof cryptAlgorithms];
+export type JSONKey = Awaited<ReturnType<Key["toJSON"]>>;
+export type JSONPublicKey = Awaited<ReturnType<PublicKey["toJSON"]>>;
+export type JSONPrivateKey = Awaited<ReturnType<PrivateKey["toJSON"]>>;
+export type JSONKeyPair = Awaited<ReturnType<KeyPair["toJSON"]>>;
+export type PairKey = PrivateKey | PublicKey;

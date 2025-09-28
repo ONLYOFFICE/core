@@ -1,4 +1,4 @@
-import {Key, KeyPair, PrivateKey, PublicKey, SymmetricKey} from "./keys/keys.ts";
+import {Key, KeyPair, KeyUsages, PrivateKey, PublicKey, SymmetricKey} from "./keys/keys.ts";
 import {
     type DigestType,
     digestTypes,
@@ -22,9 +22,11 @@ abstract class CCryptoBase {
     abstract verify(key: PublicKey, signature: ArrayBuffer, data: ArrayBuffer): Promise<boolean>;
     // abstract decrypt(key: DecryptKey, data: ArrayBuffer): Promise<ArrayBuffer>;
     // abstract encrypt(key: EncryptKey, data: ArrayBuffer): Promise<ArrayBuffer>;
-    abstract generateKey(params: KeyGenParams, isEncrypt: boolean, isSign: boolean): Promise<SymmetricKey | KeyPair>;
-    abstract wrapKey(format: ExportKeyFormat, key: Key, masterPassword: ArrayBuffer, salt: ArrayBuffer, aesParams: AesGcmParams): Promise<ArrayBuffer>
-    abstract unwrapKey(format: ExportKeyFormat, key: ArrayBuffer, masterPassword: ArrayBuffer, salt: ArrayBuffer, aesParams: AesGcmParams, keyParams: KeyParams, keyUsages): Promise<ArrayBuffer>
+    abstract generateKey(params: KeyGenParams, keyUsage: KeyUsages): Promise<SymmetricKey | KeyPair>;
+    abstract wrapKey(format: ExportKeyFormat, key: Key, masterPassword: ArrayBuffer, salt: ArrayBuffer, aesParams: AesGcmParams, keyUsage: KeyUsages): Promise<ArrayBuffer>
+    abstract unwrapKey(format: ExportKeyFormat, key: ArrayBuffer, masterPassword: ArrayBuffer, salt: ArrayBuffer, aesParams: AesGcmParams, keyParams: KeyParams, keyUsage: KeyUsages): Promise<ArrayBuffer>
+    abstract getRandomValues(length: number): ArrayBuffer;
+    abstract randomUUID(): string;
     }
     class CWebCrypto extends CCryptoBase {
         crypto = window.crypto;
@@ -33,7 +35,8 @@ abstract class CCryptoBase {
             super();
         }
         getRandomValues(length: number) {
-            return this.crypto.getRandomValues(new Uint8Array(length));
+            const ui = new Uint8Array(length);
+            return this.crypto.getRandomValues(ui);
         }
         async getAesCryptoKey(masterPassword: ArrayBuffer, salt: ArrayBuffer) {
             const pwKey = await this.subtle.importKey(
@@ -43,7 +46,7 @@ abstract class CCryptoBase {
                 false,
                 ['deriveKey']
             );
-            return await this.subtle.deriveKey(
+            return this.subtle.deriveKey(
                 {
                     name: 'PBKDF2',
                     salt: salt,
@@ -52,42 +55,54 @@ abstract class CCryptoBase {
                 },
                 pwKey,
                 new AesGcmGenParams(),
-                true,
-                ['encrypt', 'decrypt', 'wrapKey', 'unwrapKey']
+                false,
+                ['wrapKey', 'unwrapKey']
             );
         };
-        async wrapKey(format: ExportKeyFormat, key: Key, masterPassword: ArrayBuffer, salt: ArrayBuffer, aesParams: AesGcmParams) {
+        async wrapKey(format: ExportKeyFormat, key: Key, masterPassword: ArrayBuffer, salt: ArrayBuffer, aesParams: AesGcmParams, keyUsage: KeyUsages) {
             const cryptoAesKey = await this.getAesCryptoKey(masterPassword, salt);
-            const importKey = await this.getCryptoKeyFromWrapper(key);
+            const importKey = await this.getCryptoKeyFromWrapper(key, keyUsage);
             return this.subtle.wrapKey(format, importKey, cryptoAesKey, aesParams);
         }
-        async unwrapKey(format: ExportKeyFormat, key: ArrayBuffer, masterPassword: ArrayBuffer, salt: ArrayBuffer, aesParams: AesGcmParams, keyParams: KeyParams, keyUsages) {
+        async unwrapKey(format: ExportKeyFormat, key: ArrayBuffer, masterPassword: ArrayBuffer, salt: ArrayBuffer, aesParams: AesGcmParams, keyParams: KeyParams, keyUsages: KeyUsages) {
             const cryptoAesKey = await this.getAesCryptoKey(masterPassword, salt);
-            const cryptoKey = await this.subtle.unwrapKey(format, key, cryptoAesKey, aesParams, keyParams, true, keyUsages);
+            const cryptoKey = await this.subtle.unwrapKey(format, key, cryptoAesKey, aesParams, keyParams, true, /*this.getKeyUsages(keyUsages)*/["sign"]);
             return this.subtle.exportKey(format, cryptoKey);
         }
-        async getCryptoKeyFromWrapper(key: Key) {
-            return await this.subtle.importKey(key.exportFormat, key.key, key.params, true, this.getKeyUsages());
+        async getCryptoKeyFromWrapper(key: Key, keyUsage: KeyUsages) {
+            return this.subtle.importKey(key.exportFormat, key.key, key.params, true, this.getKeyUsages(keyUsage, key));
         }
-        getKeyUsages(isCrypt?: boolean, isSign?: boolean) {
+        getKeyUsages({isEncrypt, isSign}: KeyUsages, key?: Key) {
             const keyUsages: KeyUsage[] = [];
-            if (isCrypt) {
-                keyUsages.push("encrypt", "decrypt");
+            if (isEncrypt) {
+                if (key instanceof PrivateKey) {
+                    keyUsages.push("decrypt");
+                } else if (key instanceof PublicKey) {
+                    keyUsages.push("encrypt");
+                } else {
+                    keyUsages.push("encrypt", "decrypt");
+                }
             }
             if (isSign) {
-                keyUsages.push("sign", "verify");
+                if (key instanceof PrivateKey) {
+                    keyUsages.push("sign");
+                } else if (key instanceof PublicKey) {
+                    keyUsages.push("verify");
+                } else {
+                    keyUsages.push("sign", "verify");
+                }
             }
             return keyUsages;
         }
         async sign(key: PrivateKey, data: ArrayBuffer): Promise<ArrayBuffer> {
-            const cryptoKey = await this.getCryptoKeyFromWrapper(key);
+            const cryptoKey = await this.getCryptoKeyFromWrapper(key, new KeyUsages(false, true));
             return this.subtle.sign(key.params, cryptoKey, data);
         }
         async digest(algorithm: DigestType, data: ArrayBuffer): Promise<ArrayBuffer> {
             return this.subtle.digest(algorithm, data);
         }
         async verify(key: PublicKey, signature: ArrayBuffer, data: ArrayBuffer): Promise<boolean> {
-            const cryptoKey = await this.getCryptoKeyFromWrapper(key);
+            const cryptoKey = await this.getCryptoKeyFromWrapper(key, new KeyUsages(false, true));
             return this.subtle.verify(key.params, cryptoKey, signature, data);
         }
         // async decrypt(key: DecryptKey, data: ArrayBuffer): Promise<ArrayBuffer> {
@@ -97,18 +112,22 @@ abstract class CCryptoBase {
         // async encrypt(key: EncryptKey, data: ArrayBuffer): Promise<ArrayBuffer> {
         //     throw new Error("Method not implemented.");
         // }
-        async generateKey(params: KeyGenParams, keyUsage) {
-            const cryptoKey = await this.subtle.generateKey(params, true, this.getKeyUsages(keyUsage.isEncrypt, keyUsave));
+        async generateKey(params: KeyGenParams, keyUsage: KeyUsages) {
+            const cryptoKey = await this.subtle.generateKey(params, true, this.getKeyUsages(keyUsage));
             const importParams = params.getImportParams();
             if (("privateKey" in cryptoKey) && ("publicKey" in cryptoKey)) {
                 const publicKeyBuffer = await this.subtle.exportKey(exportKeyFormats.spki, cryptoKey.publicKey);
                 const publicKey = new PublicKey(publicKeyBuffer, importParams);
                 const privateKeyBuffer = await this.subtle.exportKey(exportKeyFormats.pkcs8, cryptoKey.privateKey);
                 const privateKey = new PrivateKey(privateKeyBuffer, importParams, this.getRandomValues(pbkdf2Parameters.saltLength));
-                return new KeyPair(publicKey, privateKey);
+                return new KeyPair(publicKey, privateKey, keyUsage);
             }
             const keyBuffer = await this.subtle.exportKey(exportKeyFormats.raw, cryptoKey);
-            return new SymmetricKey(keyBuffer, importParams);
+            return new SymmetricKey(keyBuffer, importParams, keyUsage);
+        };
+
+        randomUUID() {
+            return this.crypto.randomUUID();
         }
     }
 

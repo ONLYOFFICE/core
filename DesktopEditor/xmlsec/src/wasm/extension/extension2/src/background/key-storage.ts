@@ -1,13 +1,9 @@
 import browser from "webextension-polyfill";
-
-const jsonKeysFormat = {
-    SIGN: "SIGN",
-    CIPHER: "CIPHER"
-} as const;
+import type {JSONKeyPair} from "../common/keys/key-types.ts";
+import {KeyPair} from "../common/keys/keys.ts";
 
 export default class KeyStorage {
-    keys: Keys[];
-    aesMasterKey?: Key;
+    keys: KeyPair[] = [];
     async loadKeysFromStorage() {
         const item = await browser.storage.local.get("keys");
         if (item && Array.isArray(item.keys)) {
@@ -15,34 +11,38 @@ export default class KeyStorage {
         }
     }
 
-    async loadKeys(jsonKeys) {
+    async loadKeys(jsonKeys: JSONKeyPair[]) {
         const keyPromises = [];
-        const keyObjects = [];
-        for (const key of jsonKeys) {
-            const keysObject = key.format === jsonKeysFormat.CIPHER ? new CipherKeys() : new SignKeys();
-            keyObjects.push(keysObject);
-            keyPromises.push(keysObject.fromJSON(key));
+        const masterPassword = await this.getMasterPassword();
+        if (typeof masterPassword !== "string") {
+            return [];
         }
-        await Promise.all(keyPromises);
-        return keyObjects;
+        for (const key of jsonKeys) {
+            keyPromises.push(KeyPair.fromJSON(key, masterPassword));
+        }
+        return Promise.all(keyPromises);
     };
-    async addNewKeys(keys) {
+    async addNewKeys(keys: KeyPair[]) {
         this.keys.push.apply(this.keys, keys);
         await this.writeKeys();
     }
     async getJsonKeys() {
         const jsonKeyPromises = [];
-        for (const key of this.keys) {
-            jsonKeyPromises.push(key.toJSON());
+        const masterPassword = await this.getMasterPassword();
+        if (typeof masterPassword !== "string") {
+            return [];
         }
-        return await Promise.all(jsonKeyPromises);
+        for (const key of this.keys) {
+            jsonKeyPromises.push(key.toJSON(masterPassword));
+        }
+        return Promise.all(jsonKeyPromises);
     };
 
     async writeKeys() {
         const jsonKeys = await this.getJsonKeys();
         await this.setStorageKeys(jsonKeys);
     }
-    async setStorageKeys(jsonKeys) {
+    async setStorageKeys(jsonKeys: JSONKeyPair[]) {
         await browser.storage.local.set({keys: jsonKeys});
     }
     async getMasterPassword() {
@@ -62,7 +62,7 @@ export default class KeyStorage {
         }
         return false;
     }
-    async exportKeys({encrypt=false, password}) {
+    async exportKeys({encrypt=false, password: string}) {
         const passwordInfo = {
             encrypt: encrypt,
             data: null
@@ -82,7 +82,7 @@ export default class KeyStorage {
 
         URL.revokeObjectURL(url);
     }
-    async importKeys(jsonKeys) {
+    async importKeys(jsonKeys: JSONKeyPair[]) {
         const keyObjects = await this.loadKeys(jsonKeys);
         await this.addNewKeys(keyObjects);
     }

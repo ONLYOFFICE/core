@@ -1,5 +1,4 @@
 import browser from "webextension-polyfill";
-import getCrypto from "../../common/crypto.ts";
 export const getStorageMasterPassword = async () => {
     const masterPassword = await browser.storage.local.get('masterPassword');
     if (masterPassword && typeof masterPassword.masterPassword === 'string') {
@@ -8,9 +7,7 @@ export const getStorageMasterPassword = async () => {
     return null;
 }
 export const setStorageMasterPassword = (masterPassword: string) => {
-    const crypto = getCrypto();
-    const masterPasswordSalt = crypto.generateSalt();
-    browser.storage.local.set({masterPassword, masterPasswordSalt});
+    browser.storage.local.set({masterPassword});
 }
 
 export const checkIsStorageLogged = async () => {

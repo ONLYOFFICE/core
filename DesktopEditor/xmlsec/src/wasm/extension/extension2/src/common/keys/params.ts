@@ -1,19 +1,28 @@
 import {
     type AesKeyGenLength,
-    type AesType, aesTypes,
+    type AesType,
+    aesTypes,
     type AlgorithmType,
     algorithmTypes,
     type DigestType,
-    digestTypes,
-    isRsaAlgorithm, type JSONAesGcmParams, type RSAJSONType,
+    digestTypes, isAesJson, isEd25519Json,
+    isRSAJson,
+    type JSONAesGcmParams,
+    type JSONKeyParams,
+    type RsaJSONType,
     type RsaType
 } from "./key-types.ts";
 import {ab2base64, base642ui} from "../utils.ts";
 
-export const getKeyParamsFromJson = (keyParamsJson) => {
-    const name = keyParamsJson.name;
-    if (isRsaAlgorithm(name)) {
-        return new RSAImportParams(name, keyParamsJson.hash);
+export const getKeyParamsFromJson = (keyParamsJson: JSONKeyParams) => {
+    if (isRSAJson(keyParamsJson)) {
+        return new RsaImportParams(keyParamsJson.name, keyParamsJson.hash);
+    }
+    if (isEd25519Json(keyParamsJson)) {
+        return new Ed25519ImportParams();
+    }
+    if (isAesJson(keyParamsJson)) {
+        return new AesImportParams(keyParamsJson.name);
     }
     throw new Error("Unknown param type");
 };
@@ -37,7 +46,7 @@ export class AlgorithmParams<TName extends AlgorithmType = AlgorithmType> {
     }
 }
 
-export class RSAImportParams extends AlgorithmParams<RsaType> {
+export class RsaImportParams extends AlgorithmParams<RsaType> {
     hash;
     constructor(name: RsaType, hash: DigestType = digestTypes.SHA256) {
         super(name);
@@ -49,13 +58,13 @@ export class RSAImportParams extends AlgorithmParams<RsaType> {
             hash: this.hash,
         }
     }
-    override fromJSON(json: RSAJSONType) {
+    override fromJSON(json: RsaJSONType) {
         this.name = json.name;
         this.hash = json.hash;
     }
 }
 
-export class RSAKeyGenParams extends RSAImportParams {
+export class RSAKeyGenParams extends RsaImportParams {
     modulusLength;
     publicExponent;
     constructor(name: RsaType, hash: DigestType = digestTypes.SHA256, modulusLength = 2048, publicExponent = new Uint8Array([0x01, 0x00, 0x01])) {
@@ -64,10 +73,10 @@ export class RSAKeyGenParams extends RSAImportParams {
         this.publicExponent = publicExponent;
     }
     override getImportParams() {
-        return new RSAImportParams(this.name, this.hash);
+        return new RsaImportParams(this.name, this.hash);
     }
 }
-export class Ed25519ImportParams extends AlgorithmParams {
+export class Ed25519ImportParams extends AlgorithmParams<typeof algorithmTypes.ED25519> {
     constructor() {
         super(algorithmTypes.ED25519);
     }
@@ -82,25 +91,17 @@ export class AesImportParams extends AlgorithmParams<AesType> {
 export class AesGcmParams {
     name = algorithmTypes.AES_GCM;
     iv: ArrayBuffer;
-    additionalData?: ArrayBuffer;
-    tagLength?: number;
-    constructor(iv?: ArrayBuffer, additionalData?: ArrayBuffer, tagLength?: number) {
-        this.iv = iv || new Uint8Array(12);
-        this.additionalData = additionalData;
-        this.tagLength = tagLength;
+    constructor(iv: ArrayBuffer = new Uint8Array(12)) {
+        this.iv = iv;
     }
     toJSON() {
         return {
             name: this.name,
-            iv: ab2base64(this.iv),
-            additionalData: this.additionalData && ab2base64(this.additionalData),
-            tagLength: this.tagLength
+            iv: ab2base64(this.iv)
         }
     };
     fromJSON(json: JSONAesGcmParams) {
         this.iv = base642ui(json.iv);
-        this.additionalData = typeof json.additionalData === "string" ? base642ui(json.additionalData) : undefined;
-        this.tagLength = json.tagLength;
     };
 }
 

@@ -151,8 +151,10 @@
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/PIVOTVIEW.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/PIVOTCORE.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/PIVOTVD.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/PIVOTIVD.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/SxView.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Sxvd.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/SxIvd.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/SXVI.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/SXDI.h"
 
@@ -536,11 +538,16 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			for(auto i : m_oPivotFields->m_arrItems)
 				ptr->m_arPIVOTVD.push_back(i->toXLS());
 		}
+		if(m_oRowFields.IsInit())
+			ptr->m_arPIVOTIVD.push_back(m_oRowFields->toXLS());
+		if(m_oColFields.IsInit())
+			ptr->m_arPIVOTIVD.push_back(m_oColFields->toXLS());
 		if(m_oDataFields.IsInit())
 		{
 			for(auto i : m_oDataFields->m_arrItems)
 				ptr->m_arSXDI.push_back(i->toXLS());
 		}
+
 		return XLS::BaseObjectPtr(ptr1);
 	}
 	XLS::BaseObjectPtr CPivotTableDefinition::writeAttributes()
@@ -1199,6 +1206,18 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		for(auto i:m_arrItems)
 			ptr1->rgisxvdcols.push_back(i->m_oX.get());
 		return objectPtr;
+	}
+	XLS::BaseObjectPtr CColumnRowFields::toXLS()
+	{
+		auto ptr1 = new XLS::PIVOTIVD;
+		auto ptr = new XLS::SxIvd;
+		ptr1->m_SxIvd = XLS::BaseObjectPtr(ptr);
+		for(auto i : m_arrItems)
+		{
+			if(i->m_oX.IsInit())
+				ptr->rgSxivd.push_back(i->m_oX.get());
+		}
+		return XLS::BaseObjectPtr(ptr1);
 	}
 	void CColumnRowFields::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{

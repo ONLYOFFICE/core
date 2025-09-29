@@ -120,7 +120,7 @@ const bool PIVOTCORE::saveContent(BinProcessor& proc)
     for(auto i : m_arPIVOTVD)
         if(i!= nullptr)
             proc.mandatory(*i);
-    for(auto i : m_arPIVOTIVD)
+	for(auto i : m_arPIVOTIVD)	//rows beforee columns
         if(i!= nullptr)
             proc.mandatory(*i);
     if(m_PIVOTPI != nullptr)

@@ -232,6 +232,7 @@ namespace OOX
             void fromBin(XLS::BaseObjectPtr& obj);
 			XLS::BaseObjectPtr toBinRows();
 			XLS::BaseObjectPtr toBinCols();
+			XLS::BaseObjectPtr toXLS();
 			virtual EElementType getType () const
 			{
 				return et_x_ColumnRowFields;

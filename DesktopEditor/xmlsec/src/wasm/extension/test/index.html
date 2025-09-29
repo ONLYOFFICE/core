@@ -6,8 +6,11 @@
     <title>Test</title>
 </head>
 <body>
-    <button id="test1" style="position:absolute;margin:0px;padding:0px;left:10px;top:10px;width:60px;height:40px;">Generate keys</button>
-    <button id="test2" style="position:absolute;margin:0px;padding:0px;left:90px;top:10px;width:60px;height:40px;">Test2</button>
+    <input type="text" id="inputTest1">
+    <button id="selectSign" style="position:absolute;margin:0px;padding:0px;left:10px;top:10px;width:60px;height:40px;">Select sign keys</button>
+    <div id="guid">Выбранный guid ключа: </div>
+    <button id="signText" style="position:absolute;margin:0px;padding:0px;left:10px;top:10px;width:60px;height:40px;">Sign text</button>
+    <div id="signValue">base64 подпись: </div>
     <script src="../lib/messenger.js"></script>
     <script src="../lib/keychain.js"></script>
     <script src="page.js"></script>

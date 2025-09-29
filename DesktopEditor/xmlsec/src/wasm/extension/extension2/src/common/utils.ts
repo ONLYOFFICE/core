@@ -16,3 +16,17 @@ export function str2ui(str: string) {
     }
     return ui;
 }
+
+export const selectUserJSON = (callback: (file: File) => void) => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "application/json";
+    input.addEventListener("change", (e) => {
+        const target = e.target as HTMLInputElement;
+        const file = target.files?.[0];
+        if (file) {
+            callback(file);
+        }
+    });
+    input.click();
+};

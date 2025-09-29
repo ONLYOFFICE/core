@@ -1,6 +1,7 @@
 import browser from "webextension-polyfill";
-import type {JSONKeyPair} from "../common/keys/key-types.ts";
-import {KeyPair} from "../common/keys/keys.ts";
+import type {JSONExportKeyFormat, JSONKeyPair} from "./keys/key-types.ts";
+import {KeyPair} from "./keys/keys.ts";
+import {selectUserJSON} from "./utils.ts";
 
 export default class KeyStorage {
     keys: KeyPair[] = [];
@@ -26,9 +27,9 @@ export default class KeyStorage {
         this.keys.push.apply(this.keys, keys);
         await this.writeKeys();
     }
-    async getJsonKeys() {
+    async getJsonKeys(encryptPassword?: string) {
         const jsonKeyPromises = [];
-        const masterPassword = await this.getMasterPassword();
+        const masterPassword = typeof encryptPassword === "string" ? encryptPassword : await this.getMasterPassword();
         if (typeof masterPassword !== "string") {
             return [];
         }
@@ -37,41 +38,26 @@ export default class KeyStorage {
         }
         return Promise.all(jsonKeyPromises);
     };
-
     async writeKeys() {
         const jsonKeys = await this.getJsonKeys();
         await this.setStorageKeys(jsonKeys);
-    }
+    };
     async setStorageKeys(jsonKeys: JSONKeyPair[]) {
         await browser.storage.local.set({keys: jsonKeys});
-    }
+    };
     async getMasterPassword() {
         const item = await browser.storage.local.get("masterPassword");
         return item.masterPassword ? item.masterPassword : null;
     };
-    async compareWithCurrentMasterPassword(masterPassword: string) {
-        const currentMasterPassword = await this.getMasterPassword();
-        return masterPassword === currentMasterPassword;
-    }
-    async changeMasterPassword(oldMasterPassword: string, newMasterPassword: string) {
-        const isOldMasterPasswordEqualsWithCurrent = await this.compareWithCurrentMasterPassword(oldMasterPassword);
-        if (isOldMasterPasswordEqualsWithCurrent) {
-            const keys = await this.getJsonKeys();
-            await browser.storage.local.set({masterPassword: newMasterPassword, keys});
-            return true;
-        }
-        return false;
-    }
-    async exportKeys({encrypt=false, password: string}) {
-        const passwordInfo = {
-            encrypt: encrypt,
-            data: null
+    async changeMasterPassword(newMasterPassword: string) {
+        const keys = await this.getJsonKeys(newMasterPassword);
+        return browser.storage.local.set({masterPassword: newMasterPassword, keys});
+    };
+    async exportKeys() {
+        const passwordInfo : JSONExportKeyFormat = {
+            encrypt: false,
+            data: await this.getJsonKeys()
         };
-        if (encrypt) {
-
-        } else {
-            passwordInfo.data = await this.getJsonKeys();
-        }
         const blob = new Blob([JSON.stringify(passwordInfo)], { type: "application/json"});
         const url = URL.createObjectURL(blob);
 
@@ -81,9 +67,42 @@ export default class KeyStorage {
         link.click();
 
         URL.revokeObjectURL(url);
+    };
+    importKeys(callback: () => void) {
+        selectUserJSON(async (file: File) => {
+            try {
+                const text = await file.text();
+                const json: JSONExportKeyFormat = JSON.parse(text);
+                if (!json.encrypt) {
+                    const keyObjects = await this.loadKeys(json.data);
+                    await this.addNewKeys(keyObjects);
+                    callback();
+                }
+            } catch (e) {
+
+            }
+        });
+    };
+    getKeyPairByGuid(guid: string) {
+        for (let i = 0; i < this.keys.length; i++) {
+            const key = this.keys[i];
+            if (guid === key.guid) {
+                return key;
+            }
+        }
+    };
+    getValidKeys() {
+        const keys = [];
+        for (let i = 0; i < this.keys.length; i++) {
+            const key = this.keys[i];
+            if (key.isValid) {
+                keys.push(key);
+            }
+        }
+        return keys;
     }
-    async importKeys(jsonKeys: JSONKeyPair[]) {
-        const keyObjects = await this.loadKeys(jsonKeys);
-        await this.addNewKeys(keyObjects);
-    }
+    deprecateKey(key: KeyPair) {
+        key.setIsValid(false);
+        return this.writeKeys();
+    };
 }

@@ -96,3 +96,13 @@ export type JSONPublicKey = Awaited<ReturnType<PublicKey["toJSON"]>>;
 export type JSONPrivateKey = Awaited<ReturnType<PrivateKey["toJSON"]>>;
 export type JSONKeyPair = Awaited<ReturnType<KeyPair["toJSON"]>>;
 export type PairKey = PrivateKey | PublicKey;
+type JSONEncryptExportKeyFormat = {
+    encrypt: true;
+    salt: string;
+    data: string;
+};
+type JSONDecryptExportKeyFormat = {
+    encrypt: false;
+    data: JSONKeyPair[];
+};
+export type JSONExportKeyFormat = JSONEncryptExportKeyFormat | JSONDecryptExportKeyFormat;

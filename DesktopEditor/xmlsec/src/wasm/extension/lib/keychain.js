@@ -15,6 +15,7 @@
 	const messageTypes = {
 		CHECK_ENGINE: "CHECK_ENGINE",
 		GENERATE_KEYS: "GENERATE_KEYS",
+		SELECT_SIGN_KEYS: "SELECT_SIGN_KEYS",
 	};
 	var KeychainVersion = 1;
 	var KeychainKeyVersion = 2;
@@ -61,6 +62,19 @@
 			type : messageTypes.GENERATE_KEYS,
 		});
 		return key;
+	};
+
+	Keychain.prototype.selectSignKeys = async function() {
+		return pluginMessenger.postMessage({
+			type : messageTypes.SELECT_SIGN_KEYS
+		});
+	};
+	Keychain.prototype.signData = async function(base64, guid) {
+		return pluginMessenger.postMessage({
+			type : messageTypes.SIGN_DATA,
+			base64Data: base64,
+			guid: guid
+		});
 	};
 	window.Asc = window.Asc || {};
 	window.Asc.Keychain = new Keychain();

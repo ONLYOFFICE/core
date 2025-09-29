@@ -1,0 +1,8 @@
+
+.wrapper {
+    display: flex;
+    justify-content: space-between;
+    :hover {
+        background-color: rgba(240 , 240, 240, 255);
+    }
+}

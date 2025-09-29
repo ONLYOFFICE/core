@@ -1,6 +1,6 @@
 import browser from "webextension-polyfill";
 import {messageTypes} from "../../common/message-const.ts";
-import {generatePopupKeys} from "./tasks.ts";
+import {generatePopupKeys, selectSignKeys} from "./tasks.ts";
 import {isBackgroundMessageType} from "../../common/message-types.ts";
 
 const initTaskManager = () => {
@@ -13,6 +13,13 @@ const initTaskManager = () => {
             case messageTypes.GENERATE_KEYS: {
                 return generatePopupKeys();
             }
+            case messageTypes.SELECT_SIGN_KEYS: {
+                return selectSignKeys();
+            }
+            // todo
+            // case messageTypes.SIGN_DATA: {
+            //     return signData(data.base64Data, data.guid);
+            // }
             default:
                 return false;
         }

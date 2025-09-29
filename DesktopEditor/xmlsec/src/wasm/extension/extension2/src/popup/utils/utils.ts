@@ -6,6 +6,10 @@ export const getStorageMasterPassword = async () => {
     }
     return null;
 }
+export const compareWithOldMasterPassword = async (checkPassword: string) => {
+    const masterPassword = await getStorageMasterPassword();
+    return masterPassword === checkPassword;
+}
 export const setStorageMasterPassword = (masterPassword: string) => {
     browser.storage.local.set({masterPassword});
 }
@@ -15,15 +19,24 @@ export const checkIsStorageLogged = async () => {
     if (masterPassword) {
         return true;
     }
+    return getChangedProperty("masterPassword");
+};
+const getChangedProperty = (key: string) => {
     return new Promise((resolve) => {
         browser.storage.local.onChanged.addListener(function handler(change) {
-            if (change.masterPassword) {
+            if (change[key]) {
                 browser.storage.local.onChanged.removeListener(handler);
-                resolve(true);
+                resolve(change[key].newValue);
             }
         });
     });
 };
+export const getChangedDefaultGuid = () => {
+    return getChangedProperty("default-sign-guid");
+};
+export const setDefaultSignGuid = (guid: string) => {
+    return browser.storage.local.set({"default-sign-guid": guid});
+}
 
 export const initCheckOpenedPopup = () => {
     const port = browser.runtime.connect({ name: "popup" });

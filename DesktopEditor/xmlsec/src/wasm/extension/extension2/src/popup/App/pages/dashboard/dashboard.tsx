@@ -1,19 +1,29 @@
 import type {KeyPair} from "../../../../common/keys/keys.ts";
-import {ab2base64} from "../../../../common/utils.ts";
+import {locations} from "../../../utils/locations.ts";
+import css from "./dashboard.module.css";
 
 type DashboardProps = {
     masterPassword: string;
     keys: KeyPair[];
     handleGenerateSignKeys: () => Promise<void>
-    handleReloadStorage: () => void
+    handleImportKeys: () => void;
+    handleExportKeys: () => void;
+    handleDeprecateKey: (key: KeyPair) => void;
+    changeLocation: (location: string) => void
 };
 
-export function Dashboard({keys, masterPassword, handleReloadStorage, handleGenerateSignKeys}: DashboardProps) {
+export function Dashboard({keys, handleDeprecateKey, masterPassword, handleGenerateSignKeys, handleImportKeys, handleExportKeys, changeLocation}: DashboardProps) {
     return <div>
         <div>Hello, your master password: {masterPassword}</div>
+        <button onClick={() => {changeLocation(locations.changeMasterPassword)}}>Change password</button>
+        <button onClick={handleExportKeys}>Export keys</button>
+        <button onClick={handleImportKeys}>Import keys</button>
         <button onClick={handleGenerateSignKeys}>Generate sign keys</button>
-        <button onClick={handleReloadStorage}>Reload keys</button>
         <div>Generated sign keys</div>
-        {keys.map((key) => <div>{ab2base64(key.privateKey.key)} : {ab2base64(key.publicKey.key)}</div>)}
+        {keys.map((key, idx) =>
+            <div key={idx} className={css.wrapper}>
+            <div>{key.guid}</div>
+            <div onClick={() => handleDeprecateKey(key)}>&times;</div>
+        </div>)}
     </div>
 }

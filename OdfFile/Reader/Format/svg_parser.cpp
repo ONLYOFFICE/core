@@ -861,7 +861,7 @@ namespace svg_path
         return true;
     }
 
-    bool parseSvgS(std::vector<_polylineS>& Polyline, const std::wstring& rSvgDStatement, bool bWrongPositionAfterZ, bool& bIsClosed, bool& bStroked)
+	bool parseSvgS(std::vector<_polylineS>& Polyline, const std::wstring& rSvgDStatement, bool bWrongPositionAfterZ, bool& bIsClosed, bool& bStroked, std::wstring &wsNewFormula, std::wstring &wsH, std::wstring &wsW)
     {
         Polyline.clear();
         const int nLen(rSvgDStatement.length());
@@ -872,6 +872,8 @@ namespace svg_path
 
         std::wstring nLastControlX;
         std::wstring nLastControlY;
+
+		unsigned int iCountFormul(1);
 
         _polylineS aCurrPoly;
 
@@ -1162,10 +1164,107 @@ namespace svg_path
                 bRelative = true;
             }
             case 'A':
+			case 'W':
             {
+				nPos++;
                 skipSpaces(nPos, rSvgDStatement, nLen);
+				while(nPos < nLen && isOnNumberChar(rSvgDStatement,nPos))
+				{
+					std::wstring wsX1,wsY1,wsX2,wsY2;
+					std::wstring wsAngleStartX,wsAngleStartY,wsAngleEndX,wsAngleEndY;
 
-                return false;
+					if(!importStringAndSpaces(wsX1,nPos,rSvgDStatement,nLen)) return false;
+					if(!importStringAndSpaces(wsY1,nPos,rSvgDStatement,nLen)) return false;
+					if(!importStringAndSpaces(wsX2,nPos,rSvgDStatement,nLen)) return false;
+					if(!importStringAndSpaces(wsY2,nPos,rSvgDStatement,nLen)) return false;
+					if(aCurrChar == L'A')
+					{
+						if(!importStringAndSpaces(wsAngleEndX,nPos,rSvgDStatement,nLen)) return false;
+						if(!importStringAndSpaces(wsAngleEndY,nPos,rSvgDStatement,nLen)) return false;
+						if(!importStringAndSpaces(wsAngleStartX,nPos,rSvgDStatement,nLen)) return false;
+						if(!importStringAndSpaces(wsAngleStartY,nPos,rSvgDStatement,nLen)) return false;
+					}
+					else
+					{
+						if(!importStringAndSpaces(wsAngleStartX,nPos,rSvgDStatement,nLen)) return false;
+						if(!importStringAndSpaces(wsAngleStartY,nPos,rSvgDStatement,nLen)) return false;
+						if(!importStringAndSpaces(wsAngleEndX,nPos,rSvgDStatement,nLen)) return false;
+						if(!importStringAndSpaces(wsAngleEndY,nPos,rSvgDStatement,nLen)) return false;
+					}
+
+
+					std::wstring wsKoefHeight{L"af" + std::to_wstring(iCountFormul++)},
+								wsKoefWidth{L"af" + std::to_wstring(iCountFormul++)},
+								wsHeight{L"af" + std::to_wstring(iCountFormul++)},
+								wsWidth{L"af" + std::to_wstring(iCountFormul++)},
+								wsNewFirstAngleX{L"af" + std::to_wstring(iCountFormul++)},
+								wsNewFirstAngleY{L"af" + std::to_wstring(iCountFormul++)},
+								wsDifferenceX_FirstAngle{L"af" + std::to_wstring(iCountFormul++)},
+								wsDifferenceY_FirsAngle{L"af" + std::to_wstring(iCountFormul++)},
+								wsNewSecondAngleX{L"af" + std::to_wstring(iCountFormul++)},
+								wsNewSecondAngleY{L"af" + std::to_wstring(iCountFormul++)},
+								wsDifferenceX_SecondAngle{L"af" + std::to_wstring(iCountFormul++)},
+								wsDifferenceY_SecondAngle{L"af" + std::to_wstring(iCountFormul++)},
+								wsArcTangensFirst{L"af" + std::to_wstring(iCountFormul++)},
+								wsArcTangensSecond{L"af" + std::to_wstring(iCountFormul++)},
+								wsConversionToDegreesStAngle{L"af" + std::to_wstring(iCountFormul++)},
+								wsConversionToDegreesSecondAngle{L"af" + std::to_wstring(iCountFormul++)},
+								wsDifferenceBetweenAngles{L"af" + std::to_wstring(iCountFormul++)},
+								wsStAngle{L"af" + std::to_wstring(iCountFormul++)},
+								wsSwAngleNegative{L"af" + std::to_wstring(iCountFormul++)},
+								wsSwAngle{L"af" + std::to_wstring(iCountFormul++)};
+
+
+					{/*...*/}
+
+					/* implemented without taking into account the left offset*/
+					if(wsH.empty())
+						wsH = L"h";
+					if(wsW.empty())
+						wsW = L"w";
+
+					wsNewFormula += L"<a:gd name=\""+ wsKoefHeight + L"\" fmla=\"*/ h 1 " + wsH + L"\"/>";
+					wsNewFormula += L"<a:gd name=\""+ wsKoefWidth + L"\" fmla=\"*/ w 1 " + wsW + L"\"/>";
+					// }
+					wsNewFormula += L"<a:gd name=\""+ wsHeight + L"\" fmla=\"*/ vc " + wsH + L" h\"/>";
+					wsNewFormula += L"<a:gd name=\""+ wsWidth + L"\" fmla=\"*/ wd2 " + wsW + L" w\"/>";
+
+
+					wsNewFormula += L"<a:gd name=\""+ wsNewFirstAngleX + L"\" fmla=\"*/ "+ wsAngleStartX +L" " + wsKoefWidth + L" 1\"/>";
+					wsNewFormula += L"<a:gd name=\""+ wsNewFirstAngleY + L"\" fmla=\"*/ "+ wsAngleStartY +L" " + wsKoefHeight + L" 1\"/>";
+					wsNewFormula += L"<a:gd name=\""+ wsDifferenceX_FirstAngle + L"\" fmla=\"+- 0 " + wsNewFirstAngleX + L" wd2\"/>";
+					wsNewFormula += L"<a:gd name=\""+ wsDifferenceY_FirsAngle + L"\" fmla=\"+- 0 " + wsNewFirstAngleY + L" vc\"/>";
+					wsNewFormula += L"<a:gd name=\""+ wsNewSecondAngleX + L"\" fmla=\"*/ "+ wsAngleEndX +L" " + wsKoefWidth + L" 1\"/>";
+					wsNewFormula += L"<a:gd name=\""+ wsNewSecondAngleY + L"\" fmla=\"*/ "+ wsAngleEndY +L" " + wsKoefHeight + L" 1\"/>";
+					wsNewFormula += L"<a:gd name=\""+ wsDifferenceX_SecondAngle + L"\" fmla=\"+- 0 " + wsNewSecondAngleX + L" wd2\"/>";
+					wsNewFormula += L"<a:gd name=\""+ wsDifferenceY_SecondAngle + L"\" fmla=\"+- 0 " + wsNewSecondAngleY + L" vc\"/>";
+
+					wsNewFormula += L"<a:gd name=\""+ wsArcTangensFirst + L"\" fmla=\"at2 " + wsDifferenceX_FirstAngle + L" " + wsDifferenceY_FirsAngle + L"\"/>";
+					wsNewFormula += L"<a:gd name=\""+ wsArcTangensSecond + L"\" fmla=\"at2 " + wsDifferenceX_SecondAngle + L" " + wsDifferenceY_SecondAngle + L"\"/>";
+
+					wsNewFormula += L"<a:gd name=\""+ wsDifferenceBetweenAngles + L"\" fmla=\"+- 0 " + wsArcTangensSecond + L" " + wsArcTangensFirst + L"\"/>";
+					wsNewFormula += L"<a:gd name=\""+ wsStAngle + L"\" fmla=\"val " + wsArcTangensFirst + L"\"/>";
+					wsNewFormula += L"<a:gd name=\""+ wsSwAngleNegative + L"\" fmla=\"+- 21600000 " + wsDifferenceBetweenAngles + L" 0 \"/>";
+
+					wsNewFormula += L"<a:gd name=\""+ wsSwAngle +L"\" fmla=\"?: " + wsDifferenceBetweenAngles + L" " + wsDifferenceBetweenAngles + L" " + wsSwAngleNegative +L"\"/>";
+
+					aCurrPoly.command = L"a:moveTo";
+					aCurrPoly.points.push_back(_pointS(wsAngleStartX,wsAngleStartY));
+					Polyline.push_back(aCurrPoly);
+					aCurrPoly.points.clear();
+
+					aCurrPoly.command = L"a:arcTo";
+					aCurrPoly.points.push_back(_pointS(wsWidth,wsHeight));
+					aCurrPoly.points.push_back(_pointS(wsStAngle,wsSwAngle));
+					Polyline.push_back(aCurrPoly);
+					aCurrPoly.points.clear();
+
+					nLastX = wsAngleEndX;
+					nLastY = wsAngleEndY;
+
+					nLastControlX = wsAngleEndX;
+					nLastControlY = wsAngleEndY;
+				}
             }break;
             default:
             {

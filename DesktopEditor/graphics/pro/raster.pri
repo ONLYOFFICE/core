@@ -20,7 +20,7 @@ core_linux {
 }
 
 core_linux_clang {
-    QMAKE_CFLAGS += -Wno-incompatible-function-pointer-types
+	QMAKE_CFLAGS += -Wno-incompatible-function-pointer-types
 }
 
 core_mac {
@@ -284,6 +284,16 @@ SOURCES += \
 SOURCES += \
 	$$LIB_GRAPHICS_PRI_PATH/raster/PICT/PICFile.cpp \
 	$$LIB_GRAPHICS_PRI_PATH/raster/PICT/pic.cpp
+
+!build_xp {
+	CONFIG += support_heif
+}
+
+support_heif {
+	DEFINES += SUPPORT_LIB_HEIF_SOURCES
+	include($$CORE_ROOT_DIR/Common/3dParty/heif/heif.pri)
+	SOURCES += $$LIB_GRAPHICS_PRI_PATH/raster/heif/heif.cpp
+}
 
 SOURCES += \
 	$$LIB_GRAPHICS_PRI_PATH/cximage/jasper/base/jas_cm.c \

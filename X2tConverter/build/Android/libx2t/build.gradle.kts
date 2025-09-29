@@ -12,8 +12,6 @@ apply {
     from("../extras/gradle/common.gradle")
 }
 
-val keystore = extra.get("getKeystore") as org.codehaus.groovy.runtime.MethodClosure
-
 android {
 
     namespace = "lib.x2t"
@@ -84,9 +82,11 @@ android {
     }
 
     packaging {
-        jniLibs.useLegacyPackaging = true
-        arrayOf("armeabi-v7a", "x86", "arm64-v8a", "x86_64").forEach { abi ->
-            jniLibs.pickFirsts.add("lib/$abi/libc++_shared.so")
+        jniLibs {
+            pickFirsts.add("lib/armeabi-v7a/libc++_shared.so")
+            pickFirsts.add("lib/x86/libc++_shared.so")
+            pickFirsts.add("lib/arm64-v8a/libc++_shared.so")
+            pickFirsts.add("lib/x86_64/libc++_shared.so")
         }
     }
 }
@@ -120,7 +120,7 @@ fun getProjectPath(path: String, isRelativeCreate: Boolean = true): String {
     throw GradleException("getProjectPath($path) - path doesn't exist...")
 }
 
-tasks.create("copyIcuDatFiles") {
+tasks.register("copyIcuDatFiles") {
     doLast {
 
         println()

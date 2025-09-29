@@ -73,6 +73,40 @@ namespace NExtractTools
 		return 0;
 	}
 
+	_UINT32 compound2(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
+	{
+		POLE::Storage storage(sFrom.c_str());
+
+		if (storage.open())
+		{
+			POLE::Stream stream(&storage, storage.GetAllStreams(L"/").front());
+
+			POLE::uint64 stream_size = stream.size();
+
+			unsigned char* buffer = new unsigned char[stream_size];
+			if (buffer)
+			{
+				stream.read(buffer, stream_size);
+				std::wstring sTempDocxDir = convertParams.m_sTempDir + FILE_SEPARATOR_STR + L"tempdocx.docx";
+
+				NSFile::CFileBinary file;
+
+				if (file.CreateFileW(sTempDocxDir))
+				{
+					file.WriteFile(buffer, stream_size);
+					file.CloseFile();
+				}
+				delete[]buffer;
+
+				InputParams newparams = params;
+				newparams.m_sFileFrom = &sTempDocxDir;
+
+				return fromInputParams(params) && file.Remove(sTempDocxDir);
+			}
+		}
+
+		return AVS_FILEUTILS_ERROR_CONVERT;
+	}
 	// detect macroses
 	_UINT32 detectMacroInFile(InputParams& oInputParams)
 	{
@@ -684,6 +718,10 @@ namespace NExtractTools
 			{
 				nRes = mht2docx_dir(sFrom, sDocxDir, params, convertParams);
 			}
+			else if (AVS_OFFICESTUDIO_FILE_OTHER_COMPOUND == nFormatFrom)
+			{
+				nRes = compound2(sFrom, sDocxDir, params, convertParams);
+			}
 			else if (AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM_PDF == nFormatFrom)
 			{
 				nRes = pdfoform2docx_dir(sFrom, sDocxDir, params, convertParams);
@@ -1207,6 +1245,10 @@ namespace NExtractTools
 				}
 			}
 		}
+		else if (AVS_OFFICESTUDIO_FILE_DOCUMENT_TXT == nFormatTo)
+		{
+			pptx_dir2txt(sFrom, sTo, params, convertParams);
+		}
 		else
 			nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
 		return nRes;
@@ -1565,7 +1607,7 @@ namespace NExtractTools
 		return nRes;
 	}
 
-	//------------------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------
 
 	_UINT32 fromInputParams(InputParams& oInputParams)
 	{
@@ -2286,6 +2328,10 @@ namespace NExtractTools
 		case TCD_XLSX2XLSB:
 		{
 			result = xlsx2xlsb(sFileFrom, sFileTo, oInputParams, oConvertParams);
+		}break;
+		case TCD_COMPOUND2:
+		{
+			result = compound2(sFileFrom, sFileTo, oInputParams, oConvertParams);
 		}break;
 		// TCD_FB22DOCT,
 		// TCD_FB22DOCT_BIN,

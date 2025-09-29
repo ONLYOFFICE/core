@@ -3317,7 +3317,7 @@ CAnnot::CAnnot(PDFDoc* pdfDoc, AcroFormField* pField, int nStartRefID)
 	oObj.free();
 
 	// 6 - Наличие/Отсутствие внешнего вида
-	if (pField->fieldLookup("AP", &oObj)->isDict() && oObj.dictGetLength())
+	if (std::abs(m_pRect[2] - m_pRect[0]) * std::abs(m_pRect[3] - m_pRect[1]) < 1073741824.0 / 3.0 && pField->fieldLookup("AP", &oObj)->isDict() && oObj.dictGetLength())
 		m_unAFlags |= (1 << 6);
 	oObj.free();
 
@@ -3453,7 +3453,7 @@ CAnnot::CAnnot(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex, int nStartRefI
 	oObj.free();
 
 	// 6 - Наличие/Отсутствие внешнего вида
-	if (oAnnot.dictLookup("AP", &oObj)->isDict() && oObj.dictGetLength())
+	if (std::abs(m_pRect[2] - m_pRect[0]) * std::abs(m_pRect[3] - m_pRect[1]) < 1073741824.0 / 3.0 && oAnnot.dictLookup("AP", &oObj)->isDict() && oObj.dictGetLength())
 		m_unAFlags |= (1 << 6);
 	oObj.free();
 
@@ -3516,9 +3516,11 @@ CAnnotAP::CAnnotAP(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFont
 
 		// Координаты - BBox
 		pField->getBBox(&m_dx1, &m_dy1, &m_dx2, &m_dy2);
-
-		Init(pdfDoc, pFontManager, pFontList, nRasterW, nRasterH, nBackgroundColor, nPageIndex);
-		Draw(pdfDoc, &oAP, nRasterH, nBackgroundColor, nPageIndex, pField, sView, sButtonView);
+		if (std::abs(m_dx2 - m_dx1) * std::abs(m_dy2 - m_dy1) < 1073741824.0 / 3.0)
+		{
+			Init(pdfDoc, pFontManager, pFontList, nRasterW, nRasterH, nBackgroundColor, nPageIndex);
+			Draw(pdfDoc, &oAP, nRasterH, nBackgroundColor, nPageIndex, pField, sView, sButtonView);
+		}
 	}
 	oAP.free();
 
@@ -3542,8 +3544,11 @@ CAnnotAP::CAnnotAP(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFont
 		m_unRefNum = oAnnotRef->getRefNum() + nStartRefID;
 
 		Init(&oAnnot);
-		Init(pdfDoc, pFontManager, pFontList, nRasterW, nRasterH, nBackgroundColor, nPageIndex);
-		Draw(pdfDoc, &oAP, nRasterH, nBackgroundColor, oAnnotRef, sView);
+		if (std::abs(m_dx2 - m_dx1) * std::abs(m_dy2 - m_dy1) < 1073741824.0 / 3.0)
+		{
+			Init(pdfDoc, pFontManager, pFontList, nRasterW, nRasterH, nBackgroundColor, nPageIndex);
+			Draw(pdfDoc, &oAP, nRasterH, nBackgroundColor, oAnnotRef, sView);
+		}
 	}
 	oAP.free(); oAnnot.free(); oSubtype.free();
 

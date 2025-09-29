@@ -55,6 +55,9 @@ void RtfDocumentProperty::SetDefaultOOX()
 }
 void RtfDocumentProperty::SetDefault()
 {
+	m_sDefFontName = L"Times New Roman";
+	m_nDefFontSize = 24;
+
 	m_eCodePage					= cp_ansi;
 	m_nTabWidth					= 720; //todo -1
 	m_nDefFont					= PROP_DEF;

@@ -1,5 +1,6 @@
 #include "XMLReader.h"
 #include <cmath>
+#include <cctype>
 
 namespace HWP
 {

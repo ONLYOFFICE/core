@@ -146,6 +146,7 @@ namespace NExtractTools
 		TCD_DOC2DOCT_BIN,
 		TCD_DOC2DOCX,
 		TCD_DOC2DOCM,
+		TCD_COMPOUND2,
 		// xls 2
 		TCD_XLS2XLST,
 		TCD_XLS2XLST_BIN,
@@ -494,6 +495,8 @@ namespace NExtractTools
 	class InputParams
 	{
 	public:
+        std::wstring* m_sDefaultFontName;
+        int* m_nDefaultFontSize;
 		std::wstring* m_sKey;
 		std::wstring* m_sFileFrom;
 		std::wstring* m_sFileTo;
@@ -529,6 +532,8 @@ namespace NExtractTools
 	public:
 		InputParams()
 		{
+			m_sDefaultFontName = NULL;
+			m_nDefaultFontSize = NULL;
 			m_sKey = NULL;
 			m_sFileFrom = NULL;
 			m_sFileTo = NULL;
@@ -562,6 +567,8 @@ namespace NExtractTools
 		}
 		~InputParams()
 		{
+			RELEASEOBJECT(m_sDefaultFontName);
+			RELEASEOBJECT(m_nDefaultFontSize);
 			RELEASEOBJECT(m_sKey);
 			RELEASEOBJECT(m_sFileFrom);
 			RELEASEOBJECT(m_sFileTo);
@@ -686,6 +693,16 @@ namespace NExtractTools
 								{
 									RELEASEOBJECT(m_nFormatTo);
 									m_nFormatTo = new int(XmlUtils::GetInteger(sValue));
+								}
+								else if (_T("m_sDefaultFontName") == sName)
+								{
+									RELEASEOBJECT(m_sDefaultFontName);
+									m_sDefaultFontName = new std::wstring(sValue);
+								}
+								else if (_T("m_nDefaultFontSize") == sName)
+								{
+									RELEASEOBJECT(m_nDefaultFontSize);
+									m_nDefaultFontSize = new int(XmlUtils::GetInteger(sValue));
 								}
 								else if (_T("m_nCsvTxtEncoding") == sName)
 								{
@@ -991,7 +1008,6 @@ namespace NExtractTools
 					nFormatTo = AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM_PDF;
 					*m_nFormatTo = AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM_PDF;
 				}
-
 				if (NULL != m_oMailMergeSend)
 					eRes = TCD_MAILMERGE;
 				else if ((AVS_OFFICESTUDIO_FILE_DOCUMENT_XML == nFormatFrom) && 0 != (AVS_OFFICESTUDIO_FILE_OTHER & nFormatTo))
@@ -1030,6 +1046,8 @@ namespace NExtractTools
 					eRes = TCD_VBAPROJECT2XML;
 				else if (AVS_OFFICESTUDIO_FILE_UNKNOWN == nFormatFrom && AVS_OFFICESTUDIO_FILE_OTHER_ZIP == nFormatTo)
 					eRes = TCD_ZIPDIR;
+				else if (AVS_OFFICESTUDIO_FILE_OTHER_COMPOUND == nFormatFrom)
+					eRes = TCD_COMPOUND2;
 			}
 			else
 				eRes = TCD_ERROR;

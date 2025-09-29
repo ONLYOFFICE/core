@@ -76,10 +76,10 @@ public:
 	Xnum	numFtr;
 	_UINT32 iCopies = 1;
 
-	std::wstring szRelID; // biff12
-	bool fLandscape; // biff12
+	std::wstring szRelID = L""; // biff12
+	bool fLandscape = false; // biff12
 
-	bool _isChart;
+	bool _isChart = false;
 };
 
 } // namespace XLS

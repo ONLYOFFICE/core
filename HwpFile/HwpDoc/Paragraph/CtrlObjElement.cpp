@@ -329,18 +329,15 @@ void TMatrix::Multiply(const TMatrix& oMatrix)
 	const double dM21 = m_dM21 * oMatrix.m_dM11 + m_dM22 * oMatrix.m_dM21;
 	const double dM22 = m_dM21 * oMatrix.m_dM12 + m_dM22 * oMatrix.m_dM22;
 
-	const double dDx = m_dDX * oMatrix.m_dM11 + m_dDY * oMatrix.m_dM21 + oMatrix.m_dDX;
-	const double dDy = m_dDX * oMatrix.m_dM12 + m_dDY * oMatrix.m_dM22 + oMatrix.m_dDY;
-
 	m_dM11 = dM11;
 	m_dM12 = dM12;
 	m_dM21 = dM21;
 	m_dM22 = dM22;
-	m_dDX  = dDx;
-	m_dDY  = dDy;
+	m_dDX  += oMatrix.m_dDX;
+	m_dDY  += oMatrix.m_dDY;
 }
 
-void TMatrix::ApplyToPoint(double& dX, double& dY)
+void TMatrix::ApplyToPoint(double& dX, double& dY) const
 {
 	const double _dX = dX;
 	const double _dY = dY;
@@ -349,7 +346,16 @@ void TMatrix::ApplyToPoint(double& dX, double& dY)
 	dY = _dX * m_dM12 + _dY * m_dM22 + m_dDY;
 }
 
-void TMatrix::ApplyToSize(double& dW, double& dH)
+void HWP::TMatrix::ApplyToPoint(int& nX, int& nY) const
+{
+	const double _dX = nX;
+	const double _dY = nY;
+
+	nX = (int)(_dX * m_dM11 + _dY * m_dM21 + m_dDX);
+	nY = (int)(_dX * m_dM12 + _dY * m_dM22 + m_dDY);
+}
+
+void TMatrix::ApplyToSize(double& dW, double& dH) const
 {
 	const double _dW = dW;
 	const double _dH = dH;

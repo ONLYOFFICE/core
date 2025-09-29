@@ -18,8 +18,9 @@ struct TMatrix
 	TMatrix(double dM11, double dM12, double dM21, double dM22, double dDX, double dDY);
 	void Multiply(const TMatrix& oMatrix);
 
-	void ApplyToPoint(double& dX, double& dY);
-	void ApplyToSize(double& dW, double& dH);
+	void ApplyToPoint(double& dX, double& dY) const;
+	void ApplyToPoint(int& nX, int &nY) const;
+	void ApplyToSize(double& dW, double& dH) const;
 };
 
 class CCtrlObjElement : public CCtrlCommon

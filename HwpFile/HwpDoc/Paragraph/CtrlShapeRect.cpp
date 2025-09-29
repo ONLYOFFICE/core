@@ -69,19 +69,19 @@ void CCtrlShapeRect::ReadFromHWPML(CXMLReader &oReader)
 		else if ("X0" == sAttributeName)
 			m_arPoints[0].m_nX = oReader.GetInt();
 		else if ("Y0" == sAttributeName)
-			m_arPoints[0].m_nX = oReader.GetInt();
+			m_arPoints[0].m_nY = oReader.GetInt();
 		else if ("X1" == sAttributeName)
 			m_arPoints[1].m_nX = oReader.GetInt();
 		else if ("Y1" == sAttributeName)
-			m_arPoints[1].m_nX = oReader.GetInt();
+			m_arPoints[1].m_nY = oReader.GetInt();
 		else if ("X2" == sAttributeName)
 			m_arPoints[2].m_nX = oReader.GetInt();
 		else if ("Y2" == sAttributeName)
-			m_arPoints[2].m_nX = oReader.GetInt();
+			m_arPoints[2].m_nY = oReader.GetInt();
 		else if ("X3" == sAttributeName)
 			m_arPoints[3].m_nX = oReader.GetInt();
 		else if ("Y3" == sAttributeName)
-			m_arPoints[3].m_nX = oReader.GetInt();
+			m_arPoints[3].m_nY = oReader.GetInt();
 	}
 	END_READ_ATTRIBUTES(oReader)
 
@@ -93,6 +93,11 @@ void CCtrlShapeRect::ReadFromHWPML(CXMLReader &oReader)
 EShapeType CCtrlShapeRect::GetShapeType() const
 {
 	return EShapeType::Rect;
+}
+
+void CCtrlShapeRect::GetPoints(TPoint (&arPoints)[4]) const
+{
+	memcpy(arPoints, m_arPoints, sizeof(TPoint) * 4);
 }
 
 int CCtrlShapeRect::ParseElement(CCtrlShapeRect& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)

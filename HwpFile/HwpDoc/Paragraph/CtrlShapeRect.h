@@ -22,6 +22,8 @@ public:
 
 	EShapeType GetShapeType() const override;
 
+	void GetPoints(TPoint (&arPoints)[4]) const;
+
 	static int ParseElement(CCtrlShapeRect& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 	static int ParseCtrl(CCtrlShapeRect& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 	static int ParseListHeaderAppend(CCtrlShapeRect& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);

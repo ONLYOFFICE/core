@@ -24,6 +24,11 @@ public:
 
 	EShapeType GetShapeType() const override;
 
+	int GetStartX() const;
+	int GetStartY() const;
+	int GetEndX() const;
+	int GetEndY() const;
+
 	static void ParseElement(CCtrlShapeLine& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 	static void ParseCtrl(CCtrlShapeLine& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 };

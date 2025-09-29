@@ -52,6 +52,8 @@ CCtrlContainer::CCtrlContainer(const HWP_STRING& sCtrlID, CXMLReader& oReader, E
 			m_arShapes.push_back(new CCtrlShapePic(L"cip$", oReader, eType));
 		else if (GetNodeName(ENode::Ole, eType) == sNodeName)
 			m_arShapes.push_back(new CCtrlShapeOle(L"elo$", oReader, eType));
+		else
+			CCtrlGeneralShape::ParseChildren(oReader, eType);
 	}
 	END_WHILE
 

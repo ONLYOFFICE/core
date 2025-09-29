@@ -639,7 +639,7 @@ void style::add_attributes( const xml::attributes_wc_ptr & Attributes )
 	{
 		if (sTest->empty())
 		{
-			style_default_outline_level_ = 9;
+			//style_default_outline_level_ = 9;
 		}
 		else
 			style_default_outline_level_= XmlUtils::GetInteger(*sTest);

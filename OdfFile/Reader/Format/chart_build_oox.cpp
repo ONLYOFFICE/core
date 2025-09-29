@@ -260,18 +260,36 @@ void object_odf_context::docx_convert(oox::docx_conversion_context & Context)
 	else if (object_type_ == 3 && office_math_)
 	{
 		bool in_draw_frame = Context.get_drawing_state_content();
+
+		Context.get_math_context().base_font_size_ = baseFontHeight_;
+		Context.get_math_context().base_font_name_ = baseFontName_;
+		Context.get_math_context().base_font_italic_ = baseFontItalic_;
+		Context.get_math_context().base_font_bold_ = baseFontBold_;
+		Context.get_math_context().base_alignment_ = in_draw_frame ? 0 : baseAlignment_;
+
+		if (!in_draw_frame && Context.get_paragraph_state())
+		{
+			style_paragraph_properties_ptr props = Context.current_paragraph_properties();
+			if (props && props->content_.fo_text_align_)
+			{
+				switch (props->content_.fo_text_align_->get_type())
+				{
+				case text_align::Left:			Context.get_math_context().base_alignment_ = 0;	break;
+				case text_align::Right:			Context.get_math_context().base_alignment_ = 2;	break;
+				case text_align::Center:		Context.get_math_context().base_alignment_ = 1;	break;
+				case text_align::Justify:		Context.get_math_context().base_alignment_ = 0; break;
+				case text_align::Start:			Context.get_math_context().base_alignment_ = Context.get_rtl() ? 2 : 0; break;
+				case text_align::End:			Context.get_math_context().base_alignment_ = Context.get_rtl() ? 0 : 2; break;
+				}
+			}
+		}
+
 		oox::StreamsManPtr prev = Context.get_stream_man();
 		
 		std::wstringstream temp_stream(Context.get_drawing_context().get_text_stream_frame());
 		Context.set_stream_man( boost::shared_ptr<oox::streams_man>( new oox::streams_man(temp_stream) ));	
 		
 		Context.reset_context_state();
-
-		Context.get_math_context().base_font_size_ = baseFontHeight_;	
-		Context.get_math_context().base_font_name_ = baseFontName_;
-		Context.get_math_context().base_alignment_ = in_draw_frame ? 0 : baseAlignment_;
-		Context.get_math_context().base_font_italic_ = baseFontItalic_;
-		Context.get_math_context().base_font_bold_ = baseFontBold_;
 
 		Context.start_math_formula();
 		office_math_->oox_convert(Context.get_math_context(), 2);

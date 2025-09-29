@@ -14,8 +14,8 @@ CCtrlShapeVideo::CCtrlShapeVideo(const HWP_STRING& sCtrlID, int nSize, CHWPStrea
 	: CCtrlGeneralShape(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
 
-CCtrlShapeVideo::CCtrlShapeVideo(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion)
-    : CCtrlGeneralShape(sCtrlID, oReader, nVersion)
+CCtrlShapeVideo::CCtrlShapeVideo(const HWP_STRING& sCtrlID, CXMLReader& oReader, EHanType eType)
+    : CCtrlGeneralShape(sCtrlID, oReader, eType)
 {
 	START_READ_ATTRIBUTES(oReader)
 	{
@@ -38,7 +38,7 @@ CCtrlShapeVideo::CCtrlShapeVideo(const HWP_STRING& sCtrlID, CXMLReader& oReader,
 	END_READ_ATTRIBUTES(oReader)
 
 	WHILE_READ_NEXT_NODE(oReader)
-		CCtrlGeneralShape::ParseChildren(oReader, nVersion);
+		CCtrlGeneralShape::ParseChildren(oReader, eType);
 	END_WHILE
 }
 

@@ -1,51 +1,57 @@
 #include "Page.h"
+#include "../Common/NodeNames.h"
 
 namespace HWP
 {
 HWP::CPage::CPage()
 {}
 
-CPage::CPage(CXMLReader& oReader)
+CPage::CPage(CXMLReader& oReader, EHanType eType)
 {
 	START_READ_ATTRIBUTES(oReader)
 	{
-		if ("landscape" == sAttributeName)
-			m_bLandscape = "NARROWLY" == oReader.GetTextA();
-		else if ("width" == sAttributeName)
+		if (GetAttributeName(EAttribute::Landscape, eType) == sAttributeName)
+		{
+			if (EHanType::HWPX == eType)
+				m_bLandscape = "NARROWLY" == oReader.GetTextA();
+			else
+				m_bLandscape = oReader.GetBool();
+		}
+		else if (GetAttributeName(EAttribute::Width, eType) == sAttributeName)
 			m_nWidth = oReader.GetInt();
-		else if ("height" == sAttributeName)
+		else if (GetAttributeName(EAttribute::Height, eType) == sAttributeName)
 			m_nHeight = oReader.GetInt();
-		else if ("gutterType" == sAttributeName)
+		else if (GetAttributeName(EAttribute::GutterType, eType) == sAttributeName)
 		{
 			const std::string sType{oReader.GetTextA()};
 
-			if ("LEFT_ONELY" == sType)
+			if (GetValueName(EValue::LeftOnly, eType) == sType)
 				m_chGutterType = 0;
-			else if ("LEFT_RIGHT" == sType)
+			else if (GetValueName(EValue::LeftRight, eType) == sType)
 				m_chGutterType = 1;
-			else if ("TOP_BOTTOM" == sType)
+			else if (GetValueName(EValue::TopBottom, eType) == sType)
 				m_chGutterType = 2;
 		}
 	}
 	END_READ_ATTRIBUTES(oReader)
 
-	WHILE_READ_NEXT_NODE_WITH_ONE_NAME(oReader, "hp:margin")
+	WHILE_READ_NEXT_NODE_WITH_ONE_NAME(oReader, GetNodeName(ENode::PageMargin, eType))
 	{
 		START_READ_ATTRIBUTES(oReader)
 		{
-			if ("left" == sAttributeName)
+			if (GetAttributeName(EAttribute::Left, eType) == sAttributeName)
 				m_nMarginLeft = oReader.GetInt();
-			else if ("right" == sAttributeName)
+			else if (GetAttributeName(EAttribute::Right, eType) == sAttributeName)
 				m_nMarginRight = oReader.GetInt();
-			else if ("top" == sAttributeName)
+			else if (GetAttributeName(EAttribute::Top, eType) == sAttributeName)
 				m_nMarginTop = oReader.GetInt();
-			else if ("bottom" == sAttributeName)
+			else if (GetAttributeName(EAttribute::Bottom, eType) == sAttributeName)
 				m_nMarginBottom = oReader.GetInt();
-			else if ("header" == sAttributeName)
+			else if (GetAttributeName(EAttribute::Header, eType) == sAttributeName)
 				m_nMarginHeader = oReader.GetInt();
-			else if ("footer" == sAttributeName)
+			else if (GetAttributeName(EAttribute::Footer, eType) == sAttributeName)
 				m_nMarginFooter = oReader.GetInt();
-			else if ("gutter" == sAttributeName)
+			else if (GetAttributeName(EAttribute::Gutter, eType) == sAttributeName)
 				m_nMarginGutter = oReader.GetInt();
 
 		}

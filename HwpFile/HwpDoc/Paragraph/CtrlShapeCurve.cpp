@@ -1,5 +1,7 @@
 #include "CtrlShapeCurve.h"
 
+#include "../Common/NodeNames.h"
+
 namespace HWP
 {
 CCtrlShapeCurve::CCtrlShapeCurve()
@@ -17,39 +19,38 @@ CCtrlShapeCurve::CCtrlShapeCurve(const HWP_STRING& sCtrlID, int nSize, CHWPStrea
 	: CCtrlGeneralShape(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
 
-CCtrlShapeCurve::CCtrlShapeCurve(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion)
-    : CCtrlGeneralShape(sCtrlID, oReader, nVersion)
+CCtrlShapeCurve::CCtrlShapeCurve(const HWP_STRING& sCtrlID, CXMLReader& oReader, EHanType eType)
+    : CCtrlGeneralShape(sCtrlID, oReader, eType)
 {
-	// bool bReadedType
 	TPoint oPoint1{0, 0}, oPoint2{0, 0};
-	HWP_BYTE chSegmentType = 0;
+	HWP_BYTE chSegmentType = 1;
 
 	WHILE_READ_NEXT_NODE(oReader)
 	{
-		if ("hp:seg" == oReader.GetName())
+		if (GetNodeName(ENode::Segment, eType) == oReader.GetName())
 		{
-			chSegmentType = 0;
+			chSegmentType = 1;
 			oPoint1 = {0, 0};
 			oPoint2 = {0, 0};
 
 			START_READ_ATTRIBUTES(oReader)
 			{
-				if ("type" == sAttributeName)
+				if (GetAttributeName(EAttribute::Type, eType) == sAttributeName)
 				{
 					const std::string sType{oReader.GetTextA()};
 
-					if ("CURVE" == sType)
+					if (GetValueName(EValue::Curve, eType) == sType)
 						chSegmentType = 1;
-					else if ("LINE" == sType)
+					else if (GetValueName(EValue::Line, eType) == sType)
 						chSegmentType = 0;
 				}
-				else if ("x1" == sAttributeName)
+				else if (GetAttributeName(EAttribute::X1, eType) == sAttributeName)
 					oPoint1.m_nX = oReader.GetInt();
-				else if ("y1" == sAttributeName)
+				else if (GetAttributeName(EAttribute::Y1, eType) == sAttributeName)
 					oPoint1.m_nY = oReader.GetInt();
-				else if ("x2" == sAttributeName)
+				else if (GetAttributeName(EAttribute::X2, eType) == sAttributeName)
 					oPoint2.m_nX = oReader.GetInt();
-				else if ("y2" == sAttributeName)
+				else if (GetAttributeName(EAttribute::Y2, eType) == sAttributeName)
 					oPoint2.m_nY = oReader.GetInt();
 			}
 			END_READ_ATTRIBUTES(oReader)
@@ -58,7 +59,7 @@ CCtrlShapeCurve::CCtrlShapeCurve(const HWP_STRING& sCtrlID, CXMLReader& oReader,
 			m_arPoints.push_back(oPoint1);
 		}
 		else
-			CCtrlGeneralShape::ParseChildren(oReader, nVersion);
+			CCtrlGeneralShape::ParseChildren(oReader, eType);
 	}
 	END_WHILE
 

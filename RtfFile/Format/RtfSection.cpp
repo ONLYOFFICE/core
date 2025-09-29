@@ -79,8 +79,8 @@ void RtfDocumentProperty::SetDefault()
 	m_nThemelangfe				= PROP_DEF;
 	m_nThemelangcs				= PROP_DEF;
 
-	m_nPaperWidth				= 12240;
-	m_nPaperHeight				= 15840;
+    m_nPaperWidth				= 11900;
+    m_nPaperHeight				= 16840;
 	m_nMarginLeft				= 1701;
 	m_nMarginRight				= 850;
 	m_nMarginTop				= 1134;

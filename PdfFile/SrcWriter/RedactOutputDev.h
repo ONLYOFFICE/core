@@ -203,6 +203,7 @@ namespace PdfWriter
 
 		XRef* m_pXref;
 		std::vector<double> m_arrQuadPoints;
+		Aggplus::CGraphicsPath m_oPathRedact;
 
 		CPdfWriter* m_pRenderer;
 		CDocument*  m_pDoc;

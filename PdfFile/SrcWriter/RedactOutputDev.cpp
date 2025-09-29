@@ -69,6 +69,15 @@ RedactOutputDev::~RedactOutputDev()
 void RedactOutputDev::SetRedact(const std::vector<double>& arrQuadPoints)
 {
 	m_arrQuadPoints = arrQuadPoints;
+	for (int i = 0; i < m_arrQuadPoints.size(); i += 4)
+	{
+		m_oPathRedact.StartFigure();
+		m_oPathRedact.MoveTo(m_arrQuadPoints[i + 0], m_arrQuadPoints[i + 1]);
+		m_oPathRedact.LineTo(m_arrQuadPoints[i + 0], m_arrQuadPoints[i + 3]);
+		m_oPathRedact.LineTo(m_arrQuadPoints[i + 2], m_arrQuadPoints[i + 3]);
+		m_oPathRedact.LineTo(m_arrQuadPoints[i + 2], m_arrQuadPoints[i + 1]);
+		m_oPathRedact.CloseFigure();
+	}
 }
 void RedactOutputDev::NewPDF(XRef* pXref)
 {
@@ -812,7 +821,7 @@ void RedactOutputDev::DoPathRedact(GfxState* pGState, GfxPath* pPath, double* pC
 	CMatrix oInverse = oMatrix.Inverse();
 
 	std::vector<CSegment> arrForStroke;
-	Aggplus::CGraphicsPath oPath, oPathRedact, oPathResult;
+	Aggplus::CGraphicsPath oPath, oPathResult;
 	if (bEoFill)
 		oPath.SetRuler(true);
 	for (int nSubPathIndex = 0, nSubPathCount = pPath->getNumSubpaths(); nSubPathIndex < nSubPathCount; ++nSubPathIndex)
@@ -861,47 +870,20 @@ void RedactOutputDev::DoPathRedact(GfxState* pGState, GfxPath* pPath, double* pC
 			arrForStroke.push_back(CSegment(CPoint(dXCur, dYCur), CPoint(dXStart, dYStart)));
 	}
 
-	//size_t length1 = oPath.GetPointCount(), compound1 = oPath.GetCloseCount();
-	//std::vector<Aggplus::PointD> points1 = oPath.GetPoints(0, length1 + compound1);
-	//std::cout << "Path1:" <<std::endl;
-	//for (int i = 0; i < points1.size(); ++i)
-	//{
-	//	std::cout << "( " << points1[i].X << ", " << points1[i].Y << " ); ";
-	//}
-	//std::cout <<std::endl;
-
-	for (int i = 0; i < m_arrQuadPoints.size(); i += 4)
+	if (bStroke)
 	{
-		oPathRedact.StartFigure();
-		oPathRedact.MoveTo(m_arrQuadPoints[i + 0], m_arrQuadPoints[i + 1]);
-		oPathRedact.LineTo(m_arrQuadPoints[i + 0], m_arrQuadPoints[i + 3]);
-		oPathRedact.LineTo(m_arrQuadPoints[i + 2], m_arrQuadPoints[i + 3]);
-		oPathRedact.LineTo(m_arrQuadPoints[i + 2], m_arrQuadPoints[i + 1]);
-		oPathRedact.CloseFigure();
-
-		if (bStroke)
+		for (int i = 0; i < m_arrQuadPoints.size(); i += 4)
 		{
 			arrForStroke.push_back(CSegment(CPoint(m_arrQuadPoints[i + 0], m_arrQuadPoints[i + 1]), CPoint(m_arrQuadPoints[i + 0], m_arrQuadPoints[i + 3])));
 			arrForStroke.push_back(CSegment(CPoint(m_arrQuadPoints[i + 0], m_arrQuadPoints[i + 3]), CPoint(m_arrQuadPoints[i + 2], m_arrQuadPoints[i + 3])));
 			arrForStroke.push_back(CSegment(CPoint(m_arrQuadPoints[i + 2], m_arrQuadPoints[i + 3]), CPoint(m_arrQuadPoints[i + 2], m_arrQuadPoints[i + 1])));
 			arrForStroke.push_back(CSegment(CPoint(m_arrQuadPoints[i + 2], m_arrQuadPoints[i + 1]), CPoint(m_arrQuadPoints[i + 0], m_arrQuadPoints[i + 1])));
 		}
-
-		oPathResult = Aggplus::CalcBooleanOperation(oPath, oPathRedact, Aggplus::BooleanOpType::Subtraction);
-		oPath.Reset();
-		oPathRedact.Reset();
-		oPath = oPathResult;
 	}
+	oPathResult = Aggplus::CalcBooleanOperation(oPath, m_oPathRedact, Aggplus::BooleanOpType::Subtraction);
 
 	size_t length = oPathResult.GetPointCount(), compound = oPathResult.GetCloseCount();
 	std::vector<Aggplus::PointD> points = oPathResult.GetPoints(0, length + compound);
-	//std::cout << "PathRES:" <<std::endl;
-	//for (int i = 0; i < points.size(); ++i)
-	//{
-	//	std::cout << "( " << points[i].X << ", " << points[i].Y << " ); ";
-	//}
-	//std::cout <<std::endl;
-
 	m_pRenderer->m_oPath.Clear();
 
 	double dXStart = -1, dYStart = -1, dXCur = -1, dYCur = -1;

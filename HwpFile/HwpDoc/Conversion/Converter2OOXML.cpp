@@ -1683,7 +1683,7 @@ HWP_STRING GetHRelativeFrom(EHRelTo eRelTo)
 		case EHRelTo::COLUMN:
 			return L"column";
 		case EHRelTo::PARA:
-			return L"character";
+			return L"margin";
 	}
 }
 

@@ -154,6 +154,7 @@
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/SxView.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Sxvd.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/SXVI.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/SXDI.h"
 
 namespace OOX
 {
@@ -531,10 +532,15 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 
 		ptr->m_SxView = writeAttributesXLS();
 		if(m_oPivotFields.IsInit())
-			{
-				for(auto i : m_oPivotFields->m_arrItems)
-					ptr->m_arPIVOTVD.push_back(i->toXLS());
-			}
+		{
+			for(auto i : m_oPivotFields->m_arrItems)
+				ptr->m_arPIVOTVD.push_back(i->toXLS());
+		}
+		if(m_oDataFields.IsInit())
+		{
+			for(auto i : m_oDataFields->m_arrItems)
+				ptr->m_arSXDI.push_back(i->toXLS());
+		}
 		return XLS::BaseObjectPtr(ptr1);
 	}
 	XLS::BaseObjectPtr CPivotTableDefinition::writeAttributes()
@@ -1672,6 +1678,72 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			ptr->iiftab = XLSB::DataConsolidationFunction::SUM;
 		}
 		return objectPtr;
+	}
+	XLS::BaseObjectPtr CDataField::toXLS()
+	{
+		auto ptr = new XLS::SXDI;
+
+		if(m_oBaseField.IsInit())
+			ptr->isxvd = m_oBaseField.get();
+		if(m_oBaseItem.IsInit())
+			ptr->isxvi = m_oBaseItem->GetValue();
+		if(m_oFld.IsInit())
+			ptr->isxvdData = m_oFld->GetValue();
+		if(m_oNumFmtId.IsInit())
+			ptr->ifmt = m_oNumFmtId->GetValue();
+		if(m_oName.IsInit())
+		{
+			ptr->stName = m_oName.get();
+		}
+		if(m_oShowDataAs.IsInit())
+		{
+			if (m_oShowDataAs == SimpleTypes::Spreadsheet::EShowDataAs::dataAsNormal)
+				ptr->df = XLSB::ShowDataAs::NORMAL;
+			else if (m_oShowDataAs == SimpleTypes::Spreadsheet::EShowDataAs::dataAsDifference)
+				ptr->df = XLSB::ShowDataAs::DIFFERENCE_;
+			else if (m_oShowDataAs == SimpleTypes::Spreadsheet::EShowDataAs::dataAsPercentOff)
+				ptr->df = XLSB::ShowDataAs::PERCENT;
+			else if (m_oShowDataAs == SimpleTypes::Spreadsheet::EShowDataAs::dataAsPercentDiff)
+				ptr->df = XLSB::ShowDataAs::PERCENTDIFF;
+			else if (m_oShowDataAs == SimpleTypes::Spreadsheet::EShowDataAs::dataAsIndex)
+				ptr->df = XLSB::ShowDataAs::INDEX;
+			else if (m_oShowDataAs == SimpleTypes::Spreadsheet::EShowDataAs::dataAsPercentOfTotal)
+				ptr->df = XLSB::ShowDataAs::PERCENTOFTOTAL;
+			else if (m_oShowDataAs == SimpleTypes::Spreadsheet::EShowDataAs::dataAsPercentOfCol)
+				ptr->df = XLSB::ShowDataAs::PERCENTOFCOL;
+			else if (m_oShowDataAs == SimpleTypes::Spreadsheet::EShowDataAs::dataAsPercentOfRow)
+				ptr->df = XLSB::ShowDataAs::PERCENTOFROW;
+			else if (m_oShowDataAs == SimpleTypes::Spreadsheet::EShowDataAs::dataAsRunTotal)
+				ptr->df = XLSB::ShowDataAs::PERCENTOFRUNTOTAL;
+		}
+
+		if(m_oSubtotal.IsInit())
+		{
+			if (m_oSubtotal == SimpleTypes::Spreadsheet::EDataConsolidateFunction::functionSum)
+				ptr->iiftab = XLSB::DataConsolidationFunction::SUM;
+			else if (m_oSubtotal == SimpleTypes::Spreadsheet::EDataConsolidateFunction::functionCount)
+				ptr->iiftab = XLSB::DataConsolidationFunction::COUNT;
+			else if (m_oSubtotal == SimpleTypes::Spreadsheet::EDataConsolidateFunction::functionAverage)
+				ptr->iiftab = XLSB::DataConsolidationFunction::AVERAGE;
+			else if (m_oSubtotal == SimpleTypes::Spreadsheet::EDataConsolidateFunction::functionMaximum)
+				ptr->iiftab = XLSB::DataConsolidationFunction::MAX;
+			else if (m_oSubtotal == SimpleTypes::Spreadsheet::EDataConsolidateFunction::functionMinimum)
+				ptr->iiftab = XLSB::DataConsolidationFunction::MIN;
+			else if (m_oSubtotal == SimpleTypes::Spreadsheet::EDataConsolidateFunction::functionProduct)
+				ptr->iiftab = XLSB::DataConsolidationFunction::PRODUCT;
+			else if (m_oSubtotal == SimpleTypes::Spreadsheet::EDataConsolidateFunction::functionCountNums)
+				ptr->iiftab = XLSB::DataConsolidationFunction::COUNTNUM;
+			else if (m_oSubtotal == SimpleTypes::Spreadsheet::EDataConsolidateFunction::functionStdDev)
+				ptr->iiftab = XLSB::DataConsolidationFunction::STDDEV;
+			else if (m_oSubtotal == SimpleTypes::Spreadsheet::EDataConsolidateFunction::functionStdDevP)
+				ptr->iiftab = XLSB::DataConsolidationFunction::STDDEVP;
+			else if (m_oSubtotal == SimpleTypes::Spreadsheet::EDataConsolidateFunction::functionVariance)
+				ptr->iiftab = XLSB::DataConsolidationFunction::STDVAR;
+			else if (m_oSubtotal == SimpleTypes::Spreadsheet::EDataConsolidateFunction::functionVarP)
+				ptr->iiftab = XLSB::DataConsolidationFunction::STDVARP;
+		}
+
+		return XLS::BaseObjectPtr(ptr);
 	}
     void CDataField::fromBin(XLS::BaseObjectPtr& obj)
     {

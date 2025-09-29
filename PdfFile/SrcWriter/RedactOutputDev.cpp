@@ -804,93 +804,19 @@ bool SkipPath(const std::vector<CSegment>& arrForStroke, const CPoint& P1, const
 	}
 	return false;
 }
-void RedactOutputDev::DoPathRedact(GfxState* pGState, GfxPath* pPath, double* pCTM, bool bStroke, bool bEoFill)
+void RedactOutputDev::DrawPathRedact(Aggplus::CGraphicsPath* oPath, bool bStroke, const std::vector<CSegment>& arrForStroke)
 {
-	double arrMatrix[6];
-	arrMatrix[0] = pCTM[0];
-	arrMatrix[1] = pCTM[1];
-	arrMatrix[2] = pCTM[2];
-	arrMatrix[3] = pCTM[3];
-	arrMatrix[4] = pCTM[4];
-	arrMatrix[5] = pCTM[5];
-
-	double dShiftX = 0, dShiftY = 0;
-	DoTransform(arrMatrix, &dShiftX, &dShiftY, true);
-
 	CMatrix oMatrix(m_arrMatrix[0], m_arrMatrix[1], m_arrMatrix[2], m_arrMatrix[3], m_arrMatrix[4], m_arrMatrix[5]);
 	CMatrix oInverse = oMatrix.Inverse();
 
-	std::vector<CSegment> arrForStroke;
-	Aggplus::CGraphicsPath oPath, oPathResult;
-	if (bEoFill)
-		oPath.SetRuler(true);
-	for (int nSubPathIndex = 0, nSubPathCount = pPath->getNumSubpaths(); nSubPathIndex < nSubPathCount; ++nSubPathIndex)
-	{
-		GfxSubpath* pSubpath = pPath->getSubpath(nSubPathIndex);
-		int nPointsCount = pSubpath->getNumPoints();
-
-		oPath.StartFigure();
-
-		double dX = pSubpath->getX(0), dY = pSubpath->getY(0);
-		oMatrix.Apply(dX, dY);
-		double dXStart = dX, dYStart = dY, dXCur = dX, dYCur = dY;
-		oPath.MoveTo(dX, dY);
-
-		int nCurPointIndex = 1;
-		while (nCurPointIndex < nPointsCount)
-		{
-			if (pSubpath->getCurve(nCurPointIndex))
-			{
-				dX = pSubpath->getX(nCurPointIndex);
-				dY = pSubpath->getY(nCurPointIndex);
-				oMatrix.Apply(dX, dY);
-				double dX2 = pSubpath->getX(nCurPointIndex + 1);
-				double dY2 = pSubpath->getY(nCurPointIndex + 1);
-				oMatrix.Apply(dX2, dY2);
-				double dX3 = pSubpath->getX(nCurPointIndex + 2);
-				double dY3 = pSubpath->getY(nCurPointIndex + 2);
-				oMatrix.Apply(dX3, dY3);
-				dXCur = dX3; dYCur = dY3;
-				oPath.CurveTo(dX, dY, dX2, dY2, dX3, dY3);
-				nCurPointIndex += 3;
-			}
-			else
-			{
-				dX = pSubpath->getX(nCurPointIndex);
-				dY = pSubpath->getY(nCurPointIndex);
-				oMatrix.Apply(dX, dY);
-				dXCur = dX; dYCur = dY;
-				oPath.LineTo(dX, dY);
-				++nCurPointIndex;
-			}
-		}
-		if (pSubpath->isClosed())
-			oPath.CloseFigure();
-		else if (bStroke && (std::abs(dXCur - dXStart) > EPS || std::abs(dYCur - dYStart) > EPS))
-			arrForStroke.push_back(CSegment(CPoint(dXCur, dYCur), CPoint(dXStart, dYStart)));
-	}
-
-	if (bStroke)
-	{
-		for (int i = 0; i < m_arrQuadPoints.size(); i += 4)
-		{
-			arrForStroke.push_back(CSegment(CPoint(m_arrQuadPoints[i + 0], m_arrQuadPoints[i + 1]), CPoint(m_arrQuadPoints[i + 0], m_arrQuadPoints[i + 3])));
-			arrForStroke.push_back(CSegment(CPoint(m_arrQuadPoints[i + 0], m_arrQuadPoints[i + 3]), CPoint(m_arrQuadPoints[i + 2], m_arrQuadPoints[i + 3])));
-			arrForStroke.push_back(CSegment(CPoint(m_arrQuadPoints[i + 2], m_arrQuadPoints[i + 3]), CPoint(m_arrQuadPoints[i + 2], m_arrQuadPoints[i + 1])));
-			arrForStroke.push_back(CSegment(CPoint(m_arrQuadPoints[i + 2], m_arrQuadPoints[i + 1]), CPoint(m_arrQuadPoints[i + 0], m_arrQuadPoints[i + 1])));
-		}
-	}
-	oPathResult = Aggplus::CalcBooleanOperation(oPath, m_oPathRedact, Aggplus::BooleanOpType::Subtraction);
-
-	size_t length = oPathResult.GetPointCount(), compound = oPathResult.GetCloseCount();
-	std::vector<Aggplus::PointD> points = oPathResult.GetPoints(0, length + compound);
-	m_pRenderer->m_oPath.Clear();
+	size_t length = oPath->GetPointCount(), compound = oPath->GetCloseCount();
+	std::vector<Aggplus::PointD> points = oPath->GetPoints(0, length + compound);
 
 	double dXStart = -1, dYStart = -1, dXCur = -1, dYCur = -1;
 	bool bBreak = false;
 	for (size_t i = 0; i < length + compound; i++)
 	{
-		if (oPathResult.IsCurvePoint(i))
+		if (oPath->IsCurvePoint(i))
 		{
 			double dX = points[i].X;
 			double dY = points[i].Y;
@@ -913,7 +839,7 @@ void RedactOutputDev::DoPathRedact(GfxState* pGState, GfxPath* pPath, double* pC
 
 			i += 2;
 		}
-		else if (oPathResult.IsMovePoint(i))
+		else if (oPath->IsMovePoint(i))
 		{
 			double dX = points[i].X, dY = points[i].Y;
 			dXStart = dX; dYStart = dY; dXCur = dX; dYCur = dY;
@@ -925,7 +851,7 @@ void RedactOutputDev::DoPathRedact(GfxState* pGState, GfxPath* pPath, double* pC
 				m_pRenderer->m_oPath.MoveTo(dX, dY);
 			}
 		}
-		else if (oPathResult.IsLinePoint(i))
+		else if (oPath->IsLinePoint(i))
 		{
 			double dX = points[i].X, dY = points[i].Y;
 			if (bStroke && SkipPath(arrForStroke, CPoint(dXCur, dYCur), CPoint(dX, dY)))
@@ -945,7 +871,7 @@ void RedactOutputDev::DoPathRedact(GfxState* pGState, GfxPath* pPath, double* pC
 			oInverse.Apply(dX, dY);
 			m_pRenderer->m_oPath.LineTo(dX, dY);
 		}
-		else if (oPathResult.IsClosePoint(i))
+		else if (oPath->IsClosePoint(i))
 		{
 			if (bStroke && (std::abs(dXCur - dXStart) > EPS || std::abs(dYCur - dYStart) > EPS) && SkipPath(arrForStroke, CPoint(dXCur, dYCur), CPoint(dXStart, dYStart)))
 			{
@@ -969,6 +895,349 @@ void RedactOutputDev::DoPathRedact(GfxState* pGState, GfxPath* pPath, double* pC
 			else
 				m_pRenderer->m_oPath.Close();
 		}
+	}
+}
+class CLineClipper
+{
+private:
+	std::vector<TRect> rectangles;
+
+	// Проверка пересечения отрезка с прямоугольником
+	bool intersectsRectangle(const CSegment& segment, const TRect& rect)
+	{
+		// Используем алгоритм Коэна-Сазерленда для определения пересечения
+		int code1 = computeCohenSutherlandCode(segment.start, rect);
+		int code2 = computeCohenSutherlandCode(segment.end, rect);
+
+		// Если оба конца внутри - полное пересечение
+		if (code1 == 0 && code2 == 0) return true;
+
+		// Если оба конца с одной стороны - нет пересечения
+		if ((code1 & code2) != 0) return false;
+
+		// Есть пересечение
+		return true;
+	}
+
+	// Вычисление кода Коэна-Сазерленда
+	int computeCohenSutherlandCode(const CPoint& p, const TRect& rect)
+	{
+		int code = 0;
+
+		if (p.x < rect.fLeft)   code |= 1; // Слева
+		if (p.x > rect.fRight)  code |= 2; // Справа
+		if (p.y < rect.fBottom) code |= 4; // Снизу
+		if (p.y > rect.fTop)    code |= 8; // Сверху
+
+		return code;
+	}
+
+	// Нахождение точек пересечения отрезка с прямоугольником
+	std::vector<CPoint> findIntersectionPoints(const CSegment& segment, const TRect& rect)
+	{
+		std::vector<CPoint> intersections;
+
+		// Проверяем пересечение с каждой стороной прямоугольника
+		std::vector<CSegment> rectSides =
+		{
+			CSegment(CPoint(rect.fLeft, rect.fBottom),  CPoint(rect.fRight, rect.fBottom)), // нижняя
+			CSegment(CPoint(rect.fRight, rect.fBottom), CPoint(rect.fRight, rect.fTop)),    // правая
+			CSegment(CPoint(rect.fRight, rect.fTop),    CPoint(rect.fLeft, rect.fTop)),     // верхняя
+			CSegment(CPoint(rect.fLeft, rect.fTop),     CPoint(rect.fLeft, rect.fBottom))   // левая
+		};
+
+		for (const auto& side : rectSides)
+		{
+			CPoint intersection;
+			if (findLineIntersection(segment, side, intersection))
+			{
+				// Проверяем, что точка лежит на обоих отрезках
+				if (pointOnSegment(intersection, segment) && pointOnSegment(intersection, side))
+					intersections.push_back(intersection);
+			}
+		}
+
+		return intersections;
+	}
+
+	// Нахождение пересечения двух отрезков
+	bool findLineIntersection(const CSegment& seg1, const CSegment& seg2, CPoint& result)
+	{
+		double x1 = seg1.start.x, y1 = seg1.start.y;
+		double x2 = seg1.end.x, y2 = seg1.end.y;
+		double x3 = seg2.start.x, y3 = seg2.start.y;
+		double x4 = seg2.end.x, y4 = seg2.end.y;
+
+		double denom = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
+
+		if (std::abs(denom) < 1e-9) return false; // Параллельные линии
+
+		double t =  ((x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4)) / denom;
+		double u = -((x1 - x2) * (y1 - y3) - (y1 - y2) * (x1 - x3)) / denom;
+
+		result.x = x1 + t * (x2 - x1);
+		result.y = y1 + t * (y2 - y1);
+
+		return true;
+	}
+
+	// Проверка, лежит ли точка на отрезке
+	bool pointOnSegment(const CPoint& p, const CSegment& seg)
+	{
+		// Проверяем коллинеарность и нахождение между концами
+		return std::abs(distance(seg.start, p) + distance(p, seg.end) - distance(seg.start, seg.end)) < 1e-9;
+	}
+
+	// Расстояние между двумя точками
+	double distance(const CPoint& a, const CPoint& b)
+	{
+		return std::sqrt((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y));
+	}
+
+	// Параметрическое значение точки на линии (0 = start, 1 = end)
+	double getParametricValue(const CPoint& p, const CSegment& line)
+	{
+		double lineLength = distance(line.start, line.end);
+		if (lineLength < 1e-9) return 0;
+
+		// Проекция на направляющий вектор линии
+		double dx = line.end.x - line.start.x;
+		double dy = line.end.y - line.start.y;
+
+		if (std::abs(dx) > std::abs(dy))
+			return (p.x - line.start.x) / dx;
+		else
+			return (p.y - line.start.y) / dy;
+	}
+
+public:
+	CLineClipper(const std::vector<TRect>& rects) : rectangles(rects) {}
+
+	// Основная функция для вычисления видимых сегментов
+	std::vector<CSegment> getVisibleSegments(const CSegment& line)
+	{
+		std::vector<double> cutPoints = {0.0, 1.0}; // Начало и конец линии
+
+		// Собираем все точки пересечения со всеми прямоугольниками
+		for (const auto& rect : rectangles)
+		{
+			if (intersectsRectangle(line, rect))
+			{
+				auto intersections = findIntersectionPoints(line, rect);
+				for (const auto& p : intersections)
+				{
+					double t = getParametricValue(p, line);
+					if (t >= 0 && t <= 1)
+						cutPoints.push_back(t);
+				}
+			}
+		}
+
+		// Сортируем точки по параметрическому значению
+		std::sort(cutPoints.begin(), cutPoints.end());
+		cutPoints.erase(std::unique(cutPoints.begin(), cutPoints.end()), cutPoints.end());
+
+		// Проверяем каждый сегмент на видимость
+		std::vector<CSegment> visibleSegments;
+		for (size_t i = 0; i < cutPoints.size() - 1; i++)
+		{
+			double t1 = cutPoints[i];
+			double t2 = cutPoints[i + 1];
+
+			// Средняя точка сегмента для проверки видимости
+			double t_mid = (t1 + t2) / 2.0;
+			CPoint midPoint(
+				line.start.x + t_mid * (line.end.x - line.start.x),
+				line.start.y + t_mid * (line.end.y - line.start.y)
+			);
+
+			// Сегмент видим, если его средняя точка не внутри ни одного прямоугольника
+			if (!isPointInsideAnyRectangle(midPoint))
+			{
+				CPoint segStart(
+					line.start.x + t1 * (line.end.x - line.start.x),
+					line.start.y + t1 * (line.end.y - line.start.y)
+				);
+				CPoint segEnd(
+					line.start.x + t2 * (line.end.x - line.start.x),
+					line.start.y + t2 * (line.end.y - line.start.y)
+				);
+				visibleSegments.push_back(CSegment(segStart, segEnd));
+			}
+		}
+
+		return visibleSegments;
+	}
+
+private:
+	// Проверка, находится ли точка внутри любого прямоугольника
+	bool isPointInsideAnyRectangle(const CPoint& p)
+	{
+		for (const auto& rect : rectangles)
+		{
+			if (p.x >= rect.fLeft && p.x <= rect.fRight && p.y >= rect.fBottom && p.y <= rect.fTop)
+				return true;
+		}
+		return false;
+	}
+};
+void RedactOutputDev::DoPathRedact(GfxState* pGState, GfxPath* pPath, double* pCTM, bool bStroke, bool bEoFill)
+{
+	double arrMatrix[6];
+	arrMatrix[0] = pCTM[0];
+	arrMatrix[1] = pCTM[1];
+	arrMatrix[2] = pCTM[2];
+	arrMatrix[3] = pCTM[3];
+	arrMatrix[4] = pCTM[4];
+	arrMatrix[5] = pCTM[5];
+
+	double dShiftX = 0, dShiftY = 0;
+	DoTransform(arrMatrix, &dShiftX, &dShiftY, true);
+	m_pRenderer->m_oPath.Clear();
+
+	CMatrix oMatrix(m_arrMatrix[0], m_arrMatrix[1], m_arrMatrix[2], m_arrMatrix[3], m_arrMatrix[4], m_arrMatrix[5]);
+	CMatrix oInverse = oMatrix.Inverse();
+
+	std::vector<CSegment> arrForStroke;
+	Aggplus::CGraphicsPath oPath, oPathResult;
+	if (bEoFill)
+		oPath.SetRuler(true);
+
+	if (bStroke)
+	{
+		std::vector<TRect> rectangles;
+		for (int i = 0; i < m_arrQuadPoints.size(); i += 4)
+		{
+			arrForStroke.push_back(CSegment(CPoint(m_arrQuadPoints[i + 0], m_arrQuadPoints[i + 1]), CPoint(m_arrQuadPoints[i + 0], m_arrQuadPoints[i + 3])));
+			arrForStroke.push_back(CSegment(CPoint(m_arrQuadPoints[i + 0], m_arrQuadPoints[i + 3]), CPoint(m_arrQuadPoints[i + 2], m_arrQuadPoints[i + 3])));
+			arrForStroke.push_back(CSegment(CPoint(m_arrQuadPoints[i + 2], m_arrQuadPoints[i + 3]), CPoint(m_arrQuadPoints[i + 2], m_arrQuadPoints[i + 1])));
+			arrForStroke.push_back(CSegment(CPoint(m_arrQuadPoints[i + 2], m_arrQuadPoints[i + 1]), CPoint(m_arrQuadPoints[i + 0], m_arrQuadPoints[i + 1])));
+
+			rectangles.push_back({m_arrQuadPoints[i + 0], m_arrQuadPoints[i + 3], m_arrQuadPoints[i + 2], m_arrQuadPoints[i + 1]});
+		}
+
+		for (int nSubPathIndex = 0, nSubPathCount = pPath->getNumSubpaths(); nSubPathIndex < nSubPathCount; ++nSubPathIndex)
+		{
+			GfxSubpath* pSubpath = pPath->getSubpath(nSubPathIndex);
+			int nPointsCount = pSubpath->getNumPoints();
+
+			double dX = pSubpath->getX(0), dY = pSubpath->getY(0);
+			oMatrix.Apply(dX, dY);
+			double dXStart = dX, dYStart = dY, dXCur = dX, dYCur = dY;
+
+			int nCurPointIndex = 1;
+			while (nCurPointIndex < nPointsCount)
+			{
+				if (pSubpath->getCurve(nCurPointIndex))
+				{
+					dX = pSubpath->getX(nCurPointIndex);
+					dY = pSubpath->getY(nCurPointIndex);
+					oMatrix.Apply(dX, dY);
+					double dX2 = pSubpath->getX(nCurPointIndex + 1);
+					double dY2 = pSubpath->getY(nCurPointIndex + 1);
+					oMatrix.Apply(dX2, dY2);
+					double dX3 = pSubpath->getX(nCurPointIndex + 2);
+					double dY3 = pSubpath->getY(nCurPointIndex + 2);
+					oMatrix.Apply(dX3, dY3);
+					nCurPointIndex += 3;
+
+					oPath.StartFigure();
+					oPath.MoveTo(dXCur, dYCur);
+					oPath.CurveTo(dX, dY, dX2, dY2, dX3, dY3);
+					oPath.CloseFigure();
+
+					arrForStroke.push_back(CSegment(CPoint(dXCur, dYCur), CPoint(dX3, dY3)));
+					dXCur = dX3, dYCur = dY3;
+
+					oPathResult = Aggplus::CalcBooleanOperation(oPath, m_oPathRedact, Aggplus::BooleanOpType::Subtraction);
+					DrawPathRedact(&oPathResult, bStroke, arrForStroke);
+					oPathResult.Reset(); oPath.Reset();
+				}
+				else
+				{
+					dX = pSubpath->getX(nCurPointIndex);
+					dY = pSubpath->getY(nCurPointIndex);
+					oMatrix.Apply(dX, dY);
+					++nCurPointIndex;
+
+					CLineClipper clipper(rectangles);
+					CSegment line(CPoint(dXCur, dYCur), CPoint(dX, dY));
+					dXCur = dX; dYCur = dY;
+
+					auto visibleSegments = clipper.getVisibleSegments(line);
+					for (int i = 0; i < visibleSegments.size(); ++i)
+					{
+						double dX1 = visibleSegments[i].start.x, dY1 = visibleSegments[i].start.y;
+						double dX2 = visibleSegments[i].end.x,   dY2 = visibleSegments[i].end.y;
+						oInverse.Apply(dX1, dY1);
+						m_pRenderer->m_oPath.MoveTo(dX1, dY1);
+						oInverse.Apply(dX2, dY2);
+						m_pRenderer->m_oPath.LineTo(dX2, dY2);
+					}
+				}
+			}
+			if (pSubpath->isClosed())
+			{
+				CLineClipper clipper(rectangles);
+				CSegment line(CPoint(dXCur, dYCur), CPoint(dXStart, dYStart));
+				auto visibleSegments = clipper.getVisibleSegments(line);
+				for (int i = 0; i < visibleSegments.size(); ++i)
+				{
+					double dX1 = visibleSegments[i].start.x, dY1 = visibleSegments[i].start.y;
+					double dX2 = visibleSegments[i].end.x,   dY2 = visibleSegments[i].end.y;
+					oInverse.Apply(dX1, dY1);
+					m_pRenderer->m_oPath.MoveTo(dX1, dY1);
+					oInverse.Apply(dX2, dY2);
+					m_pRenderer->m_oPath.LineTo(dX2, dY2);
+				}
+			}
+		}
+	}
+	else
+	{
+		for (int nSubPathIndex = 0, nSubPathCount = pPath->getNumSubpaths(); nSubPathIndex < nSubPathCount; ++nSubPathIndex)
+		{
+			GfxSubpath* pSubpath = pPath->getSubpath(nSubPathIndex);
+			int nPointsCount = pSubpath->getNumPoints();
+
+			oPath.StartFigure();
+
+			double dX = pSubpath->getX(0), dY = pSubpath->getY(0);
+			oMatrix.Apply(dX, dY);
+			oPath.MoveTo(dX, dY);
+
+			int nCurPointIndex = 1;
+			while (nCurPointIndex < nPointsCount)
+			{
+				if (pSubpath->getCurve(nCurPointIndex))
+				{
+					dX = pSubpath->getX(nCurPointIndex);
+					dY = pSubpath->getY(nCurPointIndex);
+					oMatrix.Apply(dX, dY);
+					double dX2 = pSubpath->getX(nCurPointIndex + 1);
+					double dY2 = pSubpath->getY(nCurPointIndex + 1);
+					oMatrix.Apply(dX2, dY2);
+					double dX3 = pSubpath->getX(nCurPointIndex + 2);
+					double dY3 = pSubpath->getY(nCurPointIndex + 2);
+					oMatrix.Apply(dX3, dY3);
+					oPath.CurveTo(dX, dY, dX2, dY2, dX3, dY3);
+					nCurPointIndex += 3;
+				}
+				else
+				{
+					dX = pSubpath->getX(nCurPointIndex);
+					dY = pSubpath->getY(nCurPointIndex);
+					oMatrix.Apply(dX, dY);
+					oPath.LineTo(dX, dY);
+					++nCurPointIndex;
+				}
+			}
+			if (pSubpath->isClosed())
+				oPath.CloseFigure();
+		}
+
+		oPathResult = Aggplus::CalcBooleanOperation(oPath, m_oPathRedact, Aggplus::BooleanOpType::Subtraction);
+		DrawPathRedact(&oPathResult, bStroke);
 	}
 
 	return;

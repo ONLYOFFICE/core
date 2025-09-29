@@ -839,15 +839,18 @@ void CPdfReader::DrawPageOnRenderer(IRenderer* pRenderer, int _nPageIndex, bool*
 			double B = ret / 100000.0;
 			LONG lColor = (LONG)(((LONG)(R * 255)) | ((LONG)(G * 255) << 8) | ((LONG)(B * 255) << 16) | ((LONG)255 << 24));
 
-			pRenderer->PathCommandEnd();
-			pRenderer->put_BrushColor1(lColor);
-			pRenderer->PathCommandMoveTo(PdfReader::PDFCoordsToMM(m_vRedact[i]->m_arrRedactBox[0] - cropBox->x1), PdfReader::PDFCoordsToMM(cropBox->y2 - m_vRedact[i]->m_arrRedactBox[1]));
-			pRenderer->PathCommandLineTo(PdfReader::PDFCoordsToMM(m_vRedact[i]->m_arrRedactBox[0] - cropBox->x1), PdfReader::PDFCoordsToMM(cropBox->y2 - m_vRedact[i]->m_arrRedactBox[3]));
-			pRenderer->PathCommandLineTo(PdfReader::PDFCoordsToMM(m_vRedact[i]->m_arrRedactBox[2] - cropBox->x1), PdfReader::PDFCoordsToMM(cropBox->y2 - m_vRedact[i]->m_arrRedactBox[3]));
-			pRenderer->PathCommandLineTo(PdfReader::PDFCoordsToMM(m_vRedact[i]->m_arrRedactBox[2] - cropBox->x1), PdfReader::PDFCoordsToMM(cropBox->y2 - m_vRedact[i]->m_arrRedactBox[1]));
-			pRenderer->PathCommandClose();
-			pRenderer->DrawPath(c_nWindingFillMode);
-			pRenderer->PathCommandEnd();
+			for (int j = 0; j < m_vRedact[i]->m_arrRedactBox.size(); j += 4)
+			{
+				pRenderer->PathCommandEnd();
+				pRenderer->put_BrushColor1(lColor);
+				pRenderer->PathCommandMoveTo(PdfReader::PDFCoordsToMM(m_vRedact[i]->m_arrRedactBox[j + 0] - cropBox->x1), PdfReader::PDFCoordsToMM(cropBox->y2 - m_vRedact[i]->m_arrRedactBox[j + 1]));
+				pRenderer->PathCommandLineTo(PdfReader::PDFCoordsToMM(m_vRedact[i]->m_arrRedactBox[j + 0] - cropBox->x1), PdfReader::PDFCoordsToMM(cropBox->y2 - m_vRedact[i]->m_arrRedactBox[j + 3]));
+				pRenderer->PathCommandLineTo(PdfReader::PDFCoordsToMM(m_vRedact[i]->m_arrRedactBox[j + 2] - cropBox->x1), PdfReader::PDFCoordsToMM(cropBox->y2 - m_vRedact[i]->m_arrRedactBox[j + 3]));
+				pRenderer->PathCommandLineTo(PdfReader::PDFCoordsToMM(m_vRedact[i]->m_arrRedactBox[j + 2] - cropBox->x1), PdfReader::PDFCoordsToMM(cropBox->y2 - m_vRedact[i]->m_arrRedactBox[j + 1]));
+				pRenderer->PathCommandClose();
+				pRenderer->DrawPath(c_nWindingFillMode);
+				pRenderer->PathCommandEnd();
+			}
 
 			// IMetafileToRenderter* pCorrector = new IMetafileToRenderter(pRenderer);
 			// NSOnlineOfficeBinToPdf::ConvertBufferToRenderer(m_vRedact[i]->m_pChanges, m_vRedact[i]->m_nChangeLength, pCorrector);

@@ -1232,12 +1232,12 @@ CRedact::~CRedact()
 const std::vector<CRedact::SRedact*>& CRedact::GetRedact() { return m_arrRedact; }
 bool CRedact::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector)
 {
-	int n = 1; //pReader->ReadInt();
+	int n = pReader->ReadInt();
 	m_arrRedact.reserve(n);
 	for (int i = 0; i < n; ++i)
 	{
 		SRedact* pRedact = new SRedact();
-		//pRedact->sID = pReader->ReadString();
+		pRedact->sID = pReader->ReadString();
 		int m = pReader->ReadInt();
 		pRedact->arrQuadPoints.reserve(m * 4);
 		for (int j = 0; j < m; ++j)

@@ -379,18 +379,16 @@ void CCtrlShapePic::ReadFromHWPML(CXMLReader &oReader)
 	{
 		if ("IMAGERECT" == sNodeName)
 		{
-			#define READ_POINT(point, index) (STR(##point##index) == sAttributeName) m_arBorderPoints[index].m_n##point = oReader.GetInt()
-
 			START_READ_ATTRIBUTES(oReader)
 			{
-				     if READ_POINT(X, 0);
-				else if READ_POINT(Y, 0);
-				else if READ_POINT(X, 1);
-				else if READ_POINT(Y, 1);
-				else if READ_POINT(X, 2);
-				else if READ_POINT(Y, 2);
-				else if READ_POINT(X, 3);
-				else if READ_POINT(Y, 3);
+					 if ("X0" == sAttributeName) m_arBorderPoints[0].m_nX = oReader.GetInt();
+				else if ("Y0" == sAttributeName) m_arBorderPoints[0].m_nY = oReader.GetInt();
+				else if ("X1" == sAttributeName) m_arBorderPoints[1].m_nX = oReader.GetInt();
+				else if ("Y1" == sAttributeName) m_arBorderPoints[1].m_nY = oReader.GetInt();
+				else if ("X2" == sAttributeName) m_arBorderPoints[2].m_nX = oReader.GetInt();
+				else if ("Y2" == sAttributeName) m_arBorderPoints[2].m_nY = oReader.GetInt();
+				else if ("X3" == sAttributeName) m_arBorderPoints[3].m_nX = oReader.GetInt();
+				else if ("Y3" == sAttributeName) m_arBorderPoints[3].m_nY = oReader.GetInt();
 			}
 			END_READ_ATTRIBUTES(oReader)
 		}

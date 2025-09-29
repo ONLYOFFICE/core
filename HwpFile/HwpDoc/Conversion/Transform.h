@@ -25,7 +25,7 @@ namespace Transform
 	inline std::wstring IntColorToHEX(int nColor)
 	{
 		wchar_t buffer[7];
-		std::swprintf(buffer, L"%02X%02X%02X", (nColor >> 16) & 0xFF, (nColor >> 8) & 0xFF, nColor & 0xFF);
+		std::swprintf(buffer, sizeof(buffer) / sizeof(wchar_t), L"%06X", nColor & 0xFFFFFF);
 		return std::wstring(buffer);
 	}
 

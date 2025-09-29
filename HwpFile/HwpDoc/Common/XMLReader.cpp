@@ -31,12 +31,47 @@ bool CXMLReader::IsEmptyNode()
 
 bool CXMLReader::GetBool()
 {
-	return "1" == GetTextAValue(*this);
+	return "1" == GetTextAValue(*this) || "true" == GetTextAValue(*this);
+}
+
+int StringToInt(const std::string& sValue, const int& _default)
+{
+	std::string::const_iterator itPos{sValue.cbegin()};
+
+	while (std::isspace(*itPos))
+		++itPos;
+
+	if (sValue.cend() == itPos)
+		return _default;
+
+	while (sValue.cend() != itPos && !std::isdigit(*itPos))
+		++itPos;
+
+	if (sValue.cend() == itPos)
+		return _default;
+
+	int nResult = 0;
+
+	while (itPos != sValue.cend() && std::isdigit(*itPos))
+	{
+		nResult = nResult * 10 + (*itPos - '0');
+		++itPos;
+	}
+
+	return ((nResult & 0xFF) << 16) | (((nResult >> 8)  & 0xFF) << 8) | ((nResult >> 16) & 0xFF);
 }
 
 int CXMLReader::GetColor(const int& nDefault)
 {
-	return ConvertHexToInt(GetTextAValue(*this), nDefault);
+	const std::string sValue{GetTextAValue(*this)};
+
+	if (sValue.empty())
+		return nDefault;
+
+	if ('#' == sValue[0])
+		return ConvertHexToInt(sValue, nDefault);
+
+	return StringToInt(sValue, nDefault);
 }
 
 int CXMLReader::GetInt()
@@ -300,24 +335,24 @@ int ConvertWidthToHWP(const std::string& sValue)
 	return 0;
 }
 
-int ConvertHexToInt(const std::string& wsValue, const int& _default)
+int ConvertHexToInt(const std::string& sValue, const int& _default)
 {
-	if (wsValue.empty() || "none" == wsValue)
+	if (sValue.empty() || "none" == sValue)
 		return _default;
 
-	std::string::const_iterator itStart = wsValue.cbegin();
+	std::string::const_iterator itStart = sValue.cbegin();
 
 	if ('#' == *itStart)
 		++itStart;
 
-	if (wsValue.cend() - itStart < 6)
+	if (sValue.cend() - itStart != 6)
 		return _default;
 
-	itStart = wsValue.cend() - 6;
+	itStart = sValue.cend() - 6;
 
 	int nResult = 0;
 
-	while (itStart != wsValue.cend())
+	while (itStart != sValue.cend())
 	{
 		if ('0' <= *itStart && *itStart <= '9')
 			nResult = (nResult << 4) | (*itStart++ - '0');

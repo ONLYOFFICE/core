@@ -1,47 +1,54 @@
 #include "PageBorderFill.h"
 
+#include "../Common/NodeNames.h"
+
 namespace HWP
 {
 CPageBorderFill::CPageBorderFill()
 {}
 
-CPageBorderFill::CPageBorderFill(CXMLReader& oReader, int nVersion)
+CPageBorderFill::CPageBorderFill(CXMLReader& oReader, EHanType eType)
 {
 	START_READ_ATTRIBUTES(oReader)
 	{
-		if ("borderFillIDRef" == sAttributeName)
+		if (GetAttributeName(EAttribute::BorderFillId, eType) == sAttributeName)
 			m_shBorderFill = oReader.GetInt();
-		else if ("textBorder" == sAttributeName)
-			m_bTextBorder = "PAPER" == oReader.GetTextA();
-		else if ("headerInside" == sAttributeName)
+		else if (GetAttributeName(EAttribute::TextBorder, eType) == sAttributeName)
+		{
+			if (EHanType::HWPX == eType)
+				m_bTextBorder = "PAPER" == oReader.GetTextA();
+			else
+				m_bTextBorder = oReader.GetBool();
+		}
+		else if (GetAttributeName(EAttribute::HeaderInside, eType) == sAttributeName)
 			m_bHeaderInside = oReader.GetBool();
-		else if ("footerInside" == sAttributeName)
+		else if (GetAttributeName(EAttribute::FooterInside, eType) == sAttributeName)
 			m_bFooterInside = oReader.GetBool();
-		else if ("fillArea" == sAttributeName)
+		else if (GetAttributeName(EAttribute::FillArea, eType) == sAttributeName)
 		{
 			const std::string sType{oReader.GetTextA()};
 
-			if ("PAPER" == sType)
+			if (GetValueName(EValue::Paper, eType) == sType)
 				m_chFillArea = 0;
-			else if ("PAGE" == sType)
+			else if (GetValueName(EValue::Page, eType) == sType)
 				m_chFillArea = 1;
-			else if ("BORDER" == sType)
+			else if (GetValueName(EValue::Border, eType) == sType)
 				m_chFillArea = 2;
 		}
 	}
 	END_READ_ATTRIBUTES(oReader)
 
-	WHILE_READ_NEXT_NODE_WITH_ONE_NAME(oReader, "offset")
+	WHILE_READ_NEXT_NODE_WITH_ONE_NAME(oReader, GetNodeName(ENode::PageOffset, eType))
 	{
 		START_READ_ATTRIBUTES(oReader)
 		{
-			if ("left" == sAttributeName)
+			if (GetAttributeName(EAttribute::Left, eType) == sAttributeName)
 				m_shOffsetLeft = oReader.GetInt();
-			else if ("right" == sAttributeName)
+			else if (GetAttributeName(EAttribute::Right, eType) == sAttributeName)
 				m_shOffsetRight = oReader.GetInt();
-			else if ("top" == sAttributeName)
+			else if (GetAttributeName(EAttribute::Top, eType) == sAttributeName)
 				m_shOffsetTop = oReader.GetInt();
-			else if ("bottom" == sAttributeName)
+			else if (GetAttributeName(EAttribute::Bottom, eType) == sAttributeName)
 				m_shOffsetBottom = oReader.GetInt();
 		}
 		END_READ_ATTRIBUTES(oReader)

@@ -15,12 +15,15 @@ class CCtrlShapeArc : public CCtrlGeneralShape
 	int m_nAxixY1;
 	int m_nAxixX2;
 	int m_nAxixY2;
+
+	void ReadFromHWPX(CXMLReader& oReader);
+	void ReadFromHWPML(CXMLReader& oReader);
 public:
 	CCtrlShapeArc();
 	CCtrlShapeArc(const HWP_STRING& sCtrlID);
 	CCtrlShapeArc(const CCtrlGeneralShape& oShape);
 	CCtrlShapeArc(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
-	CCtrlShapeArc(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion);
+	CCtrlShapeArc(const HWP_STRING& sCtrlID, CXMLReader& oReader, EHanType eType);
 
 	EShapeType GetShapeType() const override;
 

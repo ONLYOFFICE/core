@@ -904,7 +904,7 @@ HRESULT CPdfWriter::DrawPath(NSFonts::IApplicationFonts* pAppFonts, const std::w
 	}
 
 	if (!m_arrRedact.empty())
-		m_oPath.Redact(m_oTransform, m_arrRedact);
+		m_oPath.Redact(m_oTransform, m_arrRedact, bStroke, bEoFill);
 
 	if (!m_pShading)
 	{

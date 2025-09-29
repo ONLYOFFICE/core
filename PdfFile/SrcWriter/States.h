@@ -1597,7 +1597,8 @@ public:
     void Draw(PdfWriter::CPage* pPage, bool bStroke, bool bFill, bool bEoFill);
     void Clip(PdfWriter::CPage* pPage, bool bEvenOdd = false);
     void GetBounds(double& dL, double& dT, double& dR, double& dB);
-	void Redact(const CTransform& oTransform, const std::vector<double>& arrRedact);
+	void Redact(const CTransform& oTransform, const std::vector<double>& arrRedact, bool bStroke, bool bEoFill);
+	void DrawPathRedact(PdfWriter::CMatrix oMatrix, Aggplus::CGraphicsPath* oPath, bool bStroke, const std::vector<PdfWriter::CSegment>& arrForStroke = {});
 
 private:
 

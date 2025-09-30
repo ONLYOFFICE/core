@@ -527,19 +527,29 @@ void RedactOutputDev::setExtGState(const char* name)
 {
 	if (m_sStates.empty())
 		return;
-	m_sStates.back().m_arrOp.push_back(std::make_pair(name, "gs"));
+	m_sStates.back().m_arrOp.push_back(std::make_pair("/" + std::string(name), "gs"));
 }
 void RedactOutputDev::setFillColorSpace(const char* name)
 {
 	if (m_sStates.empty())
 		return;
-	m_sStates.back().m_arrOp.push_back(std::make_pair(name, "cs"));
+	m_sStates.back().m_arrOp.push_back(std::make_pair("/" + std::string(name), "cs"));
 }
-void RedactOutputDev::setFillColorN(const char* name)
+void RedactOutputDev::setFillColorN(Object* args, int numArgs)
 {
 	if (m_sStates.empty())
 		return;
-	m_sStates.back().m_arrOp.push_back(std::make_pair(name, "scn"));
+	std::string sOp;
+	for (int i = 0; i < numArgs; ++i)
+	{
+		if (args[i].isName())
+			sOp += ("/" + std::string(args[i].getName()) + " ");
+		else if (args[i].isInt())
+			sOp += (std::to_string(args[i].getInt()) + " ");
+		else if (args[i].isReal())
+			sOp += (std::to_string(args[i].getReal()) + " ");
+	}
+	m_sStates.back().m_arrOp.push_back(std::make_pair(sOp, "scn"));
 }
 //----- image drawing
 void RedactOutputDev::drawImageMask(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GBool bInvert, GBool bInlineImage, GBool interpolate)
@@ -632,7 +642,7 @@ void RedactOutputDev::drawForm(GfxState *pGState, Ref id, const char* name)
 	{
 		for (int j = 0; j < m_sStates[i].m_arrOp.size(); ++j)
 		{
-			pStream->WriteEscapeName(m_sStates[i].m_arrOp[j].first.c_str());
+			pStream->WriteStr(m_sStates[i].m_arrOp[j].first.c_str());
 			pStream->WriteChar(' ');
 			pStream->WriteStr(m_sStates[i].m_arrOp[j].second.c_str());
 			pStream->WriteStr("\012");
@@ -697,6 +707,20 @@ void RedactOutputDev::drawImage(GfxState *pGState, Ref id, const char* name)
 	Transform(m_arrMatrix, dXmin, dYmin, &dXmin, &dYmin);
 	Transform(m_arrMatrix, dXmax, dYmax, &dXmax, &dYmax);
 
+	m_pPage->GrSave();
+	UpdateTransform();
+	CStream* pStream = m_pPage->GetStream();
+	for (int i = 0; i < m_sStates.size(); ++i)
+	{
+		for (int j = 0; j < m_sStates[i].m_arrOp.size(); ++j)
+		{
+			pStream->WriteStr(m_sStates[i].m_arrOp[j].first.c_str());
+			pStream->WriteChar(' ');
+			pStream->WriteStr(m_sStates[i].m_arrOp[j].second.c_str());
+			pStream->WriteStr("\012");
+		}
+	}
+
 	for (int i = 0; i < m_arrQuadPoints.size(); i += 4)
 	{
 		double xMin = m_arrQuadPoints[i + 0];
@@ -705,23 +729,13 @@ void RedactOutputDev::drawImage(GfxState *pGState, Ref id, const char* name)
 		double yMax = m_arrQuadPoints[i + 3];
 
 		if (!(dXmax < xMin || dXmin > xMax || dYmax < yMin || dYmin > yMax))
+		{
+			m_pPage->GrRestore();
 			return;
+		}
 	}
 	oImage.free();
 
-	m_pPage->GrSave();
-	UpdateTransform();
-	CStream* pStream = m_pPage->GetStream();
-	for (int i = 0; i < m_sStates.size(); ++i)
-	{
-		for (int j = 0; j < m_sStates[i].m_arrOp.size(); ++j)
-		{
-			pStream->WriteEscapeName(m_sStates[i].m_arrOp[j].first.c_str());
-			pStream->WriteChar(' ');
-			pStream->WriteStr(m_sStates[i].m_arrOp[j].second.c_str());
-			pStream->WriteStr("\012");
-		}
-	}
 	m_pPage->ExecuteXObject(name);
 	m_pPage->GrRestore();
 }
@@ -1400,7 +1414,7 @@ void RedactOutputDev::DrawPath(const LONG& lType)
 	{
 		for (int j = 0; j < m_sStates[i].m_arrOp.size(); ++j)
 		{
-			pStream->WriteEscapeName(m_sStates[i].m_arrOp[j].first.c_str());
+			pStream->WriteStr(m_sStates[i].m_arrOp[j].first.c_str());
 			pStream->WriteChar(' ');
 			pStream->WriteStr(m_sStates[i].m_arrOp[j].second.c_str());
 			pStream->WriteStr("\012");

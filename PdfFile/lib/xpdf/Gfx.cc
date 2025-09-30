@@ -1569,7 +1569,7 @@ void Gfx::opSetFillColorN(Object args[], int numArgs) {
   }
   if (out->useNameOp())
   {
-	out->setFillColorN(args[numArgs-1].getName());
+	out->setFillColorN(args, numArgs);
 	return;
   }
   if (state->getFillColorSpace()->getMode() == csPattern) {

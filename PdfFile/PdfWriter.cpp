@@ -168,6 +168,8 @@ CPdfWriter::CPdfWriter(NSFonts::IApplicationFonts* pAppFonts, bool isPDFA, IRend
 	m_pRenderer = pRenderer;
 	m_bNeedAddHelvetica = true;
 	m_wsTempDirectory = wsTempDirectory;
+	m_pShading = NULL;
+	m_pShadingExtGrState = NULL;
 
 	m_pDocument = new PdfWriter::CDocument();
 

@@ -1,5 +1,7 @@
 #include "HwpRecordTabDef.h"
 
+#include "../Common/NodeNames.h"
+
 namespace HWP
 {
 TTab::TTab()
@@ -14,7 +16,7 @@ TTab::TTab(CXMLReader& oReader)
 		else if ("type" == sAttributeName)
 			SetType(oReader.GetInt());
 		else if ("leader" == sAttributeName)
-			m_eLeader = GetLineStyle2(oReader.GetText());
+			m_eLeader = GetLineStyle2(oReader.GetTextA(), EHanType::HWPX);
 	}
 	END_READ_ATTRIBUTES(oReader)
 }
@@ -69,19 +71,19 @@ CHwpRecordTabDef::CHwpRecordTabDef(CHWPDocInfo& oDocInfo, int nTagNum, int nLeve
 	oBuffer.RemoveLastSavedPos();
 }
 
-CHwpRecordTabDef::CHwpRecordTabDef(CHWPDocInfo& oDocInfo, CXMLReader& oReader, int nVersion)
+CHwpRecordTabDef::CHwpRecordTabDef(CHWPDocInfo& oDocInfo, CXMLReader& oReader, EHanType eType)
 	: CHWPRecord(EHWPTag::HWPTAG_TAB_DEF, 0, 0), m_pParent(&oDocInfo), m_nAttr(0)
 {
 	START_READ_ATTRIBUTES(oReader)
 	{
-		if ("autoTabLeft" == sAttributeName)
+		if (GetAttributeName(EAttribute::AutoTabLeft, eType) == sAttributeName)
 		{
 			if (oReader.GetBool())
 				m_nAttr |= 0x00000001;
 			else
 				m_nAttr &= 0xFFFFFFFE;
 		}
-		else if ("autoTabRight" == sAttributeName)
+		else if (GetAttributeName(EAttribute::AutoTabRight, eType) == sAttributeName)
 		{
 			if (oReader.GetBool())
 				m_nAttr |= 0x00000002;
@@ -91,6 +93,10 @@ CHwpRecordTabDef::CHwpRecordTabDef(CHWPDocInfo& oDocInfo, CXMLReader& oReader, i
 	}
 	END_READ_ATTRIBUTES(oReader)
 
+	// Дальнейшая структура встречается лишь в HWPX формате
+	if (EHanType::HWPX != eType)
+		return;
+	
 	WHILE_READ_NEXT_NODE_WITH_ONE_NAME(oReader, "hp:switch")
 		WHILE_READ_NEXT_NODE_WITH_DEPTH_ONE_NAME(oReader, Child, "hp:default")
 			WHILE_READ_NEXT_NODE_WITH_DEPTH_ONE_NAME(oReader, TabChild, "hh:tabItem")
@@ -98,7 +104,6 @@ CHwpRecordTabDef::CHwpRecordTabDef(CHWPDocInfo& oDocInfo, CXMLReader& oReader, i
 			END_WHILE
 		END_WHILE
 	END_WHILE
-
 }
 
 int CHwpRecordTabDef::GetCount() const

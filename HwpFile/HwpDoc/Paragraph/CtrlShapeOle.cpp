@@ -17,8 +17,18 @@ CCtrlShapeOle::CCtrlShapeOle(const HWP_STRING& sCtrlID, int nSize, CHWPStream& o
 	: CCtrlGeneralShape(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
 
-CCtrlShapeOle::CCtrlShapeOle(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion)
-    : CCtrlGeneralShape(sCtrlID, oReader, nVersion)
+CCtrlShapeOle::CCtrlShapeOle(const HWP_STRING& sCtrlID, CXMLReader& oReader, EHanType eType)
+    : CCtrlGeneralShape(sCtrlID, oReader, eType)
+{
+	switch(eType)
+	{
+		case EHanType::HWPX:  ReadFromHWPX (oReader); return;
+		case EHanType::HWPML: ReadFromHWPML(oReader); return;
+		default: break;
+	}
+}
+
+void CCtrlShapeOle::ReadFromHWPX(CXMLReader &oReader)
 {
 	m_sBinDataID = oReader.GetAttribute("binaryItemIDRef");
 
@@ -36,8 +46,26 @@ CCtrlShapeOle::CCtrlShapeOle(const HWP_STRING& sCtrlID, CXMLReader& oReader, int
 			END_READ_ATTRIBUTES(oReader)
 		}
 		else
-			CCtrlGeneralShape::ParseChildren(oReader, nVersion);
+			CCtrlGeneralShape::ParseChildren(oReader, EHanType::HWPX);
 	}
+	END_WHILE
+}
+
+void CCtrlShapeOle::ReadFromHWPML(CXMLReader &oReader)
+{
+	START_READ_ATTRIBUTES(oReader)
+	{
+		if ("ExtentX" == sAttributeName)
+			m_nExtentX = oReader.GetInt();
+		else if ("ExtentY" == sAttributeName)
+			m_nExtentY = oReader.GetInt();
+		else if ("BinItem" == sAttributeName)
+			m_sBinDataID = oReader.GetText();
+	}
+	END_READ_ATTRIBUTES(oReader)
+
+	WHILE_READ_NEXT_NODE(oReader)
+		CCtrlGeneralShape::ParseChildren(oReader, EHanType::HWPML);
 	END_WHILE
 }
 

@@ -152,11 +152,13 @@
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/PIVOTCORE.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/PIVOTVD.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/PIVOTIVD.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/PIVOTLI.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/SxView.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Sxvd.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/SxIvd.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/SXVI.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/SXDI.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/SXLI.h"
 
 namespace OOX
 {
@@ -542,6 +544,10 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			ptr->m_arPIVOTIVD.push_back(m_oRowFields->toXLS());
 		if(m_oColFields.IsInit())
 			ptr->m_arPIVOTIVD.push_back(m_oColFields->toXLS());
+		if(m_oRowItems.IsInit())
+			ptr->m_arPIVOTLI.push_back(m_oRowItems->toXLS());
+		if(m_oColItems.IsInit())
+			ptr->m_arPIVOTLI.push_back(m_oColItems->toXLS());
 		if(m_oDataFields.IsInit())
 		{
 			for(auto i : m_oDataFields->m_arrItems)
@@ -1285,6 +1291,60 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		for(auto i:m_arrItems)
 			ptr->m_arSXLI.push_back(i->toBin());
 		return objectPtr;
+	}
+	XLS::BaseObjectPtr CColumnRowItems::toXLS()
+	{
+		auto ptr1 = new XLS::PIVOTLI(m_arrItems.size());
+		auto ptr = new XLS::SXLI(m_arrItems.size());
+		ptr1->m_SXLI = XLS::BaseObjectPtr(ptr);
+		for(auto i : m_arrItems)
+		{
+			XLS::SXLIItem lineItem;
+			if(i->m_oR.IsInit())
+				lineItem.cSic = i->m_oR->GetValue();
+
+			if(i->m_oT.IsInit())
+			{
+				if (i->m_oT == SimpleTypes::Spreadsheet::EPivotItemType::typeData)
+					lineItem.itmType = XLSB::PivotItemType::PITDATA;
+				else if (i->m_oT == SimpleTypes::Spreadsheet::EPivotItemType::typeDefault)
+					lineItem.itmType = XLSB::PivotItemType::PITDEFAULT;
+				else if (i->m_oT == SimpleTypes::Spreadsheet::EPivotItemType::typeSum)
+					lineItem.itmType = XLSB::PivotItemType::PITSUM;
+				else if (i->m_oT == SimpleTypes::Spreadsheet::EPivotItemType::typeCountA)
+					lineItem.itmType = XLSB::PivotItemType::PITCOUNTA;
+				else if (i->m_oT == SimpleTypes::Spreadsheet::EPivotItemType::typeAverage)
+					lineItem.itmType = XLSB::PivotItemType::PITAVG;
+				else if (i->m_oT == SimpleTypes::Spreadsheet::EPivotItemType::typeMax)
+					lineItem.itmType = XLSB::PivotItemType::PITMAX;
+				else if (i->m_oT == SimpleTypes::Spreadsheet::EPivotItemType::typeMin)
+					lineItem.itmType = XLSB::PivotItemType::PITMIN;
+				else if (i->m_oT == SimpleTypes::Spreadsheet::EPivotItemType::typeProduct)
+					lineItem.itmType = XLSB::PivotItemType::PITPRODUCT;
+				else if (i->m_oT == SimpleTypes::Spreadsheet::EPivotItemType::typeCount)
+					lineItem.itmType = XLSB::PivotItemType::PITCOUNT;
+				else if (i->m_oT == SimpleTypes::Spreadsheet::EPivotItemType::typeStdDev)
+					lineItem.itmType = XLSB::PivotItemType::PITSTDDEV;
+				else if (i->m_oT == SimpleTypes::Spreadsheet::EPivotItemType::typeStdDevP)
+					lineItem.itmType = XLSB::PivotItemType::PITSTDDEVP;
+				else if (i->m_oT == SimpleTypes::Spreadsheet::EPivotItemType::typeVar)
+					lineItem.itmType = XLSB::PivotItemType::PITVAR;
+				else if (i->m_oT == SimpleTypes::Spreadsheet::EPivotItemType::typeVarP)
+					lineItem.itmType = XLSB::PivotItemType::PITVARP;
+				else if (i->m_oT == SimpleTypes::Spreadsheet::EPivotItemType::typeGrandTotalt)
+					lineItem.itmType = XLSB::PivotItemType::PITGRAND;
+				else if (i->m_oT == SimpleTypes::Spreadsheet::EPivotItemType::typeBlank)
+					lineItem.itmType = XLSB::PivotItemType::PITBLANK;
+			}
+			lineItem.isxviMac = i->m_arrItems.size();
+			if(i->m_oI.IsInit())
+				lineItem.iData = i->m_oI->GetValue();
+			for(auto j : i->m_arrItems)
+				if(j->m_oV.IsInit())
+					lineItem.rgisxvi.push_back(j->m_oV->GetValue());
+			ptr->m_arItems.push_back(lineItem);
+		}
+		return XLS::BaseObjectPtr(ptr1);
 	}
     void CColumnRowItems::fromBin(XLS::BaseObjectPtr& obj)
     {

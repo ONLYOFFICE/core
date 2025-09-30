@@ -34,6 +34,7 @@
 
 #include "../../DesktopEditor/common/Types.h"
 #include "../../DesktopEditor/graphics/AggPlusEnums.h"
+#include "../../DesktopEditor/graphics/GraphicsPath.h"
 #include "Types.h"
 
 #include <string>
@@ -72,11 +73,17 @@ public:
         m_dY          = dY;
         m_pFont       = NULL;
         m_dSize       = -1;
+		m_nType       = PdfWriter::EFontType::fontUnknownType;
         m_lColor      = 0;
         m_nAlpha      = 255;
         m_dCharSpace  = 0;
         m_dHorScaling = 100;
         m_nMode       = (int)PdfWriter::textrenderingmode_Fill;
+		m_nColor2Size = 1;
+		m_dColor2[0]  = 0;
+		m_dRise       = 0;
+		m_dWordSpace  = 0;
+		m_dWidth      = -1;
 
         m_bNeedDoItalic = false;
         m_bNeedDoBold   = false;
@@ -115,6 +122,10 @@ public:
     {
         m_dSize = dSize;
     }
+	inline void           SetType(PdfWriter::EFontType oType)
+	{
+		m_nType = oType;
+	}
     inline void           SetColor(const LONG& lColor)
     {
         m_lColor = lColor;
@@ -147,7 +158,31 @@ public:
 	{
 		m_sPUA = sPUA;
 	}
-    inline PdfWriter::CFontDict*     GetFont() const
+	inline void           SetDColor2(int nSize, double d1 = 0, double d2 = 0, double d3 = 0, double d4 = 0)
+	{
+		m_nColor2Size = nSize;
+		m_dColor2[0] = d1;
+		m_dColor2[1] = d2;
+		m_dColor2[2] = d3;
+		m_dColor2[3] = d4;
+	}
+	inline void           SetRise(const double& dRise)
+	{
+		m_dRise = dRise;
+	}
+	inline void           SetWordSpace(const double& dWordSpace)
+	{
+		m_dWordSpace = dWordSpace;
+	}
+	inline void           SetName(const std::wstring& sName)
+	{
+		m_sName = sName;
+	}
+	inline void           SetWidth(const double& dWidth)
+	{
+		m_dWidth = dWidth;
+	}
+	inline PdfWriter::CFontDict* GetFont() const
     {
         return m_pFont;
     }
@@ -155,6 +190,10 @@ public:
     {
         return m_dSize;
     }
+	inline PdfWriter::EFontType GetFontType() const
+	{
+		return m_nType;
+	}
     inline LONG           GetColor() const
     {
         return m_lColor;
@@ -187,6 +226,27 @@ public:
 	{
 		return m_sPUA;
 	}
+	inline double*        GetDColor2(int& nSize)
+	{
+		nSize = m_nColor2Size;
+		return m_dColor2;
+	}
+	inline double         GetRise()
+	{
+		return m_dRise;
+	}
+	inline double         GetWordSpace()
+	{
+		return m_dWordSpace;
+	}
+	inline std::wstring   GetName()
+	{
+		return m_sName;
+	}
+	inline double         GetWidth()
+	{
+		return m_dWidth;
+	}
 
 private:
 
@@ -199,12 +259,19 @@ private:
     bool           m_bNeedDoItalic;
     bool           m_bNeedDoBold;
     double         m_dSize;
+	PdfWriter::EFontType m_nType;
     LONG           m_lColor;
     BYTE           m_nAlpha;
     double         m_dCharSpace;
     int            m_nMode;
     double         m_dHorScaling;
 	std::string    m_sPUA;
+	double         m_dColor2[4];
+	int            m_nColor2Size;
+	double         m_dRise;
+	double         m_dWordSpace;
+	std::wstring   m_sName;
+	double         m_dWidth;
 };
 struct TFontInfo
 {
@@ -429,11 +496,32 @@ public:
             }
         }
     }
-    inline double*GetDashPattern(LONG& lSize)
+	inline double* GetDashPattern(LONG& lSize)
     {
         lSize = m_lDashPatternSize;
         return m_pDashPattern;
     }
+	inline double GetFlatness()
+	{
+		return m_dFlatness;
+	}
+	inline void   SetFlatness(const double& dF)
+	{
+		m_dFlatness = dF;
+	}
+	inline double* GetDColor2(int& nSize)
+	{
+		nSize = m_nColor2Size;
+		return m_dColor2;
+	}
+	inline void SetDColor2(int nSize, double d1 = 0, double d2 = 0, double d3 = 0, double d4 = 0)
+	{
+		m_nColor2Size = nSize;
+		m_dColor2[0] = d1;
+		m_dColor2[1] = d2;
+		m_dColor2[2] = d3;
+		m_dColor2[3] = d4;
+	}
 
     void Reset()
     {
@@ -449,12 +537,14 @@ public:
 
         m_lAlign = 0;
         m_dMiter = 3.527778;
+		m_dFlatness = 0;
 
         m_nDashStyle       = Aggplus::DashStyleSolid;
         m_lDashPatternSize = 0;
         m_pDashPattern     = NULL;
+		m_dDashOffset      = 0;
 
-        m_dDashOffset = 0;
+		m_nColor2Size = 0;
     }
 
 private:
@@ -468,12 +558,15 @@ private:
 
     LONG   m_lAlign;
     double m_dMiter;
+	double m_dFlatness;
 
     BYTE   m_nDashStyle;
     double m_dDashOffset;
     double*m_pDashPattern;
     LONG   m_lDashPatternSize;
 
+	double m_dColor2[4];
+	int m_nColor2Size;
 };
 class CBrushState
 {
@@ -981,6 +1074,20 @@ public:
         lCount  = m_lShadingPointsCount;
     }
 
+	inline double* GetDColor2(int& nSize)
+	{
+		nSize = m_nColor2Size;
+		return m_dColor2;
+	}
+	inline void SetDColor2(int nSize, double d1 = 0, double d2 = 0, double d3 = 0, double d4 = 0)
+	{
+		m_nColor2Size = nSize;
+		m_dColor2[0] = d1;
+		m_dColor2[1] = d2;
+		m_dColor2[2] = d3;
+		m_dColor2[3] = d4;
+	}
+
 private:
 
     LONG         m_lType;
@@ -998,13 +1105,16 @@ private:
     double*      m_pShadingPoints;
     LONG         m_lShadingPointsCount;
     double       m_pShadingPattern[6]; // У линейного градиента x0, y0, x1, y1 (2 не используются), у радиального x0, y0, r0, x1, y1, r1
+
+	double m_dColor2[4];
+	int m_nColor2Size;
 };
 class CFontState
 {
 public:
 
-    CFontState() : m_wsName(L"Arial"), m_wsPath(L""), m_dSize(10), m_bGid(false), m_lFaceIndex(0), m_lStyle(0),
-        m_bBold(false), m_bItalic(false), m_dCharSpace(0), m_bNeedDoItalic(false), m_bNeedDoBold(false)
+	CFontState() : m_wsName(L"Arial"), m_wsPath(L""), m_dSize(10), m_bGid(false), m_lFaceIndex(0), m_lStyle(0), m_bBold(false), m_bItalic(false), m_dCharSpace(0), m_bNeedDoItalic(false),
+		m_bNeedDoBold(false), m_nRenderMode(0), m_dRise(0), m_dWordSpace(0), m_dHorizontalScaling(100)
     {
     }
 
@@ -1019,6 +1129,10 @@ public:
         m_bBold      = false;
         m_bItalic    = false;
         m_dCharSpace = 0;
+		m_nRenderMode = 0;
+		m_dRise      = 0;
+		m_dWordSpace = 0;
+		m_dHorizontalScaling = 100;
 
         m_bNeedDoItalic = false;
         m_bNeedDoBold   = false;
@@ -1106,6 +1220,39 @@ public:
     {
         return m_bNeedDoBold;
     }
+	inline void         SetRenderMode(BYTE nMode)
+	{
+		m_nRenderMode = nMode;
+	}
+	inline BYTE         GetRenderMode()
+	{
+		return m_nRenderMode;
+	}
+	inline void         SetRise(double dRise)
+	{
+		m_dRise = dRise;
+	}
+	inline double       GetRise()
+	{
+		return m_dRise;
+	}
+	inline void         SetWordSpace(double dWordSpace)
+	{
+		m_dWordSpace = dWordSpace;
+	}
+	inline double       GetWordSpace()
+	{
+		return m_dWordSpace;
+	}
+	inline void         SetHorizontalScaling(double dHS)
+	{
+		m_dHorizontalScaling = dHS;
+	}
+	inline double       GetHorizontalScaling()
+	{
+		return m_dHorizontalScaling;
+	}
+
 
 private:
 
@@ -1120,6 +1267,68 @@ private:
     double       m_dCharSpace;
     bool         m_bNeedDoItalic;
     bool         m_bNeedDoBold;
+	BYTE         m_nRenderMode;
+	double       m_dRise;
+	double       m_dWordSpace;
+	double m_dHorizontalScaling;
+};
+struct CTransform
+{
+	CTransform()
+	{
+		Reset();
+	}
+	void operator=(const CTransform& oT)
+	{
+		m11 = oT.m11;
+		m12 = oT.m12;
+		m21 = oT.m21;
+		m22 = oT.m22;
+		dx  = oT.dx;
+		dy  = oT.dy;
+	}
+	void Reset()
+	{
+		m11 = 1.0;
+		m12 = 0.0;
+		m21 = 0.0;
+		m22 = 1.0;
+		dx  = 0;
+		dy  = 0;
+	}
+	bool IsIdentity() const
+	{
+		if (fabs(m11 - 1) < 0.001
+			&& fabs(m12) < 0.001
+			&& fabs(m21) < 0.001
+			&& fabs(m22 - 1) < 0.001
+			&& fabs(dx) < 0.001
+			&& fabs(dy) < 0.001)
+			return true;
+
+		return false;
+	}
+	void Set(const double& dM11, const double& dM12, const double& dM21, const double& dM22, const double& dX, const double& dY)
+	{
+		m11 = dM11;
+		m12 = dM12;
+		m21 = dM21;
+		m22 = dM22;
+		dx  = dX;
+		dy  = dY;
+	}
+	void Transform(double dUserX, double dUserY, double* pdDeviceX, double* pdDeviceY) const
+	{
+		*pdDeviceX = dUserX * m11 + dUserY * m21 + dx;
+		*pdDeviceY = dUserX * m12 + dUserY * m22 + dy;
+	}
+
+	double m11;
+	double m12;
+	double m21;
+	double m22;
+	double dx;
+	double dy;
 };
 class CPath
 {
@@ -1151,6 +1360,7 @@ private:
         virtual void UpdateBounds(double& dL, double& dT, double& dR, double& dB) = 0;
         virtual void GetLastPoint(double& dX, double& dY) = 0;
         virtual EPathCommandType GetType() = 0;
+		virtual void ToCGraphicsPath(const CTransform& oTransform, Aggplus::CGraphicsPath& oPath) = 0;
     };
     class CPathMoveTo : public CPathCommandBase
     {
@@ -1171,6 +1381,7 @@ private:
         {
             return rendererpathcommand_MoveTo;
         }
+		void ToCGraphicsPath(const CTransform& oTransform, Aggplus::CGraphicsPath& oPath);
 
     public:
 
@@ -1196,6 +1407,7 @@ private:
         {
             return rendererpathcommand_LineTo;
         }
+		void ToCGraphicsPath(const CTransform& oTransform, Aggplus::CGraphicsPath& oPath);
 
     public:
 
@@ -1225,6 +1437,7 @@ private:
         {
             return rendererpathcommand_CurveTo;
         }
+		void ToCGraphicsPath(const CTransform& oTransform, Aggplus::CGraphicsPath& oPath);
 
     public:
 
@@ -1259,6 +1472,7 @@ private:
         {
             return rendererpathcommand_ArcTo;
         }
+		void ToCGraphicsPath(const CTransform& oTransform, Aggplus::CGraphicsPath& oPath);
 
     public:
 
@@ -1287,6 +1501,7 @@ private:
         {
             return rendererpathcommand_Close;
         }
+		void ToCGraphicsPath(const CTransform& oTransform, Aggplus::CGraphicsPath& oPath);
     };
     class CPathText : public CPathCommandBase
     {
@@ -1316,6 +1531,7 @@ private:
         {
             return rendererpathcommand_Text;
         }
+		void ToCGraphicsPath(const CTransform& oTransform, Aggplus::CGraphicsPath& oPath);
 
     public:
 
@@ -1391,6 +1607,8 @@ public:
     void Draw(PdfWriter::CPage* pPage, bool bStroke, bool bFill, bool bEoFill);
     void Clip(PdfWriter::CPage* pPage, bool bEvenOdd = false);
     void GetBounds(double& dL, double& dT, double& dR, double& dB);
+	void Redact(const CTransform& oTransform, const std::vector<double>& arrRedact, bool bStroke, bool bEoFill);
+	void DrawPathRedact(PdfWriter::CMatrix oMatrix, Aggplus::CGraphicsPath* oPath, bool bStroke, const std::vector<PdfWriter::CSegment>& arrForStroke = {});
 
 private:
 
@@ -1410,59 +1628,7 @@ public:
     std::vector<CPathCommandBase*> m_vCommands;
     bool                           m_bIsMoveTo;
 };
-struct CTransform
-{
-    CTransform()
-    {
-        Reset();
-    }
-    void operator=(const CTransform& oT)
-    {
-        m11 = oT.m11;
-        m12 = oT.m12;
-        m21 = oT.m21;
-        m22 = oT.m22;
-        dx  = oT.dx;
-        dy  = oT.dy;
-    }
-    void Reset()
-    {
-        m11 = 1.0;
-        m12 = 0.0;
-        m21 = 0.0;
-        m22 = 1.0;
-        dx  = 0;
-        dy  = 0;
-    }
-    bool IsIdentity() const
-    {
-        if (fabs(m11 - 1) < 0.001
-            && fabs(m12) < 0.001
-            && fabs(m21) < 0.001
-            && fabs(m22 - 1) < 0.001
-            && fabs(dx) < 0.001
-            && fabs(dy) < 0.001)
-            return true;
 
-        return false;
-    }
-    void Set(const double& dM11, const double& dM12, const double& dM21, const double& dM22, const double& dX, const double& dY)
-    {
-        m11 = dM11;
-        m12 = dM12;
-        m21 = dM21;
-        m22 = dM22;
-        dx  = dX;
-        dy  = dY;
-    }
-
-    double m11;
-    double m12;
-    double m21;
-    double m22;
-    double dx;
-    double dy;
-};
 class CCommandManager
 {
 public:
@@ -1478,7 +1644,7 @@ private:
 private:
     CPdfWriter*                        m_pRenderer;
     std::vector<CRendererCommandBase*> m_vCommands;
-    CTransform                         m_oTransform;
+	CTransform                         m_oTransform;
 };
 struct TDestinationInfo
 {

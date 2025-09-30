@@ -46,6 +46,7 @@
 #include <string>
 #include <algorithm>
 #include <math.h>
+#include <vector>
 
 #ifdef __linux__
 #include <string.h>
@@ -53,6 +54,7 @@
 
 namespace PdfWriter
 {
+	const double EPS = 0.001;
 	struct TRect
 	{
 		TRect()
@@ -76,7 +78,7 @@ namespace PdfWriter
 		double fTop;
 	};
 	typedef TRect TBox;
-	class CMatrix	
+	class CMatrix
 	{
 	public:
 
@@ -356,12 +358,10 @@ namespace PdfWriter
 	class CPoint
 	{
 	public:
+		CPoint() : x(0), y(0) {}
+		CPoint(double dX, double dY) : x(dX), y(dY) {}
+		CPoint(const CPoint& oPoint) : x(oPoint.x), y(oPoint.y) {}
 
-		CPoint()
-		{
-			x = 0;
-			y = 0;
-		}
 		void Set(double dX, double dY)
 		{
 			x = dX;
@@ -378,11 +378,204 @@ namespace PdfWriter
 			y = oPoint.y;
 			return *this;
 		}
+		bool operator==(const CPoint& oPoint) const
+		{
+			return std::abs(x - oPoint.x) < EPS && std::abs(y - oPoint.y) < EPS;
+		}
 
 	public:
-
 		double x;
 		double y;
+	};
+	struct CSegment
+	{
+		CPoint start;
+		CPoint end;
+		CSegment(const CPoint& s, const CPoint& e) : start(s), end(e) {}
+	};
+	class CLineClipper
+	{
+	private:
+		std::vector<TRect> rectangles;
+
+		// Проверка пересечения отрезка с прямоугольником
+		bool intersectsRectangle(const CSegment& segment, const TRect& rect)
+		{
+			// Используем алгоритм Коэна-Сазерленда для определения пересечения
+			int code1 = computeCohenSutherlandCode(segment.start, rect);
+			int code2 = computeCohenSutherlandCode(segment.end, rect);
+
+			// Если оба конца внутри - полное пересечение
+			if (code1 == 0 && code2 == 0) return true;
+
+			// Если оба конца с одной стороны - нет пересечения
+			if ((code1 & code2) != 0) return false;
+
+			// Есть пересечение
+			return true;
+		}
+
+		// Вычисление кода Коэна-Сазерленда
+		int computeCohenSutherlandCode(const CPoint& p, const TRect& rect)
+		{
+			int code = 0;
+
+			if (p.x < rect.fLeft)   code |= 1; // Слева
+			if (p.x > rect.fRight)  code |= 2; // Справа
+			if (p.y < rect.fBottom) code |= 4; // Снизу
+			if (p.y > rect.fTop)    code |= 8; // Сверху
+
+			return code;
+		}
+
+		// Нахождение точек пересечения отрезка с прямоугольником
+		std::vector<CPoint> findIntersectionPoints(const CSegment& segment, const TRect& rect)
+		{
+			std::vector<CPoint> intersections;
+
+			// Проверяем пересечение с каждой стороной прямоугольника
+			std::vector<CSegment> rectSides =
+			{
+				CSegment(CPoint(rect.fLeft, rect.fBottom),  CPoint(rect.fRight, rect.fBottom)), // нижняя
+				CSegment(CPoint(rect.fRight, rect.fBottom), CPoint(rect.fRight, rect.fTop)),    // правая
+				CSegment(CPoint(rect.fRight, rect.fTop),    CPoint(rect.fLeft, rect.fTop)),     // верхняя
+				CSegment(CPoint(rect.fLeft, rect.fTop),     CPoint(rect.fLeft, rect.fBottom))   // левая
+			};
+
+			for (const auto& side : rectSides)
+			{
+				CPoint intersection;
+				if (findLineIntersection(segment, side, intersection))
+				{
+					// Проверяем, что точка лежит на обоих отрезках
+					if (pointOnSegment(intersection, segment) && pointOnSegment(intersection, side))
+						intersections.push_back(intersection);
+				}
+			}
+
+			return intersections;
+		}
+
+		// Нахождение пересечения двух отрезков
+		bool findLineIntersection(const CSegment& seg1, const CSegment& seg2, CPoint& result)
+		{
+			double x1 = seg1.start.x, y1 = seg1.start.y;
+			double x2 = seg1.end.x, y2 = seg1.end.y;
+			double x3 = seg2.start.x, y3 = seg2.start.y;
+			double x4 = seg2.end.x, y4 = seg2.end.y;
+
+			double denom = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
+
+			if (std::abs(denom) < 1e-9) return false; // Параллельные линии
+
+			double t =  ((x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4)) / denom;
+			double u = -((x1 - x2) * (y1 - y3) - (y1 - y2) * (x1 - x3)) / denom;
+
+			result.x = x1 + t * (x2 - x1);
+			result.y = y1 + t * (y2 - y1);
+
+			return true;
+		}
+
+		// Проверка, лежит ли точка на отрезке
+		bool pointOnSegment(const CPoint& p, const CSegment& seg)
+		{
+			// Проверяем коллинеарность и нахождение между концами
+			return std::abs(distance(seg.start, p) + distance(p, seg.end) - distance(seg.start, seg.end)) < 1e-9;
+		}
+
+		// Расстояние между двумя точками
+		double distance(const CPoint& a, const CPoint& b)
+		{
+			return std::sqrt((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y));
+		}
+
+		// Параметрическое значение точки на линии (0 = start, 1 = end)
+		double getParametricValue(const CPoint& p, const CSegment& line)
+		{
+			double lineLength = distance(line.start, line.end);
+			if (lineLength < 1e-9) return 0;
+
+			// Проекция на направляющий вектор линии
+			double dx = line.end.x - line.start.x;
+			double dy = line.end.y - line.start.y;
+
+			if (std::abs(dx) > std::abs(dy))
+				return (p.x - line.start.x) / dx;
+			else
+				return (p.y - line.start.y) / dy;
+		}
+
+	public:
+		CLineClipper(const std::vector<TRect>& rects) : rectangles(rects) {}
+
+		// Основная функция для вычисления видимых сегментов
+		std::vector<CSegment> getVisibleSegments(const CSegment& line)
+		{
+			std::vector<double> cutPoints = {0.0, 1.0}; // Начало и конец линии
+
+			// Собираем все точки пересечения со всеми прямоугольниками
+			for (const auto& rect : rectangles)
+			{
+				if (intersectsRectangle(line, rect))
+				{
+					auto intersections = findIntersectionPoints(line, rect);
+					for (const auto& p : intersections)
+					{
+						double t = getParametricValue(p, line);
+						if (t >= 0 && t <= 1)
+							cutPoints.push_back(t);
+					}
+				}
+			}
+
+			// Сортируем точки по параметрическому значению
+			std::sort(cutPoints.begin(), cutPoints.end());
+			cutPoints.erase(std::unique(cutPoints.begin(), cutPoints.end()), cutPoints.end());
+
+			// Проверяем каждый сегмент на видимость
+			std::vector<CSegment> visibleSegments;
+			for (size_t i = 0; i < cutPoints.size() - 1; i++)
+			{
+				double t1 = cutPoints[i];
+				double t2 = cutPoints[i + 1];
+
+				// Средняя точка сегмента для проверки видимости
+				double t_mid = (t1 + t2) / 2.0;
+				CPoint midPoint(
+					line.start.x + t_mid * (line.end.x - line.start.x),
+					line.start.y + t_mid * (line.end.y - line.start.y)
+				);
+
+				// Сегмент видим, если его средняя точка не внутри ни одного прямоугольника
+				if (!isPointInsideAnyRectangle(midPoint))
+				{
+					CPoint segStart(
+						line.start.x + t1 * (line.end.x - line.start.x),
+						line.start.y + t1 * (line.end.y - line.start.y)
+					);
+					CPoint segEnd(
+						line.start.x + t2 * (line.end.x - line.start.x),
+						line.start.y + t2 * (line.end.y - line.start.y)
+					);
+					visibleSegments.push_back(CSegment(segStart, segEnd));
+				}
+			}
+
+			return visibleSegments;
+		}
+
+	private:
+		// Проверка, находится ли точка внутри любого прямоугольника
+		bool isPointInsideAnyRectangle(const CPoint& p)
+		{
+			for (const auto& rect : rectangles)
+			{
+				if (p.x >= rect.fLeft && p.x <= rect.fRight && p.y >= rect.fBottom && p.y <= rect.fTop)
+					return true;
+			}
+			return false;
+		}
 	};
 	enum EGrMode
 	{
@@ -456,6 +649,13 @@ namespace PdfWriter
 		fontCIDType0COT,
 		fontCIDType2,
 		fontCIDType2OT
+	};
+	enum class ERenderingIntent
+	{
+		RenderingIntent_AbsoluteColorimetric,
+		RenderingIntent_RelativeColorimetric,
+		RenderingIntent_Saturation,
+		RenderingIntent_Perceptual
 	};
 }
 

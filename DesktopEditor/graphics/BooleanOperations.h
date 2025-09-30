@@ -116,6 +116,8 @@ namespace Aggplus
 		void TraceOneInters();
 		void TraceAllOverlap();
 		void TracePaths();
+		void TraceOneCurvePath1();
+		void TraceOneCurvePath2();
 
 		// Path
 		void	PreparePath(const CGraphicsPath& path, int id, std::vector<Segment>& segments,
@@ -151,6 +153,7 @@ namespace Aggplus
 		void InsertLocation(std::shared_ptr<Location> loc, bool overlap);
 		bool AllOverlap() const noexcept;
 		bool AllInters(const std::vector<Segment>& segments) const noexcept;
+		bool IsOneCurvePath(int pathIndex) const noexcept;
 		void AddOffsets(std::vector<double>& offsets, const Curve& curve, bool end);
 
 	private:

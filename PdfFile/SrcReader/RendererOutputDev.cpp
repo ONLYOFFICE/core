@@ -2381,6 +2381,9 @@ namespace PdfReader
 			return;
 		}
 
+		if (((GlobalParamsAdaptor*)globalParams)->InRedact(dX + dDx / 2.0, dY))
+			return;
+
 		double* pCTM   = pGState->getCTM();
 		double* pTm    = pGState->getTextMat();
 		GfxFont* pFont = pGState->getFont();

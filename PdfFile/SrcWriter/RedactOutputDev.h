@@ -157,6 +157,7 @@ namespace PdfWriter
 		virtual void setExtGState(const char* name) override;
 		virtual void setFillColorSpace(const char* name) override;
 		virtual void setFillColorN(Object* args, int numArgs) override;
+		virtual void setShading(GfxState *state, const char* name) override;
 		//----- image drawing
 		virtual void drawImageMask(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GBool bInvert, GBool bInlineImage, GBool interpolate) override;
 		virtual void setSoftMaskFromImageMask(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GBool bInvert, GBool bInlineImage, GBool interpolate) override;

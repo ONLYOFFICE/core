@@ -194,6 +194,7 @@ public:
   virtual void setExtGState(const char* name) {}
   virtual void setFillColorSpace(const char* name) {}
   virtual void setFillColorN(Object* args, int numArgs) {}
+  virtual void setShading(GfxState *state, const char* name) {}
 
   //----- image drawing
   virtual void drawImageMask(GfxState *state, Object *ref, Stream *str,

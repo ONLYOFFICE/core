@@ -379,7 +379,34 @@ void RedactOutputDev::clipToStrokePath(GfxState *pGState)
 //----- text drawing
 void RedactOutputDev::beginStringOp(GfxState *pGState)
 {
+	int nDColor2Size;
+	double* dColor = m_pRenderer->m_oBrush.GetDColor2(nDColor2Size);
+	if (nDColor2Size == 1)
+		m_pPage->SetFillG(dColor[0]);
+	else if (nDColor2Size == 3)
+		m_pPage->SetFillRGB(dColor[0], dColor[1], dColor[2]);
+	else if (nDColor2Size == 4)
+		m_pPage->SetFillCMYK(dColor[0], dColor[1], dColor[2], dColor[3]);
 
+	dColor = m_pRenderer->m_oPen.GetDColor2(nDColor2Size);
+	if (nDColor2Size == 1)
+		m_pPage->SetStrokeG(dColor[0]);
+	else if (nDColor2Size == 3)
+		m_pPage->SetStrokeRGB(dColor[0], dColor[1], dColor[2]);
+	else if (nDColor2Size == 4)
+		m_pPage->SetStrokeCMYK(dColor[0], dColor[1], dColor[2], dColor[3]);
+
+	CStream* pStream = m_pPage->GetStream();
+	for (int i = 0; i < m_sStates.size(); ++i)
+	{
+		for (int j = 0; j < m_sStates[i].m_arrOp.size(); ++j)
+		{
+			pStream->WriteStr(m_sStates[i].m_arrOp[j].first.c_str());
+			pStream->WriteChar(' ');
+			pStream->WriteStr(m_sStates[i].m_arrOp[j].second.c_str());
+			pStream->WriteStr("\012");
+		}
+	}
 }
 void RedactOutputDev::endStringOp(GfxState *pGState)
 {
@@ -454,7 +481,11 @@ void RedactOutputDev::drawChar(GfxState *pGState, double dX, double dY, double d
 	double dShiftX = 0, dShiftY = 0;
 	DoTransform(arrMatrix, &dShiftX, &dShiftY, true);
 
-	double dDiff = dX + dDx / 2.0;
+	double startX, startY, endX, endY;
+	pGState->transform(dX, dY, &startX, &startY);
+	pGState->transform(dX + dDx, dY + dDy, &endX, &endY);
+	double dCenterX = (startX + endX) / 2;
+	double dCenterY = (startY + endY) / 2;
 	for (int i = 0; i < m_arrQuadPoints.size(); i += 4)
 	{
 		double xMin = m_arrQuadPoints[i + 0];
@@ -462,8 +493,11 @@ void RedactOutputDev::drawChar(GfxState *pGState, double dX, double dY, double d
 		double xMax = m_arrQuadPoints[i + 2];
 		double yMax = m_arrQuadPoints[i + 3];
 
-		if (xMin < dDiff && dDiff < xMax && yMin < dY && dY < yMax)
+		if (xMin < dCenterX && dCenterX < xMax && yMin < dCenterY && dCenterY < yMax)
+		{
+			m_pRenderer->put_FontSize(dOldSize);
 			return;
+		}
 	}
 
 	BYTE* pCodes = new BYTE[2];
@@ -475,9 +509,7 @@ void RedactOutputDev::drawChar(GfxState *pGState, double dX, double dY, double d
 	CRendererTextCommand* pText = m_pRenderer->m_oCommandManager.AddText(pCodes, 2, dShiftX, dShiftY);
 	pText->SetName(m_pRenderer->m_oFont.GetName());
 	pText->SetSize(m_pRenderer->m_oFont.GetSize());
-	int nDColor2Size;
-	double* dColor2 = m_pRenderer->m_oBrush.GetDColor2(nDColor2Size);
-	pText->SetDColor2(nDColor2Size, dColor2[0], dColor2[1], dColor2[2], dColor2[3]);
+	pText->SetType((EFontType)pGState->getFont()->getType());
 	pText->SetAlpha((BYTE)m_pRenderer->m_oBrush.GetAlpha1()); // TODO
 	pText->SetCharSpace(m_pRenderer->m_oFont.GetCharSpace());
 	pText->SetMode(m_pRenderer->m_oFont.GetRenderMode());
@@ -485,6 +517,8 @@ void RedactOutputDev::drawChar(GfxState *pGState, double dX, double dY, double d
 	pText->SetWordSpace(m_pRenderer->m_oFont.GetWordSpace());
 	pText->SetHorScaling(m_pRenderer->m_oFont.GetHorizontalScaling());
 	pText->SetWidth(dDx);
+
+	m_pRenderer->put_FontSize(dOldSize);
 }
 GBool RedactOutputDev::beginType3Char(GfxState *pGState, double x, double y, double dx, double dy, CharCode code, Unicode *u, int uLen)
 {
@@ -527,13 +561,15 @@ void RedactOutputDev::setExtGState(const char* name)
 {
 	if (m_sStates.empty())
 		return;
-	m_sStates.back().m_arrOp.push_back(std::make_pair("/" + std::string(name), "gs"));
+	std::string sOp = "/" + std::string(name);
+	m_sStates.back().m_arrOp.push_back(std::make_pair(sOp, "gs"));
 }
 void RedactOutputDev::setFillColorSpace(const char* name)
 {
 	if (m_sStates.empty())
 		return;
-	m_sStates.back().m_arrOp.push_back(std::make_pair("/" + std::string(name), "cs"));
+	std::string sOp = "/" + std::string(name);
+	m_sStates.back().m_arrOp.push_back(std::make_pair(sOp, "cs"));
 }
 void RedactOutputDev::setFillColorN(Object* args, int numArgs)
 {
@@ -550,6 +586,34 @@ void RedactOutputDev::setFillColorN(Object* args, int numArgs)
 			sOp += (std::to_string(args[i].getReal()) + " ");
 	}
 	m_sStates.back().m_arrOp.push_back(std::make_pair(sOp, "scn"));
+}
+void RedactOutputDev::setShading(GfxState *pGState, const char* name)
+{
+	m_pRenderer->m_oCommandManager.Flush();
+
+	double dShiftX = 0, dShiftY = 0;
+	DoTransform(pGState->getCTM(), &dShiftX, &dShiftY, true);
+
+	// TODO Нужно проверять Shading на отсечение?
+
+	m_pPage->GrSave();
+	UpdateTransform();
+	CStream* pStream = m_pPage->GetStream();
+	for (int i = 0; i < m_sStates.size(); ++i)
+	{
+		for (int j = 0; j < m_sStates[i].m_arrOp.size(); ++j)
+		{
+			pStream->WriteStr(m_sStates[i].m_arrOp[j].first.c_str());
+			pStream->WriteChar(' ');
+			pStream->WriteStr(m_sStates[i].m_arrOp[j].second.c_str());
+			pStream->WriteStr("\012");
+		}
+	}
+	pStream->WriteEscapeName(name);
+	pStream->WriteChar(' ');
+	pStream->WriteStr("sh");
+	pStream->WriteStr("\012");
+	m_pPage->GrRestore();
 }
 //----- image drawing
 void RedactOutputDev::drawImageMask(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GBool bInvert, GBool bInlineImage, GBool interpolate)
@@ -659,53 +723,21 @@ void RedactOutputDev::drawImage(GfxState *pGState, Ref id, const char* name)
 	DoTransform(pGState->getCTM(), &dShiftX, &dShiftY, true);
 
 	// TODO пока что исключается всё изображение
-	Object oImage;
-	if (!m_pXref->fetch(id.num, id.gen, &oImage)->isStream())
-	{
-		oImage.free();
-		return;
-	}
 
-	// TODO нужно учитывать Matrix у формы
-	Dict* pDict = oImage.streamGetDict();
-	Object obj1;
-	if (pDict->lookup("Width", &obj1)->isNull())
-	{
-		obj1.free();
-		if (!pDict->lookup("W", &obj1)->isNum())
-		{
-			obj1.free(); oImage.free();
-			return;
-		}
-	}
-	double width = obj1.getNum();
-	obj1.free();
-	if (width <= 0)
-	{
-		oImage.free();
-		return;
-	}
-
-	if (pDict->lookup("Height", &obj1)->isNull())
-	{
-		obj1.free();
-		if (!pDict->lookup("H", &obj1)->isNum())
-		{
-			obj1.free(); oImage.free();
-			return;
-		}
-	}
-	double height = obj1.getNum();
-	obj1.free();
-	if (height <= 0)
-	{
-		oImage.free();
-		return;
-	}
-
-	double dXmin = 0, dYmin = 0, dXmax = width, dYmax = height;
+	double dXmin = 0, dYmin = 0, dXmax = 1, dYmax = 1;
 	Transform(m_arrMatrix, dXmin, dYmin, &dXmin, &dYmin);
 	Transform(m_arrMatrix, dXmax, dYmax, &dXmax, &dYmax);
+
+	for (int i = 0; i < m_arrQuadPoints.size(); i += 4)
+	{
+		double xMin = m_arrQuadPoints[i + 0];
+		double yMin = m_arrQuadPoints[i + 1];
+		double xMax = m_arrQuadPoints[i + 2];
+		double yMax = m_arrQuadPoints[i + 3];
+
+		if (!(dXmax < xMin || dXmin > xMax || dYmax < yMin || dYmin > yMax))
+			return;
+	}
 
 	m_pPage->GrSave();
 	UpdateTransform();
@@ -720,22 +752,6 @@ void RedactOutputDev::drawImage(GfxState *pGState, Ref id, const char* name)
 			pStream->WriteStr("\012");
 		}
 	}
-
-	for (int i = 0; i < m_arrQuadPoints.size(); i += 4)
-	{
-		double xMin = m_arrQuadPoints[i + 0];
-		double yMin = m_arrQuadPoints[i + 1];
-		double xMax = m_arrQuadPoints[i + 2];
-		double yMax = m_arrQuadPoints[i + 3];
-
-		if (!(dXmax < xMin || dXmin > xMax || dYmax < yMin || dYmin > yMax))
-		{
-			m_pPage->GrRestore();
-			return;
-		}
-	}
-	oImage.free();
-
 	m_pPage->ExecuteXObject(name);
 	m_pPage->GrRestore();
 }
@@ -1416,9 +1432,10 @@ void RedactOutputDev::DrawPath(const LONG& lType)
 		{
 			pStream->WriteStr(m_sStates[i].m_arrOp[j].first.c_str());
 			pStream->WriteChar(' ');
-			pStream->WriteStr(m_sStates[i].m_arrOp[j].second.c_str());
+			std::string sOp = m_sStates[i].m_arrOp[j].second;
+			pStream->WriteStr(sOp.c_str());
 			pStream->WriteStr("\012");
-			if (m_sStates[i].m_arrOp[j].second == "cs")
+			if (sOp == "cs" || sOp == "sc" || sOp == "scn")
 				bCS = true;
 		}
 	}

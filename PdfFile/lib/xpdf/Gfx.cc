@@ -2370,6 +2370,12 @@ void Gfx::opShFill(Object args[], int numArgs) {
     return;
   }
 
+  if (out->useNameOp())
+  {
+	  out->setShading(state, args[0].getName());
+	  return;
+  }
+
   // save current graphics state
   savedState = saveStateStack();
 

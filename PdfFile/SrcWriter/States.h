@@ -73,6 +73,7 @@ public:
         m_dY          = dY;
         m_pFont       = NULL;
         m_dSize       = -1;
+		m_nType       = PdfWriter::EFontType::fontUnknownType;
         m_lColor      = 0;
         m_nAlpha      = 255;
         m_dCharSpace  = 0;
@@ -121,6 +122,10 @@ public:
     {
         m_dSize = dSize;
     }
+	inline void           SetType(PdfWriter::EFontType oType)
+	{
+		m_nType = oType;
+	}
     inline void           SetColor(const LONG& lColor)
     {
         m_lColor = lColor;
@@ -185,6 +190,10 @@ public:
     {
         return m_dSize;
     }
+	inline PdfWriter::EFontType GetFontType() const
+	{
+		return m_nType;
+	}
     inline LONG           GetColor() const
     {
         return m_lColor;
@@ -250,6 +259,7 @@ private:
     bool           m_bNeedDoItalic;
     bool           m_bNeedDoBold;
     double         m_dSize;
+	PdfWriter::EFontType m_nType;
     LONG           m_lColor;
     BYTE           m_nAlpha;
     double         m_dCharSpace;
@@ -1634,7 +1644,7 @@ private:
 private:
     CPdfWriter*                        m_pRenderer;
     std::vector<CRendererCommandBase*> m_vCommands;
-    CTransform                         m_oTransform;
+	CTransform                         m_oTransform;
 };
 struct TDestinationInfo
 {

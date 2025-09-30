@@ -35,6 +35,7 @@
 #include "Pages.h"
 #include "FontCidTT.h"
 #include "../PdfWriter.h"
+#include "Streams.h"
 
 //----------------------------------------------------------------------------------------
 //
@@ -120,6 +121,7 @@ void CCommandManager::Flush()
 					{
 						std::string sKey = U_TO_UTF8(sTextName);
 						pPage->SetFontKeyAndSize(sKey.c_str(), dTextSize);
+						pPage->SetFontType(pText->GetFontType());
 					}
 				}
 
@@ -132,6 +134,7 @@ void CCommandManager::Flush()
 						oTextLine.Flush(pPage);
 						nColorSize = nColorSize2;
 						dColor[0] = dColor2[0];
+						pPage->SetFillG(dColor[0]);
 						pPage->SetStrokeG(dColor[0]);
 					}
 					else if (nColorSize2 == 3 && (nColorSize != nColorSize2 || dColor[0] != dColor2[0] || dColor[1] != dColor2[1] || dColor[2] != dColor2[2]))
@@ -141,6 +144,7 @@ void CCommandManager::Flush()
 						dColor[0] = dColor2[0];
 						dColor[1] = dColor2[1];
 						dColor[2] = dColor2[2];
+						pPage->SetFillRGB(dColor[0], dColor[1], dColor[2]);
 						pPage->SetStrokeRGB(dColor[0], dColor[1], dColor[2]);
 					}
 					else if (nColorSize2 == 4 && (nColorSize != nColorSize2 || dColor[0] != dColor2[0] || dColor[1] != dColor2[1] || dColor[2] != dColor2[2] || dColor[3] != dColor2[3]))
@@ -151,6 +155,7 @@ void CCommandManager::Flush()
 						dColor[1] = dColor2[1];
 						dColor[2] = dColor2[2];
 						dColor[3] = dColor2[3];
+						pPage->SetFillCMYK(dColor[0], dColor[1], dColor[2], dColor[3]);
 						pPage->SetStrokeCMYK(dColor[0], dColor[1], dColor[2], dColor[3]);
 					}
 				}

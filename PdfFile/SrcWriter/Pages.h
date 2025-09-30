@@ -174,6 +174,7 @@ namespace PdfWriter
 		void      SetHorizontalScaling(double dValue);
 		void      SetFontAndSize(CFontDict* pFont, double dSize);
 		void      SetFontKeyAndSize(const char* sKey, double dSize);
+		void      SetFontType(EFontType nType);
 		void      SetTextRenderingMode(ETextRenderingMode eMode);
 		void      SetTextMatrix(double dM11, double dM12, double dM21, double dM22, double dX, double dY);
 		void      DrawTextLine(const CTextLine* pTextLine);
@@ -228,6 +229,7 @@ namespace PdfWriter
 		unsigned int m_unShadingsCount;
 		CDictObject* m_pPatterns;
 		unsigned int m_unPatternsCount;
+		EFontType    m_eType;
 	};
 	class CFakePage : public CObjectBase
 	{

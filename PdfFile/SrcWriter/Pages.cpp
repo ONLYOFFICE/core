@@ -520,6 +520,7 @@ namespace PdfWriter
 		m_unShadingsCount   = 0;
 		m_pPatterns         = NULL;
 		m_unPatternsCount   = 0;
+		m_eType             = fontUnknownType;
 	}
     void CPage::SetWidth(double dValue)
 	{
@@ -1281,25 +1282,23 @@ namespace PdfWriter
 	}
     void CPage::WriteText(const BYTE* sText, unsigned int unLen)
 	{
-		EFontType eType = m_pFont ? m_pFont->GetFontType() : fontCIDType0;
+		EFontType eType = m_eType != fontUnknownType ? m_eType : (m_pFont ? m_pFont->GetFontType() : fontCIDType0);
 		if (fontCIDType0 == eType || fontCIDType0C == eType || fontCIDType0COT == eType || fontCIDType2 == eType || fontCIDType2OT == eType)
 		{
 			m_pStream->WriteChar('<');
 			m_pStream->WriteBinary(sText, unLen, NULL);
 			m_pStream->WriteChar('>');
 		}
-		else if (fontType1 == eType)
+		else
 		{
 			unLen = unLen / 2;
 			BYTE* sText2 = new BYTE[unLen];
 			for (int i = 0; i < unLen; ++i)
 				sText2[i] = sText[i * 2 + 1];
-			m_pStream->WriteEscapeText(sText2, unLen);
+			m_pStream->WriteChar('<');
+			m_pStream->WriteBinary(sText2, unLen, NULL);
+			m_pStream->WriteChar('>');
 			RELEASEARRAYOBJECTS(sText2);
-		}
-		else
-		{
-			m_pStream->WriteEscapeText(sText, unLen);
 		}
 	}
     void CPage::DrawText(double dXpos, double dYpos, const BYTE* sText, unsigned int unLen)
@@ -1447,6 +1446,10 @@ namespace PdfWriter
 		m_pStream->WriteChar(' ');
 		m_pStream->WriteReal(dSize);
 		m_pStream->WriteStr(" Tf\012");
+	}
+	void CPage::SetFontType(EFontType nType)
+	{
+		m_eType = nType;
 	}
     void CPage::SetTextRenderingMode(ETextRenderingMode eMode)
 	{

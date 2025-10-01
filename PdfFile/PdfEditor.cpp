@@ -3298,7 +3298,7 @@ bool CPdfEditor::EditWidgets(IAdvancedCommand* pCommand)
 	if (m_nMode == Mode::Unknown && !IncrementalUpdates())
 		return false;
 
-	//WriteRedact({});
+	WriteRedact({});
 	m_pWriter->AddRedact({});
 	m_arrRedact.clear();
 

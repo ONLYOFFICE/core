@@ -51,12 +51,16 @@ namespace oox{
 namespace odf_reader
 {
 	class	style_instance;
-	class	style_text_properties;
 	class	fonts_container;
+	class	form_element;	
+
+	class	style_text_properties;
 	typedef boost::shared_ptr<style_text_properties> style_text_properties_ptr;
-	
+
+	class	style_paragraph_properties;
+	typedef boost::shared_ptr<style_paragraph_properties> style_paragraph_properties_ptr;
+
 	class	office_element;
-	class	form_element;
 	typedef boost::shared_ptr<office_element> office_element_ptr;
 };
 

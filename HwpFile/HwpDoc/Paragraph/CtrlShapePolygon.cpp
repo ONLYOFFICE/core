@@ -1,5 +1,7 @@
 #include "CtrlShapePolygon.h"
 
+#include "../Common/NodeNames.h"
+
 namespace HWP
 {
 CCtrlShapePolygon::CCtrlShapePolygon()
@@ -17,30 +19,31 @@ CCtrlShapePolygon::CCtrlShapePolygon(const HWP_STRING& sCtrlID, int nSize, CHWPS
 	: CCtrlGeneralShape(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
 
-CCtrlShapePolygon::CCtrlShapePolygon(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion)
-    : CCtrlGeneralShape(sCtrlID, oReader, nVersion)
+CCtrlShapePolygon::CCtrlShapePolygon(const HWP_STRING& sCtrlID, CXMLReader& oReader, EHanType eType)
+    : CCtrlGeneralShape(sCtrlID, oReader, eType)
 {
 	TPoint oPoint{0, 0};
 
 	WHILE_READ_NEXT_NODE(oReader)
 	{
-		if ("hc:pt" == oReader.GetName())
+		if (GetNodeName(ENode::Point, eType) == oReader.GetName())
 		{
 			START_READ_ATTRIBUTES(oReader)
 			{
-				if ("x" == sAttributeName)
+				if (GetAttributeName(EAttribute::X, eType) == sAttributeName)
 					oPoint.m_nX = oReader.GetInt();
-				else if ("y" == sAttributeName)
+				else if (GetAttributeName(EAttribute::Y, eType) == sAttributeName)
 					oPoint.m_nY = oReader.GetInt();
 			}
 			END_READ_ATTRIBUTES(oReader)
 
 			m_arPoints.push_back(oPoint);
 
-			oPoint = {0, 0};
+			oPoint.m_nX = 0;
+			oPoint.m_nY = 0;
 		}
 		else
-			CCtrlGeneralShape::ParseChildren(oReader, nVersion);
+			CCtrlGeneralShape::ParseChildren(oReader, eType);
 	}
 	END_WHILE
 

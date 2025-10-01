@@ -1489,6 +1489,11 @@ void Gfx::opSetStrokeColorSpace(Object args[], int numArgs) {
 	  " in uncolored Type 3 char or tiling pattern");
     return;
   }
+  if (out->useNameOp())
+  {
+	out->setStrokeColorSpace(args[0].getName());
+	return;
+  }
   state->setStrokePattern(NULL);
   res->lookupColorSpace(args[0].getName(), &obj);
   if (obj.isNull()) {
@@ -1528,6 +1533,11 @@ void Gfx::opSetFillColor(Object args[], int numArgs) {
 	  "Incorrect number of arguments in 'sc' command");
     return;
   }
+  if (out->useNameOp())
+  {
+	out->setFillColor(args, numArgs);
+	return;
+  }
   state->setFillPattern(NULL);
   for (i = 0; i < numArgs; ++i) {
     color.c[i] = dblToCol(args[i].getNum());
@@ -1548,6 +1558,11 @@ void Gfx::opSetStrokeColor(Object args[], int numArgs) {
     error(errSyntaxError, getPos(),
 	  "Incorrect number of arguments in 'SC' command");
     return;
+  }
+  if (out->useNameOp())
+  {
+	out->setStrokeColor(args, numArgs);
+	return;
   }
   state->setStrokePattern(NULL);
   for (i = 0; i < numArgs; ++i) {
@@ -1624,6 +1639,11 @@ void Gfx::opSetStrokeColorN(Object args[], int numArgs) {
     error(errSyntaxWarning, getPos(), "Ignoring color setting"
 	  " in uncolored Type 3 char or tiling pattern");
     return;
+  }
+  if (out->useNameOp())
+  {
+	out->setStrokeColorN(args, numArgs);
+	return;
   }
   if (state->getStrokeColorSpace()->getMode() == csPattern) {
     if (numArgs == 0 || !args[numArgs-1].isName()) {

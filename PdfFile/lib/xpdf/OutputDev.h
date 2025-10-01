@@ -193,7 +193,11 @@ public:
   virtual GBool useNameOp() { return gFalse; }
   virtual void setExtGState(const char* name) {}
   virtual void setFillColorSpace(const char* name) {}
+  virtual void setFillColor(Object* args, int numArgs) {}
   virtual void setFillColorN(Object* args, int numArgs) {}
+  virtual void setStrokeColorSpace(const char* name) {}
+  virtual void setStrokeColor(Object* args, int numArgs) {}
+  virtual void setStrokeColorN(Object* args, int numArgs) {}
   virtual void setShading(GfxState *state, const char* name) {}
 
   //----- image drawing

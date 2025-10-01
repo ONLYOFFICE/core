@@ -56,7 +56,7 @@ RedactOutputDev::RedactOutputDev(CPdfWriter* pRenderer)
 	m_pDoc = m_pRenderer->GetDocument();
 	m_pPage = NULL;
 
-	m_nRI = 1;
+	m_bUpdateAll = false;
 }
 RedactOutputDev::~RedactOutputDev()
 {
@@ -103,43 +103,43 @@ void RedactOutputDev::endPage()
 //----- save/restore graphics state
 void RedactOutputDev::saveState(GfxState *pGState)
 {
+	m_pRenderer->m_oCommandManager.Flush();
+	DoStateOp();
+	m_pPage->GrSave();
 	m_sStates.push_back(GfxRedactState());
 	updateAll(pGState);
 }
 void RedactOutputDev::restoreState(GfxState *pGState)
 {
+	m_pRenderer->m_oCommandManager.Flush();
+	m_pPage->GrRestore();
 	updateAll(pGState);
 
 	if (m_sStates.empty())
-	{
-		UpdateAllClip(pGState);
 		return; // Несбалансированный q/Q - сломанный файл
-	}
-
-	bool bClipChanged = m_sStates.back().m_pClip;
 	m_sStates.pop_back();
-	if (bClipChanged)
-		UpdateAllClip(pGState);
 }
 //----- update graphics state
 void RedactOutputDev::updateAll(GfxState *pGState)
 {
+	m_bUpdateAll = true;
 	updateLineDash(pGState);
 	updateFlatness(pGState);
 	updateLineJoin(pGState);
 	updateLineCap(pGState);
 	updateMiterLimit(pGState);
 	updateLineWidth(pGState);
-	updateStrokeAdjust(pGState);
-	updateFillColorSpace(pGState);
-	updateFillColor(pGState);
-	updateStrokeColorSpace(pGState);
-	updateStrokeColor(pGState);
+	// updateStrokeAdjust(pGState);
+	// updateFillColorSpace(pGState);
+	// updateFillColor(pGState);
+	// updateStrokeColorSpace(pGState);
+	// updateStrokeColor(pGState);
 	updateRenderingIntent(pGState);
 	// updateBlendMode(pGState);
 	// updateFillOpacity(pGState);
 	// updateStrokeOpacity(pGState);
 	updateFont(pGState);
+	m_bUpdateAll = false;
 }
 void RedactOutputDev::updateCTM(GfxState *pGState, double dMatrix11, double dMatrix12, double dMatrix21, double dMatrix22, double dMatrix31, double dMatrix32)
 {
@@ -164,26 +164,44 @@ void RedactOutputDev::updateLineDash(GfxState *pGState)
 		m_pRenderer->m_oPen.SetDashOffset(dStart);
 		m_pRenderer->m_oPen.SetDashStyle(Aggplus::DashStyleCustom);
 	}
+
+	if (m_bUpdateAll || m_sStates.empty())
+		return;
+	std::string sOp = "[ ";
+	for (int i = 0; i < nSize; ++i)
+		sOp += (std::to_string(pDash[i]) + " ");
+	sOp += "] " + std::to_string(dStart);
+	m_sStates.back().m_arrOp.push_back(std::make_pair(sOp, "d"));
 }
 void RedactOutputDev::updateFlatness(GfxState *pGState)
 {
 	m_pRenderer->m_oPen.SetFlatness(pGState->getFlatness());
+	if (!m_bUpdateAll && !m_sStates.empty())
+		m_sStates.back().m_arrOp.push_back(std::make_pair(std::to_string(pGState->getFlatness()), "i"));
 }
 void RedactOutputDev::updateLineJoin(GfxState *pGState)
 {
 	m_pRenderer->m_oPen.SetJoinStyle(pGState->getLineJoin());
+	if (!m_bUpdateAll && !m_sStates.empty())
+		m_sStates.back().m_arrOp.push_back(std::make_pair(std::to_string(pGState->getLineJoin()), "j"));
 }
 void RedactOutputDev::updateLineCap(GfxState *pGState)
 {
 	m_pRenderer->m_oPen.SetStartCapStyle(pGState->getLineCap());
+	if (!m_bUpdateAll && !m_sStates.empty())
+		m_sStates.back().m_arrOp.push_back(std::make_pair(std::to_string(pGState->getLineCap()), "J"));
 }
 void RedactOutputDev::updateMiterLimit(GfxState *pGState)
 {
 	m_pRenderer->m_oPen.SetMiter(pGState->getMiterLimit());
+	if (!m_bUpdateAll && !m_sStates.empty())
+		m_sStates.back().m_arrOp.push_back(std::make_pair(std::to_string(pGState->getMiterLimit()), "M"));
 }
 void RedactOutputDev::updateLineWidth(GfxState *pGState)
 {
 	m_pRenderer->m_oPen.SetSize(pGState->getLineWidth());
+	if (!m_bUpdateAll && !m_sStates.empty())
+		m_sStates.back().m_arrOp.push_back(std::make_pair(std::to_string(pGState->getLineWidth()), "w"));
 }
 void RedactOutputDev::updateFillColorSpace(GfxState *pGState)
 {
@@ -195,77 +213,96 @@ void RedactOutputDev::updateStrokeColorSpace(GfxState *pGState)
 }
 void RedactOutputDev::updateFillColor(GfxState *pGState)
 {
+	if (m_sStates.empty())
+		return;
 	GfxColorSpace* pColorSpace = pGState->getFillColorSpace();
 	GfxColorSpaceMode eMode = pColorSpace->getMode();
 	GfxColor* pColor = pGState->getFillColor();
-	switch (eMode) {
+	std::string sOp;
+	std::string sOp2;
+	switch (eMode)
+	{
 	case csDeviceGray:
 	{
-		m_pRenderer->m_oBrush.SetDColor2(1, colToDbl(pColor->c[0]));
+		sOp = std::to_string(colToDbl(pColor->c[0]));
+		sOp2 = "g";
 		break;
 	}
 	case csDeviceRGB:
 	{
-		m_pRenderer->m_oBrush.SetDColor2(3, colToDbl(pColor->c[0]), colToDbl(pColor->c[1]), colToDbl(pColor->c[2]));
+		sOp = std::to_string(colToDbl(pColor->c[0])) + " " + std::to_string(colToDbl(pColor->c[1])) + " " + std::to_string(colToDbl(pColor->c[2]));
+		sOp2 = "rg";
 		break;
 	}
 	case csDeviceCMYK:
 	{
-		m_pRenderer->m_oBrush.SetDColor2(4, colToDbl(pColor->c[0]), colToDbl(pColor->c[1]), colToDbl(pColor->c[2]), colToDbl(pColor->c[3]));
+		sOp = std::to_string(colToDbl(pColor->c[0])) + " " + std::to_string(colToDbl(pColor->c[1])) + " " + std::to_string(colToDbl(pColor->c[2])) + " " + std::to_string(colToDbl(pColor->c[3]));
+		sOp2 = "k";
 		break;
 	}
 	default:
 		break;
 	}
+	m_sStates.back().m_arrOp.push_back(std::make_pair(sOp, sOp2));
 }
 void RedactOutputDev::updateStrokeColor(GfxState *pGState)
 {
+	if (m_sStates.empty())
+		return;
 	GfxColorSpace* pColorSpace = pGState->getStrokeColorSpace();
 	GfxColorSpaceMode eMode = pColorSpace->getMode();
 	GfxColor* pColor = pGState->getStrokeColor();
-	switch (eMode) {
+	std::string sOp;
+	std::string sOp2;
+	switch (eMode)
+	{
 	case csDeviceGray:
 	{
-		m_pRenderer->m_oPen.SetDColor2(1, colToDbl(pColor->c[0]));
+		sOp = std::to_string(colToDbl(pColor->c[0]));
+		sOp2 = "G";
 		break;
 	}
 	case csDeviceRGB:
 	{
-		m_pRenderer->m_oPen.SetDColor2(3, colToDbl(pColor->c[0]), colToDbl(pColor->c[1]), colToDbl(pColor->c[2]));
+		sOp = std::to_string(colToDbl(pColor->c[0])) + " " + std::to_string(colToDbl(pColor->c[1])) + " " + std::to_string(colToDbl(pColor->c[2]));
+		sOp2 = "RG";
 		break;
 	}
 	case csDeviceCMYK:
 	{
-		m_pRenderer->m_oPen.SetDColor2(4, colToDbl(pColor->c[0]), colToDbl(pColor->c[1]), colToDbl(pColor->c[2]), colToDbl(pColor->c[3]));
+		sOp = std::to_string(colToDbl(pColor->c[0])) + " " + std::to_string(colToDbl(pColor->c[1])) + " " + std::to_string(colToDbl(pColor->c[2])) + " " + std::to_string(colToDbl(pColor->c[3]));
+		sOp2 = "K";
 		break;
 	}
 	default:
 		break;
 	}
+	m_sStates.back().m_arrOp.push_back(std::make_pair(sOp, sOp2));
 }
 void RedactOutputDev::updateRenderingIntent(GfxState *pGState)
 {
+	if (m_bUpdateAll || m_sStates.empty())
+		return;
+	std::string sOp = "/";
+
 	GfxRenderingIntent eRI = pGState->getRenderingIntent();
-	if (eRI != m_nRI)
+	switch (eRI)
 	{
-		m_nRI = eRI;
-		switch (eRI)
-		{
-		case GfxRenderingIntent::gfxRenderingIntentAbsoluteColorimetric:
-			m_pPage->SetRenderingIntent(ERenderingIntent::RenderingIntent_AbsoluteColorimetric);
-			break;
-		case GfxRenderingIntent::gfxRenderingIntentRelativeColorimetric:
-			m_pPage->SetRenderingIntent(ERenderingIntent::RenderingIntent_RelativeColorimetric);
-			break;
-		case GfxRenderingIntent::gfxRenderingIntentSaturation:
-			m_pPage->SetRenderingIntent(ERenderingIntent::RenderingIntent_Saturation);
-			break;
-		case GfxRenderingIntent::gfxRenderingIntentPerceptual:
-		default:
-			m_pPage->SetRenderingIntent(ERenderingIntent::RenderingIntent_Perceptual);
-			break;
-		}
+	case GfxRenderingIntent::gfxRenderingIntentAbsoluteColorimetric:
+		sOp += "AbsoluteColorimetric";
+		break;
+	case GfxRenderingIntent::gfxRenderingIntentRelativeColorimetric:
+		sOp += "RelativeColorimetric";
+		break;
+	case GfxRenderingIntent::gfxRenderingIntentSaturation:
+		sOp += "Saturation";
+		break;
+	case GfxRenderingIntent::gfxRenderingIntentPerceptual:
+	default:
+		sOp += "Perceptual";
+		break;
 	}
+	m_sStates.back().m_arrOp.push_back(std::make_pair(sOp, "ri"));
 }
 //----- update text state
 void RedactOutputDev::updateFont(GfxState *pGState)
@@ -304,7 +341,7 @@ void RedactOutputDev::updateWordSpace(GfxState *pGState)
 }
 void RedactOutputDev::updateHorizScaling(GfxState *pGState)
 {
-	m_pRenderer->m_oFont.SetHorizontalScaling(pGState->getHorizScaling());
+	m_pRenderer->m_oFont.SetHorizontalScaling(pGState->getHorizScaling() * 100);
 }
 void RedactOutputDev::updateTextPos(GfxState *pGState)
 {
@@ -377,34 +414,8 @@ void RedactOutputDev::clipToStrokePath(GfxState *pGState)
 //----- text drawing
 void RedactOutputDev::beginStringOp(GfxState *pGState)
 {
-	int nDColor2Size;
-	double* dColor = m_pRenderer->m_oBrush.GetDColor2(nDColor2Size);
-	if (nDColor2Size == 1)
-		m_pPage->SetFillG(dColor[0]);
-	else if (nDColor2Size == 3)
-		m_pPage->SetFillRGB(dColor[0], dColor[1], dColor[2]);
-	else if (nDColor2Size == 4)
-		m_pPage->SetFillCMYK(dColor[0], dColor[1], dColor[2], dColor[3]);
-
-	dColor = m_pRenderer->m_oPen.GetDColor2(nDColor2Size);
-	if (nDColor2Size == 1)
-		m_pPage->SetStrokeG(dColor[0]);
-	else if (nDColor2Size == 3)
-		m_pPage->SetStrokeRGB(dColor[0], dColor[1], dColor[2]);
-	else if (nDColor2Size == 4)
-		m_pPage->SetStrokeCMYK(dColor[0], dColor[1], dColor[2], dColor[3]);
-
-	CStream* pStream = m_pPage->GetStream();
-	for (int i = 0; i < m_sStates.size(); ++i)
-	{
-		for (int j = 0; j < m_sStates[i].m_arrOp.size(); ++j)
-		{
-			pStream->WriteStr(m_sStates[i].m_arrOp[j].first.c_str());
-			pStream->WriteChar(' ');
-			pStream->WriteStr(m_sStates[i].m_arrOp[j].second.c_str());
-			pStream->WriteStr("\012");
-		}
-	}
+	m_pRenderer->m_oCommandManager.Flush();
+	DoStateOp();
 }
 void RedactOutputDev::endStringOp(GfxState *pGState)
 {
@@ -508,7 +519,6 @@ void RedactOutputDev::drawChar(GfxState *pGState, double dX, double dY, double d
 	pText->SetName(m_pRenderer->m_oFont.GetName());
 	pText->SetSize(m_pRenderer->m_oFont.GetSize());
 	pText->SetType((EFontType)pGState->getFont()->getType());
-	pText->SetAlpha((BYTE)m_pRenderer->m_oBrush.GetAlpha1()); // TODO
 	pText->SetCharSpace(m_pRenderer->m_oFont.GetCharSpace());
 	pText->SetMode(m_pRenderer->m_oFont.GetRenderMode());
 	pText->SetRise(m_pRenderer->m_oFont.GetRise());
@@ -569,6 +579,22 @@ void RedactOutputDev::setFillColorSpace(const char* name)
 	std::string sOp = "/" + std::string(name);
 	m_sStates.back().m_arrOp.push_back(std::make_pair(sOp, "cs"));
 }
+void RedactOutputDev::setFillColor(Object* args, int numArgs)
+{
+	if (m_sStates.empty())
+		return;
+	std::string sOp;
+	for (int i = 0; i < numArgs; ++i)
+	{
+		if (args[i].isName())
+			sOp += ("/" + std::string(args[i].getName()) + " ");
+		else if (args[i].isInt())
+			sOp += (std::to_string(args[i].getInt()) + " ");
+		else if (args[i].isReal())
+			sOp += (std::to_string(args[i].getReal()) + " ");
+	}
+	m_sStates.back().m_arrOp.push_back(std::make_pair(sOp, "sc"));
+}
 void RedactOutputDev::setFillColorN(Object* args, int numArgs)
 {
 	if (m_sStates.empty())
@@ -585,9 +611,49 @@ void RedactOutputDev::setFillColorN(Object* args, int numArgs)
 	}
 	m_sStates.back().m_arrOp.push_back(std::make_pair(sOp, "scn"));
 }
+void RedactOutputDev::setStrokeColorSpace(const char* name)
+{
+	if (m_sStates.empty())
+		return;
+	std::string sOp = "/" + std::string(name);
+	m_sStates.back().m_arrOp.push_back(std::make_pair(sOp, "CS"));
+}
+void RedactOutputDev::setStrokeColor(Object* args, int numArgs)
+{
+	if (m_sStates.empty())
+		return;
+	std::string sOp;
+	for (int i = 0; i < numArgs; ++i)
+	{
+		if (args[i].isName())
+			sOp += ("/" + std::string(args[i].getName()) + " ");
+		else if (args[i].isInt())
+			sOp += (std::to_string(args[i].getInt()) + " ");
+		else if (args[i].isReal())
+			sOp += (std::to_string(args[i].getReal()) + " ");
+	}
+	m_sStates.back().m_arrOp.push_back(std::make_pair(sOp, "SC"));
+}
+void RedactOutputDev::setStrokeColorN(Object* args, int numArgs)
+{
+	if (m_sStates.empty())
+		return;
+	std::string sOp;
+	for (int i = 0; i < numArgs; ++i)
+	{
+		if (args[i].isName())
+			sOp += ("/" + std::string(args[i].getName()) + " ");
+		else if (args[i].isInt())
+			sOp += (std::to_string(args[i].getInt()) + " ");
+		else if (args[i].isReal())
+			sOp += (std::to_string(args[i].getReal()) + " ");
+	}
+	m_sStates.back().m_arrOp.push_back(std::make_pair(sOp, "SCN"));
+}
 void RedactOutputDev::setShading(GfxState *pGState, const char* name)
 {
 	m_pRenderer->m_oCommandManager.Flush();
+	DoStateOp();
 
 	double dShiftX = 0, dShiftY = 0;
 	DoTransform(pGState->getCTM(), &dShiftX, &dShiftY, true);
@@ -596,17 +662,8 @@ void RedactOutputDev::setShading(GfxState *pGState, const char* name)
 
 	m_pPage->GrSave();
 	UpdateTransform();
+	DoStateOp();
 	CStream* pStream = m_pPage->GetStream();
-	for (int i = 0; i < m_sStates.size(); ++i)
-	{
-		for (int j = 0; j < m_sStates[i].m_arrOp.size(); ++j)
-		{
-			pStream->WriteStr(m_sStates[i].m_arrOp[j].first.c_str());
-			pStream->WriteChar(' ');
-			pStream->WriteStr(m_sStates[i].m_arrOp[j].second.c_str());
-			pStream->WriteStr("\012");
-		}
-	}
 	pStream->WriteEscapeName(name);
 	pStream->WriteChar(' ');
 	pStream->WriteStr("sh");
@@ -649,6 +706,7 @@ void RedactOutputDev::type3D1(GfxState *pGState, double wx, double wy, double ll
 void RedactOutputDev::drawForm(GfxState *pGState, Ref id, const char* name)
 {
 	m_pRenderer->m_oCommandManager.Flush();
+	DoStateOp();
 
 	double dShiftX = 0, dShiftY = 0;
 	DoTransform(pGState->getCTM(), &dShiftX, &dShiftY, true);
@@ -699,23 +757,13 @@ void RedactOutputDev::drawForm(GfxState *pGState, Ref id, const char* name)
 
 	m_pPage->GrSave();
 	UpdateTransform();
-	CStream* pStream = m_pPage->GetStream();
-	for (int i = 0; i < m_sStates.size(); ++i)
-	{
-		for (int j = 0; j < m_sStates[i].m_arrOp.size(); ++j)
-		{
-			pStream->WriteStr(m_sStates[i].m_arrOp[j].first.c_str());
-			pStream->WriteChar(' ');
-			pStream->WriteStr(m_sStates[i].m_arrOp[j].second.c_str());
-			pStream->WriteStr("\012");
-		}
-	}
 	m_pPage->ExecuteXObject(name);
 	m_pPage->GrRestore();
 }
 void RedactOutputDev::drawImage(GfxState *pGState, Ref id, const char* name)
 {
 	m_pRenderer->m_oCommandManager.Flush();
+	DoStateOp();
 
 	double dShiftX = 0, dShiftY = 0;
 	DoTransform(pGState->getCTM(), &dShiftX, &dShiftY, true);
@@ -739,17 +787,6 @@ void RedactOutputDev::drawImage(GfxState *pGState, Ref id, const char* name)
 
 	m_pPage->GrSave();
 	UpdateTransform();
-	CStream* pStream = m_pPage->GetStream();
-	for (int i = 0; i < m_sStates.size(); ++i)
-	{
-		for (int j = 0; j < m_sStates[i].m_arrOp.size(); ++j)
-		{
-			pStream->WriteStr(m_sStates[i].m_arrOp[j].first.c_str());
-			pStream->WriteChar(' ');
-			pStream->WriteStr(m_sStates[i].m_arrOp[j].second.c_str());
-			pStream->WriteStr("\012");
-		}
-	}
 	m_pPage->ExecuteXObject(name);
 	m_pPage->GrRestore();
 }
@@ -1131,6 +1168,7 @@ void RedactOutputDev::DoTransform(double* pMatrix, double* pdShiftX, double* pdS
 void RedactOutputDev::DrawPath(const LONG& lType)
 {
 	m_pRenderer->m_oCommandManager.Flush();
+	DoStateOp();
 
 	bool bStroke = lType & c_nStroke;
 	bool bFill   = lType & c_nWindingFillMode;
@@ -1138,362 +1176,18 @@ void RedactOutputDev::DrawPath(const LONG& lType)
 
 	m_pPage->GrSave();
 	UpdateTransform();
-
-	if (bStroke)
-		UpdatePen();
-
-	bool bCS = false;
-	CStream* pStream = m_pPage->GetStream();
-	for (int i = 0; i < m_sStates.size(); ++i)
-	{
-		for (int j = 0; j < m_sStates[i].m_arrOp.size(); ++j)
-		{
-			pStream->WriteStr(m_sStates[i].m_arrOp[j].first.c_str());
-			pStream->WriteChar(' ');
-			std::string sOp = m_sStates[i].m_arrOp[j].second;
-			pStream->WriteStr(sOp.c_str());
-			pStream->WriteStr("\012");
-			if (sOp == "cs" || sOp == "sc" || sOp == "scn")
-				bCS = true;
-		}
-	}
-
-	std::wstring sTextureOldPath = L"";
-	std::wstring sTextureTmpPath = L"";
-
-	if ((bFill || bEoFill) && !bCS)
-	{
-		if (c_BrushTypeTexture == m_pRenderer->m_oBrush.GetType())
-		{
-			sTextureOldPath = m_pRenderer->m_oBrush.GetTexturePath();
-			//sTextureTmpPath = GetDownloadFile(sTextureOldPath, wsTempDirectory);
-
-			if (!sTextureTmpPath.empty())
-				m_pRenderer->m_oBrush.SetTexturePath(sTextureTmpPath);
-		}
-
-		UpdateBrush(NULL, L"");
-	}
-
-	if (!m_pRenderer->m_pShading)
-	{
-		m_pRenderer->m_oPath.Draw(m_pPage, bStroke, bFill, bEoFill);
-	}
-	else
-	{
-		if (bFill || bEoFill)
-		{
-			m_pPage->GrSave();
-			m_pRenderer->m_oPath.Clip(m_pPage, bEoFill);
-
-			if (NULL != m_pRenderer->m_pShadingExtGrState)
-				m_pPage->SetExtGrState(m_pRenderer->m_pShadingExtGrState);
-
-			m_pPage->DrawShading(m_pRenderer->m_pShading);
-			m_pPage->GrRestore();
-		}
-
-		if (bStroke)
-			m_pRenderer->m_oPath.Draw(m_pPage, bStroke, false, false);
-	}
-
+	m_pRenderer->m_oPath.Draw(m_pPage, bStroke, bFill, bEoFill);
 	m_pPage->GrRestore();
-
-	if (!sTextureTmpPath.empty())
-		m_pRenderer->m_oBrush.SetTexturePath(sTextureOldPath);
 }
 void RedactOutputDev::UpdateTransform()
 {
 	m_pPage->SetTransform(m_arrMatrix[0], m_arrMatrix[1], m_arrMatrix[2], m_arrMatrix[3], m_arrMatrix[4], m_arrMatrix[5]);
 }
-void RedactOutputDev::UpdatePen()
-{
-	int nSize = -1;
-	double* dColor = m_pRenderer->m_oPen.GetDColor2(nSize);
-	if (nSize == 1)
-		m_pPage->SetStrokeG(dColor[0]);
-	else if (nSize == 3)
-		m_pPage->SetStrokeRGB(dColor[0], dColor[1], dColor[2]);
-	else if (nSize == 4)
-		m_pPage->SetStrokeCMYK(dColor[0], dColor[1], dColor[2], dColor[3]);
-
-	// TODO ExtGState
-	//m_pPage->SetStrokeAlpha((unsigned char)m_pRenderer->m_oPen.GetAlpha());
-	m_pPage->SetLineWidth(m_pRenderer->m_oPen.GetSize());
-
-	LONG lDashStyle = m_pRenderer->m_oPen.GetDashStyle();
-	if (Aggplus::DashStyleSolid == lDashStyle)
-	{
-		// Ничего не делаем
-	}
-	else if (Aggplus::DashStyleCustom == lDashStyle)
-	{
-		LONG lDashCount = 0;
-		double* pDashPattern = m_pRenderer->m_oPen.GetDashPattern(lDashCount);
-		m_pPage->SetDash(pDashPattern, lDashCount, m_pRenderer->m_oPen.GetDashOffset());
-	}
-
-	BYTE nLineCap = m_pRenderer->m_oPen.GetStartCapStyle();
-	if (nLineCap == 0)
-		m_pPage->SetLineCap(ELineCapStyle::linecap_Butt);
-	else if (nLineCap == 1)
-		m_pPage->SetLineCap(ELineCapStyle::linecap_Round);
-	else if (nLineCap == 2)
-		m_pPage->SetLineCap(ELineCapStyle::linecap_ProjectingSquare);
-
-	BYTE nLineJoin = m_pRenderer->m_oPen.GetJoinStyle();
-	if (nLineJoin == 0)
-	{
-		m_pPage->SetLineJoin(ELineJoinStyle::linejoin_Miter);
-		m_pPage->SetMiterLimit(m_pRenderer->m_oPen.GetMiter());
-	}
-	else if (nLineJoin == 1)
-		m_pPage->SetLineJoin(ELineJoinStyle::linejoin_Round);
-	else if (nLineJoin == 2)
-		m_pPage->SetLineJoin(ELineJoinStyle::linejoin_Bevel);
-
-	double dFlatness = m_pRenderer->m_oPen.GetFlatness();
-	if (dFlatness > 0.0001)
-		m_pPage->SetFlat(dFlatness);
-}
-void RedactOutputDev::UpdateBrush(NSFonts::IApplicationFonts* pAppFonts, const std::wstring& wsTempDirectory)
-{
-	m_pRenderer->m_pShading = NULL;
-	m_pRenderer->m_pShadingExtGrState = NULL;
-
-	LONG lBrushType = m_pRenderer->m_oBrush.GetType();
-	/*
-	if (c_BrushTypeTexture == lBrushType)
-	{
-		std::wstring wsTexturePath = m_oBrush.GetTexturePath();
-		BYTE nAlpha = m_oBrush.GetTextureAlpha();
-		CImageFileFormatChecker oImageFormat(wsTexturePath);
-
-		PdfWriter::CImageDict* pImage = NULL;
-		int nImageW = 0;
-		int nImageH = 0;
-		bool bHasImage = false;
-		if (m_pDocument->HasImage(wsTexturePath, nAlpha))
-		{
-			pImage = m_pDocument->GetImage(wsTexturePath, nAlpha);
-			nImageH = pImage->GetHeight();
-			nImageW = pImage->GetWidth();
-			bHasImage = true;
-		}
-		else if (_CXIMAGE_FORMAT_JPG == oImageFormat.eFileType || _CXIMAGE_FORMAT_JP2 == oImageFormat.eFileType)
-		{
-			pImage = m_pDocument->CreateImage();
-			CBgraFrame oFrame;
-			oFrame.OpenFile(wsTexturePath);
-			nImageH = oFrame.get_Height();
-			nImageW = oFrame.get_Width();
-
-			if (pImage)
-			{
-				if (_CXIMAGE_FORMAT_JPG == oImageFormat.eFileType)
-					pImage->LoadJpeg(wsTexturePath.c_str(), nImageW, nImageH, oFrame.IsGrayScale());
-				else
-					pImage->LoadJpx(wsTexturePath.c_str(), nImageW, nImageH);
-
-				m_pDocument->AddImage(wsTexturePath, nAlpha, pImage);
-			}
-		}
-		else if (_CXIMAGE_FORMAT_WMF == oImageFormat.eFileType ||
-				 _CXIMAGE_FORMAT_EMF == oImageFormat.eFileType ||
-				 _CXIMAGE_FORMAT_SVM == oImageFormat.eFileType ||
-				 _CXIMAGE_FORMAT_SVG == oImageFormat.eFileType)
-		{
-			// TODO: Реализовать отрисовку метафайлов по-нормальному
-			MetaFile::IMetaFile* pMeta = MetaFile::Create(pAppFonts);
-			pMeta->LoadFromFile(wsTexturePath.c_str());
-
-			double dL, dR, dT, dB;
-			m_oPath.GetBounds(dL, dT, dR, dB);
-
-			double dW = 300.0 * (dR - dL) / 72;
-			if (dW < 0) dW = -dW;
-			double dH = 300.0 * (dB - dT) / 72;
-			if (dH < 0) dH = -dH;
-
-			if (dW < 1) dW = 1;
-			if (dH < 1) dH = 1;
-
-			double dMax = 2000;
-			double dMin = 10;
-			if (dW > dMax || dH > dMax)
-			{
-				double dMaxSrc = (dW > dH) ? dW : dH;
-				dW *= (dMax / dMaxSrc);
-				dH *= (dMax / dMaxSrc);
-			}
-
-			if (dW < dMin) dW = dMin;
-			if (dH < dMin) dH = dMin;
-
-			std::wstring wsTempFile = GetTempFile(wsTempDirectory);
-			pMeta->ConvertToRaster(wsTempFile.c_str(), _CXIMAGE_FORMAT_PNG, (int)dW, (int)dH);
-
-			RELEASEOBJECT(pMeta);
-
-			Aggplus::CImage oImage(wsTempFile);
-			nImageW = abs((int)oImage.GetWidth());
-			nImageH = abs((int)oImage.GetHeight());
-			pImage = LoadImage(&oImage, 255);
-			m_pDocument->AddImage(wsTexturePath, nAlpha, pImage);
-		}
-		else
-		{
-			Aggplus::CImage oImage(wsTexturePath);
-			nImageW = abs((int)oImage.GetWidth());
-			nImageH = abs((int)oImage.GetHeight());
-			pImage = LoadImage(&oImage, 255);
-			m_pDocument->AddImage(wsTexturePath, nAlpha, pImage);
-		}
-
-		if (pImage)
-		{
-			if (0xFF != nAlpha && !bHasImage)
-				pImage->AddTransparency(nAlpha);
-
-			LONG lTextureMode = m_oBrush.GetTextureMode();
-
-			double dW = 10;
-			double dH = 10;
-
-			double dL, dR, dT, dB;
-			CBrushState::TBrushRect& oRect = m_oBrush.GetBrushRect();
-			if (!oRect.bUse)
-			{
-				m_oPath.GetBounds(dL, dT, dR, dB);
-			}
-			else
-			{
-				dL = MM_2_PT(oRect.dLeft);
-				dB = MM_2_PT(m_dPageHeight - oRect.dTop);
-				dR = MM_2_PT(oRect.dLeft + oRect.dWidth);
-				dT = MM_2_PT(m_dPageHeight - oRect.dTop - oRect.dHeight);
-			}
-
-			double dXStepSpacing = 0, dYStepSpacing = 0;
-			if (c_BrushTextureModeStretch == lTextureMode)
-			{
-				// Растягиваем картинку по размерам пата
-				dW = std::max(10.0, dR - dL);
-				dH = std::max(10.0, dB - dT);
-
-				// Чтобы избавиться от погрешностей из-за которых могут возникать полоски или обрезание картинки,
-				// удвоим расстрояние между соседними тайлами. Плохого тут нет, т.к. нам нужен всего 1 тайл
-				dXStepSpacing = dW;
-				dYStepSpacing = dH;
-			}
-			else
-			{
-				// Размеры картинки заданы в пикселях. Размеры тайла - это размеры картинки в пунктах.
-				dW = (double)nImageW * 72.0 / 96.0;
-				dH = (double)nImageH * 72.0 / 96.0;
-
-				dT = dB;
-			}
-
-			// Нам нужно, чтобы левый нижний угол границ нашего пата являлся точкой переноса для матрицы преобразования.
-			PdfWriter::CMatrix* pMatrix = m_pPage->GetTransform();
-			pMatrix->Apply(dL, dT);
-			PdfWriter::CMatrix oPatternMatrix = *pMatrix;
-			oPatternMatrix.x = dL;
-			oPatternMatrix.y = dT;
-			m_pPage->SetPatternColorSpace(m_pDocument->CreateImageTilePattern(dW, dH, pImage, &oPatternMatrix, PdfWriter::imagetilepatterntype_Default, dXStepSpacing, dYStepSpacing));
-		}
-	}
-	else if (c_BrushTypeHatch1 == lBrushType)
-	{
-		std::wstring wsHatchType = m_oBrush.GetTexturePath();
-
-		double dW = 8 * 72 / 96;
-		double dH = 8 * 72 / 96;
-
-		TColor oColor1 = m_oBrush.GetTColor1();
-		TColor oColor2 = m_oBrush.GetTColor2();
-		BYTE nAlpha1 = (BYTE)m_oBrush.GetAlpha1();
-		BYTE nAlpha2 = (BYTE)m_oBrush.GetAlpha2();
-
-		m_pPage->SetPatternColorSpace(m_pDocument->CreateHatchPattern(dW, dH, oColor1.r, oColor1.g, oColor1.b, nAlpha1, oColor2.r, oColor2.g, oColor2.b, nAlpha2, wsHatchType));
-	}
-	else if (c_BrushTypeRadialGradient == lBrushType || c_BrushTypeLinearGradient == lBrushType)
-	{
-		TColor* pGradientColors;
-		double* pPoints;
-		LONG lCount;
-
-		m_oBrush.GetGradientColors(pGradientColors, pPoints, lCount);
-
-		if (lCount > 0)
-		{
-			unsigned char* pColors = new unsigned char[3 * lCount];
-			unsigned char* pAlphas = new unsigned char[lCount];
-			if (pColors)
-			{
-				for (LONG lIndex = 0; lIndex < lCount; lIndex++)
-				{
-					pColors[3 * lIndex + 0] = pGradientColors[lIndex].r;
-					pColors[3 * lIndex + 1] = pGradientColors[lIndex].g;
-					pColors[3 * lIndex + 2] = pGradientColors[lIndex].b;
-					pAlphas[lIndex]         = pGradientColors[lIndex].a;
-				}
-
-				if (c_BrushTypeLinearGradient == lBrushType)
-				{
-					double dX0, dY0, dX1, dY1;
-					m_oBrush.GetLinearGradientPattern(dX0, dY0, dX1, dY1);
-					m_pShading = m_pDocument->CreateAxialShading(m_pPage, MM_2_PT(dX0), MM_2_PT(m_dPageHeight - dY0), MM_2_PT(dX1), MM_2_PT(m_dPageHeight - dY1), pColors, pAlphas, pPoints, lCount, m_pShadingExtGrState);
-				}
-				else //if (c_BrushTypeRadialGradient == lBrushType)
-				{
-					double dX0, dY0, dR0, dX1, dY1, dR1;
-					m_oBrush.GetRadialGradientPattern(dX0, dY0, dR0, dX1, dY1, dR1);
-					m_pShading = m_pDocument->CreateRadialShading(m_pPage, MM_2_PT(dX0), MM_2_PT(m_dPageHeight - dY0), MM_2_PT(dR0), MM_2_PT(dX1), MM_2_PT(m_dPageHeight - dY1), MM_2_PT(dR1), pColors, pAlphas, pPoints, lCount, m_pShadingExtGrState);
-				}
-				delete[] pColors;
-				delete[] pAlphas;
-			}
-		}
-	}
-	*/
-	// else// if (c_BrushTypeSolid == lBrushType)
-	{
-		int nSize = -1;
-		double* dColor = m_pRenderer->m_oBrush.GetDColor2(nSize);
-		if (nSize == 1)
-			m_pPage->SetFillG(dColor[0]);
-		else if (nSize == 3)
-			m_pPage->SetFillRGB(dColor[0], dColor[1], dColor[2]);
-		else if (nSize == 4)
-			m_pPage->SetFillCMYK(dColor[0], dColor[1], dColor[2], dColor[3]);
-
-		// TODO ExtGState
-		// m_pPage->SetFillAlpha((unsigned char)m_pRenderer->m_oBrush.GetAlpha1());
-	}
-}
-void RedactOutputDev::UpdateAllClip(GfxState *pGState)
-{
-	m_pRenderer->m_oCommandManager.Flush();
-	while (m_pRenderer->m_lClipDepth)
-	{
-		m_pPage->GrRestore();
-		m_pRenderer->m_lClipDepth--;
-	}
-
-	for (int i = 0; i < m_sStates.size(); i++)
-	{
-		GfxClip* pClip = m_sStates[i].m_pClip;
-		if (pClip)
-			for (int nIndex = 0, nClipCount = pClip->GetPathNum(); nIndex < nClipCount; nIndex++)
-				AddClip(pGState, &m_sStates[i], nIndex);
-	}
-
-	updateFont(pGState);
-}
 void RedactOutputDev::AddClip(GfxState* pGState, GfxRedactState* pState, int nIndex)
 {
+	m_pRenderer->m_oCommandManager.Flush();
+	DoStateOp();
+
 	GfxClip* pClip = pState->m_pClip;
 	GfxPath* pPath = pClip->GetPath(nIndex);
 	int  nClipFlag = pClip->GetClipFlag(nIndex);;
@@ -1502,11 +1196,24 @@ void RedactOutputDev::AddClip(GfxState* pGState, GfxRedactState* pState, int nIn
 	GfxClipMatrix oMatrix = pClip->m_vMatrix[nIndex];
 	double pMatrix[6] = { oMatrix.dA, oMatrix.dB, oMatrix.dC, oMatrix.dD, oMatrix.dE, oMatrix.dF };
 	DoPath(pGState, pPath, pMatrix);
-	m_pRenderer->m_oCommandManager.Flush();
-	m_pPage->GrSave();
-	m_pRenderer->m_lClipDepth++;
 	UpdateTransform();
 	m_pRenderer->m_oPath.Clip(m_pPage, c_nClipRegionTypeEvenOdd & m_pRenderer->m_lClipMode);
 	m_pRenderer->m_oPath.Clear();
+}
+void RedactOutputDev::DoStateOp()
+{
+	if (m_sStates.empty() || m_sStates.back().m_arrOp.empty())
+		return;
+
+	CStream* pStream = m_pPage->GetStream();
+	for (int i = 0; i < m_sStates.back().m_arrOp.size(); ++i)
+	{
+		auto arrOp = m_sStates.back().m_arrOp;
+		pStream->WriteStr(arrOp[i].first.c_str());
+		pStream->WriteChar(' ');
+		pStream->WriteStr(arrOp[i].second.c_str());
+		pStream->WriteStr("\012");
+	}
+	m_sStates.back().m_arrOp.clear();
 }
 }

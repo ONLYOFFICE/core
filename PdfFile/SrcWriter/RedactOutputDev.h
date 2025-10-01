@@ -156,7 +156,11 @@ namespace PdfWriter
 		virtual GBool useNameOp() override;
 		virtual void setExtGState(const char* name) override;
 		virtual void setFillColorSpace(const char* name) override;
+		virtual void setFillColor(Object* args, int numArgs) override;
 		virtual void setFillColorN(Object* args, int numArgs) override;
+		virtual void setStrokeColorSpace(const char* name) override;
+		virtual void setStrokeColor(Object* args, int numArgs) override;
+		virtual void setStrokeColorN(Object* args, int numArgs) override;
 		virtual void setShading(GfxState *state, const char* name) override;
 		//----- image drawing
 		virtual void drawImageMask(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GBool bInvert, GBool bInlineImage, GBool interpolate) override;
@@ -198,10 +202,8 @@ namespace PdfWriter
 		void DoTransform(double* pMatrix, double* pdShiftX, double* pdShiftY, bool bActual = false);
 		void DrawPath(const LONG& lType);
 		void UpdateTransform();
-		void UpdatePen();
-		void UpdateBrush(NSFonts::IApplicationFonts* pAppFonts, const std::wstring& wsTempDirectory);
-		void UpdateAllClip(GfxState *pGState);
 		void AddClip(GfxState* pGState, GfxRedactState* pState, int nIndex);
+		void DoStateOp();
 
 		XRef* m_pXref;
 		std::vector<double> m_arrQuadPoints;
@@ -212,7 +214,7 @@ namespace PdfWriter
 		CPage*      m_pPage;
 		double      m_arrMatrix[6];
 
-		BYTE m_nRI;
+		bool m_bUpdateAll;
 		std::deque<GfxRedactState> m_sStates;
 	};
 }

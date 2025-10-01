@@ -133,6 +133,8 @@ const bool PIVOTCORE::saveContent(BinProcessor& proc)
             proc.mandatory(*i);
     if(m_PIVOTEX != nullptr)
         proc.mandatory(*m_PIVOTEX);
+	else
+		proc.mandatory<PIVOTEX>();
     return true;
 }
 

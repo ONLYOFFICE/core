@@ -73,9 +73,9 @@ public:
     bool			fDisplayNullString = false;
     bool			fSubtotalHiddenPageItems = false;
 
-    unsigned short	cchPageFieldStyle = 0;
-    unsigned short	cchTableStyle = 0;
-    unsigned short	cchVacateStyle = 0;
+	unsigned short	cchPageFieldStyle = 0xFFFF;
+	unsigned short	cchTableStyle = 0xFFFF;
+	unsigned short	cchVacateStyle = 0xFFFF;
 
 	XLUnicodeStringNoCch	stError;
 	XLUnicodeStringNoCch	stDisplayNull;

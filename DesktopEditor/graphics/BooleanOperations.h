@@ -107,9 +107,11 @@ namespace Aggplus
 	class CBooleanOperations
 	{
 	public:
+		CBooleanOperations() {};
 		CBooleanOperations(const CGraphicsPath& path1, const CGraphicsPath& path2, BooleanOpType op, long fillType, bool isLuminosity);
 		~CBooleanOperations();
 		CGraphicsPath&& GetResult();
+		bool IsSelfInters(const CGraphicsPath& p);
 
 		// BooleanOp
 		void TraceBoolean();
@@ -129,6 +131,7 @@ namespace Aggplus
 		Segment GetPreviousSegment(const Segment& segment) const noexcept;
 		Segment GetNextSegment(const Segment& segment) const noexcept;
 		void	SetVisited(const Segment& segment);
+		void	CreateNewPath(const std::vector<std::vector<int>>& adjMatr) noexcept;
 
 		// Bounds
 		std::vector<std::vector<int>>	 FindBoundsCollisions();
@@ -155,6 +158,7 @@ namespace Aggplus
 		bool AllInters(const std::vector<Segment>& segments) const noexcept;
 		bool IsOneCurvePath(int pathIndex) const noexcept;
 		void AddOffsets(std::vector<double>& offsets, const Curve& curve, bool end);
+		bool CheckLocation(std::shared_ptr<Location> loc, bool start) const noexcept;
 
 	private:
 		BooleanOpType Op = Intersection;
@@ -166,9 +170,9 @@ namespace Aggplus
 		// c_nStroke, c_nWindingFillMode, c_nEvenOddFillMode
 		long FillType = c_nWindingFillMode;
 
-		CGraphicsPath Path1;
-		CGraphicsPath Path2;
-		CGraphicsPath Result;
+		CGraphicsPath Path1{};
+		CGraphicsPath Path2{};
+		CGraphicsPath Result{};
 
 		std::vector<Segment> Segments1;
 		std::vector<Segment> Segments2;

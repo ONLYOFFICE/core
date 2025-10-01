@@ -47,6 +47,7 @@
 #include <algorithm>
 #include <math.h>
 #include <vector>
+#include <cmath>
 
 #ifdef __linux__
 #include <string.h>

@@ -38,7 +38,6 @@ INCLUDEPATH += \
     lib/goo \
     lib/fofi \
     lib/splash \
-    lib/pathkit \
     lib
 
 HEADERS += $$files(lib/*.h, true)

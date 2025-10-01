@@ -188,7 +188,7 @@ void GlobalParamsAdaptor::AddRedact(const std::vector<double>& arrRedactBox)
 }
 bool GlobalParamsAdaptor::InRedact(double dX, double dY)
 {
-	for (int i = 0; i < m_arrRedactBox.size(); i += 8)
+	for (int i = 0; i < m_arrRedactBox.size(); i += 4)
 	{
 		double xMin = m_arrRedactBox[i + 0];
 		double yMin = m_arrRedactBox[i + 1];

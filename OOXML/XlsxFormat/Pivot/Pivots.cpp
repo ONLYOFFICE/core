@@ -1348,6 +1348,8 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			for(auto j : i->m_arrItems)
 				if(j->m_oV.IsInit())
 					lineItem.rgisxvi.push_back(j->m_oV->GetValue());
+				else
+					lineItem.rgisxvi.push_back(0);
 			ptr->m_arItems.push_back(lineItem);
 		}
 		return XLS::BaseObjectPtr(ptr1);

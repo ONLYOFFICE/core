@@ -2338,7 +2338,8 @@ CGraphicsPath CalcBooleanOperation(const CGraphicsPath& path1,
 
 	for (size_t i = 0; i < paths2.size(); i++)
 	{
-		if (CBooleanOperations o; o.IsSelfInters(paths2[i]))
+		CBooleanOperations o;
+		if (o.IsSelfInters(paths2[i]))
 		{
 			CBooleanOperations operation(paths2[i], paths2[i], Intersection, fillType, isLuminosity);
 			CGraphicsPath p = std::move(operation.GetResult());
@@ -2351,7 +2352,8 @@ CGraphicsPath CalcBooleanOperation(const CGraphicsPath& path1,
 
 		for (size_t j = 0; j < paths1.size(); j++)
 		{
-			if (CBooleanOperations o; o.IsSelfInters(paths1[j]))
+			CBooleanOperations o2;
+			if (o2.IsSelfInters(paths1[j]))
 			{
 				CBooleanOperations operation(paths1[j], paths1[j], Intersection, fillType, isLuminosity);
 				CGraphicsPath p = std::move(operation.GetResult());

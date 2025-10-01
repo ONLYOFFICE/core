@@ -282,8 +282,7 @@ SOURCES += \
 	$$LIB_GRAPHICS_PRI_PATH/raster/JBig2/source/JBig2File.cpp
 
 SOURCES += \
-	$$LIB_GRAPHICS_PRI_PATH/raster/PICT/PICFile.cpp \
-	$$LIB_GRAPHICS_PRI_PATH/raster/PICT/pic.cpp
+	$$LIB_GRAPHICS_PRI_PATH/raster/PICT/PICFile.cpp
 
 !build_xp {
 	CONFIG += support_heif

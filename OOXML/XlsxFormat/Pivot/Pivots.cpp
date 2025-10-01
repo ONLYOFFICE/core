@@ -721,14 +721,20 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			if(m_oLocation->m_oRef.IsInit())
 				ptr->ref = m_oLocation->m_oRef.get();
 			if(m_oLocation->m_oFirstHeaderRow.IsInit())
-				ptr->rwFirstHead = m_oLocation->m_oFirstHeaderRow->GetValue();
+				ptr->rwFirstHead = ptr->ref.rowFirst + m_oLocation->m_oFirstHeaderRow->GetValue();
+			else
+				ptr->rwFirstHead = ptr->ref.rowFirst;
 			if(m_oLocation->m_oFirstDataRow.IsInit())
-				ptr->rwFirstData = m_oLocation->m_oFirstDataRow->GetValue();
+				ptr->rwFirstData =  ptr->ref.rowFirst + m_oLocation->m_oFirstDataRow->GetValue();
+			else
+				ptr->rwFirstData = ptr->ref.rowFirst+1;
 			if(m_oLocation->m_oFirstDataCol.IsInit())
-				ptr->colFirstData = m_oLocation->m_oFirstDataCol->GetValue();
+				ptr->colFirstData = ptr->ref.columnFirst + m_oLocation->m_oFirstDataCol->GetValue();
+			else
+				ptr->colFirstData = ptr->ref.columnFirst;
 		}
 		if(m_oCacheId.IsInit())
-			ptr->iCache = m_oCacheId->GetValue();
+			ptr->iCache = m_oCacheId->GetValue() - 1;
 		ptr->sxaxis4Data.bCol = true;
 		if(m_oDataPosition.IsInit())
 			ptr->ipos4Data = m_oDataPosition->GetValue();

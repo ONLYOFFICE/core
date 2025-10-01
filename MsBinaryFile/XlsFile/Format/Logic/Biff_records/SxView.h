@@ -61,7 +61,7 @@ public:
     short			iCache = 0;
     short			reserved = 0;
 	SXAxis			sxaxis4Data;
-    short			ipos4Data = 0;
+	short			ipos4Data = -1;
     short			cDim = 0;
     unsigned short	cDimRw = 0;
     unsigned short	cDimCol = 0;
@@ -70,9 +70,9 @@ public:
     unsigned short	cRw = 0;
     unsigned short	cCol = 0;
 
-    bool fRwGrand = false;
+	bool fRwGrand = true;
     bool fColGrand = false;
-    bool fAutoFormat = false;
+	bool fAutoFormat = true;
     bool fAtrNum = false;
     bool fAtrFnt = false;
     bool fAtrAlc = false;

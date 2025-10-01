@@ -2895,6 +2895,8 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			else if(m_oAxis == SimpleTypes::Spreadsheet::EPivotAxisType::axisValues)
 				ptr->sxaxis.bData = true;
 		}
+		else if(m_oDataField.IsInit() && m_oDataField.get())
+			ptr->sxaxis.bData = true;
 		if(m_oDefaultSubtotal.IsInit() && m_oDefaultSubtotal.get())
 		{
 			ptr->cSub++;
@@ -2955,6 +2957,12 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			ptr->cSub++;
 			ptr->fVariancep = true;
 		}
+		if(ptr->cSub == 0)
+		{
+			ptr->cSub++;
+			ptr->fDefault = true;
+		}
+
 		if(m_oItems.IsInit())
 			ptr->cItm  = m_oItems->m_arrItems.size();
 		if(m_oName.IsInit())

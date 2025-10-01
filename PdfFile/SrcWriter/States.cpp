@@ -125,41 +125,7 @@ void CCommandManager::Flush()
 					}
 				}
 
-				if (!pText->GetName().empty())
-				{
-					int nColorSize2;
-					double* dColor2 = pText->GetDColor2(nColorSize2);
-					if (nColorSize2 == 1 && (nColorSize != nColorSize2 || dColor[0] != dColor2[0]))
-					{
-						oTextLine.Flush(pPage);
-						nColorSize = nColorSize2;
-						dColor[0] = dColor2[0];
-						pPage->SetFillG(dColor[0]);
-						pPage->SetStrokeG(dColor[0]);
-					}
-					else if (nColorSize2 == 3 && (nColorSize != nColorSize2 || dColor[0] != dColor2[0] || dColor[1] != dColor2[1] || dColor[2] != dColor2[2]))
-					{
-						oTextLine.Flush(pPage);
-						nColorSize = nColorSize2;
-						dColor[0] = dColor2[0];
-						dColor[1] = dColor2[1];
-						dColor[2] = dColor2[2];
-						pPage->SetFillRGB(dColor[0], dColor[1], dColor[2]);
-						pPage->SetStrokeRGB(dColor[0], dColor[1], dColor[2]);
-					}
-					else if (nColorSize2 == 4 && (nColorSize != nColorSize2 || dColor[0] != dColor2[0] || dColor[1] != dColor2[1] || dColor[2] != dColor2[2] || dColor[3] != dColor2[3]))
-					{
-						oTextLine.Flush(pPage);
-						nColorSize = nColorSize2;
-						dColor[0] = dColor2[0];
-						dColor[1] = dColor2[1];
-						dColor[2] = dColor2[2];
-						dColor[3] = dColor2[3];
-						pPage->SetFillCMYK(dColor[0], dColor[1], dColor[2], dColor[3]);
-						pPage->SetStrokeCMYK(dColor[0], dColor[1], dColor[2], dColor[3]);
-					}
-				}
-				else if (lTextColor != pText->GetColor())
+				if (lTextColor != pText->GetColor())
                 {
                     oTextLine.Flush(pPage);
                     lTextColor = pText->GetColor();

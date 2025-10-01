@@ -79,8 +79,6 @@ public:
         m_dCharSpace  = 0;
         m_dHorScaling = 100;
         m_nMode       = (int)PdfWriter::textrenderingmode_Fill;
-		m_nColor2Size = 1;
-		m_dColor2[0]  = 0;
 		m_dRise       = 0;
 		m_dWordSpace  = 0;
 		m_dWidth      = -1;
@@ -158,14 +156,6 @@ public:
 	{
 		m_sPUA = sPUA;
 	}
-	inline void           SetDColor2(int nSize, double d1 = 0, double d2 = 0, double d3 = 0, double d4 = 0)
-	{
-		m_nColor2Size = nSize;
-		m_dColor2[0] = d1;
-		m_dColor2[1] = d2;
-		m_dColor2[2] = d3;
-		m_dColor2[3] = d4;
-	}
 	inline void           SetRise(const double& dRise)
 	{
 		m_dRise = dRise;
@@ -226,11 +216,6 @@ public:
 	{
 		return m_sPUA;
 	}
-	inline double*        GetDColor2(int& nSize)
-	{
-		nSize = m_nColor2Size;
-		return m_dColor2;
-	}
 	inline double         GetRise()
 	{
 		return m_dRise;
@@ -266,8 +251,6 @@ private:
     int            m_nMode;
     double         m_dHorScaling;
 	std::string    m_sPUA;
-	double         m_dColor2[4];
-	int            m_nColor2Size;
 	double         m_dRise;
 	double         m_dWordSpace;
 	std::wstring   m_sName;

@@ -97,7 +97,7 @@
 	"compile_files_array": [
 	{
 		"folder": "../../../raster/",
-		"files": ["BgraFrame.cpp", "ImageFileFormatChecker.cpp", "PICT/PICFile.cpp", "PICT/pic.cpp"]
+		"files": ["BgraFrame.cpp", "ImageFileFormatChecker.cpp", "PICT/PICFile.cpp"]
 	},
 	{
 		"folder": "../../../cximage/CxImage/",
@@ -157,7 +157,7 @@
 	},
 	{
 		"folder": "../../../agg-2.4/src/",
-		"files": ["agg_arc.cpp", "agg_vcgen_stroke.cpp", "agg_vcgen_dash.cpp", "agg_trans_affine.cpp", "agg_curves.cpp", "agg_image_filters.cpp"]
+		"files": ["agg_arc.cpp", "agg_vcgen_stroke.cpp", "agg_vcgen_dash.cpp", "agg_trans_affine.cpp", "agg_curves.cpp", "agg_image_filters.cpp", "agg_bezier_arc.cpp"]
 	},
 	{
 		"folder": "../../../common/",
@@ -197,7 +197,7 @@
 	},
 	{
 		"folder": "../../../../PdfFile/SrcWriter/",
-		"files": ["AcroForm.cpp", "Annotation.cpp", "Catalog.cpp", "Destination.cpp", "Document.cpp", "Encrypt.cpp", "EncryptDictionary.cpp", "Field.cpp", "Font.cpp", "Font14.cpp", "FontCidTT.cpp", "FontOTWriter.cpp", "FontTT.cpp", "FontTTWriter.cpp", "GState.cpp", "Image.cpp", "Info.cpp", "Metadata.cpp", "Objects.cpp", "Outline.cpp", "Pages.cpp", "Pattern.cpp", "ResourcesDictionary.cpp", "Shading.cpp", "States.cpp", "Streams.cpp", "Utils.cpp"]
+		"files": ["AcroForm.cpp", "Annotation.cpp", "Catalog.cpp", "Destination.cpp", "Document.cpp", "Encrypt.cpp", "EncryptDictionary.cpp", "Field.cpp", "Font.cpp", "Font14.cpp", "FontCidTT.cpp", "FontOTWriter.cpp", "FontTT.cpp", "FontTTWriter.cpp", "GState.cpp", "Image.cpp", "Info.cpp", "Metadata.cpp", "Objects.cpp", "Outline.cpp", "Pages.cpp", "Pattern.cpp", "ResourcesDictionary.cpp", "Shading.cpp", "States.cpp", "Streams.cpp", "Utils.cpp", "RedactOutputDev.cpp"]
 	},
 	{
 		"folder": "../../../../PdfFile/Resources/",

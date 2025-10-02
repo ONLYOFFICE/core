@@ -131,6 +131,11 @@ namespace PdfWriter
 			dX = _x * m11 + _y * m21 + x;
 			dY = _x * m12 + _y * m22 + y;
 		}
+		void Transform(double dUserX, double dUserY, double* pdDeviceX, double* pdDeviceY) const
+		{
+			*pdDeviceX = dUserX * m11 + dUserY * m21 + x;
+			*pdDeviceY = dUserX * m12 + dUserY * m22 + y;
+		}
 		bool operator==(const CMatrix& oMatrix)
 		{
 			if (fabs(oMatrix.m11 - m11) > 0.001

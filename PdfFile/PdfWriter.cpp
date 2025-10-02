@@ -906,7 +906,15 @@ HRESULT CPdfWriter::DrawPath(NSFonts::IApplicationFonts* pAppFonts, const std::w
 	}
 
 	if (!m_arrRedact.empty())
-		m_oPath.Redact(m_oTransform, m_arrRedact, bStroke, bEoFill);
+	{
+		PdfWriter::CMatrix* pMatrix = m_pPage->GetTransform();
+		m_oPath.Redact(pMatrix, m_arrRedact, m_pPage, bStroke, bFill, bEoFill, m_pShading, m_pShadingExtGrState);
+
+		m_pPage->GrRestore();
+		if (!sTextureTmpPath.empty())
+			m_oBrush.SetTexturePath(sTextureOldPath);
+		return S_OK;
+	}
 
 	if (!m_pShading)
 	{

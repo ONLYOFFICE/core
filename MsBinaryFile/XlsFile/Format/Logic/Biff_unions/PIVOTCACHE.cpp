@@ -158,10 +158,13 @@ const bool PIVOTCACHE::loadContent(BinProcessor& proc)
 }
 const bool PIVOTCACHE::saveContent(BinProcessor& proc)
 {
-	if(m_SXDB == nullptr || m_SXDBEx == nullptr)
+	if(m_SXDB == nullptr)
 		return false;
 	proc.mandatory(*m_SXDB);
-	proc.mandatory(*m_SXDBEx);
+	if(m_SXDBEx != nullptr)
+		proc.mandatory(*m_SXDBEx);
+	else
+		proc.mandatory<SXDBEx>();
 	for(auto i : m_arSXFORMULA)
 		if(i != nullptr)
 			proc.mandatory(*i);

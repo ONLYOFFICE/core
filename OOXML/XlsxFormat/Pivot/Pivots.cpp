@@ -153,11 +153,13 @@
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/PIVOTVD.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/PIVOTIVD.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/PIVOTLI.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/PIVOTCACHE.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/SxView.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Sxvd.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/SxIvd.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/SXVI.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/SXDI.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/SXDB.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/SXLI.h"
 
 namespace OOX
@@ -4360,6 +4362,18 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			ptr->fUpgradeOnRefresh = false;
 
 		return objectPtr;
+	}
+	XLS::BaseObjectPtr CPivotCacheDefinition::toXLS()
+	{
+		auto ptr = new XLS::PIVOTCACHE;
+		ptr->m_SXDB = writeAttributesXLS();
+		return XLS::BaseObjectPtr(ptr);
+	}
+	XLS::BaseObjectPtr CPivotCacheDefinition::writeAttributesXLS()
+	{
+		auto ptr = new XLS::SXDB;
+
+		return XLS::BaseObjectPtr(ptr);
 	}
     void CPivotCacheDefinition::fromBin(XLS::BaseObjectPtr& obj)
     {

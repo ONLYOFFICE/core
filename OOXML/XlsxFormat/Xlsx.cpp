@@ -213,6 +213,19 @@ bool OOX::Spreadsheet::CXlsx::WriteXLS(const CPath& oFilePath)
 
 	writer.Open(oFilePath.GetPath());
 	writer.WriteWorkbook(workbookPtr);
+
+	if(m_pWorkbook->m_oPivotCaches.IsInit() && !m_pWorkbook->m_oPivotCaches->m_arrItems.empty())
+	{
+		for(auto cacheHeader : m_pWorkbook->m_oPivotCaches->m_arrItems)
+		{
+			if(!cacheHeader->m_oCacheId.IsInit() || !cacheHeader->m_oRid.IsInit() ||  !m_pWorkbook->IsExist(cacheHeader->m_oRid->GetValue()))
+				continue;
+			auto cacheFilePtr = m_pWorkbook->Find(cacheHeader->m_oRid->GetValue());
+			auto CachePtr = static_cast<CPivotCacheDefinitionFile*>(cacheFilePtr.GetPointer());
+			if(CachePtr->m_oPivotCashDefinition.IsInit())
+				writer.WritePivotCache(CachePtr->m_oPivotCashDefinition->toXLS(), cacheHeader->m_oCacheId->GetValue());
+		}
+	}
 	return true;
 }
 bool OOX::Spreadsheet::CXlsx::WriteWorkbook(const CPath& oDirPath)

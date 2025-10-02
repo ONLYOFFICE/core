@@ -32,7 +32,7 @@
 #ifndef PICFILE_H
 #define PICFILE_H
 
-#include "../pro/Graphics.h"
+#include "../../graphics/pro/Graphics.h"
 
 enum PixelTrait
 {

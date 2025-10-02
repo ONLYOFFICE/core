@@ -3468,7 +3468,14 @@ CAnnot::CAnnot(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex, int nStartRefI
 	oObj.free();
 
 	// 9 - OO метаданные форм - OMetadata
-	m_sOMetadata = DictLookupString(&oAnnot, "OMetadata", 9);
+	if (oAnnot.dictLookup("OMetadata", &oObj)->isString())
+	{
+		m_unAFlags |= (1 << 9);
+		TextString* s = new TextString(oObj.getString());
+		m_sOMetadata = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+		delete s;
+	}
+	oObj.free();
 
 	oAnnot.free();
 }

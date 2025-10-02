@@ -33,7 +33,9 @@
 #include "../../common/File.h"
 
 #include <sys/stat.h>
+#ifndef _WIN32
 #include <unistd.h>
+#endif
 
 CPictFile::CPictFile()
 {

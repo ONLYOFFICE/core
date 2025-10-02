@@ -53,9 +53,7 @@
 #include "SrcWriter/Destination.h"
 #include "SrcWriter/Outline.h"
 #include "SrcWriter/GState.h"
-#ifndef BUILDING_WASM_MODULE
 #include "SrcWriter/RedactOutputDev.h"
-#endif
 
 #define AddToObject(oVal)\
 {\
@@ -3570,7 +3568,6 @@ void CPdfEditor::Redact(IAdvancedCommand* _pCommand)
 
 	if (bEditPage)
 	{
-#ifndef BUILDING_WASM_MODULE
 		PdfWriter::RedactOutputDev oRedactOut(m_pWriter);
 		oRedactOut.NewPDF(pPDFDocument->getXRef());
 		oRedactOut.SetRedact(arrAllQuads);
@@ -3584,7 +3581,6 @@ void CPdfEditor::Redact(IAdvancedCommand* _pCommand)
 		gfx->endOfPage();
 		oContents.free();
 		RELEASEOBJECT(gfx);
-#endif
 	}
 	else
 	{

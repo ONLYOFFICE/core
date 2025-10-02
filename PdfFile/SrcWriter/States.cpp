@@ -297,9 +297,9 @@ bool SkipPath(const std::vector<PdfWriter::CSegment>& arrForStroke, const PdfWri
 	}
 	return false;
 }
-void CPath::DrawPathRedact(PdfWriter::CMatrix oMatrix, Aggplus::CGraphicsPath* oPath, bool bStroke, const std::vector<PdfWriter::CSegment>& arrForStroke)
+void CPath::DrawPathRedact(PdfWriter::CMatrix* pMatrix, Aggplus::CGraphicsPath* oPath, bool bStroke, const std::vector<PdfWriter::CSegment>& arrForStroke)
 {
-	PdfWriter::CMatrix oInverse = oMatrix.Inverse();
+	PdfWriter::CMatrix oInverse = pMatrix->Inverse();
 
 	size_t length = oPath->GetPointCount(), compound = oPath->GetCloseCount();
 	std::vector<Aggplus::PointD> points = oPath->GetPoints(0, length + compound);
@@ -389,10 +389,10 @@ void CPath::DrawPathRedact(PdfWriter::CMatrix oMatrix, Aggplus::CGraphicsPath* o
 		}
 	}
 }
-void CPath::Redact(const CTransform& oTransform, const std::vector<double>& arrRedact, bool bStroke, bool bEoFill)
+void CPath::Redact(PdfWriter::CMatrix* pMatrix, const std::vector<double>& arrRedact, PdfWriter::CPage* pPage, bool bStroke, bool bFill, bool bEoFill,
+				   PdfWriter::CShading* pShading, PdfWriter::CExtGrState* pShadingExtGrState)
 {
-	PdfWriter::CMatrix oMatrix(oTransform.m11, oTransform.m12, oTransform.m21, oTransform.m22, oTransform.dx, oTransform.dy);
-	PdfWriter::CMatrix oInverse = oMatrix.Inverse();
+	PdfWriter::CMatrix oInverse = pMatrix->Inverse();
 
 	Aggplus::CGraphicsPath oPath, oPathRedact, oPathResult;
 	for (int i = 0; i < arrRedact.size(); i += 4)
@@ -405,15 +405,38 @@ void CPath::Redact(const CTransform& oTransform, const std::vector<double>& arrR
 		oPathRedact.CloseFigure();
 	}
 
-	for (int nIndex = 0, nCount = m_vCommands.size(); nIndex < nCount; nIndex++)
+	std::vector<CPathCommandBase*> vCommands = m_vCommands;
+	for (int nIndex = 0, nCount = vCommands.size(); nIndex < nCount; nIndex++)
 	{
-		CPathCommandBase* pCommand = m_vCommands.at(nIndex);
+		CPathCommandBase* pCommand = vCommands.at(nIndex);
 		// CPath to CGraphicsPath
-		pCommand->ToCGraphicsPath(oTransform, oPath);
+		pCommand->ToCGraphicsPath(pMatrix, oPath);
 	}
 	if (bEoFill)
 		oPath.SetRuler(true);
-	Clear();
+	m_vCommands.clear();
+
+	if (bFill || bEoFill)
+	{
+		oPathResult = Aggplus::CalcBooleanOperation(oPath, oPathRedact, Aggplus::BooleanOpType::Subtraction);
+		DrawPathRedact(pMatrix, &oPathResult, bStroke);
+
+		if (!pShading)
+			Draw(pPage, false, bFill, bEoFill);
+		else
+		{
+			pPage->GrSave();
+			Clip(pPage, bEoFill);
+
+			if (pShadingExtGrState)
+				pPage->SetExtGrState(pShadingExtGrState);
+
+			pPage->DrawShading(pShading);
+			pPage->GrRestore();
+		}
+	}
+
+	m_vCommands.clear();
 
 	if (bStroke)
 	{
@@ -454,7 +477,7 @@ void CPath::Redact(const CTransform& oTransform, const std::vector<double>& arrR
 				dXCur = dX3, dYCur = dY3;
 
 				oPathResult = Aggplus::CalcBooleanOperation(_oPath, oPathRedact, Aggplus::BooleanOpType::Subtraction);
-				DrawPathRedact(oMatrix, &oPathResult, bStroke, arrForStroke);
+				DrawPathRedact(pMatrix, &oPathResult, bStroke, arrForStroke);
 				oPathResult.Reset();
 			}
 			else if (oPath.IsMovePoint(i))
@@ -497,12 +520,11 @@ void CPath::Redact(const CTransform& oTransform, const std::vector<double>& arrR
 				}
 			}
 		}
+
+		Draw(pPage, bStroke, false, false);
 	}
-	else
-	{
-		oPathResult = Aggplus::CalcBooleanOperation(oPath, oPathRedact, Aggplus::BooleanOpType::Subtraction);
-		DrawPathRedact(oMatrix, &oPathResult, bStroke);
-	}
+
+	m_vCommands = vCommands;
 }
 void CPath::Draw(PdfWriter::CPage* pPage, bool bStroke, bool bFill, bool bEoFill)
 {
@@ -582,10 +604,10 @@ void CPath::CPathMoveTo::UpdateBounds(double& dL, double& dT, double& dR, double
 {
     UpdateMaxMinPoints(dL, dT, dR, dB, x, y);
 }
-void CPath::CPathMoveTo::ToCGraphicsPath(const CTransform& oTransform, Aggplus::CGraphicsPath& oPath)
+void CPath::CPathMoveTo::ToCGraphicsPath(PdfWriter::CMatrix* pMatrix, Aggplus::CGraphicsPath& oPath)
 {
-	double dX, dY;
-	oTransform.Transform(x, y, &dX, &dY);
+	double dX = x, dY = y;
+	pMatrix->Apply(dX, dY);
 	oPath.StartFigure();
 	oPath.MoveTo(dX, dY);
 }
@@ -597,10 +619,10 @@ void CPath::CPathLineTo::UpdateBounds(double& dL, double& dT, double& dR, double
 {
     UpdateMaxMinPoints(dL, dT, dR, dB, x, y);
 }
-void CPath::CPathLineTo::ToCGraphicsPath(const CTransform& oTransform, Aggplus::CGraphicsPath& oPath)
+void CPath::CPathLineTo::ToCGraphicsPath(PdfWriter::CMatrix* pMatrix, Aggplus::CGraphicsPath& oPath)
 {
 	double dX, dY;
-	oTransform.Transform(x, y, &dX, &dY);
+	pMatrix->Transform(x, y, &dX, &dY);
 	oPath.LineTo(dX, dY);
 }
 void CPath::CPathCurveTo::Draw(PdfWriter::CPage* pPage)
@@ -613,12 +635,12 @@ void CPath::CPathCurveTo::UpdateBounds(double& dL, double& dT, double& dR, doubl
     UpdateMaxMinPoints(dL, dT, dR, dB, x2, y2);
     UpdateMaxMinPoints(dL, dT, dR, dB, xe, ye);
 }
-void CPath::CPathCurveTo::ToCGraphicsPath(const CTransform& oTransform, Aggplus::CGraphicsPath& oPath)
+void CPath::CPathCurveTo::ToCGraphicsPath(PdfWriter::CMatrix* pMatrix, Aggplus::CGraphicsPath& oPath)
 {
 	double dX1, dY1, dX2, dY2, dX3, dY3;
-	oTransform.Transform(x1, y1, &dX1, &dY1);
-	oTransform.Transform(x2, y2, &dX2, &dY2);
-	oTransform.Transform(xe, ye, &dX3, &dY3);
+	pMatrix->Transform(x1, y1, &dX1, &dY1);
+	pMatrix->Transform(x2, y2, &dX2, &dY2);
+	pMatrix->Transform(xe, ye, &dX3, &dY3);
 	oPath.CurveTo(dX1, dY1, dX2, dY2, dX3, dY3);
 }
 void CPath::CPathArcTo::Draw(PdfWriter::CPage* pPage)
@@ -640,7 +662,7 @@ double AngToEllPrm(double dAngle, double dXRad, double dYRad)
 	// x = r cos(p), y = r sin(p) => t = atan2( sin(p) / b, cos(p) / a );
 	return atan2(sin(dAngle) / dYRad, cos(dAngle) / dXRad);
 }
-void WriteEllipseArc(const CTransform& oTransform, Aggplus::CGraphicsPath& oPath, double dX, double dY, double dXRad, double dYRad, double dAngle1, double dAngle2, double& dXCur, double& dYCur, bool bClockDirection = false)
+void WriteEllipseArc(PdfWriter::CMatrix* pMatrix, Aggplus::CGraphicsPath& oPath, double dX, double dY, double dXRad, double dYRad, double dAngle1, double dAngle2, double& dXCur, double& dYCur, bool bClockDirection = false)
 {
 	// Рассчитаем начальную, конечную и контрольные точки
 	double dX1  = 0.0, dX2  = 0.0, dY1  = 0.0, dY2  = 0.0;
@@ -666,9 +688,9 @@ void WriteEllipseArc(const CTransform& oTransform, Aggplus::CGraphicsPath& oPath
 		dYCur = dY2;
 
 		double _dX1, _dY1, _dX2, _dY2, dX3, dY3;
-		oTransform.Transform(dCX1, dCY1, &_dX1, &_dY1);
-		oTransform.Transform(dCX2, dCY2, &_dX2, &_dY2);
-		oTransform.Transform(dX2, dY2, &dX3, &dY3);
+		pMatrix->Transform(dCX1, dCY1, &_dX1, &_dY1);
+		pMatrix->Transform(dCX2, dCY2, &_dX2, &_dY2);
+		pMatrix->Transform(dX2, dY2, &dX3, &dY3);
 		oPath.CurveTo(_dX1, _dY1, _dX2, _dY2, dX3, dY3);
 	}
 	else
@@ -677,13 +699,13 @@ void WriteEllipseArc(const CTransform& oTransform, Aggplus::CGraphicsPath& oPath
 		dYCur = dY1;
 
 		double _dX1, _dY1, _dX2, _dY2, dX3, dY3;
-		oTransform.Transform(dCX2, dCY2, &_dX1, &_dY1);
-		oTransform.Transform(dCX1, dCY1, &_dX2, &_dY2);
-		oTransform.Transform(dX1, dY1, &dX3, &dY3);
+		pMatrix->Transform(dCX2, dCY2, &_dX1, &_dY1);
+		pMatrix->Transform(dCX1, dCY1, &_dX2, &_dY2);
+		pMatrix->Transform(dX1, dY1, &dX3, &dY3);
 		oPath.CurveTo(_dX1, _dY1, _dX2, _dY2, dX3, dY3);
 	}
 }
-void EllipseArc(double dX, double dY, double dXRad, double dYRad, double _dAngle1, double _dAngle2, bool bClockDirection, const CTransform& oTransform, Aggplus::CGraphicsPath& oPath)
+void EllipseArc(double dX, double dY, double dXRad, double dYRad, double _dAngle1, double _dAngle2, bool bClockDirection, PdfWriter::CMatrix* pMatrix, Aggplus::CGraphicsPath& oPath)
 {
 	// переведем углы в радианы
 	double dAngle1 = _dAngle1 * 3.141592f / 180;
@@ -718,7 +740,7 @@ void EllipseArc(double dX, double dY, double dXRad, double dYRad, double _dAngle
 			if (!(nIndex == nFirstPointQuard))
 				dStartAngle = (90 * (nIndex - 1)) * 3.141592f / 180;
 
-			WriteEllipseArc(oTransform, oPath, dX, dY, dXRad, dYRad, AngToEllPrm(dStartAngle, dXRad, dYRad), AngToEllPrm(dEndAngle, dXRad, dYRad), dEndX, dEndY, false);
+			WriteEllipseArc(pMatrix, oPath, dX, dY, dXRad, dYRad, AngToEllPrm(dStartAngle, dXRad, dYRad), AngToEllPrm(dEndAngle, dXRad, dYRad), dEndX, dEndY, false);
 		}
 	}
 	else
@@ -734,11 +756,11 @@ void EllipseArc(double dX, double dY, double dXRad, double dYRad, double _dAngle
 			else
 				dEndAngle = dAngle2;
 
-			WriteEllipseArc(oTransform, oPath, dX, dY, dXRad, dYRad, AngToEllPrm(dStartAngle, dXRad, dYRad), AngToEllPrm(dEndAngle, dXRad, dYRad), dEndX, dEndY, false);
+			WriteEllipseArc(pMatrix, oPath, dX, dY, dXRad, dYRad, AngToEllPrm(dStartAngle, dXRad, dYRad), AngToEllPrm(dEndAngle, dXRad, dYRad), dEndX, dEndY, false);
 		}
 	}
 }
-void CPath::CPathArcTo::ToCGraphicsPath(const CTransform& oTransform, Aggplus::CGraphicsPath& oPath)
+void CPath::CPathArcTo::ToCGraphicsPath(PdfWriter::CMatrix* pMatrix, Aggplus::CGraphicsPath& oPath)
 {
 	if (sweepAngle >= 360 - 0.001)
 	{
@@ -750,28 +772,28 @@ void CPath::CPathArcTo::ToCGraphicsPath(const CTransform& oTransform, Aggplus::C
 		double dYRay = h / 2;
 
 		double _dX, _dY;
-		oTransform.Transform(dX, dY, &_dX, &_dY);
+		pMatrix->Transform(dX, dY, &_dX, &_dY);
 		oPath.MoveTo(_dX, _dY);
 
 		double dX1, dY1, dX2, dY2, dX3, dY3;
-		oTransform.Transform(dX - dXRay, dY + dYRay * c_dKappa, &dX1, &dY1);
-		oTransform.Transform(dX - dXRay * c_dKappa, dY + dYRay, &dX2, &dY2);
-		oTransform.Transform(dX, dY + dYRay, &dX3, &dY3);
+		pMatrix->Transform(dX - dXRay, dY + dYRay * c_dKappa, &dX1, &dY1);
+		pMatrix->Transform(dX - dXRay * c_dKappa, dY + dYRay, &dX2, &dY2);
+		pMatrix->Transform(dX, dY + dYRay, &dX3, &dY3);
 		oPath.CurveTo(dX1, dY1, dX2, dY2, dX3, dY3);
 
-		oTransform.Transform(dX + dXRay * c_dKappa, dY + dYRay, &dX1, &dY1);
-		oTransform.Transform(dX + dXRay, dY + dYRay * c_dKappa, &dX2, &dY2);
-		oTransform.Transform(dX + dXRay, dY, &dX3, &dY3);
+		pMatrix->Transform(dX + dXRay * c_dKappa, dY + dYRay, &dX1, &dY1);
+		pMatrix->Transform(dX + dXRay, dY + dYRay * c_dKappa, &dX2, &dY2);
+		pMatrix->Transform(dX + dXRay, dY, &dX3, &dY3);
 		oPath.CurveTo(dX1, dY1, dX2, dY2, dX3, dY3);
 
-		oTransform.Transform(dX + dXRay, dY - dYRay * c_dKappa, &dX1, &dY1);
-		oTransform.Transform(dX + dXRay * c_dKappa, dY - dYRay, &dX2, &dY2);
-		oTransform.Transform(dX, dY - dYRay, &dX3, &dY3);
+		pMatrix->Transform(dX + dXRay, dY - dYRay * c_dKappa, &dX1, &dY1);
+		pMatrix->Transform(dX + dXRay * c_dKappa, dY - dYRay, &dX2, &dY2);
+		pMatrix->Transform(dX, dY - dYRay, &dX3, &dY3);
 		oPath.CurveTo(dX1, dY1, dX2, dY2, dX3, dY3);
 
-		oTransform.Transform(dX - dXRay * c_dKappa, dY - dYRay, &dX1, &dY1);
-		oTransform.Transform(dX - dXRay, dY - dYRay * c_dKappa, &dX2, &dY2);
-		oTransform.Transform(dX - dXRay, dY, &dX3, &dY3);
+		pMatrix->Transform(dX - dXRay * c_dKappa, dY - dYRay, &dX1, &dY1);
+		pMatrix->Transform(dX - dXRay, dY - dYRay * c_dKappa, &dX2, &dY2);
+		pMatrix->Transform(dX - dXRay, dY, &dX3, &dY3);
 		oPath.CurveTo(dX1, dY1, dX2, dY2, dX3, dY3);
 	}
 	else
@@ -787,21 +809,21 @@ void CPath::CPathArcTo::ToCGraphicsPath(const CTransform& oTransform, Aggplus::C
 			double _dX, _dY;
 			if (dXRad < 0.001 && dYRad < 0.001)
 			{
-				oTransform.Transform(dX, dY, &_dX, &_dY);
+				pMatrix->Transform(dX, dY, &_dX, &_dY);
 				oPath.LineTo(_dX, _dY);
 			}
 			else if (dXRad < 0.001)
 			{
-				oTransform.Transform(dX, dY + sin(dAngle1) * dYRad, &_dX, &_dY);
+				pMatrix->Transform(dX, dY + sin(dAngle1) * dYRad, &_dX, &_dY);
 				oPath.LineTo(_dX, _dY);
-				oTransform.Transform(dX, dY + sin(dAngle2) * dYRad, &_dX, &_dY);
+				pMatrix->Transform(dX, dY + sin(dAngle2) * dYRad, &_dX, &_dY);
 				oPath.LineTo(_dX, _dY);
 			}
 			else // if (dYRad < 0.001)
 			{
-				oTransform.Transform(dX + cos(dAngle1) * dXRad, dY, &_dX, &_dY);
+				pMatrix->Transform(dX + cos(dAngle1) * dXRad, dY, &_dX, &_dY);
 				oPath.LineTo(_dX, _dY);
-				oTransform.Transform(dX + cos(dAngle2) * dXRad, dY, &_dX, &_dY);
+				pMatrix->Transform(dX + cos(dAngle2) * dXRad, dY, &_dX, &_dY);
 				oPath.LineTo(_dX, _dY);
 			}
 			return;
@@ -822,21 +844,21 @@ void CPath::CPathArcTo::ToCGraphicsPath(const CTransform& oTransform, Aggplus::C
 		if (!bClockDirection)
 		{
 			if (_dAngle1 <= _dAngle2)
-				EllipseArc(dX, dY, dXRad, dYRad, _dAngle1, _dAngle2, false, oTransform, oPath);
+				EllipseArc(dX, dY, dXRad, dYRad, _dAngle1, _dAngle2, false, pMatrix, oPath);
 			else
 			{
-				EllipseArc(dX, dY, dXRad, dYRad, _dAngle1, 360, false, oTransform, oPath);
-				EllipseArc(dX, dY, dXRad, dYRad, 0, _dAngle2, false, oTransform, oPath);
+				EllipseArc(dX, dY, dXRad, dYRad, _dAngle1, 360, false, pMatrix, oPath);
+				EllipseArc(dX, dY, dXRad, dYRad, 0, _dAngle2, false, pMatrix, oPath);
 			}
 		}
 		else
 		{
 			if (_dAngle1 >= _dAngle2)
-				EllipseArc(dX, dY, dXRad, dYRad, _dAngle1, _dAngle2, true, oTransform, oPath);
+				EllipseArc(dX, dY, dXRad, dYRad, _dAngle1, _dAngle2, true, pMatrix, oPath);
 			else
 			{
-				EllipseArc(dX, dY, dXRad, dYRad, _dAngle1, 0, true, oTransform, oPath);
-				EllipseArc(dX, dY, dXRad, dYRad, 360, _dAngle2, true, oTransform, oPath);
+				EllipseArc(dX, dY, dXRad, dYRad, _dAngle1, 0, true, pMatrix, oPath);
+				EllipseArc(dX, dY, dXRad, dYRad, 360, _dAngle2, true, pMatrix, oPath);
 			}
 		}
 	}
@@ -848,7 +870,7 @@ void CPath::CPathClose::Draw(PdfWriter::CPage* pPage)
 void CPath::CPathClose::UpdateBounds(double& dL, double& dT, double& dR, double& dB)
 {
 }
-void CPath::CPathClose::ToCGraphicsPath(const CTransform& oTransform, Aggplus::CGraphicsPath& oPath)
+void CPath::CPathClose::ToCGraphicsPath(PdfWriter::CMatrix* pMatrix, Aggplus::CGraphicsPath& oPath)
 {
 	oPath.CloseFigure();
 }
@@ -866,7 +888,7 @@ void CPath::CPathText::UpdateBounds(double& dL, double& dT, double& dR, double& 
 {
     UpdateMaxMinPoints(dL, dT, dR, dB, x, y);
 }
-void CPath::CPathText::ToCGraphicsPath(const CTransform& oTransform, Aggplus::CGraphicsPath& oPath)
+void CPath::CPathText::ToCGraphicsPath(PdfWriter::CMatrix* pMatrix, Aggplus::CGraphicsPath& oPath)
 {
 	// Весь текст проверяется в CPdfWriter::PathCommandDrawText
 	// Эта функция не должна быть вызвана

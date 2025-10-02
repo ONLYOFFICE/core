@@ -30,9 +30,10 @@
  *
  */
 #include "PICFile.h"
-
-
 #include "../../common/File.h"
+
+#include <sys/stat.h>
+#include <unistd.h>
 
 CPictFile::CPictFile()
 {
@@ -977,7 +978,12 @@ size_t CPictFile::GetFileSize() const
 {
 	struct stat st;
 
-	long long file_discription = _fileno(m_pFile);
+	long long file_discription =
+#ifdef _WIN32
+	_fileno(m_pFile);
+#else
+	fileno(m_pFile);
+#endif
 	if (fstat(file_discription, &st) == 0)
 		return st.st_size;
 

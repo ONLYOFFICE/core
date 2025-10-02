@@ -222,11 +222,6 @@ namespace MetaFile
 		if (NULL == m_pParser || NULL == m_pParser->GetFont())
 			return;
 
-		const std::wstring wsNormalizedText = StringNormalization(wsText);
-
-		if (wsNormalizedText.empty())
-			return;
-
 		AddClip();
 
 		NodeAttributes arNodeAttributes;
@@ -401,19 +396,19 @@ namespace MetaFile
 
 		arNodeAttributes.Add(L"xml:space", L"preserve");
 
-		size_t unPosLineBreak = wsNormalizedText.find(L"\n");
+		size_t unPosLineBreak = wsText.find(L"\n");
 
 		std::wstring wsXCoord;
 
-		if (arDx.empty() || arDx.size() < wsNormalizedText.length())
+		if (arDx.empty() || arDx.size() < wsText.length())
 			wsXCoord = ConvertToWString(dXCoord);
 		else
 		{
-			std::vector<double> arXCoords(wsNormalizedText.length());
+			std::vector<double> arXCoords(wsText.length());
 
 			arXCoords[0] = dXCoord;
 
-			for (unsigned int unIndex = 1; unIndex < wsNormalizedText.length(); ++unIndex)
+			for (unsigned int unIndex = 1; unIndex < wsText.length(); ++unIndex)
 				arXCoords[unIndex] = arDx[unIndex - 1] + arXCoords[unIndex - 1];
 
 			wsXCoord = ConvertToWString(arXCoords);
@@ -424,7 +419,7 @@ namespace MetaFile
 			arNodeAttributes.Add(L"x", wsXCoord);
 			arNodeAttributes.Add(L"y", dYCoord);
 
-			WriteNode(L"text", arNodeAttributes, wsNormalizedText);
+			WriteNode(L"text", arNodeAttributes, StringNormalization(wsText));
 		}
 		else
 		{
@@ -436,11 +431,11 @@ namespace MetaFile
 			do
 			{
 				WriteNode(L"tspan", {{L"x", wsXCoord},
-				                     {L"y", ConvertToWString(dYNewCoord)}}, wsNormalizedText.substr(unStart, unPosLineBreak - unStart));
+				                     {L"y", ConvertToWString(dYNewCoord)}}, StringNormalization(wsText.substr(unStart, unPosLineBreak - unStart)));
 
 				dYNewCoord += dFontHeight * 1.6;
-				unStart = wsNormalizedText.find_first_not_of(L"\n", unPosLineBreak);
-				unPosLineBreak = wsNormalizedText.find(L"\n", unStart);
+				unStart = wsText.find_first_not_of(L"\n", unPosLineBreak);
+				unPosLineBreak = wsText.find(L"\n", unStart);
 			}
 			while(unStart != std::wstring::npos);
 

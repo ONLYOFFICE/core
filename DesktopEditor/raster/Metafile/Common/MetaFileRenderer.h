@@ -352,7 +352,7 @@ namespace MetaFile
 
 		}
 
-		void DrawString(std::wstring& wsText, unsigned int unCharsCount, double _dX, double _dY, double* pDx, int iGraphicsMode, double dXScale, double dYScale)
+		void DrawString(std::wstring& wsText, unsigned int unCharsCount, double _dX, double _dY, double* pDx, int iGraphicsMode, double dXScale, double dYScale, bool bExChars)
 		{
 			CheckEndPath();
 			const IFont* pFont = m_pFile->GetFont();
@@ -681,11 +681,12 @@ namespace MetaFile
 				m_pRenderer->put_BrushColor1(m_pFile->GetTextColor());
 				m_pRenderer->put_BrushAlpha1(255);
 
+				if (bExChars)
+					m_pRenderer->put_FontStringGID(TRUE);
+
 				// Рисуем сам текст
 				if (NULL == pDx)
-				{
 					m_pRenderer->CommandDrawText(wsString, dX, dY, 0, 0);
-				}
 				else
 				{
 					unsigned int unUnicodeLen = 0;
@@ -703,6 +704,9 @@ namespace MetaFile
 						delete[] pUnicode;
 					}
 				}
+
+				if (bExChars)
+					m_pRenderer->put_FontStringGID(FALSE);
 
 				if (bChangeCTM)
 					m_pRenderer->ResetTransform();

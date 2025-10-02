@@ -156,7 +156,7 @@ namespace MetaFile
 		void ArcTo(int nL, int nT, int nR, int nB, double dStart, double dSweep);
 
 		void DrawPath(bool bStroke, bool bFill, bool bClosePath = true);
-		void DrawText(std::wstring &wsString, unsigned int unCharsCount, int _nX, int _nY, int *pnDx, int iGraphicsMode, TScale oScale);
+		void DrawText(std::wstring &wsString, unsigned int unCharsCount, int _nX, int _nY, int *pnDx, int iGraphicsMode, TScale oScale, bool bExChars);
 		void DrawTextA(TEmrTextA &oText, int iGraphicsMode, TScale oScale = TScale(1, 1));
 		void DrawTextW(TEmrTextW &oText, int iGraphicsMode, TScale oScale = TScale(1, 1));
 

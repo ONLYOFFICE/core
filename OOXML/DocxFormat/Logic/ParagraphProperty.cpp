@@ -640,27 +640,36 @@ namespace OOX
 					m_oRPr = oReader;
 				else if ( !m_bPPrChange && L"sectPr" == sName )
 				{
-					m_oSectPr = new CSectionProperty(document);
-					m_oSectPr->fromXML(oReader);
-//------------------------------------------------------------------------------------
-					OOX::CDocx *docx = dynamic_cast<OOX::CDocx*>(document);
-					if (docx)
-					{
-						OOX::CDocument *doc = docx->m_bGlossaryRead ? docx->m_oGlossary.document : docx->m_oMain.document;
+					Logic::CSectionProperty* pSectPr = new Logic::CSectionProperty(document);
+					pSectPr->fromXML(oReader);
 
-						if (doc->m_arrSections.empty())
+					if (pSectPr->m_bEmpty)
+					{
+						delete pSectPr;
+						pSectPr = NULL;
+					}
+					else
+					{
+						m_oSectPr = pSectPr;
+
+						OOX::CDocx* docx = dynamic_cast<OOX::CDocx*>(document);
+						if (docx)
 						{
+							OOX::CDocument* doc = docx->m_bGlossaryRead ? docx->m_oGlossary.document : docx->m_oMain.document;
+
+							if (doc->m_arrSections.empty())
+							{
+								OOX::CDocument::_section section;
+								doc->m_arrSections.push_back(section);
+							}
+							doc->m_arrSections.back().sect = m_oSectPr.GetPointer();
+							doc->m_arrSections.back().end_elm = doc->m_arrItems.size() + 1;  // порядок выше - сначала читаем, потом добавляем
+
 							OOX::CDocument::_section section;
+							section.start_elm = doc->m_arrItems.size() + 1;
 							doc->m_arrSections.push_back(section);
 						}
-						doc->m_arrSections.back().sect = m_oSectPr.GetPointer();
-						doc->m_arrSections.back().end_elm = doc->m_arrItems.size() + 1;  // порядок выше - сначала читаем, потом добавляем
-						
-						OOX::CDocument::_section section;
-						section.start_elm = doc->m_arrItems.size() + 1;
-						doc->m_arrSections.push_back(section);
 					}
-//------------------------------------------------------------------------------------
 				}
 				else if ( L"shd" == sName )
 					m_oShd = oReader;

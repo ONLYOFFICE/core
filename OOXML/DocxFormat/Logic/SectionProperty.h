@@ -503,7 +503,8 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-			bool m_bSectPrChange;
+			bool m_bSectPrChange = false;
+			bool m_bEmpty = false;
 
 			nullable<SimpleTypes::CLongHexNumber> m_oRsidDel;
 			nullable<SimpleTypes::CLongHexNumber> m_oRsidR;

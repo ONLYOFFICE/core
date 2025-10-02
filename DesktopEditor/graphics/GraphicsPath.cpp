@@ -76,7 +76,7 @@ namespace Aggplus
 						j += 2;
 					}
 				}
-				if (p.Is_poly_closed()) CloseFigure();
+				//if (p.Is_poly_closed()) CloseFigure();
 			}
 		}
 	}
@@ -917,11 +917,10 @@ namespace Aggplus
 					PointD firstPoint = subPath.GetPoints(0, 1)[0];
 					double x, y;
 					subPath.GetLastPoint(x, y);
-					if ((abs(firstPoint.X - x) <= 1e-2 && abs(firstPoint.Y - y) <= 1e-2) ||
+					if ((abs(firstPoint.X - x) >= 1e-2 && abs(firstPoint.Y - y) >= 1e-2) ||
 						subPath.GetPointCount() == 1)
 					{
-						if (!firstPoint.Equals(PointD(x, y)) || subPath.GetPointCount() == 1)
-							subPath.LineTo(firstPoint.X, firstPoint.Y);
+						subPath.LineTo(firstPoint.X, firstPoint.Y);
 						subPath.CloseFigure();
 					}
 
@@ -952,7 +951,7 @@ namespace Aggplus
 				double x, y;
 				subPath.GetLastPoint(x, y);
 
-				if (!firstPoint.Equals(PointD(x, y)) || subPath.GetPointCount() == 1)
+				if ((abs(firstPoint.X - x) >= 1e-2 && abs(firstPoint.Y - y) >= 1e-2) || subPath.GetPointCount() == 1)
 					subPath.LineTo(firstPoint.X, firstPoint.Y);
 
 				subPath.CloseFigure();

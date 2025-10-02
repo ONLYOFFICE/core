@@ -1188,7 +1188,10 @@ void CBooleanOperations::TracePaths()
 				Segment tmp = GetNextSegment(prev.Inters->S);
 				if (tmp.IsEmpty()) break;
 				if (tmp.IsValid(Op))
+				{
 					s = tmp;
+					valid = true;
+				}
 			}
 
 			if (!valid && prev.Inters)

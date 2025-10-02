@@ -1714,9 +1714,12 @@ void DocxConverter::convert(OOX::Logic::CParagraphProperty	*oox_paragraph_pr,
 		odt_context->text_context()->set_type_break(1, 0); //page, clear_all
 	}
 
-	if (oox_paragraph_pr->m_oKeepNext.IsInit() && odt_context->table_context()->empty() && !current_section_properties)
+	bool flag = oox_paragraph_pr->m_oKeepNext.IsInit() && odt_context->table_context()->empty() && current_section_properties && oox_paragraph_pr->m_oKeepNext->m_oVal.ToBool();
+
+	if (flag) // check bug 65069
 	{
-		odt_context->text_context()->set_KeepNextParagraph(true);
+		//odt_context->text_context()->set_KeepNextParagraph(true);
+		paragraph_properties->fo_keep_with_next_ = odf_types::keep_together::type::Always;
 	}
 
 	convert(oox_paragraph_pr->m_oFramePr.GetPointer(), paragraph_properties);		//буквица или фрейм

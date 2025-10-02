@@ -34,6 +34,7 @@
 #include "../Format/Binary/CompoundFile.h"
 #include "../Format/Binary/CFStreamCacheWriter.h"
 #include "../Format/Logic/WorkbookStreamObject.h"
+#include <iomanip>
 
 bool XlsWriter::Open(const std::wstring &fileName)
 {
@@ -77,4 +78,13 @@ bool XlsWriter::WriteStreamObject(std::wstring &streamName, XLS::BaseObjectPtr s
 	XLS::BinWriterProcessor stream_proc(cacheWriter, nullptr);
 	stream_proc.mandatory(*streamObject);
 	return true;
+}
+
+bool XlsWriter::WritePivotCache(XLS::BaseObjectPtr streamObject, _UINT32 cacheId)
+{
+	auto DirectoryName = L"_SX_DB_CUR/";
+	std::wstringstream ss;
+	ss << std::hex << std::setw(4) << std::setfill(L'0') << std::uppercase << cacheId;
+	std::wstring streamName = DirectoryName + ss.str();
+	return WriteStreamObject(streamName, streamObject);
 }

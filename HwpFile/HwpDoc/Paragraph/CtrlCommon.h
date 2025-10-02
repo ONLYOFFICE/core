@@ -49,7 +49,7 @@ enum class EVertAlign
 };
 
 EVertAlign GetVertAlign(int nValue);
-EVertAlign GetVertAlign(const HWP_STRING& sValue);
+EVertAlign GetVertAlign(const std::string& sValue, EHanType eType);
 
 enum class EHorzAlign
 {
@@ -109,19 +109,21 @@ class CCtrlCommon : public CCtrl
 	friend class CCtrlShapeVideo;
 	friend class CCtrlEqEdit;
 	friend class CCtrlTable;
+
+	void ReadAttributes(CXMLReader& oReader, EHanType eType);
 public:
 	CCtrlCommon();
 	CCtrlCommon(const HWP_STRING& sCtrlID);
 	CCtrlCommon(const CCtrlCommon& oCtrlCommon);
 	CCtrlCommon(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
-	CCtrlCommon(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion);
+	CCtrlCommon(const HWP_STRING& sCtrlID, CXMLReader& oReader, EHanType eType);
 	virtual ~CCtrlCommon();
 
 	ECtrlObjectType GetCtrlType() const override;
 
 	void SetTextVerAlign(EVertAlign eVertAlign);
 
-	void ParseChildren(CXMLReader& oReader, int nVersion);
+	void ParseChildren(CXMLReader& oReader, EHanType eType);
 
 	void AddParagraph(CHWPPargraph* pParagraph);
 	void AddCaption(CCapParagraph* pCapPara);

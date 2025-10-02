@@ -1674,31 +1674,12 @@ namespace NSBinPptxRW
 		
 		return rid;
 	}
-	std::wstring  CRelsGenerator::WriteSlideComments(int nIndexComment)
-	{
-		std::wstring rid = L"rId" + std::to_wstring(m_lNextRelsID++);
-		std::wstring strRels = L"<Relationship Id=\"" + rid +
-			L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/comments\" Target=\"../comments/comment" + 
-			std::to_wstring(nIndexComment) + L".xml\"/>";
 
-		m_pWriter->WriteString(strRels);
-		return rid;
-	}
 	void CRelsGenerator::WriteNotesMaster()
 	{
 		std::wstring strRels0 = L"<Relationship Id=\"rId" + std::to_wstring(m_lNextRelsID++) +
 				L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/notesMaster\" Target=\"notesMasters/notesMaster1.xml\"/>";
 		m_pWriter->WriteString(strRels0);			
-	}
-	std::wstring  CRelsGenerator::WritePresentationComments(int nIndexComment)
-	{
-		std::wstring rid = L"rId" + std::to_wstring(m_lNextRelsID++);
-		std::wstring strRels = L"<Relationship Id=\"" + rid +
-			L"\" Type=\"http://schemas.onlyoffice.com/comments\" Target=\"comments/comment" +
-			std::to_wstring(nIndexComment) + L".xml\"/>";
-
-		m_pWriter->WriteString(strRels);
-		return rid;
 	}
 	std::wstring CRelsGenerator::WriteCustom(const std::wstring & file_name)
 	{
@@ -1708,7 +1689,7 @@ namespace NSBinPptxRW
 			m_pWriter->WriteString(strRels);
 		return rid;
 	}
-	void CRelsGenerator::EndPresentationRels(bool bIsCommentsAuthors, bool bIsVbaProject, bool bIsJsaProject)
+	void CRelsGenerator::EndPresentationRels(bool bIsVbaProject, bool bIsJsaProject)
 	{
         std::wstring strRels1 = L"<Relationship Id=\"rId" + std::to_wstring(m_lNextRelsID++) +
                 L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/presProps\" Target=\"presProps.xml\" />";
@@ -1721,12 +1702,6 @@ namespace NSBinPptxRW
 		m_pWriter->WriteString(strRels2);
 		m_pWriter->WriteString(strRels3);
 
-		if (bIsCommentsAuthors)
-		{
-            std::wstring strRels4 = L"<Relationship Id=\"rId" + std::to_wstring(m_lNextRelsID++) +
-                    L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/commentAuthors\" Target=\"commentAuthors.xml\"/>";
-			m_pWriter->WriteString(strRels4);
-		}
 		if (bIsVbaProject)
 		{
             std::wstring strRels4 = L"<Relationship Id=\"rId" + std::to_wstring(m_lNextRelsID++) +

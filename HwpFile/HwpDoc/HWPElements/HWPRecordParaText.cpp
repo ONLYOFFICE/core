@@ -152,7 +152,7 @@ LIST<CCtrl*> CHWPRecordParaText::Parse(int nTagNum, int nLevel, int nSize, CHWPS
 				{
 					UPDATE_CURRENT_TEXT();
 
-					if (sText.length() < unIndex + 6 || (sText[unIndex] != sText[unIndex + 6] && sText[unIndex] != sText[unIndex + 7]))
+					if (sText.length() < unIndex + 7 || (sText[unIndex] != sText[unIndex + 6] && sText[unIndex] != sText[unIndex + 7]))
 						continue;
 
 					arParas.push_back(new CCtrlCharacter(L"   _", ECtrlCharType::TABULATION));

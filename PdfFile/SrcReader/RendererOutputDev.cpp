@@ -2381,6 +2381,14 @@ namespace PdfReader
 			return;
 		}
 
+		double startX, startY, endX, endY;
+		Transform(pGState->getCTM(), dX, dY, &startX, &startY);
+		Transform(pGState->getCTM(), dX + dDx, dY + dDy, &endX, &endY);
+		double dCenterX = (startX + endX) / 2;
+		double dCenterY = (startY + endY) / 2;
+		if (((GlobalParamsAdaptor*)globalParams)->InRedact(dCenterX, dCenterY))
+			return;
+
 		double* pCTM   = pGState->getCTM();
 		double* pTm    = pGState->getTextMat();
 		GfxFont* pFont = pGState->getFont();

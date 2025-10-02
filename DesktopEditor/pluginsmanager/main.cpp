@@ -255,6 +255,7 @@ private:
 
 	std::wstring m_sPluginsDir;
 	std::wstring m_sMarketplaceUrl;
+	std::wstring m_sMarketplaceRepo;
 
 	std::wstring m_sSettingsDir;
 	std::wstring m_sSettingsFile;
@@ -267,6 +268,7 @@ public:
 	{
 		m_sPluginsDir = L"";
 		m_sMarketplaceUrl = L"https://onlyoffice.github.io";
+		m_sMarketplaceRepo = L"https://github.com/ONLYOFFICE/onlyoffice.github.io";
 
 		m_sSettingsDir = NSSystemUtils::GetAppDataDir() + L"/pluginsmanager";
 
@@ -323,7 +325,28 @@ public:
 
 		if ( sUrl.length() )
 		{
-			m_sMarketplaceUrl = sUrl;
+			if (0 == sUrl.find(L"https://onlyoffice.github.io"))
+			{
+				m_sMarketplaceUrl = L"https://onlyoffice.github.io";
+				m_sMarketplaceRepo = L"https://github.com/ONLYOFFICE/onlyoffice.github.io";
+			}
+			else if (0 == sUrl.find(L"https://onlyoffice-plugins.github.io/onlyoffice.github.io"))
+			{
+				m_sMarketplaceUrl = L"https://onlyoffice-plugins.github.io/onlyoffice.github.io";
+				m_sMarketplaceRepo = L"https://github.com/ONLYOFFICE-PLUGINS/onlyoffice.github.io";
+			}
+			else
+			{
+				m_sMarketplaceUrl = sUrl;
+				m_sMarketplaceRepo = L"";
+				std::wstring::size_type posDelimeter = m_sMarketplaceUrl.find(';');
+				if (posDelimeter != std::wstring::npos)
+				{
+					m_sMarketplaceUrl = sUrl.substr(0, posDelimeter);
+					m_sMarketplaceRepo = sUrl.substr(posDelimeter + 1);
+				}
+			}
+
 			bResult = true;
 		}
 
@@ -758,6 +781,8 @@ private:
 			if (pPlugin)
 			{
 				sPackageUrl = m_sMarketplaceUrl + L"/sdkjs-plugins/content/" + pPlugin->m_sName + L"/deploy/" + pPlugin->m_sName + L".plugin";
+				if (!m_sMarketplaceRepo.empty())
+					sPackageUrl = m_sMarketplaceRepo + L"/releases/latest/download/" + pPlugin->m_sName + L".plugin";
 			}
 			else if (IsNeedDownload(sPlugin))
 			{

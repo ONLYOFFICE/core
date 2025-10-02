@@ -493,6 +493,8 @@ namespace NExtractTools
 	class InputParams
 	{
 	public:
+        std::wstring* m_sDefaultFontName;
+        int* m_nDefaultFontSize;
 		std::wstring* m_sKey;
 		std::wstring* m_sFileFrom;
 		std::wstring* m_sFileTo;
@@ -528,6 +530,8 @@ namespace NExtractTools
 	public:
 		InputParams()
 		{
+			m_sDefaultFontName = NULL;
+			m_nDefaultFontSize = NULL;
 			m_sKey = NULL;
 			m_sFileFrom = NULL;
 			m_sFileTo = NULL;
@@ -561,6 +565,8 @@ namespace NExtractTools
 		}
 		~InputParams()
 		{
+			RELEASEOBJECT(m_sDefaultFontName);
+			RELEASEOBJECT(m_nDefaultFontSize);
 			RELEASEOBJECT(m_sKey);
 			RELEASEOBJECT(m_sFileFrom);
 			RELEASEOBJECT(m_sFileTo);
@@ -685,6 +691,16 @@ namespace NExtractTools
 								{
 									RELEASEOBJECT(m_nFormatTo);
 									m_nFormatTo = new int(XmlUtils::GetInteger(sValue));
+								}
+								else if (_T("m_sDefaultFontName") == sName)
+								{
+									RELEASEOBJECT(m_sDefaultFontName);
+									m_sDefaultFontName = new std::wstring(sValue);
+								}
+								else if (_T("m_nDefaultFontSize") == sName)
+								{
+									RELEASEOBJECT(m_nDefaultFontSize);
+									m_nDefaultFontSize = new int(XmlUtils::GetInteger(sValue));
 								}
 								else if (_T("m_nCsvTxtEncoding") == sName)
 								{

@@ -9,7 +9,20 @@ namespace OFD
 CPageBlock::CPageBlock(CXmlReader& oLiteReader)
 	: IPageBlock(oLiteReader)
 {
-	if ("ofd:PageBlock" != oLiteReader.GetNameA() || oLiteReader.IsEmptyNode())
+	if (oLiteReader.MoveToFirstAttribute())
+	{
+		do
+		{
+			if ("Boundary" != oLiteReader.GetNameA())
+				continue;
+
+			m_oBoundary.Read(oLiteReader.GetTextA());
+		} while (oLiteReader.MoveToNextAttribute());
+
+		oLiteReader.MoveToElement();
+	}
+
+	if (oLiteReader.IsEmptyNode())
 		return;
 
 	CPageBlock::ReadIntoContainer(oLiteReader, m_arPageBlocks);
@@ -41,12 +54,19 @@ void CPageBlock::ReadIntoContainer(CXmlReader& oLiteReader, std::vector<IPageBlo
 	}
 }
 
-void CPageBlock::Draw(IRenderer* pRenderer, const CCommonData& oCommonData) const
+void CPageBlock::Draw(IRenderer* pRenderer, const CCommonData& oCommonData, EPageType ePageType) const
 {
 	if (nullptr == pRenderer)
 		return;
 
+	double dM11, dM12, dM21, dM22, dDx, dDy;
+
+	pRenderer->GetTransform(&dM11, &dM12, &dM21, &dM22, &dDx, &dDy);
+	pRenderer->SetTransform(dM11, dM12, dM21, dM22, dDx + m_oBoundary.m_dX, dDy + m_oBoundary.m_dY);
+
 	for (const IPageBlock* pPageBlock : m_arPageBlocks)
-		pPageBlock->Draw(pRenderer, oCommonData);
+		pPageBlock->Draw(pRenderer, oCommonData, ePageType);
+
+	pRenderer->SetTransform(dM11, dM12, dM21, dM22, dDx, dDy);
 }
 }

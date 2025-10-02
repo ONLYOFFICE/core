@@ -59,6 +59,7 @@ public:
 		Ink = 14,
 		Popup = 15,
 		FileAttachment = 16,
+		Redact = 25,
 		Widget = 26,
 		WidgetPushButton = 27,
 		WidgetRadioButton = 28,
@@ -452,6 +453,31 @@ public:
 		double m_dInRect[4]{};
 	};
 
+	class GRAPHICS_DECL CRedactAnnotPr
+	{
+	public:
+		BYTE GetQ() const;
+		int  GetFontStyle()  const;
+		double GetFontSize() const;
+		const std::wstring& GetFontName();
+		const std::wstring& GetOverlayText();
+		const std::vector<double>& GetIC();
+		const std::vector<double>& GetFontColor();
+		const std::vector<double>& GetQuadPoints();
+
+		void Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, int nFlags);
+
+	private:
+		BYTE m_nQ;
+		int m_nFontStyle;
+		double m_dFS;
+		std::wstring m_wsFN;
+		std::wstring m_wsOverlayText;
+		std::vector<double> m_arrIC;
+		std::vector<double> m_arrFC;
+		std::vector<double> m_arrQuadPoints;
+	};
+
 	CAnnotFieldInfo();
 	virtual ~CAnnotFieldInfo();
 
@@ -491,6 +517,7 @@ public:
 	bool IsFreeText()        const;
 	bool IsCaret()           const;
 	bool IsStamp()           const;
+	bool IsRedact()          const;
 
 	CMarkupAnnotPr*       GetMarkupAnnotPr();
 	CTextAnnotPr*         GetTextAnnotPr();
@@ -503,6 +530,7 @@ public:
 	CFreeTextAnnotPr*     GetFreeTextAnnotPr();
 	CCaretAnnotPr*        GetCaretAnnotPr();
 	CStampAnnotPr*        GetStampAnnotPr();
+	CRedactAnnotPr*       GetRedactAnnotPr();
 	CWidgetAnnotPr*       GetWidgetAnnotPr();
 
 	bool Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector);
@@ -547,6 +575,7 @@ private:
 	CFreeTextAnnotPr*     m_pFreeTextPr;
 	CCaretAnnotPr*        m_pCaretPr;
 	CStampAnnotPr*        m_pStampPr;
+	CRedactAnnotPr*       m_pRedactPr;
 	CWidgetAnnotPr*       m_pWidgetPr;
 };
 
@@ -600,6 +629,29 @@ private:
 	std::vector< std::pair<int, int> > m_arrCO;
 	std::vector<std::wstring> m_arrButtonImg;
 	std::vector<CParent*> m_arrParents;
+};
+
+class GRAPHICS_DECL CRedact : public IAdvancedCommand
+{
+public:
+	struct SRedact
+	{
+		std::wstring sID;
+		std::vector<double> arrQuadPoints;
+		int nFlag;
+		LONG nRenderLen;
+		BYTE* pRender;
+	};
+
+	CRedact();
+	virtual ~CRedact();
+
+	const std::vector<SRedact*>& GetRedact();
+
+	bool Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector);
+
+private:
+	std::vector<SRedact*> m_arrRedact;
 };
 
 #endif // _BUILD_ANNOTFIELD_H_

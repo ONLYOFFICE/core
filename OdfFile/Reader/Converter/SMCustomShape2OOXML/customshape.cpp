@@ -33,12 +33,12 @@
 
 namespace OdfCustomShape
 {
-	std::wstring convert_formula(const std::wstring& odf_formula, const std::wstring& name)
+	std::wstring convert_formula(const std::wstring& odf_formula, const std::wstring& name,const std::wstring& wsLeft,const std::wstring& wsTop,const std::wstring& wsRight,const std::wstring& wsBottom)
 	{
 		SMCustomShapePars oPars;
 		SMCustomShapeConversion oConvers;
 		
-		oPars.StartParsSMCustomShape(odf_formula);
+		oPars.StartParsSMCustomShape(odf_formula,wsLeft,wsTop,wsRight,wsBottom);
 		oConvers.StartConversion(oPars.GetVector(), name);
 
 		return oConvers.GetStringXml();

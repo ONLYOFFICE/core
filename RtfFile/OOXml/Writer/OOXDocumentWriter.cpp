@@ -268,7 +268,11 @@ bool OOXDocumentWriter::SaveBySection()
 			_section section;
 			if (m_oDocument.GetItem(section, 0))
 			{
-				sXmlSectProp = section.props->RenderToOOX(oNewParam);
+                if (m_oDocument.GetCount() == 2)
+                {
+                    section.props->m_bFinalize = false;
+                }
+                sXmlSectProp = section.props->RenderToOOX(oNewParam);
 			}	
 		}
 		RtfParagraph *para = dynamic_cast<RtfParagraph *>(m_oDocument[0].props->operator[](i).get());

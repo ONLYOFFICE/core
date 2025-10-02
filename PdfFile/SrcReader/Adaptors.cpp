@@ -182,6 +182,29 @@ bool GlobalParamsAdaptor::GetCMap(const char* sName, char*& pData, unsigned int&
     return false;
 }
 
+void GlobalParamsAdaptor::AddRedact(const std::vector<double>& arrRedactBox)
+{
+	m_arrRedactBox.insert(m_arrRedactBox.end(), arrRedactBox.begin(), arrRedactBox.end());
+}
+bool GlobalParamsAdaptor::InRedact(double dX, double dY)
+{
+	for (int i = 0; i < m_arrRedactBox.size(); i += 4)
+	{
+		double xMin = m_arrRedactBox[i + 0];
+		double yMin = m_arrRedactBox[i + 1];
+		double xMax = m_arrRedactBox[i + 2];
+		double yMax = m_arrRedactBox[i + 3];
+
+		if (xMin < dX && dX < xMax && yMin < dY && dY < yMax)
+			return true;
+	}
+	return false;
+}
+void GlobalParamsAdaptor::ClearRedact()
+{
+	m_arrRedactBox.clear();
+}
+
 bool operator==(const Ref &a, const Ref &b)
 {
 	return a.gen == b.gen && a.num == b.num;

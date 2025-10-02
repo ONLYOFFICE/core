@@ -78,8 +78,6 @@ odt_conversion_context::odt_conversion_context(package::odf_document * outputDoc
 	:	odf_conversion_context (TextDocument, outputDocument),
 		comment_context_(this), notes_context_(this), main_text_context_(NULL), table_context_(this), controls_context_(this)
 {
-
-	is_hyperlink_ = false;
 	is_header_ = false;
 	is_footer_ = false;
 	is_background_ = false;
@@ -326,6 +324,13 @@ void odt_conversion_context::end_drawing_context()
 }
 void odt_conversion_context::start_paragraph(bool styled)
 {
+	if (pendingBreakType) // for bug when we have text and after conversion we have early break column (check bug 73365)
+	{
+		add_paragraph_break(m_pendingBreakType);
+		m_pendingBreakType = -1;
+		pendingBreakType = false;
+	}
+
 	if (false == current_fields.empty() && current_fields.back().status == 1 && false == current_fields.back().in_span)
 	{
 		current_fields.back().status = 2;
@@ -613,20 +618,26 @@ void odt_conversion_context::start_hyperlink(const std::wstring& link, const std
 		hyperlink->common_xlink_attlist_.type_	= xlink_type::Simple;
 		
 		text_context()->start_element(hyperlink_elm);
+		text_context()->level_hyperlink_ = text_context()->get_last_level();
 
-		is_hyperlink_ = true;
+		text_context()->is_hyperlink_ = true;
 	}
 }
 void odt_conversion_context::end_hyperlink()
 {
-	if (!is_hyperlink_) return;
+	if (!text_context()->is_hyperlink_) return;
 
-	if (false == text_context()->current_level_.empty() && dynamic_cast<text_span*>(text_context()->current_level_.back().elm.get()))	//CARA SETTING WARNET.docx
+	//if (false == text_context()->current_level_.empty() && dynamic_cast<text_span*>(text_context()->current_level_.back().elm.get()))	//CARA SETTING WARNET.docx
+	//	text_context()->end_element();
+
+	while (text_context()->get_last_level() > text_context()->level_hyperlink_)
+	{
 		text_context()->end_element();
+	}
+	text_context()->level_hyperlink_ = 0;
+	text_context()->end_element(); //hyperlink_element
 
-	text_context()->end_element();
-
-	is_hyperlink_ = false; //метка .. для гиперлинков в объектах - там не будет span
+	text_context()->is_hyperlink_ = false; //метка .. для гиперлинков в объектах - там не будет span
 }
 void odt_conversion_context::start_drop_down()
 {
@@ -1106,7 +1117,7 @@ void odt_conversion_context::add_section(bool continuous)
 
 	sections_.push_back(state);
 }
-void odt_conversion_context::add_section_columns(int count, double space_pt, bool separator)
+void odt_conversion_context::add_section_columns(int count, double space_pt, bool separator, bool flag)
 {
 	if (sections_.empty() || count < 1) return;
 
@@ -1114,6 +1125,15 @@ void odt_conversion_context::add_section_columns(int count, double space_pt, boo
 	if (!style_)return;
 
 	style_section_properties* section_properties = style_->content_.add_get_style_section_properties();
+
+	if( flag ) // for bug when we have implicit break column (check bug 73365)
+	{
+		section_properties->text_dont_balance_text_columns_ = flag;
+	}
+	else if( !flag )
+	{
+		section_properties->text_dont_balance_text_columns_ = flag;
+	}
 	
 	create_element(L"style", L"columns", section_properties->style_columns_,this);	
 	

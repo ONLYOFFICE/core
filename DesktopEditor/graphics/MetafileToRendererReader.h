@@ -190,8 +190,12 @@ namespace NSOnlineOfficeBinToPdf
 			int len = 2 * ReadUShort();
 			SkipString16(len);
 		}
+		inline int Tell()
+		{
+			return (int)(m_cur - m_buffer);
+		}
 
-		IAdvancedCommand* Read(int type, IMetafileToRenderter* pCorrector);
+		IAdvancedCommand* Read(int type, IMetafileToRenderter* pCorrector, int nLen = 0);
 	};
 }
 

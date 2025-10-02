@@ -2,7 +2,7 @@
  * vlc_actions.h: handle vlc actions
  *****************************************************************************
  * Copyright (C) 2003-2016 VLC authors and VideoLAN
- * $Id: 404c1662a82ef3f3ffc983a81fa73b90f5773eef $
+ * $Id$
  *
  * Authors: Sigmund Augdal Helberg <dnumgis@videolan.org>
  *

@@ -1,0 +1,15 @@
+diff --git a/contrib/src/ffmpeg/rules.mak b/contrib/src/ffmpeg/rules.mak
+index d0b72a5e4e..7133936f14 100644
+--- a/contrib/src/ffmpeg/rules.mak
++++ b/contrib/src/ffmpeg/rules.mak
+@@ -181,8 +181,10 @@ endif
+ # Windows
+ ifdef HAVE_WIN32
+ ifndef HAVE_VISUALSTUDIO
++ifneq ($(ARCH),aarch64)
+ DEPS_ffmpeg += d3d11
+ endif
++endif
+ FFMPEGCONF += --target-os=mingw32
+ FFMPEGCONF += --disable-w32threads --enable-pthreads --extra-libs="-lpthread"
+ DEPS_ffmpeg += pthreads $(DEPS_pthreads)

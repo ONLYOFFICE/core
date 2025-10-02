@@ -65,4 +65,20 @@ std::vector<double> CXmlReader::GetArrayDoubles(bool bIsAttribute)
 
 	return arDoubleValues;
 }
+
+std::vector<unsigned int> CXmlReader::GetArrayUInteger(bool bIsAttribute)
+{
+	const std::vector<std::string> arValues{Split(GetTextValueA(bIsAttribute), ' ')};
+
+	if(arValues.empty())
+		return std::vector<unsigned int>();
+
+	std::vector<unsigned int> arUIntValues(arValues.size());
+
+	for (unsigned int unIndex = 0; unIndex < arValues.size(); ++unIndex)
+		if (!StringToUInteger(arValues[unIndex], arUIntValues[unIndex]))
+			return std::vector<unsigned int>();
+
+	return arUIntValues;
+}
 }

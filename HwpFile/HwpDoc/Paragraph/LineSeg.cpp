@@ -20,7 +20,7 @@ CLineSeg::CLineSeg(int nTagNum, int nLevel, int nSize, CHWPStream& oBuffer, int 
 	oBuffer.Skip(nSize - oBuffer.GetDistanceToLastPos(true));
 }
 
-CLineSeg::CLineSeg(CXMLReader& oReader, int nVersion)
+CLineSeg::CLineSeg(CXMLReader& oReader)
 {
 	//TODO:: реализовать
 

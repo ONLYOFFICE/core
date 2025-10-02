@@ -95,6 +95,7 @@ namespace PPTX
 		class Shape;
 		class ClrMap;
 		class UniColor;
+		class Paragraph;
 	}
 
 	class CStringTrimmer
@@ -311,7 +312,8 @@ namespace NSBinPptxRW
         void ConvertShapeVML        (PPTX::Logic::SpTreeElem& oShape, const std::wstring& sMainProps, NSBinPptxRW::CXmlWriter& oWriter, bool bSignature = false);
         void ConvertGroupVML        (PPTX::Logic::SpTreeElem& oGroup, const std::wstring& sMainProps, NSBinPptxRW::CXmlWriter& oWriter);
 
-        void ConvertTextVML         (XmlUtils::CXmlNode &nodeTextBox, PPTX::Logic::Shape* pShape);
+        void ConvertTextVML         (XmlUtils::CXmlNode &node, PPTX::Logic::Shape* pShape);
+		void ConvertParaVML			(XmlUtils::CXmlNode& node, PPTX::Logic::Paragraph* p);
 
 		HRESULT SetCurrentRelsPath();
 	};

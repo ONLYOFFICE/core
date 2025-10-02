@@ -24,7 +24,7 @@ class CHWPRecordBullet : public CHWPRecord
 	HWP_CHAR m_chCheckBulletChar;
 public:
 	CHWPRecordBullet(CHWPDocInfo& oDocInfo, int nTagNum, int nLevel, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
-	CHWPRecordBullet(CHWPDocInfo& oDocInfo, CXMLReader& oReader, int nVersion);
+	CHWPRecordBullet(CHWPDocInfo& oDocInfo, CXMLReader& oReader, EHanType eType);
 };
 }
 

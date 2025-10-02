@@ -916,32 +916,49 @@ void text_list_level_style_image::pptx_convert(oox::pptx_conversion_context & Co
 
 	std::wostream & strm = Context.get_text_context().get_styles_context().list_style();
 
- //   style_list_level_properties * listLevelProperties = dynamic_cast<style_list_level_properties *>( list_level_properties_.get() );
- //   
-	//style_list_level_label_alignment * labelAlignment = listLevelProperties ?
- //       dynamic_cast<style_list_level_label_alignment *>(listLevelProperties->style_list_level_label_alignment_.get()) : NULL;
+	style_list_level_properties* listLevelProperties = dynamic_cast<style_list_level_properties*>(list_level_properties_.get());
 
-	//int level = text_list_level_style_attr_.get_text_level();
-	
+	style_list_level_label_alignment* labelAlignment = listLevelProperties ?
+		dynamic_cast<style_list_level_label_alignment*>(listLevelProperties->style_list_level_label_alignment_.get()) : NULL;
+
 	CP_XML_WRITER(strm)
-	{ 	
-		style_text_properties * textProperties = dynamic_cast<style_text_properties *>(text_properties_.get());
-		wchar_t bullet = L'\x2022';
-	    
-		if (textProperties)///эти свойства относятся 
-			// к отрисовки значков !!! а не самого текста
-	    {
-	        textProperties->content_.pptx_convert_as_list(Context);
-			strm << Context.get_text_context().get_styles_context().text_style().str();
-	    }
-		
-		CP_XML_NODE(L"a:buChar")
+	{
+		if (image_attr_.xlink_attlist_.href_ && false == image_attr_.xlink_attlist_.href_->empty())
 		{
-			//if ((textProperties) && (textProperties->content().style_font_charset_))
-			//{
-			//	if (textProperties->content().style_font_charset_.get() == L"x-xsymbol")bullet = bullet + 0xf000;
-			//}
-			CP_XML_ATTR(L"char",bullet/*convert_bullet_char(bullet)*/);
+			std::wstring ref_image;
+			bool isMediaInternal = true;
+			std::wstring rid = Context.get_mediaitems()->add_or_find(*image_attr_.xlink_attlist_.href_, oox::typeImage, isMediaInternal, ref_image, oox::document_place);
+			Context.get_slide_context().add_rels(isMediaInternal, rid, ref_image, oox::typeImage);
+
+			//a:buSzPct
+			CP_XML_NODE(L"a:buBlip")
+			{
+				CP_XML_NODE(L"a:blip")
+				{
+					CP_XML_ATTR(L"r:embed", rid);
+				}
+			}
+		}
+		else
+		{
+			style_text_properties* textProperties = dynamic_cast<style_text_properties*>(text_properties_.get());
+			wchar_t bullet = L'\x2022';
+
+			if (textProperties)///эти свойства относятся 
+				// к отрисовки значков !!! а не самого текста
+			{
+				textProperties->content_.pptx_convert_as_list(Context);
+				strm << Context.get_text_context().get_styles_context().text_style().str();
+			}
+
+			CP_XML_NODE(L"a:buChar")
+			{
+				//if ((textProperties) && (textProperties->content().style_font_charset_))
+				//{
+				//	if (textProperties->content().style_font_charset_.get() == L"x-xsymbol")bullet = bullet + 0xf000;
+				//}
+				CP_XML_ATTR(L"char", bullet/*convert_bullet_char(bullet)*/);
+			}
 		}
 	}
 }

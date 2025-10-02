@@ -2,7 +2,7 @@
  * vlc_rand.h: RNG
  *****************************************************************************
  * Copyright © 2007 Rémi Denis-Courmont
- * $Id: 3ae95ac04c55f46d116481eb89255b013f6d1c32 $
+ * $Id$
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by

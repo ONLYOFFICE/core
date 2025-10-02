@@ -621,7 +621,6 @@
     <ClInclude Include="..\..\..\PPTXFormat\NotesMaster.h" />
     <ClInclude Include="..\..\..\PPTXFormat\NotesSlide.h" />
     <ClInclude Include="..\..\..\PPTXFormat\PPTX.h" />
-    <ClInclude Include="..\..\..\PPTXFormat\PPTXEvent.h" />
     <ClInclude Include="..\..\..\PPTXFormat\Presentation.h" />
     <ClInclude Include="..\..\..\PPTXFormat\Presentation\PresentationChildElements.h" />
     <ClInclude Include="..\..\..\PPTXFormat\PresProps.h" />

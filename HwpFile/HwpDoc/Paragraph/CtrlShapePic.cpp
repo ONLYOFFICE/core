@@ -1,5 +1,7 @@
 #include "CtrlShapePic.h"
 
+#include "../Common/NodeNames.h"
+
 namespace HWP
 {
 EPicEffectType GetPicEffectType(int nValue)
@@ -65,25 +67,41 @@ CShadow::CShadow(int nTypeNum, CHWPStream& oBuffer, int nOff, int nSize)
 	m_nSize = oBuffer.GetDistanceToLastPos(true);
 }
 
-CShadow::CShadow(CXMLReader& oReader, int nVersion)
+CShadow::CShadow(CXMLReader& oReader, EHanType eType)
 	: CPicEffect(EPicEffectType::SHADOW), m_pColor(nullptr)
 {
 	START_READ_ATTRIBUTES(oReader)
 	{
-		if ("style" == sAttributeName)
+		if (GetAttributeName(EAttribute::StyleId, eType) == sAttributeName)
 			m_nStyle = oReader.GetInt();
-		else if ("alpha" == sAttributeName)
+		else if (GetAttributeName(EAttribute::Alpha, eType) == sAttributeName)
 			m_nTransparency = oReader.GetInt();
-		else if ("radius" == sAttributeName)
+		else if (GetAttributeName(EAttribute::Radius, eType) == sAttributeName)
 			m_nBlur = oReader.GetInt();
-		else if ("direction" == sAttributeName)
+		else if (GetAttributeName(EAttribute::Direction, eType) == sAttributeName)
 			m_nDirection = oReader.GetInt();
-		else if ("distance" == sAttributeName)
+		else if (GetAttributeName(EAttribute::Distance, eType) == sAttributeName)
 			m_nDistance = oReader.GetInt();
-		else if ("rotationStyle" == sAttributeName)
+		else if (GetAttributeName(EAttribute::RotationStyle, eType) == sAttributeName)
 			m_nRotation = (int)oReader.GetBool();
+
+		// Далее идут атрибуты, которые встречаются только в HWPML
+		else if (EHanType::HWPML != eType)
+			continue;
+		else if ("SkewX" == sAttributeName)
+			m_fAngleX = oReader.GetDouble();
+		else if ("SkewY" == sAttributeName)
+			m_fAngleY = oReader.GetDouble();
+		else if ("ScaleX" == sAttributeName)
+			m_fMagnifyX = oReader.GetDouble();
+		else if ("ScaleY" == sAttributeName)
+			m_fMagnifyY = oReader.GetDouble();
 	}
 	END_READ_ATTRIBUTES(oReader)
+
+	// Далее идут ноды, которые встречаются только в HWPX
+	if (EHanType::HWPX != eType)
+		return;
 
 	WHILE_READ_NEXT_NODE_WITH_NAME(oReader)
 	{
@@ -109,6 +127,7 @@ CShadow::CShadow(CXMLReader& oReader, int nVersion)
 			}
 			END_READ_ATTRIBUTES(oReader)
 		}
+		// TODO:: реализовать для HWPX и HWPML при встрече
 		else if ("hp:effectsColor" == sNodeName)
 			m_pColor = new CPicColor(oReader);
 	}
@@ -133,19 +152,19 @@ CNeon::CNeon(int nTypeNum, CHWPStream& oBuffer, int nOff, int nSize)
 	m_nSize = oBuffer.GetDistanceToLastPos(true);
 }
 
-CNeon::CNeon(CXMLReader& oReader, int nVersion)
+CNeon::CNeon(CXMLReader& oReader, EHanType eType)
 	: CPicEffect(EPicEffectType::GLOW), m_pColor(nullptr)
 {
 	START_READ_ATTRIBUTES(oReader)
 	{
-		if ("alpha" == sAttributeName)
+		if (GetAttributeName(EAttribute::Alpha, eType) == sAttributeName)
 			m_fTransparency = oReader.GetDouble();
-		else if ("radius" == sAttributeName)
+		else if (GetAttributeName(EAttribute::Radius, eType) == sAttributeName)
 			m_fRadius = oReader.GetDouble();
 	}
 	END_READ_ATTRIBUTES(oReader)
 
-	WHILE_READ_NEXT_NODE_WITH_ONE_NAME(oReader, "hp:effectsColor")
+	WHILE_READ_NEXT_NODE_WITH_ONE_NAME(oReader, GetNodeName(ENode::EffectsColor, eType))
 	{
 		m_pColor = new CPicColor(oReader);
 		break;
@@ -167,10 +186,10 @@ CSoftEdge::CSoftEdge(int nTypeNum, CHWPStream& oBuffer, int nOff, int nSize)
 	m_nSize = 4;
 }
 
-CSoftEdge::CSoftEdge(CXMLReader& oReader, int nVersion)
+CSoftEdge::CSoftEdge(CXMLReader& oReader, EHanType eType)
 	: CPicEffect(EPicEffectType::SOFT_EDGE)
 {
-	m_fRadius = oReader.GetAttributeDouble("radius");
+	m_fRadius = oReader.GetAttributeDouble(GetAttributeName(EAttribute::Radius, eType));
 }
 
 CReflect::CReflect(int nTypeNum, CHWPStream& oBuffer, int nOff, int nSize)
@@ -196,23 +215,47 @@ CReflect::CReflect(int nTypeNum, CHWPStream& oBuffer, int nOff, int nSize)
 	m_nSize = oBuffer.GetDistanceToLastPos(true);
 }
 
-CReflect::CReflect(CXMLReader& oReader, int nVersion)
+CReflect::CReflect(CXMLReader& oReader, EHanType eType)
 	: CPicEffect(EPicEffectType::REFLECT)
 {
 	START_READ_ATTRIBUTES(oReader)
 	{
-		if ("radius" == sAttributeName)
+		if (GetAttributeName(EAttribute::Radius, eType) == sAttributeName)
 			m_fRadius = oReader.GetDouble();
-		else if ("direction" == sAttributeName)
+		else if (GetAttributeName(EAttribute::Direction, eType) == sAttributeName)
 			m_fDirection = oReader.GetDouble();
-		else if ("distance" == sAttributeName)
+		else if (GetAttributeName(EAttribute::Distance, eType) == sAttributeName)
 			m_fDistance = oReader.GetDouble();
-		else if ("rotationStyle" == sAttributeName)
+		else if (GetAttributeName(EAttribute::RotationStyle, eType) == sAttributeName)
 			m_nRotateStyle = (int)oReader.GetBool();
-		else if ("fadeDirection" == sAttributeName)
+		else if (GetAttributeName(EAttribute::FadeDirection, eType) == sAttributeName)
 			m_fOffsetDirection = oReader.GetDouble();
+
+		// Далее идут атрибуты, которые встречаются только в HWPML
+		else if (EHanType::HWPML != eType)
+			continue;
+		else if ("SkewX" == sAttributeName)
+			m_fAngleX = oReader.GetDouble();
+		else if ("SkewY" == sAttributeName)
+			m_fAngleY = oReader.GetDouble();
+		else if ("ScaleX" == sAttributeName)
+			m_fMagnifyX = oReader.GetDouble();
+		else if ("ScaleY" == sAttributeName)
+			m_fMagnifyY = oReader.GetDouble();
+		else if ("StartAlpha" == sAttributeName)
+			m_fStartTrans = oReader.GetDouble();
+		else if ("StartPos" == sAttributeName)
+			m_fStartPos = oReader.GetDouble();
+		else if ("EndAlpha" == sAttributeName)
+			m_fEndTrans = oReader.GetDouble();
+		else if ("EndPos" == sAttributeName)
+			m_fEndPos = oReader.GetDouble();
 	}
 	END_READ_ATTRIBUTES(oReader)
+
+	// Далее идут ноды, которые встречаются только в HWPX
+	if (EHanType::HWPX != eType)
+		return;
 
 	#define READ_VALUES(value_1_name, value_1_variable, value_2_name, value_2_variable)\
 	{\
@@ -256,8 +299,27 @@ CCtrlShapePic::CCtrlShapePic(const HWP_STRING& sCtrlID, int nSize, CHWPStream& o
 	: CCtrlGeneralShape(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
 
-CCtrlShapePic::CCtrlShapePic(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion)
-    : CCtrlGeneralShape(sCtrlID, oReader, nVersion)
+CCtrlShapePic::CCtrlShapePic(const HWP_STRING& sCtrlID, CXMLReader& oReader, EHanType eType)
+    : CCtrlGeneralShape(sCtrlID, oReader, eType)
+{
+	switch (eType)
+	{
+		case EHanType::HWPX : ReadFromHWPX (oReader); return;
+		case EHanType::HWPML: ReadFromHWPML(oReader); return;
+		default: break;
+	}
+}
+
+CCtrlShapePic::~CCtrlShapePic()
+{
+	for (CPicEffect* pEffect : m_arPicEffect)
+	{
+		if (nullptr != pEffect)
+			delete pEffect;
+	}
+}
+
+void CCtrlShapePic::ReadFromHWPX(CXMLReader &oReader)
 {
 	WHILE_READ_NEXT_NODE_WITH_NAME(oReader)
 	{
@@ -289,62 +351,11 @@ CCtrlShapePic::CCtrlShapePic(const HWP_STRING& sCtrlID, CXMLReader& oReader, int
 			END_WHILE
 		}
 		else if ("hp:imgClip" == sNodeName)
-		{
-			START_READ_ATTRIBUTES(oReader)
-			{
-				if ("left" == sAttributeName)
-					m_nCropLeft = oReader.GetInt();
-				else if ("right" == sAttributeName)
-					m_nCropRight = oReader.GetInt();
-				else if ("top" == sAttributeName)
-					m_nCropTop = oReader.GetInt();
-				else if ("bottom" == sAttributeName)
-					m_nCropBottom = oReader.GetInt();
-			}
-			END_READ_ATTRIBUTES(oReader)
-		}
+			ReadImageClip(oReader, EHanType::HWPX);
 		else if ("hp:effects" == sNodeName)
-		{
-			if (oReader.GetReader()->IsEmptyNode())
-				continue;
-
-			WHILE_READ_NEXT_NODE_WITH_DEPTH_AND_NAME(oReader, Child)
-			{
-				if ("hp:shadow" == sNodeChildName)
-					m_arPicEffect.push_back(new CShadow(oReader, nVersion));
-				else if ("hp:glow" == sNodeChildName)
-					m_arPicEffect.push_back(new CNeon(oReader, nVersion));
-				else if ("hp:softEdge" == sNodeChildName)
-					m_arPicEffect.push_back(new CSoftEdge(oReader, nVersion));
-				else if ("hp:reflection" == sNodeChildName)
-					m_arPicEffect.push_back(new CReflect(oReader, nVersion));
-			}
-			END_WHILE
-		}
+			ReadEffects(oReader, EHanType::HWPX);
 		else if ("hc:img" == sNodeName)
-		{
-			START_READ_ATTRIBUTES(oReader)
-			{
-				if ("bright" == sAttributeName)
-					m_chBright = (HWP_BYTE)oReader.GetInt();
-				else if ("contrast" == sAttributeName)
-					m_chContrast = (HWP_BYTE)oReader.GetInt();
-				else if ("effect" == sAttributeName)
-				{
-					const std::string sType{oReader.GetTextA()};
-
-					if ("REAL_PIC" == sType)
-						m_chEffect = 0;
-					else if ("GRAY_SCALE" == sType)
-						m_chEffect = 1;
-					else if ("BLACK_WHITE" == sType)
-						m_chEffect = 2;
-				}
-				else if ("binaryItemIDRef" == sAttributeName)
-					m_sBinDataID = oReader.GetText();
-			}
-			END_READ_ATTRIBUTES(oReader)
-		}
+			ReadImage(oReader, EHanType::HWPX);
 		else if ("hp:imgDim" == sNodeName)
 		{
 			START_READ_ATTRIBUTES(oReader)
@@ -357,18 +368,97 @@ CCtrlShapePic::CCtrlShapePic(const HWP_STRING& sCtrlID, CXMLReader& oReader, int
 			END_READ_ATTRIBUTES(oReader)
 		}
 		else
-			CCtrlGeneralShape::ParseChildren(oReader, nVersion);
+			CCtrlGeneralShape::ParseChildren(oReader, EHanType::HWPX);
 	}
 	END_WHILE
 }
 
-CCtrlShapePic::~CCtrlShapePic()
+void CCtrlShapePic::ReadFromHWPML(CXMLReader &oReader)
 {
-	for (CPicEffect* pEffect : m_arPicEffect)
+	WHILE_READ_NEXT_NODE_WITH_NAME(oReader)
 	{
-		if (nullptr != pEffect)
-			delete pEffect;
+		if ("IMAGERECT" == sNodeName)
+		{
+			START_READ_ATTRIBUTES(oReader)
+			{
+					 if ("X0" == sAttributeName) m_arBorderPoints[0].m_nX = oReader.GetInt();
+				else if ("Y0" == sAttributeName) m_arBorderPoints[0].m_nY = oReader.GetInt();
+				else if ("X1" == sAttributeName) m_arBorderPoints[1].m_nX = oReader.GetInt();
+				else if ("Y1" == sAttributeName) m_arBorderPoints[1].m_nY = oReader.GetInt();
+				else if ("X2" == sAttributeName) m_arBorderPoints[2].m_nX = oReader.GetInt();
+				else if ("Y2" == sAttributeName) m_arBorderPoints[2].m_nY = oReader.GetInt();
+				else if ("X3" == sAttributeName) m_arBorderPoints[3].m_nX = oReader.GetInt();
+				else if ("Y3" == sAttributeName) m_arBorderPoints[3].m_nY = oReader.GetInt();
+			}
+			END_READ_ATTRIBUTES(oReader)
+		}
+		else if ("IMAGECLIP" == sNodeName)
+			ReadImageClip(oReader, EHanType::HWPML);
+		else if ("EFFECTS" == sNodeName)
+			ReadEffects(oReader, EHanType::HWPML);
+		else if ("IMAGE" == sNodeName)
+			ReadImage(oReader, EHanType::HWPML);
+		else
+			CCtrlGeneralShape::ParseChildren(oReader, EHanType::HWPML);
 	}
+	END_WHILE
+}
+
+void CCtrlShapePic::ReadImageClip(CXMLReader &oReader, EHanType eType)
+{
+	START_READ_ATTRIBUTES(oReader)
+	{
+		if (GetAttributeName(EAttribute::Left, eType) == sAttributeName)
+			m_nCropLeft = oReader.GetInt();
+		else if (GetAttributeName(EAttribute::Right, eType) == sAttributeName)
+			m_nCropRight = oReader.GetInt();
+		else if (GetAttributeName(EAttribute::Top, eType) == sAttributeName)
+			m_nCropTop = oReader.GetInt();
+		else if (GetAttributeName(EAttribute::Bottom, eType) == sAttributeName)
+			m_nCropBottom = oReader.GetInt();
+	}
+	END_READ_ATTRIBUTES(oReader)
+}
+
+void CCtrlShapePic::ReadEffects(CXMLReader &oReader, EHanType eType)
+{
+	WHILE_READ_NEXT_NODE_WITH_NAME(oReader)
+	{
+		if (GetNodeName(ENode::ShadowEffect, eType) == sNodeName)
+			m_arPicEffect.push_back(new CShadow(oReader, eType));
+		else if (GetNodeName(ENode::GlowEffect, eType) == sNodeName)
+			m_arPicEffect.push_back(new CNeon(oReader, eType));
+		else if (GetNodeName(ENode::SoftEdgeEffect, eType) == sNodeName)
+			m_arPicEffect.push_back(new CSoftEdge(oReader, eType));
+		else if (GetNodeName(ENode::ReflectionEffect, eType) == sNodeName)
+			m_arPicEffect.push_back(new CReflect(oReader, eType));
+	}
+	END_WHILE
+}
+
+void CCtrlShapePic::ReadImage(CXMLReader &oReader, EHanType eType)
+{
+	START_READ_ATTRIBUTES(oReader)
+	{
+		if (GetAttributeName(EAttribute::Bright, eType) == sAttributeName)
+			m_chBright = (HWP_BYTE)oReader.GetInt();
+		else if (GetAttributeName(EAttribute::Contrast, eType) == sAttributeName)
+			m_chContrast = (HWP_BYTE)oReader.GetInt();
+		else if (GetAttributeName(EAttribute::Effect, eType) == sAttributeName)
+		{
+			const std::string sType{oReader.GetTextA()};
+
+			if (GetValueName(EValue::RealPic, eType) == sType)
+				m_chEffect = 0;
+			else if (GetValueName(EValue::GrayScale, eType) == sType)
+				m_chEffect = 1;
+			else if (GetValueName(EValue::BlackWhite, eType) == sType)
+				m_chEffect = 2;
+		}
+		else if (GetAttributeName(EAttribute::BinItem, eType) == sAttributeName)
+			m_sBinDataID = oReader.GetText();
+	}
+	END_READ_ATTRIBUTES(oReader)
 }
 
 EShapeType CCtrlShapePic::GetShapeType() const

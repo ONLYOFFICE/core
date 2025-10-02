@@ -76,6 +76,7 @@ namespace PPTX
 			
 			//std::vector<Ext>	extLst;
 			nullable_string		vmlSpid;
+			nullable_string		creationId;
 
 		protected:
 			virtual void FillParentPointersForChilds();

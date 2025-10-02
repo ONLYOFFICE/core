@@ -21,12 +21,12 @@ CLayer::~CLayer()
 		delete pPageBlock;
 }
 
-void CLayer::Draw(IRenderer* pRenderer, const CCommonData& oCommonData) const
+void CLayer::Draw(IRenderer* pRenderer, const CCommonData& oCommonData, EPageType ePageType) const
 {
 	if (nullptr == pRenderer)
 		return;
 
 	for (const IPageBlock* pPageBlock : m_arPageBlocks)
-		pPageBlock->Draw(pRenderer, oCommonData);
+		pPageBlock->Draw(pRenderer, oCommonData, ePageType);
 }
 }

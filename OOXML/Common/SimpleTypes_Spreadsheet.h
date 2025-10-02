@@ -979,8 +979,8 @@ namespace SimpleTypes
 			double m_dValue;
 			CDoubleOrAutomatic() : m_dValue(0){}
 			
-			CDoubleOrAutomatic(const double & val) { m_dValue = val; this->m_eValue = typeDouble; }
-			CDoubleOrAutomatic(const EDoubleOrAutomatic & val) { this->m_eValue = val; m_dValue = 0; }
+			CDoubleOrAutomatic(const double& val);
+			CDoubleOrAutomatic(const EDoubleOrAutomatic& val);
 
 			virtual EDoubleOrAutomatic FromString(const std::wstring &sValue);
 			double GetDoubleValue() const;

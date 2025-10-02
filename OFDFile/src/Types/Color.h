@@ -2,10 +2,10 @@
 #define COLOR_H
 
 #include "../Utils/XmlReader.h"
-#include "../Res.h"
 
 namespace OFD
 {
+class CRes;
 class CColor
 {
 	BYTE m_oValues[4];

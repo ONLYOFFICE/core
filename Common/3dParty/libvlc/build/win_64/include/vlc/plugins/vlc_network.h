@@ -3,7 +3,7 @@
  *****************************************************************************
  * Copyright (C) 2002-2005 VLC authors and VideoLAN
  * Copyright © 2006-2007 Rémi Denis-Courmont
- * $Id: 010454a01c09730b342d9603d2dc1770361057d2 $
+ * $Id$
  *
  * Authors: Christophe Massiot <massiot@via.ecp.fr>
  *          Laurent Aimar <fenrir@via.ecp.fr>
@@ -182,6 +182,22 @@ VLC_API ssize_t net_vaPrintf( vlc_object_t *p_this, int fd, const char *psz_fmt,
 VLC_API int vlc_close(int);
 
 /** @} */
+
+#ifdef _WIN32
+static inline int vlc_getsockopt(int s, int level, int name,
+                                 void *val, socklen_t *len)
+{
+    return getsockopt(s, level, name, (char *)val, len);
+}
+#define getsockopt vlc_getsockopt
+
+static inline int vlc_setsockopt(int s, int level, int name,
+                                 const void *val, socklen_t len)
+{
+    return setsockopt(s, level, name, (const char *)val, len);
+}
+#define setsockopt vlc_setsockopt
+#endif
 
 /* Portable network names/addresses resolution layer */
 

@@ -16,7 +16,7 @@ CHWPRecordDocumentProperties::CHWPRecordDocumentProperties(CHWPDocInfo& oDocInfo
 	oBuffer.ReadInt(m_nCharUnitLocInPara);
 }
 
-CHWPRecordDocumentProperties::CHWPRecordDocumentProperties(CHWPDocInfo& oDocInfo, CXMLReader& oReader, int nVersion)
+CHWPRecordDocumentProperties::CHWPRecordDocumentProperties(CHWPDocInfo& oDocInfo, CXMLReader& oReader)
 	: CHWPRecord(EHWPTag::HWPTAG_DOCUMENT_PROPERTIES, 0, 0), m_pParent(&oDocInfo)
 {
 	START_READ_ATTRIBUTES(oReader)

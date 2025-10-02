@@ -30,11 +30,8 @@
  *
  */
 #pragma once
-#ifndef PPTX_IFILE_CONTAINER_INCLUDE_H_
-#define PPTX_IFILE_CONTAINER_INCLUDE_H_
 
 #include "FileMap.h"
-#include "PPTXEvent.h"
 #include "../DocxFormat/IFileContainer.h"
 #include "../DocxFormat/Media/Image.h"
 #include "../DocxFormat/Media/OleObject.h"
@@ -77,4 +74,3 @@ namespace PPTX
 
 } // namespace PPTX
 
-#endif // PPTX_IFILE_CONTAINER_INCLUDE_H_

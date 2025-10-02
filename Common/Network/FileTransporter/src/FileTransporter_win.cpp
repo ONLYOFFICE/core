@@ -34,6 +34,8 @@
 #include "../../../../DesktopEditor/common/StringExt.h"
 
 #include <wininet.h>
+#include <objbase.h>
+#include <urlmon.h>
 #pragma comment(lib, "Wininet")
 #pragma comment(lib, "Ole32.lib")
 

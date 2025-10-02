@@ -139,15 +139,17 @@ public:
 	~CShapeStart();
 
 	std::string& GetShapeXML();
+	const std::vector<std::wstring>& GetRedactID();
 	Aggplus::CImage* GetShapeImage();
 
 	void SetShapeXML(const std::string& sShapeXML);
 	void SetShapeImage(BYTE* pImgData, int nWidth, int nHeight);
 
-	bool Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector);
+	bool Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector, int nLen);
 
 private:
 	std::string m_sShapeXML;
+	std::vector<std::wstring> m_arrRedactID;
 	Aggplus::CImage* m_pImage;
 };
 

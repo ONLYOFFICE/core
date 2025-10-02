@@ -64,7 +64,9 @@ void oox_title::oox_content_serialize(std::wostream & _Wostream, odf_reader::cha
 				//odf_reader::fonts_container & fonts = context.fontContainer();
 				odf_reader::fonts_container fonts;
 				if (content.text_properties_)
+				{
 					content.text_properties_->oox_serialize(CP_XML_STREAM(), true, fonts);
+				}
 
 				CP_XML_NODE(L"a:t")
 				{

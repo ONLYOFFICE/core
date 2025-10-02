@@ -33,6 +33,7 @@ public:
 	void SetStream(HWP_BYTE* pBuffer, unsigned long ulSize, bool bExternalBuffer = true);
 
 	HWP_BYTE* GetCurPtr();
+	const HWP_BYTE* GetCurPtr() const;
 	unsigned long Tell() const;
 	unsigned long SizeToEnd() const;
 

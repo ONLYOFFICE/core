@@ -54,6 +54,8 @@ public:
 	JSSmart<CJSValue> SplitPages(JSSmart<CJSValue> arrPageIndexes, JSSmart<CJSValue> data);
 	JSSmart<CJSValue> MergePages(JSSmart<CJSValue> data, JSSmart<CJSValue> nMaxID, JSSmart<CJSValue> sPrefixForm);
 	JSSmart<CJSValue> UnmergePages();
+	JSSmart<CJSValue> RedactPage(JSSmart<CJSValue> nPageIndex, JSSmart<CJSValue> arrRedactBox, JSSmart<CJSValue> dataFiller);
+	JSSmart<CJSValue> UndoRedact();
 
 	DECLARE_EMBED_METHODS
 };

@@ -7070,7 +7070,7 @@ int BinaryWorksheetsTableReader::ReadCell(BYTE type, long length, void* poResult
 	{
 		int nRow = m_oBufferedStream.GetLong();
 		int nCol = m_oBufferedStream.GetLong();
-		pCell->setRowCol(nRow - 1, nCol);
+		pCell->setRowCol(nRow, nCol);
 	}
 	else if (c_oSerCellTypes::Style == type)
 	{

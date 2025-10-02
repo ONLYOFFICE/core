@@ -142,7 +142,7 @@ public:
 	void end_run			();
 
 	void	add_section					(bool continuous);
-	void	add_section_columns			(int count, double space_pt, bool separator );
+	void	add_section_columns			(int count, double space_pt, bool separator, bool flag );
 	void	add_section_column			(std::vector<std::pair<double,double>> width_space);
 	int		get_current_section_columns	();
 	void	flush_section				();
@@ -201,6 +201,9 @@ public:
 	bool is_paragraph_in_current_section_;
 
 	bool empty() {return current_root_elements_.empty();}
+
+	int m_pendingBreakType = -1;
+	bool pendingBreakType = false;
 
 private:
 	void start_table_header_rows();
@@ -270,8 +273,6 @@ private:
 	}text_changes_state_;
 
 	bool table_row_header_state_ = false;
-
-	bool is_hyperlink_;
 
 	struct _drop_cap_state
 	{

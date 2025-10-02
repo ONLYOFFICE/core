@@ -36,6 +36,14 @@ bool CHWPFile::OpenHWPX(const std::wstring& wsFilePath)
 	return m_pInternal->Open(wsFilePath, HWP::EHanType::HWPX);
 }
 
+bool CHWPFile::OpenHWPML(const std::wstring &wsFilePath)
+{
+	if (nullptr == m_pInternal)
+		return false;
+	
+	return m_pInternal->Open(wsFilePath, HWP::EHanType::HWPML);
+}
+
 void CHWPFile::Close()
 {
 	if (nullptr != m_pInternal)
@@ -69,4 +77,9 @@ bool CHWPFile::IsHWPFormat(const std::wstring& wsFilePath)
 bool CHWPFile::IsHWPXFormat(const std::wstring& wsFilePath)
 {
 	return HWP::EHanType::HWPX == HWP::CWriterContext::DetectHancom(wsFilePath);
+}
+
+bool CHWPFile::IsHWPMLFormat(const std::wstring &wsFilePath)
+{
+	return HWP::EHanType::HWPML == HWP::CWriterContext::DetectHancom(wsFilePath);
 }

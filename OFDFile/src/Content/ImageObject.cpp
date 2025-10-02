@@ -24,7 +24,7 @@ CImageObject::CImageObject(CXmlReader& oLiteReader)
 	oLiteReader.MoveToElement();
 }
 
-void CImageObject::Draw(IRenderer* pRenderer, const CCommonData& oCommonData) const
+void CImageObject::Draw(IRenderer* pRenderer, const CCommonData& oCommonData, EPageType ePageType) const
 {
 	if (nullptr == pRenderer || nullptr == oCommonData.GetDocumentRes())
 		return;

@@ -476,7 +476,11 @@ std::wstring RtfField::RenderToOOX(RenderParameter oRenderParameter)
 			}
 	
 	//заканчиваем Field
-			sResult += L"<w:r><w:fldChar w:fldCharType=\"end\"/></w:r>";
+            sResult += L"<w:r>";
+            if (!props.empty())
+                sResult += props;
+            sResult += L"<w:fldChar w:fldCharType=\"end\"/></w:r>";
+            //sResult += L"<w:r><w:fldChar w:fldCharType=\"end\"/></w:r>";
 		}
 		if (bDelete) sResult += L"</w:del>";
 		if (bInsert) sResult += L"</w:ins>";

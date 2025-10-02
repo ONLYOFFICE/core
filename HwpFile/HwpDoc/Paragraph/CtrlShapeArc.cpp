@@ -17,8 +17,18 @@ CCtrlShapeArc::CCtrlShapeArc(const HWP_STRING& sCtrlID, int nSize, CHWPStream& o
 	: CCtrlGeneralShape(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
 
-CCtrlShapeArc::CCtrlShapeArc(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion)
-    : CCtrlGeneralShape(sCtrlID, oReader, nVersion)
+CCtrlShapeArc::CCtrlShapeArc(const HWP_STRING& sCtrlID, CXMLReader& oReader, EHanType eType)
+    : CCtrlGeneralShape(sCtrlID, oReader, eType)
+{
+	switch(eType)
+	{
+		case EHanType::HWPX:  ReadFromHWPX (oReader); return;
+		case EHanType::HWPML: ReadFromHWPML(oReader); return;
+		default: break;
+	}
+}
+
+void CCtrlShapeArc::ReadFromHWPX(CXMLReader &oReader)
 {
 	m_eType = GetArcType(oReader.GetAttributeInt("type"));
 
@@ -58,8 +68,34 @@ CCtrlShapeArc::CCtrlShapeArc(const HWP_STRING& sCtrlID, CXMLReader& oReader, int
 			END_READ_ATTRIBUTES(oReader)
 		}
 		else
-			CCtrlGeneralShape::ParseChildren(oReader, nVersion);
+			CCtrlGeneralShape::ParseChildren(oReader, EHanType::HWPX);
 	}
+	END_WHILE
+}
+
+void CCtrlShapeArc::ReadFromHWPML(CXMLReader &oReader)
+{
+	START_READ_ATTRIBUTES(oReader)
+	{
+		if ("Type" == sAttributeName)
+			m_eType = GetArcType(oReader.GetTextA(), EHanType::HWPML);
+		else if ("CenterX" == sAttributeName)
+			m_nCenterX = oReader.GetInt();
+		else if ("CenterY" == sAttributeName)
+			m_nCenterY = oReader.GetInt();
+		else if ("Axis1X" == sAttributeName)
+			m_nAxixX1 = oReader.GetInt();
+		else if ("Axis1Y" == sAttributeName)
+			m_nAxixY1 = oReader.GetInt();
+		else if ("Axis2X" == sAttributeName)
+			m_nAxixX2 = oReader.GetInt();
+		else if ("Axis2Y" == sAttributeName)
+			m_nAxixY2 = oReader.GetInt();
+	}
+	END_READ_ATTRIBUTES(oReader)
+
+	WHILE_READ_NEXT_NODE(oReader)
+		CCtrlGeneralShape::ParseChildren(oReader, EHanType::HWPML);
 	END_WHILE
 }
 

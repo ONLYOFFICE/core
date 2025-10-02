@@ -55,6 +55,11 @@ HWP_BYTE* CHWPStream::GetCurPtr()
 	return m_pCur;
 }
 
+const HWP_BYTE *CHWPStream::GetCurPtr() const
+{
+	return m_pCur;
+}
+
 unsigned long CHWPStream::Tell() const
 {
 	return (!IsValid()) ? 0 : m_pCur - m_pBegin;

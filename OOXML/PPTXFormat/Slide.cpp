@@ -217,6 +217,15 @@ namespace PPTX
 		pWriter->Write(transition);
 		pWriter->Write(timing);
 
+
+		if (ridModernComment.IsInit())
+		{ 
+			pWriter->WriteString(L"<p:extLst>");
+				pWriter->WriteString(L"<p:ext uri=\"{6950BFC3-D8DA-4A85-94F7-54DA5524770B}\"><p188:commentRel \
+xmlns:p188=\"http://schemas.microsoft.com/office/powerpoint/2018/8/main\" r:id=\"" + *ridModernComment + L"\"/></p:ext>");
+			pWriter->WriteString(L"</p:extLst>");
+		}
+
 		pWriter->EndNode(L"p:sld");
 	}
 	void Slide::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
@@ -290,6 +299,11 @@ namespace PPTX
 		Layout		= FileContainer::Get(OOX::Presentation::FileTypes::SlideLayout).smart_dynamic_cast<PPTX::SlideLayout>();//boost::shared_dynamic_cast<PPTX::SlideLayout, PPTX::File>(FileContainer::get(OOX::Presentation::FileTypes::SlideLayout));
 		Note		= FileContainer::Get(OOX::Presentation::FileTypes::NotesSlide).smart_dynamic_cast<PPTX::NotesSlide>();
 		comments	= FileContainer::Get(OOX::Presentation::FileTypes::SlideComments).smart_dynamic_cast<PPTX::Comments>();
+
+		if (false == comments.IsInit())
+		{
+			comments = FileContainer::Get(OOX::Presentation::FileTypes::ModernComments).smart_dynamic_cast<PPTX::Comments>();
+		}
 
 		if (Layout.IsInit())
 		{

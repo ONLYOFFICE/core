@@ -30,24 +30,268 @@
  *
  */
 #pragma once
-#ifndef PPTX_COMMENTS_COMMENTS_H_
-#define PPTX_COMMENTS_COMMENTS_H_
 
 #include "WrapperFile.h"
 #include "FileContainer.h"
 #include "WrapperWritingElement.h"
 #include "../Base/Unit.h"
+#include "Logic/TxBody.h"
 
 namespace PPTX
 {
+	//todooo base_type - >const or define ????
 	namespace Logic
 	{
+//------------------------------------------------------------------------------------------------------------
+		class TextCharRangeContext : public WrapperWritingElement //context  
+		{
+		public:
+			PPTX_LOGIC_BASE(TextCharRangeContext)
+
+			nullable_uint len;
+			nullable_uint hash;
+
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const { return L""; }
+
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+
+			virtual void FillParentPointersForChilds() {}
+		};
+//------------------------------------------------------------------------------------------------------------
+		class TextCharRangeMoniker : public WrapperWritingElement //txMk  
+		{
+		public:
+			PPTX_LOGIC_BASE(TextCharRangeMoniker)
+
+			nullable_uint cp;
+			nullable_uint len;
+
+			nullable<TextCharRangeContext> context;
+
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const { return L""; }
+
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+
+			virtual void FillParentPointersForChilds() {}
+			//base_type = 25;
+		};
+//------------------------------------------------------------------------------------------------------------
+		class DrawingMoniker : public WrapperWritingElement
+		{
+		public:
+			PPTX_LOGIC_BASE2(DrawingMoniker)
+
+			nullable_uint id;
+			nullable_string creationId;
+
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const { return L""; }
+
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+
+			virtual void FillParentPointersForChilds() {}
+		protected:
+			int base_type = 0xff;
+			std::wstring node_name;
+		};
+//------------------------------------------------------------------------------------------------------------
+		class GraphicFrameMoniker : public DrawingMoniker   
+		{
+		public:
+			GraphicFrameMoniker() { base_type = 1; node_name = L"ac:graphicFrameMk";}
+			PPTX_LOGIC_BASE_NC(GraphicFrameMoniker)
+		};
+//------------------------------------------------------------------------------------------------------------
+		class GroupShapeMoniker : public DrawingMoniker 
+		{
+		public:
+			GroupShapeMoniker() { base_type = 2; node_name = L"ac:grpSpMk";}
+			PPTX_LOGIC_BASE_NC(GroupShapeMoniker)
+		};
+//------------------------------------------------------------------------------------------------------------
+		class PictureMoniker : public DrawingMoniker
+		{
+		public:
+			PictureMoniker() { base_type = 3; node_name = L"ac:picMk";}
+			PPTX_LOGIC_BASE_NC(PictureMoniker)
+		};
+//------------------------------------------------------------------------------------------------------------
+		class ShapeMoniker : public DrawingMoniker 
+		{
+		public:
+			ShapeMoniker() { base_type = 4; node_name = L"ac:spMk";}
+			PPTX_LOGIC_BASE_NC(ShapeMoniker)
+		};
+//------------------------------------------------------------------------------------------------------------
+		class ConnectorMoniker : public DrawingMoniker 
+		{
+		public:
+			ConnectorMoniker() { base_type = 5; node_name = L"ac:cxnSpMk";}
+			PPTX_LOGIC_BASE_NC(ConnectorMoniker)
+		};
+//------------------------------------------------------------------------------------------------------------
+		class InkMoniker : public DrawingMoniker 
+		{
+		public:
+			InkMoniker() { base_type = 6; node_name = L"ac:inkMk";}
+			PPTX_LOGIC_BASE_NC(InkMoniker)
+		};
+//------------------------------------------------------------------------------------------------------------
+		class SlideBaseMoniker : public WrapperWritingElement 
+		{
+		public:
+			PPTX_LOGIC_BASE2(SlideBaseMoniker)
+
+			nullable_uint cId;
+			nullable_uint sldId;
+
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const { return L""; }
+
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+
+			virtual void FillParentPointersForChilds() {}
+		protected:
+			int base_type = 0xff;
+			std::wstring node_name;
+		};
+//------------------------------------------------------------------------------------------------------------
+		class SlideMasterMoniker : public SlideBaseMoniker 
+		{
+		public:
+			SlideMasterMoniker() { base_type = 11; node_name = L"pc:sldMasterMk"; }
+			PPTX_LOGIC_BASE_NC(SlideMasterMoniker)
+		};
+//------------------------------------------------------------------------------------------------------------
+		class SlideLayoutMoniker : public SlideBaseMoniker 
+		{
+		public:
+			SlideLayoutMoniker() { base_type = 12; node_name = L"pc:sldLayoutMk";}
+			PPTX_LOGIC_BASE_NC(SlideLayoutMoniker)
+		};
+//------------------------------------------------------------------------------------------------------------
+		class SlideMoniker : public SlideBaseMoniker 
+		{
+		public:
+			SlideMoniker() { base_type = 10; node_name = L"pc:sldMk";}
+			PPTX_LOGIC_BASE_NC(SlideMoniker)
+		};
+//------------------------------------------------------------------------------------------------------------
+		class DocumentMoniker : public WrapperWritingElement //docMk
+		{
+		public:
+			PPTX_LOGIC_BASE(DocumentMoniker)
+
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const { return L""; }
+
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+
+			virtual void FillParentPointersForChilds() {}
+			//base_type = 20;
+		};
+//------------------------------------------------------------------------------------------------------------
+		class CommentReply : public WrapperWritingElement
+		{
+		public:
+			PPTX_LOGIC_BASE(CommentReply)
+
+			nullable_string id;
+			nullable_string authorId;
+			nullable_string status;
+			nullable_string created;
+
+			nullable<TxBody> txBody;
+			//extLst
+
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
+
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+
+			virtual void FillParentPointersForChilds();
+		};
+
+		class CommentReplyList : public WrapperWritingElement
+		{
+		public:
+			PPTX_LOGIC_BASE(CommentReplyList)
+
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
+
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+
+			virtual void FillParentPointersForChilds();
+
+			std::vector<CommentReply> m_arReply;
+		};
+//------------------------------------------------------------------------------------------------------------
+		class AnyMonikerList : public WrapperWritingElement
+		{
+		public:
+			PPTX_LOGIC_BASE(AnyMonikerList)
+
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) {}
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+
+			virtual std::wstring toXML() const;
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+
+			virtual void FillParentPointersForChilds() {}
+
+			std::vector<smart_ptr<WrapperWritingElement>> m_arrItems;
+			int pptyType() const { return baseType; }
+		protected:			
+			int baseType = 0xff;
+		};
+		class TextCharRangeMonikerList : public AnyMonikerList //txMkLst
+		{//TEXTCHARRANGEMONIKERLIST = DRAWINGMONIKERLIST TEXTCHARRANGEMONIKER
+		public:
+			TextCharRangeMonikerList() { baseType = 3; }
+			PPTX_LOGIC_BASE_NC(TextCharRangeMonikerList)
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+		};
+		class SlideMonikerList : public AnyMonikerList //sldMkLst
+		{//SLIDEMONIKERLIST = DOCUMENTMONIKERLIST SLIDEMONIKER
+		public:
+			SlideMonikerList() { baseType = 4; }
+			PPTX_LOGIC_BASE_NC(SlideMonikerList)
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+		};
+		class DrawingElementMonikerList : public AnyMonikerList //deMkLst
+		{
+		public:
+			DrawingElementMonikerList() { baseType = 5; }
+			PPTX_LOGIC_BASE_NC(DrawingElementMonikerList)
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+		};
+//------------------------------------------------------------------------------------------------------------
 		class Comment : public WrapperWritingElement
 		{
 		public:
 			PPTX_LOGIC_BASE(Comment)
 
-			nullable_int	authorId;
+			nullable_int	authorIdx;
 			nullable_int	idx;
 			nullable_string dt;
 
@@ -62,7 +306,28 @@ namespace PPTX
 			nullable_string additional_data; // teamlab editor information!!!
 
 			nullable_int timeZoneBias;
+//------------------------------------------------------------------------------------------
+//modern
+			nullable_string id;  //Guid
+			nullable_string	authorId; //Guid
+			nullable_string created;
+			nullable_string status;
+			nullable_string startDate;
+			nullable_string dueDate;
+			nullable_string assignedTo;
+			nullable_uint complete;
+			nullable_string title;
 
+			nullable<TxBody> txBody;
+			nullable<CommentReplyList> replyLst;
+
+			//nullable<TextCharRangeMonikerList > txMkLst;
+			//nullable<SlideMonikerList> sldMkLst;
+			//nullable<DrawingElementMonikerList> deMkLst;
+			smart_ptr<AnyMonikerList> anyMkLst;
+
+			bool bModern = false;
+//------------------------------------------------------------------------------------------
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual std::wstring toXML() const;
 
@@ -78,6 +343,7 @@ namespace PPTX
 	{
 	public:
 		std::vector<PPTX::Logic::Comment> m_arComments;
+		bool bModern = false;
 
 		Comments(OOX::Document* pMain);
 		Comments(OOX::Document* pMain, const OOX::CPath& filename, FileMap& map);
@@ -96,5 +362,3 @@ namespace PPTX
 		virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 	};
 } // namespace PPTX
-
-#endif // PPTX_COMMENTS_COMMENTS_H_

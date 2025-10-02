@@ -921,6 +921,7 @@ namespace NSOnlineOfficeBinToPdf
 			case ctPageClear:
 			case ctPageRotate:
 			case ctHeadings:
+			case ctRedact:
 			{
 				IAdvancedCommand::AdvancedCommandType eAdvancedCommandType = IAdvancedCommand::AdvancedCommandType::Undefined;
 				switch (eCommand)
@@ -934,6 +935,7 @@ namespace NSOnlineOfficeBinToPdf
 				case ctPageClear:        eAdvancedCommandType = IAdvancedCommand::AdvancedCommandType::PageClear;   break;
 				case ctPageRotate:       eAdvancedCommandType = IAdvancedCommand::AdvancedCommandType::PageRotate;  break;
 				case ctHeadings:         eAdvancedCommandType = IAdvancedCommand::AdvancedCommandType::Headings;    break;
+				case ctRedact:           eAdvancedCommandType = IAdvancedCommand::AdvancedCommandType::Redact;      break;
 				default:
 					break;
 				}
@@ -944,7 +946,7 @@ namespace NSOnlineOfficeBinToPdf
 				if ((IAdvancedCommand::AdvancedCommandType::Undefined != eAdvancedCommandType) &&
 					(S_OK == pRenderer->IsSupportAdvancedCommand(eAdvancedCommandType)))
 				{
-					IAdvancedCommand* pCommand = oReader.Read(eCommand, pCorrector);
+					IAdvancedCommand* pCommand = oReader.Read(eCommand, pCorrector, nLen);
 					if (pCommand)
 					{
 						pRenderer->AdvancedCommand(pCommand);

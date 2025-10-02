@@ -61,7 +61,7 @@ CPage* CPage::Read(const std::wstring& wsFilePath, const std::wstring& wsRootPat
 	return pPage;
 }
 
-void CPage::Draw(IRenderer* pRenderer, const CCommonData& oCommonData) const
+void CPage::Draw(IRenderer* pRenderer, const CCommonData& oCommonData, EPageType ePageType) const
 {
 	if (nullptr == pRenderer)
 		return;
@@ -73,10 +73,10 @@ void CPage::Draw(IRenderer* pRenderer, const CCommonData& oCommonData) const
 		const CTemplatePage *pTemplatePage = oCommonData.GetTemplatePage(m_parTemplatePage.first, m_parTemplatePage.second);
 
 		if (nullptr != pTemplatePage && EZOrder::Background == pTemplatePage->GetZOrder() && nullptr != pTemplatePage->GetPage())
-			pTemplatePage->GetPage()->Draw(pRenderer, oCommonData);
+			pTemplatePage->GetPage()->Draw(pRenderer, oCommonData, EPageType::TemplatePage);
 	}
 
-	m_oContent.Draw(pRenderer, oCommonData);
+	m_oContent.Draw(pRenderer, oCommonData, ePageType);
 
 	pRenderer->EndCommand(c_nImageType);
 }

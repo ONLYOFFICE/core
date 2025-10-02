@@ -72,6 +72,7 @@ namespace PPTX
 //image
 			nullable<OOX::RId>		link_svg;
 
+			nullable_string			creationId;
 		protected:
 			virtual void FillParentPointersForChilds();
 		};

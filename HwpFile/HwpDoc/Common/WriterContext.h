@@ -4,6 +4,7 @@
 #include "../HanType.h"
 #include "../HWPFile.h"
 #include "../HWPXFile.h"
+#include "../HWPMLFile.h"
 
 #include "../HWPElements/HWPRecordParaShape.h"
 #include "../HWPElements/HWPRecordStyle.h"
@@ -16,9 +17,10 @@ namespace HWP
 {
 class CWriterContext
 {
-	EHanType m_eType;
-	CHWPFile*  m_pHWPFile;
-	CHWPXFile* m_pHWPXFile;
+	EHanType    m_eType;
+	CHWPFile*   m_pHWPFile;
+	CHWPXFile*  m_pHWPXFile;
+	CHWPMLFile* m_pHWPMLFile;
 public:
 	CWriterContext();
 	~CWriterContext();

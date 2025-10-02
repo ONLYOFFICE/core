@@ -261,7 +261,6 @@ void oox_serialize_effects(std::wostream & strm, const std::vector<odf_reader::_
 					CP_XML_ATTR(L"dist", (int)(dist)); 
 					CP_XML_ATTR(L"dir", (int)(dir * 60000)); 
 					
-					CP_XML_ATTR(L"rotWithShape", L"0"); 
 					CP_XML_ATTR(L"algn", L"tl"); 
 
 					CP_XML_NODE(L"a:srgbClr")

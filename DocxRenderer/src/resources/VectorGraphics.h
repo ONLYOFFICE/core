@@ -80,7 +80,7 @@ namespace NSDocxRenderer
 		void Transform(const Aggplus::CMatrix& matrix);
 		void DrawOnRenderer(IRenderer* renderer) const noexcept;
 
-		static CVectorGraphics CalcBoolean(const CVectorGraphics& vg1, const CVectorGraphics& vg2, long clipType, long fillType = c_nWindingFillMode);
+		static CVectorGraphics CalcBoolean(const CVectorGraphics& vg1, const CVectorGraphics& vg2, long clipType, long fillType = c_nWindingFillMode, bool isLuminosity = false);
 
 	private:
 		std::list<CPathCommand> m_arData;

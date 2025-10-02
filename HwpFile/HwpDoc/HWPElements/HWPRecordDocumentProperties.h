@@ -24,7 +24,7 @@ class CHWPRecordDocumentProperties : public CHWPRecord
 	int m_nCharUnitLocInPara;
 public:
 	CHWPRecordDocumentProperties(CHWPDocInfo& oDocInfo, int nTagNum, int nLevel, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
-	CHWPRecordDocumentProperties(CHWPDocInfo& oDocInfo, CXMLReader& oReader, int nVersion);
+	CHWPRecordDocumentProperties(CHWPDocInfo& oDocInfo, CXMLReader& oReader);
 };
 }
 

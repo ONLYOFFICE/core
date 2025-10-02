@@ -48,6 +48,7 @@
 #ifndef FILE_SEPARATOR
 #define FILE_SEPARATOR
 #define FILE_SEPARATOR_CHAR '\\'
+#define FILE_SEPARATOR_WCHAR L'\\'
 #define FILE_SEPARATOR_STR L"\\"
 #endif
 #else
@@ -57,6 +58,7 @@
 #ifndef FILE_SEPARATOR
 #define FILE_SEPARATOR
 #define FILE_SEPARATOR_CHAR '/'
+#define FILE_SEPARATOR_WCHAR L'/'
 #define FILE_SEPARATOR_STR L"/"
 #endif
 #endif

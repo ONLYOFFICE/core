@@ -55,7 +55,10 @@ namespace SVG
 			std::wstring wsImageData = m_wsHref.substr(unType + 8, m_wsHref.length() - unType - 8);
 			ulSize = NSBase64::Base64DecodeGetRequiredLength(wsImageData.length());
 
-			pBuffer = new BYTE[ulSize];
+			pBuffer = new(std::nothrow) BYTE[ulSize];
+
+			if (NULL == pBuffer)
+				return false;
 
 			NSBase64::Base64Decode(wsImageData.c_str(), wsImageData.length(), pBuffer, &(int&)ulSize);
 		}

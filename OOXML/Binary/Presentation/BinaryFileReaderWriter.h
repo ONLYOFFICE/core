@@ -503,9 +503,6 @@ namespace NSBinPptxRW
 		void WriteThemes (int nCount);
 		void WriteNotesMaster();
 
-		std::wstring WriteSlideComments(int nIndexComment);
-		std::wstring WritePresentationComments(int nIndexComment);
-
 		std::wstring WriteCustom(const std::wstring& file_name);
 		std::wstring WriteMaster(int nIndex);
 		std::wstring WriteSlide(int nIndex);
@@ -513,7 +510,7 @@ namespace NSBinPptxRW
 		unsigned int WriteRels (const std::wstring& bsType, const std::wstring& bsTarget, const std::wstring& bsTargetMode);
 		unsigned int WriteHyperlink	(const std::wstring& strLink, const bool& bIsActionInit);		
 	
-		void EndPresentationRels (bool bIsCommentsAuthors = false, bool bIsVbaProject = false, bool bIsJsaProject = false  );
+		void EndPresentationRels (bool bIsVbaProject = false, bool bIsJsaProject = false  );
 		void CloseRels ();
 
 		void AddRels (const std::wstring& strRels);

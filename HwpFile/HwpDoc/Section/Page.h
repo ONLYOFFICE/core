@@ -1,6 +1,7 @@
 #ifndef PAGE_H
 #define PAGE_H
 
+#include "../HanType.h"
 #include "../HWPStream.h"
 #include "../Common/XMLReader.h"
 
@@ -21,7 +22,7 @@ class CPage
 	int m_nMarginGutter;
 public:
 	CPage();
-	CPage(CXMLReader& oReader);
+	CPage(CXMLReader& oReader, EHanType eType);
 
 	int GetWidth() const;
 	int GetHeight() const;

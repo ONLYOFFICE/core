@@ -2,7 +2,7 @@
  * vlc_playlist.h : Playlist functions
  *****************************************************************************
  * Copyright (C) 1999-2004 VLC authors and VideoLAN
- * $Id: 9498e622cac22fc9c70cb4b298cca02722092d2e $
+ * $Id$
  *
  * Authors: Samuel Hocevar <sam@zoy.org>
  *
@@ -317,7 +317,7 @@ VLC_API input_thread_t *playlist_CurrentInputLocked( playlist_t *p_playlist ) VL
 
 /** Get the duration of all items in a node.
  */
-VLC_API mtime_t playlist_GetNodeDuration( playlist_item_t * );
+VLC_API vlc_tick_t playlist_GetNodeDuration( playlist_item_t * );
 
 /** Clear the playlist
  * \param b_locked TRUE if playlist is locked when entering this function

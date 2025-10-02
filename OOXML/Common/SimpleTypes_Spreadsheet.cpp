@@ -2222,7 +2222,6 @@ namespace SimpleTypes
 
 			}
 		}
-
 		template<>
 		CDoubleOrAutomatic<typeAuto>::CDoubleOrAutomatic() : m_dValue(0){}
 

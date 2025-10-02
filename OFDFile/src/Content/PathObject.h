@@ -117,7 +117,7 @@ public:
 	CPathObject(CXmlReader& oLiteReader);
 	~CPathObject();
 
-	void Draw(IRenderer* pRenderer, const CCommonData& oCommonData) const override;
+	void Draw(IRenderer* pRenderer, const CCommonData& oCommonData, EPageType ePageType) const override;
 };
 }
 

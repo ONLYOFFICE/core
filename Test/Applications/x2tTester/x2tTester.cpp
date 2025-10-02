@@ -666,6 +666,8 @@ void Cx2tTester::Convert(const std::vector<std::wstring>& files, bool bNoDirecto
 			    || (ext == L"docx" && input_ext == L"xps")
 			    // pdf -> docx
 			    || (ext == L"docx" && m_inputFormatsList.IsPdf(input_ext))
+			    // pdf/pptx -> txt
+			    || (ext == L"txt" && (input_ext == L"pdf" || input_ext == L"pptx"))
 			    // all formats -> images
 			    || m_outputFormatsList.IsImage(ext)
 			    // all formats -> pdf

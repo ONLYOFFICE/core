@@ -18,7 +18,7 @@ public:
 	~CPage();
 
 	static CPage* Read(const std::wstring& wsFilePath, const std::wstring& wsRootPath);
-	void Draw(IRenderer* pRenderer, const CCommonData& oCommonData) const;
+	void Draw(IRenderer* pRenderer, const CCommonData& oCommonData, EPageType ePageType) const;
 
 	void GetPageSize(double& dWidth, double& dHeight) const;
 };

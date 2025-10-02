@@ -3,7 +3,7 @@
  * Interface used to send events.
  *****************************************************************************
  * Copyright (C) 2007 VLC authors and VideoLAN
- * $Id: 229f4f677029763a837558932dad3e47b283e61c $
+ * $Id$
  *
  * Authors: Pierre d'Herbemont
  *
@@ -142,7 +142,7 @@ typedef struct vlc_event_t
         } input_item_subitem_tree_added;
         struct vlc_input_item_duration_changed
         {
-            mtime_t new_duration;
+            vlc_tick_t new_duration;
         } input_item_duration_changed;
         struct vlc_input_item_preparsed_changed
         {

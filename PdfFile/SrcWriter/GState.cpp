@@ -109,7 +109,8 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	CExtGrState::CExtGrState(CXref* pXref)
 	{
-		pXref->Add(this);
+		if (pXref)
+			pXref->Add(this);
 		Add("Type", "ExtGState");
 
 		m_eBlendMode   = blendmode_Unknown;

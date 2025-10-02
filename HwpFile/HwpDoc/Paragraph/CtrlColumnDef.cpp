@@ -1,5 +1,7 @@
 #include "CtrlColumnDef.h"
 
+#include "../Common/NodeNames.h"
+
 namespace HWP
 {
 CCtrlColumnDef::CCtrlColumnDef(const HWP_STRING& sCtrlID)
@@ -40,15 +42,17 @@ CCtrlColumnDef::CCtrlColumnDef(const HWP_STRING& sCtrlID, int nSize, CHWPStream&
 	m_bFullFilled = true;
 }
 
-CCtrlColumnDef::CCtrlColumnDef(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion)
+CCtrlColumnDef::CCtrlColumnDef(const HWP_STRING& sCtrlID, CXMLReader& oReader, EHanType eType)
 	: CCtrl(sCtrlID), m_eColLineStyle(ELineStyle2::SOLID)
 {
 	START_READ_ATTRIBUTES(oReader)
 	{
-		if ("colCount" == sAttributeName)
+		if (GetAttributeName(EAttribute::ColumnCount, eType) == sAttributeName)
 			m_shColCount = oReader.GetInt();
-		else if ("sameSz" == sAttributeName)
+		else if (GetAttributeName(EAttribute::SameSize, eType) == sAttributeName)
 			m_bSameSz = oReader.GetBool();
+		else if (GetAttributeName(EAttribute::SameGap, eType) == sAttributeName)
+			m_shSameGap = oReader.GetInt();
 	}
 	END_READ_ATTRIBUTES(oReader)
 
@@ -62,34 +66,47 @@ CCtrlColumnDef::CCtrlColumnDef(const HWP_STRING& sCtrlID, CXMLReader& oReader, i
 
 	WHILE_READ_NEXT_NODE_WITH_NAME(oReader)
 	{
-		if ("hp:colLine" == sNodeName)
+		if (GetNodeName(ENode::ColumnLine, eType) == sNodeName)
 		{
 			START_READ_ATTRIBUTES(oReader)
 			{
-				if ("type" == sAttributeName)
-					m_eColLineStyle = GetLineStyle2(oReader.GetText());
-				else if ("width" == sAttributeName)
+				if (GetAttributeName(EAttribute::Type, eType) == sAttributeName)
+					m_eColLineStyle = GetLineStyle2(oReader.GetTextA(), eType);
+				else if (GetAttributeName(EAttribute::Width, eType) == sAttributeName)
 					m_chColLineWidth = (HWP_BYTE)ConvertWidthToHWP(oReader.GetTextA());
-				else if ("color" == sAttributeName)
+				else if (GetAttributeName(EAttribute::Color, eType) == sAttributeName)
 					m_nColLineColor = oReader.GetColor();
 			}
 			END_READ_ATTRIBUTES(oReader)
 		}
-		else if ("hp:colSz" == sNodeName)
+		else if (unColSzIndex >= m_shColCount)
+			break;
+		else if (EHanType::HWPX == eType && "hp:colSz" == sNodeName)
+			ReadColumn(oReader, eType, unColSzIndex);
+		else if (EHanType::HWPML == eType && "COLUMNTABLE" == sNodeName)
 		{
-			START_READ_ATTRIBUTES(oReader)
-			{
-				if ("width" == sAttributeName)
-					m_arColSzWidths[unColSzIndex] = oReader.GetInt();
-				else if ("gap" == sAttributeName)
-					m_arColSzGaps[unColSzIndex++] =  oReader.GetInt();
-			}
-			END_READ_ATTRIBUTES(oReader)
+			WHILE_READ_NEXT_NODE_WITH_DEPTH_ONE_NAME(oReader, Child, "COLUMN")
+				ReadColumn(oReader, eType, unColSzIndex);
+			END_WHILE
 		}
 	}
 	END_WHILE
 
 	m_bFullFilled = true;
+}
+
+void CCtrlColumnDef::ReadColumn(CXMLReader &oReader, EHanType eType, unsigned int& unColSzIndex)
+{
+	START_READ_ATTRIBUTES(oReader)
+	{
+		if (GetAttributeName(EAttribute::Width, eType) == sAttributeName)
+			m_arColSzWidths[unColSzIndex] = oReader.GetInt();
+		else if (GetAttributeName(EAttribute::Gap, eType) == sAttributeName)
+			m_arColSzGaps[unColSzIndex] =  oReader.GetInt();
+	}
+	END_READ_ATTRIBUTES(oReader)
+
+	++unColSzIndex;
 }
 
 ECtrlObjectType CCtrlColumnDef::GetCtrlType() const

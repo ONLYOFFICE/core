@@ -9,7 +9,6 @@
 
 namespace HWP
 {
-
 enum class ELang
 {
 	HANGUL,
@@ -28,17 +27,6 @@ enum class EUnderline
 	BOTTOM,
 	CENTER,
 	TOP
-};
-
-enum class EOutline
-{
-	NONE,
-	SOLID,
-	DOTTED,
-	BOLD,
-	DASHED,
-	DASH_DOT,
-	DASH_2DOT
 };
 
 enum class EShadow
@@ -60,7 +48,7 @@ enum class EAccent
 };
 
 EAccent GetAccent(int nValue);
-EAccent GetAccent(const HWP_STRING& sValue);
+EAccent GetAccent(const std::string &sValue);
 
 #define MAX_ELEMENTS (int)ELang::MAX
 
@@ -80,7 +68,7 @@ class CHWPRecordCharShape : public CHWPRecord
 	EUnderline m_eUnderline;
 	ELineStyle1 m_eUnderLineShape;
 	int m_nUnderlineColor;
-	EOutline m_eOutline;
+	ELineStyle3 m_eOutline;
 	EShadow m_eShadow;
 	bool m_bEmboss;
 	bool m_bEngrave;
@@ -103,7 +91,7 @@ class CHWPRecordCharShape : public CHWPRecord
 	void ReadContainerData(CXMLReader& oReader, short arValues[], int nDefaultValue = 0);
 public:
 	CHWPRecordCharShape(CHWPDocInfo& oDocInfo, int nTagNum, int nLevel, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
-	CHWPRecordCharShape(CHWPDocInfo& oDocInfo, CXMLReader& oReader, int nVersion);
+	CHWPRecordCharShape(CHWPDocInfo& oDocInfo, CXMLReader& oReader, EHanType eType);
 
 	bool Bold() const;
 	bool Italic() const;

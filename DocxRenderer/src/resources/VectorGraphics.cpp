@@ -319,10 +319,10 @@ namespace NSDocxRenderer
 	// c_nStroke = 0x0001;
 	// c_nWindingFillMode = 0x0100;
 	// c_nEvenOddFillMode = 0x0200;
-	CVectorGraphics CVectorGraphics::CalcBoolean(const CVectorGraphics& vg1, const CVectorGraphics& vg2, long clipType, long fillType)
+	CVectorGraphics CVectorGraphics::CalcBoolean(const CVectorGraphics& vg1, const CVectorGraphics& vg2, long clipType, long fillType, bool isLuminosity)
 	{
 		auto op = GetOpType(clipType);
-		Aggplus::CGraphicsPath result = Aggplus::CalcBooleanOperation(vg1.GetGraphicsPath(), vg2.GetGraphicsPath(), op, fillType);
+		Aggplus::CGraphicsPath result = Aggplus::CalcBooleanOperation(vg1.GetGraphicsPath(), vg2.GetGraphicsPath(), op, fillType, isLuminosity);
 		return CVectorGraphics(result);
 	}
 

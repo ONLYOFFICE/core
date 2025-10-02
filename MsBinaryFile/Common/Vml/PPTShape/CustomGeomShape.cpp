@@ -83,9 +83,11 @@ namespace NSCustomVML
 				m_nCount = 0;
 				break;
 			case 0xac00:
+                m_eRuler = ODRAW::rtUnknown;
+                break;
 			case 0xaa00: // nofill
 			case 0xad00:
-				m_eRuler = ODRAW::rtNoFill;
+                m_eRuler = ODRAW::rtNoFill;
 				break;
 			case 0xab00: // nostroke
 				m_eRuler = ODRAW::rtNoStroke;

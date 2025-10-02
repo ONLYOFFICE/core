@@ -14,7 +14,7 @@ public:
 	~CContent();
 
 	bool Read(CXmlReader& oLiteReader);
-	void Draw(IRenderer* pRenderer, const CCommonData& oCommonData) const;
+	void Draw(IRenderer* pRenderer, const CCommonData& oCommonData, EPageType ePageType) const;
 };
 }
 

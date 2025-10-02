@@ -1,0 +1,13 @@
+diff --git a/extras/package/win32/build.sh b/extras/package/win32/build.sh
+index c0339d86a3..0ac7c779a1 100755
+--- a/extras/package/win32/build.sh
++++ b/extras/package/win32/build.sh
+@@ -353,8 +353,6 @@ if [ ! -z "$WINSTORE" ]; then
+     # other modules that were disabled in the old UWP builds
+     CONFIGFLAGS="$CONFIGFLAGS --disable-crystalhd --disable-dxva2"
+ 
+-else
+-    CONFIGFLAGS="$CONFIGFLAGS --enable-dvdread --enable-caca"
+ fi
+ if [ ! -z "$INSTALL_PATH" ]; then
+     CONFIGFLAGS="$CONFIGFLAGS --prefix=$INSTALL_PATH"

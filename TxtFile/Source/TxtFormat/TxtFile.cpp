@@ -291,7 +291,10 @@ bool TxtFile::writeUtf8(const std::vector<std::string>& content)
 	for (std::vector<std::string>::const_iterator iter = content.begin(); iter != content.end(); ++iter)
 	{
 		file.WriteFile((BYTE*)(*iter).c_str(), (*iter).length());
-		file.WriteFile((BYTE*)EndLine, 2);
+        if (iter + 1 != content.end())
+        {
+            file.WriteFile((BYTE*)EndLine, 2);
+        }
 
 		m_linesCount++;
 	}

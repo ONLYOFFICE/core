@@ -1,5 +1,7 @@
 #include "Color.h"
 
+#include "../Res.h"
+
 namespace OFD
 {
 CColor::CColor(CXmlReader& oXmlReader)

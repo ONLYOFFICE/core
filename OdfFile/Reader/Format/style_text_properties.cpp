@@ -353,9 +353,14 @@ void text_format_properties::drawing_serialize(std::wostream & strm, std::wstrin
 			if ((style_text_position_) && (style_text_position_->has_font_size()))
 			{
 				mul = style_text_position_->font_size().get_value() / 100.;
-				mul *= 1.725;	//ms 100% - 1.725
+
+				if (style_text_position_->get_type() != text_position::Percent || 
+						style_text_position_->get_position().get_value() > 0.1 || style_text_position_->get_position().get_value() < -0.1)
+				{
+					mul *= 1.725;
+				}
 			}
-			if (fontSizeVal > 0)
+			if (fontSizeVal > 0) 
 			{
 				CP_XML_ATTR(L"sz", (int)(fontSizeVal/2. * mul * 100 + 0.5)); //in pt *100 
 			}
@@ -381,6 +386,16 @@ void text_format_properties::drawing_serialize(std::wostream & strm, std::wstrin
 				{
 					underline = L"sng";
 				}
+			}
+
+			if ((fo_letter_spacing_) && (fo_letter_spacing_->get_type() != letter_spacing::Normal))
+			{
+				CP_XML_ATTR(L"spc", (int)(100. * fo_letter_spacing_->get_length().get_value_unit(length::pt)));
+			}
+			else if (style_text_scale_)
+			{
+				mul = style_text_scale_->get_value();
+				CP_XML_ATTR(L"spc", (int)(mul * 2));
 			}
 			const int W = process_font_weight(fo_font_weight_);
 			if (W > 0) CP_XML_ATTR(L"b", true);
@@ -457,11 +472,6 @@ void text_format_properties::drawing_serialize(std::wostream & strm, std::wstrin
 			}
 			else CP_XML_ATTR(L"strike",L"noStrike");
 			
-			if ((fo_letter_spacing_) && (fo_letter_spacing_->get_type() != letter_spacing::Normal))
-			{
-				CP_XML_ATTR(L"spc",(int)(100. * fo_letter_spacing_->get_length().get_value_unit(length::pt)));
-			}
-		
 			if (style_text_position_)
 			{
 				if (style_text_position_->get_type() == text_position::Percent)

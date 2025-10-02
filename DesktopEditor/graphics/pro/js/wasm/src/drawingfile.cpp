@@ -178,6 +178,19 @@ WASM_EXPORT int UnmergePages(CDrawingFile* pFile)
 {
 	return pFile->UnmergePages() ? 1 : 0;
 }
+WASM_EXPORT int RedactPage(CDrawingFile* pFile, int nPageIndex, int* arrRedactBox, int nLengthX4, BYTE* data, int size)
+{
+	double* arrDRedactBox = new double[nLengthX4 * 4];
+	for (int i = 0; i < nLengthX4 * 4; ++i)
+		arrDRedactBox[i] = arrRedactBox[i] / 10000.0;
+	int nRes = pFile->RedactPage(nPageIndex, arrDRedactBox, nLengthX4, data, size) ? 1 : 0;
+	delete[] arrDRedactBox;
+	return nRes;
+}
+WASM_EXPORT int UndoRedact(CDrawingFile* pFile)
+{
+	return pFile->UndoRedact() ? 1 : 0;
+}
 
 WASM_EXPORT void* GetImageBase64(CDrawingFile* pFile, int rId)
 {

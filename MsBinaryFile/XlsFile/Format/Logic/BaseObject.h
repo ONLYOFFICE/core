@@ -32,6 +32,11 @@
 #pragma once
 
 #include <boost/shared_ptr.hpp>
+
+#if defined(GetTempPath)
+#undef GetTempPath
+#endif
+
 #include <list>
 #include <sstream>
 

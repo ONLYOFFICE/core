@@ -828,11 +828,12 @@ gtStripContig(TIFFRGBAImage* img, uint32* raster, uint32 w, uint32 h)
 		nrowsub = nrow;
 		if ((nrowsub%subsamplingver)!=0)
 			nrowsub+=subsamplingver-nrowsub%subsamplingver;
+
 		if (TIFFReadEncodedStrip(tif,
 		    TIFFComputeStrip(tif,row+img->row_offset, 0),
 		    buf,
-		    ((row + img->row_offset)%rowsperstrip + nrowsub) * scanline) < 0
-		    && img->stoponerr)
+			((row + img->row_offset)%rowsperstrip + nrowsub) * scanline) < 0
+			&& img->stoponerr)
 		{
 			ret = 0;
 			break;

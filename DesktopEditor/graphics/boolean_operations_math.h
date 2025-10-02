@@ -244,7 +244,7 @@ inline void getConvexHull(const double& dq0, const double& dq1,
 		}
 	}
 
-	if (dist1 < 0.0 || dist2 < 0.0)
+	if (dist1 < 0.0 || (dist1 == 0.0 && dist2 < 0.0))
 		std::swap(top, bottom);
 }
 

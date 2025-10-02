@@ -44,6 +44,7 @@
 #ifndef _IOS
 	#include "../../../../MsBinaryFile/DocFile/Main/DocFormatLib.h"
 #endif
+#include "../../../../TxtFile/Source/TxtXmlFile.h"
 #include "../../../../HtmlFile2/htmlfile2.h"
 #include "../../../../RtfFile/Format/ConvertationManager.h"
 
@@ -3778,6 +3779,14 @@ void BinaryDocumentTableWriter::WriteAltChunk(OOX::Media& oAltChunkFile, OOX::CS
 			rtfConvert.m_sTempFolder = sTempDir;
 
 			result = (S_OK == rtfConvert.ConvertRtfToOOX(file_name_inp, sResultDocxDir));
+		}break;
+		case AVS_OFFICESTUDIO_FILE_DOCUMENT_XML:
+		case AVS_OFFICESTUDIO_FILE_DOCUMENT_TXT:
+		{
+			CTxtXmlFile txtFile;
+
+			std::wstring xmlOptions;
+			result = (S_OK == txtFile.txt_LoadFromFile(file_name_inp, sResultDocxDir, xmlOptions));
 		}break;
 		case AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML:
 		{

@@ -2,7 +2,7 @@
  * vlc_picture_fifo.h: picture fifo definitions
  *****************************************************************************
  * Copyright (C) 2009 VLC authors and VideoLAN
- * $Id: 73d1b20c279f628cf94bc7cfc83b2548878bcc07 $
+ * $Id$
  *
  * Authors: Laurent Aimar <fenrir _AT_ videolan _DOT_ org>
  *
@@ -77,12 +77,12 @@ VLC_API void picture_fifo_Push( picture_fifo_t *, picture_t * );
  *
  * All pictures inside the fifo will be released by picture_Release.
  */
-VLC_API void picture_fifo_Flush( picture_fifo_t *, mtime_t date, bool flush_before );
+VLC_API void picture_fifo_Flush( picture_fifo_t *, vlc_tick_t date, bool flush_before );
 
 /**
  * It applies a delta on all the picture timestamp.
  */
-VLC_API void picture_fifo_OffsetDate( picture_fifo_t *, mtime_t delta );
+VLC_API void picture_fifo_OffsetDate( picture_fifo_t *, vlc_tick_t delta );
 
 
 #endif /* VLC_PICTURE_FIFO_H */

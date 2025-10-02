@@ -1006,6 +1006,13 @@ void Gfx::opSetExtGState(Object args[], int numArgs) {
     printf("\n");
   }
 
+  if (out->useNameOp())
+  {
+	out->setExtGState(args[0].getName());
+	obj1.free();
+	return;
+  }
+
   // parameters that are also set by individual PDF operators
   if (obj1.dictLookup("LW", &obj2)->isNum()) {
     opSetLineWidth(&obj2, 1);
@@ -1446,6 +1453,11 @@ void Gfx::opSetFillColorSpace(Object args[], int numArgs) {
 	  " in uncolored Type 3 char or tiling pattern");
     return;
   }
+  if (out->useNameOp())
+  {
+	out->setFillColorSpace(args[0].getName());
+	return;
+  }
   state->setFillPattern(NULL);
   res->lookupColorSpace(args[0].getName(), &obj);
   if (obj.isNull()) {
@@ -1458,7 +1470,7 @@ void Gfx::opSetFillColorSpace(Object args[], int numArgs) {
   obj.free();
   if (colorSpace) {
     state->setFillColorSpace(colorSpace);
-    out->updateFillColorSpace(state);
+	out->updateFillColorSpace(state);
     colorSpace->getDefaultColor(&color);
     state->setFillColor(&color);
     out->updateFillColor(state);
@@ -1476,6 +1488,11 @@ void Gfx::opSetStrokeColorSpace(Object args[], int numArgs) {
     error(errSyntaxWarning, getPos(), "Ignoring color space setting"
 	  " in uncolored Type 3 char or tiling pattern");
     return;
+  }
+  if (out->useNameOp())
+  {
+	out->setStrokeColorSpace(args[0].getName());
+	return;
   }
   state->setStrokePattern(NULL);
   res->lookupColorSpace(args[0].getName(), &obj);
@@ -1516,6 +1533,11 @@ void Gfx::opSetFillColor(Object args[], int numArgs) {
 	  "Incorrect number of arguments in 'sc' command");
     return;
   }
+  if (out->useNameOp())
+  {
+	out->setFillColor(args, numArgs);
+	return;
+  }
   state->setFillPattern(NULL);
   for (i = 0; i < numArgs; ++i) {
     color.c[i] = dblToCol(args[i].getNum());
@@ -1537,6 +1559,11 @@ void Gfx::opSetStrokeColor(Object args[], int numArgs) {
 	  "Incorrect number of arguments in 'SC' command");
     return;
   }
+  if (out->useNameOp())
+  {
+	out->setStrokeColor(args, numArgs);
+	return;
+  }
   state->setStrokePattern(NULL);
   for (i = 0; i < numArgs; ++i) {
     color.c[i] = dblToCol(args[i].getNum());
@@ -1554,6 +1581,11 @@ void Gfx::opSetFillColorN(Object args[], int numArgs) {
     error(errSyntaxWarning, getPos(), "Ignoring color setting"
 	  " in uncolored Type 3 char or tiling pattern");
     return;
+  }
+  if (out->useNameOp())
+  {
+	out->setFillColorN(args, numArgs);
+	return;
   }
   if (state->getFillColorSpace()->getMode() == csPattern) {
     if (numArgs == 0 || !args[numArgs-1].isName()) {
@@ -1581,7 +1613,6 @@ void Gfx::opSetFillColorN(Object args[], int numArgs) {
 				      ))) {
       state->setFillPattern(pattern);
     }
-
   } else {
     if (numArgs != state->getFillColorSpace()->getNComps()) {
       error(errSyntaxError, getPos(),
@@ -1608,6 +1639,11 @@ void Gfx::opSetStrokeColorN(Object args[], int numArgs) {
     error(errSyntaxWarning, getPos(), "Ignoring color setting"
 	  " in uncolored Type 3 char or tiling pattern");
     return;
+  }
+  if (out->useNameOp())
+  {
+	out->setStrokeColorN(args, numArgs);
+	return;
   }
   if (state->getStrokeColorSpace()->getMode() == csPattern) {
     if (numArgs == 0 || !args[numArgs-1].isName()) {
@@ -2352,6 +2388,12 @@ void Gfx::opShFill(Object args[], int numArgs) {
   if (!(shading = res->lookupShading(args[0].getName()
 				     ))) {
     return;
+  }
+
+  if (out->useNameOp())
+  {
+	  out->setShading(state, args[0].getName());
+	  return;
   }
 
   // save current graphics state
@@ -4075,14 +4117,17 @@ void Gfx::opXObject(Object args[], int numArgs) {
     if (obj2.isName("Image")) {
       if (out->needNonText()) {
 	res->lookupXObjectNF(name, &refObj);
-	doImage(&refObj, obj1.getStream(), gFalse);
+	if (out->useNameOp() && refObj.isRef())
+		out->drawImage(state, refObj.getRef(), name);
+	else
+		doImage(&refObj, obj1.getStream(), gFalse);
 	refObj.free();
       }
     } else if (obj2.isName("Form")) {
       res->lookupXObjectNF(name, &refObj);
       if (out->useDrawForm() && refObj.isRef()) {
 	if (ocState) {
-	  out->drawForm(refObj.getRef());
+	  out->drawForm(state, refObj.getRef(), name);
 	}
       } else {
 	doForm(&refObj, &obj1);

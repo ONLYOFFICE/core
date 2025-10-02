@@ -9,7 +9,7 @@ enum class EZOrder
 {
 	Body,
 	Background
-} ;
+};
 
 EZOrder GetZOrderFromString(const std::string& sValue);
 

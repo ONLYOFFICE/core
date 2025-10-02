@@ -5,10 +5,9 @@
 #include "../../../DesktopEditor/common/File.h"
 #include "../../../DesktopEditor/common/Directory.h"
 #include "../../../DesktopEditor/common/SystemUtils.h"
-#include "../../../DesktopEditor/raster/BgraFrame.h"
 #include "../../../OfficeUtils/src/OfficeUtils.h"
 
-#include "../../../DesktopEditor/graphics/pro/Graphics.h"
+#include "../../../DesktopEditor/graphics/pro/Image.h"
 
 #include "../Paragraph/ParaText.h"
 #include "../Paragraph/CtrlTable.h"
@@ -16,6 +15,8 @@
 #include "../Paragraph/CtrlShapeArc.h"
 #include "../Paragraph/CtrlShapePolygon.h"
 #include "../Paragraph/CtrlShapeCurve.h"
+#include "../Paragraph/CtrlShapeLine.h"
+#include "../Paragraph/CtrlShapeRect.h"
 
 #include "../HWPElements/HWPRecordParaShape.h"
 #include "../HWPElements/HWPRecordCharShape.h"
@@ -333,7 +334,7 @@ void CConverter2OOXML::WriteCharacter(const CCtrlCharacter* pCharacter, short sh
 	}
 }
 
-void CConverter2OOXML::WriteShape(const CCtrlGeneralShape* pShape, short shParaShapeID, short shParaStyleID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)
+void CConverter2OOXML::WriteShape(const CCtrlGeneralShape* pShape, short shParaShapeID, short shParaStyleID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState, const CCtrlContainer *pContainer)
 {
 	if (nullptr == pShape || oState.m_bInTextBox)
 		return;
@@ -347,7 +348,7 @@ void CConverter2OOXML::WriteShape(const CCtrlGeneralShape* pShape, short shParaS
 		case EShapeType::Polygon:
 		case EShapeType::Curve:
 		{
-			WriteGeometryShape(pShape, shParaShapeID, shParaStyleID, oBuilder, oState);
+			WriteGeometryShape(pShape, shParaShapeID, shParaStyleID, oBuilder, oState, pContainer);
 			break;
 		}
 		case EShapeType::Pic:
@@ -597,7 +598,8 @@ void CConverter2OOXML::WriteParagraph(const CHWPPargraph* pParagraph, NSStringUt
 			}
 			case ECtrlObjectType::HeadFoot:
 			{
-				if (EHanType::HWPX == m_pContext->GetType())
+				if (EHanType::HWPX  == m_pContext->GetType() ||
+				    EHanType::HWPML == m_pContext->GetType())
 					oState.m_arCtrlsHeadFoot.push_back((const CCtrlHeadFoot*)pCtrl);
 				break;
 			}
@@ -1002,7 +1004,7 @@ VECTOR<TPoint> ArcToBezier(const TPoint& oStart, const TPoint& oEnd, const TPoin
 	return {oStart, oControl1, oControl2, oEnd};
 }
 
-void CConverter2OOXML::WriteGeometryShape(const CCtrlGeneralShape* pGeneralShape, short shParaShapeID, short shParaStyleID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)
+void CConverter2OOXML::WriteGeometryShape(const CCtrlGeneralShape* pGeneralShape, short shParaShapeID, short shParaStyleID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState, const CCtrlContainer* pContainer)
 {
 	if (nullptr == pGeneralShape)
 		return;
@@ -1018,8 +1020,8 @@ void CConverter2OOXML::WriteGeometryShape(const CCtrlGeneralShape* pGeneralShape
 
 	OpenParagraph(shParaShapeID, shParaStyleID, oBuilder, oState);
 
-	const int nWidth =  Transform::HWPUINT2OOXML(pGeneralShape->GetWidth());
-	const int nHeight = Transform::HWPUINT2OOXML(pGeneralShape->GetHeight());
+	const int nWidth =  Transform::HWPUINT2OOXML(pGeneralShape->GetFinalWidth());
+	const int nHeight = Transform::HWPUINT2OOXML(pGeneralShape->GetFinalHeight());
 
 	const std::wstring wsWidth  = std::to_wstring(nWidth);
 	const std::wstring wsHeight = std::to_wstring(nHeight);
@@ -1027,7 +1029,7 @@ void CConverter2OOXML::WriteGeometryShape(const CCtrlGeneralShape* pGeneralShape
 	oBuilder.WriteString(L"<w:r><w:rPr><w:noProof/></w:rPr>");
 	oBuilder.WriteString(L"<mc:AlternateContent><mc:Choice Requires=\"wps\">");
 
-	OpenDrawingNode(pGeneralShape, oBuilder);
+	OpenDrawingNode((nullptr != pContainer) ? pContainer : pGeneralShape, oBuilder);
 
 	oBuilder.WriteString(L"<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">");
 	oBuilder.WriteString(L"<a:graphicData uri=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\">");
@@ -1041,9 +1043,20 @@ void CConverter2OOXML::WriteGeometryShape(const CCtrlGeneralShape* pGeneralShape
 		case EShapeObjectType::Arc:
 		{
 			const CCtrlShapeArc *pShapeArc = (const CCtrlShapeArc*)pGeneralShape;
-			VECTOR<TPoint> arBezierPoints{ArcToBezier({Transform::HWPUINT2OOXML(pShapeArc->GetFirstPoint() .m_nX), Transform::HWPUINT2OOXML(pShapeArc->GetFirstPoint() .m_nY)},
-			                                          {Transform::HWPUINT2OOXML(pShapeArc->GetSecondPoint().m_nX), Transform::HWPUINT2OOXML(pShapeArc->GetSecondPoint().m_nY)},
-			                                          {Transform::HWPUINT2OOXML(pShapeArc->GetCenterPoint().m_nX), Transform::HWPUINT2OOXML(pShapeArc->GetCenterPoint().m_nY)})};
+
+			TPoint oStartPoint {pShapeArc->GetFirstPoint()},
+			       oEndPoint   {pShapeArc->GetSecondPoint()},
+				   oCenterPoint{pShapeArc->GetCenterPoint()};
+
+			const TMatrix oMatrix{pGeneralShape->GetFinalMatrix()};
+
+			oMatrix.ApplyToPoint(oStartPoint .m_nX, oStartPoint .m_nY);
+			oMatrix.ApplyToPoint(oEndPoint   .m_nX, oEndPoint   .m_nY);
+			oMatrix.ApplyToPoint(oCenterPoint.m_nX, oCenterPoint.m_nY);
+
+			VECTOR<TPoint> arBezierPoints{ArcToBezier({Transform::HWPUINT2OOXML(oStartPoint .m_nX), Transform::HWPUINT2OOXML(oStartPoint .m_nY)},
+			                                          {Transform::HWPUINT2OOXML(oEndPoint   .m_nX), Transform::HWPUINT2OOXML(oEndPoint   .m_nY)},
+			                                          {Transform::HWPUINT2OOXML(oCenterPoint.m_nX), Transform::HWPUINT2OOXML(oCenterPoint.m_nY)})};
 
 			oBuilder.WriteString(L"<a:custGeom><a:pathLst><a:path>");
 			oBuilder.WriteString(L"<a:moveTo><a:pt x=\"" + std::to_wstring(arBezierPoints[0].m_nX) + L"\" y=\"" + std::to_wstring(arBezierPoints[0].m_nY) + L"\"/></a:moveTo>");
@@ -1065,13 +1078,55 @@ void CConverter2OOXML::WriteGeometryShape(const CCtrlGeneralShape* pGeneralShape
 		}
 		case EShapeObjectType::Line:
 		{
-			oBuilder.WriteString(L"<a:prstGeom prst=\"line\"><a:avLst/></a:prstGeom>");
+			const CCtrlShapeLine *pShapeLine = (const CCtrlShapeLine*)pGeneralShape;
+
+			TPoint oStartPoint{pShapeLine->GetStartX(), pShapeLine->GetStartY()},
+			       oEndPoint  {pShapeLine->GetEndX(),   pShapeLine->GetEndY()  };
+
+			const TMatrix oMatrix{pGeneralShape->GetFinalMatrix()};
+
+			oMatrix.ApplyToPoint(oStartPoint .m_nX, oStartPoint .m_nY);
+			oMatrix.ApplyToPoint(oEndPoint   .m_nX, oEndPoint   .m_nY);
+
+			oBuilder.WriteString(L"<a:custGeom><a:pathLst><a:path>");
+
+			oBuilder.WriteString(L"<a:moveTo><a:pt x=\"" + std::to_wstring(Transform::HWPUINT2OOXML(oStartPoint.m_nX)) + L"\" y=\"" + std::to_wstring(Transform::HWPUINT2OOXML(oStartPoint.m_nY)) + L"\"/></a:moveTo>");
+			oBuilder.WriteString(L"<a:lnTo><a:pt x=\"" + std::to_wstring(Transform::HWPUINT2OOXML(oEndPoint.m_nX)) + L"\" y=\"" + std::to_wstring(Transform::HWPUINT2OOXML(oEndPoint.m_nY)) + L"\"/></a:lnTo>");
+
+			oBuilder.WriteString(L"</a:path></a:pathLst></a:custGeom>");
+			// oBuilder.WriteString(L"<a:prstGeom prst=\"line\"><a:avLst/></a:prstGeom>");
 			break;
 		}
 
 		case EShapeObjectType::Rectangle:
 		{
-			oBuilder.WriteString(L"<a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom>");
+			const CCtrlShapeRect* pShapeRect = (const CCtrlShapeRect*)pGeneralShape;
+
+			TPoint arPoints[4];
+
+			pShapeRect->GetPoints(arPoints);
+
+			const TMatrix oMatrix{pGeneralShape->GetFinalMatrix()};
+
+			for (TPoint& oPoint : arPoints)
+			{
+				oMatrix.ApplyToPoint(oPoint.m_nX, oPoint.m_nY);
+
+				oPoint.m_nX = Transform::HWPUINT2OOXML(oPoint.m_nX);
+				oPoint.m_nY = Transform::HWPUINT2OOXML(oPoint.m_nY);
+			}
+
+			oBuilder.WriteString(L"<a:custGeom><a:pathLst><a:path>");
+
+			oBuilder.WriteString(L"<a:moveTo><a:pt x=\"" + std::to_wstring(arPoints[0].m_nX) + L"\" y=\"" + std::to_wstring(arPoints[0].m_nY) + L"\"/></a:moveTo>");
+
+			for (unsigned short ushIndex = 1; ushIndex < 4; ++ushIndex)
+				oBuilder.WriteString(L"<a:lnTo><a:pt x=\"" + std::to_wstring(arPoints[ushIndex].m_nX) + L"\" y=\"" + std::to_wstring(arPoints[ushIndex].m_nY) + L"\"/></a:lnTo>");
+
+			oBuilder.WriteString(L"<a:lnTo><a:pt x=\"" + std::to_wstring(arPoints[0].m_nX) + L"\" y=\"" + std::to_wstring(arPoints[0].m_nY) + L"\"/></a:lnTo>");
+
+			oBuilder.WriteString(L"</a:path></a:pathLst></a:custGeom>");
+			// oBuilder.WriteString(L"<a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom>");
 			break;
 		}
 		case EShapeObjectType::Polygon:
@@ -1081,11 +1136,21 @@ void CConverter2OOXML::WriteGeometryShape(const CCtrlGeneralShape* pGeneralShape
 			if (2 > arPoints.size())
 				break;
 
+			const TMatrix oMatrix{pGeneralShape->GetFinalMatrix()};
+
+			for (TPoint& oPoint : arPoints)
+			{
+				oMatrix.ApplyToPoint(oPoint.m_nX, oPoint.m_nY);
+
+				oPoint.m_nX = Transform::HWPUINT2OOXML(oPoint.m_nX);
+				oPoint.m_nY = Transform::HWPUINT2OOXML(oPoint.m_nY);
+			}
+
 			oBuilder.WriteString(L"<a:custGeom><a:pathLst><a:path>");
-			oBuilder.WriteString(L"<a:moveTo><a:pt x=\"" + std::to_wstring(Transform::HWPUINT2OOXML(arPoints[0].m_nX)) + L"\" y=\"" + std::to_wstring(Transform::HWPUINT2OOXML(arPoints[0].m_nY)) + L"\"/></a:moveTo>");
+			oBuilder.WriteString(L"<a:moveTo><a:pt x=\"" + std::to_wstring(arPoints[0].m_nX) + L"\" y=\"" + std::to_wstring(arPoints[0].m_nY) + L"\"/></a:moveTo>");
 
 			for (unsigned short ushIndex = 1; ushIndex < arPoints.size(); ++ushIndex)
-				oBuilder.WriteString(L"<a:lnTo><a:pt x=\"" + std::to_wstring(Transform::HWPUINT2OOXML(arPoints[ushIndex].m_nX)) + L"\" y=\"" + std::to_wstring(Transform::HWPUINT2OOXML(arPoints[ushIndex].m_nY)) + L"\"/></a:lnTo>");
+				oBuilder.WriteString(L"<a:lnTo><a:pt x=\"" + std::to_wstring(arPoints[ushIndex].m_nX) + L"\" y=\"" + std::to_wstring(arPoints[ushIndex].m_nY) + L"\"/></a:lnTo>");
 
 			oBuilder.WriteString(L"</a:path></a:pathLst></a:custGeom>");
 			break;
@@ -1097,23 +1162,34 @@ void CConverter2OOXML::WriteGeometryShape(const CCtrlGeneralShape* pGeneralShape
 			if (2 > arPoints.size())
 				break;
 
+			const TMatrix oMatrix{pGeneralShape->GetFinalMatrix()};
+
+			for (TPoint& oPoint : arPoints)
+			{
+				oPoint.m_nX = Transform::HWPUINT2OOXML(oPoint.m_nX);
+				oPoint.m_nY = Transform::HWPUINT2OOXML(oPoint.m_nY);
+
+				oMatrix.ApplyToPoint(oPoint.m_nX, oPoint.m_nY);
+			}
+
 			VECTOR<HWP_BYTE> arSegmentType{((const CCtrlShapeCurve*)pGeneralShape)->GetSegmentsType()};
 			oBuilder.WriteString(L"<a:custGeom><a:pathLst><a:path>");
-			oBuilder.WriteString(L"<a:moveTo><a:pt x=\"" + std::to_wstring(Transform::HWPUINT2OOXML(arPoints[0].m_nX)) + L"\" y=\"" + std::to_wstring(Transform::HWPUINT2OOXML(arPoints[0].m_nY)) + L"\"/></a:moveTo>");
+
+			oBuilder.WriteString(L"<a:moveTo><a:pt x=\"" + std::to_wstring(arPoints[0].m_nX) + L"\" y=\"" + std::to_wstring(arPoints[0].m_nY) + L"\"/></a:moveTo>");
 
 			for (unsigned short ushIndex = 0; ushIndex < arSegmentType.size(); ++ushIndex)
 			{
 				if (0x01 == arSegmentType[ushIndex])
 				{
 					oBuilder.WriteString(L"<a:cubicBezTo>");
-					oBuilder.WriteString(L"<a:pt x=\"" + std::to_wstring(Transform::HWPUINT2OOXML(arPoints[ushIndex + 1].m_nX)) + L"\" y=\"" + std::to_wstring(Transform::HWPUINT2OOXML(arPoints[ushIndex + 1].m_nY)) + L"\"/>");
-					oBuilder.WriteString(L"<a:pt x=\"" + std::to_wstring(Transform::HWPUINT2OOXML(arPoints[ushIndex + 2].m_nX)) + L"\" y=\"" + std::to_wstring(Transform::HWPUINT2OOXML(arPoints[ushIndex + 2].m_nY)) + L"\"/>");
-					oBuilder.WriteString(L"<a:pt x=\"" + std::to_wstring(Transform::HWPUINT2OOXML(arPoints[ushIndex + 3].m_nX)) + L"\" y=\"" + std::to_wstring(Transform::HWPUINT2OOXML(arPoints[ushIndex + 3].m_nY)) + L"\"/>");
+					oBuilder.WriteString(L"<a:pt x=\"" + std::to_wstring(arPoints[ushIndex + 1].m_nX) + L"\" y=\"" + std::to_wstring(arPoints[ushIndex + 1].m_nY) + L"\"/>");
+					oBuilder.WriteString(L"<a:pt x=\"" + std::to_wstring(arPoints[ushIndex + 2].m_nX) + L"\" y=\"" + std::to_wstring(arPoints[ushIndex + 2].m_nY) + L"\"/>");
+					oBuilder.WriteString(L"<a:pt x=\"" + std::to_wstring(arPoints[ushIndex + 3].m_nX) + L"\" y=\"" + std::to_wstring(arPoints[ushIndex + 3].m_nY) + L"\"/>");
 					oBuilder.WriteString(L"</a:cubicBezTo>");
 					ushIndex += 2;
 				}
 				else
-					oBuilder.WriteString(L"<a:lnTo><a:pt x=\"" + std::to_wstring(Transform::HWPUINT2OOXML(arPoints[ushIndex + 1].m_nX)) + L"\" y=\"" + std::to_wstring(Transform::HWPUINT2OOXML(arPoints[ushIndex + 1].m_nY)) + L"\"/></a:lnTo>");
+					oBuilder.WriteString(L"<a:lnTo><a:pt x=\"" + std::to_wstring(arPoints[ushIndex + 1].m_nX) + L"\" y=\"" + std::to_wstring(arPoints[ushIndex + 1].m_nY) + L"\"/></a:lnTo>");
 			}
 
 			oBuilder.WriteString(L"</a:path></a:pathLst></a:custGeom>");
@@ -1235,7 +1311,7 @@ void CConverter2OOXML::WriteOleShape(const CCtrlShapeOle* pOleShape, short shPar
 void CConverter2OOXML::WriteContainer(const CCtrlContainer* pContainer, short shParaShapeID, short shParaStyleID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)
 {
 	for (const CCtrlGeneralShape* pGeneralShape : pContainer->GetShapes())
-		WriteShape(pGeneralShape, shParaShapeID, shParaStyleID, oBuilder, oState);
+		WriteShape(pGeneralShape, shParaShapeID, shParaStyleID, oBuilder, oState, pContainer);
 }
 
 void CConverter2OOXML::WriteSectionSettings(TConversionState& oState)
@@ -1246,12 +1322,22 @@ void CConverter2OOXML::WriteSectionSettings(TConversionState& oState)
 	{
 		std::vector<const CCtrlHeadFoot*> arCtrlsHeadFoot;
 
-		if (EHanType::HWP == m_pContext->GetType())
-			arCtrlsHeadFoot = oState.m_pSectionDef->GetHeaderFooters();
-		else if (EHanType::HWPX == m_pContext->GetType())
+		switch (m_pContext->GetType())
 		{
-			arCtrlsHeadFoot = oState.m_arCtrlsHeadFoot;
-			oState.m_arCtrlsHeadFoot.clear();
+			case EHanType::HWP:
+			{
+				arCtrlsHeadFoot = oState.m_pSectionDef->GetHeaderFooters();
+				break;
+			}
+			case EHanType::HWPX:
+			case EHanType::HWPML:
+			{
+				arCtrlsHeadFoot = oState.m_arCtrlsHeadFoot;
+				oState.m_arCtrlsHeadFoot.clear();
+				break;
+			}
+			default:
+				return;
 		}
 
 		#define WRITE_ID(id)\
@@ -1293,8 +1379,8 @@ void CConverter2OOXML::WriteSectionSettings(TConversionState& oState)
 	else
 	{
 		m_oDocXml.WriteString(L"<w:pgSz w:w=\"" + std::to_wstring(Transform::HWPUINT2Twips(pPage->GetWidth())) + L"\" w:h=\"" + std::to_wstring(Transform::HWPUINT2Twips(pPage->GetHeight())) + L"\"/>");
-		m_oDocXml.WriteString(L"<w:pgMar w:top=\"" + std::to_wstring(Transform::HWPUINT2Twips(pPage->GetMarginTop())) + L"\" w:right=\"" + std::to_wstring(Transform::HWPUINT2Twips(pPage->GetMarginRight())) + L"\" w:bottom=\"" +
-		                        std::to_wstring(Transform::HWPUINT2Twips(pPage->GetMarginBottom())) + L"\"  w:left=\"" + std::to_wstring(Transform::HWPUINT2Twips(pPage->GetMarginRight())) + L"\" w:header=\"" +
+		m_oDocXml.WriteString(L"<w:pgMar w:top=\"" + std::to_wstring(Transform::HWPUINT2Twips(pPage->GetMarginTop() + pPage->GetMarginHeader())) + L"\" w:right=\"" + std::to_wstring(Transform::HWPUINT2Twips(pPage->GetMarginRight())) + L"\" w:bottom=\"" +
+		                        std::to_wstring(Transform::HWPUINT2Twips(pPage->GetMarginBottom() + pPage->GetMarginFooter())) + L"\"  w:left=\"" + std::to_wstring(Transform::HWPUINT2Twips(pPage->GetMarginRight())) + L"\" w:header=\"" +
 		                        std::to_wstring(Transform::HWPUINT2Twips(pPage->GetMarginHeader())) + L"\"  w:footer=\"" + std::to_wstring(Transform::HWPUINT2Twips(pPage->GetMarginFooter())) + L"\"  w:gutter=\"" +
 		                        std::to_wstring(Transform::HWPUINT2Twips(pPage->GetMarginGutter())) + L"\"/>");
 	}
@@ -1333,9 +1419,7 @@ void CConverter2OOXML::WritePicture(const CCtrlShapePic* pCtrlPic, short shParaS
 
 	oBuilder.WriteString(L"<w:r><w:rPr><w:noProof/></w:rPr>");
 
-	int nWidth{pCtrlPic->GetImageRectWidth()}, nHeight{pCtrlPic->GetIMageRectHeight()};
-
-	OpenDrawingNode(pCtrlPic, oBuilder, &nWidth, &nHeight);
+	OpenDrawingNode(pCtrlPic, oBuilder);
 
 	oBuilder.WriteString(L"<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">");
 	oBuilder.WriteString(L"<a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/picture\">");
@@ -1351,7 +1435,7 @@ void CConverter2OOXML::WritePicture(const CCtrlShapePic* pCtrlPic, short shParaS
 	if (pCtrlPic->VertFlip())
 		oBuilder.WriteString(L" flipV=\"1\"");
 
-	oBuilder.WriteString(L"><a:off x=\"0\" y=\"0\"/><a:ext cx=\"" + std::to_wstring(nWidth) + L"\" cy=\"" + std::to_wstring(nHeight) + L"\"/></a:xfrm>");
+	oBuilder.WriteString(L"><a:off x=\"0\" y=\"0\"/><a:ext cx=\"" + std::to_wstring(pCtrlPic->GetFinalWidth()) + L"\" cy=\"" + std::to_wstring(pCtrlPic->GetFinalHeight()) + L"\"/></a:xfrm>");
 	oBuilder.WriteString(L"<a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom><a:noFill/>");
 	WriteBorderSettings(pCtrlPic, oBuilder);
 	oBuilder.WriteString(L"</pic:spPr></pic:pic></a:graphicData></a:graphic>");
@@ -1443,7 +1527,7 @@ bool CConverter2OOXML::SaveSVGFile(const HWP_STRING& sSVG, HWP_STRING& sFileName
 
 HWP_STRING CConverter2OOXML::SavePicture(const HWP_STRING& sBinItemId, TConversionState& oState)
 {
-	if (nullptr == m_pContext)
+	if (nullptr == m_pContext || sBinItemId.empty())
 		return HWP_STRING();
 
 	//TODO:: добавить поддержку устновки размеров изображения из свойств шейпа
@@ -1529,7 +1613,7 @@ void CConverter2OOXML::WriteTextBorderStyle(short shBorderFillId, NSStringUtils:
 	WriteBorder(pBorderFill->GetLeftBorder(), L"bdr", oBuilder);
 }
 
-void CConverter2OOXML::OpenDrawingNode(const CCtrlObjElement* pCtrlShape, NSStringUtils::CStringBuilder& oBuilder, int* pWidth, int* pHeight)
+void CConverter2OOXML::OpenDrawingNode(const CCtrlObjElement* pCtrlShape, NSStringUtils::CStringBuilder& oBuilder)
 {
 	if (nullptr == pCtrlShape)
 		return;
@@ -1544,7 +1628,7 @@ void CConverter2OOXML::OpenDrawingNode(const CCtrlObjElement* pCtrlShape, NSStri
 		                             L"\" distR=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlShape->GetRightOutMargin() / 10)) +
 		                     L"\">");
 
-		WriteShapeExtent(pCtrlShape, oBuilder, pWidth, pHeight);
+		WriteShapeExtent(pCtrlShape, oBuilder);
 	}
 	else
 	{
@@ -1557,7 +1641,7 @@ void CConverter2OOXML::OpenDrawingNode(const CCtrlObjElement* pCtrlShape, NSStri
 		                     L"\" simplePos=\"0\" locked=\"0\" layoutInCell=\"1\" allowOverlap=\"1\">");
 
 		WriteShapePosition(pCtrlShape, oBuilder);
-		WriteShapeExtent(pCtrlShape, oBuilder, pWidth, pHeight);
+		WriteShapeExtent(pCtrlShape, oBuilder);
 		WriteShapeWrapMode(pCtrlShape, oBuilder);
 	}
 
@@ -1572,10 +1656,7 @@ void CConverter2OOXML::CloseDrawingNode(const CCtrlObjElement* pCtrlShape, NSStr
 	if (pCtrlShape->GetTreatAsChar())
 		oBuilder.WriteString(L"</wp:inline>");
 	else
-	{
-		oBuilder.WriteString(L"<wp14:sizeRelH relativeFrom=\"page\"><wp14:pctWidth>0</wp14:pctWidth></wp14:sizeRelH><wp14:sizeRelV relativeFrom=\"page\"><wp14:pctHeight>0</wp14:pctHeight></wp14:sizeRelV>");
 		oBuilder.WriteString(L"</wp:anchor>");
-	}
 
 	oBuilder.WriteString(L"</w:drawing>");
 }
@@ -1602,7 +1683,7 @@ HWP_STRING GetHRelativeFrom(EHRelTo eRelTo)
 		case EHRelTo::COLUMN:
 			return L"column";
 		case EHRelTo::PARA:
-			return L"character";
+			return L"margin";
 	}
 }
 
@@ -1624,43 +1705,20 @@ void CConverter2OOXML::WriteShapePosition(const CCtrlCommon* pCtrlShape, NSStrin
 
 	oBuilder.WriteString(L"<wp:simplePos x=\"0\" y=\"0\"/>");
 
-	oBuilder.WriteString(L"<wp:positionH relativeFrom=\"");
+	const int nHorzOffset = pCtrlShape->GetHorzOffset();
+	const int nVertOffset = pCtrlShape->GetVertOffset();
 
-	if (0 == pCtrlShape->GetHorzOffset())
-	{
-		oBuilder.WriteString(L"margin\">");
-		oBuilder.WriteString(L"<wp:align>left</wp:align>");
-	}
-	else
-	{
-		oBuilder.WriteString(GetHRelativeFrom(pCtrlShape->GetHorzRelTo()) + L"\">");
-		oBuilder.WriteString(L"<wp:posOffset>" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlShape->GetHorzOffset())) + L"</wp:posOffset>");
-	}
-
-	oBuilder.WriteString(L"</wp:positionH>");
-
-	oBuilder.WriteString(L"<wp:positionV relativeFrom=\"" + GetVRelativeFrom(pCtrlShape->GetVertRelTo()) + L"\"><wp:posOffset>" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlShape->GetVertOffset())) + L"</wp:posOffset></wp:positionV>");
+	oBuilder.WriteString(L"<wp:positionH relativeFrom=\"" + GetHRelativeFrom(pCtrlShape->GetHorzRelTo()) + L"\"><wp:posOffset>" + std::to_wstring(Transform::HWPUINT2OOXML(nHorzOffset)) + L"</wp:posOffset></wp:positionH>");
+	oBuilder.WriteString(L"<wp:positionV relativeFrom=\"" + GetVRelativeFrom(pCtrlShape->GetVertRelTo()) + L"\"><wp:posOffset>" + std::to_wstring(Transform::HWPUINT2OOXML(nVertOffset)) + L"</wp:posOffset></wp:positionV>");
 }
 
-void CConverter2OOXML::WriteShapeExtent(const CCtrlObjElement* pCtrlShape, NSStringUtils::CStringBuilder& oBuilder, int* pWidth, int* pHeight)
+void CConverter2OOXML::WriteShapeExtent(const CCtrlObjElement* pCtrlShape, NSStringUtils::CStringBuilder& oBuilder)
 {
 	if (nullptr == pCtrlShape)
 		return;
 
-	int nFinalWidth  = pCtrlShape->GetCurWidth();
-	int nFinalHeight = pCtrlShape->GetCurHeight();
-
-	if (0 == nFinalWidth || 0 == nFinalHeight)
-	{
-		nFinalWidth = std::abs(pCtrlShape->GetWidth());
-		nFinalHeight = std::abs(pCtrlShape->GetHeight());
-	}
-
-	if (nullptr != pWidth)
-		*pWidth = Transform::HWPUINT2OOXML(nFinalWidth);
-
-	if (nullptr != pHeight)
-		*pHeight = Transform::HWPUINT2OOXML(nFinalHeight);
+	const int nFinalWidth  = std::abs(pCtrlShape->GetFinalWidth());
+	const int nFinalHeight = std::abs(pCtrlShape->GetFinalHeight());
 
 	oBuilder.WriteString(L"<wp:extent cx=\"" + std::to_wstring(Transform::HWPUINT2OOXML(nFinalWidth)) + L"\" cy=\"" + std::to_wstring(Transform::HWPUINT2OOXML(nFinalHeight)) + L"\"/>");
 	oBuilder.WriteString(L"<wp:effectExtent l=\"0\" t=\"0\" r=\"0\" b=\"0\"/>");
@@ -1896,25 +1954,63 @@ void CConverter2OOXML::WriteLineSettings(const CCtrlGeneralShape* pCtrlGeneralSh
 	if (nullptr == pCtrlGeneralShape)
 		return;
 
-	WriteLineSettings(pCtrlGeneralShape->GetLineStyle(), pCtrlGeneralShape->GetLineColor(), pCtrlGeneralShape->GetLineThick(), 1, oBuilder);
+	WriteLineSettings({pCtrlGeneralShape->GetLineStyle(), pCtrlGeneralShape->GetLineColor(),
+	                   pCtrlGeneralShape->GetLineThick(), 1,
+	                   pCtrlGeneralShape->GetLineHeadStyle(), pCtrlGeneralShape->GetLineHeadSize(),
+	                   pCtrlGeneralShape->GetLineTailStyle(), pCtrlGeneralShape->GetLineTailSize()}, oBuilder);
+
 }
 
-void CConverter2OOXML::WriteLineSettings(ELineStyle2 eLineStyle, int nColor, int nThick, HWP_BYTE nCompoundLineType, NSStringUtils::CStringBuilder& oBuilder)
+void WriteLineArrowStyles(ELineArrowStyle eArrowStyle, ELineArrowSize eArrowSize, NSStringUtils::CStringBuilder& oBuilder)
 {
-	if (ELineStyle2::NONE == eLineStyle)
+	switch (eArrowStyle)
+	{
+		case ELineArrowStyle::ARROW: oBuilder.WriteString(L" type=\"triangle\""); break;
+		case ELineArrowStyle::SPEAR: oBuilder.WriteString(L" type=\"arrow\""); break;
+		case ELineArrowStyle::CONCAVE_ARROW: oBuilder.WriteString(L" type=\"stealth\""); break;
+		case ELineArrowStyle::DIAMOND:
+		case ELineArrowStyle::EMPTY_DIAMOND:
+		case ELineArrowStyle::BOX:
+		case ELineArrowStyle::EMPTY_BOX: oBuilder.WriteString(L" type=\"diamond\""); break;
+		case ELineArrowStyle::CIRCLE:
+		case ELineArrowStyle::EMPTY_CIRCLE: oBuilder.WriteString(L" type=\"oval\""); break;
+		case ELineArrowStyle::NORMAL:
+			break;
+	}
+
+	switch (eArrowSize)
+	{
+		case ELineArrowSize::SMALL_SMALL: oBuilder.WriteString(L" w=\"sm\" len=\"sm\""); break;
+		case ELineArrowSize::SMALL_MEDIUM: oBuilder.WriteString(L" w=\"sm\" len=\"med\""); break;
+		case ELineArrowSize::SMALL_LARGE: oBuilder.WriteString(L" w=\"sm\" len=\"lg\""); break;
+		case ELineArrowSize::MEDIUM_SMALL: oBuilder.WriteString(L" w=\"med\" len=\"sm\""); break;
+		case ELineArrowSize::MEDIUM_MEDIUM: oBuilder.WriteString(L" w=\"med\" len=\"med\""); break;
+		case ELineArrowSize::MEDIUM_LARGE: oBuilder.WriteString(L" w=\"med\" len=\"lg\""); break;
+		case ELineArrowSize::LARGE_SMALL: oBuilder.WriteString(L" w=\"lg\" len=\"sm\""); break;
+		case ELineArrowSize::LARGE_MEDIUM: oBuilder.WriteString(L" w=\"lg\" len=\"med\""); break;
+		case ELineArrowSize::LARGE_LARGE: oBuilder.WriteString(L" w=\"lg\" len=\"lg\""); break;
+			break;
+	}
+}
+
+void CConverter2OOXML::WriteLineSettings(const TLineData& oLineData, NSStringUtils::CStringBuilder& oBuilder)
+{
+	if (ELineStyle2::NONE == oLineData.m_eStyle)
 	{
 		oBuilder.WriteString(L"<a:ln><a:noFill/></a:ln>");
 		return;
 	}
 
-	if (0 == nThick)
+	int nThick{oLineData.m_nThick};
+
+	if (0 == oLineData.m_nThick)
 		nThick = 100;
 
 	oBuilder.WriteString(L"<a:ln");
 
 	oBuilder.WriteString(L" w=\"" + std::to_wstring(Transform::HWPUINT2OOXML(nThick)) + L"\" cap=\"sq\"");
 
-	switch (eLineStyle)
+	switch (oLineData.m_eStyle)
 	{
 		case ELineStyle2::DOUBLE_SLIM:
 		{
@@ -1942,9 +2038,9 @@ void CConverter2OOXML::WriteLineSettings(ELineStyle2 eLineStyle, int nColor, int
 
 	oBuilder.WriteString(L">");
 
-	oBuilder.WriteString(L"<a:solidFill><a:srgbClr val=\"" + Transform::IntColorToHEX(nColor) + L"\"/></a:solidFill>");
+	oBuilder.WriteString(L"<a:solidFill><a:srgbClr val=\"" + Transform::IntColorToHEX(oLineData.m_nColor) + L"\"/></a:solidFill>");
 
-	switch (eLineStyle)
+	switch (oLineData.m_eStyle)
 	{
 		case ELineStyle2::DASH:
 		{
@@ -1980,7 +2076,21 @@ void CConverter2OOXML::WriteLineSettings(ELineStyle2 eLineStyle, int nColor, int
 			break;
 	}
 
-	switch (nCompoundLineType)
+	if (ELineArrowStyle::NORMAL != oLineData.m_eHeadStyle)
+	{
+		oBuilder.WriteString(L"<a:headEnd");
+		WriteLineArrowStyles(oLineData.m_eHeadStyle, oLineData.m_eHeadSize, oBuilder);
+		oBuilder.WriteString(L"/>");
+	}
+
+	if (ELineArrowStyle::NORMAL != oLineData.m_eTailStyle)
+	{
+		oBuilder.WriteString(L"<a:tailEnd ");
+		WriteLineArrowStyles(oLineData.m_eTailStyle, oLineData.m_eTailSize, oBuilder);
+		oBuilder.WriteString(L"/>");
+	}
+
+	switch (oLineData.m_nCompoundLineType)
 	{
 		case 0x00:
 		{
@@ -2003,9 +2113,13 @@ void CConverter2OOXML::WriteBorderSettings(const CCtrlShapePic* pCtrlPic, NSStri
 		return;
 
 	if (EHanType::HWP == m_pContext->GetType())
-		WriteLineSettings(pCtrlPic->GetBorderLineStyle(), pCtrlPic->GetBorderColor(), pCtrlPic->GetBorderThick(), pCtrlPic->GetBorderCompoundLineType(), oBuilder);
-	else if (EHanType::HWPX == m_pContext->GetType())
-		WriteLineSettings(pCtrlPic->GetLineStyle(), pCtrlPic->GetLineColor(), pCtrlPic->GetLineThick(), 1, oBuilder);
+		WriteLineSettings({pCtrlPic->GetBorderLineStyle(), pCtrlPic->GetBorderColor(),
+		                   pCtrlPic->GetBorderThick(), pCtrlPic->GetBorderCompoundLineType()},
+		                   oBuilder);
+	else if (EHanType::HWPX == m_pContext->GetType() ||
+	         EHanType::HWPML == m_pContext->GetType())
+		WriteLineSettings({pCtrlPic->GetLineStyle(), pCtrlPic->GetLineColor(),
+		                   pCtrlPic->GetLineThick(), 1}, oBuilder);
 }
 
 void CConverter2OOXML::WriteAutoNumber(const CCtrlAutoNumber* pAutoNumber, short shParaShapeID, short shParaStyleID, short shCharShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)
@@ -2026,7 +2140,11 @@ void CConverter2OOXML::WriteAutoNumber(const CCtrlAutoNumber* pAutoNumber, short
 			return;
 		}
 		case ENumType::TOTAL_PAGE:
-			ushValue = m_ushPageCount; break;
+		{
+			OpenParagraph(shParaShapeID, shParaStyleID, oBuilder, oState);
+			oBuilder.WriteString(L"<w:fldSimple w:instr=\"NUMPAGES \\* ARABIC\"><w:r><w:t>1</w:t></w:r></w:fldSimple>");
+			return;
+		}
 		case ENumType::FOOTNOTE:
 		{
 			OpenParagraph(shParaShapeID, shParaStyleID, oBuilder, oState);
@@ -2178,4 +2296,23 @@ HWP_STRING CConverter2OOXML::GetTempDirectory() const
 {
 	return m_sTempDirectory;
 }
+
+TLineData::TLineData(ELineStyle2 eStyle, int nColor,
+                     int nThick, HWP_BYTE nCompoundLineType,
+                     ELineArrowStyle eHeadStyle, ELineArrowSize eHeadSize,
+                     ELineArrowStyle eTailStyle, ELineArrowSize eTailSize)
+	:m_eStyle(eStyle), m_nColor(nColor),
+      m_nThick(nThick), m_nCompoundLineType(nCompoundLineType),
+	  m_eHeadStyle(eHeadStyle), m_eHeadSize(eHeadSize),
+	  m_eTailStyle(eTailStyle), m_eTailSize(eTailSize)
+{}
+
+TLineData::TLineData(ELineStyle2 eStyle, int nColor,
+                     int nThick, HWP_BYTE nCompoundLineType)
+    :m_eStyle(eStyle), m_nColor(nColor),
+      m_nThick(nThick), m_nCompoundLineType(nCompoundLineType),
+	  m_eHeadStyle(ELineArrowStyle::NORMAL), m_eHeadSize(ELineArrowSize::SMALL_SMALL),
+	  m_eTailStyle(ELineArrowStyle::NORMAL), m_eTailSize(ELineArrowSize::SMALL_SMALL)
+{}
+
 }

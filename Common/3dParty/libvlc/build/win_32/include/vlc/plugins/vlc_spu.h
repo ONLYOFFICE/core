@@ -3,7 +3,7 @@
  *****************************************************************************
  * Copyright (C) 1999-2010 VLC authors and VideoLAN
  * Copyright (C) 2010 Laurent Aimar
- * $Id: 510ee151ec907da9fb6ac88b38cf7ef68a5c4af8 $
+ * $Id$
  *
  * Authors: Gildas Bazin <gbazin@videolan.org>
  *          Laurent Aimar <fenrir _AT_ videolan _DOT_ org>
@@ -57,7 +57,7 @@ VLC_API void spu_Destroy( spu_t * );
 
 /**
  * This function sends a subpicture to the spu_t core.
- * 
+ *
  * You cannot use the provided subpicture anymore. The spu_t core
  * will destroy it at its convenience.
  */
@@ -73,7 +73,7 @@ VLC_API void spu_PutSubpicture( spu_t *, subpicture_t * );
  *
  * The returned value if non NULL must be released by subpicture_Delete().
  */
-VLC_API subpicture_t * spu_Render( spu_t *, const vlc_fourcc_t *p_chroma_list, const video_format_t *p_fmt_dst, const video_format_t *p_fmt_src, mtime_t render_subtitle_date, mtime_t render_osd_date, bool ignore_osd );
+VLC_API subpicture_t * spu_Render( spu_t *, const vlc_fourcc_t *p_chroma_list, const video_format_t *p_fmt_dst, const video_format_t *p_fmt_src, vlc_tick_t render_subtitle_date, vlc_tick_t render_osd_date, bool ignore_osd );
 
 /**
  * It registers a new SPU channel.

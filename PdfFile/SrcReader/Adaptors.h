@@ -53,6 +53,7 @@
 
 class GlobalParamsAdaptor : public GlobalParams
 {
+private:
     std::wstring m_wsTempFolder;
     std::wstring m_wsCMapFolder;
 
@@ -60,6 +61,7 @@ class GlobalParamsAdaptor : public GlobalParams
     DWORD m_nCMapDataLength;
 
     bool m_bDrawFormField;
+	std::vector<double> m_arrRedactBox;
 
 public:
     GlobalParamsAdaptor(const char *filename) : GlobalParams(filename)
@@ -92,6 +94,10 @@ public:
 
 	void setDrawFormField(bool bDrawFormField) { m_bDrawFormField = bDrawFormField; }
     bool getDrawFormField() { return m_bDrawFormField; }
+
+	void AddRedact(const std::vector<double>& arrRedactBox);
+	bool InRedact(double dX, double dY);
+	void ClearRedact();
 private:
 
 	void AddNameToUnicode(const char* sFile);

@@ -1,5 +1,7 @@
 #include "PathObject.h"
+
 #include "src/Utils/Utils.h"
+#include "../Types/DrawParam.h"
 
 namespace OFD
 {
@@ -132,7 +134,7 @@ void CPathObject::AddElement(const IPathElement* pElement)
 		m_arElements.push_back(pElement);
 }
 
-void CPathObject::Draw(IRenderer* pRenderer, const CCommonData& oCommonData) const
+void CPathObject::Draw(IRenderer* pRenderer, const CCommonData& oCommonData, EPageType ePageType) const
 {
 	if (nullptr == pRenderer || m_arElements.empty())
 		return;
@@ -168,38 +170,46 @@ void CPathObject::Draw(IRenderer* pRenderer, const CCommonData& oCommonData) con
 		}
 	}
 
+	const CRes* pPublicRes{oCommonData.GetPublicRes()};
+	std::vector<const CDrawParam*> arDrawParams{pPublicRes->GetDrawParams()};
+
 	if (m_bFill)
 	{
 		pRenderer->put_BrushType(c_BrushTypeSolid);
 
 		if (nullptr != m_pFillColor)
 		{
-			pRenderer->put_BrushColor1(m_pFillColor->ToInt(oCommonData.GetPublicRes()));
+			pRenderer->put_BrushColor1(m_pFillColor->ToInt(pPublicRes));
 			pRenderer->put_BrushAlpha1(m_pFillColor->GetAlpha());
 		}
 		else
 		{
 			pRenderer->put_BrushColor1(0);
-			pRenderer->put_BrushAlpha1(0xff);
+
+			if (EPageType::TemplatePage == ePageType)
+				for (const CDrawParam* pDrawParam : arDrawParams)
+					if (pDrawParam->ApplyFillColor(pRenderer, pPublicRes))
+						break;
 		}
 	}
 	else
 		pRenderer->put_BrushType(c_BrushTypeNotSet);
 
-
 	if(m_bStroke)
 	{
-		pRenderer->put_PenSize(m_dLineWidth);
-
 		if (nullptr != m_pStrokeColor)
 		{
-			pRenderer->put_PenColor(m_pStrokeColor->ToInt(oCommonData.GetPublicRes()));
+			pRenderer->put_PenColor(m_pStrokeColor->ToInt(pPublicRes));
 			pRenderer->put_PenAlpha(m_pStrokeColor->GetAlpha());
 		}
 		else
 		{
 			pRenderer->put_PenColor(0);
-			pRenderer->put_PenAlpha(0xff);
+
+			if (EPageType::TemplatePage == ePageType)
+				for (const CDrawParam* pDrawParam : arDrawParams)
+					if (pDrawParam->ApplyStrokeColor(pRenderer, pPublicRes))
+						break;
 		}
 	}
 	else

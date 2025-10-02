@@ -119,9 +119,12 @@ namespace PPTX
 			return smart_ptr<OOX::File>(new OOX::CChartDrawing(pMain, OOX::CPath(), filename));
 		else if (relation.Type() == OOX::Presentation::FileTypes::CommentAuthors)
 			return smart_ptr<OOX::File>(new PPTX::Authors(pMain, filename, map));
+		else if (relation.Type() == OOX::Presentation::FileTypes::ModernCommentAuthors)
+			return smart_ptr<OOX::File>(new PPTX::Authors(pMain, filename, map));
 		else if (relation.Type() == OOX::Presentation::FileTypes::SlideComments)
 			return smart_ptr<OOX::File>(new PPTX::Comments(pMain, filename, map));
-
+		else if (relation.Type() == OOX::Presentation::FileTypes::ModernComments)
+			return smart_ptr<OOX::File>(new PPTX::Comments(pMain, filename, map));
 		else if (relation.Type() == OOX::FileTypes::Chart)
 			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartFile(pMain, filename, filename));
 		else if (relation.Type() == OOX::FileTypes::ChartEx)

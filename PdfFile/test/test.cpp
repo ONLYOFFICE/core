@@ -294,9 +294,15 @@ TEST_F(CPdfFileTest, PdfToPdf)
 	LoadFromFile();
 	pdfFile->CreatePdf();
 
+	double dPageDpiX, dPageDpiY, dW, dH;
 	for (int i = 0; i < pdfFile->GetPagesCount(); i++)
 	{
 		pdfFile->NewPage();
+
+		pdfFile->GetPageInfo(i, &dW, &dH, &dPageDpiX, &dPageDpiY);
+		pdfFile->put_Width( dW / dPageDpiX * 25.4);
+		pdfFile->put_Height(dH / dPageDpiY * 25.4);
+
 		pdfFile->DrawPageOnRenderer(pdfFile, i, NULL);
 	}
 

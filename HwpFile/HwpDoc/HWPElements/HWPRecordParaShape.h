@@ -77,7 +77,7 @@ class CHWPRecordParaShape : public CHWPRecord
 	void RecursiveParaShape(CXMLReader& oReader);
 public:
 	CHWPRecordParaShape(CHWPDocInfo& oDocInfo, int nTagNum, int nLevel, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
-	CHWPRecordParaShape(CHWPDocInfo& oDocInfo, CXMLReader& oReader, int nVersion);
+	CHWPRecordParaShape(CHWPDocInfo& oDocInfo, CXMLReader& oReader, EHanType eType);
 
 	EHorizontalAlign GetHorizantalAlign() const;
 	EVerticalAlign GetVerticalAlign() const;

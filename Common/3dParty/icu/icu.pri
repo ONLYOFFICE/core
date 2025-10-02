@@ -4,10 +4,18 @@ core_windows {
     exists($$PWD/$$CORE_BUILDS_PLATFORM_PREFIX/icu) {
         INCLUDEPATH += $$PWD/$$CORE_BUILDS_PLATFORM_PREFIX/icu/include
     } else {
-        INCLUDEPATH += $$PWD/icu/include
+        build_xp {
+            INCLUDEPATH += $$PWD/icu58/include
+        } else {
+            INCLUDEPATH += $$PWD/icu/include
+        }
     }
 
-    LIBS        += -L$$PWD/$$CORE_BUILDS_PLATFORM_PREFIX/build -licuuc
+    ICU_LIBS_PATH_WIN = $$PWD/$$CORE_BUILDS_PLATFORM_PREFIX/build
+    build_xp {
+        ICU_LIBS_PATH_WIN = $$ICU_LIBS_PATH_WIN/xp
+    }
+    LIBS        += -L$$ICU_LIBS_PATH_WIN -licuuc
 }
 
 core_linux {

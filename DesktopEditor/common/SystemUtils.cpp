@@ -29,9 +29,9 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#include <stdlib.h>
 #include "SystemUtils.h"
 #include "Directory.h"
+#include <stdlib.h>
 
 #ifdef _WIN32
 #include "ShlObj.h"
@@ -41,15 +41,74 @@
 #ifdef CreateFile
 #undef CreateFile
 #endif
+#ifdef GetSystemDirectory
+#undef GetSystemDirectory
+#endif
+#endif
+
+#if defined(_MAC) && !defined(_IOS)
+#include <pwd.h>
+#include <unistd.h>
+
+#if 0
+#include <CoreFoundation/CoreFoundation.h>
+std::wstring getDirectoryPathMac(const NSSystemUtils::SystemDirectoryType& type)
+{
+	// Определяем тип директории
+	CFSearchPathDirectory searchPath = kCFDocumentDirectory;
+	switch (type) {
+	case 1:
+		searchPath = kCFDownloadsDirectory;
+		break;
+	case 2:
+		searchPath = kCFDesktopDirectory;
+		break;
+	default:
+		break;
+	}
+
+	// Получаем массив путей
+	CFArrayRef pathsArray = CFCopySearchPathForDirectoriesInDomains(searchPath, kCFUserDomainMask, true);
+
+	std::wstring result = L"";
+	if (pathsArray && CFArrayGetCount(pathsArray) > 0)
+	{
+		CFStringRef pathString = (CFStringRef)CFArrayGetValueAtIndex(pathsArray, 0);
+
+		if (pathString)
+		{
+			CFIndex length = CFStringGetMaximumSizeForEncoding(CFStringGetLength(pathString), kCFStringEncodingUTF8) + 1;
+			char* buffer = new char[length];
+			if (CFStringGetCString(pathString, buffer, length, kCFStringEncodingUTF8))
+			{
+				std::string resultA = std::string(buffer);
+				result = UTF8_TO_U(resultA);
+			}
+			delete[] buffer;
+		}
+	}
+
+	if (pathsArray)
+		CFRelease(pathsArray);
+
+	return result;
+}
+#endif
+
+#endif
+
+#if defined(_LINUX) && !defined(_MAC) && !defined(__ANDROID__)
+#include <pwd.h>
+#include <unistd.h>
 #endif
 
 namespace NSSystemUtils
 {
-    std::string GetEnvVariableA(const std::wstring& strName)
-    {
-        std::wstring sTmp = GetEnvVariable(strName);
-        return U_TO_UTF8(sTmp);
-    }
+	std::string GetEnvVariableA(const std::wstring& strName)
+	{
+		std::wstring sTmp = GetEnvVariable(strName);
+		return U_TO_UTF8(sTmp);
+	}
 
 	std::wstring GetEnvVariable(const std::wstring& strName)
 	{
@@ -78,50 +137,129 @@ namespace NSSystemUtils
 #endif
 	}
 
-    std::wstring GetAppDataDir()
-    {
-        std::wstring sBranding = GetBuildBranding();
-        std::wstring sAppDataPath;
+	std::wstring GetAppDataDir()
+	{
+		std::wstring sBranding = GetBuildBranding();
+		std::wstring sAppDataPath;
 
 #ifdef _WIN32
-        wchar_t sAppDataLocal[65535];
+		wchar_t sAppDataLocal[65535];
 
 		if (SUCCEEDED(SHGetFolderPathW(NULL, CSIDL_LOCAL_APPDATA, NULL, 0, sAppDataLocal)))
-        {
-            sAppDataPath = std::wstring(sAppDataLocal);
-        }
+		{
+			sAppDataPath = std::wstring(sAppDataLocal);
+		}
 #else
-        std::wstring sHomeDir = NSSystemUtils::GetEnvVariable(L"HOME");
+		std::wstring sHomeDir = NSSystemUtils::GetEnvVariable(L"HOME");
 
-        if (!sHomeDir.empty())
-        {
-            if (NSDirectory::Exists(sHomeDir + L"/.local/share"))
-                sHomeDir = sHomeDir + L"/.local/share";
-            else if (NSDirectory::Exists(sHomeDir + L"/.local"))
-                sHomeDir = sHomeDir + L"/.local";
-        }
+		if (!sHomeDir.empty())
+		{
+			if (NSDirectory::Exists(sHomeDir + L"/.local/share"))
+				sHomeDir = sHomeDir + L"/.local/share";
+			else if (NSDirectory::Exists(sHomeDir + L"/.local"))
+				sHomeDir = sHomeDir + L"/.local";
+		}
 
-        sAppDataPath = sHomeDir;
+		sAppDataPath = sHomeDir;
 #endif
 
-        if (!NSDirectory::Exists(sAppDataPath))
-            return L"";
+		if (!NSDirectory::Exists(sAppDataPath))
+			return L"";
 
-        sAppDataPath += (L"/" + sBranding);
+		sAppDataPath += (L"/" + sBranding);
 
-        if (!NSDirectory::Exists(sAppDataPath))
-            NSDirectory::CreateDirectory(sAppDataPath);
+		if (!NSDirectory::Exists(sAppDataPath))
+			NSDirectory::CreateDirectory(sAppDataPath);
 
-        return sAppDataPath;
-    }
+		return sAppDataPath;
+	}
 
-    std::wstring GetBuildBranding()
-    {
-        std::string sBrandingA = "ONLYOFFICE";
-    #ifdef BUILD_BRANDING_NAME
-        sBrandingA = BUILD_BRANDING_NAME;
-    #endif
+	std::wstring GetBuildBranding()
+	{
+		std::string sBrandingA = "ONLYOFFICE";
+#ifdef BUILD_BRANDING_NAME
+		sBrandingA = BUILD_BRANDING_NAME;
+#endif
 
-        return UTF8_TO_U(sBrandingA);
-    }
-}
+		return UTF8_TO_U(sBrandingA);
+	}
+
+	std::wstring GetSystemDirectory(const SystemDirectoryType& type)
+	{
+		std::wstring result = L"";
+		if (type == SystemDirectoryType::Undefined)
+			return result;
+
+#if defined(_WIN32) && !defined(WIN_XP_OR_VISTA)
+
+		KNOWNFOLDERID folderId = FOLDERID_Documents;
+		switch (type)
+		{
+		case SystemDirectoryType::Downloads:
+			folderId = FOLDERID_Downloads;
+			break;
+		case SystemDirectoryType::Desktop:
+			folderId = FOLDERID_Desktop;
+			break;
+		default:
+			break;
+		}
+
+		PWSTR dirPath = NULL;
+		HRESULT hr = SHGetKnownFolderPath(folderId, 0, NULL, &dirPath);
+
+		if (SUCCEEDED(hr))
+			result = std::wstring(dirPath);
+
+		if (dirPath)
+			CoTaskMemFree(dirPath);
+
+#endif
+
+#if defined(_LINUX) && !defined(_MAC) && !defined(__ANDROID__)
+
+		std::wstring home_dir = NSSystemUtils::GetEnvVariable(L"HOME");
+		result = home_dir + L"/Documents";
+
+		switch (type)
+		{
+		case SystemDirectoryType::Downloads:
+			result = home_dir + L"/Downloads";
+			break;
+		case SystemDirectoryType::Desktop:
+			result = home_dir + L"/Desktop";
+			break;
+		default:
+			break;
+		}
+
+#endif
+
+#if defined(_MAC) && !defined(_IOS)
+
+#if 0
+		result = getDirectoryPathMac(type);
+#endif
+		if (!result.empty())
+			return result;
+
+		std::wstring home_dir = NSSystemUtils::GetEnvVariable(L"HOME");
+		result = home_dir + L"/Documents";
+
+		switch (type)
+		{
+		case SystemDirectoryType::Downloads:
+			result = home_dir + L"/Downloads";
+			break;
+		case SystemDirectoryType::Desktop:
+			result = home_dir + L"/Desktop";
+			break;
+		default:
+			break;
+		}
+
+#endif
+
+		return result;
+	}
+} // namespace NSSystemUtils

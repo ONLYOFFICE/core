@@ -35,7 +35,7 @@
 #include "../Biff_structures/CellRef.h"
 #include "../Biff_structures/CellRangeRef.h"
 #include "../Biff_structures/BiffString.h"
-#include "../../../../OOXML/Base/Nullable.h"
+#include "../../../../../OOXML/Base/Nullable.h"
 
 namespace XLS
 {

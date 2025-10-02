@@ -100,6 +100,7 @@ namespace PPTX
 		smart_ptr<TableStyles>		tableStyles_;
 
 		smart_ptr<PPTX::Comments>	comments;
+		nullable_string ridModernComment;
 
 //--------------------------------------------------------------------------------------
 		void ApplyRels();

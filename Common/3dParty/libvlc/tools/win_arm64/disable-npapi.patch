@@ -1,0 +1,13 @@
+diff --git a/extras/package/win32/package.mak b/extras/package/win32/package.mak
+index 2045de887a..6707386df2 100644
+--- a/extras/package/win32/package.mak
++++ b/extras/package/win32/package.mak
+@@ -90,7 +90,7 @@ package-win-npapi: build-npapi
+ 	mkdir -p "$(win32_destdir)/sdk/activex/"
+ 	cp $(top_builddir)/npapi-vlc/activex/README.TXT $(top_builddir)/npapi-vlc/share/test/test.html $(win32_destdir)/sdk/activex/
+ 
+-package-win-strip: package-win-common package-win-npapi
++package-win-strip: package-win-common
+ 	mkdir -p "$(win32_debugdir)"/
+ 	find $(win32_destdir) -type f \( -name '*$(LIBEXT)' -or -name '*$(EXEEXT)' \) | while read i; \
+ 	do if test -n "$$i" ; then \

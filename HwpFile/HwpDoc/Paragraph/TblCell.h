@@ -22,9 +22,14 @@ class CTblCell
 	EVertAlign m_eVertAlign;
 
 	HWP_STRING m_sMergedColName;
+
+	void ReadFromHWPX(CXMLReader& oReader);
+	void ReadFromHWPML(CXMLReader& oReader);
+	void ReadCellMargin(CXMLReader& oReader, EHanType eType);
+	void ReadCell(CXMLReader& oReader, EHanType eType);
 public:
 	CTblCell(int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
-	CTblCell(CXMLReader& oReader, int nVersion);
+	CTblCell(CXMLReader& oReader, EHanType eType);
 
 	void SetVertAlign(EVertAlign eVertAlign);
 

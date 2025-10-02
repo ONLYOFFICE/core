@@ -73,12 +73,14 @@ public:
 	{
 		Unknown,
 		ReadOnly,
-		WriteNew,
-		WriteAppend
+		Split,
+		WriteAppend,
+		WriteNew
 	};
 
-	CPdfEditor(const std::wstring& _wsSrcFile, const std::wstring& _wsPassword, const std::wstring& _wsDstFile, CPdfReader* _pReader, CPdfWriter* _pWriter);
+	CPdfEditor(const std::wstring& _wsSrcFile, const std::wstring& _wsPassword, const std::wstring& _wsDstFile, CPdfReader* _pReader, CPdfWriter* _pWriter, Mode nMode = Mode::Unknown);
 
+	void SetMode(Mode nMode);
 	bool IncrementalUpdates();
 
 	int  GetError();
@@ -98,6 +100,8 @@ public:
 	void AddShapeXML(const std::string& sXML);
 	void EndMarkedContent();
 	bool IsBase14(const std::wstring& wsFontName, bool& bBold, bool& bItalic, std::wstring& wsFontPath);
+	void Redact(IAdvancedCommand* pCommand);
+	std::vector<double> WriteRedact(const std::vector<std::wstring>& arrID);
 
 	bool SplitPages(const int* arrPageIndex, unsigned int unLength);
 	void AfterSplitPages();
@@ -107,9 +111,19 @@ private:
 	void GetPageTree(XRef* xref, Object* pPagesRefObj, PdfWriter::CPageTree* pPageParent = NULL);
 	bool SplitPages(const int* arrPageIndex, unsigned int unLength, PDFDoc* _pDoc, int nStartRefID);
 
+	struct CRedactData
+	{
+		std::wstring sID;
+		std::vector<double> arrQuads;
+		LONG nLenRender;
+		BYTE* pRender;
+		bool bDraw = false;
+	};
+
 	std::wstring m_wsSrcFile;
 	std::wstring m_wsDstFile;
 	std::wstring m_wsPassword;
+	std::vector<CRedactData> m_arrRedact;
 	std::map<std::wstring, std::wstring> m_mFonts;
 	CObjectsManager m_mObjManager;
 

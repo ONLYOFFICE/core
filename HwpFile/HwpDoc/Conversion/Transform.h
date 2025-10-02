@@ -24,11 +24,9 @@ namespace Transform
 
 	inline std::wstring IntColorToHEX(int nColor)
 	{
-		std::wstringstream oSStream;
-
-		oSStream << std::uppercase << std::hex << std::setw(6) << std::setfill(L'0') << nColor;
-
-		return oSStream.str();
+		wchar_t buffer[7];
+		std::swprintf(buffer, sizeof(buffer) / sizeof(wchar_t), L"%06X", nColor & 0xFFFFFF);
+		return std::wstring(buffer);
 	}
 
 	inline short LineWidth2Pt(short shHWPThick)

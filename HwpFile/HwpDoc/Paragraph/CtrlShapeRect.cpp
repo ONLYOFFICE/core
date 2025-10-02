@@ -17,8 +17,18 @@ CCtrlShapeRect::CCtrlShapeRect(const HWP_STRING& sCtrlID, int nSize, CHWPStream&
 	: CCtrlGeneralShape(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
 
-CCtrlShapeRect::CCtrlShapeRect(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion)
-    : CCtrlGeneralShape(sCtrlID, oReader, nVersion)
+CCtrlShapeRect::CCtrlShapeRect(const HWP_STRING& sCtrlID, CXMLReader& oReader, EHanType eType)
+    : CCtrlGeneralShape(sCtrlID, oReader, eType)
+{
+	switch(eType)
+	{
+		case EHanType::HWPX:  ReadFromHWPX (oReader); return;
+		case EHanType::HWPML: ReadFromHWPML(oReader); return;
+		default: break;
+	}
+}
+
+void CCtrlShapeRect::ReadFromHWPX(CXMLReader &oReader)
 {
 	m_chCurv = (HWP_BYTE)oReader.GetAttributeInt("ratio");
 
@@ -45,14 +55,49 @@ CCtrlShapeRect::CCtrlShapeRect(const HWP_STRING& sCtrlID, CXMLReader& oReader, i
 		else if ("hc:pt3" == sNodeName)
 			READ_POINT(3)
 		else
-			CCtrlGeneralShape::ParseChildren(oReader, nVersion);
+			CCtrlGeneralShape::ParseChildren(oReader, EHanType::HWPX);
 	}
+	END_WHILE
+}
+
+void CCtrlShapeRect::ReadFromHWPML(CXMLReader &oReader)
+{
+	START_READ_ATTRIBUTES(oReader)
+	{
+		if ("Ratio" == sAttributeName)
+			m_chCurv = (HWP_BYTE)oReader.GetInt();
+		else if ("X0" == sAttributeName)
+			m_arPoints[0].m_nX = oReader.GetInt();
+		else if ("Y0" == sAttributeName)
+			m_arPoints[0].m_nY = oReader.GetInt();
+		else if ("X1" == sAttributeName)
+			m_arPoints[1].m_nX = oReader.GetInt();
+		else if ("Y1" == sAttributeName)
+			m_arPoints[1].m_nY = oReader.GetInt();
+		else if ("X2" == sAttributeName)
+			m_arPoints[2].m_nX = oReader.GetInt();
+		else if ("Y2" == sAttributeName)
+			m_arPoints[2].m_nY = oReader.GetInt();
+		else if ("X3" == sAttributeName)
+			m_arPoints[3].m_nX = oReader.GetInt();
+		else if ("Y3" == sAttributeName)
+			m_arPoints[3].m_nY = oReader.GetInt();
+	}
+	END_READ_ATTRIBUTES(oReader)
+
+	WHILE_READ_NEXT_NODE(oReader)
+		CCtrlGeneralShape::ParseChildren(oReader, EHanType::HWPML);
 	END_WHILE
 }
 
 EShapeType CCtrlShapeRect::GetShapeType() const
 {
 	return EShapeType::Rect;
+}
+
+void CCtrlShapeRect::GetPoints(TPoint (&arPoints)[4]) const
+{
+	memcpy(arPoints, m_arPoints, sizeof(TPoint) * 4);
 }
 
 int CCtrlShapeRect::ParseElement(CCtrlShapeRect& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)

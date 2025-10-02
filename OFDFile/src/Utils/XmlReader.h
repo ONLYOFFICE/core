@@ -20,6 +20,7 @@ public:
 	double GetDouble(bool bIsAttribute = false);
 	std::vector<std::string> GetArrayStrings(bool bIsAttribute = false);
 	std::vector<double> GetArrayDoubles(bool bIsAttribute = false);
+	std::vector<unsigned int> GetArrayUInteger(bool bIsAttribute = false);
 };
 }
 

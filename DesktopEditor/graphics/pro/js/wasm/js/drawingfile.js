@@ -160,6 +160,14 @@ CFile.prototype["UndoMergePages"] = function()
 {
 	return this._UndoMergePages();
 };
+CFile.prototype["RedactPage"] = function(pageIndex, arrRedactBox, arrayBufferFiller)
+{
+	return this._RedactPage(pageIndex, arrRedactBox, arrayBufferFiller);
+};
+CFile.prototype["UndoRedact"] = function()
+{
+	return this._UndoRedact();
+};
 
 // INFO DOCUMENT
 CFile.prototype.getInfo = function()

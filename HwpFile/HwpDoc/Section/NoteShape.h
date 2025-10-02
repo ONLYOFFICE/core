@@ -47,7 +47,7 @@ class CNoteShape
 	int m_nNoteLineColor;
 public:
 	CNoteShape();
-	CNoteShape(CXMLReader& oReader, int nVersion);
+	CNoteShape(CXMLReader& oReader, EHanType eType);
 
 	static CNoteShape* Parse(int nLevel, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 };

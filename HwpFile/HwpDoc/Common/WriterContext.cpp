@@ -13,28 +13,45 @@ CWriterContext::CWriterContext()
 
 CWriterContext::~CWriterContext()
 {
-	if (nullptr != m_pHWPFile)
-		delete m_pHWPFile;
-
-	if (nullptr != m_pHWPXFile)
-		delete m_pHWPXFile;
+	Clear();
 }
 
 void CWriterContext::Clear()
 {
+	switch (m_eType)
+	{
+		case EHanType::HWP:
+		{
+			if (nullptr == m_pHWPFile)
+				return;
+			
+			delete m_pHWPFile;
+			m_pHWPFile = nullptr;
+			break;
+		}
+		case EHanType::HWPX:
+		{
+			if (nullptr == m_pHWPXFile)
+				return;
+			
+			delete m_pHWPXFile;
+			m_pHWPXFile = nullptr;
+			break;
+		}
+		case EHanType::HWPML:
+		{
+			if(nullptr == m_pHWPMLFile)
+				return;
+			
+			delete m_pHWPMLFile;
+			m_pHWPMLFile = nullptr;
+			break;
+		}
+		default:
+			break;
+	}
+	
 	m_eType = EHanType::NONE;
-
-	if (nullptr != m_pHWPFile)
-	{
-		delete m_pHWPFile;
-		m_pHWPFile = nullptr;
-	}
-
-	if (nullptr != m_pHWPXFile)
-	{
-		delete m_pHWPXFile;
-		m_pHWPXFile = nullptr;
-	}
 }
 
 EHanType CWriterContext::GetType()
@@ -61,6 +78,13 @@ VECTOR<const CHWPSection*> CWriterContext::GetSections()
 
 			break;
 		}
+		case EHanType::HWPML:
+		{
+			if (nullptr != m_pHWPMLFile)
+				return m_pHWPMLFile->GetSections();
+			
+			break;
+		}
 	}
 
 	return VECTOR<const CHWPSection*>();
@@ -70,35 +94,34 @@ EHanType CWriterContext::DetectHancom(const HWP_STRING& sPathToFile)
 {
 	bool bDetected = false;
 
-	CHWPFile* pHwpTemp = new CHWPFile(sPathToFile);
-	if (nullptr != pHwpTemp)
-	{
-		if (pHwpTemp->Detect())
-		{
-			bDetected = true;
-			pHwpTemp->Close();
-		}
-
-		delete pHwpTemp;
+	#define DETECT(hwp_class)\
+	{\
+		hwp_class* pTemp = new hwp_class(sPathToFile);\
+		if (nullptr != pTemp)\
+		{\
+			if (pTemp->Detect())\
+			{\
+				bDetected = true;\
+				pTemp->Close();\
+			}\
+			delete pTemp;\
+		}\
 	}
+
+	DETECT(CHWPFile)
 
 	if (bDetected)
 		return EHanType::HWP;
 
-	CHWPXFile* pHwpxTemp = new CHWPXFile(sPathToFile);
-	if (nullptr != pHwpxTemp)
-	{
-		if (pHwpxTemp->Detect())
-		{
-			bDetected = true;
-			pHwpxTemp->Close();
-		}
-
-		delete pHwpxTemp;
-	}
+	DETECT(CHWPXFile)
 
 	if (bDetected)
 		return EHanType::HWPX;
+
+	DETECT(CHWPMLFile)
+
+	if(bDetected)
+		return EHanType::HWPML;
 
 	return EHanType::NONE;
 }
@@ -108,19 +131,11 @@ bool CWriterContext::Detect()
 	switch(m_eType)
 	{
 		case EHanType::HWP:
-		{
-			if (nullptr == m_pHWPFile)
-				return false;
-
-			return m_pHWPFile->Detect();
-		}
+			return (nullptr != m_pHWPFile) ? m_pHWPFile->Detect() : false;
 		case EHanType::HWPX:
-		{
-			if (nullptr == m_pHWPXFile)
-				return false;
-
-			return m_pHWPXFile->Detect();
-		}
+			return (nullptr != m_pHWPXFile) ? m_pHWPXFile->Detect() : false;
+		case EHanType::HWPML:
+			return (nullptr != m_pHWPMLFile) ? m_pHWPMLFile->Detect() : false;
 		case EHanType::NONE:
 			return false;
 	}
@@ -132,25 +147,25 @@ bool CWriterContext::Open(const HWP_STRING& sPathToFile, EHanType eHanType)
 
 	m_eType = eHanType;
 
+	#define OPEN(variable_name, class_name)\
+	variable_name = new class_name(sPathToFile);\
+	if (nullptr == variable_name)\
+		return false;\
+	return variable_name->Open()
+	
 	switch (m_eType)
 	{
 		case EHanType::HWP:
 		{
-			m_pHWPFile = new CHWPFile(sPathToFile);
-
-			if (nullptr == m_pHWPFile)
-				return false;
-
-			return m_pHWPFile->Open();
+			OPEN(m_pHWPFile, CHWPFile);
 		}
 		case EHanType::HWPX:
 		{
-			m_pHWPXFile = new CHWPXFile(sPathToFile);
-
-			if (nullptr == m_pHWPXFile)
-				return false;
-
-			return m_pHWPXFile->Open();
+			OPEN(m_pHWPXFile, CHWPXFile);
+		}
+		case EHanType::HWPML:
+		{
+			OPEN(m_pHWPMLFile, CHWPMLFile);
 		}
 		case EHanType::NONE:
 			break;
@@ -161,19 +176,24 @@ bool CWriterContext::Open(const HWP_STRING& sPathToFile, EHanType eHanType)
 
 void CWriterContext::Close()
 {
+	#define CLOSE(variable_name)\
+	if (nullptr != variable_name)\
+		variable_name->Close();\
+	break
+	
 	switch (m_eType)
 	{
 		case EHanType::HWP:
 		{
-			if (nullptr != m_pHWPFile)
-				m_pHWPFile->Close();
-			break;
+			CLOSE(m_pHWPFile);
 		}
 		case EHanType::HWPX:
 		{
-			if (nullptr != m_pHWPXFile)
-				m_pHWPXFile->Close();
-			break;
+			CLOSE(m_pHWPXFile);
+		}
+		case EHanType::HWPML:
+		{
+			CLOSE(m_pHWPMLFile);
 		}
 		case EHanType::NONE:
 			break;
@@ -198,7 +218,14 @@ const CHWPDocInfo* CWriterContext::GetDocInfo()
 
 			return m_pHWPXFile->GetDocInfo();
 		}
-		case EHanType::NONE:
+		case EHanType::HWPML:
+		{
+			if (nullptr == m_pHWPMLFile)
+				return nullptr;
+			
+			return m_pHWPMLFile->GetDocInfo();
+		}
+		default:
 			return nullptr;
 	}
 }
@@ -308,6 +335,11 @@ bool CWriterContext::GetBinBytes(const HWP_STRING& sId, CHWPStream& oBuffer, HWP
 			{
 				sFileName = NSFile::GetFileName(pBinData->GetPath());
 				return m_pHWPXFile->GetChildStream(pBinData->GetPath(), oBuffer);
+			}
+			case EHanType::HWPML:
+			{
+				sFileName = pBinData->GetItemID() + L'.' + pBinData->GetFormat();
+				return m_pHWPMLFile->GetBinData(pBinData->GetItemID(), oBuffer);
 			}
 			default:
 				break;

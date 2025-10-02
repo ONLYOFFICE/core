@@ -302,6 +302,7 @@ XRef::XRef(BaseStream *strA, GBool repair) {
   size = 0;
   last = -1;
   entries = NULL;
+  lastXRefPos = 0;
   lastStartxrefPos = 0;
   xrefTablePos = NULL;
   xrefTablePosLen = 0;
@@ -838,7 +839,8 @@ GBool XRef::readXRefStreamSection(Stream *xrefStr, int *w, int first, int n) {
       }
       gen = (gen << 8) + c;
     }
-    if (gen < 0 || gen > INT_MAX) {
+	// bug 76416: gen of a free object should be 65535, but here it is not
+	if (gen < 0 || gen > UINT_MAX) {
       return gFalse;
     }
     if (entries[i].offset == (GFileOffset)-1) {

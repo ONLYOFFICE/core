@@ -63,6 +63,8 @@ namespace PPTX
 			nullable<Bg>			bg;
 			SpTree					spTree;
 			nullable<Controls>		controls;
+
+			nullable_uint			creationId;
 			//custDataLst
 			//controls
 

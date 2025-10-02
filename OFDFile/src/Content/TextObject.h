@@ -58,7 +58,7 @@ public:
 	CTextObject(CXmlReader& oLiteReader);
 	~CTextObject();
 
-	void Draw(IRenderer* pRenderer, const CCommonData& oCommonData) const override;
+	void Draw(IRenderer* pRenderer, const CCommonData& oCommonData, EPageType ePageType) const override;
 };
 }
 

@@ -12,11 +12,16 @@ EArcType GetArcType(int nValue)
 	}
 }
 
-EArcType GetArcType(const HWP_STRING& sValue)
+EArcType GetArcType(const std::string& sValue, EHanType eType)
 {
-	IF_STRING_IN_ENUM(PIE, sValue, EArcType);
-	ELSE_IF_STRING_IN_ENUM(CHORD, sValue, EArcType);
-	ELSE_STRING_IN_ENUM(NORMAL, EArcType);
+	if (sValue.empty() || GetValueName(EValue::Normal, eType) == sValue)
+		return EArcType::NORMAL;
+	if (GetValueName(EValue::Pie, eType) == sValue)
+		return EArcType::PIE;
+	if (GetValueName(EValue::Chord, eType) == sValue)
+		return EArcType::CHORD;
+
+	return EArcType::NORMAL;
 }
 
 CCtrlShapeEllipse::CCtrlShapeEllipse()
@@ -34,8 +39,18 @@ CCtrlShapeEllipse::CCtrlShapeEllipse(const HWP_STRING& sCtrlID, int nSize, CHWPS
 	: CCtrlGeneralShape(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
 
-CCtrlShapeEllipse::CCtrlShapeEllipse(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion)
-    : CCtrlGeneralShape(sCtrlID, oReader, nVersion)
+CCtrlShapeEllipse::CCtrlShapeEllipse(const HWP_STRING& sCtrlID, CXMLReader& oReader, EHanType eType)
+    : CCtrlGeneralShape(sCtrlID, oReader, eType)
+{
+	switch(eType)
+	{
+		case EHanType::HWPX:  ReadFromHWPX (oReader); return;
+		case EHanType::HWPML: ReadFromHWPML(oReader); return;
+		default: break;
+	}
+}
+
+void CCtrlShapeEllipse::ReadFromHWPX(CXMLReader &oReader)
 {
 	START_READ_ATTRIBUTES(oReader)
 	{
@@ -44,7 +59,7 @@ CCtrlShapeEllipse::CCtrlShapeEllipse(const HWP_STRING& sCtrlID, CXMLReader& oRea
 		else if ("hasArcPr" == sAttributeName)
 			m_bHasArcProperty = oReader.GetBool();
 		else if ("arcType" == sAttributeName)
-			m_eArcType = GetArcType(oReader.GetText());
+			m_eArcType = GetArcType(oReader.GetTextA(), EHanType::HWPX);
 	}
 	END_READ_ATTRIBUTES(oReader)
 
@@ -128,8 +143,54 @@ CCtrlShapeEllipse::CCtrlShapeEllipse(const HWP_STRING& sCtrlID, CXMLReader& oRea
 			END_READ_ATTRIBUTES(oReader)
 		}
 		else
-			CCtrlGeneralShape::ParseChildren(oReader, nVersion);
+			CCtrlGeneralShape::ParseChildren(oReader, EHanType::HWPX);
 	}
+	END_WHILE
+}
+
+void CCtrlShapeEllipse::ReadFromHWPML(CXMLReader &oReader)
+{
+	START_READ_ATTRIBUTES(oReader)
+	{
+		if ("IntervalDirty" == sAttributeName)
+			m_bIntervalDirty = oReader.GetBool();
+		else if ("HasArcProperty" == sAttributeName)
+			m_bHasArcProperty = oReader.GetBool();
+		else if ("ArcType" == sAttributeName)
+			m_eArcType = GetArcType(oReader.GetTextA(), EHanType::HWPML);
+		else if ("CenterX" == sAttributeName)
+			m_nCenterX = oReader.GetInt();
+		else if ("CenterY" == sAttributeName)
+			m_nCenterY = oReader.GetInt();
+		else if ("Axis1X" == sAttributeName)
+			m_nAxixX1 = oReader.GetInt();
+		else if ("Axis1Y" == sAttributeName)
+			m_nAxixY1 = oReader.GetInt();
+		else if ("Axis2X" == sAttributeName)
+			m_nAxixX2 = oReader.GetInt();
+		else if ("Axis2Y" == sAttributeName)
+			m_nAxixY2 = oReader.GetInt();
+		else if ("Start1X" == sAttributeName)
+			m_nStartX1 = oReader.GetInt();
+		else if ("Start1Y" == sAttributeName)
+			m_nStartY1 = oReader.GetInt();
+		else if ("End1X" == sAttributeName)
+			m_nEndX1 = oReader.GetInt();
+		else if ("End1Y" == sAttributeName)
+			m_nEndY1 = oReader.GetInt();
+		else if ("Start2X" == sAttributeName)
+			m_nStartX2 = oReader.GetInt();
+		else if ("Start2Y" == sAttributeName)
+			m_nStartY2 = oReader.GetInt();
+		else if ("End2X" == sAttributeName)
+			m_nEndX2 = oReader.GetInt();
+		else if ("End2Y" == sAttributeName)
+			m_nEndY2 = oReader.GetInt();
+	}
+	END_READ_ATTRIBUTES(oReader)
+
+	WHILE_READ_NEXT_NODE(oReader)
+		CCtrlGeneralShape::ParseChildren(oReader, EHanType::HWPML);
 	END_WHILE
 }
 

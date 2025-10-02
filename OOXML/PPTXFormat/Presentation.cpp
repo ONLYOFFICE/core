@@ -33,11 +33,6 @@
 #include "FileContainer.h"
 #include "FileTypes.h"
 
-#include "Presentation/EmbeddedFont.h"
-#include "Presentation/Kinsoku.h"
-#include "Presentation/NotesSz.h"
-#include "Presentation/PhotoAlbum.h"
-#include "Presentation/SldSz.h"
 #include "CommentAuthors.h"
 
 #include "Limit/Conformance.h"
@@ -68,118 +63,137 @@ namespace PPTX
 	}
 	void Presentation::read(const OOX::CPath& filename, FileMap& map)
 	{
-		XmlUtils::CXmlNode oNode;
-		oNode.FromXmlFile(filename.m_strFilename);
-
-		XmlMacroReadAttributeBase(oNode, L"autoCompressPictures", attrAutoCompressPictures);
-		XmlMacroReadAttributeBase(oNode, L"bookmarkIdSeed", attrBookmarkIdSeed);
-		XmlMacroReadAttributeBase(oNode, L"compatMode", attrCompatMode);
-		XmlMacroReadAttributeBase(oNode, L"conformance", attrConformance);
-		XmlMacroReadAttributeBase(oNode, L"embedTrueTypeFonts", attrEmbedTrueTypeFonts);
-		XmlMacroReadAttributeBase(oNode, L"firstSlideNum", attrFirstSlideNum);
-		XmlMacroReadAttributeBase(oNode, L"removePersonalInfoOnSave", attrRemovePersonalInfoOnSave);
-		XmlMacroReadAttributeBase(oNode, L"rtl", attrRtl);
-		XmlMacroReadAttributeBase(oNode, L"saveSubsetFonts", attrSaveSubsetFonts);
-		XmlMacroReadAttributeBase(oNode, L"serverZoom", attrServerZoom);
-		XmlMacroReadAttributeBase(oNode, L"showSpecialPlsOnTitleSld", attrShowSpecialPlsOnTitleSld);
-		XmlMacroReadAttributeBase(oNode, L"strictFirstAndLastChars", attrStrictFirstAndLastChars);
-
-		//custDataLst (Customer Data List)
-		//custShowLst (List of Custom Shows)
-		defaultTextStyle = oNode.ReadNode(_T("p:defaultTextStyle"));
-		if (defaultTextStyle.is_init())
-			defaultTextStyle->SetParentFilePointer(this);
-
 		embeddedFontLst.clear();
-		XmlUtils::CXmlNode oNodeEmbeddedFonts;
-		if (oNode.GetNode(_T("p:embeddedFontLst"), oNodeEmbeddedFonts))
-		{
-			XmlMacroLoadArray(oNodeEmbeddedFonts, _T("p:embeddedFont"), embeddedFontLst, nsPresentation::EmbeddedFont);
-
-			for (size_t i = 0; i < embeddedFontLst.size(); ++i)
-				embeddedFontLst[i].SetParentFilePointer(this);
-		}
-
 		handoutMasterIdLst.clear();
-		XmlUtils::CXmlNode oNodeHMList;
-		if (oNode.GetNode(_T("p:handoutMasterIdLst"), oNodeHMList))
-		{
-			XmlMacroLoadArray(oNodeHMList, _T("p:handoutMasterId"), handoutMasterIdLst, Logic::XmlId);
-
-			for (size_t i = 0; i < handoutMasterIdLst.size(); ++i)
-				handoutMasterIdLst[i].SetParentFilePointer(this);
-		}
-
-
-		kinsoku = oNode.ReadNode(_T("p:kinsoku"));
-		if (kinsoku.is_init())
-			kinsoku->SetParentFilePointer(this);
-
-		//modifyVerifier (Modification Verifier)
-		notesMasterIdLst.clear();
-		XmlUtils::CXmlNode oNodeMIDList;
-		if (oNode.GetNode(_T("p:notesMasterIdLst"), oNodeMIDList))
-		{
-			XmlMacroLoadArray(oNodeMIDList, _T("p:notesMasterId"), notesMasterIdLst, Logic::XmlId);
-
-			for (size_t i = 0; i < notesMasterIdLst.size(); ++i)
-				notesMasterIdLst[i].SetParentFilePointer(this);
-		}
-
-		notesSz = oNode.ReadNode(_T("p:notesSz"));
-		if (notesSz.is_init())
-			notesSz->SetParentFilePointer(this);
-
-		photoAlbum = oNode.ReadNode(_T("p:photoAlbum"));
-		if (photoAlbum.is_init())
-			photoAlbum->SetParentFilePointer(this);
-
 		sldIdLst.clear();
-		XmlUtils::CXmlNode oNode_sldId;
-		if (oNode.GetNode(_T("p:sldIdLst"), oNode_sldId))
-		{
-			XmlMacroLoadArray(oNode_sldId, _T("p:sldId"), sldIdLst, Logic::XmlId);
-
-			for (size_t i = 0; i < sldIdLst.size(); ++i)
-				sldIdLst[i].SetParentFilePointer(this);
-		}
-
 		sldMasterIdLst.clear();
-		XmlUtils::CXmlNode oNode_sldM_Id;
-		if (oNode.GetNode(_T("p:sldMasterIdLst"), oNode_sldM_Id))
+
+		XmlUtils::CXmlNode oNodeRoot;
+		oNodeRoot.FromXmlFile(filename.m_strFilename);
+
+		XmlMacroReadAttributeBase(oNodeRoot, L"autoCompressPictures", attrAutoCompressPictures);
+		XmlMacroReadAttributeBase(oNodeRoot, L"bookmarkIdSeed", attrBookmarkIdSeed);
+		XmlMacroReadAttributeBase(oNodeRoot, L"compatMode", attrCompatMode);
+		XmlMacroReadAttributeBase(oNodeRoot, L"conformance", attrConformance);
+		XmlMacroReadAttributeBase(oNodeRoot, L"embedTrueTypeFonts", attrEmbedTrueTypeFonts);
+		XmlMacroReadAttributeBase(oNodeRoot, L"firstSlideNum", attrFirstSlideNum);
+		XmlMacroReadAttributeBase(oNodeRoot, L"removePersonalInfoOnSave", attrRemovePersonalInfoOnSave);
+		XmlMacroReadAttributeBase(oNodeRoot, L"rtl", attrRtl);
+		XmlMacroReadAttributeBase(oNodeRoot, L"saveSubsetFonts", attrSaveSubsetFonts);
+		XmlMacroReadAttributeBase(oNodeRoot, L"serverZoom", attrServerZoom);
+		XmlMacroReadAttributeBase(oNodeRoot, L"showSpecialPlsOnTitleSld", attrShowSpecialPlsOnTitleSld);
+		XmlMacroReadAttributeBase(oNodeRoot, L"strictFirstAndLastChars", attrStrictFirstAndLastChars);
+
+		//smartTags (Smart Tags)
+		//modifyVerifier (Modification Verifier)
+
+		std::vector<XmlUtils::CXmlNode> oNodes;
+		if (oNodeRoot.GetNodes(L"*", oNodes))
 		{
-			XmlMacroLoadArray(oNode_sldM_Id, _T("p:sldMasterId"), sldMasterIdLst, Logic::XmlId);
-
-			for (size_t i = 0; i < sldMasterIdLst.size(); ++i)
-				sldMasterIdLst[i].SetParentFilePointer(this);
-		}
-
-		sldSz = oNode.ReadNode(_T("p:sldSz"));
-		if (sldSz.is_init())
-			sldSz->SetParentFilePointer(this);
-
-		XmlUtils::CXmlNode list = oNode.ReadNodeNoNS(_T("extLst"));
-		if (list.IsValid())
-		{
-			std::vector<XmlUtils::CXmlNode> oNodes;
-			if (list.GetNodes(_T("*"), oNodes))
+			for (size_t i = 0; i < oNodes.size(); ++i)
 			{
-				size_t nCount = oNodes.size();
-				for (size_t i = 0; i < nCount; ++i)
-				{
-					XmlUtils::CXmlNode& oNode = oNodes[i];
+				XmlUtils::CXmlNode& oNode = oNodes[i];
 
-					PPTX::Logic::Ext ext;
-					ext.fromXML(oNode);
-					if (ext.sectionLst.IsInit())
+				std::wstring strName = XmlUtils::GetNameNoNS(oNode.GetName());
+
+				if (L"custDataLst" == strName)
+				{
+					std::vector<XmlUtils::CXmlNode> oCustDataLstNodes;
+					if (oNode.GetNodes(L"custData", oCustDataLstNodes))
 					{
-						sectionLst = ext.sectionLst;
+						for (auto n : oCustDataLstNodes)
+						{
+							custDataLst.emplace_back();
+							XmlMacroReadAttributeBase(n, L"r:id", custDataLst.back());
+						}
+					}
+				}
+				else if (L"custShowLst" == strName)
+				{
+					custShowLst = oNode;
+					if (custShowLst.is_init()) custShowLst->SetParentFilePointer(this);
+				}
+				else if (L"defaultTextStyle" == strName)
+				{
+					defaultTextStyle = oNode;
+					if (defaultTextStyle.is_init()) defaultTextStyle->SetParentFilePointer(this);
+				}
+				else if (L"embeddedFontLst" == strName)
+				{
+					XmlMacroLoadArray(oNode, L"p:embeddedFont", embeddedFontLst, nsPresentation::EmbeddedFont);
+
+					for (size_t i = 0; i < embeddedFontLst.size(); ++i)
+						embeddedFontLst[i].SetParentFilePointer(this);
+				}
+				else if (L"handoutMasterIdLst" == strName)
+				{
+					XmlMacroLoadArray(oNode, L"p:handoutMasterId", handoutMasterIdLst, Logic::XmlId);
+
+					for (size_t i = 0; i < handoutMasterIdLst.size(); ++i)
+						handoutMasterIdLst[i].SetParentFilePointer(this);
+				}
+				else if (L"kinsoku" == strName)
+				{
+					kinsoku = oNode;
+					if (kinsoku.is_init()) kinsoku->SetParentFilePointer(this);
+				}
+				else if (L"notesMasterIdLst" == strName)
+				{
+					XmlMacroLoadArray(oNode, L"p:notesMasterId", notesMasterIdLst, Logic::XmlId);
+
+					for (size_t i = 0; i < notesMasterIdLst.size(); ++i)
+						notesMasterIdLst[i].SetParentFilePointer(this);
+				}
+				else if (L"notesSz" == strName)
+				{
+					notesSz = oNode;
+					if (notesSz.is_init()) notesSz->SetParentFilePointer(this);
+				}
+				else if (L"photoAlbum" == strName)
+				{
+					photoAlbum = oNode;
+					if (photoAlbum.is_init()) photoAlbum->SetParentFilePointer(this);
+				}
+				else if (L"sldIdLst" == strName)
+				{
+					XmlMacroLoadArray(oNode, L"p:sldId", sldIdLst, Logic::XmlId);
+
+					for (size_t i = 0; i < sldIdLst.size(); ++i)
+						sldIdLst[i].SetParentFilePointer(this);
+				}
+				else if (L"sldMasterIdLst" == strName)
+				{
+					XmlMacroLoadArray(oNode, L"p:sldMasterId", sldMasterIdLst, Logic::XmlId);
+
+					for (size_t i = 0; i < sldMasterIdLst.size(); ++i)
+						sldMasterIdLst[i].SetParentFilePointer(this);
+				}
+				else if (L"sldSz" == strName)
+				{
+					sldSz = oNode;
+					if (sldSz.is_init()) sldSz->SetParentFilePointer(this);
+				}
+				else if (L"extLst" == strName)
+				{
+					if (oNode.IsValid())
+					{
+						std::vector<XmlUtils::CXmlNode> oExtLstNodes;
+						if (oNode.GetNodes(L"*", oExtLstNodes))
+						{
+							for (auto n : oExtLstNodes)
+							{
+								PPTX::Logic::Ext ext;
+								ext.fromXML(n);
+								if (ext.sectionLst.IsInit())
+								{
+									sectionLst = ext.sectionLst;
+								}
+							}
+						}
 					}
 				}
 			}
 		}
-
-		//smartTags (Smart Tags)
 		Normalize();
 	}
 	void Presentation::write(const OOX::CPath& filename, const OOX::CPath& directory, OOX::CContentTypes& content)const
@@ -277,7 +291,7 @@ namespace PPTX
 			case 0:
 			{
 				defaultTextStyle = PPTX::Logic::TextListStyle();
-				defaultTextStyle->m_name = _T("p:defaultTextStyle");
+				defaultTextStyle->m_name = L"p:defaultTextStyle";
 				defaultTextStyle->fromPPTY(pReader);
 				break;
 			}
@@ -330,7 +344,10 @@ namespace PPTX
 			}break;
 			case 6:
 			{
-				commentAuthors = new PPTX::Authors(File::m_pMainDocument);
+				if (false == commentAuthors.IsInit())
+				{
+					commentAuthors = new PPTX::Authors(File::m_pMainDocument);
+				}
 				commentAuthors->fromPPTY(pReader);
 			}break;
 			case 7:
@@ -378,28 +395,28 @@ namespace PPTX
 
 	void Presentation::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 	{
-		pWriter->StartNode(_T("p:presentation"));
+		pWriter->StartNode(L"p:presentation");
 
 		pWriter->StartAttributes();
 
-		pWriter->WriteAttribute(_T("xmlns:a"), PPTX::g_Namespaces.a.m_strLink);
-		pWriter->WriteAttribute(_T("xmlns:r"), PPTX::g_Namespaces.r.m_strLink);
-		pWriter->WriteAttribute(_T("xmlns:p"), PPTX::g_Namespaces.p.m_strLink);
-		pWriter->WriteAttribute(_T("xmlns:m"), PPTX::g_Namespaces.m.m_strLink);
-		pWriter->WriteAttribute(_T("xmlns:w"), PPTX::g_Namespaces.w.m_strLink);
+		pWriter->WriteAttribute(L"xmlns:a", PPTX::g_Namespaces.a.m_strLink);
+		pWriter->WriteAttribute(L"xmlns:r", PPTX::g_Namespaces.r.m_strLink);
+		pWriter->WriteAttribute(L"xmlns:p", PPTX::g_Namespaces.p.m_strLink);
+		pWriter->WriteAttribute(L"xmlns:m", PPTX::g_Namespaces.m.m_strLink);
+		pWriter->WriteAttribute(L"xmlns:w", PPTX::g_Namespaces.w.m_strLink);
 
-		pWriter->WriteAttribute(_T("autoCompressPictures"), attrAutoCompressPictures);
-		pWriter->WriteAttribute(_T("bookmarkIdSeed"), attrBookmarkIdSeed);
-		pWriter->WriteAttribute(_T("compatMode"), attrCompatMode);
-		pWriter->WriteAttribute(_T("conformance"), attrConformance);
-		pWriter->WriteAttribute(_T("embedTrueTypeFonts"), attrEmbedTrueTypeFonts);
-		pWriter->WriteAttribute(_T("firstSlideNum"), attrFirstSlideNum);
-		pWriter->WriteAttribute(_T("removePersonalInfoOnSave"), attrRemovePersonalInfoOnSave);
-		pWriter->WriteAttribute(_T("rtl"), attrRtl);
-		pWriter->WriteAttribute(_T("saveSubsetFonts"), attrSaveSubsetFonts);
-		pWriter->WriteAttribute(_T("serverZoom"), attrServerZoom);
-		pWriter->WriteAttribute(_T("showSpecialPlsOnTitleSld"), attrShowSpecialPlsOnTitleSld);
-		pWriter->WriteAttribute(_T("strictFirstAndLastChars"), attrStrictFirstAndLastChars);
+		pWriter->WriteAttribute(L"autoCompressPictures", attrAutoCompressPictures);
+		pWriter->WriteAttribute(L"bookmarkIdSeed", attrBookmarkIdSeed);
+		pWriter->WriteAttribute(L"compatMode", attrCompatMode);
+		pWriter->WriteAttribute(L"conformance", attrConformance);
+		pWriter->WriteAttribute(L"embedTrueTypeFonts", attrEmbedTrueTypeFonts);
+		pWriter->WriteAttribute(L"firstSlideNum", attrFirstSlideNum);
+		pWriter->WriteAttribute(L"removePersonalInfoOnSave", attrRemovePersonalInfoOnSave);
+		pWriter->WriteAttribute(L"rtl", attrRtl);
+		pWriter->WriteAttribute(L"saveSubsetFonts", attrSaveSubsetFonts);
+		pWriter->WriteAttribute(L"serverZoom", attrServerZoom);
+		pWriter->WriteAttribute(L"showSpecialPlsOnTitleSld", attrShowSpecialPlsOnTitleSld);
+		pWriter->WriteAttribute(L"strictFirstAndLastChars", attrStrictFirstAndLastChars);
 
 		pWriter->EndAttributes();
 
@@ -413,6 +430,26 @@ namespace PPTX
 		pWriter->Write(notesSz);
 		pWriter->Write(photoAlbum);
 		pWriter->Write(kinsoku);
+
+		if (false == custDataLst.empty())
+		{
+			pWriter->StartNode(L"p:custDataLst");
+			pWriter->EndAttributes();
+
+			for (auto cust : custDataLst)
+			{
+				pWriter->StartNode(L"p:custData");
+				pWriter->StartAttributes();
+				pWriter->WriteAttribute(L"r:id", cust.ToString());
+
+				pWriter->EndAttributes();
+				pWriter->EndNode(L"p:custData");
+			}
+
+			pWriter->EndNode(L"p:custDataLst");
+		}
+		pWriter->Write(custShowLst);
+
 		pWriter->Write(defaultTextStyle);
 
 		std::vector<Logic::Ext> extLst;

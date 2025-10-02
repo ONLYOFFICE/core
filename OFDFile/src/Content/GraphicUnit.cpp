@@ -4,9 +4,7 @@
 namespace OFD
 {
 CGraphicUnit::CGraphicUnit(CXmlReader& oLiteReader)
-	: m_bVisible(true), m_unDrawParam(0), m_dLineWidth(0.353),
-	  m_eCap(ECap::Butt), m_eJoin(EJoin::Miter), m_dMiterLimit(4.234),
-	  m_dDashOffset(0.), m_uchAlpha(255)
+	: m_bVisible(true), m_unDrawParam(0), m_oPenSettings(oLiteReader)
 {
 	if (0 == oLiteReader.GetAttributesCount() || !oLiteReader.MoveToFirstAttribute())
 		return;
@@ -27,36 +25,6 @@ CGraphicUnit::CGraphicUnit(CXmlReader& oLiteReader)
 			m_oCTM.Read(oLiteReader.GetTextA());
 		else if (L"DrawParam" == wsAttributeName)
 			m_unDrawParam = oLiteReader.GetUInteger(true);
-		else if (L"LineWidth" == wsAttributeName)
-			m_dLineWidth = oLiteReader.GetDouble(true);
-		else if (L"Cap" == wsAttributeName)
-		{
-			const std::wstring wsValue{oLiteReader.GetText()};
-
-			if (L"Butt" == wsValue)
-				m_eCap = ECap::Butt;
-			else if (L"Round" == wsValue)
-				m_eCap = ECap::Round;
-			else if (L"Square" == wsValue)
-				m_eCap = ECap::Square;
-		}
-		else if (L"Join" == wsAttributeName)
-		{
-			const std::wstring wsValue{oLiteReader.GetText()};
-
-			if (L"Miter" == wsValue)
-				m_eJoin = EJoin::Miter;
-			else if (L"Round" == wsValue)
-				m_eJoin = EJoin::Round;
-			else if (L"Bevel" == wsValue)
-				m_eJoin = EJoin::Bevel;
-		}
-		else if (L"MiterLimit" == wsAttributeName)
-			m_dMiterLimit = oLiteReader.GetDouble(true);
-		else if (L"DashOffset" == wsAttributeName)
-			m_dDashOffset = oLiteReader.GetDouble(true);
-		else if (L"Alpha" == wsAttributeName)
-			m_uchAlpha = oLiteReader.GetUInteger(true);
 	} while (oLiteReader.MoveToNextAttribute());
 
 	oLiteReader.MoveToElement();
@@ -66,6 +34,8 @@ void CGraphicUnit::Apply(IRenderer* pRenderer, TMatrix& oOldTransform) const
 {
 	if (nullptr == pRenderer)
 		return;
+
+	m_oPenSettings.Apply(pRenderer);
 
 	pRenderer->GetTransform(&oOldTransform.m_dM11, &oOldTransform.m_dM12, &oOldTransform.m_dM21, &oOldTransform.m_dM22, &oOldTransform.m_dDx, &oOldTransform.m_dDy);
 

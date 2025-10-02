@@ -30,6 +30,7 @@ INCLUDEPATH += \
 
 HEADERS += \
 	OFDFile.h \
+	src/Annotation.h \
 	src/Content/ImageObject.h \
 	src/Content/PageBlock.h \
 	src/Content/PathObject.h \
@@ -52,6 +53,7 @@ HEADERS += \
 	src/Types/Font.h \
 	src/Types/MultiMedia.h \
 	src/Types/PageArea.h \
+	src/Types/PenSettings.h \
 	src/Types/Signature.h \
 	src/Types/TemplatePage.h \
 	src/Utils/Types.h \
@@ -60,6 +62,7 @@ HEADERS += \
 
 SOURCES += \
 	OFDFile.cpp \
+	src/Annotation.cpp \
 	src/Content/ImageObject.cpp \
 	src/Content/PageBlock.cpp \
 	src/Content/PathObject.cpp \
@@ -80,6 +83,7 @@ SOURCES += \
 	src/Types/Font.cpp \
 	src/Types/MultiMedia.cpp \
 	src/Types/PageArea.cpp \
+	src/Types/PenSettings.cpp \
 	src/Types/Signature.cpp \
 	src/Types/TemplatePage.cpp \
 	src/Utils/Types.cpp \

@@ -34,7 +34,7 @@
 
 namespace PPTX
 {
-	namespace nsPresentationPr
+	namespace nsPresentation
 	{
 		void Browse::fromXML(XmlUtils::CXmlNode& node)
 		{
@@ -88,5 +88,5 @@ namespace PPTX
 		void Browse::FillParentPointersForChilds()
 		{
 		}
-	} // namespace nsPresentationPr
+	} // namespace nsPresentation
 } // namespace PPTX

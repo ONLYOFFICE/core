@@ -1,4 +1,38 @@
-FROM registry.videolan.org/vlc-ubuntu-xenial:20181109145051
+FROM ubuntu:xenial-20180417
+
+RUN apt-get update && apt-get -y upgrade && \
+    apt-get install -y wget
+
+####################################
+# from vlc-ubuntu-xenial Dockerfile
+ENV PATH=$PATH:/usr/sbin
+
+RUN echo "deb http://archive.neon.kde.org/user xenial main" >> /etc/apt/sources.list.d/neon.list && \
+    apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E6D4736255751E5D && \
+    (apt-get update || :) && \
+    apt-get install --no-install-suggests --no-install-recommends -y \
+      ant autoconf automake autopoint bison build-essential flex g++ gettext \
+      git git-core libasound2-dev libavahi-client-dev libcdio-dev libdbus-1-dev \
+      libdirectfb-dev libegl1-mesa-dev libfreerdp-dev libfreetype6-dev libfribidi-dev \
+      libgles2-mesa-dev libgnutls28-dev libgtk2.0-dev libidn11-dev libjack-dev \
+      liblircclient-dev libltdl-dev liblua5.2-dev libmtp-dev libncursesw5-dev \
+      libpng-dev libpulse-dev libqt5svg5-dev libqt5x11extras5-dev librsvg2-dev \
+      libsecret-1-dev libtool libtool-bin libudev-dev libupnp-dev libv4l-dev \
+      libvdpau-dev libx11-dev libxcb-composite0-dev libxcb-keysyms1-dev \
+      libxcb-randr0-dev libxcb-shm0-dev libxcb-xfixes0-dev libxcb-xv0-dev libxcb1-dev \
+      libxext-dev libxi-dev libxinerama-dev libxml2-dev libxpm-dev libzvbi-dev \
+      locales lua5.2 make pkg-config qtbase5-dev qtbase5-private-dev ragel snapcraft \
+      vim xz-utils yasm zlib1g-dev libxkbcommon-x11-dev libvulkan-dev \
+    && \
+    apt-get clean -y && rm -rf /var/lib/apt/lists/* && \
+    locale-gen en_US.UTF-8 && \
+    /usr/sbin/update-locale LANG=en_US.UTF-8 && \
+    echo "export PATH=\$PATH:/usr/sbin" >> /etc/profile.d/vlc_env.sh
+
+RUN apt-get install -y wget
+
+ENV LANG=en_US.UTF-8
+####################################
 
 ARG CORES=8
 
@@ -68,20 +102,21 @@ CMD cd /vlc && \
     cd contrib && \
     mkdir -p native && \
     cd native && \
-    ../bootstrap --disable-disc --disable-net --disable-sout --disable-a52 --disable-asdcplib --disable-chromaprint --disable-gcrypt --disable-gme --disable-goom --disable-jpeg --disable-libarchive --disable-nfs --disable-png --disable-postproc --disable-sidplay2 --disable-dvbpsi && \
+    ../bootstrap --disable-disc --disable-net --disable-sout --disable-a52 --disable-asdcplib --disable-chromaprint --disable-gcrypt --disable-gme --disable-goom --disable-jpeg --disable-libarchive --disable-nfs --disable-png --disable-postproc --disable-sidplay2 --disable-dvbpsi --disable-aribb24 --disable-ass --disable-kate --disable-openjpeg --disable-SDL_image && \
 # on WSL2 based docker containers the ffi build may fail, so some lines in ffi configs need to be changed
     (make .ffi || (sed -i '/$(RECONF)/d' ../src/ffi/rules.mak && sed -i 's/mv $srcdir\/config.log/cp $srcdir\/config.log/' ffi/configure)) && \
 # build other contribs
     (make -j$CORES || make) && \
     cd /vlc && \
     mkdir -p build/linux_64 && \
-    ./configure --prefix=/vlc/build/linux_64 --disable-sout --disable-lua --disable-vlm --disable-addonmanagermodules --disable-dbus --disable-archive --disable-linsys --disable-nfs --disable-v4l2 --disable-vcd --disable-libcddb --disable-screen --disable-freerdp --disable-macosx-avfoundation --disable-asdcp --disable-dvbpsi --disable-gme --disable-sid --disable-mod --disable-mpc --disable-swscale --disable-postproc --disable-a52 --disable-png --disable-jpeg --disable-zvbi --disable-telx --disable-sdl-image --disable-svg --disable-svgdec --disable-chromaprint --disable-chromecast --disable-qt --disable-skins2 --disable-macosx --disable-sparkle --disable-ncurses --disable-goom --disable-projectm --disable-vsxu --disable-avahi --disable-udev --disable-mtp --disable-upnp --disable-microdns --disable-libxml2 --disable-libgcrypt --disable-gnutls --disable-secret --disable-kwallet --disable-vlc && \
+    ./configure --prefix=/vlc/build/linux_64 --disable-sout --disable-lua --disable-vlm --disable-addonmanagermodules --disable-dbus --disable-archive --disable-linsys --disable-nfs --disable-v4l2 --disable-vcd --disable-libcddb --disable-screen --disable-freerdp --disable-macosx-avfoundation --disable-asdcp --disable-dvbpsi --disable-gme --disable-sid --disable-mod --disable-mpc --disable-swscale --disable-postproc --disable-a52 --disable-png --disable-jpeg --disable-zvbi --disable-telx --disable-sdl-image --disable-svg --disable-svgdec --disable-chromaprint --disable-chromecast --disable-qt --disable-skins2 --disable-macosx --disable-sparkle --disable-ncurses --disable-goom --disable-projectm --disable-vsxu --disable-avahi --disable-udev --disable-mtp --disable-upnp --disable-microdns --disable-libxml2 --disable-libgcrypt --disable-gnutls --disable-secret --disable-kwallet --disable-vlc --disable-fontconfig --disable-freetype --disable-fribidi --disable-harfbuzz  && \
     make && \
     make -j$CORES install-strip && \
 # correct build files
     cd build/linux_64 && \
 # change rpaths
     echo "CHANGING RPATHS..." && \
+    chmod +x /vlc/change-rpaths.sh && \
     /vlc/change-rpaths.sh && \
 # copy libva libraries
     (for f in $(find /usr/lib/x86_64-linux-gnu/ -name 'libva*.so*'); do cp $f lib; done;) && \

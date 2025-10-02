@@ -20,7 +20,7 @@ class CLineSeg
 	bool m_bIsHeadingApplied;
 public:
 	CLineSeg(int nTagNum, int nLevel, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
-	CLineSeg(CXMLReader& oReader, int nVersion);
+	CLineSeg(CXMLReader& oReader);
 
 	int GetLineSpacing() const;
 };

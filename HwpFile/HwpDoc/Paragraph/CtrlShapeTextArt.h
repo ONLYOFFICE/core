@@ -23,12 +23,17 @@ class CCtrlShapeTextArt : public CCtrlGeneralShape
 	HWP_STRING m_sAlign;
 
 	std::vector<TPoint> m_arOutline;
+
+	void ReadFromHWPX(CXMLReader& oReader);
+	void ReadFromHWPML(CXMLReader& oReader);
+	void ReadTextArtShape(CXMLReader& oReader, EHanType eType);
+	void ReadOutlineData(CXMLReader& oReader, EHanType eType);
 public:
 	CCtrlShapeTextArt();
 	CCtrlShapeTextArt(const HWP_STRING& sCtrlID);
 	CCtrlShapeTextArt(const CCtrlGeneralShape& oShape);
 	CCtrlShapeTextArt(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
-	CCtrlShapeTextArt(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion);
+	CCtrlShapeTextArt(const HWP_STRING& sCtrlID, CXMLReader& oReader, EHanType eType);
 
 	EShapeType GetShapeType() const override;
 

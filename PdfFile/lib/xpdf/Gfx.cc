@@ -4965,7 +4965,6 @@ void Gfx::opBeginImage(Object args[], int numArgs) {
     // if we have the stream length, skip to end-of-stream and then
     // skip 'EI' in the original stream
     } else if (haveLength) {
-      while ((c1 = str->getChar()) != EOF) ;
       delete str;
       str = parser->getStream();
       c1 = str->getChar();

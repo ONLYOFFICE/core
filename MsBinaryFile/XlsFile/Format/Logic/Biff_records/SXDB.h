@@ -64,8 +64,8 @@ public:
 	short					cfdbdb = 0;
 	short					cfdbTot = 0;
 	unsigned short			crdbUsed = 0;
-	short					vsType = 0;
-	unsigned short			cchWho = 0;
+	short					vsType = 1;
+	unsigned short			cchWho = 0xFFFF;
 	XLUnicodeStringNoCch	rgb;
 
 };

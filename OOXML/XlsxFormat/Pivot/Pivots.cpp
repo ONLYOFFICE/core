@@ -160,6 +160,7 @@
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/SXVI.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/SXDI.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/SXDB.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/SXDBEx.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/SXLI.h"
 
 namespace OOX
@@ -4363,16 +4364,51 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 
 		return objectPtr;
 	}
-	XLS::BaseObjectPtr CPivotCacheDefinition::toXLS()
+	XLS::BaseObjectPtr CPivotCacheDefinition::toXLS(const _UINT32 &cacheId)
 	{
 		auto ptr = new XLS::PIVOTCACHE;
 		ptr->m_SXDB = writeAttributesXLS();
+		{
+			auto sxDbPtr = static_cast<XLS::SXDB*>(ptr->m_SXDB.get());
+			sxDbPtr->idstm = cacheId;
+		}
+		if(m_oCalculatedItems.IsInit())
+		{
+			auto Extptr = new XLS::SXDBEx;
+			ptr->m_SXDBEx = XLS::BaseObjectPtr(Extptr);
+			Extptr->cSxFormula = m_oCalculatedItems->m_arrItems.size();
+		}
 		return XLS::BaseObjectPtr(ptr);
 	}
 	XLS::BaseObjectPtr CPivotCacheDefinition::writeAttributesXLS()
 	{
 		auto ptr = new XLS::SXDB;
-
+		if(m_oRecordCount.IsInit() && m_oRecordCount->GetValue())
+		{
+			ptr->crdbdb = m_oRecordCount->GetValue();
+			ptr->fSaveData = true;
+		}
+		if(m_oInvalid.IsInit())
+			ptr->fInvalid = m_oInvalid.get();
+		if(m_oRefreshOnLoad.IsInit())
+			ptr->fRefreshOnLoad = m_oRefreshOnLoad.get();
+		if(m_oCacheFields.IsInit())
+			ptr->cfdbTot = m_oCacheFields->m_arrItems.size();
+		ptr->cfdbdb = ptr->cfdbTot;
+		ptr->crdbUsed = ptr->cfdbTot;
+		if(m_oCacheSource.IsInit() && m_oCacheSource->m_oType.IsInit())
+		{
+			if(m_oCacheSource->m_oType->GetValue() == SimpleTypes::Spreadsheet::ESourceCacheType::typeSourceWorksheet)
+				ptr->vsType = 0x0001;
+			else if(m_oCacheSource->m_oType->GetValue() == SimpleTypes::Spreadsheet::ESourceCacheType::typeSourceConsolidation)
+				ptr->vsType = 0x0004;
+			else if(m_oCacheSource->m_oType->GetValue() == SimpleTypes::Spreadsheet::ESourceCacheType::typeSourceExternal)
+				ptr->vsType = 0x0002;
+			else if(m_oCacheSource->m_oType->GetValue() == SimpleTypes::Spreadsheet::ESourceCacheType::typeSourceScenario)
+				ptr->vsType = 0x0010;
+		}
+		if(m_oRefreshedBy.IsInit())
+			ptr->rgb = m_oRefreshedBy.get();
 		return XLS::BaseObjectPtr(ptr);
 	}
     void CPivotCacheDefinition::fromBin(XLS::BaseObjectPtr& obj)

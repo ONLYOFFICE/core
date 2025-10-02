@@ -567,7 +567,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
             void fromBin(XLS::BaseObjectPtr& obj);
 			XLS::BaseObjectPtr toBin();
-			XLS::BaseObjectPtr toXLS();
+			XLS::BaseObjectPtr toXLS(const _UINT32 &cacheId = 0);
 			virtual EElementType getType () const
 			{
 				return et_x_PivotCacheDefinition;

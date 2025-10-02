@@ -113,7 +113,6 @@ SOURCES += \
 	../../../../raster/ImageFileFormatChecker.cpp \
 	../../../../raster/Metafile/MetaFile.cpp \
 	../../../../raster/PICT/PICFile.cpp \
-	../../../../raster/PICT/pic.cpp \
 	\
 	../../../ArrowHead.cpp \
 	../../../Brush.cpp \

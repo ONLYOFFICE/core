@@ -65,13 +65,13 @@ public:
     bool			fAcrossPageLay = false;
     unsigned char	cWrapPage = 0;
     bool			fEnableWizard = false;
-    bool			fEnableDrilldown = false;
+	bool			fEnableDrilldown = true;
     bool			fEnableFieldDialog = false;
     bool			fPreserveFormatting = false;
-    bool			fMergeLabels = false;
-    bool			fDisplayErrorString = false;
-    bool			fDisplayNullString = false;
-    bool			fSubtotalHiddenPageItems = false;
+	bool			fMergeLabels = true;
+	bool			fDisplayErrorString = true;
+	bool			fDisplayNullString = true;
+	bool			fSubtotalHiddenPageItems = true;
 
 	unsigned short	cchPageFieldStyle = 0xFFFF;
 	unsigned short	cchTableStyle = 0xFFFF;

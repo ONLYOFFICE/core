@@ -2111,8 +2111,6 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 				BYTE* pRender = oInfo.GetRender(nLen);
 				DrawAP(pAnnot, pRender, nLen);
 			}
-			else
-				pLineAnnot->SetAP();
 		}
 		else if (oInfo.IsTextMarkup())
 		{

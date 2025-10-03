@@ -1188,7 +1188,10 @@ void CBooleanOperations::TracePaths()
 				Segment tmp = GetNextSegment(prev.Inters->S);
 				if (tmp.IsEmpty()) break;
 				if (tmp.IsValid(Op))
+				{
 					s = tmp;
+					valid = true;
+				}
 			}
 
 			if (!valid && prev.Inters)
@@ -1419,7 +1422,7 @@ void CBooleanOperations::CreateNewPath(const std::vector<std::vector<int>>& adjM
 			break;
 
 		auto add_seg = [&](int x, int prev_x) {
-			for (size_t j = adjMatr[x].size() - 1; j >= 0; j--)
+			for (int j = adjMatr[x].size() - 1; j >= 0; j--)
 			{
 				int ver = adjMatr[x][j];
 				if (seg_visited[ver] || ver == prev_x)
@@ -1514,7 +1517,7 @@ void CBooleanOperations::CreateNewPath(const std::vector<std::vector<int>>& adjM
 						return j;
 					}
 				}
-				x = x + 1;
+				x = (x >= Curves1.size() - 1) ? 0 : x + 1;
 				prev_x = -1;
 				if (Curves1[x].Segment2.IsCurve)
 					Result.CurveTo(Curves1[x].Segment2.HI.X + Curves1[x].Segment2.P.X, Curves1[x].Segment2.HI.Y + Curves1[x].Segment2.P.Y,

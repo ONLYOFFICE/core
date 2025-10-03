@@ -2369,6 +2369,21 @@ CAnnotStamp::CAnnotStamp(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex, int 
 			}
 		}
 	}
+	else
+	{
+		m_dX1 = 0;
+		m_dY1 = 0;
+
+		m_dX2 = 0;
+		m_dY2 = 0;
+
+		m_dX3 = 0;
+		m_dY3 = 0;
+
+		m_dX4 = 0;
+		m_dY4 = 0;
+		return;
+	}
 	oAP.free(); oObj2.free(); oObj.free();
 
 	double formXMin, formYMin, formXMax, formYMax, x, y, sx, sy;

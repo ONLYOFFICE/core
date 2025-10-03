@@ -286,9 +286,6 @@ CFile.prototype["getLinks"] = function(pageIndex)
 // TEXT
 CFile.prototype["getGlyphs"] = function(pageIndex)
 {
-	let page = this.pages[pageIndex];
-	if (page.originIndex == undefined)
-		return [];
 	if (page.fonts.length > 0)
 	{
 		// waiting fonts
@@ -296,7 +293,7 @@ CFile.prototype["getGlyphs"] = function(pageIndex)
 	}
 
 	this.lockPageNumForFontsLoader(pageIndex, UpdateFontsSource.Page);
-	let res = this._getGlyphs(page.originIndex);
+	let res = this._getGlyphs(pageIndex);
 	// there is no need to delete the result; this buffer is used as a text buffer 
 	// for text commands on other pages. After receiving ALL text pages, 
 	// you need to call destroyTextInfo()

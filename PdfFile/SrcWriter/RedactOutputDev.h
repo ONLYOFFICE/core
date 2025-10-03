@@ -204,6 +204,7 @@ namespace PdfWriter
 		void UpdateTransform();
 		void AddClip(GfxState* pGState, GfxRedactState* pState, int nIndex);
 		void DoStateOp();
+		bool SAT(const std::vector<CPoint>& vXObject);
 
 		XRef* m_pXref;
 		std::vector<double> m_arrQuadPoints;

@@ -703,6 +703,64 @@ void RedactOutputDev::type3D1(GfxState *pGState, double wx, double wy, double ll
 
 }
 //----- form XObjects
+void projectPolygon(const std::vector<CPoint>& polygon, const CPoint& axis, double& min, double& max)
+{
+	min = std::numeric_limits<double>::max();
+	max = std::numeric_limits<double>::lowest();
+
+	for (const auto& point : polygon)
+	{
+		double projection = (point.x * axis.x + point.y * axis.y) / (axis.x * axis.x + axis.y * axis.y);
+		projection *= (axis.x * axis.x + axis.y * axis.y);
+
+		if (projection < min) min = projection;
+		if (projection > max) max = projection;
+	}
+}
+bool RedactOutputDev::SAT(const std::vector<CPoint>& poly2)
+{
+	for (int j = 0; j < m_arrQuadPoints.size(); j += 4)
+	{
+		std::vector<CPoint> poly1 =
+		{
+			CPoint(m_arrQuadPoints[j + 0], m_arrQuadPoints[j + 1]),
+			CPoint(m_arrQuadPoints[j + 2], m_arrQuadPoints[j + 1]),
+			CPoint(m_arrQuadPoints[j + 2], m_arrQuadPoints[j + 3]),
+			CPoint(m_arrQuadPoints[j + 0], m_arrQuadPoints[j + 3])
+		};
+
+		std::vector<CPoint> axes;
+		for (size_t i = 0; i < poly1.size(); i++)
+		{
+			CPoint p1 = poly1[i];
+			CPoint p2 = poly1[(i + 1) % poly1.size()];
+			CPoint edge(p2.x - p1.x, p2.y - p1.y);
+			CPoint normal(-edge.y, edge.x); // Перпендикуляр к ребру
+			axes.push_back(normal);
+		}
+
+		for (size_t i = 0; i < poly2.size(); i++)
+		{
+			CPoint p1 = poly2[i];
+			CPoint p2 = poly2[(i + 1) % poly2.size()];
+			CPoint edge(p2.x - p1.x, p2.y - p1.y);
+			CPoint normal(-edge.y, edge.x); // Перпендикуляр к ребру
+			axes.push_back(normal);
+		}
+
+		// Проверяем все оси на разделение
+		for (const auto& axis : axes)
+		{
+			double min1, max1, min2, max2;
+			projectPolygon(poly1, axis, min1, max1);
+			projectPolygon(poly2, axis, min2, max2);
+
+			if (max1 < min2 || max2 < min1)
+				return false; // Найдена разделяющая ось
+		}
+	}
+	return true; // Пересекаются
+}
 void RedactOutputDev::drawForm(GfxState *pGState, Ref id, const char* name)
 {
 	m_pRenderer->m_oCommandManager.Flush();
@@ -719,41 +777,62 @@ void RedactOutputDev::drawForm(GfxState *pGState, Ref id, const char* name)
 		return;
 	}
 
-	// TODO нужно учитывать Matrix у формы
 	double dXmin = 0, dYmin = 0, dXmax = 0, dYmax = 0;
-	Object oBBox;
-	if (oForm.streamGetDict()->lookup("BBox", &oBBox)->isArray() && oBBox.arrayGetLength() == 4)
+	double dX1 = 0, dY1 = 0, dX2 = 0, dY2 = 1, dX3 = 1, dY3 = 1, dX4 = 1, dY4 = 0;
+	Object oObj;
+	if (oForm.streamGetDict()->lookup("BBox", &oObj)->isArray() && oObj.arrayGetLength() == 4)
 	{
 		Object oNum;
-		if (oBBox.arrayGet(0, &oNum)->isNum())
+		if (oObj.arrayGet(0, &oNum)->isNum())
 			dXmin = oNum.getNum();
 		oNum.free();
-		if (oBBox.arrayGet(1, &oNum)->isNum())
+		if (oObj.arrayGet(1, &oNum)->isNum())
 			dYmin = oNum.getNum();
 		oNum.free();
-		if (oBBox.arrayGet(2, &oNum)->isNum())
+		if (oObj.arrayGet(2, &oNum)->isNum())
 			dXmax = oNum.getNum();
 		oNum.free();
-		if (oBBox.arrayGet(3, &oNum)->isNum())
+		if (oObj.arrayGet(3, &oNum)->isNum())
 			dYmax = oNum.getNum();
-		oNum.free();
+		oNum.free(); oObj.free();
 
-		Transform(m_arrMatrix, dXmin, dYmin, &dXmin, &dYmin);
-		Transform(m_arrMatrix, dXmax, dYmax, &dXmax, &dYmax);
+		dX1 = dXmin, dY1 = dYmin;
+		dX2 = dXmin, dY2 = dYmax;
+		dX3 = dXmax, dY3 = dYmax;
+		dX4 = dXmax, dY4 = dYmin;
+
+		double oMatrix[6] = { 1, 0, 0, 1, 0, 0 };
+		if (oForm.streamGetDict()->lookup("Matrix", &oObj)->isArray() && oObj.arrayGetLength() == 6)
+		{
+			Object oObj2;
+			for (int i = 0; i < 6; ++i)
+			{
+				oMatrix[i] = oObj.arrayGet(i, &oObj2)->getNum();
+				oObj2.free();
+			}
+		}
+
+		Transform(oMatrix, dX1, dY1, &dX1, &dY1);
+		Transform(oMatrix, dX2, dY2, &dX2, &dY2);
+		Transform(oMatrix, dX3, dY3, &dX3, &dY3);
+		Transform(oMatrix, dX4, dY4, &dX4, &dY4);
+
+		Transform(m_arrMatrix, dX1, dY1, &dX1, &dY1);
+		Transform(m_arrMatrix, dX2, dY2, &dX2, &dY2);
+		Transform(m_arrMatrix, dX3, dY3, &dX3, &dY3);
+		Transform(m_arrMatrix, dX4, dY4, &dX4, &dY4);
 	}
-	oBBox.free();
+	oObj.free();
 
-	for (int i = 0; i < m_arrQuadPoints.size(); i += 4)
+	std::vector<CPoint> poly2 =
 	{
-		double xMin = m_arrQuadPoints[i + 0];
-		double yMin = m_arrQuadPoints[i + 1];
-		double xMax = m_arrQuadPoints[i + 2];
-		double yMax = m_arrQuadPoints[i + 3];
-
-		if (!(dXmax < xMin || dXmin > xMax || dYmax < yMin || dYmin > yMax))
-			return;
-	}
-	oForm.free();
+		CPoint(dX1, dY1),
+		CPoint(dX2, dY2),
+		CPoint(dX3, dY3),
+		CPoint(dX4, dY4)
+	};
+	if (SAT(poly2))
+		return;
 
 	m_pPage->GrSave();
 	UpdateTransform();
@@ -770,20 +849,21 @@ void RedactOutputDev::drawImage(GfxState *pGState, Ref id, const char* name)
 
 	// TODO пока что исключается всё изображение
 
-	double dXmin = 0, dYmin = 0, dXmax = 1, dYmax = 1;
-	Transform(m_arrMatrix, dXmin, dYmin, &dXmin, &dYmin);
-	Transform(m_arrMatrix, dXmax, dYmax, &dXmax, &dYmax);
+	double dX1 = 0, dY1 = 0, dX2 = 0, dY2 = 1, dX3 = 1, dY3 = 1, dX4 = 1, dY4 = 0;
+	Transform(m_arrMatrix, dX1, dY1, &dX1, &dY1);
+	Transform(m_arrMatrix, dX2, dY2, &dX2, &dY2);
+	Transform(m_arrMatrix, dX3, dY3, &dX3, &dY3);
+	Transform(m_arrMatrix, dX4, dY4, &dX4, &dY4);
 
-	for (int i = 0; i < m_arrQuadPoints.size(); i += 4)
+	std::vector<CPoint> poly2 =
 	{
-		double xMin = m_arrQuadPoints[i + 0];
-		double yMin = m_arrQuadPoints[i + 1];
-		double xMax = m_arrQuadPoints[i + 2];
-		double yMax = m_arrQuadPoints[i + 3];
-
-		if (!(dXmax < xMin || dXmin > xMax || dYmax < yMin || dYmin > yMax))
-			return;
-	}
+		CPoint(dX1, dY1),
+		CPoint(dX2, dY2),
+		CPoint(dX3, dY3),
+		CPoint(dX4, dY4)
+	};
+	if (SAT(poly2))
+		return;
 
 	m_pPage->GrSave();
 	UpdateTransform();
@@ -1079,7 +1159,7 @@ void RedactOutputDev::DoPathRedact(GfxState* pGState, GfxPath* pPath, double* pC
 					++nCurPointIndex;
 				}
 			}
-			if (pSubpath->isClosed())
+			// if (pSubpath->isClosed()) Принудительное замыкание фигур для CGraphicsPath
 				oPath.CloseFigure();
 		}
 

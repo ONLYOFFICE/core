@@ -123,7 +123,7 @@ namespace PdfReader
 		{
 			return true;
 		}
-		virtual  GBool usePatchMeshFills()
+		virtual GBool usePatchMeshFills()
 		{
 			return true;
 		}
@@ -139,7 +139,7 @@ namespace PdfReader
 		{
 			return true;
 		}
-		virtual GBool  useSimpleTransparentGroup()
+		virtual GBool useSimpleTransparentGroup()
 		{
 			return true;
 		}

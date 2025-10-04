@@ -1450,7 +1450,7 @@ bool COfficeFileFormatChecker::isHwpxFile(const std::wstring &fileName)
 	
 	if (19 <= unSize && NULL != strstr((char *)pBuffer, hwpxFormatLine))
 	{
-		nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_HWPML;
+		nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_HWPX;
 		bResult = true;
 	}
 

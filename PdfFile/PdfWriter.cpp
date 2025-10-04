@@ -168,6 +168,8 @@ CPdfWriter::CPdfWriter(NSFonts::IApplicationFonts* pAppFonts, bool isPDFA, IRend
 	m_pRenderer = pRenderer;
 	m_bNeedAddHelvetica = true;
 	m_wsTempDirectory = wsTempDirectory;
+	m_pShading = NULL;
+	m_pShadingExtGrState = NULL;
 
 	m_pDocument = new PdfWriter::CDocument();
 
@@ -903,6 +905,17 @@ HRESULT CPdfWriter::DrawPath(NSFonts::IApplicationFonts* pAppFonts, const std::w
 		UpdateBrush(pAppFonts, wsTempDirectory);
 	}
 
+	if (!m_arrRedact.empty())
+	{
+		PdfWriter::CMatrix* pMatrix = m_pPage->GetTransform();
+		m_oPath.Redact(pMatrix, m_arrRedact, m_pPage, bStroke, bFill, bEoFill, m_pShading, m_pShadingExtGrState);
+
+		m_pPage->GrRestore();
+		if (!sTextureTmpPath.empty())
+			m_oBrush.SetTexturePath(sTextureOldPath);
+		return S_OK;
+	}
+
 	if (!m_pShading)
 	{
 		m_oPath.Draw(m_pPage, bStroke, bFill, bEoFill);
@@ -1076,7 +1089,7 @@ HRESULT CPdfWriter::DrawImage(IGrObject* pImage, const double& dX, const double&
 {
 	m_oCommandManager.Flush();
 
-	if (!IsPageValid() || !pImage)
+	if (!IsPageValid() || !pImage || SkipRedact(dX, dY, dW, dH))
 		return S_OK;
 
 	if (!DrawImage((Aggplus::CImage*)pImage, dX, dY, dW, dH, 255))
@@ -1088,7 +1101,7 @@ HRESULT CPdfWriter::DrawImageFromFile(NSFonts::IApplicationFonts* pAppFonts, con
 {
 	m_oCommandManager.Flush();
 
-	if (!IsPageValid())
+	if (!IsPageValid() || SkipRedact(dX, dY, dW, dH))
 		return S_OK;
 
 	if (m_pDocument->HasImage(wsImagePathSrc, nAlpha))
@@ -2238,6 +2251,39 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 
 			pStampAnnot->SetRotate(nRotate);
 		}
+		else if (oInfo.IsRedact())
+		{
+			CAnnotFieldInfo::CRedactAnnotPr* pPr = oInfo.GetRedactAnnotPr();
+			PdfWriter::CRedactAnnotation* pRedactAnnot = (PdfWriter::CRedactAnnotation*)pAnnot;
+
+			if (nFlags & (1 << 15))
+				pRedactAnnot->SetQuadPoints(pPr->GetQuadPoints());
+			if (nFlags & (1 << 16))
+				pRedactAnnot->SetIC(pPr->GetIC());
+			if (nFlags & (1 << 17))
+				pRedactAnnot->SetOverlayText(pPr->GetOverlayText());
+			if (nFlags & (1 << 18))
+				pRedactAnnot->SetRepeat(true);
+			if (nFlags & (1 << 19))
+				pRedactAnnot->SetQ(pPr->GetQ());
+			if (nFlags & (1 << 20))
+			{
+				std::wstring wsFontName = pPr->GetFontName();
+				int nStyle = pPr->GetFontStyle();
+				double dFontSize = pPr->GetFontSize();
+				PdfWriter::CFontTrueType* pFontTT = NULL;
+
+				put_FontName(wsFontName);
+				put_FontStyle(nStyle);
+				put_FontSize(dFontSize);
+
+				if (m_bNeedUpdateTextFont)
+					UpdateFont();
+				if (m_pFont)
+					pFontTT = m_pDocument->CreateTrueTypeFont(m_pFont);
+				pRedactAnnot->SetDA(pFontTT, dFontSize, pPr->GetFontColor());
+			}
+		}
 	}
 	else if (oInfo.IsPopup())
 	{
@@ -2583,6 +2629,32 @@ HRESULT CPdfWriter::AddMetaData(const std::wstring& sMetaName, BYTE* pMetaData, 
 {
 	return m_pDocument->AddMetaData(sMetaName, pMetaData, nMetaLength) ? S_OK : S_FALSE;
 }
+HRESULT CPdfWriter::AddRedact(const std::vector<double>& arrRedact)
+{
+	m_arrRedact.clear();
+	if (arrRedact.empty())
+		return S_OK;
+	m_arrRedact = arrRedact;
+
+	PdfWriter::CArrayObject* pPageBox = (PdfWriter::CArrayObject*)m_pPage->Get("CropBox");
+	if (!pPageBox)
+		pPageBox = (PdfWriter::CArrayObject*)m_pPage->Get("MediaBox");
+	PdfWriter::CObjectBase* pD = pPageBox->Get(3);
+	double dPageH = pD->GetType() == PdfWriter::object_type_NUMBER ? ((PdfWriter::CNumberObject*)pD)->Get() : ((PdfWriter::CRealObject*)pD)->Get();
+	pD = pPageBox->Get(0);
+	double dPageX = pD->GetType() == PdfWriter::object_type_NUMBER ? ((PdfWriter::CNumberObject*)pD)->Get() : ((PdfWriter::CRealObject*)pD)->Get();
+
+	for (int i = 0; i < m_arrRedact.size(); i += 4)
+	{
+		m_arrRedact[i * 4 + 0] += dPageX;
+		double dQ = m_arrRedact[i * 4 + 1];
+		m_arrRedact[i * 4 + 1] = dPageH - m_arrRedact[i * 4 + 3];
+		m_arrRedact[i * 4 + 2] += dPageX;
+		m_arrRedact[i * 4 + 3] = dPageH - dQ;
+	}
+
+	return S_OK;
+}
 void CreateOutlines(PdfWriter::CDocument* m_pDocument, const std::vector<CHeadings::CHeading*>& arrHeadings, PdfWriter::COutline* pParent)
 {
 	for (int i = 0; i < arrHeadings.size(); ++i)
@@ -2614,7 +2686,7 @@ HRESULT CPdfWriter::DrawImage1bpp(NSImages::CPixJbig2* pImageBuffer, const unsig
 {
 	m_oCommandManager.Flush();
 
-	if (!IsPageValid() || !pImageBuffer)
+	if (!IsPageValid() || !pImageBuffer || SkipRedact(dX, dY, dW, dH))
 		return S_OK;
 
 	m_pPage->GrSave();
@@ -2648,7 +2720,7 @@ HRESULT CPdfWriter::DrawImageWith1bppMask(IGrObject* pImage, NSImages::CPixJbig2
 {
 	m_oCommandManager.Flush();
 
-	if (!IsPageValid() || !pMaskBuffer || !pImage)
+	if (!IsPageValid() || !pMaskBuffer || !pImage || SkipRedact(dX, dY, dW, dH))
 		return S_OK;
 
 	PdfWriter::CImageDict* pPdfImage = LoadImage((Aggplus::CImage*)pImage, 255);
@@ -3017,6 +3089,15 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 }
 PdfWriter::CDocument* CPdfWriter::GetDocument() { return m_pDocument; }
 PdfWriter::CPage* CPdfWriter::GetPage() { return m_pPage; }
+IRenderer* CPdfWriter::GetRenderer() { return m_pRenderer; }
+void CPdfWriter::SetPage(PdfWriter::CPage* pPage)
+{
+	if (!IsValid())
+		return;
+	m_oCommandManager.Flush();
+
+	m_pPage = pPage;
+}
 bool CPdfWriter::EditPage(PdfWriter::CPage* pNewPage)
 {
 	if (!IsValid())
@@ -3090,6 +3171,25 @@ void CPdfWriter::Sign(const double& dX, const double& dY, const double& dW, cons
 //----------------------------------------------------------------------------------------
 // Внутренние функции
 //----------------------------------------------------------------------------------------
+bool CPdfWriter::SkipRedact(const double& dX, const double& dY, const double& dW, const double& dH)
+{
+	if (m_arrRedact.empty())
+		return false;
+	double dXmin = MM_2_PT(dX), dYmin = MM_2_PT(m_dPageHeight - dY - dH), dXmax = MM_2_PT(dX + dW), dYmax = MM_2_PT(m_dPageHeight - dY);
+	m_oTransform.Transform(dXmin, dYmin, &dXmin, &dYmin);
+	m_oTransform.Transform(dXmax, dYmax, &dXmax, &dYmax);
+	for (int i = 0; i < m_arrRedact.size(); i += 4)
+	{
+		double xMin = m_arrRedact[i + 0];
+		double yMin = m_arrRedact[i + 1];
+		double xMax = m_arrRedact[i + 2];
+		double yMax = m_arrRedact[i + 3];
+
+		if (!(dXmax < xMin || dXmin > xMax || dYmax < yMin || dYmin > yMax))
+			return true;
+	}
+	return false;
+}
 PdfWriter::CImageDict* CPdfWriter::LoadImage(Aggplus::CImage* pImage, BYTE nAlpha)
 {
 	TColor oColor;
@@ -3205,6 +3305,24 @@ bool CPdfWriter::DrawText(unsigned char* pCodes, const unsigned int& unLen, cons
 	if (!pCodes || !unLen)
 		return false;
 
+	if (!m_arrRedact.empty())
+	{
+		double dXc = MM_2_PT(dX), dYc = MM_2_PT(m_dPageHeight - dY);
+		m_oTransform.Transform(dXc, dYc, &dXc, &dYc);
+		// TODO должна быть проверка центрального положения, а не точки начала
+		// TODO Сюда приходит много символов за раз, и нужно отрисовать только те, что вне областей редакта
+		for (int i = 0; i < m_arrRedact.size(); i += 4)
+		{
+			double xMin = m_arrRedact[i + 0];
+			double yMin = m_arrRedact[i + 1];
+			double xMax = m_arrRedact[i + 2];
+			double yMax = m_arrRedact[i + 3];
+
+			if (xMin < dXc && dXc < xMax && yMin < dYc && dYc < yMax)
+				return true;
+		}
+	}
+
 	CTransform& t = m_oTransform;
 	m_oCommandManager.SetTransform(t.m11, -t.m12, -t.m21, t.m22, MM_2_PT(t.dx + t.m21 * m_dPageHeight), MM_2_PT(m_dPageHeight - m_dPageHeight * t.m22 - t.dy));
 
@@ -3227,6 +3345,23 @@ bool CPdfWriter::DrawTextToRenderer(const unsigned int* unGid, const unsigned in
 {
 	if (m_bSplit)
 		return false;
+	if (!m_arrRedact.empty())
+	{
+		double dXc = MM_2_PT(dX), dYc = MM_2_PT(m_dPageHeight - dY);
+		m_oTransform.Transform(dXc, dYc, &dXc, &dYc);
+		// TODO должна быть проверка центрального положения, а не точки начала
+		// TODO Сюда приходит много символов за раз, и нужно отрисовать только те, что вне областей редакта
+		for (int i = 0; i < m_arrRedact.size(); i += 4)
+		{
+			double xMin = m_arrRedact[i + 0];
+			double yMin = m_arrRedact[i + 1];
+			double xMax = m_arrRedact[i + 2];
+			double yMax = m_arrRedact[i + 3];
+
+			if (xMin < dXc && dXc < xMax && yMin < dYc && dYc < yMax)
+				return true;
+		}
+	}
 	// TODO pdf позволяет создание своего шрифта, но не следует это использовать для воссоздания шрифта запрещенного для редактирования или встраивания
 	Aggplus::CGraphicsPathSimpleConverter simplifier;
 	simplifier.SetRenderer(m_pRenderer);
@@ -3242,6 +3377,24 @@ bool CPdfWriter::DrawTextToRenderer(const unsigned int* unGid, const unsigned in
 }
 bool CPdfWriter::PathCommandDrawText(unsigned int* pUnicodes, unsigned int unLen, const double& dX, const double& dY, const unsigned int* pGids)
 {
+	if (!m_arrRedact.empty())
+	{
+		double dXc = MM_2_PT(dX), dYc = MM_2_PT(m_dPageHeight - dY);
+		m_oTransform.Transform(dXc, dYc, &dXc, &dYc);
+		// TODO должна быть проверка центрального положения, а не точки начала
+		// TODO Сюда приходит много символов за раз, и нужно отрисовать только те, что вне областей редакта
+		for (int i = 0; i < m_arrRedact.size(); i += 4)
+		{
+			double xMin = m_arrRedact[i + 0];
+			double yMin = m_arrRedact[i + 1];
+			double xMax = m_arrRedact[i + 2];
+			double yMax = m_arrRedact[i + 3];
+
+			if (xMin < dXc && dXc < xMax && yMin < dYc && dYc < yMax)
+				return true;
+		}
+	}
+
 	unsigned char* pCodes = EncodeString(pUnicodes, unLen, pGids);
 	if (!pCodes)
 		return false;

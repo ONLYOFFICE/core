@@ -147,10 +147,20 @@ void CShapeStart::SetShapeImage(BYTE* pImgData, int nWidth, int nHeight)
 	}
 }
 std::string& CShapeStart::GetShapeXML() { return m_sShapeXML; }
+const std::vector<std::wstring>& CShapeStart::GetRedactID() { return m_arrRedactID; }
 Aggplus::CImage* CShapeStart::GetShapeImage() { return m_pImage; }
-bool CShapeStart::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector)
+bool CShapeStart::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector, int nLen)
 {
+	int nStart = pReader->Tell();
 	m_sShapeXML = pReader->ReadStringA();
+	int nEnd = pReader->Tell();
+	if (nEnd - nStart < nLen)
+	{
+		int n = pReader->ReadInt();
+		m_arrRedactID.reserve(n);
+		for (int i = 0; i < n; ++i)
+			m_arrRedactID.push_back(pReader->ReadString());
+	}
 	return true;
 }
 

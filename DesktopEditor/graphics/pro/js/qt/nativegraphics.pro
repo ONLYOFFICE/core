@@ -113,7 +113,6 @@ SOURCES += \
 	../../../../raster/ImageFileFormatChecker.cpp \
 	../../../../raster/Metafile/MetaFile.cpp \
 	../../../../raster/PICT/PICFile.cpp \
-	../../../../raster/PICT/pic.cpp \
 	\
 	../../../ArrowHead.cpp \
 	../../../Brush.cpp \
@@ -701,7 +700,8 @@ HEADERS += \
 	$$PDF_ROOT_DIR/SrcWriter/Utils.h \
 	$$PDF_ROOT_DIR/SrcWriter/Metadata.h \
 	$$PDF_ROOT_DIR/SrcWriter/ICCProfile.h \
-	$$PDF_ROOT_DIR/SrcWriter/States.h
+	$$PDF_ROOT_DIR/SrcWriter/States.h \
+	$$PDF_ROOT_DIR/SrcWriter/RedactOutputDev.h
 
 SOURCES += \
 	$$PDF_ROOT_DIR/SrcWriter/AcroForm.cpp \
@@ -730,7 +730,8 @@ SOURCES += \
 	$$PDF_ROOT_DIR/SrcWriter/Streams.cpp \
 	$$PDF_ROOT_DIR/SrcWriter/Utils.cpp \
 	$$PDF_ROOT_DIR/SrcWriter/Metadata.cpp \
-	$$PDF_ROOT_DIR/SrcWriter/States.cpp
+	$$PDF_ROOT_DIR/SrcWriter/States.cpp \
+	$$PDF_ROOT_DIR/SrcWriter/RedactOutputDev.cpp
 
 # PdfFile
 

@@ -392,6 +392,7 @@ enum ElementType
 	typeMathSemantics,
 	typeMathAnnotation,
 	typeMathAnnotationXml,
+	typeMathSignatue,
 	typeMN,
 	typeMI,
 	typeMS,

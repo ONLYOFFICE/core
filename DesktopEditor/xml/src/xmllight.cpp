@@ -208,13 +208,13 @@ namespace XmlUtils
 		return m_pInternal->GetTextWithHHHH(bPreserve);
 	}
 
-	std::wstring CXmlLiteReader::GetOuterXml()
+	std::wstring CXmlLiteReader::GetOuterXml(bool bEncodingXml)
 	{
-		return m_pInternal->GetOuterXml();
+		return m_pInternal->GetOuterXml(bEncodingXml);
 	}
-	std::wstring CXmlLiteReader::GetInnerXml()
+	std::wstring CXmlLiteReader::GetInnerXml(bool bEncodingXml)
 	{
-		return m_pInternal->GetInnerXml();
+		return m_pInternal->GetInnerXml(bEncodingXml);
 	}
 
 	int CXmlLiteReader::GetAttributesCount()

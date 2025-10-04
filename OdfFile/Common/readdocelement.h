@@ -57,7 +57,7 @@ namespace cpdoccore {
 	class read_doc_element 
 	{
 	public:
-		bool read_sax( xml::sax * Reader);
+		bool read_sax( xml::sax * Reader, bool bOnlyText = false);
 		virtual ~read_doc_element() = 0; 
 
 		virtual void add_child_element	( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name) = 0;

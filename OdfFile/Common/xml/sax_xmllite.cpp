@@ -70,6 +70,8 @@ public:
     virtual bool moveToAttrOwner();
 
     virtual NodeType next(int Depth);
+
+    virtual std::wstring getXML();
     
 private:
     smart_ptr< XmlUtils::CXmlLiteReader > xml_;
@@ -222,6 +224,11 @@ NodeType saxXmlLiteReader::next(int Depth)
 		return typeNone;
 
 	
+}
+
+std::wstring saxXmlLiteReader::getXML()
+{
+   return xml_->GetInnerXml(false);
 }
 
 sax_ptr create_sax_xmllite(const wchar_t * FileName)

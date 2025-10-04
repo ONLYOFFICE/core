@@ -154,7 +154,7 @@ namespace StarMath
 		static bool ColorCheck(const std::wstring& wsColor,std::wstring& wsRecordColor);
 		void CheckVectorElementsForMf(std::vector<OOX::WritingElement*> arWrElement);
 		TFormulaSize GetFormulaSize();
-		void EndOdf();
+		void EndOdf(OOX::WritingElement* pNode);
 		std::wstring GetOdf();
 		std::wstring GetAnnotation();
 		std::wstring GetSemantic();

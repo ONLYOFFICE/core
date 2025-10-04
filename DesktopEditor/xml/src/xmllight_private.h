@@ -635,13 +635,13 @@ namespace XmlUtils
             GetTextWithHHHH(bPreserve, pUnicodes, nSize, nLen);
             return std::wstring(pUnicodes, nLen);
         }
-        inline std::wstring GetOuterXml()
+        inline std::wstring GetOuterXml(bool bEncodingXml = true)
         {
-            return GetXml(false);
+            return GetXml(false, bEncodingXml);
         }
-        inline std::wstring GetInnerXml()
+        inline std::wstring GetInnerXml(bool bEncodingXml = true)
         {
-            return GetXml(true);
+            return GetXml(true, bEncodingXml);
         }
 
         inline int GetAttributesCount()
@@ -700,7 +700,7 @@ namespace XmlUtils
         }
 
     private:
-        inline std::wstring GetXml(bool bInner)
+        inline std::wstring GetXml(bool bInner, bool bEncodingXml = true)
         {
             if (!IsValid())
                 return L"";
@@ -730,7 +730,7 @@ namespace XmlUtils
                         eNodeType == XmlNodeType_Whitespace ||
                         eNodeType == XmlNodeType_SIGNIFICANT_WHITESPACE ||
                         eNodeType == XmlNodeType_CDATA)
-                            oResult.WriteEncodeXmlString(GetText().c_str());
+                        (bEncodingXml)?  oResult.WriteEncodeXmlString(GetText().c_str()): oResult.WriteString(GetText().c_str());
                     else if (eNodeType == XmlNodeType_Element)
                         WriteElement(oResult);
                     else if (eNodeType == XmlNodeType_EndElement)

@@ -116,8 +116,8 @@ namespace XmlUtils
 		void GetTextWithHHHH(bool bPreserve, wchar_t*& sBuffer, long& nSize, long& nLen);
 		std::wstring GetTextWithHHHH(bool bPreserve);
 
-		std::wstring	GetOuterXml();
-		std::wstring	GetInnerXml();
+		std::wstring	GetOuterXml(bool bEncodingXml = true);
+		std::wstring	GetInnerXml(bool bEncodingXml = true);
 
 		int GetAttributesCount();
 		bool MoveToFirstAttribute();

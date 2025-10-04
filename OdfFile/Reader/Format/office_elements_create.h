@@ -137,7 +137,8 @@ bool create_element_and_read(xml::sax * Reader,
                              const std::wstring & Name,
                              office_element_ptr & _Element,
                              document_context * Context,
-                             bool isRoot = false);
+                             bool isRoot = false,
+                             bool bOnlyText = false);
 
 //  Создать элемент и в случае успеха прочитать его содержимое из SAX, поместить в array
 bool create_element_and_read(xml::sax * Reader,

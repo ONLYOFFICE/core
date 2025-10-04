@@ -37,7 +37,7 @@
 namespace cpdoccore { 
 namespace common {
 
-bool read_doc_element::read_sax( xml::sax * Reader )
+bool read_doc_element::read_sax( xml::sax * Reader, bool bOnlyText )
 {
 	const unsigned int currentDepth = Reader->depth();
    
@@ -63,7 +63,15 @@ bool read_doc_element::read_sax( xml::sax * Reader )
 		return false;
 	}
 
-
+	if(bOnlyText)
+	{
+		const std::wstring value = Reader->getXML();
+		if (false == value.empty())
+		{
+			add_text(value);
+		}
+		return true;
+	}
     while (true)
 	{
 		nodeType = Reader->next(currentDepth);

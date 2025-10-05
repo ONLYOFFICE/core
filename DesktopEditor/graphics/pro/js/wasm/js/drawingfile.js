@@ -286,6 +286,7 @@ CFile.prototype["getLinks"] = function(pageIndex)
 // TEXT
 CFile.prototype["getGlyphs"] = function(pageIndex)
 {
+	let page = this.pages[pageIndex];
 	if (page.fonts.length > 0)
 	{
 		// waiting fonts

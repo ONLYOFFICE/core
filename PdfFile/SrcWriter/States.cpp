@@ -297,12 +297,14 @@ bool SkipPath(const std::vector<PdfWriter::CSegment>& arrForStroke, const PdfWri
 	}
 	return false;
 }
-void CPath::DrawPathRedact(PdfWriter::CMatrix* pMatrix, Aggplus::CGraphicsPath* oPath, bool bStroke, const std::vector<PdfWriter::CSegment>& arrForStroke)
+bool CPath::DrawPathRedact(PdfWriter::CMatrix* pMatrix, Aggplus::CGraphicsPath* oPath, bool bStroke, const std::vector<PdfWriter::CSegment>& arrForStroke)
 {
 	PdfWriter::CMatrix oInverse = pMatrix->Inverse();
 
 	size_t length = oPath->GetPointCount(), compound = oPath->GetCloseCount();
 	std::vector<Aggplus::PointD> points = oPath->GetPoints(0, length + compound);
+	if (length + compound == 0)
+		return false;
 
 	double dXStart = -1, dYStart = -1, dXCur = -1, dYCur = -1;
 	bool bBreak = false;
@@ -388,6 +390,7 @@ void CPath::DrawPathRedact(PdfWriter::CMatrix* pMatrix, Aggplus::CGraphicsPath* 
 				Close();
 		}
 	}
+	return true;
 }
 void CPath::Redact(PdfWriter::CMatrix* pMatrix, const std::vector<double>& arrRedact, PdfWriter::CPage* pPage, bool bStroke, bool bFill, bool bEoFill,
 				   PdfWriter::CShading* pShading, PdfWriter::CExtGrState* pShadingExtGrState)
@@ -419,20 +422,23 @@ void CPath::Redact(PdfWriter::CMatrix* pMatrix, const std::vector<double>& arrRe
 	if (bFill || bEoFill)
 	{
 		oPathResult = Aggplus::CalcBooleanOperation(oPath, oPathRedact, Aggplus::BooleanOpType::Subtraction);
-		DrawPathRedact(pMatrix, &oPathResult, bStroke);
+		bool bPath = DrawPathRedact(pMatrix, &oPathResult, bStroke);
 
-		if (!pShading)
-			Draw(pPage, false, bFill, bEoFill);
-		else
+		if (bPath)
 		{
-			pPage->GrSave();
-			Clip(pPage, bEoFill);
+			if (!pShading)
+				Draw(pPage, false, bFill, bEoFill);
+			else
+			{
+				pPage->GrSave();
+				Clip(pPage, bEoFill);
 
-			if (pShadingExtGrState)
-				pPage->SetExtGrState(pShadingExtGrState);
+				if (pShadingExtGrState)
+					pPage->SetExtGrState(pShadingExtGrState);
 
-			pPage->DrawShading(pShading);
-			pPage->GrRestore();
+				pPage->DrawShading(pShading);
+				pPage->GrRestore();
+			}
 		}
 	}
 
@@ -440,6 +446,7 @@ void CPath::Redact(PdfWriter::CMatrix* pMatrix, const std::vector<double>& arrRe
 
 	if (bStroke)
 	{
+		bool bPath = false;
 		std::vector<PdfWriter::CSegment> arrForStroke;
 		std::vector<PdfWriter::TRect> rectangles;
 		for (int i = 0; i < arrRedact.size(); i += 4)
@@ -477,7 +484,7 @@ void CPath::Redact(PdfWriter::CMatrix* pMatrix, const std::vector<double>& arrRe
 				dXCur = dX3, dYCur = dY3;
 
 				oPathResult = Aggplus::CalcBooleanOperation(_oPath, oPathRedact, Aggplus::BooleanOpType::Subtraction);
-				DrawPathRedact(pMatrix, &oPathResult, bStroke, arrForStroke);
+				bPath = bPath || DrawPathRedact(pMatrix, &oPathResult, bStroke, arrForStroke);
 				oPathResult.Reset();
 			}
 			else if (oPath.IsMovePoint(i))
@@ -494,6 +501,7 @@ void CPath::Redact(PdfWriter::CMatrix* pMatrix, const std::vector<double>& arrRe
 				dXCur = dX; dYCur = dY;
 
 				auto visibleSegments = clipper.getVisibleSegments(line);
+				bPath = bPath || visibleSegments.size() != 0;
 				for (int i = 0; i < visibleSegments.size(); ++i)
 				{
 					double dX1 = visibleSegments[i].start.x, dY1 = visibleSegments[i].start.y;
@@ -509,6 +517,7 @@ void CPath::Redact(PdfWriter::CMatrix* pMatrix, const std::vector<double>& arrRe
 				PdfWriter::CLineClipper clipper(rectangles);
 				PdfWriter::CSegment line(PdfWriter::CPoint(dXCur, dYCur), PdfWriter::CPoint(dXStart, dYStart));
 				auto visibleSegments = clipper.getVisibleSegments(line);
+				bPath = bPath || visibleSegments.size() != 0;
 				for (int i = 0; i < visibleSegments.size(); ++i)
 				{
 					double dX1 = visibleSegments[i].start.x, dY1 = visibleSegments[i].start.y;
@@ -521,7 +530,8 @@ void CPath::Redact(PdfWriter::CMatrix* pMatrix, const std::vector<double>& arrRe
 			}
 		}
 
-		Draw(pPage, bStroke, false, false);
+		if (bPath)
+			Draw(pPage, bStroke, false, false);
 	}
 
 	m_vCommands = vCommands;

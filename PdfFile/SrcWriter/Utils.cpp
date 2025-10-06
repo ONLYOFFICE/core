@@ -316,4 +316,51 @@ namespace PdfWriter
 
 		return sRes;
 	}
+	void projectPolygon(const std::vector<CPoint>& polygon, const CPoint& axis, double& min, double& max)
+	{
+		min = std::numeric_limits<double>::max();
+		max = std::numeric_limits<double>::lowest();
+
+		for (const auto& point : polygon)
+		{
+			double projection = (point.x * axis.x + point.y * axis.y) / (axis.x * axis.x + axis.y * axis.y);
+			projection *= (axis.x * axis.x + axis.y * axis.y);
+
+			if (projection < min) min = projection;
+			if (projection > max) max = projection;
+		}
+	}
+	bool SAT(const std::vector<CPoint>& poly1, const std::vector<CPoint>& poly2)
+	{
+		std::vector<CPoint> axes;
+		for (size_t i = 0; i < poly1.size(); i++)
+		{
+			CPoint p1 = poly1[i];
+			CPoint p2 = poly1[(i + 1) % poly1.size()];
+			CPoint edge(p2.x - p1.x, p2.y - p1.y);
+			CPoint normal(-edge.y, edge.x); // Перпендикуляр к ребру
+			axes.push_back(normal);
+		}
+
+		for (size_t i = 0; i < poly2.size(); i++)
+		{
+			CPoint p1 = poly2[i];
+			CPoint p2 = poly2[(i + 1) % poly2.size()];
+			CPoint edge(p2.x - p1.x, p2.y - p1.y);
+			CPoint normal(-edge.y, edge.x); // Перпендикуляр к ребру
+			axes.push_back(normal);
+		}
+
+		// Проверяем все оси на разделение
+		for (const auto& axis : axes)
+		{
+			double min1, max1, min2, max2;
+			projectPolygon(poly1, axis, min1, max1);
+			projectPolygon(poly2, axis, min2, max2);
+
+			if (max1 < min2 || max2 < min1)
+				return false; // Найдена разделяющая ось
+		}
+		return true; // Пересекаются
+	}
 }

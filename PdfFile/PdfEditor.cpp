@@ -3296,8 +3296,8 @@ bool CPdfEditor::EditWidgets(IAdvancedCommand* pCommand)
 	if (m_nMode == Mode::Unknown && !IncrementalUpdates())
 		return false;
 
-	WriteRedact({});
 	m_pWriter->AddRedact({});
+	WriteRedact({});
 	m_arrRedact.clear();
 
 	CWidgetsInfo* pFieldInfo = (CWidgetsInfo*)pCommand;
@@ -3605,7 +3605,6 @@ std::vector<double> CPdfEditor::WriteRedact(const std::vector<std::wstring>& arr
 		if (oRedact.bDraw || !oRedact.pRender)
 			continue;
 
-		m_pWriter->SetTransform(1, 0, 0, 1, 0, 0);
 		LONG nLenRender = oRedact.nLenRender;
 		BYTE* pRender = oRedact.pRender;
 
@@ -3620,18 +3619,22 @@ std::vector<double> CPdfEditor::WriteRedact(const std::vector<std::wstring>& arr
 		double B = ret / 100000.0;
 		LONG lColor = (LONG)(((LONG)(R * 255)) | ((LONG)(G * 255) << 8) | ((LONG)(B * 255) << 16) | ((LONG)255 << 24));
 
+		m_pWriter->SetTransform(1, 0, 0, 1, 0, 0);
+		m_pWriter->PathCommandEnd();
+		m_pWriter->put_BrushType(c_BrushTypeSolid);
+		m_pWriter->put_BrushColor1(lColor);
+
 		for (int i = 0; i < oRedact.arrQuads.size(); i += 4)
 		{
-			m_pWriter->PathCommandEnd();
-			m_pWriter->put_BrushColor1(lColor);
 			m_pWriter->PathCommandMoveTo(PdfReader::PDFCoordsToMM(oRedact.arrQuads[i + 0]), PdfReader::PDFCoordsToMM(oRedact.arrQuads[i + 1]));
 			m_pWriter->PathCommandLineTo(PdfReader::PDFCoordsToMM(oRedact.arrQuads[i + 0]), PdfReader::PDFCoordsToMM(oRedact.arrQuads[i + 3]));
 			m_pWriter->PathCommandLineTo(PdfReader::PDFCoordsToMM(oRedact.arrQuads[i + 2]), PdfReader::PDFCoordsToMM(oRedact.arrQuads[i + 3]));
 			m_pWriter->PathCommandLineTo(PdfReader::PDFCoordsToMM(oRedact.arrQuads[i + 2]), PdfReader::PDFCoordsToMM(oRedact.arrQuads[i + 1]));
 			m_pWriter->PathCommandClose();
-			m_pWriter->DrawPath(NULL, L"", c_nWindingFillMode);
-			m_pWriter->PathCommandEnd();
 		}
+
+		m_pWriter->DrawPath(NULL, L"", c_nWindingFillMode);
+		m_pWriter->PathCommandEnd();
 
 		// TODO рендер редакта должен быть пересечён со всеми последующими редактами
 		// TODO на самом деле должен быть рендер команд редакта

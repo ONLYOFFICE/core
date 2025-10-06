@@ -141,6 +141,9 @@ namespace PdfWriter
 
 	std::string DateNow();
 	std::wstring NormalizeWhitespace(const std::wstring& s);
+
+	// Пересечение по теореме о разделяющей оси
+	bool SAT(const std::vector<CPoint>& poly1, const std::vector<CPoint>& poly2);
 }
 
 #endif // _PDF_WRITER_SRC_UTILS_H

@@ -33,6 +33,7 @@
 #include "RedactOutputDev.h"
 #include "Types.h"
 #include "Streams.h"
+#include "Utils.h"
 
 #include "../lib/xpdf/GfxFont.h"
 #include "../lib/xpdf/XRef.h"
@@ -703,64 +704,6 @@ void RedactOutputDev::type3D1(GfxState *pGState, double wx, double wy, double ll
 
 }
 //----- form XObjects
-void projectPolygon(const std::vector<CPoint>& polygon, const CPoint& axis, double& min, double& max)
-{
-	min = std::numeric_limits<double>::max();
-	max = std::numeric_limits<double>::lowest();
-
-	for (const auto& point : polygon)
-	{
-		double projection = (point.x * axis.x + point.y * axis.y) / (axis.x * axis.x + axis.y * axis.y);
-		projection *= (axis.x * axis.x + axis.y * axis.y);
-
-		if (projection < min) min = projection;
-		if (projection > max) max = projection;
-	}
-}
-bool RedactOutputDev::SAT(const std::vector<CPoint>& poly2)
-{
-	for (int j = 0; j < m_arrQuadPoints.size(); j += 4)
-	{
-		std::vector<CPoint> poly1 =
-		{
-			CPoint(m_arrQuadPoints[j + 0], m_arrQuadPoints[j + 1]),
-			CPoint(m_arrQuadPoints[j + 2], m_arrQuadPoints[j + 1]),
-			CPoint(m_arrQuadPoints[j + 2], m_arrQuadPoints[j + 3]),
-			CPoint(m_arrQuadPoints[j + 0], m_arrQuadPoints[j + 3])
-		};
-
-		std::vector<CPoint> axes;
-		for (size_t i = 0; i < poly1.size(); i++)
-		{
-			CPoint p1 = poly1[i];
-			CPoint p2 = poly1[(i + 1) % poly1.size()];
-			CPoint edge(p2.x - p1.x, p2.y - p1.y);
-			CPoint normal(-edge.y, edge.x); // Перпендикуляр к ребру
-			axes.push_back(normal);
-		}
-
-		for (size_t i = 0; i < poly2.size(); i++)
-		{
-			CPoint p1 = poly2[i];
-			CPoint p2 = poly2[(i + 1) % poly2.size()];
-			CPoint edge(p2.x - p1.x, p2.y - p1.y);
-			CPoint normal(-edge.y, edge.x); // Перпендикуляр к ребру
-			axes.push_back(normal);
-		}
-
-		// Проверяем все оси на разделение
-		for (const auto& axis : axes)
-		{
-			double min1, max1, min2, max2;
-			projectPolygon(poly1, axis, min1, max1);
-			projectPolygon(poly2, axis, min2, max2);
-
-			if (max1 < min2 || max2 < min1)
-				return false; // Найдена разделяющая ось
-		}
-	}
-	return true; // Пересекаются
-}
 void RedactOutputDev::drawForm(GfxState *pGState, Ref id, const char* name)
 {
 	m_pRenderer->m_oCommandManager.Flush();
@@ -831,8 +774,19 @@ void RedactOutputDev::drawForm(GfxState *pGState, Ref id, const char* name)
 		CPoint(dX3, dY3),
 		CPoint(dX4, dY4)
 	};
-	if (SAT(poly2))
-		return;
+	for (int i = 0; i < m_arrQuadPoints.size(); i += 4)
+	{
+		std::vector<CPoint> poly1 =
+		{
+			CPoint(m_arrQuadPoints[i + 0], m_arrQuadPoints[i + 1]),
+			CPoint(m_arrQuadPoints[i + 2], m_arrQuadPoints[i + 1]),
+			CPoint(m_arrQuadPoints[i + 2], m_arrQuadPoints[i + 3]),
+			CPoint(m_arrQuadPoints[i + 0], m_arrQuadPoints[i + 3])
+		};
+
+		if (PdfWriter::SAT(poly1, poly2))
+			return;
+	}
 
 	m_pPage->GrSave();
 	UpdateTransform();
@@ -862,8 +816,19 @@ void RedactOutputDev::drawImage(GfxState *pGState, Ref id, const char* name)
 		CPoint(dX3, dY3),
 		CPoint(dX4, dY4)
 	};
-	if (SAT(poly2))
-		return;
+	for (int j = 0; j < m_arrQuadPoints.size(); j += 4)
+	{
+		std::vector<CPoint> poly1 =
+		{
+			CPoint(m_arrQuadPoints[j + 0], m_arrQuadPoints[j + 1]),
+			CPoint(m_arrQuadPoints[j + 2], m_arrQuadPoints[j + 1]),
+			CPoint(m_arrQuadPoints[j + 2], m_arrQuadPoints[j + 3]),
+			CPoint(m_arrQuadPoints[j + 0], m_arrQuadPoints[j + 3])
+		};
+
+		if (PdfWriter::SAT(poly1, poly2))
+			return;
+	}
 
 	m_pPage->GrSave();
 	UpdateTransform();

@@ -182,6 +182,8 @@ const bool FDB::saveContent(BinProcessor& proc)
 	proc.mandatory(*m_SXFDB);
 	if(m_SXFDBType != nullptr)
 		proc.mandatory(*m_SXFDBType);
+	else
+		proc.mandatory<SXFDBType>();
 	if(m_SXFMLA != nullptr)
 		proc.mandatory(*m_SXFMLA);
 	else

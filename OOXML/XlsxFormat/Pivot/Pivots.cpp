@@ -164,6 +164,7 @@
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/SXDBEx.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/SXLI.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/SXFDB.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/SXFDBType.h"
 
 namespace OOX
 {
@@ -4689,6 +4690,12 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 	XLS::BaseObjectPtr CPivotCacheField::toXLS()
 	{
 		auto unionPtr = new XLS::FDB;
+		if(m_oSqlType.IsInit())
+		{
+			auto sqlTypePtr = new XLS::SXFDBType;
+			sqlTypePtr->wTypeSql = m_oSqlType.get();
+			unionPtr->m_SXFDBType = XLS::BaseObjectPtr(sqlTypePtr);
+		}
 		auto ptr = new XLS::SXFDB;
 		unionPtr->m_SXFDB = XLS::BaseObjectPtr(ptr);
 		if(m_oName.IsInit())

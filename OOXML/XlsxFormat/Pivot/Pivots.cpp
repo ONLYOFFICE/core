@@ -154,6 +154,7 @@
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/PIVOTIVD.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/PIVOTLI.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/PIVOTCACHE.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/FDB.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/SxView.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Sxvd.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/SxIvd.h"
@@ -162,6 +163,7 @@
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/SXDB.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/SXDBEx.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/SXLI.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/SXFDB.h"
 
 namespace OOX
 {
@@ -4378,6 +4380,11 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			ptr->m_SXDBEx = XLS::BaseObjectPtr(Extptr);
 			Extptr->cSxFormula = m_oCalculatedItems->m_arrItems.size();
 		}
+		if(m_oCacheFields.IsInit())
+		{
+			for(auto i : m_oCacheFields->m_arrItems)
+				ptr->m_arFDB.push_back(i->toXLS());
+		}
 		return XLS::BaseObjectPtr(ptr);
 	}
 	XLS::BaseObjectPtr CPivotCacheDefinition::writeAttributesXLS()
@@ -4678,6 +4685,59 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		if(m_oFieldGroup.IsInit())
 			ptr->m_PCDFGROUP = m_oFieldGroup->toBin();
 		return objectPtr;
+	}
+	XLS::BaseObjectPtr CPivotCacheField::toXLS()
+	{
+		auto unionPtr = new XLS::FDB;
+		auto ptr = new XLS::SXFDB;
+		unionPtr->m_SXFDB = XLS::BaseObjectPtr(ptr);
+		if(m_oName.IsInit())
+			ptr->stFieldName = m_oName.get();
+		if(m_oSharedItems.IsInit() && m_oSharedItems->m_arrItems.size())
+			ptr->fAllAtoms = true;
+		if(m_oFieldGroup.IsInit() && m_oFieldGroup->m_oPar.IsInit())
+		{
+			ptr->fHasParent = true;
+			ptr->ifdbParent = m_oFieldGroup->m_oPar->GetValue();
+		}
+		if(m_oFieldGroup.IsInit() && m_oFieldGroup->m_oBase.IsInit())
+		{
+			ptr->ifdbBase = m_oFieldGroup->m_oBase->GetValue();
+		}
+		if(m_oSharedItems.IsInit())
+		{
+			if(m_oSharedItems->m_oContainsNumber.IsInit()  && m_oSharedItems->m_oContainsNumber.get())
+			{
+				ptr->fNumField = true;
+			}
+			if(m_oSharedItems->m_oContainsString.IsInit() && m_oSharedItems->m_oContainsString.get())
+			{
+				ptr->fTextEtcField = true;
+			}
+			if(m_oSharedItems->m_oContainsNonDate.IsInit() && m_oSharedItems->m_oContainsNonDate.get())
+			{
+				ptr->fNonDates = true;
+			}
+
+			if(m_oSharedItems->m_oContainsDate.IsInit() && m_oSharedItems->m_oContainsDate.get())
+			{
+				ptr->fNonDates = false;
+				ptr->fDateInField = true;
+				ptr->fNumField = false;
+			}
+			else
+				ptr->fNonDates = true;
+			if(m_oSharedItems->m_arrItems.size() && m_oSharedItems->m_arrItems.size() <= 255)
+				ptr->fShortIitms = true;
+
+		}
+		if(ptr->fDateInField || ptr->fNumField)
+			ptr->fnumMinMaxValid  = true;
+		if(m_oServerField.IsInit())
+			ptr->fServerBased = m_oServerField.get();
+		if(m_oFormula.IsInit())
+			ptr->fCalculatedField = true;
+		return XLS::BaseObjectPtr(unionPtr);
 	}
 	XLS::BaseObjectPtr CPivotCacheField::writeAttributes()
 	{

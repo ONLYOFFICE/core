@@ -49,23 +49,30 @@ namespace PdfWriter
 	{
 		"Text",
 		"Link",
-		"Sound",
 		"FreeText",
-		"Stamp",
+		"Line",
 		"Square",
 		"Circle",
-		"StrikeOut",
-		"Highlight",
-		"Underline",
-		"Ink",
-		"FileAttachment",
-		"Popup",
-		"Line",
-		"Squiggly",
 		"Polygon",
 		"PolyLine",
+		"Highlight",
+		"Underline",
+		"Squiggly",
+		"StrikeOut",
+		"Stamp",
 		"Caret",
-		"Widget"
+		"Ink",
+		"Popup",
+		"FileAttachment",
+		"Sound",
+		"Movie",
+		"Widget",
+		"Screen",
+		"PrinterMark",
+		"TrapNet",
+		"Watermark",
+		"3D",
+		"Redact"
 	};
 	const static char* c_sAnnotIconNames[] =
 	{
@@ -1212,6 +1219,65 @@ namespace PdfWriter
 	CDictObject* CStampAnnotation::GetAPStream()
 	{
 		return m_pAPStream;
+	}
+	//----------------------------------------------------------------------------------------
+	// CRedactAnnotation
+	//----------------------------------------------------------------------------------------
+	CRedactAnnotation::CRedactAnnotation(CXref* pXref) : CMarkupAnnotation(pXref, AnnotRedact)
+	{
+	}
+	void CRedactAnnotation::SetDA(CFontDict* pFont, const double& dFontSize, const std::vector<double>& arrC)
+	{
+		const char* sFontName =  NULL;
+		if (pFont)
+		{
+			CResourcesDict* pFieldsResources = m_pDocument->GetFieldsResources();
+			sFontName = pFieldsResources->GetFontName(pFont);
+		}
+
+		std::vector<double> _arrC = arrC;
+		if (arrC.empty())
+			_arrC = {0};
+		std::string sDA = GetColor(_arrC, false);
+		if (sFontName)
+		{
+			sDA.append(" /");
+			sDA.append(sFontName);
+
+			sDA.append(" ");
+			sDA.append(std::to_string(dFontSize));
+			sDA.append(" Tf");
+		}
+
+		Add("DA", new CStringObject(sDA.c_str()));
+	}
+	void CRedactAnnotation::SetRepeat(bool bRepeat)
+	{
+		Add("Repeat", bRepeat);
+	}
+	void CRedactAnnotation::SetQ(BYTE nQ)
+	{
+		Add("Q", (int)nQ);
+	}
+	void CRedactAnnotation::SetOverlayText(const std::wstring& wsOverlayText)
+	{
+		std::string sValue = U_TO_UTF8(wsOverlayText);
+		Add("OverlayText", new CStringObject(sValue.c_str(), true));
+	}
+	void CRedactAnnotation::SetIC(const std::vector<double>& arrIC)
+	{
+		AddToVectorD(this, "IC", arrIC);
+	}
+	void CRedactAnnotation::SetQuadPoints(const std::vector<double>& arrQuadPoints)
+	{
+		CArrayObject* pArray = new CArrayObject();
+		if (!pArray)
+			return;
+
+		Add("QuadPoints", pArray);
+
+		for (int i = 0; i < arrQuadPoints.size(); ++i)
+			pArray->Add(i % 2 == 0 ? (arrQuadPoints[i] + m_dPageX) : (m_dPageH - arrQuadPoints[i]));
 	}
 	//----------------------------------------------------------------------------------------
 	// CWidgetAnnotation

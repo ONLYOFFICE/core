@@ -976,6 +976,8 @@ bool GetFromBase64(const std::wstring& sPath, BYTE** pBuffer, int* nBufferLen)
 		if (!NSBase64::Base64Decode((const char*)pFileContent, dwFileSize, *pBuffer, nBufferLen))
 			return false;
 	}
+	else
+		return false;
 	oFile.CloseFile();
 	return true;
 }
@@ -1135,6 +1137,15 @@ int main(int argc, char* argv[])
 		}
 	}
 
+	BYTE* pColor = new BYTE[12] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+	// REDACT
+	if (false)
+	{
+		int pRect[4] = { 307499, 217499, 1799999, 1124999 };
+		if (!RedactPage(pGrFile, nTestPage, pRect, 1, pColor, 12))
+			std::cout << "Redact false" << std::endl;
+	}
+
 	int i = nTestPage;
 	//for (int i = 0; i < nPagesCount; ++i)
 	{
@@ -1162,7 +1173,6 @@ int main(int argc, char* argv[])
 			RELEASEARRAYOBJECTS(res);
 		}
 	}
-
 	free(pInfo);
 
 	// LINKS

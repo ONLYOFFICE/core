@@ -207,6 +207,40 @@ JSSmart<CJSValue> CDrawingFileEmbed::UnmergePages()
 		return CJSContext::createBool(m_pFile->UnmergePages());
 	return CJSContext::createBool(false);
 }
+JSSmart<CJSValue> CDrawingFileEmbed::RedactPage(JSSmart<CJSValue> nPageIndex, JSSmart<CJSValue> arrRedactBox, JSSmart<CJSValue> dataFiller)
+{
+	bool result = false;
+	if (m_pFile)
+	{
+		int pageIndex = nPageIndex->toInt32();
+
+		JSSmart<CJSArray> arrBox = arrRedactBox->toArray();
+		int nCountBox = arrBox->getCount();
+		double* pBox = NULL;
+		if (0 < nCountBox)
+			pBox = new double[nCountBox];
+
+		for (int i = 0; i < nCountBox; i++)
+			pBox[i] = arrBox->get(i)->toDouble();
+
+		JSSmart<CJSTypedArray> dataPtr = dataFiller->toTypedArray();
+		CJSDataBuffer buffer = dataPtr->getData();
+
+		result = m_pFile->RedactPage(pageIndex, pBox, nCountBox / 4, buffer.Data, (int)buffer.Len);
+
+		if (pBox)
+			delete[] pBox;
+		if (buffer.IsExternalize)
+			buffer.Free();
+	}
+	return CJSContext::createBool(result);
+}
+JSSmart<CJSValue> CDrawingFileEmbed::UndoRedact()
+{
+	if (m_pFile)
+		return CJSContext::createBool(m_pFile->UndoRedact());
+	return CJSContext::createBool(false);
+}
 
 bool EmbedDrawingFile(JSSmart<NSJSBase::CJSContext>& context, IOfficeDrawingFile* pFile)
 {

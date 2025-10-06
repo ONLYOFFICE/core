@@ -215,7 +215,8 @@ core_linux {
 				QMAKE_LINK        = $$join(QMAKE_CUSTOM_SYSROOT_BIN, , , "g++")
 				QMAKE_LINK_SHLIB  = $$join(QMAKE_CUSTOM_SYSROOT_BIN, , , "g++")
 
-                QMAKE_CXXFLAGS    += --sysroot $$QMAKE_CUSTOM_SYSROOT
+                QMAKE_CFLAGS      += --sysroot $$QMAKE_CUSTOM_SYSROOT
+				QMAKE_CXXFLAGS    += --sysroot $$QMAKE_CUSTOM_SYSROOT
 				QMAKE_LFLAGS      += --sysroot $$QMAKE_CUSTOM_SYSROOT
 			}
 		}

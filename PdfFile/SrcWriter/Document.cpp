@@ -558,6 +558,10 @@ namespace PdfWriter
 
 		return NULL;
 	}
+	void CDocument::AddExtGState(CExtGrState* pState)
+	{
+		m_vExtGrStates.push_back(pState);
+	}
     CExtGrState* CDocument::GetExtGState(double dAlphaStroke, double dAlphaFill, EBlendMode eMode, int nStrokeAdjustment)
 	{
 		CExtGrState* pExtGrState = FindExtGrState(dAlphaStroke, dAlphaFill, eMode, nStrokeAdjustment);
@@ -651,6 +655,8 @@ namespace PdfWriter
 			pAnnot = new CCaretAnnotation(m_pXref);
 		else if (m_nType == 12)
 			pAnnot = new CStampAnnotation(m_pXref);
+		else if (m_nType == 25)
+			pAnnot = new CRedactAnnotation(m_pXref);
 
 		if (pAnnot)
 			m_pXref->Add(pAnnot);
@@ -1320,7 +1326,7 @@ namespace PdfWriter
 		pObj->SetHidden();
 		if (!pObj->IsIndirect())
 			return;
-		TXrefEntry* pEntry = m_pXref->GetEntryByObjectId(pObj->GetObjId());
+		TXrefEntry* pEntry = pObj->GetXrefEntry();
 		if (pEntry)
 		{
 			pEntry->nEntryType = 'f'; // FREE_ENTRY
@@ -1709,6 +1715,11 @@ namespace PdfWriter
 		{
 			if (pObj->IsIndirect())
 				return true;
+			if (!pObj->GetObjId())
+			{
+				delete pObj;
+				return true;
+			}
 			CXref* pXref = new CXref(this, pObj->GetObjId(), pObj->GetGenNo());
 			delete pObj;
 			if (!pXref)
@@ -2023,5 +2034,9 @@ namespace PdfWriter
 	{
 		m_pCurPage->ClearContent(m_pXref);
 		m_pCurPage->StartTransform(1, 0, 0, 1, 0, 0);
+	}
+	void CDocument::ClearPageFull()
+	{
+		m_pCurPage->ClearContentFull(m_pXref);
 	}
 }

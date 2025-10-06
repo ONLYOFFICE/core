@@ -2646,11 +2646,11 @@ HRESULT CPdfWriter::AddRedact(const std::vector<double>& arrRedact)
 
 	for (int i = 0; i < m_arrRedact.size(); i += 4)
 	{
-		m_arrRedact[i * 4 + 0] += dPageX;
-		double dQ = m_arrRedact[i * 4 + 1];
-		m_arrRedact[i * 4 + 1] = dPageH - m_arrRedact[i * 4 + 3];
-		m_arrRedact[i * 4 + 2] += dPageX;
-		m_arrRedact[i * 4 + 3] = dPageH - dQ;
+		m_arrRedact[i + 0] += dPageX;
+		double dQ = m_arrRedact[i + 1];
+		m_arrRedact[i + 1] = dPageH - m_arrRedact[i + 3];
+		m_arrRedact[i + 2] += dPageX;
+		m_arrRedact[i + 3] = dPageH - dQ;
 	}
 
 	return S_OK;
@@ -3176,8 +3176,52 @@ bool CPdfWriter::SkipRedact(const double& dX, const double& dY, const double& dW
 	if (m_arrRedact.empty())
 		return false;
 	double dXmin = MM_2_PT(dX), dYmin = MM_2_PT(m_dPageHeight - dY - dH), dXmax = MM_2_PT(dX + dW), dYmax = MM_2_PT(m_dPageHeight - dY);
-	m_oTransform.Transform(dXmin, dYmin, &dXmin, &dYmin);
-	m_oTransform.Transform(dXmax, dYmax, &dXmax, &dYmax);
+	CTransform& t = m_oTransform;
+	CTransform oT;
+	oT.Set(t.m11, -t.m12, -t.m21, t.m22, MM_2_PT(t.dx + t.m21 * m_dPageHeight), MM_2_PT(m_dPageHeight - m_dPageHeight * t.m22 - t.dy));
+
+	double dX1, dY1, dX2, dY2, dX3, dY3, dX4, dY4;
+	dX1 = dXmin, dY1 = dYmin;
+	dX2 = dXmin, dY2 = dYmax;
+	dX3 = dXmax, dY3 = dYmax;
+	dX4 = dXmax, dY4 = dYmin;
+
+	oT.Transform(dX1, dY1, &dX1, &dY1);
+	oT.Transform(dX2, dY2, &dX2, &dY2);
+	oT.Transform(dX3, dY3, &dX3, &dY3);
+	oT.Transform(dX4, dY4, &dX4, &dY4);
+
+	std::vector<PdfWriter::CPoint> poly2 =
+	{
+		PdfWriter::CPoint(dX1, dY1),
+		PdfWriter::CPoint(dX2, dY2),
+		PdfWriter::CPoint(dX3, dY3),
+		PdfWriter::CPoint(dX4, dY4)
+	};
+	for (int i = 0; i < m_arrRedact.size(); i += 4)
+	{
+		std::vector<PdfWriter::CPoint> poly1 =
+		{
+			PdfWriter::CPoint(m_arrRedact[i + 0], m_arrRedact[i + 1]),
+			PdfWriter::CPoint(m_arrRedact[i + 2], m_arrRedact[i + 1]),
+			PdfWriter::CPoint(m_arrRedact[i + 2], m_arrRedact[i + 3]),
+			PdfWriter::CPoint(m_arrRedact[i + 0], m_arrRedact[i + 3])
+		};
+
+		if (PdfWriter::SAT(poly1, poly2))
+			return true;
+	}
+	return false;
+}
+bool CPdfWriter::SkipRedact(const double& dX, const double& dY)
+{
+	if (m_arrRedact.empty())
+		return false;
+	double dXc = MM_2_PT(dX), dYc = MM_2_PT(m_dPageHeight - dY);
+	CTransform& t = m_oTransform;
+	CTransform oT;
+	oT.Set(t.m11, -t.m12, -t.m21, t.m22, MM_2_PT(t.dx + t.m21 * m_dPageHeight), MM_2_PT(m_dPageHeight - m_dPageHeight * t.m22 - t.dy));
+	oT.Transform(dXc, dYc, &dXc, &dYc);
 	for (int i = 0; i < m_arrRedact.size(); i += 4)
 	{
 		double xMin = m_arrRedact[i + 0];
@@ -3185,7 +3229,7 @@ bool CPdfWriter::SkipRedact(const double& dX, const double& dY, const double& dW
 		double xMax = m_arrRedact[i + 2];
 		double yMax = m_arrRedact[i + 3];
 
-		if (!(dXmax < xMin || dXmin > xMax || dYmax < yMin || dYmin > yMax))
+		if (xMin < dXc && dXc < xMax && yMin < dYc && dYc < yMax)
 			return true;
 	}
 	return false;
@@ -3305,23 +3349,10 @@ bool CPdfWriter::DrawText(unsigned char* pCodes, const unsigned int& unLen, cons
 	if (!pCodes || !unLen)
 		return false;
 
-	if (!m_arrRedact.empty())
-	{
-		double dXc = MM_2_PT(dX), dYc = MM_2_PT(m_dPageHeight - dY);
-		m_oTransform.Transform(dXc, dYc, &dXc, &dYc);
-		// TODO должна быть проверка центрального положения, а не точки начала
-		// TODO Сюда приходит много символов за раз, и нужно отрисовать только те, что вне областей редакта
-		for (int i = 0; i < m_arrRedact.size(); i += 4)
-		{
-			double xMin = m_arrRedact[i + 0];
-			double yMin = m_arrRedact[i + 1];
-			double xMax = m_arrRedact[i + 2];
-			double yMax = m_arrRedact[i + 3];
-
-			if (xMin < dXc && dXc < xMax && yMin < dYc && dYc < yMax)
-				return true;
-		}
-	}
+	// TODO должна быть проверка центрального положения, а не точки начала
+	// TODO Сюда приходит много символов за раз, и нужно отрисовать только те, что вне областей редакта
+	if (SkipRedact(dX, dY))
+		return true;
 
 	CTransform& t = m_oTransform;
 	m_oCommandManager.SetTransform(t.m11, -t.m12, -t.m21, t.m22, MM_2_PT(t.dx + t.m21 * m_dPageHeight), MM_2_PT(m_dPageHeight - m_dPageHeight * t.m22 - t.dy));
@@ -3345,23 +3376,10 @@ bool CPdfWriter::DrawTextToRenderer(const unsigned int* unGid, const unsigned in
 {
 	if (m_bSplit)
 		return false;
-	if (!m_arrRedact.empty())
-	{
-		double dXc = MM_2_PT(dX), dYc = MM_2_PT(m_dPageHeight - dY);
-		m_oTransform.Transform(dXc, dYc, &dXc, &dYc);
-		// TODO должна быть проверка центрального положения, а не точки начала
-		// TODO Сюда приходит много символов за раз, и нужно отрисовать только те, что вне областей редакта
-		for (int i = 0; i < m_arrRedact.size(); i += 4)
-		{
-			double xMin = m_arrRedact[i + 0];
-			double yMin = m_arrRedact[i + 1];
-			double xMax = m_arrRedact[i + 2];
-			double yMax = m_arrRedact[i + 3];
-
-			if (xMin < dXc && dXc < xMax && yMin < dYc && dYc < yMax)
-				return true;
-		}
-	}
+	// TODO должна быть проверка центрального положения, а не точки начала
+	// TODO Сюда приходит много символов за раз, и нужно отрисовать только те, что вне областей редакта
+	if (SkipRedact(dX, dY))
+		return true;
 	// TODO pdf позволяет создание своего шрифта, но не следует это использовать для воссоздания шрифта запрещенного для редактирования или встраивания
 	Aggplus::CGraphicsPathSimpleConverter simplifier;
 	simplifier.SetRenderer(m_pRenderer);
@@ -3377,23 +3395,10 @@ bool CPdfWriter::DrawTextToRenderer(const unsigned int* unGid, const unsigned in
 }
 bool CPdfWriter::PathCommandDrawText(unsigned int* pUnicodes, unsigned int unLen, const double& dX, const double& dY, const unsigned int* pGids)
 {
-	if (!m_arrRedact.empty())
-	{
-		double dXc = MM_2_PT(dX), dYc = MM_2_PT(m_dPageHeight - dY);
-		m_oTransform.Transform(dXc, dYc, &dXc, &dYc);
-		// TODO должна быть проверка центрального положения, а не точки начала
-		// TODO Сюда приходит много символов за раз, и нужно отрисовать только те, что вне областей редакта
-		for (int i = 0; i < m_arrRedact.size(); i += 4)
-		{
-			double xMin = m_arrRedact[i + 0];
-			double yMin = m_arrRedact[i + 1];
-			double xMax = m_arrRedact[i + 2];
-			double yMax = m_arrRedact[i + 3];
-
-			if (xMin < dXc && dXc < xMax && yMin < dYc && dYc < yMax)
-				return true;
-		}
-	}
+	// TODO должна быть проверка центрального положения, а не точки начала
+	// TODO Сюда приходит много символов за раз, и нужно отрисовать только те, что вне областей редакта
+	if (SkipRedact(dX, dY))
+		return true;
 
 	unsigned char* pCodes = EncodeString(pUnicodes, unLen, pGids);
 	if (!pCodes)

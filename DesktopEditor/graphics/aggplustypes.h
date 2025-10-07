@@ -212,7 +212,7 @@ public:
 		void Offset(const PointF_T<T>& point) { Offset(point.X, point.Y); }
 		void Offset(T dx, T dy) { X += dx; Y += dy; }
 
-		inline bool IsPositive() { return X >= 0 && Y >= 0 && Width > 0 && Height > 0; }
+		inline bool IsPositive() { return Width > 0 && Height > 0; }
 
 public:
 		T X, Y, Width, Height;

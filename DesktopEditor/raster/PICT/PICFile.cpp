@@ -597,7 +597,7 @@ bool CPictFile::DecodeData()
 			case 0x34:
 			{
 				if (!ReadRectangle(&m_oLastRect))
-					return false;
+					break;
 
 				DrawRect(code == 0x30);
 				break;
@@ -618,7 +618,7 @@ bool CPictFile::DecodeData()
 			case 0x44:
 			{
 				if (!ReadRectangle(&m_oLastRoundRect))
-					return false;
+					break;
 
 				DrawRoundRect(code == 0x40);
 				break;
@@ -639,7 +639,7 @@ bool CPictFile::DecodeData()
 			case 0x54:
 			{
 				if (!ReadRectangle(&m_oLastOval))
-					return false;
+					break;
 
 				DrawOval(code == 0x50);
 				break;
@@ -660,7 +660,7 @@ bool CPictFile::DecodeData()
 			case 0x64:
 			{
 				if (!ReadRectangle(&m_oLastArc))
-					return false;
+					break;
 
 				DrawArc();
 				break;

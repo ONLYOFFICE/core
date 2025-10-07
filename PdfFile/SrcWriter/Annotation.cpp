@@ -2129,11 +2129,18 @@ namespace PdfWriter
 	{
 		std::string sName = m_sAP_N_Yes.empty() ? "Yes" : m_sAP_N_Yes;
 		Add("AS", sName.c_str());
+
+		if (!m_nParentID)
+			Add("V", sName.c_str());
+
 		return sName;
 	}
 	void CCheckBoxWidget::Off()
 	{
 		Add("AS", "Off");
+
+		if (!m_nParentID)
+			Add("V", "Off");
 	}
 	void CCheckBoxWidget::SwitchAP(const std::string& sV, int nI)
 	{

@@ -377,7 +377,7 @@ PdfWriter::CObjectBase* DictToCDictObject2(Object* obj, PdfWriter::CDocument* pD
 
 		Object oType, oSubtype;
 		PdfWriter::CDictObject* pDict = NULL;
-		if (obj->dictLookup("Type", &oType)->isName("Annot") && obj->dictLookup("Subtype", &oSubtype)->isName())
+		if (obj->dictLookup("Subtype", &oSubtype)->isName())
 		{
 			PdfWriter::CAnnotation* pAnnot = CreateAnnot(obj, &oSubtype, NULL);
 			if (pAnnot)
@@ -386,7 +386,7 @@ PdfWriter::CObjectBase* DictToCDictObject2(Object* obj, PdfWriter::CDocument* pD
 				pDict = pAnnot;
 			}
 		}
-		oType.free(); oSubtype.free();
+		oSubtype.free();
 
 		if (obj->dictLookup("Type", &oType)->isName("ExtGState"))
 		{

@@ -1239,10 +1239,10 @@ bool CRedact::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRe
 		SRedact* pRedact = new SRedact();
 		pRedact->sID = pReader->ReadString();
 		int m = pReader->ReadInt();
-		pRedact->arrQuadPoints.reserve(m * 4);
+		pRedact->arrQuadPoints.reserve(m * 8);
 		for (int j = 0; j < m; ++j)
 		{
-			for (int k = 0; k < 4; ++k)
+			for (int k = 0; k < 8; ++k)
 				pRedact->arrQuadPoints.push_back(pReader->ReadDouble());
 		}
 		pRedact->nFlag = pReader->ReadInt();

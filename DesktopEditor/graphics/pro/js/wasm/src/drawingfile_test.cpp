@@ -1046,14 +1046,14 @@ int main(int argc, char* argv[])
 	RELEASEARRAYOBJECTS(pFileData);
 
 	// SPLIT & MERGE
-	if (false)
+	if (true)
 	{
 		int nBufferLen = NULL;
 		BYTE* pBuffer = NULL;
 
 		if (true && GetFromBase64(NSFile::GetProcessDirectory() + L"/split.txt", &pBuffer, &nBufferLen))
 		{
-			std::vector<int> arrPages = { 0 };
+			std::vector<int> arrPages = { 2 };
 			BYTE* pSplitPages = SplitPages(pGrFile, arrPages.data(), arrPages.size(), pBuffer, nBufferLen);
 			int nLength = READ_INT(pSplitPages);
 
@@ -1129,7 +1129,7 @@ int main(int argc, char* argv[])
 	// REDACT
 	if (false)
 	{
-		int pRect[4] = { 307499, 217499, 1799999, 1124999 };
+		int pRect[8] = { 307499, 217499, 307499, 1124999, 1799999, 1124999, 1799999, 217499 };
 		if (!RedactPage(pGrFile, nTestPage, pRect, 1, pColor, 12))
 			std::cout << "Redact false" << std::endl;
 	}

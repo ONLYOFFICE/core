@@ -398,13 +398,13 @@ void CPath::Redact(PdfWriter::CMatrix* pMatrix, const std::vector<double>& arrRe
 	PdfWriter::CMatrix oInverse = pMatrix->Inverse();
 
 	Aggplus::CGraphicsPath oPath, oPathRedact, oPathResult;
-	for (int i = 0; i < arrRedact.size(); i += 4)
+	for (int i = 0; i < arrRedact.size(); i += 8)
 	{
 		oPathRedact.StartFigure();
 		oPathRedact.MoveTo(arrRedact[i + 0], arrRedact[i + 1]);
-		oPathRedact.LineTo(arrRedact[i + 0], arrRedact[i + 3]);
 		oPathRedact.LineTo(arrRedact[i + 2], arrRedact[i + 3]);
-		oPathRedact.LineTo(arrRedact[i + 2], arrRedact[i + 1]);
+		oPathRedact.LineTo(arrRedact[i + 4], arrRedact[i + 5]);
+		oPathRedact.LineTo(arrRedact[i + 6], arrRedact[i + 7]);
 		oPathRedact.CloseFigure();
 	}
 
@@ -448,15 +448,12 @@ void CPath::Redact(PdfWriter::CMatrix* pMatrix, const std::vector<double>& arrRe
 	{
 		bool bPath = false;
 		std::vector<PdfWriter::CSegment> arrForStroke;
-		std::vector<PdfWriter::TRect> rectangles;
-		for (int i = 0; i < arrRedact.size(); i += 4)
+		for (int i = 0; i < arrRedact.size(); i += 8)
 		{
-			arrForStroke.push_back(PdfWriter::CSegment(PdfWriter::CPoint(arrRedact[i + 0], arrRedact[i + 1]), PdfWriter::CPoint(arrRedact[i + 0], arrRedact[i + 3])));
-			arrForStroke.push_back(PdfWriter::CSegment(PdfWriter::CPoint(arrRedact[i + 0], arrRedact[i + 3]), PdfWriter::CPoint(arrRedact[i + 2], arrRedact[i + 3])));
-			arrForStroke.push_back(PdfWriter::CSegment(PdfWriter::CPoint(arrRedact[i + 2], arrRedact[i + 3]), PdfWriter::CPoint(arrRedact[i + 2], arrRedact[i + 1])));
-			arrForStroke.push_back(PdfWriter::CSegment(PdfWriter::CPoint(arrRedact[i + 2], arrRedact[i + 1]), PdfWriter::CPoint(arrRedact[i + 0], arrRedact[i + 1])));
-
-			rectangles.push_back({arrRedact[i + 0], arrRedact[i + 3], arrRedact[i + 2], arrRedact[i + 1]});
+			arrForStroke.push_back(PdfWriter::CSegment(PdfWriter::CPoint(arrRedact[i + 0], arrRedact[i + 1]), PdfWriter::CPoint(arrRedact[i + 2], arrRedact[i + 3])));
+			arrForStroke.push_back(PdfWriter::CSegment(PdfWriter::CPoint(arrRedact[i + 2], arrRedact[i + 3]), PdfWriter::CPoint(arrRedact[i + 4], arrRedact[i + 5])));
+			arrForStroke.push_back(PdfWriter::CSegment(PdfWriter::CPoint(arrRedact[i + 4], arrRedact[i + 5]), PdfWriter::CPoint(arrRedact[i + 6], arrRedact[i + 7])));
+			arrForStroke.push_back(PdfWriter::CSegment(PdfWriter::CPoint(arrRedact[i + 6], arrRedact[i + 7]), PdfWriter::CPoint(arrRedact[i + 0], arrRedact[i + 1])));
 		}
 
 		size_t length = oPath.GetPointCount(), compound = oPath.GetCloseCount();
@@ -496,6 +493,19 @@ void CPath::Redact(PdfWriter::CMatrix* pMatrix, const std::vector<double>& arrRe
 			{
 				double dX = points[i].X, dY = points[i].Y;
 
+				Aggplus::CGraphicsPath _oPath;
+				_oPath.StartFigure();
+				_oPath.MoveTo(dXCur, dYCur);
+				_oPath.LineTo(dX, dY);
+				_oPath.CloseFigure();
+
+				dXCur = dX, dYCur = dY;
+
+				oPathResult = Aggplus::CalcBooleanOperation(_oPath, oPathRedact, Aggplus::BooleanOpType::Subtraction);
+				bPath = bPath || DrawPathRedact(pMatrix, &oPathResult, bStroke);
+				oPathResult.Reset();
+
+				/*
 				PdfWriter::CLineClipper clipper(rectangles);
 				PdfWriter::CSegment line(PdfWriter::CPoint(dXCur, dYCur), PdfWriter::CPoint(dX, dY));
 				dXCur = dX; dYCur = dY;
@@ -511,9 +521,20 @@ void CPath::Redact(PdfWriter::CMatrix* pMatrix, const std::vector<double>& arrRe
 					MoveTo(dX1, dY1);
 					LineTo(dX2, dY2);
 				}
+				*/
 			}
 			else if (oPath.IsClosePoint(i))
 			{
+				Aggplus::CGraphicsPath _oPath;
+				_oPath.StartFigure();
+				_oPath.MoveTo(dXCur, dYCur);
+				_oPath.LineTo(dXStart, dYStart);
+				_oPath.CloseFigure();
+
+				oPathResult = Aggplus::CalcBooleanOperation(_oPath, oPathRedact, Aggplus::BooleanOpType::Subtraction);
+				bPath = bPath || DrawPathRedact(pMatrix, &oPathResult, bStroke);
+				oPathResult.Reset();
+				/*
 				PdfWriter::CLineClipper clipper(rectangles);
 				PdfWriter::CSegment line(PdfWriter::CPoint(dXCur, dYCur), PdfWriter::CPoint(dXStart, dYStart));
 				auto visibleSegments = clipper.getVisibleSegments(line);
@@ -527,6 +548,7 @@ void CPath::Redact(PdfWriter::CMatrix* pMatrix, const std::vector<double>& arrRe
 					MoveTo(dX1, dY1);
 					LineTo(dX2, dY2);
 				}
+				*/
 			}
 		}
 

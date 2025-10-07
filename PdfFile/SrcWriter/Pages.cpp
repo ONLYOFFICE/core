@@ -393,17 +393,15 @@ namespace PdfWriter
 	void CPage::Fix()
 	{
 		// Инициализация текущего contents
-		CObjectBase* pContents = Get("Contents");
+		CObjectBase* pContents = Get("Contents", true);
 		if (pContents)
 		{
 			if (pContents->GetType() == object_type_ARRAY)
 				m_pContents = (CArrayObject*)pContents;
-			else if (pContents->GetType() == object_type_UNKNOWN)
+			else if (pContents->GetType() == object_type_PROXY)
 			{
-				CProxyObject* pNewContents = new CProxyObject(pContents->Copy(), true);
-				pNewContents->Get()->SetRef(pContents->GetObjId(), pContents->GetGenNo());
 				m_pContents = new CArrayObject();
-				m_pContents->Add(pNewContents);
+				m_pContents->Add(pContents->Copy());
 				Add("Contents", m_pContents);
 			}
 			else if (pContents->GetType() == object_type_DICT)

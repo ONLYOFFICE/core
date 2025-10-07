@@ -917,13 +917,11 @@ namespace Aggplus
 					PointD firstPoint = subPath.GetPoints(0, 1)[0];
 					double x, y;
 					subPath.GetLastPoint(x, y);
-					if ((abs(firstPoint.X - x) >= 1e-2 && abs(firstPoint.Y - y) >= 1e-2) ||
+					if ((abs(firstPoint.X - x) >= 1e-2 || abs(firstPoint.Y - y) >= 1e-2) ||
 						subPath.GetPointCount() == 1)
-					{
 						subPath.LineTo(firstPoint.X, firstPoint.Y);
-						subPath.CloseFigure();
-					}
 
+					subPath.CloseFigure();
 					result.push_back(subPath);
 					subPath.Reset();
 				}
@@ -951,7 +949,7 @@ namespace Aggplus
 				double x, y;
 				subPath.GetLastPoint(x, y);
 
-				if ((abs(firstPoint.X - x) >= 1e-2 && abs(firstPoint.Y - y) >= 1e-2) || subPath.GetPointCount() == 1)
+				if ((abs(firstPoint.X - x) >= 1e-2 || abs(firstPoint.Y - y) >= 1e-2) || subPath.GetPointCount() == 1)
 					subPath.LineTo(firstPoint.X, firstPoint.Y);
 
 				subPath.CloseFigure();
@@ -1004,6 +1002,24 @@ namespace Aggplus
 		other.m_internal = nullptr;
 
 		return *this;
+	}
+
+	bool CGraphicsPath::operator==(const CGraphicsPath& other) noexcept
+	{
+		unsigned pointsCount = GetPointCount(),
+			otherPointsCount = other.GetPointCount();
+
+		if (pointsCount != otherPointsCount)
+			return false;
+
+		std::vector<PointD> points = GetPoints(0, pointsCount),
+			otherPoints = other.GetPoints(0, otherPointsCount);
+
+		for (unsigned i = 0; i < pointsCount; i++)
+			if (!points[i].Equals(otherPoints[i]))
+				return false;
+
+		return true;
 	}
 }
 

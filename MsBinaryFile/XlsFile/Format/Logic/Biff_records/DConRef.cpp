@@ -132,7 +132,7 @@ void DConRef::writeFields(CFRecord& record)
 		XLUnicodeStringNoCch file;
 		file = stFile;
 		record << file;
-        record.reserveNunBytes(2);
+		//record.reserveNunBytes(2);
     }
 }
 

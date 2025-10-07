@@ -33,6 +33,7 @@
 
 #include "Workbook.h"
 #include "../Worksheets/Worksheet.h"
+#include "../Pivot/PivotCacheDefinition.h"
 
 #include "../../XlsbFormat/Xlsb.h"
 
@@ -58,8 +59,11 @@
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/GlobalsSubstream.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/WorkbookStreamObject.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/PIVOTCACHEDEFINITION.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/SXSRC.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/DREF.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/SXStreamID.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/SXVS.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/DConRef.h"
 
 #include "../../Common/SimpleTypes_Shared.h"
 #include "../../Common/SimpleTypes_Spreadsheet.h"
@@ -470,7 +474,35 @@ namespace OOX
 			if(m_oPivotCaches.IsInit())
 			{
 				for(auto i : m_oPivotCaches->m_arrItems)
-					globalsSubstream->m_arPIVOTCACHEDEFINITION.push_back(i->toXLS());
+				{	auto pivotCacheBin = i->toXLS();
+
+					if(!i->m_oCacheId.IsInit() || !i->m_oRid.IsInit() ||  !this->IsExist(i->m_oRid->GetValue()))
+					continue;
+					auto cacheFilePtr = this->Find(i->m_oRid->GetValue());
+					auto CachePtr = static_cast<CPivotCacheDefinitionFile*>(cacheFilePtr.GetPointer());
+					if(CachePtr->m_oPivotCashDefinition.IsInit() && CachePtr->m_oPivotCashDefinition->m_oCacheSource.IsInit()
+						&& CachePtr->m_oPivotCashDefinition->m_oCacheSource->m_oType.IsInit()
+						&& CachePtr->m_oPivotCashDefinition->m_oCacheSource->m_oType->GetValue() == SimpleTypes::Spreadsheet::ESourceCacheType::typeSourceWorksheet)
+					{
+						auto source = CachePtr->m_oPivotCashDefinition->m_oCacheSource;
+						auto castedPivotCache = static_cast<XLS::PIVOTCACHEDEFINITION*>(pivotCacheBin.get());
+						auto cacheSourcePtr = new XLS::SXSRC;
+						castedPivotCache->m_SXSRC =XLS::BaseObjectPtr(cacheSourcePtr);
+						auto dref = new XLS::DREF;
+						auto conRef = new XLS::DConRef;
+						cacheSourcePtr->m_source = XLS::BaseObjectPtr(dref);
+						dref->m_DCon = XLS::BaseObjectPtr(conRef);
+						if(source->m_oWorksheetSource->m_oRef.IsInit())
+						{
+							conRef->ref = source->m_oWorksheetSource->m_oRef.get();
+						}
+						if(source->m_oWorksheetSource->m_oSheet.IsInit())
+						{
+							conRef->sheet_name = source->m_oWorksheetSource->m_oSheet.get();
+						}
+					}
+					globalsSubstream->m_arPIVOTCACHEDEFINITION.push_back(pivotCacheBin);
+				}
 			}
 			return objectPtr;
 		}

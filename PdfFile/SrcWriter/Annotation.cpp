@@ -1809,18 +1809,21 @@ namespace PdfWriter
 			{
 				CDictObject* pDAP = (CDictObject*)pAP;
 				CObjectBase* pAPi = pDAP->Get("N");
+				if (pAPi)
 				{
 					CProxyObject* pNewAPi = new CProxyObject(pAPi->Copy(), true);
 					pNewAPi->Get()->SetRef(pAPi->GetObjId(), pAPi->GetGenNo());
 					m_pAppearance->Add("N", pNewAPi);
 				}
 				pAPi = pDAP->Get("D");
+				if (pAPi)
 				{
 					CProxyObject* pNewAPi = new CProxyObject(pAPi->Copy(), true);
 					pNewAPi->Get()->SetRef(pAPi->GetObjId(), pAPi->GetGenNo());
 					m_pAppearance->Add("D", pNewAPi);
 				}
 				pAPi = pDAP->Get("R");
+				if (pAPi)
 				{
 					CProxyObject* pNewAPi = new CProxyObject(pAPi->Copy(), true);
 					pNewAPi->Get()->SetRef(pAPi->GetObjId(), pAPi->GetGenNo());

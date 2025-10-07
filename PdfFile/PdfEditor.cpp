@@ -1105,6 +1105,11 @@ bool CPdfEditor::IncrementalUpdates()
 				}
 				else if (strcmp("Fields", chKey) == 0)
 					oAcroForm.dictGetVal(nIndex, &oTemp2);
+				else if (strcmp("NeedAppearances", chKey) == 0)
+				{
+					oTemp2.free();
+					continue;
+				}
 				else
 					oAcroForm.dictGetValNF(nIndex, &oTemp2);
 				DictToCDictObject(&oTemp2, pAcroForm, chKey);

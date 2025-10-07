@@ -1070,10 +1070,12 @@ unsigned int CPictFile::ReadLongValue()
 
 bool CPictFile::ReadRectangle(Aggplus::Rect* rect)
 {
-	rect->Y = ReadShortValue();
-	rect->X = ReadShortValue();
-	rect->Height = ReadShortValue() - rect->Y;
-	rect->Width  = ReadShortValue() - rect->X;
+	rect->Y = (short) ReadShortValue();
+	rect->X = (short) ReadShortValue();
+	short bottom = (short) ReadShortValue();
+	short right = (short) ReadShortValue();
+	rect->Height = bottom - rect->Y;
+	rect->Width  = right - rect->X;
 
 	if (feof(m_pFile) != 0)
 		return false;

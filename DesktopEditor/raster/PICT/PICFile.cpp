@@ -60,6 +60,9 @@ bool CPictFile::Open(CBgraFrame* frame, const std::wstring& fileName, bool isRGB
 	auto status = Decode();
 	file.CloseFile();
 
+	if (!status)
+		return false;
+
 	BYTE* data = new BYTE[4 * m_oImgData.m_nWidth * m_oImgData.m_nHeight];
 	frame->put_Data(data);
 	frame->put_Height(m_oImgData.m_nHeight);
@@ -82,7 +85,7 @@ bool CPictFile::Open(CBgraFrame* frame, const std::wstring& fileName, bool isRGB
 		}
 	}
 
-	return status;
+	return true;
 }
 
 bool CPictFile::Open(CBgraFrame* frame, BYTE* buffer, const size_t& size, bool isRGB)
@@ -191,6 +194,8 @@ bool CPictFile::DecodeData()
 	int flag = 0;
 
 	bool  is_pix_data = false;
+	if (!m_oImgData.m_pPixelData)
+		m_oImgData.m_pPixelData = (BYTE*) malloc(m_oImgData.m_nWidth * m_oImgData.m_nHeight * 4);
 
 	for (int code = 0; feof(m_pFile) == 0; )
 	{
@@ -228,6 +233,7 @@ bool CPictFile::DecodeData()
 					break;
 				m_oImgData.m_nHeight = frame.Height;
 				m_oImgData.m_nWidth  = frame.Width;
+				m_oImgData.m_pPixelData = (BYTE*)realloc(m_oImgData.m_pPixelData, m_oImgData.m_nHeight * m_oImgData.m_nWidth * 4);
 				break;
 			}
 			case 0x11:
@@ -714,8 +720,7 @@ bool CPictFile::DecodeData()
 				if (frame.Height != 0)
 					tile_image.m_nHeight = frame.Height;
 
-				tile_image.m_pPixelData = new BYTE[4 * tile_image.m_nWidth * tile_image.m_nHeight];
-
+				tile_image.m_pPixelData = (BYTE*)malloc(4 * tile_image.m_nWidth * tile_image.m_nHeight);
 				if ((code == 0x9a) || (code == 0x9b) || ((bytes_per_line & 0x8000) != 0))
 				{
 					fseek(m_pFile, 18, SEEK_CUR);
@@ -829,7 +834,7 @@ bool CPictFile::DecodeData()
 				}
 
 				BYTE* p = pixels;
-				for (size_t y = 0; y < tile_image.m_nHeight; y++)
+				for	(size_t y = 0; y < tile_image.m_nHeight; y++)
 				{
 					if (p > (pixels + extent + m_oImgData.m_nWidth))
 					{
@@ -917,9 +922,15 @@ bool CPictFile::DecodeData()
 				if (feof(m_pFile) == 0)
 					if ((code == 0x9a) || (code == 0x9b) || ((bytes_per_line & 0x8000) != 0))
 					{
-						m_oImgData = tile_image;
-						m_oImgData.m_pPixelData = new BYTE[4 * m_oImgData.m_nHeight * m_oImgData.m_nWidth];
-						memcpy(m_oImgData.m_pPixelData, tile_image.m_pPixelData, 4 * m_oImgData.m_nHeight * m_oImgData.m_nWidth);
+						if (m_oImgData.m_nHeight <= tile_image.m_nHeight && m_oImgData.m_nWidth <= tile_image.m_nWidth)
+						{
+							m_oImgData.m_nHeight = tile_image.m_nHeight;
+							m_oImgData.m_nWidth = tile_image.m_nWidth;
+							m_oImgData.m_pPixelData = (BYTE*)realloc(m_oImgData.m_pPixelData, m_oImgData.m_nHeight * m_oImgData.m_nWidth * 4);
+							memcpy(m_oImgData.m_pPixelData, tile_image.m_pPixelData, m_oImgData.m_nHeight * m_oImgData.m_nWidth * 4);
+						}
+						else
+							CompositeImage(tile_image, destination.X, destination.Y);
 					}
 				break;
 			}
@@ -969,8 +980,9 @@ bool CPictFile::DecodeData()
 
 	if (!is_pix_data)
 	{
-		m_oImgData.m_pPixelData	= new BYTE[4 * m_oImgData.m_nHeight * m_oImgData.m_nWidth];
-		memcpy(m_oImgData.m_pPixelData, m_oFrame.get_Data(), 4 * m_oImgData.m_nHeight * m_oImgData.m_nWidth);
+		if (!m_oImgData.m_pPixelData)
+			m_oImgData.m_pPixelData	= (BYTE*)malloc(4 * m_oImgData.m_nHeight * m_oImgData.m_nWidth);
+			memcpy(m_oImgData.m_pPixelData, m_oFrame.get_Data(), 4 * m_oImgData.m_nHeight * m_oImgData.m_nWidth);
 	}
 
 	return true;
@@ -1076,7 +1088,7 @@ void CPictFile::SetImageAlpha(Image* img, const BYTE alpha)
 	bool status = true;
 
 	if (!img->m_pPixelData)
-		img->m_pPixelData = new BYTE[4 * img->m_nHeight * img->m_nWidth];
+		img->m_pPixelData = (BYTE*)malloc(4 * img->m_nHeight * img->m_nWidth);
 
 	img->m_eAlphaTrait = BlendPixelTrait;
 	img->m_pChannelMap[AlphaPixelChannel].traits = UpdatePixelTrait;
@@ -1693,4 +1705,228 @@ void CPictFile::InitializeRenderer()
 	m_pRenderer->put_Height(m_oImgData.m_nHeight);
 	m_pRenderer->SetSwapRGB(false);
 	m_pRenderer->put_PenColor(0x000000);
+}
+
+
+BYTE* CPictFile::GetPixels(const Image& image, const long long& x, const long long& y, const size_t& width, const size_t& height) const
+{
+	BYTE* pixels = image.m_pPixelData + 4 * (y * image.m_nWidth + x);
+
+	if (!pixels)
+		return nullptr;
+
+	if (image.m_nWidth == 0)
+		return nullptr;
+
+	long long offset = y * image.m_nWidth;
+
+	offset += x;
+	size_t length =  4 * width * sizeof(unsigned char);
+
+	size_t rows = height;
+	size_t extent = length * rows;
+
+	BYTE* q = pixels;
+
+	if (image.m_nWidth == width)
+	{
+		length = extent;
+		rows = 1UL;
+	}
+
+	BYTE* p = image.m_pPixelData + 4 * offset;
+	for (size_t i = 0; i < rows; i++)
+	{
+		memcpy(q, p, length);
+		p += 4 * image.m_nWidth;
+		q += 4 * width;
+	}
+
+	return pixels;
+}
+
+void CPictFile::CompositeImage(const Image& composite,const long long& xOffset, const long long& yOffset)
+{
+	m_oImgData.m_eStorageClass = DirectClass;
+	Image source_image(composite);
+	source_image.m_pPixelData = (BYTE*)malloc(source_image.m_nWidth * source_image.m_nHeight * 4);
+	memcpy(source_image.m_pPixelData, composite.m_pPixelData, source_image.m_nWidth * source_image.m_nHeight * 4);
+
+	m_oImgData.m_pChannelMap[RedPixelChannel].traits = UpdatePixelTrait;
+	m_oImgData.m_pChannelMap[GreenPixelChannel].traits = UpdatePixelTrait;
+	m_oImgData.m_pChannelMap[BluePixelChannel].traits = UpdatePixelTrait;
+	m_oImgData.m_pChannelMap[AlphaPixelChannel].traits = UpdatePixelTrait;
+
+	source_image.m_pChannelMap[RedPixelChannel].traits = CopyPixelTrait;
+	source_image.m_pChannelMap[GreenPixelChannel].traits = CopyPixelTrait;
+	source_image.m_pChannelMap[BluePixelChannel].traits = CopyPixelTrait;
+	source_image.m_pChannelMap[AlphaPixelChannel].traits = CopyPixelTrait;
+
+	bool status = false;
+	if (!((xOffset < 0) || (yOffset < 0)) && !((xOffset + source_image.m_nWidth) > m_oImgData.m_nWidth) && !((yOffset + source_image.m_nHeight) > m_oImgData.m_nHeight))
+	{
+		if ((source_image.m_eAlphaTrait == UndefinedPixelTrait) &&
+			(m_oImgData.m_eAlphaTrait != UndefinedPixelTrait))
+			SetImageAlpha(&source_image, 255);
+
+		status = true;
+		for (size_t y = 0; y < source_image.m_nHeight; y++)
+		{
+			if (!status)
+				continue;
+
+			const BYTE* p = GetPixels(source_image,0,y,source_image.m_nWidth, 1);
+			BYTE* q = GetPixels(m_oImgData, xOffset, y + yOffset, source_image.m_nWidth, 1);
+
+			if (p == nullptr || q == nullptr)
+			{
+				status = false;
+				continue;
+			}
+
+			for (size_t x = 0; x < source_image.m_nWidth; x++)
+			{
+				BYTE read_mask;
+				if (source_image.m_pChannelMap[ReadMaskPixelChannel].traits == UndefinedPixelTrait)
+					read_mask = 255;
+				else
+					read_mask = p[source_image.m_pChannelMap[ReadMaskPixelChannel].offset];
+
+				if (read_mask <= (255.0 / 2.0))
+				{
+					p += 4;
+					q += 4;
+					continue;
+				}
+
+				for (int i = 0; i < 4; i++)
+				{
+					PixelChannel channel = source_image.m_pChannelMap[i].channel;
+					PixelTrait source_traits = source_image.m_pChannelMap[channel].traits;
+					PixelTrait traits = m_oImgData.m_pChannelMap[channel].traits;
+
+					if ((source_traits == UndefinedPixelTrait) || (traits == UndefinedPixelTrait))
+						continue;
+					q[m_oImgData.m_pChannelMap[channel].offset] = p[i];
+				}
+				p += 4;
+				q += 4;
+			}
+		}
+
+		return;
+	}
+
+	status = true;
+	for (size_t y = 0; y < m_oImgData.m_nHeight; y++)
+	{
+		if (!status)
+			continue;
+
+		if (y < yOffset)
+			continue;
+		if (y - yOffset >= source_image.m_nHeight)
+			continue;
+
+		const BYTE* pixels = nullptr;
+		const BYTE* p = nullptr;
+		if (y >= yOffset && y - yOffset < source_image.m_nHeight)
+		{
+			p = GetPixels(source_image, 0, y - yOffset, source_image.m_nWidth,1);
+			if (!p)
+			{
+				status = false;
+				continue;
+			}
+			pixels = p;
+			if (xOffset < 0)
+				p -= xOffset * 4;
+		}
+
+		BYTE* q = GetPixels(m_oImgData, 0, y, m_oImgData.m_nWidth,1);
+		if (!q)
+		{
+			status = false;
+			continue;
+		}
+
+		for (size_t x = 0; x < m_oImgData.m_nWidth; x++)
+		{
+			double
+				Dc = 0.0,
+				Sa = 0.0,
+				Sc = 0.0;
+
+			if (x < xOffset)
+			{
+				q += 4;
+				continue;
+			}
+			if (x - xOffset >= source_image.m_nWidth)
+				break;
+
+			if (!pixels || x < xOffset || x - xOffset >= source_image.m_nWidth)
+			{
+				for (int i = 0; i < 4; i++)
+				{
+					PixelChannel channel = m_oImgData.m_pChannelMap[i].channel;
+					PixelTrait traits = m_oImgData.m_pChannelMap[channel].traits;
+					PixelTrait source_traits = source_image.m_pChannelMap[channel].traits;
+					if (traits == UndefinedPixelTrait || source_traits == UndefinedPixelTrait)
+						continue;
+
+					q[i] = 0;
+				}
+				q += 4;
+				continue;
+			}
+
+			BYTE pixel_alpha = 0;
+			if (source_image.m_pChannelMap[AlphaPixelChannel].traits != UndefinedPixelTrait)
+				pixel_alpha = p[source_image.m_pChannelMap[AlphaPixelChannel].offset];
+			Sa = (1.0 / 255.0) *  pixel_alpha;
+			Sa = Sa == 0 ? 1 : Sa;
+			pixel_alpha = 0;
+			if (m_oImgData.m_pChannelMap[AlphaPixelChannel].traits != UndefinedPixelTrait)
+				pixel_alpha = q[m_oImgData.m_pChannelMap[AlphaPixelChannel].offset];
+
+			for (int i = 0; i < 4; i++)
+			{
+				double pixel = 0.0;
+				PixelChannel channel = m_oImgData.m_pChannelMap[i].channel;
+				PixelTrait traits = m_oImgData.m_pChannelMap[channel].traits;
+				PixelTrait source_traits = source_image.m_pChannelMap[channel].traits;
+				if (traits == UndefinedPixelTrait)
+					continue;
+				if ((channel == AlphaPixelChannel) &&
+					((traits & UpdatePixelTrait) != 0))
+				{
+					pixel = 255.0 * Sa;
+					q[i] = pixel > 255 ? 255 : pixel < 0 ? 0 : pixel;
+					continue;
+				}
+				if (source_traits == UndefinedPixelTrait)
+					continue;
+
+				Sc = p[source_image.m_pChannelMap[channel].offset];
+				Dc=q[i];
+
+				if ((traits & CopyPixelTrait) != 0)
+				{
+					q[i] = Dc > 255 ? 255 : Dc < 0 ? 0 : Dc;
+					continue;
+				}
+
+				pixel = 255.0 * (1.0 / 255.0) * Sa * Sc;
+				q[i] = pixel > 255 ? 255 : pixel < 0 ? 0 : pixel;
+			}
+
+			p += 4;
+			if (p >= (pixels + 4 * source_image.m_nWidth))
+				p = pixels;
+			q += 4;
+		}
+	}
+
+	return;
 }

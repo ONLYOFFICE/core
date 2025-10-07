@@ -57,6 +57,9 @@
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/GlobalWorkbookInfo.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/GlobalsSubstream.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/WorkbookStreamObject.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/PIVOTCACHEDEFINITION.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/SXStreamID.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/SXVS.h"
 
 #include "../../Common/SimpleTypes_Shared.h"
 #include "../../Common/SimpleTypes_Spreadsheet.h"
@@ -141,6 +144,15 @@ namespace OOX
                 ptr1->FRTheader.relID.relId.setSize(0xFFFFFFFF);
             return objectPtr;
         }
+		XLS::BaseObjectPtr CWorkbookPivotCache::toXLS()
+		{
+			auto ptr = new XLS::PIVOTCACHEDEFINITION;
+			auto idPtr = new XLS::SXStreamID;
+			if(m_oCacheId.IsInit())
+				idPtr->idStm = m_oCacheId->GetValue();
+			ptr->m_SXStreamID = XLS::BaseObjectPtr(idPtr);
+			return XLS::BaseObjectPtr(ptr);
+		}
 		EElementType CWorkbookPivotCache::getType() const
 		{
 			return et_x_WorkbookPivotCache;
@@ -455,6 +467,11 @@ namespace OOX
 				m_oBookViews->toXLS(objectPtr);
 			if (m_oWorkbookProtection.IsInit())
 				globalsSubstream->m_PROTECTION = m_oWorkbookProtection->toXLS();
+			if(m_oPivotCaches.IsInit())
+			{
+				for(auto i : m_oPivotCaches->m_arrItems)
+					globalsSubstream->m_arPIVOTCACHEDEFINITION.push_back(i->toXLS());
+			}
 			return objectPtr;
 		}
 		void CWorkbook::read(const CPath& oPath)

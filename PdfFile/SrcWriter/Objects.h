@@ -448,7 +448,7 @@ namespace PdfWriter
 		{
 			return object_type_DICT;
 		}
-		CObjectBase* Get(const std::string& sKey, bool bProxy = false) const;
+		CObjectBase* Get(const std::string& sKey) const;
 		void         Add(const std::string& sKey, CObjectBase* pObject);
 		void         Remove(const std::string& sKey);
 		void         Add(const std::string& sKey, const char* sName);

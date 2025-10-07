@@ -1808,15 +1808,24 @@ namespace PdfWriter
 			if (pAP && pAP->GetType() == object_type_DICT)
 			{
 				CDictObject* pDAP = (CDictObject*)pAP;
-				CObjectBase* pAPi = pDAP->Get("N", true);
-				if (pAPi)
-					m_pAppearance->Add("N", pAPi->Copy());
-				pAPi = pDAP->Get("D", true);
-				if (pAPi)
-					m_pAppearance->Add("D", pAPi->Copy());
-				pAPi = pDAP->Get("R", true);
-				if (pAPi)
-					m_pAppearance->Add("R", pAPi->Copy());
+				CObjectBase* pAPi = pDAP->Get("N");
+				{
+					CProxyObject* pNewAPi = new CProxyObject(pAPi->Copy(), true);
+					pNewAPi->Get()->SetRef(pAPi->GetObjId(), pAPi->GetGenNo());
+					m_pAppearance->Add("N", pNewAPi);
+				}
+				pAPi = pDAP->Get("D");
+				{
+					CProxyObject* pNewAPi = new CProxyObject(pAPi->Copy(), true);
+					pNewAPi->Get()->SetRef(pAPi->GetObjId(), pAPi->GetGenNo());
+					m_pAppearance->Add("D", pNewAPi);
+				}
+				pAPi = pDAP->Get("R");
+				{
+					CProxyObject* pNewAPi = new CProxyObject(pAPi->Copy(), true);
+					pNewAPi->Get()->SetRef(pAPi->GetObjId(), pAPi->GetGenNo());
+					m_pAppearance->Add("R", pNewAPi);
+				}
 			}
 		}
 

@@ -577,13 +577,13 @@ namespace PdfWriter
 		if (m_pStream)
 			delete m_pStream;
 	}
-	CObjectBase* CDictObject::Get(const std::string& sKey, bool bProxy) const
+	CObjectBase* CDictObject::Get(const std::string& sKey) const
 	{
 		std::map<std::string, CObjectBase*>::const_iterator oIter = m_mList.find(sKey);
 		if (m_mList.end() != oIter)
 		{
 			CObjectBase* pObject = oIter->second;
-			if (pObject && object_type_PROXY == pObject->GetType() && !bProxy)
+			if (pObject && object_type_PROXY == pObject->GetType())
 				pObject = ((CProxyObject*)pObject)->Get();
 
 			return pObject;

@@ -732,8 +732,8 @@ bool CPictFile::DecodeData()
 					fseek(m_pFile, 12, SEEK_CUR);
 
 					if (feof(m_pFile) != 0 || bits_per_pixel <= 0 ||
-						bits_per_pixel > 32 || component_count <= 0 ||
-						component_count > 4 || component_size <= 0)
+						bits_per_pixel > 32 || component_count < 0 ||
+						component_count > 4 || component_size < 0)
 						return false;
 
 					tile_image.m_eAlphaTrait = component_count == 4 ? BlendPixelTrait : UndefinedPixelTrait;

@@ -194,6 +194,7 @@ protected:
 	double m_dHeight; // Высота холста, для Y трансформации
 	double m_dX; // Смещение по X для трансформации
 	double m_pRect[4]; // Координаты
+	std::vector<double> m_arrC; // Специальный цвет
 
 private:
 	unsigned int m_unAnnotFlag; // Флаг аннотации - F
@@ -205,7 +206,6 @@ private:
 	std::string m_sM; // Дата последнего изменения
 	std::string m_sOUserID; // OO User ID
 	std::string m_sOMetadata; // OO метаданные формы
-	std::vector<double> m_arrC; // Специальный цвет
 	CBorderType* m_pBorder; // Граница
 };
 

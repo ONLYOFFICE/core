@@ -2272,6 +2272,7 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 				pRedactAnnot->SetRepeat(true);
 			if (nFlags & (1 << 19))
 				pRedactAnnot->SetQ(pPr->GetQ());
+			pRedactAnnot->SetOC(oInfo.GetC());
 			if (nFlags & (1 << 20))
 			{
 				std::wstring wsFontName = pPr->GetFontName();

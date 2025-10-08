@@ -1268,6 +1268,10 @@ namespace PdfWriter
 	{
 		AddToVectorD(this, "IC", arrIC);
 	}
+	void CRedactAnnotation::SetOC(const std::vector<double>& arrOC)
+	{
+		AddToVectorD(this, "OC", arrOC);
+	}
 	void CRedactAnnotation::SetQuadPoints(const std::vector<double>& arrQuadPoints)
 	{
 		CArrayObject* pArray = new CArrayObject();

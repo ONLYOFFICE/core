@@ -311,7 +311,7 @@ public:
 			return ((CPdfFile*)m_pFile)->UnmergePages();
 		return false;
 	}
-	bool RedactPage(int nPageIndex, double* arrRedactBox, int nLengthX4, BYTE* data, int size, bool bCopy = false)
+	bool RedactPage(int nPageIndex, double* arrRedactBox, int nLengthX8, BYTE* data, int size, bool bCopy = false)
 	{
 		if (m_nType == 0)
 		{
@@ -323,7 +323,7 @@ public:
 				data = pCopy;
 			}
 			// Захватывает полученную память data
-			return ((CPdfFile*)m_pFile)->RedactPage(nPageIndex, arrRedactBox, nLengthX4, data, size);
+			return ((CPdfFile*)m_pFile)->RedactPage(nPageIndex, arrRedactBox, nLengthX8, data, size);
 		}
 		return false;
 	}

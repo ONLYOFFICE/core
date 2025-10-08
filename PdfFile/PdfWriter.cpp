@@ -2052,8 +2052,11 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 			if (nFlags & (1 << 18))
 				pTextAnnot->SetState(pPr->GetState());
 
-			pMarkupAnnot->RemoveAP();
-			pTextAnnot->SetAP();
+			if (!m_bSplit)
+			{
+				pMarkupAnnot->RemoveAP();
+				pTextAnnot->SetAP();
+			}
 		}
 		else if (oInfo.IsInk())
 		{
@@ -2120,8 +2123,11 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 			pTextMarkupAnnot->SetSubtype(pTMPr->GetSubtype());
 			pTextMarkupAnnot->SetQuadPoints(pTMPr->GetQuadPoints());
 
-			pMarkupAnnot->RemoveAP();
-			pTextMarkupAnnot->SetAP(pTMPr->GetQuadPoints(), pPr->GetCA());
+			if (!m_bSplit)
+			{
+				pMarkupAnnot->RemoveAP();
+				pTextMarkupAnnot->SetAP(pTMPr->GetQuadPoints(), pPr->GetCA());
+			}
 		}
 		else if (oInfo.IsSquareCircle())
 		{
@@ -2266,6 +2272,7 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 				pRedactAnnot->SetRepeat(true);
 			if (nFlags & (1 << 19))
 				pRedactAnnot->SetQ(pPr->GetQ());
+			pRedactAnnot->SetOC(oInfo.GetC());
 			if (nFlags & (1 << 20))
 			{
 				std::wstring wsFontName = pPr->GetFontName();
@@ -2644,13 +2651,10 @@ HRESULT CPdfWriter::AddRedact(const std::vector<double>& arrRedact)
 	pD = pPageBox->Get(0);
 	double dPageX = pD->GetType() == PdfWriter::object_type_NUMBER ? ((PdfWriter::CNumberObject*)pD)->Get() : ((PdfWriter::CRealObject*)pD)->Get();
 
-	for (int i = 0; i < m_arrRedact.size(); i += 4)
+	for (int i = 0; i < m_arrRedact.size(); i += 2)
 	{
 		m_arrRedact[i + 0] += dPageX;
-		double dQ = m_arrRedact[i + 1];
-		m_arrRedact[i + 1] = dPageH - m_arrRedact[i + 3];
-		m_arrRedact[i + 2] += dPageX;
-		m_arrRedact[i + 3] = dPageH - dQ;
+		m_arrRedact[i + 1] = dPageH - m_arrRedact[i + 1];
 	}
 
 	return S_OK;
@@ -3198,14 +3202,14 @@ bool CPdfWriter::SkipRedact(const double& dX, const double& dY, const double& dW
 		PdfWriter::CPoint(dX3, dY3),
 		PdfWriter::CPoint(dX4, dY4)
 	};
-	for (int i = 0; i < m_arrRedact.size(); i += 4)
+	for (int i = 0; i < m_arrRedact.size(); i += 8)
 	{
 		std::vector<PdfWriter::CPoint> poly1 =
 		{
 			PdfWriter::CPoint(m_arrRedact[i + 0], m_arrRedact[i + 1]),
-			PdfWriter::CPoint(m_arrRedact[i + 2], m_arrRedact[i + 1]),
 			PdfWriter::CPoint(m_arrRedact[i + 2], m_arrRedact[i + 3]),
-			PdfWriter::CPoint(m_arrRedact[i + 0], m_arrRedact[i + 3])
+			PdfWriter::CPoint(m_arrRedact[i + 4], m_arrRedact[i + 5]),
+			PdfWriter::CPoint(m_arrRedact[i + 6], m_arrRedact[i + 7])
 		};
 
 		if (PdfWriter::SAT(poly1, poly2))
@@ -3222,14 +3226,18 @@ bool CPdfWriter::SkipRedact(const double& dX, const double& dY)
 	CTransform oT;
 	oT.Set(t.m11, -t.m12, -t.m21, t.m22, MM_2_PT(t.dx + t.m21 * m_dPageHeight), MM_2_PT(m_dPageHeight - m_dPageHeight * t.m22 - t.dy));
 	oT.Transform(dXc, dYc, &dXc, &dYc);
-	for (int i = 0; i < m_arrRedact.size(); i += 4)
+	for (int i = 0; i < m_arrRedact.size(); i += 8)
 	{
-		double xMin = m_arrRedact[i + 0];
-		double yMin = m_arrRedact[i + 1];
-		double xMax = m_arrRedact[i + 2];
-		double yMax = m_arrRedact[i + 3];
+		double x1 = m_arrRedact[i + 0];
+		double y1 = m_arrRedact[i + 1];
+		double x2 = m_arrRedact[i + 2];
+		double y2 = m_arrRedact[i + 3];
+		double x3 = m_arrRedact[i + 4];
+		double y3 = m_arrRedact[i + 5];
+		double x4 = m_arrRedact[i + 6];
+		double y4 = m_arrRedact[i + 7];
 
-		if (xMin < dXc && dXc < xMax && yMin < dYc && dYc < yMax)
+		if (PdfWriter::isPointInQuad(dXc, dYc, x1, y1, x2, y2, x3, y3, x4, y4))
 			return true;
 	}
 	return false;

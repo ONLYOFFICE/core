@@ -68,13 +68,13 @@ RedactOutputDev::~RedactOutputDev()
 void RedactOutputDev::SetRedact(const std::vector<double>& arrQuadPoints)
 {
 	m_arrQuadPoints = arrQuadPoints;
-	for (int i = 0; i < m_arrQuadPoints.size(); i += 4)
+	for (int i = 0; i < m_arrQuadPoints.size(); i += 8)
 	{
 		m_oPathRedact.StartFigure();
 		m_oPathRedact.MoveTo(m_arrQuadPoints[i + 0], m_arrQuadPoints[i + 1]);
-		m_oPathRedact.LineTo(m_arrQuadPoints[i + 0], m_arrQuadPoints[i + 3]);
 		m_oPathRedact.LineTo(m_arrQuadPoints[i + 2], m_arrQuadPoints[i + 3]);
-		m_oPathRedact.LineTo(m_arrQuadPoints[i + 2], m_arrQuadPoints[i + 1]);
+		m_oPathRedact.LineTo(m_arrQuadPoints[i + 4], m_arrQuadPoints[i + 5]);
+		m_oPathRedact.LineTo(m_arrQuadPoints[i + 6], m_arrQuadPoints[i + 7]);
 		m_oPathRedact.CloseFigure();
 	}
 }
@@ -91,7 +91,7 @@ void RedactOutputDev::setDefaultCTM(double *ctm)
 }
 void RedactOutputDev::startPage(int nPageIndex, GfxState *pGState)
 {
-	m_pPage = m_pDoc->GetEditPage(nPageIndex - 1);
+	m_pPage = m_pDoc->GetEditPage(nPageIndex);
 	m_pRenderer->EditPage(m_pPage);
 	m_pDoc->SetCurPage(m_pPage);
 	m_pDoc->ClearPageFull();
@@ -496,14 +496,18 @@ void RedactOutputDev::drawChar(GfxState *pGState, double dX, double dY, double d
 	pGState->transform(dX + dDx, dY + dDy, &endX, &endY);
 	double dCenterX = (startX + endX) / 2;
 	double dCenterY = (startY + endY) / 2;
-	for (int i = 0; i < m_arrQuadPoints.size(); i += 4)
+	for (int i = 0; i < m_arrQuadPoints.size(); i += 8)
 	{
-		double xMin = m_arrQuadPoints[i + 0];
-		double yMin = m_arrQuadPoints[i + 1];
-		double xMax = m_arrQuadPoints[i + 2];
-		double yMax = m_arrQuadPoints[i + 3];
+		double x1 = m_arrQuadPoints[i + 0];
+		double y1 = m_arrQuadPoints[i + 1];
+		double x2 = m_arrQuadPoints[i + 2];
+		double y2 = m_arrQuadPoints[i + 3];
+		double x3 = m_arrQuadPoints[i + 4];
+		double y3 = m_arrQuadPoints[i + 5];
+		double x4 = m_arrQuadPoints[i + 6];
+		double y4 = m_arrQuadPoints[i + 7];
 
-		if (xMin < dCenterX && dCenterX < xMax && yMin < dCenterY && dCenterY < yMax)
+		if (isPointInQuad(dCenterX, dCenterY, x1, y1, x2, y2, x3, y3, x4, y4))
 		{
 			m_pRenderer->put_FontSize(dOldSize);
 			return;
@@ -774,14 +778,14 @@ void RedactOutputDev::drawForm(GfxState *pGState, Ref id, const char* name)
 		CPoint(dX3, dY3),
 		CPoint(dX4, dY4)
 	};
-	for (int i = 0; i < m_arrQuadPoints.size(); i += 4)
+	for (int i = 0; i < m_arrQuadPoints.size(); i += 8)
 	{
 		std::vector<CPoint> poly1 =
 		{
 			CPoint(m_arrQuadPoints[i + 0], m_arrQuadPoints[i + 1]),
-			CPoint(m_arrQuadPoints[i + 2], m_arrQuadPoints[i + 1]),
 			CPoint(m_arrQuadPoints[i + 2], m_arrQuadPoints[i + 3]),
-			CPoint(m_arrQuadPoints[i + 0], m_arrQuadPoints[i + 3])
+			CPoint(m_arrQuadPoints[i + 4], m_arrQuadPoints[i + 5]),
+			CPoint(m_arrQuadPoints[i + 6], m_arrQuadPoints[i + 7])
 		};
 
 		if (PdfWriter::SAT(poly1, poly2))
@@ -816,14 +820,14 @@ void RedactOutputDev::drawImage(GfxState *pGState, Ref id, const char* name)
 		CPoint(dX3, dY3),
 		CPoint(dX4, dY4)
 	};
-	for (int j = 0; j < m_arrQuadPoints.size(); j += 4)
+	for (int j = 0; j < m_arrQuadPoints.size(); j += 8)
 	{
 		std::vector<CPoint> poly1 =
 		{
 			CPoint(m_arrQuadPoints[j + 0], m_arrQuadPoints[j + 1]),
-			CPoint(m_arrQuadPoints[j + 2], m_arrQuadPoints[j + 1]),
 			CPoint(m_arrQuadPoints[j + 2], m_arrQuadPoints[j + 3]),
-			CPoint(m_arrQuadPoints[j + 0], m_arrQuadPoints[j + 3])
+			CPoint(m_arrQuadPoints[j + 4], m_arrQuadPoints[j + 5]),
+			CPoint(m_arrQuadPoints[j + 6], m_arrQuadPoints[j + 7])
 		};
 
 		if (PdfWriter::SAT(poly1, poly2))
@@ -988,7 +992,6 @@ void RedactOutputDev::DoPathRedact(GfxState* pGState, GfxPath* pPath, double* pC
 	m_pRenderer->m_oPath.Clear();
 
 	CMatrix oMatrix(m_arrMatrix[0], m_arrMatrix[1], m_arrMatrix[2], m_arrMatrix[3], m_arrMatrix[4], m_arrMatrix[5]);
-	CMatrix oInverse = oMatrix.Inverse();
 
 	std::vector<CSegment> arrForStroke;
 	Aggplus::CGraphicsPath oPath, oPathResult;
@@ -997,15 +1000,12 @@ void RedactOutputDev::DoPathRedact(GfxState* pGState, GfxPath* pPath, double* pC
 
 	if (bStroke)
 	{
-		std::vector<TRect> rectangles;
-		for (int i = 0; i < m_arrQuadPoints.size(); i += 4)
+		for (int i = 0; i < m_arrQuadPoints.size(); i += 8)
 		{
-			arrForStroke.push_back(CSegment(CPoint(m_arrQuadPoints[i + 0], m_arrQuadPoints[i + 1]), CPoint(m_arrQuadPoints[i + 0], m_arrQuadPoints[i + 3])));
-			arrForStroke.push_back(CSegment(CPoint(m_arrQuadPoints[i + 0], m_arrQuadPoints[i + 3]), CPoint(m_arrQuadPoints[i + 2], m_arrQuadPoints[i + 3])));
-			arrForStroke.push_back(CSegment(CPoint(m_arrQuadPoints[i + 2], m_arrQuadPoints[i + 3]), CPoint(m_arrQuadPoints[i + 2], m_arrQuadPoints[i + 1])));
-			arrForStroke.push_back(CSegment(CPoint(m_arrQuadPoints[i + 2], m_arrQuadPoints[i + 1]), CPoint(m_arrQuadPoints[i + 0], m_arrQuadPoints[i + 1])));
-
-			rectangles.push_back({m_arrQuadPoints[i + 0], m_arrQuadPoints[i + 3], m_arrQuadPoints[i + 2], m_arrQuadPoints[i + 1]});
+			arrForStroke.push_back(CSegment(CPoint(m_arrQuadPoints[i + 0], m_arrQuadPoints[i + 1]), CPoint(m_arrQuadPoints[i + 2], m_arrQuadPoints[i + 3])));
+			arrForStroke.push_back(CSegment(CPoint(m_arrQuadPoints[i + 2], m_arrQuadPoints[i + 3]), CPoint(m_arrQuadPoints[i + 4], m_arrQuadPoints[i + 5])));
+			arrForStroke.push_back(CSegment(CPoint(m_arrQuadPoints[i + 4], m_arrQuadPoints[i + 5]), CPoint(m_arrQuadPoints[i + 6], m_arrQuadPoints[i + 7])));
+			arrForStroke.push_back(CSegment(CPoint(m_arrQuadPoints[i + 6], m_arrQuadPoints[i + 7]), CPoint(m_arrQuadPoints[i + 0], m_arrQuadPoints[i + 1])));
 		}
 
 		for (int nSubPathIndex = 0, nSubPathCount = pPath->getNumSubpaths(); nSubPathIndex < nSubPathCount; ++nSubPathIndex)
@@ -1052,6 +1052,18 @@ void RedactOutputDev::DoPathRedact(GfxState* pGState, GfxPath* pPath, double* pC
 					oMatrix.Apply(dX, dY);
 					++nCurPointIndex;
 
+					oPath.StartFigure();
+					oPath.MoveTo(dXCur, dYCur);
+					oPath.LineTo(dX, dY);
+					oPath.CloseFigure();
+
+					dXCur = dX, dYCur = dY;
+
+					oPathResult = Aggplus::CalcBooleanOperation(oPath, m_oPathRedact, Aggplus::BooleanOpType::Subtraction);
+					DrawPathRedact(&oPathResult, bStroke);
+					oPathResult.Reset(); oPath.Reset();
+
+					/*
 					CLineClipper clipper(rectangles);
 					CSegment line(CPoint(dXCur, dYCur), CPoint(dX, dY));
 					dXCur = dX; dYCur = dY;
@@ -1066,10 +1078,21 @@ void RedactOutputDev::DoPathRedact(GfxState* pGState, GfxPath* pPath, double* pC
 						oInverse.Apply(dX2, dY2);
 						m_pRenderer->m_oPath.LineTo(dX2, dY2);
 					}
+					*/
 				}
 			}
 			if (pSubpath->isClosed())
 			{
+				oPath.StartFigure();
+				oPath.MoveTo(dXCur, dYCur);
+				oPath.LineTo(dXStart, dYStart);
+				oPath.CloseFigure();
+
+				oPathResult = Aggplus::CalcBooleanOperation(oPath, m_oPathRedact, Aggplus::BooleanOpType::Subtraction);
+				DrawPathRedact(&oPathResult, bStroke);
+				oPathResult.Reset(); oPath.Reset();
+
+				/*
 				CLineClipper clipper(rectangles);
 				CSegment line(CPoint(dXCur, dYCur), CPoint(dXStart, dYStart));
 				auto visibleSegments = clipper.getVisibleSegments(line);
@@ -1082,6 +1105,7 @@ void RedactOutputDev::DoPathRedact(GfxState* pGState, GfxPath* pPath, double* pC
 					oInverse.Apply(dX2, dY2);
 					m_pRenderer->m_oPath.LineTo(dX2, dY2);
 				}
+				*/
 			}
 		}
 	}

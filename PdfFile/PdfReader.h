@@ -93,7 +93,7 @@ public:
 	bool MergePages(BYTE* pData, DWORD nLength, const std::wstring& wsPassword = L"", int nMaxID = 0, const std::string& sPrefixForm = "");
 	bool MergePages(const std::wstring& wsFile, const std::wstring& wsPassword = L"", int nMaxID = 0, const std::string& sPrefixForm = "");
 	bool UnmergePages();
-	bool RedactPage(int nPageIndex, double* arrRedactBox, int nLengthX4, BYTE* pChanges, int nLength);
+	bool RedactPage(int nPageIndex, double* arrRedactBox, int nLengthX8, BYTE* pChanges, int nLength);
 	bool UndoRedact();
 	void GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY);
 	void DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak);

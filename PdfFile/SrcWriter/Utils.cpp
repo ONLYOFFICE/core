@@ -363,4 +363,20 @@ namespace PdfWriter
 		}
 		return true; // Пересекаются
 	}
+	double crossProduct(double x1, double y1, double x2, double y2, double x3, double y3)
+	{
+		return (x2 - x1) * (y3 - y1) - (y2 - y1) * (x3 - x1);
+	}
+	bool isPointInQuad(double px, double py, double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4)
+	{
+		// Проверяем знаки векторных произведений для всех сторон
+		double cross1 = crossProduct(x1, y1, x2, y2, px, py);
+		double cross2 = crossProduct(x2, y2, x3, y3, px, py);
+		double cross3 = crossProduct(x3, y3, x4, y4, px, py);
+		double cross4 = crossProduct(x4, y4, x1, y1, px, py);
+
+		// Точка внутри, если все векторные произведения имеют одинаковый знак
+		return (cross1 >= 0 && cross2 >= 0 && cross3 >= 0 && cross4 >= 0) ||
+			   (cross1 <= 0 && cross2 <= 0 && cross3 <= 0 && cross4 <= 0);
+	}
 }

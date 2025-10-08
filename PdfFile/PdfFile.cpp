@@ -361,14 +361,14 @@ bool CPdfFile::UnmergePages()
 		return false;
 	return m_pInternal->pReader->UnmergePages();
 }
-bool CPdfFile::RedactPage(int nPageIndex, double* arrRedactBox, int nLengthX4, BYTE* pChanges, int nLength)
+bool CPdfFile::RedactPage(int nPageIndex, double* arrRedactBox, int nLengthX8, BYTE* pChanges, int nLength)
 {
 	if (!m_pInternal->pReader)
 	{
 		free(pChanges);
 		return false;
 	}
-	return m_pInternal->pReader->RedactPage(nPageIndex, arrRedactBox, nLengthX4, pChanges, nLength);
+	return m_pInternal->pReader->RedactPage(nPageIndex, arrRedactBox, nLengthX8, pChanges, nLength);
 }
 bool CPdfFile::UndoRedact()
 {

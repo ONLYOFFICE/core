@@ -432,6 +432,7 @@ namespace PdfWriter
 		void SetQ(BYTE nQ);
 		void SetOverlayText(const std::wstring& wsOverlayText);
 		void SetIC(const std::vector<double>& arrIC);
+		void SetOC(const std::vector<double>& arrOC);
 		void SetQuadPoints(const std::vector<double>& arrQuadPoints);
 	};
 	class CWidgetAnnotation : public CAnnotation

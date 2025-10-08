@@ -2508,6 +2508,19 @@ CAnnotRedact::CAnnotRedact(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex, in
 	}
 	oObj.free();
 
+	// Замена C: 3 - Цвет - C
+	if (oAnnot.dictLookup("OC", &oObj)->isArray())
+	{
+		m_unAFlags |= (1 << 3);
+		int nBCLength = oObj.arrayGetLength();
+		for (int j = 0; j < nBCLength; ++j)
+		{
+			m_arrC.push_back(oObj.arrayGet(j, &oObj2)->isNum() ? oObj2.getNum() : 0.0);
+			oObj2.free();
+		}
+	}
+	oObj.free();
+
 	oAnnot.free();
 }
 void CAnnotRedact::SetFont(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList, Object* oAnnotRef)

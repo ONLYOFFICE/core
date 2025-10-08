@@ -1268,6 +1268,10 @@ namespace PdfWriter
 	{
 		AddToVectorD(this, "IC", arrIC);
 	}
+	void CRedactAnnotation::SetOC(const std::vector<double>& arrOC)
+	{
+		AddToVectorD(this, "OC", arrOC);
+	}
 	void CRedactAnnotation::SetQuadPoints(const std::vector<double>& arrQuadPoints)
 	{
 		CArrayObject* pArray = new CArrayObject();
@@ -2141,11 +2145,18 @@ namespace PdfWriter
 	{
 		std::string sName = m_sAP_N_Yes.empty() ? "Yes" : m_sAP_N_Yes;
 		Add("AS", sName.c_str());
+
+		if (!m_nParentID)
+			Add("V", sName.c_str());
+
 		return sName;
 	}
 	void CCheckBoxWidget::Off()
 	{
 		Add("AS", "Off");
+
+		if (!m_nParentID)
+			Add("V", "Off");
 	}
 	void CCheckBoxWidget::SwitchAP(const std::string& sV, int nI)
 	{

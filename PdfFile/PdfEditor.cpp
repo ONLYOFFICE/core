@@ -3572,7 +3572,7 @@ void CPdfEditor::Redact(IAdvancedCommand* _pCommand)
 		Object oContents;
 		pPage->getContents(&oContents);
 		PDFRectangle* box = pPage->getMediaBox();
-		Gfx* gfx = new Gfx(pPDFDocument, &oRedactOut, nPageIndex, pPage->getResourceDict(), 72.0, 72.0, box, NULL, 0);
+		Gfx* gfx = new Gfx(pPDFDocument, &oRedactOut, m_nEditPage, pPage->getResourceDict(), 72.0, 72.0, box, NULL, 0);
 		gfx->saveState();
 		gfx->display(&oContents);
 		gfx->endOfPage();

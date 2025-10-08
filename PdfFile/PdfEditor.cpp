@@ -1654,6 +1654,10 @@ bool CPdfEditor::EditPage(int _nPageIndex, bool bSet, bool bActualPos)
 	if (m_nMode == Mode::Unknown && !IncrementalUpdates())
 		return false;
 
+	m_pWriter->AddRedact({});
+	WriteRedact({});
+	m_arrRedact.clear();
+
 	PDFDoc* pPDFDocument = NULL;
 	PdfReader::CPdfFontList* pFontList = NULL;
 	int nStartRefID = 0;
@@ -2697,6 +2701,10 @@ bool CPdfEditor::DeletePage(int nPageIndex)
 	if (m_nMode == Mode::Unknown && !IncrementalUpdates())
 		return false;
 
+	m_pWriter->AddRedact({});
+	WriteRedact({});
+	m_arrRedact.clear();
+
 	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
 	PdfWriter::CPage* pPage = pDoc->GetPage(nPageIndex);
 	int nObjID = m_mObjManager.FindObj(pPage);
@@ -2721,6 +2729,11 @@ bool CPdfEditor::AddPage(int nPageIndex)
 {
 	if (m_nMode == Mode::Unknown && !IncrementalUpdates())
 		return false;
+
+	m_pWriter->AddRedact({});
+	WriteRedact({});
+	m_arrRedact.clear();
+
 	if (m_nMode == Mode::Split)
 	{
 		std::vector<int>::iterator it = std::find(m_mObjManager.m_arrSplitAddPages.begin(), m_mObjManager.m_arrSplitAddPages.end(), m_nOriginIndex++);
@@ -2752,6 +2765,10 @@ bool CPdfEditor::AddPage(int nPageIndex)
 }
 bool CPdfEditor::MovePage(int nPageIndex, int nPos)
 {
+	m_pWriter->AddRedact({});
+	WriteRedact({});
+	m_arrRedact.clear();
+
 	if (m_nMode == Mode::Split || m_nMode == Mode::WriteNew || EditPage(nPageIndex, true, true))
 		return m_pWriter->GetDocument()->MovePage(nPageIndex, nPos);
 	return false;

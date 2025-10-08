@@ -33,6 +33,7 @@
 
 #include "../DocxFormat/App.h"
 #include "../DocxFormat/Core.h"
+#include "../DocxFormat/FileTypes.h"
 
 #include "Workbook/Workbook.h"
 #include "SharedStrings/SharedStrings.h"
@@ -57,10 +58,12 @@
 
 #include "ComplexTypes_Spreadsheet.h"
 #include "../../DesktopEditor/common/SystemUtils.h"
+#include "../Binary/XlsbFormat/FileTypes_SpreadsheetBin.h"
 
 #include "../../MsBinaryFile/XlsFile/Converter/xls_writer.h"
 #include "../../MsBinaryFile/XlsFile/Format/Logic/WorkbookStreamObject.h"
 #include "../../MsBinaryFile/XlsFile/Format/Logic/GlobalsSubstream.h"
+#include "../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/PIVOTCACHE.h"
 
 OOX::Spreadsheet::CXlsx::CXlsx() : OOX::IFileContainer(dynamic_cast<OOX::Document*>(this))
 {
@@ -203,7 +206,6 @@ bool OOX::Spreadsheet::CXlsx::WriteXLS(const CPath& oFilePath)
 	workbookStream->m_GlobalsSubstream = m_pWorkbook->toXLS();
 	auto CastedGlobalsStram = static_cast<XLS::GlobalsSubstream*>(workbookStream->m_GlobalsSubstream.get());
 	CastedGlobalsStram->global_info_ = writer.globalInfoPtr;
-	//todo substreams conversion
 	for(auto i : m_arWorksheets)
 		workbookStream->m_arWorksheetSubstream.push_back(i->toXLS());
 	if(m_pSharedStrings != nullptr)
@@ -222,8 +224,30 @@ bool OOX::Spreadsheet::CXlsx::WriteXLS(const CPath& oFilePath)
 				continue;
 			auto cacheFilePtr = m_pWorkbook->Find(cacheHeader->m_oRid->GetValue());
 			auto CachePtr = static_cast<CPivotCacheDefinitionFile*>(cacheFilePtr.GetPointer());
+			auto XLSBinCache = CachePtr->m_oPivotCashDefinition->toXLS(cacheHeader->m_oCacheId->GetValue());
+			auto castedCache = static_cast<XLS::PIVOTCACHE*>(XLSBinCache.get());
+			auto cacheRecordsPtr = CachePtr->Find(OOX::SpreadsheetBin::FileTypes::PivotCacheRecordsBin);
+			if(!(cacheRecordsPtr->type() == OOX::FileTypes::Unknown))
+			{
+				auto castedRecords = static_cast<CPivotCacheRecordsFile*>(cacheRecordsPtr.GetPointer());
+				if(!castedRecords->m_oPivotCacheRecords.IsInit() && castedRecords->m_pData!= nullptr)
+				{
+					castedRecords->m_oPivotCacheRecords.Init();
+					XmlUtils::CXmlLiteReader reader;
+					reader.FromStringA((char*)castedRecords->m_pData, castedRecords->m_nDataLength);
+					reader.ReadNextNode();
+					castedRecords->m_oPivotCacheRecords->fromXML(reader);
+				}
+				if(castedRecords->m_oPivotCacheRecords.IsInit())
+				for(auto CacheRecord : castedRecords->m_oPivotCacheRecords->m_arrItems)
+				{
+					castedCache->m_arDBB.push_back(CacheRecord->toXLS());
+				}
+			}
+
+
 			if(CachePtr->m_oPivotCashDefinition.IsInit())
-				writer.WritePivotCache(CachePtr->m_oPivotCashDefinition->toXLS(cacheHeader->m_oCacheId->GetValue()), cacheHeader->m_oCacheId->GetValue());
+				writer.WritePivotCache(XLSBinCache, cacheHeader->m_oCacheId->GetValue());
 		}
 	}
 	return true;

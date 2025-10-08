@@ -85,9 +85,8 @@ const bool DBB::loadContent(BinProcessor& proc)
 
 const bool DBB::saveContent(BinProcessor& proc)
 {
-	if(m_SXDBB == nullptr)
-		return false;
-	proc.mandatory(*m_SXDBB);
+	if(m_SXDBB != nullptr)
+		proc.mandatory(*m_SXDBB);
 	for(auto i : m_arSXOPER)
 		if(i != nullptr)
 			proc.mandatory(*i);

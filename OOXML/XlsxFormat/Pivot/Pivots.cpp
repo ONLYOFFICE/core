@@ -155,6 +155,8 @@
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/PIVOTLI.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/PIVOTCACHE.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/FDB.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/DBB.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/SXOPER.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/SxView.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Sxvd.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/SxIvd.h"
@@ -7875,7 +7877,6 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		{
 			auto ptrPCDIDT(new XLSB::PCDIDT);
 
-
 			if(i->getType() == et_x_PivotBooleanValue)
 			{
                 auto boolValue = static_cast<CPivotBooleanValue*>(i);
@@ -7933,6 +7934,70 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			}
 		}
 		return objectPtr;
+	}
+	XLS::BaseObjectPtr CPivotCacheRecord::toXLS()
+	{
+		auto ptr = new XLS::DBB;
+		for(auto i:m_arrItems)
+		{
+			auto operPtr = new XLS::SXOPER;
+			if(i->getType() == et_x_PivotBooleanValue)
+			{
+				auto boolValue = static_cast<CPivotBooleanValue*>(i);
+				if(boolValue->m_oValue.IsInit())
+					operPtr->value =  std::to_wstring(boolValue->m_oValue.get());
+				operPtr->bBool = true;
+				ptr->m_arSXOPER.push_back(XLS::BaseObjectPtr(operPtr));
+				continue;
+			}
+
+			else if(i->getType() == et_x_PivotErrorValue)
+			{
+				auto errorValue = static_cast<CPivotErrorValue*>(i);
+				if(errorValue->m_oValue.IsInit())
+					operPtr->value = errorValue->m_oValue.get();
+				operPtr->bErr = true;
+				ptr->m_arSXOPER.push_back(XLS::BaseObjectPtr(operPtr));
+				continue;
+			}
+
+			else if(i->getType() == et_x_PivotNoValue)
+			{
+				ptr->m_arSXOPER.push_back(XLS::BaseObjectPtr(operPtr));
+				continue;
+			}
+
+			else if(i->getType() == et_x_PivotNumericValue)
+			{
+				auto numValue = static_cast<CPivotNumericValue*>(i);
+				if(numValue->m_oValue.IsInit())
+					operPtr->value = std::to_wstring(numValue->m_oValue.get());
+				operPtr->bNumber = true;
+				ptr->m_arSXOPER.push_back(XLS::BaseObjectPtr(operPtr));
+				continue;
+			}
+
+			else if(i->getType() == et_x_PivotCharacterValue)
+			{
+				auto charValue = static_cast<CPivotCharacterValue*>(i);
+				if(charValue->m_oValue.IsInit())
+					operPtr->value = charValue->m_oValue.get();
+				operPtr->bString = true;
+				ptr->m_arSXOPER.push_back(XLS::BaseObjectPtr(operPtr));
+				continue;
+			}
+
+			else if(i->getType() == et_x_PivotDateTimeValue)
+			{
+				auto dataValue = static_cast<CPivotDateTimeValue*>(i);
+				if(dataValue->m_oValue.IsInit())
+					operPtr->value = dataValue->m_oValue->GetValue();
+				operPtr->bDate = true;
+				ptr->m_arSXOPER.push_back(XLS::BaseObjectPtr(operPtr));
+				continue;
+			}
+		}
+		return XLS::BaseObjectPtr(ptr);
 	}
     void CPivotCacheRecord::toBin(XLS::StreamCacheWriterPtr& writer)
     {

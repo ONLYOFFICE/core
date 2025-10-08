@@ -130,7 +130,6 @@ const bool SXOPER::loadContent(BinProcessor& proc)
 	m_element = elements_.back();
 	elements_.pop_back();
 
-
 	return true;
 }
 const bool SXOPER::saveContent(BinProcessor& proc)
@@ -141,11 +140,37 @@ const bool SXOPER::saveContent(BinProcessor& proc)
 		number.num.data.value = std::stod(value);
 		proc.mandatory(number);
 	}
+	else if (bBool)
+	{
+		SxBool boolVal;
+		boolVal.val = value == L"1";
+		proc.mandatory(boolVal);
+	}
 	else if(bString)
 	{
 		SXString string;
 		string.segment = value;
 		proc.mandatory(string);
+	}
+	else if(bErr)
+	{
+		SxErr err;
+		if(value == L"NULL!")
+			err.wbe = 0;
+		else if(value == L"#DIV/0!")
+			err.wbe = 0x07;
+		else if(value == L"#VALUE!")
+			err.wbe = 0x0F;
+		else if(value == L"#REF!")
+			err.wbe = 0x17;
+		else if(value == L"#NAME?")
+			err.wbe = 0x1D;
+		else if(value == L"#NUM!")
+			err.wbe = 0x24;
+		else if(value == L"#N/A")
+			err.wbe = 0x2A;
+		proc.mandatory(err);
+
 	}
 	else if(bDate)
 	{

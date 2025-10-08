@@ -63,6 +63,7 @@ public:
 	bool	bEmpty = false;
 	bool	bInteger = false;
 	bool	bBool = false;
+	bool	bErr = false;
 
 	std::wstring value = L"";
 	std::wstring node = L"";

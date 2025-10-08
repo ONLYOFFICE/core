@@ -210,8 +210,9 @@ bool GlobalParamsAdaptor::InRedact(double dX, double dY)
 		double cross4 = crossProduct(x4, y4, x1, y1, dX, dY);
 
 		// Точка внутри, если все векторные произведения имеют одинаковый знак
-		return (cross1 >= 0 && cross2 >= 0 && cross3 >= 0 && cross4 >= 0) ||
-			   (cross1 <= 0 && cross2 <= 0 && cross3 <= 0 && cross4 <= 0);
+		if ((cross1 >= 0 && cross2 >= 0 && cross3 >= 0 && cross4 >= 0) ||
+			(cross1 <= 0 && cross2 <= 0 && cross3 <= 0 && cross4 <= 0))
+			return true;
 	}
 	return false;
 }

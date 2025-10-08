@@ -2052,8 +2052,11 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 			if (nFlags & (1 << 18))
 				pTextAnnot->SetState(pPr->GetState());
 
-			pMarkupAnnot->RemoveAP();
-			pTextAnnot->SetAP();
+			if (!m_bSplit)
+			{
+				pMarkupAnnot->RemoveAP();
+				pTextAnnot->SetAP();
+			}
 		}
 		else if (oInfo.IsInk())
 		{
@@ -2120,8 +2123,11 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 			pTextMarkupAnnot->SetSubtype(pTMPr->GetSubtype());
 			pTextMarkupAnnot->SetQuadPoints(pTMPr->GetQuadPoints());
 
-			pMarkupAnnot->RemoveAP();
-			pTextMarkupAnnot->SetAP(pTMPr->GetQuadPoints(), pPr->GetCA());
+			if (!m_bSplit)
+			{
+				pMarkupAnnot->RemoveAP();
+				pTextMarkupAnnot->SetAP(pTMPr->GetQuadPoints(), pPr->GetCA());
+			}
 		}
 		else if (oInfo.IsSquareCircle())
 		{

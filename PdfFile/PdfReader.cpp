@@ -774,16 +774,10 @@ bool CPdfReader::RedactPage(int _nPageIndex, double* arrRedactBox, int nLengthX8
 
 	CPdfRedact* pRedact = new CPdfRedact();
 	pRedact->m_nPageIndex = _nPageIndex;
-	for (int i = 0; i < nLengthX8; i += 8)
+	for (int i = 0; i < nLengthX8 * 8; i += 2)
 	{
 		pRedact->m_arrRedactBox.push_back(arrRedactBox[i + 0] + cropBox->x1);
 		pRedact->m_arrRedactBox.push_back(cropBox->y2 - arrRedactBox[i + 1]);
-		pRedact->m_arrRedactBox.push_back(arrRedactBox[i + 2] + cropBox->x1);
-		pRedact->m_arrRedactBox.push_back(cropBox->y2 - arrRedactBox[i + 3]);
-		pRedact->m_arrRedactBox.push_back(arrRedactBox[i + 4] + cropBox->x1);
-		pRedact->m_arrRedactBox.push_back(cropBox->y2 - arrRedactBox[i + 5]);
-		pRedact->m_arrRedactBox.push_back(arrRedactBox[i + 6] + cropBox->x1);
-		pRedact->m_arrRedactBox.push_back(cropBox->y2 - arrRedactBox[i + 7]);
 	}
 	pRedact->m_pChanges = pChanges;
 	pRedact->m_nChangeLength = nLength;
@@ -849,8 +843,8 @@ void CPdfReader::DrawPageOnRenderer(IRenderer* pRenderer, int _nPageIndex, bool*
 				pRenderer->put_BrushColor1(lColor);
 				pRenderer->PathCommandMoveTo(PdfReader::PDFCoordsToMM(m_vRedact[i]->m_arrRedactBox[j + 0] - cropBox->x1), PdfReader::PDFCoordsToMM(cropBox->y2 - m_vRedact[i]->m_arrRedactBox[j + 1]));
 				pRenderer->PathCommandLineTo(PdfReader::PDFCoordsToMM(m_vRedact[i]->m_arrRedactBox[j + 2] - cropBox->x1), PdfReader::PDFCoordsToMM(cropBox->y2 - m_vRedact[i]->m_arrRedactBox[j + 3]));
-				pRenderer->PathCommandLineTo(PdfReader::PDFCoordsToMM(m_vRedact[i]->m_arrRedactBox[j + 4] - cropBox->x1), PdfReader::PDFCoordsToMM(cropBox->y2 - m_vRedact[i]->m_arrRedactBox[j + 5]));
 				pRenderer->PathCommandLineTo(PdfReader::PDFCoordsToMM(m_vRedact[i]->m_arrRedactBox[j + 6] - cropBox->x1), PdfReader::PDFCoordsToMM(cropBox->y2 - m_vRedact[i]->m_arrRedactBox[j + 7]));
+				pRenderer->PathCommandLineTo(PdfReader::PDFCoordsToMM(m_vRedact[i]->m_arrRedactBox[j + 4] - cropBox->x1), PdfReader::PDFCoordsToMM(cropBox->y2 - m_vRedact[i]->m_arrRedactBox[j + 5]));
 				pRenderer->PathCommandClose();
 				pRenderer->DrawPath(c_nWindingFillMode);
 				pRenderer->PathCommandEnd();

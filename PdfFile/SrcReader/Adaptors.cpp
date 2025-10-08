@@ -198,10 +198,10 @@ bool GlobalParamsAdaptor::InRedact(double dX, double dY)
 		double y1 = m_arrRedactBox[i + 1];
 		double x2 = m_arrRedactBox[i + 2];
 		double y2 = m_arrRedactBox[i + 3];
-		double x3 = m_arrRedactBox[i + 4];
-		double y3 = m_arrRedactBox[i + 5];
-		double x4 = m_arrRedactBox[i + 6];
-		double y4 = m_arrRedactBox[i + 7];
+		double x3 = m_arrRedactBox[i + 6];
+		double y3 = m_arrRedactBox[i + 7];
+		double x4 = m_arrRedactBox[i + 4];
+		double y4 = m_arrRedactBox[i + 5];
 
 		// Проверяем знаки векторных произведений для всех сторон
 		double cross1 = crossProduct(x1, y1, x2, y2, dX, dY);

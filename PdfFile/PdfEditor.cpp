@@ -377,7 +377,7 @@ PdfWriter::CObjectBase* DictToCDictObject2(Object* obj, PdfWriter::CDocument* pD
 
 		Object oType, oSubtype;
 		PdfWriter::CDictObject* pDict = NULL;
-		if (obj->dictLookup("Type", &oType)->isName("Annot") && obj->dictLookup("Subtype", &oSubtype)->isName())
+		if (obj->dictLookup("Subtype", &oSubtype)->isName())
 		{
 			PdfWriter::CAnnotation* pAnnot = CreateAnnot(obj, &oSubtype, NULL);
 			if (pAnnot)
@@ -386,7 +386,7 @@ PdfWriter::CObjectBase* DictToCDictObject2(Object* obj, PdfWriter::CDocument* pD
 				pDict = pAnnot;
 			}
 		}
-		oType.free(); oSubtype.free();
+		oSubtype.free();
 
 		if (obj->dictLookup("Type", &oType)->isName("ExtGState"))
 		{
@@ -1105,6 +1105,11 @@ bool CPdfEditor::IncrementalUpdates()
 				}
 				else if (strcmp("Fields", chKey) == 0)
 					oAcroForm.dictGetVal(nIndex, &oTemp2);
+				else if (strcmp("NeedAppearances", chKey) == 0)
+				{
+					oTemp2.free();
+					continue;
+				}
 				else
 					oAcroForm.dictGetValNF(nIndex, &oTemp2);
 				DictToCDictObject(&oTemp2, pAcroForm, chKey);
@@ -1648,6 +1653,10 @@ bool CPdfEditor::EditPage(int _nPageIndex, bool bSet, bool bActualPos)
 {
 	if (m_nMode == Mode::Unknown && !IncrementalUpdates())
 		return false;
+
+	m_pWriter->AddRedact({});
+	WriteRedact({});
+	m_arrRedact.clear();
 
 	PDFDoc* pPDFDocument = NULL;
 	PdfReader::CPdfFontList* pFontList = NULL;
@@ -2692,6 +2701,10 @@ bool CPdfEditor::DeletePage(int nPageIndex)
 	if (m_nMode == Mode::Unknown && !IncrementalUpdates())
 		return false;
 
+	m_pWriter->AddRedact({});
+	WriteRedact({});
+	m_arrRedact.clear();
+
 	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
 	PdfWriter::CPage* pPage = pDoc->GetPage(nPageIndex);
 	int nObjID = m_mObjManager.FindObj(pPage);
@@ -2716,6 +2729,11 @@ bool CPdfEditor::AddPage(int nPageIndex)
 {
 	if (m_nMode == Mode::Unknown && !IncrementalUpdates())
 		return false;
+
+	m_pWriter->AddRedact({});
+	WriteRedact({});
+	m_arrRedact.clear();
+
 	if (m_nMode == Mode::Split)
 	{
 		std::vector<int>::iterator it = std::find(m_mObjManager.m_arrSplitAddPages.begin(), m_mObjManager.m_arrSplitAddPages.end(), m_nOriginIndex++);
@@ -2747,6 +2765,10 @@ bool CPdfEditor::AddPage(int nPageIndex)
 }
 bool CPdfEditor::MovePage(int nPageIndex, int nPos)
 {
+	m_pWriter->AddRedact({});
+	WriteRedact({});
+	m_arrRedact.clear();
+
 	if (m_nMode == Mode::Split || m_nMode == Mode::WriteNew || EditPage(nPageIndex, true, true))
 		return m_pWriter->GetDocument()->MovePage(nPageIndex, nPos);
 	return false;
@@ -3296,8 +3318,8 @@ bool CPdfEditor::EditWidgets(IAdvancedCommand* pCommand)
 	if (m_nMode == Mode::Unknown && !IncrementalUpdates())
 		return false;
 
-	WriteRedact({});
 	m_pWriter->AddRedact({});
+	WriteRedact({});
 	m_arrRedact.clear();
 
 	CWidgetsInfo* pFieldInfo = (CWidgetsInfo*)pCommand;
@@ -3542,21 +3564,13 @@ void CPdfEditor::Redact(IAdvancedCommand* _pCommand)
 	std::vector<CRedact::SRedact*> arrRedacts = pCommand->GetRedact();
 	for (CRedact::SRedact* pRedact : arrRedacts)
 	{
-		int nRect = pRedact->arrQuadPoints.size() / 4;
 		m_arrRedact.push_back(CRedactData());
 		m_arrRedact.back().sID = pRedact->sID;
-		m_arrRedact.back().arrQuads.reserve(nRect);
-		for (int i = 0; i < nRect; ++i)
+		m_arrRedact.back().arrQuads = pRedact->arrQuadPoints;
+		for (int i = 0; i < pRedact->arrQuadPoints.size(); i += 2)
 		{
-			std::vector<double> arrQuads = { pRedact->arrQuadPoints[i * 4 + 0], pRedact->arrQuadPoints[i * 4 + 1], pRedact->arrQuadPoints[i * 4 + 2], pRedact->arrQuadPoints[i * 4 + 3] };
-			m_arrRedact.back().arrQuads.insert(m_arrRedact.back().arrQuads.end(), arrQuads.begin(), arrQuads.end());
-
-			arrQuads[0] += cropBox->x1;
-			double dQ = arrQuads[1];
-			arrQuads[1] = cropBox->y2 - arrQuads[3];
-			arrQuads[2] += cropBox->x1;
-			arrQuads[3] = cropBox->y2 - dQ;
-			arrAllQuads.insert(arrAllQuads.end(), arrQuads.begin(), arrQuads.end());
+			arrAllQuads.push_back(pRedact->arrQuadPoints[i + 0] + cropBox->x1);
+			arrAllQuads.push_back(cropBox->y2 - pRedact->arrQuadPoints[i + 1]);
 		}
 		int nFlags = pRedact->nFlag;
 		if (nFlags & (1 << 0))
@@ -3575,7 +3589,7 @@ void CPdfEditor::Redact(IAdvancedCommand* _pCommand)
 		Object oContents;
 		pPage->getContents(&oContents);
 		PDFRectangle* box = pPage->getMediaBox();
-		Gfx* gfx = new Gfx(pPDFDocument, &oRedactOut, nPageIndex, pPage->getResourceDict(), 72.0, 72.0, box, NULL, 0);
+		Gfx* gfx = new Gfx(pPDFDocument, &oRedactOut, m_nEditPage, pPage->getResourceDict(), 72.0, 72.0, box, NULL, 0);
 		gfx->saveState();
 		gfx->display(&oContents);
 		gfx->endOfPage();
@@ -3605,7 +3619,6 @@ std::vector<double> CPdfEditor::WriteRedact(const std::vector<std::wstring>& arr
 		if (oRedact.bDraw || !oRedact.pRender)
 			continue;
 
-		m_pWriter->SetTransform(1, 0, 0, 1, 0, 0);
 		LONG nLenRender = oRedact.nLenRender;
 		BYTE* pRender = oRedact.pRender;
 
@@ -3620,18 +3633,22 @@ std::vector<double> CPdfEditor::WriteRedact(const std::vector<std::wstring>& arr
 		double B = ret / 100000.0;
 		LONG lColor = (LONG)(((LONG)(R * 255)) | ((LONG)(G * 255) << 8) | ((LONG)(B * 255) << 16) | ((LONG)255 << 24));
 
-		for (int i = 0; i < oRedact.arrQuads.size(); i += 4)
+		m_pWriter->SetTransform(1, 0, 0, 1, 0, 0);
+		m_pWriter->PathCommandEnd();
+		m_pWriter->put_BrushType(c_BrushTypeSolid);
+		m_pWriter->put_BrushColor1(lColor);
+
+		for (int i = 0; i < oRedact.arrQuads.size(); i += 8)
 		{
-			m_pWriter->PathCommandEnd();
-			m_pWriter->put_BrushColor1(lColor);
 			m_pWriter->PathCommandMoveTo(PdfReader::PDFCoordsToMM(oRedact.arrQuads[i + 0]), PdfReader::PDFCoordsToMM(oRedact.arrQuads[i + 1]));
-			m_pWriter->PathCommandLineTo(PdfReader::PDFCoordsToMM(oRedact.arrQuads[i + 0]), PdfReader::PDFCoordsToMM(oRedact.arrQuads[i + 3]));
 			m_pWriter->PathCommandLineTo(PdfReader::PDFCoordsToMM(oRedact.arrQuads[i + 2]), PdfReader::PDFCoordsToMM(oRedact.arrQuads[i + 3]));
-			m_pWriter->PathCommandLineTo(PdfReader::PDFCoordsToMM(oRedact.arrQuads[i + 2]), PdfReader::PDFCoordsToMM(oRedact.arrQuads[i + 1]));
+			m_pWriter->PathCommandLineTo(PdfReader::PDFCoordsToMM(oRedact.arrQuads[i + 4]), PdfReader::PDFCoordsToMM(oRedact.arrQuads[i + 5]));
+			m_pWriter->PathCommandLineTo(PdfReader::PDFCoordsToMM(oRedact.arrQuads[i + 6]), PdfReader::PDFCoordsToMM(oRedact.arrQuads[i + 7]));
 			m_pWriter->PathCommandClose();
-			m_pWriter->DrawPath(NULL, L"", c_nWindingFillMode);
-			m_pWriter->PathCommandEnd();
 		}
+
+		m_pWriter->DrawPath(NULL, L"", c_nWindingFillMode);
+		m_pWriter->PathCommandEnd();
 
 		// TODO рендер редакта должен быть пересечён со всеми последующими редактами
 		// TODO на самом деле должен быть рендер команд редакта

@@ -976,6 +976,8 @@ bool GetFromBase64(const std::wstring& sPath, BYTE** pBuffer, int* nBufferLen)
 		if (!NSBase64::Base64Decode((const char*)pFileContent, dwFileSize, *pBuffer, nBufferLen))
 			return false;
 	}
+	else
+		return false;
 	oFile.CloseFile();
 	return true;
 }
@@ -1044,54 +1046,42 @@ int main(int argc, char* argv[])
 	RELEASEARRAYOBJECTS(pFileData);
 
 	// SPLIT & MERGE
-	if (false)
+	if (true)
 	{
 		int nBufferLen = NULL;
 		BYTE* pBuffer = NULL;
 
-		if (GetFromBase64(NSFile::GetProcessDirectory() + L"/split1.txt", &pBuffer, &nBufferLen))
+		if (true && GetFromBase64(NSFile::GetProcessDirectory() + L"/split.txt", &pBuffer, &nBufferLen))
 		{
-			std::vector<int> arrPages = { 0 };
+			std::vector<int> arrPages = { 2 };
 			BYTE* pSplitPages = SplitPages(pGrFile, arrPages.data(), arrPages.size(), pBuffer, nBufferLen);
 			int nLength = READ_INT(pSplitPages);
 
 			if (nLength > 4)
 			{
 				NSFile::CFileBinary oFile;
-				if (oFile.CreateFileW(NSFile::GetProcessDirectory() + L"/split1.pdf"))
+				if (oFile.CreateFileW(NSFile::GetProcessDirectory() + L"/split.pdf"))
 					oFile.WriteFile(pSplitPages + 4, nLength - 4);
 				oFile.CloseFile();
-
-				BYTE* pMallocData = (BYTE*)malloc(nLength - 4);
-				memcpy(pMallocData, pSplitPages + 4, nLength - 4);
-
-				MergePages(pGrFile, pMallocData, nLength - 4, 0, "merge1");
 			}
 			RELEASEARRAYOBJECTS(pSplitPages);
 		}
 		RELEASEARRAYOBJECTS(pBuffer);
 
-		if (GetFromBase64(NSFile::GetProcessDirectory() + L"/split2.txt", &pBuffer, &nBufferLen))
+		if (true)
 		{
-			std::vector<int> arrPages = { 0 };
-			BYTE* pSplitPages = SplitPages(pGrFile, arrPages.data(), arrPages.size(), pBuffer, nBufferLen);
-			int nLength = READ_INT(pSplitPages);
-
-			if (nLength > 4)
+			NSFile::CFileBinary oFile;
+			if (oFile.OpenFile(NSFile::GetProcessDirectory() + L"/split.pdf"))
 			{
-				NSFile::CFileBinary oFile;
-				if (oFile.CreateFileW(NSFile::GetProcessDirectory() + L"/split2.pdf"))
-					oFile.WriteFile(pSplitPages + 4, nLength - 4);
-				oFile.CloseFile();
+				DWORD dwFileSize = oFile.GetFileSize();
+				BYTE* pFileContent = (BYTE*)malloc(dwFileSize);
 
-				BYTE* pMallocData = (BYTE*)malloc(nLength - 4);
-				memcpy(pMallocData, pSplitPages + 4, nLength - 4);
-
-				MergePages(pGrFile, pMallocData, nLength - 4, 0, "merge2");
+				DWORD dwReaded;
+				if (oFile.ReadFile(pFileContent, dwFileSize, dwReaded))
+					MergePages(pGrFile, pFileContent, dwReaded, 0, "merge1");
 			}
-			RELEASEARRAYOBJECTS(pSplitPages);
+			oFile.CloseFile();
 		}
-		RELEASEARRAYOBJECTS(pBuffer);
 	}
 
 	// INFO
@@ -1137,9 +1127,9 @@ int main(int argc, char* argv[])
 
 	BYTE* pColor = new BYTE[12] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 	// REDACT
-	if (true)
+	if (false)
 	{
-		int pRect[4] = { 307499, 217499, 1799999, 1124999 };
+		int pRect[8] = { 307499, 217499, 307499, 1124999, 1799999, 1124999, 1799999, 217499 };
 		if (!RedactPage(pGrFile, nTestPage, pRect, 1, pColor, 12))
 			std::cout << "Redact false" << std::endl;
 	}

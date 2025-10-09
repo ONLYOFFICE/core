@@ -859,6 +859,37 @@ namespace PdfWriter
 
 		return NULL;
 	}
+	void CXref::Add(CObjectBase* pObject)
+	{
+		if (!pObject)
+			return;
+
+		if (pObject->IsDirect() || pObject->IsIndirect())
+			return;
+
+		if (m_arrEntries.size() >= LIMIT_MAX_XREF_ELEMENT)
+		{
+			RELEASE_OBJECT(pObject);
+			return;
+		}
+
+		// В случае ошибки r объектe нужно применить dispose
+		TXrefEntry* pEntry = new TXrefEntry;
+		if (NULL == pEntry)
+		{
+			RELEASE_OBJECT(pObject);
+			return;
+		}
+
+		m_arrEntries.push_back(pEntry);
+
+		pEntry->nEntryType   = IN_USE_ENTRY;
+		pEntry->unByteOffset = 0;
+		pEntry->unGenNo      = 0;
+		pEntry->pObject      = pObject;
+		pObject->SetIndirect();
+		pObject->SetXrefEntry(pEntry);
+	}
 	void CXref::Add(CObjectBase* pObject, unsigned int unObjectGen)
 	{
 		if (!pObject)
@@ -887,7 +918,7 @@ namespace PdfWriter
 		pEntry->unByteOffset = 0;
 		pEntry->unGenNo      = unObjectGen;
 		pEntry->pObject      = pObject;
-		pObject->SetRef(0, pEntry->unGenNo);
+		pObject->SetRef(m_unStartOffset + m_arrEntries.size() - 1, pEntry->unGenNo);
 		pObject->SetIndirect();
 		pObject->SetXrefEntry(pEntry);
 	}

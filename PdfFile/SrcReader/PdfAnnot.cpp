@@ -2369,6 +2369,21 @@ CAnnotStamp::CAnnotStamp(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex, int 
 			}
 		}
 	}
+	else
+	{
+		m_dX1 = 0;
+		m_dY1 = 0;
+
+		m_dX2 = 0;
+		m_dY2 = 0;
+
+		m_dX3 = 0;
+		m_dY3 = 0;
+
+		m_dX4 = 0;
+		m_dY4 = 0;
+		return;
+	}
 	oAP.free(); oObj2.free(); oObj.free();
 
 	double formXMin, formYMin, formXMax, formYMax, x, y, sx, sy;
@@ -2490,6 +2505,19 @@ CAnnotRedact::CAnnotRedact(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex, in
 	{
 		m_unFlags |= (1 << 19);
 		m_nQ = oObj.getInt();
+	}
+	oObj.free();
+
+	// Замена C: 3 - Цвет - C
+	if (oAnnot.dictLookup("OC", &oObj)->isArray())
+	{
+		m_unAFlags |= (1 << 3);
+		int nBCLength = oObj.arrayGetLength();
+		for (int j = 0; j < nBCLength; ++j)
+		{
+			m_arrC.push_back(oObj.arrayGet(j, &oObj2)->isNum() ? oObj2.getNum() : 0.0);
+			oObj2.free();
+		}
 	}
 	oObj.free();
 

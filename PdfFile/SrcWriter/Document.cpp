@@ -1326,7 +1326,7 @@ namespace PdfWriter
 		pObj->SetHidden();
 		if (!pObj->IsIndirect())
 			return;
-		TXrefEntry* pEntry = m_pXref->GetEntryByObjectId(pObj->GetObjId());
+		TXrefEntry* pEntry = pObj->GetXrefEntry();
 		if (pEntry)
 		{
 			pEntry->nEntryType = 'f'; // FREE_ENTRY

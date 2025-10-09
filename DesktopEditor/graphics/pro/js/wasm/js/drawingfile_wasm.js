@@ -211,7 +211,7 @@ CFile.prototype._RedactPage = function(pageIndex, arrRedactBox, arrayBufferFille
 	let pointer = Module["_malloc"](memoryBuffer.length * 4);
 	Module["HEAP32"].set(memoryBuffer, pointer >> 2);
 
-	let bRes = Module["_RedactPage"](this.nativeFile, pageIndex, pointer, memoryBuffer.length / 4, changesPtr, changesLen);
+	let bRes = Module["_RedactPage"](this.nativeFile, pageIndex, pointer, memoryBuffer.length / 8, changesPtr, changesLen);
 	changesPtr = 0; // Success or not, changesPtr is either taken or freed
 
 	Module["_free"](pointer);

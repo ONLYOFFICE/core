@@ -756,7 +756,7 @@ bool CPdfReader::UnmergePages()
 	m_vPDFContext.pop_back();
 	return true;
 }
-bool CPdfReader::RedactPage(int _nPageIndex, double* arrRedactBox, int nLengthX4, BYTE* pChanges, int nLength)
+bool CPdfReader::RedactPage(int _nPageIndex, double* arrRedactBox, int nLengthX8, BYTE* pChanges, int nLength)
 {
 	if (m_eError)
 	{
@@ -774,12 +774,10 @@ bool CPdfReader::RedactPage(int _nPageIndex, double* arrRedactBox, int nLengthX4
 
 	CPdfRedact* pRedact = new CPdfRedact();
 	pRedact->m_nPageIndex = _nPageIndex;
-	for (int i = 0; i < nLengthX4; ++i)
+	for (int i = 0; i < nLengthX8 * 8; i += 2)
 	{
-		pRedact->m_arrRedactBox.push_back(arrRedactBox[i * 4 + 0] + cropBox->x1);
-		pRedact->m_arrRedactBox.push_back(cropBox->y2 - arrRedactBox[i * 4 + 3]);
-		pRedact->m_arrRedactBox.push_back(arrRedactBox[i * 4 + 2] + cropBox->x1);
-		pRedact->m_arrRedactBox.push_back(cropBox->y2 - arrRedactBox[i * 4 + 1]);
+		pRedact->m_arrRedactBox.push_back(arrRedactBox[i + 0] + cropBox->x1);
+		pRedact->m_arrRedactBox.push_back(cropBox->y2 - arrRedactBox[i + 1]);
 	}
 	pRedact->m_pChanges = pChanges;
 	pRedact->m_nChangeLength = nLength;
@@ -839,14 +837,14 @@ void CPdfReader::DrawPageOnRenderer(IRenderer* pRenderer, int _nPageIndex, bool*
 			double B = ret / 100000.0;
 			LONG lColor = (LONG)(((LONG)(R * 255)) | ((LONG)(G * 255) << 8) | ((LONG)(B * 255) << 16) | ((LONG)255 << 24));
 
-			for (int j = 0; j < m_vRedact[i]->m_arrRedactBox.size(); j += 4)
+			for (int j = 0; j < m_vRedact[i]->m_arrRedactBox.size(); j += 8)
 			{
 				pRenderer->PathCommandEnd();
 				pRenderer->put_BrushColor1(lColor);
 				pRenderer->PathCommandMoveTo(PdfReader::PDFCoordsToMM(m_vRedact[i]->m_arrRedactBox[j + 0] - cropBox->x1), PdfReader::PDFCoordsToMM(cropBox->y2 - m_vRedact[i]->m_arrRedactBox[j + 1]));
-				pRenderer->PathCommandLineTo(PdfReader::PDFCoordsToMM(m_vRedact[i]->m_arrRedactBox[j + 0] - cropBox->x1), PdfReader::PDFCoordsToMM(cropBox->y2 - m_vRedact[i]->m_arrRedactBox[j + 3]));
 				pRenderer->PathCommandLineTo(PdfReader::PDFCoordsToMM(m_vRedact[i]->m_arrRedactBox[j + 2] - cropBox->x1), PdfReader::PDFCoordsToMM(cropBox->y2 - m_vRedact[i]->m_arrRedactBox[j + 3]));
-				pRenderer->PathCommandLineTo(PdfReader::PDFCoordsToMM(m_vRedact[i]->m_arrRedactBox[j + 2] - cropBox->x1), PdfReader::PDFCoordsToMM(cropBox->y2 - m_vRedact[i]->m_arrRedactBox[j + 1]));
+				pRenderer->PathCommandLineTo(PdfReader::PDFCoordsToMM(m_vRedact[i]->m_arrRedactBox[j + 6] - cropBox->x1), PdfReader::PDFCoordsToMM(cropBox->y2 - m_vRedact[i]->m_arrRedactBox[j + 7]));
+				pRenderer->PathCommandLineTo(PdfReader::PDFCoordsToMM(m_vRedact[i]->m_arrRedactBox[j + 4] - cropBox->x1), PdfReader::PDFCoordsToMM(cropBox->y2 - m_vRedact[i]->m_arrRedactBox[j + 5]));
 				pRenderer->PathCommandClose();
 				pRenderer->DrawPath(c_nWindingFillMode);
 				pRenderer->PathCommandEnd();

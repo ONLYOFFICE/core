@@ -468,6 +468,18 @@ int CPdfReader::GetNumPagesBefore(PDFDoc* _pDoc)
 	}
 	return -1;
 }
+std::string CPdfReader::GetPrefixForm(PDFDoc* _pDoc)
+{
+	for (CPdfReaderContext* pPDFContext : m_vPDFContext)
+	{
+		if (!pPDFContext || !pPDFContext->m_pDocument)
+			continue;
+		PDFDoc* pDoc = pPDFContext->m_pDocument;
+		if (_pDoc == pDoc)
+			return pPDFContext->m_sPrefixForm;
+	}
+	return "";
+}
 int CPdfReader::FindRefNum(int nObjID, PDFDoc** _pDoc, int* _nStartRefID)
 {
 	for (CPdfReaderContext* pPDFContext : m_vPDFContext)

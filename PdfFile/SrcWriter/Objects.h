@@ -304,6 +304,7 @@ namespace PdfWriter
 		CStringObject();
 		virtual ~CStringObject();
 		void Set(const char* sValue, bool isUTF16, bool isDictValue, int nMax = LIMIT_MAX_STRING_LEN);
+		void Add(const char* sValue);
 		const BYTE*  GetString() const
 		{
 			return (const BYTE*)m_pValue;
@@ -346,6 +347,7 @@ namespace PdfWriter
 		CBinaryObject(BYTE* pValue, unsigned int unLen, bool bCopy = true);
 		~CBinaryObject();
 		void Set(BYTE* pValue, unsigned int unLen, bool bCopy = true);
+		void Add(BYTE* pValue, unsigned int unLen);
 		BYTE*        GetValue() const
 		{
 			return m_pValue;

@@ -173,7 +173,7 @@ public:
 	HRESULT PathCommandArcTo(const double& dX, const double& dY, const double& dW, const double& dH, const double& dStartAngle, const double& dSweepAngle);
 	HRESULT PathCommandClose();
 	HRESULT PathCommandEnd();
-	HRESULT DrawPath(NSFonts::IApplicationFonts* pAppFonts, const std::wstring& wsTempDirectory, const LONG& lType);
+	HRESULT DrawPath(NSFonts::IApplicationFonts* pAppFonts, const std::wstring& wsTempDirectory, const LONG& lType, bool bIgnoreRedact = false);
 	HRESULT PathCommandStart();
 	HRESULT PathCommandGetCurrentPoint(double* dX, double* dY);
 	HRESULT PathCommandTextCHAR  (const LONG& lUnicode,                   const double& dX, const double& dY, const double& dW, const double& dH);

@@ -148,7 +148,7 @@ bool CPdfFile::MergePages(const std::wstring& wsPath, int nMaxID, const std::wst
 	if (!m_pInternal->pEditor)
 		return false;
 	if (m_pInternal->pReader->MergePages(wsPath, L"", nMaxID))
-		return m_pInternal->pEditor->MergePages(wsPath, wsPrefixForm);
+		return m_pInternal->pEditor->MergePages(wsPath, nMaxID, wsPrefixForm);
 	return false;
 }
 bool CPdfFile::MovePage(int nPageIndex, int nPos)

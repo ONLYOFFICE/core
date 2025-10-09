@@ -105,11 +105,12 @@ public:
 
 	bool SplitPages(const int* arrPageIndex, unsigned int unLength);
 	void AfterSplitPages();
-	bool MergePages(const std::wstring& wsPath, const std::wstring& wsPrefixForm);
+	bool MergePages(const std::wstring& wsPath, int nMaxID, const std::wstring& wsPrefixForm);
 
 private:
 	void GetPageTree(XRef* xref, Object* pPagesRefObj, PdfWriter::CPageTree* pPageParent = NULL);
 	bool SplitPages(const int* arrPageIndex, unsigned int unLength, PDFDoc* _pDoc, int nStartRefID);
+	bool ChangeFullNameParent(int nParent, const std::string& sPrefixForm, std::vector<int>& arrRename);
 
 	struct CRedactData
 	{

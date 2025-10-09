@@ -1311,11 +1311,6 @@ void CPdfEditor::Close()
 						}
 					}
 
-					// TODO нужна проверка полных имён
-					// Если имя совпадает, то: переименование с удалением действий или преобразование типа
-					// Если другие поля - тип, флаг и т.д. совпадает, то выносим общее в общего родителя
-					// Иначе переименовываем, action обрубаем
-
 					if (oAcroForm.dictGetVal(nIndex, &oTemp)->isArray())
 					{
 						if (!pFields)
@@ -2340,11 +2335,6 @@ bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength, PDFD
 					}
 				}
 
-				// TODO нужна проверка полных имён
-				// Если имя совпадает, то: переименование с удалением действий или преобразование типа
-				// Если другие поля - тип, флаг и т.д. совпадает, то выносим общее в общего родителя
-				// Иначе переименовываем, action обрубаем
-
 				if (oAcroForm.dictGetVal(nIndex, &oTemp)->isArray())
 				{
 					if (!pFields)
@@ -2648,7 +2638,37 @@ void CreateOutlines(PDFDoc* pdfDoc, PdfWriter::CDocument* pDoc, OutlineItem* pOu
 	}
 	pOutlineItem->close();
 }
-bool CPdfEditor::MergePages(const std::wstring& wsPath, const std::wstring& wsPrefixForm)
+bool CPdfEditor::ChangeFullNameParent(int nParent, const std::string& sPrefix, std::vector<int>& arrRename)
+{
+	std::vector<int>::const_iterator it2 = std::find(arrRename.begin(), arrRename.end(), nParent);
+	if (it2 != arrRename.end())
+		return true;
+
+	PdfWriter::CObjectBase* pObjBase = m_mObjManager.GetObj(nParent);
+	if (pObjBase->GetType() != PdfWriter::object_type_DICT)
+		return false;
+
+	PdfWriter::CDictObject* pDict = (PdfWriter::CDictObject*)pObjBase;
+	pObjBase = pDict->Get("Parent");
+	if (!pObjBase || !ChangeFullNameParent(pObjBase->GetObjId(), sPrefix, arrRename))
+	{
+		pObjBase = pDict->Get("T");
+		if (pObjBase && pObjBase->GetType() == PdfWriter::object_type_STRING)
+		{
+			PdfWriter::CStringObject* pStr = (PdfWriter::CStringObject*)pObjBase;
+			pStr->Add(sPrefix.c_str());
+		}
+		else if (pObjBase && pObjBase->GetType() == PdfWriter::object_type_BINARY)
+		{
+			PdfWriter::CBinaryObject* pBin = (PdfWriter::CBinaryObject*)pObjBase;
+			pBin->Add((BYTE*)sPrefix.c_str(), sPrefix.length());
+		}
+	}
+	arrRename.push_back(nParent);
+
+	return true;
+}
+bool CPdfEditor::MergePages(const std::wstring& wsPath, int nMaxID, const std::wstring& wsPrefixForm)
 {
 	if (m_nMode == Mode::Unknown && !IncrementalUpdates())
 		return false;
@@ -2659,6 +2679,38 @@ bool CPdfEditor::MergePages(const std::wstring& wsPath, const std::wstring& wsPr
 	bool bRes = SplitPages(NULL, 0, pDocument, nStartRefID);
 	if (!bRes)
 		return false;
+
+	// Переименование полей
+	std::string sPrefix = "_" + U_TO_UTF8(wsPrefixForm);
+	std::vector<int> arrRename; // Вектор переименованных полей
+	std::map<int, PdfWriter::CAnnotation*> mAnnots = m_pWriter->GetDocument()->GetAnnots();
+	for (auto it = mAnnots.begin(); it != mAnnots.end(); it++)
+	{
+		PdfWriter::CAnnotation* pAnnot = it->second;
+		if (pAnnot->GetAnnotationType() != PdfWriter::AnnotWidget || it->first < nMaxID)
+			continue;
+
+		std::vector<int>::iterator it2 = std::find(arrRename.begin(), arrRename.end(), it->first);
+		if (it2 != arrRename.end())
+			continue;
+
+		PdfWriter::CObjectBase* pObjBase = pAnnot->Get("Parent");
+		if (!pObjBase || !ChangeFullNameParent(pObjBase->GetObjId(), sPrefix, arrRename))
+		{
+			pObjBase = pAnnot->Get("T");
+			if (pObjBase && pObjBase->GetType() == PdfWriter::object_type_STRING)
+			{
+				PdfWriter::CStringObject* pStr = (PdfWriter::CStringObject*)pObjBase;
+				pStr->Add(sPrefix.c_str());
+			}
+			else if (pObjBase && pObjBase->GetType() == PdfWriter::object_type_BINARY)
+			{
+				PdfWriter::CBinaryObject* pBin = (PdfWriter::CBinaryObject*)pObjBase;
+				pBin->Add((BYTE*)sPrefix.c_str(), sPrefix.length());
+			}
+		}
+		arrRename.push_back(it->first);
+	}
 
 	Outline* pOutlineAdd = pDocument->getOutline();
 	GList* pListAdd = NULL;

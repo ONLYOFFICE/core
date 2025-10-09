@@ -871,7 +871,7 @@ HRESULT CPdfWriter::PathCommandEnd()
 	m_oPath.Clear();
 	return S_OK;
 }
-HRESULT CPdfWriter::DrawPath(NSFonts::IApplicationFonts* pAppFonts, const std::wstring& wsTempDirectory, const LONG& lType)
+HRESULT CPdfWriter::DrawPath(NSFonts::IApplicationFonts* pAppFonts, const std::wstring& wsTempDirectory, const LONG& lType, bool bIgnoreRedact)
 {
 	m_oCommandManager.Flush();
 
@@ -905,7 +905,7 @@ HRESULT CPdfWriter::DrawPath(NSFonts::IApplicationFonts* pAppFonts, const std::w
 		UpdateBrush(pAppFonts, wsTempDirectory);
 	}
 
-	if (!m_arrRedact.empty())
+	if (!bIgnoreRedact && !m_arrRedact.empty())
 	{
 		PdfWriter::CMatrix* pMatrix = m_pPage->GetTransform();
 		m_oPath.Redact(pMatrix, m_arrRedact, m_pPage, bStroke, bFill, bEoFill, m_pShading, m_pShadingExtGrState);
@@ -3395,7 +3395,7 @@ bool CPdfWriter::DrawTextToRenderer(const unsigned int* unGid, const unsigned in
 	PathCommandEnd();
 	if (simplifier.PathCommandText2(wsUnicodeText, (const int*)unGid, unLen, m_pFontManager, dX, dY, 0, 0))
 	{
-		DrawPath(NULL, L"", c_nWindingFillMode);
+		DrawPath(NULL, L"", c_nWindingFillMode, true);
 		PathCommandEnd();
 		return true;
 	}

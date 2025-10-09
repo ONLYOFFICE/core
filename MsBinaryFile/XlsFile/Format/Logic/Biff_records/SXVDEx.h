@@ -71,8 +71,8 @@ public:
     bool					fSubtotalAtTop = false;
 
     unsigned char			citmAutoShow = 0;
-    short					isxdiAutoSort = 0;
-    short					isxdiAutoShow = 0;
+	short					isxdiAutoSort = -1;
+	short					isxdiAutoShow = -1;
     unsigned short			ifmt = 0;
     unsigned short			cchSubName = 0;
 	XLUnicodeStringNoCch	stSubName;

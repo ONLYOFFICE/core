@@ -762,6 +762,8 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			ptr->cRw = m_oRowItems->m_arrItems.size();
 		if(m_oColGrandTotals.IsInit())
 			ptr->fColGrand  = m_oColGrandTotals.get();
+		else
+			ptr->fColGrand = true;
 		if(m_oRowGrandTotals.IsInit())
 			ptr->fRwGrand = m_oRowGrandTotals.get();
 		if(m_oUseAutoFormatting.IsInit())
@@ -4405,7 +4407,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		if(m_oCacheFields.IsInit())
 			ptr->cfdbTot = m_oCacheFields->m_arrItems.size();
 		ptr->cfdbdb = ptr->cfdbTot;
-		ptr->crdbUsed = ptr->cfdbTot;
+		//ptr->crdbUsed = ptr->cfdbTot;
 		if(m_oCacheSource.IsInit() && m_oCacheSource->m_oType.IsInit())
 		{
 			if(m_oCacheSource->m_oType->GetValue() == SimpleTypes::Spreadsheet::ESourceCacheType::typeSourceWorksheet)

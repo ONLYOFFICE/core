@@ -80,7 +80,7 @@ public:
     bool fAtrPat = false;
     bool fAtrProc = false;
 
-    unsigned short	itblAutoFmt = 0; //enum AutoFmt8
+	unsigned short	itblAutoFmt = 1; //enum AutoFmt8
     unsigned short	cchTableName = 0;
     unsigned short	cchDataName = 0;
 

@@ -19,7 +19,7 @@ namespace MetaFile
 		void DrawBitmap(double dX, double dY, double dW, double dH, BYTE* pBuffer, unsigned int unWidth, unsigned int unHeight, unsigned int unBlendMode) override;
 
 		void DrawString(std::wstring& wsText, unsigned int unCharsCount, double dX, double dY, double* pDx,
-		                int iGraphicsMode = 1, double dXScale = 1, double dYScale = 1, bool bExChars = false) override;
+		                int iGraphicsMode = 1, double dXScale = 1, double dYScale = 1, bool bUseGID = false) override;
 
 		void DrawDriverString(const std::wstring& wsString, const std::vector<TPointD>& arPoints) override;
 

@@ -411,7 +411,7 @@ namespace MetaFile
 	}
 
 	void CEmfParserBase::DrawText(std::wstring &wsString, unsigned int unCharsCount, int _nX, int _nY,
-	                              int *pnDx, int iGraphicsMode, TScale oScale, bool bExChars)
+	                              int *pnDx, int iGraphicsMode, TScale oScale, bool bUseGID)
 	{
 		int nX = _nX;
 		int nY = _nY;
@@ -448,7 +448,7 @@ namespace MetaFile
 				}
 			}
 
-			m_pInterpretator->DrawString(wsString, unCharsCount, dX, dY, pdDx, iGraphicsMode, oScale.X, oScale.Y, bExChars);
+			m_pInterpretator->DrawString(wsString, unCharsCount, dX, dY, pdDx, iGraphicsMode, oScale.X, oScale.Y, bUseGID);
 
 			if (pdDx)
 				delete[] pdDx;

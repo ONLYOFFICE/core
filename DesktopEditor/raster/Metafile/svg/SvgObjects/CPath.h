@@ -106,7 +106,7 @@ namespace SVG
 	class CPath : public CRenderedObject
 	{
 	public:
-		CPath(XmlUtils::CXmlNode& oNode, CRenderedObject* pParent = NULL, bool bChechCommands = true);
+		CPath(CSvgReader& oReader, CRenderedObject* pParent = NULL, bool bChechCommands = true);
 		virtual ~CPath();
 
 		void SetData(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false) override;

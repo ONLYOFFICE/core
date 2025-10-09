@@ -445,11 +445,11 @@ namespace SVG
     #define CURVESTEP 0.05
     #define MINCURVESTEP 0.001
 
-	CPath::CPath(XmlUtils::CXmlNode& oNode, CRenderedObject* pParent, bool bChechCommands)
-		: CRenderedObject(oNode, pParent), m_bEvenOddRule(false)
+	CPath::CPath(CSvgReader& oReader, CRenderedObject* pParent, bool bChechCommands)
+		: CRenderedObject(oReader, pParent), m_bEvenOddRule(false)
 	{
 		if (bChechCommands)
-			ReadFromString(oNode.GetAttribute(L"d"));
+			ReadFromString(oReader.GetAttribute("d"));
 	}
 
 	CPath::~CPath()

@@ -3,10 +3,11 @@
 
 #include "../../../../../Common/3dParty/html/css/src/CNode.h"
 #include "../../../../../Common/3dParty/html/css/src/StaticFunctions.h"
-#include "../../../../xml/include/xmlutils.h"
 #include "../../../../graphics/IRenderer.h"
 #include "../../../../common/IGrObject.h"
+
 #include "../SvgTypes.h"
+#include "../SvgReader.h"
 
 class CSvgFile;
 
@@ -36,11 +37,13 @@ namespace SVG
 		AppliedObject
 	};
 
+	//TODO:: хотелось бы передалать принцип чтения аргументов
+
 	class CObject : public IGrObject
 	{
 	public:
 		CObject(const NSCSS::CNode& oData);
-		CObject(XmlUtils::CXmlNode& oNode);
+		CObject(CSvgReader& oReader);
 		virtual ~CObject();
 
 		virtual ObjectType GetType() const = 0;
@@ -64,7 +67,7 @@ namespace SVG
 
 		bool ApplyDef(IRenderer* pRenderer, const CSvgFile *pFile, const std::wstring& wsUrl, const TBounds& oBounds) const;
 
-		void SetNodeData(XmlUtils::CXmlNode& oNode);
+		void SetNodeData(CSvgReader& oReader);
 
 		friend class CRenderedObject;
 		friend class CAppliedObject;
@@ -99,7 +102,7 @@ namespace SVG
 	{
 	public:
 		CRenderedObject(const NSCSS::CNode& oData, CRenderedObject* pParent = NULL);
-		CRenderedObject(XmlUtils::CXmlNode& oNode, CRenderedObject* pParent = NULL);
+		CRenderedObject(CSvgReader& oReader, CRenderedObject* pParent = NULL);
 		virtual ~CRenderedObject();
 
 		ObjectType GetType() const override;
@@ -146,10 +149,22 @@ namespace SVG
 		CRenderedObject *m_pParent;
 	};
 
+	#define BEGIN_RENDERER_CHILDREN_H(name)\
+	class C##name : public CRenderedObject\
+	{\
+	public:\
+		C##name(CSvgReader& oReader, CRenderedObject* pParent = NULL);
+
+	#define END_RENDERER_CHILDREN_H };
+
+	#define RENDERER_CHILDREN_CPP(name)\
+	C##name::C##name(CSvgReader& oReader, CRenderedObject* pParent)\
+		: CRenderedObject(oReader, pParent)
+
 	class CAppliedObject : public CObject
 	{
 	public:
-		CAppliedObject(XmlUtils::CXmlNode& oNode);
+		CAppliedObject(CSvgReader& oReader);
 		virtual ~CAppliedObject();
 
 		ObjectType GetType() const override;

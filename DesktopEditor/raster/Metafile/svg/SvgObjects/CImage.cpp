@@ -8,15 +8,22 @@
 
 namespace SVG
 {
-	CImage::CImage(XmlUtils::CXmlNode& oNode, CRenderedObject* pParent)
-		: CRenderedObject(oNode, pParent)
+	RENDERER_CHILDREN_CPP(Image)
 	{
-		m_oRect.m_oX     .SetValue(oNode.GetAttribute(L"x"));
-		m_oRect.m_oY     .SetValue(oNode.GetAttribute(L"y"));
-		m_oRect.m_oWidth .SetValue(oNode.GetAttribute(L"width"));
-		m_oRect.m_oHeight.SetValue(oNode.GetAttribute(L"height"));
-
-		m_wsHref = oNode.GetAttribute(L"href", oNode.GetAttribute(L"xlink:href")); // TODO:: В дальнейшем возможно стоит реализовать отдельный класс CHref для всех типов ссылок
+		START_READ_ATTRIBUTES(oReader)
+		{
+			IF_ATTRIBUTE("x")
+				SET_VALUE(m_oRect.m_oX);
+			ELSE_IF_ATTRIBUTE("y")
+				SET_VALUE(m_oRect.m_oY);
+			ELSE_IF_ATTRIBUTE("width")
+				SET_VALUE(m_oRect.m_oWidth);
+			ELSE_IF_ATTRIBUTE("height")
+				SET_VALUE(m_oRect.m_oHeight);
+			ELSE_IF_ATTRIBUTE2("href", "xlink:href")
+				SET_VALUE_STRING(m_wsHref);// TODO:: В дальнейшем возможно стоит реализовать отдельный класс CHref для всех типов ссылок
+		}
+		END_READ_ATTRIBUTES(oReader)
 	}
 
 	bool CImage::Draw(IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode, const TSvgStyles *pOtherStyles, const CRenderedObject* pContexObject) const

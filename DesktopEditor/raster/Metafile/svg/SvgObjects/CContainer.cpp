@@ -15,40 +15,45 @@ namespace SVG
 			pObject->m_pParent = NULL;
 	}
 
-	void CGraphicsContainer::SetData(XmlUtils::CXmlNode &oNode)
+	void CGraphicsContainer::SetData(CSvgReader& oReader)
 	{
-		SetNodeData(oNode);
+		SetNodeData(oReader);
 
-		m_oWindow.m_oX     .SetValue(oNode.GetAttribute(L"x"));
-		m_oWindow.m_oY     .SetValue(oNode.GetAttribute(L"y"));
-		m_oWindow.m_oWidth .SetValue(oNode.GetAttribute(L"width"), 0, true);
-		m_oWindow.m_oHeight.SetValue(oNode.GetAttribute(L"height"), 0, true);
-
-		const std::wstring wsViewBox = oNode.GetAttribute(L"viewBox");
-
-		if (!wsViewBox.empty())
+		START_READ_ATTRIBUTES(oReader)
 		{
-			std::vector<double> arValues = StrUtils::ReadDoubleValues(wsViewBox);
-			if (4 == arValues.size())
+			if ("x" == sAttributeName)
+				m_oWindow.m_oX.SetValue(oReader.GetText());
+			else if ("y" == sAttributeName)
+				m_oWindow.m_oY.SetValue(oReader.GetText());
+			else if ("width" == sAttributeName)
+				m_oWindow.m_oWidth.SetValue(oReader.GetText(), 0, true);
+			else if ("height" == sAttributeName)
+				m_oWindow.m_oHeight.SetValue(oReader.GetText(), 0, true);
+			else if ("viewBox" == sAttributeName)
 			{
-				m_oViewBox.m_oX      = arValues[0];
-				m_oViewBox.m_oY      = arValues[1];
-				m_oViewBox.m_oWidth  = arValues[2];
-				m_oViewBox.m_oHeight = arValues[3];
+				m_oViewBox = m_oWindow;
+
+				std::vector<double> arValues = StrUtils::ReadDoubleValues(oReader.GetText());
+				if (4 == arValues.size())
+				{
+					m_oViewBox.m_oX      = arValues[0];
+					m_oViewBox.m_oY      = arValues[1];
+					m_oViewBox.m_oWidth  = arValues[2];
+					m_oViewBox.m_oHeight = arValues[3];
+				}
 			}
 		}
-		else
-			m_oViewBox = m_oWindow;
+		END_READ_ATTRIBUTES(oReader)
 	}
 
-	CGraphicsContainer::CGraphicsContainer(XmlUtils::CXmlNode& oNode, CRenderedObject *pParent)
-		: CRenderedObject(oNode, pParent)
+	CGraphicsContainer::CGraphicsContainer(CSvgReader& oReader, CRenderedObject *pParent)
+		: CRenderedObject(oReader, pParent)
 	{
-		SetData(oNode);
+		SetData(oReader);
 	}
 
-	CGraphicsContainer::CGraphicsContainer(double dWidth, double dHeight, XmlUtils::CXmlNode& oNode, CRenderedObject *pParent)
-		: CRenderedObject(oNode, pParent), m_oWindow{0, 0, dWidth, dHeight}
+	CGraphicsContainer::CGraphicsContainer(double dWidth, double dHeight, CSvgReader& oReader, CRenderedObject *pParent)
+		: CRenderedObject(oReader, pParent), m_oWindow{0, 0, dWidth, dHeight}
 	{}
 
 	bool CGraphicsContainer::Draw(IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode, const TSvgStyles *pOtherStyles, const CRenderedObject* pContexObject) const

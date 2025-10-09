@@ -1,17 +1,23 @@
 #include "CEllipse.h"
 
-#include "CStyle.h"
 #include "CContainer.h"
 
 namespace SVG
 {
-	CEllipse::CEllipse(XmlUtils::CXmlNode &oNode, CRenderedObject *pParent)
-		: CRenderedObject(oNode, pParent)
+	RENDERER_CHILDREN_CPP(Ellipse)
 	{
-		m_oCx.SetValue(oNode.GetAttribute(L"cx"));
-		m_oCy.SetValue(oNode.GetAttribute(L"cy"));
-		m_oRx.SetValue(oNode.GetAttribute(L"rx"));
-		m_oRy.SetValue(oNode.GetAttribute(L"ry"));
+		START_READ_ATTRIBUTES(oReader)
+		{
+			IF_ATTRIBUTE("cx")
+				SET_VALUE(m_oCx);
+			ELSE_IF_ATTRIBUTE("cy")
+				SET_VALUE(m_oCy);
+			ELSE_IF_ATTRIBUTE("rx")
+				SET_VALUE(m_oRx);
+			ELSE_IF_ATTRIBUTE("ry")
+				SET_VALUE(m_oRy);
+		}
+		END_READ_ATTRIBUTES(oReader)
 	}
 
 	void CEllipse::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)

@@ -31,9 +31,9 @@ namespace SVG
 		: m_oXmlNode(oData)
 	{}
 
-	CObject::CObject(XmlUtils::CXmlNode &oNode)
+	CObject::CObject(CSvgReader& oReader)
 	{
-		SetNodeData(oNode);
+		SetNodeData(oReader);
 	}
 
 	CObject::~CObject()
@@ -153,31 +153,25 @@ namespace SVG
 		return pDefObject->Apply(pRenderer, pFile, oBounds);
 	}
 
-	void CObject::SetNodeData(XmlUtils::CXmlNode &oNode)
+	void CObject::SetNodeData(CSvgReader& oReader)
 	{
-		if (!oNode.IsValid())
-			return;
+		m_oXmlNode.m_wsName = oReader.GetNameW();
 
-		std::vector<std::wstring> arProperties, arValues;
-
-		oNode.GetAllAttributes(arProperties, arValues);
-
-		m_oXmlNode.m_wsName = oNode.GetName();
-
-		for (unsigned int unIndex = 0; unIndex < arProperties.size(); ++unIndex)
+		START_READ_ATTRIBUTES(oReader)
 		{
-			if (L"class" == arProperties[unIndex])
+			if ("class" == sAttributeName)
 			{
-				m_oXmlNode.m_wsClass = arValues[unIndex];
+				m_oXmlNode.m_wsClass = oReader.GetText();
 				std::transform(m_oXmlNode.m_wsClass.begin(), m_oXmlNode.m_wsClass.end(), m_oXmlNode.m_wsClass.begin(), std::towlower);
 			}
-			else if (L"id" == arProperties[unIndex])
-				m_oXmlNode.m_wsId = arValues[unIndex];
-			else if (L"style" == arProperties[unIndex])
-				m_oXmlNode.m_wsStyle = arValues[unIndex];
+			else if ("id" == sAttributeName)
+				m_oXmlNode.m_wsId = oReader.GetText();
+			else if ("style" == sAttributeName)
+				m_oXmlNode.m_wsStyle = oReader.GetText();
 			else
-				m_oXmlNode.m_mAttributes.insert({arProperties[unIndex], arValues[unIndex]});
+				m_oXmlNode.m_mAttributes.insert({oReader.GetNameW(), oReader.GetText()});
 		}
+		END_READ_ATTRIBUTES(oReader)
 	}
 
 	std::wstring CObject::GetId() const
@@ -196,9 +190,13 @@ namespace SVG
 		SetDefaultStyles();
 	}
 
-	CRenderedObject::CRenderedObject(XmlUtils::CXmlNode &oNode, CRenderedObject *pParent)
-		: CObject(oNode), m_pParent(pParent)
+	CRenderedObject::CRenderedObject(CSvgReader& oReader, CRenderedObject *pParent)
+	    : CObject(oReader), m_pParent(pParent)
 	{
+		START_READ_ATTRIBUTES(oReader)
+			SetAttribute(sAttributeName, oReader.GetText());
+		END_READ_ATTRIBUTES(oReader)
+
 		SetDefaultStyles();
 	}
 
@@ -447,8 +445,8 @@ namespace SVG
 		return false;
 	}
 
-	CAppliedObject::CAppliedObject(XmlUtils::CXmlNode &oNode)
-		: CObject(oNode)
+	CAppliedObject::CAppliedObject(CSvgReader& oReader)
+	    : CObject(oReader)
 	{}
 
 	CAppliedObject::~CAppliedObject()

@@ -3,9 +3,9 @@
 
 #include "../../../common/Directory.h"
 #include "../../../graphics/pro/Fonts.h"
-#include "../../../xml/include/xmlutils.h"
 
 #include "SvgObjects/CContainer.h"
+#include "SvgReader.h"
 
 class CSvgFile;
 
@@ -20,16 +20,15 @@ namespace SVG
 		void SetFontManager(NSFonts::IFontManager* pFontManager);
 
 		bool LoadFromFile(const std::wstring& wsFile, CGraphicsContainer* pContainer, CSvgFile* pFile) const;
-		bool LoadFromString(const std::wstring& wsContentent, CGraphicsContainer* pContainer, CSvgFile* pFile) const;
-		bool LoadFromXmlNode(XmlUtils::CXmlNode& oElement, CGraphicsContainer* pContainer, CSvgFile* pFile) const;
+		bool LoadFromString(const std::wstring& wsContent, CGraphicsContainer* pContainer, CSvgFile* pFile) const;
 
 		template <class ObjectType>
-		bool ReadObject(XmlUtils::CXmlNode& oElement, CContainer<ObjectType>* pContainer, CSvgFile* pFile, CRenderedObject* pParent = NULL) const;
+		bool ReadObject(CSvgReader& oReader, CContainer<ObjectType>* pContainer, CSvgFile* pFile, CRenderedObject* pParent = NULL) const;
 	private:
 		template <class ObjectType>
-		bool ReadChildrens(XmlUtils::CXmlNode& oElement, CContainer<ObjectType>* pContainer, CSvgFile* pFile, CRenderedObject* pParent = NULL) const;
+		bool ReadChildrens(CSvgReader& oReader, CContainer<ObjectType>* pContainer, CSvgFile* pFile, CRenderedObject* pParent = NULL) const;
 
-		bool ScanStyles(XmlUtils::CXmlNode& oElement, CSvgFile* pFile) const;
+		bool ScanStyles(CSvgReader& oReader, CSvgFile* pFile) const;
 		void ParseStyles(const std::wstring& wsStyles, CSvgFile *pFile) const;
 
 		void UpdateStyles(CObject* pObject, CSvgFile* pFile) const;

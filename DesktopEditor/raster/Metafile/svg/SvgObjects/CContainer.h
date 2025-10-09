@@ -81,12 +81,12 @@ namespace SVG
 	{
 	public:
 		CGraphicsContainer(const std::wstring& wsName = L"GraphicsContainer");
-		CGraphicsContainer(XmlUtils::CXmlNode& oNode, CRenderedObject* pParent = NULL);
-		CGraphicsContainer(double dWidth, double dHeight, XmlUtils::CXmlNode& oNode, CRenderedObject* pParent = NULL);
+		CGraphicsContainer(CSvgReader& oReader, CRenderedObject* pParent = NULL);
+		CGraphicsContainer(double dWidth, double dHeight, CSvgReader& oReader, CRenderedObject* pParent = NULL);
 
 		virtual ~CGraphicsContainer();
 
-		void SetData(XmlUtils::CXmlNode& oNode);
+		void SetData(CSvgReader& oReader);
 
 		bool Draw(IRenderer* pRenderer, const CSvgFile *pFile, CommandeMode oMode = CommandeModeDraw, const TSvgStyles* pOtherStyles = NULL, const CRenderedObject* pContexObject = NULL) const override;
 

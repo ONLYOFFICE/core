@@ -22,7 +22,7 @@ namespace SVG
 	class CStopElement : public CObject
 	{
 	public:
-		CStopElement(XmlUtils::CXmlNode& oNode);
+		CStopElement(CSvgReader& oReader);
 
 		ObjectType GetType() const override;
 
@@ -40,7 +40,7 @@ namespace SVG
 		friend class CLinearGradient;
 		friend class CRadialGradient;
 	public:
-		CGradient(XmlUtils::CXmlNode& oNode);
+		CGradient(CSvgReader& oReader);
 
 		void SetData(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false) override;
 
@@ -59,7 +59,7 @@ namespace SVG
 	class CLinearGradient : public CGradient
 	{
 	public:
-		CLinearGradient(XmlUtils::CXmlNode& oNode);
+		CLinearGradient(CSvgReader& oReader);
 
 		bool Apply(IRenderer* pRenderer, const CSvgFile *pFile, const TBounds &oObjectBounds) override;
 	private:
@@ -72,7 +72,7 @@ namespace SVG
 	class CRadialGradient : public CGradient
 	{
 	public:
-		CRadialGradient(XmlUtils::CXmlNode& oNode);
+		CRadialGradient(CSvgReader& oReader);
 
 		bool Apply(IRenderer* pRenderer, const CSvgFile *pFile, const TBounds &oObjectBounds) override;
 	private:

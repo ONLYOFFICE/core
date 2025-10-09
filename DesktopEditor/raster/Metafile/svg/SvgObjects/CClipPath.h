@@ -14,7 +14,7 @@ namespace SVG
 	class CClipPath : public CAppliedObject
 	{
 	public:
-		CClipPath(XmlUtils::CXmlNode& oNode);
+		CClipPath(CSvgReader& oReader);
 
 		void SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode) override;
 

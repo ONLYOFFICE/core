@@ -1,16 +1,21 @@
 #include "CCircle.h"
 
 #include "CContainer.h"
-#include "CStyle.h"
 
 namespace SVG
 {
-	CCircle::CCircle(XmlUtils::CXmlNode& oNode, CRenderedObject* pParent)
-		: CRenderedObject(oNode, pParent)
+	RENDERER_CHILDREN_CPP(Circle)
 	{
-		m_oCx.SetValue(oNode.GetAttribute(L"cx"));
-		m_oCy.SetValue(oNode.GetAttribute(L"cy"));
-		m_oR .SetValue(oNode.GetAttribute(L"r"));
+		START_READ_ATTRIBUTES(oReader)
+		{
+			IF_ATTRIBUTE("cx")
+				SET_VALUE(m_oCx);
+			ELSE_IF_ATTRIBUTE("cy")
+				SET_VALUE(m_oCy);
+			ELSE_IF_ATTRIBUTE("r")
+				SET_VALUE(m_oR);
+		}
+		END_READ_ATTRIBUTES(oReader)
 	}
 
 	void CCircle::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)

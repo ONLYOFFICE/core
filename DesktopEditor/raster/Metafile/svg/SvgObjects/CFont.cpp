@@ -2,15 +2,22 @@
 
 namespace SVG 
 {
-	CGlyph::CGlyph(XmlUtils::CXmlNode &oNode)
-		: CPath(oNode)
+	CGlyph::CGlyph(CSvgReader& oReader)
+		: CPath(oReader)
 	{
-		std::wstring wsUnicode(oNode.GetAttribute(L"unicode"));
+		START_READ_ATTRIBUTES(oReader)
+		{
+			if ("unicode" == sAttributeName)
+			{
+				const std::wstring wsUnicode{oReader.GetText()};
 
-		if (!wsUnicode.empty())
-			m_wchUnicode = wsUnicode[0];
-
-		m_oHorizAdvX.SetValue(oNode.GetAttributeOrValue(L"horiz-adv-x"));
+				if (!wsUnicode.empty())
+					m_wchUnicode = wsUnicode[0];
+			}
+			else if ("horiz-adv-x" == sAttributeName)
+				m_oHorizAdvX.SetValue(oReader.GetText());
+		}
+		END_READ_ATTRIBUTES(oReader)
 	}
 
 	wchar_t CGlyph::GetUnicode() const
@@ -18,21 +25,26 @@ namespace SVG
 		return m_wchUnicode;
 	}
 
-	CFontFace::CFontFace(XmlUtils::CXmlNode &oNode)
+	CFontFace::CFontFace(CSvgReader& oReader)
+	{}
+
+	CFont::CFont(CSvgReader& oReader)
+		: CAppliedObject(oReader), m_pMissingGlyph(NULL)
 	{
-		
-	}
+		START_READ_ATTRIBUTES(oReader)
+		{
+			if ("font-variant" == sAttributeName)
+				m_oArguments.m_wsFontVariant = oReader.GetText();
+			else if ("font-style" == sAttributeName)
+				m_oArguments.m_wsFontStyle = oReader.GetText();
+			else if ("font-weight" == sAttributeName)
+				m_oArguments.m_wsFontWidght = oReader.GetText();
+			else if ("horiz-adv-x" == sAttributeName)
+				m_oHorizAdvX.SetValue(oReader.GetText());
+		}
+		END_READ_ATTRIBUTES(oReader)
 
-	CFont::CFont(XmlUtils::CXmlNode &oNode)
-		: CAppliedObject(oNode), m_pMissingGlyph(NULL)
-	{
-		ParseGlyphs(oNode);
-
-		m_oArguments.m_wsFontVariant = oNode.GetAttribute(L"font-variant");
-		m_oArguments.m_wsFontStyle   = oNode.GetAttribute(L"font-style");
-		m_oArguments.m_wsFontWidght  = oNode.GetAttribute(L"font-weight");
-
-		m_oHorizAdvX.SetValue(oNode.GetAttributeOrValue(L"horiz-adv-x"));
+		ParseGlyphs(oReader);
 	}
 
 	CFont::~CFont()
@@ -115,18 +127,13 @@ namespace SVG
 		return true;
 	}
 
-	void CFont::ParseGlyphs(XmlUtils::CXmlNode &oNode)
+	void CFont::ParseGlyphs(CSvgReader& oReader)
 	{
-		std::vector<XmlUtils::CXmlNode> arChilds;
-
-		if (!oNode.GetChilds(arChilds) || arChilds.empty())
-			return;
-
-		for (XmlUtils::CXmlNode& oChild : arChilds)
+		WHILE_READ_NEXT_NODE_WITH_NAME(oReader)
 		{
-			if (L"glyph" == oChild.GetName())
+			if ("glyph" == sNodeName)
 			{
-				CGlyph *pGlyph = new CGlyph(oChild);
+				CGlyph *pGlyph = new CGlyph(oReader);
 
 				if (NULL == pGlyph)
 					continue;
@@ -136,22 +143,17 @@ namespace SVG
 				else
 					delete pGlyph;
 			}
-			else if (L"missing-glyph" == oChild.GetName())
+			else if ("missing-glyph" == sNodeName)
 			{
-				std::vector<XmlUtils::CXmlNode> arMissingGlyphChilds;
-				if (!oChild.GetChilds(arMissingGlyphChilds) || arMissingGlyphChilds.empty())
-					continue;
-
-				for (XmlUtils::CXmlNode& oChildMissingGlyph : arMissingGlyphChilds)
+				WHILE_READ_NEXT_NODE_WITH_DEPTH_ONE_NAME(oReader, Child, "path")
 				{
-					if (L"path" == oChildMissingGlyph.GetName())
-					{
-						m_pMissingGlyph = new CPath(oChildMissingGlyph);
-						if (NULL != m_pMissingGlyph)
-							break;
-					}
+					m_pMissingGlyph = new CPath(oReader);
+					if (NULL != m_pMissingGlyph)
+						break;
 				}
+				END_WHILE
 			}
 		}
+		END_WHILE
 	}
 }

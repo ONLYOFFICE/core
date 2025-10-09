@@ -8,7 +8,7 @@ namespace SVG
 	class CLine : public CPath
 	{
 	public:
-		CLine(XmlUtils::CXmlNode& oNode, CRenderedObject* pParent = NULL);
+		CLine(CSvgReader& oReader, CRenderedObject* pParent = NULL);
 
 		void SetData(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false) override;
 	private:

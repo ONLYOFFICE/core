@@ -2,13 +2,11 @@
 
 namespace SVG
 {
-	CClipPath::CClipPath(XmlUtils::CXmlNode &oNode)
-		: CAppliedObject(oNode)
+	CClipPath::CClipPath(CSvgReader& oReader)
+		: CAppliedObject(oReader), m_enUnits(ClipU_ObjectBoundingBox)
 	{
-		if (L"userSpaceOnUse" == oNode.GetAttribute(L"gradientUnits"))
+		if (L"userSpaceOnUse" == oReader.GetAttribute("gradientUnits"))
 			m_enUnits = ClipU_UserSpaceOnUse;
-		else
-			m_enUnits = ClipU_ObjectBoundingBox;
 	}
 
 	void CClipPath::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)

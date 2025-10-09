@@ -8,7 +8,7 @@ namespace SVG
 	class CCircle : public CRenderedObject
 	{
 	public:
-		CCircle(XmlUtils::CXmlNode& oNode, CRenderedObject* pParent = NULL);
+		CCircle(CSvgReader& oReader, CRenderedObject* pParent = NULL);
 
 		void SetData(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false) override;
 

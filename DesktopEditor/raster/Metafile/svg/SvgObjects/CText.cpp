@@ -29,6 +29,41 @@ namespace SVG
 	{
 		m_oFont.UpdateSize(DEFAULT_TSPAN_FONT_SIZE,DEFAULT_TSPAN_FONT_SIZE);
 
+		// const int nDepth = oReader.GetDepth();
+		// XmlUtils::XmlNodeType eNodeType = XmlUtils::XmlNodeType_EndElement;
+		// while (oReader.Read(eNodeType) && oReader.GetDepth() >= nDepth && XmlUtils::XmlNodeType_EndElement != eNodeType)
+		// {
+		// 	if (eNodeType == XmlUtils::XmlNodeType_Text ||
+		// 	    eNodeType == XmlUtils::XmlNodeType_Whitespace ||
+		// 	    eNodeType == XmlUtils::XmlNodeType_SIGNIFICANT_WHITESPACE ||
+		// 	    eNodeType == XmlUtils::XmlNodeType_CDATA)
+		// 	{
+		// 		const char* pValue = oReader.GetTextChar();
+		// 		std::wstring wsValue;
+
+		// 		if('\0' != pValue[0])
+		// 		{
+		// 			NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)pValue, (LONG)strlen(pValue), wsValue);
+		// 			m_arP.push_back(new CParaText(L"____", wsValue, 0, nCharShapeID));
+		// 		}
+		// 	}
+		// 	else if (eNodeType == XmlUtils::XmlNodeType_Element)
+		// 	{
+		// 		const std::string sChildNodeName{oReader.GetName()};
+
+		// 		if (GetNodeName(ENode::LineBreak, eType) == sChildNodeName)
+		// 			m_arP.push_back(new CCtrlCharacter(L"   _", ECtrlCharType::LINE_BREAK));
+		// 		else if (GetNodeName(ENode::Tab, eType) == sChildNodeName)
+		// 			m_arP.push_back(new CCtrlCharacter(L"   _", ECtrlCharType::TABULATION));
+		// 		else if (GetNodeName(ENode::Hyphen, eType) == sChildNodeName)
+		// 			m_arP.push_back(new CCtrlCharacter(L"   _", ECtrlCharType::HARD_HYPHEN));
+		// 		else if (GetNodeName(ENode::NbSpace, eType) == sChildNodeName ||
+		// 		         GetNodeName(ENode::FwSpace, eType) == sChildNodeName)
+		// 			m_arP.push_back(new CCtrlCharacter(L"   _", ECtrlCharType::HARD_SPACE));
+		// 	}
+		// }
+
+
 		if (bCheckText)
 			m_wsText = StrUtils::TrimExtraEnding(oNode.GetText());
 		else

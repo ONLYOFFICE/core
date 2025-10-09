@@ -109,21 +109,26 @@ namespace SVG
 		return bResult;
 	}
 
-	bool CSvgParser::LoadFromString(const std::wstring &wsContentent, CGraphicsContainer* pContainer, CSvgFile* pFile) const
+	bool CSvgParser::LoadFromString(const std::wstring &wsContent, CGraphicsContainer* pContainer, CSvgFile* pFile) const
 	{
-		if (wsContentent.empty() || NULL == pFile)
+		if (wsContent.empty() || NULL == pFile)
 			return false;
 
-		XmlUtils::CXmlNode oXml;
-		if (!oXml.FromXmlString(wsContentent))
+		CSvgReader oReader;
+		if (!oReader.ReadFromString(wsContent))
 			return false;
 
-		ScanStyles(oXml, pFile);
+		ScanStyles(oReader, pFile);
 
 		if (NULL != pContainer)
-			pContainer->SetData(oXml);
+			pContainer->SetData(oReader);
 
-		return LoadFromXmlNode(oXml, pContainer, pFile);
+		const CSvgCalculator *pSvgCalculator = pFile->GetSvgCalculator();
+
+		if (NULL != pSvgCalculator)
+			pSvgCalculator->SetData(pContainer);
+
+		return ReadChildrens(oElement, pContainer, pFile, pContainer);
 	}
 
 	bool CSvgParser::LoadFromXmlNode(XmlUtils::CXmlNode &oElement, CGraphicsContainer* pContainer, CSvgFile* pFile) const
@@ -139,33 +144,30 @@ namespace SVG
 		return ReadChildrens(oElement, pContainer, pFile, pContainer);
 	}
 
-	bool CSvgParser::ScanStyles(XmlUtils::CXmlNode &oElement, CSvgFile *pFile) const
+	bool CSvgParser::ScanStyles(CSvgReader& oReader, CSvgFile *pFile) const
 	{
-		if (!oElement.IsValid() || NULL == pFile)
+		if (oReader.IsEmptyNode() || NULL == pFile || !oReader.MoveToStart())
 			return false;
 
-		std::wstring wsElementName = oElement.GetName();
+		const std::string sElementName = oReader.GetName();
 
-		if (L"style" == wsElementName)
+		if ("style" == sElementName)
 		{
-			ParseStyles(oElement.GetText(), pFile);
+			ParseStyles(oReader.GetText(), pFile);
 			return true;
 		}
 
 		bool bScanResult = false;
 
-		if (L"svg" == wsElementName || L"g" == wsElementName || L"defs" == wsElementName)
+		if ("svg" == sElementName || "g" == sElementName || "defs" == sElementName)
 		{
-			std::vector<XmlUtils::CXmlNode> arChilds;
-
-			oElement.GetChilds(arChilds);
-
-			for (XmlUtils::CXmlNode& oChild : arChilds)
-			{
-				if (ScanStyles(oChild, pFile))
+			WHILE_READ_NEXT_NODE(oReader)
+				if (ScanStyles(oReader, pFile))
 					bScanResult = true;
-			}
+			END_WHILE
 		}
+
+		oReader.MoveToStart();
 
 		return bScanResult;
 	}
@@ -226,78 +228,78 @@ namespace SVG
 	}
 
 	template <class ObjectType>
-	bool CSvgParser::ReadObject(XmlUtils::CXmlNode &oElement, CContainer<ObjectType> *pContainer, CSvgFile *pFile, CRenderedObject *pParent) const
+	bool CSvgParser::ReadObject(CSvgReader& oReader, CContainer<ObjectType> *pContainer, CSvgFile *pFile, CRenderedObject *pParent) const
 	{
-		if (!oElement.IsValid() || NULL == pFile)
+		if (NULL == pFile)
 			return false;
 
-		std::wstring wsElementName = oElement.GetName();
+		const std::string sElementName = oReader.GetName();
 
 		CObject *pObject = NULL;
 
-		if (L"svg" == wsElementName || L"g" == wsElementName || L"a" == wsElementName)
+		if ("svg" == sElementName || "g" == sElementName || "a" == sElementName)
 		{
-			pObject = new CGraphicsContainer(oElement, pParent);
-			if (!ReadChildrens(oElement, (CGraphicsContainer*)pObject, pFile, (CGraphicsContainer*)pObject))
+			pObject = new CGraphicsContainer(oReader, pParent);
+			if (!ReadChildrens(oReader, (CGraphicsContainer*)pObject, pFile, (CGraphicsContainer*)pObject))
 			{
 				RELEASEOBJECT(pObject);
 				return false;
 			}
 		}
-		else if (L"line" == wsElementName)
-			pObject = new CLine(oElement, pParent);
-		else if (L"rect" == wsElementName)
-			pObject = new CRect(oElement, pParent);
-		else if (L"circle" == wsElementName)
-			pObject = new CCircle(oElement, pParent);
-		else if (L"ellipse" == wsElementName)
-			pObject = new CEllipse(oElement, pParent);
-		else if (L"path" == wsElementName)
-			pObject = new CPath(oElement, pParent);
-		else if (L"polyline" == wsElementName)
-			pObject = new CPolyline(oElement, pParent);
-		else if (L"polygon" == wsElementName)
-			pObject = new CPolygon(oElement, pParent);
-		else if (L"image" == wsElementName)
-			pObject = new CImage(oElement, pParent);
-		else if (L"use" == wsElementName)
-			pObject = new CUse(oElement, pParent);
-		else if (L"text" == wsElementName)
+		else if ("line" == sElementName)
+			pObject = new CLine(oReader, pParent);
+		else if ("rect" == sElementName)
+			pObject = new CRect(oReader, pParent);
+		else if ("circle" == sElementName)
+			pObject = new CCircle(oReader, pParent);
+		else if ("ellipse" == sElementName)
+			pObject = new CEllipse(oReader, pParent);
+		else if ("path" == sElementName)
+			pObject = new CPath(oReader, pParent);
+		else if ("polyline" == sElementName)
+			pObject = new CPolyline(oReader, pParent);
+		else if ("polygon" == sElementName)
+			pObject = new CPolygon(oReader, pParent);
+		else if ("image" == sElementName)
+			pObject = new CImage(oReader, pParent);
+		else if ("use" == sElementName)
+			pObject = new CUse(oReader, pParent);
+		else if ("text" == sElementName)
 		{
-			pObject = CText::Create(oElement, pParent, m_pFontManager);
-			ReadChildrens(oElement, (CText*)pObject, pFile, (CText*)pObject);
+			pObject = CText::Create(oReader, pParent, m_pFontManager);
+			ReadChildrens(oReader, (CText*)pObject, pFile, (CText*)pObject);
 		}
-		else if (L"tspan" == wsElementName)
+		else if ("tspan" == sElementName)
 		{
-			pObject = CTSpan::Create(oElement, pParent, m_pFontManager);
-			ReadChildrens(oElement, (CTSpan*)pObject, pFile, (CTSpan*)pObject);
+			pObject = CTSpan::Create(oReader, pParent, m_pFontManager);
+			ReadChildrens(oReader, (CTSpan*)pObject, pFile, (CTSpan*)pObject);
 		}
-		else if (L"textPath" == wsElementName)
+		else if ("textPath" == sElementName)
 		{
-			pObject = CTextPath::Create(oElement, pParent, m_pFontManager, pFile);
-			ReadChildrens(oElement, (CTextPath*)pObject, pFile);
+			pObject = CTextPath::Create(oReader, pParent, m_pFontManager, pFile);
+			ReadChildrens(oReader, (CTextPath*)pObject, pFile);
 		}
-		else if (L"switch" == wsElementName)
+		else if ("switch" == sElementName)
 		{
-			pObject = new CSwitch(oElement, pParent);
-			ReadChildrens(oElement, (CSwitch*)pObject, pFile);
+			pObject = new CSwitch(oReader, pParent);
+			ReadChildrens(oReader, (CSwitch*)pObject, pFile);
 		}
 		//defs
-		else if (L"defs" == wsElementName)
-			return ReadChildrens<CRenderedObject>(oElement, NULL, pFile);
-		else if(L"linearGradient" == wsElementName)
+		else if ("defs" == sElementName)
+			return ReadChildrens<CRenderedObject>(oReader, NULL, pFile);
+		else if("linearGradient" == sElementName)
 		{
-			pObject = new CLinearGradient(oElement);
-			ReadChildrens(oElement, (CLinearGradient*)pObject, pFile);
+			pObject = new CLinearGradient(oReader);
+			ReadChildrens(oReader, (CLinearGradient*)pObject, pFile);
 		}
-		else if (L"radialGradient" == wsElementName)
+		else if ("radialGradient" == sElementName)
 		{
-			pObject = new CRadialGradient(oElement);
-			ReadChildrens(oElement, (CRadialGradient*)pObject, pFile);
+			pObject = new CRadialGradient(oReader);
+			ReadChildrens(oReader, (CRadialGradient*)pObject, pFile);
 		}
-		else if (L"stop" == wsElementName)
+		else if ("stop" == sElementName)
 		{
-			CStopElement *pStopElement = new CStopElement(oElement);
+			CStopElement *pStopElement = new CStopElement(oReader);
 			if (AddObject((ObjectType*)pStopElement, pContainer))
 			{
 				UpdateStyles(pStopElement, pFile);
@@ -309,37 +311,37 @@ namespace SVG
 				return false;
 			}
 		}
-		else if (L"pattern" == wsElementName)
+		else if ("pattern" == sElementName)
 		{
-			pObject = new CPattern(oElement, m_pFontManager);
-			ReadChildrens(oElement, (CGraphicsContainer*)(&((CPattern*)pObject)->GetContainer()), pFile);
+			pObject = new CPattern(oReader, m_pFontManager);
+			ReadChildrens(oReader, (CGraphicsContainer*)(&((CPattern*)pObject)->GetContainer()), pFile);
 		}
-		else if (L"clipPath" == wsElementName)
+		else if ("clipPath" == sElementName)
 		{
-			pObject = new CClipPath(oElement);
-			ReadChildrens(oElement, (CGraphicsContainer*)(&((CClipPath*)pObject)->GetContainer()), pFile);
+			pObject = new CClipPath(oReader);
+			ReadChildrens(oReader, (CGraphicsContainer*)(&((CClipPath*)pObject)->GetContainer()), pFile);
 		}
-		else if (L"marker" == wsElementName)
+		else if ("marker" == sElementName)
 		{
-			pObject = new CMarker(oElement);
-			ReadChildrens(oElement, (CMarker*)pObject, pFile);
+			pObject = new CMarker(oReader);
+			ReadChildrens(oReader, (CMarker*)pObject, pFile);
 		}
-		else if (L"mask" == wsElementName)
+		else if ("mask" == sElementName)
 		{
-			pObject = new CMask(oElement);
-			ReadChildrens(oElement, (CGraphicsContainer*)(&((CMask*)pObject)->GetContainer()), pFile);
+			pObject = new CMask(oReader);
+			ReadChildrens(oReader, (CGraphicsContainer*)(&((CMask*)pObject)->GetContainer()), pFile);
 		}
-		else if (L"symbol" == wsElementName)
+		else if ("symbo" == sElementName)
 		{
-			pObject = new CSymbol(oElement);
-			if (ReadChildrens(oElement, (CSymbol*)pObject, pFile) && MarkObject(pObject, pFile))
+			pObject = new CSymbol(oReader);
+			if (ReadChildrens(oReader, (CSymbol*)pObject, pFile) && MarkObject(pObject, pFile))
 				return true;
 			else
 				RELEASEOBJECT(pObject);
 		}
-		else if (L"font" == wsElementName)
+		else if ("font" == sElementName)
 		{
-			pObject = new CFont(oElement);
+			pObject = new CFont(oReader);
 		}
 
 		if (NULL != pObject)
@@ -382,18 +384,15 @@ namespace SVG
 	}
 
 	template <class ObjectType>
-	bool CSvgParser::ReadChildrens(XmlUtils::CXmlNode &oElement, CContainer<ObjectType>* pContainer, CSvgFile* pFile, CRenderedObject *pParent) const
+	bool CSvgParser::ReadChildrens(CSvgReader& oReader, CContainer<ObjectType>* pContainer, CSvgFile* pFile, CRenderedObject *pParent) const
 	{
-		std::vector<XmlUtils::CXmlNode> arChilds;
+		bool bResult = false;
 
-		oElement.GetChilds(arChilds);
+		WHILE_READ_NEXT_NODE(oReader)
+			if (ReadObject(oReader, pContainer, pFile, pParent))
+				bResult = true;
+		END_WHILE
 
-		if (arChilds.empty())
-			return false;
-
-		for (XmlUtils::CXmlNode& oChild : arChilds)
-			ReadObject(oChild, pContainer, pFile, pParent);
-
-		return true;
+		return bResult;
 	}
 }

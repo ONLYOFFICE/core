@@ -2,18 +2,26 @@
 
 namespace SVG
 {
-	CLine::CLine(XmlUtils::CXmlNode& oNode, CRenderedObject* pParent)
-		: CPath(oNode, pParent, false)
+CLine::CLine(CSvgReader& oReader, CRenderedObject* pParent)
+    : CPath(oReader, pParent, false)
 	{	
 		SvgDigit oX1;
 		SvgDigit oY1;
 		SvgDigit oX2;
 		SvgDigit oY2;
 
-		oX1.SetValue(oNode.GetAttribute(L"x1"));
-		oY1.SetValue(oNode.GetAttribute(L"y1"));
-		oX2.SetValue(oNode.GetAttribute(L"x2"));
-		oY2.SetValue(oNode.GetAttribute(L"y2"));
+		START_READ_ATTRIBUTES(oReader)
+		{
+			if ("x1" == sAttributeName)
+				oX1.SetValue(oReader.GetText());
+			else if ("y1" == sAttributeName)
+				oY1.SetValue(oReader.GetText());
+			else if ("x2" == sAttributeName)
+				oX2.SetValue(oReader.GetText());
+			else if ("y2" == sAttributeName)
+				oY2.SetValue(oReader.GetText());
+		}
+		END_READ_ATTRIBUTES(oReader)
 
 		AddElement(new CMoveElement(Point{oX1.ToDouble(NSCSS::Pixel), oY1.ToDouble(NSCSS::Pixel)}));
 		AddElement(new CLineElement(Point{oX2.ToDouble(NSCSS::Pixel), oY2.ToDouble(NSCSS::Pixel)}));

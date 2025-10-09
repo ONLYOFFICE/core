@@ -6,11 +6,7 @@
 
 namespace SVG
 {
-	class CEllipse : public CRenderedObject
-	{
-	public:
-		CEllipse(XmlUtils::CXmlNode& oNode, CRenderedObject* pParent = NULL);
-
+	BEGIN_RENDERER_CHILDREN_H(Ellipse)
 		void SetData(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false) override;
 
 		bool Draw(IRenderer* pRenderer, const CSvgFile *pFile, CommandeMode oMode = CommandeModeDraw, const TSvgStyles* pOtherStyles = NULL, const CRenderedObject* pContexObject = NULL) const override;
@@ -23,7 +19,7 @@ namespace SVG
 		SvgDigit m_oCy;
 		SvgDigit m_oRx;
 		SvgDigit m_oRy;
-	};
+	END_RENDERER_CHILDREN_H
 }
 
 #endif // CELLIPSE_H

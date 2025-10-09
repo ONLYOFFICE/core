@@ -141,6 +141,13 @@ namespace PdfWriter
 
 	std::string DateNow();
 	std::wstring NormalizeWhitespace(const std::wstring& s);
+
+	// Пересечение многоугольников по теореме о разделяющей оси
+	bool SAT(const std::vector<CPoint>& poly1, const std::vector<CPoint>& poly2);
+	// Проверка принадлежности точки выпуклому четырехугольнику
+	bool isPointInQuad(double px, double py,
+					   double x1, double y1, double x2, double y2,
+					   double x3, double y3, double x4, double y4);
 }
 
 #endif // _PDF_WRITER_SRC_UTILS_H

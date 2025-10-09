@@ -117,6 +117,7 @@ namespace Aggplus
 		std::vector<PointD>  GetPoints(unsigned idx, unsigned count) const noexcept;
 		std::vector<CGraphicsPath> GetSubPaths() const;
 
+		bool Equals(const CGraphicsPath& other)	noexcept;
 		CGraphicsPath& operator=(const CGraphicsPath& other)	noexcept;
 		CGraphicsPath& operator=(CGraphicsPath&& other)			noexcept;
 		bool operator==(const CGraphicsPath& other)	noexcept;

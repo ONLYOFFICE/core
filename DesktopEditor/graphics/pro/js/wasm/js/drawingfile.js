@@ -145,9 +145,9 @@ CFile.prototype["isNeedPassword"] = function()
 {
 	return this._isNeedPassword;
 };
-CFile.prototype["SplitPages"] = function(arrPageIndex, arrayBufferChanges)
+CFile.prototype["SplitPages"] = function(arrOriginIndex, arrayBufferChanges)
 {
-	let ptr = this._SplitPages(arrPageIndex, arrayBufferChanges);
+	let ptr = this._SplitPages(arrOriginIndex, arrayBufferChanges);
 	let res = ptr.getMemory(true);
 	ptr.free();
 	return res;
@@ -160,9 +160,9 @@ CFile.prototype["UndoMergePages"] = function()
 {
 	return this._UndoMergePages();
 };
-CFile.prototype["RedactPage"] = function(pageIndex, arrRedactBox, arrayBufferFiller)
+CFile.prototype["RedactPage"] = function(originIndex, arrRedactBox, arrayBufferFiller)
 {
-	return this._RedactPage(pageIndex, arrRedactBox, arrayBufferFiller);
+	return this._RedactPage(originIndex, arrRedactBox, arrayBufferFiller);
 };
 CFile.prototype["UndoRedact"] = function()
 {
@@ -259,9 +259,9 @@ CFile.prototype["getStructure"] = function()
 	return res;
 };
 
-CFile.prototype["getLinks"] = function(pageIndex)
+CFile.prototype["getLinks"] = function(originIndex)
 {
-	let ptr = this._getLinks(pageIndex);
+	let ptr = this._getLinks(originIndex);
 	let reader = ptr.getReader();
 
 	if (!reader) return [];
@@ -284,8 +284,12 @@ CFile.prototype["getLinks"] = function(pageIndex)
 };
 
 // TEXT
-CFile.prototype["getGlyphs"] = function(pageIndex)
+CFile.prototype["getGlyphs"] = function(originIndex)
 {
+	let pageIndex = this.pages.findIndex(function(page) {
+		return page.originIndex == originIndex;
+	});
+	let page = this.pages[pageIndex];
 	if (page.fonts.length > 0)
 	{
 		// waiting fonts
@@ -293,7 +297,7 @@ CFile.prototype["getGlyphs"] = function(pageIndex)
 	}
 
 	this.lockPageNumForFontsLoader(pageIndex, UpdateFontsSource.Page);
-	let res = this._getGlyphs(pageIndex);
+	let res = this._getGlyphs(originIndex);
 	// there is no need to delete the result; this buffer is used as a text buffer 
 	// for text commands on other pages. After receiving ALL text pages, 
 	// you need to call destroyTextInfo()
@@ -1404,7 +1408,7 @@ CFile.prototype["getInteractiveFormsInfo"] = function()
 // optional nWidget     - rec["AP"]["i"]
 // optional sView       - N/D/R
 // optional sButtonView - state pushbutton-annotation - Off/Yes(or rec["ExportValue"])
-CFile.prototype["getInteractiveFormsAP"] = function(pageIndex, width, height, backgroundColor, nWidget, sView, sButtonView)
+CFile.prototype["getInteractiveFormsAP"] = function(originIndex, width, height, backgroundColor, nWidget, sView, sButtonView)
 {
 	let nView = -1;
 	if (sView)
@@ -1420,8 +1424,11 @@ CFile.prototype["getInteractiveFormsAP"] = function(pageIndex, width, height, ba
 	if (sButtonView)
 		nButtonView = (sButtonView == "Off" ? 0 : 1);
 
+	let pageIndex = this.pages.findIndex(function(page) {
+		return page.originIndex == originIndex;
+	});
 	this.lockPageNumForFontsLoader(pageIndex, UpdateFontsSource.Forms);
-	let ptr = this._getInteractiveFormsAP(width, height, backgroundColor, pageIndex, nWidget, nView, nButtonView);
+	let ptr = this._getInteractiveFormsAP(width, height, backgroundColor, originIndex, nWidget, nView, nButtonView);
 	let reader = ptr.getReader();
 	this.unlockPageNumForFontsLoader();
 	
@@ -1506,13 +1513,13 @@ CFile.prototype["getButtonIcons"] = function(pageIndex, width, height, backgroun
 	ptr.free();
 	return res;
 };
-// optional pageIndex - get annotations from specific page
-CFile.prototype["getAnnotationsInfo"] = function(pageIndex)
+// optional originIndex - get annotations from specific page
+CFile.prototype["getAnnotationsInfo"] = function(originIndex)
 {
 	if (!this.nativeFile)
 		return [];
 
-	let ptr = this._getAnnotationsInfo(pageIndex);
+	let ptr = this._getAnnotationsInfo(originIndex);
 	let reader = ptr.getReader();
 
 	if (!reader) return [];
@@ -1544,7 +1551,7 @@ CFile.prototype["getAnnotationsInfo"] = function(pageIndex)
 };
 // optional nAnnot ...
 // optional sView ...
-CFile.prototype["getAnnotationsAP"] = function(pageIndex, width, height, backgroundColor, nAnnot, sView)
+CFile.prototype["getAnnotationsAP"] = function(originIndex, width, height, backgroundColor, nAnnot, sView)
 {
 	let nView = -1;
 	if (sView)
@@ -1557,8 +1564,11 @@ CFile.prototype["getAnnotationsAP"] = function(pageIndex, width, height, backgro
 			nView = 2;
 	}
 
+	let pageIndex = this.pages.findIndex(function(page) {
+		return page.originIndex == originIndex;
+	});
 	this.lockPageNumForFontsLoader(pageIndex, UpdateFontsSource.Annotation);
-	let ptr = this._getAnnotationsAP(width, height, backgroundColor, pageIndex, nAnnot, nView);
+	let ptr = this._getAnnotationsAP(width, height, backgroundColor, originIndex, nAnnot, nView);
 	let reader = ptr.getReader();
 	this.unlockPageNumForFontsLoader();
 

@@ -139,7 +139,7 @@ struct Image
 			delete[] m_pColormap;
 
 		if (m_pPixelData)
-			delete[] m_pPixelData;
+			free(m_pPixelData);
 	}
 
 	Image& operator=(const Image& other)
@@ -190,6 +190,8 @@ private:
 	void SetImageAlpha(Image* img, const BYTE alpha);
 	BYTE* DecodeImage(const Image& img, size_t bytesPerLine, size_t bitsPerPixel, size_t* extent);
 	const BYTE* UnpackScanline(const BYTE* pixels, const size_t& bitsPerPixel, BYTE* scanline, size_t* bytesPerLine);
+	BYTE* GetPixels(const Image& image, const long long& x, const long long& y, const size_t& width, const size_t& height) const;
+	void CompositeImage(const Image& composite,const long long& xOffset, const long long& yOffset);
 
 	void ReadPolygon();
 	Aggplus::Rect ContractRect(const Aggplus::Rect& rect, bool isFrame);

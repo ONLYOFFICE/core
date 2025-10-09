@@ -254,6 +254,7 @@ public:
 	double GetCharWidth(int gid);
 
 	int GetGIDByUnicode(int code);
+	int GetUnicodeByGID(int gid);
 
 	int GetKerning(FT_UInt unPrevGID, FT_UInt unGID);
 	void SetStringGID(const INT& bGID);

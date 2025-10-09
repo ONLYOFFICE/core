@@ -2381,17 +2381,17 @@ CGraphicsPath CalcBooleanOperation(const CGraphicsPath& path1,
 	return op == Subtraction ? CGraphicsPath(paths1) : CGraphicsPath(paths);
 }
 
-//For unit-tests
-bool CGraphicsPath::operator==(const CGraphicsPath& other) noexcept
+// For Unit-tests
+bool CGraphicsPath::Equals(const CGraphicsPath& other) noexcept
 {
 	unsigned pointsCount = GetPointCount(),
-			 otherPointsCount = other.GetPointCount();
+		otherPointsCount = other.GetPointCount();
 
 	if (pointsCount != otherPointsCount)
 		return false;
 
 	std::vector<PointD> points = GetPoints(0, pointsCount),
-						otherPoints = other.GetPoints(0, otherPointsCount);
+		otherPoints = other.GetPoints(0, otherPointsCount);
 
 	for (unsigned i = 0; i < pointsCount; i++)
 		if (getDistance(points[i], otherPoints[i]) > POINT_EPSILON)

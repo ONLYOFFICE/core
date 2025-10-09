@@ -1594,7 +1594,7 @@ public:
     void GetBounds(double& dL, double& dT, double& dR, double& dB);
 	void Redact(PdfWriter::CMatrix* oMatrix, const std::vector<double>& arrRedact, PdfWriter::CPage* pPage, bool bStroke, bool bFill, bool bEoFill,
 				PdfWriter::CShading* pShading, PdfWriter::CExtGrState* pShadingExtGrState);
-	void DrawPathRedact(PdfWriter::CMatrix* oMatrix, Aggplus::CGraphicsPath* oPath, bool bStroke, const std::vector<PdfWriter::CSegment>& arrForStroke = {});
+	bool DrawPathRedact(PdfWriter::CMatrix* oMatrix, Aggplus::CGraphicsPath* oPath, bool bStroke, const std::vector<PdfWriter::CSegment>& arrForStroke = {});
 
 private:
 

@@ -379,4 +379,135 @@ namespace PdfWriter
 		return (cross1 >= 0 && cross2 >= 0 && cross3 >= 0 && cross4 >= 0) ||
 			   (cross1 <= 0 && cross2 <= 0 && cross3 <= 0 && cross4 <= 0);
 	}
+	bool RectangleIntersection::segmentsIntersect(const CPoint& a, const CPoint& b, const CPoint& c, const CPoint& d, CPoint& intersection)
+	{
+		double x1 = a.x, y1 = a.y;
+		double x2 = b.x, y2 = b.y;
+		double x3 = c.x, y3 = c.y;
+		double x4 = d.x, y4 = d.y;
+
+		double denom = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
+
+		if (std::abs(denom) < 1e-10) return false;
+
+		double t = ((x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4)) / denom;
+		double u = -((x1 - x2) * (y1 - y3) - (y1 - y2) * (x1 - x3)) / denom;
+
+		if (t >= 0 && t <= 1 && u >= 0 && u <= 1)
+		{
+			intersection.x = x1 + t * (x2 - x1);
+			intersection.y = y1 + t * (y2 - y1);
+			return true;
+		}
+		return false;
+	}
+	bool RectangleIntersection::pointInRectangle(const CPoint& p, const std::vector<CPoint>& rect)
+	{
+		double totalAngle = 0;
+		int n = rect.size();
+
+		for (int i = 0; i < n; i++)
+		{
+			CPoint v1 = { rect[i].x - p.x, rect[i].y - p.y };
+			CPoint v2 = { rect[(i + 1) % n].x - p.x, rect[(i + 1) % n].y - p.y };
+
+			double dot = v1.x * v2.x + v1.y * v2.y;
+			double cross = v1.x * v2.y - v1.y * v2.x;
+			double angle = std::atan2(cross, dot);
+			totalAngle += angle;
+		}
+
+		return std::abs(totalAngle) > 1;
+	}
+	double RectangleIntersection::distanceAlongLine(const CPoint& start, const CPoint& end, const CPoint& point)
+	{
+		double dx = end.x - start.x;
+		double dy = end.y - start.y;
+		double length = std::sqrt(dx * dx + dy * dy);
+
+		if (length < 1e-10) return 0;
+
+		// Проекция вектора (point - start) на направление отрезка
+		double proj = ((point.x - start.x) * dx + (point.y - start.y) * dy) / length;
+		return proj;
+	}
+	std::vector<CSegment> RectangleIntersection::findSegmentsOutsideRectangles(const CSegment& line, const std::vector<std::vector<CPoint>>& rectangles)
+	{
+		std::vector<CPoint> allIntersections;
+
+		// Собираем все точки пересечения со всеми прямоугольниками
+		for (const auto& rect : rectangles)
+		{
+			for (int i = 0; i < rect.size(); i++)
+			{
+				CPoint intersection;
+				if (segmentsIntersect(line.start, line.end, rect[i], rect[(i + 1) % rect.size()], intersection))
+					allIntersections.push_back(intersection);
+			}
+		}
+
+		// Добавляем концы отрезка
+		allIntersections.push_back(line.start);
+		allIntersections.push_back(line.end);
+
+		// Удаляем дубликаты
+		std::sort(allIntersections.begin(), allIntersections.end(), [&line](const CPoint& a, const CPoint& b)
+		{
+			return distanceAlongLine(line.start, line.end, a) < distanceAlongLine(line.start, line.end, b);
+		});
+
+		auto last = std::unique(allIntersections.begin(), allIntersections.end());
+		allIntersections.erase(last, allIntersections.end());
+
+		// Проверяем каждый сегмент между точками пересечения
+		std::vector<CSegment> result;
+
+		for (size_t i = 0; i < allIntersections.size() - 1; i++) {
+			CPoint start = allIntersections[i];
+			CPoint end = allIntersections[i + 1];
+
+			// Находим среднюю точку сегмента
+			CPoint mid =
+			{
+				(start.x + end.x) / 2,
+				(start.y + end.y) / 2
+			};
+
+			// Проверяем, находится ли средняя точка внутри какого-либо прямоугольника
+			bool isInsideAnyRectangle = false;
+			for (const auto& rect : rectangles)
+			{
+				if (pointInRectangle(mid, rect))
+				{
+					isInsideAnyRectangle = true;
+					break;
+				}
+			}
+
+			// Если средняя точка не внутри ни одного прямоугольника - это внешний сегмент
+			if (!isInsideAnyRectangle)
+				result.push_back(CSegment(start, end));
+		}
+
+		return result;
+	}
+	std::vector<CSegment> RectangleIntersection::findSegmentsOutsideRectanglesSequential(const CSegment& line, const std::vector<std::vector<CPoint>>& rectangles)
+	{
+		// Начинаем с полного отрезка
+		std::vector<CSegment> currentSegments = {line};
+
+		// Последовательно вычитаем каждый прямоугольник
+		for (const auto& rect : rectangles) {
+			std::vector<CSegment> newSegments;
+
+			for (const auto& segment : currentSegments) {
+				auto segmentsOutside = findSegmentsOutsideRectangles(segment, {rect});
+				newSegments.insert(newSegments.end(), segmentsOutside.begin(), segmentsOutside.end());
+			}
+
+			currentSegments = newSegments;
+		}
+
+		return currentSegments;
+	}
 }

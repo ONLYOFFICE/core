@@ -2498,7 +2498,7 @@ bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength, PDFD
 				continue;
 
 			PdfWriter::CObjectBase* pObjBase = pAnnot->Get("Parent");
-			if (!pObjBase || !ChangeFullNameParent(pObjBase->GetObjId(), sPrefix, arrRename))
+			if (!pObjBase || !ChangeFullNameParent(m_mObjManager.FindObj(pObjBase), sPrefix, arrRename))
 			{
 				pObjBase = pAnnot->Get("T");
 				if (pObjBase && pObjBase->GetType() == PdfWriter::object_type_STRING)
@@ -2681,12 +2681,12 @@ bool CPdfEditor::ChangeFullNameParent(int nParent, const std::string& sPrefix, s
 		return true;
 
 	PdfWriter::CObjectBase* pObjBase = m_mObjManager.GetObj(nParent);
-	if (pObjBase->GetType() != PdfWriter::object_type_DICT)
+	if (!pObjBase || pObjBase->GetType() != PdfWriter::object_type_DICT)
 		return false;
 
 	PdfWriter::CDictObject* pDict = (PdfWriter::CDictObject*)pObjBase;
 	pObjBase = pDict->Get("Parent");
-	if (!pObjBase || !ChangeFullNameParent(pObjBase->GetObjId(), sPrefix, arrRename))
+	if (!pObjBase || !ChangeFullNameParent(m_mObjManager.FindObj(pObjBase), sPrefix, arrRename))
 	{
 		pObjBase = pDict->Get("T");
 		if (pObjBase && pObjBase->GetType() == PdfWriter::object_type_STRING)
@@ -3490,7 +3490,10 @@ void CPdfEditor::ClearPage()
 	}
 	pageObj.free();
 
-	pDoc->ClearPage();
+	if (m_nMode == Mode::Split || m_nMode == Mode::WriteNew)
+		pDoc->ClearPageFull();
+	else
+		pDoc->ClearPage();
 
 	Page* pOPage = pPDFDocument->getCatalog()->getPage(nPageIndex);
 	if (pOPage->isCropped())
@@ -3593,6 +3596,7 @@ void CPdfEditor::Redact(IAdvancedCommand* _pCommand)
 	int nPageIndex = -1;
 	Page* pPage = NULL;
 	bool bEditPage = IsEditPage();
+	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
 	if (bEditPage)
 	{
 		nPageIndex = m_pReader->GetPageIndex(m_nEditPage, &pPDFDocument);
@@ -3604,7 +3608,6 @@ void CPdfEditor::Redact(IAdvancedCommand* _pCommand)
 	else
 	{
 		cropBox = new PDFRectangle();
-		PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
 		PdfWriter::CPage* pWPage = pDoc->GetCurPage();
 		cropBox->x2 = pWPage->GetWidth();
 		cropBox->y2 = pWPage->GetHeight();
@@ -3646,6 +3649,9 @@ void CPdfEditor::Redact(IAdvancedCommand* _pCommand)
 		gfx->endOfPage();
 		oContents.free();
 		RELEASEOBJECT(gfx);
+
+		PdfWriter::CPage* pWPage = pDoc->GetCurPage();
+		pWPage->SetFontType(PdfWriter::EFontType::fontUnknownType);
 	}
 	else
 	{

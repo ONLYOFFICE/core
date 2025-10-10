@@ -487,7 +487,7 @@ void CPath::Redact(PdfWriter::CMatrix* pMatrix, const std::vector<double>& arrRe
 				dXCur = dX3, dYCur = dY3;
 
 				oPathResult = Aggplus::CalcBooleanOperation(_oPath, oPathRedact, Aggplus::BooleanOpType::Subtraction);
-				bPath = bPath || DrawPathRedact(pMatrix, &oPathResult, bStroke, arrForStroke);
+				bPath = DrawPathRedact(pMatrix, &oPathResult, bStroke, arrForStroke) || bPath;
 				oPathResult.Reset();
 			}
 			else if (oPath.IsMovePoint(i))
@@ -502,7 +502,7 @@ void CPath::Redact(PdfWriter::CMatrix* pMatrix, const std::vector<double>& arrRe
 				dXCur = dX; dYCur = dY;
 
 				auto visibleSegments = PdfWriter::RectangleIntersection::findSegmentsOutsideRectangles(line, rectangles);
-				bPath = bPath || visibleSegments.size() != 0;
+				bPath = visibleSegments.size() != 0 || bPath;
 				for (int i = 0; i < visibleSegments.size(); ++i)
 				{
 					double dX1 = visibleSegments[i].start.x, dY1 = visibleSegments[i].start.y;
@@ -517,7 +517,7 @@ void CPath::Redact(PdfWriter::CMatrix* pMatrix, const std::vector<double>& arrRe
 			{
 				PdfWriter::CSegment line(PdfWriter::CPoint(dXCur, dYCur), PdfWriter::CPoint(dXStart, dYStart));
 				auto visibleSegments = PdfWriter::RectangleIntersection::findSegmentsOutsideRectangles(line, rectangles);
-				bPath = bPath || visibleSegments.size() != 0;
+				bPath = visibleSegments.size() != 0 || bPath;
 				for (int i = 0; i < visibleSegments.size(); ++i)
 				{
 					double dX1 = visibleSegments[i].start.x, dY1 = visibleSegments[i].start.y;

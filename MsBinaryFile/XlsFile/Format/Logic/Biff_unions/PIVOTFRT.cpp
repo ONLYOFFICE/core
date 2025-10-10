@@ -72,5 +72,14 @@ const bool PIVOTFRT::loadContent(BinProcessor& proc)
 	return true;
 }
 
+const bool PIVOTFRT::saveContent(BinProcessor& proc)
+{
+	if(m_PIVOTFRT9 != nullptr)
+		proc.mandatory(*m_PIVOTFRT9);
+	if(m_PIVOTADDL != nullptr)
+		proc.mandatory(*m_PIVOTADDL);
+	return true;
+}
+
 } // namespace XLS
 

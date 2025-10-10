@@ -48,15 +48,16 @@ public:
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
+	void writeFields(CFRecord& record);
 
 	static const ElementType type = typeSXViewEx9;
 
-	unsigned short		rt;
-	bool				fFrtAlert;
-	bool				fPrintTitles;
-	bool				fLineMode;
-	bool				fRepeatItemsOnEachPrintedPage;
-	unsigned short		itblAutoFmt;
+	unsigned short		rt = 0;
+	bool				fFrtAlert = false;
+	bool				fPrintTitles = false;
+	bool				fLineMode = false;
+	bool				fRepeatItemsOnEachPrintedPage = false;
+	unsigned short		itblAutoFmt = 0;
 	XLUnicodeString		chGrand;
 
 };

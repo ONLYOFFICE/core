@@ -93,5 +93,18 @@ const bool PIVOTFRT9::loadContent(BinProcessor& proc)
 	return true;
 }
 
+const bool PIVOTFRT9::saveContent(BinProcessor& proc)
+{
+	if(m_QsiSXTag != nullptr)
+		proc.mandatory(*m_QsiSXTag);
+	if(m_DBQUERYEXT != nullptr)
+		proc.mandatory(*m_DBQUERYEXT);
+	if(m_PIVOTVIEWEX != nullptr)
+		proc.mandatory(*m_PIVOTVIEWEX);
+	if(m_SXViewEx9 != nullptr)
+		proc.mandatory(*m_SXViewEx9);
+	return true;
+}
+
 } // namespace XLS
 

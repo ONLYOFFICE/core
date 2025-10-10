@@ -7,6 +7,7 @@
 #include "../../../../OOXML/Common/SimpleTypes_OMath.h"
 #include "../../../../DesktopEditor/common/StringUTF32.h"
 #include "../../../../../DesktopEditor/common/File.h"
+#include "shakey.h"
 #include "typeselements.h"
 #include "fontType.h"
 #include <vector>
@@ -14,11 +15,6 @@
 #include <cstring>
 #include <sstream>
 #include <stack>
-#include "../../../../../Common/3dParty/cryptopp/sha.h"
-#include "../../../../../Common/3dParty/cryptopp/hex.h"
-#include "../../../../../Common/3dParty/cryptopp/base64.h"
-#include "../../../../../Common/3dParty/cryptopp/filters.h"
-#include "../../../../../Common/3dParty/cryptopp/files.h"
 
 namespace StarMath
 {
@@ -159,8 +155,6 @@ namespace StarMath
 		std::wstring GetAnnotation();
 		std::wstring GetSemantic();
 		void SetBaseAttribute(std::wstring wsBaseColor = L"", unsigned int uiBaseSize = 0);
-		static std::wstring HashingAnnotation(const std::wstring & wsAnnotation);
-		static bool HashComparison(const std::wstring& wsHashFirst,const std::wstring& wsHashSecond);
 		std::wstring GetHashAnnotation();
 	private:
 		XmlUtils::CXmlWriter* m_pXmlWrite;

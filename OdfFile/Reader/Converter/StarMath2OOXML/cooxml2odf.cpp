@@ -31,6 +31,7 @@ namespace StarMath
 		m_pXmlWrite->WriteNodeBegin(L"annotation",true);
 		m_pXmlWrite->WriteAttribute(L"encoding",L"StarMath 5.0");
 		m_pXmlWrite->WriteNodeEnd(L"w",true,false);
+		HashSM::RemovingSpaces(m_wsAnnotationStarMath);
 		m_pXmlWrite->WriteString(m_wsAnnotationStarMath);
 		EndOdf(pNode);
 	}
@@ -713,7 +714,7 @@ namespace StarMath
 		m_pXmlWrite->WriteNodeBegin(L"signature",true);
 		m_pXmlWrite->WriteAttribute(L"encoding",L"OOXML");
 		m_pXmlWrite->WriteAttribute(L"alg",L"sha256");
-		m_pXmlWrite->WriteAttribute(L"shakey",HashingAnnotation(m_wsAnnotationStarMath));
+		m_pXmlWrite->WriteAttribute(L"shakey",HashSM::HashingAnnotation(m_wsAnnotationStarMath));
 		m_pXmlWrite->WriteNodeEnd(L"w",true,false);
 		m_pXmlWrite->WriteString(pNode->toXML());
 		m_pXmlWrite->WriteNodeEnd(L"signature",false,false);
@@ -1870,33 +1871,6 @@ namespace StarMath
 				wsText16.push_back(oString32[i]);
 		}
 		return wsText16;
-	}
-	std::wstring COOXml2Odf::HashingAnnotation(const std::wstring &wsAnnotation)
-	{
-		std::string sAnnotation = U_TO_UTF8(wsAnnotation),sResult;
-		std::wstring wsResult;
-		CryptoPP::SHA256 hash;
-		CryptoPP::StringSource oStringSourse(sAnnotation,true, new CryptoPP::HashFilter(hash,new CryptoPP::HexEncoder(new CryptoPP::StringSink(sResult))));
-		wsResult = UTF8_TO_U(sResult);
-		return wsResult;
-	}
-	bool COOXml2Odf::HashComparison(const std::wstring &wsHashFirst, const std::wstring &wsHashSecond)
-	{
-		if(wsHashFirst.length() != wsHashSecond.length())
-			return false;
-
-		std::string sFirstHash = U_TO_UTF8(wsHashFirst),sSecondHash = U_TO_UTF8(wsHashSecond);
-
-		const char* cFirst = sFirstHash.c_str();
-		const char* cSecond = sSecondHash.c_str();
-
-		size_t sizeLen = wsHashFirst.length();
-		for(size_t i = 0; i< sizeLen;i++)
-		{
-			if((cFirst[i]^cSecond[i]) != 0)
-				return false;
-		}
-		return true;
 	}
 	std::wstring COOXml2Odf::GetHashAnnotation()
 	{

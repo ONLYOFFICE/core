@@ -32,7 +32,7 @@
 
 #include "math_elements.h"
 #include "../Converter/StarMath2OOXML/cconversionsmtoooxml.h"
-#include "../Converter/StarMath2OOXML/shakey.cpp"
+#include "../Converter/StarMath2OOXML/shakey.h"
 
 namespace cpdoccore { 
 
@@ -87,9 +87,9 @@ void math_semantics::add_child_element( xml::sax * Reader, const std::wstring & 
     {
         CP_CREATE_ELEMENT(annotation_);
     }
-	else if(CP_CHECK_NAME1(L"signature"))
-		create_element_and_read(Reader,Ns,Name,signature_,getContext(),false,true);
-	else
+    else if(CP_CHECK_NAME1(L"signature"))
+        create_element_and_read(Reader,Ns,Name,signature_,getContext(),false,true);
+    else
         CP_CREATE_ELEMENT(content_);
 
 }
@@ -101,53 +101,53 @@ void math_semantics::oox_convert(oox::math_context & Context)
 }
 void math_semantics::oox_convert(oox::math_context &Context, int iTypeConversion)
 {
-	math_signature* pSignature = dynamic_cast<math_signature*>(signature_.get());
+    math_signature* pSignature = dynamic_cast<math_signature*>(signature_.get());
     math_annotation* annotation = dynamic_cast<math_annotation*>(annotation_.get());
     math_annotation_xml* annotation_xml = dynamic_cast<math_annotation_xml*>(annotation_.get());
 
     std::wstring annotation_text(L"");
     if ((annotation) && (annotation->text_)) annotation_text = *annotation->text_;
     else if ((annotation_xml) && (annotation_xml->text_)) annotation_text = *annotation_xml->text_;
-	bool result = false;
-	if(pSignature)
-	{
-		if(pSignature->text_ && pSignature->GetAlg() == L"sha256" && HashSM::HashComparison(pSignature->GetShaKey(),HashSM::HashingAnnotation(annotation_text)))
-		{
-			Context.output_stream() << *pSignature->text_;
-			result = true;
-		}
+    bool result = false;
+    if(pSignature)
+    {
+        if(pSignature->text_ && pSignature->GetAlg() == L"sha256" && HashSM::HashComparison(pSignature->GetShaKey(),HashSM::HashingAnnotation(annotation_text,true)))
+        {
+            Context.output_stream() << *pSignature->text_;
+            result = true;
+        }
 
-	}
+    }
 
     if (!annotation_text.empty() && !result)
     {
         result = true;
-		StarMath::CParserStarMathString parser;
-		StarMath::CConversionSMtoOOXML converter;
+        StarMath::CParserStarMathString parser;
+        StarMath::CConversionSMtoOOXML converter;
 
-		parser.SetBaseFont(Context.base_font_name_);
-		parser.SetBaseSize(Context.base_font_size_);
-		parser.SetBaseAlignment(Context.base_alignment_);
-		parser.SetBaseItalic(Context.base_font_italic_);
-		parser.SetBaseBold(Context.base_font_bold_);
+        parser.SetBaseFont(Context.base_font_name_);
+        parser.SetBaseSize(Context.base_font_size_);
+        parser.SetBaseAlignment(Context.base_alignment_);
+        parser.SetBaseItalic(Context.base_font_italic_);
+        parser.SetBaseBold(Context.base_font_bold_);
 
-		converter.StartConversion(parser.Parse(annotation_text,iTypeConversion),parser.GetAlignment());
+        converter.StartConversion(parser.Parse(annotation_text,iTypeConversion),parser.GetAlignment());
 
-		auto sizes = parser.GetFormulaSize();
+        auto sizes = parser.GetFormulaSize();
 
-		for (;!sizes.empty(); sizes.pop())
-		{
-			if (sizes.front().m_iWidth > Context.width)
-				Context.width = sizes.front().m_iWidth;
+        for (;!sizes.empty(); sizes.pop())
+        {
+            if (sizes.front().m_iWidth > Context.width)
+                Context.width = sizes.front().m_iWidth;
 
-			Context.height += sizes.front().m_iHeight;
-		}
-		Context.output_stream() << converter.GetOOXML();
+            Context.height += sizes.front().m_iHeight;
+        }
+        Context.output_stream() << converter.GetOOXML();
     }
 
     if (!result)
     {
- 		Context.output_stream() << L"<m:oMathPara xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\">";
+        Context.output_stream() << L"<m:oMathPara xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\">";
         Context.output_stream() << L"<m:oMath xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\">";
         for (size_t i = 0; i < content_.size(); i++)
         {

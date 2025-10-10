@@ -322,6 +322,7 @@ SOURCES += \
 	../../Reader/Converter/xlsx_data_validation.cpp \
 	../../Reader/Converter/xlsx_utils.cpp \
 	../../Reader/Converter/xlsx_xf.cpp \
+	../../Reader/Converter/StarMath2OOXML/shakey.cpp \
 	\
 	../../Writer/Format/office_document.cpp \
 	../../Writer/Format/office_forms.cpp \
@@ -721,6 +722,7 @@ HEADERS += \
 	../../Reader/Converter/xlsx_xf.h \
 	../../Reader/Converter/conversionelement.h \
 	../../Reader/Converter/ConvertOO2OOX.h \
+	../../Reader/Converter/StarMath2OOXML/shakey.h \
 	\
 	../../Writer/Format/math_elementaries.h \
 	../../Writer/Format/math_elements.h \
@@ -827,4 +829,3 @@ HEADERS += \
 	../../Writer/Converter/VmlShapeTypes2Oox.h \
 	../../Writer/Converter/XlsxConverter.h \
 	../../Writer/Converter/PptxConverter.h
-

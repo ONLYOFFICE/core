@@ -180,9 +180,9 @@ private:
     virtual void add_text(const std::wstring & Text);
 
     office_element_ptr_array content_;
-	_CP_OPT(std::wstring) encoding_;
-	_CP_OPT(std::wstring) alg_;
-	_CP_OPT(std::wstring) shakey_;
+    _CP_OPT(std::wstring) encoding_;
+    _CP_OPT(std::wstring) alg_;
+    _CP_OPT(std::wstring) shakey_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(math_signature);

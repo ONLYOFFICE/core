@@ -2498,7 +2498,7 @@ bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength, PDFD
 				continue;
 
 			PdfWriter::CObjectBase* pObjBase = pAnnot->Get("Parent");
-			if (!pObjBase || !ChangeFullNameParent(pObjBase->GetObjId(), sPrefix, arrRename))
+			if (!pObjBase || !ChangeFullNameParent(m_mObjManager.FindObj(pObjBase), sPrefix, arrRename))
 			{
 				pObjBase = pAnnot->Get("T");
 				if (pObjBase && pObjBase->GetType() == PdfWriter::object_type_STRING)
@@ -2681,12 +2681,12 @@ bool CPdfEditor::ChangeFullNameParent(int nParent, const std::string& sPrefix, s
 		return true;
 
 	PdfWriter::CObjectBase* pObjBase = m_mObjManager.GetObj(nParent);
-	if (pObjBase->GetType() != PdfWriter::object_type_DICT)
+	if (!pObjBase || pObjBase->GetType() != PdfWriter::object_type_DICT)
 		return false;
 
 	PdfWriter::CDictObject* pDict = (PdfWriter::CDictObject*)pObjBase;
 	pObjBase = pDict->Get("Parent");
-	if (!pObjBase || !ChangeFullNameParent(pObjBase->GetObjId(), sPrefix, arrRename))
+	if (!pObjBase || !ChangeFullNameParent(m_mObjManager.FindObj(pObjBase), sPrefix, arrRename))
 	{
 		pObjBase = pDict->Get("T");
 		if (pObjBase && pObjBase->GetType() == PdfWriter::object_type_STRING)

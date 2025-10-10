@@ -186,16 +186,32 @@ void GlobalParamsAdaptor::AddRedact(const std::vector<double>& arrRedactBox)
 {
 	m_arrRedactBox.insert(m_arrRedactBox.end(), arrRedactBox.begin(), arrRedactBox.end());
 }
+double crossProduct(double x1, double y1, double x2, double y2, double x3, double y3)
+{
+	return (x2 - x1) * (y3 - y1) - (y2 - y1) * (x3 - x1);
+}
 bool GlobalParamsAdaptor::InRedact(double dX, double dY)
 {
-	for (int i = 0; i < m_arrRedactBox.size(); i += 4)
+	for (int i = 0; i < m_arrRedactBox.size(); i += 8)
 	{
-		double xMin = m_arrRedactBox[i + 0];
-		double yMin = m_arrRedactBox[i + 1];
-		double xMax = m_arrRedactBox[i + 2];
-		double yMax = m_arrRedactBox[i + 3];
+		double x1 = m_arrRedactBox[i + 0];
+		double y1 = m_arrRedactBox[i + 1];
+		double x2 = m_arrRedactBox[i + 2];
+		double y2 = m_arrRedactBox[i + 3];
+		double x3 = m_arrRedactBox[i + 6];
+		double y3 = m_arrRedactBox[i + 7];
+		double x4 = m_arrRedactBox[i + 4];
+		double y4 = m_arrRedactBox[i + 5];
 
-		if (xMin < dX && dX < xMax && yMin < dY && dY < yMax)
+		// Проверяем знаки векторных произведений для всех сторон
+		double cross1 = crossProduct(x1, y1, x2, y2, dX, dY);
+		double cross2 = crossProduct(x2, y2, x3, y3, dX, dY);
+		double cross3 = crossProduct(x3, y3, x4, y4, dX, dY);
+		double cross4 = crossProduct(x4, y4, x1, y1, dX, dY);
+
+		// Точка внутри, если все векторные произведения имеют одинаковый знак
+		if ((cross1 >= 0 && cross2 >= 0 && cross3 >= 0 && cross4 >= 0) ||
+			(cross1 <= 0 && cross2 <= 0 && cross3 <= 0 && cross4 <= 0))
 			return true;
 	}
 	return false;

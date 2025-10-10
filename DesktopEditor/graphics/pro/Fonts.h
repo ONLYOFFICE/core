@@ -639,6 +639,7 @@ namespace NSFonts
 		virtual double GetCharWidth(int gid) = 0;
 
 		virtual int GetGIDByUnicode(int code) = 0;
+		virtual int GetUnicodeByGID(int gid) = 0;
 
 		virtual int GetEmbeddingLicenceType() = 0;
 		virtual void FillFontSelectFormat(CFontSelectFormat& oFormat) = 0;
@@ -736,6 +737,7 @@ namespace NSFonts
 
 		virtual unsigned int GetNameIndex(const std::wstring& wsName) = 0;
 		virtual unsigned int GetGIDByUnicode(const unsigned int& unCode) = 0;
+		virtual int GetUnicodeByGID(const int& gid) = 0;
 
 		virtual void GetFace(double& d0, double& d1, double& d2) = 0;
 		virtual void GetLimitsY(double& dMin, double& dMax) = 0;

@@ -3490,7 +3490,10 @@ void CPdfEditor::ClearPage()
 	}
 	pageObj.free();
 
-	pDoc->ClearPage();
+	if (m_nMode == Mode::Split || m_nMode == Mode::WriteNew)
+		pDoc->ClearPageFull();
+	else
+		pDoc->ClearPage();
 
 	Page* pOPage = pPDFDocument->getCatalog()->getPage(nPageIndex);
 	if (pOPage->isCropped())

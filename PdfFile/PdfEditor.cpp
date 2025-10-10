@@ -3593,6 +3593,7 @@ void CPdfEditor::Redact(IAdvancedCommand* _pCommand)
 	int nPageIndex = -1;
 	Page* pPage = NULL;
 	bool bEditPage = IsEditPage();
+	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
 	if (bEditPage)
 	{
 		nPageIndex = m_pReader->GetPageIndex(m_nEditPage, &pPDFDocument);
@@ -3604,7 +3605,6 @@ void CPdfEditor::Redact(IAdvancedCommand* _pCommand)
 	else
 	{
 		cropBox = new PDFRectangle();
-		PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
 		PdfWriter::CPage* pWPage = pDoc->GetCurPage();
 		cropBox->x2 = pWPage->GetWidth();
 		cropBox->y2 = pWPage->GetHeight();
@@ -3646,6 +3646,9 @@ void CPdfEditor::Redact(IAdvancedCommand* _pCommand)
 		gfx->endOfPage();
 		oContents.free();
 		RELEASEOBJECT(gfx);
+
+		PdfWriter::CPage* pWPage = pDoc->GetCurPage();
+		pWPage->SetFontType(PdfWriter::EFontType::fontUnknownType);
 	}
 	else
 	{

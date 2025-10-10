@@ -226,7 +226,7 @@ JSSmart<CJSValue> CDrawingFileEmbed::RedactPage(JSSmart<CJSValue> nPageIndex, JS
 		JSSmart<CJSTypedArray> dataPtr = dataFiller->toTypedArray();
 		CJSDataBuffer buffer = dataPtr->getData();
 
-		result = m_pFile->RedactPage(pageIndex, pBox, nCountBox / 8, buffer.Data, (int)buffer.Len);
+		result = m_pFile->RedactPage(pageIndex, pBox, nCountBox / 8, buffer.Data, (int)buffer.Len, true);
 
 		if (pBox)
 			delete[] pBox;

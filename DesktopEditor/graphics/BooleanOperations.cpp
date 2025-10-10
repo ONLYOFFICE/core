@@ -774,7 +774,7 @@ bool CBooleanOperations::IsSelfInters(const CGraphicsPath& p)
 	{
 		for (const auto& l : Locations)
 		{
-			if (l->Time != 0.0 && l->Time != 1.0 && l->C.Segment2.Index != l->Inters->C.Segment1.Index)
+			if (!isZero(l->Time) && !isZero(l->Time - 1.0) && l->C.Segment2.Index != l->Inters->C.Segment1.Index)
 				return true;
 		}
 	}

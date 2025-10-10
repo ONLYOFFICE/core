@@ -59,6 +59,7 @@ public:
 	unsigned char	sec = 0;
 
 	std::wstring value();
+	void fromString(const std::wstring &strDate);
 
 };
 

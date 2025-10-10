@@ -174,7 +174,9 @@ const bool SXOPER::saveContent(BinProcessor& proc)
 	}
 	else if(bDate)
 	{
-		//todo date parsing
+		SXDtr date;
+		date.fromString(value);
+		proc.mandatory(date);
 	}
 	else
 		proc.mandatory<SxNil>();

@@ -31,6 +31,7 @@
  */
 
 #include "SXDtr.h"
+#include "../../../../../OOXML/Binary/Sheets/Reader/CellFormatController/DateReader.h"
 
 namespace XLS
 {
@@ -70,6 +71,21 @@ std::wstring SXDtr::value()
 		 << (hr < 10 ? L"0" : L"") << hr << L":" << (min < 10 ? L"0" : L"") << min << L":" << (sec < 10 ? L"0" : L"") << sec;
 
 	return s.str();
+}
+
+void SXDtr::fromString(const std::wstring &strDate)
+{
+	DateReader reader;
+	tm dateTime;
+	if(reader.parseIsoDate(strDate, dateTime))
+	{
+		yr = dateTime.tm_year + 1900;
+		mon = dateTime.tm_mon + 1;
+		dom = dateTime.tm_mday + 1;
+		hr = dateTime.tm_hour;
+		min = dateTime.tm_min;
+		sec = dateTime.tm_sec;
+	}
 }
 
 } // namespace XLS

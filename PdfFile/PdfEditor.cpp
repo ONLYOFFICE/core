@@ -1464,6 +1464,7 @@ void CPdfEditor::Close()
 		return;
 	}
 
+	// m_nMode == Mode::WriteAppend
 	PDFDoc* pPDFDocument = m_pReader->GetPDFDocument(0);
 	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
 	XRef* xref = pPDFDocument->getXRef();
@@ -2766,13 +2767,13 @@ bool CPdfEditor::DeletePage(int nPageIndex)
 	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
 	PdfWriter::CPage* pPage = pDoc->GetPage(nPageIndex);
 	int nObjID = m_mObjManager.FindObj(pPage);
-	if (nObjID > 0)
+	bool bRes = pDoc->DeletePage(nPageIndex);
+	if (bRes && nObjID > 0)
 	{
 		m_mObjManager.RemoveObj(nObjID);
 		pDoc->RemoveObj(pPage);
 	}
-
-	return pDoc->DeletePage(nPageIndex);
+	return bRes;
 }
 bool CPdfEditor::AddPage(int nPageIndex)
 {
@@ -2836,6 +2837,9 @@ bool CPdfEditor::EditAnnot(int _nPageIndex, int nID)
 
 	if (pDoc->GetAnnot(nID))
 		return true;
+
+	if (m_nMode == Mode::Split || m_nMode == Mode::WriteNew)
+		return false;
 
 	XRef* xref = pPDFDocument->getXRef();
 	Ref* pPageRef = pPDFDocument->getCatalog()->getPageRef(nPageIndex);
@@ -3122,7 +3126,7 @@ bool CPdfEditor::DeleteAnnot(int nID, Object* oAnnots)
 		pDoc->RemoveObj(pObj);
 		return true;
 	}
-	if (m_nMode == Mode::Split)
+	if (m_nMode == Mode::Split || m_nMode == Mode::WriteNew)
 		return true;
 
 	PDFDoc* pPDFDocument = NULL;

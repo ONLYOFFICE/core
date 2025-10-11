@@ -52,6 +52,7 @@ public:
 	CObjectsManager() : m_pDoc(NULL) {}
 
 	void AddObj(int nID, PdfWriter::CObjectBase* pObj);
+	void RemoveObj(int nID);
 	PdfWriter::CObjectBase* GetObj(int nID);
 	bool IncRefCount(int nID);
 	bool DecRefCount(int nID);

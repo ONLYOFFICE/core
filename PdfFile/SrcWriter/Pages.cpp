@@ -1234,7 +1234,6 @@ namespace PdfWriter
 				CObjectBase* pDelete = pArray->Remove(i);
 				RELEASEOBJECT(pDelete);
 				return true;
-				break;
 			}
 		}
 		return false;

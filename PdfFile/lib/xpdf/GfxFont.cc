@@ -1762,8 +1762,7 @@ GfxCIDFont::GfxCIDFont(XRef *xref, const char *tagA, Ref idA, GString *nameA,
 
   // check for fonts that use the Identity-H encoding (cmap), and the
   // Adobe-Identity character collection
-  identityEnc = obj1.isName("Identity-H") &&
-                !collection->cmp("Adobe-Identity");
+  identityEnc = obj1.isName("Identity-H");
 
   obj1.free();
 

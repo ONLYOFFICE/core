@@ -1764,7 +1764,7 @@ GfxCIDFont::GfxCIDFont(XRef *xref, const char *tagA, Ref idA, GString *nameA,
   // Adobe-Identity character collection
   GString* collectionL = collection->copy();
   collectionL->lowerCase();
-  identityEnc = obj1.isName("Identity-H") && (strstr(collectionL->getCString(), "identity") || strstr(collectionL->getCString(), "indentity"));
+  identityEnc = obj1.isName("Identity-H") && (!collection->cmp("Adobe-Identity") || strstr(collectionL->getCString(), "indentity"));
   delete collectionL;
 
   obj1.free();

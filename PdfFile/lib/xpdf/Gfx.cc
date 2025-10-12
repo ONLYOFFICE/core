@@ -2385,17 +2385,16 @@ void Gfx::opShFill(Object args[], int numArgs) {
     return;
   }
 
-  if (!(shading = res->lookupShading(args[0].getName()
-				     ))) {
-    return;
-  }
-
   if (out->useNameOp())
   {
 	  out->setShading(state, args[0].getName());
 	  return;
   }
 
+  if (!(shading = res->lookupShading(args[0].getName()
+				     ))) {
+    return;
+  }
   // save current graphics state
   savedState = saveStateStack();
 

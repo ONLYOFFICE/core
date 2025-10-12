@@ -142,11 +142,6 @@ void RedactOutputDev::updateAll(GfxState *pGState)
 	updateFont(pGState);
 	m_bUpdateAll = false;
 }
-void RedactOutputDev::updateCTM(GfxState *pGState, double dMatrix11, double dMatrix12, double dMatrix21, double dMatrix22, double dMatrix31, double dMatrix32)
-{
-	// TODO применять только непосредственно при записи
-	//m_pPage->Concat(dMatrix11, dMatrix12, dMatrix21, dMatrix22, dMatrix31, dMatrix32);
-}
 void RedactOutputDev::updateLineDash(GfxState *pGState)
 {
 	double* pDash  = NULL;
@@ -203,14 +198,6 @@ void RedactOutputDev::updateLineWidth(GfxState *pGState)
 	m_pRenderer->m_oPen.SetSize(pGState->getLineWidth());
 	if (!m_bUpdateAll && !m_sStates.empty())
 		m_sStates.back().m_arrOp.push_back(std::make_pair(std::to_string(pGState->getLineWidth()), "w"));
-}
-void RedactOutputDev::updateFillColorSpace(GfxState *pGState)
-{
-
-}
-void RedactOutputDev::updateStrokeColorSpace(GfxState *pGState)
-{
-
 }
 void RedactOutputDev::updateFillColor(GfxState *pGState)
 {
@@ -317,12 +304,6 @@ void RedactOutputDev::updateFont(GfxState *pGState)
 	else
 		m_pRenderer->put_FontName(L"");
 }
-void RedactOutputDev::updateTextMat(GfxState *pGState)
-{
-	//double* dTM = pGState->getTextMat();
-	// TODO
-	//m_pPage->SetTextMatrix(dTM[0], dTM[1], dTM[2], dTM[3], dTM[4], dTM[5]);
-}
 void RedactOutputDev::updateCharSpace(GfxState *pGState)
 {
 	m_pRenderer->m_oFont.SetCharSpace(pGState->getCharSpace());
@@ -344,14 +325,6 @@ void RedactOutputDev::updateHorizScaling(GfxState *pGState)
 {
 	m_pRenderer->m_oFont.SetHorizontalScaling(pGState->getHorizScaling() * 100);
 }
-void RedactOutputDev::updateTextPos(GfxState *pGState)
-{
-	// TODO Это Td, но опять таки нужно смещать к реальному тексту который не попадает под Redact
-}
-void RedactOutputDev::updateTextShift(GfxState *pGState, double shift)
-{
-	// TODO Смещение между строками в TJ, т.е. ~ TL межстрочный интервал
-}
 //----- path painting
 void RedactOutputDev::stroke(GfxState *pGState)
 {
@@ -371,12 +344,6 @@ void RedactOutputDev::eoFill(GfxState *pGState)
 void RedactOutputDev::tilingPatternFill(GfxState *pGState, Gfx *gfx, Object *pStream, int nPaintType, int nTilingType, Dict *pResourcesDict,
 										double *pMatrix, double *pBBox, int nX0, int nY0, int nX1, int nY1, double dXStep, double dYStep)
 {
-	// TODO Нужно как-то пересечь области заливки паттерном
-}
-GBool RedactOutputDev::shadedFill(GfxState* pGState, GfxShading* shading)
-{
-	// TODO Нужно как-то пересечь области градиентой заливки
-	return gFalse;
 }
 //----- path clipping
 void RedactOutputDev::clip(GfxState *pGState)
@@ -417,18 +384,6 @@ void RedactOutputDev::beginStringOp(GfxState *pGState)
 {
 	m_pRenderer->m_oCommandManager.Flush();
 	DoStateOp();
-}
-void RedactOutputDev::endStringOp(GfxState *pGState)
-{
-
-}
-void RedactOutputDev::beginString(GfxState *pGState, GString *s)
-{
-
-}
-void RedactOutputDev::endString(GfxState *pGState)
-{
-
 }
 void RedactOutputDev::drawChar(GfxState *pGState, double dX, double dY, double dDx, double dDy, double dOriginX, double dOriginY,
 							   CharCode nCode, int nBytesCount, Unicode *pUnicode, int nUnicodeLen)
@@ -533,39 +488,7 @@ void RedactOutputDev::drawChar(GfxState *pGState, double dX, double dY, double d
 
 	m_pRenderer->put_FontSize(dOldSize);
 }
-GBool RedactOutputDev::beginType3Char(GfxState *pGState, double x, double y, double dx, double dy, CharCode code, Unicode *u, int uLen)
-{
-	return gFalse;
-}
-void RedactOutputDev::endType3Char(GfxState *pGState)
-{
-
-}
-void RedactOutputDev::endTextObject(GfxState *pGState)
-{
-
-}
-void RedactOutputDev::beginActualText(GfxState *state, Unicode *u, int uLen)
-{
-
-}
-void RedactOutputDev::endActualText(GfxState *state)
-{
-
-}
 //----- additional
-GBool RedactOutputDev::beginMarkedContent(GfxState *pGState, GString *s)
-{
-	return gFalse;
-}
-GBool RedactOutputDev::beginMCOShapes(GfxState *pGState, GString *s, Object *ref)
-{
-	return gFalse;
-}
-void RedactOutputDev::endMarkedContent(GfxState *pGState)
-{
-
-}
 GBool RedactOutputDev::useNameOp()
 {
 	return gTrue;

@@ -1639,6 +1639,7 @@ GfxCIDFont::GfxCIDFont(XRef *xref, const char *tagA, Ref idA, GString *nameA,
   GfxFont(tagA, idA, nameA, typeA, embFontIDA)
 {
   Dict *desFontDict;
+  GString* collectionL;
   Object desFontDictObj;
   Object obj1, obj2, obj3, obj4, obj5, obj6;
   CharCodeToUnicode *utu;
@@ -1762,7 +1763,7 @@ GfxCIDFont::GfxCIDFont(XRef *xref, const char *tagA, Ref idA, GString *nameA,
 
   // check for fonts that use the Identity-H encoding (cmap), and the
   // Adobe-Identity character collection
-  GString* collectionL = collection->copy();
+  collectionL = collection->copy();
   collectionL->lowerCase();
   identityEnc = obj1.isName("Identity-H") && (!collection->cmp("Adobe-Identity") || strstr(collectionL->getCString(), "indentity"));
   delete collectionL;

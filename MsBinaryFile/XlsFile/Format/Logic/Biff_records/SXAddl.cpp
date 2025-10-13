@@ -117,6 +117,8 @@ void SXAddl::writeFields(CFRecord& record)
 	record << frtHeaderOld << sxc << sxd;
 	if(content != nullptr)
 		content->save(record);
+	else if(bEndElement)
+	record.reserveNunBytes(6);
 }
 
 BiffStructurePtr SXAddl::createSxcView(CFRecord& record)
@@ -437,6 +439,25 @@ void SXAddl_SXCView_SXDVer10Info::load(CFRecord& record)
     fTensorFillCv           = GETBIT(flags, 7);
     fHideDDData             = GETBIT(flags, 8);
 }
+
+void SXAddl_SXCView_SXDVer10Info::save(CFRecord& record)
+{
+	 unsigned short flags = 0;
+
+	SETBIT(flags, 0, fDisplayImmediateItems)
+	SETBIT(flags, 1, fEnableDataEd)
+	SETBIT(flags, 2, fDisableFList)
+	SETBIT(flags, 3, fReenterOnLoadOnce)
+	SETBIT(flags, 4, fNotViewCalculatedMembers)
+	SETBIT(flags, 5, fNotVisualTotals)
+	SETBIT(flags, 6, fPageMultipleItemLabel)
+	SETBIT(flags, 7, fTensorFillCv)
+	SETBIT(flags, 8, fHideDDData)
+
+	record << bVerSxMacro << flags;
+	record.reserveNunBytes(3);
+}
+
 //----------------------------------------------------------------------------
 BiffStructurePtr SXAddl_SXCView_SXDVer12Info::clone()
 {
@@ -559,6 +580,14 @@ void SXAddl_SXCCache_SXDVer10Info::load(CFRecord& record)
 
 	record >> reserved2;
 }
+void SXAddl_SXCCache_SXDVer10Info::save(CFRecord& record)
+{
+	record.reserveNunBytes(6);
+	record << citmGhostMax << bVerCacheLastRefresh << bVerCacheRefreshableMin;
+	for (int i = 0; i < 8; i++)
+		record << numDateCopy[i];
+	record.reserveNunBytes(2);
+}
 //----------------------------------------------------------------------------
 BiffStructurePtr SXAddl_SXCCache_SXDVerUpdInv::clone()
 {
@@ -655,6 +684,20 @@ void SXAddl_SXCView_SXDTableStyleClient::load(CFRecord& record)
 	fColumnHeaders	= GETBIT(flags, 5);
 	fDefaultStyle	= GETBIT(flags, 6);
 }
+
+void SXAddl_SXCView_SXDTableStyleClient::save(CFRecord& record)
+{
+	record.reserveNunBytes(6);
+	unsigned short	flags = 0;
+	SETBIT(flags, 1, fLastColumn)
+	SETBIT(flags, 2, fRowStrips)
+	SETBIT(flags, 3, fColumnStrips)
+	SETBIT(flags, 4, fRowHeaders)
+	SETBIT(flags, 5, fColumnHeaders)
+	SETBIT(flags, 6, fDefaultStyle)
+	record << flags << stName;
+}
+
 //----------------------------------------------------------------------------
 BiffStructurePtr SXAddl_SXCCacheField_SXDSxrmitmCount::clone()
 {

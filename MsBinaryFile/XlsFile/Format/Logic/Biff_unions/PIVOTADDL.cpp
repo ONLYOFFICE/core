@@ -150,5 +150,16 @@ const bool PIVOTADDL::loadContent(BinProcessor& proc)
 	return result;
 }
 
+const bool PIVOTADDL::saveContent(BinProcessor& proc)
+{
+	if(m_SXAddl_SXCView_SXDId != nullptr)
+	{
+		SXAddl tempAddl;
+		tempAddl.content = m_SXAddl_SXCView_SXDId;
+		proc.mandatory(tempAddl);
+	}
+	return true;
+}
+
 } // namespace XLS
 

@@ -49,10 +49,11 @@ public:
 	BiffStructurePtr clone();
 	
 	virtual void load(CFRecord& record);
+	virtual void save(CFRecord& record);
 
 	static const ElementType type = typeStringSegmentedSXADDL;
 
-	_UINT32				cchTotal;
+	_UINT32				cchTotal = 0;
 	XLUnicodeString		string;
 };
 
@@ -66,15 +67,16 @@ public:
 	
 	virtual BaseObjectPtr clone();
 	virtual void readFields(CFRecord& record);
+	virtual void writeFields(CFRecord& record);
 
 	static const ElementType	type = typeSXAddl;
 
 	bool				bStartElement;
 	bool				bEndElement;
 
-	_UINT32				frtHeaderOld;
-	unsigned char		sxc;
-	unsigned char		sxd;
+	_UINT32				frtHeaderOld = 0x0864;
+	unsigned char		sxc = 0;
+	unsigned char		sxd = 0;
 	BiffStructurePtr	content;
 private:
 	BiffStructurePtr createSxcView		(CFRecord& record);
@@ -171,6 +173,7 @@ public:
 	static const ElementType	type = typeSXAddl;
 
 	virtual void load(CFRecord& record);
+	virtual void save(CFRecord& record);
 
 	XLUnicodeStringSegmentedSXADDL stName;
 };

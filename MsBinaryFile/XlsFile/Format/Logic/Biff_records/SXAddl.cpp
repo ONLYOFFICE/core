@@ -46,6 +46,15 @@ void XLUnicodeStringSegmentedSXADDL::load(CFRecord& record)
 
 	record >> string;
 }
+
+void XLUnicodeStringSegmentedSXADDL::save(CFRecord& record)
+{
+	cchTotal = string.getSize();
+	record << cchTotal;
+	record.reserveNunBytes(2);
+	record << string;
+}
+
 //-----------------------------------------
 
 SXAddl::SXAddl() : bEndElement(false), bStartElement(false)
@@ -103,6 +112,13 @@ void SXAddl::readFields(CFRecord& record)
 	}
 
 }
+void SXAddl::writeFields(CFRecord& record)
+{
+	record << frtHeaderOld << sxc << sxd;
+	if(content != nullptr)
+		content->save(record);
+}
+
 BiffStructurePtr SXAddl::createSxcView(CFRecord& record)
 {
 	BiffStructurePtr result;
@@ -383,6 +399,11 @@ void SXAddl_SXCView_SXDId::load(CFRecord& record)
 {
 	record >> stName;
 }
+void SXAddl_SXCView_SXDId::save(CFRecord& record)
+{
+	record << stName;
+}
+
 //----------------------------------------------------------------------------
 BiffStructurePtr SXAddl_SXCQsi_SXDId::clone()
 {

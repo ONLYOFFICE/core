@@ -2,6 +2,7 @@
 #include "../../common/File.h"
 
 #include "../../Common/3dParty/webp/libwebp/src/webp/decode.h"
+#include "../../Common/3dParty/webp/libwebp/src/webp/encode.h"
 
 #include <limits>
 #include <memory>
@@ -35,6 +36,12 @@ namespace NSWebP {
 		DWORD size{0};
 		DWORD cur{0};
 	};
+
+	static int writeFunc(const BYTE* data, size_t size, const WebPPicture* picture)
+	{
+		FILE* file = static_cast<FILE*>(picture->custom_ptr);
+		return fwrite(data, 1, size, file);
+	}
 
 	bool CWebPFile::isWebP(const std::wstring& fileName)
 	{
@@ -91,6 +98,65 @@ namespace NSWebP {
 		auto status = Decode(stream, frame, isRGBA);
 		delete stream;
 		return status;
+	}
+
+	bool CWebPFile::Save(const BYTE* source, int width, int height, const std::wstring& dstPath, bool isRGBA)
+	{
+		if (!source)
+			return false;
+
+		WebPConfig cfg;
+		if (!WebPConfigInit(&cfg))
+			return false;
+
+		if (!WebPConfigLosslessPreset(&cfg, 6))
+			return false;
+
+		if (!WebPValidateConfig(&cfg))
+			return false;
+
+		WebPPicture pct;
+		if (!WebPPictureInit(&pct))
+			return false;
+
+		pct.width = width;
+		pct.height = height;
+		pct.use_argb = 1;
+
+		if (!WebPPictureAlloc(&pct))
+		{
+			WebPPictureFree(&pct);
+			return false;
+		}
+
+		BYTE* data = new BYTE[width * height * 4];
+		for (size_t i = 0; i < height; ++i)
+		{
+			BYTE* dst = data + width * 4 * i;
+			const BYTE* src = source + width * 4 * (height - i - 1);
+			for (size_t j = 0; j < width; ++j)
+			{
+				dst[0] = src[j * 4 + 0];
+				dst[1] = src[j * 4 + 1];
+				dst[2] = src[j * 4 + 2];
+				dst[3] = src[j * 4 + 3];
+				dst += 4;
+			}
+		}
+
+		if (!(isRGBA ? WebPPictureImportRGBA(&pct, data, width * 4) : WebPPictureImportBGRA(&pct, data, width * 4)))
+		{
+			WebPPictureFree(&pct);
+			delete[] data;
+			return false;
+		}
+
+		NSFile::CFileBinary file;
+		file.CreateFile(dstPath);
+
+		pct.writer = writeFunc;
+		pct.custom_ptr = file.GetFileNative();
+		return WebPEncode(&cfg, &pct);
 	}
 
 	bool CWebPFile::Decode(Stream* stream, CBgraFrame* frame, bool isRGBA)

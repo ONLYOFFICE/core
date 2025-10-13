@@ -18,7 +18,7 @@ namespace NSWebP {
 
 		static bool Open(CBgraFrame* frame, const std::wstring& fileName, bool isRGBA);
 		static bool Open(CBgraFrame* frame, BYTE* buffer, const DWORD& size, bool isRGBA);
-		static bool Save(const BYTE* source, int width, int height, int stride, const std::wstring& dstPath, bool isRGBA);
+		static bool Save(const BYTE* source, int width, int height, const std::wstring& dstPath, bool isRGBA);
 
 	private:
 		static bool Decode(Stream* stream, CBgraFrame* frame, bool isRGBA);

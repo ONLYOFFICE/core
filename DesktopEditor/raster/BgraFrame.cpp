@@ -606,6 +606,13 @@ bool CBgraFrame::SaveFile(const std::wstring& strFileName, unsigned int nFileTyp
 	}
 #endif
 
+#if CXIMAGE_SUPPORT_WEBP
+	if (CXIMAGE_FORMAT_WEBP == nFileType)
+	{
+		return NSWebP::CWebPFile::Save(m_pData, m_lWidth, m_lHeight, strFileName, m_bIsRGBA);
+	}
+#endif
+
 	NSFile::CFileBinary oFile;
 	if (!oFile.CreateFileW(strFileName))
 		return false;

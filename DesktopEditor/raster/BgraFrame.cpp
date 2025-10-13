@@ -48,6 +48,10 @@
 #include "heif/heif.h"
 #endif
 
+#if CXIMAGE_SUPPORT_WEBP
+#include "WebP/webp.h"
+#endif
+
 #include <cmath>
 #define BGRA_FRAME_CXIMAGE_MAX_MEMORY 67108864 // 256Mb (*4 channel)
 
@@ -462,6 +466,13 @@ bool CBgraFrame::OpenFile(const std::wstring& strFileName, unsigned int nFileTyp
 	}
 #endif
 
+#if CXIMAGE_SUPPORT_WEBP
+	if (CXIMAGE_FORMAT_WEBP == m_nFileType)
+	{
+		return NSWebP::CWebPFile::Open(this, strFileName, m_bIsRGBA);
+	}
+#endif
+
 	NSFile::CFileBinary oFile;
 	if (!oFile.OpenFile(strFileName))
 		return false;
@@ -549,6 +560,13 @@ bool CBgraFrame::Decode(BYTE* pBuffer, int nSize, unsigned int nFileType)
 	if (CXIMAGE_FORMAT_HEIF == m_nFileType)
 	{
 		return NSHeif::CHeifFile::Open(this, pBuffer, nSize, m_bIsRGBA);
+	}
+#endif
+
+#if CXIMAGE_SUPPORT_WEBP
+	if (CXIMAGE_FORMAT_WEBP == m_nFileType)
+	{
+		return NSWebP::CWebPFile::Open(this, pBuffer, nSize, m_bIsRGBA);
 	}
 #endif
 

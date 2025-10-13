@@ -35,6 +35,9 @@
 #if CXIMAGE_SUPPORT_HEIF
 #include "heif/heif.h"
 #endif
+#if CXIMAGE_SUPPORT_WEBP
+#include "WebP/webp.h"
+#endif
 
 #ifndef IMAGE_CHECKER_DISABLE_XML
 #include "../xml/include/xmlutils.h"
@@ -444,6 +447,15 @@ bool CImageFileFormatChecker::isHeifFile(BYTE* pBuffer, DWORD dwBytes)
 	return false;
 #endif
 }
+
+bool CImageFileFormatChecker::isWebPFile(BYTE* pBuffer, DWORD dwBytes)
+{
+#if CXIMAGE_SUPPORT_WEBP
+	return NSWebP::CWebPFile::isWebP(pBuffer, dwBytes);
+#else
+	return false;
+#endif
+}
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 bool CImageFileFormatChecker::isImageFile(const std::wstring& fileName)
 {
@@ -570,6 +582,10 @@ bool CImageFileFormatChecker::isImageFile(const std::wstring& fileName)
 	{
 		eFileType = _CXIMAGE_FORMAT_HEIF;
 	}
+	else if (isWebPFile(fileName))
+	{
+		eFileType = _CXIMAGE_FORMAT_WEBP;
+	}
 	///////////////////////////////////////////////////////////////////////
 	delete [] buffer;
 
@@ -688,6 +704,10 @@ bool CImageFileFormatChecker::isImageFile(BYTE* buffer, DWORD sizeRead)
 	if (isHeifFile(buffer, sizeRead))
 	{
 		eFileType = _CXIMAGE_FORMAT_HEIF;
+	}
+	if (isWebPFile(buffer, sizeRead))
+	{
+		eFileType = _CXIMAGE_FORMAT_WEBP;
 	}
     ///////////////////////////////////////////////////////////////////////
 	if (eFileType) return true;
@@ -810,6 +830,15 @@ bool CImageFileFormatChecker::isHeifFile(const std::wstring& fileName)
 {
 #if CXIMAGE_SUPPORT_HEIF
 	return NSHeif::CHeifFile::isHeif(fileName);
+#else
+	return false;
+#endif
+}
+
+bool CImageFileFormatChecker::isWebPFile(const std::wstring& fileName)
+{
+#if CXIMAGE_SUPPORT_WEBP
+	return NSWebP::CWebPFile::isWebP(fileName);
 #else
 	return false;
 #endif

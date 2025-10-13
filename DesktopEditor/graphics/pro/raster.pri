@@ -286,12 +286,19 @@ SOURCES += \
 
 !build_xp {
 	CONFIG += support_heif
+	CONFIG += support_webp
 }
 
 support_heif {
 	DEFINES += SUPPORT_LIB_HEIF_SOURCES
 	include($$CORE_ROOT_DIR/Common/3dParty/heif/heif.pri)
 	SOURCES += $$LIB_GRAPHICS_PRI_PATH/raster/heif/heif.cpp
+}
+
+support_webp {
+	DEFINES += SUPPORT_LIB_WEBP_SOURCES
+	include($$CORE_ROOT_DIR/Common/3dParty/webp/webp.pri)
+	SOURCES += $$LIB_GRAPHICS_PRI_PATH/raster/WebP/webp.cpp
 }
 
 SOURCES += \

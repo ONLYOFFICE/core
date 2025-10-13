@@ -1578,15 +1578,18 @@ namespace PdfWriter
 	{
 		if (m_pCurPage && m_pCurPage->DeleteAnnotation(nObjNum))
 		{
-			CArrayObject* ppFields = (CArrayObject*)m_pAcroForm->Get("Fields");
-			for (int i = 0; i < ppFields->GetCount(); ++i)
+			if (m_pAcroForm)
 			{
-				CObjectBase* pObj = ppFields->Get(i);
-				if (pObj->GetObjId() == nObjNum)
+				CArrayObject* ppFields = (CArrayObject*)m_pAcroForm->Get("Fields");
+				for (int i = 0; i < ppFields->GetCount(); ++i)
 				{
-					CObjectBase* pDelete = ppFields->Remove(i);
-					RELEASEOBJECT(pDelete);
-					break;
+					CObjectBase* pObj = ppFields->Get(i);
+					if (pObj->GetObjId() == nObjNum)
+					{
+						CObjectBase* pDelete = ppFields->Remove(i);
+						RELEASEOBJECT(pDelete);
+						break;
+					}
 				}
 			}
 

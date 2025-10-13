@@ -129,10 +129,10 @@ namespace NSWebP {
 			return false;
 		}
 
-		BYTE* data = new BYTE[width * height * 4];
+		std::vector<BYTE> data(width * height * 4);
 		for (size_t i = 0; i < height; ++i)
 		{
-			BYTE* dst = data + width * 4 * i;
+			BYTE* dst = data.data() + width * 4 * i;
 			const BYTE* src = source + width * 4 * (height - i - 1);
 			for (size_t j = 0; j < width; ++j)
 			{
@@ -144,10 +144,9 @@ namespace NSWebP {
 			}
 		}
 
-		if (!(isRGBA ? WebPPictureImportRGBA(&pct, data, width * 4) : WebPPictureImportBGRA(&pct, data, width * 4)))
+		if (!(isRGBA ? WebPPictureImportRGBA(&pct, data.data(), width * 4) : WebPPictureImportBGRA(&pct, data.data(), width * 4)))
 		{
 			WebPPictureFree(&pct);
-			delete[] data;
 			return false;
 		}
 

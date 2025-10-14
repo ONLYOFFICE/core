@@ -4,9 +4,17 @@ namespace SVG
 {
 	CClipPath::CClipPath(CSvgReader& oReader)
 		: CAppliedObject(oReader), m_enUnits(ClipU_ObjectBoundingBox)
+	{}
+
+	void CClipPath::SetAttribute(const std::string& sName, CSvgReader& oReader)
 	{
-		if (L"userSpaceOnUse" == oReader.GetAttribute("gradientUnits"))
-			m_enUnits = ClipU_UserSpaceOnUse;
+		if ("gradientUnits" == sName)
+		{
+			if ("userSpaceOnUse" == oReader.GetTextA())
+				m_enUnits = ClipU_UserSpaceOnUse;
+		}
+		else
+			CAppliedObject::SetAttribute(sName, oReader);
 	}
 
 	void CClipPath::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)

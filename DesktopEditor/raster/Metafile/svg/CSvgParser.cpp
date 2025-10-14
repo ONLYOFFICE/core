@@ -24,6 +24,8 @@
 #include "SvgObjects/CMask.h"
 #include "SvgObjects/CUse.h"
 
+#include "../../../../Common/3dParty/html/css/src/StaticFunctions.h"
+
 namespace SVG
 {
 	CSvgParser::CSvgParser()
@@ -74,7 +76,7 @@ namespace SVG
 		return std::string(itEncodingValueBegin, itEncodingValueEnd);
 	}
 
-	bool CSvgParser::LoadFromFile(const std::wstring &wsFile, CGraphicsContainer* pContainer, CSvgFile* pFile) const
+	bool CSvgParser::LoadFromFile(const std::wstring &wsFile, CGraphicsContainer*& pContainer, CSvgFile* pFile) const
 	{
 		if (wsFile.empty() || NULL == pFile)
 			return false;
@@ -109,7 +111,7 @@ namespace SVG
 		return bResult;
 	}
 
-	bool CSvgParser::LoadFromString(const std::wstring &wsContent, CGraphicsContainer* pContainer, CSvgFile* pFile) const
+	bool CSvgParser::LoadFromString(const std::wstring &wsContent, CGraphicsContainer*& pContainer, CSvgFile* pFile) const
 	{
 		if (wsContent.empty() || NULL == pFile)
 			return false;
@@ -119,34 +121,22 @@ namespace SVG
 			return false;
 
 		ScanStyles(oReader, pFile);
+		oReader.MoveToStart();
 
-		if (NULL != pContainer)
-			pContainer->SetData(oReader);
+		RELEASEOBJECT(pContainer);
 
-		const CSvgCalculator *pSvgCalculator = pFile->GetSvgCalculator();
+		pContainer = CRenderedObject::Create<CGraphicsContainer>(oReader, pFile->GetSvgCalculator());
 
-		if (NULL != pSvgCalculator)
-			pSvgCalculator->SetData(pContainer);
-
-		return ReadChildrens(oElement, pContainer, pFile, pContainer);
-	}
-
-	bool CSvgParser::LoadFromXmlNode(XmlUtils::CXmlNode &oElement, CGraphicsContainer* pContainer, CSvgFile* pFile) const
-	{
-		if (NULL == pFile || !oElement.IsValid())
+		if (NULL == pContainer)
 			return false;
 
-		const CSvgCalculator *pSvgCalculator = pFile->GetSvgCalculator();
 
-		if (NULL != pSvgCalculator)
-			pSvgCalculator->SetData(pContainer);
-
-		return ReadChildrens(oElement, pContainer, pFile, pContainer);
+		return ReadChildrens(oReader, pContainer, pFile, pContainer);
 	}
 
 	bool CSvgParser::ScanStyles(CSvgReader& oReader, CSvgFile *pFile) const
 	{
-		if (oReader.IsEmptyNode() || NULL == pFile || !oReader.MoveToStart())
+		if (oReader.IsEmptyNode() || NULL == pFile)
 			return false;
 
 		const std::string sElementName = oReader.GetName();
@@ -162,12 +152,12 @@ namespace SVG
 		if ("svg" == sElementName || "g" == sElementName || "defs" == sElementName)
 		{
 			WHILE_READ_NEXT_NODE(oReader)
+			{
 				if (ScanStyles(oReader, pFile))
 					bScanResult = true;
+			}
 			END_WHILE
 		}
-
-		oReader.MoveToStart();
 
 		return bScanResult;
 	}
@@ -227,6 +217,21 @@ namespace SVG
 		}
 	}
 
+	template <class TextType>
+	TextType* ReadTextObject(CSvgReader& oReader, const CSvgCalculator* pSvgCalculator, CRenderedObject *pParent, NSFonts::IFontManager* pFontManager)
+	{
+		//1 - создаем родительский объект
+		//2 - парсим аргументы
+		//3 - SetData
+		//4 - чтение дочерних (текста и внутри)
+
+		TextType *pText = CRenderedObject::Create<TextType>(oReader, pSvgCalculator, pParent, pFontManager);
+		if (NULL == pText)
+			return NULL;
+
+		return pText;
+	}
+
 	template <class ObjectType>
 	bool CSvgParser::ReadObject(CSvgReader& oReader, CContainer<ObjectType> *pContainer, CSvgFile *pFile, CRenderedObject *pParent) const
 	{
@@ -239,7 +244,7 @@ namespace SVG
 
 		if ("svg" == sElementName || "g" == sElementName || "a" == sElementName)
 		{
-			pObject = new CGraphicsContainer(oReader, pParent);
+			pObject = CRenderedObject::Create<CGraphicsContainer>(oReader, pFile->GetSvgCalculator(), pParent);
 			if (!ReadChildrens(oReader, (CGraphicsContainer*)pObject, pFile, (CGraphicsContainer*)pObject))
 			{
 				RELEASEOBJECT(pObject);
@@ -247,41 +252,44 @@ namespace SVG
 			}
 		}
 		else if ("line" == sElementName)
-			pObject = new CLine(oReader, pParent);
+			pObject = CRenderedObject::Create<CLine>(oReader, pFile->GetSvgCalculator(), pParent);
 		else if ("rect" == sElementName)
-			pObject = new CRect(oReader, pParent);
+			pObject = CRenderedObject::Create<CRect>(oReader, pFile->GetSvgCalculator(), pParent);
 		else if ("circle" == sElementName)
-			pObject = new CCircle(oReader, pParent);
+			pObject = CRenderedObject::Create<CCircle>(oReader, pFile->GetSvgCalculator(), pParent);
 		else if ("ellipse" == sElementName)
-			pObject = new CEllipse(oReader, pParent);
+			pObject = CRenderedObject::Create<CEllipse>(oReader, pFile->GetSvgCalculator(), pParent);
 		else if ("path" == sElementName)
-			pObject = new CPath(oReader, pParent);
+			pObject = CRenderedObject::Create<CPath>(oReader, pFile->GetSvgCalculator(), pParent);
 		else if ("polyline" == sElementName)
-			pObject = new CPolyline(oReader, pParent);
+			pObject = CRenderedObject::Create<CPolyline>(oReader, pFile->GetSvgCalculator(), pParent);
 		else if ("polygon" == sElementName)
-			pObject = new CPolygon(oReader, pParent);
+			pObject = CRenderedObject::Create<CPolygon>(oReader, pFile->GetSvgCalculator(), pParent);
 		else if ("image" == sElementName)
-			pObject = new CImage(oReader, pParent);
+			pObject = CRenderedObject::Create<CImage>(oReader, pFile->GetSvgCalculator(), pParent);
 		else if ("use" == sElementName)
-			pObject = new CUse(oReader, pParent);
+			pObject = CRenderedObject::Create<CUse>(oReader, pFile->GetSvgCalculator(), pParent);
 		else if ("text" == sElementName)
 		{
-			pObject = CText::Create(oReader, pParent, m_pFontManager);
-			ReadChildrens(oReader, (CText*)pObject, pFile, (CText*)pObject);
+			pObject = ReadTextObject<CText>(oReader, pFile->GetSvgCalculator(), pParent, m_pFontManager);
+			// pObject = CText::Create(oReader, pParent, m_pFontManager);
+			// ReadChildrens(oReader, (CText*)pObject, pFile, (CText*)pObject);
 		}
 		else if ("tspan" == sElementName)
 		{
-			pObject = CTSpan::Create(oReader, pParent, m_pFontManager);
-			ReadChildrens(oReader, (CTSpan*)pObject, pFile, (CTSpan*)pObject);
+			pObject = ReadTextObject<CTSpan>(oReader, pFile->GetSvgCalculator(), pParent, m_pFontManager);
+			// pObject = CTSpan::Create(oReader, pParent, m_pFontManager);
+			// ReadChildrens(oReader, (CTSpan*)pObject, pFile, (CTSpan*)pObject);
 		}
 		else if ("textPath" == sElementName)
 		{
-			pObject = CTextPath::Create(oReader, pParent, m_pFontManager, pFile);
-			ReadChildrens(oReader, (CTextPath*)pObject, pFile);
+			pObject = ReadTextObject<CTextPath>(oReader, pFile->GetSvgCalculator(), pParent, m_pFontManager);
+			// pObject = CTextPath::Create(oReader, pParent, m_pFontManager);
+			// ReadChildrens(oReader, (CTextPath*)pObject, pFile);
 		}
 		else if ("switch" == sElementName)
 		{
-			pObject = new CSwitch(oReader, pParent);
+			pObject = CRenderedObject::Create<CSwitch>(oReader, pFile->GetSvgCalculator(), pParent);
 			ReadChildrens(oReader, (CSwitch*)pObject, pFile);
 		}
 		//defs
@@ -333,7 +341,7 @@ namespace SVG
 		}
 		else if ("symbo" == sElementName)
 		{
-			pObject = new CSymbol(oReader);
+			pObject = CRenderedObject::Create<CSymbol>(oReader, pFile->GetSvgCalculator());
 			if (ReadChildrens(oReader, (CSymbol*)pObject, pFile) && MarkObject(pObject, pFile))
 				return true;
 			else
@@ -349,7 +357,8 @@ namespace SVG
 			if ((MarkObject(pObject, pFile) && (AppliedObject == pObject->GetType() || NULL == pContainer)) ||
 				(RendererObject == pObject->GetType() && AddObject((ObjectType*)pObject, pContainer)))
 			{
-				UpdateStyles(pObject, pFile);
+				if (RendererObject != pObject->GetType())
+					UpdateStyles(pObject, pFile);
 				return true;
 			}
 			delete pObject;

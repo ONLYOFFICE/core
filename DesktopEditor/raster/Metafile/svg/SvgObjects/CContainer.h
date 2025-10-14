@@ -79,14 +79,15 @@ namespace SVG
 
 	class CGraphicsContainer : public CContainer<CRenderedObject>, public CRenderedObject
 	{
-	public:
-		CGraphicsContainer(const std::wstring& wsName = L"GraphicsContainer");
+		friend class CRenderedObject;
+		// CGraphicsContainer(const std::wstring& wsName = L"GraphicsContainer");
 		CGraphicsContainer(CSvgReader& oReader, CRenderedObject* pParent = NULL);
+	public:
 		CGraphicsContainer(double dWidth, double dHeight, CSvgReader& oReader, CRenderedObject* pParent = NULL);
 
 		virtual ~CGraphicsContainer();
 
-		void SetData(CSvgReader& oReader);
+		void SetAttribute(const std::string& sName, CSvgReader& oReader) override;
 
 		bool Draw(IRenderer* pRenderer, const CSvgFile *pFile, CommandeMode oMode = CommandeModeDraw, const TSvgStyles* pOtherStyles = NULL, const CRenderedObject* pContexObject = NULL) const override;
 

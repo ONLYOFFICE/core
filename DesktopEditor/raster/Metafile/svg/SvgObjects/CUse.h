@@ -8,9 +8,12 @@ namespace SVG
 {
 	class CUse : public CRenderedObject
 	{
+		friend class CRenderedObject;
+		CUse(CSvgReader& oReader, CRenderedObject* pParent = NULL);
 	public:
-		CUse(XmlUtils::CXmlNode& oNode, CRenderedObject* pParent = NULL);
 		virtual ~CUse();
+
+		void SetAttribute(const std::string& sName, CSvgReader& oReader) override;
 
 		void SetData(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false) override;
 

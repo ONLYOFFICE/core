@@ -44,7 +44,7 @@ class CSvgFile
 		void Clear();
 
 		SVG::CSvgParser          m_oParser;
-		SVG::CGraphicsContainer  m_oContainer;
+		SVG::CGraphicsContainer *m_pContainer;
 		SVG::CSvgCalculator      m_oSvgCalculator;
 
 		typedef std::map<std::wstring, SVG::CObject*> MarkedMap;

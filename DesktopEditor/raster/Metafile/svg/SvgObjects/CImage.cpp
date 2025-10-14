@@ -8,22 +8,24 @@
 
 namespace SVG
 {
-	RENDERER_CHILDREN_CPP(Image)
+	CImage::CImage(CSvgReader& oReader, CRenderedObject* pParent)
+		: CRenderedObject(oReader, pParent)
+	{}
+
+	void CImage::SetAttribute(const std::string& sName, CSvgReader& oReader)
 	{
-		START_READ_ATTRIBUTES(oReader)
-		{
-			IF_ATTRIBUTE("x")
-				SET_VALUE(m_oRect.m_oX);
-			ELSE_IF_ATTRIBUTE("y")
-				SET_VALUE(m_oRect.m_oY);
-			ELSE_IF_ATTRIBUTE("width")
-				SET_VALUE(m_oRect.m_oWidth);
-			ELSE_IF_ATTRIBUTE("height")
-				SET_VALUE(m_oRect.m_oHeight);
-			ELSE_IF_ATTRIBUTE2("href", "xlink:href")
-				SET_VALUE_STRING(m_wsHref);// TODO:: В дальнейшем возможно стоит реализовать отдельный класс CHref для всех типов ссылок
-		}
-		END_READ_ATTRIBUTES(oReader)
+		if ("x" == sName)
+			m_oRect.m_oX.SetValue(oReader.GetDouble());
+		else if ("y" == sName)
+			m_oRect.m_oY.SetValue(oReader.GetDouble());
+		else if ("width" == sName)
+			m_oRect.m_oWidth.SetValue(oReader.GetDouble());
+		else if ("height" == sName)
+			m_oRect.m_oHeight.SetValue(oReader.GetDouble());
+		else if ("href" == sName || "xlink:href" == sName)
+			m_wsHref = oReader.GetText(); // TODO:: В дальнейшем возможно стоит реализовать отдельный класс CHref для всех типов ссылок
+		else
+			CRenderedObject::SetAttribute(sName, oReader);
 	}
 
 	bool CImage::Draw(IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode, const TSvgStyles *pOtherStyles, const CRenderedObject* pContexObject) const

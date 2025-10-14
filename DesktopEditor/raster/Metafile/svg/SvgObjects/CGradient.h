@@ -37,16 +37,16 @@ namespace SVG
 
 	class CGradient : public CContainer<CStopElement>, public CAppliedObject
 	{
-		friend class CLinearGradient;
-		friend class CRadialGradient;
 	public:
 		CGradient(CSvgReader& oReader);
+
+		void SetAttribute(const std::string& sName, CSvgReader& oReader) override;
 
 		void SetData(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false) override;
 
 		bool Apply(IRenderer* pRenderer, const CSvgFile *pFile, const TBounds &oObjectBounds) override;
 		void ApplyTransform(IRenderer *pRenderer, const TBounds& oBounds, double& dAngle) const;
-	private:
+	protected:
 		CGradient* GetRefGradient(const CSvgFile *pFile) const;
 		bool ApplyRefGradient(IRenderer *pRenderer, const CSvgFile *pFile, const TBounds &oObjectBounds) const;
 
@@ -61,6 +61,8 @@ namespace SVG
 	public:
 		CLinearGradient(CSvgReader& oReader);
 
+		void SetAttribute(const std::string& sName, CSvgReader& oReader) override;
+
 		bool Apply(IRenderer* pRenderer, const CSvgFile *pFile, const TBounds &oObjectBounds) override;
 	private:
 		SvgDigit m_oX1;
@@ -73,6 +75,8 @@ namespace SVG
 	{
 	public:
 		CRadialGradient(CSvgReader& oReader);
+
+		void SetAttribute(const std::string& sName, CSvgReader& oReader) override;
 
 		bool Apply(IRenderer* pRenderer, const CSvgFile *pFile, const TBounds &oObjectBounds) override;
 	private:

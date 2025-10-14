@@ -2,12 +2,12 @@
 #define COBJECTBASE_H
 
 #include "../../../../../Common/3dParty/html/css/src/CNode.h"
-#include "../../../../../Common/3dParty/html/css/src/StaticFunctions.h"
 #include "../../../../graphics/IRenderer.h"
 #include "../../../../common/IGrObject.h"
 
 #include "../SvgTypes.h"
 #include "../SvgReader.h"
+#include "CStyle.h"
 
 class CSvgFile;
 
@@ -37,16 +37,18 @@ namespace SVG
 		AppliedObject
 	};
 
-	//TODO:: хотелось бы передалать принцип чтения аргументов
-
 	class CObject : public IGrObject
 	{
-	public:
+	protected:
 		CObject(const NSCSS::CNode& oData);
 		CObject(CSvgReader& oReader);
+		CObject(const CObject& oObject);
+	public:
 		virtual ~CObject();
 
 		virtual ObjectType GetType() const = 0;
+
+		virtual void SetAttribute(const std::string& sName, CSvgReader& oReader);
 
 		void SetData(const std::wstring wsStyles, unsigned short ushLevel, bool bHardMode = false);
 
@@ -66,8 +68,6 @@ namespace SVG
 		bool ApplyMask(IRenderer* pRenderer, const SvgColor* pMask, const CSvgFile *pFile, const TBounds& oBounds) const;
 
 		bool ApplyDef(IRenderer* pRenderer, const CSvgFile *pFile, const std::wstring& wsUrl, const TBounds& oBounds) const;
-
-		void SetNodeData(CSvgReader& oReader);
 
 		friend class CRenderedObject;
 		friend class CAppliedObject;
@@ -98,16 +98,26 @@ namespace SVG
 		CommandeModeMask
 	};
 
+	class CSvgCalculator;
+
 	class CRenderedObject : public CObject
 	{
-	public:
+	protected:
 		CRenderedObject(const NSCSS::CNode& oData, CRenderedObject* pParent = NULL);
 		CRenderedObject(CSvgReader& oReader, CRenderedObject* pParent = NULL);
+		CRenderedObject(const CRenderedObject& oRenderedObject);
+	public:
 		virtual ~CRenderedObject();
+
+		template <class T, typename... Args>
+		static T* Create(CSvgReader& oReader, const CSvgCalculator* pSvgCalculator, CRenderedObject* pParent = NULL, Args&&... args);
 
 		ObjectType GetType() const override;
 
+		virtual void SetAttribute(const std::string& sName, CSvgReader& oReader) override;
 		virtual void SetData(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false) override;
+
+		virtual void ReadChildrens(CSvgReader& oReader, const CSvgCalculator* pSvgCalculator);
 
 		virtual bool Draw(IRenderer* pRenderer, const CSvgFile *pFile, CommandeMode oMode = CommandeModeDraw, const TSvgStyles* pStyles = NULL, const CRenderedObject* pContextObject = NULL) const = 0;
 
@@ -115,8 +125,6 @@ namespace SVG
 
 		std::vector<NSCSS::CNode> GetFullPath() const override;
 	private:
-		void SetDefaultStyles();
-
 		void SetStroke(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false);
 		void SetFill(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false);
 
@@ -128,6 +136,8 @@ namespace SVG
 		bool ApplyStroke(IRenderer* pRenderer, const TStroke* pStroke, bool bUseDefault = false, const CRenderedObject* pContextObject = NULL) const;
 		bool ApplyFill(IRenderer* pRenderer, const SvgColor* pFill, const CSvgFile *pFile, bool bUseDefault = false, const CRenderedObject* pContextObject = NULL) const;
 		bool ApplyOpacity(IRenderer* pRenderer, const SvgDigit* pOpacity) const;
+
+		void SetDefaultData();
 
 		friend class CUse;
 		friend class CLine;
@@ -149,22 +159,31 @@ namespace SVG
 		CRenderedObject *m_pParent;
 	};
 
-	#define BEGIN_RENDERER_CHILDREN_H(name)\
-	class C##name : public CRenderedObject\
-	{\
-	public:\
-		C##name(CSvgReader& oReader, CRenderedObject* pParent = NULL);
+	template<class T, typename... Args>
+	inline T* CRenderedObject::Create(CSvgReader& oReader, const CSvgCalculator* pSvgCalculator, CRenderedObject* pParent, Args&&... args)
+	{
+		T* pObject = new T(oReader, pParent, std::forward<Args>(args)...);
 
-	#define END_RENDERER_CHILDREN_H };
+		if (NULL == pObject)
+			return NULL;
 
-	#define RENDERER_CHILDREN_CPP(name)\
-	C##name::C##name(CSvgReader& oReader, CRenderedObject* pParent)\
-		: CRenderedObject(oReader, pParent)
+		START_READ_ATTRIBUTES(oReader)
+			pObject->SetAttribute(sAttributeName, oReader);
+		END_READ_ATTRIBUTES(oReader)
+
+		if (NULL != pSvgCalculator)
+			pSvgCalculator->SetData(pObject);
+
+		pObject->ReadChildrens(oReader, pSvgCalculator);
+
+		return pObject;
+	}
 
 	class CAppliedObject : public CObject
 	{
-	public:
+	protected:
 		CAppliedObject(CSvgReader& oReader);
+	public:
 		virtual ~CAppliedObject();
 
 		ObjectType GetType() const override;

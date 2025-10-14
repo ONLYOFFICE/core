@@ -1,29 +1,38 @@
 #include "CRect.h"
-#include "CStyle.h"
 #include "CContainer.h"
 #include "../SvgTypes.h"
 
 namespace SVG
 {
-	CRect::CRect(XmlUtils::CXmlNode& oNode, CRenderedObject *pParent)
-		: CRenderedObject(oNode, pParent)
-	{
-		m_oRect.m_oX     .SetValue(oNode.GetAttribute(L"x"));
-		m_oRect.m_oY     .SetValue(oNode.GetAttribute(L"y"));
-		m_oRect.m_oWidth .SetValue(oNode.GetAttribute(L"width"));
-		m_oRect.m_oHeight.SetValue(oNode.GetAttribute(L"height"));
+	CRect::CRect(CSvgReader& oReader, CRenderedObject *pParent)
+		: CRenderedObject(oReader, pParent)
+	{}
 
-		m_oRx.SetValue(oNode.GetAttribute(L"rx"));
-		m_oRy.SetValue(oNode.GetAttribute(L"ry"));
+	CRect::~CRect()
+	{}
+
+	void CRect::SetAttribute(const std::string& sName, CSvgReader& oReader)
+	{
+		if ("x" == sName)
+			m_oRect.m_oX.SetValue(oReader.GetDouble());
+		else if ("y" == sName)
+			m_oRect.m_oY.SetValue(oReader.GetDouble());
+		else if ("width" == sName)
+			m_oRect.m_oWidth.SetValue(oReader.GetDouble());
+		else if ("height" == sName)
+			m_oRect.m_oHeight.SetValue(oReader.GetDouble());
+		else if ("rx" == sName)
+			m_oRx.SetValue(oReader.GetDouble());
+		else if ("ry" == sName)
+			m_oRy.SetValue(oReader.GetDouble());
+		else
+			CRenderedObject::SetAttribute(sName, oReader);
 
 		if (m_oRx.Empty() && !m_oRy.Empty())
 			m_oRx = m_oRy;
 		else if (!m_oRx.Empty() && m_oRy.Empty())
 			m_oRy = m_oRx;
 	}
-
-	CRect::~CRect()
-	{}
 
 	void CRect::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
 	{

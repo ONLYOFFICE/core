@@ -31,19 +31,6 @@ namespace SVG
 	CFont::CFont(CSvgReader& oReader)
 		: CAppliedObject(oReader), m_pMissingGlyph(NULL)
 	{
-		START_READ_ATTRIBUTES(oReader)
-		{
-			if ("font-variant" == sAttributeName)
-				m_oArguments.m_wsFontVariant = oReader.GetText();
-			else if ("font-style" == sAttributeName)
-				m_oArguments.m_wsFontStyle = oReader.GetText();
-			else if ("font-weight" == sAttributeName)
-				m_oArguments.m_wsFontWidght = oReader.GetText();
-			else if ("horiz-adv-x" == sAttributeName)
-				m_oHorizAdvX.SetValue(oReader.GetText());
-		}
-		END_READ_ATTRIBUTES(oReader)
-
 		ParseGlyphs(oReader);
 	}
 
@@ -53,6 +40,20 @@ namespace SVG
 			RELEASEOBJECT(oElement.second);
 
 		RELEASEOBJECT(m_pMissingGlyph);
+	}
+
+	void CFont::SetAttribute(const std::string& sName, CSvgReader& oReader)
+	{
+		if ("font-variant" == sName)
+			m_oArguments.m_wsFontVariant = oReader.GetText();
+		else if ("font-style" == sName)
+			m_oArguments.m_wsFontStyle = oReader.GetText();
+		else if ("font-weight" == sName)
+			m_oArguments.m_wsFontWidght = oReader.GetText();
+		else if ("horiz-adv-x" == sName)
+			m_oHorizAdvX.SetValue(oReader.GetDouble());
+		else
+			CAppliedObject::SetAttribute(sName, oReader);
 	}
 
 	void CFont::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)

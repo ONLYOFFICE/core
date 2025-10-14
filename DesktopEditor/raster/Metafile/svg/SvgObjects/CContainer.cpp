@@ -5,9 +5,9 @@
 
 namespace SVG
 {
-	CGraphicsContainer::CGraphicsContainer(const std::wstring &wsName)
-		: CRenderedObject(NSCSS::CNode(wsName, L"", L""))
-	{}
+	// CGraphicsContainer::CGraphicsContainer(const std::wstring &wsName)
+	// 	: CRenderedObject(NSCSS::CNode(wsName, L"", L""))
+	// {}
 
 	CGraphicsContainer::~CGraphicsContainer()
 	{
@@ -15,42 +15,36 @@ namespace SVG
 			pObject->m_pParent = NULL;
 	}
 
-	void CGraphicsContainer::SetData(CSvgReader& oReader)
+	void CGraphicsContainer::SetAttribute(const std::string& sName, CSvgReader& oReader)
 	{
-		SetNodeData(oReader);
-
-		START_READ_ATTRIBUTES(oReader)
+		if ("x" == sName)
+			m_oWindow.m_oX.SetValue(oReader.GetDouble());
+		else if ("y" == sName)
+			m_oWindow.m_oY.SetValue(oReader.GetDouble());
+		else if ("width" == sName)
+			m_oWindow.m_oWidth.SetValue(oReader.GetDouble());
+		else if ("height" == sName)
+			m_oWindow.m_oHeight.SetValue(oReader.GetDouble());
+		else if ("viewBox" == sName)
 		{
-			if ("x" == sAttributeName)
-				m_oWindow.m_oX.SetValue(oReader.GetText());
-			else if ("y" == sAttributeName)
-				m_oWindow.m_oY.SetValue(oReader.GetText());
-			else if ("width" == sAttributeName)
-				m_oWindow.m_oWidth.SetValue(oReader.GetText(), 0, true);
-			else if ("height" == sAttributeName)
-				m_oWindow.m_oHeight.SetValue(oReader.GetText(), 0, true);
-			else if ("viewBox" == sAttributeName)
-			{
-				m_oViewBox = m_oWindow;
+			m_oViewBox = m_oWindow;
 
-				std::vector<double> arValues = StrUtils::ReadDoubleValues(oReader.GetText());
-				if (4 == arValues.size())
-				{
-					m_oViewBox.m_oX      = arValues[0];
-					m_oViewBox.m_oY      = arValues[1];
-					m_oViewBox.m_oWidth  = arValues[2];
-					m_oViewBox.m_oHeight = arValues[3];
-				}
+			std::vector<double> arValues = StrUtils::ReadDoubleValues(oReader.GetText());
+			if (4 == arValues.size())
+			{
+				m_oViewBox.m_oX      = arValues[0];
+				m_oViewBox.m_oY      = arValues[1];
+				m_oViewBox.m_oWidth  = arValues[2];
+				m_oViewBox.m_oHeight = arValues[3];
 			}
 		}
-		END_READ_ATTRIBUTES(oReader)
+		else
+			CRenderedObject::SetAttribute(sName, oReader);
 	}
 
 	CGraphicsContainer::CGraphicsContainer(CSvgReader& oReader, CRenderedObject *pParent)
 		: CRenderedObject(oReader, pParent)
-	{
-		SetData(oReader);
-	}
+	{}
 
 	CGraphicsContainer::CGraphicsContainer(double dWidth, double dHeight, CSvgReader& oReader, CRenderedObject *pParent)
 		: CRenderedObject(oReader, pParent), m_oWindow{0, 0, dWidth, dHeight}

@@ -54,7 +54,10 @@ bool SVG::CSvgReader::ReadFromFile(const std::wstring& wsFilePath)
 
 bool SVG::CSvgReader::ReadFromString(const std::wstring& wsSvg)
 {
-	return (nullptr != m_pReader) ? m_pReader->FromString(wsSvg) : false;
+	if (nullptr != m_pReader && m_pReader->FromString(wsSvg))
+		return m_pReader->ReadNextNode();
+
+	return false;
 }
 
 // XmlUtils::CXmlLiteReader* CSvgReader::GetReader()
@@ -200,7 +203,10 @@ std::wstring CSvgReader::GetAttribute(const std::string& sName)
 
 bool CSvgReader::MoveToStart()
 {
-	return (nullptr != m_pReader) ? m_pReader->MoveToStart() : false;
+	if (nullptr != m_pReader && m_pReader->MoveToStart())
+		return m_pReader->ReadNextNode();
+
+	return false;
 }
 
 bool CSvgReader::MoveToFirstAttribute()

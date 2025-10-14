@@ -46,10 +46,12 @@ namespace SVG
 	class CMarker : public CObject, public CContainer<CRenderedObject>
 	{
 	public:
-		CMarker(XmlUtils::CXmlNode& oNode);
+		CMarker(CSvgReader& oReader);
 		virtual ~CMarker();
 
 		ObjectType GetType() const override;
+
+		void SetAttribute(const std::string& sName, CSvgReader& oReader) override;
 
 		void SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode) override;
 

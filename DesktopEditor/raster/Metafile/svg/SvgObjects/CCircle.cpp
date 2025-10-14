@@ -4,18 +4,24 @@
 
 namespace SVG
 {
-	RENDERER_CHILDREN_CPP(Circle)
+	CCircle::CCircle(CSvgReader& oReader, CRenderedObject* pParent)
+		: CRenderedObject(oReader, pParent)
 	{
 		START_READ_ATTRIBUTES(oReader)
-		{
-			IF_ATTRIBUTE("cx")
-				SET_VALUE(m_oCx);
-			ELSE_IF_ATTRIBUTE("cy")
-				SET_VALUE(m_oCy);
-			ELSE_IF_ATTRIBUTE("r")
-				SET_VALUE(m_oR);
-		}
+			SetAttribute(sAttributeName, oReader);
 		END_READ_ATTRIBUTES(oReader)
+	}
+
+	void CCircle::SetAttribute(const std::string& sName, CSvgReader& oReader)
+	{
+		if ("cx" == sName)
+			m_oCx.SetValue(oReader.GetDouble());
+		else if ("cy" == sName)
+			m_oCy.SetValue(oReader.GetDouble());
+		else if ("r" == sName)
+			m_oR.SetValue(oReader.GetDouble());
+		else
+			CRenderedObject::SetAttribute(sName, oReader);
 	}
 
 	void CCircle::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)

@@ -109,13 +109,6 @@ private:
 	while(xml_reader.MoveToNextAttribute());\
 	xml_reader.MoveToElement();\
 	}
-
-#define IF_ATTRIBUTE(value) if (value == ATTRIBUTE_NAME)
-#define ELSE_IF_ATTRIBUTE(value) else if (value == ATTRIBUTE_NAME)
-#define ELSE_IF_ATTRIBUTE2(value1, value2) else if (value1 == ATTRIBUTE_NAME || value2 == ATTRIBUTE_NAME)
-
-#define SET_VALUE(value) value.SetValue(oReader.GetText())
-#define SET_VALUE_STRING(value) value = oReader.GetText()
 }
 
 #endif // SVGREADER_H

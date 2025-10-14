@@ -2,8 +2,8 @@
 
 namespace SVG
 {
-	CMask::CMask(XmlUtils::CXmlNode &oNode)
-		: CClipPath(oNode)
+	CMask::CMask(CSvgReader& oReader)
+		: CClipPath(oReader)
 	{}
 
 	bool CMask::Apply(IRenderer *pRenderer, const CSvgFile *pFile, const TBounds &oObjectBounds)

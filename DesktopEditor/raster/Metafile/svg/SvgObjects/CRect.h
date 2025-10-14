@@ -7,10 +7,12 @@ namespace SVG
 {
 	class CRect : public CRenderedObject
 	{
+		friend class CRenderedObject;
+		CRect(CSvgReader& oReader, CRenderedObject* pParent = NULL);
 	public:
-		CRect(XmlUtils::CXmlNode& oNode, CRenderedObject* pParent = NULL);
-
 		virtual ~CRect();
+
+		void SetAttribute(const std::string& sName, CSvgReader& oReader) override;
 
 		void SetData(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false) override;
 

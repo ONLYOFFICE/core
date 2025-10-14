@@ -19,8 +19,8 @@ namespace SVG
 
 		void SetFontManager(NSFonts::IFontManager* pFontManager);
 
-		bool LoadFromFile(const std::wstring& wsFile, CGraphicsContainer* pContainer, CSvgFile* pFile) const;
-		bool LoadFromString(const std::wstring& wsContent, CGraphicsContainer* pContainer, CSvgFile* pFile) const;
+		bool LoadFromFile(const std::wstring& wsFile, CGraphicsContainer*& pContainer, CSvgFile* pFile) const;
+		bool LoadFromString(const std::wstring& wsContent, CGraphicsContainer*& pContainer, CSvgFile* pFile) const;
 
 		template <class ObjectType>
 		bool ReadObject(CSvgReader& oReader, CContainer<ObjectType>* pContainer, CSvgFile* pFile, CRenderedObject* pParent = NULL) const;

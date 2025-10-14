@@ -105,9 +105,13 @@ namespace SVG
 
 	class CPath : public CRenderedObject
 	{
+		friend class CRenderedObject;
+	protected:
+		CPath(CSvgReader& oReader, CRenderedObject* pParent = NULL);
 	public:
-		CPath(CSvgReader& oReader, CRenderedObject* pParent = NULL, bool bChechCommands = true);
 		virtual ~CPath();
+
+		void SetAttribute(const std::string& sName, CSvgReader& oReader) override;
 
 		void SetData(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false) override;
 
@@ -118,24 +122,23 @@ namespace SVG
 		void ApplyStyle(IRenderer* pRenderer, const TSvgStyles* pStyles, const CSvgFile *pFile, int& nTypePath, const CRenderedObject* pContexObject = NULL) const override;
 		bool DrawMarkers(IRenderer* pRenderer, const CSvgFile *pFile, CommandeMode oMode = CommandeModeDraw, const TSvgStyles* pOtherStyles = NULL, const CRenderedObject* pContexObject = NULL) const;
 
-		void SetMarker(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode);
 
 		TBounds GetBounds() const override;
 
 		const int FindIndexFirstNotEmpty(bool bReverseSearch = false) const;
 
 		void ReadFromString(const std::wstring& wsValue);
-		bool AddElement(IPathElement* pElement);
-
-		friend class CLine;
-		friend class CFont;
-		friend class CPolygon;
-		friend class CPolyline;
 
 		std::vector<IPathElement*> m_arElements;
 
 		TMarkers m_oMarkers;
 		bool m_bEvenOddRule;
+
+		friend class CFont;
+	protected:
+		bool AddElement(IPathElement* pElement);
+
+		void SetMarker(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode);
 	};
 
 	class CMovingPath

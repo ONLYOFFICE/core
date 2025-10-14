@@ -4,21 +4,9 @@
 
 namespace SVG
 {
-	RENDERER_CHILDREN_CPP(Ellipse)
-	{
-		START_READ_ATTRIBUTES(oReader)
-		{
-			IF_ATTRIBUTE("cx")
-				SET_VALUE(m_oCx);
-			ELSE_IF_ATTRIBUTE("cy")
-				SET_VALUE(m_oCy);
-			ELSE_IF_ATTRIBUTE("rx")
-				SET_VALUE(m_oRx);
-			ELSE_IF_ATTRIBUTE("ry")
-				SET_VALUE(m_oRy);
-		}
-		END_READ_ATTRIBUTES(oReader)
-	}
+	CEllipse::CEllipse(CSvgReader& oReader, CRenderedObject* pParent)
+		: CRenderedObject(oReader, pParent)
+	{}
 
 	void CEllipse::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
 	{
@@ -26,6 +14,20 @@ namespace SVG
 
 		SetStroke(mAttributes, ushLevel, bHardMode);
 		SetFill(mAttributes, ushLevel, bHardMode);
+	}
+
+	void CEllipse::SetAttribute(const std::string& sName, CSvgReader& oReader)
+	{
+		if ("cx" == sName)
+			m_oCx.SetValue(oReader.GetDouble());
+		else if ("cy" == sName)
+			m_oCy.SetValue(oReader.GetDouble());
+		else if ("rx" == sName)
+			m_oRx.SetValue(oReader.GetDouble());
+		else if ("ry" == sName)
+			m_oRy.SetValue(oReader.GetDouble());
+		else
+			CRenderedObject::SetAttribute(sName, oReader);
 	}
 
 	bool CEllipse::Draw(IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode, const TSvgStyles *pOtherStyles, const CRenderedObject* pContexObject) const

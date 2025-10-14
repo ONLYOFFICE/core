@@ -2,26 +2,27 @@
 
 namespace SVG
 {
-CLine::CLine(CSvgReader& oReader, CRenderedObject* pParent)
-    : CPath(oReader, pParent, false)
-	{	
+	CLine::CLine(CSvgReader& oReader, CRenderedObject* pParent)
+		: CPath(oReader, pParent)
+	{}
+
+	void CLine::SetAttribute(const std::string& sName, CSvgReader& oReader)
+	{
 		SvgDigit oX1;
 		SvgDigit oY1;
 		SvgDigit oX2;
 		SvgDigit oY2;
 
-		START_READ_ATTRIBUTES(oReader)
-		{
-			if ("x1" == sAttributeName)
-				oX1.SetValue(oReader.GetText());
-			else if ("y1" == sAttributeName)
-				oY1.SetValue(oReader.GetText());
-			else if ("x2" == sAttributeName)
-				oX2.SetValue(oReader.GetText());
-			else if ("y2" == sAttributeName)
-				oY2.SetValue(oReader.GetText());
-		}
-		END_READ_ATTRIBUTES(oReader)
+		if ("x1" == sName)
+			oX1.SetValue(oReader.GetText());
+		else if ("y1" == sName)
+			oY1.SetValue(oReader.GetText());
+		else if ("x2" == sName)
+			oX2.SetValue(oReader.GetText());
+		else if ("y2" == sName)
+			oY2.SetValue(oReader.GetText());
+		else
+			CRenderedObject::SetAttribute(sName, oReader);
 
 		AddElement(new CMoveElement(Point{oX1.ToDouble(NSCSS::Pixel), oY1.ToDouble(NSCSS::Pixel)}));
 		AddElement(new CLineElement(Point{oX2.ToDouble(NSCSS::Pixel), oY2.ToDouble(NSCSS::Pixel)}));

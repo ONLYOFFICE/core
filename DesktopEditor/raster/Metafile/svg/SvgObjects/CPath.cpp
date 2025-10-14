@@ -445,17 +445,22 @@ namespace SVG
     #define CURVESTEP 0.05
     #define MINCURVESTEP 0.001
 
-	CPath::CPath(CSvgReader& oReader, CRenderedObject* pParent, bool bChechCommands)
+	CPath::CPath(CSvgReader& oReader, CRenderedObject* pParent)
 		: CRenderedObject(oReader, pParent), m_bEvenOddRule(false)
-	{
-		if (bChechCommands)
-			ReadFromString(oReader.GetAttribute("d"));
-	}
+	{}
 
 	CPath::~CPath()
 	{
 		for (IPathElement* pPathElement : m_arElements)
 			delete pPathElement;
+	}
+
+	void CPath::SetAttribute(const std::string& sName, CSvgReader& oReader)
+	{
+		if ("d" == sName)
+			ReadFromString(oReader.GetText());
+		else
+			CRenderedObject::SetAttribute(sName, oReader);
 	}
 
 	void CPath::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)

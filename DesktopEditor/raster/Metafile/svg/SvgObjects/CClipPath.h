@@ -16,6 +16,8 @@ namespace SVG
 	public:
 		CClipPath(CSvgReader& oReader);
 
+		void SetAttribute(const std::string& sName, CSvgReader& oReader) override;
+
 		void SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode) override;
 
 		bool Apply(IRenderer* pRenderer, const CSvgFile *pFile, const TBounds &oObjectBounds) override;

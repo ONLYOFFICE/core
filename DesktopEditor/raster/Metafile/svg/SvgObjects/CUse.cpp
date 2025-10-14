@@ -3,19 +3,28 @@
 
 namespace SVG
 {
-	CUse::CUse(XmlUtils::CXmlNode &oNode, CRenderedObject *pParent)
-		: CRenderedObject(oNode, pParent)
-	{
-		m_wsHref = oNode.GetAttribute(L"href", oNode.GetAttribute(L"xlink:href"));
-
-		m_oX     .SetValue(oNode.GetAttribute(L"x"));
-		m_oY     .SetValue(oNode.GetAttribute(L"y"));
-		m_oWidth .SetValue(oNode.GetAttribute(L"width"));
-		m_oHeight.SetValue(oNode.GetAttribute(L"height"));
-	}
+	CUse::CUse(CSvgReader& oReader, CRenderedObject *pParent)
+		: CRenderedObject(oReader, pParent)
+	{}
 
 	CUse::~CUse()
 	{}
+
+	void CUse::SetAttribute(const std::string& sName, CSvgReader& oReader)
+	{
+		if ("x" == sName)
+			m_oX.SetValue(oReader.GetDouble());
+		else if ("y" == sName)
+			m_oY.SetValue(oReader.GetDouble());
+		else if ("width" == sName)
+			m_oWidth.SetValue(oReader.GetDouble());
+		else if ("height" == sName)
+			m_oHeight.SetValue(oReader.GetDouble());
+		else if ("href" == sName || "xlink:href" == sName)
+			m_wsHref = oReader.GetText();
+		else
+			CRenderedObject::SetAttribute(sName, oReader);
+	}
 
 	void CUse::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
 	{

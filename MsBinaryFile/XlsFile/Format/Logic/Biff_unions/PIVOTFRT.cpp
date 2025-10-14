@@ -76,6 +76,8 @@ const bool PIVOTFRT::saveContent(BinProcessor& proc)
 {
 	if(m_PIVOTFRT9 != nullptr)
 		proc.mandatory(*m_PIVOTFRT9);
+	else
+		proc.mandatory<PIVOTFRT9>();
 	if(m_PIVOTADDL != nullptr)
 		proc.mandatory(*m_PIVOTADDL);
 	return true;

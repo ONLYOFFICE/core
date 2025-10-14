@@ -159,6 +159,7 @@
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/DBB.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/SXOPER.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/PIVOTADDL.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/PIVOTFRT9.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/SxView.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Sxvd.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/SxIvd.h"
@@ -170,6 +171,7 @@
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/SXFDB.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/SXFDBType.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/SXAddl.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/QsiSXTag.h"
 
 namespace OOX
 {
@@ -559,9 +561,17 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			ptr->m_arPIVOTLI.push_back(m_oRowItems->toXLS());
 		if(m_oColItems.IsInit())
 			ptr->m_arPIVOTLI.push_back(m_oColItems->toXLS());
-		if(m_oPivotTableStyle.IsInit())
+		if(m_oPivotTableStyleInfo.IsInit())
 		{
 			auto frtPtr = new XLS::PIVOTFRT;
+			{
+				auto frt9 = new XLS::PIVOTFRT9;
+				frtPtr->m_PIVOTFRT9 = XLS::BaseObjectPtr(frt9);
+				auto sxTag = new XLS::QsiSXTag;
+				frt9->m_QsiSXTag = XLS::BaseObjectPtr(sxTag);
+				if(m_oName.IsInit())
+					sxTag->stName = m_oName.get();
+			}
 			auto addlPtr = new XLS::PIVOTADDL;
 			frtPtr->m_PIVOTADDL = XLS::BaseObjectPtr(addlPtr);
 			{
@@ -573,7 +583,18 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			}
 			{
 				auto style = new XLS::SXAddl_SXCView_SXDTableStyleClient;
-				style->stName = m_oPivotTableStyle.get();
+				if(m_oPivotTableStyleInfo->m_oName.IsInit())
+					style->stName = m_oPivotTableStyleInfo->m_oName.get();
+				if(m_oPivotTableStyleInfo->m_oShowColHeaders.IsInit())
+					style->fColumnHeaders = m_oPivotTableStyleInfo->m_oShowColHeaders.get();
+				if(m_oPivotTableStyleInfo->m_oShowColStripes.IsInit())
+					style->fColumnStrips = m_oPivotTableStyleInfo->m_oShowColStripes.get();
+				if(m_oPivotTableStyleInfo->m_oShowLastColumn.IsInit())
+					style->fLastColumn = m_oPivotTableStyleInfo->m_oShowLastColumn.get();
+				if(m_oPivotTableStyleInfo->m_oShowRowHeaders.IsInit())
+					style->fRowHeaders = m_oPivotTableStyleInfo->m_oShowRowHeaders.get();
+				if(m_oPivotTableStyleInfo->m_oShowRowStripes.IsInit())
+					style->fRowStrips = m_oPivotTableStyleInfo->m_oShowRowStripes.get();
 				addlPtr->m_SXAddl_SXCView_SXDTableStyleClient = XLS::BiffStructurePtr(style);
 			}
 

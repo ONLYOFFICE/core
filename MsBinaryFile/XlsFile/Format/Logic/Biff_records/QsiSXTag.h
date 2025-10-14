@@ -54,9 +54,9 @@ public:
 	static const ElementType type = typeQsiSXTag;
 
 	FrtHeaderOld	frtHeaderOld;
-	unsigned short	fSx = 0;
+	unsigned short	fSx = 1;
 
-	bool			fEnableRefresh = false;
+	bool			fEnableRefresh = true;
 	bool			fInvalid = false;
 	bool			fTensorEx = false;
 	

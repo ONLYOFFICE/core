@@ -498,11 +498,11 @@ void DocxConverter::convert(OOX::WritingElement  *oox_unknown)
 		{
 			convert(dynamic_cast<OOX::Logic::CTbl*>(oox_unknown));
 		}break;
-		case OOX::et_w_tr:
+	    case OOX::et_w_tr:
 		{
 			convert(dynamic_cast<OOX::Logic::CTr*>(oox_unknown));
 		}break;
-		case OOX::et_w_tc:
+	    case OOX::et_w_tc:
 		{
 			convert(dynamic_cast<OOX::Logic::CTc*>(oox_unknown));
 		}break;		
@@ -4891,9 +4891,20 @@ void DocxConverter::convert(OOX::Logic::CTblGrid	*oox_table_grid)
 		if (oox_table_grid->m_arrGridCol[i] == NULL) continue;
 		double width = -1;
 
+		const double pt_per_cm = 28.3464567;
+
 		if (oox_table_grid->m_arrGridCol[i]->m_oW.IsInit())
 		{
-			width = oox_table_grid->m_arrGridCol[i]->m_oW->ToPoints();
+			if( oox_table_grid->m_arrGridCol[i]->m_oW->ToPoints() / pt_per_cm < 7.0 ) // check bug 51597
+			{
+				int twips = oox_table_grid->m_arrGridCol[i]->m_oW->ToTwips();
+				const double points = (twips + 37) / 20.0;
+				width = points;
+			}
+			else
+			{
+				width = oox_table_grid->m_arrGridCol[i]->m_oW->ToPoints();
+			}
 		}
 
 		odt_context->add_table_column(width);

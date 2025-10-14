@@ -56,6 +56,11 @@ void CrtLine::readFields(CFRecord& record)
 	record >> id;
 }
 
+void CrtLine::writeFields(CFRecord& record)
+{
+	record << id;
+}
+
 int CrtLine::serialize(std::wostream & _stream)
 {
 	std::wstring sNode;

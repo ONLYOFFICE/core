@@ -49,6 +49,12 @@ void FullColorExt::load(CFRecord& record)
 	record.skipNunBytes(8); //unused
 }
 
+void FullColorExt::save(CFRecord& record)
+{
+    record << xclrType << nTintShade << xclrValue;
+    record.reserveNunBytes(8); //unused
+}
+
 int FullColorExt::serialize(std::wostream & stream, const std::wstring &node_name)
 {
 	if (xclrType > 3) return 0;//not set

@@ -48,13 +48,13 @@ public:
 
 	BaseObjectPtr clone();
 
-	
+    void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
 
 	static const ElementType	type = typeCalcIter;
 
 //-----------------------------
-	Boolean<unsigned short> vfIter;
+    Boolean<unsigned short> vfIter = 0;
 
 };
 

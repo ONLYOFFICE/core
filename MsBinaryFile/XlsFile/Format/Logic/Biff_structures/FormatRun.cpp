@@ -46,5 +46,9 @@ void FormatRun::load(CFRecord& record)
 	record >> ich >> ifnt;
 }
 
+void FormatRun::save(CFRecord& record)
+{
+    record << ich << ifnt;
+}
 
 } // namespace XLS

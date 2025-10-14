@@ -50,18 +50,19 @@ public:
 
 	
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 
 	static const ElementType	type = typeBar;
 
 	int		serialize(std::wostream & _stream);
 
-	_INT16			pcOverlap;
-	_UINT16			pcGap;
+    _INT16			pcOverlap = 0;
+    _UINT16			pcGap = 0;
 
-	bool			fTranspose;
-	bool			fStacked;
-	bool			f100;
-	bool			fHasShadow;
+    bool			fTranspose = false;
+    bool			fStacked = false;
+    bool			f100 = false;
+    bool			fHasShadow = false;
 //------------------------------------
 	BaseObjectPtr		m_chart3D;
 };

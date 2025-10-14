@@ -50,20 +50,21 @@ public:
 	BaseObjectPtr clone();
 
 	void readFields(CFRecord& record);
+	void writeFields(CFRecord& record);
 
 	static const ElementType	type = typeAutoFilter12;
 
 	FrtRefHeader frtRefHeader;
 	
-	_UINT16		iEntry;
-	_UINT32		fHideArrow;
-	_UINT32		ft;
-	_UINT32		cft;
-	_UINT32		cCriteria;
-	_UINT32		cDateGroupings;
-	_UINT32		idList;
+	_UINT16		iEntry = 0;
+	_UINT32		fHideArrow = 0;
+	_UINT32		ft = 0;
+	_UINT32		cft = 0;
+	_UINT32		cCriteria = 0;
+	_UINT32		cDateGroupings = 0;
+	_UINT32		idList = 0;
 
-	std::wstring			guidSview;
+	std::wstring			guidSview = L"";
 	BiffStructurePtr		rgb;
 	
 	BiffStructurePtrVector arAF12Criteries;

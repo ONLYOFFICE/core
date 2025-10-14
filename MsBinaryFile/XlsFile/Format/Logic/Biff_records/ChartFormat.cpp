@@ -60,6 +60,14 @@ void ChartFormat::readFields(CFRecord& record)
 	fVaried = GETBIT(flags, 0);
 }
 
+void ChartFormat::writeFields(CFRecord& record)
+{
+    record.reserveNunBytes(16);
+    unsigned short flags = 0;
+    SETBIT(flags, 0, fVaried);
+    record << flags << icrt;
+}
+
 int ChartFormat::serialize(std::wostream & _stream)
 {
 	CP_XML_WRITER(_stream)    

@@ -56,5 +56,10 @@ void FontX::readFields(CFRecord& record)
 	record >> iFont;
 }
 
+void FontX::writeFields(CFRecord& record)
+{
+	record << iFont;
+}
+
 } // namespace XLS
 

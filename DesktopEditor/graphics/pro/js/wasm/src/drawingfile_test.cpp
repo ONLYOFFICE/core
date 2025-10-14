@@ -278,6 +278,13 @@ void ReadAnnot(BYTE* pWidgets, int& i)
 		std::cout << "User ID " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
 		i += nPathLength;
 	}
+	if (nFlags & (1 << 9))
+	{
+		nPathLength = READ_INT(pWidgets + i);
+		i += 4;
+		std::cout << "OMetadata " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+		i += nPathLength;
+	}
 }
 
 void ReadInteractiveForms(BYTE* pWidgets, int& i)
@@ -414,6 +421,19 @@ void ReadInteractiveForms(BYTE* pWidgets, int& i)
 			nPathLength = READ_INT(pWidgets + i);
 			i += 4;
 			std::cout << "MaxLen " << nPathLength << ", ";
+		}
+		if (nFlags & (1 << 10))
+		{
+			nPathLength = READ_INT(pWidgets + i);
+			i += 4;
+			std::cout << "TU " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+			i += nPathLength;
+		}
+		if (nFlags & (1 << 11))
+		{
+			nPathLength = READ_INT(pWidgets + i);
+			i += 4;
+			std::cout << "MEOptions " << nPathLength << ", ";
 		}
 
 		std::cout << std::endl;
@@ -574,12 +594,11 @@ void ReadInteractiveForms(BYTE* pWidgets, int& i)
 			std::cout << "Font button " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
 			i += nPathLength;
 		}
-		if (nFlags & (1 << 20))
+		if (nFlags & (1 << 21))
 		{
 			nPathLength = READ_INT(pWidgets + i);
 			i += 4;
-			std::cout << "OMetadata " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
-			i += nPathLength;
+			std::cout << "MEOptions " << nPathLength << ", ";
 		}
 
 		//Action
@@ -957,6 +976,8 @@ bool GetFromBase64(const std::wstring& sPath, BYTE** pBuffer, int* nBufferLen)
 		if (!NSBase64::Base64Decode((const char*)pFileContent, dwFileSize, *pBuffer, nBufferLen))
 			return false;
 	}
+	else
+		return false;
 	oFile.CloseFile();
 	return true;
 }
@@ -1025,54 +1046,42 @@ int main(int argc, char* argv[])
 	RELEASEARRAYOBJECTS(pFileData);
 
 	// SPLIT & MERGE
-	if (false)
+	if (true)
 	{
 		int nBufferLen = NULL;
 		BYTE* pBuffer = NULL;
 
-		if (GetFromBase64(NSFile::GetProcessDirectory() + L"/split1.txt", &pBuffer, &nBufferLen))
+		if (true && GetFromBase64(NSFile::GetProcessDirectory() + L"/split.txt", &pBuffer, &nBufferLen))
 		{
-			std::vector<int> arrPages = { 0 };
+			std::vector<int> arrPages = { 2 };
 			BYTE* pSplitPages = SplitPages(pGrFile, arrPages.data(), arrPages.size(), pBuffer, nBufferLen);
 			int nLength = READ_INT(pSplitPages);
 
 			if (nLength > 4)
 			{
 				NSFile::CFileBinary oFile;
-				if (oFile.CreateFileW(NSFile::GetProcessDirectory() + L"/split1.pdf"))
+				if (oFile.CreateFileW(NSFile::GetProcessDirectory() + L"/split.pdf"))
 					oFile.WriteFile(pSplitPages + 4, nLength - 4);
 				oFile.CloseFile();
-
-				BYTE* pMallocData = (BYTE*)malloc(nLength - 4);
-				memcpy(pMallocData, pSplitPages + 4, nLength - 4);
-
-				MergePages(pGrFile, pMallocData, nLength - 4, 0, "merge1");
 			}
 			RELEASEARRAYOBJECTS(pSplitPages);
 		}
 		RELEASEARRAYOBJECTS(pBuffer);
 
-		if (GetFromBase64(NSFile::GetProcessDirectory() + L"/split2.txt", &pBuffer, &nBufferLen))
+		if (true)
 		{
-			std::vector<int> arrPages = { 0 };
-			BYTE* pSplitPages = SplitPages(pGrFile, arrPages.data(), arrPages.size(), pBuffer, nBufferLen);
-			int nLength = READ_INT(pSplitPages);
-
-			if (nLength > 4)
+			NSFile::CFileBinary oFile;
+			if (oFile.OpenFile(NSFile::GetProcessDirectory() + L"/split.pdf"))
 			{
-				NSFile::CFileBinary oFile;
-				if (oFile.CreateFileW(NSFile::GetProcessDirectory() + L"/split2.pdf"))
-					oFile.WriteFile(pSplitPages + 4, nLength - 4);
-				oFile.CloseFile();
+				DWORD dwFileSize = oFile.GetFileSize();
+				BYTE* pFileContent = (BYTE*)malloc(dwFileSize);
 
-				BYTE* pMallocData = (BYTE*)malloc(nLength - 4);
-				memcpy(pMallocData, pSplitPages + 4, nLength - 4);
-
-				MergePages(pGrFile, pMallocData, nLength - 4, 0, "merge2");
+				DWORD dwReaded;
+				if (oFile.ReadFile(pFileContent, dwFileSize, dwReaded))
+					MergePages(pGrFile, pFileContent, dwReaded, 0, "merge1");
 			}
-			RELEASEARRAYOBJECTS(pSplitPages);
+			oFile.CloseFile();
 		}
-		RELEASEARRAYOBJECTS(pBuffer);
 	}
 
 	// INFO
@@ -1116,6 +1125,15 @@ int main(int argc, char* argv[])
 		}
 	}
 
+	BYTE* pColor = new BYTE[12] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+	// REDACT
+	if (false)
+	{
+		int pRect[8] = { 307499, 217499, 307499, 1124999, 1799999, 1124999, 1799999, 217499 };
+		if (!RedactPage(pGrFile, nTestPage, pRect, 1, pColor, 12))
+			std::cout << "Redact false" << std::endl;
+	}
+
 	int i = nTestPage;
 	//for (int i = 0; i < nPagesCount; ++i)
 	{
@@ -1143,7 +1161,6 @@ int main(int argc, char* argv[])
 			RELEASEARRAYOBJECTS(res);
 		}
 	}
-
 	free(pInfo);
 
 	// LINKS
@@ -2035,6 +2052,83 @@ int main(int argc, char* argv[])
 					nPathLength = READ_INT(pAnnots + i);
 					i += 4;
 					std::cout << "Y4 " << (double)nPathLength / 10000.0 << ", ";
+				}
+				else if (sType == "Redact")
+				{
+					if (nFlags & (1 << 15))
+					{
+						std::cout << "QuadPoints";
+						int nQuadPointsLength = READ_INT(pAnnots + i);
+						i += 4;
+
+						for (int j = 0; j < nQuadPointsLength; ++j)
+						{
+							nPathLength = READ_INT(pAnnots + i);
+							i += 4;
+							std::cout << " " << (double)nPathLength / 100.0;
+						}
+						std::cout << ", ";
+					}
+					if (nFlags & (1 << 16))
+					{
+						int nICLength = READ_INT(pAnnots + i);
+						i += 4;
+						std::cout << "IC ";
+
+						for (int j = 0; j < nICLength; ++j)
+						{
+							nPathLength = READ_INT(pAnnots + i);
+							i += 4;
+							std::cout << (double)nPathLength / 10000.0 << " ";
+						}
+						std::cout << ", ";
+					}
+					if (nFlags & (1 << 17))
+					{
+						nPathLength = READ_INT(pAnnots + i);
+						i += 4;
+						std::cout << "OverlayText " << std::string((char*)(pAnnots + i), nPathLength) << ", ";
+						i += nPathLength;
+					}
+					if (nFlags & (1 << 18))
+						std::cout << "Repeat true, ";
+					else
+						std::cout << "Repeat false, ";
+					if (nFlags & (1 << 19))
+					{
+						std::string arrQ[] = {"left-justified", "centered", "right-justified"};
+						nPathLength = READ_BYTE(pAnnots + i);
+						i += 1;
+						std::cout << "Q " << arrQ[nPathLength] << ", ";
+					}
+					if (nFlags & (1 << 20))
+					{
+						int nICLength = READ_INT(pAnnots + i);
+						i += 4;
+						std::cout << "DA color ";
+
+						for (int j = 0; j < nICLength; ++j)
+						{
+							nPathLength = READ_INT(pAnnots + i);
+							i += 4;
+							std::cout << (double)nPathLength / 10000.0 << " ";
+						}
+						std::cout << ", size ";
+						nPathLength = READ_INT(pAnnots + i);
+						i += 4;
+						std::cout << (double)nPathLength / 100.0 << ", font ";
+						nPathLength = READ_INT(pAnnots + i);
+						i += 4;
+						std::cout << std::string((char*)(pAnnots + i), nPathLength) << " actual ";
+						i += nPathLength;
+						nPathLength = READ_INT(pAnnots + i);
+						i += 4;
+						std::cout << std::string((char*)(pAnnots + i), nPathLength) << ", style ";
+						i += nPathLength;
+						nPathLength = READ_INT(pAnnots + i);
+						i += 4;
+						std::cout << nPathLength << ", ";
+					}
 				}
 
 				std::cout << std::endl << "]" << std::endl;

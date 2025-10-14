@@ -51,8 +51,9 @@ public:
 
 	
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 //-----------------------------
-	_UINT16 codePage;
+    _UINT16 codePage = 0x04B0;
 };
 
 } // namespace XLS

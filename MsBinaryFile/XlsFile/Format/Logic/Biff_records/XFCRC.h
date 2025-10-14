@@ -48,12 +48,13 @@ public:
 	BaseObjectPtr clone();
 
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 	
 	static const ElementType type = typeXFCRC;
 
 //-----------------------------
-	_UINT16		cxfs;
-	_UINT32		crc;
+    _UINT16		cxfs = 0;
+    _UINT32		crc = 0;
 	FrtHeader	frtHeader;
 };
 

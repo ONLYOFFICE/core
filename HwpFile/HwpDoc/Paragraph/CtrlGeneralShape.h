@@ -53,17 +53,19 @@ class CCtrlGeneralShape : public CCtrlObjElement
 	friend class CCtrlShapePolygon;
 	friend class CCtrlShapeRect;
 
-	void ReadSubList(CXMLNode& oNode, int nVersion);
+	void ReadSubList(CXMLReader& oReader);
 public:
 	CCtrlGeneralShape();
 	CCtrlGeneralShape(const HWP_STRING& sCtrlID);
 	CCtrlGeneralShape(const CCtrlGeneralShape& oGeneralShape);
 	CCtrlGeneralShape(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
-	CCtrlGeneralShape(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVersion);
+	CCtrlGeneralShape(const HWP_STRING& sCtrlID, CXMLReader& oReader, EHanType eType);
 	virtual ~CCtrlGeneralShape();
 
 	ECtrlObjectType GetCtrlType() const override;
 	virtual EShapeType GetShapeType() const;
+
+	void ParseChildren(CXMLReader& oReader, EHanType eType);
 
 	void SetParent(CHWPPargraph* pParent);
 	CHWPPargraph* GetParent();
@@ -73,6 +75,11 @@ public:
 	ELineStyle2 GetLineStyle() const;
 	int GetLineColor() const;
 	int GetLineThick() const;
+
+	ELineArrowStyle GetLineHeadStyle() const;
+	ELineArrowSize  GetLineHeadSize () const;
+	ELineArrowStyle GetLineTailStyle() const;
+	ELineArrowSize  GetLineTailSize () const;
 
 	static CCtrlGeneralShape* Parse(CCtrlGeneralShape& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 	static int ParseListHeaderApend(CCtrlGeneralShape& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);

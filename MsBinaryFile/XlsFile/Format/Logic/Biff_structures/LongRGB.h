@@ -51,10 +51,10 @@ public:
 	void load(CFRecord& record) override;
 	void save(CFRecord& record) override;
 
-	unsigned char red;
-	unsigned char green;
-	unsigned char blue;
-	unsigned char alpha;
+    unsigned char red = 0;
+    unsigned char green = 0;
+    unsigned char blue = 0;
+    unsigned char alpha = 0;
 	
 	std::wstring  strARGB;
 	std::wstring  strRGB;

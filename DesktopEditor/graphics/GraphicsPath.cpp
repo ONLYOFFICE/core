@@ -76,7 +76,7 @@ namespace Aggplus
 						j += 2;
 					}
 				}
-				if (p.Is_poly_closed()) CloseFigure();
+				//if (p.Is_poly_closed()) CloseFigure();
 			}
 		}
 	}
@@ -262,6 +262,25 @@ namespace Aggplus
 		m_internal->m_agg_ps.line_to(x + width, y);
 		m_internal->m_agg_ps.line_to(x + width, y + height);
 		m_internal->m_agg_ps.line_to(x, y + height);
+		m_internal->m_agg_ps.line_to(x, y);
+		m_internal->m_agg_ps.close_polygon();
+		return Ok;
+	}
+	Status CGraphicsPath::AddRoundRectangle(double x, double y, double width, double height, double cx, double cy)
+	{
+		m_internal->m_agg_ps.move_to(x + cx, y);
+		m_internal->m_agg_ps.line_to(x + width - cx, y);
+		agg::bezier_arc arc1(x + width - cx, y + cy, cx, cy, -agg::pi / 2.0, agg::pi / 2.0);
+		m_internal->m_agg_ps.join_path(arc1, 0);
+		m_internal->m_agg_ps.line_to(x + width, y + height - cy);
+		agg::bezier_arc arc2(x + width - cx, y + height - cy, cx, cy, 0.0, agg::pi / 2.0);
+		m_internal->m_agg_ps.join_path(arc2, 0);
+		m_internal->m_agg_ps.line_to(x + cx, y + height);
+		agg::bezier_arc arc3(x + cx, y + height - cy, cx, cy, agg::pi / 2.0, agg::pi / 2.0);
+		m_internal->m_agg_ps.join_path(arc3, 0);
+		m_internal->m_agg_ps.line_to(x, y + cy);
+		agg::bezier_arc arc4(x + cx, y + cy, cx, cy, agg::pi, agg::pi / 2.0);
+		m_internal->m_agg_ps.join_path(arc4, 0);
 		m_internal->m_agg_ps.close_polygon();
 		return Ok;
 	}
@@ -898,14 +917,11 @@ namespace Aggplus
 					PointD firstPoint = subPath.GetPoints(0, 1)[0];
 					double x, y;
 					subPath.GetLastPoint(x, y);
-					if ((abs(firstPoint.X - x) <= 1e-2 && abs(firstPoint.Y - y) <= 1e-2) ||
+					if ((abs(firstPoint.X - x) >= 1e-2 || abs(firstPoint.Y - y) >= 1e-2) ||
 						subPath.GetPointCount() == 1)
-					{
-						if (!firstPoint.Equals(PointD(x, y)) || subPath.GetPointCount() == 1)
-							subPath.LineTo(firstPoint.X, firstPoint.Y);
-						subPath.CloseFigure();
-					}
+						subPath.LineTo(firstPoint.X, firstPoint.Y);
 
+					subPath.CloseFigure();
 					result.push_back(subPath);
 					subPath.Reset();
 				}
@@ -933,7 +949,7 @@ namespace Aggplus
 				double x, y;
 				subPath.GetLastPoint(x, y);
 
-				if (!firstPoint.Equals(PointD(x, y)) || subPath.GetPointCount() == 1)
+				if ((abs(firstPoint.X - x) >= 1e-2 || abs(firstPoint.Y - y) >= 1e-2) || subPath.GetPointCount() == 1)
 					subPath.LineTo(firstPoint.X, firstPoint.Y);
 
 				subPath.CloseFigure();
@@ -986,6 +1002,24 @@ namespace Aggplus
 		other.m_internal = nullptr;
 
 		return *this;
+	}
+
+	bool CGraphicsPath::operator==(const CGraphicsPath& other) noexcept
+	{
+		unsigned pointsCount = GetPointCount(),
+			otherPointsCount = other.GetPointCount();
+
+		if (pointsCount != otherPointsCount)
+			return false;
+
+		std::vector<PointD> points = GetPoints(0, pointsCount),
+			otherPoints = other.GetPoints(0, otherPointsCount);
+
+		for (unsigned i = 0; i < pointsCount; i++)
+			if (!points[i].Equals(otherPoints[i]))
+				return false;
+
+		return true;
 	}
 }
 

@@ -10,7 +10,8 @@ enum class ECtrlCharType
 	LINE_BREAK = 0x1,
 	PARAGRAPH_BREAK = 0x2,
 	HARD_HYPHEN = 0x3,
-	HARD_SPACE = 0x04
+	HARD_SPACE = 0x04,
+	TABULATION = 0x05
 };
 
 class CCtrlCharacter : public CCtrl

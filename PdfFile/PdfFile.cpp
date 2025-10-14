@@ -118,6 +118,13 @@ bool CPdfFile::EditPdf(const std::wstring& wsDstFile)
 	m_pInternal->pEditor = new CPdfEditor(m_pInternal->wsSrcFile, m_pInternal->wsPassword, wsDstFile, m_pInternal->pReader, m_pInternal->pWriter);
 	return m_pInternal->pEditor->GetError() == 0;
 }
+void CPdfFile::SetEditType(int nType)
+{
+	if (!m_pInternal->pEditor)
+		return;
+	if (nType == 1)
+		m_pInternal->pEditor->SetMode(CPdfEditor::Mode::WriteNew);
+}
 bool CPdfFile::EditPage(int nPageIndex)
 {
 	if (!m_pInternal->pEditor)
@@ -140,8 +147,8 @@ bool CPdfFile::MergePages(const std::wstring& wsPath, int nMaxID, const std::wst
 {
 	if (!m_pInternal->pEditor)
 		return false;
-	if (m_pInternal->pReader->MergePages(wsPath, L"", nMaxID))
-		return m_pInternal->pEditor->MergePages(wsPath, wsPrefixForm);
+	if (m_pInternal->pReader->MergePages(wsPath, L"", nMaxID, U_TO_UTF8(wsPrefixForm)))
+		return m_pInternal->pEditor->MergePages(wsPath);
 	return false;
 }
 bool CPdfFile::MovePage(int nPageIndex, int nPos)
@@ -354,6 +361,21 @@ bool CPdfFile::UnmergePages()
 		return false;
 	return m_pInternal->pReader->UnmergePages();
 }
+bool CPdfFile::RedactPage(int nPageIndex, double* arrRedactBox, int nLengthX8, BYTE* pChanges, int nLength)
+{
+	if (!m_pInternal->pReader)
+	{
+		free(pChanges);
+		return false;
+	}
+	return m_pInternal->pReader->RedactPage(nPageIndex, arrRedactBox, nLengthX8, pChanges, nLength);
+}
+bool CPdfFile::UndoRedact()
+{
+	if (!m_pInternal->pReader)
+		return false;
+	return m_pInternal->pReader->UndoRedact();
+}
 int CPdfFile::GetRotate(int nPageIndex)
 {
 	if (!m_pInternal->pReader)
@@ -444,7 +466,7 @@ BYTE* CPdfFile::SplitPages(const int* arrPageIndex, unsigned int unLength, BYTE*
 	m_pInternal->pWriter = new CPdfWriter(m_pInternal->pAppFonts, false, this);
 
 	RELEASEOBJECT(m_pInternal->pEditor);
-	m_pInternal->pEditor = new CPdfEditor(m_pInternal->wsSrcFile, m_pInternal->wsPassword, L"", m_pInternal->pReader, m_pInternal->pWriter);
+	m_pInternal->pEditor = new CPdfEditor(m_pInternal->wsSrcFile, m_pInternal->wsPassword, L"", m_pInternal->pReader, m_pInternal->pWriter, CPdfEditor::Mode::Split);
 
 	BYTE* pRes = NULL;
 	int nLen = 0;
@@ -452,8 +474,10 @@ BYTE* CPdfFile::SplitPages(const int* arrPageIndex, unsigned int unLength, BYTE*
 	{
 		if (pChanges && nLength > 3)
 		{
+			m_pInternal->pWriter->SetSplit(true);
 			CConvertFromBinParams* pParams = new CConvertFromBinParams();
 			AddToPdfFromBinary(pChanges + 4, nLength - 4, pParams);
+			m_pInternal->pWriter->SetSplit(false);
 		}
 		m_pInternal->pEditor->AfterSplitPages();
 
@@ -1232,6 +1256,7 @@ HRESULT CPdfFile::IsSupportAdvancedCommand(const IAdvancedCommand::AdvancedComma
 	case IAdvancedCommand::AdvancedCommandType::PageClear:
 	case IAdvancedCommand::AdvancedCommandType::PageRotate:
 	case IAdvancedCommand::AdvancedCommandType::Headings:
+	case IAdvancedCommand::AdvancedCommandType::Redact:
 		return S_OK;
 	default:
 		break;
@@ -1303,9 +1328,13 @@ HRESULT CPdfFile::AdvancedCommand(IAdvancedCommand* command)
 	case IAdvancedCommand::AdvancedCommandType::ShapeStart:
 	{
 		CShapeStart* pCommand = (CShapeStart*)command;
+		std::vector<double> arrRedact;
 		if (m_pInternal->pEditor)
+		{
 			m_pInternal->pEditor->AddShapeXML(pCommand->GetShapeXML());
-		return S_OK;
+			arrRedact = m_pInternal->pEditor->WriteRedact(pCommand->GetRedactID());
+		}
+		return m_pInternal->pWriter->AddRedact(arrRedact);
 	}
 	case IAdvancedCommand::AdvancedCommandType::ShapeEnd:
 	{
@@ -1329,6 +1358,12 @@ HRESULT CPdfFile::AdvancedCommand(IAdvancedCommand* command)
 	case IAdvancedCommand::AdvancedCommandType::Headings:
 	{
 		m_pInternal->pWriter->SetHeadings((CHeadings*)command);
+		return S_OK;
+	}
+	case IAdvancedCommand::AdvancedCommandType::Redact:
+	{
+		if (m_pInternal->pEditor && m_pInternal->pEditor->IsEditPage())
+			m_pInternal->pEditor->Redact((CRedact*)command);
 		return S_OK;
 	}
 	default:

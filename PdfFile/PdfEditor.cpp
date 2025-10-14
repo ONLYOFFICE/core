@@ -32,6 +32,7 @@
 #include "PdfEditor.h"
 
 #include "../DesktopEditor/common/Path.h"
+#include "../DesktopEditor/graphics/commands/AnnotField.h"
 
 #include "SrcReader/Adaptors.h"
 #include "SrcReader/PdfAnnot.h"
@@ -42,6 +43,7 @@
 #include "lib/xpdf/Parser.h"
 #include "lib/xpdf/Outline.h"
 #include "lib/xpdf/Link.h"
+#include "lib/xpdf/Stream.h"
 
 #include "SrcWriter/Catalog.h"
 #include "SrcWriter/EncryptDictionary.h"
@@ -50,6 +52,8 @@
 #include "SrcWriter/Streams.h"
 #include "SrcWriter/Destination.h"
 #include "SrcWriter/Outline.h"
+#include "SrcWriter/GState.h"
+#include "SrcWriter/RedactOutputDev.h"
 
 #define AddToObject(oVal)\
 {\
@@ -212,6 +216,8 @@ PdfWriter::CAnnotation* CreateAnnot(Object* oAnnot, Object* oType, PdfWriter::CX
 		pAnnot = new PdfWriter::CCaretAnnotation(pXref);
 	else if (oType->isName("Stamp"))
 		pAnnot = new PdfWriter::CStampAnnotation(pXref);
+	else if (oType->isName("Redact"))
+		pAnnot = new PdfWriter::CRedactAnnotation(pXref);
 	else if (oType->isName("Popup"))
 		pAnnot = new PdfWriter::CPopupAnnotation(pXref);
 	else if (oType->isName("Widget"))
@@ -289,7 +295,12 @@ PdfWriter::CAnnotation* CreateAnnot(Object* oAnnot, Object* oType, PdfWriter::CX
 	}
 	return pAnnot;
 }
-PdfWriter::CObjectBase* DictToCDictObject2(Object* obj, PdfWriter::CDocument* pDoc, XRef* xref, CObjectsManager* pManager, int nStartRefID, int nAddObjToXRef = 0)
+PdfWriter::CExtGrState* CreateExtGState(Object* oState)
+{
+	PdfWriter::CExtGrState* pState = new PdfWriter::CExtGrState(NULL);
+	return pState;
+}
+PdfWriter::CObjectBase* DictToCDictObject2(Object* obj, PdfWriter::CDocument* pDoc, XRef* xref, CObjectsManager* pManager, int nStartRefID, int nAddObjToXRef = 0, bool bUndecodedStream = true)
 {
 	PdfWriter::CObjectBase* pBase = NULL;
 	Object oTemp;
@@ -352,7 +363,7 @@ PdfWriter::CObjectBase* DictToCDictObject2(Object* obj, PdfWriter::CDocument* pD
 		for (int nIndex = 0; nIndex < obj->arrayGetLength(); ++nIndex)
 		{
 			obj->arrayGetNF(nIndex, &oTemp);
-			pBase = DictToCDictObject2(&oTemp, pDoc, xref, pManager, nStartRefID);
+			pBase = DictToCDictObject2(&oTemp, pDoc, xref, pManager, nStartRefID, 0, bUndecodedStream);
 			pArray->Add(pBase);
 			oTemp.free();
 		}
@@ -366,7 +377,7 @@ PdfWriter::CObjectBase* DictToCDictObject2(Object* obj, PdfWriter::CDocument* pD
 
 		Object oType, oSubtype;
 		PdfWriter::CDictObject* pDict = NULL;
-		if (obj->dictLookup("Type", &oType)->isName("Annot") && obj->dictLookup("Subtype", &oSubtype)->isName())
+		if (obj->dictLookup("Subtype", &oSubtype)->isName())
 		{
 			PdfWriter::CAnnotation* pAnnot = CreateAnnot(obj, &oSubtype, NULL);
 			if (pAnnot)
@@ -375,7 +386,18 @@ PdfWriter::CObjectBase* DictToCDictObject2(Object* obj, PdfWriter::CDocument* pD
 				pDict = pAnnot;
 			}
 		}
-		oType.free(); oSubtype.free();
+		oSubtype.free();
+
+		if (obj->dictLookup("Type", &oType)->isName("ExtGState"))
+		{
+			PdfWriter::CExtGrState* pState = CreateExtGState(obj);
+			if (pState)
+			{
+				pDoc->AddExtGState(pState);
+				pDict = pState;
+			}
+		}
+		oType.free();
 
 		if (!pDict)
 			pDict = new PdfWriter::CDictObject();
@@ -389,7 +411,7 @@ PdfWriter::CObjectBase* DictToCDictObject2(Object* obj, PdfWriter::CDocument* pD
 		{
 			char* chKey = obj->dictGetKey(nIndex);
 			obj->dictGetValNF(nIndex, &oTemp);
-			pBase = DictToCDictObject2(&oTemp, pDoc, xref, pManager, nStartRefID);
+			pBase = DictToCDictObject2(&oTemp, pDoc, xref, pManager, nStartRefID, 0, bUndecodedStream);
 			pDict->Add(chKey, pBase);
 			oTemp.free();
 		}
@@ -407,7 +429,7 @@ PdfWriter::CObjectBase* DictToCDictObject2(Object* obj, PdfWriter::CDocument* pD
 		}
 
 		obj->fetch(xref, &oTemp);
-		pBase = DictToCDictObject2(&oTemp, pDoc, xref, pManager, nStartRefID, nObjNum);
+		pBase = DictToCDictObject2(&oTemp, pDoc, xref, pManager, nStartRefID, nObjNum, bUndecodedStream);
 		oTemp.free();
 		break;
 	}
@@ -451,7 +473,7 @@ PdfWriter::CObjectBase* DictToCDictObject2(Object* obj, PdfWriter::CDocument* pD
 
 		PdfWriter::CStream* pStream = new PdfWriter::CMemoryStream(nLength);
 		pDict->SetStream(pStream);
-		Stream* pOStream = obj->getStream()->getUndecodedStream();
+		Stream* pOStream = bUndecodedStream ? obj->getStream()->getUndecodedStream() : obj->getStream();
 		pOStream->reset();
 		int nChar = pOStream->getChar();
 		while (nChar != EOF)
@@ -828,6 +850,10 @@ void CObjectsManager::AddObj(int nID, PdfWriter::CObjectBase* pObj)
 	if (m_mUniqueRef.find(nID) == m_mUniqueRef.end())
 		m_mUniqueRef[nID] = { pObj, 1 };
 }
+void CObjectsManager::RemoveObj(int nID)
+{
+	m_mUniqueRef.erase(nID);
+}
 PdfWriter::CObjectBase* CObjectsManager::GetObj(int nID)
 {
 	if (m_mUniqueRef.find(nID) != m_mUniqueRef.end())
@@ -848,7 +874,7 @@ bool CObjectsManager::DecRefCount(int nID)
 	if (m_mUniqueRef.find(nID) != m_mUniqueRef.end())
 	{
 		if (m_pDoc)
-			m_pDoc->FreeHidden(m_mUniqueRef[nID].pObj);
+			m_pDoc->RemoveObj(m_mUniqueRef[nID].pObj);
 		else
 			m_mUniqueRef[nID].pObj->SetHidden();
 		return true;
@@ -927,7 +953,7 @@ void CObjectsManager::DeleteObjTree(Object* obj, XRef* xref, int nStartRefID)
 }
 void CObjectsManager::SetDoc(PdfWriter::CDocument* pDoc) { m_pDoc = pDoc; }
 
-CPdfEditor::CPdfEditor(const std::wstring& _wsSrcFile, const std::wstring& _wsPassword, const std::wstring& _wsDstFile, CPdfReader* _pReader, CPdfWriter* _pWriter)
+CPdfEditor::CPdfEditor(const std::wstring& _wsSrcFile, const std::wstring& _wsPassword, const std::wstring& _wsDstFile, CPdfReader* _pReader, CPdfWriter* _pWriter, Mode nMode)
 {
 	m_wsSrcFile  = _wsSrcFile;
 	m_wsDstFile  = _wsDstFile;
@@ -954,6 +980,23 @@ CPdfEditor::CPdfEditor(const std::wstring& _wsSrcFile, const std::wstring& _wsPa
 	}
 
 	m_nOriginIndex = m_pReader->GetNumPages();
+	SetMode(nMode);
+}
+void CPdfEditor::SetMode(Mode nMode)
+{
+	if (m_nMode != Mode::Unknown)
+		return;
+	m_nMode = nMode;
+	if (m_nMode == Mode::WriteAppend)
+		IncrementalUpdates();
+	else if (m_nMode == Mode::WriteNew)
+	{
+		PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
+		PdfWriter::CPageTree* pPageTree = pDoc->GetPageTree();
+		m_mObjManager.SetDoc(pDoc);
+		int nPages = m_pReader->GetNumPages();
+		pPageTree->CreateFakePages(nPages);
+	}
 }
 bool CPdfEditor::IncrementalUpdates()
 {
@@ -1066,6 +1109,11 @@ bool CPdfEditor::IncrementalUpdates()
 				}
 				else if (strcmp("Fields", chKey) == 0)
 					oAcroForm.dictGetVal(nIndex, &oTemp2);
+				else if (strcmp("NeedAppearances", chKey) == 0)
+				{
+					oTemp2.free();
+					continue;
+				}
 				else
 					oAcroForm.dictGetValNF(nIndex, &oTemp2);
 				DictToCDictObject(&oTemp2, pAcroForm, chKey);
@@ -1193,12 +1241,230 @@ void CPdfEditor::Close()
 			NSFile::CFileBinary::Copy(m_wsSrcFile, m_wsDstFile);
 		return;
 	}
-	if (m_nMode == Mode::WriteNew)
+	if (m_nMode == Mode::Split)
 	{
 		m_pWriter->SaveToFile(m_wsDstFile);
 		return;
 	}
+	if (m_nMode == Mode::WriteNew)
+	{
+		PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
+		PdfWriter::CPageTree* pPageTree = pDoc->GetPageTree();
+		int nPages = pPageTree->GetCount();
+		for (int i = 0; i < nPages; ++i)
+		{
+			PdfWriter::CObjectBase* pObj = pPageTree->GetObj(i);
+			if (pObj && pObj->GetType() != PdfWriter::object_type_DICT)
+				EditPage(i, false, true);
+		}
 
+		Object oCatalog;
+		PDFDoc* pPDFDocument = m_pReader->GetPDFDocument(0);
+		int nStartRefID = 0;
+		XRef* xref = pPDFDocument->getXRef();
+		if (!xref->getCatalog(&oCatalog)->isDict())
+		{
+			oCatalog.free();
+			return;
+		}
+
+		Object oAcroForm;
+		if (oCatalog.dictLookupNF("AcroForm", &oAcroForm)->isRef() || oAcroForm.isDict())
+		{
+			PdfWriter::CDictObject* pAcroForm = pDoc->GetAcroForm();
+			if (!pAcroForm)
+			{
+				pAcroForm = new PdfWriter::CDictObject();
+				if (oAcroForm.isRef())
+					pDoc->AddObject(pAcroForm);
+				pDoc->SetAcroForm(pAcroForm);
+			}
+			else
+				pAcroForm->Remove("NeedAppearances");
+
+			if (oAcroForm.isRef())
+			{
+				oAcroForm.free();
+				if (!oCatalog.dictLookup("AcroForm", &oAcroForm)->isDict())
+				{
+					oAcroForm.free(); oCatalog.free();
+					return;
+				}
+			}
+
+			for (int nIndex = 0; nIndex < oAcroForm.dictGetLength(); ++nIndex)
+			{
+				Object oTemp;
+				char* chKey = oAcroForm.dictGetKey(nIndex);
+				if (strcmp("Fields", chKey) == 0)
+				{
+					Ref oFieldsRef = { -1, -1 };
+					if (oAcroForm.dictGetValNF(nIndex, &oTemp)->isRef())
+						oFieldsRef = oTemp.getRef();
+					oTemp.free();
+
+					PdfWriter::CArrayObject* pFields = dynamic_cast<PdfWriter::CArrayObject*>(pAcroForm->Get("Fields"));
+					if (!pFields)
+					{
+						PdfWriter::CObjectBase* pObj = oFieldsRef.num > 0 ? m_mObjManager.GetObj(oFieldsRef.num + nStartRefID) : NULL;
+						if (pObj)
+						{
+							pAcroForm->Add(chKey, pObj);
+							m_mObjManager.IncRefCount(oFieldsRef.num + nStartRefID);
+							continue;
+						}
+					}
+
+					if (oAcroForm.dictGetVal(nIndex, &oTemp)->isArray())
+					{
+						if (!pFields)
+						{
+							pFields = new PdfWriter::CArrayObject();
+							if (oFieldsRef.num > 0)
+							{
+								pDoc->AddObject(pFields);
+								m_mObjManager.AddObj(oFieldsRef.num + nStartRefID, pFields);
+							}
+							pAcroForm->Add(chKey, pFields);
+						}
+
+						for (int nIndex = 0; nIndex < oTemp.arrayGetLength(); ++nIndex)
+						{
+							Object oRes;
+							PdfWriter::CObjectBase* pObj = NULL;
+							if (oTemp.arrayGetNF(nIndex, &oRes)->isRef())
+								pObj = m_mObjManager.GetObj(oRes.getRefNum() + nStartRefID);
+							if (pObj)
+							{
+								pFields->Add(pObj);
+								m_mObjManager.IncRefCount(oRes.getRefNum() + nStartRefID);
+								AddWidgetParent(pDoc, &m_mObjManager, pObj);
+								oRes.free();
+								continue;
+							}
+							oRes.free();
+						}
+						oTemp.free();
+						continue;
+					}
+					else if (!pFields)
+					{
+						oTemp.free();
+						oAcroForm.dictGetValNF(nIndex, &oTemp);
+					}
+					else
+					{
+						oTemp.free();
+						continue;
+					}
+				}
+				else if (strcmp("SigFlags", chKey) == 0 || strcmp("XFA", chKey) == 0 || (strcmp("DA", chKey) == 0 && pAcroForm->Get("DA")) || strcmp("NeedAppearances", chKey) == 0)
+				{ // Нельзя гарантировать их выполнение
+					oTemp.free();
+					continue;
+				}
+				else if (strcmp("DR", chKey) == 0)
+				{ // Добавляем только уникальные ключи
+					PdfWriter::CDictObject* pDR = dynamic_cast<PdfWriter::CDictObject*>(pAcroForm->Get("DR"));
+					if (!pDR)
+					{
+						pDR = new PdfWriter::CDictObject();
+						pDoc->AddObject(pDR);
+						pAcroForm->Add(chKey, pDR);
+					}
+
+					PdfWriter::CArrayObject* pProcset = new PdfWriter::CArrayObject();
+					pDR->Add("ProcSet", pProcset);
+					pProcset->Add(new PdfWriter::CNameObject("PDF"));
+					pProcset->Add(new PdfWriter::CNameObject("Text"));
+					pProcset->Add(new PdfWriter::CNameObject("ImageB"));
+					pProcset->Add(new PdfWriter::CNameObject("ImageC"));
+					pProcset->Add(new PdfWriter::CNameObject("ImageI"));
+
+					if (oAcroForm.dictGetVal(nIndex, &oTemp)->isDict())
+					{
+						Object oTemp2;
+						for (int nIndex2 = 0; nIndex2 < oTemp.dictGetLength(); ++nIndex2)
+						{
+							char* chKey2 = oTemp.dictGetKey(nIndex2);
+							if (strcmp("ProcSet", chKey2) == 0 || !oTemp.dictGetVal(nIndex2, &oTemp2)->isDict())
+							{
+								oTemp2.free();
+								continue;
+							}
+							PdfWriter::CDictObject* pDict = dynamic_cast<PdfWriter::CDictObject*>(pDR->Get(chKey2));
+							if (!pDict)
+							{
+								Object oTempRef;
+								if (oTemp.dictGetValNF(nIndex2, &oTempRef)->isRef())
+								{
+									PdfWriter::CObjectBase* pObj = m_mObjManager.GetObj(oTempRef.getRefNum() + nStartRefID);
+									if (pObj)
+									{
+										pDR->Add(chKey2, pObj);
+										m_mObjManager.IncRefCount(oTempRef.getRefNum() + nStartRefID);
+										oTemp2.free(); oTempRef.free();
+										continue;
+									}
+								}
+								PdfWriter::CObjectBase* pBase = DictToCDictObject2(&oTemp2, pDoc, xref, &m_mObjManager, nStartRefID);
+								if (oTempRef.isRef())
+									pDoc->AddObject(pBase);
+								pDR->Add(chKey2, pBase);
+								oTemp2.free(); oTempRef.free();
+								continue;
+							}
+							else
+							{
+								for (int nIndex3 = 0; nIndex3 < oTemp2.dictGetLength(); ++nIndex3)
+								{
+									char* chKey3 = oTemp2.dictGetKey(nIndex3);
+									if (pDict->Get(chKey3))
+										continue;
+									Object oTempRef;
+									if (oTemp2.dictGetValNF(nIndex3, &oTempRef)->isRef())
+									{
+										PdfWriter::CObjectBase* pObj = m_mObjManager.GetObj(oTempRef.getRefNum() + nStartRefID);
+										if (pObj)
+										{
+											pDict->Add(chKey3, pObj);
+											m_mObjManager.IncRefCount(oTempRef.getRefNum() + nStartRefID);
+											oTemp2.free(); oTempRef.free();
+											continue;
+										}
+									}
+									PdfWriter::CObjectBase* pBase = DictToCDictObject2(&oTemp2, pDoc, xref, &m_mObjManager, nStartRefID);
+									if (oTempRef.isRef())
+										pDoc->AddObject(pBase);
+									pDict->Add(chKey3, pBase);
+									oTemp2.free(); oTempRef.free();
+									continue;
+								}
+							}
+						}
+						oTemp2.free(); oTemp.free();
+						continue;
+					}
+					else
+					{
+						oTemp.free();
+						oAcroForm.dictGetValNF(nIndex, &oTemp);
+					}
+				}
+				else
+					oAcroForm.dictGetValNF(nIndex, &oTemp);
+				PdfWriter::CObjectBase* pBase = DictToCDictObject2(&oTemp, pDoc, xref, &m_mObjManager, nStartRefID);
+				pAcroForm->Add(chKey, pBase);
+				oTemp.free();
+			}
+		}
+		oAcroForm.free(); oCatalog.free();
+
+		m_pWriter->SaveToFile(m_wsDstFile);
+		return;
+	}
+
+	// m_nMode == Mode::WriteAppend
 	PDFDoc* pPDFDocument = m_pReader->GetPDFDocument(0);
 	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
 	XRef* xref = pPDFDocument->getXRef();
@@ -1388,18 +1654,20 @@ bool CPdfEditor::EditPage(int _nPageIndex, bool bSet, bool bActualPos)
 	if (m_nMode == Mode::Unknown && !IncrementalUpdates())
 		return false;
 
-	PDFDoc* pPDFDocument = NULL;
-	int nPageIndex = m_pReader->GetPageIndex(_nPageIndex, &pPDFDocument);
-	if (nPageIndex < 0 || !pPDFDocument)
-		return NULL;
+	WriteRedact({});
+	m_arrRedact.clear();
 
+	PDFDoc* pPDFDocument = NULL;
+	PdfReader::CPdfFontList* pFontList = NULL;
+	int nStartRefID = 0;
 	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
-	if (!pPDFDocument || !pDoc)
+	if (!pDoc)
 		return false;
 
+	PdfWriter::CPageTree* pPageTree = pDoc->GetPageTree();
 	PdfWriter::CPage* pEditPage = NULL;
 	pEditPage = bActualPos ? pDoc->GetPage(_nPageIndex) : pDoc->GetEditPage(_nPageIndex);
-	if (m_nMode == Mode::WriteNew && !pEditPage)
+	if (m_nMode == Mode::Split && !pEditPage)
 		return false;
 	if (pEditPage)
 	{
@@ -1408,6 +1676,192 @@ bool CPdfEditor::EditPage(int _nPageIndex, bool bSet, bool bActualPos)
 			pDoc->SetCurPage(pEditPage);
 			m_pWriter->EditPage(pEditPage);
 			m_nEditPage = _nPageIndex;
+		}
+		return true;
+	}
+
+	int nOriginIndex = _nPageIndex;
+	if (m_nMode == Mode::WriteNew)
+	{
+		PdfWriter::CObjectBase* pObj = pPageTree->GetObj(_nPageIndex);
+		PdfWriter::CFakePage* pFakePage = NULL;
+		if (pObj)
+			pFakePage = dynamic_cast<PdfWriter::CFakePage*>(pObj);
+		if (pFakePage)
+			nOriginIndex = pFakePage->GetOriginIndex();
+	}
+	int nPageIndex = m_pReader->GetPageIndex(nOriginIndex, &pPDFDocument, &pFontList, &nStartRefID);
+	if (nPageIndex < 0 || !pPDFDocument)
+		return NULL;
+
+	if (m_nMode == Mode::WriteNew)
+	{
+		PdfWriter::CPage* pPage = new PdfWriter::CPage(pDoc);
+		pDoc->AddObject(pPage);
+		pPageTree->ReplacePage(_nPageIndex, pPage);
+		pDoc->AddEditPage(pPage, _nPageIndex);
+
+		// Получение объекта страницы
+		Catalog* pCatalog = pPDFDocument->getCatalog();
+		XRef* xref = pPDFDocument->getXRef();
+		Ref* pPageRef = pCatalog->getPageRef(nPageIndex);
+		Object pageRefObj, pageObj;
+		pageRefObj.initRef(pPageRef->num, pPageRef->gen);
+		if (!pageRefObj.fetch(xref, &pageObj)->isDict())
+		{
+			pageObj.free(); pageRefObj.free();
+			return false;
+		}
+		m_mObjManager.AddObj(pPageRef->num + nStartRefID, pPage);
+		pageRefObj.free();
+
+		bool bResources = false, bMediaBox = false, bCropBox = false, bRotate = false;
+		for (int nIndex = 0; nIndex < pageObj.dictGetLength(); ++nIndex)
+		{
+			Object oTemp;
+			char* chKey = pageObj.dictGetKey(nIndex);
+			if (strcmp("Resources", chKey) == 0)
+			{
+				bResources = true;
+				Ref oResourcesRef = { -1, -1 };
+				if (pageObj.dictGetValNF(nIndex, &oTemp)->isRef())
+					oResourcesRef = oTemp.getRef();
+				oTemp.free();
+
+				PdfWriter::CObjectBase* pObj = oResourcesRef.num > 0 ? m_mObjManager.GetObj(oResourcesRef.num + nStartRefID) : NULL;
+				if (pObj)
+				{
+					pPage->Add(chKey, pObj);
+					m_mObjManager.IncRefCount(oResourcesRef.num + nStartRefID);
+					continue;
+				}
+
+				if (pageObj.dictGetVal(nIndex, &oTemp)->isDict())
+				{
+					PdfWriter::CResourcesDict* pDict = pDoc->CreateResourcesDict(oResourcesRef.num < 0, false);
+					if (oResourcesRef.num > 0)
+						m_mObjManager.AddObj(oResourcesRef.num + nStartRefID, pDict);
+					pPage->Add(chKey, pDict);
+					for (int nIndex = 0; nIndex < oTemp.dictGetLength(); ++nIndex)
+					{
+						Object oRes;
+						char* chKey2 = oTemp.dictGetKey(nIndex);
+						oTemp.dictGetValNF(nIndex, &oRes);
+						PdfWriter::CObjectBase* pBase = DictToCDictObject2(&oRes, pDoc, xref, &m_mObjManager, nStartRefID);
+						pDict->Add(chKey2, pBase);
+						oRes.free();
+					}
+
+					oTemp.free();
+					continue;
+				}
+				else
+				{
+					oTemp.free();
+					pageObj.dictGetValNF(nIndex, &oTemp);
+				}
+			}
+			else if (strcmp("Parent", chKey) == 0)
+			{
+				// Поля родителей страниц переносятся к самим страницам
+				oTemp.free();
+				continue;
+			}
+			else if (strcmp("MediaBox", chKey) == 0)
+			{
+				bMediaBox = true;
+				pageObj.dictGetValNF(nIndex, &oTemp);
+			}
+			else if (strcmp("CropBox", chKey) == 0)
+			{
+				bCropBox = true;
+				pageObj.dictGetValNF(nIndex, &oTemp);
+			}
+			else if (strcmp("Rotate", chKey) == 0)
+			{
+				bRotate = true;
+				pageObj.dictGetValNF(nIndex, &oTemp);
+			}
+			else if (strcmp("Contents", chKey) == 0)
+			{
+				pageObj.dictGetValNF(nIndex, &oTemp);
+				PdfWriter::CObjectBase* pBase = DictToCDictObject2(&oTemp, pDoc, xref, &m_mObjManager, nStartRefID, 0, false);
+				pPage->Add(chKey, pBase);
+				continue;
+			}
+			else
+				pageObj.dictGetValNF(nIndex, &oTemp);
+			PdfWriter::CObjectBase* pBase = DictToCDictObject2(&oTemp, pDoc, xref, &m_mObjManager, nStartRefID);
+			pPage->Add(chKey, pBase);
+			oTemp.free();
+		}
+		if (!bResources || !bMediaBox || !bCropBox || !bRotate)
+		{
+			Page* pOPage = pCatalog->getPage(nPageIndex);
+			if (!bMediaBox)
+			{
+				PDFRectangle* pRect = pOPage->getMediaBox();
+				pPage->Add("MediaBox", PdfWriter::CArrayObject::CreateBox(pRect->x1, pRect->y1, pRect->x2, pRect->y2));
+			}
+			if (!bCropBox && pOPage->isCropped())
+			{
+				PDFRectangle* pRect = pOPage->getCropBox();
+				pPage->Add("CropBox", PdfWriter::CArrayObject::CreateBox(pRect->x1, pRect->y1, pRect->x2, pRect->y2));
+			}
+			if (!bRotate)
+				pPage->Add("Rotate", pOPage->getRotate());
+			if (!bResources)
+			{
+				Dict* pResources = pOPage->getResourceDict();
+				PdfWriter::CResourcesDict* pDict = pDoc->CreateResourcesDict(true, false);
+				pPage->Add("Resources", pDict);
+				for (int nIndex = 0; nIndex < pResources->getLength(); ++nIndex)
+				{
+					Object oRes;
+					char* chKey2 = pResources->getKey(nIndex);
+					pResources->getValNF(nIndex, &oRes);
+					PdfWriter::CObjectBase* pBase = DictToCDictObject2(&oRes, pDoc, xref, &m_mObjManager, nStartRefID);
+					pDict->Add(chKey2, pBase);
+					oRes.free();
+				}
+			}
+		}
+		pPage->Fix();
+		pDoc->FixEditPage(pPage);
+		double dCTM[6] = { 1, 0, 0, 1, 0, 0 };
+		GetCTM(xref, &pageObj, dCTM);
+		pageObj.free();
+
+		if (bSet)
+		{
+			pDoc->SetCurPage(pPage);
+			m_pWriter->EditPage(pPage);
+			m_nEditPage = _nPageIndex;
+
+			if (bCropBox)
+			{
+				Page* pOPage = pCatalog->getPage(nPageIndex);
+				if (pOPage->isCropped())
+				{
+					PDFRectangle* pCropBox = pOPage->getCropBox();
+					PdfWriter::CStream* pStream = pPage->GetStream();
+					pStream->WriteStr("1 0 0 1 ");
+					pStream->WriteReal(pCropBox->x1);
+					pStream->WriteChar(' ');
+					pStream->WriteReal(pCropBox->y2 - pOPage->getMediaBox()->y2);
+					pStream->WriteStr(" cm\012");
+				}
+			}
+
+			pPage->StartTransform(dCTM[0], dCTM[1], dCTM[2], dCTM[3], dCTM[4], dCTM[5]);
+			pPage->SetStrokeColor(0, 0, 0);
+			pPage->SetFillColor(0, 0, 0);
+			pPage->SetExtGrState(pDoc->GetExtGState(255, 255));
+			pPage->BeginText();
+			pPage->SetCharSpace(0);
+			pPage->SetTextRenderingMode(PdfWriter::textrenderingmode_Fill);
+			pPage->SetHorizontalScaling(100);
+			pPage->EndText();
 		}
 		return true;
 	}
@@ -1616,7 +2070,7 @@ bool CPdfEditor::EditPage(int _nPageIndex, bool bSet, bool bActualPos)
 		pPage->BeginText();
 		pPage->SetCharSpace(0);
 		pPage->SetTextRenderingMode(PdfWriter::textrenderingmode_Fill);
-		pPage->SetHorizontalScalling(100);
+		pPage->SetHorizontalScaling(100);
 		pPage->EndText();
 		return true;
 	}
@@ -1647,7 +2101,7 @@ bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength, PDFD
 
 		PdfWriter::CPage* pPage = new PdfWriter::CPage(pDoc);
 		pDoc->AddObject(pPage);
-		if (m_nMode == Mode::WriteAppend)
+		if (m_nMode == Mode::WriteAppend || m_nMode == Mode::WriteNew)
 			pDoc->AddPage(pDoc->GetPagesCount(), pPage);
 		else
 			pPageTree->ReplacePage(nPagesBefore + (arrPageIndex ? arrPageIndex[i] : i), pPage);
@@ -1730,7 +2184,7 @@ bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength, PDFD
 					pageObj.dictGetValNF(nIndex, &oTemp);
 				}
 			}
-			else if (strcmp("Parent", chKey) == 0) // TODO может ли родитель страницы обладать важными для неё полями
+			else if (strcmp("Parent", chKey) == 0)
 			{
 				oTemp.free();
 				continue;
@@ -1776,7 +2230,6 @@ bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength, PDFD
 					if (pDict->Get("Filter"))
 						pDict->SetFilter(STREAM_FILTER_ALREADY_DECODE);
 				}
-
 			}
 			oTemp.free();
 		}
@@ -1788,16 +2241,13 @@ bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength, PDFD
 				PDFRectangle* pRect = pOPage->getMediaBox();
 				pPage->Add("MediaBox", PdfWriter::CArrayObject::CreateBox(pRect->x1, pRect->y1, pRect->x2, pRect->y2));
 			}
-
 			if (!bCropBox && pOPage->isCropped())
 			{
 				PDFRectangle* pRect = pOPage->getCropBox();
 				pPage->Add("CropBox", PdfWriter::CArrayObject::CreateBox(pRect->x1, pRect->y1, pRect->x2, pRect->y2));
 			}
-
 			if (!bRotate)
 				pPage->Add("Rotate", pOPage->getRotate());
-
 			if (!bResources)
 			{
 				Dict* pResources = pOPage->getResourceDict();
@@ -1815,7 +2265,7 @@ bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength, PDFD
 			}
 		}
 		pPage->Fix();
-		if (m_nMode == Mode::WriteAppend)
+		if (m_nMode == Mode::WriteAppend || m_nMode == Mode::WriteNew)
 		{
 			pDoc->FixEditPage(pPage);
 
@@ -1828,7 +2278,7 @@ bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength, PDFD
 			pPage->BeginText();
 			pPage->SetCharSpace(0);
 			pPage->SetTextRenderingMode(PdfWriter::textrenderingmode_Fill);
-			pPage->SetHorizontalScalling(100);
+			pPage->SetHorizontalScaling(100);
 			pPage->EndText();
 		}
 		else
@@ -1889,11 +2339,6 @@ bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength, PDFD
 						continue;
 					}
 				}
-
-				// TODO нужна проверка полных имён
-				// Если имя совпадает, то: переименование с удалением действий или преобразование типа
-				// Если другие поля - тип, флаг и т.д. совпадает, то выносим общее в общего родителя
-				// Иначе переименовываем, action обрубаем
 
 				if (oAcroForm.dictGetVal(nIndex, &oTemp)->isArray())
 				{
@@ -2040,14 +2485,48 @@ bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength, PDFD
 	}
 	oAcroForm.free(); oCatalog.free();
 
+	// Переименование полей
+	std::string sPrefix = m_pReader->GetPrefixForm(pPDFDocument);
+	if (!sPrefix.empty())
+	{
+		sPrefix = "_" + sPrefix;
+		std::vector<int> arrRename; // Вектор переименованных полей
+		std::map<int, PdfWriter::CAnnotation*> mAnnots = m_pWriter->GetDocument()->GetAnnots();
+		for (auto it = mAnnots.begin(); it != mAnnots.end(); it++)
+		{
+			PdfWriter::CAnnotation* pAnnot = it->second;
+			if (pAnnot->GetAnnotationType() != PdfWriter::AnnotWidget || it->first < nStartRefID)
+				continue;
+
+			std::vector<int>::iterator it2 = std::find(arrRename.begin(), arrRename.end(), it->first);
+			if (it2 != arrRename.end())
+				continue;
+
+			PdfWriter::CObjectBase* pObjBase = pAnnot->Get("Parent");
+			if (!pObjBase || !ChangeFullNameParent(m_mObjManager.FindObj(pObjBase), sPrefix, arrRename))
+			{
+				pObjBase = pAnnot->Get("T");
+				if (pObjBase && pObjBase->GetType() == PdfWriter::object_type_STRING)
+				{
+					PdfWriter::CStringObject* pStr = (PdfWriter::CStringObject*)pObjBase;
+					pStr->Add(sPrefix.c_str());
+				}
+				else if (pObjBase && pObjBase->GetType() == PdfWriter::object_type_BINARY)
+				{
+					PdfWriter::CBinaryObject* pBin = (PdfWriter::CBinaryObject*)pObjBase;
+					pBin->Add((BYTE*)sPrefix.c_str(), sPrefix.length());
+				}
+			}
+			arrRename.push_back(it->first);
+		}
+	}
+
 	return true;
 }
 bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength)
 {
-	if (m_nMode == Mode::WriteNew)
+	if (m_nMode != Mode::Split)
 		return false;
-	if (m_nMode == Mode::Unknown)
-		m_nMode = Mode::WriteNew;
 	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
 	if (!pDoc)
 		return false;
@@ -2200,9 +2679,39 @@ void CreateOutlines(PDFDoc* pdfDoc, PdfWriter::CDocument* pDoc, OutlineItem* pOu
 	}
 	pOutlineItem->close();
 }
-bool CPdfEditor::MergePages(const std::wstring& wsPath, const std::wstring& wsPrefixForm)
+bool CPdfEditor::ChangeFullNameParent(int nParent, const std::string& sPrefix, std::vector<int>& arrRename)
 {
-	if (m_nMode != Mode::WriteAppend && !IncrementalUpdates())
+	std::vector<int>::const_iterator it2 = std::find(arrRename.begin(), arrRename.end(), nParent);
+	if (it2 != arrRename.end())
+		return true;
+
+	PdfWriter::CObjectBase* pObjBase = m_mObjManager.GetObj(nParent);
+	if (!pObjBase || pObjBase->GetType() != PdfWriter::object_type_DICT)
+		return false;
+
+	PdfWriter::CDictObject* pDict = (PdfWriter::CDictObject*)pObjBase;
+	pObjBase = pDict->Get("Parent");
+	if (!pObjBase || !ChangeFullNameParent(m_mObjManager.FindObj(pObjBase), sPrefix, arrRename))
+	{
+		pObjBase = pDict->Get("T");
+		if (pObjBase && pObjBase->GetType() == PdfWriter::object_type_STRING)
+		{
+			PdfWriter::CStringObject* pStr = (PdfWriter::CStringObject*)pObjBase;
+			pStr->Add(sPrefix.c_str());
+		}
+		else if (pObjBase && pObjBase->GetType() == PdfWriter::object_type_BINARY)
+		{
+			PdfWriter::CBinaryObject* pBin = (PdfWriter::CBinaryObject*)pObjBase;
+			pBin->Add((BYTE*)sPrefix.c_str(), sPrefix.length());
+		}
+	}
+	arrRename.push_back(nParent);
+
+	return true;
+}
+bool CPdfEditor::MergePages(const std::wstring& wsPath)
+{
+	if (m_nMode == Mode::Unknown && !IncrementalUpdates())
 		return false;
 	m_nOriginIndex = m_pReader->GetNumPages();
 	PDFDoc* pDocument = m_pReader->GetLastPDFDocument();
@@ -2252,43 +2761,41 @@ bool CPdfEditor::DeletePage(int nPageIndex)
 	if (m_nMode == Mode::Unknown && !IncrementalUpdates())
 		return false;
 
+	WriteRedact({});
+	m_arrRedact.clear();
+
 	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
 	PdfWriter::CPage* pPage = pDoc->GetPage(nPageIndex);
 	int nObjID = m_mObjManager.FindObj(pPage);
-	if (nObjID > 0)
+	bool bRes = pDoc->DeletePage(nPageIndex);
+	if (bRes && nObjID > 0)
 	{
-		PDFDoc* pPDFDocument = NULL;
-		int nStartRefID = 0;
-		int nRefID = m_pReader->FindRefNum(nObjID, &pPDFDocument, &nStartRefID);
-		if (nRefID > 0)
-		{
-			XRefEntry* pEntry = pPDFDocument->getXRef()->getEntry(nRefID);
-			Object oRef;
-			oRef.initRef(nRefID, pEntry->type == xrefEntryCompressed ? 0 : pEntry->gen);
-			m_mObjManager.DeleteObjTree(&oRef, pPDFDocument->getXRef(), nStartRefID);
-		}
-		pDoc->FreeHidden(pPage);
+		m_mObjManager.RemoveObj(nObjID);
+		pDoc->RemoveObj(pPage);
 	}
-
-	return pDoc->DeletePage(nPageIndex);
+	return bRes;
 }
 bool CPdfEditor::AddPage(int nPageIndex)
 {
 	if (m_nMode == Mode::Unknown && !IncrementalUpdates())
 		return false;
-	if (m_nMode == Mode::WriteNew)
+
+	WriteRedact({});
+	m_arrRedact.clear();
+
+	if (m_nMode == Mode::Split)
 	{
 		std::vector<int>::iterator it = std::find(m_mObjManager.m_arrSplitAddPages.begin(), m_mObjManager.m_arrSplitAddPages.end(), m_nOriginIndex++);
 		if (it == m_mObjManager.m_arrSplitAddPages.end())
 		{
-			PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
-			PdfWriter::CPageTree* pPageTree = pDoc->GetPageTree();
+			PdfWriter::CPageTree* pPageTree = m_pWriter->GetDocument()->GetPageTree();
 			pPageTree->CreateFakePages(1, nPageIndex);
 			return false;
 		}
 		m_mObjManager.m_arrSplitAddPages.erase(it);
 	}
 
+	// Mode WriteNew & WriteAppend
 	m_nEditPage = -1;
 	// Применение добавления страницы для writer
 	if (!m_pWriter->AddPage(nPageIndex))
@@ -2307,7 +2814,10 @@ bool CPdfEditor::AddPage(int nPageIndex)
 }
 bool CPdfEditor::MovePage(int nPageIndex, int nPos)
 {
-	if (EditPage(nPageIndex, true, true) || m_nMode == Mode::WriteNew)
+	WriteRedact({});
+	m_arrRedact.clear();
+
+	if (m_nMode == Mode::Split || m_nMode == Mode::WriteNew || EditPage(nPageIndex, true, true))
 		return m_pWriter->GetDocument()->MovePage(nPageIndex, nPos);
 	return false;
 }
@@ -2327,6 +2837,9 @@ bool CPdfEditor::EditAnnot(int _nPageIndex, int nID)
 
 	if (pDoc->GetAnnot(nID))
 		return true;
+
+	if (m_nMode == Mode::Split || m_nMode == Mode::WriteNew)
+		return false;
 
 	XRef* xref = pPDFDocument->getXRef();
 	Ref* pPageRef = pPDFDocument->getCatalog()->getPageRef(nPageIndex);
@@ -2392,6 +2905,8 @@ bool CPdfEditor::EditAnnot(int _nPageIndex, int nID)
 		pAnnot = new PdfWriter::CCaretAnnotation(pXref);
 	else if (oType.isName("Stamp"))
 		pAnnot = new PdfWriter::CStampAnnotation(pXref);
+	else if (oType.isName("Redact"))
+		pAnnot = new PdfWriter::CRedactAnnotation(pXref);
 	else if (oType.isName("Popup"))
 		pAnnot = new PdfWriter::CPopupAnnotation(pXref);
 	else if (oType.isName("Widget"))
@@ -2607,20 +3122,11 @@ bool CPdfEditor::DeleteAnnot(int nID, Object* oAnnots)
 	PdfWriter::CObjectBase* pObj = m_mObjManager.GetObj(nID);
 	if (pObj)
 	{
-		PDFDoc* pPDFDocument = NULL;
-		int nStartRefID = 0;
-		int nRefID = m_pReader->FindRefNum(nID, &pPDFDocument, &nStartRefID);
-		if (nRefID > 0)
-		{
-			XRefEntry* pEntry = pPDFDocument->getXRef()->getEntry(nRefID);
-			Object oRef;
-			oRef.initRef(nRefID, pEntry->type == xrefEntryCompressed ? 0 : pEntry->gen);
-			m_mObjManager.DeleteObjTree(&oRef, pPDFDocument->getXRef(), nStartRefID);
-		}
-		pDoc->FreeHidden(pObj);
+		m_mObjManager.RemoveObj(nID);
+		pDoc->RemoveObj(pObj);
 		return true;
 	}
-	if (m_nMode == Mode::WriteNew)
+	if (m_nMode == Mode::Split || m_nMode == Mode::WriteNew)
 		return true;
 
 	PDFDoc* pPDFDocument = NULL;
@@ -2854,6 +3360,9 @@ bool CPdfEditor::EditWidgets(IAdvancedCommand* pCommand)
 	if (m_nMode == Mode::Unknown && !IncrementalUpdates())
 		return false;
 
+	WriteRedact({});
+	m_arrRedact.clear();
+
 	CWidgetsInfo* pFieldInfo = (CWidgetsInfo*)pCommand;
 	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
 
@@ -2971,7 +3480,10 @@ void CPdfEditor::ClearPage()
 	}
 	pageObj.free();
 
-	pDoc->ClearPage();
+	if (m_nMode == Mode::Split || m_nMode == Mode::WriteNew)
+		pDoc->ClearPageFull();
+	else
+		pDoc->ClearPage();
 
 	Page* pOPage = pPDFDocument->getCatalog()->getPage(nPageIndex);
 	if (pOPage->isCropped())
@@ -3066,4 +3578,166 @@ bool CPdfEditor::IsBase14(const std::wstring& wsFontName, bool& bBold, bool& bIt
 	if (wsFontName == L"ZapfDingbats")
 		return true;
 	return false;
+}
+void CPdfEditor::Redact(IAdvancedCommand* _pCommand)
+{
+	PDFDoc* pPDFDocument = NULL;
+	PDFRectangle* cropBox = NULL;
+	int nPageIndex = -1;
+	Page* pPage = NULL;
+	bool bEditPage = IsEditPage();
+	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
+	if (bEditPage)
+	{
+		nPageIndex = m_pReader->GetPageIndex(m_nEditPage, &pPDFDocument);
+		if (nPageIndex < 0 || !pPDFDocument)
+			return;
+		pPage = pPDFDocument->getCatalog()->getPage(nPageIndex);
+		cropBox = pPage->getCropBox();
+	}
+	else
+	{
+		cropBox = new PDFRectangle();
+		PdfWriter::CPage* pWPage = pDoc->GetCurPage();
+		cropBox->x2 = pWPage->GetWidth();
+		cropBox->y2 = pWPage->GetHeight();
+	}
+
+	std::vector<double> arrAllQuads;
+	CRedact* pCommand = (CRedact*)_pCommand;
+	std::vector<CRedact::SRedact*> arrRedacts = pCommand->GetRedact();
+	for (CRedact::SRedact* pRedact : arrRedacts)
+	{
+		m_arrRedact.push_back(CRedactData());
+		m_arrRedact.back().sID = pRedact->sID;
+		m_arrRedact.back().arrQuads = pRedact->arrQuadPoints;
+		for (int i = 0; i < pRedact->arrQuadPoints.size(); i += 2)
+		{
+			arrAllQuads.push_back(pRedact->arrQuadPoints[i + 0] + cropBox->x1);
+			arrAllQuads.push_back(cropBox->y2 - pRedact->arrQuadPoints[i + 1]);
+		}
+		int nFlags = pRedact->nFlag;
+		if (nFlags & (1 << 0))
+		{
+			m_arrRedact.back().pRender = pRedact->pRender;
+			m_arrRedact.back().nLenRender = pRedact->nRenderLen;
+		}
+	}
+
+	if (bEditPage)
+	{
+		PdfWriter::RedactOutputDev oRedactOut(m_pWriter);
+		oRedactOut.NewPDF(pPDFDocument->getXRef());
+		oRedactOut.SetRedact(arrAllQuads);
+
+		Object oContents;
+		pPage->getContents(&oContents);
+		PDFRectangle* box = pPage->getMediaBox();
+		Gfx* gfx = new Gfx(pPDFDocument, &oRedactOut, m_nEditPage, pPage->getResourceDict(), 72.0, 72.0, box, NULL, 0);
+		gfx->saveState();
+		gfx->display(&oContents);
+		gfx->endOfPage();
+		oContents.free();
+		RELEASEOBJECT(gfx);
+
+		PdfWriter::CPage* pWPage = pDoc->GetCurPage();
+		pWPage->SetFontType(PdfWriter::EFontType::fontUnknownType);
+	}
+	else
+	{
+		RELEASEOBJECT(cropBox);
+	}
+}
+std::vector<double> CPdfEditor::WriteRedact(const std::vector<std::wstring>& arrID)
+{
+	std::wstring sID;
+	if (!arrID.empty())
+		sID = arrID[0];
+	std::vector<double> arrRes;
+	for (int i = 0; i < m_arrRedact.size(); ++i)
+	{
+		if (m_arrRedact[i].sID == sID)
+		{
+			for (int j = i; j < m_arrRedact.size(); ++j)
+				arrRes.insert(arrRes.end(), m_arrRedact[j].arrQuads.begin(), m_arrRedact[j].arrQuads.end());
+			return arrRes;
+		}
+		CRedactData oRedact = m_arrRedact[i];
+		if (oRedact.bDraw || !oRedact.pRender)
+			continue;
+
+		LONG nLenRender = oRedact.nLenRender;
+		BYTE* pRender = oRedact.pRender;
+
+		BYTE* pMemory = pRender;
+		int ret = *((int*)pMemory);
+		pMemory += 4;
+		double R = ret / 100000.0;
+		ret = *((int*)pMemory);
+		pMemory += 4;
+		double G = ret / 100000.0;
+		ret = *((int*)pMemory);
+		double B = ret / 100000.0;
+		LONG lColor = (LONG)(((LONG)(R * 255)) | ((LONG)(G * 255) << 8) | ((LONG)(B * 255) << 16) | ((LONG)255 << 24));
+
+		m_pWriter->AddRedact({});
+		double dM1, dM2, dM3, dM4, dM5, dM6;
+		m_pWriter->GetTransform(&dM1, &dM2, &dM3, &dM4, &dM5, &dM6);
+		LONG lType, lColorB, lAlpha1, lAlpha2;
+		m_pWriter->get_BrushType(&lType);
+		m_pWriter->get_BrushColor1(&lColorB);
+		m_pWriter->get_BrushAlpha1(&lAlpha1);
+		m_pWriter->get_BrushAlpha2(&lAlpha2);
+
+		m_pWriter->SetTransform(1, 0, 0, 1, 0, 0);
+		m_pWriter->PathCommandEnd();
+		m_pWriter->put_BrushType(c_BrushTypeSolid);
+		m_pWriter->put_BrushColor1(lColor);
+		m_pWriter->put_BrushAlpha1(255);
+		m_pWriter->put_BrushAlpha2(255);
+
+		for (int i = 0; i < oRedact.arrQuads.size(); i += 8)
+		{
+			m_pWriter->PathCommandMoveTo(PdfReader::PDFCoordsToMM(oRedact.arrQuads[i + 0]), PdfReader::PDFCoordsToMM(oRedact.arrQuads[i + 1]));
+			m_pWriter->PathCommandLineTo(PdfReader::PDFCoordsToMM(oRedact.arrQuads[i + 2]), PdfReader::PDFCoordsToMM(oRedact.arrQuads[i + 3]));
+			m_pWriter->PathCommandLineTo(PdfReader::PDFCoordsToMM(oRedact.arrQuads[i + 4]), PdfReader::PDFCoordsToMM(oRedact.arrQuads[i + 5]));
+			m_pWriter->PathCommandLineTo(PdfReader::PDFCoordsToMM(oRedact.arrQuads[i + 6]), PdfReader::PDFCoordsToMM(oRedact.arrQuads[i + 7]));
+			m_pWriter->PathCommandClose();
+		}
+
+		m_pWriter->DrawPath(NULL, L"", c_nWindingFillMode);
+		m_pWriter->PathCommandEnd();
+
+		m_pWriter->SetTransform(dM1, dM2, dM3, dM4, dM5, dM6);
+		m_pWriter->put_BrushType(lType);
+		m_pWriter->put_BrushColor1(lColorB);
+		m_pWriter->put_BrushAlpha1(lAlpha1);
+		m_pWriter->put_BrushAlpha2(lAlpha2);
+
+		// TODO рендер редакта должен быть пересечён со всеми последующими редактами
+		// TODO на самом деле должен быть рендер команд редакта
+		/*
+		PdfWriter::CPage* pCurPage = m_pWriter->GetPage();
+		pDoc->FixEditPage(pCurPage);
+		PdfWriter::CPage* pFakePage = new PdfWriter::CPage(pDoc);
+		m_pWriter->SetPage(pFakePage);
+		pDoc->SetCurPage(pFakePage);
+
+		// TODO Нужно нивелировать текущую матрицу до единичной, а потом сместить ещё на CropBox
+
+		pFakePage->SetStream(pCurPage->GetStream());
+		pFakePage->Add("Resources", pCurPage->Get("Resources"));
+
+		IMetafileToRenderter* pCorrector = new IMetafileToRenderter(m_pWriter->GetRenderer());
+		NSOnlineOfficeBinToPdf::ConvertBufferToRenderer(pRender, nLenRender, pCorrector);
+		RELEASEOBJECT(pCorrector);
+
+		m_pWriter->SetPage(pCurPage);
+		pDoc->SetCurPage(pCurPage);
+		RELEASEOBJECT(pFakePage);
+		*/
+
+		m_arrRedact[i].bDraw = true;
+	}
+	return arrRes;
 }

@@ -49,9 +49,10 @@ public:
 	static const ElementType	type = typeCFMStateItem;
 
 	virtual void load(CFRecord& record);
+    virtual void save(CFRecord& record);
 
 	CFVO cfvo;
-	Boolean<unsigned char> fEqual;
+    Boolean<unsigned char> fEqual = 0;
 };
 
 typedef boost::shared_ptr<CFMStateItem> CFMStateItemPtr;

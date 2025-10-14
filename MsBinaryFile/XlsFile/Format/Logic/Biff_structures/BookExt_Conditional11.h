@@ -48,10 +48,10 @@ public:
 	
 	
 	virtual void load(CFRecord& record);
+	virtual void save(CFRecord& record);
 
-
-	bool fBuggedUserAboutSolution;
-	bool fShowInkAnnotation;
+	bool fBuggedUserAboutSolution = false;
+	bool fShowInkAnnotation = false;
 };
 
 } // namespace XLS

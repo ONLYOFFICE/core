@@ -1,0 +1,14 @@
+diff --git a/contrib/src/vpx/rules.mak b/contrib/src/vpx/rules.mak
+index 263ce7d1f0..42b0b3783f 100644
+--- a/contrib/src/vpx/rules.mak
++++ b/contrib/src/vpx/rules.mak
+@@ -127,7 +127,9 @@ endif
+ ifndef HAVE_WIN32
+ VPX_CONF += --enable-pic
+ else
++ifneq ($(ARCH),aarch64)
+ VPX_CONF += --extra-cflags="-mstackrealign"
++endif
+ ifeq ($(ARCH),arm)
+ # As of libvpx 1.14.0 we have to explicitly disable runtime CPU detection for Windows armv7
+ VPX_CONF += --disable-runtime-cpu-detect

@@ -175,6 +175,28 @@ const bool SUPBOOK::loadContent(BinProcessor& proc)
 	}
 	return true;
 }
+
+const bool SUPBOOK::saveContent(BinProcessor& proc)
+{
+    if(m_SupBook == nullptr)
+        return false;
+    proc.mandatory(*m_SupBook);
+    for(auto i : m_arExternName)
+        if(i != nullptr)
+            proc.mandatory(*i);
+    for(auto i : m_arXCT)
+        if(i.m_XCT != nullptr)
+        {
+            proc.mandatory(*i.m_XCT);
+            for(auto j : i.m_arCRN)
+                if(j != nullptr)
+                    proc.mandatory(*j);
+        }
+    if(m_ExternSheet != nullptr)
+        proc.mandatory(*m_ExternSheet);
+    return true;
+}
+
 bool SUPBOOK::IsExternal()
 {
 	SupBook *book = dynamic_cast<SupBook*>(m_SupBook.get());

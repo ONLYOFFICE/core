@@ -55,5 +55,11 @@ void UserSViewEnd::readFields(CFRecord& record)
 	record.skipNunBytes(2); // reserved
 }
 
+void UserSViewEnd::writeFields(CFRecord& record)
+{
+    unsigned short reserve = 1; // reserved
+    record << reserve;
+}
+
 } // namespace XLS
 

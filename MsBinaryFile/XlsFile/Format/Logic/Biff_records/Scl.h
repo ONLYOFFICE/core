@@ -50,12 +50,13 @@ public:
 
 	
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 
 	static const ElementType	type = typeScl;
 
 //-----------------------------
-	_INT16 nscl;
-	_INT16 dscl;
+    _INT16 nscl = 0;
+    _INT16 dscl = 1;
 
 };
 

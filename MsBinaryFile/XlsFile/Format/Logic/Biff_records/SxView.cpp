@@ -74,5 +74,38 @@ void SxView::readFields(CFRecord& record)
 	record.skipNunBytes(skip);
 }
 
+void SxView::writeFields(CFRecord& record)
+{
+    unsigned short flags = 0;
+    record << ref << rwFirstHead << rwFirstData << colFirstData << iCache;
+    record.reserveNunBytes(2);
+    record << sxaxis4Data << ipos4Data;
+    record << cDim << cDimRw << cDimCol << cDimPg << cDimData << cRw << cCol;
+
+    SETBIT(flags, 0, fRwGrand)
+    SETBIT(flags, 1, fColGrand)
+    SETBIT(flags, 3, fAutoFormat)
+    SETBIT(flags, 4, fAtrNum)
+    SETBIT(flags, 5, fAtrFnt)
+    SETBIT(flags, 6, fAtrAlc)
+    SETBIT(flags, 7, fAtrBdr)
+    SETBIT(flags, 8, fAtrPat)
+    SETBIT(flags, 9, fAtrProc)
+    record << flags;
+
+    cchTableName = stTable.getSize();
+    cchDataName = stData.getSize();
+    record << itblAutoFmt << cchTableName << cchDataName;
+    if(cchTableName && cchTableName <= 0x00FF)
+    {
+        record << stTable;
+    }
+    if(cchDataName > 0 && cchDataName <= 0x00FE)
+    {
+        record << stData;
+    }
+
+}
+
 } // namespace XLS
 

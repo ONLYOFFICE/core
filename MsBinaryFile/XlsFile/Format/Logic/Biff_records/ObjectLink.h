@@ -50,18 +50,19 @@ public:
 
 	
 	void readFields(CFRecord& record);
+	void writeFields(CFRecord& record);
 
 	static const ElementType	type = typeObjectLink;
 
-	_UINT16 wLinkObj;
-	_UINT16 wLinkVar1;
-	_UINT16 wLinkVar2;
+	_UINT16 wLinkObj = 0;
+	_UINT16 wLinkVar1 = 0;
+	_UINT16 wLinkVar2 = 0;
 
 //-------------------------------
 
-	int testLinkObj;
-	int testLinkVar1;
-	int testLinkVar2;
+	int testLinkObj = 0;
+	int testLinkVar1 = 0;
+	int testLinkVar2 = 0;
 
 };
 

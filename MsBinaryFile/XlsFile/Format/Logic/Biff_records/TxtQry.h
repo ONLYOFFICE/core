@@ -49,28 +49,29 @@ public:
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
+	void writeFields(CFRecord& record);
 
 	static const ElementType type = typeTxtQry;
 
-	unsigned short		rt;
-	bool				fFile;
-	bool				fDelimited;
-	unsigned char		iCpid;
-	bool				fPromptForFile;
-	unsigned char		iCpidNew;
-	bool				fUseNewiCpid;
-	_INT32				rowStartAt;
-	bool				fTab;
-	bool				fSpace;
-	bool				fComma;
-	bool				fSemiColon;
-	bool				fCustom;
-	bool				fConsecutive;
-	unsigned char		iTextDelm;
-	unsigned short		chCustom;
-	_INT32				itwf;
-	unsigned char		chDecimal;
-	unsigned char		chThousSep;
+	unsigned short		rt = 0x0805;
+	bool				fFile = false;
+	bool				fDelimited = false;
+	unsigned char		iCpid = 0;
+	bool				fPromptForFile = false;
+	unsigned char		iCpidNew = 0;
+	bool				fUseNewiCpid = 0;
+	_INT32				rowStartAt = 0;
+	bool				fTab = false;
+	bool				fSpace = false;
+	bool				fComma = false;
+	bool				fSemiColon = false;
+	bool				fCustom = false;
+	bool				fConsecutive = false;
+	unsigned char		iTextDelm = 0;
+	unsigned short		chCustom = 0;
+	_INT32				itwf = 0;
+	unsigned char		chDecimal = 0;
+	unsigned char		chThousSep = 0;
 	std::vector<TxtWf>	rgtxtwf;	
 	XLUnicodeString		rgchFile;
 };

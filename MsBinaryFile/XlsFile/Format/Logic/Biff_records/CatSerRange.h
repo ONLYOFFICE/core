@@ -50,17 +50,18 @@ public:
 
 	
 	void readFields(CFRecord& record);
+	void writeFields(CFRecord& record);
 
 	static const ElementType	type = typeCatSerRange;
 
 //-----------------------------
-	_INT16 catCross;
-	_INT16 catLabel;
-	_INT16 catMark;
+	_INT16 catCross = 0;
+	_INT16 catLabel = 0;
+	_INT16 catMark = 0;
 	
-	bool fBetween;
-	bool fMaxCross;
-	bool fReversed;
+	bool fBetween = false;
+	bool fMaxCross = false;
+	bool fReversed = false;
 };
 
 } // namespace XLS

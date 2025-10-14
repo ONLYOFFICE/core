@@ -74,6 +74,16 @@ const bool AI::loadContent(BinProcessor& proc)
 
 	return true;
 }
+const bool AI::saveContent(BinProcessor& proc)
+{
+	if(m_BRAI == nullptr)
+		return false;
+	proc.mandatory(*m_BRAI);
+	if(m_SeriesText != nullptr)
+		proc.mandatory(*m_SeriesText);
+	return true;
+}
+
 bool AI::empty()
 {
 	if (!m_SeriesText && !m_BRAI) return true;

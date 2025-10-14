@@ -194,6 +194,7 @@ protected:
 	double m_dHeight; // Высота холста, для Y трансформации
 	double m_dX; // Смещение по X для трансформации
 	double m_pRect[4]; // Координаты
+	std::vector<double> m_arrC; // Специальный цвет
 
 private:
 	unsigned int m_unAnnotFlag; // Флаг аннотации - F
@@ -204,7 +205,7 @@ private:
 	std::string m_sNM; // Уникальное имя
 	std::string m_sM; // Дата последнего изменения
 	std::string m_sOUserID; // OO User ID
-	std::vector<double> m_arrC; // Специальный цвет
+	std::string m_sOMetadata; // OO метаданные формы
 	CBorderType* m_pBorder; // Граница
 };
 
@@ -222,11 +223,12 @@ public:
 	unsigned int GetRefNumParent() { return m_unRefNumParent; }
 	const std::string& GetFullName() { return m_sFullName; }
 	void SetFullName(const std::string& sFullName) { m_sFullName = sFullName; }
-	void AddFullName(const std::string& sPrefixForm) { m_sFullName += sPrefixForm; }
 	bool ChangeFullName(const std::string& sPrefixForm);
 	void ClearActions();
 	virtual std::string GetType() = 0;
 	virtual void ToWASM(NSWasm::CData& oRes) override;
+
+	bool m_bChangeFullName;
 
 protected:
 	CAnnotWidget(PDFDoc* pdfDoc, AcroFormField* pField, int nStartRefID);
@@ -240,6 +242,7 @@ private:
 	unsigned int m_unR; // Поворот аннотации относительно страницы - R
 	unsigned int m_unRefNumParent; // Номер ссылки на объект родителя
 	unsigned int m_unFontStyle; // Стиль шрифта - из DA
+	unsigned int m_unMEOptions; // MEOptions
 	double m_dFontSize; // Размер шрифта - из DA
 	std::vector<double> m_arrTC; // Цвет текста - из DA
 	std::vector<double> m_arrBC; // Цвет границ - BC
@@ -254,7 +257,6 @@ private:
 	std::string m_sFontKey; // Уникальный идентификатор шрифта
 	std::string m_sFullName; // Полное имя поля
 	std::string m_sFontName; // Имя шрифта - из DA
-	std::string m_sOMetadata; // OO метаданные формы
 	std::string m_sActualFontName; // Имя замененного шрифта
 	std::string m_sButtonFontName; // Имя шрифта кнопки
 };
@@ -590,10 +592,36 @@ public:
 	CAnnotStamp(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex, int nStartRefID);
 
 	void ToWASM(NSWasm::CData& oRes) override;
+
 private:
 	std::string m_sName; // Иконка
 	double m_dRotate;
 	double m_dX1, m_dY1, m_dX2, m_dY2, m_dX3, m_dY3, m_dX4, m_dY4;
+};
+
+//------------------------------------------------------------------------
+// PdfReader::CAnnotRedact
+//------------------------------------------------------------------------
+
+class CAnnotRedact final : public CAnnotMarkup
+{
+public:
+	CAnnotRedact(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex, int nStartRefID);
+
+	void SetFont(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList, Object* oAnnotRef);
+
+	void ToWASM(NSWasm::CData& oRes) override;
+
+private:
+	BYTE m_nQ; // Выравнивание текста
+	unsigned int m_unFontStyle; // Стиль шрифта - из DA
+	double m_dFontSize; // Размер шрифта - из DA
+	std::string m_sFontName; // Имя шрифта - из DA
+	std::string m_sActualFontName; // Имя замененного шрифта
+	std::string m_sOverlayText; // Текст наложения
+	std::vector<double> m_arrQuadPoints; // Координаты
+	std::vector<double> m_arrIC; // Цвет заполнения
+	std::vector<double> m_arrCFromDA; // Цвет текста
 };
 
 //------------------------------------------------------------------------
@@ -619,6 +647,7 @@ private:
 			unFlags = 0;
 			unRefNum = 0;
 			unRefNumParent = 0;
+			bChangeFullName = false;
 		}
 		~CAnnotParent()
 		{
@@ -628,10 +657,12 @@ private:
 
 		void ToWASM(NSWasm::CData& oRes);
 
+		bool bChangeFullName;
 		unsigned int unFlags;
 		unsigned int unRefNum; // Номер ссылки на объект
 		unsigned int unMaxLen; // Ограничение на максимальную длину text field
 		unsigned int unFieldFlag; // Флаг Ff
+		unsigned int unMEOptions; // MEOptions
 		unsigned int unRefNumParent; // Номер ссылки на объект родителя
 		std::vector<int> arrI;
 		std::vector<std::string> arrV;
@@ -640,6 +671,7 @@ private:
 		std::string sT;
 		std::string sV;
 		std::string sDV;
+		std::string sTU;
 		std::string sFullName;
 	};
 
@@ -663,7 +695,6 @@ public:
 	static bool GetFontFromAP(PDFDoc* pdfDoc, AcroFormField* pField, Object* oFontRef, std::string& sFontKey);
 	static std::map<std::wstring, std::wstring> GetAnnotFont(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList, Object* oAnnotRef);
 	static std::map<std::wstring, std::wstring> GetFreeTextFont(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList* pFontList, Object* oAnnotRef, std::vector<CAnnotMarkup::CFontData*>& arrRC);
-private:
 	static bool FindFonts(Object* oStream, int nDepth, Object* oResFonts);
 };
 

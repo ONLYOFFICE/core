@@ -49,23 +49,30 @@ namespace PdfWriter
 	{
 		"Text",
 		"Link",
-		"Sound",
 		"FreeText",
-		"Stamp",
+		"Line",
 		"Square",
 		"Circle",
-		"StrikeOut",
-		"Highlight",
-		"Underline",
-		"Ink",
-		"FileAttachment",
-		"Popup",
-		"Line",
-		"Squiggly",
 		"Polygon",
 		"PolyLine",
+		"Highlight",
+		"Underline",
+		"Squiggly",
+		"StrikeOut",
+		"Stamp",
 		"Caret",
-		"Widget"
+		"Ink",
+		"Popup",
+		"FileAttachment",
+		"Sound",
+		"Movie",
+		"Widget",
+		"Screen",
+		"PrinterMark",
+		"TrapNet",
+		"Watermark",
+		"3D",
+		"Redact"
 	};
 	const static char* c_sAnnotIconNames[] =
 	{
@@ -291,6 +298,11 @@ namespace PdfWriter
 	{
 		std::string sValue = U_TO_UTF8(wsLM);
 		Add("OUserID", new CStringObject(sValue.c_str()));
+	}
+	void CAnnotation::SetOMetadata(const std::wstring& wsOMetadata)
+	{
+		std::string sValue = U_TO_UTF8(wsOMetadata);
+		Add("OMetadata", new CStringObject(sValue.c_str(), true));
 	}
 	void CAnnotation::SetC(const std::vector<double>& arrC)
 	{
@@ -823,6 +835,9 @@ namespace PdfWriter
 	}
 	void CFreeTextAnnotation::SetDA(CFontDict* pFont, const double& dFontSize, const std::vector<double>& arrC)
 	{
+		if (!pFont)
+			return;
+
 		CResourcesDict* pFieldsResources = m_pDocument->GetFieldsResources();
 		const char* sFontName = pFieldsResources->GetFontName(pFont);
 
@@ -1206,6 +1221,69 @@ namespace PdfWriter
 		return m_pAPStream;
 	}
 	//----------------------------------------------------------------------------------------
+	// CRedactAnnotation
+	//----------------------------------------------------------------------------------------
+	CRedactAnnotation::CRedactAnnotation(CXref* pXref) : CMarkupAnnotation(pXref, AnnotRedact)
+	{
+	}
+	void CRedactAnnotation::SetDA(CFontDict* pFont, const double& dFontSize, const std::vector<double>& arrC)
+	{
+		const char* sFontName =  NULL;
+		if (pFont)
+		{
+			CResourcesDict* pFieldsResources = m_pDocument->GetFieldsResources();
+			sFontName = pFieldsResources->GetFontName(pFont);
+		}
+
+		std::vector<double> _arrC = arrC;
+		if (arrC.empty())
+			_arrC = {0};
+		std::string sDA = GetColor(_arrC, false);
+		if (sFontName)
+		{
+			sDA.append(" /");
+			sDA.append(sFontName);
+
+			sDA.append(" ");
+			sDA.append(std::to_string(dFontSize));
+			sDA.append(" Tf");
+		}
+
+		Add("DA", new CStringObject(sDA.c_str()));
+	}
+	void CRedactAnnotation::SetRepeat(bool bRepeat)
+	{
+		Add("Repeat", bRepeat);
+	}
+	void CRedactAnnotation::SetQ(BYTE nQ)
+	{
+		Add("Q", (int)nQ);
+	}
+	void CRedactAnnotation::SetOverlayText(const std::wstring& wsOverlayText)
+	{
+		std::string sValue = U_TO_UTF8(wsOverlayText);
+		Add("OverlayText", new CStringObject(sValue.c_str(), true));
+	}
+	void CRedactAnnotation::SetIC(const std::vector<double>& arrIC)
+	{
+		AddToVectorD(this, "IC", arrIC);
+	}
+	void CRedactAnnotation::SetOC(const std::vector<double>& arrOC)
+	{
+		AddToVectorD(this, "OC", arrOC);
+	}
+	void CRedactAnnotation::SetQuadPoints(const std::vector<double>& arrQuadPoints)
+	{
+		CArrayObject* pArray = new CArrayObject();
+		if (!pArray)
+			return;
+
+		Add("QuadPoints", pArray);
+
+		for (int i = 0; i < arrQuadPoints.size(); ++i)
+			pArray->Add(i % 2 == 0 ? (arrQuadPoints[i] + m_dPageX) : (m_dPageH - arrQuadPoints[i]));
+	}
+	//----------------------------------------------------------------------------------------
 	// CWidgetAnnotation
 	//----------------------------------------------------------------------------------------
 	CWidgetAnnotation::CWidgetAnnotation(CXref* pXref, EAnnotType eType) : CAnnotation(pXref, eType)
@@ -1229,6 +1307,9 @@ namespace PdfWriter
 	}
 	void CWidgetAnnotation::SetDA(CFontDict* pFont, const double& dFontSize, const double& dFontSizeAP, const std::vector<double>& arrTC)
 	{
+		if (!pFont)
+			return;
+
 		CResourcesDict* pFieldsResources = m_pDocument->GetFieldsResources();
 		const char* sFontName = pFieldsResources->GetFontName(pFont);
 
@@ -1361,6 +1442,10 @@ namespace PdfWriter
 	{
 		m_nParentID = nParentID;
 	}
+	void CWidgetAnnotation::SetMEOptions(const int& nMEOptions)
+	{
+		Add("MEOptions", nMEOptions);
+	}
 	void CWidgetAnnotation::SetTU(const std::wstring& wsTU)
 	{
 		std::string sValue = U_TO_UTF8(wsTU);
@@ -1390,20 +1475,8 @@ namespace PdfWriter
 		std::string sValue = U_TO_UTF8(wsT);
 		CDictObject* pOwner = GetObjOwnValue("T");
 		if (!pOwner)
-		{
 			pOwner = this;
-			pOwner->Add("T", new CStringObject(sValue.c_str(), true));
-		}
-	}
-	void CWidgetAnnotation::SetOMetadata(const std::wstring& wsOMetadata)
-	{
-		std::string sValue = U_TO_UTF8(wsOMetadata);
-		CDictObject* pOwner = GetObjOwnValue("OMetadata");
-		if (!pOwner)
-		{
-			pOwner = this;
-			pOwner->Add("OMetadata", new CStringObject(sValue.c_str(), true));
-		}
+		pOwner->Add("T", new CStringObject(sValue.c_str(), true));
 	}
 	void CWidgetAnnotation::SetBC(const std::vector<double>& arrBC)
 	{
@@ -1711,7 +1784,7 @@ namespace PdfWriter
 		m_pMK->Add("AC", new CStringObject(sValue.c_str(), true));
 		m_wsAC = wsAC;
 	}
-	void CPushButtonWidget::SetAP(CXObject* pForm, BYTE nAP, unsigned short* pCodes, unsigned int unCount, double dX, double dY, double dLineW, double dLineH, CFontCidTrueType** ppFonts)
+	void CPushButtonWidget::SetAP(CXObject* pForm, BYTE nAP, unsigned short* pCodes, unsigned int unCount, double dX, double dY, double dLineW, double dLineH, CFontCidTrueType** ppFonts, bool bNoAP)
 	{
 		if (!pForm && !pCodes)
 		{
@@ -1761,6 +1834,22 @@ namespace PdfWriter
 					m_pAppearance->Add("R", pNewAPi);
 				}
 			}
+		}
+
+		if (bNoAP)
+		{
+			if (pForm)
+			{
+				CheckMK();
+				std::string sAP = nAP == 0 ? "I" : (nAP == 1 ? "RI" : "IX");
+				m_pMK->Add(sAP, pForm);
+			}
+			else if (m_pMK)
+			{
+				std::string sAP = nAP == 0 ? "I" : (nAP == 1 ? "RI" : "IX");
+				m_pMK->Remove(sAP);
+			}
+			return;
 		}
 
 		CAnnotAppearanceObject* pAppearance = NULL;
@@ -2056,11 +2145,18 @@ namespace PdfWriter
 	{
 		std::string sName = m_sAP_N_Yes.empty() ? "Yes" : m_sAP_N_Yes;
 		Add("AS", sName.c_str());
+
+		if (!m_nParentID)
+			Add("V", sName.c_str());
+
 		return sName;
 	}
 	void CCheckBoxWidget::Off()
 	{
 		Add("AS", "Off");
+
+		if (!m_nParentID)
+			Add("V", "Off");
 	}
 	void CCheckBoxWidget::SwitchAP(const std::string& sV, int nI)
 	{

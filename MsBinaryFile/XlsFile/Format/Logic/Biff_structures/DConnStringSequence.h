@@ -48,8 +48,9 @@ public:
 	static const ElementType type = typeDConnStringSequence;
 	
 	virtual void load(CFRecord& record);
+	virtual void save(CFRecord& record);
 
-	unsigned short							cst;
+	unsigned short							cst = 0;
 	std::vector<XLUnicodeStringSegmented>	rgString;
 
 };

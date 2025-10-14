@@ -48,13 +48,14 @@ public:
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 
 	static const ElementType type = typeIndex;
 
 //-----------------------------
-	_UINT32	rwMic;
-	_UINT32	rwMac;
-	_UINT32	ibXF;
+    _UINT32	rwMic = 0;
+    _UINT32	rwMac = 0;
+    _UINT32	ibXF = 0;
 
 	BiffStructurePtrVector rgibRw;
 };

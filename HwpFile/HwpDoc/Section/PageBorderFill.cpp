@@ -1,33 +1,59 @@
 #include "PageBorderFill.h"
 
+#include "../Common/NodeNames.h"
+
 namespace HWP
 {
 CPageBorderFill::CPageBorderFill()
 {}
 
-CPageBorderFill::CPageBorderFill(CXMLNode& oNode, int nVersion)
+CPageBorderFill::CPageBorderFill(CXMLReader& oReader, EHanType eType)
 {
-	m_shBorderFill = oNode.GetAttributeInt(L"borderFillIDRef");
-	m_bTextBorder = L"PAPER" == oNode.GetAttribute(L"textBorder");
-	m_bHeaderInside = oNode.GetAttributeBool(L"headerInside");
-	m_bFooterInside = oNode.GetAttributeBool(L"footerInside");
-
-	HWP_STRING sType = oNode.GetAttribute(L"fillArea");
-
-	if (L"PAPER" == sType)
-		m_chFillArea = 0;
-	else if (L"PAGE" == sType)
-		m_chFillArea = 1;
-	else if (L"BORDER" == sType)
-		m_chFillArea = 2;
-
-	for (CXMLNode& oChild : oNode.GetChilds(L"offset"))
+	START_READ_ATTRIBUTES(oReader)
 	{
-		m_shOffsetLeft   = oChild.GetAttributeInt(L"left");
-		m_shOffsetRight  = oChild.GetAttributeInt(L"right");
-		m_shOffsetTop    = oChild.GetAttributeInt(L"top");
-		m_shOffsetBottom = oChild.GetAttributeInt(L"bottom");
+		if (GetAttributeName(EAttribute::BorderFillId, eType) == sAttributeName)
+			m_shBorderFill = oReader.GetInt();
+		else if (GetAttributeName(EAttribute::TextBorder, eType) == sAttributeName)
+		{
+			if (EHanType::HWPX == eType)
+				m_bTextBorder = "PAPER" == oReader.GetTextA();
+			else
+				m_bTextBorder = oReader.GetBool();
+		}
+		else if (GetAttributeName(EAttribute::HeaderInside, eType) == sAttributeName)
+			m_bHeaderInside = oReader.GetBool();
+		else if (GetAttributeName(EAttribute::FooterInside, eType) == sAttributeName)
+			m_bFooterInside = oReader.GetBool();
+		else if (GetAttributeName(EAttribute::FillArea, eType) == sAttributeName)
+		{
+			const std::string sType{oReader.GetTextA()};
+
+			if (GetValueName(EValue::Paper, eType) == sType)
+				m_chFillArea = 0;
+			else if (GetValueName(EValue::Page, eType) == sType)
+				m_chFillArea = 1;
+			else if (GetValueName(EValue::Border, eType) == sType)
+				m_chFillArea = 2;
+		}
 	}
+	END_READ_ATTRIBUTES(oReader)
+
+	WHILE_READ_NEXT_NODE_WITH_ONE_NAME(oReader, GetNodeName(ENode::PageOffset, eType))
+	{
+		START_READ_ATTRIBUTES(oReader)
+		{
+			if (GetAttributeName(EAttribute::Left, eType) == sAttributeName)
+				m_shOffsetLeft = oReader.GetInt();
+			else if (GetAttributeName(EAttribute::Right, eType) == sAttributeName)
+				m_shOffsetRight = oReader.GetInt();
+			else if (GetAttributeName(EAttribute::Top, eType) == sAttributeName)
+				m_shOffsetTop = oReader.GetInt();
+			else if (GetAttributeName(EAttribute::Bottom, eType) == sAttributeName)
+				m_shOffsetBottom = oReader.GetInt();
+		}
+		END_READ_ATTRIBUTES(oReader)
+	}
+	END_WHILE
 }
 
 CPageBorderFill* CPageBorderFill::Parse(int nLevel, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)

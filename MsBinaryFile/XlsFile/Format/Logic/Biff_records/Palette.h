@@ -51,6 +51,7 @@ public:
 
 	
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 
 	int serialize(std::wostream & stream);
 
@@ -58,7 +59,7 @@ public:
 
 //-----------------------------
 	BiffStructurePtrVector rgColor;
-	unsigned short ccv;
+    unsigned short ccv = 0;
 
 };
 

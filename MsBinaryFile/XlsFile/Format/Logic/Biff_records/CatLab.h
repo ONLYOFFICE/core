@@ -50,13 +50,14 @@ public:
 
 	
 	void readFields(CFRecord& record);
+	void writeFields(CFRecord& record);
 
 	static const ElementType	type = typeCatLab;
 
 //-----------------------------
-	_UINT16 wOffset;
-	_UINT16 at;
-	bool cAutoCatLabelReal;
+	_UINT16 wOffset = 0;
+	_UINT16 at = 0;
+	bool cAutoCatLabelReal = false;
 };
 
 } // namespace XLS

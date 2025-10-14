@@ -73,5 +73,14 @@ const bool HLINK::loadContent(BinProcessor& proc)
 	return true;
 }
 
+const bool HLINK::saveContent(BinProcessor& proc)
+{
+    if(m_HLink != nullptr)
+        proc.mandatory(*m_HLink);
+    if(m_HLinkTooltip != nullptr)
+        proc.mandatory(*m_HLinkTooltip);
+    return true;
+}
+
 } // namespace XLS
 

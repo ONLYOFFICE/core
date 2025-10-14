@@ -52,7 +52,7 @@
 	if (pObject && !pObject->IsIndirect())\
 		delete pObject;\
 
-static const BYTE UNICODE_HEADER[] ={ 0xFE, 0xFF };
+static const BYTE UNICODE_HEADER[] = { 0xFE, 0xFF };
 
 namespace PdfWriter
 {
@@ -83,6 +83,14 @@ namespace PdfWriter
 	{
 		m_unFlags |= FLAG_HIDDEN;
 	}
+	void CObjectBase::SetXrefEntry(TXrefEntry* pEntry)
+	{
+		m_pXrefEntry = pEntry;
+	}
+	TXrefEntry* CObjectBase::GetXrefEntry()
+	{
+		return m_pXrefEntry;
+	}
 	void CObjectBase::WriteValue(CStream* pStream, CEncrypt* pEncrypt)
 	{
 
@@ -106,11 +114,13 @@ namespace PdfWriter
 
 		if (object_type_PROXY == GetType())
 		{
+			CObjectBase* pObject = ((CProxyObject*)this)->Get();
+			if (!pObject)
+				return;
+
 			char sBuf[SHORT_BUFFER_SIZE];
 			char *pBuf = sBuf;
 			char *pEndPtr = sBuf + SHORT_BUFFER_SIZE - 1;
-
-			CObjectBase* pObject = ((CProxyObject*)this)->Get();
 
 			pBuf = ItoA(pBuf, pObject->m_unObjId & 0x00FFFFFF, pEndPtr);
 			*pBuf++ = ' ';
@@ -169,6 +179,22 @@ namespace PdfWriter
 		m_bUTF16     = isUTF16;
 		m_bDictValue = isDictValue;
 	}
+	void CStringObject::Add(const char* sValue)
+	{
+		if (!sValue || !*sValue)
+			return;
+
+		unsigned int unAppendLen = StrLen(sValue, LIMIT_MAX_STRING_LEN);
+		BYTE* pNewValue = new BYTE[m_unLen + unAppendLen + 1];
+		if (m_unLen > 0)
+			StrCpy((char*)pNewValue, (char*)m_pValue, (char*)(pNewValue + m_unLen));
+		StrCpy((char*)(pNewValue + m_unLen), (char*)sValue, (char*)(pNewValue + m_unLen + unAppendLen));
+
+		if (m_pValue)
+			delete[] m_pValue;
+		m_pValue = pNewValue;
+		m_unLen += unAppendLen;
+	}
 	//----------------------------------------------------------------------------------------
 	// CBinaryObject
 	//----------------------------------------------------------------------------------------
@@ -205,6 +231,32 @@ namespace PdfWriter
 		else
 			m_pValue = pValue;
 	}
+	void CBinaryObject::Add(BYTE* pValue, unsigned int unLen)
+	{
+		if (!pValue || !unLen)
+			return;
+		unLen = std::min((unsigned int)LIMIT_MAX_STRING_LEN, unLen);
+		if (!m_pValue || m_unLen == 0)
+		{
+			Set(pValue, unLen, true);
+			return;
+		}
+
+		if (m_unLen + unLen > (unsigned int)LIMIT_MAX_STRING_LEN)
+		{
+			unLen = (unsigned int)LIMIT_MAX_STRING_LEN - m_unLen;
+			if (unLen == 0)
+				return;
+		}
+
+		BYTE* pNewValue = new BYTE[m_unLen + unLen];
+		MemCpy(pNewValue, m_pValue, m_unLen);
+		MemCpy(pNewValue + m_unLen, pValue, unLen);
+		if (m_pValue)
+			delete[] m_pValue;
+		m_pValue = pNewValue;
+		m_unLen += unLen;
+	}
 	//----------------------------------------------------------------------------------------
 	// CProxyObject
 	//----------------------------------------------------------------------------------------
@@ -212,11 +264,30 @@ namespace PdfWriter
 	{
 		m_pObject = pObject;
 		m_bClear = bClear;
+		TXrefEntry* pXrefEntry = m_pObject->GetXrefEntry();
+		if (pXrefEntry)
+			pXrefEntry->pRefObj.push_back(this);
 	}
 	CProxyObject::~CProxyObject()
 	{
+		TXrefEntry* pXrefEntry = m_pObject ? m_pObject->GetXrefEntry() : NULL;
+		if (pXrefEntry)
+		{
+			std::vector<CProxyObject*>::iterator it = std::find(pXrefEntry->pRefObj.begin(), pXrefEntry->pRefObj.end(), this);
+			if (it != pXrefEntry->pRefObj.end())
+				pXrefEntry->pRefObj.erase(it);
+		}
 		if (m_bClear)
 			RELEASE_OBJECT(m_pObject);
+	}
+	void CProxyObject::Clear()
+	{
+		if (m_bClear)
+		{
+			RELEASE_OBJECT(m_pObject);
+		}
+		else
+			m_pObject = NULL;
 	}
 	//----------------------------------------------------------------------------------------
 	// CArrayObject
@@ -773,6 +844,12 @@ namespace PdfWriter
 					delete pObject;
 			}
 
+			for (int i = 0; i < pEntry->pRefObj.size(); ++i)
+			{
+				CProxyObject* pProxy = pEntry->pRefObj[i];
+				pProxy->Clear();
+			}
+
 			delete pEntry;
 		}
 
@@ -824,6 +901,37 @@ namespace PdfWriter
 
 		return NULL;
 	}
+	void CXref::Add(CObjectBase* pObject)
+	{
+		if (!pObject)
+			return;
+
+		if (pObject->IsDirect() || pObject->IsIndirect())
+			return;
+
+		if (m_arrEntries.size() >= LIMIT_MAX_XREF_ELEMENT)
+		{
+			RELEASE_OBJECT(pObject);
+			return;
+		}
+
+		// В случае ошибки r объектe нужно применить dispose
+		TXrefEntry* pEntry = new TXrefEntry;
+		if (NULL == pEntry)
+		{
+			RELEASE_OBJECT(pObject);
+			return;
+		}
+
+		m_arrEntries.push_back(pEntry);
+
+		pEntry->nEntryType   = IN_USE_ENTRY;
+		pEntry->unByteOffset = 0;
+		pEntry->unGenNo      = 0;
+		pEntry->pObject      = pObject;
+		pObject->SetIndirect();
+		pObject->SetXrefEntry(pEntry);
+	}
 	void CXref::Add(CObjectBase* pObject, unsigned int unObjectGen)
 	{
 		if (!pObject)
@@ -854,6 +962,30 @@ namespace PdfWriter
 		pEntry->pObject      = pObject;
 		pObject->SetRef(m_unStartOffset + m_arrEntries.size() - 1, pEntry->unGenNo);
 		pObject->SetIndirect();
+		pObject->SetXrefEntry(pEntry);
+	}
+	void CXref::Remove(CObjectBase* pObject)
+	{
+		if (!pObject)
+			return;
+
+		for (unsigned int unIndex = 0, unCount = m_arrEntries.size(); unIndex < unCount; ++unIndex)
+		{
+			TXrefEntry* pEntry = m_arrEntries.at(unIndex);
+			if (pEntry->pObject == pObject)
+			{
+				for (int i = 0; i < pEntry->pRefObj.size(); ++i)
+					pEntry->pRefObj[i]->Clear();
+
+				CObjectBase* pObject = pEntry->pObject;
+				if (pObject)
+					delete pObject;
+
+				m_arrEntries.erase(m_arrEntries.begin() + unIndex);
+				delete pEntry;
+				break;
+			}
+		}
 	}
     void CXref::WriteTrailer(CStream* pStream)
 	{
@@ -879,6 +1011,18 @@ namespace PdfWriter
 		char* pEndPtr = sBuf + SHORT_BUFFER_SIZE - 1;
 
 		CXref* pXref = this;
+		while (pXref)
+		{
+			for (unsigned int unIndex = 0, unCount = pXref->m_arrEntries.size(); unIndex < unCount; unIndex++)
+			{
+				TXrefEntry* pEntry = pXref->m_arrEntries.at(unIndex);
+				if (pEntry->nEntryType != FREE_ENTRY && pEntry->pObject->GetObjId() == 0)
+					pEntry->pObject->SetRef(pXref->m_unStartOffset + unIndex, pEntry->unGenNo);
+			}
+			pXref = pXref->m_pPrev;
+		}
+
+		pXref = this;
 		TXrefEntry* pNextFreeObj = NULL;
 		while (pXref)
 		{

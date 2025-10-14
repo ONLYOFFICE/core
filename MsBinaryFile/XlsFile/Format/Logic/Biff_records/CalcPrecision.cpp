@@ -56,5 +56,10 @@ void CalcPrecision::readFields(CFRecord& record)
 	record >> fFullPrec;
 }
 
+void CalcPrecision::writeFields(CFRecord& record)
+{
+    record << fFullPrec;
+}
+
 } // namespace XLS
 

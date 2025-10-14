@@ -71,5 +71,33 @@ const bool PRFILTER::loadContent(BinProcessor& proc)
 	return true;
 }
 
+const bool PRFILTER::saveContent(BinProcessor& proc)
+{
+    if(m_SxFilt == nullptr)
+        return false;
+    proc.mandatory(*m_SxFilt);
+    if(m_SxItm != nullptr)
+    {
+        proc.mandatory(*m_SxItm);
+        auto castedPtr = static_cast<SxItm*>(m_SxItm.get());
+        const auto maxRecSize = 8224;
+        const auto continueElemSize = 2;
+        while(!castedPtr->rgisxvi.empty())
+        {
+            Continue continueRecord;
+            if(castedPtr->rgisxvi.size() < maxRecSize/continueElemSize)
+                continueRecord.m_iDataSize = castedPtr->rgisxvi.size() * continueElemSize;
+            else
+                continueRecord.m_iDataSize = maxRecSize;
+            continueRecord.m_pData = new char[continueRecord.m_iDataSize];
+            memcpy(continueRecord.m_pData, castedPtr->rgisxvi.data(), continueRecord.m_iDataSize);
+            proc.mandatory(continueRecord);
+            castedPtr->rgisxvi.erase(castedPtr->rgisxvi.begin(),
+                castedPtr->rgisxvi.begin() + (continueRecord.m_iDataSize/continueElemSize));
+        }
+    }
+    return true;
+}
+
 } // namespace XLS
 

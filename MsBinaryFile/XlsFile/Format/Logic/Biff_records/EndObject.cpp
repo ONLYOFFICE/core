@@ -59,5 +59,12 @@ void EndObject::readFields(CFRecord& record)
 	record >> iObjectKind >> unused1 >> unused2 >> unused3;
 }
 
+void EndObject::writeFields(CFRecord& record)
+{
+	FrtHeaderOld rt(rt_EndObject);
+	record << rt << iObjectKind;
+	record.reserveNunBytes(6);
+}
+
 } // namespace XLS
 

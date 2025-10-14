@@ -1,5 +1,7 @@
 #include "CtrlObjElement.h"
 
+#include "../Common/NodeNames.h"
+
 namespace HWP
 {
 CCtrlObjElement::CCtrlObjElement()
@@ -47,66 +49,169 @@ CCtrlObjElement::CCtrlObjElement(const HWP_STRING& sCtrlID, int nSize, CHWPStrea
 	: CCtrlCommon(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
 
-TMatrix ReadMatrix(CXMLNode& oNode)
+TMatrix ReadMatrix(CXMLReader& oReader, EHanType eType)
 {
-	return TMatrix
+	TMatrix oMatrix;
+
+	START_READ_ATTRIBUTES(oReader)
 	{
-		oNode.GetAttributeDouble(L"e1", 1.),
-		oNode.GetAttributeDouble(L"e2"),
-		oNode.GetAttributeDouble(L"e4"),
-		oNode.GetAttributeDouble(L"e5", 1.),
-		oNode.GetAttributeDouble(L"e3"),
-		oNode.GetAttributeDouble(L"e6"),
-	};
+		if (GetAttributeName(EAttribute::MatrixElement1_1, eType) == sAttributeName)
+			oMatrix.m_dM11 = oReader.GetDouble();
+		else if (GetAttributeName(EAttribute::MatrixElement1_2, eType) == sAttributeName)
+			oMatrix.m_dM12 = oReader.GetDouble();
+		else if (GetAttributeName(EAttribute::MatrixElementOffsetX, eType) == sAttributeName)
+			oMatrix.m_dDX = oReader.GetDouble();
+		else if (GetAttributeName(EAttribute::MatrixElement2_1, eType) == sAttributeName)
+			oMatrix.m_dM21 = oReader.GetDouble();
+		else if (GetAttributeName(EAttribute::MatrixElement2_2, eType) == sAttributeName)
+			oMatrix.m_dM22 = oReader.GetDouble();
+		else if (GetAttributeName(EAttribute::MatrixElementOffsetY, eType) == sAttributeName)
+			oMatrix.m_dDY = oReader.GetDouble();
+	}
+	END_READ_ATTRIBUTES(oReader)
+
+	return oMatrix;
 }
 
-CCtrlObjElement::CCtrlObjElement(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVersion)
-	: CCtrlCommon(sCtrlID, oNode, nVersion)
+CCtrlObjElement::CCtrlObjElement(const HWP_STRING& sCtrlID, CXMLReader& oReader, EHanType eType)
+    : CCtrlCommon(sCtrlID, oReader, eType), m_nCurWidth(0), m_nCurHeight(0)
 {
-	m_shNGrp = oNode.GetAttributeInt(L"groupLevel");
+	if (EHanType::HWPX == eType)
+		m_shNGrp = oReader.GetAttributeInt("groupLevel");
+}
 
-	for (CXMLNode& oChild : oNode.GetChilds())
+void CCtrlObjElement::ParseChildren(CXMLReader& oReader, EHanType eType)
+{
+	const std::string sNodeName{oReader.GetName()};
+
+	if (EHanType::HWPML == eType && "SHAPECOMPONENT" == sNodeName)
+		ParseHWPMLElement(oReader);
+	else if (EHanType::HWPX == eType)
+		ParseHWPXChildren(oReader);
+	else
+		CCtrlCommon::ParseChildren(oReader, eType);
+}
+
+void CCtrlObjElement::ParseRotationInfo(CXMLReader &oReader, EHanType eType)
+{
+	START_READ_ATTRIBUTES(oReader)
 	{
-		if (L"hp:offset" == oChild.GetName())
-		{
-			m_nXGrpOffset = oChild.GetAttributeInt(L"x");
-			m_nYGrpOffset = oChild.GetAttributeInt(L"y");
-		}
-		else if (L"hp:orgSz" == oChild.GetName())
-		{
-			m_nOrgWidth  = oChild.GetAttributeInt(L"width");
-			m_nOrgHeight = oChild.GetAttributeInt(L"height");
-		}
-		else if (L"hp:curSz" == oChild.GetName())
-		{
-			m_nCurWidth  = oChild.GetAttributeInt(L"width");
-			m_nCurHeight = oChild.GetAttributeInt(L"height");
-		}
-		else if (L"hp:flip" == oChild.GetName())
-		{
-			m_bHorzFlip = oChild.GetAttributeBool(L"horizontal");
-			m_bVerFlip  = oChild.GetAttributeBool(L"vertical");
-		}
-		else if (L"hp:rotationInfo" == oChild.GetName())
-		{
-			m_shRotat = oChild.GetAttributeInt(L"angle");
-			m_nXCenter = oChild.GetAttributeInt(L"centerX");
-			m_nYCenter = oChild.GetAttributeInt(L"centerY");
-		}
-		else if (L"hp:renderingInfo" == oChild.GetName())
-		{
-			for (CXMLNode& oGrandChild : oChild.GetChilds())
-			{
-				// Сначала идёт 1 hc:transMatrix, а после попарно идут hc:scaMatrix с hc:rotMatrix
-				if (L"hc:transMatrix" == oGrandChild.GetName())
-					m_arMatrixs.push_back(ReadMatrix(oGrandChild));
-				else if (L"hc:scaMatrix" == oGrandChild.GetName())
-					m_arMatrixs.push_back(ReadMatrix(oGrandChild));
-				else if (L"hc:rotMatrix" == oGrandChild.GetName())
-					m_arMatrixs.push_back(ReadMatrix(oGrandChild));
-			}
-		}
+		if (GetAttributeName(EAttribute::Angle, eType) == sAttributeName)
+			m_shRotat = oReader.GetInt();
+		else if (GetAttributeName(EAttribute::CenterX, eType) == sAttributeName)
+			m_nXCenter = oReader.GetInt();
+		else if (GetAttributeName(EAttribute::CenterY, eType) == sAttributeName)
+			m_nYCenter = oReader.GetInt();
 	}
+	END_READ_ATTRIBUTES(oReader)
+}
+
+void CCtrlObjElement::ParseRenderingInfo(CXMLReader &oReader, EHanType eType)
+{
+	WHILE_READ_NEXT_NODE_WITH_NAME(oReader)
+	{
+		// Сначала идёт 1 hc:transMatrix, а после попарно идут hc:scaMatrix с hc:rotMatrix
+
+		if (GetNodeName(ENode::TransformMatrix, eType) != sNodeName &&
+		    GetNodeName(ENode::ScaleMatrix, eType)     != sNodeName &&
+		    GetNodeName(ENode::RotationMatrix, eType)  != sNodeName)
+			continue;
+
+		m_arMatrixs.push_back(ReadMatrix(oReader, eType));
+	}
+	END_WHILE
+}
+
+void CCtrlObjElement::ParseHWPXChildren(CXMLReader& oReader)
+{
+	const std::string sNodeName{oReader.GetName()};
+
+	if ("hp:offset" == sNodeName)
+	{
+		START_READ_ATTRIBUTES(oReader)
+		{
+			if ("x" == sAttributeName)
+				m_nXGrpOffset = oReader.GetInt();
+			else if ("y" == sAttributeName)
+				m_nYGrpOffset = oReader.GetInt();
+		}
+		END_READ_ATTRIBUTES(oReader)
+	}
+
+	else if ("hp:orgSz" == sNodeName)
+	{
+		START_READ_ATTRIBUTES(oReader)
+		{
+			if ("width" == sAttributeName)
+				m_nOrgWidth = oReader.GetInt();
+			else if ("height" == sAttributeName)
+				m_nOrgHeight = oReader.GetInt();
+		}
+		END_READ_ATTRIBUTES(oReader)
+	}
+	else if ("hp:curSz" == sNodeName)
+	{
+		START_READ_ATTRIBUTES(oReader)
+		{
+			if ("width" == sAttributeName)
+				m_nCurWidth = oReader.GetInt();
+			else if ("height" == sAttributeName)
+				m_nCurHeight = oReader.GetInt();
+		}
+		END_READ_ATTRIBUTES(oReader)
+	}
+	else if ("hp:flip" == sNodeName)
+	{
+		START_READ_ATTRIBUTES(oReader)
+		{
+			if ("horizontal" == sAttributeName)
+				m_bHorzFlip = oReader.GetBool();
+			else if ("vertical" == sAttributeName)
+				m_bVerFlip = oReader.GetBool();
+		}
+		END_READ_ATTRIBUTES(oReader)
+	}
+	else if ("hp:rotationInfo" == sNodeName)
+		ParseRotationInfo(oReader, EHanType::HWPX);
+	else if ("hp:renderingInfo" == sNodeName)
+		ParseRenderingInfo(oReader, EHanType::HWPX);
+	else
+		CCtrlCommon::ParseChildren(oReader, EHanType::HWPX);
+}
+
+void CCtrlObjElement::ParseHWPMLElement(CXMLReader &oReader)
+{
+	START_READ_ATTRIBUTES(oReader)
+	{
+		if ("XPos" == sAttributeName)
+			m_nXGrpOffset = oReader.GetInt();
+		else if ("YPos" == sAttributeName)
+			m_nYGrpOffset = oReader.GetInt();
+		else if ("GroupLevel" == sAttributeName)
+			m_shNGrp = oReader.GetInt();
+		else if ("OriWidth" == sAttributeName)
+			m_nOrgWidth = oReader.GetInt();
+		else if ("OriHeight" == sAttributeName)
+			m_nOrgHeight = oReader.GetInt();
+		else if ("CurWidth" == sAttributeName)
+			m_nCurWidth = oReader.GetInt();
+		else if ("CurHeight" == sAttributeName)
+			m_nCurHeight = oReader.GetInt();
+		else if ("HorzFlip" == sAttributeName)
+			m_bHorzFlip = oReader.GetBool();
+		else if ("VertFlip" == sAttributeName)
+			m_bVerFlip = oReader.GetBool();
+	}
+	END_READ_ATTRIBUTES(oReader)
+
+	WHILE_READ_NEXT_NODE_WITH_NAME(oReader)
+	{
+		if ("ROTATIONINFO" == sNodeName)
+			ParseRotationInfo(oReader, EHanType::HWPML);
+		else if ("RENDERINGINFO" == sNodeName)
+			ParseRenderingInfo(oReader, EHanType::HWPML);
+	}
+	END_WHILE
 }
 
 int CCtrlObjElement::GetCurWidth() const
@@ -134,7 +239,10 @@ int CCtrlObjElement::GetFinalWidth() const
 	if (0 != m_nCurWidth)
 		return m_nCurWidth;
 
-	return CCtrlCommon::GetWidth();
+	if (0 != CCtrlCommon::GetWidth())
+		return CCtrlCommon::GetWidth();
+
+	return m_nOrgWidth;
 }
 
 int CCtrlObjElement::GetFinalHeight() const
@@ -142,12 +250,20 @@ int CCtrlObjElement::GetFinalHeight() const
 	if (0 != m_nCurHeight)
 		return m_nCurHeight;
 
-	return CCtrlCommon::GetHeight();
+	if (0 != CCtrlCommon::GetHeight())
+		return CCtrlCommon::GetHeight();
+
+	return m_nOrgHeight;
+}
+
+short CCtrlObjElement::GetGroupLevel() const
+{
+	return m_shNGrp;
 }
 
 TMatrix CCtrlObjElement::GetFinalMatrix() const
 {
-	if (m_arMatrixs.empty() || 0 == m_shNGrp)
+	if (m_arMatrixs.empty())
 		return TMatrix();
 
 	TMatrix oMatrix{m_arMatrixs.front()};
@@ -213,18 +329,15 @@ void TMatrix::Multiply(const TMatrix& oMatrix)
 	const double dM21 = m_dM21 * oMatrix.m_dM11 + m_dM22 * oMatrix.m_dM21;
 	const double dM22 = m_dM21 * oMatrix.m_dM12 + m_dM22 * oMatrix.m_dM22;
 
-	const double dDx = m_dDX * oMatrix.m_dM11 + m_dDY * oMatrix.m_dM21 + oMatrix.m_dDX;
-	const double dDy = m_dDX * oMatrix.m_dM12 + m_dDY * oMatrix.m_dM22 + oMatrix.m_dDY;
-
 	m_dM11 = dM11;
 	m_dM12 = dM12;
 	m_dM21 = dM21;
 	m_dM22 = dM22;
-	m_dDX  = dDx;
-	m_dDY  = dDy;
+	m_dDX  += oMatrix.m_dDX;
+	m_dDY  += oMatrix.m_dDY;
 }
 
-void TMatrix::ApplyToPoint(double& dX, double& dY)
+void TMatrix::ApplyToPoint(double& dX, double& dY) const
 {
 	const double _dX = dX;
 	const double _dY = dY;
@@ -233,7 +346,16 @@ void TMatrix::ApplyToPoint(double& dX, double& dY)
 	dY = _dX * m_dM12 + _dY * m_dM22 + m_dDY;
 }
 
-void TMatrix::ApplyToSize(double& dW, double& dH)
+void HWP::TMatrix::ApplyToPoint(int& nX, int& nY) const
+{
+	const double _dX = nX;
+	const double _dY = nY;
+
+	nX = (int)(_dX * m_dM11 + _dY * m_dM21 + m_dDX);
+	nY = (int)(_dX * m_dM12 + _dY * m_dM22 + m_dDY);
+}
+
+void TMatrix::ApplyToSize(double& dW, double& dH) const
 {
 	const double _dW = dW;
 	const double _dH = dH;

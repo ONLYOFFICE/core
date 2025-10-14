@@ -128,6 +128,33 @@ const bool SXTBL::loadContent(BinProcessor& proc)
 	}	
 	return true;
 }
+
+const bool SXTBL::saveContent(BinProcessor& proc)
+{
+    if(m_SXTbl == nullptr)
+        return false;
+    {
+        auto castedPtr = static_cast<SXTbl*>(m_SXTbl.get());
+        castedPtr->cdref = m_arDREF.size();
+        castedPtr->csxtbpg = m_arSxTbpg.size();
+    }
+    proc.mandatory(*m_SXTbl);
+    for(auto i : m_arDREF)
+        if(i!= nullptr)
+            proc.mandatory(*i);
+    for(auto i: m_arSxTbpg)
+        if(i!= nullptr)
+            proc.mandatory(*i);
+    for(auto i: m_arSXTBRGIITM)
+    {
+        proc.mandatory(*i.item);
+        for(auto j : i.strings)
+            if(j!= nullptr)
+                proc.mandatory(*j);
+    }
+    return true;
+}
+
 int SXTBL::serialize(std::wostream & strm)
 {
 	if (!m_SXTbl) return 0;

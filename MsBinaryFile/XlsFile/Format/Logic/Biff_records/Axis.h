@@ -50,11 +50,12 @@ public:
 
 	
 	void readFields(CFRecord& record);
+	void writeFields(CFRecord& record);
 
 	static const ElementType	type = typeAxis;
 
 //-----------------------------
-	_UINT16 wType;
+	_UINT16 wType = 0;
 
 };
 

@@ -92,6 +92,7 @@ public:
 	// --- EDIT ---
 	// Переходит в режим редактирования. Pdf уже должен быть открыт на чтение - LoadFromFile/LoadFromMemory
 	bool EditPdf(const std::wstring& wsDstFile = L"");
+	void SetEditType(int nType);
 	// Манипуляции со страницами возможны в режиме редактирования
 	bool EditPage  (int nPageIndex);
 	bool DeletePage(int nPageIndex);
@@ -130,6 +131,8 @@ public:
 	// Захватывает полученную память malloc data
 	bool MergePages(BYTE* data, DWORD length, int nMaxID = 0, const std::string& sPrefixForm = "");
 	bool UnmergePages();
+	bool RedactPage(int nPageIndex, double* arrRedactBox, int nLengthX8, BYTE* pChanges = NULL, int nLength = 0);
+	bool UndoRedact();
 	int GetRotate(int nPageIndex);
 	int GetMaxRefID();
 	BYTE* GetWidgets();

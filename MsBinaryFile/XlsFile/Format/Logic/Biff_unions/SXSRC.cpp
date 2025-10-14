@@ -75,6 +75,14 @@ const bool SXSRC::loadContent(BinProcessor& proc)
 	return true;
 }
 
+const bool SXSRC::saveContent(BinProcessor& proc)
+{
+    if(m_source == nullptr)
+        return false;
+    proc.mandatory(*m_source);
+    return true;
+}
+
 int SXSRC::serialize(std::wostream & stream)
 {
 	if (m_source)

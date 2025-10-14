@@ -236,6 +236,11 @@ bool RtfAbstractReader::RtfAbstractReader::Parse(RtfDocument& oDocument, RtfRead
 				oReader.m_oState->m_sCurText += " ";
 				oReader.m_oState->m_bControlPresent = true;
 			}
+            if (m_oTok.Key == "par" && false == m_oTok.HasParameter)
+            {
+                oReader.m_oState->m_sCurText += "\n";
+                oReader.m_oState->m_bControlPresent = true;
+            }
 		}break;
 		case RtfToken::Text:
 		{

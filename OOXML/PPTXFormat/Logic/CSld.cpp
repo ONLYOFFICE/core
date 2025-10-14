@@ -45,10 +45,30 @@ namespace PPTX
 		void CSld::fromXML(XmlUtils::CXmlNode& node)
 		{
 			XmlMacroReadAttributeBase(node, L"name", attrName);
+			
+			bg = node.ReadNode(L"p:bg");
+			spTree = node.ReadNodeNoNS(L"spTree");
+			controls = node.ReadNode(L"p:controls");
 
-			bg			= node.ReadNode(L"p:bg");
-			spTree		= node.ReadNodeNoNS(L"spTree");
-			controls	= node.ReadNode(L"p:controls");
+			std::vector<XmlUtils::CXmlNode> oNodes;
+			node.GetNodes(L"*", oNodes);
+
+			XmlUtils::CXmlNode oNodeExtLst = node.ReadNode(L"p:extLst");
+
+			std::vector<XmlUtils::CXmlNode> oNodesExts;
+			if (oNodeExtLst.GetNodes(L"p:ext", oNodesExts))
+			{
+				for (size_t nIndex = 0; nIndex < oNodesExts.size(); ++nIndex)
+				{
+					XmlUtils::CXmlNode oNodeId = oNodesExts[nIndex].ReadNodeNoNS(L"creationId");
+					if (oNodeId.IsValid())
+					{
+						XmlMacroReadAttributeBase(oNodeId, L"val", creationId);
+						break;
+					}
+				}
+			}
+			
 
 			FillParentPointersForChilds();
 		}
@@ -76,6 +96,13 @@ namespace PPTX
 			spTree.toXmlWriter(pWriter);
 			pWriter->Write(controls);
 
+			if (creationId.IsInit())
+			{
+				pWriter->WriteString(L"<p:extLst>");
+				pWriter->WriteString(L"<p:ext uri=\"{BB962C8B-B14F-4D97-AF65-F5344CB8AC3E}\">\
+<p14:creationId xmlns:p14=\"http://schemas.microsoft.com/office/powerpoint/2010/main\" val=\"" + std::to_wstring(*creationId) + L"\"/></p:ext>");
+				pWriter->WriteString(L"</p:extLst>");
+			}
 			pWriter->EndNode(L"p:cSld");
 		}
 		void CSld::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
@@ -103,6 +130,13 @@ namespace PPTX
 			pWriter->EndRecord();
 
 			pWriter->WriteRecord2(2, controls);
+			
+			if (creationId.IsInit())
+			{
+				pWriter->StartRecord(3);
+				pWriter->WriteULONG(*creationId);
+				pWriter->EndRecord();
+			}
 		}
 		void CSld::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 		{
@@ -118,6 +152,8 @@ namespace PPTX
 
 				if (0 == _at)
 					attrName = pReader->GetString2();
+				else if (1 == _at)
+					creationId = pReader->GetLong();
 				else
 					break;
 			}
@@ -135,15 +171,18 @@ namespace PPTX
 					}
 					case 1:
 					{
-						spTree.fromPPTY(pReader);
-						break;
-					}
+						spTree.fromPPTY(pReader);						
+					}break;
 					case 2:
 					{
 						controls = new Controls(m_pMainDocument);
-						controls->fromPPTY(pReader);
-						break;
-					}
+						controls->fromPPTY(pReader);						
+					}break;
+					case 3:
+					{
+						_UINT32 sz = pReader->GetULong();
+						creationId = pReader->GetULong();
+					}break;
 					default:
 					{
 						pReader->Seek(_end_rec);

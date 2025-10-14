@@ -1,6 +1,7 @@
 #include "HWPRecordBinData.h"
 
 #include "../HWPFile.h"
+#include "../Common/NodeNames.h"
 
 #include <iomanip>
 #include <regex>
@@ -27,7 +28,6 @@ EType GetType(int nValue)
 		CASE(EType::STORAGE);
 	}
 }
-
 
 EState GetState(int nValue)
 {
@@ -74,35 +74,53 @@ CHWPRecordBinData::CHWPRecordBinData(CHWPDocInfo& oDocInfo, int nTagNum, int nLe
 	oBuffer.Skip(nSize - oBuffer.GetDistanceToLastPos(true));
 }
 
-CHWPRecordBinData::CHWPRecordBinData(CXMLNode& oNode, int nVersion)
+CHWPRecordBinData::CHWPRecordBinData(CXMLReader& oReader, EHanType eType)
 	: CHWPRecord(EHWPTag::HWPTAG_BIN_DATA, 0, 0)
 {
-	m_sItemID = oNode.GetAttribute(L"id");
+	HWP_STRING sSubPath;
 
-	HWP_STRING sType = oNode.GetAttribute(L"isEmbeded");
-
-	if (L"0" == sType)
+	START_READ_ATTRIBUTES(oReader)
 	{
-		m_eType = EType::LINK;
+		if (GetAttributeName(EAttribute::BinData, eType) == sAttributeName)
+			m_sItemID = oReader.GetText();
+		else if (EHanType::HWPX == eType && "isEmbeded" == sAttributeName)
+		{
+			const std::string sType = oReader.GetTextA();
 
-		m_sAPath = oNode.GetAttribute(L"sub-path");
+			if ("0" == sType)
+				m_eType = EType::LINK;
+			else if ("1" == sType)
+				m_eType = EType::EMBEDDING;
+		}
+		else if (EHanType::HWPML == eType && "Type" == sAttributeName)
+		{
+			const std::string sType = oReader.GetTextA();
 
-		if (m_sAPath.empty())
-			m_sAPath = oNode.GetAttribute(L"href");
+			if ("Link" == sType)
+				m_eType = EType::LINK;
+			else if ("Embedding" == sType)
+				m_eType = EType::EMBEDDING;
+			else if ("Storage" == sType)
+				m_eType = EType::STORAGE;
+		}
+		else if (GetAttributeName(EAttribute::Href, eType) == sAttributeName)
+			m_sAPath = oReader.GetText();
+		else if (GetAttributeName(EAttribute::SubPath, eType) == sAttributeName)
+			sSubPath = oReader.GetText();
+		else if (GetAttributeName(EAttribute::MediaType, eType) == sAttributeName)
+		{
+			m_sFormat = oReader.GetText();
+
+			std::wregex oRegex(L"image/(.*)");
+			m_sFormat = std::regex_replace(m_sFormat, oRegex, L"$1");
+		}
 	}
-	else if (L"1" == sType)
-	{
-		m_eType = EType::EMBEDDING;
-		m_sAPath = oNode.GetAttribute(L"href");
-	}
-	else
-		m_sAPath = oNode.GetAttribute(L"href");
+	END_READ_ATTRIBUTES(oReader)
 
-	m_sFormat = oNode.GetAttribute(L"media-type");
+	if (EType::LINK != m_eType || sSubPath.empty())
+		return;
 
-	std::wregex oRegex(L"image/(.*)");
-
-	m_sFormat = std::regex_replace(m_sFormat, oRegex, L"$1");
+	m_sAPath = sSubPath;
 }
 
 HWP_STRING CHWPRecordBinData::GetPath() const

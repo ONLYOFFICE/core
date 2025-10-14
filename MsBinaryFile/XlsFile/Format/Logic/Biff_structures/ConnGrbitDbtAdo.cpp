@@ -48,6 +48,12 @@ void ConnGrbitDbtAdo::load(CFRecord& record)
 	fAdoRefreshable = GETBIT(flags, 1);
 }
 
+void ConnGrbitDbtAdo::save(CFRecord& record)
+{
+	unsigned short flags = 0;
+	SETBIT(flags, 1, fAdoRefreshable)
+	record << flags;
+}
 
 } // namespace XLS
 

@@ -50,9 +50,9 @@ TEST(BooleanOperations, NoIntersOutside)
 	resultSubtract.CloseFigure();
 
 
-	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Intersection) == resultIntersect);
-	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Union) == resultUnite);
-	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Subtraction) == resultSubtract);
+	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Intersection).Equals(resultIntersect));
+	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Union).Equals(resultUnite));
+	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Subtraction).Equals(resultSubtract));
 }
 
 TEST(BooleanOperations, NoIntersInside)
@@ -105,9 +105,9 @@ TEST(BooleanOperations, NoIntersInside)
 	resultSubtract.CloseFigure();
 
 
-	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Intersection) == resultIntersect);
-	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Union) == resultUnite);
-	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Subtraction) == resultSubtract);
+	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Intersection).Equals(resultIntersect));
+	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Union).Equals(resultUnite));
+	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Subtraction).Equals(resultSubtract));
 }
 
 TEST(BooleanOperations, OneIntersOutside)
@@ -154,9 +154,9 @@ TEST(BooleanOperations, OneIntersOutside)
 	resultSubtract.CloseFigure();
 
 
-	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Intersection) == resultIntersect);
-	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Union) == resultUnite);
-	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Subtraction) == resultSubtract);
+	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Intersection).Equals(resultIntersect));
+	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Union).Equals(resultUnite));
+	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Subtraction).Equals(resultSubtract));
 }
 
 TEST(BooleanOperations, OneIntersInside)
@@ -206,9 +206,9 @@ TEST(BooleanOperations, OneIntersInside)
 	resultSubtract.CloseFigure();
 
 
-	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Intersection) == resultIntersect);
-	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Union) == resultUnite);
-	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Subtraction) == resultSubtract);
+	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Intersection).Equals(resultIntersect));
+	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Union).Equals(resultUnite));
+	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Subtraction).Equals(resultSubtract));
 }
 
 TEST(BooleanOperations, OverlapOutside)
@@ -258,9 +258,9 @@ TEST(BooleanOperations, OverlapOutside)
 	resultSubtract.CloseFigure();
 
 
-	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Intersection) == resultIntersect);
-	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Union) == resultUnite);
-	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Subtraction) == resultSubtract);
+	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Intersection).Equals(resultIntersect));
+	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Union).Equals(resultUnite));
+	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Subtraction).Equals(resultSubtract));
 }
 
 TEST(BooleanOperations, OverlapInside)
@@ -312,9 +312,9 @@ TEST(BooleanOperations, OverlapInside)
 	resultSubtract.CloseFigure();
 
 
-	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Intersection) == resultIntersect);
-	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Union) == resultUnite);
-	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Subtraction) == resultSubtract);
+	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Intersection).Equals(resultIntersect));
+	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Union).Equals(resultUnite));
+	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Subtraction).Equals(resultSubtract));
 }
 
 TEST(BooleanOperations, LineIntersLine)
@@ -368,9 +368,9 @@ TEST(BooleanOperations, LineIntersLine)
 	resultSubtract.CloseFigure();
 
 
-	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Intersection) == resultIntersect);
-	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Union) == resultUnite);
-	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Subtraction) == resultSubtract);
+	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Intersection).Equals(resultIntersect));
+	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Union).Equals(resultUnite));
+	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Subtraction).Equals(resultSubtract));
 }
 
 TEST(BooleanOperations, CurveIntersLine)
@@ -415,9 +415,9 @@ TEST(BooleanOperations, CurveIntersLine)
 	resultSubtract.CloseFigure();
 
 
-	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Intersection) == resultIntersect);
-	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Union) == resultUnite);
-	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Subtraction) == resultSubtract);
+	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Intersection).Equals(resultIntersect));
+	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Union).Equals(resultUnite));
+	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Subtraction).Equals(resultSubtract));
 }
 
 TEST(BooleanOperations, CurveIntersCurve)
@@ -453,9 +453,9 @@ TEST(BooleanOperations, CurveIntersCurve)
 	resultSubtract.CloseFigure();
 
 
-	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Intersection) == resultIntersect);
-	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Union) == resultUnite);
-	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Subtraction) == resultSubtract);
+	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Intersection).Equals(resultIntersect));
+	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Union).Equals(resultUnite));
+	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Subtraction).Equals(resultSubtract));
 }
 
 TEST(BooleanOperations, RectIntersRect)
@@ -508,9 +508,9 @@ TEST(BooleanOperations, RectIntersRect)
 	resultSubtract.LineTo(55.0, 25.0);
 	resultSubtract.CloseFigure();
 
-	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Intersection) == resultIntersect);
-	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Union) == resultUnite);
-	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Subtraction) == resultSubtract);
+	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Intersection).Equals(resultIntersect));
+	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Union).Equals(resultUnite));
+	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Subtraction).Equals(resultSubtract));
 }
 
 TEST(BooleanOperations, EllipseIntersEllipse)
@@ -550,9 +550,9 @@ TEST(BooleanOperations, EllipseIntersEllipse)
 	resultSubtract.CurveTo(303.228, 82.0, 348.0, 126.772, 348.0, 182.0);
 	resultSubtract.CloseFigure();
 
-	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Intersection) == resultIntersect);
-	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Union) == resultUnite);
-	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Subtraction) == resultSubtract);
+	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Intersection).Equals(resultIntersect));
+	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Union).Equals(resultUnite));
+	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Subtraction).Equals(resultSubtract));
 }
 
 TEST(BooleanOperations, EllipseIntersCross)
@@ -621,9 +621,9 @@ TEST(BooleanOperations, EllipseIntersCross)
 	resultSubtract.CurveTo(188.228, 60, 233, 104.772, 233, 160);
 	resultSubtract.CloseFigure();
 
-	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Intersection) == resultIntersect);
-	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Union) == resultUnite);
-	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Subtraction) == resultSubtract);
+	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Intersection).Equals(resultIntersect));
+	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Union).Equals(resultUnite));
+	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Subtraction).Equals(resultSubtract));
 }
 
 TEST(BooleanOperations, TriangleIntersEllipse)
@@ -665,9 +665,9 @@ TEST(BooleanOperations, TriangleIntersEllipse)
 	resultSubtract.CurveTo(243.078, 286.812, 260.127, 260.386, 263.419, 229.839);
 	resultSubtract.CloseFigure();
 
-	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Intersection) == resultIntersect);
-	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Union) == resultUnite);
-	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Subtraction) == resultSubtract);
+	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Intersection).Equals(resultIntersect));
+	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Union).Equals(resultUnite));
+	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Subtraction).Equals(resultSubtract));
 }
 
 TEST(BooleanOperations, TwoVerticesInters)
@@ -715,9 +715,9 @@ TEST(BooleanOperations, TwoVerticesInters)
 	resultSubtract.LineTo(-300, -300);
 	resultSubtract.CloseFigure();
 
-	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Intersection) == resultIntersect);
-	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Union) == resultUnite);
-	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Subtraction) == resultSubtract);
+	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Intersection).Equals(resultIntersect));
+	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Union).Equals(resultUnite));
+	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Subtraction).Equals(resultSubtract));
 }
 
 TEST(BooleanOperations, RectIntersEllipse)
@@ -773,9 +773,9 @@ TEST(BooleanOperations, RectIntersEllipse)
 	resultSubtract.CurveTo(257.623, 242.785, 258.883, 240.478, 260, 238.092);
 	resultSubtract.CloseFigure();
 
-	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Intersection) == resultIntersect);
-	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Union) == resultUnite);
-	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Subtraction) == resultSubtract);
+	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Intersection).Equals(resultIntersect));
+	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Union).Equals(resultUnite));
+	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Subtraction).Equals(resultSubtract));
 }
 
 TEST(BooleanOperations, RectIntersCross)
@@ -869,9 +869,9 @@ TEST(BooleanOperations, RectIntersCross)
 	resultSubtract.LineTo(-89.5, 24);
 	resultSubtract.CloseFigure();
 
-	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Intersection) == resultIntersect);
-	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Union) == resultUnite);
-	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Subtraction) == resultSubtract);
+	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Intersection).Equals(resultIntersect));
+	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Union).Equals(resultUnite));
+	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Subtraction).Equals(resultSubtract));
 }
 
 TEST(BooleanOperations, CrossIntersTriangle)
@@ -977,9 +977,9 @@ TEST(BooleanOperations, CrossIntersTriangle)
 	resultSubtract.LineTo(-6, 3.5);
 	resultSubtract.CloseFigure();
 
-	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Intersection) == resultIntersect);
-	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Union) == resultUnite);
-	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Subtraction) == resultSubtract);
+	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Intersection).Equals(resultIntersect));
+	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Union).Equals(resultUnite));
+	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Subtraction).Equals(resultSubtract));
 }
 
 TEST(BooleanOperations, CrossIntersCross)
@@ -1077,9 +1077,9 @@ TEST(BooleanOperations, CrossIntersCross)
 	resultSubtract.LineTo(-72, -191);
 	resultSubtract.CloseFigure();
 
-	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Intersection) == resultIntersect);
-	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Union) == resultUnite);
-	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Subtraction) == resultSubtract);
+	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Intersection).Equals(resultIntersect));
+	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Union).Equals(resultUnite));
+	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Subtraction).Equals(resultSubtract));
 }
 
 TEST(BooleanOperations, EllipseTouchEllipse)
@@ -1119,9 +1119,9 @@ TEST(BooleanOperations, EllipseTouchEllipse)
 	resultSubtract.CurveTo(138.137, 237, 165, 210.137, 165, 177);
 	resultSubtract.CloseFigure();
 
-	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Intersection) == resultIntersect);
-	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Union) == resultUnite);
-	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Subtraction) == resultSubtract);
+	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Intersection).Equals(resultIntersect));
+	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Union).Equals(resultUnite));
+	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Subtraction).Equals(resultSubtract));
 }
 
 TEST(BooleanOperations, TriangleOverlapTriangle)
@@ -1170,7 +1170,7 @@ TEST(BooleanOperations, TriangleOverlapTriangle)
 	resultSubtract.LineTo(-200, -300);
 	resultSubtract.CloseFigure();
 
-	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Intersection) == resultIntersect);
-	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Union) == resultUnite);
-	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Subtraction) == resultSubtract);
+	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Intersection).Equals(resultIntersect));
+	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Union).Equals(resultUnite));
+	EXPECT_TRUE(Aggplus::CalcBooleanOperation(path1, path2, Aggplus::Subtraction).Equals(resultSubtract));
 }

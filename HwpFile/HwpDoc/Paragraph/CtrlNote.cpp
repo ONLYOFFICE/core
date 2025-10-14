@@ -1,5 +1,7 @@
 #include "CtrlNote.h"
 
+#include "../Common/NodeNames.h"
+
 namespace HWP
 {
 CCtrlNote::CCtrlNote()
@@ -16,14 +18,14 @@ CCtrlNote::CCtrlNote(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, 
 	m_bFullFilled = true;
 }
 
-CCtrlNote::CCtrlNote(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVersion)
+CCtrlNote::CCtrlNote(const HWP_STRING& sCtrlID, CXMLReader& oReader, EHanType eType)
 	: CCtrl(sCtrlID)
 {
-	for (CXMLNode& oChild : oNode.GetChilds(L"hp:subList"))
-	{
-		for (CXMLNode& oGrandChild : oChild.GetChilds(L"hp:p"))
-			m_arParas.push_back(new CHWPPargraph(oGrandChild, nVersion));
-	}
+	WHILE_READ_NEXT_NODE_WITH_ONE_NAME(oReader, GetNodeName(ENode::ParaList, eType))
+		WHILE_READ_NEXT_NODE_WITH_DEPTH_ONE_NAME(oReader, Child, GetNodeName(ENode::Paragraph, eType))
+			m_arParas.push_back(new CHWPPargraph(oReader, eType));
+		END_WHILE
+	END_WHILE
 
 	m_bFullFilled = true;
 }

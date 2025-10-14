@@ -56,6 +56,23 @@ void ConnGrbitDbtOledb::load(CFRecord& record)
 	fSrvSupportsClientCube	= GETBIT(flags, 11);
 }
 
+void ConnGrbitDbtOledb::save(CFRecord& record)
+{
+	unsigned short flags = 0;
+
+	SETBITS(flags, 0, 2, dbost)
+	SETBIT(flags, 3, fLocalConn)
+	SETBIT(flags, 4, fNoRefreshCube)
+	SETBIT(flags, 5, fUseOfficeLcid)
+	SETBIT(flags, 6, fSrvFmtNum)
+	SETBIT(flags, 7, fSrvFmtBack)
+	SETBIT(flags, 8, fSrvFmtFore)
+	SETBIT(flags, 9, fSrvFmtFlags)
+	SETBIT(flags, 10, fSupportsLangCellProp)
+	SETBIT(flags, 11, fSrvSupportsClientCube)
+
+	record 	<< flags;
+}
 
 } // namespace XLS
 

@@ -384,23 +384,32 @@ namespace OOX
 				pItem = new Logic::CSdt( document );
 			else if (L"sectPr" == sName )
 			{
-				m_oSectPr = new Logic::CSectionProperty( document );
-				m_oSectPr->fromXML(oReader);
-//-------------------------------------------------------------------------
-				OOX::CDocx* docx = dynamic_cast<OOX::CDocx*>(document);
-				OOX::CDocument* document = docx ? (docx->m_bGlossaryRead ? docx->m_oGlossary.document : (docx->m_oMain.document ? docx->m_oMain.document : this)) : this;
+				Logic::CSectionProperty *pSectPr = new Logic::CSectionProperty( document );
+				pSectPr->fromXML(oReader);
 
-				if (document)
+				if (pSectPr->m_bEmpty)
 				{
-					if (document->m_arrSections.empty())
-					{
-						OOX::CDocument::_section section;
-						document->m_arrSections.push_back(section);
-					}
-					document->m_arrSections.back().sect = m_oSectPr.GetPointer();
-					document->m_arrSections.back().end_elm = document->m_arrItems.size(); //активный рутовый еще не добавлен
+					delete pSectPr;
+					pSectPr = NULL;
 				}
-//-------------------------------------------------------------------------
+				else
+				{
+					m_oSectPr = pSectPr;
+
+					OOX::CDocx* docx = dynamic_cast<OOX::CDocx*>(document);
+					OOX::CDocument* document = docx ? (docx->m_bGlossaryRead ? docx->m_oGlossary.document : (docx->m_oMain.document ? docx->m_oMain.document : this)) : this;
+
+					if (document)
+					{
+						if (document->m_arrSections.empty())
+						{
+							OOX::CDocument::_section section;
+							document->m_arrSections.push_back(section);
+						}
+						document->m_arrSections.back().sect = m_oSectPr.GetPointer();
+						document->m_arrSections.back().end_elm = document->m_arrItems.size(); //активный рутовый еще не добавлен
+					}
+				}
 			}
 			else if (L"tbl" == sName )
 				pItem = new Logic::CTbl( document );

@@ -62,5 +62,20 @@ void SxItm::readFields(CFRecord& record)
 	}
 }
 
+void SxItm::writeFields(CFRecord& record)
+{
+    const auto maxRecSize = 8224;
+    while(!rgisxvi.empty())
+    {
+        record << rgisxvi.at(0);
+        if(record.getRdPtr() > maxRecSize)
+        {
+            record.RollRdPtrBack(2);
+            return;
+        }
+        rgisxvi.erase(rgisxvi.begin());
+    }
+}
+
 } // namespace XLS
 

@@ -54,6 +54,10 @@ void CalcCount::readFields(CFRecord& record)
 {
 	record >> cIter;
 }
+void CalcCount::writeFields(CFRecord& record)
+{
+    record << cIter;
+}
 
 } // namespace XLS
 

@@ -48,28 +48,28 @@ public:
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 
 	static const ElementType	type = typeSxSelect;
 
-	unsigned char	pnn;		//enum PaneType
+    unsigned char	pnn = 0;		//enum PaneType
 	SXAxis			sxaxisAct;
-	unsigned short	iDimAct;
-	unsigned short	iLiStart;
-	unsigned short	iLiAct;
-	unsigned short	iLiMin;
-	unsigned short	iLiMax;
-	RwU				rwClick;
-	ColU			colClick;
-	RwU				rwClickPrev;
-	ColU			colClickPrev;
+    unsigned short	iDimAct = 0;
+    unsigned short	iLiStart = 0;
+    unsigned short	iLiAct = 0;
+    unsigned short	iLiMin = 0;
+    unsigned short	iLiMax = 0;
+    RwU				rwClick = 0;
+    ColU			colClick = 0;
+    RwU				rwClickPrev = 0;
+    ColU			colClickPrev = 0;
 
-	unsigned char	cClick;
-	bool			fLabelOnly;
-	bool			fDataOnly;
-	bool			fToggleDataHeader;
-	bool			fSelectionClick;
-	bool			fExtendable;
-
+    unsigned char	cClick = 0;
+    bool			fLabelOnly = false;
+    bool			fDataOnly = false;
+    bool			fToggleDataHeader = false;
+    bool			fSelectionClick = false;
+    bool			fExtendable = false;
 };
 
 } // namespace XLS

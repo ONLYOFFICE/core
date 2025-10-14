@@ -151,6 +151,15 @@ const bool CELL::loadContent(BinProcessor& proc)
 	return true;
 }
 
+const bool CELL::saveContent(BinProcessor& proc)
+{
+    if(cellContent != nullptr)
+        proc.mandatory(*cellContent);
+    else
+        return false;
+    return true;
+}
+
 int CELL::serialize(std::wostream & stream)
 {
 	CP_XML_WRITER(stream)    

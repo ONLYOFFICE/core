@@ -24,6 +24,10 @@ def _loadLibrary(path):
         library_name = 'libdocbuilder.c.so'
     elif 'darwin' == os_name:
         library_name = 'libdocbuilder.c.dylib'
+        # if there is no dylib file, get library from framework
+        if not os.path.exists(path + '/' + library_name):
+            path = path + '/docbuilder.c.framework'
+            library_name = 'docbuilder.c'
 
     _lib = ctypes.CDLL(path + '/' + library_name)
 
@@ -437,7 +441,7 @@ class CDocBuilderValue:
                 return CDocBuilderValue(OBJECT_HANDLE(_lib.CDocBuilderValue_Call6(self._internal, ctypes.c_wchar_p(name), values[0]._internal, values[1]._internal, values[2]._internal, values[3]._internal, values[4]._internal, values[5]._internal)))
         else:
             raise TypeError("Call() expects at most 6 arguments")
-            
+
     def append(self, value):
         if not self.IsArray():
             raise TypeError("Object is not an array")

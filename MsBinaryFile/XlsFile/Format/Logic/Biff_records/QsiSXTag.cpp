@@ -92,5 +92,36 @@ void QsiSXTag::readFields(CFRecord& record)
 	record.skipNunBytes(skip);
 }
 
+void QsiSXTag::writeFields(CFRecord& record)
+{
+	frtHeaderOld.rt = rt_QsiSXTag;
+	unsigned short	flags = 0;
+	SETBIT(flags, 0, fEnableRefresh)
+	SETBIT(flags, 1, fInvalid)
+	SETBIT(flags, 2, fTensorEx)
+	record << frtHeaderOld << fSx << flags;
+	if (fSx)
+	{
+		//dwQsiFuture is SXView9Save
+		SETBIT(dwQsiFuture, 0, fNoStencil)
+		SETBIT(dwQsiFuture, 1, fHideTotAnnotation)
+		SETBIT(dwQsiFuture, 3, fIncludeEmptyRw)
+		SETBIT(dwQsiFuture, 4, fIncludeEmptyCol)
+	}
+	else
+	{
+		//dwQsiFuture is DwQsiFuture
+		SETBIT(dwQsiFuture, 0, fPreserveFmt)
+		SETBIT(dwQsiFuture, 1, fAutoFit)
+		SETBIT(dwQsiFuture, 4, fExtDataList)
+		SETBIT(dwQsiFuture, 6, fCreateQTList)
+		SETBIT(dwQsiFuture, 7, fDummyList)
+	}
+	record << dwQsiFuture << verSxLastUpdated << verSxUpdatableMin << obCchName;
+	record.reserveNunBytes(1);
+	record << stName;
+	record.reserveNunBytes(2);
+}
+
 } // namespace XLS
 

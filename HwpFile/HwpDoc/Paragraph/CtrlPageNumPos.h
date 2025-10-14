@@ -4,7 +4,7 @@
 #include "Ctrl.h"
 #include "../HWPStream.h"
 #include "../HWPElements/HwpRecordTypes.h"
-#include "../Common/XMLNode.h"
+#include "../Common/XMLReader.h"
 
 namespace HWP
 {
@@ -34,7 +34,7 @@ class CCtrlPageNumPos : public CCtrl
 public:
 	CCtrlPageNumPos(const HWP_STRING& sCtrlID);
 	CCtrlPageNumPos(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
-	CCtrlPageNumPos(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVersion);
+	CCtrlPageNumPos(const HWP_STRING& sCtrlID, CXMLReader& oReader, EHanType eType);
 
 	ENumPos GetPos() const;
 

@@ -67,6 +67,30 @@ const bool PIVOTPI::loadContent(BinProcessor& proc)
 	return true;
 }
 
+const bool PIVOTPI::saveContent(BinProcessor& proc)
+{
+    if(m_SXPI == nullptr)
+        return false;
+    proc.mandatory(*m_SXPI);
+    auto castedPtr = static_cast<SXPI*>(m_SXPI.get());
+    const auto maxRecSize = 8224;
+    const auto continueElemSize = 6;
+    while(!castedPtr->m_arItems.empty())
+    {
+        Continue continueRecord;
+        if(castedPtr->m_arItems.size() < maxRecSize/continueElemSize)
+            continueRecord.m_iDataSize = castedPtr->m_arItems.size() * continueElemSize;
+        else
+            continueRecord.m_iDataSize = maxRecSize;
+        continueRecord.m_pData = new char[continueRecord.m_iDataSize];
+        memcpy(continueRecord.m_pData, castedPtr->m_arItems.data(), continueRecord.m_iDataSize);
+        proc.mandatory(continueRecord);
+        castedPtr->m_arItems.erase(castedPtr->m_arItems.begin(),
+            castedPtr->m_arItems.begin() + (continueRecord.m_iDataSize/continueElemSize));
+    }
+    return true;
+}
+
 int PIVOTPI::serialize(std::wostream & strm)
 {
 	SXPI* page_items = dynamic_cast<SXPI*>(m_SXPI.get());

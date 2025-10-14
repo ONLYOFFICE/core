@@ -1046,6 +1046,28 @@ int CFontFile::GetGIDByUnicode(int code)
 	return unGID;
 }
 
+int CFontFile::GetUnicodeByGID(int gid)
+{
+	if (!m_pFace)
+		return 0;
+
+	FT_ULong charcode;
+	FT_UInt gindex;
+
+	charcode = FT_Get_First_Char(m_pFace, &gindex);
+
+	while (gindex != 0)
+	{
+		if (gindex == gid)
+		{
+			return charcode;
+		}
+		charcode = FT_Get_Next_Char(m_pFace, charcode, &gindex);
+	}
+
+	return 0;
+}
+
 INT CFontFile::GetString(CGlyphString& oString)
 {
 	int nCountGlyph = oString.GetLength();

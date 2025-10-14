@@ -215,7 +215,7 @@ void RtfShape::SetDefault()
 	DEFAULT_PROPERTY( m_nConnectorStyle )
 
 //Fill
-	DEFAULT_PROPERTY_DEF( m_bFilled, true )
+    DEFAULT_PROPERTY_DEF( m_bFilled, true )
 	DEFAULT_PROPERTY( m_nFillType )
 	DEFAULT_PROPERTY( m_nFillColor )
 	DEFAULT_PROPERTY( m_nFillColor2 )
@@ -945,8 +945,13 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 			sShapeStart += L" o:spt=\"" + std::to_wstring(m_nShapeType) + L"\"";
 		}
 
-		if (0 == m_bFilled || (m_nFillColor == PROP_DEF && m_nFillColor2 == PROP_DEF && m_nFillType == PROP_DEF))
-			sShapeStart += L" filled=\"f\""; //сф_850000158725_R7_M194_МО_Q194.rtf
+        if (0 == m_bFilled || (m_nFillColor == PROP_DEF && m_nFillColor2 == PROP_DEF && m_nFillType == PROP_DEF))
+        {
+            if (1 == m_bFilled)
+                sShapeStart += L" filled=\"t\"";
+            else
+                sShapeStart += L" filled=\"f\""; //сф_850000158725_R7_M194_МО_Q194.rtf
+        }
 		else
 			sShapeStart += L" filled=\"t\"";
 
@@ -1193,7 +1198,7 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 	else if (PROP_DEF != m_nZOrder)
 	{
 		if (0 == m_nZOrderRelative) nZIndex = m_nZOrder;
-		else nZIndex = -m_nZOrder;
+        else nZIndex = -abs(m_nZOrder) - 1;
 	}
 	else if (oRenderParameter.nType !=  RENDER_TO_OOX_PARAM_SHAPE_CHILD)
 	{
@@ -1454,7 +1459,24 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
             sShapeNodes += L" inset=\"" + std::to_wstring((int)RtfUtility::Emu2Pt(m_nTexpLeft)) + L"pt,"
                                     + std::to_wstring((int)RtfUtility::Emu2Pt(m_nTexpTop)) + L"pt,"
                                     + std::to_wstring((int)RtfUtility::Emu2Pt(m_nTexpRight)) + L"pt,"
-                                    + std::to_wstring((int)RtfUtility::Emu2Pt(m_nTexpBottom)) + L"pt\">";
+                                    + std::to_wstring((int)RtfUtility::Emu2Pt(m_nTexpBottom)) + L"pt\"";
+            if (m_nTxflTextFlow != PROP_DEF)
+            {
+                switch (m_nTxflTextFlow)
+                {
+                case 0:
+                    break;
+                case 1:
+                    sShapeNodes += L" style=\"mso-layout-flow-alt:vertical-ideographic\"";
+                    break;
+                case 2:
+                    sShapeNodes += L" style=\"mso-layout-flow-alt:vertical\"";
+                    break;
+                default:
+                    break;
+                }
+            }
+            sShapeNodes += L">";
 		}
 		else  
 			sShapeNodes += L">";

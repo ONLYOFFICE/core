@@ -50,11 +50,12 @@ public:
 
 	
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 
 	static const ElementType	type = typeDxGCol;
 
 //-----------------------------
-	_UINT16 dxgCol;
+    _UINT16 dxgCol = 0xFFFF;
 };
 
 } // namespace XLS

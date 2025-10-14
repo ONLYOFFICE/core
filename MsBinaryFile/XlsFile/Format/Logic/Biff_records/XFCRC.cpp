@@ -55,5 +55,13 @@ void XFCRC::readFields(CFRecord& record)
 	record >> cxfs >> crc;
 }
 
+void XFCRC::writeFields(CFRecord& record)
+{
+    frtHeader.rt =  0x87C;
+    record << frtHeader;
+    record.reserveNunBytes(2); // reserved
+    record << cxfs << crc;
+}
+
 } // namespace XLS
 

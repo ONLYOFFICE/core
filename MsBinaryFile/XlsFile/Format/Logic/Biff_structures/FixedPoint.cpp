@@ -72,6 +72,17 @@ void FixedPoint::load(IBinaryReader* reader)
 	dVal =  Integral + Fractional/65536.;
 }
 
+void FixedPoint::save(XLS::CFRecord& record)
+{
+    if(Fractional== 0 && Integral == 0 && dVal != 0)
+    {
+        Integral = dVal;
+        double tempValue = dVal - Integral;
+        Fractional = tempValue * 65536.;
+
+    }
+    record << Integral << Fractional;
+}
 
 } // namespace OSHARED
 

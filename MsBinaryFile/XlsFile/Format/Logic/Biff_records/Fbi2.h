@@ -50,11 +50,12 @@ public:
 	static const ElementType type = typeFbi2;
 
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 
-	unsigned short	dmixBasis;
-	unsigned short	dmiyBasis;
-	unsigned short	twpHeightBasis;
-	bool			scab;
+    unsigned short	dmixBasis = 0;
+    unsigned short	dmiyBasis = 0;
+    unsigned short	twpHeightBasis = 0;
+    bool			scab = false;
 	FontIndex		ifnt;
 
 };

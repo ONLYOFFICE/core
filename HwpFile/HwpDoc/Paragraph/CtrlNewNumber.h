@@ -13,7 +13,7 @@ class CCtrlNewNumber : public CCtrl
 public:
 	CCtrlNewNumber(const HWP_STRING& sCtrlID);
 	CCtrlNewNumber(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
-	CCtrlNewNumber(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVersion);
+	CCtrlNewNumber(const HWP_STRING& sCtrlID, CXMLReader& oReader, EHanType eType);
 
 	ECtrlObjectType GetCtrlType() const override;
 

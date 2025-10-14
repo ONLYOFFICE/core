@@ -1,5 +1,7 @@
 #include "CtrlEqEdit.h"
 
+#include "../Common/NodeNames.h"
+
 namespace HWP
 {
 CCtrlEqEdit::CCtrlEqEdit()
@@ -17,23 +19,53 @@ CCtrlEqEdit::CCtrlEqEdit(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuff
 	: CCtrlGeneralShape(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
 
-CCtrlEqEdit::CCtrlEqEdit(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVersion)
-	: CCtrlGeneralShape(sCtrlID)
+CCtrlEqEdit::CCtrlEqEdit(const HWP_STRING& sCtrlID, CXMLReader& oReader, EHanType eType)
+	: CCtrlGeneralShape(sCtrlID, oReader, eType)
 {
-	m_sVersion = oNode.GetAttribute(L"version");
-	m_nBaseline = oNode.GetAttributeInt(L"baseLine");
-	m_nColor = oNode.GetAttributeColor(L"textColor");
-	m_nCharSize = oNode.GetAttributeInt(L"baseUnit");
+	START_READ_ATTRIBUTES(oReader)
+	{
+		if (GetAttributeName(EAttribute::Version, eType) == sAttributeName)
+			m_sVersion = oReader.GetText();
+		else if (GetAttributeName(EAttribute::BaseLine, eType) == sAttributeName)
+			m_nBaseline = oReader.GetInt();
+		else if (GetAttributeName(EAttribute::TextColor, eType) == sAttributeName)
+			m_nColor = oReader.GetColor();
+		else if (GetAttributeName(EAttribute::BaseUnit, eType) == sAttributeName)
+			m_nCharSize = oReader.GetInt();
+		else if (GetAttributeName(EAttribute::LineMode, eType) == sAttributeName)
+		{
+			switch(eType)
+			{
+				case EHanType::HWPX:
+				{
+					const std::string sType{oReader.GetTextA()};
 
-	HWP_STRING sType = oNode.GetAttribute(L"lineMode");
+					if ("LINE" == sType)
+						m_nAttr = 1;
+					else if ("CHAR" == sType)
+						m_nAttr = 0;
 
-	if (L"LINE" == sType)
-		m_nAttr = 1;
-	else if (L"CHAR" == sType)
-		m_nAttr = 0;
+					break;
+				}
+				case EHanType::HWPML:
+					m_nAttr = oReader.GetBool();
+				default:
+					break;
+			}
+		}
+		else if (EHanType::HWPX == eType && "font" == sAttributeName)
+			m_sFont = oReader.GetText();
+	}
+	END_READ_ATTRIBUTES(oReader)
 
-	m_sFont = oNode.GetAttribute(L"font");
-	m_sEqn = oNode.GetChild(L"hp:script").GetText();
+	WHILE_READ_NEXT_NODE(oReader)
+	{
+		if (GetNodeName(ENode::Script, eType) == oReader.GetName())
+			m_sEqn = oReader.GetText();
+		else
+			CCtrlGeneralShape::ParseChildren(oReader, eType);
+	}
+	END_WHILE
 
 	m_bFullFilled = true;
 }

@@ -56,5 +56,11 @@ void SerAuxTrend::readFields(CFRecord& record)
 	record >> regt >> ordUser >> numIntercept >> fEquation >> fRSquared >> numForecast >> numBackcast;
 }
 
+void SerAuxTrend::writeFields(CFRecord& record)
+{
+
+	record << regt << ordUser << numIntercept << fEquation << fRSquared << numForecast << numBackcast;
+}
+
 } // namespace XLS
 

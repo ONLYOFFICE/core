@@ -86,5 +86,48 @@ void MDTInfo::readFields(CFRecord& record)
 	record >> stName;
 }
 
+void MDTInfo::writeFields(CFRecord& record)
+{
+	frtHeader.rt = rt_MDTInfo;
+	record << frtHeader;
+	_UINT32 flags = 0;
+
+	SETBIT(flags, 0, fGhostRow)
+	SETBIT(flags, 1, fGhostCol)
+	SETBIT(flags, 2, fEdit)
+	SETBIT(flags, 3, fDelete)
+	SETBIT(flags, 4, fCopy)
+	SETBIT(flags, 5, fPasteAll)
+	SETBIT(flags, 6, fPasteFormulas)
+	SETBIT(flags, 7, fPasteValues)
+	SETBIT(flags, 8, fPasteFormats)
+	SETBIT(flags, 9, fPasteComments)
+	SETBIT(flags, 10, fPasteDataValidation)
+	SETBIT(flags, 11, fPasteBorders)
+	SETBIT(flags, 12, fPasteColWidths)
+	SETBIT(flags, 13, fPasteNumberFormats)
+	SETBIT(flags, 14, fMerge)
+	SETBIT(flags, 15, fSplitFirst)
+	SETBIT(flags, 16, fSplitAll)
+	SETBIT(flags, 17, fRowColShift)
+	SETBIT(flags, 18, fClearAll)
+	SETBIT(flags, 19, fClearFormats)
+	SETBIT(flags, 20, fClearContents)
+	SETBIT(flags, 21, fClearComments)
+	SETBIT(flags, 22, fAssign)
+	SETBIT(flags, 28, fCoerce)
+	SETBIT(flags, 29, fAdjust)
+	SETBIT(flags, 30, fCellMeta)
+
+	record << flags;
+	if(stName.getSize() <= 4104)
+		record << stName;
+	else
+	{
+		LPWideString tempVal = stName.value().substr(0, 4104);
+		record << tempVal;
+	}
+}
+
 } // namespace XLS
 

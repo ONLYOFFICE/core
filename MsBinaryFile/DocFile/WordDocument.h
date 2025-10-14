@@ -256,7 +256,7 @@ namespace DocFileFormat
 
 
 		AnnotationReferenceExDescriptors* AnnotationsReferencesEx;
-		//------------------------------------------------------------------------------
-		void CorrectColor(ODRAW::OfficeArtCOLORREF& color, int base_color);
+//------------------------------------------------------------------------------
+		void CorrectColor(ODRAW::OfficeArtCOLORREF& color, int base_color, int type = 1); //fill, back, shadow, text, border
 	};
 }

@@ -172,6 +172,7 @@ void pptx_xml_slideLayout::write_to(std::wostream & strm)
 			CP_XML_ATTR(L"xmlns:p15",	L"http://schemas.microsoft.com/office/powerpoint/2012/main"); 
 			CP_XML_ATTR(L"xmlns:mc",	L"http://schemas.openxmlformats.org/markup-compatibility/2006");
       
+			CP_XML_ATTR(L"preserve", 1);
 			//if (slideLayoutData_.str().length()<0)
 			//	CP_XML_ATTR(L"type",L"cust");//---------------------------!!!!!!!!!!!!
 			//else
@@ -279,7 +280,9 @@ void pptx_xml_slideMaster::write_to(std::wostream & strm)
 			CP_XML_ATTR(L"xmlns:p14",	L"http://schemas.microsoft.com/office/powerpoint/2010/main"); 
 			CP_XML_ATTR(L"xmlns:p15",	L"http://schemas.microsoft.com/office/powerpoint/2012/main"); 
 			CP_XML_ATTR(L"xmlns:mc",	L"http://schemas.openxmlformats.org/markup-compatibility/2006");
-           
+			
+			CP_XML_ATTR(L"preserve", 1);
+
 			CP_XML_NODE(L"p:cSld")
             {
 				CP_XML_STREAM() << strmBackground_.str();

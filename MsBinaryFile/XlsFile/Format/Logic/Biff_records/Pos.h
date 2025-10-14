@@ -49,6 +49,7 @@ public:
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 
 	GlobalWorkbookInfoPtr	pGlobalWorkbookInfoPtr;
 		
@@ -56,18 +57,18 @@ public:
 
 	static const ElementType	type = typePos;
 
-	_UINT16 mdTopLt;
-	_UINT16 mdBotRt;
+    _UINT16 mdTopLt = 0;
+    _UINT16 mdBotRt = 0;
 	
-	_INT16 x1;
-	_INT16 y1;
-	_INT16 x2;
-	_INT16 y2;
+    _INT16 x1 = 0;
+    _INT16 y1 = 0;
+    _INT16 x2 = 0;
+    _INT16 y2 = 0;
 
 //-----------------------------
 
-	int				m_iLayoutTarget;
-	short			m_iLinkObject;
+    int				m_iLayoutTarget = 0;
+    short			m_iLinkObject = 0;
 
 	BaseObjectPtr	m_Frame;
 

@@ -1113,13 +1113,6 @@ namespace OOX
 		}
 		void CShadow::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Выставляем значения по умолчанию
-				m_oColor.SetRGB( 128, 128, 128 );
-				m_oColor2.SetRGB( 203, 203, 203 );
-				m_oOffset.SetValue_Points( 2, 2 );
-				m_oOffset2.SetValue_Points( -2, -2 );
-				m_oOrigin.SetValue( 0, 0 );
-
 				if ( oReader.GetAttributesCount() <= 0 )
 					return;
 

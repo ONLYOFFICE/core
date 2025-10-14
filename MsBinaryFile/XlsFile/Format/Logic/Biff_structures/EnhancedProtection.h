@@ -49,23 +49,23 @@ public:
 	static const ElementType	type = typeEnhancedProtection;
 
 	virtual void load(CFRecord& record);
+	virtual void save(CFRecord& record);
 
-
-	bool iprotObjects;
-	bool iprotScenarios;
-	bool iprotFormatCells;
-	bool iprotFormatColumns;
-	bool iprotFormatRows;
-	bool iprotInsertColumns;
-	bool iprotInsertRows;
-	bool iprotInsertHyperlinks;
-	bool iprotDeleteColumns;
-	bool iprotDeleteRows;
-	bool iprotSelLockedCells;
-	bool iprotSort;
-	bool iprotAutoFilter;
-	bool iprotPivotTables;
-	bool iprotSelUnlockedCells;
+	bool iprotObjects = false;
+	bool iprotScenarios = false;
+	bool iprotFormatCells = false;
+	bool iprotFormatColumns = false;
+	bool iprotFormatRows = false;
+	bool iprotInsertColumns = false;
+	bool iprotInsertRows = false;
+	bool iprotInsertHyperlinks = false;
+	bool iprotDeleteColumns = false;
+	bool iprotDeleteRows = false;
+	bool iprotSelLockedCells = false;
+	bool iprotSort = false;
+	bool iprotAutoFilter = false;
+	bool iprotPivotTables = false;
+	bool iprotSelUnlockedCells = false;
 };
 
 } // namespace XLS

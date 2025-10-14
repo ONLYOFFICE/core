@@ -192,6 +192,38 @@ CFile.prototype._UndoMergePages = function()
 	return Module["_UnmergePages"](this.nativeFile) == 1;
 };
 
+CFile.prototype._RedactPage = function(pageIndex, arrRedactBox, arrayBufferFiller)
+{
+	let changesPtr = 0;
+	let changesLen = 0;
+	if (arrayBufferFiller)
+	{
+		let changes = new Uint8Array(arrayBufferFiller);
+		changesLen = changes.length;
+		changesPtr = Module["_malloc"](changesLen);
+		Module["HEAP8"].set(changes, changesPtr);
+	}
+
+	let memoryBuffer = new Int32Array(arrRedactBox.length);
+	for (let i = 0; i < arrRedactBox.length; i++)
+        memoryBuffer[i] = Math.round(arrRedactBox[i] * 10000);
+
+	let pointer = Module["_malloc"](memoryBuffer.length * 4);
+	Module["HEAP32"].set(memoryBuffer, pointer >> 2);
+
+	let bRes = Module["_RedactPage"](this.nativeFile, pageIndex, pointer, memoryBuffer.length / 8, changesPtr, changesLen);
+	changesPtr = 0; // Success or not, changesPtr is either taken or freed
+
+	Module["_free"](pointer);
+
+	return bRes == 1;
+};
+
+CFile.prototype._UndoRedact = function()
+{
+	return Module["_UndoRedact"](this.nativeFile) == 1;
+};
+
 // FONTS
 CFile.prototype._isNeedCMap = function()
 {

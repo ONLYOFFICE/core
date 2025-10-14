@@ -91,6 +91,10 @@ isEqual(QT_MAJOR_VERSION, 5) {
 
 greaterThan(QT_MAJOR_VERSION, 5) {
 	DEFINES += QT_VERSION_6
+
+	core_windows {
+		QMAKE_CXXFLAGS += /permissive-
+	}
 }
 
 ios {
@@ -107,6 +111,10 @@ win32:contains(QMAKE_TARGET.arch, x86_64): {
 }
 win32:!contains(QMAKE_TARGET.arch, x86_64): {
 	CONFIG += core_win_32
+}
+win32:contains(QMAKE_TARGET.arch, arm64): {
+	CONFIG -= core_win_32
+	CONFIG += core_win_arm64
 }
 
 linux-clang-libc++ {
@@ -177,18 +185,12 @@ mac {
 	}
 }
 
-gcc {
-	COMPILER_VERSION = $$system($$QMAKE_CXX " -dumpversion")
-	COMPILER_MAJOR_VERSION_ARRAY = $$split(COMPILER_VERSION, ".")
-	COMPILER_MAJOR_VERSION = $$member(COMPILER_MAJOR_VERSION_ARRAY, 0)
-	lessThan(COMPILER_MAJOR_VERSION, 5): CONFIG += build_gcc_less_5
-	lessThan(COMPILER_MAJOR_VERSION, 6): CONFIG += build_gcc_less_6
-}
-
 # DEFINES
 core_windows {
 	DEFINES += WIN32 _WIN32
 	DEFINES += NOMINMAX
+
+	#DEFINES += WIN32_LEAN_AND_MEAN
 
 	# use default _ITERATOR_DEBUG_LEVEL value
 	#core_debug:DEFINES += "_ITERATOR_DEBUG_LEVEL=0"
@@ -199,7 +201,36 @@ core_win_64 {
 
 core_linux {
 	DEFINES += LINUX _LINUX
+
+    QMAKE_CUSTOM_SYSROOT = $$(QMAKE_CUSTOM_SYSROOT)
+	QMAKE_CUSTOM_SYSROOT_BIN = $$(QMAKE_CUSTOM_SYSROOT)/usr/bin/
+
+    core_linux_64 {
+	    !linux_arm64 { # x86_64
+		    QMAKE_CUSTOM_SYSROOT_LIB = $$(QMAKE_CUSTOM_SYSROOT)/usr/lib/x86_64-linux-gnu
+			!isEmpty(QMAKE_CUSTOM_SYSROOT) {
+			    message("using custom sysroot $$QMAKE_CUSTOM_SYSROOT")
+				QMAKE_CC          = $$join(QMAKE_CUSTOM_SYSROOT_BIN, , , "gcc")
+				QMAKE_CXX         = $$join(QMAKE_CUSTOM_SYSROOT_BIN, , , "g++")
+				QMAKE_LINK        = $$join(QMAKE_CUSTOM_SYSROOT_BIN, , , "g++")
+				QMAKE_LINK_SHLIB  = $$join(QMAKE_CUSTOM_SYSROOT_BIN, , , "g++")
+
+                QMAKE_CFLAGS      += --sysroot $$QMAKE_CUSTOM_SYSROOT
+				QMAKE_CXXFLAGS    += --sysroot $$QMAKE_CUSTOM_SYSROOT
+				QMAKE_LFLAGS      += --sysroot $$QMAKE_CUSTOM_SYSROOT
+			}
+		}
+	}
 }
+
+gcc {
+    COMPILER_VERSION = $$system($$QMAKE_CXX " -dumpversion")
+	COMPILER_MAJOR_VERSION_ARRAY = $$split(COMPILER_VERSION, ".")
+	COMPILER_MAJOR_VERSION = $$member(COMPILER_MAJOR_VERSION_ARRAY, 0)
+	lessThan(COMPILER_MAJOR_VERSION, 5): CONFIG += build_gcc_less_5
+	lessThan(COMPILER_MAJOR_VERSION, 6): CONFIG += build_gcc_less_6
+}
+
 core_linux_host_arm64 {
 	message("build on arm64")
 	DEFINES += _ARM_ALIGN_
@@ -211,7 +242,11 @@ core_mac {
 	QMAKE_LFLAGS += -isysroot $$QMAKE_MAC_SDK_PATH
 
 	# xcode15 add new linker
-	QMAKE_LFLAGS += -Wl,-ld_classic
+	greaterThan(QMAKE_XCODE_VERSION, 1499) {
+		QMAKE_LFLAGS += -Wl,-ld_classic
+	} else {
+		CONFIG += c++14
+	}
 
 	QMAKE_CFLAGS += "-Wno-implicit-function-declaration"
 
@@ -228,8 +263,8 @@ core_linux_clang {
 # PREFIXES
 core_windows {
 	CONFIG -= debug_and_release debug_and_release_target
-	QMAKE_CXXFLAGS_RELEASE -= -Zc:strictStrings
-	QMAKE_CXXFLAGS -= -Zc:strictStrings
+	QMAKE_CXXFLAGS_RELEASE += /Zc:strictStrings-
+	QMAKE_CXXFLAGS += /Zc:strictStrings-
 	QMAKE_CXXFLAGS += /MP
 
 	MSVC_VERSION_DETECT = $$(VisualStudioVersion)
@@ -285,6 +320,9 @@ core_win_32 {
 core_win_64 {
 	CORE_BUILDS_PLATFORM_PREFIX = win_64
 }
+core_win_arm64 {
+    CORE_BUILDS_PLATFORM_PREFIX = win_arm64
+}
 core_linux_32 {
 	CORE_BUILDS_PLATFORM_PREFIX = linux_32
 }
@@ -311,8 +349,8 @@ linux_arm64 {
 
 	!isEmpty(ARM64_TOOLCHAIN_BIN){
 		!isEmpty(ARM64_TOOLCHAIN_BIN_PREFIX){
-
 			ARM64_TOOLCHAIN_BIN_FULL = $$ARM64_TOOLCHAIN_BIN/$$ARM64_TOOLCHAIN_BIN_PREFIX
+			message("using arm64 toolchain $$ARM64_TOOLCHAIN_BIN")
 
 			QMAKE_CC          = $$join(ARM64_TOOLCHAIN_BIN_FULL, , , "gcc")
 			QMAKE_CXX         = $$join(ARM64_TOOLCHAIN_BIN_FULL, , , "g++")
@@ -572,42 +610,45 @@ core_windows {
 DEFINES += CRYPTOPP_DISABLE_ASM
 }
 
-core_ios:CONFIG+=support_bundle_dylibs
+core_ios|core_mac {
+	CONFIG += support_bundle_dylibs
+}
 
 !support_bundle_dylibs:CONFIG-=bundle_dylibs
 
-core_ios {
-	bundle_dylibs {
-		plugin {
-			CONFIG -= plugin
-			CONFIG += lib_bundle
+bundle_dylibs {
+	plugin {
+		CONFIG -= plugin
+		CONFIG += lib_bundle
 
-			QMAKE_LFLAGS_SONAME = -Wl,-install_name,@rpath/
-			#QMAKE_LFLAGS += -Xlinker -rpath -Xlinker @executable_path/Frameworks
-			#QMAKE_LFLAGS += -Xlinker -rpath -Xlinker @loader_path/Frameworks
+		QMAKE_LFLAGS_SONAME = -Wl,-install_name,@rpath/
+		#QMAKE_LFLAGS += -Xlinker -rpath -Xlinker @executable_path/Frameworks
+		#QMAKE_LFLAGS += -Xlinker -rpath -Xlinker @loader_path/Frameworks
 
-			# correct version to < 256
-			VERSIONS = $$split(VERSION, ".")
-			VERSION_1 = $$member(VERSIONS, 0)
-			VERSION_2 = $$member(VERSIONS, 1)
-			VERSION_3 = $$member(VERSIONS, 2)
-			VERSION_4 = $$member(VERSIONS, 3)
+		# correct version to < 256
+		VERSIONS = $$split(VERSION, ".")
+		VERSION_1 = $$member(VERSIONS, 0)
+		VERSION_2 = $$member(VERSIONS, 1)
+		VERSION_3 = $$member(VERSIONS, 2)
+		VERSION_4 = $$member(VERSIONS, 3)
 
-			greaterThan(VERSION_1, 255): VERSION_1 = 255
-			greaterThan(VERSION_2, 255): VERSION_2 = 255
-			greaterThan(VERSION_3, 255): VERSION_3 = 255
-			greaterThan(VERSION_4, 255): VERSION_4 = 255
+		greaterThan(VERSION_1, 255): VERSION_1 = 255
+		greaterThan(VERSION_2, 255): VERSION_2 = 255
+		greaterThan(VERSION_3, 255): VERSION_3 = 255
+		greaterThan(VERSION_4, 255): VERSION_4 = 255
 
-			VERSION_CORRECT = $$VERSION_1
-			VERSION_CORRECT = $$join(VERSION_CORRECT, "", "", ".")
-			VERSION_CORRECT = $$join(VERSION_CORRECT, "", "", $$VERSION_2)
-			VERSION_CORRECT = $$join(VERSION_CORRECT, "", "", ".")
-			VERSION_CORRECT = $$join(VERSION_CORRECT, "", "", $$VERSION_3)
-			VERSION_CORRECT = $$join(VERSION_CORRECT, "", "", ".")
-			VERSION_CORRECT = $$join(VERSION_CORRECT, "", "", $$VERSION_4)
+		VERSION_CORRECT = $$VERSION_1
+		VERSION_CORRECT = $$join(VERSION_CORRECT, "", "", ".")
+		VERSION_CORRECT = $$join(VERSION_CORRECT, "", "", $$VERSION_2)
+		VERSION_CORRECT = $$join(VERSION_CORRECT, "", "", ".")
+		VERSION_CORRECT = $$join(VERSION_CORRECT, "", "", $$VERSION_3)
+		VERSION_CORRECT = $$join(VERSION_CORRECT, "", "", ".")
+		VERSION_CORRECT = $$join(VERSION_CORRECT, "", "", $$VERSION_4)
 
-			VERSION = $$VERSION_CORRECT
-		}
+		VERSION = $$VERSION_CORRECT
+		MAJOR_VERSION = $$VERSION_1
+		# set framework version as A
+		QMAKE_FRAMEWORK_VERSION = A
 	}
 }
 

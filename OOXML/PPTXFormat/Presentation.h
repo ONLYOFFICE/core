@@ -35,7 +35,7 @@
 #include "FileContainer.h"
 #include "FileTypes.h"
 
-#include "Presentation/EmbeddedFont.h"
+#include "Presentation/PresentationChildElements.h"
 #include "CommentAuthors.h"
 
 #include "Limit/Conformance.h"
@@ -88,9 +88,6 @@ namespace PPTX
 			return type().DefaultFileName();
 		}
 
-	//Childs
-		//custDataLst (Customer Data List)
-		//property<std::list<Presentation::CustShow> > custShowLst (List of Custom Shows)
 		nullable<Logic::TextListStyle>				defaultTextStyle;
 		std::vector<nsPresentation::EmbeddedFont>	embeddedFontLst;
 		std::vector<Logic::XmlId>					handoutMasterIdLst;
@@ -101,11 +98,12 @@ namespace PPTX
 		nullable<nsPresentation::PhotoAlbum>		photoAlbum;
 		std::vector<Logic::XmlId>					sldIdLst;
 		std::vector<Logic::XmlId>					sldMasterIdLst;
+		std::vector<OOX::RId>						custDataLst;
+		nullable<nsPresentation::CustShowLst>		custShowLst;
 		nullable<nsPresentation::SldSz>				sldSz;
 		nullable<nsPresentation::SectionLst>		sectionLst;
 		//smartTags (Smart Tags)
 
-	// Attrs
 		nullable_bool							attrAutoCompressPictures;
 		nullable_int							attrBookmarkIdSeed;
 		nullable_bool							attrCompatMode;
@@ -119,36 +117,12 @@ namespace PPTX
 		nullable_bool							attrShowSpecialPlsOnTitleSld;
 		nullable_bool							attrStrictFirstAndLastChars;
 
-		smart_ptr<PPTX::Authors>				commentAuthors;
+		smart_ptr<PPTX::Authors>	commentAuthors;
+		smart_ptr<PPTX::Comments>	comments;
 
-	private:
-		Logic::ClrMap				m_clrMap;
-		nsTheme::ClrScheme			m_clrScheme;
-	public:
 		bool						m_bMacroEnabled;
 		smart_ptr<OOX::VbaProject>	m_pVbaProject;
-		smart_ptr<OOX::JsaProject>	m_pJsaProject;
-		smart_ptr<PPTX::Comments>	comments;
-		
-        void SetClrMap(Logic::ClrMap map)				{m_clrMap = map;}
-        void SetClrScheme(nsTheme::ClrScheme scheme)	{m_clrScheme = scheme;}
-
-		DWORD GetRGBAFromMap(const std::wstring& str)const
-		{
-			return m_clrScheme.GetRGBAFromScheme(m_clrMap.GetColorSchemeIndex(str));
-		}
-		DWORD GetARGBFromMap(const std::wstring& str)const
-		{
-			return m_clrScheme.GetARGBFromScheme(m_clrMap.GetColorSchemeIndex(str));
-		}
-		DWORD GetBGRAFromMap(const std::wstring& str)const
-		{
-			return m_clrScheme.GetBGRAFromScheme(m_clrMap.GetColorSchemeIndex(str));
-		}
-		DWORD GetABGRFromMap(const std::wstring& str)const
-		{
-			return m_clrScheme.GetABGRFromScheme(m_clrMap.GetColorSchemeIndex(str));
-		}
+		smart_ptr<OOX::JsaProject>	m_pJsaProject;		
 
 	private:
 		void Normalize();

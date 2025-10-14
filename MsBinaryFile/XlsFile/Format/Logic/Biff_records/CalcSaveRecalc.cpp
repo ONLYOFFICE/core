@@ -56,5 +56,10 @@ void CalcSaveRecalc::readFields(CFRecord& record)
 	record >> fSaveRecalc;
 }
 
+void CalcSaveRecalc::writeFields(CFRecord& record)
+{
+    record << fSaveRecalc;
+}
+
 } // namespace XLS
 

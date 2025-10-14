@@ -57,5 +57,16 @@ void ExtString::readFields(CFRecord& record)
 	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
 }
 
+void ExtString::writeFields(CFRecord& record)
+{
+	frtHeaderOld.rt = rt_ExtString;
+	record << frtHeaderOld << string;
+	auto stringSize = string.getSize();
+	if(stringSize < 8)
+	{
+		record.reserveNunBytes( 8 - stringSize);
+	}
+}
+
 } // namespace XLS
 

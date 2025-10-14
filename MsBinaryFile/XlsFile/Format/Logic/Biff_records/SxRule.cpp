@@ -69,5 +69,32 @@ void SxRule::readFields(CFRecord& record)
 	fGrandColSav	= GETBIT(flags, 15);
 }
 
+void SxRule::writeFields(CFRecord& record)
+{
+    unsigned short flags = 0;
+    SETBIT(flags, 0, sxaxisRw)
+    SETBIT(flags, 1, sxaxisCol)
+    SETBIT(flags, 2, sxaxisPage)
+    SETBIT(flags, 3, sxaxisData)
+    SETBITS(flags, 4, 7, sxrType)
+    SETBIT(flags, 8, fPart)
+    SETBIT(flags, 9, fDataOnly)
+    SETBIT(flags, 10, fLabelOnly)
+    SETBIT(flags, 11, fGrandRw)
+    SETBIT(flags, 12, fGrandCol)
+    SETBIT(flags, 13, fGrandRwSav)
+    SETBIT(flags, 14, fCacheBased)
+    SETBIT(flags, 15, fGrandColSav)
+
+    record << iDim << isxvd << flags;
+    record.reserveNunBytes(2);
+    record << csxFilt;
+    if(fPart)
+    {
+        record << irwFirst << irwLast << icolFirst << icolLast;
+    }
+
+}
+
 } // namespace XLS
 

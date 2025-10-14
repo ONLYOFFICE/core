@@ -2,7 +2,7 @@
  * vlc_mouse.h: mouse related structures and functions
  *****************************************************************************
  * Copyright (C) 2009 Laurent Aimar
- * $Id: 481c3598e905db66805cf9a8ca58f6702921e4f0 $
+ * $Id$
  *
  * Authors: Laurent Aimar <fenrir _AT_ videolan _DOT_ org>
  *

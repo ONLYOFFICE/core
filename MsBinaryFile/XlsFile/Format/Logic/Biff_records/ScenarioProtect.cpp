@@ -54,5 +54,10 @@ void ScenarioProtect::readFields(CFRecord& record)
 	record >> fScenProtect;
 }
 
+void ScenarioProtect::writeFields(CFRecord& record)
+{
+    record << fScenProtect;
+}
+
 } // namespace XLS
 

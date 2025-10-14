@@ -49,6 +49,12 @@ void AFDOperBoolErr::load(CFRecord& record)
 	record.skipNunBytes(4);
 }
 
+void AFDOperBoolErr::save(CFRecord& record)
+{
+    record << bes;
+    record.reserveNunBytes(6);
+}
+
 
 } // namespace XLS
 

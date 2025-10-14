@@ -50,6 +50,7 @@ public:
 	static const ElementType type = typeXFExtNoFRT;
 
 	virtual void load(CFRecord& record);
+    virtual void save(CFRecord& record);
 
 	std::map<ExtProp::_type, ExtProp> mapRgExt;
 };

@@ -135,6 +135,17 @@ CFile.prototype._UndoMergePages = function()
 	return g_native_drawing_file["UnmergePages"]();
 };
 
+CFile.prototype._RedactPage = function(pageIndex, box, filler)
+{
+	let dataFiller = (undefined !== filler.byteLength) ? new Uint8Array(filler) : filler;
+	return g_native_drawing_file["RedactPage"](pageIndex, box, dataFiller);
+};
+
+CFile.prototype._UndoRedact = function()
+{
+	return g_native_drawing_file["UndoRedact"]();
+};
+
 // FONTS
 CFile.prototype._isNeedCMap = function()
 {

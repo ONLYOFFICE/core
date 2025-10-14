@@ -56,5 +56,13 @@ void SXTbl::readFields(CFRecord& record)
 	cPages		= GETBITS(cPages, 0, 14);
 }
 
+void SXTbl::writeFields(CFRecord& record)
+{
+    unsigned short flags = 0;
+    SETBIT(flags, 15, fAutoPage);
+    SETBITS(flags, 0, 14, cPages);
+    record << cdref << csxtbpg << flags;
+}
+
 } // namespace XLS
 

@@ -28,10 +28,13 @@ class CCtrlHeadFoot : public CCtrl
 	HWP_BYTE m_chRefLevelNum;
 
 	VECTOR<CHWPPargraph*> m_arParas;
+
+	void ReadFromHWPX(CXMLReader& oReader);
+	void ReadFromHWPML(CXMLReader& oReader);
 public:
 	CCtrlHeadFoot(const HWP_STRING& sCtrlID);
 	CCtrlHeadFoot(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion, bool bIsHeader);
-	CCtrlHeadFoot(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVersion);
+	CCtrlHeadFoot(const HWP_STRING& sCtrlID, CXMLReader& oReader, EHanType eType);
 
 	ECtrlObjectType GetCtrlType() const override;
 

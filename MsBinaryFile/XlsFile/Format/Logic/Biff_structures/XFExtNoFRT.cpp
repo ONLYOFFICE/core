@@ -72,5 +72,17 @@ void XFExtNoFRT::load(CFRecord& record)
 	}
 }
 
+void XFExtNoFRT::save(CFRecord& record)
+{
+    record.reserveNunBytes(2);
+    unsigned short reserved2 = 0xFFFF;
+    record << reserved2;
+    record.reserveNunBytes(2);
+    unsigned short cexts = mapRgExt.size();
+    record << cexts;
+    for(auto i:mapRgExt)
+        record << i.second;
+}
+
 } // namespace XLS
 

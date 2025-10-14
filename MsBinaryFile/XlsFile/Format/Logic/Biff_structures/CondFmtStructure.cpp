@@ -52,6 +52,17 @@ void CondFmtStructure::load(CFRecord& record)
 	record >> refBound >> sqref;
 }
 
+void CondFmtStructure::save(CFRecord& record)
+{
+    record << ccf;
+    unsigned short flags = 0;
+    SETBIT(flags, 0, fToughRecalc);
+    SETBITS(flags, 1, 15, nID);
+    record << flags;
+
+    record << refBound << sqref;
+}
+
 
 const CellRef CondFmtStructure::getLocation() const
 {

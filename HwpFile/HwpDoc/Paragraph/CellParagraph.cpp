@@ -4,11 +4,10 @@ namespace HWP
 {
 CCellParagraph::CCellParagraph()
 	: CHWPPargraph()
-{
-}
+{}
 
-CCellParagraph::CCellParagraph(CXMLNode& oNode, int nVersion)
-	: CHWPPargraph(oNode, nVersion)
+CCellParagraph::CCellParagraph(CXMLReader& oReader, EHanType eType)
+    : CHWPPargraph(oReader, eType)
 {}
 
 EParagraphType CCellParagraph::GetType() const

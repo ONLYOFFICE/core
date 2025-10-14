@@ -48,33 +48,34 @@ public:
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 
 	static const ElementType	type = typeAutoFilter;
 
 	_UINT16 iEntry;
 	
-	unsigned char	wJoin;
+    unsigned char	wJoin = 0;
 	
-	bool fSimple1;
-	bool fSimple2;
+    bool fSimple1 = false;
+    bool fSimple2 = false;
 	
-	bool fTopN;
-	bool fPercent;
+    bool fTopN = false;
+    bool fPercent = false;
 	
-	unsigned char	fTop;
-	_UINT16 wTopN;
+    unsigned char	fTop = 0;
+    _UINT16 wTopN = 0;
 
 	AFDOper doper1;
 	AFDOper doper2;
 
-	bool m_bAutoFilter12;
+    bool m_bAutoFilter12 = false;
 	
-	std::wstring str1;
-	std::wstring str2;
+    std::wstring str1 = L"";
+    std::wstring str2 = L"";
 
 //----------------------------------------
-	bool	bExist;
-	_UINT32	size;
+    bool	bExist = false;
+    _UINT32	size = 0;
 };
 
 } // namespace XLS

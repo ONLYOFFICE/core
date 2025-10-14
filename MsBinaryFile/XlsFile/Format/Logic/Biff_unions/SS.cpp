@@ -237,6 +237,35 @@ const bool SS::loadContent(BinProcessor& proc)
 	return true;
 }
 
+const bool SS::saveContent(BinProcessor& proc)
+{
+	if(m_DataFormat == nullptr)
+		return false;
+	proc.mandatory(*m_DataFormat);
+	proc.mandatory<Begin>();
+	if(m_Chart3DBarShape != nullptr)
+		proc.mandatory(*m_Chart3DBarShape);
+	if(m_LineFormat != nullptr)
+		proc.mandatory(*m_LineFormat);
+	if(m_AreaFormat != nullptr)
+		proc.mandatory(*m_AreaFormat);
+	if(m_PieFormat != nullptr)
+		proc.mandatory(*m_PieFormat);
+	if(m_SerFmt != nullptr)
+		proc.mandatory(*m_SerFmt);
+	if(m_GELFRAME != nullptr)
+		proc.optional(*m_GELFRAME);
+	if(m_MarkerFormat != nullptr)
+		proc.mandatory(*m_MarkerFormat);
+	if(m_AttachedLabel != nullptr)
+		proc.mandatory(*m_AttachedLabel);
+	for(auto i : m_arSHAPEPROPS)
+		if(i != nullptr)
+			proc.mandatory(*i);
+	proc.mandatory<End>();
+	return true;
+}
+
 void SS::apply_crt_ss (BaseObjectPtr crt_ss)
 {
 	SS * ss_common = dynamic_cast<SS*>(crt_ss.get());

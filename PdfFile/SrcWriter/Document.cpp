@@ -558,6 +558,10 @@ namespace PdfWriter
 
 		return NULL;
 	}
+	void CDocument::AddExtGState(CExtGrState* pState)
+	{
+		m_vExtGrStates.push_back(pState);
+	}
     CExtGrState* CDocument::GetExtGState(double dAlphaStroke, double dAlphaFill, EBlendMode eMode, int nStrokeAdjustment)
 	{
 		CExtGrState* pExtGrState = FindExtGrState(dAlphaStroke, dAlphaFill, eMode, nStrokeAdjustment);
@@ -651,6 +655,8 @@ namespace PdfWriter
 			pAnnot = new CCaretAnnotation(m_pXref);
 		else if (m_nType == 12)
 			pAnnot = new CStampAnnotation(m_pXref);
+		else if (m_nType == 25)
+			pAnnot = new CRedactAnnotation(m_pXref);
 
 		if (pAnnot)
 			m_pXref->Add(pAnnot);
@@ -741,6 +747,7 @@ namespace PdfWriter
 	}
 	void CDocument::AddAnnotation(const int& nID, CAnnotation* pAnnot)
 	{
+		pAnnot->SetXref(m_pXref);
 		m_mAnnotations[nID] = pAnnot;
 	}
     CImageDict* CDocument::CreateImage()
@@ -1314,17 +1321,17 @@ namespace PdfWriter
 	{
 		m_pXref->Add(pObj);
 	}
-	void CDocument::FreeHidden(CObjectBase* pObj)
+	void CDocument::RemoveObj(CObjectBase* pObj)
 	{
-		pObj->SetHidden();
-		if (!pObj->IsIndirect())
-			return;
-		TXrefEntry* pEntry = m_pXref->GetEntryByObjectId(pObj->GetObjId());
-		if (pEntry)
-		{
-			pEntry->nEntryType = 'f'; // FREE_ENTRY
-			pEntry->unGenNo = MAX_GENERATION_NUM;
-		}
+		std::map<int, CAnnotation*>::iterator it1 = std::find_if(m_mAnnotations.begin(), m_mAnnotations.end(), [pObj](const std::pair<int, CAnnotation*>& t){ return t.second == pObj; });
+		if (it1 != m_mAnnotations.end())
+			m_mAnnotations.erase(it1);
+		std::map<int, CPage*>::iterator it2 = std::find_if(m_mEditPages.begin(), m_mEditPages.end(), [pObj](const std::pair<int, CPage*>& t){ return t.second == pObj; });
+		if (it2 != m_mEditPages.end())
+			m_mEditPages.erase(it2);
+		if (m_pCurPage == pObj)
+			m_pCurPage = NULL;
+		m_pXref->Remove(pObj);
 	}
 	bool CDocument::CheckFieldName(CFieldBase* pField, const std::string& sName)
 	{
@@ -1571,6 +1578,21 @@ namespace PdfWriter
 	{
 		if (m_pCurPage && m_pCurPage->DeleteAnnotation(nObjNum))
 		{
+			if (m_pAcroForm)
+			{
+				CArrayObject* ppFields = (CArrayObject*)m_pAcroForm->Get("Fields");
+				for (int i = 0; i < ppFields->GetCount(); ++i)
+				{
+					CObjectBase* pObj = ppFields->Get(i);
+					if (pObj->GetObjId() == nObjNum)
+					{
+						CObjectBase* pDelete = ppFields->Remove(i);
+						RELEASEOBJECT(pDelete);
+						break;
+					}
+				}
+			}
+
 			CXref* pXref = new CXref(this, nObjNum, nObjGen);
 			if (!pXref)
 				return false;
@@ -1627,14 +1649,17 @@ namespace PdfWriter
 			}
 			bool bReplase = false;
 			int nID = pWidget->GetObjId();
-			for (int i = 0; i < pKids->GetCount(); ++i)
+			if (nID > 0)
 			{
-				CObjectBase* pKid = pKids->Get(i);
-				if (pKid->GetObjId() == nID)
+				for (int i = 0; i < pKids->GetCount(); ++i)
 				{
-					pKids->Insert(pKid, pWidget, true);
-					bReplase = true;
-					break;
+					CObjectBase* pKid = pKids->Get(i);
+					if (pKid->GetObjId() == nID)
+					{
+						pKids->Insert(pKid, pWidget, true);
+						bReplase = true;
+						break;
+					}
 				}
 			}
 			if (!bReplase)
@@ -1708,6 +1733,11 @@ namespace PdfWriter
 		{
 			if (pObj->IsIndirect())
 				return true;
+			if (!pObj->GetObjId())
+			{
+				delete pObj;
+				return true;
+			}
 			CXref* pXref = new CXref(this, pObj->GetObjId(), pObj->GetGenNo());
 			delete pObj;
 			if (!pXref)
@@ -2022,5 +2052,9 @@ namespace PdfWriter
 	{
 		m_pCurPage->ClearContent(m_pXref);
 		m_pCurPage->StartTransform(1, 0, 0, 1, 0, 0);
+	}
+	void CDocument::ClearPageFull()
+	{
+		m_pCurPage->ClearContentFull(m_pXref);
 	}
 }

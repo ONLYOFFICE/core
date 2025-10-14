@@ -46,11 +46,11 @@ public:
 	static const ElementType	type = typeCFVO;
 	
 	virtual void load(CFRecord& record);
+    virtual void save(CFRecord& record);
 
-
-	unsigned char		cfvoType;
+    unsigned char		cfvoType = 0;
 	CFVOParsedFormula	fmla;
-	double				numValue;
+    double				numValue = 0;
 };
 
 typedef boost::shared_ptr<CFVO> CFVOPtr;

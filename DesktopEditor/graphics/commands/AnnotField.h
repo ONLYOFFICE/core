@@ -59,6 +59,7 @@ public:
 		Ink = 14,
 		Popup = 15,
 		FileAttachment = 16,
+		Redact = 25,
 		Widget = 26,
 		WidgetPushButton = 27,
 		WidgetRadioButton = 28,
@@ -185,6 +186,7 @@ public:
 		int  GetFlag()      const;
 		int  GetFlags()     const;
 		int  GetParentID()  const;
+		int  GetMEOptions() const;
 		int  GetFontStyle() const;
 		double GetFontSize()   const;
 		double GetFontSizeAP() const;
@@ -194,7 +196,6 @@ public:
 		const std::wstring& GetT();
 		const std::wstring& GetFontName();
 		const std::wstring& GetFontKey();
-		const std::wstring& GetOMetadata();
 		const std::vector<double>& GetTC();
 		const std::vector<double>& GetBC();
 		const std::vector<double>& GetBG();
@@ -215,6 +216,7 @@ public:
 		int m_nFlag;
 		int m_nFlags;
 		int m_nParentID;
+		int m_nMEOptions;
 		int m_nFontStyle;
 		double m_dFS;
 		double m_dFSAP;
@@ -224,7 +226,6 @@ public:
 		std::wstring m_wsT;
 		std::wstring m_wsFN;
 		std::wstring m_wsFK;
-		std::wstring m_wsOMetadata;
 		std::vector<double> m_arrTC;
 		std::vector<double> m_arrBC;
 		std::vector<double> m_arrBG;
@@ -452,6 +453,31 @@ public:
 		double m_dInRect[4]{};
 	};
 
+	class GRAPHICS_DECL CRedactAnnotPr
+	{
+	public:
+		BYTE GetQ() const;
+		int  GetFontStyle()  const;
+		double GetFontSize() const;
+		const std::wstring& GetFontName();
+		const std::wstring& GetOverlayText();
+		const std::vector<double>& GetIC();
+		const std::vector<double>& GetFontColor();
+		const std::vector<double>& GetQuadPoints();
+
+		void Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, int nFlags);
+
+	private:
+		BYTE m_nQ;
+		int m_nFontStyle;
+		double m_dFS;
+		std::wstring m_wsFN;
+		std::wstring m_wsOverlayText;
+		std::vector<double> m_arrIC;
+		std::vector<double> m_arrFC;
+		std::vector<double> m_arrQuadPoints;
+	};
+
 	CAnnotFieldInfo();
 	virtual ~CAnnotFieldInfo();
 
@@ -471,6 +497,7 @@ public:
 	const std::wstring& GetNM();
 	const std::wstring& GetLM();
 	const std::wstring& GetOUserID();
+	const std::wstring& GetOMetadata();
 	const std::wstring& GetContents();
 	const std::vector<double>& GetC();
 
@@ -490,6 +517,7 @@ public:
 	bool IsFreeText()        const;
 	bool IsCaret()           const;
 	bool IsStamp()           const;
+	bool IsRedact()          const;
 
 	CMarkupAnnotPr*       GetMarkupAnnotPr();
 	CTextAnnotPr*         GetTextAnnotPr();
@@ -502,6 +530,7 @@ public:
 	CFreeTextAnnotPr*     GetFreeTextAnnotPr();
 	CCaretAnnotPr*        GetCaretAnnotPr();
 	CStampAnnotPr*        GetStampAnnotPr();
+	CRedactAnnotPr*       GetRedactAnnotPr();
 	CWidgetAnnotPr*       GetWidgetAnnotPr();
 
 	bool Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector);
@@ -527,6 +556,7 @@ private:
 	std::wstring m_wsNM;
 	std::wstring m_wsLM;
 	std::wstring m_wsOUserID;
+	std::wstring m_wsOMetadata;
 	std::wstring m_wsContents;
 	std::pair<BYTE, double> m_pBE;
 	std::vector<double> m_arrC;
@@ -545,6 +575,7 @@ private:
 	CFreeTextAnnotPr*     m_pFreeTextPr;
 	CCaretAnnotPr*        m_pCaretPr;
 	CStampAnnotPr*        m_pStampPr;
+	CRedactAnnotPr*       m_pRedactPr;
 	CWidgetAnnotPr*       m_pWidgetPr;
 };
 
@@ -571,10 +602,12 @@ public:
 		int nFlags;
 		int nMaxLen;
 		int nParentID;
+		int nMEOptions;
 		int nFieldFlag;
 		std::wstring sName;
 		std::wstring sV;
 		std::wstring sDV;
+		std::wstring sTU;
 		std::vector<int> arrI;
 		std::vector<std::wstring> arrV;
 		std::vector<CAnnotFieldInfo::CWidgetAnnotPr::CActionWidget*> arrAction;
@@ -596,6 +629,29 @@ private:
 	std::vector< std::pair<int, int> > m_arrCO;
 	std::vector<std::wstring> m_arrButtonImg;
 	std::vector<CParent*> m_arrParents;
+};
+
+class GRAPHICS_DECL CRedact : public IAdvancedCommand
+{
+public:
+	struct SRedact
+	{
+		std::wstring sID;
+		std::vector<double> arrQuadPoints;
+		int nFlag;
+		LONG nRenderLen;
+		BYTE* pRender;
+	};
+
+	CRedact();
+	virtual ~CRedact();
+
+	const std::vector<SRedact*>& GetRedact();
+
+	bool Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector);
+
+private:
+	std::vector<SRedact*> m_arrRedact;
 };
 
 #endif // _BUILD_ANNOTFIELD_H_

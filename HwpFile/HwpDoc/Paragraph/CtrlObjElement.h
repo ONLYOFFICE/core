@@ -18,8 +18,9 @@ struct TMatrix
 	TMatrix(double dM11, double dM12, double dM21, double dM22, double dDX, double dDY);
 	void Multiply(const TMatrix& oMatrix);
 
-	void ApplyToPoint(double& dX, double& dY);
-	void ApplyToSize(double& dW, double& dH);
+	void ApplyToPoint(double& dX, double& dY) const;
+	void ApplyToPoint(int& nX, int &nY) const;
+	void ApplyToSize(double& dW, double& dH) const;
 };
 
 class CCtrlObjElement : public CCtrlCommon
@@ -39,12 +40,20 @@ class CCtrlObjElement : public CCtrlCommon
 	int m_nYCenter;
 	short m_shMatCnt;
 	VECTOR<TMatrix> m_arMatrixs;
+
+	void ParseRotationInfo(CXMLReader& oReader, EHanType eType);
+	void ParseRenderingInfo(CXMLReader& oReader, EHanType eType);
+
+	void ParseHWPXChildren(CXMLReader& oReader);
+	void ParseHWPMLElement(CXMLReader& oReader);
 public:
 	CCtrlObjElement();
 	CCtrlObjElement(const HWP_STRING& sCtrlID);
 	CCtrlObjElement(const CCtrlObjElement& oObjElement);
 	CCtrlObjElement(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
-	CCtrlObjElement(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVersion);
+	CCtrlObjElement(const HWP_STRING& sCtrlID, CXMLReader& oReader, EHanType eType);
+
+	void ParseChildren(CXMLReader& oReader, EHanType eType);
 
 	int GetCurWidth() const;
 	int GetCurHeight() const;
@@ -54,6 +63,8 @@ public:
 
 	int GetFinalWidth() const;
 	int GetFinalHeight() const;
+
+	short GetGroupLevel() const;
 
 	TMatrix GetFinalMatrix() const;
 

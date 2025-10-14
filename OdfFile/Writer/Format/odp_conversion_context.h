@@ -64,7 +64,7 @@ public:
 
 	size_t get_pages_count();
 
-	void start_master_slide(std::wstring name);
+	void start_master_slide(std::wstring & name);
 	void end_master_slide();
 
 	void start_layout_slide();
@@ -99,13 +99,15 @@ public:
 
 	std::map<std::wstring, table_style_state>	map_table_styles_;
 
-	// NOTE(Kamil Kerimov): Key - PPTX identifier, value - ODP identifier
+	// Key - PPTX identifier, value - ODP identifier
 	using IdentifierMap = std::unordered_map<std::wstring, std::wstring>;
 	std::vector<IdentifierMap> map_identifiers_;
 
-	// NOTE(Kamil Kerimov): Key - slide name in pptx (e.g. slide1.xml), Value - slide name in odp (e.g. "This is a title")
+	// Key - slide name in pptx (e.g. slide1.xml), Value - slide name in odp (e.g. "This is a title")
 	using SlidenameMap = std::map<std::wstring, std::wstring>;
 	SlidenameMap map_slidenames_;
+	
+	std::map<std::wstring, int> map_masterNames_;
 private:
 	odp_slide_context			slide_context_;
 	office_presentation*		root_presentation_;

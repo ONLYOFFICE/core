@@ -48,6 +48,7 @@ public:
 	static const ElementType type = typeDConnConnectionWeb;
 	
 	virtual void load(CFRecord& record);
+	virtual void save(CFRecord& record);
 
 	DConnStringSequence	rgbURL;
 	DConnStringSequence	rgbWebPost;

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
@@ -61,9 +61,19 @@ namespace NSSystemUtils
 	static const wchar_t* gc_EnvMemoryLimit = L"X2T_MEMORY_LIMIT";
 	static const wchar_t* gc_EnvMemoryLimitDefault = L"4GiB";
 
-    KERNEL_DECL std::string GetEnvVariableA(const std::wstring& strName);
-    KERNEL_DECL std::wstring GetEnvVariable(const std::wstring& strName);
-    KERNEL_DECL std::wstring GetAppDataDir();
-    KERNEL_DECL std::wstring GetBuildBranding();
+	KERNEL_DECL std::string GetEnvVariableA(const std::wstring& strName);
+	KERNEL_DECL std::wstring GetEnvVariable(const std::wstring& strName);
+	KERNEL_DECL std::wstring GetAppDataDir();
+	KERNEL_DECL std::wstring GetBuildBranding();
+
+	enum class SystemDirectoryType
+	{
+		Documents = 0,
+		Downloads = 1,
+		Desktop = 2,
+
+		Undefined = 255
+	};
+	KERNEL_DECL std::wstring GetSystemDirectory(const SystemDirectoryType& type);
 }
 #endif // _SYSTEMUTILS_H

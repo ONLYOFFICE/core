@@ -55,5 +55,11 @@ void FnGrp12::readFields(CFRecord& record)
 	record >> frtHeader >> astFnGrp;
 }
 
+void FnGrp12::writeFields(CFRecord& record)
+{
+    frtHeader.rt =  0x0898;
+    record << frtHeader << astFnGrp;
+}
+
 } // namespace XLS
 

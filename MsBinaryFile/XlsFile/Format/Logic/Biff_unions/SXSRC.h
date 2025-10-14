@@ -46,14 +46,15 @@ public:
 	BaseObjectPtr clone();
 
 	virtual const bool loadContent(BinProcessor& proc);
+    virtual const bool saveContent(BinProcessor& proc);
 
 	int serialize(std::wostream & stream);
 
 	static const ElementType type = typeSXSRC;
 
 	BaseObjectPtr	m_source;	
-	bool			bSql;
-	bool			bOLAP;
+    bool			bSql = false;
+    bool			bOLAP = false;
 };
 
 } // namespace XLS

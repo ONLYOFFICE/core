@@ -696,6 +696,10 @@ namespace NExtractTools
 			{
 				nRes = hwpx2docx_dir(sFrom, sDocxDir, params, convertParams);
 			}
+			else if (AVS_OFFICESTUDIO_FILE_DOCUMENT_HWPML == nFormatFrom)
+			{
+				nRes = hwpml2docx_dir(sFrom, sDocxDir, params, convertParams);
+			}
 			else
 				nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
 			
@@ -1206,6 +1210,10 @@ namespace NExtractTools
 					nRes = fromPpttBin(sTFile, sTo, nFormatTo, params, convertParams);
 				}
 			}
+		}
+		else if (AVS_OFFICESTUDIO_FILE_DOCUMENT_TXT == nFormatTo)
+		{
+			pptx_dir2txt(sFrom, sTo, params, convertParams);
 		}
 		else
 			nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;

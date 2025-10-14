@@ -47,15 +47,16 @@ public:
 	static const ElementType	type = typeRPHSSub;
 	
 	virtual void load(CFRecord& record);
+    virtual void save(CFRecord& record);
 
 
 	const size_t getSize() const;
 	const unsigned short getRunsNumber() const;
 
-	unsigned short crun;
+    unsigned short crun = 0;
 	LPWideString st;
 
-	int sz;
+    int sz = 0;
 };
 
 } // namespace XLS

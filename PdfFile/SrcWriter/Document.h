@@ -133,7 +133,8 @@ namespace PdfWriter
 		COutline*         GetOutlines() { return m_pOutlines; }
 		CDestination*     CreateDestination(CObjectBase* pPage, bool bInline = false);
 		bool              AddMetaData(const std::wstring& sMetaName, BYTE* pMetaData, DWORD nMetaLength);
-					      
+
+		void              AddExtGState(CExtGrState* pState);
 		CExtGrState*      GetExtGState(double dAlphaStroke = -1, double dAlphaFill = -1, EBlendMode eMode = blendmode_Unknown, int nStrokeAdjustment = -1);
 		CExtGrState*      GetStrokeAlpha(double dAlpha);
 		CExtGrState*      GetFillAlpha(double dAlpha);
@@ -206,11 +207,12 @@ namespace PdfWriter
 		void              AddShapeXML(const std::string& sXML);
 		void              EndShapeXML();
 		void              ClearPage();
+		void              ClearPageFull();
 		bool              EditXref(CXref* pXref);
 		void              SetAcroForm(CDictObject* pObj);
 		CDictObject*      GetAcroForm() { return m_pAcroForm; }
 		CResourcesDict*   CreateResourcesDict(bool bInline, bool bProcSet);
-		void              FreeHidden(CObjectBase* pObj);
+		void              RemoveObj(CObjectBase* pObj);
 	private:		  
 					  
 		char*             GetTTFontTag();

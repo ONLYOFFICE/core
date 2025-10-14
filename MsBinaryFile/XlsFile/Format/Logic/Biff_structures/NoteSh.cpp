@@ -43,6 +43,7 @@ NoteSh::NoteSh()
 	fShow		= false;
 	fRwHidden	= false;
 	fColHidden	= false;
+    stAuthor = L" ";
 }
 
 NoteSh::NoteSh(CFRecord& record)
@@ -82,6 +83,19 @@ void NoteSh::load(CFRecord& record)
 	
 		record.skipNunBytes(1); // unused
 	}
+}
+
+void NoteSh::save(CFRecord& record)
+{
+    record << row << col;
+
+    unsigned short flags = 0;
+    SETBIT(flags, 0, fShow)
+    SETBIT(flags, 7, fRwHidden)
+    SETBIT(flags, 8, fColHidden)
+    record << flags;
+    record << idObj << stAuthor;
+    record.reserveNunBytes(1);
 }
 
 //-----------------------------------------------------------------------

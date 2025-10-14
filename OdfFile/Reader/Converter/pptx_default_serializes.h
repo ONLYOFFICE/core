@@ -251,7 +251,7 @@ namespace oox {
 							CP_XML_ATTR(L"dist",20000);
 							CP_XML_ATTR(L"blurRad",40000);
 							CP_XML_ATTR(L"dir",5400000);
-							CP_XML_ATTR(L"rotWithShape",0);
+							
 							CP_XML_NODE(L"a:srgbClr")
 							{
 								CP_XML_ATTR(L"val",L"000000");
@@ -269,7 +269,7 @@ namespace oox {
 							CP_XML_ATTR(L"dist",23000);
 							CP_XML_ATTR(L"blurRad",40000);
 							CP_XML_ATTR(L"dir",5400000);
-							CP_XML_ATTR(L"rotWithShape",0);
+
 							CP_XML_NODE(L"a:srgbClr")
 							{
 								CP_XML_ATTR(L"val",L"000000");
@@ -287,7 +287,7 @@ namespace oox {
 							CP_XML_ATTR(L"dist",23000);
 							CP_XML_ATTR(L"blurRad",40000);
 							CP_XML_ATTR(L"dir",5400000);
-							CP_XML_ATTR(L"rotWithShape",0);
+
 							CP_XML_NODE(L"a:srgbClr")
 							{
 								CP_XML_ATTR(L"val",L"000000");

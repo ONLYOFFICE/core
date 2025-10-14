@@ -265,6 +265,7 @@ struct CTextSettings
 	bool bMergeText; // Объединять подяр идущий текст в 1?
 	int  nLi;  // Уровень списка
 	bool bNumberingLi; // Является ли список нумерованным
+	bool bWritedLi; // Записан ли уже w:numPr
 
 	std::wstring sPStyle;
 
@@ -278,12 +279,12 @@ struct CTextSettings
 	NSCSS::CCompiledStyle oAdditionalStyle;
 
 	CTextSettings()
-		: bBdo(false), bPre(false), bQ(false), bAddSpaces(true), bMergeText(false), nLi(-1), bNumberingLi(false), eTextMode(Normal)
+		: bBdo(false), bPre(false), bQ(false), bAddSpaces(true), bMergeText(false), nLi(-1), bNumberingLi(false), bWritedLi(false), eTextMode(Normal)
 	{}
 
 	CTextSettings(const CTextSettings& oTS) :
 		bBdo(oTS.bBdo), bPre(oTS.bPre), bQ(oTS.bQ), bAddSpaces(oTS.bAddSpaces), bMergeText(oTS.bMergeText),
-	    nLi(oTS.nLi),bNumberingLi(oTS.bNumberingLi), sPStyle(oTS.sPStyle), eTextMode(oTS.eTextMode)
+	    nLi(oTS.nLi), bNumberingLi(oTS.bNumberingLi), bWritedLi(oTS.bWritedLi), sPStyle(oTS.sPStyle), eTextMode(oTS.eTextMode)
 	{}
 
 	void AddPStyle(const std::wstring& wsStyle)
@@ -3962,6 +3963,7 @@ private:
 			m_oLightReader.MoveToElement();
 
 			oTSLiP.nLi++;
+			oTSLiP.bWritedLi = false;
 
 			if (!wsValue.empty())
 			{
@@ -4230,7 +4232,7 @@ private:
 			CloseP(oXml, sSelectors);
 	}
 
-	bool readImage  (NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS)
+	bool readImage  (NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors, CTextSettings& oTS)
 	{
 		std::wstring wsAlt, sSrcM;
 		bool bRes = false;
@@ -4355,7 +4357,7 @@ private:
 		return true;
 	}
 
-	std::wstring wrP(NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS)
+	std::wstring wrP(NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors, CTextSettings& oTS)
 	{
 		OpenP(oXml);
 
@@ -4386,8 +4388,18 @@ private:
 		}
 
 		if (oTS.nLi >= 0)
-			oXml->WriteString(L"<w:numPr><w:ilvl w:val=\"" + std::to_wstring(oTS.nLi) + L"\"/><w:numId w:val=\"" +
-							  (!oTS.bNumberingLi ? L"1" : std::to_wstring(m_nNumberingId + 1)) + L"\"/></w:numPr>");
+		{
+			if (!oTS.bWritedLi)
+			{
+				oXml->WriteString(L"<w:numPr><w:ilvl w:val=\"" + std::to_wstring(oTS.nLi) + L"\"/><w:numId w:val=\"" +
+				                  (!oTS.bNumberingLi ? L"1" : std::to_wstring(m_nNumberingId + 1)) + L"\"/></w:numPr>");
+
+				oTS.bWritedLi = true;
+			}
+			else if (sSelectors.back().m_pCompiledStyle->m_oText.GetIndent().Empty() &&
+			         oTS.oAdditionalStyle.m_oText.GetIndent().Empty())
+				oXml->WriteString(L"<w:ind w:left=\"" + std::to_wstring(720 * (oTS.nLi + 1)) + L"\"/>");
+		}
 
 		oXml->WriteString(oTS.sPStyle + sPSettings);
 		oXml->WriteNodeEnd(L"w:pPr");

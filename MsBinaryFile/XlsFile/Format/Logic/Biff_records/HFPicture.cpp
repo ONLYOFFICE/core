@@ -71,5 +71,22 @@ void HFPicture::readFields(CFRecord& record)
 	record.skipNunBytes(size);
 }
 
+void HFPicture::writeFields(CFRecord& record)
+{
+    FrtHeader frtHeader(rt_HFPicture);
+    record << frtHeader;
+
+    unsigned short flags = 0;
+    SETBIT(flags, 0, fIsDrawing)
+    SETBIT(flags, 1, fIsDrawingGroup)
+    SETBIT(flags, 2, fContinue)
+    record << flags;
+    if(recordDrawingGroup != nullptr)
+    {
+        record.appendRawDataToStatic(recordDrawingGroup->getCurData<unsigned char>(), recordDrawingGroup->getRdPtr());
+    }
+
+}
+
 } // namespace XLS
 

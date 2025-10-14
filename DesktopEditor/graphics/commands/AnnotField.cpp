@@ -76,6 +76,7 @@ CAnnotFieldInfo::CAnnotFieldInfo() : IAdvancedCommand(AdvancedCommandType::Annot
 	m_pFreeTextPr     = NULL;
 	m_pCaretPr        = NULL;
 	m_pStampPr        = NULL;
+	m_pRedactPr       = NULL;
 	m_pWidgetPr       = NULL;
 }
 CAnnotFieldInfo::~CAnnotFieldInfo()
@@ -91,6 +92,7 @@ CAnnotFieldInfo::~CAnnotFieldInfo()
 	RELEASEOBJECT(m_pFreeTextPr);
 	RELEASEOBJECT(m_pCaretPr);
 	RELEASEOBJECT(m_pStampPr);
+	RELEASEOBJECT(m_pRedactPr);
 	RELEASEOBJECT(m_pWidgetPr);
 }
 
@@ -178,6 +180,13 @@ void CAnnotFieldInfo::SetType(int nType)
 		m_pPopupPr = new CAnnotFieldInfo::CPopupAnnotPr();
 		break;
 	}
+	case EAnnotType::Redact:
+	{
+		CreateMarkup();
+		RELEASEOBJECT(m_pRedactPr);
+		m_pRedactPr = new CAnnotFieldInfo::CRedactAnnotPr();
+		break;
+	}
 	case EAnnotType::Widget:
 	case EAnnotType::WidgetPushButton:
 	case EAnnotType::WidgetRadioButton:
@@ -214,7 +223,7 @@ int  CAnnotFieldInfo::GetFlag()      const { return m_nFlag; }
 int  CAnnotFieldInfo::GetID()        const { return m_nID; }
 int  CAnnotFieldInfo::GetAnnotFlag() const { return m_nAnnotFlag; }
 int  CAnnotFieldInfo::GetPage()      const { return m_nPage; }
-int CAnnotFieldInfo::GetCopyAP()     const { return m_nCopyAP; }
+int  CAnnotFieldInfo::GetCopyAP()    const { return m_nCopyAP; }
 void CAnnotFieldInfo::GetBE(BYTE& nS, double& dI) { nS = m_pBE.first; dI = m_pBE.second; }
 BYTE* CAnnotFieldInfo::GetRender(LONG& nLen)
 {
@@ -224,6 +233,7 @@ BYTE* CAnnotFieldInfo::GetRender(LONG& nLen)
 const std::wstring& CAnnotFieldInfo::GetNM() { return m_wsNM; }
 const std::wstring& CAnnotFieldInfo::GetLM() { return m_wsLM; }
 const std::wstring& CAnnotFieldInfo::GetOUserID() { return m_wsOUserID; }
+const std::wstring& CAnnotFieldInfo::GetOMetadata() { return m_wsOMetadata; }
 const std::wstring& CAnnotFieldInfo::GetContents() { return m_wsContents; }
 const std::vector<double>& CAnnotFieldInfo::GetC() { return m_arrC; }
 
@@ -291,6 +301,10 @@ bool CAnnotFieldInfo::IsStamp() const
 {
 	return (m_nType == 12);
 }
+bool CAnnotFieldInfo::IsRedact() const
+{
+	return (m_nType == 25);
+}
 
 CAnnotFieldInfo::CMarkupAnnotPr*       CAnnotFieldInfo::GetMarkupAnnotPr()       { return m_pMarkupPr; }
 CAnnotFieldInfo::CTextAnnotPr*         CAnnotFieldInfo::GetTextAnnotPr()         { return m_pTextPr; }
@@ -303,6 +317,7 @@ CAnnotFieldInfo::CPopupAnnotPr*        CAnnotFieldInfo::GetPopupAnnotPr()       
 CAnnotFieldInfo::CFreeTextAnnotPr*     CAnnotFieldInfo::GetFreeTextAnnotPr()     { return m_pFreeTextPr; }
 CAnnotFieldInfo::CCaretAnnotPr*        CAnnotFieldInfo::GetCaretAnnotPr()        { return m_pCaretPr; }
 CAnnotFieldInfo::CStampAnnotPr*        CAnnotFieldInfo::GetStampAnnotPr()        { return m_pStampPr; }
+CAnnotFieldInfo::CRedactAnnotPr*       CAnnotFieldInfo::GetRedactAnnotPr()       { return m_pRedactPr; }
 CAnnotFieldInfo::CWidgetAnnotPr*       CAnnotFieldInfo::GetWidgetAnnotPr()       { return m_pWidgetPr; }
 
 bool CAnnotFieldInfo::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector)
@@ -362,6 +377,8 @@ bool CAnnotFieldInfo::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMeta
 		m_wsOUserID = pReader->ReadString();
 	if (nFlags & (1 << 8))
 		m_nCopyAP = pReader->ReadInt();
+	if (nFlags & (1 << 9))
+		m_wsOMetadata = pReader->ReadString();
 
 	if (IsMarkup())
 	{
@@ -388,6 +405,8 @@ bool CAnnotFieldInfo::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMeta
 			m_pCaretPr->Read(pReader, nFlags);
 		else if (IsStamp())
 			m_pStampPr->Read(pReader, nFlags);
+		else if (IsRedact())
+			m_pRedactPr->Read(pReader, nFlags);
 	}
 	else if (IsPopup())
 		m_pPopupPr->Read(pReader);
@@ -662,6 +681,46 @@ void CAnnotFieldInfo::CStampAnnotPr::Read(NSOnlineOfficeBinToPdf::CBufferReader*
 	m_dInRect[3] = pReader->ReadDouble();
 }
 
+BYTE CAnnotFieldInfo::CRedactAnnotPr::GetQ() const { return m_nQ; }
+int CAnnotFieldInfo::CRedactAnnotPr::GetFontStyle()  const { return m_nFontStyle; }
+double CAnnotFieldInfo::CRedactAnnotPr::GetFontSize() const { return m_dFS; }
+const std::wstring& CAnnotFieldInfo::CRedactAnnotPr::GetFontName() { return m_wsFN; }
+const std::wstring& CAnnotFieldInfo::CRedactAnnotPr::GetOverlayText() { return m_wsOverlayText; }
+const std::vector<double>& CAnnotFieldInfo::CRedactAnnotPr::GetIC() { return m_arrIC; }
+const std::vector<double>& CAnnotFieldInfo::CRedactAnnotPr::GetFontColor() { return m_arrFC; }
+const std::vector<double>& CAnnotFieldInfo::CRedactAnnotPr::GetQuadPoints() { return m_arrQuadPoints; }
+void CAnnotFieldInfo::CRedactAnnotPr::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, int nFlags)
+{
+	if (nFlags & (1 << 15))
+	{
+		int n = pReader->ReadInt();
+		m_arrQuadPoints.reserve(n);
+		for (int i = 0; i < n; ++i)
+			m_arrQuadPoints.push_back(pReader->ReadDouble());
+	}
+	if (nFlags & (1 << 16))
+	{
+		int n = pReader->ReadInt();
+		m_arrIC.reserve(n);
+		for (int i = 0; i < n; ++i)
+			m_arrIC.push_back(pReader->ReadDouble());
+	}
+	if (nFlags & (1 << 17))
+		m_wsOverlayText = pReader->ReadString();
+	if (nFlags & (1 << 19))
+		m_nQ = pReader->ReadByte();
+	if (nFlags & (1 << 20))
+	{
+		int n = pReader->ReadInt();
+		m_arrFC.reserve(n);
+		for (int i = 0; i < n; ++i)
+			m_arrFC.push_back(pReader->ReadDouble());
+		m_dFS = pReader->ReadDouble();
+		m_wsFN = pReader->ReadString();
+		m_nFontStyle = pReader->ReadInt();
+	}
+}
+
 bool CAnnotFieldInfo::CPopupAnnotPr::IsOpen()      const { return m_bOpen; }
 int  CAnnotFieldInfo::CPopupAnnotPr::GetFlag()     const { return m_nFlag; }
 int  CAnnotFieldInfo::CPopupAnnotPr::GetParentID() const { return m_nParentID; }
@@ -680,6 +739,7 @@ int  CAnnotFieldInfo::CWidgetAnnotPr::GetR()    const { return m_nR; }
 int  CAnnotFieldInfo::CWidgetAnnotPr::GetFlag()      const { return m_nFlag; }
 int  CAnnotFieldInfo::CWidgetAnnotPr::GetFlags()     const { return m_nFlags; }
 int  CAnnotFieldInfo::CWidgetAnnotPr::GetParentID()  const { return m_nParentID; }
+int  CAnnotFieldInfo::CWidgetAnnotPr::GetMEOptions() const { return m_nMEOptions; }
 int  CAnnotFieldInfo::CWidgetAnnotPr::GetFontStyle() const { return m_nFontStyle; }
 double CAnnotFieldInfo::CWidgetAnnotPr::GetFontSize()   const { return m_dFS; }
 double CAnnotFieldInfo::CWidgetAnnotPr::GetFontSizeAP() const { return m_dFSAP; }
@@ -689,7 +749,6 @@ const std::wstring& CAnnotFieldInfo::CWidgetAnnotPr::GetDV() { return m_wsDV; }
 const std::wstring& CAnnotFieldInfo::CWidgetAnnotPr::GetT()  { return m_wsT; }
 const std::wstring& CAnnotFieldInfo::CWidgetAnnotPr::GetFontName()  { return m_wsFN; }
 const std::wstring& CAnnotFieldInfo::CWidgetAnnotPr::GetFontKey()   { return m_wsFK; }
-const std::wstring& CAnnotFieldInfo::CWidgetAnnotPr::GetOMetadata() { return m_wsOMetadata; }
 const std::vector<double>& CAnnotFieldInfo::CWidgetAnnotPr::GetTC() { return m_arrTC; }
 const std::vector<double>& CAnnotFieldInfo::CWidgetAnnotPr::GetBC() { return m_arrBC; }
 const std::vector<double>& CAnnotFieldInfo::CWidgetAnnotPr::GetBG() { return m_arrBG; }
@@ -890,8 +949,8 @@ void CAnnotFieldInfo::CWidgetAnnotPr::Read(NSOnlineOfficeBinToPdf::CBufferReader
 		m_nParentID = pReader->ReadInt();
 	if (nFlags & (1 << 18))
 		m_wsT = pReader->ReadString();
-	if (nFlags & (1 << 20))
-		m_wsOMetadata = pReader->ReadString();
+	if (nFlags & (1 << 21))
+		m_nMEOptions = pReader->ReadInt();
 
 	// Action
 	int nAction = pReader->ReadInt();
@@ -1143,6 +1202,10 @@ bool CWidgetsInfo::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafil
 		}
 		if (nFlags & (1 << 9))
 			pParent->nMaxLen = pReader->ReadInt();
+		if (nFlags & (1 << 10))
+			pParent->sTU = pReader->ReadString();
+		if (nFlags & (1 << 11))
+			pParent->nMEOptions = pReader->ReadInt();
 		m_arrParents.push_back(pParent);
 	}
 
@@ -1151,7 +1214,53 @@ bool CWidgetsInfo::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafil
 	for (int i = 0; i < n; ++i)
 	{
 		std::string sImagePath = pReader->ReadStringA();
-		m_arrButtonImg.push_back(pCorrector->GetImagePath(UTF8_TO_U(sImagePath)));
+		std::wstring sImage = UTF8_TO_U(sImagePath);
+		if (sImagePath.find("data:") != 0 && !sImagePath.empty())
+			sImage = pCorrector->GetImagePath(sImage);
+		m_arrButtonImg.push_back(sImage);
+	}
+
+	return true;
+}
+
+CRedact::CRedact() : IAdvancedCommand(AdvancedCommandType::Redact) {}
+CRedact::~CRedact()
+{
+	for (int i = 0; i < m_arrRedact.size(); ++i)
+		RELEASEOBJECT(m_arrRedact[i]);
+}
+const std::vector<CRedact::SRedact*>& CRedact::GetRedact() { return m_arrRedact; }
+bool CRedact::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector)
+{
+	int n = pReader->ReadInt();
+	m_arrRedact.reserve(n);
+	for (int i = 0; i < n; ++i)
+	{
+		SRedact* pRedact = new SRedact();
+		pRedact->sID = pReader->ReadString();
+		int m = pReader->ReadInt();
+		pRedact->arrQuadPoints.reserve(m * 8);
+		for (int j = 0; j < m; ++j)
+		{
+			pRedact->arrQuadPoints.push_back(pReader->ReadDouble());
+			pRedact->arrQuadPoints.push_back(pReader->ReadDouble());
+			pRedact->arrQuadPoints.push_back(pReader->ReadDouble());
+			pRedact->arrQuadPoints.push_back(pReader->ReadDouble());
+			double x = pReader->ReadDouble();
+			double y = pReader->ReadDouble();
+			pRedact->arrQuadPoints.push_back(pReader->ReadDouble());
+			pRedact->arrQuadPoints.push_back(pReader->ReadDouble());
+			pRedact->arrQuadPoints.push_back(x);
+			pRedact->arrQuadPoints.push_back(y);
+		}
+		pRedact->nFlag = pReader->ReadInt();
+		if (pRedact->nFlag & (1 << 0))
+		{
+			pRedact->nRenderLen = pReader->ReadInt() - 4;
+			pRedact->pRender = pReader->GetCurrentBuffer();
+			pReader->Skip(pRedact->nRenderLen);
+		}
+		m_arrRedact.push_back(pRedact);
 	}
 
 	return true;

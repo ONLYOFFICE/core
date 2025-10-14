@@ -55,6 +55,7 @@ namespace ODRAW
         case rtRCurveTo:			{ return _T("v"); }
 
         case rtNoFill:				{ return _T("nf"); }
+        case rtUnknown:             { return _T(""); }
         case rtNoStroke:			{ return _T("ns"); }
 
         case rtAngleEllipseTo:		{ return _T("ae"); }

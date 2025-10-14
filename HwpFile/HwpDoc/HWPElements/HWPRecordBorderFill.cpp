@@ -1,5 +1,7 @@
 #include "HWPRecordBorderFill.h"
 
+#include "../Common/NodeNames.h"
+
 namespace HWP
 {
 EImageFillType GetImageFillType(int nType)
@@ -58,19 +60,26 @@ EColorFillPattern GetColorFillPattern(int nPattern)
 	}
 }
 
-void TBorder::ReadFromNode(CXMLNode& oNode)
+void TBorder::Read(CXMLReader& oReader, EHanType eType)
 {
-	m_eStyle  = GetLineStyle2(oNode.GetAttribute(L"type"));
-	m_nColor  = oNode.GetAttributeColor(L"color");
-	m_chWidth = (HWP_BYTE)ConvertWidthToHWP(oNode.GetAttribute(L"width"));
+	START_READ_ATTRIBUTES(oReader)
+	{
+		if (GetAttributeName(EAttribute::Type, eType) == sAttributeName)
+			m_eStyle = GetLineStyle2(oReader.GetTextA(), eType);
+		else if (GetAttributeName(EAttribute::Color, eType) == sAttributeName)
+			m_nColor = oReader.GetInt();
+		else if (GetAttributeName(EAttribute::Width, eType) == sAttributeName)
+			m_chWidth = (HWP_BYTE)ConvertWidthToHWP(oReader.GetTextA());
+	}
+	END_READ_ATTRIBUTES(oReader)
 }
 
 CFill::CFill()
-	: m_nFillType(0)
+	: m_nFillType(0), m_eHatchStyle(EColorFillPattern::NONE), m_eMode(EImageFillType::NONE), m_chAlpha(0xff)
 {}
 
 CFill::CFill(CHWPStream& oBuffer, int nOff, int nSize)
-	: m_nFillType(0)
+	: m_nFillType(0), m_eHatchStyle(EColorFillPattern::NONE), m_eMode(EImageFillType::NONE), m_chAlpha(0xff)
 {
 	oBuffer.SavePosition();
 
@@ -147,82 +156,117 @@ CFill::CFill(CHWPStream& oBuffer, int nOff, int nSize)
 	m_nSize = oBuffer.GetDistanceToLastPos(true);
 }
 
-CFill::CFill(CXMLNode& oNode)
-	: m_nFillType(0)
+CFill::CFill(CXMLReader& oReader, EHanType eType)
+	: m_nFillType(0), m_eHatchStyle(EColorFillPattern::NONE), m_eMode(EImageFillType::NONE), m_chAlpha(0xff)
 {
-	for (CXMLNode& oChild : oNode.GetChilds())
+	WHILE_READ_NEXT_NODE_WITH_NAME(oReader)
 	{
-		if (L"hc:winBrush" == oChild.GetName())
+		if (GetNodeName(ENode::WindowBrush, eType) == sNodeName)
 		{
-			ReadWinBrush(oChild);
+			ReadWinBrush(oReader, eType);
 			m_nFillType |= 0x01;
 		}
-		else if (L"hc:gradation" == oChild.GetName())
+		else if (GetNodeName(ENode::Gradation, eType) == sNodeName)
 		{
-			ReadGradation(oChild);
+			ReadGradation(oReader, eType);
 			m_nFillType |= 0x04;
 		}
-		else if (L"hc:imgBrush" == oChild.GetName())
+		else if (GetNodeName(ENode::ImageBrush, eType) == sNodeName)
 		{
-			ReadImgBrush(oChild);
+			ReadImgBrush(oReader, eType);
 			m_nFillType |= 0x02;
 		}
 	}
+	END_WHILE
 }
 
-void CFill::ReadWinBrush(CXMLNode& oNode)
+void CFill::ReadWinBrush(CXMLReader& oReader, EHanType eType)
 {
-	m_nFaceColor = oNode.GetAttributeColor(L"faceColor", 0xFFFFFFFF);
-	m_nHatchColor = oNode.GetAttributeColor(L"hatchColor", 0x000000);
-	m_eHatchStyle = GetColorFillPattern(oNode.GetAttributeInt(L"hatchStyle", -1));
-	m_chAlpha = (HWP_BYTE)oNode.GetAttributeInt(L"alpha", 255);
-}
+	m_eHatchStyle = EColorFillPattern::NONE;
+	m_chAlpha = 0xff;
 
-void CFill::ReadGradation(CXMLNode& oNode)
-{
-	m_eGradType = ::HWP::GetGradFillType(oNode.GetAttributeInt(L"type"));
-	m_nAngle = oNode.GetAttributeInt(L"angle");
-	m_nCenterX = oNode.GetAttributeInt(L"centerX");
-	m_nCenterY = oNode.GetAttributeInt(L"centerY");
-	m_nStep = oNode.GetAttributeInt(L"step");
-	m_nColorNum = oNode.GetAttributeInt(L"colorNum");
-	m_chStepCenter = (HWP_BYTE)oNode.GetAttributeInt(L"stepCenter");
-	m_chAlpha = (HWP_BYTE)oNode.GetAttributeInt(L"alpha", 255);
-
-	std::vector<XmlUtils::CXmlNode> arChilds;
-
-	oNode.GetNodes(L"hc:color", arChilds);
-
-	m_arColors.resize(arChilds.size());
-
-	for (unsigned int unIndex = 0; unIndex < arChilds.size(); ++unIndex)
-		m_arColors[unIndex] = CXMLNode(arChilds[unIndex]).GetAttributeColor(L"value");
-}
-
-void CFill::ReadImgBrush(CXMLNode& oNode)
-{
-	m_eMode = GetImageFillType(oNode.GetAttributeInt(L"mode", (int)EImageFillType::NONE));
-
-	for (CXMLNode& oChild : oNode.GetChilds())
+	START_READ_ATTRIBUTES(oReader)
 	{
-		if (L"hc:img" == oChild.GetName())
-		{
-			m_chBright = (HWP_BYTE)oChild.GetAttributeInt(L"bright");
-			m_chContrast = (HWP_BYTE)oChild.GetAttributeInt(L"contrast");
-
-			HWP_STRING sEffect = oChild.GetAttribute(L"effect");
-
-			if (L"REAL_PIC" == sEffect)
-				m_chEffect = 0;
-			else if (L"GRAY_SCALE" == sEffect)
-				m_chEffect = 1;
-			else if (L"BLACK_WHITE" == sEffect)
-				m_chEffect = 2;
-
-			m_sBinItemID = oChild.GetAttribute(L"binaryItemIDRef");
-			m_chAlpha = (HWP_BYTE)oChild.GetAttributeInt(L"alpha", 255);
-		}
+		if (GetAttributeName(EAttribute::FaceColor, eType) == sAttributeName)
+			m_nFaceColor = oReader.GetColor(0xFFFFFFFF);
+		else if (GetAttributeName(EAttribute::HatchColor, eType) == sAttributeName)
+			m_nHatchColor = oReader.GetColor();
+		else if (GetAttributeName(EAttribute::HatchStyle, eType) == sAttributeName)
+			m_eHatchStyle = GetColorFillPattern(oReader.GetInt());
+		else if (GetAttributeName(EAttribute::Alpha, eType) == sAttributeName)
+			m_chAlpha = (HWP_BYTE)oReader.GetInt();
 	}
+	END_READ_ATTRIBUTES(oReader)
+}
+
+void CFill::ReadGradation(CXMLReader& oReader, EHanType eType)
+{
+	START_READ_ATTRIBUTES(oReader)
+	{
+		if (GetAttributeName(EAttribute::Type, eType) == sAttributeName)
+			m_eGradType = ::HWP::GetGradFillType(oReader.GetInt());
+		else if (GetAttributeName(EAttribute::Angle, eType) == sAttributeName)
+			m_nAngle = oReader.GetInt();
+		else if (GetAttributeName(EAttribute::CenterX, eType) == sAttributeName)
+			m_nCenterX = oReader.GetInt();
+		else if (GetAttributeName(EAttribute::CenterY, eType) == sAttributeName)
+			m_nCenterY = oReader.GetInt();
+		else if (GetAttributeName(EAttribute::Step, eType) == sAttributeName)
+			m_nStep = oReader.GetInt();
+		else if (GetAttributeName(EAttribute::ColorNum, eType) == sAttributeName)
+			m_nColorNum = oReader.GetInt();
+		else if (GetAttributeName(EAttribute::StepCenter, eType) == sAttributeName)
+			m_chStepCenter = (HWP_BYTE)oReader.GetInt();
+		else if (GetAttributeName(EAttribute::Alpha, eType) == sAttributeName)
+			m_chAlpha = (HWP_BYTE)oReader.GetInt();
+	}
+	END_READ_ATTRIBUTES(oReader)
+
+	WHILE_READ_NEXT_NODE_WITH_ONE_NAME(oReader, GetNodeName(ENode::Color, eType))
+	{
+		START_READ_ATTRIBUTES(oReader)
+		{
+			if (GetAttributeName(EAttribute::Value, eType) != sAttributeName)
+				continue;
+
+			m_arColors.push_back(oReader.GetColor());
+		}
+		END_READ_ATTRIBUTES(oReader)
+	}
+	END_WHILE
+}
+
+void CFill::ReadImgBrush(CXMLReader& oReader, EHanType eType)
+{
+	m_eMode = GetImageFillType(oReader.GetAttributeInt(GetAttributeName(EAttribute::Mode, eType)));
+
+	WHILE_READ_NEXT_NODE_WITH_ONE_NAME(oReader, GetNodeName(ENode::Image, eType))
+	{
+		START_READ_ATTRIBUTES(oReader)
+		{
+			if (GetAttributeName(EAttribute::Bright, eType) == sAttributeName)
+				m_chBright = (HWP_BYTE)oReader.GetInt();
+			else if (GetAttributeName(EAttribute::Contrast, eType) == sAttributeName)
+				m_chContrast = (HWP_BYTE)oReader.GetInt();
+			else if (GetAttributeName(EAttribute::Effect, eType) == sAttributeName)
+			{
+				const std::string sEffect{oReader.GetTextA()};
+
+				if (GetValueName(EValue::RealPic, eType))
+					m_chEffect = 0;
+				else if (GetValueName(EValue::GrayScale, eType))
+					m_chEffect = 1;
+				else if (GetValueName(EValue::BlackWhite, eType))
+					m_chEffect = 2;
+			}
+			else if (GetAttributeName(EAttribute::BinItem, eType))
+				m_sBinItemID = oReader.GetText();
+			else if (GetAttributeName(EAttribute::Alpha, eType) == sAttributeName)
+				m_chAlpha = (HWP_BYTE)oReader.GetInt();
+		}
+		END_READ_ATTRIBUTES(oReader)
+	}
+	END_WHILE
 }
 
 int CFill::GetSize() const
@@ -333,66 +377,88 @@ CHWPRecordBorderFill::CHWPRecordBorderFill(CHWPDocInfo& oDocInfo, int nTagNum, i
 	m_pFill = new CFill(oBuffer, 0, 0); // TODO:: перейти от использования off и size
 }
 
-CHWPRecordBorderFill::CHWPRecordBorderFill(CHWPDocInfo& oDocInfo, CXMLNode& oNode, int nVersion)
+CHWPRecordBorderFill::CHWPRecordBorderFill(CHWPDocInfo& oDocInfo, CXMLReader& oReader, EHanType eType)
 	: CHWPRecord(EHWPTag::HWPTAG_BORDER_FILL, 0, 0), m_pFill(nullptr)
 {
-	m_bThreeD = oNode.GetAttributeBool(L"threeD");
-	m_bShadow = oNode.GetAttributeBool(L"shadow");
-	m_bBreakCellSeparateLine = oNode.GetAttributeBool(L"breakCellSeparateLine");
-
-	HWP_STRING sChildName;
-
-	for (CXMLNode& oChild : oNode.GetChilds())
+	START_READ_ATTRIBUTES(oReader)
 	{
-		if (L"hh:slash" == oChild.GetName())
-		{
-			HWP_STRING sType = oChild.GetAttribute(L"type");
-
-			if (L"NONE" == sType)
-				m_chSlash = 0x0;
-			else if (L"CENTER" == sType)
-				m_chSlash = 0b010;
-			else if (L"CENTER_BELOW" == sType)
-				m_chSlash = 0b011;
-			else if (L"CENTER_ABOVE" == sType)
-				m_chSlash = 0b110;
-			else if (L"ALL" == sType)
-				m_chSlash = 0b111;
-
-			m_chCrookedSlash = oChild.GetAttributeBool(L"Crooked");
-			m_bCounterSlash = oChild.GetAttributeBool(L"isCounter");
-		}
-		else if (L"hh:backSlash" == oChild.GetName())
-		{
-			HWP_STRING sType = oChild.GetAttribute(L"type");
-
-			if (L"NONE" == sType)
-				m_chBackSlash = 0x0;
-			else if (L"CENTER" == sType)
-				m_chBackSlash = 0b010;
-			else if (L"CENTER_BELOW" == sType)
-				m_chBackSlash = 0b011;
-			else if (L"CENTER_ABOVE" == sType)
-				m_chBackSlash = 0b110;
-			else if (L"ALL" == sType)
-				m_chBackSlash = 0b111;
-
-			m_chCrookedBackSlash = oChild.GetAttributeBool(L"Crooked");
-			m_bCounterBackSlash = oChild.GetAttributeBool(L"isCounter");
-		}
-		else if (L"hh:leftBorder" == oChild.GetName())
-			m_oLeft.ReadFromNode(oChild);
-		else if (L"hh:rightBorder" == oChild.GetName())
-			m_oRight.ReadFromNode(oChild);
-		else if (L"hh:topBorder" == oChild.GetName())
-			m_oTop.ReadFromNode(oChild);
-		else if (L"hh:bottomBorder" == oChild.GetName())
-			m_oBottom.ReadFromNode(oChild);
-		else if (L"hh:diagonal" == oChild.GetName())
-			m_oDiagonal.ReadFromNode(oChild);
-		else if (L"hc:fillBrush" == oChild.GetName())
-			m_pFill = new CFill(oChild);
+		if (GetAttributeName(EAttribute::ThreeD, eType) == sAttributeName)
+			m_bThreeD = oReader.GetBool();
+		else if (GetAttributeName(EAttribute::Shadow, eType) == sAttributeName)
+			m_bShadow = oReader.GetBool();
+		else if (GetAttributeName(EAttribute::BreakCellSeparateLine, eType) == sAttributeName)
+			m_bBreakCellSeparateLine = oReader.GetBool();
 	}
+	END_READ_ATTRIBUTES(oReader)
+
+	WHILE_READ_NEXT_NODE_WITH_NAME(oReader)
+	{
+		if (GetNodeName(ENode::LeftBorder, eType) == sNodeName)
+			m_oLeft.Read(oReader, eType);
+		else if (GetNodeName(ENode::RightBorder, eType) == sNodeName)
+			m_oRight.Read(oReader, eType);
+		else if (GetNodeName(ENode::TopBorder, eType) == sNodeName)
+			m_oTop.Read(oReader, eType);
+		else if (GetNodeName(ENode::BottomBorder, eType) == sNodeName)
+			m_oBottom.Read(oReader, eType);
+		else if (GetNodeName(ENode::Diagonal, eType) == sNodeName)
+			m_oDiagonal.Read(oReader, eType);
+		else if (GetNodeName(ENode::FillBrush, eType) == sNodeName)
+			m_pFill = new CFill(oReader, eType);
+		else if (Equals(ENode::Slash, eType, sNodeName))
+		{
+			START_READ_ATTRIBUTES(oReader)
+			{
+				if (GetAttributeName(EAttribute::Type, eType) == sAttributeName)
+				{
+					const std::string sType{oReader.GetTextA()};
+					
+					if (GetValueName(EValue::None, eType) == sType)
+						m_chSlash = 0x0;
+					else if (GetValueName(EValue::Center, eType) == sType)
+						m_chSlash = 0b010;
+					else if (GetValueName(EValue::CenterBelow, eType) == sType)
+						m_chSlash = 0b011;
+					else if (GetValueName(EValue::CenterAbove, eType) == sType)
+						m_chSlash = 0b110;
+					else if (GetValueName(EValue::All, eType) == sType)
+						m_chSlash = 0b111;
+				}
+				else if ("Crooked" == sAttributeName)
+					m_chCrookedSlash = oReader.GetBool();
+				else if ("isCounter" == sAttributeName)
+					m_bCounterSlash = oReader.GetBool();
+			}
+			END_READ_ATTRIBUTES(oReader)
+		}
+		else if (GetNodeName(ENode::BackSlash, eType) == sNodeName)
+		{
+			START_READ_ATTRIBUTES(oReader)
+			{
+				if (GetAttributeName(EAttribute::Type, eType) == sAttributeName)
+				{
+					const std::string sType{oReader.GetTextA()};
+
+					if (GetValueName(EValue::None, eType) == sType)
+						m_chBackSlash = 0x0;
+					else if (GetValueName(EValue::Center, eType) == sType)
+						m_chBackSlash = 0b010;
+					else if (GetValueName(EValue::CenterBelow, eType) == sType)
+						m_chBackSlash = 0b011;
+					else if (GetValueName(EValue::CenterAbove, eType) == sType)
+						m_chBackSlash = 0b110;
+					else if (GetValueName(EValue::All, eType) == sType)
+						m_chBackSlash = 0b111;
+				}
+				else if ("Crooked" == sAttributeName)
+					m_chCrookedBackSlash = oReader.GetBool();
+				else if ("isCounter" == sAttributeName)
+					m_bCounterBackSlash = oReader.GetBool();
+			}
+			END_READ_ATTRIBUTES(oReader)
+		}
+	}
+	END_WHILE
 }
 
 CHWPRecordBorderFill::~CHWPRecordBorderFill()

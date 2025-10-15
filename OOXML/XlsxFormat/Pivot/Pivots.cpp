@@ -785,8 +785,10 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			else
 				ptr->colFirstData = ptr->ref.columnFirst;
 		}
-		if(m_oCacheId.IsInit())
+		if(m_oCacheId.IsInit() && m_oCacheId->GetValue() != 0)
 			ptr->iCache = m_oCacheId->GetValue() - 1;
+		else
+			ptr->iCache = 0;
 		ptr->sxaxis4Data.bCol = true;
 		if(m_oDataPosition.IsInit())
 			ptr->ipos4Data = m_oDataPosition->GetValue();

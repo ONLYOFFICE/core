@@ -218,13 +218,14 @@ bool OOX::Spreadsheet::CXlsx::WriteXLS(const CPath& oFilePath)
 
 	if(m_pWorkbook->m_oPivotCaches.IsInit() && !m_pWorkbook->m_oPivotCaches->m_arrItems.empty())
 	{
+		auto cacheId = 1;
 		for(auto cacheHeader : m_pWorkbook->m_oPivotCaches->m_arrItems)
 		{
 			if(!cacheHeader->m_oCacheId.IsInit() || !cacheHeader->m_oRid.IsInit() ||  !m_pWorkbook->IsExist(cacheHeader->m_oRid->GetValue()))
 				continue;
 			auto cacheFilePtr = m_pWorkbook->Find(cacheHeader->m_oRid->GetValue());
 			auto CachePtr = static_cast<CPivotCacheDefinitionFile*>(cacheFilePtr.GetPointer());
-			auto XLSBinCache = CachePtr->m_oPivotCashDefinition->toXLS(cacheHeader->m_oCacheId->GetValue());
+			auto XLSBinCache = CachePtr->m_oPivotCashDefinition->toXLS(cacheId);
 			auto castedCache = static_cast<XLS::PIVOTCACHE*>(XLSBinCache.get());
 			auto cacheRecordsPtr = CachePtr->Find(OOX::SpreadsheetBin::FileTypes::PivotCacheRecordsBin);
 			if(!(cacheRecordsPtr->type() == OOX::FileTypes::Unknown))
@@ -248,6 +249,7 @@ bool OOX::Spreadsheet::CXlsx::WriteXLS(const CPath& oFilePath)
 
 			if(CachePtr->m_oPivotCashDefinition.IsInit())
 				writer.WritePivotCache(XLSBinCache, cacheHeader->m_oCacheId->GetValue());
+			cacheId++;
 		}
 	}
 	return true;

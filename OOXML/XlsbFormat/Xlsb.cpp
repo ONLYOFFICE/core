@@ -377,6 +377,8 @@ void OOX::Spreadsheet::CXlsb::PrepareTableFormula()
                         formula.replace(formula.find(str), str.size(), L"#NAME?");
                     }
                 }
+				else
+					break;
                 str = STR::guidFromStr(formula);
             }
         };

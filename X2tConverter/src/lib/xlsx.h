@@ -181,6 +181,7 @@ namespace NExtractTools
 			oXlsx.Read(oox_path);
 			oXlsx.PrepareHlinks();
 			oXlsx.PrepareRichStr();
+			oXlsx.PrepareTableFormula();
 			nRes = oXlsx.WriteXLS(sTo)? S_OK : AVS_FILEUTILS_ERROR_CONVERT;;
 		}
 		return nRes;

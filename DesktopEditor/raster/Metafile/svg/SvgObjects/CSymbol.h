@@ -7,7 +7,7 @@ namespace SVG
 {
 	class CSymbol : public CGraphicsContainer
 	{
-		friend class CRenderedObject;
+		friend class CObject;
 		CSymbol(CSvgReader& oReader, CRenderedObject* pParent = NULL);
 	public:
 		bool Draw(IRenderer* pRenderer, const CSvgFile* pFile, CommandeMode oMode = CommandeModeDraw, const TSvgStyles* pOtherStyles = NULL, const CRenderedObject* pContexObject = NULL) const override;

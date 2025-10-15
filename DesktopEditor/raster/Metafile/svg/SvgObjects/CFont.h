@@ -36,8 +36,9 @@ namespace SVG
 
 	class CFont : public CAppliedObject
 	{
-	public:
+		friend class CObject;
 		CFont(CSvgReader& oReader);
+	public:
 		~CFont();
 
 		void SetAttribute(const std::string& sName, CSvgReader& oReader) override;

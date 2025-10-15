@@ -28,14 +28,12 @@
 
 namespace SVG
 {
-	CSvgParser::CSvgParser()
-	    : m_pFontManager(NULL)
-	{
-	}
+	CSvgParser::CSvgParser(NSFonts::IFontManager* pFontManager)
+		: m_pFontManager(pFontManager)
+	{}
 
 	CSvgParser::~CSvgParser()
-	{
-	}
+	{}
 
 	void CSvgParser::SetFontManager(NSFonts::IFontManager *pFontManager)
 	{
@@ -104,11 +102,7 @@ namespace SVG
 		else
 			return false;
 
-		XmlUtils::IXmlDOMDocument::DisableOutput();
-		bool bResult = LoadFromString(wsContent, pContainer, pFile);
-		XmlUtils::IXmlDOMDocument::EnableOutput();
-
-		return bResult;
+		return LoadFromString(wsContent, pContainer, pFile);
 	}
 
 	bool CSvgParser::LoadFromString(const std::wstring &wsContent, CGraphicsContainer*& pContainer, CSvgFile* pFile) const
@@ -125,11 +119,10 @@ namespace SVG
 
 		RELEASEOBJECT(pContainer);
 
-		pContainer = CRenderedObject::Create<CGraphicsContainer>(oReader, pFile->GetSvgCalculator());
+		pContainer = CObject::Create<CGraphicsContainer>(oReader, pFile);
 
 		if (NULL == pContainer)
 			return false;
-
 
 		return ReadChildrens(oReader, pContainer, pFile, pContainer);
 	}
@@ -216,22 +209,6 @@ namespace SVG
 			oSearchStart = oMatch.suffix().first;
 		}
 	}
-
-	template <class TextType>
-	TextType* ReadTextObject(CSvgReader& oReader, const CSvgCalculator* pSvgCalculator, CRenderedObject *pParent, NSFonts::IFontManager* pFontManager)
-	{
-		//1 - создаем родительский объект
-		//2 - парсим аргументы
-		//3 - SetData
-		//4 - чтение дочерних (текста и внутри)
-
-		TextType *pText = CRenderedObject::Create<TextType>(oReader, pSvgCalculator, pParent, pFontManager);
-		if (NULL == pText)
-			return NULL;
-
-		return pText;
-	}
-
 	template <class ObjectType>
 	bool CSvgParser::ReadObject(CSvgReader& oReader, CContainer<ObjectType> *pContainer, CSvgFile *pFile, CRenderedObject *pParent) const
 	{
@@ -244,7 +221,7 @@ namespace SVG
 
 		if ("svg" == sElementName || "g" == sElementName || "a" == sElementName)
 		{
-			pObject = CRenderedObject::Create<CGraphicsContainer>(oReader, pFile->GetSvgCalculator(), pParent);
+			pObject = CObject::Create<CGraphicsContainer>(oReader, pFile, pParent);
 			if (!ReadChildrens(oReader, (CGraphicsContainer*)pObject, pFile, (CGraphicsContainer*)pObject))
 			{
 				RELEASEOBJECT(pObject);
@@ -252,138 +229,83 @@ namespace SVG
 			}
 		}
 		else if ("line" == sElementName)
-			pObject = CRenderedObject::Create<CLine>(oReader, pFile->GetSvgCalculator(), pParent);
+			pObject = CObject::Create<CLine>(oReader, pFile, pParent);
 		else if ("rect" == sElementName)
-			pObject = CRenderedObject::Create<CRect>(oReader, pFile->GetSvgCalculator(), pParent);
+			pObject = CObject::Create<CRect>(oReader, pFile, pParent);
 		else if ("circle" == sElementName)
-			pObject = CRenderedObject::Create<CCircle>(oReader, pFile->GetSvgCalculator(), pParent);
+			pObject = CObject::Create<CCircle>(oReader, pFile, pParent);
 		else if ("ellipse" == sElementName)
-			pObject = CRenderedObject::Create<CEllipse>(oReader, pFile->GetSvgCalculator(), pParent);
+			pObject = CObject::Create<CEllipse>(oReader, pFile, pParent);
 		else if ("path" == sElementName)
-			pObject = CRenderedObject::Create<CPath>(oReader, pFile->GetSvgCalculator(), pParent);
+			pObject = CObject::Create<CPath>(oReader, pFile, pParent);
 		else if ("polyline" == sElementName)
-			pObject = CRenderedObject::Create<CPolyline>(oReader, pFile->GetSvgCalculator(), pParent);
+			pObject = CObject::Create<CPolyline>(oReader, pFile, pParent);
 		else if ("polygon" == sElementName)
-			pObject = CRenderedObject::Create<CPolygon>(oReader, pFile->GetSvgCalculator(), pParent);
+			pObject = CObject::Create<CPolygon>(oReader, pFile, pParent);
 		else if ("image" == sElementName)
-			pObject = CRenderedObject::Create<CImage>(oReader, pFile->GetSvgCalculator(), pParent);
+			pObject = CObject::Create<CImage>(oReader, pFile, pParent);
 		else if ("use" == sElementName)
-			pObject = CRenderedObject::Create<CUse>(oReader, pFile->GetSvgCalculator(), pParent);
+			pObject = CObject::Create<CUse>(oReader, pFile, pParent);
 		else if ("text" == sElementName)
-		{
-			pObject = ReadTextObject<CText>(oReader, pFile->GetSvgCalculator(), pParent, m_pFontManager);
-			// pObject = CText::Create(oReader, pParent, m_pFontManager);
-			// ReadChildrens(oReader, (CText*)pObject, pFile, (CText*)pObject);
-		}
+			pObject = CObject::Create<CText>(oReader, pFile, pParent, m_pFontManager);
 		else if ("tspan" == sElementName)
-		{
-			pObject = ReadTextObject<CTSpan>(oReader, pFile->GetSvgCalculator(), pParent, m_pFontManager);
-			// pObject = CTSpan::Create(oReader, pParent, m_pFontManager);
-			// ReadChildrens(oReader, (CTSpan*)pObject, pFile, (CTSpan*)pObject);
-		}
+			pObject = CObject::Create<CTSpan>(oReader, pFile, pParent, m_pFontManager);
 		else if ("textPath" == sElementName)
-		{
-			pObject = ReadTextObject<CTextPath>(oReader, pFile->GetSvgCalculator(), pParent, m_pFontManager);
-			// pObject = CTextPath::Create(oReader, pParent, m_pFontManager);
-			// ReadChildrens(oReader, (CTextPath*)pObject, pFile);
-		}
+			pObject = CObject::Create<CTextPath>(oReader, pFile, pParent, m_pFontManager);
 		else if ("switch" == sElementName)
 		{
-			pObject = CRenderedObject::Create<CSwitch>(oReader, pFile->GetSvgCalculator(), pParent);
+			pObject = CObject::Create<CSwitch>(oReader, pFile, pParent);
 			ReadChildrens(oReader, (CSwitch*)pObject, pFile);
 		}
 		//defs
 		else if ("defs" == sElementName)
 			return ReadChildrens<CRenderedObject>(oReader, NULL, pFile);
 		else if("linearGradient" == sElementName)
-		{
-			pObject = new CLinearGradient(oReader);
-			ReadChildrens(oReader, (CLinearGradient*)pObject, pFile);
-		}
+			pObject = CObject::Create<CLinearGradient>(oReader, pFile);
 		else if ("radialGradient" == sElementName)
-		{
-			pObject = new CRadialGradient(oReader);
-			ReadChildrens(oReader, (CRadialGradient*)pObject, pFile);
-		}
-		else if ("stop" == sElementName)
-		{
-			CStopElement *pStopElement = new CStopElement(oReader);
-			if (AddObject((ObjectType*)pStopElement, pContainer))
-			{
-				UpdateStyles(pStopElement, pFile);
-				return true;
-			}
-			else
-			{
-				RELEASEOBJECT(pStopElement);
-				return false;
-			}
-		}
+			pObject = CObject::Create<CRadialGradient>(oReader, pFile);
 		else if ("pattern" == sElementName)
 		{
-			pObject = new CPattern(oReader, m_pFontManager);
+			pObject = CObject::Create<CPattern>(oReader, pFile);
 			ReadChildrens(oReader, (CGraphicsContainer*)(&((CPattern*)pObject)->GetContainer()), pFile);
 		}
 		else if ("clipPath" == sElementName)
 		{
-			pObject = new CClipPath(oReader);
+			pObject = CObject::Create<CClipPath>(oReader, pFile);
 			ReadChildrens(oReader, (CGraphicsContainer*)(&((CClipPath*)pObject)->GetContainer()), pFile);
 		}
 		else if ("marker" == sElementName)
 		{
-			pObject = new CMarker(oReader);
+			pObject = CObject::Create<CMarker>(oReader, pFile);
 			ReadChildrens(oReader, (CMarker*)pObject, pFile);
 		}
 		else if ("mask" == sElementName)
 		{
-			pObject = new CMask(oReader);
+			pObject = CObject::Create<CMask>(oReader, pFile);
 			ReadChildrens(oReader, (CGraphicsContainer*)(&((CMask*)pObject)->GetContainer()), pFile);
 		}
-		else if ("symbo" == sElementName)
+		else if ("symbol" == sElementName)
 		{
-			pObject = CRenderedObject::Create<CSymbol>(oReader, pFile->GetSvgCalculator());
-			if (ReadChildrens(oReader, (CSymbol*)pObject, pFile) && MarkObject(pObject, pFile))
+			pObject = CObject::Create<CSymbol>(oReader, pFile);
+			if (ReadChildrens(oReader, (CSymbol*)pObject, pFile))
 				return true;
 			else
 				RELEASEOBJECT(pObject);
 		}
 		else if ("font" == sElementName)
 		{
-			pObject = new CFont(oReader);
+			pObject = CObject::Create<CFont>(oReader, pFile);
 		}
 
-		if (NULL != pObject)
-		{
-			if ((MarkObject(pObject, pFile) && (AppliedObject == pObject->GetType() || NULL == pContainer)) ||
-				(RendererObject == pObject->GetType() && AddObject((ObjectType*)pObject, pContainer)))
-			{
-				if (RendererObject != pObject->GetType())
-					UpdateStyles(pObject, pFile);
-				return true;
-			}
-			delete pObject;
-		}
-
-		return false;
-	}
-
-	void CSvgParser::UpdateStyles(CObject *pObject, CSvgFile *pFile) const
-	{
-		if (NULL == pObject || NULL == pFile)
-			return;
-
-		const CSvgCalculator *pSvgCalculator = pFile->GetSvgCalculator();
-
-		if (NULL != pSvgCalculator)
-			pSvgCalculator->SetData(pObject);
-	}
-
-	bool CSvgParser::MarkObject(CObject *pObject, CSvgFile *pFile) const
-	{
-		if (NULL == pObject || NULL == pFile)
+		if (NULL == pObject)
 			return false;
 
-		return pFile->MarkObject(pObject);
+		if ((RendererObject == pObject->GetType() && AddObject((ObjectType*)pObject, pContainer)) ||
+		    AppliedObject == pObject->GetType())
+			return true;
+
+		RELEASEOBJECT(pObject);
+		return false;
 	}
 
 	template <class ObjectType>

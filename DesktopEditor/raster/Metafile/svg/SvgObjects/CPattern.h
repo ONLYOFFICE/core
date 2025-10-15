@@ -14,8 +14,9 @@ namespace SVG
 
 	class CPattern : public CAppliedObject
 	{
-	public:
+		friend class CObject;
 		CPattern(CSvgReader& oReader, NSFonts::IFontManager *pFontManager = NULL);
+	public:
 		virtual ~CPattern();
 
 		void SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode) override;

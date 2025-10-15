@@ -42,9 +42,6 @@ namespace SVG
 		: m_oXmlNode(oObject.m_oXmlNode), m_oTransformation(oObject.m_oTransformation)
 	{}
 
-	CObject::~CObject()
-	{}
-
 	void CObject::SetAttribute(const std::string& sName, CSvgReader& oReader)
 	{
 		if ("class" == sName)
@@ -66,6 +63,11 @@ namespace SVG
 			return;
 
 		SetData(NSCSS::NS_STATIC_FUNCTIONS::GetRules(wsStyles), ushLevel, bHardMode);
+	}
+
+	void CObject::ReadChildrens(CSvgReader& oReader, CSvgFile* pSvgFile)
+	{
+		//TODO:: реализовано в классах там, где нужно
 	}
 
 	void CObject::SetTransform(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
@@ -201,9 +203,6 @@ namespace SVG
 	      m_pParent(oRenderedObject.m_pParent)
 	{}
 
-	CRenderedObject::~CRenderedObject()
-	{}
-
 	ObjectType CRenderedObject::GetType() const
 	{
 		return RendererObject;
@@ -221,11 +220,6 @@ namespace SVG
 		SetOpacity  (mAttributes, ushLevel, bHardMode);
 		SetClip     (mAttributes, ushLevel, bHardMode);
 		SetMask     (mAttributes, ushLevel, bHardMode);
-	}
-
-	void CRenderedObject::ReadChildrens(CSvgReader& oReader, const CSvgCalculator* pSvgCalculator)
-	{
-		//TODO:: реализовано в классах там, где нужно
 	}
 
 	std::vector<NSCSS::CNode> CRenderedObject::GetFullPath() const
@@ -458,9 +452,6 @@ namespace SVG
 
 	CAppliedObject::CAppliedObject(CSvgReader& oReader)
 	    : CObject(oReader)
-	{}
-
-	CAppliedObject::~CAppliedObject()
 	{}
 
 	ObjectType CAppliedObject::GetType() const

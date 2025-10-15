@@ -45,9 +45,10 @@ namespace SVG
 
 	class CMarker : public CObject, public CContainer<CRenderedObject>
 	{
-	public:
+		friend class CObject;
 		CMarker(CSvgReader& oReader);
-		virtual ~CMarker();
+	public:
+		virtual ~CMarker() = default;
 
 		ObjectType GetType() const override;
 

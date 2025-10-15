@@ -14,7 +14,7 @@ namespace SVG
 		pRenderer->BeginCommand(c_nMaskType);
 		pRenderer->PathCommandStart();
 
-		for (const CRenderedObject* pObject : m_oContainer.m_arObjects)
+		for (const CRenderedObject* pObject : m_oContainer)
 			pObject->Draw(pRenderer, pFile, CommandeModeMask);
 
 		pRenderer->EndCommand(c_nMaskType);

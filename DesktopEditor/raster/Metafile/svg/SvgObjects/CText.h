@@ -12,18 +12,18 @@ namespace SVG
 {
 	class CTSpan : public CRenderedObject, public CContainer<CTSpan>
 	{
-		friend class CRenderedObject;
+		friend class CObject;
 	protected:
 		CTSpan(CSvgReader& oReader, CRenderedObject* pParent = NULL, NSFonts::IFontManager* pFontManager = NULL, const Point& oPosition = {});
-		CTSpan(const std::wstring& wsText, const Point& oPosition, CRenderedObject* pParent = NULL, NSFonts::IFontManager* pFontManager = NULL, bool bCheckText = true);
 		CTSpan(const CTSpan& oTSpan, double dX, const std::wstring& wsText);
+		CTSpan(wchar_t wChar, const Point& oPosition, CRenderedObject* pParent = NULL, NSFonts::IFontManager* pFontManager = NULL);
 	public:
 		virtual ~CTSpan();
 
 		void SetAttribute(const std::string& sName, CSvgReader& oReader) override;
 		void SetData(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false) override;
 
-		void ReadChildrens(CSvgReader& oReader, const CSvgCalculator* pSvgCalculator) override;
+		void ReadChildrens(CSvgReader& oReader, CSvgFile* pSvgFile) override;
 
 		bool Draw(IRenderer* pRenderer, const CSvgFile* pFile, CommandeMode oMode = CommandeModeDraw, const TSvgStyles* pOtherStyles = NULL, const CRenderedObject* pContexObject = NULL) const override;
 
@@ -37,8 +37,6 @@ namespace SVG
 		bool UseExternalFont(const CSvgFile* pFile, double dX, double dY, IRenderer* pRenderer, CommandeMode oMode = CommandeModeDraw, const TSvgStyles* pOtherStyles = NULL, const CRenderedObject* pContexObject = NULL) const;
 
 		TBounds GetBounds() const override;
-
-		void ReadText(CSvgReader& oReader, const CSvgCalculator* pSvgCalculator, bool bCheckText);
 
 		double GetWidth() const;
 		void CorrectFontFamily(std::wstring& wsFontFamily) const;
@@ -68,7 +66,7 @@ namespace SVG
 
 	class CText : public CTSpan
 	{
-		friend class CRenderedObject;
+		friend class CObject;
 	protected:
 		CText(CSvgReader& oReader, CRenderedObject* pParent = NULL, NSFonts::IFontManager* pFontManager = NULL);
 	public:
@@ -77,7 +75,7 @@ namespace SVG
 
 	class CTextPath : public CText
 	{
-		friend class CRenderedObject;
+		friend class CObject;
 		CTextPath(CSvgReader& oReader, CRenderedObject* pParent = NULL, NSFonts::IFontManager* pFontManager = NULL);
 	public:
 		void SetAttribute(const std::string& sName, CSvgReader& oReader) override;

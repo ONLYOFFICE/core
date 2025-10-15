@@ -7,7 +7,7 @@ namespace SVG
 {
 	class CImage : public CRenderedObject
 	{
-		friend class CRenderedObject;
+		friend class CObject;
 		CImage(CSvgReader& oReader, CRenderedObject* pParent = NULL);
 	public:
 		void SetAttribute(const std::string& sName, CSvgReader& oReader) override;

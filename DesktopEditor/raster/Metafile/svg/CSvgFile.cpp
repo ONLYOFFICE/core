@@ -3,11 +3,13 @@
 #include "SvgObjects/CContainer.h"
 #include "SvgObjects/CFont.h"
 
+#include "CSvgParser.h"
+
 #define SVG_FILE_WIDTH  300
 #define SVG_FILE_HEIGHT 150
 
 CSvgFile::CSvgFile()
-	: m_pContainer(NULL)
+	: m_pContainer(NULL), m_pFontManager(NULL)
 {}
 
 CSvgFile::~CSvgFile()
@@ -24,7 +26,10 @@ bool CSvgFile::ReadFromBuffer(BYTE *pBuffer, unsigned int unSize)
 bool CSvgFile::ReadFromWString(const std::wstring &wsContext)
 {
 	Clear();
-	return m_oParser.LoadFromString(wsContext, m_pContainer, this);
+
+	SVG::CSvgParser oSvgParser(m_pFontManager);
+
+	return oSvgParser.LoadFromString(wsContext, m_pContainer, this);
 }
 
 bool CSvgFile::OpenFromFile(const std::wstring &wsFile)
@@ -33,7 +38,9 @@ bool CSvgFile::OpenFromFile(const std::wstring &wsFile)
 
 	m_wsWorkingDirectory = NSFile::GetDirectoryName(wsFile);
 
-	return m_oParser.LoadFromFile(wsFile, m_pContainer, this);
+	SVG::CSvgParser oSvgParser(m_pFontManager);
+
+	return oSvgParser.LoadFromFile(wsFile, m_pContainer, this);
 }
 
 bool CSvgFile::GetBounds(double &dX, double &dY, double &dWidth, double &dHeight) const
@@ -94,7 +101,7 @@ const SVG::CSvgCalculator *CSvgFile::GetSvgCalculator() const
 
 void CSvgFile::SetFontManager(NSFonts::IFontManager *pFontManager)
 {
-	m_oParser.SetFontManager(pFontManager);
+	m_pFontManager = pFontManager;
 }
 
 void CSvgFile::SetWorkingDirectory(const std::wstring &wsWorkingDirectory)

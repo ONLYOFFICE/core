@@ -56,6 +56,25 @@ namespace SVG
 	void CGradient::SetData(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode)
 	{}
 
+	void CGradient::ReadChildrens(CSvgReader& oReader, CSvgFile* pSvgFile)
+	{
+		if (NULL == pSvgFile || NULL == pSvgFile->GetSvgCalculator())
+			return;
+
+		WHILE_READ_NEXT_NODE_WITH_ONE_NAME(oReader, "stop")
+		{
+			CStopElement *pStopElement = new CStopElement(oReader);
+
+			if (NULL == pStopElement)
+				continue;
+
+			pSvgFile->GetSvgCalculator()->SetData(pStopElement);
+
+			AddObject(pStopElement);
+		}
+		END_WHILE
+	}
+
 	bool CGradient::Apply(IRenderer *pRenderer, const CSvgFile *pFile, const TBounds &oObjectBounds)
 	{
 		if (NULL == pRenderer || m_arObjects.empty())

@@ -4,28 +4,44 @@ namespace SVG
 {
 	CLine::CLine(CSvgReader& oReader, CRenderedObject* pParent)
 		: CPath(oReader, pParent)
-	{}
+	{
+		AddElement(new CMoveElement(Point{0, 0}));
+		AddElement(new CLineElement(Point{0, 0}));
+	}
 
 	void CLine::SetAttribute(const std::string& sName, CSvgReader& oReader)
 	{
-		SvgDigit oX1;
-		SvgDigit oY1;
-		SvgDigit oX2;
-		SvgDigit oY2;
-
+		//TODO:: не нравится, подумать как можно сделать иначе
 		if ("x1" == sName)
-			oX1.SetValue(oReader.GetText());
+		{
+			CMoveElement* pMoveElement{dynamic_cast<CMoveElement*>(operator[](0))};
+
+			if (NULL != pMoveElement)
+				pMoveElement->m_oPoint.dX = oReader.GetDouble();
+		}
 		else if ("y1" == sName)
-			oY1.SetValue(oReader.GetText());
+		{
+			CMoveElement* pMoveElement{dynamic_cast<CMoveElement*>(operator[](0))};
+
+			if (NULL != pMoveElement)
+				pMoveElement->m_oPoint.dY = oReader.GetDouble();
+		}
 		else if ("x2" == sName)
-			oX2.SetValue(oReader.GetText());
+		{
+			CLineElement* pLineElement{dynamic_cast<CLineElement*>(operator[](1))};
+
+			if (NULL != pLineElement)
+				pLineElement->m_oPoint.dX = oReader.GetDouble();
+		}
 		else if ("y2" == sName)
-			oY2.SetValue(oReader.GetText());
+		{
+			CLineElement* pLineElement{dynamic_cast<CLineElement*>(operator[](1))};
+
+			if (NULL != pLineElement)
+				pLineElement->m_oPoint.dY = oReader.GetDouble();
+		}
 		else
 			CRenderedObject::SetAttribute(sName, oReader);
-
-		AddElement(new CMoveElement(Point{oX1.ToDouble(NSCSS::Pixel), oY1.ToDouble(NSCSS::Pixel)}));
-		AddElement(new CLineElement(Point{oX2.ToDouble(NSCSS::Pixel), oY2.ToDouble(NSCSS::Pixel)}));
 	}
 
 	void CLine::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)

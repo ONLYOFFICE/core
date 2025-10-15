@@ -14,7 +14,7 @@ namespace SVG
 	class CSvgParser
 	{
 	public:
-		CSvgParser();
+		CSvgParser(NSFonts::IFontManager* pFontManager = NULL);
 		~CSvgParser();
 
 		void SetFontManager(NSFonts::IFontManager* pFontManager);
@@ -31,8 +31,6 @@ namespace SVG
 		bool ScanStyles(CSvgReader& oReader, CSvgFile* pFile) const;
 		void ParseStyles(const std::wstring& wsStyles, CSvgFile *pFile) const;
 
-		void UpdateStyles(CObject* pObject, CSvgFile* pFile) const;
-		bool MarkObject(CObject* pObject, CSvgFile* pFile) const;
 		template <class ObjectType>
 		bool AddObject(ObjectType* pObject, CContainer<ObjectType>* pContainer) const;
 

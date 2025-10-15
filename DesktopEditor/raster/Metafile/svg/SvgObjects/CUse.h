@@ -8,7 +8,7 @@ namespace SVG
 {
 	class CUse : public CRenderedObject
 	{
-		friend class CRenderedObject;
+		friend class CObject;
 		CUse(CSvgReader& oReader, CRenderedObject* pParent = NULL);
 	public:
 		virtual ~CUse();

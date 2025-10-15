@@ -7,7 +7,7 @@ namespace SVG
 {
 	class CPolyline : public CPath
 	{
-		friend class CRenderedObject;
+		friend class CObject;
 	protected:
 		CPolyline(CSvgReader& oReader, CRenderedObject* pParent = NULL);
 	public:
@@ -16,7 +16,7 @@ namespace SVG
 
 	class CPolygon : public CPolyline
 	{
-		friend class CRenderedObject;
+		friend class CObject;
 		CPolygon(CSvgReader& oReader, CRenderedObject* pParent = NULL);
 	public:
 		void SetAttribute(const std::string& sName, CSvgReader& oReader) override;

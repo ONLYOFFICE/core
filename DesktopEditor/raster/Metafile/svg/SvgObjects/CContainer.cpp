@@ -5,15 +5,9 @@
 
 namespace SVG
 {
-	// CGraphicsContainer::CGraphicsContainer(const std::wstring &wsName)
-	// 	: CRenderedObject(NSCSS::CNode(wsName, L"", L""))
-	// {}
-
-	CGraphicsContainer::~CGraphicsContainer()
-	{
-		for (CRenderedObject* pObject : m_arObjects)
-			pObject->m_pParent = NULL;
-	}
+	CGraphicsContainer::CGraphicsContainer(CSvgReader& oReader, CRenderedObject *pParent)
+		: CRenderedObject(oReader, pParent)
+	{}
 
 	void CGraphicsContainer::SetAttribute(const std::string& sName, CSvgReader& oReader)
 	{
@@ -27,9 +21,7 @@ namespace SVG
 			m_oWindow.m_oHeight.SetValue(oReader.GetDouble());
 		else if ("viewBox" == sName)
 		{
-			m_oViewBox = m_oWindow;
-
-			std::vector<double> arValues = StrUtils::ReadDoubleValues(oReader.GetText());
+			const std::vector<double> arValues{StrUtils::ReadDoubleValues(oReader.GetText())};
 			if (4 == arValues.size())
 			{
 				m_oViewBox.m_oX      = arValues[0];
@@ -41,14 +33,6 @@ namespace SVG
 		else
 			CRenderedObject::SetAttribute(sName, oReader);
 	}
-
-	CGraphicsContainer::CGraphicsContainer(CSvgReader& oReader, CRenderedObject *pParent)
-		: CRenderedObject(oReader, pParent)
-	{}
-
-	CGraphicsContainer::CGraphicsContainer(double dWidth, double dHeight, CSvgReader& oReader, CRenderedObject *pParent)
-		: CRenderedObject(oReader, pParent), m_oWindow{0, 0, dWidth, dHeight}
-	{}
 
 	bool CGraphicsContainer::Draw(IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode, const TSvgStyles *pOtherStyles, const CRenderedObject* pContexObject) const
 	{
@@ -72,6 +56,9 @@ namespace SVG
 
 	TRect CGraphicsContainer::GetViewBox() const
 	{
+		if (m_oViewBox.m_oWidth.Empty() || m_oViewBox.m_oHeight.Empty())
+			return m_oWindow;
+
 		return m_oViewBox;
 	}
 

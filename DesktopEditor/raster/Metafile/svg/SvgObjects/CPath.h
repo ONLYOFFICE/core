@@ -30,57 +30,55 @@ namespace SVG
 	class IPathElement
 	{
 	public:
-		virtual ~IPathElement();
+		virtual ~IPathElement() = default;
 		virtual EPathElement GetType() const = 0;
 		virtual void Draw(IRenderer* pRenderer) const = 0;
+		virtual TBounds GetBounds() const = 0;
 
-		TBounds GetBounds() const;
-		UINT    GetPointCount() const;
-		virtual Point operator[](int nIndex) const;
-
-	private:
-		friend class CMoveElement;
-		friend class CLineElement;
-		friend class CVLineElement;
-		friend class CHLineElement;
-		friend class CCBezierElement;
-		friend class CSBezierElement;
-		friend class CQBezierElement;
-		friend class CTBezierElement;
-		friend class CArcElement;
-		friend class CCloseElement;
-		friend class CMovingPath;
-
-		std::vector<Point> m_arPoints;
+		Point GetFirstPoint() const;
+		Point GetLastPoint() const;
 	};
 
 	class CMoveElement : public IPathElement
 	{
 	public:
 		CMoveElement(const Point& oPoint);
-		virtual ~CMoveElement();
+		virtual ~CMoveElement() = default;
 		EPathElement GetType() const override;
 		static CMoveElement* CreateFromArray(std::vector<double>& arValues, bool bRelativeCoordinate, IPathElement* pPrevElement = NULL);
 		void Draw(IRenderer* pRenderer) const override;
+		TBounds GetBounds() const override;
+	private:
+		Point m_oPoint;
+
+		friend class IPathElement;
+		friend class CLine;
 	};
 
 	class CLineElement : public IPathElement
 	{
 	public:
 		CLineElement(const Point& oPoint);
-		virtual ~CLineElement();
+		virtual ~CLineElement() = default;
 		EPathElement GetType() const override;
 		static CLineElement* CreateFromArray(std::vector<double>& arValues, bool bRelativeCoordinate, IPathElement* pPrevElement = NULL);
 		static CLineElement* CreateFromVArray(std::vector<double>& arValues, bool bRelativeCoordinate, IPathElement* pPrevElement = NULL);
 		static CLineElement* CreateFromHArray(std::vector<double>& arValues, bool bRelativeCoordinate, IPathElement* pPrevElement = NULL);
 		void Draw(IRenderer* pRenderer) const override;
+		TBounds GetBounds() const override;
+		Point GetPoint() const;
+	private:
+		Point m_oPoint;
+
+		friend class IPathElement;
+		friend class CLine;
 	};
 
 	class CCBezierElement : public IPathElement
 	{
 	public:
 		CCBezierElement(const Point& oPoint1, const Point& oPoint2, const Point& oPointE, EPathElement enType = CBezier);
-		virtual ~CCBezierElement();
+		virtual ~CCBezierElement() = default;
 		EPathElement GetType() const override;
 		static IPathElement* CreateFromArray(std::vector<double>& arValues, bool bRelativeCoordinate, IPathElement* pPrevElement = NULL);
 		static IPathElement* CreateFromSArray(std::vector<double>& arValues, bool bRelativeCoordinate, IPathElement* pPrevElement = NULL);
@@ -88,24 +86,33 @@ namespace SVG
 		static IPathElement* CreateFromTArray(std::vector<double>& arValues, bool bRelativeCoordinate, IPathElement* pPrevElement = NULL);
 		static std::vector<IPathElement*> CreateFromArc(std::vector<double>& arValues, bool bRelativeCoordinate, IPathElement* pPrevElement = NULL);
 		void Draw(IRenderer* pRenderer) const override;
+		TBounds GetBounds() const override;
 	private:
 		static void  CalculateArcData(const Point& oFirst, const Point& oSecond, Point& oRadius, Point& oCenter, double dAngle, bool bLargeArc, bool bSweep, double& dStartAngle, double& dSweep);
 
+		Point m_oPoint1;
+		Point m_oPoint2;
+		Point m_oPointE;
 		EPathElement m_enType;
+
+		friend class IPathElement;
+		friend class CMovingPath;
+		friend class CPath;
 	};
 
 	class CCloseElement : public IPathElement
 	{
 	public:
-		CCloseElement();
-		virtual ~CCloseElement();
+		CCloseElement() = default;
+		virtual ~CCloseElement() = default;
 		EPathElement GetType() const override;
 		void Draw(IRenderer* pRenderer) const override;
+		TBounds GetBounds() const override;
 	};
 
 	class CPath : public CRenderedObject
 	{
-		friend class CRenderedObject;
+		friend class CObject;
 	protected:
 		CPath(CSvgReader& oReader, CRenderedObject* pParent = NULL);
 	public:
@@ -121,7 +128,6 @@ namespace SVG
 	private:
 		void ApplyStyle(IRenderer* pRenderer, const TSvgStyles* pStyles, const CSvgFile *pFile, int& nTypePath, const CRenderedObject* pContexObject = NULL) const override;
 		bool DrawMarkers(IRenderer* pRenderer, const CSvgFile *pFile, CommandeMode oMode = CommandeModeDraw, const TSvgStyles* pOtherStyles = NULL, const CRenderedObject* pContexObject = NULL) const;
-
 
 		TBounds GetBounds() const override;
 

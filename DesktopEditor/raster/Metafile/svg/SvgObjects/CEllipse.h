@@ -7,7 +7,7 @@ namespace SVG
 {
 	class CEllipse : public CRenderedObject
 	{
-		friend class CRenderedObject;
+		friend class CObject;
 		CEllipse(CSvgReader& oReader, CRenderedObject* pParent = NULL);
 	public:
 		void SetData(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false) override;

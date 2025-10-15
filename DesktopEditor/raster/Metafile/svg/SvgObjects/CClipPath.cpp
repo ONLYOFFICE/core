@@ -31,7 +31,7 @@ namespace SVG
 
 		ApplyClip(pRenderer, &m_oTransformation.m_oClip, pFile, oObjectBounds);
 
-		for (const CRenderedObject* pObject : m_oContainer.m_arObjects)
+		for (const CRenderedObject* pObject : m_oContainer)
 			pObject->Draw(pRenderer, pFile, CommandeModeClip);
 
 		return true;

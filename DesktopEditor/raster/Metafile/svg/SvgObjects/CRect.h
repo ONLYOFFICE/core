@@ -7,7 +7,7 @@ namespace SVG
 {
 	class CRect : public CRenderedObject
 	{
-		friend class CRenderedObject;
+		friend class CObject;
 		CRect(CSvgReader& oReader, CRenderedObject* pParent = NULL);
 	public:
 		virtual ~CRect();

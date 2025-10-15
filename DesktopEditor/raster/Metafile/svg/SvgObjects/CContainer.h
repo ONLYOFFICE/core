@@ -12,8 +12,9 @@ namespace SVG
 	template<typename TypeObject>
 	class CContainer
 	{
+		using const_iterator = typename std::vector<TypeObject*>::const_iterator;
 	public:
-		CContainer(){}
+		CContainer() = default;
 		virtual ~CContainer()
 		{
 			Clear();
@@ -61,31 +62,26 @@ namespace SVG
 
 			return NULL;
 		}
-	private:
-		std::vector<TypeObject*> m_arObjects;
 
-		friend class CText;
-		friend class CMask;
-		friend class CTSpan;
-		friend class CMarker;
-		friend class CSwitch;
-		friend class CPattern;
-		friend class CGradient;
-		friend class CClipPath;
-		friend class CTextPath;
-		friend class CLinearGradient;
-		friend class CGraphicsContainer;
+		const_iterator begin() const
+		{
+			return m_arObjects.cbegin();
+		}
+
+		const_iterator end() const
+		{
+			return m_arObjects.cend();
+		}
+	protected:
+		std::vector<TypeObject*> m_arObjects;
 	};
 
 	class CGraphicsContainer : public CContainer<CRenderedObject>, public CRenderedObject
 	{
-		friend class CRenderedObject;
-		// CGraphicsContainer(const std::wstring& wsName = L"GraphicsContainer");
+		friend class CObject;
 		CGraphicsContainer(CSvgReader& oReader, CRenderedObject* pParent = NULL);
 	public:
-		CGraphicsContainer(double dWidth, double dHeight, CSvgReader& oReader, CRenderedObject* pParent = NULL);
-
-		virtual ~CGraphicsContainer();
+		virtual ~CGraphicsContainer() = default;
 
 		void SetAttribute(const std::string& sName, CSvgReader& oReader) override;
 

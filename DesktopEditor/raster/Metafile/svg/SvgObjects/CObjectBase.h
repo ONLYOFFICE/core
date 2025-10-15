@@ -9,7 +9,7 @@
 #include "../SvgReader.h"
 #include "CStyle.h"
 
-class CSvgFile;
+#include "../CSvgFile.h"
 
 namespace SVG
 {
@@ -44,7 +44,7 @@ namespace SVG
 		CObject(CSvgReader& oReader);
 		CObject(const CObject& oObject);
 	public:
-		virtual ~CObject();
+		virtual ~CObject() = default;
 
 		virtual ObjectType GetType() const = 0;
 
@@ -54,6 +54,10 @@ namespace SVG
 
 		virtual void SetData(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false) = 0;
 
+		template <class T, typename... Args>
+		static T* Create(CSvgReader& oReader, CSvgFile* pSvgFile, Args&&... args);
+		virtual void ReadChildrens(CSvgReader& oReader, CSvgFile* pSvgFile);
+
 		void SetTransform(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false);
 		void SetClip(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false);
 		void SetMask(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false);
@@ -62,34 +66,47 @@ namespace SVG
 
 		std::wstring GetId() const;
 		virtual std::vector<NSCSS::CNode> GetFullPath() const;
-	private:
+	protected:
 		bool ApplyTransform(IRenderer* pRenderer, const SvgTransform* pTransform, Aggplus::CMatrix& oOldMatrix) const;
 		bool ApplyClip(IRenderer* pRenderer, const TClip* pClip, const CSvgFile *pFile, const TBounds& oBounds) const;
 		bool ApplyMask(IRenderer* pRenderer, const SvgColor* pMask, const CSvgFile *pFile, const TBounds& oBounds) const;
 
 		bool ApplyDef(IRenderer* pRenderer, const CSvgFile *pFile, const std::wstring& wsUrl, const TBounds& oBounds) const;
 
-		friend class CRenderedObject;
-		friend class CAppliedObject;
-
-		friend class CUse;
-		friend class CLine;
-		friend class CRect;
-		friend class CPath;
-		friend class CText;
-		friend class CTSpan;
-		friend class CImage;
-		friend class CCircle;
-		friend class CPolygon;
-		friend class CEllipse;
-		friend class CPolyline;
-		friend class CGraphicsContainer;
-
-		friend class CClipPath;
-
 		NSCSS::CNode       m_oXmlNode;
 		TSvgTransformation m_oTransformation;
 	};
+
+	template<class T, typename... Args>
+	inline T* CObject::Create(CSvgReader& oReader, CSvgFile* pSvgFile, Args&&... args)
+	{
+		T* pObject = new T(oReader, std::forward<Args>(args)...);
+
+		if (NULL == pObject)
+			return NULL;
+
+		START_READ_ATTRIBUTES(oReader)
+			pObject->SetAttribute(sAttributeName, oReader);
+		END_READ_ATTRIBUTES(oReader)
+
+		if (NULL == pSvgFile)
+			return pObject;
+
+		if (!pSvgFile->MarkObject(pObject) && AppliedObject == pObject->GetType())
+		{
+			delete pObject;
+			return NULL;
+		}
+
+		const CSvgCalculator* pSvgCalculator{pSvgFile->GetSvgCalculator()};
+
+		if (NULL != pSvgCalculator)
+			pSvgCalculator->SetData(pObject);
+
+		pObject->ReadChildrens(oReader, pSvgFile);
+
+		return pObject;
+	}
 
 	enum CommandeMode
 	{
@@ -107,17 +124,12 @@ namespace SVG
 		CRenderedObject(CSvgReader& oReader, CRenderedObject* pParent = NULL);
 		CRenderedObject(const CRenderedObject& oRenderedObject);
 	public:
-		virtual ~CRenderedObject();
-
-		template <class T, typename... Args>
-		static T* Create(CSvgReader& oReader, const CSvgCalculator* pSvgCalculator, CRenderedObject* pParent = NULL, Args&&... args);
+		virtual ~CRenderedObject() = default;
 
 		ObjectType GetType() const override;
 
 		virtual void SetAttribute(const std::string& sName, CSvgReader& oReader) override;
 		virtual void SetData(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false) override;
-
-		virtual void ReadChildrens(CSvgReader& oReader, const CSvgCalculator* pSvgCalculator);
 
 		virtual bool Draw(IRenderer* pRenderer, const CSvgFile *pFile, CommandeMode oMode = CommandeModeDraw, const TSvgStyles* pStyles = NULL, const CRenderedObject* pContextObject = NULL) const = 0;
 
@@ -159,32 +171,12 @@ namespace SVG
 		CRenderedObject *m_pParent;
 	};
 
-	template<class T, typename... Args>
-	inline T* CRenderedObject::Create(CSvgReader& oReader, const CSvgCalculator* pSvgCalculator, CRenderedObject* pParent, Args&&... args)
-	{
-		T* pObject = new T(oReader, pParent, std::forward<Args>(args)...);
-
-		if (NULL == pObject)
-			return NULL;
-
-		START_READ_ATTRIBUTES(oReader)
-			pObject->SetAttribute(sAttributeName, oReader);
-		END_READ_ATTRIBUTES(oReader)
-
-		if (NULL != pSvgCalculator)
-			pSvgCalculator->SetData(pObject);
-
-		pObject->ReadChildrens(oReader, pSvgCalculator);
-
-		return pObject;
-	}
-
 	class CAppliedObject : public CObject
 	{
 	protected:
 		CAppliedObject(CSvgReader& oReader);
 	public:
-		virtual ~CAppliedObject();
+		virtual ~CAppliedObject() = default;
 
 		ObjectType GetType() const override;
 

@@ -61,7 +61,7 @@ public:
 	bool			fTensorEx = false;
 	
 	_UINT32			dwQsiFuture = 0;
-	unsigned char	verSxLastUpdated = 0;
+	unsigned char	verSxLastUpdated = 1;
 	unsigned char	verSxUpdatableMin = 0;
 
 	unsigned char	obCchName = 0x10;

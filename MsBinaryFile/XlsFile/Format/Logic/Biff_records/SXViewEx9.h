@@ -52,12 +52,12 @@ public:
 
 	static const ElementType type = typeSXViewEx9;
 
-	unsigned short		rt = 0;
-	bool				fFrtAlert = false;
+	unsigned short		rt = 0x0810;
+	bool				fFrtAlert = true;
 	bool				fPrintTitles = false;
 	bool				fLineMode = false;
 	bool				fRepeatItemsOnEachPrintedPage = false;
-	unsigned short		itblAutoFmt = 0;
+	unsigned short		itblAutoFmt = 1;
 	XLUnicodeString		chGrand;
 
 };

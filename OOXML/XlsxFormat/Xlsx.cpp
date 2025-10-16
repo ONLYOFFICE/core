@@ -65,6 +65,8 @@
 #include "../../MsBinaryFile/XlsFile/Format/Logic/GlobalsSubstream.h"
 #include "../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/PIVOTCACHE.h"
 
+#include <iomanip>
+
 OOX::Spreadsheet::CXlsx::CXlsx() : OOX::IFileContainer(dynamic_cast<OOX::Document*>(this))
 {
 	init();
@@ -210,8 +212,23 @@ bool OOX::Spreadsheet::CXlsx::WriteXLS(const CPath& oFilePath)
 		workbookStream->m_arWorksheetSubstream.push_back(i->toXLS());
 	if(m_pSharedStrings != nullptr)
 		m_pSharedStrings->toXLS(workbookStream->m_GlobalsSubstream);
+	auto themesPtr = m_pWorkbook->Find(OOX::FileTypes::Theme);
+	if(!(themesPtr->type() == OOX::FileTypes::Unknown))
+	{	auto counter = 0;
+		auto theme = static_cast<PPTX::Theme*>(themesPtr.GetPointer());
+		for(auto themeColor : theme->themeElements.clrScheme.Scheme)
+		{
+			auto tempcolor = themeColor.second;
+			std::wstringstream sStream;
+			sStream << std::hex  << std::setw(6) << std::setfill(L'0')<< tempcolor.Color->GetRGBA(0);
+			writer.globalInfoPtr->RegisterPaletteColor(counter, sStream.str());
+			counter++;
+		}
+	}
 	if(m_pStyles != nullptr)
+	{
 		m_pStyles->toXLS(workbookStream->m_GlobalsSubstream);
+	}
 
 	writer.Open(oFilePath.GetPath());
 	writer.WriteWorkbook(workbookPtr);

@@ -353,6 +353,18 @@ namespace OOX
 			m_oColors = OOX::Spreadsheet::CColors();
 			m_oColors->m_oIndexedColors.Init();
 			m_oColors->m_oMruColors.Init();
+			{
+				auto globalInfo = workbookPtr->global_info_;
+				for(auto i : globalInfo->colors_palette)
+				{
+					nullable<CColor> tempColor;
+					tempColor.Init();
+					tempColor->m_oRgb.Init();
+					tempColor->m_oRgb->FromString(i.second);
+					SetColor(m_oColors.get(), tempColor);
+				}
+
+			}
 			if (m_oFonts.IsInit())
 			{
 				for(auto i : m_oFonts->m_arrItems)

@@ -1,4 +1,9 @@
-import type {BackgroundMessage, DispatchEventMessageType, MessagesType, PopupMessage} from "../common/message-types.ts";
+import type {
+    AnswerMainPageEventType,
+    BackgroundMessage,
+    MessagesType,
+    PopupMessage
+} from "../common/message-types.ts";
 import browser from "webextension-polyfill";
 import {messageListeners, onlyofficeChannels} from "../common/message-const.ts";
 
@@ -12,6 +17,6 @@ export const sendToPopup = async (data: MessagesType) => {
     return browser.runtime.sendMessage(sendData);
 };
 
-export const sendToPage = (data: DispatchEventMessageType) => {
-    window.dispatchEvent(new CustomEvent<DispatchEventMessageType>(onlyofficeChannels.onlyofficeClientChannel, {detail: data}));
+export const sendToPage = (data: AnswerMainPageEventType) => {
+    window.dispatchEvent(new CustomEvent<AnswerMainPageEventType>(onlyofficeChannels.onlyofficeClientChannel, {detail: data}));
 };

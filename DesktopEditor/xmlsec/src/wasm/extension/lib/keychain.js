@@ -16,6 +16,8 @@
 		CHECK_ENGINE: "CHECK_ENGINE",
 		GENERATE_KEYS: "GENERATE_KEYS",
 		SELECT_SIGN_KEYS: "SELECT_SIGN_KEYS",
+		SIGN_DATA: "SIGN_DATA",
+		VERIFY_DATA: "VERIFY_DATA",
 	};
 	var KeychainVersion = 1;
 	var KeychainKeyVersion = 2;
@@ -73,6 +75,14 @@
 		return pluginMessenger.postMessage({
 			type : messageTypes.SIGN_DATA,
 			base64Data: base64,
+			guid: guid
+		});
+	};
+	Keychain.prototype.verifyData = async function(base64Data, base64Signature, guid) {
+		return pluginMessenger.postMessage({
+			type : messageTypes.VERIFY_DATA,
+			base64Data: base64Data,
+			base64Signature: base64Signature,
 			guid: guid
 		});
 	};

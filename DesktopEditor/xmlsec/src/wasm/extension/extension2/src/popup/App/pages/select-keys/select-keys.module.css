@@ -1,0 +1,6 @@
+.key {
+    cursor: pointer;
+    &:hover {
+        background-color: rgba(0, 0, 0, 10%);
+    }
+}

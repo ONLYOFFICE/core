@@ -1,3 +1,4 @@
 export const locations = {
-    changeMasterPassword: "changeMasterPassword"
+    changeMasterPassword: "changeMasterPassword",
+    selectKeys: "selectKeys",
 } as const;

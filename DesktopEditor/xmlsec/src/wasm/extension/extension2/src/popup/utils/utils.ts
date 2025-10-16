@@ -31,12 +31,6 @@ const getChangedProperty = (key: string) => {
         });
     });
 };
-export const getChangedDefaultGuid = () => {
-    return getChangedProperty("default-sign-guid");
-};
-export const setDefaultSignGuid = (guid: string) => {
-    return browser.storage.local.set({"default-sign-guid": guid});
-}
 
 export const initCheckOpenedPopup = () => {
     const port = browser.runtime.connect({ name: "popup" });

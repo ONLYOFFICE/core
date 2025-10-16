@@ -1,7 +1,7 @@
 import {useState, useEffect} from 'react'
 import Login from "../login/login.tsx";
 import {getStorageMasterPassword, initCheckOpenedPopup, setStorageMasterPassword} from "../../../utils/utils.ts";
-import initTaskManager from "../../../task-manager/task-manager.ts";
+import {useTaskManager} from "../../../task-manager/task-manager.ts";
 import {Dashboard} from "../dashboard/dashboard.tsx";
 import KeyStorage from "../../../../common/key-storage.ts";
 import {KeyPair, KeyUsages} from "../../../../common/keys/keys.ts";
@@ -9,6 +9,8 @@ import getCrypto from "../../../../common/crypto.ts";
 import {Ed25519KeyGenParams} from "../../../../common/keys/params.ts";
 import {ChangePasswordPage} from "../change-password/change-password.tsx";
 import {locations} from "../../../utils/locations.ts";
+import SelectKeysPage from "../select-keys/select-keys.tsx";
+import {messageTypes} from "../../../../common/message-const.ts";
 const keyStorage = new KeyStorage();
 const generateKeys = async () => {
     const crypto = getCrypto();
@@ -21,9 +23,9 @@ const generateKeys = async () => {
 
 
 export default function App() {
-    const [location, setLocation] = useState("");
     const [localMasterPassword, setLocalMasterPassword] = useState<string | null>(null);
     const [keys, setKeys] = useState<KeyPair[]>([]);
+    const {location, setLocation, promiseRef} = useTaskManager();
     useEffect(() => {
        (async () => {
            const storageMasterPassword = await getStorageMasterPassword();
@@ -32,8 +34,20 @@ export default function App() {
            setKeys(keyStorage.getValidKeys());
         })();
         initCheckOpenedPopup();
-        initTaskManager();
     }, []);
+
+    const handleSelectKey = (e: React.MouseEvent<HTMLLIElement>) => {
+        if (promiseRef.current) {
+            const guid = e.currentTarget.dataset.guid;
+            if (promiseRef.current.messageId === messageTypes.SELECT_SIGN_KEYS && guid) {
+                promiseRef.current.resolve(guid);
+            } else {
+                promiseRef.current.reject("Another task was expected to resolve");
+            }
+        }
+        promiseRef.current = null;
+        window.close();
+    };
 
     const handleSubmitMasterPassword = (masterPassword: string) => {
         setStorageMasterPassword(masterPassword);
@@ -64,13 +78,14 @@ export default function App() {
         setKeys(keyStorage.getValidKeys());
     };
     const isLoggedOut = localMasterPassword === null;
+    console.log(location)
     return (
         <>
             {
                 isLoggedOut ?
                 <Login handleSubmitMasterPassword={handleSubmitMasterPassword} /> :
-                location === locations.changeMasterPassword ?
-                <ChangePasswordPage handleSubmitNewMasterPassword={handleSubmitNewMasterPassword} /> :
+                location === locations.changeMasterPassword ? <ChangePasswordPage handleSubmitNewMasterPassword={handleSubmitNewMasterPassword} /> :
+                location === locations.selectKeys ? <SelectKeysPage keys={keys} handleKey={handleSelectKey}/> :
                 <Dashboard handleDeprecateKey={handleDeprecateKey} changeLocation={setLocation} handleImportKeys={handleImportKeys} handleExportKeys={handleExportKeys} handleGenerateSignKeys={handleGenerateKeys} keys={keys} masterPassword={localMasterPassword}/>
             }
         </>

@@ -29,7 +29,7 @@ abstract class CCryptoBase {
     abstract randomUUID(): string;
     }
     class CWebCrypto extends CCryptoBase {
-        crypto = window.crypto;
+        crypto = globalThis.crypto;
         subtle = this.crypto.subtle;
         constructor() {
             super();

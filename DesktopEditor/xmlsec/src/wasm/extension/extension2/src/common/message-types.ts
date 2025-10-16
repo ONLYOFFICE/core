@@ -11,6 +11,10 @@ export type DispatchEventMessageType = {
     id?: number;
     data: MessagesType;
 }
+export type AnswerMainPageEventType = {
+    id?: number;
+    data: unknown;
+};
 type Listeners = typeof messageListeners[keyof typeof messageListeners];
 type ExtensionMessage<T extends Listeners = Listeners> = {
     data: MessagesType;

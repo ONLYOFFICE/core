@@ -45,8 +45,8 @@ export const openPopup = async () => {
         });
     });
 };
-
-export const getGUID = () => {
+type TGuid = `{${string}-${string}-${string}-${string}-${string}}`
+export const getGUID = (): TGuid => {
     const crypto = getCrypto();
     return `{${crypto.randomUUID()}}`;
 }

@@ -7,10 +7,12 @@
 </head>
 <body>
     <input type="text" id="inputTest1">
-    <button id="selectSign" style="position:absolute;margin:0px;padding:0px;left:10px;top:10px;width:60px;height:40px;">Select sign keys</button>
+    <button id="selectSign">Select sign keys</button>
     <div id="guid">Выбранный guid ключа: </div>
-    <button id="signText" style="position:absolute;margin:0px;padding:0px;left:10px;top:10px;width:60px;height:40px;">Sign text</button>
+    <button id="signText">Sign text</button>
+    <button id="verifyText">Verify</button>
     <div id="signValue">base64 подпись: </div>
+    <div id="verifyValue">Результат проверки подписи: </div>
     <script src="../lib/messenger.js"></script>
     <script src="../lib/keychain.js"></script>
     <script src="page.js"></script>

@@ -157,11 +157,55 @@ struct Image
 		if (other.m_pColormap)
 		{
 			m_pColormap = new PixelInfo[m_nColors + 1];
-			memcpy(m_pColormap, other.m_pColormap, m_nColors + 1);
+			memcpy(m_pColormap, other.m_pColormap, (m_nColors + 1) * sizeof(PixelInfo));
 		}
 
-		memcpy(m_pChannelMap, other.m_pChannelMap, 65);
+		memcpy(m_pChannelMap, other.m_pChannelMap, 65 * sizeof(PixelChannelMap));
 		return *this;
+	}
+
+	void Realloc(const size_t& w, const size_t& h, const bool& isCopy = true)
+	{
+		size_t oldSize = 4 * m_nWidth * m_nHeight;
+		size_t newSize = 4 * w * h;
+
+		m_nWidth = w;
+		m_nHeight = h;
+
+		if (0 == newSize)
+		{
+			if (m_pPixelData)
+				free(m_pPixelData);
+			m_pPixelData = nullptr;
+			return;
+		}
+
+		if (oldSize == newSize)
+			return;
+
+		BYTE* oldPixels = m_pPixelData;
+		if (oldSize > newSize || !m_pPixelData)
+		{
+			m_pPixelData = (BYTE*)malloc(newSize);
+			if (isCopy && oldPixels)
+				memcpy(m_pPixelData, oldPixels, newSize);
+
+			if (oldPixels)
+				free(oldPixels);
+		}
+		else
+		{
+			m_pPixelData = (BYTE*)realloc(oldPixels, newSize);
+			if (NULL == m_pPixelData)
+			{
+				m_pPixelData = (BYTE*)malloc(newSize);
+				if (isCopy && oldPixels)
+					memcpy(m_pPixelData, oldPixels, oldSize);
+
+				if (oldPixels)
+					free(oldPixels);
+			}
+		}
 	}
 };
 
@@ -221,8 +265,8 @@ private:
 
 	std::wstring m_wsFontName{};
 
-	Aggplus::Point m_oPenPoint{};
-	Aggplus::Point m_oTextPoint{};
+	Aggplus::Point m_oPenPoint{0, 0};
+	Aggplus::Point m_oTextPoint{0, 0};
 
 	Aggplus::Rect m_oLastRect{};
 	Aggplus::Rect m_oLastRoundRect{};

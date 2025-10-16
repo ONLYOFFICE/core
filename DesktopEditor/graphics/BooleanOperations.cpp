@@ -768,7 +768,17 @@ bool CBooleanOperations::IsSelfInters(const CGraphicsPath& p)
 
 	GetIntersection();
 
-	return !Locations.empty();
+	if (Locations.empty())
+		return false;
+	else
+	{
+		for (const auto& l : Locations)
+		{
+			if (!isZero(l->Time) && !isZero(l->Time - 1.0) && l->C.Segment2.Index != l->Inters->C.Segment1.Index)
+				return true;
+		}
+	}
+	return false;
 }
 
 void CBooleanOperations::TraceBoolean()
@@ -2338,17 +2348,19 @@ CGraphicsPath CalcBooleanOperation(const CGraphicsPath& path1,
 	std::vector<CGraphicsPath>	paths1 = path1.GetSubPaths(),
 								paths2 = path2.GetSubPaths(),
 								paths;
-
+	int skip_end1 = -1;
 	for (size_t i = 0; i < paths2.size(); i++)
 	{
+		int  skip_end2 = -1;
 		CBooleanOperations o;
-		if (o.IsSelfInters(paths2[i]))
+		if (i > skip_end2 && o.IsSelfInters(paths2[i]))
 		{
 			CBooleanOperations operation(paths2[i], paths2[i], Intersection, fillType, isLuminosity);
 			CGraphicsPath p = std::move(operation.GetResult());
 
 			std::vector<CGraphicsPath> tmp_paths = p.GetSubPaths();
 			paths2[i] = tmp_paths[0];
+			skip_end2 = i + tmp_paths.size() - 1;
 			for (size_t k = 1; k < tmp_paths.size(); k++)
 				paths2.insert(paths2.begin() + i + k, tmp_paths[k]);
 		}
@@ -2356,13 +2368,14 @@ CGraphicsPath CalcBooleanOperation(const CGraphicsPath& path1,
 		for (size_t j = 0; j < paths1.size(); j++)
 		{
 			CBooleanOperations o2;
-			if (o2.IsSelfInters(paths1[j]))
+			if (j > skip_end1 && o2.IsSelfInters(paths1[j]))
 			{
 				CBooleanOperations operation(paths1[j], paths1[j], Intersection, fillType, isLuminosity);
 				CGraphicsPath p = std::move(operation.GetResult());
 
 				std::vector<CGraphicsPath> tmp_paths = p.GetSubPaths();
 				paths1[j] = tmp_paths[0];
+				skip_end1 = j + tmp_paths.size() - 1;
 				for (size_t k = 1; k < tmp_paths.size(); k++)
 					paths1.insert(paths1.begin() + i + k, tmp_paths[k]);
 			}

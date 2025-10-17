@@ -292,7 +292,9 @@ private:
 	OOX::Logic::CRunProperty		m_oCur_rPr;
 	OOX::Logic::CRunProperty		m_oMath_rPr;
 	OOX::Logic::CParagraphProperty	m_oCur_pPr;
-    
+	nullable<SimpleTypes::CLongHexNumber> m_oParaId;
+	nullable<SimpleTypes::CLongHexNumber> m_oTextId;
+
 	BYTE                            m_byteLastElemType;
 public:
     Writers::ContentWriter&         m_oDocumentWriter;
@@ -305,7 +307,7 @@ public:
 	~Binary_DocumentTableReader();
 	
 	int Read();
-	NSStringUtils::CStringBuilder& GetRunStringWriter();
+	NSStringUtils::CStringBuilder& GetCurrentStringWriter();
 	int ReadDocumentContentOut(long length);
 	int ReadDocumentContent(BYTE type, long length, void* poResult);
 	int ReadParagraph(BYTE type, long length, void* poResult);

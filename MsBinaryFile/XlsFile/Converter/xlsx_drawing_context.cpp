@@ -793,6 +793,48 @@ void xlsx_drawing_context::set_object_drop_lines(int val)
 
 	current_drawing_states->back()->object.drop_lines = val;
 }
+void xlsx_drawing_context::set_object_dx(int val)
+{
+	if (current_drawing_states == NULL) return;
+	if (current_drawing_states->empty()) return;
+
+	current_drawing_states->back()->object.dx = val;
+}
+void xlsx_drawing_context::set_object_checked(bool val)
+{
+	if (current_drawing_states == NULL) return;
+	if (current_drawing_states->empty()) return;
+
+	current_drawing_states->back()->object.checked = val;
+}
+void xlsx_drawing_context::set_object_multiLine(bool val)
+{
+	if (current_drawing_states == NULL) return;
+	if (current_drawing_states->empty()) return;
+
+	current_drawing_states->back()->object.multiLine = val;
+}
+void xlsx_drawing_context::set_object_vscroll(bool val)
+{
+	if (current_drawing_states == NULL) return;
+	if (current_drawing_states->empty()) return;
+
+	current_drawing_states->back()->object.vscroll = val;
+}
+void xlsx_drawing_context::set_object_hscroll(bool val)
+{
+	if (current_drawing_states == NULL) return;
+	if (current_drawing_states->empty()) return;
+
+	current_drawing_states->back()->object.hscroll = val;
+}
+void xlsx_drawing_context::set_object_3D(bool val)
+{
+	if (current_drawing_states == NULL) return;
+	if (current_drawing_states->empty()) return;
+
+	current_drawing_states->back()->object._3D = val;
+}
 void xlsx_drawing_context::end_drawing()
 {
 	if (current_drawing_states == NULL) return;
@@ -1303,6 +1345,30 @@ void xlsx_drawing_context::serialize_vml_shape(_drawing_state_ptr & drawing_stat
 				{
 					CP_XML_NODE(L"x:DropLines"){CP_XML_CONTENT(*drawing_state->object.drop_lines);}
 				}
+				if (drawing_state->object.dx)
+				{
+					CP_XML_NODE(L"x:Dx") { CP_XML_CONTENT(*drawing_state->object.dx); }
+				}
+				if (drawing_state->object.checked)
+				{
+					CP_XML_NODE(L"x:Checked") { CP_XML_CONTENT(*drawing_state->object.checked); }
+				}		
+				if (drawing_state->object._3D)
+				{
+					CP_XML_NODE(L"x:NoThreeD") { CP_XML_CONTENT(*drawing_state->object._3D ? L"False" : L"True"); }
+				}	
+				if (drawing_state->object.multiLine)
+				{
+					CP_XML_NODE(L"x:Multiline") { CP_XML_CONTENT(*drawing_state->object.multiLine ? L"True" : L"False"); }
+				}
+				if (drawing_state->object.vscroll)
+				{
+					CP_XML_NODE(L"x:VScroll") { CP_XML_CONTENT(*drawing_state->object.vscroll ? L"True" : L"False"); }
+				}			
+				if (drawing_state->object.hscroll)
+				{
+					CP_XML_NODE(L"x:Horiz") { CP_XML_CONTENT(*drawing_state->object.hscroll ? L"True" : L"False"); }
+				}	
 			}
 		}	
 	
@@ -2710,6 +2776,30 @@ void xlsx_drawing_context::serialize_control_props(std::wostream & strm, _drawin
 			if (drawing_state->object.drop_lines)
 			{
 				CP_XML_ATTR(L"dropLines", *drawing_state->object.drop_lines);
+			}
+			if (drawing_state->object.dx)
+			{
+				CP_XML_ATTR(L"dx", *drawing_state->object.dx);
+			}
+			if (drawing_state->object.checked && (*drawing_state->object.checked))
+			{
+				CP_XML_ATTR(L"checked", L"Checked");
+			}
+			if (drawing_state->object._3D)
+			{
+				CP_XML_ATTR(L"noThreeD", !(*drawing_state->object._3D));
+			}
+			if (drawing_state->object.vscroll)
+			{
+				CP_XML_ATTR(L"verticalBar", *drawing_state->object.vscroll);
+			}
+			if (drawing_state->object.hscroll)
+			{
+				CP_XML_ATTR(L"horiz", *drawing_state->object.hscroll);
+			}
+			if (drawing_state->object.multiLine)
+			{
+				CP_XML_ATTR(L"multiLine", *drawing_state->object.multiLine);
 			}
 		}
 	}

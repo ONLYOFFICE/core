@@ -42,6 +42,8 @@ BiffStructurePtr FtGboData::clone()
 
 void FtGboData::load(CFRecord& record)
 {
+	//ft(2 bytes) : Reserved.MUST be 0x000F.
+	//cb(2 bytes) : Reserved.MUST be 0x0006
 	unsigned short ft, cb;
 	record >> ft >> cb;
 

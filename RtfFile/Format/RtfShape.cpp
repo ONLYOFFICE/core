@@ -215,7 +215,8 @@ void RtfShape::SetDefault()
 	DEFAULT_PROPERTY( m_nConnectorStyle )
 
 //Fill
-    DEFAULT_PROPERTY_DEF( m_bFilled, true )
+    //DEFAULT_PROPERTY_DEF( m_bFilled, true )
+    DEFAULT_PROPERTY_DEF( m_bFilled, false )
 	DEFAULT_PROPERTY( m_nFillType )
 	DEFAULT_PROPERTY( m_nFillColor )
 	DEFAULT_PROPERTY( m_nFillColor2 )
@@ -945,15 +946,10 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 			sShapeStart += L" o:spt=\"" + std::to_wstring(m_nShapeType) + L"\"";
 		}
 
-        if (0 == m_bFilled || (m_nFillColor == PROP_DEF && m_nFillColor2 == PROP_DEF && m_nFillType == PROP_DEF))
-        {
-            if (1 == m_bFilled)
-                sShapeStart += L" filled=\"t\"";
-            else
-                sShapeStart += L" filled=\"f\""; //сф_850000158725_R7_M194_МО_Q194.rtf
-        }
-		else
-			sShapeStart += L" filled=\"t\"";
+        if (1 == m_bFilled || m_nFillColor != PROP_DEF || m_nFillColor2 != PROP_DEF || m_nFillType != PROP_DEF)
+            sShapeStart += L" filled=\"t\"";
+        else
+            sShapeStart += L" filled=\"f\""; //сф_850000158725_R7_M194_МО_Q194.rtf
 
 		if (PROP_DEF == m_bLine)
 		{

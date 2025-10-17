@@ -353,8 +353,8 @@ namespace OOX
 			m_oColors = OOX::Spreadsheet::CColors();
 			m_oColors->m_oIndexedColors.Init();
 			m_oColors->m_oMruColors.Init();
+			auto globalInfo = workbookPtr->global_info_;
 			{
-				auto globalInfo = workbookPtr->global_info_;
 				for(auto i : globalInfo->colors_palette)
 				{
 					nullable<CColor> tempColor;
@@ -419,6 +419,15 @@ namespace OOX
 					{
 						i->m_oColor->m_oIndexed = GetClrIndex(m_oColors.get(), i->m_oColor->m_oRgb.get());
 					}
+					//finding registred theme clr
+					else if(i->m_oColor.IsInit() && i->m_oColor->m_oThemeColor.IsInit()
+					&& globalInfo->colors_palette.find(i->m_oColor->m_oThemeColor->GetValue()) != globalInfo->colors_palette.end())
+					{
+						auto rgb = globalInfo->colors_palette.find(i->m_oColor->m_oThemeColor->GetValue())->second;
+						SimpleTypes::Spreadsheet::CHexColor hexClr;
+						hexClr.FromString(rgb);
+						i->m_oColor->m_oIndexed = GetClrIndex(m_oColors.get(), hexClr);
+					}
 				}
 				FormatPtr->m_arFonts = m_oFonts->toXLS();
 			}
@@ -432,13 +441,12 @@ namespace OOX
 					m_oCellStyleXfs->toXLS(FormatPtr->m_XFS);
 				if(m_oCellXfs.IsInit())
 					m_oCellXfs->toXLS(FormatPtr->m_XFS);
-				SetFillXLS(FormatPtr->m_XFS);
-				SetBordersXLS(FormatPtr->m_XFS);
+				SetFillXLS(FormatPtr->m_XFS, globalsStreamPtr);
+				SetBordersXLS(FormatPtr->m_XFS, globalsStreamPtr);
 			}
 			if(m_oDxfs.IsInit())
 			{
 				//FormatPtr->m_arDXF = m_oDxfs->toXLS();
-				auto globalInfo = workbookPtr->global_info_;
 				if(globalInfo != nullptr)
 				{
 					for(auto i : m_oDxfs->m_arrItems)
@@ -452,10 +460,12 @@ namespace OOX
 				FormatPtr->m_TABLESTYLES = m_oTableStyles->toXLS();
 
 		}
-		void CStyles::SetFillXLS(XLS::BaseObjectPtr XFSPtr)
+		void CStyles::SetFillXLS(XLS::BaseObjectPtr XFSPtr, XLS::BaseObjectPtr workbookPtr)
 		{
 			if(!m_oFills.IsInit())
 				return;
+			auto castedWorkbook = static_cast<XLS::GlobalsSubstream*>(workbookPtr.get());
+			auto globalInfo = castedWorkbook->global_info_;
 			//preparing clr indexes
 			for(auto i : m_oFills->m_arrItems)
 			{
@@ -464,8 +474,24 @@ namespace OOX
 					auto pattern = &i->m_oPatternFill;
 					if((*pattern)->m_oBgColor.IsInit() && !(*pattern)->m_oBgColor->m_oIndexed.IsInit() && (*pattern)->m_oBgColor->m_oRgb.IsInit())
 						(*pattern)->m_oBgColor->m_oIndexed = GetClrIndex(m_oColors.get(), (*pattern)->m_oBgColor->m_oRgb.get());
+					else if((*pattern)->m_oBgColor.IsInit() && (*pattern)->m_oBgColor->m_oThemeColor.IsInit()
+					&& globalInfo->colors_palette.find((*pattern)->m_oBgColor->m_oThemeColor->GetValue()) != globalInfo->colors_palette.end())
+						{
+							auto rgb = globalInfo->colors_palette.find((*pattern)->m_oBgColor->m_oThemeColor->GetValue())->second;
+							SimpleTypes::Spreadsheet::CHexColor hexClr;
+							hexClr.FromString(rgb);
+							(*pattern)->m_oBgColor->m_oIndexed = GetClrIndex(m_oColors.get(), hexClr);
+						}
 					if((*pattern)->m_oFgColor.IsInit() && !(*pattern)->m_oFgColor->m_oIndexed.IsInit() && (*pattern)->m_oFgColor->m_oRgb.IsInit())
 						(*pattern)->m_oFgColor->m_oIndexed = GetClrIndex(m_oColors.get(), (*pattern)->m_oFgColor->m_oRgb.get());
+					else if((*pattern)->m_oFgColor.IsInit() && (*pattern)->m_oFgColor->m_oThemeColor.IsInit()
+					&& globalInfo->colors_palette.find((*pattern)->m_oFgColor->m_oThemeColor->GetValue()) != globalInfo->colors_palette.end())
+						{
+							auto rgb = globalInfo->colors_palette.find((*pattern)->m_oFgColor->m_oThemeColor->GetValue())->second;
+							SimpleTypes::Spreadsheet::CHexColor hexClr;
+							hexClr.FromString(rgb);
+							(*pattern)->m_oFgColor->m_oIndexed = GetClrIndex(m_oColors.get(), hexClr);
+						}
 				}
 			}
 
@@ -610,38 +636,69 @@ namespace OOX
 			if(prop->m_oColor.IsInit() && prop->m_oColor->m_oIndexed.IsInit())
 				icvPtr = prop->m_oColor->m_oIndexed->GetValue();
 		}
-		void CStyles::SetBordersXLS(XLS::BaseObjectPtr XFSPtr)
+		void CStyles::SetBordersXLS(XLS::BaseObjectPtr XFSPtr, XLS::BaseObjectPtr workbookPtr)
 		{
 			if(!m_oBorders.IsInit())
 				return;
+			auto castedWorkbook = static_cast<XLS::GlobalsSubstream*>(workbookPtr.get());
+			auto globalInfo = castedWorkbook->global_info_;
 			for(auto i : m_oBorders->m_arrItems)
 			{
 				if(i->m_oTop.IsInit() && i->m_oTop->m_oColor.IsInit() &&
-					!i->m_oTop->m_oColor->m_oIndexed.IsInit() &&  i->m_oTop->m_oColor->m_oRgb.IsInit())
-				{
+				!i->m_oTop->m_oColor->m_oIndexed.IsInit() &&  i->m_oTop->m_oColor->m_oRgb.IsInit())
 					i->m_oTop->m_oColor->m_oIndexed = GetClrIndex(m_oColors.get(), i->m_oTop->m_oColor->m_oRgb.get());
-				}
+				else if(i->m_oTop.IsInit() && i->m_oTop->m_oColor.IsInit() && i->m_oTop->m_oColor->m_oThemeColor.IsInit()
+				&& globalInfo->colors_palette.find(i->m_oTop->m_oColor->m_oThemeColor->GetValue()) != globalInfo->colors_palette.end())
+					{
+						auto rgb = globalInfo->colors_palette.find(i->m_oTop->m_oColor->m_oThemeColor->GetValue())->second;
+						SimpleTypes::Spreadsheet::CHexColor hexClr;
+						hexClr.FromString(rgb);
+						i->m_oTop->m_oColor->m_oIndexed = GetClrIndex(m_oColors.get(), hexClr);
+					}
 				if(i->m_oBottom.IsInit() && i->m_oBottom->m_oColor.IsInit() &&
-					!i->m_oBottom->m_oColor->m_oIndexed.IsInit() &&  i->m_oBottom->m_oColor->m_oRgb.IsInit())
-				{
+				!i->m_oBottom->m_oColor->m_oIndexed.IsInit() &&  i->m_oBottom->m_oColor->m_oRgb.IsInit())
 					i->m_oBottom->m_oColor->m_oIndexed = GetClrIndex(m_oColors.get(), i->m_oBottom->m_oColor->m_oRgb.get());
-				}
+				else if(i->m_oBottom.IsInit() && i->m_oBottom->m_oColor.IsInit() && i->m_oBottom->m_oColor->m_oThemeColor.IsInit()
+					&& globalInfo->colors_palette.find(i->m_oBottom->m_oColor->m_oThemeColor->GetValue()) != globalInfo->colors_palette.end())
+					{
+						auto rgb = globalInfo->colors_palette.find(i->m_oBottom->m_oColor->m_oThemeColor->GetValue())->second;
+						SimpleTypes::Spreadsheet::CHexColor hexClr;
+						hexClr.FromString(rgb);
+						i->m_oBottom->m_oColor->m_oIndexed = GetClrIndex(m_oColors.get(), hexClr);
+					}
 				if(i->m_oStart.IsInit() && i->m_oStart->m_oColor.IsInit() &&
-					!i->m_oStart->m_oColor->m_oIndexed.IsInit() &&  i->m_oStart->m_oColor->m_oRgb.IsInit())
-				{
+				!i->m_oStart->m_oColor->m_oIndexed.IsInit() &&  i->m_oStart->m_oColor->m_oRgb.IsInit())
 					i->m_oStart->m_oColor->m_oIndexed = GetClrIndex(m_oColors.get(), i->m_oStart->m_oColor->m_oRgb.get());
-				}
+				else if(i->m_oStart.IsInit() && i->m_oStart->m_oColor.IsInit() && i->m_oStart->m_oColor->m_oThemeColor.IsInit()
+					&& globalInfo->colors_palette.find(i->m_oStart->m_oColor->m_oThemeColor->GetValue()) != globalInfo->colors_palette.end())
+					{
+						auto rgb = globalInfo->colors_palette.find(i->m_oStart->m_oColor->m_oThemeColor->GetValue())->second;
+						SimpleTypes::Spreadsheet::CHexColor hexClr;
+						hexClr.FromString(rgb);
+						i->m_oStart->m_oColor->m_oIndexed = GetClrIndex(m_oColors.get(), hexClr);
+					}
 				if(i->m_oEnd.IsInit() && i->m_oEnd->m_oColor.IsInit() &&
-					!i->m_oEnd->m_oColor->m_oIndexed.IsInit() &&  i->m_oEnd->m_oColor->m_oRgb.IsInit())
-				{
+				!i->m_oEnd->m_oColor->m_oIndexed.IsInit() &&  i->m_oEnd->m_oColor->m_oRgb.IsInit())
 					i->m_oEnd->m_oColor->m_oIndexed = GetClrIndex(m_oColors.get(), i->m_oEnd->m_oColor->m_oRgb.get());
-				}
+				else if(i->m_oEnd->m_oColor.IsInit() && i->m_oEnd->m_oColor.IsInit() && i->m_oEnd->m_oColor->m_oThemeColor.IsInit()
+					&& globalInfo->colors_palette.find(i->m_oEnd->m_oColor->m_oThemeColor->GetValue()) != globalInfo->colors_palette.end())
+					{
+						auto rgb = globalInfo->colors_palette.find(i->m_oEnd->m_oColor->m_oThemeColor->GetValue())->second;
+						SimpleTypes::Spreadsheet::CHexColor hexClr;
+						hexClr.FromString(rgb);
+						i->m_oEnd->m_oColor->m_oIndexed = GetClrIndex(m_oColors.get(), hexClr);
+					}
 				if(i->m_oDiagonal.IsInit() && i->m_oDiagonal->m_oColor.IsInit() &&
-					!i->m_oDiagonal->m_oColor->m_oIndexed.IsInit() &&  i->m_oDiagonal->m_oColor->m_oRgb.IsInit())
-				{
+				!i->m_oDiagonal->m_oColor->m_oIndexed.IsInit() &&  i->m_oDiagonal->m_oColor->m_oRgb.IsInit())
 					i->m_oDiagonal->m_oColor->m_oIndexed = GetClrIndex(m_oColors.get(), i->m_oDiagonal->m_oColor->m_oRgb.get());
-				}
-
+				else if(i->m_oDiagonal.IsInit() && i->m_oDiagonal->m_oColor.IsInit()  && i->m_oDiagonal->m_oColor->m_oThemeColor.IsInit()
+					&& globalInfo->colors_palette.find(i->m_oDiagonal->m_oColor->m_oThemeColor->GetValue()) != globalInfo->colors_palette.end())
+					{
+						auto rgb = globalInfo->colors_palette.find(i->m_oDiagonal->m_oColor->m_oThemeColor->GetValue())->second;
+						SimpleTypes::Spreadsheet::CHexColor hexClr;
+						hexClr.FromString(rgb);
+						i->m_oDiagonal->m_oColor->m_oIndexed = GetClrIndex(m_oColors.get(), hexClr);
+					}
 			}
 			auto CastedPtr = static_cast<XLS::XFS*>(XFSPtr.get());
 			for(auto i = 0; i < m_oCellXfs->m_arrItems.size(); i++)

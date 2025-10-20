@@ -2513,6 +2513,7 @@ CAnnotRedact::CAnnotRedact(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex, in
 	{
 		m_unAFlags |= (1 << 3);
 		int nBCLength = oObj.arrayGetLength();
+		m_arrC.clear();
 		for (int j = 0; j < nBCLength; ++j)
 		{
 			m_arrC.push_back(oObj.arrayGet(j, &oObj2)->isNum() ? oObj2.getNum() : 0.0);
@@ -3194,6 +3195,17 @@ std::vector<CAnnotMarkup::CFontData*> CAnnotMarkup::ReadRC(const std::string& sR
 		if (oLightReader.GetNameA() != "p")
 			continue;
 
+		bool bRTL = false;
+		while (oLightReader.MoveToNextAttribute())
+		{
+			if (oLightReader.GetNameA() == "dir" && oLightReader.GetTextA() == "rtl")
+			{
+				bRTL = true;
+				break;
+			}
+		}
+		oLightReader.MoveToElement();
+
 		int nDepthSpan = oLightReader.GetDepth();
 		if (oLightReader.IsEmptyNode() || !oLightReader.ReadNextSiblingNode2(nDepthSpan))
 			continue;
@@ -3214,12 +3226,16 @@ std::vector<CAnnotMarkup::CFontData*> CAnnotMarkup::ReadRC(const std::string& sR
 				}
 				oLightReader.MoveToElement();
 
+				if (bRTL)
+					pFont->unFontFlags |= (1 << 7);
 				pFont->sText = oLightReader.GetText2A();
 				arrRC.push_back(pFont);
 			}
 			else if (sName == "#text")
 			{
 				CAnnotMarkup::CFontData* pFont = new CAnnotMarkup::CFontData(oFontBase);
+				if (bRTL)
+					pFont->unFontFlags |= (1 << 7);
 				pFont->sText = oLightReader.GetTextA();
 				arrRC.push_back(pFont);
 			}

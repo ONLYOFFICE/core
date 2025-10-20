@@ -220,10 +220,10 @@ bool OOX::Spreadsheet::CXlsx::WriteXLS(const CPath& oFilePath)
 		{
 			if(themeColor.first == L"lt1")
 				counter = 0;
-			else if(themeColor.first == L"lt2")
-				counter = 2;
 			else if(themeColor.first == L"dk1")
 				counter = 1;
+			else if(themeColor.first == L"lt2")
+				counter = 2;
 			else if(themeColor.first == L"dk2")
 				counter = 3;
 			else if(themeColor.first == L"accent1")

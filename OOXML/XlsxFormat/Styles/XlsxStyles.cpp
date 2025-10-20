@@ -466,32 +466,28 @@ namespace OOX
 				return;
 			auto castedWorkbook = static_cast<XLS::GlobalsSubstream*>(workbookPtr.get());
 			auto globalInfo = castedWorkbook->global_info_;
+			auto setFillClr = [](nullable<CColor> &color, nullable<OOX::Spreadsheet::CColors> &colors, XLS::GlobalWorkbookInfoPtr globInfo)
+			{
+				if(color.IsInit() && !color->m_oIndexed.IsInit() && color->m_oRgb.IsInit())
+					color->m_oIndexed = GetClrIndex(colors.get(), color->m_oRgb.get());
+				else if(color.IsInit() && color->m_oThemeColor.IsInit()
+				&& globInfo->colors_palette.find(color->m_oThemeColor->GetValue()) != globInfo->colors_palette.end())
+				{
+					auto rgb = globInfo->colors_palette.find(color->m_oThemeColor->GetValue())->second;
+					SimpleTypes::Spreadsheet::CHexColor hexClr;
+					hexClr.FromString(rgb);
+					color->m_oIndexed = GetClrIndex(colors.get(), hexClr);
+				}
+				return 0;
+			};
 			//preparing clr indexes
 			for(auto i : m_oFills->m_arrItems)
 			{
 				if(i->m_oPatternFill.IsInit())
 				{
 					auto pattern = &i->m_oPatternFill;
-					if((*pattern)->m_oBgColor.IsInit() && !(*pattern)->m_oBgColor->m_oIndexed.IsInit() && (*pattern)->m_oBgColor->m_oRgb.IsInit())
-						(*pattern)->m_oBgColor->m_oIndexed = GetClrIndex(m_oColors.get(), (*pattern)->m_oBgColor->m_oRgb.get());
-					else if((*pattern)->m_oBgColor.IsInit() && (*pattern)->m_oBgColor->m_oThemeColor.IsInit()
-					&& globalInfo->colors_palette.find((*pattern)->m_oBgColor->m_oThemeColor->GetValue()) != globalInfo->colors_palette.end())
-						{
-							auto rgb = globalInfo->colors_palette.find((*pattern)->m_oBgColor->m_oThemeColor->GetValue())->second;
-							SimpleTypes::Spreadsheet::CHexColor hexClr;
-							hexClr.FromString(rgb);
-							(*pattern)->m_oBgColor->m_oIndexed = GetClrIndex(m_oColors.get(), hexClr);
-						}
-					if((*pattern)->m_oFgColor.IsInit() && !(*pattern)->m_oFgColor->m_oIndexed.IsInit() && (*pattern)->m_oFgColor->m_oRgb.IsInit())
-						(*pattern)->m_oFgColor->m_oIndexed = GetClrIndex(m_oColors.get(), (*pattern)->m_oFgColor->m_oRgb.get());
-					else if((*pattern)->m_oFgColor.IsInit() && (*pattern)->m_oFgColor->m_oThemeColor.IsInit()
-					&& globalInfo->colors_palette.find((*pattern)->m_oFgColor->m_oThemeColor->GetValue()) != globalInfo->colors_palette.end())
-						{
-							auto rgb = globalInfo->colors_palette.find((*pattern)->m_oFgColor->m_oThemeColor->GetValue())->second;
-							SimpleTypes::Spreadsheet::CHexColor hexClr;
-							hexClr.FromString(rgb);
-							(*pattern)->m_oFgColor->m_oIndexed = GetClrIndex(m_oColors.get(), hexClr);
-						}
+					setFillClr((*pattern)->m_oBgColor, m_oColors, globalInfo);
+					setFillClr((*pattern)->m_oFgColor, m_oColors, globalInfo);
 				}
 			}
 
@@ -642,63 +638,28 @@ namespace OOX
 				return;
 			auto castedWorkbook = static_cast<XLS::GlobalsSubstream*>(workbookPtr.get());
 			auto globalInfo = castedWorkbook->global_info_;
+			auto setBorderClr = [](nullable<CBorderProp> &border, nullable<OOX::Spreadsheet::CColors> &colors, XLS::GlobalWorkbookInfoPtr &globInfo)
+			{
+				if(border.IsInit() && border->m_oColor.IsInit() &&
+				!border->m_oColor->m_oIndexed.IsInit() &&  border->m_oColor->m_oRgb.IsInit())
+					border->m_oColor->m_oIndexed = GetClrIndex(colors.get(), border->m_oColor->m_oRgb.get());
+				else if(border.IsInit() && border->m_oColor.IsInit() && border->m_oColor->m_oThemeColor.IsInit()
+				&& globInfo->colors_palette.find(border->m_oColor->m_oThemeColor->GetValue()) != globInfo->colors_palette.end())
+				{
+					auto rgb = globInfo->colors_palette.find(border->m_oColor->m_oThemeColor->GetValue())->second;
+					SimpleTypes::Spreadsheet::CHexColor hexClr;
+					hexClr.FromString(rgb);
+					border->m_oColor->m_oIndexed = GetClrIndex(colors.get(), hexClr);
+				}
+				return 0;
+			};
 			for(auto i : m_oBorders->m_arrItems)
 			{
-				if(i->m_oTop.IsInit() && i->m_oTop->m_oColor.IsInit() &&
-				!i->m_oTop->m_oColor->m_oIndexed.IsInit() &&  i->m_oTop->m_oColor->m_oRgb.IsInit())
-					i->m_oTop->m_oColor->m_oIndexed = GetClrIndex(m_oColors.get(), i->m_oTop->m_oColor->m_oRgb.get());
-				else if(i->m_oTop.IsInit() && i->m_oTop->m_oColor.IsInit() && i->m_oTop->m_oColor->m_oThemeColor.IsInit()
-				&& globalInfo->colors_palette.find(i->m_oTop->m_oColor->m_oThemeColor->GetValue()) != globalInfo->colors_palette.end())
-					{
-						auto rgb = globalInfo->colors_palette.find(i->m_oTop->m_oColor->m_oThemeColor->GetValue())->second;
-						SimpleTypes::Spreadsheet::CHexColor hexClr;
-						hexClr.FromString(rgb);
-						i->m_oTop->m_oColor->m_oIndexed = GetClrIndex(m_oColors.get(), hexClr);
-					}
-				if(i->m_oBottom.IsInit() && i->m_oBottom->m_oColor.IsInit() &&
-				!i->m_oBottom->m_oColor->m_oIndexed.IsInit() &&  i->m_oBottom->m_oColor->m_oRgb.IsInit())
-					i->m_oBottom->m_oColor->m_oIndexed = GetClrIndex(m_oColors.get(), i->m_oBottom->m_oColor->m_oRgb.get());
-				else if(i->m_oBottom.IsInit() && i->m_oBottom->m_oColor.IsInit() && i->m_oBottom->m_oColor->m_oThemeColor.IsInit()
-					&& globalInfo->colors_palette.find(i->m_oBottom->m_oColor->m_oThemeColor->GetValue()) != globalInfo->colors_palette.end())
-					{
-						auto rgb = globalInfo->colors_palette.find(i->m_oBottom->m_oColor->m_oThemeColor->GetValue())->second;
-						SimpleTypes::Spreadsheet::CHexColor hexClr;
-						hexClr.FromString(rgb);
-						i->m_oBottom->m_oColor->m_oIndexed = GetClrIndex(m_oColors.get(), hexClr);
-					}
-				if(i->m_oStart.IsInit() && i->m_oStart->m_oColor.IsInit() &&
-				!i->m_oStart->m_oColor->m_oIndexed.IsInit() &&  i->m_oStart->m_oColor->m_oRgb.IsInit())
-					i->m_oStart->m_oColor->m_oIndexed = GetClrIndex(m_oColors.get(), i->m_oStart->m_oColor->m_oRgb.get());
-				else if(i->m_oStart.IsInit() && i->m_oStart->m_oColor.IsInit() && i->m_oStart->m_oColor->m_oThemeColor.IsInit()
-					&& globalInfo->colors_palette.find(i->m_oStart->m_oColor->m_oThemeColor->GetValue()) != globalInfo->colors_palette.end())
-					{
-						auto rgb = globalInfo->colors_palette.find(i->m_oStart->m_oColor->m_oThemeColor->GetValue())->second;
-						SimpleTypes::Spreadsheet::CHexColor hexClr;
-						hexClr.FromString(rgb);
-						i->m_oStart->m_oColor->m_oIndexed = GetClrIndex(m_oColors.get(), hexClr);
-					}
-				if(i->m_oEnd.IsInit() && i->m_oEnd->m_oColor.IsInit() &&
-				!i->m_oEnd->m_oColor->m_oIndexed.IsInit() &&  i->m_oEnd->m_oColor->m_oRgb.IsInit())
-					i->m_oEnd->m_oColor->m_oIndexed = GetClrIndex(m_oColors.get(), i->m_oEnd->m_oColor->m_oRgb.get());
-				else if(i->m_oEnd->m_oColor.IsInit() && i->m_oEnd->m_oColor.IsInit() && i->m_oEnd->m_oColor->m_oThemeColor.IsInit()
-					&& globalInfo->colors_palette.find(i->m_oEnd->m_oColor->m_oThemeColor->GetValue()) != globalInfo->colors_palette.end())
-					{
-						auto rgb = globalInfo->colors_palette.find(i->m_oEnd->m_oColor->m_oThemeColor->GetValue())->second;
-						SimpleTypes::Spreadsheet::CHexColor hexClr;
-						hexClr.FromString(rgb);
-						i->m_oEnd->m_oColor->m_oIndexed = GetClrIndex(m_oColors.get(), hexClr);
-					}
-				if(i->m_oDiagonal.IsInit() && i->m_oDiagonal->m_oColor.IsInit() &&
-				!i->m_oDiagonal->m_oColor->m_oIndexed.IsInit() &&  i->m_oDiagonal->m_oColor->m_oRgb.IsInit())
-					i->m_oDiagonal->m_oColor->m_oIndexed = GetClrIndex(m_oColors.get(), i->m_oDiagonal->m_oColor->m_oRgb.get());
-				else if(i->m_oDiagonal.IsInit() && i->m_oDiagonal->m_oColor.IsInit()  && i->m_oDiagonal->m_oColor->m_oThemeColor.IsInit()
-					&& globalInfo->colors_palette.find(i->m_oDiagonal->m_oColor->m_oThemeColor->GetValue()) != globalInfo->colors_palette.end())
-					{
-						auto rgb = globalInfo->colors_palette.find(i->m_oDiagonal->m_oColor->m_oThemeColor->GetValue())->second;
-						SimpleTypes::Spreadsheet::CHexColor hexClr;
-						hexClr.FromString(rgb);
-						i->m_oDiagonal->m_oColor->m_oIndexed = GetClrIndex(m_oColors.get(), hexClr);
-					}
+				setBorderClr(i->m_oTop, m_oColors, globalInfo);
+				setBorderClr(i->m_oBottom, m_oColors, globalInfo);
+				setBorderClr(i->m_oStart, m_oColors, globalInfo);
+				setBorderClr(i->m_oEnd, m_oColors, globalInfo);
+				setBorderClr(i->m_oDiagonal, m_oColors, globalInfo);
 			}
 			auto CastedPtr = static_cast<XLS::XFS*>(XFSPtr.get());
 			for(auto i = 0; i < m_oCellXfs->m_arrItems.size(); i++)

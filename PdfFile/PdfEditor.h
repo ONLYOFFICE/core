@@ -52,6 +52,7 @@ public:
 	CObjectsManager() : m_pDoc(NULL) {}
 
 	void AddObj(int nID, PdfWriter::CObjectBase* pObj);
+	void RemoveObj(int nID);
 	PdfWriter::CObjectBase* GetObj(int nID);
 	bool IncRefCount(int nID);
 	bool DecRefCount(int nID);
@@ -105,11 +106,12 @@ public:
 
 	bool SplitPages(const int* arrPageIndex, unsigned int unLength);
 	void AfterSplitPages();
-	bool MergePages(const std::wstring& wsPath, const std::wstring& wsPrefixForm);
+	bool MergePages(const std::wstring& wsPath);
 
 private:
 	void GetPageTree(XRef* xref, Object* pPagesRefObj, PdfWriter::CPageTree* pPageParent = NULL);
 	bool SplitPages(const int* arrPageIndex, unsigned int unLength, PDFDoc* _pDoc, int nStartRefID);
+	bool ChangeFullNameParent(int nParent, const std::string& sPrefixForm, std::vector<int>& arrRename);
 
 	struct CRedactData
 	{

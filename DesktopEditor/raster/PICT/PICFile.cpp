@@ -195,7 +195,10 @@ bool CPictFile::DecodeData()
 
 	bool  is_pix_data = false;
 	if (!m_oImgData.m_pPixelData)
+	{
 		m_oImgData.m_pPixelData = (BYTE*) malloc(m_oImgData.m_nWidth * m_oImgData.m_nHeight * 4);
+		memset(m_oImgData.m_pPixelData, 255, m_oImgData.m_nWidth * m_oImgData.m_nHeight * 4);
+	}
 
 	for (int code = 0; feof(m_pFile) == 0; )
 	{
@@ -231,9 +234,8 @@ bool CPictFile::DecodeData()
 					return false;
 				if (((frame.GetLeft() & 0x8000) != 0) || ((frame.GetTop() & 0x8000) != 0))
 					break;
-				m_oImgData.m_nHeight = frame.Height;
-				m_oImgData.m_nWidth  = frame.Width;
-				m_oImgData.m_pPixelData = (BYTE*)realloc(m_oImgData.m_pPixelData, m_oImgData.m_nHeight * m_oImgData.m_nWidth * 4);
+
+				m_oImgData.Realloc(frame.Width, frame.Height);
 				break;
 			}
 			case 0x11:
@@ -924,9 +926,7 @@ bool CPictFile::DecodeData()
 					{
 						if (m_oImgData.m_nHeight <= tile_image.m_nHeight && m_oImgData.m_nWidth <= tile_image.m_nWidth)
 						{
-							m_oImgData.m_nHeight = tile_image.m_nHeight;
-							m_oImgData.m_nWidth = tile_image.m_nWidth;
-							m_oImgData.m_pPixelData = (BYTE*)realloc(m_oImgData.m_pPixelData, m_oImgData.m_nHeight * m_oImgData.m_nWidth * 4);
+							m_oImgData.Realloc(tile_image.m_nWidth, tile_image.m_nHeight, false);
 							memcpy(m_oImgData.m_pPixelData, tile_image.m_pPixelData, m_oImgData.m_nHeight * m_oImgData.m_nWidth * 4);
 						}
 						else
@@ -1091,7 +1091,10 @@ void CPictFile::SetImageAlpha(Image* img, const BYTE alpha)
 	bool status = true;
 
 	if (!img->m_pPixelData)
+	{
 		img->m_pPixelData = (BYTE*)malloc(4 * img->m_nHeight * img->m_nWidth);
+		memset(img->m_pPixelData, 255, 4 * img->m_nHeight * img->m_nWidth);
+	}
 
 	img->m_eAlphaTrait = BlendPixelTrait;
 	img->m_pChannelMap[AlphaPixelChannel].traits = UpdatePixelTrait;

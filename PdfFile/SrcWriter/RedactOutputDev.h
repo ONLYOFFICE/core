@@ -95,7 +95,7 @@ namespace PdfWriter
 		virtual void restoreState(GfxState *pGState) override;
 		//----- update graphics state
 		virtual void updateAll(GfxState *pGState) override;
-		virtual void updateCTM(GfxState *pGState, double dMatrix11, double dMatrix12, double dMatrix21, double dMatrix22, double dMatrix31, double dMatrix32) override;
+		// updateCTM -> UpdateTransform
 		virtual void updateLineDash(GfxState *pGState) override;
 		virtual void updateFlatness(GfxState *pGState) override;
 		virtual void updateLineJoin(GfxState *pGState) override;
@@ -103,8 +103,8 @@ namespace PdfWriter
 		virtual void updateMiterLimit(GfxState *pGState) override;
 		virtual void updateLineWidth(GfxState *pGState) override;
 		// updateStrokeAdjust -> setExtGState
-		virtual void updateFillColorSpace(GfxState *pGState) override;
-		virtual void updateStrokeColorSpace(GfxState *pGState) override;
+		// updateFillColorSpace
+		// updateStrokeColorSpace
 		virtual void updateFillColor(GfxState *pGState) override;
 		virtual void updateStrokeColor(GfxState *pGState) override;
 		// updateBlendMode -> setExtGState
@@ -117,14 +117,14 @@ namespace PdfWriter
 		// updateTransfer -> setExtGState
 		//----- update text state
 		virtual void updateFont(GfxState *pGState) override;
-		virtual void updateTextMat(GfxState *pGState) override;
+		// updateTextMat -> drawChar
 		virtual void updateCharSpace(GfxState *pGState) override;
 		virtual void updateRender(GfxState *pGState) override;
 		virtual void updateRise(GfxState *pGState) override;
 		virtual void updateWordSpace(GfxState *pGState) override;
 		virtual void updateHorizScaling(GfxState *pGState) override;
-		virtual void updateTextPos(GfxState *pGState) override;
-		virtual void updateTextShift(GfxState *pGState, double shift) override;
+		// updateTextPos -> drawChar
+		// updateTextShift -> drawChar
 		// saveTextPos
 		// restoreTextPos
 		//----- path painting
@@ -132,27 +132,26 @@ namespace PdfWriter
 		virtual void fill(GfxState *pGState) override;
 		virtual void eoFill(GfxState *pGState) override;
 		virtual void tilingPatternFill(GfxState *pGState, Gfx *gfx, Object *pStream, int nPaintType, int nTilingType, Dict *pResourcesDict, double *pMatrix, double *pBBox, int nX0, int nY0, int nX1, int nY1, double dXStep, double dYStep) override;
-		virtual GBool shadedFill(GfxState* pGState, GfxShading* shading) override;
 		//----- path clipping
 		virtual void clip(GfxState *pGState) override;
 		virtual void eoClip(GfxState *pGState) override;
 		virtual void clipToStrokePath(GfxState *pGState) override;
 		//----- text drawing
 		virtual void beginStringOp(GfxState *pGState) override;
-		virtual void endStringOp(GfxState *pGState) override;
-		virtual void beginString(GfxState *pGState, GString *s) override;
-		virtual void endString(GfxState *pGState) override;
+		// endStringOp
+		// beginString
+		// endString
 		virtual void drawChar(GfxState *pGState, double dX, double dY, double dDx, double dDy, double dOriginX, double dOriginY, CharCode nCode, int nBytesCount, Unicode *pUnicode, int nUnicodeLen) override;
 		// drawString
-		virtual GBool beginType3Char(GfxState *pGState, double x, double y, double dx, double dy, CharCode code, Unicode *u, int uLen) override;
-		virtual void endType3Char(GfxState *pGState) override;
-		virtual void endTextObject(GfxState *pGState) override;
-		virtual void beginActualText(GfxState *state, Unicode *u, int uLen) override;
-		virtual void endActualText(GfxState *state) override;
+		// beginType3Char
+		// endType3Char
+		// endTextObject
+		// beginActualText
+		// endActualText
 		//----- additional
-		virtual GBool beginMarkedContent(GfxState *pGState, GString *s) override;
-		virtual GBool beginMCOShapes(GfxState *pGState, GString *s, Object *ref) override;
-		virtual void endMarkedContent(GfxState *pGState) override;
+		// beginMarkedContent
+		// beginMCOShapes
+		// endMarkedContent
 		virtual GBool useNameOp() override;
 		virtual void setExtGState(const char* name) override;
 		virtual void setFillColorSpace(const char* name) override;

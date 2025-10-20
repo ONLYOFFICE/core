@@ -179,6 +179,22 @@ namespace PdfWriter
 		m_bUTF16     = isUTF16;
 		m_bDictValue = isDictValue;
 	}
+	void CStringObject::Add(const char* sValue)
+	{
+		if (!sValue || !*sValue)
+			return;
+
+		unsigned int unAppendLen = StrLen(sValue, LIMIT_MAX_STRING_LEN);
+		BYTE* pNewValue = new BYTE[m_unLen + unAppendLen + 1];
+		if (m_unLen > 0)
+			StrCpy((char*)pNewValue, (char*)m_pValue, (char*)(pNewValue + m_unLen));
+		StrCpy((char*)(pNewValue + m_unLen), (char*)sValue, (char*)(pNewValue + m_unLen + unAppendLen));
+
+		if (m_pValue)
+			delete[] m_pValue;
+		m_pValue = pNewValue;
+		m_unLen += unAppendLen;
+	}
 	//----------------------------------------------------------------------------------------
 	// CBinaryObject
 	//----------------------------------------------------------------------------------------
@@ -214,6 +230,32 @@ namespace PdfWriter
 		}
 		else
 			m_pValue = pValue;
+	}
+	void CBinaryObject::Add(BYTE* pValue, unsigned int unLen)
+	{
+		if (!pValue || !unLen)
+			return;
+		unLen = std::min((unsigned int)LIMIT_MAX_STRING_LEN, unLen);
+		if (!m_pValue || m_unLen == 0)
+		{
+			Set(pValue, unLen, true);
+			return;
+		}
+
+		if (m_unLen + unLen > (unsigned int)LIMIT_MAX_STRING_LEN)
+		{
+			unLen = (unsigned int)LIMIT_MAX_STRING_LEN - m_unLen;
+			if (unLen == 0)
+				return;
+		}
+
+		BYTE* pNewValue = new BYTE[m_unLen + unLen];
+		MemCpy(pNewValue, m_pValue, m_unLen);
+		MemCpy(pNewValue + m_unLen, pValue, unLen);
+		if (m_pValue)
+			delete[] m_pValue;
+		m_pValue = pNewValue;
+		m_unLen += unLen;
 	}
 	//----------------------------------------------------------------------------------------
 	// CProxyObject

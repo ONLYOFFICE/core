@@ -140,6 +140,11 @@ void RedactOutputDev::updateAll(GfxState *pGState)
 	// updateFillOpacity(pGState);
 	// updateStrokeOpacity(pGState);
 	updateFont(pGState);
+	updateCharSpace(pGState);
+	updateRender(pGState);
+	updateRise(pGState);
+	updateWordSpace(pGState);
+	updateHorizScaling(pGState);
 	m_bUpdateAll = false;
 }
 void RedactOutputDev::updateLineDash(GfxState *pGState)

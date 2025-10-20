@@ -426,12 +426,12 @@ namespace OOX
 				worksheetPtr->m_CELLTABLE = m_oSheetData->toXLS();
 			if(m_oDataConsolidate.IsInit())
 				worksheetPtr->m_DCON = m_oDataConsolidate->toXLS();
-			if(m_pComments != nullptr)
+			/*if(m_pComments != nullptr)
 			{
 				if(worksheetPtr->m_OBJECTS == nullptr)
 					worksheetPtr->m_OBJECTS = XLS::BaseObjectPtr(new XLS::OBJECTS(false));
 				worksheetPtr->m_arNote = m_pComments->toXLS(worksheetPtr->m_OBJECTS);
-			}
+			}*///will be later
 			if(m_oTableParts.IsInit())
 			{
 				auto feat11 = new XLS::FEAT11;

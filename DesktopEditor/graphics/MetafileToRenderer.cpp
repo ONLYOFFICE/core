@@ -352,10 +352,12 @@ namespace NSOnlineOfficeBinToPdf
 		bool bIsPathOpened = false;
 		bool bIsEnableBrushRect = false;
 
+		double old_t1, old_t2, old_t3, old_t4, old_t5, old_t6;
+
 		CBufferReader oReader(pBuffer, lBufferLen);
 		Aggplus::CGraphicsPath path;
-		Aggplus::CGraphicsPath clipPath;
-		bool isClip = false;
+		Aggplus::CMatrix transMatrRot;
+		Aggplus::CMatrix transMatrOff;
 		bool isClose = false;
 		while (oReader.Check())
 		{
@@ -595,6 +597,26 @@ namespace NSOnlineOfficeBinToPdf
 				pRenderer->put_BrushTextureAlpha(lAlpha);
 				break;
 			}
+			case ctBrushResetRotation:
+			{
+				Aggplus::RectF rect;
+				bool rectable;
+				pRenderer->get_BrushRect(rect, rectable);
+
+				pRenderer->GetTransform(&old_t1, &old_t2, &old_t3, &old_t4, &old_t5, &old_t6);
+				Aggplus::CMatrix mtr(old_t1, old_t2, old_t3, old_t4, old_t5, old_t6);
+
+				double rot = mtr.rotation();
+				mtr.Rotate(-agg::rad2deg(rot));
+				mtr.Translate((cos(atan2(rect.Height, rect.Width) + rot) * sqrt(rect.Width * rect.Width + rect.Height * rect.Height) - rect.Width) / 2.0,
+							  (sin(atan2(rect.Height, rect.Width) + rot) * sqrt(rect.Width * rect.Width + rect.Height * rect.Height) - rect.Height) / 2.0);
+
+				pRenderer->SetTransform(mtr.sx(), mtr.shy(), mtr.shx(), mtr.sy(), mtr.tx(), mtr.ty());
+				transMatrRot.Rotate(rot, Aggplus::MatrixOrderAppend);
+				transMatrRot.Translate((cos(atan2(rect.Height, rect.Width) - rot) * sqrt(rect.Width * rect.Width + rect.Height * rect.Height) - rect.Width) / 2.0,
+									   (sin(atan2(rect.Height, rect.Width) - rot) * sqrt(rect.Width * rect.Width + rect.Height * rect.Height) - rect.Height) / 2.0);
+				break;
+			}
 			case ctSetTransform:
 			{
 				double m1 = oReader.ReadDouble();
@@ -664,8 +686,6 @@ namespace NSOnlineOfficeBinToPdf
 			}
 			case ctPathCommandOffset:
 			{
-				isClip = true;
-
 				double m1 = oReader.ReadDouble();
 				double m2 = oReader.ReadDouble();
 
@@ -678,18 +698,16 @@ namespace NSOnlineOfficeBinToPdf
 					pRenderer->BrushRect(true, rect.X, rect.Y, rect.Width, rect.Height);
 				}
 
-				clipPath = path.Trsanslate(m1, m2);
+				transMatrOff.Translate(m1, m2);
+				break;
 			}
 			case ctDrawPath:
 			{
-				if (isClip)
-				{
-					path = Aggplus::CalcBooleanOperation(path, clipPath, Aggplus::Intersection);
-					clipPath.Reset();
-					isClip = false;
-				}
+				Aggplus::CGraphicsPath clipPath1(path), clipPath2(path);
+				clipPath1.Transform(&transMatrRot);
+				clipPath2.Transform(&transMatrOff);
 
-				pRenderer->AddPath(path);
+				pRenderer->AddPath(Aggplus::CalcBooleanOperation(clipPath1, clipPath2, Aggplus::Intersection));
 
 				if (isClose)
 				{

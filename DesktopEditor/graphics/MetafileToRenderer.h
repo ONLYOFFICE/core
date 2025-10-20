@@ -108,6 +108,7 @@ namespace NSOnlineOfficeBinToPdf
 		ctBrushRectableEnabled 		    = 30,
 		ctBrushGradient                 = 31,
 		ctBrushTexturePath              = 32,
+		ctBrushResetRotation			= 33,
 
 		// font
 		ctFontXML						= 40,

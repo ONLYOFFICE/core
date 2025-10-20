@@ -2513,6 +2513,7 @@ CAnnotRedact::CAnnotRedact(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex, in
 	{
 		m_unAFlags |= (1 << 3);
 		int nBCLength = oObj.arrayGetLength();
+		m_arrC.clear();
 		for (int j = 0; j < nBCLength; ++j)
 		{
 			m_arrC.push_back(oObj.arrayGet(j, &oObj2)->isNum() ? oObj2.getNum() : 0.0);

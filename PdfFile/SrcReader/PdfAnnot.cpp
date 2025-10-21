@@ -103,6 +103,91 @@ TextString* getFullFieldName(Object* oField)
 
 	return sResName;
 }
+CActionGoTo* getGoTo(PDFDoc* pdfDoc, LinkAction* oAct)
+{
+	if (!oAct || oAct->getKind() != actionGoTo)
+		return NULL;
+
+	GString* str = ((LinkGoTo*)oAct)->getNamedDest();
+	LinkDest* pLinkDest = str ? pdfDoc->findDest(str) : ((LinkGoTo*)oAct)->getDest();
+	if (!pLinkDest)
+	{
+		RELEASEOBJECT(oAct);
+		return NULL;
+	}
+	CActionGoTo* ppRes = new CActionGoTo();
+	if (pLinkDest->isPageRef())
+	{
+		Ref pageRef = pLinkDest->getPageRef();
+		ppRes->unPage = pdfDoc->findPage(pageRef.num, pageRef.gen);
+	}
+	else
+		ppRes->unPage = pLinkDest->getPageNum();
+
+	if (ppRes->unPage > 0)
+		--ppRes->unPage;
+	ppRes->nKind = pLinkDest->getKind();
+
+	PDFRectangle* pCropBox = pdfDoc->getCatalog()->getPage(ppRes->unPage + 1)->getCropBox();
+	double dHeight = pCropBox->y2;
+	double dX = pCropBox->x1;
+	switch (ppRes->nKind)
+	{
+	case destXYZ:
+	case destFitH:
+	case destFitBH:
+	case destFitV:
+	case destFitBV:
+	{
+		ppRes->unKindFlag = 0;
+		// 0 - left
+		if (pLinkDest->getChangeLeft())
+		{
+			ppRes->unKindFlag |= (1 << 0);
+			ppRes->pRect[0] = pLinkDest->getLeft() - dX;
+		}
+		// 1 - top
+		if (pLinkDest->getChangeTop())
+		{
+			ppRes->unKindFlag |= (1 << 1);
+			ppRes->pRect[1] = dHeight - pLinkDest->getTop();
+		}
+		// 2 - zoom
+		if (pLinkDest->getChangeZoom() && pLinkDest->getZoom())
+		{
+			ppRes->unKindFlag |= (1 << 2);
+			ppRes->pRect[2] = pLinkDest->getZoom();
+		}
+		break;
+	}
+	case destFitR:
+	{
+		ppRes->pRect[0] = pLinkDest->getLeft() - dX;
+		ppRes->pRect[1] = dHeight - pLinkDest->getTop();
+		ppRes->pRect[2] = pLinkDest->getRight() - dX;
+		ppRes->pRect[3] = dHeight - pLinkDest->getBottom();
+		break;
+	}
+	case destFit:
+	case destFitB:
+	default:
+		break;
+	}
+	if (str)
+		RELEASEOBJECT(pLinkDest);
+	return ppRes;
+}
+CAction* getDest(PDFDoc* pdfDoc, Object* oDest)
+{
+	LinkAction* oAct = LinkAction::parseDest(oDest);
+	if (!oAct)
+		return NULL;
+
+	CAction* pRes = getGoTo(pdfDoc, oAct);
+
+	RELEASEOBJECT(oAct);
+	return pRes;
+}
 CAction* getAction(PDFDoc* pdfDoc, Object* oAction)
 {
 	Object oActType;
@@ -122,71 +207,7 @@ CAction* getAction(PDFDoc* pdfDoc, Object* oAction)
 	// Переход внутри файла
 	case actionGoTo:
 	{
-		GString* str = ((LinkGoTo*)oAct)->getNamedDest();
-		LinkDest* pLinkDest = str ? pdfDoc->findDest(str) : ((LinkGoTo*)oAct)->getDest();
-		if (!pLinkDest)
-			break;
-		CActionGoTo* ppRes = new CActionGoTo();
-		if (pLinkDest->isPageRef())
-		{
-			Ref pageRef = pLinkDest->getPageRef();
-			ppRes->unPage = pdfDoc->findPage(pageRef.num, pageRef.gen);
-		}
-		else
-			ppRes->unPage = pLinkDest->getPageNum();
-
-		if (ppRes->unPage > 0)
-			--ppRes->unPage;
-		ppRes->nKind = pLinkDest->getKind();
-
-		PDFRectangle* pCropBox = pdfDoc->getCatalog()->getPage(ppRes->unPage + 1)->getCropBox();
-		double dHeight = pCropBox->y2;
-		double dX = pCropBox->x1;
-		switch (ppRes->nKind)
-		{
-		case destXYZ:
-		case destFitH:
-		case destFitBH:
-		case destFitV:
-		case destFitBV:
-		{
-			ppRes->unKindFlag = 0;
-			// 0 - left
-			if (pLinkDest->getChangeLeft())
-			{
-				ppRes->unKindFlag |= (1 << 0);
-				ppRes->pRect[0] = pLinkDest->getLeft() - dX;
-			}
-			// 1 - top
-			if (pLinkDest->getChangeTop())
-			{
-				ppRes->unKindFlag |= (1 << 1);
-				ppRes->pRect[1] = dHeight - pLinkDest->getTop();
-			}
-			// 2 - zoom
-			if (pLinkDest->getChangeZoom() && pLinkDest->getZoom())
-			{
-				ppRes->unKindFlag |= (1 << 2);
-				ppRes->pRect[2] = pLinkDest->getZoom();
-			}
-			break;
-		}
-		case destFitR:
-		{
-			ppRes->pRect[0] = pLinkDest->getLeft() - dX;
-			ppRes->pRect[1] = dHeight - pLinkDest->getTop();
-			ppRes->pRect[2] = pLinkDest->getRight() - dX;
-			ppRes->pRect[3] = dHeight - pLinkDest->getBottom();
-			break;
-		}
-		case destFit:
-		case destFitB:
-		default:
-			break;
-		}
-		if (str)
-			RELEASEOBJECT(pLinkDest);
-		pRes = ppRes;
+		pRes = getGoTo(pdfDoc, oAct);
 		break;
 	}
 	// Переход к внешнему файлу
@@ -1650,6 +1671,92 @@ CAnnotPopup::CAnnotPopup(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex, int 
 	}
 	oObj.free();
 	oAnnot.free();
+}
+
+//------------------------------------------------------------------------
+// Link
+//------------------------------------------------------------------------
+
+CAnnotLink::CAnnotLink(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex, int nStartRefID) : CAnnot(pdfDoc, oAnnotRef, nPageIndex, nStartRefID)
+{
+	m_unFlags = 0;
+	m_pAction = NULL;
+	m_pPA = NULL;
+
+	Object oAnnot, oObj, oObj2;
+	XRef* pXref = pdfDoc->getXRef();
+	oAnnotRef->fetch(pXref, &oAnnot);
+
+	// 0 - Action - A
+	if (oAnnot.dictLookup("A", &oObj)->isDict())
+	{
+		m_pAction = getAction(pdfDoc, &oObj);
+		if (m_pAction)
+		{
+			m_unFlags |= (1 << 0);
+			m_pAction->sType = "A";
+		}
+	}
+	oObj.free();
+
+	// 0 - Action from Dest - Dest
+	if (!m_pAction && !oAnnot.dictLookup("Dest", &oObj)->isNull())
+	{
+		m_pAction = getDest(pdfDoc, &oObj);
+		if (m_pAction)
+		{
+			m_unFlags |= (1 << 0);
+			m_pAction->sType = "A";
+		}
+	}
+	oObj.free();
+
+	// 1 - Action - PA
+	if (oAnnot.dictLookup("PA", &oObj)->isDict())
+	{
+		m_pPA = getAction(pdfDoc, &oObj);
+		if (m_pPA)
+		{
+			m_unFlags |= (1 << 1);
+			m_pPA->sType = "A";
+		}
+	}
+	oObj.free();
+
+	// 2 - Режим выделения - H
+	if (oAnnot.dictLookup("H", &oObj)->isName())
+	{
+		m_unFlags |= (1 << 2);
+		std::string sName(oObj.getName());
+		m_nH = 1; // Default: I
+		if (sName == "N")
+			m_nH = 0;
+		else if (sName == "O")
+			m_nH = 3;
+		else if (sName == "P" || sName == "T")
+			m_nH = 2;
+	}
+	oObj.free();
+
+	// 3 - Координаты - QuadPoints
+	if (oAnnot.dictLookup("QuadPoints", &oObj)->isArray())
+	{
+		m_unFlags |= (1 << 3);
+		for (int i = 0; i < oObj.arrayGetLength(); ++i)
+		{
+			if (oObj.arrayGet(i, &oObj2)->isNum())
+				m_arrQuadPoints.push_back(i % 2 == 0 ? oObj2.getNum() - m_dX : m_dHeight - oObj2.getNum());
+			oObj2.free();
+		}
+	}
+	oObj.free();
+
+	oAnnot.free();
+}
+CAnnotLink::~CAnnotLink()
+{
+	RELEASEOBJECT(m_pAction);
+	RELEASEOBJECT(m_pPA);
 }
 
 //------------------------------------------------------------------------
@@ -4332,6 +4439,26 @@ void CAnnotText::ToWASM(NSWasm::CData& oRes)
 		oRes.WriteBYTE(m_nStateModel);
 	if (m_unFlags & (1 << 18))
 		oRes.WriteBYTE(m_nState);
+}
+void CAnnotLink::ToWASM(NSWasm::CData& oRes)
+{
+	oRes.WriteBYTE(1); // Link
+
+	CAnnot::ToWASM(oRes);
+
+	oRes.AddInt(m_unFlags);
+	if (m_unFlags & (1 << 0))
+		m_pAction->ToWASM(oRes);
+	if (m_unFlags & (1 << 1))
+		m_pPA->ToWASM(oRes);
+	if (m_unFlags & (1 << 2))
+		oRes.WriteBYTE(m_nH);
+	if (m_unFlags & (1 << 3))
+	{
+		oRes.AddInt((unsigned int)m_arrQuadPoints.size());
+		for (int i = 0; i < m_arrQuadPoints.size(); ++i)
+			oRes.AddDouble(m_arrQuadPoints[i]);
+	}
 }
 void CAnnotPopup::ToWASM(NSWasm::CData& oRes)
 {

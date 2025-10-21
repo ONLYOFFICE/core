@@ -247,7 +247,7 @@ private:
 	std::vector<double> m_arrTC; // Цвет текста - из DA
 	std::vector<double> m_arrBC; // Цвет границ - BC
 	std::vector<double> m_arrBG; // Цвет фона - BG
-	std::vector<CAction*> m_arrAction; // Действия
+	std::vector<CAction*> m_arrAction; // Действия - A&AA
 	BYTE m_nQ; // Выравнивание текста - Q
 	BYTE m_nH; // Режим выделения - H
 	std::string m_sTU; // Альтернативное имя поля, используется во всплывающей подсказке и сообщениях об ошибке - TU
@@ -333,6 +333,25 @@ public:
 private:
 	unsigned int m_unFlags;
 	unsigned int m_unRefNumParent; // Номер ссылки на объект родителя
+};
+
+//------------------------------------------------------------------------
+// PdfReader::CLinkAnnot
+//------------------------------------------------------------------------
+
+class CAnnotLink final : public CAnnot
+{
+public:
+	CAnnotLink(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex, int nStartRefID);
+	virtual ~CAnnotLink();
+
+	void ToWASM(NSWasm::CData& oRes) override;
+
+private:
+	BYTE m_nH; // Режим выделения - H
+	std::vector<double> m_arrQuadPoints; // Координаты - QuadPoints
+	CAction* m_pAction; // Действие - A&Dest
+	CAction* m_pPA; // URI действие - PA
 };
 
 //------------------------------------------------------------------------

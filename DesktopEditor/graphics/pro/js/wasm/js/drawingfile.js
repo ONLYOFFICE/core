@@ -1027,6 +1027,33 @@ function readAnnotType(reader, rec, readDoubleFunc, readDouble2Func, readStringF
 			rec["font"]["style"] = reader.readInt();
 		}
 	}
+	// Link
+	else if (rec["type"] == 1)
+	{
+		flags = reader.readInt();
+		if (flags & (1 << 0))
+		{
+			rec["A"] = {};
+			readAction(reader, rec["A"], readDoubleFunc, readStringFunc);
+		}
+		if (flags & (1 << 1))
+		{
+			rec["PA"] = {};
+			readAction(reader, rec["PA"], readDoubleFunc, readStringFunc);
+		}
+		// Selection mode - H
+		// 0 - none, 1 - invert, 2 - push, 3 - outline
+		if (flags & (1 << 2))
+			rec["highlight"] = reader.readByte();
+		// QuadPoints
+		if (flags & (1 << 3))
+		{
+			let n = reader.readInt();
+			rec["QuadPoints"] = [];
+			for (let i = 0; i < n; ++i)
+				rec["QuadPoints"].push(readDoubleFunc.call(reader));
+		}
+	}
 }
 function readWidgetType(reader, rec, readDoubleFunc, readDouble2Func, readStringFunc, isRead = false)
 {

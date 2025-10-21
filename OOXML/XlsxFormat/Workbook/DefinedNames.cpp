@@ -314,7 +314,7 @@ namespace OOX
 			auto globalsSubstream = static_cast<XLS::GlobalsSubstream*>(substream.get());
 			for(auto i:m_arrItems)
 				if(i->m_oName.IsInit() || i->m_oRef.IsInit())
-					globalsSubstream->m_arLBL.push_back(i->toBin());
+					globalsSubstream->m_arLBL.push_back(i->toXLS());
 		}
 		void CDefinedNames::fromBin(std::vector<XLS::BaseObjectPtr>& obj)
 		{

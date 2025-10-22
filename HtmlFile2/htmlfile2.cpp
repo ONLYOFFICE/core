@@ -4268,6 +4268,31 @@ private:
 		}
 		m_oLightReader.MoveToElement();
 
+		if (NULL != sSelectors.back().m_pCompiledStyle)
+		{
+			m_oStylesCalculator.CalculateCompiledStyle(sSelectors);
+
+			const NSCSS::NSProperties::CDigit& oWidth {sSelectors.back().m_pCompiledStyle->m_oDisplay.GetWidth() };
+			const NSCSS::NSProperties::CDigit& oHeight{sSelectors.back().m_pCompiledStyle->m_oDisplay.GetHeight()};
+
+			if (0 == oImageData.m_unWidth && !oWidth.Empty())
+			{
+				if (NSCSS::UnitMeasure::None == oWidth.GetUnitMeasure())
+					oImageData.m_unWidth = static_cast<int>(NSCSS::CUnitMeasureConverter::ConvertPx(oWidth.ToDouble(), NSCSS::Inch, 96) * 914400);
+				else
+					oImageData.m_unWidth = static_cast<int>(oWidth.ToDouble(NSCSS::Inch) * 914400);
+			}
+
+			if (0 == oImageData.m_unHeight && !oHeight.Empty())
+			{
+				if (NSCSS::UnitMeasure::None == oHeight.GetUnitMeasure())
+					oImageData.m_unHeight = static_cast<int>(NSCSS::CUnitMeasureConverter::ConvertPx(oHeight.ToDouble(), NSCSS::Inch, 96) * 914400);
+				else
+					oImageData.m_unHeight = static_cast<int>(oHeight.ToDouble(NSCSS::Inch) * 914400);
+			}
+		}
+
+
 		if (sSrcM.empty())
 		{
 			ImageAlternative(oXml, sSelectors, oTS, wsAlt, sSrcM, oImageData);
@@ -4583,30 +4608,40 @@ private:
 
 		TImageData oNewImageData{oImageData};
 
-		// Получаем размеры картинки
-		oNewImageData.m_unWidth  = oBgraFrame.get_Width();
-		oNewImageData.m_unHeight = oBgraFrame.get_Height();
-
-		if (oNewImageData.m_unWidth > oNewImageData.m_unHeight)
+		if (0 != oNewImageData.m_unWidth || 0 != oNewImageData.m_unHeight)
 		{
-			int nW = oNewImageData.m_unWidth * 9525;
-			nW = (nW > 7000000 ? 7000000 : nW);
-			oNewImageData.m_unHeight = (int)((double)oNewImageData.m_unHeight * (double)nW / (double)oNewImageData.m_unWidth);
-			oNewImageData.m_unWidth = nW;
+			const double dMaxScale = std::max(oNewImageData.m_unWidth  / oBgraFrame.get_Width(),
+			                                  oNewImageData.m_unHeight / oBgraFrame.get_Height());
+
+			oNewImageData.m_unWidth  = oBgraFrame.get_Width()  * dMaxScale;
+			oNewImageData.m_unHeight = oBgraFrame.get_Height() * dMaxScale;
 		}
 		else
 		{
-			int nH = oNewImageData.m_unHeight * 9525;
-			nH = (nH > 8000000 ? 8000000 : nH);
-			int nW = (int)((double)oNewImageData.m_unWidth * (double)nH / (double)oNewImageData.m_unHeight);
-			if (nW > 7000000)
+			oNewImageData.m_unWidth  = oBgraFrame.get_Width();
+			oNewImageData.m_unHeight = oBgraFrame.get_Height();
+
+			if (oNewImageData.m_unWidth > oNewImageData.m_unHeight)
 			{
-				nW = 7000000;
+				int nW = oNewImageData.m_unWidth * 9525;
+				nW = (nW > 7000000 ? 7000000 : nW);
 				oNewImageData.m_unHeight = (int)((double)oNewImageData.m_unHeight * (double)nW / (double)oNewImageData.m_unWidth);
+				oNewImageData.m_unWidth = nW;
 			}
 			else
-				oNewImageData.m_unHeight = nH;
-			oNewImageData.m_unWidth = nW;
+			{
+				int nH = oNewImageData.m_unHeight * 9525;
+				nH = (nH > 8000000 ? 8000000 : nH);
+				int nW = (int)((double)oNewImageData.m_unWidth * (double)nH / (double)oNewImageData.m_unHeight);
+				if (nW > 7000000)
+				{
+					nW = 7000000;
+					oNewImageData.m_unHeight = (int)((double)oNewImageData.m_unHeight * (double)nW / (double)oNewImageData.m_unWidth);
+				}
+				else
+					oNewImageData.m_unHeight = nH;
+				oNewImageData.m_unWidth = nW;
+			}
 		}
 
 		WriteImage(oXml, oNewImageData, sImageId);

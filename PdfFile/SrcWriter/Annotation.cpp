@@ -420,13 +420,13 @@ namespace PdfWriter
 		Remove("AP");
 	}
 	//----------------------------------------------------------------------------------------
-	// CLinkAnnotation
+	// CDestLinkAnnotation
 	//----------------------------------------------------------------------------------------
-	CLinkAnnotation::CLinkAnnotation(CXref* pXref, CDestination* pDestination) : CAnnotation(pXref, AnnotLink)
+	CDestLinkAnnotation::CDestLinkAnnotation(CXref* pXref, CDestination* pDestination) : CAnnotation(pXref, AnnotLink)
 	{
 		Add("Dest", (CObjectBase*)pDestination);
 	}
-	void CLinkAnnotation::SetBorderStyle(float fWidth, unsigned short nDashOn, unsigned short nDashOff)
+	void CDestLinkAnnotation::SetBorderStyle(float fWidth, unsigned short nDashOn, unsigned short nDashOff)
 	{
         fWidth = std::max(fWidth, 0.f);
 
@@ -452,7 +452,7 @@ namespace PdfWriter
 			pDash->Add(nDashOff);
 		}
 	}
-	void CLinkAnnotation::SetHighlightMode(EAnnotHighlightMode eMode)
+	void CDestLinkAnnotation::SetHighlightMode(EAnnotHighlightMode eMode)
 	{
 		switch (eMode)
 		{
@@ -812,6 +812,50 @@ namespace PdfWriter
 		Add("AP", pAppearance);
 		CAnnotAppearanceObject* pNormal = pAppearance->GetNormal();
 		pNormal->DrawLine();
+	}
+	//----------------------------------------------------------------------------------------
+	// CLinkAnnotation
+	//----------------------------------------------------------------------------------------
+	CLinkAnnotation::CLinkAnnotation(CXref* pXref) : CAnnotation(pXref, AnnotLink)
+	{
+	}
+	void CLinkAnnotation::SetH(BYTE nH)
+	{
+		std::string sValue;
+		switch (nH)
+		{
+		case 0:
+		{ sValue = "N"; break; }
+		default:
+		case 1:
+		{ sValue = "I"; break; }
+		case 2:
+		{ sValue = "P"; break; }
+		case 3:
+		{ sValue = "O"; break; }
+		}
+		Add("H", sValue.c_str());
+	}
+	void CLinkAnnotation::SetQuadPoints(const std::vector<double>& arrQuadPoints)
+	{
+		CArrayObject* pArray = new CArrayObject();
+		if (!pArray)
+			return;
+		Add("QuadPoints", pArray);
+		for (int i = 0; i < arrQuadPoints.size(); ++i)
+			pArray->Add(i % 2 == 0 ? (arrQuadPoints[i] + m_dPageX) : (m_dPageH - arrQuadPoints[i]));
+	}
+	void CLinkAnnotation::SetA(CAction* pAction)
+	{
+		if (!pAction)
+			return;
+		Add("A", pAction);
+	}
+	void CLinkAnnotation::SetPA(CAction* pAction)
+	{
+		if (!pAction)
+			return;
+		Add("PA", pAction);
 	}
 	//----------------------------------------------------------------------------------------
 	// CPopupAnnotation

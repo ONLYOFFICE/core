@@ -657,6 +657,8 @@ namespace PdfWriter
 			pAnnot = new CStampAnnotation(m_pXref);
 		else if (m_nType == 25)
 			pAnnot = new CRedactAnnotation(m_pXref);
+		else if (m_nType == 1)
+			pAnnot = new CLinkAnnotation(m_pXref);
 
 		if (pAnnot)
 			m_pXref->Add(pAnnot);
@@ -719,7 +721,7 @@ namespace PdfWriter
 	}
 	CAnnotation* CDocument::CreateLinkAnnot(const TRect& oRect, CDestination* pDest)
 	{
-		CAnnotation* pAnnot = new CLinkAnnotation(m_pXref, pDest);
+		CAnnotation* pAnnot = new CDestLinkAnnotation(m_pXref, pDest);
 		pAnnot->SetRect(oRect);
 		m_pXref->Add(pAnnot);
 		return pAnnot;

@@ -1736,7 +1736,7 @@ void GetRCSpanStyle(CAnnotFieldInfo::CMarkupAnnotPr::CFontData* pFontData, NSStr
 		oRC.AddDouble(pFontData->dVAlign, 2);
 	}
 }
-PdfWriter::CAction* GetAction(PdfWriter::CDocument* m_pDocument, CAnnotFieldInfo::CWidgetAnnotPr::CActionWidget* pAction)
+PdfWriter::CAction* GetAction(PdfWriter::CDocument* m_pDocument, CAnnotFieldInfo::CActionFieldPr* pAction)
 {
 	PdfWriter::CAction* pA = m_pDocument->CreateAction(pAction->nActionType);
 	if (!pA)
@@ -2367,8 +2367,8 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 		else
 			pWidgetAnnot->Remove("MEOptions");
 
-		const std::vector<CAnnotFieldInfo::CWidgetAnnotPr::CActionWidget*> arrActions = pPr->GetActions();
-		for (CAnnotFieldInfo::CWidgetAnnotPr::CActionWidget* pAction : arrActions)
+		const std::vector<CAnnotFieldInfo::CActionFieldPr*> arrActions = pPr->GetActions();
+		for (CAnnotFieldInfo::CActionFieldPr* pAction : arrActions)
 		{
 			PdfWriter::CAction* pA = GetAction(m_pDocument, pAction);
 			pWidgetAnnot->AddAction(pA);
@@ -2638,6 +2638,27 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 			CAnnotFieldInfo::CWidgetAnnotPr::CSignatureWidgetPr* pPr = oInfo.GetWidgetAnnotPr()->GetSignatureWidgetPr();
 			PdfWriter::CSignatureWidget* pSignatureWidget = (PdfWriter::CSignatureWidget*)pAnnot;
 		}
+	}
+	else if (oInfo.IsLink())
+	{
+		CAnnotFieldInfo::CLinkAnnotPr* pPr = oInfo.GetLinkAnnotPr();
+		PdfWriter::CLinkAnnotation* pLinkAnnot = (PdfWriter::CLinkAnnotation*)pAnnot;
+
+		nFlags = pPr->GetFlags();
+		if (nFlags & (1 << 0))
+		{
+			PdfWriter::CAction* pA = GetAction(m_pDocument, pPr->GetA());
+			pLinkAnnot->SetA(pA);
+		}
+		if (nFlags & (1 << 1))
+		{
+			PdfWriter::CAction* pA = GetAction(m_pDocument, pPr->GetPA());
+			pLinkAnnot->SetPA(pA);
+		}
+		if (nFlags & (1 << 2))
+			pLinkAnnot->SetH(pPr->GetH());
+		if (nFlags & (1 << 3))
+			pLinkAnnot->SetQuadPoints(pPr->GetQuadPoints());
 	}
 
 	return S_OK;
@@ -2973,8 +2994,8 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 			pParentObj->Add("Ff", pParent->nFieldFlag);
 		if (nFlags & (1 << 8))
 		{
-			const std::vector<CAnnotFieldInfo::CWidgetAnnotPr::CActionWidget*> arrActions = pParent->arrAction;
-			for (CAnnotFieldInfo::CWidgetAnnotPr::CActionWidget* pAction : arrActions)
+			const std::vector<CAnnotFieldInfo::CActionFieldPr*> arrActions = pParent->arrAction;
+			for (CAnnotFieldInfo::CActionFieldPr* pAction : arrActions)
 			{
 				PdfWriter::CAction* pA = GetAction(m_pDocument, pAction);
 				if (!pA)

@@ -3197,9 +3197,9 @@ private:
 			case HTML_TAG(STYLE):
 			case HTML_TAG(SCRIPT):
 			{
-				WriteEmptyParagraph(oXml, false, m_oState.m_bInP);
+				//Если встретили не обрабатываемые теги, то просто пропускаем
 				sSelectors.pop_back();
-				return true;
+				return false;
 			}
 			case HTML_TAG(SPAN):
 			{

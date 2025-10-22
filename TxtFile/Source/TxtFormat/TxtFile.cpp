@@ -32,6 +32,8 @@
 
 #include "TxtFile.h"
 #include "../../../OOXML/SystemUtility/File.h"
+#include "../../../UnicodeConverter/UnicodeConverter.h"
+#include "../../../UnicodeConverter/UnicodeConverter_Encodings.h"
 
 static const std::string BadSymbols = "\x0A\x0B\x0C\x0D\x0E\x0F\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19";
 
@@ -42,6 +44,88 @@ const int TxtFile::getLinesCount()
 {
 	return m_linesCount;
 }
+
+const std::vector<std::wstring> TxtFile::readUnicodeLines(int CodePage)
+{
+    std::vector<std::wstring> result;
+    NSFile::CFileBinary file_binary;
+    if (!file_binary.OpenFile(m_path)) return result;
+    DWORD file_size = file_binary.GetFileSize();
+    if (file_size == 0) return result;
+    char* file_data = new char[file_size];
+    DWORD read_size = 0;
+    file_binary.ReadFile((BYTE*)file_data, file_size, read_size);
+    if (read_size == 0) {
+        delete[] file_data;
+        return result;
+    }
+    bool isUtf8 = (read_size >= 3 && (BYTE)file_data[0] == 0xEF && (BYTE)file_data[1] == 0xBB && (BYTE)file_data[2] == 0xBF);
+    bool isUtf16LE = (read_size >= 2 && (BYTE)file_data[0] == 0xFF && (BYTE)file_data[1] == 0xFE);
+    bool isUtf16BE = (read_size >= 2 && (BYTE)file_data[0] == 0xFE && (BYTE)file_data[1] == 0xFF);
+    std::wstring content;
+    if (isUtf8)
+    {
+        NSUnicodeConverter::CUnicodeConverter conv;
+        content = conv.toUnicode(file_data + 3, read_size - 3, "UTF-8");
+    }
+    else if (isUtf16LE) {
+        NSUnicodeConverter::CUnicodeConverter conv;
+        content = conv.toUnicode(file_data + 2, read_size - 2, "UTF-16LE");
+    }
+    else if (isUtf16BE) {
+        NSUnicodeConverter::CUnicodeConverter conv;
+        content = conv.toUnicode(file_data + 2, read_size - 2, "UTF-16BE");
+    }
+    else
+    {
+
+        NSUnicodeConverter::CUnicodeConverter conv;
+        if (CodePage >= 0 && CodePage < UNICODE_CONVERTER_ENCODINGS_COUNT)
+        {
+            const char* encodingName = NSUnicodeConverter::Encodings[CodePage].Name;
+            content = conv.toUnicode(file_data, read_size, encodingName);
+        }
+        else
+        {
+            content = conv.toUnicode(file_data, read_size, 46);
+        }
+    }
+    delete [] file_data;
+    size_t lineCount = 0;
+    for (size_t i = 0; i < content.size(); ++i)
+    {
+        if (content[i] == L'\n' || content[i] == L'\r')
+        {
+            ++lineCount;
+            if (content[i] == L'\r' && i + 1 < content.size() && content[i + 1] == L'\n')
+                ++i;
+        }
+    }
+    if (!content.empty() && content.back() != L'\n' && content.back() != L'\r')
+        ++lineCount;
+    result.reserve(lineCount);
+    std::wstring line;
+    for (size_t i = 0; i < content.size(); ++i)
+    {
+        wchar_t wc = content[i];
+        if (wc == L'\n' || wc == L'\r')
+        {
+            result.push_back(std::move(line));
+            line.clear();
+            if (wc == L'\r' && i + 1 < content.size() && content[i + 1] == L'\n')
+                ++i;
+        }
+        else
+        {
+            line.push_back(wc);
+        }
+    }
+    if (!line.empty())
+        result.push_back(std::move(line));
+    m_linesCount = result.size();
+    return result;
+}
+
 const std::vector<std::string> TxtFile::readAnsiOrCodePage() // == readUtf8withoutPref также
 {
     std::vector<std::string> result;

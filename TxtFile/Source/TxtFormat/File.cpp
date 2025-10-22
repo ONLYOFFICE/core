@@ -157,35 +157,8 @@ namespace Txt
 			return;
 
 		TxtFile file(filename);
-		
-		//читаем юникод чтобы можно было выкинуть невалидные символы
 
-		if (file.isUtf8())
-		{
-			m_listContent = NSEncoding::transformToUnicode(file.readUtf8(), 46); //65001 Unicode (UTF-8)
-		}
-		else if (file.isUnicode())
-		{
-			m_listContent = file.readUnicode();
-		}
-		else if (file.isBigEndian())
-		{
-			m_listContent = file.readBigEndian();
-		}
-		//проверка убрана, потому что она работает в редких случаюх: если в первой строке есть английские символы
-		//далее не делается проверка BigEndian или LittleEndian
-		//notepad++ открывает такие файлы как ansi и мы будем также.
-		//else if (file.isUnicodeWithOutBOM())
-		//	listContentUnicode = file.readUnicodeWithOutBOM();
-		else
-		{
-			int nCodePage = m_nEncoding;
-			if (-1 == nCodePage) nCodePage = 46;
-			else if (1000 == nCodePage) nCodePage = -1;
-
-			m_listContent = NSEncoding::transformToUnicode(file.readAnsiOrCodePage(), nCodePage);
-		}
-		
+        m_listContent = file.readUnicodeLines(m_nEncoding);
 		m_listContentSize = file.getLinesCount();
 	}
 

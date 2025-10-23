@@ -155,6 +155,7 @@ namespace NSOnlineOfficeBinToPdf
 		ctPathCommandText				= 102,
 		ctPathCommandTextEx			    = 103,
 		ctPathCommandOffset				= 104,
+		ctPathCommandScale				= 105,
 
 		// image
 		ctDrawImage					    = 110,

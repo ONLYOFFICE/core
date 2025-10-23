@@ -698,7 +698,34 @@ namespace NSOnlineOfficeBinToPdf
 					pRenderer->BrushRect(true, rect.X, rect.Y, rect.Width, rect.Height);
 				}
 
-				transMatrOff.Translate(m1, m2);
+				LONG type;
+				pRenderer->get_BrushType(&type);
+				if (type == c_BrushTypeTexture)
+					pRenderer->get_BrushTextureMode(&type);
+				if (type == c_BrushTextureModeStretch)
+					transMatrOff.Translate(m1, m2);
+				break;
+			}
+			case ctPathCommandScale:
+			{
+				double m1 = oReader.ReadDouble();
+				double m2 = oReader.ReadDouble();
+
+				Aggplus::RectF rect;
+				bool rectable;
+				pRenderer->get_BrushRect(rect, rectable);
+				if (rectable)
+				{
+					rect.Scale(m1, m2);
+					pRenderer->BrushRect(true, rect.X, rect.Y, rect.Width, rect.Height);
+				}
+
+				LONG type;
+				pRenderer->get_BrushType(&type);
+				if (type == c_BrushTypeTexture)
+					pRenderer->get_BrushTextureMode(&type);
+				if (type == c_BrushTextureModeStretch)
+					transMatrOff.Scale(m1, m2);
 				break;
 			}
 			case ctDrawPath:
@@ -717,6 +744,8 @@ namespace NSOnlineOfficeBinToPdf
 
 				pRenderer->DrawPath(oReader.ReadInt());
 				path.Reset();
+				transMatrRot.Reset();
+				transMatrOff.Reset();
 				break;
 			}
 			case ctDrawImageFromFile:

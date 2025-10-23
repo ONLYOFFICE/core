@@ -102,9 +102,9 @@ _UINT32 CTxtXmlFile::txt_LoadFromFile(const std::wstring & sSrcFileName, const s
 
 		Txt2Docx::Converter converter( encoding);
 		converter.read(sSrcFileName);
-		converter.convert();
-		converter.write(pDocxWriter->get_document_writer().m_oContent);
-	}
+       // converter.convert();
+        converter.write(pDocxWriter->get_document_writer().m_oContent);
+    }
 	catch(...)
 	{
 		return AVS_FILEUTILS_ERROR_CONVERT;

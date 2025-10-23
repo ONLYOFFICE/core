@@ -952,10 +952,17 @@ HRESULT CGraphicsRenderer::DrawPath(const LONG& nType)
 				switch (m_oBrush.TextureMode)
 				{
 				case c_BrushTextureModeTile:
-					oMode = Aggplus::WrapModeTile;
-					break;
 				case c_BrushTextureModeTileCenter:
 					oMode = Aggplus::WrapModeTile;
+					break;
+				case c_BrushTextureModeTileFlipX:
+					oMode = Aggplus::WrapModeTileFlipX;
+					break;
+				case c_BrushTextureModeTileFlipY:
+					oMode = Aggplus::WrapModeTileFlipY;
+					break;
+				case c_BrushTextureModeTileFlipXY:
+					oMode = Aggplus::WrapModeTileFlipXY;
 					break;
 				default: 
 					break;

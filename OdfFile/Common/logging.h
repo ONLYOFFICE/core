@@ -49,6 +49,7 @@ namespace cpdoccore
         template <class T>
         Ostream & operator << (const T & t)
         {
+#if defined(_DEBUG) || defined(_LOGOUT_ALWAYS) 
             std::chrono::system_clock::time_point now{ std::chrono::system_clock::now() };
             std::time_t now_c = std::chrono::system_clock::to_time_t(now);
             std::tm tm = *std::localtime(&now_c);
@@ -56,7 +57,9 @@ namespace cpdoccore
             auto duration_since_epoch = now.time_since_epoch();
             auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(duration_since_epoch) % 1000;
 
-            ostream_ << std::put_time(&tm, L"%H:%M:%S") << L"." << milliseconds.count() << L"\t" << t;
+            ostream_ << std::put_time(&tm, L"%H:%M:%S") << L"." << milliseconds.count() << L"\t";
+#endif
+            ostream_ << t;
             return ostream_;
         }
 

@@ -3295,12 +3295,21 @@ private:
 						bResult = ReadHr(&oXmlData, sSelectors, oTS);
 						break;
 					}
+					case HTML_TAG(LI):
+					{
+						bResult = ReadListElement(&oXmlData, sSelectors, oTS);
+						break;
+					}
+					case HTML_TAG(OL):
 					case HTML_TAG(UL):
+					{
+						bResult = ReadList(&oXmlData, sSelectors, oTS);
+						break;
+					}
 					case HTML_TAG(MENU):
 					case HTML_TAG(SELECT):
 					case HTML_TAG(DATALIST):
 					case HTML_TAG(DIR):
-					case HTML_TAG(OL):
 					{
 						bResult = readLi(&oXmlData, sSelectors, oTS, HTML_TAG(OL) != eHtmlTag);
 						break;
@@ -3889,6 +3898,103 @@ private:
 		return readStream(oXml, sSelectors, oTS, ElementInTable(sSelectors));
 	}
 
+	bool ReadListElement(NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& arSelectors, CTextSettings& oTS)
+	{
+		if (0 > oTS.nLi)
+		{
+			CTextSettings oTSLi;
+			oTSLi.nLi = 0;
+			oTSLi.oAdditionalStyle.m_oMargin.SetLeft(360., NSCSS::UnitMeasure::Twips, 0, true);
+
+			if (OpenP(oXml))
+				wrP(oXml, arSelectors, oTSLi);
+		}
+		else if (OpenP(oXml))
+			wrP(oXml, arSelectors, oTS);
+
+		return readStream(oXml, arSelectors, oTS);
+	}
+
+	bool ReadList(NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& arSelectors, CTextSettings& oTS)
+	{
+		if(m_oLightReader.IsEmptyNode())
+			return false;
+
+		GetSubClass(oXml, arSelectors);
+
+		CloseP(oXml, arSelectors);
+
+		CTextSettings oTSLi(oTS);
+
+		++oTSLi.nLi;
+
+		//Нумерованный список
+		if (L"ol" == arSelectors.back().m_wsName)
+		{
+			int nStart = 1;
+			while(m_oLightReader.MoveToNextAttribute())
+				if(m_oLightReader.GetName() == L"start")
+					nStart = NSStringFinder::ToInt(m_oLightReader.GetText(), 1);
+			m_oLightReader.MoveToElement();
+
+			oTSLi.bNumberingLi = true;
+
+			const std::wstring wsStart(std::to_wstring(nStart));
+			m_oNumberXml.WriteString(L"<w:abstractNum w:abstractNumId=\"");
+			m_oNumberXml.WriteString(std::to_wstring(m_nNumberingId++));
+			m_oNumberXml.WriteString(L"\"><w:multiLevelType w:val=\"hybridMultilevel\"/><w:lvl w:ilvl=\"0\"><w:start w:val=\"");
+			m_oNumberXml.WriteString(wsStart);
+			m_oNumberXml.WriteString(L"\"/><w:numFmt w:val=\"decimal\"/><w:isLgl w:val=\"false\"/><w:suff w:val=\"tab\"/><w:lvlText w:val=\"%1.\"/><w:lvlJc w:val=\"left\"/><w:pPr><w:ind w:left=\"709\" w:hanging=\"360\"/></w:pPr></w:lvl><w:lvl w:ilvl=\"1\"><w:start w:val=\"");
+			m_oNumberXml.WriteString(wsStart);
+			m_oNumberXml.WriteString(L"\"/><w:numFmt w:val=\"decimal\"/><w:isLgl w:val=\"false\"/><w:suff w:val=\"tab\"/><w:lvlText w:val=\"%2.\"/><w:lvlJc w:val=\"left\"/><w:pPr><w:ind w:left=\"1429\" w:hanging=\"360\"/></w:pPr></w:lvl><w:lvl w:ilvl=\"2\"><w:start w:val=\"");
+			m_oNumberXml.WriteString(wsStart);
+			m_oNumberXml.WriteString(L"\"/><w:numFmt w:val=\"decimal\"/><w:isLgl w:val=\"false\"/><w:suff w:val=\"tab\"/><w:lvlText w:val=\"%3.\"/><w:lvlJc w:val=\"right\"/><w:pPr><w:ind w:left=\"2149\" w:hanging=\"180\"/></w:pPr></w:lvl><w:lvl w:ilvl=\"3\"><w:start w:val=\"");
+			m_oNumberXml.WriteString(wsStart);
+			m_oNumberXml.WriteString(L"\"/><w:numFmt w:val=\"decimal\"/><w:isLgl w:val=\"false\"/><w:suff w:val=\"tab\"/><w:lvlText w:val=\"%4.\"/><w:lvlJc w:val=\"left\"/><w:pPr><w:ind w:left=\"2869\" w:hanging=\"360\"/></w:pPr></w:lvl><w:lvl w:ilvl=\"4\"><w:start w:val=\"");
+			m_oNumberXml.WriteString(wsStart);
+			m_oNumberXml.WriteString(L"\"/><w:numFmt w:val=\"decimal\"/><w:isLgl w:val=\"false\"/><w:suff w:val=\"tab\"/><w:lvlText w:val=\"%5.\"/><w:lvlJc w:val=\"left\"/><w:pPr><w:ind w:left=\"3589\" w:hanging=\"360\"/></w:pPr></w:lvl><w:lvl w:ilvl=\"5\"><w:start w:val=\"");
+			m_oNumberXml.WriteString(wsStart);
+			m_oNumberXml.WriteString(L"\"/><w:numFmt w:val=\"decimal\"/><w:isLgl w:val=\"false\"/><w:suff w:val=\"tab\"/><w:lvlText w:val=\"%6.\"/><w:lvlJc w:val=\"right\"/><w:pPr><w:ind w:left=\"4309\" w:hanging=\"180\"/></w:pPr></w:lvl><w:lvl w:ilvl=\"6\"><w:start w:val=\"");
+			m_oNumberXml.WriteString(wsStart);
+			m_oNumberXml.WriteString(L"\"/><w:numFmt w:val=\"decimal\"/><w:isLgl w:val=\"false\"/><w:suff w:val=\"tab\"/><w:lvlText w:val=\"%7.\"/><w:lvlJc w:val=\"left\"/><w:pPr><w:ind w:left=\"5029\" w:hanging=\"360\"/></w:pPr></w:lvl><w:lvl w:ilvl=\"7\"><w:start w:val=\"");
+			m_oNumberXml.WriteString(wsStart);
+			m_oNumberXml.WriteString(L"\"/><w:numFmt w:val=\"decimal\"/><w:isLgl w:val=\"false\"/><w:suff w:val=\"tab\"/><w:lvlText w:val=\"%8.\"/><w:lvlJc w:val=\"left\"/><w:pPr><w:ind w:left=\"5749\" w:hanging=\"360\"/></w:pPr></w:lvl><w:lvl w:ilvl=\"8\"><w:start w:val=\"");
+			m_oNumberXml.WriteString(wsStart);
+			m_oNumberXml.WriteString(L"\"/><w:numFmt w:val=\"decimal\"/><w:isLgl w:val=\"false\"/><w:suff w:val=\"tab\"/><w:lvlText w:val=\"%9.\"/><w:lvlJc w:val=\"right\"/><w:pPr><w:ind w:left=\"6469\" w:hanging=\"180\"/></w:pPr></w:lvl></w:abstractNum>");
+		}
+
+		CTextSettings oTSList{oTSLi};
+
+		oTSList.oAdditionalStyle.m_oMargin.SetTop   (100, NSCSS::UnitMeasure::Twips, 0, true);
+		oTSList.oAdditionalStyle.m_oMargin.SetBottom(100, NSCSS::UnitMeasure::Twips, 0, true);
+
+		oTSLi.bWritedLi = true;
+
+		int nDeath = m_oLightReader.GetDepth();
+		while(m_oLightReader.ReadNextSiblingNode2(nDeath))
+		{
+			const std::wstring wsName = m_oLightReader.GetName();
+
+			if (L"li" == wsName)
+			{
+				if (OpenP(oXml))
+					wrP(oXml, arSelectors, oTSList);
+
+				ReadListElement(oXml, arSelectors, oTSLi);
+			}
+			else
+			{
+				CloseP(oXml, arSelectors);
+				readInside(oXml, arSelectors, oTSLi, wsName);
+			}
+		}
+
+		CloseP(oXml, arSelectors);
+		arSelectors.pop_back();
+
+		return true;
+	}
+
 	bool readLi     (NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors, CTextSettings& oTS, bool bType)
 	{
 		if(m_oLightReader.IsEmptyNode())
@@ -4418,7 +4524,7 @@ private:
 			if (!oTS.bWritedLi)
 			{
 				oXml->WriteString(L"<w:numPr><w:ilvl w:val=\"" + std::to_wstring(oTS.nLi) + L"\"/><w:numId w:val=\"" +
-				                  (!oTS.bNumberingLi ? L"1" : std::to_wstring(m_nNumberingId + 1)) + L"\"/></w:numPr>");
+				                  (!oTS.bNumberingLi ? L"1" : std::to_wstring(m_nNumberingId)) + L"\"/></w:numPr>");
 
 				oTS.bWritedLi = true;
 			}

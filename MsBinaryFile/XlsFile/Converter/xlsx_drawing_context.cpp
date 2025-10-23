@@ -2922,10 +2922,10 @@ void xlsx_drawing_context::set_sheet_anchor(int colFrom, int xFrom, int rwFrom, 
 		current_drawing_states->back()->sheet_anchor.colTo = colTo;
 		current_drawing_states->back()->sheet_anchor.rwFrom = rwFrom;
 		current_drawing_states->back()->sheet_anchor.rwTo = rwTo;
-		current_drawing_states->back()->sheet_anchor.xFrom = (std::min)(xFrom, xTo);
-		current_drawing_states->back()->sheet_anchor.yFrom = (std::min)(yFrom, yTo);
-		current_drawing_states->back()->sheet_anchor.xTo = (std::max)(xFrom, xTo);
-		current_drawing_states->back()->sheet_anchor.yTo = (std::max)(yFrom, yTo);
+		current_drawing_states->back()->sheet_anchor.xFrom = xFrom;
+		current_drawing_states->back()->sheet_anchor.yFrom = yFrom;
+		current_drawing_states->back()->sheet_anchor.xTo = xTo;
+		current_drawing_states->back()->sheet_anchor.yTo = yTo;
 	}
 
 	current_drawing_states->back()->sheet_anchor.absolute.x = x;

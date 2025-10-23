@@ -70,6 +70,8 @@ void SXDB::readFields(CFRecord& record)
 void SXDB::writeFields(CFRecord& record)
 {
 	cchWho = rgb.getSize();
+	if(!cchWho)
+		cchWho = 0xFFFF;
 	unsigned short	flags = 0;
 	SETBIT(flags, 0, fSaveData)
 	SETBIT(flags, 1, fInvalid)

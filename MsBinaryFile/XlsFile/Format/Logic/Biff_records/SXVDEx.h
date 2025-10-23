@@ -53,24 +53,24 @@ public:
 	static const ElementType type = typeSXVDEx;
 	
     bool					fShowAllItems = false;
-    bool					fDragToRow = false;
-    bool					fDragToColumn = false;
-    bool					fDragToPage = false;
-    bool					fDragToHide = false;
+	bool					fDragToRow = true;
+	bool					fDragToColumn = true;
+	bool					fDragToPage = true;
+	bool					fDragToHide = true;
     bool					fNotDragToData = false;
     bool					fServerBased = false;
     bool					fAutoSort = false;
     bool					fAscendSort = false;
     bool					fAutoShow = false;
-    bool					fTopAutoShow = false;
+	bool					fTopAutoShow = true;
     bool					fCalculatedField = false;
     bool					fPageBreaksBetweenItems = false;
     bool					fHideNewItems = false;
-    bool					fOutline = false;
+	bool					fOutline = true;
     bool					fInsertBlankRow = false;
-    bool					fSubtotalAtTop = false;
+	bool					fSubtotalAtTop = true;
 
-    unsigned char			citmAutoShow = 0;
+	unsigned char			citmAutoShow = 10;
 	short					isxdiAutoSort = -1;
 	short					isxdiAutoShow = -1;
     unsigned short			ifmt = 0;

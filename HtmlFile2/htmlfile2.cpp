@@ -1513,10 +1513,11 @@ public:
 	CHtmlFile2_Private() 
 		: m_nFootnoteId(1), m_nHyperlinkId(1), m_nNumberingId(1), m_nId(1), m_pFonts(NULL)
 	{
-		m_oPageData.SetSize  (std::to_wstring(DEFAULT_PAGE_WIDTH) + L"tw " + std::to_wstring(DEFAULT_PAGE_HEIGHT) + L"tw", 0, true);
-		m_oPageData.SetMargin(L"1440tw 1440tw 1440tw 1440tw", 0, true);
-		m_oPageData.SetFooter(L"720tw", 0, true);
-		m_oPageData.SetHeader(L"720tw", 0, true);
+		m_oPageData.SetWidth (DEFAULT_PAGE_WIDTH,  NSCSS::UnitMeasure::Twips, 0, true);
+		m_oPageData.SetHeight(DEFAULT_PAGE_HEIGHT, NSCSS::UnitMeasure::Twips, 0, true);
+		m_oPageData.SetMargin(1440,                NSCSS::UnitMeasure::Twips, 0, true);
+		m_oPageData.SetFooter(720,                 NSCSS::UnitMeasure::Twips, 0, true);
+		m_oPageData.SetHeader(720,                 NSCSS::UnitMeasure::Twips, 0, true);
 	}
 
 	~CHtmlFile2_Private()
@@ -2638,7 +2639,7 @@ private:
 
 		CTextSettings oTSR(oTS);
 		oTSR.oAdditionalStyle.m_oFont.SetFamily(L"Courier New", UINT_MAX, true);
-		oTSR.oAdditionalStyle.m_oFont.SetSize(20, UINT_MAX, true);
+		oTSR.oAdditionalStyle.m_oFont.SetSize(20, NSCSS::UnitMeasure::Point, UINT_MAX, true);
 		oTSR.oAdditionalStyle.m_oFont.SetWeight(L"bold", UINT_MAX, true);
 
 		return readStream(pXml, arSelectors, oTSR);
@@ -2697,7 +2698,7 @@ private:
 				if (nSize < 1 || nSize > 7)
 					nSize = 3;
 
-				oTSR.oAdditionalStyle.m_oFont.SetSize(HTML_FONTS[nSize - 1], UINT_MAX, true);
+				oTSR.oAdditionalStyle.m_oFont.SetSize(HTML_FONTS[nSize - 1], NSCSS::UnitMeasure::Point, UINT_MAX, true);
 			}
 		}
 		m_oLightReader.MoveToElement();
@@ -2797,14 +2798,14 @@ private:
 			{
 				switch(NSStringFinder::ToInt(m_oLightReader.GetText(), 3))
 				{
-					case 1: oTS.oAdditionalStyle.m_oFont.SetSize(7.5, UINT_MAX, true);  break;
-					case 2: oTS.oAdditionalStyle.m_oFont.SetSize(10, UINT_MAX, true);   break;
+					case 1: oTS.oAdditionalStyle.m_oFont.SetSize(7.5,  NSCSS::UnitMeasure::Point, UINT_MAX, true);  break;
+					case 2: oTS.oAdditionalStyle.m_oFont.SetSize(10,   NSCSS::UnitMeasure::Point, UINT_MAX, true);   break;
 					default:
-					case 3: oTS.oAdditionalStyle.m_oFont.SetSize(12, UINT_MAX, true);   break;
-					case 4: oTS.oAdditionalStyle.m_oFont.SetSize(13.5, UINT_MAX, true); break;
-					case 5: oTS.oAdditionalStyle.m_oFont.SetSize(18, UINT_MAX, true);   break;
-					case 6: oTS.oAdditionalStyle.m_oFont.SetSize(24, UINT_MAX, true);   break;
-					case 7: oTS.oAdditionalStyle.m_oFont.SetSize(36, UINT_MAX, true);   break;
+					case 3: oTS.oAdditionalStyle.m_oFont.SetSize(12,   NSCSS::UnitMeasure::Point, UINT_MAX, true);   break;
+					case 4: oTS.oAdditionalStyle.m_oFont.SetSize(13.5, NSCSS::UnitMeasure::Point, UINT_MAX, true); break;
+					case 5: oTS.oAdditionalStyle.m_oFont.SetSize(18,   NSCSS::UnitMeasure::Point, UINT_MAX, true);   break;
+					case 6: oTS.oAdditionalStyle.m_oFont.SetSize(24,   NSCSS::UnitMeasure::Point, UINT_MAX, true);   break;
+					case 7: oTS.oAdditionalStyle.m_oFont.SetSize(36,   NSCSS::UnitMeasure::Point, UINT_MAX, true);   break;
 				}
 			}
 			else if (L"color" == m_oLightReader.GetName())
@@ -2824,7 +2825,7 @@ private:
 			return false;
 
 		CTextSettings oTSP(oTS);
-		oTSP.oAdditionalStyle.m_oMargin.SetLeft(720, UINT_MAX, true);
+		oTSP.oAdditionalStyle.m_oMargin.SetLeft(720, NSCSS::UnitMeasure::Twips, UINT_MAX, true);
 
 		return readStream(pXml, arSelectors, oTSP);
 	}
@@ -2959,9 +2960,9 @@ private:
 
 		CTextSettings oTSPre(oTS);
 		oTSPre.oAdditionalStyle.m_oFont.SetFamily(L"Courier New", NEXT_LEVEL);
-		oTSPre.oAdditionalStyle.m_oFont.SetSize(20, NEXT_LEVEL);
-		oTSPre.oAdditionalStyle.m_oMargin.SetTop(0, NEXT_LEVEL);
-		oTSPre.oAdditionalStyle.m_oMargin.SetBottom(0, NEXT_LEVEL);
+		oTSPre.oAdditionalStyle.m_oFont.SetSize(20, NSCSS::UnitMeasure::Point, NEXT_LEVEL);
+		oTSPre.oAdditionalStyle.m_oMargin.SetTop(0, NSCSS::UnitMeasure::Twips, NEXT_LEVEL);
+		oTSPre.oAdditionalStyle.m_oMargin.SetBottom(0, NSCSS::UnitMeasure::Twips, NEXT_LEVEL);
 		oTSPre.bPre = true;
 
 		return readStream(pXml, arSelectors, oTSPre);
@@ -3756,7 +3757,7 @@ private:
 						continue;
 
 					pStyle->m_oBorder.SetStyle(L"outset",  0, true);
-					pStyle->m_oBorder.SetWidth(nWidth,     0, true);
+					pStyle->m_oBorder.SetWidth(nWidth,     NSCSS::UnitMeasure::Point, 0, true);
 					pStyle->m_oBorder.SetColor(L"auto",    0, true);
 				}
 				else if (pStyle->m_oBorder.Empty())
@@ -3777,38 +3778,38 @@ private:
 		{
 			#define SetDefaultBorderSide(side) \
 				pStyle->m_oBorder.SetStyle##side(L"solid", 0, true); \
-				pStyle->m_oBorder.SetWidth##side(1,        0, true); \
-				pStyle->m_oBorder.SetColor##side(L"black", 0, true);
+				pStyle->m_oBorder.SetWidth##side(1,        NSCSS::UnitMeasure::Point, 0, true); \
+				pStyle->m_oBorder.SetColor##side(L"black", 0, true)
 
 			if (NSStringFinder::Equals(L"border", wsFrame))
 			{
-				SetDefaultBorderSide()
+				SetDefaultBorderSide();
 			}
 			else if (NSStringFinder::Equals(L"above", wsFrame))
 			{
-				SetDefaultBorderSide(TopSide)
+				SetDefaultBorderSide(TopSide);
 			}
 			else if (NSStringFinder::Equals(L"below", wsFrame))
 			{
-				SetDefaultBorderSide(BottomSide)
+				SetDefaultBorderSide(BottomSide);
 			}
 			else if (NSStringFinder::Equals(L"hsides", wsFrame))
 			{
-				SetDefaultBorderSide(TopSide)
-				SetDefaultBorderSide(BottomSide)
+				SetDefaultBorderSide(TopSide);
+				SetDefaultBorderSide(BottomSide);
 			}
 			else if (NSStringFinder::Equals(L"vsides", wsFrame))
 			{
-				SetDefaultBorderSide(LeftSide)
-				SetDefaultBorderSide(RightSide)
+				SetDefaultBorderSide(LeftSide);
+				SetDefaultBorderSide(RightSide);
 			}
 			else if (NSStringFinder::Equals(L"rhs", wsFrame))
 			{
-				SetDefaultBorderSide(RightSide)
+				SetDefaultBorderSide(RightSide);
 			}
 			else if (NSStringFinder::Equals(L"lhs", wsFrame))
 			{
-				SetDefaultBorderSide(LeftSide)
+				SetDefaultBorderSide(LeftSide);
 			}
 		}
 

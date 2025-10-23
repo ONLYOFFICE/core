@@ -32,7 +32,10 @@
 #pragma once
 
 #include <iosfwd>
-
+#include <chrono>
+#include <iomanip>
+#include <ctime>
+#include <locale>
 
 namespace cpdoccore
 {
@@ -46,7 +49,14 @@ namespace cpdoccore
         template <class T>
         Ostream & operator << (const T & t)
         {
-            ostream_ << t;
+            std::chrono::system_clock::time_point now{ std::chrono::system_clock::now() };
+            std::time_t now_c = std::chrono::system_clock::to_time_t(now);
+            std::tm tm = *std::localtime(&now_c);
+
+            auto duration_since_epoch = now.time_since_epoch();
+            auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(duration_since_epoch) % 1000;
+
+            ostream_ << std::put_time(&tm, L"%H:%M:%S") << L"." << milliseconds.count() << L"\t" << t;
             return ostream_;
         }
 
@@ -54,12 +64,12 @@ namespace cpdoccore
         Ostream & ostream_;
     };
 
-    extern logging< std::wostream >     logging_cout;
-    extern logging< std::wstringstream >logging_log;
+    extern logging<std::wostream>     logging_cout;
+    extern logging<std::wstringstream>logging_log;
 }
 
-#ifdef _DEBUG
-    #define _CP_LOG     cpdoccore::logging_cout
+#if defined( _DEBUG) || defined(_LOGOUT_ALWAYS) 
+    #define _CP_LOG cpdoccore::logging_cout
 #else
-    #define _CP_LOG     cpdoccore::logging_log
+    #define _CP_LOG cpdoccore::logging_log
 #endif

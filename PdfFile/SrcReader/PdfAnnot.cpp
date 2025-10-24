@@ -516,8 +516,6 @@ CAnnot::CBorderType* getBorder(Object* oBorder, bool bBSorBorder)
 	{
 		pBorderType->nType = annotBorderSolid;
 		pBorderType->dWidth = ArrGetNum(oBorder, 2);
-		if (!pBorderType->dWidth)
-			pBorderType->dWidth = 1.0;
 
 		Object oObj;
 		if (oBorder->arrayGetLength() > 3 && oBorder->arrayGet(3, &oObj)->isArray() && oObj.arrayGetLength() > 1)

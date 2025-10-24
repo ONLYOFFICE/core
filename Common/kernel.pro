@@ -33,7 +33,6 @@ HEADERS += \
 	./../DesktopEditor/graphics/TemporaryCS.h
 
 SOURCES += \
-	../OdfFile/Common/logging.cpp \
 	./../DesktopEditor/graphics/TemporaryCS.cpp
 
 # THREAD

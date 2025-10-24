@@ -508,6 +508,24 @@ namespace NSDocxRenderer
 		oWriter.WriteBYTE(0); oWriter.WriteStringUtf16(m_oText.ToStdWString());
 		oWriter.WriteBYTE(kBin_g_nodeAttributeEnd);
 
+		// Meta-info
+		oWriter.StartRecord(111);
+		oWriter.WriteBYTE(kBin_g_nodeAttributeStart);
+		oWriter.WriteBYTE(0); oWriter.WriteStringUtf16(m_wsOriginFontName); // Origin font name
+		oWriter.WriteBYTE(1); oWriter.AddInt(static_cast<unsigned int>(m_dLeft * c_dMMToEMU)); // Origin left
+		oWriter.WriteBYTE(2); oWriter.AddInt(static_cast<unsigned int>(m_dBot * c_dMMToEMU)); // Origin bot
+
+		// Origin width string
+		std::wstring origin_width{};
+		for (auto& w : m_arSymWidths)
+			origin_width += std::to_wstring(static_cast<unsigned int>(w * c_dMMToEMU)) + L";";
+
+		oWriter.WriteBYTE(3); oWriter.AddInt(m_arSymWidths.size()); // Len of sym widths
+		oWriter.WriteBYTE(4); oWriter.WriteStringUtf16(origin_width);
+
+		oWriter.WriteBYTE(kBin_g_nodeAttributeEnd);
+		oWriter.EndRecord();
+
 		// WriteRecord WriteRunProperties
 		[&oWriter, this, lCalculatedSpacing] () {
 			oWriter.StartRecord(0);

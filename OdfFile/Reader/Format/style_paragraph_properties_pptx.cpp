@@ -112,7 +112,7 @@ std::wstring pptx_process_margin(const _CP_OPT(length_or_percent) & margin, leng
     {
         if (margin->get_type() == length_or_percent::Length)
         {
-            int val = (int)(0.5 + Mul * margin->get_length().get_value_unit(unit));
+            int val = (int)(0.57 * (0.5 + Mul * margin->get_length().get_value_unit(unit)));
             return std::to_wstring( val );
         }
         else

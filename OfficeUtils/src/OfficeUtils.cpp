@@ -33,6 +33,8 @@
 #include "ZipUtilsCP.h"
 #include "../../DesktopEditor/common/File.h"
 #include "../../DesktopEditor/common/Directory.h"
+#include "../../OdfFile/Common/logging.h"
+#include <sstream>
 
 COfficeUtils::COfficeUtils(OnProgressCallback* fCallback)
 {
@@ -48,10 +50,12 @@ HRESULT COfficeUtils::ExtractToDirectory(const std::wstring& _zipFile, const std
 	std::wstring zipFile = _zipFile;
 	std::wstring unzipDir = _unzipDir;
 #endif
+    _CP_LOG << L"start unzip" << std::endl;
 
 	if( ZLibZipUtils::UnzipToDir( zipFile.c_str(), unzipDir.c_str(), m_fCallback, password, ( extract_without_path > 0 ) ? (true) : (false) ) == 0 )
 	{
-		return S_OK;
+        _CP_LOG << L"end unzip" << std::endl;
+        return S_OK;
 	}
 	else
 	{
@@ -65,11 +69,13 @@ HRESULT COfficeUtils::ExtractToDirectory(BYTE* data, size_t len, const std::wstr
 	std::wstring unzipDir = CorrectPathW(_unzipDir);
 #else
 	std::wstring unzipDir = _unzipDir;
-#endif
+#endif    
+    _CP_LOG << L"start unzip" << std::endl;
 
-	if( ZLibZipUtils::UnzipToDir( data, len, unzipDir.c_str(), m_fCallback, password, ( extract_without_path > 0 ) ? (true) : (false) ) == 0 )
+    if( ZLibZipUtils::UnzipToDir( data, len, unzipDir.c_str(), m_fCallback, password, ( extract_without_path > 0 ) ? (true) : (false) ) == 0 )
 	{
-		return S_OK;
+        _CP_LOG << L"end unzip" << std::endl;
+        return S_OK;
 	}
 	else
 	{
@@ -87,13 +93,15 @@ HRESULT COfficeUtils::CompressFileOrDirectory(const std::wstring& _name, const s
 	std::wstring name = _name;
 	std::wstring outputFile = _outputFile;
 #endif
+    _CP_LOG << L"start zip" << std::endl;
 
 	HRESULT result = S_FALSE;
 	if(NSDirectory::Exists(name))
 	{
 		if ( ZLibZipUtils::ZipDir( name.c_str(), outputFile.c_str(), m_fCallback, bSorted, method, level, bDateTime ) == 0 )
 		{
-			result = S_OK;
+            _CP_LOG << L"end zip" << std::endl;
+            result = S_OK;
 		}
 		else
 		{
@@ -104,7 +112,8 @@ HRESULT COfficeUtils::CompressFileOrDirectory(const std::wstring& _name, const s
 	{
 		if ( ZLibZipUtils::ZipFile( name.c_str(), outputFile.c_str(), method, level, bDateTime ) == 0 )
 		{
-			result = S_OK;
+            _CP_LOG << L"end zip" << std::endl;
+            result = S_OK;
 		}
 		else
 		{

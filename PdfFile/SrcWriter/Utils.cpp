@@ -369,6 +369,9 @@ namespace PdfWriter
 	}
 	bool isPointInQuad(double px, double py, double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4)
 	{
+		if (x1 == x2 && x2 == x3 && x3 == x4 && y1 == y2 && y2 == y3 && y3 == y4)
+			return (px == x1 && py == y1);
+
 		// Проверяем знаки векторных произведений для всех сторон
 		double cross1 = crossProduct(x1, y1, x2, y2, px, py);
 		double cross2 = crossProduct(x2, y2, x3, y3, px, py);
@@ -376,8 +379,10 @@ namespace PdfWriter
 		double cross4 = crossProduct(x4, y4, x1, y1, px, py);
 
 		// Точка внутри, если все векторные произведения имеют одинаковый знак
-		return (cross1 >= 0 && cross2 >= 0 && cross3 >= 0 && cross4 >= 0) ||
-			   (cross1 <= 0 && cross2 <= 0 && cross3 <= 0 && cross4 <= 0);
+		bool allPositive = (cross1 >= 0 && cross2 >= 0 && cross3 >= 0 && cross4 >= 0);
+		bool allNegative = (cross1 <= 0 && cross2 <= 0 && cross3 <= 0 && cross4 <= 0);
+
+		return (allNegative || allPositive) && !(cross1 == 0 && cross2 == 0 && cross3 == 0 && cross4 == 0);
 	}
 	bool RectangleIntersection::segmentsIntersect(const CPoint& a, const CPoint& b, const CPoint& c, const CPoint& d, CPoint& intersection)
 	{

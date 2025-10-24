@@ -2886,7 +2886,87 @@ namespace PdfReader
 		}
 		return isMask;
 	}
+	BYTE* BufferFromImageStream(GfxState* pGState, Stream* pStream, int nWidth, int nHeight, GfxImageColorMap* pColorMap, int* pMaskColors)
+	{
+		int nBufferSize = 4 * nWidth * nHeight;
+		if (nBufferSize < 1)
+			return NULL;
 
+		BYTE* pBufferPtr = new(std::nothrow) BYTE[nBufferSize];
+		if (!pBufferPtr)
+			return NULL;
+
+		int nComponentsCount = pColorMap->getNumPixelComps();
+		BYTE unAlpha = std::min(255, std::max(0, int(pGState->getFillOpacity() * 255)));
+
+		// Пишем данные в pBufferPtr
+		ImageStream* pImageStream = new ImageStream(pStream, nWidth, nComponentsCount, pColorMap->getBits());
+		pImageStream->reset();
+
+		int nComps = pImageStream->getComps();
+		int nCheckWidth = std::min(nWidth, pImageStream->getVals() / nComps);
+		GfxRenderingIntent intent = pGState->getRenderingIntent();
+
+		// fast realization for some colorspaces (for wasm module)
+		int nColorMapType = pColorMap->getFillType();
+		GfxColorComp** pColorMapLookup = pColorMap->getLookup();
+		if (!pColorMapLookup)
+			nColorMapType = 0;
+
+		for (int nY = nHeight - 1; nY >= 0; --nY)
+		{
+			BYTE* pLine = pImageStream->getLine();
+			BYTE* pLineDst = pBufferPtr + 4 * nWidth * nY;
+
+			if (!pLine)
+			{
+				memset(pLineDst, 0, 4 * nWidth);
+				continue;
+			}
+
+			for (int nX = 0; nX < nCheckWidth; ++nX)
+			{
+				if (2 == nColorMapType)
+				{
+					pLineDst[2] = colToByte(clip01(pColorMapLookup[0][pLine[0]]));
+					pLineDst[1] = colToByte(clip01(pColorMapLookup[1][pLine[1]]));
+					pLineDst[0] = colToByte(clip01(pColorMapLookup[2][pLine[2]]));
+				}
+				else if (1 == nColorMapType)
+				{
+					pLineDst[0] = pLineDst[1] = pLineDst[2] = colToByte(clip01(pColorMapLookup[0][pLine[0]]));
+				}
+				else if (3 == nColorMapType)
+				{
+					pLineDst[2] = colToByte(clip01(pColorMapLookup[0][pLine[0]]));
+					pLineDst[1] = colToByte(clip01(pColorMapLookup[1][pLine[1]]));
+					pLineDst[0] = colToByte(clip01(pColorMapLookup[2][pLine[2]]));
+					pLineDst[3] = colToByte(clip01(pColorMapLookup[3][pLine[3]]));
+				}
+				else
+				{
+					GfxRGB oRGB;
+					pColorMap->getRGB(pLine, &oRGB, intent);
+					pLineDst[0] = colToByte(oRGB.b);
+					pLineDst[1] = colToByte(oRGB.g);
+					pLineDst[2] = colToByte(oRGB.r);
+				}
+
+				if (pMaskColors && CheckMask(nComponentsCount, pMaskColors, pLine))
+					pLineDst[3] = 0;
+				else if (3 != nColorMapType)
+					pLineDst[3] = unAlpha;
+
+				pLine += nComps;
+				pLineDst += 4;
+			}
+		}
+
+		pImageStream->close();
+		delete pImageStream;
+
+		return pBufferPtr;
+	}
 	bool RendererOutputDev::ReadImage(Aggplus::CImage* pImageRes, Object* pRef, Stream* pStream)
 	{
 		Object oIm;
@@ -2937,79 +3017,9 @@ namespace PdfReader
 		// Чтение jpeg через cximage происходит быстрее чем через xpdf на ~40%
 		if (pMaskColors || unAlpha != 255 || (nSK != strDCT || nComponentsCount != 3 || !ReadImage(&oImage, pRef, pStream)))
 		{
-			int nBufferSize = 4 * nWidth * nHeight;
-			if (nBufferSize < 1)
-				return;
-
-			BYTE* pBufferPtr = new(std::nothrow) BYTE[nBufferSize];
+			BYTE* pBufferPtr = BufferFromImageStream(pGState, pStream, nWidth, nHeight, pColorMap, pMaskColors);
 			if (!pBufferPtr)
 				return;
-
-			// Пишем данные в pBufferPtr
-			ImageStream* pImageStream = new ImageStream(pStream, nWidth, nComponentsCount, pColorMap->getBits());
-			pImageStream->reset();
-
-			int nComps = pImageStream->getComps();
-			int nCheckWidth = std::min(nWidth, pImageStream->getVals() / nComps);
-			GfxRenderingIntent intent = pGState->getRenderingIntent();
-
-			// fast realization for some colorspaces (for wasm module)
-			int nColorMapType = pColorMap->getFillType();
-			GfxColorComp** pColorMapLookup = pColorMap->getLookup();
-			if (!pColorMapLookup)
-				nColorMapType = 0;
-
-			for (int nY = nHeight - 1; nY >= 0; --nY)
-			{
-				BYTE* pLine = pImageStream->getLine();
-				BYTE* pLineDst = pBufferPtr + 4 * nWidth * nY;
-
-				if (!pLine)
-				{
-					memset(pLineDst, 0, 4 * nWidth);
-					continue;
-				}
-
-				for (int nX = 0; nX < nCheckWidth; ++nX)
-				{
-					if (2 == nColorMapType)
-					{
-						pLineDst[2] = colToByte(clip01(pColorMapLookup[0][pLine[0]]));
-						pLineDst[1] = colToByte(clip01(pColorMapLookup[1][pLine[1]]));
-						pLineDst[0] = colToByte(clip01(pColorMapLookup[2][pLine[2]]));
-					}
-					else if (1 == nColorMapType)
-					{
-						pLineDst[0] = pLineDst[1] = pLineDst[2] = colToByte(clip01(pColorMapLookup[0][pLine[0]]));
-					}
-					else if (3 == nColorMapType)
-					{
-						pLineDst[2] = colToByte(clip01(pColorMapLookup[0][pLine[0]]));
-						pLineDst[1] = colToByte(clip01(pColorMapLookup[1][pLine[1]]));
-						pLineDst[0] = colToByte(clip01(pColorMapLookup[2][pLine[2]]));
-						pLineDst[3] = colToByte(clip01(pColorMapLookup[3][pLine[3]]));
-					}
-					else
-					{
-						GfxRGB oRGB;
-						pColorMap->getRGB(pLine, &oRGB, intent);
-						pLineDst[0] = colToByte(oRGB.b);
-						pLineDst[1] = colToByte(oRGB.g);
-						pLineDst[2] = colToByte(oRGB.r);
-					}
-
-					if (pMaskColors && CheckMask(nComponentsCount, pMaskColors, pLine))
-						pLineDst[3] = 0;
-					else if (3 != nColorMapType)
-						pLineDst[3] = unAlpha;
-
-					pLine += nComps;
-					pLineDst += 4;
-				}
-			}
-
-			pImageStream->close();
-			delete pImageStream;
 
 			oImage.Create(pBufferPtr, nWidth, nHeight, -4 * nWidth);
 		}
@@ -3190,33 +3200,9 @@ namespace PdfReader
 
 		if (nComponentsCount != 3 || pStream->getKind() != strDCT || !ReadImage(&oImage, pRef, pStream))
 		{
-			BYTE* pBufferPtr = new(std::nothrow) BYTE[nBufferSize];
+			BYTE* pBufferPtr = BufferFromImageStream(pGState, pStream, nWidth, nHeight, pColorMap, NULL);
 			if (!pBufferPtr)
 				return;
-
-			// Пишем данные в pBufferPtr
-			ImageStream* pImageStream = new ImageStream(pStream, nWidth, pColorMap->getNumPixelComps(), pColorMap->getBits());
-			pImageStream->reset();
-
-			BYTE unPixel[4] = { 0, 0, 0, 0 };
-			for (int nY = nHeight - 1; nY >= 0; --nY)
-			{
-				int nIndex = 4 * nY * nWidth;
-				for (int nX = 0; nX < nWidth; ++nX)
-				{
-					pImageStream->getPixel(unPixel);
-					GfxRGB oRGB;
-					pColorMap->getRGB(unPixel, &oRGB, gfxRenderingIntentAbsoluteColorimetric);
-					pBufferPtr[nIndex + 0] = colToByte(oRGB.b);
-					pBufferPtr[nIndex + 1] = colToByte(oRGB.g);
-					pBufferPtr[nIndex + 2] = colToByte(oRGB.r);
-					pBufferPtr[nIndex + 3] = 255;
-
-					nIndex += 4;
-				}
-			}
-			delete pImageStream;
-
 			oImage.Create(pBufferPtr, nWidth, nHeight, -4 * nWidth);
 		}
 
@@ -3331,16 +3317,54 @@ namespace PdfReader
 			ImageStream* pSMaskStream = new ImageStream(pMaskStream, nMaskWidth, pMaskColorMap->getNumPixelComps(), pMaskColorMap->getBits());
 			pSMaskStream->reset();
 
+			// Быстрая реализация для масок
+			int nMaskColorMapType = pMaskColorMap->getFillType();
+			GfxColorComp** pMaskColorMapLookup = pMaskColorMap->getLookup();
+			if (!pMaskColorMapLookup)
+				nMaskColorMapType = 0;
+			int nMaskComps = pSMaskStream->getComps();
+			int nMaskCheckWidth = std::min(nMaskWidth, pSMaskStream->getVals() / nMaskComps);
+
 			BYTE unAlpha = 0;
 			for (int nY = nMaskHeight - 1; nY >= 0; --nY)
 			{
+				BYTE* pMaskLine = pSMaskStream->getLine();
 				int nIndex = 4 * nY * nMaskWidth;
-				for (int nX = 0; nX < nMaskWidth; ++nX)
+				if (!pMaskLine)
 				{
-					pSMaskStream->getPixel(&unAlpha);
-					GfxGray oGray;
-					pMaskColorMap->getGray(&unAlpha, &oGray, GfxRenderingIntent::gfxRenderingIntentAbsoluteColorimetric);
-					pBufferPtr[nIndex + 3] = (BYTE)(colToByte(oGray) * dAlphaKoef);
+					// Заполняем прозрачностью, если линия не прочитана
+					for (int nX = 0; nX < nMaskWidth; ++nX)
+					{
+						pBufferPtr[nIndex + 3] = 0;
+						nIndex += 4;
+					}
+					continue;
+				}
+
+				for (int nX = 0; nX < nMaskCheckWidth; ++nX)
+				{
+					BYTE unAlpha = 0;
+
+					// Оптимизированные случаи для разных цветовых пространств
+					if (1 == nMaskColorMapType)
+					{
+						unAlpha = colToByte(clip01(pMaskColorMapLookup[0][pMaskLine[0]]));
+					}
+					else if (2 == nMaskColorMapType || 3 == nMaskColorMapType)
+					{
+						unAlpha = colToByte(clip01(0.3 * pMaskColorMapLookup[0][pMaskLine[0]] +
+												  0.59 * pMaskColorMapLookup[1][pMaskLine[1]] +
+												  0.11 * pMaskColorMapLookup[2][pMaskLine[2]] + 0.5));
+					}
+					else
+					{
+						GfxGray oGray;
+						pMaskColorMap->getGray(pMaskLine, &oGray, GfxRenderingIntent::gfxRenderingIntentAbsoluteColorimetric);
+						unAlpha = colToByte(oGray);
+					}
+
+					pBufferPtr[nIndex + 3] = (BYTE)(unAlpha * dAlphaKoef);
+					pMaskLine += nMaskComps;
 					nIndex += 4;
 				}
 			}

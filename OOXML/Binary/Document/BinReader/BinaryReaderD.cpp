@@ -3851,8 +3851,8 @@ int Binary_CommentsTableReader::ReadCommentContent(BYTE type, long length, void*
 
 		Binary_DocumentTableReader* doc_reader = (Binary_DocumentTableReader*)pComment->pBinary_DocumentTableReader;
 		
-		pComment->sContent = doc_reader->m_oDocumentWriter.m_oContent.GetData();
-		doc_reader->m_oDocumentWriter.m_oContent.Clear();
+		pComment->sContent = doc_reader->GetCurrentStringWriter().GetData();
+		doc_reader->GetCurrentStringWriter().Clear();
 
 		_INT32 nId = m_oFileWriter.m_pComments->m_oParaIdCounter.getCurrentId();
 		pComment->sParaId = XmlUtils::ToString(nId, L"%08X");
@@ -4846,7 +4846,7 @@ int Binary_DocumentTableReader::Read()
 	READ_TABLE_DEF(res, this->ReadDocumentContent, NULL);
 	return res;
 }
-NSStringUtils::CStringBuilder& Binary_DocumentTableReader::GetRunStringWriter()
+NSStringUtils::CStringBuilder& Binary_DocumentTableReader::GetCurrentStringWriter()
 {
 	if (NULL != m_pCurWriter)
 		return *m_pCurWriter;
@@ -4866,20 +4866,40 @@ int Binary_DocumentTableReader::ReadDocumentContent(BYTE type, long length, void
 	{
 		m_byteLastElemType = c_oSerParType::Par;
 		m_oCur_pPr.Clear();
+		m_oParaId.reset();
+		m_oTextId.reset();
 
-		if (m_bUsedParaIdCounter && m_oFileWriter.m_pComments)
+		NSStringUtils::CStringBuilder  paraWriter;
+		NSStringUtils::CStringBuilder* pPrevWriter = m_pCurWriter;
+		
+		m_pCurWriter = &paraWriter;
+			READ1_DEF(length, res, this->ReadParagraph, NULL);
+		m_pCurWriter = pPrevWriter;
+
+		if (m_oParaId.IsInit() || m_oTextId.IsInit())
+		{
+			GetCurrentStringWriter().WriteString(L"<w:p");
+			if (m_oParaId.IsInit())
+				GetCurrentStringWriter().WriteString(L" w14:paraId=\"" + m_oParaId->ToString() + L"\"");
+			if (m_oTextId.IsInit())
+				GetCurrentStringWriter().WriteString(L" w14:textId=\"" + m_oTextId->ToString() + L"\"");
+			GetCurrentStringWriter().WriteString(L">");
+		}
+		else if (m_bUsedParaIdCounter && m_oFileWriter.m_pComments)
 		{
 			_INT32 nId = m_oFileWriter.m_pComments->m_oParaIdCounter.getNextId();
 			std::wstring sParaId = XmlUtils::ToString(nId, L"%08X");
 
-			m_oDocumentWriter.m_oContent.WriteString(L"<w:p w14:paraId=\"" + sParaId + L"\" w14:textId=\"" + sParaId + L"\">");
+			GetCurrentStringWriter().WriteString(L"<w:p w14:paraId=\"" + sParaId + L"\" w14:textId=\"" + sParaId + L"\">");
 		}
 		else
 		{
-			m_oDocumentWriter.m_oContent.WriteString(std::wstring(L"<w:p>"));
+			GetCurrentStringWriter().WriteString(L"<w:p>");
 		}
-		READ1_DEF(length, res, this->ReadParagraph, NULL);
-        m_oDocumentWriter.m_oContent.WriteString(std::wstring(L"</w:p>"));
+
+		GetCurrentStringWriter().WriteString(paraWriter.GetData());
+		GetCurrentStringWriter().WriteString(L"</w:p>");
+
 	}
 	else if (c_oSerParType::CommentStart == type)
 	{
@@ -4892,7 +4912,7 @@ int Binary_DocumentTableReader::ReadDocumentContent(BYTE type, long length, void
 			{
 				int nNewId = m_oFileWriter.m_pComments->getNextId(pComment->getCount());
 				pComment->setFormatStart(nNewId);
-				GetRunStringWriter().WriteString(pComment->writeRef(std::wstring(_T("")), std::wstring(_T("w:commentRangeStart")), std::wstring(_T(""))));
+				GetCurrentStringWriter().WriteString(pComment->writeRef(std::wstring(_T("")), std::wstring(_T("w:commentRangeStart")), std::wstring(_T(""))));
 			}
 		}
 	}
@@ -4904,15 +4924,15 @@ int Binary_DocumentTableReader::ReadDocumentContent(BYTE type, long length, void
 		{
 			CComment* pComment = m_oFileWriter.m_pComments->get(nId);
 			if (NULL != pComment && pComment->bIdFormat)
-				GetRunStringWriter().WriteString(pComment->writeRef(std::wstring(_T("")), std::wstring(_T("w:commentRangeEnd")), std::wstring(_T(""))));
+				GetCurrentStringWriter().WriteString(pComment->writeRef(std::wstring(_T("")), std::wstring(_T("w:commentRangeEnd")), std::wstring(_T(""))));
 		}
 	}
 	else if (c_oSerParType::Table == type)
 	{
 		m_byteLastElemType = c_oSerParType::Table;
-        m_oDocumentWriter.m_oContent.WriteString(std::wstring(_T("<w:tbl>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<w:tbl>")));
 		READ1_DEF(length, res, this->ReadDocTable, &m_oDocumentWriter.m_oContent);
-        m_oDocumentWriter.m_oContent.WriteString(std::wstring(_T("</w:tbl>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</w:tbl>")));
 	}
 	else if (c_oSerParType::Sdt == type)
 	{
@@ -4936,44 +4956,44 @@ int Binary_DocumentTableReader::ReadDocumentContent(BYTE type, long length, void
 	{
 		OOX::Logic::CBookmarkStart oBookmarkStart;
 		READ1_DEF(length, res, this->ReadBookmarkStart, &oBookmarkStart);
-		m_oDocumentWriter.m_oContent.WriteString(oBookmarkStart.toXML());
+		GetCurrentStringWriter().WriteString(oBookmarkStart.toXML());
 	}
 	else if ( c_oSerParType::BookmarkEnd == type )
 	{
 		OOX::Logic::CBookmarkEnd oBookmarkEnd;
 		READ1_DEF(length, res, this->ReadBookmarkEnd, &oBookmarkEnd);
-		m_oDocumentWriter.m_oContent.WriteString(oBookmarkEnd.toXML());
+		GetCurrentStringWriter().WriteString(oBookmarkEnd.toXML());
 	}
 	else if ( c_oSerParType::MoveFromRangeStart == type )
 	{
 		OOX::Logic::CMoveFromRangeStart oMoveFromRangeStart;
 		READ1_DEF(length, res, this->ReadMoveFromRangeStart, &oMoveFromRangeStart);
-		m_oDocumentWriter.m_oContent.WriteString(oMoveFromRangeStart.toXML());
+		GetCurrentStringWriter().WriteString(oMoveFromRangeStart.toXML());
 	}
 	else if ( c_oSerParType::MoveFromRangeEnd == type )
 	{
 		OOX::Logic::CMoveFromRangeEnd oMoveToRangeEnd;
 		READ1_DEF(length, res, this->ReadMoveFromRangeEnd, &oMoveToRangeEnd);
-		m_oDocumentWriter.m_oContent.WriteString(oMoveToRangeEnd.toXML());
+		GetCurrentStringWriter().WriteString(oMoveToRangeEnd.toXML());
 	}
 	else if ( c_oSerParType::MoveToRangeStart == type )
 	{
 		OOX::Logic::CMoveToRangeStart oMoveToRangeStart;
 		READ1_DEF(length, res, this->ReadMoveToRangeStart, &oMoveToRangeStart);
-		m_oDocumentWriter.m_oContent.WriteString(oMoveToRangeStart.toXML());
+		GetCurrentStringWriter().WriteString(oMoveToRangeStart.toXML());
 	}
 	else if ( c_oSerParType::MoveToRangeEnd == type )
 	{
 		OOX::Logic::CMoveToRangeEnd oMoveToRangeEnd;
 		READ1_DEF(length, res, this->ReadMoveToRangeEnd, &oMoveToRangeEnd);
-		m_oDocumentWriter.m_oContent.WriteString(oMoveToRangeEnd.toXML());
+		GetCurrentStringWriter().WriteString(oMoveToRangeEnd.toXML());
 	}
 	else if (c_oSerParType::DocParts == type)
 	{
-		m_oDocumentWriter.m_oContent.WriteString(L"<w:docParts>");
+		GetCurrentStringWriter().WriteString(L"<w:docParts>");
 		OOX::Logic::CDocParts oDocParts;
 		READ1_DEF(length, res, this->ReadDocParts, &oDocParts);
-		m_oDocumentWriter.m_oContent.WriteString(L"</w:docParts>");
+		GetCurrentStringWriter().WriteString(L"</w:docParts>");
 	}
 	else if (c_oSerParType::JsaProjectExternal == type)
 	{
@@ -5000,13 +5020,13 @@ int Binary_DocumentTableReader::ReadDocumentContent(BYTE type, long length, void
 	{
 		OOX::Logic::CPermStart oPerm;
 		READ1_DEF(length, res, this->ReadPermStart, &oPerm);
-		m_oDocumentWriter.m_oContent.WriteString(oPerm.toXML());
+		GetCurrentStringWriter().WriteString(oPerm.toXML());
 	}
 	else if (c_oSerParType::PermEnd == type)
 	{
 		OOX::Logic::CPermEnd oPerm;
 		READ1_DEF(length, res, this->ReadPermEnd, &oPerm);
-		m_oDocumentWriter.m_oContent.WriteString(oPerm.toXML());
+		GetCurrentStringWriter().WriteString(oPerm.toXML());
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -5019,10 +5039,10 @@ int Binary_DocumentTableReader::ReadDocParts(BYTE type, long length, void* poRes
 	
 	if (c_oSerGlossary::DocPart == type)
 	{
-		m_oDocumentWriter.m_oContent.WriteString(L"<w:docPart>");
+		GetCurrentStringWriter().WriteString(L"<w:docPart>");
 		pDocParts->m_arrItems.push_back(new OOX::Logic::CDocPart());
 		READ1_DEF(length, res, this->ReadDocPart, pDocParts->m_arrItems.back());
-		m_oDocumentWriter.m_oContent.WriteString(L"</w:docPart>");
+		GetCurrentStringWriter().WriteString(L"</w:docPart>");
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -5038,13 +5058,13 @@ int Binary_DocumentTableReader::ReadDocPart(BYTE type, long length, void* poResu
 		pDocPart->m_oDocPartPr = new OOX::Logic::CDocPartPr();
 		READ1_DEF(length, res, this->ReadDocPartPr, pDocPart->m_oDocPartPr.GetPointer());
 		
-		m_oDocumentWriter.m_oContent.WriteString(pDocPart->m_oDocPartPr->toXML());
+		GetCurrentStringWriter().WriteString(pDocPart->m_oDocPartPr->toXML());
 	}
 	else if (c_oSerGlossary::DocPartBody == type)
 	{
-		m_oDocumentWriter.m_oContent.WriteString(L"<w:docPartBody>");
+		GetCurrentStringWriter().WriteString(L"<w:docPartBody>");
 		READ1_DEF(length, res, this->ReadDocumentContent, this);
-		m_oDocumentWriter.m_oContent.WriteString(L"</w:docPartBody>");
+		GetCurrentStringWriter().WriteString(L"</w:docPartBody>");
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -5146,12 +5166,24 @@ int Binary_DocumentTableReader::ReadParagraph(BYTE type, long length, void* poRe
 		if (m_oCur_pPr.IsNoEmpty())
 		{
 			std::wstring sParaPr = m_oCur_pPr.toXML();
-			m_oDocumentWriter.m_oContent.WriteString(sParaPr);
+			GetCurrentStringWriter().WriteString(sParaPr);
 		}
 	}
 	else if ( c_oSerParType::Content == type )
 	{
 		READ1_DEF(length, res, this->ReadParagraphContent, NULL);
+	}
+	else if (c_oSerParType::ParaID == type)
+	{
+		m_oParaId.Init();
+		_INT64 res = m_oBufferedStream.GetLong64();
+		m_oParaId->SetValue(res);
+	}
+	else if (c_oSerParType::TextID == type)
+	{
+		m_oTextId.Init();
+		_INT64 res = m_oBufferedStream.GetLong64();
+		m_oTextId->SetValue(res);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -5163,9 +5195,9 @@ int Binary_DocumentTableReader::ReadParagraphContent(BYTE type, long length, voi
 	if ( c_oSerParType::Run == type )
 	{
 		m_oCur_rPr.Clear();
-        GetRunStringWriter().WriteString(std::wstring(_T("<w:r>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<w:r>")));
 		READ1_DEF(length, res, this->ReadRun, NULL);
-        GetRunStringWriter().WriteString(std::wstring(_T("</w:r>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</w:r>")));
 	}
 	else if ( c_oSerParType::CommentStart == type )
 	{
@@ -5178,7 +5210,7 @@ int Binary_DocumentTableReader::ReadParagraphContent(BYTE type, long length, voi
 			{
 				int nNewId = m_oFileWriter.m_pComments->getNextId(pComment->getCount());
 				pComment->setFormatStart(nNewId);
-                GetRunStringWriter().WriteString(pComment->writeRef(std::wstring(_T("")), std::wstring(_T("w:commentRangeStart")), std::wstring(_T(""))));
+                GetCurrentStringWriter().WriteString(pComment->writeRef(std::wstring(_T("")), std::wstring(_T("w:commentRangeStart")), std::wstring(_T(""))));
 			}
 		}
 	}
@@ -5190,86 +5222,86 @@ int Binary_DocumentTableReader::ReadParagraphContent(BYTE type, long length, voi
 		{
 			CComment* pComment = m_oFileWriter.m_pComments->get(nId);
 			if (NULL != pComment && pComment->bIdFormat)
-                GetRunStringWriter().WriteString(pComment->writeRef(std::wstring(_T("")), std::wstring(_T("w:commentRangeEnd")), std::wstring(_T(""))));
+                GetCurrentStringWriter().WriteString(pComment->writeRef(std::wstring(_T("")), std::wstring(_T("w:commentRangeEnd")), std::wstring(_T(""))));
 		}
 	}
 	else if ( c_oSerParType::OMathPara == type )
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:oMathPara>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:oMathPara>")));
 		READ1_DEF(length, res, this->ReadMathOMathPara, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:oMathPara>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:oMathPara>")));
 	}
 	else if ( c_oSerParType::OMath == type )
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:oMath>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:oMath>")));
 		READ1_DEF(length, res, this->ReadMathArg, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:oMath>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:oMath>")));
 	}
 	else if ( c_oSerParType::MRun == type )
 	{
-		GetRunStringWriter().WriteString(std::wstring(_T("<m:r>")));
+		GetCurrentStringWriter().WriteString(std::wstring(_T("<m:r>")));
 		READ1_DEF(length, res, this->ReadMathMRun, poResult);
-		GetRunStringWriter().WriteString(std::wstring(_T("</m:r>")));
+		GetCurrentStringWriter().WriteString(std::wstring(_T("</m:r>")));
 	}
 	else if ( c_oSerParType::Hyperlink == type )
 	{
 		CHyperlink oHyperlink;
 		READ1_DEF(length, res, this->ReadHyperlink, &oHyperlink);
-		oHyperlink.Write(GetRunStringWriter());
+		oHyperlink.Write(GetCurrentStringWriter());
 	}
 	else if ( c_oSerParType::FldSimple == type )
 	{
 		CFldSimple oFldSimple;
 		READ1_DEF(length, res, this->ReadFldSimple, &oFldSimple);
-		oFldSimple.Write(GetRunStringWriter());
+		oFldSimple.Write(GetCurrentStringWriter());
 	}
 	else if ( c_oSerParType::Ins == type )
 	{
 		TrackRevision oTrackRevision;
 		READ1_DEF(length, res, this->ReadDelIns, &oTrackRevision);
-		oTrackRevision.Write(&GetRunStringWriter(), _T("w:ins"));
+		oTrackRevision.Write(&GetCurrentStringWriter(), _T("w:ins"));
 	}
 	else if ( c_oSerParType::Del == type )
 	{
 		TrackRevision oTrackRevision;
 		READ1_DEF(length, res, this->ReadDelIns, &oTrackRevision);
-		oTrackRevision.Write(&GetRunStringWriter(), _T("w:del"));
+		oTrackRevision.Write(&GetCurrentStringWriter(), _T("w:del"));
 	}
 	else if ( c_oSerParType::MoveFrom == type )
 	{
 		TrackRevision oTrackRevision;
 		READ1_DEF(length, res, this->ReadDelIns, &oTrackRevision);
-		oTrackRevision.Write(&GetRunStringWriter(), _T("w:moveFrom"));
+		oTrackRevision.Write(&GetCurrentStringWriter(), _T("w:moveFrom"));
 	}
 	else if ( c_oSerParType::MoveTo == type )
 	{
 		TrackRevision oTrackRevision;
 		READ1_DEF(length, res, this->ReadDelIns, &oTrackRevision);
-		oTrackRevision.Write(&GetRunStringWriter(), _T("w:moveTo"));
+		oTrackRevision.Write(&GetCurrentStringWriter(), _T("w:moveTo"));
 	}
 	else if ( c_oSerParType::MoveFromRangeStart == type )
 	{
 		OOX::Logic::CMoveFromRangeStart oMoveFromRangeStart;
 		READ1_DEF(length, res, this->ReadMoveFromRangeStart, &oMoveFromRangeStart);
-		GetRunStringWriter().WriteString(oMoveFromRangeStart.toXML());
+		GetCurrentStringWriter().WriteString(oMoveFromRangeStart.toXML());
 	}
 	else if ( c_oSerParType::MoveFromRangeEnd == type )
 	{
 		OOX::Logic::CMoveFromRangeEnd oMoveToRangeEnd;
 		READ1_DEF(length, res, this->ReadMoveFromRangeEnd, &oMoveToRangeEnd);
-		GetRunStringWriter().WriteString(oMoveToRangeEnd.toXML());
+		GetCurrentStringWriter().WriteString(oMoveToRangeEnd.toXML());
 	}
 	else if ( c_oSerParType::MoveToRangeStart == type )
 	{
 		OOX::Logic::CMoveToRangeStart oMoveToRangeStart;
 		READ1_DEF(length, res, this->ReadMoveToRangeStart, &oMoveToRangeStart);
-		GetRunStringWriter().WriteString(oMoveToRangeStart.toXML());
+		GetCurrentStringWriter().WriteString(oMoveToRangeStart.toXML());
 	}
 	else if ( c_oSerParType::MoveToRangeEnd == type )
 	{
 		OOX::Logic::CMoveToRangeEnd oMoveToRangeEnd;
 		READ1_DEF(length, res, this->ReadMoveToRangeEnd, &oMoveToRangeEnd);
-		GetRunStringWriter().WriteString(oMoveToRangeEnd.toXML());
+		GetCurrentStringWriter().WriteString(oMoveToRangeEnd.toXML());
 	}
 	else if (c_oSerParType::Sdt == type)
 	{
@@ -5280,25 +5312,25 @@ int Binary_DocumentTableReader::ReadParagraphContent(BYTE type, long length, voi
 	{
 		OOX::Logic::CBookmarkStart oBookmarkStart;
 		READ1_DEF(length, res, this->ReadBookmarkStart, &oBookmarkStart);
-		GetRunStringWriter().WriteString(oBookmarkStart.toXML());
+		GetCurrentStringWriter().WriteString(oBookmarkStart.toXML());
 	}
 	else if ( c_oSerParType::BookmarkEnd == type )
 	{
 		OOX::Logic::CBookmarkEnd oBookmarkEnd;
 		READ1_DEF(length, res, this->ReadBookmarkEnd, &oBookmarkEnd);
-		GetRunStringWriter().WriteString(oBookmarkEnd.toXML());
+		GetCurrentStringWriter().WriteString(oBookmarkEnd.toXML());
 	}
 	else if (c_oSerParType::PermStart == type)
 	{
 		OOX::Logic::CPermStart oPerm;
 		READ1_DEF(length, res, this->ReadPermStart, &oPerm);
-		GetRunStringWriter().WriteString(oPerm.toXML());
+		GetCurrentStringWriter().WriteString(oPerm.toXML());
 	}
 	else if (c_oSerParType::PermEnd == type)
 	{
 		OOX::Logic::CPermEnd oPerm;
 		READ1_DEF(length, res, this->ReadPermEnd, &oPerm);
-		GetRunStringWriter().WriteString(oPerm.toXML());
+		GetCurrentStringWriter().WriteString(oPerm.toXML());
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -5873,207 +5905,207 @@ int Binary_DocumentTableReader::ReadMathArg(BYTE type, long length, void* poResu
 	int res = c_oSerConstants::ReadOk;
 	if ( c_oSer_OMathContentType::Acc == type )
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:acc>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:acc>")));
 		READ1_DEF(length, res, this->ReadMathAcc, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:acc>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:acc>")));
 	}
 	else if ( c_oSer_OMathContentType::ArgPr == type )
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:argPr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:argPr>")));
 		READ1_DEF(length, res, this->ReadMathArgPr, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:argPr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:argPr>")));
 	}
 	else if ( c_oSer_OMathContentType::Bar == type )
 	{			
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:bar>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:bar>")));
 		READ1_DEF(length, res, this->ReadMathBar, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:bar>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:bar>")));
 	}
 	else if ( c_oSer_OMathContentType::BorderBox == type )
 	{			
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:borderBox>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:borderBox>")));
 		READ1_DEF(length, res, this->ReadMathBorderBox, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:borderBox>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:borderBox>")));
 	}
 	else if ( c_oSer_OMathContentType::Box == type )
 	{			
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:box>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:box>")));
 		READ1_DEF(length, res, this->ReadMathBox, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:box>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:box>")));
 	}
 	else if ( c_oSer_OMathContentType::CtrlPr == type )
 	{			
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:ctrlPr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:ctrlPr>")));
 		READ1_DEF(length, res, this->ReadMathCtrlPr, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:ctrlPr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:ctrlPr>")));
 	}
 	else if ( c_oSer_OMathContentType::Delimiter == type )
 	{	
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:d>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:d>")));
 		READ1_DEF(length, res, this->ReadMathDelimiter, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:d>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:d>")));
 	}
 	else if ( c_oSer_OMathContentType::Del == type )
 	{
 		TrackRevision oTrackRevision;
 		READ1_DEF(length, res, this->ReadDelIns, &oTrackRevision);
-		oTrackRevision.Write(&GetRunStringWriter(), _T("w:del"));
+		oTrackRevision.Write(&GetCurrentStringWriter(), _T("w:del"));
 	}
 	else if ( c_oSer_OMathContentType::EqArr == type )
 	{			
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:eqArr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:eqArr>")));
 		READ1_DEF(length, res, this->ReadMathEqArr, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:eqArr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:eqArr>")));
 	}
 	else if ( c_oSer_OMathContentType::Fraction == type )
 	{			
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:f>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:f>")));
 		READ1_DEF(length, res, this->ReadMathFraction, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:f>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:f>")));
 	}
 	else if ( c_oSer_OMathContentType::Func == type )
 	{			
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:func>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:func>")));
 		READ1_DEF(length, res, this->ReadMathFunc, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:func>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:func>")));
 	}
 	else if ( c_oSer_OMathContentType::GroupChr == type )
 	{			
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:groupChr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:groupChr>")));
 		READ1_DEF(length, res, this->ReadMathGroupChr, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:groupChr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:groupChr>")));
 	}
 	else if ( c_oSer_OMathContentType::Ins == type )
 	{
 		TrackRevision oTrackRevision;
 		READ1_DEF(length, res, this->ReadDelIns, &oTrackRevision);
-		oTrackRevision.Write(&GetRunStringWriter(), _T("w:ins"));
+		oTrackRevision.Write(&GetCurrentStringWriter(), _T("w:ins"));
 	}
 	else if ( c_oSer_OMathContentType::LimLow == type )
 	{			
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:limLow>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:limLow>")));
 		READ1_DEF(length, res, this->ReadMathLimLow, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:limLow>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:limLow>")));
 	}
 	else if ( c_oSer_OMathContentType::LimUpp == type )
 	{			
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:limUpp>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:limUpp>")));
 		READ1_DEF(length, res, this->ReadMathLimUpp, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:limUpp>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:limUpp>")));
 	}
 	else if ( c_oSer_OMathContentType::Matrix == type )
 	{			
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:m>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:m>")));
 		READ1_DEF(length, res, this->ReadMathMatrix, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:m>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:m>")));
 	}
 	else if ( c_oSer_OMathContentType::Nary == type )
 	{			
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:nary>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:nary>")));
 		READ1_DEF(length, res, this->ReadMathNary, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:nary>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:nary>")));
 	}
 	else if ( c_oSer_OMathContentType::OMath == type )
 	{			
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:oMath>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:oMath>")));
 		READ1_DEF(length, res, this->ReadMathArg, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:oMath>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:oMath>")));
 	}
 	else if ( c_oSer_OMathContentType::OMathPara == type )
 	{			
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:oMathPara>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:oMathPara>")));
 		READ1_DEF(length, res, this->ReadMathOMathPara, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:oMathPara>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:oMathPara>")));
 	}
 	else if ( c_oSer_OMathContentType::Phant == type )
 	{			
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:phant>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:phant>")));
 		READ1_DEF(length, res, this->ReadMathPhant, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:phant>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:phant>")));
 	}
 	else if ( c_oSer_OMathContentType::MRun == type )
 	{			
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:r>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:r>")));
 		READ1_DEF(length, res, this->ReadMathMRun, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:r>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:r>")));
 	}
 	else if ( c_oSer_OMathContentType::Rad == type )
 	{			
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:rad>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:rad>")));
 		READ1_DEF(length, res, this->ReadMathRad, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:rad>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:rad>")));
 	}
 	else if ( c_oSer_OMathContentType::SPre == type )
 	{			
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:sPre>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:sPre>")));
 		READ1_DEF(length, res, this->ReadMathSPre, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:sPre>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:sPre>")));
 	}
 	else if ( c_oSer_OMathContentType::SSub == type )
 	{			
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:sSub>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:sSub>")));
 		READ1_DEF(length, res, this->ReadMathSSub, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:sSub>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:sSub>")));
 	}
 	else if ( c_oSer_OMathContentType::SSubSup == type )
 	{			
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:sSubSup>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:sSubSup>")));
 		READ1_DEF(length, res, this->ReadMathSSubSup, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:sSubSup>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:sSubSup>")));
 	}
 	else if ( c_oSer_OMathContentType::SSup == type )
 	{			
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:sSup>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:sSup>")));
 		READ1_DEF(length, res, this->ReadMathSSup, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:sSup>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:sSup>")));
 	}
 	else if ( c_oSer_OMathContentType::BookmarkStart == type )
 	{
 		OOX::Logic::CBookmarkStart oBookmarkStart;
 		READ1_DEF(length, res, this->ReadBookmarkStart, &oBookmarkStart);
-		GetRunStringWriter().WriteString(oBookmarkStart.toXML());
+		GetCurrentStringWriter().WriteString(oBookmarkStart.toXML());
 	}
 	else if ( c_oSer_OMathContentType::BookmarkEnd == type )
 	{
 		OOX::Logic::CBookmarkEnd oBookmarkEnd;
 		READ1_DEF(length, res, this->ReadBookmarkEnd, &oBookmarkEnd);
-		GetRunStringWriter().WriteString(oBookmarkEnd.toXML());
+		GetCurrentStringWriter().WriteString(oBookmarkEnd.toXML());
 	}
 	else if ( c_oSer_OMathContentType::MoveFromRangeStart == type )
 	{
 		OOX::Logic::CMoveFromRangeStart oMoveFromRangeStart;
 		READ1_DEF(length, res, this->ReadMoveFromRangeStart, &oMoveFromRangeStart);
-		GetRunStringWriter().WriteString(oMoveFromRangeStart.toXML());
+		GetCurrentStringWriter().WriteString(oMoveFromRangeStart.toXML());
 	}
 	else if ( c_oSer_OMathContentType::MoveFromRangeEnd == type )
 	{
 		OOX::Logic::CMoveFromRangeEnd oMoveToRangeEnd;
 		READ1_DEF(length, res, this->ReadMoveFromRangeEnd, &oMoveToRangeEnd);
-		GetRunStringWriter().WriteString(oMoveToRangeEnd.toXML());
+		GetCurrentStringWriter().WriteString(oMoveToRangeEnd.toXML());
 	}
 	else if ( c_oSer_OMathContentType::MoveToRangeStart == type )
 	{
 		OOX::Logic::CMoveToRangeStart oMoveToRangeStart;
 		READ1_DEF(length, res, this->ReadMoveToRangeStart, &oMoveToRangeStart);
-		GetRunStringWriter().WriteString(oMoveToRangeStart.toXML());
+		GetCurrentStringWriter().WriteString(oMoveToRangeStart.toXML());
 	}
 	else if ( c_oSer_OMathContentType::MoveToRangeEnd == type )
 	{
 		OOX::Logic::CMoveToRangeEnd oMoveToRangeEnd;
 		READ1_DEF(length, res, this->ReadMoveToRangeEnd, &oMoveToRangeEnd);
-		GetRunStringWriter().WriteString(oMoveToRangeEnd.toXML());
+		GetCurrentStringWriter().WriteString(oMoveToRangeEnd.toXML());
 	}	
 	else if (c_oSer_OMathContentType::PermStart == type)
 	{
 		OOX::Logic::CPermStart oPerm;
 		READ1_DEF(length, res, this->ReadPermStart, &oPerm);
-		GetRunStringWriter().WriteString(oPerm.toXML());
+		GetCurrentStringWriter().WriteString(oPerm.toXML());
 	}
 	else if (c_oSer_OMathContentType::PermEnd == type)
 	{
 		OOX::Logic::CPermEnd oPerm;
 		READ1_DEF(length, res, this->ReadPermEnd, &oPerm);
-		GetRunStringWriter().WriteString(oPerm.toXML());
+		GetCurrentStringWriter().WriteString(oPerm.toXML());
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -6085,15 +6117,15 @@ int Binary_DocumentTableReader::ReadMathAcc(BYTE type, long length, void* poResu
 	int res = c_oSerConstants::ReadOk;
 	if ( c_oSer_OMathContentType::AccPr == type )
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:accPr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:accPr>")));
 		READ1_DEF(length, res, this->ReadMathAccPr, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:accPr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:accPr>")));
 	}
 	else if ( c_oSer_OMathContentType::Element == type )
 	{			
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:e>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:e>")));
 		READ1_DEF(length, res, this->ReadMathArg, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:e>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:e>")));
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -6109,9 +6141,9 @@ int Binary_DocumentTableReader::ReadMathAccPr(BYTE type, long length, void* poRe
 	}
 	else if ( c_oSer_OMathBottomNodesType::CtrlPr == type )
 	{			
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:ctrlPr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:ctrlPr>")));
 		READ1_DEF(length, res, this->ReadMathCtrlPr, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:ctrlPr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:ctrlPr>")));
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -6128,7 +6160,7 @@ int Binary_DocumentTableReader::ReadMathAln(BYTE type, long length, void* poResu
 			sVal += _T(" m:val=\"on\" />");
 		else
 			sVal += _T(" m:val=\"off\" />");
-		GetRunStringWriter().WriteString(sVal);
+		GetCurrentStringWriter().WriteString(sVal);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -6145,7 +6177,7 @@ int Binary_DocumentTableReader::ReadMathAlnScr(BYTE type, long length, void* poR
 			sVal += _T(" m:val=\"on\" />");
 		else
 			sVal += _T(" m:val=\"off\" />");
-		GetRunStringWriter().WriteString(sVal);
+		GetCurrentStringWriter().WriteString(sVal);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -6175,7 +6207,7 @@ int Binary_DocumentTableReader::ReadMathArgSz(BYTE type, long length, void* poRe
             sVal += L" m:val=\"" + std::to_wstring(lVal) + L"\"";
 		}
         sVal += (_T(" />"));
-		GetRunStringWriter().WriteString(sVal);
+		GetCurrentStringWriter().WriteString(sVal);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -6186,15 +6218,15 @@ int Binary_DocumentTableReader::ReadMathBar(BYTE type, long length, void* poResu
 	int res = c_oSerConstants::ReadOk;
 	if ( c_oSer_OMathContentType::BarPr == type )
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:barPr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:barPr>")));
 		READ1_DEF(length, res, this->ReadMathBarPr, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:barPr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:barPr>")));
 	}
 	else if ( c_oSer_OMathContentType::Element == type )
 	{			
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:e>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:e>")));
 		READ1_DEF(length, res, this->ReadMathArg, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:e>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:e>")));
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -6205,9 +6237,9 @@ int Binary_DocumentTableReader::ReadMathBarPr(BYTE type, long length, void* poRe
 	int res = c_oSerConstants::ReadOk;
 	if ( c_oSer_OMathBottomNodesType::CtrlPr == type )
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:ctrlPr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:ctrlPr>")));
 		READ1_DEF(length, res, this->ReadMathCtrlPr, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:ctrlPr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:ctrlPr>")));
 	}
 	else if ( c_oSer_OMathBottomNodesType::Pos == type )
 	{		
@@ -6234,7 +6266,7 @@ int Binary_DocumentTableReader::ReadMathBaseJc(BYTE type, long length, void* poR
 			case 4: sBaseJc = _T("outside");break;
             case 5: sBaseJc = _T("top");    break;
 		}			
-        GetRunStringWriter().WriteString(L"<m:baseJc m:val=\"" + sBaseJc + L"\"/>");
+        GetCurrentStringWriter().WriteString(L"<m:baseJc m:val=\"" + sBaseJc + L"\"/>");
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -6251,7 +6283,7 @@ int Binary_DocumentTableReader::ReadMathBegChr(BYTE type, long length, void* poR
             sVal += (sChr);
             sVal += (_T("\" />"));
 
-			GetRunStringWriter().WriteString(sVal);
+			GetCurrentStringWriter().WriteString(sVal);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -6262,15 +6294,15 @@ int Binary_DocumentTableReader::ReadMathBorderBox(BYTE type, long length, void* 
 	int res = c_oSerConstants::ReadOk;
 	if ( c_oSer_OMathContentType::BorderBoxPr == type )
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:borderBoxPr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:borderBoxPr>")));
 		READ1_DEF(length, res, this->ReadMathBorderBoxPr, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:borderBoxPr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:borderBoxPr>")));
 	}
 	else if ( c_oSer_OMathContentType::Element == type )
 	{		
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:e>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:e>")));
 		READ1_DEF(length, res, this->ReadMathArg, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:e>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:e>")));
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -6281,9 +6313,9 @@ int Binary_DocumentTableReader::ReadMathBorderBoxPr(BYTE type, long length, void
 	int res = c_oSerConstants::ReadOk;
 	if ( c_oSer_OMathBottomNodesType::CtrlPr == type )
 	{			
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:ctrlPr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:ctrlPr>")));
 		READ1_DEF(length, res, this->ReadMathCtrlPr, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:ctrlPr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:ctrlPr>")));
 	}
 	else if ( c_oSer_OMathBottomNodesType::HideBot == type )
 	{
@@ -6326,15 +6358,15 @@ int Binary_DocumentTableReader::ReadMathBox(BYTE type, long length, void* poResu
 	int res = c_oSerConstants::ReadOk;
 	if ( c_oSer_OMathContentType::BoxPr == type )
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:boxPr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:boxPr>")));
 		READ1_DEF(length, res, this->ReadMathBoxPr, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:boxPr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:boxPr>")));
 	}
 	else if ( c_oSer_OMathContentType::Element == type )
 	{		
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:e>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:e>")));
 		READ1_DEF(length, res, this->ReadMathArg, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:e>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:e>")));
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -6353,9 +6385,9 @@ int Binary_DocumentTableReader::ReadMathBoxPr(BYTE type, long length, void* poRe
 	}
 	else if ( c_oSer_OMathBottomNodesType::CtrlPr == type )
 	{		
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:ctrlPr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:ctrlPr>")));
 		READ1_DEF(length, res, this->ReadMathCtrlPr, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:ctrlPr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:ctrlPr>")));
 	}
 	else if ( c_oSer_OMathBottomNodesType::Diff == type )
 	{		
@@ -6386,13 +6418,13 @@ int Binary_DocumentTableReader::ReadMathBrk(BYTE type, long length, void* poResu
             sVal += L" m:alnAt=\"" + std::to_wstring(lVal)+ L"\"";
 		}
         sVal += (_T(" />"));
-		GetRunStringWriter().WriteString(sVal);
+		GetCurrentStringWriter().WriteString(sVal);
 	}
 	else if ( c_oSer_OMathBottomNodesValType::Val == type )
 	{
         bool bVal = m_oBufferedStream.GetBool();
         std::wstring sVal(_T("<m:brk/>"));
-			GetRunStringWriter().WriteString(sVal);
+			GetCurrentStringWriter().WriteString(sVal);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -6411,7 +6443,7 @@ int Binary_DocumentTableReader::ReadMathCGp(BYTE type, long length, void* poResu
             sVal += L" m:val=\"" + std::to_wstring(lVal) + L"\"";
 		}
         sVal += (_T("/>"));
-        GetRunStringWriter().WriteString(sVal);
+        GetCurrentStringWriter().WriteString(sVal);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -6431,7 +6463,7 @@ int Binary_DocumentTableReader::ReadMathCGpRule(BYTE type, long length, void* po
             sVal += L" m:val=\"" + std::to_wstring(lVal)+ L"\"";
 		}
         sVal += (_T(" />"));
-		GetRunStringWriter().WriteString(sVal);
+		GetCurrentStringWriter().WriteString(sVal);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -6448,7 +6480,7 @@ int Binary_DocumentTableReader::ReadMathChr(BYTE type, long length, void* poResu
             sVal += (_T("<m:chr m:val=\""));
             sVal += (sChr);
             sVal += (_T("\" />"));
-			GetRunStringWriter().WriteString(sVal);
+			GetCurrentStringWriter().WriteString(sVal);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -6467,7 +6499,7 @@ int Binary_DocumentTableReader::ReadMathCount(BYTE type, long length, void* poRe
             sVal += L" m:val=\"" + std::to_wstring(lVal) + L"\"";
 		}
         sVal += (_T(" />"));
-		GetRunStringWriter().WriteString(sVal);
+		GetCurrentStringWriter().WriteString(sVal);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -6486,7 +6518,7 @@ int Binary_DocumentTableReader::ReadMathCSp(BYTE type, long length, void* poResu
             sVal += L" m:val=\"" + std::to_wstring(lVal)+ L"\"";
 		}
         sVal += (_T(" />"));
-		GetRunStringWriter().WriteString(sVal);
+		GetCurrentStringWriter().WriteString(sVal);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -6501,7 +6533,7 @@ int Binary_DocumentTableReader::ReadMathCtrlPr(BYTE type, long length, void* poR
 		res = oBinary_rPrReader.Read(length, &m_oMath_rPr);
 		
 		if (m_oMath_rPr.IsNoEmpty())		
-			GetRunStringWriter().WriteString(m_oMath_rPr.toXML());
+			GetCurrentStringWriter().WriteString(m_oMath_rPr.toXML());
 	}
 	else if ( c_oSerRunType::arPr == type )
 	{
@@ -6512,21 +6544,21 @@ int Binary_DocumentTableReader::ReadMathCtrlPr(BYTE type, long length, void* poR
 		//todo use one writer
 		NSBinPptxRW::CXmlWriter oWriter;
 		rPr.toXmlWriter(&oWriter);
-		GetRunStringWriter().WriteString(oWriter.GetXmlString());
+		GetCurrentStringWriter().WriteString(oWriter.GetXmlString());
 	}
 	else if ( c_oSerRunType::del == type )
 	{
 		ComplexTypes::Word::CTrackChange del;
 		
 		READ1_DEF(length, res, this->ReadMathCtrlPrDelIns, &del);
-		GetRunStringWriter().WriteString(del.ValNode(L"w:del"));
+		GetCurrentStringWriter().WriteString(del.ValNode(L"w:del"));
 	}
 	else if ( c_oSerRunType::ins == type )
 	{
 		ComplexTypes::Word::CTrackChange ins;
 
 		READ1_DEF(length, res, this->ReadMathCtrlPrDelIns, &ins);
-		GetRunStringWriter().WriteString(ins.ValNode(L"w:ins"));
+		GetCurrentStringWriter().WriteString(ins.ValNode(L"w:ins"));
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -6548,15 +6580,15 @@ int Binary_DocumentTableReader::ReadMathDelimiter(BYTE type, long length, void* 
 	int res = c_oSerConstants::ReadOk;
 	if ( c_oSer_OMathContentType::DelimiterPr == type )
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:dPr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:dPr>")));
 		READ1_DEF(length, res, this->ReadMathDelimiterPr, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:dPr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:dPr>")));
 	}
 	else if ( c_oSer_OMathContentType::Element == type )
 	{		
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:e>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:e>")));
 		READ1_DEF(length, res, this->ReadMathArg, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:e>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:e>")));
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -6574,7 +6606,7 @@ int Binary_DocumentTableReader::ReadMathDegHide(BYTE type, long length, void* po
 			sVal += _T(" m:val=\"on\" />");
 		else
 			sVal += _T(" m:val=\"off\" />");
-		GetRunStringWriter().WriteString(sVal);
+		GetCurrentStringWriter().WriteString(sVal);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -6591,7 +6623,7 @@ int Binary_DocumentTableReader::ReadMathDiff(BYTE type, long length, void* poRes
 			sVal += _T(" m:val=\"on\" />");
 		else
 			sVal += _T(" m:val=\"off\" />");
-		GetRunStringWriter().WriteString(sVal);
+		GetCurrentStringWriter().WriteString(sVal);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -6610,9 +6642,9 @@ int Binary_DocumentTableReader::ReadMathDelimiterPr(BYTE type, long length, void
 	}
 	else if ( c_oSer_OMathBottomNodesType::CtrlPr == type )
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:ctrlPr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:ctrlPr>")));
 		READ1_DEF(length, res, this->ReadMathCtrlPr, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:ctrlPr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:ctrlPr>")));
 	}
 	else if ( c_oSer_OMathBottomNodesType::EndChr == type )
 	{
@@ -6644,7 +6676,7 @@ int Binary_DocumentTableReader::ReadMathEndChr(BYTE type, long length, void* poR
             sVal += (_T("<m:endChr m:val=\""));
             sVal += (sChr);
             sVal += (_T("\" />"));
-			GetRunStringWriter().WriteString(sVal);
+			GetCurrentStringWriter().WriteString(sVal);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -6655,15 +6687,15 @@ int Binary_DocumentTableReader::ReadMathEqArr(BYTE type, long length, void* poRe
 	int res = c_oSerConstants::ReadOk;
 	if ( c_oSer_OMathContentType::Element == type )
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:e>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:e>")));
 		READ1_DEF(length, res, this->ReadMathArg, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:e>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:e>")));
 	}
 	else if ( c_oSer_OMathContentType::EqArrPr == type )
 	{
-		GetRunStringWriter().WriteString(std::wstring(_T("<m:eqArrPr>")));
+		GetCurrentStringWriter().WriteString(std::wstring(_T("<m:eqArrPr>")));
 		READ1_DEF(length, res, this->ReadMathEqArrPr, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:eqArrPr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:eqArrPr>")));
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -6682,9 +6714,9 @@ int Binary_DocumentTableReader::ReadMathEqArrPr(BYTE type, long length, void* po
 	}
 	else if ( c_oSer_OMathBottomNodesType::CtrlPr == type )
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:ctrlPr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:ctrlPr>")));
 		READ1_DEF(length, res, this->ReadMathCtrlPr, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:ctrlPr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:ctrlPr>")));
 	}
 	else if ( c_oSer_OMathBottomNodesType::MaxDist == type )
 	{
@@ -6711,21 +6743,21 @@ int Binary_DocumentTableReader::ReadMathFraction(BYTE type, long length, void* p
 	int res = c_oSerConstants::ReadOk;
 	if ( c_oSer_OMathContentType::Den == type )
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:den>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:den>")));
 		READ1_DEF(length, res, this->ReadMathArg, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:den>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:den>")));
 	}
 	else if ( c_oSer_OMathContentType::FPr == type )
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:fPr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:fPr>")));
 		READ1_DEF(length, res, this->ReadMathFPr, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:fPr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:fPr>")));
 	}
 	else if ( c_oSer_OMathContentType::Num == type )
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:num>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:num>")));
 		READ1_DEF(length, res, this->ReadMathArg, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:num>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:num>")));
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -6736,9 +6768,9 @@ int Binary_DocumentTableReader::ReadMathFPr(BYTE type, long length, void* poResu
 	int res = c_oSerConstants::ReadOk;
 	if ( c_oSer_OMathBottomNodesType::CtrlPr == type )
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:ctrlPr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:ctrlPr>")));
 		READ1_DEF(length, res, this->ReadMathCtrlPr, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:ctrlPr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:ctrlPr>")));
 	}
 	else if ( c_oSer_OMathBottomNodesType::Type == type )
 	{
@@ -6753,21 +6785,21 @@ int Binary_DocumentTableReader::ReadMathFunc(BYTE type, long length, void* poRes
 	int res = c_oSerConstants::ReadOk;
 	if ( c_oSer_OMathContentType::Element == type )
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:e>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:e>")));
 		READ1_DEF(length, res, this->ReadMathArg, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:e>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:e>")));
 	}
 	else if ( c_oSer_OMathContentType::FName == type )
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:fName>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:fName>")));
 		READ1_DEF(length, res, this->ReadMathArg, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:fName>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:fName>")));
 	}
 	else if ( c_oSer_OMathContentType::FuncPr == type )
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:funcPr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:funcPr>")));
 		READ1_DEF(length, res, this->ReadMathFuncPr, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:funcPr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:funcPr>")));
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -6778,9 +6810,9 @@ int Binary_DocumentTableReader::ReadMathFuncPr(BYTE type, long length, void* poR
 	int res = c_oSerConstants::ReadOk;
 	if ( c_oSer_OMathBottomNodesType::CtrlPr == type )
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:ctrlPr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:ctrlPr>")));
 		READ1_DEF(length, res, this->ReadMathCtrlPr, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:ctrlPr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:ctrlPr>")));
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -6791,15 +6823,15 @@ int Binary_DocumentTableReader::ReadMathGroupChr(BYTE type, long length, void* p
 	int res = c_oSerConstants::ReadOk;
 	if ( c_oSer_OMathContentType::Element == type )
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:e>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:e>")));
 		READ1_DEF(length, res, this->ReadMathArg, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:e>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:e>")));
 	}
 	else if ( c_oSer_OMathContentType::GroupChrPr == type )
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:groupChrPr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:groupChrPr>")));
 		READ1_DEF(length, res, this->ReadMathGroupChrPr, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:groupChrPr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:groupChrPr>")));
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -6814,9 +6846,9 @@ int Binary_DocumentTableReader::ReadMathGroupChrPr(BYTE type, long length, void*
 	}
 	else if ( c_oSer_OMathBottomNodesType::CtrlPr == type )
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:ctrlPr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:ctrlPr>")));
 		READ1_DEF(length, res, this->ReadMathCtrlPr, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:ctrlPr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:ctrlPr>")));
 	}
 	else if ( c_oSer_OMathBottomNodesType::Pos == type )
 	{
@@ -6842,7 +6874,7 @@ int Binary_DocumentTableReader::ReadMathGrow(BYTE type, long length, void* poRes
 		else
 			sVal += _T(" m:val=\"on\" />");
 
-		GetRunStringWriter().WriteString(sVal);
+		GetCurrentStringWriter().WriteString(sVal);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -6859,7 +6891,7 @@ int Binary_DocumentTableReader::ReadMathHideBot(BYTE type, long length, void* po
 			sVal += _T(" m:val=\"on\" />");
 		else
 			sVal += _T(" m:val=\"off\" />");
-		GetRunStringWriter().WriteString(sVal);
+		GetCurrentStringWriter().WriteString(sVal);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -6876,7 +6908,7 @@ int Binary_DocumentTableReader::ReadMathHideLeft(BYTE type, long length, void* p
 			sVal += _T(" m:val=\"on\" />");
 		else
 			sVal += _T(" m:val=\"off\" />");
-		GetRunStringWriter().WriteString(sVal);
+		GetCurrentStringWriter().WriteString(sVal);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -6893,7 +6925,7 @@ int Binary_DocumentTableReader::ReadMathHideRight(BYTE type, long length, void* 
 			sVal += _T(" m:val=\"on\" />");
 		else
 			sVal += _T(" m:val=\"off\" />");
-		GetRunStringWriter().WriteString(sVal);
+		GetCurrentStringWriter().WriteString(sVal);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -6910,7 +6942,7 @@ int Binary_DocumentTableReader::ReadMathHideTop(BYTE type, long length, void* po
 			sVal += _T(" m:val=\"on\" />");
 		else
 			sVal += _T(" m:val=\"off\" />");
-		GetRunStringWriter().WriteString(sVal);
+		GetCurrentStringWriter().WriteString(sVal);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -6931,7 +6963,7 @@ int Binary_DocumentTableReader::ReadMathMJc(BYTE type, long length, void* poResu
 			case 2:	sJc = _T("left");break;
 			case 3:	sJc = _T("right");break;
 		}			
-        GetRunStringWriter().WriteString(L"<m:jc m:val=\"" + sJc + L"\"/>");
+        GetCurrentStringWriter().WriteString(L"<m:jc m:val=\"" + sJc + L"\"/>");
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -6950,7 +6982,7 @@ int Binary_DocumentTableReader::ReadMathLimLoc(BYTE type, long length, void* poR
 			case 0: sLimLoc = _T("subSup");break;
 			case 1: sLimLoc = _T("undOvr");break;
 		}		
-        GetRunStringWriter().WriteString(L"<m:limLoc m:val=\"" + sLimLoc + L"\"/>");
+        GetCurrentStringWriter().WriteString(L"<m:limLoc m:val=\"" + sLimLoc + L"\"/>");
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -6962,21 +6994,21 @@ int Binary_DocumentTableReader::ReadMathLimLow(BYTE type, long length, void* poR
 	int res = c_oSerConstants::ReadOk;
 	if ( c_oSer_OMathContentType::Element == type )
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:e>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:e>")));
 		READ1_DEF(length, res, this->ReadMathArg, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:e>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:e>")));
 	}
 	else if ( c_oSer_OMathContentType::Lim == type )
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:lim>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:lim>")));
 		READ1_DEF(length, res, this->ReadMathArg, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:lim>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:lim>")));
 	}
 	else if ( c_oSer_OMathContentType::LimLowPr == type )
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:limLowPr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:limLowPr>")));
 		READ1_DEF(length, res, this->ReadMathLimLowPr, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:limLowPr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:limLowPr>")));
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -6987,9 +7019,9 @@ int Binary_DocumentTableReader::ReadMathLimLowPr(BYTE type, long length, void* p
 	int res = c_oSerConstants::ReadOk;
 	if ( c_oSer_OMathBottomNodesType::CtrlPr == type )
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:ctrlPr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:ctrlPr>")));
 		READ1_DEF(length, res, this->ReadMathCtrlPr, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:ctrlPr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:ctrlPr>")));
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -7000,21 +7032,21 @@ int Binary_DocumentTableReader::ReadMathLimUpp(BYTE type, long length, void* poR
 	int res = c_oSerConstants::ReadOk;
 	if ( c_oSer_OMathContentType::Element == type )
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:e>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:e>")));
 		READ1_DEF(length, res, this->ReadMathArg, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:e>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:e>")));
 	}
 	else if ( c_oSer_OMathContentType::Lim == type )
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:lim>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:lim>")));
 		READ1_DEF(length, res, this->ReadMathArg, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:lim>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:lim>")));
 	}
 	else if ( c_oSer_OMathContentType::LimUppPr == type )
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:limUppPr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:limUppPr>")));
 		READ1_DEF(length, res, this->ReadMathLimUppPr, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:limUppPr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:limUppPr>")));
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -7025,9 +7057,9 @@ int Binary_DocumentTableReader::ReadMathLimUppPr(BYTE type, long length, void* p
 	int res = c_oSerConstants::ReadOk;
 	if ( c_oSer_OMathBottomNodesType::CtrlPr == type )
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:ctrlPr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:ctrlPr>")));
 		READ1_DEF(length, res, this->ReadMathCtrlPr, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:ctrlPr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:ctrlPr>")));
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -7044,7 +7076,7 @@ int Binary_DocumentTableReader::ReadMathLit(BYTE type, long length, void* poResu
 			sVal += _T(" m:val=\"on\" />");
 		else
 			sVal += _T(" m:val=\"off\" />");
-		GetRunStringWriter().WriteString(sVal);
+		GetCurrentStringWriter().WriteString(sVal);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -7055,15 +7087,15 @@ int Binary_DocumentTableReader::ReadMathMatrix(BYTE type, long length, void* poR
 	int res = c_oSerConstants::ReadOk;
 	if ( c_oSer_OMathContentType::MPr == type )
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:mPr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:mPr>")));
 		READ1_DEF(length, res, this->ReadMathMPr, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:mPr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:mPr>")));
 	}
 	else if ( c_oSer_OMathContentType::Mr == type )
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:mr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:mr>")));
 		READ1_DEF(length, res, this->ReadMathMr, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:mr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:mr>")));
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -7080,7 +7112,7 @@ int Binary_DocumentTableReader::ReadMathMaxDist(BYTE type, long length, void* po
 			sVal += _T(" m:val=\"on\" />");
 		else
 			sVal += _T(" m:val=\"off\" />");
-		GetRunStringWriter().WriteString(sVal);
+		GetCurrentStringWriter().WriteString(sVal);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -7091,9 +7123,9 @@ int Binary_DocumentTableReader::ReadMathMc(BYTE type, long length, void* poResul
 	int res = c_oSerConstants::ReadOk;
 	if ( c_oSer_OMathContentType::McPr == type )
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:mcPr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:mcPr>")));
 		READ1_DEF(length, res, this->ReadMathMcPr, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:mcPr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:mcPr>")));
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -7115,7 +7147,7 @@ int Binary_DocumentTableReader::ReadMathMcJc(BYTE type, long length, void* poRes
             case 3: sMcJc = _T("outside");  break;
             case 4: sMcJc = _T("right");    break;
 		}			
-        GetRunStringWriter().WriteString(L"<m:mcJc m:val=\"" + sMcJc + L"\"/>");
+        GetCurrentStringWriter().WriteString(L"<m:mcJc m:val=\"" + sMcJc + L"\"/>");
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -7141,9 +7173,9 @@ int Binary_DocumentTableReader::ReadMathMcs(BYTE type, long length, void* poResu
 	int res = c_oSerConstants::ReadOk;
 	if ( c_oSer_OMathContentType::Mc == type )
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:mc>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:mc>")));
 		READ1_DEF(length, res, this->ReadMathMc, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:mc>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:mc>")));
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -7178,15 +7210,15 @@ int Binary_DocumentTableReader::ReadMathMPr(BYTE type, long length, void* poResu
 	}
 	else if ( c_oSer_OMathBottomNodesType::CtrlPr == type )
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:ctrlPr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:ctrlPr>")));
 		READ1_DEF(length, res, this->ReadMathCtrlPr, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:ctrlPr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:ctrlPr>")));
 	}
 	else if ( c_oSer_OMathBottomNodesType::Mcs == type )
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:mcs>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:mcs>")));
 		READ1_DEF(length, res, this->ReadMathMcs, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:mcs>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:mcs>")));
 	}
 	else if ( c_oSer_OMathBottomNodesType::PlcHide == type )
 	{
@@ -7209,9 +7241,9 @@ int Binary_DocumentTableReader::ReadMathMr(BYTE type, long length, void* poResul
 	int res = c_oSerConstants::ReadOk;
 	if ( c_oSer_OMathContentType::Element == type )
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:e>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:e>")));
 		READ1_DEF(length, res, this->ReadMathArg, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:e>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:e>")));
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -7222,27 +7254,27 @@ int Binary_DocumentTableReader::ReadMathNary(BYTE type, long length, void* poRes
 	int res = c_oSerConstants::ReadOk;
 	if ( c_oSer_OMathContentType::Element == type )
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:e>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:e>")));
 		READ1_DEF(length, res, this->ReadMathArg, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:e>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:e>")));
 	}
 	else if ( c_oSer_OMathContentType::NaryPr == type )
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:naryPr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:naryPr>")));
 		READ1_DEF(length, res, this->ReadMathNaryPr, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:naryPr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:naryPr>")));
 	}
 	else if ( c_oSer_OMathContentType::Sub == type )
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:sub>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:sub>")));
 		READ1_DEF(length, res, this->ReadMathArg, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:sub>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:sub>")));
 	}
 	else if ( c_oSer_OMathContentType::Sup == type )
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:sup>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:sup>")));
 		READ1_DEF(length, res, this->ReadMathArg, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:sup>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:sup>")));
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -7257,9 +7289,9 @@ int Binary_DocumentTableReader::ReadMathNaryPr(BYTE type, long length, void* poR
 	}
 	else if ( c_oSer_OMathBottomNodesType::CtrlPr == type )
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:ctrlPr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:ctrlPr>")));
 		READ1_DEF(length, res, this->ReadMathCtrlPr, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:ctrlPr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:ctrlPr>")));
 	}
 	else if ( c_oSer_OMathBottomNodesType::Grow == type )
 	{
@@ -7292,7 +7324,7 @@ int Binary_DocumentTableReader::ReadMathNoBreak(BYTE type, long length, void* po
 			sVal += _T(" m:val=\"on\" />");
 		else
 			sVal += _T(" m:val=\"off\" />");
-		GetRunStringWriter().WriteString(sVal);
+		GetCurrentStringWriter().WriteString(sVal);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -7309,7 +7341,7 @@ int Binary_DocumentTableReader::ReadMathNor(BYTE type, long length, void* poResu
 			sVal += _T(" m:val=\"on\" />");
 		else
 			sVal += _T(" m:val=\"off\" />");
-		GetRunStringWriter().WriteString(sVal);
+		GetCurrentStringWriter().WriteString(sVal);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -7326,7 +7358,7 @@ int Binary_DocumentTableReader::ReadMathObjDist(BYTE type, long length, void* po
 			sVal += _T(" m:val=\"on\" />");
 		else
 			sVal += _T(" m:val=\"off\" />");
-		GetRunStringWriter().WriteString(sVal);
+		GetCurrentStringWriter().WriteString(sVal);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -7343,22 +7375,22 @@ int Binary_DocumentTableReader::ReadMathOMathPara(BYTE type, long length, void* 
 	int res = c_oSerConstants::ReadOk;
 	if ( c_oSer_OMathContentType::OMath == type )
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:oMath>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:oMath>")));
 		READ1_DEF(length, res, this->ReadMathArg, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:oMath>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:oMath>")));
 	}
 	else if ( c_oSer_OMathContentType::OMathParaPr == type )
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:oMathParaPr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:oMathParaPr>")));
 		READ1_DEF(length, res, this->ReadMathOMathParaPr, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:oMathParaPr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:oMathParaPr>")));
 	}
 	else if ( c_oSer_OMathContentType::Run == type )
 	{
 		m_oCur_rPr.Clear();
-        GetRunStringWriter().WriteString(std::wstring(_T("<w:r>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<w:r>")));
 		READ1_DEF(length, res, this->ReadRun, NULL);
-        GetRunStringWriter().WriteString(std::wstring(_T("</w:r>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</w:r>")));
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -7386,7 +7418,7 @@ int Binary_DocumentTableReader::ReadMathOpEmu(BYTE type, long length, void* poRe
 			sVal += _T(" m:val=\"on\" />");
 		else
 			sVal += _T(" m:val=\"off\" />");
-		GetRunStringWriter().WriteString(sVal);
+		GetCurrentStringWriter().WriteString(sVal);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -7397,15 +7429,15 @@ int Binary_DocumentTableReader::ReadMathPhant(BYTE type, long length, void* poRe
 	int res = c_oSerConstants::ReadOk;
 	if ( c_oSer_OMathContentType::Element == type )
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:e>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:e>")));
 		READ1_DEF(length, res, this->ReadMathArg, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:e>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:e>")));
 	}
 	else if ( c_oSer_OMathContentType::PhantPr == type )
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:phantPr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:phantPr>")));
 		READ1_DEF(length, res, this->ReadMathPhantPr, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:phantPr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:phantPr>")));
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -7416,9 +7448,9 @@ int Binary_DocumentTableReader::ReadMathPhantPr(BYTE type, long length, void* po
 	int res = c_oSerConstants::ReadOk;
 	if ( c_oSer_OMathBottomNodesType::CtrlPr == type )
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:ctrlPr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:ctrlPr>")));
 		READ1_DEF(length, res, this->ReadMathCtrlPr, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:ctrlPr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:ctrlPr>")));
 	}
 	else if ( c_oSer_OMathBottomNodesType::Show == type )
 	{
@@ -7455,7 +7487,7 @@ int Binary_DocumentTableReader::ReadMathPlcHide(BYTE type, long length, void* po
 			sVal += _T(" m:val=\"on\" />");
 		else
 			sVal += _T(" m:val=\"off\" />");
-		GetRunStringWriter().WriteString(sVal);
+		GetCurrentStringWriter().WriteString(sVal);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -7476,7 +7508,7 @@ int Binary_DocumentTableReader::ReadMathPos(BYTE type, long length, void* poResu
 			case 1: sPos = _T("top");break;
 		}
 		
-        GetRunStringWriter().WriteString(L"<m:pos m:val=\"" + sPos + L"\"/>");
+        GetCurrentStringWriter().WriteString(L"<m:pos m:val=\"" + sPos + L"\"/>");
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -7493,7 +7525,7 @@ int Binary_DocumentTableReader::ReadMathText(BYTE type, long length, void* poRes
 	if ( c_oSer_OMathBottomNodesValType::Val == type )
 	{
         std::wstring sText = GetMathText (length);
-		GetRunStringWriter().WriteString(sText);
+		GetCurrentStringWriter().WriteString(sText);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -7504,11 +7536,11 @@ int Binary_DocumentTableReader::ReadMathMRun(BYTE type, long length, void* poRes
 	int res = c_oSerConstants::ReadOk;
 	if ( c_oSer_OMathContentType::MText == type )
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:t>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:t>")));
 
 		READ2_DEF(length, res, this->ReadMathText, poResult);
 
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:t>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:t>")));
 	}
 	else if ( c_oSer_OMathContentType::RPr == type )
 	{
@@ -7516,13 +7548,13 @@ int Binary_DocumentTableReader::ReadMathMRun(BYTE type, long length, void* poRes
 		res = oBinary_rPrReader.Read(length, &m_oMath_rPr);
 		
 		if (m_oMath_rPr.IsNoEmpty())
-			GetRunStringWriter().WriteString(m_oMath_rPr.toXML());
+			GetCurrentStringWriter().WriteString(m_oMath_rPr.toXML());
 	}
 	else if ( c_oSer_OMathContentType::MRPr == type )
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:rPr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:rPr>")));
 		READ1_DEF(length, res, this->ReadMathMRPr, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:rPr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:rPr>")));
 	}
 	else if ( c_oSer_OMathContentType::ARPr == type )
 	{
@@ -7533,36 +7565,36 @@ int Binary_DocumentTableReader::ReadMathMRun(BYTE type, long length, void* poRes
 		//todo use one writer
 		NSBinPptxRW::CXmlWriter oWriter;
 		rPr.toXmlWriter(&oWriter);
-		GetRunStringWriter().WriteString(oWriter.GetXmlString());
+		GetCurrentStringWriter().WriteString(oWriter.GetXmlString());
 	}
 	else if (c_oSer_OMathContentType::pagebreak == type)
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<w:br w:type=\"page\"/>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<w:br w:type=\"page\"/>")));
 	}
 	else if (c_oSer_OMathContentType::linebreak == type)
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<w:br />")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<w:br />")));
 	}
 	else if (c_oSer_OMathContentType::columnbreak == type)
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<w:br w:type=\"column\"/>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<w:br w:type=\"column\"/>")));
 	}
 	else if (c_oSer_OMathContentType::Del == type)
 	{
 		TrackRevision oTrackRevision;
 		READ1_DEF(length, res, this->ReadMathInsDel, &oTrackRevision);
-		oTrackRevision.Write(&GetRunStringWriter(), _T("w:del"));
+		oTrackRevision.Write(&GetCurrentStringWriter(), _T("w:del"));
 	}
 	else if (c_oSer_OMathContentType::Ins == type)
 	{
 		TrackRevision oTrackRevision;
 		READ1_DEF(length, res, this->ReadMathInsDel, &oTrackRevision);
-		oTrackRevision.Write(&GetRunStringWriter(), _T("w:ins"));
+		oTrackRevision.Write(&GetCurrentStringWriter(), _T("w:ins"));
 	}
 	else if (c_oSer_OMathContentType::AnnotationRef == type)
 	{
 		OOX::Logic::CAnnotationRef oAnnotationRef;
-		GetRunStringWriter().WriteString(oAnnotationRef.toXML());
+		GetCurrentStringWriter().WriteString(oAnnotationRef.toXML());
 	}
 	else if (c_oSer_OMathContentType::CommentReference == type)
 	{
@@ -7573,56 +7605,56 @@ int Binary_DocumentTableReader::ReadMathMRun(BYTE type, long length, void* poRes
 			CComment* pComment = m_oFileWriter.m_pComments->get(nId);
 			if (NULL != pComment) // могут быть и без start/end
 			{
-				GetRunStringWriter().WriteString(pComment->writeRef(std::wstring(_T("")), std::wstring(_T("w:commentReference")), std::wstring(_T(""))));
+				GetCurrentStringWriter().WriteString(pComment->writeRef(std::wstring(_T("")), std::wstring(_T("w:commentReference")), std::wstring(_T(""))));
 			}
 		}
 	}
 	else if (c_oSer_OMathContentType::Cr == type)
 	{
 		OOX::Logic::CCr oCr;
-		GetRunStringWriter().WriteString(oCr.toXML());
+		GetCurrentStringWriter().WriteString(oCr.toXML());
 	}
 	else if (c_oSer_OMathContentType::EndnoteRef == type)
 	{
 		OOX::Logic::CEndnoteRef oEndnoteRef;
-		GetRunStringWriter().WriteString(oEndnoteRef.toXML());
+		GetCurrentStringWriter().WriteString(oEndnoteRef.toXML());
 	}
 	else if (c_oSer_OMathContentType::FootnoteRef == type)
 	{
 		OOX::Logic::CFootnoteRef oFootnoteRef;
-		GetRunStringWriter().WriteString(oFootnoteRef.toXML());
+		GetCurrentStringWriter().WriteString(oFootnoteRef.toXML());
 	}
 	else if (c_oSer_OMathContentType::EndnoteReference == type)
 	{
 		OOX::Logic::CEndnoteReference oEndnoteReference;
 		READ1_DEF(length, res, this->ReadEndnoteRef, &oEndnoteReference);
-		GetRunStringWriter().WriteString(oEndnoteReference.toXML());
+		GetCurrentStringWriter().WriteString(oEndnoteReference.toXML());
 	}
 	else if (c_oSer_OMathContentType::FootnoteReference == type)
 	{
 		OOX::Logic::CFootnoteReference oFootnoteReference;
 		READ1_DEF(length, res, this->ReadFootnoteRef, &oFootnoteReference);
-		GetRunStringWriter().WriteString(oFootnoteReference.toXML());
+		GetCurrentStringWriter().WriteString(oFootnoteReference.toXML());
 	}
 	else if (c_oSer_OMathContentType::LastRenderedPageBreak == type)
 	{
 		OOX::Logic::CLastRenderedPageBreak oLastRenderedPageBreak;
-		GetRunStringWriter().WriteString(oLastRenderedPageBreak.toXML());
+		GetCurrentStringWriter().WriteString(oLastRenderedPageBreak.toXML());
 	}
 	else if (c_oSer_OMathContentType::NoBreakHyphen == type)
 	{
 		OOX::Logic::CNoBreakHyphen oNoBreakHyphen;
-		GetRunStringWriter().WriteString(oNoBreakHyphen.toXML());
+		GetCurrentStringWriter().WriteString(oNoBreakHyphen.toXML());
 	}
 	else if (c_oSer_OMathContentType::SoftHyphen == type)
 	{
 		OOX::Logic::CSoftHyphen oSoftHyphen;
-		GetRunStringWriter().WriteString(oSoftHyphen.toXML());
+		GetCurrentStringWriter().WriteString(oSoftHyphen.toXML());
 	}
 	else if (c_oSer_OMathContentType::Tab == type)
 	{
 		OOX::Logic::CTab oTab;
-		GetRunStringWriter().WriteString(oTab.toXML());
+		GetCurrentStringWriter().WriteString(oTab.toXML());
 	}
 	else if (c_oSer_OMathContentType::Sym == type)
 	{
@@ -7654,21 +7686,21 @@ int Binary_DocumentTableReader::ReadMathRad(BYTE type, long length, void* poResu
 	int res = c_oSerConstants::ReadOk;
 	if ( c_oSer_OMathContentType::Deg== type )
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:deg>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:deg>")));
 		READ1_DEF(length, res, this->ReadMathArg, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:deg>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:deg>")));
 	}
 	else if ( c_oSer_OMathContentType::Element == type )
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:e>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:e>")));
 		READ1_DEF(length, res, this->ReadMathArg, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:e>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:e>")));
 	}
 	else if ( c_oSer_OMathContentType::RadPr == type )
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:radPr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:radPr>")));
 		READ1_DEF(length, res, this->ReadMathRadPr, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:radPr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:radPr>")));
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -7679,9 +7711,9 @@ int Binary_DocumentTableReader::ReadMathRadPr(BYTE type, long length, void* poRe
 	int res = c_oSerConstants::ReadOk;
 	if ( c_oSer_OMathBottomNodesType::CtrlPr == type )
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:ctrlPr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:ctrlPr>")));
 		READ1_DEF(length, res, this->ReadMathCtrlPr, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:ctrlPr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:ctrlPr>")));
 	}
 	else if ( c_oSer_OMathBottomNodesType::DegHide == type )
 	{
@@ -7735,7 +7767,7 @@ int Binary_DocumentTableReader::ReadMathRSp(BYTE type, long length, void* poResu
             sVal += L" m:val=\"" + std::to_wstring(lVal) + L"\"";
 		}
         sVal += (_T("/>"));
-		GetRunStringWriter().WriteString(sVal);
+		GetCurrentStringWriter().WriteString(sVal);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -7754,7 +7786,7 @@ int Binary_DocumentTableReader::ReadMathRSpRule(BYTE type, long length, void* po
             sVal += L" m:val=\"" + std::to_wstring(lVal)+ L"\"";
 		}
         sVal += (_T("/>"));
-		GetRunStringWriter().WriteString(sVal);
+		GetCurrentStringWriter().WriteString(sVal);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -7777,7 +7809,7 @@ int Binary_DocumentTableReader::ReadMathScr(BYTE type, long length, void* poResu
 			case 4: sScr = _T("sans-serif");break;
             case 5: sScr = _T("script");    break;
 		}			
-        GetRunStringWriter().WriteString(L"<m:scr m:val=\"" + sScr + L"\"/>");
+        GetCurrentStringWriter().WriteString(L"<m:scr m:val=\"" + sScr + L"\"/>");
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -7793,7 +7825,7 @@ int Binary_DocumentTableReader::ReadMathSepChr(BYTE type, long length, void* poR
             sVal += (_T("<m:sepChr m:val=\""));
             sVal += (sChr);
             sVal += (_T("\" />"));
-			GetRunStringWriter().WriteString(sVal);
+			GetCurrentStringWriter().WriteString(sVal);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -7810,7 +7842,7 @@ int Binary_DocumentTableReader::ReadMathShow(BYTE type, long length, void* poRes
 			sVal += _T(" m:val=\"on\" />");
 		else
 			sVal += _T(" m:val=\"off\" />");
-		GetRunStringWriter().WriteString(sVal);
+		GetCurrentStringWriter().WriteString(sVal);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -7829,7 +7861,7 @@ int Binary_DocumentTableReader::ReadMathShp(BYTE type, long length, void* poResu
 			case 0: sShp = _T("centered");break;
 			case 1: sShp = _T("match");break;
 		}			
-        GetRunStringWriter().WriteString(L"<m:shp m:val=\"" + sShp + L"\"/>");
+        GetCurrentStringWriter().WriteString(L"<m:shp m:val=\"" + sShp + L"\"/>");
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -7840,27 +7872,27 @@ int Binary_DocumentTableReader::ReadMathSPre(BYTE type, long length, void* poRes
 	int res = c_oSerConstants::ReadOk;
 	if ( c_oSer_OMathContentType::SPrePr == type )
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:sPrePr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:sPrePr>")));
 		READ1_DEF(length, res, this->ReadMathSPrePr, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:sPrePr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:sPrePr>")));
 	}
 	else if ( c_oSer_OMathContentType::Sub == type )
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:sub>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:sub>")));
 		READ1_DEF(length, res, this->ReadMathArg, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:sub>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:sub>")));
 	}
 	else if ( c_oSer_OMathContentType::Sup == type )
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:sup>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:sup>")));
 		READ1_DEF(length, res, this->ReadMathArg, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:sup>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:sup>")));
 	}
 	else if ( c_oSer_OMathContentType::Element == type )
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:e>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:e>")));
 		READ1_DEF(length, res, this->ReadMathArg, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:e>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:e>")));
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -7871,9 +7903,9 @@ int Binary_DocumentTableReader::ReadMathSPrePr(BYTE type, long length, void* poR
 	int res = c_oSerConstants::ReadOk;
 	if ( c_oSer_OMathBottomNodesType::CtrlPr == type )
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:ctrlPr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:ctrlPr>")));
 		READ1_DEF(length, res, this->ReadMathCtrlPr, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:ctrlPr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:ctrlPr>")));
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -7884,21 +7916,21 @@ int Binary_DocumentTableReader::ReadMathSSub(BYTE type, long length, void* poRes
 	int res = c_oSerConstants::ReadOk;
 	if ( c_oSer_OMathContentType::SSubPr == type )
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:sSubPr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:sSubPr>")));
 		READ1_DEF(length, res, this->ReadMathSSubPr, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:sSubPr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:sSubPr>")));
 	}
 	else if ( c_oSer_OMathContentType::Sub == type )
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:sub>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:sub>")));
 		READ1_DEF(length, res, this->ReadMathArg, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:sub>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:sub>")));
 	}
 	else if ( c_oSer_OMathContentType::Element == type )
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:e>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:e>")));
 		READ1_DEF(length, res, this->ReadMathArg, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:e>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:e>")));
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -7909,9 +7941,9 @@ int Binary_DocumentTableReader::ReadMathSSubPr(BYTE type, long length, void* poR
 	int res = c_oSerConstants::ReadOk;
 	if ( c_oSer_OMathBottomNodesType::CtrlPr == type )
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:ctrlPr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:ctrlPr>")));
 		READ1_DEF(length, res, this->ReadMathCtrlPr, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:ctrlPr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:ctrlPr>")));
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -7922,27 +7954,27 @@ int Binary_DocumentTableReader::ReadMathSSubSup(BYTE type, long length, void* po
 	int res = c_oSerConstants::ReadOk;
 	if ( c_oSer_OMathContentType::SSubSupPr == type )
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:sSubSupPr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:sSubSupPr>")));
 		READ1_DEF(length, res, this->ReadMathSSubSupPr, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:sSubSupPr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:sSubSupPr>")));
 	}
 	else if ( c_oSer_OMathContentType::Sub == type )
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:sub>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:sub>")));
 		READ1_DEF(length, res, this->ReadMathArg, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:sub>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:sub>")));
 	}
 	else if ( c_oSer_OMathContentType::Sup == type )
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:sup>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:sup>")));
 		READ1_DEF(length, res, this->ReadMathArg, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:sup>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:sup>")));
 	}
 	else if ( c_oSer_OMathContentType::Element == type )
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:e>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:e>")));
 		READ1_DEF(length, res, this->ReadMathArg, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:e>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:e>")));
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -7957,9 +7989,9 @@ int Binary_DocumentTableReader::ReadMathSSubSupPr(BYTE type, long length, void* 
 	}
 	else if ( c_oSer_OMathBottomNodesType::CtrlPr == type )
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:ctrlPr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:ctrlPr>")));
 		READ1_DEF(length, res, this->ReadMathCtrlPr, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:ctrlPr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:ctrlPr>")));
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -7970,21 +8002,21 @@ int Binary_DocumentTableReader::ReadMathSSup(BYTE type, long length, void* poRes
 	int res = c_oSerConstants::ReadOk;
 	if ( c_oSer_OMathContentType::SSupPr == type )
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:sSupPr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:sSupPr>")));
 		READ1_DEF(length, res, this->ReadMathSSupPr, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:sSupPr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:sSupPr>")));
 	}
 	else if ( c_oSer_OMathContentType::Sup == type )
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:sup>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:sup>")));
 		READ1_DEF(length, res, this->ReadMathArg, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:sup>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:sup>")));
 	}
 	else if ( c_oSer_OMathContentType::Element == type )
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:e>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:e>")));
 		READ1_DEF(length, res, this->ReadMathArg, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:e>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:e>")));
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -7995,9 +8027,9 @@ int Binary_DocumentTableReader::ReadMathSSupPr(BYTE type, long length, void* poR
 	int res = c_oSerConstants::ReadOk;
 	if ( c_oSer_OMathBottomNodesType::CtrlPr == type )
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:ctrlPr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:ctrlPr>")));
 		READ1_DEF(length, res, this->ReadMathCtrlPr, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:ctrlPr>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:ctrlPr>")));
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -8014,7 +8046,7 @@ int Binary_DocumentTableReader::ReadMathStrikeBLTR(BYTE type, long length, void*
 			sVal += _T(" m:val=\"on\" />");
 		else
 			sVal += _T(" m:val=\"off\" />");
-		GetRunStringWriter().WriteString(sVal);
+		GetCurrentStringWriter().WriteString(sVal);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -8031,7 +8063,7 @@ int Binary_DocumentTableReader::ReadMathStrikeH(BYTE type, long length, void* po
 			sVal += _T(" m:val=\"on\" />");
 		else
 			sVal += _T(" m:val=\"off\" />");
-		GetRunStringWriter().WriteString(sVal);
+		GetCurrentStringWriter().WriteString(sVal);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -8048,7 +8080,7 @@ int Binary_DocumentTableReader::ReadMathStrikeTLBR(BYTE type, long length, void*
 			sVal += _T(" m:val=\"on\" />");
 		else
 			sVal += _T(" m:val=\"off\" />");
-		GetRunStringWriter().WriteString(sVal);
+		GetCurrentStringWriter().WriteString(sVal);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -8065,7 +8097,7 @@ int Binary_DocumentTableReader::ReadMathStrikeV(BYTE type, long length, void* po
 			sVal += _T(" m:val=\"on\" />");
 		else
 			sVal += _T(" m:val=\"off\" />");
-		GetRunStringWriter().WriteString(sVal);
+		GetCurrentStringWriter().WriteString(sVal);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -8086,7 +8118,7 @@ int Binary_DocumentTableReader::ReadMathSty(BYTE type, long length, void* poResu
 			case 2: sSty = _T("i");break;
 			case 3: sSty = _T("p");break;
 		}			
-        GetRunStringWriter().WriteString(L"<m:sty m:val=\"" + sSty + L"\"/>");
+        GetCurrentStringWriter().WriteString(L"<m:sty m:val=\"" + sSty + L"\"/>");
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -8103,7 +8135,7 @@ int Binary_DocumentTableReader::ReadMathSubHide(BYTE type, long length, void* po
 			sVal += _T(" m:val=\"on\" />");
 		else
 			sVal += _T(" m:val=\"off\" />");
-		GetRunStringWriter().WriteString(sVal);
+		GetCurrentStringWriter().WriteString(sVal);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -8120,7 +8152,7 @@ int Binary_DocumentTableReader::ReadMathSupHide(BYTE type, long length, void* po
 			sVal += _T(" m:val=\"on\" />");
 		else
 			sVal += _T(" m:val=\"off\" />");
-		GetRunStringWriter().WriteString(sVal);
+		GetCurrentStringWriter().WriteString(sVal);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -8137,7 +8169,7 @@ int Binary_DocumentTableReader::ReadMathTransp(BYTE type, long length, void* poR
 			sVal += _T(" m:val=\"on\" />");
 		else
 			sVal += _T(" m:val=\"off\" />");
-		GetRunStringWriter().WriteString(sVal);
+		GetCurrentStringWriter().WriteString(sVal);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -8158,7 +8190,7 @@ int Binary_DocumentTableReader::ReadMathType(BYTE type, long length, void* poRes
 			case 2: sType = _T("noBar");break;
 			case 3: sType = _T("skw");break;
 		}			
-        GetRunStringWriter().WriteString(L"<m:type m:val=\"" + sType + L"\"/>");
+        GetCurrentStringWriter().WriteString(L"<m:type m:val=\"" + sType + L"\"/>");
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -8177,7 +8209,7 @@ int Binary_DocumentTableReader::ReadMathVertJc(BYTE type, long length, void* poR
 			case 0: sVertJc = _T("bot");break;
 			case 1: sVertJc = _T("top");break;
 		}			
-        GetRunStringWriter().WriteString(L"<m:vertJc m:val=\"" + sVertJc + L"\"/>");
+        GetCurrentStringWriter().WriteString(L"<m:vertJc m:val=\"" + sVertJc + L"\"/>");
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -8194,7 +8226,7 @@ int Binary_DocumentTableReader::ReadMathZeroAsc(BYTE type, long length, void* po
 			sVal += _T(" m:val=\"on\" />");
 		else
 			sVal += _T(" m:val=\"off\" />");
-		GetRunStringWriter().WriteString(sVal);
+		GetCurrentStringWriter().WriteString(sVal);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -8211,7 +8243,7 @@ int Binary_DocumentTableReader::ReadMathZeroDesc(BYTE type, long length, void* p
 			sVal += _T(" m:val=\"on\" />");
 		else
 			sVal += _T(" m:val=\"off\" />");
-		GetRunStringWriter().WriteString(sVal);
+		GetCurrentStringWriter().WriteString(sVal);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -8228,7 +8260,7 @@ int Binary_DocumentTableReader::ReadMathZeroWid(BYTE type, long length, void* po
 			sVal += _T(" m:val=\"on\" />");
 		else
 			sVal += _T(" m:val=\"off\" />");
-		GetRunStringWriter().WriteString(sVal);
+		GetCurrentStringWriter().WriteString(sVal);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -8242,7 +8274,7 @@ int Binary_DocumentTableReader::ReadRun(BYTE type, long length, void* poResult)
 		res = oBinary_rPrReader.Read(length, &m_oCur_rPr);
 		
 		if (m_oCur_rPr.IsNoEmpty())
-			GetRunStringWriter().WriteString(m_oCur_rPr.toXML());
+			GetCurrentStringWriter().WriteString(m_oCur_rPr.toXML());
 	}
 	else if ( c_oSerRunType::Content == type )
 	{
@@ -8258,72 +8290,72 @@ int Binary_DocumentTableReader::ReadRunContent(BYTE type, long length, void* poR
 
 	if (c_oSerRunType::run == type)
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<w:t xml:space=\"preserve\">")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<w:t xml:space=\"preserve\">")));
         std::wstring sText(m_oBufferedStream.GetString3(length));
 		sText = XmlUtils::EncodeXmlString(sText);
-		GetRunStringWriter().WriteString(sText);
-        GetRunStringWriter().WriteString(std::wstring(_T("</w:t>")));
+		GetCurrentStringWriter().WriteString(sText);
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</w:t>")));
 	}
 	else if (c_oSerRunType::delText == type)
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<w:delText xml:space=\"preserve\">")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<w:delText xml:space=\"preserve\">")));
         std::wstring sText(m_oBufferedStream.GetString3(length));
 		sText = XmlUtils::EncodeXmlString(sText);
-		GetRunStringWriter().WriteString(sText);
-        GetRunStringWriter().WriteString(std::wstring(_T("</w:delText>")));
+		GetCurrentStringWriter().WriteString(sText);
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</w:delText>")));
 	}
 	else if (c_oSerRunType::tab == type)
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<w:tab/>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<w:tab/>")));
 	}
 	else if (c_oSerRunType::cr == type)
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<w:cr/>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<w:cr/>")));
 	}
 	else if (c_oSerRunType::noBreakHyphen == type)
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<w:noBreakHyphen/>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<w:noBreakHyphen/>")));
 	}
 	else if (c_oSerRunType::softHyphen == type)
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<w:softHyphen/>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<w:softHyphen/>")));
 	}
 	else if (c_oSerRunType::pagenum == type)
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<w:fldChar w:fldCharType=\"begin\"/></w:r><w:r>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<w:fldChar w:fldCharType=\"begin\"/></w:r><w:r>")));
 		if (m_oCur_rPr.IsNoEmpty())
-			GetRunStringWriter().WriteString(m_oCur_rPr.toXML());
-        GetRunStringWriter().WriteString(std::wstring(_T("<w:instrText xml:space=\"preserve\">PAGE \\* MERGEFORMAT</w:instrText></w:r><w:r>")));
+			GetCurrentStringWriter().WriteString(m_oCur_rPr.toXML());
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<w:instrText xml:space=\"preserve\">PAGE \\* MERGEFORMAT</w:instrText></w:r><w:r>")));
 		if (m_oCur_rPr.IsNoEmpty())
-			GetRunStringWriter().WriteString(m_oCur_rPr.toXML());
-        GetRunStringWriter().WriteString(std::wstring(_T("<w:fldChar w:fldCharType=\"separate\"/></w:r><w:r>")));
+			GetCurrentStringWriter().WriteString(m_oCur_rPr.toXML());
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<w:fldChar w:fldCharType=\"separate\"/></w:r><w:r>")));
 		if (m_oCur_rPr.IsNoEmpty())
-			GetRunStringWriter().WriteString(m_oCur_rPr.toXML());
-		GetRunStringWriter().WriteString(std::wstring(_T("<w:fldChar w:fldCharType=\"end\"/>")));
+			GetCurrentStringWriter().WriteString(m_oCur_rPr.toXML());
+		GetCurrentStringWriter().WriteString(std::wstring(_T("<w:fldChar w:fldCharType=\"end\"/>")));
 	}
 	else if (c_oSerRunType::pagebreak == type)
 	{
-		GetRunStringWriter().WriteString(std::wstring(_T("<w:br w:type=\"page\" w:clear=\"all\"/>")));
+		GetCurrentStringWriter().WriteString(std::wstring(_T("<w:br w:type=\"page\" w:clear=\"all\"/>")));
 	}
 	else if (c_oSerRunType::linebreak == type)
 	{
-		GetRunStringWriter().WriteString(std::wstring(_T("<w:br/>")));
+		GetCurrentStringWriter().WriteString(std::wstring(_T("<w:br/>")));
 	}
 	else if (c_oSerRunType::linebreakClearAll == type)
 	{
-		GetRunStringWriter().WriteString(std::wstring(_T("<w:br w:type=\"textWrapping\" w:clear=\"all\"/>")));
+		GetCurrentStringWriter().WriteString(std::wstring(_T("<w:br w:type=\"textWrapping\" w:clear=\"all\"/>")));
 	}
 	else if (c_oSerRunType::linebreakClearLeft == type)
 	{
-		GetRunStringWriter().WriteString(std::wstring(_T("<w:br w:type=\"textWrapping\" w:clear=\"left\"/>")));
+		GetCurrentStringWriter().WriteString(std::wstring(_T("<w:br w:type=\"textWrapping\" w:clear=\"left\"/>")));
 	}
 	else if (c_oSerRunType::linebreakClearRight == type)
 	{
-		GetRunStringWriter().WriteString(std::wstring(_T("<w:br w:type=\"textWrapping\" w:clear=\"right\"/>")));
+		GetCurrentStringWriter().WriteString(std::wstring(_T("<w:br w:type=\"textWrapping\" w:clear=\"right\"/>")));
 	}
 	else if (c_oSerRunType::columnbreak == type)
 	{
-		GetRunStringWriter().WriteString(std::wstring(_T("<w:br w:type=\"column\"/>")));
+		GetCurrentStringWriter().WriteString(std::wstring(_T("<w:br w:type=\"column\"/>")));
 	}
 	else if (c_oSerRunType::image == type)
 	{
@@ -8342,7 +8374,7 @@ int Binary_DocumentTableReader::ReadRunContent(BYTE type, long length, void* poR
 			//odocImg.srId = m_oMediaWriter.m_aImageRels[odocImg.MediaId];
             if (!odocImg.srId.empty())
 			{
-				odocImg.Write(&GetRunStringWriter());
+				odocImg.Write(&GetCurrentStringWriter());
 			}
 		}
 	}
@@ -8353,7 +8385,7 @@ int Binary_DocumentTableReader::ReadRunContent(BYTE type, long length, void* poR
 
 		if (oCDrawingProperty.IsGraphicFrameContent())
 		{
-			GetRunStringWriter().WriteString(oCDrawingProperty.Write());
+			GetCurrentStringWriter().WriteString(oCDrawingProperty.Write());
 		}
 		else if (oCDrawingProperty.bDataPos && oCDrawingProperty.bDataLength)
 		{
@@ -8368,46 +8400,46 @@ int Binary_DocumentTableReader::ReadRunContent(BYTE type, long length, void* poR
 	else if (c_oSerRunType::table == type)
 	{
 		//todo
-        m_oDocumentWriter.m_oContent.WriteString(std::wstring(L"</w:p>"));
-        m_oDocumentWriter.m_oContent.WriteString(std::wstring(L"<w:tbl>"));
+        GetCurrentStringWriter().WriteString(L"</w:p>");
+        GetCurrentStringWriter().WriteString(L"<w:tbl>");
 		READ1_DEF(length, res, this->ReadDocTable, &m_oDocumentWriter.m_oContent);
-        m_oDocumentWriter.m_oContent.WriteString(std::wstring(L"</w:tbl>"));
+        GetCurrentStringWriter().WriteString(L"</w:tbl>");
 
 		if (m_bUsedParaIdCounter && m_oFileWriter.m_pComments)
 		{
 			_INT32 nId = m_oFileWriter.m_pComments->m_oParaIdCounter.getNextId();
 			std::wstring sParaId = XmlUtils::ToString(nId, L"%08X");
 
-			m_oDocumentWriter.m_oContent.WriteString(L"<w:p w14:paraId=\"" + sParaId + L"\" w14:textId=\"" + sParaId + L"\">");
+			GetCurrentStringWriter().WriteString(L"<w:p w14:paraId=\"" + sParaId + L"\" w14:textId=\"" + sParaId + L"\">");
 		}
 		else
 		{
-			m_oDocumentWriter.m_oContent.WriteString(std::wstring(L"<w:p>"));
+			GetCurrentStringWriter().WriteString(L"<w:p>");
 		}
 		if (m_oCur_pPr.IsNoEmpty())
 		{
 			std::wstring sParaPr = m_oCur_pPr.toXML();
 			
-			m_oDocumentWriter.m_oContent.WriteString(sParaPr);
+			GetCurrentStringWriter().WriteString(sParaPr);
 		}
 	}
 	else if (c_oSerRunType::fldstart_deprecated == type)
 	{
         std::wstring sField(m_oBufferedStream.GetString3(length));
 		sField = XmlUtils::EncodeXmlString(sField);
-        GetRunStringWriter().WriteString(std::wstring(_T("<w:fldChar w:fldCharType=\"begin\"/></w:r><w:r>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<w:fldChar w:fldCharType=\"begin\"/></w:r><w:r>")));
 		if (m_oCur_rPr.IsNoEmpty())
-			GetRunStringWriter().WriteString(m_oCur_rPr.toXML());
-		GetRunStringWriter().WriteString(std::wstring(_T("<w:instrText xml:space=\"preserve\">")));
-		GetRunStringWriter().WriteString(sField);
-        GetRunStringWriter().WriteString(std::wstring(_T("</w:instrText></w:r><w:r>")));
+			GetCurrentStringWriter().WriteString(m_oCur_rPr.toXML());
+		GetCurrentStringWriter().WriteString(std::wstring(_T("<w:instrText xml:space=\"preserve\">")));
+		GetCurrentStringWriter().WriteString(sField);
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</w:instrText></w:r><w:r>")));
 		if (m_oCur_rPr.IsNoEmpty())
-			GetRunStringWriter().WriteString(m_oCur_rPr.toXML());
-		GetRunStringWriter().WriteString(std::wstring(_T("<w:fldChar w:fldCharType=\"separate\"/>")));
+			GetCurrentStringWriter().WriteString(m_oCur_rPr.toXML());
+		GetCurrentStringWriter().WriteString(std::wstring(_T("<w:fldChar w:fldCharType=\"separate\"/>")));
 	}
 	else if (c_oSerRunType::fldend_deprecated == type)
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<w:fldChar w:fldCharType=\"end\"/>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<w:fldChar w:fldCharType=\"end\"/>")));
 	}
 	else if ( c_oSerRunType::CommentReference == type )
 	{
@@ -8418,7 +8450,7 @@ int Binary_DocumentTableReader::ReadRunContent(BYTE type, long length, void* poR
 			CComment* pComment = m_oFileWriter.m_pComments->get(nId);
 			if (NULL != pComment) // могут быть и без start/end
 			{
-                GetRunStringWriter().WriteString(pComment->writeRef(std::wstring(_T("")), std::wstring(_T("w:commentReference")), std::wstring(_T(""))));
+                GetCurrentStringWriter().WriteString(pComment->writeRef(std::wstring(_T("")), std::wstring(_T("w:commentReference")), std::wstring(_T(""))));
 			}
 		}
 	}
@@ -8428,53 +8460,53 @@ int Binary_DocumentTableReader::ReadRunContent(BYTE type, long length, void* poR
 	}
 	else if ( c_oSerRunType::separator == type)
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<w:separator/>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<w:separator/>")));
 	}
 	else if ( c_oSerRunType::continuationSeparator == type)
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<w:continuationSeparator/>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<w:continuationSeparator/>")));
 	}
 	else if ( c_oSerRunType::footnoteRef == type)
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<w:footnoteRef/>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<w:footnoteRef/>")));
 	}
 	else if ( c_oSerRunType::endnoteRef == type)
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<w:endnoteRef/>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<w:endnoteRef/>")));
 	}
 	else if ( c_oSerRunType::footnoteReference == type)
 	{
 		OOX::Logic::CFootnoteReference oFootnoteRef;
 		READ1_DEF(length, res, this->ReadFootnoteRef, &oFootnoteRef);
-		GetRunStringWriter().WriteString(oFootnoteRef.toXML());
+		GetCurrentStringWriter().WriteString(oFootnoteRef.toXML());
 	}
 	else if ( c_oSerRunType::endnoteReference == type)
 	{
 		OOX::Logic::CEndnoteReference oEndnoteRef;
 		READ1_DEF(length, res, this->ReadEndnoteRef, &oEndnoteRef);
-		GetRunStringWriter().WriteString(oEndnoteRef.toXML());
+		GetCurrentStringWriter().WriteString(oEndnoteRef.toXML());
 	}
 	else if ( c_oSerRunType::fldChar == type)
 	{
 		OOX::Logic::CFldChar oFldChar;
 		READ1_DEF(length, res, this->ReadFldChar, &oFldChar);
-		GetRunStringWriter().WriteString(oFldChar.toXML());
+		GetCurrentStringWriter().WriteString(oFldChar.toXML());
 	}
 	else if ( c_oSerRunType::instrText == type)
 	{
-		GetRunStringWriter().WriteString(std::wstring(_T("<w:instrText xml:space=\"preserve\">")));
+		GetCurrentStringWriter().WriteString(std::wstring(_T("<w:instrText xml:space=\"preserve\">")));
 		std::wstring sText(m_oBufferedStream.GetString3(length));
 		sText = XmlUtils::EncodeXmlString(sText);
-		GetRunStringWriter().WriteString(sText);
-		GetRunStringWriter().WriteString(std::wstring(_T("</w:instrText>")));
+		GetCurrentStringWriter().WriteString(sText);
+		GetCurrentStringWriter().WriteString(std::wstring(_T("</w:instrText>")));
 	}
 	else if ( c_oSerRunType::delInstrText == type)
 	{
-		GetRunStringWriter().WriteString(std::wstring(_T("<w:delInstrText xml:space=\"preserve\">")));
+		GetCurrentStringWriter().WriteString(std::wstring(_T("<w:delInstrText xml:space=\"preserve\">")));
 		std::wstring sText(m_oBufferedStream.GetString3(length));
 		sText = XmlUtils::EncodeXmlString(sText);
-		GetRunStringWriter().WriteString(sText);
-		GetRunStringWriter().WriteString(std::wstring(_T("</w:delInstrText>")));
+		GetCurrentStringWriter().WriteString(sText);
+		GetCurrentStringWriter().WriteString(std::wstring(_T("</w:delInstrText>")));
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -8531,7 +8563,7 @@ void Binary_DocumentTableReader::ReadDrawing(CDrawingProperty &oCDrawingProperty
 
         if ( false == sDrawingXml.empty())
 		{
-            GetRunStringWriter().WriteString(sDrawingXml);
+            GetCurrentStringWriter().WriteString(sDrawingXml);
 		}
 	}
 }
@@ -8542,9 +8574,9 @@ int Binary_DocumentTableReader::ReadObject(BYTE type, long length, void* poResul
 	int res = c_oSerConstants::ReadOk;
 	if ( c_oSerParType::OMath == type )
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<m:oMath>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("<m:oMath>")));
 		READ1_DEF(length, res, this->ReadMathArg, poResult);
-        GetRunStringWriter().WriteString(std::wstring(_T("</m:oMath>")));
+        GetCurrentStringWriter().WriteString(std::wstring(_T("</m:oMath>")));
 	}
 	else if (c_oSerRunType::pptxDrawing == type) 
 	{
@@ -8812,7 +8844,7 @@ int Binary_DocumentTableReader::ReadCell(BYTE type, long length, void* poResult)
 		//Потому что если перед </tc> не идет <p>, то документ считается невалидным
 		if (c_oSerParType::Par != oBinary_DocumentTableReader.m_byteLastElemType)
 		{
-            m_oDocumentWriter.m_oContent.WriteString(std::wstring(_T("<w:p/>")));
+            GetCurrentStringWriter().WriteString(std::wstring(_T("<w:p/>")));
 		}
 	}
 	else
@@ -9555,24 +9587,24 @@ int Binary_DocumentTableReader::ReadSdt(BYTE type, long length, void* poResult)
 	}
 	else if (c_oSerSdt::Content == type)
 	{
-		m_oDocumentWriter.m_oContent.WriteString(L"<w:sdt>");
+		GetCurrentStringWriter().WriteString(L"<w:sdt>");
 		if ( pSdt->m_oSdt.m_oSdtPr.IsInit() )
 		{
-			m_oDocumentWriter.m_oContent.WriteString(pSdt->m_oSdt.m_oSdtPr->toXMLStart());
+			GetCurrentStringWriter().WriteString(pSdt->m_oSdt.m_oSdtPr->toXMLStart());
 			if (pSdt->m_oRPr.IsInit())
 			{
-				m_oDocumentWriter.m_oContent.WriteString(pSdt->m_oRPr->toXML());
+				GetCurrentStringWriter().WriteString(pSdt->m_oRPr->toXML());
 			}
-			m_oDocumentWriter.m_oContent.WriteString(pSdt->m_oSdt.m_oSdtPr->toXMLEnd());
+			GetCurrentStringWriter().WriteString(pSdt->m_oSdt.m_oSdtPr->toXMLEnd());
 		}
 		if (pSdt->m_oEndPr.IsInit())
 		{
-			m_oDocumentWriter.m_oContent.WriteString(L"<w:sdtEndPr>");
-			m_oDocumentWriter.m_oContent.WriteString(pSdt->m_oEndPr->toXML());
-			m_oDocumentWriter.m_oContent.WriteString(L"</w:sdtEndPr>");
+			GetCurrentStringWriter().WriteString(L"<w:sdtEndPr>");
+			GetCurrentStringWriter().WriteString(pSdt->m_oEndPr->toXML());
+			GetCurrentStringWriter().WriteString(L"</w:sdtEndPr>");
 		}
 
-		m_oDocumentWriter.m_oContent.WriteString(L"<w:sdtContent>");
+		GetCurrentStringWriter().WriteString(L"<w:sdtContent>");
 		switch(pSdt->m_nType)
 		{
 		case 0:
@@ -9596,8 +9628,8 @@ int Binary_DocumentTableReader::ReadSdt(BYTE type, long length, void* poResult)
 			}
 			break;
 		}
-		m_oDocumentWriter.m_oContent.WriteString(L"</w:sdtContent>");
-		m_oDocumentWriter.m_oContent.WriteString(L"</w:sdt>");
+		GetCurrentStringWriter().WriteString(L"</w:sdtContent>");
+		GetCurrentStringWriter().WriteString(L"</w:sdt>");
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;

@@ -1639,6 +1639,11 @@ void DocxConverter::convert(OOX::Logic::CParagraphProperty	*oox_paragraph_pr,
 	//if (oox_paragraph_pr->m_oRtl.IsInit())
 	//{
 	//}	
+	if (current_bidi_set)
+	{
+		paragraph_properties->style_writing_mode_ = writing_mode(writing_mode::RlTb);
+	}
+
 	if (oox_paragraph_pr->m_oBidi.IsInit() || oox_paragraph_pr->m_oJc.IsInit())
 	{
 		convert(oox_paragraph_pr->m_oJc.GetPointer(), oox_paragraph_pr->m_oBidi.IsInit() ? oox_paragraph_pr->m_oBidi->m_oVal.ToBool() : false,
@@ -1988,8 +1993,8 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty* oox_section_pr, bool b
 			if (header)
 			{
 				double header_length_cm = header->get_value_unit(length::cm);
-				if (abs(length_cm - header_length_cm) > 0.001)
-					length_cm -= header_length_cm;
+				//if (abs(length_cm - header_length_cm) > 0.001)
+				//	length_cm -= header_length_cm;
 			}
 
 			if (length_cm > 2.4)

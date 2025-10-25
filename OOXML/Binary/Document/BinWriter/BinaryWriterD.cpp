@@ -3926,6 +3926,20 @@ void BinaryDocumentTableWriter::WriteParapraph(OOX::Logic::CParagraph& par, OOX:
 		WriteParagraphContent(par.m_arrItems);
 	m_oBcw.WriteItemWithLengthEnd(nCurPos);
 
+	if (par.m_oParaId.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerParType::ParaID);
+		nCurPos = m_oBcw.WriteItemWithLengthStart();
+		m_oBcw.m_oStream.WriteLONG64(par.m_oParaId->GetValue());
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}	
+	if (par.m_oTextId.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerParType::TextID);
+		nCurPos = m_oBcw.WriteItemWithLengthStart();
+		m_oBcw.m_oStream.WriteLONG64(par.m_oTextId->GetValue());
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
 }
 void BinaryDocumentTableWriter::WriteParagraphContent(const std::vector<OOX::WritingElement*> & content, bool bHyperlink)
 {

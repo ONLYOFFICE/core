@@ -52,6 +52,8 @@
 #include "../../Binary/XlsbFormat/FileTypes_SpreadsheetBin.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Binary/CFStreamCacheWriter.h"
 
+#include "../../../OdfFile/Common/logging.h"
+
 namespace OOX
 {
 	namespace Spreadsheet
@@ -487,17 +489,21 @@ namespace OOX
 			}
 			else
 			{
+				_CP_LOG << L"\tstart read xml sheet: " << oPath.GetFilename() << std::endl;
 				XmlUtils::CXmlLiteReader oReader;
 				if (!oReader.FromFile(oPath.GetPath()))
 					return;
 				if (!oReader.ReadNextNode())
 					return;
 
+				_CP_LOG << L"\tend read xml, start parsing: " << oPath.GetFilename() << std::endl;
+
 				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if (L"worksheet" == sName || L"chartsheet" == sName)
 				{
 					fromXML(oReader);
 				}
+				_CP_LOG << L"\tend parsing sheet: " << oPath.GetFilename() << std::endl;
 			}
 		}
 		void CWorksheet::PrepareAfterRead()

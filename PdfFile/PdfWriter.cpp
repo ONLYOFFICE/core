@@ -1928,7 +1928,7 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 		oInfo.GetBE(nS, dI);
 		pAnnot->SetBE(nS, dI);
 	}
-	if (nFlags & (1 << 3))
+	if ((nFlags & (1 << 3)) && !oInfo.IsFreeText())
 		pAnnot->SetC(oInfo.GetC());
 	if (nFlags & (1 << 4))
 	{
@@ -1983,9 +1983,10 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 		if (nFlags & (1 << 3))
 		{
 			NSStringUtils::CStringBuilder oRC;
-			oRC += L"<?xml version=\"1.0\"?><body xmlns=\"http://www.w3.org/1999/xhtml\" xmlns:xfa=\"http://www.xfa.org/schema/xfa-data/1.0/\" xfa:APIVersion=\"Acrobat:23.8.0\"  xfa:spec=\"2.0.2\"><p dir=\"ltr\">";
+			oRC += L"<?xml version=\"1.0\"?><body xmlns=\"http://www.w3.org/1999/xhtml\" xmlns:xfa=\"http://www.xfa.org/schema/xfa-data/1.0/\" xfa:APIVersion=\"Acrobat:23.8.0\"  xfa:spec=\"2.0.2\">";
 			std::vector<CAnnotFieldInfo::CMarkupAnnotPr::CFontData*> arrRC = pPr->GetRC();
 
+			bool bCurRTL = false;
 			if (!arrRC.empty())
 			{
 				NSStringUtils::CStringBuilder oDS;
@@ -2005,10 +2006,19 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 								   (unsigned char)(arrRC[0]->dColor[1] * 255.0),
 								   (unsigned char)(arrRC[0]->dColor[2] * 255.0));
 				sDefaultStyle = oDS.GetData();
+
+				bCurRTL = (arrRC[0]->nFontFlag >> 7) & 1;
 			}
 
+			oRC += (bCurRTL ? L"<p dir=\"rtl\">" : L"<p dir=\"ltr\">");
 			for (int i = 0; i < arrRC.size(); ++i)
 			{
+				bool bRTL = (arrRC[i]->nFontFlag >> 7) & 1;
+				if (bRTL != bCurRTL)
+				{
+					oRC += (bRTL ? L"</p><p dir=\"rtl\">" : L"</p><p dir=\"ltr\">");
+					bCurRTL = bRTL;
+				}
 				oRC += L"<span style=\"";
 				GetRCSpanStyle(arrRC[i], oRC);
 				oRC += L"\">";

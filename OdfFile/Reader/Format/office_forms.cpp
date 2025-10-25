@@ -968,6 +968,9 @@ void form_listbox::add_attributes( const xml::attributes_wc_ptr & Attributes )
 	CP_APPLY_ATTR(L"form:list-linkage-type", list_linkage_type_);
 	CP_APPLY_ATTR(L"form:size", size_);
 	CP_APPLY_ATTR(L"form:value", n_value_);
+	
+	if (dropdown_ && dropdown_->get())
+		object_type_ = OBJ_DropdownList;
 }
 void form_listbox::docx_convert(oox::docx_conversion_context & Context)
 {
@@ -978,7 +981,10 @@ void form_listbox::docx_convert(oox::docx_conversion_context & Context)
 }
 void form_listbox::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
-	Context.get_forms_context().start_element(oox::formListbox);
+	if (dropdown_  && dropdown_->get())
+		Context.get_forms_context().start_element(oox::formCombobox);
+	else
+		Context.get_forms_context().start_element(oox::formListbox);
 	Context.get_forms_context().set_element(dynamic_cast<form_element*>(this));
 
 	form_element::xlsx_convert(Context);

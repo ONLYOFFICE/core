@@ -2231,7 +2231,6 @@ private:
 		if (m_mDivs.empty())
 			pXml->WriteString(L"<w:divs>");
 
-		m_oStylesCalculator.CalculateCompiledStyle(sSelectors);
 		NSCSS::CCompiledStyle *pStyle = sSelectors.back().m_pCompiledStyle;
 
 		const bool bInTable = ElementInTable(sSelectors);
@@ -2308,6 +2307,8 @@ private:
 		}
 		m_oLightReader.MoveToElement();
 		sSelectors.push_back(oNode);
+
+		m_oStylesCalculator.CalculateCompiledStyle(sSelectors);
 		return sNote;
 	}
 
@@ -2390,8 +2391,6 @@ private:
 
 		if (sText.empty())
 			return false;
-
-		m_oStylesCalculator.CalculateCompiledStyle(arSelectors);
 
 		bool bPre = oTS.bPre;
 
@@ -2585,7 +2584,6 @@ private:
 		if (m_oState.m_bInP)
 		{
 			OpenR(pXml);
-			m_oStylesCalculator.CalculateCompiledStyle(arSelectors);
 			if(arSelectors.back().m_pCompiledStyle->m_oText.GetAlign() == L"both")
 				pXml->WriteString(L"<w:tab/>");
 			pXml->WriteString(L"<w:br/>");
@@ -3056,8 +3054,6 @@ private:
 
 		std::wstring sNote = GetSubClass(oXml, sSelectors);
 		bool bResult = true;
-		// Ссылка
-		// Область ссылки
 
 		const HtmlTag eHtmlTag{GetHtmlTag(sName)};
 
@@ -3406,8 +3402,6 @@ private:
 		if (NULL == pCellStyle)
 			return;
 
-		m_oStylesCalculator.CalculateCompiledStyle(arSelectors);
-
 		pCellStyle->m_wsVAlign     = arSelectors.back().m_pCompiledStyle->m_oDisplay.GetVAlign().ToWString();
 		pCellStyle->m_wsHAlign     = arSelectors.back().m_pCompiledStyle->m_oDisplay.GetHAlign().ToWString();
 		pCellStyle->m_oBackground  = arSelectors.back().m_pCompiledStyle->m_oBackground.GetColor();
@@ -3658,8 +3652,6 @@ private:
 
 			CTextSettings oNewSettings{oTS};
 
-			m_oStylesCalculator.CalculateCompiledStyle(sSelectors);
-
 			const std::wstring wsHighlight{sSelectors.back().m_pCompiledStyle->m_oBackground.GetColor()
 				        .EquateToColor({{{0,   0,   0},   L"black"},    {{0,   0,   255}, L"blue"},      {{0,   255, 255}, L"cyan"},
 			                            {{0,   255, 0},   L"green"},    {{255, 0,   255}, L"magenta"},   {{255, 0,   0},   L"red"},
@@ -3698,7 +3690,6 @@ private:
 
 		if (0 != oRT.GetSize())
 		{
-			m_oStylesCalculator.CalculateCompiledStyle(sSelectors);
 			NSCSS::CCompiledStyle *pStyle = sSelectors.back().m_pCompiledStyle;
 
 			int nFontSize = 24;
@@ -3746,7 +3737,6 @@ private:
 		CTextSettings oTextSettings{oTS};
 		oTextSettings.sPStyle.clear();
 
-		m_oStylesCalculator.CalculateCompiledStyle(sSelectors);
 		NSCSS::CCompiledStyle *pStyle = sSelectors.back().m_pCompiledStyle;
 
 		//Table styles
@@ -4377,8 +4367,6 @@ private:
 
 		if (NULL != sSelectors.back().m_pCompiledStyle)
 		{
-			m_oStylesCalculator.CalculateCompiledStyle(sSelectors);
-
 			const NSCSS::NSProperties::CDigit& oWidth {sSelectors.back().m_pCompiledStyle->m_oDisplay.GetWidth() };
 			const NSCSS::NSProperties::CDigit& oHeight{sSelectors.back().m_pCompiledStyle->m_oDisplay.GetHeight()};
 
@@ -4496,8 +4484,6 @@ private:
 		if (m_oState.m_bWasPStyle)
 			return L"";
 
-		m_oStylesCalculator.CalculateCompiledStyle(sSelectors);
-
 		std::wstring sPStyle = GetStyle(*sSelectors.back().m_pCompiledStyle, true);
 
 		if (sPStyle.empty() && !ElementInTable(sSelectors))
@@ -4544,8 +4530,6 @@ private:
 	{
 		if (!m_oState.m_bInP)
 			return L"";
-
-		m_oStylesCalculator.CalculateCompiledStyle(sSelectors);
 
 		std::wstring sRStyle = GetStyle(*sSelectors.back().m_pCompiledStyle, false);
 

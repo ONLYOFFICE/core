@@ -523,7 +523,7 @@ namespace NSCSS
 			unStart = itFound.base() - arSelectors.cbegin();
 
 		std::vector<std::wstring> arNodes = CalculateAllNodes(arSelectors, unStart);
-		std::vector<std::wstring> arPrevNodes;
+		std::vector<std::wstring> arPrevNodes = CalculateAllNodes(arSelectors, 0, unStart);
 		bool bInTable = false;
 
 		for (size_t i = 0; i < unStart; ++i)
@@ -592,11 +592,14 @@ namespace NSCSS
 	}
 	#endif
 
-	std::vector<std::wstring> CCssCalculator_Private::CalculateAllNodes(const std::vector<CNode> &arSelectors, unsigned int unStart)
+	std::vector<std::wstring> CCssCalculator_Private::CalculateAllNodes(const std::vector<CNode> &arSelectors, unsigned int unStart, unsigned int unEnd)
 	{
+		if (0 != unEnd && (unEnd < unStart || unEnd > arSelectors.size()))
+			return std::vector<std::wstring>();
+
 		std::vector<std::wstring> arNodes;
-		
-		for (std::vector<CNode>::const_reverse_iterator oNode = arSelectors.rbegin(); oNode != arSelectors.rend() - unStart; ++oNode)
+
+		for (std::vector<CNode>::const_reverse_iterator oNode = arSelectors.rbegin() + ((0 != unEnd) ? (arSelectors.size() - unEnd) : 0); oNode != arSelectors.rend() - unStart; ++oNode)
 		{
 			if (!oNode->m_wsName.empty())
 				arNodes.push_back(oNode->m_wsName);

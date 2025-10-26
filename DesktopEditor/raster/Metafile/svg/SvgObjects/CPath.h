@@ -129,7 +129,7 @@ namespace SVG
 		void ApplyStyle(IRenderer* pRenderer, const TSvgStyles* pStyles, const CSvgFile *pFile, int& nTypePath, const CRenderedObject* pContexObject = NULL) const override;
 		bool DrawMarkers(IRenderer* pRenderer, const CSvgFile *pFile, CommandeMode oMode = CommandeModeDraw, const TSvgStyles* pOtherStyles = NULL, const CRenderedObject* pContexObject = NULL) const;
 
-		TBounds GetBounds() const override;
+		TBounds GetBounds(SvgMatrix* pTransform = nullptr) const override;
 
 		const int FindIndexFirstNotEmpty(bool bReverseSearch = false) const;
 

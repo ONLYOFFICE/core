@@ -703,7 +703,7 @@ namespace SVG
 		}
 	}
 
-	TBounds CPath::GetBounds() const
+	TBounds CPath::GetBounds(SvgMatrix* pTransform) const
 	{
 		TBounds oBounds{DBL_MAX, DBL_MAX, -DBL_MAX, -DBL_MAX}, oTempBounds;
 
@@ -715,6 +715,16 @@ namespace SVG
 			oBounds.m_dTop    = std::min(oBounds.m_dTop,    oTempBounds.m_dTop);
 			oBounds.m_dRight  = std::max(oBounds.m_dRight,  oTempBounds.m_dRight);
 			oBounds.m_dBottom = std::max(oBounds.m_dBottom, oTempBounds.m_dBottom);
+		}
+
+		if (nullptr != pTransform)
+		{
+			*pTransform += m_oTransformation.m_oTransform.GetMatrix();
+
+			pTransform->GetFinalValue().TransformPoint(oBounds.m_dLeft,  oBounds.m_dTop   );
+			pTransform->GetFinalValue().TransformPoint(oBounds.m_dRight, oBounds.m_dBottom);
+
+			*pTransform -= m_oTransformation.m_oTransform.GetMatrix();
 		}
 
 		return oBounds;

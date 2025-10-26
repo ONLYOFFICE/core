@@ -34,9 +34,10 @@ namespace SVG
 		void ApplyStyle(IRenderer* pRenderer, const TSvgStyles* pStyles, const CSvgFile* pFile, int& nTypePath, const CRenderedObject* pContexObject = NULL) const override;
 		void ApplyFont(IRenderer* pRenderer, double& dX, double& dY) const;
 
+		void UpdateFontSize();
 		bool UseExternalFont(const CSvgFile* pFile, double dX, double dY, IRenderer* pRenderer, CommandeMode oMode = CommandeModeDraw, const TSvgStyles* pOtherStyles = NULL, const CRenderedObject* pContexObject = NULL) const;
 
-		TBounds GetBounds() const override;
+		TBounds GetBounds(SvgMatrix* pTransform = nullptr) const override;
 
 		double GetWidth() const;
 		void CorrectFontFamily(std::wstring& wsFontFamily) const;

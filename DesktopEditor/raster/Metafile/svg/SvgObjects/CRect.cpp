@@ -14,17 +14,17 @@ namespace SVG
 	void CRect::SetAttribute(const std::string& sName, CSvgReader& oReader)
 	{
 		if ("x" == sName)
-			m_oRect.m_oX.SetValue(oReader.GetDouble());
+			m_oRect.m_oX.SetValue(oReader.GetText());
 		else if ("y" == sName)
-			m_oRect.m_oY.SetValue(oReader.GetDouble());
+			m_oRect.m_oY.SetValue(oReader.GetText());
 		else if ("width" == sName)
-			m_oRect.m_oWidth.SetValue(oReader.GetDouble());
+			m_oRect.m_oWidth.SetValue(oReader.GetText());
 		else if ("height" == sName)
-			m_oRect.m_oHeight.SetValue(oReader.GetDouble());
+			m_oRect.m_oHeight.SetValue(oReader.GetText());
 		else if ("rx" == sName)
-			m_oRx.SetValue(oReader.GetDouble());
+			m_oRx.SetValue(oReader.GetText());
 		else if ("ry" == sName)
-			m_oRy.SetValue(oReader.GetDouble());
+			m_oRy.SetValue(oReader.GetText());
 		else
 			CRenderedObject::SetAttribute(sName, oReader);
 
@@ -103,7 +103,7 @@ namespace SVG
 			nTypePath += c_nWindingFillMode;
 	}
 
-	TBounds CRect::GetBounds() const
+	TBounds CRect::GetBounds(SvgMatrix* pTransform) const
 	{
 		TBounds oBounds;
 
@@ -111,6 +111,16 @@ namespace SVG
 		oBounds.m_dTop    = m_oRect.m_oY.ToDouble(NSCSS::Pixel);
 		oBounds.m_dRight  = oBounds.m_dLeft + m_oRect.m_oWidth.ToDouble(NSCSS::Pixel);
 		oBounds.m_dBottom = oBounds.m_dTop  + m_oRect.m_oHeight.ToDouble(NSCSS::Pixel);
+
+		if (nullptr != pTransform)
+		{
+			*pTransform += m_oTransformation.m_oTransform.GetMatrix();
+
+			pTransform->GetFinalValue().TransformPoint(oBounds.m_dLeft,  oBounds.m_dTop   );
+			pTransform->GetFinalValue().TransformPoint(oBounds.m_dRight, oBounds.m_dBottom);
+
+			*pTransform -= m_oTransformation.m_oTransform.GetMatrix();
+		}
 
 		return oBounds;
 	}

@@ -12,13 +12,13 @@ namespace SVG
 	void CGraphicsContainer::SetAttribute(const std::string& sName, CSvgReader& oReader)
 	{
 		if ("x" == sName)
-			m_oWindow.m_oX.SetValue(oReader.GetDouble());
+			m_oWindow.m_oX.SetValue(oReader.GetText());
 		else if ("y" == sName)
-			m_oWindow.m_oY.SetValue(oReader.GetDouble());
+			m_oWindow.m_oY.SetValue(oReader.GetText());
 		else if ("width" == sName)
-			m_oWindow.m_oWidth.SetValue(oReader.GetDouble());
+			m_oWindow.m_oWidth.SetValue(oReader.GetText());
 		else if ("height" == sName)
-			m_oWindow.m_oHeight.SetValue(oReader.GetDouble());
+			m_oWindow.m_oHeight.SetValue(oReader.GetText());
 		else if ("viewBox" == sName)
 		{
 			const std::vector<double> arValues{StrUtils::ReadDoubleValues(oReader.GetText())};
@@ -56,13 +56,10 @@ namespace SVG
 
 	TRect CGraphicsContainer::GetViewBox() const
 	{
-		if (m_oViewBox.m_oWidth.Empty() || m_oViewBox.m_oHeight.Empty())
-			return m_oWindow;
-
 		return m_oViewBox;
 	}
 
-	TBounds CGraphicsContainer::GetBounds() const
+	TBounds CGraphicsContainer::GetBounds(SvgMatrix* pTransform) const
 	{
 		TBounds oBounds, oTempBounds;
 
@@ -71,14 +68,20 @@ namespace SVG
 		oBounds.m_dRight  += m_oWindow.m_oWidth.ToDouble(NSCSS::Pixel);
 		oBounds.m_dBottom += m_oWindow.m_oHeight.ToDouble(NSCSS::Pixel);
 
+		if (nullptr != pTransform)
+			*pTransform += m_oTransformation.m_oTransform.GetMatrix();
+
 		for (const CRenderedObject* pObject : m_arObjects)
 		{
-			oTempBounds = pObject->GetBounds();
+			oTempBounds = pObject->GetBounds(pTransform);
 			oBounds.m_dLeft   = std::min(oBounds.m_dLeft, oTempBounds.m_dLeft);
 			oBounds.m_dTop    = std::min(oBounds.m_dTop, oTempBounds.m_dTop);
 			oBounds.m_dRight  = std::max(oBounds.m_dRight, oTempBounds.m_dRight);
 			oBounds.m_dBottom = std::max(oBounds.m_dBottom, oTempBounds.m_dBottom);
 		}
+
+		if (nullptr != pTransform)
+			*pTransform -= m_oTransformation.m_oTransform.GetMatrix();
 
 		return oBounds;
 	}

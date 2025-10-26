@@ -21,7 +21,7 @@ namespace SVG
 	private:
 		void ApplyStyle(IRenderer* pRenderer, const TSvgStyles* pStyles, const CSvgFile* pFile, int& nTypePath, const CRenderedObject* pContexObject = NULL) const override;
 
-		TBounds GetBounds() const override;
+		TBounds GetBounds(SvgMatrix* pTransform = nullptr) const override;
 
 		TRect    m_oRect;
 

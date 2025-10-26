@@ -43,6 +43,8 @@ class CSvgFile
 	private:
 		void Clear();
 
+		bool CalculateFinalSize(bool bUseViewBox, double& dX, double& dY, double& dWidth, double& dHeight) const;
+
 		SVG::CGraphicsContainer *m_pContainer;
 		SVG::CSvgCalculator      m_oSvgCalculator;
 		NSFonts::IFontManager   *m_pFontManager;

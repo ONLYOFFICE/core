@@ -19,13 +19,13 @@ namespace SVG
 	void CEllipse::SetAttribute(const std::string& sName, CSvgReader& oReader)
 	{
 		if ("cx" == sName)
-			m_oCx.SetValue(oReader.GetDouble());
+			m_oCx.SetValue(oReader.GetText());
 		else if ("cy" == sName)
-			m_oCy.SetValue(oReader.GetDouble());
+			m_oCy.SetValue(oReader.GetText());
 		else if ("rx" == sName)
-			m_oRx.SetValue(oReader.GetDouble());
+			m_oRx.SetValue(oReader.GetText());
 		else if ("ry" == sName)
-			m_oRy.SetValue(oReader.GetDouble());
+			m_oRy.SetValue(oReader.GetText());
 		else
 			CRenderedObject::SetAttribute(sName, oReader);
 	}
@@ -64,7 +64,7 @@ namespace SVG
 			nTypePath += c_nWindingFillMode;
 	}
 
-	TBounds CEllipse::GetBounds() const
+	TBounds CEllipse::GetBounds(SvgMatrix* pTransform) const
 	{
 		TBounds oBounds;
 
@@ -72,6 +72,16 @@ namespace SVG
 		oBounds.m_dTop    = m_oCy.ToDouble(NSCSS::Pixel);
 		oBounds.m_dRight  = oBounds.m_dLeft + m_oRx.ToDouble(NSCSS::Pixel);
 		oBounds.m_dBottom = oBounds.m_dTop  + m_oRy.ToDouble(NSCSS::Pixel);;
+
+		if (nullptr != pTransform)
+		{
+			*pTransform += m_oTransformation.m_oTransform.GetMatrix();
+
+			pTransform->GetFinalValue().TransformPoint(oBounds.m_dLeft,  oBounds.m_dTop   );
+			pTransform->GetFinalValue().TransformPoint(oBounds.m_dRight, oBounds.m_dBottom);
+
+			*pTransform -= m_oTransformation.m_oTransform.GetMatrix();
+		}
 
 		return oBounds;
 	}

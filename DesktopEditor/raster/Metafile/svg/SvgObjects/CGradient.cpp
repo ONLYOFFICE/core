@@ -149,13 +149,13 @@ namespace SVG
 	void CLinearGradient::SetAttribute(const std::string& sName, CSvgReader& oReader)
 	{
 		if ("x1" == sName)
-			m_oX1.SetValue(oReader.GetDouble());
+			m_oX1.SetValue(oReader.GetText());
 		else if ("y1" == sName)
-			m_oY1.SetValue(oReader.GetDouble());
+			m_oY1.SetValue(oReader.GetText());
 		else if ("x2" == sName)
-			m_oX2.SetValue(oReader.GetDouble());
+			m_oX2.SetValue(oReader.GetText());
 		else if ("y2" == sName)
-			m_oY2.SetValue(oReader.GetDouble());
+			m_oY2.SetValue(oReader.GetText());
 		else
 			CGradient::SetAttribute(sName, oReader);
 	}
@@ -210,11 +210,11 @@ namespace SVG
 	void CRadialGradient::SetAttribute(const std::string& sName, CSvgReader& oReader)
 	{
 		if ("cx" == sName)
-			m_oCx.SetValue(oReader.GetDouble());
+			m_oCx.SetValue(oReader.GetText());
 		else if ("cy" == sName)
-			m_oCy.SetValue(oReader.GetDouble());
+			m_oCy.SetValue(oReader.GetText());
 		else if ("r" == sName)
-			m_oR.SetValue(oReader.GetDouble());
+			m_oR.SetValue(oReader.GetText());
 		else
 			CGradient::SetAttribute(sName, oReader);
 	}

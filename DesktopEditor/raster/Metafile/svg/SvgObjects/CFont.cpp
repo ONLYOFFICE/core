@@ -51,7 +51,7 @@ namespace SVG
 		else if ("font-weight" == sName)
 			m_oArguments.m_wsFontWidght = oReader.GetText();
 		else if ("horiz-adv-x" == sName)
-			m_oHorizAdvX.SetValue(oReader.GetDouble());
+			m_oHorizAdvX.SetValue(oReader.GetText());
 		else
 			CAppliedObject::SetAttribute(sName, oReader);
 	}

@@ -89,8 +89,8 @@ namespace SVG
 
 		TRect GetWindow() const;
 		TRect GetViewBox() const;
+		TBounds GetBounds(SvgMatrix* pTransform = nullptr) const override;
 	private:
-		TBounds GetBounds() const override;
 
 		friend class CPattern;
 		friend class CMarker;

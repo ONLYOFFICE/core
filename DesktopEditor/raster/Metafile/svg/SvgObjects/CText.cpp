@@ -19,7 +19,6 @@
 
 namespace SVG
 {
-	#define DEFAULT_TSPAN_FONT_SIZE 16
 	#define DefaultFontFamily L"Times New Roman"
 	#define MIN_FONT_SIZE 5
 	#define MAX_FONT_SIZE 100
@@ -29,24 +28,18 @@ namespace SVG
 	CTSpan::CTSpan(CSvgReader& oReader, CRenderedObject* pParent, NSFonts::IFontManager* pFontManager, const Point &oPosition)
 		: CRenderedObject(oReader, pParent), m_pFontManager(pFontManager),
 		  m_oX(oPosition.dX), m_oY(oPosition.dY)
-	{
-		m_oFont.UpdateSize(DEFAULT_TSPAN_FONT_SIZE, DEFAULT_TSPAN_FONT_SIZE);
-	}
+	{}
 
 	CTSpan::CTSpan(const CTSpan& oTSpan, double dX, const std::wstring& wsText)
 		: CRenderedObject(oTSpan), m_pFontManager(oTSpan.m_pFontManager),
 		  m_oX(dX), m_oY(oTSpan.m_oY), m_wsText(wsText),
 		  m_oFont(oTSpan.m_oFont), m_oText(oTSpan.m_oText)
-	{
-		m_oFont.UpdateSize(DEFAULT_TSPAN_FONT_SIZE, DEFAULT_TSPAN_FONT_SIZE);
-	}
+	{}
 
 	CTSpan::CTSpan(wchar_t wChar, const Point& oPosition, CRenderedObject* pParent, NSFonts::IFontManager* pFontManager)
 		: CRenderedObject(NSCSS::CNode(L"tspan", L"", L""), pParent), m_pFontManager(pFontManager),
 		  m_oX(oPosition.dX), m_oY(oPosition.dY)
-	{
-		m_oFont.UpdateSize(DEFAULT_TSPAN_FONT_SIZE, DEFAULT_TSPAN_FONT_SIZE);
-	}
+	{}
 
 	CTSpan::~CTSpan()
 	{}
@@ -54,9 +47,9 @@ namespace SVG
 	void CTSpan::SetAttribute(const std::string& sName, CSvgReader& oReader)
 	{
 		if ("x" == sName)
-			m_oX.SetValue(oReader.GetDouble());
+			m_oX.SetValue(oReader.GetText());
 		else if ("y" == sName)
-			m_oY.SetValue(oReader.GetDouble());
+			m_oY.SetValue(oReader.GetText());
 		else
 			CRenderedObject::SetAttribute(sName, oReader);
 	}
@@ -70,13 +63,22 @@ namespace SVG
 
 		//FONT
 		if (mAttributes.end() != mAttributes.find(L"font"))
+		{
 			m_oFont.SetValue(mAttributes.at(L"font"), ushLevel, bHardMode);
+			UpdateFontSize();
+		}
 
 		if (mAttributes.end() != mAttributes.find(L"font-size"))
+		{
 			m_oFont.SetSize(mAttributes.at(L"font-size"), ushLevel, bHardMode);
+			UpdateFontSize();
+		}
 
 		if (mAttributes.end() != mAttributes.find(L"font-size-adjust"))
+		{
 			m_oFont.SetSize(mAttributes.at(L"font-size-adjust"), ushLevel, bHardMode);
+			UpdateFontSize();
+		}
 
 		if (mAttributes.end() != mAttributes.find(L"font-stretch"))
 			m_oFont.SetStretch(mAttributes.at(L"font-stretch"), ushLevel, bHardMode);
@@ -94,7 +96,10 @@ namespace SVG
 			m_oFont.SetFamily(mAttributes.at(L"font-family"), ushLevel, bHardMode);
 
 		if (mAttributes.end() != mAttributes.find(L"line-height"))
+		{
 			m_oFont.SetLineHeight(mAttributes.at(L"line-height"), ushLevel, bHardMode);
+			UpdateFontSize();
+		}
 
 		//TEXT
 		if (mAttributes.end() != mAttributes.find(L"text-anchor"))
@@ -131,7 +136,7 @@ namespace SVG
 					const char* pCheckValue = pValue;
 					while ('\0' != *pCheckValue)
 					{
-						if (isprint(*pCheckValue++))
+						if (0x32 >= *pCheckValue++)
 						{
 							bFoundedSymbol = true;
 							break;
@@ -226,7 +231,7 @@ namespace SVG
 	void CTSpan::ApplyFont(IRenderer* pRenderer, double& dX, double& dY) const
 	{
 		std::wstring wsFontFamily = DefaultFontFamily;
-		double dFontSize = m_oFont.GetSize().ToDouble(NSCSS::Pixel) * 72. / 25.4;
+		double dFontSize = ((!m_oFont.GetSize().Empty()) ? m_oFont.GetSize().ToDouble(NSCSS::Pixel) : DEFAULT_FONT_SIZE) * 72. / 25.4;
 
 		Normalize(pRenderer, dX, dY, dFontSize);
 
@@ -259,7 +264,6 @@ namespace SVG
 			m_pFontManager->SetCharSpacing(0);
 
 			double dKoef     = 25.4 / 72.;
-
 
 			NSFonts::IFontFile* pFontFile = m_pFontManager->GetFile();
 
@@ -326,6 +330,22 @@ namespace SVG
 		pRenderer->put_BrushAlpha1(255);
 	}
 
+	void CTSpan::UpdateFontSize()
+	{
+		if (NULL != m_pParent)
+		{
+			const CTSpan* pParentTSpan{dynamic_cast<const CTSpan*>(m_pParent)};
+
+			if (NULL != pParentTSpan)
+			{
+				m_oFont.UpdateSize((!pParentTSpan->m_oFont.GetSize().Empty()) ? pParentTSpan->m_oFont.GetSize().ToDouble(NSCSS::Pixel) : DEFAULT_FONT_SIZE, DEFAULT_FONT_SIZE);
+				return;
+			}
+		}
+
+		m_oFont.UpdateSize(DEFAULT_FONT_SIZE, DEFAULT_FONT_SIZE);
+	}
+
 	bool CTSpan::UseExternalFont(const CSvgFile *pFile, double dX, double dY, IRenderer *pRenderer, CommandeMode oMode, const TSvgStyles *pOtherStyles, const CRenderedObject* pContexObject) const
 	{
 		std::wstring wsFontFamily = DefaultFontFamily;
@@ -353,27 +373,39 @@ namespace SVG
 		return true;
 	}
 
-	TBounds CTSpan::GetBounds() const
+	TBounds CTSpan::GetBounds(SvgMatrix* pTransform) const
 	{
 		TBounds oBounds;
 
 		oBounds.m_dLeft   = m_oX.ToDouble(NSCSS::Pixel);
-		oBounds.m_dTop    = m_oY.ToDouble(NSCSS::Pixel);
 		oBounds.m_dRight  = oBounds.m_dLeft + GetWidth();
-		oBounds.m_dBottom = oBounds.m_dTop  + m_oFont.GetSize().ToDouble(NSCSS::Pixel) * 72. / 25.4;
+
+		oBounds.m_dBottom = m_oY.ToDouble(NSCSS::Pixel);
+		oBounds.m_dTop    = oBounds.m_dBottom + ((!m_oFont.GetSize().Empty()) ? m_oFont.GetSize().ToDouble(NSCSS::Pixel) : DEFAULT_FONT_SIZE);
+
+		if (nullptr != pTransform)
+		{
+			*pTransform += m_oTransformation.m_oTransform.GetMatrix();
+
+			pTransform->GetFinalValue().TransformPoint(oBounds.m_dLeft,  oBounds.m_dTop   );
+			pTransform->GetFinalValue().TransformPoint(oBounds.m_dRight, oBounds.m_dBottom);
+		}
 
 		if (!m_arObjects.empty())
 		{
 			TBounds oTempBounds;
 			for (const CRenderedObject* pObject : m_arObjects)
 			{
-				oTempBounds = pObject->GetBounds();
+				oTempBounds = pObject->GetBounds(pTransform);
 				oBounds.m_dLeft   = std::min(oBounds.m_dLeft, oTempBounds.m_dLeft);
 				oBounds.m_dTop    = std::min(oBounds.m_dTop, oTempBounds.m_dTop);
 				oBounds.m_dRight  = std::max(oBounds.m_dRight, oTempBounds.m_dRight);
 				oBounds.m_dBottom = std::max(oBounds.m_dBottom, oTempBounds.m_dBottom);
 			}
 		}
+
+		if (nullptr != pTransform)
+			*pTransform -= m_oTransformation.m_oTransform.GetMatrix();
 
 		return oBounds;
 	}
@@ -384,7 +416,7 @@ namespace SVG
 			return 0.;
 
 		std::wstring wsName = DefaultFontFamily;
-		double dSize = (!m_oFont.GetSize().Zero()) ? m_oFont.GetSize().ToDouble(NSCSS::Pixel) : DEFAULT_TSPAN_FONT_SIZE;
+		const double dSize = (!m_oFont.GetSize().Empty()) ? m_oFont.GetSize().ToDouble(NSCSS::Pixel) : DEFAULT_FONT_SIZE;
 
 		if (!m_oFont.GetFamily().Empty())
 		{
@@ -545,7 +577,9 @@ namespace SVG
 
 	CText::CText(CSvgReader& oReader, CRenderedObject *pParent, NSFonts::IFontManager* pFontManager)
 	    : CTSpan(oReader, pParent, pFontManager)
-	{}
+	{
+		m_oFont.UpdateSize(DEFAULT_FONT_SIZE, DEFAULT_FONT_SIZE);
+	}
 
 	bool CText::Draw(IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode, const TSvgStyles *pOtherStyles, const CRenderedObject* pContexObject) const
 	{

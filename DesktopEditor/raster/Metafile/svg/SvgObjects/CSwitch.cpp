@@ -17,7 +17,7 @@ namespace SVG
 		return false;
 	}
 
-	TBounds CSwitch::GetBounds() const
+	TBounds CSwitch::GetBounds(SvgMatrix* pTransform) const
 	{
 		for (const CRenderedObject* pObject : m_arObjects)
 			if (NULL != pObject)

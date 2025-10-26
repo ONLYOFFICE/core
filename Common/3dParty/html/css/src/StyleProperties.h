@@ -302,6 +302,8 @@ namespace NSCSS
 		void ApplyTranform(Aggplus::CMatrix& oMatrix, Aggplus::MatrixOrder order = Aggplus::MatrixOrderPrepend) const;
 
 		bool operator==(const CMatrix& oMatrix) const;
+		CMatrix& operator+=(const CMatrix& oMatrix);
+		CMatrix& operator-=(const CMatrix& oMatrix);
 	};
 
 	class CEnum : public CValue<int>

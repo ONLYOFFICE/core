@@ -20,13 +20,13 @@ namespace SVG
 	void CMarker::SetAttribute(const std::string& sName, CSvgReader& oReader)
 	{
 		if ("refX" == sName)
-			m_oWindow.m_oX.SetValue(oReader.GetDouble());
+			m_oWindow.m_oX.SetValue(oReader.GetText());
 		else if ("refY" == sName)
-			m_oWindow.m_oY.SetValue(oReader.GetDouble());
+			m_oWindow.m_oY.SetValue(oReader.GetText());
 		else if ("markerWidth" == sName)
-			m_oWindow.m_oWidth.SetValue(oReader.GetDouble());
+			m_oWindow.m_oWidth.SetValue(oReader.GetText());
 		else if ("markerHeight" == sName)
-			m_oWindow.m_oHeight.SetValue(oReader.GetDouble());
+			m_oWindow.m_oHeight.SetValue(oReader.GetText());
 		else if ("viewBox" == sName)
 		{
 			const  std::vector<double> arValues{StrUtils::ReadDoubleValues(oReader.GetText())};

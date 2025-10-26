@@ -133,7 +133,7 @@ namespace SVG
 
 		virtual bool Draw(IRenderer* pRenderer, const CSvgFile *pFile, CommandeMode oMode = CommandeModeDraw, const TSvgStyles* pStyles = NULL, const CRenderedObject* pContextObject = NULL) const = 0;
 
-		virtual TBounds GetBounds() const = 0;
+		virtual TBounds GetBounds(SvgMatrix* pTransform = nullptr) const = 0;
 
 		std::vector<NSCSS::CNode> GetFullPath() const override;
 	private:

@@ -12,7 +12,7 @@ namespace SVG
 	public:
 		bool Draw(IRenderer* pRenderer, const CSvgFile *pFile, CommandeMode oMode = CommandeModeDraw, const TSvgStyles* pStyles = NULL, const CRenderedObject* pContexObject = NULL) const override;
 
-		TBounds GetBounds() const override;
+		TBounds GetBounds(SvgMatrix* pTransform = nullptr) const override;
 	};
 }
 #endif // CSWITCH_H

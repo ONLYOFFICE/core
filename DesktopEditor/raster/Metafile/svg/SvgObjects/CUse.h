@@ -19,7 +19,7 @@ namespace SVG
 
 		bool Draw(IRenderer* pRenderer, const CSvgFile* pFile, CommandeMode oMode = CommandeModeDraw, const TSvgStyles* pOtherStyles = NULL, const CRenderedObject* pContexObject = NULL) const override;
 	private:
-		TBounds GetBounds() const override;
+		TBounds GetBounds(SvgMatrix* pTransform = nullptr) const override;
 
 		CRenderedObject *m_pUsedObject;
 

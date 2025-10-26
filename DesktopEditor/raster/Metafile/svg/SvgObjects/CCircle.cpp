@@ -15,11 +15,11 @@ namespace SVG
 	void CCircle::SetAttribute(const std::string& sName, CSvgReader& oReader)
 	{
 		if ("cx" == sName)
-			m_oCx.SetValue(oReader.GetDouble());
+			m_oCx.SetValue(oReader.GetText());
 		else if ("cy" == sName)
-			m_oCy.SetValue(oReader.GetDouble());
+			m_oCy.SetValue(oReader.GetText());
 		else if ("r" == sName)
-			m_oR.SetValue(oReader.GetDouble());
+			m_oR.SetValue(oReader.GetText());
 		else
 			CRenderedObject::SetAttribute(sName, oReader);
 	}
@@ -62,7 +62,7 @@ namespace SVG
 			nTypePath += c_nWindingFillMode;
 	}
 
-	TBounds CCircle::GetBounds() const
+	TBounds CCircle::GetBounds(SvgMatrix* pTransform) const
 	{
 		TBounds oBounds;
 
@@ -70,6 +70,16 @@ namespace SVG
 		oBounds.m_dTop    = (m_oCy - m_oR).ToDouble(NSCSS::Pixel);
 		oBounds.m_dRight  = (m_oCx + m_oR).ToDouble(NSCSS::Pixel);
 		oBounds.m_dBottom = (m_oCy + m_oR).ToDouble(NSCSS::Pixel);
+
+		if (nullptr != pTransform)
+		{
+			*pTransform += m_oTransformation.m_oTransform.GetMatrix();
+
+			pTransform->GetFinalValue().TransformPoint(oBounds.m_dLeft,  oBounds.m_dTop   );
+			pTransform->GetFinalValue().TransformPoint(oBounds.m_dRight, oBounds.m_dBottom);
+
+			*pTransform -= m_oTransformation.m_oTransform.GetMatrix();
+		}
 
 		return oBounds;
 	}

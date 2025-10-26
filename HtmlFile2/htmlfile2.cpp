@@ -3053,6 +3053,13 @@ private:
 			return false;
 
 		std::wstring sNote = GetSubClass(oXml, sSelectors);
+
+		if (NULL != sSelectors.back().m_pCompiledStyle && L"none" == sSelectors.back().m_pCompiledStyle->m_oDisplay.GetDisplay().ToWString())
+		{
+			sSelectors.pop_back();
+			return false;
+		}
+
 		bool bResult = true;
 
 		const HtmlTag eHtmlTag{GetHtmlTag(sName)};

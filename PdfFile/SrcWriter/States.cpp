@@ -36,6 +36,7 @@
 #include "FontCidTT.h"
 #include "../PdfWriter.h"
 #include "Streams.h"
+#include "Utils.h"
 
 //----------------------------------------------------------------------------------------
 //
@@ -448,12 +449,17 @@ void CPath::Redact(PdfWriter::CMatrix* pMatrix, const std::vector<double>& arrRe
 	{
 		bool bPath = false;
 		std::vector<PdfWriter::CSegment> arrForStroke;
+		std::vector<std::vector<PdfWriter::CPoint>> rectangles;
 		for (int i = 0; i < arrRedact.size(); i += 8)
 		{
 			arrForStroke.push_back(PdfWriter::CSegment(PdfWriter::CPoint(arrRedact[i + 0], arrRedact[i + 1]), PdfWriter::CPoint(arrRedact[i + 2], arrRedact[i + 3])));
 			arrForStroke.push_back(PdfWriter::CSegment(PdfWriter::CPoint(arrRedact[i + 2], arrRedact[i + 3]), PdfWriter::CPoint(arrRedact[i + 4], arrRedact[i + 5])));
 			arrForStroke.push_back(PdfWriter::CSegment(PdfWriter::CPoint(arrRedact[i + 4], arrRedact[i + 5]), PdfWriter::CPoint(arrRedact[i + 6], arrRedact[i + 7])));
 			arrForStroke.push_back(PdfWriter::CSegment(PdfWriter::CPoint(arrRedact[i + 6], arrRedact[i + 7]), PdfWriter::CPoint(arrRedact[i + 0], arrRedact[i + 1])));
+
+			std::vector<PdfWriter::CPoint> rectangle = { PdfWriter::CPoint(arrRedact[i + 0], arrRedact[i + 1]), PdfWriter::CPoint(arrRedact[i + 2], arrRedact[i + 3]),
+											  PdfWriter::CPoint(arrRedact[i + 4], arrRedact[i + 5]), PdfWriter::CPoint(arrRedact[i + 6], arrRedact[i + 7]) };
+			rectangles.push_back(rectangle);
 		}
 
 		size_t length = oPath.GetPointCount(), compound = oPath.GetCloseCount();
@@ -481,7 +487,7 @@ void CPath::Redact(PdfWriter::CMatrix* pMatrix, const std::vector<double>& arrRe
 				dXCur = dX3, dYCur = dY3;
 
 				oPathResult = Aggplus::CalcBooleanOperation(_oPath, oPathRedact, Aggplus::BooleanOpType::Subtraction);
-				bPath = bPath || DrawPathRedact(pMatrix, &oPathResult, bStroke, arrForStroke);
+				bPath = DrawPathRedact(pMatrix, &oPathResult, bStroke, arrForStroke) || bPath;
 				oPathResult.Reset();
 			}
 			else if (oPath.IsMovePoint(i))
@@ -492,26 +498,11 @@ void CPath::Redact(PdfWriter::CMatrix* pMatrix, const std::vector<double>& arrRe
 			else if (oPath.IsLinePoint(i))
 			{
 				double dX = points[i].X, dY = points[i].Y;
-
-				Aggplus::CGraphicsPath _oPath;
-				_oPath.StartFigure();
-				_oPath.MoveTo(dXCur, dYCur);
-				_oPath.LineTo(dX, dY);
-				_oPath.CloseFigure();
-
-				dXCur = dX, dYCur = dY;
-
-				oPathResult = Aggplus::CalcBooleanOperation(_oPath, oPathRedact, Aggplus::BooleanOpType::Subtraction);
-				bPath = bPath || DrawPathRedact(pMatrix, &oPathResult, bStroke);
-				oPathResult.Reset();
-
-				/*
-				PdfWriter::CLineClipper clipper(rectangles);
 				PdfWriter::CSegment line(PdfWriter::CPoint(dXCur, dYCur), PdfWriter::CPoint(dX, dY));
 				dXCur = dX; dYCur = dY;
 
-				auto visibleSegments = clipper.getVisibleSegments(line);
-				bPath = bPath || visibleSegments.size() != 0;
+				auto visibleSegments = PdfWriter::RectangleIntersection::findSegmentsOutsideRectangles(line, rectangles);
+				bPath = visibleSegments.size() != 0 || bPath;
 				for (int i = 0; i < visibleSegments.size(); ++i)
 				{
 					double dX1 = visibleSegments[i].start.x, dY1 = visibleSegments[i].start.y;
@@ -521,24 +512,12 @@ void CPath::Redact(PdfWriter::CMatrix* pMatrix, const std::vector<double>& arrRe
 					MoveTo(dX1, dY1);
 					LineTo(dX2, dY2);
 				}
-				*/
 			}
 			else if (oPath.IsClosePoint(i))
 			{
-				Aggplus::CGraphicsPath _oPath;
-				_oPath.StartFigure();
-				_oPath.MoveTo(dXCur, dYCur);
-				_oPath.LineTo(dXStart, dYStart);
-				_oPath.CloseFigure();
-
-				oPathResult = Aggplus::CalcBooleanOperation(_oPath, oPathRedact, Aggplus::BooleanOpType::Subtraction);
-				bPath = bPath || DrawPathRedact(pMatrix, &oPathResult, bStroke);
-				oPathResult.Reset();
-				/*
-				PdfWriter::CLineClipper clipper(rectangles);
 				PdfWriter::CSegment line(PdfWriter::CPoint(dXCur, dYCur), PdfWriter::CPoint(dXStart, dYStart));
-				auto visibleSegments = clipper.getVisibleSegments(line);
-				bPath = bPath || visibleSegments.size() != 0;
+				auto visibleSegments = PdfWriter::RectangleIntersection::findSegmentsOutsideRectangles(line, rectangles);
+				bPath = visibleSegments.size() != 0 || bPath;
 				for (int i = 0; i < visibleSegments.size(); ++i)
 				{
 					double dX1 = visibleSegments[i].start.x, dY1 = visibleSegments[i].start.y;
@@ -548,7 +527,6 @@ void CPath::Redact(PdfWriter::CMatrix* pMatrix, const std::vector<double>& arrRe
 					MoveTo(dX1, dY1);
 					LineTo(dX2, dY2);
 				}
-				*/
 			}
 		}
 

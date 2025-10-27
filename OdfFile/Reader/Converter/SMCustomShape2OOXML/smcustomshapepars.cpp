@@ -156,6 +156,11 @@ namespace OdfCustomShape
 			m_wsNumber = L"h";
 		else if(m_wsNumber == L"width")
 			m_wsNumber = L"w";
+		else if(m_wsNumber[0] == L'\u0024' && m_wsNumber.size() >1)
+			m_wsNumber = m_wsNumber.substr(1,m_wsNumber.size());
+		else if(m_wsNumber == L"L\u0024")
+			m_wsNumber = L"0";
+
 	}
 	bool CElementNumber::CheckNumber(const std::wstring& wsNumber)
 	{
@@ -551,6 +556,8 @@ namespace OdfCustomShape
 				m_stEndBrecket.push(m_itEnd);
 				m_itEnd = m_itStart;
 				m_itStart = itStartTemp;
+				if(m_wsElement == L"(")
+					m_wsElement.clear();
 				return;
 			}
 			else if(*m_itStart == L')' && uiOpenBracket != 0)
@@ -659,6 +666,8 @@ namespace OdfCustomShape
 			return TypeElement::max;
 		else if(wsFunction == L"atan")
 			return TypeElement::atan;
+		else if(wsFunction == L"atan2")
+			return TypeElement::atan2;
 		else if(wsFunction == L"logheight")
 			return TypeElement::logheight;
 		else if(wsFunction == L"logwidth")
@@ -772,6 +781,7 @@ namespace OdfCustomShape
 		case TypeElement::sin:
 		case TypeElement::cos:
 		case TypeElement::atan:
+		case TypeElement::atan2:
 		case TypeElement::tan:
 		{
 			std::wstring wsFormula;
@@ -782,11 +792,17 @@ namespace OdfCustomShape
 				wsFormula = L"cos";
 			else if(m_enTypeFunction == TypeElement::tan)
 				wsFormula = L"tan";
-			else
-				wsFormula = L"at2";
-
-			wsFormula += L" 1 ";
-			ConvertBracketsForTrigonometry(pXmlWriter,wsFormula);
+			else if(m_enTypeFunction == TypeElement::atan || m_enTypeFunction == TypeElement::atan2)
+				wsFormula = L"at2 ";
+			if(m_enTypeFunction != TypeElement::atan2)
+				wsFormula += L" 1 ";
+			if(!ConvertBracketsForTrigonometry(pXmlWriter,wsFormula,m_enTypeFunction))
+			{
+				if(m_enTypeFunction != TypeElement::atan2)
+					wsFormula += L"0 ";
+				else
+					wsFormula += L" 0 0 ";
+			}
 			SMCustomShapeConversion::WritingFormulaXml(pXmlWriter,GetNameFormula(),wsFormula);
 			break;
 		}
@@ -798,7 +814,7 @@ namespace OdfCustomShape
 		}
 		case TypeElement::pi:
 		{
-			SMCustomShapeConversion::WritingFormulaXml(pXmlWriter,GetNameFormula(),L"+/ 0 314 100");
+			SMCustomShapeConversion::WritingFormulaXml(pXmlWriter,GetNameFormula(),L"+/ 0 355 113");
 		}
 		default:
 			break;
@@ -830,21 +846,31 @@ namespace OdfCustomShape
 			pElement->ConversionOOXml(pXmlWriter,wsNewName);
 		}
 	}
-	void CElementFunction::ConvertBracketsForTrigonometry(XmlUtils::CXmlWriter* pXmlWriter, std::wstring& wsFormula)
+	bool CElementFunction::ConvertBracketsForTrigonometry(XmlUtils::CXmlWriter* pXmlWriter, std::wstring& wsFormula, const TypeElement &enTypeFunc)
 	{
 		if(m_pValue->GetBaseType() == TypeElement::Bracket)
 		{
 			CElementBracket* pBracket = dynamic_cast<CElementBracket*>(m_pValue);
 			std::vector<CElement*> arVec = pBracket->GetVector();
 			if(arVec.empty())
-				wsFormula += L"0 ";
-			else if(arVec[0] != nullptr && arVec[0]->GetBaseType() != TypeElement::comma)
-				ConversionElement(pXmlWriter,arVec[0],wsFormula);
+				return false;
+			else
+				for(unsigned int i = 0 ; i < arVec.size();i++)
+				{
+					if(arVec[i] != nullptr && arVec[i]->GetBaseType() != TypeElement::comma)
+						ConversionElement(pXmlWriter,arVec[0],wsFormula);
+					else
+						wsFormula += L"0 ";
+					if((enTypeFunc != TypeElement::atan2 && i == 0) || (enTypeFunc == TypeElement::atan2 && i == 1))
+						return true;
+				}
 		}
-		else if(m_pValue->GetBaseType() != TypeElement::comma)
+		else if(m_pValue != nullptr && m_pValue->GetBaseType() != TypeElement::comma)
+		{
 			ConversionElement(pXmlWriter,m_pValue,wsFormula);
-		else
-			wsFormula += L"1 ";
+			return true;
+		}
+	    return false;
 	}
 //CElementComma
 	CElementComma::CElementComma()

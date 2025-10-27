@@ -42,6 +42,8 @@ BiffStructurePtr FtEdoData::clone()
 
 void FtEdoData::load(CFRecord& record)
 {
+	//ft(2 bytes) : Reserved.MUST be 0x0010.
+	//cb(2 bytes) : Reserved.MUST be 0x0008.
 	unsigned short ft, cb;
 	record >> ft >> cb;
 

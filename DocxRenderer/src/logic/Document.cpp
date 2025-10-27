@@ -21,12 +21,10 @@ namespace NSDocxRenderer
 	}
 	void CDocument::Clear()
 	{
+		m_oPageBuilder.Clear();
 		NewPage();
 
-		for(auto& val : m_mapXmlString)
-			delete val.second;
-
-		m_mapXmlString.clear();
+		m_arXmlString.clear();
 		m_lCurrentCommandType = 0;
 		m_oImageManager.Clear();
 		m_oFontStyleManager.Clear();
@@ -568,11 +566,16 @@ namespace NSDocxRenderer
 			m_lCurrentCommandType = -1;
 			m_oCurrentPage.m_lCurrentCommand = m_lCurrentCommandType;
 
-			auto pWriter = new NSStringUtils::CStringBuilder();
-			pWriter->AddSize(100000);
+			if (0 == m_oPageBuilder.GetSize())
+				m_oPageBuilder.AddSize(100000);
+			m_oPageBuilder.ClearNoAttack();
+
 			m_oCurrentPage.Analyze();
-			m_oCurrentPage.Record(*pWriter, m_lPageNum >= m_lNumberPages - 1);
-			m_mapXmlString[m_lPageNum] = pWriter;
+			m_oCurrentPage.Record(m_oPageBuilder, m_lPageNum >= m_lNumberPages - 1);
+			m_arXmlString.push_back(NSFile::CUtf8Converter::GetUtf8StringFromUnicode2(m_oPageBuilder.GetBuffer(), (LONG)m_oPageBuilder.GetCurSize()));
+
+			if (m_oPageBuilder.GetCurSize() > 100000000/*100Mb*/)
+				m_oPageBuilder.Clear();
 		}
 		else
 			m_oCurrentPage.EndCommand(lType);
@@ -867,9 +870,9 @@ namespace NSDocxRenderer
 		        mc:Ignorable=\"w14 w15 w16se w16cid w16 w16cex w16sdtdh wp14\">\
 		        <w:body>");
 
-		        for (size_t i = 0; i < m_mapXmlString.size(); ++i)
+		for (std::list<std::string>::const_iterator i = m_arXmlString.cbegin(); i != m_arXmlString.cend(); ++i)
 		{
-			oDocumentStream.WriteStringUTF8(m_mapXmlString[i]->GetData());
+			oDocumentStream.WriteFile((const BYTE*)i->c_str(), (LONG)i->length());
 		}
 
 		oDocumentStream.WriteStringUTF8(L"</w:body></w:document>");

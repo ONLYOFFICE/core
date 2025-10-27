@@ -215,7 +215,7 @@ void RtfShape::SetDefault()
 	DEFAULT_PROPERTY( m_nConnectorStyle )
 
 //Fill
-    DEFAULT_PROPERTY_DEF( m_bFilled, false )
+    DEFAULT_PROPERTY_DEF( m_bFilled, true )
 	DEFAULT_PROPERTY( m_nFillType )
 	DEFAULT_PROPERTY( m_nFillColor )
 	DEFAULT_PROPERTY( m_nFillColor2 )

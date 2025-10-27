@@ -871,7 +871,7 @@ HRESULT CPdfWriter::PathCommandEnd()
 	m_oPath.Clear();
 	return S_OK;
 }
-HRESULT CPdfWriter::DrawPath(NSFonts::IApplicationFonts* pAppFonts, const std::wstring& wsTempDirectory, const LONG& lType)
+HRESULT CPdfWriter::DrawPath(NSFonts::IApplicationFonts* pAppFonts, const std::wstring& wsTempDirectory, const LONG& lType, bool bIgnoreRedact)
 {
 	m_oCommandManager.Flush();
 
@@ -905,7 +905,7 @@ HRESULT CPdfWriter::DrawPath(NSFonts::IApplicationFonts* pAppFonts, const std::w
 		UpdateBrush(pAppFonts, wsTempDirectory);
 	}
 
-	if (!m_arrRedact.empty())
+	if (!bIgnoreRedact && !m_arrRedact.empty())
 	{
 		PdfWriter::CMatrix* pMatrix = m_pPage->GetTransform();
 		m_oPath.Redact(pMatrix, m_arrRedact, m_pPage, bStroke, bFill, bEoFill, m_pShading, m_pShadingExtGrState);
@@ -1928,7 +1928,7 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 		oInfo.GetBE(nS, dI);
 		pAnnot->SetBE(nS, dI);
 	}
-	if (nFlags & (1 << 3))
+	if ((nFlags & (1 << 3)) && !oInfo.IsFreeText())
 		pAnnot->SetC(oInfo.GetC());
 	if (nFlags & (1 << 4))
 	{
@@ -1983,9 +1983,10 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 		if (nFlags & (1 << 3))
 		{
 			NSStringUtils::CStringBuilder oRC;
-			oRC += L"<?xml version=\"1.0\"?><body xmlns=\"http://www.w3.org/1999/xhtml\" xmlns:xfa=\"http://www.xfa.org/schema/xfa-data/1.0/\" xfa:APIVersion=\"Acrobat:23.8.0\"  xfa:spec=\"2.0.2\"><p dir=\"ltr\">";
+			oRC += L"<?xml version=\"1.0\"?><body xmlns=\"http://www.w3.org/1999/xhtml\" xmlns:xfa=\"http://www.xfa.org/schema/xfa-data/1.0/\" xfa:APIVersion=\"Acrobat:23.8.0\"  xfa:spec=\"2.0.2\">";
 			std::vector<CAnnotFieldInfo::CMarkupAnnotPr::CFontData*> arrRC = pPr->GetRC();
 
+			bool bCurRTL = false;
 			if (!arrRC.empty())
 			{
 				NSStringUtils::CStringBuilder oDS;
@@ -2005,10 +2006,19 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 								   (unsigned char)(arrRC[0]->dColor[1] * 255.0),
 								   (unsigned char)(arrRC[0]->dColor[2] * 255.0));
 				sDefaultStyle = oDS.GetData();
+
+				bCurRTL = (arrRC[0]->nFontFlag >> 7) & 1;
 			}
 
+			oRC += (bCurRTL ? L"<p dir=\"rtl\">" : L"<p dir=\"ltr\">");
 			for (int i = 0; i < arrRC.size(); ++i)
 			{
+				bool bRTL = (arrRC[i]->nFontFlag >> 7) & 1;
+				if (bRTL != bCurRTL)
+				{
+					oRC += (bRTL ? L"</p><p dir=\"rtl\">" : L"</p><p dir=\"ltr\">");
+					bCurRTL = bRTL;
+				}
 				oRC += L"<span style=\"";
 				GetRCSpanStyle(arrRC[i], oRC);
 				oRC += L"\">";
@@ -3075,14 +3085,17 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 
 		bool bReplase = false;
 		int nID = pP->GetObjId();
-		for (int i = 0; i < pKids->GetCount(); ++i)
+		if (nID > 0)
 		{
-			PdfWriter::CObjectBase* pKid = pKids->Get(i);
-			if (pKid->GetObjId() == nID)
+			for (int i = 0; i < pKids->GetCount(); ++i)
 			{
-				pKids->Insert(pKid, pP, true);
-				bReplase = true;
-				break;
+				PdfWriter::CObjectBase* pKid = pKids->Get(i);
+				if (pKid->GetObjId() == nID)
+				{
+					pKids->Insert(pKid, pP, true);
+					bReplase = true;
+					break;
+				}
 			}
 		}
 		if (!bReplase)
@@ -3395,7 +3408,7 @@ bool CPdfWriter::DrawTextToRenderer(const unsigned int* unGid, const unsigned in
 	PathCommandEnd();
 	if (simplifier.PathCommandText2(wsUnicodeText, (const int*)unGid, unLen, m_pFontManager, dX, dY, 0, 0))
 	{
-		DrawPath(NULL, L"", c_nWindingFillMode);
+		DrawPath(NULL, L"", c_nWindingFillMode, true);
 		PathCommandEnd();
 		return true;
 	}

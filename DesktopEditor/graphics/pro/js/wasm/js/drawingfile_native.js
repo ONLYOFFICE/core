@@ -137,7 +137,7 @@ CFile.prototype._UndoMergePages = function()
 
 CFile.prototype._RedactPage = function(pageIndex, box, filler)
 {
-	let dataFiller = (undefined !== filler.byteLength) ? new Float64Array(filler) : filler;
+	let dataFiller = (undefined !== filler.byteLength) ? new Uint8Array(filler) : filler;
 	return g_native_drawing_file["RedactPage"](pageIndex, box, dataFiller);
 };
 

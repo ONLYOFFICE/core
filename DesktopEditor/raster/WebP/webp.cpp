@@ -11,7 +11,7 @@ namespace NSWebP {
 	constexpr int MAX_INT_SIZE = std::numeric_limits<int32_t>::max();
 	constexpr int BUFFER_SIZE = 4096;
 
-	class Stream
+    class CWebPFile::Stream
 	{
 	public:
 		Stream() {}

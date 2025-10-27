@@ -4,11 +4,10 @@
 #include "../../graphics/pro/Graphics.h"
 
 namespace NSWebP {
-	class CWebPFile
+    class CWebPFile
 	{
-	private:
-		friend class Stream;
-
+    private:
+        class Stream;
 	private:
 		CWebPFile() = delete;
 

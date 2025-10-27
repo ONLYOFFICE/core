@@ -125,8 +125,8 @@ namespace Draw
 	}
 	void CMasterFile::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 	{
-		smart_ptr<OOX::IFileContainer> rels_old = pReader->GetRels();
-		pReader->SetRels(dynamic_cast<OOX::IFileContainer*>((CMasterFile*)this));
+		OOX::IFileContainer* rels_old = pReader->GetRelsPtr();
+		pReader->SetRelsPtr(dynamic_cast<OOX::IFileContainer*>((CMasterFile*)this));
 
 		LONG end = pReader->GetPos() + pReader->GetRecordSize() + 4;
 
@@ -153,17 +153,17 @@ namespace Draw
 			}
 		}
 		pReader->Seek(end);
-		pReader->SetRels(rels_old);
+		pReader->SetRelsPtr(rels_old);
 	}
 	void CMasterFile::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 	{
-		smart_ptr<OOX::IFileContainer> rels_old = pWriter->GetRels();
-		pWriter->SetRels(dynamic_cast<OOX::IFileContainer*>((CPageFile*)this));
+		OOX::IFileContainer* rels_old = pWriter->GetRelsPtr();
+		pWriter->SetRelsPtr(dynamic_cast<OOX::IFileContainer*>((CPageFile*)this));
 
 		pWriter->WriteRecord2(0, Shapes);
 		pWriter->WriteRecord2(1, Connects);
 
-		pWriter->SetRels(rels_old);
+		pWriter->SetRelsPtr(rels_old);
 	}
 	void CMasterFile::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 	{
@@ -268,8 +268,8 @@ namespace Draw
 		std::vector<std::pair<nullable_uint, nullable_string>> arMasterRels;
 		std::vector<nullable_uint> arPagesRels;
 
-		smart_ptr<OOX::IFileContainer> rels_old = pReader->GetRels();
-		pReader->SetRels(dynamic_cast<OOX::IFileContainer*>((CPageFile*)this));
+		OOX::IFileContainer* rels_old = pReader->GetRelsPtr();
+		pReader->SetRelsPtr(dynamic_cast<OOX::IFileContainer*>((CPageFile*)this));
 
 		LONG end = pReader->GetPos() + pReader->GetRecordSize() + 4;
 
@@ -346,7 +346,7 @@ namespace Draw
 			}
 		}
 		pReader->Seek(end);
-		pReader->SetRels(rels_old);
+		pReader->SetRelsPtr(rels_old);
 //-------------------------------------------------------------------------------------------
 		OOX::Draw::CVsdx* pVsdx = dynamic_cast<OOX::Draw::CVsdx*>(((OOX::File*)this)->m_pMainDocument);
 		for (auto r : arMasterRels)
@@ -382,13 +382,13 @@ namespace Draw
 	}
 	void CPageFile::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 	{
-		smart_ptr<OOX::IFileContainer> rels_old = pWriter->GetRels();
-		pWriter->SetRels(dynamic_cast<OOX::IFileContainer*>((CPageFile*)this));
+		OOX::IFileContainer* rels_old = pWriter->GetRelsPtr();
+		pWriter->SetRelsPtr(dynamic_cast<OOX::IFileContainer*>((CPageFile*)this));
 
 		pWriter->WriteRecord2(0, Shapes);
 		pWriter->WriteRecord2(1, Connects);
 
-		pWriter->SetRels(rels_old);
+		pWriter->SetRelsPtr(rels_old);
 //-------------------------------------------------------------------------------------------------------
 		for (auto r : m_arContainer)
 		{
@@ -532,8 +532,8 @@ namespace Draw
 	}
 	void CMastersFile::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 	{
-		smart_ptr<OOX::IFileContainer> rels_old = pReader->GetRels();
-		pReader->SetRels(dynamic_cast<OOX::IFileContainer*>((CMastersFile*)this));
+		OOX::IFileContainer* rels_old = pReader->GetRelsPtr();
+		pReader->SetRelsPtr(dynamic_cast<OOX::IFileContainer*>((CMastersFile*)this));
 
 		LONG end = pReader->GetPos() + pReader->GetRecordSize() + 4;
 
@@ -555,17 +555,17 @@ namespace Draw
 			}
 		}
 		pReader->Seek(end);
-		pReader->SetRels(rels_old);
+		pReader->SetRelsPtr(rels_old);
 	}
 	void CMastersFile::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 	{
-		smart_ptr<OOX::IFileContainer> rels_old = pWriter->GetRels();
-		pWriter->SetRels(dynamic_cast<OOX::IFileContainer*>((CPageFile*)this));
+		OOX::IFileContainer* rels_old = pWriter->GetRelsPtr();
+		pWriter->SetRelsPtr(dynamic_cast<OOX::IFileContainer*>((CPageFile*)this));
 
 		for (size_t i = 0; i < m_arrItems.size(); ++i)
 			pWriter->WriteRecord2(0, dynamic_cast<OOX::WritingElement*>(m_arrItems[i]));
 
-		pWriter->SetRels(rels_old);
+		pWriter->SetRelsPtr(rels_old);
 	}
 	void CMastersFile::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 	{
@@ -683,8 +683,8 @@ namespace Draw
 	}
 	void CPagesFile::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 	{
-		smart_ptr<OOX::IFileContainer> rels_old = pReader->GetRels();
-		pReader->SetRels(dynamic_cast<OOX::IFileContainer*>((CPagesFile*)this));
+		OOX::IFileContainer* rels_old = pReader->GetRelsPtr();
+		pReader->SetRelsPtr(dynamic_cast<OOX::IFileContainer*>((CPagesFile*)this));
 
 		LONG end = pReader->GetPos() + pReader->GetRecordSize() + 4;
 
@@ -706,17 +706,17 @@ namespace Draw
 			}
 		}
 		pReader->Seek(end);
-		pReader->SetRels(rels_old);
+		pReader->SetRelsPtr(rels_old);
 	}
 	void CPagesFile::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 	{
-		smart_ptr<OOX::IFileContainer> rels_old = pWriter->GetRels();
-		pWriter->SetRels(dynamic_cast<OOX::IFileContainer*>((CPageFile*)this));
+		OOX::IFileContainer* rels_old = pWriter->GetRelsPtr();
+		pWriter->SetRelsPtr(dynamic_cast<OOX::IFileContainer*>((CPageFile*)this));
 
 		for (size_t i = 0; i < m_arrItems.size(); ++i)
 			pWriter->WriteRecord2(0, dynamic_cast<OOX::WritingElement*>(m_arrItems[i]));
 
-		pWriter->SetRels(rels_old);
+		pWriter->SetRelsPtr(rels_old);
 	}
 	void CPagesFile::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 	{
@@ -799,9 +799,9 @@ namespace Draw
 
 		pWriter->WriteRecord2(0, PageSheet);
 
-		if (Rel.IsInit() && Rel->Rid.IsInit())
+		if (Rel.IsInit() && Rel->Rid.IsInit() && pWriter->GetRelsPtr())
 		{
-			smart_ptr<OOX::File> pFile = pWriter->GetRels()->Find(Rel->Rid->GetValue());
+			smart_ptr<OOX::File> pFile = pWriter->GetRelsPtr()->Find(Rel->Rid->GetValue());
 			CPageFile* pPage = dynamic_cast<CPageFile*>(pFile.GetPointer());
 			if (pPage)
 			{
@@ -888,8 +888,11 @@ namespace Draw
 				pPage->fromPPTY(pReader);
 				smart_ptr<OOX::File> oFile(pPage);
 
-				Rel.Init(); Rel->Rid.Init();
-				Rel->Rid->SetValue(pReader->GetRels()->Add(oFile).get());
+				if (pReader->GetRelsPtr())
+				{
+					Rel.Init(); Rel->Rid.Init();
+					Rel->Rid->SetValue(pReader->GetRelsPtr()->Add(oFile).get());
+				}
 				
 				pPage->ID = ID;
 
@@ -1014,9 +1017,9 @@ namespace Draw
 			pWriter->WriteString(Icon->content);
 			pWriter->EndRecord();
 		}
-		if (Rel.IsInit() && Rel->Rid.IsInit())
+		if (Rel.IsInit() && Rel->Rid.IsInit() && pWriter->GetRelsPtr())
 		{
-			smart_ptr<OOX::File> pFile = pWriter->GetRels()->Find(Rel->Rid->GetValue());
+			smart_ptr<OOX::File> pFile = pWriter->GetRelsPtr()->Find(Rel->Rid->GetValue());
 			CMasterFile* pMaster = dynamic_cast<CMasterFile*>(pFile.GetPointer());
 			if (pMaster)
 			{
@@ -1120,8 +1123,11 @@ namespace Draw
 				pMaster->fromPPTY(pReader);
 				smart_ptr<OOX::File> oFile(pMaster);
 
-				Rel.Init(); Rel->Rid.Init();
-				Rel->Rid->SetValue(pReader->GetRels()->Add(oFile).get());
+				if (pReader->GetRelsPtr())
+				{
+					Rel.Init(); Rel->Rid.Init();
+					Rel->Rid->SetValue(pReader->GetRelsPtr()->Add(oFile).get());
+				}
 
 				pMaster->ID = ID;
 				pMaster->UniqueID = UniqueID;

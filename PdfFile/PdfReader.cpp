@@ -841,13 +841,13 @@ void CPdfReader::DrawPageOnRenderer(IRenderer* pRenderer, int _nPageIndex, bool*
 			BYTE* pMemory = m_vRedact[i]->m_pChanges;
 			int ret = *((int*)pMemory);
 			pMemory += 4;
-			double R = ret / 100000.0;
+			LONG R = ret;
 			ret = *((int*)pMemory);
 			pMemory += 4;
-			double G = ret / 100000.0;
+			LONG G = ret;
 			ret = *((int*)pMemory);
-			double B = ret / 100000.0;
-			LONG lColor = (LONG)(((LONG)(R * 255)) | ((LONG)(G * 255) << 8) | ((LONG)(B * 255) << 16) | ((LONG)255 << 24));
+			LONG B = ret;
+			LONG lColor = (LONG)(R | (G << 8) | (B << 16) | ((LONG)255 << 24));
 
 			for (int j = 0; j < m_vRedact[i]->m_arrRedactBox.size(); j += 8)
 			{

@@ -653,7 +653,7 @@ void object_odf_context::oox_convert(oox::oox_chart_context & chart_context)
 			z_enabled = true;
 		}
 
-		chart_context.add_axis(a.type_, a);
+		chart_context.add_axis(a.bCategories_ ? 1 : a.type_, a);
 	}
 
 	if (bIs3D.get_value_or(false))

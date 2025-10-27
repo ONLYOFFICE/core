@@ -59,6 +59,7 @@
 
 #include "../../DesktopEditor/doctrenderer/docbuilder.h"
 #include "../../MsBinaryFile/Common/Vba/VbaReader.h"
+#include "../../OdfFile/Common/logging.h"
 
 namespace NExtractTools
 {
@@ -1615,6 +1616,7 @@ namespace NExtractTools
 
 	_UINT32 fromInputParams(InputParams& oInputParams)
 	{
+		_CP_LOG << L"start/detect conversion" << std::endl;
 		TConversionDirection conversion = oInputParams.getConversionDirection();
 		
 		std::wstring sFileFrom = oInputParams.m_sFileFrom  ? *oInputParams.m_sFileFrom : L"";
@@ -1685,11 +1687,13 @@ namespace NExtractTools
 				NSFile::CFileBinary::SetTempPath(sGlobalTempDir);
 			return AVS_FILEUTILS_ERROR_CONVERT_LIMITS;
 		}
+		_CP_LOG << L"doct initialize" << std::endl;
 
 #ifndef BUILD_X2T_AS_LIBRARY_DYLIB
 		NSDoctRenderer::CDocBuilder::Initialize();
 #endif
 
+		_CP_LOG << L"start conversion" << std::endl;
 		_UINT32 result = 0;
 		switch (conversion)
 		{
@@ -2357,10 +2361,13 @@ namespace NExtractTools
 		if (!sGlobalTempDir.empty())
 			NSFile::CFileBinary::SetTempPath(sGlobalTempDir);
 
+		_CP_LOG << L"end conversion and start dispose doctrenderer" << std::endl;
 		// clean up v8
 #ifndef BUILD_X2T_AS_LIBRARY_DYLIB
 		NSDoctRenderer::CDocBuilder::Dispose();
 #endif
+		_CP_LOG << L"finish" << std::endl;
+
 		if (SUCCEEDED_X2T(result) && oInputParams.m_bOutputConvertCorrupted)
 		{
 			return AVS_FILEUTILS_ERROR_CONVERT_CORRUPTED;

@@ -201,7 +201,7 @@ void InitLocalInfo()
     };
     MonthNames = std::vector<std::vector<std::wstring>>
     {
-        {L"january", L"jebruary", L"march", L"april", L"may", L"june", L"july", L"august", L"september", L"october", L"november", L"december"},
+		{L"january", L"february", L"march", L"april", L"may", L"june", L"july", L"august", L"september", L"october", L"november", L"december"},
         {L"январь", L"февраль", L"март", L"апрель", L"май", L"июнь", L"июль", L"август", L"сентябрь", L"октябрь", L"ноябрь", L"декабрь"},
         {L"enero", L"febrero", L"marzo", L"abril", L"mayo", L"junio", L"julio", L"agosto", L"septiembre", L"octubre", L"noviembre", L"diciembre"},
         {L"一月", L"二月", L"三月", L"四月", L"五月", L"六月", L"七月", L"八月", L"九月", L"十月", L"十一月", L"十二月"},

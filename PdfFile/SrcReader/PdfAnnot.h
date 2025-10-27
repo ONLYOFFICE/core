@@ -346,7 +346,7 @@ public:
 	{
 		bool bFind;
 		BYTE nAlign;
-		unsigned int unFontFlags; // 0 Bold, 1 Italic, 3 зачеркнутый, 4 подчеркнутый, 5 vertical-align, 6 actual font
+		unsigned int unFontFlags; // 0 Bold, 1 Italic, 3 зачеркнутый, 4 подчеркнутый, 5 vertical-align, 6 actual font, 7 RTL
 		double dFontSise;
 		double dVAlign;
 		double dColor[3];

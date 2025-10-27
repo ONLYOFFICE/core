@@ -141,7 +141,10 @@ bool OOX::Spreadsheet::CXlsx::ReadNative(const CPath& oFilePath)
 }
 bool OOX::Spreadsheet::CXlsx::Read(const CPath& oFilePath)
 {
+	_CP_LOG << L"start read and parsing: " << oFilePath.GetFilename() << std::endl;
 	ReadNative(oFilePath);
+
+	_CP_LOG << L"end read ... " << std::endl;
 
 	if (!m_pWorkbook) return false;
 

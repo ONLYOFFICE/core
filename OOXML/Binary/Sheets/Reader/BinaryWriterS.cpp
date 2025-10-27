@@ -36,6 +36,7 @@
 #include "../../../../Common/OfficeFileFormats.h"
 #include "../../../../Common/Base64.h"
 #include "../../../../Common/OfficeFileErrorDescription.h"
+#include "../../../../OdfFile/Common/logging.h"
 
 #include "../../Presentation/FontCutter.h"
 #include "../../../PPTXFormat/Logic/HeadingVariant.h"
@@ -8975,6 +8976,7 @@ _UINT32 BinaryFileWriter::Open(const std::wstring& sInputDir, const std::wstring
 	}
 	else
 	{
+		_CP_LOG << L"start binary" << std::endl;
 		if (bIsNoBase64)
 		{
 			oBufferedStream.WriteStringUtf8(WriteFileHeader(0, g_nFormatVersionNoBase64));
@@ -9026,6 +9028,8 @@ _UINT32 BinaryFileWriter::Open(const std::wstring& sInputDir, const std::wstring
 			}
 			RELEASEARRAYOBJECTS(pbBase64Buffer);
 		}
+
+		_CP_LOG << L"end binary" << std::endl;
 	}
 
 	RELEASEOBJECT(pXlsx);

@@ -368,6 +368,11 @@ bool DateReader::parseLocalDate(const std::wstring &date, tm &result, bool &Hasd
             }
            SetDateElem(result, datePart, locInf.ShortDatePattern, BDay, Bmonth, Byear, bError);
         }
+		else if(CurrentElementType == DateElemTypes::letter)
+		{
+			if(!parseMonthName(StringBuf, result))
+				return false;
+		}
     }
     else
     {

@@ -621,6 +621,7 @@ function readAnnotType(reader, rec, readDoubleFunc, readDouble2Func, readStringF
 					oFont["vertical"] = readDoubleFunc.call(reader);
 				if (nFontFlag & (1 << 6))
 					oFont["actual"] = readStringFunc.call(reader);
+				oFont["rtl"] = (nFontFlag >> 7) & 1;
 				oFont["size"] = readDoubleFunc.call(reader);
 				oFont["color"] = [];
 				oFont["color"].push(readDouble2Func.call(reader));

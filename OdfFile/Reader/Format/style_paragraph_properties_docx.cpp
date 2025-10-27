@@ -491,10 +491,10 @@ void paragraph_format_properties::docx_convert(oox::docx_conversion_context & Co
 
 	Context.get_tabs_context().docx_convert(Context);
 
-	//if (style_tab_stops_)	
-	//{
-	//	style_tab_stops_->docx_convert(Context);
-	//}
+	// if (style_tab_stops_)
+	// {
+	// 	style_tab_stops_->docx_convert(Context);
+	// }
 }
 void style_tab_stops::docx_convert(oox::docx_conversion_context & Context)
 {
@@ -537,8 +537,32 @@ void style_tab_stop::docx_convert(oox::docx_conversion_context & Context, bool c
 		}
 	}
 
+	const double PtPerCm = 28.346;
+	const double TwPerPt = 20.0;
+
+	double PageWidthTwips       =   21 * PtPerCm * TwPerPt;
+	double LeftPageMarginTwips  =   3 * PtPerCm * TwPerPt;
+	double RightPageMarginTwips =   1.5 * PtPerCm * TwPerPt;
+
+	double current_tab_width_twips = 0;
+
+	if( style_type_->get_type() == style_type::Left )
+	{
+		current_tab_width_twips = PageWidthTwips - LeftPageMarginTwips - RightPageMarginTwips - margin_right;
+	}
+	else
+	{
+		current_tab_width_twips = PageWidthTwips - LeftPageMarginTwips - RightPageMarginTwips - margin_left - margin_right;
+	}
+
+	if( tab_pos > current_tab_width_twips )
+	{
+		tab_pos = current_tab_width_twips;
+		tab_pos -= 150;
+	}
+
 	_pPr << L" w:val=\"" << val << "\"";
-    _pPr << L" w:pos=\"" << (int)tab_pos << "\"";
+	_pPr << L" w:pos=\"" << static_cast<int>(tab_pos) << "\"";
 	
 	std::wstring leader;
 

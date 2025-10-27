@@ -111,6 +111,7 @@ public:
 
 //-----------------------------
 	double margin_left;
+    double margin_right;
 
 };
 

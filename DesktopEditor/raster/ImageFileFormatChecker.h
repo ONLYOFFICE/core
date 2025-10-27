@@ -64,6 +64,7 @@ enum __ENUM_CXIMAGE_FORMATS
 	_CXIMAGE_FORMAT_SVG = 24,
     _CXIMAGE_FORMAT_PIC = 25,
 	_CXIMAGE_FORMAT_HEIF = 26,
+	_CXIMAGE_FORMAT_WEBP = 27
 };
 
 class GRAPHICS_DECL CImageFileFormatChecker
@@ -96,6 +97,7 @@ public:
 	bool isTiffFile(BYTE* pBuffer,DWORD dwBytes);
 	bool isJpgFile(BYTE* pBuffer,DWORD dwBytes);
 	bool isWbFile(BYTE* pBuffer,DWORD dwBytes);
+	bool isWebPFile(BYTE* pBuffer, DWORD dwBytes);
 
 	bool isIcoFile(BYTE* pBuffer,DWORD dwBytes);
 	bool isRasFile(BYTE* pBuffer,DWORD dwBytes);

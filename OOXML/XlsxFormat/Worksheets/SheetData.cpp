@@ -1238,10 +1238,30 @@ namespace OOX
 		{
 			auto FmlaUnion = static_cast<XLS::FORMULA*>(obj.get());
 			auto xlsFmla = static_cast<XLS::Formula*>(FmlaUnion->m_Formula.get());
+			auto parseFmlaValueType = [](ParsedFormula &fmla)
+			{
+				if(!fmla.rgce.sequence.empty())
+				{
+					auto lastValType = GETBITS(fmla.rgce.sequence.rbegin()->get()->ptg_id.get(),5,6);
+					if(lastValType == 1 || lastValType == 3)
+					{
+						SETBITS(fmla.rgce.sequence.rbegin()->get()->ptg_id.get(),5,6,2);
+					}
+					else if(fmla.rgce.sequence.rbegin()->get()->ptg_id.get() == 6424)
+					{
+						auto list = static_cast<XLS::PtgList*>(fmla.rgce.sequence.rbegin()->get());
+						list->type_ = 1;
+					}
+				}
+				return 0;
+			};
 			if(!m_oT.IsInit())
 				m_oT = SimpleTypes::Spreadsheet::ECellFormulaType::cellformulatypeNormal;
 			if(m_oT->GetValue() == SimpleTypes::Spreadsheet::ECellFormulaType::cellformulatypeNormal && !m_sText.empty())
+			{
 				xlsFmla->formula = m_sText;
+				parseFmlaValueType(xlsFmla->formula);
+			}
 			else if(m_oT->GetValue() == SimpleTypes::Spreadsheet::ECellFormulaType::cellformulatypeShared)
 			{
 				xlsFmla->fShrFmla = true;
@@ -1255,6 +1275,7 @@ namespace OOX
 					shrFmla->ref_.fromString(m_oRef.get());
 					shrFmla->formula = m_sText;
 					FmlaUnion->shared_formulas_locations_ref_.push_back(shrFmla->ref_);
+					parseFmlaValueType(shrFmla->formula);
 				}
 				if(m_oSi.IsInit() && FmlaUnion->shared_formulas_locations_ref_.size() > m_oSi->GetValue())
 				{
@@ -1263,6 +1284,7 @@ namespace OOX
 					cellPos->row = SharedFmlaRef.row;
 					cellPos->col = SharedFmlaRef.column;
 					xlsFmla->formula.rgce.addPtg(PtgPtr{cellPos});
+					parseFmlaValueType(xlsFmla->formula);
 
 				}
 			}
@@ -1282,11 +1304,13 @@ namespace OOX
 					FmlaUnion->m_ArrayFormula = XLS::BaseObjectPtr(ArrayFmla);
 					ArrayFmla->ref_.fromString(m_oRef.get());
 					ArrayFmla->formula = m_sText;
+					parseFmlaValueType(ArrayFmla->formula);
 
 					auto cellPos = new XLS::PtgExp;
 					cellPos->row = cellBaseRef.row;
 					cellPos->col = cellBaseRef.column;
 					xlsFmla->formula.rgce.addPtg(PtgPtr{cellPos});
+					parseFmlaValueType(xlsFmla->formula);
 				}
 				else if(!m_sText.empty())
 				{
@@ -1296,6 +1320,7 @@ namespace OOX
 					cellPos->row = cellBaseRef.row;
 					cellPos->col = cellBaseRef.column;
 					xlsFmla->formula.rgce.addPtg(PtgPtr{cellPos});
+					parseFmlaValueType(xlsFmla->formula);
 				}
 
 			}

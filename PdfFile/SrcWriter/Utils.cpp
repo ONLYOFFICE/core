@@ -363,6 +363,15 @@ namespace PdfWriter
 		}
 		return true; // Пересекаются
 	}
+	bool isPolygonInsidePolygon(const std::vector<CPoint>& inner, const std::vector<CPoint>& outer)
+	{
+		for (const CPoint& point : inner)
+		{
+			if (!isPointInQuad(point.x, point.y, outer[0].x, outer[0].y, outer[1].x, outer[1].y, outer[2].x, outer[2].y, outer[3].x, outer[3].y))
+				return false;
+		}
+		return true;
+	}
 	double crossProduct(double x1, double y1, double x2, double y2, double x3, double y3)
 	{
 		return (x2 - x1) * (y3 - y1) - (y2 - y1) * (x3 - x1);

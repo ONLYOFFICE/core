@@ -237,7 +237,7 @@ public:
 		       double llx, double lly, double urx, double ury) {}
 
   //----- form XObjects
-  virtual void drawForm(GfxState *state, Ref id, const char *name = nullptr) {}
+  virtual void drawForm(GfxState *state, Gfx *gfx, Ref id, const char *name = nullptr) {}
   virtual void drawImage(GfxState *pGState, Ref id, const char* name = nullptr) {}
 
   //----- PostScript XObjects

@@ -35,8 +35,10 @@
 #include "Streams.h"
 #include "Utils.h"
 
+#include "../lib/xpdf/Gfx.h"
 #include "../lib/xpdf/GfxFont.h"
 #include "../lib/xpdf/XRef.h"
+#include "../lib/xpdf/Page.h"
 
 #include "../../DesktopEditor/graphics/GraphicsPath.h"
 
@@ -636,7 +638,7 @@ void RedactOutputDev::type3D1(GfxState *pGState, double wx, double wy, double ll
 
 }
 //----- form XObjects
-void RedactOutputDev::drawForm(GfxState *pGState, Ref id, const char* name)
+void RedactOutputDev::drawForm(GfxState *pGState, Gfx *gfx, Ref id, const char* name)
 {
 	m_pRenderer->m_oCommandManager.Flush();
 	DoStateOp();
@@ -644,7 +646,6 @@ void RedactOutputDev::drawForm(GfxState *pGState, Ref id, const char* name)
 	double dShiftX = 0, dShiftY = 0;
 	DoTransform(pGState->getCTM(), &dShiftX, &dShiftY, true);
 
-	// TODO пока что исключается всё изображение
 	Object oForm;
 	if (!m_pXref->fetch(id.num, id.gen, &oForm)->isStream())
 	{
@@ -699,7 +700,8 @@ void RedactOutputDev::drawForm(GfxState *pGState, Ref id, const char* name)
 	}
 	oObj.free();
 
-	std::vector<CPoint> poly2 =
+	bool bFullyRedacted = false;
+	std::vector<CPoint> formPolygon =
 	{
 		CPoint(dX1, dY1),
 		CPoint(dX2, dY2),
@@ -708,7 +710,7 @@ void RedactOutputDev::drawForm(GfxState *pGState, Ref id, const char* name)
 	};
 	for (int i = 0; i < m_arrQuadPoints.size(); i += 8)
 	{
-		std::vector<CPoint> poly1 =
+		std::vector<CPoint> redactPolygon =
 		{
 			CPoint(m_arrQuadPoints[i + 0], m_arrQuadPoints[i + 1]),
 			CPoint(m_arrQuadPoints[i + 2], m_arrQuadPoints[i + 3]),
@@ -716,9 +718,37 @@ void RedactOutputDev::drawForm(GfxState *pGState, Ref id, const char* name)
 			CPoint(m_arrQuadPoints[i + 6], m_arrQuadPoints[i + 7])
 		};
 
-		if (PdfWriter::SAT(poly1, poly2))
-			return;
+		if (PdfWriter::isPolygonInsidePolygon(formPolygon, redactPolygon))
+		{
+			bFullyRedacted = true;
+			break;
+		}
 	}
+
+	if (bFullyRedacted)
+	{
+		oForm.free();
+		return;
+	}
+
+	// Создаем fake page для рендеринга формы
+	PdfWriter::CDocument* pDocument = m_pRenderer->GetDocument();
+	PdfWriter::CPage* pCurPage = m_pRenderer->GetPage();
+	PdfWriter::CPage* pFakePage = new PdfWriter::CPage(pDocument);
+	m_pRenderer->SetPage(pFakePage);
+	pDocument->SetCurPage(pFakePage);
+
+	// Создаем новый RedactOutputDev для рекурсивного применения редоктирования
+	RedactOutputDev* pFormOutputDev = new RedactOutputDev(m_pRenderer);
+	pFormOutputDev->NewPDF(m_pXref);
+	pFormOutputDev->SetRedact(m_arrQuadPoints);
+
+	Object resourcesObj;
+	oForm.streamGetDict()->lookup("Resources", &resourcesObj);
+
+	// Gfx* m_gfx = new Gfx(gfx->getDoc(), m_pRendererOut, -1, pResourcesDict, dDpiX, dDpiY, &box, NULL, 0);
+	PDFRectangle pBBox = { dXmin, dYmin, dXmax, dYmax };
+	Gfx* _gfx = new Gfx(gfx->getDoc(), pFormOutputDev, resourcesObj.isDict() ? resourcesObj.getDict() : NULL, &pBBox, NULL);
 
 	m_pPage->GrSave();
 	UpdateTransform();

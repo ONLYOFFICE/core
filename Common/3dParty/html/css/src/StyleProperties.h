@@ -138,7 +138,7 @@ namespace NSCSS
 
 		bool SetValue(const std::wstring& wsValue, unsigned int unLevel = 0, bool bHardMode = true) override;
 		bool SetValue(const CDigit& oValue);
-		bool SetValue(const double& dValue, UnitMeasure enUnitMeasure, unsigned int unLevel, bool bHardMode);
+		bool SetValue(const double& dValue, UnitMeasure enUnitMeasure, unsigned int unLevel = 0, bool bHardMode = true);
 
 		bool Empty() const override;
 		bool Zero() const;
@@ -302,6 +302,8 @@ namespace NSCSS
 		void ApplyTranform(Aggplus::CMatrix& oMatrix, Aggplus::MatrixOrder order = Aggplus::MatrixOrderPrepend) const;
 
 		bool operator==(const CMatrix& oMatrix) const;
+		CMatrix& operator+=(const CMatrix& oMatrix);
+		CMatrix& operator-=(const CMatrix& oMatrix);
 	};
 
 	class CEnum : public CValue<int>

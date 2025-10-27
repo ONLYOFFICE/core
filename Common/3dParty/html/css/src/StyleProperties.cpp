@@ -1327,6 +1327,23 @@ namespace NSCSS
 		return true;
 	}
 
+	CMatrix& CMatrix::operator+=(const CMatrix& oMatrix)
+	{
+		m_oValue.insert(m_oValue.end(), oMatrix.m_oValue.begin(), oMatrix.m_oValue.end());
+		return *this;
+	}
+
+	CMatrix& CMatrix::operator-=(const CMatrix& oMatrix)
+	{
+		for (MatrixValues::const_reverse_iterator itElement = oMatrix.m_oValue.crbegin(); itElement < oMatrix.m_oValue.crend(); ++itElement)
+		{
+			if (!m_oValue.empty() && m_oValue.back() == *itElement)
+				m_oValue.pop_back();
+		}
+
+		return *this;
+	}
+
 	// DISPLAY
 	CDisplay::CDisplay()
 	{

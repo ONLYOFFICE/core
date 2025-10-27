@@ -1,29 +1,38 @@
 #include "CRect.h"
-#include "CStyle.h"
 #include "CContainer.h"
 #include "../SvgTypes.h"
 
 namespace SVG
 {
-	CRect::CRect(XmlUtils::CXmlNode& oNode, CRenderedObject *pParent)
-		: CRenderedObject(oNode, pParent)
-	{
-		m_oRect.m_oX     .SetValue(oNode.GetAttribute(L"x"));
-		m_oRect.m_oY     .SetValue(oNode.GetAttribute(L"y"));
-		m_oRect.m_oWidth .SetValue(oNode.GetAttribute(L"width"));
-		m_oRect.m_oHeight.SetValue(oNode.GetAttribute(L"height"));
+	CRect::CRect(CSvgReader& oReader, CRenderedObject *pParent)
+		: CRenderedObject(oReader, pParent)
+	{}
 
-		m_oRx.SetValue(oNode.GetAttribute(L"rx"));
-		m_oRy.SetValue(oNode.GetAttribute(L"ry"));
+	CRect::~CRect()
+	{}
+
+	void CRect::SetAttribute(const std::string& sName, CSvgReader& oReader)
+	{
+		if ("x" == sName)
+			m_oRect.m_oX.SetValue(oReader.GetText());
+		else if ("y" == sName)
+			m_oRect.m_oY.SetValue(oReader.GetText());
+		else if ("width" == sName)
+			m_oRect.m_oWidth.SetValue(oReader.GetText());
+		else if ("height" == sName)
+			m_oRect.m_oHeight.SetValue(oReader.GetText());
+		else if ("rx" == sName)
+			m_oRx.SetValue(oReader.GetText());
+		else if ("ry" == sName)
+			m_oRy.SetValue(oReader.GetText());
+		else
+			CRenderedObject::SetAttribute(sName, oReader);
 
 		if (m_oRx.Empty() && !m_oRy.Empty())
 			m_oRx = m_oRy;
 		else if (!m_oRx.Empty() && m_oRy.Empty())
 			m_oRy = m_oRx;
 	}
-
-	CRect::~CRect()
-	{}
 
 	void CRect::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
 	{
@@ -94,7 +103,7 @@ namespace SVG
 			nTypePath += c_nWindingFillMode;
 	}
 
-	TBounds CRect::GetBounds() const
+	TBounds CRect::GetBounds(SvgMatrix* pTransform) const
 	{
 		TBounds oBounds;
 
@@ -102,6 +111,16 @@ namespace SVG
 		oBounds.m_dTop    = m_oRect.m_oY.ToDouble(NSCSS::Pixel);
 		oBounds.m_dRight  = oBounds.m_dLeft + m_oRect.m_oWidth.ToDouble(NSCSS::Pixel);
 		oBounds.m_dBottom = oBounds.m_dTop  + m_oRect.m_oHeight.ToDouble(NSCSS::Pixel);
+
+		if (nullptr != pTransform)
+		{
+			*pTransform += m_oTransformation.m_oTransform.GetMatrix();
+
+			pTransform->GetFinalValue().TransformPoint(oBounds.m_dLeft,  oBounds.m_dTop   );
+			pTransform->GetFinalValue().TransformPoint(oBounds.m_dRight, oBounds.m_dBottom);
+
+			*pTransform -= m_oTransformation.m_oTransform.GetMatrix();
+		}
 
 		return oBounds;
 	}

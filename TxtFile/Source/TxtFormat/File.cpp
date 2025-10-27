@@ -158,7 +158,8 @@ namespace Txt
 
 		TxtFile file(filename);
 
-        m_listContent = file.readUnicodeLines(m_nEncoding);
+        //m_listContent = file.readUnicodeLines(m_nEncoding);
+        m_listContentutf8 = file.readUtf8Lines(m_nEncoding);
 		m_listContentSize = file.getLinesCount();
 	}
 

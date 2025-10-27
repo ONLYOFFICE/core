@@ -153,54 +153,56 @@ namespace Txt2Docx
 	{
 		return converter_->m_inputFile.read(path);
 	}
-    void Converter::write(NSStringUtils::CStringBuilder &stringWriter)
+
+
+    void Converter::write(NSStringUtils::CStringBuilderA &stringWriter)
     {
-        const wchar_t* fontName = L"Courier New";
-        const wchar_t* defaultSpacing = L"<w:spacing w:after=\"0\" w:line=\"240\" w:lineRule=\"auto\"/>";
+        const char* fontName = "Courier New";
+        const char* defaultSpacing = "<w:spacing w:after=\"0\" w:line=\"240\" w:lineRule=\"auto\"/>";
 
-        for (const std::wstring &lineRaw : converter_->m_inputFile.m_listContent)
+        for (const std::string &lineRaw : converter_->m_inputFile.m_listContentutf8)
         {
-            std::wstring line = lineRaw;
+            std::string line = lineRaw;
 
-            line.erase(std::remove(line.begin(), line.end(), L'\x08'), line.end());
+            line.erase(std::remove(line.begin(), line.end(), '\x08'), line.end());
 
-            stringWriter.WriteString(L"<w:p><w:pPr>");
+            stringWriter.WriteString("<w:p><w:pPr>");
             stringWriter.WriteString(defaultSpacing);
-            stringWriter.WriteString(L"<w:rPr><w:rFonts w:ascii=\"");
+            stringWriter.WriteString("<w:rPr><w:rFonts w:ascii=\"");
             stringWriter.WriteString(fontName);
-            stringWriter.WriteString(L"\" w:hAnsi=\"");
+            stringWriter.WriteString("\" w:hAnsi=\"");
             stringWriter.WriteString(fontName);
-            stringWriter.WriteString(L"\" w:cs=\"");
+            stringWriter.WriteString("\" w:cs=\"");
             stringWriter.WriteString(fontName);
-            stringWriter.WriteString(L"\"/></w:rPr></w:pPr>");
+            stringWriter.WriteString("\"/></w:rPr></w:pPr>");
 
             size_t start = 0;
             while (true)
             {
-                size_t pos = line.find(L'\x09', start);
-                std::wstring segment = (pos == std::wstring::npos) ? line.substr(start) : line.substr(start, pos - start);
+                size_t pos = line.find('\x09', start);
+                std::string segment = (pos == std::string::npos) ? line.substr(start) : line.substr(start, pos - start);
 
                 if (!segment.empty())
                 {
-                    stringWriter.WriteString(L"<w:r><w:rPr><w:rFonts w:ascii=\"");
+                    stringWriter.WriteString("<w:r><w:rPr><w:rFonts w:ascii=\"");
                     stringWriter.WriteString(fontName);
-                    stringWriter.WriteString(L"\" w:hAnsi=\"");
+                    stringWriter.WriteString("\" w:hAnsi=\"");
                     stringWriter.WriteString(fontName);
-                    stringWriter.WriteString(L"\" w:cs=\"");
+                    stringWriter.WriteString("\" w:cs=\"");
                     stringWriter.WriteString(fontName);
-                    stringWriter.WriteString(L"\"/></w:rPr><w:t xml:space=\"preserve\">");
+                    stringWriter.WriteString("\"/></w:rPr><w:t xml:space=\"preserve\">");
                     stringWriter.WriteString(segment.c_str());
-                    stringWriter.WriteString(L"</w:t></w:r>");
+                    stringWriter.WriteString("</w:t></w:r>");
                 }
 
-                if (pos == std::wstring::npos)
+                if (pos == std::string::npos)
                     break;
 
-                stringWriter.WriteString(L"<w:tab/>");
+                stringWriter.WriteString("<w:tab/>");
                 start = pos + 1;
             }
 
-            stringWriter.WriteString(L"</w:p>");
+            stringWriter.WriteString("</w:p>");
         }
     }
 

@@ -44,6 +44,115 @@ const int TxtFile::getLinesCount()
 {
 	return m_linesCount;
 }
+const std::vector<std::string> TxtFile::readUtf8Lines(int CodePage)
+{
+    std::vector<std::string> result;
+    NSFile::CFileBinary file_binary;
+    if (!file_binary.OpenFile(m_path))
+        return result;
+    DWORD file_size = file_binary.GetFileSize();
+    if (file_size == 0)
+        return result;
+    std::unique_ptr<char[]> file_data(new char[file_size]);
+    DWORD read_size = 0;
+    file_binary.ReadFile((BYTE*)file_data.get(), file_size, read_size);
+    if (read_size == 0)
+        return result;
+    bool isUtf8 = (read_size >= 3 && (BYTE)file_data[0] == 0xEF && (BYTE)file_data[1] == 0xBB && (BYTE)file_data[2] == 0xBF);
+    bool isUtf16LE = (read_size >= 2 && (BYTE)file_data[0] == 0xFF && (BYTE)file_data[1] == 0xFE);
+    bool isUtf16BE = (read_size >= 2 && (BYTE)file_data[0] == 0xFE && (BYTE)file_data[1] == 0xFF);
+
+    NSUnicodeConverter::CUnicodeConverter conv;
+    std::string utf8_content;
+
+    if (isUtf8)
+    {
+        size_t content_start = 0;
+        size_t content_size = read_size;
+
+        if (read_size >= 3 && file_data[0] == '\xEF' && file_data[1] == '\xBB' && file_data[2] == '\xBF') {
+            content_start = 3;
+            content_size -= 3;
+        }
+
+        utf8_content.assign(file_data.get() + content_start, content_size);
+    }
+    else if (isUtf16LE)
+    {
+        std::wstring unicode_content = conv.toUnicode(file_data.get() + 2, read_size - 2, "UTF-16LE");
+        utf8_content = conv.fromUnicode(unicode_content, "UTF-8");
+    }
+    else if (isUtf16BE)
+    {
+        std::wstring unicode_content = conv.toUnicode(file_data.get() + 2, read_size - 2, "UTF-16BE");
+        utf8_content = conv.fromUnicode(unicode_content, "UTF-8");
+    }
+    else
+    {
+        std::wstring unicode_content;
+
+        if (CodePage >= 0 && CodePage < UNICODE_CONVERTER_ENCODINGS_COUNT)
+        {
+            const char* encodingName = NSUnicodeConverter::Encodings[CodePage].Name;
+            unicode_content = conv.toUnicode(file_data.get(), read_size, encodingName);
+        }
+        else
+        {
+            unicode_content = conv.toUnicode(file_data.get(), read_size, 46);
+        }
+
+        utf8_content = conv.fromUnicode(unicode_content, "UTF-8");
+    }
+    size_t lineCount = 0;
+    if (!utf8_content.empty())
+    {
+        for (size_t i = 0; i < utf8_content.size(); ++i)
+        {
+            if (utf8_content[i] == '\n' || utf8_content[i] == '\r')
+            {
+                ++lineCount;
+                if (utf8_content[i] == '\r' && i + 1 < utf8_content.size() && utf8_content[i + 1] == '\n')
+                    ++i;
+            }
+        }
+        if (!utf8_content.empty() && utf8_content.back() != '\n' && utf8_content.back() != '\r')
+            ++lineCount;
+    }
+
+    result.reserve(lineCount);
+
+    if (!utf8_content.empty())
+    {
+        size_t line_start = 0;
+        size_t i = 0;
+
+        while (i < utf8_content.size())
+        {
+            if (utf8_content[i] == '\n' || utf8_content[i] == '\r')
+            {
+                result.push_back(utf8_content.substr(line_start, i - line_start));
+                if (utf8_content[i] == '\r' && i + 1 < utf8_content.size() && utf8_content[i + 1] == '\n') {
+                    i += 2;
+                } else {
+                    i += 1;
+                }
+
+                line_start = i;
+            }
+            else
+            {
+                ++i;
+            }
+        }
+
+        if (line_start < utf8_content.size()) {
+            result.push_back(utf8_content.substr(line_start));
+        }
+    }
+
+    m_linesCount = result.size();
+    return result;
+}
 
 const std::vector<std::wstring> TxtFile::readUnicodeLines(int CodePage)
 {

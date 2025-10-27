@@ -206,6 +206,7 @@ namespace OOX
 					mergeCellsArray.push_back(XLS::BaseObjectPtr(cellsRecord));
 					cellsRecord = new XLS::MergeCells;
 				}
+				i++;
 			}
 			if(cellsRecord->cmcs)
 				mergeCellsArray.push_back(XLS::BaseObjectPtr(cellsRecord));

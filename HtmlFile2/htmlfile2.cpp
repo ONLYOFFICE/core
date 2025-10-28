@@ -4421,22 +4421,57 @@ private:
 		}
 
 		int nImageId = -1;
-		std::wstring sImageSrc, sExtention;
+		std::wstring sExtention;
 		// Предполагаем картинку в Base64
 		if (bIsBase64)
 			bRes = readBase64(sSrcM, sExtention);
 
+		// Проверка расширения
+		sExtention = NSFile::GetFileExtention(sSrcM);
+		std::transform(sExtention.begin(), sExtention.end(), sExtention.begin(), tolower);
+
+		std::wstring::const_iterator itFound = std::find_if(sExtention.cbegin(), sExtention.cend(), [](wchar_t wChar){ return !iswalpha(wChar) && L'+' != wChar; });
+
+		if (sExtention.cend() != itFound)
+			sExtention.erase(itFound, sExtention.cend());
+
+		// Предполагаем картинку в сети
+		if (!bRes &&
+		    ((!m_sBase.empty() && m_sBase.length() > 4 && m_sBase.substr(0, 4) == L"http") ||
+		      (sSrcM.length() > 4 && sSrcM.substr(0, 4) == L"http")))
+		{
+			const std::wstring wsDst = m_sDst + L"/word/media/i" + std::to_wstring(m_arrImages.size()) + L'.' + ((!sExtention.empty()) ? sExtention : L"png");
+
+			// Проверка gc_allowNetworkRequest предполагается в kernel_network
+			NSNetwork::NSFileTransport::CFileDownloader oDownloadImg(m_sBase + sSrcM, false);
+			oDownloadImg.SetFilePath(wsDst);
+			bRes = oDownloadImg.DownloadSync();
+
+			if (!bRes)
+			{
+				ImageAlternative(oXml, sSelectors, oTS, wsAlt, sSrcM, oImageData);
+				return true;
+			}
+
+			if (IsSVG(sExtention))
+			{
+				std::wstring wsFileData;
+
+				if (!NSFile::CFileBinary::ReadAllTextUtf8(wsDst, wsFileData) || !readSVG(wsFileData))
+					bRes = false;
+
+				NSFile::CFileBinary::Remove(wsDst);
+				sExtention = L"png";
+			}
+			else if (sExtention.empty())
+			{
+				//TODO:: лучше узнавать формат изображения из содержимого
+				sExtention = L"png";
+			}
+		}
+
 		if (!bRes)
 		{
-			// Проверка расширения
-			sExtention = NSFile::GetFileExtention(sSrcM);
-			std::transform(sExtention.begin(), sExtention.end(), sExtention.begin(), tolower);
-
-			std::wstring::const_iterator itFound = std::find_if(sExtention.cbegin(), sExtention.cend(), [](wchar_t wChar){ return !iswalpha(wChar) && L'+' != wChar; });
-
-			if (sExtention.cend() != itFound)
-				sExtention.erase(itFound, sExtention.cend());
-
 			if (NotValidExtension(sExtention))
 			{
 				ImageAlternative(oXml, sSelectors, oTS, wsAlt, sSrcM, oImageData);
@@ -4452,47 +4487,24 @@ private:
 			}
 		}
 
+		// Предполагаем картинку по локальному пути
 		if (!bRes)
 		{
-			sImageSrc = sSrcM;
-			std::wstring wsDst = m_sDst + L"/word/media/i" + std::to_wstring(m_arrImages.size()) + L'.' + sExtention;
+			const std::wstring wsDst = m_sDst + L"/word/media/i" + std::to_wstring(m_arrImages.size()) + L'.' + sExtention;
 
-			// Предполагаем картинку по локальному пути
-			if (!((!m_sBase.empty() && m_sBase.length() > 4 && m_sBase.substr(0, 4) == L"http") || (sSrcM.length() > 4 && sSrcM.substr(0, 4) == L"http")))
+			if (!m_sBase.empty())
 			{
-				if (!m_sBase.empty())
-				{
-					if (!bRes)
-						bRes = CopyImage(NSSystemPath::Combine(m_sBase, sSrcM), wsDst, bIsAllowExternalLocalFiles);
-					if (!bRes)
-						bRes = CopyImage(NSSystemPath::Combine(m_sSrc, m_sBase + sSrcM), wsDst, bIsAllowExternalLocalFiles);
-				}
 				if (!bRes)
-					bRes = CopyImage(NSSystemPath::Combine(m_sSrc, sSrcM), wsDst, bIsAllowExternalLocalFiles);
+					bRes = CopyImage(NSSystemPath::Combine(m_sBase, sSrcM), wsDst, bIsAllowExternalLocalFiles);
 				if (!bRes)
-					bRes = CopyImage(m_sSrc + L"/" + NSFile::GetFileName(sSrcM), wsDst, bIsAllowExternalLocalFiles);
-				if (!bRes)
-					bRes = CopyImage(sSrcM, wsDst, bIsAllowExternalLocalFiles);
+					bRes = CopyImage(NSSystemPath::Combine(m_sSrc, m_sBase + sSrcM), wsDst, bIsAllowExternalLocalFiles);
 			}
-			// Предполагаем картинку в сети
-			else
-			{
-				// Проверка gc_allowNetworkRequest предполагается в kernel_network
-				NSNetwork::NSFileTransport::CFileDownloader oDownloadImg(m_sBase + sSrcM, false);
-				oDownloadImg.SetFilePath(wsDst);
-				bRes = oDownloadImg.DownloadSync();
-
-				if (IsSVG(sExtention))
-				{
-					std::wstring wsFileData;
-
-					if (!NSFile::CFileBinary::ReadAllTextUtf8(wsDst, wsFileData) || !readSVG(wsFileData))
-						bRes = false;
-
-					NSFile::CFileBinary::Remove(wsDst);
-					sExtention = L"png";
-				}
-			}
+			if (!bRes)
+				bRes = CopyImage(NSSystemPath::Combine(m_sSrc, sSrcM), wsDst, bIsAllowExternalLocalFiles);
+			if (!bRes)
+				bRes = CopyImage(m_sSrc + L"/" + NSFile::GetFileName(sSrcM), wsDst, bIsAllowExternalLocalFiles);
+			if (!bRes)
+				bRes = CopyImage(sSrcM, wsDst, bIsAllowExternalLocalFiles);
 		}
 
 		if (!bRes)
@@ -4500,7 +4512,7 @@ private:
 		else
 		{
 			wrP(oXml, sSelectors, oTS);
-			ImageRels(oXml, nImageId, sImageSrc, sExtention, oImageData);
+			ImageRels(oXml, nImageId, sSrcM, sExtention, oImageData);
 		}
 
 		return true;
@@ -4703,8 +4715,9 @@ private:
 		if (bNew)
 			nImageId = m_arrImages.size();
 
-		std::wstring sImageId = std::to_wstring(nImageId);
-		std::wstring sImageName = sImageId + L'.' + sExtention;
+		const std::wstring sImageId = std::to_wstring(nImageId);
+		const std::wstring sImageName = sImageId + L'.' + sExtention;
+
 		CBgraFrame oBgraFrame;
 		if (!oBgraFrame.OpenFile(m_sDst + L"/word/media/i" + sImageName))
 		{

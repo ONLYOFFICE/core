@@ -1,4 +1,5 @@
 #include "CStyle.h"
+#include "CObjectBase.h"
 
 namespace SVG
 {

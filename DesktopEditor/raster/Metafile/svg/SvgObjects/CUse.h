@@ -8,15 +8,18 @@ namespace SVG
 {
 	class CUse : public CRenderedObject
 	{
+		friend class CObject;
+		CUse(CSvgReader& oReader, CRenderedObject* pParent = NULL);
 	public:
-		CUse(XmlUtils::CXmlNode& oNode, CRenderedObject* pParent = NULL);
 		virtual ~CUse();
+
+		void SetAttribute(const std::string& sName, CSvgReader& oReader) override;
 
 		void SetData(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false) override;
 
 		bool Draw(IRenderer* pRenderer, const CSvgFile* pFile, CommandeMode oMode = CommandeModeDraw, const TSvgStyles* pOtherStyles = NULL, const CRenderedObject* pContexObject = NULL) const override;
 	private:
-		TBounds GetBounds() const override;
+		TBounds GetBounds(SvgMatrix* pTransform = nullptr) const override;
 
 		CRenderedObject *m_pUsedObject;
 

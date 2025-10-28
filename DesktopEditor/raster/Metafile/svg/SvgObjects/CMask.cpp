@@ -2,8 +2,8 @@
 
 namespace SVG
 {
-	CMask::CMask(XmlUtils::CXmlNode &oNode)
-		: CClipPath(oNode)
+	CMask::CMask(CSvgReader& oReader)
+		: CClipPath(oReader)
 	{}
 
 	bool CMask::Apply(IRenderer *pRenderer, const CSvgFile *pFile, const TBounds &oObjectBounds)
@@ -14,7 +14,7 @@ namespace SVG
 		pRenderer->BeginCommand(c_nMaskType);
 		pRenderer->PathCommandStart();
 
-		for (const CRenderedObject* pObject : m_oContainer.m_arObjects)
+		for (const CRenderedObject* pObject : m_oContainer)
 			pObject->Draw(pRenderer, pFile, CommandeModeMask);
 
 		pRenderer->EndCommand(c_nMaskType);

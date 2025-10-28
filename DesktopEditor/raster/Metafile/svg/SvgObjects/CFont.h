@@ -8,7 +8,7 @@ namespace SVG
 	class CGlyph : public CPath
 	{
 	public:
-		CGlyph(XmlUtils::CXmlNode& oNode);
+		CGlyph(CSvgReader& oReader);
 
 		wchar_t GetUnicode() const;
 	private:
@@ -21,7 +21,7 @@ namespace SVG
 	class CFontFace
 	{
 	public:
-		CFontFace(XmlUtils::CXmlNode& oNode);
+		CFontFace(CSvgReader& oReader);
 	private:
 		std::wstring m_wsSrcFaceName;
 	};
@@ -36,16 +36,19 @@ namespace SVG
 
 	class CFont : public CAppliedObject
 	{
+		friend class CObject;
+		CFont(CSvgReader& oReader);
 	public:
-		CFont(XmlUtils::CXmlNode& oNode);
 		~CFont();
+
+		void SetAttribute(const std::string& sName, CSvgReader& oReader) override;
 
 		void SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode) override;
 
 		bool Apply(IRenderer* pRenderer, const CSvgFile *pFile, const TBounds &oObjectBounds) override;
 		bool Draw(const std::wstring& wsText, const double& dX, const double& dY, const double& dFontHeight, IRenderer* pRenderer, const CSvgFile *pFile, CommandeMode oMode = CommandeModeDraw, const TSvgStyles* pStyles = NULL, const CRenderedObject* pContexObject = NULL) const;
 	private:
-		void ParseGlyphs(XmlUtils::CXmlNode& oNode);
+		void ParseGlyphs(CSvgReader& oReader);
 
 		TFontArguments m_oArguments;
 

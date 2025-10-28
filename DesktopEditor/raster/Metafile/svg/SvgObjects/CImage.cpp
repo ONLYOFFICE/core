@@ -5,18 +5,29 @@
 #include "../../../BgraFrame.h"
 #include "../../../../common/Path.h"
 #include "../../../../common/ProcessEnv.h"
+#include "../../../../common/Base64.h"
+#include "../../../../common/File.h"
 
 namespace SVG
 {
-	CImage::CImage(XmlUtils::CXmlNode& oNode, CRenderedObject* pParent)
-		: CRenderedObject(oNode, pParent)
-	{
-		m_oRect.m_oX     .SetValue(oNode.GetAttribute(L"x"));
-		m_oRect.m_oY     .SetValue(oNode.GetAttribute(L"y"));
-		m_oRect.m_oWidth .SetValue(oNode.GetAttribute(L"width"));
-		m_oRect.m_oHeight.SetValue(oNode.GetAttribute(L"height"));
+	CImage::CImage(CSvgReader& oReader, CRenderedObject* pParent)
+		: CRenderedObject(oReader, pParent)
+	{}
 
-		m_wsHref = oNode.GetAttribute(L"href", oNode.GetAttribute(L"xlink:href")); // TODO:: В дальнейшем возможно стоит реализовать отдельный класс CHref для всех типов ссылок
+	void CImage::SetAttribute(const std::string& sName, CSvgReader& oReader)
+	{
+		if ("x" == sName)
+			m_oRect.m_oX.SetValue(oReader.GetText());
+		else if ("y" == sName)
+			m_oRect.m_oY.SetValue(oReader.GetText());
+		else if ("width" == sName)
+			m_oRect.m_oWidth.SetValue(oReader.GetText());
+		else if ("height" == sName)
+			m_oRect.m_oHeight.SetValue(oReader.GetText());
+		else if ("href" == sName || "xlink:href" == sName)
+			m_wsHref = oReader.GetText(); // TODO:: В дальнейшем возможно стоит реализовать отдельный класс CHref для всех типов ссылок
+		else
+			CRenderedObject::SetAttribute(sName, oReader);
 	}
 
 	bool CImage::Draw(IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode, const TSvgStyles *pOtherStyles, const CRenderedObject* pContexObject) const
@@ -124,7 +135,7 @@ namespace SVG
 		return true;
 	}
 
-	TBounds CImage::GetBounds() const
+	TBounds CImage::GetBounds(SvgMatrix* pTransform) const
 	{
 		TBounds oBounds;
 
@@ -132,6 +143,16 @@ namespace SVG
 		oBounds.m_dTop    = m_oRect.m_oY.ToDouble(NSCSS::Pixel);
 		oBounds.m_dRight  = oBounds.m_dLeft + m_oRect.m_oWidth.ToDouble(NSCSS::Pixel);
 		oBounds.m_dBottom = oBounds.m_dTop  + m_oRect.m_oHeight.ToDouble(NSCSS::Pixel);
+
+		if (nullptr != pTransform)
+		{
+			*pTransform += m_oTransformation.m_oTransform.GetMatrix();
+
+			pTransform->GetFinalValue().TransformPoint(oBounds.m_dLeft,  oBounds.m_dTop   );
+			pTransform->GetFinalValue().TransformPoint(oBounds.m_dRight, oBounds.m_dBottom);
+
+			*pTransform -= m_oTransformation.m_oTransform.GetMatrix();
+		}
 
 		return oBounds;
 	}

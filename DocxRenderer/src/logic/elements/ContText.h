@@ -63,6 +63,7 @@ namespace NSDocxRenderer
 
 		// origin font
 		std::wstring m_wsOriginFontName{};
+		int m_nOriginFontFaceIndex{};
 
 		// sizes
 		double m_dSpaceWidthMM{0};
@@ -76,6 +77,9 @@ namespace NSDocxRenderer
 		bool m_bIsAddBrEnd{false};
 		bool m_bWriteStyleRaw{false};
 		bool m_bPossibleHorSplit{false};
+
+		std::vector<unsigned int> m_arGids{};
+		std::vector<double> m_arOriginLefts{};
 
 		CContText() = default;
 		CContText(CFontManager* pManager) : m_pManager(pManager) {}
@@ -92,13 +96,22 @@ namespace NSDocxRenderer
 		void CalcSelected();
 
 		size_t GetLength() const noexcept;
-		void AddTextBack(const NSStringUtils::CStringUTF32& oText, const std::vector<double>& arSymWidths);
-		void AddTextFront(const NSStringUtils::CStringUTF32& oText, const std::vector<double>& arSymWidths);
-		void SetText(const NSStringUtils::CStringUTF32& oText, const std::vector<double>& arSymWidths);
+		void AddTextBack(const NSStringUtils::CStringUTF32& oText,
+		                 const std::vector<double>& arSymWidths,
+		                 const std::vector<unsigned int>& arGids,
+		                 const std::vector<double>& arOriginLefts);
+		void AddTextFront(const NSStringUtils::CStringUTF32& oText,
+		                  const std::vector<double>& arSymWidths,
+		                  const std::vector<unsigned int>& arGids,
+		                  const std::vector<double>& arOriginLefts);
+		void SetText(const NSStringUtils::CStringUTF32& oText,
+		             const std::vector<double>& arSymWidths,
+		             const std::vector<unsigned int>& arGids,
+		             const std::vector<double>& arOriginLefts);
 
-		void AddSymBack(uint32_t cSym, double dWidth);
-		void AddSymFront(uint32_t cSym, double dWidth);
-		void SetSym(uint32_t cSym, double dWidth);
+		void AddSymBack(uint32_t cSym, double dWidth, unsigned int nGid, double dLeft);
+		void AddSymFront(uint32_t cSym, double dWidth, unsigned int nGid, double dLeft);
+		void SetSym(uint32_t cSym, double dWidth, unsigned int nGid, double dLeft);
 		void RemoveLastSym();
 
 		uint32_t GetLastSym() const;
@@ -172,6 +185,7 @@ namespace NSDocxRenderer
 		        const NSStructures::CBrush& oBrush,
 		        CFontManager* pFontManager,
 		        const NSStringUtils::CStringUTF32& oText,
+		        const PUINT pGids = nullptr,
 		        bool bForcedBold = false,
 		        bool bUseDefaultFont = false,
 		        bool bWriteStyleRaw = false);

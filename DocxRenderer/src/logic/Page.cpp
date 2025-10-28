@@ -342,7 +342,7 @@ namespace NSDocxRenderer
 			bForcedBold = true;
 
 		m_oManagers.pParagraphStyleManager->UpdateAvgFontSize(m_oFont.Size);
-		m_oContBuilder.AddUnicode(top, baseline, left, right, m_oFont, m_oBrush, m_oManagers.pFontManager, oText, bForcedBold, m_bUseDefaultFont, m_bWriteStyleRaw);
+		m_oContBuilder.AddUnicode(top, baseline, left, right, m_oFont, m_oBrush, m_oManagers.pFontManager, oText, pGids, bForcedBold, m_bUseDefaultFont, m_bWriteStyleRaw);
 	}
 
 	void CPage::Analyze()
@@ -1152,11 +1152,11 @@ namespace NSDocxRenderer
 
 						if ((bIf1 && bIf6) || (bIf2 && bIf7) || (bIf4 && bIf8) || (bIf5 && bIf7))
 						{
-							cont->AddSymBack(d_sym->GetText().at(0), 0);
+							cont->AddSymBack(d_sym->GetText().at(0), 0, d_sym->m_arGids.at(0), d_sym->m_arOriginLefts.at(0));
 						}
 						else if (bIf3 && bIf7)
 						{
-							cont->AddSymFront(d_sym->GetText().at(0), 0);
+							cont->AddSymFront(d_sym->GetText().at(0), 0, d_sym->m_arGids.at(0), d_sym->m_arOriginLefts.at(0));
 						}
 						isBreak = true;
 						break;

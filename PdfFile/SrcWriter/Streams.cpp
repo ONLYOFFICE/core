@@ -851,6 +851,11 @@ namespace PdfWriter
 	{
 		return m_unSize;
 	}
+	void CMemoryStream::Clear()
+	{
+		m_pCur   = m_pBuffer;
+		m_unSize = 0;
+	}
 	BYTE* CMemoryStream::GetBuffer()
 	{
 		return m_pBuffer;

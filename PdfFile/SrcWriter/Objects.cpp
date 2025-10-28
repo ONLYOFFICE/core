@@ -788,6 +788,12 @@ namespace PdfWriter
 		while (oCoreReader.ReadNextSiblingNode(nDeath))
 			ReadDict(oCoreReader, this);
 	}
+	void CDictObject::ClearStream()
+	{
+		m_unFilter    = STREAM_FILTER_NONE;
+		m_unPredictor = STREAM_PREDICTOR_NONE;
+		m_pStream->Clear();
+	}
 	//----------------------------------------------------------------------------------------
 	// CXref
 	//----------------------------------------------------------------------------------------

@@ -33,11 +33,7 @@
 #define _PDF_WRITER_SRC_REDACT_OUTPUTDEV_H
 
 #include "../PdfWriter.h"
-//#include "../../DesktopEditor/graphics/IRenderer.h"
-//#include "../../DesktopEditor/graphics/pro/Fonts.h"
-//#include "../../DesktopEditor/graphics/AlphaMask.h"
-//#include "../../DesktopEditor/graphics/TemporaryCS.h"
-//#include "../../DesktopEditor/graphics/structures.h"
+#include "../PdfEditor.h"
 
 #include "../SrcReader/GfxClip.h"
 
@@ -51,7 +47,7 @@ namespace PdfWriter
 	class RedactOutputDev : public OutputDev
 	{
 	public:
-		RedactOutputDev(CPdfWriter* pRenderer);
+		RedactOutputDev(CPdfWriter* pRenderer, CObjectsManager* pObjMng);
 		virtual ~RedactOutputDev();
 
 		void SetRedact(const std::vector<double>& arrQuadPoints);
@@ -209,6 +205,7 @@ namespace PdfWriter
 		Aggplus::CGraphicsPath m_oPathRedact;
 
 		CPdfWriter* m_pRenderer;
+		CObjectsManager* m_mObjManager;
 		CDocument*  m_pDoc;
 		CPage*      m_pPage;
 		double      m_arrMatrix[6];

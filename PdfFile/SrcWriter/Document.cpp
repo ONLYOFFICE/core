@@ -754,14 +754,8 @@ namespace PdfWriter
 	{
 		return new CImageDict(m_pXref, this);
 	}
-	CXObject* CDocument::CreateForm(CImageDict* pImage, const std::string& sName)
+	CXObject* CDocument::CreateForm()
 	{
-		if (!pImage)
-			return NULL;
-
-		std::string sFrmName = "FRM" + sName;
-		std::string sImgName = "Img" + sName;
-
 		CXObject* pForm = new CXObject();
 		CStream* pStream = new CMemoryStream();
 		pForm->SetStream(m_pXref, pStream);
@@ -770,6 +764,18 @@ namespace PdfWriter
 		if (m_unCompressMode & COMP_TEXT)
 			pForm->SetFilter(STREAM_FILTER_FLATE_DECODE);
 #endif
+
+		return pForm;
+	}
+	CXObject* CDocument::CreateForm(CImageDict* pImage, const std::string& sName)
+	{
+		if (!pImage)
+			return NULL;
+
+		std::string sFrmName = "FRM" + sName;
+		std::string sImgName = "Img" + sName;
+
+		CXObject* pForm = CreateForm();
 		double dOriginW = pImage->GetWidth();
 		double dOriginH = pImage->GetHeight();
 		pForm->SetWidth(dOriginW);
@@ -807,6 +813,7 @@ namespace PdfWriter
 		pForm->Add("Subtype", "Form");
 		pForm->Add("Type", "XObject");
 
+		CStream* pStream = pForm->GetStream();
 		pStream->WriteStr("q\012");
 		pStream->WriteReal(dOriginW);
 		pStream->WriteStr(" 0 0 ");
@@ -1549,6 +1556,17 @@ namespace PdfWriter
 	void CDocument::AddParent(int nID, CDictObject* pParent)
 	{
 		m_mParents[nID] = pParent;
+	}
+	void CDocument::AddXObject(int nID, CDictObject* pXObject)
+	{
+		m_mXObjects[nID] = pXObject;
+	}
+	CDictObject* CDocument::GetXObject(int nID)
+	{
+		std::map<int, CDictObject*>::iterator p = m_mXObjects.find(nID);
+		if (p != m_mXObjects.end())
+			return p->second;
+		return NULL;
 	}
 	CDictObject* CDocument::CreateParent(int nID)
 	{

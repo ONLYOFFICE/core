@@ -34,6 +34,7 @@
 #include "Types.h"
 #include "Streams.h"
 #include "Utils.h"
+#include "Image.h"
 
 #include "../lib/xpdf/Gfx.h"
 #include "../lib/xpdf/GfxFont.h"
@@ -49,13 +50,30 @@ void Transform(double* pMatrix, double dUserX, double dUserY, double* pdDeviceX,
 	*pdDeviceX = dUserX * pMatrix[0] + dUserY * pMatrix[2] + pMatrix[4];
 	*pdDeviceY = dUserX * pMatrix[1] + dUserY * pMatrix[3] + pMatrix[5];
 }
+bool InvertMatrix(const double* matrix, double* inverse)
+{
+	double det = matrix[0] * matrix[3] - matrix[1] * matrix[2];
+	if (fabs(det) < 1e-10)
+		return false;
+
+	double invDet = 1.0 / det;
+	inverse[0] =  matrix[3] * invDet;
+	inverse[1] = -matrix[1] * invDet;
+	inverse[2] = -matrix[2] * invDet;
+	inverse[3] =  matrix[0] * invDet;
+	inverse[4] = (matrix[2] * matrix[5] - matrix[3] * matrix[4]) * invDet;
+	inverse[5] = (matrix[1] * matrix[4] - matrix[0] * matrix[5]) * invDet;
+
+	return true;
+}
 
 //----- constructor/destructor
-RedactOutputDev::RedactOutputDev(CPdfWriter* pRenderer)
+RedactOutputDev::RedactOutputDev(CPdfWriter* pRenderer, CObjectsManager* pObjMng)
 {
 	m_pXref = NULL;
 
 	m_pRenderer = pRenderer;
+	m_mObjManager = pObjMng;
 	m_pDoc = m_pRenderer->GetDocument();
 	m_pPage = NULL;
 
@@ -646,10 +664,26 @@ void RedactOutputDev::drawForm(GfxState *pGState, Gfx *gfx, Ref id, const char* 
 	double dShiftX = 0, dShiftY = 0;
 	DoTransform(pGState->getCTM(), &dShiftX, &dShiftY, true);
 
+	PdfWriter::CObjectBase* pObj = m_mObjManager->GetObj(id.num);
+	if (pObj->GetType() != object_type_DICT)
+		return;
+
 	Object oForm;
 	if (!m_pXref->fetch(id.num, id.gen, &oForm)->isStream())
 	{
 		oForm.free();
+		return;
+	}
+
+	PdfWriter::CDocument* pDocument = m_pRenderer->GetDocument();
+	CDictObject* pXObject = pDocument->GetXObject(id.num);
+	if (pXObject)
+	{
+		// Этот XObject уже прошёл через Redact
+		m_pPage->GrSave();
+		UpdateTransform();
+		m_pPage->ExecuteXObject(name);
+		m_pPage->GrRestore();
 		return;
 	}
 
@@ -731,24 +765,52 @@ void RedactOutputDev::drawForm(GfxState *pGState, Gfx *gfx, Ref id, const char* 
 		return;
 	}
 
-	// Создаем fake page для рендеринга формы
-	PdfWriter::CDocument* pDocument = m_pRenderer->GetDocument();
+	CDictObject* pDictObj = (CDictObject*)pObj;
+	pDictObj->ClearStream();
+	CNumberObject* pLength = new CNumberObject(0);
+	pDocument->AddObject(pLength);
+	pDictObj->Add("Length", pLength);
+#ifndef FILTER_FLATE_DECODE_DISABLED
+	pDictObj->SetFilter(STREAM_FILTER_FLATE_DECODE);
+#endif
+
 	PdfWriter::CPage* pCurPage = m_pRenderer->GetPage();
 	PdfWriter::CPage* pFakePage = new PdfWriter::CPage(pDocument);
 	m_pRenderer->SetPage(pFakePage);
 	pDocument->SetCurPage(pFakePage);
+	pFakePage->SetStream(pDictObj->GetStream());
 
-	// Создаем новый RedactOutputDev для рекурсивного применения редоктирования
-	RedactOutputDev* pFormOutputDev = new RedactOutputDev(m_pRenderer);
+	RedactOutputDev* pFormOutputDev = new RedactOutputDev(m_pRenderer, m_mObjManager);
 	pFormOutputDev->NewPDF(m_pXref);
-	pFormOutputDev->SetRedact(m_arrQuadPoints);
+	pFormOutputDev->m_pPage = pFakePage;
+	std::vector<double> arrFormQuadPoints;
+	double dInvMatrix[6] = { 1, 0, 0, 1, 0, 0 };
+	InvertMatrix(m_arrMatrix, dInvMatrix);
+	for (int i = 0; i < m_arrQuadPoints.size(); i += 2)
+	{
+		double x = m_arrQuadPoints[i];
+		double y = m_arrQuadPoints[i + 1];
+		Transform(dInvMatrix, x, y, &x, &y);
+		arrFormQuadPoints.push_back(x);
+		arrFormQuadPoints.push_back(y);
+	}
+	pFormOutputDev->SetRedact(arrFormQuadPoints);
 
 	Object resourcesObj;
 	oForm.streamGetDict()->lookup("Resources", &resourcesObj);
 
-	// Gfx* m_gfx = new Gfx(gfx->getDoc(), m_pRendererOut, -1, pResourcesDict, dDpiX, dDpiY, &box, NULL, 0);
 	PDFRectangle pBBox = { dXmin, dYmin, dXmax, dYmax };
 	Gfx* _gfx = new Gfx(gfx->getDoc(), pFormOutputDev, resourcesObj.isDict() ? resourcesObj.getDict() : NULL, &pBBox, NULL);
+	_gfx->display(&oForm);
+
+	RELEASEOBJECT(_gfx);
+	RELEASEOBJECT(pFormOutputDev);
+	RELEASEOBJECT(pFakePage);
+	resourcesObj.free();
+
+	m_pRenderer->SetPage(pCurPage);
+	pDocument->SetCurPage(pCurPage);
+	pDocument->AddXObject(id.num, pDictObj);
 
 	m_pPage->GrSave();
 	UpdateTransform();

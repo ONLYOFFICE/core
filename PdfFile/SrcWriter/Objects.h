@@ -492,6 +492,7 @@ namespace PdfWriter
 		unsigned int GetSize() { return m_mList.size(); }
 		std::map<std::string, CObjectBase*> GetDict() { return m_mList; }
 		void FromXml(const std::wstring& sXml);
+		void ClearStream();
 
 	protected:
 		std::map<std::string, CObjectBase*> m_mList;

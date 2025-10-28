@@ -97,6 +97,7 @@ namespace PdfWriter
 		virtual int          Tell() = 0;
 		virtual void         Close() = 0;
 		virtual unsigned int Size() = 0;
+		virtual void         Clear() {}
 		virtual EStreamType  GetType()
 		{
 			return StreamUnknown;
@@ -159,6 +160,7 @@ namespace PdfWriter
 		int          Tell();
 		void         Close();
 		unsigned int Size();
+		void         Clear();
 		EStreamType  GetType()
 		{
 			return StreamMemory;

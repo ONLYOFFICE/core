@@ -2154,9 +2154,9 @@ void CDrawingConverter::ConvertDiagram(PPTX::Logic::SpTreeElem *result, XmlUtils
 
     XmlMacroReadAttributeBase(oNode, L"r:dm", id_data);
 	
-	if (id_data.IsInit())
+	if (id_data.IsInit() && m_pBinaryWriter->GetRelsPtr())
 	{
-		oFileData = m_pBinaryWriter->GetRels()->Find(*id_data);
+		oFileData = m_pBinaryWriter->GetRelsPtr()->Find(*id_data);
 		
 		if (oFileData.is_init())
 		{
@@ -2173,9 +2173,9 @@ void CDrawingConverter::ConvertDiagram(PPTX::Logic::SpTreeElem *result, XmlUtils
 				}
 			}
 		}
-		if (id_drawing.is_init())
+		if (id_drawing.is_init() && m_pBinaryWriter->GetRelsPtr())
 		{
-			oFileDrawing = m_pBinaryWriter->GetRels()->Find(*id_drawing);
+			oFileDrawing = m_pBinaryWriter->GetRelsPtr()->Find(*id_drawing);
 			pDiagramDrawing = dynamic_cast<OOX::CDiagramDrawing*>(oFileDrawing.GetPointer());
 		}
 		if (!pDiagramDrawing && pDiagramData)
@@ -2200,7 +2200,7 @@ void CDrawingConverter::ConvertDiagram(PPTX::Logic::SpTreeElem *result, XmlUtils
 	{
 		result->InitElem(new PPTX::Logic::SpTree(*pDiagramDrawing->m_oShapeTree));
 		//to correct write blipFill rId to binary
-		SetRels(pDiagramDrawing);
+		SetRelsPtr(pDiagramDrawing);
 	}
 	else
 	{//BG-FSC1.docx
@@ -2836,10 +2836,10 @@ void CDrawingConverter::ConvertShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::CX
 			{
 				std::wstring sId = oNodeTextData.GetAttribute(L"id");
 
-				if (sId.length() > 0 && m_pBinaryWriter->GetRels().IsInit())
+				if (sId.length() > 0 && m_pBinaryWriter->GetRelsPtr())
 				{
 					OOX::RId rId(sId);
-					smart_ptr<PPTX::LegacyDiagramText> pExt = m_pBinaryWriter->GetRels()->Get<PPTX::LegacyDiagramText>(rId);
+					smart_ptr<PPTX::LegacyDiagramText> pExt = m_pBinaryWriter->GetRelsPtr()->Get<PPTX::LegacyDiagramText>(rId);
 
 					if (pExt.IsInit())
 					{
@@ -6260,7 +6260,7 @@ std::wstring CDrawingConverter::SaveObjectBackground(LONG lStart, LONG lLength)
 		oXmlWriter.m_bIsTop = true; // не забыть скинуть в самом шейпе
 
 		PPTX::Logic::Shape& oShape = oElem.as<PPTX::Logic::Shape>();
-		smart_ptr<OOX::IFileContainer> rels = GetRels();
+		OOX::IFileContainer* rels = GetRelsPtr();
 		oShape.toXmlWriterVMLBackground(&oXmlWriter, *m_pTheme, *m_pClrMap, rels);
 	}
 	--m_nCurrentIndexObject;
@@ -6289,7 +6289,7 @@ void CDrawingConverter::ConvertShapeVML(PPTX::Logic::SpTreeElem& oElem, const st
 		oWriter.m_bIsTop = true; // не забыть скинуть в самом шейпе
 		
 		PPTX::Logic::Shape& oShape = oElem.as<PPTX::Logic::Shape>();
-		smart_ptr<OOX::IFileContainer> rels = GetRels();
+		OOX::IFileContainer* rels = GetRelsPtr();
 		oShape.toXmlWriterVML(&oWriter, *m_pTheme, *m_pClrMap, rels, false, bSignature);
 	}
 }
@@ -6303,7 +6303,7 @@ void CDrawingConverter::ConvertGroupVML(PPTX::Logic::SpTreeElem& oElem, const st
 		oWriter.m_bIsTop = true; // не забыть скинуть в самом шейпе (вместе с остальными параметрами)
 		
 		PPTX::Logic::SpTree& oGroup = oElem.as<PPTX::Logic::SpTree>();
-		smart_ptr<OOX::IFileContainer> rels = GetRels();
+		OOX::IFileContainer* rels = GetRelsPtr();
 		oGroup.toXmlWriterVML(&oWriter, *m_pTheme, *m_pClrMap, rels);
 	}
 }
@@ -6981,17 +6981,13 @@ OOX::CContentTypes* CDrawingConverter::GetContentTypes()
 	return m_pImageManager->m_pContentTypes;
 }
 
-void CDrawingConverter::SetRels(smart_ptr<OOX::IFileContainer> container)
+void CDrawingConverter::SetRelsPtr(OOX::IFileContainer *container)
 {
-	m_pBinaryWriter->SetRels(container);
+	m_pBinaryWriter->SetRelsPtr(container);
 }
-void CDrawingConverter::SetRels(OOX::IFileContainer *container)
+OOX::IFileContainer* CDrawingConverter::GetRelsPtr()
 {
-	m_pBinaryWriter->SetRels(container);
-}
-smart_ptr<OOX::IFileContainer> CDrawingConverter::GetRels()
-{
-	return m_pBinaryWriter->GetRels();
+	return m_pBinaryWriter->GetRelsPtr();
 }
 void CDrawingConverter::SetFontManager(NSFonts::IFontManager* pFontManager)
 {

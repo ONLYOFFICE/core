@@ -6454,9 +6454,8 @@ int BinaryWorksheetsTableReader::ReadDrawings(BYTE type, long length, void* poRe
 				oWriter.m_lObjectIdVML = m_pCurVmlDrawing->m_lObjectIdVML;
 
 				NSCommon::smart_ptr<PPTX::Logic::ClrMap> oClrMap;
-				NSCommon::smart_ptr<OOX::IFileContainer> oContainer = m_pCurVmlDrawing.smart_dynamic_cast<OOX::IFileContainer>();
 				
-				oShape.toXmlWriterVML(&oWriter, m_oSaveParams.pTheme, oClrMap, oContainer, false, true);
+				oShape.toXmlWriterVML(&oWriter, m_oSaveParams.pTheme, oClrMap, m_pCurVmlDrawing.GetPointer(), false, true);
 
 				std::wstring strXml = oWriter.GetXmlString();
 
@@ -6711,7 +6710,7 @@ int BinaryWorksheetsTableReader::ReadLegacyDrawingHFDrawings(BYTE type, long len
 			NSCommon::smart_ptr<OOX::IFileContainer> oContainer(pVmlDrawing);
 			oContainer.AddRef();
 
-			pSpTree->toXmlWriterVML(&oWriter, m_oSaveParams.pTheme, oClrMap, oContainer);
+			pSpTree->toXmlWriterVML(&oWriter, m_oSaveParams.pTheme, oClrMap, oContainer.GetPointer());
 			pVmlDrawing->m_lObjectIdVML = oWriter.m_lObjectIdVML;
 			pVmlDrawing->m_arObjectXml.push_back(oWriter.GetXmlString());
 		}
@@ -7479,9 +7478,7 @@ void BinaryWorksheetsTableReader::GetControlVmlShape(void* pC)
 	{
 		NSCommon::smart_ptr<PPTX::Logic::ClrMap> oClrMap;
 
-		NSCommon::smart_ptr<OOX::IFileContainer> pContainer = m_pCurVmlDrawing.smart_dynamic_cast<OOX::IFileContainer>();
-
-		CalculateFill(XMLWRITER_DOC_TYPE_XLSX, oShape->spPr, oShape->style, m_oSaveParams.pTheme, oClrMap, pContainer, strFillAttr, strFillNode, false, false);
+		CalculateFill(XMLWRITER_DOC_TYPE_XLSX, oShape->spPr, oShape->style, m_oSaveParams.pTheme, oClrMap, m_pCurVmlDrawing.GetPointer(), strFillAttr, strFillNode, false, false);
 		CalculateLine(XMLWRITER_DOC_TYPE_XLSX, oShape->spPr, oShape->style, m_oSaveParams.pTheme, oClrMap, strStrokeAttr, strStrokeNode, false);
 	}
 	else

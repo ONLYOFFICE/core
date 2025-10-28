@@ -308,7 +308,7 @@ namespace PPTX
 			double dW = pWriter->GetShapeWidth(); //mm
 			double dH = pWriter->GetShapeHeight();
 
-			OOX::IFileContainer* pRels = pWriter->GetRels().GetPointer();
+			OOX::IFileContainer* pRels = pWriter->GetRelsPtr();
 
 			std::wstring	additionalPath;
 			int				additionalType = 0;

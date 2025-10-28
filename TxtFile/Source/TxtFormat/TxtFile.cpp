@@ -44,7 +44,7 @@ const int TxtFile::getLinesCount()
 {
 	return m_linesCount;
 }
-const std::vector<std::string> TxtFile::readUtf8Lines(int CodePage)
+const std::vector<std::string> TxtFile::readUtf8Lines(int IdxEncoding)
 {
     std::vector<std::string> result;
     NSFile::CFileBinary file_binary;
@@ -79,26 +79,26 @@ const std::vector<std::string> TxtFile::readUtf8Lines(int CodePage)
     }
     else if (isUtf16LE)
     {
-        std::wstring unicode_content = conv.toUnicode(file_data.get() + 2, read_size - 2, "UTF-16LE");
+        std::wstring unicode_content = conv.toUnicode(file_data.get() + 2, read_size - 2, 1200);//UTF-16LE
         utf8_content = conv.fromUnicode(unicode_content, "UTF-8");
     }
     else if (isUtf16BE)
     {
-        std::wstring unicode_content = conv.toUnicode(file_data.get() + 2, read_size - 2, "UTF-16BE");
+        std::wstring unicode_content = conv.toUnicode(file_data.get() + 2, read_size - 2, 1201);//UTF-16BE
         utf8_content = conv.fromUnicode(unicode_content, "UTF-8");
     }
     else
     {
         std::wstring unicode_content;
 
-        if (CodePage >= 0 && CodePage < UNICODE_CONVERTER_ENCODINGS_COUNT)
+        if (IdxEncoding >= 0 && IdxEncoding < UNICODE_CONVERTER_ENCODINGS_COUNT)
         {
-            const char* encodingName = NSUnicodeConverter::Encodings[CodePage].Name;
+            const char* encodingName = NSUnicodeConverter::Encodings[IdxEncoding].Name;
             unicode_content = conv.toUnicode(file_data.get(), read_size, encodingName);
         }
         else
         {
-            unicode_content = conv.toUnicode(file_data.get(), read_size, 46);
+            unicode_content = conv.toUnicode(file_data.get(), read_size, 65001);
         }
 
         utf8_content = conv.fromUnicode(unicode_content, "UTF-8");

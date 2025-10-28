@@ -73,6 +73,9 @@ namespace NSDocxRenderer
 		m_bPossibleHorSplit = rCont.m_bPossibleHorSplit;
 		m_bWriteStyleRaw = rCont.m_bWriteStyleRaw;
 
+		m_nOriginFontFaceIndex = rCont.m_nOriginFontFaceIndex;
+		m_wsOriginFontName = rCont.m_nOriginFontFaceIndex;
+
 		m_arSymWidths.clear();
 		m_arSymWidths.resize(rCont.m_arSymWidths.size());
 		for (size_t i = 0; i < rCont.m_arSymWidths.size(); ++i)

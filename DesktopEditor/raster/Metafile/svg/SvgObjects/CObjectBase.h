@@ -34,7 +34,8 @@ namespace SVG
 	enum ObjectType
 	{
 		RendererObject,
-		AppliedObject
+		AppliedObject,
+		DataObject
 	};
 
 	class CObject : public IGrObject

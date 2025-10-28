@@ -327,7 +327,7 @@ namespace SVG
 		pRenderer->put_FontStyle(nStyle);
 		pRenderer->put_BrushType(c_BrushTypeSolid);
 		pRenderer->put_BrushColor1(m_oStyles.m_oFill.ToInt());
-		pRenderer->put_BrushAlpha1(255);
+		pRenderer->put_BrushAlpha1(255 * m_oStyles.m_oFill.GetOpacity());
 	}
 
 	void CTSpan::UpdateFontSize()

@@ -544,7 +544,11 @@ void style_tab_stop::docx_convert(oox::docx_conversion_context & Context, bool c
 	double LeftPageMarginTwips  =   0;
 	double RightPageMarginTwips =   0;
 
-	auto pp = Context.root()->odf_context().pageLayoutContainer().page_layout_first();
+	std::wstring curr_name_layout = Context.get_master_page_name();
+
+	_CP_LOG << "current layout name = " << curr_name_layout << "\n";
+
+	auto pp = Context.root()->odf_context().pageLayoutContainer().page_layout_by_style(curr_name_layout);
 
 	if( pp && pp->properties() )
 	{
@@ -582,7 +586,7 @@ void style_tab_stop::docx_convert(oox::docx_conversion_context & Context, bool c
 	if( tab_pos > current_tab_width_twips )
 	{
 		tab_pos = current_tab_width_twips;
-		tab_pos -= 150;
+		tab_pos -= 300;
 	}
 
 	_pPr << L" w:val=\"" << val << "\"";

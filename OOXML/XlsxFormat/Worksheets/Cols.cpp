@@ -138,7 +138,7 @@ namespace OOX
 			XLS::BaseObjectPtr CCol::toXLS()
 			{
 				auto colInfo = new XLS::ColInfo;
-				if(m_oMax.IsInit())
+				if(m_oMax.IsInit() && m_oMax->GetValue() <= 255)
 					colInfo->colLast = m_oMax->m_eValue - 1;
 				else
 					colInfo->colLast = 255;
@@ -149,12 +149,12 @@ namespace OOX
 				if (m_oWidth.IsInit())
 				{
 					if(m_oWidth->GetValue() > 0)
-						colInfo->coldx           = m_oWidth->GetValue() * 256;
+						colInfo->coldx = m_oWidth->GetValue() * 256;
 				}
 				else
 					colInfo->coldx = 2304;
 				if(m_oStyle.IsInit())
-					colInfo->ixfe = m_oStyle->m_eValue;
+					colInfo->ixfe = m_oStyle->m_eValue + 15;
 				if(m_oHidden.IsInit())
 					colInfo->fHidden = m_oHidden->ToBool();
 				if(m_oCustomWidth.IsInit())

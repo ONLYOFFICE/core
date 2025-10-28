@@ -154,16 +154,59 @@ namespace Txt2Docx
 		return converter_->m_inputFile.read(path);
 	}
 
-	void Converter::write(/*const std::wstring& path*/NSStringUtils::CStringBuilder & stringWriter)
-	{
-		for (size_t	i = 0; i < converter_->m_outputFile.m_arrItems.size(); ++i)
-		{
-			if ( converter_->m_outputFile.m_arrItems[i] )
-				stringWriter.WriteString(converter_->m_outputFile.m_arrItems[i]->toXML());
-		}
-		//BOOL res = converter_->m_outputFile.Write(std_string2string(path.string()));
-		return;
-	}
+
+    void Converter::write(NSStringUtils::CStringBuilderA &stringWriter)
+    {
+        const char* fontName = "Courier New";
+        const char* defaultSpacing = "<w:spacing w:after=\"0\" w:line=\"240\" w:lineRule=\"auto\"/>";
+
+        for (const std::string &lineRaw : converter_->m_inputFile.m_listContentutf8)
+        {
+            std::string line = lineRaw;
+
+            line.erase(std::remove(line.begin(), line.end(), '\x08'), line.end());
+
+            stringWriter.WriteString("<w:p><w:pPr>");
+            stringWriter.WriteString(defaultSpacing);
+            stringWriter.WriteString("<w:rPr><w:rFonts w:ascii=\"");
+            stringWriter.WriteString(fontName);
+            stringWriter.WriteString("\" w:hAnsi=\"");
+            stringWriter.WriteString(fontName);
+            stringWriter.WriteString("\" w:cs=\"");
+            stringWriter.WriteString(fontName);
+            stringWriter.WriteString("\"/></w:rPr></w:pPr>");
+
+            size_t start = 0;
+            while (true)
+            {
+                size_t pos = line.find('\x09', start);
+                std::string segment = (pos == std::string::npos) ? line.substr(start) : line.substr(start, pos - start);
+
+                if (!segment.empty())
+                {
+                    stringWriter.WriteString("<w:r><w:rPr><w:rFonts w:ascii=\"");
+                    stringWriter.WriteString(fontName);
+                    stringWriter.WriteString("\" w:hAnsi=\"");
+                    stringWriter.WriteString(fontName);
+                    stringWriter.WriteString("\" w:cs=\"");
+                    stringWriter.WriteString(fontName);
+                    stringWriter.WriteString("\"/></w:rPr><w:t xml:space=\"preserve\">");
+                    stringWriter.WriteString(segment.c_str());
+                    stringWriter.WriteString("</w:t></w:r>");
+                }
+
+                if (pos == std::string::npos)
+                    break;
+
+                stringWriter.WriteString("<w:tab/>");
+                start = pos + 1;
+            }
+
+            stringWriter.WriteString("</w:p>");
+        }
+    }
+
+
 
 	Converter_Impl::Converter_Impl(int encoding) : m_outputFile(NULL)
 	{

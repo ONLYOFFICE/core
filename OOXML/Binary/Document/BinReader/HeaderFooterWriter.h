@@ -75,6 +75,7 @@ mc:Ignorable=\"w14 w15 wp14\">";
 		NSStringUtils::CStringBuilder	m_oBackground;
 		NSStringUtils::CStringBuilder	m_oContent;
 		NSStringUtils::CStringBuilder	m_oSecPr;
+        NSStringUtils::CStringBuilderA	m_oContentutf8;
 	};
 
 	class HdrFtrItem

@@ -136,7 +136,7 @@ namespace SVG
 					const char* pCheckValue = pValue;
 					while ('\0' != *pCheckValue)
 					{
-						if (0x32 >= *pCheckValue++)
+						if (std::isprint(static_cast<unsigned char>(*pCheckValue++)))
 						{
 							bFoundedSymbol = true;
 							break;

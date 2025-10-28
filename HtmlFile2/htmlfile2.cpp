@@ -203,6 +203,11 @@ bool TagIsUnprocessed(const std::wstring& wsTagName)
 	return L"xml" == wsTagName;
 }
 
+bool IsSVG(const std::wstring& wsExtention)
+{
+	return L"svg" == wsExtention || L"svg+xml" == wsExtention;
+}
+
 static inline HtmlTag GetHtmlTag(const std::wstring& wsStrTag)
 {
 	std::map<std::wstring, HtmlTag>::const_iterator oFound = m_HTML_TAGS.find(wsStrTag);
@@ -4271,7 +4276,7 @@ private:
 			if (!pImageData || FALSE == NSBase64::Base64Decode(sSrcM.c_str() + nOffset, nSrcLen, pImageData, &nDecodeLen))
 				return bRes;
 
-			if (L"svg" == sExtention || L"svg+xml" == sExtention)
+			if (IsSVG(sExtention))
 			{
 				std::wstring wsSvg(pImageData, pImageData + nDecodeLen);
 				bRes = readSVG(wsSvg);
@@ -4316,8 +4321,8 @@ private:
 	{
 		return  sExtention != L"bmp" && sExtention != L"emf"  && sExtention != L"emz"  && sExtention != L"eps"  && sExtention != L"fpx" && sExtention != L"gif"  &&
 				sExtention != L"jpe" && sExtention != L"jpeg" && sExtention != L"jpg"  && sExtention != L"jfif" && sExtention != L"pct" && sExtention != L"pict" &&
-				sExtention != L"png" && sExtention != L"pntg" && sExtention != L"psd"  && sExtention != L"qtif" && sExtention != L"sgi" && sExtention != L"svg"  &&
-				sExtention != L"tga" && sExtention != L"tpic" && sExtention != L"tiff" && sExtention != L"tif"  && sExtention != L"wmf" && sExtention != L"wmz";
+				sExtention != L"png" && sExtention != L"pntg" && sExtention != L"psd"  && sExtention != L"qtif" && sExtention != L"sgi" && sExtention != L"wmz"  &&
+				sExtention != L"tga" && sExtention != L"tpic" && sExtention != L"tiff" && sExtention != L"tif"  && sExtention != L"wmf" && !IsSVG(sExtention);
 	}
 
 	void ImageAlternative(NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS, const std::wstring& wsAlt, const std::wstring& wsSrc, const TImageData& oImageData)
@@ -4426,6 +4431,12 @@ private:
 			// Проверка расширения
 			sExtention = NSFile::GetFileExtention(sSrcM);
 			std::transform(sExtention.begin(), sExtention.end(), sExtention.begin(), tolower);
+
+			std::wstring::const_iterator itFound = std::find_if(sExtention.cbegin(), sExtention.cend(), [](wchar_t wChar){ return !iswalpha(wChar) && L'+' != wChar; });
+
+			if (sExtention.cend() != itFound)
+				sExtention.erase(itFound, sExtention.cend());
+
 			if (NotValidExtension(sExtention))
 			{
 				ImageAlternative(oXml, sSelectors, oTS, wsAlt, sSrcM, oImageData);
@@ -4470,6 +4481,17 @@ private:
 				NSNetwork::NSFileTransport::CFileDownloader oDownloadImg(m_sBase + sSrcM, false);
 				oDownloadImg.SetFilePath(wsDst);
 				bRes = oDownloadImg.DownloadSync();
+
+				if (IsSVG(sExtention))
+				{
+					std::wstring wsFileData;
+
+					if (!NSFile::CFileBinary::ReadAllTextUtf8(wsDst, wsFileData) || !readSVG(wsFileData))
+						bRes = false;
+
+					NSFile::CFileBinary::Remove(wsDst);
+					sExtention = L"png";
+				}
 			}
 		}
 
@@ -4770,7 +4792,12 @@ private:
 			return false;
 
 		if (NULL == m_pFonts)
+		{
 			m_pFonts = NSFonts::NSApplication::Create();
+
+			if (NULL != m_pFonts)
+				m_pFonts->Initialize();
+		}
 
 		MetaFile::IMetaFile* pSvgReader = MetaFile::Create(m_pFonts);
 		if (!pSvgReader->LoadFromString(wsSvg))

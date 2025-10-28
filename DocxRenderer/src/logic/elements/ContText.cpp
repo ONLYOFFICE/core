@@ -513,7 +513,6 @@ namespace NSDocxRenderer
 		oWriter.WriteString(L"\" faceindex=\"");
 		oWriter.AddInt(m_nOriginFontFaceIndex);
 		oWriter.WriteString(L"\" />");
-		oWriter.WriteString(L"</a:r>");
 
 		oWriter.WriteString(L"<metaorigin:syminfo");
 		oWriter.WriteString(L" lefts=\"");
@@ -521,6 +520,8 @@ namespace NSDocxRenderer
 		oWriter.WriteString(L"\" gids=\"");
 		oWriter.WriteString(origin_gids);
 		oWriter.WriteString(L"\" />");
+
+		oWriter.WriteString(L"</a:r>");
 	}
 	void CContText::ToBin(NSWasm::CData& oWriter) const
 	{

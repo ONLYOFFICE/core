@@ -540,9 +540,33 @@ void style_tab_stop::docx_convert(oox::docx_conversion_context & Context, bool c
 	const double PtPerCm = 28.346;
 	const double TwPerPt = 20.0;
 
-	double PageWidthTwips       =   21 * PtPerCm * TwPerPt;
-	double LeftPageMarginTwips  =   3 * PtPerCm * TwPerPt;
-	double RightPageMarginTwips =   1.5 * PtPerCm * TwPerPt;
+	double PageWidthTwips       =   0;
+	double LeftPageMarginTwips  =   0;
+	double RightPageMarginTwips =   0;
+
+	auto pp = Context.root()->odf_context().pageLayoutContainer().page_layout_first();
+
+	if( pp && pp->properties() )
+	{
+		auto page_attributes = pp->properties()->attlist_;
+
+		if( page_attributes.fo_page_width_.is_initialized() )
+		{
+			PageWidthTwips = page_attributes.fo_page_width_->get_value_unit(odf_types::length::cm) * PtPerCm * TwPerPt;
+		}
+
+		if( page_attributes.common_horizontal_margin_attlist_.fo_margin_left_.is_initialized() )
+		{
+			LeftPageMarginTwips = page_attributes.common_horizontal_margin_attlist_.fo_margin_left_->get_length().get_value_unit(odf_types::length::cm) * PtPerCm * TwPerPt;
+		}
+
+		if( page_attributes.common_horizontal_margin_attlist_.fo_margin_right_.is_initialized() )
+		{
+			RightPageMarginTwips = page_attributes.common_horizontal_margin_attlist_.fo_margin_right_->get_length().get_value_unit(odf_types::length::cm) * PtPerCm * TwPerPt;
+		}
+	}
+
+
 
 	double current_tab_width_twips = 0;
 

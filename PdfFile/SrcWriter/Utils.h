@@ -33,7 +33,6 @@
 #define _PDF_WRITER_SRC_UTILS_H
 
 #include "Types.h"
-#include <limits>
 
 #define NEEDS_ESCAPE(c)    (c < 0x21 || \
                             c > 0x7e || \

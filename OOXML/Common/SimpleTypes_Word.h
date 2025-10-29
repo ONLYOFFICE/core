@@ -832,7 +832,8 @@ namespace SimpleTypes
 	{
 		complexFormTypeCustom    = 0,
 		complexFormTypeTelephone = 1,
-		complexFormTypeEmail     = 2
+		complexFormTypeEmail     = 2,
+		complexFormTypeLabeledCheckBox = 3
 	};	
 
 	DEFINE_SIMPLE_TYPE_START(CComplexFormType, EComplexFormType, complexFormTypeCustom)

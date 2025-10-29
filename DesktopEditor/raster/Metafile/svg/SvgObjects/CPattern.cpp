@@ -5,8 +5,9 @@
 
 namespace SVG
 {
-	CPattern::CPattern(XmlUtils::CXmlNode& oNode, NSFonts::IFontManager *pFontManager)
-		: CAppliedObject(oNode), m_oContainer(oNode), m_pFontManager(pFontManager), m_pImage(NULL), m_enPatternUnits(objectBoundingBox)
+	CPattern::CPattern(CSvgReader& oReader, NSFonts::IFontManager *pFontManager)
+		: CAppliedObject(oReader), m_oContainer(oReader), m_pFontManager(pFontManager),
+		  m_pImage(NULL), m_enPatternUnits(objectBoundingBox)
 	{}
 
 	CPattern::~CPattern()

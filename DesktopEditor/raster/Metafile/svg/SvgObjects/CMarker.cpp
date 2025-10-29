@@ -1,26 +1,35 @@
 #include "CMarker.h"
 
-#include "../../../graphics/pro/Graphics.h"
 #include "../SvgUtils.h"
 
 namespace SVG
 {
-	CMarker::CMarker(XmlUtils::CXmlNode &oNode)
-		: CObject(oNode), m_dAngle(0.), m_oBounds{0., 0., 0., 0.}
+	CMarker::CMarker(CSvgReader& oReader)
+		: CObject(oReader), m_enUnits{EMarkerUnits::StrokeWidth}, m_enOrient{EMarkerOrient::Angle},
+	      m_dAngle(0.), m_oBounds{0., 0., 0., 0.}
 	{
-		m_oWindow.m_oX     .SetValue(oNode.GetAttribute(L"refX"));
-		m_oWindow.m_oY     .SetValue(oNode.GetAttribute(L"refY"));
+		m_oWindow.m_oWidth.SetValue(3);
+		m_oWindow.m_oHeight.SetValue(3);
+	}
 
-		m_oWindow.m_oWidth .SetValue(oNode.GetAttribute(L"markerWidth",  L"3"));
-		m_oWindow.m_oHeight.SetValue(oNode.GetAttribute(L"markerHeight", L"3"));
+	ObjectType CMarker::GetType() const
+	{
+		return AppliedObject;
+	}
 
-		m_oViewBox = m_oWindow;
-
-		const std::wstring wsViewBox = oNode.GetAttribute(L"viewBox");
-
-		if (!wsViewBox.empty())
+	void CMarker::SetAttribute(const std::string& sName, CSvgReader& oReader)
+	{
+		if ("refX" == sName)
+			m_oWindow.m_oX.SetValue(oReader.GetText());
+		else if ("refY" == sName)
+			m_oWindow.m_oY.SetValue(oReader.GetText());
+		else if ("markerWidth" == sName)
+			m_oWindow.m_oWidth.SetValue(oReader.GetText());
+		else if ("markerHeight" == sName)
+			m_oWindow.m_oHeight.SetValue(oReader.GetText());
+		else if ("viewBox" == sName)
 		{
-			std::vector<double> arValues = StrUtils::ReadDoubleValues(wsViewBox);
+			const  std::vector<double> arValues{StrUtils::ReadDoubleValues(oReader.GetText())};
 			if (4 == arValues.size())
 			{
 				m_oViewBox.m_oX      = arValues[0];
@@ -29,35 +38,24 @@ namespace SVG
 				m_oViewBox.m_oHeight = arValues[3];
 			}
 		}
-
-		const std::wstring& wsUnits = oNode.GetAttribute(L"markerUnits");
-
-		if (L"userSpaceOnUse" == wsUnits)
-			m_enUnits = EMarkerUnits::UserSpaceOnUse;
-		else
-			m_enUnits = EMarkerUnits::StrokeWidth;
-
-		const std::wstring& wsOrient = oNode.GetAttribute(L"orient");
-
-		if (L"auto" == wsOrient)
-			m_enOrient = EMarkerOrient::Auto;
-		else if (L"auto-start-reverse" == wsOrient)
-			m_enOrient = EMarkerOrient::Auto_start_reverse;
-		else
+		else if ("markerUnits" == sName)
 		{
-			m_enOrient = EMarkerOrient::Angle;
-			if (!StrUtils::ReadAngle(wsOrient, m_dAngle))
+			if (L"userSpaceOnUse" == oReader.GetText())
+				m_enUnits = EMarkerUnits::UserSpaceOnUse;
+		}
+		else if ("orient" == sName)
+		{
+			const std::wstring& wsOrient{oReader.GetText()};
+
+			if (L"auto" == wsOrient)
+				m_enOrient = EMarkerOrient::Auto;
+			else if (L"auto-start-reverse" == wsOrient)
+				m_enOrient = EMarkerOrient::Auto_start_reverse;
+			else if (!StrUtils::ReadAngle(wsOrient, m_dAngle))
 				StrUtils::ReadDoubleValue(wsOrient, m_dAngle);
 		}
-	}
-
-	CMarker::~CMarker()
-	{
-	}
-
-	ObjectType CMarker::GetType() const
-	{
-		return AppliedObject;
+		else
+			CObject::SetAttribute(sName, oReader);
 	}
 
 	void CMarker::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
@@ -68,7 +66,11 @@ namespace SVG
 		if (NULL == oExternalData.m_pPoints || oExternalData.m_pPoints->empty() || m_arObjects.empty() || (EMarkerUnits::StrokeWidth == m_enUnits && Equals(0., oExternalData.m_dStroke)))
 			return;
 
-		const double dMaxScale = ((EMarkerUnits::StrokeWidth == m_enUnits) ? oExternalData.m_dStroke : 1.) * std::max((m_oWindow.m_oWidth.ToDouble(NSCSS::Pixel) / m_oViewBox.m_oWidth.ToDouble(NSCSS::Pixel)), (m_oWindow.m_oHeight.ToDouble(NSCSS::Pixel) / m_oViewBox.m_oHeight.ToDouble(NSCSS::Pixel)));
+		const double dMaxScale = ((EMarkerUnits::StrokeWidth == m_enUnits) ? oExternalData.m_dStroke : 1.) *
+		                         ((!m_oViewBox.m_oWidth.Empty() && !m_oViewBox.m_oHeight.Empty()) ?
+		                              std::max((m_oWindow.m_oWidth.ToDouble(NSCSS::Pixel) / m_oViewBox.m_oWidth.ToDouble(NSCSS::Pixel)),
+		                                       (m_oWindow.m_oHeight.ToDouble(NSCSS::Pixel) / m_oViewBox.m_oHeight.ToDouble(NSCSS::Pixel))) :
+		                              1.);
 
 		double dM11, dM12, dM21, dM22, dDx, dDy;
 		pRenderer->GetTransform(&dM11, &dM12, &dM21, &dM22, &dDx, &dDy);

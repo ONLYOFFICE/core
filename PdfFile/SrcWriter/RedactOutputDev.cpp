@@ -806,7 +806,7 @@ void RedactOutputDev::drawForm(GfxState *pGState, Gfx *gfx, Ref id, const char* 
 	RELEASEOBJECT(_gfx);
 	RELEASEOBJECT(pFormOutputDev);
 	RELEASEOBJECT(pFakePage);
-	resourcesObj.free();
+	resourcesObj.free(); oForm.free();
 
 	m_pRenderer->SetPage(pCurPage);
 	pDocument->SetCurPage(pCurPage);
@@ -817,7 +817,7 @@ void RedactOutputDev::drawForm(GfxState *pGState, Gfx *gfx, Ref id, const char* 
 	m_pPage->ExecuteXObject(name);
 	m_pPage->GrRestore();
 }
-void RedactOutputDev::drawImage(GfxState *pGState, Ref id, const char* name)
+void RedactOutputDev::drawImage(GfxState *pGState, Gfx *gfx, Ref id, const char* name)
 {
 	m_pRenderer->m_oCommandManager.Flush();
 	DoStateOp();
@@ -825,15 +825,15 @@ void RedactOutputDev::drawImage(GfxState *pGState, Ref id, const char* name)
 	double dShiftX = 0, dShiftY = 0;
 	DoTransform(pGState->getCTM(), &dShiftX, &dShiftY, true);
 
-	// TODO пока что исключается всё изображение
-
 	double dX1 = 0, dY1 = 0, dX2 = 0, dY2 = 1, dX3 = 1, dY3 = 1, dX4 = 1, dY4 = 0;
 	Transform(m_arrMatrix, dX1, dY1, &dX1, &dY1);
 	Transform(m_arrMatrix, dX2, dY2, &dX2, &dY2);
 	Transform(m_arrMatrix, dX3, dY3, &dX3, &dY3);
 	Transform(m_arrMatrix, dX4, dY4, &dX4, &dY4);
 
-	std::vector<CPoint> poly2 =
+	bool bHasRedaction = false;
+	std::vector<std::vector<CPoint>> intersectingRedacts;
+	std::vector<CPoint> imagePolygon =
 	{
 		CPoint(dX1, dY1),
 		CPoint(dX2, dY2),
@@ -842,7 +842,7 @@ void RedactOutputDev::drawImage(GfxState *pGState, Ref id, const char* name)
 	};
 	for (int j = 0; j < m_arrQuadPoints.size(); j += 8)
 	{
-		std::vector<CPoint> poly1 =
+		std::vector<CPoint> redactPolygon =
 		{
 			CPoint(m_arrQuadPoints[j + 0], m_arrQuadPoints[j + 1]),
 			CPoint(m_arrQuadPoints[j + 2], m_arrQuadPoints[j + 3]),
@@ -850,14 +850,94 @@ void RedactOutputDev::drawImage(GfxState *pGState, Ref id, const char* name)
 			CPoint(m_arrQuadPoints[j + 6], m_arrQuadPoints[j + 7])
 		};
 
-		if (PdfWriter::SAT(poly1, poly2))
-			return;
+		if (PdfWriter::SAT(redactPolygon, imagePolygon))
+		{
+			bHasRedaction = true;
+			intersectingRedacts.push_back(redactPolygon);
+		}
 	}
 
-	m_pPage->GrSave();
-	UpdateTransform();
-	m_pPage->ExecuteXObject(name);
-	m_pPage->GrRestore();
+	if (!bHasRedaction)
+	{
+		m_pPage->GrSave();
+		UpdateTransform();
+		m_pPage->ExecuteXObject(name);
+		m_pPage->GrRestore();
+		return;
+	}
+
+	Object oImage;
+	if (!m_pXref->fetch(id.num, id.gen, &oImage)->isStream())
+	{
+		oImage.free();
+		return;
+	}
+
+	Stream* pStream = oImage.getStream();
+	Dict* pDict = oImage.streamGetDict();
+
+	int nWidth = 0, nHeight = 0, nBits = 0;
+	Object oObj;
+	if (!pDict->lookup("Width", &oObj)->isInt())
+	{
+		oObj.free();
+		if (!pDict->lookup("W", &oObj)->isInt())
+		{
+			oObj.free(); oImage.free();
+			return;
+		}
+	}
+	nWidth = oObj.getInt();
+	oObj.free();
+	if (!pDict->lookup("Height", &oObj)->isInt())
+	{
+		oObj.free();
+		if (!pDict->lookup("H", &oObj)->isInt())
+		{
+			oObj.free(); oImage.free();
+			return;
+		}
+	}
+	nHeight = oObj.getInt();
+	oObj.free();
+	if (nWidth <= 0 || nHeight <= 0)
+	{
+		oImage.free();
+		return;
+	}
+
+	bool bMask = false;
+	if (!pDict->lookup("ImageMask", &oObj)->isBool())
+	{
+		oObj.free();
+		pDict->lookup("IM", &oObj);
+	}
+	if (oObj.isBool())
+		bMask = oObj.getBool();
+	oObj.free();
+
+	StreamColorSpaceMode csMode = streamCSNone;
+	pStream->getImageParams(&nBits, &csMode);
+	if (nBits == 0)
+	{
+		if (!pDict->lookup("BitsPerComponent", &oObj)->isInt())
+		{
+			oObj.free();
+			pDict->lookup("BPC", &oObj);
+		}
+		if (oObj.isInt())
+			nBits = oObj.getInt();
+		else if (bMask)
+			nBits = 1;
+		oObj.free();
+	}
+	if (nBits < 1 || nBits > 16)
+	{
+		oImage.free();
+		return;
+	}
+
+	oImage.free();
 }
 //----- transparency groups and soft masks
 void RedactOutputDev::beginTransparencyGroup(GfxState *pGState, double *pBBox, GfxColorSpace *pBlendingColorSpace, GBool bIsolated, GBool bKnockout, GBool bForSoftMask)

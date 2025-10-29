@@ -1010,9 +1010,9 @@ namespace PdfWriter
 	{
 		switch (eMode)
 		{
-			case SeekCur: m_nFilePos += nPos; break;
-        case SeekEnd: m_nFilePos = std::max(0, (m_nFileSize - nPos)); break;
-			case SeekSet: m_nFilePos = nPos; break;
+		case SeekCur: m_nFilePos += nPos; break;
+		case SeekEnd: m_nFilePos = std::max(0, (m_nFileSize - nPos)); break;
+		case SeekSet: m_nFilePos = nPos; break;
 		}
 	}
 	int          CImageFileStream::Tell()

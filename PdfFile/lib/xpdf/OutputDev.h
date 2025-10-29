@@ -238,7 +238,7 @@ public:
 
   //----- form XObjects
   virtual void drawForm(GfxState *state, Gfx *gfx, Ref id, const char *name = nullptr) {}
-  virtual void drawImage(GfxState *pGState, Ref id, const char* name = nullptr) {}
+  virtual void drawImage(GfxState *pGState, Gfx *gfx, Ref id, const char* name = nullptr) {}
 
   //----- PostScript XObjects
   virtual void psXObject(Stream *psStream, Stream *level1Stream) {}

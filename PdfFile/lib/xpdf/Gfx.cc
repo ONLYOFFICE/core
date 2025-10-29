@@ -4117,7 +4117,7 @@ void Gfx::opXObject(Object args[], int numArgs) {
       if (out->needNonText()) {
 	res->lookupXObjectNF(name, &refObj);
 	if (out->useNameOp() && refObj.isRef())
-		out->drawImage(state, refObj.getRef(), name);
+		out->drawImage(state, this, refObj.getRef(), name);
 	else
 		doImage(&refObj, obj1.getStream(), gFalse);
 	refObj.free();

@@ -4313,10 +4313,11 @@ namespace OOX
 				rowPtr->iOutLevel = m_oOutlineLevel->GetValue();
 			if(m_oHidden.IsInit())
 				rowPtr->fDyZero = m_oHidden->GetValue();
-			if(m_oCustomFormat.IsInit())
-				rowPtr->fGhostDirty = m_oCustomFormat->GetValue();
 			if(m_oS.IsInit())
+			{
 				rowPtr->ixfe_val = m_oS->GetValue();
+				rowPtr->fGhostDirty = true;
+			}
 			if(m_oCustomHeight.IsInit())
 				rowPtr->fUnsynced = m_oCustomHeight->GetValue();
 			if(m_oHt.IsInit())
@@ -5111,15 +5112,63 @@ namespace OOX
 		auto tablePtr = XLS::BaseObjectPtr(cellTable);
 		auto cellGroup = new XLS::CELL_GROUP(shared_formulas_locations_ref);
 		cellTable->m_arCellGroups.push_back(XLS::BaseObjectPtr(cellGroup));
-		for(auto row : m_arrItems)
+		auto processCell = [&](CCell *cell, XLS::CELL_GROUP *groupPtr, std::vector<CellRangeRef> shared_formulas_locations_ref)
 		{
-			cellGroup->m_arRows.push_back(row->toXLS());
+			auto Cellptr = XLS::BaseObjectPtr(new XLS::CELL(shared_formulas_locations_ref));
+			cell->toXLS(Cellptr);
+			groupPtr->m_arCells.push_back(Cellptr);
+			if(cell->m_oRepeated.IsInit())
+			{
+				auto pcell = cell;
+				_INT32 cellTimes = pcell->m_oRepeated.get() - 1;
+				_INT32 originalCol = 0;
+				if(pcell->m_oCol.IsInit())
+					originalCol = pcell->m_oCol.get();
+				while(cellTimes > 0)
+				{
+					if(pcell->m_oCol.IsInit())
+						pcell->m_oCol = pcell->m_oCol.get() + 1;
+					auto TempCell = XLS::BaseObjectPtr(new XLS::CELL(shared_formulas_locations_ref));
+					cell->toXLS(TempCell);
+					groupPtr->m_arCells.push_back(TempCell);
+					cellTimes--;
+				}
+				if(pcell->m_oCol.IsInit())
+					pcell->m_oCol = originalCol;
+
+			}
+		};
+		auto processRow = [&](CRow *row, XLS::CELL_GROUP *groupPtr, std::vector<CellRangeRef> shared_formulas_locations_ref)
+		{
+			groupPtr->m_arRows.push_back(row->toXLS());
 			for(auto cell : row->m_arrItems)
 			{
-				auto Cellptr = XLS::BaseObjectPtr(new XLS::CELL(shared_formulas_locations_ref));
-				cell->toXLS(Cellptr);
-				cellGroup->m_arCells.push_back(Cellptr);
+				processCell(cell, groupPtr, shared_formulas_locations_ref);
 			}
+			if(row->m_oRepeated.IsInit())
+			{
+				auto prow = row;
+				_INT32 rowTimes = prow->m_oRepeated.get() - 1;
+				while(rowTimes > 0)
+				{
+					if(prow->m_oR.IsInit())
+						prow->m_oR = prow->m_oR->GetValue() + 1;
+					if(!prow->m_arrItems.empty() && prow->m_arrItems.at(0)->m_oRow.IsInit())
+						prow->m_arrItems.at(0)->m_oRow = prow->m_oR->GetValue();
+					groupPtr->m_arRows.push_back(row->toXLS());
+					for(auto cell : row->m_arrItems)
+					{
+						processCell(cell, groupPtr, shared_formulas_locations_ref);
+					}
+					rowTimes--;
+				}
+
+			}
+		};
+
+		for(auto row : m_arrItems)
+		{
+			processRow(row, cellGroup, shared_formulas_locations_ref);
 		}
 
 		return tablePtr;

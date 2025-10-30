@@ -4792,7 +4792,7 @@ private:
 		oXml->WriteString(L"\"/></w:r>");
 		m_oNoteXml.WriteString(L"<w:footnote w:id=\"");
 		m_oNoteXml.WriteString(std::to_wstring(m_nFootnoteId++));
-		m_oNoteXml.WriteString(L"\"><w:p><w:pPr><w:pStyle w:val=\"footnote-p\"/></w:pPr><w:r><w:rPr><w:rStyle w:val=\"footnote\"/></w:rPr></w:r><w:r><w:t xml:space=\"preserve\">");
+		m_oNoteXml.WriteString(L"\"><w:p><w:pPr><w:pStyle w:val=\"footnote-p\"/></w:pPr><w:r><w:rPr><w:footnoteRef/></w:rPr><w:t xml:space=\"preserve\"> </w:t></w:r><w:r><w:rPr><w:rStyle w:val=\"footnote\"/></w:rPr></w:r><w:r><w:t xml:space=\"preserve\">");
 		m_oNoteXml.WriteEncodeXmlString(sNote);
 		m_oNoteXml.WriteString(L"</w:t></w:r></w:p></w:footnote>");
 

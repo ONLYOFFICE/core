@@ -149,7 +149,7 @@ namespace PPTX
 
 			pReader->Seek(_end_rec);
 			
-			if (id.IsInit())
+			if (false == idx.IsInit())
 			{
 				bModern = true;
 			}
@@ -186,7 +186,7 @@ namespace PPTX
 
 			std::wstring strName = XmlUtils::GetNameNoNS(oCm.GetName());
 
-			if (strName == L"author")
+			if (strName == L"author" || strName == L"cmAuthor")
 			{
 				m_arAuthors.emplace_back();
 

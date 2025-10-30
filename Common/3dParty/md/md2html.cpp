@@ -39,7 +39,7 @@ void WriteBaseHtmlStyles(NSFile::CFileBinary& oFile)
 	oFile.WriteStringUTF8(L"table { margin-bottom: 20px; width: 100%; max-width: 100%; border-spacing:0; border-collapse: collapse; border-color: gray;}");
 	oFile.WriteStringUTF8(L"thead { display: table-header-group; vertical-align: middle; }");
 	oFile.WriteStringUTF8(L"tr { display: table-row; }");
-	oFile.WriteStringUTF8(L"th { text-align: left; display: table-cell; font-weight: bold; }");
+	oFile.WriteStringUTF8(L"th { text-align: center; display: table-cell; font-weight: bold; }");
 
 	oFile.WriteStringUTF8(L"table thead tr th, table thead tr td { vertical-align: bottom; border-bottom: 2px solid #ddd; border-top: none; }");
 	oFile.WriteStringUTF8(L"table tbody tr th, table tbody tr td { padding 8px; line-height: 1.4; vertical-align: top; border-top: 1px solid #ddd; }");

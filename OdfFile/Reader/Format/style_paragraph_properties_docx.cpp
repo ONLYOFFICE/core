@@ -546,8 +546,6 @@ void style_tab_stop::docx_convert(oox::docx_conversion_context & Context, bool c
 
 	std::wstring curr_name_layout = Context.get_master_page_name();
 
-	_CP_LOG << "current layout name = " << curr_name_layout << "\n";
-
 	auto pp = Context.root()->odf_context().pageLayoutContainer().page_layout_by_style(curr_name_layout);
 
 	if( pp && pp->properties() )
@@ -574,7 +572,7 @@ void style_tab_stop::docx_convert(oox::docx_conversion_context & Context, bool c
 
 	double current_tab_width_twips = 0;
 
-	if( style_type_->get_type() == style_type::Left )
+	if( style_type_.is_initialized() && style_type_->get_type() == style_type::Left )
 	{
 		current_tab_width_twips = PageWidthTwips - LeftPageMarginTwips - RightPageMarginTwips - margin_right;
 	}

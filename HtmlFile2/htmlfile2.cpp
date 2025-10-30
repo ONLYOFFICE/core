@@ -1253,7 +1253,7 @@ public:
 
 	bool ConvertToOOXML(NSStringUtils::CStringBuilder& oStringBuilder)
 	{
-		if (m_arRows.empty())
+		if (m_arRows.empty() && m_arHeaders.empty() && m_arFoother.empty())
 			return false;
 
 		oStringBuilder.WriteNodeBegin(L"w:tbl");

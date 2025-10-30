@@ -373,6 +373,7 @@ namespace NSCSS
 		const CEnum& GetWhiteSpace() const;
 
 		bool Empty() const;
+		void Clear();
 
 		CDisplay& operator+=(const CDisplay& oDisplay);
 		bool      operator==(const CDisplay& oDisplay) const;

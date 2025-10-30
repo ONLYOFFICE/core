@@ -106,12 +106,13 @@ void tabs_context::reset()
 	}
 	tabs.clear();
 }
-void tabs_context::add(const odf_reader::office_element_ptr & element, double margin_left)
+void tabs_context::add(const odf_reader::office_element_ptr & element, double margin_left, double margin_right)
 {
 	odf_reader::style_tab_stop *tab_stop = dynamic_cast<odf_reader::style_tab_stop*>(element.get());
 	if (tab_stop)
 	{
 		tab_stop->margin_left = margin_left;
+		tab_stop->margin_right = margin_right;
 		
 		auto type = tab_stop->style_type_ ? tab_stop->style_type_->get_type() : odf_types::style_type::Left;
 
@@ -132,6 +133,7 @@ void tabs_context::add(const odf_reader::office_element_ptr & element, double ma
 		{
 			clear_tabs.erase(pFind);
 		}
+
 		tabs.push_back(element);
 	}
 }
@@ -152,6 +154,7 @@ void tabs_context::docx_convert(oox::docx_conversion_context & Context)
 		for (size_t i = 0; i < tabs.size(); i++)
 		{
 			odf_reader::style_tab_stop * tab_stop = dynamic_cast<odf_reader::style_tab_stop*>(tabs[i].get());
+
 			tab_stop->docx_convert(Context, false);
 		}
     _pPr << L"</w:tabs>";

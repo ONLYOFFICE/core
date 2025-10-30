@@ -5176,7 +5176,7 @@ int Binary_DocumentTableReader::ReadParagraph(BYTE type, long length, void* poRe
 	else if (c_oSerParType::ParaID == type)
 	{
 		m_oParaId.Init();
-		_INT64 res = m_oBufferedStream.GetLong64();
+		_INT64 res = m_oBufferedStream.GetULong();
 		m_oParaId->SetValue(res);
 	}
 	else if (c_oSerParType::TextID == type)

@@ -192,7 +192,7 @@ namespace PdfWriter
 		};
 
 		void DoPathRedact(GfxState* pGState, GfxPath* pPath, double* pCTM, bool bStroke = false, bool bEoFill = false);
-		void DrawPathRedact(Aggplus::CGraphicsPath* oPath, bool bStroke, const std::vector<CSegment>& arrForStroke = {});
+		void DrawPathRedact(Aggplus::CGraphicsPath* oPath, bool bStroke, double& dXEnd, double& dYEnd, const std::vector<CSegment>& arrForStroke = {});
 		void DoPath(GfxState* pGState, GfxPath* pPath, double* pCTM);
 		void DoTransform(double* pMatrix, double* pdShiftX, double* pdShiftY, bool bActual = false);
 		void DrawPath(const LONG& lType);
@@ -209,6 +209,7 @@ namespace PdfWriter
 		CDocument*  m_pDoc;
 		CPage*      m_pPage;
 		double      m_arrMatrix[6];
+		std::string m_sImageName;
 
 		bool m_bUpdateAll;
 		std::deque<GfxRedactState> m_sStates;

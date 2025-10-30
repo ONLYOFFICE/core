@@ -1528,15 +1528,15 @@ void Gfx::opSetFillColor(Object args[], int numArgs) {
 	  " in uncolored Type 3 char or tiling pattern");
     return;
   }
-  if (numArgs != state->getFillColorSpace()->getNComps()) {
-    error(errSyntaxError, getPos(),
-	  "Incorrect number of arguments in 'sc' command");
-    return;
-  }
   if (out->useNameOp())
   {
 	out->setFillColor(args, numArgs);
 	return;
+  }
+  if (numArgs != state->getFillColorSpace()->getNComps()) {
+    error(errSyntaxError, getPos(),
+	  "Incorrect number of arguments in 'sc' command");
+    return;
   }
   state->setFillPattern(NULL);
   for (i = 0; i < numArgs; ++i) {
@@ -4117,9 +4117,8 @@ void Gfx::opXObject(Object args[], int numArgs) {
       if (out->needNonText()) {
 	res->lookupXObjectNF(name, &refObj);
 	if (out->useNameOp() && refObj.isRef())
-		out->drawImage(state, this, refObj.getRef(), name);
-	else
-		doImage(&refObj, obj1.getStream(), gFalse);
+	  out->drawImage(state, this, refObj.getRef(), name);
+	doImage(&refObj, obj1.getStream(), gFalse);
 	refObj.free();
       }
     } else if (obj2.isName("Form")) {
@@ -4314,7 +4313,8 @@ GBool Gfx::doImage(Object *ref, Stream *str, GBool inlineImg) {
 
     // rendering intent
     if (dict->lookup("Intent", &obj1)->isName()) {
-      opSetRenderingIntent(&obj1, 1);
+	  if (!out->useNameOp())
+		opSetRenderingIntent(&obj1, 1);
     }
     obj1.free();
 

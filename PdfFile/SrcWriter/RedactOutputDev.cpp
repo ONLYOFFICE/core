@@ -42,6 +42,8 @@
 #include "../lib/xpdf/Page.h"
 
 #include "../../DesktopEditor/graphics/GraphicsPath.h"
+#include "../../DesktopEditor/raster/BgraFrame.h"
+#include "../../DesktopEditor/raster/ImageFileFormatChecker.h"
 
 namespace PdfWriter
 {
@@ -634,7 +636,167 @@ void RedactOutputDev::setSoftMaskFromImageMask(GfxState *pGState, Object *pRef, 
 }
 void RedactOutputDev::drawImage(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap, int *pMaskColors, GBool bInlineImg, GBool interpolate)
 {
+	m_pRenderer->m_oCommandManager.Flush();
+	DoStateOp();
 
+	double dShiftX = 0, dShiftY = 0;
+	DoTransform(pGState->getCTM(), &dShiftX, &dShiftY, true);
+
+	PdfWriter::CObjectBase* pObj = m_mObjManager->GetObj(pRef->getRefNum());
+	if (pObj->GetType() != object_type_DICT)
+		return;
+
+	PdfWriter::CDocument* pDocument = m_pRenderer->GetDocument();
+	CDictObject* pXObject = pDocument->GetXObject(pRef->getRefNum());
+	if (pXObject)
+	{
+		// Этот XObject уже прошёл через Redact
+		m_pPage->GrSave();
+		UpdateTransform();
+		m_pPage->ExecuteXObject(m_sImageName.c_str());
+		m_pPage->GrRestore();
+		return;
+	}
+
+	double dX1 = 0, dY1 = 0, dX2 = 0, dY2 = 1, dX3 = 1, dY3 = 1, dX4 = 1, dY4 = 0;
+	Transform(m_arrMatrix, dX1, dY1, &dX1, &dY1);
+	Transform(m_arrMatrix, dX2, dY2, &dX2, &dY2);
+	Transform(m_arrMatrix, dX3, dY3, &dX3, &dY3);
+	Transform(m_arrMatrix, dX4, dY4, &dX4, &dY4);
+
+	bool bHasRedaction = false;
+	std::vector<CPoint> imagePolygon =
+	{
+		CPoint(dX1, dY1),
+		CPoint(dX2, dY2),
+		CPoint(dX3, dY3),
+		CPoint(dX4, dY4)
+	};
+	for (int j = 0; j < m_arrQuadPoints.size(); j += 8)
+	{
+		std::vector<CPoint> redactPolygon =
+		{
+			CPoint(m_arrQuadPoints[j + 0], m_arrQuadPoints[j + 1]),
+			CPoint(m_arrQuadPoints[j + 2], m_arrQuadPoints[j + 3]),
+			CPoint(m_arrQuadPoints[j + 4], m_arrQuadPoints[j + 5]),
+			CPoint(m_arrQuadPoints[j + 6], m_arrQuadPoints[j + 7])
+		};
+
+		if (PdfWriter::SAT(redactPolygon, imagePolygon))
+		{
+			bHasRedaction = true;
+			break;
+		}
+	}
+
+	if (!bHasRedaction)
+	{
+		m_pPage->GrSave();
+		UpdateTransform();
+		m_pPage->ExecuteXObject(m_sImageName.c_str());
+		m_pPage->GrRestore();
+		return;
+	}
+
+	BYTE* pBufferPtr = new(std::nothrow) BYTE[4 * nWidth * nHeight];
+	if (!pBufferPtr)
+		return;
+
+	int nComponentsCount = pColorMap->getNumPixelComps();
+	ImageStream* pImageStream = new ImageStream(pStream, nWidth, nComponentsCount, pColorMap->getBits());
+	pImageStream->reset();
+
+	int nComps = pImageStream->getComps();
+	int nCheckWidth = std::min(nWidth, pImageStream->getVals() / nComps);
+	GfxRenderingIntent intent = pGState->getRenderingIntent();
+
+	int nColorMapType = pColorMap->getFillType();
+	GfxColorComp** pColorMapLookup = pColorMap->getLookup();
+	if (!pColorMapLookup)
+		nColorMapType = 0;
+
+	for (int nY = 0; nY < nHeight; ++nY)
+	{
+		BYTE* pLine = pImageStream->getLine();
+		BYTE* pLineDst = pBufferPtr + 4 * nWidth * nY;
+
+		if (!pLine)
+		{
+			memset(pLineDst, 0, 4 * nWidth);
+			continue;
+		}
+
+		for (int nX = 0; nX < nCheckWidth; ++nX)
+		{
+			if (2 == nColorMapType)
+			{
+				pLineDst[0] = colToByte(clip01(pColorMapLookup[0][pLine[0]]));
+				pLineDst[1] = colToByte(clip01(pColorMapLookup[1][pLine[1]]));
+				pLineDst[2] = colToByte(clip01(pColorMapLookup[2][pLine[2]]));
+			}
+			else if (1 == nColorMapType)
+			{
+				pLineDst[0] = pLineDst[1] = pLineDst[2] = colToByte(clip01(pColorMapLookup[0][pLine[0]]));
+			}
+			else if (3 == nColorMapType)
+			{
+				pLineDst[0] = colToByte(clip01(pColorMapLookup[0][pLine[0]]));
+				pLineDst[1] = colToByte(clip01(pColorMapLookup[1][pLine[1]]));
+				pLineDst[2] = colToByte(clip01(pColorMapLookup[2][pLine[2]]));
+				pLineDst[3] = colToByte(clip01(pColorMapLookup[3][pLine[3]]));
+			}
+			else
+			{
+				GfxRGB oRGB;
+				pColorMap->getRGB(pLine, &oRGB, intent);
+				pLineDst[0] = colToByte(oRGB.r);
+				pLineDst[1] = colToByte(oRGB.g);
+				pLineDst[2] = colToByte(oRGB.b);
+			}
+
+			pLineDst[3] = 225;
+
+			pLine += nComps;
+			pLineDst += 4;
+		}
+	}
+
+	pImageStream->close();
+	delete pImageStream;
+
+	// TODO Пересечение с Redact и закрашивание пикселов
+
+	CBgraFrame oFrame;
+	oFrame.put_Data(pBufferPtr);
+	oFrame.put_Width(nWidth);
+	oFrame.put_Height(nHeight);
+	oFrame.put_Stride(4 * nWidth);
+	oFrame.put_IsRGBA(true);
+
+	oFrame.SetJpegQuality(85.0);
+	BYTE* pBuffer = NULL;
+	int nBufferSize = 0;
+	if (!oFrame.Encode(pBuffer, nBufferSize, _CXIMAGE_FORMAT_JPG))
+		return;
+
+	CDictObject* pDictObj = (CDictObject*)pObj;
+	pDictObj->ClearStream();
+	CNumberObject* pLength = new CNumberObject(0);
+	pDocument->AddObject(pLength);
+	pDictObj->Add("Length", pLength);
+
+	pDictObj->SetFilter(STREAM_FILTER_DCT_DECODE);
+	pDictObj->Add("BitsPerComponent", 8);
+	pDictObj->Add("ColorSpace", "DeviceRGB");
+	pDictObj->Remove("DecodeParms");
+
+	CStream* pStreamForm = pDictObj->GetStream();
+	pStreamForm->Write(pBuffer, nBufferSize);
+
+	m_pPage->GrSave();
+	UpdateTransform();
+	m_pPage->ExecuteXObject(m_sImageName.c_str());
+	m_pPage->GrRestore();
 }
 void RedactOutputDev::drawMaskedImage(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap,
 							 Object* pMaskRef, Stream *pMaskStream, int nMaskWidth, int nMaskHeight, GBool bMaskInvert, GBool interpolate)
@@ -668,13 +830,6 @@ void RedactOutputDev::drawForm(GfxState *pGState, Gfx *gfx, Ref id, const char* 
 	if (pObj->GetType() != object_type_DICT)
 		return;
 
-	Object oForm;
-	if (!m_pXref->fetch(id.num, id.gen, &oForm)->isStream())
-	{
-		oForm.free();
-		return;
-	}
-
 	PdfWriter::CDocument* pDocument = m_pRenderer->GetDocument();
 	CDictObject* pXObject = pDocument->GetXObject(id.num);
 	if (pXObject)
@@ -684,6 +839,13 @@ void RedactOutputDev::drawForm(GfxState *pGState, Gfx *gfx, Ref id, const char* 
 		UpdateTransform();
 		m_pPage->ExecuteXObject(name);
 		m_pPage->GrRestore();
+		return;
+	}
+
+	Object oForm;
+	if (!m_pXref->fetch(id.num, id.gen, &oForm)->isStream())
+	{
+		oForm.free();
 		return;
 	}
 
@@ -799,7 +961,7 @@ void RedactOutputDev::drawForm(GfxState *pGState, Gfx *gfx, Ref id, const char* 
 	Object resourcesObj;
 	oForm.streamGetDict()->lookup("Resources", &resourcesObj);
 
-	PDFRectangle pBBox = { dXmin, dYmin, dXmax, dYmax };
+	PDFRectangle pBBox = { 0, 0, dXmax - dXmin, dYmax - dYmin };
 	Gfx* _gfx = new Gfx(gfx->getDoc(), pFormOutputDev, resourcesObj.isDict() ? resourcesObj.getDict() : NULL, &pBBox, NULL);
 	_gfx->display(&oForm);
 
@@ -819,6 +981,9 @@ void RedactOutputDev::drawForm(GfxState *pGState, Gfx *gfx, Ref id, const char* 
 }
 void RedactOutputDev::drawImage(GfxState *pGState, Gfx *gfx, Ref id, const char* name)
 {
+	m_sImageName = std::string(name);
+	return;
+
 	m_pRenderer->m_oCommandManager.Flush();
 	DoStateOp();
 
@@ -832,7 +997,6 @@ void RedactOutputDev::drawImage(GfxState *pGState, Gfx *gfx, Ref id, const char*
 	Transform(m_arrMatrix, dX4, dY4, &dX4, &dY4);
 
 	bool bHasRedaction = false;
-	std::vector<std::vector<CPoint>> intersectingRedacts;
 	std::vector<CPoint> imagePolygon =
 	{
 		CPoint(dX1, dY1),
@@ -853,7 +1017,7 @@ void RedactOutputDev::drawImage(GfxState *pGState, Gfx *gfx, Ref id, const char*
 		if (PdfWriter::SAT(redactPolygon, imagePolygon))
 		{
 			bHasRedaction = true;
-			intersectingRedacts.push_back(redactPolygon);
+			break;
 		}
 	}
 
@@ -937,6 +1101,29 @@ void RedactOutputDev::drawImage(GfxState *pGState, Gfx *gfx, Ref id, const char*
 		return;
 	}
 
+	bool bInterpolate = false;
+	if (!pDict->lookup("Interpolate", &oObj)->isBool())
+	{
+		oObj.free();
+		pDict->lookup("I", &oObj);
+	}
+	if (oObj.isBool())
+		bInterpolate = oObj.getBool();
+	oObj.free();
+
+	if (bMask)
+	{
+		// TODO drawImageMask
+	}
+	else
+	{
+
+	}
+
+	//int nComponentsCount = pColorMap->getNumPixelComps();
+	//ImageStream* pImageStream = new ImageStream(pStream, nWidth, nComponentsCount, pColorMap->getBits());
+	//pImageStream->reset();
+
 	oImage.free();
 }
 //----- transparency groups and soft masks
@@ -984,7 +1171,7 @@ bool SkipPath(const std::vector<CSegment>& arrForStroke, const CPoint& P1, const
 	}
 	return false;
 }
-void RedactOutputDev::DrawPathRedact(Aggplus::CGraphicsPath* oPath, bool bStroke, const std::vector<CSegment>& arrForStroke)
+void RedactOutputDev::DrawPathRedact(Aggplus::CGraphicsPath* oPath, bool bStroke, double& dXEnd, double& dYEnd, const std::vector<CSegment>& arrForStroke)
 {
 	CMatrix oMatrix(m_arrMatrix[0], m_arrMatrix[1], m_arrMatrix[2], m_arrMatrix[3], m_arrMatrix[4], m_arrMatrix[5]);
 	CMatrix oInverse = oMatrix.Inverse();
@@ -1011,11 +1198,13 @@ void RedactOutputDev::DrawPathRedact(Aggplus::CGraphicsPath* oPath, bool bStroke
 				bBreak = false;
 				double dXCI = dXCur, dYCI = dYCur;
 				oInverse.Apply(dXCI, dYCI);
-				m_pRenderer->m_oPath.MoveTo(dXCI, dYCI);
+				if (dXEnd != dXCI || dYEnd != dYCI)
+					m_pRenderer->m_oPath.MoveTo(dXCI, dYCI);
 			}
 			dXCur = dX3; dYCur = dY3;
 			oInverse.Apply(dX3, dY3);
 			m_pRenderer->m_oPath.CurveTo(dX, dY, dX2, dY2, dX3, dY3);
+			dXEnd = dX3, dYEnd = dY3;
 
 			i += 2;
 		}
@@ -1045,11 +1234,13 @@ void RedactOutputDev::DrawPathRedact(Aggplus::CGraphicsPath* oPath, bool bStroke
 				bBreak = false;
 				double dXCI = dXCur, dYCI = dYCur;
 				oInverse.Apply(dXCI, dYCI);
-				m_pRenderer->m_oPath.MoveTo(dXCI, dYCI);
+				if (dXEnd != dXCI || dYEnd != dYCI)
+					m_pRenderer->m_oPath.MoveTo(dXCI, dYCI);
 			}
 			dXCur = dX; dYCur = dY;
 			oInverse.Apply(dX, dY);
 			m_pRenderer->m_oPath.LineTo(dX, dY);
+			dXEnd = dX, dYEnd = dY;
 		}
 		else if (oPath->IsClosePoint(i))
 		{
@@ -1068,8 +1259,10 @@ void RedactOutputDev::DrawPathRedact(Aggplus::CGraphicsPath* oPath, bool bStroke
 					oInverse.Apply(dXCI, dYCI);
 					double dXSI = dXStart, dYSI = dYStart;
 					oInverse.Apply(dXSI, dYSI);
-					m_pRenderer->m_oPath.MoveTo(dXCI, dYCI);
+					if (dXEnd != dXCI || dYEnd != dYCI)
+						m_pRenderer->m_oPath.MoveTo(dXCI, dYCI);
 					m_pRenderer->m_oPath.LineTo(dXSI, dYSI);
+					dXEnd = dXSI, dYEnd = dYSI;
 				}
 			}
 			else
@@ -1121,7 +1314,7 @@ void RedactOutputDev::DoPathRedact(GfxState* pGState, GfxPath* pPath, double* pC
 
 			double dX = pSubpath->getX(0), dY = pSubpath->getY(0);
 			oMatrix.Apply(dX, dY);
-			double dXStart = dX, dYStart = dY, dXCur = dX, dYCur = dY;
+			double dXStart = dX, dYStart = dY, dXCur = dX, dYCur = dY, dXEnd = dX + 1, dYEnd = dY + 1;
 
 			int nCurPointIndex = 1;
 			while (nCurPointIndex < nPointsCount)
@@ -1148,7 +1341,7 @@ void RedactOutputDev::DoPathRedact(GfxState* pGState, GfxPath* pPath, double* pC
 					dXCur = dX3, dYCur = dY3;
 
 					oPathResult = Aggplus::CalcBooleanOperation(oPath, m_oPathRedact, Aggplus::BooleanOpType::Subtraction);
-					DrawPathRedact(&oPathResult, bStroke, arrForStroke);
+					DrawPathRedact(&oPathResult, bStroke, dXEnd, dYEnd, arrForStroke);
 					oPathResult.Reset(); oPath.Reset();
 				}
 				else
@@ -1167,9 +1360,11 @@ void RedactOutputDev::DoPathRedact(GfxState* pGState, GfxPath* pPath, double* pC
 						double dX1 = visibleSegments[i].start.x, dY1 = visibleSegments[i].start.y;
 						double dX2 = visibleSegments[i].end.x,   dY2 = visibleSegments[i].end.y;
 						oInverse.Apply(dX1, dY1);
-						m_pRenderer->m_oPath.MoveTo(dX1, dY1);
+						if (dXEnd != dX1 || dYEnd != dY1)
+							m_pRenderer->m_oPath.MoveTo(dX1, dY1);
 						oInverse.Apply(dX2, dY2);
 						m_pRenderer->m_oPath.LineTo(dX2, dY2);
+						dXEnd = dX2, dYEnd = dY2;
 					}
 				}
 			}
@@ -1233,7 +1428,8 @@ void RedactOutputDev::DoPathRedact(GfxState* pGState, GfxPath* pPath, double* pC
 		}
 
 		oPathResult = Aggplus::CalcBooleanOperation(oPath, m_oPathRedact, Aggplus::BooleanOpType::Subtraction);
-		DrawPathRedact(&oPathResult, bStroke);
+		double dXEnd = -1, dYEnd = -1; // TODO А вдруг именно эти координаты будут
+		DrawPathRedact(&oPathResult, bStroke, dXEnd, dYEnd);
 	}
 }
 void RedactOutputDev::DoPath(GfxState* pGState, GfxPath* pPath, double* pCTM)

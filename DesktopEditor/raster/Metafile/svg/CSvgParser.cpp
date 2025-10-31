@@ -224,7 +224,7 @@ namespace SVG
 			pObject = CObject::Create<CGraphicsContainer>(oReader, pFile, pParent);
 			if (!ReadChildrens(oReader, (CGraphicsContainer*)pObject, pFile, (CGraphicsContainer*)pObject))
 			{
-				RELEASEOBJECT(pObject);
+				RELEASEINTERFACE(pObject);
 				return false;
 			}
 		}
@@ -290,7 +290,7 @@ namespace SVG
 			if (ReadChildrens(oReader, (CSymbol*)pObject, pFile))
 				return true;
 			else
-				RELEASEOBJECT(pObject);
+				RELEASEINTERFACE(pObject);
 		}
 		else if ("font" == sElementName)
 		{
@@ -300,11 +300,11 @@ namespace SVG
 		if (NULL == pObject)
 			return false;
 
-		if ((RendererObject == pObject->GetType() && AddObject((ObjectType*)pObject, pContainer)) ||
+		if ((RendererObject == pObject->GetType() && (AddObject((ObjectType*)pObject, pContainer) || pObject->Marked())) ||
 		    AppliedObject == pObject->GetType())
 			return true;
 
-		RELEASEOBJECT(pObject);
+		RELEASEINTERFACE(pObject);
 		return false;
 	}
 

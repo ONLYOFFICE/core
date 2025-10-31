@@ -68,7 +68,13 @@ bool CSvgFile::MarkObject(SVG::CObject *pObject)
 	if (NULL == pObject || pObject->GetId().empty())
 		return false;
 
-	pObject->AddRef();
+	pObject->Mark();
+
+	const MarkedMap::const_iterator itFound = m_mMarkedObjects.find(pObject->GetId());
+
+	if (m_mMarkedObjects.cend() != itFound)
+		RELEASEINTERFACE(m_mMarkedObjects[pObject->GetId()])
+
 	m_mMarkedObjects[pObject->GetId()] = pObject;
 
 	return true;

@@ -1,4 +1,8 @@
 WEBP_BUILDS_PLATFORM_PREFIX = $$CORE_BUILDS_PLATFORM_PREFIX
+core_ios : xcframework_platform_ios_simulator {
+	WEBP_BUILDS_PLATFORM_PREFIX = ios_simulator
+}
+
 WEBP_BUILD_PATH = $$PWD/build/$$WEBP_BUILDS_PLATFORM_PREFIX
 
 core_windows {

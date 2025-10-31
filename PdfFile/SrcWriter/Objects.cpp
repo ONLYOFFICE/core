@@ -792,7 +792,8 @@ namespace PdfWriter
 	{
 		m_unFilter    = STREAM_FILTER_NONE;
 		m_unPredictor = STREAM_PREDICTOR_NONE;
-		m_pStream->Clear();
+		if (m_pStream)
+			m_pStream->Clear();
 	}
 	//----------------------------------------------------------------------------------------
 	// CXref

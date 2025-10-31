@@ -68,6 +68,344 @@ bool InvertMatrix(const double* matrix, double* inverse)
 
 	return true;
 }
+std::vector<CPoint> GetImagePolygon(double* pMatrix)
+{
+	double dX1 = 0, dY1 = 0, dX2 = 0, dY2 = 1, dX3 = 1, dY3 = 1, dX4 = 1, dY4 = 0;
+	Transform(pMatrix, dX1, dY1, &dX1, &dY1);
+	Transform(pMatrix, dX2, dY2, &dX2, &dY2);
+	Transform(pMatrix, dX3, dY3, &dX3, &dY3);
+	Transform(pMatrix, dX4, dY4, &dX4, &dY4);
+	return { CPoint(dX1, dY1), CPoint(dX2, dY2), CPoint(dX3, dY3), CPoint(dX4, dY4) };
+}
+bool CheckImageRedact(const std::vector<double>& arrQuadPoints, const std::vector<CPoint>& imagePolygon)
+{
+	for (int j = 0; j < arrQuadPoints.size(); j += 8)
+	{
+		std::vector<CPoint> redactPolygon =
+		{
+			CPoint(arrQuadPoints[j + 0], arrQuadPoints[j + 1]),
+			CPoint(arrQuadPoints[j + 2], arrQuadPoints[j + 3]),
+			CPoint(arrQuadPoints[j + 4], arrQuadPoints[j + 5]),
+			CPoint(arrQuadPoints[j + 6], arrQuadPoints[j + 7])
+		};
+
+		if (PdfWriter::SAT(redactPolygon, imagePolygon))
+			return true;
+	}
+	return false;
+}
+BYTE* DecodeImageToRGBA(Stream* pStream, int nWidth, int nHeight, GfxImageColorMap* pColorMap, GfxState* pGState)
+{
+	BYTE* pBufferPtr = new(std::nothrow) BYTE[4 * nWidth * nHeight];
+	if (!pBufferPtr)
+		return nullptr;
+
+	int nComponentsCount = pColorMap->getNumPixelComps();
+	ImageStream* pImageStream = new ImageStream(pStream, nWidth, nComponentsCount, pColorMap->getBits());
+	pImageStream->reset();
+
+	int nComps = pImageStream->getComps();
+	int nCheckWidth = std::min(nWidth, pImageStream->getVals() / nComps);
+	GfxRenderingIntent intent = pGState->getRenderingIntent();
+
+	int nColorMapType = pColorMap->getFillType();
+	GfxColorComp** pColorMapLookup = pColorMap->getLookup();
+	if (!pColorMapLookup)
+		nColorMapType = 0;
+
+	for (int nY = 0; nY < nHeight; ++nY)
+	{
+		BYTE* pLine = pImageStream->getLine();
+		BYTE* pLineDst = pBufferPtr + 4 * nWidth * nY;
+
+		if (!pLine) {
+			memset(pLineDst, 0, 4 * nWidth);
+			continue;
+		}
+
+		for (int nX = 0; nX < nCheckWidth; ++nX)
+		{
+			if (2 == nColorMapType)
+			{
+				pLineDst[0] = colToByte(clip01(pColorMapLookup[0][pLine[0]]));
+				pLineDst[1] = colToByte(clip01(pColorMapLookup[1][pLine[1]]));
+				pLineDst[2] = colToByte(clip01(pColorMapLookup[2][pLine[2]]));
+				pLineDst[3] = 255;
+			}
+			else if (1 == nColorMapType)
+			{
+				pLineDst[0] = pLineDst[1] = pLineDst[2] = colToByte(clip01(pColorMapLookup[0][pLine[0]]));
+				pLineDst[3] = 255;
+			}
+			else if (3 == nColorMapType)
+			{
+				pLineDst[0] = colToByte(clip01(pColorMapLookup[0][pLine[0]]));
+				pLineDst[1] = colToByte(clip01(pColorMapLookup[1][pLine[1]]));
+				pLineDst[2] = colToByte(clip01(pColorMapLookup[2][pLine[2]]));
+				pLineDst[3] = colToByte(clip01(pColorMapLookup[3][pLine[3]]));
+			}
+			else
+			{
+				GfxRGB oRGB;
+				pColorMap->getRGB(pLine, &oRGB, intent);
+				pLineDst[0] = colToByte(oRGB.r);
+				pLineDst[1] = colToByte(oRGB.g);
+				pLineDst[2] = colToByte(oRGB.b);
+				pLineDst[3] = 255;
+			}
+
+			pLine += nComps;
+			pLineDst += 4;
+		}
+	}
+
+	pImageStream->close();
+	delete pImageStream;
+	return pBufferPtr;
+}
+BYTE* DecodeImageToGray(Stream* pStream, int nWidth, int nHeight, GfxImageColorMap* pColorMap, GfxState* pGState)
+{
+	BYTE* pBufferPtr = new(std::nothrow) BYTE[nWidth * nHeight];
+	if (!pBufferPtr)
+		return nullptr;
+
+	int nComponentsCount = pColorMap->getNumPixelComps();
+	ImageStream* pImageStream = new ImageStream(pStream, nWidth, nComponentsCount, pColorMap->getBits());
+	pImageStream->reset();
+
+	int nComps = pImageStream->getComps();
+	int nCheckWidth = std::min(nWidth, pImageStream->getVals() / nComps);
+	GfxRenderingIntent intent = pGState->getRenderingIntent();
+
+	int nColorMapType = pColorMap->getFillType();
+	GfxColorComp** pColorMapLookup = pColorMap->getLookup();
+	if (!pColorMapLookup)
+		nColorMapType = 0;
+
+	for (int nY = 0; nY < nHeight; ++nY)
+	{
+		BYTE* pLine = pImageStream->getLine();
+		BYTE* pLineDst = pBufferPtr + nWidth * nY;
+
+		if (!pLine) {
+			memset(pLineDst, 0, nWidth);
+			continue;
+		}
+
+		for (int nX = 0; nX < nCheckWidth; ++nX)
+		{
+			if (1 == nColorMapType)
+				pLineDst[nX] = colToByte(clip01(pColorMapLookup[0][pLine[0]]));
+			else if (2 == nColorMapType || 3 == nColorMapType)
+			{
+				pLineDst[nX] = colToByte(clip01(
+							   0.3  * pColorMapLookup[0][pLine[0]] +
+							   0.59 * pColorMapLookup[1][pLine[1]] +
+							   0.11 * pColorMapLookup[2][pLine[2]] + 0.5));
+			}
+			else
+			{
+				GfxGray oGray;
+				pColorMap->getGray(pLine, &oGray, intent);
+				pLineDst[nX] = colToByte(oGray);
+			}
+
+			pLine += nComps;
+		}
+	}
+
+	pImageStream->close();
+	delete pImageStream;
+	return pBufferPtr;
+}
+void SaveRGBAToStream(CDocument* pDocument, CDictObject* pDictObj, BYTE* pRGBA, int nWidth, int nHeight)
+{
+	CBgraFrame oFrame;
+	oFrame.put_Data(pRGBA);
+	oFrame.put_Width(nWidth);
+	oFrame.put_Height(nHeight);
+	oFrame.put_Stride(4 * nWidth);
+	oFrame.put_IsRGBA(true);
+
+	oFrame.SetJpegQuality(85.0);
+	BYTE* pBuffer = NULL;
+	int nBufferSize = 0;
+	if (!oFrame.Encode(pBuffer, nBufferSize, _CXIMAGE_FORMAT_JPG))
+		return;
+
+	pDictObj->ClearStream();
+	pDictObj->SetFilter(STREAM_FILTER_DCT_DECODE);
+	CNumberObject* pLength = new CNumberObject(0);
+	pDocument->AddObject(pLength);
+	pDictObj->Add("Length", pLength);
+	pDictObj->Add("BitsPerComponent", 8);
+	pDictObj->Add("ColorSpace", "DeviceRGB");
+	pDictObj->Remove("DecodeParms");
+
+	CStream* pStreamForm = pDictObj->GetStream();
+	if (!pStreamForm)
+	{
+		pStreamForm = new PdfWriter::CMemoryStream(nBufferSize);
+		pDictObj->SetStream(pStreamForm);
+	}
+	pStreamForm->Write(pBuffer, nBufferSize);
+
+	delete[] pBuffer;
+}
+void SaveGrayToSMask(CDocument* pDocument, CDictObject* pDictObj, BYTE* pMaskGray, int nWidth, int nHeight)
+{
+	CObjectBase* pObj = pDictObj->Get("SMask");
+	if (!pObj || pObj->GetType() != object_type_DICT)
+	{
+		pObj = new CDictObject();
+		pDocument->AddObject(pObj);
+		pDictObj->Add("SMask", pObj);
+	}
+	CDictObject* pSMask = (CDictObject*)pObj;
+
+	pSMask->ClearStream();
+	pSMask->SetFilter(STREAM_FILTER_FLATE_DECODE);
+	CNumberObject* pLength = new CNumberObject(0);
+	pDocument->AddObject(pLength);
+	pSMask->Add("Length", pLength);
+	pSMask->Add("Type", "XObject");
+	pSMask->Add("Subtype", "Image");
+	pSMask->Add("ColorSpace", "DeviceGray");
+	pSMask->Add("Width", nWidth);
+	pSMask->Add("Height", nHeight);
+	pSMask->Add("BitsPerComponent", 8);
+	pSMask->Remove("DecodeParms");
+
+	int nBufferSize = nWidth * nHeight;
+	CStream* pStreamForm = pSMask->GetStream();
+	if (!pStreamForm)
+	{
+		pStreamForm = new PdfWriter::CMemoryStream(nBufferSize);
+		pDictObj->SetStream(pStreamForm);
+	}
+	pStreamForm->Write(pMaskGray, nBufferSize);
+
+	delete[] pMaskGray;
+}
+void ApplyRedactToRGBA(const std::vector<double>& arrQuadPoints, BYTE* pImage, int nWidth, int nHeight, const std::vector<CPoint>& imagePolygon)
+{
+	// Находим все области редоктирования, которые пересекаются с изображением
+	std::vector<std::vector<CPoint>> imageSpaceRedacts;
+
+	for (int j = 0; j < arrQuadPoints.size(); j += 8)
+	{
+		std::vector<CPoint> redactPolygon =
+		{
+			CPoint(arrQuadPoints[j + 0], arrQuadPoints[j + 1]),
+			CPoint(arrQuadPoints[j + 2], arrQuadPoints[j + 3]),
+			CPoint(arrQuadPoints[j + 4], arrQuadPoints[j + 5]),
+			CPoint(arrQuadPoints[j + 6], arrQuadPoints[j + 7])
+		};
+
+		// Преобразуем в координаты изображения
+		std::vector<CPoint> imageSpaceRedact;
+		for (const CPoint& point : redactPolygon)
+		{
+			double x = (point.x - imagePolygon[0].x) / (imagePolygon[2].x - imagePolygon[0].x) * nWidth;
+			double y = (point.y - imagePolygon[0].y) / (imagePolygon[2].y - imagePolygon[0].y) * nHeight;
+			imageSpaceRedact.push_back(CPoint(x, y));
+		}
+
+		// Проверяем, что область хоть частично внутри изображения
+		if (PdfWriter::SAT(imageSpaceRedact, {CPoint(0, 0), CPoint(0, nHeight), CPoint(nWidth, nHeight), CPoint(nWidth, 0)}))
+			imageSpaceRedacts.push_back(imageSpaceRedact);
+	}
+
+	// Закрашиваем области редоктирования черным цветом
+	for (const auto& redact : imageSpaceRedacts)
+	{
+		// Находим bounding box области редоктирования в координатах изображения
+		double minX = nWidth, minY = nHeight, maxX = 0, maxY = 0;
+		for (const CPoint& p : redact)
+		{
+			if (p.x < minX) minX = p.x;
+			if (p.y < minY) minY = p.y;
+			if (p.x > maxX) maxX = p.x;
+			if (p.y > maxY) maxY = p.y;
+		}
+
+		// Ограничиваем bounding box размерами изображения
+		int startX = std::max(0, (int)minX);
+		int startY = std::max(0, (int)minY);
+		int endX = std::min(nWidth  - 1, (int)maxX);
+		int endY = std::min(nHeight - 1, (int)maxY);
+
+		// Закрашиваем прямоугольную область
+		for (int y = startY; y <= endY; ++y)
+		{
+			for (int x = startX; x <= endX; ++x)
+			{
+				// Проверяем, что пиксель внутри полигона редоктирования
+				if (PdfWriter::isPointInQuad(x, y, redact[0].x, redact[0].y, redact[1].x, redact[1].y, redact[2].x, redact[2].y, redact[3].x, redact[3].y))
+				{
+					int nIndex = ((nHeight - 1 - y) * nWidth + x) * 4;
+					pImage[nIndex + 0] = 0; // R
+					pImage[nIndex + 1] = 0; // G
+					pImage[nIndex + 2] = 0; // B
+					// Alpha оставляем 255
+				}
+			}
+		}
+	}
+}
+void ApplyRedactToGray(const std::vector<double>& arrQuadPoints, BYTE* pImage, int nWidth, int nHeight, const std::vector<CPoint>& imagePolygon)
+{
+	// Преобразуем области редоктирования в координаты маски
+	std::vector<std::vector<CPoint>> maskSpaceRedacts;
+
+	for (int j = 0; j < arrQuadPoints.size(); j += 8)
+	{
+		std::vector<CPoint> redactPolygon =
+		{
+			CPoint(arrQuadPoints[j + 0], arrQuadPoints[j + 1]),
+			CPoint(arrQuadPoints[j + 2], arrQuadPoints[j + 3]),
+			CPoint(arrQuadPoints[j + 4], arrQuadPoints[j + 5]),
+			CPoint(arrQuadPoints[j + 6], arrQuadPoints[j + 7])
+		};
+
+		// Преобразуем в координаты маски
+		std::vector<CPoint> maskSpaceRedact;
+		for (const CPoint& point : redactPolygon)
+		{
+			double x = (point.x - imagePolygon[0].x) / (imagePolygon[2].x - imagePolygon[0].x) * nWidth;
+			double y = (point.y - imagePolygon[0].y) / (imagePolygon[2].y - imagePolygon[0].y) * nHeight;
+			maskSpaceRedact.push_back(CPoint(x, y));
+		}
+
+		if (PdfWriter::SAT(maskSpaceRedact, {CPoint(0, 0), CPoint(0, nHeight), CPoint(nWidth, nHeight), CPoint(nWidth, 0)}))
+			maskSpaceRedacts.push_back(maskSpaceRedact);
+	}
+
+	// Закрашиваем области редоктирования в маске (делаем полностью прозрачными)
+	for (const auto& redact : maskSpaceRedacts)
+	{
+		// Находим bounding box
+		double minX = nWidth, minY = nHeight, maxX = 0, maxY = 0;
+		for (const CPoint& p : redact)
+		{
+			if (p.x < minX) minX = p.x;
+			if (p.y < minY) minY = p.y;
+			if (p.x > maxX) maxX = p.x;
+			if (p.y > maxY) maxY = p.y;
+		}
+
+		int startX = std::max(0, (int)minX);
+		int startY = std::max(0, (int)minY);
+		int endX = std::min(nWidth  - 1, (int)maxX);
+		int endY = std::min(nHeight - 1, (int)maxY);
+
+		// Закрашиваем область (0 = полностью прозрачный в маске)
+		for (int y = startY; y <= endY; ++y)
+			for (int x = startX; x <= endX; ++x)
+				if (PdfWriter::isPointInQuad(x, y, redact[0].x, redact[0].y, redact[1].x, redact[1].y, redact[2].x, redact[2].y, redact[3].x, redact[3].y))
+					pImage[y * nWidth + x] = 0;
+	}
+}
 
 //----- constructor/destructor
 RedactOutputDev::RedactOutputDev(CPdfWriter* pRenderer, CObjectsManager* pObjMng)
@@ -643,160 +981,32 @@ void RedactOutputDev::drawImage(GfxState *pGState, Object *pRef, Stream *pStream
 	DoTransform(pGState->getCTM(), &dShiftX, &dShiftY, true);
 
 	PdfWriter::CObjectBase* pObj = m_mObjManager->GetObj(pRef->getRefNum());
-	if (pObj->GetType() != object_type_DICT)
+	if (!pObj || pObj->GetType() != object_type_DICT)
 		return;
 
 	PdfWriter::CDocument* pDocument = m_pRenderer->GetDocument();
 	CDictObject* pXObject = pDocument->GetXObject(pRef->getRefNum());
 	if (pXObject)
 	{
-		// Этот XObject уже прошёл через Redact
-		m_pPage->GrSave();
-		UpdateTransform();
-		m_pPage->ExecuteXObject(m_sImageName.c_str());
-		m_pPage->GrRestore();
+		DrawXObject(m_sImageName.c_str());
 		return;
 	}
 
-	double dX1 = 0, dY1 = 0, dX2 = 0, dY2 = 1, dX3 = 1, dY3 = 1, dX4 = 1, dY4 = 0;
-	Transform(m_arrMatrix, dX1, dY1, &dX1, &dY1);
-	Transform(m_arrMatrix, dX2, dY2, &dX2, &dY2);
-	Transform(m_arrMatrix, dX3, dY3, &dX3, &dY3);
-	Transform(m_arrMatrix, dX4, dY4, &dX4, &dY4);
-
-	bool bHasRedaction = false;
-	std::vector<CPoint> imagePolygon =
+	std::vector<CPoint> imagePolygon = GetImagePolygon(m_arrMatrix);
+	if (!CheckImageRedact(m_arrQuadPoints, imagePolygon))
 	{
-		CPoint(dX1, dY1),
-		CPoint(dX2, dY2),
-		CPoint(dX3, dY3),
-		CPoint(dX4, dY4)
-	};
-	for (int j = 0; j < m_arrQuadPoints.size(); j += 8)
-	{
-		std::vector<CPoint> redactPolygon =
-		{
-			CPoint(m_arrQuadPoints[j + 0], m_arrQuadPoints[j + 1]),
-			CPoint(m_arrQuadPoints[j + 2], m_arrQuadPoints[j + 3]),
-			CPoint(m_arrQuadPoints[j + 4], m_arrQuadPoints[j + 5]),
-			CPoint(m_arrQuadPoints[j + 6], m_arrQuadPoints[j + 7])
-		};
-
-		if (PdfWriter::SAT(redactPolygon, imagePolygon))
-		{
-			bHasRedaction = true;
-			break;
-		}
-	}
-
-	if (!bHasRedaction)
-	{
-		m_pPage->GrSave();
-		UpdateTransform();
-		m_pPage->ExecuteXObject(m_sImageName.c_str());
-		m_pPage->GrRestore();
+		DrawXObject(m_sImageName.c_str());
 		return;
 	}
 
-	BYTE* pBufferPtr = new(std::nothrow) BYTE[4 * nWidth * nHeight];
+	BYTE* pBufferPtr = DecodeImageToRGBA(pStream, nWidth, nHeight, pColorMap, pGState);
 	if (!pBufferPtr)
 		return;
 
-	int nComponentsCount = pColorMap->getNumPixelComps();
-	ImageStream* pImageStream = new ImageStream(pStream, nWidth, nComponentsCount, pColorMap->getBits());
-	pImageStream->reset();
+	ApplyRedactToRGBA(m_arrQuadPoints, pBufferPtr, nWidth, nHeight, imagePolygon);
+	SaveRGBAToStream(pDocument, (CDictObject*)pObj, pBufferPtr, nWidth, nHeight);
 
-	int nComps = pImageStream->getComps();
-	int nCheckWidth = std::min(nWidth, pImageStream->getVals() / nComps);
-	GfxRenderingIntent intent = pGState->getRenderingIntent();
-
-	int nColorMapType = pColorMap->getFillType();
-	GfxColorComp** pColorMapLookup = pColorMap->getLookup();
-	if (!pColorMapLookup)
-		nColorMapType = 0;
-
-	for (int nY = 0; nY < nHeight; ++nY)
-	{
-		BYTE* pLine = pImageStream->getLine();
-		BYTE* pLineDst = pBufferPtr + 4 * nWidth * nY;
-
-		if (!pLine)
-		{
-			memset(pLineDst, 0, 4 * nWidth);
-			continue;
-		}
-
-		for (int nX = 0; nX < nCheckWidth; ++nX)
-		{
-			if (2 == nColorMapType)
-			{
-				pLineDst[0] = colToByte(clip01(pColorMapLookup[0][pLine[0]]));
-				pLineDst[1] = colToByte(clip01(pColorMapLookup[1][pLine[1]]));
-				pLineDst[2] = colToByte(clip01(pColorMapLookup[2][pLine[2]]));
-			}
-			else if (1 == nColorMapType)
-			{
-				pLineDst[0] = pLineDst[1] = pLineDst[2] = colToByte(clip01(pColorMapLookup[0][pLine[0]]));
-			}
-			else if (3 == nColorMapType)
-			{
-				pLineDst[0] = colToByte(clip01(pColorMapLookup[0][pLine[0]]));
-				pLineDst[1] = colToByte(clip01(pColorMapLookup[1][pLine[1]]));
-				pLineDst[2] = colToByte(clip01(pColorMapLookup[2][pLine[2]]));
-				pLineDst[3] = colToByte(clip01(pColorMapLookup[3][pLine[3]]));
-			}
-			else
-			{
-				GfxRGB oRGB;
-				pColorMap->getRGB(pLine, &oRGB, intent);
-				pLineDst[0] = colToByte(oRGB.r);
-				pLineDst[1] = colToByte(oRGB.g);
-				pLineDst[2] = colToByte(oRGB.b);
-			}
-
-			pLineDst[3] = 225;
-
-			pLine += nComps;
-			pLineDst += 4;
-		}
-	}
-
-	pImageStream->close();
-	delete pImageStream;
-
-	// TODO Пересечение с Redact и закрашивание пикселов
-
-	CBgraFrame oFrame;
-	oFrame.put_Data(pBufferPtr);
-	oFrame.put_Width(nWidth);
-	oFrame.put_Height(nHeight);
-	oFrame.put_Stride(4 * nWidth);
-	oFrame.put_IsRGBA(true);
-
-	oFrame.SetJpegQuality(85.0);
-	BYTE* pBuffer = NULL;
-	int nBufferSize = 0;
-	if (!oFrame.Encode(pBuffer, nBufferSize, _CXIMAGE_FORMAT_JPG))
-		return;
-
-	CDictObject* pDictObj = (CDictObject*)pObj;
-	pDictObj->ClearStream();
-	CNumberObject* pLength = new CNumberObject(0);
-	pDocument->AddObject(pLength);
-	pDictObj->Add("Length", pLength);
-
-	pDictObj->SetFilter(STREAM_FILTER_DCT_DECODE);
-	pDictObj->Add("BitsPerComponent", 8);
-	pDictObj->Add("ColorSpace", "DeviceRGB");
-	pDictObj->Remove("DecodeParms");
-
-	CStream* pStreamForm = pDictObj->GetStream();
-	pStreamForm->Write(pBuffer, nBufferSize);
-
-	m_pPage->GrSave();
-	UpdateTransform();
-	m_pPage->ExecuteXObject(m_sImageName.c_str());
-	m_pPage->GrRestore();
+	DrawXObject(m_sImageName.c_str());
 }
 void RedactOutputDev::drawMaskedImage(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap,
 							 Object* pMaskRef, Stream *pMaskStream, int nMaskWidth, int nMaskHeight, GBool bMaskInvert, GBool interpolate)
@@ -806,7 +1016,53 @@ void RedactOutputDev::drawMaskedImage(GfxState *pGState, Object *pRef, Stream *p
 void RedactOutputDev::drawSoftMaskedImage(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap,
 								 Object *maskRef, Stream *pMaskStream, int nMaskWidth, int nMaskHeight, GfxImageColorMap *pMaskColorMap, double *pMatte, GBool interpolate)
 {
+	m_pRenderer->m_oCommandManager.Flush();
+	DoStateOp();
 
+	double dShiftX = 0, dShiftY = 0;
+	DoTransform(pGState->getCTM(), &dShiftX, &dShiftY, true);
+
+	PdfWriter::CObjectBase* pObj = m_mObjManager->GetObj(pRef->getRefNum());
+	if (!pObj || pObj->GetType() != object_type_DICT)
+		return;
+
+	PdfWriter::CDocument* pDocument = m_pRenderer->GetDocument();
+	CDictObject* pXObject = pDocument->GetXObject(pRef->getRefNum());
+	if (pXObject)
+	{
+		DrawXObject(m_sImageName.c_str());
+		return;
+	}
+
+	std::vector<CPoint> imagePolygon = GetImagePolygon(m_arrMatrix);
+	if (!CheckImageRedact(m_arrQuadPoints, imagePolygon))
+	{
+		DrawXObject(m_sImageName.c_str());
+		return;
+	}
+
+	BYTE* pBufferPtr = DecodeImageToRGBA(pStream, nWidth, nHeight, pColorMap, pGState);
+	if (!pBufferPtr)
+		return;
+
+	ApplyRedactToRGBA(m_arrQuadPoints, pBufferPtr, nWidth, nHeight, imagePolygon);
+	CDictObject* pDictObj = (CDictObject*)pObj;
+	SaveRGBAToStream(pDocument, pDictObj, pBufferPtr, nWidth, nHeight);
+
+	BYTE* pMaskBufferPtr = NULL;
+	if (nWidth == nMaskWidth && nHeight == nMaskHeight)
+		pMaskBufferPtr = DecodeImageToGray(pMaskStream, nMaskWidth, nMaskHeight, pMaskColorMap, pGState);
+	else
+	{
+		// TODO DecodeAndScaleMaskToGray
+	}
+	if (pMaskBufferPtr)
+	{
+		ApplyRedactToGray(m_arrQuadPoints, pMaskBufferPtr, nWidth, nHeight, imagePolygon);
+		SaveGrayToSMask(pDocument, pDictObj, pMaskBufferPtr, nWidth, nHeight);
+	}
+
+	DrawXObject(m_sImageName.c_str());
 }
 //----- Type 3 font operators
 void RedactOutputDev::type3D0(GfxState *pGState, double wx, double wy)
@@ -827,18 +1083,14 @@ void RedactOutputDev::drawForm(GfxState *pGState, Gfx *gfx, Ref id, const char* 
 	DoTransform(pGState->getCTM(), &dShiftX, &dShiftY, true);
 
 	PdfWriter::CObjectBase* pObj = m_mObjManager->GetObj(id.num);
-	if (pObj->GetType() != object_type_DICT)
+	if (!pObj || pObj->GetType() != object_type_DICT)
 		return;
 
 	PdfWriter::CDocument* pDocument = m_pRenderer->GetDocument();
 	CDictObject* pXObject = pDocument->GetXObject(id.num);
 	if (pXObject)
 	{
-		// Этот XObject уже прошёл через Redact
-		m_pPage->GrSave();
-		UpdateTransform();
-		m_pPage->ExecuteXObject(name);
-		m_pPage->GrRestore();
+		DrawXObject(name);
 		return;
 	}
 
@@ -913,7 +1165,6 @@ void RedactOutputDev::drawForm(GfxState *pGState, Gfx *gfx, Ref id, const char* 
 			CPoint(m_arrQuadPoints[i + 4], m_arrQuadPoints[i + 5]),
 			CPoint(m_arrQuadPoints[i + 6], m_arrQuadPoints[i + 7])
 		};
-
 		if (PdfWriter::isPolygonInsidePolygon(formPolygon, redactPolygon))
 		{
 			bFullyRedacted = true;
@@ -974,157 +1225,11 @@ void RedactOutputDev::drawForm(GfxState *pGState, Gfx *gfx, Ref id, const char* 
 	pDocument->SetCurPage(pCurPage);
 	pDocument->AddXObject(id.num, pDictObj);
 
-	m_pPage->GrSave();
-	UpdateTransform();
-	m_pPage->ExecuteXObject(name);
-	m_pPage->GrRestore();
+	DrawXObject(name);
 }
 void RedactOutputDev::drawImage(GfxState *pGState, Gfx *gfx, Ref id, const char* name)
 {
 	m_sImageName = std::string(name);
-	return;
-
-	m_pRenderer->m_oCommandManager.Flush();
-	DoStateOp();
-
-	double dShiftX = 0, dShiftY = 0;
-	DoTransform(pGState->getCTM(), &dShiftX, &dShiftY, true);
-
-	double dX1 = 0, dY1 = 0, dX2 = 0, dY2 = 1, dX3 = 1, dY3 = 1, dX4 = 1, dY4 = 0;
-	Transform(m_arrMatrix, dX1, dY1, &dX1, &dY1);
-	Transform(m_arrMatrix, dX2, dY2, &dX2, &dY2);
-	Transform(m_arrMatrix, dX3, dY3, &dX3, &dY3);
-	Transform(m_arrMatrix, dX4, dY4, &dX4, &dY4);
-
-	bool bHasRedaction = false;
-	std::vector<CPoint> imagePolygon =
-	{
-		CPoint(dX1, dY1),
-		CPoint(dX2, dY2),
-		CPoint(dX3, dY3),
-		CPoint(dX4, dY4)
-	};
-	for (int j = 0; j < m_arrQuadPoints.size(); j += 8)
-	{
-		std::vector<CPoint> redactPolygon =
-		{
-			CPoint(m_arrQuadPoints[j + 0], m_arrQuadPoints[j + 1]),
-			CPoint(m_arrQuadPoints[j + 2], m_arrQuadPoints[j + 3]),
-			CPoint(m_arrQuadPoints[j + 4], m_arrQuadPoints[j + 5]),
-			CPoint(m_arrQuadPoints[j + 6], m_arrQuadPoints[j + 7])
-		};
-
-		if (PdfWriter::SAT(redactPolygon, imagePolygon))
-		{
-			bHasRedaction = true;
-			break;
-		}
-	}
-
-	if (!bHasRedaction)
-	{
-		m_pPage->GrSave();
-		UpdateTransform();
-		m_pPage->ExecuteXObject(name);
-		m_pPage->GrRestore();
-		return;
-	}
-
-	Object oImage;
-	if (!m_pXref->fetch(id.num, id.gen, &oImage)->isStream())
-	{
-		oImage.free();
-		return;
-	}
-
-	Stream* pStream = oImage.getStream();
-	Dict* pDict = oImage.streamGetDict();
-
-	int nWidth = 0, nHeight = 0, nBits = 0;
-	Object oObj;
-	if (!pDict->lookup("Width", &oObj)->isInt())
-	{
-		oObj.free();
-		if (!pDict->lookup("W", &oObj)->isInt())
-		{
-			oObj.free(); oImage.free();
-			return;
-		}
-	}
-	nWidth = oObj.getInt();
-	oObj.free();
-	if (!pDict->lookup("Height", &oObj)->isInt())
-	{
-		oObj.free();
-		if (!pDict->lookup("H", &oObj)->isInt())
-		{
-			oObj.free(); oImage.free();
-			return;
-		}
-	}
-	nHeight = oObj.getInt();
-	oObj.free();
-	if (nWidth <= 0 || nHeight <= 0)
-	{
-		oImage.free();
-		return;
-	}
-
-	bool bMask = false;
-	if (!pDict->lookup("ImageMask", &oObj)->isBool())
-	{
-		oObj.free();
-		pDict->lookup("IM", &oObj);
-	}
-	if (oObj.isBool())
-		bMask = oObj.getBool();
-	oObj.free();
-
-	StreamColorSpaceMode csMode = streamCSNone;
-	pStream->getImageParams(&nBits, &csMode);
-	if (nBits == 0)
-	{
-		if (!pDict->lookup("BitsPerComponent", &oObj)->isInt())
-		{
-			oObj.free();
-			pDict->lookup("BPC", &oObj);
-		}
-		if (oObj.isInt())
-			nBits = oObj.getInt();
-		else if (bMask)
-			nBits = 1;
-		oObj.free();
-	}
-	if (nBits < 1 || nBits > 16)
-	{
-		oImage.free();
-		return;
-	}
-
-	bool bInterpolate = false;
-	if (!pDict->lookup("Interpolate", &oObj)->isBool())
-	{
-		oObj.free();
-		pDict->lookup("I", &oObj);
-	}
-	if (oObj.isBool())
-		bInterpolate = oObj.getBool();
-	oObj.free();
-
-	if (bMask)
-	{
-		// TODO drawImageMask
-	}
-	else
-	{
-
-	}
-
-	//int nComponentsCount = pColorMap->getNumPixelComps();
-	//ImageStream* pImageStream = new ImageStream(pStream, nWidth, nComponentsCount, pColorMap->getBits());
-	//pImageStream->reset();
-
-	oImage.free();
 }
 //----- transparency groups and soft masks
 void RedactOutputDev::beginTransparencyGroup(GfxState *pGState, double *pBBox, GfxColorSpace *pBlendingColorSpace, GBool bIsolated, GBool bKnockout, GBool bForSoftMask)
@@ -1560,5 +1665,12 @@ void RedactOutputDev::DoStateOp()
 		pStream->WriteStr("\012");
 	}
 	m_sStates.back().m_arrOp.clear();
+}
+void RedactOutputDev::DrawXObject(const char* name)
+{
+	m_pPage->GrSave();
+	UpdateTransform();
+	m_pPage->ExecuteXObject(name);
+	m_pPage->GrRestore();
 }
 }

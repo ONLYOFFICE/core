@@ -996,6 +996,7 @@ void CPdfEditor::SetMode(Mode nMode)
 		m_mObjManager.SetDoc(pDoc);
 		int nPages = m_pReader->GetNumPages();
 		pPageTree->CreateFakePages(nPages);
+		m_pWriter->SetNeedAddHelvetica(false);
 	}
 }
 bool CPdfEditor::IncrementalUpdates()

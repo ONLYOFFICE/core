@@ -226,6 +226,10 @@ namespace OOX
 			XLS::BaseObjectPtr objectPtr(ptr);
 
 			NSStringUtils::CStringBuilder writer;
+			if(m_oNumFmt.IsInit() && m_oNumFmt->m_oFormatCode.IsInit() && m_oNumFmt->m_oNumFmtId.IsInit())
+			{
+				m_oNumFmt->m_oNumFmtId.reset();
+			}
 			toXML(writer);
 			XmlUtils::CXmlLiteReader oReader;
 			auto stringData = writer.GetData();

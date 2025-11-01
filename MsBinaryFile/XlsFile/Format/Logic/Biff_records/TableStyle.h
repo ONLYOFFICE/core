@@ -56,7 +56,7 @@ public:
 
 //-----------------------------
     bool				fIsPivot = false;
-    bool				fIsTable = false;
+	bool				fIsTable = true;
     _UINT32				ctse = 0;
     //LPWideStringNoCch	rgchName;
     std::wstring    	rgchName = L""; //strName in biff12

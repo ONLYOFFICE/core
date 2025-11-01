@@ -446,7 +446,7 @@ namespace OOX
 			}
 			if(m_oDxfs.IsInit())
 			{
-				//FormatPtr->m_arDXF = m_oDxfs->toXLS();
+				FormatPtr->m_arDXF = m_oDxfs->toXLS();
 				if(globalInfo != nullptr)
 				{
 					for(auto i : m_oDxfs->m_arrItems)

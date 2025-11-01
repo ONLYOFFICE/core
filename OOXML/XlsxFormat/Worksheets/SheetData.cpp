@@ -1242,15 +1242,19 @@ namespace OOX
 			{
 				if(!fmla.rgce.sequence.empty())
 				{
+					for(auto i = 0; i < fmla.rgce.sequence.size(); i++)
+					{
+						if(fmla.rgce.sequence[i].get()->ptg_id.get() == 6424)
+						{
+							auto list = static_cast<XLS::PtgList*>(fmla.rgce.sequence[i].get());
+							auto area = list->toArea();
+							fmla.rgce.sequence[i].reset(area);
+						}
+					}
 					auto lastValType = GETBITS(fmla.rgce.sequence.rbegin()->get()->ptg_id.get(),5,6);
 					if(lastValType == 1 || lastValType == 3)
 					{
 						SETBITS(fmla.rgce.sequence.rbegin()->get()->ptg_id.get(),5,6,2);
-					}
-					else if(fmla.rgce.sequence.rbegin()->get()->ptg_id.get() == 6424)
-					{
-						auto list = static_cast<XLS::PtgList*>(fmla.rgce.sequence.rbegin()->get());
-						list->type_ = 1;
 					}
 				}
 				return 0;

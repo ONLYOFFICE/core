@@ -768,6 +768,7 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
 			}
 		}
         XLS::GlobalWorkbookInfo::mapTableNames_static.emplace(m_oId->GetValue(), m_oName.get());
+		XLS::GlobalWorkbookInfo::mapTableRefsStatic.emplace(m_oId->GetValue(), m_oRef->GetValue());
 	}
     void CTable::fromBin(XLS::BaseObjectPtr& obj)
     {

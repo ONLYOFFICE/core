@@ -9,6 +9,8 @@
 
 #include "../../../../Common/3dParty/html/css/src/StaticFunctions.h"
 
+#include <cctype>
+
 #ifndef MININT8
 #define MAXUINT8    ((unsigned char)~((unsigned char)0))
 #define MAXINT8     ((char)(MAXUINT8 >> 1))

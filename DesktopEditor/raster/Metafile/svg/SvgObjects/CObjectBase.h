@@ -96,7 +96,7 @@ namespace SVG
 		if (NULL == pSvgFile)
 			return pObject;
 
-		if (DataObject != pObject->GetType() ||
+		if (DataObject != pObject->GetType() &&
 		    (!pSvgFile->MarkObject(pObject) && AppliedObject == pObject->GetType()))
 		{
 			delete pObject;

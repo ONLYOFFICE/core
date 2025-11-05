@@ -403,7 +403,7 @@ void ApplyRedactToGray(const std::vector<double>& arrQuadPoints, BYTE* pImage, i
 		for (int y = startY; y <= endY; ++y)
 			for (int x = startX; x <= endX; ++x)
 				if (PdfWriter::isPointInQuad(x, y, redact[0].x, redact[0].y, redact[1].x, redact[1].y, redact[2].x, redact[2].y, redact[3].x, redact[3].y))
-					pImage[y * nWidth + x] = 0;
+					pImage[(nHeight - 1 - y) * nWidth + x] = 0;
 	}
 }
 

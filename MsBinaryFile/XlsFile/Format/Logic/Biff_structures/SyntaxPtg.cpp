@@ -512,16 +512,18 @@ const bool SyntaxPtg::extract_PtgList(std::wstring::const_iterator& first, std::
 					ptgList.rowType = 0x01;
 				}
 				else if (insider == L"[#Headers]")
-				{
-					if (boost::regex_search(first, last, results_1, reg_inside_table2))
+				{	auto tempResults = results_1;
+					if (boost::regex_search(first, last, tempResults, reg_inside_table2))
 					{
-						if (results_1.str(0) == L"[#Headers],[#Data]")
+						if (tempResults.str(0) == L"[#Headers],[#Data]")
 						{
 							ptgList.rowType = 0x06;
+							results_1 = tempResults;
 						}
 					}
 					else
 						ptgList.rowType = 0x02;
+
 				}
 				else if (insider == L"[#Totals]")
 				{

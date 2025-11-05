@@ -660,7 +660,8 @@ std::wstring RtfShape::RenderToRtfShapeProperty(RenderParameter oRenderParameter
 	RENDER_RTF_SHAPE_PROP(L"fillFocus",			sResult,   	m_nFillFocus );
     
 	if (PROP_DEF != m_nFillAngle)
-		RENDER_RTF_SHAPE_PROP(L"fillAngle",		sResult,   	m_nFillAngle * 65536 );
+        //RENDER_RTF_SHAPE_PROP(L"fillAngle",		sResult,   	m_nFillAngle  * 65536 );
+        RENDER_RTF_SHAPE_PROP(L"fillAngle",		sResult,   	(m_nFillAngle / 60000) * 65536 );
 	
 	RENDER_RTF_SHAPE_PROP(L"fillToBottom",	sResult,	m_nFillToBottom )
 	RENDER_RTF_SHAPE_PROP(L"fillToTop",		sResult,	m_nFillToTop )
@@ -1553,7 +1554,7 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 		oRenderParameter.sValue.clear();
 	}
 //-----------------------------------------------------------------------------------------------
-	if ( 0 != m_bFilled && !m_bIsGroup) 
+    if ( (0 != m_bFilled || PROP_DEF != m_nFillType) && !m_bIsGroup)
 	{
 		sShapeNodes += L"<v:fill";
 

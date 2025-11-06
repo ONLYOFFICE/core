@@ -171,7 +171,7 @@ bool CSvgFile::Draw(IRenderer *pRenderer, double dX, double dY, double dWidth, d
 
 void CSvgFile::Clear()
 {
-	RELEASEOBJECT(m_pContainer);
+	RELEASEINTERFACE(m_pContainer);
 	m_oSvgCalculator.Clear();
 
 	for (MarkedMap::reference oIter : m_mMarkedObjects)

@@ -117,7 +117,7 @@ namespace SVG
 		ScanStyles(oReader, pFile);
 		oReader.MoveToStart();
 
-		RELEASEOBJECT(pContainer);
+		RELEASEINTERFACE(pContainer);
 
 		pContainer = CObject::Create<CGraphicsContainer>(oReader, pFile);
 

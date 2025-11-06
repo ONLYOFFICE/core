@@ -179,6 +179,10 @@ Ptg* PtgList::toArea()
 	}
 	PtgArea* listArea = new PtgArea(0x25);
 	listArea->area = tableRef;
+	listArea->area.rowFirstRelative = false;
+	listArea->area.rowLastRelative = false;
+	listArea->area.columnFirstRelative = false;
+	listArea->area.columnLastRelative = false;
 	Ptg* ptr = listArea;
 
 	return ptr;

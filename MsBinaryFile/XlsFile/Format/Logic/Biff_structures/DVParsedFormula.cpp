@@ -94,7 +94,9 @@ void DVParsedFormula::save(CFRecord& record, bool bSave)
 	{
 		cce = 0;
         _UINT32 cb = 0;
-        record << cce << cb;
+		record << cce;
+		if(record.getGlobalWorkbookInfo()->Version == 0x0800)
+			record << cb;
 	}
 }
 

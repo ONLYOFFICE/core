@@ -841,9 +841,15 @@ void CAnnotFieldInfo::CLinkAnnotPr::Read(NSOnlineOfficeBinToPdf::CBufferReader* 
 {
 	m_nFlags = pReader->ReadInt();
 	if (m_nFlags & (1 << 0))
+	{
+		pReader->ReadString();
 		m_pAction = ReadAction(pReader);
+	}
 	if (m_nFlags & (1 << 1))
+	{
+		pReader->ReadString();
 		m_pPA = ReadAction(pReader);
+	}
 	if (m_nFlags & (1 << 2))
 		m_nH = pReader->ReadByte();
 	if (m_nFlags & (1 << 3))

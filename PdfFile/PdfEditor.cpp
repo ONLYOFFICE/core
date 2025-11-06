@@ -220,6 +220,8 @@ PdfWriter::CAnnotation* CreateAnnot(Object* oAnnot, Object* oType, PdfWriter::CX
 		pAnnot = new PdfWriter::CRedactAnnotation(pXref);
 	else if (oType->isName("Popup"))
 		pAnnot = new PdfWriter::CPopupAnnotation(pXref);
+	else if (oType->isName("Link"))
+		pAnnot = new PdfWriter::CLinkAnnotation(pXref);
 	else if (oType->isName("Widget"))
 	{
 		char* sName = NULL;
@@ -2909,6 +2911,8 @@ bool CPdfEditor::EditAnnot(int _nPageIndex, int nID)
 		pAnnot = new PdfWriter::CRedactAnnotation(pXref);
 	else if (oType.isName("Popup"))
 		pAnnot = new PdfWriter::CPopupAnnotation(pXref);
+	else if (oType.isName("Link"))
+		pAnnot = new PdfWriter::CLinkAnnotation(pXref);
 	else if (oType.isName("Widget"))
 	{
 		bIsWidget = true;

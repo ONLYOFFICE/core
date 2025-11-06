@@ -2564,7 +2564,7 @@ namespace PdfWriter
 	void CActionURI::SetURI(const std::wstring& wsURI)
 	{
 		std::string sValue = U_TO_UTF8(wsURI);
-		Add("URI", new CStringObject(sValue.c_str(), true));
+		Add("URI", new CStringObject(sValue.c_str(), false, true));
 	}
 	//----------------------------------------------------------------------------------------
 	CActionHide::CActionHide(CXref* pXref) : CAction(pXref)

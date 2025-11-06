@@ -1006,10 +1006,10 @@ namespace NSBinPptxRW
 	}
 	CBinaryFileWriter::~CBinaryFileWriter()
 	{
+		m_pCurrentContainer = NULL;
 		RELEASEARRAYOBJECTS	(m_pStreamData);
 		RELEASEOBJECT		(m_pCommon);
 		//RELEASEOBJECT		(m_pCommonRels);
-		RELEASEOBJECT		(m_pCurrentContainer);
 		
 		RELEASEOBJECT		(m_pTheme);
 		RELEASEOBJECT		(m_pClrMap);

@@ -104,7 +104,7 @@ namespace cpdoccore {
 
 		void oox_plot_area::add_axis(odf_reader::chart::axis& content)
 		{
-			unsigned int id = axis_id_++;
+			unsigned int id = content.type_ != 0 ? axis_id_++ : 0;
 			oox_axis_content_ptr ax = oox_axis_content::create(id);
 			ax->content_ = content;
 

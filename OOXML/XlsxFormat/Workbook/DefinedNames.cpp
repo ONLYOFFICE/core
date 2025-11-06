@@ -35,7 +35,7 @@
 
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/GlobalsSubstream.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Lbl.h"
-
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/PtgList.h"
 #include "../../Common/SimpleTypes_Shared.h"
 
 namespace OOX
@@ -178,9 +178,25 @@ namespace OOX
 				name->fGrp = m_oFunctionGroupId->GetValue();
 			if(m_oWorkbookParameter.IsInit())
 				name->fWorkbookParam = m_oWorkbookParameter->GetValue();
-
+			auto parseFmlaValueType = [](XLS::ParsedFormula &fmla)
+			{
+				if(!fmla.rgce.sequence.empty())
+				{
+					for(auto i = 0; i < fmla.rgce.sequence.size(); i++)
+					{
+						if(fmla.rgce.sequence[i].get()->ptg_id.get() == 6424)
+						{
+							auto list = static_cast<XLS::PtgList*>(fmla.rgce.sequence[i].get());
+							auto area = list->toArea();
+							fmla.rgce.sequence[i].reset(area);
+						}
+					}
+				}
+				return 0;
+			};
 			if(m_oRef.IsInit())
 				name->rgce.parseStringFormula(m_oRef.get(), L"");
+			parseFmlaValueType(name->rgce);
 
 			return namePtr;
 		}

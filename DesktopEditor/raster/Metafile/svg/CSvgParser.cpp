@@ -294,7 +294,7 @@ namespace SVG
 		}
 		else if ("font" == sElementName)
 		{
-			pObject = CObject::Create<CFont>(oReader, pFile);
+			pObject = CObject::Create<CFont>(oReader, pFile, pFile);
 		}
 
 		if (NULL == pObject)

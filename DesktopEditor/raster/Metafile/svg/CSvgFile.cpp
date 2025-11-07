@@ -159,8 +159,7 @@ bool CSvgFile::Draw(IRenderer *pRenderer, double dX, double dY, double dWidth, d
 		dTranslateY -= oViewBox.m_oY.ToDouble(NSCSS::Pixel) * dScaleY * dM22;
 	}
 
-	const double dMinScale = std::min(dScaleX, dScaleY);
-	pRenderer->SetTransform(dM11 * dMinScale, 0, 0, dM22 * dMinScale, dTranslateX, dTranslateY);
+	pRenderer->SetTransform(dM11 * dScaleX, 0, 0, dM22 * dScaleY, dTranslateX, dTranslateY);
 
 	bool bResult = m_pContainer->Draw(pRenderer, this);
 

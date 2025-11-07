@@ -39,13 +39,13 @@ void WriteBaseHtmlStyles(NSFile::CFileBinary& oFile)
 	oFile.WriteStringUTF8(L"img { vertical-align: middle; }");
 
 	// Styles for tables
-	oFile.WriteStringUTF8(L"table { margin-bottom: 20px; width: 100%; max-width: 100%; border-spacing:0; border-collapse: collapse; border-color: gray;}");
-	oFile.WriteStringUTF8(L"thead { display: table-header-group; vertical-align: middle; }");
+	oFile.WriteStringUTF8(L"table { margin-bottom: 20px; width: 100%; max-width: 100%; border-spacing:0; border-collapse: collapse; border-color: gray; vertical-align:middle;}");
+	oFile.WriteStringUTF8(L"thead { display: table-header-group;}");
 	oFile.WriteStringUTF8(L"tr { display: table-row; }");
 	oFile.WriteStringUTF8(L"th { text-align: center; display: table-cell; font-weight: bold; }");
 
-	oFile.WriteStringUTF8(L"table thead tr th, table thead tr td { vertical-align: bottom; border-bottom: 2px solid #ddd; border-top: none; }");
-	oFile.WriteStringUTF8(L"table tbody tr th, table tbody tr td { padding 8px; line-height: 1.4; vertical-align: top; border-top: 1px solid #ddd; }");
+	oFile.WriteStringUTF8(L"table thead tr th, table thead tr td { border-bottom: 2px solid #ddd; border-top: none; }");
+	oFile.WriteStringUTF8(L"table tbody tr th, table tbody tr td { padding 8px; line-height: 1.4; border-top: 1px solid #ddd; }");
 
 	// Styles for blockquote
 	oFile.WriteStringUTF8(L"blockquote { border-left: 3px solid #e9e9e9;  margin: 1.5em 0; padding: 0.5em 10px 0.5em 24px; font-size: 1.25rem; display: block; margin-top: 8pt; font-style: italic; color: #404040; }");

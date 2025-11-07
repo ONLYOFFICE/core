@@ -5,6 +5,9 @@
 
 namespace Md
 {
+#define MD_PARSER_FLAGS MD_DIALECT_GITHUB | MD_FLAG_NOINDENTEDCODEBLOCKS | MD_HTML_FLAG_SKIP_UTF8_BOM | MD_FLAG_HARD_SOFT_BREAKS | MD_HTML_FLAG_XHTML
+#define MD_RENDERER_FLAGS MD_HTML_FLAG_XHTML
+
 void ToHtml(const MD_CHAR* pValue, MD_SIZE uSize, void* pData)
 {
 	if (NULL != pData)
@@ -14,7 +17,7 @@ void ToHtml(const MD_CHAR* pValue, MD_SIZE uSize, void* pData)
 std::string ConvertMdStringToHtml(const std::string& sMdString)
 {
 	std::string sData;
-	md_html(sMdString.c_str(), sMdString.length(), ToHtml, &sData, 0, 0);
+	md_html(sMdString.c_str(), sMdString.length(), ToHtml, &sData, MD_PARSER_FLAGS, MD_RENDERER_FLAGS);
 	return sData;
 }
 
@@ -86,9 +89,7 @@ bool ConvertMdFileToHtml(const std::wstring& wsPathToMdFile, const std::wstring&
 
 	bool bResult = true;
 
-	if (0 != md_html(sMdData.c_str(), sMdData.length(), ToHtmlFile, &oFile,
-					 MD_DIALECT_GITHUB | MD_FLAG_NOINDENTEDCODEBLOCKS | MD_HTML_FLAG_SKIP_UTF8_BOM | MD_FLAG_HARD_SOFT_BREAKS,
-					 0))
+	if (0 != md_html(sMdData.c_str(), sMdData.length(), ToHtmlFile, &oFile, MD_PARSER_FLAGS, MD_RENDERER_FLAGS))
 		bResult = false;
 
 	oFile.WriteStringUTF8(L"</body></html>");

@@ -3,9 +3,13 @@
 #include "../CSvgParser.h"
 #include "../SvgUtils.h"
 #include "../CSvgFile.h"
+#include "CObjectBase.h"
 #include "CContainer.h"
 #include "CFont.h"
-#include "CStyle.h"
+
+#include "../../../../Common/3dParty/html/css/src/StaticFunctions.h"
+
+#include <cctype>
 
 #ifndef MININT8
 #define MAXUINT8    ((unsigned char)~((unsigned char)0))
@@ -17,83 +21,39 @@
 
 namespace SVG
 {
-	#define DEFAULT_TSPAN_FONT_SIZE 16
 	#define DefaultFontFamily L"Times New Roman"
 	#define MIN_FONT_SIZE 5
 	#define MAX_FONT_SIZE 100
 	#define MIN_SCALE     0.05
 	#define MAX_SCALE     100
 
-	CTSpan::CTSpan(XmlUtils::CXmlNode& oNode, CRenderedObject* pParent, NSFonts::IFontManager* pFontManager, bool bCheckText)
-		: CRenderedObject(oNode, pParent), m_pFontManager(pFontManager)
-	{
-		m_oFont.UpdateSize(DEFAULT_TSPAN_FONT_SIZE,DEFAULT_TSPAN_FONT_SIZE);
+	CTSpan::CTSpan(CSvgReader& oReader, CRenderedObject* pParent, NSFonts::IFontManager* pFontManager, const Point &oPosition)
+		: CRenderedObject(oReader, pParent), m_pFontManager(pFontManager),
+		  m_oX(oPosition.dX), m_oY(oPosition.dY)
+	{}
 
-		if (bCheckText)
-			m_wsText = StrUtils::TrimExtraEnding(oNode.GetText());
-		else
-			m_wsText = oNode.GetText();
+	CTSpan::CTSpan(const CTSpan& oTSpan, double dX, const std::wstring& wsText)
+		: CRenderedObject(oTSpan), m_pFontManager(oTSpan.m_pFontManager),
+		  m_oX(dX), m_oY(oTSpan.m_oY), m_wsText(wsText),
+		  m_oFont(oTSpan.m_oFont), m_oText(oTSpan.m_oText)
+	{}
 
-		m_oX.SetValue(oNode.GetAttribute(L"x"));
-		m_oY.SetValue(oNode.GetAttribute(L"y"));
-
-		if (NULL != pParent)
-		{
-			TBounds oBounds = pParent->GetBounds();
-
-			CTSpan *pTSpan = dynamic_cast<CTSpan*>(pParent);
-
-			if (NULL == pTSpan)
-				return;
-
-			m_oStyles = pTSpan->m_oStyles;
-
-			if (m_oX.Empty())
-			{
-				if (!pTSpan->m_arObjects.empty())
-					pTSpan = pTSpan->m_arObjects.back();
-
-				m_oX = pTSpan->m_oX.ToDouble(NSCSS::Pixel, oBounds.m_dRight - oBounds.m_dLeft) + pTSpan->GetWidth();
-			}
-
-			if (m_oY.Empty())
-				m_oY = pTSpan->m_oY;
-		}
-	}
-
-	CTSpan::CTSpan(const std::wstring &wsText, const Point &oPosition, CRenderedObject *pParent, NSFonts::IFontManager *pFontManager, bool bCheckText)
-		: CRenderedObject(NSCSS::CNode(L"tspan", L"", L""), pParent), m_pFontManager(pFontManager), m_wsText(wsText)
-	{
-		m_oFont.UpdateSize(DEFAULT_TSPAN_FONT_SIZE, DEFAULT_TSPAN_FONT_SIZE);
-
-		if (bCheckText)
-			m_wsText = StrUtils::TrimExtraEnding(m_wsText);
-
-		m_oX = oPosition.dX;
-		m_oY = oPosition.dY;
-	}
+	CTSpan::CTSpan(wchar_t wChar, const Point& oPosition, CRenderedObject* pParent, NSFonts::IFontManager* pFontManager)
+		: CRenderedObject(NSCSS::CNode(L"tspan", L"", L""), pParent), m_pFontManager(pFontManager),
+		  m_oX(oPosition.dX), m_oY(oPosition.dY)
+	{}
 
 	CTSpan::~CTSpan()
 	{}
 
-	CTSpan *CTSpan::Create(XmlUtils::CXmlNode &oNode, CRenderedObject *pParent, NSFonts::IFontManager *pFontManager)
+	void CTSpan::SetAttribute(const std::string& sName, CSvgReader& oReader)
 	{
-		CTSpan *pTSpanParent = dynamic_cast<CTSpan*>(pParent);
-
-		if (NULL == pTSpanParent)
-			return NULL;
-
-		return new CTSpan(oNode, pTSpanParent, pFontManager);
-	}
-
-	CTSpan *CTSpan::Create(const std::wstring &wsValue, const Point& oPosition, CRenderedObject *pParent, NSFonts::IFontManager *pFontManager, bool bCheckText)
-	{
-		CTSpan *pTSpanParent = dynamic_cast<CTSpan*>(pParent);
-
-		if (NULL == pTSpanParent || wsValue.empty())
-			return NULL;
-
-		return new CTSpan(wsValue, oPosition, pParent, pFontManager, bCheckText);
+		if ("x" == sName)
+			m_oX.SetValue(oReader.GetText());
+		else if ("y" == sName)
+			m_oY.SetValue(oReader.GetText());
+		else
+			CRenderedObject::SetAttribute(sName, oReader);
 	}
 
 	void CTSpan::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
@@ -105,13 +65,22 @@ namespace SVG
 
 		//FONT
 		if (mAttributes.end() != mAttributes.find(L"font"))
+		{
 			m_oFont.SetValue(mAttributes.at(L"font"), ushLevel, bHardMode);
+			UpdateFontSize();
+		}
 
 		if (mAttributes.end() != mAttributes.find(L"font-size"))
+		{
 			m_oFont.SetSize(mAttributes.at(L"font-size"), ushLevel, bHardMode);
+			UpdateFontSize();
+		}
 
 		if (mAttributes.end() != mAttributes.find(L"font-size-adjust"))
+		{
 			m_oFont.SetSize(mAttributes.at(L"font-size-adjust"), ushLevel, bHardMode);
+			UpdateFontSize();
+		}
 
 		if (mAttributes.end() != mAttributes.find(L"font-stretch"))
 			m_oFont.SetStretch(mAttributes.at(L"font-stretch"), ushLevel, bHardMode);
@@ -129,7 +98,10 @@ namespace SVG
 			m_oFont.SetFamily(mAttributes.at(L"font-family"), ushLevel, bHardMode);
 
 		if (mAttributes.end() != mAttributes.find(L"line-height"))
+		{
 			m_oFont.SetLineHeight(mAttributes.at(L"line-height"), ushLevel, bHardMode);
+			UpdateFontSize();
+		}
 
 		//TEXT
 		if (mAttributes.end() != mAttributes.find(L"text-anchor"))
@@ -144,6 +116,57 @@ namespace SVG
 			double dX, dY;
 			CalculatePosition(dX, dY);
 			m_oTransformation.m_oTransform.RotateAt(NSCSS::NS_STATIC_FUNCTIONS::ReadDouble(mAttributes.at(L"rotate")), dX, dY);
+		}
+	}
+
+	void CTSpan::ReadChildrens(CSvgReader& oReader, CSvgFile* pSvgFile)
+	{
+		const int nDepth = oReader.GetDepth();
+		XmlUtils::XmlNodeType eNodeType = XmlUtils::XmlNodeType_EndElement;
+		while (oReader.Read(eNodeType) && oReader.GetDepth() >= nDepth && XmlUtils::XmlNodeType_EndElement != eNodeType)
+		{
+			if (eNodeType == XmlUtils::XmlNodeType_Text ||
+			    eNodeType == XmlUtils::XmlNodeType_Whitespace ||
+			    eNodeType == XmlUtils::XmlNodeType_SIGNIFICANT_WHITESPACE ||
+			    eNodeType == XmlUtils::XmlNodeType_CDATA)
+			{
+				const char* pValue = oReader.GetTextChar();
+
+				if('\0' != pValue[0])
+				{
+					bool bFoundedSymbol = false;
+					const char* pCheckValue = pValue;
+					while ('\0' != *pCheckValue)
+					{
+						if (std::isprint(static_cast<unsigned char>(*pCheckValue++)))
+						{
+							bFoundedSymbol = true;
+							break;
+						}
+					}
+
+					if (!bFoundedSymbol)
+						continue;
+
+					if (m_wsText.empty())
+					{
+						NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)pValue, (LONG)strlen(pValue), m_wsText);
+						continue;
+					}
+
+					std::wstring wsValue;
+					NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)pValue, (LONG)strlen(pValue), wsValue);
+
+					AddObject(new CTSpan(*this, GetBounds().m_dRight, wsValue));
+				}
+			}
+			else if (eNodeType == XmlUtils::XmlNodeType_Element && "tspan" == oReader.GetName())
+			{
+				const TBounds oBounds{GetBounds()};
+				const Point oPoint{oBounds.m_dRight, oBounds.m_dTop};
+
+				AddObject(CRenderedObject::Create<CTSpan>(oReader, pSvgFile, this, m_pFontManager, oPoint));
+			}
 		}
 	}
 
@@ -210,7 +233,7 @@ namespace SVG
 	void CTSpan::ApplyFont(IRenderer* pRenderer, double& dX, double& dY) const
 	{
 		std::wstring wsFontFamily = DefaultFontFamily;
-		double dFontSize = m_oFont.GetSize().ToDouble(NSCSS::Pixel) * 72. / 25.4;
+		double dFontSize = ((!m_oFont.GetSize().Empty()) ? m_oFont.GetSize().ToDouble(NSCSS::Pixel) : DEFAULT_FONT_SIZE) * 72. / 25.4;
 
 		Normalize(pRenderer, dX, dY, dFontSize);
 
@@ -233,34 +256,37 @@ namespace SVG
 		if (m_oText.Underline())
 			nStyle |= (1 << 2);
 
-		// Вычиления размеров текста
-		m_pFontManager->LoadFontByName(wsFontFamily, dFontSize, nStyle, 72., 72.);
-		m_pFontManager->SetCharSpacing(0);
-
-		double dKoef     = 25.4 / 72.;
+		float fW, fUndX1, fUndY1, fUndX2, fUndY2, fUndSize;
 		double dFHeight  = dFontSize;
 
-		NSFonts::IFontFile* pFontFile = m_pFontManager->GetFile();
+		if (NULL != m_pFontManager)
+		{
+			// Вычиления размеров текста
+			m_pFontManager->LoadFontByName(wsFontFamily, dFontSize, nStyle, 72., 72.);
+			m_pFontManager->SetCharSpacing(0);
 
-		if (pFontFile)
-			dFHeight  *= pFontFile->GetHeight() / pFontFile->Units_Per_Em() * dKoef;
+			double dKoef     = 25.4 / 72.;
 
-		float fW, fUndX1, fUndY1, fUndX2, fUndY2, fUndSize;
+			NSFonts::IFontFile* pFontFile = m_pFontManager->GetFile();
 
-		m_pFontManager->LoadString1(m_wsText, 0, 0);
-		TBBox oBox = m_pFontManager->MeasureString2();
-		fW = (float)dKoef * (oBox.fMaxX - oBox.fMinX);
+			if (pFontFile)
+				dFHeight  *= pFontFile->GetHeight() / pFontFile->Units_Per_Em() * dKoef;
 
-		// Просчитаем положение подчеркивания
-		m_pFontManager->GetUnderline(&fUndX1, &fUndY1, &fUndX2, &fUndY2, &fUndSize);
-		fUndX1   *= (float)dKoef;
-		fUndY1   *= (float)dKoef;
-		fUndX2   *= (float)dKoef;
-		fUndY2   *= (float)dKoef;
-		fUndSize *= (float)dKoef / 2;
+			m_pFontManager->LoadString1(m_wsText, 0, 0);
+			TBBox oBox = m_pFontManager->MeasureString2();
+			fW = (float)dKoef * (oBox.fMaxX - oBox.fMinX);
 
-		fUndY1 -= dFHeight / 4;
-		fUndY2 -= dFHeight / 4;
+			// Просчитаем положение подчеркивания
+			m_pFontManager->GetUnderline(&fUndX1, &fUndY1, &fUndX2, &fUndY2, &fUndSize);
+			fUndX1   *= (float)dKoef;
+			fUndY1   *= (float)dKoef;
+			fUndX2   *= (float)dKoef;
+			fUndY2   *= (float)dKoef;
+			fUndSize *= (float)dKoef / 2;
+
+			fUndY1 -= dFHeight / 4;
+			fUndY2 -= dFHeight / 4;
+		}
 
 		if (L"left" == m_oText.GetAlign().ToWString())
 			dX += -fW;
@@ -303,7 +329,23 @@ namespace SVG
 		pRenderer->put_FontStyle(nStyle);
 		pRenderer->put_BrushType(c_BrushTypeSolid);
 		pRenderer->put_BrushColor1(m_oStyles.m_oFill.ToInt());
-		pRenderer->put_BrushAlpha1(255);
+		pRenderer->put_BrushAlpha1(255 * m_oStyles.m_oFill.GetOpacity());
+	}
+
+	void CTSpan::UpdateFontSize()
+	{
+		if (NULL != m_pParent)
+		{
+			const CTSpan* pParentTSpan{dynamic_cast<const CTSpan*>(m_pParent)};
+
+			if (NULL != pParentTSpan)
+			{
+				m_oFont.UpdateSize((!pParentTSpan->m_oFont.GetSize().Empty()) ? pParentTSpan->m_oFont.GetSize().ToDouble(NSCSS::Pixel) : DEFAULT_FONT_SIZE, DEFAULT_FONT_SIZE);
+				return;
+			}
+		}
+
+		m_oFont.UpdateSize(DEFAULT_FONT_SIZE, DEFAULT_FONT_SIZE);
 	}
 
 	bool CTSpan::UseExternalFont(const CSvgFile *pFile, double dX, double dY, IRenderer *pRenderer, CommandeMode oMode, const TSvgStyles *pOtherStyles, const CRenderedObject* pContexObject) const
@@ -333,27 +375,39 @@ namespace SVG
 		return true;
 	}
 
-	TBounds CTSpan::GetBounds() const
+	TBounds CTSpan::GetBounds(SvgMatrix* pTransform) const
 	{
 		TBounds oBounds;
 
 		oBounds.m_dLeft   = m_oX.ToDouble(NSCSS::Pixel);
-		oBounds.m_dTop    = m_oY.ToDouble(NSCSS::Pixel);
 		oBounds.m_dRight  = oBounds.m_dLeft + GetWidth();
-		oBounds.m_dBottom = oBounds.m_dTop  + m_oFont.GetSize().ToDouble(NSCSS::Pixel) * 72. / 25.4;
+
+		oBounds.m_dBottom = m_oY.ToDouble(NSCSS::Pixel);
+		oBounds.m_dTop    = oBounds.m_dBottom + ((!m_oFont.GetSize().Empty()) ? m_oFont.GetSize().ToDouble(NSCSS::Pixel) : DEFAULT_FONT_SIZE);
+
+		if (nullptr != pTransform)
+		{
+			*pTransform += m_oTransformation.m_oTransform.GetMatrix();
+
+			pTransform->GetFinalValue().TransformPoint(oBounds.m_dLeft,  oBounds.m_dTop   );
+			pTransform->GetFinalValue().TransformPoint(oBounds.m_dRight, oBounds.m_dBottom);
+		}
 
 		if (!m_arObjects.empty())
 		{
 			TBounds oTempBounds;
 			for (const CRenderedObject* pObject : m_arObjects)
 			{
-				oTempBounds = pObject->GetBounds();
+				oTempBounds = pObject->GetBounds(pTransform);
 				oBounds.m_dLeft   = std::min(oBounds.m_dLeft, oTempBounds.m_dLeft);
 				oBounds.m_dTop    = std::min(oBounds.m_dTop, oTempBounds.m_dTop);
 				oBounds.m_dRight  = std::max(oBounds.m_dRight, oTempBounds.m_dRight);
 				oBounds.m_dBottom = std::max(oBounds.m_dBottom, oTempBounds.m_dBottom);
 			}
 		}
+
+		if (nullptr != pTransform)
+			*pTransform -= m_oTransformation.m_oTransform.GetMatrix();
 
 		return oBounds;
 	}
@@ -364,7 +418,7 @@ namespace SVG
 			return 0.;
 
 		std::wstring wsName = DefaultFontFamily;
-		double dSize = m_oFont.GetSize().ToDouble(NSCSS::Pixel);
+		const double dSize = (!m_oFont.GetSize().Empty()) ? m_oFont.GetSize().ToDouble(NSCSS::Pixel) : DEFAULT_FONT_SIZE;
 
 		if (!m_oFont.GetFamily().Empty())
 		{
@@ -382,11 +436,15 @@ namespace SVG
 		if (m_oText.Underline())
 			nStyle |= (1 << 2);
 
-		m_pFontManager->LoadFontByName(wsName, dSize, nStyle, 72., 72.);
+		double dWidth = 0;
+		if (NULL != m_pFontManager)
+		{
+			m_pFontManager->LoadFontByName(wsName, dSize, nStyle, 72., 72.);
 
-		m_pFontManager->LoadString1(m_wsText, 0., 0.);
-		TBBox oBox = m_pFontManager->MeasureString2();
-		double dWidth = oBox.fMaxX - oBox.fMinX;
+			m_pFontManager->LoadString1(m_wsText, 0., 0.);
+			TBBox oBox = m_pFontManager->MeasureString2();
+			dWidth = oBox.fMaxX - oBox.fMinX;
+		}
 
 		for (const CTSpan* oTSpan : m_arObjects)
 			dWidth += oTSpan->GetWidth();
@@ -476,6 +534,33 @@ namespace SVG
 		m_oY = oPosition.dY;
 	}
 
+	void CTSpan::SetPositionFromParent(CRenderedObject* pParent)
+	{
+		if (NULL == pParent)
+			return;
+
+		const TBounds oBounds{pParent->GetBounds()};
+
+		CTSpan *pTSpan = dynamic_cast<CTSpan*>(pParent);
+
+		if (NULL == pTSpan)
+			return;
+
+		m_oStyles = pTSpan->m_oStyles;
+
+		if (m_oX.Empty())
+		{
+			if (!pTSpan->m_arObjects.empty())
+				pTSpan = pTSpan->m_arObjects.back();
+
+			m_oX = pTSpan->m_oX.ToDouble(NSCSS::Pixel, oBounds.m_dRight - oBounds.m_dLeft) + pTSpan->GetWidth();
+		}
+
+		if (m_oY.Empty())
+			m_oY = pTSpan->m_oY;
+
+	}
+
 	std::vector<CTSpan> CTSpan::Split() const
 	{
 		std::vector<CTSpan> arGlyphs;
@@ -485,25 +570,17 @@ namespace SVG
 
 		for (unsigned int unIndex = 0; unIndex < m_wsText.length(); ++unIndex)
 		{
-			arGlyphs.push_back(CTSpan(std::wstring(1, m_wsText[unIndex]), oPosition, m_pParent, m_pFontManager, false));
+			arGlyphs.push_back(CTSpan(m_wsText[unIndex], oPosition, m_pParent, m_pFontManager));
 			oPosition.dX += arGlyphs[unIndex].GetWidth();
 		}
 
 		return arGlyphs;
 	}
 
-	CText::CText(XmlUtils::CXmlNode &oNode, CRenderedObject *pParent, NSFonts::IFontManager *pFontManager)
-	    : CTSpan(oNode, pParent, pFontManager)
-	{}
-
-	CText *CText::Create(XmlUtils::CXmlNode &oNode, CRenderedObject *pParent, NSFonts::IFontManager *pFontManager)
+	CText::CText(CSvgReader& oReader, CRenderedObject *pParent, NSFonts::IFontManager* pFontManager)
+	    : CTSpan(oReader, pParent, pFontManager)
 	{
-		CTSpan* pTSpan = dynamic_cast<CTSpan*>(pParent);
-
-		if (NULL != pTSpan)
-			return NULL;
-
-		return new CText(oNode, pParent, pFontManager);
+		m_oFont.UpdateSize(DEFAULT_FONT_SIZE, DEFAULT_FONT_SIZE);
 	}
 
 	bool CText::Draw(IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode, const TSvgStyles *pOtherStyles, const CRenderedObject* pContexObject) const
@@ -516,20 +593,9 @@ namespace SVG
 		return true;
 	}
 
-	CTextPath::CTextPath(XmlUtils::CXmlNode &oNode, CRenderedObject *pParent, NSFonts::IFontManager *pFontManager, const CSvgFile* pFile)
-	    : CText(oNode, pParent, pFontManager), m_pPath(NULL)
+	CTextPath::CTextPath(CSvgReader& oReader, CRenderedObject *pParent, NSFonts::IFontManager* pFontManager)
+	    : CText(oReader, pParent, pFontManager)
 	{
-		if (NULL != pFile)
-		{
-			std::wstring wsHref = oNode.GetAttribute(L"href", oNode.GetAttribute(L"xlink:href"));
-			size_t unPosition = wsHref.find(L'#');
-
-			if (std::wstring::npos != unPosition)
-				wsHref.erase(0, unPosition + 1);
-
-			m_pPath = dynamic_cast<const CPath*>(pFile->GetMarkedObject(wsHref));
-		}
-
 		if (NULL != pParent)
 		{
 			CTSpan *pTSpan = dynamic_cast<CTSpan*>(pParent);
@@ -539,12 +605,32 @@ namespace SVG
 		}
 	}
 
+	void CTextPath::SetAttribute(const std::string& sName, CSvgReader& oReader)
+	{
+		if ("href" == sName || "xlink:href" == sName)
+		{
+			m_wsHref = oReader.GetText();
+
+			size_t unPosition = m_wsHref.find(L'#');
+
+			if (std::wstring::npos != unPosition)
+				m_wsHref.erase(0, unPosition + 1);
+		}
+		else
+			CText::SetAttribute(sName, oReader);
+	}
+
 	bool CTextPath::Draw(IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode, const TSvgStyles *pOtherStyles, const CRenderedObject* pContexObject) const
 	{
-		if (NULL == pRenderer || CommandeModeClip == oMode || NULL == m_pPath)
+		if (NULL == pRenderer || CommandeModeClip == oMode || m_wsHref.empty() || NULL == pFile)
 			return false;
 
-		CMovingPath oMovingPath(m_pPath);
+		const CPath* pPath = dynamic_cast<const CPath*>(pFile->GetMarkedObject(m_wsHref));
+
+		if (NULL == pPath)
+			return false;
+
+		CMovingPath oMovingPath(pPath);
 
 		oMovingPath.Move(m_oX.ToDouble(NSCSS::Pixel));
 
@@ -564,16 +650,6 @@ namespace SVG
 
 		return true;
 
-	}
-
-	CTextPath* CTextPath::Create(XmlUtils::CXmlNode &oNode, CRenderedObject *pParent, NSFonts::IFontManager *pFontManager, const CSvgFile* pFile)
-	{
-		CTSpan *pTSpan = dynamic_cast<CText*>(pParent);
-
-		if (NULL == pTSpan)
-			return NULL;
-
-		return new CTextPath(oNode, pTSpan, pFontManager, pFile);
 	}
 
 	void CTextPath::DrawGlyph(CTSpan* pTSpan, CMovingPath &oMovingPath, IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode, const CRenderedObject* pContexObject) const

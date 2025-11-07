@@ -1,4 +1,5 @@
 #include "CStyle.h"
+#include "CObjectBase.h"
 
 namespace SVG
 {
@@ -31,7 +32,7 @@ namespace SVG
 
 		const std::vector<NSCSS::CNode> arSelectors = pSvgObject->GetFullPath();
 
-		std::vector<std::wstring> arNodes = m_pInternal->CalculateAllNodes(arSelectors);
+		std::vector<std::wstring> arNodes = m_pInternal->CalculateAllNodes(arSelectors, 0, arSelectors.size());
 		std::vector<std::wstring> arPrevNodes;
 
 		for (size_t i = 0; i < arSelectors.size(); ++i)

@@ -780,16 +780,6 @@ namespace NSBinPptxRW
 			OOX::CPath pathCore = m_strDstFolder + FILE_SEPARATOR_STR + _T("docProps") + FILE_SEPARATOR_STR + _T("core.xml");
 			oXmlWriter.SaveToFile(pathCore.GetPath());
 
-	// customProperies
-			if (m_oCustomProperties.IsInit())
-			{
-				oXmlWriter.ClearNoAttack();
-				m_oCustomProperties->toXmlWriter(&oXmlWriter);
-
-				OOX::CPath pathCore = m_strDstFolder + FILE_SEPARATOR_STR + _T("docProps") + FILE_SEPARATOR_STR + OOX::FileTypes::CustomProperties.DefaultFileName().GetPath();
-				oXmlWriter.SaveToFile(pathCore.GetPath());
-			}
-
 	// presProps
 			oXmlWriter.ClearNoAttack();
 			m_oPresProps.toXmlWriter(&oXmlWriter);
@@ -807,6 +797,7 @@ namespace NSBinPptxRW
 			m_oReader.m_pRels->Clear();
 			m_oReader.m_pRels->StartRels();
 
+	// customProperies
 			pPair = m_mainTables.find(NSBinPptxRW::NSMainTables::CustomProperties);
 			if (m_mainTables.end() != pPair)
 			{
@@ -819,6 +810,14 @@ namespace NSBinPptxRW
 				catch (...)
 				{
 				}
+			}
+			if (m_oCustomProperties.IsInit())
+			{
+				oXmlWriter.ClearNoAttack();
+				m_oCustomProperties->toXmlWriter(&oXmlWriter);
+
+				OOX::CPath pathCore = m_strDstFolder + FILE_SEPARATOR_STR + _T("docProps") + FILE_SEPARATOR_STR + OOX::FileTypes::CustomProperties.DefaultFileName().GetPath();
+				oXmlWriter.SaveToFile(pathCore.GetPath());
 			}
 	// customs
 			pPair = m_mainTables.find(NSBinPptxRW::NSMainTables::Customs);

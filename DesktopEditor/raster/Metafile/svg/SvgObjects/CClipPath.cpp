@@ -2,13 +2,19 @@
 
 namespace SVG
 {
-	CClipPath::CClipPath(XmlUtils::CXmlNode &oNode)
-		: CAppliedObject(oNode)
+	CClipPath::CClipPath(CSvgReader& oReader)
+		: CAppliedObject(oReader), m_enUnits(ClipU_ObjectBoundingBox)
+	{}
+
+	void CClipPath::SetAttribute(const std::string& sName, CSvgReader& oReader)
 	{
-		if (L"userSpaceOnUse" == oNode.GetAttribute(L"gradientUnits"))
-			m_enUnits = ClipU_UserSpaceOnUse;
+		if ("gradientUnits" == sName)
+		{
+			if ("userSpaceOnUse" == oReader.GetTextA())
+				m_enUnits = ClipU_UserSpaceOnUse;
+		}
 		else
-			m_enUnits = ClipU_ObjectBoundingBox;
+			CAppliedObject::SetAttribute(sName, oReader);
 	}
 
 	void CClipPath::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
@@ -25,7 +31,7 @@ namespace SVG
 
 		ApplyClip(pRenderer, &m_oTransformation.m_oClip, pFile, oObjectBounds);
 
-		for (const CRenderedObject* pObject : m_oContainer.m_arObjects)
+		for (const CRenderedObject* pObject : m_oContainer)
 			pObject->Draw(pRenderer, pFile, CommandeModeClip);
 
 		return true;

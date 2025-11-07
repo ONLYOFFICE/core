@@ -1,16 +1,27 @@
 #include "CCircle.h"
 
 #include "CContainer.h"
-#include "CStyle.h"
 
 namespace SVG
 {
-	CCircle::CCircle(XmlUtils::CXmlNode& oNode, CRenderedObject* pParent)
-		: CRenderedObject(oNode, pParent)
+	CCircle::CCircle(CSvgReader& oReader, CRenderedObject* pParent)
+		: CRenderedObject(oReader, pParent)
 	{
-		m_oCx.SetValue(oNode.GetAttribute(L"cx"));
-		m_oCy.SetValue(oNode.GetAttribute(L"cy"));
-		m_oR .SetValue(oNode.GetAttribute(L"r"));
+		START_READ_ATTRIBUTES(oReader)
+			SetAttribute(sAttributeName, oReader);
+		END_READ_ATTRIBUTES(oReader)
+	}
+
+	void CCircle::SetAttribute(const std::string& sName, CSvgReader& oReader)
+	{
+		if ("cx" == sName)
+			m_oCx.SetValue(oReader.GetText());
+		else if ("cy" == sName)
+			m_oCy.SetValue(oReader.GetText());
+		else if ("r" == sName)
+			m_oR.SetValue(oReader.GetText());
+		else
+			CRenderedObject::SetAttribute(sName, oReader);
 	}
 
 	void CCircle::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
@@ -51,7 +62,7 @@ namespace SVG
 			nTypePath += c_nWindingFillMode;
 	}
 
-	TBounds CCircle::GetBounds() const
+	TBounds CCircle::GetBounds(SvgMatrix* pTransform) const
 	{
 		TBounds oBounds;
 
@@ -59,6 +70,16 @@ namespace SVG
 		oBounds.m_dTop    = (m_oCy - m_oR).ToDouble(NSCSS::Pixel);
 		oBounds.m_dRight  = (m_oCx + m_oR).ToDouble(NSCSS::Pixel);
 		oBounds.m_dBottom = (m_oCy + m_oR).ToDouble(NSCSS::Pixel);
+
+		if (nullptr != pTransform)
+		{
+			*pTransform += m_oTransformation.m_oTransform.GetMatrix();
+
+			pTransform->GetFinalValue().TransformPoint(oBounds.m_dLeft,  oBounds.m_dTop   );
+			pTransform->GetFinalValue().TransformPoint(oBounds.m_dRight, oBounds.m_dBottom);
+
+			*pTransform -= m_oTransformation.m_oTransform.GetMatrix();
+		}
 
 		return oBounds;
 	}

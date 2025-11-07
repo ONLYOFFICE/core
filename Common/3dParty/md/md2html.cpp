@@ -39,19 +39,18 @@ void WriteBaseHtmlStyles(NSFile::CFileBinary& oFile)
 	oFile.WriteStringUTF8(L"table { margin-bottom: 20px; width: 100%; max-width: 100%; border-spacing:0; border-collapse: collapse; border-color: gray;}");
 	oFile.WriteStringUTF8(L"thead { display: table-header-group; vertical-align: middle; }");
 	oFile.WriteStringUTF8(L"tr { display: table-row; }");
-	oFile.WriteStringUTF8(L"th { text-align: left; display: table-cell; font-weight: bold; }");
+	oFile.WriteStringUTF8(L"th { text-align: center; display: table-cell; font-weight: bold; }");
 
-	oFile.WriteStringUTF8(L"table thead tr th { vertical-align: bottom; border-bottom: 2px solid #ddd; }");
-	oFile.WriteStringUTF8(L"table thead tr th, table tbody tr th, table thead tr td, table tbody tr td { padding 8px; line-height: 1.4; vertical-align: top; border-top: 1px solid #ddd; }");
-	oFile.WriteStringUTF8(L"table > caption + thead > tr > th, table > colgroup + thead > tr > th, table > thead > tr > th, table > caption + thead > tr > td, table > colgroup + thead > tr > td, table > thead > tr > td { border-top: 0; }");
+	oFile.WriteStringUTF8(L"table thead tr th, table thead tr td { vertical-align: bottom; border-bottom: 2px solid #ddd; border-top: none; }");
+	oFile.WriteStringUTF8(L"table tbody tr th, table tbody tr td { padding 8px; line-height: 1.4; vertical-align: top; border-top: 1px solid #ddd; }");
 
 	// Styles for blockquote
 	oFile.WriteStringUTF8(L"blockquote { border-left: 3px solid #e9e9e9;  margin: 1.5em 0; padding: 0.5em 10px 0.5em 24px; font-size: 1.25rem; display: block; margin-top: 8pt; font-style: italic; color: #404040; }");
 
 	// Styles for code
-	oFile.WriteStringUTF8(L"code { padding: 2px 4px; font-size: 90%; color: #c7254e; background-color: #f9f2f4; border-radius: 4px; }");
-	oFile.WriteStringUTF8(L"pre code { padding: 0px; white-space: pre-wrap; border-radius: 0; background-color: #f5f5f5; color:black; }");
-	oFile.WriteStringUTF8(L"pre { display: block; padding: 9.5px; margin: 0 0 10px; line-height: 1.4; word-break: break-all; word-wrap: break-word; background-color: #f5f5f5; border: 1px solid #ccc; border-radius: 4px; font-size: 1em; }");
+	oFile.WriteStringUTF8(L"code { padding: 2px 4px; font-size: 90%; color: #c7254e; background-color: #f9f2f4; }");
+	oFile.WriteStringUTF8(L"pre code { padding: 0px; white-space: pre-wrap; border-radius: 0; background-color: #f8f8f8; color:black; }");
+	oFile.WriteStringUTF8(L"pre { display: block; padding: 9.5px; margin: 0 0 10px; line-height: 1.4; word-break: break-all; word-wrap: break-word; background-color: #f8f8f8; border: none; font-size: 1em; }");
 	oFile.WriteStringUTF8(L"code, pre { font-family: Menlo, Monaco, Consolas, \"Courier New\", monospace; }");
 
 	// Styles for headings
@@ -88,7 +87,7 @@ bool ConvertMdFileToHtml(const std::wstring& wsPathToMdFile, const std::wstring&
 	bool bResult = true;
 
 	if (0 != md_html(sMdData.c_str(), sMdData.length(), ToHtmlFile, &oFile,
-					 MD_DIALECT_GITHUB | MD_FLAG_NOINDENTEDCODEBLOCKS | MD_HTML_FLAG_SKIP_UTF8_BOM,
+					 MD_DIALECT_GITHUB | MD_FLAG_NOINDENTEDCODEBLOCKS | MD_HTML_FLAG_SKIP_UTF8_BOM | MD_FLAG_HARD_SOFT_BREAKS,
 					 0))
 		bResult = false;
 

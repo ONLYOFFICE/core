@@ -2,8 +2,8 @@
 
 namespace SVG
 {
-	CSymbol::CSymbol(XmlUtils::CXmlNode &oNode, CRenderedObject *pParent, NSFonts::IFontManager *pFontManager)
-		: CGraphicsContainer(oNode)
+	CSymbol::CSymbol(CSvgReader& oReader, CRenderedObject *pParent)
+		: CGraphicsContainer(oReader)
 	{}
 
 	bool CSymbol::Draw(IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode, const TSvgStyles *pOtherStyles, const CRenderedObject* pContexObject) const

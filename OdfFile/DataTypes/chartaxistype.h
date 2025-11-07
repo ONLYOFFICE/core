@@ -29,48 +29,44 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once 
+#pragma once
 
 #include <iosfwd>
+#include <string>
+#include "odfattributes.h"
+//
 
-#include "oox_types_chart.h"
-#include "oox_chart_axis.h"
-            
-namespace cpdoccore {
-namespace oox {
+namespace cpdoccore { namespace odf_types { 
 
-class oox_plot_area: boost::noncopyable
+class chart_axis_type
 {
 public:
-	oox_plot_area();
-	~oox_plot_area(){}
- 
-    std::vector<oox_chart_ptr>			charts_;
-	oox_chart_ptr						current_chart_;   
-	std::vector<oox_axis_content_ptr>	axis_;
-	
-	odf_reader::graphic_format_properties_ptr graphic_properties_;
+    enum type
+    {
+        _auto,
+        text,
+        date
+    };
 
-	odf_reader::chart_format_properties_ptr properties_;
-	_oox_fill fill_; 
-	
-	//std::vector<odf_reader::_property> wall_graphic_properties_;
-	
-	void oox_serialize(std::wostream & _Wostream);
-	void oox_serialize_view3D(std::wostream & _Wostream);
+    chart_axis_type() {}
 
-	void add_chart	(int type);
-	void add_axis	(odf_reader::chart::axis & content);
+    chart_axis_type(type _Type) : type_(_Type)
+    {}
 
-	void set_no_local_table (bool val); //whithout embedded tables
-	//void set_content_series	(odf_reader::chart::series & content);
-	void set_data_table(odf_reader::chart::simple & content);
+    type get_type() const
+    {
+        return type_;
+    };
+    
+    static chart_axis_type parse(const std::wstring & Str);
+
 private:
-	odf_reader::chart::simple data_table_content_;
-	void reset_cross_axis(); //обязательно после всех добавлений
- 	bool no_used_local_tables_;
-	unsigned int axis_id_ = 0xf2905;
-};
+    type type_;
 
-}
+};
+	std::wostream & operator << (std::wostream & _Wostream, const chart_axis_type& _Val);
+} 
+
+APPLY_PARSE_XML_ATTRIBUTES(odf_types::chart_axis_type);
+
 }

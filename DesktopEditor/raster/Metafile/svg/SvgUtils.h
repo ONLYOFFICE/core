@@ -5,7 +5,6 @@
 #include <string>
 #include <vector>
 #include <regex>
-#include <map>
 #include <cfloat>
 
 namespace SVG

@@ -2461,6 +2461,12 @@ void BinaryWorkbookTableWriter::WriteWorkbookPr(const OOX::Spreadsheet::CWorkboo
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
 		m_oBcw.m_oStream.WriteBYTE(workbookPr.m_oUpdateLinks->GetValue());
 	}
+	if (workbookPr.m_oCodeName.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerWorkbookPrTypes::CodeName);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+		m_oBcw.m_oStream.WriteStringW(*workbookPr.m_oCodeName);
+	}
 }
 void BinaryWorkbookTableWriter::WriteConnectionTextFields(const OOX::Spreadsheet::CTextFields& textFields)
 {

@@ -204,7 +204,11 @@ bool GlobalParamsAdaptor::InRedact(double dX, double dY)
 		double y4 = m_arrRedactBox[i + 5];
 
 		if (x1 == x2 && x2 == x3 && x3 == x4 && y1 == y2 && y2 == y3 && y3 == y4)
-			return (dX == x1 && dY == y1);
+		{
+			if (dX == x1 && dY == y1)
+				return true;
+			continue;
+		}
 
 		// Проверяем знаки векторных произведений для всех сторон
 		double cross1 = crossProduct(x1, y1, x2, y2, dX, dY);
@@ -216,7 +220,8 @@ bool GlobalParamsAdaptor::InRedact(double dX, double dY)
 		bool allNegative = (cross1 <= 0 && cross2 <= 0 && cross3 <= 0 && cross4 <= 0);
 
 		// Точка внутри, если все векторные произведения имеют одинаковый знак
-		return (allPositive || allNegative) && !(cross1 == 0 && cross2 == 0 && cross3 == 0 && cross4 == 0);
+		if ((allPositive || allNegative) && !(cross1 == 0 && cross2 == 0 && cross3 == 0 && cross4 == 0))
+			return true;
 	}
 	return false;
 }

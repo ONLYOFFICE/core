@@ -1,6 +1,8 @@
 #include "CObjectBase.h"
 #include "../CSvgFile.h"
 
+#include "../../../../../Common/3dParty/html/css/src/StaticFunctions.h"
+
 namespace SVG
 {
 	TSvgStyles &TSvgStyles::operator+=(const TSvgStyles &oSvgStyles)
@@ -31,13 +33,41 @@ namespace SVG
 		: m_oXmlNode(oData)
 	{}
 
-	CObject::CObject(XmlUtils::CXmlNode &oNode)
+	CObject::CObject(CSvgReader& oReader)
 	{
-		SetNodeData(oNode);
+		m_oXmlNode.m_wsName = oReader.GetNameW();
 	}
 
-	CObject::~CObject()
+	CObject::CObject(const CObject& oObject)
+		: m_oXmlNode(oObject.m_oXmlNode), m_oTransformation(oObject.m_oTransformation)
 	{}
+
+	void CObject::Mark()
+	{
+		this->AddRef();
+	}
+
+	bool CObject::Marked() const
+	{
+		//Так как по логике кода объект может храниться только в одном контейнере и в списке маркированных элементов,
+		//то хватит и такой проверки
+		return 1 != m_lRef;
+	}
+
+	void CObject::SetAttribute(const std::string& sName, CSvgReader& oReader)
+	{
+		if ("class" == sName)
+		{
+			m_oXmlNode.m_wsClass = oReader.GetText();
+			std::transform(m_oXmlNode.m_wsClass.begin(), m_oXmlNode.m_wsClass.end(), m_oXmlNode.m_wsClass.begin(), std::towlower);
+		}
+		else if ("id" == sName)
+			m_oXmlNode.m_wsId = oReader.GetText();
+		else if ("style" == sName)
+			m_oXmlNode.m_wsStyle = oReader.GetText();
+		else
+			m_oXmlNode.m_mAttributes.insert({oReader.GetNameW(), oReader.GetText()});
+	}
 
 	void CObject::SetData(const std::wstring wsStyles, unsigned short ushLevel, bool bHardMode)
 	{
@@ -45,6 +75,11 @@ namespace SVG
 			return;
 
 		SetData(NSCSS::NS_STATIC_FUNCTIONS::GetRules(wsStyles), ushLevel, bHardMode);
+	}
+
+	void CObject::ReadChildrens(CSvgReader& oReader, CSvgFile* pSvgFile)
+	{
+		//TODO:: реализовано в классах там, где нужно
 	}
 
 	void CObject::SetTransform(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
@@ -153,33 +188,6 @@ namespace SVG
 		return pDefObject->Apply(pRenderer, pFile, oBounds);
 	}
 
-	void CObject::SetNodeData(XmlUtils::CXmlNode &oNode)
-	{
-		if (!oNode.IsValid())
-			return;
-
-		std::vector<std::wstring> arProperties, arValues;
-
-		oNode.GetAllAttributes(arProperties, arValues);
-
-		m_oXmlNode.m_wsName = oNode.GetName();
-
-		for (unsigned int unIndex = 0; unIndex < arProperties.size(); ++unIndex)
-		{
-			if (L"class" == arProperties[unIndex])
-			{
-				m_oXmlNode.m_wsClass = arValues[unIndex];
-				std::transform(m_oXmlNode.m_wsClass.begin(), m_oXmlNode.m_wsClass.end(), m_oXmlNode.m_wsClass.begin(), std::towlower);
-			}
-			else if (L"id" == arProperties[unIndex])
-				m_oXmlNode.m_wsId = arValues[unIndex];
-			else if (L"style" == arProperties[unIndex])
-				m_oXmlNode.m_wsStyle = arValues[unIndex];
-			else
-				m_oXmlNode.m_mAttributes.insert({arProperties[unIndex], arValues[unIndex]});
-		}
-	}
-
 	std::wstring CObject::GetId() const
 	{
 		return m_oXmlNode.m_wsId;
@@ -193,21 +201,28 @@ namespace SVG
 	CRenderedObject::CRenderedObject(const NSCSS::CNode &oData, CRenderedObject *pParent)
 		: CObject(oData), m_pParent(pParent)
 	{
-		SetDefaultStyles();
+		SetDefaultData();
 	}
 
-	CRenderedObject::CRenderedObject(XmlUtils::CXmlNode &oNode, CRenderedObject *pParent)
-		: CObject(oNode), m_pParent(pParent)
+	CRenderedObject::CRenderedObject(CSvgReader& oReader, CRenderedObject *pParent)
+	    : CObject(oReader), m_pParent(pParent)
 	{
-		SetDefaultStyles();
+		SetDefaultData();
 	}
 
-	CRenderedObject::~CRenderedObject()
+	CRenderedObject::CRenderedObject(const CRenderedObject& oRenderedObject)
+		: CObject(oRenderedObject), m_oStyles(oRenderedObject.m_oStyles),
+	      m_pParent(oRenderedObject.m_pParent)
 	{}
 
 	ObjectType CRenderedObject::GetType() const
 	{
 		return RendererObject;
+	}
+
+	void CRenderedObject::SetAttribute(const std::string& sName, CSvgReader& oReader)
+	{
+		CObject::SetAttribute(sName, oReader);
 	}
 
 	void CRenderedObject::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
@@ -227,20 +242,6 @@ namespace SVG
 		std::vector<NSCSS::CNode> arObjects = m_pParent->GetFullPath();
 		arObjects.push_back(m_oXmlNode);
 		return arObjects;
-	}
-
-	void CRenderedObject::SetDefaultStyles()
-	{
-		m_oStyles.m_oStroke.m_oLineCap.SetMapping({std::make_pair(L"butt", Aggplus::LineCapFlat), std::make_pair(L"round", Aggplus::LineCapRound), std::make_pair(L"square", Aggplus::LineCapSquare)});
-		m_oStyles.m_oStroke.m_oLineCap = Aggplus::LineCapFlat;
-
-		m_oStyles.m_oStroke.m_oLineJoin.SetMapping({std::make_pair(L"arcs", Aggplus::LineJoinMiter), std::make_pair(L"bevel", Aggplus::LineJoinBevel), std::make_pair(L"miter", Aggplus::LineJoinMiter), std::make_pair(L"miter-clip", Aggplus::LineJoinMiterClipped), std::make_pair(L"round", Aggplus::LineJoinRound)});
-		m_oStyles.m_oStroke.m_oLineCap = Aggplus::LineJoinMiter;
-
-		m_oStyles.m_oStroke.m_oMiterlimit = 4.;
-
-		m_oTransformation.m_oOpacity = 1.;
-		m_oTransformation.m_bDraw = true;
 	}
 
 	void CRenderedObject::SetStroke(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
@@ -447,15 +448,27 @@ namespace SVG
 		return false;
 	}
 
-	CAppliedObject::CAppliedObject(XmlUtils::CXmlNode &oNode)
-		: CObject(oNode)
-	{}
+	void CRenderedObject::SetDefaultData()
+	{
+		m_oStyles.m_oStroke.m_oLineCap.SetMapping({std::make_pair(L"butt", Aggplus::LineCapFlat), std::make_pair(L"round", Aggplus::LineCapRound), std::make_pair(L"square", Aggplus::LineCapSquare)});
+		m_oStyles.m_oStroke.m_oLineCap = Aggplus::LineCapFlat;
 
-	CAppliedObject::~CAppliedObject()
+		m_oStyles.m_oStroke.m_oLineJoin.SetMapping({std::make_pair(L"arcs", Aggplus::LineJoinMiter), std::make_pair(L"bevel", Aggplus::LineJoinBevel), std::make_pair(L"miter", Aggplus::LineJoinMiter), std::make_pair(L"miter-clip", Aggplus::LineJoinMiterClipped), std::make_pair(L"round", Aggplus::LineJoinRound)});
+		m_oStyles.m_oStroke.m_oLineCap = Aggplus::LineJoinMiter;
+
+		m_oStyles.m_oStroke.m_oMiterlimit = 4.;
+
+		m_oTransformation.m_oOpacity = 1.;
+		m_oTransformation.m_bDraw = true;
+	}
+
+	CAppliedObject::CAppliedObject(CSvgReader& oReader)
+	    : CObject(oReader)
 	{}
 
 	ObjectType CAppliedObject::GetType() const
 	{
 		return AppliedObject;
 	}
+
 }

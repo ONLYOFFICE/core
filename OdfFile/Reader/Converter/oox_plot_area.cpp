@@ -102,10 +102,10 @@ namespace cpdoccore {
 			charts_.push_back(chart);
 		}
 
-		void oox_plot_area::add_axis(int type, odf_reader::chart::axis& content)
+		void oox_plot_area::add_axis(odf_reader::chart::axis& content)
 		{
-			unsigned int id = axis_id_++;
-			oox_axis_content_ptr ax = oox_axis_content::create(type, id);
+			unsigned int id = content.type_ != 0 ? axis_id_++ : 0;
+			oox_axis_content_ptr ax = oox_axis_content::create(id);
 			ax->content_ = content;
 
 			if (content.dimension_ == L"x") axis_.insert(axis_.begin(), ax);

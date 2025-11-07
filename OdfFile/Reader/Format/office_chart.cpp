@@ -256,6 +256,7 @@ void chart_axis_attlist::add_attributes( const xml::attributes_wc_ptr & Attribut
 {
     CP_APPLY_ATTR(L"chart:dimension", chart_dimension_);
     CP_APPLY_ATTR(L"chart:name", chart_name_);
+    CP_APPLY_ATTR(L"chartooo:axis-type", axis_type_);
     common_attlist_.add_attributes(Attributes);
 }
 

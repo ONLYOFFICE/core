@@ -62,13 +62,16 @@ BiffStructurePtr SerNum::clone()
 void SerNum::load(CFRecord& record)
 {
 	record >> xnum;
-	//excel limitations
-	constexpr double ExcelMin = 2.229e-308;
+	// Excel limitations
+	constexpr double ExcelMinAbs = 2.229e-308;
 	constexpr double ExcelMax = 9.99999999999999e+307;
-	if(xnum < ExcelMin)
-		xnum = ExcelMin;
+
+	if(std::abs(xnum) < ExcelMinAbs && xnum != 0.0)
+		xnum = (xnum > 0) ? ExcelMinAbs : -ExcelMinAbs;
 	else if(xnum > ExcelMax)
 		xnum = ExcelMax;
+	else if(xnum < -ExcelMax)
+		xnum = -ExcelMax;
 }
 
 void SerNum::save(CFRecord& record)

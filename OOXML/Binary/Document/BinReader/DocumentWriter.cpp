@@ -114,15 +114,22 @@ mc:Ignorable=\"w14 w15 w16se w16cid w16 w16cex w16sdtdh wp14\">"));
 			oFile.WriteStringUTF8(m_oBackground.GetData());
 
 			oFile.WriteStringUTF8(std::wstring(L"<w:body>"));
-
+            //oFile.WriteStringUTF8(m_oContent.GetData());
             std::string utf8Content = m_oContentutf8.GetData();
-            const size_t CHUNK_SIZE = 65536;
-            for (size_t i = 0; i < utf8Content.length(); i += CHUNK_SIZE)
+            if (!utf8Content.empty())
             {
-                size_t end = std::min(i + CHUNK_SIZE, utf8Content.length());
-                oFile.WriteFile(utf8Content.c_str() + i, end - i);
-            }
+                const size_t CHUNK_SIZE = 65536;
 
+                for (size_t i = 0; i < utf8Content.length(); i += CHUNK_SIZE)
+                {
+                    size_t end = std::min(i + CHUNK_SIZE, utf8Content.length());
+                    oFile.WriteFile(utf8Content.c_str() + i, end - i);
+                }
+            }
+            else
+            {
+                oFile.WriteStringUTF8(m_oContent.GetData());
+            }
 			//oFile.WriteStringUTF8(WriteSectPrHdrFtr());
 			oFile.WriteStringUTF8(m_oSecPr.GetData());
 

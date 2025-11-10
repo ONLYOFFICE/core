@@ -198,7 +198,7 @@ public:
 	int m_nFillToRight;
 	int m_nFillToLeft;
 	int m_nFillShadeType;
-	std::vector< std::pair<int, int> >	m_aFillShadeColors;
+    std::vector< std::pair<int, double> >	m_aFillShadeColors;
 	//int m_bFillShape;				//есть копия заливки картинкой	
 //Line
 	int m_bLine;					//fLine Has a line

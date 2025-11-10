@@ -413,9 +413,9 @@ function readAction(reader, rec, readDoubleFunc, readStringFunc)
 			case 4:
 			{
 				rec["left"]   = readDoubleFunc.call(reader);
-				rec["bottom"] = readDoubleFunc.call(reader);
+				rec["top"] = readDoubleFunc.call(reader);
 				rec["right"]  = readDoubleFunc.call(reader);
-				rec["top"]    = readDoubleFunc.call(reader);
+				rec["bottom"]    = readDoubleFunc.call(reader);
 				break;
 			}
 			case 1:

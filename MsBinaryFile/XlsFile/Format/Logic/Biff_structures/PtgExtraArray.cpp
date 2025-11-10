@@ -81,7 +81,12 @@ void PtgExtraArray::load(CFRecord& record)
     for(int i = 0; i < (tempcols) * (temprows); ++i)
 	{
 		if (record.getRdPtr() >= record.getDataSize())
-			break;
+		{
+			unsigned char rec_type = SerAr::SerType::typeSerNil;
+			SerArPtr ser(SerAr::createSerAr(rec_type));
+			array_.push_back(ser);
+			continue;
+		}
 		unsigned char rec_type;
 		record >> rec_type;
         if (record.getGlobalWorkbookInfo()->Version >= 0x0800)
@@ -138,24 +143,31 @@ void PtgExtraArray::save(CFRecord& record)
 const std::wstring PtgExtraArray::toString() const
 {
 	std::wstring ret_val;
-    unsigned char col_cnt = cols + 1;
+	unsigned char col_cnt = cols;
 
 	if (array_.empty()) return L"";
 
 	for(std::vector<SerArPtr>::const_iterator it = array_.begin(), itEnd = --array_.end(); it != itEnd; ++it)
 	{
-		ret_val += (*it)->toString();
-		if(--col_cnt)
+		auto tempVal = (*it)->toString();
+		if(tempVal.empty())
+			tempVal = L"#N/A";
+		ret_val += tempVal;
+		if (col_cnt > 1)
 		{
 			ret_val += L',';
+			--col_cnt;
 		}
 		else
 		{
 			ret_val += L';';
-            col_cnt = cols + 1;
+			col_cnt = cols;
 		}
 	}
-	ret_val += array_.back()->toString();
+	auto tempVal = array_.back()->toString();
+	if(tempVal.empty())
+			tempVal = L"#N/A";
+	ret_val += tempVal;
 	return ret_val;
 }
 

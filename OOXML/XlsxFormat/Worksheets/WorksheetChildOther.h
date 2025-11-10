@@ -754,6 +754,8 @@ namespace OOX
 		public:
 			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oCount;
 			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oManualBreakCount;
+
+			bool m_fRowBreak = true;
 		};
 
 		class CSheetProtection : public WritingElement

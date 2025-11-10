@@ -814,7 +814,10 @@ namespace OOX
 			if(m_oRowBreaks.IsInit())
 				m_oRowBreaks->toXML(writer);
 			if(m_oColBreaks.IsInit())
+			{
+				m_oColBreaks->m_fRowBreak = false;
 				m_oColBreaks->toXML(writer);
+			}
 			if (m_oCellWatches.IsInit())
 				m_oCellWatches->toXML(writer);
 			if(m_oDrawing.IsInit())

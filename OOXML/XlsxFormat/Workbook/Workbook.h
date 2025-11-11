@@ -150,6 +150,7 @@ namespace OOX
 			void PrepareToWrite();
 			LONG GetActiveSheetIndex();
 			XLS::BaseObjectPtr WriteXtiRefs() const;
+			XLS::BaseObjectPtr WriteXtiRefsXLS() const;
 
 			CPath											m_oReadPath;
 

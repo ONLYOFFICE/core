@@ -61,9 +61,12 @@
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/PIVOTCACHEDEFINITION.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/SXSRC.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/DREF.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/SUPBOOK.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/SXStreamID.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/SXVS.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/DConRef.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/SupBook.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/ExternSheet.h"
 
 #include "../../Common/SimpleTypes_Shared.h"
 #include "../../Common/SimpleTypes_Spreadsheet.h"
@@ -815,6 +818,24 @@ xmlns:xr2=\"http://schemas.microsoft.com/office/spreadsheetml/2015/revision2\"\
 			return XLS::BaseObjectPtr{ptr};
 		}
 
+		XLS::BaseObjectPtr CWorkbook::WriteXtiRefsXLS() const
+		{
+			auto unionPtr = new XLS::SUPBOOK;
+			auto ptr = new XLS::SupBook;
+			unionPtr->m_SupBook = XLS::BaseObjectPtr(ptr);
+			auto sheetPtr = new XLS::ExternSheet;
+			unionPtr->m_ExternSheet = XLS::BaseObjectPtr(sheetPtr);
+			for(auto i:XLS::GlobalWorkbookInfo::arXti_External_static)
+			{
+				auto xti(new XLS::XTI);
+				xti->iSupBook = i.iSup;
+				xti->itabFirst = i.itabFirst;
+				xti->itabLast = i.itabLast;
+				sheetPtr->rgXTI.push_back(XLS::BiffStructurePtr(xti));
+
+			}
+			return XLS::BaseObjectPtr(unionPtr);
+		}
 	} //Spreadsheet
 } // namespace OOX
 

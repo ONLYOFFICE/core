@@ -226,6 +226,7 @@ bool OOX::Spreadsheet::CXlsx::WriteXLS(const CPath& oFilePath)
 	CastedGlobalsStram->global_info_ = writer.globalInfoPtr;
 	for(auto i : m_arWorksheets)
 		workbookStream->m_arWorksheetSubstream.push_back(i->toXLS());
+	CastedGlobalsStram->m_arSUPBOOK.push_back(m_pWorkbook->WriteXtiRefsXLS());
 	if(m_pSharedStrings != nullptr)
 		m_pSharedStrings->toXLS(workbookStream->m_GlobalsSubstream);
 	auto themesPtr = m_pWorkbook->Find(OOX::FileTypes::Theme);

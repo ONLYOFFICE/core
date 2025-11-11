@@ -31,6 +31,7 @@
  */
 
 #include "PtgList.h"
+#include "PtgArea3d.h"
 #include "PtgExtraList.h"
 #include "../../../../../OOXML/Base/Unit.h"
 
@@ -177,7 +178,8 @@ Ptg* PtgList::toArea()
 		else if(rowType == 0x8) //totals
 			tableRef.rowFirst = tableRef.rowLast;
 	}
-	PtgArea* listArea = new PtgArea(0x25);
+	PtgArea3d* listArea = new PtgArea3d(0x3B, CellRef());
+	listArea->ixti = ixti;
 	listArea->area = tableRef;
 	listArea->area.rowFirstRelative = false;
 	listArea->area.rowLastRelative = false;

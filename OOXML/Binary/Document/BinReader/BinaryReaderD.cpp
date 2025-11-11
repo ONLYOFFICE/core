@@ -9277,6 +9277,20 @@ int Binary_DocumentTableReader::ReadDocPr(BYTE type, long length, void* poResult
 	{
 		pNonVisualDrawingProps->form = m_oBufferedStream.GetBool();
 	}
+	else if (c_oSerDocPr::HlinkClick == type)
+	{
+		m_oBufferedStream.Skip(1); //skip type
+
+		pNonVisualDrawingProps->hlinkClick.Init();
+		pNonVisualDrawingProps->hlinkClick->fromPPTY(&m_oBufferedStream);
+	}
+	else if (c_oSerDocPr::HlinkHover == type)
+	{
+		m_oBufferedStream.Skip(1); //skip type
+
+		pNonVisualDrawingProps->hlinkHover.Init();
+		pNonVisualDrawingProps->hlinkHover->fromPPTY(&m_oBufferedStream);
+	}
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;

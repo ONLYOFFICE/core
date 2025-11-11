@@ -159,6 +159,11 @@ linux-g++:contains(QMAKE_HOST.arch, aarch64): {
 	CONFIG += core_linux_64
 	CONFIG += core_linux_host_arm64
 }
+linux-g++:contains(QMAKE_HOST.arch, ppc64le): {
+    message("linux-64")
+    CONFIG += core_linux_64
+    CONFIG += core_linux_host_ppc64le
+}
 !core_linux_64: {
 	message("linux-32")
 	CONFIG += core_linux_32
@@ -235,6 +240,9 @@ gcc {
 core_linux_host_arm64 {
 	message("build on arm64")
 	DEFINES += _ARM_ALIGN_
+}
+core_linux_host_ppc64le {
+    message("build on ppc64le")
 }
 
 core_mac {

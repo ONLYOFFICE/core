@@ -98,19 +98,19 @@ namespace PdfWriter
 		virtual void updateLineCap(GfxState *pGState) override;
 		virtual void updateMiterLimit(GfxState *pGState) override;
 		virtual void updateLineWidth(GfxState *pGState) override;
-		// updateStrokeAdjust -> setExtGState
+		// updateStrokeAdjust    -> setExtGState
 		// updateFillColorSpace
 		// updateStrokeColorSpace
 		virtual void updateFillColor(GfxState *pGState) override;
 		virtual void updateStrokeColor(GfxState *pGState) override;
-		// updateBlendMode -> setExtGState
-		// updateFillOpacity -> setExtGState
-		// updateStrokeOpacity -> setExtGState
-		// updateFillOverprint -> setExtGState
+		// updateBlendMode       -> setExtGState
+		// updateFillOpacity     -> setExtGState
+		// updateStrokeOpacity   -> setExtGState
+		// updateFillOverprint   -> setExtGState
 		// updateStrokeOverprint -> setExtGState
-		// updateOverprintMode -> setExtGState
+		// updateOverprintMode   -> setExtGState
 		virtual void updateRenderingIntent(GfxState *pGState) override;
-		// updateTransfer -> setExtGState
+		// updateTransfer        -> setExtGState
 		//----- update text state
 		virtual void updateFont(GfxState *pGState) override;
 		// updateTextMat -> drawChar
@@ -119,7 +119,7 @@ namespace PdfWriter
 		virtual void updateRise(GfxState *pGState) override;
 		virtual void updateWordSpace(GfxState *pGState) override;
 		virtual void updateHorizScaling(GfxState *pGState) override;
-		// updateTextPos -> drawChar
+		// updateTextPos   -> drawChar
 		// updateTextShift -> drawChar
 		// saveTextPos
 		// restoreTextPos
@@ -159,7 +159,7 @@ namespace PdfWriter
 		virtual void setShading(GfxState *state, const char* name) override;
 		//----- image drawing
 		virtual void drawImageMask(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GBool bInvert, GBool bInlineImage, GBool interpolate) override;
-		virtual void setSoftMaskFromImageMask(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GBool bInvert, GBool bInlineImage, GBool interpolate) override;
+		// setSoftMaskFromImageMask -> drawImageMask
 		virtual void drawImage(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap, int *pMaskColors, GBool bInlineImg, GBool interpolate) override;
 		virtual void drawMaskedImage(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap,
 									 Object* pMaskRef, Stream *pMaskStream, int nMaskWidth, int nMaskHeight, GBool bMaskInvert, GBool interpolate) override;
@@ -172,11 +172,11 @@ namespace PdfWriter
 		virtual void drawForm(GfxState *pGState, Gfx *gfx, Ref id, const char *name = NULL) override;
 		virtual void drawImage(GfxState *pGState, Gfx *gfx, Ref id, const char* name = NULL) override;
 		//----- transparency groups and soft masks
-		virtual void beginTransparencyGroup(GfxState *pGState, double *pBBox, GfxColorSpace *pBlendingColorSpace, GBool bIsolated, GBool bKnockout, GBool bForSoftMask) override;
-		virtual void endTransparencyGroup(GfxState *pGState) override;
-		virtual void paintTransparencyGroup(GfxState *pGState, double *pBBox) override;
-		virtual void setSoftMask(GfxState *pGState, double *pBBox, GBool bAlpha, Function *pTransferFunc, GfxColor *pBackdropColor) override;
-		virtual void clearSoftMask(GfxState *pGState) override;
+		// beginTransparencyGroup -> drawForm
+		// endTransparencyGroup   -> drawForm
+		// paintTransparencyGroup -> drawForm
+		// setSoftMask            -> drawForm
+		// clearSoftMask          -> drawForm
 
 	private:
 		struct GfxRedactState

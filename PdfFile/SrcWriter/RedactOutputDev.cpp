@@ -218,6 +218,38 @@ BYTE* DecodeImageToGray(Stream* pStream, int nWidth, int nHeight, GfxImageColorM
 	delete pImageStream;
 	return pBufferPtr;
 }
+BYTE* DecodeImageMaskToBits(Stream* pStream, int nWidth, int nHeight, GBool bInvert)
+{
+	int nRowSize = (nWidth + 7) / 8;
+	BYTE* pBits = new BYTE[nRowSize * nHeight];
+	if (!pBits)
+		return nullptr;
+
+	ImageStream* pImageStream = new ImageStream(pStream, nWidth, 1, 1);
+	pImageStream->reset();
+
+	for (int y = 0; y < nHeight; ++y)
+	{
+		BYTE* pLine = pImageStream->getLine();
+		if (!pLine)
+		{
+			memset(pBits + y * nRowSize, bInvert ? 0xFF : 0x00, nRowSize);
+			continue;
+		}
+
+		memcpy(pBits + y * nRowSize, pLine, nRowSize);
+
+		if (bInvert)
+		{
+			for (int x = 0; x < nRowSize; ++x)
+				pBits[y * nRowSize + x] = ~pBits[y * nRowSize + x];
+		}
+	}
+
+	pImageStream->close();
+	delete pImageStream;
+	return pBits;
+}
 void SaveRGBAToStream(CDocument* pDocument, CDictObject* pDictObj, BYTE* pRGBA, int nWidth, int nHeight)
 {
 	CBgraFrame oFrame;
@@ -284,8 +316,29 @@ void SaveGrayToSMask(CDocument* pDocument, CDictObject* pDictObj, BYTE* pMaskGra
 		pDictObj->SetStream(pStreamForm);
 	}
 	pStreamForm->Write(pMaskGray, nBufferSize);
+}
+void SaveImageMaskToStream(CDocument* pDocument, CDictObject* pDictObj, BYTE* pMaskBits, int nWidth, int nHeight)
+{
+	int nRowSize = (nWidth + 7) / 8;
+	int nTotalSize = nRowSize * nHeight;
 
-	delete[] pMaskGray;
+	pDictObj->ClearStream();
+	pDictObj->SetFilter(STREAM_FILTER_FLATE_DECODE);
+	CNumberObject* pLength = new CNumberObject(nTotalSize);
+	pDocument->AddObject(pLength);
+	pDictObj->Add("Length", pLength);
+	pDictObj->Add("Type", "XObject");
+	pDictObj->Add("Subtype", "Image");
+	pDictObj->Add("ImageMask", true);
+	pDictObj->Add("Width", nWidth);
+	pDictObj->Add("Height", nHeight);
+	pDictObj->Add("BitsPerComponent", 1);
+
+	pDictObj->Remove("DecodeParms");
+	pDictObj->Remove("ColorSpace");
+
+	CStream* pStream = pDictObj->GetStream();
+	pStream->Write(pMaskBits, nTotalSize);
 }
 void ApplyRedactToRGBA(const std::vector<double>& arrQuadPoints, BYTE* pImage, int nWidth, int nHeight, const std::vector<CPoint>& imagePolygon)
 {
@@ -404,6 +457,67 @@ void ApplyRedactToGray(const std::vector<double>& arrQuadPoints, BYTE* pImage, i
 			for (int x = startX; x <= endX; ++x)
 				if (PdfWriter::isPointInQuad(x, y, redact[0].x, redact[0].y, redact[1].x, redact[1].y, redact[2].x, redact[2].y, redact[3].x, redact[3].y))
 					pImage[(nHeight - 1 - y) * nWidth + x] = 0;
+	}
+}
+void ApplyRedactToImageMask(const std::vector<double>& arrQuadPoints, BYTE* pMaskBits, int nWidth, int nHeight, const std::vector<CPoint>& imagePolygon)
+{
+	int nRowSize = (nWidth + 7) / 8;
+
+	// Преобразуем области редоктирования в координаты маски
+	std::vector<std::vector<CPoint>> maskSpaceRedacts;
+
+	for (int j = 0; j < arrQuadPoints.size(); j += 8)
+	{
+		std::vector<CPoint> redactPolygon =
+		{
+			CPoint(arrQuadPoints[j + 0], arrQuadPoints[j + 1]),
+			CPoint(arrQuadPoints[j + 2], arrQuadPoints[j + 3]),
+			CPoint(arrQuadPoints[j + 4], arrQuadPoints[j + 5]),
+			CPoint(arrQuadPoints[j + 6], arrQuadPoints[j + 7])
+		};
+
+		// Преобразуем в координаты маски
+		std::vector<CPoint> maskSpaceRedact;
+		for (const CPoint& point : redactPolygon)
+		{
+			double x = (point.x - imagePolygon[0].x) / (imagePolygon[2].x - imagePolygon[0].x) * nWidth;
+			double y = (point.y - imagePolygon[0].y) / (imagePolygon[2].y - imagePolygon[0].y) * nHeight;
+			maskSpaceRedact.push_back(CPoint(x, y));
+		}
+
+		if (PdfWriter::SAT(maskSpaceRedact, {CPoint(0, 0), CPoint(0, nHeight), CPoint(nWidth, nHeight), CPoint(nWidth, 0)}))
+			maskSpaceRedacts.push_back(maskSpaceRedact);
+	}
+
+	for (const auto& redact : maskSpaceRedacts)
+	{
+		double minX = nWidth, minY = nHeight, maxX = 0, maxY = 0;
+		for (const CPoint& p : redact)
+		{
+			if (p.x < minX) minX = p.x;
+			if (p.y < minY) minY = p.y;
+			if (p.x > maxX) maxX = p.x;
+			if (p.y > maxY) maxY = p.y;
+		}
+
+		int startX = std::max(0, (int)minX);
+		int startY = std::max(0, (int)minY);
+		int endX = std::min(nWidth - 1, (int)maxX);
+		int endY = std::min(nHeight - 1, (int)maxY);
+
+		for (int y = startY; y <= endY; ++y)
+		{
+			for (int x = startX; x <= endX; ++x)
+			{
+				if (PdfWriter::isPointInQuad(x, y, redact[0].x, redact[0].y, redact[1].x, redact[1].y, redact[2].x, redact[2].y, redact[3].x, redact[3].y))
+				{
+					int byteIndex = y * nRowSize + (x / 8);
+					int bitIndex = 7 - (x % 7); // Биты хранятся слева направо
+
+					pMaskBits[byteIndex] &= ~(1 << bitIndex);
+				}
+			}
+		}
 	}
 }
 
@@ -966,11 +1080,39 @@ void RedactOutputDev::setShading(GfxState *pGState, const char* name)
 //----- image drawing
 void RedactOutputDev::drawImageMask(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GBool bInvert, GBool bInlineImage, GBool interpolate)
 {
+	m_pRenderer->m_oCommandManager.Flush();
+	DoStateOp();
 
-}
-void RedactOutputDev::setSoftMaskFromImageMask(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GBool bInvert, GBool bInlineImage, GBool interpolate)
-{
+	double dShiftX = 0, dShiftY = 0;
+	DoTransform(pGState->getCTM(), &dShiftX, &dShiftY, true);
 
+	PdfWriter::CObjectBase* pObj = m_mObjManager->GetObj(pRef->getRefNum());
+	if (!pObj || pObj->GetType() != object_type_DICT)
+		return;
+
+	PdfWriter::CDocument* pDocument = m_pRenderer->GetDocument();
+	CDictObject* pXObject = pDocument->GetXObject(pRef->getRefNum());
+	if (pXObject)
+	{
+		DrawXObject(m_sImageName.c_str());
+		return;
+	}
+
+	std::vector<CPoint> imagePolygon = GetImagePolygon(m_arrMatrix);
+	if (!CheckImageRedact(m_arrQuadPoints, imagePolygon))
+	{
+		DrawXObject(m_sImageName.c_str());
+		return;
+	}
+
+	BYTE* pBufferPtr = DecodeImageMaskToBits(pStream, nWidth, nHeight, bInvert);
+	if (!pBufferPtr)
+		return;
+
+	ApplyRedactToImageMask(m_arrQuadPoints, pBufferPtr, nWidth, nHeight, imagePolygon);
+	SaveImageMaskToStream(pDocument, (CDictObject*)pObj, pBufferPtr, nWidth, nHeight);
+
+	DrawXObject(m_sImageName.c_str());
 }
 void RedactOutputDev::drawImage(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap, int *pMaskColors, GBool bInlineImg, GBool interpolate)
 {
@@ -1049,17 +1191,44 @@ void RedactOutputDev::drawSoftMaskedImage(GfxState *pGState, Object *pRef, Strea
 	CDictObject* pDictObj = (CDictObject*)pObj;
 	SaveRGBAToStream(pDocument, pDictObj, pBufferPtr, nWidth, nHeight);
 
-	BYTE* pMaskBufferPtr = NULL;
-	if (nWidth == nMaskWidth && nHeight == nMaskHeight)
-		pMaskBufferPtr = DecodeImageToGray(pMaskStream, nMaskWidth, nMaskHeight, pMaskColorMap, pGState);
-	else
-	{
-		// TODO DecodeAndScaleMaskToGray
-	}
+	BYTE* pMaskBufferPtr = DecodeImageToGray(pMaskStream, nMaskWidth, nMaskHeight, pMaskColorMap, pGState);
 	if (pMaskBufferPtr)
 	{
+		if (nWidth != nMaskWidth || nHeight != nMaskHeight)
+		{
+			// Простое масштабирование (ближайший сосед)
+			BYTE* pDstMask = new BYTE[nWidth * nHeight];
+			if (!pDstMask)
+			{
+				delete[] pMaskBufferPtr;
+				return;
+			}
+
+			double dScaleX = (double)nMaskWidth  / nWidth;
+			double dScaleY = (double)nMaskHeight / nHeight;
+
+			for (int dstY = 0; dstY < nHeight; ++dstY)
+			{
+				for (int dstX = 0; dstX < nWidth; ++dstX)
+				{
+					int srcX = (int)(dstX * dScaleX);
+					int srcY = (int)(dstY * dScaleY);
+
+					// Ограничиваем координаты
+					srcX = std::min(srcX, nMaskWidth  - 1);
+					srcY = std::min(srcY, nMaskHeight - 1);
+
+					pDstMask[dstY * nWidth + dstX] = pMaskBufferPtr[srcY * nMaskWidth + srcX];
+				}
+			}
+
+			delete[] pMaskBufferPtr;
+			pMaskBufferPtr = pDstMask;
+		}
+
 		ApplyRedactToGray(m_arrQuadPoints, pMaskBufferPtr, nWidth, nHeight, imagePolygon);
 		SaveGrayToSMask(pDocument, pDictObj, pMaskBufferPtr, nWidth, nHeight);
+		delete[] pMaskBufferPtr;
 	}
 
 	DrawXObject(m_sImageName.c_str());
@@ -1230,27 +1399,6 @@ void RedactOutputDev::drawForm(GfxState *pGState, Gfx *gfx, Ref id, const char* 
 void RedactOutputDev::drawImage(GfxState *pGState, Gfx *gfx, Ref id, const char* name)
 {
 	m_sImageName = std::string(name);
-}
-//----- transparency groups and soft masks
-void RedactOutputDev::beginTransparencyGroup(GfxState *pGState, double *pBBox, GfxColorSpace *pBlendingColorSpace, GBool bIsolated, GBool bKnockout, GBool bForSoftMask)
-{
-
-}
-void RedactOutputDev::endTransparencyGroup(GfxState *pGState)
-{
-
-}
-void RedactOutputDev::paintTransparencyGroup(GfxState *pGState, double *pBBox)
-{
-
-}
-void RedactOutputDev::setSoftMask(GfxState *pGState, double *pBBox, GBool bAlpha, Function *pTransferFunc, GfxColor *pBackdropColor)
-{
-
-}
-void RedactOutputDev::clearSoftMask(GfxState *pGState)
-{
-
 }
 
 bool SkipPath(const std::vector<CSegment>& arrForStroke, const CPoint& P1, const CPoint& P2)

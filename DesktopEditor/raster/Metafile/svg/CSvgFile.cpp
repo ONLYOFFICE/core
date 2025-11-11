@@ -68,7 +68,13 @@ bool CSvgFile::MarkObject(SVG::CObject *pObject)
 	if (NULL == pObject || pObject->GetId().empty())
 		return false;
 
-	pObject->AddRef();
+	pObject->Mark();
+
+	const MarkedMap::const_iterator itFound = m_mMarkedObjects.find(pObject->GetId());
+
+	if (m_mMarkedObjects.cend() != itFound)
+		RELEASEINTERFACE(m_mMarkedObjects[pObject->GetId()])
+
 	m_mMarkedObjects[pObject->GetId()] = pObject;
 
 	return true;
@@ -153,8 +159,7 @@ bool CSvgFile::Draw(IRenderer *pRenderer, double dX, double dY, double dWidth, d
 		dTranslateY -= oViewBox.m_oY.ToDouble(NSCSS::Pixel) * dScaleY * dM22;
 	}
 
-	const double dMinScale = std::min(dScaleX, dScaleY);
-	pRenderer->SetTransform(dM11 * dMinScale, 0, 0, dM22 * dMinScale, dTranslateX, dTranslateY);
+	pRenderer->SetTransform(dM11 * dScaleX, 0, 0, dM22 * dScaleY, dTranslateX, dTranslateY);
 
 	bool bResult = m_pContainer->Draw(pRenderer, this);
 
@@ -165,7 +170,7 @@ bool CSvgFile::Draw(IRenderer *pRenderer, double dX, double dY, double dWidth, d
 
 void CSvgFile::Clear()
 {
-	RELEASEOBJECT(m_pContainer);
+	RELEASEINTERFACE(m_pContainer);
 	m_oSvgCalculator.Clear();
 
 	for (MarkedMap::reference oIter : m_mMarkedObjects)

@@ -32,7 +32,7 @@ namespace SVG
 		void InheritStyles(const CTSpan* pTSpan);
 	private:
 		void ApplyStyle(IRenderer* pRenderer, const TSvgStyles* pStyles, const CSvgFile* pFile, int& nTypePath, const CRenderedObject* pContexObject = NULL) const override;
-		void ApplyFont(IRenderer* pRenderer, double& dX, double& dY) const;
+		void ApplyFont(IRenderer* pRenderer, double& dX, double& dY, Aggplus::CMatrix& oOldMatrix) const;
 
 		void UpdateFontSize();
 		bool UseExternalFont(const CSvgFile* pFile, double dX, double dY, IRenderer* pRenderer, CommandeMode oMode = CommandeModeDraw, const TSvgStyles* pOtherStyles = NULL, const CRenderedObject* pContexObject = NULL) const;
@@ -44,7 +44,7 @@ namespace SVG
 
 		void CalculatePosition(double& dX, double& dY) const;
 
-		void Normalize(IRenderer* pRenderer, double& dX, double& dY, double& dFontHeight) const;
+		void Normalize(IRenderer* pRenderer, double& dX, double& dY, double& dFontHeight, Aggplus::CMatrix& oOldMatrix) const;
 		void SetPosition(const Point& oPosition);
 
 		void SetPositionFromParent(CRenderedObject* pParent);

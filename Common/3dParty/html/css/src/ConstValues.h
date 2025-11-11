@@ -69,7 +69,8 @@ namespace NSCSS
 				R_Highlight,
 				R_Shd,
 				R_SmallCaps,
-				R_Kern
+				R_Kern,
+				R_Vanish
 			} RunnerProperties;
 
 			typedef enum

@@ -42,6 +42,18 @@ namespace SVG
 		: m_oXmlNode(oObject.m_oXmlNode), m_oTransformation(oObject.m_oTransformation)
 	{}
 
+	void CObject::Mark()
+	{
+		this->AddRef();
+	}
+
+	bool CObject::Marked() const
+	{
+		//Так как по логике кода объект может храниться только в одном контейнере и в списке маркированных элементов,
+		//то хватит и такой проверки
+		return 1 != m_lRef;
+	}
+
 	void CObject::SetAttribute(const std::string& sName, CSvgReader& oReader)
 	{
 		if ("class" == sName)

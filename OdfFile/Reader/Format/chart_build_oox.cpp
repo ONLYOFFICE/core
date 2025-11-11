@@ -617,7 +617,7 @@ void object_odf_context::oox_convert(oox::oox_chart_context & chart_context)
 		if	(a.dimension_ == L"y" && y_enabled)continue;
 		if	(a.dimension_ == L"z" && z_enabled)continue;
 
-		if	(a.dimension_ == L"x")//могут быть типы 1, 2, 3, 4
+		if	(a.dimension_ == L"x")
 		{			
 			if (last_set_class == chart_class::scatter ||
 				last_set_class == chart_class::bubble) a.type_ = 2;
@@ -637,9 +637,6 @@ void object_odf_context::oox_convert(oox::oox_chart_context & chart_context)
 			a.type_ = 2;
 			if (last_set_class == chart_class::bar)
 			{
-				//вот нахрена свойства относящиеся к серии и самому чарту воткнули в оси ???? (ооо писали идиеты???)
-				//или это банальная ошибка которую так никогда и не исправили???
-				//overlap & gap-width
 				oox::oox_chart_ptr current = chart_context.get_current_chart();
 				current->set_graphic_properties(a.graphic_properties_);
 			}
@@ -653,7 +650,7 @@ void object_odf_context::oox_convert(oox::oox_chart_context & chart_context)
 			z_enabled = true;
 		}
 
-		chart_context.add_axis(a.bCategories_ ? 1 : a.type_, a);
+		chart_context.add_axis(a);
 	}
 
 	if (bIs3D.get_value_or(false))
@@ -663,7 +660,7 @@ void object_odf_context::oox_convert(oox::oox_chart_context & chart_context)
 			chart::axis a;
 			a.type_ = 0;	// blank
 
-			chart_context.add_axis(a.type_, a);
+			chart_context.add_axis(a);
 		}
 		chart_context.set_3D_chart (true);
 	}
@@ -1021,6 +1018,15 @@ void process_build_object::visit(chart_axis& val)
 							val.attlist_.chart_name_.get_value_or(L""),
 							val.attlist_.common_attlist_.chart_style_name_.get_value_or(L""));
 
+	if (val.attlist_.axis_type_)
+	{
+		if (val.attlist_.axis_type_->get_type() == odf_types::chart_axis_type::date)
+			object_odf_context_.axises_.back().type_ = 4;
+		else if (val.attlist_.axis_type_->get_type() == odf_types::chart_axis_type::text)
+			object_odf_context_.axises_.back().type_ = 1;
+
+	}
+
     ACCEPT_ALL_CONTENT(val.content_);
 
 	std::wstring style_name	= val.attlist_.common_attlist_.chart_style_name_.get_value_or(L"");
@@ -1124,11 +1130,11 @@ void process_build_object::visit(chart_mean_value & val)
 }
 void process_build_object::visit(chart_date_scale & val)
 {
-	object_odf_context_.axises_.back().type_ = 4;
+	//...
 }
 void process_build_object::visit(chartooo_date_scale & val)
 {
-	object_odf_context_.axises_.back().type_ = 4;
+	//...
 }
 void process_build_object::visit(chart_error_indicator & val)
 {

@@ -34,7 +34,8 @@ namespace SVG
 	enum ObjectType
 	{
 		RendererObject,
-		AppliedObject
+		AppliedObject,
+		DataObject
 	};
 
 	class CObject : public IGrObject
@@ -47,6 +48,9 @@ namespace SVG
 		virtual ~CObject() = default;
 
 		virtual ObjectType GetType() const = 0;
+
+		void Mark();
+		bool Marked() const;
 
 		virtual void SetAttribute(const std::string& sName, CSvgReader& oReader);
 
@@ -92,7 +96,8 @@ namespace SVG
 		if (NULL == pSvgFile)
 			return pObject;
 
-		if (!pSvgFile->MarkObject(pObject) && AppliedObject == pObject->GetType())
+		if (DataObject != pObject->GetType() &&
+		    (!pSvgFile->MarkObject(pObject) && AppliedObject == pObject->GetType()))
 		{
 			delete pObject;
 			return NULL;

@@ -29,69 +29,44 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#pragma once
 
-#include "SerNum.h"
+#include <iosfwd>
+#include <string>
+#include "odfattributes.h"
+//
 
-namespace XLS
+namespace cpdoccore { namespace odf_types { 
+
+class chart_axis_type
 {
+public:
+    enum type
+    {
+        _auto,
+        text,
+        date
+    };
 
+    chart_axis_type() {}
 
-SerNum::SerNum()
-{
-    fixed_type = typeSerNum;
+    chart_axis_type(type _Type) : type_(_Type)
+    {}
+
+    type get_type() const
+    {
+        return type_;
+    };
+    
+    static chart_axis_type parse(const std::wstring & Str);
+
+private:
+    type type_;
+
+};
+	std::wostream & operator << (std::wostream & _Wostream, const chart_axis_type& _Val);
+} 
+
+APPLY_PARSE_XML_ATTRIBUTES(odf_types::chart_axis_type);
+
 }
-
-
-SerNum::SerNum(const std::wstring& word)
-{
-#if defined(_WIN32) || defined (_WIN64)
-    xnum = _wtof(word.c_str());
-#else
-    wchar_t *pEnd;
-    xnum = wcstod(word.c_str(), &pEnd);
-#endif
-}
-
-
-BiffStructurePtr SerNum::clone()
-{
-	return BiffStructurePtr(new SerNum(*this));
-}
-
-
-void SerNum::load(CFRecord& record)
-{
-	record >> xnum;
-	// Excel limitations
-	constexpr double ExcelMinAbs = 2.229e-308;
-	constexpr double ExcelMax = 9.99999999999999e+307;
-
-	if(std::abs(xnum) < ExcelMinAbs && xnum != 0.0)
-		xnum = (xnum > 0) ? ExcelMinAbs : -ExcelMinAbs;
-	else if(xnum > ExcelMax)
-		xnum = ExcelMax;
-	else if(xnum < -ExcelMax)
-		xnum = -ExcelMax;
-}
-
-void SerNum::save(CFRecord& record)
-{
-    char serType;
-    if (record.getGlobalWorkbookInfo()->Version < 0x0800)
-        serType = 1;
-    else
-        serType = 0;
-
-    record << serType << xnum;
-}
-
-const std::wstring SerNum::toString() const
-{
-	auto tempNum = STR::double2str(xnum);
-	if(tempNum == L"-nan")
-		tempNum = L"#NUM!";
-	return tempNum;
-}
-
-
-} // namespace XLS

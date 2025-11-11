@@ -30,68 +30,36 @@
  *
  */
 
-#include "SerNum.h"
+#include "chartaxistype.h"
+#include <boost/algorithm/string.hpp>
+#include <ostream>
 
-namespace XLS
+namespace cpdoccore { namespace odf_types {
+
+std::wostream & operator << (std::wostream & _Wostream, const chart_axis_type& _Val)
 {
-
-
-SerNum::SerNum()
-{
-    fixed_type = typeSerNum;
+	switch(_Val.get_type())
+	{
+	case   chart_axis_type::text: _Wostream <<  L"text"; break;
+	case   chart_axis_type::date: _Wostream <<  L"date"; break;
+	case   chart_axis_type::_auto:
+    default:
+        _Wostream <<  L"auto"; break;
+	}
+    return _Wostream;    
 }
-
-
-SerNum::SerNum(const std::wstring& word)
+chart_axis_type chart_axis_type::parse(const std::wstring & Str)
 {
-#if defined(_WIN32) || defined (_WIN64)
-    xnum = _wtof(word.c_str());
-#else
-    wchar_t *pEnd;
-    xnum = wcstod(word.c_str(), &pEnd);
-#endif
-}
+    std::wstring tmp = Str;
+    boost::algorithm::to_lower(tmp);
 
-
-BiffStructurePtr SerNum::clone()
-{
-	return BiffStructurePtr(new SerNum(*this));
-}
-
-
-void SerNum::load(CFRecord& record)
-{
-	record >> xnum;
-	// Excel limitations
-	constexpr double ExcelMinAbs = 2.229e-308;
-	constexpr double ExcelMax = 9.99999999999999e+307;
-
-	if(std::abs(xnum) < ExcelMinAbs && xnum != 0.0)
-		xnum = (xnum > 0) ? ExcelMinAbs : -ExcelMinAbs;
-	else if(xnum > ExcelMax)
-		xnum = ExcelMax;
-	else if(xnum < -ExcelMax)
-		xnum = -ExcelMax;
-}
-
-void SerNum::save(CFRecord& record)
-{
-    char serType;
-    if (record.getGlobalWorkbookInfo()->Version < 0x0800)
-        serType = 1;
+    if (tmp == L"date")
+        return chart_axis_type( date );
+    else if (tmp == L"text")
+        return chart_axis_type( text);
     else
-        serType = 0;
-
-    record << serType << xnum;
+    {
+        return chart_axis_type( _auto );
+    }
 }
-
-const std::wstring SerNum::toString() const
-{
-	auto tempNum = STR::double2str(xnum);
-	if(tempNum == L"-nan")
-		tempNum = L"#NUM!";
-	return tempNum;
-}
-
-
-} // namespace XLS
+} }

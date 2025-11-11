@@ -79,7 +79,6 @@ namespace OOX
 			nullable<SimpleTypes::COnOff>						m_oAutoCompressPictures;
 			nullable<SimpleTypes::COnOff>						m_oBackupFile;
 			nullable<SimpleTypes::COnOff>						m_oCheckCompatibility;
-			nullable<SimpleTypes::COnOff>	  					m_oCodeName;
 			nullable<SimpleTypes::COnOff>						m_oDate1904;
 			nullable<SimpleTypes::COnOff>						m_oDateCompatibility;
 			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oDefaultThemeVersion;
@@ -93,6 +92,7 @@ namespace OOX
 			nullable<SimpleTypes::COnOff>						m_oShowObjects;
 			nullable<SimpleTypes::COnOff>						m_oShowPivotChartFilter;
 			nullable<SimpleTypes::Spreadsheet::CUpdateLinksType> m_oUpdateLinks;
+			nullable_string										m_oCodeName;
 		};
 		class CWorkbookProtection : public WritingElement
 		{

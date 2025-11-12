@@ -831,6 +831,11 @@ void CPdfReader::DrawPageOnRenderer(IRenderer* pRenderer, int _nPageIndex, bool*
 
 	((GlobalParamsAdaptor*)globalParams)->ClearRedact();
 
+	LONG lRendererType = 0;
+	pRenderer->get_Type(&lRendererType);
+	if (c_nDocxWriter == lRendererType)
+		return; // Без отрисовки Redact при ScanPage
+
 	Page* pPage = pDoc->getCatalog()->getPage(nPageIndex);
 	PDFRectangle* cropBox = pPage->getCropBox();
 	pRenderer->SetTransform(1, 0, 0, 1, 0, 0);

@@ -79,6 +79,7 @@
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/PtgExp.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/PtgExtraCol.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/PtgList.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/PtgArea3d.h"
 
 #include <boost/regex.hpp>
 #include <boost/date_time/gregorian/gregorian.hpp>
@@ -1238,7 +1239,7 @@ namespace OOX
 		{
 			auto FmlaUnion = static_cast<XLS::FORMULA*>(obj.get());
 			auto xlsFmla = static_cast<XLS::Formula*>(FmlaUnion->m_Formula.get());
-			auto parseFmlaValueType = [](ParsedFormula &fmla)
+			auto parseFmlaValueType = [](ParsedFormula &fmla, _INT32 cellRw = 0)
 			{
 				if(!fmla.rgce.sequence.empty())
 				{
@@ -1248,6 +1249,12 @@ namespace OOX
 						{
 							auto list = static_cast<XLS::PtgList*>(fmla.rgce.sequence[i].get());
 							auto area = list->toArea();
+							auto castedArea = static_cast<XLS::PtgArea3d*>(area);
+							if(list->rowType == 0x10)
+							{
+								castedArea->area.rowFirst = cellRw;
+								castedArea->area.rowLast = cellRw;
+							}
 							fmla.rgce.sequence[i].reset(area);
 						}
 					}
@@ -1264,7 +1271,7 @@ namespace OOX
 			if(m_oT->GetValue() == SimpleTypes::Spreadsheet::ECellFormulaType::cellformulatypeNormal && !m_sText.empty())
 			{
 				xlsFmla->formula = m_sText;
-				parseFmlaValueType(xlsFmla->formula);
+				parseFmlaValueType(xlsFmla->formula, xlsFmla->cell.rw);
 			}
 			else if(m_oT->GetValue() == SimpleTypes::Spreadsheet::ECellFormulaType::cellformulatypeShared)
 			{

@@ -9,6 +9,8 @@
 
 #include "../../../../Common/3dParty/html/css/src/StaticFunctions.h"
 
+#include <cctype>
+
 #ifndef MININT8
 #define MAXUINT8    ((unsigned char)~((unsigned char)0))
 #define MAXINT8     ((char)(MAXUINT8 >> 1))
@@ -136,7 +138,7 @@ namespace SVG
 					const char* pCheckValue = pValue;
 					while ('\0' != *pCheckValue)
 					{
-						if (0x32 >= *pCheckValue++)
+						if (std::isprint(static_cast<unsigned char>(*pCheckValue++)))
 						{
 							bFoundedSymbol = true;
 							break;
@@ -161,9 +163,9 @@ namespace SVG
 			else if (eNodeType == XmlUtils::XmlNodeType_Element && "tspan" == oReader.GetName())
 			{
 				const TBounds oBounds{GetBounds()};
-				const Point oPoint{oBounds.m_dRight, oBounds.m_dTop};
+				const Point oPoint{oBounds.m_dRight, oBounds.m_dBottom};
 
-				AddObject(CRenderedObject::Create<CTSpan>(oReader, pSvgFile, this, m_pFontManager, oPoint));
+				AddObject(CObject::Create<CTSpan>(oReader, pSvgFile, this, m_pFontManager, oPoint));
 			}
 		}
 	}
@@ -185,8 +187,14 @@ namespace SVG
 		{
 			if (!m_wsText.empty())
 			{
-				ApplyFont(pRenderer, dX, dY);
+				Aggplus::CMatrix oCurrentMatrix;
+				ApplyFont(pRenderer, dX, dY, oCurrentMatrix);
+
 				pRenderer->CommandDrawText(m_wsText, dX, dY, 0, 0);
+
+				pRenderer->SetTransform(oCurrentMatrix.sx(),  oCurrentMatrix.shy(),
+				                        oCurrentMatrix.shx(), oCurrentMatrix.sy(),
+				                        oCurrentMatrix.tx(),  oCurrentMatrix.ty());
 			}
 		}
 
@@ -228,12 +236,12 @@ namespace SVG
 			nTypePath += c_nWindingFillMode;
 	}
 
-	void CTSpan::ApplyFont(IRenderer* pRenderer, double& dX, double& dY) const
+	void CTSpan::ApplyFont(IRenderer* pRenderer, double& dX, double& dY, Aggplus::CMatrix& oOldMatrix) const
 	{
 		std::wstring wsFontFamily = DefaultFontFamily;
 		double dFontSize = ((!m_oFont.GetSize().Empty()) ? m_oFont.GetSize().ToDouble(NSCSS::Pixel) : DEFAULT_FONT_SIZE) * 72. / 25.4;
 
-		Normalize(pRenderer, dX, dY, dFontSize);
+		Normalize(pRenderer, dX, dY, dFontSize, oOldMatrix);
 
 		if (!m_oFont.GetFamily().Empty())
 		{
@@ -327,7 +335,7 @@ namespace SVG
 		pRenderer->put_FontStyle(nStyle);
 		pRenderer->put_BrushType(c_BrushTypeSolid);
 		pRenderer->put_BrushColor1(m_oStyles.m_oFill.ToInt());
-		pRenderer->put_BrushAlpha1(255);
+		pRenderer->put_BrushAlpha1(255 * m_oStyles.m_oFill.GetOpacity());
 	}
 
 	void CTSpan::UpdateFontSize()
@@ -338,7 +346,7 @@ namespace SVG
 
 			if (NULL != pParentTSpan)
 			{
-				m_oFont.UpdateSize((!pParentTSpan->m_oFont.GetSize().Empty()) ? pParentTSpan->m_oFont.GetSize().ToDouble(NSCSS::Pixel) : DEFAULT_FONT_SIZE, DEFAULT_FONT_SIZE);
+				m_oFont.UpdateSize((!pParentTSpan->m_oFont.GetSize().Empty()) ? pParentTSpan->m_oFont.GetSize().ToDouble(NSCSS::Point) : DEFAULT_FONT_SIZE, DEFAULT_FONT_SIZE);
 				return;
 			}
 		}
@@ -476,7 +484,7 @@ namespace SVG
 		dY = m_oY.ToDouble(NSCSS::Pixel, oBounds.m_dBottom - oBounds.m_dTop);
 	}
 
-	void CTSpan::Normalize(IRenderer *pRenderer, double &dX, double &dY, double &dFontHeight) const
+	void CTSpan::Normalize(IRenderer *pRenderer, double &dX, double &dY, double &dFontHeight, Aggplus::CMatrix& oOldMatrix) const
 	{
 		if (NULL == pRenderer)
 			return;
@@ -518,6 +526,8 @@ namespace SVG
 		double dM11, dM12, dM21, dM22, dDx, dDy;
 
 		pRenderer->GetTransform(&dM11, &dM12, &dM21, &dM22, &dDx, &dDy);
+
+		oOldMatrix.SetElements(dM11, dM12, dM21, dM22, dDx, dDy);
 
 		Aggplus::CMatrix oMatrix(dM11, dM12, dM21, dM22, dDx, dDy);
 

@@ -509,6 +509,9 @@ namespace NSCSS
 		else if (L"serif" == wsFontFamily)
 			wsFontFamily = L"Times New Roman";
 
+		if (oStyle.m_oDisplay.GetDisplay() == L"none")
+			oXmlElement.AddPropertiesInR(RProperties::R_Vanish, L"true");
+
 		oXmlElement.AddPropertiesInR(RProperties::R_RFonts, oStyle.m_oFont.GetFamily().ToWString());
 		oXmlElement.AddPropertiesInR(RProperties::R_I, oStyle.m_oFont.GetStyle().ToWString());
 		oXmlElement.AddPropertiesInR(RProperties::R_B, oStyle.m_oFont.GetWeight().ToWString());

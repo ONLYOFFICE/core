@@ -2187,6 +2187,11 @@ BYTE* CPdfReader::GetAPAnnots(int nRasterW, int nRasterH, int nBackgroundColor, 
 		Object oAnnot, oObj;
 		std::string sType;
 		oAnnots.arrayGet(i, &oAnnot);
+		if (!oAnnot.isDict())
+		{
+			oAnnot.free();
+			continue;
+		}
 		if (oAnnot.dictLookup("Subtype", &oObj)->isName())
 			sType = oObj.getName();
 		oObj.free(); oAnnot.free();

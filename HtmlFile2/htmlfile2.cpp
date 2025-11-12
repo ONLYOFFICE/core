@@ -203,6 +203,11 @@ bool TagIsUnprocessed(const std::wstring& wsTagName)
 	return L"xml" == wsTagName;
 }
 
+bool IsSVG(const std::wstring& wsExtention)
+{
+	return L"svg" == wsExtention || L"svg+xml" == wsExtention;
+}
+
 static inline HtmlTag GetHtmlTag(const std::wstring& wsStrTag)
 {
 	std::map<std::wstring, HtmlTag>::const_iterator oFound = m_HTML_TAGS.find(wsStrTag);
@@ -1248,7 +1253,7 @@ public:
 
 	bool ConvertToOOXML(NSStringUtils::CStringBuilder& oStringBuilder)
 	{
-		if (m_arRows.empty())
+		if (m_arRows.empty() && m_arHeaders.empty() && m_arFoother.empty())
 			return false;
 
 		oStringBuilder.WriteNodeBegin(L"w:tbl");
@@ -3054,12 +3059,6 @@ private:
 
 		std::wstring sNote = GetSubClass(oXml, sSelectors);
 
-		if (NULL != sSelectors.back().m_pCompiledStyle && L"none" == sSelectors.back().m_pCompiledStyle->m_oDisplay.GetDisplay().ToWString())
-		{
-			sSelectors.pop_back();
-			return false;
-		}
-
 		bool bResult = true;
 
 		const HtmlTag eHtmlTag{GetHtmlTag(sName)};
@@ -4271,7 +4270,7 @@ private:
 			if (!pImageData || FALSE == NSBase64::Base64Decode(sSrcM.c_str() + nOffset, nSrcLen, pImageData, &nDecodeLen))
 				return bRes;
 
-			if (L"svg" == sExtention || L"svg+xml" == sExtention)
+			if (IsSVG(sExtention))
 			{
 				std::wstring wsSvg(pImageData, pImageData + nDecodeLen);
 				bRes = readSVG(wsSvg);
@@ -4316,8 +4315,8 @@ private:
 	{
 		return  sExtention != L"bmp" && sExtention != L"emf"  && sExtention != L"emz"  && sExtention != L"eps"  && sExtention != L"fpx" && sExtention != L"gif"  &&
 				sExtention != L"jpe" && sExtention != L"jpeg" && sExtention != L"jpg"  && sExtention != L"jfif" && sExtention != L"pct" && sExtention != L"pict" &&
-				sExtention != L"png" && sExtention != L"pntg" && sExtention != L"psd"  && sExtention != L"qtif" && sExtention != L"sgi" && sExtention != L"svg"  &&
-				sExtention != L"tga" && sExtention != L"tpic" && sExtention != L"tiff" && sExtention != L"tif"  && sExtention != L"wmf" && sExtention != L"wmz";
+				sExtention != L"png" && sExtention != L"pntg" && sExtention != L"psd"  && sExtention != L"qtif" && sExtention != L"sgi" && sExtention != L"wmz"  &&
+				sExtention != L"tga" && sExtention != L"tpic" && sExtention != L"tiff" && sExtention != L"tif"  && sExtention != L"wmf" && !IsSVG(sExtention);
 	}
 
 	void ImageAlternative(NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS, const std::wstring& wsAlt, const std::wstring& wsSrc, const TImageData& oImageData)
@@ -4416,16 +4415,57 @@ private:
 		}
 
 		int nImageId = -1;
-		std::wstring sImageSrc, sExtention;
+		std::wstring sExtention;
 		// Предполагаем картинку в Base64
 		if (bIsBase64)
 			bRes = readBase64(sSrcM, sExtention);
 
+		// Проверка расширения
+		sExtention = NSFile::GetFileExtention(sSrcM);
+		std::transform(sExtention.begin(), sExtention.end(), sExtention.begin(), tolower);
+
+		std::wstring::const_iterator itFound = std::find_if(sExtention.cbegin(), sExtention.cend(), [](wchar_t wChar){ return !iswalpha(wChar) && L'+' != wChar; });
+
+		if (sExtention.cend() != itFound)
+			sExtention.erase(itFound, sExtention.cend());
+
+		// Предполагаем картинку в сети
+		if (!bRes &&
+		    ((!m_sBase.empty() && m_sBase.length() > 4 && m_sBase.substr(0, 4) == L"http") ||
+		      (sSrcM.length() > 4 && sSrcM.substr(0, 4) == L"http")))
+		{
+			const std::wstring wsDst = m_sDst + L"/word/media/i" + std::to_wstring(m_arrImages.size()) + L'.' + ((!sExtention.empty()) ? sExtention : L"png");
+
+			// Проверка gc_allowNetworkRequest предполагается в kernel_network
+			NSNetwork::NSFileTransport::CFileDownloader oDownloadImg(m_sBase + sSrcM, false);
+			oDownloadImg.SetFilePath(wsDst);
+			bRes = oDownloadImg.DownloadSync();
+
+			if (!bRes)
+			{
+				ImageAlternative(oXml, sSelectors, oTS, wsAlt, sSrcM, oImageData);
+				return true;
+			}
+
+			if (IsSVG(sExtention))
+			{
+				std::wstring wsFileData;
+
+				if (!NSFile::CFileBinary::ReadAllTextUtf8(wsDst, wsFileData) || !readSVG(wsFileData))
+					bRes = false;
+
+				NSFile::CFileBinary::Remove(wsDst);
+				sExtention = L"png";
+			}
+			else if (sExtention.empty())
+			{
+				//TODO:: лучше узнавать формат изображения из содержимого
+				sExtention = L"png";
+			}
+		}
+
 		if (!bRes)
 		{
-			// Проверка расширения
-			sExtention = NSFile::GetFileExtention(sSrcM);
-			std::transform(sExtention.begin(), sExtention.end(), sExtention.begin(), tolower);
 			if (NotValidExtension(sExtention))
 			{
 				ImageAlternative(oXml, sSelectors, oTS, wsAlt, sSrcM, oImageData);
@@ -4441,36 +4481,24 @@ private:
 			}
 		}
 
+		// Предполагаем картинку по локальному пути
 		if (!bRes)
 		{
-			sImageSrc = sSrcM;
-			std::wstring wsDst = m_sDst + L"/word/media/i" + std::to_wstring(m_arrImages.size()) + L'.' + sExtention;
+			const std::wstring wsDst = m_sDst + L"/word/media/i" + std::to_wstring(m_arrImages.size()) + L'.' + sExtention;
 
-			// Предполагаем картинку по локальному пути
-			if (!((!m_sBase.empty() && m_sBase.length() > 4 && m_sBase.substr(0, 4) == L"http") || (sSrcM.length() > 4 && sSrcM.substr(0, 4) == L"http")))
+			if (!m_sBase.empty())
 			{
-				if (!m_sBase.empty())
-				{
-					if (!bRes)
-						bRes = CopyImage(NSSystemPath::Combine(m_sBase, sSrcM), wsDst, bIsAllowExternalLocalFiles);
-					if (!bRes)
-						bRes = CopyImage(NSSystemPath::Combine(m_sSrc, m_sBase + sSrcM), wsDst, bIsAllowExternalLocalFiles);
-				}
 				if (!bRes)
-					bRes = CopyImage(NSSystemPath::Combine(m_sSrc, sSrcM), wsDst, bIsAllowExternalLocalFiles);
+					bRes = CopyImage(NSSystemPath::Combine(m_sBase, sSrcM), wsDst, bIsAllowExternalLocalFiles);
 				if (!bRes)
-					bRes = CopyImage(m_sSrc + L"/" + NSFile::GetFileName(sSrcM), wsDst, bIsAllowExternalLocalFiles);
-				if (!bRes)
-					bRes = CopyImage(sSrcM, wsDst, bIsAllowExternalLocalFiles);
+					bRes = CopyImage(NSSystemPath::Combine(m_sSrc, m_sBase + sSrcM), wsDst, bIsAllowExternalLocalFiles);
 			}
-			// Предполагаем картинку в сети
-			else
-			{
-				// Проверка gc_allowNetworkRequest предполагается в kernel_network
-				NSNetwork::NSFileTransport::CFileDownloader oDownloadImg(m_sBase + sSrcM, false);
-				oDownloadImg.SetFilePath(wsDst);
-				bRes = oDownloadImg.DownloadSync();
-			}
+			if (!bRes)
+				bRes = CopyImage(NSSystemPath::Combine(m_sSrc, sSrcM), wsDst, bIsAllowExternalLocalFiles);
+			if (!bRes)
+				bRes = CopyImage(m_sSrc + L"/" + NSFile::GetFileName(sSrcM), wsDst, bIsAllowExternalLocalFiles);
+			if (!bRes)
+				bRes = CopyImage(sSrcM, wsDst, bIsAllowExternalLocalFiles);
 		}
 
 		if (!bRes)
@@ -4478,7 +4506,7 @@ private:
 		else
 		{
 			wrP(oXml, sSelectors, oTS);
-			ImageRels(oXml, nImageId, sImageSrc, sExtention, oImageData);
+			ImageRels(oXml, nImageId, sSrcM, sExtention, oImageData);
 		}
 
 		return true;
@@ -4681,8 +4709,9 @@ private:
 		if (bNew)
 			nImageId = m_arrImages.size();
 
-		std::wstring sImageId = std::to_wstring(nImageId);
-		std::wstring sImageName = sImageId + L'.' + sExtention;
+		const std::wstring sImageId = std::to_wstring(nImageId);
+		const std::wstring sImageName = sImageId + L'.' + sExtention;
+
 		CBgraFrame oBgraFrame;
 		if (!oBgraFrame.OpenFile(m_sDst + L"/word/media/i" + sImageName))
 		{
@@ -4757,7 +4786,7 @@ private:
 		oXml->WriteString(L"\"/></w:r>");
 		m_oNoteXml.WriteString(L"<w:footnote w:id=\"");
 		m_oNoteXml.WriteString(std::to_wstring(m_nFootnoteId++));
-		m_oNoteXml.WriteString(L"\"><w:p><w:pPr><w:pStyle w:val=\"footnote-p\"/></w:pPr><w:r><w:rPr><w:rStyle w:val=\"footnote\"/></w:rPr></w:r><w:r><w:t xml:space=\"preserve\">");
+		m_oNoteXml.WriteString(L"\"><w:p><w:pPr><w:pStyle w:val=\"footnote-p\"/></w:pPr><w:r><w:rPr><w:footnoteRef/></w:rPr><w:t xml:space=\"preserve\"> </w:t></w:r><w:r><w:rPr><w:rStyle w:val=\"footnote\"/></w:rPr></w:r><w:r><w:t xml:space=\"preserve\">");
 		m_oNoteXml.WriteEncodeXmlString(sNote);
 		m_oNoteXml.WriteString(L"</w:t></w:r></w:p></w:footnote>");
 
@@ -4770,7 +4799,12 @@ private:
 			return false;
 
 		if (NULL == m_pFonts)
+		{
 			m_pFonts = NSFonts::NSApplication::Create();
+
+			if (NULL != m_pFonts)
+				m_pFonts->Initialize();
+		}
 
 		MetaFile::IMetaFile* pSvgReader = MetaFile::Create(m_pFonts);
 		if (!pSvgReader->LoadFromString(wsSvg))

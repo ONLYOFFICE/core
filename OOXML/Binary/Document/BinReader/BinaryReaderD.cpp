@@ -5176,7 +5176,7 @@ int Binary_DocumentTableReader::ReadParagraph(BYTE type, long length, void* poRe
 	else if (c_oSerParType::ParaID == type)
 	{
 		m_oParaId.Init();
-		_INT64 res = m_oBufferedStream.GetLong64();
+		_INT64 res = m_oBufferedStream.GetULong();
 		m_oParaId->SetValue(res);
 	}
 	else if (c_oSerParType::TextID == type)
@@ -9276,6 +9276,20 @@ int Binary_DocumentTableReader::ReadDocPr(BYTE type, long length, void* poResult
 	else if (c_oSerDocPr::Form == type)
 	{
 		pNonVisualDrawingProps->form = m_oBufferedStream.GetBool();
+	}
+	else if (c_oSerDocPr::HlinkClick == type)
+	{
+		m_oBufferedStream.Skip(1); //skip type
+
+		pNonVisualDrawingProps->hlinkClick.Init();
+		pNonVisualDrawingProps->hlinkClick->fromPPTY(&m_oBufferedStream);
+	}
+	else if (c_oSerDocPr::HlinkHover == type)
+	{
+		m_oBufferedStream.Skip(1); //skip type
+
+		pNonVisualDrawingProps->hlinkHover.Init();
+		pNonVisualDrawingProps->hlinkHover->fromPPTY(&m_oBufferedStream);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;

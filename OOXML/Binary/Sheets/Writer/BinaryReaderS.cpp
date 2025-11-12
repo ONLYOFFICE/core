@@ -2957,6 +2957,10 @@ int BinaryWorkbookTableReader::ReadWorkbookPr(BYTE type, long length, void* poRe
 		m_oWorkbook.m_oWorkbookPr->m_oUpdateLinks.Init();
 		m_oWorkbook.m_oWorkbookPr->m_oUpdateLinks->SetValueFromByte(m_oBufferedStream.GetUChar());
 	}
+	else if (c_oSerWorkbookPrTypes::CodeName == type)
+	{
+		m_oWorkbook.m_oWorkbookPr->m_oCodeName = m_oBufferedStream.GetString4(length);
+	}
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;

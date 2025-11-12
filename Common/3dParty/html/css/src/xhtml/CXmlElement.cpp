@@ -473,6 +473,12 @@ std::wstring CXmlElement::ConvertRStyle(bool bIsLite) const
 				sRStyle += L"<w:kern w:val=\"" + oItem.second + L"\"/>";
 				break;
 			}
+			case CSSProperties::RunnerProperties::R_Vanish:
+			{
+				if (oItem.second == L"true")
+					sRStyle += L"<w:vanish/>";
+				break;
+			}
 			default:
 				break;
 		}

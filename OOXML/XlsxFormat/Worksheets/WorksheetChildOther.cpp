@@ -3466,7 +3466,10 @@ namespace OOX
 		}
 		void CRowColBreaks::toXML(NSStringUtils::CStringBuilder& writer) const
 		{
-			toXML2(writer, L"rowBreaks");
+			if(m_fRowBreak)
+				toXML2(writer, L"rowBreaks");
+			else
+				toXML2(writer, L"colBreaks");
 		}
 		void CRowColBreaks::toXML2(NSStringUtils::CStringBuilder& writer, const std::wstring& sName) const
 		{

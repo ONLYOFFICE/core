@@ -9,7 +9,7 @@ namespace SVG
 
 	ObjectType CStopElement::GetType() const
 	{
-		return AppliedObject;
+		return DataObject;
 	}
 
 	SvgDigit CStopElement::GetOffset() const
@@ -62,16 +62,7 @@ namespace SVG
 			return;
 
 		WHILE_READ_NEXT_NODE_WITH_ONE_NAME(oReader, "stop")
-		{
-			CStopElement *pStopElement = new CStopElement(oReader);
-
-			if (NULL == pStopElement)
-				continue;
-
-			pSvgFile->GetSvgCalculator()->SetData(pStopElement);
-
-			AddObject(pStopElement);
-		}
+			AddObject(CObject::Create<CStopElement>(oReader, pSvgFile));
 		END_WHILE
 	}
 

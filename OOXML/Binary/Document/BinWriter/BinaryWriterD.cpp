@@ -3929,7 +3929,7 @@ void BinaryDocumentTableWriter::WriteParapraph(OOX::Logic::CParagraph& par, OOX:
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerParType::ParaID);
 		nCurPos = m_oBcw.WriteItemWithLengthStart();
-		m_oBcw.m_oStream.WriteLONG64(par.m_oParaId->GetValue());
+		m_oBcw.m_oStream.WriteULONG(par.m_oParaId->GetValue());
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}	
 	if (par.m_oTextId.IsInit())
@@ -7293,6 +7293,18 @@ void BinaryDocumentTableWriter::WriteDocPr(const PPTX::Logic::CNvPr& oDocPr)
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerDocPr::Form);
 		m_oBcw.m_oStream.WriteBOOL(oDocPr.form.get());
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	if (oDocPr.hlinkClick.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerDocPr::HlinkClick);
+		m_oBcw.m_oStream.WriteRecord2(0, oDocPr.hlinkClick);
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	if (oDocPr.hlinkHover.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerDocPr::HlinkHover);
+		m_oBcw.m_oStream.WriteRecord2(0, oDocPr.hlinkHover);
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}
 }

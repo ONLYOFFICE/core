@@ -2,22 +2,23 @@
 
 namespace SVG 
 {
-	CGlyph::CGlyph(CSvgReader& oReader)
+	CGlyph::CGlyph(CSvgReader& oReader, CSvgFile* pFile)
 		: CPath(oReader)
-	{
-		START_READ_ATTRIBUTES(oReader)
-		{
-			if ("unicode" == sAttributeName)
-			{
-				const std::wstring wsUnicode{oReader.GetText()};
+	{}
 
-				if (!wsUnicode.empty())
-					m_wchUnicode = wsUnicode[0];
-			}
-			else if ("horiz-adv-x" == sAttributeName)
-				m_oHorizAdvX.SetValue(oReader.GetText());
+	void CGlyph::SetAttribute(const std::string& sName, CSvgReader& oReader)
+	{
+		if ("unicode" == sName)
+		{
+			const std::wstring wsUnicode{oReader.GetText()};
+
+			if (!wsUnicode.empty())
+				m_wchUnicode = wsUnicode[0];
 		}
-		END_READ_ATTRIBUTES(oReader)
+		else if ("horiz-adv-x" == sName)
+			m_oHorizAdvX.SetValue(oReader.GetText());
+		else
+			CPath::SetAttribute(sName, oReader);
 	}
 
 	wchar_t CGlyph::GetUnicode() const
@@ -28,10 +29,10 @@ namespace SVG
 	CFontFace::CFontFace(CSvgReader& oReader)
 	{}
 
-	CFont::CFont(CSvgReader& oReader)
+	CFont::CFont(CSvgReader& oReader, CSvgFile* pFile)
 		: CAppliedObject(oReader), m_pMissingGlyph(NULL)
 	{
-		ParseGlyphs(oReader);
+		ParseGlyphs(oReader, pFile);
 	}
 
 	CFont::~CFont()
@@ -95,7 +96,7 @@ namespace SVG
 		{ \
 			oMatrix.Scale(1. / dGlyphScale, -1. / dGlyphScale); \
 			pRenderer->SetTransform(oMatrix.sx(), oMatrix.shy(), oMatrix.shx(), oMatrix.sy(), oMatrix.tx(), oMatrix.ty()); \
-		} \
+		}
 
 		for (wchar_t wchGlyph : wsText)
 		{
@@ -128,13 +129,13 @@ namespace SVG
 		return true;
 	}
 
-	void CFont::ParseGlyphs(CSvgReader& oReader)
+	void CFont::ParseGlyphs(CSvgReader& oReader, CSvgFile* pFile)
 	{
 		WHILE_READ_NEXT_NODE_WITH_NAME(oReader)
 		{
 			if ("glyph" == sNodeName)
 			{
-				CGlyph *pGlyph = new CGlyph(oReader);
+				CGlyph *pGlyph = CObject::Create<CGlyph>(oReader, pFile, pFile);
 
 				if (NULL == pGlyph)
 					continue;

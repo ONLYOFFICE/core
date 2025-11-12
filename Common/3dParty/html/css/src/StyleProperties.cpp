@@ -1483,6 +1483,21 @@ namespace NSCSS
 		       (m_eWhiteSpace.Empty() || m_eWhiteSpace == EWhiteSpace::Normal);
 	}
 
+	void CDisplay::Clear()
+	{
+		m_oX.Clear();
+		m_oY.Clear();
+		m_oWidth.Clear();
+		m_oHeight.Clear();
+
+		m_oHAlign.Clear();
+		m_oVAlign.Clear();
+
+		m_oDisplay.Clear();
+
+		m_eWhiteSpace.Clear();
+	}
+
 	CDisplay &CDisplay::operator+=(const CDisplay &oDisplay)
 	{
 		m_oX          += oDisplay.m_oX;

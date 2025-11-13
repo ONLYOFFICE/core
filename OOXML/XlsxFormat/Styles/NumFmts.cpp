@@ -234,6 +234,8 @@ namespace OOX
 			std::vector<XLS::BaseObjectPtr> fmtVector;
 			for(auto i:m_arrItems)
 			{
+				if(i->m_oNumFmtId.IsInit() && i->m_oNumFmtId->m_eValue < 164)
+					continue;
 				fmtVector.push_back(i->toXLS());
 			}
 			return fmtVector;

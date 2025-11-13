@@ -2028,7 +2028,7 @@ void Gfx::doPatternImageMask(Object *ref, Stream *str, int width, int height,
 			     GBool invert, GBool inlineImg, GBool interpolate) {
   saveState();
 
-  out->setSoftMaskFromImageMask(state, ref, str,
+  out->setSoftMaskFromImageMask(state, this, ref, str,
 				width, height, invert, inlineImg, interpolate);
 
   state->clearPath();
@@ -4304,7 +4304,7 @@ GBool Gfx::doImage(Object *ref, Stream *str, GBool inlineImg) {
 	doPatternImageMask(ref, str, width, height, invert, inlineImg,
 			   interpolate);
       } else {
-	out->drawImageMask(state, ref, str, width, height, invert, inlineImg,
+	out->drawImageMask(state, this, ref, str, width, height, invert, inlineImg,
 			   interpolate);
       }
     }
@@ -4646,7 +4646,7 @@ GBool Gfx::doImage(Object *ref, Stream *str, GBool inlineImg) {
     } else {
       if (haveSoftMask) {
 	dict->lookupNF("Mask", &maskRef);
-	out->drawSoftMaskedImage(state, ref, str, width, height, colorMap,
+	out->drawSoftMaskedImage(state, this, ref, str, width, height, colorMap,
 				 &maskRef, maskStr, maskWidth, maskHeight,
 				 maskColorMap,
 				 haveMatte ? matte : (double *)NULL,
@@ -4655,12 +4655,12 @@ GBool Gfx::doImage(Object *ref, Stream *str, GBool inlineImg) {
 	delete maskColorMap;
       } else if (haveExplicitMask) {
 	dict->lookupNF("Mask", &maskRef);
-	out->drawMaskedImage(state, ref, str, width, height, colorMap,
+	out->drawMaskedImage(state, this, ref, str, width, height, colorMap,
 			     &maskRef, maskStr, maskWidth, maskHeight,
 			     maskInvert, interpolate);
 	maskRef.free();
       } else {
-	out->drawImage(state, ref, str, width, height, colorMap,
+	out->drawImage(state, this, ref, str, width, height, colorMap,
 		       haveColorKeyMask ? maskColors : (int *)NULL, inlineImg,
 		       interpolate);
       }
@@ -4930,6 +4930,12 @@ void Gfx::drawForm(Object *strRef, Dict *resDict,
 
 void Gfx::takeContentStreamStack(Gfx *oldGfx) {
   contentStreamStack->append(oldGfx->contentStreamStack);
+}
+
+Object* Gfx::getTopContentStreamStack() {
+	if (!contentStreamStack->getLength())
+		return NULL;
+	return (Object*)contentStreamStack->get(contentStreamStack->getLength() - 1);
 }
 
 void Gfx::endOfPage() {

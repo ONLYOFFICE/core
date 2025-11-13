@@ -1696,6 +1696,7 @@ namespace PdfReader
 		m_pRendererOut->NewPDF(gfx->getDoc()->getXRef());
 
 		Gfx* m_gfx = new Gfx(gfx->getDoc(), m_pRendererOut, -1, pResourcesDict, dDpiX, dDpiY, &box, NULL, 0);
+		m_gfx->takeContentStreamStack(gfx);
 		m_gfx->display(pStream);
 
 		pFrame->ClearNoAttack();
@@ -2707,7 +2708,7 @@ namespace PdfReader
 			RELEASEOBJECT(pCommand);
 		}
 	}
-	void RendererOutputDev::drawImageMask(GfxState* pGState, Object* pRef, Stream* pStream, int nWidth, int nHeight, GBool bInvert, GBool bInlineImage, GBool interpolate)
+	void RendererOutputDev::drawImageMask(GfxState* pGState, Gfx *gfx, Object* pRef, Stream* pStream, int nWidth, int nHeight, GBool bInvert, GBool bInlineImage, GBool interpolate)
 	{
 		if (m_bDrawOnlyText || pGState->getFillColorSpace()->isNonMarking())
 			return;
@@ -2783,7 +2784,7 @@ namespace PdfReader
 		DoTransform(arrMatrix, &dShiftX, &dShiftY, true);
 		m_pRenderer->DrawImage(&oImage, dShiftX, dShiftY, PDFCoordsToMM(1), PDFCoordsToMM(1));
 	}
-	void RendererOutputDev::setSoftMaskFromImageMask(GfxState* pGState, Object* pRef, Stream* pStream, int nWidth, int nHeight, GBool bInvert, GBool bInlineImage, GBool interpolate)
+	void RendererOutputDev::setSoftMaskFromImageMask(GfxState* pGState, Gfx *gfx, Object* pRef, Stream* pStream, int nWidth, int nHeight, GBool bInvert, GBool bInlineImage, GBool interpolate)
 	{
 		if (m_bDrawOnlyText || pGState->getFillColorSpace()->isNonMarking())
 			return;
@@ -2924,7 +2925,7 @@ namespace PdfReader
 		RELEASEARRAYOBJECTS(pBuffer);
 		return false;
 	}
-	void RendererOutputDev::drawImage(GfxState* pGState, Object* pRef, Stream* pStream, int nWidth, int nHeight, GfxImageColorMap* pColorMap, int* pMaskColors, GBool bInlineImg, GBool interpolate)
+	void RendererOutputDev::drawImage(GfxState* pGState, Gfx *gfx, Object* pRef, Stream* pStream, int nWidth, int nHeight, GfxImageColorMap* pColorMap, int* pMaskColors, GBool bInlineImg, GBool interpolate)
 	{
 		if (m_bDrawOnlyText)
 			return;
@@ -3031,13 +3032,13 @@ namespace PdfReader
 		DoTransform(arrMatrix, &dShiftX, &dShiftY, true);
 		m_pRenderer->DrawImage(&oImage, dShiftX, dShiftY, PDFCoordsToMM(1), PDFCoordsToMM(1));
 	}
-	void RendererOutputDev::drawMaskedImage(GfxState* pGState, Object* pRef, Stream* pStream, int nWidth, int nHeight, GfxImageColorMap* pColorMap, Object* pStreamRef, Stream* pMaskStream, int nMaskWidth, int nMaskHeight, GBool bMaskInvert, GBool interpolate)
+	void RendererOutputDev::drawMaskedImage(GfxState* pGState, Gfx *gfx, Object* pRef, Stream* pStream, int nWidth, int nHeight, GfxImageColorMap* pColorMap, Object* pStreamRef, Stream* pMaskStream, int nMaskWidth, int nMaskHeight, GBool bMaskInvert, GBool interpolate)
 	{
 		if (m_bDrawOnlyText)
 			return;
 
 		if (nMaskWidth <= 0 || nMaskHeight <= 0)
-			drawImage(pGState, pRef, pStream, nWidth, nHeight, pColorMap, NULL, false, interpolate);
+			drawImage(pGState, gfx, pRef, pStream, nWidth, nHeight, pColorMap, NULL, false, interpolate);
 
 		if (nMaskWidth > nWidth || nMaskHeight > nHeight)
 		{
@@ -3054,7 +3055,7 @@ namespace PdfReader
 			maskDecode.arrayAdd(&decodeHigh);
 			maskColorMap = new GfxImageColorMap(1, &maskDecode, new GfxDeviceGrayColorSpace());
 			maskDecode.free();
-			drawSoftMaskedImage(pGState, pRef, pStream, nWidth, nHeight,
+			drawSoftMaskedImage(pGState, gfx, pRef, pStream, nWidth, nHeight,
 								pColorMap, pStreamRef, pMaskStream, nMaskWidth, nMaskHeight, maskColorMap, NULL, interpolate);
 			delete maskColorMap;
 			return;
@@ -3176,7 +3177,7 @@ namespace PdfReader
 		DoTransform(arrMatrix, &dShiftX, &dShiftY, true);
 		m_pRenderer->DrawImage(&oImage, dShiftX, dShiftY, PDFCoordsToMM(1), PDFCoordsToMM(1));
 	}
-	void RendererOutputDev::drawSoftMaskedImage(GfxState* pGState, Object* pRef, Stream* pStream, int nWidth, int nHeight, GfxImageColorMap* pColorMap, Object* maskRef, Stream* pMaskStream, int nMaskWidth, int nMaskHeight, GfxImageColorMap* pMaskColorMap, double* pMatteColor, GBool interpolate)
+	void RendererOutputDev::drawSoftMaskedImage(GfxState* pGState, Gfx *gfx, Object* pRef, Stream* pStream, int nWidth, int nHeight, GfxImageColorMap* pColorMap, Object* maskRef, Stream* pMaskStream, int nMaskWidth, int nMaskHeight, GfxImageColorMap* pMaskColorMap, double* pMatteColor, GBool interpolate)
 	{
 		if (m_bDrawOnlyText)
 			return;

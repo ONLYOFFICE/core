@@ -201,23 +201,23 @@ public:
   virtual void setShading(GfxState *state, const char* name) {}
 
   //----- image drawing
-  virtual void drawImageMask(GfxState *state, Object *ref, Stream *str,
+  virtual void drawImageMask(GfxState *state, Gfx *gfx, Object *ref, Stream *str,
 			     int width, int height, GBool invert,
 			     GBool inlineImg, GBool interpolate);
-  virtual void setSoftMaskFromImageMask(GfxState *state,
+  virtual void setSoftMaskFromImageMask(GfxState *state, Gfx *gfx,
 					Object *ref, Stream *str,
 					int width, int height, GBool invert,
 					GBool inlineImg, GBool interpolate);
-  virtual void drawImage(GfxState *state, Object *ref, Stream *str,
+  virtual void drawImage(GfxState *state, Gfx *gfx, Object *ref, Stream *str,
 			 int width, int height, GfxImageColorMap *colorMap,
 			 int *maskColors, GBool inlineImg, GBool interpolate);
-  virtual void drawMaskedImage(GfxState *state, Object *ref, Stream *str,
+  virtual void drawMaskedImage(GfxState *state, Gfx *gfx, Object *ref, Stream *str,
 			       int width, int height,
 			       GfxImageColorMap *colorMap,
 			       Object *maskRef, Stream *maskStr,
 			       int maskWidth, int maskHeight,
 			       GBool maskInvert, GBool interpolate);
-  virtual void drawSoftMaskedImage(GfxState *state, Object *ref, Stream *str,
+  virtual void drawSoftMaskedImage(GfxState *state, Gfx *gfx, Object *ref, Stream *str,
 				   int width, int height,
 				   GfxImageColorMap *colorMap,
 				   Object *maskRef, Stream *maskStr,

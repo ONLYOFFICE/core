@@ -343,22 +343,6 @@ void WriteEmptyParagraph(NSStringUtils::CStringBuilder* pXml, bool bVahish = fal
 		pXml->WriteString(L"</w:pPr></w:p>");
 }
 
-void WriteLine(NSStringUtils::CStringBuilder* pXml, const std::wstring& wsAlign, const std::wstring& wsColor, bool bShade, double dSize, double dWidth)
-{
-	if (dWidth < 0)
-		dWidth = -dWidth;
-
-	if (dSize < 0)
-		dSize = -dSize;
-
-	if (dWidth > 100)
-		dWidth = 0;
-
-	pXml->WriteNodeBegin(L"w:pict");
-	pXml->WriteString(L"<v:rect style=\"height:" + std::to_wstring(dSize) + L"pt\"" + ((0. != dWidth) ? (L" o:hrpct=\"" + std::to_wstring((int)(10. * dWidth)) + L"\"") : L"") + L" o:hralign=\"" + wsAlign + L"\" o:hrstd=\"t\" " + ((bShade) ? L"o:hrnoshade=\"t\" " : L"") + L"o:hr=\"t\" fillcolor=\"#" + wsColor + L"\" stroked=\"f\"/>");
-	pXml->WriteNodeEnd(L"w:pict");
-}
-
 bool ElementInTable(const std::vector<NSCSS::CNode>& arSelectors)
 {
 	return arSelectors.crend() != std::find_if(arSelectors.crbegin(), arSelectors.crend(), [](const NSCSS::CNode& oNode) { return L"table" == oNode.m_wsName; });
@@ -1482,6 +1466,7 @@ private:
 	int m_nHyperlinkId; // ID ссылки
 	int m_nNumberingId; // ID списка
 	int m_nId;          // ID остальные элементы
+	int m_nShapeId;     // Id shape's
 
 	NSStringUtils::CStringBuilder m_oStylesXml;   // styles.xml
 	NSStringUtils::CStringBuilder m_oDocXmlRels;  // document.xml.rels
@@ -1516,7 +1501,7 @@ private:
 public:
 
 	CHtmlFile2_Private() 
-		: m_nFootnoteId(1), m_nHyperlinkId(1), m_nNumberingId(1), m_nId(1), m_pFonts(NULL)
+		: m_nFootnoteId(1), m_nHyperlinkId(1), m_nNumberingId(1), m_nId(1), m_nShapeId(1), m_pFonts(NULL)
 	{
 		m_oPageData.SetWidth (DEFAULT_PAGE_WIDTH,  NSCSS::UnitMeasure::Twips, 0, true);
 		m_oPageData.SetHeight(DEFAULT_PAGE_HEIGHT, NSCSS::UnitMeasure::Twips, 0, true);
@@ -2892,68 +2877,100 @@ private:
 		if (NULL == pXml)
 			return false;
 
-		bool bPrint = true;
-
 		for (const NSCSS::CNode& item : arSelectors)
 		{
 			if (item.m_wsName == L"div" && item.m_wsStyle == L"mso-element:footnote-list")
-			{
-				bPrint = false;
-				break;
-			}
+				return false;
 		}
 
-		if (bPrint)
+		NSCSS::NSProperties::CDigit oSize, oWidth;
+		NSCSS::NSProperties::CColor oColor;
+		bool bShade = true;
+		std::wstring wsAlign{L"center"};
+
+		if (m_oLightReader.MoveToFirstAttribute())
 		{
-			NSCSS::NSProperties::CDigit oSize, oWidth;
-			NSCSS::NSProperties::CColor oColor;
-			bool bShade = false;
-			std::wstring wsAlign{L"center"};
-
-			if (m_oLightReader.MoveToFirstAttribute())
+			std::wstring wsAttributeName;
+			do
 			{
-				std::wstring wsAttributeName;
-				do
+				wsAttributeName =  m_oLightReader.GetName();
+
+				if (L"align" == wsAttributeName)
 				{
-					wsAttributeName =  m_oLightReader.GetName();
+					const std::wstring wsValue{m_oLightReader.GetText()};
 
-					if (L"align" == wsAttributeName)
-					{
-						const std::wstring wsValue{m_oLightReader.GetText()};
+					if (NSStringFinder::Equals(L"left", wsValue))
+						wsAlign = L"left";
+					else if (NSStringFinder::Equals(L"right", wsValue))
+						wsAlign = L"right";
+					else if (NSStringFinder::Equals(L"center", wsValue))
+						wsAlign = L"center";
+				}
+				if (L"color" == wsAttributeName)
+					oColor.SetValue(m_oLightReader.GetText());
+				else if (L"noshade" == wsAttributeName)
+					bShade = false;
+				else if (L"size" == wsAttributeName)
+					oSize.SetValue(m_oLightReader.GetText());
+				else if (L"width" == wsAttributeName)
+					oWidth.SetValue(m_oLightReader.GetText());
+			} while (m_oLightReader.MoveToNextAttribute());
 
-						if (NSStringFinder::Equals(L"left", wsValue))
-							wsAlign = L"left";
-						else if (NSStringFinder::Equals(L"right", wsValue))
-							wsAlign = L"right";
-						else if (NSStringFinder::Equals(L"center", wsValue))
-							wsAlign = L"center";
-					}
-					if (L"color" == wsAttributeName)
-						oColor.SetValue(m_oLightReader.GetText());
-					else if (L"noshade" == wsAttributeName)
-						bShade = true;
-					else if (L"size" == wsAttributeName)
-						oSize.SetValue(m_oLightReader.GetText());
-					else if (L"width" == wsAttributeName)
-						oWidth.SetValue(m_oLightReader.GetText());
-				} while (m_oLightReader.MoveToNextAttribute());
-
-				m_oLightReader.MoveToElement();
-			}
-
-			const bool bOpenedP = OpenP(pXml);
-
-			OpenR(pXml);
-			WriteLine(pXml, wsAlign, (!oColor.Empty()) ? oColor.ToWString() : L"a0a0a0", bShade, (!oSize.Empty()) ? oSize.ToDouble(NSCSS::Point) : 1.5, (NSCSS::UnitMeasure::Percent == oWidth.GetUnitMeasure()) ? oWidth.ToDouble() : 0);
-			CloseR(pXml);
-
-			if (bOpenedP)
-				CloseP(pXml, arSelectors);
-
-			return true;
+			m_oLightReader.MoveToElement();
 		}
 
-		return false;
+		OpenP(pXml);
+
+		pXml->WriteString(L"<w:pPr><w:jc w:val=\"" + wsAlign + L"\"/></w:pPr>");
+
+		OpenR(pXml);
+
+		const unsigned int unPageWidth{static_cast<unsigned int>((m_oPageData.GetWidth().ToDouble(NSCSS::Inch) - m_oPageData.GetMargin().GetLeft().ToDouble(NSCSS::Inch) - m_oPageData.GetMargin().GetRight().ToDouble(NSCSS::Inch)) * 914400.)};
+
+		std::wstring wsWidth;
+
+		// width измеряется в px или %
+		if (!oWidth.Empty())
+			wsWidth = std::to_wstring(static_cast<int>((NSCSS::UnitMeasure::Percent != oWidth.GetUnitMeasure()) ? (NSCSS::CUnitMeasureConverter::ConvertPx(oWidth.ToDouble(), NSCSS::Inch, 96) * 914400.) : oWidth.ToDouble(NSCSS::Inch, unPageWidth)));
+		else
+			wsWidth = std::to_wstring(unPageWidth);
+
+		std::wstring wsHeight{L"14288"};
+
+		// size измеряется только в px
+		if (!oSize.Empty())
+			wsHeight = std::to_wstring(static_cast<int>(NSCSS::CUnitMeasureConverter::ConvertPx(oSize.ToDouble(), NSCSS::Inch, 96) * 914400.));
+
+		pXml->WriteString(L"<w:rPr><w:noProof/></w:rPr>");
+		pXml->WriteString(L"<mc:AlternateContent><mc:Choice Requires=\"wps\"><w:drawing><wp:inline distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\">");
+		pXml->WriteString(L"<wp:extent cx=\"" + wsWidth + L"\" cy=\"0\"/>");
+		pXml->WriteString(L"<wp:effectExtent l=\"0\" t=\"0\" r=\"0\" b=\"0\"/>");
+		pXml->WriteString(L"<wp:docPr id=\"" + std::to_wstring(m_nShapeId) + L"\" name=\"Line " + std::to_wstring(m_nShapeId) + L"\"/>"
+		                   "<wp:cNvGraphicFramePr/>"
+		                   "<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">"
+		                       "<a:graphicData uri=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\">"
+		                           "<wps:wsp>"
+		                               "<wps:cNvSpPr/>"
+		                               "<wps:spPr>");
+		pXml->WriteString(L"<a:xfrm>"
+		                       "<a:off x=\"0\" y=\"0\"/>"
+		                       "<a:ext cx=\"" + wsWidth + L"\" cy=\"0\"/>"
+		                   "</a:xfrm>"
+		                   "<a:custGeom><a:pathLst><a:path>"
+		                       "<a:moveTo><a:pt x=\"0\" y=\"0\"/></a:moveTo>"
+		                       "<a:lnTo><a:pt x=\"" + wsWidth + L"\" y=\"0\"/></a:lnTo>"
+		                   "</a:path></a:pathLst></a:custGeom>"
+		                   "<a:ln w=\"" + wsHeight + L"\"><a:solidFill><a:srgbClr val=\"" + ((!oColor.Empty()) ? oColor.ToHEX() : L"808080") + L"\"/></a:solidFill></a:ln>");
+
+		if (bShade)
+			pXml->WriteString(L"<a:scene3d><a:camera prst=\"orthographicFront\"/><a:lightRig rig=\"threePt\" dir=\"t\"/></a:scene3d><a:sp3d><a:bevelT prst=\"angle\"/></a:sp3d>");
+
+		pXml->WriteString(L"</wps:spPr><wps:bodyPr/></wps:wsp></a:graphicData></a:graphic></wp:inline></w:drawing></mc:Choice></mc:AlternateContent>");
+
+		CloseP(pXml, arSelectors);
+
+		++m_nShapeId;
+		return true;
 	}
 
 	bool ReadPre(NSStringUtils::CStringBuilder* pXml, std::vector<NSCSS::CNode>& arSelectors, CTextSettings& oTS)

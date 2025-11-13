@@ -106,16 +106,16 @@ std::wstring process_border(border_style	& borderStyle,
     return res;
 }
 
-std::wstring pptx_process_margin(const _CP_OPT(length_or_percent) & margin, length::unit unit, double Mul, bool bLeft)
+std::wstring pptx_process_margin(const _CP_OPT(length_or_percent) & margin, length::unit unit, double Mul)
 {
     if (margin)
     {
         if (margin->get_type() == length_or_percent::Length)
         {
-            int val = ( bLeft && margin->get_length().get_unit() == length::unit::cm) ? (int)(0.57 * (0.5 + Mul * margin->get_length().get_value_unit(unit))) : (int)(0.5 + Mul * margin->get_length().get_value_unit(unit));
+            int val = (int)(0.5 + Mul * margin->get_length().get_value_unit(unit));
             return std::to_wstring( val );
         }
-        else
+         else
         {
         }       
     }
@@ -156,9 +156,9 @@ void paragraph_format_properties::xlsx_convert(std::wostream & strm, bool in_dra
 				// TODO auto indent
 				std::wstring w_left, w_right, w_firstLine;
 
-                w_left = pptx_process_margin(fo_margin_left_, length::emu, 1., false);
-                w_right = pptx_process_margin(fo_margin_right_, length::emu, 1., false);
-                w_firstLine = pptx_process_margin(fo_text_indent_,length::emu, 1., false);
+                w_left = pptx_process_margin(fo_margin_left_, length::emu, 1.);
+                w_right = pptx_process_margin(fo_margin_right_, length::emu, 1.);
+                w_firstLine = pptx_process_margin(fo_text_indent_,length::emu, 1.);
 
 				//if (w_left.empty())		w_left = L"0";
 				//if (w_right.empty())		w_right = L"0";
@@ -227,7 +227,7 @@ void paragraph_format_properties::xlsx_convert(std::wostream & strm, bool in_dra
 				{
 					if (fo_margin_top_->get_type() == length_or_percent::Length)
 					{
-                        std::wstring w_before = pptx_process_margin(fo_margin_top_, length::pt, 100.0, false);
+                        std::wstring w_before = pptx_process_margin(fo_margin_top_, length::pt, 100.0);
 						CP_XML_NODE(L"a:spcPts")
 						{
 							CP_XML_ATTR(L"val",w_before);
@@ -249,7 +249,7 @@ void paragraph_format_properties::xlsx_convert(std::wostream & strm, bool in_dra
 				{
 					if (fo_margin_bottom_->get_type() == length_or_percent::Length)
 					{
-                        std::wstring w_after = pptx_process_margin(fo_margin_bottom_, length::pt, 100.0, false);
+                        std::wstring w_after = pptx_process_margin(fo_margin_bottom_, length::pt, 100.0);
 						CP_XML_NODE(L"a:spcPts")
 						{
 							CP_XML_ATTR(L"val",w_after);
@@ -280,9 +280,9 @@ void paragraph_format_properties::pptx_convert(oox::pptx_conversion_context & Co
 		// TODO auto indent
 		std::wstring w_left, w_right, w_firstLine;
 
-        w_left = pptx_process_margin(fo_margin_left_, length::emu, 1., true);
-        w_right = pptx_process_margin(fo_margin_right_, length::emu, 1., false);
-        w_firstLine = pptx_process_margin(fo_text_indent_,length::emu, 1., false);
+        w_left = pptx_process_margin(fo_margin_left_, length::emu, 1.);
+        w_right = pptx_process_margin(fo_margin_right_, length::emu, 1.);
+        w_firstLine = pptx_process_margin(fo_text_indent_,length::emu, 1.);
 
 		//if (w_left.empty())			w_left = L"0";
 		//if (w_right.empty())		w_right = L"0";
@@ -481,7 +481,7 @@ void paragraph_format_properties::pptx_convert(oox::pptx_conversion_context & Co
 						}
 					}
 					
-                    std::wstring w_before = pptx_process_margin(margin_top, length::pt, 100.0, false);
+                    std::wstring w_before = pptx_process_margin(margin_top, length::pt, 100.0);
 					CP_XML_NODE(L"a:spcPts")
 					{
 						CP_XML_ATTR(L"val", w_before);
@@ -504,7 +504,7 @@ void paragraph_format_properties::pptx_convert(oox::pptx_conversion_context & Co
 			{
 				if (fo_margin_bottom_->get_type() == length_or_percent::Length)
 				{
-					std::wstring w_after = pptx_process_margin(fo_margin_bottom_, length::pt, 100.0, false);
+					std::wstring w_after = pptx_process_margin(fo_margin_bottom_, length::pt, 100.0);
 					CP_XML_NODE(L"a:spcPts")
 					{
 						CP_XML_ATTR(L"val", w_after);

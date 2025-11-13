@@ -203,12 +203,12 @@ core_win_64 {
 core_linux {
 	DEFINES += LINUX _LINUX
 
-    QMAKE_CUSTOM_SYSROOT = $$(QMAKE_CUSTOM_SYSROOT)
+	QMAKE_CUSTOM_SYSROOT = $$(QMAKE_CUSTOM_SYSROOT)
 	QMAKE_CUSTOM_SYSROOT_BIN = $$(QMAKE_CUSTOM_SYSROOT)/usr/bin/
 
-    core_linux_64 {
-	    !linux_arm64 { # x86_64
-		    QMAKE_CUSTOM_SYSROOT_LIB = $$(QMAKE_CUSTOM_SYSROOT)/usr/lib/x86_64-linux-gnu
+	core_linux_64 {
+		!linux_arm64 { # x86_64
+			QMAKE_CUSTOM_SYSROOT_LIB = $$(QMAKE_CUSTOM_SYSROOT)/usr/lib/x86_64-linux-gnu
 			!isEmpty(QMAKE_CUSTOM_SYSROOT) {
 			    message("using custom sysroot $$QMAKE_CUSTOM_SYSROOT")
 				QMAKE_CC          = $$join(QMAKE_CUSTOM_SYSROOT_BIN, , , "gcc")
@@ -217,7 +217,7 @@ core_linux {
 				QMAKE_LINK_SHLIB  = $$join(QMAKE_CUSTOM_SYSROOT_BIN, , , "g++")
 
                 QMAKE_CFLAGS      += --sysroot $$QMAKE_CUSTOM_SYSROOT
-				QMAKE_CXXFLAGS    += --sysroot $$QMAKE_CUSTOM_SYSROOT
+				QMAKE_CXXFLAGS    += --sysroot $$QMAKE_CUSTOM_SYSROOT -std=gnu++11
 				QMAKE_LFLAGS      += --sysroot $$QMAKE_CUSTOM_SYSROOT
 			}
 		}

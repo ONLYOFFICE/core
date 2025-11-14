@@ -159,7 +159,17 @@ void serialize_wrap(std::wostream & strm, _docx_drawing const & val)
 			case odf_types::style_wrap::None:
 				serialize_wrap_top_bottom(strm, val);
 				break;
-			case odf_types::style_wrap::Dynamic: //Présentation_de_tib.odt
+			case odf_types::style_wrap::Dynamic: 
+			{
+				//if (val.styleWrapContour && *val.styleWrapContour == false)
+				//{
+				//	CP_XML_NODE(L"wp:wrapTopAndBottom");
+				//}
+				//else
+				{
+					serialize_wrap_square(strm, val);
+				}
+			}break;
 			default:
 				CP_XML_NODE(L"wp:wrapTopAndBottom");
 				break;

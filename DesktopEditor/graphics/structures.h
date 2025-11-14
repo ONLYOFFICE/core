@@ -113,10 +113,10 @@ const long c_BrushTypeTensorCurveGradient = 6007;
 
 const long c_BrushTextureModeStretch = 0;
 const long c_BrushTextureModeTile = 1;
-const long c_BrushTextureModeTileCenter = 2;
-const long c_BrushTextureModeTileFlipX = 3;
-const long c_BrushTextureModeTileFlipY = 4;
-const long c_BrushTextureModeTileFlipXY = 5;
+const long c_BrushTextureModeTileFlipX = 2;
+const long c_BrushTextureModeTileFlipY = 3;
+const long c_BrushTextureModeTileFlipXY = 4;
+const long c_BrushTextureModeTileCenter = 5;
 // --------------------------------------------------------------
 
 namespace Aggplus { class CImage; }

@@ -59,6 +59,7 @@ public:
     _CP_OPT(odf_types::vertical_rel)	styleVerticalRel;
 
 	_CP_OPT(odf_types::style_wrap)		styleWrap;
+	_CP_OPT(bool)						styleWrapContour;
 
 	int number_wrapped_paragraphs;
 

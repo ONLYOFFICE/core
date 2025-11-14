@@ -221,8 +221,7 @@ BYTE* DecodeImageToGray(Stream* pStream, int nWidth, int nHeight, GfxImageColorM
 }
 BYTE* DecodeImageMaskToBits(Stream* pStream, int nWidth, int nHeight, GBool bInvert)
 {
-	int nRowSize = (nWidth + 7) / 8;
-	BYTE* pBits = new BYTE[nRowSize * nHeight];
+	BYTE* pBits = new BYTE[nWidth * nHeight];
 	if (!pBits)
 		return nullptr;
 
@@ -234,16 +233,16 @@ BYTE* DecodeImageMaskToBits(Stream* pStream, int nWidth, int nHeight, GBool bInv
 		BYTE* pLine = pImageStream->getLine();
 		if (!pLine)
 		{
-			memset(pBits + y * nRowSize, bInvert ? 0xFF : 0x00, nRowSize);
+			memset(pBits + y * nWidth, bInvert ? 1 : 0, nWidth);
 			continue;
 		}
 
-		memcpy(pBits + y * nRowSize, pLine, nRowSize);
-
-		if (bInvert)
+		for (int x = 0; x < nWidth; ++x)
 		{
-			for (int x = 0; x < nRowSize; ++x)
-				pBits[y * nRowSize + x] = ~pBits[y * nRowSize + x];
+			BYTE pixel = pLine[x];
+			if (bInvert)
+				pixel = pixel ? 0 : 1;
+			pBits[y * nWidth + x] = pixel;
 		}
 	}
 
@@ -334,9 +333,6 @@ void SaveGrayToSMask(CDocument* pDocument, CDictObject* pDictObj, BYTE* pMaskGra
 }
 void SaveImageMaskToStream(CDocument* pDocument, CDictObject* pDictObj, BYTE* pMaskBits, int nWidth, int nHeight)
 {
-	int nRowSize = (nWidth + 7) / 8;
-	int nTotalSize = nRowSize * nHeight;
-
 	pDictObj->ClearStream();
 	pDictObj->SetFilter(STREAM_FILTER_FLATE_DECODE);
 	CObjectBase* pLength = pDictObj->Get("Length");
@@ -356,13 +352,33 @@ void SaveImageMaskToStream(CDocument* pDocument, CDictObject* pDictObj, BYTE* pM
 	pDictObj->Remove("DecodeParms");
 	pDictObj->Remove("ColorSpace");
 
+	int nRowSize = (nWidth + 7) / 8;
+	int nTotalSize = nRowSize * nHeight;
+	BYTE* pPackedBits = new BYTE[nTotalSize];
+	memset(pPackedBits, 0, nTotalSize);
+
+	for (int y = 0; y < nHeight; ++y)
+	{
+		for (int x = 0; x < nWidth; ++x)
+		{
+			if (pMaskBits[y * nWidth + x])
+			{
+				int byteIndex = y * nRowSize + (x / 8);
+				int bitIndex = 7 - (x % 8);
+				pPackedBits[byteIndex] |= (1 << bitIndex);
+			}
+		}
+	}
+
 	CStream* pStream = pDictObj->GetStream();
 	if (!pStream)
 	{
 		pStream = new PdfWriter::CMemoryStream(nTotalSize);
 		pDictObj->SetStream(pStream);
 	}
-	pStream->Write(pMaskBits, nTotalSize);
+	pStream->Write(pPackedBits, nTotalSize);
+
+	delete[] pPackedBits;
 }
 void ApplyRedactToRGBA(const std::vector<double>& arrQuadPoints, BYTE* pImage, int nWidth, int nHeight, const std::vector<CPoint>& imagePolygon)
 {
@@ -458,7 +474,6 @@ void ApplyRedactToGray(const std::vector<double>& arrQuadPoints, BYTE* pImage, i
 			maskSpaceRedacts.push_back(maskSpaceRedact);
 	}
 
-	// Закрашиваем области редоктирования в маске (делаем полностью прозрачными)
 	for (const auto& redact : maskSpaceRedacts)
 	{
 		// Находим bounding box
@@ -476,72 +491,10 @@ void ApplyRedactToGray(const std::vector<double>& arrQuadPoints, BYTE* pImage, i
 		int endX = std::min(nWidth  - 1, (int)maxX);
 		int endY = std::min(nHeight - 1, (int)maxY);
 
-		// Закрашиваем область (0 = полностью прозрачный в маске)
 		for (int y = startY; y <= endY; ++y)
 			for (int x = startX; x <= endX; ++x)
 				if (PdfWriter::isPointInQuad(x, y, redact[0].x, redact[0].y, redact[1].x, redact[1].y, redact[2].x, redact[2].y, redact[3].x, redact[3].y))
-					pImage[(nHeight - 1 - y) * nWidth + x] = 0;
-	}
-}
-void ApplyRedactToImageMask(const std::vector<double>& arrQuadPoints, BYTE* pMaskBits, int nWidth, int nHeight, const std::vector<CPoint>& imagePolygon)
-{
-	int nRowSize = (nWidth + 7) / 8;
-
-	// Преобразуем области редоктирования в координаты маски
-	std::vector<std::vector<CPoint>> maskSpaceRedacts;
-
-	for (int j = 0; j < arrQuadPoints.size(); j += 8)
-	{
-		std::vector<CPoint> redactPolygon =
-		{
-			CPoint(arrQuadPoints[j + 0], arrQuadPoints[j + 1]),
-			CPoint(arrQuadPoints[j + 2], arrQuadPoints[j + 3]),
-			CPoint(arrQuadPoints[j + 4], arrQuadPoints[j + 5]),
-			CPoint(arrQuadPoints[j + 6], arrQuadPoints[j + 7])
-		};
-
-		// Преобразуем в координаты маски
-		std::vector<CPoint> maskSpaceRedact;
-		for (const CPoint& point : redactPolygon)
-		{
-			double x = (point.x - imagePolygon[0].x) / (imagePolygon[2].x - imagePolygon[0].x) * nWidth;
-			double y = (point.y - imagePolygon[0].y) / (imagePolygon[2].y - imagePolygon[0].y) * nHeight;
-			maskSpaceRedact.push_back(CPoint(x, y));
-		}
-
-		if (PdfWriter::SAT(maskSpaceRedact, {CPoint(0, 0), CPoint(0, nHeight), CPoint(nWidth, nHeight), CPoint(nWidth, 0)}))
-			maskSpaceRedacts.push_back(maskSpaceRedact);
-	}
-
-	for (const auto& redact : maskSpaceRedacts)
-	{
-		double minX = nWidth, minY = nHeight, maxX = 0, maxY = 0;
-		for (const CPoint& p : redact)
-		{
-			if (p.x < minX) minX = p.x;
-			if (p.y < minY) minY = p.y;
-			if (p.x > maxX) maxX = p.x;
-			if (p.y > maxY) maxY = p.y;
-		}
-
-		int startX = std::max(0, (int)minX);
-		int startY = std::max(0, (int)minY);
-		int endX = std::min(nWidth - 1, (int)maxX);
-		int endY = std::min(nHeight - 1, (int)maxY);
-
-		for (int y = startY; y <= endY; ++y)
-		{
-			for (int x = startX; x <= endX; ++x)
-			{
-				if (PdfWriter::isPointInQuad(x, y, redact[0].x, redact[0].y, redact[1].x, redact[1].y, redact[2].x, redact[2].y, redact[3].x, redact[3].y))
-				{
-					int byteIndex = y * nRowSize + (x / 8);
-					int bitIndex = 7 - (x % 7); // Биты хранятся слева направо
-
-					pMaskBits[byteIndex] &= ~(1 << bitIndex);
-				}
-			}
-		}
+					pImage[(nHeight - 1 - y) * nWidth + x] = 1;
 	}
 }
 
@@ -1130,26 +1083,9 @@ void RedactOutputDev::drawImageMask(GfxState *pGState, Gfx *gfx, Object *pRef, S
 		return;
 
 	std::vector<CPoint> imagePolygon = GetImagePolygon(m_arrMatrix);
-	if (!CheckImageRedact(m_arrQuadPoints, imagePolygon))
+	bool bHasRedact = CheckImageRedact(m_arrQuadPoints, imagePolygon);
+	if (!bHasRedact && pRef && !bInlineImage)
 	{
-		if (!pRef || bInlineImage)
-		{
-			PdfWriter::CDictObject* pDictObj = (PdfWriter::CDictObject*)pObj;
-			CStream* pS = pDictObj->GetStream();
-			if (!pS)
-			{
-				pS = new PdfWriter::CMemoryStream(0);
-				pDictObj->SetStream(pS);
-			}
-
-			pStream->reset();
-			int nChar = pStream->getChar();
-			while (nChar != EOF)
-			{
-				pS->WriteChar(nChar);
-				nChar = pStream->getChar();
-			}
-		}
 		DrawXObject(m_sImageName.c_str());
 		return;
 	}
@@ -1158,7 +1094,9 @@ void RedactOutputDev::drawImageMask(GfxState *pGState, Gfx *gfx, Object *pRef, S
 	if (!pBufferPtr)
 		return;
 
-	ApplyRedactToImageMask(m_arrQuadPoints, pBufferPtr, nWidth, nHeight, imagePolygon);
+	if (bHasRedact)
+		ApplyRedactToGray(m_arrQuadPoints, pBufferPtr, nWidth, nHeight, imagePolygon);
+
 	SaveImageMaskToStream(pDocument, (CDictObject*)pObj, pBufferPtr, nWidth, nHeight);
 	delete[] pBufferPtr;
 
@@ -1192,26 +1130,9 @@ void RedactOutputDev::drawImage(GfxState *pGState, Gfx *gfx, Object *pRef, Strea
 		return;
 
 	std::vector<CPoint> imagePolygon = GetImagePolygon(m_arrMatrix);
-	if (!CheckImageRedact(m_arrQuadPoints, imagePolygon))
+	bool bHasRedact = CheckImageRedact(m_arrQuadPoints, imagePolygon);
+	if (!bHasRedact && pRef && !bInlineImg)
 	{
-		if (!pRef || bInlineImg)
-		{
-			PdfWriter::CDictObject* pDictObj = (PdfWriter::CDictObject*)pObj;
-			CStream* pS = pDictObj->GetStream();
-			if (!pS)
-			{
-				pS = new PdfWriter::CMemoryStream(0);
-				pDictObj->SetStream(pS);
-			}
-
-			pStream->reset();
-			int nChar = pStream->getChar();
-			while (nChar != EOF)
-			{
-				pS->WriteChar(nChar);
-				nChar = pStream->getChar();
-			}
-		}
 		DrawXObject(m_sImageName.c_str());
 		return;
 	}
@@ -1220,7 +1141,9 @@ void RedactOutputDev::drawImage(GfxState *pGState, Gfx *gfx, Object *pRef, Strea
 	if (!pBufferPtr)
 		return;
 
-	ApplyRedactToRGBA(m_arrQuadPoints, pBufferPtr, nWidth, nHeight, imagePolygon);
+	if (bHasRedact)
+		ApplyRedactToRGBA(m_arrQuadPoints, pBufferPtr, nWidth, nHeight, imagePolygon);
+
 	SaveRGBAToStream(pDocument, (CDictObject*)pObj, pBufferPtr, nWidth, nHeight);
 
 	DrawXObject(m_sImageName.c_str());
@@ -1261,24 +1184,6 @@ void RedactOutputDev::drawSoftMaskedImage(GfxState *pGState, Gfx *gfx, Object *p
 	std::vector<CPoint> imagePolygon = GetImagePolygon(m_arrMatrix);
 	if (!CheckImageRedact(m_arrQuadPoints, imagePolygon))
 	{
-		if (!pRef)
-		{
-			PdfWriter::CDictObject* pDictObj = (PdfWriter::CDictObject*)pObj;
-			CStream* pS = pDictObj->GetStream();
-			if (!pS)
-			{
-				pS = new PdfWriter::CMemoryStream(0);
-				pDictObj->SetStream(pS);
-			}
-
-			pStream->reset();
-			int nChar = pStream->getChar();
-			while (nChar != EOF)
-			{
-				pS->WriteChar(nChar);
-				nChar = pStream->getChar();
-			}
-		}
 		DrawXObject(m_sImageName.c_str());
 		return;
 	}
@@ -1491,12 +1396,13 @@ void RedactOutputDev::drawForm(GfxState *pGState, Gfx *gfx, Ref id, const char* 
 
 	RELEASEOBJECT(_gfx);
 	RELEASEOBJECT(pFormOutputDev);
-	RELEASEOBJECT(pFakePage);
 	resourcesObj.free(); oForm.free();
 
 	m_pRenderer->SetPage(pCurPage);
 	pDocument->SetCurPage(pCurPage);
 	pDocument->AddXObject(id.num, pDictObj);
+
+	RELEASEOBJECT(pFakePage);
 
 	DrawXObject(name);
 }

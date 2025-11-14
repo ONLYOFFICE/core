@@ -6960,8 +6960,17 @@ int BinaryWorksheetsTableReader::ReadRow(BYTE type, long length, void* poResult)
         if (NULL == m_oSaveParams.pCSVWriter && NULL == m_pCurStreamWriterBin)
 		{
 			pRow->toXMLStart(*m_pCurStreamWriter);
+			auto filePos = m_pCurStreamWriter->GetCurSize();
 			READ1_DEF(length, res, this->ReadCells, pRow);
-			pRow->toXMLEnd(*m_pCurStreamWriter);
+			// in case of empty row
+			if(m_pCurStreamWriter->GetCurSize() == filePos)
+			{
+
+				m_pCurStreamWriter->SetCurSize(filePos-1);
+				m_pCurStreamWriter->WriteString(_T("/>"));
+			}
+			else
+				pRow->toXMLEnd(*m_pCurStreamWriter);
 		}
         else if(m_pCurStreamWriterBin != NULL)
         {

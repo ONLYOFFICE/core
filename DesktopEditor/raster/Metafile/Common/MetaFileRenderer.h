@@ -1237,7 +1237,7 @@ namespace MetaFile
 
 			// Вычисление минимально возможной ширины пера
 			// # Код явялется дублированным из Graphics
-			const double dSqrtDet = sqrt(abs(oMatrix.Determinant()));
+			const double dSqrtDet = sqrt(fabs(oMatrix.Determinant()));
 			const double dWidthMinSize = (dSqrtDet != 0) ? (1.0 / dSqrtDet) : dWidth;
 
 			if (0 == pPen->GetWidth())

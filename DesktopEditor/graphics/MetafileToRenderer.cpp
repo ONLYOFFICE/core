@@ -356,8 +356,8 @@ namespace NSOnlineOfficeBinToPdf
 
 		CBufferReader oReader(pBuffer, lBufferLen);
 		Aggplus::CGraphicsPath path;
-		Aggplus::CMatrix transMatrRot;
 		Aggplus::CMatrix transMatrSc;
+		Aggplus::CMatrix transMatrRot;
 		Aggplus::RectF clipRect;
 		bool isClose = false;
 		bool isTexture = false;
@@ -480,6 +480,8 @@ namespace NSOnlineOfficeBinToPdf
 				double m2 = oReader.ReadDouble();
 				double m3 = oReader.ReadDouble();
 				double m4 = oReader.ReadDouble();
+
+				clipRect = Aggplus::RectF(m1, m2, m3, m4);
 
 				pRenderer->BrushRect(bIsEnableBrushRect ? 1 : 0, m1, m2, m3, m4);
 				break;
@@ -616,7 +618,7 @@ namespace NSOnlineOfficeBinToPdf
 							  (sin(atan2(rect.Height, rect.Width) + rot) * sqrt(rect.Width * rect.Width + rect.Height * rect.Height) - rect.Height) / 2.0);
 
 				pRenderer->SetTransform(mtr.sx(), mtr.shy(), mtr.shx(), mtr.sy(), mtr.tx(), mtr.ty());
-				transMatrRot.Rotate(rot, Aggplus::MatrixOrderAppend);
+				transMatrRot.Rotate(agg::rad2deg(rot), Aggplus::MatrixOrderPrepend);
 				transMatrRot.Translate((cos(atan2(rect.Height, rect.Width) - rot) * sqrt(rect.Width * rect.Width + rect.Height * rect.Height) - rect.Width) / 2.0,
 									   (sin(atan2(rect.Height, rect.Width) - rot) * sqrt(rect.Width * rect.Width + rect.Height * rect.Height) - rect.Height) / 2.0);
 				break;
@@ -698,7 +700,6 @@ namespace NSOnlineOfficeBinToPdf
 				pRenderer->get_BrushRect(rect, rectable);
 				if (rectable)
 				{
-					clipRect = rect;
 					rect.Offset(m1, m2);
 					pRenderer->BrushRect(true, rect.X, rect.Y, rect.Width, rect.Height);
 					LONG type;
@@ -734,14 +735,12 @@ namespace NSOnlineOfficeBinToPdf
 			{
 				if (isTexture)
 				{
-					Aggplus::CGraphicsPath clipPath1(path);
-					clipPath1.Transform(&transMatrRot);
+					Aggplus::CGraphicsPath clipPath;
+					clipPath.AddRectangle(clipRect.X, clipRect.Y, clipRect.Width, clipRect.Height);
+					clipPath.Transform(&transMatrSc);
+					clipPath.Transform(&transMatrRot);
 
-					Aggplus::CGraphicsPath clipPath2;
-					clipPath2.AddRectangle(clipRect.X, clipRect.Y, clipRect.Width, clipRect.Height);
-					clipPath2.Transform(&transMatrSc);
-
-					path = Aggplus::CalcBooleanOperation(clipPath1, clipPath2, Aggplus::Intersection);
+					path = Aggplus::CalcBooleanOperation(path, clipPath, Aggplus::Intersection);
 					isTexture = false;
 				}
 
@@ -754,6 +753,10 @@ namespace NSOnlineOfficeBinToPdf
 				}
 
 				pRenderer->DrawPath(oReader.ReadInt());
+
+				if (!transMatrRot.IsIdentity())
+					pRenderer->SetTransform(old_t1, old_t2, old_t3, old_t4, old_t5, old_t6);
+
 				path.Reset();
 				transMatrRot.Reset();
 				transMatrSc.Reset();

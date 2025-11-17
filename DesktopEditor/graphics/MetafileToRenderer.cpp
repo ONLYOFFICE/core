@@ -357,8 +357,10 @@ namespace NSOnlineOfficeBinToPdf
 		CBufferReader oReader(pBuffer, lBufferLen);
 		Aggplus::CGraphicsPath path;
 		Aggplus::CMatrix transMatrRot;
-		Aggplus::CMatrix transMatrOff;
+		Aggplus::CMatrix transMatrSc;
+		Aggplus::RectF clipRect;
 		bool isClose = false;
+		bool isTexture = false;
 		while (oReader.Check())
 		{
 			eCommand = (CommandType)(oReader.ReadByte());
@@ -478,6 +480,7 @@ namespace NSOnlineOfficeBinToPdf
 				double m2 = oReader.ReadDouble();
 				double m3 = oReader.ReadDouble();
 				double m4 = oReader.ReadDouble();
+
 				pRenderer->BrushRect(bIsEnableBrushRect ? 1 : 0, m1, m2, m3, m4);
 				break;
 			}
@@ -503,6 +506,7 @@ namespace NSOnlineOfficeBinToPdf
 				std::wstring sTempPath = oReader.ReadString16(nLen);
 				std::wstring sImagePath = pCorrector->GetImagePath(sTempPath);
 				pRenderer->put_BrushTexturePath(sImagePath);
+				isTexture = true;
 				break;
 			}
 			case ctBrushGradient:
@@ -702,16 +706,14 @@ namespace NSOnlineOfficeBinToPdf
 				pRenderer->get_BrushRect(rect, rectable);
 				if (rectable)
 				{
+					clipRect = rect;
 					rect.Offset(m1, m2);
 					pRenderer->BrushRect(true, rect.X, rect.Y, rect.Width, rect.Height);
-				}
-
-				LONG type;
-				pRenderer->get_BrushType(&type);
-				if (type == c_BrushTypeTexture)
+					LONG type;
 					pRenderer->get_BrushTextureMode(&type);
-				if (type == c_BrushTextureModeStretch)
-					transMatrOff.Translate(m1, m2);
+					if (type == c_BrushTextureModeStretch)
+						clipRect.Offset(m1, m2);
+				}
 				break;
 			}
 			case ctPathCommandScale:
@@ -729,22 +731,29 @@ namespace NSOnlineOfficeBinToPdf
 				}
 
 				LONG type;
-				pRenderer->get_BrushType(&type);
-				if (type == c_BrushTypeTexture)
-					pRenderer->get_BrushTextureMode(&type);
+				pRenderer->get_BrushTextureMode(&type);
 				if (type == c_BrushTextureModeStretch)
-					transMatrOff.Scale(m1, m2);
+					transMatrSc.Scale(m1, m2);
 				else if (rectable)
 					pRenderer->BrushRect(true, rect.X, rect.Y, m1, m2);
 				break;
 			}
 			case ctDrawPath:
 			{
-				Aggplus::CGraphicsPath clipPath1(path), clipPath2(path);
-				clipPath1.Transform(&transMatrRot);
-				clipPath2.Transform(&transMatrOff);
+				if (isTexture)
+				{
+					Aggplus::CGraphicsPath clipPath1(path);
+					clipPath1.Transform(&transMatrRot);
 
-				pRenderer->AddPath(Aggplus::CalcBooleanOperation(clipPath1, clipPath2, Aggplus::Intersection));
+					Aggplus::CGraphicsPath clipPath2;
+					clipPath2.AddRectangle(clipRect.X, clipRect.Y, clipRect.Width, clipRect.Height);
+					clipPath2.Transform(&transMatrSc);
+
+					path = Aggplus::CalcBooleanOperation(clipPath1, clipPath2, Aggplus::Intersection);
+					isTexture = false;
+				}
+
+				pRenderer->AddPath(path);
 
 				if (isClose)
 				{
@@ -755,7 +764,7 @@ namespace NSOnlineOfficeBinToPdf
 				pRenderer->DrawPath(oReader.ReadInt());
 				path.Reset();
 				transMatrRot.Reset();
-				transMatrOff.Reset();
+				transMatrSc.Reset();
 				break;
 			}
 			case ctDrawImageFromFile:

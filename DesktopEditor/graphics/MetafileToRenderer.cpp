@@ -1228,6 +1228,10 @@ namespace NSOnlineOfficeBinToPdf
 				oReader.Skip(1);
 				break;
 			}
+			case ctBrushResetRotation:
+			{
+				break;
+			}
 			case ctSetTransform:
 			{
 				oReader.SkipInt(6);
@@ -1258,6 +1262,16 @@ namespace NSOnlineOfficeBinToPdf
 			}
 			case ctPathCommandEnd:
 			{
+				break;
+			}
+			case ctPathCommandOffset:
+			{
+				oReader.SkipInt(2);
+				break;
+			}
+			case ctPathCommandScale:
+			{
+				oReader.SkipInt(2);
 				break;
 			}
 			case ctDrawPath:

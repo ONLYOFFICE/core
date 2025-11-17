@@ -592,14 +592,6 @@ namespace NSOnlineOfficeBinToPdf
 			case ctBrushTextureMode:
 			{
 				LONG lMode = (LONG)oReader.ReadByte();
-				if (lMode != c_BrushTextureModeStretch)
-				{
-					Aggplus::RectF rect;
-					bool rectable;
-					pRenderer->get_BrushRect(rect, rectable);
-					if (rectable)
-						pRenderer->BrushRect(true, rect.X, rect.Y, 1.0, 1.0);
-				}
 				pRenderer->put_BrushTextureMode(lMode);
 				break;
 			}

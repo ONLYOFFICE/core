@@ -359,7 +359,6 @@ namespace NSOnlineOfficeBinToPdf
 		Aggplus::CMatrix transMatrRot;
 		Aggplus::RectF clipRect;
 		bool isClose = false;
-		bool isTexture = false;
 		while (oReader.Check())
 		{
 			eCommand = (CommandType)(oReader.ReadByte());
@@ -507,7 +506,6 @@ namespace NSOnlineOfficeBinToPdf
 				std::wstring sTempPath = oReader.ReadString16(nLen);
 				std::wstring sImagePath = pCorrector->GetImagePath(sTempPath);
 				pRenderer->put_BrushTexturePath(sImagePath);
-				isTexture = true;
 				break;
 			}
 			case ctBrushGradient:
@@ -610,16 +608,9 @@ namespace NSOnlineOfficeBinToPdf
 
 				pRenderer->GetTransform(&old_t1, &old_t2, &old_t3, &old_t4, &old_t5, &old_t6);
 				Aggplus::CMatrix mtr(old_t1, old_t2, old_t3, old_t4, old_t5, old_t6);
+				transMatrRot = mtr;
 
-				double rot = mtr.rotation();
-				mtr.Rotate(-agg::rad2deg(rot));
-				mtr.Translate((cos(atan2(rect.Height, rect.Width) + rot) * sqrt(rect.Width * rect.Width + rect.Height * rect.Height) - rect.Width) / 2.0,
-							  (sin(atan2(rect.Height, rect.Width) + rot) * sqrt(rect.Width * rect.Width + rect.Height * rect.Height) - rect.Height) / 2.0);
-
-				pRenderer->SetTransform(mtr.sx(), mtr.shy(), mtr.shx(), mtr.sy(), mtr.tx(), mtr.ty());
-				transMatrRot.Rotate(agg::rad2deg(rot), Aggplus::MatrixOrderPrepend);
-				transMatrRot.Translate((cos(atan2(rect.Height, rect.Width) - rot) * sqrt(rect.Width * rect.Width + rect.Height * rect.Height) - rect.Width) / 2.0,
-									   (sin(atan2(rect.Height, rect.Width) - rot) * sqrt(rect.Width * rect.Width + rect.Height * rect.Height) - rect.Height) / 2.0);
+				pRenderer->SetTransform(1.0, 0.0, 0.0, 1.0, 0.0, 0.0);
 				break;
 			}
 			case ctSetTransform:
@@ -643,6 +634,7 @@ namespace NSOnlineOfficeBinToPdf
 
 				pRenderer->BeginCommand(c_nPathType);
 				pRenderer->PathCommandStart();
+				path.Reset();
 				path.StartFigure();
 
 				bIsPathOpened = true;
@@ -707,7 +699,11 @@ namespace NSOnlineOfficeBinToPdf
 			}
 			case ctDrawPath:
 			{
-				if (isTexture)
+				long fill = oReader.ReadInt();
+				long type;
+				pRenderer->get_BrushType(&type);
+
+				if (fill != c_nStroke && type == c_BrushTypeTexture)
 				{
 					Aggplus::CGraphicsPath clipPath;
 					Aggplus::CGraphicsPath drawPath;
@@ -715,17 +711,39 @@ namespace NSOnlineOfficeBinToPdf
 					clipPath.Transform(&transMatrRot);
 
 					if (!transMatrRot.IsIdentity())
-					{
+					{						
 						double left, top, width, height;
 						clipPath.GetBounds(left, top, width, height);
 						pRenderer->BrushRect(true, left, top, width, height);
-						drawPath.AddRectangle(left, top, width, height);
+
+						double rot = transMatrRot.rotation();
+						Aggplus::CGraphicsPath tmpPath(path);
+						tmpPath.Transform(&transMatrRot);
+
+						bool isCustomRectRot = false;
+						size_t length = tmpPath.GetPointCount();
+						auto points = tmpPath.GetPoints(0, 2);
+						auto pointDif = points[0] - points[1];
+						if (length == 4 && ((pointDif.X < 0.1 && pointDif.X > -0.1) || (pointDif.Y < 0.1 && pointDif.Y > -0.1)))
+							isCustomRectRot = true;
+
+						if ((rot < 1e-6 && rot > -1e-6) || isCustomRectRot)
+						{
+							drawPath = path;
+							drawPath.Transform(&transMatrRot);
+							if (isCustomRectRot)
+							{
+								drawPath.GetBounds(left, top, width, height);
+								pRenderer->BrushRect(true, left, top, width, height);
+							}
+						}
+						else
+							drawPath.AddRectangle(left, top, width, height);
 					}
 					else
 						drawPath = path;
 
 					path = Aggplus::CalcBooleanOperation(drawPath, clipPath, Aggplus::Intersection);
-					isTexture = false;
 				}
 
 				pRenderer->AddPath(path);
@@ -736,13 +754,13 @@ namespace NSOnlineOfficeBinToPdf
 					isClose = false;
 				}
 
-				pRenderer->DrawPath(oReader.ReadInt());
+				pRenderer->DrawPath(fill);
 
 				if (!transMatrRot.IsIdentity())
 					pRenderer->SetTransform(old_t1, old_t2, old_t3, old_t4, old_t5, old_t6);
 
-				path.Reset();
 				transMatrRot.Reset();
+
 				break;
 			}
 			case ctDrawImageFromFile:

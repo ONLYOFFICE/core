@@ -694,18 +694,7 @@ namespace NSOnlineOfficeBinToPdf
 				double m1 = oReader.ReadDouble();
 				double m2 = oReader.ReadDouble();
 
-				Aggplus::RectF rect;
-				bool rectable;
-				pRenderer->get_BrushRect(rect, rectable);
-				if (rectable)
-				{
-					rect.Offset(m1, m2);
-					pRenderer->BrushRect(true, rect.X, rect.Y, rect.Width, rect.Height);
-					LONG type;
-					pRenderer->get_BrushTextureMode(&type);
-					if (type == c_BrushTextureModeStretch)
-						clipRect.Offset(m1, m2);
-				}
+				pRenderer->put_BrushOffset(m1, m2);
 				break;
 			}
 			case ctPathCommandScale:

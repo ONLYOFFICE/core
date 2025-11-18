@@ -291,6 +291,9 @@ namespace NSStructures
 		double ScaleX;
 		double ScaleY;
 
+		double OffsetX;
+		double OffsetY;
+
 		double LinearAngle;
 		std::vector<TSubColor> m_arrSubColors;
 		NSStructures::GradientInfo m_oGradientInfo;
@@ -425,6 +428,9 @@ namespace NSStructures
 			IsScale = FALSE;
 			ScaleX = 1.0;
 			ScaleY = 1.0;
+
+			OffsetX = 0.0;
+			OffsetY = 0.0;
 
 			Bounds.left = 0;
 			Bounds.top = 0;

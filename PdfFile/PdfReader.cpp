@@ -2199,13 +2199,20 @@ BYTE* CPdfReader::GetAPAnnots(int nRasterW, int nRasterH, int nBackgroundColor, 
 		}
 		if (oAnnot.dictLookup("Subtype", &oObj)->isName())
 			sType = oObj.getName();
-		oObj.free(); oAnnot.free();
+		oObj.free();
 
 		if (sType == "Widget")
 		{
-			oAnnotRef.free();
+			oAnnotRef.free(); oAnnot.free();
 			continue;
 		}
+
+		if (oAnnot.dictLookupNF("IRT", &oObj)->isRef())
+		{
+			oObj.free(); oAnnotRef.free(); oAnnot.free();
+			continue;
+		}
+		oAnnot.free(); oObj.free();
 
 		PdfReader::CAnnotAP* pAP = new PdfReader::CAnnotAP(pDoc, m_pFontManager, pFontList, nRasterW, nRasterH, nBackgroundColor, nPageIndex, sView, &oAnnotRef, nStartRefID);
 		if (pAP)

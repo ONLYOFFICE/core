@@ -282,6 +282,7 @@ void SaveRGBAToStream(CDocument* pDocument, CDictObject* pDictObj, BYTE* pRGBA, 
 	pDictObj->Add("BitsPerComponent", 8);
 
 	pDictObj->Remove("DecodeParms");
+	pDictObj->Remove("Decode");
 
 	CStream* pStreamForm = pDictObj->GetStream();
 	if (!pStreamForm)
@@ -321,6 +322,7 @@ void SaveGrayToSMask(CDocument* pDocument, CDictObject* pDictObj, BYTE* pMaskGra
 	pSMask->Add("BitsPerComponent", 8);
 
 	pSMask->Remove("DecodeParms");
+	pDictObj->Remove("Decode");
 
 	int nBufferSize = nWidth * nHeight;
 	CStream* pStreamForm = pSMask->GetStream();

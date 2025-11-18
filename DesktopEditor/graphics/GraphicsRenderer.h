@@ -189,6 +189,8 @@ public:
 	virtual HRESULT put_BrushLinearAngle(const double& dAngle);
 	virtual HRESULT get_BrushTransform(Aggplus::CMatrix& oMatrix);
 	virtual HRESULT put_BrushTransform(const Aggplus::CMatrix& oMatrix);
+	virtual HRESULT get_BrushScale(bool& isScale, double& scaleX, double& scaleY) const;
+	virtual HRESULT put_BrushScale(bool isScale, const double& scaleX, const double& scaleY);
 	virtual HRESULT BrushRect(const INT& val, const double& left, const double& top, const double& width, const double& height);
 	virtual HRESULT get_BrushRect(Aggplus::RectF& rect, bool& rectable) const;
 	virtual HRESULT BrushBounds(const double& left, const double& top, const double& width, const double& height);

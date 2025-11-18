@@ -847,7 +847,8 @@ namespace Aggplus
 				double dScaleY = m_dDpiY / m_dDpiTile;
 
 				brushMatrix.Scale(dScaleX, dScaleY, Aggplus::MatrixOrderAppend);
-				brushMatrix.Scale(r - x, b - y, Aggplus::MatrixOrderAppend);
+				if (ptxBrush->m_bIsScale)
+					brushMatrix.Scale(ptxBrush->m_dScaleX, ptxBrush->m_dScaleY, Aggplus::MatrixOrderAppend);
 			}
 
 			brushMatrix.Translate(x, y, Aggplus::MatrixOrderAppend);

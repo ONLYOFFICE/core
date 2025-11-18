@@ -613,6 +613,20 @@ HRESULT CGraphicsRenderer::put_BrushTransform(const Aggplus::CMatrix& oMatrix)
 	m_oBrush.Transform = oMatrix;
 	return S_OK;
 }
+HRESULT CGraphicsRenderer::get_BrushScale(bool& isScale, double& scaleX, double& scaleY) const
+{
+	isScale = m_oBrush.IsScale;
+	scaleX = m_oBrush.ScaleX;
+	scaleY = m_oBrush.ScaleY;
+	return S_OK;
+}
+HRESULT CGraphicsRenderer::put_BrushScale(bool isScale, const double& scaleX, const double& scaleY)
+{
+	m_oBrush.IsScale = isScale;
+	m_oBrush.ScaleX = scaleX;
+	m_oBrush.ScaleY = scaleY;
+	return S_OK;
+}
 HRESULT CGraphicsRenderer::BrushRect(const INT& val, const double& left, const double& top, const double& width, const double& height)
 {
 	m_oBrush.Rectable = val;
@@ -1041,6 +1055,13 @@ HRESULT CGraphicsRenderer::DrawPath(const LONG& nType)
                         pTextureBrush->m_oBounds.right = pTextureBrush->m_oBounds.left + m_oBrush.Rect.Width;
                         pTextureBrush->m_oBounds.bottom = pTextureBrush->m_oBounds.top + m_oBrush.Rect.Height;
                     }
+
+					if (m_oBrush.IsScale == 1)
+					{
+						pTextureBrush->m_bIsScale = true;
+						pTextureBrush->m_dScaleX = m_oBrush.ScaleX;
+						pTextureBrush->m_dScaleY = m_oBrush.ScaleY;
+					}
 				}
 
 				pBrush = pTextureBrush;

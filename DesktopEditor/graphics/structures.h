@@ -287,6 +287,10 @@ namespace NSStructures
 		Aggplus::RectF Rect;
 		Aggplus::CDoubleRect Bounds;
 
+		int IsScale;
+		double ScaleX;
+		double ScaleY;
+
 		double LinearAngle;
 		std::vector<TSubColor> m_arrSubColors;
 		NSStructures::GradientInfo m_oGradientInfo;
@@ -418,6 +422,10 @@ namespace NSStructures
 			Rect.Width = 0.0F;
 			Rect.Height = 0.0F;
 
+			IsScale = FALSE;
+			ScaleX = 1.0;
+			ScaleY = 1.0;
+
 			Bounds.left = 0;
 			Bounds.top = 0;
 			Bounds.right = 0;
@@ -456,6 +464,10 @@ namespace NSStructures
 			Rectable = other.Rectable;
 			Rect = other.Rect;
 			Bounds = other.Bounds;
+
+			IsScale = other.IsScale;
+			ScaleX = other.ScaleX;
+			ScaleY = other.ScaleY;
 
 			LinearAngle = other.LinearAngle;
 			m_arrSubColors = other.m_arrSubColors;

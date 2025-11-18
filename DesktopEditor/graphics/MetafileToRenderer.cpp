@@ -356,7 +356,6 @@ namespace NSOnlineOfficeBinToPdf
 
 		CBufferReader oReader(pBuffer, lBufferLen);
 		Aggplus::CGraphicsPath path;
-		Aggplus::CMatrix transMatrSc;
 		Aggplus::CMatrix transMatrRot;
 		Aggplus::RectF clipRect;
 		bool isClose = false;
@@ -714,21 +713,7 @@ namespace NSOnlineOfficeBinToPdf
 				double m1 = oReader.ReadDouble();
 				double m2 = oReader.ReadDouble();
 
-				Aggplus::RectF rect;
-				bool rectable;
-				pRenderer->get_BrushRect(rect, rectable);
-				if (rectable)
-				{
-					rect.Scale(m1, m2);
-					pRenderer->BrushRect(true, rect.X, rect.Y, rect.Width, rect.Height);
-				}
-
-				LONG type;
-				pRenderer->get_BrushTextureMode(&type);
-				if (type == c_BrushTextureModeStretch)
-					transMatrSc.Scale(m1, m2);
-				else if (rectable)
-					pRenderer->BrushRect(true, rect.X, rect.Y, m1, m2);
+				pRenderer->put_BrushScale(true, m1, m2);
 				break;
 			}
 			case ctDrawPath:
@@ -736,11 +721,21 @@ namespace NSOnlineOfficeBinToPdf
 				if (isTexture)
 				{
 					Aggplus::CGraphicsPath clipPath;
+					Aggplus::CGraphicsPath drawPath;
 					clipPath.AddRectangle(clipRect.X, clipRect.Y, clipRect.Width, clipRect.Height);
-					clipPath.Transform(&transMatrSc);
 					clipPath.Transform(&transMatrRot);
 
-					path = Aggplus::CalcBooleanOperation(path, clipPath, Aggplus::Intersection);
+					if (!transMatrRot.IsIdentity())
+					{
+						double left, top, width, height;
+						clipPath.GetBounds(left, top, width, height);
+						pRenderer->BrushRect(true, left, top, width, height);
+						drawPath.AddRectangle(left, top, width, height);
+					}
+					else
+						drawPath = path;
+
+					path = Aggplus::CalcBooleanOperation(drawPath, clipPath, Aggplus::Intersection);
 					isTexture = false;
 				}
 
@@ -759,7 +754,6 @@ namespace NSOnlineOfficeBinToPdf
 
 				path.Reset();
 				transMatrRot.Reset();
-				transMatrSc.Reset();
 				break;
 			}
 			case ctDrawImageFromFile:

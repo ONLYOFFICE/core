@@ -2443,6 +2443,8 @@ int BinaryWorkbookTableReader::ReadWorkbookTableContent(BYTE type, long length, 
 	else if (c_oSerWorkbookTypes::Metadata == type)
 	{
 		smart_ptr<OOX::Spreadsheet::CMetadataFile> oMetadataFile(new OOX::Spreadsheet::CMetadataFile(NULL));
+		if(m_oWorkbook.OOX::File::m_pMainDocument)
+			oMetadataFile->OOX::File::m_pMainDocument = m_oWorkbook.OOX::File::m_pMainDocument;
 		oMetadataFile->m_oMetadata.Init();
 		READ1_DEF(length, res, this->ReadMetadata, oMetadataFile->m_oMetadata.GetPointer());
 

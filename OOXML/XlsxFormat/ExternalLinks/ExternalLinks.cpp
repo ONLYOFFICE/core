@@ -66,6 +66,7 @@
 
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/GlobalWorkbookInfo.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BIFF12/CellRef.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/ExtPtgErr.h"
 #include "../../Binary/XlsbFormat/FileTypes_SpreadsheetBin.h"
 #include <string>
 
@@ -200,6 +201,8 @@ namespace Spreadsheet
 		{
 			auto nameFmla(new XLSB::SupNameFmla);
 			ptr->m_BrtSupNameFmla = XLS::BaseObjectPtr{nameFmla};
+			if(m_oRefersTo.get() == L"#REF!")
+				m_oRefersTo = L"#N/A";
 			nameFmla->fmla = m_oRefersTo.get();
 		}
 		if(m_oSheetId.IsInit())
@@ -207,7 +210,7 @@ namespace Spreadsheet
 			auto supBits(new XLSB::SupNameBits(type));
 			ptr->m_BrtSupNameBits = XLS::BaseObjectPtr{supBits};
 			supBits->sbt = 0x0000;
-			supBits->contentsExtName.iSheet = m_oSheetId->GetValue();
+			supBits->contentsExtName.iSheet = m_oSheetId->GetValue()+1;
 			supBits->contentsExtName.fBuiltIn = false;
 		}
 		return objectPtr;

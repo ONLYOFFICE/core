@@ -247,7 +247,6 @@ public:
 	virtual HRESULT get_BrushScale(bool& isScale, double& scaleX, double& scaleY) const = 0;
 	virtual HRESULT put_BrushScale(bool isScale, const double& scaleX, const double& scaleY) = 0;
 	virtual HRESULT BrushRect(const INT& val, const double& left, const double& top, const double& width, const double& height) = 0;
-	virtual HRESULT get_BrushRect(Aggplus::RectF& rect, bool& rectable) const = 0;
 	virtual HRESULT BrushBounds(const double& left, const double& top, const double& width, const double& height) = 0;
 
 	virtual HRESULT put_BrushGradientColors(LONG* lColors, double* pPositions, LONG nCount) = 0;

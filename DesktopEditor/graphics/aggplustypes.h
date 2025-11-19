@@ -210,8 +210,7 @@ public:
 		}
 
 		void Offset(const PointF_T<T>& point) { Offset(point.X, point.Y); }
-		void Offset(const T& dx, const T& dy) { X += dx; Y += dy; }
-		void Scale(const T& sx, const T& sy) { Width *= sx; Height *= sy; }
+		void Offset(T dx, T dy) { X += dx; Y += dy; }
 
 		RectF_T& operator=(const RectF_T& other)
 		{

@@ -726,12 +726,13 @@ namespace NSOnlineOfficeBinToPdf
 						double cX = left + width / 2.0;
 						double cY = top + height / 2.0;
 
-						transMatrRot.Reset();
-						transMatrRot.RotateAt(agg::rad2deg(rot), cX, cY, Aggplus::MatrixOrderAppend);
-						drawPath.Transform(&transMatrRot);
-
 						bool isZeroPt = clipRect.X < 0.1 && clipRect.X > -0.1 && clipRect.Y < 0.1 && clipRect.Y > -0.1;
 						bool isZeroRot = rot < 1e-6 && rot > -1e-6;
+
+						transMatrRot.Reset();
+						transMatrRot.RotateAt(agg::rad2deg(rot), cX, cY, Aggplus::MatrixOrderAppend);
+
+						drawPath.Transform(&transMatrRot);
 
 						if (isZeroPt && !isZeroRot && isStretch)
 							drawPath.GetBounds(left, top, width, height);
@@ -748,7 +749,7 @@ namespace NSOnlineOfficeBinToPdf
 						if (isZeroPt || !isStretch)
 							clipRect = Aggplus::RectF_T<double>(left, top, width, height);
 
-						if (type == c_BrushTextureModeStretch)
+						if (isStretch)
 							pRenderer->BrushRect(true, clipRect.X, clipRect.Y, clipRect.Width, clipRect.Height);
 					}
 

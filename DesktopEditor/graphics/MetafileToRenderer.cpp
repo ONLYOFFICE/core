@@ -357,7 +357,7 @@ namespace NSOnlineOfficeBinToPdf
 		CBufferReader oReader(pBuffer, lBufferLen);
 		Aggplus::CGraphicsPath path;
 		Aggplus::CMatrix transMatrRot;
-		Aggplus::RectF clipRect;
+		Aggplus::RectF_T<double> clipRect;
 		bool isClose = false;
 		bool isResetRot = false;
 		while (oReader.Check())
@@ -488,7 +488,7 @@ namespace NSOnlineOfficeBinToPdf
 					m2 = 0.0;
 				}
 
-				clipRect = Aggplus::RectF(m1, m2, m3, m4);
+				clipRect = Aggplus::RectF_T<double>(m1, m2, m3, m4);
 				pRenderer->BrushRect(bIsEnableBrushRect ? 1 : 0, m1, m2, m3, m4);
 				break;
 			}
@@ -717,6 +717,7 @@ namespace NSOnlineOfficeBinToPdf
 					if (isResetRot)
 					{
 						pRenderer->get_BrushTextureMode(&type);
+						bool isStretch = type == c_BrushTextureModeStretch;
 
 						double left, top, width, height;
 						drawPath.GetBounds(left, top, width, height);
@@ -729,7 +730,10 @@ namespace NSOnlineOfficeBinToPdf
 						transMatrRot.RotateAt(agg::rad2deg(rot), cX, cY, Aggplus::MatrixOrderAppend);
 						drawPath.Transform(&transMatrRot);
 
-						if (clipRect.X == 0.0 && clipRect.Y == 0.0 && type == c_BrushTextureModeStretch && rot != 0.0)
+						bool isZeroPt = clipRect.X < 0.1 && clipRect.X > -0.1 && clipRect.Y < 0.1 && clipRect.Y > -0.1;
+						bool isZeroRot = rot < 1e-6 && rot > -1e-6;
+
+						if (isZeroPt && !isZeroRot && isStretch)
 							drawPath.GetBounds(left, top, width, height);
 						else
 						{
@@ -741,8 +745,8 @@ namespace NSOnlineOfficeBinToPdf
 
 						pRenderer->SetTransform(1.0, 0.0, 0.0, 1.0, old_t5 - transMatrRot.tx(), old_t6 - transMatrRot.ty());
 
-						if ((clipRect.X == 0.0 && clipRect.Y == 0.0) || type != c_BrushTextureModeStretch)
-							clipRect = Aggplus::RectF(left, top, width, height);
+						if (isZeroPt || !isStretch)
+							clipRect = Aggplus::RectF_T<double>(left, top, width, height);
 
 						if (type == c_BrushTextureModeStretch)
 							pRenderer->BrushRect(true, clipRect.X, clipRect.Y, clipRect.Width, clipRect.Height);
@@ -771,7 +775,7 @@ namespace NSOnlineOfficeBinToPdf
 				transMatrRot.Reset();
 				pRenderer->put_BrushScale(false, 1.0, 1.0);
 				pRenderer->put_BrushOffset(0.0, 0.0);
-				clipRect = Aggplus::RectF();
+				clipRect = Aggplus::RectF_T<double>();
 				break;
 			}
 			case ctDrawImageFromFile:

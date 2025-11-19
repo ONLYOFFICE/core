@@ -6306,9 +6306,13 @@ int BinaryWorksheetsTableReader::ReadDrawings(BYTE type, long length, void* poRe
 
     if (c_oSerWorksheetsTypes::Drawing == type)
 	{
+		LONG pos = m_oBufferedStream.GetPos();
+
 		OOX::Spreadsheet::CCellAnchor* pCellAnchor = new OOX::Spreadsheet::CCellAnchor(SimpleTypes::Spreadsheet::CCellAnchorType());
 		READ1_DEF(length, res, this->ReadDrawing, pCellAnchor);
 		
+		m_oBufferedStream.Seek(pos + length);
+
 		pCellAnchor->m_bShapeOle = false;
 		pCellAnchor->m_bShapeControl = false;
 

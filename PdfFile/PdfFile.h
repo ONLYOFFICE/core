@@ -133,6 +133,7 @@ public:
 	bool UnmergePages();
 	bool RedactPage(int nPageIndex, double* arrRedactBox, int nLengthX8, BYTE* pChanges = NULL, int nLength = 0);
 	bool UndoRedact();
+	bool CheckOwnerPassword(const std::wstring& sPassword);
 	int GetRotate(int nPageIndex);
 	int GetMaxRefID();
 	BYTE* GetWidgets();

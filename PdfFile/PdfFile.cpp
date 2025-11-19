@@ -373,8 +373,20 @@ bool CPdfFile::RedactPage(int nPageIndex, double* arrRedactBox, int nLengthX8, B
 bool CPdfFile::UndoRedact()
 {
 	if (!m_pInternal->pReader)
-		return false;
+		return true;
 	return m_pInternal->pReader->UndoRedact();
+}
+bool CPdfFile::CheckOwnerPassword(const std::wstring& sPassword)
+{
+	if (!m_pInternal->pReader)
+		return false;
+	bool bRes = m_pInternal->pReader->CheckOwnerPassword(sPassword);
+	if (bRes)
+		m_pInternal->wsPassword = sPassword;
+	else if (!m_pInternal->wsPassword.empty())
+		bRes = m_pInternal->pReader->CheckOwnerPassword(m_pInternal->wsPassword);
+
+	return bRes;
 }
 int CPdfFile::GetRotate(int nPageIndex)
 {

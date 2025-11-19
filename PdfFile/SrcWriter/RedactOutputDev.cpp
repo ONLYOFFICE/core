@@ -1393,7 +1393,9 @@ void RedactOutputDev::drawForm(GfxState *pGState, Gfx *gfx, Ref id, const char* 
 	_gfx->takeContentStreamStack(gfx);
 	Object oFormRef;
 	oFormRef.initRef(id.num, id.gen);
+	_gfx->saveState();
 	_gfx->display(&oFormRef);
+	_gfx->endOfPage();
 	oFormRef.free();
 
 	RELEASEOBJECT(_gfx);
@@ -1693,7 +1695,7 @@ void RedactOutputDev::DoPathRedact(GfxState* pGState, GfxPath* pPath, double* pC
 		}
 
 		oPathResult = Aggplus::CalcBooleanOperation(oPath, m_oPathRedact, Aggplus::BooleanOpType::Subtraction);
-		double dXEnd = -1, dYEnd = -1; // TODO А вдруг именно эти координаты будут
+		double dXEnd = -1, dYEnd = -1;
 		DrawPathRedact(&oPathResult, bStroke, dXEnd, dYEnd);
 	}
 }
@@ -1779,6 +1781,9 @@ void RedactOutputDev::DrawPath(const LONG& lType)
 {
 	m_pRenderer->m_oCommandManager.Flush();
 	DoStateOp();
+
+	if (!m_pRenderer->m_oPath.m_bIsMoveTo)
+		return;
 
 	bool bStroke = lType & c_nStroke;
 	bool bFill   = lType & c_nWindingFillMode;

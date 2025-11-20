@@ -2554,6 +2554,13 @@ void xlsx_drawing_context::serialize_bitmap_fill(std::wostream & stream, _drawin
 						CP_XML_ATTR(L"thresh", *fill.biLevel * 1000);
 					}
 				}
+				if (fill.color.opacity > 0.00001)
+				{
+					CP_XML_NODE(L"a:alphaModFix")
+					{
+						CP_XML_ATTR(L"amt", (int)(fill.color.opacity * 100000));
+					}
+				}
 			}
 
 			CP_XML_NODE(L"a:srcRect")

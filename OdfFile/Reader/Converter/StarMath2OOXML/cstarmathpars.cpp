@@ -94,6 +94,8 @@ namespace StarMath
 
 			if(pReader->GetAttribute() != nullptr && !CheckForLeftArgument(pReader->GetGlobalType()))
 				pElement->SetBaseAttribute(pReader->GetAttribute());
+			else if(pReader->GetAttribute() != nullptr && pElement->GetBaseType() == TypeElement::Index && dynamic_cast<CElementIndex*>(pElement)->GetType() == TypeElement::sqrt)
+				pElement->SetBaseAttribute(pReader->GetAttribute());
 			else if(pReader->GetAttribute() != nullptr && (pReader->GetLocalType() == TypeElement::plus || TypeElement::minus == pReader->GetLocalType() || TypeElement::frac == pReader->GetLocalType() || TypeElement::neg == pReader->GetLocalType()))
 				pElement->SetBaseAttribute(pReader->GetAttribute());
 			pReader->ClearReader();
@@ -2610,6 +2612,8 @@ namespace StarMath
 			m_pLeftArg->SetBaseAttribute(pAttribute);
 			this->SetBaseAttribute(m_pLeftArg->GetAttribute());
 		}
+		if(m_enTypeIndex == TypeElement::sqrt)
+			this->SetBaseAttribute(pAttribute);
 		if(m_pValueIndex != nullptr)
 			m_pValueIndex->SetAttribute(pAttribute);
 		if(m_pLeftArg != nullptr)

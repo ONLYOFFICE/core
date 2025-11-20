@@ -54,6 +54,7 @@
 #include "lib/xpdf/Link.h"
 #include "lib/xpdf/TextOutputDev.h"
 #include "lib/xpdf/AcroForm.h"
+#include "lib/xpdf/SecurityHandler.h"
 #include "lib/goo/GList.h"
 
 NSFonts::IFontManager* InitFontManager(NSFonts::IApplicationFonts* pAppFonts)
@@ -805,6 +806,59 @@ bool CPdfReader::UndoRedact()
 	delete pRedact;
 	m_vRedact.pop_back();
 	return true;
+}
+bool CPdfReader::CheckOwnerPassword(const std::wstring& wsPassword)
+{
+	PDFDoc* pDoc = m_vPDFContext.front()->m_pDocument;
+	XRef* xref = pDoc->getXRef();
+
+	if (!xref->isEncrypted())
+		return true;
+
+	Object* pTrailerDict = xref->getTrailerDict();
+	Object encrypt;
+	SecurityHandler* secHdlr = NULL;
+	xref->offEncrypted();
+	if (pTrailerDict->dictLookup("Encrypt", &encrypt) && encrypt.isDict())
+		secHdlr = SecurityHandler::make(pDoc, &encrypt);
+	encrypt.free();
+
+	if (!secHdlr || secHdlr->isUnencrypted())
+	{
+		RELEASEOBJECT(secHdlr);
+		xref->onEncrypted();
+		return true;
+	}
+
+	bool bRes = false;
+	GString* owner_pswd = NSStrings::CreateString(wsPassword);
+	if (secHdlr->checkEncryption(owner_pswd, NULL) && secHdlr->getOwnerPasswordOk())
+	{
+		bRes = true;
+		xref->setEncryption(secHdlr->getPermissionFlags(), secHdlr->getOwnerPasswordOk(), secHdlr->getFileKey(),
+							secHdlr->getFileKeyLength(), secHdlr->getEncVersion(), secHdlr->getEncAlgorithm());
+	}
+	else
+		xref->onEncrypted();
+
+	delete owner_pswd;
+	delete secHdlr;
+	return bRes;
+}
+bool CPdfReader::CheckPerm(int nPerm)
+{
+	PDFDoc* pDoc = m_vPDFContext.front()->m_pDocument;
+	XRef* xref = pDoc->getXRef();
+
+	if (!xref->isEncrypted())
+		return true;
+
+	CryptAlgorithm encAlgorithm;
+	GBool ownerPasswordOk;
+	int permFlags, keyLength, encVersion;
+	xref->getEncryption(&permFlags, &ownerPasswordOk, &keyLength, &encVersion, &encAlgorithm);
+
+	return ownerPasswordOk || (permFlags & (1 << --nPerm));
 }
 void CPdfReader::DrawPageOnRenderer(IRenderer* pRenderer, int _nPageIndex, bool* pbBreak)
 {

@@ -2207,7 +2207,7 @@ BYTE* CPdfReader::GetAPAnnots(int nRasterW, int nRasterH, int nBackgroundColor, 
 			continue;
 		}
 
-		if (oAnnot.dictLookupNF("IRT", &oObj)->isRef())
+		if (sType == "Text" && oAnnot.dictLookupNF("IRT", &oObj)->isRef())
 		{
 			oObj.free(); oAnnotRef.free(); oAnnot.free();
 			continue;

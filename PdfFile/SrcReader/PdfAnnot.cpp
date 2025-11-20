@@ -1768,6 +1768,11 @@ CAnnotText::CAnnotText(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex, int nS
 			m_nState = 5;
 	}
 	oObj.free();
+
+	// Text аннотация с IRT не отображается
+	if (m_unFlags & (1 << 5))
+		m_unAFlags &= ~(1 << 6);
+
 	oAnnot.free();
 }
 
@@ -3095,7 +3100,6 @@ CAnnotMarkup::CAnnotMarkup(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex, in
 	if (oAnnot.dictLookupNF("IRT", &oObj)->isRef())
 	{
 		m_unFlags |= (1 << 5);
-		m_unAFlags &= ~(1 << 6); // IRT аннотации не отображаются
 		m_unRefNumIRT = oObj.getRefNum() + nStartRefID;
 	}
 	oObj.free();

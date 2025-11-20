@@ -1676,7 +1676,7 @@ void Annot::draw(Gfx *gfx, GBool printing) {
     return;
   }
 
-  if (annotObj.dictLookupNF("IRT", &oIRTObj)->isRef()) {
+  if (type && !type->cmp("Text") && annotObj.dictLookupNF("IRT", &oIRTObj)->isRef()) {
     annotObj.free(); oIRTObj.free();
     return;
   }

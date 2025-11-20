@@ -6059,7 +6059,7 @@ HRESULT CDrawingConverter::SaveObject(LONG lStart, LONG lLength, const std::wstr
 						PPTX::Logic::Pic& s = oElem.as<PPTX::Logic::Pic>();
 						if (s.spPr.xfrm.IsInit() == false)
 						{
-							s.spPr.xfrm.Init(); pXfrm = s.spPr.xfrm.GetPointer();
+							//s.spPr.xfrm.Init(); pXfrm = s.spPr.xfrm.GetPointer();
 						}
 					}
 					else if (oElem.getType() == OOX::et_graphicFrame)

@@ -45,6 +45,10 @@
 #undef DeleteFile
 #endif
 
+#if defined(GetSystemDirectory)
+#undef GetSystemDirectory
+#endif
+
 #ifndef _BUILD_FILE_CROSSPLATFORM_H_
 #define _BUILD_FILE_CROSSPLATFORM_H_
 

@@ -191,6 +191,7 @@ int ComputeMarginX(const style_page_layout_properties				* pagePropertiesNode,
 	_CP_OPT(horizontal_rel) styleHorizontalRel;
 	_CP_OPT(horizontal_pos) styleHorizontalPos;
 	_CP_OPT(style_wrap) styleWrap;
+	_CP_OPT(bool) styleWrapContour;
 	_CP_OPT(length) frameMarginLeft;
 	_CP_OPT(length) frameMarginRight;
 
@@ -199,6 +200,7 @@ int ComputeMarginX(const style_page_layout_properties				* pagePropertiesNode,
 		styleHorizontalRel = graphicProperties->common_horizontal_rel_attlist_.style_horizontal_rel_;
 		styleHorizontalPos = graphicProperties->common_horizontal_pos_attlist_.style_horizontal_pos_;
 		styleWrap = graphicProperties->style_wrap_;
+		styleWrapContour = graphicProperties->style_wrap_contour_;
 		frameMarginLeft = GetOnlyLength(graphicProperties->common_horizontal_margin_attlist_.fo_margin_left_);
 		frameMarginRight = GetOnlyLength(graphicProperties->common_horizontal_margin_attlist_.fo_margin_right_);
 	}
@@ -837,6 +839,7 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, union_comm
 	if (graphicProperties)
 	{
 		drawing->styleWrap = graphicProperties->style_wrap_;
+		drawing->styleWrapContour = graphicProperties->style_wrap_contour_;
 
 		if (drawing->styleWrap && drawing->styleWrap->get_type() == style_wrap::Parallel)
 		{

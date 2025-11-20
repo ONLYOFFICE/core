@@ -1740,8 +1740,8 @@ namespace MetaFile
 					const TRectL& oEmfRect{oEmfParser.GetDCBounds()};
 					const TRectL& oCurentRect{GetDCBounds()};
 
-					const double dScaleX = std::abs((oCurentRect.Right  - oCurentRect.Left) / (oEmfRect.Right  - oEmfRect.Left));
-					const double dScaleY = std::abs((oCurentRect.Bottom - oCurentRect.Top)  / (oEmfRect.Bottom - oEmfRect.Top));
+					const double dScaleX = std::abs((double)(oCurentRect.Right  - oCurentRect.Left) / (double)(oEmfRect.Right  - oEmfRect.Left));
+					const double dScaleY = std::abs((double)(oCurentRect.Bottom - oCurentRect.Top)  / (double)(oEmfRect.Bottom - oEmfRect.Top));
 
 					const bool bAddGElement = !Equals(1., dScaleX) || !Equals(1., dScaleY);
 

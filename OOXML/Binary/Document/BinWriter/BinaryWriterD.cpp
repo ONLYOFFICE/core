@@ -3936,7 +3936,7 @@ void BinaryDocumentTableWriter::WriteParapraph(OOX::Logic::CParagraph& par, OOX:
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerParType::TextID);
 		nCurPos = m_oBcw.WriteItemWithLengthStart();
-		m_oBcw.m_oStream.WriteLONG64(par.m_oTextId->GetValue());
+		m_oBcw.m_oStream.WriteULONG(par.m_oTextId->GetValue());
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}
 }

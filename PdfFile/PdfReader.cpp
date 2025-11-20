@@ -831,6 +831,11 @@ void CPdfReader::DrawPageOnRenderer(IRenderer* pRenderer, int _nPageIndex, bool*
 
 	((GlobalParamsAdaptor*)globalParams)->ClearRedact();
 
+	LONG lRendererType = 0;
+	pRenderer->get_Type(&lRendererType);
+	if (c_nDocxWriter == lRendererType)
+		return; // Без отрисовки Redact при ScanPage
+
 	Page* pPage = pDoc->getCatalog()->getPage(nPageIndex);
 	PDFRectangle* cropBox = pPage->getCropBox();
 	pRenderer->SetTransform(1, 0, 0, 1, 0, 0);
@@ -2194,13 +2199,20 @@ BYTE* CPdfReader::GetAPAnnots(int nRasterW, int nRasterH, int nBackgroundColor, 
 		}
 		if (oAnnot.dictLookup("Subtype", &oObj)->isName())
 			sType = oObj.getName();
-		oObj.free(); oAnnot.free();
+		oObj.free();
 
 		if (sType == "Widget")
 		{
-			oAnnotRef.free();
+			oAnnotRef.free(); oAnnot.free();
 			continue;
 		}
+
+		if (oAnnot.dictLookupNF("IRT", &oObj)->isRef())
+		{
+			oObj.free(); oAnnotRef.free(); oAnnot.free();
+			continue;
+		}
+		oAnnot.free(); oObj.free();
 
 		PdfReader::CAnnotAP* pAP = new PdfReader::CAnnotAP(pDoc, m_pFontManager, pFontList, nRasterW, nRasterH, nBackgroundColor, nPageIndex, sView, &oAnnotRef, nStartRefID);
 		if (pAP)

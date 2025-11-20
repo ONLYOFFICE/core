@@ -257,6 +257,11 @@ void paragraph_format_properties::docx_convert(oox::docx_conversion_context & Co
 			CP_XML_NODE(L"w:keepNext");
 			CP_XML_NODE(L"w:framePr")
 			{
+				if( !Context.get_inside_frame() )
+				{
+					Context.set_inside_frame(true);
+				}
+
 				CP_XML_ATTR(L"w:dropCap", L"drop");
 				if (Context.get_drop_cap_context().Scale > 0)
 				{
@@ -274,10 +279,20 @@ void paragraph_format_properties::docx_convert(oox::docx_conversion_context & Co
 			CP_XML_NODE(L"w:spacing")
 			{
 				CP_XML_ATTR(L"w:after", 0); 
-				if (Context.get_drop_cap_context().FontSize > 0)
+				if ( Context.get_inside_frame() )
+				{
+					int space = Context.get_drop_cap_context().Space > 0 ? Context.get_drop_cap_context().Space : 113;
+					_CP_LOG << "space = " << space << "\n";
+					CP_XML_ATTR(L"w:line", 240 * ( Context.get_drop_cap_context().Scale ) + space);
+				}
+				else if (Context.get_drop_cap_context().FontSize > 0)
+				{
 					CP_XML_ATTR(L"w:line", Context.get_drop_cap_context().FontSize);
+				}
 				else
+				{
 					CP_XML_ATTR(L"w:line", 240);
+				}
 				CP_XML_ATTR(L"w:lineRule", L"exact");
 			}
 			CP_XML_NODE(L"w:textAlignment"){CP_XML_ATTR(L"w:val", L"baseline");}
@@ -425,25 +440,26 @@ void paragraph_format_properties::docx_convert(oox::docx_conversion_context & Co
 #endif
 			std::wstring w_left, w_right, w_hanging;
 
-            w_left = docx_process_margin(fo_margin_left_, 20.0);
-            w_right = docx_process_margin(fo_margin_right_, 20.0);
+			w_left = docx_process_margin(fo_margin_left_, 20.0);
+			w_right = docx_process_margin(fo_margin_right_, 20.0);
 			w_hanging = docx_process_margin(fo_text_indent_, -20.0);
 
 			if (w_left.empty()) w_left = L"0";
 			if (w_right.empty()) w_right = L"0";
 			if (w_hanging.empty()) w_hanging = L"0";
-	                
+
 		   CP_XML_NODE(L"w:ind")
 		   {
-				CP_XML_ATTR(L"w:start", w_left);
+
+			    CP_XML_ATTR(L"w:start", w_left);
 				CP_XML_ATTR(L"w:end", w_right);
-		        
+
 				if (Context.get_drop_cap_context().state() != 1 )//состояние сразу после добавления буквицы - не нужны ни отступы, ни висячие
 				{
 					if (!w_hanging.empty())
 						CP_XML_ATTR(L"w:hanging", w_hanging);
 				}
-			}
+		    }
 		}
 
 		if (style_vertical_align_ && Context.get_drop_cap_context().state() != 2)

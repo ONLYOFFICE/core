@@ -1360,6 +1360,29 @@ void text_format_properties::docx_convert(oox::docx_conversion_context & Context
 		{
             _rPr << L"<w:sz w:val=\"" << fontSize << "\" />";
 		}
+		else if( Context.get_inside_frame() ) // check bug 69510
+		{
+			int fontSize = 0;
+			if( Context.get_current_fontSize() > 0 )
+			{
+				fontSize = static_cast<int>(Context.get_current_fontSize());
+			}
+			else
+			{
+				auto DefaultStyle = Context.root()->odf_context().styleContainer().style_default_by_type(odf_types::style_family::Paragraph);
+				if( DefaultStyle != nullptr )
+				{
+					fontSize = static_cast<int>(2 * (DefaultStyle->content()->get_style_text_properties()->content_.fo_font_size_.has_value() ?
+					DefaultStyle->content()->get_style_text_properties()->content_.fo_font_size_.value().get_length().get_value() : 0.0));
+				}
+			}
+			if( fontSize > 0 )
+			{
+				needProcessFontSize = false;
+				_rPr << L"<w:sz w:val=\"" << fontSize * Context.get_drop_cap_context().Scale << "\"/>";
+				Context.set_inside_frame(false);
+			}
+		}
     }
 
     int fontSizeComplex=0;

@@ -96,13 +96,6 @@ WASM_EXPORT int GetErrorCode(CDrawingFile* pFile)
 		return -1;
 	return pFile->GetErrorCode();
 }
-WASM_EXPORT int CheckOwnerPassword(CDrawingFile* pFile, const char* password)
-{
-	std::wstring sPassword = L"";
-	if (NULL != password)
-		sPassword = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)password, strlen(password));
-	return pFile->CheckOwnerPassword(sPassword) ? 1 : 0;
-}
 WASM_EXPORT void Close(CDrawingFile* pFile)
 {
 	delete pFile;
@@ -197,6 +190,17 @@ WASM_EXPORT int RedactPage(CDrawingFile* pFile, int nPageIndex, int* arrRedactBo
 WASM_EXPORT int UndoRedact(CDrawingFile* pFile)
 {
 	return pFile->UndoRedact() ? 1 : 0;
+}
+WASM_EXPORT int CheckOwnerPassword(CDrawingFile* pFile, const char* password)
+{
+	std::wstring sPassword = L"";
+	if (NULL != password)
+		sPassword = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)password, strlen(password));
+	return pFile->CheckOwnerPassword(sPassword) ? 1 : 0;
+}
+WASM_EXPORT int CheckPerm(CDrawingFile* pFile, int nPermFlag)
+{
+	return pFile->CheckPerm(nPermFlag) ? 1 : 0;
 }
 
 WASM_EXPORT void* GetImageBase64(CDrawingFile* pFile, int rId)

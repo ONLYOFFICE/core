@@ -1128,8 +1128,13 @@ int main(int argc, char* argv[])
 	// OWNER PASSWORD
 	if (true)
 	{
-		std::string sPassword = "";
+		std::string sPassword = "gfhjkmgfhjkm";
+		std::cout << "CheckPerm 4 Edit "  << CheckPerm(pGrFile, 4) << std::endl;
+		std::cout << "CheckPerm 4 Print " << CheckPerm(pGrFile, 3) << std::endl;
+
 		std::cout << "CheckOwnerPassword " << CheckOwnerPassword(pGrFile, sPassword.c_str()) << std::endl;
+		std::cout << "CheckPerm 4 Edit "  << CheckPerm(pGrFile, 4) << std::endl;
+		std::cout << "CheckPerm 4 Print " << CheckPerm(pGrFile, 3) << std::endl;
 	}
 
 	BYTE* pColor = new BYTE[12] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };

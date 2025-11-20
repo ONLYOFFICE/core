@@ -841,6 +841,21 @@ bool CPdfReader::CheckOwnerPassword(const std::wstring& wsPassword)
 	delete secHdlr;
 	return bRes;
 }
+bool CPdfReader::CheckPerm(int nPerm)
+{
+	PDFDoc* pDoc = m_vPDFContext.front()->m_pDocument;
+	XRef* xref = pDoc->getXRef();
+
+	if (!xref->isEncrypted())
+		return true;
+
+	CryptAlgorithm encAlgorithm;
+	GBool ownerPasswordOk;
+	int permFlags, keyLength, encVersion;
+	xref->getEncryption(&permFlags, &ownerPasswordOk, &keyLength, &encVersion, &encAlgorithm);
+
+	return ownerPasswordOk || (permFlags & (1 << --nPerm));
+}
 void CPdfReader::DrawPageOnRenderer(IRenderer* pRenderer, int _nPageIndex, bool* pbBreak)
 {
 	PDFDoc* pDoc = NULL;

@@ -388,6 +388,12 @@ bool CPdfFile::CheckOwnerPassword(const std::wstring& sPassword)
 
 	return bRes;
 }
+bool CPdfFile::CheckPerm(int nPerm)
+{
+	if (!m_pInternal->pReader)
+		return false;
+	return m_pInternal->pReader->CheckPerm(nPerm);
+}
 int CPdfFile::GetRotate(int nPageIndex)
 {
 	if (!m_pInternal->pReader)

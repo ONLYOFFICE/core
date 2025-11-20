@@ -148,9 +148,12 @@ CFile.prototype._UndoRedact = function()
 
 CFile.prototype._CheckOwnerPassword = function(password)
 {
-	if (!password)
-		password = "";
-	return g_native_drawing_file["CheckOwnerPassword"](password);
+	return true;
+}
+
+CFile.prototype._CheckPerm = function(perm)
+{
+	return true;
 }
 
 // FONTS

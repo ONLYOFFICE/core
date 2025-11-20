@@ -96,6 +96,7 @@ public:
 	bool RedactPage(int nPageIndex, double* arrRedactBox, int nLengthX8, BYTE* pChanges, int nLength);
 	bool UndoRedact();
 	bool CheckOwnerPassword(const std::wstring& sPassword);
+	bool CheckPerm(int nPerm);
 	void GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY);
 	void DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak);
 	std::wstring GetInfo();

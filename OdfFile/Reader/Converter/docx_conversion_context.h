@@ -1007,9 +1007,15 @@ public:
 
     bool get_implicit_end() const;
 
+	void set_inside_frame( bool flag );
+
+	bool get_inside_frame() const;
+
 private:
 
     bool flag_implicit_end = false;
+
+	bool inside_frame = false;
 
 	struct _context_state
 	{

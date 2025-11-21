@@ -224,6 +224,35 @@ core_linux {
 	}
 }
 
+core_linux_arm {
+	CORE_BUILDS_PLATFORM_PREFIX = arm
+}
+linux_arm64 {
+	CORE_BUILDS_PLATFORM_PREFIX = linux_arm64
+	DEFINES += _ARM_ALIGN_
+
+	ARM64_TOOLCHAIN_BIN = $$(ARM64_TOOLCHAIN_BIN)
+	ARM64_TOOLCHAIN_BIN_PREFIX = $$(ARM64_TOOLCHAIN_BIN_PREFIX)
+	ARM64_SYSROOT = $$(ARM64_SYSROOT)
+
+	!isEmpty(ARM64_TOOLCHAIN_BIN){
+		!isEmpty(ARM64_TOOLCHAIN_BIN_PREFIX){
+			ARM64_TOOLCHAIN_BIN_FULL = $$ARM64_TOOLCHAIN_BIN/$$ARM64_TOOLCHAIN_BIN_PREFIX
+			message("using arm64 toolchain $$ARM64_TOOLCHAIN_BIN")
+
+			QMAKE_CC          = $$join(ARM64_TOOLCHAIN_BIN_FULL, , , "gcc")
+			QMAKE_CXX         = $$join(ARM64_TOOLCHAIN_BIN_FULL, , , "g++")
+			QMAKE_LINK        = $$join(ARM64_TOOLCHAIN_BIN_FULL, , , "g++")
+			QMAKE_LINK_SHLIB  = $$join(ARM64_TOOLCHAIN_BIN_FULL, , , "g++")
+
+			QMAKE_AR          = $$join(ARM64_TOOLCHAIN_BIN_FULL, , , "ar cqs")
+			QMAKE_OBJCOPY     = $$join(ARM64_TOOLCHAIN_BIN_FULL, , , "objcopy")
+			QMAKE_NM          = $$join(ARM64_TOOLCHAIN_BIN_FULL, , , "nm -P")
+			QMAKE_STRIP       = $$join(ARM64_TOOLCHAIN_BIN_FULL, , , "strip")
+
+		}
+	}
+}
 gcc {
     COMPILER_VERSION = $$system($$QMAKE_CXX " -dumpversion")
 	COMPILER_MAJOR_VERSION_ARRAY = $$split(COMPILER_VERSION, ".")
@@ -336,34 +365,6 @@ core_mac_64 {
 	apple_silicon {
 		CORE_BUILDS_PLATFORM_PREFIX = mac_arm64
 		QMAKE_APPLE_DEVICE_ARCHS = arm64
-	}
-}
-core_linux_arm {
-	CORE_BUILDS_PLATFORM_PREFIX = arm
-}
-linux_arm64 {
-	CORE_BUILDS_PLATFORM_PREFIX = linux_arm64
-	DEFINES += _ARM_ALIGN_
-
-	ARM64_TOOLCHAIN_BIN = $$(ARM64_TOOLCHAIN_BIN)
-	ARM64_TOOLCHAIN_BIN_PREFIX = $$(ARM64_TOOLCHAIN_BIN_PREFIX)
-
-	!isEmpty(ARM64_TOOLCHAIN_BIN){
-		!isEmpty(ARM64_TOOLCHAIN_BIN_PREFIX){
-			ARM64_TOOLCHAIN_BIN_FULL = $$ARM64_TOOLCHAIN_BIN/$$ARM64_TOOLCHAIN_BIN_PREFIX
-			message("using arm64 toolchain $$ARM64_TOOLCHAIN_BIN")
-
-			QMAKE_CC          = $$join(ARM64_TOOLCHAIN_BIN_FULL, , , "gcc")
-			QMAKE_CXX         = $$join(ARM64_TOOLCHAIN_BIN_FULL, , , "g++")
-			QMAKE_LINK        = $$join(ARM64_TOOLCHAIN_BIN_FULL, , , "g++")
-			QMAKE_LINK_SHLIB  = $$join(ARM64_TOOLCHAIN_BIN_FULL, , , "g++")
-
-			QMAKE_AR          = $$join(ARM64_TOOLCHAIN_BIN_FULL, , , "ar cqs")
-			QMAKE_OBJCOPY     = $$join(ARM64_TOOLCHAIN_BIN_FULL, , , "objcopy")
-			QMAKE_NM          = $$join(ARM64_TOOLCHAIN_BIN_FULL, , , "nm -P")
-			QMAKE_STRIP       = $$join(ARM64_TOOLCHAIN_BIN_FULL, , , "strip")
-
-		}
 	}
 }
 core_ios {

@@ -41,14 +41,20 @@ namespace utils {
 
 std::pair<double, double> GetMaxDigitSizePixelsImpl(const std::wstring & fontName, double fontSize, double dpi, long fontStyle, NSFonts::IFontManager *pFontManager)
 {
-    if (pFontManager == NULL) return std::pair<double, double>(7., 8.);
+    if (pFontManager == NULL)
+    {
+        _CP_LOG_CONTINUE << " wrong FontManager" << std::endl;
+        return std::pair<double, double>(7., 8.);
+    }
 
 	int hr = FALSE;
 
     if (FALSE == (hr = pFontManager->LoadFontByName(fontName, fontSize, fontStyle, dpi, dpi )))
 	{
+        _CP_LOG_CONTINUE << " wrong load font: " << fontName << L" " << std::to_wstring(fontSize) << L" pt";
         if (FALSE == (hr = pFontManager->LoadFontByName(L"Arial", fontSize, fontStyle, dpi, dpi )))
 		{
+            _CP_LOG_CONTINUE << " wrong load font: Arial " << std::to_wstring(fontSize) << L" pt ... default set" << std::endl;
             return std::pair<double, double>(7, 8);
 		}
 	}
@@ -64,8 +70,11 @@ std::pair<double, double> GetMaxDigitSizePixelsImpl(const std::wstring & fontNam
 		//if (FALSE == (hr = pFontManager->LoadString2( std::to_wstring(i), 0, 0)))
 		//	return std::pair<float, float>(7,8);
 
-		if (FALSE == (hr = pFontManager->LoadString2( L"0123456789" , 0, 0)))//
-			return std::pair<double, double>(7., 8.);
+        if (FALSE == (hr = pFontManager->LoadString2(L"0123456789", 0, 0)))//
+        {
+            _CP_LOG_CONTINUE << " wrong load string ... default set" << std::endl;
+            return std::pair<double, double>(7., 8.);
+        }
 
 		TBBox box;
 		try
@@ -73,12 +82,16 @@ std::pair<double, double> GetMaxDigitSizePixelsImpl(const std::wstring & fontNam
            box = pFontManager->MeasureString();
 		}catch(...)
 		{
+            _CP_LOG_CONTINUE << " wrong measure string ... default set" << std::endl;
             return std::pair<double, double>(7.,8.);
 		}
 
-		if (box.fMaxX < -0xffff+1 || box.fMaxY < -0xffff+1 ||
-			box.fMinX > 0xffff-1 || box.fMinY > 0xffff-1)		
-				return std::pair<double, double>(7., 8. );
+        if (box.fMaxX < -0xffff + 1 || box.fMaxY < -0xffff + 1 ||
+            box.fMinX > 0xffff - 1 || box.fMinY > 0xffff - 1)
+        {
+            _CP_LOG_CONTINUE << " wrong get box size from FontManager ... default set" << std::endl;
+            return std::pair<double, double>(7., 8.);
+        }
           
         if (box.fMaxX - box.fMinX > maxWidth)   maxWidth = box.fMaxX - box.fMinX;
         if (box.fMaxY - box.fMinY > maxHeight)  maxHeight = box.fMaxY - box.fMinY;
@@ -90,19 +103,25 @@ std::pair<double, double> GetMaxDigitSizePixelsImpl(const std::wstring & fontNam
     double width = (minWidth + 2 * maxWidth) /10. /3.;
 	//double width = (minWidth + 2 * maxWidth) / 5./*/36.*/ /3.;
 
-	if (width > 0.01 && maxHeight > 0.01)
-		return std::pair<double, double>(width, maxHeight);
-	else
-		return std::pair<double, double>(7., 8.);
+    if (width > 0.01 && maxHeight > 0.01)
+    {
+        _CP_LOG_CONTINUE << std::to_wstring(width) << ", " << std::to_wstring(maxHeight) << std::endl;
+        return std::pair<double, double>(width, maxHeight);
+    }
+    else
+    {
+        _CP_LOG_CONTINUE << " wrong size ... default set" << std::endl;
+        return std::pair<double, double>(7., 8.);
+    }
 }
 
 
 std::pair<double, double> GetMaxDigitSizePixels(const std::wstring & fontName, double fontSize, double dpi, long fontStyle, NSFonts::IApplicationFonts *appFonts)
 {
-    try 
-    {
-        _CP_LOG << "[info] : GetMaxDigitSizePixels...";
+    _CP_LOG << "[info] : GetMaxDigitSizePixels...";
 
+    try
+    {
         if (appFonts)
         {
             NSFonts::IFontManager *pFontManager = appFonts->GenerateFontManager();
@@ -114,15 +133,14 @@ std::pair<double, double> GetMaxDigitSizePixels(const std::wstring & fontName, d
                 delete pFontManager;
             }
 
-            _CP_LOG << "ok" << std::endl;
             return val;
         }
     }
     catch(...)
     {
-        // TODO: default value!
     }    
-	return std::pair<double, double>(7., 8.);
+    _CP_LOG_CONTINUE << " default set" << std::endl;
+    return std::pair<double, double>(7., 8.);
 }
 
 }

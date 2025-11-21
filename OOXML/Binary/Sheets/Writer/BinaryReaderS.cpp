@@ -6328,7 +6328,7 @@ int BinaryWorksheetsTableReader::ReadDrawings(BYTE type, long length, void* poRe
 				{			
 					OOX::Spreadsheet::COleObject* pOleObject = new OOX::Spreadsheet::COleObject();
 					
-					if (oPic.oleObject->m_sProgId.IsInit())						pOleObject->m_oProgId = oPic.oleObject->m_sProgId.get();
+					if (oPic.oleObject->m_sProgId.IsInit()) pOleObject->m_oProgId = oPic.oleObject->m_sProgId.get();
 					if (oPic.oleObject->m_oDrawAspect.IsInit())
 					{
 						std::wstring sDrawAspect;

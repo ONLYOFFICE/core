@@ -36,10 +36,11 @@
 
 namespace cpdoccore
 {
-    logging< std::wostream > logging_err(std::wcerr);
-    logging< std::wostream > logging_cout(std::wcout);
-
-    std::wstringstream              log_stringstream;
-    logging< std::wstringstream >   logging_log (log_stringstream);
-
+    logging<std::wostream> logging_cout(std::wcout, true);
+    logging<std::wostream> logging_cout_continue(std::wcout, false);
+    
+    std::wstringstream log_stringstream;
+    
+    logging<std::wstringstream> logging_log(log_stringstream, true);
+    logging<std::wstringstream> logging_log_continue(log_stringstream, false);
 }

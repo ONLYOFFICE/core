@@ -43,7 +43,7 @@ std::pair<double, double> GetMaxDigitSizePixelsImpl(const std::wstring & fontNam
 {
     if (pFontManager == NULL)
     {
-        _CP_LOG_CONTINUE << " wrong FontManager" << std::endl;
+        _CP_LOG_CONTINUE << " error FontManager - default set" << std::endl;
         return std::pair<double, double>(7., 8.);
     }
 
@@ -51,10 +51,10 @@ std::pair<double, double> GetMaxDigitSizePixelsImpl(const std::wstring & fontNam
 
     if (FALSE == (hr = pFontManager->LoadFontByName(fontName, fontSize, fontStyle, dpi, dpi )))
 	{
-        _CP_LOG_CONTINUE << " wrong load font: " << fontName << L" " << std::to_wstring(fontSize) << L" pt";
+        _CP_LOG_CONTINUE << " error load font ... try Arial";
         if (FALSE == (hr = pFontManager->LoadFontByName(L"Arial", fontSize, fontStyle, dpi, dpi )))
 		{
-            _CP_LOG_CONTINUE << " wrong load font: Arial " << std::to_wstring(fontSize) << L" pt ... default set" << std::endl;
+            _CP_LOG_CONTINUE << "... error - default set" << std::endl;
             return std::pair<double, double>(7, 8);
 		}
 	}
@@ -72,7 +72,7 @@ std::pair<double, double> GetMaxDigitSizePixelsImpl(const std::wstring & fontNam
 
         if (FALSE == (hr = pFontManager->LoadString2(L"0123456789", 0, 0)))//
         {
-            _CP_LOG_CONTINUE << " wrong load string ... default set" << std::endl;
+            _CP_LOG_CONTINUE << " error load string - default set" << std::endl;
             return std::pair<double, double>(7., 8.);
         }
 
@@ -82,14 +82,14 @@ std::pair<double, double> GetMaxDigitSizePixelsImpl(const std::wstring & fontNam
            box = pFontManager->MeasureString();
 		}catch(...)
 		{
-            _CP_LOG_CONTINUE << " wrong measure string ... default set" << std::endl;
+            _CP_LOG_CONTINUE << " error measure string - default set" << std::endl;
             return std::pair<double, double>(7.,8.);
 		}
 
         if (box.fMaxX < -0xffff + 1 || box.fMaxY < -0xffff + 1 ||
             box.fMinX > 0xffff - 1 || box.fMinY > 0xffff - 1)
         {
-            _CP_LOG_CONTINUE << " wrong get box size from FontManager ... default set" << std::endl;
+            _CP_LOG_CONTINUE << " wrong get box size from FontManager - default set" << std::endl;
             return std::pair<double, double>(7., 8.);
         }
           
@@ -110,7 +110,7 @@ std::pair<double, double> GetMaxDigitSizePixelsImpl(const std::wstring & fontNam
     }
     else
     {
-        _CP_LOG_CONTINUE << " wrong size ... default set" << std::endl;
+        _CP_LOG_CONTINUE << " wrong size - default set" << std::endl;
         return std::pair<double, double>(7., 8.);
     }
 }
@@ -118,8 +118,9 @@ std::pair<double, double> GetMaxDigitSizePixelsImpl(const std::wstring & fontNam
 
 std::pair<double, double> GetMaxDigitSizePixels(const std::wstring & fontName, double fontSize, double dpi, long fontStyle, NSFonts::IApplicationFonts *appFonts)
 {
-    _CP_LOG << "[info] : GetMaxDigitSizePixels...";
+    _CP_LOG << "[info] : GetMaxDigitSizePixels (" << fontName << L" " << std::to_wstring(fontSize) << L"pt style " << std::to_wstring(fontStyle) << L") ...";
 
+    _CP_LOG_CONTINUE;
     try
     {
         if (appFonts)
@@ -139,7 +140,7 @@ std::pair<double, double> GetMaxDigitSizePixels(const std::wstring & fontName, d
     catch(...)
     {
     }    
-    _CP_LOG_CONTINUE << " default set" << std::endl;
+    _CP_LOG_CONTINUE << "error .. default set" << std::endl;
     return std::pair<double, double>(7., 8.);
 }
 

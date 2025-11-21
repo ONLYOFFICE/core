@@ -186,6 +186,16 @@ bool docx_conversion_context::get_inside_frame() const
 	return inside_frame;
 }
 
+void docx_conversion_context::set_scale( const int _scale )
+{
+	scale_for_framePr = _scale;
+}
+
+int docx_conversion_context::get_scale() const
+{
+	return scale_for_framePr;
+}
+
 void docx_conversion_context::set_output_document(package::docx_document * document)
 {
 	output_document_ = document;

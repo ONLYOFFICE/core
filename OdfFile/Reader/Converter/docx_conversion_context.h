@@ -1011,11 +1011,17 @@ public:
 
 	bool get_inside_frame() const;
 
+	void set_scale( const int _scale );
+
+	int get_scale() const;
+
 private:
 
     bool flag_implicit_end = false;
 
 	bool inside_frame = false;
+
+	int scale_for_framePr = 0;
 
 	struct _context_state
 	{

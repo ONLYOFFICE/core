@@ -266,6 +266,7 @@ void paragraph_format_properties::docx_convert(oox::docx_conversion_context & Co
 				if (Context.get_drop_cap_context().Scale > 0)
 				{
 					CP_XML_ATTR(L"w:lines",Context.get_drop_cap_context().Scale);
+					Context.set_scale( Context.get_drop_cap_context().Scale );
 				}
 				else
 				{
@@ -281,9 +282,14 @@ void paragraph_format_properties::docx_convert(oox::docx_conversion_context & Co
 				CP_XML_ATTR(L"w:after", 0); 
 				if ( Context.get_inside_frame() )
 				{
-					int space = Context.get_drop_cap_context().Space > 0 ? Context.get_drop_cap_context().Space : 113;
-					_CP_LOG << "space = " << space << "\n";
-					CP_XML_ATTR(L"w:line", 240 * ( Context.get_drop_cap_context().Scale ) + space);
+					if( Context.get_drop_cap_context().Scale < 5 )
+					{
+						CP_XML_ATTR(L"w:line", 240 * ( Context.get_drop_cap_context().Scale ));
+					}
+					else
+					{
+						CP_XML_ATTR(L"w:line", 240 * ( Context.get_drop_cap_context().Scale ) + 2 * 240);
+					}
 				}
 				else if (Context.get_drop_cap_context().FontSize > 0)
 				{

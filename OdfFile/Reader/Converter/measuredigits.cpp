@@ -92,7 +92,12 @@ std::pair<double, double> GetMaxDigitSizePixelsImpl(const std::wstring & fontNam
             _CP_LOG_CONTINUE << " wrong get box size from FontManager - default set" << std::endl;
             return std::pair<double, double>(7., 8.);
         }
-          
+        _CP_LOG_CONTINUE << " box_x(" << std::to_wstring(box.fMinX) << L", " << std::to_wstring(box.fMaxX) << L")";
+
+        TBBox box2;
+        box2 = pFontManager->MeasureString2();
+        _CP_LOG_CONTINUE << " box2_x(" << std::to_wstring(box2.fMinX) << L", " << std::to_wstring(box2.fMaxX) << L")";
+        
         if (box.fMaxX - box.fMinX > maxWidth)   maxWidth = box.fMaxX - box.fMinX;
         if (box.fMaxY - box.fMinY > maxHeight)  maxHeight = box.fMaxY - box.fMinY;
        
@@ -100,8 +105,8 @@ std::pair<double, double> GetMaxDigitSizePixelsImpl(const std::wstring & fontNam
         if (box.fMaxY - box.fMinY < minHeight)  minHeight = box.fMaxY - box.fMinY;
     }
 
+    _CP_LOG_CONTINUE << " width(" << std::to_wstring(minWidth) << L", " << std::to_wstring(maxWidth) << L")";
     double width = (minWidth + 2 * maxWidth) /10. /3.;
-	//double width = (minWidth + 2 * maxWidth) / 5./*/36.*/ /3.;
 
     if (width > 0.01 && maxHeight > 0.01)
     {

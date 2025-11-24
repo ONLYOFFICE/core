@@ -1379,8 +1379,8 @@ void text_format_properties::docx_convert(oox::docx_conversion_context & Context
 			if( fontSize > 0 )
 			{
 				needProcessFontSize = false;
-				int scale = Context.get_drop_cap_context().Scale != 1 ? Context.get_drop_cap_context().Scale : Context.get_scale();
-				_rPr << L"<w:sz w:val=\"" << fontSize * scale + (scale < 5 ? 0: 24) << "\"/>";
+				const int scale = Context.get_drop_cap_context().Scale == 1 ? Context.get_scale() : Context.get_drop_cap_context().Scale;
+				_rPr << L"<w:sz w:val=\"" << fontSize * scale + ( scale < 5 ? 0: 8 * (scale - 1) ) << "\"/>";
 				Context.set_inside_frame(false);
 			}
 		}

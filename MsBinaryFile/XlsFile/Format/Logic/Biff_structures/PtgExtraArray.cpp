@@ -77,6 +77,8 @@ void PtgExtraArray::load(CFRecord& record)
         record >> cols >> rows;
         tempcols = cols;
         temprows = rows;
+		--cols;
+		--rows;
     }
     for(int i = 0; i < (tempcols) * (temprows); ++i)
 	{
@@ -153,10 +155,10 @@ const std::wstring PtgExtraArray::toString() const
 		if(tempVal.empty())
 			tempVal = L"#N/A";
 		ret_val += tempVal;
-		if (col_cnt > 1)
+		if (col_cnt)
 		{
 			ret_val += L',';
-			--col_cnt;
+			col_cnt--;
 		}
 		else
 		{

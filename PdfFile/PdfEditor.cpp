@@ -996,6 +996,7 @@ void CPdfEditor::SetMode(Mode nMode)
 		m_mObjManager.SetDoc(pDoc);
 		int nPages = m_pReader->GetNumPages();
 		pPageTree->CreateFakePages(nPages);
+		m_pWriter->SetNeedAddHelvetica(false);
 	}
 }
 bool CPdfEditor::IncrementalUpdates()
@@ -3675,7 +3676,7 @@ void CPdfEditor::Redact(IAdvancedCommand* _pCommand)
 
 	if (bEditPage)
 	{
-		PdfWriter::RedactOutputDev oRedactOut(m_pWriter);
+		PdfWriter::RedactOutputDev oRedactOut(m_pWriter, &m_mObjManager);
 		oRedactOut.NewPDF(pPDFDocument->getXRef());
 		oRedactOut.SetRedact(arrAllQuads);
 

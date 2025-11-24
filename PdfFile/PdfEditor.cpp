@@ -300,7 +300,7 @@ PdfWriter::CExtGrState* CreateExtGState(Object* oState)
 	PdfWriter::CExtGrState* pState = new PdfWriter::CExtGrState(NULL);
 	return pState;
 }
-PdfWriter::CObjectBase* DictToCDictObject2(Object* obj, PdfWriter::CDocument* pDoc, XRef* xref, CObjectsManager* pManager, int nStartRefID, int nAddObjToXRef = 0, bool bUndecodedStream = true)
+PdfWriter::CObjectBase* DictToCDictObject2(Object* obj, PdfWriter::CDocument* pDoc, XRef* xref, CObjectsManager* pManager, int nStartRefID, int nAddObjToXRef = 0, bool bUndecodedStream = true, bool bMakeBinary = false)
 {
 	PdfWriter::CObjectBase* pBase = NULL;
 	Object oTemp;
@@ -324,7 +324,7 @@ PdfWriter::CObjectBase* DictToCDictObject2(Object* obj, PdfWriter::CDocument* pD
 	case objString:
 	{
 		GString* str = obj->getString();
-		if (str->isBinary())
+		if (str->isBinary() || bMakeBinary)
 		{
 			int nLength = str->getLength();
 			BYTE* arrId = new BYTE[nLength];
@@ -1459,6 +1459,55 @@ void CPdfEditor::Close()
 			}
 		}
 		oAcroForm.free(); oCatalog.free();
+
+		if (xref->isEncrypted() && xref->getTrailerDict())
+		{
+			CryptAlgorithm encAlgorithm;
+			GBool ownerPasswordOk;
+			int permFlags, keyLength, encVersion;
+			xref->getEncryption(&permFlags, &ownerPasswordOk, &keyLength, &encVersion, &encAlgorithm);
+			int nCryptAlgorithm = encAlgorithm;
+
+			Object* pTrailerDict = xref->getTrailerDict();
+			pDoc->SetPasswords(m_wsPassword, m_wsPassword);
+			PdfWriter::CEncryptDict* pEncryptDict = pDoc->GetEncrypt();
+
+			// Нужно получить словарь Encrypt БЕЗ дешифровки, поэтому времено отключаем encrypted в xref
+			xref->offEncrypted();
+
+			Object encrypt, ID, ID1;
+			if (pTrailerDict->dictLookup("Encrypt", &encrypt) && encrypt.isDict())
+			{
+				for (int nIndex = 0; nIndex < encrypt.dictGetLength(); ++nIndex)
+				{
+					Object oTemp;
+					char* chKey = encrypt.dictGetKey(nIndex);
+					encrypt.dictGetValNF(nIndex, &oTemp);
+					PdfWriter::CObjectBase* pBase = DictToCDictObject2(&oTemp, pDoc, xref, &m_mObjManager, nStartRefID, 0, true, true);
+					pEncryptDict->Add(chKey, pBase);
+					oTemp.free();
+				}
+			}
+
+			if (!pEncryptDict->Get("Length"))
+				pEncryptDict->Add("Length", 40);
+
+			encrypt.free();
+
+			PdfWriter::CObjectBase* pID = NULL;
+			if (pTrailerDict->dictLookup("ID", &ID) && ID.isArray() && ID.arrayGet(0, &ID1) && ID1.isString())
+			{
+				pID = DictToCDictObject2(&ID1, pDoc, xref, &m_mObjManager, nStartRefID, 0, true, true);
+				pEncryptDict->Add("ID", pID);
+			}
+			ID.free(); ID1.free();
+
+			xref->onEncrypted();
+
+			pDoc->SetEncryption(pEncryptDict, pID);
+			pEncryptDict->Fix();
+			pEncryptDict->UpdateKey(nCryptAlgorithm);
+		}
 
 		m_pWriter->SaveToFile(m_wsDstFile);
 		return;

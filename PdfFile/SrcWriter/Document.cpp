@@ -280,6 +280,8 @@ namespace PdfWriter
 			pEncrypt = m_pEncryptDict->GetEncrypt();
 			PrepareEncryption();
 		}
+		else if (m_pEncryptDict)
+			pEncrypt = m_pEncryptDict->GetEncrypt();
 
 		m_pXref->WriteToStream(pStream, pEncrypt, true);
 	}
@@ -309,6 +311,23 @@ namespace PdfWriter
 
 		delete pStream;
 		return true;
+	}
+	void CDocument::SetEncryption(CEncryptDict* pEncrypt, PdfWriter::CObjectBase* _pID)
+	{
+		m_bEncrypt = false;
+		m_pEncryptDict = pEncrypt;
+
+		CArrayObject* pArrID = new CArrayObject();
+		m_pTrailer->Add("ID", pArrID);
+		BYTE arrId[16];
+
+		CEncryptDict::CreateId(m_pInfo, m_pXref, (BYTE*)arrId);
+
+		pArrID->Add(_pID->Copy());
+		pArrID->Add(new CBinaryObject(arrId, 16));
+
+		for (int i = 0; i < m_vMetaOForms.size(); ++i)
+			m_vMetaOForms[i]->Add("ID", new CBinaryObject(arrId, 16));
 	}
     void CDocument::PrepareEncryption()
 	{
@@ -1936,7 +1955,7 @@ namespace PdfWriter
 				m_pTrailer->Copy(pTrailer);
 
 				CEncrypt* pEncrypt = NULL;
-				if (m_bEncrypt && m_pEncryptDict)
+				if (m_pEncryptDict)
 					pEncrypt = m_pEncryptDict->GetEncrypt();
 
 				pXref->WriteToStream(pStream, pEncrypt, bNeedStreamXRef);

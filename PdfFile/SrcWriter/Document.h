@@ -204,6 +204,7 @@ namespace PdfWriter
 		const std::map<int, CAnnotation*>& GetAnnots() { return m_mAnnotations; }
 		const std::map<int, CDictObject*>& GetParents() { return m_mParents; }
 		CPageTree*        GetPageTree() { return m_pPageTree; }
+		CEncryptDict*     GetEncrypt() { return m_pEncryptDict; }
 		void              AddShapeXML(const std::string& sXML);
 		void              EndShapeXML();
 		void              ClearPage();
@@ -213,6 +214,7 @@ namespace PdfWriter
 		CDictObject*      GetAcroForm() { return m_pAcroForm; }
 		CResourcesDict*   CreateResourcesDict(bool bInline, bool bProcSet);
 		void              RemoveObj(CObjectBase* pObj);
+		void              SetEncryption(CEncryptDict* pEncrypt, PdfWriter::CObjectBase* pID);
 	private:		  
 					  
 		char*             GetTTFontTag();

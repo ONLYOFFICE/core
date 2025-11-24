@@ -898,18 +898,19 @@ void CPdfReader::DrawPageOnRenderer(IRenderer* pRenderer, int _nPageIndex, bool*
 		if (m_vRedact[i]->m_nPageIndex == _nPageIndex)
 		{
 			BYTE* pMemory = m_vRedact[i]->m_pChanges;
-			int ret = *((int*)pMemory);
-			pMemory += 4;
-			LONG R = ret;
-			ret = *((int*)pMemory);
-			pMemory += 4;
-			LONG G = ret;
-			ret = *((int*)pMemory);
-			LONG B = ret;
-			LONG lColor = (LONG)(R | (G << 8) | (B << 16) | ((LONG)255 << 24));
-
 			for (int j = 0; j < m_vRedact[i]->m_arrRedactBox.size(); j += 8)
 			{
+				int ret = *((int*)pMemory);
+				pMemory += 4;
+				LONG R = ret;
+				ret = *((int*)pMemory);
+				pMemory += 4;
+				LONG G = ret;
+				ret = *((int*)pMemory);
+				pMemory += 4;
+				LONG B = ret;
+				LONG lColor = (LONG)(R | (G << 8) | (B << 16) | ((LONG)255 << 24));
+
 				pRenderer->PathCommandEnd();
 				pRenderer->put_BrushColor1(lColor);
 				pRenderer->PathCommandMoveTo(PdfReader::PDFCoordsToMM(m_vRedact[i]->m_arrRedactBox[j + 0] - cropBox->x1), PdfReader::PDFCoordsToMM(cropBox->y2 - m_vRedact[i]->m_arrRedactBox[j + 1]));

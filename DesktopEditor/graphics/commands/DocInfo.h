@@ -181,7 +181,6 @@ public:
 		int nPage;
 		double dX;
 		double dY;
-		CHeading* pParent;
 		std::vector<CHeading*> arrHeading;
 
 		CHeading();

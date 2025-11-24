@@ -999,38 +999,77 @@ void form_listbox::pptx_convert(oox::pptx_conversion_context& Context)
 void form_listbox::serialize_control_props(std::wostream & strm)
 {
 	formulasconvert::odf2oox_converter converter;
-	CP_XML_WRITER(strm)
+
+	if (dropdown_ && dropdown_->get())
 	{
-		CP_XML_NODE(L"formControlPr")
+		CP_XML_WRITER(strm)
 		{
-			CP_XML_ATTR(L"xmlns", L"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main");
-
-			CP_XML_ATTR(L"objectType", L"List");
-			if ((dropdown_) && (dropdown_->get()))
+			CP_XML_NODE(L"formControlPr")
 			{
+				CP_XML_ATTR(L"xmlns", L"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main");
+				CP_XML_ATTR(L"objectType", L"Drop");
 				CP_XML_ATTR(L"dropStyle", L"combo");
-			}
-			if (size_)
-				CP_XML_ATTR(L"dx", 3 * (*size_));
-			else
-				CP_XML_ATTR(L"dx", L"20");
 
-			CP_XML_ATTR(L"noThreeD", L"1");
-			
-			if (linked_cell_)
-			{
-				std::wstring fmla = converter.convert_named_ref(*linked_cell_, true, L" ", true);
-				CP_XML_ATTR(L"fmlaLink", fmla);
-			}
-			if (source_cell_range_)
-			{
-				std::wstring fmla = converter./*convert_named_expr*/convert_named_ref(*source_cell_range_, true, L" ", true);
-				CP_XML_ATTR(L"fmlaRange", fmla);
-			}
-			//CP_XML_ATTR(L"sel", L"3");
-			if (n_value_)
-				CP_XML_ATTR(L"val", *n_value_);
+				if (size_)
+					CP_XML_ATTR(L"dx", 3 * (*size_));
+				else
+					CP_XML_ATTR(L"dx", L"20");
 
+				CP_XML_ATTR(L"noThreeD", L"1");
+
+				if (linked_cell_)
+				{
+					std::wstring fmla = converter.convert_named_ref(*linked_cell_, true, L" ", true);
+					CP_XML_ATTR(L"fmlaLink", fmla);
+				}
+				if (source_cell_range_)
+				{
+					std::wstring fmla = converter.convert_named_ref(*source_cell_range_, true, L" ", true);
+					CP_XML_ATTR(L"fmlaRange", fmla);
+				}
+				CP_XML_ATTR(L"sel", L"3");
+				if (n_value_)
+					CP_XML_ATTR(L"val", *n_value_);
+				else
+					CP_XML_ATTR(L"val", 0);
+			}
+		}
+	}
+	else
+	{
+		CP_XML_WRITER(strm)
+		{
+			CP_XML_NODE(L"formControlPr")
+			{
+				CP_XML_ATTR(L"xmlns", L"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main");
+
+				CP_XML_ATTR(L"objectType", L"List");
+				if ((dropdown_) && (dropdown_->get()))
+				{
+					CP_XML_ATTR(L"dropStyle", L"combo");
+				}
+				if (size_)
+					CP_XML_ATTR(L"dx", 3 * (*size_));
+				else
+					CP_XML_ATTR(L"dx", L"20");
+
+				CP_XML_ATTR(L"noThreeD", L"1");
+
+				if (linked_cell_)
+				{
+					std::wstring fmla = converter.convert_named_ref(*linked_cell_, true, L" ", true);
+					CP_XML_ATTR(L"fmlaLink", fmla);
+				}
+				if (source_cell_range_)
+				{
+					std::wstring fmla = converter./*convert_named_expr*/convert_named_ref(*source_cell_range_, true, L" ", true);
+					CP_XML_ATTR(L"fmlaRange", fmla);
+				}
+				//CP_XML_ATTR(L"sel", L"3");
+				if (n_value_)
+					CP_XML_ATTR(L"val", *n_value_);
+
+			}
 		}
 	}
 }

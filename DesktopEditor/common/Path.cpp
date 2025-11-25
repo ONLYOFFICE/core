@@ -246,6 +246,11 @@ namespace NSSystemPath
 
 		wsNewPath.pop_back();
 
+		#if !defined(_WIN32) && !defined(_WIN64)
+		if (L'/' == strPath[0] || L'\\' == strPath[0])
+			return L'/' + wsNewPath;
+		#endif
+
 		return wsNewPath;
 	}
 	

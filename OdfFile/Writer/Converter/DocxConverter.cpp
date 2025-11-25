@@ -883,7 +883,7 @@ void DocxConverter::convert(OOX::Logic::CParagraph *oox_paragraph)
 			odt_context->end_drop_cap(); 
 		}
 
-		convert(oox_paragraph->m_oParagraphProperty, paragraph_properties, text_properties);
+		convert(oox_paragraph->m_oParagraphProperty, paragraph_properties, text_properties, false);
 		
 		if (text_properties && oox_paragraph->m_oParagraphProperty)
 		{
@@ -1355,7 +1355,7 @@ int DocxConverter::convert(OOX::Logic::CPPrChange *oox_para_prop_change)
 			list_style_name = odt_context->styles_context()->lists_styles().get_style_name(list_style_id); 
 			odt_context->styles_context()->last_state()->set_list_style_name(list_style_name);
 		}
-		convert(oox_para_prop_change->m_pParPr.GetPointer(), paragraph_properties, text_properties);
+		convert(oox_para_prop_change->m_pParPr.GetPointer(), paragraph_properties, text_properties, false);
 
 		odf_writer::odf_style_state_ptr style_state = odt_context->styles_context()->last_state(style_family::Paragraph);
 		if (style_state)
@@ -1494,7 +1494,7 @@ void DocxConverter::convert(OOX::Logic::CSmartTag *oox_tag)
 	}
 }
 void DocxConverter::convert(OOX::Logic::CParagraphProperty	*oox_paragraph_pr, 
-	cpdoccore::odf_writer::paragraph_format_properties *paragraph_properties, odf_writer::text_format_properties* text_properties)
+    cpdoccore::odf_writer::paragraph_format_properties *paragraph_properties, odf_writer::text_format_properties* text_properties, bool is_default_style_par_props)
 {
 	odt_context->text_context()->set_KeepNextParagraph(false);
 	
@@ -1579,16 +1579,27 @@ void DocxConverter::convert(OOX::Logic::CParagraphProperty	*oox_paragraph_pr,
 			}
 			else
 			{
-				double val = oox_paragraph_pr->m_oSpacing->m_oLine->ToPoints() * 20;
+				double val {240.0};
+				if( !is_default_style_par_props )
+				{
+					val = oox_paragraph_pr->m_oSpacing->m_oLine->ToPoints() * 20;
+				}
 				odf_types::percent percent(val * 100. / 240);
 				paragraph_properties->fo_line_height_ = percent;
 			}
 		}
 		if (oox_paragraph_pr->m_oSpacing->m_oAfter.IsInit())
 		{
- 			_CP_OPT(odf_types::length_or_percent) length;
-			convert(dynamic_cast<SimpleTypes::CUniversalMeasure *>(oox_paragraph_pr->m_oSpacing->m_oAfter.GetPointer()), length);
-			paragraph_properties->fo_margin_bottom_ = length;
+			_CP_OPT(odf_types::length_or_percent) length;
+			if( !is_default_style_par_props )
+			{
+				convert(dynamic_cast<SimpleTypes::CUniversalMeasure *>(oox_paragraph_pr->m_oSpacing->m_oAfter.GetPointer()), length);
+				paragraph_properties->fo_margin_bottom_ = length;
+			}
+			else
+			{
+				paragraph_properties->fo_margin_bottom_ = length;
+			}
 		}
 		if (oox_paragraph_pr->m_oSpacing->m_oBefore.IsInit())
 		{
@@ -3859,9 +3870,16 @@ void DocxConverter::convert(OOX::CDocDefaults *def_style, OOX::CStyles *styles)
 	if (def_style == NULL)return;
 	if (styles == NULL)return;
 
+	bool is_default_par_props = false;
+
 	std::map<SimpleTypes::EStyleType, size_t>::iterator pFindParaDefault = styles->m_mapStyleDefaults.find(SimpleTypes::styletypeParagraph);
 	std::map<SimpleTypes::EStyleType, size_t>::iterator pFindRunDefault = styles->m_mapStyleDefaults.find(SimpleTypes::styletypeCharacter);
 	std::map<SimpleTypes::EStyleType, size_t>::iterator pFindTableDefault = styles->m_mapStyleDefaults.find(SimpleTypes::styletypeTable);
+
+	if( pFindParaDefault != styles->m_mapStyleDefaults.end() )
+	{
+		is_default_par_props = true;
+	}
 
 	if (def_style->m_oParPr.IsInit() || pFindParaDefault != styles->m_mapStyleDefaults.end())
 	{
@@ -3883,7 +3901,7 @@ void DocxConverter::convert(OOX::CDocDefaults *def_style, OOX::CStyles *styles)
 			}
 		}
 
-		convert(&paraProps, paragraph_properties, NULL); 
+		convert(&paraProps, paragraph_properties, NULL, is_default_par_props);
 		
 		if (def_style->m_oParPr.IsInit() && def_style->m_oParPr->m_oRPr.IsInit())
 		{
@@ -4249,7 +4267,7 @@ void DocxConverter::convert_table_style(OOX::CStyle *oox_style)
 	if (oox_style->m_oParPr.IsInit())
 	{
 		odf_writer::paragraph_format_properties* paragraph_properties = odt_context->styles_context()->table_styles().get_paragraph_properties();
-		convert(oox_style->m_oParPr.GetPointer(), paragraph_properties, NULL);
+		convert(oox_style->m_oParPr.GetPointer(), paragraph_properties, NULL, false);
 	}
 
 	if (oox_style->m_oTcPr.IsInit())
@@ -4287,7 +4305,7 @@ void DocxConverter::convert_table_style(OOX::CStyle *oox_style)
 		//сначела отнаследоваться от общих настроек???
 		convert(oox_style->m_arrTblStylePr[i]->m_oTcPr.GetPointer(), odt_context->styles_context()->table_styles().get_table_cell_properties());
 		convert(oox_style->m_arrTblStylePr[i]->m_oRunPr.GetPointer(),odt_context->styles_context()->table_styles().get_text_properties());
-		convert(oox_style->m_arrTblStylePr[i]->m_oParPr.GetPointer(),odt_context->styles_context()->table_styles().get_paragraph_properties(), NULL);
+		convert(oox_style->m_arrTblStylePr[i]->m_oParPr.GetPointer(),odt_context->styles_context()->table_styles().get_paragraph_properties(), NULL, false);
 
 			//nullable<OOX::Logic::CTableProperty      >      m_oTblPr;
 			//nullable<OOX::Logic::CTableRowProperties >      m_oTrPr;
@@ -4378,7 +4396,7 @@ void DocxConverter::convert(OOX::CStyle	*oox_style)
 			}
 		}
 
-		convert(oox_style->m_oParPr.GetPointer(), paragraph_properties, NULL);
+		convert(oox_style->m_oParPr.GetPointer(), paragraph_properties, NULL, false);
 
 		if (oox_style->m_oParPr->m_oNumPr.IsInit())
 		{

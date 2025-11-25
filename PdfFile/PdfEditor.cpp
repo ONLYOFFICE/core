@@ -3632,6 +3632,8 @@ bool CPdfEditor::IsBase14(const std::wstring& wsFontName, bool& bBold, bool& bIt
 void CPdfEditor::Redact(IAdvancedCommand* _pCommand)
 {
 	PDFDoc* pPDFDocument = NULL;
+	PdfReader::CPdfFontList* pFontList = NULL;
+	int nStartRefID = 0;
 	PDFRectangle* cropBox = NULL;
 	int nPageIndex = -1;
 	Page* pPage = NULL;
@@ -3639,7 +3641,7 @@ void CPdfEditor::Redact(IAdvancedCommand* _pCommand)
 	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
 	if (bEditPage)
 	{
-		nPageIndex = m_pReader->GetPageIndex(m_nEditPage, &pPDFDocument);
+		nPageIndex = m_pReader->GetPageIndex(m_nEditPage, &pPDFDocument, &pFontList, &nStartRefID);
 		if (nPageIndex < 0 || !pPDFDocument)
 			return;
 		pPage = pPDFDocument->getCatalog()->getPage(nPageIndex);
@@ -3676,7 +3678,7 @@ void CPdfEditor::Redact(IAdvancedCommand* _pCommand)
 
 	if (bEditPage)
 	{
-		PdfWriter::RedactOutputDev oRedactOut(m_pWriter, &m_mObjManager);
+		PdfWriter::RedactOutputDev oRedactOut(m_pWriter, &m_mObjManager, nStartRefID);
 		oRedactOut.NewPDF(pPDFDocument->getXRef());
 		oRedactOut.SetRedact(arrAllQuads);
 

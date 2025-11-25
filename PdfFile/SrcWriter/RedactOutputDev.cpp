@@ -501,12 +501,13 @@ void ApplyRedactToGray(const std::vector<double>& arrQuadPoints, BYTE* pImage, i
 }
 
 //----- constructor/destructor
-RedactOutputDev::RedactOutputDev(CPdfWriter* pRenderer, CObjectsManager* pObjMng)
+RedactOutputDev::RedactOutputDev(CPdfWriter* pRenderer, CObjectsManager* pObjMng, int nStartRefID)
 {
 	m_pXref = NULL;
 
 	m_pRenderer = pRenderer;
 	m_mObjManager = pObjMng;
+	m_nStartRefID = nStartRefID;
 	m_pDoc = m_pRenderer->GetDocument();
 	m_pPage = NULL;
 
@@ -1071,9 +1072,9 @@ void RedactOutputDev::drawImageMask(GfxState *pGState, Gfx *gfx, Object *pRef, S
 		pObj = CreateImage(gfx, nWidth, nHeight, STREAM_FILTER_FLATE_DECODE, 1, NULL);
 	else
 	{
-		pObj = m_mObjManager->GetObj(pRef->getRefNum());
+		pObj = m_mObjManager->GetObj(pRef->getRefNum() + m_nStartRefID);
 
-		CDictObject* pXObject = pDocument->GetXObject(pRef->getRefNum());
+		CDictObject* pXObject = pDocument->GetXObject(pRef->getRefNum() + m_nStartRefID);
 		if (pXObject)
 		{
 			DrawXObject(m_sImageName.c_str());
@@ -1102,6 +1103,7 @@ void RedactOutputDev::drawImageMask(GfxState *pGState, Gfx *gfx, Object *pRef, S
 	SaveImageMaskToStream(pDocument, (CDictObject*)pObj, pBufferPtr, nWidth, nHeight);
 	delete[] pBufferPtr;
 
+	pDocument->AddXObject(pRef->getRefNum() + m_nStartRefID, (CDictObject*)pObj);
 	DrawXObject(m_sImageName.c_str());
 }
 void RedactOutputDev::drawImage(GfxState *pGState, Gfx *gfx, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap, int *pMaskColors, GBool bInlineImg, GBool interpolate)
@@ -1118,9 +1120,9 @@ void RedactOutputDev::drawImage(GfxState *pGState, Gfx *gfx, Object *pRef, Strea
 		pObj = CreateImage(gfx, nWidth, nHeight, STREAM_FILTER_DCT_DECODE, 8, "DeviceRGB");
 	else
 	{
-		pObj = m_mObjManager->GetObj(pRef->getRefNum());
+		pObj = m_mObjManager->GetObj(pRef->getRefNum() + m_nStartRefID);
 
-		CDictObject* pXObject = pDocument->GetXObject(pRef->getRefNum());
+		CDictObject* pXObject = pDocument->GetXObject(pRef->getRefNum() + m_nStartRefID);
 		if (pXObject)
 		{
 			DrawXObject(m_sImageName.c_str());
@@ -1148,6 +1150,7 @@ void RedactOutputDev::drawImage(GfxState *pGState, Gfx *gfx, Object *pRef, Strea
 
 	SaveRGBAToStream(pDocument, (CDictObject*)pObj, pBufferPtr, nWidth, nHeight);
 
+	pDocument->AddXObject(pRef->getRefNum() + m_nStartRefID, (CDictObject*)pObj);
 	DrawXObject(m_sImageName.c_str());
 }
 void RedactOutputDev::drawMaskedImage(GfxState *pGState, Gfx *gfx, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap,
@@ -1170,9 +1173,9 @@ void RedactOutputDev::drawSoftMaskedImage(GfxState *pGState, Gfx *gfx, Object *p
 		pObj = CreateImage(gfx, nWidth, nHeight, STREAM_FILTER_DCT_DECODE, 8, "DeviceRGB");
 	else
 	{
-		pObj = m_mObjManager->GetObj(pRef->getRefNum());
+		pObj = m_mObjManager->GetObj(pRef->getRefNum() + m_nStartRefID);
 
-		CDictObject* pXObject = pDocument->GetXObject(pRef->getRefNum());
+		CDictObject* pXObject = pDocument->GetXObject(pRef->getRefNum() + m_nStartRefID);
 		if (pXObject)
 		{
 			DrawXObject(m_sImageName.c_str());
@@ -1238,6 +1241,7 @@ void RedactOutputDev::drawSoftMaskedImage(GfxState *pGState, Gfx *gfx, Object *p
 		delete[] pMaskBufferPtr;
 	}
 
+	pDocument->AddXObject(pRef->getRefNum() + m_nStartRefID, (CDictObject*)pObj);
 	DrawXObject(m_sImageName.c_str());
 }
 //----- Type 3 font operators
@@ -1258,12 +1262,12 @@ void RedactOutputDev::drawForm(GfxState *pGState, Gfx *gfx, Ref id, const char* 
 	double dShiftX = 0, dShiftY = 0;
 	DoTransform(pGState->getCTM(), &dShiftX, &dShiftY, true);
 
-	PdfWriter::CObjectBase* pObj = m_mObjManager->GetObj(id.num);
+	PdfWriter::CObjectBase* pObj = m_mObjManager->GetObj(id.num + m_nStartRefID);
 	if (!pObj || pObj->GetType() != object_type_DICT)
 		return;
 
 	PdfWriter::CDocument* pDocument = m_pRenderer->GetDocument();
-	CDictObject* pXObject = pDocument->GetXObject(id.num);
+	CDictObject* pXObject = pDocument->GetXObject(id.num + m_nStartRefID);
 	if (pXObject)
 	{
 		DrawXObject(name);
@@ -1369,7 +1373,7 @@ void RedactOutputDev::drawForm(GfxState *pGState, Gfx *gfx, Ref id, const char* 
 	pDocument->SetCurPage(pFakePage);
 	pFakePage->SetStream(pDictObj->GetStream());
 
-	RedactOutputDev* pFormOutputDev = new RedactOutputDev(m_pRenderer, m_mObjManager);
+	RedactOutputDev* pFormOutputDev = new RedactOutputDev(m_pRenderer, m_mObjManager, m_nStartRefID);
 	pFormOutputDev->NewPDF(m_pXref);
 	pFormOutputDev->m_pPage = pFakePage;
 	std::vector<double> arrFormQuadPoints;
@@ -1404,7 +1408,7 @@ void RedactOutputDev::drawForm(GfxState *pGState, Gfx *gfx, Ref id, const char* 
 
 	m_pRenderer->SetPage(pCurPage);
 	pDocument->SetCurPage(pCurPage);
-	pDocument->AddXObject(id.num, pDictObj);
+	pDocument->AddXObject(id.num + m_nStartRefID, pDictObj);
 
 	RELEASEOBJECT(pFakePage);
 
@@ -1863,7 +1867,7 @@ CObjectBase* RedactOutputDev::CreateImage(Gfx *gfx, int nWidth, int nHeight, uns
 	Object* pContent = gfx->getTopContentStreamStack();
 	if (pContent && pContent->isRef())
 	{
-		PdfWriter::CObjectBase* pForm = m_mObjManager->GetObj(pContent->getRefNum());
+		PdfWriter::CObjectBase* pForm = m_mObjManager->GetObj(pContent->getRefNum() + m_nStartRefID);
 		if (pForm && pForm->GetType() == object_type_DICT)
 		{
 			PdfWriter::CDictObject* pDictForm = (PdfWriter::CDictObject*)pForm;

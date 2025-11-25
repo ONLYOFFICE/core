@@ -47,7 +47,7 @@ namespace PdfWriter
 	class RedactOutputDev : public OutputDev
 	{
 	public:
-		RedactOutputDev(CPdfWriter* pRenderer, CObjectsManager* pObjMng);
+		RedactOutputDev(CPdfWriter* pRenderer, CObjectsManager* pObjMng, int nStartRefID);
 		virtual ~RedactOutputDev();
 
 		void SetRedact(const std::vector<double>& arrQuadPoints);
@@ -208,6 +208,7 @@ namespace PdfWriter
 
 		CPdfWriter* m_pRenderer;
 		CObjectsManager* m_mObjManager;
+		int m_nStartRefID;
 		CDocument*  m_pDoc;
 		CPage*      m_pPage;
 		double      m_arrMatrix[6];

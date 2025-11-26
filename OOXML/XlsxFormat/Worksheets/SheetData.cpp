@@ -5123,7 +5123,7 @@ namespace OOX
 		auto tablePtr = XLS::BaseObjectPtr(cellTable);
 		auto cellGroup = new XLS::CELL_GROUP(shared_formulas_locations_ref);
 		cellTable->m_arCellGroups.push_back(XLS::BaseObjectPtr(cellGroup));
-		auto processCell = [&](CCell *cell, XLS::CELL_GROUP *groupPtr, std::vector<CellRangeRef> shared_formulas_locations_ref)
+		auto processCell = [&](CCell *cell, XLS::CELL_GROUP *groupPtr, std::vector<CellRangeRef> &shared_formulas_locations_ref)
 		{
 			auto Cellptr = XLS::BaseObjectPtr(new XLS::CELL(shared_formulas_locations_ref));
 			cell->toXLS(Cellptr);
@@ -5149,7 +5149,7 @@ namespace OOX
 
 			}
 		};
-		auto processRow = [&](CRow *row, XLS::CELL_GROUP *groupPtr, std::vector<CellRangeRef> shared_formulas_locations_ref)
+		auto processRow = [&](CRow *row, XLS::CELL_GROUP *groupPtr, std::vector<CellRangeRef> &shared_formulas_locations_ref)
 		{
 			groupPtr->m_arRows.push_back(row->toXLS());
 			for(auto cell : row->m_arrItems)

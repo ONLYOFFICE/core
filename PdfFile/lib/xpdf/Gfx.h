@@ -177,6 +177,7 @@ public:
   // Gfx constructor, i.e., before processing any content streams with
   // the new Gfx object.
   void takeContentStreamStack(Gfx *oldGfx);
+  Object* getTopContentStreamStack();
 
   // Clear the state stack and the marked content stack.
   void endOfPage();

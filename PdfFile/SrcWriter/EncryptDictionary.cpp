@@ -39,10 +39,10 @@
 #include "../../Common/3dParty/cryptopp/md5.h"
 #include "../../UnicodeConverter/UnicodeConverter.h"
 
-#define SET_BINARY_PARAM(Name, set_func) \
+#define SET_BINARY_PARAM(Name, set_func, max_len) \
     pObj = Get(Name);\
     if (pObj && pObj->GetType() == object_type_BINARY)\
-        m_pEncrypt->set_func(((CBinaryObject*)pObj)->GetValue(), ((CBinaryObject*)pObj)->GetLength());
+        m_pEncrypt->set_func(((CBinaryObject*)pObj)->GetValue(), std::min((int)((CBinaryObject*)pObj)->GetLength(), max_len));
 #define SET_NUMBER_PARAM(Name, set_func) \
     pObj = Get(Name);\
     if (pObj && pObj->GetType() == object_type_NUMBER)\
@@ -66,12 +66,12 @@ namespace PdfWriter
     void CEncryptDict::Fix()
     {
         CObjectBase* pObj = NULL;
-        SET_BINARY_PARAM("O", SetO);
-        SET_BINARY_PARAM("U", SetU);
-        SET_BINARY_PARAM("OE", SetOE);
-        SET_BINARY_PARAM("UE", SetUE);
-        SET_BINARY_PARAM("Perms", SetPerms);
-        SET_BINARY_PARAM("ID", SetID);
+		SET_BINARY_PARAM("O", SetO, 48);
+		SET_BINARY_PARAM("U", SetU, 48);
+		SET_BINARY_PARAM("OE", SetOE, 32);
+		SET_BINARY_PARAM("UE", SetUE, 32);
+		SET_BINARY_PARAM("Perms", SetPerms, 16);
+		SET_BINARY_PARAM("ID", SetID, 16);
         pObj = Get("ID");
         if (pObj && pObj->GetType() == object_type_BINARY)
             m_pEncrypt->m_unIDLength = ((CBinaryObject*)pObj)->GetLength();

@@ -280,6 +280,8 @@ namespace PdfWriter
 			pEncrypt = m_pEncryptDict->GetEncrypt();
 			PrepareEncryption();
 		}
+		else if (m_pEncryptDict)
+			pEncrypt = m_pEncryptDict->GetEncrypt();
 
 		m_pXref->WriteToStream(pStream, pEncrypt, true);
 	}
@@ -309,6 +311,23 @@ namespace PdfWriter
 
 		delete pStream;
 		return true;
+	}
+	void CDocument::SetEncryption(CEncryptDict* pEncrypt, PdfWriter::CObjectBase* _pID)
+	{
+		m_bEncrypt = false;
+		m_pEncryptDict = pEncrypt;
+
+		CArrayObject* pArrID = new CArrayObject();
+		m_pTrailer->Add("ID", pArrID);
+		BYTE arrId[16];
+
+		CEncryptDict::CreateId(m_pInfo, m_pXref, (BYTE*)arrId);
+
+		pArrID->Add(_pID->Copy());
+		pArrID->Add(new CBinaryObject(arrId, 16));
+
+		for (int i = 0; i < m_vMetaOForms.size(); ++i)
+			m_vMetaOForms[i]->Add("ID", new CBinaryObject(arrId, 16));
 	}
     void CDocument::PrepareEncryption()
 	{
@@ -754,14 +773,8 @@ namespace PdfWriter
 	{
 		return new CImageDict(m_pXref, this);
 	}
-	CXObject* CDocument::CreateForm(CImageDict* pImage, const std::string& sName)
+	CXObject* CDocument::CreateForm()
 	{
-		if (!pImage)
-			return NULL;
-
-		std::string sFrmName = "FRM" + sName;
-		std::string sImgName = "Img" + sName;
-
 		CXObject* pForm = new CXObject();
 		CStream* pStream = new CMemoryStream();
 		pForm->SetStream(m_pXref, pStream);
@@ -770,6 +783,18 @@ namespace PdfWriter
 		if (m_unCompressMode & COMP_TEXT)
 			pForm->SetFilter(STREAM_FILTER_FLATE_DECODE);
 #endif
+
+		return pForm;
+	}
+	CXObject* CDocument::CreateForm(CImageDict* pImage, const std::string& sName)
+	{
+		if (!pImage)
+			return NULL;
+
+		std::string sFrmName = "FRM" + sName;
+		std::string sImgName = "Img" + sName;
+
+		CXObject* pForm = CreateForm();
 		double dOriginW = pImage->GetWidth();
 		double dOriginH = pImage->GetHeight();
 		pForm->SetWidth(dOriginW);
@@ -807,6 +832,7 @@ namespace PdfWriter
 		pForm->Add("Subtype", "Form");
 		pForm->Add("Type", "XObject");
 
+		CStream* pStream = pForm->GetStream();
 		pStream->WriteStr("q\012");
 		pStream->WriteReal(dOriginW);
 		pStream->WriteStr(" 0 0 ");
@@ -1550,6 +1576,17 @@ namespace PdfWriter
 	{
 		m_mParents[nID] = pParent;
 	}
+	void CDocument::AddXObject(int nID, CDictObject* pXObject)
+	{
+		m_mXObjects[nID] = pXObject;
+	}
+	CDictObject* CDocument::GetXObject(int nID)
+	{
+		std::map<int, CDictObject*>::iterator p = m_mXObjects.find(nID);
+		if (p != m_mXObjects.end())
+			return p->second;
+		return NULL;
+	}
 	CDictObject* CDocument::CreateParent(int nID)
 	{
 		CDictObject* pParent = new CDictObject();
@@ -1936,7 +1973,7 @@ namespace PdfWriter
 				m_pTrailer->Copy(pTrailer);
 
 				CEncrypt* pEncrypt = NULL;
-				if (m_bEncrypt && m_pEncryptDict)
+				if (m_pEncryptDict)
 					pEncrypt = m_pEncryptDict->GetEncrypt();
 
 				pXref->WriteToStream(pStream, pEncrypt, bNeedStreamXRef);

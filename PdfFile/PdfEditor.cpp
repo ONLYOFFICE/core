@@ -300,7 +300,7 @@ PdfWriter::CExtGrState* CreateExtGState(Object* oState)
 	PdfWriter::CExtGrState* pState = new PdfWriter::CExtGrState(NULL);
 	return pState;
 }
-PdfWriter::CObjectBase* DictToCDictObject2(Object* obj, PdfWriter::CDocument* pDoc, XRef* xref, CObjectsManager* pManager, int nStartRefID, int nAddObjToXRef = 0, bool bUndecodedStream = true)
+PdfWriter::CObjectBase* DictToCDictObject2(Object* obj, PdfWriter::CDocument* pDoc, XRef* xref, CObjectsManager* pManager, int nStartRefID, int nAddObjToXRef = 0, bool bUndecodedStream = true, bool bMakeBinary = false)
 {
 	PdfWriter::CObjectBase* pBase = NULL;
 	Object oTemp;
@@ -324,7 +324,7 @@ PdfWriter::CObjectBase* DictToCDictObject2(Object* obj, PdfWriter::CDocument* pD
 	case objString:
 	{
 		GString* str = obj->getString();
-		if (str->isBinary())
+		if (str->isBinary() || bMakeBinary)
 		{
 			int nLength = str->getLength();
 			BYTE* arrId = new BYTE[nLength];
@@ -996,6 +996,7 @@ void CPdfEditor::SetMode(Mode nMode)
 		m_mObjManager.SetDoc(pDoc);
 		int nPages = m_pReader->GetNumPages();
 		pPageTree->CreateFakePages(nPages);
+		m_pWriter->SetNeedAddHelvetica(false);
 	}
 }
 bool CPdfEditor::IncrementalUpdates()
@@ -1459,6 +1460,55 @@ void CPdfEditor::Close()
 			}
 		}
 		oAcroForm.free(); oCatalog.free();
+
+		if (xref->isEncrypted() && xref->getTrailerDict())
+		{
+			CryptAlgorithm encAlgorithm;
+			GBool ownerPasswordOk;
+			int permFlags, keyLength, encVersion;
+			xref->getEncryption(&permFlags, &ownerPasswordOk, &keyLength, &encVersion, &encAlgorithm);
+			int nCryptAlgorithm = encAlgorithm;
+
+			Object* pTrailerDict = xref->getTrailerDict();
+			pDoc->SetPasswords(m_wsPassword, m_wsPassword);
+			PdfWriter::CEncryptDict* pEncryptDict = pDoc->GetEncrypt();
+
+			// Нужно получить словарь Encrypt БЕЗ дешифровки, поэтому времено отключаем encrypted в xref
+			xref->offEncrypted();
+
+			Object encrypt, ID, ID1;
+			if (pTrailerDict->dictLookup("Encrypt", &encrypt) && encrypt.isDict())
+			{
+				for (int nIndex = 0; nIndex < encrypt.dictGetLength(); ++nIndex)
+				{
+					Object oTemp;
+					char* chKey = encrypt.dictGetKey(nIndex);
+					encrypt.dictGetValNF(nIndex, &oTemp);
+					PdfWriter::CObjectBase* pBase = DictToCDictObject2(&oTemp, pDoc, xref, &m_mObjManager, nStartRefID, 0, true, true);
+					pEncryptDict->Add(chKey, pBase);
+					oTemp.free();
+				}
+			}
+
+			if (!pEncryptDict->Get("Length"))
+				pEncryptDict->Add("Length", 40);
+
+			encrypt.free();
+
+			PdfWriter::CObjectBase* pID = NULL;
+			if (pTrailerDict->dictLookup("ID", &ID) && ID.isArray() && ID.arrayGet(0, &ID1) && ID1.isString())
+			{
+				pID = DictToCDictObject2(&ID1, pDoc, xref, &m_mObjManager, nStartRefID, 0, true, true);
+				pEncryptDict->Add("ID", pID);
+			}
+			ID.free(); ID1.free();
+
+			xref->onEncrypted();
+
+			pDoc->SetEncryption(pEncryptDict, pID);
+			pEncryptDict->Fix();
+			pEncryptDict->UpdateKey(nCryptAlgorithm);
+		}
 
 		m_pWriter->SaveToFile(m_wsDstFile);
 		return;
@@ -3582,6 +3632,8 @@ bool CPdfEditor::IsBase14(const std::wstring& wsFontName, bool& bBold, bool& bIt
 void CPdfEditor::Redact(IAdvancedCommand* _pCommand)
 {
 	PDFDoc* pPDFDocument = NULL;
+	PdfReader::CPdfFontList* pFontList = NULL;
+	int nStartRefID = 0;
 	PDFRectangle* cropBox = NULL;
 	int nPageIndex = -1;
 	Page* pPage = NULL;
@@ -3589,7 +3641,7 @@ void CPdfEditor::Redact(IAdvancedCommand* _pCommand)
 	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
 	if (bEditPage)
 	{
-		nPageIndex = m_pReader->GetPageIndex(m_nEditPage, &pPDFDocument);
+		nPageIndex = m_pReader->GetPageIndex(m_nEditPage, &pPDFDocument, &pFontList, &nStartRefID);
 		if (nPageIndex < 0 || !pPDFDocument)
 			return;
 		pPage = pPDFDocument->getCatalog()->getPage(nPageIndex);
@@ -3626,7 +3678,7 @@ void CPdfEditor::Redact(IAdvancedCommand* _pCommand)
 
 	if (bEditPage)
 	{
-		PdfWriter::RedactOutputDev oRedactOut(m_pWriter);
+		PdfWriter::RedactOutputDev oRedactOut(m_pWriter, &m_mObjManager, nStartRefID);
 		oRedactOut.NewPDF(pPDFDocument->getXRef());
 		oRedactOut.SetRedact(arrAllQuads);
 
@@ -3662,24 +3714,12 @@ std::vector<double> CPdfEditor::WriteRedact(const std::vector<std::wstring>& arr
 				arrRes.insert(arrRes.end(), m_arrRedact[j].arrQuads.begin(), m_arrRedact[j].arrQuads.end());
 			return arrRes;
 		}
+
 		CRedactData oRedact = m_arrRedact[i];
-		if (oRedact.bDraw || !oRedact.pRender)
+		if (oRedact.bDraw || !oRedact.pRender || oRedact.nLenRender != oRedact.arrQuads.size() / 8 * 12)
 			continue;
 
-		LONG nLenRender = oRedact.nLenRender;
-		BYTE* pRender = oRedact.pRender;
-
-		BYTE* pMemory = pRender;
-		int ret = *((int*)pMemory);
-		pMemory += 4;
-		LONG R = ret;
-		ret = *((int*)pMemory);
-		pMemory += 4;
-		LONG G = ret;
-		ret = *((int*)pMemory);
-		LONG B = ret;
-		LONG lColor = (LONG)(R | (G << 8) | (B << 16) | ((LONG)255 << 24));
-
+		BYTE* pMemory = oRedact.pRender;
 		m_pWriter->AddRedact({});
 		double dM1, dM2, dM3, dM4, dM5, dM6;
 		m_pWriter->GetTransform(&dM1, &dM2, &dM3, &dM4, &dM5, &dM6);
@@ -3692,21 +3732,31 @@ std::vector<double> CPdfEditor::WriteRedact(const std::vector<std::wstring>& arr
 		m_pWriter->SetTransform(1, 0, 0, 1, 0, 0);
 		m_pWriter->PathCommandEnd();
 		m_pWriter->put_BrushType(c_BrushTypeSolid);
-		m_pWriter->put_BrushColor1(lColor);
 		m_pWriter->put_BrushAlpha1(255);
 		m_pWriter->put_BrushAlpha2(255);
 
 		for (int i = 0; i < oRedact.arrQuads.size(); i += 8)
 		{
+			int ret = *((int*)pMemory);
+			pMemory += 4;
+			LONG R = ret;
+			ret = *((int*)pMemory);
+			pMemory += 4;
+			LONG G = ret;
+			ret = *((int*)pMemory);
+			pMemory += 4;
+			LONG B = ret;
+			LONG lColor = (LONG)(R | (G << 8) | (B << 16) | ((LONG)255 << 24));
+
+			m_pWriter->put_BrushColor1(lColor);
 			m_pWriter->PathCommandMoveTo(PdfReader::PDFCoordsToMM(oRedact.arrQuads[i + 0]), PdfReader::PDFCoordsToMM(oRedact.arrQuads[i + 1]));
 			m_pWriter->PathCommandLineTo(PdfReader::PDFCoordsToMM(oRedact.arrQuads[i + 2]), PdfReader::PDFCoordsToMM(oRedact.arrQuads[i + 3]));
 			m_pWriter->PathCommandLineTo(PdfReader::PDFCoordsToMM(oRedact.arrQuads[i + 4]), PdfReader::PDFCoordsToMM(oRedact.arrQuads[i + 5]));
 			m_pWriter->PathCommandLineTo(PdfReader::PDFCoordsToMM(oRedact.arrQuads[i + 6]), PdfReader::PDFCoordsToMM(oRedact.arrQuads[i + 7]));
 			m_pWriter->PathCommandClose();
+			m_pWriter->DrawPath(NULL, L"", c_nWindingFillMode);
+			m_pWriter->PathCommandEnd();
 		}
-
-		m_pWriter->DrawPath(NULL, L"", c_nWindingFillMode);
-		m_pWriter->PathCommandEnd();
 
 		m_pWriter->SetTransform(dM1, dM2, dM3, dM4, dM5, dM6);
 		m_pWriter->put_BrushType(lType);

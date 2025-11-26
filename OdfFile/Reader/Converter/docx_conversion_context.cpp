@@ -176,6 +176,26 @@ bool docx_conversion_context::get_implicit_end() const // fix bug with convert f
     return flag_implicit_end;
 }
 
+void docx_conversion_context::set_inside_frame( bool flag )
+{
+	inside_frame = flag;
+}
+
+bool docx_conversion_context::get_inside_frame() const
+{
+	return inside_frame;
+}
+
+void docx_conversion_context::set_scale( const int _scale )
+{
+	scale_for_framePr = _scale;
+}
+
+int docx_conversion_context::get_scale() const
+{
+	return scale_for_framePr;
+}
+
 void docx_conversion_context::set_output_document(package::docx_document * document)
 {
 	output_document_ = document;

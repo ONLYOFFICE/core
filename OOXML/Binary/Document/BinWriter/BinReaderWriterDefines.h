@@ -1226,7 +1226,7 @@ extern int g_nCurFormatVersion;
 		Descr = 4,
 		Form = 5,
 		HlinkClick = 6,
-		HlinkHover = 6,
+		HlinkHover = 7
 
 	};}
 	namespace c_oSerEmbedded{enum c_oSerEmbedded

@@ -194,6 +194,7 @@ namespace PdfWriter
 		void      ClearContent(CXref* pXref);
 		void      ClearContentFull(CXref* pXref);
 		CResourcesDict* GetResourcesItem();
+		void      AddResource(CXref* pXref = NULL);
 
 	private:
 
@@ -204,7 +205,6 @@ namespace PdfWriter
         CObjectBase*  GetRotateItem();
 		TBox          GetMediaBox();
 		void          SetMediaBoxValue(unsigned int unIndex, double dValue);
-		void          AddResource(CXref* pXref = NULL);
 		void          SetGrMode(EGrMode eMode);
 		void          CheckGrMode(EGrMode eMode);
 		void          WriteText(const BYTE* sText, unsigned int unLen);

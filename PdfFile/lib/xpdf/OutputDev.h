@@ -201,23 +201,23 @@ public:
   virtual void setShading(GfxState *state, const char* name) {}
 
   //----- image drawing
-  virtual void drawImageMask(GfxState *state, Object *ref, Stream *str,
+  virtual void drawImageMask(GfxState *state, Gfx *gfx, Object *ref, Stream *str,
 			     int width, int height, GBool invert,
 			     GBool inlineImg, GBool interpolate);
-  virtual void setSoftMaskFromImageMask(GfxState *state,
+  virtual void setSoftMaskFromImageMask(GfxState *state, Gfx *gfx,
 					Object *ref, Stream *str,
 					int width, int height, GBool invert,
 					GBool inlineImg, GBool interpolate);
-  virtual void drawImage(GfxState *state, Object *ref, Stream *str,
+  virtual void drawImage(GfxState *state, Gfx *gfx, Object *ref, Stream *str,
 			 int width, int height, GfxImageColorMap *colorMap,
 			 int *maskColors, GBool inlineImg, GBool interpolate);
-  virtual void drawMaskedImage(GfxState *state, Object *ref, Stream *str,
+  virtual void drawMaskedImage(GfxState *state, Gfx *gfx, Object *ref, Stream *str,
 			       int width, int height,
 			       GfxImageColorMap *colorMap,
 			       Object *maskRef, Stream *maskStr,
 			       int maskWidth, int maskHeight,
 			       GBool maskInvert, GBool interpolate);
-  virtual void drawSoftMaskedImage(GfxState *state, Object *ref, Stream *str,
+  virtual void drawSoftMaskedImage(GfxState *state, Gfx *gfx, Object *ref, Stream *str,
 				   int width, int height,
 				   GfxImageColorMap *colorMap,
 				   Object *maskRef, Stream *maskStr,
@@ -237,8 +237,8 @@ public:
 		       double llx, double lly, double urx, double ury) {}
 
   //----- form XObjects
-  virtual void drawForm(GfxState *state, Ref id, const char *name = nullptr) {}
-  virtual void drawImage(GfxState *pGState, Ref id, const char* name = nullptr) {}
+  virtual void drawForm(GfxState *state, Gfx *gfx, Ref id, const char *name = nullptr) {}
+  virtual void drawImage(GfxState *pGState, Gfx *gfx, Ref id, const char* name = nullptr) {}
 
   //----- PostScript XObjects
   virtual void psXObject(Stream *psStream, Stream *level1Stream) {}

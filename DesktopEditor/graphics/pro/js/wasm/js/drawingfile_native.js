@@ -146,6 +146,16 @@ CFile.prototype._UndoRedact = function()
 	return g_native_drawing_file["UndoRedact"]();
 };
 
+CFile.prototype._CheckOwnerPassword = function(password)
+{
+	return true;
+}
+
+CFile.prototype._CheckPerm = function(perm)
+{
+	return true;
+}
+
 // FONTS
 CFile.prototype._isNeedCMap = function()
 {

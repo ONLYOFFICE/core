@@ -179,7 +179,6 @@ CHeadings::CHeading::CHeading()
 	nPage = 0;
 	dX = 0.0;
 	dY = 0.0;
-	pParent = NULL;
 }
 CHeadings::CHeading::~CHeading()
 {
@@ -196,35 +195,26 @@ CHeadings::~CHeadings()
 const std::vector<CHeadings::CHeading*>& CHeadings::GetHeading() { return m_arrHeading; }
 bool CHeadings::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector)
 {
-	int nPredLevel = 0, nHeaderLevel = 0;
-	std::vector<CHeading*>* arrHeading = &m_arrHeading;
-	CHeading* pParent = NULL;
+	std::vector<CHeading*> arrParentStack;
 	int nHeadings = pReader->ReadInt();
 	for (int i = 0; i < nHeadings; ++i)
 	{
 		int nLevel = pReader->ReadInt();
-		if (nLevel > nPredLevel && i > 0)
-		{
-			nHeaderLevel = nPredLevel;
-			pParent = arrHeading->back();
-			arrHeading = &pParent->arrHeading;
-		}
-		else if (nLevel < nPredLevel && nLevel <= nHeaderLevel)
-		{
-			nHeaderLevel = nLevel;
-			pParent = pParent ? pParent->pParent : NULL;
-			arrHeading = pParent ? &pParent->arrHeading : &m_arrHeading;
-		}
-		nPredLevel = nLevel;
-
 		CHeading* pHeading = new CHeading();
 		pHeading->nPage = pReader->ReadInt();
 		pHeading->dX = pReader->ReadDouble();
 		pHeading->dY = pReader->ReadDouble();
 		pHeading->wsTitle = pReader->ReadString();
-		pHeading->pParent = pParent;
 
-		arrHeading->push_back(pHeading);
+		while (arrParentStack.size() > nLevel)
+			arrParentStack.pop_back();
+
+		if (arrParentStack.empty())
+			m_arrHeading.push_back(pHeading);
+		else
+			arrParentStack.back()->arrHeading.push_back(pHeading);
+
+		arrParentStack.push_back(pHeading);
 	}
 	return true;
 }

@@ -245,7 +245,18 @@ public:
 
 		return 0;
 	}
-
+	bool CheckOwnerPassword(const std::wstring& sPassword)
+	{
+		if (m_nType == 0)
+			return ((CPdfFile*)m_pFile)->CheckOwnerPassword(sPassword);
+		return true;
+	}
+	bool CheckPerm(int nPerm)
+	{
+		if (m_nType == 0)
+			return ((CPdfFile*)m_pFile)->CheckPerm(nPerm);
+		return true;
+	}
 	BYTE* GetInfo()
 	{
 		NSWasm::CData oRes;

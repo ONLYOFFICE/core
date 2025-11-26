@@ -2065,7 +2065,8 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 			if (!m_bSplit)
 			{
 				pMarkupAnnot->RemoveAP();
-				pTextAnnot->SetAP();
+				if (!(nFlags & (1 << 5)))
+					pTextAnnot->SetAP();
 			}
 		}
 		else if (oInfo.IsInk())

@@ -1528,15 +1528,15 @@ void Gfx::opSetFillColor(Object args[], int numArgs) {
 	  " in uncolored Type 3 char or tiling pattern");
     return;
   }
-  if (numArgs != state->getFillColorSpace()->getNComps()) {
-    error(errSyntaxError, getPos(),
-	  "Incorrect number of arguments in 'sc' command");
-    return;
-  }
   if (out->useNameOp())
   {
 	out->setFillColor(args, numArgs);
 	return;
+  }
+  if (numArgs != state->getFillColorSpace()->getNComps()) {
+    error(errSyntaxError, getPos(),
+	  "Incorrect number of arguments in 'sc' command");
+    return;
   }
   state->setFillPattern(NULL);
   for (i = 0; i < numArgs; ++i) {
@@ -2028,7 +2028,7 @@ void Gfx::doPatternImageMask(Object *ref, Stream *str, int width, int height,
 			     GBool invert, GBool inlineImg, GBool interpolate) {
   saveState();
 
-  out->setSoftMaskFromImageMask(state, ref, str,
+  out->setSoftMaskFromImageMask(state, this, ref, str,
 				width, height, invert, inlineImg, interpolate);
 
   state->clearPath();
@@ -4117,16 +4117,15 @@ void Gfx::opXObject(Object args[], int numArgs) {
       if (out->needNonText()) {
 	res->lookupXObjectNF(name, &refObj);
 	if (out->useNameOp() && refObj.isRef())
-		out->drawImage(state, refObj.getRef(), name);
-	else
-		doImage(&refObj, obj1.getStream(), gFalse);
+	  out->drawImage(state, this, refObj.getRef(), name);
+	doImage(&refObj, obj1.getStream(), gFalse);
 	refObj.free();
       }
     } else if (obj2.isName("Form")) {
       res->lookupXObjectNF(name, &refObj);
       if (out->useDrawForm() && refObj.isRef()) {
 	if (ocState) {
-	  out->drawForm(state, refObj.getRef(), name);
+	  out->drawForm(state, this, refObj.getRef(), name);
 	}
       } else {
 	doForm(&refObj, &obj1);
@@ -4305,7 +4304,7 @@ GBool Gfx::doImage(Object *ref, Stream *str, GBool inlineImg) {
 	doPatternImageMask(ref, str, width, height, invert, inlineImg,
 			   interpolate);
       } else {
-	out->drawImageMask(state, ref, str, width, height, invert, inlineImg,
+	out->drawImageMask(state, this, ref, str, width, height, invert, inlineImg,
 			   interpolate);
       }
     }
@@ -4314,7 +4313,8 @@ GBool Gfx::doImage(Object *ref, Stream *str, GBool inlineImg) {
 
     // rendering intent
     if (dict->lookup("Intent", &obj1)->isName()) {
-      opSetRenderingIntent(&obj1, 1);
+	  if (!out->useNameOp())
+		opSetRenderingIntent(&obj1, 1);
     }
     obj1.free();
 
@@ -4646,7 +4646,7 @@ GBool Gfx::doImage(Object *ref, Stream *str, GBool inlineImg) {
     } else {
       if (haveSoftMask) {
 	dict->lookupNF("Mask", &maskRef);
-	out->drawSoftMaskedImage(state, ref, str, width, height, colorMap,
+	out->drawSoftMaskedImage(state, this, ref, str, width, height, colorMap,
 				 &maskRef, maskStr, maskWidth, maskHeight,
 				 maskColorMap,
 				 haveMatte ? matte : (double *)NULL,
@@ -4655,12 +4655,12 @@ GBool Gfx::doImage(Object *ref, Stream *str, GBool inlineImg) {
 	delete maskColorMap;
       } else if (haveExplicitMask) {
 	dict->lookupNF("Mask", &maskRef);
-	out->drawMaskedImage(state, ref, str, width, height, colorMap,
+	out->drawMaskedImage(state, this, ref, str, width, height, colorMap,
 			     &maskRef, maskStr, maskWidth, maskHeight,
 			     maskInvert, interpolate);
 	maskRef.free();
       } else {
-	out->drawImage(state, ref, str, width, height, colorMap,
+	out->drawImage(state, this, ref, str, width, height, colorMap,
 		       haveColorKeyMask ? maskColors : (int *)NULL, inlineImg,
 		       interpolate);
       }
@@ -4930,6 +4930,12 @@ void Gfx::drawForm(Object *strRef, Dict *resDict,
 
 void Gfx::takeContentStreamStack(Gfx *oldGfx) {
   contentStreamStack->append(oldGfx->contentStreamStack);
+}
+
+Object* Gfx::getTopContentStreamStack() {
+	if (!contentStreamStack->getLength())
+		return NULL;
+	return (Object*)contentStreamStack->get(contentStreamStack->getLength() - 1);
 }
 
 void Gfx::endOfPage() {

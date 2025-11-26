@@ -224,6 +224,29 @@ CFile.prototype._UndoRedact = function()
 	return Module["_UndoRedact"](this.nativeFile) == 1;
 };
 
+CFile.prototype._CheckOwnerPassword = function(password)
+{
+	let passwordPtr = 0;
+	if (password)
+	{
+		let passwordBuf = password.toUtf8();
+		passwordPtr = Module["_malloc"](passwordBuf.length);
+		Module["HEAP8"].set(passwordBuf, passwordPtr);
+	}
+
+	let bRes = Module["_CheckOwnerPassword"](this.nativeFile, passwordPtr);
+
+	if (passwordPtr)
+		Module["_free"](passwordPtr);
+
+	return bRes == 1;
+}
+
+CFile.prototype._CheckPerm = function(perm)
+{
+	return Module["_CheckPerm"](this.nativeFile, perm) == 1;
+}
+
 // FONTS
 CFile.prototype._isNeedCMap = function()
 {

@@ -145,6 +145,14 @@ CFile.prototype["isNeedPassword"] = function()
 {
 	return this._isNeedPassword;
 };
+CFile.prototype["CheckOwnerPassword"] = function(password)
+{
+	return this._CheckOwnerPassword(password);
+};
+CFile.prototype["CheckPerm"] = function(perm)
+{
+	return this._CheckPerm(perm);
+};
 CFile.prototype["SplitPages"] = function(arrOriginIndex, arrayBufferChanges)
 {
 	let ptr = this._SplitPages(arrOriginIndex, arrayBufferChanges);

@@ -1125,6 +1125,18 @@ int main(int argc, char* argv[])
 		}
 	}
 
+	// OWNER PASSWORD
+	if (true)
+	{
+		std::string sPassword = "gfhjkmgfhjkm";
+		std::cout << "CheckPerm 4 Edit "  << CheckPerm(pGrFile, 4) << std::endl;
+		std::cout << "CheckPerm 4 Print " << CheckPerm(pGrFile, 3) << std::endl;
+
+		std::cout << "CheckOwnerPassword " << CheckOwnerPassword(pGrFile, sPassword.c_str()) << std::endl;
+		std::cout << "CheckPerm 4 Edit "  << CheckPerm(pGrFile, 4) << std::endl;
+		std::cout << "CheckPerm 4 Print " << CheckPerm(pGrFile, 3) << std::endl;
+	}
+
 	BYTE* pColor = new BYTE[12] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 	// REDACT
 	if (false)
@@ -1230,7 +1242,7 @@ int main(int argc, char* argv[])
 	}
 
 	// GLYPHS
-	if (false && nPagesCount > 0)
+	if (true && nPagesCount > 0)
 	{
 		BYTE* pGlyphs = GetGlyphs(pGrFile, nTestPage);
 		nLength = READ_INT(pGlyphs);

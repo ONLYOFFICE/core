@@ -29,8 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef XLSX_BIN_READER_WRITER_DEFINES
-#define XLSX_BIN_READER_WRITER_DEFINES
+#pragma once
 
 namespace BinXlsxRW
 {
@@ -239,7 +238,10 @@ namespace BinXlsxRW
 		TimelineCaches = 27,
 		TimelineCache = 28,
 		Metadata = 29,
-		XmlMap = 30
+		XmlMap = 30,
+		RdRichValue = 31,
+		RdRichValueStructure = 32,
+		RdRichValueTypes = 33
 	};}
 	namespace c_oSerWorkbookProtection {enum c_oSerWorkbookProtection{
 		AlgorithmName = 0,
@@ -1630,5 +1632,3 @@ namespace BinXlsxRW
 		Rho = 21
 	};}
 }
-
-#endif //

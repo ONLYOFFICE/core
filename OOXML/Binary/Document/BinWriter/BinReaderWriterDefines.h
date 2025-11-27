@@ -1315,7 +1315,9 @@ extern int g_nCurFormatVersion;
 		ComplexFormPrType = 91,
 		OformMaster = 92,
 		Border = 93,
-		Shd = 94
+		Shd = 94,
+		RepeatingSection = 95,
+		RepeatingSectionItem = 96
 	};}
 	namespace c_oSerFFData{enum c_oSerFFData
 	{

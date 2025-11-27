@@ -8227,7 +8227,18 @@ void BinaryDocumentTableWriter::WriteSdtPr(const OOX::Logic::CSdtPr& oStdPr)
 		m_oBcw.WriteShd(oStdPr.m_oShd.get());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
-}
+	if (oStdPr.m_oRepeatingSection.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::RepeatingSection);
+		m_oBcw.m_oStream.WriteBOOL(*oStdPr.m_oRepeatingSection);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if (oStdPr.m_oRepeatingSectionItem.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::RepeatingSectionItem);
+		m_oBcw.m_oStream.WriteBOOL(*oStdPr.m_oRepeatingSectionItem);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}}
 void BinaryDocumentTableWriter::WriteSdtPicture(const OOX::Logic::CSdtPicture& oSdtPicture)
 {
 	int nCurPos = 0;

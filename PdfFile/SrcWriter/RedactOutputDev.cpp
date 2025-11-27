@@ -843,6 +843,31 @@ void RedactOutputDev::beginStringOp(GfxState *pGState)
 {
 	m_pRenderer->m_oCommandManager.Flush();
 	DoStateOp();
+
+	int nRenderMode = m_pRenderer->m_oFont.GetRenderMode();
+	if (nRenderMode == 1 || nRenderMode == 2 || nRenderMode == 5 || nRenderMode == 6)
+	{
+		double* pCTM = pGState->getCTM();
+		double* pTm = pGState->getTextMat();
+		double pNewTm[6], arrMatrix[6];
+
+		double dTextScale = std::min(sqrt(pTm[2] * pTm[2] + pTm[3] * pTm[3]), sqrt(pTm[0] * pTm[0] + pTm[1] * pTm[1]));
+		double dITextScale = 1 / dTextScale;
+
+		pNewTm[0] =  pTm[0] * dITextScale * pGState->getHorizScaling();
+		pNewTm[1] =  pTm[1] * dITextScale * pGState->getHorizScaling();
+		pNewTm[2] =  pTm[2] * dITextScale;
+		pNewTm[3] =  pTm[3] * dITextScale;
+
+		arrMatrix[0] = pNewTm[0] * pCTM[0] + pNewTm[1] * pCTM[2];
+		arrMatrix[1] = pNewTm[0] * pCTM[1] + pNewTm[1] * pCTM[3];
+		arrMatrix[2] = pNewTm[2] * pCTM[0] + pNewTm[3] * pCTM[2];
+		arrMatrix[3] = pNewTm[2] * pCTM[1] + pNewTm[3] * pCTM[3];
+
+		double dNorma = std::min(sqrt(arrMatrix[0] * arrMatrix[0] + arrMatrix[1] * arrMatrix[1]), sqrt(arrMatrix[2] * arrMatrix[2] + arrMatrix[3] * arrMatrix[3]));
+		if (dNorma > 0 && dNorma != 1)
+			m_pPage->SetLineWidth(pGState->getLineWidth() * dNorma);
+	}
 }
 void RedactOutputDev::drawChar(GfxState *pGState, double dX, double dY, double dDx, double dDy, double dOriginX, double dOriginY,
 							   CharCode nCode, int nBytesCount, Unicode *pUnicode, int nUnicodeLen)

@@ -66,7 +66,19 @@ namespace DocFileFormat
 				if (structureLength > 0)
 				{
 					// this PLEX contains CPs and Elements
-					n = ((int)lcb - CP_LENGTH) / (structureLength + CP_LENGTH);
+                    //n = ((int)lcb - CP_LENGTH) / (structureLength + CP_LENGTH);
+                    int totalSize = (int)lcb - CP_LENGTH;
+                    int elementSize = structureLength + CP_LENGTH;
+
+                    if (elementSize > 0)
+                    {
+                        n = totalSize / elementSize;
+
+                        if (totalSize % elementSize != 0)
+                        {
+                            n += 1;
+                        }
+                    }
 				}
 				else
 				{

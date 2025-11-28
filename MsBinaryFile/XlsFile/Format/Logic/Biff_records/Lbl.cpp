@@ -219,6 +219,8 @@ void Lbl::writeFields(CFRecord& record)
         SETBIT(flags, 14, fWorkbookParam)
 
         unsigned char cch = Name_bin.getSize();
+		if(!cch)
+			Name_bin = L"";
         record << flags << chKey << cch;
         auto ccePos = record.getRdPtr();
         record.reserveNunBytes(4);
@@ -226,7 +228,8 @@ void Lbl::writeFields(CFRecord& record)
         _UINT16	itab_2b = itab;
         record << itab_2b;
         record.reserveNunBytes(4);
-        record << Name_bin;
+		if(cch)
+			record << Name_bin;
         auto rgceStart = record.getRdPtr();
         rgce.save(record);
 

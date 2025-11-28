@@ -32,6 +32,7 @@
 #pragma once
 
 #include "OperandPtg.h"
+#include "PtgArea.h"
 
 namespace XLS
 {
@@ -52,8 +53,9 @@ public:
 	void writeFields(CFRecord& record) override;
 
     void assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref = false) override;
-
     static const unsigned short fixed_id = 0x1918;
+
+	Ptg* toArea();
 
     //const std::wstring toString() const;
 

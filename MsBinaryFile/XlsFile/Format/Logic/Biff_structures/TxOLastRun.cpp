@@ -57,6 +57,12 @@ void TxOLastRun::load(CFRecord& record)
 	record.skipNunBytes(6);	// unused1 + unused2
 }
 
+void TxOLastRun::save(CFRecord& record)
+{
+	record << cchText;
+	record.reserveNunBytes(6);
+}
+
 
 } // namespace XLS
 

@@ -40,7 +40,6 @@ namespace XLS
 
 struct CFExFilterParams
 {
-private:
 	bool fTop : 1;
 	bool fPercent : 1;
 	unsigned short iParam;
@@ -55,50 +54,47 @@ private:
 
 struct CFExTextTemplateParams
 {
-private:
 	unsigned short ctp;
 
 private:
-	_UINT16 reserved_1;
-	_UINT32 reserved_2;
-	_UINT32 reserved_3;
-	_UINT32 reserved_4;
+	_UINT16 reserved_1 = 0;
+	_UINT32 reserved_2 = 0;
+	_UINT32 reserved_3 = 0;
+	_UINT32 reserved_4 = 0;
 };
 
 
 struct CFExDateTemplateParams
 {
-private:
 	unsigned short dateOp;
 
 private:
-	_UINT16 reserved_1;
-	_UINT32 reserved_2;
-	_UINT32 reserved_3;
-	_UINT32 reserved_4;
+	_UINT16 reserved_1 = 0;
+	_UINT32 reserved_2 = 0;
+	_UINT32 reserved_3 = 0;
+	_UINT32 reserved_4 = 0;
 };
 
 
 struct CFExAveragesTemplateParams
 {
-private:
-	unsigned short iParam;
+	unsigned short iParam = 0;
 
 private:
-	unsigned short reserved_1;
-	_UINT32 reserved_2;
-	_UINT32 reserved_3;
-	_UINT32 reserved_4;
+	unsigned short reserved_1 = 0;
+	_UINT32 reserved_2 = 0;
+	_UINT32 reserved_3 = 0;
+	_UINT32 reserved_4 = 0;
 };
 
 
 struct CFExDefaultTemplateParams
 {
 private:
-	_UINT32 unused1;
-	_UINT32 unused2;
-	_UINT32 unused3;
-	_UINT32 unused4;
+	_UINT32 unused1 = 0;
+	_UINT32 unused2 = 0;
+	_UINT32 unused3 = 0;
+	_UINT32 unused4 = 0;
 };
 
 
@@ -107,6 +103,7 @@ class CFExTemplateParams : public BiffStructure
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(CFExTemplateParams)
 
 public:
+	CFExTemplateParams();
 	BiffStructurePtr clone();
 
 	virtual void load(CFRecord& record);

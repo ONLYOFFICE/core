@@ -84,6 +84,18 @@ const bool SXFORMULA::loadContent(BinProcessor& proc)
 		elements_.pop_back();
 	}	return true;
 }
+const bool SXFORMULA::saveContent(BinProcessor& proc)
+{
+	if(m_SXFMLA == nullptr)
+		return false;
+	proc.mandatory(*m_SXFMLA);
+	if(m_PIVOTRULE != nullptr)
+		proc.mandatory(*m_PIVOTRULE);
+	if(m_SXFormula != nullptr)
+		proc.mandatory(*m_SXFormula);
+	return true;
+}
+
 int SXFORMULA::serialize(std::wostream & strm)
 {
 	SXFMLA* fmla = dynamic_cast<SXFMLA*>(m_SXFMLA.get());

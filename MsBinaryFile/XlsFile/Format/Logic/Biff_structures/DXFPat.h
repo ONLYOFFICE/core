@@ -52,10 +52,10 @@ public:
 
 	int serialize(std::wostream & stream);
 
-	FillPattern fls;
+	FillPattern fls = 0;
 	
-	unsigned char icvForeground;
-	unsigned char icvBackground; 
+	unsigned char icvForeground = 0;
+	unsigned char icvBackground = 0;
 //------------------------------------------------
 	DXFN *parent = NULL;
 };

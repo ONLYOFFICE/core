@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2025
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -31,62 +31,28 @@
  */
 #pragma once
 
-#include "BiffRecord.h"
-#include "../Biff_structures/FrtRefHeader.h"
-#include "../Biff_structures/DXFN12.h"
-#include "../Biff_structures/CFParsedFormulaNoCCE.h"
-#include "../Biff_structures/CFParsedFormula.h"
-#include "../Biff_structures/CFExTemplateParams.h"
-
+#include "BiffStructure.h"
 
 namespace XLS
 {
 
-class CF12: public BiffRecord
+class CFFilter : public BiffStructure
 {
-	BIFF_RECORD_DEFINE_TYPE_INFO(CF12)
-	BASE_OBJECT_DEFINE_CLASS_NAME(CF12)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(CFFilter)
 public:
-	CF12(const CellRef& cell_base_ref);
-	~CF12();
-
-	BaseObjectPtr clone();
-
+	BiffStructurePtr clone();
+	static const ElementType type = typeCFFilter;
 	
-	void readFields(CFRecord& record);
-    void writeFields(CFRecord& record);
+	virtual void load(CFRecord& record);
+    virtual void save(CFRecord& record);
 
-	static const ElementType	type = typeCF12;
+	virtual int serialize(std::wostream & _stream);
 
-	int serialize(std::wostream & stream);
+	unsigned short iParam  = 10;
 
-	FrtRefHeader			frtRefHeader;
-
-    unsigned char			ct = 0;
-    unsigned char			cp = 0;
-
-	DXFN12					dxf;
-
-	CFParsedFormulaNoCCE	rgce1;
-	CFParsedFormulaNoCCE	rgce2;
-
-	CFParsedFormula			fmlaActive;
-    _UINT16					ipriority = 0;
-	_UINT16					icfTemplate = 1;
-	CFExTemplateParams		rgbTemplateParms;
-
-	BiffStructurePtr		rgbCT;
-
-//-----------------------------
-    bool					fStopIfTrue = 0;
-    int						ipriority_ = 0;
-	int						dxfId_ = -1;
-
-	BaseObjectPtr			m_CFEx;
-	BaseObjectPtr			m_CF12_2;
+	bool fTop  = true;
+	bool fPercent  = false;
 };
-
-typedef boost::shared_ptr<CF12> CF12Ptr;
 
 } // namespace XLS
 

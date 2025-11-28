@@ -234,7 +234,7 @@ namespace XLS
 	{
 		if(!cch_)
 		{
-			// EXCEPT::LE::StructureSizeNotSet("BiffString", __FUNCTION__/*__FUNCDNAME__*/); 
+			return 0;// EXCEPT::LE::StructureSizeNotSet("BiffString", __FUNCTION__/*__FUNCDNAME__*/);
 		}
 		return *cch_;
 	}

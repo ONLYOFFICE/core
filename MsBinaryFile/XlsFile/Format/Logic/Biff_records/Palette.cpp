@@ -93,7 +93,7 @@ void Palette::writeFields(CFRecord& record)
     record << ccv;
     for(auto i: rgColor)
         if(i != nullptr)
-            record << i;
+			i->save(record);
 }
 
 

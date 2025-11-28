@@ -62,6 +62,19 @@ void FtCblsData::load(CFRecord& record)
 
 }
 
+void FtCblsData::save(CFRecord& record)
+{
+	{
+		unsigned short ft = 0x0012, cb = 0x0008;
+		record << ft << cb;
+	}
+	record << fChecked << accel;
+	record.reserveNunBytes(2);
+	unsigned short flags = 0;
+	SETBIT(flags, 0, fNo3d)
+	record << flags;
+}
+
 
 } // namespace XLS
 

@@ -83,6 +83,7 @@ namespace OOX
 
 			XLS::BaseObjectPtr toBin();
             XLS::BaseObjectPtr toBin14();
+			XLS::BaseObjectPtr toXLS();
 			void fromBin(XLS::BaseObjectPtr& obj);
             void fromBin14(XLS::BaseObjectPtr& obj);
 			virtual EElementType getType() const;
@@ -129,6 +130,7 @@ namespace OOX
 
 			void readBin(const CPath& oPath);
 			XLS::BaseObjectPtr WriteBin() const;
+			XLS::BaseObjectPtr toXLS() const;
 			virtual void read(const CPath& oPath);
 			virtual void read(const CPath& oRootPath, const CPath& oPath);
 			virtual void fromXML(XmlUtils::CXmlNode& node);
@@ -148,6 +150,7 @@ namespace OOX
 			void PrepareToWrite();
 			LONG GetActiveSheetIndex();
 			XLS::BaseObjectPtr WriteXtiRefs() const;
+			XLS::BaseObjectPtr WriteXtiRefsXLS() const;
 
 			CPath											m_oReadPath;
 

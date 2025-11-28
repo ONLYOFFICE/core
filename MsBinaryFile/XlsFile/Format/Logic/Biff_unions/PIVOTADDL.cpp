@@ -150,5 +150,40 @@ const bool PIVOTADDL::loadContent(BinProcessor& proc)
 	return result;
 }
 
+const bool PIVOTADDL::saveContent(BinProcessor& proc)
+{
+	if(m_SXAddl_SXCView_SXDId != nullptr)
+	{
+		SXAddl tempAddl;
+		tempAddl.content = m_SXAddl_SXCView_SXDId;
+		proc.mandatory(tempAddl);
+	}
+	if(m_SXAddl_SXCView_SXDVer10Info != nullptr)
+	{
+		SXAddl tempAddl;
+		tempAddl.sxc = 0x00;
+		tempAddl.sxd = 0x02;
+		tempAddl.content = m_SXAddl_SXCView_SXDVer10Info;
+		proc.mandatory(tempAddl);
+	}
+	if(m_SXAddl_SXCView_SXDTableStyleClient != nullptr)
+	{
+		SXAddl tempAddl;
+		tempAddl.sxc = 0x00;
+		tempAddl.sxd = 0x1E;
+		tempAddl.content = m_SXAddl_SXCView_SXDTableStyleClient;
+		proc.mandatory(tempAddl);
+	}
+
+	{
+		SXAddl tempAddl;
+		tempAddl.sxc = 0x00;
+		tempAddl.sxd = 0xFF;
+		tempAddl.bEndElement = true;
+		proc.mandatory(tempAddl);//SXAddl_SXCView_SXDEnd
+	}
+	return true;
+}
+
 } // namespace XLS
 

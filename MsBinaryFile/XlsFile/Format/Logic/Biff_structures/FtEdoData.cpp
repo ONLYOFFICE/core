@@ -57,6 +57,15 @@ void FtEdoData::load(CFRecord& record)
 	record >> ivtEdit >> fMultiLine >> fVScroll >> id;
 }
 
+void FtEdoData::save(CFRecord& record)
+{
+	{
+		unsigned short ft = 0x0010, cb = 0x0008;
+		record << ft << cb;
+	}
+	record << ivtEdit << fMultiLine << fVScroll << id;
+}
+
 
 } // namespace XLS
 

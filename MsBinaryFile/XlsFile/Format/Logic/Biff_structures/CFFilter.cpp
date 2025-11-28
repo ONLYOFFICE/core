@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2025
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -29,64 +29,47 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "BiffRecord.h"
-#include "../Biff_structures/FrtRefHeader.h"
-#include "../Biff_structures/DXFN12.h"
-#include "../Biff_structures/CFParsedFormulaNoCCE.h"
-#include "../Biff_structures/CFParsedFormula.h"
-#include "../Biff_structures/CFExTemplateParams.h"
-
+#include "CFFilter.h"
+#include "../../../../Common/Utils/simple_xml_writer.h"
 
 namespace XLS
 {
 
-class CF12: public BiffRecord
+
+BiffStructurePtr CFFilter::clone()
 {
-	BIFF_RECORD_DEFINE_TYPE_INFO(CF12)
-	BASE_OBJECT_DEFINE_CLASS_NAME(CF12)
-public:
-	CF12(const CellRef& cell_base_ref);
-	~CF12();
+	return BiffStructurePtr(new CFFilter(*this));
+}
 
-	BaseObjectPtr clone();
-
+void CFFilter::load(CFRecord& record)
+{
+	record.skipNunBytes(3); // unused
 	
-	void readFields(CFRecord& record);
-    void writeFields(CFRecord& record);
+	unsigned char flags;
+	record >> flags;
 
-	static const ElementType	type = typeCF12;
+	fTop = GETBIT(flags, 0);
+	fPercent = GETBIT(flags, 1);
+	record >> iParam;
+}
 
-	int serialize(std::wostream & stream);
+void CFFilter::save(CFRecord& record)
+{
+	unsigned short cbFilter = 4;
+	record << cbFilter;
+	record.reserveNunBytes(1);
+    unsigned char flags = 0;
+    SETBIT(flags, 0, fTop);
+	SETBIT(flags, 1, fPercent);
+    record << flags << iParam;
+}
 
-	FrtRefHeader			frtRefHeader;
-
-    unsigned char			ct = 0;
-    unsigned char			cp = 0;
-
-	DXFN12					dxf;
-
-	CFParsedFormulaNoCCE	rgce1;
-	CFParsedFormulaNoCCE	rgce2;
-
-	CFParsedFormula			fmlaActive;
-    _UINT16					ipriority = 0;
-	_UINT16					icfTemplate = 1;
-	CFExTemplateParams		rgbTemplateParms;
-
-	BiffStructurePtr		rgbCT;
-
-//-----------------------------
-    bool					fStopIfTrue = 0;
-    int						ipriority_ = 0;
-	int						dxfId_ = -1;
-
-	BaseObjectPtr			m_CFEx;
-	BaseObjectPtr			m_CF12_2;
-};
-
-typedef boost::shared_ptr<CF12> CF12Ptr;
+int CFFilter::serialize(std::wostream & stream)
+{
+	//todo
+	return 0;
+}
 
 } // namespace XLS
 

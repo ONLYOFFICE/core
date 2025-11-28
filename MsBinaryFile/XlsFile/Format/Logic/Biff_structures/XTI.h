@@ -49,9 +49,9 @@ public:
 	void load(CFRecord& record) override;
 	void save(CFRecord& record) override;
 
-    _UINT32 iSupBook; //externalLink in biff12
-    _INT32 itabFirst; //firstSheet in biff12
-    _INT32 itabLast; //lastSheet in biff12
+	_UINT32 iSupBook = 0; //externalLink in biff12
+	_INT32 itabFirst = 0; //firstSheet in biff12
+	_INT32 itabLast = 0; //lastSheet in biff12
 };
 
 typedef boost::shared_ptr<XTI> XTIPtr;

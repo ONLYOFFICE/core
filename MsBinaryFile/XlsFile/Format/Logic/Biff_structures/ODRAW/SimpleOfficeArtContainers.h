@@ -61,9 +61,10 @@ class OfficeArtSpgrContainer : public OfficeArtContainer
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(OfficeArtSpgrContainer)
 public:
 	OfficeArtSpgrContainer(const OfficeArtClientAnchorType anchor_type) : OfficeArtContainer(0x0F, SpgrContainer, anchor_type) {}
-	XLS::BiffStructurePtr clone() { return XLS::BiffStructurePtr(new OfficeArtSpgrContainer(*this)); }
+	XLS::BiffStructurePtr clone()override { return XLS::BiffStructurePtr(new OfficeArtSpgrContainer(*this)); }
 
-	void loadFields(XLS::CFRecord& record);
+	void loadFields(XLS::CFRecord& record) override;
+	void save(XLS::CFRecord& record) override;
 
 	static const XLS::ElementType type = XLS::typeOfficeArtSpgrContainer;
 
@@ -85,14 +86,17 @@ class OfficeArtSpContainer : public OfficeArtContainer
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(OfficeArtSpContainer)
 public:
 	OfficeArtSpContainer(const OfficeArtClientAnchorType anchor_type) : OfficeArtContainer(0x0F, SpContainer, anchor_type) {}
-	XLS::BiffStructurePtr clone() { return XLS::BiffStructurePtr(new OfficeArtSpContainer(*this)); }
+	XLS::BiffStructurePtr clone()override { return XLS::BiffStructurePtr(new OfficeArtSpContainer(*this)); }
 
 	static const XLS::ElementType	type = XLS::typeOfficeArtSpContainer;
 
-	void loadFields(XLS::CFRecord& record);
+	void loadFields(XLS::CFRecord& record)override;
+	void save(XLS::CFRecord& record) override;
 
+	OfficeArtRecordPtr m_OfficeArtFSPGR;
 	OfficeArtRecordPtr m_OfficeArtFSP;
 	OfficeArtRecordPtr m_OfficeArtAnchor;
+	OfficeArtRecordPtr m_oOfficeArtFOPT;
 };
 
 class OfficeArtClientData : public OfficeArtRecord

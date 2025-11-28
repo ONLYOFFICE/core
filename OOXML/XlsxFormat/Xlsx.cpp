@@ -33,6 +33,7 @@
 
 #include "../DocxFormat/App.h"
 #include "../DocxFormat/Core.h"
+#include "../DocxFormat/FileTypes.h"
 
 #include "Workbook/Workbook.h"
 #include "SharedStrings/SharedStrings.h"
@@ -57,6 +58,14 @@
 
 #include "ComplexTypes_Spreadsheet.h"
 #include "../../DesktopEditor/common/SystemUtils.h"
+#include "../Binary/XlsbFormat/FileTypes_SpreadsheetBin.h"
+
+#include "../../MsBinaryFile/XlsFile/Converter/xls_writer.h"
+#include "../../MsBinaryFile/XlsFile/Format/Logic/WorkbookStreamObject.h"
+#include "../../MsBinaryFile/XlsFile/Format/Logic/GlobalsSubstream.h"
+#include "../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/PIVOTCACHE.h"
+
+#include <iomanip>
 
 OOX::Spreadsheet::CXlsx::CXlsx() : OOX::IFileContainer(dynamic_cast<OOX::Document*>(this))
 {
@@ -189,6 +198,115 @@ bool OOX::Spreadsheet::CXlsx::Write(const CPath& oDirPath, OOX::CContentTypes &o
 
     oContentTypes.Write(oDirPath);
     return true;
+}
+bool OOX::Spreadsheet::CXlsx::WriteXLS(const CPath& oFilePath)
+{
+	PrepareToWrite();
+	if(NULL == m_pWorkbook ||  m_arWorksheets.empty ())
+		return false;
+	auto workbookStream = new XLS::WorkbookStreamObject;
+	auto workbookPtr = XLS::BaseObjectPtr(workbookStream);
+	XlsWriter writer;
+	writer.globalInfoPtr.reset(new XLS::GlobalWorkbookInfo(XLS::WorkbookStreamObject::DefaultCodePage, nullptr));
+	// add pivot cache ids to global inf and fix 0 ids
+	if(m_pWorkbook->m_oPivotCaches.IsInit() && !m_pWorkbook->m_oPivotCaches->m_arrItems.empty())
+	{
+		auto cacheNum = 0;
+		for(auto cacheHeader : m_pWorkbook->m_oPivotCaches->m_arrItems)
+		{
+			if(!cacheHeader->m_oCacheId.IsInit())
+				continue;
+			cacheHeader->m_oCacheId = cacheHeader->m_oCacheId->GetValue() + 1;
+			writer.globalInfoPtr->mapPivotCacheIndex.emplace(cacheHeader->m_oCacheId->GetValue(), cacheNum);
+			cacheNum++;
+		}
+	}
+	workbookStream->m_GlobalsSubstream = m_pWorkbook->toXLS();
+	auto CastedGlobalsStram = static_cast<XLS::GlobalsSubstream*>(workbookStream->m_GlobalsSubstream.get());
+	CastedGlobalsStram->global_info_ = writer.globalInfoPtr;
+	for(auto i : m_arWorksheets)
+		workbookStream->m_arWorksheetSubstream.push_back(i->toXLS());
+	CastedGlobalsStram->m_arSUPBOOK.push_back(m_pWorkbook->WriteXtiRefsXLS());
+	if(m_pSharedStrings != nullptr)
+		m_pSharedStrings->toXLS(workbookStream->m_GlobalsSubstream);
+	auto themesPtr = m_pWorkbook->Find(OOX::FileTypes::Theme);
+	if(!(themesPtr->type() == OOX::FileTypes::Unknown))
+	{	auto counter = 0;
+		auto theme = static_cast<PPTX::Theme*>(themesPtr.GetPointer());
+		for(auto themeColor : theme->themeElements.clrScheme.Scheme)
+		{
+			if(themeColor.first == L"lt1")
+				counter = 0;
+			else if(themeColor.first == L"dk1")
+				counter = 1;
+			else if(themeColor.first == L"lt2")
+				counter = 2;
+			else if(themeColor.first == L"dk2")
+				counter = 3;
+			else if(themeColor.first == L"accent1")
+				counter = 4;
+			else if(themeColor.first == L"accent2")
+				counter = 5;
+			else if(themeColor.first == L"accent3")
+				counter = 6;
+			else if(themeColor.first == L"accent4")
+				counter = 7;
+			else if(themeColor.first == L"accent5")
+				counter = 8;
+			else if(themeColor.first == L"accent6")
+				counter = 9;
+			else if(themeColor.first == L"hlink")
+				counter = 10;
+			else if(themeColor.first == L"folHlink")
+				counter = 11;
+			else continue;
+			auto tempcolor = themeColor.second;
+			std::wstringstream sStream;
+			sStream << std::hex  << std::setw(6) << std::setfill(L'0')<< tempcolor.Color->GetARGB(0);
+			writer.globalInfoPtr->RegisterPaletteColor(counter, sStream.str());
+		}
+	}
+	if(m_pStyles != nullptr)
+		m_pStyles->toXLS(workbookStream->m_GlobalsSubstream);
+
+	writer.Open(oFilePath.GetPath());
+	writer.WriteWorkbook(workbookPtr);
+
+	if(m_pWorkbook->m_oPivotCaches.IsInit() && !m_pWorkbook->m_oPivotCaches->m_arrItems.empty())
+	{
+		for(auto cacheHeader : m_pWorkbook->m_oPivotCaches->m_arrItems)
+		{
+			if(!cacheHeader->m_oCacheId.IsInit() || !cacheHeader->m_oRid.IsInit() ||  !m_pWorkbook->IsExist(cacheHeader->m_oRid->GetValue()))
+				continue;
+			auto cacheFilePtr = m_pWorkbook->Find(cacheHeader->m_oRid->GetValue());
+			auto CachePtr = static_cast<CPivotCacheDefinitionFile*>(cacheFilePtr.GetPointer());
+			auto XLSBinCache = CachePtr->m_oPivotCashDefinition->toXLS(cacheHeader->m_oCacheId->GetValue());
+			auto castedCache = static_cast<XLS::PIVOTCACHE*>(XLSBinCache.get());
+			auto cacheRecordsPtr = CachePtr->Find(OOX::SpreadsheetBin::FileTypes::PivotCacheRecordsBin);
+			if(!(cacheRecordsPtr->type() == OOX::FileTypes::Unknown))
+			{
+				auto castedRecords = static_cast<CPivotCacheRecordsFile*>(cacheRecordsPtr.GetPointer());
+				if(!castedRecords->m_oPivotCacheRecords.IsInit() && castedRecords->m_pData!= nullptr)
+				{
+					castedRecords->m_oPivotCacheRecords.Init();
+					XmlUtils::CXmlLiteReader reader;
+					reader.FromStringA((char*)castedRecords->m_pData, castedRecords->m_nDataLength);
+					reader.ReadNextNode();
+					castedRecords->m_oPivotCacheRecords->fromXML(reader);
+				}
+				if(castedRecords->m_oPivotCacheRecords.IsInit())
+				for(auto CacheRecord : castedRecords->m_oPivotCacheRecords->m_arrItems)
+				{
+					castedCache->m_arDBB.push_back(CacheRecord->toXLS());
+				}
+			}
+
+
+			if(CachePtr->m_oPivotCashDefinition.IsInit())
+				writer.WritePivotCache(XLSBinCache, cacheHeader->m_oCacheId->GetValue());
+		}
+	}
+	return true;
 }
 bool OOX::Spreadsheet::CXlsx::WriteWorkbook(const CPath& oDirPath)
 {

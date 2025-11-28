@@ -206,8 +206,13 @@ public:
 			switch (rel_info)
 			{
 			case rel_Present:
-				colFirst = (columnFirst >> 2) << 2;
-				colLast = (columnLast >> 2) << 2;
+				SETBITS(colFirst, 0, 13, columnFirst);
+				SETBIT(colFirst, 14, columnFirstRelative);
+				SETBIT(colFirst, 15, rowFirstRelative);
+
+				SETBITS(colLast, 0, 13, columnLast);
+				SETBIT(colLast, 14, columnLastRelative);
+				SETBIT(colLast, 15, rowLastRelative);
 				break;
 			case rel_Absent:
 				colFirst = columnFirst;

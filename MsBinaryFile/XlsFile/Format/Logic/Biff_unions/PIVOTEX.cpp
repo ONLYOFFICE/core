@@ -83,9 +83,10 @@ const bool PIVOTEX::loadContent(BinProcessor& proc)
 
 const bool PIVOTEX::saveContent(BinProcessor& proc)
 {
-    if(m_SXEx == nullptr)
-        return false;
-    proc.mandatory(*m_SXEx);
+	if(m_SXEx != nullptr)
+		proc.mandatory(*m_SXEx);
+	else
+		proc.mandatory<SXEx>();
     for(auto i : m_arPIVOTSELECT)
         if(i != nullptr)
             proc.mandatory(*i);

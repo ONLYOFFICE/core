@@ -2126,6 +2126,11 @@ namespace NExtractTools
 			result = xls2xlsx(sFileFrom, sFileTo, oInputParams, oConvertParams);
 		}
 		break;
+		case TCD_XLSX2XLS:
+		{
+			result = xlsx2xls(sFileFrom, sFileTo, oInputParams, oConvertParams);
+		}
+		break;
 		case TCD_XLS2XLSM:
 		{
 			result = xls2xlsm(sFileFrom, sFileTo, oInputParams, oConvertParams);

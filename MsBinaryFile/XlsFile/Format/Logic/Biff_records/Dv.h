@@ -51,7 +51,7 @@ enum _typOperatorDv
 	operatorDvGreaterThanOrEqual,
 	operatorDvLessThanOrEqual
 };
-enum _valTypeDv
+enum	_valTypeDv
 {
 	typeDvNone = 0,
 	typeDvWhole = 1,
@@ -81,12 +81,12 @@ public:
 	_valTypeDv		valType;
 	unsigned char	errStyle;
 	
-	bool			fStrLookup;
-	bool			fAllowBlank;
-	bool			fSuppressCombo;
-	unsigned char	mdImeMode;
-	bool			fShowInputMsg;
-	bool			fShowErrorMsg;
+	bool			fStrLookup = false;
+	bool			fAllowBlank = false;
+	bool			fSuppressCombo = false;
+	unsigned char	mdImeMode = 0;
+	bool			fShowInputMsg = false;
+	bool			fShowErrorMsg = false;
 	_typOperatorDv	typOperator;
 
     std::wstring    PromptTitle;//XLUnicodeString

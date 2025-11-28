@@ -47,7 +47,7 @@ namespace XLS
         bool			fSbt = 0;
         bool			fBlock = 0;
         bool			fGrand = 0;
-        bool			fMultiDataOnAxis = 0;
+		bool			fMultiDataOnAxis = true;
 
 		std::vector<short> rgisxvi;
 	};

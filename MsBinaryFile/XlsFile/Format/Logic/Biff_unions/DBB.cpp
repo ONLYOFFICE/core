@@ -82,6 +82,17 @@ const bool DBB::loadContent(BinProcessor& proc)
 
 	return true;
 }
+
+const bool DBB::saveContent(BinProcessor& proc)
+{
+	if(m_SXDBB != nullptr)
+		proc.mandatory(*m_SXDBB);
+	for(auto i : m_arSXOPER)
+		if(i != nullptr)
+			proc.mandatory(*i);
+	return true;
+}
+
 int DBB::serialize(std::wostream & strm)
 {
 	SXDBB* dbb = dynamic_cast<SXDBB*>(m_SXDBB.get());

@@ -38,6 +38,9 @@
 
 #include "../../Common/SimpleTypes_Shared.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Binary/CFStreamCacheWriter.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/COLUMNS.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/DefColWidth.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/ColInfo.h"
 
 namespace OOX
 {
@@ -131,6 +134,40 @@ namespace OOX
 				else
 					castedPtr->coldx = 2304; ///standart col width(9) * 256
 				return ptr;
+			}
+			XLS::BaseObjectPtr CCol::toXLS()
+			{
+				auto colInfo = new XLS::ColInfo;
+				if(m_oMax.IsInit() && m_oMax->GetValue() <= 255)
+					colInfo->colLast = m_oMax->m_eValue - 1;
+				else
+					colInfo->colLast = 255;
+				if(m_oMin.IsInit())
+					colInfo->colFirst  = m_oMin->m_eValue - 1;
+				else
+					colInfo->colFirst = 0;
+				if (m_oWidth.IsInit())
+				{
+					if(m_oWidth->GetValue() > 0)
+						colInfo->coldx = m_oWidth->GetValue() * 256;
+				}
+				else
+					colInfo->coldx = 2304;
+				if(m_oStyle.IsInit())
+					colInfo->ixfe = m_oStyle->m_eValue + 15;
+				if(m_oHidden.IsInit())
+					colInfo->fHidden = m_oHidden->ToBool();
+				if(m_oCustomWidth.IsInit())
+					colInfo->fUserSet = m_oCustomWidth->ToBool();
+				if(m_oBestFit.IsInit())
+					colInfo->fBestFit = m_oBestFit->ToBool();
+				if(m_oPhonetic.IsInit())
+					colInfo->fPhonetic = m_oPhonetic->ToBool();
+				if(m_oOutlineLevel.IsInit())
+					colInfo->iOutLevel =  m_oOutlineLevel->m_eValue;
+				if(m_oCollapsed.IsInit())
+					colInfo->fCollapsed = m_oCollapsed->ToBool();
+				return XLS::BaseObjectPtr(colInfo);
 			}
             void CCol::toBin(XLS::StreamCacheWriterPtr& writer)
             {
@@ -350,6 +387,16 @@ namespace OOX
                     writer->storeNextRecord(end);
                 }
             }
+			XLS::BaseObjectPtr CCols::toXLS()
+			{
+				auto cols = new XLS::COLUMNS;
+				for(auto i:m_arrItems)
+				{
+				   cols->m_colInfos.push_back(i->toXLS());
+				}
+
+				return  XLS::BaseObjectPtr(cols);
+			}
 			EElementType CCols::getType () const
 			{
 				return et_x_Cols;

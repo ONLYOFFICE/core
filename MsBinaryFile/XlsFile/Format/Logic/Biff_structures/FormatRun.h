@@ -43,6 +43,7 @@ class FormatRun : public BiffStructure
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(FormatRun)
 public:
+	FormatRun();
 	BiffStructurePtr clone();
 
 	static const ElementType	type = typeFormatRun;

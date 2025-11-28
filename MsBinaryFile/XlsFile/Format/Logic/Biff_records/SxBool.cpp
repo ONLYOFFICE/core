@@ -55,5 +55,12 @@ void SxBool::readFields(CFRecord& record)
 
 	val = (flags != 0);
 }
+
+void SxBool::writeFields(CFRecord& record)
+{
+	unsigned short flags = val;
+	record << flags;
+}
+
 } // namespace XLS
 

@@ -228,6 +228,25 @@ void OOX::Spreadsheet::CXlsb::PrepareSi()
     }
 }
 
+// подготовка гиперссылок для записи в xls
+void OOX::Spreadsheet::CXlsb::PrepareHlinks()
+{
+	for(auto i : m_arWorksheets)
+	{
+		if(i->m_oHyperlinks.IsInit())
+		{
+			for(auto hlink : i->m_oHyperlinks->m_arrItems)
+			{
+				if(!hlink->m_oLink.IsInit() && hlink->m_oRid.IsInit())
+				{
+					auto rel = static_cast<OOX::External*>(i->Find(hlink->m_oRid->GetValue()).GetPointer());
+					if(rel != nullptr)
+						hlink->m_oLink = rel->Uri().GetFilename();
+				}
+			}
+		}
+	}
+}
 //подготовка шрифтов в richString для конвертации в xlsb
 void OOX::Spreadsheet::CXlsb::PrepareRichStr()
 {

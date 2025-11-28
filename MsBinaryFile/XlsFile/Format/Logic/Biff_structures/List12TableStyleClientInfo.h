@@ -50,12 +50,13 @@ public:
 	static const ElementType type = typeList12TableStyleClientInfo;
 	
 	virtual void load(CFRecord& record);
+	virtual void save(CFRecord& record);
 
-	bool	fFirstColumn;
-	bool	fLastColumn;
-	bool	fRowStripes;
-	bool	fColumnStripes;
-	bool	fDefaultStyle;
+	bool	fFirstColumn = false;
+	bool	fLastColumn = false;
+	bool	fRowStripes = false;
+	bool	fColumnStripes = false;
+	bool	fDefaultStyle = false;
 
 	XLUnicodeString stListStyleName;
 };

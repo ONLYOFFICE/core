@@ -67,5 +67,15 @@ void FeatHdr11::readFields(CFRecord& record)
 	record.skipNunBytes(2);		// reserved4
 }
 
+void FeatHdr11::writeFields(CFRecord& record)
+{
+	frt.rt = 0x0871;
+	record << frt  << isf;
+	unsigned char reserved1 = 1;
+	unsigned int reserved2 = 0xFFFFFFFF;
+	record << reserved1 << reserved2 << reserved2 << idListNext;
+	record.reserveNunBytes(2);
+}
+
 } // namespace XLS
 

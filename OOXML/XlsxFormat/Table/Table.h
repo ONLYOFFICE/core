@@ -114,6 +114,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
             void fromBin(XLS::BaseObjectPtr& obj);
 			XLS::BaseObjectPtr toBin();
+			XLS::BaseObjectPtr toXLS();
 			virtual EElementType getType () const
 			{
 				return et_x_TableStyleInfo;
@@ -173,6 +174,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
             void fromBin(XLS::BaseObjectPtr& obj);
 			XLS::BaseObjectPtr toBin();
+			XLS::BiffStructurePtr toXLS();
 			virtual EElementType getType () const
 			{
 				return et_x_TableColumn;
@@ -264,6 +266,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
             void fromBin(XLS::BaseObjectPtr& obj);
 			XLS::BaseObjectPtr toBin();
+			XLS::BaseObjectPtr toXLS();
 			virtual EElementType getType () const
 			{
 				return et_x_Table;

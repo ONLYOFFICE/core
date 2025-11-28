@@ -59,6 +59,17 @@ void OfficeArtFRITContainer::loadFields(XLS::CFRecord& record)
 	}
 }
 
+void OfficeArtFRITContainer::save(XLS::CFRecord& record)
+{
+	rh_own.recVer = 0;
+	rh_own.recInstance = rgfrit.size();
+	rh_own.recType = 0xF118;
+	rh_own.recLen = rh_own.recInstance * 4;
+	record << rh_own;
+	for(auto i : rgfrit)
+			i.save(record);
+}
+
 const unsigned short OfficeArtFRITContainer::GetInstanceToStore()
 {
 	return rgfrit.size();

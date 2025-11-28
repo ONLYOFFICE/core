@@ -61,8 +61,9 @@ void HLink::readFields(CFRecord& record)
 void HLink::writeFields(CFRecord& record)
 {
     record << ref8;
-    _GUID_ guid_num(0, 0, 0, 0);
-    STR::bstr2guid(hlinkClsid, guid_num);
+	_GUID_ guid_num;
+	if(!hlinkClsid.empty())
+		STR::bstr2guid(hlinkClsid, guid_num);
     record << guid_num << hyperlink;
 }
 

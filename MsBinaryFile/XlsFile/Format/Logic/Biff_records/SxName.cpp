@@ -57,5 +57,12 @@ void SxName::readFields(CFRecord& record)
 	fErrName = GETBIT(flags, 0);
 }
 
+void SxName::writeFields(CFRecord& record)
+{
+	unsigned short	flags = 0;
+	SETBIT(flags, 0, fErrName)
+	record << flags << ifdb << ifn << csxpair;
+}
+
 } // namespace XLS
 

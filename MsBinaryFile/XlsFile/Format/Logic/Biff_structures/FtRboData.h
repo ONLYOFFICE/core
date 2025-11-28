@@ -51,11 +51,12 @@ public:
 	static const ElementType type = typeFtRboData;
 
 	virtual void load(CFRecord& record);
+	virtual void save(CFRecord& record);
 
-	unsigned short idRadNext;
-	Boolean<unsigned short> fFirstBtn;
+	unsigned short idRadNext = 0;
+	Boolean<unsigned short> fFirstBtn = false;
 
-	bool fExist;
+	bool fExist = false;
 };
 
 } // namespace XLS

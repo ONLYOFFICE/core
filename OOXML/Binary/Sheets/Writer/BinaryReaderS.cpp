@@ -2443,6 +2443,8 @@ int BinaryWorkbookTableReader::ReadWorkbookTableContent(BYTE type, long length, 
 	else if (c_oSerWorkbookTypes::Metadata == type)
 	{
 		smart_ptr<OOX::Spreadsheet::CMetadataFile> oMetadataFile(new OOX::Spreadsheet::CMetadataFile(NULL));
+		if(m_oWorkbook.OOX::File::m_pMainDocument)
+			oMetadataFile->OOX::File::m_pMainDocument = m_oWorkbook.OOX::File::m_pMainDocument;
 		oMetadataFile->m_oMetadata.Init();
 		READ1_DEF(length, res, this->ReadMetadata, oMetadataFile->m_oMetadata.GetPointer());
 
@@ -6963,8 +6965,17 @@ int BinaryWorksheetsTableReader::ReadRow(BYTE type, long length, void* poResult)
         if (NULL == m_oSaveParams.pCSVWriter && NULL == m_pCurStreamWriterBin)
 		{
 			pRow->toXMLStart(*m_pCurStreamWriter);
+			auto filePos = m_pCurStreamWriter->GetCurSize();
 			READ1_DEF(length, res, this->ReadCells, pRow);
-			pRow->toXMLEnd(*m_pCurStreamWriter);
+			// in case of empty row
+			if(m_pCurStreamWriter->GetCurSize() == filePos)
+			{
+
+				m_pCurStreamWriter->SetCurSize(filePos-1);
+				m_pCurStreamWriter->WriteString(_T("/>"));
+			}
+			else
+				pRow->toXMLEnd(*m_pCurStreamWriter);
 		}
         else if(m_pCurStreamWriterBin != NULL)
         {

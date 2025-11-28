@@ -3918,7 +3918,7 @@ namespace OOX
             while(1)
             {
                 CCell *pCell = new CCell(m_pMainDocument);
-                pCell->m_oRow = m_oR->GetValue();
+				pCell->m_oRow = m_oR->GetValue()-1;
                 if(pCell->fromBin(reader))
                 {
                     //пытаемся сжать пустые клетки

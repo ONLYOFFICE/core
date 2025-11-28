@@ -5754,7 +5754,7 @@ void BinaryWorksheetTableWriter::WriteSheetData(const OOX::Spreadsheet::CSheetDa
                     if(pRow->m_oR.IsInit())
                         pRow->m_oR = pRow->m_oR->GetValue() + 1;
                     if(!pRow->m_arrItems.empty() && pRow->m_arrItems.at(0)->m_oRow.IsInit())
-                        pRow->m_arrItems.at(0)->m_oRow = pRow->m_oR->GetValue();
+						pRow->m_arrItems.at(0)->m_oRow = pRow->m_oR->GetValue()-1;
                     nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::Row);
                     WriteRow(*pRow);
                     m_oBcw.WriteItemEnd(nCurPos);

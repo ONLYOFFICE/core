@@ -108,7 +108,7 @@ void List12BlockLevel::load(CFRecord& record)
 	if (istnAgg != -1)
 		record >> stAgg;
 }
-auto saveDXFN(CFRecord& record, const size_t cbPos, DXFN12List & dxfnList)
+void saveDXFN(CFRecord& record, const size_t cbPos, DXFN12List & dxfnList)
 {
 	_INT32 listSize = 0;
 	auto dxfnStart = record.getRdPtr();

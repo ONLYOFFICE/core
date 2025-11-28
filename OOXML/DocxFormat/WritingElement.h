@@ -33,6 +33,7 @@
 
 #include "../../DesktopEditor/xml/include/xmlutils.h"
 #include "../Base/SmartPtr.h"
+#include "../../OdfFile/Common/logging.h"
 
 namespace NSBinPptxRW
 {

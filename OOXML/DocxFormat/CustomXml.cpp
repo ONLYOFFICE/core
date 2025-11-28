@@ -171,7 +171,18 @@ namespace OOX
 	{
 		if (L"datastoreItem" == XmlUtils::GetNameNoNS(oNode.GetName()));
 		{
-			m_oItemID = oNode.ReadAttribute(L"ds:itemID");
+			std::wstring id = oNode.ReadAttribute(L"ds:itemID");
+			if (false == id.empty())
+			{
+				if (id[0] != L'{' && id.size() == 36)
+				{
+					id = L"{" + id + L"}";
+				}
+				if (false == m_oItemID.FromString(id))
+				{
+					_CP_LOG << L"[error] guid (" << id << L")" << std::endl;
+				}
+			}
 
 			XmlUtils::CXmlNode oItem;
 			if (oNode.GetNode(L"ds:schemaRefs", oItem))

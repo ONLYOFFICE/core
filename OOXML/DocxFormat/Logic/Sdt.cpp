@@ -1515,6 +1515,10 @@ namespace OOX
 				}
 				else if (L"complexFormPr" == sName)
 					m_oComplexFormPr = oReader;
+				else if (L"repeatingSection" == sName)
+					m_oRepeatingSection = true;
+				else if (L"repeatingSectionItem" == sName)
+					m_oRepeatingSectionItem = true;
 			}
 		}
 		std::wstring CSdtPr::toXMLStart() const
@@ -1534,7 +1538,7 @@ namespace OOX
 
 			if (m_oDataBinding.IsInit())
 			{ 
-				if (m_oDataBinding->m_sStoreItemChecksum.IsInit())
+				if (m_oDataBinding->m_sStoreItemChecksum.IsInit() || m_oRepeatingSectionItem.IsInit() || m_oRepeatingSection.IsInit())
 				{
 					WritingElement_WriteNode_1(L"<w15:dataBinding", m_oDataBinding);
 				}
@@ -1543,6 +1547,9 @@ namespace OOX
 					WritingElement_WriteNode_1(L"<w:dataBinding", m_oDataBinding);
 				}
 			}
+			if (m_oRepeatingSection.IsInit()) sResult += L"<w15:repeatingSection/>";
+			else if (m_oRepeatingSectionItem.IsInit()) sResult += L"<w15:repeatingSectionItem/>";
+
 			WritingElement_WriteNode_1(L"<w:temporary ", m_oTemporary);
 			WritingElement_WriteNode_1(L"<w:tag ", m_oTag);
 

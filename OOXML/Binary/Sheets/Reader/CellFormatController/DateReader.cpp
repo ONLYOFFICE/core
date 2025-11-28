@@ -143,6 +143,7 @@ enum class ParsingElem
 
 void SetDateElem(tm &result, _INT32 value, const std::wstring datePattern,  bool &day, bool &month, bool &year, bool &Berror)
 {
+	_INT16 Partscount = day + month + year;
     for(auto dateFmtPart : datePattern)
     {
         if((dateFmtPart == L'0' || dateFmtPart == L'1') && !day && value <= 31)
@@ -163,6 +164,15 @@ void SetDateElem(tm &result, _INT32 value, const std::wstring datePattern,  bool
             result.tm_year = value;
             return;
         }
+		if(Partscount)
+		{
+			Partscount--;
+		}
+		else
+		{
+			 Berror = true;
+			 break;
+		}
     }
     Berror = true;
 }

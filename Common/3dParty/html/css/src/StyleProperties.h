@@ -619,6 +619,30 @@ namespace NSCSS
 		bool operator==(const TTextDecoration& oTextDecoration) const;
 	};
 
+	typedef enum
+	{
+		Baseline,
+		Sub,
+		Super,
+		Percentage,
+		Length
+	} EBaselineShift;
+
+	class CBaselineShift
+	{
+		CEnum   m_eType;
+		CDigit  m_oValue;
+	public:
+		CBaselineShift();
+
+		bool Empty() const;
+
+		EBaselineShift GetType() const;
+		double         GetValue() const;
+
+		bool SetValue(const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
+	};
+
 	class CText
 	{
 	public:
@@ -626,17 +650,21 @@ namespace NSCSS
 
 		static void Equation(CText &oFirstText, CText &oSecondText);
 
-		bool SetIndent    (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
-		bool SetAlign     (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
-		bool SetDecoration(const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
-		bool SetColor     (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
-		bool SetHighlight (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
+		bool SetIndent        (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
+		bool SetAlign         (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
+		bool SetDecoration    (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
+		bool SetColor         (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
+		bool SetHighlight     (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
+		bool SetBaselineShift (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
 
 		const CDigit&          GetIndent()     const;
 		const CString&         GetAlign()      const;
 		const TTextDecoration& GetDecoration() const;
 		const CColor&          GetColor()      const;
 		const CColor&          GetHighlight()  const;
+
+		EBaselineShift GetBaselineShiftType()  const;
+		double         GetBaselineShiftValue() const;
 
 		bool Empty() const;
 
@@ -647,6 +675,7 @@ namespace NSCSS
 		CText& operator+=(const CText& oText);
 		bool   operator==(const CText& oText) const;
 	private:
+		CBaselineShift  m_oBaselineShift;
 		TTextDecoration m_oDecoration;
 		CDigit          m_oIndent;
 		CString         m_oAlign;

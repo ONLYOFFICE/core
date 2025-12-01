@@ -2255,6 +2255,11 @@ namespace NSCSS
 		return m_oHighlight.SetValue(wsValue, unLevel, bHardMode);
 	}
 
+	bool CText::SetBaselineShift(const std::wstring& wsValue, unsigned int unLevel, bool bHardMode)
+	{
+		return m_oBaselineShift.SetValue(wsValue, unLevel, bHardMode);
+	}
+
 	const CDigit& CText::GetIndent() const
 	{
 		return m_oIndent;
@@ -2280,10 +2285,21 @@ namespace NSCSS
 		return m_oHighlight;
 	}
 
+	EBaselineShift CText::GetBaselineShiftType() const
+	{
+		return m_oBaselineShift.GetType();
+	}
+
+	double CText::GetBaselineShiftValue() const
+	{
+		return m_oBaselineShift.GetValue();
+	}
+
 	bool CText::Empty() const
 	{
 		return m_oIndent.Empty()     && m_oAlign.Empty() &&
-		       m_oDecoration.m_oLine.Empty() && m_oColor.Empty();
+		       m_oDecoration.m_oLine.Empty() && m_oColor.Empty() &&
+		       m_oBaselineShift.Empty();
 	}
 
 	bool CText::Underline() const
@@ -2615,6 +2631,40 @@ namespace NSCSS
 		return m_oLine  == oTextDecoration.m_oLine  &&
 		       m_oStyle == oTextDecoration.m_oStyle &&
 		       m_oColor == oTextDecoration.m_oColor;
+	}
+
+	CBaselineShift::CBaselineShift()
+	{
+		m_eType.SetMapping({{L"baseline", EBaselineShift::Baseline}, {L"sub", EBaselineShift::Sub}, {L"super", EBaselineShift::Super}}, EBaselineShift::Baseline);
+	}
+
+	bool CBaselineShift::Empty() const
+	{
+		return m_eType.Empty() && m_oValue.Empty();
+	}
+
+	EBaselineShift CBaselineShift::GetType() const
+	{
+		if (m_oValue.Empty())
+			return (EBaselineShift)m_eType.ToInt();
+
+		if (UnitMeasure::Percent == m_oValue.GetUnitMeasure())
+			return EBaselineShift::Percentage;
+
+		return EBaselineShift::Length;
+	}
+
+	double CBaselineShift::GetValue() const
+	{
+		if (UnitMeasure::Percent == m_oValue.GetUnitMeasure())
+			return m_oValue.ToDouble();
+
+		return m_oValue.ToDouble(NSCSS::Pixel);
+	}
+
+	bool CBaselineShift::SetValue(const std::wstring& wsValue, unsigned int unLevel, bool bHardMode)
+	{
+		return m_eType.SetValue(wsValue, unLevel, bHardMode) || m_oValue.SetValue(wsValue, unLevel, bHardMode);
 	}
 
 	CFont::CFont()

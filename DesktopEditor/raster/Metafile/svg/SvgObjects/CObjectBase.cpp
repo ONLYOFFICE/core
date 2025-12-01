@@ -426,9 +426,15 @@ namespace SVG
 			}
 		}
 		else if (NSCSS::NSProperties::ColorType::ColorContextFill == pFill->GetType() && NULL != pContextObject)
-			pRenderer->put_BrushColor1(pContextObject->m_oStyles.m_oFill.ToInt());
+		{
+			if (!ApplyFill(pRenderer, &pContextObject->m_oStyles.m_oFill, pFile, bUseDefault, pContextObject))
+				return false;
+		}
 		else if (NSCSS::NSProperties::ColorType::ColorContextStroke == pFill->GetType() && NULL != pContextObject)
-			pRenderer->put_BrushColor1(pContextObject->m_oStyles.m_oStroke.m_oColor.ToInt());
+		{
+			if (!ApplyFill(pRenderer, &pContextObject->m_oStyles.m_oStroke.m_oColor, pFile, bUseDefault, pContextObject))
+				return false;
+		}
 		else if (bUseDefault)
 		{
 			pRenderer->put_BrushColor1(0);

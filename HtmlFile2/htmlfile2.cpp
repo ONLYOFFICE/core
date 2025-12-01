@@ -4396,41 +4396,42 @@ private:
 			}
 		}
 
-
 		if (sSrcM.empty())
 		{
 			ImageAlternative(oXml, sSelectors, oTS, wsAlt, sSrcM, oImageData);
 			return true;
 		}
 
+		std::wstring sExtention;
+
+		// Предполагаем картинку в Base64
+		if (sSrcM.length() > 4 && sSrcM.substr(0, 4) == L"data" && sSrcM.find(L"/", 4) != std::wstring::npos)
+			bRes = readBase64(sSrcM, sExtention);
+
 		const bool bIsAllowExternalLocalFiles = GetStatusUsingExternalLocalFiles();
 
-		bool bIsBase64 = false;
-		if (sSrcM.length() > 4 && sSrcM.substr(0, 4) == L"data" && sSrcM.find(L"/", 4) != std::wstring::npos)
-			bIsBase64 = true;
-
-		if (!bIsBase64 && (sSrcM.length() <= 7 || L"http" != sSrcM.substr(0, 4)))
+		if (!bRes && (sSrcM.length() <= 7 || L"http" != sSrcM.substr(0, 4)))
 		{
 			sSrcM = NSSystemPath::ShortenPath(sSrcM);
 
 			if (!CanUseThisPath(sSrcM, m_sSrc, m_sCore, bIsAllowExternalLocalFiles))
+			{
+				ImageAlternative(oXml, sSelectors, oTS, wsAlt, sSrcM, oImageData);
 				return true;
+			}
 		}
 
-		int nImageId = -1;
-		std::wstring sExtention;
-		// Предполагаем картинку в Base64
-		if (bIsBase64)
-			bRes = readBase64(sSrcM, sExtention);
-
 		// Проверка расширения
-		sExtention = NSFile::GetFileExtention(sSrcM);
-		std::transform(sExtention.begin(), sExtention.end(), sExtention.begin(), tolower);
+		if (!bRes)
+		{
+			sExtention = NSFile::GetFileExtention(sSrcM);
+			std::transform(sExtention.begin(), sExtention.end(), sExtention.begin(), tolower);
 
-		std::wstring::const_iterator itFound = std::find_if(sExtention.cbegin(), sExtention.cend(), [](wchar_t wChar){ return !iswalpha(wChar) && L'+' != wChar; });
+			std::wstring::const_iterator itFound = std::find_if(sExtention.cbegin(), sExtention.cend(), [](wchar_t wChar){ return !iswalpha(wChar) && L'+' != wChar; });
 
-		if (sExtention.cend() != itFound)
-			sExtention.erase(itFound, sExtention.cend());
+			if (sExtention.cend() != itFound)
+				sExtention.erase(itFound, sExtention.cend());
+		}
 
 		// Предполагаем картинку в сети
 		if (!bRes &&
@@ -4466,6 +4467,8 @@ private:
 				sExtention = L"png";
 			}
 		}
+
+		int nImageId = -1;
 
 		if (!bRes)
 		{

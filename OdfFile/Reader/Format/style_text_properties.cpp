@@ -1347,9 +1347,8 @@ void text_format_properties::docx_convert(oox::docx_conversion_context & Context
 		 {
 			 fontSize = process_font_size(fo_font_size_, Context.get_styles_context().get_current_processed_style(),false,
 				 Context.get_drop_cap_context().Scale + (Context.get_drop_cap_context().Scale-1) * 0.7);//вместо 1 ДОЛЖНОБЫТЬ коэфф. межстрочного интервала!!!
-
 			 if (fontSize < 1)
-				 fontSize = (int)(Context.get_drop_cap_context().FontSize / 7.52);
+                 fontSize = (int)(Context.get_drop_cap_context().FontSize / 10.0);
 		 }
 		 else
 		 {
@@ -1380,7 +1379,7 @@ void text_format_properties::docx_convert(oox::docx_conversion_context & Context
 			{
 				needProcessFontSize = false;
 				const int scale = Context.get_drop_cap_context().Scale == 1 ? Context.get_scale() : Context.get_drop_cap_context().Scale;
-				_rPr << L"<w:sz w:val=\"" << fontSize * scale + ( scale < 5 ? 0: 8 * (scale - 1) ) << "\"/>";
+				_rPr << L"<w:sz w:val=\"" << fontSize * scale << "\"/>";
 				Context.set_inside_frame(false);
 			}
 		}

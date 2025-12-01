@@ -3172,6 +3172,13 @@ bool CPdfEditor::DeleteAnnot(int nID, Object* oAnnots)
 	PdfWriter::CObjectBase* pObj = m_mObjManager.GetObj(nID);
 	if (pObj)
 	{
+		if (pObj->GetType() == PdfWriter::object_type_DICT)
+		{
+			PdfWriter::CObjectBase* pPopup = ((PdfWriter::CDictObject*)pObj)->Get("Popup");
+			int nIDPopup = m_mObjManager.FindObj(pPopup);
+			m_mObjManager.RemoveObj(nIDPopup);
+			pDoc->RemoveObj(pPopup);
+		}
 		m_mObjManager.RemoveObj(nID);
 		pDoc->RemoveObj(pObj);
 		return true;

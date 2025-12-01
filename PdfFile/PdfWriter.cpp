@@ -2935,7 +2935,7 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 						PdfWriter::CCheckBoxWidget* pKid = dynamic_cast<PdfWriter::CCheckBoxWidget*>(pObj);
 						if (!pKid)
 							continue;
-						if (pKid->NeedAP_N_Yes())
+						if (pKid->NeedAP_N_Yes() && i < pParent->arrOpt.size())
 						{
 							std::pair<std::wstring, std::wstring> PV = pParent->arrOpt[i];
 							std::wstring sOpt = PV.first.empty() ? PV.second : PV.first;

@@ -113,6 +113,10 @@ namespace NSHtmlRenderer
 		virtual HRESULT put_BrushTextureAlpha(const LONG& lTxAlpha);
 		virtual HRESULT get_BrushLinearAngle(double* dAngle);
 		virtual HRESULT put_BrushLinearAngle(const double& dAngle);
+		virtual HRESULT get_BrushOffset(double& offsetX, double& offsetY) const { return S_OK; }
+		virtual HRESULT put_BrushOffset(const double& offsetX, const double& offsetY) { return S_OK; }
+		virtual HRESULT get_BrushScale(bool& isScale, double& scaleX, double& scaleY) const { return S_OK; }
+		virtual HRESULT put_BrushScale(bool isScale, const double& scaleX, const double& scaleY) { return S_OK; }
 		virtual HRESULT BrushRect(const INT& val, const double& left, const double& top, const double& width, const double& height);
 		virtual HRESULT BrushBounds(const double& left, const double& top, const double& width, const double& height);
 

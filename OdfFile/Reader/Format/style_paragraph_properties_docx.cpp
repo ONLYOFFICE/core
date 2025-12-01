@@ -271,7 +271,7 @@ void paragraph_format_properties::docx_convert(oox::docx_conversion_context & Co
 				}
 				if( Context.get_drop_cap_context().Space > 0 )
 				{
-					CP_XML_ATTR(L"w:hSpace", Context.get_drop_cap_context().Space-100);
+					CP_XML_ATTR(L"w:hSpace", Context.get_drop_cap_context().Space);
 				}
 				CP_XML_ATTR(L"w:wrap", L"around"); 
 				CP_XML_ATTR(L"w:hAnchor", L"text");
@@ -281,20 +281,13 @@ void paragraph_format_properties::docx_convert(oox::docx_conversion_context & Co
 			CP_XML_NODE(L"w:spacing")
 			{
 				CP_XML_ATTR(L"w:after", 0); 
-				if ( Context.get_inside_frame() )
-				{
-					if ( Context.get_drop_cap_context().Scale < 5 )
-					{
-						CP_XML_ATTR(L"w:line", 240 * ( Context.get_drop_cap_context().Scale ));
-					}
-					else
-					{
-						CP_XML_ATTR(L"w:line", 270 * ( Context.get_drop_cap_context().Scale ) + ( Context.get_drop_cap_context().Scale - 2 ) * 113);
-					}
-				}
-				else if (Context.get_drop_cap_context().FontSize > 0)
+				if (Context.get_drop_cap_context().FontSize > 0)
 				{
 					CP_XML_ATTR(L"w:line", Context.get_drop_cap_context().FontSize);
+				}
+				else if ( Context.get_inside_frame() && Context.get_drop_cap_context().Scale < 5 )
+				{
+					CP_XML_ATTR(L"w:line", 240 * ( Context.get_drop_cap_context().Scale ));
 				}
 				else
 				{
@@ -303,26 +296,6 @@ void paragraph_format_properties::docx_convert(oox::docx_conversion_context & Co
 				CP_XML_ATTR(L"w:lineRule", L"exact");
 			}
 			CP_XML_NODE(L"w:textAlignment"){CP_XML_ATTR(L"w:val", L"baseline");}
-
-			if( Context.get_inside_frame() && Context.get_drop_cap_context().Scale >= 5 )
-			{
-				int fontSize = 0;
-				if( Context.get_current_fontSize() > 0 )
-				{
-					fontSize = static_cast<int>(Context.get_current_fontSize());
-				}
-				else
-				{
-					fontSize = 24;
-				}
-				if( fontSize > 0 )
-				{
-					const int scale = Context.get_drop_cap_context().Scale;
-					const int pos = -10;
-					_rPr << L"<w:position w:val=\"" << std::to_wstring(pos) << "\" />";
-					_rPr << L"<w:sz w:val=\"" << fontSize * scale + ( scale < 5 ? 0: 8 * (scale - 1) ) << "\"/>";
-				}
-			}
 		}
 
 		if (Context.get_page_break_before() == 2)

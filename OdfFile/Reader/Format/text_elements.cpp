@@ -91,7 +91,7 @@ void process_paragraph_drop_cap_attr(const paragraph_attrs & Attr, oox::docx_con
 	Context.get_drop_cap_context().Scale = style_drop_cap_->style_lines_;
 	
 	if (style_drop_cap_->style_distance_)
-		Context.get_drop_cap_context().Space = (int)(20.0 * (style_drop_cap_->style_distance_->get_value_unit(length::pt) + 5)+ 0.5);//формула ачуметь !! - подбор вручную
+		Context.get_drop_cap_context().Space = (int)(20.0 * (style_drop_cap_->style_distance_->get_value_unit(length::pt) ) );//формула ачуметь !! - подбор вручную
 
 	//font size пощитаем здесь .. так как его значение нужо в стиле параграфа (межстрочный интервал) - в (pt*20)
 	

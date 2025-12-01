@@ -1297,7 +1297,6 @@ namespace BinXlsxRW
 		if (file.CreateFileW(m_oSaveParams.sEmbeddingsPath + FILE_SEPARATOR_STR + sXlsxFilename))
 		{
 			file.WriteFile(pData, length);
-			file.WriteFile(pData, length);
 			file.CloseFile();
 		}
 		fileOut->set_filename(m_oSaveParams.sEmbeddingsPath + FILE_SEPARATOR_STR + sXlsxFilename, false);

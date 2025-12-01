@@ -183,7 +183,7 @@ void OfficeArtClientAnchorSheet::calculate_1()
 		else 
 			_cy += 256 * kfRow * sheet_info.defaultRowHeight;	
 	}
-	_cy += _dyT - _y;
+	_cy += _dyB - _y;
 
 
 }

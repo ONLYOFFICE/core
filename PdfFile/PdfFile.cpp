@@ -1362,7 +1362,7 @@ HRESULT CPdfFile::AdvancedCommand(IAdvancedCommand* command)
 	}
 	case IAdvancedCommand::AdvancedCommandType::Redact:
 	{
-		if (m_pInternal->pEditor && m_pInternal->pEditor->IsEditPage())
+		if (m_pInternal->pEditor)
 			m_pInternal->pEditor->Redact((CRedact*)command);
 		return S_OK;
 	}

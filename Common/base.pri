@@ -33,8 +33,7 @@ OO_BUILD_BRANDING = $$(OO_BRANDING)
 OO_DESTDIR_BUILD_OVERRIDE = $$(DESTDIR_BUILD_OVERRIDE)
 
 win32 {
-	CURRENT_YEAR = $$system(wmic PATH Win32_LocalTime GET ^Year /FORMAT:VALUE | find \"=\")
-	CURRENT_YEAR = $$replace(CURRENT_YEAR, "Year=", "")
+	CURRENT_YEAR = $$system(powershell -NoLogo -NoProfile -Command "(Get-Date).Year")
 	CURRENT_YEAR = $$replace(CURRENT_YEAR, "\r", "")
 	CURRENT_YEAR = $$replace(CURRENT_YEAR, "\n", "")
 	CURRENT_YEAR = $$replace(CURRENT_YEAR, "\t", "")
@@ -45,6 +44,7 @@ win32 {
 }
 
 DEFINES += COPYRIGHT_YEAR=$${CURRENT_YEAR}
+#DEFINES += _LOGOUT_ALWAYS
 
 QMAKE_TARGET_COMPANY = $$PUBLISHER_NAME
 QMAKE_TARGET_COPYRIGHT = © $${PUBLISHER_NAME} $${CURRENT_YEAR}. All rights reserved.
@@ -202,12 +202,12 @@ core_win_64 {
 core_linux {
 	DEFINES += LINUX _LINUX
 
-    QMAKE_CUSTOM_SYSROOT = $$(QMAKE_CUSTOM_SYSROOT)
+	QMAKE_CUSTOM_SYSROOT = $$(QMAKE_CUSTOM_SYSROOT)
 	QMAKE_CUSTOM_SYSROOT_BIN = $$(QMAKE_CUSTOM_SYSROOT)/usr/bin/
 
-    core_linux_64 {
-	    !linux_arm64 { # x86_64
-		    QMAKE_CUSTOM_SYSROOT_LIB = $$(QMAKE_CUSTOM_SYSROOT)/usr/lib/x86_64-linux-gnu
+	core_linux_64 {
+		!linux_arm64 { # x86_64
+			QMAKE_CUSTOM_SYSROOT_LIB = $$(QMAKE_CUSTOM_SYSROOT)/usr/lib/x86_64-linux-gnu
 			!isEmpty(QMAKE_CUSTOM_SYSROOT) {
 			    message("using custom sysroot $$QMAKE_CUSTOM_SYSROOT")
 				QMAKE_CC          = $$join(QMAKE_CUSTOM_SYSROOT_BIN, , , "gcc")
@@ -216,7 +216,7 @@ core_linux {
 				QMAKE_LINK_SHLIB  = $$join(QMAKE_CUSTOM_SYSROOT_BIN, , , "g++")
 
                 QMAKE_CFLAGS      += --sysroot $$QMAKE_CUSTOM_SYSROOT
-				QMAKE_CXXFLAGS    += --sysroot $$QMAKE_CUSTOM_SYSROOT
+				QMAKE_CXXFLAGS    += --sysroot $$QMAKE_CUSTOM_SYSROOT -std=gnu++1y
 				QMAKE_LFLAGS      += --sysroot $$QMAKE_CUSTOM_SYSROOT
 			}
 		}

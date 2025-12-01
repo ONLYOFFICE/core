@@ -1662,6 +1662,7 @@ void Annot::drawText(GString *text, GString *da, int quadding, double margin,
 
 void Annot::draw(Gfx *gfx, GBool printing) {
   GBool oc, isLink;
+  Object annotObj, oIRTObj;
 
   // check the flags
   if ((flags & annotFlagHidden) ||
@@ -1669,6 +1670,18 @@ void Annot::draw(Gfx *gfx, GBool printing) {
       (!printing && (flags & annotFlagNoView))) {
     return;
   }
+
+  if (!getObject(&annotObj)->isDict()) {
+    annotObj.free();
+    return;
+  }
+
+  if (annotObj.dictLookupNF("IRT", &oIRTObj)->isRef()) {
+    annotObj.free(); oIRTObj.free();
+    return;
+  }
+
+  annotObj.free(); oIRTObj.free();
 
   // check the optional content entry
   if (doc->getOptionalContent()->evalOCObject(&ocObj, &oc) && !oc) {

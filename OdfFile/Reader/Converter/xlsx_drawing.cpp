@@ -665,6 +665,18 @@ void _xlsx_drawing::serialize_vml(std::wostream & strm)
 					if (*sVal == L"horizontal")	CP_XML_NODE(L"x:Horiz");
 					else						CP_XML_NODE(L"x:Vert");
 				}
+
+				if (sub_type == OBJ_DropdownList)
+				{
+					CP_XML_NODE(L"x:DropStyle")
+					{
+						CP_XML_STREAM() << L"Combo";
+					}					
+					CP_XML_NODE(L"x:DropLines")
+					{
+						CP_XML_STREAM() << 8;
+					}
+				}
 			}
 		}
 	}

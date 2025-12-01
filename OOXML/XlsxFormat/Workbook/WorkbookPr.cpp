@@ -66,7 +66,7 @@ namespace OOX
 			WritingStringNullableAttrBool(L"autoCompressPictures", m_oAutoCompressPictures);
 			WritingStringNullableAttrBool(L"backupFile", m_oBackupFile);
 			WritingStringNullableAttrBool(L"checkCompatibility", m_oCheckCompatibility);
-			WritingStringNullableAttrBool(L"codeName", m_oCodeName);
+			WritingStringNullableAttrString(L"codeName", m_oCodeName, *m_oCodeName);
 			WritingStringNullableAttrBool(L"date1904", m_oDate1904);
 			WritingStringNullableAttrBool(L"dateCompatibility", m_oDateCompatibility);
 			WritingStringNullableAttrInt(L"defaultThemeVersion", m_oDefaultThemeVersion, m_oDefaultThemeVersion->GetValue());
@@ -109,7 +109,7 @@ namespace OOX
             else
                 ptr->fCheckCompat = false;
 			if(m_oCodeName.IsInit())
-				ptr->strName.value = m_oCodeName->GetValue();
+				ptr->strName.value = *m_oCodeName;
 			else
 				ptr->strName.value = false;
 			if(m_oDate1904.IsInit())

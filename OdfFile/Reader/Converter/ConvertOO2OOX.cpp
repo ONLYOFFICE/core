@@ -87,7 +87,8 @@ _UINT32 ConvertODF2OOXml(const std::wstring & srcPath, const std::wstring & dstP
 {
 	_UINT32 nResult = 0;
 
-	try 
+	_CP_LOG << L"start odf to ..." << std::endl;
+	try
     {
         cpdoccore::odf_reader::odf_document inputOdf(srcPath, tempPath, password);
 		
@@ -129,6 +130,7 @@ _UINT32 ConvertODF2OOXml(const std::wstring & srcPath, const std::wstring & dstP
 	{
 		return AVS_ERROR_UNEXPECTED;
 	}
+	_CP_LOG << L"... finish" << std::endl;
 	return nResult;
 
 }

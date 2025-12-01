@@ -110,7 +110,7 @@ namespace NSCSS
 		void ClearPageData();
 		#endif
 
-		std::vector<std::wstring> CalculateAllNodes(const std::vector<CNode>& arSelectors, unsigned int unStart = 0);
+		std::vector<std::wstring> CalculateAllNodes(const std::vector<CNode>& arSelectors, unsigned int unStart, unsigned int unEnd);
 		std::vector<const CElement*> FindElements(std::vector<std::wstring>& arNodes, std::vector<std::wstring>& arNextNodes);
 
 		void AddStyles(const std::string& sStyle);

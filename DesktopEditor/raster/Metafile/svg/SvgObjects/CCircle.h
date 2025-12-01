@@ -7,8 +7,10 @@ namespace SVG
 {
 	class CCircle : public CRenderedObject
 	{
+		friend class CObject;
+		CCircle(CSvgReader& oReader, CRenderedObject* pParent = NULL);
 	public:
-		CCircle(XmlUtils::CXmlNode& oNode, CRenderedObject* pParent = NULL);
+		void SetAttribute(const std::string& sName, CSvgReader& oReader) override;
 
 		void SetData(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false) override;
 
@@ -16,7 +18,7 @@ namespace SVG
 	private:
 		void ApplyStyle(IRenderer* pRenderer, const TSvgStyles* pStyles, const CSvgFile *pFile, int& nTypePath, const CRenderedObject* pContexObject = NULL) const override;
 
-		TBounds GetBounds() const override;
+		TBounds GetBounds(SvgMatrix* pTransform = nullptr) const override;
 
 		SvgDigit m_oCx;
 		SvgDigit m_oCy;

@@ -362,7 +362,8 @@ namespace BinXlsxRW
 		DateCompatibility = 1,
 		HidePivotFieldList = 2,
 		ShowPivotChartFilter = 3,
-		UpdateLinks = 4
+		UpdateLinks = 4,
+		CodeName = 5
 	};}
 	namespace c_oSerWorkbookViewTypes{enum c_oSerWorkbookViewTypes
 	{

@@ -42,30 +42,22 @@ namespace cpdoccore {
 namespace oox {
 
 
-_CP_PTR(oox_axis_content) oox_axis_content::create(int type, unsigned int id)
+_CP_PTR(oox_axis_content) oox_axis_content::create(unsigned int id)
 {
-    return boost::make_shared<oox_axis_content>(type, id);
+    return boost::make_shared<oox_axis_content>(id);
 }
 
-oox_axis_content::oox_axis_content(int type/*,std::wstring name*/, unsigned int id)
+oox_axis_content::oox_axis_content(unsigned int id)
 {
-	if (type == 0)
-	{
-		id_  = 0;
-	}
-	else
-	{
-		id_  = id;
-	}
-	type_ = type;
+	id_  = id;
 }
 void oox_axis_content::oox_serialize(std::wostream & _Wostream)
 {
 	if (id_ < 1 ) return; //not activate, blank axis
- 
+
 	CP_XML_WRITER(_Wostream)
     {
-		switch(type_)
+		switch(content_.type_)
 		{
 		case 1:
 			CP_XML_NODE(L"c:catAx")

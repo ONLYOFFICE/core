@@ -41,6 +41,7 @@
 #include "../../DataTypes/common_attlists.h"
 #include "../../DataTypes/charttimeunit.h"
 #include "../../DataTypes/chartclass.h"
+#include "../../DataTypes/chartaxistype.h"
 
 namespace cpdoccore {
 namespace odf_reader {
@@ -275,8 +276,7 @@ public:
 
 public:
     _CP_OPT(odf_types::length)	svg_width_;
-    common_chart_attlist		common_attlist_;
-
+    common_chart_attlist common_attlist_;
 };
 
 class chart_wall : public office_element_impl<chart_wall>
@@ -314,10 +314,9 @@ private:
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
 public:
-    common_chart_attlist	common_attlist_;
+    common_chart_attlist common_attlist_;
 
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(chart_floor);
 
 class chart_axis_attlist 
@@ -325,10 +324,11 @@ class chart_axis_attlist
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
-public:
-    _CP_OPT(std::wstring)		chart_dimension_;
-    _CP_OPT(std::wstring)		chart_name_;
-    common_chart_attlist		common_attlist_;
+    _CP_OPT(std::wstring) chart_dimension_;
+    _CP_OPT(std::wstring) chart_name_;
+    _CP_OPT(odf_types::chart_axis_type) axis_type_;
+
+    common_chart_attlist common_attlist_;
 };
 
 //  chart:axis
@@ -348,9 +348,7 @@ private:
 public:
     chart_axis_attlist			attlist_;
     office_element_ptr_array	content_; 
-
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(chart_axis);
 
 class chart_grid_attlist

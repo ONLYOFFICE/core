@@ -67,7 +67,7 @@ namespace NSDrawingFileEmbed
 		NSV8Objects::Template_Set(result, "SplitPages",	_SplitPages);
 		NSV8Objects::Template_Set(result, "MergePages",	_MergePages);
 		NSV8Objects::Template_Set(result, "UnmergePages",	_UnmergePages);
-		NSV8Objects::Template_Set(result, "RedactPage", _RedactPage);
+		NSV8Objects::Template_Set(result, "RedactPage",	_RedactPage);
 		NSV8Objects::Template_Set(result, "UndoRedact",	_UndoRedact);
 
 		return handle_scope.Escape(result);

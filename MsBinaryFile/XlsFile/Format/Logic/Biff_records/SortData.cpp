@@ -104,6 +104,7 @@ void SortData::writeFields(CFRecord& record)
 {
 	if (record.getGlobalWorkbookInfo()->Version < 0x0800)
 	{
+		frtHeader.rt =  0x0895;
 		_UINT16 flags = 0;
 
 		SETBIT(flags, 0, fCol)
@@ -119,10 +120,10 @@ void SortData::writeFields(CFRecord& record)
 
 		record << idParent;
 
-		for (auto& item: sortCond12Array)
-		{
-			record << *item;
-		}
+		//for (auto& item: sortCond12Array)
+		//{
+			//record << *item;
+		//}
 	}
 	else
 	{

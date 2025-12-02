@@ -181,8 +181,8 @@ namespace Draw
 	}
 	void CSolutionsFile::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 	{
-		smart_ptr<OOX::IFileContainer> rels_old = pReader->GetRels();
-		pReader->SetRels(dynamic_cast<OOX::IFileContainer*>((CSolutionsFile*)this));
+		OOX::IFileContainer* rels_old = pReader->GetRelsPtr();
+		pReader->SetRelsPtr(dynamic_cast<OOX::IFileContainer*>((CSolutionsFile*)this));
 
 		LONG end = pReader->GetPos() + pReader->GetRecordSize() + 4;
 
@@ -204,16 +204,16 @@ namespace Draw
 			}
 		}
 		pReader->Seek(end);
-		pReader->SetRels(rels_old);
+		pReader->SetRelsPtr(rels_old);
 	}
 	void CSolutionsFile::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 	{
-		smart_ptr<OOX::IFileContainer> rels_old = pWriter->GetRels();
-		pWriter->SetRels(dynamic_cast<OOX::IFileContainer*>((CSolutionsFile*)this));
+		OOX::IFileContainer* rels_old = pWriter->GetRelsPtr();
+		pWriter->SetRelsPtr(dynamic_cast<OOX::IFileContainer*>((CSolutionsFile*)this));
 		
 		pWriter->WriteRecord2(0, Solutions);
 
-		pWriter->SetRels(rels_old);
+		pWriter->SetRelsPtr(rels_old);
 	}
 	void CSolutionsFile::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 	{		
@@ -254,9 +254,9 @@ namespace Draw
 		pWriter->WriteString2(0, Name);
 		pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 		
-		if (Rel.IsInit() && Rel->Rid.IsInit())
+		if (Rel.IsInit() && Rel->Rid.IsInit() && pWriter->GetRelsPtr())
 		{
-			smart_ptr<OOX::File> pFile = pWriter->GetRels()->Find(Rel->Rid->GetValue());
+			smart_ptr<OOX::File> pFile = pWriter->GetRelsPtr()->Find(Rel->Rid->GetValue());
 			CSolutionFile* pSolution = dynamic_cast<CSolutionFile*>(pFile.GetPointer());
 			if (pSolution)
 			{
@@ -294,8 +294,11 @@ namespace Draw
 				pSolution->fromPPTY(pReader);
 				smart_ptr<OOX::File> oFile(pSolution);
 
-				Rel.Init(); Rel->Rid.Init();
-				Rel->Rid->SetValue(pReader->GetRels()->Add(oFile).get());
+				if (pReader->GetRelsPtr())
+				{
+					Rel.Init(); Rel->Rid.Init();
+					Rel->Rid->SetValue(pReader->GetRelsPtr()->Add(oFile).get());
+				}
 			}break;
 			default:
 			{
@@ -1361,12 +1364,12 @@ namespace Draw
 	}
 	void CCommentsFile::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 	{
-		smart_ptr<OOX::IFileContainer> rels_old = pWriter->GetRels();
-		pWriter->SetRels(dynamic_cast<OOX::IFileContainer*>((CSolutionsFile*)this));
+		OOX::IFileContainer* rels_old = pWriter->GetRelsPtr();
+		pWriter->SetRelsPtr(dynamic_cast<OOX::IFileContainer*>((CSolutionsFile*)this));
 
 		pWriter->WriteRecord2(0, Comments);
 
-		pWriter->SetRels(rels_old);
+		pWriter->SetRelsPtr(rels_old);
 	}
 	void CCommentsFile::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 	{

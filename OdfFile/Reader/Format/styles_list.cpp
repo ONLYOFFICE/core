@@ -930,7 +930,16 @@ void text_list_level_style_image::pptx_convert(oox::pptx_conversion_context & Co
 			std::wstring rid = Context.get_mediaitems()->add_or_find(*image_attr_.xlink_attlist_.href_, oox::typeImage, isMediaInternal, ref_image, oox::document_place);
 			Context.get_slide_context().add_rels(isMediaInternal, rid, ref_image, oox::typeImage);
 
-			//a:buSzPct
+			if (listLevelProperties && listLevelProperties->fo_width_ && listLevelProperties->fo_height_)
+			{
+				double width_pt = listLevelProperties->fo_width_->get_value_unit(length::pt);
+				double height_pt = listLevelProperties->fo_height_->get_value_unit(length::pt);
+				
+				CP_XML_NODE(L"a:buSzPts")
+				{
+					CP_XML_ATTR(L"val", (int)(width_pt * 100));
+				}
+			}
 			CP_XML_NODE(L"a:buBlip")
 			{
 				CP_XML_NODE(L"a:blip")

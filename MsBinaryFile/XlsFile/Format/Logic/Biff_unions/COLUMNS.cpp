@@ -94,22 +94,15 @@ const bool COLUMNS::loadContent(BinProcessor& proc)
 }
 const bool COLUMNS::saveContent(BinProcessor& proc)
 {
-    if(m_DefColWidth != nullptr)
-        proc.mandatory(*m_DefColWidth);
-    else
-        proc.mandatory<DefColWidth>();
-	/*if(global_info_ && global_info_->sheets_info.size() > global_info_->current_sheet)
-    {
-        for(auto i:global_info_->sheets_info[global_info_->current_sheet - 1].customColumnsWidth)
-        {
-            ColInfo column_info;
-            column_info.colFirst = i.first;
-            column_info.colLast = i.first;
-            column_info.coldx = i.second * 256;
-            proc.mandatory(column_info);
-        }
-	}*/
-    return true;
+	if(m_DefColWidth != nullptr)
+		proc.mandatory(*m_DefColWidth);
+	else
+		proc.mandatory<DefColWidth>();
+	for(auto i : m_colInfos)
+	{
+		proc.mandatory(*i);
+	}
+	return true;
 }
 int COLUMNS::serialize(std::wostream & stream)
 {

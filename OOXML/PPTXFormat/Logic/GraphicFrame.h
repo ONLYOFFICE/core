@@ -115,7 +115,7 @@ namespace PPTX
 
 			std::wstring m_sRequires;//from mc:Choice
 
-			std::wstring GetVmlXmlBySpid(smart_ptr<OOX::IFileContainer> & rels)	const;
+			std::wstring GetVmlXmlBySpid(OOX::IFileContainer*& rels) const;
 
 			void ChartToOlePackageInStorage(OOX::IFileContainer* pRels, const std::wstring &sTempDirectory, int nCurrentGenerateId);
 			std::wstring ChartToXlsx(OOX::IFileContainer* pRels, const std::wstring &sTempDirectory);

@@ -2443,6 +2443,84 @@
     <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\FutureFunctionParser.cpp">
       <Filter>Logic\Biff_structures</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\CFFilter.cpp">
+      <Filter>Logic\Biff_structures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsFile\Converter\ConvertXls2Xlsx.cpp">
+      <Filter>Binary</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsFile\Converter\external_items.cpp">
+      <Filter>Binary</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsFile\Converter\mediaitems_utils.cpp">
+      <Filter>Binary</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsFile\Converter\namespaces.cpp">
+      <Filter>Binary</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsFile\Converter\oox_content_type.cpp">
+      <Filter>Binary</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsFile\Converter\oox_package.cpp">
+      <Filter>Binary</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsFile\Converter\oox_rels.cpp">
+      <Filter>Binary</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsFile\Converter\xls_writer.cpp">
+      <Filter>Binary</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsFile\Converter\XlsConverter.cpp">
+      <Filter>Binary</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsFile\Converter\xlsx_activeX_context.cpp">
+      <Filter>Binary</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsFile\Converter\xlsx_chart_context.cpp">
+      <Filter>Binary</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsFile\Converter\xlsx_comments.cpp">
+      <Filter>Binary</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsFile\Converter\xlsx_comments_context.cpp">
+      <Filter>Binary</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsFile\Converter\xlsx_conversion_context.cpp">
+      <Filter>Binary</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsFile\Converter\xlsx_drawing_context.cpp">
+      <Filter>Binary</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsFile\Converter\xlsx_drawings.cpp">
+      <Filter>Binary</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsFile\Converter\xlsx_external_context.cpp">
+      <Filter>Binary</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsFile\Converter\xlsx_hyperlinks.cpp">
+      <Filter>Binary</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsFile\Converter\xlsx_output_xml.cpp">
+      <Filter>Binary</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsFile\Converter\xlsx_package.cpp">
+      <Filter>Binary</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsFile\Converter\xlsx_pivots_context.cpp">
+      <Filter>Binary</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsFile\Converter\xlsx_protection.cpp">
+      <Filter>Binary</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsFile\Converter\xlsx_sheet_context.cpp">
+      <Filter>Binary</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsFile\Converter\xlsx_tablecontext.cpp">
+      <Filter>Binary</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsFile\Converter\xlsx_textcontext.cpp">
+      <Filter>Binary</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\XlsFile\Format\Logging\Log.h">
@@ -4898,6 +4976,90 @@
     </ClInclude>
     <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\FutureFunctionParser.h">
       <Filter>Logic\Biff_structures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\CFFilter.h">
+      <Filter>Logic\Biff_structures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsFile\Converter\ConvertXls2Xlsx.h">
+      <Filter>Binary</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsFile\Converter\external_items.h">
+      <Filter>Binary</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsFile\Converter\mediaitems_utils.h">
+      <Filter>Binary</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsFile\Converter\namespaces.h">
+      <Filter>Binary</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsFile\Converter\oox_content_type.h">
+      <Filter>Binary</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsFile\Converter\oox_package.h">
+      <Filter>Binary</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsFile\Converter\oox_rels.h">
+      <Filter>Binary</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsFile\Converter\progressCallback.h">
+      <Filter>Binary</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsFile\Converter\ShapeType.h">
+      <Filter>Binary</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsFile\Converter\xls_writer.h">
+      <Filter>Binary</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsFile\Converter\XlsConverter.h">
+      <Filter>Binary</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsFile\Converter\xlsx_activeX_context.h">
+      <Filter>Binary</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsFile\Converter\xlsx_chart_context.h">
+      <Filter>Binary</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsFile\Converter\xlsx_comments.h">
+      <Filter>Binary</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsFile\Converter\xlsx_comments_context.h">
+      <Filter>Binary</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsFile\Converter\xlsx_conversion_context.h">
+      <Filter>Binary</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsFile\Converter\xlsx_drawing_context.h">
+      <Filter>Binary</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsFile\Converter\xlsx_drawings.h">
+      <Filter>Binary</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsFile\Converter\xlsx_external_context.h">
+      <Filter>Binary</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsFile\Converter\xlsx_hyperlinks.h">
+      <Filter>Binary</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsFile\Converter\xlsx_output_xml.h">
+      <Filter>Binary</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsFile\Converter\xlsx_package.h">
+      <Filter>Binary</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsFile\Converter\xlsx_pivots_context.h">
+      <Filter>Binary</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsFile\Converter\xlsx_protection.h">
+      <Filter>Binary</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsFile\Converter\xlsx_sheet_context.h">
+      <Filter>Binary</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsFile\Converter\xlsx_tablecontext.h">
+      <Filter>Binary</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsFile\Converter\xlsx_textcontext.h">
+      <Filter>Binary</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

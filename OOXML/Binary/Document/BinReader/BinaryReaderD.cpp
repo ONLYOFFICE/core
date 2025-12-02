@@ -3717,7 +3717,12 @@ int Binary_CustomsTableReader::ReadCustomContent(BYTE type, long length, void* p
 	}
 	else if (c_oSerCustoms::ItemId == type)
 	{
-		pCustomXMLProps->m_oItemID.FromString(m_oBufferedStream.GetString3(length));
+		std::wstring id = m_oBufferedStream.GetString3(length);
+		if (id[0] != L'{' && id.size() == 36)
+		{
+			id = L"{" + id + L"}";
+		}
+		pCustomXMLProps->m_oItemID.FromString(id);
 	}
 	else if (c_oSerCustoms::Content == type)
 	{
@@ -5176,13 +5181,13 @@ int Binary_DocumentTableReader::ReadParagraph(BYTE type, long length, void* poRe
 	else if (c_oSerParType::ParaID == type)
 	{
 		m_oParaId.Init();
-		_INT64 res = m_oBufferedStream.GetLong64();
+		_INT64 res = m_oBufferedStream.GetULong();
 		m_oParaId->SetValue(res);
 	}
 	else if (c_oSerParType::TextID == type)
 	{
 		m_oTextId.Init();
-		_INT64 res = m_oBufferedStream.GetLong64();
+		_INT64 res = m_oBufferedStream.GetULong();
 		m_oTextId->SetValue(res);
 	}
 	else
@@ -9277,6 +9282,20 @@ int Binary_DocumentTableReader::ReadDocPr(BYTE type, long length, void* poResult
 	{
 		pNonVisualDrawingProps->form = m_oBufferedStream.GetBool();
 	}
+	else if (c_oSerDocPr::HlinkClick == type)
+	{
+		m_oBufferedStream.Skip(1); //skip type
+
+		pNonVisualDrawingProps->hlinkClick.Init();
+		pNonVisualDrawingProps->hlinkClick->fromPPTY(&m_oBufferedStream);
+	}
+	else if (c_oSerDocPr::HlinkHover == type)
+	{
+		m_oBufferedStream.Skip(1); //skip type
+
+		pNonVisualDrawingProps->hlinkHover.Init();
+		pNonVisualDrawingProps->hlinkHover->fromPPTY(&m_oBufferedStream);
+	}
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;
@@ -9778,6 +9797,14 @@ int Binary_DocumentTableReader::ReadSdtPr(BYTE type, long length, void* poResult
 	{
 		pSdtPr->m_oShd.Init();
 		READ2_DEF(length, res, oBinary_CommonReader2.ReadShdComplexType, pSdtPr->m_oShd.GetPointer());
+	}
+	else if (c_oSerSdt::RepeatingSection == type)
+	{
+		pSdtPr->m_oRepeatingSection = m_oBufferedStream.GetBool();
+	}
+	else if (c_oSerSdt::RepeatingSectionItem == type)
+	{
+		pSdtPr->m_oRepeatingSectionItem = m_oBufferedStream.GetBool();
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;

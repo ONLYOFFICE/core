@@ -1297,7 +1297,6 @@ namespace BinXlsxRW
 		if (file.CreateFileW(m_oSaveParams.sEmbeddingsPath + FILE_SEPARATOR_STR + sXlsxFilename))
 		{
 			file.WriteFile(pData, length);
-			file.WriteFile(pData, length);
 			file.CloseFile();
 		}
 		fileOut->set_filename(m_oSaveParams.sEmbeddingsPath + FILE_SEPARATOR_STR + sXlsxFilename, false);
@@ -7424,8 +7423,8 @@ namespace BinXlsxRW
 			{
 				OOX::CChartDrawing* pDrawing = (OOX::CChartDrawing*)oFile.GetPointer();
 				
-				smart_ptr<OOX::IFileContainer> oldRels = m_pOfficeDrawingConverter->GetRels();
-				m_pOfficeDrawingConverter->SetRels(pDrawing);
+				OOX::IFileContainer* oldRels = m_pOfficeDrawingConverter->GetRelsPtr();
+				m_pOfficeDrawingConverter->SetRelsPtr(pDrawing);
 				
 				int nCurPos = m_oBcw.WriteItemStart(c_oserct_chartspaceUSERSHAPES);
 
@@ -7433,8 +7432,8 @@ namespace BinXlsxRW
 					m_oBcw.m_oStream.WriteLONG(pDrawing->m_arrItems.size());
 				m_oBcw.WriteItemEnd(nCurPos1);
 				
-				smart_ptr<OOX::IFileContainer> oldRelsStream = m_oBcw.m_oStream.GetRels();
-				m_oBcw.m_oStream.SetRels(pDrawing);
+				OOX::IFileContainer* oldRelsStream = m_oBcw.m_oStream.GetRelsPtr();
+				m_oBcw.m_oStream.SetRelsPtr(pDrawing);
 
 				for (size_t i = 0; i < pDrawing->m_arrItems.size(); i++)
 				{
@@ -7448,8 +7447,8 @@ namespace BinXlsxRW
 				
 				m_oBcw.WriteItemEnd(nCurPos);
 				
-				m_oBcw.m_oStream.SetRels(oldRelsStream);
-				m_pOfficeDrawingConverter->SetRels(oldRels);
+				m_oBcw.m_oStream.SetRelsPtr(oldRelsStream);
+				m_pOfficeDrawingConverter->SetRelsPtr(oldRels);
 			}
 		}	
 	}

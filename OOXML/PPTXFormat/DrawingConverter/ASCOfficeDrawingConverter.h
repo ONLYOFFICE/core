@@ -223,10 +223,9 @@ namespace NSBinPptxRW
 		CDrawingConverter();
 		~CDrawingConverter();
 
-		void							SetRels(OOX::IFileContainer *container);
-		void							SetRels(smart_ptr<OOX::IFileContainer> container);
-		smart_ptr<OOX::IFileContainer>	GetRels();
-		
+		void SetRelsPtr(OOX::IFileContainer *container);
+		OOX::IFileContainer* GetRelsPtr();
+
 		void SetMainDocument (BinDocxRW::CDocxSerializer* pDocument);
 
         void SetSrcPath         (const std::wstring& sPath, int nDocType = 1/*XMLWRITER_DOC_TYPE_DOCX*/);

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
@@ -281,6 +281,8 @@ namespace NExtractTools
 						res = TCD_XLTM2XLSM;
 					else if (0 == sExt2.compare(L".xlsb"))
 						res = TCD_XLSX2XLSB;
+					else if (0 == sExt2.compare(L".xls"))
+						res = TCD_XLSX2XLS;
 				}
 				break;
 				case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSB:

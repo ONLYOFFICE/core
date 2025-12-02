@@ -203,6 +203,11 @@ bool TagIsUnprocessed(const std::wstring& wsTagName)
 	return L"xml" == wsTagName;
 }
 
+bool IsSVG(const std::wstring& wsExtention)
+{
+	return L"svg" == wsExtention || L"svg+xml" == wsExtention;
+}
+
 static inline HtmlTag GetHtmlTag(const std::wstring& wsStrTag)
 {
 	std::map<std::wstring, HtmlTag>::const_iterator oFound = m_HTML_TAGS.find(wsStrTag);
@@ -265,7 +270,6 @@ struct CTextSettings
 	bool bMergeText; // Объединять подяр идущий текст в 1?
 	int  nLi;  // Уровень списка
 	bool bNumberingLi; // Является ли список нумерованным
-	bool bWritedLi; // Записан ли уже w:numPr
 
 	std::wstring sPStyle;
 
@@ -279,12 +283,12 @@ struct CTextSettings
 	NSCSS::CCompiledStyle oAdditionalStyle;
 
 	CTextSettings()
-		: bBdo(false), bPre(false), bQ(false), bAddSpaces(true), bMergeText(false), nLi(-1), bNumberingLi(false), bWritedLi(false), eTextMode(Normal)
+		: bBdo(false), bPre(false), bQ(false), bAddSpaces(true), bMergeText(false), nLi(-1), bNumberingLi(false), eTextMode(Normal)
 	{}
 
 	CTextSettings(const CTextSettings& oTS) :
 		bBdo(oTS.bBdo), bPre(oTS.bPre), bQ(oTS.bQ), bAddSpaces(oTS.bAddSpaces), bMergeText(oTS.bMergeText),
-	    nLi(oTS.nLi), bNumberingLi(oTS.bNumberingLi), bWritedLi(oTS.bWritedLi), sPStyle(oTS.sPStyle), eTextMode(oTS.eTextMode)
+	    nLi(oTS.nLi), bNumberingLi(oTS.bNumberingLi), sPStyle(oTS.sPStyle), eTextMode(oTS.eTextMode)
 	{}
 
 	void AddPStyle(const std::wstring& wsStyle)
@@ -336,22 +340,6 @@ void WriteEmptyParagraph(NSStringUtils::CStringBuilder* pXml, bool bVahish = fal
 
 	if (!bInP)
 		pXml->WriteString(L"</w:pPr></w:p>");
-}
-
-void WriteLine(NSStringUtils::CStringBuilder* pXml, const std::wstring& wsAlign, const std::wstring& wsColor, bool bShade, double dSize, double dWidth)
-{
-	if (dWidth < 0)
-		dWidth = -dWidth;
-
-	if (dSize < 0)
-		dSize = -dSize;
-
-	if (dWidth > 100)
-		dWidth = 0;
-
-	pXml->WriteNodeBegin(L"w:pict");
-	pXml->WriteString(L"<v:rect style=\"height:" + std::to_wstring(dSize) + L"pt\"" + ((0. != dWidth) ? (L" o:hrpct=\"" + std::to_wstring((int)(10. * dWidth)) + L"\"") : L"") + L" o:hralign=\"" + wsAlign + L"\" o:hrstd=\"t\" " + ((bShade) ? L"o:hrnoshade=\"t\" " : L"") + L"o:hr=\"t\" fillcolor=\"#" + wsColor + L"\" stroked=\"f\"/>");
-	pXml->WriteNodeEnd(L"w:pict");
 }
 
 bool ElementInTable(const std::vector<NSCSS::CNode>& arSelectors)
@@ -1248,7 +1236,7 @@ public:
 
 	bool ConvertToOOXML(NSStringUtils::CStringBuilder& oStringBuilder)
 	{
-		if (m_arRows.empty())
+		if (m_arRows.empty() && m_arHeaders.empty() && m_arFoother.empty())
 			return false;
 
 		oStringBuilder.WriteNodeBegin(L"w:tbl");
@@ -1477,6 +1465,7 @@ private:
 	int m_nHyperlinkId; // ID ссылки
 	int m_nNumberingId; // ID списка
 	int m_nId;          // ID остальные элементы
+	int m_nShapeId;     // Id shape's
 
 	NSStringUtils::CStringBuilder m_oStylesXml;   // styles.xml
 	NSStringUtils::CStringBuilder m_oDocXmlRels;  // document.xml.rels
@@ -1511,12 +1500,13 @@ private:
 public:
 
 	CHtmlFile2_Private() 
-		: m_nFootnoteId(1), m_nHyperlinkId(1), m_nNumberingId(1), m_nId(1), m_pFonts(NULL)
+		: m_nFootnoteId(1), m_nHyperlinkId(1), m_nNumberingId(1), m_nId(1), m_nShapeId(1), m_pFonts(NULL)
 	{
-		m_oPageData.SetSize  (std::to_wstring(DEFAULT_PAGE_WIDTH) + L"tw " + std::to_wstring(DEFAULT_PAGE_HEIGHT) + L"tw", 0, true);
-		m_oPageData.SetMargin(L"1440tw 1440tw 1440tw 1440tw", 0, true);
-		m_oPageData.SetFooter(L"720tw", 0, true);
-		m_oPageData.SetHeader(L"720tw", 0, true);
+		m_oPageData.SetWidth (DEFAULT_PAGE_WIDTH,  NSCSS::UnitMeasure::Twips, 0, true);
+		m_oPageData.SetHeight(DEFAULT_PAGE_HEIGHT, NSCSS::UnitMeasure::Twips, 0, true);
+		m_oPageData.SetMargin(1440,                NSCSS::UnitMeasure::Twips, 0, true);
+		m_oPageData.SetFooter(720,                 NSCSS::UnitMeasure::Twips, 0, true);
+		m_oPageData.SetHeader(720,                 NSCSS::UnitMeasure::Twips, 0, true);
 	}
 
 	~CHtmlFile2_Private()
@@ -2230,7 +2220,6 @@ private:
 		if (m_mDivs.empty())
 			pXml->WriteString(L"<w:divs>");
 
-		m_oStylesCalculator.CalculateCompiledStyle(sSelectors);
 		NSCSS::CCompiledStyle *pStyle = sSelectors.back().m_pCompiledStyle;
 
 		const bool bInTable = ElementInTable(sSelectors);
@@ -2307,6 +2296,8 @@ private:
 		}
 		m_oLightReader.MoveToElement();
 		sSelectors.push_back(oNode);
+
+		m_oStylesCalculator.CalculateCompiledStyle(sSelectors);
 		return sNote;
 	}
 
@@ -2389,8 +2380,6 @@ private:
 
 		if (sText.empty())
 			return false;
-
-		m_oStylesCalculator.CalculateCompiledStyle(arSelectors);
 
 		bool bPre = oTS.bPre;
 
@@ -2584,7 +2573,6 @@ private:
 		if (m_oState.m_bInP)
 		{
 			OpenR(pXml);
-			m_oStylesCalculator.CalculateCompiledStyle(arSelectors);
 			if(arSelectors.back().m_pCompiledStyle->m_oText.GetAlign() == L"both")
 				pXml->WriteString(L"<w:tab/>");
 			pXml->WriteString(L"<w:br/>");
@@ -2638,7 +2626,7 @@ private:
 
 		CTextSettings oTSR(oTS);
 		oTSR.oAdditionalStyle.m_oFont.SetFamily(L"Courier New", UINT_MAX, true);
-		oTSR.oAdditionalStyle.m_oFont.SetSize(20, UINT_MAX, true);
+		oTSR.oAdditionalStyle.m_oFont.SetSize(20, NSCSS::UnitMeasure::Point, UINT_MAX, true);
 		oTSR.oAdditionalStyle.m_oFont.SetWeight(L"bold", UINT_MAX, true);
 
 		return readStream(pXml, arSelectors, oTSR);
@@ -2697,7 +2685,7 @@ private:
 				if (nSize < 1 || nSize > 7)
 					nSize = 3;
 
-				oTSR.oAdditionalStyle.m_oFont.SetSize(HTML_FONTS[nSize - 1], UINT_MAX, true);
+				oTSR.oAdditionalStyle.m_oFont.SetSize(HTML_FONTS[nSize - 1], NSCSS::UnitMeasure::Point, UINT_MAX, true);
 			}
 		}
 		m_oLightReader.MoveToElement();
@@ -2797,14 +2785,14 @@ private:
 			{
 				switch(NSStringFinder::ToInt(m_oLightReader.GetText(), 3))
 				{
-					case 1: oTS.oAdditionalStyle.m_oFont.SetSize(7.5, UINT_MAX, true);  break;
-					case 2: oTS.oAdditionalStyle.m_oFont.SetSize(10, UINT_MAX, true);   break;
+					case 1: oTS.oAdditionalStyle.m_oFont.SetSize(7.5,  NSCSS::UnitMeasure::Point, UINT_MAX, true);  break;
+					case 2: oTS.oAdditionalStyle.m_oFont.SetSize(10,   NSCSS::UnitMeasure::Point, UINT_MAX, true);   break;
 					default:
-					case 3: oTS.oAdditionalStyle.m_oFont.SetSize(12, UINT_MAX, true);   break;
-					case 4: oTS.oAdditionalStyle.m_oFont.SetSize(13.5, UINT_MAX, true); break;
-					case 5: oTS.oAdditionalStyle.m_oFont.SetSize(18, UINT_MAX, true);   break;
-					case 6: oTS.oAdditionalStyle.m_oFont.SetSize(24, UINT_MAX, true);   break;
-					case 7: oTS.oAdditionalStyle.m_oFont.SetSize(36, UINT_MAX, true);   break;
+					case 3: oTS.oAdditionalStyle.m_oFont.SetSize(12,   NSCSS::UnitMeasure::Point, UINT_MAX, true);   break;
+					case 4: oTS.oAdditionalStyle.m_oFont.SetSize(13.5, NSCSS::UnitMeasure::Point, UINT_MAX, true); break;
+					case 5: oTS.oAdditionalStyle.m_oFont.SetSize(18,   NSCSS::UnitMeasure::Point, UINT_MAX, true);   break;
+					case 6: oTS.oAdditionalStyle.m_oFont.SetSize(24,   NSCSS::UnitMeasure::Point, UINT_MAX, true);   break;
+					case 7: oTS.oAdditionalStyle.m_oFont.SetSize(36,   NSCSS::UnitMeasure::Point, UINT_MAX, true);   break;
 				}
 			}
 			else if (L"color" == m_oLightReader.GetName())
@@ -2824,7 +2812,7 @@ private:
 			return false;
 
 		CTextSettings oTSP(oTS);
-		oTSP.oAdditionalStyle.m_oMargin.SetLeft(720, UINT_MAX, true);
+		oTSP.oAdditionalStyle.m_oMargin.SetLeft(720, NSCSS::UnitMeasure::Twips, UINT_MAX, true);
 
 		return readStream(pXml, arSelectors, oTSP);
 	}
@@ -2888,68 +2876,100 @@ private:
 		if (NULL == pXml)
 			return false;
 
-		bool bPrint = true;
-
 		for (const NSCSS::CNode& item : arSelectors)
 		{
 			if (item.m_wsName == L"div" && item.m_wsStyle == L"mso-element:footnote-list")
-			{
-				bPrint = false;
-				break;
-			}
+				return false;
 		}
 
-		if (bPrint)
+		NSCSS::NSProperties::CDigit oSize, oWidth;
+		NSCSS::NSProperties::CColor oColor;
+		bool bShade = true;
+		std::wstring wsAlign{L"center"};
+
+		if (m_oLightReader.MoveToFirstAttribute())
 		{
-			NSCSS::NSProperties::CDigit oSize, oWidth;
-			NSCSS::NSProperties::CColor oColor;
-			bool bShade = false;
-			std::wstring wsAlign{L"center"};
-
-			if (m_oLightReader.MoveToFirstAttribute())
+			std::wstring wsAttributeName;
+			do
 			{
-				std::wstring wsAttributeName;
-				do
+				wsAttributeName =  m_oLightReader.GetName();
+
+				if (L"align" == wsAttributeName)
 				{
-					wsAttributeName =  m_oLightReader.GetName();
+					const std::wstring wsValue{m_oLightReader.GetText()};
 
-					if (L"align" == wsAttributeName)
-					{
-						const std::wstring wsValue{m_oLightReader.GetText()};
+					if (NSStringFinder::Equals(L"left", wsValue))
+						wsAlign = L"left";
+					else if (NSStringFinder::Equals(L"right", wsValue))
+						wsAlign = L"right";
+					else if (NSStringFinder::Equals(L"center", wsValue))
+						wsAlign = L"center";
+				}
+				if (L"color" == wsAttributeName)
+					oColor.SetValue(m_oLightReader.GetText());
+				else if (L"noshade" == wsAttributeName)
+					bShade = false;
+				else if (L"size" == wsAttributeName)
+					oSize.SetValue(m_oLightReader.GetText());
+				else if (L"width" == wsAttributeName)
+					oWidth.SetValue(m_oLightReader.GetText());
+			} while (m_oLightReader.MoveToNextAttribute());
 
-						if (NSStringFinder::Equals(L"left", wsValue))
-							wsAlign = L"left";
-						else if (NSStringFinder::Equals(L"right", wsValue))
-							wsAlign = L"right";
-						else if (NSStringFinder::Equals(L"center", wsValue))
-							wsAlign = L"center";
-					}
-					if (L"color" == wsAttributeName)
-						oColor.SetValue(m_oLightReader.GetText());
-					else if (L"noshade" == wsAttributeName)
-						bShade = true;
-					else if (L"size" == wsAttributeName)
-						oSize.SetValue(m_oLightReader.GetText());
-					else if (L"width" == wsAttributeName)
-						oWidth.SetValue(m_oLightReader.GetText());
-				} while (m_oLightReader.MoveToNextAttribute());
-
-				m_oLightReader.MoveToElement();
-			}
-
-			const bool bOpenedP = OpenP(pXml);
-
-			OpenR(pXml);
-			WriteLine(pXml, wsAlign, (!oColor.Empty()) ? oColor.ToWString() : L"a0a0a0", bShade, (!oSize.Empty()) ? oSize.ToDouble(NSCSS::Point) : 1.5, (NSCSS::UnitMeasure::Percent == oWidth.GetUnitMeasure()) ? oWidth.ToDouble() : 0);
-			CloseR(pXml);
-
-			if (bOpenedP)
-				CloseP(pXml, arSelectors);
-
-			return true;
+			m_oLightReader.MoveToElement();
 		}
 
-		return false;
+		OpenP(pXml);
+
+		pXml->WriteString(L"<w:pPr><w:jc w:val=\"" + wsAlign + L"\"/></w:pPr>");
+
+		OpenR(pXml);
+
+		const unsigned int unPageWidth{static_cast<unsigned int>((m_oPageData.GetWidth().ToDouble(NSCSS::Inch) - m_oPageData.GetMargin().GetLeft().ToDouble(NSCSS::Inch) - m_oPageData.GetMargin().GetRight().ToDouble(NSCSS::Inch)) * 914400.)};
+
+		std::wstring wsWidth;
+
+		// width измеряется в px или %
+		if (!oWidth.Empty())
+			wsWidth = std::to_wstring(static_cast<int>((NSCSS::UnitMeasure::Percent != oWidth.GetUnitMeasure()) ? (NSCSS::CUnitMeasureConverter::ConvertPx(oWidth.ToDouble(), NSCSS::Inch, 96) * 914400.) : oWidth.ToDouble(NSCSS::Inch, unPageWidth)));
+		else
+			wsWidth = std::to_wstring(unPageWidth);
+
+		std::wstring wsHeight{L"14288"};
+
+		// size измеряется только в px
+		if (!oSize.Empty())
+			wsHeight = std::to_wstring(static_cast<int>(NSCSS::CUnitMeasureConverter::ConvertPx(oSize.ToDouble(), NSCSS::Inch, 96) * 914400.));
+
+		pXml->WriteString(L"<w:rPr><w:noProof/></w:rPr>");
+		pXml->WriteString(L"<mc:AlternateContent><mc:Choice Requires=\"wps\"><w:drawing><wp:inline distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\">");
+		pXml->WriteString(L"<wp:extent cx=\"" + wsWidth + L"\" cy=\"0\"/>");
+		pXml->WriteString(L"<wp:effectExtent l=\"0\" t=\"0\" r=\"0\" b=\"0\"/>");
+		pXml->WriteString(L"<wp:docPr id=\"" + std::to_wstring(m_nShapeId) + L"\" name=\"Line " + std::to_wstring(m_nShapeId) + L"\"/>"
+		                   "<wp:cNvGraphicFramePr/>"
+		                   "<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">"
+		                       "<a:graphicData uri=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\">"
+		                           "<wps:wsp>"
+		                               "<wps:cNvSpPr/>"
+		                               "<wps:spPr>");
+		pXml->WriteString(L"<a:xfrm>"
+		                       "<a:off x=\"0\" y=\"0\"/>"
+		                       "<a:ext cx=\"" + wsWidth + L"\" cy=\"0\"/>"
+		                   "</a:xfrm>"
+		                   "<a:custGeom><a:pathLst><a:path>"
+		                       "<a:moveTo><a:pt x=\"0\" y=\"0\"/></a:moveTo>"
+		                       "<a:lnTo><a:pt x=\"" + wsWidth + L"\" y=\"0\"/></a:lnTo>"
+		                   "</a:path></a:pathLst></a:custGeom>"
+		                   "<a:ln w=\"" + wsHeight + L"\"><a:solidFill><a:srgbClr val=\"" + ((!oColor.Empty()) ? oColor.ToHEX() : L"808080") + L"\"/></a:solidFill></a:ln>");
+
+		if (bShade)
+			pXml->WriteString(L"<a:scene3d><a:camera prst=\"orthographicFront\"/><a:lightRig rig=\"threePt\" dir=\"t\"/></a:scene3d><a:sp3d><a:bevelT prst=\"angle\"/></a:sp3d>");
+
+		pXml->WriteString(L"</wps:spPr><wps:bodyPr/></wps:wsp></a:graphicData></a:graphic></wp:inline></w:drawing></mc:Choice></mc:AlternateContent>");
+
+		CloseP(pXml, arSelectors);
+
+		++m_nShapeId;
+		return true;
 	}
 
 	bool ReadPre(NSStringUtils::CStringBuilder* pXml, std::vector<NSCSS::CNode>& arSelectors, CTextSettings& oTS)
@@ -2959,9 +2979,9 @@ private:
 
 		CTextSettings oTSPre(oTS);
 		oTSPre.oAdditionalStyle.m_oFont.SetFamily(L"Courier New", NEXT_LEVEL);
-		oTSPre.oAdditionalStyle.m_oFont.SetSize(20, NEXT_LEVEL);
-		oTSPre.oAdditionalStyle.m_oMargin.SetTop(0, NEXT_LEVEL);
-		oTSPre.oAdditionalStyle.m_oMargin.SetBottom(0, NEXT_LEVEL);
+		oTSPre.oAdditionalStyle.m_oFont.SetSize(20, NSCSS::UnitMeasure::Point, NEXT_LEVEL);
+		oTSPre.oAdditionalStyle.m_oMargin.SetTop(0, NSCSS::UnitMeasure::Twips, NEXT_LEVEL);
+		oTSPre.oAdditionalStyle.m_oMargin.SetBottom(0, NSCSS::UnitMeasure::Twips, NEXT_LEVEL);
 		oTSPre.bPre = true;
 
 		return readStream(pXml, arSelectors, oTSPre);
@@ -3054,9 +3074,8 @@ private:
 			return false;
 
 		std::wstring sNote = GetSubClass(oXml, sSelectors);
+
 		bool bResult = true;
-		// Ссылка
-		// Область ссылки
 
 		const HtmlTag eHtmlTag{GetHtmlTag(sName)};
 
@@ -3197,9 +3216,9 @@ private:
 			case HTML_TAG(STYLE):
 			case HTML_TAG(SCRIPT):
 			{
-				WriteEmptyParagraph(oXml, false, m_oState.m_bInP);
+				//Если встретили не обрабатываемые теги, то просто пропускаем
 				sSelectors.pop_back();
-				return true;
+				return false;
 			}
 			case HTML_TAG(SPAN):
 			{
@@ -3294,12 +3313,21 @@ private:
 						bResult = ReadHr(&oXmlData, sSelectors, oTS);
 						break;
 					}
+					case HTML_TAG(LI):
+					{
+						bResult = ReadListElement(&oXmlData, sSelectors, oTS);
+						break;
+					}
+					case HTML_TAG(OL):
 					case HTML_TAG(UL):
+					{
+						bResult = ReadList(&oXmlData, sSelectors, oTS);
+						break;
+					}
 					case HTML_TAG(MENU):
 					case HTML_TAG(SELECT):
 					case HTML_TAG(DATALIST):
 					case HTML_TAG(DIR):
-					case HTML_TAG(OL):
 					{
 						bResult = readLi(&oXmlData, sSelectors, oTS, HTML_TAG(OL) != eHtmlTag);
 						break;
@@ -3395,8 +3423,6 @@ private:
 	{
 		if (NULL == pCellStyle)
 			return;
-
-		m_oStylesCalculator.CalculateCompiledStyle(arSelectors);
 
 		pCellStyle->m_wsVAlign     = arSelectors.back().m_pCompiledStyle->m_oDisplay.GetVAlign().ToWString();
 		pCellStyle->m_wsHAlign     = arSelectors.back().m_pCompiledStyle->m_oDisplay.GetHAlign().ToWString();
@@ -3648,8 +3674,6 @@ private:
 
 			CTextSettings oNewSettings{oTS};
 
-			m_oStylesCalculator.CalculateCompiledStyle(sSelectors);
-
 			const std::wstring wsHighlight{sSelectors.back().m_pCompiledStyle->m_oBackground.GetColor()
 				        .EquateToColor({{{0,   0,   0},   L"black"},    {{0,   0,   255}, L"blue"},      {{0,   255, 255}, L"cyan"},
 			                            {{0,   255, 0},   L"green"},    {{255, 0,   255}, L"magenta"},   {{255, 0,   0},   L"red"},
@@ -3688,7 +3712,6 @@ private:
 
 		if (0 != oRT.GetSize())
 		{
-			m_oStylesCalculator.CalculateCompiledStyle(sSelectors);
 			NSCSS::CCompiledStyle *pStyle = sSelectors.back().m_pCompiledStyle;
 
 			int nFontSize = 24;
@@ -3736,7 +3759,6 @@ private:
 		CTextSettings oTextSettings{oTS};
 		oTextSettings.sPStyle.clear();
 
-		m_oStylesCalculator.CalculateCompiledStyle(sSelectors);
 		NSCSS::CCompiledStyle *pStyle = sSelectors.back().m_pCompiledStyle;
 
 		//Table styles
@@ -3756,7 +3778,7 @@ private:
 						continue;
 
 					pStyle->m_oBorder.SetStyle(L"outset",  0, true);
-					pStyle->m_oBorder.SetWidth(nWidth,     0, true);
+					pStyle->m_oBorder.SetWidth(nWidth,     NSCSS::UnitMeasure::Point, 0, true);
 					pStyle->m_oBorder.SetColor(L"auto",    0, true);
 				}
 				else if (pStyle->m_oBorder.Empty())
@@ -3777,38 +3799,38 @@ private:
 		{
 			#define SetDefaultBorderSide(side) \
 				pStyle->m_oBorder.SetStyle##side(L"solid", 0, true); \
-				pStyle->m_oBorder.SetWidth##side(1,        0, true); \
-				pStyle->m_oBorder.SetColor##side(L"black", 0, true);
+				pStyle->m_oBorder.SetWidth##side(1,        NSCSS::UnitMeasure::Point, 0, true); \
+				pStyle->m_oBorder.SetColor##side(L"black", 0, true)
 
 			if (NSStringFinder::Equals(L"border", wsFrame))
 			{
-				SetDefaultBorderSide()
+				SetDefaultBorderSide();
 			}
 			else if (NSStringFinder::Equals(L"above", wsFrame))
 			{
-				SetDefaultBorderSide(TopSide)
+				SetDefaultBorderSide(TopSide);
 			}
 			else if (NSStringFinder::Equals(L"below", wsFrame))
 			{
-				SetDefaultBorderSide(BottomSide)
+				SetDefaultBorderSide(BottomSide);
 			}
 			else if (NSStringFinder::Equals(L"hsides", wsFrame))
 			{
-				SetDefaultBorderSide(TopSide)
-				SetDefaultBorderSide(BottomSide)
+				SetDefaultBorderSide(TopSide);
+				SetDefaultBorderSide(BottomSide);
 			}
 			else if (NSStringFinder::Equals(L"vsides", wsFrame))
 			{
-				SetDefaultBorderSide(LeftSide)
-				SetDefaultBorderSide(RightSide)
+				SetDefaultBorderSide(LeftSide);
+				SetDefaultBorderSide(RightSide);
 			}
 			else if (NSStringFinder::Equals(L"rhs", wsFrame))
 			{
-				SetDefaultBorderSide(RightSide)
+				SetDefaultBorderSide(RightSide);
 			}
 			else if (NSStringFinder::Equals(L"lhs", wsFrame))
 			{
-				SetDefaultBorderSide(LeftSide)
+				SetDefaultBorderSide(LeftSide);
 			}
 		}
 
@@ -3888,6 +3910,91 @@ private:
 		return readStream(oXml, sSelectors, oTS, ElementInTable(sSelectors));
 	}
 
+	bool ReadListElement(NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& arSelectors, CTextSettings& oTS)
+	{
+		if (OpenP(oXml))
+			wrP(oXml, arSelectors, oTS);
+
+		const bool bResult{readStream(oXml, arSelectors, oTS)};
+
+		CloseP(oXml, arSelectors);
+
+		return bResult;
+	}
+
+	bool ReadList(NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& arSelectors, CTextSettings& oTS)
+	{
+		if(m_oLightReader.IsEmptyNode())
+			return false;
+
+		GetSubClass(oXml, arSelectors);
+
+		CloseP(oXml, arSelectors);
+
+		CTextSettings oTSLi(oTS);
+
+		++oTSLi.nLi;
+
+		//Нумерованный список
+		if (L"ol" == arSelectors.back().m_wsName)
+		{
+			int nStart = 1;
+			while(m_oLightReader.MoveToNextAttribute())
+				if(m_oLightReader.GetName() == L"start")
+					nStart = NSStringFinder::ToInt(m_oLightReader.GetText(), 1);
+			m_oLightReader.MoveToElement();
+
+			oTSLi.bNumberingLi = true;
+
+			const std::wstring wsStart(std::to_wstring(nStart));
+			m_oNumberXml.WriteString(L"<w:abstractNum w:abstractNumId=\"");
+			m_oNumberXml.WriteString(std::to_wstring(m_nNumberingId++));
+			m_oNumberXml.WriteString(L"\"><w:multiLevelType w:val=\"hybridMultilevel\"/><w:lvl w:ilvl=\"0\"><w:start w:val=\"");
+			m_oNumberXml.WriteString(wsStart);
+			m_oNumberXml.WriteString(L"\"/><w:numFmt w:val=\"decimal\"/><w:isLgl w:val=\"false\"/><w:suff w:val=\"tab\"/><w:lvlText w:val=\"%1.\"/><w:lvlJc w:val=\"left\"/><w:pPr><w:ind w:left=\"709\" w:hanging=\"360\"/></w:pPr></w:lvl><w:lvl w:ilvl=\"1\"><w:start w:val=\"");
+			m_oNumberXml.WriteString(wsStart);
+			m_oNumberXml.WriteString(L"\"/><w:numFmt w:val=\"decimal\"/><w:isLgl w:val=\"false\"/><w:suff w:val=\"tab\"/><w:lvlText w:val=\"%2.\"/><w:lvlJc w:val=\"left\"/><w:pPr><w:ind w:left=\"1429\" w:hanging=\"360\"/></w:pPr></w:lvl><w:lvl w:ilvl=\"2\"><w:start w:val=\"");
+			m_oNumberXml.WriteString(wsStart);
+			m_oNumberXml.WriteString(L"\"/><w:numFmt w:val=\"decimal\"/><w:isLgl w:val=\"false\"/><w:suff w:val=\"tab\"/><w:lvlText w:val=\"%3.\"/><w:lvlJc w:val=\"right\"/><w:pPr><w:ind w:left=\"2149\" w:hanging=\"180\"/></w:pPr></w:lvl><w:lvl w:ilvl=\"3\"><w:start w:val=\"");
+			m_oNumberXml.WriteString(wsStart);
+			m_oNumberXml.WriteString(L"\"/><w:numFmt w:val=\"decimal\"/><w:isLgl w:val=\"false\"/><w:suff w:val=\"tab\"/><w:lvlText w:val=\"%4.\"/><w:lvlJc w:val=\"left\"/><w:pPr><w:ind w:left=\"2869\" w:hanging=\"360\"/></w:pPr></w:lvl><w:lvl w:ilvl=\"4\"><w:start w:val=\"");
+			m_oNumberXml.WriteString(wsStart);
+			m_oNumberXml.WriteString(L"\"/><w:numFmt w:val=\"decimal\"/><w:isLgl w:val=\"false\"/><w:suff w:val=\"tab\"/><w:lvlText w:val=\"%5.\"/><w:lvlJc w:val=\"left\"/><w:pPr><w:ind w:left=\"3589\" w:hanging=\"360\"/></w:pPr></w:lvl><w:lvl w:ilvl=\"5\"><w:start w:val=\"");
+			m_oNumberXml.WriteString(wsStart);
+			m_oNumberXml.WriteString(L"\"/><w:numFmt w:val=\"decimal\"/><w:isLgl w:val=\"false\"/><w:suff w:val=\"tab\"/><w:lvlText w:val=\"%6.\"/><w:lvlJc w:val=\"right\"/><w:pPr><w:ind w:left=\"4309\" w:hanging=\"180\"/></w:pPr></w:lvl><w:lvl w:ilvl=\"6\"><w:start w:val=\"");
+			m_oNumberXml.WriteString(wsStart);
+			m_oNumberXml.WriteString(L"\"/><w:numFmt w:val=\"decimal\"/><w:isLgl w:val=\"false\"/><w:suff w:val=\"tab\"/><w:lvlText w:val=\"%7.\"/><w:lvlJc w:val=\"left\"/><w:pPr><w:ind w:left=\"5029\" w:hanging=\"360\"/></w:pPr></w:lvl><w:lvl w:ilvl=\"7\"><w:start w:val=\"");
+			m_oNumberXml.WriteString(wsStart);
+			m_oNumberXml.WriteString(L"\"/><w:numFmt w:val=\"decimal\"/><w:isLgl w:val=\"false\"/><w:suff w:val=\"tab\"/><w:lvlText w:val=\"%8.\"/><w:lvlJc w:val=\"left\"/><w:pPr><w:ind w:left=\"5749\" w:hanging=\"360\"/></w:pPr></w:lvl><w:lvl w:ilvl=\"8\"><w:start w:val=\"");
+			m_oNumberXml.WriteString(wsStart);
+			m_oNumberXml.WriteString(L"\"/><w:numFmt w:val=\"decimal\"/><w:isLgl w:val=\"false\"/><w:suff w:val=\"tab\"/><w:lvlText w:val=\"%9.\"/><w:lvlJc w:val=\"right\"/><w:pPr><w:ind w:left=\"6469\" w:hanging=\"180\"/></w:pPr></w:lvl></w:abstractNum>");
+		}
+
+		CTextSettings oTSList{oTSLi};
+
+		oTSList.oAdditionalStyle.m_oMargin.SetTop   (100, NSCSS::UnitMeasure::Twips, 0, true);
+		oTSList.oAdditionalStyle.m_oMargin.SetBottom(100, NSCSS::UnitMeasure::Twips, 0, true);
+
+		int nDeath = m_oLightReader.GetDepth();
+		while(m_oLightReader.ReadNextSiblingNode2(nDeath))
+		{
+			const std::wstring wsName = m_oLightReader.GetName();
+
+			if (L"li" == wsName)
+				ReadListElement(oXml, arSelectors, oTSList);
+			else
+			{
+				CloseP(oXml, arSelectors);
+				readInside(oXml, arSelectors, oTSLi, wsName);
+			}
+		}
+
+		CloseP(oXml, arSelectors);
+		arSelectors.pop_back();
+
+		return true;
+	}
+
 	bool readLi     (NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors, CTextSettings& oTS, bool bType)
 	{
 		if(m_oLightReader.IsEmptyNode())
@@ -3963,7 +4070,6 @@ private:
 			m_oLightReader.MoveToElement();
 
 			oTSLiP.nLi++;
-			oTSLiP.bWritedLi = false;
 
 			if (!wsValue.empty())
 			{
@@ -4167,7 +4273,7 @@ private:
 			if (!pImageData || FALSE == NSBase64::Base64Decode(sSrcM.c_str() + nOffset, nSrcLen, pImageData, &nDecodeLen))
 				return bRes;
 
-			if (L"svg" == sExtention || L"svg+xml" == sExtention)
+			if (IsSVG(sExtention))
 			{
 				std::wstring wsSvg(pImageData, pImageData + nDecodeLen);
 				bRes = readSVG(wsSvg);
@@ -4212,8 +4318,8 @@ private:
 	{
 		return  sExtention != L"bmp" && sExtention != L"emf"  && sExtention != L"emz"  && sExtention != L"eps"  && sExtention != L"fpx" && sExtention != L"gif"  &&
 				sExtention != L"jpe" && sExtention != L"jpeg" && sExtention != L"jpg"  && sExtention != L"jfif" && sExtention != L"pct" && sExtention != L"pict" &&
-				sExtention != L"png" && sExtention != L"pntg" && sExtention != L"psd"  && sExtention != L"qtif" && sExtention != L"sgi" && sExtention != L"svg"  &&
-				sExtention != L"tga" && sExtention != L"tpic" && sExtention != L"tiff" && sExtention != L"tif"  && sExtention != L"wmf" && sExtention != L"wmz";
+				sExtention != L"png" && sExtention != L"pntg" && sExtention != L"psd"  && sExtention != L"qtif" && sExtention != L"sgi" && sExtention != L"wmz"  &&
+				sExtention != L"tga" && sExtention != L"tpic" && sExtention != L"tiff" && sExtention != L"tif"  && sExtention != L"wmf" && !IsSVG(sExtention);
 	}
 
 	void ImageAlternative(NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS, const std::wstring& wsAlt, const std::wstring& wsSrc, const TImageData& oImageData)
@@ -4268,37 +4374,104 @@ private:
 		}
 		m_oLightReader.MoveToElement();
 
+		if (NULL != sSelectors.back().m_pCompiledStyle)
+		{
+			const NSCSS::NSProperties::CDigit& oWidth {sSelectors.back().m_pCompiledStyle->m_oDisplay.GetWidth() };
+			const NSCSS::NSProperties::CDigit& oHeight{sSelectors.back().m_pCompiledStyle->m_oDisplay.GetHeight()};
+
+			if (0 == oImageData.m_unWidth && !oWidth.Empty())
+			{
+				if (NSCSS::UnitMeasure::None == oWidth.GetUnitMeasure())
+					oImageData.m_unWidth = static_cast<int>(NSCSS::CUnitMeasureConverter::ConvertPx(oWidth.ToDouble(), NSCSS::Inch, 96) * 914400);
+				else
+					oImageData.m_unWidth = static_cast<int>(oWidth.ToDouble(NSCSS::Inch) * 914400);
+			}
+
+			if (0 == oImageData.m_unHeight && !oHeight.Empty())
+			{
+				if (NSCSS::UnitMeasure::None == oHeight.GetUnitMeasure())
+					oImageData.m_unHeight = static_cast<int>(NSCSS::CUnitMeasureConverter::ConvertPx(oHeight.ToDouble(), NSCSS::Inch, 96) * 914400);
+				else
+					oImageData.m_unHeight = static_cast<int>(oHeight.ToDouble(NSCSS::Inch) * 914400);
+			}
+		}
+
 		if (sSrcM.empty())
 		{
 			ImageAlternative(oXml, sSelectors, oTS, wsAlt, sSrcM, oImageData);
 			return true;
 		}
 
+		std::wstring sExtention;
+
+		// Предполагаем картинку в Base64
+		if (sSrcM.length() > 4 && sSrcM.substr(0, 4) == L"data" && sSrcM.find(L"/", 4) != std::wstring::npos)
+			bRes = readBase64(sSrcM, sExtention);
+
 		const bool bIsAllowExternalLocalFiles = GetStatusUsingExternalLocalFiles();
 
-		bool bIsBase64 = false;
-		if (sSrcM.length() > 4 && sSrcM.substr(0, 4) == L"data" && sSrcM.find(L"/", 4) != std::wstring::npos)
-			bIsBase64 = true;
-
-		if (!bIsBase64 && (sSrcM.length() <= 7 || L"http" != sSrcM.substr(0, 4)))
+		if (!bRes && (sSrcM.length() <= 7 || L"http" != sSrcM.substr(0, 4)))
 		{
 			sSrcM = NSSystemPath::ShortenPath(sSrcM);
 
 			if (!CanUseThisPath(sSrcM, m_sSrc, m_sCore, bIsAllowExternalLocalFiles))
+			{
+				ImageAlternative(oXml, sSelectors, oTS, wsAlt, sSrcM, oImageData);
 				return true;
+			}
+		}
+
+		// Проверка расширения
+		if (!bRes)
+		{
+			sExtention = NSFile::GetFileExtention(sSrcM);
+			std::transform(sExtention.begin(), sExtention.end(), sExtention.begin(), tolower);
+
+			std::wstring::const_iterator itFound = std::find_if(sExtention.cbegin(), sExtention.cend(), [](wchar_t wChar){ return !iswalpha(wChar) && L'+' != wChar; });
+
+			if (sExtention.cend() != itFound)
+				sExtention.erase(itFound, sExtention.cend());
+		}
+
+		// Предполагаем картинку в сети
+		if (!bRes &&
+		    ((!m_sBase.empty() && m_sBase.length() > 4 && m_sBase.substr(0, 4) == L"http") ||
+		      (sSrcM.length() > 4 && sSrcM.substr(0, 4) == L"http")))
+		{
+			const std::wstring wsDst = m_sDst + L"/word/media/i" + std::to_wstring(m_arrImages.size()) + L'.' + ((!sExtention.empty()) ? sExtention : L"png");
+
+			// Проверка gc_allowNetworkRequest предполагается в kernel_network
+			NSNetwork::NSFileTransport::CFileDownloader oDownloadImg(m_sBase + sSrcM, false);
+			oDownloadImg.SetFilePath(wsDst);
+			bRes = oDownloadImg.DownloadSync();
+
+			if (!bRes)
+			{
+				ImageAlternative(oXml, sSelectors, oTS, wsAlt, sSrcM, oImageData);
+				return true;
+			}
+
+			if (IsSVG(sExtention))
+			{
+				std::wstring wsFileData;
+
+				if (!NSFile::CFileBinary::ReadAllTextUtf8(wsDst, wsFileData) || !readSVG(wsFileData))
+					bRes = false;
+
+				NSFile::CFileBinary::Remove(wsDst);
+				sExtention = L"png";
+			}
+			else if (sExtention.empty())
+			{
+				//TODO:: лучше узнавать формат изображения из содержимого
+				sExtention = L"png";
+			}
 		}
 
 		int nImageId = -1;
-		std::wstring sImageSrc, sExtention;
-		// Предполагаем картинку в Base64
-		if (bIsBase64)
-			bRes = readBase64(sSrcM, sExtention);
 
 		if (!bRes)
 		{
-			// Проверка расширения
-			sExtention = NSFile::GetFileExtention(sSrcM);
-			std::transform(sExtention.begin(), sExtention.end(), sExtention.begin(), tolower);
 			if (NotValidExtension(sExtention))
 			{
 				ImageAlternative(oXml, sSelectors, oTS, wsAlt, sSrcM, oImageData);
@@ -4314,36 +4487,24 @@ private:
 			}
 		}
 
+		// Предполагаем картинку по локальному пути
 		if (!bRes)
 		{
-			sImageSrc = sSrcM;
-			std::wstring wsDst = m_sDst + L"/word/media/i" + std::to_wstring(m_arrImages.size()) + L'.' + sExtention;
+			const std::wstring wsDst = m_sDst + L"/word/media/i" + std::to_wstring(m_arrImages.size()) + L'.' + sExtention;
 
-			// Предполагаем картинку по локальному пути
-			if (!((!m_sBase.empty() && m_sBase.length() > 4 && m_sBase.substr(0, 4) == L"http") || (sSrcM.length() > 4 && sSrcM.substr(0, 4) == L"http")))
+			if (!m_sBase.empty())
 			{
-				if (!m_sBase.empty())
-				{
-					if (!bRes)
-						bRes = CopyImage(NSSystemPath::Combine(m_sBase, sSrcM), wsDst, bIsAllowExternalLocalFiles);
-					if (!bRes)
-						bRes = CopyImage(NSSystemPath::Combine(m_sSrc, m_sBase + sSrcM), wsDst, bIsAllowExternalLocalFiles);
-				}
 				if (!bRes)
-					bRes = CopyImage(NSSystemPath::Combine(m_sSrc, sSrcM), wsDst, bIsAllowExternalLocalFiles);
+					bRes = CopyImage(NSSystemPath::Combine(m_sBase, sSrcM), wsDst, bIsAllowExternalLocalFiles);
 				if (!bRes)
-					bRes = CopyImage(m_sSrc + L"/" + NSFile::GetFileName(sSrcM), wsDst, bIsAllowExternalLocalFiles);
-				if (!bRes)
-					bRes = CopyImage(sSrcM, wsDst, bIsAllowExternalLocalFiles);
+					bRes = CopyImage(NSSystemPath::Combine(m_sSrc, m_sBase + sSrcM), wsDst, bIsAllowExternalLocalFiles);
 			}
-			// Предполагаем картинку в сети
-			else
-			{
-				// Проверка gc_allowNetworkRequest предполагается в kernel_network
-				NSNetwork::NSFileTransport::CFileDownloader oDownloadImg(m_sBase + sSrcM, false);
-				oDownloadImg.SetFilePath(wsDst);
-				bRes = oDownloadImg.DownloadSync();
-			}
+			if (!bRes)
+				bRes = CopyImage(NSSystemPath::Combine(m_sSrc, sSrcM), wsDst, bIsAllowExternalLocalFiles);
+			if (!bRes)
+				bRes = CopyImage(m_sSrc + L"/" + NSFile::GetFileName(sSrcM), wsDst, bIsAllowExternalLocalFiles);
+			if (!bRes)
+				bRes = CopyImage(sSrcM, wsDst, bIsAllowExternalLocalFiles);
 		}
 
 		if (!bRes)
@@ -4351,7 +4512,7 @@ private:
 		else
 		{
 			wrP(oXml, sSelectors, oTS);
-			ImageRels(oXml, nImageId, sImageSrc, sExtention, oImageData);
+			ImageRels(oXml, nImageId, sSrcM, sExtention, oImageData);
 		}
 
 		return true;
@@ -4363,8 +4524,6 @@ private:
 
 		if (m_oState.m_bWasPStyle)
 			return L"";
-
-		m_oStylesCalculator.CalculateCompiledStyle(sSelectors);
 
 		std::wstring sPStyle = GetStyle(*sSelectors.back().m_pCompiledStyle, true);
 
@@ -4388,18 +4547,8 @@ private:
 		}
 
 		if (oTS.nLi >= 0)
-		{
-			if (!oTS.bWritedLi)
-			{
-				oXml->WriteString(L"<w:numPr><w:ilvl w:val=\"" + std::to_wstring(oTS.nLi) + L"\"/><w:numId w:val=\"" +
-				                  (!oTS.bNumberingLi ? L"1" : std::to_wstring(m_nNumberingId + 1)) + L"\"/></w:numPr>");
-
-				oTS.bWritedLi = true;
-			}
-			else if (sSelectors.back().m_pCompiledStyle->m_oText.GetIndent().Empty() &&
-			         oTS.oAdditionalStyle.m_oText.GetIndent().Empty())
-				oXml->WriteString(L"<w:ind w:left=\"" + std::to_wstring(720 * (oTS.nLi + 1)) + L"\"/>");
-		}
+			oXml->WriteString(L"<w:numPr><w:ilvl w:val=\"" + std::to_wstring(oTS.nLi) + L"\"/><w:numId w:val=\"" +
+			                  (!oTS.bNumberingLi ? L"1" : std::to_wstring(m_nNumberingId)) + L"\"/></w:numPr>");
 
 		oXml->WriteString(oTS.sPStyle + sPSettings);
 		oXml->WriteNodeEnd(L"w:pPr");
@@ -4412,8 +4561,6 @@ private:
 	{
 		if (!m_oState.m_bInP)
 			return L"";
-
-		m_oStylesCalculator.CalculateCompiledStyle(sSelectors);
 
 		std::wstring sRStyle = GetStyle(*sSelectors.back().m_pCompiledStyle, false);
 
@@ -4558,8 +4705,9 @@ private:
 		if (bNew)
 			nImageId = m_arrImages.size();
 
-		std::wstring sImageId = std::to_wstring(nImageId);
-		std::wstring sImageName = sImageId + L'.' + sExtention;
+		const std::wstring sImageId = std::to_wstring(nImageId);
+		const std::wstring sImageName = sImageId + L'.' + sExtention;
+
 		CBgraFrame oBgraFrame;
 		if (!oBgraFrame.OpenFile(m_sDst + L"/word/media/i" + sImageName))
 		{
@@ -4583,30 +4731,40 @@ private:
 
 		TImageData oNewImageData{oImageData};
 
-		// Получаем размеры картинки
-		oNewImageData.m_unWidth  = oBgraFrame.get_Width();
-		oNewImageData.m_unHeight = oBgraFrame.get_Height();
-
-		if (oNewImageData.m_unWidth > oNewImageData.m_unHeight)
+		if (0 != oNewImageData.m_unWidth || 0 != oNewImageData.m_unHeight)
 		{
-			int nW = oNewImageData.m_unWidth * 9525;
-			nW = (nW > 7000000 ? 7000000 : nW);
-			oNewImageData.m_unHeight = (int)((double)oNewImageData.m_unHeight * (double)nW / (double)oNewImageData.m_unWidth);
-			oNewImageData.m_unWidth = nW;
+			const double dMaxScale = std::max(oNewImageData.m_unWidth  / oBgraFrame.get_Width(),
+			                                  oNewImageData.m_unHeight / oBgraFrame.get_Height());
+
+			oNewImageData.m_unWidth  = oBgraFrame.get_Width()  * dMaxScale;
+			oNewImageData.m_unHeight = oBgraFrame.get_Height() * dMaxScale;
 		}
 		else
 		{
-			int nH = oNewImageData.m_unHeight * 9525;
-			nH = (nH > 8000000 ? 8000000 : nH);
-			int nW = (int)((double)oNewImageData.m_unWidth * (double)nH / (double)oNewImageData.m_unHeight);
-			if (nW > 7000000)
+			oNewImageData.m_unWidth  = oBgraFrame.get_Width();
+			oNewImageData.m_unHeight = oBgraFrame.get_Height();
+
+			if (oNewImageData.m_unWidth > oNewImageData.m_unHeight)
 			{
-				nW = 7000000;
+				int nW = oNewImageData.m_unWidth * 9525;
+				nW = (nW > 7000000 ? 7000000 : nW);
 				oNewImageData.m_unHeight = (int)((double)oNewImageData.m_unHeight * (double)nW / (double)oNewImageData.m_unWidth);
+				oNewImageData.m_unWidth = nW;
 			}
 			else
-				oNewImageData.m_unHeight = nH;
-			oNewImageData.m_unWidth = nW;
+			{
+				int nH = oNewImageData.m_unHeight * 9525;
+				nH = (nH > 8000000 ? 8000000 : nH);
+				int nW = (int)((double)oNewImageData.m_unWidth * (double)nH / (double)oNewImageData.m_unHeight);
+				if (nW > 7000000)
+				{
+					nW = 7000000;
+					oNewImageData.m_unHeight = (int)((double)oNewImageData.m_unHeight * (double)nW / (double)oNewImageData.m_unWidth);
+				}
+				else
+					oNewImageData.m_unHeight = nH;
+				oNewImageData.m_unWidth = nW;
+			}
 		}
 
 		WriteImage(oXml, oNewImageData, sImageId);
@@ -4624,7 +4782,7 @@ private:
 		oXml->WriteString(L"\"/></w:r>");
 		m_oNoteXml.WriteString(L"<w:footnote w:id=\"");
 		m_oNoteXml.WriteString(std::to_wstring(m_nFootnoteId++));
-		m_oNoteXml.WriteString(L"\"><w:p><w:pPr><w:pStyle w:val=\"footnote-p\"/></w:pPr><w:r><w:rPr><w:rStyle w:val=\"footnote\"/></w:rPr></w:r><w:r><w:t xml:space=\"preserve\">");
+		m_oNoteXml.WriteString(L"\"><w:p><w:pPr><w:pStyle w:val=\"footnote-p\"/></w:pPr><w:r><w:rPr><w:rStyle w:val=\"footnote\"/></w:rPr><w:footnoteRef/></w:r><w:r><w:t xml:space=\"preserve\"> </w:t></w:r><w:r><w:t xml:space=\"preserve\">");
 		m_oNoteXml.WriteEncodeXmlString(sNote);
 		m_oNoteXml.WriteString(L"</w:t></w:r></w:p></w:footnote>");
 
@@ -4637,7 +4795,12 @@ private:
 			return false;
 
 		if (NULL == m_pFonts)
+		{
 			m_pFonts = NSFonts::NSApplication::Create();
+
+			if (NULL != m_pFonts)
+				m_pFonts->Initialize();
+		}
 
 		MetaFile::IMetaFile* pSvgReader = MetaFile::Create(m_pFonts);
 		if (!pSvgReader->LoadFromString(wsSvg))

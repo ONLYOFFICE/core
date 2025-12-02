@@ -60,5 +60,17 @@ void Feat11FdaAutoFilter::load(CFRecord& record)
 	}
 }
 
+void Feat11FdaAutoFilter::save(CFRecord& record)
+{
+	record.reserveNunBytes(6);
+
+	auto autofilterPos = record.getRdPtr();
+	recAutoFilter.writeFields(record);
+	cbAutoFilter = record.getRdPtr() - autofilterPos;
+	record.RollRdPtrBack(cbAutoFilter + 6);
+	record << cbAutoFilter;
+	record.skipNunBytes(cbAutoFilter + 2);
+}
+
 } // namespace XLS
 

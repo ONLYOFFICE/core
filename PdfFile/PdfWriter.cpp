@@ -2065,7 +2065,8 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 			if (!m_bSplit)
 			{
 				pMarkupAnnot->RemoveAP();
-				pTextAnnot->SetAP();
+				if (!(nFlags & (1 << 5)))
+					pTextAnnot->SetAP();
 			}
 		}
 		else if (oInfo.IsInk())
@@ -2525,6 +2526,8 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 			if (nFlags & (1 << 13))
 			{
 				pTextWidget->SetAPV();
+				m_pFont14 = NULL; m_pFont = NULL;
+				m_bNeedUpdateTextFont = true;
 
 				LONG nLen = 0;
 				BYTE* pRender = pPr->GetRender(nLen);
@@ -2544,7 +2547,9 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 
 					if (m_bNeedUpdateTextFont)
 						UpdateFont();
-					if (m_pFont)
+					if (m_pFont14)
+						pFont = m_pFont14;
+					else if (m_pFont)
 						pFont = m_pDocument->CreateTrueTypeFont(m_pFont);
 				}
 				if (pFont)
@@ -2592,6 +2597,8 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 			if (nFlags & (1 << 15))
 			{
 				pChoiceWidget->SetAPV();
+				m_pFont14 = NULL; m_pFont = NULL;
+				m_bNeedUpdateTextFont = true;
 
 				LONG nLen = 0;
 				BYTE* pRender = pPr->GetRender(nLen);
@@ -2611,7 +2618,9 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 
 					if (m_bNeedUpdateTextFont)
 						UpdateFont();
-					if (m_pFont)
+					if (m_pFont14)
+						pFont = m_pFont14;
+					else if (m_pFont)
 						pFont = m_pDocument->CreateTrueTypeFont(m_pFont);
 				}
 				if (pFont)
@@ -2947,7 +2956,7 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 						PdfWriter::CCheckBoxWidget* pKid = dynamic_cast<PdfWriter::CCheckBoxWidget*>(pObj);
 						if (!pKid)
 							continue;
-						if (pKid->NeedAP_N_Yes())
+						if (pKid->NeedAP_N_Yes() && i < pParent->arrOpt.size())
 						{
 							std::pair<std::wstring, std::wstring> PV = pParent->arrOpt[i];
 							std::wstring sOpt = PV.first.empty() ? PV.second : PV.first;

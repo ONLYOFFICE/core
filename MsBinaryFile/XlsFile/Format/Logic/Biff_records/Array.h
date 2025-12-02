@@ -56,7 +56,7 @@ public:
 
     Ref                 ref_;
     ArrayParsedFormula  formula;
-    bool                fAlwaysCalc;
+	bool                fAlwaysCalc = false;
 
     RFX                 rfx; //biff12
 };

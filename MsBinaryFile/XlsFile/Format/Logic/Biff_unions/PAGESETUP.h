@@ -60,6 +60,11 @@ public:
 	BaseObjectPtr m_HCenter;
 	BaseObjectPtr m_VCenter;
 
+	BaseObjectPtr m_LeftMargin;
+	BaseObjectPtr m_RightMargin;
+	BaseObjectPtr m_TopMargin;
+	BaseObjectPtr m_BottomtMargin;
+
 	BaseObjectPtr m_Pls;
 
 };

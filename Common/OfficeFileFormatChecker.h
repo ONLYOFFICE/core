@@ -74,6 +74,7 @@ public:
 	bool isDocFormatFile(const std::wstring& fileName);
 	bool isXlsFormatFile(const std::wstring& fileName);
 
+	bool isCompoundFile     (POLE::Storage* storage);
 	bool isOleObjectFile(POLE::Storage* storage);
 	bool isDocFormatFile(POLE::Storage* storage);
 	bool isXlsFormatFile(POLE::Storage* storage);

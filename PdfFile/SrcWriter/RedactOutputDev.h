@@ -33,11 +33,7 @@
 #define _PDF_WRITER_SRC_REDACT_OUTPUTDEV_H
 
 #include "../PdfWriter.h"
-//#include "../../DesktopEditor/graphics/IRenderer.h"
-//#include "../../DesktopEditor/graphics/pro/Fonts.h"
-//#include "../../DesktopEditor/graphics/AlphaMask.h"
-//#include "../../DesktopEditor/graphics/TemporaryCS.h"
-//#include "../../DesktopEditor/graphics/structures.h"
+#include "../PdfEditor.h"
 
 #include "../SrcReader/GfxClip.h"
 
@@ -51,7 +47,7 @@ namespace PdfWriter
 	class RedactOutputDev : public OutputDev
 	{
 	public:
-		RedactOutputDev(CPdfWriter* pRenderer);
+		RedactOutputDev(CPdfWriter* pRenderer, CObjectsManager* pObjMng, int nStartRefID);
 		virtual ~RedactOutputDev();
 
 		void SetRedact(const std::vector<double>& arrQuadPoints);
@@ -102,19 +98,19 @@ namespace PdfWriter
 		virtual void updateLineCap(GfxState *pGState) override;
 		virtual void updateMiterLimit(GfxState *pGState) override;
 		virtual void updateLineWidth(GfxState *pGState) override;
-		// updateStrokeAdjust -> setExtGState
+		// updateStrokeAdjust    -> setExtGState
 		// updateFillColorSpace
 		// updateStrokeColorSpace
 		virtual void updateFillColor(GfxState *pGState) override;
 		virtual void updateStrokeColor(GfxState *pGState) override;
-		// updateBlendMode -> setExtGState
-		// updateFillOpacity -> setExtGState
-		// updateStrokeOpacity -> setExtGState
-		// updateFillOverprint -> setExtGState
+		// updateBlendMode       -> setExtGState
+		// updateFillOpacity     -> setExtGState
+		// updateStrokeOpacity   -> setExtGState
+		// updateFillOverprint   -> setExtGState
 		// updateStrokeOverprint -> setExtGState
-		// updateOverprintMode -> setExtGState
+		// updateOverprintMode   -> setExtGState
 		virtual void updateRenderingIntent(GfxState *pGState) override;
-		// updateTransfer -> setExtGState
+		// updateTransfer        -> setExtGState
 		//----- update text state
 		virtual void updateFont(GfxState *pGState) override;
 		// updateTextMat -> drawChar
@@ -123,7 +119,7 @@ namespace PdfWriter
 		virtual void updateRise(GfxState *pGState) override;
 		virtual void updateWordSpace(GfxState *pGState) override;
 		virtual void updateHorizScaling(GfxState *pGState) override;
-		// updateTextPos -> drawChar
+		// updateTextPos   -> drawChar
 		// updateTextShift -> drawChar
 		// saveTextPos
 		// restoreTextPos
@@ -162,25 +158,25 @@ namespace PdfWriter
 		virtual void setStrokeColorN(Object* args, int numArgs) override;
 		virtual void setShading(GfxState *state, const char* name) override;
 		//----- image drawing
-		virtual void drawImageMask(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GBool bInvert, GBool bInlineImage, GBool interpolate) override;
-		virtual void setSoftMaskFromImageMask(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GBool bInvert, GBool bInlineImage, GBool interpolate) override;
-		virtual void drawImage(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap, int *pMaskColors, GBool bInlineImg, GBool interpolate) override;
-		virtual void drawMaskedImage(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap,
+		virtual void drawImageMask(GfxState *pGState, Gfx *gfx, Object *pRef, Stream *pStream, int nWidth, int nHeight, GBool bInvert, GBool bInlineImage, GBool interpolate) override;
+		// setSoftMaskFromImageMask -> drawImageMask
+		virtual void drawImage(GfxState *pGState, Gfx *gfx, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap, int *pMaskColors, GBool bInlineImg, GBool interpolate) override;
+		virtual void drawMaskedImage(GfxState *pGState, Gfx *gfx, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap,
 									 Object* pMaskRef, Stream *pMaskStream, int nMaskWidth, int nMaskHeight, GBool bMaskInvert, GBool interpolate) override;
-		virtual void drawSoftMaskedImage(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap,
+		virtual void drawSoftMaskedImage(GfxState *pGState, Gfx *gfx, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap,
 										 Object *maskRef, Stream *pMaskStream, int nMaskWidth, int nMaskHeight, GfxImageColorMap *pMaskColorMap, double *pMatte, GBool interpolate) override;
 		//----- Type 3 font operators
 		virtual void type3D0(GfxState *pGState, double wx, double wy) override;
 		virtual void type3D1(GfxState *pGState, double wx, double wy, double llx, double lly, double urx, double ury) override;
 		//----- form XObjects
-		virtual void drawForm(GfxState *pGState, Ref id, const char *name = NULL) override;
-		virtual void drawImage(GfxState *pGState, Ref id, const char* name = NULL) override;
+		virtual void drawForm(GfxState *pGState, Gfx *gfx, Ref id, const char *name = NULL) override;
+		virtual void drawImage(GfxState *pGState, Gfx *gfx, Ref id, const char* name = NULL) override;
 		//----- transparency groups and soft masks
-		virtual void beginTransparencyGroup(GfxState *pGState, double *pBBox, GfxColorSpace *pBlendingColorSpace, GBool bIsolated, GBool bKnockout, GBool bForSoftMask) override;
-		virtual void endTransparencyGroup(GfxState *pGState) override;
-		virtual void paintTransparencyGroup(GfxState *pGState, double *pBBox) override;
-		virtual void setSoftMask(GfxState *pGState, double *pBBox, GBool bAlpha, Function *pTransferFunc, GfxColor *pBackdropColor) override;
-		virtual void clearSoftMask(GfxState *pGState) override;
+		// beginTransparencyGroup -> drawForm
+		// endTransparencyGroup   -> drawForm
+		// paintTransparencyGroup -> drawForm
+		// setSoftMask            -> drawForm
+		// clearSoftMask          -> drawForm
 
 	private:
 		struct GfxRedactState
@@ -196,22 +192,27 @@ namespace PdfWriter
 		};
 
 		void DoPathRedact(GfxState* pGState, GfxPath* pPath, double* pCTM, bool bStroke = false, bool bEoFill = false);
-		void DrawPathRedact(Aggplus::CGraphicsPath* oPath, bool bStroke, const std::vector<CSegment>& arrForStroke = {});
+		void DrawPathRedact(Aggplus::CGraphicsPath* oPath, bool bStroke, double& dXEnd, double& dYEnd, const std::vector<CSegment>& arrForStroke = {});
 		void DoPath(GfxState* pGState, GfxPath* pPath, double* pCTM);
 		void DoTransform(double* pMatrix, double* pdShiftX, double* pdShiftY, bool bActual = false);
 		void DrawPath(const LONG& lType);
 		void UpdateTransform();
 		void AddClip(GfxState* pGState, GfxRedactState* pState, int nIndex);
 		void DoStateOp();
+		void DrawXObject(const char* name);
+		CObjectBase* CreateImage(Gfx *gfx, int nWidth, int nHeight, unsigned int nFilter, int nBPC, const char* sCS);
 
 		XRef* m_pXref;
 		std::vector<double> m_arrQuadPoints;
 		Aggplus::CGraphicsPath m_oPathRedact;
 
 		CPdfWriter* m_pRenderer;
+		CObjectsManager* m_mObjManager;
+		int m_nStartRefID;
 		CDocument*  m_pDoc;
 		CPage*      m_pPage;
 		double      m_arrMatrix[6];
+		std::string m_sImageName;
 
 		bool m_bUpdateAll;
 		std::deque<GfxRedactState> m_sStates;

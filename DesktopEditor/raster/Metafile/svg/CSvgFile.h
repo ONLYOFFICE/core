@@ -4,13 +4,13 @@
 #include "../../../graphics/IRenderer.h"
 #include "../../../graphics/pro/Fonts.h"
 
-#include "CSvgParser.h"
 #include "SvgObjects/CStyle.h"
 
 namespace SVG 
 {
 	struct TFontArguments;
 	class CFont;
+	class CGraphicsContainer;
 }
 
 class CSvgFile
@@ -43,9 +43,11 @@ class CSvgFile
 	private:
 		void Clear();
 
-		SVG::CSvgParser          m_oParser;
-		SVG::CGraphicsContainer  m_oContainer;
+		bool CalculateFinalSize(bool bUseViewBox, double& dX, double& dY, double& dWidth, double& dHeight) const;
+
+		SVG::CGraphicsContainer *m_pContainer;
 		SVG::CSvgCalculator      m_oSvgCalculator;
+		NSFonts::IFontManager   *m_pFontManager;
 
 		typedef std::map<std::wstring, SVG::CObject*> MarkedMap;
 

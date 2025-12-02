@@ -68,6 +68,29 @@ void OfficeArtFSP::loadFields(XLS::CFRecord& record)
 	shape_id = rh_own.recInstance;
 }
 
+void OfficeArtFSP::save(XLS::CFRecord& record)
+{
+	rh_own.recVer = 0x2;
+	rh_own.recInstance = shape_id;
+	rh_own.recType = 0xF00A;
+	rh_own.recLen =  0x00000008;
+	record << rh_own;
+	_UINT32 flags = 0;
+	SETBIT(flags, 0, fGroup)
+	SETBIT(flags, 1, fChild)
+	SETBIT(flags, 2, fPatriarch)
+	SETBIT(flags, 3, fDeleted)
+	SETBIT(flags, 4, fOleShape)
+	SETBIT(flags, 5, fHaveMaster)
+	SETBIT(flags, 6, fFlipH)
+	SETBIT(flags, 7, fFlipV)
+	SETBIT(flags, 8, fConnector)
+	SETBIT(flags, 9, fHaveAnchor)
+	SETBIT(flags, 10, fBackground)
+	SETBIT(flags, 11, fHaveSpt)
+
+	record << spid << flags;
+}
 
 const unsigned short OfficeArtFSP::GetInstanceToStore()
 {

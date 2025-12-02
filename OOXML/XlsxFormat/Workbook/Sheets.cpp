@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
@@ -32,6 +32,12 @@
 
 #include "Sheets.h"
 #include "../../XlsbFormat/Biff12_records/BundleSh.h"
+
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/GlobalsSubstream.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/BUNDLESHEET.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/BoundSheet8.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/RRTabId.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/SheetId.h"
 
 #include "../../Common/SimpleTypes_Shared.h"
 #include "../../Common/SimpleTypes_Spreadsheet.h"
@@ -211,6 +217,33 @@ namespace OOX
 			for(auto i: m_arrItems)
 				objectVector.push_back(i->toBin());
 			return objectVector;
+		}
+		void CSheets::toXLS(XLS::BaseObjectPtr stream)
+		{
+			auto streamPtr = static_cast<XLS::GlobalsSubstream*>(stream.get());
+			auto tabIdArray = new XLS::RRTabId;
+			streamPtr->m_RRTabId = XLS::BaseObjectPtr(tabIdArray);
+			auto SheetNum = 1;
+			for(auto i: m_arrItems)
+				{
+					auto tempSheet = new XLS::BoundSheet8;
+					auto tempSheetUnion = new XLS::BUNDLESHEET;
+					tempSheetUnion->bundleSheetRecord = XLS::BaseObjectPtr(tempSheet);
+					{
+						XLS::SheetIdPtr element(new XLS::SheetId);
+						if(i->m_oSheetId.IsInit())
+							element->id = i->m_oSheetId->GetValue();
+						else
+							element->id = SheetNum;
+						tabIdArray->sheet_ids.push_back(element);
+					}
+					if(i->m_oName.IsInit())
+						tempSheet->name_ = i->m_oName.get();
+					else
+						tempSheet->name_ = std::wstring(L"sheet" + std::to_wstring(SheetNum));
+					streamPtr->m_arBUNDLESHEET.push_back(XLS::BaseObjectPtr(tempSheetUnion));
+					SheetNum++;
+				}
 		}
 		EElementType CSheets::getType () const
 		{

@@ -68,6 +68,10 @@ namespace MetaFile
 	#ifdef METAFILE_SUPPORT_SVM
 		m_oSvmFile.SetFontManager(m_pFontManager);
 	#endif
+
+	#ifdef METAFILE_SUPPORT_SVG
+		m_oSvgFile.SetFontManager(m_pFontManager);
+	#endif
 		m_lType  = 0;
 	}
 
@@ -84,7 +88,6 @@ namespace MetaFile
 
 	std::wstring CMetaFile::ConvertToSvg(unsigned int unWidth, unsigned int unHeight)
 	{
-
 	#ifdef METAFILE_SUPPORT_WMF_EMF
 		if (c_lMetaWmf == m_lType)
 		{

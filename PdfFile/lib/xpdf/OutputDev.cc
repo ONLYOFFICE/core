@@ -82,7 +82,7 @@ GBool OutputDev::beginType3Char(GfxState *state, double x, double y,
   return gFalse;
 }
 
-void OutputDev::drawImageMask(GfxState *state, Object *ref, Stream *str,
+void OutputDev::drawImageMask(GfxState *state, Gfx *gfx, Object *ref, Stream *str,
 			      int width, int height, GBool invert,
 			      GBool inlineImg, GBool interpolate) {
   if (inlineImg) {
@@ -92,14 +92,14 @@ void OutputDev::drawImageMask(GfxState *state, Object *ref, Stream *str,
   }
 }
 
-void OutputDev::setSoftMaskFromImageMask(GfxState *state,
+void OutputDev::setSoftMaskFromImageMask(GfxState *state, Gfx *gfx,
 					 Object *ref, Stream *str,
 					 int width, int height, GBool invert,
 					 GBool inlineImg, GBool interpolate) {
-  drawImageMask(state, ref, str, width, height, invert, inlineImg, interpolate);
+  drawImageMask(state, gfx, ref, str, width, height, invert, inlineImg, interpolate);
 }
 
-void OutputDev::drawImage(GfxState *state, Object *ref, Stream *str,
+void OutputDev::drawImage(GfxState *state, Gfx *gfx, Object *ref, Stream *str,
 			  int width, int height, GfxImageColorMap *colorMap,
 			  int *maskColors, GBool inlineImg, GBool interpolate) {
   if (inlineImg) {
@@ -110,24 +110,24 @@ void OutputDev::drawImage(GfxState *state, Object *ref, Stream *str,
   }
 }
 
-void OutputDev::drawMaskedImage(GfxState *state, Object *ref, Stream *str,
+void OutputDev::drawMaskedImage(GfxState *state, Gfx *gfx, Object *ref, Stream *str,
 				int width, int height,
 				GfxImageColorMap *colorMap,
 				Object *maskRef, Stream *maskStr,
 				int maskWidth, int maskHeight,
 				GBool maskInvert, GBool interpolate) {
-  drawImage(state, ref, str, width, height, colorMap, NULL, gFalse,
+  drawImage(state, gfx, ref, str, width, height, colorMap, NULL, gFalse,
 	    interpolate);
 }
 
-void OutputDev::drawSoftMaskedImage(GfxState *state, Object *ref, Stream *str,
+void OutputDev::drawSoftMaskedImage(GfxState *state, Gfx *gfx, Object *ref, Stream *str,
 				    int width, int height,
 				    GfxImageColorMap *colorMap,
 				    Object *maskRef, Stream *maskStr,
 				    int maskWidth, int maskHeight,
 				    GfxImageColorMap *maskColorMap,
 				    double *matte, GBool interpolate) {
-  drawImage(state, ref, str, width, height, colorMap, NULL, gFalse,
+  drawImage(state, gfx, ref, str, width, height, colorMap, NULL, gFalse,
 	    interpolate);
 }
 

@@ -338,9 +338,7 @@ void pptx_text_context::Impl::ApplyListProperties(odf_reader::paragraph_format_p
 	
 	if (list_properties)
 	{
-		propertiesOut.fo_text_indent_ = list_properties->text_min_label_width_;
-		propertiesOut.fo_margin_left_ = odf_types::length(0, odf_types::length::pt);
-		
+
 		if (list_properties->text_space_before_)
 		{
 			double spaceBeforeTwip = list_properties->text_space_before_->get_value_unit(odf_types::length::pt);
@@ -349,6 +347,11 @@ void pptx_text_context::Impl::ApplyListProperties(odf_reader::paragraph_format_p
 				propertiesOut.fo_margin_left_ = odf_types::length(spaceBeforeTwip, odf_types::length::pt);
 			}
 		}
+		else if(!propertiesOut.fo_margin_left_)
+			propertiesOut.fo_margin_left_ = odf_types::length(0, odf_types::length::pt);
+
+		propertiesOut.fo_text_indent_ = list_properties->text_min_label_width_;
+
 		if (list_properties->fo_width_)
 		{
 

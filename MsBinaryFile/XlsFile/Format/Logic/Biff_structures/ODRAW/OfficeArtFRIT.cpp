@@ -46,5 +46,10 @@ void OfficeArtFRIT::load(XLS::CFRecord& record)
 	record >> fridNew >> fridOld;
 }
 
+void OfficeArtFRIT::save(XLS::CFRecord& record)
+{
+	record << fridNew << fridOld;
+}
+
 
 } // namespace XLS

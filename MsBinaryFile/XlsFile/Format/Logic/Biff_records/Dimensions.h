@@ -56,9 +56,9 @@ public:
     std::wstring ref_ = L"";
 //-----------------------------
     _UINT32		rwMic = 0;
-    _UINT32		rwMac = 0;
+	_UINT32		rwMac = 0x00010000;
     _UINT16		colMic = 0;
-    _UINT16		colMac = 0;
+	_UINT16		colMac = 0x0100;
 	
 
 };

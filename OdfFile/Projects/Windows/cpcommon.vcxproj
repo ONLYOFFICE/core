@@ -189,6 +189,7 @@
     <ClInclude Include="..\..\DataTypes\borderstyle.h" />
     <ClInclude Include="..\..\DataTypes\borderwidths.h" />
     <ClInclude Include="..\..\DataTypes\calcext_type.h" />
+    <ClInclude Include="..\..\DataTypes\chartaxistype.h" />
     <ClInclude Include="..\..\DataTypes\chartclass.h" />
     <ClInclude Include="..\..\DataTypes\chartdatalabelnumber.h" />
     <ClInclude Include="..\..\DataTypes\charterrorcategory.h" />
@@ -324,6 +325,7 @@
     <ClCompile Include="..\..\DataTypes\borderstyle.cpp" />
     <ClCompile Include="..\..\DataTypes\borderwidths.cpp" />
     <ClCompile Include="..\..\DataTypes\calcext_type.cpp" />
+    <ClCompile Include="..\..\DataTypes\chartaxistype.cpp" />
     <ClCompile Include="..\..\DataTypes\chartclass.cpp" />
     <ClCompile Include="..\..\DataTypes\chartdatalabelnumber.cpp" />
     <ClCompile Include="..\..\DataTypes\charterrorcategory.cpp" />

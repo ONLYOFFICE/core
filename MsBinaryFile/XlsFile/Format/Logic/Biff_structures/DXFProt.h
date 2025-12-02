@@ -51,8 +51,8 @@ public:
 
 	int serialize(std::wostream & stream);
 
-	bool fLocked;
-	bool fHidden;
+	bool fLocked = true;
+	bool fHidden = false;
 //------------------------------------------------
 	DXFN *parent;
 };

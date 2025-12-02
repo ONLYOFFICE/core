@@ -33,6 +33,7 @@
 
 #include "../WritingElement.h"
 #include "../../Base/Nullable.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BiffStructure.h"
 
 namespace SimpleTypes
 {
@@ -60,6 +61,7 @@ namespace OOX
 
 			void fromBin(XLS::BaseObjectPtr& obj);
 			XLS::BaseObjectPtr toBin();
+			XLS::BiffStructurePtr toXLS();
             void toBin(XLS::StreamCacheWriterPtr& writer);
 			virtual EElementType getType () const;
 
@@ -87,6 +89,7 @@ namespace OOX
 
 			XLS::BaseObjectPtr toBin();
             void toBin(XLS::StreamCacheWriterPtr& writer);
+			std::vector<XLS::BaseObjectPtr> toXLS();
 			void fromBin(std::vector<XLS::BaseObjectPtr>& obj);
 			virtual EElementType getType () const;
 

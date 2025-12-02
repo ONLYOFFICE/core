@@ -50,18 +50,19 @@ public:
 	static const ElementType	type = typeFtPioGrbit;
 
 	virtual void load(CFRecord& record);
+	virtual void save(CFRecord& record);
 
-	bool fAutoPict;
-	bool fDde;
-	bool fPrintCalc;
-	bool fIcon;
-	bool fCtl;
-	bool fPrstm;
-	bool fCamera;
-	bool fDefaultSize;
-	bool fAutoLoad;
+	bool fAutoPict = false;
+	bool fDde = false;
+	bool fPrintCalc = false;
+	bool fIcon = false;
+	bool fCtl = false;
+	bool fPrstm = false;
+	bool fCamera = false;
+	bool fDefaultSize = false;
+	bool fAutoLoad = false;
 	
-	bool fExist;
+	bool fExist = false;
 };
 
 } // namespace XLS

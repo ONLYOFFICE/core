@@ -5,30 +5,23 @@
 
 namespace SVG
 {
-	CGraphicsContainer::CGraphicsContainer(const std::wstring &wsName)
-		: CRenderedObject(NSCSS::CNode(wsName, L"", L""))
+	CGraphicsContainer::CGraphicsContainer(CSvgReader& oReader, CRenderedObject *pParent)
+		: CRenderedObject(oReader, pParent)
 	{}
 
-	CGraphicsContainer::~CGraphicsContainer()
+	void CGraphicsContainer::SetAttribute(const std::string& sName, CSvgReader& oReader)
 	{
-		for (CRenderedObject* pObject : m_arObjects)
-			pObject->m_pParent = NULL;
-	}
-
-	void CGraphicsContainer::SetData(XmlUtils::CXmlNode &oNode)
-	{
-		SetNodeData(oNode);
-
-		m_oWindow.m_oX     .SetValue(oNode.GetAttribute(L"x"));
-		m_oWindow.m_oY     .SetValue(oNode.GetAttribute(L"y"));
-		m_oWindow.m_oWidth .SetValue(oNode.GetAttribute(L"width"), 0, true);
-		m_oWindow.m_oHeight.SetValue(oNode.GetAttribute(L"height"), 0, true);
-
-		const std::wstring wsViewBox = oNode.GetAttribute(L"viewBox");
-
-		if (!wsViewBox.empty())
+		if ("x" == sName)
+			m_oWindow.m_oX.SetValue(oReader.GetText());
+		else if ("y" == sName)
+			m_oWindow.m_oY.SetValue(oReader.GetText());
+		else if ("width" == sName)
+			m_oWindow.m_oWidth.SetValue(oReader.GetText());
+		else if ("height" == sName)
+			m_oWindow.m_oHeight.SetValue(oReader.GetText());
+		else if ("viewBox" == sName)
 		{
-			std::vector<double> arValues = StrUtils::ReadDoubleValues(wsViewBox);
+			const std::vector<double> arValues{StrUtils::ReadDoubleValues(oReader.GetText())};
 			if (4 == arValues.size())
 			{
 				m_oViewBox.m_oX      = arValues[0];
@@ -38,18 +31,8 @@ namespace SVG
 			}
 		}
 		else
-			m_oViewBox = m_oWindow;
+			CRenderedObject::SetAttribute(sName, oReader);
 	}
-
-	CGraphicsContainer::CGraphicsContainer(XmlUtils::CXmlNode& oNode, CRenderedObject *pParent)
-		: CRenderedObject(oNode, pParent)
-	{
-		SetData(oNode);
-	}
-
-	CGraphicsContainer::CGraphicsContainer(double dWidth, double dHeight, XmlUtils::CXmlNode& oNode, CRenderedObject *pParent)
-		: CRenderedObject(oNode, pParent), m_oWindow{0, 0, dWidth, dHeight}
-	{}
 
 	bool CGraphicsContainer::Draw(IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode, const TSvgStyles *pOtherStyles, const CRenderedObject* pContexObject) const
 	{
@@ -76,7 +59,7 @@ namespace SVG
 		return m_oViewBox;
 	}
 
-	TBounds CGraphicsContainer::GetBounds() const
+	TBounds CGraphicsContainer::GetBounds(SvgMatrix* pTransform) const
 	{
 		TBounds oBounds, oTempBounds;
 
@@ -85,14 +68,20 @@ namespace SVG
 		oBounds.m_dRight  += m_oWindow.m_oWidth.ToDouble(NSCSS::Pixel);
 		oBounds.m_dBottom += m_oWindow.m_oHeight.ToDouble(NSCSS::Pixel);
 
+		if (nullptr != pTransform)
+			*pTransform += m_oTransformation.m_oTransform.GetMatrix();
+
 		for (const CRenderedObject* pObject : m_arObjects)
 		{
-			oTempBounds = pObject->GetBounds();
+			oTempBounds = pObject->GetBounds(pTransform);
 			oBounds.m_dLeft   = std::min(oBounds.m_dLeft, oTempBounds.m_dLeft);
 			oBounds.m_dTop    = std::min(oBounds.m_dTop, oTempBounds.m_dTop);
 			oBounds.m_dRight  = std::max(oBounds.m_dRight, oTempBounds.m_dRight);
 			oBounds.m_dBottom = std::max(oBounds.m_dBottom, oTempBounds.m_dBottom);
 		}
+
+		if (nullptr != pTransform)
+			*pTransform -= m_oTransformation.m_oTransform.GetMatrix();
 
 		return oBounds;
 	}

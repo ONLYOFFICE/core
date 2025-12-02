@@ -409,16 +409,17 @@ const bool StringPtgParser::parseToPtgs(const std::wstring& assembled_formula, R
                     rgce.addPtg(PtgPtr(new PtgName(number,  OperandPtg::ptg_REFERENCE)));
                 }
             }
-            else if(SyntaxPtg::extract_UndefinedName(it, itEnd)) // Shall be placed strongly after extract_PtgName
-            {
-                rgce.addPtg(found_operand = OperandPtgPtr(new PtgErr(L"#REF!")));
-            }
 
             else if(SyntaxPtg::extract_PtgArray(it, itEnd, operand_str))
             {
                 rgce.addPtg(found_operand = OperandPtgPtr(new PtgArray(OperandPtg::ptg_ARRAY)));
                 rgb.addPtg(PtgPtr(new PtgExtraArray(operand_str)));
             }
+			else if(SyntaxPtg::extract_UndefinedName(it, itEnd)) // Shall be placed strongly after extract_PtgName
+			{
+				rgce.addPtg(found_operand = OperandPtgPtr(new PtgErr(L"#REF!")));
+			}
+
 
             else
             {

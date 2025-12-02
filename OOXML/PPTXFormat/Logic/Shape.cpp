@@ -687,7 +687,7 @@ namespace PPTX
 		}
 
 		void Shape::toXmlWriterVML(NSBinPptxRW::CXmlWriter *pWriter, NSCommon::smart_ptr<PPTX::Theme>& oTheme, NSCommon::smart_ptr<PPTX::Logic::ClrMap>& oClrMap
-									, NSCommon::smart_ptr<OOX::IFileContainer>& pContainer, bool in_group, bool bSignature)
+									, OOX::IFileContainer* pContainer, bool in_group, bool bSignature)
 		{
 			std::wstring strPath, strTextRect;
 			SimpleTypes::Vml::SptType vmlPrst = SimpleTypes::Vml::sptNotPrimitive;
@@ -923,7 +923,7 @@ namespace PPTX
 			pWriter->m_strStyleMain.clear();
 			pWriter->m_strStyleWrap.clear();
 		}
-		void Shape::toXmlWriterVMLBackground(NSBinPptxRW::CXmlWriter *pWriter, NSCommon::smart_ptr<PPTX::Theme>& oTheme, NSCommon::smart_ptr<PPTX::Logic::ClrMap>& oClrMap, NSCommon::smart_ptr<OOX::IFileContainer>& pContainer)
+		void Shape::toXmlWriterVMLBackground(NSBinPptxRW::CXmlWriter *pWriter, NSCommon::smart_ptr<PPTX::Theme>& oTheme, NSCommon::smart_ptr<PPTX::Logic::ClrMap>& oClrMap, OOX::IFileContainer* pContainer)
 		{
 			std::wstring strFillAttr, strFillNode;
 			CalculateFill(pWriter->m_lDocType, spPr, style, oTheme, oClrMap, pContainer, strFillAttr, strFillNode, false);

@@ -436,12 +436,13 @@ namespace NSCSS
 		return true;
 	}
 
-	bool CDigit::SetValue(const double& dValue, unsigned int unLevel, bool bHardMode)
+	bool CDigit::SetValue(const double& dValue, UnitMeasure enUnitMeasure, unsigned int unLevel, bool bHardMode)
 	{
 		if (CHECK_CONDITIONS && !bHardMode)
 			return false;
 
-		m_oValue  = dValue;
+		m_enUnitMeasure = enUnitMeasure;
+		m_oValue        = dValue;
 
 		if (UINT_MAX == unLevel)
 			m_unLevel++;
@@ -1326,6 +1327,23 @@ namespace NSCSS
 		return true;
 	}
 
+	CMatrix& CMatrix::operator+=(const CMatrix& oMatrix)
+	{
+		m_oValue.insert(m_oValue.end(), oMatrix.m_oValue.begin(), oMatrix.m_oValue.end());
+		return *this;
+	}
+
+	CMatrix& CMatrix::operator-=(const CMatrix& oMatrix)
+	{
+		for (MatrixValues::const_reverse_iterator itElement = oMatrix.m_oValue.crbegin(); itElement < oMatrix.m_oValue.crend(); ++itElement)
+		{
+			if (!m_oValue.empty() && m_oValue.back() == *itElement)
+				m_oValue.pop_back();
+		}
+
+		return *this;
+	}
+
 	// DISPLAY
 	CDisplay::CDisplay()
 	{
@@ -1463,6 +1481,21 @@ namespace NSCSS
 		return m_oX.Empty() && m_oY.Empty() && m_oWidth.Empty() && m_oHeight.Empty() &&
 		       m_oHeight.Empty() && m_oVAlign.Empty() && m_oDisplay.Empty() &&
 		       (m_eWhiteSpace.Empty() || m_eWhiteSpace == EWhiteSpace::Normal);
+	}
+
+	void CDisplay::Clear()
+	{
+		m_oX.Clear();
+		m_oY.Clear();
+		m_oWidth.Clear();
+		m_oHeight.Clear();
+
+		m_oHAlign.Clear();
+		m_oVAlign.Clear();
+
+		m_oDisplay.Clear();
+
+		m_eWhiteSpace.Clear();
 	}
 
 	CDisplay &CDisplay::operator+=(const CDisplay &oDisplay)
@@ -1743,9 +1776,9 @@ namespace NSCSS
 		return m_oWidth.SetValue(wsNewValue, unLevel, bHardMode);
 	}
 
-	bool CBorderSide::SetWidth(const double& dValue, unsigned int unLevel, bool bHardMode)
+	bool CBorderSide::SetWidth(const double& dValue, UnitMeasure enUnitMeasure, unsigned int unLevel, bool bHardMode)
 	{
-		return m_oWidth.SetValue(dValue, unLevel, bHardMode);
+		return m_oWidth.SetValue(dValue, enUnitMeasure, unLevel, bHardMode);
 	}
 
 	bool CBorderSide::SetStyle(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
@@ -1921,14 +1954,14 @@ namespace NSCSS
 		return bResult;
 	}
 
-	bool CBorder::SetWidth(const double& dValue, unsigned int unLevel, bool bHardMode)
+	bool CBorder::SetWidth(const double& dValue, UnitMeasure enUnitMeasure, unsigned int unLevel, bool bHardMode)
 	{
 		bool bResult = false;
 
-		if (m_oLeft  .SetWidth(dValue, unLevel, bHardMode)) bResult = true;
-		if (m_oTop   .SetWidth(dValue, unLevel, bHardMode)) bResult = true;
-		if (m_oRight .SetWidth(dValue, unLevel, bHardMode)) bResult = true;
-		if (m_oBottom.SetWidth(dValue, unLevel, bHardMode)) bResult = true;
+		if (m_oLeft  .SetWidth(dValue, enUnitMeasure, unLevel, bHardMode)) bResult = true;
+		if (m_oTop   .SetWidth(dValue, enUnitMeasure, unLevel, bHardMode)) bResult = true;
+		if (m_oRight .SetWidth(dValue, enUnitMeasure, unLevel, bHardMode)) bResult = true;
+		if (m_oBottom.SetWidth(dValue, enUnitMeasure, unLevel, bHardMode)) bResult = true;
 
 		return bResult;
 	}
@@ -1972,9 +2005,9 @@ namespace NSCSS
 		return m_oLeft.SetWidth(wsValue, unLevel, bHardMode);
 	}
 
-	bool CBorder::SetWidthLeftSide(const double& dValue, unsigned int unLevel, bool bHardMode)
+	bool CBorder::SetWidthLeftSide(const double& dValue, UnitMeasure enUnitMeasure, unsigned int unLevel, bool bHardMode)
 	{
-		return m_oLeft.SetWidth(dValue, unLevel, bHardMode);
+		return m_oLeft.SetWidth(dValue, enUnitMeasure, unLevel, bHardMode);
 	}
 
 	bool CBorder::SetStyleLeftSide(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
@@ -1997,9 +2030,9 @@ namespace NSCSS
 		return m_oTop.SetWidth(wsValue, unLevel, bHardMode);
 	}
 
-	bool CBorder::SetWidthTopSide(const double& dValue, unsigned int unLevel, bool bHardMode)
+	bool CBorder::SetWidthTopSide(const double& dValue, UnitMeasure enUnitMeasure, unsigned int unLevel, bool bHardMode)
 	{
-		return m_oTop.SetWidth(dValue, unLevel, bHardMode);
+		return m_oTop.SetWidth(dValue, enUnitMeasure, unLevel, bHardMode);
 	}
 
 	bool CBorder::SetStyleTopSide(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
@@ -2022,9 +2055,9 @@ namespace NSCSS
 		return m_oRight.SetWidth(wsValue, unLevel, bHardMode);
 	}
 
-	bool CBorder::SetWidthRightSide(const double& dValue, unsigned int unLevel, bool bHardMode)
+	bool CBorder::SetWidthRightSide(const double& dValue, UnitMeasure enUnitMeasure, unsigned int unLevel, bool bHardMode)
 	{
-		return m_oRight.SetWidth(dValue, unLevel, bHardMode);
+		return m_oRight.SetWidth(dValue, enUnitMeasure, unLevel, bHardMode);
 	}
 
 	bool CBorder::SetStyleRightSide(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
@@ -2047,9 +2080,9 @@ namespace NSCSS
 		return m_oBottom.SetWidth(wsValue, unLevel, bHardMode);
 	}
 
-	bool CBorder::SetWidthBottomSide(const double& dValue, unsigned int unLevel, bool bHardMode)
+	bool CBorder::SetWidthBottomSide(const double& dValue, UnitMeasure enUnitMeasure, unsigned int unLevel, bool bHardMode)
 	{
-		return m_oBottom.SetWidth(dValue, unLevel, bHardMode);
+		return m_oBottom.SetWidth(dValue, enUnitMeasure, unLevel, bHardMode);
 	}
 
 	bool CBorder::SetStyleBottomSide(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
@@ -2348,19 +2381,9 @@ namespace NSCSS
 		return m_oTop.SetValue(wsValue, unLevel, bHardMode);
 	}
 
-	bool CIndent::SetTop(const double& dValue, unsigned int unLevel, bool bHardMode)
-	{
-		return m_oTop.SetValue(dValue, unLevel, bHardMode);
-	}
-
 	bool CIndent::SetRight(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
 		return m_oRight.SetValue(wsValue, unLevel, bHardMode);
-	}
-
-	bool CIndent::SetRight(const double& dValue, unsigned int unLevel, bool bHardMode)
-	{
-		return m_oRight.SetValue(dValue, unLevel, bHardMode);
 	}
 
 	bool CIndent::SetBottom(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
@@ -2368,19 +2391,39 @@ namespace NSCSS
 		return m_oBottom.SetValue(wsValue, unLevel, bHardMode);
 	}
 
-	bool CIndent::SetBottom(const double& dValue, unsigned int unLevel, bool bHardMode)
-	{
-		return m_oBottom.SetValue(dValue, unLevel, bHardMode);
-	}
-
 	bool CIndent::SetLeft(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
 		return m_oLeft.SetValue(wsValue, unLevel, bHardMode);
 	}
 
-	bool CIndent::SetLeft(const double& dValue, unsigned int unLevel, bool bHardMode)
+	bool CIndent::SetValues(const double& dValue, UnitMeasure enUnitMeasure, unsigned int unLevel, bool bHardMode)
 	{
-		return m_oLeft.SetValue(dValue, unLevel, bHardMode);
+		const bool bTopResult    = SetTop    (dValue, enUnitMeasure, unLevel, bHardMode);
+		const bool bRightResult  = SetRight  (dValue, enUnitMeasure, unLevel, bHardMode);
+		const bool bBottomResult = SetBottom (dValue, enUnitMeasure, unLevel, bHardMode);
+		const bool bLeftResult   = SetLeft   (dValue, enUnitMeasure, unLevel, bHardMode);
+
+		return bTopResult || bRightResult || bBottomResult || bLeftResult;
+	}
+
+	bool CIndent::SetTop(const double& dValue, UnitMeasure enUnitMeasure, unsigned int unLevel, bool bHardMode)
+	{
+		return m_oTop.SetValue(dValue, enUnitMeasure, unLevel, bHardMode);
+	}
+
+	bool CIndent::SetRight(const double& dValue, UnitMeasure enUnitMeasure, unsigned int unLevel, bool bHardMode)
+	{
+		return m_oRight.SetValue(dValue, enUnitMeasure, unLevel, bHardMode);
+	}
+
+	bool CIndent::SetBottom(const double& dValue, UnitMeasure enUnitMeasure, unsigned int unLevel, bool bHardMode)
+	{
+		return m_oBottom.SetValue(dValue, enUnitMeasure, unLevel, bHardMode);
+	}
+
+	bool CIndent::SetLeft(const double& dValue, UnitMeasure enUnitMeasure, unsigned int unLevel, bool bHardMode)
+	{
+		return m_oLeft.SetValue(dValue, enUnitMeasure, unLevel, bHardMode);
 	}
 
 	void CIndent::UpdateAll(const double& dParentFontSize, const double& dCoreFontSize)
@@ -2672,9 +2715,9 @@ namespace NSCSS
 		return m_oSize.SetValue(wsNewValue, unLevel, bHardMode);
 	}
 
-	bool CFont:: SetSize(const double& dValue, unsigned int unLevel, bool bHardMode)
+	bool CFont:: SetSize(const double& dValue, UnitMeasure enUnitMeasure, unsigned int unLevel, bool bHardMode)
 	{
-		return m_oSize.SetValue(dValue, unLevel, bHardMode);
+		return m_oSize.SetValue(dValue, enUnitMeasure, unLevel, bHardMode);
 	}
 
 	bool CFont::SetLineHeight(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
@@ -2997,6 +3040,31 @@ namespace NSCSS
 	bool CPage::SetHeader(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
 		return m_oHeader.SetValue(wsValue, unLevel, bHardMode);
+	}
+
+	bool CPage::SetWidth(const double& dValue, UnitMeasure enUnitMeasure, unsigned int unLevel, bool bHardMode)
+	{
+		return m_oWidth.SetValue(dValue, enUnitMeasure, unLevel, bHardMode);
+	}
+
+	bool CPage::SetHeight(const double& dValue, UnitMeasure enUnitMeasure, unsigned int unLevel, bool bHardMode)
+	{
+		return m_oHeight.SetValue(dValue, enUnitMeasure, unLevel, bHardMode);
+	}
+
+	bool CPage::SetMargin(const double& dValue, UnitMeasure enUnitMeasure, unsigned int unLevel, bool bHardMode)
+	{
+		return m_oMargin.SetValues(dValue, enUnitMeasure, unLevel, bHardMode);
+	}
+
+	bool CPage::SetFooter(const double& dValue, UnitMeasure enUnitMeasure, unsigned int unLevel, bool bHardMode)
+	{
+		return m_oFooter.SetValue(dValue, enUnitMeasure, unLevel, bHardMode);
+	}
+
+	bool CPage::SetHeader(const double& dValue, UnitMeasure enUnitMeasure, unsigned int unLevel, bool bHardMode)
+	{
+		return m_oHeader.SetValue(dValue, enUnitMeasure, unLevel, bHardMode);
 	}
 
 	const CDigit &CPage::GetWidth() const

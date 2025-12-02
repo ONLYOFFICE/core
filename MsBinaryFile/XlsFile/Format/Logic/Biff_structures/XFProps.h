@@ -88,7 +88,7 @@ public:
 //-----------------------------------------------------
 	BiffStructurePtrVector rgExt;
 
-	bool			fNewBorder;
+	bool			fNewBorder = true;
 	bool			bPresent;
 };
 

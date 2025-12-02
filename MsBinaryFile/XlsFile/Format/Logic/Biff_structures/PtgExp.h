@@ -53,10 +53,10 @@ public:
 
 	static const unsigned short fixed_id = 0x01;
 
-	unsigned short row;
-	unsigned short col;
+	unsigned short row = 0;
+	unsigned short col = 0;
 
-    _INT32      rowXlsb;//biff12
+	_INT32      rowXlsb = 0;//biff12
 };
 
 typedef boost::shared_ptr<PtgExp> PtgExpPtr;

@@ -106,6 +106,7 @@ namespace OOX
 
 			void readBin(const CPath& oPath);
 			XLS::BaseObjectPtr WriteBin() const;
+			void toXLS(XLS::BaseObjectPtr globalsStreamPtr);
 
 			virtual void read(const CPath& oPath);
 			virtual void read(const CPath& oRootPath, const CPath& oPath);
@@ -143,6 +144,9 @@ namespace OOX
 			std::map<std::wstring, size_t>	m_mapStyles2003;
 			std::map<unsigned int, bool>	m_mapStylesContinues2003;
 			size_t							m_nStyleNormal2003 = 0xffffffff;
+		private:
+			void SetFillXLS(XLS::BaseObjectPtr XFSPtr, XLS::BaseObjectPtr workbookPtr);
+			void SetBordersXLS(XLS::BaseObjectPtr XFSPtr,XLS::BaseObjectPtr workbookPtr);
 		};
 	} //Spreadsheet
 } // namespace OOX

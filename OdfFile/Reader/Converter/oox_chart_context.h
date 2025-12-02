@@ -73,9 +73,9 @@ public:
 	{
 		plot_area_.set_data_table(v);
 	}
-	void add_axis(int type, odf_reader::chart::axis & content)
+	void add_axis(odf_reader::chart::axis & content)
 	{
-		plot_area_.add_axis(type, content);
+		plot_area_.add_axis(content);
 	}
 	void set_3D_chart(bool val)
 	{

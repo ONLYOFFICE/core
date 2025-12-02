@@ -52,7 +52,7 @@ public:
     virtual void save(CFRecord& record);
 
 	CFVO cfvo;
-    Boolean<unsigned char> fEqual = 0;
+	Boolean<unsigned char> fEqual = true;
 };
 
 typedef boost::shared_ptr<CFMStateItem> CFMStateItemPtr;

@@ -59,6 +59,7 @@
 
 #include "../../DesktopEditor/doctrenderer/docbuilder.h"
 #include "../../MsBinaryFile/Common/Vba/VbaReader.h"
+#include "../../OdfFile/Common/logging.h"
 
 namespace NExtractTools
 {
@@ -73,6 +74,40 @@ namespace NExtractTools
 		return 0;
 	}
 
+	_UINT32 compound2(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
+	{
+		POLE::Storage storage(sFrom.c_str());
+
+		if (storage.open())
+		{
+			POLE::Stream stream(&storage, storage.GetAllStreams(L"/").front());
+
+			POLE::uint64 stream_size = stream.size();
+
+			unsigned char* buffer = new unsigned char[stream_size];
+			if (buffer)
+			{
+				stream.read(buffer, stream_size);
+				std::wstring sTempDocxDir = convertParams.m_sTempDir + FILE_SEPARATOR_STR + L"tempdocx.docx";
+
+				NSFile::CFileBinary file;
+
+				if (file.CreateFileW(sTempDocxDir))
+				{
+					file.WriteFile(buffer, stream_size);
+					file.CloseFile();
+				}
+				delete[]buffer;
+
+				InputParams newparams = params;
+				newparams.m_sFileFrom = &sTempDocxDir;
+
+				return fromInputParams(params) && file.Remove(sTempDocxDir);
+			}
+		}
+
+		return AVS_FILEUTILS_ERROR_CONVERT;
+	}
 	// detect macroses
 	_UINT32 detectMacroInFile(InputParams& oInputParams)
 	{
@@ -683,6 +718,10 @@ namespace NExtractTools
 			else if (AVS_OFFICESTUDIO_FILE_DOCUMENT_MHT == nFormatFrom)
 			{
 				nRes = mht2docx_dir(sFrom, sDocxDir, params, convertParams);
+			}
+			else if (AVS_OFFICESTUDIO_FILE_OTHER_COMPOUND == nFormatFrom)
+			{
+				nRes = compound2(sFrom, sDocxDir, params, convertParams);
 			}
 			else if (AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM_PDF == nFormatFrom)
 			{
@@ -1573,10 +1612,11 @@ namespace NExtractTools
 		return nRes;
 	}
 
-	//------------------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------
 
 	_UINT32 fromInputParams(InputParams& oInputParams)
 	{
+		_CP_LOG << L"start/detect conversion" << std::endl;
 		TConversionDirection conversion = oInputParams.getConversionDirection();
 		
 		std::wstring sFileFrom = oInputParams.m_sFileFrom  ? *oInputParams.m_sFileFrom : L"";
@@ -1647,11 +1687,13 @@ namespace NExtractTools
 				NSFile::CFileBinary::SetTempPath(sGlobalTempDir);
 			return AVS_FILEUTILS_ERROR_CONVERT_LIMITS;
 		}
+		_CP_LOG << L"doct initialize" << std::endl;
 
 #ifndef BUILD_X2T_AS_LIBRARY_DYLIB
 		NSDoctRenderer::CDocBuilder::Initialize();
 #endif
 
+		_CP_LOG << L"start conversion" << std::endl;
 		_UINT32 result = 0;
 		switch (conversion)
 		{
@@ -2084,6 +2126,11 @@ namespace NExtractTools
 			result = xls2xlsx(sFileFrom, sFileTo, oInputParams, oConvertParams);
 		}
 		break;
+		case TCD_XLSX2XLS:
+		{
+			result = xlsx2xls(sFileFrom, sFileTo, oInputParams, oConvertParams);
+		}
+		break;
 		case TCD_XLS2XLSM:
 		{
 			result = xls2xlsm(sFileFrom, sFileTo, oInputParams, oConvertParams);
@@ -2290,6 +2337,10 @@ namespace NExtractTools
 		{
 			result = xlsx2xlsb(sFileFrom, sFileTo, oInputParams, oConvertParams);
 		}break;
+		case TCD_COMPOUND2:
+		{
+			result = compound2(sFileFrom, sFileTo, oInputParams, oConvertParams);
+		}break;
 		// TCD_FB22DOCT,
 		// TCD_FB22DOCT_BIN,
 		// TCD_EPUB2DOCX,
@@ -2310,10 +2361,13 @@ namespace NExtractTools
 		if (!sGlobalTempDir.empty())
 			NSFile::CFileBinary::SetTempPath(sGlobalTempDir);
 
+		_CP_LOG << L"end conversion and start dispose doctrenderer" << std::endl;
 		// clean up v8
 #ifndef BUILD_X2T_AS_LIBRARY_DYLIB
 		NSDoctRenderer::CDocBuilder::Dispose();
 #endif
+		_CP_LOG << L"finish" << std::endl;
+
 		if (SUCCEEDED_X2T(result) && oInputParams.m_bOutputConvertCorrupted)
 		{
 			return AVS_FILEUTILS_ERROR_CONVERT_CORRUPTED;

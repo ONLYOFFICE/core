@@ -50,6 +50,7 @@ public:
 	BaseObjectPtr clone();
 
 	void readFields		(CFRecord& record);
+	void writeFields	(CFRecord& record);
 	void readFields		();
 
 	void resetToBegin	();
@@ -59,6 +60,8 @@ public:
 	virtual const	bool isStartingRecord	(CFRecord& record);
 	virtual const	bool isEndingRecord		(CFRecord& record);
 	virtual			void useContinueRecords	(CFRecord& record);
+
+	void prepareComment	(const unsigned int CommentId);
 
 //-----------------------------
 	ODRAW::OfficeArtDgContainer rgChildRec;

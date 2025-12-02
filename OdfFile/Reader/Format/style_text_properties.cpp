@@ -1347,9 +1347,8 @@ void text_format_properties::docx_convert(oox::docx_conversion_context & Context
 		 {
 			 fontSize = process_font_size(fo_font_size_, Context.get_styles_context().get_current_processed_style(),false,
 				 Context.get_drop_cap_context().Scale + (Context.get_drop_cap_context().Scale-1) * 0.7);//вместо 1 ДОЛЖНОБЫТЬ коэфф. межстрочного интервала!!!
-
 			 if (fontSize < 1)
-				 fontSize = (int)(Context.get_drop_cap_context().FontSize / 7.52);
+                 fontSize = (int)(Context.get_drop_cap_context().FontSize / 10.0);
 		 }
 		 else
 		 {
@@ -1359,6 +1358,30 @@ void text_format_properties::docx_convert(oox::docx_conversion_context & Context
 		if (fontSize >  0)
 		{
             _rPr << L"<w:sz w:val=\"" << fontSize << "\" />";
+		}
+		else if( Context.get_inside_frame() ) // check bug 69510
+		{
+			int fontSize = 0;
+			if( Context.get_current_fontSize() > 0 )
+			{
+				fontSize = static_cast<int>(Context.get_current_fontSize());
+			}
+			else
+			{
+				auto DefaultStyle = Context.root()->odf_context().styleContainer().style_default_by_type(odf_types::style_family::Paragraph);
+				if( DefaultStyle != nullptr )
+				{
+					fontSize = static_cast<int>(2 * (DefaultStyle->content()->get_style_text_properties()->content_.fo_font_size_.has_value() ?
+					DefaultStyle->content()->get_style_text_properties()->content_.fo_font_size_.value().get_length().get_value() : 0.0));
+				}
+			}
+			if( fontSize > 0 )
+			{
+				needProcessFontSize = false;
+				const int scale = Context.get_drop_cap_context().Scale == 1 ? Context.get_scale() : Context.get_drop_cap_context().Scale;
+				_rPr << L"<w:sz w:val=\"" << fontSize * scale << "\"/>";
+				Context.set_inside_frame(false);
+			}
 		}
     }
 

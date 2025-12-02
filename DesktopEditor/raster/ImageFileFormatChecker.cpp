@@ -202,6 +202,19 @@ bool CImageFileFormatChecker::isWbcFile(BYTE* pBuffer,DWORD dwBytes)
 
 	return false;
 }
+//raster graphics file format developed by Google
+bool CImageFileFormatChecker::isWebPFile(BYTE* pBuffer, DWORD dwBytes)
+{
+	if (eFileType)return false;
+
+	if ((20 <= dwBytes) && ('R' == pBuffer[0] && 'I' == pBuffer[1] && 'F' == pBuffer[2] && 'F' == pBuffer[3]
+		//4–7	length + 12
+		&& 'W' == pBuffer[8] && 'E' == pBuffer[9] && 'B' == pBuffer[10] && 'P' == pBuffer[11])
+        && 'V' == pBuffer[12] && 'P' == pBuffer[13] && '8' == pBuffer[14])
+		return true;
+
+	return false;
+}
 //webshot(wb ver 1) HEX 57 57 42 42 31 31 31 31
 //webshot (wb ver 2) HEX 00 00 02 00 02 10 c9 00 02 00 c8 06 4c 00 02 00
 bool CImageFileFormatChecker::isWbFile(BYTE* pBuffer,DWORD dwBytes)
@@ -508,6 +521,10 @@ bool CImageFileFormatChecker::isImageFile(const std::wstring& fileName)
 	else if (isWbFile(buffer,sizeRead))
 	{
 		eFileType = _CXIMAGE_FORMAT_WB;
+	}
+	else if (isWebPFile(buffer, sizeRead))
+	{
+		eFileType = _CXIMAGE_FORMAT_WEBP;
 	}
 	else if (isPsdFile(buffer,sizeRead))
 	{

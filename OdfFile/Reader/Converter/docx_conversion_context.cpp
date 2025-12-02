@@ -176,6 +176,26 @@ bool docx_conversion_context::get_implicit_end() const // fix bug with convert f
     return flag_implicit_end;
 }
 
+void docx_conversion_context::set_inside_frame( bool flag )
+{
+	inside_frame = flag;
+}
+
+bool docx_conversion_context::get_inside_frame() const
+{
+	return inside_frame;
+}
+
+void docx_conversion_context::set_scale( const int _scale )
+{
+	scale_for_framePr = _scale;
+}
+
+int docx_conversion_context::get_scale() const
+{
+	return scale_for_framePr;
+}
+
 void docx_conversion_context::set_output_document(package::docx_document * document)
 {
 	output_document_ = document;
@@ -2224,7 +2244,7 @@ int docx_conversion_context::process_paragraph_attr(odf_reader::text::paragraph_
 					{
 						output_stream() << L"<w:numPr>";
 						output_stream() << L"<w:ilvl w:val=\"" << *outline_level - 1  << L"\"/>";
-						output_stream() << L"<w:numId w:val=\"" << list_styles.id_outline() << L"\"/>";
+						output_stream() << L"<w:numId w:val=\"" << list_styles.id_by_name(id) << L"\"/>"; // check bug 51965
 						output_stream() << L"</w:numPr>";
 					}
 					output_stream() << L"<w:outlineLvl w:val=\"" << *outline_level << L"\"/>";

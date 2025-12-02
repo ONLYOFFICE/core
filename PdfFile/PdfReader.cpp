@@ -54,6 +54,7 @@
 #include "lib/xpdf/Link.h"
 #include "lib/xpdf/TextOutputDev.h"
 #include "lib/xpdf/AcroForm.h"
+#include "lib/xpdf/SecurityHandler.h"
 #include "lib/goo/GList.h"
 
 NSFonts::IFontManager* InitFontManager(NSFonts::IApplicationFonts* pAppFonts)
@@ -806,6 +807,59 @@ bool CPdfReader::UndoRedact()
 	m_vRedact.pop_back();
 	return true;
 }
+bool CPdfReader::CheckOwnerPassword(const std::wstring& wsPassword)
+{
+	PDFDoc* pDoc = m_vPDFContext.front()->m_pDocument;
+	XRef* xref = pDoc->getXRef();
+
+	if (!xref->isEncrypted())
+		return true;
+
+	Object* pTrailerDict = xref->getTrailerDict();
+	Object encrypt;
+	SecurityHandler* secHdlr = NULL;
+	xref->offEncrypted();
+	if (pTrailerDict->dictLookup("Encrypt", &encrypt) && encrypt.isDict())
+		secHdlr = SecurityHandler::make(pDoc, &encrypt);
+	encrypt.free();
+
+	if (!secHdlr || secHdlr->isUnencrypted())
+	{
+		RELEASEOBJECT(secHdlr);
+		xref->onEncrypted();
+		return true;
+	}
+
+	bool bRes = false;
+	GString* owner_pswd = NSStrings::CreateString(wsPassword);
+	if (secHdlr->checkEncryption(owner_pswd, NULL) && secHdlr->getOwnerPasswordOk())
+	{
+		bRes = true;
+		xref->setEncryption(secHdlr->getPermissionFlags(), secHdlr->getOwnerPasswordOk(), secHdlr->getFileKey(),
+							secHdlr->getFileKeyLength(), secHdlr->getEncVersion(), secHdlr->getEncAlgorithm());
+	}
+	else
+		xref->onEncrypted();
+
+	delete owner_pswd;
+	delete secHdlr;
+	return bRes;
+}
+bool CPdfReader::CheckPerm(int nPerm)
+{
+	PDFDoc* pDoc = m_vPDFContext.front()->m_pDocument;
+	XRef* xref = pDoc->getXRef();
+
+	if (!xref->isEncrypted())
+		return true;
+
+	CryptAlgorithm encAlgorithm;
+	GBool ownerPasswordOk;
+	int permFlags, keyLength, encVersion;
+	xref->getEncryption(&permFlags, &ownerPasswordOk, &keyLength, &encVersion, &encAlgorithm);
+
+	return ownerPasswordOk || (permFlags & (1 << --nPerm));
+}
 void CPdfReader::DrawPageOnRenderer(IRenderer* pRenderer, int _nPageIndex, bool* pbBreak)
 {
 	PDFDoc* pDoc = NULL;
@@ -831,6 +885,11 @@ void CPdfReader::DrawPageOnRenderer(IRenderer* pRenderer, int _nPageIndex, bool*
 
 	((GlobalParamsAdaptor*)globalParams)->ClearRedact();
 
+	LONG lRendererType = 0;
+	pRenderer->get_Type(&lRendererType);
+	if (c_nDocxWriter == lRendererType)
+		return; // Без отрисовки Redact при ScanPage
+
 	Page* pPage = pDoc->getCatalog()->getPage(nPageIndex);
 	PDFRectangle* cropBox = pPage->getCropBox();
 	pRenderer->SetTransform(1, 0, 0, 1, 0, 0);
@@ -839,18 +898,19 @@ void CPdfReader::DrawPageOnRenderer(IRenderer* pRenderer, int _nPageIndex, bool*
 		if (m_vRedact[i]->m_nPageIndex == _nPageIndex)
 		{
 			BYTE* pMemory = m_vRedact[i]->m_pChanges;
-			int ret = *((int*)pMemory);
-			pMemory += 4;
-			double R = ret / 100000.0;
-			ret = *((int*)pMemory);
-			pMemory += 4;
-			double G = ret / 100000.0;
-			ret = *((int*)pMemory);
-			double B = ret / 100000.0;
-			LONG lColor = (LONG)(((LONG)(R * 255)) | ((LONG)(G * 255) << 8) | ((LONG)(B * 255) << 16) | ((LONG)255 << 24));
-
 			for (int j = 0; j < m_vRedact[i]->m_arrRedactBox.size(); j += 8)
 			{
+				int ret = *((int*)pMemory);
+				pMemory += 4;
+				LONG R = ret;
+				ret = *((int*)pMemory);
+				pMemory += 4;
+				LONG G = ret;
+				ret = *((int*)pMemory);
+				pMemory += 4;
+				LONG B = ret;
+				LONG lColor = (LONG)(R | (G << 8) | (B << 16) | ((LONG)255 << 24));
+
 				pRenderer->PathCommandEnd();
 				pRenderer->put_BrushColor1(lColor);
 				pRenderer->PathCommandMoveTo(PdfReader::PDFCoordsToMM(m_vRedact[i]->m_arrRedactBox[j + 0] - cropBox->x1), PdfReader::PDFCoordsToMM(cropBox->y2 - m_vRedact[i]->m_arrRedactBox[j + 1]));
@@ -2189,15 +2249,27 @@ BYTE* CPdfReader::GetAPAnnots(int nRasterW, int nRasterH, int nBackgroundColor, 
 		Object oAnnot, oObj;
 		std::string sType;
 		oAnnots.arrayGet(i, &oAnnot);
+		if (!oAnnot.isDict())
+		{
+			oAnnot.free();
+			continue;
+		}
 		if (oAnnot.dictLookup("Subtype", &oObj)->isName())
 			sType = oObj.getName();
-		oObj.free(); oAnnot.free();
+		oObj.free();
 
 		if (sType == "Widget")
 		{
-			oAnnotRef.free();
+			oAnnotRef.free(); oAnnot.free();
 			continue;
 		}
+
+		if (sType == "Text" && oAnnot.dictLookupNF("IRT", &oObj)->isRef())
+		{
+			oObj.free(); oAnnotRef.free(); oAnnot.free();
+			continue;
+		}
+		oAnnot.free(); oObj.free();
 
 		PdfReader::CAnnotAP* pAP = new PdfReader::CAnnotAP(pDoc, m_pFontManager, pFontList, nRasterW, nRasterH, nBackgroundColor, nPageIndex, sView, &oAnnotRef, nStartRefID);
 		if (pAP)

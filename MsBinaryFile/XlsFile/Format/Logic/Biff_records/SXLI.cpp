@@ -104,7 +104,6 @@ void SXLIItem::save(CFRecord& record)
     SETBIT(flags, 10, fBlock)
     SETBIT(flags, 11, fGrand)
     SETBIT(flags, 12, fMultiDataOnAxis)
-    cSic = rgisxvi.size();
     if (fGrand)
         isxviMac = 1;
     record << cSic << itmType << isxviMac << flags;

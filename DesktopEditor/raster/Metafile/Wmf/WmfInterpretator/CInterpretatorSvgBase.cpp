@@ -217,15 +217,23 @@ namespace MetaFile
 		m_pXmlWriter->WriteNodeEnd(wsNodeName, false, false);
 	}
 
-	void CInterpretatorSvgBase::WriteText(const std::wstring &wsText, const TPointD &oCoord, const TRectL &oBounds, const TPointD &oScale, const std::vector<double>& arDx)
+	void UpdateStringByGID(std::wstring &wsValue, const std::wstring& wsFontName, const double& dFontSize, const int& nFontStyle, NSFonts::IFontManager* pFontManeger)
+	{
+		if (nullptr == pFontManeger)
+			return;
+
+		pFontManeger->LoadFontByName(wsFontName, dFontSize, nFontStyle, 96, 96);
+
+		for (wchar_t& wChar : wsValue)
+			wChar = (wchar_t)pFontManeger->GetUnicodeByGID(wChar);
+	}
+
+	void CInterpretatorSvgBase::WriteText(const std::wstring &wsText, const TPointD &oCoord, const TRectL &oBounds, const TPointD &oScale, const std::vector<double>& arDx, bool bUseGID)
 	{
 		if (NULL == m_pParser || NULL == m_pParser->GetFont())
 			return;
 
-		const std::wstring wsNormalizedText = StringNormalization(wsText);
-
-		if (wsNormalizedText.empty())
-			return;
+		std::wstring wsNormalizedText{wsText};
 
 		AddClip();
 
@@ -297,6 +305,22 @@ namespace MetaFile
 				oFontName.WriteEncodeXmlString(L"\',\'");
 				oFontName.WriteEncodeXmlString(pFontInfo->m_wsFontName);
 				oFontName.WriteEncodeXmlString(L"\'");
+			}
+
+			if (bUseGID)
+			{
+				int nStyle = 0;
+				if (pFont->GetWeight() > 550)
+					nStyle |= 0x01;
+				if (pFont->IsItalic())
+					nStyle |= 0x02;
+				if (pFont->IsUnderline())
+					nStyle |= (1 << 2);
+				if (pFont->IsStrikeOut())
+					nStyle |= (1 << 7);
+
+				UpdateStringByGID(wsNormalizedText, (NULL != pFontInfo) ? pFontInfo->m_wsFontName : pFont->GetFaceName(),
+				                  dFontHeight, nStyle, m_pParser->GetFontManager());
 			}
 			#endif
 			arNodeAttributes.Add(L"font-family", oFontName.GetData());
@@ -424,7 +448,7 @@ namespace MetaFile
 			arNodeAttributes.Add(L"x", wsXCoord);
 			arNodeAttributes.Add(L"y", dYCoord);
 
-			WriteNode(L"text", arNodeAttributes, wsNormalizedText);
+			WriteNode(L"text", arNodeAttributes, StringNormalization(wsNormalizedText));
 		}
 		else
 		{
@@ -436,7 +460,7 @@ namespace MetaFile
 			do
 			{
 				WriteNode(L"tspan", {{L"x", wsXCoord},
-				                     {L"y", ConvertToWString(dYNewCoord)}}, wsNormalizedText.substr(unStart, unPosLineBreak - unStart));
+				                     {L"y", ConvertToWString(dYNewCoord)}}, StringNormalization(wsNormalizedText.substr(unStart, unPosLineBreak - unStart)));
 
 				dYNewCoord += dFontHeight * 1.6;
 				unStart = wsNormalizedText.find_first_not_of(L"\n", unPosLineBreak);

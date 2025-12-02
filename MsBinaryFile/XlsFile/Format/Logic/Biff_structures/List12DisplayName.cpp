@@ -56,6 +56,12 @@ void List12DisplayName::load(CFRecord& record)
 	record >> stListComment;
 }
 
+void List12DisplayName::save(CFRecord& record)
+{
+	record << stListName;
+	record << stListComment;
+}
+
 
 } // namespace XLS
 

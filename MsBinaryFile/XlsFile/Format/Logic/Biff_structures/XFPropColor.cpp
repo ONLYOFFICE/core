@@ -59,6 +59,8 @@ void XFPropColor::load(CFRecord& record)
 
 void XFPropColor::save(CFRecord& record)
 {
+	if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+		fValidRGBA = true;
 	unsigned char flags = 0;
 
 	SETBIT(flags, 0, fValidRGBA)

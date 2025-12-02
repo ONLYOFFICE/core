@@ -56,6 +56,8 @@
 		"_UnmergePages",
 		"_RedactPage",
 		"_UndoRedact",
+		"_CheckOwnerPassword",
+		"_CheckPerm",
 		"_GetImageBase64",
 		"_GetImageBase64Len",
 		"_GetImageBase64Ptr",
@@ -161,7 +163,7 @@
 	},
 	{
 		"folder": "../../../common/",
-		"files": ["File.cpp", "Directory.cpp", "ByteBuilder.cpp", "Base64.cpp", "StringExt.cpp", "Path.cpp", "SystemUtils.cpp"]
+		"files": ["File.cpp", "Directory.cpp", "ByteBuilder.cpp", "Base64.cpp", "StringExt.cpp", "Path.cpp", "SystemUtils.cpp", "StringUTF32.cpp", "StringBuilder.cpp"]
 	},
 	{
 		"folder": "../../../../Common/3dParty/icu/icu/source/common/",
@@ -252,8 +254,8 @@
 		"files": ["BaseItem.cpp", "ContText.cpp", "Paragraph.cpp", "Shape.cpp", "TextLine.cpp", "Table.cpp"]
 	},
 	{
-		"folder": "../../../common",
-		"files": ["StringUTF32.cpp", "StringBuilder.cpp"]
+		"folder": "../../../../OdfFile/Common",
+		"files": ["logging.cpp"]
 	}
 	]
 }

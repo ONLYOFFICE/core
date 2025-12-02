@@ -29,11 +29,11 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef _SYSTEMUTILS_H
-#define _SYSTEMUTILS_H
+#pragma once
 
 #include <string>
 #include "../../Common/kernel_config.h"
+#include "../../OdfFile/Common/logging.h"
 
 #define VALUE_STRINGIFY(d) L##d
 #define VALUE_TO_STR(v)    VALUE_STRINGIFY(v)
@@ -76,4 +76,3 @@ namespace NSSystemUtils
 	};
 	KERNEL_DECL std::wstring GetSystemDirectory(const SystemDirectoryType& type);
 }
-#endif // _SYSTEMUTILS_H

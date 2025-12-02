@@ -51,7 +51,7 @@ public:
 
 	static const ElementType type = typeSXStreamID;
 
-    short idStm = 0;
+	short idStm = 1;
 };
 
 } // namespace XLS

@@ -148,12 +148,15 @@ const bool AUTOFILTER::saveContent(BinProcessor& proc)
 				{
 					for(auto j : castedPtr->arAF12Criteries)
 					{
-						ContinueFrt12 continueRecord;
-						CFRecord tempRecord(rt_ContinueFrt12, proc.getGlobalWorkbookInfo());
-						j->save(tempRecord);
-						continueRecord.rgb.reserve(tempRecord.getRdPtr());
-						memcpy(continueRecord.rgb.data(), tempRecord.getCurStaticData<char>(), tempRecord.getRdPtr());
-						proc.mandatory(continueRecord);
+						CFRecord binDataRec(rt_ContinueFrt12, proc.getGlobalWorkbookInfo());
+						j->save(binDataRec);
+						ContinueFrt12 tempRecord;
+						tempRecord.frtHeader.grbitFrt.fFrtRef = castedPtr->frtRefHeader.grbitFrt.fFrtRef;
+						tempRecord.frtHeader.ref8 = castedPtr->frtRefHeader.ref8;
+						tempRecord.rgb.resize(binDataRec.getRdPtr());
+						auto copyData = binDataRec.getCurStaticData<char>() - binDataRec.getRdPtr();
+						memcpy(tempRecord.rgb.data(), copyData, binDataRec.getRdPtr());
+						proc.mandatory(tempRecord);
 					}
 				}
 			}

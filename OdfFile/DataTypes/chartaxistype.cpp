@@ -30,12 +30,36 @@
  *
  */
 
-#include "logging.h"
-#include <iostream>
+#include "chartaxistype.h"
+#include <boost/algorithm/string.hpp>
+#include <ostream>
 
-namespace cpdoccore {
+namespace cpdoccore { namespace odf_types {
 
-logging< std::wostream > logging_err(std::wcerr);
-logging< std::wostream > logging_cout(std::wcout);
-
+std::wostream & operator << (std::wostream & _Wostream, const chart_axis_type& _Val)
+{
+	switch(_Val.get_type())
+	{
+	case   chart_axis_type::text: _Wostream <<  L"text"; break;
+	case   chart_axis_type::date: _Wostream <<  L"date"; break;
+	case   chart_axis_type::_auto:
+    default:
+        _Wostream <<  L"auto"; break;
+	}
+    return _Wostream;    
 }
+chart_axis_type chart_axis_type::parse(const std::wstring & Str)
+{
+    std::wstring tmp = Str;
+    boost::algorithm::to_lower(tmp);
+
+    if (tmp == L"date")
+        return chart_axis_type( date );
+    else if (tmp == L"text")
+        return chart_axis_type( text);
+    else
+    {
+        return chart_axis_type( _auto );
+    }
+}
+} }

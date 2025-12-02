@@ -111,7 +111,7 @@ void ExternSheet::writeFields(CFRecord& record)
 	}
 	else if (record.getGlobalWorkbookInfo()->Version < 0x0800)
 	{
-		_UINT16 cXTI_2b = cXTI;
+		_UINT16 cXTI_2b = rgXTI.size();
 		record << cXTI_2b;
 		for (int i = 0; i < cXTI_2b; ++i)
 		{

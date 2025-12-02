@@ -1224,7 +1224,10 @@ extern int g_nCurFormatVersion;
 		Hidden = 2,
 		Title	= 3,
 		Descr = 4,
-		Form = 5
+		Form = 5,
+		HlinkClick = 6,
+		HlinkHover = 7
+
 	};}
 	namespace c_oSerEmbedded{enum c_oSerEmbedded
 	{
@@ -1312,7 +1315,9 @@ extern int g_nCurFormatVersion;
 		ComplexFormPrType = 91,
 		OformMaster = 92,
 		Border = 93,
-		Shd = 94
+		Shd = 94,
+		RepeatingSection = 95,
+		RepeatingSectionItem = 96
 	};}
 	namespace c_oSerFFData{enum c_oSerFFData
 	{

@@ -50,8 +50,9 @@ public:
 	static const ElementType type = typePictFmlaKey;
 
 	virtual void load(CFRecord& record);
+	virtual void save(CFRecord& record);
 
-	_UINT32			cbKey;
+	_UINT32			cbKey = 0;
 	std::wstring	keyBuf;	// ActiveX license key
 
 	ObjFmla		fmlaLinkedCell;

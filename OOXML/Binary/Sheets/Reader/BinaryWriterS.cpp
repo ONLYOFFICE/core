@@ -36,6 +36,7 @@
 #include "../../../../Common/OfficeFileFormats.h"
 #include "../../../../Common/Base64.h"
 #include "../../../../Common/OfficeFileErrorDescription.h"
+#include "../../../../OdfFile/Common/logging.h"
 
 #include "../../Presentation/FontCutter.h"
 #include "../../../PPTXFormat/Logic/HeadingVariant.h"
@@ -2460,6 +2461,12 @@ void BinaryWorkbookTableWriter::WriteWorkbookPr(const OOX::Spreadsheet::CWorkboo
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
 		m_oBcw.m_oStream.WriteBYTE(workbookPr.m_oUpdateLinks->GetValue());
 	}
+	if (workbookPr.m_oCodeName.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerWorkbookPrTypes::CodeName);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+		m_oBcw.m_oStream.WriteStringW(*workbookPr.m_oCodeName);
+	}
 }
 void BinaryWorkbookTableWriter::WriteConnectionTextFields(const OOX::Spreadsheet::CTextFields& textFields)
 {
@@ -4667,11 +4674,11 @@ void BinaryWorksheetTableWriter::WriteWorksheet(OOX::Spreadsheet::CSheet* pSheet
 	
 	WriteControls(oWorksheet, currentVmlDrawing.GetPointer());
 
-	smart_ptr<OOX::IFileContainer> oldRels;
+	OOX::IFileContainer* oldRels = NULL;
 	if (currentDrawing.IsInit())
 	{
-		oldRels = m_pOfficeDrawingConverter->GetRels();
-		m_pOfficeDrawingConverter->SetRels(currentDrawing.smart_dynamic_cast<OOX::IFileContainer>());
+		oldRels = m_pOfficeDrawingConverter->GetRelsPtr();
+		m_pOfficeDrawingConverter->SetRelsPtr(currentDrawing.GetPointer());
 	}
 	if (currentDrawing.IsInit() || currentVmlDrawing.IsInit())
 	{
@@ -4679,9 +4686,9 @@ void BinaryWorksheetTableWriter::WriteWorksheet(OOX::Spreadsheet::CSheet* pSheet
 			WriteDrawings(oWorksheet, currentDrawing.GetPointer(), currentVmlDrawing.GetPointer());
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}
-	if (oldRels.IsInit())
+	if (oldRels)
 	{
-		m_pOfficeDrawingConverter->SetRels(oldRels);
+		m_pOfficeDrawingConverter->SetRelsPtr(oldRels);
 	}
 
 	if (oWorksheet.m_oLegacyDrawingHF.IsInit())
@@ -5747,7 +5754,7 @@ void BinaryWorksheetTableWriter::WriteSheetData(const OOX::Spreadsheet::CSheetDa
                     if(pRow->m_oR.IsInit())
                         pRow->m_oR = pRow->m_oR->GetValue() + 1;
                     if(!pRow->m_arrItems.empty() && pRow->m_arrItems.at(0)->m_oRow.IsInit())
-                        pRow->m_arrItems.at(0)->m_oRow = pRow->m_oR->GetValue();
+						pRow->m_arrItems.at(0)->m_oRow = pRow->m_oR->GetValue()-1;
                     nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::Row);
                     WriteRow(*pRow);
                     m_oBcw.WriteItemEnd(nCurPos);
@@ -6383,12 +6390,12 @@ void BinaryWorksheetTableWriter::WriteControls(const OOX::Spreadsheet::CWorkshee
 				nCurPos3 = m_oBcw.WriteItemStart(c_oSerControlTypes::Shape);
 
 				std::wstring* pMainProps = NULL;
-				smart_ptr<OOX::IFileContainer> oldRels = m_pOfficeDrawingConverter->GetRels();
-				m_pOfficeDrawingConverter->SetRels(pVmlDrawing);
+				OOX::IFileContainer* oldRels = m_pOfficeDrawingConverter->GetRelsPtr();
+				m_pOfficeDrawingConverter->SetRelsPtr(pVmlDrawing);
 
 				m_pOfficeDrawingConverter->AddObject(L"<pict>" + pFind->second.sXml + L"</pict>", &pMainProps);
 
-				m_pOfficeDrawingConverter->SetRels(oldRels);
+				m_pOfficeDrawingConverter->SetRelsPtr(oldRels);
 				m_oBcw.WriteItemEnd(nCurPos3);
 			}
 		m_oBcw.WriteItemEnd(nCurPos2);
@@ -6837,23 +6844,23 @@ void BinaryWorksheetTableWriter::WriteDrawing(const OOX::Spreadsheet::CWorksheet
 			}
 			sVmlXml += L"</v:object>";
 
-            smart_ptr<OOX::IFileContainer> oldRels = m_pOfficeDrawingConverter->GetRels();
-			m_pOfficeDrawingConverter->SetRels(pVmlDrawing);
+            OOX::IFileContainer* oldRels = m_pOfficeDrawingConverter->GetRelsPtr();
+			m_pOfficeDrawingConverter->SetRelsPtr(pVmlDrawing);
 
 			std::wstring* bstrOutputXml = NULL;
 			
 			m_oBcw.m_oStream.WriteBYTE(c_oSer_DrawingType::pptxDrawing);			
 			int nCurPos = m_oBcw.WriteItemWithLengthStart();			
 				m_pOfficeDrawingConverter->AddObject(sVmlXml, &bstrOutputXml);			
-				m_pOfficeDrawingConverter->SetRels(oldRels);
+				m_pOfficeDrawingConverter->SetRelsPtr(oldRels);
 			m_oBcw.WriteItemWithLengthEnd(nCurPos);					
 			RELEASEOBJECT(bstrOutputXml);
 		}
 	}
 	else if (pCellAnchor->m_oElement.IsInit())
 	{
-		smart_ptr<OOX::IFileContainer> oldRels = m_oBcw.m_oStream.GetRels();
-		m_oBcw.m_oStream.SetRels(pDrawing);
+		OOX::IFileContainer* oldRels = m_oBcw.m_oStream.GetRelsPtr();
+		m_oBcw.m_oStream.SetRelsPtr(pDrawing);
 
 		m_oBcw.m_oStream.WriteBYTE(c_oSer_DrawingType::pptxDrawing);
 		int nCurPos = m_oBcw.WriteItemWithLengthStart();
@@ -6871,7 +6878,7 @@ void BinaryWorksheetTableWriter::WriteDrawing(const OOX::Spreadsheet::CWorksheet
 
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 
-		m_oBcw.m_oStream.SetRels(oldRels);
+		m_oBcw.m_oStream.SetRelsPtr(oldRels);
 	}
 }
 void BinaryWorksheetTableWriter::WriteLegacyDrawingHF(const OOX::Spreadsheet::CWorksheet& oWorksheet)
@@ -6992,13 +6999,13 @@ void BinaryWorksheetTableWriter::WriteLegacyDrawingHF(const OOX::Spreadsheet::CW
 		if (oFileV.IsInit() && OOX::FileTypes::VmlDrawing == oFileV->type())
 		{
 			OOX::CVmlDrawing* pVmlDrawing = (OOX::CVmlDrawing*)oFileV.GetPointer();
-			smart_ptr<OOX::IFileContainer> oldRels = m_pOfficeDrawingConverter->GetRels();
-			m_pOfficeDrawingConverter->SetRels(pVmlDrawing);
+			OOX::IFileContainer* oldRels = m_pOfficeDrawingConverter->GetRelsPtr();
+			m_pOfficeDrawingConverter->SetRelsPtr(pVmlDrawing);
 			m_pOfficeDrawingConverter->Clear();
 			nCurPos = m_oBcw.WriteItemStart(c_oSer_LegacyDrawingHF::Drawings);
 			WriteLegacyDrawingHFDrawings(pVmlDrawing);
 			m_oBcw.WriteItemWithLengthEnd(nCurPos);
-			m_pOfficeDrawingConverter->SetRels(oldRels);
+			m_pOfficeDrawingConverter->SetRelsPtr(oldRels);
 		}
 	}
 }
@@ -8975,6 +8982,7 @@ _UINT32 BinaryFileWriter::Open(const std::wstring& sInputDir, const std::wstring
 	}
 	else
 	{
+		_CP_LOG << L"start binary" << std::endl;
 		if (bIsNoBase64)
 		{
 			oBufferedStream.WriteStringUtf8(WriteFileHeader(0, g_nFormatVersionNoBase64));
@@ -9026,6 +9034,8 @@ _UINT32 BinaryFileWriter::Open(const std::wstring& sInputDir, const std::wstring
 			}
 			RELEASEARRAYOBJECTS(pbBase64Buffer);
 		}
+
+		_CP_LOG << L"end binary" << std::endl;
 	}
 
 	RELEASEOBJECT(pXlsx);

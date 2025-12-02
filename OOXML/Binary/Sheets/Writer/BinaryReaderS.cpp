@@ -2443,6 +2443,8 @@ int BinaryWorkbookTableReader::ReadWorkbookTableContent(BYTE type, long length, 
 	else if (c_oSerWorkbookTypes::Metadata == type)
 	{
 		smart_ptr<OOX::Spreadsheet::CMetadataFile> oMetadataFile(new OOX::Spreadsheet::CMetadataFile(NULL));
+		if(m_oWorkbook.OOX::File::m_pMainDocument)
+			oMetadataFile->OOX::File::m_pMainDocument = m_oWorkbook.OOX::File::m_pMainDocument;
 		oMetadataFile->m_oMetadata.Init();
 		READ1_DEF(length, res, this->ReadMetadata, oMetadataFile->m_oMetadata.GetPointer());
 
@@ -2956,6 +2958,10 @@ int BinaryWorkbookTableReader::ReadWorkbookPr(BYTE type, long length, void* poRe
 	{
 		m_oWorkbook.m_oWorkbookPr->m_oUpdateLinks.Init();
 		m_oWorkbook.m_oWorkbookPr->m_oUpdateLinks->SetValueFromByte(m_oBufferedStream.GetUChar());
+	}
+	else if (c_oSerWorkbookPrTypes::CodeName == type)
+	{
+		m_oWorkbook.m_oWorkbookPr->m_oCodeName = m_oBufferedStream.GetString4(length);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -6302,9 +6308,13 @@ int BinaryWorksheetsTableReader::ReadDrawings(BYTE type, long length, void* poRe
 
     if (c_oSerWorksheetsTypes::Drawing == type)
 	{
+		LONG pos = m_oBufferedStream.GetPos();
+
 		OOX::Spreadsheet::CCellAnchor* pCellAnchor = new OOX::Spreadsheet::CCellAnchor(SimpleTypes::Spreadsheet::CCellAnchorType());
 		READ1_DEF(length, res, this->ReadDrawing, pCellAnchor);
 		
+		m_oBufferedStream.Seek(pos + length);
+
 		pCellAnchor->m_bShapeOle = false;
 		pCellAnchor->m_bShapeControl = false;
 
@@ -6320,7 +6330,7 @@ int BinaryWorksheetsTableReader::ReadDrawings(BYTE type, long length, void* poRe
 				{			
 					OOX::Spreadsheet::COleObject* pOleObject = new OOX::Spreadsheet::COleObject();
 					
-					if (oPic.oleObject->m_sProgId.IsInit())						pOleObject->m_oProgId = oPic.oleObject->m_sProgId.get();
+					if (oPic.oleObject->m_sProgId.IsInit()) pOleObject->m_oProgId = oPic.oleObject->m_sProgId.get();
 					if (oPic.oleObject->m_oDrawAspect.IsInit())
 					{
 						std::wstring sDrawAspect;
@@ -6454,9 +6464,8 @@ int BinaryWorksheetsTableReader::ReadDrawings(BYTE type, long length, void* poRe
 				oWriter.m_lObjectIdVML = m_pCurVmlDrawing->m_lObjectIdVML;
 
 				NSCommon::smart_ptr<PPTX::Logic::ClrMap> oClrMap;
-				NSCommon::smart_ptr<OOX::IFileContainer> oContainer = m_pCurVmlDrawing.smart_dynamic_cast<OOX::IFileContainer>();
 				
-				oShape.toXmlWriterVML(&oWriter, m_oSaveParams.pTheme, oClrMap, oContainer, false, true);
+				oShape.toXmlWriterVML(&oWriter, m_oSaveParams.pTheme, oClrMap, m_pCurVmlDrawing.GetPointer(), false, true);
 
 				std::wstring strXml = oWriter.GetXmlString();
 
@@ -6711,7 +6720,7 @@ int BinaryWorksheetsTableReader::ReadLegacyDrawingHFDrawings(BYTE type, long len
 			NSCommon::smart_ptr<OOX::IFileContainer> oContainer(pVmlDrawing);
 			oContainer.AddRef();
 
-			pSpTree->toXmlWriterVML(&oWriter, m_oSaveParams.pTheme, oClrMap, oContainer);
+			pSpTree->toXmlWriterVML(&oWriter, m_oSaveParams.pTheme, oClrMap, oContainer.GetPointer());
 			pVmlDrawing->m_lObjectIdVML = oWriter.m_lObjectIdVML;
 			pVmlDrawing->m_arObjectXml.push_back(oWriter.GetXmlString());
 		}
@@ -6956,8 +6965,17 @@ int BinaryWorksheetsTableReader::ReadRow(BYTE type, long length, void* poResult)
         if (NULL == m_oSaveParams.pCSVWriter && NULL == m_pCurStreamWriterBin)
 		{
 			pRow->toXMLStart(*m_pCurStreamWriter);
+			auto filePos = m_pCurStreamWriter->GetCurSize();
 			READ1_DEF(length, res, this->ReadCells, pRow);
-			pRow->toXMLEnd(*m_pCurStreamWriter);
+			// in case of empty row
+			if(m_pCurStreamWriter->GetCurSize() == filePos)
+			{
+
+				m_pCurStreamWriter->SetCurSize(filePos-1);
+				m_pCurStreamWriter->WriteString(_T("/>"));
+			}
+			else
+				pRow->toXMLEnd(*m_pCurStreamWriter);
 		}
         else if(m_pCurStreamWriterBin != NULL)
         {
@@ -7479,9 +7497,7 @@ void BinaryWorksheetsTableReader::GetControlVmlShape(void* pC)
 	{
 		NSCommon::smart_ptr<PPTX::Logic::ClrMap> oClrMap;
 
-		NSCommon::smart_ptr<OOX::IFileContainer> pContainer = m_pCurVmlDrawing.smart_dynamic_cast<OOX::IFileContainer>();
-
-		CalculateFill(XMLWRITER_DOC_TYPE_XLSX, oShape->spPr, oShape->style, m_oSaveParams.pTheme, oClrMap, pContainer, strFillAttr, strFillNode, false, false);
+		CalculateFill(XMLWRITER_DOC_TYPE_XLSX, oShape->spPr, oShape->style, m_oSaveParams.pTheme, oClrMap, m_pCurVmlDrawing.GetPointer(), strFillAttr, strFillNode, false, false);
 		CalculateLine(XMLWRITER_DOC_TYPE_XLSX, oShape->spPr, oShape->style, m_oSaveParams.pTheme, oClrMap, strStrokeAttr, strStrokeNode, false);
 	}
 	else

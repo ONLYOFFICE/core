@@ -68,8 +68,8 @@ public:
 	_UINT32 fSssNinch = 0;
 	_UINT32 fUlsNinch = 0;
 	_UINT32 fBlsNinch = 0;
-	_INT32	ich = 0;
-    _INT32	cch = 0;
+	_INT32	ich = 0xFFFFFFFF;
+	_INT32	cch = 0xFFFFFFFF;
 	_UINT16 iFnt = 0;
 
 //------------------------------------------------

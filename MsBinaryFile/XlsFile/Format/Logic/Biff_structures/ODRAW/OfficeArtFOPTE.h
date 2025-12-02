@@ -63,6 +63,7 @@ protected:
 	virtual void load(XLS::CFRecord& record);
 	void load(IBinaryReader* reader);
 public:
+	void save(XLS::CFRecord& record);
 	XLS::BiffStructurePtr clone();
 
 	static const XLS::ElementType type = XLS::typeOfficeArtFOPTE;

@@ -2,10 +2,9 @@
 
 namespace SVG 
 {
-	CSwitch::CSwitch(XmlUtils::CXmlNode &oNode, CRenderedObject *pParent)
-		: CRenderedObject(oNode, pParent)
-	{
-	}
+	CSwitch::CSwitch(CSvgReader& oReader, CRenderedObject *pParent)
+		: CRenderedObject(oReader, pParent)
+	{}
 
 	bool CSwitch::Draw(IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode, const TSvgStyles *pStyles, const CRenderedObject* pContexObject) const
 	{
@@ -18,7 +17,7 @@ namespace SVG
 		return false;
 	}
 
-	TBounds CSwitch::GetBounds() const
+	TBounds CSwitch::GetBounds(SvgMatrix* pTransform) const
 	{
 		for (const CRenderedObject* pObject : m_arObjects)
 			if (NULL != pObject)

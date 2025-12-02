@@ -3052,7 +3052,8 @@ void RtfShapeReader::ShapePropertyReader::ShapePropertyValueReader::PopState( Rt
 	else if ( L"fillColor"		== m_sPropName ) m_oShape.m_nFillColor		= nValue;
 	else if ( L"fillBackColor"	== m_sPropName ) m_oShape.m_nFillColor2		= nValue;
 	else if ( L"fillOpacity"	== m_sPropName ) m_oShape.m_nFillOpacity	= nValue * 100 / 65536;
-	else if ( L"fillAngle"		== m_sPropName ) m_oShape.m_nFillAngle		= nValue / 65536;
+    else if ( L"fillAngle"		== m_sPropName ) m_oShape.m_nFillAngle		= nValue / 65536 * 60000;
+   // else if ( L"fillAngle"		== m_sPropName ) m_oShape.m_nFillAngle		= nValue / 65536;
 	else if ( L"fillFocus"		== m_sPropName ) m_oShape.m_nFillFocus		= nValue;
 	else if ( L"fillShadeType"	== m_sPropName ) m_oShape.m_nFillShadeType	= nValue;
 	else if ( L"fillShadeColors"== m_sPropName )
@@ -3068,7 +3069,8 @@ void RtfShapeReader::ShapePropertyReader::ShapePropertyValueReader::PopState( Rt
 			
 			int pos = (int)splitted[i].find(L",");
 
-			int col = 0, pos_col = 0;
+            int col = 0;
+            double pos_col = 0;
 			try
 			{
 				col = XmlUtils::GetInteger(splitted[i].substr(0, pos));
@@ -3076,7 +3078,7 @@ void RtfShapeReader::ShapePropertyReader::ShapePropertyValueReader::PopState( Rt
 			catch(...){}
 			try
 			{
-				pos_col = XmlUtils::GetInteger(splitted[i].substr(pos + 1, splitted[i].length() - 1)) * 100 / 65536;
+                pos_col = XmlUtils::GetDouble(splitted[i].substr(pos + 1, splitted[i].length() - 1)) * 100 / 65536;
 			}
 			catch(...){}
 

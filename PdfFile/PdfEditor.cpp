@@ -1341,6 +1341,60 @@ void CPdfEditor::NewFrom()
 				oTemp.free();
 				continue;
 			}
+			else if (strcmp("CO", chKey) == 0)
+			{
+				Ref oCORef = { -1, -1 };
+				if (oAcroForm.dictGetValNF(nIndex, &oTemp)->isRef())
+					oCORef = oTemp.getRef();
+				oTemp.free();
+
+				PdfWriter::CArrayObject* pCO = dynamic_cast<PdfWriter::CArrayObject*>(pAcroForm->Get("CO"));
+				if (!pCO)
+				{
+					PdfWriter::CObjectBase* pObj = oCORef.num > 0 ? m_mObjManager.GetObj(oCORef.num + nStartRefID) : NULL;
+					if (pObj)
+					{
+						pAcroForm->Add(chKey, pObj);
+						m_mObjManager.IncRefCount(oCORef.num + nStartRefID);
+						continue;
+					}
+				}
+
+				if (oAcroForm.dictGetVal(nIndex, &oTemp)->isArray())
+				{
+					if (!pCO)
+					{
+						pCO = new PdfWriter::CArrayObject();
+						if (oCORef.num > 0)
+						{
+							pDoc->AddObject(pCO);
+							m_mObjManager.AddObj(oCORef.num + nStartRefID, pCO);
+						}
+						pAcroForm->Add(chKey, pCO);
+					}
+
+					for (int nIndex = 0; nIndex < oTemp.arrayGetLength(); ++nIndex)
+					{
+						Object oRes;
+						PdfWriter::CObjectBase* pObj = NULL;
+						if (oTemp.arrayGetNF(nIndex, &oRes)->isRef())
+							pObj = m_mObjManager.GetObj(oRes.getRefNum() + nStartRefID);
+						if (pObj)
+						{
+							pCO->Add(pObj);
+							m_mObjManager.IncRefCount(oRes.getRefNum() + nStartRefID);
+						}
+						oRes.free();
+					}
+					oTemp.free();
+					continue;
+				}
+				else
+				{
+					oTemp.free();
+					continue;
+				}
+			}
 			else if (strcmp("DR", chKey) == 0)
 			{ // Добавляем только уникальные ключи
 				PdfWriter::CResourcesDict* pDR = pDoc->GetFieldsResources();

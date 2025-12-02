@@ -1126,7 +1126,7 @@ int main(int argc, char* argv[])
 	}
 
 	// OWNER PASSWORD
-	if (true)
+	if (false)
 	{
 		std::string sPassword = "gfhjkmgfhjkm";
 		std::cout << "CheckPerm 4 Edit "  << CheckPerm(pGrFile, 4) << std::endl;
@@ -1176,7 +1176,7 @@ int main(int argc, char* argv[])
 	free(pInfo);
 
 	// LINKS
-	if (true && nPagesCount > 0)
+	if (false && nPagesCount > 0)
 	{
 		BYTE* pLinks = GetLinks(pGrFile, nTestPage);
 		nLength = READ_INT(pLinks);
@@ -1212,7 +1212,7 @@ int main(int argc, char* argv[])
 	}
 
 	// STRUCTURE
-	if (true)
+	if (false)
 	{
 		BYTE* pStructure = GetStructure(pGrFile);
 		nLength = READ_INT(pStructure);
@@ -1242,7 +1242,7 @@ int main(int argc, char* argv[])
 	}
 
 	// GLYPHS
-	if (true && nPagesCount > 0)
+	if (false && nPagesCount > 0)
 	{
 		BYTE* pGlyphs = GetGlyphs(pGrFile, nTestPage);
 		nLength = READ_INT(pGlyphs);

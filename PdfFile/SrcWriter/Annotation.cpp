@@ -358,6 +358,10 @@ namespace PdfWriter
 		pNormal->AddBBox(GetRect().fLeft, GetRect().fBottom, GetRect().fRight, GetRect().fTop);
 		pNormal->AddMatrix(1, 0, 0, 1, -GetRect().fLeft, -GetRect().fBottom);
 	}
+	void CAnnotation::RemoveAP()
+	{
+		Remove("AP");
+	}
 	//----------------------------------------------------------------------------------------
 	// CMarkupAnnotation
 	//----------------------------------------------------------------------------------------
@@ -414,10 +418,6 @@ namespace PdfWriter
 	void CMarkupAnnotation::SetIRTID(CAnnotation* pAnnot)
 	{
 		Add("IRT", pAnnot);
-	}
-	void CMarkupAnnotation::RemoveAP()
-	{
-		Remove("AP");
 	}
 	//----------------------------------------------------------------------------------------
 	// CDestLinkAnnotation

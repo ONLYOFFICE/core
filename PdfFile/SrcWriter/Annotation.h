@@ -194,6 +194,7 @@ namespace PdfWriter
 		void SetOMetadata(const std::wstring& wsOMetadata);
 		void SetC(const std::vector<double>& arrC);
 
+		void RemoveAP();
 		void APFromFakePage();
 		virtual CAnnotAppearanceObject* StartAP(int nRotate);
 		TRect& GetRect() { return m_oRect; }
@@ -256,7 +257,7 @@ namespace PdfWriter
 		void SetCD(const std::wstring& wsCD);
 		void SetSubj(const std::wstring& wsSubj);
 
-		void RemoveAP();
+
 		void SetIRTID(CAnnotation* pAnnot);
 		CPopupAnnotation* CreatePopup();
 	};

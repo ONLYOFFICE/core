@@ -997,6 +997,8 @@ void CPdfEditor::SetMode(Mode nMode)
 		int nPages = m_pReader->GetNumPages();
 		pPageTree->CreateFakePages(nPages);
 		m_pWriter->SetNeedAddHelvetica(false);
+
+		NewFrom();
 	}
 }
 bool CPdfEditor::IncrementalUpdates()
@@ -1231,6 +1233,257 @@ bool CPdfEditor::IncrementalUpdates()
 	pagesRefObj.free();
 	return bRes;
 }
+void CPdfEditor::NewFrom()
+{
+	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
+	Object oCatalog;
+	PDFDoc* pPDFDocument = m_pReader->GetPDFDocument(0);
+	int nStartRefID = 0;
+	XRef* xref = pPDFDocument->getXRef();
+	if (!xref->getCatalog(&oCatalog)->isDict())
+	{
+		oCatalog.free();
+		return;
+	}
+
+	Object oAcroForm;
+	if (oCatalog.dictLookupNF("AcroForm", &oAcroForm)->isRef() || oAcroForm.isDict())
+	{
+		PdfWriter::CDictObject* pAcroForm = pDoc->GetAcroForm();
+		if (!pAcroForm)
+		{
+			pAcroForm = new PdfWriter::CDictObject();
+			if (oAcroForm.isRef())
+				pDoc->AddObject(pAcroForm);
+			pDoc->SetAcroForm(pAcroForm);
+		}
+		else
+			pAcroForm->Remove("NeedAppearances");
+
+		if (oAcroForm.isRef())
+		{
+			oAcroForm.free();
+			if (!oCatalog.dictLookup("AcroForm", &oAcroForm)->isDict())
+			{
+				oAcroForm.free(); oCatalog.free();
+				return;
+			}
+		}
+
+		for (int nIndex = 0; nIndex < oAcroForm.dictGetLength(); ++nIndex)
+		{
+			Object oTemp;
+			char* chKey = oAcroForm.dictGetKey(nIndex);
+			if (strcmp("Fields", chKey) == 0)
+			{
+				Ref oFieldsRef = { -1, -1 };
+				if (oAcroForm.dictGetValNF(nIndex, &oTemp)->isRef())
+					oFieldsRef = oTemp.getRef();
+				oTemp.free();
+
+				PdfWriter::CArrayObject* pFields = dynamic_cast<PdfWriter::CArrayObject*>(pAcroForm->Get("Fields"));
+				if (!pFields)
+				{
+					PdfWriter::CObjectBase* pObj = oFieldsRef.num > 0 ? m_mObjManager.GetObj(oFieldsRef.num + nStartRefID) : NULL;
+					if (pObj)
+					{
+						pAcroForm->Add(chKey, pObj);
+						m_mObjManager.IncRefCount(oFieldsRef.num + nStartRefID);
+						continue;
+					}
+				}
+
+				if (oAcroForm.dictGetVal(nIndex, &oTemp)->isArray())
+				{
+					if (!pFields)
+					{
+						pFields = new PdfWriter::CArrayObject();
+						if (oFieldsRef.num > 0)
+						{
+							pDoc->AddObject(pFields);
+							m_mObjManager.AddObj(oFieldsRef.num + nStartRefID, pFields);
+						}
+						pAcroForm->Add(chKey, pFields);
+					}
+
+					for (int nIndex = 0; nIndex < oTemp.arrayGetLength(); ++nIndex)
+					{
+						Object oRes;
+						PdfWriter::CObjectBase* pObj = NULL;
+						if (oTemp.arrayGetNF(nIndex, &oRes)->isRef())
+							pObj = m_mObjManager.GetObj(oRes.getRefNum() + nStartRefID);
+						if (pObj)
+						{
+							pFields->Add(pObj);
+							m_mObjManager.IncRefCount(oRes.getRefNum() + nStartRefID);
+							AddWidgetParent(pDoc, &m_mObjManager, pObj);
+							oRes.free();
+							continue;
+						}
+						oRes.free();
+					}
+					oTemp.free();
+					continue;
+				}
+				else if (!pFields)
+				{
+					oTemp.free();
+					oAcroForm.dictGetValNF(nIndex, &oTemp);
+				}
+				else
+				{
+					oTemp.free();
+					continue;
+				}
+			}
+			else if (strcmp("SigFlags", chKey) == 0 || strcmp("XFA", chKey) == 0 || strcmp("DA", chKey) == 0 || strcmp("NeedAppearances", chKey) == 0)
+			{ // Нельзя гарантировать их выполнение
+				oTemp.free();
+				continue;
+			}
+			else if (strcmp("CO", chKey) == 0)
+			{
+				Ref oCORef = { -1, -1 };
+				if (oAcroForm.dictGetValNF(nIndex, &oTemp)->isRef())
+					oCORef = oTemp.getRef();
+				oTemp.free();
+
+				PdfWriter::CArrayObject* pCO = dynamic_cast<PdfWriter::CArrayObject*>(pAcroForm->Get("CO"));
+				if (!pCO)
+				{
+					PdfWriter::CObjectBase* pObj = oCORef.num > 0 ? m_mObjManager.GetObj(oCORef.num + nStartRefID) : NULL;
+					if (pObj)
+					{
+						pAcroForm->Add(chKey, pObj);
+						m_mObjManager.IncRefCount(oCORef.num + nStartRefID);
+						continue;
+					}
+				}
+
+				if (oAcroForm.dictGetVal(nIndex, &oTemp)->isArray())
+				{
+					if (!pCO)
+					{
+						pCO = new PdfWriter::CArrayObject();
+						if (oCORef.num > 0)
+						{
+							pDoc->AddObject(pCO);
+							m_mObjManager.AddObj(oCORef.num + nStartRefID, pCO);
+						}
+						pAcroForm->Add(chKey, pCO);
+					}
+
+					for (int nIndex = 0; nIndex < oTemp.arrayGetLength(); ++nIndex)
+					{
+						Object oRes;
+						PdfWriter::CObjectBase* pObj = NULL;
+						if (oTemp.arrayGetNF(nIndex, &oRes)->isRef())
+							pObj = m_mObjManager.GetObj(oRes.getRefNum() + nStartRefID);
+						if (pObj)
+						{
+							pCO->Add(pObj);
+							m_mObjManager.IncRefCount(oRes.getRefNum() + nStartRefID);
+						}
+						oRes.free();
+					}
+					oTemp.free();
+					continue;
+				}
+				else
+				{
+					oTemp.free();
+					continue;
+				}
+			}
+			else if (strcmp("DR", chKey) == 0)
+			{ // Добавляем только уникальные ключи
+				PdfWriter::CResourcesDict* pDR = pDoc->GetFieldsResources();
+				if (!pDR)
+				{
+					oTemp.free();
+					continue;
+				}
+
+				if (oAcroForm.dictGetVal(nIndex, &oTemp)->isDict())
+				{
+					Object oTemp2;
+					for (int nIndex2 = 0; nIndex2 < oTemp.dictGetLength(); ++nIndex2)
+					{
+						char* chKey2 = oTemp.dictGetKey(nIndex2);
+						if (strcmp("ProcSet", chKey2) == 0 || !oTemp.dictGetVal(nIndex2, &oTemp2)->isDict())
+						{
+							oTemp2.free();
+							continue;
+						}
+						PdfWriter::CDictObject* pDict = dynamic_cast<PdfWriter::CDictObject*>(pDR->Get(chKey2));
+						if (!pDict)
+						{
+							Object oTempRef;
+							if (oTemp.dictGetValNF(nIndex2, &oTempRef)->isRef())
+							{
+								PdfWriter::CObjectBase* pObj = m_mObjManager.GetObj(oTempRef.getRefNum() + nStartRefID);
+								if (pObj)
+								{
+									pDR->Add(chKey2, pObj);
+									m_mObjManager.IncRefCount(oTempRef.getRefNum() + nStartRefID);
+									oTemp2.free(); oTempRef.free();
+									continue;
+								}
+							}
+							PdfWriter::CObjectBase* pBase = DictToCDictObject2(&oTemp2, pDoc, xref, &m_mObjManager, nStartRefID);
+							if (oTempRef.isRef())
+								pDoc->AddObject(pBase);
+							pDR->Add(chKey2, pBase);
+							oTemp2.free(); oTempRef.free();
+							continue;
+						}
+						else
+						{
+							for (int nIndex3 = 0; nIndex3 < oTemp2.dictGetLength(); ++nIndex3)
+							{
+								char* chKey3 = oTemp2.dictGetKey(nIndex3);
+								if (pDict->Get(chKey3))
+									continue;
+								Object oTempRef;
+								if (oTemp2.dictGetValNF(nIndex3, &oTempRef)->isRef())
+								{
+									PdfWriter::CObjectBase* pObj = m_mObjManager.GetObj(oTempRef.getRefNum() + nStartRefID);
+									if (pObj)
+									{
+										pDict->Add(chKey3, pObj);
+										m_mObjManager.IncRefCount(oTempRef.getRefNum() + nStartRefID);
+										oTemp2.free(); oTempRef.free();
+										continue;
+									}
+								}
+								PdfWriter::CObjectBase* pBase = DictToCDictObject2(&oTemp2, pDoc, xref, &m_mObjManager, nStartRefID);
+								if (oTempRef.isRef())
+									pDoc->AddObject(pBase);
+								pDict->Add(chKey3, pBase);
+								oTemp2.free(); oTempRef.free();
+								continue;
+							}
+						}
+					}
+					oTemp2.free(); oTemp.free();
+					pDR->Fix();
+					continue;
+				}
+				else
+				{
+					oTemp.free();
+					oAcroForm.dictGetValNF(nIndex, &oTemp);
+				}
+			}
+			else
+				oAcroForm.dictGetValNF(nIndex, &oTemp);
+			PdfWriter::CObjectBase* pBase = DictToCDictObject2(&oTemp, pDoc, xref, &m_mObjManager, nStartRefID);
+			pAcroForm->Add(chKey, pBase);
+			oTemp.free();
+		}
+	}
+	oAcroForm.free(); oCatalog.free();
+}
 void CPdfEditor::Close()
 {
 	if (m_wsDstFile.empty())
@@ -1259,208 +1512,11 @@ void CPdfEditor::Close()
 				EditPage(i, false, true);
 		}
 
-		Object oCatalog;
+		NewFrom();
+
 		PDFDoc* pPDFDocument = m_pReader->GetPDFDocument(0);
-		int nStartRefID = 0;
 		XRef* xref = pPDFDocument->getXRef();
-		if (!xref->getCatalog(&oCatalog)->isDict())
-		{
-			oCatalog.free();
-			return;
-		}
-
-		Object oAcroForm;
-		if (oCatalog.dictLookupNF("AcroForm", &oAcroForm)->isRef() || oAcroForm.isDict())
-		{
-			PdfWriter::CDictObject* pAcroForm = pDoc->GetAcroForm();
-			if (!pAcroForm)
-			{
-				pAcroForm = new PdfWriter::CDictObject();
-				if (oAcroForm.isRef())
-					pDoc->AddObject(pAcroForm);
-				pDoc->SetAcroForm(pAcroForm);
-			}
-			else
-				pAcroForm->Remove("NeedAppearances");
-
-			if (oAcroForm.isRef())
-			{
-				oAcroForm.free();
-				if (!oCatalog.dictLookup("AcroForm", &oAcroForm)->isDict())
-				{
-					oAcroForm.free(); oCatalog.free();
-					return;
-				}
-			}
-
-			for (int nIndex = 0; nIndex < oAcroForm.dictGetLength(); ++nIndex)
-			{
-				Object oTemp;
-				char* chKey = oAcroForm.dictGetKey(nIndex);
-				if (strcmp("Fields", chKey) == 0)
-				{
-					Ref oFieldsRef = { -1, -1 };
-					if (oAcroForm.dictGetValNF(nIndex, &oTemp)->isRef())
-						oFieldsRef = oTemp.getRef();
-					oTemp.free();
-
-					PdfWriter::CArrayObject* pFields = dynamic_cast<PdfWriter::CArrayObject*>(pAcroForm->Get("Fields"));
-					if (!pFields)
-					{
-						PdfWriter::CObjectBase* pObj = oFieldsRef.num > 0 ? m_mObjManager.GetObj(oFieldsRef.num + nStartRefID) : NULL;
-						if (pObj)
-						{
-							pAcroForm->Add(chKey, pObj);
-							m_mObjManager.IncRefCount(oFieldsRef.num + nStartRefID);
-							continue;
-						}
-					}
-
-					if (oAcroForm.dictGetVal(nIndex, &oTemp)->isArray())
-					{
-						if (!pFields)
-						{
-							pFields = new PdfWriter::CArrayObject();
-							if (oFieldsRef.num > 0)
-							{
-								pDoc->AddObject(pFields);
-								m_mObjManager.AddObj(oFieldsRef.num + nStartRefID, pFields);
-							}
-							pAcroForm->Add(chKey, pFields);
-						}
-
-						for (int nIndex = 0; nIndex < oTemp.arrayGetLength(); ++nIndex)
-						{
-							Object oRes;
-							PdfWriter::CObjectBase* pObj = NULL;
-							if (oTemp.arrayGetNF(nIndex, &oRes)->isRef())
-								pObj = m_mObjManager.GetObj(oRes.getRefNum() + nStartRefID);
-							if (pObj)
-							{
-								pFields->Add(pObj);
-								m_mObjManager.IncRefCount(oRes.getRefNum() + nStartRefID);
-								AddWidgetParent(pDoc, &m_mObjManager, pObj);
-								oRes.free();
-								continue;
-							}
-							oRes.free();
-						}
-						oTemp.free();
-						continue;
-					}
-					else if (!pFields)
-					{
-						oTemp.free();
-						oAcroForm.dictGetValNF(nIndex, &oTemp);
-					}
-					else
-					{
-						oTemp.free();
-						continue;
-					}
-				}
-				else if (strcmp("SigFlags", chKey) == 0 || strcmp("XFA", chKey) == 0 || (strcmp("DA", chKey) == 0 && pAcroForm->Get("DA")) || strcmp("NeedAppearances", chKey) == 0)
-				{ // Нельзя гарантировать их выполнение
-					oTemp.free();
-					continue;
-				}
-				else if (strcmp("DR", chKey) == 0)
-				{ // Добавляем только уникальные ключи
-					PdfWriter::CDictObject* pDR = dynamic_cast<PdfWriter::CDictObject*>(pAcroForm->Get("DR"));
-					if (!pDR)
-					{
-						pDR = new PdfWriter::CDictObject();
-						pDoc->AddObject(pDR);
-						pAcroForm->Add(chKey, pDR);
-					}
-
-					PdfWriter::CArrayObject* pProcset = new PdfWriter::CArrayObject();
-					pDR->Add("ProcSet", pProcset);
-					pProcset->Add(new PdfWriter::CNameObject("PDF"));
-					pProcset->Add(new PdfWriter::CNameObject("Text"));
-					pProcset->Add(new PdfWriter::CNameObject("ImageB"));
-					pProcset->Add(new PdfWriter::CNameObject("ImageC"));
-					pProcset->Add(new PdfWriter::CNameObject("ImageI"));
-
-					if (oAcroForm.dictGetVal(nIndex, &oTemp)->isDict())
-					{
-						Object oTemp2;
-						for (int nIndex2 = 0; nIndex2 < oTemp.dictGetLength(); ++nIndex2)
-						{
-							char* chKey2 = oTemp.dictGetKey(nIndex2);
-							if (strcmp("ProcSet", chKey2) == 0 || !oTemp.dictGetVal(nIndex2, &oTemp2)->isDict())
-							{
-								oTemp2.free();
-								continue;
-							}
-							PdfWriter::CDictObject* pDict = dynamic_cast<PdfWriter::CDictObject*>(pDR->Get(chKey2));
-							if (!pDict)
-							{
-								Object oTempRef;
-								if (oTemp.dictGetValNF(nIndex2, &oTempRef)->isRef())
-								{
-									PdfWriter::CObjectBase* pObj = m_mObjManager.GetObj(oTempRef.getRefNum() + nStartRefID);
-									if (pObj)
-									{
-										pDR->Add(chKey2, pObj);
-										m_mObjManager.IncRefCount(oTempRef.getRefNum() + nStartRefID);
-										oTemp2.free(); oTempRef.free();
-										continue;
-									}
-								}
-								PdfWriter::CObjectBase* pBase = DictToCDictObject2(&oTemp2, pDoc, xref, &m_mObjManager, nStartRefID);
-								if (oTempRef.isRef())
-									pDoc->AddObject(pBase);
-								pDR->Add(chKey2, pBase);
-								oTemp2.free(); oTempRef.free();
-								continue;
-							}
-							else
-							{
-								for (int nIndex3 = 0; nIndex3 < oTemp2.dictGetLength(); ++nIndex3)
-								{
-									char* chKey3 = oTemp2.dictGetKey(nIndex3);
-									if (pDict->Get(chKey3))
-										continue;
-									Object oTempRef;
-									if (oTemp2.dictGetValNF(nIndex3, &oTempRef)->isRef())
-									{
-										PdfWriter::CObjectBase* pObj = m_mObjManager.GetObj(oTempRef.getRefNum() + nStartRefID);
-										if (pObj)
-										{
-											pDict->Add(chKey3, pObj);
-											m_mObjManager.IncRefCount(oTempRef.getRefNum() + nStartRefID);
-											oTemp2.free(); oTempRef.free();
-											continue;
-										}
-									}
-									PdfWriter::CObjectBase* pBase = DictToCDictObject2(&oTemp2, pDoc, xref, &m_mObjManager, nStartRefID);
-									if (oTempRef.isRef())
-										pDoc->AddObject(pBase);
-									pDict->Add(chKey3, pBase);
-									oTemp2.free(); oTempRef.free();
-									continue;
-								}
-							}
-						}
-						oTemp2.free(); oTemp.free();
-						continue;
-					}
-					else
-					{
-						oTemp.free();
-						oAcroForm.dictGetValNF(nIndex, &oTemp);
-					}
-				}
-				else
-					oAcroForm.dictGetValNF(nIndex, &oTemp);
-				PdfWriter::CObjectBase* pBase = DictToCDictObject2(&oTemp, pDoc, xref, &m_mObjManager, nStartRefID);
-				pAcroForm->Add(chKey, pBase);
-				oTemp.free();
-			}
-		}
-		oAcroForm.free(); oCatalog.free();
-
+		int nStartRefID = 0;
 		if (xref->isEncrypted() && xref->getTrailerDict())
 		{
 			CryptAlgorithm encAlgorithm;

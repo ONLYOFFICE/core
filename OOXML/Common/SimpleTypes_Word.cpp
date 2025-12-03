@@ -1734,6 +1734,7 @@ namespace SimpleTypes
 		if (L"custom" == sValue || L"none" == sValue) this->m_eValue = complexFormTypeCustom;
 		else if (L"telephone" == sValue || L"phone" == sValue) this->m_eValue = complexFormTypeTelephone;
 		else if (L"email" == sValue) this->m_eValue = complexFormTypeEmail;
+		else if (L"labeledCheckBox" == sValue) this->m_eValue = complexFormTypeLabeledCheckBox;
 		else this->m_eValue = complexFormTypeCustom;
 
 		return this->m_eValue;
@@ -1746,6 +1747,7 @@ namespace SimpleTypes
 		case complexFormTypeCustom: return L"custom";
 		case complexFormTypeTelephone: return L"telephone";
 		case complexFormTypeEmail: return L"email";
+		case complexFormTypeLabeledCheckBox: return L"labeledCheckBox";
 		default: return (L"custom");
 		}
 	}

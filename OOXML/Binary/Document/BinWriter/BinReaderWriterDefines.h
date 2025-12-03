@@ -536,7 +536,9 @@ extern int g_nCurFormatVersion;
 		DocParts = 27,
 		PermStart = 28,
 		PermEnd = 29,
-		JsaProjectExternal = 30
+		JsaProjectExternal = 30,
+		ParaID = 31,
+		TextID = 32
 	};}
 	namespace c_oSerGlossary {
 		enum c_oSerGlossary

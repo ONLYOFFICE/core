@@ -1046,7 +1046,7 @@ int main(int argc, char* argv[])
 	RELEASEARRAYOBJECTS(pFileData);
 
 	// SPLIT & MERGE
-	if (true)
+	if (false)
 	{
 		int nBufferLen = NULL;
 		BYTE* pBuffer = NULL;
@@ -1513,6 +1513,8 @@ int main(int argc, char* argv[])
 								std::cout << "; font-actual:" << std::string((char*)(pAnnots + i), nPathLength) << "; ";
 								i += nPathLength;
 							}
+							if (nFontFlag & (1 << 7))
+								std::cout << "; dir:rtl; ";
 
 							nPathLength = READ_INT(pAnnots + i);
 							i += 4;

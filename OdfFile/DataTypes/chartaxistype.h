@@ -32,52 +32,41 @@
 #pragma once
 
 #include <iosfwd>
-#include <iostream>
+#include <string>
+#include "odfattributes.h"
+//
 
-#include "oox_drawing.h"
-#include "mediaitems.h"
-#include "../Format/style_graphic_properties.h"
+namespace cpdoccore { namespace odf_types { 
 
-namespace cpdoccore {
-namespace oox {
-
-class _docx_drawing : public _oox_drawing
-{ 
+class chart_axis_type
+{
 public:
-	_docx_drawing() : _oox_drawing(), parallel(0), isInline(false), inFrame(false), number_wrapped_paragraphs(0), posOffsetV(0), posOffsetH(0)
-	{
-	}
-	bool isInline;
-	bool inFrame;
+    enum type
+    {
+        _auto,
+        text,
+        date
+    };
+
+    chart_axis_type() {}
+
+    chart_axis_type(type _Type) : type_(_Type)
+    {}
+
+    type get_type() const
+    {
+        return type_;
+    };
     
-	unsigned int parallel;
-	
-	//_CP_OPT(run_through)				styleRunThrough	;
-	_CP_OPT(odf_types::horizontal_rel)	styleHorizontalRel;
-    _CP_OPT(odf_types::horizontal_pos)	styleHorizontalPos;
-    _CP_OPT(odf_types::vertical_pos)	styleVerticalPos;
-    _CP_OPT(odf_types::vertical_rel)	styleVerticalRel;
+    static chart_axis_type parse(const std::wstring & Str);
 
-	_CP_OPT(odf_types::style_wrap)		styleWrap;
-	_CP_OPT(bool)						styleWrapContour;
+private:
+    type type_;
 
-	int number_wrapped_paragraphs;
-
-    std::wstring relativeHeight;
-    std::wstring behindDoc;
-
-	int posOffsetV;
-	int posOffsetH;
-
-	_CP_OPT(int) pctWidth;
-	_CP_OPT(int) pctHeight;
-  
-	int margin_rect[4];		//0-left, 1 -top, 2- right, 3 - bottom
-
-	std::wstring content_group_;
-
-	void serialize_text	(std::wostream & strm);
-    void serialize		(std::wostream & strm/*, bool insideOtherDrawing*/);    
 };
-}
+	std::wostream & operator << (std::wostream & _Wostream, const chart_axis_type& _Val);
+} 
+
+APPLY_PARSE_XML_ATTRIBUTES(odf_types::chart_axis_type);
+
 }

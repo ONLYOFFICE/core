@@ -7,9 +7,9 @@ namespace SVG
 {
 	class CMask : public CClipPath
 	{
+		friend class CObject;
+		CMask(CSvgReader& oReader);
 	public:
-		CMask(XmlUtils::CXmlNode& oNode);
-
 		bool Apply(IRenderer* pRenderer, const CSvgFile *pFile, const TBounds &oObjectBounds) override;
 	};
 }

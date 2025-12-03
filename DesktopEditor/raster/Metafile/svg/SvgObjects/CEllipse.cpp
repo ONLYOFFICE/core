@@ -1,18 +1,12 @@
 #include "CEllipse.h"
 
-#include "CStyle.h"
 #include "CContainer.h"
 
 namespace SVG
 {
-	CEllipse::CEllipse(XmlUtils::CXmlNode &oNode, CRenderedObject *pParent)
-		: CRenderedObject(oNode, pParent)
-	{
-		m_oCx.SetValue(oNode.GetAttribute(L"cx"));
-		m_oCy.SetValue(oNode.GetAttribute(L"cy"));
-		m_oRx.SetValue(oNode.GetAttribute(L"rx"));
-		m_oRy.SetValue(oNode.GetAttribute(L"ry"));
-	}
+	CEllipse::CEllipse(CSvgReader& oReader, CRenderedObject* pParent)
+		: CRenderedObject(oReader, pParent)
+	{}
 
 	void CEllipse::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
 	{
@@ -20,6 +14,20 @@ namespace SVG
 
 		SetStroke(mAttributes, ushLevel, bHardMode);
 		SetFill(mAttributes, ushLevel, bHardMode);
+	}
+
+	void CEllipse::SetAttribute(const std::string& sName, CSvgReader& oReader)
+	{
+		if ("cx" == sName)
+			m_oCx.SetValue(oReader.GetText());
+		else if ("cy" == sName)
+			m_oCy.SetValue(oReader.GetText());
+		else if ("rx" == sName)
+			m_oRx.SetValue(oReader.GetText());
+		else if ("ry" == sName)
+			m_oRy.SetValue(oReader.GetText());
+		else
+			CRenderedObject::SetAttribute(sName, oReader);
 	}
 
 	bool CEllipse::Draw(IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode, const TSvgStyles *pOtherStyles, const CRenderedObject* pContexObject) const
@@ -56,7 +64,7 @@ namespace SVG
 			nTypePath += c_nWindingFillMode;
 	}
 
-	TBounds CEllipse::GetBounds() const
+	TBounds CEllipse::GetBounds(SvgMatrix* pTransform) const
 	{
 		TBounds oBounds;
 
@@ -64,6 +72,16 @@ namespace SVG
 		oBounds.m_dTop    = m_oCy.ToDouble(NSCSS::Pixel);
 		oBounds.m_dRight  = oBounds.m_dLeft + m_oRx.ToDouble(NSCSS::Pixel);
 		oBounds.m_dBottom = oBounds.m_dTop  + m_oRy.ToDouble(NSCSS::Pixel);;
+
+		if (nullptr != pTransform)
+		{
+			*pTransform += m_oTransformation.m_oTransform.GetMatrix();
+
+			pTransform->GetFinalValue().TransformPoint(oBounds.m_dLeft,  oBounds.m_dTop   );
+			pTransform->GetFinalValue().TransformPoint(oBounds.m_dRight, oBounds.m_dBottom);
+
+			*pTransform -= m_oTransformation.m_oTransform.GetMatrix();
+		}
 
 		return oBounds;
 	}

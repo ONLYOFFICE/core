@@ -514,6 +514,9 @@ namespace NSCSS
 			return true;
 		}
 
+		if (!arSelectors.back().m_pCompiledStyle->Empty())
+			return true;
+
 		arSelectors.back().m_pCompiledStyle->SetDpi(m_nDpi);
 		unsigned int unStart = 0;
 
@@ -522,8 +525,8 @@ namespace NSCSS
 		if (itFound != arSelectors.crend())
 			unStart = itFound.base() - arSelectors.cbegin();
 
-		std::vector<std::wstring> arNodes = CalculateAllNodes(arSelectors, unStart);
-		std::vector<std::wstring> arPrevNodes;
+		std::vector<std::wstring> arNodes = CalculateAllNodes(arSelectors, unStart, arSelectors.size());
+		std::vector<std::wstring> arPrevNodes = CalculateAllNodes(arSelectors, 0, unStart);
 		bool bInTable = false;
 
 		for (size_t i = 0; i < unStart; ++i)
@@ -548,6 +551,7 @@ namespace NSCSS
 			{
 				arSelectors[i].m_pCompiledStyle->m_oBackground.Clear();
 				arSelectors[i].m_pCompiledStyle->m_oBorder.Clear();
+				arSelectors[i].m_pCompiledStyle->m_oDisplay.Clear();
 			}
 
 			arSelectors[i].m_pCompiledStyle->AddStyle(arSelectors[i].m_mAttributes, i + 1);
@@ -592,11 +596,14 @@ namespace NSCSS
 	}
 	#endif
 
-	std::vector<std::wstring> CCssCalculator_Private::CalculateAllNodes(const std::vector<CNode> &arSelectors, unsigned int unStart)
+	std::vector<std::wstring> CCssCalculator_Private::CalculateAllNodes(const std::vector<CNode> &arSelectors, unsigned int unStart, unsigned int unEnd)
 	{
+		if ((0 != unEnd && (unEnd < unStart || unEnd > arSelectors.size())) || (unStart == unEnd))
+			return std::vector<std::wstring>();
+
 		std::vector<std::wstring> arNodes;
-		
-		for (std::vector<CNode>::const_reverse_iterator oNode = arSelectors.rbegin(); oNode != arSelectors.rend() - unStart; ++oNode)
+
+		for (std::vector<CNode>::const_reverse_iterator oNode = arSelectors.rbegin() + ((0 != unEnd) ? (arSelectors.size() - unEnd) : 0); oNode != arSelectors.rend() - unStart; ++oNode)
 		{
 			if (!oNode->m_wsName.empty())
 				arNodes.push_back(oNode->m_wsName);
@@ -627,7 +634,7 @@ namespace NSCSS
 		if (arNextNodes.empty())
 			return;
 
-		const std::vector<CElement*> arTempPrev = pElement->GetPrevElements(arNextNodes.crbegin() + 1, arNextNodes.crend());
+		const std::vector<CElement*> arTempPrev = pElement->GetPrevElements(arNextNodes.cbegin(), arNextNodes.cend());
 		const std::vector<CElement*> arTempKins = pElement->GetNextOfKin(wsName, arClasses);
 
 		if (!arTempPrev.empty())
@@ -644,20 +651,19 @@ namespace NSCSS
 
 		std::vector<const CElement*> arFindedElements;
 
-		std::wstring wsName, wsId;
+		std::wstring wsName, wsClasses, wsId;
 		std::vector<std::wstring> arClasses;
 
 		if (!arNodes.empty() && arNodes.back()[0] == L'#')
 		{
 			wsId = arNodes.back();
 			arNodes.pop_back();
-			arNextNodes.push_back(wsId);
 		}
 
 		if (!arNodes.empty() && arNodes.back()[0] == L'.')
 		{
-			arClasses = NS_STATIC_FUNCTIONS::GetWordsW(arNodes.back(), false, L" ");
-			arNextNodes.push_back(arNodes.back());
+			wsClasses = arNodes.back();
+			arClasses = NS_STATIC_FUNCTIONS::GetWordsW(wsClasses, false, L" ");
 			arNodes.pop_back();
 		}
 
@@ -665,7 +671,6 @@ namespace NSCSS
 		{
 			wsName = arNodes.back();
 			arNodes.pop_back();
-			arNextNodes.push_back(wsName);
 		}
 
 		if (!wsId.empty())
@@ -724,6 +729,14 @@ namespace NSCSS
 			          { return oFirstElement->GetWeight() > oSecondElement->GetWeight(); });
 		}
 
+		if (!wsId.empty())
+			arNextNodes.push_back(wsId);
+
+		if (!wsClasses.empty())
+			arNextNodes.push_back(wsClasses);
+
+		arNextNodes.push_back(wsName);
+
 		return arFindedElements;
 	}
 
@@ -738,7 +751,7 @@ namespace NSCSS
 		if (arSelectors.empty())
 			return false;
 
-		std::vector<std::wstring> arNodes = CalculateAllNodes(arSelectors);
+		std::vector<std::wstring> arNodes = CalculateAllNodes(arSelectors, 0, arSelectors.size());
 		std::vector<std::wstring> arNextNodes;
 
 		for (size_t i = 0; i < arSelectors.size(); ++i)

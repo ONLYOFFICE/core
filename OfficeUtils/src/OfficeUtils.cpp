@@ -33,6 +33,7 @@
 #include "ZipUtilsCP.h"
 #include "../../DesktopEditor/common/File.h"
 #include "../../DesktopEditor/common/Directory.h"
+#include <sstream>
 
 COfficeUtils::COfficeUtils(OnProgressCallback* fCallback)
 {

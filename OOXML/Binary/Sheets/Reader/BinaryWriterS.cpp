@@ -36,6 +36,7 @@
 #include "../../../../Common/OfficeFileFormats.h"
 #include "../../../../Common/Base64.h"
 #include "../../../../Common/OfficeFileErrorDescription.h"
+#include "../../../../OdfFile/Common/logging.h"
 
 #include "../../Presentation/FontCutter.h"
 #include "../../../PPTXFormat/Logic/HeadingVariant.h"
@@ -2459,6 +2460,12 @@ void BinaryWorkbookTableWriter::WriteWorkbookPr(const OOX::Spreadsheet::CWorkboo
 		m_oBcw.m_oStream.WriteBYTE(c_oSerWorkbookPrTypes::UpdateLinks);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
 		m_oBcw.m_oStream.WriteBYTE(workbookPr.m_oUpdateLinks->GetValue());
+	}
+	if (workbookPr.m_oCodeName.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerWorkbookPrTypes::CodeName);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+		m_oBcw.m_oStream.WriteStringW(*workbookPr.m_oCodeName);
 	}
 }
 void BinaryWorkbookTableWriter::WriteConnectionTextFields(const OOX::Spreadsheet::CTextFields& textFields)
@@ -8975,6 +8982,7 @@ _UINT32 BinaryFileWriter::Open(const std::wstring& sInputDir, const std::wstring
 	}
 	else
 	{
+		_CP_LOG << L"start binary" << std::endl;
 		if (bIsNoBase64)
 		{
 			oBufferedStream.WriteStringUtf8(WriteFileHeader(0, g_nFormatVersionNoBase64));
@@ -9026,6 +9034,8 @@ _UINT32 BinaryFileWriter::Open(const std::wstring& sInputDir, const std::wstring
 			}
 			RELEASEARRAYOBJECTS(pbBase64Buffer);
 		}
+
+		_CP_LOG << L"end binary" << std::endl;
 	}
 
 	RELEASEOBJECT(pXlsx);

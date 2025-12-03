@@ -29,55 +29,37 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include <iosfwd>
-#include <iostream>
+#include "chartaxistype.h"
+#include <boost/algorithm/string.hpp>
+#include <ostream>
 
-#include "oox_drawing.h"
-#include "mediaitems.h"
-#include "../Format/style_graphic_properties.h"
+namespace cpdoccore { namespace odf_types {
 
-namespace cpdoccore {
-namespace oox {
-
-class _docx_drawing : public _oox_drawing
-{ 
-public:
-	_docx_drawing() : _oox_drawing(), parallel(0), isInline(false), inFrame(false), number_wrapped_paragraphs(0), posOffsetV(0), posOffsetH(0)
+std::wostream & operator << (std::wostream & _Wostream, const chart_axis_type& _Val)
+{
+	switch(_Val.get_type())
 	{
+	case   chart_axis_type::text: _Wostream <<  L"text"; break;
+	case   chart_axis_type::date: _Wostream <<  L"date"; break;
+	case   chart_axis_type::_auto:
+    default:
+        _Wostream <<  L"auto"; break;
 	}
-	bool isInline;
-	bool inFrame;
-    
-	unsigned int parallel;
-	
-	//_CP_OPT(run_through)				styleRunThrough	;
-	_CP_OPT(odf_types::horizontal_rel)	styleHorizontalRel;
-    _CP_OPT(odf_types::horizontal_pos)	styleHorizontalPos;
-    _CP_OPT(odf_types::vertical_pos)	styleVerticalPos;
-    _CP_OPT(odf_types::vertical_rel)	styleVerticalRel;
-
-	_CP_OPT(odf_types::style_wrap)		styleWrap;
-	_CP_OPT(bool)						styleWrapContour;
-
-	int number_wrapped_paragraphs;
-
-    std::wstring relativeHeight;
-    std::wstring behindDoc;
-
-	int posOffsetV;
-	int posOffsetH;
-
-	_CP_OPT(int) pctWidth;
-	_CP_OPT(int) pctHeight;
-  
-	int margin_rect[4];		//0-left, 1 -top, 2- right, 3 - bottom
-
-	std::wstring content_group_;
-
-	void serialize_text	(std::wostream & strm);
-    void serialize		(std::wostream & strm/*, bool insideOtherDrawing*/);    
-};
+    return _Wostream;    
 }
+chart_axis_type chart_axis_type::parse(const std::wstring & Str)
+{
+    std::wstring tmp = Str;
+    boost::algorithm::to_lower(tmp);
+
+    if (tmp == L"date")
+        return chart_axis_type( date );
+    else if (tmp == L"text")
+        return chart_axis_type( text);
+    else
+    {
+        return chart_axis_type( _auto );
+    }
 }
+} }

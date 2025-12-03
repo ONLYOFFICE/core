@@ -515,6 +515,45 @@ CAnnot::CBorderType* getBorder(Object* oBorder, bool bBSorBorder)
 
 	return pBorderType;
 }
+std::string GetRCFromDS(const std::string& sDS, Object* pContents, const std::vector<double>& arrCFromDA)
+{
+	NSStringUtils::CStringBuilder oRC;
+
+	oRC += L"<?xml version=\"1.0\"?><body xmlns=\"http://www.w3.org/1999/xhtml\" xmlns:xfa=\"http://www.xfa.org/schema/xfa-data/1.0/\" xfa:APIVersion=\"Acrobat:23.8.0\"  xfa:spec=\"2.0.2\"><p dir=\"ltr\"><span style=\"";
+	if (sDS.find("font-family") == std::string::npos)
+		oRC += L"font-family:Helvetica;";
+	if (sDS.find("font-size") == std::string::npos)
+		oRC += L"font-size:14.0pt;";
+	if (sDS.find("text-align") == std::string::npos)
+		oRC += L"text-align:left;";
+	if (sDS.find("font-weight") == std::string::npos)
+		oRC += L"font-weight:normal;";
+	if (sDS.find("font-style") == std::string::npos)
+		oRC += L"font-style:normal;";
+	if (sDS.find("text-decoration") == std::string::npos)
+		oRC += L"text-decoration:none;";
+	if (sDS.find("color") == std::string::npos)
+	{
+		oRC += L"color:";
+		if (arrCFromDA.size() == 3)
+			oRC.WriteHexColor3((unsigned char)(arrCFromDA[0] * 255.0),
+							   (unsigned char)(arrCFromDA[1] * 255.0),
+							   (unsigned char)(arrCFromDA[2] * 255.0));
+		else
+			oRC += L"#000000";
+	}
+	oRC += (UTF8_TO_U(sDS));
+
+	oRC += L"\">";
+	TextString* s = new TextString(pContents->getString());
+	std::wstring wsContents = NSStringExt::CConverter::GetUnicodeFromUTF32(s->getUnicode(), s->getLength());
+	delete s;
+	oRC.WriteEncodeXmlString(wsContents);
+	oRC += L"</span></p></body>";
+
+	std::wstring wsRC = oRC.GetData();
+	return U_TO_UTF8(wsRC);
+}
 
 //------------------------------------------------------------------------
 // Fonts
@@ -637,29 +676,43 @@ std::map<std::wstring, std::wstring> CAnnotFonts::GetAllFonts(PDFDoc* pdfDoc, NS
 			}
 			oSubtype.free();
 
+			std::string sRC;
 			Object oObj;
 			if (!oAnnot.dictLookup("RC", &oObj)->isString())
 			{
 				oObj.free();
-				if (oAnnot.dictLookup("AP", &oObj)->isNull() && oAnnot.dictLookup("Contents", &oObj)->isString() && oObj.getString()->getLength())
+				if (oAnnot.dictLookup("Contents", &oObj)->isString() && oObj.getString()->getLength())
 				{
-					const unsigned char* pData14 = NULL;
-					unsigned int nSize14 = 0;
-					std::wstring wsFontName = L"Helvetica";
-					NSFonts::IFontsMemoryStorage* pMemoryStorage = NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage();
-					if (pMemoryStorage && !pMemoryStorage->Get(wsFontName) && GetBaseFont(wsFontName, pData14, nSize14))
-						pMemoryStorage->Add(wsFontName, (BYTE*)pData14, nSize14, false);
-					mFonts[L"Helvetica"] = L"Helvetica";
-				}
-				oAnnot.free(); oObj.free();
-				continue;
-			}
-			oAnnot.free();
+					std::string sDS;
+					Object oObj2;
+					if (oAnnot.dictLookup("DS", &oObj2)->isString())
+					{
+						TextString* s = new TextString(oObj2.getString());
+						sDS = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+						delete s;
+					}
+					oObj2.free();
 
-			TextString* s = new TextString(oObj.getString());
-			std::string sRC = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
-			delete s;
-			oObj.free();
+					sRC = GetRCFromDS(sDS, &oObj, {});
+					if (sRC.find("font-family:Helvetica") != std::string::npos)
+					{
+						const unsigned char* pData14 = NULL;
+						unsigned int nSize14 = 0;
+						std::wstring wsFontName = L"Helvetica";
+						NSFonts::IFontsMemoryStorage* pMemoryStorage = NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage();
+						if (pMemoryStorage && !pMemoryStorage->Get(wsFontName) && GetBaseFont(wsFontName, pData14, nSize14))
+							pMemoryStorage->Add(wsFontName, (BYTE*)pData14, nSize14, false);
+						mFonts[L"Helvetica"] = L"Helvetica";
+					}
+				}
+			}
+			else
+			{
+				TextString* s = new TextString(oObj.getString());
+				sRC = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+				delete s;
+			}
+			oObj.free(); oAnnot.free();
 
 			Object oAnnotRef;
 			oAnnots.arrayGetNF(i, &oAnnotRef);
@@ -2135,27 +2188,9 @@ CAnnotFreeText::CAnnotFreeText(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex
 	}
 	oObj.free();
 
-	if (oAnnot.dictLookup("AP", &oObj)->isNull() && oAnnot.dictLookup("RC", &oObj2)->isNull() && oAnnot.dictLookup("Contents", &oObj)->isString() && oObj.getString()->getLength())
+	if (oAnnot.dictLookup("RC", &oObj2)->isNull() && oAnnot.dictLookup("Contents", &oObj)->isString() && oObj.getString()->getLength())
 	{
-		NSStringUtils::CStringBuilder oRC;
-
-		oRC += L"<?xml version=\"1.0\"?><body xmlns=\"http://www.w3.org/1999/xhtml\" xmlns:xfa=\"http://www.xfa.org/schema/xfa-data/1.0/\" xfa:APIVersion=\"Acrobat:23.8.0\"  xfa:spec=\"2.0.2\"><p dir=\"ltr\"><span style=\"font-size:14.0pt;font-family:Helvetica;text-align:left;color:";
-		if (m_arrCFromDA.size() == 3)
-			oRC.WriteHexColor3((unsigned char)(m_arrCFromDA[0] * 255.0),
-							   (unsigned char)(m_arrCFromDA[1] * 255.0),
-							   (unsigned char)(m_arrCFromDA[2] * 255.0));
-		else
-			oRC += L"#000000";
-
-		oRC += L"\">";
-		TextString* s = new TextString(oObj.getString());
-		std::wstring wsContents = NSStringExt::CConverter::GetUnicodeFromUTF32(s->getUnicode(), s->getLength());
-		delete s;
-		oRC.WriteEncodeXmlString(wsContents);
-		oRC += L"</span></p></body>";
-
-		std::wstring wsRC = oRC.GetData();
-		m_arrRC = CAnnotMarkup::ReadRC(U_TO_UTF8(wsRC));
+		m_arrRC = CAnnotMarkup::ReadRC(GetRCFromDS(m_sDS, &oObj, m_arrCFromDA));
 		if (m_arrRC.empty())
 			m_unFlags &= ~(1 << 3);
 		else
@@ -2513,6 +2548,7 @@ CAnnotRedact::CAnnotRedact(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex, in
 	{
 		m_unAFlags |= (1 << 3);
 		int nBCLength = oObj.arrayGetLength();
+		m_arrC.clear();
 		for (int j = 0; j < nBCLength; ++j)
 		{
 			m_arrC.push_back(oObj.arrayGet(j, &oObj2)->isNum() ? oObj2.getNum() : 0.0);
@@ -3059,6 +3095,7 @@ CAnnotMarkup::CAnnotMarkup(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex, in
 	if (oAnnot.dictLookupNF("IRT", &oObj)->isRef())
 	{
 		m_unFlags |= (1 << 5);
+		m_unAFlags &= ~(1 << 6); // IRT аннотации не отображаются
 		m_unRefNumIRT = oObj.getRefNum() + nStartRefID;
 	}
 	oObj.free();
@@ -3194,6 +3231,17 @@ std::vector<CAnnotMarkup::CFontData*> CAnnotMarkup::ReadRC(const std::string& sR
 		if (oLightReader.GetNameA() != "p")
 			continue;
 
+		bool bRTL = false;
+		while (oLightReader.MoveToNextAttribute())
+		{
+			if (oLightReader.GetNameA() == "dir" && oLightReader.GetTextA() == "rtl")
+			{
+				bRTL = true;
+				break;
+			}
+		}
+		oLightReader.MoveToElement();
+
 		int nDepthSpan = oLightReader.GetDepth();
 		if (oLightReader.IsEmptyNode() || !oLightReader.ReadNextSiblingNode2(nDepthSpan))
 			continue;
@@ -3214,12 +3262,16 @@ std::vector<CAnnotMarkup::CFontData*> CAnnotMarkup::ReadRC(const std::string& sR
 				}
 				oLightReader.MoveToElement();
 
+				if (bRTL)
+					pFont->unFontFlags |= (1 << 7);
 				pFont->sText = oLightReader.GetText2A();
 				arrRC.push_back(pFont);
 			}
 			else if (sName == "#text")
 			{
 				CAnnotMarkup::CFontData* pFont = new CAnnotMarkup::CFontData(oFontBase);
+				if (bRTL)
+					pFont->unFontFlags |= (1 << 7);
 				pFont->sText = oLightReader.GetTextA();
 				arrRC.push_back(pFont);
 			}

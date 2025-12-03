@@ -99,6 +99,7 @@ namespace DocFileFormat
         XMLTools::XMLElement pgNumType	(L"w:pgNumType");
 
 		HeaderAndFooterTable* pTable = _ctx->_doc->headerAndFooterTable;
+        bool bHasEndnoteNumFmt = false;
 
 		if (pTable)
 		{
@@ -327,8 +328,11 @@ namespace DocFileFormat
 				break;
 
 			case sprmSNfcEdnRef:
+            {
                 appendValueElement( &endnotePr, L"numFmt", NumberingMapping::GetNumberFormatWideString( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) ), true );
-				break;
+                bHasEndnoteNumFmt = true;
+            }
+                break;
 
 			case sprmSNFtn:
                 appendValueElement( &footnotePr, L"numStart", FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) ), true );
@@ -488,6 +492,10 @@ namespace DocFileFormat
 				}
 			}
 		}
+        if (!bHasEndnoteNumFmt)
+        {
+            appendValueElement( &endnotePr, L"numFmt", L"decimal", true );
+        }
 
 		if (bWasSprmSFPgnRestart && false == wsSprmSPgnStart.empty() )
             appendValueAttribute( &pgNumType, L"w:start", wsSprmSPgnStart );

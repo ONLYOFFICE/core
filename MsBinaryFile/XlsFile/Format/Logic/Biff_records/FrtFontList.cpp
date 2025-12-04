@@ -53,5 +53,15 @@ void FrtFontList::readFields(CFRecord& record)
 	}
 }
 
+void FrtFontList::writeFields(CFRecord& record)
+{
+	frtHeaderOld.rt = 0x085A;
+	record << frtHeaderOld << verExcel;
+	record.reserveNunBytes(1);
+	record << cFont;
+	for(auto i : rgFrtFontInfo)
+		record << i;
+}
+
 } // namespace XLS
 

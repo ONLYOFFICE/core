@@ -48,8 +48,9 @@ public:
 	static const ElementType type = typeFontInfo;
 	
 	virtual void load(CFRecord& record);
+	virtual void save(CFRecord& record);
 
-	bool		fScaled; 
+	bool		fScaled = false;
 	FontIndex	ifnt;
 };
 

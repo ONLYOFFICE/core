@@ -423,6 +423,8 @@ const bool ChartSheetSubstream::saveContent(BinProcessor& proc)
         proc.mandatory(*m_PAGESETUP);
     if(m_PrintSize != nullptr)
         proc.mandatory(*m_PrintSize);
+	else
+		proc.mandatory<PrintSize>();
 	if(!m_arRECORD12.empty())
 		if(m_arRECORD12[0] != nullptr)
 			proc.mandatory(*m_arRECORD12[0]);

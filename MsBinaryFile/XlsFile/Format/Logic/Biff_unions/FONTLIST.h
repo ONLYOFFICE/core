@@ -48,7 +48,12 @@ public:
 	BaseObjectPtr clone();
 
 	virtual const bool loadContent(BinProcessor& proc);
+	virtual const bool saveContent(BinProcessor& proc);
 
+	BaseObjectPtr m_fontList;
+	BaseObjectPtr m_startObject;
+	std::vector<std::pair<BaseObjectPtr,BaseObjectPtr>> m_fonts;
+	BaseObjectPtr m_endObject;
 	static const ElementType	type = typeFONTLIST;
 };
 

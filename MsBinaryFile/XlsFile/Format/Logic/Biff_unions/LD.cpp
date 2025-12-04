@@ -80,10 +80,11 @@ const bool LD::loadContent(BinProcessor& proc)
 		elements_.pop_back();
 	}
 
-	proc.mandatory<ATTACHEDLABEL>();
-
-	m_ATTACHEDLABEL = elements_.back();
-	elements_.pop_back();
+	if(proc.mandatory<ATTACHEDLABEL>())
+	{
+		m_ATTACHEDLABEL = elements_.back();
+		elements_.pop_back();
+	}
 
 	if (proc.optional<FRAME>())
 	{
@@ -102,7 +103,8 @@ const bool LD::loadContent(BinProcessor& proc)
 		elements_.pop_back();
 	}
 	proc.optional<CRTMLFRT>();
-	proc.mandatory<End>();				elements_.pop_back();
+	if(proc.mandatory<End>())
+		elements_.pop_back();
 	return true;
 }
 

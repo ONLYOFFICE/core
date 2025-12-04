@@ -2239,6 +2239,7 @@ namespace NSDocxRenderer
 				if (direction == eLineDirection::ldLeft) return crossing->p.x - p.x;
 				if (direction == eLineDirection::ldBot) return p.y - crossing->p.y;
 				if (direction == eLineDirection::ldTop) return crossing->p.y - p.y;
+				return 0;
 			};
 
 			while (diff() > c_dMAX_TABLE_LINE_WIDTH_MM)

@@ -99,6 +99,7 @@ public:
 	bool AddPage   (int nPageIndex);
 	bool MovePage  (int nPageIndex, int nPos);
 	bool MergePages(const std::wstring& wsPath, int nMaxID = 0, const std::wstring& wsPrefixForm = L"");
+	bool PrintPages(const std::wstring& wsDstFile, const std::vector<bool>& arrPages, int nFlag);
 	HRESULT ChangePassword(const std::wstring& wsPath, const std::wstring& wsPassword = L"");
 
 	// --- READER ---

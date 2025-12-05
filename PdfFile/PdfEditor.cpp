@@ -54,6 +54,7 @@
 #include "SrcWriter/Outline.h"
 #include "SrcWriter/GState.h"
 #include "SrcWriter/RedactOutputDev.h"
+#include "SrcWriter/Image.h"
 
 #define AddToObject(oVal)\
 {\
@@ -2868,22 +2869,33 @@ bool CPdfEditor::PrintPages(const std::vector<bool>& arrPages, int nFlag)
 		return false;
 
 	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
+	PdfWriter::CPageTree* pPageTree = pDoc->GetPageTree();
 	m_mObjManager.SetDoc(pDoc);
-	PDFDoc* pPDFDocument = m_pReader->GetPDFDocument(0);
-	Catalog* pCatalog = pPDFDocument->getCatalog();
-	XRef* xref = pPDFDocument->getXRef();
 
 	for (int i = 0; i < arrPages.size(); ++i)
 	{
 		if (!arrPages[i])
 			continue;
-		Ref* pPageRef = pCatalog->getPageRef(i);
+
+		PdfWriter::CPage* pPage = new PdfWriter::CPage(pDoc);
+		pDoc->AddObject(pPage);
+		pPageTree->AddPage(pPage);
+		pDoc->AddEditPage(pPage, i);
+
+		PDFDoc* pPDFDocument = NULL;
+		PdfReader::CPdfFontList* pFontList = NULL;
+		int nStartRefID = 0;
+		int nPageIndex = m_pReader->GetPageIndex(i, &pPDFDocument, &pFontList, &nStartRefID);
+
+		Catalog* pCatalog = pPDFDocument->getCatalog();
+		XRef* xref = pPDFDocument->getXRef();
+		Ref* pPageRef = pCatalog->getPageRef(nPageIndex);
 		Object pageRefObj, pageObj;
 		pageRefObj.initRef(pPageRef->num, pPageRef->gen);
 		if (!pageRefObj.fetch(xref, &pageObj)->isDict())
 		{
 			pageObj.free(); pageRefObj.free();
-			return false;
+			continue;
 		}
 		m_mObjManager.AddObj(pPageRef->num + nStartRefID, pPage);
 		pageRefObj.free();
@@ -2962,6 +2974,11 @@ bool CPdfEditor::PrintPages(const std::vector<bool>& arrPages, int nFlag)
 				pPage->Add(chKey, pBase);
 				continue;
 			}
+			else if (nFlag && strcmp("Annots", chKey) == 0) // TODO nFlag
+			{
+				oTemp.free();
+				continue;
+			}
 			else
 				pageObj.dictGetValNF(nIndex, &oTemp);
 			PdfWriter::CObjectBase* pBase = DictToCDictObject2(&oTemp, pDoc, xref, &m_mObjManager, nStartRefID);
@@ -3003,40 +3020,105 @@ bool CPdfEditor::PrintPages(const std::vector<bool>& arrPages, int nFlag)
 		pDoc->FixEditPage(pPage);
 		double dCTM[6] = { 1, 0, 0, 1, 0, 0 };
 		GetCTM(xref, &pageObj, dCTM);
-		pageObj.free();
 
-		if (bSet)
+		// TODO Invert matrix
+		pPage->StartTransform(dCTM[0], dCTM[1], dCTM[2], dCTM[3], dCTM[4], dCTM[5]);
+		PdfWriter::CStream* pStream = pPage->GetStream();
+		pStream->WriteReal(dCTM[0]);
+		pStream->WriteChar(' ');
+		pStream->WriteReal(dCTM[1]);
+		pStream->WriteChar(' ');
+		pStream->WriteReal(dCTM[2]);
+		pStream->WriteChar(' ');
+		pStream->WriteReal(dCTM[3]);
+		pStream->WriteChar(' ');
+		pStream->WriteReal(dCTM[4]);
+		pStream->WriteChar(' ');
+		pStream->WriteReal(dCTM[5]);
+		pStream->WriteStr(" cm\012");
+
+		pPage->SetStrokeColor(0, 0, 0);
+		pPage->SetFillColor(0, 0, 0);
+		pPage->SetExtGrState(pDoc->GetExtGState(255, 255));
+		pPage->BeginText();
+		pPage->SetCharSpace(0);
+		pPage->SetTextRenderingMode(PdfWriter::textrenderingmode_Fill);
+		pPage->SetHorizontalScaling(100);
+		pPage->EndText();
+
+		Object oAnnots;
+		if (!nFlag || !pageObj.dictLookup("Annots", &oAnnots)->isArray()) // TODO nFlag
 		{
-			pDoc->SetCurPage(pPage);
-			m_pWriter->EditPage(pPage);
-			m_nEditPage = _nPageIndex;
-
-			if (bCropBox)
+			pageObj.free();
+			continue;
+		}
+		for (int i = 0; i < oAnnots.arrayGetLength(); ++i)
+		{
+			Object oAnnot, oType, oF;
+			if (!oAnnots.arrayGet(i, &oAnnot)->isDict() || !oAnnot.dictLookup("Subtype", &oType)->isName() || !oAnnot.dictLookup("F", &oF)->isInt())
 			{
-				Page* pOPage = pCatalog->getPage(nPageIndex);
-				if (pOPage->isCropped())
-				{
-					PDFRectangle* pCropBox = pOPage->getCropBox();
-					PdfWriter::CStream* pStream = pPage->GetStream();
-					pStream->WriteStr("1 0 0 1 ");
-					pStream->WriteReal(pCropBox->x1);
-					pStream->WriteChar(' ');
-					pStream->WriteReal(pCropBox->y2 - pOPage->getMediaBox()->y2);
-					pStream->WriteStr(" cm\012");
-				}
+				oAnnot.free(); oType.free(); oF.free();
+				continue;
 			}
 
-			pPage->StartTransform(dCTM[0], dCTM[1], dCTM[2], dCTM[3], dCTM[4], dCTM[5]);
-			pPage->SetStrokeColor(0, 0, 0);
-			pPage->SetFillColor(0, 0, 0);
-			pPage->SetExtGrState(pDoc->GetExtGState(255, 255));
-			pPage->BeginText();
-			pPage->SetCharSpace(0);
-			pPage->SetTextRenderingMode(PdfWriter::textrenderingmode_Fill);
-			pPage->SetHorizontalScaling(100);
-			pPage->EndText();
+			int nFlags = oF.getInt();
+			oF.free();
+			// if Invisible || Hidden || !Print
+			if ((nFlags & (1 << 0)) || (nFlags & (1 << 1)) || !(nFlags & (1 << 2)))
+			{
+				oAnnot.free(); oType.free();
+				continue;
+			}
+
+			// TODO проверка соответствия типа пришедшему nFlag
+			oType.free();
+
+			PdfWriter::CXObject* pForm = pDoc->CreateForm();
+			pPage->GrSave();
+			pPage->ExecuteXObject(pForm);
+			pPage->GrRestore();
+
+			// TODO Нужно ли генерировать внешний вид тем у кого его нет
+			Object oAP, oAPN;
+			if (!oAnnot.dictLookup("AP", &oAP)->isDict() || !oAP.dictLookup("N", &oAPN)->isStream())
+			{
+				oAnnot.free(); oAP.free(); oAPN.free();
+				continue;
+			}
+			oAP.free();
+
+			Object oTemp;
+			Dict* pODict = oAPN.streamGetDict();
+			for (int nIndex = 0; nIndex < pODict->getLength(); ++nIndex)
+			{
+				char* chKey = pODict->getKey(nIndex);
+				if (strcmp("Length", chKey) == 0)
+				{
+					oTemp.free();
+					continue;
+				}
+				pODict->getValNF(nIndex, &oTemp);
+				PdfWriter::CObjectBase* pBase = DictToCDictObject2(&oTemp, pDoc, xref, &m_mObjManager, nStartRefID);
+				pForm->Add(chKey, pBase);
+				oTemp.free();
+			}
+			oAPN.free();
+
+			PdfWriter::CStream* pStream = pForm->GetStream();
+			Stream* pOStream = oAPN.getStream()->getUndecodedStream();
+			pOStream->reset();
+			int nChar = pOStream->getChar();
+			while (nChar != EOF)
+			{
+				pStream->WriteChar(nChar);
+				nChar = pOStream->getChar();
+			}
+
+			oAnnot.free();
 		}
-		return true;
+		oAnnots.free();
+
+		pageObj.free();
 	}
 
 	return true;

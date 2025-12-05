@@ -58,6 +58,11 @@ void SerParent::readFields(CFRecord& record)
 	record >> series;
 }
 
+void SerParent::writeFields(CFRecord& record)
+{
+	record << series;
+}
+
 void SerParent::recalc(size_t current_index, std::vector<BaseObjectPtr> & arSERIESFORMAT)
 {
 	SerAuxErrBar * err_bars_current	= dynamic_cast<SerAuxErrBar*>(m_SerAuxErrBar.get());

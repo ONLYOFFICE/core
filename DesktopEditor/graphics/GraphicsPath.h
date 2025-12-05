@@ -72,6 +72,7 @@ namespace Aggplus
 		Status AddCurve(double* pPoints, int nCount);
 		Status AddEllipse(double x, double y, double width, double height);
 		Status AddRectangle(double x, double y, double width, double height);
+		Status AddRoundRectangle(double x, double y, double width, double height, double cx, double cy);
 		Status AddPolygon(double* pPoints, int nCount);
 		Status AddPath(const CGraphicsPath& oPath);
 		Status AddArc(double x, double y, double width, double height, double startAngle, double sweepAngle);
@@ -116,6 +117,7 @@ namespace Aggplus
 		std::vector<PointD>  GetPoints(unsigned idx, unsigned count) const noexcept;
 		std::vector<CGraphicsPath> GetSubPaths() const;
 
+		bool Equals(const CGraphicsPath& other)	noexcept;
 		CGraphicsPath& operator=(const CGraphicsPath& other)	noexcept;
 		CGraphicsPath& operator=(CGraphicsPath&& other)			noexcept;
 		bool operator==(const CGraphicsPath& other)	noexcept;
@@ -189,7 +191,7 @@ namespace Aggplus
 		Exclusion      = 3
 	};
 
-	GRAPHICS_DECL CGraphicsPath CalcBooleanOperation(const CGraphicsPath& path1, const CGraphicsPath& path2, BooleanOpType op, long fillType = c_nWindingFillMode);
+	GRAPHICS_DECL CGraphicsPath CalcBooleanOperation(const CGraphicsPath& path1, const CGraphicsPath& path2, BooleanOpType op, long fillType = c_nWindingFillMode, bool isLuminosity = false);
 
 } // namespace Aggplus
 

@@ -214,7 +214,15 @@ namespace XmlUtils
 
             return true;
         }
+        inline bool FromStringA(const char* sXml, int size)
+        {
+            m_lStreamLen = size;
+            m_pStream = new BYTE[m_lStreamLen];
+            memcpy(m_pStream, sXml, m_lStreamLen);
+            reader = xmlReaderForMemory((char*)m_pStream, m_lStreamLen, NULL, NULL, 0);
 
+            return true;
+        }
         inline bool MoveToStart()
         {
             if (NULL != reader)

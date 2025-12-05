@@ -76,7 +76,8 @@ void office_body::add_child_element( xml::sax * Reader, const std::wstring & Ns,
 							(L"chart"		== Name) || 
 							(L"drawing"		== Name) || 
 							(L"image"		== Name) ||
-							(L"database"	== Name)))
+							(L"database"	== Name) ||
+							(L"graphics"	== Name)))
 	{
 		CP_CREATE_ELEMENT(content_);
 	}

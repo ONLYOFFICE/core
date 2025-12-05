@@ -58,6 +58,15 @@ void LegendException::readFields(CFRecord& record)
 	fDelete = GETBIT(flags, 0);
 	fLabel	= GETBIT(flags, 1);
 }
+
+void LegendException::writeFields(CFRecord& record)
+{
+	unsigned short flags = 0;
+	SETBIT(flags, 0, fDelete)
+	SETBIT(flags, 1, fLabel)
+	record << iss << flags;
+}
+
 int LegendException::serialize(std::wostream & _stream)
 {
 	CP_XML_WRITER(_stream)    

@@ -48,20 +48,21 @@ public:
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 
 	static const ElementType	type = typeSupBook;
 
-	_UINT16						ctab;
-	_UINT16						cch;
+    _UINT16						ctab = 0;
+    _UINT16						cch = 0x0401;
 	
 	std::wstring				origin;
 	std::vector<std::wstring>	rgst;
 //-----------------------------
 	std::vector<std::wstring>	virtPath;
 
-	bool						bOleLink;
-	bool						bSimple;
-	bool						bPath;
+    bool						bOleLink = false;
+    bool						bSimple = false;
+    bool						bPath = false;
 };
 
 typedef boost::shared_ptr<SupBook> SupBookPtr;

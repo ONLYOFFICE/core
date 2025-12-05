@@ -14,17 +14,17 @@ namespace NSDocxRenderer
 		ResetBorders();
 	}
 	CVectorGraphics::CVectorGraphics(const CVectorGraphics& other) noexcept
-		: CVectorGraphics()
+	    : CVectorGraphics()
 	{
 		*this = other;
 	}
 	CVectorGraphics::CVectorGraphics(CVectorGraphics&& other) noexcept
-		: CVectorGraphics()
+	    : CVectorGraphics()
 	{
 		*this = std::move(other);
 	}
 	CVectorGraphics::CVectorGraphics(const Aggplus::CGraphicsPath& other) noexcept
-		: CVectorGraphics()
+	    : CVectorGraphics()
 	{
 		size_t close_count = other.GetCloseCount();
 		size_t count = static_cast<size_t>(other.GetPointCount()) + close_count;
@@ -35,11 +35,11 @@ namespace NSDocxRenderer
 			if (other.IsMovePoint(idx))
 				MoveTo(point.X, point.Y);
 			else if (other.IsLinePoint(idx))
-				LineTo(point.X, point.Y);	
+				LineTo(point.X, point.Y);
 			else if (idx < count - 2 &&
-					 other.IsCurvePoint(idx) &&
-					 other.IsCurvePoint(idx + 1) &&
-					 other.IsCurvePoint(idx + 2))
+			         other.IsCurvePoint(idx) &&
+			         other.IsCurvePoint(idx + 1) &&
+			         other.IsCurvePoint(idx + 2))
 			{
 				const auto& point1 = points[idx + 1];
 				const auto& point2 = points[idx + 2];
@@ -86,23 +86,23 @@ namespace NSDocxRenderer
 	bool CVectorGraphics::operator<(const CVectorGraphics& other) const noexcept
 	{
 		return m_dBottom < other.m_dBottom &&
-				m_dTop > other.m_dTop &&
-				m_dRight < other.m_dRight &&
-				m_dLeft > other.m_dLeft;
+		        m_dTop > other.m_dTop &&
+		        m_dRight < other.m_dRight &&
+		        m_dLeft > other.m_dLeft;
 	}
 	bool CVectorGraphics::operator>(const CVectorGraphics& other) const noexcept
 	{
 		return m_dBottom > other.m_dBottom &&
-				m_dTop < other.m_dTop &&
-				m_dRight > other.m_dRight &&
-				m_dLeft < other.m_dLeft;
+		        m_dTop < other.m_dTop &&
+		        m_dRight > other.m_dRight &&
+		        m_dLeft < other.m_dLeft;
 	}
 	bool CVectorGraphics::operator==(const CVectorGraphics& other) const noexcept
 	{
 		return fabs(m_dBottom - other.m_dBottom < c_dGRAPHICS_ERROR_MM) &&
-				fabs(m_dTop - other.m_dTop < c_dGRAPHICS_ERROR_MM) &&
-				fabs(m_dRight - other.m_dRight < c_dGRAPHICS_ERROR_MM) &&
-				fabs(m_dLeft - other.m_dLeft < c_dGRAPHICS_ERROR_MM);
+		        fabs(m_dTop - other.m_dTop < c_dGRAPHICS_ERROR_MM) &&
+		        fabs(m_dRight - other.m_dRight < c_dGRAPHICS_ERROR_MM) &&
+		        fabs(m_dLeft - other.m_dLeft < c_dGRAPHICS_ERROR_MM);
 	}
 	bool CVectorGraphics::operator!=(const CVectorGraphics& other) const noexcept
 	{
@@ -111,16 +111,16 @@ namespace NSDocxRenderer
 	bool CVectorGraphics::operator<=(const CVectorGraphics& other) const noexcept
 	{
 		return m_dBottom - c_dGRAPHICS_ERROR_MM < other.m_dBottom &&
-				m_dTop + c_dGRAPHICS_ERROR_MM > other.m_dTop &&
-				m_dRight - c_dGRAPHICS_ERROR_MM < other.m_dRight &&
-				m_dLeft + c_dGRAPHICS_ERROR_MM > other.m_dLeft;
+		        m_dTop + c_dGRAPHICS_ERROR_MM > other.m_dTop &&
+		        m_dRight - c_dGRAPHICS_ERROR_MM < other.m_dRight &&
+		        m_dLeft + c_dGRAPHICS_ERROR_MM > other.m_dLeft;
 	}
 	bool CVectorGraphics::operator>=(const CVectorGraphics& other) const noexcept
 	{
 		return m_dBottom + c_dGRAPHICS_ERROR_MM > other.m_dBottom &&
-				m_dTop - c_dGRAPHICS_ERROR_MM < other.m_dTop &&
-				m_dRight + c_dGRAPHICS_ERROR_MM > other.m_dRight &&
-				m_dLeft - c_dGRAPHICS_ERROR_MM < other.m_dLeft;
+		        m_dTop - c_dGRAPHICS_ERROR_MM < other.m_dTop &&
+		        m_dRight + c_dGRAPHICS_ERROR_MM > other.m_dRight &&
+		        m_dLeft - c_dGRAPHICS_ERROR_MM < other.m_dLeft;
 	}
 
 	void CVectorGraphics::ResetBorders() noexcept
@@ -164,7 +164,7 @@ namespace NSDocxRenderer
 		return m_arData.empty();
 	}
 
-	const std::list<CVectorGraphics::PathCommand>& CVectorGraphics::GetData() const
+	const std::list<CVectorGraphics::CPathCommand>& CVectorGraphics::GetData() const
 	{
 		return m_arData;
 	}
@@ -188,9 +188,9 @@ namespace NSDocxRenderer
 	}
 
 	void CVectorGraphics::CurveTo(
-		const double &x1, const double &y1,
-		const double &x2, const double &y2,
-		const double &x3, const double &y3)
+	        const double &x1, const double &y1,
+	        const double &x2, const double &y2,
+	        const double &x3, const double &y3)
 	{
 		double x0 = m_arData.back().points.back().x;
 		double y0 = m_arData.back().points.back().y;
@@ -200,7 +200,7 @@ namespace NSDocxRenderer
 		m_arData.push_back({type, points});
 
 		std::vector<Point> curve_points = GetPointsCurve(
-			{Point{x0, y0}, Point{x1, y1}, Point{x2, y2}, Point{x3, y3}}, 0.1);
+		            {Point{x0, y0}, Point{x1, y1}, Point{x2, y2}, Point{x3, y3}}, 0.1);
 
 		for(auto& point : curve_points)
 			CheckPoint(point);
@@ -218,7 +218,7 @@ namespace NSDocxRenderer
 		ResetBorders();
 	}
 
-	void CVectorGraphics::Add(const PathCommand& command)
+	void CVectorGraphics::Add(const CPathCommand& command)
 	{
 		m_arData.push_back(command);
 	}
@@ -279,9 +279,9 @@ namespace NSDocxRenderer
 					points.push_back(point);
 
 				CurveTo(
-					points[0].x, points[0].y,
-					points[1].x, points[1].y,
-					points[2].x, points[2].y);
+				            points[0].x, points[0].y,
+				            points[1].x, points[1].y,
+				            points[2].x, points[2].y);
 			}
 		}
 	}
@@ -302,9 +302,9 @@ namespace NSDocxRenderer
 					points.push_back(point);
 
 				renderer->PathCommandCurveTo(
-					points[0].x, points[0].y,
-					points[1].x, points[1].y,
-					points[2].x, points[2].y);
+				            points[0].x, points[0].y,
+				            points[1].x, points[1].y,
+				            points[2].x, points[2].y);
 			}
 		}
 	}
@@ -319,10 +319,10 @@ namespace NSDocxRenderer
 	// c_nStroke = 0x0001;
 	// c_nWindingFillMode = 0x0100;
 	// c_nEvenOddFillMode = 0x0200;
-	CVectorGraphics CVectorGraphics::CalcBoolean(const CVectorGraphics& vg1, const CVectorGraphics& vg2, long clipType, long fillType)
+	CVectorGraphics CVectorGraphics::CalcBoolean(const CVectorGraphics& vg1, const CVectorGraphics& vg2, long clipType, long fillType, bool isLuminosity)
 	{
 		auto op = GetOpType(clipType);
-		Aggplus::CGraphicsPath result = Aggplus::CalcBooleanOperation(vg1.GetGraphicsPath(), vg2.GetGraphicsPath(), op, fillType);
+		Aggplus::CGraphicsPath result = Aggplus::CalcBooleanOperation(vg1.GetGraphicsPath(), vg2.GetGraphicsPath(), op, fillType, isLuminosity);
 		return CVectorGraphics(result);
 	}
 
@@ -344,9 +344,9 @@ namespace NSDocxRenderer
 					points.push_back(point);
 
 				ret_value.CurveTo(
-					points[0].x, points[0].y,
-					points[1].x, points[1].y,
-					points[2].x, points[2].y);
+				            points[0].x, points[0].y,
+				            points[1].x, points[1].y,
+				            points[2].x, points[2].y);
 			}
 		}
 
@@ -370,13 +370,13 @@ namespace NSDocxRenderer
 		auto calc = [&curve] (double t) -> Point {
 			Point point;
 			point.x = pow(1 - t, 3) * curve[0].x +
-					  3 * pow(1 - t, 2) * t * curve[1].x +
-					  3 * (1 - t) * t * t * curve[2].x +
-					  t * t * t * curve[3].x;
+			        3 * pow(1 - t, 2) * t * curve[1].x +
+			        3 * (1 - t) * t * t * curve[2].x +
+			        t * t * t * curve[3].x;
 			point.y = pow(1 - t, 3) * curve[0].y +
-					  3 * pow(1 - t, 2) * t * curve[1].y +
-					  3 * (1 - t) * t * t * curve[2].y +
-					  t * t * t * curve[3].y;
+			        3 * pow(1 - t, 2) * t * curve[1].y +
+			        3 * (1 - t) * t * t * curve[2].y +
+			        t * t * t * curve[3].y;
 			return point;
 		};
 
@@ -416,10 +416,10 @@ namespace NSDocxRenderer
 				double x = command.points.front().x;
 				double y = command.points.front().y;
 
-				if (x - last_x <= std::numeric_limits<double>::epsilon())
+				if (fabs(x - last_x) <= std::numeric_limits<double>::epsilon())
 					m_arVertical.push_back({std::min(last_y, y), std::max(last_y, y), x});
 
-				else if (y - last_y <= std::numeric_limits<double>::epsilon())
+				else if (fabs(y - last_y) <= std::numeric_limits<double>::epsilon())
 					m_arHorizontal.push_back({std::min(last_x, x), std::max(last_x, x), y});
 			}
 			if (!command.points.empty())

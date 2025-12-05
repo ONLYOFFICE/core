@@ -1,0 +1,1 @@
+ * foo **bar [link](http://example.com) baz**

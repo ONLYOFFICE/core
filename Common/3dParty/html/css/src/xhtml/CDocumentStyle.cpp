@@ -22,10 +22,10 @@ namespace NSCSS
 		: m_oStyle(oStyle), m_bIsPStyle(bIsPStyle)
 	{}
 
-	bool CheckArrays(const std::vector<std::wstring>& arInitial, const std::set<std::wstring>& arFirst, const std::set<std::wstring>& arSecond) 
+	bool CheckArrays(const std::vector<std::wstring>& arInitial, const std::set<std::wstring>& arFirst, const std::set<std::wstring>& arSecond)
 	{
 		std::unordered_set<std::wstring> arInitialSet(arInitial.begin(), arInitial.end());
-	
+
 		std::vector<std::wstring> arCommonElements1;
 		std::vector<std::wstring> arCommonElements2;
 
@@ -341,14 +341,14 @@ namespace NSCSS
 		sSpacingValue.reserve(128);
 
 		if (!oStyle.m_oMargin.GetTop().Empty() && !oStyle.m_oMargin.GetTop().Zero())
-			sSpacingValue += L"w:before=\""  + std::to_wstring(VALUE_TO_INT(oStyle.m_oMargin.GetTop(), NSCSS::Twips))    + L"\" w:beforeAutospacing=\"0\"";
+			sSpacingValue += L"w:before=\""  + std::to_wstring(VALUE_TO_INT(oStyle.m_oMargin.GetTop(), NSCSS::Twips))    + L"\" w:beforeAutospacing=\"1\"";
 		else if (oStyle.m_oMargin.GetBottom().Zero() || bInTable)
-			sSpacingValue += L"w:before=\"0\" w:beforeAutospacing=\"0\"";
+			sSpacingValue += L"w:before=\"0\" w:beforeAutospacing=\"1\"";
 
 		if (!oStyle.m_oMargin.GetBottom().Empty() && !oStyle.m_oMargin.GetBottom().Zero())
-			sSpacingValue += L" w:after=\""   + std::to_wstring(VALUE_TO_INT(oStyle.m_oMargin.GetBottom(), NSCSS::Twips)) + L"\" w:afterAutospacing=\"0\"";
+			sSpacingValue += L" w:after=\""   + std::to_wstring(VALUE_TO_INT(oStyle.m_oMargin.GetBottom(), NSCSS::Twips)) + L"\" w:afterAutospacing=\"1\"";
 		else if (oStyle.m_oMargin.GetBottom().Zero() || bInTable)
-			sSpacingValue += L" w:after=\"0\" w:afterAutospacing=\"0\"";
+			sSpacingValue += L" w:after=\"0\" w:afterAutospacing=\"1\"";
 
 		if (!oStyle.m_oFont.GetLineHeight().Empty() && !oStyle.m_oFont.GetLineHeight().Zero())
 		{
@@ -470,9 +470,6 @@ namespace NSCSS
 
 		int nSpace{0};
 
-		if (NULL != pPadding && !pPadding->Empty() && !pPadding->Zero())
-			nSpace = pPadding->ToInt(NSCSS::Point);
-
 		return  L"w:val=\"" + wsStyle + L"\" w:sz=\"" + std::to_wstring(nWidth) + + L"\" w:space=\"" + std::to_wstring(nSpace) + L"\" w:color=\"" + wsColor + L"\"";
 	}
 
@@ -511,6 +508,9 @@ namespace NSCSS
 			wsFontFamily = L"Arial";
 		else if (L"serif" == wsFontFamily)
 			wsFontFamily = L"Times New Roman";
+
+		if (oStyle.m_oDisplay.GetDisplay() == L"none")
+			oXmlElement.AddPropertiesInR(RProperties::R_Vanish, L"true");
 
 		oXmlElement.AddPropertiesInR(RProperties::R_RFonts, oStyle.m_oFont.GetFamily().ToWString());
 		oXmlElement.AddPropertiesInR(RProperties::R_I, oStyle.m_oFont.GetStyle().ToWString());
@@ -559,7 +559,7 @@ namespace NSCSS
 
 		if (oXmlElement.Empty())
 			return false;
-		
+
 		m_sStyle += oXmlElement.GetPStyle(true);
 		return true;
 	}

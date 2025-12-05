@@ -47,11 +47,12 @@ public:
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 
 	static const ElementType type = typeSxFormat;
 
-	unsigned char	rlType;
-	unsigned short	cbData;
+    unsigned char	rlType = 0;
+    unsigned short	cbData = 0;
 };
 
 } // namespace XLS

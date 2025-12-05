@@ -79,5 +79,26 @@ const bool PIVOTFORMAT::loadContent(BinProcessor& proc)
 	return true;
 }
 
+const bool PIVOTFORMAT::saveContent(BinProcessor& proc)
+{
+    if(m_SxFormat == nullptr)
+        return false;
+    if(m_SxDXF != nullptr)
+    {
+        CFRecord tempRecord(rt_SxDXF, proc.getGlobalWorkbookInfo());
+        auto castedPtr = static_cast<SxDXF*>(m_SxDXF.get());
+        castedPtr->writeFields(tempRecord);
+        auto castedFormat = static_cast<SxFormat*>(m_SxFormat.get());
+        castedFormat->cbData = tempRecord.getRdPtr();
+        //calculating m_SxDXF.cbData
+    }
+    proc.mandatory(*m_SxFormat);
+    if(m_PIVOTRULE != nullptr)
+        proc.mandatory(*m_PIVOTRULE);
+    if(m_SxDXF != nullptr)
+        proc.mandatory(*m_SxDXF);
+    return true;
+}
+
 } // namespace XLS
 

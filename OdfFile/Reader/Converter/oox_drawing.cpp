@@ -261,7 +261,6 @@ void oox_serialize_effects(std::wostream & strm, const std::vector<odf_reader::_
 					CP_XML_ATTR(L"dist", (int)(dist)); 
 					CP_XML_ATTR(L"dir", (int)(dir * 60000)); 
 					
-					CP_XML_ATTR(L"rotWithShape", L"0"); 
 					CP_XML_ATTR(L"algn", L"tl"); 
 
 					CP_XML_NODE(L"a:srgbClr")
@@ -384,21 +383,50 @@ void oox_serialize_ln(std::wostream & strm, const std::vector<odf_reader::_prope
 			}
 			if (fill != ns + L":noFill")
 			{
-				_CP_OPT(std::wstring)	strVal;
+				_CP_OPT(std::wstring) strVal;
 
 				if (dash_style.length() > 0 && dash_style != L"solid")
 				{
-					CP_XML_NODE(ns + L":prstDash"){CP_XML_ATTR2(ns_att + L"val", dash_style);}	
+					CP_XML_NODE(ns + L":prstDash")
+					{
+						CP_XML_ATTR2(ns_att + L"val", dash_style);
+					}	
 				}
 				odf_reader::GetProperty(prop,L"marker-start", strVal);	
 				if (strVal)
 				{
-					CP_XML_NODE(ns + L":headEnd"){CP_XML_ATTR2(ns_att + L"type", strVal.get());}
+					CP_XML_NODE(ns + L":headEnd") 
+					{
+						CP_XML_ATTR2(ns_att + L"type", strVal.get());
+						_CP_OPT(double) dWidth;
+						odf_reader::GetProperty(prop, L"marker-start-width", dWidth);
+						if (dWidth && dStrokeWidth)
+						{
+							double kf = *dWidth / *dStrokeWidth;
+							
+							if (kf > 3.5) CP_XML_ATTR2(ns_att + L"w", L"lg");
+							else if (kf < 2.6) CP_XML_ATTR2(ns_att + L"w", L"sm");
+							else CP_XML_ATTR2(ns_att + L"w", L"med");
+						}
+					}
 				}
-				odf_reader::GetProperty(prop,L"marker-end",strVal);	
+				odf_reader::GetProperty(prop,L"marker-end", strVal);	
 				if (strVal)
 				{
-					CP_XML_NODE(ns + L":tailEnd"){CP_XML_ATTR2(ns_att + L"type",strVal.get());}
+					CP_XML_NODE(ns + L":tailEnd")
+					{
+						CP_XML_ATTR2(ns_att + L"type", strVal.get());
+						_CP_OPT(double) dWidth;
+						odf_reader::GetProperty(prop, L"marker-start-width", dWidth);
+						if (dWidth && dStrokeWidth)
+						{
+							double kf = *dWidth / *dStrokeWidth;
+							
+							if (kf > 3.5) CP_XML_ATTR2(ns_att + L"w", L"lg");
+							else if (kf < 2.6) CP_XML_ATTR2(ns_att + L"w", L"sm");
+							else CP_XML_ATTR2(ns_att + L"w", L"med");
+						}
+					}
 				}
 			}
 		}
@@ -756,6 +784,9 @@ void _oox_drawing::serialize_shape(std::wostream & strm)
 
 	CP_XML_WRITER(strm)
     {
+		if (connector_prst.empty()) 
+			connector = false;
+
 		if ((sub_type == 6 || sub_type == 8 || sub_type == 14) && !connector)
 		{
 			CP_XML_NODE(L"a:custGeom")
@@ -765,7 +796,7 @@ void _oox_drawing::serialize_shape(std::wostream & strm)
 				
 				if (sCustomEquations)
 				{
-					CP_XML_STREAM() << *sCustomEquations;
+					CP_XML_STREAM() << L"<a:gdLst>" << *sCustomEquations << L"</a:gdLst>";
 				}
 				CP_XML_NODE(L"a:rect")
 				{

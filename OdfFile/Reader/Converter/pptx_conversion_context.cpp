@@ -152,7 +152,7 @@ namespace cpdoccore {
 		odf_reader::presentation_masters_instance& masters = root()->odf_context().styleContainer().presentation_masters();
 
 		process_masters_ = true;
-		get_text_context().set_process_layouts(true);
+		//get_text_context().set_process_layouts(true);
 
 		//берем только актуальные
 		odf_reader::office_element_ptr master_notes_;
@@ -459,7 +459,7 @@ namespace cpdoccore {
 		const std::wstring& pageMasterName)
 	{
 		create_new_slide(pageName);
-		get_slide_context().start_slide();//pageName, pageStyleName);
+		get_slide_context().start_slide();
 		get_slide_context().get_animation_context().clear();
 
 		current_master_page_name_ = pageMasterName;

@@ -50,14 +50,15 @@ public:
 	BaseObjectPtr clone();
 
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 
 	static const ElementType	type = typeBoundSheet8;
 
-	_UINT32	lbPlyPos;
-	std::wstring hsState;
-	unsigned char dt;
+    _UINT32	lbPlyPos = 0;
+    std::wstring hsState = L"visible";
+    unsigned char dt = 0;
 //-----------------------------
-	std::wstring				name_;
+	std::wstring				name_ = L"Sheet1";
 };
 
 } // namespace XLS

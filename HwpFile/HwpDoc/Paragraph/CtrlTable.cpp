@@ -1,5 +1,7 @@
 #include "CtrlTable.h"
 
+#include "../Common/NodeNames.h"
+
 namespace HWP
 {
 CCtrlTable::CCtrlTable(const HWP_STRING& sCtrlID)
@@ -10,44 +12,74 @@ CCtrlTable::CCtrlTable(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer
 	: CCtrlCommon(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
 
-CCtrlTable::CCtrlTable(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVersion)
-	: CCtrlCommon(sCtrlID, oNode, nVersion)
+CCtrlTable::CCtrlTable(const HWP_STRING& sCtrlID, CXMLReader& oReader, EHanType eType)
+    : CCtrlCommon(sCtrlID, oReader, eType)
 {
-	m_shNRows = oNode.GetAttributeInt(L"rowCnt");
-	m_shNCols = oNode.GetAttributeInt(L"colCnt");
-	m_shCellSpacing = oNode.GetAttributeInt(L"cellSpacing");
-	m_shBorderFillID = oNode.GetAttributeInt(L"borderFillIDRef");
-
-	for (CXMLNode& oChild : oNode.GetChilds())
+	START_READ_ATTRIBUTES(oReader)
 	{
-		if (L"hp:inMargin" == oChild.GetName())
+		if (GetAttributeName(EAttribute::RowCount, eType) == sAttributeName)
+			m_shNRows = oReader.GetInt();
+		else if (GetAttributeName(EAttribute::ColCount, eType) == sAttributeName)
+			m_shNCols = oReader.GetInt();
+		else if (GetAttributeName(EAttribute::CellSpacing, eType) == sAttributeName)
+			m_shCellSpacing = oReader.GetInt();
+		else if (GetAttributeName(EAttribute::BorderFill, eType) == sAttributeName)
+			m_shBorderFillID = oReader.GetInt();
+	}
+	END_READ_ATTRIBUTES(oReader)
+
+	WHILE_READ_NEXT_NODE_WITH_NAME(oReader)
+	{
+		if (GetNodeName(ENode::InSideMargin, eType) == sNodeName)
 		{
-			m_shInLSpace = oChild.GetAttributeInt(L"left");
-			m_shInRSpace = oChild.GetAttributeInt(L"right");
-			m_shInTSpace = oChild.GetAttributeInt(L"top");
-			m_shInBSpace = oChild.GetAttributeInt(L"bottom");
+			START_READ_ATTRIBUTES(oReader)
+			{
+				if (GetAttributeName(EAttribute::Left, eType) == sAttributeName)
+					m_shInLSpace = oReader.GetInt();
+				else if (GetAttributeName(EAttribute::Right, eType) == sAttributeName)
+					m_shInRSpace = oReader.GetInt();
+				else if (GetAttributeName(EAttribute::Top, eType) == sAttributeName)
+					m_shInTSpace = oReader.GetInt();
+				else if (GetAttributeName(EAttribute::Bottom, eType) == sAttributeName)
+					m_shInBSpace = oReader.GetInt();
+			}
+			END_READ_ATTRIBUTES(oReader)
 		}
-		else if (L"hp:cellzoneList" == oChild.GetName())
+		else if (GetNodeName(ENode::CellZoneList, eType) == sNodeName)
 		{
-			for (CXMLNode& oGrandChild : oChild.GetChilds(L"hp:cellzone"))
+			WHILE_READ_NEXT_NODE_WITH_DEPTH_ONE_NAME(oReader, Child, GetNodeName(ENode::CellZone, eType))
 			{
 				TCellZone* pCellZone = new TCellZone();
 
-				pCellZone->m_shStartRowAddr = oGrandChild.GetAttributeInt(L"startRowAddr");
-				pCellZone->m_shStartColAddr = oGrandChild.GetAttributeInt(L"startColAddr");
-				pCellZone->m_shEndRowAddr = oGrandChild.GetAttributeInt(L"endRowAddr");
-				pCellZone->m_shEndColAddr = oGrandChild.GetAttributeInt(L"endColAddr");
-				pCellZone->m_shBorderFillIDRef = oGrandChild.GetAttributeInt(L"borderFillIDRef");
+				START_READ_ATTRIBUTES(oReader)
+				{
+					if (GetAttributeName(EAttribute::StartRowAddr, eType) == sAttributeName)
+						pCellZone->m_shStartRowAddr = oReader.GetInt();
+					else if (GetAttributeName(EAttribute::StartColAddr, eType) == sAttributeName)
+						pCellZone->m_shStartColAddr = oReader.GetInt();
+					else if (GetAttributeName(EAttribute::EndRowAddr, eType) == sAttributeName)
+						pCellZone->m_shEndRowAddr = oReader.GetInt();
+					else if (GetAttributeName(EAttribute::EndColAddr, eType) == sAttributeName)
+						pCellZone->m_shEndColAddr = oReader.GetInt();
+					else if (GetAttributeName(EAttribute::BorderFill, eType) == sAttributeName)
+						pCellZone->m_shBorderFillIDRef = oReader.GetInt();
+				}
+				END_READ_ATTRIBUTES(oReader)
 
 				m_arCellzoneList.push_back(pCellZone);
 			}
+			END_WHILE
 		}
-		else if(L"hp:tr" == oChild.GetName())
+		else if (GetNodeName(ENode::Row, eType) == sNodeName)
 		{
-			for (CXMLNode& oGrandChild : oChild.GetChilds(L"hp:tc"))
-				m_arCells.push_back(new CTblCell(oGrandChild, nVersion));
+			WHILE_READ_NEXT_NODE_WITH_DEPTH_ONE_NAME(oReader, Child, GetNodeName(ENode::Cell, eType))
+				m_arCells.push_back(new CTblCell(oReader, eType));
+			END_WHILE
 		}
+		else
+			CCtrlCommon::ParseChildren(oReader, eType);
 	}
+	END_WHILE
 }
 
 CCtrlTable::~CCtrlTable()
@@ -101,6 +133,26 @@ short CCtrlTable::GetCountCells() const
 short CCtrlTable::GetBorderFillID() const
 {
 	return m_shBorderFillID;
+}
+
+short CCtrlTable::GetInLSpace() const
+{
+	return m_shInLSpace;
+}
+
+short CCtrlTable::GetInTSpace() const
+{
+	return m_shInTSpace;
+}
+
+short CCtrlTable::GetInRSpace() const
+{
+	return m_shInRSpace;
+}
+
+short CCtrlTable::GetInBSpace() const
+{
+	return m_shInBSpace;
 }
 
 void CCtrlTable::AddCell(CTblCell* pCell)

@@ -57,7 +57,7 @@ namespace NSDoctRenderer
 	}
 	bool CDocBuilder::ExecuteCommand(const wchar_t* command, CDocBuilderValue* retValue)
 	{
-		return m_pInternal->ExecuteCommand(command, retValue);
+		return m_pInternal->ExecuteCommand(command, retValue, false, false);
 	}
 
 	CDocBuilderContext CDocBuilder::GetContext(bool enterContext)

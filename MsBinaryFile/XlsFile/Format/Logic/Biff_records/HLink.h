@@ -52,12 +52,13 @@ public:
 
 	
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 
 	static const ElementType	type = typeHLink;
 
 //-----------------------------
 	Ref8U ref8;
-	std::wstring hlinkClsid;
+	std::wstring hlinkClsid = L"{79EAC9D0-BAF9-11CE-8C82-00AA004BA90B}";
 	OSHARED::HyperlinkObject hyperlink;
 
 

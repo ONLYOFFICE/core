@@ -175,6 +175,34 @@ const bool FDB::loadContent(BinProcessor& proc)
 
 	return true;
 }
+const bool FDB::saveContent(BinProcessor& proc)
+{
+	if(m_SXFDB == nullptr)
+		return false;
+	proc.mandatory(*m_SXFDB);
+	if(m_SXFDBType != nullptr)
+		proc.mandatory(*m_SXFDBType);
+	else
+		proc.mandatory<SXFDBType>();
+	if(m_SXFMLA != nullptr)
+		proc.mandatory(*m_SXFMLA);
+	else
+	{
+		for(auto i : m_arGRPSXOPER)
+			if(i != nullptr)
+				proc.mandatory(*i);
+		if(m_SXRANGE != nullptr)
+			proc.mandatory(*m_SXRANGE);
+		else
+			for(auto i : m_arSxIsxoper)
+				if(i != nullptr)
+					proc.mandatory(*i);
+	}
+	for(auto i : m_arSRCSXOPER)
+		if(i != nullptr)
+			proc.mandatory(*i);
+	return true;
+}
 
 int FDB::serialize(std::wostream & strm, bool bSql, bool bDBB)
 {

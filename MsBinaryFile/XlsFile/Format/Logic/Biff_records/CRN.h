@@ -48,12 +48,13 @@ public:
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 
 	static const ElementType type = typeCRN;
 
-	unsigned char	colLast;
-	unsigned char	colFirst;
-	_UINT16 row;
+    unsigned char	colLast = 0;
+    unsigned char	colFirst = 0;
+    _UINT16 row = 0;
 	
 	BiffStructurePtrVector crnOper;
 };

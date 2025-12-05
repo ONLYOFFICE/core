@@ -837,47 +837,62 @@ public:
 				CSymbolSimpleChecker2 oAllChecker(arSymbolsAll, nMaxSymbol);
 
 				std::map<std::wstring, int> mapFontsPriorityStandard;
-				mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"ASCW3", 1));
-				mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Arial", 2));
-				mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Times New Roman", 3));
-				mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Tahoma", 4));
-				mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Cambria", 5));
-				mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Calibri", 6));
-				mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Verdana", 7));
-				mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Georgia", 8));
-				mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Open Sans", 9));
-				mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Liberation Sans", 10));
-				mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Helvetica", 11));
-				mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Nimbus Sans L", 12));
-				mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"DejaVu Sans", 13));
-				mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Liberation Serif", 14));
-				mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Trebuchet MS", 15));
-				mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Courier New", 16));
-				mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Carlito", 17));
-				mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Segoe UI", 18));
-				mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"SimSun", 19));
-				mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"MS Gothic", 20));
-				mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Nirmala UI", 21));
-				mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Batang", 22));
-				mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"MS Mincho", 23));
-				mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Wingdings", 24));
-				mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Microsoft JhengHei", 25));
-				mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Microsoft JhengHei UI", 26));
-				mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Microsoft YaHei", 27));
-				mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"PMingLiU", 28));
-				mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"MingLiU", 29));
-				mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"DFKai-SB", 30));
-				mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"FangSong", 31));
-				mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"KaiTi", 32));
-				mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"SimKai", 33));
-				mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"SimHei", 34));
-				mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Meiryo", 35));
+				int nCurrentPriority = 1;
+
+				#define SET_FONT_PRIORITY(fontName) mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(fontName, nCurrentPriority++))
+
+				SET_FONT_PRIORITY(L"ASCW3");
+				SET_FONT_PRIORITY(L"Arial");
+				SET_FONT_PRIORITY(L"Times New Roman");
+				SET_FONT_PRIORITY(L"Tahoma");
+				SET_FONT_PRIORITY(L"Cambria");
+				SET_FONT_PRIORITY(L"Calibri");
+				SET_FONT_PRIORITY(L"Verdana");
+				SET_FONT_PRIORITY(L"Georgia");
+				SET_FONT_PRIORITY(L"Open Sans");
+				SET_FONT_PRIORITY(L"Liberation Sans");
+				SET_FONT_PRIORITY(L"Helvetica");
+				SET_FONT_PRIORITY(L"Nimbus Sans L");
+				SET_FONT_PRIORITY(L"DejaVu Sans");
+				SET_FONT_PRIORITY(L"Liberation Serif");
+				SET_FONT_PRIORITY(L"Trebuchet MS");
+				SET_FONT_PRIORITY(L"Courier New");
+				SET_FONT_PRIORITY(L"Carlito");
+				SET_FONT_PRIORITY(L"Segoe UI");
+				SET_FONT_PRIORITY(L"SimSun");
+				SET_FONT_PRIORITY(L"MS Gothic");
+				SET_FONT_PRIORITY(L"Nirmala UI");
+				SET_FONT_PRIORITY(L"Batang");
+				SET_FONT_PRIORITY(L"MS Mincho");
+				SET_FONT_PRIORITY(L"Wingdings");
+				SET_FONT_PRIORITY(L"Microsoft JhengHei");
+				SET_FONT_PRIORITY(L"Microsoft JhengHei UI");
+				SET_FONT_PRIORITY(L"Microsoft YaHei");
+				SET_FONT_PRIORITY(L"PMingLiU");
+				SET_FONT_PRIORITY(L"MingLiU");
+				SET_FONT_PRIORITY(L"DFKai-SB");
+				SET_FONT_PRIORITY(L"FangSong");
+				SET_FONT_PRIORITY(L"KaiTi");
+				SET_FONT_PRIORITY(L"SimKai");
+				SET_FONT_PRIORITY(L"SimHei");
+				SET_FONT_PRIORITY(L"Meiryo");
 
 #ifdef _MAC
-				mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"PingFang SC", 36));
-				mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"PingFang TC", 37));
-				mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"PingFang HK", 38));
+				SET_FONT_PRIORITY(L"PingFang SC");
+				SET_FONT_PRIORITY(L"PingFang TC");
+				SET_FONT_PRIORITY(L"PingFang HK");
+
+				SET_FONT_PRIORITY(L"Heiti SC");
+				SET_FONT_PRIORITY(L"Heiti TC");
+				SET_FONT_PRIORITY(L"Songti SC");
+				SET_FONT_PRIORITY(L"Songti TC");
 #endif
+
+				SET_FONT_PRIORITY(L"Malgun Gothic");
+				SET_FONT_PRIORITY(L"Nanum Gothic");
+				SET_FONT_PRIORITY(L"NanumGothic");
+				SET_FONT_PRIORITY(L"Noto Sans KR");
+				SET_FONT_PRIORITY(L"TakaoGothic");
 
 				NSFonts::CApplicationFontsSymbols oApplicationChecker;
 
@@ -1603,6 +1618,14 @@ NSFonts::IApplicationFonts* CApplicationFontsWorker::Check()
 {
 	if (m_sDirectory.empty())
 		return NULL;
+
+	for (std::vector<std::wstring>::iterator i = m_arAdditionalFolders.begin(); i != m_arAdditionalFolders.end(); i++)
+	{
+		if (0 == i->find(L"./"))
+			*i = NSFile::GetProcessDirectory() + L"/" + i->substr(2);
+		else if (0 == i->find(L"../"))
+			*i = NSFile::GetProcessDirectory() + L"/" + *i;
+	}
 
 	std::wstring strAllFontsJSPath      = m_sDirectory + L"/AllFonts.js";
 	std::wstring strFontsSelectionBin   = m_sDirectory + L"/font_selection.bin";

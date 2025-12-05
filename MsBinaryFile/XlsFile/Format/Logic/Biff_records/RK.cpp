@@ -61,6 +61,13 @@ void RK::readFields(CFRecord& record)
 	
 	cell = Cell(rw, col, rkrec.get_ixfe());
 }
+void RK::writeFields(CFRecord& record)
+{
+    Rw rw = cell.rw;
+    Col col = cell.col;
+
+    record << rw << col << rkrec;
+}
 
 const CellRef RK::getLocation() const
 {

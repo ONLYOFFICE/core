@@ -47,11 +47,12 @@ public:
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
+	void writeFields(CFRecord& record);
 
 	static const ElementType type = typeSXDBB;
 
 	boost::shared_array<unsigned char>	blob;
-	unsigned int						size;
+	unsigned int						size = 0;
 };
 
 } // namespace XLS

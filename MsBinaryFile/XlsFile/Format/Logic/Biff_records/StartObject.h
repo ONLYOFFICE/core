@@ -50,14 +50,15 @@ public:
 
 	
 	void readFields(CFRecord& record);
+	void writeFields(CFRecord& record);
 
 	static const ElementType	type = typeStartObject;
 
 //-----------------------------
-	_UINT16 iObjectKind;
-	_UINT16 iObjectContext;
-	_UINT16 iObjectInstance1;
-	_UINT16 iObjectInstance2;
+	_UINT16 iObjectKind = 0x0010;
+	_UINT16 iObjectContext = 0;
+	_UINT16 iObjectInstance1 = 0;
+	_UINT16 iObjectInstance2 = 0;
 
 
 };

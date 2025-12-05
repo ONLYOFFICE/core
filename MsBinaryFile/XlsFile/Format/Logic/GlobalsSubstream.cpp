@@ -636,6 +636,116 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 
 	return true;
 }
+
+const bool GlobalsSubstream::saveContent(BinProcessor& proc)
+{
+	auto globalInfoPtr = proc.getGlobalWorkbookInfo();
+	{
+		BOF bof;
+		bof.dt= 0x0005;
+		proc.mandatory(bof);
+	}
+	if(m_WriteProtect != nullptr)
+		proc.mandatory(*m_WriteProtect);
+	if(m_Template != nullptr)
+		proc.mandatory(*m_Template);
+	proc.mandatory<INTERFACE_T>();
+	proc.mandatory<WriteAccess>();
+	if(m_FileSharing != nullptr)
+		proc.mandatory(*m_FileSharing);
+	proc.mandatory<CodePage>();
+	proc.mandatory<DSF>();
+	proc.mandatory<Excel9File>();
+	if(m_RRTabId != nullptr)
+		proc.mandatory(*m_RRTabId);
+	else
+		proc.mandatory<RRTabId>();
+	if(globalInfoPtr->bMacrosExist || globalInfoPtr->bVbaProjectExist)
+	{
+		proc.mandatory<ObProj>();
+		if(!globalInfoPtr->bMacrosExist)
+			proc.mandatory<ObNoMacros>();
+	}
+	if(m_CodeName != nullptr)
+		proc.mandatory(*m_CodeName);
+	if(m_FNGROUPS != nullptr)
+		proc.mandatory(*m_FNGROUPS);
+	for(auto i : m_arLBL)
+		if(i != nullptr)
+			proc.mandatory(*i);
+	if(m_PROTECTION != nullptr)
+		proc.mandatory(*m_PROTECTION);
+	else
+		proc.mandatory<PROTECTION>();
+	if(m_arWindow1.empty())
+		proc.mandatory<Window1>();
+	else
+		{
+			for(auto i: m_arWindow1)
+				if(i!= nullptr)
+					proc.mandatory(*i);
+		}
+	proc.mandatory<Backup>();
+	proc.mandatory<HideObj>();
+	if(m_Date1904 != nullptr)
+		proc.mandatory(*m_Date1904);
+	else
+		proc.mandatory<Date1904>();
+	if(m_CalcPrecision != nullptr)
+		proc.mandatory(*m_CalcPrecision);
+	else
+		proc.mandatory<CalcPrecision>();
+	proc.mandatory<RefreshAll>();
+	proc.mandatory<BookBool>();
+	if(m_Formating != nullptr)
+		proc.mandatory(*m_Formating);
+	else
+		proc.mandatory<FORMATTING>();
+	//if(globalInfoPtr && !globalInfoPtr->arPIVOTCACHEDEFINITION.empty())
+	//{
+		//for(auto i : globalInfoPtr->arPIVOTCACHEDEFINITION)
+			//proc.mandatory(*i);
+	//}
+	for(auto i : m_arPIVOTCACHEDEFINITION)
+		if(i != nullptr)
+			proc.mandatory(*i);
+	for(auto i : m_arUserBView)
+		if(i != nullptr)
+			proc.mandatory(*i);
+	proc.mandatory<UsesELFs>();
+	if(m_arBUNDLESHEET.empty())
+		proc.mandatory<BUNDLESHEET>();
+	else
+		for(auto i : m_arBUNDLESHEET)
+			if(i != nullptr)
+				proc.mandatory(*i);
+	if(m_METADATA != nullptr)
+		proc.mandatory(*m_METADATA);
+	if(m_MTRSettings != nullptr)
+		proc.mandatory(*m_MTRSettings);
+	if(m_Country != nullptr)
+		proc.mandatory(*m_Country);
+	else
+		proc.mandatory<Country>();
+	for(auto i: m_arSUPBOOK)
+		if(i != nullptr)
+			proc.mandatory(*i);
+	if(m_SHAREDSTRINGS != nullptr)
+		proc.mandatory(*m_SHAREDSTRINGS);
+	if(m_ExtSST != nullptr)
+		proc.mandatory(*m_ExtSST);
+	//else
+		//proc.mandatory<ExtSST>();
+	if(m_BookExt != nullptr)
+		proc.mandatory(*m_BookExt);
+	for(auto i : m_arDConn)
+		if(i != nullptr)
+			proc.mandatory(*i);
+	if(m_THEME != nullptr)
+		proc.mandatory(*m_THEME);
+	proc.mandatory<EOF_T>();
+	return true;
+}
 void GlobalsSubstream::UpdateXFC()
 {
 	FORMATTING* fmts = dynamic_cast<FORMATTING*>(m_Formating.get());

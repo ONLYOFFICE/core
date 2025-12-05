@@ -72,5 +72,74 @@ const bool MDXTUPLESET::loadContent(BinProcessor& proc)
 	return true;
 }
 
+const bool MDXTUPLESET::saveContent(BinProcessor& proc)
+{
+	if(m_MDXVarious == nullptr)
+		return false;
+	proc.mandatory(*m_MDXVarious);
+	auto type = m_MDXVarious->get_type();
+	if(type == typeMDXTuple)
+	{
+		auto tuple = static_cast<MDXTuple*>(m_MDXVarious.get());
+		auto maxSize = 2050;
+		if(tuple->cistr > maxSize)
+		{
+			auto currentPose = maxSize;
+			while(currentPose < tuple->cistr)
+			{
+
+				CFRecord tempRecord(rt_ContinueFrt12, proc.getGlobalWorkbookInfo());
+				auto limit = 0;
+				if(currentPose + maxSize > tuple->cistr)
+					limit = tuple->cistr;
+				else
+					limit = currentPose + maxSize;
+				for(auto i = currentPose; i < limit; i++)
+					tempRecord << *(tuple->rgistr[i]);
+				{
+					ContinueFrt12 continueRecord;
+					auto capacity = 4*(limit - currentPose);
+					continueRecord.rgb.reserve(capacity);
+					auto CopyData =  tempRecord.getCurStaticData<char>() - tempRecord.getRdPtr();
+					memcpy(continueRecord.rgb.data(), CopyData, capacity);
+					proc.mandatory(continueRecord);
+				}
+				currentPose = limit;
+			}
+		}
+	}
+	else
+	{
+		auto set = static_cast<MDXSet*>(m_MDXVarious.get());
+		auto maxSize = 2049;
+		if(set->cistr > maxSize)
+		{
+			auto currentPose = maxSize;
+			while(currentPose < set->cistr)
+			{
+
+				CFRecord tempRecord(rt_ContinueFrt12, proc.getGlobalWorkbookInfo());
+				auto limit = 0;
+				if(currentPose + maxSize > set->cistr)
+					limit = set->cistr;
+				else
+					limit = currentPose + maxSize;
+				for(auto i = currentPose; i < limit; i++)
+					tempRecord << *(set->rgistr[i]);
+				{
+					ContinueFrt12 continueRecord;
+					auto capacity = 4*(limit - currentPose);
+					continueRecord.rgb.reserve(capacity);
+					auto CopyData =  tempRecord.getCurStaticData<char>() - tempRecord.getRdPtr();
+					memcpy(continueRecord.rgb.data(), CopyData, capacity);
+					proc.mandatory(continueRecord);
+				}
+				currentPose = limit;
+			}
+		}
+	}
+	return true;
+}
+
 } // namespace XLS
 

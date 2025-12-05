@@ -105,6 +105,8 @@ public:
 
 	office_element_ptr text_list_style_;
 	odf_types::style_family style_family_;
+
+    bool bDefault = false;
 private:
     office_element_ptr		style_text_properties_;
     office_element_ptr		style_paragraph_properties_;
@@ -129,6 +131,10 @@ public:
     static const ElementType type = typeStyleDefaultStyle;
     CPDOCCORE_DEFINE_VISITABLE();
 
+    default_style() 
+    {
+        content_.bDefault = true;  
+    }
     virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
 
     style_content content_;
@@ -286,8 +292,7 @@ public:
     office_element_ptr_array content_;
 private:
 	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
- 
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name); 
 };
 CP_REGISTER_OFFICE_ELEMENT2(draw_opacity);
 //------------------------------------------------------------------------------------------------

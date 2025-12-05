@@ -76,7 +76,36 @@ void Sxvd::readFields(CFRecord& record)
 		record >> stName;
 	}
 	int skip = record.getDataSize() - record.getRdPtr();
-	record.skipNunBytes(skip);}
+    record.skipNunBytes(skip);
+}
+
+void Sxvd::writeFields(CFRecord& record)
+{
+    short flags = 0;
+
+    SETBIT(flags, 0, fDefault)
+    SETBIT(flags, 1, fSum)
+    SETBIT(flags, 2, fCounta)
+    SETBIT(flags, 3, fAverage)
+    SETBIT(flags, 4, fMax)
+    SETBIT(flags, 5, fMin)
+    SETBIT(flags, 6, fProduct)
+    SETBIT(flags, 7, fCount)
+    SETBIT(flags, 8, fStdev)
+    SETBIT(flags, 9, fStdevp)
+    SETBIT(flags, 10, fVariance)
+    SETBIT(flags, 11, fVariancep)
+
+    record << sxaxis << cSub << flags;
+    cchName = stName.getSize();
+	if(cchName == 0)
+		cchName = 0xffff;
+    record << cItm << cchName;
+    if(cchName && cchName != 0xffff)
+    {
+        record << stName;
+    }
+}
 
 } // namespace XLS
 

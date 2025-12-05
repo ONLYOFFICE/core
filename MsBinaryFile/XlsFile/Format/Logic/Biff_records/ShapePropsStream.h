@@ -50,13 +50,14 @@ public:
 
 	
 	void readFields(CFRecord& record);
+	void writeFields(CFRecord& record);
 	
 	static const ElementType	type = typeShapePropsStream;
 
 	FrtHeader		frtHeader;
 	
-	_UINT16			wObjContext;
-	_UINT32			dwChecksum;
+	_UINT16			wObjContext = 0;
+	_UINT32			dwChecksum = 0;
 
 	std::string		xml_;
 

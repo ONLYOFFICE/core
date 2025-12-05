@@ -338,16 +338,23 @@ void pptx_text_context::Impl::ApplyListProperties(odf_reader::paragraph_format_p
 	
 	if (list_properties)
 	{
-		propertiesOut.fo_text_indent_ = list_properties->text_min_label_width_;
+
 		if (list_properties->text_space_before_)
 		{
 			double spaceBeforeTwip = list_properties->text_space_before_->get_value_unit(odf_types::length::pt);
-			if (list_properties->text_min_label_width_)
+			if (spaceBeforeTwip > 0)
 			{
-				spaceBeforeTwip += list_properties->text_min_label_width_->get_value_unit(odf_types::length::pt);
+				propertiesOut.fo_margin_left_ = odf_types::length(spaceBeforeTwip, odf_types::length::pt);
 			}
-			if (spaceBeforeTwip>0)
-				propertiesOut.fo_margin_left_ = odf_types::length(spaceBeforeTwip,odf_types::length::pt);
+		}
+		else if(!propertiesOut.fo_margin_left_)
+			propertiesOut.fo_margin_left_ = odf_types::length(0, odf_types::length::pt);
+
+		propertiesOut.fo_text_indent_ = list_properties->text_min_label_width_;
+
+		if (list_properties->fo_width_)
+		{
+
 		}
 	}
 	
@@ -443,7 +450,7 @@ void pptx_text_context::Impl::write_rPr(std::wostream & strm)
 
 	odf_reader::text_format_properties text_properties_;
 	
-	ApplyTextProperties(span_style_name_, paragraph_style_name_, text_properties_);
+	ApplyTextProperties(span_style_name_, paragraph_style_name_, text_properties_, true);
 
 	get_styles_context().start();
 
@@ -587,7 +594,8 @@ void pptx_text_context::Impl::dump_run()
 
 	dump_field();
 	
-	if (process_layouts_) return; 
+	//if (process_layouts_) 
+	//	return; 
 	
 	const std::wstring content = XmlUtils::EncodeXmlString(text_.str());
 	//if (content.length() <1 &&  span_style_name_.length()<1) return ;      ... провеить с пустыми строками нужны ли  ...

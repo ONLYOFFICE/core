@@ -12,7 +12,7 @@
 #include "StaticFunctions.h"
 #include "ConstValues.h"
 
-#define DEFAULT_FONT_SIZE 14
+#define DEFAULT_FONT_SIZE 12
 
 namespace NSCSS
 {
@@ -49,6 +49,8 @@ namespace NSCSS
 		if (!oElement.m_sId.empty())
 			m_sId += L'+' + oElement.m_sId;
 
+		m_arParentsStyles.insert(oElement.m_arParentsStyles.begin(), oElement.m_arParentsStyles.end());
+
 		return *this;
 	}
 
@@ -68,6 +70,8 @@ namespace NSCSS
 		m_oText         = oElement.m_oText;
 		m_oDisplay      = oElement.m_oDisplay;
 		m_oTransform    = oElement.m_oTransform;
+
+		m_arParentsStyles = oElement.m_arParentsStyles;
 
 		return *this;
 	}
@@ -109,7 +113,8 @@ namespace NSCSS
 	bool CCompiledStyle::Empty() const
 	{
 		return m_oBackground.Empty() && m_oBorder.Empty() && m_oFont.Empty() &&
-		       m_oMargin.Empty() && m_oPadding.Empty() && m_oText.Empty() && m_oDisplay.Empty();
+		       m_oMargin.Empty() && m_oPadding.Empty() && m_oText.Empty() &&
+		       m_oDisplay.Empty() && m_oTransform.Empty();
 	}
 
 	void CCompiledStyle::AddPropSel(const std::wstring& sProperty, const std::wstring& sValue, const unsigned int unLevel, const bool& bHardMode)
@@ -314,6 +319,7 @@ namespace NSCSS
 				}
 				//BORDER TOP
 				CASE(L"border-top"):
+				CASE(L"mso-border-top-alt"):
 				{
 					m_oBorder.SetTopSide(pPropertie.second, unLevel, bHardMode);
 					break;
@@ -335,6 +341,7 @@ namespace NSCSS
 				}
 				//BORDER RIGHT
 				CASE(L"border-right"):
+				CASE(L"mso-border-right-alt"):
 				{
 					m_oBorder.SetRightSide(pPropertie.second, unLevel, bHardMode);
 					break;
@@ -356,6 +363,7 @@ namespace NSCSS
 				}
 				//BORDER bottom
 				CASE(L"border-bottom"):
+				CASE(L"mso-border-bottom-alt"):
 				{
 					m_oBorder.SetBottomSide(pPropertie.second, unLevel, bHardMode);
 					break;
@@ -377,6 +385,7 @@ namespace NSCSS
 				}
 				//BORDER LEFT
 				CASE(L"border-left"):
+				CASE(L"mso-border-left-alt"):
 				{
 					m_oBorder.SetLeftSide(pPropertie.second, unLevel, bHardMode);
 					break;
@@ -433,6 +442,11 @@ namespace NSCSS
 				CASE(L"valign"):
 				{
 					m_oDisplay.SetVAlign(pPropertie.second, unLevel, bHardMode);
+					break;
+				}
+				CASE(L"white-space"):
+				{
+					m_oDisplay.SetWhiteSpace(pPropertie.second, unLevel, bHardMode);
 					break;
 				}
 				//TRANSFORM
@@ -521,7 +535,7 @@ namespace NSCSS
 	{
 		return m_sId;
 	}
-	
+
 	bool CCompiledStyle::HaveThisParent(const std::wstring &wsParentName) const
 	{
 		return m_arParentsStyles.end() != m_arParentsStyles.find(wsParentName);

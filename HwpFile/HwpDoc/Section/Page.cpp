@@ -1,36 +1,63 @@
 #include "Page.h"
+#include "../Common/NodeNames.h"
 
 namespace HWP
 {
 HWP::CPage::CPage()
 {}
 
-CPage::CPage(CXMLNode& oNode)
+CPage::CPage(CXMLReader& oReader, EHanType eType)
 {
-	m_bLandscape = L"NARROWLY" == oNode.GetAttribute(L"landscape");
-
-	m_nWidth = oNode.GetAttributeInt(L"width");
-	m_nHeight = oNode.GetAttributeInt(L"height");
-
-	std::wstring wsType = oNode.GetAttribute(L"gutterType");
-
-	if (L"LEFT_ONELY" == wsType)
-		m_chGutterType = 0;
-	else if (L"LEFT_RIGHT" == wsType)
-		m_chGutterType = 1;
-	else if (L"TOP_BOTTOM" == wsType)
-		m_chGutterType = 2;
-
-	for (CXMLNode& oChild : oNode.GetChilds(L"hp:margin"))
+	START_READ_ATTRIBUTES(oReader)
 	{
-		m_nMarginLeft   = oChild.GetAttributeInt(L"left");
-		m_nMarginRight  = oChild.GetAttributeInt(L"right");
-		m_nMarginTop    = oChild.GetAttributeInt(L"top");
-		m_nMarginBottom = oChild.GetAttributeInt(L"bottom");
-		m_nMarginHeader = oChild.GetAttributeInt(L"header");
-		m_nMarginFooter = oChild.GetAttributeInt(L"footer");
-		m_nMarginGutter = oChild.GetAttributeInt(L"gutter");
+		if (GetAttributeName(EAttribute::Landscape, eType) == sAttributeName)
+		{
+			if (EHanType::HWPX == eType)
+				m_bLandscape = "NARROWLY" == oReader.GetTextA();
+			else
+				m_bLandscape = oReader.GetBool();
+		}
+		else if (GetAttributeName(EAttribute::Width, eType) == sAttributeName)
+			m_nWidth = oReader.GetInt();
+		else if (GetAttributeName(EAttribute::Height, eType) == sAttributeName)
+			m_nHeight = oReader.GetInt();
+		else if (GetAttributeName(EAttribute::GutterType, eType) == sAttributeName)
+		{
+			const std::string sType{oReader.GetTextA()};
+
+			if (GetValueName(EValue::LeftOnly, eType) == sType)
+				m_chGutterType = 0;
+			else if (GetValueName(EValue::LeftRight, eType) == sType)
+				m_chGutterType = 1;
+			else if (GetValueName(EValue::TopBottom, eType) == sType)
+				m_chGutterType = 2;
+		}
 	}
+	END_READ_ATTRIBUTES(oReader)
+
+	WHILE_READ_NEXT_NODE_WITH_ONE_NAME(oReader, GetNodeName(ENode::PageMargin, eType))
+	{
+		START_READ_ATTRIBUTES(oReader)
+		{
+			if (GetAttributeName(EAttribute::Left, eType) == sAttributeName)
+				m_nMarginLeft = oReader.GetInt();
+			else if (GetAttributeName(EAttribute::Right, eType) == sAttributeName)
+				m_nMarginRight = oReader.GetInt();
+			else if (GetAttributeName(EAttribute::Top, eType) == sAttributeName)
+				m_nMarginTop = oReader.GetInt();
+			else if (GetAttributeName(EAttribute::Bottom, eType) == sAttributeName)
+				m_nMarginBottom = oReader.GetInt();
+			else if (GetAttributeName(EAttribute::Header, eType) == sAttributeName)
+				m_nMarginHeader = oReader.GetInt();
+			else if (GetAttributeName(EAttribute::Footer, eType) == sAttributeName)
+				m_nMarginFooter = oReader.GetInt();
+			else if (GetAttributeName(EAttribute::Gutter, eType) == sAttributeName)
+				m_nMarginGutter = oReader.GetInt();
+
+		}
+		END_READ_ATTRIBUTES(oReader)
+	}
+	END_WHILE
 }
 
 int CPage::GetWidth() const

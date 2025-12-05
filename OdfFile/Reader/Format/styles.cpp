@@ -639,7 +639,7 @@ void style::add_attributes( const xml::attributes_wc_ptr & Attributes )
 	{
 		if (sTest->empty())
 		{
-			style_default_outline_level_ = 9;
+			//style_default_outline_level_ = 9;
 		}
 		else
 			style_default_outline_level_= XmlUtils::GetInteger(*sTest);
@@ -1518,6 +1518,15 @@ void style_page_layout_properties::xlsx_serialize(std::wostream & strm, oox::xls
 			header	= Context.get_table_context().get_header_page();
 			footer = Context.get_table_context().get_footer_page();
 
+			if (vertical_margins.fo_margin_bottom_ && vertical_margins.fo_margin_bottom_->get_type() == odf_types::length_or_percent::Length)
+			{
+				bottom = vertical_margins.fo_margin_bottom_->get_length().get_value_unit(odf_types::length::inch);
+			}
+			if (vertical_margins.fo_margin_top_ && vertical_margins.fo_margin_top_->get_type() == odf_types::length_or_percent::Length)
+			{
+				top = vertical_margins.fo_margin_top_->get_length().get_value_unit(odf_types::length::inch);
+			}
+			
 			CP_XML_NODE(L"pageMargins")
 			{
 				if (horizontal_margins.fo_margin_left_ && horizontal_margins.fo_margin_left_->get_type() == odf_types::length_or_percent::Length)
@@ -1528,33 +1537,32 @@ void style_page_layout_properties::xlsx_serialize(std::wostream & strm, oox::xls
 					CP_XML_ATTR(L"right"	, horizontal_margins.fo_margin_right_->get_length().get_value_unit(odf_types::length::inch));
 				else CP_XML_ATTR(L"right", 0.7875);
 				
-				if (vertical_margins.fo_margin_top_ && vertical_margins.fo_margin_top_->get_type() == odf_types::length_or_percent::Length)
+				if (top)
 				{
-					top = vertical_margins.fo_margin_top_->get_length().get_value_unit(odf_types::length::inch);
-					CP_XML_ATTR(L"top", *top);
+					CP_XML_ATTR(L"top", *top + header.get_value_or(0));
 				}
 				else CP_XML_ATTR(L"top", 1.025);
 
-				if (vertical_margins.fo_margin_bottom_ && vertical_margins.fo_margin_bottom_->get_type() == odf_types::length_or_percent::Length)
+				if (bottom)
 				{
-					bottom = vertical_margins.fo_margin_bottom_->get_length().get_value_unit(odf_types::length::inch);
-					CP_XML_ATTR(L"bottom", *bottom);
+					CP_XML_ATTR(L"bottom", *bottom + footer.get_value_or(0));
 				}
 				else CP_XML_ATTR(L"bottom", 1.025);
 				
 				if (header)
 				{
-					*header = (*header / 72.0) + top.get_value_or(0); 
-					if (*header < 0) *header = 0.7875;
-					CP_XML_ATTR(L"header", *header); // pt -> inch
+					double v = top ? *top : *header;
+					if (v < 0) v = 0.7875;
+					CP_XML_ATTR(L"header", v); 
 				}
 				else CP_XML_ATTR(L"header", 0.7875);
 
 				if (footer)
 				{
-					*footer = (*footer / 72.0) + bottom.get_value_or(0);
-					if (*footer < 0) *footer = 0.7875;
-					CP_XML_ATTR(L"footer", *footer);
+					double v = bottom ? *bottom : *footer;
+					if (v < 0) v = 0.7875;
+
+					CP_XML_ATTR(L"footer", v);
 				}
 				else CP_XML_ATTR(L"footer", 0.7875);
 			}
@@ -1651,7 +1659,7 @@ void style_page_layout_properties::docx_serialize(std::wostream & strm, oox::doc
 			
 			CP_XML_NODE(L"w:type")
 			{				
-				if (change_page_layout)
+				if (change_page_layout && Context.get_page_break()) // check bug 76397
 				{
 					CP_XML_ATTR(L"w:val", L"nextPage");
 				}

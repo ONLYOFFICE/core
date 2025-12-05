@@ -4,23 +4,23 @@
 #include "Ctrl.h"
 #include "../HWPStream.h"
 #include "../HWPElements/HwpRecordTypes.h"
-#include "../Common/XMLNode.h"
+#include "../Common/XMLReader.h"
 
 namespace HWP
 {
 enum class ENumPos
 {
 	NONE,
-	LEFT_TOP,
-	CENTER_TOP,
-	RIGHT_TOP,
-	LEFT_BOTTOM,
+	TOP_LEFT,
+	TOP_CENTER,
+	TOP_RIGHT,
+	BOTTOM_LEFT,
 	BOTTOM_CENTER,
-	RIGHT_BOTTOM,
-	OUTER_TOP,
-	OUTER_BOTTOM,
-	INNER_TOP,
-	INNER_BOTTOM
+	BOTTOM_RIGHT,
+	TOP_OUTER,
+	BOTTOM_OUTER,
+	TOP_INNER,
+	BOTTOM_INNER
 };
 
 class CCtrlPageNumPos : public CCtrl
@@ -34,7 +34,14 @@ class CCtrlPageNumPos : public CCtrl
 public:
 	CCtrlPageNumPos(const HWP_STRING& sCtrlID);
 	CCtrlPageNumPos(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
-	CCtrlPageNumPos(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVersion);
+	CCtrlPageNumPos(const HWP_STRING& sCtrlID, CXMLReader& oReader, EHanType eType);
+
+	ENumPos GetPos() const;
+
+	HWP_STRING GetPrefix() const;
+	HWP_STRING GetPostfix() const;
+
+	ENumberShape2 GetFormatType() const;
 
 	ECtrlObjectType GetCtrlType() const override;
 };

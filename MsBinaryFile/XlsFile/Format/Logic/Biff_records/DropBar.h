@@ -50,10 +50,11 @@ public:
 
 	
 	void readFields(CFRecord& record);
+	void writeFields(CFRecord& record);
 
 	static const ElementType	type = typeDropBar;
 
-	_INT16 pcGap;
+	_INT16 pcGap = 0;
 };
 
 } // namespace XLS

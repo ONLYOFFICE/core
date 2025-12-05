@@ -729,5 +729,104 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 	return true;
 }
 
+const bool WorksheetSubstream::saveContent(BinProcessor& proc)
+{
+	auto globInfo = proc.getGlobalWorkbookInfo();
+	{
+		if(globInfo->sheets_info.size() > globInfo->current_sheet)
+			globInfo->sheets_info.at(globInfo->current_sheet).StreamPos = proc.GetRecordPosition();
+
+		BOF bof;
+		bof.dt= 0x0010;
+		proc.mandatory(bof);
+	}
+	if(m_GLOBALS != nullptr)
+		proc.mandatory(*m_GLOBALS);
+	else
+		proc.mandatory<GLOBALS>();
+	if(m_PAGESETUP != nullptr)
+		proc.mandatory(*m_PAGESETUP);
+	else
+		proc.mandatory<PAGESETUP>();
+	if(m_BACKGROUND != nullptr)
+		proc.mandatory(*m_BACKGROUND);
+	if(m_PROTECTION != nullptr)
+		proc.mandatory(*m_PROTECTION);
+
+	if(m_COLUMNS != nullptr)
+		proc.mandatory(*m_COLUMNS);
+	else
+		proc.mandatory<COLUMNS>();
+	if(m_SORTANDFILTER != nullptr)
+		proc.mandatory(*m_SORTANDFILTER);
+	if(m_Dimensions != nullptr)
+		proc.mandatory(*m_Dimensions);
+	else
+		proc.mandatory<Dimensions>();
+
+	if(m_CELLTABLE != nullptr)
+		proc.mandatory(*m_CELLTABLE);
+
+	if(m_OBJECTS != nullptr)
+		proc.mandatory(*m_OBJECTS);
+
+	for(auto i : m_arHFPicture)
+		if( i!= nullptr)
+			proc.mandatory(*i);
+	for(auto i:m_arNote)
+		if(i!= nullptr)
+			proc.mandatory(*i);
+	for(auto i : m_arPIVOTVIEW)
+		if(i != nullptr)
+			proc.mandatory(*i);
+	if(m_DCON != nullptr)
+		proc.mandatory(*m_DCON);
+	if(m_arWINDOW.empty())
+	{
+		proc.mandatory<WINDOW>();
+	}
+	else
+	{
+		for(auto i: m_arWINDOW)
+			if(i != nullptr)
+				proc.mandatory(*i);
+	}
+	for(auto i : m_arCUSTOMVIEW)
+		if(i != nullptr)
+			proc.mandatory(*i);
+	if(m_DxGCol != nullptr)
+		proc.mandatory(*m_DxGCol);
+	for(auto i : m_arMergeCells)
+		if(i != nullptr)
+			proc.mandatory(*i);
+	if(m_LRng != nullptr)
+		proc.mandatory(*m_LRng);
+	for(auto i : m_arQUERYTABLE)
+		if(i != nullptr)
+			proc.mandatory(*i);
+	if(m_CONDFMTS != nullptr)
+		proc.mandatory(*m_CONDFMTS);
+	for(auto i : m_arHLINK)
+		if(i != nullptr)
+			proc.mandatory(*i);
+	if(m_DVAL != nullptr)
+		proc.mandatory(*m_DVAL);
+	if(m_CodeName != nullptr)
+		proc.mandatory(*m_CodeName);
+	if(m_SheetExt != nullptr)
+		proc.mandatory(*m_SheetExt);
+	for(auto i : m_arFEAT)
+		if(i != nullptr)
+			proc.mandatory(*i);
+	for(auto i : m_arFEAT11)
+		if(i != nullptr)
+			proc.mandatory(*i);
+	for(auto i : m_arRECORD12)
+		if(i != nullptr)
+			proc.mandatory(*i);
+	proc.mandatory<EOF_T>();
+	return true;
+}
+
 } // namespace XLS
 

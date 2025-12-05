@@ -47,6 +47,7 @@ public:
 	BaseObjectPtr clone();
 
 	virtual const bool loadContent(BinProcessor& proc);
+	virtual const bool saveContent(BinProcessor& proc);
 	
 	void serialize_attr(CP_ATTR_NODE);
 

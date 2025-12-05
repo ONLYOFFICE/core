@@ -32,7 +32,7 @@
 #pragma once
 
 #include "BiffRecord.h"
-
+#include "../Biff_structures/FrtRefHeader.h"
 namespace XLS
 {
 
@@ -50,7 +50,10 @@ public:
 
 	
 	void readFields(CFRecord& record);
+	void writeFields(CFRecord& record);
 
+	FrtRefHeader	frtHeader;
+	std::vector<char>	rgb;
 	static const ElementType	type = typeContinueFrt12;
 
 };

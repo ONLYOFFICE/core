@@ -37,10 +37,51 @@
 
 HRESULT _ChangePassword(const std::wstring& wsPath, const std::wstring& wsPassword, CPdfReader* _pReader, CPdfWriter* _pWriter);
 
+struct CObjectInfo
+{
+	PdfWriter::CObjectBase* pObj;
+	int nRefCount;
+
+	CObjectInfo() { pObj = NULL; nRefCount = 0; }
+	CObjectInfo(PdfWriter::CObjectBase* _pObj, int _nRefCount) : pObj(_pObj), nRefCount(_nRefCount) {}
+};
+
+class CObjectsManager
+{
+public:
+	CObjectsManager() : m_pDoc(NULL) {}
+
+	void AddObj(int nID, PdfWriter::CObjectBase* pObj);
+	void RemoveObj(int nID);
+	PdfWriter::CObjectBase* GetObj(int nID);
+	bool IncRefCount(int nID);
+	bool DecRefCount(int nID);
+	int FindObj(PdfWriter::CObjectBase* pObj);
+	void DeleteObjTree(Object* obj, XRef* xref, int nStartRefID);
+	void SetDoc(PdfWriter::CDocument* pDoc);
+
+	std::vector<int> m_arrSplitAddPages;
+
+private:
+	PdfWriter::CDocument* m_pDoc;
+	std::map<int, CObjectInfo> m_mUniqueRef; // map уникальных объектов
+};
+
 class CPdfEditor
 {
 public:
-	CPdfEditor(const std::wstring& _wsSrcFile, const std::wstring& _wsPassword, CPdfReader* _pReader, const std::wstring& _wsDstFile, CPdfWriter* _pWriter);
+	enum class Mode
+	{
+		Unknown,
+		ReadOnly,
+		Split,
+		WriteAppend,
+		WriteNew
+	};
+
+	CPdfEditor(const std::wstring& _wsSrcFile, const std::wstring& _wsPassword, const std::wstring& _wsDstFile, CPdfReader* _pReader, CPdfWriter* _pWriter, Mode nMode = Mode::Unknown);
+
+	void SetMode(Mode nMode);
 
 	int  GetError();
 	void Close();
@@ -59,19 +100,45 @@ public:
 	void AddShapeXML(const std::string& sXML);
 	void EndMarkedContent();
 	bool IsBase14(const std::wstring& wsFontName, bool& bBold, bool& bItalic, std::wstring& wsFontPath);
+	void Redact(IAdvancedCommand* pCommand);
+	std::vector<double> WriteRedact(const std::vector<std::wstring>& arrID);
+
+	bool SplitPages(const int* arrPageIndex, unsigned int unLength);
+	void AfterSplitPages();
+	bool MergePages(const std::wstring& wsPath);
 
 private:
+	bool IncrementalUpdates();
+	void NewFrom();
 	void GetPageTree(XRef* xref, Object* pPagesRefObj, PdfWriter::CPageTree* pPageParent = NULL);
+	bool SplitPages(const int* arrPageIndex, unsigned int unLength, PDFDoc* _pDoc, int nStartRefID);
+	bool ChangeFullNameParent(int nParent, const std::string& sPrefixForm, std::vector<int>& arrRename);
 
-	std::wstring wsSrcFile;
-	std::wstring wsPassword;
+	struct CRedactData
+	{
+		std::wstring sID;
+		std::vector<double> arrQuads;
+		LONG nLenRender;
+		BYTE* pRender;
+		bool bDraw = false;
+	};
+
+	std::wstring m_wsSrcFile;
+	std::wstring m_wsDstFile;
+	std::wstring m_wsPassword;
+	std::vector<CRedactData> m_arrRedact;
 	std::map<std::wstring, std::wstring> m_mFonts;
+	CObjectsManager m_mObjManager;
 
-	CPdfReader* pReader;
-	CPdfWriter* pWriter;
+	CPdfReader* m_pReader;
+	CPdfWriter* m_pWriter;
 
-	int nError;
+	int m_nError;
+	// 0 - Дозапись. pReader и pWriter работают с одним файлом
+	// 1 - Split. pReader и pWriter работают с разными файлами
+	Mode m_nMode;
 	int m_nEditPage;
+	int m_nOriginIndex;
 };
 
 #endif // _PDF_EDITOR_H

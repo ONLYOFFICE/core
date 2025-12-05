@@ -70,6 +70,7 @@ namespace OOX
             void fromBin(XLS::BaseObjectPtr& obj);
             void fromBin(XLS::StreamCacheReaderPtr& reader);
 			XLS::BaseObjectPtr toBin();
+			XLS::BaseObjectPtr toXLS();
             void toBin(XLS::StreamCacheWriterPtr& writer);
 			virtual EElementType getType () const
 			{
@@ -175,7 +176,6 @@ namespace OOX
 			DWORD m_nDataLength = 0;
 		private:
 			CPath m_oReadPath;
-			std::wstring prepareData() const;
 		};
 	} //Spreadsheet
 } // namespace OOX

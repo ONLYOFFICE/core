@@ -46,11 +46,12 @@ public:
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 
 	static const ElementType type = typeCalcSaveRecalc;
 
 //-----------------------------
-	Boolean<unsigned short> fSaveRecalc;
+    Boolean<unsigned short> fSaveRecalc = true;
 };
 
 } // namespace XLS

@@ -141,9 +141,19 @@ void odp_conversion_context::end_slide()
 {
 	slide_context_.end_page();
 }
-void odp_conversion_context::start_master_slide(std::wstring name)
+void odp_conversion_context::start_master_slide(std::wstring & name)
 {
 	slide_context_.set_styles_context(page_layout_context()->get_local_styles_context());
+
+	std::map<std::wstring, int>::iterator pFind = map_masterNames_.find(name);
+	if (map_masterNames_.end() == pFind)
+	{
+		map_masterNames_.insert(std::make_pair(name, 1));
+	}
+	else
+	{
+		name += std::to_wstring(++pFind->second);
+	}
 	
 	page_layout_context()->add_master_page(name);	
 	slide_context_.start_page(page_layout_context()->last_master()->get_root());

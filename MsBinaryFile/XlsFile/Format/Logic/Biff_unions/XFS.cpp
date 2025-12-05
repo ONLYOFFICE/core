@@ -110,6 +110,35 @@ const bool XFS::loadContent(BinProcessor& proc)
 	}
 	return true;
 }
+
+const bool XFS::saveContent(BinProcessor& proc)
+{
+	auto globInfo = proc.getGlobalWorkbookInfo();
+	for(auto i = 0; i < 16; i++)
+	{
+		size_t index = 0;
+		XF cellStyleMandatory(index, index);
+		cellStyleMandatory.fStyle = true;
+		proc.mandatory(cellStyleMandatory);
+	}
+	for (auto i: m_arCellStyles)
+		if(i!= nullptr)
+			proc.mandatory(*i);
+	globInfo->cellStyleXfs_count = m_arCellStyles.size() + 16; // styles + 16 mandatory styles
+	for (auto i: m_arCellXFs)
+        if(i!= nullptr)
+            proc.mandatory(*i);
+	globInfo->cellXfs_count = m_arCellXFs.size();
+    if(m_XFCRC != nullptr )
+    {
+        proc.mandatory(*m_XFCRC);
+        for(auto i : m_arXFext)
+            proc.mandatory(*i);
+    }
+
+    return true;
+}
+
 void XFS::RegisterFillBorder()
 {
 	int first_xf_ext = 0;

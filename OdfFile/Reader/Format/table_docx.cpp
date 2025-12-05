@@ -136,17 +136,17 @@ void table_table_row::docx_convert(oox::docx_conversion_context & Context)
 
 void table_table_rows::docx_convert(oox::docx_conversion_context & Context)
 {
- 	for (size_t i = 0; i < table_table_row_.size(); i++)
+ 	for (size_t i = 0; i < content_.size(); i++)
     {
-        table_table_row_[i]->docx_convert(Context);
+        content_[i]->docx_convert(Context);
     }
 }
 
 void table_table_header_rows::docx_convert(oox::docx_conversion_context & Context)
 {
- 	for (size_t i = 0; i < table_table_row_.size(); i++)
+ 	for (size_t i = 0; i < content_.size(); i++)
     {
-        table_table_row_[i]->docx_convert(Context);
+        content_[i]->docx_convert(Context);
     }
 }
 
@@ -248,9 +248,9 @@ void table_columns::docx_convert(oox::docx_conversion_context & Context)
 
 void table_table_columns::docx_convert(oox::docx_conversion_context & Context)
 {
-	for (size_t i = 0; i < table_table_column_.size(); i++)
+	for (size_t i = 0; i < content_.size(); i++)
     {
-        table_table_column_[i]->docx_convert(Context);
+        content_[i]->docx_convert(Context);
     }
 }
 
@@ -278,9 +278,9 @@ void table_columns_and_groups::docx_convert(oox::docx_conversion_context & Conte
 
 void table_table_header_columns::docx_convert(oox::docx_conversion_context & Context)
 {
-	for (size_t i = 0; i < table_table_column_.size(); i++)
+	for (size_t i = 0; i < content_.size(); i++)
     {
-        table_table_column_[i]->docx_convert(Context);
+        content_[i]->docx_convert(Context);
     }    
 }
 

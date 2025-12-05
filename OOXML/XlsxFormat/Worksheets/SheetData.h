@@ -152,6 +152,7 @@ namespace OOX
 			void fromXLSBExt (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nFlags);
             void fromBin(XLS::StreamCacheReaderPtr& reader, XLS::CFRecordPtr& record);
             void fromBin(XLS::BaseObjectPtr& obj, SimpleTypes::Spreadsheet::ECellFormulaType eType);
+			void toXls(XLS::BaseObjectPtr& obj);
             void toBin(XLS::BaseObjectPtr& obj);
             void toBin(XLS::CFRecordPtr& record, const XLS::CellRef& cellBaseRef);
 
@@ -230,6 +231,7 @@ namespace OOX
             void fromBin(XLS::BaseObjectPtr& obj);
             bool fromBin(XLS::StreamCacheReaderPtr& reader);
 			XLS::BaseObjectPtr toBin(sharedFormula &sharedFormulas);
+			void toXLS(XLS::BaseObjectPtr cellPtr);
             void toBin(XLS::StreamCacheWriterPtr& writer);
 
 			virtual EElementType getType () const;
@@ -309,17 +311,21 @@ namespace OOX
             void fromBin(XLS::BaseObjectPtr& obj);
             void fromBin(XLS::StreamCacheReaderPtr& reader);
             XLS::BaseObjectPtr toBin(sharedFormula &sharedFormulas);
+			XLS::BaseObjectPtr toXLS();
             void toBin(XLS::StreamCacheWriterPtr& writer);
-
+            void WriteAttributes(XLS::StreamCacheWriterPtr& writer);
+            //удалить хранимые ячейки и кэшировать данные для экономии памяти
+            void storeXmlCache();
 			virtual EElementType getType () const;
 
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
             void ReadAttributes(XLS::CFRecordPtr& oReader);
 			void ReadAttributes(XLS::BaseObjectPtr& obj);
-            void WriteAttributes(XLS::StreamCacheWriterPtr& writer);
 			void CheckIndex();
             bool compressCell(CCell* pCell);
+            //xml кэш чтобы не хранить ячеки
+            nullable_string           m_oDataCache;
 
 		public:
 			nullable<SimpleTypes::COnOff>					m_oCollapsed;
@@ -352,12 +358,15 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void toXMLStart(NSStringUtils::CStringBuilder& writer) const;
 			virtual void toXMLEnd(NSStringUtils::CStringBuilder& writer) const;
+            //добавить кэшированное xml значение строки для экономии памяти
+            void AddRowToCache(CRow &row);
 
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nType, CSVWriter* pCSVWriter, NSFile::CStreamWriter& oStreamWriter);
             void fromBin(XLS::BaseObjectPtr& obj);
             void fromBin(XLS::StreamCacheReaderPtr& reader);
 			XLS::BaseObjectPtr toBin();
+			XLS::BaseObjectPtr toXLS();
             void toBin(XLS::StreamCacheWriterPtr& writer);
 
 			virtual EElementType getType () const;
@@ -367,6 +376,7 @@ namespace OOX
 			std::map<int, std::map<int, unsigned int>>	m_mapStyleMerges2003; // map(row, map(col, style))
 			void StyleFromMapStyleMerges2003(std::map<int, unsigned int> &mapStyleMerges);
 			void AfterRead();
+            void ClearSharedFmlaRefs();
 
 		private:
 			void fromXLSBToXmlCell (CCell& pCell, CSVWriter* pCSVWriter, NSFile::CStreamWriter& oStreamWriter);
@@ -374,7 +384,7 @@ namespace OOX
 			void fromXLSBToXmlRowEnd (CRow* pRow, CSVWriter* pCSVWriter, NSFile::CStreamWriter& oStreamWriter, bool bLastRow = false);
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
             bool compressRow(CRow* pRow);
-
+            nullable<NSStringUtils::CStringBuilder>  m_oDataCache;
 	// spreadsheets 2003
 
 			nullable_string m_sStyleID;

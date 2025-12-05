@@ -866,6 +866,7 @@ public:
     void pop_text_properties	();
    
 	odf_reader::style_text_properties_ptr current_text_properties();
+	odf_reader::style_paragraph_properties_ptr current_paragraph_properties();
 
     void set_page_break_after(int val);
     int get_page_break_after();
@@ -1002,7 +1003,25 @@ public:
 
 	void		add_jsaProject(const std::string &content);
 
+    void set_implicit_end( bool _flag );
+
+    bool get_implicit_end() const;
+
+	void set_inside_frame( bool flag );
+
+	bool get_inside_frame() const;
+
+	void set_scale( const int _scale );
+
+	int get_scale() const;
+
 private:
+
+    bool flag_implicit_end = false;
+
+	bool inside_frame = false;
+
+	int scale_for_framePr = 0;
 
 	struct _context_state
 	{

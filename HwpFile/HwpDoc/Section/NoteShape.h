@@ -3,7 +3,7 @@
 
 #include "../HWPElements/HwpRecordTypes.h"
 #include "../HWPStream.h"
-#include "../Common/XMLNode.h"
+#include "../Common/XMLReader.h"
 
 namespace HWP
 {
@@ -47,7 +47,7 @@ class CNoteShape
 	int m_nNoteLineColor;
 public:
 	CNoteShape();
-	CNoteShape(CXMLNode& oNode, int nVersion);
+	CNoteShape(CXMLReader& oReader, EHanType eType);
 
 	static CNoteShape* Parse(int nLevel, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 };

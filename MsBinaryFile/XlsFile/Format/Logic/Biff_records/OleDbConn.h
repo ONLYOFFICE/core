@@ -48,13 +48,14 @@ public:
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
+	void writeFields(CFRecord& record);
 
 	static const ElementType type = typeOleDbConn;
 
 	FrtHeaderOld	frtHeaderOld;
-	bool			fPasswd;
-	bool			fLocal;
-	unsigned short	cst;
+	bool			fPasswd = false;
+	bool			fLocal = false;
+	unsigned short	cst = 0;
 };
 
 } // namespace XLS

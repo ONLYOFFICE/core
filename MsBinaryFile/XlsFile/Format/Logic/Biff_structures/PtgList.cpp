@@ -31,6 +31,7 @@
  */
 
 #include "PtgList.h"
+#include "PtgArea3d.h"
 #include "PtgExtraList.h"
 #include "../../../../../OOXML/Base/Unit.h"
 
@@ -72,7 +73,6 @@ void PtgList::writeFields(CFRecord& record)
 	//record.skipNunBytes(1); // eptg Reserved
 	global_info = record.getGlobalWorkbookInfo();
 	record << ixti;
-
 	unsigned short flags = 0;
 
 	SETBITS(flags, 0, 1, columns)
@@ -156,6 +156,38 @@ void PtgList::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool ful
     formula += L']';
 
     ptg_stack.push(formula);
+}
+
+Ptg* PtgList::toArea()
+{
+	Ref8 tableRef;
+	auto tableRefIndex = XLS::GlobalWorkbookInfo::mapTableRefsStatic.find(listIndex);
+	if(tableRefIndex != XLS::GlobalWorkbookInfo::mapTableRefsStatic.end())
+	{
+		tableRef.fromString(tableRefIndex->second);
+		tableRef.columnFirst += colFirst;
+		tableRef.columnLast = tableRef.columnFirst + (colLast - colFirst);
+		if(rowType == 0x2) //headers
+			tableRef.rowLast = tableRef.rowFirst;
+		else if(rowType == 0x0) //data
+			tableRef.rowFirst++;
+		else if(rowType == 0x6) //dataheaders
+			tableRef.rowLast--;
+		else if(rowType == 0x0C) // datatotals
+			tableRef.rowFirst--;
+		else if(rowType == 0x8) //totals
+			tableRef.rowFirst = tableRef.rowLast;
+	}
+	PtgArea3d* listArea = new PtgArea3d(0x3B, CellRef());
+	listArea->ixti = ixti;
+	listArea->area = tableRef;
+	listArea->area.rowFirstRelative = false;
+	listArea->area.rowLastRelative = false;
+	listArea->area.columnFirstRelative = false;
+	listArea->area.columnLastRelative = false;
+	Ptg* ptr = listArea;
+
+	return ptr;
 }
 
 } // namespace XLS

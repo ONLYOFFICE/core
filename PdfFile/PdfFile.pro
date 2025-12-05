@@ -42,6 +42,7 @@ INCLUDEPATH += \
 
 HEADERS += $$files(lib/*.h, true)
 SOURCES += $$files(lib/*.c, true)
+SOURCES += $$files(lib/*.cpp, true)
 SOURCES += $$files(lib/*.cc, true)
 
 SOURCES -= \
@@ -57,13 +58,13 @@ SOURCES -= \
     lib/xpdf/pdfinfo.cc
 
 SOURCES += \
-    SrcReader/RendererOutputDev.cpp \
+	SrcReader/RendererOutputDev.cpp \
     SrcReader/Adaptors.cpp \
     SrcReader/PdfAnnot.cpp \
     SrcReader/GfxClip.cpp
 
 HEADERS += \
-    SrcReader/RendererOutputDev.h \
+	SrcReader/RendererOutputDev.h \
     SrcReader/Adaptors.h \
     SrcReader/MemoryUtils.h \
     SrcReader/PdfAnnot.h \
@@ -128,6 +129,7 @@ core_windows {
     DEFINES -= _UNICODE
 }
 
+include($$PWD/../Common/3dParty/brotli/brotli.pri)
 include($$PWD/../DesktopEditor/graphics/pro/freetype.pri)
 
 HEADERS += \
@@ -160,7 +162,8 @@ HEADERS += \
     SrcWriter/Utils.h \
     SrcWriter/Metadata.h \
     SrcWriter/ICCProfile.h \
-    SrcWriter/States.h
+	SrcWriter/States.h \
+	SrcWriter/RedactOutputDev.h
 
 SOURCES += \
     SrcWriter/AcroForm.cpp \
@@ -176,6 +179,7 @@ SOURCES += \
     SrcWriter/FontCidTT.cpp \
     SrcWriter/FontTT.cpp \
     SrcWriter/FontTTWriter.cpp \
+    SrcWriter/FontOTWriter.cpp \
     SrcWriter/GState.cpp \
     SrcWriter/Image.cpp \
     SrcWriter/Info.cpp \
@@ -188,7 +192,8 @@ SOURCES += \
     SrcWriter/Streams.cpp \
     SrcWriter/Utils.cpp \
     SrcWriter/Metadata.cpp \
-    SrcWriter/States.cpp
+	SrcWriter/States.cpp \
+	SrcWriter/RedactOutputDev.cpp
 
 # PdfFile
 

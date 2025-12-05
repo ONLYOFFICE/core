@@ -51,21 +51,22 @@ public:
 	static const ElementType type = typeFtSbs;
 
 	virtual void load(CFRecord& record);
+	virtual void save(CFRecord& record);
 
-	short iVal;
-	short iMin;
-	short iMax;
-	short dInc;
-	short dPage;
+	short iVal = 0;
+	short iMin = 0;
+	short iMax = 0;
+	short dInc = 0;
+	short dPage = 0;
 	Boolean<unsigned short> fHoriz;
-	short dxScroll;
+	short dxScroll = 0;
 
-	bool fDraw;
-	bool fDrawSliderOnly;
-	bool fTrackElevator;
-	bool fNo3d;
+	bool fDraw = false;
+	bool fDrawSliderOnly = false;
+	bool fTrackElevator = false;
+	bool fNo3d = false;
 
-	bool fExist;
+	bool fExist = false;
 };
 
 } // namespace XLS

@@ -60,6 +60,16 @@ void LineFormat::readFields(CFRecord& record)
 	fAutoCo = GETBIT(flags, 3);
 }
 
+void LineFormat::writeFields(CFRecord& record)
+{
+	unsigned short flags = 0;
+
+	SETBIT(flags, 0, fAuto)
+	SETBIT(flags, 2, fAxisOn)
+	SETBIT(flags, 3, fAutoCo)
+	record << rgb << lns << we << flags << icv;
+}
+
 int LineFormat::serialize(std::wostream & _stream)
 {
 	CP_XML_WRITER(_stream)    

@@ -80,10 +80,11 @@ const bool LD::loadContent(BinProcessor& proc)
 		elements_.pop_back();
 	}
 
-	proc.mandatory<ATTACHEDLABEL>();
-
-	m_ATTACHEDLABEL = elements_.back();
-	elements_.pop_back();
+	if(proc.mandatory<ATTACHEDLABEL>())
+	{
+		m_ATTACHEDLABEL = elements_.back();
+		elements_.pop_back();
+	}
 
 	if (proc.optional<FRAME>())
 	{
@@ -102,7 +103,26 @@ const bool LD::loadContent(BinProcessor& proc)
 		elements_.pop_back();
 	}
 	proc.optional<CRTMLFRT>();
-	proc.mandatory<End>();				elements_.pop_back();
+	if(proc.mandatory<End>())
+		elements_.pop_back();
+	return true;
+}
+
+const bool LD::saveContent(BinProcessor& proc)
+{
+	if(m_Legend == nullptr)
+		return false;
+	proc.mandatory(*m_Legend);
+	proc.mandatory<Begin>();
+	if(m_Pos != nullptr)
+		proc.mandatory(*m_Pos);
+	if(m_ATTACHEDLABEL != nullptr)
+		proc.mandatory(*m_ATTACHEDLABEL);
+	if(m_FRAME != nullptr)
+		proc.mandatory(*m_FRAME);
+	if(m_CrtLayout12 != nullptr)
+		proc.mandatory(*m_CrtLayout12);
+	proc.mandatory<End>();
 	return true;
 }
 

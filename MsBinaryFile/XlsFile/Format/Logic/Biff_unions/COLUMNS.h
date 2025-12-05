@@ -46,12 +46,14 @@ public:
 	BaseObjectPtr clone();
 
 	virtual const bool loadContent(BinProcessor& proc);
+    virtual const bool saveContent(BinProcessor& proc);
 
 	int serialize(std::wostream & stream);
 
 	static const ElementType type = typeCOLUMNS;
 
 	BaseObjectPtr m_DefColWidth;
+	std::vector<BaseObjectPtr> m_colInfos;
 
 	GlobalWorkbookInfoPtr global_info_;
 };

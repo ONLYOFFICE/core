@@ -49,8 +49,9 @@ public:
 	static const ElementType	type = typeDXFNumUsr;
 
 	virtual void load(CFRecord& record);
+    virtual void save(CFRecord& record);
 
-	unsigned short cb;
+    unsigned short cb = 0;
 	XLUnicodeString fmt;
 };
 

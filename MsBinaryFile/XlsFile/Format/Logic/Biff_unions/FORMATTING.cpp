@@ -154,6 +154,42 @@ const bool FORMATTING::loadContent(BinProcessor& proc)
 
 	return true;
 }
+const bool FORMATTING::saveContent(BinProcessor& proc)
+{
+
+
+	proc.mandatory<Font>();
+	proc.mandatory<Font>();
+	proc.mandatory<Font>();
+	proc.mandatory<Font>();
+	for(auto i : m_arFonts)
+		if(i != nullptr)
+			proc.mandatory(*i);
+	if(m_arFormats.empty())
+		proc.mandatory<Format>();
+	for(auto i:m_arFormats)
+		if(i != nullptr)
+			proc.mandatory(*i);
+	if(m_XFS != nullptr)
+		proc.mandatory(*m_XFS);
+	else
+		proc.mandatory<XFS>();
+	for(auto i : m_arDXF)
+		if(i != nullptr)
+			proc.mandatory(*i);
+	if(m_Styles != nullptr)
+		proc.mandatory(*m_Styles);
+	else
+		proc.mandatory<STYLES>();
+	if(m_TABLESTYLES != nullptr)
+		proc.mandatory(*m_TABLESTYLES);
+	if(m_Palette != nullptr)
+		proc.mandatory(*m_Palette);
+	if(m_ClrtClient != nullptr)
+		proc.mandatory(*m_ClrtClient);
+	return true;
+}
+
 void FORMATTING::update_xfs()
 {
 	STYLES * st = dynamic_cast<STYLES*>(m_Styles.get());

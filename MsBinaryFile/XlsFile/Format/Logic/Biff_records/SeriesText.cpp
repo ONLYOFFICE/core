@@ -65,5 +65,11 @@ void SeriesText::readFields(CFRecord& record)
 		record >> stText;
 }
 
+void SeriesText::writeFields(CFRecord& record)
+{
+	record.reserveNunBytes(2);
+	record << stText;
+}
+
 } // namespace XLS
 

@@ -12,21 +12,19 @@
 namespace NSDocxRenderer
 {
 	CDocument::CDocument(IRenderer* pRenderer, NSFonts::IApplicationFonts* pFonts) :
-		m_pAppFonts(pFonts),
-		m_oFontManager(pFonts),
-		m_oFontSelector(pFonts),
-		m_oCurrentPage(pFonts, {&m_oImageManager, &m_oFontStyleManager, &m_oParagraphStyleManager, &m_oFontManager, &m_oFontSelector})
+	    m_pAppFonts(pFonts),
+	    m_oFontManager(pFonts),
+	    m_oFontSelector(pFonts),
+	    m_oCurrentPage(pFonts, {&m_oImageManager, &m_oFontStyleManager, &m_oParagraphStyleManager, &m_oFontManager, &m_oFontSelector})
 	{
 		m_oSimpleGraphicsConverter.SetRenderer(pRenderer);
 	}
 	void CDocument::Clear()
 	{
+		m_oPageBuilder.Clear();
 		NewPage();
 
-		for(auto& val : m_mapXmlString)
-			delete val.second;
-
-		m_mapXmlString.clear();
+		m_arXmlString.clear();
 		m_lCurrentCommandType = 0;
 		m_oImageManager.Clear();
 		m_oFontStyleManager.Clear();
@@ -492,8 +490,8 @@ namespace NSDocxRenderer
 
 	//-------- Функции для вывода текста --------------------------------------------------------
 	HRESULT CDocument::CommandDrawTextPrivate(const int* pUnicodes, const int* pGids, int nCount,
-											  const double& dX, const double& dY, const double& dW,
-											  const double& dH, const double& dBaseLineOffset)
+	                                          const double& dX, const double& dY, const double& dW,
+	                                          const double& dH, const double& dBaseLineOffset)
 	{
 		double dAngleMatrix = m_oCurrentPage.m_oTransform.z_Rotation();
 		if (fabs(dAngleMatrix) > 1 || m_oCurrentPage.m_oTransform.sx() < 0 || m_oCurrentPage.m_oTransform.sy() < 0)
@@ -568,11 +566,16 @@ namespace NSDocxRenderer
 			m_lCurrentCommandType = -1;
 			m_oCurrentPage.m_lCurrentCommand = m_lCurrentCommandType;
 
-			auto pWriter = new NSStringUtils::CStringBuilder();
-			pWriter->AddSize(100000);
+			if (0 == m_oPageBuilder.GetSize())
+				m_oPageBuilder.AddSize(100000);
+			m_oPageBuilder.ClearNoAttack();
+
 			m_oCurrentPage.Analyze();
-			m_oCurrentPage.Record(*pWriter, m_lPageNum >= m_lNumberPages - 1);
-			m_mapXmlString[m_lPageNum] = pWriter;
+			m_oCurrentPage.Record(m_oPageBuilder, m_lPageNum >= m_lNumberPages - 1);
+			m_arXmlString.push_back(NSFile::CUtf8Converter::GetUtf8StringFromUnicode2(m_oPageBuilder.GetBuffer(), (LONG)m_oPageBuilder.GetCurSize()));
+
+			if (m_oPageBuilder.GetCurSize() > 100000000/*100Mb*/)
+				m_oPageBuilder.Clear();
 		}
 		else
 			m_oCurrentPage.EndCommand(lType);
@@ -830,46 +833,46 @@ namespace NSDocxRenderer
 
 		oDocumentStream.CreateFileW(m_strTempDirectory + L"/word/document.xml");
 		oDocumentStream.WriteStringUTF8(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\
-										<w:document xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" \
-				xmlns:cx=\"http://schemas.microsoft.com/office/drawing/2014/chartex\" \
-				xmlns:cx1=\"http://schemas.microsoft.com/office/drawing/2015/9/8/chartex\" \
-				xmlns:cx2=\"http://schemas.microsoft.com/office/drawing/2015/10/21/chartex\" \
-				xmlns:cx3=\"http://schemas.microsoft.com/office/drawing/2016/5/9/chartex\" \
-				xmlns:cx4=\"http://schemas.microsoft.com/office/drawing/2016/5/10/chartex\" \
-				xmlns:cx5=\"http://schemas.microsoft.com/office/drawing/2016/5/11/chartex\" \
-				xmlns:cx6=\"http://schemas.microsoft.com/office/drawing/2016/5/12/chartex\" \
-				xmlns:cx7=\"http://schemas.microsoft.com/office/drawing/2016/5/13/chartex\" \
-				xmlns:cx8=\"http://schemas.microsoft.com/office/drawing/2016/5/14/chartex\" \
-				xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" \
-				xmlns:aink=\"http://schemas.microsoft.com/office/drawing/2016/ink\" \
-				xmlns:am3d=\"http://schemas.microsoft.com/office/drawing/2017/model3d\" \
-				xmlns:o=\"urn:schemas-microsoft-com:office:office\" \
-				xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" \
-				xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" \
-				xmlns:v=\"urn:schemas-microsoft-com:vml\" \
-				xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" \
-				xmlns:pic=\"http://schemas.openxmlformats.org/drawingml/2006/picture\" \
-				xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" \
-				xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" \
-				xmlns:w10=\"urn:schemas-microsoft-com:office:word\" \
-				xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" \
-				xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" \
-				xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" \
-				xmlns:w16cex=\"http://schemas.microsoft.com/office/word/2018/wordml/cex\" \
-				xmlns:w16cid=\"http://schemas.microsoft.com/office/word/2016/wordml/cid\" \
-				xmlns:w16=\"http://schemas.microsoft.com/office/word/2018/wordml\" \
-				xmlns:w16sdtdh=\"http://schemas.microsoft.com/office/word/2020/wordml/sdtdatahash\" \
-				xmlns:w16se=\"http://schemas.microsoft.com/office/word/2015/wordml/symex\" \
-				xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" \
-				xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" \
-				xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" \
-				xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" \
-				mc:Ignorable=\"w14 w15 w16se w16cid w16 w16cex w16sdtdh wp14\">\
-				<w:body>");
+		                                <w:document xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" \
+		        xmlns:cx=\"http://schemas.microsoft.com/office/drawing/2014/chartex\" \
+		        xmlns:cx1=\"http://schemas.microsoft.com/office/drawing/2015/9/8/chartex\" \
+		        xmlns:cx2=\"http://schemas.microsoft.com/office/drawing/2015/10/21/chartex\" \
+		        xmlns:cx3=\"http://schemas.microsoft.com/office/drawing/2016/5/9/chartex\" \
+		        xmlns:cx4=\"http://schemas.microsoft.com/office/drawing/2016/5/10/chartex\" \
+		        xmlns:cx5=\"http://schemas.microsoft.com/office/drawing/2016/5/11/chartex\" \
+		        xmlns:cx6=\"http://schemas.microsoft.com/office/drawing/2016/5/12/chartex\" \
+		        xmlns:cx7=\"http://schemas.microsoft.com/office/drawing/2016/5/13/chartex\" \
+		        xmlns:cx8=\"http://schemas.microsoft.com/office/drawing/2016/5/14/chartex\" \
+		        xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" \
+		        xmlns:aink=\"http://schemas.microsoft.com/office/drawing/2016/ink\" \
+		        xmlns:am3d=\"http://schemas.microsoft.com/office/drawing/2017/model3d\" \
+		        xmlns:o=\"urn:schemas-microsoft-com:office:office\" \
+		        xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" \
+		        xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" \
+		        xmlns:v=\"urn:schemas-microsoft-com:vml\" \
+		        xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" \
+		        xmlns:pic=\"http://schemas.openxmlformats.org/drawingml/2006/picture\" \
+		        xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" \
+		        xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" \
+		        xmlns:w10=\"urn:schemas-microsoft-com:office:word\" \
+		        xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" \
+		        xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" \
+		        xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" \
+		        xmlns:w16cex=\"http://schemas.microsoft.com/office/word/2018/wordml/cex\" \
+		        xmlns:w16cid=\"http://schemas.microsoft.com/office/word/2016/wordml/cid\" \
+		        xmlns:w16=\"http://schemas.microsoft.com/office/word/2018/wordml\" \
+		        xmlns:w16sdtdh=\"http://schemas.microsoft.com/office/word/2020/wordml/sdtdatahash\" \
+		        xmlns:w16se=\"http://schemas.microsoft.com/office/word/2015/wordml/symex\" \
+		        xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" \
+		        xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" \
+		        xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" \
+		        xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" \
+		        mc:Ignorable=\"w14 w15 w16se w16cid w16 w16cex w16sdtdh wp14\">\
+		        <w:body>");
 
-				for (size_t i = 0; i < m_mapXmlString.size(); ++i)
+		for (std::list<std::string>::const_iterator i = m_arXmlString.cbegin(); i != m_arXmlString.cend(); ++i)
 		{
-			oDocumentStream.WriteStringUTF8(m_mapXmlString[i]->GetData());
+			oDocumentStream.WriteFile((const BYTE*)i->c_str(), (LONG)i->length());
 		}
 
 		oDocumentStream.WriteStringUTF8(L"</w:body></w:document>");
@@ -883,12 +886,12 @@ namespace NSDocxRenderer
 		NSStringUtils::CStringBuilder oWriter;
 
 		oWriter.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\
-							<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">\
-				<Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles\" Target=\"styles.xml\"/>\
-				<Relationship Id=\"rId2\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings\" Target=\"settings.xml\"/>\
-				<Relationship Id=\"rId3\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/webSettings\" Target=\"webSettings.xml\"/>\
-				<Relationship Id=\"rId4\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/fontTable\" Target=\"fontTable.xml\"/>\
-				<Relationship Id=\"rId5\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme\" Target=\"theme/theme.xml\"/>");
+		                    <Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">\
+		        <Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles\" Target=\"styles.xml\"/>\
+		        <Relationship Id=\"rId2\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings\" Target=\"settings.xml\"/>\
+		        <Relationship Id=\"rId3\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/webSettings\" Target=\"webSettings.xml\"/>\
+		        <Relationship Id=\"rId4\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/fontTable\" Target=\"fontTable.xml\"/>\
+		        <Relationship Id=\"rId5\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme\" Target=\"theme/theme.xml\"/>");
 
 		for (const auto& pImage : m_oImageManager.m_mapImageData)
 		{
@@ -912,17 +915,17 @@ namespace NSDocxRenderer
 		NSStringUtils::CStringBuilder oWriter;
 		// сохраним fontTable
 		oWriter.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\
-							<w:fonts xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" \
-				xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" \
-				xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" \
-				xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" \
-				xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" \
-				xmlns:w16cex=\"http://schemas.microsoft.com/office/word/2018/wordml/cex\" \
-				xmlns:w16cid=\"http://schemas.microsoft.com/office/word/2016/wordml/cid\" \
-				xmlns:w16=\"http://schemas.microsoft.com/office/word/2018/wordml\" \
-				xmlns:w16sdtdh=\"http://schemas.microsoft.com/office/word/2020/wordml/sdtdatahash\" \
-				xmlns:w16se=\"http://schemas.microsoft.com/office/word/2015/wordml/symex\" \
-				mc:Ignorable=\"w14 w15 w16se w16cid w16 w16cex w16sdtdh\">");
+		                    <w:fonts xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" \
+		        xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" \
+		        xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" \
+		        xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" \
+		        xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" \
+		        xmlns:w16cex=\"http://schemas.microsoft.com/office/word/2018/wordml/cex\" \
+		        xmlns:w16cid=\"http://schemas.microsoft.com/office/word/2016/wordml/cid\" \
+		        xmlns:w16=\"http://schemas.microsoft.com/office/word/2018/wordml\" \
+		        xmlns:w16sdtdh=\"http://schemas.microsoft.com/office/word/2020/wordml/sdtdatahash\" \
+		        xmlns:w16se=\"http://schemas.microsoft.com/office/word/2015/wordml/symex\" \
+		        mc:Ignorable=\"w14 w15 w16se w16cid w16 w16cex w16sdtdh\">");
 
 		const auto& cache = m_oFontSelector.GetCache();
 		std::list<CFontSelector::CFontSelectInfo> font_table;
@@ -994,17 +997,17 @@ namespace NSDocxRenderer
 
 		// сохраним styles
 		oWriter.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\
-							<w:styles xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" \
-				xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" \
-				xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" \
-				xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" \
-				xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" \
-				xmlns:w16cex=\"http://schemas.microsoft.com/office/word/2018/wordml/cex\" \
-				xmlns:w16cid=\"http://schemas.microsoft.com/office/word/2016/wordml/cid\" \
-				xmlns:w16=\"http://schemas.microsoft.com/office/word/2018/wordml\" \
-				xmlns:w16sdtdh=\"http://schemas.microsoft.com/office/word/2020/wordml/sdtdatahash\" \
-				xmlns:w16se=\"http://schemas.microsoft.com/office/word/2015/wordml/symex\" \
-				mc:Ignorable=\"w14 w15 w16se w16cid w16 w16cex w16sdtdh\">");
+		                    <w:styles xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" \
+		        xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" \
+		        xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" \
+		        xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" \
+		        xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" \
+		        xmlns:w16cex=\"http://schemas.microsoft.com/office/word/2018/wordml/cex\" \
+		        xmlns:w16cid=\"http://schemas.microsoft.com/office/word/2016/wordml/cid\" \
+		        xmlns:w16=\"http://schemas.microsoft.com/office/word/2018/wordml\" \
+		        xmlns:w16sdtdh=\"http://schemas.microsoft.com/office/word/2020/wordml/sdtdatahash\" \
+		        xmlns:w16se=\"http://schemas.microsoft.com/office/word/2015/wordml/symex\" \
+		        mc:Ignorable=\"w14 w15 w16se w16cid w16 w16cex w16sdtdh\">");
 
 		oWriter.WriteString(L"<w:docDefaults>");
 		oWriter.WriteString(L"<w:rPrDefault><w:rPr>");

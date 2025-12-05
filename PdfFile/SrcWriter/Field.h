@@ -63,23 +63,30 @@ namespace PdfWriter
 		AnnotUnknown        = -1,
 		AnnotText           = 0,
 		AnnotLink           = 1,
-		AnnotSound          = 2,
-		AnnotFreeText       = 3,
-		AnnotStamp          = 4,
-		AnnotSquare         = 5,
-		AnnotCircle         = 6,
-		AnnotStrikeOut      = 7,
+		AnnotFreeText       = 2,
+		AnnotLine           = 3,
+		AnnotSquare         = 4,
+		AnnotCircle         = 5,
+		AnnotPolygon        = 6,
+		AnnotPolyLine       = 7,
 		AnnotHighLight      = 8,
 		AnnotUnderline      = 9,
-		AnnotInk            = 10,
-		AnnotFileAttachment = 11,
-		AnnotPopup          = 12,
-		AnnotLine           = 13,
-		AnnotSquiggly       = 14,
-		AnnotPolygon        = 15,
-		AnnotPolyLine       = 16,
-		AnnotCaret          = 17,
-		AnnotWidget         = 18
+		AnnotSquiggly       = 10,
+		AnnotStrikeOut      = 11,
+		AnnotStamp          = 12,
+		AnnotCaret          = 13,
+		AnnotInk            = 14,
+		AnnotPopup          = 15,
+		AnnotFileAttachment = 16,
+		AnnotSound          = 17,
+		AnnotMovie          = 18,
+		AnnotWidget         = 19,
+		AnnotScreen         = 20,
+		AnnotPrinterMark    = 21,
+		AnnotTrapNet        = 22,
+		AnnotWatermark      = 23,
+		Annot3D             = 24,
+		AnnotRedact         = 25
 	};
 	enum EWidgetType
 	{
@@ -363,6 +370,7 @@ namespace PdfWriter
 	{
 	public:
 		CCheckBoxAnnotAppearance(CXref* pXref, CFieldBase* pField, const char* sYesName = NULL);
+		CCheckBoxAnnotAppearance(CXref* pXref, CAnnotation* pAnnot, const char* sYesName = NULL);
 		
 		CAnnotAppearanceObject* GetYesN();
 		CAnnotAppearanceObject* GetOffN();
@@ -372,7 +380,6 @@ namespace PdfWriter
 	private:
 
 		CXref*                  m_pXref;
-		CFieldBase*             m_pField;
 		CAnnotAppearanceObject* m_pYesN;
 		CAnnotAppearanceObject* m_pOffN;
 		CAnnotAppearanceObject* m_pYesD;
@@ -395,7 +402,7 @@ namespace PdfWriter
 
 		void StartDraw(const double& dWidth, const double& dHeight);
 		void StartText(CFontDict* pFont, const double& dFontSize);
-		void DrawPictureInline(const char* sImageName, const double& dX, const double& dY, const double& dW, const double& dH, const bool& bRespectBorder);
+		void DrawPictureInline(const double& dWidth, const double& dHeight,const char* sImageName, const double& dX, const double& dY, const double& dW, const double& dH, const bool& bRespectBorder);
 		void EndText();
 		void EndDraw();
 
@@ -417,6 +424,11 @@ namespace PdfWriter
 		void DrawTextStar(const std::string& sColor);
 		void DrawTextUpArrow(const std::string& sColor);
 		void DrawTextUpLeftArrow(const std::string& sColor);
+
+		void DrawLine();
+
+		void DrawCheckBoxCircle(int nRotate, bool bSet, bool bN);
+		void DrawCheckBoxSquare(int nRotate, bool bSet, bool bN);
 
 		CStream* GetStream() const { return m_pStream; }
 		CFontDict* GetFont() { return m_pFont; }

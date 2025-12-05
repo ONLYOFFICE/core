@@ -55,5 +55,10 @@ void PrintRowCol::readFields(CFRecord& record)
 	record >> printRwCol;
 }
 
+void PrintRowCol::writeFields(CFRecord& record)
+{
+    record << printRwCol;
+}
+
 } // namespace XLS
 

@@ -62,5 +62,11 @@ void SxIsxoper::readFields(CFRecord& record)
 	}
 }
 
+void SxIsxoper::writeFields(CFRecord& record)
+{
+	for(auto i : rgSxIsxoper)
+		record << i;
+}
+
 } // namespace XLS
 

@@ -8,7 +8,7 @@ namespace HWP
 struct TCellZone
 {
 	short m_shStartRowAddr;
-	short m_shStartColAddr;;
+	short m_shStartColAddr;
 	short m_shEndRowAddr;
 	short m_shEndColAddr;
 	short m_shBorderFillIDRef;
@@ -32,7 +32,7 @@ class CCtrlTable : public CCtrlCommon
 public:
 	CCtrlTable(const HWP_STRING& sCtrlID);
 	CCtrlTable(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
-	CCtrlTable(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVersion);
+	CCtrlTable(const HWP_STRING& sCtrlID, CXMLReader& oReader, EHanType eType);
 	~CCtrlTable();
 
 	ECtrlObjectType GetCtrlType() const override;
@@ -43,6 +43,11 @@ public:
 	short GetColsInRow(short shRowIndex) const;
 	short GetCountCells() const;
 	short GetBorderFillID() const;
+
+	short GetInLSpace() const;
+	short GetInRSpace() const;
+	short GetInTSpace() const;
+	short GetInBSpace() const;
 
 	void AddCell(CTblCell* pCell);
 

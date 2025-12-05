@@ -47,10 +47,11 @@ public:
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 
 	static const ElementType type = typeSXStreamID;
 
-	short idStm;
+	short idStm = 1;
 };
 
 } // namespace XLS

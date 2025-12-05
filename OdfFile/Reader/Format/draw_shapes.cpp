@@ -51,7 +51,8 @@
 #include "../../DataTypes/length.h"
 #include "../../DataTypes/borderstyle.h"
 
-#include "../../Reader/Converter/oox_drawing.h"
+#include "../Converter/oox_drawing.h"
+#include "../Converter/SMCustomShape2OOXML/customshape.h"
 
 namespace cpdoccore { 
 
@@ -188,7 +189,7 @@ void draw_line::reset_svg_attributes()
 	double x2 = draw_line_attlist_.svg_x2_.get_value_or(length(0)).get_value_unit(length::pt);
 	double y2 = draw_line_attlist_.svg_y2_.get_value_or(length(0)).get_value_unit(length::pt);
 	
-	if (x1 > x2)
+	if (x1 - x2 > 0.5)
 	{
 		common_draw_attlists_.position_.svg_x_	 = draw_line_attlist_.svg_x2_;
 		common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_width_ = length(x1-x2, length::pt);
@@ -199,7 +200,7 @@ void draw_line::reset_svg_attributes()
 		common_draw_attlists_.position_.svg_x_	 = draw_line_attlist_.svg_x1_;
 		common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_width_ = length(x2-x1, length::pt);
 	}
-	if (y1 > y2)
+	if (y1 - y2 > 0.5)
 	{
 		common_draw_attlists_.position_.svg_y_	 = draw_line_attlist_.svg_y2_;
 		common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_height_ = length(y1-y2, length::pt);
@@ -818,46 +819,46 @@ void draw_enhanced_geometry::find_draw_type_oox()
 	else if (attlist_.draw_enhanced_path_)		odf_path_ = attlist_.draw_enhanced_path_.get();
 }
 
-static void process_polylines(std::vector<::svg_path::_polylineS>& polylines, const std::vector<std::pair<std::wstring, std::wstring>>& equations)
+static void process_polylines(std::vector<::svg_path::_polylineS>& polylines, const std::vector<std::wstring>& equation_names)
 {
 	using namespace ::svg_path;
 
-	for (size_t i = 0; i < polylines.size(); i++)
-	{
-		_polylineS& p = polylines[i];
+	//for (size_t i = 0; i < polylines.size(); i++)
+	//{
+	//	_polylineS& p = polylines[i];
 
-		if (p.command == L"a:arcTo" && p.points.size() > 1)
-		{
-			::svg_path::_pointS& pt = p.points[1];
+	//	if (p.command == L"a:arcTo" && p.points.size() > 1)
+	//	{
+	//		::svg_path::_pointS& pt = p.points[1];
 
-			auto x_it = std::find_if(equations.begin(), equations.end(),
-				[&pt](const std::pair<std::wstring, std::wstring>& eq) {return pt.x && eq.first == *pt.x;});
-			auto y_it = std::find_if(equations.begin(), equations.end(),
-				[&pt](const std::pair<std::wstring, std::wstring>& eq) {return pt.y && eq.first == *pt.y; });
+	//		auto x_it = std::find_if(equations.begin(), equations.end(),
+	//			[&pt](const std::pair<std::wstring, std::wstring>& eq) {return pt.x && eq.first == *pt.x;});
+	//		auto y_it = std::find_if(equations.begin(), equations.end(),
+	//			[&pt](const std::pair<std::wstring, std::wstring>& eq) {return pt.y && eq.first == *pt.y; });
 
-			if (x_it != equations.end())
-			{
-				const std::wstring& formula = x_it->second;
+	//		if (x_it != equations.end())
+	//		{
+	//			const std::wstring& formula = x_it->second;
 
-				std::vector<std::wstring> split;
-				boost::split(split, formula, boost::is_any_of("\t "), boost::token_compress_on);
+	//			std::vector<std::wstring> split;
+	//			boost::split(split, formula, boost::is_any_of("\t "), boost::token_compress_on);
 
-				if (split.size() == 4 && split[0] == L"*/" && split[1] == L"1" && boost::starts_with(split[2], L"gd") && split[3] == L"60000")
-					pt.x = split[2];
-			}
+	//			if (split.size() == 4 && split[0] == L"*/" && split[1] == L"1" && boost::starts_with(split[2], L"gd") && split[3] == L"60000")
+	//				pt.x = split[2];
+	//		}
 
-			if (y_it != equations.end())
-			{
-				const std::wstring& formula = y_it->second;
+	//		if (y_it != equations.end())
+	//		{
+	//			const std::wstring& formula = y_it->second;
 
-				std::vector<std::wstring> split;
-				boost::split(split, formula, boost::is_any_of("\t "), boost::token_compress_on);
+	//			std::vector<std::wstring> split;
+	//			boost::split(split, formula, boost::is_any_of("\t "), boost::token_compress_on);
 
-				if (split.size() == 4 && split[0] == L"*/" && split[1] == L"1" && boost::starts_with(split[2], L"gd") && split[3] == L"60000")
-					pt.y = split[2];
-			}
-		}
-	}
+	//			if (split.size() == 4 && split[0] == L"*/" && split[1] == L"1" && boost::starts_with(split[2], L"gd") && split[3] == L"60000")
+	//				pt.y = split[2];
+	//		}
+	//	}
+	//}
 }
 
 bool draw_enhanced_geometry::oox_convert(std::vector<odf_reader::_property>& props)
@@ -867,6 +868,8 @@ bool draw_enhanced_geometry::oox_convert(std::vector<odf_reader::_property>& pro
 	owner_shape->word_art_ = word_art_;
 
 	bool set_shape = false;
+
+	std::wstring wsH(L""),wsW(L""),wsLeft(L""),wsTop(L"");
 
 	if (attlist_.draw_mirror_horizontal_)
 	{
@@ -892,9 +895,65 @@ bool draw_enhanced_geometry::oox_convert(std::vector<odf_reader::_property>& pro
 		owner_shape->sub_type_ = sub_type_.get();
 		set_shape = true;
 	}
-	std::vector<std::pair<std::wstring, std::wstring>> equations;
+
+	if (attlist_.drawooo_sub_view_size_)
+	{
+		std::vector< std::wstring > splitted;
+		boost::algorithm::split(splitted, *attlist_.drawooo_sub_view_size_, boost::algorithm::is_any_of(L" "), boost::algorithm::token_compress_on);
+
+		if (splitted.size() == 2)
+		{
+			int w = boost::lexical_cast<int>(splitted[0]);
+			int h = boost::lexical_cast<int>(splitted[1]);
+
+			props.push_back(odf_reader::_property(L"custom_path_w", w));
+			props.push_back(odf_reader::_property(L"custom_path_h", h));
+		}
+		else if (splitted.size() == 4)
+		{///???? rect ???
+			int l = boost::lexical_cast<int>(splitted[0]);
+			int t = boost::lexical_cast<int>(splitted[1]);
+			int r = boost::lexical_cast<int>(splitted[2]);
+			int b = boost::lexical_cast<int>(splitted[3]);
+
+		}
+
+		//if (shape->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_width_)
+		//{
+		//	int w_shape = shape->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_width_->get_value();
+		//	if (w_shape < 1) shape->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_width_ = length(1, length::pt);
+		//}
+		//if (shape->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_height_)
+		//{
+		//	int h_shape = shape->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_height_->get_value();
+		//	if (h_shape < 1) shape->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_height_ = length(1, length::pt);
+		//}
+	}
+	else if (svg_viewbox_)
+	{
+		std::vector< std::wstring > splitted;
+		boost::algorithm::split(splitted, *svg_viewbox_, boost::algorithm::is_any_of(L" "), boost::algorithm::token_compress_on);
+
+		if (splitted.size() == 4)
+		{
+			int w = boost::lexical_cast<int>(splitted[2]);
+			int h = boost::lexical_cast<int>(splitted[3]);
+
+			wsLeft = std::to_wstring(boost::lexical_cast<int>(splitted[0]));
+			wsTop =	std::to_wstring(boost::lexical_cast<int>(splitted[1]));
+			wsH = std::to_wstring(h);
+			wsW = std::to_wstring(w);
+
+			props.push_back(odf_reader::_property(L"custom_path_w", w));
+			props.push_back(odf_reader::_property(L"custom_path_h", h));
+		}
+	}
+
+	std::vector<std::wstring> equation_names;
 	if (false == draw_equations_.empty() && !draw_type_oox_index_)
 	{
+		std::wstring oox_formulas;
+
 		for (size_t i = 0; i < draw_equations_.size(); i++)
 		{
 			draw_equation* eq = dynamic_cast<draw_equation*>(draw_equations_[i].get());
@@ -904,37 +963,23 @@ bool draw_enhanced_geometry::oox_convert(std::vector<odf_reader::_property>& pro
 				std::wstring value = eq->attlist_.draw_formula_.get_value_or(L"");
 
 				XmlUtils::replace_all(name, L"f", L"gd");
-				
-				XmlUtils::replace_all(value, L"(bottom-top)", L"h");
-				XmlUtils::replace_all(value, L"(right-left)", L"w");
 
-				std::wstring value_conv;
-				if (convert_equation(value, value_conv))
-				{
-					equations.push_back(std::make_pair(name, value_conv.empty() ? value : value_conv));
-				}
-				else
-				{// 
-					if (!draw_type_oox_index_) 
-						set_shape = false;
-					equations.clear();
-					break;
-				}
+				oox_formulas += OdfCustomShape::convert_formula(value, name,wsLeft,wsTop,wsW,wsH);
+				equation_names.push_back(name);
 			}
 		}
 
-		if (false == equations.empty())
+		if (false == oox_formulas.empty())
 		{
-			std::wstringstream output1_;
-			::svg_path::oox_serialize(output1_, equations);
-			props.push_back(odf_reader::_property(L"custom_equations", output1_.str()));
+			props.push_back(odf_reader::_property(L"custom_equations", oox_formulas));
 		}
 	}
 
 	if (!odf_path_.empty())
 	{
 		bool bCPathWithArgs = (std::wstring::npos != odf_path_.find(L"?"));
-		if (bOoxType_ || (bCPathWithArgs && false == equations.empty()))
+		std::wstring wsNewFormula;
+		if (bOoxType_ || (bCPathWithArgs && false == equation_names.empty()))
 		{
 			std::vector<::svg_path::_polylineS> o_Polyline;
 
@@ -943,18 +988,26 @@ bool draw_enhanced_geometry::oox_convert(std::vector<odf_reader::_property>& pro
 
 			try
 			{
-				res = ::svg_path::parseSvgS(o_Polyline, odf_path_, true, bClosed, bStroked);
+				res = ::svg_path::parseSvgS(o_Polyline, odf_path_, true, bClosed, bStroked,wsNewFormula,wsH,wsW);
 			}
 			catch (...)
 			{
 				res = false;
 			}
 
+			if(!props.empty() && !wsNewFormula.empty())
+				for(odf_reader::_property& stTempProps:props)
+					if(stTempProps.name_ == L"custom_equations")
+					{
+						boost::get<std::wstring>(stTempProps.val_) += wsNewFormula;
+						wsNewFormula.clear();
+					}
+
 			if (!o_Polyline.empty() && res)
 			{
 				set_shape = true;
 
-				process_polylines(o_Polyline, equations);
+				process_polylines(o_Polyline, equation_names);
 
 				std::wstringstream output_;
 				::svg_path::oox_serialize(output_, o_Polyline);
@@ -1001,54 +1054,7 @@ bool draw_enhanced_geometry::oox_convert(std::vector<odf_reader::_property>& pro
 		}
 	}
 
-	if (attlist_.drawooo_sub_view_size_)
-	{
-		std::vector< std::wstring > splitted;
-		boost::algorithm::split(splitted, *attlist_.drawooo_sub_view_size_, boost::algorithm::is_any_of(L" "), boost::algorithm::token_compress_on);
-
-		if (splitted.size() == 2)
-		{
-			int w = boost::lexical_cast<int>(splitted[0]);
-			int h = boost::lexical_cast<int>(splitted[1]);
-
-			props.push_back(odf_reader::_property(L"custom_path_w", w));
-			props.push_back(odf_reader::_property(L"custom_path_h", h));
-		}
-		else if (splitted.size() == 4)
-		{///???? rect ???
-			int l = boost::lexical_cast<int>(splitted[0]);
-			int t = boost::lexical_cast<int>(splitted[1]);
-			int r = boost::lexical_cast<int>(splitted[2]);
-			int b = boost::lexical_cast<int>(splitted[3]);
-
-		}
-
-		//if (shape->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_width_)
-		//{
-		//	int w_shape = shape->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_width_->get_value();
-		//	if (w_shape < 1) shape->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_width_ = length(1, length::pt);
-		//}
-		//if (shape->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_height_)
-		//{
-		//	int h_shape = shape->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_height_->get_value();
-		//	if (h_shape < 1) shape->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_height_ = length(1, length::pt);
-		//}
-	}
-	else if (svg_viewbox_)
-	{
-		std::vector< std::wstring > splitted;
-		boost::algorithm::split(splitted, *svg_viewbox_, boost::algorithm::is_any_of(L" "), boost::algorithm::token_compress_on);
-
-		if (splitted.size() == 4)
-		{
-			int w = boost::lexical_cast<int>(splitted[2]);
-			int h = boost::lexical_cast<int>(splitted[3]);
-
-			props.push_back(odf_reader::_property(L"custom_path_w", w));
-			props.push_back(odf_reader::_property(L"custom_path_h", h));
-		}
-	}
-	if (attlist_.draw_modifiers_ && ((set_shape && bOoxType_ && !draw_type_oox_index_) || (false == equations.empty())))
+	if (attlist_.draw_modifiers_ && ((set_shape && bOoxType_ && !draw_type_oox_index_) || (false == equation_names.empty())))
 	{
 		props.push_back(_property(L"oox-draw-modifiers", attlist_.draw_modifiers_.get()));
 	}

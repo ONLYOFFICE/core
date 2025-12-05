@@ -64,7 +64,7 @@ namespace MetaFile
 
 				DrawImage(oTEmfAlphaBlend.nXDest, oTEmfAlphaBlend.nYDest,
 						  oTEmfAlphaBlend.nCxDest, oTEmfAlphaBlend.nCyDest,
-						  pBgraBuffer, unWidth, unHeight);
+						  pBgraBuffer, unWidth, unHeight, BLEND_MODE_DEFAULT);
 			}
 		}
 
@@ -84,9 +84,10 @@ namespace MetaFile
 			if (m_pInterpretator)
 			{
 				ProcessRasterOperation(oTEmfStretchDIBITS.unBitBltRasterOperation, &pBgraBuffer, ulWidth, ulHeight);
+
 				DrawImage(oTEmfStretchDIBITS.nXDest, oTEmfStretchDIBITS.nYDest,
 				          oTEmfStretchDIBITS.nCxDest, oTEmfStretchDIBITS.nCyDest,
-				          pBgraBuffer, ulWidth, ulHeight);
+				          pBgraBuffer, ulWidth, ulHeight, BLEND_MODE_DEFAULT);
 			}
 		}
 
@@ -108,7 +109,7 @@ namespace MetaFile
 		{
 			DrawImage(oTEmfBitBlt.nXDest, oTEmfBitBlt.nYDest,
 					  oTEmfBitBlt.nCxDest, oTEmfBitBlt.nCyDest,
-					  pBgraBuffer, ulWidth, ulHeight);
+					  pBgraBuffer, ulWidth, ulHeight, BLEND_MODE_DEFAULT);
 		}
 		else
 		{
@@ -158,7 +159,7 @@ namespace MetaFile
 			if (pBgraBuffer)
 				DrawImage(oTEmfBitBlt.nXDest, oTEmfBitBlt.nYDest,
 						  oTEmfBitBlt.nCxDest, oTEmfBitBlt.nCyDest,
-						  pBgraBuffer, ulWidth, ulHeight);
+						  pBgraBuffer, ulWidth, ulHeight, BLEND_MODE_DEFAULT);
 		}
 
 		if (pBgraBuffer)
@@ -177,7 +178,7 @@ namespace MetaFile
 			DrawImage(oTEmfSetDiBitsToDevice.oBounds.Left, oTEmfSetDiBitsToDevice.oBounds.Top,
 					  oTEmfSetDiBitsToDevice.oBounds.Right - oTEmfSetDiBitsToDevice.oBounds.Left,
 					  oTEmfSetDiBitsToDevice.oBounds.Bottom - oTEmfSetDiBitsToDevice.oBounds.Top,
-					  pBgraBuffer, ulWidth, ulHeight);
+					  pBgraBuffer, ulWidth, ulHeight, BLEND_MODE_DEFAULT);
 		}
 
 		if (pBgraBuffer)
@@ -197,9 +198,15 @@ namespace MetaFile
 			if (m_pInterpretator)
 			{
 				ProcessRasterOperation(oTEmfStretchBLT.unBitBltRasterOperation, &pBgraBuffer, ulWidth, ulHeight);
+
+				unsigned int unBlendMode{BLEND_MODE_DEFAULT};
+
+				if (0x00660046 == oTEmfStretchBLT.unBitBltRasterOperation)
+					unBlendMode = 0;
+
 				DrawImage(oTEmfStretchBLT.nXDest, oTEmfStretchBLT.nYDest,
 						  oTEmfStretchBLT.nCxDest, oTEmfStretchBLT.nCyDest,
-						  pBgraBuffer, ulWidth, ulHeight);
+						  pBgraBuffer, ulWidth, ulHeight, unBlendMode);
 			}
 		}
 
@@ -225,14 +232,14 @@ namespace MetaFile
 		}
 	}
 
-	void CEmfParserBase::DrawImage(int nX, int nY, int nW, int nH, BYTE *pImageBuffer, unsigned int unImageW, unsigned int unImageH)
+	void CEmfParserBase::DrawImage(int nX, int nY, int nW, int nH, BYTE *pImageBuffer, unsigned int unImageW, unsigned int unImageH, unsigned int unBlendMode)
 	{
 		if (NULL != m_pInterpretator)
 		{
 			double dX, dY, dR, dB;
 			TranslatePoint(nX, nY, dX, dY);
 			TranslatePoint(nX + nW, nY + nH, dR, dB);
-			m_pInterpretator->DrawBitmap(dX, dY, dR - dX, dB - dY, pImageBuffer, unImageW, unImageH);
+			m_pInterpretator->DrawBitmap(dX, dY, dR - dX, dB - dY, pImageBuffer, unImageW, unImageH, unBlendMode);
 		}
 	}
 
@@ -404,7 +411,7 @@ namespace MetaFile
 	}
 
 	void CEmfParserBase::DrawText(std::wstring &wsString, unsigned int unCharsCount, int _nX, int _nY,
-								  int *pnDx, int iGraphicsMode, TScale oScale)
+	                              int *pnDx, int iGraphicsMode, TScale oScale, bool bUseGID)
 	{
 		int nX = _nX;
 		int nY = _nY;
@@ -441,7 +448,7 @@ namespace MetaFile
 				}
 			}
 
-			m_pInterpretator->DrawString(wsString, unCharsCount, dX, dY, pdDx, iGraphicsMode, oScale.X, oScale.Y);
+			m_pInterpretator->DrawString(wsString, unCharsCount, dX, dY, pdDx, iGraphicsMode, oScale.X, oScale.Y, bUseGID);
 
 			if (pdDx)
 				delete[] pdDx;
@@ -473,7 +480,7 @@ namespace MetaFile
 			}
 		}
 
-		DrawText(wsText, oText.unChars, oText.oReference.X, oText.oReference.Y, pDx, iGraphicsMode, oScale);
+		DrawText(wsText, oText.unChars, oText.oReference.X, oText.oReference.Y, pDx, iGraphicsMode, oScale, oText.unOptions & 0x00000010);
 
 		if (pDx)
 			delete[] pDx;
@@ -543,7 +550,7 @@ namespace MetaFile
 		}
 
 		if (unLen)
-			DrawText(wsText, unLen, oText.oReference.X, oText.oReference.Y, pDx, iGraphicsMode, oScale);
+			DrawText(wsText, unLen, oText.oReference.X, oText.oReference.Y, pDx, iGraphicsMode, oScale, oText.unOptions & 0x00000010);
 
 		if (pDx)
 			delete[] pDx;
@@ -1601,7 +1608,7 @@ namespace MetaFile
 		pBgraBuffer[2] = oColor.r;
 		pBgraBuffer[3] = 0xff;
 
-		DrawImage(oPoint.X, oPoint.Y, 1, 1, pBgraBuffer, 1, 1);
+		DrawImage(oPoint.X, oPoint.Y, 1, 1, pBgraBuffer, 1, 1, BLEND_MODE_DEFAULT);
 	}
 
 	void CEmfParserBase::HANDLE_EMR_SMALLTEXTOUT(TEmfSmallTextout &oText)

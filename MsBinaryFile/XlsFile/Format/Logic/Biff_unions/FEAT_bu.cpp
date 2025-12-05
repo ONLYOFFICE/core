@@ -111,5 +111,15 @@ const bool FEAT::loadContent(BinProcessor& proc)
 	return true;
 }
 
+const bool FEAT::saveContent(BinProcessor& proc)
+{
+	if(m_FeatHdr == nullptr)
+	{
+		m_FeatHdr = BaseObjectPtr(new FeatHdr(false));
+	}
+	proc.mandatory(*m_FeatHdr);
+	return true;
+}
+
 } // namespace XLS
 

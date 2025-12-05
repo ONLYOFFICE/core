@@ -46,6 +46,8 @@
 #include <string>
 #include <algorithm>
 #include <math.h>
+#include <vector>
+#include <cmath>
 
 #ifdef __linux__
 #include <string.h>
@@ -53,6 +55,7 @@
 
 namespace PdfWriter
 {
+	const double EPS = 0.001;
 	struct TRect
 	{
 		TRect()
@@ -76,7 +79,7 @@ namespace PdfWriter
 		double fTop;
 	};
 	typedef TRect TBox;
-	class CMatrix	
+	class CMatrix
 	{
 	public:
 
@@ -127,6 +130,11 @@ namespace PdfWriter
 
 			dX = _x * m11 + _y * m21 + x;
 			dY = _x * m12 + _y * m22 + y;
+		}
+		void Transform(double dUserX, double dUserY, double* pdDeviceX, double* pdDeviceY) const
+		{
+			*pdDeviceX = dUserX * m11 + dUserY * m21 + x;
+			*pdDeviceY = dUserX * m12 + dUserY * m22 + y;
 		}
 		bool operator==(const CMatrix& oMatrix)
 		{
@@ -356,12 +364,10 @@ namespace PdfWriter
 	class CPoint
 	{
 	public:
+		CPoint() : x(0), y(0) {}
+		CPoint(double dX, double dY) : x(dX), y(dY) {}
+		CPoint(const CPoint& oPoint) : x(oPoint.x), y(oPoint.y) {}
 
-		CPoint()
-		{
-			x = 0;
-			y = 0;
-		}
 		void Set(double dX, double dY)
 		{
 			x = dX;
@@ -378,11 +384,20 @@ namespace PdfWriter
 			y = oPoint.y;
 			return *this;
 		}
+		bool operator==(const CPoint& oPoint) const
+		{
+			return std::abs(x - oPoint.x) < EPS && std::abs(y - oPoint.y) < EPS;
+		}
 
 	public:
-
 		double x;
 		double y;
+	};
+	struct CSegment
+	{
+		CPoint start;
+		CPoint end;
+		CSegment(const CPoint& s, const CPoint& e) : start(s), end(e) {}
 	};
 	enum EGrMode
 	{
@@ -456,6 +471,13 @@ namespace PdfWriter
 		fontCIDType0COT,
 		fontCIDType2,
 		fontCIDType2OT
+	};
+	enum class ERenderingIntent
+	{
+		RenderingIntent_AbsoluteColorimetric,
+		RenderingIntent_RelativeColorimetric,
+		RenderingIntent_Saturation,
+		RenderingIntent_Perceptual
 	};
 }
 

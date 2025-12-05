@@ -502,7 +502,7 @@ namespace PPTX
 				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DSP_DRAWING)										namespace_ = L"dsp";
 
 				pWriter->StartNode(namespace_ + L":graphicFrame");
-				pWriter->WriteAttribute(L"macro", macro);
+				pWriter->WriteAttribute2(L"macro", macro);
 				pWriter->EndAttributes();
 
 				toXmlWriter2(pWriter);
@@ -535,8 +535,8 @@ namespace PPTX
 				return;
 			}
 
-			std::wstring					xml_object_vml;
-			smart_ptr<OOX::IFileContainer>	xml_object_rels;
+			std::wstring xml_object_vml;
+			OOX::IFileContainer* xml_object_rels = NULL;
 
 			if (vmlSpid.is_init())
 			{
@@ -554,7 +554,7 @@ namespace PPTX
 				RELEASEOBJECT(oDrawingConverter.m_pBinaryWriter->m_pCommon->m_pMediaManager);
 				oDrawingConverter.m_pBinaryWriter->m_pCommon->m_pMediaManager = pWriter->m_pCommon->m_pMediaManager;
 	
-				oDrawingConverter.SetRels(xml_object_rels);
+				oDrawingConverter.SetRelsPtr(xml_object_rels);
                 oDrawingConverter.SetAdditionalParam(L"xfrm_override", (BYTE*)xfrm.GetPointer(), sizeof(xfrm));
 
 				std::vector<nullable<PPTX::Logic::SpTreeElem>> elements;
@@ -563,13 +563,13 @@ namespace PPTX
 				oDrawingConverter.ConvertVml(temp, elements, anchor);
 				oDrawingConverter.m_pBinaryWriter->m_pCommon->m_pMediaManager = NULL;
 
-				smart_ptr<OOX::IFileContainer> rels_old = pWriter->GetRels();
-				pWriter->SetRels(xml_object_rels);
+				OOX::IFileContainer* rels_old = pWriter->GetRelsPtr();
+				pWriter->SetRelsPtr(xml_object_rels);
 				for (size_t i = 0; i < elements.size(); ++i)
 				{
 					elements[i]->toPPTY(pWriter);
 				}
-				pWriter->SetRels(rels_old);
+				pWriter->SetRelsPtr(rels_old);
 				return;
 			}
 			pWriter->StartRecord(SPTREE_TYPE_GRFRAME);
@@ -795,10 +795,7 @@ namespace PPTX
 			
 			sXml += L"<" + m_namespace + L":graphicFrame";
 
-			sXml += L" macro=\"" + (macro.IsInit() ? *macro : L"") + L"\">";
-
-			XmlUtils::CAttribute oAttr;
-			oAttr.Write(L"macro", macro);
+			sXml += L" macro=\"" + (macro.IsInit() ? XmlUtils::EncodeXmlString(*macro) : L"") + L"\">";
 
 			sXml += toXML2();
 
@@ -817,23 +814,23 @@ namespace PPTX
 			if (chartRec.is_init())			chartRec->SetParentPointer(this);
 			if (olePic.is_init())			olePic->SetParentPointer(this);
 		}
-		std::wstring GraphicFrame::GetVmlXmlBySpid(smart_ptr<OOX::IFileContainer> & rels)const
+		std::wstring GraphicFrame::GetVmlXmlBySpid(OOX::IFileContainer*& rels)const
 		{
             std::wstring xml;
 			if(parentFileIs<PPTX::Slide>() && parentFileAs<PPTX::Slide>().Vml.IsInit())
 			{
 				xml		= parentFileAs<PPTX::Slide>().GetVmlXmlBySpid(vmlSpid.get_value_or(L""));
-				rels	= parentFileAs<PPTX::Slide>().Vml.smart_dynamic_cast<OOX::IFileContainer>();
+				rels	= parentFileAs<PPTX::Slide>().Vml.GetPointer();
 			}
 			else if(parentFileIs<PPTX::SlideLayout>() && parentFileAs<PPTX::SlideLayout>().Vml.IsInit())
 			{
 				xml		= parentFileAs<PPTX::SlideLayout>().GetVmlXmlBySpid(vmlSpid.get_value_or(L""));
-				rels	= parentFileAs<PPTX::SlideLayout>().Vml.smart_dynamic_cast<OOX::IFileContainer>();
+				rels	= parentFileAs<PPTX::SlideLayout>().Vml.GetPointer();
 			}
 			else if(parentFileIs<PPTX::SlideMaster>() && parentFileAs<PPTX::SlideMaster>().Vml.IsInit())
 			{
 				xml		= parentFileAs<PPTX::SlideMaster>().GetVmlXmlBySpid(vmlSpid.get_value_or(L""));
-				rels	= parentFileAs<PPTX::SlideMaster>().Vml.smart_dynamic_cast<OOX::IFileContainer>();
+				rels	= parentFileAs<PPTX::SlideMaster>().Vml.GetPointer();
 			}
 
 			return xml;

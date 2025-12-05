@@ -43,7 +43,7 @@ class DateReader
 public:
     /// @brief создание считывателя с указанным id локали
     /// @param lcid идентификатор локали в зависимости от которой будет читаться дата
-    DateReader(_INT32 lcid);
+	DateReader(_INT32 lcid = 9);
 
     /// @brief получение даты в виде числа в формате excel
     /// @param date дата в строковом формате
@@ -51,7 +51,6 @@ public:
     /// @param return true в случае успешной конвертации, иначе false
     bool GetDigitalDate(const std::wstring &date, double &result, bool &Hasdate, bool &Hastime);
 
-private:
 
     /// @brief парсинг стандартизированной даты
     /// @param date дата в строковом формате
@@ -65,7 +64,7 @@ private:
     /// @param return true в случае успешной конвертации, иначе false
     bool parseLocalDate(const std::wstring &date, tm &result, bool &Hasdate, bool &Hastime);
 
-
+private:
     /// @brief получение даты в виде числа в формате excel из дат позднее 1900 года
     /// @param datetime структура с датой
     /// @return дата в формате excel
@@ -98,6 +97,11 @@ private:
     /// @return true если строка является именем месяца
     bool parseMonthName(std::vector<wchar_t> &stringBuf, tm &date);
 
-    _INT32 lcid_;
+    _INT32 lcid_ = 9;
+
+    /// @brief счетчик ячеек
+    _UINT16 cellCounter_ = 0;
+
+    bool dateFound_ = false;
 };
 

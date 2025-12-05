@@ -143,12 +143,12 @@ std::wstring RtfFont::RenderToOOX(RenderParameter oRenderParameter)
 {
 	if ( IsValid() == false) return L"";
 
-    std::wstring sResult;
-	
-	RtfDocument* poRtfDocument = static_cast<RtfDocument*>(oRenderParameter.poDocument);
-    std::wstring sFontName = m_sName;
+	std::wstring sResult;
 
-    if( sFontName.empty() )
+	RtfDocument* poRtfDocument = static_cast<RtfDocument*>(oRenderParameter.poDocument);
+	std::wstring sFontName = m_sName;
+
+	if( sFontName.empty() )
 	{
 		if( PROP_DEF != poRtfDocument->m_oProperty.m_nDefFont )
 		{
@@ -156,12 +156,14 @@ std::wstring RtfFont::RenderToOOX(RenderParameter oRenderParameter)
 			poRtfDocument->m_oFontTable.GetFont( poRtfDocument->m_oProperty.m_nDefFont, oDefFont );
 			sFontName = oDefFont.m_sName;
 		}
-        if( sFontName.empty())
-			sFontName = L"Arial";
+		if (sFontName.empty())
+		{
+			sFontName = poRtfDocument->m_oProperty.m_sDefFontName;
+		}
 	}
 	if( RENDER_TO_OOX_PARAM_MINOR_FONT == oRenderParameter.nType )
 	{
-        std::wstring sTag;
+		std::wstring sTag;
 		switch(m_eFontTheme)
 		{
 			case ft_flominor: 
@@ -463,13 +465,16 @@ std::wstring RtfColor::RenderToRtf(RenderParameter  oRenderParameter )
 std::wstring RtfColor::RenderToOOX(RenderParameter oRenderParameter)
 {
     std::wstring sResult;
+
+	oRenderParameter.sValue = ToHexColor();
+
 	if( RENDER_TO_OOX_PARAM_COLOR_VALUE == oRenderParameter.nType )
 	{
-		sResult +=  ToHexColor();
+		sResult += oRenderParameter.sValue;
 	}
 	else if( RENDER_TO_OOX_PARAM_COLOR_ATTRIBUTE == oRenderParameter.nType )
 	{
-		sResult +=  oRenderParameter.sValue;
+		sResult += L"w:color=\"" + oRenderParameter.sValue + L"\"";
 	}
 	else if( RENDER_TO_OOX_PARAM_COLOR_TAG == oRenderParameter.nType )
 	{
@@ -481,7 +486,7 @@ std::wstring RtfColor::RenderToOOX(RenderParameter oRenderParameter)
 	}
 	else
 	{
-        sResult += L"<w:color w:val=\"" + ToHexColor() + L"\"/>";
+        sResult += L"<w:color w:val=\"" + oRenderParameter.sValue + L"\"/>";
 	}
 	return sResult;
 }
@@ -1344,8 +1349,10 @@ void RtfCharProperty::SetDefaultRtf()
 	m_poShading.SetDefaultRtf();
 	m_poBorder.SetDefaultRtf();
 
-	if (false == m_bListLevel)
-		m_nFontSize = 24;
+    //if (false == m_bListLevel)
+    //{
+        //m_nFontSize = DefaultStyle::FontSize;
+    //}
 }
 void RtfCharProperty::SetDefaultOOX()
 {
@@ -1583,7 +1590,11 @@ std::wstring RtfCharProperty::RenderToOOX(RenderParameter oRenderParameter)
 	
 	bool bInsert = false;
 	bool bDelete = false;
-	
+
+	if (m_nFontSize == PROP_DEF)
+	{
+		m_nFontSize = poRtfDocument->m_oProperty.m_nDefFontSize;
+	}
 	if( RENDER_TO_OOX_PARAM_MATH == oRenderParameter.nType)
 	{//w:rPr в m:ctrlPr 
 		if (m_nRevised != PROP_DEF)
@@ -1755,7 +1766,7 @@ std::wstring RtfCharProperty::RenderToOOX(RenderParameter oRenderParameter)
 	if(  PROP_DEF != m_nUnderlineColor  )
 	{
 		RtfColor oCurColor;
-		if( true == poRtfDocument->m_oColorTable.GetColor( m_nUnderlineColor, oCurColor ) )
+		if ( true == poRtfDocument->m_oColorTable.GetColor( m_nUnderlineColor, oCurColor ) )
 		{
 			RenderParameter oNewParam = oRenderParameter;
 			oNewParam.nType = RENDER_TO_OOX_PARAM_COLOR_ATTRIBUTE;
@@ -1788,7 +1799,11 @@ std::wstring RtfCharProperty::RenderToOOX(RenderParameter oRenderParameter)
 			default:
 				break;
 		}
-	}
+    }
+    else
+    {
+        sResult += L"<w:u w:val=\"none\"/>";
+    }
 
 	RENDER_OOX_INT( m_nUp, sResult, L"w:position" )
 	
@@ -2429,7 +2444,15 @@ std::wstring RtfListOverrideProperty::ListOverrideLevels::RenderToOOX(RenderPara
 		sResult += L"<w:lvlOverride w:ilvl=\"" + std::to_wstring(index) + L"\">";
 		if ( PROP_DEF != OverrideLevel.m_nStart )
 			sResult += L"<w:startOverride w:val=\"" + std::to_wstring(OverrideLevel.m_nStart) + L"\"/>";
-		sResult += OverrideLevel.m_oLevel.RenderToOOX2(oRenderParameter, OverrideLevel.m_nLevelIndex);
+        if ( PROP_DEF != OverrideLevel.m_nLevelIndex )
+        {
+            sResult += OverrideLevel.m_oLevel.RenderToOOX2(oRenderParameter, OverrideLevel.m_nLevelIndex);
+        }
+        else
+        {
+            sResult += OverrideLevel.m_oLevel.RenderToOOX2(oRenderParameter, index);
+        }
+        //sResult += OverrideLevel.m_oLevel.RenderToOOX2(oRenderParameter, OverrideLevel.m_nLevelIndex);
 		sResult += L"</w:lvlOverride>";
 
 		index_prev = index;

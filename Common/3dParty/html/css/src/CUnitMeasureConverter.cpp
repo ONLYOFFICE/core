@@ -149,7 +149,7 @@ namespace NSCSS
 			case NSCSS::Millimeter:
 				return dValue * 0.01764;
 			case NSCSS::Inch:
-				return dValue * 1440.;
+				return dValue / 1440.;
 			case NSCSS::Peak:
 				return dValue * 0.004167; // 0.004167 = 6 / 1440
 			default:

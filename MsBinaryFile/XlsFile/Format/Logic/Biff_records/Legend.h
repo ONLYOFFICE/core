@@ -47,22 +47,23 @@ public:
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
+	void writeFields(CFRecord& record);
 
 	int serialize(std::wostream & _stream, int sz);
 
 	static const ElementType	type = typeLegend;
 
-	_UINT32	x;
-	_UINT32	y;
-	_UINT32	dx;
-	_UINT32	dy;
-	unsigned char	wSpace;
+	_UINT32	x = 0;
+	_UINT32	y = 0;
+	_UINT32	dx = 0;
+	_UINT32	dy = 0;
+	unsigned char	wSpace = 0;
 
-	bool fAutoPosition;
-	bool fAutoPosX;
-	bool fAutoPosY;
-	bool fVert;
-	bool fWasDataTable;
+	bool fAutoPosition = false;
+	bool fAutoPosX = false;
+	bool fAutoPosY = false;
+	bool fVert = false;
+	bool fWasDataTable = false;
 
 //-----------------------------
 	BaseObjectPtr m_CrtLayout12;

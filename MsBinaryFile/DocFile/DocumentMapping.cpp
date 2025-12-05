@@ -606,6 +606,7 @@ namespace DocFileFormat
         std::wstring PAGE		( L"PAGE" );
         std::wstring SHAPE		( L"SHAPE" );
 		std::wstring NREF		( L"NREF");
+        std::wstring Tocn        (L"Toc");
 
 		if (arField.empty() == false)
 			f = arField[0];
@@ -629,14 +630,16 @@ namespace DocFileFormat
 		bool bSHAPE			= search( f.begin(), f.end(), SHAPE.begin(),		SHAPE.end())			!= f.end();
 		bool bNREF			= search( f.begin(), f.end(), NREF.begin(),			NREF.end())				!= f.end();
 
-		bool bPAGEREF = false; 
+        bool bPAGEREF = false;
+        bool bTocn = false;
 		if (bHYPERLINK && arField.size() > 1)
 		{
 			std::wstring f1 = arField[1];
 			bPAGEREF	= search( f1.begin(), f1.end(), PAGEREF.begin(), PAGEREF.end())	!= f1.end();
+            bTocn       = search( f1.begin(), f1.end(), Tocn.begin(), Tocn.end())	!= f1.end();
 		}			
 
-		if (bTOC)
+        if (bTOC || bTocn)
 			_bContentWrite = true;
 
 		if ( bFORM )
@@ -710,12 +713,13 @@ namespace DocFileFormat
 			}
 			else
 			{
-				for (size_t i = 1; i < arField.size(); i++)
+				//for (size_t i = 1; i < arField.size(); i++)
+				if (arField.size() > 1)
 				{
 					std::wstring f1 = arField[1];
-					int d = (int)f1.find(PAGEREF);
+					size_t d = f1.find(PAGEREF);
 
-					if (d > 0)
+					if (d != std::wstring::npos)
 					{
 						_writeWebHidden = true;
 						std::wstring _writeTocLink =f1.substr(d + 9);
@@ -726,10 +730,8 @@ namespace DocFileFormat
 						_writeAfterRun +=	XmlUtils::EncodeXmlString(_writeTocLink);
 						_writeAfterRun +=	std::wstring (L"\" w:history=\"1\">");
 
-						break;								
-						//cp = cpFieldSep1;
+						//break;								
 					}
-					//cpFieldSep1 = cpFieldSep2;
 				}
 				_skipRuns = 5; //with separator
 			}

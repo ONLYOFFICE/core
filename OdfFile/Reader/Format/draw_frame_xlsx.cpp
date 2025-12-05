@@ -198,7 +198,7 @@ void draw_frame::xlsx_convert(oox::xlsx_conversion_context & Context)
 			if (properties->fo_clip_)
 			{
 				std::wstring strRectClip = properties->fo_clip_.get();
-				Context.get_drawing_context().set_clipping(strRectClip.substr(5, strRectClip.length() - 6));
+				fill.clipping = strRectClip.length() > 6 ? strRectClip.substr(5, strRectClip.length() - 6) : L"";
 			}
 
 			if (properties->style_mirror_)
@@ -413,7 +413,6 @@ void draw_object::xlsx_convert(oox::xlsx_conversion_context & Context)
 			if (!math_content.empty())
 			{
 				std::wstring text_content = L"<a:p><a14:m xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\">";
-//				text_content += L"<m:oMathPara xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\">";
 				text_content += math_content;
 				text_content += L"</a14:m></a:p>";
 
@@ -421,6 +420,7 @@ void draw_object::xlsx_convert(oox::xlsx_conversion_context & Context)
 				{
 					Context.get_drawing_context().set_property(_property(L"fit-to-size", true));
 					Context.get_drawing_context().set_property(_property(L"text-content", text_content));
+					Context.get_drawing_context().set_property(_property(L"auto-grow-width", true));
 				}
 				else
 				{

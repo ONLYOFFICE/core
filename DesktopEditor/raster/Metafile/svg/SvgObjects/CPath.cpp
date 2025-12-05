@@ -8,49 +8,46 @@
 
 namespace SVG
 {
-	IPathElement::~IPathElement()
-	{
-	}
-
 	#define ISPATHCOMMAND(wchar) L'M' == wchar || L'm' == wchar || L'Z' == wchar || L'z' == wchar || L'L' == wchar || L'l' == wchar || L'H' == wchar || L'h' == wchar || L'V' == wchar || L'v' == wchar || L'C' == wchar || L'c' == wchar || L'S' == wchar || L's' == wchar || L'Q' == wchar || L'q' == wchar || L'T' == wchar || L't' == wchar || L'A' == wchar || L'a' == wchar
-	// IpathElement
-	TBounds IPathElement::GetBounds() const
-	{
-		TBounds oBounds{DBL_MAX, DBL_MAX, -DBL_MAX, -DBL_MAX};
 
-		for (const Point& oPoint : m_arPoints)
+	Point IPathElement::GetFirstPoint() const
+	{
+		switch (GetType())
 		{
-			oBounds.m_dLeft   = std::min(oBounds.m_dLeft,   oPoint.dX);
-			oBounds.m_dTop    = std::min(oBounds.m_dTop,    oPoint.dY);
-			oBounds.m_dRight  = std::max(oBounds.m_dRight,  oPoint.dX);
-			oBounds.m_dBottom = std::max(oBounds.m_dBottom, oPoint.dY);
+			case Move: return ((CMoveElement*)this)->m_oPoint;
+			case Line: return ((CLineElement*)this)->m_oPoint;
+			case CBezier:
+			case SBezier:
+			case QBezier:
+			case TBezier:
+			case Arc: return ((CCBezierElement*)this)->m_oPoint1;
+			case Close: return Point{0., 0.};
 		}
 
-		return oBounds;
+		return Point{0., 0.};
 	}
 
-	UINT IPathElement::GetPointCount() const
+	Point IPathElement::GetLastPoint() const
 	{
-		return m_arPoints.size();
-	}
+		switch (GetType())
+		{
+			case Move: return ((CMoveElement*)this)->m_oPoint;
+			case Line: return ((CLineElement*)this)->m_oPoint;
+			case CBezier:
+			case SBezier:
+			case QBezier:
+			case TBezier:
+			case Arc: return ((CCBezierElement*)this)->m_oPointE;
+			case Close: return Point{0., 0.};
+		}
 
-	Point IPathElement::operator[](int nIndex) const
-	{
-		if (m_arPoints.empty() || (nIndex > 0 && nIndex >= m_arPoints.size()) || (nIndex < 0 && -nIndex > m_arPoints.size()))
-			return Point{0., 0.};
-
-		return m_arPoints[(nIndex >= 0) ? nIndex : m_arPoints.size() + nIndex];
+		return Point{0., 0.};
 	}
 
 	//CMoveElement
 	CMoveElement::CMoveElement(const Point &oPoint)
-	{
-		m_arPoints.push_back(oPoint);
-	}
-
-	CMoveElement::~CMoveElement()
-	{
-	}
+		: m_oPoint(oPoint)
+	{}
 
 	EPathElement CMoveElement::GetType() const
 	{
@@ -65,7 +62,7 @@ namespace SVG
 		Point oTranslatePoint{0., 0.};
 
 		if (bRelativeCoordinate && NULL != pPrevElement)
-			oTranslatePoint = (*pPrevElement)[-1];
+			oTranslatePoint = pPrevElement->GetLastPoint();
 
 		CMoveElement *pMoveElement = new CMoveElement(Point{arValues[0], arValues[1]} + oTranslatePoint);
 
@@ -76,19 +73,18 @@ namespace SVG
 
 	void CMoveElement::Draw(IRenderer *pRenderer) const
 	{
-		if (m_arPoints.empty())
-			return;
+		if (NULL != pRenderer)
+			pRenderer->PathCommandMoveTo(m_oPoint.dX, m_oPoint.dY);
+	}
 
-		pRenderer->PathCommandMoveTo(m_arPoints[0].dX, m_arPoints[0].dY);
+	TBounds CMoveElement::GetBounds() const
+	{
+		return TBounds{m_oPoint.dX, m_oPoint.dY, 1, 1};
 	}
 
 	//CLineElement
 	CLineElement::CLineElement(const Point &oPoint)
-	{
-		m_arPoints.push_back(oPoint);
-	}
-
-	CLineElement::~CLineElement()
+	    : m_oPoint(oPoint)
 	{}
 
 	EPathElement CLineElement::GetType() const
@@ -104,7 +100,7 @@ namespace SVG
 		Point oTranslatePoint{0., 0.};
 
 		if (bRelativeCoordinate && NULL != pPrevElement)
-			oTranslatePoint = (*pPrevElement)[-1];
+			oTranslatePoint = pPrevElement->GetLastPoint();
 
 		CLineElement *pLineElement = new CLineElement(Point{arValues[0], arValues[1]} + oTranslatePoint);
 
@@ -121,7 +117,7 @@ namespace SVG
 		Point oTranslatePoint{0., 0.};
 
 		if (NULL != pPrevElement)
-			oTranslatePoint = (*pPrevElement)[-1];
+			oTranslatePoint = pPrevElement->GetLastPoint();
 
 		CLineElement *pLineElement = new CLineElement(Point{oTranslatePoint.dX, arValues[0] + ((bRelativeCoordinate) ? oTranslatePoint.dY : 0)});
 
@@ -138,7 +134,7 @@ namespace SVG
 		Point oTranslatePoint{0., 0.};
 
 		if (NULL != pPrevElement)
-			oTranslatePoint = (*pPrevElement)[-1];
+			oTranslatePoint = pPrevElement->GetLastPoint();
 
 		CLineElement *pLineElement = new CLineElement(Point{arValues[0] + ((bRelativeCoordinate) ? oTranslatePoint.dX : 0), oTranslatePoint.dY});
 
@@ -149,23 +145,19 @@ namespace SVG
 
 	void CLineElement::Draw(IRenderer *pRenderer) const
 	{
-		if (m_arPoints.empty())
-			return;
+		if (NULL != pRenderer)
+			pRenderer->PathCommandLineTo(m_oPoint.dX, m_oPoint.dY);
+	}
 
-		pRenderer->PathCommandLineTo(m_arPoints[0].dX, m_arPoints[0].dY);
+	TBounds CLineElement::GetBounds() const
+	{
+		return TBounds{m_oPoint.dX, m_oPoint.dY, 1, 1};
 	}
 
 	//CCurveBezierElement
 	CCBezierElement::CCBezierElement(const Point &oPoint1, const Point &oPoint2, const Point &oPointE, EPathElement enType)
-		: m_enType(enType)
-	{
-		m_arPoints.push_back(oPoint1);
-		m_arPoints.push_back(oPoint2);
-		m_arPoints.push_back(oPointE);
-	}
-	CCBezierElement::~CCBezierElement()
-	{
-	}
+		: m_oPoint1(oPoint1), m_oPoint2(oPoint2), m_oPointE(oPointE), m_enType(enType)
+	{}
 
 	EPathElement CCBezierElement::GetType() const
 	{
@@ -180,11 +172,11 @@ namespace SVG
 		Point oTranslatePoint{0., 0.};
 
 		if (bRelativeCoordinate && NULL != pPrevElement)
-			oTranslatePoint = (*pPrevElement)[-1];
+			oTranslatePoint = pPrevElement->GetLastPoint();
 
 		CCBezierElement *pCBezierElement = new CCBezierElement(Point{arValues[0], arValues[1]} + oTranslatePoint,
-															   Point{arValues[2], arValues[3]} + oTranslatePoint,
-															   Point{arValues[4], arValues[5]} + oTranslatePoint);
+		                                                       Point{arValues[2], arValues[3]} + oTranslatePoint,
+		                                                       Point{arValues[4], arValues[5]} + oTranslatePoint);
 
 		arValues.erase(arValues.begin(), arValues.begin() + 6);
 
@@ -200,14 +192,19 @@ namespace SVG
 
 		if (NULL != pPrevElement)
 		{
-			oFirstPoint = (*pPrevElement)[-1];
+			oFirstPoint = pPrevElement->GetLastPoint();
 			if (bRelativeCoordinate)
 				oTranslatePoint = oFirstPoint;
 		}
 
 		if (EPathElement::SBezier == pPrevElement->GetType() ||
 			EPathElement::CBezier == pPrevElement->GetType())
-			oFirstPoint += oFirstPoint - (*pPrevElement)[-2];
+		{
+			CCBezierElement *pBezierElement{dynamic_cast<CCBezierElement*>(pPrevElement)};
+
+			if (NULL != pBezierElement)
+				oFirstPoint += oFirstPoint - pBezierElement->m_oPoint2;
+		}
 
 		CCBezierElement *pCBezierElement = new CCBezierElement(oFirstPoint,
 															   Point{arValues[0], arValues[1]} + oTranslatePoint,
@@ -228,7 +225,7 @@ namespace SVG
 
 		if (NULL != pPrevElement)
 		{
-			oLastPoint = (*pPrevElement)[-1];
+			oLastPoint = pPrevElement->GetLastPoint();
 			if (bRelativeCoordinate)
 				oTranslatePoint = oLastPoint;
 		}
@@ -240,6 +237,14 @@ namespace SVG
 		return pCBezierElement;
 	}
 
+	bool ItBezierType(EPathElement eType)
+	{
+		return EPathElement::CBezier == eType ||
+		       EPathElement::SBezier == eType ||
+		       EPathElement::QBezier == eType ||
+		       EPathElement::TBezier == eType;
+	}
+
 	IPathElement *CCBezierElement::CreateFromTArray(std::vector<double> &arValues, bool bRelativeCoordinate, IPathElement *pPrevElement)
 	{
 		if (arValues.size() < 2)
@@ -247,10 +252,29 @@ namespace SVG
 
 		Point oFirstPoint{0., 0.}, oSecondPoint{0., 0.}, oTranslatePoint{0., 0.};
 
+		if (EPathElement::SBezier == pPrevElement->GetType() ||
+			EPathElement::CBezier == pPrevElement->GetType())
+		{
+			CCBezierElement *pBezierElement{dynamic_cast<CCBezierElement*>(pPrevElement)};
+
+			if (NULL != pBezierElement)
+				oFirstPoint += oFirstPoint - pBezierElement->m_oPoint2;
+		}
+
 		if (NULL != pPrevElement)
 		{
-			oFirstPoint  = (*pPrevElement)[-1];
-			oSecondPoint = (*pPrevElement)[-2];
+			oFirstPoint  = pPrevElement->GetLastPoint();
+
+			if (ItBezierType(pPrevElement->GetType()))
+			{
+				CCBezierElement *pBezierElement{dynamic_cast<CCBezierElement*>(pPrevElement)};
+
+				if (NULL != pBezierElement)
+					oSecondPoint = pBezierElement->m_oPoint2;
+			}
+			else
+				oSecondPoint = oFirstPoint;
+
 			if (bRelativeCoordinate)
 				oTranslatePoint = oFirstPoint;
 		}
@@ -259,6 +283,8 @@ namespace SVG
 			EPathElement::QBezier != pPrevElement->GetType())
 		{
 			oSecondPoint = Point{arValues[arValues.size() - 2], arValues[arValues.size() - 1]};
+
+			arValues.erase(arValues.end() - 2, arValues.end());
 
 			return new CLineElement(oSecondPoint + oTranslatePoint);
 		}
@@ -280,9 +306,9 @@ namespace SVG
 		Point oTranslatePoint{0., 0.};
 
 		if (bRelativeCoordinate && NULL != pPrevElement)
-			oTranslatePoint = (*pPrevElement)[-1];
+			oTranslatePoint = pPrevElement->GetLastPoint();
 
-		Point oSrartPoint{(*pPrevElement)[-1]};
+		Point oSrartPoint{pPrevElement->GetLastPoint()};
 		Point oSecondPoint{arValues[5] + oTranslatePoint.dX, arValues[6] + oTranslatePoint.dY};
 
 		if (oSrartPoint == oSecondPoint)
@@ -359,12 +385,26 @@ namespace SVG
 
 	void CCBezierElement::Draw(IRenderer *pRenderer) const
 	{
-		if (3 != m_arPoints.size())
-				return;
+		pRenderer->PathCommandCurveTo(m_oPoint1.dX, m_oPoint1.dY,
+		                              m_oPoint2.dX, m_oPoint2.dY,
+		                              m_oPointE.dX, m_oPointE.dY);
+	}
 
-		pRenderer->PathCommandCurveTo(m_arPoints[0].dX, m_arPoints[0].dY,
-		                              m_arPoints[1].dX, m_arPoints[1].dY,
-		                              m_arPoints[2].dX, m_arPoints[2].dY);
+	#define CHECK_BOUNDS(bounds, point)\
+	bounds.m_dLeft   = std::min(oBounds.m_dLeft,   point.dX);\
+	bounds.m_dTop    = std::min(oBounds.m_dTop,    point.dY);\
+	bounds.m_dRight  = std::max(oBounds.m_dRight,  point.dX);\
+	bounds.m_dBottom = std::max(oBounds.m_dBottom, point.dY)
+
+	TBounds CCBezierElement::GetBounds() const
+	{
+		TBounds oBounds{DBL_MAX, DBL_MAX, -DBL_MAX, -DBL_MAX};
+
+		CHECK_BOUNDS(oBounds, m_oPoint1);
+		CHECK_BOUNDS(oBounds, m_oPoint2);
+		CHECK_BOUNDS(oBounds, m_oPointE);
+
+		return oBounds;
 	}
 
 	inline double ClampSinCos(const double& d)
@@ -420,13 +460,6 @@ namespace SVG
 	}
 
 	//CCloseElement
-	CCloseElement::CCloseElement()
-	{}
-
-	CCloseElement::~CCloseElement()
-	{
-	}
-
 	EPathElement CCloseElement::GetType() const
 	{
 		return EPathElement::Close;
@@ -437,23 +470,33 @@ namespace SVG
 		pRenderer->PathCommandClose();
 	}
 
+	TBounds CCloseElement::GetBounds() const
+	{
+		return TBounds{0., 0., 0., 0.};
+	}
+
 	#define LASTELEMENT(array) (array.empty()) ? NULL : array.back()
     #define RANGEALIGMENT(value, left, rigth) if (value < left) value = left; else if (value > rigth) value = rigth;
     #define EPSILON 0.05
     #define CURVESTEP 0.05
     #define MINCURVESTEP 0.001
 
-	CPath::CPath(XmlUtils::CXmlNode& oNode, CRenderedObject* pParent, bool bChechCommands)
-		: CRenderedObject(oNode, pParent), m_bEvenOddRule(false)
-	{
-		if (bChechCommands)
-			ReadFromString(oNode.GetAttribute(L"d"));
-	}
+	CPath::CPath(CSvgReader& oReader, CRenderedObject* pParent)
+		: CRenderedObject(oReader, pParent), m_bEvenOddRule(false)
+	{}
 
 	CPath::~CPath()
 	{
 		for (IPathElement* pPathElement : m_arElements)
 			delete pPathElement;
+	}
+
+	void CPath::SetAttribute(const std::string& sName, CSvgReader& oReader)
+	{
+		if ("d" == sName)
+			ReadFromString(oReader.GetText());
+		else
+			CRenderedObject::SetAttribute(sName, oReader);
 	}
 
 	void CPath::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
@@ -539,17 +582,22 @@ namespace SVG
 				{
 					const IPathElement* pFirstElement{m_arElements[unIndex]};
 
-					(*oExternalData.m_pPoints)[0].m_oPoint = (*pFirstElement)[0];
+					(*oExternalData.m_pPoints)[0].m_oPoint = pFirstElement->GetFirstPoint();
 
 					if (pStartMarker->NeedExternalAngle())
 					{
-						Point oCurent{(*pFirstElement)[0]};
+						Point oCurent{pFirstElement->GetFirstPoint()};
 						Point oNext;
 
-						if (pFirstElement->GetPointCount() > 1)
-							oNext = (*pFirstElement)[1];
+						if (ItBezierType(pFirstElement->GetType()))
+						{
+							const CCBezierElement* pBezierElement{dynamic_cast<const CCBezierElement*>(pFirstElement)};
+
+							if (NULL != pBezierElement)
+								oNext = pBezierElement->m_oPoint2;
+						}
 						else if (unIndex < m_arElements.size() - 1 && EPathElement::Close != m_arElements[unIndex + 1]->GetType() && EPathElement::Move != m_arElements[unIndex + 1]->GetType())
-							oNext = (*m_arElements[unIndex + 1])[0];
+							oNext = m_arElements[unIndex + 1]->GetFirstPoint();
 
 						(*oExternalData.m_pPoints)[0].m_dAngle = CALCULATE_ANGLE(oCurent, oNext);
 
@@ -575,12 +623,12 @@ namespace SVG
 				for (unsigned int unIndex = 1; unIndex < m_arElements.size() - 1; ++unIndex)
 				{
 					if (EPathElement::Close != m_arElements[unIndex]->GetType())
-						(*oExternalData.m_pPoints)[unIndex - 1].m_oPoint = (*m_arElements[unIndex])[-1];
+						(*oExternalData.m_pPoints)[unIndex - 1].m_oPoint = m_arElements[unIndex]->GetLastPoint();
 
 					if (pMidMarker->NeedExternalAngle())
 					{
-						const Point oCurrent{(*m_arElements[unIndex])[0]};
-						const Point oPrev{(*m_arElements[unIndex + 1])[-1]};
+						const Point oCurrent{m_arElements[unIndex]->GetFirstPoint()};
+						const Point oPrev{m_arElements[unIndex + 1]->GetLastPoint()};
 
 						(*oExternalData.m_pPoints)[unIndex - 1].m_dAngle = CALCULATE_ANGLE(oCurrent, oPrev);
 					}
@@ -606,17 +654,22 @@ namespace SVG
 				{
 					const IPathElement* pLastElement{m_arElements[unIndex]};
 
-					(*oExternalData.m_pPoints)[0].m_oPoint = (*pLastElement)[-1];
+					(*oExternalData.m_pPoints)[0].m_oPoint = pLastElement->GetLastPoint();
 
 					if (pEndMarker->NeedExternalAngle())
 					{
-						Point oCurent{(*pLastElement)[-1]};
+						Point oCurent{pLastElement->GetLastPoint()};
 						Point oPrev;
 
-						if (pLastElement->GetPointCount() > 1)
-							oPrev = (*pLastElement)[-2];
-						else if (unIndex > 0 && EPathElement::Close != m_arElements[unIndex - 1]->GetType() && EPathElement::Move != m_arElements[unIndex - 1]->GetType())
-							oPrev = (*m_arElements[unIndex - 1])[0];
+						if (ItBezierType(pLastElement->GetType()))
+						{
+							const CCBezierElement* pBezierElement{dynamic_cast<const CCBezierElement*>(pLastElement)};
+
+							if (NULL != pBezierElement)
+								oPrev = pBezierElement->m_oPoint2;
+						}
+						else if (unIndex > 0 && EPathElement::Close != m_arElements[unIndex - 1]->GetType())
+							oPrev = m_arElements[unIndex - 1]->GetFirstPoint();
 
 						(*oExternalData.m_pPoints)[0].m_dAngle = CALCULATE_ANGLE(oPrev, oCurent);
 					}
@@ -650,7 +703,7 @@ namespace SVG
 		}
 	}
 
-	TBounds CPath::GetBounds() const
+	TBounds CPath::GetBounds(SvgMatrix* pTransform) const
 	{
 		TBounds oBounds{DBL_MAX, DBL_MAX, -DBL_MAX, -DBL_MAX}, oTempBounds;
 
@@ -662,6 +715,16 @@ namespace SVG
 			oBounds.m_dTop    = std::min(oBounds.m_dTop,    oTempBounds.m_dTop);
 			oBounds.m_dRight  = std::max(oBounds.m_dRight,  oTempBounds.m_dRight);
 			oBounds.m_dBottom = std::max(oBounds.m_dBottom, oTempBounds.m_dBottom);
+		}
+
+		if (nullptr != pTransform)
+		{
+			*pTransform += m_oTransformation.m_oTransform.GetMatrix();
+
+			pTransform->GetFinalValue().TransformPoint(oBounds.m_dLeft,  oBounds.m_dTop   );
+			pTransform->GetFinalValue().TransformPoint(oBounds.m_dRight, oBounds.m_dBottom);
+
+			*pTransform -= m_oTransformation.m_oTransform.GetMatrix();
 		}
 
 		return oBounds;
@@ -699,7 +762,7 @@ namespace SVG
 				if (NULL == pMoveElement)
 					return;
 
-				AddElement(new CCloseElement);
+				AddElement(new CCloseElement());
 				oSecondPos = ++oFirstPos;
 				continue;
 			}
@@ -839,13 +902,13 @@ namespace SVG
 		case EPathElement::Move:
 		case  EPathElement::Close:
 		{
-			m_oPosition = m_oLastPoint = (*m_pCurrentElement)[0];
+			m_oPosition = m_oLastPoint = m_pCurrentElement->GetFirstPoint();
 			m_pCurrentElement = (*m_pPath)[m_unIndexElement++];
 			return Move(dX);
 		}
 		case EPathElement::Line:
 		{
-			Point oPoint{(*m_pCurrentElement)[0]};
+			Point oPoint{m_pCurrentElement->GetFirstPoint()};
 
 			double dDx = oPoint.dX - m_oPosition.dX;
 			double dDy = oPoint.dY - m_oPosition.dY;
@@ -872,6 +935,11 @@ namespace SVG
 		case EPathElement::QBezier:
 		case EPathElement::TBezier:
 		{
+			const CCBezierElement* pBezierElement{dynamic_cast<const CCBezierElement*>(m_pCurrentElement)};
+
+			if (NULL == pBezierElement)
+				return false;
+
 			Point oCurvePoint{0., 0.};
 			double dPrevValue = dX;
 
@@ -895,8 +963,8 @@ namespace SVG
 
 				RANGEALIGMENT(m_dCurveIndex, 0., 1.);
 
-				oCurvePoint.dX = std::pow((1. - m_dCurveIndex), 3) * m_oLastPoint.dX + 3 * std::pow((1. - m_dCurveIndex), 2) * m_dCurveIndex * (*m_pCurrentElement)[0].dX + 3 * (1. - m_dCurveIndex)* std::pow(m_dCurveIndex, 2) * (*m_pCurrentElement)[1].dX + std::pow(m_dCurveIndex, 3) * (*m_pCurrentElement)[2].dX;
-				oCurvePoint.dY = std::pow((1. - m_dCurveIndex), 3) * m_oLastPoint.dY + 3 * std::pow((1. - m_dCurveIndex), 2) * m_dCurveIndex * (*m_pCurrentElement)[0].dY + 3 * (1. - m_dCurveIndex)* std::pow(m_dCurveIndex, 2) * (*m_pCurrentElement)[1].dY + std::pow(m_dCurveIndex, 3) * (*m_pCurrentElement)[2].dY;
+				oCurvePoint.dX = std::pow((1. - m_dCurveIndex), 3) * m_oLastPoint.dX + 3 * std::pow((1. - m_dCurveIndex), 2) * m_dCurveIndex * pBezierElement->m_oPoint1.dX + 3 * (1. - m_dCurveIndex)* std::pow(m_dCurveIndex, 2) * pBezierElement->m_oPoint2.dX + std::pow(m_dCurveIndex, 3) * pBezierElement->m_oPointE.dX;
+				oCurvePoint.dY = std::pow((1. - m_dCurveIndex), 3) * m_oLastPoint.dY + 3 * std::pow((1. - m_dCurveIndex), 2) * m_dCurveIndex * pBezierElement->m_oPoint1.dY + 3 * (1. - m_dCurveIndex)* std::pow(m_dCurveIndex, 2) * pBezierElement->m_oPoint2.dY + std::pow(m_dCurveIndex, 3) * pBezierElement->m_oPointE.dY;
 
 				dPrevValue = dX;
 
@@ -905,7 +973,7 @@ namespace SVG
 
 			m_dCurveStep  = CURVESTEP;
 
-			return NextMove(dX, (*m_pCurrentElement)[-1]);
+			return NextMove(dX, m_pCurrentElement->GetLastPoint());
 		}
 		default: return false;
 		}
@@ -920,7 +988,7 @@ namespace SVG
 
 		m_unIndexElement = 0;
 		m_pCurrentElement = (*m_pPath)[m_unIndexElement++];
-		m_oPosition = m_oLastPoint = (*m_pCurrentElement)[0];
+		m_oPosition = m_oLastPoint = m_pCurrentElement->GetFirstPoint();
 		m_dAngle = m_dCurveIndex = 0.;
 		m_dCurveStep = CURVESTEP;
 	}

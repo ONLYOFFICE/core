@@ -9,17 +9,21 @@
 
 namespace SVG
 {
-	#define MapCI std::map<std::wstring, std::wstring>::const_iterator
+	using MapCI        = std::map<std::wstring, std::wstring>::const_iterator;
 
-	#define SvgDigit     NSCSS::NSProperties::CDigit
-	#define SvgString    NSCSS::NSProperties::CString
-	#define SvgColor     NSCSS::NSProperties::CColor
-	#define SvgURL       NSCSS::NSProperties::CURL
-	#define SvgEnum      NSCSS::NSProperties::CEnum
+	using SvgDigit     = NSCSS::NSProperties::CDigit;
+	using SvgString    = NSCSS::NSProperties::CString;
+	using SvgColor     = NSCSS::NSProperties::CColor;
+	using SvgURL       = NSCSS::NSProperties::CURL;
+	using SvgEnum      = NSCSS::NSProperties::CEnum;
 
-	#define SvgTransform NSCSS::NSProperties::CTransform
-	#define SvgFont      NSCSS::NSProperties::CFont
-	#define SvgText      NSCSS::NSProperties::CText
+	using SvgTransform = NSCSS::NSProperties::CTransform;
+	using SvgFont      = NSCSS::NSProperties::CFont;
+	using SvgText      = NSCSS::NSProperties::CText;
+
+	using SvgMatrix    = NSCSS::NSProperties::CMatrix;
+
+	#define DEFAULT_FONT_SIZE 16
 
 	struct TStroke
 	{

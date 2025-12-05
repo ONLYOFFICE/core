@@ -46,11 +46,12 @@ public:
 	~AF12CellIcon();
 
 	virtual void load(CFRecord& record);
+	virtual void save(CFRecord& record);
 
 	static const ElementType type = typeAF12CellIcon;
 
-	_UINT32 iIconSet;
-	_UINT32 iIcon;
+	_UINT32 iIconSet = 0;
+	_UINT32 iIcon = 0;
 };
 
 typedef boost::shared_ptr<AF12CellIcon> AF12CellIconPtr;

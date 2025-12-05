@@ -68,25 +68,6 @@ WASM_EXPORT int IsFontBinaryExist(char* path)
 	return 0;
 }
 
-WASM_EXPORT int GetType(BYTE* data, LONG size)
-{
-	// 0 - PDF
-	// 1 - DJVU
-	// 2 - XPS
-	LONG nHeaderSearchSize = 1024;
-	LONG nSize = size < nHeaderSearchSize ? size : nHeaderSearchSize;
-	char* pData = (char*)data;
-	for (int i = 0; i < nSize - 5; ++i)
-	{
-		int nPDF = strncmp(&pData[i], "%PDF-", 5);
-		if (!nPDF)
-			return 0;
-	}
-	if ( (8 <= size) && (0x41 == data[0] && 0x54 == data[1] && 0x26 == data[2] && 0x54 == data[3] &&
-						 0x46 == data[4] && 0x4f == data[5] && 0x52 == data[6] && 0x4d == data[7]))
-		return 1;
-	return 2;
-}
 WASM_EXPORT CDrawingFile* Open(BYTE* data, LONG size, const char* password)
 {
 	if (!g_applicationFonts)
@@ -102,6 +83,13 @@ WASM_EXPORT CDrawingFile* Open(BYTE* data, LONG size, const char* password)
 	pFile->OpenFile(data, size, sPassword);
 	return pFile;
 }
+WASM_EXPORT int GetType(CDrawingFile* pFile)
+{
+	// 0 - PDF
+	// 1 - DJVU
+	// 2 - XPS
+	return pFile->GetType();
+}
 WASM_EXPORT int GetErrorCode(CDrawingFile* pFile)
 {
 	if (!pFile)
@@ -111,6 +99,7 @@ WASM_EXPORT int GetErrorCode(CDrawingFile* pFile)
 WASM_EXPORT void Close(CDrawingFile* pFile)
 {
 	delete pFile;
+	g_applicationFonts->GetStreams()->Clear();
 	NSFonts::NSApplicationFontStream::SetGlobalMemoryStorage(NULL);
 }
 WASM_EXPORT BYTE* GetInfo(CDrawingFile* pFile)
@@ -125,7 +114,7 @@ WASM_EXPORT BYTE* GetGlyphs(CDrawingFile* pFile, int nPageIndex)
 {
 	return pFile->GetGlyphs(nPageIndex);
 }
-WASM_EXPORT BYTE* GetLinks  (CDrawingFile* pFile, int nPageIndex)
+WASM_EXPORT BYTE* GetLinks(CDrawingFile* pFile, int nPageIndex)
 {
 	return pFile->GetLinks(nPageIndex);
 }
@@ -176,6 +165,42 @@ WASM_EXPORT void SetCMapData(CDrawingFile* pFile, BYTE* data, int size)
 WASM_EXPORT BYTE* ScanPage(CDrawingFile* pFile, int nPageIndex, int mode)
 {
 	return pFile->ScanPage(nPageIndex, mode);
+}
+WASM_EXPORT BYTE* SplitPages(CDrawingFile* pFile, int* arrPageIndex, int nLength, BYTE* data, LONG size)
+{
+	return pFile->SplitPages(arrPageIndex, nLength, data, size);
+}
+WASM_EXPORT int MergePages(CDrawingFile* pFile, BYTE* data, LONG size, int nMaxID, const char* sPrefixForm)
+{
+	return pFile->MergePages(data, size, nMaxID, sPrefixForm) ? 1 : 0;
+}
+WASM_EXPORT int UnmergePages(CDrawingFile* pFile)
+{
+	return pFile->UnmergePages() ? 1 : 0;
+}
+WASM_EXPORT int RedactPage(CDrawingFile* pFile, int nPageIndex, int* arrRedactBox, int nLengthX8, BYTE* data, int size)
+{
+	double* arrDRedactBox = new double[nLengthX8 * 8];
+	for (int i = 0; i < nLengthX8 * 8; ++i)
+		arrDRedactBox[i] = arrRedactBox[i] / 10000.0;
+	int nRes = pFile->RedactPage(nPageIndex, arrDRedactBox, nLengthX8, data, size) ? 1 : 0;
+	delete[] arrDRedactBox;
+	return nRes;
+}
+WASM_EXPORT int UndoRedact(CDrawingFile* pFile)
+{
+	return pFile->UndoRedact() ? 1 : 0;
+}
+WASM_EXPORT int CheckOwnerPassword(CDrawingFile* pFile, const char* password)
+{
+	std::wstring sPassword = L"";
+	if (NULL != password)
+		sPassword = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)password, strlen(password));
+	return pFile->CheckOwnerPassword(sPassword) ? 1 : 0;
+}
+WASM_EXPORT int CheckPerm(CDrawingFile* pFile, int nPermFlag)
+{
+	return pFile->CheckPerm(nPermFlag) ? 1 : 0;
 }
 
 WASM_EXPORT void* GetImageBase64(CDrawingFile* pFile, int rId)

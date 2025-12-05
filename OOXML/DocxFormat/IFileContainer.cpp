@@ -45,6 +45,7 @@
 
 #include "../PPTXFormat/LegacyDiagramText.h"
 #include "../XlsxFormat/FileFactory_Spreadsheet.h"
+#include "../VsdxFormat/FileFactory_Draw.h"
 
 namespace OOX
 {
@@ -54,6 +55,7 @@ namespace OOX
 
 	IFileContainer::IFileContainer(OOX::Document* pMain) : m_pMainDocument(pMain)
 	{
+		m_bVisioPages = false;
 		m_bSpreadsheets = false;
 		m_lMaxRid		= 0;
 	}
@@ -100,6 +102,9 @@ namespace OOX
 
 			if (m_bSpreadsheets)
 				pFile = OOX::Spreadsheet::CreateFile(oRootPath, oPath, oRels.m_arRelations[i], m_pMainDocument);
+
+			if (m_bVisioPages)
+				pFile = OOX::Draw::CreateFile(oRootPath, oPath, oRels.m_arRelations[i], m_pMainDocument);
 
 			if (pFile.IsInit() == false || pFile->type() == FileTypes::Unknown)
 				pFile = OOX::CreateFile(oRootPath, oPath, oRels.m_arRelations[i], m_pMainDocument);

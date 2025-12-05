@@ -941,7 +941,8 @@ bool CSvmFile::ReadImage(unsigned short ushColorUsage, BYTE** ppBgraBuffer, unsi
 		return false;
 
 	BYTE* pBuffer = m_oStream.GetCurPtr();
-	MetaFile::ReadImage(pBuffer, unRemainBytes, ushColorUsage, ppBgraBuffer, pulWidth, pulHeight);
+	unsigned int unColorUsed;
+	MetaFile::ReadImage(pBuffer, unRemainBytes, ushColorUsage, ppBgraBuffer, pulWidth, pulHeight, unColorUsed);
 	return true;
 }
 void CSvmFile::Read_META_POP()
@@ -994,7 +995,7 @@ void CSvmFile::Read_META_BMP()
     {
         if ( m_pOutput)
         {
-            m_pOutput->DrawBitmap( m_oCurrnetOffset.x, m_oCurrnetOffset.y, bitmap_info.nWidth, bitmap_info.nHeight, pBgraBuffer, bitmap_info.nWidth, bitmap_info.nHeight);
+            m_pOutput->DrawBitmap( m_oCurrnetOffset.x, m_oCurrnetOffset.y, bitmap_info.nWidth, bitmap_info.nHeight, pBgraBuffer, bitmap_info.nWidth, bitmap_info.nHeight, BLEND_MODE_DEFAULT);
         }
 
         delete []pBgraBuffer;
@@ -1049,6 +1050,8 @@ void CSvmFile::Read_META_BMP(TSvmBitmap & bitmap_info, BYTE** ppDstBuffer, unsig
     else
         nColors = 0;
 
+	unsigned int unColorUsed;
+
     if( ZCOMPRESS == bitmap_info.nCompression )
     {
         COfficeUtils OfficeUtils(NULL);
@@ -1069,7 +1072,7 @@ void CSvmFile::Read_META_BMP(TSvmBitmap & bitmap_info, BYTE** ppDstBuffer, unsig
         }
         m_oStream.Skip(srcSize);
 
-        MetaFile::ReadImage((BYTE*)&bitmap_info, bitmap_info.nSize, destBuf, destSize, ppDstBuffer, pulWidth, pulHeight);
+        MetaFile::ReadImage((BYTE*)&bitmap_info, bitmap_info.nSize, destBuf, destSize, ppDstBuffer, pulWidth, pulHeight, unColorUsed);
         delete []destBuf;
     }
     else if (nHeaderSize >= bitmap_info.nSize)
@@ -1079,7 +1082,7 @@ void CSvmFile::Read_META_BMP(TSvmBitmap & bitmap_info, BYTE** ppDstBuffer, unsig
 
         m_oStream.ReadBytes(Header + bitmap_info.nSize, nHeaderSize - bitmap_info.nSize);
 
-        MetaFile::ReadImage(Header , nHeaderSize,  m_oStream.GetCurPtr(), bitmap_info.nSizeImage, ppDstBuffer, pulWidth, pulHeight);
+        MetaFile::ReadImage(Header , nHeaderSize,  m_oStream.GetCurPtr(), bitmap_info.nSizeImage, ppDstBuffer, pulWidth, pulHeight, unColorUsed);
         m_oStream.Skip(bitmap_info.nSizeImage);
         delete[] Header;
     }

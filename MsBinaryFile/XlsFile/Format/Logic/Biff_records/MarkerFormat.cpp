@@ -80,6 +80,16 @@ void MarkerFormat::readFields(CFRecord& record)
 	fNotShowInt = GETBIT(flags, 4);
 	fNotShowBrd = GETBIT(flags, 5);
 }
+
+void MarkerFormat::writeFields(CFRecord& record)
+{
+	unsigned short flags = 0;
+	SETBIT(flags, 0, fAuto)
+	SETBIT(flags, 4, fNotShowInt)
+	SETBIT(flags, 5, fNotShowBrd)
+	record << rgbFore << rgbBack << imk << flags << icvFore << icvBack << miSize;
+}
+
 int MarkerFormat::serialize(std::wostream & _stream)
 {
 	return serialize(_stream, -1, BaseObjectPtr());

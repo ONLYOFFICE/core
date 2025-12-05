@@ -959,7 +959,10 @@ void OOXShapeReader::Parse(ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::L
 
 			if (bColorsSet)
 			{
-				pOutput->m_aFillShadeColors.push_back(std::make_pair((int)nColor, oox_grad_fill->GsLst[i].pos));
+                double pos_docx = oox_grad_fill->GsLst[i].pos;
+                double pos_percent = pos_docx / 1000;
+                pOutput->m_aFillShadeColors.push_back(std::make_pair((int)nColor, pos_percent));
+                //pOutput->m_aFillShadeColors.push_back(std::make_pair((int)nColor, oox_grad_fill->GsLst[i].pos));
 			}
 		}
 	}
@@ -1262,11 +1265,11 @@ bool OOXShapeReader::ParseShape( ReaderParameter oParam, RtfShapePtr& pOutput)
 	if ((oox_sp_style) && (oox_sp_style->fontRef.idx.IsInit()))
 	{
 		std::wstring font_name;
-		if (oox_sp_style->fontRef.idx->GetBYTECode() == 0)
+		if (oParam.oDocx->m_pTheme && oox_sp_style->fontRef.idx->GetBYTECode() == 0)
 		{
 			font_name = oParam.oDocx->m_pTheme->themeElements.fontScheme.majorFont.latin.typeface;
 		}
-		else if (oox_sp_style->fontRef.idx->GetBYTECode() == 1)
+		else if (oParam.oDocx->m_pTheme && oox_sp_style->fontRef.idx->GetBYTECode() == 1)
 		{
 			font_name = oParam.oDocx->m_pTheme->themeElements.fontScheme.minorFont.latin.typeface;
 		}
@@ -2338,6 +2341,12 @@ bool OOXShapeGroupReader::Parse( ReaderParameter oParam , RtfShapePtr& pOutput)
 				pOutput->m_nGroupRight	= (pOutput->m_nGroupLeft != PROP_DEF  ? pOutput->m_nGroupLeft : 0) + (int)m_ooxGroup->grpSpPr.xfrm->chExtX.get();
 				pOutput->m_nGroupBottom = (pOutput->m_nGroupTop != PROP_DEF  ? pOutput->m_nGroupTop : 0) + (int)m_ooxGroup->grpSpPr.xfrm->chExtY.get();
 			}
+			else if (m_ooxGroup->grpSpPr.xfrm->extX.IsInit() && m_ooxGroup->grpSpPr.xfrm->extY.IsInit())
+			{
+				pOutput->m_nGroupRight = (pOutput->m_nGroupLeft != PROP_DEF ? pOutput->m_nGroupLeft : 0) + (int)m_ooxGroup->grpSpPr.xfrm->extX.get();
+				pOutput->m_nGroupBottom = (pOutput->m_nGroupTop != PROP_DEF ? pOutput->m_nGroupTop : 0) + (int)m_ooxGroup->grpSpPr.xfrm->extY.get();
+			}
+
 			if (pOutput->m_bInGroup)
 			{
 				if (m_ooxGroup->grpSpPr.xfrm->offX.IsInit() && m_ooxGroup->grpSpPr.xfrm->offY.IsInit())

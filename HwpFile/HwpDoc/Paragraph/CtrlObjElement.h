@@ -5,14 +5,32 @@
 
 namespace HWP
 {
+struct TMatrix
+{
+	double m_dM11; // e1
+	double m_dM12; // e2
+	double m_dM21; // e3
+	double m_dM22; // e4
+	double m_dDX;  // e5
+	double m_dDY;  // e6
+
+	TMatrix();
+	TMatrix(double dM11, double dM12, double dM21, double dM22, double dDX, double dDY);
+	void Multiply(const TMatrix& oMatrix);
+
+	void ApplyToPoint(double& dX, double& dY) const;
+	void ApplyToPoint(int& nX, int &nY) const;
+	void ApplyToSize(double& dW, double& dH) const;
+};
+
 class CCtrlObjElement : public CCtrlCommon
 {
 	int m_nXGrpOffset;
 	int m_nYGrpOffset;
 	short m_shNGrp;
 	short m_shVer;
-	int m_nIniWidth;
-	int m_nIniHeight;
+	int m_nOrgWidth;
+	int m_nOrgHeight;
 	int m_nCurWidth;
 	int m_nCurHeight;
 	bool m_bHorzFlip;
@@ -21,24 +39,37 @@ class CCtrlObjElement : public CCtrlCommon
 	int m_nXCenter;
 	int m_nYCenter;
 	short m_shMatCnt;
-	VECTOR<double> m_arMatrix;
-	VECTOR<double> m_arMatrixSeq;
+	VECTOR<TMatrix> m_arMatrixs;
 
-	void InitMatrix();
+	void ParseRotationInfo(CXMLReader& oReader, EHanType eType);
+	void ParseRenderingInfo(CXMLReader& oReader, EHanType eType);
 
-	void SetMatrix(CXMLNode& oNode, VECTOR<double>& arMatrix, int nOffset);
+	void ParseHWPXChildren(CXMLReader& oReader);
+	void ParseHWPMLElement(CXMLReader& oReader);
 public:
 	CCtrlObjElement();
 	CCtrlObjElement(const HWP_STRING& sCtrlID);
 	CCtrlObjElement(const CCtrlObjElement& oObjElement);
 	CCtrlObjElement(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
-	CCtrlObjElement(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVersion);
+	CCtrlObjElement(const HWP_STRING& sCtrlID, CXMLReader& oReader, EHanType eType);
+
+	void ParseChildren(CXMLReader& oReader, EHanType eType);
 
 	int GetCurWidth() const;
 	int GetCurHeight() const;
 
+	int GetOrgWidth() const;
+	int GetOrgHeight() const;
+
 	int GetFinalWidth() const;
 	int GetFinalHeight() const;
+
+	short GetGroupLevel() const;
+
+	TMatrix GetFinalMatrix() const;
+
+	bool HorzFlip() const;
+	bool VertFlip() const;
 
 	static int ParseCtrl(CCtrlObjElement& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 };

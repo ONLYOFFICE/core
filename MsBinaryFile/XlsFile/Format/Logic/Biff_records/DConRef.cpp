@@ -118,6 +118,24 @@ void DConRef::readFields(CFRecord& record)
 	record.skipNunBytes(unused);
 }
 
+void DConRef::writeFields(CFRecord& record)
+{
+	if(cchFile == 0 && stFile== L"")
+	{
+		stFile = L'\x0002' + sheet_name;
+		cchFile = stFile.size();
+
+	}
+    record << ref << cchFile;
+    if (cchFile > 0 && cchFile < 0xffff)
+    {
+		XLUnicodeStringNoCch file;
+		file = stFile;
+		record << file;
+		//record.reserveNunBytes(2);
+    }
+}
+
 void DConRef::check_external()
 {
 	bool bFound = false;

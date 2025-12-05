@@ -154,8 +154,8 @@ void Dv::writeFields(CFRecord& record)
         SETBIT(flags, 18, fShowInputMsg)
         SETBIT(flags, 19, fShowErrorMsg)
         SETBITS(flags, 20, 23, typOperator)
-        SETBIT(flags, 24, fDVMinFmla)
-        SETBIT(flags, 25, fDVMaxFmla)
+		//SETBIT(flags, 24, fDVMinFmla)
+		//SETBIT(flags, 25, fDVMaxFmla)
     }
     else
     {

@@ -96,6 +96,13 @@ void office_forms::xlsx_convert(oox::xlsx_conversion_context & Context)
         content_[i]->xlsx_convert(Context);
     }
 }
+void office_forms::pptx_convert(oox::pptx_conversion_context& Context)
+{
+	for (size_t i = 0; i < content_.size(); i++)
+	{
+		content_[i]->pptx_convert(Context);
+	}
+}
 // form:form
 //----------------------------------------------------------------------------------
 const wchar_t * form_form::ns = L"form";
@@ -155,6 +162,13 @@ void form_form::xlsx_convert(oox::xlsx_conversion_context & Context)
         content_[i]->xlsx_convert(Context);
     }
 }
+void form_form::pptx_convert(oox::pptx_conversion_context& Context)
+{
+	for (size_t i = 0; i < content_.size(); i++)
+	{
+		content_[i]->pptx_convert(Context);
+	}
+}
 // form:properties
 //----------------------------------------------------------------------------------
 const wchar_t * form_properties::ns = L"form";
@@ -172,6 +186,10 @@ void form_properties::docx_convert(oox::docx_conversion_context & Context)
  //   }
 }
 void form_properties::xlsx_convert(oox::xlsx_conversion_context & Context)
+{
+
+}
+void form_properties::pptx_convert(oox::pptx_conversion_context& Context)
 {
 
 }
@@ -213,6 +231,13 @@ void form_list_property::xlsx_convert(oox::xlsx_conversion_context & Context)
     {
         content_[i]->xlsx_convert(Context);
     }
+}
+void form_list_property::pptx_convert(oox::pptx_conversion_context& Context)
+{
+	for (size_t i = 0; i < content_.size(); i++)
+	{
+		content_[i]->pptx_convert(Context);
+	}
 }
 // form:list-value
 //----------------------------------------------------------------------------------
@@ -289,6 +314,22 @@ void form_element::xlsx_convert(oox::xlsx_conversion_context & Context)
 
 	Context.get_forms_context().end_element();
 }
+void form_element::pptx_convert(oox::pptx_conversion_context& Context)
+{
+	std::wstring id = id_ ? *id_ : (xml_id_ ? *xml_id_ : L"");
+	Context.get_forms_context().set_id(id);
+
+	if (name_)						Context.get_forms_context().set_name(*name_);
+	if (label_)						Context.get_forms_context().set_label(*label_);
+
+	if (current_value_)				Context.get_forms_context().set_value(*current_value_);
+	else if (value_)				Context.get_forms_context().set_value(*value_);
+
+	if (control_implementation_)	Context.get_forms_context().set_uuid(*control_implementation_);
+
+	Context.get_forms_context().end_element();
+}
+
 // form:frame
 //----------------------------------------------------------------------------------
 const wchar_t * form_frame::ns = L"form";
@@ -311,6 +352,13 @@ void form_frame::xlsx_convert(oox::xlsx_conversion_context & Context)
 	Context.get_forms_context().set_element(dynamic_cast<form_element*>(this));
 
 	form_element::xlsx_convert(Context);
+}
+void form_frame::pptx_convert(oox::pptx_conversion_context& Context)
+{
+	Context.get_forms_context().start_element(oox::formFrame);
+	Context.get_forms_context().set_element(dynamic_cast<form_element*>(this));
+
+	form_element::pptx_convert(Context);
 }
 void form_frame::serialize_control_props(std::wostream & strm)
 {
@@ -351,6 +399,13 @@ void form_button::xlsx_convert(oox::xlsx_conversion_context & Context)
 
 	form_element::xlsx_convert(Context);
 }
+void form_button::pptx_convert(oox::pptx_conversion_context& Context)
+{
+	Context.get_forms_context().start_element(oox::formButton);
+	Context.get_forms_context().set_element(dynamic_cast<form_element*>(this));
+
+	form_element::pptx_convert(Context);
+}
 void form_button::serialize_control_props(std::wostream & strm)
 {
 	formulasconvert::odf2oox_converter converter;
@@ -390,6 +445,13 @@ void form_text::xlsx_convert(oox::xlsx_conversion_context & Context)
 	Context.get_forms_context().set_element(dynamic_cast<form_element*>(this));
 
 	form_element::xlsx_convert(Context);
+}
+void form_text::pptx_convert(oox::pptx_conversion_context& Context)
+{
+	Context.get_forms_context().start_element(oox::formLabel);
+	Context.get_forms_context().set_element(dynamic_cast<form_element*>(this));
+
+	form_element::pptx_convert(Context);
 }
 void form_text::serialize_control_props(std::wostream & strm)
 {
@@ -488,6 +550,13 @@ void form_fixed_text::xlsx_convert(oox::xlsx_conversion_context & Context)
 	Context.get_forms_context().set_element(dynamic_cast<form_element*>(this));
 
 	form_element::xlsx_convert(Context);
+}
+void form_fixed_text::pptx_convert(oox::pptx_conversion_context& Context)
+{
+	Context.get_forms_context().start_element(oox::formLabel);
+	Context.get_forms_context().set_element(dynamic_cast<form_element*>(this));
+
+	form_element::pptx_convert(Context);
 }
 void form_fixed_text::serialize_control_props(std::wostream & strm)
 {
@@ -589,6 +658,13 @@ void form_checkbox::xlsx_convert(oox::xlsx_conversion_context & Context)
 	Context.get_forms_context().set_element(dynamic_cast<form_element*>(this));
 
 	form_element::xlsx_convert(Context);
+}
+void form_checkbox::pptx_convert(oox::pptx_conversion_context& Context)
+{
+	Context.get_forms_context().start_element(oox::formCheckbox);
+	Context.get_forms_context().set_element(dynamic_cast<form_element*>(this));
+
+	form_element::pptx_convert(Context);
 }
 void form_checkbox::serialize_control_props(std::wostream & strm)
 {
@@ -709,6 +785,13 @@ void form_radio::xlsx_convert(oox::xlsx_conversion_context & Context)
 
 	form_element::xlsx_convert(Context);
 }
+void form_radio::pptx_convert(oox::pptx_conversion_context& Context)
+{
+	Context.get_forms_context().start_element(oox::formCheckbox);
+	Context.get_forms_context().set_element(dynamic_cast<form_element*>(this));
+
+	form_element::pptx_convert(Context);
+}
 void form_radio::serialize_control_props(std::wostream & strm)
 {
 	CP_XML_WRITER(strm)
@@ -771,6 +854,13 @@ void form_combobox::xlsx_convert(oox::xlsx_conversion_context & Context)
 	Context.get_forms_context().set_element(dynamic_cast<form_element*>(this));
 
 	form_element::xlsx_convert(Context);
+}
+void form_combobox::pptx_convert(oox::pptx_conversion_context& Context)
+{
+	Context.get_forms_context().start_element(oox::formCombobox);
+	Context.get_forms_context().set_element(dynamic_cast<form_element*>(this));
+
+	form_element::pptx_convert(Context);
 }
 void form_combobox::serialize_control_props(std::wostream & strm)
 {
@@ -878,6 +968,9 @@ void form_listbox::add_attributes( const xml::attributes_wc_ptr & Attributes )
 	CP_APPLY_ATTR(L"form:list-linkage-type", list_linkage_type_);
 	CP_APPLY_ATTR(L"form:size", size_);
 	CP_APPLY_ATTR(L"form:value", n_value_);
+	
+	if (dropdown_ && dropdown_->get())
+		object_type_ = OBJ_DropdownList;
 }
 void form_listbox::docx_convert(oox::docx_conversion_context & Context)
 {
@@ -888,46 +981,95 @@ void form_listbox::docx_convert(oox::docx_conversion_context & Context)
 }
 void form_listbox::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
-	Context.get_forms_context().start_element(oox::formListbox);
+	if (dropdown_  && dropdown_->get())
+		Context.get_forms_context().start_element(oox::formCombobox);
+	else
+		Context.get_forms_context().start_element(oox::formListbox);
 	Context.get_forms_context().set_element(dynamic_cast<form_element*>(this));
 
 	form_element::xlsx_convert(Context);
 }
+void form_listbox::pptx_convert(oox::pptx_conversion_context& Context)
+{
+	Context.get_forms_context().start_element(oox::formListbox);
+	Context.get_forms_context().set_element(dynamic_cast<form_element*>(this));
+
+	form_element::pptx_convert(Context);
+}
 void form_listbox::serialize_control_props(std::wostream & strm)
 {
 	formulasconvert::odf2oox_converter converter;
-	CP_XML_WRITER(strm)
+
+	if (dropdown_ && dropdown_->get())
 	{
-		CP_XML_NODE(L"formControlPr")
+		CP_XML_WRITER(strm)
 		{
-			CP_XML_ATTR(L"xmlns", L"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main");
-
-			CP_XML_ATTR(L"objectType", L"List");
-			if ((dropdown_) && (dropdown_->get()))
+			CP_XML_NODE(L"formControlPr")
 			{
+				CP_XML_ATTR(L"xmlns", L"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main");
+				CP_XML_ATTR(L"objectType", L"Drop");
 				CP_XML_ATTR(L"dropStyle", L"combo");
-			}
-			if (size_)
-				CP_XML_ATTR(L"dx", 3 * (*size_));
-			else
-				CP_XML_ATTR(L"dx", L"20");
 
-			CP_XML_ATTR(L"noThreeD", L"1");
-			
-			if (linked_cell_)
-			{
-				std::wstring fmla = converter.convert_named_ref(*linked_cell_, true, L" ", true);
-				CP_XML_ATTR(L"fmlaLink", fmla);
-			}
-			if (source_cell_range_)
-			{
-				std::wstring fmla = converter./*convert_named_expr*/convert_named_ref(*source_cell_range_, true, L" ", true);
-				CP_XML_ATTR(L"fmlaRange", fmla);
-			}
-			//CP_XML_ATTR(L"sel", L"3");
-			if (n_value_)
-				CP_XML_ATTR(L"val", *n_value_);
+				if (size_)
+					CP_XML_ATTR(L"dx", 3 * (*size_));
+				else
+					CP_XML_ATTR(L"dx", L"20");
 
+				CP_XML_ATTR(L"noThreeD", L"1");
+
+				if (linked_cell_)
+				{
+					std::wstring fmla = converter.convert_named_ref(*linked_cell_, true, L" ", true);
+					CP_XML_ATTR(L"fmlaLink", fmla);
+				}
+				if (source_cell_range_)
+				{
+					std::wstring fmla = converter.convert_named_ref(*source_cell_range_, true, L" ", true);
+					CP_XML_ATTR(L"fmlaRange", fmla);
+				}
+				CP_XML_ATTR(L"sel", L"3");
+				if (n_value_)
+					CP_XML_ATTR(L"val", *n_value_);
+				else
+					CP_XML_ATTR(L"val", 0);
+			}
+		}
+	}
+	else
+	{
+		CP_XML_WRITER(strm)
+		{
+			CP_XML_NODE(L"formControlPr")
+			{
+				CP_XML_ATTR(L"xmlns", L"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main");
+
+				CP_XML_ATTR(L"objectType", L"List");
+				if ((dropdown_) && (dropdown_->get()))
+				{
+					CP_XML_ATTR(L"dropStyle", L"combo");
+				}
+				if (size_)
+					CP_XML_ATTR(L"dx", 3 * (*size_));
+				else
+					CP_XML_ATTR(L"dx", L"20");
+
+				CP_XML_ATTR(L"noThreeD", L"1");
+
+				if (linked_cell_)
+				{
+					std::wstring fmla = converter.convert_named_ref(*linked_cell_, true, L" ", true);
+					CP_XML_ATTR(L"fmlaLink", fmla);
+				}
+				if (source_cell_range_)
+				{
+					std::wstring fmla = converter./*convert_named_expr*/convert_named_ref(*source_cell_range_, true, L" ", true);
+					CP_XML_ATTR(L"fmlaRange", fmla);
+				}
+				//CP_XML_ATTR(L"sel", L"3");
+				if (n_value_)
+					CP_XML_ATTR(L"val", *n_value_);
+
+			}
 		}
 	}
 }
@@ -954,6 +1096,13 @@ void form_date::xlsx_convert(oox::xlsx_conversion_context & Context)
 	Context.get_forms_context().set_element(dynamic_cast<form_element*>(this));
 
 	form_element::xlsx_convert(Context);
+}
+void form_date::pptx_convert(oox::pptx_conversion_context& Context)
+{
+	Context.get_forms_context().start_element(oox::formDateTime);
+	Context.get_forms_context().set_element(dynamic_cast<form_element*>(this));
+
+	form_element::pptx_convert(Context);
 }
 void form_date::serialize_control_props(std::wostream & strm)
 {
@@ -1029,6 +1178,13 @@ void form_time::xlsx_convert(oox::xlsx_conversion_context & Context)
 	Context.get_forms_context().set_element(dynamic_cast<form_element*>(this));
 
 	form_element::xlsx_convert(Context);
+}
+void form_time::pptx_convert(oox::pptx_conversion_context& Context)
+{
+	Context.get_forms_context().start_element(oox::formDateTime);
+	Context.get_forms_context().set_element(dynamic_cast<form_element*>(this));
+
+	form_element::pptx_convert(Context);
 }
 void form_time::serialize_control_props(std::wostream & strm)
 {
@@ -1107,6 +1263,13 @@ void form_image_frame::xlsx_convert(oox::xlsx_conversion_context & Context)
 
 	form_element::xlsx_convert(Context);
 }
+void form_image_frame::pptx_convert(oox::pptx_conversion_context& Context)
+{
+	Context.get_forms_context().start_element(oox::formImage);
+	Context.get_forms_context().set_element(dynamic_cast<form_element*>(this));
+
+	form_element::pptx_convert(Context);
+}
 void form_image_frame::serialize_control_props(std::wostream & strm)
 {
 }
@@ -1170,6 +1333,19 @@ void form_value_range::xlsx_convert(oox::xlsx_conversion_context & Context)
 	Context.get_forms_context().set_element(dynamic_cast<form_element*>(this));
 
 	form_element::xlsx_convert(Context);
+}
+void form_value_range::pptx_convert(oox::pptx_conversion_context& Context)
+{
+	if (!control_implementation_) return;
+
+	if (control_implementation_->find(L"SpinButton") != std::wstring::npos)
+		Context.get_forms_context().start_element(oox::formSpin);
+	else
+		Context.get_forms_context().start_element(oox::formScroll);
+
+	Context.get_forms_context().set_element(dynamic_cast<form_element*>(this));
+
+	form_element::pptx_convert(Context);
 }
 void form_value_range::serialize_control_props(std::wostream & strm)
 {

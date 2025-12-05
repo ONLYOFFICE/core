@@ -637,6 +637,9 @@ void odf_drawing_context::end_drawing()
 			draw->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.drawooo_display_ = L"printer"; // L"none" ??? 
 		if (!impl_->current_drawing_state_.xml_id_.empty())
 			draw->xml_id_ = impl_->current_drawing_state_.xml_id_;
+		
+		if (impl_->anchor_settings_.style_wrap_ && impl_->current_graphic_properties)
+			impl_->current_graphic_properties->style_wrap_ = *impl_->anchor_settings_.style_wrap_;
 
 		std::wstring strTransform;
 
@@ -1455,7 +1458,7 @@ void odf_drawing_context::set_grayscale()
 {
 	if (!impl_->current_graphic_properties)return;
 
-	impl_->current_graphic_properties->common_draw_fill_attlist_.draw_color_mode_ = L"greyscale";
+	impl_->current_graphic_properties->common_draw_fill_attlist_.draw_color_mode_ = color_mode(color_mode::greyscale);
 }
 void odf_drawing_context::set_white_balance(double red, double green, double blue)
 {

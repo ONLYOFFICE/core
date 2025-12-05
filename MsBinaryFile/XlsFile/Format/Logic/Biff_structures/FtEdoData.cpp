@@ -42,6 +42,8 @@ BiffStructurePtr FtEdoData::clone()
 
 void FtEdoData::load(CFRecord& record)
 {
+	//ft(2 bytes) : Reserved.MUST be 0x0010.
+	//cb(2 bytes) : Reserved.MUST be 0x0008.
 	unsigned short ft, cb;
 	record >> ft >> cb;
 
@@ -53,6 +55,15 @@ void FtEdoData::load(CFRecord& record)
 	fExist = true;
 
 	record >> ivtEdit >> fMultiLine >> fVScroll >> id;
+}
+
+void FtEdoData::save(CFRecord& record)
+{
+	{
+		unsigned short ft = 0x0010, cb = 0x0008;
+		record << ft << cb;
+	}
+	record << ivtEdit << fMultiLine << fVScroll << id;
 }
 
 

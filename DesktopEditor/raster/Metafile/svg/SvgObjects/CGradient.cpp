@@ -3,13 +3,13 @@
 
 namespace SVG
 {
-	CStopElement::CStopElement(XmlUtils::CXmlNode& oNode)
-		: CObject(oNode)
+	CStopElement::CStopElement(CSvgReader& oReader)
+		: CObject(oReader)
 	{}
 
 	ObjectType CStopElement::GetType() const
 	{
-		return AppliedObject;
+		return DataObject;
 	}
 
 	SvgDigit CStopElement::GetOffset() const
@@ -34,20 +34,36 @@ namespace SVG
 			m_oColor.SetOpacity(mAttributes.at(L"stop-opacity"));
 	}
 
-	CGradient::CGradient(XmlUtils::CXmlNode &oNode)
-		: CAppliedObject(oNode)
-	{
-		m_wsXlinkHref = oNode.GetAttribute(L"href", oNode.GetAttribute(L"xlink:href"));
-		m_oTransform.SetMatrix(oNode.GetAttribute(L"gradientTransform"), 0, true);
+	CGradient::CGradient(CSvgReader& oReader)
+	    : CAppliedObject(oReader), m_enGradientUnits(GradU_ObjectBoundingBox)
+	{}
 
-		if (L"userSpaceOnUse" == oNode.GetAttribute(L"gradientUnits"))
-			m_enGradientUnits = GradU_UserSpaceOnUse;
+	void CGradient::SetAttribute(const std::string& sName, CSvgReader& oReader)
+	{
+		if ("href" == sName || "xlink:href" == sName)
+			m_wsXlinkHref = oReader.GetText();
+		else if ("gradientTransform" == sName)
+			m_oTransform.SetMatrix(oReader.GetText(), 0, true);
+		else if ("gradientUnits" == sName)
+		{
+			if (L"userSpaceOnUse" == oReader.GetText())
+				m_enGradientUnits = GradU_UserSpaceOnUse;
+		}
 		else
-			m_enGradientUnits = GradU_ObjectBoundingBox;
+			CAppliedObject::SetAttribute(sName, oReader);
 	}
 
-	void CGradient::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
+	void CGradient::SetData(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode)
+	{}
+
+	void CGradient::ReadChildrens(CSvgReader& oReader, CSvgFile* pSvgFile)
 	{
+		if (NULL == pSvgFile || NULL == pSvgFile->GetSvgCalculator())
+			return;
+
+		WHILE_READ_NEXT_NODE_WITH_ONE_NAME(oReader, "stop")
+			AddObject(CObject::Create<CStopElement>(oReader, pSvgFile));
+		END_WHILE
 	}
 
 	bool CGradient::Apply(IRenderer *pRenderer, const CSvgFile *pFile, const TBounds &oObjectBounds)
@@ -117,13 +133,22 @@ namespace SVG
 		return pRefGradient->Apply(pRenderer, pFile, oObjectBounds);
 	}
 
-	CLinearGradient::CLinearGradient(XmlUtils::CXmlNode& oNode)
-		: CGradient(oNode)
+	CLinearGradient::CLinearGradient(CSvgReader& oReader)
+	    : CGradient(oReader)
+	{}
+
+	void CLinearGradient::SetAttribute(const std::string& sName, CSvgReader& oReader)
 	{
-		m_oX1.SetValue(oNode.GetAttribute(L"x1"));
-		m_oY1.SetValue(oNode.GetAttribute(L"y1"));
-		m_oX2.SetValue(oNode.GetAttribute(L"x2"));
-		m_oY2.SetValue(oNode.GetAttribute(L"y2"));
+		if ("x1" == sName)
+			m_oX1.SetValue(oReader.GetText());
+		else if ("y1" == sName)
+			m_oY1.SetValue(oReader.GetText());
+		else if ("x2" == sName)
+			m_oX2.SetValue(oReader.GetText());
+		else if ("y2" == sName)
+			m_oY2.SetValue(oReader.GetText());
+		else
+			CGradient::SetAttribute(sName, oReader);
 	}
 
 	bool CLinearGradient::Apply(IRenderer *pRenderer, const CSvgFile *pFile, const TBounds &oObjectBounds)
@@ -169,12 +194,20 @@ namespace SVG
 		return true;
 	}
 
-	CRadialGradient::CRadialGradient(XmlUtils::CXmlNode& oNode)
-		: CGradient(oNode)
+	CRadialGradient::CRadialGradient(CSvgReader& oReader)
+	    : CGradient(oReader)
+	{}
+
+	void CRadialGradient::SetAttribute(const std::string& sName, CSvgReader& oReader)
 	{
-		m_oCx.SetValue(oNode.GetAttribute(L"cx"));
-		m_oCy.SetValue(oNode.GetAttribute(L"cy"));
-		m_oR.SetValue(oNode.GetAttribute(L"r"));
+		if ("cx" == sName)
+			m_oCx.SetValue(oReader.GetText());
+		else if ("cy" == sName)
+			m_oCy.SetValue(oReader.GetText());
+		else if ("r" == sName)
+			m_oR.SetValue(oReader.GetText());
+		else
+			CGradient::SetAttribute(sName, oReader);
 	}
 
 	bool CRadialGradient::Apply(IRenderer *pRenderer, const CSvgFile *pFile, const TBounds &oObjectBounds)

@@ -1,5 +1,7 @@
 #include "CtrlShapeCurve.h"
 
+#include "../Common/NodeNames.h"
+
 namespace HWP
 {
 CCtrlShapeCurve::CCtrlShapeCurve()
@@ -17,34 +19,51 @@ CCtrlShapeCurve::CCtrlShapeCurve(const HWP_STRING& sCtrlID, int nSize, CHWPStrea
 	: CCtrlGeneralShape(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
 
-CCtrlShapeCurve::CCtrlShapeCurve(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVersion)
-	: CCtrlGeneralShape(sCtrlID, oNode, nVersion)
+CCtrlShapeCurve::CCtrlShapeCurve(const HWP_STRING& sCtrlID, CXMLReader& oReader, EHanType eType)
+    : CCtrlGeneralShape(sCtrlID, oReader, eType)
 {
-	std::vector<CXMLNode> arChilds{oNode.GetChilds(L"hp:seg")};
+	TPoint oPoint1{0, 0}, oPoint2{0, 0};
+	HWP_BYTE chSegmentType = 1;
 
-	m_arPoints.resize(arChilds.size() + 1);
-	m_arSegmentType.resize(arChilds.size());
-
-	HWP_STRING sType;
-
-	for (unsigned int unIndex = 0; unIndex < arChilds.size(); ++unIndex)
+	WHILE_READ_NEXT_NODE(oReader)
 	{
-		sType = arChilds[unIndex].GetAttribute(L"type");
-
-		if (L"CURVE" == sType)
-			m_arSegmentType[unIndex] = 1;
-		else if (L"LINE" == sType)
-			m_arSegmentType[unIndex] = 0;
-
-		m_arPoints[unIndex].m_nX = arChilds[unIndex].GetAttributeInt(L"x1");
-		m_arPoints[unIndex].m_nY = arChilds[unIndex].GetAttributeInt(L"y1");
-
-		if (unIndex == arChilds.size() - 1)
+		if (GetNodeName(ENode::Segment, eType) == oReader.GetName())
 		{
-			m_arPoints[unIndex + 1].m_nX = arChilds[unIndex].GetAttributeInt(L"x2");
-			m_arPoints[unIndex + 1].m_nY = arChilds[unIndex].GetAttributeInt(L"y2");
+			chSegmentType = 1;
+			oPoint1 = {0, 0};
+			oPoint2 = {0, 0};
+
+			START_READ_ATTRIBUTES(oReader)
+			{
+				if (GetAttributeName(EAttribute::Type, eType) == sAttributeName)
+				{
+					const std::string sType{oReader.GetTextA()};
+
+					if (GetValueName(EValue::Curve, eType) == sType)
+						chSegmentType = 1;
+					else if (GetValueName(EValue::Line, eType) == sType)
+						chSegmentType = 0;
+				}
+				else if (GetAttributeName(EAttribute::X1, eType) == sAttributeName)
+					oPoint1.m_nX = oReader.GetInt();
+				else if (GetAttributeName(EAttribute::Y1, eType) == sAttributeName)
+					oPoint1.m_nY = oReader.GetInt();
+				else if (GetAttributeName(EAttribute::X2, eType) == sAttributeName)
+					oPoint2.m_nX = oReader.GetInt();
+				else if (GetAttributeName(EAttribute::Y2, eType) == sAttributeName)
+					oPoint2.m_nY = oReader.GetInt();
+			}
+			END_READ_ATTRIBUTES(oReader)
+
+			m_arSegmentType.push_back(chSegmentType);
+			m_arPoints.push_back(oPoint1);
 		}
+		else
+			CCtrlGeneralShape::ParseChildren(oReader, eType);
 	}
+	END_WHILE
+
+	m_arPoints.push_back(oPoint2);
 }
 
 EShapeType CCtrlShapeCurve::GetShapeType() const

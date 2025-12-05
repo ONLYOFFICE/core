@@ -59,5 +59,12 @@ void CodeName::readFields(CFRecord& record)
 	value = codeName.value();
 }
 
+void CodeName::writeFields(CFRecord& record)
+{
+    XLUnicodeString codeName;
+    codeName = value;
+    record << codeName;
+}
+
 } // namespace XLS
 

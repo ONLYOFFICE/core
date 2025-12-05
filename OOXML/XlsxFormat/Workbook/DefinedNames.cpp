@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
@@ -33,6 +33,9 @@
 #include "DefinedNames.h"
 #include "../../XlsbFormat/Biff12_records/CommonRecords.h"
 
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/GlobalsSubstream.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Lbl.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/PtgList.h"
 #include "../../Common/SimpleTypes_Shared.h"
 
 namespace OOX
@@ -150,6 +153,53 @@ namespace OOX
 			ptr->fBuiltin = false;
 			return objectPtr;
 		}
+		XLS::BaseObjectPtr CDefinedName::toXLS()
+		{
+			auto name = new XLS::Lbl;
+			auto namePtr = XLS::BaseObjectPtr(name);
+			if(m_oHidden.IsInit())
+				name->fHidden = m_oHidden->GetValue();
+			if(m_oFunction.IsInit())
+				name->fFunc = m_oFunction->GetValue();
+			if(m_oVbProcedure.IsInit())
+			{
+				name->fOB = m_oVbProcedure->GetValue();
+				name->fProc = m_oVbProcedure->GetValue();
+			}
+			if (m_oName.IsInit())
+				name->Name_bin = m_oName.get();
+			else
+				name->Name_bin = L"";
+			if(m_oLocalSheetId.IsInit())
+				name->itab = m_oLocalSheetId->GetValue();
+			if(m_oPublishToServer.IsInit())
+				name->fPublished = m_oPublishToServer->GetValue();
+			if(m_oFunctionGroupId.IsInit())
+				name->fGrp = m_oFunctionGroupId->GetValue();
+			if(m_oWorkbookParameter.IsInit())
+				name->fWorkbookParam = m_oWorkbookParameter->GetValue();
+			auto parseFmlaValueType = [](XLS::ParsedFormula &fmla)
+			{
+				if(!fmla.rgce.sequence.empty())
+				{
+					for(auto i = 0; i < fmla.rgce.sequence.size(); i++)
+					{
+						if(fmla.rgce.sequence[i].get()->ptg_id.get() == 6424)
+						{
+							auto list = static_cast<XLS::PtgList*>(fmla.rgce.sequence[i].get());
+							auto area = list->toArea();
+							fmla.rgce.sequence[i].reset(area);
+						}
+					}
+				}
+				return 0;
+			};
+			if(m_oRef.IsInit())
+				name->rgce.parseStringFormula(m_oRef.get(), L"");
+			parseFmlaValueType(name->rgce);
+
+			return namePtr;
+		}
 		void CDefinedName::fromBin(XLS::BaseObjectPtr& obj)
 		{
 			ReadAttributes(obj);
@@ -264,7 +314,8 @@ namespace OOX
 			std::vector<XLS::BaseObjectPtr> objectVector;
 
 			for(auto i:m_arrItems)
-				objectVector.push_back(i->toBin());
+				if(i->m_oName.IsInit() || i->m_oRef.IsInit())
+					objectVector.push_back(i->toBin());
 			
 			auto functionsVector = AddFutureFunctions(m_arrItems.size());
 			if(!functionsVector.empty())
@@ -273,6 +324,13 @@ namespace OOX
 			}
 
 			return objectVector;
+		}
+		void CDefinedNames::toXLS(XLS::BaseObjectPtr substream)
+		{
+			auto globalsSubstream = static_cast<XLS::GlobalsSubstream*>(substream.get());
+			for(auto i:m_arrItems)
+				if(i->m_oName.IsInit() || i->m_oRef.IsInit())
+					globalsSubstream->m_arLBL.push_back(i->toXLS());
 		}
 		void CDefinedNames::fromBin(std::vector<XLS::BaseObjectPtr>& obj)
 		{
@@ -284,9 +342,11 @@ namespace OOX
 			for(auto &definedName : obj)
 			{
 				CDefinedName *pDefinedName = new CDefinedName(m_pMainDocument);
-				m_arrItems.push_back( pDefinedName);
-
 				pDefinedName->fromBin(definedName);
+                if(pDefinedName->m_oName.IsInit() || pDefinedName->m_oRef.IsInit())
+                    m_arrItems.push_back( pDefinedName);
+                else
+                    delete pDefinedName;
 			}
 		}
 		EElementType CDefinedNames::getType () const

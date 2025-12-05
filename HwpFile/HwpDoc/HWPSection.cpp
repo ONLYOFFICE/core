@@ -1,6 +1,6 @@
 #include "HWPSection.h"
 
-#include "HWPElements/HWPTag.h"
+#include "Common/NodeNames.h"
 
 #include "HwpDoc/Paragraph/CtrlEqEdit.h"
 #include "Paragraph/CtrlTable.h"
@@ -111,14 +111,11 @@ CHWPSection::~CHWPSection()
 	CLEAR_ARRAY(CHWPPargraph, m_arParas);
 }
 
-bool CHWPSection::Parse(CXMLNode& oNode, int nVersion)
+bool CHWPSection::Parse(CXMLReader& oReader, EHanType eType)
 {
-	std::vector<CXMLNode> arParagraphNodes{oNode.GetChilds(L"hp:p")};
-
-	m_arParas.resize(arParagraphNodes.size());
-
-	for (unsigned int unIndex = 0; unIndex < arParagraphNodes.size(); ++unIndex)
-		m_arParas[unIndex] = new CHWPPargraph(arParagraphNodes[unIndex], nVersion);
+	WHILE_READ_NEXT_NODE_WITH_ONE_NAME(oReader, GetNodeName(ENode::Paragraph, eType))
+		m_arParas.push_back(new CHWPPargraph(oReader, eType));
+	END_WHILE
 
 	return true;
 }
@@ -630,30 +627,12 @@ int CHWPSection::ParseCtrlRecurse(CCtrl* pCurrCtrl, int nRunLevel, CHWPStream& o
 							ParseRecurse(pNewPara, nLevel, oBuffer, 0, nVersion);
 						}
 					}
-					else if (ECtrlObjectType::Shape == pCtrl->GetCtrlType() && EShapeType::Rect == ((CCtrlGeneralShape*)pCtrl)->GetShapeType())
+					else if (ECtrlObjectType::Shape == pCtrl->GetCtrlType())
 					{
 						CHWPPargraph *pNewPara = CHWPPargraph::Parse(nTagNum, nLevel, nSize, oBuffer, 0, nVersion);
 						((CCtrlCommon*)pCtrl)->AddParagraph(pNewPara);
 						CHWPPargraph::Parse(*pNewPara, nSize, oBuffer, 0, nVersion);
 						ParseRecurse(pNewPara, nLevel, oBuffer, 0, nVersion);
-					}
-					else if (ECtrlObjectType::Shape == pCtrl->GetCtrlType())
-					{
-						CCtrlCommon *pCtrlCommon = (CCtrlCommon*)(pCtrl);
-						if (0 < pCtrlCommon->GetCaptionWidth() && pCtrlCommon->CaptionsEmpty())
-						{
-							CCapParagraph *pNewPara = new CCapParagraph();
-							pCtrlCommon->AddCaption(pNewPara);
-							CHWPPargraph::Parse(*pNewPara, nSize, oBuffer, 0, nVersion);
-							ParseRecurse(pNewPara, nLevel, oBuffer, 0, nVersion);
-						}
-						else
-						{
-							CHWPPargraph *pNewPara = CHWPPargraph::Parse(nTagNum, nLevel, nSize, oBuffer, 0, nVersion);
-							pCtrlCommon->AddParagraph(pNewPara);
-							CHWPPargraph::Parse(*pNewPara, nLevel, oBuffer, 0, nVersion);
-							ParseRecurse(pNewPara, nLevel, oBuffer, 0, nVersion);
-						}
 					}
 					else if (ECtrlObjectType::HeadFoot == pCtrl->GetCtrlType())
 					{

@@ -904,8 +904,16 @@ namespace OOX
 			{
 				if(i->m_sUri == L"{78C0D931-6437-407d-A8EE-F0AAD7539E65}")
 				{
-					auto formatPtr(new XLSB::CONDITIONALFORMATTINGS);
-					ptr->m_CONDITIONALFORMATTINGS = XLS::BaseObjectPtr{formatPtr};
+                    XLSB::CONDITIONALFORMATTINGS *formatPtr = NULL;
+                    if(!ptr->m_CONDITIONALFORMATTINGS)
+                    {
+                        formatPtr = new XLSB::CONDITIONALFORMATTINGS;
+                        ptr->m_CONDITIONALFORMATTINGS = XLS::BaseObjectPtr{formatPtr};
+                    }
+                    else
+                    {
+                        formatPtr = static_cast<XLSB::CONDITIONALFORMATTINGS*>(ptr->m_CONDITIONALFORMATTINGS.get());
+                    }
 					for(auto j:i->m_arrConditionalFormatting)
 					{
                         formatPtr->m_arCONDITIONALFORMATTING14.push_back(j->toBin14());

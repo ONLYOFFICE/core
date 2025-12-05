@@ -37,6 +37,7 @@ namespace XLS
 
 HideObj::HideObj()
 {
+    hideObj.value() = 0;
 }
 
 
@@ -55,6 +56,12 @@ void HideObj::readFields(CFRecord& record)
 {
 	record >> hideObj;
 }
+
+void HideObj::writeFields(CFRecord& record)
+{
+    record << hideObj;
+}
+
 
 } // namespace XLS
 

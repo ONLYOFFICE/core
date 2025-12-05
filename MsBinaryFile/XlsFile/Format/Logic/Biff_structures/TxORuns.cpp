@@ -83,6 +83,11 @@ void TxORuns::load(CFRecord& record)
 	lastRun.load(record);
 }
 
+void TxORuns::save(CFRecord& record)
+{
+
+}
+
 
 } // namespace XLS
 

@@ -51,14 +51,15 @@ public:
 
 	
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 
 	static const ElementType	type = typeFbi;
 
 //-----------------------------
-	_UINT16 dmixBasis;
-	_UINT16 dmiyBasis;
-	_UINT16 twpHeightBasis;
-	_UINT16 scab;
+    _UINT16 dmixBasis = 0;
+    _UINT16 dmiyBasis = 0;
+    _UINT16 twpHeightBasis = 0;
+    _UINT16 scab = 0;
 	FontIndex ifnt;
 
 

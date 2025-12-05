@@ -49,6 +49,7 @@ public:
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
+	void writeFields(CFRecord& record);
 //-----------------------------
 	BiffStructurePtrVector	rgmdir;
 	FrtHeader				frtHeader;

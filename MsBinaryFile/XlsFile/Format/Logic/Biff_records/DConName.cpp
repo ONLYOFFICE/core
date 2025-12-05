@@ -62,5 +62,16 @@ void DConName::readFields(CFRecord& record)
 	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
 }
 
+void DConName::writeFields(CFRecord& record)
+{
+    cchFile = stFile.getSize();
+    record << stName << cchFile;
+    if (cchFile > 0 && cchFile < 0xffff)
+    {
+        record << stFile;
+        record.reserveNunBytes(2);
+    }
+}
+
 } // namespace XLS
 

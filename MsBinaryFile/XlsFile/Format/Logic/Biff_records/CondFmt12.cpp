@@ -57,6 +57,13 @@ void CondFmt12::readFields(CFRecord& record)
 	record >> mainCF;
 }
 
+void CondFmt12::writeFields(CFRecord& record)
+{
+    frtRefHeaderU.rt = 0x0879;
+    frtRefHeaderU.grbitFrt.fFrtRef = 1;
+    record << frtRefHeaderU;
+    record << mainCF;
+}
 
 const CellRef CondFmt12::getLocation() const
 {

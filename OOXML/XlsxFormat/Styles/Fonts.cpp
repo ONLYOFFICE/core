@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
@@ -37,6 +37,8 @@
 #include "../../XlsbFormat/Biff12_records/BeginFonts.h"
 
 #include "../../XlsbFormat/Biff12_unions/FONTS.h"
+
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Font.h"
 
 namespace OOX
 {
@@ -292,6 +294,66 @@ namespace OOX
 
 			return objectPtr;
 		}
+		XLS::BaseObjectPtr CFont::toXLS()
+		{
+			auto ptr = new XLS::Font;
+			if(m_oSz.IsInit())
+				ptr->dyHeight = m_oSz->m_oVal->GetValue() * 20;
+			if(m_oItalic.IsInit())
+				ptr->fItalic = m_oItalic->ToBool();
+			if(m_oStrike.IsInit())
+				ptr->fStrikeOut = m_oStrike->ToBool();
+			if(m_oOutline.IsInit())
+				ptr->fOutline = m_oOutline->ToBool();
+			if(m_oShadow.IsInit())
+				ptr->fShadow = m_oShadow->ToBool();
+			if(m_oCondense.IsInit())
+				ptr->fCondense = m_oCondense->ToBool();
+			if(m_oExtend.IsInit())
+				ptr->fExtend = m_oExtend->ToBool();
+
+			if(m_oColor.IsInit() && m_oColor->m_oIndexed.IsInit())
+			{
+				ptr->icv = m_oColor->m_oIndexed->GetValue();
+			}
+
+			if(m_oBold.IsInit() && m_oBold->ToBool())
+				ptr->bls = 0x02BC;
+			else
+				ptr->bls = 0x0190;
+			if(m_oUnderline.IsInit() && m_oUnderline->m_oUnderline.IsInit())
+			{
+				if(m_oUnderline->m_oUnderline == SimpleTypes::Spreadsheet::EUnderline::underlineNone)
+					ptr->uls = 0;
+				else if(m_oUnderline->m_oUnderline == SimpleTypes::Spreadsheet::EUnderline::underlineSingle)
+					ptr->uls = 1;
+				else if(m_oUnderline->m_oUnderline == SimpleTypes::Spreadsheet::EUnderline::underlineDouble)
+					ptr->uls = 2;
+				else if(m_oUnderline->m_oUnderline == SimpleTypes::Spreadsheet::EUnderline::underlineSingleAccounting)
+					ptr->uls = 33;
+				else if(m_oUnderline->m_oUnderline == SimpleTypes::Spreadsheet::EUnderline::underlineDoubleAccounting)
+					ptr->uls = 34;
+			}
+			else
+				ptr->uls = 0;
+			if(m_oVertAlign.IsInit() && m_oVertAlign->m_oVerticalAlign.IsInit())
+			{
+				if(m_oVertAlign->m_oVerticalAlign->GetValue() == SimpleTypes::EVerticalAlignRun::verticalalignrunBaseline)
+					ptr->sss = 0;
+				else if(m_oVertAlign->m_oVerticalAlign->GetValue() == SimpleTypes::EVerticalAlignRun::verticalalignrunSuperscript)
+					ptr->sss = 1;
+				else if(m_oVertAlign->m_oVerticalAlign->GetValue() == SimpleTypes::EVerticalAlignRun::verticalalignrunSubscript)
+					ptr->sss = 2;
+			}
+			if(m_oFamily.IsInit())
+				ptr->bFamily = m_oFamily->m_oFontFamily->GetValue();
+
+			if(m_oCharset.IsInit())
+				ptr->bCharSet = m_oCharset->m_oCharset->GetValue();
+			if(m_oRFont.IsInit())
+				ptr->fontName = m_oRFont->m_sVal.get();
+			return XLS::BaseObjectPtr(ptr);
+		}
 		EElementType CFont::getType () const
 		{
 			return et_x_Font;
@@ -532,6 +594,15 @@ namespace OOX
 			}
 			ptr1->cfonts = ptr->m_arBrtFont.size();
 			return objectPtr;
+		}
+		std::vector<XLS::BaseObjectPtr> CFonts::toXLS()
+		{
+			std::vector<XLS::BaseObjectPtr> fontVector;
+			for(auto i:m_arrItems)
+			{
+				fontVector.push_back(i->toXLS());
+			}
+			return  fontVector;
 		}
 		EElementType CFonts::getType () const
 		{

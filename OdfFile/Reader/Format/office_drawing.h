@@ -33,47 +33,30 @@
 
 #include <iosfwd>
 
-#include "office_elements.h"
-#include "office_elements_create.h"
+#include "office_presentation.h"
 
 namespace cpdoccore {
 namespace odf_reader {
 
-class office_drawing : public office_element_impl<office_drawing>
+class office_drawing : public office_presentation
 {
 public:
     static const wchar_t* ns;
     static const wchar_t* name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeOfficeDrawing;
-    CPDOCCORE_DEFINE_VISITABLE();
-
-    virtual void docx_convert(oox::docx_conversion_context& Context);
-    virtual void xlsx_convert(oox::xlsx_conversion_context& Context);
-    virtual void pptx_convert(oox::pptx_conversion_context& Context);
-
-private:
-	virtual void add_attributes(const xml::attributes_wc_ptr& Attributes);
-	virtual void add_child_element(xml::sax* Reader, const std::wstring& Ns, const std::wstring& Name);
-	virtual void add_text(const std::wstring& Text);
-
-public:
-
-    office_element_ptr			tracked_changes_;
-    office_element_ptr			content_validations_;
-
-    office_element_ptr_array	date_time_decls_;
-    office_element_ptr_array	footer_decls_;
-
-    office_element_ptr_array	pages_;
-
-    office_element_ptr			user_fields_;
-    office_element_ptr			variables_;
-    office_element_ptr			sequences_;
-
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(office_drawing);
+
+class office_graphics : public office_presentation
+{
+public:
+    static const wchar_t* ns;
+    static const wchar_t* name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeOfficeGraphics;
+};
+CP_REGISTER_OFFICE_ELEMENT2(office_graphics);
 
 } // namespace odf_reader
 } // namespace cpdoccore

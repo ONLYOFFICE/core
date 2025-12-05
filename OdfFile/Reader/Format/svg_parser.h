@@ -42,6 +42,7 @@ namespace svg_path
 {
 	struct _point
 	{
+		_point() {}
 		_point(double _x, double _y) { x = _x; y = _y; }
 
 		_CP_OPT(double) x;
@@ -69,5 +70,5 @@ namespace svg_path
 	bool parseSvgD(std::vector<_polyline>& Polyline, const std::wstring& path, bool bWrongPositionAfterZ, bool& bIsClosed, bool& bIsStroked);
 	bool parsePolygon(std::vector<_polyline>& Polyline, const std::wstring& path, bool bWrongPositionAfterZ, bool closed);
 
-	bool parseSvgS(std::vector<_polylineS>& Polyline, const std::wstring& path, bool bWrongPositionAfterZ, bool& bIsClosed, bool& bIsStroked);
+	bool parseSvgS(std::vector<_polylineS>& Polyline, const std::wstring& path, bool bWrongPositionAfterZ, bool& bIsClosed, bool& bIsStroked, std::wstring& wsNewFormula, std::wstring &wsH, std::wstring &wsW);
 }

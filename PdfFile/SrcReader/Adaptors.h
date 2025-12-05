@@ -53,6 +53,7 @@
 
 class GlobalParamsAdaptor : public GlobalParams
 {
+private:
     std::wstring m_wsTempFolder;
     std::wstring m_wsCMapFolder;
 
@@ -60,16 +61,16 @@ class GlobalParamsAdaptor : public GlobalParams
     DWORD m_nCMapDataLength;
 
     bool m_bDrawFormField;
+	std::vector<double> m_arrRedactBox;
 
 public:
-    NSFonts::IFontManager *m_pFontManager;
     GlobalParamsAdaptor(const char *filename) : GlobalParams(filename)
     {
         m_bCMapData = NULL;
         m_nCMapDataLength = 0;
         m_bDrawFormField = false;
     }
-    ~GlobalParamsAdaptor()
+    virtual ~GlobalParamsAdaptor()
     {
         RELEASEARRAYOBJECTS(m_bCMapData);
     }
@@ -85,13 +86,18 @@ public:
         m_wsTempFolder = folder;
     }
 
+    bool IsNeedCMap() { return !m_bCMapData; }
     void SetCMapFolder(const std::wstring &wsFolder);
     void SetCMapFile(const std::wstring &wsFile);
     void SetCMapMemory(BYTE* pData, DWORD nSizeData);
     bool GetCMap(const char* sName, char*& pData, unsigned int& nSize);
 
-    void setDrawFormField(bool bDrawFormField) { m_bDrawFormField = bDrawFormField; }
+	void setDrawFormField(bool bDrawFormField) { m_bDrawFormField = bDrawFormField; }
     bool getDrawFormField() { return m_bDrawFormField; }
+
+	void AddRedact(const std::vector<double>& arrRedactBox);
+	bool InRedact(double dX, double dY);
+	void ClearRedact();
 private:
 
 	void AddNameToUnicode(const char* sFile);

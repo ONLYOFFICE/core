@@ -57,46 +57,47 @@ public:
 	static const ElementType type = typeDXFN;
 	
 	virtual void load(CFRecord& record);
+    virtual void save(CFRecord& record);
 
 	int serialize(std::wostream & stream);
 
-	bool alchNinch;
-	bool alcvNinch;
+	bool alchNinch = true;
+	bool alcvNinch = true;
 	
-	bool wrapNinch;
-	bool trotNinch;
-	bool kintoNinch;
-	bool cIndentNinch;
-	bool fShrinkNinch;
-	bool fMergeCellNinch;
+	bool wrapNinch = true;
+	bool trotNinch = true;
+	bool kintoNinch = true;
+	bool cIndentNinch = true;
+	bool fShrinkNinch = true;
+	bool fMergeCellNinch = true;
 	
-	bool lockedNinch;
-	bool hiddenNinch;
+	bool lockedNinch = true;
+	bool hiddenNinch = true;
 	
-	bool glLeftNinch;
-	bool glRightNinch;
-	bool glTopNinch;
-	bool glBottomNinch;
-	bool glDiagDownNinch;
-	bool glDiagUpNinch;
+	bool glLeftNinch = true;
+	bool glRightNinch = true;
+	bool glTopNinch = true;
+	bool glBottomNinch = true;
+	bool glDiagDownNinch = true;
+	bool glDiagUpNinch = true;
 	
-	bool flsNinch;
-	bool icvFNinch;
-	bool icvBNinch;
-	bool ifmtNinch;
-	bool fIfntNinch;
+	bool flsNinch = true;
+	bool icvFNinch = true;
+	bool icvBNinch = true;
+	bool ifmtNinch = true;
+	bool fIfntNinch = true;
 	
-	bool ibitAtrNum;
-	bool ibitAtrFnt;
-	bool ibitAtrAlc;
-	bool ibitAtrBdr;
-	bool ibitAtrPat;
-	bool ibitAtrProt;
+	bool ibitAtrNum = false;
+	bool ibitAtrFnt = false;
+	bool ibitAtrAlc = false;
+	bool ibitAtrBdr = false;
+	bool ibitAtrPat = false;
+	bool ibitAtrProt = false;
 	
-	bool iReadingOrderNinch;
-	bool fIfmtUser;
-	bool fNewBorder;
-	bool fZeroInited;
+	bool iReadingOrderNinch = true;
+	bool fIfmtUser = false;
+	bool fNewBorder = false;
+	bool fZeroInited = false;
 
 	DXFNum	dxfnum;
 	DXFFntD dxffntd;

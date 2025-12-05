@@ -82,5 +82,28 @@ void DbOrParamQry::readFields(CFRecord& record)
 	}
 }
 
+void DbOrParamQry::writeFields(CFRecord& record)
+{
+    unsigned short	flags = 0;
+    if (typeRecord == 2)
+    {
+        SETBITS(flags, 0, 2, query.dbt)
+        SETBIT(flags, 3, query.fOdbcConn)
+        SETBIT(flags, 4, query.fSql)
+        SETBIT(flags, 5, query.fSqlSav)
+        SETBIT(flags, 6, query.fWeb)
+        SETBIT(flags, 7, query.fSavePwd)
+        SETBIT(flags, 8, query.fTablesOnlyHTML)
+
+        record << flags << query.cparams << query.cstQuery << query.cstWebPost << query.cstSQLSav << query.cstOdbcConn;
+    }
+    else
+    {
+        SETBITS(flags, 0, 1, param.pbt)
+        SETBIT(flags, 2, param.fNonDefaultName)
+        record << param.wTypeSql << flags << param.grbit << param.fVal;
+    }
+}
+
 } // namespace XLS
 

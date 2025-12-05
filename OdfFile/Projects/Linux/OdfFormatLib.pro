@@ -20,6 +20,7 @@ include(../../../Common/base.pri)
 include($$PWD/../../../Common/3dParty/boost/boost.pri)
 
 include($$PWD/../../Reader/Converter/StarMath2OOXML/StarMath2OOXML.pri)
+include($$PWD/../../Reader/Converter/SMCustomShape2OOXML/SMCustomShape2OOXML.pri)
 
 DEFINES +=  UNICODE \
             _UNICODE \
@@ -52,7 +53,8 @@ SOURCES += \
 	../../DataTypes/borderstyle.cpp \
 	../../DataTypes/borderwidths.cpp \
 	../../DataTypes/calcext_type.cpp \
-	../../DataTypes/chartdatalabelnumber.cpp \
+        ../../DataTypes/chartaxistype.cpp \
+        ../../DataTypes/chartdatalabelnumber.cpp \
 	../../DataTypes/charterrorcategory.cpp \
 	../../DataTypes/chartinterpolation.cpp \
 	../../DataTypes/chartlabelarrangement.cpp \
@@ -166,6 +168,7 @@ SOURCES += \
 	../../DataTypes/messagetype.cpp \
 	../../DataTypes/stylecellprotect.cpp \
         ../../DataTypes/sparklines.cpp \
+        ../../DataTypes/color_mode.cpp \
         \
 	../../Reader/Format/abstract_xml.cpp \
 	../../Reader/Format/anim_elements.cpp \

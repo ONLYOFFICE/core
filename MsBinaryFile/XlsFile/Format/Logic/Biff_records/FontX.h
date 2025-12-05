@@ -50,11 +50,12 @@ public:
 
 	
 	void readFields(CFRecord& record);
+	void writeFields(CFRecord& record);
 
 	static const ElementType	type = typeFontX;
 
 //-----------------------------
-	_UINT16 iFont;
+	_UINT16 iFont = 0;
 
 };
 

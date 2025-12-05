@@ -55,13 +55,13 @@ public:
 
 	static const ElementType type = typeSortData;
 
-	bool			fCol;
-	bool			fCaseSensitive;
-	bool			fAltMethod;
-	unsigned char	sfp;
+	bool			fCol = false;
+	bool			fCaseSensitive = false;
+	bool			fAltMethod = false;
+	unsigned char	sfp = 0; // sheet for default
 
-	_UINT32			cconditions;
-	_UINT32			idParent;
+	_UINT32			cconditions = 0;
+	_UINT32			idParent = 0;
 
 	BiffStructurePtrVector	sortCond12Array;
 	FrtHeader				frtHeader;

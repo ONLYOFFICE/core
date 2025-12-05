@@ -419,10 +419,10 @@ namespace ComplexTypes
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-			nullable<SimpleTypes::CThemeColor           > m_oThemeColor;
-			nullable<SimpleTypes::CUcharHexNumber       > m_oThemeShade;
-			nullable<SimpleTypes::CUcharHexNumber       > m_oThemeTint;
-			nullable<SimpleTypes::CHexColor             > m_oVal;
+			nullable<SimpleTypes::CThemeColor> m_oThemeColor;
+			nullable<SimpleTypes::CUcharHexNumber> m_oThemeShade;
+			nullable<SimpleTypes::CUcharHexNumber> m_oThemeTint;
+			nullable<SimpleTypes::CHexColor> m_oVal;
 		};
 
 		//--------------------------------------------------------------------------------

@@ -72,6 +72,31 @@ void SortCond12::load(CFRecord& record)
     }
 }
 
+void SortCond12::save(CFRecord& record)
+{
+	unsigned short flags = 0;
+	SETBIT(flags, 0, fSortDes)
+	SETBITS(flags, 1, 4, sortOn)
+	record << flags << rfx;
+	switch(sortOn)
+	{
+		case 0x00:
+		case 0x01:
+		case 0x02:
+			record << condDataValue;
+			break;
+		case 0x03:
+			record << cfflag;
+			break;
+	}
+
+	cchSt = stSslist.getSize();
+	record << cchSt;
+	if(cchSt)
+	{
+		record << stSslist;
+	}
+}
 
 } // namespace XLS
 

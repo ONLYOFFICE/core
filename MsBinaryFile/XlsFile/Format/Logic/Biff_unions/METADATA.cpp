@@ -120,5 +120,22 @@ const bool METADATA::loadContent(BinProcessor& proc)
 	return false;
 }
 
+const bool METADATA::saveContent(BinProcessor& proc)
+{
+	for(auto i : m_arMDTINFO)
+		if(i != nullptr)
+			proc.mandatory(*i);
+	for(auto i : m_arMDXSTR)
+		if(i != nullptr)
+			proc.mandatory(*i);
+	for(auto i : m_arMDTSET)
+		if(i != nullptr)
+			proc.mandatory(*i);
+	for(auto i : m_arMDBLOCK)
+		if(i != nullptr)
+			proc.mandatory(*i);
+	return true;
+}
+
 } // namespace XLS
 

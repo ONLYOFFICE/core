@@ -168,6 +168,41 @@ namespace XLS
 	return true;
 }
 
+const bool PAGESETUP::saveContent(BinProcessor& proc)
+{
+	if(m_Header != nullptr)
+		proc.mandatory(*m_Header);
+	else
+		proc.mandatory<Header>();
+	if(m_Footer != nullptr)
+		proc.mandatory(*m_Footer);
+	else
+		proc.mandatory<Footer>();
+	if(m_HCenter != nullptr)
+		proc.mandatory(*m_HCenter);
+	else
+		proc.mandatory<HCenter>();
+	if(m_VCenter != nullptr)
+		proc.mandatory(*m_VCenter);
+	else
+		proc.mandatory<VCenter>();
+
+	if(m_LeftMargin != nullptr)
+		proc.mandatory(*m_LeftMargin);
+	if(m_RightMargin != nullptr)
+		proc.mandatory(*m_RightMargin);
+	if(m_TopMargin != nullptr)
+		proc.mandatory(*m_TopMargin);
+	if(m_BottomtMargin != nullptr)
+		proc.mandatory(*m_BottomtMargin);
+
+	if(m_Setup != nullptr)
+		proc.mandatory(*m_Setup);
+	else
+		proc.mandatory<Setup>();
+	return true;
+}
+
 int PAGESETUP::serialize(std::wostream & stream)
 {
 	if (elements_.empty() && !m_Setup && !m_Header && !m_Footer) return 0;

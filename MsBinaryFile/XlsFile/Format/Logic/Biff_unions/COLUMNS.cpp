@@ -92,7 +92,18 @@ const bool COLUMNS::loadContent(BinProcessor& proc)
 
 	return def_ok || (count > 0);
 }
-
+const bool COLUMNS::saveContent(BinProcessor& proc)
+{
+	if(m_DefColWidth != nullptr)
+		proc.mandatory(*m_DefColWidth);
+	else
+		proc.mandatory<DefColWidth>();
+	for(auto i : m_colInfos)
+	{
+		proc.mandatory(*i);
+	}
+	return true;
+}
 int COLUMNS::serialize(std::wostream & stream)
 {
 	if (elements_.size() < 1) return 0;

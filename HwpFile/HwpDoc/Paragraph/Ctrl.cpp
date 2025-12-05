@@ -8,6 +8,8 @@
 #include "CtrlPageNumPos.h"
 #include "CtrlField.h"
 
+#include "../Common/NodeNames.h"
+
 namespace HWP
 {
 CCtrl::CCtrl()
@@ -50,27 +52,29 @@ bool CCtrl::Equals(CCtrl* pFirstCtrl, CCtrl* pSecondCtrl)
 	       pFirstCtrl->m_bFullFilled == pSecondCtrl->m_bFullFilled;
 }
 
-CCtrl* CCtrl::GetCtrl(CXMLNode& oNode, int nVersion)
+CCtrl* CCtrl::GetCtrl(CXMLReader& oReader, EHanType eType)
 {
-	if (L"hp:colPr" == oNode.GetName())
-		return new CCtrlColumnDef(L"dloc", oNode, nVersion);
-	else if (L"hp:header" == oNode.GetName())
-		return new CCtrlHeadFoot(L"daeh", oNode, nVersion);
-	else if (L"hp:footer" == oNode.GetName())
-		return new CCtrlHeadFoot(L"toof", oNode, nVersion);
-	else if (L"hp:footNote" == oNode.GetName())
-		return new CCtrlNote(L"  nf", oNode, nVersion);
-	else if (L"hp:endNote" == oNode.GetName())
-		return new CCtrlNote(L"  ne", oNode, nVersion);
-	else if (L"hp:autoNum" == oNode.GetName())
-		return new CCtrlAutoNumber(L"onta", oNode, nVersion);
-	else if (L"hp:newNum" == oNode.GetName())
-		return new CCtrlNewNumber(L"onwn", oNode, nVersion);
-	else if (L"hp:pageNum" == oNode.GetName())
-		return new CCtrlPageNumPos(L"pngp", oNode, nVersion);
-	else if (L"hp:fieldBegin" == oNode.GetName() ||
-	         L"hp:fieldEnd" == oNode.GetName())
-		return new CCtrlField(L"", oNode, nVersion);
+	const std::string sNodeName{oReader.GetName()};
+
+	if (GetNodeName(ENode::ColumnDef, eType) == sNodeName)
+		return new CCtrlColumnDef(L"dloc", oReader, eType);
+	else if (GetNodeName(ENode::Header, eType) == sNodeName)
+		return new CCtrlHeadFoot(L"daeh", oReader, eType);
+	else if (GetNodeName(ENode::Footer, eType) == sNodeName)
+		return new CCtrlHeadFoot(L"toof", oReader, eType);
+	else if (GetNodeName(ENode::FootNote, eType) == sNodeName)
+		return new CCtrlNote(L"  nf", oReader, eType);
+	else if (GetNodeName(ENode::EndNote, eType) == sNodeName)
+		return new CCtrlNote(L"  ne", oReader, eType);
+	else if (GetNodeName(ENode::AutoNum, eType) == sNodeName)
+		return new CCtrlAutoNumber(L"onta", oReader, eType);
+	else if (GetNodeName(ENode::NewNum, eType) == sNodeName)
+		return new CCtrlNewNumber(L"onwn", oReader, eType);
+	else if (GetNodeName(ENode::PageNum, eType) == sNodeName)
+		return new CCtrlPageNumPos(L"pngp", oReader, eType);
+	else if (GetNodeName(ENode::FieldBegin, eType) == sNodeName ||
+	         GetNodeName(ENode::FieldEnd,   eType) == sNodeName)
+		return new CCtrlField(L"", oReader, eType);
 
 	return nullptr;
 }

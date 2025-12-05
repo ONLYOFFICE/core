@@ -85,7 +85,15 @@ void Cell::load(CFRecord& record)
 		record >> ixfe;
 	}
 }
-
+void Cell::save(CFRecord& record)
+{
+	auto globInfo = record.getGlobalWorkbookInfo();
+	if(ixfe != 0)
+	{
+		ixfe+= globInfo->cellStyleXfs_count;
+	}
+    record << rw << col << ixfe;
+}
 
 const CellRef Cell::getLocation() const
 {

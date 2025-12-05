@@ -95,6 +95,7 @@ namespace PPTX
 		class Shape;
 		class ClrMap;
 		class UniColor;
+		class Paragraph;
 	}
 
 	class CStringTrimmer
@@ -222,10 +223,9 @@ namespace NSBinPptxRW
 		CDrawingConverter();
 		~CDrawingConverter();
 
-		void							SetRels(OOX::IFileContainer *container);
-		void							SetRels(smart_ptr<OOX::IFileContainer> container);
-		smart_ptr<OOX::IFileContainer>	GetRels();
-		
+		void SetRelsPtr(OOX::IFileContainer *container);
+		OOX::IFileContainer* GetRelsPtr();
+
 		void SetMainDocument (BinDocxRW::CDocxSerializer* pDocument);
 
         void SetSrcPath         (const std::wstring& sPath, int nDocType = 1/*XMLWRITER_DOC_TYPE_DOCX*/);
@@ -298,6 +298,7 @@ namespace NSBinPptxRW
         void CheckBrushShape        (PPTX::Logic::SpTreeElem* oElem, XmlUtils::CXmlNode& oNode, CPPTShape* pPPTShape);
         void CheckPenShape          (PPTX::Logic::SpTreeElem* oElem, XmlUtils::CXmlNode& oNode, CPPTShape* pPPTShape);
 		void CheckBorderShape		(PPTX::Logic::SpTreeElem* oElem, XmlUtils::CXmlNode& oNode, CPPTShape* pPPTShape);
+		void CheckEffectShape		(PPTX::Logic::SpTreeElem* oElem, XmlUtils::CXmlNode& oNode, CPPTShape* pPPTShape);
 
 		void ConvertColor			(PPTX::Logic::UniColor& uniColor, nullable_string& sColor, nullable_string& sOpacity);
 		void LoadCoordSize			(XmlUtils::CXmlNode& oNode, ::CShapePtr pShape);
@@ -310,7 +311,8 @@ namespace NSBinPptxRW
         void ConvertShapeVML        (PPTX::Logic::SpTreeElem& oShape, const std::wstring& sMainProps, NSBinPptxRW::CXmlWriter& oWriter, bool bSignature = false);
         void ConvertGroupVML        (PPTX::Logic::SpTreeElem& oGroup, const std::wstring& sMainProps, NSBinPptxRW::CXmlWriter& oWriter);
 
-        void ConvertTextVML         (XmlUtils::CXmlNode &nodeTextBox, PPTX::Logic::Shape* pShape);
+        void ConvertTextVML         (XmlUtils::CXmlNode &node, PPTX::Logic::Shape* pShape);
+		void ConvertParaVML			(XmlUtils::CXmlNode& node, PPTX::Logic::Paragraph* p);
 
 		HRESULT SetCurrentRelsPath();
 	};

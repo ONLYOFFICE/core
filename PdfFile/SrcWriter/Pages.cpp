@@ -58,6 +58,13 @@
 namespace PdfWriter
 {
 	static const double c_dKappa = 0.552;
+	const static char* c_sRenderingIntent[] =
+	{
+		"AbsoluteColorimetric",
+		"RelativeColorimetric",
+		"Saturation",
+		"Perceptual"
+	};
 	static void QuarterEllipseA(CStream* pStream, double dX, double dY, double dXRad, double dYRad)
 	{
 		pStream->WriteReal(dX - dXRad);
@@ -224,9 +231,9 @@ namespace PdfWriter
 		if (pResources)
 			pResources->Fix();
 	}
-	void CPageTree::AddPage(CDictObject* pPage)
+	void CPageTree::AddPage(CObjectBase* pObj)
 	{
-		m_pPages->Add(pPage);
+		m_pPages->Add(pObj);
 		(*m_pCount)++;
 	}
 	CObjectBase* CPageTree::GetObj(int nPageIndex)
@@ -247,12 +254,13 @@ namespace PdfWriter
 		int nI = 0;
 		return GetFromPageTree(nPageIndex, nI, true);
 	}
-	bool CPageTree::InsertPage(int nPageIndex, CPage* pPage)
+	bool CPageTree::InsertPage(int nPageIndex, CObjectBase* pPage)
 	{
 		if (nPageIndex >= m_pCount->Get())
 		{
 			AddPage(pPage);
-			pPage->Add("Parent", this);
+			if (pPage->GetType() == object_type_DICT && ((CDictObject*)pPage)->GetDictType() == dict_type_PAGE)
+				((CPage*)pPage)->Add("Parent", this);
 			return true;
 		}
 		int nI = 0;
@@ -287,7 +295,7 @@ namespace PdfWriter
 		}
 		return false;
 	}
-	CObjectBase* CPageTree::GetFromPageTree(int nPageIndex, int& nI, bool bRemove, bool bInsert, CPage* pPage)
+	CObjectBase* CPageTree::GetFromPageTree(int nPageIndex, int& nI, bool bRemove, bool bInsert, CObjectBase* pPage)
 	{
 		for (int i = 0, count = m_pPages->GetCount(); i < count; ++i)
 		{
@@ -303,14 +311,16 @@ namespace PdfWriter
 					if (bRemove && bInsert)
 					{
 						m_pPages->Insert(pObj, pPage, true);
-						pPage->Add("Parent", this);
+						if (pPage->GetType() == object_type_DICT && ((CDictObject*)pPage)->GetDictType() == dict_type_PAGE)
+							((CPage*)pPage)->Add("Parent", this);
 					}
 					else if (bRemove)
 						pRes = m_pPages->Remove(i);
 					else if (bInsert)
 					{
 						m_pPages->Insert(pObj, pPage);
-						pPage->Add("Parent", this);
+						if (pPage->GetType() == object_type_DICT && ((CDictObject*)pPage)->GetDictType() == dict_type_PAGE)
+							((CPage*)pPage)->Add("Parent", this);
 					}
 				}
 				nI++;
@@ -343,19 +353,42 @@ namespace PdfWriter
 		}
 		return false;
 	}
+	void CPageTree::CreateFakePages(int nPages, int nPageIndex)
+	{
+		for (int i = 0; i < nPages; ++i)
+		{
+			if (nPageIndex < 0)
+				m_pPages->Add(new CFakePage(i));
+			else
+			{
+				CObjectBase* pTarget = GetObj(nPageIndex);
+				if (pTarget)
+					m_pPages->Insert(pTarget, new CFakePage(nPageIndex));
+				else
+					m_pPages->Add(new CFakePage(m_pPages->GetCount()));
+			}
+			(*m_pCount)++;
+		}
+	}
+	void CPageTree::ClearFakePages()
+	{
+		for (int i = 0; i < GetCount(); ++i)
+		{
+			CObjectBase* pObj = GetObj(i);
+			if (pObj->GetType() == object_type_DICT && ((CDictObject*)pObj)->GetDictType() == dict_type_PAGE)
+				continue;
+			pObj = m_pPages->Remove(i);
+			delete pObj;
+			(*m_pCount)--;
+			--i;
+		}
+	}
 	//----------------------------------------------------------------------------------------
 	// CPage
 	//----------------------------------------------------------------------------------------
-	CPage::CPage(CDocument* pDocument, CXref* pXref)
+	CPage::CPage(CDocument* pDocument)
 	{
 		Init(pDocument);
-		if (pXref)
-		{
-			AddResource(pXref);
-			m_pContents = new CArrayObject();
-			Add("Contents", m_pContents);
-			AddContents(pXref);
-		}
 	}
 	void CPage::Fix()
 	{
@@ -371,6 +404,12 @@ namespace PdfWriter
 				pNewContents->Get()->SetRef(pContents->GetObjId(), pContents->GetGenNo());
 				m_pContents = new CArrayObject();
 				m_pContents->Add(pNewContents);
+				Add("Contents", m_pContents);
+			}
+			else if (pContents->GetType() == object_type_DICT)
+			{
+				m_pContents = new CArrayObject();
+				m_pContents->Add(pContents);
 				Add("Contents", m_pContents);
 			}
 		}
@@ -481,6 +520,7 @@ namespace PdfWriter
 		m_unShadingsCount   = 0;
 		m_pPatterns         = NULL;
 		m_unPatternsCount   = 0;
+		m_eType             = fontUnknownType;
 	}
     void CPage::SetWidth(double dValue)
 	{
@@ -982,12 +1022,7 @@ namespace PdfWriter
 		double dG = unG / 255.0;
 		double dB = unB / 255.0;
 
-		m_pStream->WriteReal(dR);
-		m_pStream->WriteChar(' ');
-		m_pStream->WriteReal(dG);
-		m_pStream->WriteChar(' ');
-		m_pStream->WriteReal(dB);
-		m_pStream->WriteStr(" RG\012");
+		SetStrokeRGB(dR, dG, dB);
 
 		m_pGrState->m_oStrokeColor.r = dR;
 		m_pGrState->m_oStrokeColor.g = dG;
@@ -1003,18 +1038,81 @@ namespace PdfWriter
 		double dG = unG / 255.0;
 		double dB = unB / 255.0;
 
+		SetFillRGB(dR, dG, dB);
+
+		m_pGrState->m_oFillColor.r = dR;
+		m_pGrState->m_oFillColor.g = dG;
+		m_pGrState->m_oFillColor.b = dB;
+	}
+	void CPage::SetStrokeG(double dG)
+	{
+		// Operator   : G
+		// Description: Заливка в DeviceG
+
+		m_pStream->WriteReal(dG);
+		m_pStream->WriteStr(" G\012");
+	}
+	void CPage::SetStrokeRGB(double dR, double dG, double dB)
+	{
+		// Operator   : RG
+		// Description: Обводка в DeviceRGB
+
+		m_pStream->WriteReal(dR);
+		m_pStream->WriteChar(' ');
+		m_pStream->WriteReal(dG);
+		m_pStream->WriteChar(' ');
+		m_pStream->WriteReal(dB);
+		m_pStream->WriteStr(" RG\012");
+	}
+	void CPage::SetStrokeCMYK(double dC, double dM, double dY, double dK)
+	{
+		// Operator   : K
+		// Description: Обводка в DeviceCMYK
+
+		m_pStream->WriteReal(dC);
+		m_pStream->WriteChar(' ');
+		m_pStream->WriteReal(dM);
+		m_pStream->WriteChar(' ');
+		m_pStream->WriteReal(dY);
+		m_pStream->WriteChar(' ');
+		m_pStream->WriteReal(dK);
+		m_pStream->WriteStr(" K\012");
+	}
+	void CPage::SetFillG(double dG)
+	{
+		// Operator   : g
+		// Description: Заливка в DeviceG
+
+		m_pStream->WriteReal(dG);
+		m_pStream->WriteStr(" g\012");
+	}
+	void CPage::SetFillRGB(double dR, double dG, double dB)
+	{
+		// Operator   : rg
+		// Description: Заливка в DeviceRGB
+
 		m_pStream->WriteReal(dR);
 		m_pStream->WriteChar(' ');
 		m_pStream->WriteReal(dG);
 		m_pStream->WriteChar(' ');
 		m_pStream->WriteReal(dB);
 		m_pStream->WriteStr(" rg\012");
-
-		m_pGrState->m_oFillColor.r = dR;
-		m_pGrState->m_oFillColor.g = dG;
-		m_pGrState->m_oFillColor.b = dB;
 	}
-    void CPage::Concat(double dM11, double dM12, double dM21, double dM22, double dX, double dY)
+	void CPage::SetFillCMYK(double dC, double dM, double dY, double dK)
+	{
+		// Operator   : k
+		// Description: Заливка в DeviceCMYK
+
+		m_pStream->WriteReal(dC);
+		m_pStream->WriteChar(' ');
+		m_pStream->WriteReal(dM);
+		m_pStream->WriteChar(' ');
+		m_pStream->WriteReal(dY);
+		m_pStream->WriteChar(' ');
+		m_pStream->WriteReal(dK);
+		m_pStream->WriteStr(" k\012");
+	}
+	void CPage::Concat(double dM11, double dM12, double dM21, double dM22, double dX, double dY)
 	{
 		// Operator   : cm
 		// Description: меняем матрицу преобразований (CTM - Current Transformation Matrix)
@@ -1095,10 +1193,17 @@ namespace PdfWriter
 			return;
 
 		const char* sGsName = pResources->GetExtGrStateName(pState);
-		if (!sGsName)
+		SetExtGrStateKey(sGsName);
+	}
+	void CPage::SetExtGrStateKey(const char* sKey)
+	{
+		// Operator   : gs
+		// Description: устанавливаем сразу все настройки данного графического состояния(ExtGState)
+
+		if (!sKey)
 			return;
 
-		m_pStream->WriteEscapeName(sGsName);
+		m_pStream->WriteEscapeName(sKey);
 		m_pStream->WriteStr(" gs\012");
 	}
 	void CPage::AddAnnotation(CDictObject* pAnnot)
@@ -1123,13 +1228,12 @@ namespace PdfWriter
 
 		for (int i = 0; i < pArray->GetCount(); i++)
 		{
-			CObjectBase* pObj = pArray->Get(i, false);
-			if (pObj->GetType() == object_type_PROXY && ((CProxyObject*)pObj)->Get()->GetObjId() == nID)
+			CObjectBase* pObj = pArray->Get(i);
+			if (pObj->GetObjId() == nID)
 			{
 				CObjectBase* pDelete = pArray->Remove(i);
 				RELEASEOBJECT(pDelete);
 				return true;
-				break;
 			}
 		}
 		return false;
@@ -1177,25 +1281,23 @@ namespace PdfWriter
 	}
     void CPage::WriteText(const BYTE* sText, unsigned int unLen)
 	{
-		EFontType eType = m_pFont->GetFontType();
+		EFontType eType = m_eType != fontUnknownType ? m_eType : (m_pFont ? m_pFont->GetFontType() : fontCIDType0);
 		if (fontCIDType0 == eType || fontCIDType0C == eType || fontCIDType0COT == eType || fontCIDType2 == eType || fontCIDType2OT == eType)
 		{
 			m_pStream->WriteChar('<');
 			m_pStream->WriteBinary(sText, unLen, NULL);
 			m_pStream->WriteChar('>');
 		}
-		else if (fontType1 == eType)
+		else
 		{
 			unLen = unLen / 2;
 			BYTE* sText2 = new BYTE[unLen];
 			for (int i = 0; i < unLen; ++i)
 				sText2[i] = sText[i * 2 + 1];
-			m_pStream->WriteEscapeText(sText2, unLen);
+			m_pStream->WriteChar('<');
+			m_pStream->WriteBinary(sText2, unLen, NULL);
+			m_pStream->WriteChar('>');
 			RELEASEARRAYOBJECTS(sText2);
-		}
-		else
-		{
-			m_pStream->WriteEscapeText(sText, unLen);
 		}
 	}
     void CPage::DrawText(double dXpos, double dYpos, const BYTE* sText, unsigned int unLen)
@@ -1271,7 +1373,16 @@ namespace PdfWriter
 			m_pStream->WriteStr("]TJ\012");
 		}
 	}
-    void CPage::SetCharSpace(double dValue)
+	void CPage::SetTextRise(double dS)
+	{
+		// Operator   : Ts
+		// Description: Устанавливаем подъём текста
+		CheckGrMode(grmode_TEXT);
+
+		m_pStream->WriteReal(dS);
+		m_pStream->WriteStr(" Ts\012");
+	}
+	void CPage::SetCharSpace(double dValue)
 	{
 		// Operator   : Tc
 		// Description: Устанавливаем расстояние между буквами
@@ -1281,7 +1392,16 @@ namespace PdfWriter
 		m_pStream->WriteReal(dValue);
 		m_pStream->WriteStr(" Tc\012");
 	}
-    void CPage::SetHorizontalScalling(double dValue)
+	void CPage::SetWordSpace(double dValue)
+	{
+		// Operator   : Tw
+		// Description: Устанавливаем расстояние между словами
+		CheckGrMode(grmode_TEXT);
+
+		m_pStream->WriteReal(dValue);
+		m_pStream->WriteStr(" Tw\012");
+	}
+	void CPage::SetHorizontalScaling(double dValue)
 	{
 		// Operator   : Tz
 		// Description: Устанавливаем горизонтальное растяжение/сжатие
@@ -1294,7 +1414,7 @@ namespace PdfWriter
     void CPage::SetFontAndSize(CFontDict* pFont, double dSize)
 	{
 		// Operator   : Tf
-		// Description: Устанавливаем фонт и размер фонта
+		// Description: Устанавливаем шрифт и размер шрифта
 
         dSize = std::min((double)MAX_FONTSIZE, std::max(0.0, dSize));
 		CResourcesDict* pResources = GetResourcesItem();
@@ -1311,6 +1431,24 @@ namespace PdfWriter
 		m_pStream->WriteStr(" Tf\012");
 
 		m_pFont = pFont;
+	}
+	void CPage::SetFontKeyAndSize(const char* sKey, double dSize)
+	{
+		// Operator   : Tf
+		// Description: Устанавливаем шрифт и размер шрифта
+
+		dSize = std::min((double)MAX_FONTSIZE, std::max(0.0, dSize));
+		if (!sKey)
+			return;
+
+		m_pStream->WriteEscapeName(sKey);
+		m_pStream->WriteChar(' ');
+		m_pStream->WriteReal(dSize);
+		m_pStream->WriteStr(" Tf\012");
+	}
+	void CPage::SetFontType(EFontType nType)
+	{
+		m_eType = nType;
 	}
     void CPage::SetTextRenderingMode(ETextRenderingMode eMode)
 	{
@@ -1354,9 +1492,12 @@ namespace PdfWriter
 			return;
 
 		const char* sXObjectName = pResources->GetXObjectName(pXObject);
+		ExecuteXObject(sXObjectName);
+	}
+	void CPage::ExecuteXObject(const char* sXObjectName)
+	{
 		if (!sXObjectName)
 			return;
-
 		m_pStream->WriteEscapeName(sXObjectName);
 		m_pStream->WriteStr(" Do\012");
 	}
@@ -1519,10 +1660,26 @@ namespace PdfWriter
 		m_pContents = new CArrayObject();
 		Add("Contents", m_pContents);
 		AddContents(pXref);
+#ifndef FILTER_FLATE_DECODE_DISABLED
+		SetFilter(STREAM_FILTER_FLATE_DECODE);
+#endif
 	}
-	CDictObject* CPage::GetContent() const
+	void CPage::ClearContentFull(CXref* pXref)
 	{
-		return (CDictObject*)m_pContents->Remove(0);
+		if (m_pContents)
+		{
+			for (int i = 0; i < m_pContents->GetCount(); ++i)
+			{
+				CObjectBase* pObj = m_pContents->Get(i);
+				if (pObj->GetType() == object_type_DICT)
+				{
+					CObjectBase* pLength = ((CDictObject*)pObj)->Get("Length");
+					pXref->Remove(pLength);
+				}
+				pXref->Remove(pObj);
+			}
+		}
+		ClearContent(pXref);
 	}
     int CPage::GetRotate()
     {
@@ -1553,6 +1710,22 @@ namespace PdfWriter
 		// Description: Конец маркированного контента
 
 		m_pStream->WriteStr("EMC\012");
+	}
+	void CPage::SetRenderingIntent(ERenderingIntent eRenderingIntent)
+	{
+		// Operator   : ri
+		// Description: Способы рендеринга/цветопередачи
+
+		m_pStream->WriteEscapeName(c_sRenderingIntent[(int)eRenderingIntent]);
+		m_pStream->WriteStr(" ri\012");
+	}
+
+	CFakePage::CFakePage(int nOriginIndex) : m_nOriginIndex(nOriginIndex)
+	{
+	}
+	int CFakePage::GetOriginIndex()
+	{
+		return m_nOriginIndex;
 	}
 	//----------------------------------------------------------------------------------------
 	// CTextWord

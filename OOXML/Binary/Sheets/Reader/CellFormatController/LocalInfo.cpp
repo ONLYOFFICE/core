@@ -47,7 +47,7 @@ void InitLocalInfo()
 {
     InfoMap = std::map<_INT32, LocalInfo>
     {
-        {-1, LocalInfo{-1, L"default", L"-", L"215", 0, 3}},
+		{-1, LocalInfo{-1, L"default", L".", L"135", 0, 3}},
         {1, LocalInfo{1, L"ar", L"/", L"134", 28, 13}},
         {4, LocalInfo{4, L"zh-Hans", L"/", L"520", 3, 3}},
         {5, LocalInfo{5, L"cs", L".", L"135", 4, 3}},
@@ -201,7 +201,7 @@ void InitLocalInfo()
     };
     MonthNames = std::vector<std::vector<std::wstring>>
     {
-        {L"january", L"jebruary", L"march", L"april", L"may", L"june", L"july", L"august", L"september", L"october", L"november", L"december"},
+		{L"january", L"february", L"march", L"april", L"may", L"june", L"july", L"august", L"september", L"october", L"november", L"december"},
         {L"январь", L"февраль", L"март", L"апрель", L"май", L"июнь", L"июль", L"август", L"сентябрь", L"октябрь", L"ноябрь", L"декабрь"},
         {L"enero", L"febrero", L"marzo", L"abril", L"mayo", L"junio", L"julio", L"agosto", L"septiembre", L"octubre", L"noviembre", L"diciembre"},
         {L"一月", L"二月", L"三月", L"四月", L"五月", L"六月", L"七月", L"八月", L"九月", L"十月", L"十一月", L"十二月"},

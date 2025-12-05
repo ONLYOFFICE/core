@@ -194,9 +194,17 @@ namespace NSJSBase
 		 */
 		virtual CJSEmbedObjectAdapterBase* getAdapter();
 
+		/**
+		 * Use the externalize flag if you are monitoring the object's destruction yourself.
+		 */
+		virtual void SetExternalize(const bool& isExternalize = true);
+		virtual bool GetExternalize();
+
 	protected:
 		CJSEmbedObjectPrivateBase* embed_native_internal;
 		CJSEmbedObjectAdapterBase* m_pAdapter;
+
+		bool m_isExternalize;
 
 		friend class CJSEmbedObjectPrivateBase;
 		friend class CJSEmbedObjectPrivate;
@@ -482,6 +490,12 @@ namespace NSJSBase
 		 * This method is called in the destructor of CJSContextScope class.
 		 */
 		void Exit();
+
+		/**
+		 * Сheck if context is current.
+		 * This method is not safe.
+		 */
+		bool IsEntered();
 
 		/**
 		 * Embeds specified class in JS contexts.

@@ -199,23 +199,23 @@ namespace PPTX
 
 			pWriter->EndNode(L"p:control");
 		}
-		std::wstring Control::GetVmlXmlBySpid(std::wstring spid, smart_ptr<OOX::IFileContainer> & rels)  const
+		std::wstring Control::GetVmlXmlBySpid(std::wstring spid, OOX::IFileContainer*& rels)  const
 		{
 			std::wstring xml;
 			if(parentFileIs<PPTX::Slide>() && parentFileAs<PPTX::Slide>().Vml.IsInit())
 			{
 				xml		= parentFileAs<PPTX::Slide>().GetVmlXmlBySpid(spid);
-				rels	= parentFileAs<PPTX::Slide>().Vml.smart_dynamic_cast<OOX::IFileContainer>();
+				rels	= parentFileAs<PPTX::Slide>().Vml.GetPointer();
 			}
 			else if(parentFileIs<PPTX::SlideLayout>() && parentFileAs<PPTX::SlideLayout>().Vml.IsInit())
 			{
 				xml= parentFileAs<PPTX::SlideLayout>().GetVmlXmlBySpid(spid);
-				rels	= parentFileAs<PPTX::SlideLayout>().Vml.smart_dynamic_cast<OOX::IFileContainer>();
+				rels	= parentFileAs<PPTX::SlideLayout>().Vml.GetPointer();
 			}
 			else if(parentFileIs<PPTX::SlideMaster>() && parentFileAs<PPTX::SlideMaster>().Vml.IsInit())
 			{
 				xml = parentFileAs<PPTX::SlideMaster>().GetVmlXmlBySpid(spid);
-				rels	= parentFileAs<PPTX::SlideMaster>().Vml.smart_dynamic_cast<OOX::IFileContainer>();
+				rels	= parentFileAs<PPTX::SlideMaster>().Vml.GetPointer();
 			}
 
 			return xml;
@@ -237,7 +237,7 @@ namespace PPTX
 				std::wstring s = *spid;
 				if (s.length() < 8) s = L"_x0000_s" + s;
 
-				smart_ptr<OOX::IFileContainer> rels;
+				OOX::IFileContainer* rels = NULL;
 				std::wstring xml = GetVmlXmlBySpid(s, rels);
 
 				if (false == xml.empty())
@@ -251,7 +251,7 @@ namespace PPTX
 					RELEASEOBJECT(oDrawingConverter.m_pBinaryWriter->m_pCommon->m_pMediaManager);
 					oDrawingConverter.m_pBinaryWriter->m_pCommon->m_pMediaManager = pWriter->m_pCommon->m_pMediaManager;
 
-					oDrawingConverter.SetRels(rels);
+					oDrawingConverter.SetRelsPtr(rels);
 
 					std::vector<nullable<PPTX::Logic::SpTreeElem>> elements;
 					nullable<OOX::WritingElement> anchor;
@@ -259,13 +259,13 @@ namespace PPTX
 					oDrawingConverter.ConvertVml(temp, elements, anchor);
 					oDrawingConverter.m_pBinaryWriter->m_pCommon->m_pMediaManager = NULL;
 
-					smart_ptr<OOX::IFileContainer> rels_old = pWriter->GetRels();
-					pWriter->SetRels(rels);
+					OOX::IFileContainer* rels_old = pWriter->GetRelsPtr();
+					pWriter->SetRelsPtr(rels);
 					for (size_t i = 0; i < elements.size(); ++i)
 					{
 						pWriter->WriteRecord2(0, elements[i]);
 					}
-					pWriter->SetRels(rels_old);
+					pWriter->SetRelsPtr(rels_old);
 				}
 			}
 

@@ -43,6 +43,7 @@
 #include <xml/xmlchar.h>
 #include "odf_document.h"
 
+#include "office_forms.h"
 #include "serialize_elements.h"
 
 #include "style_graphic_properties.h"
@@ -108,14 +109,14 @@ void draw_shape::common_pptx_convert(oox::pptx_conversion_context & Context)
 /////////////////////////////////////////////////////////////////////////////////
 	std::vector<const odf_reader::style_instance *> instances;
 
-	const std::wstring grStyleName		= common_draw_attlist_.draw_style_name_.get_value_or(L"");
-	const std::wstring baseStyleName	= common_draw_attlists_.shape_with_text_and_styles_.common_presentation_attlist_.presentation_style_name_.get_value_or(L"");
+	const std::wstring drawStyleName		= common_draw_attlist_.draw_style_name_.get_value_or(L"");
+	const std::wstring presentationStyleName	= common_draw_attlists_.shape_with_text_and_styles_.common_presentation_attlist_.presentation_style_name_.get_value_or(L"");
 
 	odf_reader::style_instance* grStyleInst = 
-		Context.root()->odf_context().styleContainer().style_by_name(grStyleName, odf_types::style_family::Graphic,Context.process_masters_);
+		Context.root()->odf_context().styleContainer().style_by_name(drawStyleName, odf_types::style_family::Graphic,Context.process_masters_);
 	
 	odf_reader::style_instance* baseStyleInst = 
-		Context.root()->odf_context().styleContainer().style_by_name(baseStyleName, odf_types::style_family::Presentation,Context.process_masters_);
+		Context.root()->odf_context().styleContainer().style_by_name(presentationStyleName, odf_types::style_family::Presentation,Context.process_masters_);
 
 	if (baseStyleInst)//векторная фигура презентаций
 	{
@@ -143,7 +144,7 @@ void draw_shape::common_pptx_convert(oox::pptx_conversion_context & Context)
 		if (properties->fo_clip_)
 		{
 			std::wstring strRectClip = properties->fo_clip_.get();
-			Context.get_slide_context().set_clipping(strRectClip.substr(5, strRectClip.length() - 6));
+			fill.clipping = strRectClip.length() > 6 ? strRectClip.substr(5, strRectClip.length() - 6) : L"";
 		}
 	}
  	for (size_t i = 0; i < additional_.size(); i++)
@@ -189,7 +190,7 @@ void draw_shape::common_pptx_convert(oox::pptx_conversion_context & Context)
 
 	if (!text_content_.empty())
 	{
-		Context.get_slide_context().set_property(_property(L"text-content",text_content_));
+		Context.get_slide_context().set_property(_property(L"text-content", text_content_));
 	}
 }
 void draw_rect::pptx_convert(oox::pptx_conversion_context & Context)
@@ -425,5 +426,128 @@ void dr3d_sphere::pptx_convert(oox::pptx_conversion_context & Context)
 {
 	Context.get_slide_context().start_shape(sub_type_); //reset type
 }
+void draw_control::pptx_convert(oox::pptx_conversion_context& Context)
+{
+	if (!control_id_) return;
+
+	oox::forms_context::_state& state = Context.get_forms_context().get_state_element(*control_id_);
+	if (state.id.empty()) return;
+
+	form_element* control = dynamic_cast<form_element*>(state.element);
+	if (!control) return;
+
+	if (state.ctrlPropId.empty())
+	{
+		std::wstring target;
+		state.ctrlPropId = Context.get_mediaitems()->add_control_props(target);
+
+		//std::wstringstream strm;
+		//control->serialize_control_props(strm);
+
+		//Context.add_control_props(state.ctrlPropId, target, strm.str());
+	}
+
+	Context.get_slide_context().start_control(state.ctrlPropId, control->object_type_);
+
+	common_pptx_convert(Context);
+
+	if (control->linked_cell_)
+	{
+		Context.get_slide_context().set_property(_property(L"linked_cell", control->linked_cell_.get()));
+	}
+	if (control->disabled_)
+	{
+		Context.get_slide_context().set_property(_property(L"disabled", control->disabled_->get()));
+	}
+	if (control->value_)
+	{
+		Context.get_slide_context().set_property(_property(L"value", control->value_.get()));
+	}
+	else if (control->current_value_)
+	{
+		Context.get_slide_context().set_property(_property(L"value", control->current_value_.get()));
+	}
+	if (control->label_)
+	{
+		Context.get_slide_context().set_property(_property(L"label", control->label_.get()));
+
+		Context.get_text_context().start_object();
+		Context.get_text_context().add_text(control->label_.get());
+		
+		std::wstring text_content_ = Context.get_text_context().end_object();
+
+		if (!text_content_.empty())
+		{
+			Context.get_slide_context().set_property(_property(L"text-content", text_content_));
+		}
+	}
+	//if (control->name_)
+	//{
+	//	Context.get_drawing_context().set_name(control->name_.get());
+	//}
+	form_value_range* value_range = dynamic_cast<form_value_range*>(control);
+
+	if (value_range)
+	{
+		if (value_range->min_value_)
+		{
+			Context.get_slide_context().set_property(_property(L"min_value", value_range->min_value_.get()));
+		}
+		if (value_range->max_value_)
+		{
+			Context.get_slide_context().set_property(_property(L"max_value", value_range->max_value_.get()));
+		}
+		if (value_range->step_size_)
+		{
+			Context.get_slide_context().set_property(_property(L"step", value_range->step_size_.get()));
+		}
+		if (value_range->page_step_size_)
+		{
+			Context.get_slide_context().set_property(_property(L"page_step", value_range->page_step_size_.get()));
+		}
+		if (value_range->orientation_)
+		{
+			Context.get_slide_context().set_property(_property(L"orientation", value_range->orientation_.get()));
+		}
+	}
+	form_combobox* combobox = dynamic_cast<form_combobox*>(control);
+
+	if (combobox)
+	{
+		//items_;
+		if (combobox->source_cell_range_)
+		{
+			Context.get_slide_context().set_property(_property(L"cell_range", combobox->source_cell_range_.get()));
+		}
+		if (combobox->list_source_)
+		{
+			Context.get_slide_context().set_property(_property(L"list_source", combobox->list_source_.get()));
+		}
+	}
+	form_listbox* listbox = dynamic_cast<form_listbox*>(control);
+	if (listbox)
+	{
+		if (listbox->source_cell_range_)
+		{
+			Context.get_slide_context().set_property(_property(L"cell_range", listbox->source_cell_range_.get()));
+		}
+		if (listbox->list_source_)
+		{
+			Context.get_slide_context().set_property(_property(L"list_source", listbox->list_source_.get()));
+		}
+	}
+	form_checkbox* checkbox = dynamic_cast<form_checkbox*>(control);
+	if (checkbox)
+	{
+		Context.get_slide_context().set_property(_property(L"checkbox_state", checkbox->current_state_));
+	}
+
+	//_CP_OPT(std::wstring)		label_;
+	//_CP_OPT(std::wstring)		title_;
+	//_CP_OPT(odf_types::Bool)	dropdown_;
+
+	Context.get_slide_context().end_control();
+}
+
 }
 }

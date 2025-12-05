@@ -78,7 +78,6 @@ namespace ComplexTypes
 		}
 		void CColumn::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, (L"w:space"), m_oSpace )
 				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:w"),     m_oW )
@@ -245,7 +244,6 @@ namespace ComplexTypes
 		}
 		void CLineNumber::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, (L"w:countBy"),  m_oCountBy )
 				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:distance"), m_oDistance )
@@ -298,7 +296,6 @@ namespace ComplexTypes
 		}
 		void CPaperSource::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, (L"w:first"), m_oFirst )
 				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:other"), m_oOther )
@@ -851,7 +848,6 @@ namespace ComplexTypes
 		}
 		void CPageNumber::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, (L"w:chapSep"),   m_oChapSep )
 				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:chapStyle"), m_oChapStyle )
@@ -918,7 +914,6 @@ namespace ComplexTypes
 		}
 		void CPageSz::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, (L"w:code"),   m_oCode )
 				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:h"),      m_oH )
@@ -963,7 +958,6 @@ namespace ComplexTypes
 		}
 		void CSectType::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, (L"w:val"), m_oVal )
 				WritingElement_ReadAttributes_End( oReader )
@@ -986,12 +980,6 @@ namespace OOX
 		}
 		CColumns::~CColumns()
 		{
-			for ( unsigned int nIndex = 0; nIndex < m_arrColumns.size(); nIndex++ )
-			{
-				if ( m_arrColumns[nIndex] )	delete m_arrColumns[nIndex];
-				m_arrColumns[nIndex] = NULL;
-			}
-			m_arrColumns.clear();
 		}
 		void CColumns::fromXML(XmlUtils::CXmlNode& oNode)
 		{
@@ -1006,13 +994,13 @@ namespace OOX
 			{
 				for ( size_t nIndex = 0; nIndex < oCols.size(); nIndex++ )
 				{
-					XmlUtils::CXmlNode& oCol = oCols[nIndex];
-					if ( oCol.IsValid() )
+					XmlUtils::CXmlNode& oColNode = oCols[nIndex];
+					if (oColNode.IsValid() )
 					{
-						ComplexTypes::Word::CColumn *oColumn = new ComplexTypes::Word::CColumn();
-						*oColumn = oCol;
+						nullable<ComplexTypes::Word::CColumn> oColumn; oColumn.Init();
+						oColumn->FromXML(oColNode);
 
-						if (oColumn) m_arrColumns.push_back( oColumn );
+						m_arrColumns.push_back( oColumn );
 					}
 				}
 			}
@@ -1030,10 +1018,10 @@ namespace OOX
 				std::wstring sName = oReader.GetName();
 				if ( L"w:col" == sName )
 				{
-					ComplexTypes::Word::CColumn *oColumn = new ComplexTypes::Word::CColumn();
-					*oColumn = oReader;
+					nullable<ComplexTypes::Word::CColumn> oColumn; oColumn.Init();
+					oColumn->FromXML(oReader);
 
-					if (oColumn) m_arrColumns.push_back( oColumn );
+					m_arrColumns.push_back( oColumn );
 				}
 			}
 		}
@@ -1072,7 +1060,7 @@ namespace OOX
 			for ( unsigned int nIndex = 0; nIndex < m_arrColumns.size(); nIndex++ )
 			{
 				sResult += L"<w:col ";
-				if (m_arrColumns[nIndex])
+				if (m_arrColumns[nIndex].IsInit())
 					sResult += m_arrColumns[nIndex]->ToString();
 				sResult += L"/>";
 			}
@@ -1087,7 +1075,6 @@ namespace OOX
 		}
 		void CColumns::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, (L"w:equalWidth"), m_oEqualWidth )
 				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:num"),        m_oNum )
@@ -1384,11 +1371,10 @@ namespace OOX
 		}
 		void CPageBorders::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, (L"w:display"),    m_oDisplay )
-				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:offsetFrom"), m_oOffsetFrom )
-				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:zOrder"),     m_oZOrder )
+				WritingElement_ReadAttributes_Read_if     ( oReader, L"w:display",    m_oDisplay )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:offsetFrom", m_oOffsetFrom )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:zOrder",     m_oZOrder )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
@@ -1406,14 +1392,14 @@ namespace OOX
 		}
 		void CSectPrChange::fromXML(XmlUtils::CXmlNode& oNode)
 		{
-            XmlMacroReadAttributeBase( oNode, _T("w:author"), m_sAuthor );
-            XmlMacroReadAttributeBase( oNode, _T("w:date"),   m_oDate );
-            XmlMacroReadAttributeBase( oNode, _T("w:id"),     m_oId );
-            XmlMacroReadAttributeBase( oNode, _T("oouserid"), m_sUserId );
+            XmlMacroReadAttributeBase( oNode, L"w:author", m_sAuthor );
+            XmlMacroReadAttributeBase( oNode, L"w:date",   m_oDate );
+            XmlMacroReadAttributeBase( oNode, L"w:id",     m_oId );
+            XmlMacroReadAttributeBase( oNode, L"oouserid", m_sUserId );
 
 			XmlUtils::CXmlNode oNode_sectPr;
 
-			if ( m_pSecPr.IsInit() && oNode.GetNode( _T("w:sectPr"), oNode_sectPr ) )
+			if ( m_pSecPr.IsInit() && oNode.GetNode( L"w:sectPr", oNode_sectPr ) )
 				m_pSecPr->fromXML( oNode_sectPr );
 
 		}
@@ -1428,13 +1414,13 @@ namespace OOX
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
 				std::wstring sName = oReader.GetName();
-				if ( _T("w:sectPr") == sName )
+				if ( L"w:sectPr" == sName )
 					m_pSecPr->fromXML( oReader );
 			}
 		}
 		std::wstring CSectPrChange::toXML() const
 		{			
-			std::wstring sResult = _T("<w:sectPrChange ");
+			std::wstring sResult = L"<w:sectPrChange ";
 
 			if ( m_sAuthor.IsInit() )
 			{
@@ -1445,31 +1431,31 @@ namespace OOX
 
 			if ( m_oDate.IsInit() )
 			{
-				sResult += _T("w:date=\"");
+				sResult += L"w:date=\"";
 				sResult += m_oDate->ToString();
-				sResult += _T("\" ");
+				sResult += L"\" ";
 			}
 
 			if ( m_oId.IsInit() )
 			{
-				sResult += _T("w:id=\"");
+				sResult += L"w:id=\"";
 				sResult += m_oId->ToString();
-				sResult += _T("\" ");
+				sResult += L"\" ";
 			}
 
 			if ( m_sUserId.IsInit() )
 			{
-				sResult += _T("oouserid=\"");
+				sResult += L"oouserid=\"";
                 sResult += m_sUserId.get2();
-				sResult += _T("\" ");
+				sResult += L"\" ";
 			}
 
-			sResult += _T(">");
+			sResult += L">";
 
 			if ( m_pSecPr.IsInit() )
 				sResult += m_pSecPr->toXML();
 
-			sResult += _T("</w:sectPrChange>");
+			sResult += L"</w:sectPrChange>";
 
 			return sResult;
 		}
@@ -1479,12 +1465,11 @@ namespace OOX
 		}
 		void CSectPrChange::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
-			// Читаем атрибуты
 			WritingElement_ReadAttributes_Start( oReader )
-			WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:author"), m_sAuthor )
-			WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:date"),   m_oDate )
-			WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:id"),     m_oId )
-			WritingElement_ReadAttributes_Read_else_if( oReader, _T("oouserid"), m_sUserId )
+			WritingElement_ReadAttributes_Read_if     ( oReader, L"w:author", m_sAuthor )
+			WritingElement_ReadAttributes_Read_else_if( oReader, L"w:date",   m_oDate )
+			WritingElement_ReadAttributes_Read_else_if( oReader, L"w:id",     m_oId )
+			WritingElement_ReadAttributes_Read_else_if( oReader, L"oouserid", m_sUserId )
 			WritingElement_ReadAttributes_End( oReader )
 		}
 
@@ -1502,19 +1487,6 @@ namespace OOX
 		}
 		void CSectionProperty::ClearItems()
 		{
-			for ( unsigned int nIndex = 0; nIndex < m_arrFooterReference.size(); nIndex++ )
-			{
-				if ( m_arrFooterReference[nIndex] ) delete m_arrFooterReference[nIndex];
-				m_arrFooterReference[nIndex] = NULL;
-			}
-			m_arrFooterReference.clear();
-
-			for ( unsigned int nIndex = 0; nIndex < m_arrHeaderReference.size(); nIndex++ )
-			{
-				if ( m_arrHeaderReference[nIndex] ) delete m_arrHeaderReference[nIndex];
-				m_arrHeaderReference[nIndex] = NULL;
-			}
-			m_arrHeaderReference.clear();
 		}
 		CSectionProperty& CSectionProperty::operator =(const XmlUtils::CXmlNode& oNode)
 		{
@@ -1530,116 +1502,70 @@ namespace OOX
 		}
 		void CSectionProperty::fromXML(XmlUtils::CXmlNode &oNode)
 		{
-			if ( (L"w:sectPr") != oNode.GetName() )
-				return;
+			std::vector<XmlUtils::CXmlNode> oChilds;
+			oNode.GetNodes(L"*", oChilds);
 
+			if (oChilds.empty() && oNode.GetAttributesCount() < 1)
+			{
+				m_bEmpty = true;
+				return;
+			}
 			XmlMacroReadAttributeBase( oNode, (L"w:rsidDel"),  m_oRsidDel );
 			XmlMacroReadAttributeBase( oNode, (L"w:rsidR"),    m_oRsidR );
 			XmlMacroReadAttributeBase( oNode, (L"w:rsidRPr"),  m_oRsidRPr );
 			XmlMacroReadAttributeBase( oNode, (L"w:rsidSect"), m_oRsidSect );
 
-			XmlUtils::CXmlNode oChild;
-
-			if ( oNode.GetNode( (L"w:bidi"), oChild ) )
-				m_oBidi = oChild;
-
-			if ( oNode.GetNode( (L"w:cols"), oChild ) )
-				m_oCols = oChild;
-
-			if ( oNode.GetNode( (L"w:docGrid"), oChild ) )
-				m_oDocGrid = oChild;
-
-			if ( oNode.GetNode( (L"w:endnotePr"), oChild ) )
-				m_oEndnotePr = oChild;
-
-			if ( !m_bSectPrChange )
+			for (size_t nIndex = 0; nIndex < oChilds.size(); nIndex++)
 			{
-				std::vector<XmlUtils::CXmlNode> oNodes;
-				if ( oNode.GetNodes( (L"w:footerReference"), oNodes ) )
+				XmlUtils::CXmlNode& oChild = oChilds[nIndex];
+				if (oChild.IsValid())
 				{
-					for ( int nIndex = 0; nIndex < oNodes.size(); nIndex++ )
-					{
-						XmlUtils::CXmlNode& oNode = oNodes[nIndex];
-						if ( oNode.IsValid() )
-						{
-							ComplexTypes::Word::CHdrFtrRef *oFooter = new ComplexTypes::Word::CHdrFtrRef();
-							oFooter->FromXML(oNode);
+					std::wstring sName = oChild.GetName();
 
-							if (oFooter) m_arrFooterReference.push_back( oFooter );
-						}
+					if (L"w:bidi" == sName) m_oBidi = oChild;
+					else if (L"w:cols" == sName) m_oCols = oChild;
+					else if (L"w:docGrid" == sName) m_oDocGrid = oChild;
+					else if (L"w:endnotePr" == sName) m_oEndnotePr = oChild;
+					else if (L"w:footnotePr" == sName) m_oFootnotePr = oChild;
+					else if (L"w:formProt" == sName) m_oFormProt = oChild;
+					else if (!m_bSectPrChange && L"w:footerReference" == sName)
+					{
+						nullable<ComplexTypes::Word::CHdrFtrRef> oFooter; oFooter.Init();
+						oFooter->FromXML(oChild);
+
+						m_arrFooterReference.push_back(oFooter);
 					}
+					else if (!m_bSectPrChange && L"w:headerReference" == sName)
+					{
+						nullable < ComplexTypes::Word::CHdrFtrRef> oHeader; oHeader.Init();
+						oHeader->FromXML(oChild);
+
+						m_arrHeaderReference.push_back(oHeader);
+					}
+					else if (L"w:lnNumType" == sName) m_oLnNumType = oChild;
+					else if (L"w:noEndnote" == sName) m_oNoEndnote = oChild;
+					else if (L"w:paperSrc" == sName) m_oPaperSrc = oChild;
+					else if (L"w:pgBorders" == sName) m_oPgBorders = oChild;
+					else if (L"w:pgMar" == sName) m_oPgMar = oChild;
+					else if (L"w:pgNumType" == sName) m_oPgNumType = oChild;
+					else if (L"w:pgSz" == sName) m_oPgSz = oChild;
+					else if (L"w:printerSettings" == sName) m_oPrinterSettings = oChild;
+					else if (L"w:rtlGutter" == sName) m_oRtlGutter = oChild;
+					else if (!m_bSectPrChange && L"w:sectPrChange" == sName) m_oSectPrChange = oChild;
+					else if (L"w:textDirection" == sName) m_oTextDirection = oChild;
+					else if (L"w:titlePg" == sName) m_oTitlePg = oChild;
+					else if (L"w:type" == sName) m_oType = oChild;
+					else if (L"w:vAlign" == sName) m_oVAlign = oChild;
 				}
 			}
-
-			if ( oNode.GetNode( (L"w:footnotePr"), oChild ) )
-				m_oFootnotePr = oChild;
-
-			if ( oNode.GetNode( (L"w:formProt"), oChild ) )
-				m_oFormProt = oChild;
-
-			if ( !m_bSectPrChange )
-			{
-				std::vector<XmlUtils::CXmlNode> oNodes;
-				if ( oNode.GetNodes( L"w:headerReference", oNodes ) )
-				{
-					for ( size_t nIndex = 0; nIndex < oNodes.size(); nIndex++ )
-					{
-						XmlUtils::CXmlNode& oNode = oNodes[nIndex];
-						if ( oNode.IsValid())
-						{
-							ComplexTypes::Word::CHdrFtrRef *oHeader = new ComplexTypes::Word::CHdrFtrRef();
-							oHeader->FromXML(oNode);
-
-							if (oHeader) m_arrHeaderReference.push_back( oHeader );
-						}
-					}
-				}
-			}
-
-			if ( oNode.GetNode( (L"w:lnNumType"), oChild ) )
-				m_oLnNumType = oChild;
-
-			if ( oNode.GetNode( (L"w:noEndnote"), oChild ) )
-				m_oNoEndnote = oChild;
-
-			if ( oNode.GetNode( (L"w:paperSrc"), oChild ) )
-				m_oPaperSrc = oChild;
-
-			if ( oNode.GetNode( (L"w:pgBorders"), oChild ) )
-				m_oPgBorders = oChild;
-
-			if ( oNode.GetNode( (L"w:pgMar"), oChild ) )
-				m_oPgMar = oChild;
-
-			if ( oNode.GetNode( (L"w:pgNumType"), oChild ) )
-				m_oPgNumType = oChild;
-
-			if ( oNode.GetNode( (L"w:pgSz"), oChild ) )
-				m_oPgSz = oChild;
-
-			if ( oNode.GetNode( (L"w:printerSettings"), oChild ) )
-				m_oPrinterSettings = oChild;
-
-			if ( oNode.GetNode( (L"w:rtlGutter"), oChild ) )
-				m_oRtlGutter = oChild;
-
-			if ( !m_bSectPrChange && oNode.GetNode( (L"w:sectPrChange"), oChild ) )
-				m_oSectPrChange = oChild;
-
-			if ( oNode.GetNode( (L"w:textDirection"), oChild ) )
-				m_oTextDirection = oChild;
-
-			if ( oNode.GetNode( (L"w:titlePg"), oChild ) )
-				m_oTitlePg = oChild;
-
-			if ( oNode.GetNode( (L"w:type"), oChild ) )
-				m_oType = oChild;
-
-			if ( oNode.GetNode( (L"w:vAlign"), oChild ) )
-				m_oVAlign = oChild;
 		}
 		void CSectionProperty::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
+			if (oReader.IsEmptyNode() && oReader.GetAttributesCount() < 1)
+			{
+				m_bEmpty = true;
+				return;
+			}
 			ReadAttributes( oReader );
 
 			if ( oReader.IsEmptyNode() )
@@ -1661,10 +1587,10 @@ namespace OOX
 					m_oEndnotePr = oReader;
 				else if ( !m_bSectPrChange && L"w:footerReference" == sName )
 				{
-					ComplexTypes::Word::CHdrFtrRef *oFooter = new ComplexTypes::Word::CHdrFtrRef();
-					*oFooter = oReader;
+					nullable<ComplexTypes::Word::CHdrFtrRef> oFooter; oFooter.Init();
+					oFooter->FromXML(oReader);
 
-					if (oFooter) m_arrFooterReference.push_back( oFooter );
+					m_arrFooterReference.push_back( oFooter );
 				}
 				else if ( L"w:footnotePr" == sName )
 					m_oFootnotePr = oReader;
@@ -1672,10 +1598,10 @@ namespace OOX
 					m_oFormProt = oReader;
 				else if ( !m_bSectPrChange && L"w:headerReference" == sName )
 				{
-					ComplexTypes::Word::CHdrFtrRef *oHeader = new ComplexTypes::Word::CHdrFtrRef();
-					*oHeader = oReader;
+					nullable < ComplexTypes::Word::CHdrFtrRef> oHeader; oHeader.Init();
+					oHeader->FromXML(oReader);
 
-					if (oHeader) m_arrHeaderReference.push_back( oHeader );
+					m_arrHeaderReference.push_back( oHeader );
 				}
 				else if ( L"w:lnNumType" == sName )
 					m_oLnNumType = oReader;
@@ -1710,10 +1636,10 @@ namespace OOX
 					CDocxFlat* docx_flat = dynamic_cast<CDocxFlat*>(document);
 					if (docx_flat)
 					{
-						ComplexTypes::Word::CHdrFtrRef *pHeaderRef = new ComplexTypes::Word::CHdrFtrRef();
+						nullable<ComplexTypes::Word::CHdrFtrRef> pHeaderRef; pHeaderRef.Init();
 						NSCommon::smart_ptr<OOX::CHdrFtr> pHeader = new OOX::CHdrFtr(document);
 
-						if (pHeaderRef && pHeader.IsInit())
+						if (pHeaderRef.IsInit() && pHeader.IsInit())
 						{
 							OOX::IFileContainer* oldContainer = docx_flat->m_currentContainer;
 							docx_flat->m_currentContainer = dynamic_cast<OOX::IFileContainer*>(pHeader.GetPointer());
@@ -1735,10 +1661,10 @@ namespace OOX
 					CDocxFlat* docx_flat = dynamic_cast<CDocxFlat*>(document);
 					if (docx_flat)
 					{
-						ComplexTypes::Word::CHdrFtrRef *pFooterRef = new ComplexTypes::Word::CHdrFtrRef();
+						nullable<ComplexTypes::Word::CHdrFtrRef> pFooterRef; pFooterRef.Init();
 						NSCommon::smart_ptr<OOX::CHdrFtr> pFooter = new OOX::CHdrFtr(document);
 
-						if (pFooter.IsInit() && pFooterRef)
+						if (pFooter.IsInit() && pFooterRef.IsInit())
 						{
 							OOX::IFileContainer* oldContainer = docx_flat->m_currentContainer;
 							docx_flat->m_currentContainer = dynamic_cast<OOX::IFileContainer*>(pFooter.GetPointer());
@@ -1783,14 +1709,14 @@ namespace OOX
 				for (size_t nIndex = 0; nIndex < m_arrHeaderReference.size(); nIndex++)
 				{
 					sResult += (L"<w:headerReference");
-					if (m_arrHeaderReference[nIndex])
+					if (m_arrHeaderReference[nIndex].IsInit())
 						sResult += m_arrHeaderReference[nIndex]->ToString();
 					sResult += (L"/>");
 				}
 				for (size_t nIndex = 0; nIndex < m_arrFooterReference.size(); nIndex++)
 				{
 					sResult += (L"<w:footerReference");
-					if (m_arrFooterReference[nIndex])
+					if (m_arrFooterReference[nIndex].IsInit())
 						sResult += m_arrFooterReference[nIndex]->ToString();
 					sResult += (L"/>");
 				}
@@ -1890,6 +1816,11 @@ namespace OOX
 			WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:rsidRPr"),  m_oRsidRPr )
 			WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:rsidSect"), m_oRsidSect )
 			WritingElement_ReadAttributes_End( oReader )
+		}
+		const CSectionProperty CSectionProperty::Merge(const CSectionProperty& oPrev, const CSectionProperty& oCurrent)
+		{
+			// ??? ну не хорошо это			
+			return oPrev;
 		}
 
 	} // Logic

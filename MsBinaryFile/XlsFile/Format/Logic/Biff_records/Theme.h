@@ -48,15 +48,16 @@ public:
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
+	void writeFields(CFRecord& record);
 
 	static const ElementType	type = typeTheme;
 
 //-----------------------------
-	_UINT32		dwThemeVersion;
+	_UINT32		dwThemeVersion = 0;
 	FrtHeader	frtHeader;
 
-	_UINT32		nThemeDataSize;
-	boost::shared_array<char> pThemeData;
+	_UINT32		nThemeDataSize = 0;
+	boost::shared_array<BYTE> pThemeData;
 };
 
 } // namespace XLS

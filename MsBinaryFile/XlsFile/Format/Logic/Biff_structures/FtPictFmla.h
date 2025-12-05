@@ -55,6 +55,7 @@ public:
 	virtual void load(CFRecord& record, int linkSize);
 //biff8
 	virtual void load(CFRecord& record, FtPioGrbit& pictFlags);
+	virtual void save(CFRecord& record, FtPioGrbit& pictFlags);
 
 	static const ElementType	type = typeFtPictFmla;
 

@@ -47,11 +47,11 @@ public:
 	static const ElementType	type = typePhRuns;
 	
 	virtual void load(CFRecord& record);
+    virtual void save(CFRecord& record);
 
-
-	short ichFirst;
-	short ichMom;
-	short cchMom;
+    short ichFirst = 0;
+    short ichMom = 0;
+    short cchMom = 0;
 };
 
 } // namespace XLS

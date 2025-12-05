@@ -29,8 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef XLSX_BIN_READER_WRITER_DEFINES
-#define XLSX_BIN_READER_WRITER_DEFINES
+#pragma once
 
 namespace BinXlsxRW
 {
@@ -239,7 +238,10 @@ namespace BinXlsxRW
 		TimelineCaches = 27,
 		TimelineCache = 28,
 		Metadata = 29,
-		PivotCachesTmp = 107
+		XmlMap = 30,
+		RdRichValue = 31,
+		RdRichValueStructure = 32,
+		RdRichValueTypes = 33
 	};}
 	namespace c_oSerWorkbookProtection {enum c_oSerWorkbookProtection{
 		AlgorithmName = 0,
@@ -362,7 +364,8 @@ namespace BinXlsxRW
 		DateCompatibility = 1,
 		HidePivotFieldList = 2,
 		ShowPivotChartFilter = 3,
-		UpdateLinks = 4
+		UpdateLinks = 4,
+		CodeName = 5
 	};}
 	namespace c_oSerWorkbookViewTypes{enum c_oSerWorkbookViewTypes
 	{
@@ -457,9 +460,7 @@ namespace BinXlsxRW
 		TimelinesList = 48,
 		Timelines = 49,
 		Timeline = 50,
-		PivotTableTmp = 126,
-
-
+		TableSingleCells = 51
 	};}
 	namespace c_oSerWorksheetProtection {enum c_oSerWorksheetPropTypes
 	{
@@ -591,7 +592,8 @@ namespace BinXlsxRW
 		Text = 53,
 		Print = 54,
 		ItemLst = 55,
-		Item = 56
+		Item = 56,
+		Shape = 57
 	};}
 	namespace c_oSerCellTypes{enum c_oSerCellTypes
 	{
@@ -1116,7 +1118,12 @@ namespace BinXlsxRW
 		QueryTableFieldId = 11,
 		TotalsRowCellStyle = 12,
 		TotalsRowDxfId = 13,
-		UniqueName = 14
+		UniqueName = 14,
+		XmlColumnPr = 15,
+		MapId = 16,
+		Xpath = 17,
+		Denormalized = 18,
+		XmlDataType = 19
 	};}
 	namespace c_oSer_SortState{enum c_oSer_SortState
 	{
@@ -1625,5 +1632,3 @@ namespace BinXlsxRW
 		Rho = 21
 	};}
 }
-
-#endif //

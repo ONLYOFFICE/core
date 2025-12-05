@@ -34,6 +34,7 @@
 #include "Worksheet.h"
 
 #include "../Comments/Comments.h"
+#include "../Pivot/PivotTable.h"
 #include "../Comments/ThreadedComments.h"
 
 #include "../../DocxFormat/External/HyperLink.h"
@@ -51,6 +52,16 @@
 
 #include "../../Binary/XlsbFormat/FileTypes_SpreadsheetBin.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Binary/CFStreamCacheWriter.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/WorksheetSubstream.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/PAGESETUP.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/SORTANDFILTER.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/CONDFMTS.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/CONDFMT12.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/OBJECTS.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/FEAT11.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/CondFmt12.h"
+
+#include "../../../OdfFile/Common/logging.h"
 
 namespace OOX
 {
@@ -359,6 +370,102 @@ namespace OOX
 			}
 
 		}
+		XLS::BaseObjectPtr CWorksheet::toXLS()
+		{
+			auto worksheetPtr = new XLS::WorksheetSubstream(0);
+			auto sheetPtr = XLS::BaseObjectPtr(worksheetPtr);
+			if(m_oSortState.IsInit() || m_oAutofilter.IsInit())
+			{
+				auto sortData = new XLS::SORTANDFILTER;
+				worksheetPtr->m_SORTANDFILTER = XLS::BaseObjectPtr(sortData);
+				if(m_oSortState.IsInit())
+					m_oSortState->toXLS(worksheetPtr->m_SORTANDFILTER);
+				if(m_oAutofilter.IsInit())
+					m_oAutofilter->toXLS(worksheetPtr->m_SORTANDFILTER);
+			}
+			if(m_oDimension.IsInit())
+				worksheetPtr->m_Dimensions = m_oDimension->toXLS();
+			if(m_oCols.IsInit())
+				worksheetPtr->m_COLUMNS = m_oCols->toXLS();
+			if (m_oMergeCells.IsInit())
+				worksheetPtr->m_arMergeCells = m_oMergeCells->toXLS();
+			if(m_oSheetViews.IsInit())
+				worksheetPtr->m_arWINDOW = m_oSheetViews->toXLS();
+			if(m_oPageSetup.IsInit())
+				worksheetPtr->m_PAGESETUP = m_oPageSetup->toXLS();
+			else
+				{
+					auto pageSetup = new XLS::PAGESETUP;
+					worksheetPtr->m_PAGESETUP = XLS::BaseObjectPtr(pageSetup);
+				}
+			if(m_oPageMargins.IsInit())
+				m_oPageMargins->toXLS(worksheetPtr->m_PAGESETUP);
+			if(m_oPrintOptions.IsInit())
+				m_oPrintOptions->toXLS(worksheetPtr->m_PAGESETUP);
+			if(m_oHeaderFooter.IsInit())
+				m_oHeaderFooter->toXLS(worksheetPtr->m_PAGESETUP);
+			if(m_oSheetProtection.IsInit())
+				worksheetPtr->m_PROTECTION = m_oSheetProtection->toXLS();
+			if(!m_arrConditionalFormatting.empty())
+			{
+				auto condFmts = new XLS::CONDFMTS;
+				worksheetPtr->m_CONDFMTS = XLS::BaseObjectPtr(condFmts);
+				auto condFmtId = 0;
+				for(auto i : m_arrConditionalFormatting)
+					{
+						i->toXLS(worksheetPtr->m_CONDFMTS);
+						auto lastCondFmt = static_cast<XLS::CONDFMT12*>(condFmts->m_arCONDFMT.back().get());
+						auto fmtRecord = static_cast<XLS::CondFmt12*>(lastCondFmt->m_CondFmt12.get());
+						fmtRecord->mainCF.nID = condFmtId;
+						condFmtId++;
+					}
+			}
+			if(m_oHyperlinks.IsInit())
+				worksheetPtr->m_arHLINK = m_oHyperlinks->toXLS();
+			if(m_oDataValidations.IsInit())
+				worksheetPtr->m_DVAL = m_oDataValidations->toXLS();
+			if(m_oSheetData.IsInit())
+				worksheetPtr->m_CELLTABLE = m_oSheetData->toXLS();
+			if(m_oDataConsolidate.IsInit())
+				worksheetPtr->m_DCON = m_oDataConsolidate->toXLS();
+			/*if(m_pComments != nullptr)
+			{
+				if(worksheetPtr->m_OBJECTS == nullptr)
+					worksheetPtr->m_OBJECTS = XLS::BaseObjectPtr(new XLS::OBJECTS(false));
+				worksheetPtr->m_arNote = m_pComments->toXLS(worksheetPtr->m_OBJECTS);
+			}*///will be later
+			if(m_oTableParts.IsInit())
+			{
+				auto feat11 = new XLS::FEAT11;
+				worksheetPtr->m_arFEAT11.push_back(XLS::BaseObjectPtr(feat11));
+			}
+			auto container = GetContainer();
+			for(auto file : container)
+			{
+				if((file->type() == OOX::SpreadsheetBin::FileTypes::TableBin || file->type() == OOX::Spreadsheet::FileTypes::Table) && !worksheetPtr->m_arFEAT11.empty())
+				{
+					auto feat11 = static_cast< XLS::FEAT11*>(worksheetPtr->m_arFEAT11.back().get());
+					XLS::FEAT11::_data featData;
+					auto tempTable = static_cast<CTableFile*>(file.GetPointer());
+					featData.m_Feature = tempTable->m_oTable->toXLS();
+					if(tempTable->m_oTable->m_oTableStyleInfo.IsInit())
+					{
+						featData.m_arList12.push_back(tempTable->m_oTable->m_oTableStyleInfo->toXLS());
+					}
+
+					feat11->m_arFEAT.push_back(featData);
+				}
+				else if(file->type() == OOX::SpreadsheetBin::FileTypes::PivotTableBin)
+				{
+					auto tempPivot = static_cast<CPivotTableFile*>(file.GetPointer());
+					if(tempPivot->m_oPivotTableDefinition.IsInit())
+						worksheetPtr->m_arPIVOTVIEW.push_back(tempPivot->m_oPivotTableDefinition->toXLS());
+				}
+			}
+
+
+			return sheetPtr;
+		}
         void CWorksheet::WriteBin(XLS::StreamCacheWriterPtr& writer) const
         {
             {
@@ -487,17 +594,21 @@ namespace OOX
 			}
 			else
 			{
+				_CP_LOG << L"\tstart read xml sheet: " << oPath.GetFilename() << std::endl;
 				XmlUtils::CXmlLiteReader oReader;
 				if (!oReader.FromFile(oPath.GetPath()))
 					return;
 				if (!oReader.ReadNextNode())
 					return;
 
+				_CP_LOG << L"\tend read xml, start parsing: " << oPath.GetFilename() << std::endl;
+
 				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if (L"worksheet" == sName || L"chartsheet" == sName)
 				{
 					fromXML(oReader);
 				}
+				_CP_LOG << L"\tend parsing sheet: " << oPath.GetFilename() << std::endl;
 			}
 		}
 		void CWorksheet::PrepareAfterRead()
@@ -808,7 +919,10 @@ namespace OOX
 			if(m_oRowBreaks.IsInit())
 				m_oRowBreaks->toXML(writer);
 			if(m_oColBreaks.IsInit())
+			{
+				m_oColBreaks->m_fRowBreak = false;
 				m_oColBreaks->toXML(writer);
+			}
 			if (m_oCellWatches.IsInit())
 				m_oCellWatches->toXML(writer);
 			if(m_oDrawing.IsInit())

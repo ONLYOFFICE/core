@@ -38,6 +38,7 @@
 #include <sstream>
 
 const std::wstring DefaultPercentFormat = L"0.0%";
+const auto NonDigitcellLimit = 1000;
 
 bool DigitReader::ReadDigit(const std::wstring &value, std::wstring &digit, std::wstring &format)
 {
@@ -51,7 +52,7 @@ bool DigitReader::ReadDigit(const std::wstring &value, std::wstring &digit, std:
 		return false;
     }
 
-    if ((0 == *pEndPtr) || (pEndPtr != value.c_str() && (value.c_str() + length  - pEndPtr) <= 4))
+	if ((0 == *pEndPtr) || (pEndPtr != value.c_str() && (value.c_str() + length  - pEndPtr) <= 1))
 	{
 	std::wstring postfix;
 	auto length = value.length();
@@ -87,6 +88,9 @@ bool DigitReader::ReadDigit(const std::wstring &value, std::wstring &digit, std:
 					format = DefaultPercentFormat;
                     return true;
 				}
+				else
+					return false;
+				/*
 				else if(currency.CheckPostfix(postfix))
 				{
 					digit = std::to_wstring(dValue);
@@ -115,6 +119,7 @@ bool DigitReader::ReadDigit(const std::wstring &value, std::wstring &digit, std:
 					}
 					format = data_format;
 				}
+				*/
 			}
 			else
 			{
@@ -174,34 +179,41 @@ bool DigitReader::checkCommonFractionFormat(const double &numerator, const std::
 
 bool DigitReader::ReadScientific(const std::wstring &value, std::wstring &digit, std::wstring &format)
 {
-	std::wregex scientificRegex(L"(^[+-]?(\\d+\\.?\\d*)([eE][+-]?\\d+))$");
-	if(std::regex_search(value, scientificRegex))
-	{
-        try
+    if(nonscientificCellsCounter_ > NonDigitcellLimit && !scientificFound_)
+        return false;
+    {
+        std::wregex scientificRegex(L"(^[+-]?(\\d+\\.?\\d*)([eE][+-]?\\d+))$");
+        if(std::regex_search(value, scientificRegex))
         {
-            auto doubleVal = std::stod(value);
+            try
+            {
+                auto doubleVal = std::stod(value);
 
-            std::wstringstream ss;
-            _INT32 MainPartSize = value.find(L"E");
-            if(MainPartSize < 1)
-                MainPartSize = value.find(L"e");
-            ss.precision(MainPartSize); // Установить точность
-            ss.setf(std::ios::scientific);
-            ss << doubleVal;
-            digit = ss.str();
+                std::wstringstream ss;
+                _INT32 MainPartSize = value.find(L"E");
+                if(MainPartSize < 1)
+                    MainPartSize = value.find(L"e");
+                ss.precision(MainPartSize); // Установить точность
+                ss.setf(std::ios::scientific);
+                ss << doubleVal;
+                digit = ss.str();
 
-            format = L"0.0";
-            if(MainPartSize > 3)
-            format += std::wstring(MainPartSize - 3, L'0');
-            format +=L"E+00";
-            return true;
+                format = L"0.0";
+                if(MainPartSize > 3)
+                format += std::wstring(MainPartSize - 3, L'0');
+                format +=L"E+00";
+                scientificFound_ = true;
+                return true;
+
+            }
+            catch (std::exception)
+            {
+                nonscientificCellsCounter_++;
+                return false;
+            }
 
         }
-        catch (std::exception)
-        {
-            return false;
-        }
-
-	}
+    }
+    nonscientificCellsCounter_++;
 	return false;
 }

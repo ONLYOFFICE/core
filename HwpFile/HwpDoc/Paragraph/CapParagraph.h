@@ -9,7 +9,7 @@ class CCapParagraph : public CHWPPargraph
 {
 public:
 	CCapParagraph();
-	CCapParagraph(CXMLNode& oNode, int nVersion);
+	CCapParagraph(CXMLReader& oReader, EHanType eType);
 
 	EParagraphType GetType() const override;
 };

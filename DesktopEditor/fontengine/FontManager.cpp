@@ -851,6 +851,14 @@ unsigned int CFontManager::GetGIDByUnicode(const unsigned int& unCode)
 
 	return m_pFont->GetGIDByUnicode(unCode);
 }
+int CFontManager::GetUnicodeByGID(const int& gid)
+{
+	if (!m_pFont)
+		return 0;
+
+	return m_pFont->GetUnicodeByGID(gid);
+}
+
 void CFontManager::SetSubpixelRendering(const bool& hmul, const bool& vmul)
 {
 	if (hmul)

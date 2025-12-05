@@ -346,7 +346,7 @@ namespace MetaFile
 		if (NULL != oTEmfExtTextoutA.oEmrText.pOutputDx)
 			arDx = std::vector<double>(oTEmfExtTextoutA.oEmrText.pOutputDx, oTEmfExtTextoutA.oEmrText.pOutputDx + oTEmfExtTextoutA.oEmrText.unChars);
 
-		WriteText(wsText, TPointD(oTEmfExtTextoutA.oEmrText.oReference.X, oTEmfExtTextoutA.oEmrText.oReference.Y), oTEmfExtTextoutA.oBounds, TPointD(oTEmfExtTextoutA.dExScale, oTEmfExtTextoutA.dEyScale), arDx);
+		WriteText(wsText, TPointD(oTEmfExtTextoutA.oEmrText.oReference.X, oTEmfExtTextoutA.oEmrText.oReference.Y), oTEmfExtTextoutA.oBounds, TPointD(oTEmfExtTextoutA.dExScale, oTEmfExtTextoutA.dEyScale), arDx, oTEmfExtTextoutA.oEmrText.unOptions & 0x00000010);
 	}
 
 	void CEmfInterpretatorSvg::HANDLE_EMR_EXTTEXTOUTW(const TEmfExtTextoutW &oTEmfExtTextoutW)
@@ -358,7 +358,7 @@ namespace MetaFile
 		if (NULL != oTEmfExtTextoutW.oEmrText.pOutputDx)
 			arDx = std::vector<double>(oTEmfExtTextoutW.oEmrText.pOutputDx, oTEmfExtTextoutW.oEmrText.pOutputDx + oTEmfExtTextoutW.oEmrText.unChars);
 
-		WriteText(wsText, TPointD(oTEmfExtTextoutW.oEmrText.oReference.X, oTEmfExtTextoutW.oEmrText.oReference.Y), oTEmfExtTextoutW.oBounds, TPointD(oTEmfExtTextoutW.dExScale, oTEmfExtTextoutW.dEyScale), arDx);
+		WriteText(wsText, TPointD(oTEmfExtTextoutW.oEmrText.oReference.X, oTEmfExtTextoutW.oEmrText.oReference.Y), oTEmfExtTextoutW.oBounds, TPointD(oTEmfExtTextoutW.dExScale, oTEmfExtTextoutW.dEyScale), arDx, oTEmfExtTextoutW.oEmrText.unOptions & 0x00000010);
 	}
 
 	void CEmfInterpretatorSvg::HANDLE_EMR_LINETO(const TPointL &oPoint)
@@ -1477,9 +1477,9 @@ namespace MetaFile
 		m_bUpdatedClip = false;
 	}
 
-	void CEmfInterpretatorSvg::DrawBitmap(double dX, double dY, double dW, double dH, BYTE *pBuffer, unsigned int unWidth, unsigned int unHeight)
+	void CEmfInterpretatorSvg::DrawBitmap(double dX, double dY, double dW, double dH, BYTE *pBuffer, unsigned int unWidth, unsigned int unHeight, unsigned int unBlendMode)
 	{
-		CInterpretatorSvgBase::DrawBitmap(dX, dY, dW, dH, pBuffer, unWidth, unHeight);
+		CInterpretatorSvgBase::DrawBitmap(dX, dY, dW, dH, pBuffer, unWidth, unHeight, unBlendMode);
 	}
 
 	void CEmfInterpretatorSvg::ResetClip()

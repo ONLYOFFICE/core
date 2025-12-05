@@ -3,12 +3,10 @@
 
 #include <string>
 #include "../../../../../Common/3dParty/html/css/src/CCssCalculator_Private.h"
-#include "CObjectBase.h"
-
-#include <numeric>
 
 namespace SVG
 {
+	class CObject;
 	class CSvgCalculator
 	{
 		NSCSS::CCssCalculator_Private *m_pInternal;

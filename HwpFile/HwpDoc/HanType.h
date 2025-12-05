@@ -7,6 +7,7 @@ enum class EHanType
 {
 	NONE,
 	HWP,
+	HWPML,
 	HWPX
 };
 }

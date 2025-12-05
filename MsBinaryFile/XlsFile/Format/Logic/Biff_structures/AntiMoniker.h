@@ -47,9 +47,10 @@ public:
 	static const XLS::ElementType	type = XLS::typeAntiMoniker;
 
 	virtual void load(XLS::CFRecord& record);
+    virtual void save(XLS::CFRecord& record);
 
 
-	_UINT32 count;
+    _UINT32 count  = 0;
 };
 
 } // namespace OSHARED

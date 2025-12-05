@@ -51,13 +51,14 @@ public:
 	static const ElementType	type = typeNoteSh;
 
 	virtual void load(CFRecord& record);
+    virtual void save(CFRecord& record);
 
-	Rw				row;
-	Col				col;
-	bool			fShow;
-	bool			fRwHidden;
-	bool			fColHidden;
-	ObjId			idObj;
+    Rw				row = 0;
+    Col				col = 0;
+	bool			fShow = true;
+    bool			fRwHidden = false;
+    bool			fColHidden = false;
+    ObjId			idObj = 0;
 	
 	XLUnicodeString stAuthor;
 	XLUnicodeString stText;
@@ -66,9 +67,9 @@ public:
 
 	void calculate();
 
-	std::wstring	ref_;
-	int				x_;
-	int				y_;
+    std::wstring	ref_ = L"";
+    int				x_ = 0;
+    int				y_ = 0;
 };
 
 } // namespace XLS

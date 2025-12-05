@@ -3,11 +3,13 @@
 #include "SvgObjects/CContainer.h"
 #include "SvgObjects/CFont.h"
 
+#include "CSvgParser.h"
+
 #define SVG_FILE_WIDTH  300
 #define SVG_FILE_HEIGHT 150
 
 CSvgFile::CSvgFile()
-	: m_oContainer(L"svg")
+	: m_pContainer(NULL), m_pFontManager(NULL)
 {}
 
 CSvgFile::~CSvgFile()
@@ -24,7 +26,10 @@ bool CSvgFile::ReadFromBuffer(BYTE *pBuffer, unsigned int unSize)
 bool CSvgFile::ReadFromWString(const std::wstring &wsContext)
 {
 	Clear();
-	return m_oParser.LoadFromString(wsContext, &m_oContainer, this);
+
+	SVG::CSvgParser oSvgParser(m_pFontManager);
+
+	return oSvgParser.LoadFromString(wsContext, m_pContainer, this);
 }
 
 bool CSvgFile::OpenFromFile(const std::wstring &wsFile)
@@ -33,58 +38,14 @@ bool CSvgFile::OpenFromFile(const std::wstring &wsFile)
 
 	m_wsWorkingDirectory = NSFile::GetDirectoryName(wsFile);
 
-	return m_oParser.LoadFromFile(wsFile, &m_oContainer, this);
+	SVG::CSvgParser oSvgParser(m_pFontManager);
+
+	return oSvgParser.LoadFromFile(wsFile, m_pContainer, this);
 }
 
 bool CSvgFile::GetBounds(double &dX, double &dY, double &dWidth, double &dHeight) const
 {
-	if (m_oContainer.Empty())
-		return false;
-
-	SVG::TRect oWindow = m_oContainer.GetWindow();
-
-	dX = oWindow.m_oX.ToDouble(NSCSS::Pixel, SVG_FILE_WIDTH);
-	dY = oWindow.m_oY.ToDouble(NSCSS::Pixel, SVG_FILE_HEIGHT);
-
-	dWidth  = 0.;
-	dHeight = 0.;
-
-	if (!oWindow.m_oWidth.Empty() && !oWindow.m_oWidth.Zero())
-	{
-		if (NSCSS::Percent == oWindow.m_oWidth.GetUnitMeasure())
-		{
-			if (!m_oContainer.GetViewBox().m_oWidth.Empty() && !m_oContainer.GetViewBox().m_oWidth.Zero())
-				dWidth = oWindow.m_oWidth.ToDouble(NSCSS::Pixel, m_oContainer.GetViewBox().m_oWidth.ToDouble(NSCSS::Pixel));
-			else
-				dWidth = oWindow.m_oWidth.ToDouble(NSCSS::Pixel, SVG_FILE_WIDTH);
-		}
-		else
-			dWidth = oWindow.m_oWidth.ToDouble(NSCSS::Pixel);
-	}
-	else
-		dWidth = m_oContainer.GetViewBox().m_oWidth.ToDouble(NSCSS::Pixel);
-
-	if (!oWindow.m_oHeight.Empty() && !oWindow.m_oHeight.Zero())
-	{
-		if (NSCSS::Percent == oWindow.m_oHeight.GetUnitMeasure())
-		{
-			if (!m_oContainer.GetViewBox().m_oHeight.Empty() && !m_oContainer.GetViewBox().m_oHeight.Zero())
-				dHeight = oWindow.m_oHeight.ToDouble(NSCSS::Pixel, m_oContainer.GetViewBox().m_oHeight.ToDouble(NSCSS::Pixel));
-			else
-				dHeight = oWindow.m_oHeight.ToDouble(NSCSS::Pixel, SVG_FILE_WIDTH);
-		}
-		else
-			dHeight = oWindow.m_oHeight.ToDouble(NSCSS::Pixel);
-	}
-	else
-		dHeight = m_oContainer.GetViewBox().m_oHeight.ToDouble(NSCSS::Pixel);
-
-	if (0. == dWidth)
-		dWidth  = SVG_FILE_WIDTH;
-	if (0. == dHeight)
-		dHeight = SVG_FILE_HEIGHT;
-
-	return true;
+	return CalculateFinalSize(true, dX, dY, dWidth, dHeight);
 }
 
 const SVG::CSvgCalculator *CSvgFile::GetSvgCalculator() const
@@ -94,7 +55,7 @@ const SVG::CSvgCalculator *CSvgFile::GetSvgCalculator() const
 
 void CSvgFile::SetFontManager(NSFonts::IFontManager *pFontManager)
 {
-	m_oParser.SetFontManager(pFontManager);
+	m_pFontManager = pFontManager;
 }
 
 void CSvgFile::SetWorkingDirectory(const std::wstring &wsWorkingDirectory)
@@ -107,7 +68,13 @@ bool CSvgFile::MarkObject(SVG::CObject *pObject)
 	if (NULL == pObject || pObject->GetId().empty())
 		return false;
 
-	pObject->AddRef();
+	pObject->Mark();
+
+	const MarkedMap::const_iterator itFound = m_mMarkedObjects.find(pObject->GetId());
+
+	if (m_mMarkedObjects.cend() != itFound)
+		RELEASEINTERFACE(m_mMarkedObjects[pObject->GetId()])
+
 	m_mMarkedObjects[pObject->GetId()] = pObject;
 
 	return true;
@@ -160,69 +127,41 @@ void CSvgFile::AddFontFace(const SVG::TFontArguments& oArguments, const std::wst
 
 bool CSvgFile::Draw(IRenderer *pRenderer, double dX, double dY, double dWidth, double dHeight)
 {
-	if (NULL == pRenderer || m_oContainer.Empty())
+	if (NULL == pRenderer || NULL == m_pContainer || m_pContainer->Empty())
 		return false;
 
-	SVG::TRect oWindow  = m_oContainer.GetWindow();
-	SVG::TRect oViewBox = m_oContainer.GetViewBox();
+	double dFileX, dFileY, dFileWidth, dFileHeight;
 
-	if (oWindow.m_oWidth.Empty() || oWindow.m_oWidth.Zero())
-	{
-		if (oViewBox.m_oWidth.Empty() || oViewBox.m_oWidth.Zero())
-			oWindow.m_oWidth =  SVG_FILE_WIDTH;
-		else
-		{
-			oWindow.m_oWidth = oViewBox.m_oWidth;
-			oViewBox.m_oWidth.Clear();
-		}
-	}
-
-	if (oWindow.m_oHeight.Empty() || oWindow.m_oHeight.Zero())
-	{
-		if (oViewBox.m_oHeight.Empty() || oViewBox.m_oHeight.Zero())
-			oWindow.m_oHeight =  SVG_FILE_HEIGHT;
-		else
-		{
-			oWindow.m_oHeight = oViewBox.m_oHeight;
-			oViewBox.m_oHeight.Clear();
-		}
-	}
-
-	double dViewBoxWidth  = oViewBox.m_oWidth.ToDouble(NSCSS::Pixel, SVG_FILE_WIDTH);
-	double dViewBoxHeight = oViewBox.m_oHeight.ToDouble(NSCSS::Pixel, SVG_FILE_HEIGHT);
-
-	double dWindowWidth  = oWindow.m_oWidth.ToDouble(NSCSS::Pixel, dViewBoxWidth);
-	double dWindowHeight = oWindow.m_oHeight.ToDouble(NSCSS::Pixel, dViewBoxHeight);
-
-	if (SVG::Equals(0., dWindowWidth) || SVG::Equals(0., dWindowHeight))
+	if (!CalculateFinalSize(false, dFileX, dFileY, dFileWidth, dFileHeight))
 		return false;
 
 	double oldTransform[6];
-	oldTransform[0] = oldTransform[3] = 1;
-	oldTransform[1] = oldTransform[2] = oldTransform[4] = oldTransform[5] = 0;
 
 	pRenderer->GetTransform(&oldTransform[0], &oldTransform[1], &oldTransform[2], &oldTransform[3], &oldTransform[4], &oldTransform[5]);
 	pRenderer->ResetTransform();
 
-	double dM11 = dWidth / dWindowWidth;
-	double dM22 = dHeight / dWindowHeight;
+	const double dM11 = dWidth  / dFileWidth;
+	const double dM22 = dHeight / dFileHeight;
 
-	double dScaleX = 1, dScaleY = 1;
+	double dScaleX = 1.,
+	       dScaleY = 1.;
+	double dTranslateX = dFileX * dM11,
+	       dTranslateY = dFileY * dM22;
 
-	if (!SVG::Equals(0., dViewBoxWidth))
-		dScaleX = dWindowWidth / dViewBoxWidth;
+	const SVG::TRect oViewBox{m_pContainer->GetViewBox()};
 
-	if (!SVG::Equals(0., dViewBoxHeight))
-		dScaleY = dWindowHeight / dViewBoxHeight;
+	if (!oViewBox.m_oWidth.Empty() && !oViewBox.m_oHeight.Empty())
+	{
+		dScaleX = dFileWidth  / oViewBox.m_oWidth .ToDouble(NSCSS::Pixel, SVG_FILE_WIDTH );
+		dScaleY = dFileHeight / oViewBox.m_oHeight.ToDouble(NSCSS::Pixel, SVG_FILE_HEIGHT);
 
-	double dMinScale = std::min(dScaleX, dScaleY);
+		dTranslateX -= oViewBox.m_oX.ToDouble(NSCSS::Pixel) * dScaleX * dM11;
+		dTranslateY -= oViewBox.m_oY.ToDouble(NSCSS::Pixel) * dScaleY * dM22;
+	}
 
-	double dSkipX = -oViewBox.m_oX.ToDouble(NSCSS::Pixel) * dScaleX * dM11;
-	double dSkipY = -oViewBox.m_oY.ToDouble(NSCSS::Pixel) * dScaleY * dM22;
+	pRenderer->SetTransform(dM11 * dScaleX, 0, 0, dM22 * dScaleY, dTranslateX, dTranslateY);
 
-	pRenderer->SetTransform(dM11 * dMinScale, 0, 0, dM22 * dMinScale, dSkipX, dSkipY);
-
-	bool bResult = m_oContainer.Draw(pRenderer, this);
+	bool bResult = m_pContainer->Draw(pRenderer, this);
 
 	pRenderer->SetTransform(oldTransform[0], oldTransform[1], oldTransform[2], oldTransform[3], oldTransform[4], oldTransform[5]);
 
@@ -231,7 +170,7 @@ bool CSvgFile::Draw(IRenderer *pRenderer, double dX, double dY, double dWidth, d
 
 void CSvgFile::Clear()
 {
-	m_oContainer.Clear();
+	RELEASEINTERFACE(m_pContainer);
 	m_oSvgCalculator.Clear();
 
 	for (MarkedMap::reference oIter : m_mMarkedObjects)
@@ -239,4 +178,142 @@ void CSvgFile::Clear()
 
 	m_mMarkedObjects.clear();
 	m_wsWorkingDirectory.clear();
+}
+
+bool CSvgFile::CalculateFinalSize(bool bUseViewBox, double& dX, double& dY, double& dWidth, double& dHeight) const
+{
+	if (NULL == m_pContainer || m_pContainer->Empty())
+		return false;
+
+	const SVG::TRect oWindow  = m_pContainer->GetWindow();
+	const SVG::TRect oViewBox = m_pContainer->GetViewBox();
+
+	const double dViewBoxWidth {oViewBox.m_oWidth .ToDouble()};
+	const double dViewBoxHeigth{oViewBox.m_oHeight.ToDouble()};
+
+	dX = 0.;
+	dY = 0.;
+
+	dWidth  = 0.;
+	dHeight = 0.;
+
+	#define GET_PREV_WIDTH_VALUE ((NSCSS::UnitMeasure::Em == oWindow.m_oWidth.GetUnitMeasure() || NSCSS::UnitMeasure::Rem == oWindow.m_oWidth.GetUnitMeasure()) ? DEFAULT_FONT_SIZE : ((!SVG::Equals(0., dViewBoxWidth )) ? dViewBoxWidth : SVG_FILE_WIDTH))
+	#define GET_PREV_HEIGHT_VALUE ((NSCSS::UnitMeasure::Em == oWindow.m_oHeight.GetUnitMeasure() || NSCSS::UnitMeasure::Rem == oWindow.m_oHeight.GetUnitMeasure()) ? DEFAULT_FONT_SIZE : ((!SVG::Equals(0., dViewBoxHeigth )) ? dViewBoxHeigth : SVG_FILE_HEIGHT))
+
+	if (!oWindow.m_oWidth.Empty() && !oWindow.m_oHeight.Empty())
+	{
+		dWidth  = oWindow.m_oWidth .ToDouble(NSCSS::Pixel, GET_PREV_WIDTH_VALUE);
+		dHeight = oWindow.m_oHeight.ToDouble(NSCSS::Pixel, GET_PREV_HEIGHT_VALUE);
+		return true;
+	}
+
+	if (bUseViewBox)
+	{
+		if (!oViewBox.m_oWidth.Empty() && !oViewBox.m_oHeight.Empty())
+		{
+			if (!oWindow.m_oWidth.Empty())
+			{
+				dWidth = oWindow.m_oWidth.ToDouble(NSCSS::Pixel, GET_PREV_WIDTH_VALUE);
+				const double dAspectRatio{dViewBoxWidth / dViewBoxHeigth};
+				dHeight = dWidth / dAspectRatio;
+				return true;
+			}
+
+			if (!oWindow.m_oHeight.Empty())
+			{
+				dHeight = oWindow.m_oHeight.ToDouble(NSCSS::Pixel, GET_PREV_HEIGHT_VALUE);
+				const double dAspectRatio{dViewBoxWidth / dViewBoxHeigth};
+				dWidth = dHeight * dAspectRatio;
+				return true;
+			}
+
+			dX = oViewBox.m_oX.ToDouble();
+			dY = oViewBox.m_oY.ToDouble();
+
+			dWidth  = dViewBoxWidth;
+			dHeight = dViewBoxHeigth;
+
+			return true;
+		}
+	}
+
+	if (!oWindow.m_oWidth.Empty() || !oWindow.m_oHeight.Empty())
+	{
+		if (!oViewBox.m_oWidth.Empty() && !oViewBox.m_oHeight.Empty())
+		{
+			const double dAspectRatio{dViewBoxWidth / dViewBoxHeigth};
+
+			if (!oWindow.m_oWidth.Empty())
+			{
+				dWidth  = oWindow.m_oWidth.ToDouble(NSCSS::Pixel, GET_PREV_WIDTH_VALUE);
+				dHeight = dWidth / dAspectRatio;
+			}
+			else if (!oWindow.m_oHeight.Empty())
+			{
+				dHeight = oWindow.m_oHeight.ToDouble(NSCSS::Pixel, GET_PREV_HEIGHT_VALUE);
+				dWidth  = dHeight * dAspectRatio;
+			}
+
+			return true;
+		}
+
+		if (NULL != m_pContainer && !m_pContainer->Empty())
+		{
+			SVG::SvgMatrix oTransform;
+			const SVG::TBounds oBounds{m_pContainer->GetBounds(&oTransform)};
+
+			const double dContentWidth {oBounds.m_dRight  - oBounds.m_dLeft};
+			const double dContentHeight{oBounds.m_dBottom - oBounds.m_dTop };
+
+			const double dAspectRatio{dContentWidth / dContentHeight};
+
+			if (!oWindow.m_oWidth.Empty())
+			{
+				dWidth  = oWindow.m_oWidth.ToDouble(NSCSS::Pixel, GET_PREV_WIDTH_VALUE);
+				dHeight = dWidth / dAspectRatio;
+			}
+			else if (!oWindow.m_oHeight.Empty())
+			{
+				dHeight = oWindow.m_oHeight.ToDouble(NSCSS::Pixel, GET_PREV_HEIGHT_VALUE);
+				dWidth  = dHeight * dAspectRatio;
+			}
+
+			dX = oBounds.m_dLeft;
+			dY = oBounds.m_dTop;
+
+			return true;
+		}
+
+		if (!oWindow.m_oWidth.Empty())
+		{
+			dWidth  = oWindow.m_oWidth.ToDouble(NSCSS::Pixel, GET_PREV_WIDTH_VALUE);
+			dHeight = SVG_FILE_HEIGHT;
+		}
+		else if (!oWindow.m_oHeight.Empty())
+		{
+			dHeight = oWindow.m_oHeight.ToDouble(NSCSS::Pixel, GET_PREV_HEIGHT_VALUE);
+			dWidth  = SVG_FILE_WIDTH;
+		}
+
+		return true;
+	}
+
+	if (NULL != m_pContainer && !m_pContainer->Empty())
+	{
+		SVG::SvgMatrix oTransform;
+		const SVG::TBounds oBounds{m_pContainer->GetBounds(&oTransform)};
+
+		dX = oBounds.m_dLeft;
+		dY = oBounds.m_dTop;
+
+		dWidth  = oBounds.m_dRight  - oBounds.m_dLeft;
+		dHeight = oBounds.m_dBottom - oBounds.m_dTop;
+
+		return true;
+	}
+
+	dWidth  = SVG_FILE_WIDTH;
+	dHeight = SVG_FILE_HEIGHT;
+
+	return true;
 }

@@ -45,6 +45,7 @@ public:
 	BaseObjectPtr clone();
 
 	virtual const bool loadContent(BinProcessor& proc);
+    virtual const bool saveContent(BinProcessor& proc);
 
 	BaseObjectPtr				m_ChartRect;
 	std::vector<BaseObjectPtr>	m_arSERIESFORMAT;

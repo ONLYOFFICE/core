@@ -313,8 +313,8 @@ namespace PPTX
 			void SetLevelUpElement( Shape* p){m_pLevelUp = p;};
 
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
-			void toXmlWriterVML				(NSBinPptxRW::CXmlWriter* pWriter, smart_ptr<PPTX::Theme>& oTheme, smart_ptr<PPTX::Logic::ClrMap>& oClrMap, bool in_group = false, bool bSignature = false);
-			void toXmlWriterVMLBackground	(NSBinPptxRW::CXmlWriter *pWriter, NSCommon::smart_ptr<PPTX::Theme>& oTheme, NSCommon::smart_ptr<PPTX::Logic::ClrMap>& oClrMap);
+			void toXmlWriterVML				(NSBinPptxRW::CXmlWriter* pWriter, smart_ptr<PPTX::Theme>& oTheme, smart_ptr<PPTX::Logic::ClrMap>& oClrMap, OOX::IFileContainer* pContainer, bool in_group = false, bool bSignature = false);
+			void toXmlWriterVMLBackground	(NSBinPptxRW::CXmlWriter *pWriter, NSCommon::smart_ptr<PPTX::Theme>& oTheme, NSCommon::smart_ptr<PPTX::Logic::ClrMap>& oClrMap, OOX::IFileContainer* pContainer);
 
 			virtual void toXmlWriter	(NSBinPptxRW::CXmlWriter* pWriter) const;			
 			virtual void fromPPTY		(NSBinPptxRW::CBinaryFileReader* pReader);

@@ -48,23 +48,24 @@ public:
 	static const ElementType	type = typeDXFBdr;
 	
 	virtual void load(CFRecord& record);
+    virtual void save(CFRecord& record);
 
 	int serialize(std::wostream & stream);
 
-	unsigned char dgLeft;
-	unsigned char dgRight;
-	unsigned char dgTop;
-	unsigned char dgBottom;
-	unsigned char icvLeft;
-	unsigned char icvRight;
+	unsigned char dgLeft = 0;
+	unsigned char dgRight = 0;
+	unsigned char dgTop = 0;
+	unsigned char dgBottom = 0;
+	unsigned char icvLeft = 0;
+	unsigned char icvRight = 0;
 	
-	bool bitDiagDown;
-	bool bitDiagUp;
+	bool bitDiagDown = false;
+	bool bitDiagUp = false;
 
-	unsigned char icvTop;
-	unsigned char icvBottom;
-	unsigned char icvDiag;
-	unsigned char dgDiag;
+	unsigned char icvTop = 0;
+	unsigned char icvBottom = 0;
+	unsigned char icvDiag = 0;
+	unsigned char dgDiag = 0;
 
 //------------------------------------------------
 	DXFN *parent = NULL;

@@ -45,6 +45,7 @@ public:
 	BaseObjectPtr clone();
 
 	virtual const bool loadContent(BinProcessor& proc);
+    virtual const bool saveContent(BinProcessor& proc);
 
 	int serialize(std::wostream & stream);
 
@@ -58,6 +59,11 @@ public:
 
 	BaseObjectPtr m_HCenter;
 	BaseObjectPtr m_VCenter;
+
+	BaseObjectPtr m_LeftMargin;
+	BaseObjectPtr m_RightMargin;
+	BaseObjectPtr m_TopMargin;
+	BaseObjectPtr m_BottomtMargin;
 
 	BaseObjectPtr m_Pls;
 

@@ -44,11 +44,13 @@ namespace XLS
 		static const ElementType type = typeVertBrk;
 
 		virtual void load(CFRecord& record);
+        virtual void save(CFRecord& record);
+
 		virtual int serialize(std::wostream & stream);
 
-		ColU col;
-		RwU rowStart;
-		RwU rowEnd;
+        ColU col = 0;
+        RwU rowStart = 0;
+        RwU rowEnd = 0;
 	};
 	typedef boost::shared_ptr<VertBrk> VertBrkPtr;
 

@@ -400,7 +400,14 @@ namespace SimpleTypes
 
 		void CHexColor::FromString(const std::wstring &sValue)
 		{
-			Parse(sValue);
+			if (false == Parse(sValue))
+			{
+				m_unA = 255;
+				m_unR = 0;
+				m_unG = 0;
+				m_unB = 0;
+			}
+
 		}
 		CHexColor::CHexColor(const std::wstring& wsStr)
 		{
@@ -470,48 +477,55 @@ namespace SimpleTypes
 			m_unA = 255;
 		}
 
-		void CHexColor::Parse(std::wstring sValue)
+		bool CHexColor::Parse(std::wstring sValue)
 		{
+			bool bResult = true;
+
 			if (0 == sValue.find(L"#"))
 			{
 				sValue = sValue.substr(1);
 			}
 			int nValueLength = (int)sValue.length();
 
-			if(3 == nValueLength)
+			if (3 == nValueLength)
 			{
-				int nTempR = HexToInt( (int)sValue[0] );
-				int nTempG = HexToInt( (int)sValue[1] );
-				int nTempB = HexToInt( (int)sValue[2] );
+				int nTempR = HexToInt( (int)sValue[0], bResult);
+				int nTempG = HexToInt( (int)sValue[1], bResult);
+				int nTempB = HexToInt( (int)sValue[2], bResult);
 
 				m_unR = nTempR +  (unsigned char)(nTempR << 4);
 				m_unG = nTempG +  (unsigned char)(nTempG << 4);
 				m_unB = nTempB +  (unsigned char)(nTempB << 4);
 			}
-			else if(6 == nValueLength)
+			else if (6 == nValueLength)
 			{
-				m_unR = HexToInt( (int)sValue[1] ) + (unsigned char)(HexToInt( (int)sValue[0] ) << 4);
-				m_unG = HexToInt( (int)sValue[3] ) + (unsigned char)(HexToInt( (int)sValue[2] ) << 4);
-				m_unB = HexToInt( (int)sValue[5] ) + (unsigned char)(HexToInt( (int)sValue[4] ) << 4);
+				m_unR = HexToInt( (int)sValue[1], bResult) + (unsigned char)(HexToInt( (int)sValue[0], bResult) << 4);
+				m_unG = HexToInt( (int)sValue[3], bResult) + (unsigned char)(HexToInt( (int)sValue[2], bResult) << 4);
+				m_unB = HexToInt( (int)sValue[5], bResult) + (unsigned char)(HexToInt( (int)sValue[4], bResult) << 4);
 			}
 			else if(8 == nValueLength)
 			{
-				m_unA = HexToInt( (int)sValue[1] ) + (unsigned char)(HexToInt( (int)sValue[0] ) << 4);
-				m_unR = HexToInt( (int)sValue[3] ) + (unsigned char)(HexToInt( (int)sValue[2] ) << 4);
-				m_unG = HexToInt( (int)sValue[5] ) + (unsigned char)(HexToInt( (int)sValue[4] ) << 4);
-				m_unB = HexToInt( (int)sValue[7] ) + (unsigned char)(HexToInt( (int)sValue[6] ) << 4);
+				m_unA = HexToInt( (int)sValue[1], bResult) + (unsigned char)(HexToInt( (int)sValue[0], bResult) << 4);
+				m_unR = HexToInt( (int)sValue[3], bResult) + (unsigned char)(HexToInt( (int)sValue[2], bResult) << 4);
+				m_unG = HexToInt( (int)sValue[5], bResult) + (unsigned char)(HexToInt( (int)sValue[4], bResult) << 4);
+				m_unB = HexToInt( (int)sValue[7], bResult) + (unsigned char)(HexToInt( (int)sValue[6], bResult) << 4);
 			}
+			return bResult;
 		}
 
-		int	CHexColor::HexToInt(int nHex)
+		int	CHexColor::HexToInt(int nHex, bool& bResult)
 		{
 			if ( nHex >= '0' && nHex <= '9' ) return (nHex - '0');
 			if ( nHex >= 'a' && nHex <= 'f' ) return (nHex - 'a' + 10);
 			if ( nHex >= 'A' && nHex <= 'F' ) return (nHex - 'A' + 10);
 
+			bResult = false;
 			return 0;
 		}
-
+		const bool CHexColor::operator ==(const CHexColor& clr)
+		{
+			return (m_unA == clr.m_unA && m_unR == clr.m_unR && m_unG == clr.m_unG && m_unB == clr.m_unB);
+		}
 		EFontFamily CFontFamily::FromString(const std::wstring &sValue)
 		{
 			std::wstring oldValue = XmlUtils::GetLower(sValue);
@@ -2211,7 +2225,6 @@ namespace SimpleTypes
 
 			}
 		}
-
 		template<>
 		CDoubleOrAutomatic<typeAuto>::CDoubleOrAutomatic() : m_dValue(0){}
 
@@ -3412,6 +3425,26 @@ namespace SimpleTypes
 			case typeNotView: return L"notView"; break;
 			case typeView: return L"view"; break;
 			case typeEdit: return L"edit"; break;
+			}
+			return L"edit";
+		}
+		EXmlDataType CXmlDataType::FromString(const std::wstring& sValue)
+		{
+			if (L"date" == sValue)
+				this->m_eValue = typeDate;
+			else if (L"float" == sValue)
+				this->m_eValue = typeFloat;
+			else
+				this->m_eValue = typeString;
+			return this->m_eValue;
+		}
+		std::wstring CXmlDataType::ToString() const
+		{
+			switch (this->m_eValue)
+			{
+			case typeString: return L"string"; break;
+			case typeDate: return L"date"; break;
+			case typeFloat: return L"float"; break;
 			}
 			return L"edit";
 		}

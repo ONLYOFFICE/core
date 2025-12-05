@@ -1943,15 +1943,15 @@ void DjVuDocument::ReadPageInfo(int nPage, int& width, int& height, int& nDpi)
 				bHasIW44 = true;
 
 				// Get image dimensions and resolution from bitmap chunk
-				UINT serial = chunk_stream->read8();
-				UINT slices = chunk_stream->read8();
-				UINT major = chunk_stream->read8();
-				UINT minor = chunk_stream->read8();
+				unsigned int serial = chunk_stream->read8();
+				unsigned int slices = chunk_stream->read8();
+				unsigned int major = chunk_stream->read8();
+				unsigned int minor = chunk_stream->read8();
 
-				UINT xhi = chunk_stream->read8();
-				UINT xlo = chunk_stream->read8();
-				UINT yhi = chunk_stream->read8();
-				UINT ylo = chunk_stream->read8();
+				unsigned int xhi = chunk_stream->read8();
+				unsigned int xlo = chunk_stream->read8();
+				unsigned int yhi = chunk_stream->read8();
+				unsigned int ylo = chunk_stream->read8();
 
 				width = (xhi << 8) | xlo;
 				height = (yhi << 8) | ylo;

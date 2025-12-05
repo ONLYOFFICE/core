@@ -38,6 +38,11 @@
 #include <vector>
 #include <cmath>
 #include <cwctype>
+#include <regex>
+
+const auto NonDatecellLimit = 1000;
+const auto MaxDateLength = 32;
+const auto MinDateLength = 5;
 
 DateReader::DateReader(_INT32 lcid):lcid_{lcid}
 {}
@@ -46,10 +51,21 @@ bool DateReader::GetDigitalDate(const std::wstring &date, double &result, bool &
 {
 
     tm time = {};
+    if(date.size() > MaxDateLength || date.size() < MinDateLength)
+    {
+        cellCounter_++;
+        return false;
+    }
+    ///если не было найдено ни одной даты в n ячейках - перестаем их искать
+    if(!dateFound_ && cellCounter_ > NonDatecellLimit)
+        return false;
     if(!parseIsoDate(date,time))
     {
         if(!parseLocalDate(date, time, Hasdate, Hastime ))
+        {
+            cellCounter_++;
             return false;
+        }
     }
     else
     {
@@ -67,6 +83,7 @@ bool DateReader::GetDigitalDate(const std::wstring &date, double &result, bool &
           result = getNonUnixDate(time);
         Hasdate = true;
         Hastime = false;
+        dateFound_ = true;
         return true;
     }
     //время без даты
@@ -75,6 +92,7 @@ bool DateReader::GetDigitalDate(const std::wstring &date, double &result, bool &
         result = getStandartTime(time);
         Hasdate = false;
         Hastime = true;
+        dateFound_ = true;
         return true;
     }
     else //дата и время
@@ -87,6 +105,7 @@ bool DateReader::GetDigitalDate(const std::wstring &date, double &result, bool &
         result += getStandartTime(time);
         Hasdate = true;
         Hastime = true;
+        dateFound_ = true;
         return true;
     }
     }
@@ -124,6 +143,7 @@ enum class ParsingElem
 
 void SetDateElem(tm &result, _INT32 value, const std::wstring datePattern,  bool &day, bool &month, bool &year, bool &Berror)
 {
+	_INT16 Partscount = day + month + year;
     for(auto dateFmtPart : datePattern)
     {
         if((dateFmtPart == L'0' || dateFmtPart == L'1') && !day && value <= 31)
@@ -144,6 +164,15 @@ void SetDateElem(tm &result, _INT32 value, const std::wstring datePattern,  bool
             result.tm_year = value;
             return;
         }
+		if(Partscount)
+		{
+			Partscount--;
+		}
+		else
+		{
+			 Berror = true;
+			 break;
+		}
     }
     Berror = true;
 }
@@ -323,6 +352,11 @@ bool DateReader::parseLocalDate(const std::wstring &date, tm &result, bool &Hasd
                        StringBuf.clear();
                     }
                 }
+                else if(elementType == DateElemTypes::letter)
+                {
+                    //невалидная дата
+                    bError = true;
+                }
                 //анализируем собранный элемент
                 PrevType = CurrentElementType;
             }
@@ -344,6 +378,11 @@ bool DateReader::parseLocalDate(const std::wstring &date, tm &result, bool &Hasd
             }
            SetDateElem(result, datePart, locInf.ShortDatePattern, BDay, Bmonth, Byear, bError);
         }
+		else if(CurrentElementType == DateElemTypes::letter)
+		{
+			if(!parseMonthName(StringBuf, result))
+				return false;
+		}
     }
     else
     {
@@ -372,44 +411,52 @@ bool DateReader::parseLocalDate(const std::wstring &date, tm &result, bool &Hasd
         result.tm_mon--;
         result.tm_year = normalizeYear(result.tm_year);
     }
-    if(!Hasdate && !Hastime)
+    if((!Hasdate && !Hastime) || bError)
         return false;
 
     return true;
 }
 bool DateReader::parseIsoDate(const std::wstring &date, tm &result)
 {
-    //проверка размера строки и разделителей
-    if(date.size() != 20 || date[4] != L'-' || date[7] != L'-' ||
-            date[10] != L'T' || date[13] != L':' ||
-            date[16] != L':' || date[19] != L'Z')
+    std::wregex iso_regex(
+    LR"(^(\d{4})-(\d{2})-(\d{2})(?:[T ](\d{2}):(\d{2})(?::(\d{2})(?:\.(\d{1,3}))?)?(?:(Z)|([+-])(\d{2})(?::?(\d{2}))?)?)?$)"                        // таймзона: Z или ±ч:мин
+    );
+
+    std::wsmatch match;
+    if (!std::regex_match(date, match, iso_regex))
         return false;
-    //проверка того что между разделителями стоят только цифры
-    for(auto i = 0; i < 4; i++)
-        if(!std::iswdigit(date[i]))
-            return false;
-    for(auto i = 5; i < 7; i++)
-        if(!std::iswdigit(date[i]))
-            return false;
-    for(auto i = 8; i < 10; i++)
-        if(!std::iswdigit(date[i]))
-            return false;
-    for(auto i = 11; i < 13; i++)
-        if(!std::iswdigit(date[i]))
-            return false;
-    for(auto i = 14; i < 16; i++)
-        if(!std::iswdigit(date[i]))
-            return false;
-    for(auto i = 17; i < 19; i++)
-        if(!std::iswdigit(date[i]))
-            return false;
-    _INT16 year = std::stoi(date.substr(0,4));
-    result.tm_year = normalizeYear(year);
-    result.tm_mon = std::stoi(date.substr(5,2)) - 1;
-    result.tm_mday = std::stoi(date.substr(8,2));
-    result.tm_hour = std::stoi(date.substr(11,2));
-    result.tm_min = std::stoi(date.substr(14,2));
-    result.tm_sec = std::stoi(date.substr(17,2));
+    if (match.size() < 12) return false;
+    result.tm_year = normalizeYear(std::stoi(match[1]));
+    result.tm_mon = std::stoi(match[2]) - 1;
+    result.tm_mday = std::stoi(match[3]);
+    if (match[4].matched) {
+        result.tm_hour = std::stoi(match[4]);
+        result.tm_min  = std::stoi(match[5]);
+        result.tm_sec  = match[6].matched ? std::stoi(match[6]) : 0;
+
+        if (match[9].matched) {
+            if (match[8] != L"Z")
+            {
+
+                int hours = 0;
+                if(match[10].matched)
+                    hours = std::stoi(match[10]);
+                int mins  = 0;
+                if(match[11].matched)
+                    mins = std::stoi(match[11]);
+                if (match[9] == L"-")
+                {
+                    result.tm_hour -= hours;
+                    result.tm_min -= mins;
+                }
+                else
+                {
+                    result.tm_hour += hours;
+                    result.tm_min += mins;
+                }
+            }
+        }
+    }
     return true;
 }
 _INT32 DateReader::getStandartDate(tm date)

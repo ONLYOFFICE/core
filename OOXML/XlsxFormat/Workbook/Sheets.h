@@ -97,10 +97,10 @@ namespace OOX
 
 			void fromBin(std::vector<XLS::BaseObjectPtr>& obj);
 			std::vector<XLS::BaseObjectPtr> toBin();
+			void toXLS(XLS::BaseObjectPtr stream);
 			virtual EElementType getType () const;
-
+            static void AddSheetRef(const std::wstring& link, const _INT32&  sheetIndex);
 		private:
-			void AddSheetRef(const std::wstring& link, const _INT32&  sheetIndex);
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
 

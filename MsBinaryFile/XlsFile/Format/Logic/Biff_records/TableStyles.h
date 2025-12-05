@@ -55,7 +55,7 @@ public:
 	static const ElementType type = typeTableStyles;
 
 //-----------------------------
-	_UINT32				cts;
+	_UINT32				cts = 144;
     //LPWideStringNoCch	rgchDefTableStyle;
     //LPWideStringNoCch	rgchDefPivotStyle;
     std::wstring        rgchDefTableStyle; //strDefList in biff12

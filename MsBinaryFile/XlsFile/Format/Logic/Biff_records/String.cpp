@@ -71,5 +71,10 @@ void String::readFields(CFRecord& record)
 	}
 }
 
+void String::writeFields(CFRecord& record)
+{
+    record << string;
+}
+
 } // namespace XLS
 

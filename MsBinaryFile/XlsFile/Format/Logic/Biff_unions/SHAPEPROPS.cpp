@@ -70,6 +70,36 @@ const bool SHAPEPROPS::loadContent(BinProcessor& proc)
 	return true;
 }
 
+const bool SHAPEPROPS::saveContent(BinProcessor& proc)
+{
+	if(m_ShapePropsStream == nullptr)
+		return false;
+	proc.mandatory(*m_ShapePropsStream);
+	auto castedPtr = static_cast<ShapePropsStream*>(m_ShapePropsStream.get());
+	const auto limit = 8200;
+	if(castedPtr->xml_.size() > limit)
+	{
+		auto xmlPos = limit;
+		while(xmlPos < castedPtr->xml_.size())
+		{
+			ContinueFrt12 continueRecord;
+			continueRecord.frtHeader.rt = rt_ContinueFrt12;
+			auto continueLength = 0;
+			if((castedPtr->xml_.size() - xmlPos) > limit)
+				continueLength = limit;
+			else
+				continueLength = castedPtr->xml_.size() - xmlPos;
+			continueRecord.rgb = std::vector<char>(
+				castedPtr->xml_.begin() + xmlPos,
+				castedPtr->xml_.begin() + xmlPos + continueLength);
+			proc.mandatory(continueRecord);
+			xmlPos += continueLength;
+
+		}
+	}
+	return true;
+}
+
 int SHAPEPROPS::serialize(std::wostream & _stream)
 {
 	CP_XML_WRITER(_stream)    

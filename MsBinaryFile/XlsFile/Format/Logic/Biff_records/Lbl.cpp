@@ -206,7 +206,37 @@ void Lbl::writeFields(CFRecord& record)
 
 	if (record.getGlobalWorkbookInfo()->Version < 0x0800)
 	{
-		//stub
+        unsigned short flags = 0;
+
+        SETBIT(flags, 0, fHidden)
+        SETBIT(flags, 1, fFunc)
+        SETBIT(flags, 2, fOB)
+        SETBIT(flags, 3, fProc)
+        SETBIT(flags, 4, fCalcExp)
+        SETBIT(flags, 5, fBuiltin)
+        SETBITS(flags, 6, 11, fGrp)
+        SETBIT(flags, 13, fPublished)
+        SETBIT(flags, 14, fWorkbookParam)
+
+        unsigned char cch = Name_bin.getSize();
+		if(!cch)
+			Name_bin = L"";
+        record << flags << chKey << cch;
+        auto ccePos = record.getRdPtr();
+        record.reserveNunBytes(4);
+
+        _UINT16	itab_2b = itab;
+        record << itab_2b;
+        record.reserveNunBytes(4);
+		if(cch)
+			record << Name_bin;
+        auto rgceStart = record.getRdPtr();
+        rgce.save(record);
+
+        unsigned short cce = record.getRdPtr() - rgceStart;
+        record.RollRdPtrBack(record.getRdPtr() - ccePos);
+        record << cce;
+        record.skipNunBytes((rgceStart - record.getRdPtr()) + cce);
 	}
 
 	else

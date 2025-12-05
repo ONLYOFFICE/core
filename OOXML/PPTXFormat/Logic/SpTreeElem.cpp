@@ -64,7 +64,7 @@ namespace PPTX
 		}
 
 		void CalculateFill(BYTE lDocType, PPTX::Logic::SpPr& oSpPr, nullable<ShapeStyle>& pShapeStyle, NSCommon::smart_ptr<PPTX::Theme>& oTheme,
-			NSCommon::smart_ptr<PPTX::Logic::ClrMap>& oClrMap, std::wstring& strAttr, std::wstring& strNode, bool bOle, bool bSignature)
+			NSCommon::smart_ptr<PPTX::Logic::ClrMap>& oClrMap, OOX::IFileContainer* pContainer, std::wstring& strAttr, std::wstring& strNode, bool bOle, bool bSignature)
 		{
 			PPTX::Logic::UniFill fill;
 			DWORD ARGB = 0;
@@ -129,8 +129,17 @@ namespace PPTX
 							}
 						}
 					}
-
 					std::wstring strId = oBlip.blip->embed->ToString();
+					
+					NSCommon::smart_ptr<OOX::Image> pImageFileVml(new OOX::Image(NULL, false));
+					pImageFileVml->set_filename(oBlip.blip->imageFilepath, false);
+
+					smart_ptr<OOX::File> pFileVml = pImageFileVml.smart_dynamic_cast<OOX::File>();
+
+					if (pContainer)
+					{
+						pContainer->Add(strId, pFileVml);
+					}
 					if (XMLWRITER_DOC_TYPE_XLSX == lDocType)
 					{
 						strId = L"o:relid=\"" + strId + L"\"";
@@ -158,7 +167,7 @@ namespace PPTX
 				BYTE A = (BYTE)((ARGB >> 24) & 0xFF);
 				if (A != 255)
 				{
-					int fopacity = 100 - (int)(((double)A / 255.0) * 65536);
+					int fopacity = (int)((double)A / 255. * 65536.);
 					strNode = L"<v:fill opacity=\"" + std::to_wstring(fopacity) + L"f\" />";
 				}
 			}
@@ -218,7 +227,7 @@ namespace PPTX
 					BYTE A = (BYTE)((ARGB >> 24) & 0xFF);
 					if (A != 255)
 					{
-						int fopacity = 100 - (int)(((double)A / 255.0) * 65536);
+						int fopacity = (int)((double)A / 255. * 65536.);
 						op = std::to_wstring(fopacity) + L"f";
 					}
 
@@ -616,12 +625,14 @@ namespace PPTX
 					if (_type == SPTREE_TYPE_AUDIO)	
 					{
 						OOX::Audio *pAudio = new OOX::Audio(NULL, pReader->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX);
-						p->blipFill.additionalFile = smart_ptr<OOX::File>(dynamic_cast<OOX::File*>(pAudio));
+						p->blipFill.additionalFiles.emplace_back();
+						p->blipFill.additionalFiles.back() = smart_ptr<OOX::File>(dynamic_cast<OOX::File*>(pAudio));
 					}
 					else if (_type == SPTREE_TYPE_VIDEO)
 					{
 						OOX::Video* pVideo = new OOX::Video(NULL, pReader->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX);
-						p->blipFill.additionalFile = smart_ptr<OOX::File>(dynamic_cast<OOX::File*>(pVideo));
+						p->blipFill.additionalFiles.emplace_back();
+						p->blipFill.additionalFiles.back() = smart_ptr<OOX::File>(dynamic_cast<OOX::File*>(pVideo));
 					}
 					
 					p->fromPPTY(pReader);
@@ -694,7 +705,7 @@ namespace PPTX
 				return m_elem->toXML();
 			return L"";
 		}
-		void SpTreeElem::toXmlWriterVML	(NSBinPptxRW::CXmlWriter* pWriter, smart_ptr<PPTX::Theme>& oTheme, smart_ptr<PPTX::Logic::ClrMap>& oClrMap) const
+		void SpTreeElem::toXmlWriterVML	(NSBinPptxRW::CXmlWriter* pWriter, smart_ptr<PPTX::Theme>& oTheme, smart_ptr<PPTX::Logic::ClrMap>& oClrMap, OOX::IFileContainer* pContainer) const
 		{
 			if (m_elem.IsInit() == false) return;
 
@@ -703,7 +714,7 @@ namespace PPTX
 				case OOX::et_a_Shape:
 				{
 					smart_ptr<PPTX::Logic::Shape> oShape = m_elem.smart_dynamic_cast<PPTX::Logic::Shape>();
-					if (oShape.IsInit()) oShape->toXmlWriterVML(pWriter, oTheme, oClrMap);
+					if (oShape.IsInit()) oShape->toXmlWriterVML(pWriter, oTheme, oClrMap, pContainer);
 				}break;
 				case OOX::et_pic:
 				{
@@ -714,7 +725,7 @@ namespace PPTX
 				case OOX::et_lc_LockedCanvas:
 				{
 					smart_ptr<PPTX::Logic::SpTree> oSpTree = m_elem.smart_dynamic_cast<PPTX::Logic::SpTree>();
-					if (oSpTree.IsInit()) oSpTree->toXmlWriterVML(pWriter, oTheme, oClrMap);
+					if (oSpTree.IsInit()) oSpTree->toXmlWriterVML(pWriter, oTheme, oClrMap, pContainer);
 				}break;
 				default:
 					break;

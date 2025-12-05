@@ -53,7 +53,9 @@ namespace OOX
 		IFileContainer(OOX::Document* pMain);
 		virtual ~IFileContainer();
 
-        bool												m_bSpreadsheets;
+		bool m_bVisioPages = false;
+        bool m_bSpreadsheets = false;
+
 		static boost::unordered_map<std::wstring, size_t>	m_mapEnumeratedGlobal;
 		OOX::Document*										m_pMainDocument;
         smart_ptr<OOX::CRels>								m_pCurRels;

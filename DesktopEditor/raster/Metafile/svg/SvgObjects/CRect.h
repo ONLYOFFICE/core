@@ -7,10 +7,12 @@ namespace SVG
 {
 	class CRect : public CRenderedObject
 	{
+		friend class CObject;
+		CRect(CSvgReader& oReader, CRenderedObject* pParent = NULL);
 	public:
-		CRect(XmlUtils::CXmlNode& oNode, CRenderedObject* pParent = NULL);
-
 		virtual ~CRect();
+
+		void SetAttribute(const std::string& sName, CSvgReader& oReader) override;
 
 		void SetData(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false) override;
 
@@ -19,7 +21,7 @@ namespace SVG
 	private:
 		void ApplyStyle(IRenderer* pRenderer, const TSvgStyles* pStyles, const CSvgFile* pFile, int& nTypePath, const CRenderedObject* pContexObject = NULL) const override;
 
-		TBounds GetBounds() const override;
+		TBounds GetBounds(SvgMatrix* pTransform = nullptr) const override;
 
 		TRect    m_oRect;
 

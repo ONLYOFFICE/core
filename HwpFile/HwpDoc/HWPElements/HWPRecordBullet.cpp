@@ -45,25 +45,35 @@ CHWPRecordBullet::CHWPRecordBullet(CHWPDocInfo& oDocInfo, int nTagNum, int nLeve
 		oBuffer.ReadChar(m_chCheckBulletChar);
 }
 
-CHWPRecordBullet::CHWPRecordBullet(CHWPDocInfo& oDocInfo, CXMLNode& oNode, int nVersion)
+CHWPRecordBullet::CHWPRecordBullet(CHWPDocInfo& oDocInfo, CXMLReader& oReader, EHanType eType)
 	: CHWPRecord(EHWPTag::HWPTAG_BULLET, 0, 0), m_pParent(&oDocInfo)
 {
-	std::wstring wsAttributeValue = oNode.GetAttribute(L"char");
-
-	if (!wsAttributeValue.empty())
-		m_chBulletChar = wsAttributeValue.at(0);
-
-	wsAttributeValue = oNode.GetAttribute(L"checkedChar");
-
-	if (!wsAttributeValue.empty())
-		m_chCheckBulletChar = wsAttributeValue.at(0);
-
-	m_nBulletImage = oNode.GetAttributeInt(L"useImage");
-
-	for (CXMLNode& oChild : oNode.GetChilds())
+	if (EHanType::HWPML == eType)
+		return; // TODO:: реализовать как встретится пример
+	
+	START_READ_ATTRIBUTES(oReader)
 	{
-		if (L"hc:img" == oChild.GetName())
-			m_sBinItemRefID = oChild.GetAttribute(L"binaryItemIDRef");
+		if ("char" == sAttributeName)
+		{
+			const HWP_STRING wsValue{oReader.GetText()};
+
+			if (!wsValue.empty())
+				m_chBulletChar = wsValue.at(0);
+		}
+		else if ("checkedChar" == sAttributeName)
+		{
+			const HWP_STRING wsValue{oReader.GetText()};
+
+			if (!wsValue.empty())
+				m_chCheckBulletChar = wsValue.at(0);
+		}
+		else if ("useImage" == sAttributeName)
+			m_nBulletImage = oReader.GetInt();
 	}
+	END_READ_ATTRIBUTES(oReader)
+
+	WHILE_READ_NEXT_NODE_WITH_ONE_NAME(oReader, "hc:img")
+		m_sBinItemRefID = oReader.GetAttribute("binaryItemIDRef");
+	END_WHILE
 }
 }

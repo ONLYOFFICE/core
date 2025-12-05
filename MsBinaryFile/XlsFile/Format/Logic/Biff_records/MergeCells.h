@@ -51,13 +51,14 @@ public:
 
 	
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 
 	static const ElementType	type = typeMergeCells;
 
 	int serialize(std::wostream & stream);
 
 //-----------------------------
-	_UINT16					cmcs;
+    _UINT16					cmcs = 0;
 	BiffStructurePtrVector	rgref;
 
 };

@@ -51,12 +51,13 @@ public:
 	static const ElementType	type = typeCFColor;
 
 	virtual void load(CFRecord& record);
+    virtual void save(CFRecord& record);
 
 	XColorType	xclrType;
-	ColorICV	icv;
+    ColorICV	icv = 0;
 	LongRGBA	rgb;
-	ColorTheme	theme;
-	double		numTint;
+    ColorTheme	theme = 0;
+    double		numTint = 0;
 };
 
 } // namespace XLS

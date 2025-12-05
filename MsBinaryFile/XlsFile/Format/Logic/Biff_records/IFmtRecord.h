@@ -50,11 +50,12 @@ public:
 
 	
 	void readFields(CFRecord& record);
+	void writeFields(CFRecord& record);
 
 	static const ElementType	type = typeIFmtRecord;
 
 //-----------------------------
-	_UINT16 ifmt;
+	_UINT16 ifmt = 0;
 };
 
 } // namespace XLS

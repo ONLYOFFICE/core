@@ -52,6 +52,7 @@ public:
 	static const ElementType	type = typeFrtRefHeaderNoGrbit;
 
 	virtual void load(CFRecord& record);
+    virtual void save(CFRecord& record);
 
 
 	CFRecordType::TypeId rt;

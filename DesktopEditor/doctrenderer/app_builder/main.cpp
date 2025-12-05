@@ -81,6 +81,8 @@ void parse_args(NSDoctRenderer::CDocBuilder* builder, int argc, char *argv[])
 
 bool CheckLicense(const std::wstring& sSrc, const std::wstring& sDst)
 {
+	if (sDst.empty())
+		return false;
 	NSFile::CFileBinary::Remove(sDst);
 	NSFile::CFileBinary::Copy(sSrc, sDst);
 	return NSFile::CFileBinary::Exists(sDst);

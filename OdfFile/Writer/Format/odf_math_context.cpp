@@ -134,12 +134,10 @@ namespace odf_writer
 		lvl_down_counter = -1;
 		lvl_max = 1;
 		lvl_min = -1;
-		//debug_stream.open(debug_fileName);
 	}
 
 	odf_math_context::~odf_math_context()
 	{
-		//debug_stream.close();
 	}
 
 	void odf_math_context::set_styles_context(odf_style_context_ptr style_context)
@@ -172,14 +170,21 @@ namespace odf_writer
 
 		size_t level = impl_->current_level_.size();
 
-		odf_math_level_state	level_state = { NULL, NULL, root };
+		odf_math_level_state level_state = { NULL, NULL, root };
 		odf_element_state state(root, L"", office_element_ptr(), level);
 
 		impl_->current_level_.push_back(level_state);
 		impl_->current_math_state_.elements_.push_back(state);
 		style_flag = true;		
 	}
+	void odf_math_context::end_math()
+	{
+		if (impl_->current_math_state_.elements_.empty()) return;
 
+		end_element();
+
+		impl_->clear_current();
+	}
 	bool odf_math_context::start_element(office_element_ptr & elm)
 	{
 		if (!elm)
@@ -198,19 +203,18 @@ namespace odf_writer
 
 	void odf_math_context::end_element()
 	{
+		if (impl_->current_level_.empty()) return;
+
 		impl_->current_level_.pop_back();
 	}
 	bool odf_math_context::isEmpty()
 	{
 		return impl_->current_level_.empty();
 	}
-	void odf_math_context::end_math()
+	void odf_math_context::add_content(const std::wstring& content)
 	{
-		if (impl_->current_math_state_.elements_.empty()) return;		
-
-		end_element();
-
-		impl_->clear_current();
+		if (!impl_->root_element_) return;
+		impl_->root_element_->content_ = content;
 	}
 }
 }

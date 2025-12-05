@@ -185,6 +185,7 @@ namespace NSOnlineOfficeBinToPdf
 		ctShapeStart                    = 167,
 		ctShapeEnd                      = 168,
 		ctHeadings                      = 169,
+		ctRedact                        = 170,
 
 		ctPageWidth                     = 200,
 		ctPageHeight                    = 201,

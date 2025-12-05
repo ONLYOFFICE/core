@@ -173,7 +173,19 @@ const bool OBJECTS::loadContentRead(BinReaderProcessor& proc)
 	return count_1 > 0 || count_4 > 0;
 }
 
-
+const bool OBJECTS::saveContent(BinProcessor& proc)
+{
+	for(auto i : m_arrObject)
+	{
+		if(i.first == nullptr)
+			continue;
+		proc.mandatory(*i.first);
+		for(auto j : i.second)
+			if(j != nullptr)
+				proc.mandatory(*j);
+	}
+	return true;
+}
 
 
 

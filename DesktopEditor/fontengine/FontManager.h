@@ -186,6 +186,7 @@ public:
 	virtual std::wstring GetFontType();
 	virtual unsigned int GetNameIndex(const std::wstring& wsName);
 	virtual unsigned int GetGIDByUnicode(const unsigned int& unCode);
+	virtual int GetUnicodeByGID(const int& gid);
 
 	virtual void SetSubpixelRendering(const bool& hmul, const bool& vmul);
 

@@ -36,8 +36,10 @@
 
 #include "../../../DjVuFile/DjVu.h"
 #include "../../../DocxRenderer/DocxRenderer.h"
+#include "../../../TxtFile/Source/TxtRenderer.h"
 #include "../../../PdfFile/PdfFile.h"
 #include "../../../XpsFile/XpsFile.h"
+#include "../../../OFDFile/OFDFile.h"
 #include "../../../OfficeUtils/src/ZipFolder.h"
 
 #include "common.h"
@@ -416,6 +418,8 @@ namespace NExtractTools
 			return new CXpsFile(pFonts);
 		case AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_DJVU:
 			return new CDjVuFile(pFonts);
+		case AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_OFD:
+			return new COFDFile(pFonts);
 		default:
 			break;
 		}
@@ -704,6 +708,9 @@ namespace NExtractTools
 				password = params.getSavePassword();
 				if (!oPdfResult.LoadFromFile(sFrom, L"", password, password))
 					return false;
+
+				RELEASEOBJECT(params.m_sPassword);
+				params.m_sPassword = new std::wstring(params.getSavePassword());
 			}
 			else
 				return false;
@@ -1027,6 +1034,9 @@ namespace NExtractTools
 			case AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_XPS:
 				pReader = new CXpsFile(pApplicationFonts);
 				break;
+			case AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_OFD:
+				pReader = new COFDFile(pApplicationFonts);
+				break;
 			case AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_DJVU:
 				pReader = new CDjVuFile(pApplicationFonts);
 				break;
@@ -1041,49 +1051,57 @@ namespace NExtractTools
 				std::wstring sPassword = params.getPassword();
 				pReader->LoadFromFile(sFrom, L"", sPassword, sPassword);
 
-				CDocxRenderer oDocxRenderer(pApplicationFonts);
-
-				NSDocxRenderer::TextAssociationType taType = NSDocxRenderer::TextAssociationType::tatPlainLine;
-				if (params.m_oTextParams)
+				// pdf -> txt via TxtRenderer
+				if (nFormatTo == AVS_OFFICESTUDIO_FILE_DOCUMENT_TXT && nFormatFrom == AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF)
 				{
-					InputParamsText *oTextParams = params.m_oTextParams;
-					if (oTextParams->m_nTextAssociationType)
-					// taType = static_cast<NSDocxRenderer::TextAssociationType>(*oTextParams->m_nTextAssociationType);
+					CTxtRenderer txt_renderer;
+					txt_renderer.Convert(pReader, sTo);
+				}
+				else // crossplatform -> docx -> txt via DocxRenderer
+				{
+					CDocxRenderer oDocxRenderer(pApplicationFonts);
+					NSDocxRenderer::TextAssociationType taType = NSDocxRenderer::TextAssociationType::tatPlainLine;
+					if (params.m_oTextParams)
 					{
-						switch (*oTextParams->m_nTextAssociationType)
+						InputParamsText *oTextParams = params.m_oTextParams;
+						if (oTextParams->m_nTextAssociationType)
+						// taType = static_cast<NSDocxRenderer::TextAssociationType>(*oTextParams->m_nTextAssociationType);
 						{
-						case 0:
-							taType = NSDocxRenderer::TextAssociationType::tatBlockChar;
-							break;
-						case 1:
-							taType = NSDocxRenderer::TextAssociationType::tatBlockLine;
-							break;
-						case 2:
-							taType = NSDocxRenderer::TextAssociationType::tatPlainLine;
-							break;
-						case 3:
-							taType = NSDocxRenderer::TextAssociationType::tatPlainParagraph;
-							break;
-						default:
-							break;
+							switch (*oTextParams->m_nTextAssociationType)
+							{
+							case 0:
+								taType = NSDocxRenderer::TextAssociationType::tatBlockChar;
+								break;
+							case 1:
+								taType = NSDocxRenderer::TextAssociationType::tatBlockLine;
+								break;
+							case 2:
+								taType = NSDocxRenderer::TextAssociationType::tatPlainLine;
+								break;
+							case 3:
+								taType = NSDocxRenderer::TextAssociationType::tatPlainParagraph;
+								break;
+							default:
+								break;
+							}
 						}
 					}
+					oDocxRenderer.SetTextAssociationType(taType);
+
+					std::wstring sTempDirOut = combinePath(convertParams.m_sTempDir, L"output");
+					if (!NSDirectory::Exists(sTempDirOut))
+						NSDirectory::CreateDirectory(sTempDirOut);
+
+					std::wstring sTempDirOutTmp = combinePath(convertParams.m_sTempDir, L"output_tmp");
+					if (!NSDirectory::Exists(sTempDirOutTmp))
+						NSDirectory::CreateDirectory(sTempDirOutTmp);
+
+					oDocxRenderer.SetTempFolder(sTempDirOutTmp);
+					nRes = oDocxRenderer.Convert(pReader, sTempDirOut, false);
+
+					if (nRes == S_OK)
+						nRes = fromDocxDir(sTempDirOut, sTo, nFormatTo, params, convertParams);
 				}
-				oDocxRenderer.SetTextAssociationType(taType);
-
-				std::wstring sTempDirOut = combinePath(convertParams.m_sTempDir, L"output");
-				if (!NSDirectory::Exists(sTempDirOut))
-					NSDirectory::CreateDirectory(sTempDirOut);
-
-				std::wstring sTempDirOutTmp = combinePath(convertParams.m_sTempDir, L"output_tmp");
-				if (!NSDirectory::Exists(sTempDirOutTmp))
-					NSDirectory::CreateDirectory(sTempDirOutTmp);
-
-				oDocxRenderer.SetTempFolder(sTempDirOutTmp);
-				nRes = oDocxRenderer.Convert(pReader, sTempDirOut, false);
-
-				if (nRes == S_OK)
-					nRes = fromDocxDir(sTempDirOut, sTo, nFormatTo, params, convertParams);
 			}
 			else
 				nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;

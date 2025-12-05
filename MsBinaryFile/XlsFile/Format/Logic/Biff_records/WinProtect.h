@@ -47,11 +47,12 @@ public:
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 
 	static const ElementType type = typeWinProtect;
 
 //-----------------------------
-	Boolean<unsigned short> fLockWn;
+    Boolean<unsigned short> fLockWn = false;
 
 };
 

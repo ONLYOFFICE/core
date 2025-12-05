@@ -96,6 +96,7 @@ namespace NExtractTools
 		TCD_XLSB2XLST,
 		TCD_XLSX2XLSB,
 		TCD_XLST2XLSB,
+		TCD_XLSX2XLS,
 
 		TCD_PPTX2PPTT,
 		TCD_PPTT2PPTX,
@@ -110,6 +111,14 @@ namespace NExtractTools
 		TCD_PPSM2PPTX,
 		TCD_POTM2PPTM,
 		TCD_PPSM2PPTM,
+
+		TCD_VSDX2VSDT,
+		TCD_VSDX2VSDT_BIN,
+		TCD_VSDT2VSDX,
+		TCD_VSDT2VSDM,
+		TCD_VSDT2VSTX,
+		TCD_VSDT2VSTM,
+		TCD_VSDT_BIN2VSDX,
 
 		TCD_ZIPDIR,
 		TCD_UNZIPDIR,
@@ -137,6 +146,7 @@ namespace NExtractTools
 		TCD_DOC2DOCT_BIN,
 		TCD_DOC2DOCX,
 		TCD_DOC2DOCM,
+		TCD_COMPOUND2,
 		// xls 2
 		TCD_XLS2XLST,
 		TCD_XLS2XLST_BIN,
@@ -221,6 +231,7 @@ namespace NExtractTools
         TCD_DOCT_BIN2,
         TCD_XLST_BIN2,
         TCD_PPTT_BIN2,
+		TCD_VSDT_BIN2,
         TCD_DOCUMENT2,
         TCD_SPREADSHEET2,
         TCD_PRESENTATION2,
@@ -484,6 +495,8 @@ namespace NExtractTools
 	class InputParams
 	{
 	public:
+        std::wstring* m_sDefaultFontName;
+        int* m_nDefaultFontSize;
 		std::wstring* m_sKey;
 		std::wstring* m_sFileFrom;
 		std::wstring* m_sFileTo;
@@ -519,6 +532,8 @@ namespace NExtractTools
 	public:
 		InputParams()
 		{
+			m_sDefaultFontName = NULL;
+			m_nDefaultFontSize = NULL;
 			m_sKey = NULL;
 			m_sFileFrom = NULL;
 			m_sFileTo = NULL;
@@ -552,6 +567,8 @@ namespace NExtractTools
 		}
 		~InputParams()
 		{
+			RELEASEOBJECT(m_sDefaultFontName);
+			RELEASEOBJECT(m_nDefaultFontSize);
 			RELEASEOBJECT(m_sKey);
 			RELEASEOBJECT(m_sFileFrom);
 			RELEASEOBJECT(m_sFileTo);
@@ -676,6 +693,16 @@ namespace NExtractTools
 								{
 									RELEASEOBJECT(m_nFormatTo);
 									m_nFormatTo = new int(XmlUtils::GetInteger(sValue));
+								}
+								else if (_T("m_sDefaultFontName") == sName)
+								{
+									RELEASEOBJECT(m_sDefaultFontName);
+									m_sDefaultFontName = new std::wstring(sValue);
+								}
+								else if (_T("m_nDefaultFontSize") == sName)
+								{
+									RELEASEOBJECT(m_nDefaultFontSize);
+									m_nDefaultFontSize = new int(XmlUtils::GetInteger(sValue));
 								}
 								else if (_T("m_nCsvTxtEncoding") == sName)
 								{
@@ -956,6 +983,14 @@ namespace NExtractTools
 					if (nFormatFrom != FileFormatChecker.nFileType && FileFormatChecker.nFileType != AVS_OFFICESTUDIO_FILE_UNKNOWN)
 					{
 						nFormatFrom = FileFormatChecker.nFileType;
+						bool bOFormAsPdf = nFormatFrom == AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM_PDF && 
+							NSProcessEnv::IsPresent(NSProcessEnv::Converter::gc_oformAsPdf) && 
+							NSProcessEnv::GetBoolValue(NSProcessEnv::Converter::gc_oformAsPdf);
+						if (bOFormAsPdf)
+						{
+							nFormatFrom = AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF;
+						}
+						
 						*m_nFormatFrom = nFormatFrom;
 						
 						 changeFormatFromPrev(nFormatFrom); 
@@ -973,7 +1008,6 @@ namespace NExtractTools
 					nFormatTo = AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM_PDF;
 					*m_nFormatTo = AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM_PDF;
 				}
-
 				if (NULL != m_oMailMergeSend)
 					eRes = TCD_MAILMERGE;
 				else if ((AVS_OFFICESTUDIO_FILE_DOCUMENT_XML == nFormatFrom) && 0 != (AVS_OFFICESTUDIO_FILE_OTHER & nFormatTo))
@@ -996,6 +1030,8 @@ namespace NExtractTools
 					eRes = TCD_XLST_BIN2;
 				else if (AVS_OFFICESTUDIO_FILE_CANVAS_PRESENTATION == nFormatFrom)
 					eRes = TCD_PPTT_BIN2;
+				else if (AVS_OFFICESTUDIO_FILE_CANVAS_DRAW == nFormatFrom)
+					eRes = TCD_VSDT_BIN2;
 				else if (0 != (AVS_OFFICESTUDIO_FILE_CROSSPLATFORM & nFormatFrom))
 					eRes = TCD_CROSSPLATFORM2;
 				else if (AVS_OFFICESTUDIO_FILE_CANVAS_PDF == nFormatFrom)
@@ -1010,6 +1046,8 @@ namespace NExtractTools
 					eRes = TCD_VBAPROJECT2XML;
 				else if (AVS_OFFICESTUDIO_FILE_UNKNOWN == nFormatFrom && AVS_OFFICESTUDIO_FILE_OTHER_ZIP == nFormatTo)
 					eRes = TCD_ZIPDIR;
+				else if (AVS_OFFICESTUDIO_FILE_OTHER_COMPOUND == nFormatFrom)
+					eRes = TCD_COMPOUND2;
 			}
 			else
 				eRes = TCD_ERROR;

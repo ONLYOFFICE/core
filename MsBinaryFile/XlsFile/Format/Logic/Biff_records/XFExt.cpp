@@ -66,5 +66,18 @@ void XFExt::readFields(CFRecord& record)
 	}
 }
 
+void XFExt::writeFields(CFRecord& record)
+{
+    frtHeader.rt = 0x0892;
+    record << frtHeader;
+    record.reserveNunBytes(2); // reserved
+    record << ixfe;
+    record.reserveNunBytes(2); // reserved
+    cexts = rgExt.size();
+    record << cexts;
+    for(auto i : rgExt)
+        record << *i;
+}
+
 } // namespace XLS
 

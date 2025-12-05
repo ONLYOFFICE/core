@@ -62,6 +62,14 @@ void MergeCells::readFields(CFRecord& record)
 	}
 }
 
+void MergeCells::writeFields(CFRecord& record)
+{
+    cmcs = rgref.size();
+	record << cmcs;
+    for(auto i : rgref)
+        record << *i;
+}
+
 int MergeCells::serialize(std::wostream & stream)
 {
 	CP_XML_WRITER(stream)    

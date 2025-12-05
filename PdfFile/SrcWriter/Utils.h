@@ -140,6 +140,34 @@ namespace PdfWriter
 	void  UIntChangeBit2(unsigned int& nValue, short nBit);
 
 	std::string DateNow();
+	std::wstring NormalizeWhitespace(const std::wstring& s);
+
+	// Пересечение многоугольников по теореме о разделяющей оси
+	bool SAT(const std::vector<CPoint>& poly1, const std::vector<CPoint>& poly2);
+	// Проверка, что все точки внутреннего полигона находятся внутри внешнего
+	bool isPolygonInsidePolygon(const std::vector<CPoint>& inner, const std::vector<CPoint>& outer);
+	// Проверка принадлежности точки выпуклому четырехугольнику
+	bool isPointInQuad(double px, double py,
+					   double x1, double y1, double x2, double y2,
+					   double x3, double y3, double x4, double y4);
+
+	class RectangleIntersection
+	{
+	private:
+		// Проверка на пересечение двух отрезков
+		static bool segmentsIntersect(const CPoint& a, const CPoint& b, const CPoint& c, const CPoint& d, CPoint& intersection);
+		// Проверка, находится ли точка внутри прямоугольника
+		static bool pointInRectangle(const CPoint& p, const std::vector<CPoint>& rect);
+		// Вычисление расстояния от точки до начала отрезка вдоль направления
+		static double distanceAlongLine(const CPoint& start, const CPoint& end, const CPoint& point);
+
+	public:
+		// Основная функция для нахождения отрезков вне всех прямоугольников
+		static std::vector<CSegment> findSegmentsOutsideRectangles(const CSegment& line, const std::vector<std::vector<CPoint>>& rectangles);
+		// Альтернативный подход: последовательное вычитание прямоугольников
+		static std::vector<CSegment> findSegmentsOutsideRectanglesSequential(const CSegment& line, const std::vector<std::vector<CPoint>>& rectangles);
+	};
+
 }
 
 #endif // _PDF_WRITER_SRC_UTILS_H

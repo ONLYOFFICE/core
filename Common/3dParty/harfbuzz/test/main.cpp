@@ -84,7 +84,7 @@ public:
 
 /* fonts */
 const char *fonts_paths[NUM_EXAMPLES] = {
-	"C:/Windows/Fonts/arial.ttf",
+	"C:/Windows/Fonts/calibri.ttf",
 	//"C:/Windows/Fonts/arial.ttf",
 	"C:/Users/korol/AppData/Local/Microsoft/Windows/Fonts/ArabicTest.ttf",
 	"C:/Windows/Fonts/simsun.ttc"
@@ -95,7 +95,7 @@ const char *num_glyph_types[NUM_GLYPH_TYPES] = {"UNCLASSIFIED", "BASE_GLYPH", "L
 
 /* tranlations courtesy of google */
 const char *texts[NUM_EXAMPLES] = {
-	"hello",
+	"fi",
 	"لا لآ لأ لا",
 	"懶惰的姜貓"
 };
@@ -107,7 +107,7 @@ const hb_direction_t text_directions[NUM_EXAMPLES] = {
 };
 
 const int text_skip[NUM_EXAMPLES] = {
-	1,
+	0,
 	0,
 	1,
 };
@@ -435,6 +435,11 @@ static void print_layout_info_using_private_api(hb_blob_t *blob)
 /* end of private API use */
 #endif
 
+struct hb_feature_test {
+	hb_tag_t tag;
+	uint32_t value;
+};
+
 int main(int argc, char *argv[])
 {
 	// hb_blob_t* blobFileTest = hb_blob_create_from_file("C:/Windows/Fonts/calibri.ttf");
@@ -499,28 +504,34 @@ int main(int argc, char *argv[])
 		hb_buffer_set_language(buf, hb_language_from_string(languages[i], strlen(languages[i])));
 		// hb_buffer_set_cluster_level (buf, HB_BUFFER_CLUSTER_LEVEL_MONOTONE_GRAPHEMES);
 		// hb_buffer_set_cluster_level (buf, HB_BUFFER_CLUSTER_LEVEL_MONOTONE_CHARACTERS);
-		hb_buffer_set_cluster_level(buf, HB_BUFFER_CLUSTER_LEVEL_CHARACTERS);
+		hb_buffer_set_cluster_level(buf, HB_BUFFER_CLUSTER_LEVEL_MONOTONE_GRAPHEMES);
 
-#if 0
-#define userfeatures_count 4
-        hb_feature_t userfeatures[userfeatures_count];
-        hb_tag_t tags[] = {
-            HB_TAG('l','i','g','a'),
-            HB_TAG('c','l','i','g'),
-            HB_TAG('d','l','i','g'),
-            HB_TAG('h','l','i','g'),
-        };
-        for (int f = 0; f < userfeatures_count; f++)
-        {
-            userfeatures[f].tag = tags[f];
-            userfeatures[f].value = 1;
-            userfeatures[f].start = HB_FEATURE_GLOBAL_START;
-            userfeatures[f].end = HB_FEATURE_GLOBAL_END;
-        }
-#else
-#define userfeatures_count 0
-		hb_feature_t *userfeatures = NULL;
-#endif
+		hb_feature_test features[] {
+			{HB_TAG('r','l','i','g'), 1},
+			{HB_TAG('l','i','g','a'), 0},
+			{HB_TAG('c','l','i','g'), 1},
+			{HB_TAG('h','l','i','g'), 1},
+			{HB_TAG('d','l','i','g'), 1},
+			{HB_TAG('k','e','r','n'), 2},
+			{0, 0}
+		};
+
+		int userfeatures_count = 0;
+		hb_feature_t userfeatures[100];
+
+		hb_feature_test* current_feature = features;
+		while (current_feature->tag != 0)
+		{
+			if (current_feature->value != 2)
+			{
+				userfeatures[userfeatures_count].tag   = current_feature->tag;
+				userfeatures[userfeatures_count].value = current_feature->value;
+				userfeatures[userfeatures_count].start = HB_FEATURE_GLOBAL_START;
+				userfeatures[userfeatures_count].end   = HB_FEATURE_GLOBAL_END;
+				userfeatures_count++;
+			}
+			current_feature++;
+		}
 
 		/* Layout the text */
 		hb_buffer_add_utf8(buf, texts[i], strlen(texts[i]), 0, strlen(texts[i]));
@@ -531,7 +542,7 @@ int main(int argc, char *argv[])
 		// const char*const pHbShapers[] = { "graphite2", "coretext_aat", "ot", "fallback", nullptr };
 		// bool ok = hb_shape_full(hb_ft_font[i], buf, userfeatures, userfeatures_count, pHbShapers);
 
-		hb_shape(hb_ft_font[i], buf, userfeatures, userfeatures_count);
+		hb_shape(hb_ft_font[i], buf, (userfeatures_count != 0) ? userfeatures : NULL, userfeatures_count);
 
 		unsigned int glyph_count;
 		hb_glyph_info_t *glyph_info = hb_buffer_get_glyph_infos(buf, &glyph_count);

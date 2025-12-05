@@ -3,7 +3,7 @@
 
 #include "HWPRecord.h"
 #include "../HWPDocInfo.h"
-#include "../Common/XMLNode.h"
+#include "../Common/XMLReader.h"
 
 namespace HWP
 {
@@ -74,10 +74,10 @@ class CHWPRecordParaShape : public CHWPRecord
 	bool m_bAutoSpaceEAsianNum;
 
 	int m_nLineSpacingType;
-	void RecursiveParaShape(CXMLNode& oNode);
+	void RecursiveParaShape(CXMLReader& oReader);
 public:
 	CHWPRecordParaShape(CHWPDocInfo& oDocInfo, int nTagNum, int nLevel, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
-	CHWPRecordParaShape(CHWPDocInfo& oDocInfo, CXMLNode& oNode, int nVersion);
+	CHWPRecordParaShape(CHWPDocInfo& oDocInfo, CXMLReader& oReader, EHanType eType);
 
 	EHorizontalAlign GetHorizantalAlign() const;
 	EVerticalAlign GetVerticalAlign() const;
@@ -91,6 +91,10 @@ public:
 	int GetMarginNext() const;
 
 	int GetIndent() const;
+	int GetLeftIndent() const;
+	int GetRightIndent() const;
+
+	short GetTabDef() const;
 
 	bool KeepWithNext() const;
 };

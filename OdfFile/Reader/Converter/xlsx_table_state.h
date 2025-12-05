@@ -146,8 +146,8 @@ public:
 	void set_protection_delete_columns(bool val);
 	void set_protection_delete_rows(bool val);
 
-	void start_column	(unsigned int repeated, const std::wstring & defaultCellStyleName);
-    void start_row		(const std::wstring & StyleName, const std::wstring & defaultCellStyleName);
+	void start_column	(unsigned int repeated, const std::wstring & defaultCellStyleName, bool bHeader = false);
+    void start_row		(const std::wstring & StyleName, const std::wstring & defaultCellStyleName, bool bHeader = false);
 
 	void set_column_break_before();
 	void set_column_break_after();
@@ -159,7 +159,7 @@ public:
     bool is_empty_row	() const;
     void end_row		();
 
-	void add_empty_row(int count);
+	void add_empty_row(int count, bool bHeader = false);
 
 	void set_end_table(){ bEndTable = true; }
 	bool get_end_table(){ return bEndTable; }
@@ -269,9 +269,13 @@ private:
     std::wstring						columns_spanned_style_;
    
 	std::vector<xlsx_row_spanned>		rows_spanned_;
+
     std::vector<unsigned int>			columns_;
     unsigned int						columns_count_;
     double								table_column_last_width_;
+	
+	std::vector<std::pair<unsigned int, unsigned int>> columnsHeaders_; // start, repeate
+	std::vector<std::pair<unsigned int, unsigned int>> rowsHeaders_;
     
     std::vector<unsigned int>			column_breaks_;
     std::vector<unsigned int>			row_breaks_;

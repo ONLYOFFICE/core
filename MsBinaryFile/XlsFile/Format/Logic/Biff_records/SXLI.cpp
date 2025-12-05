@@ -95,5 +95,38 @@ void SXLI::readFields(CFRecord& record)
 	}
 }
 
+void SXLIItem::save(CFRecord& record)
+{
+    unsigned short flags = 0;
+    SETBIT(flags, 0, fMultiDataName)
+    SETBITS(flags, 1, 8, iData)
+    SETBIT(flags, 9, fSbt)
+    SETBIT(flags, 10, fBlock)
+    SETBIT(flags, 11, fGrand)
+    SETBIT(flags, 12, fMultiDataOnAxis)
+    if (fGrand)
+        isxviMac = 1;
+    record << cSic << itmType << isxviMac << flags;
+    for(auto i : rgisxvi)
+        record << i;
+}
+
+void SXLI::writeFields(CFRecord& record)
+{
+    const auto maxRecSize = 8224;
+    while(!m_arItems.empty())
+    {
+        auto itemPose = record.getRdPtr();
+        m_arItems.at(0).save(record);
+        if(record.getRdPtr() > maxRecSize)
+        {
+            auto itemSize = record.getRdPtr() - itemPose;
+            record.RollRdPtrBack(itemSize);
+            return;
+        }
+        m_arItems.erase(m_arItems.begin());
+    }
+}
+
 } // namespace XLS
 

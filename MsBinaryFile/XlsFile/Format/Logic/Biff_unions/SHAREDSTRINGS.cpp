@@ -70,6 +70,41 @@ const bool SHAREDSTRINGS::loadContent(BinProcessor& proc)
 	return true;
 }
 
+const bool SHAREDSTRINGS::saveContent(BinProcessor& proc)
+{
+    if(sstPtr == nullptr)
+        return false;
+    proc.mandatory(*sstPtr);
+    auto castedSst = static_cast<SST*>(sstPtr.get());
+    if(!castedSst->rgb.empty())
+    {
+        const auto MaxRecordSize = 8224;
+        while(!castedSst->rgb.empty())
+        {
+            CFRecordPtr tempRecord(new CFRecord(rt_Continue, proc.getGlobalWorkbookInfo()));
+            Continue continueRecord;
+            while(!castedSst->rgb.empty())
+            {
+                auto oldPose = tempRecord->getRdPtr();
+                *tempRecord << castedSst->rgb.at(0);
+                if(tempRecord->getRdPtr() > MaxRecordSize)
+                {
+                    tempRecord->RollRdPtrBack(tempRecord->getRdPtr() - oldPose);
+                    break;
+                }
+                castedSst->rgb.erase(castedSst->rgb.begin());
+            }
+            continueRecord.m_iDataSize = tempRecord->getRdPtr();
+            continueRecord.m_pData = new char[continueRecord.m_iDataSize];
+            auto copyData = tempRecord->getCurStaticData<char>() - continueRecord.m_iDataSize;
+            memcpy(continueRecord.m_pData, copyData, continueRecord.m_iDataSize);
+            proc.mandatory(continueRecord);
+        }
+
+    }
+    return true;
+}
+
 int SHAREDSTRINGS::serialize(std::wostream & stream)
 {
 	for (std::list<XLS::BaseObjectPtr>::iterator it = elements_.begin(); it != elements_.end(); ++it)

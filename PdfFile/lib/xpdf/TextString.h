@@ -52,6 +52,7 @@ public:
   // Get the Unicode characters in the TextString.
   int getLength() { return len; }
   Unicode *getUnicode() { return u; }
+  bool isPDFDocEncoding() { return bPDFDocEncoding; }
 
   // Create a PDF text string from a TextString.
   GString *toPDFTextString();
@@ -63,6 +64,7 @@ private:
 
   void expand(int delta);
 
+  bool bPDFDocEncoding;
   Unicode *u;			// NB: not null-terminated
   int len;
   int size;

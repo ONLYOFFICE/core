@@ -45,6 +45,10 @@
 #undef DeleteFile
 #endif
 
+#if defined(GetSystemDirectory)
+#undef GetSystemDirectory
+#endif
+
 #ifndef _BUILD_FILE_CROSSPLATFORM_H_
 #define _BUILD_FILE_CROSSPLATFORM_H_
 
@@ -212,7 +216,7 @@ namespace NSFile
 	class KERNEL_DECL CBase64Converter
 	{
 	public:
-		static bool Encode(BYTE* pDataSrc, int nLenSrc, char*& pDataDst, int& nLenDst, DWORD dwFlags = NSBase64::B64_BASE64_FLAG_NONE);
+		static bool Encode(const BYTE* pDataSrc, int nLenSrc, char*& pDataDst, int& nLenDst, DWORD dwFlags = NSBase64::B64_BASE64_FLAG_NONE);
 		static bool Decode(const char* pDataSrc, int nLenSrc, BYTE*& pDataDst, int& nLenDst);
 	};
 

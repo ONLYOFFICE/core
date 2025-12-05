@@ -203,21 +203,27 @@ void calc_tab_stops(const style_instance * styleInstance, oox::tabs_context & co
         styleInstance = styleInstance->parent();
     }
 	double margin_left = 0;
+    double margin_right = 0;
 
 	for (size_t i = 0; i < parProps.size(); i++)
 	{
 		if (parProps[i]->content_.fo_margin_left_)
 			margin_left = 20.0 * parProps[i]->content_.fo_margin_left_->get_length().get_value_unit(odf_types::length::pt);
+
+        if( parProps[i]->content_.fo_margin_right_)
+        {
+            margin_right= 20.0 * parProps[i]->content_.fo_margin_right_->get_length().get_value_unit(odf_types::length::pt);
+        }
 		
-		if (parProps[i]->content_.style_tab_stops_)
-		{
-			style_tab_stops *tab_stops = dynamic_cast<style_tab_stops*>(parProps[i]->content_.style_tab_stops_.get());
-			context.reset();
-			for (size_t j = 0; j < tab_stops->content_.size(); j++)
-			{
-				context.add(tab_stops->content_[j], margin_left);
-			}
-		}
+        if ( parProps[i]->content_.style_tab_stops_ )
+        {
+            style_tab_stops *tab_stops = dynamic_cast<style_tab_stops*>(parProps[i]->content_.style_tab_stops_.get());
+            context.reset();
+            for (size_t j = 0; j < tab_stops->content_.size(); j++)
+            {
+                context.add(tab_stops->content_[j], margin_left, margin_right);
+            }
+        }
 	}
 }
 

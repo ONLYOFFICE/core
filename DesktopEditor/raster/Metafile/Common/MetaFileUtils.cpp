@@ -93,7 +93,7 @@ namespace MetaFile
 
 		return false;
 	}
-	bool ReadImageInfoHeader(BYTE* pHeaderBuffer, unsigned int ulHeaderBufferLen, BYTE* pImageBuffer, unsigned int ulImageBufferLen, BYTE** ppDstBuffer, unsigned int* pulWidth, unsigned int* pulHeight)
+	bool ReadImageInfoHeader(BYTE* pHeaderBuffer, unsigned int ulHeaderBufferLen, BYTE* pImageBuffer, unsigned int ulImageBufferLen, BYTE** ppDstBuffer, unsigned int* pulWidth, unsigned int* pulHeight, unsigned int& unColorUsed)
 	{
 		CDataStream oHeaderStream;
 		oHeaderStream.SetStream(pHeaderBuffer, ulHeaderBufferLen);
@@ -108,7 +108,6 @@ namespace MetaFile
 		unsigned int unImageSize;
 		unsigned int unXPelsPerMeter;
 		unsigned int unYPelsPerMeter;
-		unsigned int unColorUsed;
 		unsigned int unColorImportant;
 
 		oHeaderStream >> nWidth;
@@ -817,7 +816,7 @@ namespace MetaFile
 
 		return false;
 	}
-	void ReadImage(BYTE* pHeaderBuffer, unsigned int ulHeaderBufferLen, BYTE* pImageBuffer, unsigned int ulImageBufferLen, BYTE** ppDstBuffer, unsigned int* pulWidth, unsigned int* pulHeight)
+	void ReadImage(BYTE* pHeaderBuffer, unsigned int ulHeaderBufferLen, BYTE* pImageBuffer, unsigned int ulImageBufferLen, BYTE** ppDstBuffer, unsigned int* pulWidth, unsigned int* pulHeight, unsigned int& unColorUsed)
 	{
 		if (ulHeaderBufferLen <= 0 || NULL == pHeaderBuffer || NULL == pImageBuffer || ulImageBufferLen < 0)
 			return;
@@ -834,9 +833,9 @@ namespace MetaFile
 		else if (0x0000000C == ulHeaderSize) // BitmapCoreHeader
 			ReadImageCoreHeader(pHeaderBuffer + 4, ulHeaderBufferLen - 4, pImageBuffer, ulImageBufferLen, ppDstBuffer, pulWidth, pulHeight);
 		else // BitmapInfoHeader
-			ReadImageInfoHeader(pHeaderBuffer + 4, ulHeaderBufferLen - 4, pImageBuffer, ulImageBufferLen, ppDstBuffer, pulWidth, pulHeight);
+			ReadImageInfoHeader(pHeaderBuffer + 4, ulHeaderBufferLen - 4, pImageBuffer, ulImageBufferLen, ppDstBuffer, pulWidth, pulHeight, unColorUsed);
 	}
-	void ReadImage(BYTE* pImageBuffer, unsigned int unBufferLen, unsigned int unColorUsage, BYTE** ppDstBuffer, unsigned int* punWidth, unsigned int* punHeight)
+	void ReadImage(BYTE* pImageBuffer, unsigned int unBufferLen, unsigned int unColorUsage, BYTE** ppDstBuffer, unsigned int* punWidth, unsigned int* punHeight, unsigned int& unColorUsed)
 	{
 		if (unBufferLen <= 0 || NULL == pImageBuffer)
 			return;
@@ -866,7 +865,7 @@ namespace MetaFile
 			unsigned int unImageSize;
 			unsigned int unXPelsPerMeter;
 			unsigned int unYPelsPerMeter;
-			unsigned int unColorUsed;
+			// unsigned int unColorUsed;
 			unsigned int unColorImportant;
 
 			oHeaderStream >> nWidth;
@@ -897,7 +896,7 @@ namespace MetaFile
 				}
 
 				unHeaderSize += 4 * unColorUsed; // RGBQuad
-				ReadImageInfoHeader(pImageBuffer + 4, unHeaderSize - 4, pImageBuffer + unHeaderSize, unBufferLen - unHeaderSize, ppDstBuffer, punWidth, punHeight);
+				ReadImageInfoHeader(pImageBuffer + 4, unHeaderSize - 4, pImageBuffer + unHeaderSize, unBufferLen - unHeaderSize, ppDstBuffer, punWidth, punHeight, unColorUsed);
 			}
 			else
 			{
@@ -982,21 +981,6 @@ namespace MetaFile
 			for (unsigned int unIndex = 3; unIndex < unWidth * 4 * unHeight; unIndex += 4)
 				pBgra[unIndex] = 0xff;
 		}
-		else if (0x00660046 == unRasterOperation) //SRCINVERT
-		{
-			BYTE* pCur = pBgra;
-
-			for (unsigned int unY = 0; unY < unHeight; unY++)
-			{
-				for (unsigned int unX = 0; unX < unWidth; unX++)
-				{
-					unsigned int unIndex = (unY * unWidth + unX) * 4;
-
-					if (0x00 == pCur[unIndex + 0] && 0x00 == pCur[unIndex + 1] && 0x00 == pCur[unIndex + 2])
-						pCur[unIndex + 3] = 0;
-				}
-			}
-		}
 	}
 
 	std::wstring GetTempFilename(const std::wstring& sFolder)
@@ -1015,20 +999,21 @@ namespace MetaFile
 	{
 		std::wstring wsText;
 		for (const wchar_t& wChar : wsString)
-		    if (wChar == L'<')
+		{
+			if (wChar == L'<')
 			   wsText += L"&lt;";
-		    else if (wChar == L'>')
+			else if (wChar == L'>')
 			   wsText += L"&gt;";
-		    else if (wChar == L'&')
+			else if (wChar == L'&')
 			   wsText += L"&amp;";
-		    else if (wChar == L'\'')
+			else if (wChar == L'\'')
 			   wsText += L"&apos;";
-		    else if (wChar == L'"')
+			else if (wChar == L'"')
 			   wsText += L"&quot;";
 			else if (wChar == L'\r' || (wChar >= 0x00 && wChar <=0x1F))
 				continue;
-
-		    else wsText += wChar;
+			else wsText += wChar;
+		}
 		return wsText;
 	}
 

@@ -184,7 +184,8 @@ extern int g_nCurFormatVersion;
 		Legacy = 34,
 		LegacyIndent = 35,
 		LegacySpace = 36,
-		lvl_Jc = 37
+		lvl_Jc = 37,
+		Nsid = 38
 	};}
 	namespace c_oSerOtherTableTypes{enum c_oSerOtherTableTypes
 	{
@@ -287,7 +288,8 @@ extern int g_nCurFormatVersion;
 		tblDescription = 18,
 		TableIndTwips = 19,
 		TableCellSpacingTwips = 20,
-		tblOverlap = 21
+		tblOverlap = 21,
+		bidiVisual = 22
 	};}
 	namespace c_oSer_tblpPrType{enum c_oSer_tblpPrType
 	{
@@ -479,7 +481,8 @@ extern int g_nCurFormatVersion;
 		endnotePr = 11,
 		rtlGutter = 12,
 		lnNumType = 13,
-		docGrid = 14
+		docGrid = 14,
+		bidi = 15
 	};}
 	namespace c_oSerProp_secPrSettingsType{enum c_oSerProp_secPrSettingsType
 	{
@@ -533,7 +536,9 @@ extern int g_nCurFormatVersion;
 		DocParts = 27,
 		PermStart = 28,
 		PermEnd = 29,
-		JsaProjectExternal = 30
+		JsaProjectExternal = 30,
+		ParaID = 31,
+		TextID = 32
 	};}
 	namespace c_oSerGlossary {
 		enum c_oSerGlossary
@@ -1219,7 +1224,10 @@ extern int g_nCurFormatVersion;
 		Hidden = 2,
 		Title	= 3,
 		Descr = 4,
-		Form = 5
+		Form = 5,
+		HlinkClick = 6,
+		HlinkHover = 7
+
 	};}
 	namespace c_oSerEmbedded{enum c_oSerEmbedded
 	{
@@ -1307,7 +1315,9 @@ extern int g_nCurFormatVersion;
 		ComplexFormPrType = 91,
 		OformMaster = 92,
 		Border = 93,
-		Shd = 94
+		Shd = 94,
+		RepeatingSection = 95,
+		RepeatingSectionItem = 96
 	};}
 	namespace c_oSerFFData{enum c_oSerFFData
 	{

@@ -12,6 +12,8 @@
 #include "HWPElements/HWPRecordStyle.h"
 #include "HWPElements/HwpRecordTabDef.h"
 
+#include "Common/NodeNames.h"
+
 namespace HWP
 {
 ECompatDoc GetCompatDoc(int nValue)
@@ -36,6 +38,10 @@ CHWPDocInfo::CHWPDocInfo(CHWPXFile* pHWPXFile)
 
 CHWPDocInfo::CHWPDocInfo(CHWPFile* pHWPFile)
 	: m_eHanType(EHanType::HWP), m_pParentHWP(pHWPFile), m_eCompatibleDoc(ECompatDoc::HWP)
+{}
+
+CHWPDocInfo::CHWPDocInfo(CHWPMLFile* pHWPMLFile)
+	: m_eHanType(EHanType::HWPML), m_pParentHWPML(pHWPMLFile), m_eCompatibleDoc(ECompatDoc::UNKNOWN)
 {}
 
 CHWPDocInfo::~CHWPDocInfo()
@@ -182,81 +188,129 @@ bool CHWPDocInfo::Parse(CHWPStream& oBuffer, int nVersion)
 	return true;
 }
 
-bool CHWPDocInfo::Parse(CXMLNode& oNode, int nVersion)
+bool CHWPDocInfo::ParseHWPX(CXMLReader& oReader)
 {
-	for (CXMLNode& oChild : oNode.GetChilds())
+	WHILE_READ_NEXT_NODE_WITH_NAME(oReader)
 	{
-		if (L"hh:beginNum" == oChild.GetName())
-			m_arRecords.push_back(new CHWPRecordDocumentProperties(*this, oChild, nVersion));
-		else if (L"hh:refList" == oChild.GetName())
-			ReadRefList(oChild, nVersion);
+		if ("hh:beginNum" == sNodeName)
+			m_arRecords.push_back(new CHWPRecordDocumentProperties(*this, oReader));
+		else if ("hh:refList" == sNodeName)
+			ReadRefList(oReader);
+	}
+	END_WHILE
+
+	return true;
+}
+
+bool CHWPDocInfo::ParseHWPML(CXMLReader &oReader)
+{
+	WHILE_READ_NEXT_NODE_WITH_NAME(oReader)
+	{
+		if ("MAPPINGTABLE" == sNodeName)
+		{
+			WHILE_READ_NEXT_NODE_WITH_DEPTH_AND_NAME(oReader, Mapping)
+			{
+				if ("BINDATALIST" == sNodeMappingName)
+				{
+					CHWPRecordBinData *pRecordBinData = nullptr;
+
+					WHILE_READ_NEXT_NODE_WITH_DEPTH_ONE_NAME(oReader, BinData, "BINITEM")
+						pRecordBinData = new CHWPRecordBinData(oReader, EHanType::HWPML);
+						m_mBinDatas.insert(std::make_pair<HWP_STRING, CHWPRecord*>(pRecordBinData->GetItemID(), (HWP::CHWPRecord*)pRecordBinData));
+					END_WHILE
+				}
+				else
+					ReadRefListElement(oReader, EHanType::HWPML);
+			}
+			END_WHILE
+		}
+	}
+	END_WHILE
+
+	return true;
+}
+
+bool CHWPDocInfo::ReadRefList(CXMLReader& oReader)
+{
+	WHILE_READ_NEXT_NODE(oReader)
+		ReadRefListElement(oReader, EHanType::HWPX);
+	END_WHILE
+
+	return true;
+}
+
+bool CHWPDocInfo::ReadRefListElement(CXMLReader &oReader, HWP::EHanType eType)
+{
+	const std::string sNodeName{oReader.GetName()};
+	
+	if (GetNodeName(ENode::FaceNameList, eType) == sNodeName)
+	{
+		WHILE_READ_NEXT_NODE_WITH_DEPTH_ONE_NAME(oReader, FontFace, GetNodeName(ENode::FontFace, eType))
+			WHILE_READ_NEXT_NODE_WITH_DEPTH_ONE_NAME(oReader, Font, GetNodeName(ENode::Font, eType))
+				m_arFaseNames.push_back(new CHWPRecordFaceName(*this, oReader, eType));
+			END_WHILE
+		END_WHILE
+	}
+	else if (GetNodeName(ENode::BorderFillList, eType) == sNodeName)
+	{
+		WHILE_READ_NEXT_NODE_WITH_DEPTH_ONE_NAME(oReader, BorderFill, GetNodeName(ENode::BorderFill, eType))
+			m_arBorderFills.push_back(new CHWPRecordBorderFill(*this, oReader, eType));
+		END_WHILE
+	}
+	else if (GetNodeName(ENode::CharShapeList, eType) == sNodeName)
+	{
+		WHILE_READ_NEXT_NODE_WITH_DEPTH_ONE_NAME(oReader, CharPr, GetNodeName(ENode::CharShape, eType))
+			m_arCharShapes.push_back(new CHWPRecordCharShape(*this, oReader, eType));
+		END_WHILE
+	}
+	else if (GetNodeName(ENode::TabDefList, eType) == sNodeName)
+	{
+		WHILE_READ_NEXT_NODE_WITH_DEPTH_ONE_NAME(oReader, TabPr, GetNodeName(ENode::TabDef, eType))
+			m_arTabDefs.push_back(new CHwpRecordTabDef(*this, oReader, eType));
+		END_WHILE
+	}
+	else if (GetNodeName(ENode::NumberingList, eType) == sNodeName)
+	{
+		WHILE_READ_NEXT_NODE_WITH_DEPTH_ONE_NAME(oReader, Numbering, GetNodeName(ENode::Numbering, eType))
+			m_arNumberings.push_back(new CHWPRecordNumbering(*this, oReader, eType));
+		END_WHILE
+	}
+	else if (GetNodeName(ENode::BulletList, eType) == sNodeName)
+	{
+		WHILE_READ_NEXT_NODE_WITH_DEPTH(oReader, Bullet)
+			m_arBullets.push_back(new CHWPRecordBullet(*this, oReader, eType));
+		END_WHILE
+	}
+	else if (GetNodeName(ENode::ParaShapeList, eType) == sNodeName)
+	{
+		WHILE_READ_NEXT_NODE_WITH_DEPTH_ONE_NAME(oReader, ParaPr, GetNodeName(ENode::ParaShape, eType))
+			m_arParaShapes.push_back(new CHWPRecordParaShape(*this, oReader, eType));
+		END_WHILE
+	}
+	else if (GetNodeName(ENode::StyleList, eType) == sNodeName)
+	{
+		WHILE_READ_NEXT_NODE_WITH_DEPTH_ONE_NAME(oReader, Style, GetNodeName(ENode::Style, eType))
+			m_arStyles.push_back(new CHWPRecordStyle(*this, oReader, eType));
+		END_WHILE
 	}
 
 	return true;
 }
 
-bool CHWPDocInfo::ReadRefList(CXMLNode& oNode, int nVersion)
-{
-	for (CXMLNode& oChild : oNode.GetChilds())
-	{
-		if (L"hh:fontfaces" == oChild.GetName())
-		{
-			for (CXMLNode& oFontFaceNode : oChild.GetChilds(L"hh:fontface"))
-				for (CXMLNode& oFontNode : oFontFaceNode.GetChilds(L"hh:font"))
-					m_arFaseNames.push_back(new CHWPRecordFaceName(*this, oFontNode, nVersion));
-		}
-		else if (L"hh:borderFills" == oChild.GetName())
-		{
-			for (CXMLNode& oBorderFillNode : oChild.GetChilds(L"hh:borderFill"))
-				m_arBorderFills.push_back(new CHWPRecordBorderFill(*this, oBorderFillNode, nVersion));
-		}
-		else if (L"hh:charProperties" == oChild.GetName())
-		{
-			for (CXMLNode& oCharPrNode : oChild.GetChilds(L"hh:charPr"))
-				m_arCharShapes.push_back(new CHWPRecordCharShape(*this, oCharPrNode, nVersion));
-		}
-		else if (L"hh:tabProperties" == oChild.GetName())
-		{
-			for (CXMLNode& oTabPrNode : oChild.GetChilds(L"hh:tabPr"))
-				m_arTabDefs.push_back(new CHwpRecordTabDef(*this, oTabPrNode, nVersion));
-		}
-		else if (L"hh:numberings" == oChild.GetName())
-		{
-			for (CXMLNode& oNumberingNode : oChild.GetChilds(L"hh:numbering"))
-				m_arNumberings.push_back(new CHWPRecordNumbering(*this, oNumberingNode, nVersion));
-		}
-		else if (L"hh:bullets" == oChild.GetName())
-		{
-			for (CXMLNode& oBulletNode : oChild.GetChilds())
-				m_arBullets.push_back(new CHWPRecordBullet(*this, oBulletNode, nVersion));
-		}
-		else if (L"hh:paraProperties" == oChild.GetName())
-		{
-			for (CXMLNode& oParaPrNode : oChild.GetChilds(L"hh:paraPr"))
-				m_arParaShapes.push_back(new CHWPRecordParaShape(*this, oParaPrNode, nVersion));
-		}
-		else if (L"hh:styles" == oChild.GetName())
-		{
-			for (CXMLNode& oStyleNode : oChild.GetChilds(L"hh:style"))
-				m_arStyles.push_back(new CHWPRecordStyle(*this, oStyleNode, nVersion));
-		}
-	}
-
-	return true;
-}
-
-bool CHWPDocInfo::ReadContentHpf(CXMLNode& oNode, int nVersion)
+bool CHWPDocInfo::ReadContentHpf(CXMLReader& oReader)
 {
 	CHWPRecordBinData *pRecordBinData = nullptr;
 
-	for (CXMLNode& oChild : oNode.GetChilds(L"opf:manifest"))
+	WHILE_READ_NEXT_NODE_WITH_ONE_NAME(oReader, "opf:manifest")
 	{
-		for (CXMLNode& oGrandChild : oChild.GetChilds(L"opf:item"))
+		WHILE_READ_NEXT_NODE_WITH_DEPTH_ONE_NAME(oReader, Item, "opf:item")
 		{
-			pRecordBinData = new CHWPRecordBinData(oGrandChild, nVersion);
+			pRecordBinData = new CHWPRecordBinData(oReader, EHanType::HWPX);
 			m_mBinDatas.insert(std::make_pair<HWP_STRING, CHWPRecord*>(pRecordBinData->GetItemID(), (HWP::CHWPRecord*)pRecordBinData));
 		}
+		END_WHILE
 	}
+	END_WHILE
 
 	return true;
 }
@@ -321,26 +375,13 @@ const CHWPRecord* CHWPDocInfo::GetBinData(const HWP_STRING& sID) const
 	switch (m_eHanType)
 	{
 		case EHanType::HWP:
-		{
-			short shID = std::stoi(sID) - 1;
-
-			if (shID >= m_mBinDatas.size())
-				return nullptr;
-
-			std::map<HWP_STRING, CHWPRecord*>::const_iterator itElement = m_mBinDatas.cbegin();
-
-			for (unsigned short ushIndex = 0; ushIndex < shID; ++ushIndex)
-				++itElement;
-
-			return itElement->second;
-		}
 		case EHanType::HWPX:
+		case EHanType::HWPML:
 		{
-			if (m_mBinDatas.end() == m_mBinDatas.find(sID))
-				return nullptr;
+			std::map<HWP_STRING, CHWPRecord*>::const_iterator itFound = m_mBinDatas.find(sID);
 
-			return m_mBinDatas.at(sID);
-			break;
+			if (m_mBinDatas.cend() != itFound)
+				return itFound->second;
 		}
 		default:
 			return nullptr;

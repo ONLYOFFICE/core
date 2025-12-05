@@ -75,9 +75,10 @@ void DXF::writeFields(CFRecord& record)
 {
 	if (record.getGlobalWorkbookInfo()->Version < 0x0800)
 	{
+		frtRefHeaderU.rt = 2189;
 		record << frtRefHeaderU;
 		_UINT16 flags = 0;
-
+		SETBIT(flags, 0, 1)
 		SETBIT(flags, 1, xfprops.fNewBorder)
 		record << flags << xfprops;
 	}

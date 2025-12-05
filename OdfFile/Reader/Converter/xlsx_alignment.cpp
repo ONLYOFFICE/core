@@ -185,10 +185,9 @@ xlsx_alignment OdfProperties2XlsxAlignment(	xlsx_conversion_context * context,
 
 			alignment.textRotation = angle;       //??? приоритет какой
 		}		
-		if ((cellProp->fo_wrap_option_) &&
-			(cellProp->fo_wrap_option_->get_type() == odf_types::wrap_option::Wrap))		
+		if (cellProp->fo_wrap_option_)
 		{
-			alignment.wrapText = true;
+			alignment.wrapText = cellProp->fo_wrap_option_->get_type() == odf_types::wrap_option::Wrap;
 		}
 		if (cellProp->style_shrink_to_fit_)
 		{

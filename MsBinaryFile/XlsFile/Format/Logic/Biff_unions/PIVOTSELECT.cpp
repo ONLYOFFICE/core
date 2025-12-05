@@ -73,5 +73,15 @@ const bool PIVOTSELECT::loadContent(BinProcessor& proc)
 	return true;
 }
 
+const bool PIVOTSELECT::saveContent(BinProcessor& proc)
+{
+    if(m_SxSelect == nullptr)
+        return false;
+    proc.mandatory(*m_SxSelect);
+    if(m_PIVOTRULE != nullptr)
+        proc.mandatory(*m_PIVOTRULE);
+    return true;
+}
+
 } // namespace XLS
 

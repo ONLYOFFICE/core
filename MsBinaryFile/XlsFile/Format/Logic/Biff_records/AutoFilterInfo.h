@@ -52,8 +52,9 @@ class AutoFilterInfo: public BiffRecord
 
 	
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 //-----------------------------
-	_UINT16 cEntries;
+    _UINT16 cEntries = 0;
 
 };
 

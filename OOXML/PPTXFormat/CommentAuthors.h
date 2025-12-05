@@ -47,12 +47,21 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(CommentAuthor)
 
-			nullable_int	id;
+			nullable_int	idx;
 			nullable_int	last_idx;
 			nullable_int	clr_idx;
 
 			nullable_string	name;
 			nullable_string	initials;			
+
+//------------------------------------------------------------------------------------------
+//modern
+			nullable_string	id; //Guid
+			nullable_string	userId;
+			nullable_string	providerId;
+
+			bool bModern = false;
+//------------------------------------------------------------------------------------------
 
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual std::wstring toXML() const;
@@ -70,7 +79,10 @@ namespace PPTX
 	{
 	public:
 		std::vector<PPTX::Logic::CommentAuthor> m_arAuthors;
-
+//--------------------------------------------------------------------------------------
+		bool bModern = false;
+		std::map<std::wstring, int> mapAuthors;
+//--------------------------------------------------------------------------------------
 		Authors(OOX::Document* pMain);
 		Authors(OOX::Document* pMain, const OOX::CPath& filename, FileMap& map);
 		virtual ~Authors();

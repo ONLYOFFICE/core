@@ -969,21 +969,18 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 		}break;
 		case OOX::et_mc_alternateContent:
 		{
+			bool res = false;
 			OOX::Logic::CAlternateContent *ooxAlt = dynamic_cast<OOX::Logic::CAlternateContent* >(ooxItem);
-			if (!ooxAlt->m_arrChoiceItems.empty())
+            for (size_t i = 0; res == false && i < ooxAlt->m_arrChoiceItems.size(); i++)
+            {
+                res = Parse(oParam, oOutputParagraph, poStyle, oNewProperty, ooxAlt->m_arrChoiceItems[i]);
+            }
+			for (size_t i = 0; res == false && i < ooxAlt->m_arrFallbackItems.size(); i++)
 			{
-				for (size_t i = 0; i < ooxAlt->m_arrChoiceItems.size(); i++)
-				{
-					Parse(oParam , oOutputParagraph, poStyle, oNewProperty, ooxAlt->m_arrChoiceItems[i]);
-				}
-			}
-			else
-			{
-				for (size_t i = 0; i < ooxAlt->m_arrFallbackItems.size(); i++)
-				{
-					Parse(oParam , oOutputParagraph, poStyle, oNewProperty, ooxAlt->m_arrFallbackItems[i]);
-				}					
-			}
+				res = Parse(oParam, oOutputParagraph, poStyle, oNewProperty, ooxAlt->m_arrFallbackItems[i]);
+			}			
+
+
 		}break;
 		case OOX::et_w_sym:
 		{
@@ -2113,7 +2110,7 @@ bool OOXSectionPropertyReader::Parse( ReaderParameter oParam , RtfSectionPropert
 		{
 			RtfSectionProperty::ColumnProperty::CollumnVar oNewColumn;
 			
-			if (m_ooxSectionProperty->m_oCols->m_arrColumns[i] != NULL)
+			if (m_ooxSectionProperty->m_oCols->m_arrColumns[i].IsInit())
 			{
 				if(m_ooxSectionProperty->m_oCols->m_arrColumns[i]->m_oW.IsInit() )
 					oNewColumn.m_nColumnWidth = m_ooxSectionProperty->m_oCols->m_arrColumns[i]->m_oW->ToTwips(); //twips??? todooo 
@@ -2339,7 +2336,7 @@ bool OOXSectionPropertyReader::Parse( ReaderParameter oParam , RtfSectionPropert
 	}
 	for (size_t i = 0 ; i < m_ooxSectionProperty->m_arrHeaderReference.size(); i++ )
 	{
-		OOXHeaderReader oHeaderReader(m_ooxSectionProperty->m_arrHeaderReference[i]);
+		OOXHeaderReader oHeaderReader(m_ooxSectionProperty->m_arrHeaderReference[i].GetPointer());
 		
 		if(m_ooxSectionProperty->m_arrHeaderReference[i]->m_oType.IsInit() &&
 			m_ooxSectionProperty->m_arrHeaderReference[i]->m_oId.IsInit() )
@@ -2378,7 +2375,7 @@ bool OOXSectionPropertyReader::Parse( ReaderParameter oParam , RtfSectionPropert
 	}
 	for (size_t i = 0 ; i < m_ooxSectionProperty->m_arrFooterReference.size(); i++ )
 	{
-		OOXHeaderReader oFooterReader(m_ooxSectionProperty->m_arrFooterReference[i]);
+		OOXHeaderReader oFooterReader(m_ooxSectionProperty->m_arrFooterReference[i].GetPointer());
 		
 		if(m_ooxSectionProperty->m_arrFooterReference[i]->m_oType.IsInit() &&
 			m_ooxSectionProperty->m_arrFooterReference[i]->m_oId.IsInit() )

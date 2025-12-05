@@ -95,6 +95,19 @@ const bool PROTECTION_COMMON::loadContent(BinProcessor& proc)
 	return m_Protect || m_ScenarioProtect || m_ObjProtect || m_Password;
 }
 
+const bool PROTECTION_COMMON::saveContent(BinProcessor& proc)
+{
+    if(m_Protect != nullptr)
+        proc.mandatory(*m_Protect);
+    if(m_ScenarioProtect != nullptr)
+        proc.mandatory(*m_ScenarioProtect);
+    if(m_ObjProtect != nullptr)
+        proc.mandatory(*m_ObjProtect);
+    if(m_Password != nullptr)
+        proc.mandatory(*m_Password);
+    return true;
+}
+
 int PROTECTION_COMMON::serialize (std::wostream & _stream)
 {
 	Protect			*protect	= dynamic_cast<Protect*>		(m_Protect.get());

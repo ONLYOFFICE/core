@@ -12,7 +12,7 @@ CCtrlNewNumber::CCtrlNewNumber(const HWP_STRING& sCtrlID, int nSize, CHWPStream&
 	int nAttr;
 	oBuffer.ReadInt(nAttr);
 
-	m_eNumType = GetNumType(nAttr & 0xF);
+	m_eNumType = ::HWP::GetNumType(nAttr & 0xF);
 	m_eNumShape = GetNumberShape2((nAttr >> 4) & 0xF);
 
 	oBuffer.ReadShort(m_shNum);
@@ -20,13 +20,22 @@ CCtrlNewNumber::CCtrlNewNumber(const HWP_STRING& sCtrlID, int nSize, CHWPStream&
 	m_bFullFilled = true;
 }
 
-CCtrlNewNumber::CCtrlNewNumber(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVersion)
+CCtrlNewNumber::CCtrlNewNumber(const HWP_STRING& sCtrlID, CXMLReader& oReader, EHanType eType)
 	: CCtrl(sCtrlID)
 {
-	m_shNum = oNode.GetAttributeInt(L"num");
-	m_eNumType = GetNumType(oNode.GetAttributeInt(L"numType"));
-	//TODO:: проверить данный момент
-	m_eNumShape = GetNumberShape2(oNode.GetAttributeInt(L"autoNumFormat"));
+	//TODO:: при встрече в файле нужно проверить
+
+	START_READ_ATTRIBUTES(oReader)
+	{
+		if ("num" == sAttributeName)
+			m_shNum = oReader.GetInt();
+		else if ("numType" == sAttributeName)
+			m_eNumType = ::HWP::GetNumType(oReader.GetTextA(), eType);
+		//TODO:: проверить данный момент
+		else if ("autoNumFormat" == sAttributeName)
+			m_eNumShape = GetNumberShape2(oReader.GetInt());
+	}
+	END_READ_ATTRIBUTES(oReader)
 
 	m_bFullFilled = true;
 }
@@ -34,5 +43,15 @@ CCtrlNewNumber::CCtrlNewNumber(const HWP_STRING& sCtrlID, CXMLNode& oNode, int n
 ECtrlObjectType CCtrlNewNumber::GetCtrlType() const
 {
 	return ECtrlObjectType::NewNumber;
+}
+
+ENumType CCtrlNewNumber::GetNumType() const
+{
+	return m_eNumType;
+}
+
+short CCtrlNewNumber::GetNum() const
+{
+	return m_shNum;
 }
 }

@@ -208,6 +208,7 @@ namespace SimpleTypes
 
 			CHexColor(const std::wstring& wsStr);
 			const CHexColor &operator =(const std::wstring& wsStr);
+			const bool operator ==(const CHexColor& clr);
 			virtual std::wstring   ToString  () const;
 			void Set_R(unsigned char R);
 			void Set_G(unsigned char G);
@@ -221,8 +222,8 @@ namespace SimpleTypes
 			void FromInt(int nColor);
 
 		private:
-			void Parse(const std::wstring sValue);
-			int	HexToInt(int nHex);
+			bool Parse(const std::wstring sValue);
+			int	HexToInt(int nHex, bool& bResult);
 
 		private:
 			unsigned char m_unA;
@@ -979,8 +980,8 @@ namespace SimpleTypes
 			double m_dValue;
 			CDoubleOrAutomatic() : m_dValue(0){}
 			
-			CDoubleOrAutomatic(const double & val) { m_dValue = val; this->m_eValue = typeDouble; }
-			CDoubleOrAutomatic(const EDoubleOrAutomatic & val) { this->m_eValue = val; m_dValue = 0; }
+			CDoubleOrAutomatic(const double& val);
+			CDoubleOrAutomatic(const EDoubleOrAutomatic& val);
 
 			virtual EDoubleOrAutomatic FromString(const std::wstring &sValue);
 			double GetDoubleValue() const;
@@ -1449,5 +1450,12 @@ namespace SimpleTypes
 		};
 		DEFINE_SIMPLE_TYPE(CUserProtectedRangeType, EUserProtectedRangeType, typeView)
 
+		enum EXmlDataType
+		{
+			typeString = 0,
+			typeDate = 1,
+			typeFloat = 2 //...
+		};
+		DEFINE_SIMPLE_TYPE(CXmlDataType, EXmlDataType, typeString)
 	}// Spreadsheet
 } // SimpleTypes

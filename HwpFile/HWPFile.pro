@@ -16,7 +16,9 @@ LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lCryptoPPLib
 
 ADD_DEPENDENCY(kernel, UnicodeConverter, graphics)
 
-DEFINES += HWPFILE_USE_DYNAMIC_LIBRARY
+DEFINES += HWPFILE_USE_DYNAMIC_LIBRARY \
+           CRYPTOPP_DISABLE_ASM 
+
 
 SOURCES += \
     HWPFile.cpp \
@@ -26,6 +28,7 @@ SOURCES += \
     HwpDoc/Conversion/FootnoteConverter.cpp \
     HwpDoc/Conversion/NumberingConverter.cpp \
     HwpDoc/Conversion/OleConverter.cpp \
+    HwpDoc/Conversion/StyleConverter.cpp \
     HwpDoc/HWPDocInfo.cpp \
     HwpDoc/HWPElements/HWPRecord.cpp \
     HwpDoc/HWPElements/HWPRecordBinData.cpp \
@@ -46,6 +49,7 @@ SOURCES += \
     HwpDoc/HWPElements/HWPRecordStyle.cpp \
     HwpDoc/HWPElements/HwpRecordTabDef.cpp \
     HwpDoc/HWPFile.cpp \
+    HwpDoc/HWPMLFile.cpp \
     HwpDoc/HWPSection.cpp \
     HwpDoc/HWPStream.cpp \
     HwpDoc/HWPXFile.cpp \
@@ -96,12 +100,15 @@ SOURCES += \
 HEADERS += \
     HWPFile.h \
     HwpDoc/Common/Common.h \
-    HwpDoc/Common/XMLNode.h \
+    HwpDoc/Common/NodeNames.h \
     HwpDoc/Common/WriterContext.h \
+    HwpDoc/Common/XMLReader.h \
+    HwpDoc/Conversion/ConversionState.h \
     HwpDoc/Conversion/Converter2OOXML.h \
     HwpDoc/Conversion/FootnoteConverter.h \
     HwpDoc/Conversion/NumberingConverter.h \
     HwpDoc/Conversion/OleConverter.h \
+    HwpDoc/Conversion/StyleConverter.h \
     HwpDoc/Conversion/Transform.h \
     HwpDoc/Conversion/Types.h \
     HwpDoc/Errors.h \
@@ -124,10 +131,10 @@ HEADERS += \
     HwpDoc/HWPElements/HWPRecordParaText.h \
     HwpDoc/HWPElements/HWPRecordStyle.h \
     HwpDoc/HWPElements/HWPTag.h \
-    HwpDoc/HWPElements/HWPType.h \
     HwpDoc/HWPElements/HwpRecordTabDef.h \
     HwpDoc/HWPElements/HwpRecordTypes.h \
     HwpDoc/HWPFile.h \
+    HwpDoc/HWPMLFile.h \
     HwpDoc/HWPSection.h \
     HwpDoc/HWPStream.h \
     HwpDoc/HWPXFile.h \

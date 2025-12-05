@@ -80,22 +80,22 @@ namespace PdfWriter
 			return 0;
 
 		unsigned int unBytesRead = 1;
-		int nChar0, nChar1, nChar2, nChar3;
-		Read((BYTE*)&nChar0, &unBytesRead);
-		Read((BYTE*)&nChar1, &unBytesRead);
-		Read((BYTE*)&nChar2, &unBytesRead);
-		Read((BYTE*)&nChar3, &unBytesRead);
+		BYTE nChar0, nChar1, nChar2, nChar3;
+		Read(&nChar0, &unBytesRead);
+		Read(&nChar1, &unBytesRead);
+		Read(&nChar2, &unBytesRead);
+		Read(&nChar3, &unBytesRead);
 
-		return (unsigned int)((nChar0 << 24) | (nChar1 << 16) | (nChar2 << 8) | nChar3);
+		return (unsigned int)(((unsigned int)nChar0 << 24) | ((unsigned int)nChar1 << 16) | ((unsigned int)nChar2 << 8) | nChar3);
 	}
 	unsigned char  CStream::ReadUChar()
 	{
 		if (!CheckSize(1))
 			return 0;
 
-		int nChar;
+		BYTE nChar;
 		unsigned int unBytesRead = 1;
-		Read((BYTE*)&nChar, &unBytesRead);
+		Read(&nChar, &unBytesRead);
 
 		return nChar;	
 	}
@@ -109,13 +109,58 @@ namespace PdfWriter
 			return 0;
 
 		unsigned int unBytesRead = 1;
-		int nChar0, nChar1;
-		Read((BYTE*)&nChar0, &unBytesRead);
-		Read((BYTE*)&nChar1, &unBytesRead);
+		BYTE nChar0, nChar1;
+		Read(&nChar0, &unBytesRead);
+		Read(&nChar1, &unBytesRead);
 
-		return (unsigned short)((nChar0 << 8) | nChar1);
+		return (unsigned short)(((unsigned short)nChar0 << 8) | nChar1);
 	}
-    void CStream::Write(const BYTE* pBuffer, unsigned int unSize, bool bCalcCheckSum)
+	double         CStream::ReadFixed()
+	{
+		if (!CheckSize(4))
+			return 0;
+
+		unsigned short integer  = ReadUShort();
+		unsigned short fraction = ReadUShort();
+
+		return (double)integer + ((double)fraction) / (1 << 16);
+	}
+	long long      CStream::ReadLongDateTime()
+	{
+		if (!CheckSize(8))
+			return 0;
+
+		unsigned int unBytesRead = 1;
+		BYTE nChar0, nChar1, nChar2, nChar3, nChar4, nChar5, nChar6, nChar7;
+		Read(&nChar0, &unBytesRead);
+		Read(&nChar1, &unBytesRead);
+		Read(&nChar2, &unBytesRead);
+		Read(&nChar3, &unBytesRead);
+		Read(&nChar4, &unBytesRead);
+		Read(&nChar5, &unBytesRead);
+		Read(&nChar6, &unBytesRead);
+		Read(&nChar7, &unBytesRead);
+
+		return (long long)(((long long)nChar0 << 56) | ((long long)nChar1 << 48) |
+						   ((long long)nChar2 << 40) | ((long long)nChar3 << 32) |
+						   ((long long)nChar4 << 24) | ((long long)nChar5 << 16) |
+						   ((long long)nChar6 << 8)  | nChar7);
+	}
+	unsigned int   CStream::ReadOffset(BYTE nOffset)
+	{
+		unsigned int nRes = 0;
+		if (nOffset < 1 || nOffset > 4 || !CheckSize(nOffset))
+			return nRes;
+		for (BYTE i = 0; i < nOffset; ++i)
+		{
+			BYTE nChar;
+			unsigned int unBytesRead = 1;
+			Read(&nChar, &unBytesRead);
+			nRes = (nRes << 8) | nChar;
+		}
+		return nRes;
+	}
+	void CStream::Write(const BYTE* pBuffer, unsigned int unSize, bool bCalcCheckSum)
 	{
 		Write(pBuffer, unSize);
 		if (bCalcCheckSum)
@@ -476,7 +521,7 @@ namespace PdfWriter
 
 #ifndef FILTER_FLATE_DECODE_DISABLED
 
-		if (unFilter & STREAM_FILTER_FLATE_DECODE)
+		if ((unFilter & STREAM_FILTER_FLATE_DECODE) && !(unFilter & STREAM_FILTER_ALREADY_DECODE))
 			return WriteStreamWithDeflate(pStream, pEncrypt);
 
 #endif
@@ -614,7 +659,7 @@ namespace PdfWriter
 		if (pDict->GetStream())
 		{
 			unsigned int unFilter = pDict->GetFilter();
-			if (STREAM_FILTER_NONE != unFilter)
+			if (STREAM_FILTER_NONE != unFilter && STREAM_FILTER_ALREADY_DECODE != unFilter)
 			{
 				CArrayObject* pFilter = new CArrayObject();
 				pDict->Add("Filter", pFilter);
@@ -710,6 +755,7 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	CMemoryStream::CMemoryStream()
 	{
+		m_bFree       = true;
 		m_unSize      = 0;
 		m_nBufferSize = 0;
 		m_pBuffer     = NULL;
@@ -717,6 +763,7 @@ namespace PdfWriter
 	}
 	CMemoryStream::CMemoryStream(unsigned int unBufferSize)
 	{
+		m_bFree       = true;
 		m_unSize      = 0;
 		m_nBufferSize = 0;
 		m_pBuffer     = NULL;
@@ -724,9 +771,26 @@ namespace PdfWriter
 
 		Shrink(unBufferSize);
 	}
+	CMemoryStream::CMemoryStream(BYTE* pBuffer, unsigned int unSize, bool bFree)
+	{
+		m_bFree       = bFree;
+		m_unSize      = unSize;
+		m_nBufferSize = unSize;
+		m_pBuffer     = pBuffer;
+		m_pCur        = pBuffer;
+	}
 	CMemoryStream::~CMemoryStream()
 	{
-		Close();
+		if (m_pBuffer && m_bFree)
+		{
+			free(m_pBuffer);
+			//delete[] m_pBuffer;
+		}
+
+		m_nBufferSize = 0;
+		m_pBuffer     = NULL;
+		m_pCur        = NULL;
+		m_unSize      = 0;
 	}
 	bool         CMemoryStream::IsEof()
 	{
@@ -772,7 +836,7 @@ namespace PdfWriter
 	}
 	void         CMemoryStream::Close()
 	{
-		if (m_pBuffer)
+		if (m_pBuffer && m_bFree)
 		{
 			free(m_pBuffer);
 			//delete[] m_pBuffer;
@@ -786,6 +850,26 @@ namespace PdfWriter
 	unsigned int CMemoryStream::Size()
 	{
 		return m_unSize;
+	}
+	void CMemoryStream::Clear()
+	{
+		m_pCur   = m_pBuffer;
+		m_unSize = 0;
+	}
+	BYTE* CMemoryStream::GetBuffer()
+	{
+		return m_pBuffer;
+	}
+	BYTE* CMemoryStream::GetCurBuffer()
+	{
+		return m_pCur;
+	}
+	void CMemoryStream::ClearWithoutAttack()
+	{
+		m_nBufferSize = 0;
+		m_pBuffer     = NULL;
+		m_pCur        = NULL;
+		m_unSize      = 0;
 	}
 	void         CMemoryStream::Shrink(unsigned int unSize)
 	{
@@ -926,9 +1010,9 @@ namespace PdfWriter
 	{
 		switch (eMode)
 		{
-			case SeekCur: m_nFilePos += nPos; break;
-        case SeekEnd: m_nFilePos = std::max(0, (m_nFileSize - nPos)); break;
-			case SeekSet: m_nFilePos = nPos; break;
+		case SeekCur: m_nFilePos += nPos; break;
+		case SeekEnd: m_nFilePos = std::max(0, (m_nFileSize - nPos)); break;
+		case SeekSet: m_nFilePos = nPos; break;
 		}
 	}
 	int          CImageFileStream::Tell()

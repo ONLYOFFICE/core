@@ -54,6 +54,11 @@ void LabelSst::readFields(CFRecord& record)
 	record >> cell >> isst;
 }
 
+void LabelSst::writeFields(CFRecord& record)
+{
+    record << cell << isst;
+}
+
 const CellRef LabelSst::getLocation() const
 {
 	return cell.getLocation();

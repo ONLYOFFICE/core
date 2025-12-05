@@ -13,7 +13,7 @@ enum class EArcType
 };
 
 EArcType GetArcType(int nValue);
-EArcType GetArcType(const HWP_STRING& sValue);
+EArcType GetArcType(const std::string &sValue, EHanType eType);
 
 class CCtrlShapeEllipse : public CCtrlGeneralShape
 {
@@ -34,12 +34,15 @@ class CCtrlShapeEllipse : public CCtrlGeneralShape
 	int m_nStartY2;
 	int m_nEndX2;
 	int m_nEndY2;
+
+	void ReadFromHWPX(CXMLReader& oReader);
+	void ReadFromHWPML(CXMLReader& oReader);
 public:
 	CCtrlShapeEllipse();
 	CCtrlShapeEllipse(const HWP_STRING& sCtrlID);
 	CCtrlShapeEllipse(const CCtrlGeneralShape& oShape);
 	CCtrlShapeEllipse(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
-	CCtrlShapeEllipse(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVersion);
+	CCtrlShapeEllipse(const HWP_STRING& sCtrlID, CXMLReader& oReader, EHanType eType);
 
 	EShapeType GetShapeType() const override;
 

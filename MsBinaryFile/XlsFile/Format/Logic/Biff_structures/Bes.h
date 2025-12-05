@@ -46,12 +46,13 @@ public:
 	static const ElementType	type = typeBes;	
 	
 	virtual void load(CFRecord& record);
+    virtual void save(CFRecord& record);
 
 	const std::wstring toString();
 	void fromString(const std::wstring str);
 
-	unsigned char			bBoolErr;
-	Boolean<unsigned char>	fError;
+    unsigned char			bBoolErr = 0;
+    Boolean<unsigned char>	fError = 0;
 };
 
 } // namespace XLS

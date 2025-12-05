@@ -78,6 +78,18 @@ void Style::readFields(CFRecord& record)
 	}
 }
 
+void Style::writeFields(CFRecord& record)
+{
+    unsigned short flags = 0;
+    SETBITS(flags, 0, 11, ixfe);
+    SETBIT(flags, 15, fBuiltIn);
+    record << flags;
+    if(fBuiltIn)
+        record << builtInData;
+    else
+        record << user;
+}
+
 int Style::serialize(std::wostream & stream)
 {
 	return 0;

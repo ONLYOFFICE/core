@@ -49,16 +49,17 @@ public:
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 
 	static const ElementType type = typeStyle;
 
 	int serialize(std::wostream & stream);
 //-----------------------------
-	_UINT16			ixfe;	
+    _UINT16			ixfe = 0;
 	BuiltInStyle 	builtInData;
 	XLUnicodeString user;
 
-	bool			fBuiltIn;
+	bool			fBuiltIn = true;
 };
 
 } // namespace XLS

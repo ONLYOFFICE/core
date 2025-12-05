@@ -1717,20 +1717,10 @@ namespace SimpleTypes
 		CVml_Matrix &operator =(const std::wstring& wsStr);
 
 		void ResetMatrix();
-		void SetMatrix(double dSxx, double dSxy, double dSyx, double dSyy, double dPx, double dPy);
-
-		double Get_Sxx() const;
-		double Get_Sxy() const;
-		double Get_Syx() const;
-		double Get_Syy() const;
-
-		double Get_Px() const;
-		double Get_Py() const;
 
 		virtual double FromString(const std::wstring &sValue);
-		virtual std::wstring ToString  () const;
+		virtual std::wstring ToString () const;
 
-	private:
 		double m_dSxx;
 		double m_dSxy;
 		double m_dSyx;
@@ -1760,11 +1750,11 @@ namespace SimpleTypes
 		SimpleTypes_DefaultString(CVml_Vector2D_Units_Or_Percentage)
 
 		private:
-			double m_dX; //
-		double m_dY; //
+			double m_dX;
+			double m_dY;
 
-		bool   m_bUnitsX;
-		bool   m_bUnitsY;
+			bool   m_bUnitsX;
+			bool   m_bUnitsY;
 	};
 
 	//--------------------------------------------------------------------------------

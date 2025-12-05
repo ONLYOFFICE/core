@@ -167,6 +167,7 @@ namespace Oox2Odf
 		void			convert		(OOX::WritingElement *oox_unknown);		
 		std::wstring	dump_text	(OOX::WritingElement *oox_unknown);
     private:
+		bool current_bidi_set = false;
 		struct _section
 		{
             OOX::Logic::CSectionProperty *props = NULL;
@@ -201,7 +202,7 @@ namespace Oox2Odf
 		void convert(OOX::Logic::CSectionProperty		*oox_section_pr, bool bSection, const std::wstring & master_name = L"", bool bAlways = false);
 		void convert(OOX::Logic::CParagraph				*oox_paragraph);
 		void convert(OOX::Logic::CRun					*oox_run);
-		void convert(OOX::Logic::CParagraphProperty		*oox_para_prop,	odf_writer::paragraph_format_properties	*paragraph_properties, odf_writer::text_format_properties* text_properties);
+		void convert(OOX::Logic::CParagraphProperty		*oox_para_prop,	odf_writer::paragraph_format_properties	*paragraph_properties, odf_writer::text_format_properties* text_properties, bool is_default_style_par_props);
 		void convert(ComplexTypes::Word::CFramePr		*oox_frame_pr,	odf_writer::paragraph_format_properties	*paragraph_properties);
 		void convert(OOX::Logic::CRunProperty			*oox_run_prop,	odf_writer::text_format_properties		*text_properties, bool is_para_props = false);
 		void convert(OOX::Logic::CFldSimple				*oox_fld);
@@ -241,7 +242,7 @@ namespace Oox2Odf
 		void convert(SimpleTypes::CUniversalMeasure		*oox_size,		_CP_OPT(odf_types::length)			& odf_size);
 		void convert(SimpleTypes::CUniversalMeasure		*oox_size,		_CP_OPT(odf_types::length_or_percent) & odf_size);
 		void convert(ComplexTypes::Word::CTblWidth		*oox_size,		_CP_OPT(odf_types::length)			& odf_size);
-		void convert(ComplexTypes::Word::CJc			*oox_jc,		_CP_OPT(odf_types::text_align)		& align);
+		void convert(ComplexTypes::Word::CJc			*oox_jc, bool bidi, _CP_OPT(odf_types::text_align)		& align);
 		void convert(ComplexTypes::Word::CBorder		*borderProp,	std::wstring & odf_border_prop);
 		void convert(ComplexTypes::Word::CPageBorder	*borderProp,	std::wstring & odf_border_prop);
 		

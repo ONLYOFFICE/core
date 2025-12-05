@@ -47,10 +47,11 @@ public:
 	static const ElementType	type = typeAnyObject;
 
 	virtual void load(CFRecord& record);
+    virtual void save(CFRecord& record);
 
 
-	CFVO	cfvo;
-	double	numDomain;
+    CFVO	cfvo;
+    double	numDomain = 0;
 };
 typedef boost::shared_ptr<CFGradientInterpItem> CFGradientInterpItemPtr;
 
@@ -64,6 +65,7 @@ public:
 	static const ElementType	type = typeAnyObject;
 
 	virtual void load(CFRecord& record);
+    virtual void save(CFRecord& record);
 
 	Xnum numGrange;
 	CFColor	color;
@@ -79,14 +81,15 @@ public:
 	static const ElementType	type = typeCFGradient;
 	
 	virtual void load(CFRecord& record);
+    virtual void save(CFRecord& record);
 
 	virtual int serialize(std::wostream & stream);
 
-	unsigned char						cInterpCurve;		//MUST be 0x2 or 0x3.
-	unsigned char						cGradientCurve;		// == cInterpCurve
+    unsigned char						cInterpCurve = 0x2;		//MUST be 0x2 or 0x3.
+    unsigned char						cGradientCurve = 0x2;		// == cInterpCurve
 
-	bool								fClamp;
-	bool								fBackground;
+	bool								fClamp = 1;
+	bool								fBackground = 1;
 
 	std::vector<CFGradientInterpItemPtr>rgInterp;
 	std::vector<CFGradientItemPtr>		rgCurve;

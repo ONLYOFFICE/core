@@ -203,8 +203,6 @@ namespace PdfWriter
 		m_pFieldsResources  = NULL;
 		memset((void*)m_sTTFontTag, 0x00, 8);
 		m_pDefaultCheckBoxFont = NULL;
-		m_wsDocumentID      = L"";
-		m_wsFilePath        = L"";
 
 		m_vExtGrStates.clear();
 		m_vStrokeAlpha.clear();
@@ -238,6 +236,23 @@ namespace PdfWriter
 
 		return true;
 	}
+	bool CDocument::SaveToMemory(BYTE** pData, int* pLength)
+	{
+		CMemoryStream* pStream = new CMemoryStream();
+		if (!pStream)
+			return false;
+
+		if (m_pJbig2)
+			m_pJbig2->FlushStreams();
+
+		SaveToStream(pStream);
+
+		*pData = pStream->GetBuffer();
+		*pLength = pStream->Size();
+
+		pStream->ClearWithoutAttack();
+		return true;
+	}
     void CDocument::SaveToStream(CStream* pStream)
 	{
 		m_pCatalog->AddMetadata(m_pXref, m_pInfo);
@@ -265,8 +280,10 @@ namespace PdfWriter
 			pEncrypt = m_pEncryptDict->GetEncrypt();
 			PrepareEncryption();
 		}
+		else if (m_pEncryptDict)
+			pEncrypt = m_pEncryptDict->GetEncrypt();
 
-		m_pXref->WriteToStream(pStream, pEncrypt);
+		m_pXref->WriteToStream(pStream, pEncrypt, true);
 	}
 	bool CDocument::SaveNewWithPassword(CXref* pXref, CXref* _pXref, const std::wstring& wsPath, const std::wstring& wsOwnerPassword, const std::wstring& wsUserPassword, CDictObject* pTrailer)
 	{
@@ -294,6 +311,23 @@ namespace PdfWriter
 
 		delete pStream;
 		return true;
+	}
+	void CDocument::SetEncryption(CEncryptDict* pEncrypt, PdfWriter::CObjectBase* _pID)
+	{
+		m_bEncrypt = false;
+		m_pEncryptDict = pEncrypt;
+
+		CArrayObject* pArrID = new CArrayObject();
+		m_pTrailer->Add("ID", pArrID);
+		BYTE arrId[16];
+
+		CEncryptDict::CreateId(m_pInfo, m_pXref, (BYTE*)arrId);
+
+		pArrID->Add(_pID->Copy());
+		pArrID->Add(new CBinaryObject(arrId, 16));
+
+		for (int i = 0; i < m_vMetaOForms.size(); ++i)
+			m_vMetaOForms[i]->Add("ID", new CBinaryObject(arrId, 16));
 	}
     void CDocument::PrepareEncryption()
 	{
@@ -513,7 +547,7 @@ namespace PdfWriter
 
 		return new COutline(pParent, sTitle, m_pXref);
 	}
-	CDestination* CDocument::CreateDestination(CPage* pPage, bool bInline)
+	CDestination* CDocument::CreateDestination(CObjectBase* pPage, bool bInline)
 	{
 		if (pPage)
 			return new CDestination(pPage, m_pXref, bInline);
@@ -542,6 +576,10 @@ namespace PdfWriter
 		}
 
 		return NULL;
+	}
+	void CDocument::AddExtGState(CExtGrState* pState)
+	{
+		m_vExtGrStates.push_back(pState);
 	}
     CExtGrState* CDocument::GetExtGState(double dAlphaStroke, double dAlphaFill, EBlendMode eMode, int nStrokeAdjustment)
 	{
@@ -610,11 +648,93 @@ namespace PdfWriter
 		m_vFillAlpha.push_back(pExtGrState);
 		return pExtGrState;
 	}
-	CAnnotation* CDocument::CreateTextAnnot()
+	CAnnotation* CDocument::CreateAnnot(BYTE m_nType)
 	{
-		CTextAnnotation* pNew = new CTextAnnotation(m_pXref);
-		pNew->SetC({ 1.0, 0.8, 0.0 });
-		return pNew;
+		CAnnotation* pAnnot = NULL;
+		if (m_nType == 0)
+		{
+			pAnnot = new CTextAnnotation(m_pXref);
+			pAnnot->SetC({ 1.0, 0.8, 0.0 });
+		}
+		else if (m_nType == 14)
+			pAnnot = new CInkAnnotation(m_pXref);
+		else if (m_nType == 3)
+			pAnnot = new CLineAnnotation(m_pXref);
+		else if (m_nType >= 8 && m_nType <= 11)
+			pAnnot = new CTextMarkupAnnotation(m_pXref);
+		else if (m_nType == 4 || m_nType == 5)
+			pAnnot = new CSquareCircleAnnotation(m_pXref);
+		else if (m_nType == 6 || m_nType == 7)
+			pAnnot = new CPolygonLineAnnotation(m_pXref);
+		else if (m_nType == 15)
+			pAnnot = new CPopupAnnotation(m_pXref);
+		else if (m_nType == 2)
+			pAnnot = new CFreeTextAnnotation(m_pXref);
+		else if (m_nType == 13)
+			pAnnot = new CCaretAnnotation(m_pXref);
+		else if (m_nType == 12)
+			pAnnot = new CStampAnnotation(m_pXref);
+		else if (m_nType == 25)
+			pAnnot = new CRedactAnnotation(m_pXref);
+
+		if (pAnnot)
+			m_pXref->Add(pAnnot);
+
+		if (m_nType >= 26)
+		{
+			if (!CheckAcroForm())
+				return NULL;
+
+			switch (m_nType)
+			{
+			case 26:
+			{
+				pAnnot = new CWidgetAnnotation(m_pXref, EAnnotType::AnnotWidget);
+				break;
+			}
+			case 27:
+			{
+				pAnnot = new CPushButtonWidget(m_pXref);
+				pAnnot->Add("FT", "Btn");
+				break;
+			}
+			case 28:
+			case 29:
+			{
+				pAnnot = new CCheckBoxWidget(m_pXref);
+				pAnnot->Add("FT", "Btn");
+				break;
+			}
+			case 30:
+			{
+				pAnnot = new CTextWidget(m_pXref);
+				pAnnot->Add("FT", "Tx");
+				break;
+			}
+			case 31:
+			case 32:
+			{
+				pAnnot = new CChoiceWidget(m_pXref);
+				pAnnot->Add("FT", "Ch");
+				break;
+			}
+			case 33:
+			{
+				pAnnot = new CSignatureWidget(m_pXref);
+				pAnnot->Add("FT", "Sig");
+				break;
+			}
+			default: break;
+			}
+
+			if (pAnnot)
+			{
+				m_pXref->Add(pAnnot);
+				CArrayObject* ppFields = (CArrayObject*)m_pAcroForm->Get("Fields");
+				ppFields->Add(pAnnot);
+			}
+		}
+		return pAnnot;
 	}
 	CAnnotation* CDocument::CreateLinkAnnot(const TRect& oRect, CDestination* pDest)
 	{
@@ -629,78 +749,6 @@ namespace PdfWriter
 		pAnnot->SetRect(oRect);
 		m_pXref->Add(pAnnot);
 		return pAnnot;
-	}
-	CAnnotation* CDocument::CreateInkAnnot()
-	{
-		return new CInkAnnotation(m_pXref);
-	}
-	CAnnotation* CDocument::CreateLineAnnot()
-	{
-		return new CLineAnnotation(m_pXref);
-	}
-	CAnnotation* CDocument::CreateTextMarkupAnnot()
-	{
-		return new CTextMarkupAnnotation(m_pXref);
-	}
-	CAnnotation* CDocument::CreateSquareCircleAnnot()
-	{
-		return new CSquareCircleAnnotation(m_pXref);
-	}
-	CAnnotation* CDocument::CreatePolygonLineAnnot()
-	{
-		return new CPolygonLineAnnotation(m_pXref);
-	}
-	CAnnotation* CDocument::CreatePopupAnnot()
-	{
-		return new CPopupAnnotation(m_pXref);
-	}
-	CAnnotation* CDocument::CreateFreeTextAnnot()
-	{
-		return new CFreeTextAnnotation(m_pXref);
-	}
-	CAnnotation* CDocument::CreateCaretAnnot()
-	{
-		return new CCaretAnnotation(m_pXref);
-	}
-	CAnnotation* CDocument::CreateStampAnnot()
-	{
-		return new CStampAnnotation(m_pXref);
-	}
-	CAnnotation* CDocument::CreateWidgetAnnot()
-	{
-		if (!CheckAcroForm())
-			return NULL;
-
-		CWidgetAnnotation* pWidget = new CWidgetAnnotation(m_pXref, EAnnotType::AnnotWidget);
-		if (!pWidget)
-			return NULL;
-
-		CArrayObject* ppFields = (CArrayObject*)m_pAcroForm->Get("Fields");
-		ppFields->Add(pWidget);
-
-		return pWidget;
-	}
-	CAnnotation* CDocument::CreatePushButtonWidget()
-	{
-		return new CPushButtonWidget(m_pXref);
-	}
-	CAnnotation* CDocument::CreateCheckBoxWidget()
-	{
-		return new CCheckBoxWidget(m_pXref);
-	}
-	CAnnotation* CDocument::CreateTextWidget()
-	{
-		CAnnotation* pNew = new CTextWidget(m_pXref);
-		pNew->Add("FT", "Tx");
-		return pNew;
-	}
-	CAnnotation* CDocument::CreateChoiceWidget()
-	{
-		return new CChoiceWidget(m_pXref);
-	}
-	CAnnotation* CDocument::CreateSignatureWidget()
-	{
-		return new CSignatureWidget(m_pXref);
 	}
 	CAction* CDocument::CreateAction(BYTE nType)
 	{
@@ -718,12 +766,25 @@ namespace PdfWriter
 	}
 	void CDocument::AddAnnotation(const int& nID, CAnnotation* pAnnot)
 	{
-		m_pXref->Add(pAnnot);
+		pAnnot->SetXref(m_pXref);
 		m_mAnnotations[nID] = pAnnot;
 	}
     CImageDict* CDocument::CreateImage()
 	{
 		return new CImageDict(m_pXref, this);
+	}
+	CXObject* CDocument::CreateForm()
+	{
+		CXObject* pForm = new CXObject();
+		CStream* pStream = new CMemoryStream();
+		pForm->SetStream(m_pXref, pStream);
+
+#ifndef FILTER_FLATE_DECODE_DISABLED
+		if (m_unCompressMode & COMP_TEXT)
+			pForm->SetFilter(STREAM_FILTER_FLATE_DECODE);
+#endif
+
+		return pForm;
 	}
 	CXObject* CDocument::CreateForm(CImageDict* pImage, const std::string& sName)
 	{
@@ -733,14 +794,7 @@ namespace PdfWriter
 		std::string sFrmName = "FRM" + sName;
 		std::string sImgName = "Img" + sName;
 
-		CXObject* pForm = new CXObject();
-		CStream* pStream = new CMemoryStream();
-		pForm->SetStream(m_pXref, pStream);
-
-#ifndef FILTER_FLATE_DECODE_DISABLED
-		if (m_unCompressMode & COMP_TEXT)
-			pForm->SetFilter(STREAM_FILTER_FLATE_DECODE);
-#endif
+		CXObject* pForm = CreateForm();
 		double dOriginW = pImage->GetWidth();
 		double dOriginH = pImage->GetHeight();
 		pForm->SetWidth(dOriginW);
@@ -778,6 +832,7 @@ namespace PdfWriter
 		pForm->Add("Subtype", "Form");
 		pForm->Add("Type", "XObject");
 
+		CStream* pStream = pForm->GetStream();
 		pStream->WriteStr("q\012");
 		pStream->WriteReal(dOriginW);
 		pStream->WriteStr(" 0 0 ");
@@ -785,8 +840,6 @@ namespace PdfWriter
 		pStream->WriteStr(" 0 0 cm\012/");
 		pStream->WriteStr(sImgName.c_str());
 		pStream->WriteStr(" Do\012Q");
-
-		GetFieldsResources()->AddXObjectWithName(sFrmName.c_str(), pForm);
 
 		return pForm;
 	}
@@ -1290,6 +1343,22 @@ namespace PdfWriter
 		m_pCurImage = pImage;
 		m_vImages.push_back({wsImagePath, nAlpha, pImage});
 	}
+	void CDocument::AddObject(CObjectBase* pObj)
+	{
+		m_pXref->Add(pObj);
+	}
+	void CDocument::RemoveObj(CObjectBase* pObj)
+	{
+		std::map<int, CAnnotation*>::iterator it1 = std::find_if(m_mAnnotations.begin(), m_mAnnotations.end(), [pObj](const std::pair<int, CAnnotation*>& t){ return t.second == pObj; });
+		if (it1 != m_mAnnotations.end())
+			m_mAnnotations.erase(it1);
+		std::map<int, CPage*>::iterator it2 = std::find_if(m_mEditPages.begin(), m_mEditPages.end(), [pObj](const std::pair<int, CPage*>& t){ return t.second == pObj; });
+		if (it2 != m_mEditPages.end())
+			m_mEditPages.erase(it2);
+		if (m_pCurPage == pObj)
+			m_pCurPage = NULL;
+		m_pXref->Remove(pObj);
+	}
 	bool CDocument::CheckFieldName(CFieldBase* pField, const std::string& sName)
 	{
 		CFieldBase* pBase = m_mFields[sName];
@@ -1302,19 +1371,24 @@ namespace PdfWriter
 				pParent->Add("Ff", pBase->GetFieldFlag());
 				pParent->Add("FT", pBase->GetFieldType());
 
+				CObjectBase* pT = pBase->Get("T");
+				if (pT && pT->GetType() == object_type_STRING)
+					pParent->Add("T", pT->Copy());
+
+				CObjectBase* pV = pBase->Get("V");
+				if (pV && pV->GetType() == object_type_STRING)
+					pParent->Add("V", pV->Copy());
+
+				CObjectBase* pAA = pBase->Get("AA");
+				if (pAA)
+					pParent->Add("AA", pAA->Copy());
+
 				CTextField* pTextField = dynamic_cast<CTextField*>(pBase);
 				int nMaxLen = 0;
-				if (pTextField)
+				if (pTextField && 0 != (nMaxLen = pTextField->GetMaxLen()))
 				{
-					CObjectBase* pT = pBase->Get("T");
-					if (pT && pT->GetType() == object_type_STRING)
-						pParent->Add("V", pT->Copy());
-
-					if (0 != (nMaxLen = pTextField->GetMaxLen()))
-					{
-						pBase->Remove("MaxLen");
-						pParent->Add("MaxLen", nMaxLen);
-					}
+					pBase->Remove("MaxLen");
+					pParent->Add("MaxLen", nMaxLen);
 				}
 
 				pBase->SetParent(pParent);
@@ -1370,6 +1444,17 @@ namespace PdfWriter
 
 		return (!!m_pAcroForm);
 	}
+	void CDocument::SetAcroForm(CDictObject* pObj)
+	{
+		if (!m_pXref || !m_pCatalog)
+			return;
+		m_pCatalog->Add("AcroForm", pObj);
+		m_pAcroForm = pObj;
+	}
+	CResourcesDict* CDocument::CreateResourcesDict(bool bInline, bool bProcSet)
+	{
+		return new CResourcesDict(m_pXref, bInline, bProcSet);
+	}
 	bool CDocument::CreatePageTree(CXref* pXref, CPageTree* pPageTree)
 	{
 		if (!pPageTree || !EditXref(pXref))
@@ -1382,7 +1467,7 @@ namespace PdfWriter
 
 		return true;
 	}
-	bool CDocument::EditPdf(const std::wstring& wsPath, int nPosLastXRef, int nSizeXRef, CXref* pXref, CCatalog* pCatalog, CEncryptDict* pEncrypt, int nFormField)
+	bool CDocument::EditPdf(int nPosLastXRef, int nSizeXRef, CXref* pXref, CCatalog* pCatalog, CEncryptDict* pEncrypt, int nFormField)
 	{
 		if (!pXref || !pCatalog)
 			return false;
@@ -1415,7 +1500,6 @@ namespace PdfWriter
 		}
 
 		m_unFormFields = nFormField;
-		m_wsFilePath = wsPath;
 		return true;
 	}
 	bool CDocument::EditResources(CXref* pXref, CResourcesDict* pResources)
@@ -1454,13 +1538,29 @@ namespace PdfWriter
 			pPage->SetFilter(STREAM_FILTER_FLATE_DECODE);
 #endif
 
-		m_pCurPage  = pPage;
+		m_pCurPage = pPage;
 		m_mEditPages[nPageIndex] = pPage;
 
 		if (m_pPageTree)
 			m_pPageTree->ReplacePage(nPageIndex, pPage);
 
 		return true;
+	}
+	void CDocument::FixEditPage(CPage* _pPage, int nPageIndex)
+	{
+		CPage* pPage = _pPage ? _pPage : m_mEditPages[nPageIndex];
+		if (!pPage)
+			return;
+
+		pPage->AddContents(m_pXref);
+#ifndef FILTER_FLATE_DECODE_DISABLED
+		if (m_unCompressMode & COMP_TEXT)
+			pPage->SetFilter(STREAM_FILTER_FLATE_DECODE);
+#endif
+	}
+	void CDocument::AddEditPage(CPage* pPage, int nPageIndex)
+	{
+		m_mEditPages[nPageIndex] = pPage;
 	}
 	bool CDocument::EditAnnot(CXref* pXref, CAnnotation* pAnnot, int nID)
 	{
@@ -1472,19 +1572,39 @@ namespace PdfWriter
 
 		return true;
 	}
+	void CDocument::AddParent(int nID, CDictObject* pParent)
+	{
+		m_mParents[nID] = pParent;
+	}
+	void CDocument::AddXObject(int nID, CDictObject* pXObject)
+	{
+		m_mXObjects[nID] = pXObject;
+	}
+	CDictObject* CDocument::GetXObject(int nID)
+	{
+		std::map<int, CDictObject*>::iterator p = m_mXObjects.find(nID);
+		if (p != m_mXObjects.end())
+			return p->second;
+		return NULL;
+	}
+	CDictObject* CDocument::CreateParent(int nID)
+	{
+		CDictObject* pParent = new CDictObject();
+		m_pXref->Add(pParent);
+		m_mParents[nID] = pParent;
+		return pParent;
+	}
 	bool CDocument::EditParent(CXref* pXref, CDictObject* pParent, int nID)
 	{
 		if (!pParent || !EditXref(pXref))
 			return false;
-
 		m_mParents[nID] = pParent;
-
 		return true;
 	}
 	bool CDocument::EditXref(CXref* pXref)
 	{
 		if (!pXref)
-			return false;
+			return true;
 
 		pXref->SetPrev(m_pLastXref);
 		m_pLastXref = pXref;
@@ -1495,6 +1615,21 @@ namespace PdfWriter
 	{
 		if (m_pCurPage && m_pCurPage->DeleteAnnotation(nObjNum))
 		{
+			if (m_pAcroForm)
+			{
+				CArrayObject* ppFields = (CArrayObject*)m_pAcroForm->Get("Fields");
+				for (int i = 0; i < ppFields->GetCount(); ++i)
+				{
+					CObjectBase* pObj = ppFields->Get(i);
+					if (pObj->GetObjId() == nObjNum)
+					{
+						CObjectBase* pDelete = ppFields->Remove(i);
+						RELEASEOBJECT(pDelete);
+						break;
+					}
+				}
+			}
+
 			CXref* pXref = new CXref(this, nObjNum, nObjGen);
 			if (!pXref)
 				return false;
@@ -1519,11 +1654,61 @@ namespace PdfWriter
 			return p->second;
 		return NULL;
 	}
-	CPage* CDocument::CreateFakePage()
+	std::string CDocument::SetParentKids(int nParentID)
 	{
-		return new CPage(this, NULL);
+		CDictObject* pParent = GetParent(nParentID);
+		if (!pParent)
+			return "";
+
+		for (auto it = m_mAnnotations.begin(); it != m_mAnnotations.end(); it++)
+		{
+			CAnnotation* pAnnot = it->second;
+			if (pAnnot->GetAnnotationType() != AnnotWidget)
+				continue;
+
+			CWidgetAnnotation* pWidget = (CWidgetAnnotation*)pAnnot;
+			int nWidgetParentID = pWidget->GetParentID();
+			if (nWidgetParentID != nParentID)
+				continue;
+
+			pWidget->SetParent(pParent);
+
+			CObjectBase* pFT = pParent->Get("FT");
+			CObjectBase* pWidgetFT = pWidget->Get("FT");
+			if (!pFT && pParent->Get("T") && pWidgetFT)
+				pParent->Add("FT", pWidgetFT->Copy());
+
+			CArrayObject* pKids = dynamic_cast<CArrayObject*>(pParent->Get("Kids"));
+			if (!pKids)
+			{
+				pKids = new CArrayObject();
+				pParent->Add("Kids", pKids);
+			}
+			bool bReplase = false;
+			int nID = pWidget->GetObjId();
+			if (nID > 0)
+			{
+				for (int i = 0; i < pKids->GetCount(); ++i)
+				{
+					CObjectBase* pKid = pKids->Get(i);
+					if (pKid->GetObjId() == nID)
+					{
+						pKids->Insert(pKid, pWidget, true);
+						bReplase = true;
+						break;
+					}
+				}
+			}
+			if (!bReplase)
+				pKids->Add(pWidget);
+		}
+
+		CObjectBase* pFT = pParent->Get("FT");
+		if (pFT && pFT->GetType() == object_type_NAME)
+			return ((CNameObject*)pFT)->Get();
+		return "";
 	}
-	bool CDocument::EditCO(const std::vector<int>& arrCO)
+	bool CDocument::EditCO(const std::vector< std::pair<int, int> >& arrCO)
 	{
 		if (arrCO.empty())
 			return true;
@@ -1537,37 +1722,41 @@ namespace PdfWriter
 
 		m_pAcroForm->Add("CO", pArray);
 
-		for (int CO : arrCO)
+		for (std::pair<int, int> CO : arrCO)
 		{
-			CDictObject* pObj = GetParent(CO);
+			CDictObject* pObj = GetParent(CO.first);
 			if (pObj)
 				pArray->Add(pObj);
 			else
 			{
-				CAnnotation* pAnnot = m_mAnnotations[CO];
+				CAnnotation* pAnnot = GetAnnot(CO.first);
 				if (pAnnot)
 					pArray->Add(pAnnot);
+				else if (CO.second >= 0)
+				{
+					PdfWriter::CObjectBase* pBase = new PdfWriter::CObjectBase();
+					pBase->SetRef(CO.first, CO.second);
+					pArray->Add(new PdfWriter::CProxyObject(pBase, true));
+				}
 			}
 		}
 
 		return true;
 	}
-	CPage* CDocument::AddPage(int nPageIndex)
+	CPage* CDocument::AddPage(int nPageIndex, CPage* _pNewPage)
 	{
 		if (!m_pPageTree)
 			return NULL;
 
-		CPage* pNewPage = new CPage(m_pXref, NULL, this);
+		CPage* pNewPage = _pNewPage ? _pNewPage : new CPage(m_pXref, NULL, this);
 		if (!pNewPage)
 			return NULL;
 		bool bRes = m_pPageTree->InsertPage(nPageIndex, pNewPage);
 		if (!bRes)
 			return NULL;
 
-#ifndef FILTER_FLATE_DECODE_DISABLED
-		if (m_unCompressMode & COMP_TEXT)
+		if (!_pNewPage)
 			pNewPage->SetFilter(STREAM_FILTER_FLATE_DECODE);
-#endif
 		m_pCurPage = pNewPage;
 		return pNewPage;
 	}
@@ -1579,6 +1768,13 @@ namespace PdfWriter
 		CObjectBase* pObj = m_pPageTree->RemovePage(nPageIndex);
 		if (pObj)
 		{
+			if (pObj->IsIndirect())
+				return true;
+			if (!pObj->GetObjId())
+			{
+				delete pObj;
+				return true;
+			}
 			CXref* pXref = new CXref(this, pObj->GetObjId(), pObj->GetGenNo());
 			delete pObj;
 			if (!pXref)
@@ -1595,21 +1791,29 @@ namespace PdfWriter
 		if (m_pPageTree)
 		{
 			CObjectBase* pObj = m_pPageTree->RemovePage(nPageIndex);
-			if (pObj->GetType() == object_type_DICT && ((CDictObject*)pObj)->GetDictType() == dict_type_PAGE)
-				return m_pPageTree->InsertPage(nPos, (CPage*)pObj);
+			if (pObj)
+			{
+				if (pObj->GetType() == object_type_UNKNOWN)
+				{
+					CObjectBase* pObjTemp = pObj->Copy();
+					delete pObj;
+					pObj = pObjTemp;
+				}
+				return m_pPageTree->InsertPage(nPos, pObj);
+			}
 		}
 		return false;
 	}
-	bool CDocument::AddToFile(CXref* pXref, CDictObject* pTrailer, CXref* pInfoXref, CInfoDict* pInfo)
+	bool CDocument::AddToFile(const std::wstring& wsPath, CXref* pXref, CDictObject* pTrailer, CXref* pInfoXref, CInfoDict* pInfo)
 	{
-		if (!pTrailer || m_wsFilePath.empty())
+		if (!pTrailer || wsPath.empty())
 			return false;
 
 		CFileStream* pStream = new CFileStream();
 		if (!pStream)
 			return false;
 
-		if (!pStream->OpenFile(m_wsFilePath, false))
+		if (!pStream->OpenFile(wsPath, false))
 		{
 			RELEASEOBJECT(pStream);
 			return false;
@@ -1698,7 +1902,7 @@ namespace PdfWriter
 		RELEASEOBJECT(pStream);
 		unsigned int nSizeXRef = m_pXref->GetSizeXRef();
 		m_pXref = m_pLastXref;
-		Sign(m_wsFilePath, nSizeXRef, bNeedStreamXRef);
+		Sign(wsPath, nSizeXRef, bNeedStreamXRef);
 		RELEASEOBJECT(m_pEncryptDict);
 
 		return true;
@@ -1769,7 +1973,7 @@ namespace PdfWriter
 				m_pTrailer->Copy(pTrailer);
 
 				CEncrypt* pEncrypt = NULL;
-				if (m_bEncrypt && m_pEncryptDict)
+				if (m_pEncryptDict)
 					pEncrypt = m_pEncryptDict->GetEncrypt();
 
 				pXref->WriteToStream(pStream, pEncrypt, bNeedStreamXRef);
@@ -1848,7 +2052,9 @@ namespace PdfWriter
 			CArrayObject* pArrayImage = new CArrayObject();
 			pMetaOForm->Add("Image", pArrayImage);
 		}
-		pArrayMeta->Add(new CStringObject(sXML.c_str()));
+		CStringObject* pXML = new CStringObject();
+		pXML->Set(sXML.c_str(), false, false, -1);
+		pArrayMeta->Add(pXML);
 
 		CDictObject* pBDC = new CDictObject();
 		pBDC->Add("MCID", pArrayMeta->GetCount() - 1);
@@ -1883,5 +2089,9 @@ namespace PdfWriter
 	{
 		m_pCurPage->ClearContent(m_pXref);
 		m_pCurPage->StartTransform(1, 0, 0, 1, 0, 0);
+	}
+	void CDocument::ClearPageFull()
+	{
+		m_pCurPage->ClearContentFull(m_pXref);
 	}
 }

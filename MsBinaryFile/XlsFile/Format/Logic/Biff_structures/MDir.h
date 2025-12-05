@@ -47,10 +47,10 @@ public:
 	static const ElementType	type = typeMDir;
 
 	virtual void load(CFRecord& record);
+	virtual void save(CFRecord& record);
 
-
-    _INT32		imdt;
-	_UINT16		mdd;
+	_INT32		imdt = 0;
+	_UINT16		mdd = 0;
 };
 
 typedef boost::shared_ptr<MDir> MDirPtr;

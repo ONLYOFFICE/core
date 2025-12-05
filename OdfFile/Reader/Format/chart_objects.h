@@ -102,7 +102,7 @@ namespace chart {
 			graphic_format_properties_ptr graphic_properties_;
 		};
 		bool bCategories_ = false;
-		
+
 		title title_;
         
 		std::wstring		dimension_;

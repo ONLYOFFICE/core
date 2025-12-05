@@ -51,12 +51,13 @@ public:
 	static const ElementType type = typeDXFN12List;
 	
 	virtual void load(CFRecord& record);
+	virtual void save(CFRecord& record);
 
 	DXFN			dxfn;
 //-----------------------------------------------------------------
-	bool		bExist;
-	_INT32		size;
-	int			dxfId_;
+	bool		bExist = false;
+	_INT32		size = 0;
+	int			dxfId_ = 0;
 };
 
 typedef boost::shared_ptr<DXFN12List> DXFN12ListPtr;

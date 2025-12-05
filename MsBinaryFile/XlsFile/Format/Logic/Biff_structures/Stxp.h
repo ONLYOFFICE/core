@@ -48,8 +48,10 @@ public:
 	static const ElementType	type = typeStxp;
 
 	virtual void load(CFRecord& record);
+    virtual void save(CFRecord& record);
 
-    int twpHeight = 0;
+
+	int twpHeight = -1;
 	Ts ts;
 	short bls = 0;
 	short sss = 0;

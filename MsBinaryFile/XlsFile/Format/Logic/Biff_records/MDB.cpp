@@ -62,5 +62,21 @@ void MDB::readFields(CFRecord& record)
 	}
 }
 
+void MDB::writeFields(CFRecord& record)
+{
+	frtHeader.rt = rt_MDB;
+	const auto maxRecordLen = 8224;
+	record << frtHeader;
+	auto curSize = 12;
+	for(auto i : rgmdir)
+	{
+		if(curSize + 8 > maxRecordLen)
+			break;
+		if(i != nullptr)
+		record << *i;
+		curSize += 8;
+	}
+}
+
 } // namespace XLS
 

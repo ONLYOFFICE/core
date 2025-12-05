@@ -4,7 +4,7 @@
 #include "HanType.h"
 #include "HWPStream.h"
 #include "HWPElements/HWPRecord.h"
-#include "Common/XMLNode.h"
+#include "Common/XMLReader.h"
 
 #include <map>
 
@@ -20,11 +20,13 @@ enum class ECompatDoc
 
 class CHWPFile;
 class CHWPXFile;
+class CHWPMLFile;
 class CHWPDocInfo
 {
-	EHanType   m_eHanType;
-	CHWPXFile *m_pParentHWPX;
-	CHWPFile  *m_pParentHWP;
+	EHanType    m_eHanType;
+	CHWPXFile  *m_pParentHWPX;
+	CHWPFile   *m_pParentHWP;
+	CHWPMLFile *m_pParentHWPML;
 	VECTOR<CHWPRecord*> m_arRecords;
 
 	std::map<HWP_STRING, CHWPRecord*> m_mBinDatas;
@@ -42,12 +44,14 @@ public:
 	CHWPDocInfo(EHanType eHanType);
 	CHWPDocInfo(CHWPXFile* pHWPXFile);
 	CHWPDocInfo(CHWPFile* pHWPFile);
+	CHWPDocInfo(CHWPMLFile* pHWPMLFile);
 
 	~CHWPDocInfo();
 
 	bool Parse(CHWPStream& oBuffer, int nVersion);
-	bool Parse(CXMLNode& oNode, int nVersion);
-	bool ReadContentHpf(CXMLNode& oNode, int nVersion);
+	bool ParseHWPX(CXMLReader& oReader);
+	bool ParseHWPML(CXMLReader& oReader);
+	bool ReadContentHpf(CXMLReader& oReader);
 
 	const CHWPRecord* GetRecord(int nIndex) const;
 	const CHWPRecord* GetFaceName(int nIndex) const;
@@ -65,7 +69,8 @@ public:
 	EHanType GetHanType() const;
 	ECompatDoc GetCompatibleDoc() const;
 private:
-	bool ReadRefList(CXMLNode& oNode, int nVersion);
+	bool ReadRefList(CXMLReader& oReader);
+	bool ReadRefListElement(CXMLReader& oReader, EHanType eType);
 };
 }
 

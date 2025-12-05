@@ -65,14 +65,16 @@ namespace PdfWriter
 		CPageTree(CXref* pXref);
 		CPageTree();
 		void Fix();
-		void AddPage(CDictObject* pPage);
+		void AddPage(CObjectBase* pPage);
 		CObjectBase* GetObj(int nPageIndex);
 		CPage* GetPage(int nPageIndex);
 		CObjectBase* RemovePage(int nPageIndex);
-		bool InsertPage(int nPageIndex, CPage* pPage);
+		bool InsertPage(int nPageIndex, CObjectBase* pPage);
 		bool ReplacePage(int nPageIndex, CPage* pPage);
 		bool Join(CPageTree* pPageTree);
 		bool Find(CPage* pPage, int& nI);
+		void CreateFakePages(int nPages, int nPageIndex = -1);
+		void ClearFakePages();
 		unsigned int GetCount()
 		{
 			return m_pCount ? m_pCount->Get() : 0;
@@ -82,7 +84,7 @@ namespace PdfWriter
 			return dict_type_PAGES;
 		}
 	private:
-		CObjectBase* GetFromPageTree(int nPageIndex, int& nI, bool bRemove = false, bool bInsert = false, CPage* pPage = NULL);
+		CObjectBase* GetFromPageTree(int nPageIndex, int& nI, bool bRemove = false, bool bInsert = false, CObjectBase* pPage = NULL);
 
 		CNumberObject* m_pCount;
 		CArrayObject*  m_pPages;
@@ -93,7 +95,7 @@ namespace PdfWriter
 	class CPage : public CDictObject
 	{
 	public:
-		CPage(CDocument* pDocument, CXref* pXref = NULL);
+		CPage(CDocument* pDocument);
 		CPage(CXref* pXref, CPageTree* pParent, CDocument* pDocument);
 		~CPage();
 
@@ -140,11 +142,18 @@ namespace PdfWriter
 		void      GrSave();
 		void      GrRestore();
 		void      SetStrokeColor(unsigned char unR, unsigned char unG, unsigned char unB);
+		void      SetStrokeG(double dG);
+		void      SetStrokeRGB(double dR, double dG, double dB);
+		void      SetStrokeCMYK(double dC, double dM, double dY, double dK);
 		void      SetFillColor(unsigned char unR, unsigned char unG, unsigned char unB);
+		void      SetFillG(double dG);
+		void      SetFillRGB(double dR, double dG, double dB);
+		void      SetFillCMYK(double dC, double dM, double dY, double dK);
 		void      Concat(double dM11, double dM12, double dM21, double dM22, double dX, double dY);
 		void      StartTransform(double dM11, double dM12, double dM21, double dM22, double dX, double dY);
 		void      SetTransform(double dM11, double dM12, double dM21, double dM22, double dX, double dY);
 		void      SetExtGrState(CExtGrState* pExtGrState);
+		void      SetExtGrStateKey(const char* sKey);
 		void      AddAnnotation(CDictObject* pAnnot);
 		bool      DeleteAnnotation(unsigned int nID);
 		void      DrawShading(CShading* pShading);
@@ -153,6 +162,7 @@ namespace PdfWriter
 		void      BeginMarkedContent(const std::string& sName);
 		void      BeginMarkedContentDict(const std::string& sName, CDictObject* pBDC);
 		void      EndMarkedContent();
+		void      SetRenderingIntent(ERenderingIntent eRenderingIntent);
 
 		void      BeginText();
 		void      EndText();
@@ -160,13 +170,18 @@ namespace PdfWriter
 		void      ShowText(const BYTE* sText, unsigned int unLen);
 		void      DrawText(double dX, double dY, const BYTE* sText, unsigned int unLen);
 		void      SetCharSpace(double dValue);
-		void      SetHorizontalScalling(double dValue);
+		void      SetWordSpace(double dValue);
+		void      SetHorizontalScaling(double dValue);
 		void      SetFontAndSize(CFontDict* pFont, double dSize);
+		void      SetFontKeyAndSize(const char* sKey, double dSize);
+		void      SetFontType(EFontType nType);
 		void      SetTextRenderingMode(ETextRenderingMode eMode);
 		void      SetTextMatrix(double dM11, double dM12, double dM21, double dM22, double dX, double dY);
 		void      DrawTextLine(const CTextLine* pTextLine);
+		void      SetTextRise(double dS);
 
 		void      ExecuteXObject(CXObject* pXObject);
+		void      ExecuteXObject(const char* sXObjectName);
 		void      DrawImage(CImageDict* pImage, double dX, double dY, double dWidth, double dHeight);
 		void      SetPatternColorSpace(CImageTilePattern* pPattern);
 		void      SetFilter(unsigned int unFiler);
@@ -177,8 +192,9 @@ namespace PdfWriter
         void      SetRotate(int nRotate);
         int       GetRotate();
 		void      ClearContent(CXref* pXref);
-		CDictObject* GetContent() const;
+		void      ClearContentFull(CXref* pXref);
 		CResourcesDict* GetResourcesItem();
+		void      AddResource(CXref* pXref = NULL);
 
 	private:
 
@@ -189,7 +205,6 @@ namespace PdfWriter
         CObjectBase*  GetRotateItem();
 		TBox          GetMediaBox();
 		void          SetMediaBoxValue(unsigned int unIndex, double dValue);
-		void          AddResource(CXref* pXref = NULL);
 		void          SetGrMode(EGrMode eMode);
 		void          CheckGrMode(EGrMode eMode);
 		void          WriteText(const BYTE* sText, unsigned int unLen);
@@ -214,6 +229,21 @@ namespace PdfWriter
 		unsigned int m_unShadingsCount;
 		CDictObject* m_pPatterns;
 		unsigned int m_unPatternsCount;
+		EFontType    m_eType;
+	};
+	class CFakePage : public CObjectBase
+	{
+	public:
+		CFakePage(int nOriginIndex);
+		virtual CObjectBase* Copy(CObjectBase* pOut = NULL) const
+		{
+			return pOut ? pOut : new CFakePage(m_nOriginIndex);
+		}
+
+		int GetOriginIndex();
+
+	private:
+		int m_nOriginIndex;
 	};
 	//----------------------------------------------------------------------------------------
 	// CTextWord

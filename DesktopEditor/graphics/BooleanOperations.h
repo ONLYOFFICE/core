@@ -17,10 +17,10 @@ namespace Aggplus
 		bool IsCurve	= false;
 		bool Visited	= false;
 		bool PolyClosed = false;
+		bool Winding	= false;
 
-		int Index	= -1;
-		int Id		= 0;
-		int Winding	= 0;
+		int Index = -1;
+		int Id	  = 0;
 
 		std::shared_ptr<Location> Inters{nullptr};
 
@@ -107,15 +107,19 @@ namespace Aggplus
 	class CBooleanOperations
 	{
 	public:
-		CBooleanOperations(const CGraphicsPath& path1, const CGraphicsPath& path2, BooleanOpType op, long fillType = c_nWindingFillMode);
+		CBooleanOperations() {};
+		CBooleanOperations(const CGraphicsPath& path1, const CGraphicsPath& path2, BooleanOpType op, long fillType, bool isLuminosity);
 		~CBooleanOperations();
 		CGraphicsPath&& GetResult();
+		bool IsSelfInters(const CGraphicsPath& p);
 
 		// BooleanOp
 		void TraceBoolean();
 		void TraceOneInters();
 		void TraceAllOverlap();
 		void TracePaths();
+		void TraceOneCurvePath1();
+		void TraceOneCurvePath2();
 
 		// Path
 		void	PreparePath(const CGraphicsPath& path, int id, std::vector<Segment>& segments,
@@ -124,8 +128,10 @@ namespace Aggplus
 		Curve	GetCurve(const Segment& segment) const noexcept;
 		Curve	GetPreviousCurve(const Curve& curve) const noexcept;
 		Curve	GetNextCurve(const Curve& curve) const noexcept;
+		Segment GetPreviousSegment(const Segment& segment) const noexcept;
 		Segment GetNextSegment(const Segment& segment) const noexcept;
 		void	SetVisited(const Segment& segment);
+		void	CreateNewPath(const std::vector<std::vector<int>>& adjMatr) noexcept;
 
 		// Bounds
 		std::vector<std::vector<int>>	 FindBoundsCollisions();
@@ -141,6 +147,7 @@ namespace Aggplus
 		int  AddCurveIntersection(const Curve& curve1, const Curve& curve2, const Curve& startCurve1, const Curve& startCurve2, bool flip,
 								  int recursion = 0, int calls = 0, double tMin = 0.0, double tMax = 1.0, double uMin = 0.0, double uMax = 1.0);
 		int  CheckInters(const PointD& point, const Segment& segment, const Curve& curve, int& touchCount) const;
+		bool IsInside(const Segment& segment) const;
 		void SetWinding();
 
 		// Location
@@ -149,20 +156,23 @@ namespace Aggplus
 		void InsertLocation(std::shared_ptr<Location> loc, bool overlap);
 		bool AllOverlap() const noexcept;
 		bool AllInters(const std::vector<Segment>& segments) const noexcept;
+		bool IsOneCurvePath(int pathIndex) const noexcept;
 		void AddOffsets(std::vector<double>& offsets, const Curve& curve, bool end);
+		bool CheckLocation(std::shared_ptr<Location> loc, bool start) const noexcept;
 
 	private:
 		BooleanOpType Op = Intersection;
 
 		bool Close1 = true;
 		bool Close2 = true;
+		bool IsLuminosity = false;
 
 		// c_nStroke, c_nWindingFillMode, c_nEvenOddFillMode
 		long FillType = c_nWindingFillMode;
 
-		CGraphicsPath Path1;
-		CGraphicsPath Path2;
-		CGraphicsPath Result;
+		CGraphicsPath Path1{};
+		CGraphicsPath Path2{};
+		CGraphicsPath Result{};
 
 		std::vector<Segment> Segments1;
 		std::vector<Segment> Segments2;

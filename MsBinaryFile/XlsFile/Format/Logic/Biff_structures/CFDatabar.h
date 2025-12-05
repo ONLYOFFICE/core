@@ -47,14 +47,15 @@ public:
 	static const ElementType type = typeCFDatabar;
 	
 	virtual void load(CFRecord& record);
+    virtual void save(CFRecord& record);
 
 	virtual int serialize(std::wostream & _stream);
 
-	unsigned char iPercentMin;
-	unsigned char iPercentMax;
+	unsigned char iPercentMin = 0;
+	unsigned char iPercentMax = 100;
 
-	bool fShowValue;
-	bool fRightToLeft;
+	bool fShowValue = false;
+	bool fRightToLeft = false;
 
 	CFColor color;
 

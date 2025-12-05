@@ -62,6 +62,19 @@ void CrtLayout12A::readFields(CFRecord& record)
 	record >> x >> y >> dx >> dy >> reserved;
 }
 
+void CrtLayout12A::writeFields(CFRecord& record)
+{
+	frtheader.rt = rt_CrtLayout12A;
+	unsigned short flags = 0;
+	SETBIT(flags, 0, fLayoutTargetInner)
+
+	record << frtheader << dwCheckSum << flags;
+	record << xTL << yTL << xBR << yBR;
+	record << wXMode << wYMode << wWidthMode << wHeightMode;
+	record << x << y << dx << dy;
+	record.reserveNunBytes(2);
+}
+
 int CrtLayout12A::serialize (std::wostream & _stream)
 {
 	CP_XML_WRITER(_stream)    

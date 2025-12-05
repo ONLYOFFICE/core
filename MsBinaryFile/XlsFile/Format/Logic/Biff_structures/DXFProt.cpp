@@ -50,6 +50,14 @@ void DXFProt::load(CFRecord& record)
 	fHidden = GETBIT(flags, 1);
 }
 
+void DXFProt::save(CFRecord& record)
+{
+    unsigned short flags = 0;
+    SETBIT(flags, 0, fLocked)
+    SETBIT(flags, 1, fHidden)
+    record << flags;
+}
+
 int DXFProt::serialize(std::wostream & stream)
 {
 	if (parent->lockedNinch && parent->hiddenNinch) return 0;

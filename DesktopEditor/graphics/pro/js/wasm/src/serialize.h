@@ -2,7 +2,10 @@
 #define _WASM_SERIALIZE_H
 
 #include <vector>
+#include <stack>
 #include "../../../../../common/File.h"
+
+#define CLEAR_STACK(stack) while (!(stack).empty()) (stack).pop()
 
 namespace NSWasm
 {
@@ -15,6 +18,8 @@ namespace NSWasm
 		BYTE* m_pDataCur;
 		size_t m_lSizeCur;
 
+		std::stack<size_t> m_lStack;
+
 	public:
 		CData()
 		{
@@ -24,9 +29,69 @@ namespace NSWasm
 			m_pDataCur = m_pData;
 			m_lSizeCur = m_lSize;
 		}
+		CData(const CData& other)
+		{
+			m_lSize = other.m_lSize;
+			m_lSizeCur = other.m_lSizeCur;
+
+			m_pData = (BYTE*)malloc(m_lSize * sizeof(BYTE));
+			memcpy(m_pData, other.m_pData, other.m_lSizeCur * sizeof(BYTE));
+			m_pDataCur = m_pData + m_lSizeCur;
+
+			m_lStack = other.m_lStack;
+		}
+		CData(CData&& other)
+		{
+			m_lSize = other.m_lSize;
+			m_lSizeCur = other.m_lSizeCur;
+
+			m_pData = other.m_pData;
+			m_pDataCur = other.m_pDataCur;
+
+			m_lStack = std::move(other.m_lStack);
+
+			other.ClearWithoutAttack();
+		}
 		virtual ~CData()
 		{
 			Clear();
+		}
+		CData& operator= (const CData& other)
+		{
+			if (this == &other)
+				return *this;
+
+			Clear();
+
+			m_lSize = other.m_lSize;
+			m_lSizeCur = other.m_lSizeCur;
+
+			m_pData = (BYTE*)malloc(m_lSize * sizeof(BYTE));
+			memcpy(m_pData, other.m_pData, other.m_lSizeCur * sizeof(BYTE));
+			m_pDataCur = m_pData + m_lSizeCur;
+
+			m_lStack = other.m_lStack;
+
+			return *this;
+		}
+		CData& operator= (CData&& other)
+		{
+			if (this == &other)
+				return *this;
+
+			Clear();
+
+			m_lSize = other.m_lSize;
+			m_lSizeCur = other.m_lSizeCur;
+
+			m_pData = other.m_pData;
+			m_pDataCur = other.m_pDataCur;
+
+			other.ClearWithoutAttack();
+
+			m_lStack = std::move(other.m_lStack);
+
+			return *this;
 		}
 
 		inline void AddSize(size_t nSize)
@@ -68,10 +133,31 @@ namespace NSWasm
 		}
 
 	public:
+		void StartRecord(BYTE type)
+		{
+			AddSize(5); // sizeof (BYTE + unsigned int)
+			WriteBYTE(type);
+			AddInt(0);
+			m_lStack.push(m_lSizeCur);
+		}
+		void EndRecord()
+		{
+			size_t start = m_lStack.top();
+			unsigned int len = m_lSizeCur - start;
+			memcpy(m_pData + start - 4, &len, sizeof(unsigned int));
+			m_lStack.pop();
+		}
 		void AddInt(unsigned int value)
 		{
 			AddSize(4);
 			memcpy(m_pDataCur, &value, sizeof(unsigned int));
+			m_pDataCur += 4;
+			m_lSizeCur += 4;
+		}
+		void AddSInt(int value)
+		{
+			AddSize(4);
+			memcpy(m_pDataCur, &value, sizeof(int));
 			m_pDataCur += 4;
 			m_lSizeCur += 4;
 		}
@@ -92,6 +178,10 @@ namespace NSWasm
 			memcpy(m_pDataCur, &value, sizeof(BYTE));
 			m_pDataCur += sizeof(BYTE);
 			m_lSizeCur += sizeof(BYTE);
+		}
+		void WriteBool(bool value)
+		{
+			WriteBYTE(value ? 1 : 0);
 		}
 		void WriteDouble(double value)
 		{
@@ -151,6 +241,37 @@ namespace NSWasm
 			WriteString(pDataUtf8, (unsigned int)lDataUtf8);
 			RELEASEARRAYOBJECTS(pDataUtf8);
 		}
+		void WriteStringUtf16(const std::wstring& sStr, const bool& isBytes = false)
+		{
+			unsigned int size = static_cast<unsigned int>(sStr.length());
+
+			int len = 0;
+			size_t posLen = m_lSizeCur;
+
+			// len reserve
+			AddInt(0);
+
+			if (sizeof(wchar_t) == 4)
+			{
+				AddSize(4 * size + 2/*'\0'*/);
+				NSFile::CUtf8Converter::GetUtf16StringFromUnicode_4bytes(sStr.c_str(), (LONG)size, m_pDataCur, len, false);
+			}
+			else
+			{
+				size_t bufferLen = 2 * size;
+				AddSize(bufferLen);
+				len = (int)(bufferLen);
+				memcpy(m_pDataCur, sStr.c_str(), bufferLen);
+			}
+
+			m_pDataCur += static_cast<unsigned int>(len);
+			m_lSizeCur += static_cast<unsigned int>(len);
+
+			if (!isBytes)
+				len /= 2;
+
+			AddInt((unsigned int)len, posLen);
+		}
 		void Write(BYTE* value, unsigned int len)
 		{
 			if (!value || len == 0)
@@ -165,6 +286,13 @@ namespace NSWasm
 			return m_pData;
 		}
 
+		BYTE* MoveBuffer()
+		{
+			BYTE* pData = m_pData;
+			ClearWithoutAttack();
+			return pData;
+		}
+
 		void Clear()
 		{
 			if (m_pData)
@@ -175,6 +303,8 @@ namespace NSWasm
 
 			m_pDataCur = m_pData;
 			m_lSizeCur = 0;
+
+			CLEAR_STACK(m_lStack);
 		}
 		void ClearWithoutAttack()
 		{
@@ -183,11 +313,15 @@ namespace NSWasm
 
 			m_pDataCur = m_pData;
 			m_lSizeCur = 0;
+
+			CLEAR_STACK(m_lStack);
 		}
 		void ClearNoAttack()
 		{
 			m_pDataCur = m_pData;
 			m_lSizeCur = 0;
+
+			CLEAR_STACK(m_lStack);
 		}
 		unsigned int GetSize()
 		{

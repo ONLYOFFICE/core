@@ -47,12 +47,12 @@ public:
 	static const ElementType	type = typeDXFProt;
 	
 	virtual void load(CFRecord& record);
-
+    virtual void save(CFRecord& record);
 
 	int serialize(std::wostream & stream);
 
-	bool fLocked;
-	bool fHidden;
+	bool fLocked = true;
+	bool fHidden = false;
 //------------------------------------------------
 	DXFN *parent;
 };

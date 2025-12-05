@@ -1,5 +1,7 @@
 #include "HWPRecordParaShape.h"
 
+#include "../Common/NodeNames.h"
+
 namespace HWP
 {
 EHeadingType GetHeadingType(int nValue)
@@ -13,12 +15,18 @@ EHeadingType GetHeadingType(int nValue)
 	}
 }
 
-EHeadingType GetHeadingType(const HWP_STRING& sValue)
+EHeadingType GetHeadingType(const std::string& sValue, EHanType eType)
 {
-	IF_STRING_IN_ENUM(OUTLINE, sValue, EHeadingType);
-	ELSE_IF_STRING_IN_ENUM(NUMBER, sValue, EHeadingType);
-	ELSE_IF_STRING_IN_ENUM(BULLET, sValue, EHeadingType);
-	ELSE_STRING_IN_ENUM(NONE, EHeadingType);
+	if (sValue.empty() || GetValueName(EValue::None, eType) == sValue)
+		return EHeadingType::NONE;
+	if (GetValueName(EValue::Outline, eType) == sValue)
+		return EHeadingType::OUTLINE;
+	if (GetValueName(EValue::Number, eType) == sValue)
+		return EHeadingType::NUMBER;
+	if (GetValueName(EValue::Bullet, eType) == sValue)
+		return EHeadingType::BULLET;
+
+	return EHeadingType::NONE;
 }
 
 EHorizontalAlign GetHorizontalAlign(int nValue)
@@ -34,14 +42,22 @@ EHorizontalAlign GetHorizontalAlign(int nValue)
 	}
 }
 
-EHorizontalAlign GetHorizontalAlign(const HWP_STRING& sValue)
+EHorizontalAlign GetHorizontalAlign(const std::string& sValue, EHanType eType)
 {
-	IF_STRING_IN_ENUM(RIGHT, sValue, EHorizontalAlign);
-	ELSE_IF_STRING_IN_ENUM(CENTER, sValue, EHorizontalAlign);
-	ELSE_IF_STRING_IN_ENUM(DISTRIBUTE, sValue, EHorizontalAlign);
-	ELSE_IF_STRING_IN_ENUM(DISTRIBUTE_SPACE, sValue, EHorizontalAlign);
-	ELSE_IF_STRING_IN_ENUM(JUSTIFY, sValue, EHorizontalAlign);
-	ELSE_STRING_IN_ENUM(LEFT, EHorizontalAlign);
+	if (sValue.empty() || GetValueName(EValue::Left, eType) == sValue)
+		return EHorizontalAlign::LEFT;
+	if (GetValueName(EValue::Center, eType) == sValue)
+		return EHorizontalAlign::CENTER;
+	if (GetValueName(EValue::Right, eType) == sValue)
+		return EHorizontalAlign::RIGHT;
+	if (GetValueName(EValue::Distribute, eType) == sValue)
+		return EHorizontalAlign::DISTRIBUTE;
+	if (GetValueName(EValue::DistributeSpace, eType) == sValue)
+		return EHorizontalAlign::DISTRIBUTE_SPACE;
+	if (GetValueName(EValue::Justify, eType) == sValue)
+		return EHorizontalAlign::JUSTIFY;
+
+	return EHorizontalAlign::LEFT;
 }
 
 EVerticalAlign GetVerticalAlign(int nValue)
@@ -55,12 +71,18 @@ EVerticalAlign GetVerticalAlign(int nValue)
 	}
 }
 
-EVerticalAlign GetVerticalAlign(const HWP_STRING& sValue)
+EVerticalAlign GetVerticalAlign(const std::string& sValue, EHanType eType)
 {
-	IF_STRING_IN_ENUM(CENTER, sValue, EVerticalAlign);
-	ELSE_IF_STRING_IN_ENUM(BOTTOM, sValue, EVerticalAlign);
-	ELSE_IF_STRING_IN_ENUM(BASELINE, sValue, EVerticalAlign);
-	ELSE_STRING_IN_ENUM(TOP, EVerticalAlign);
+	if (sValue.empty() || GetValueName(EValue::Top, eType) == sValue)
+		return EVerticalAlign::TOP;
+	if (GetValueName(EValue::Center, eType) == sValue)
+		return EVerticalAlign::CENTER;
+	if (GetValueName(EValue::Bottom, eType) == sValue)
+		return EVerticalAlign::BOTTOM;
+	if (GetValueName(EValue::Baseline, eType) == sValue)
+		return EVerticalAlign::BASELINE;
+
+	return EVerticalAlign::TOP;
 }
 
 CHWPRecordParaShape::CHWPRecordParaShape(CHWPDocInfo& oDocInfo, int nTagNum, int nLevel, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
@@ -131,111 +153,295 @@ CHWPRecordParaShape::CHWPRecordParaShape(CHWPDocInfo& oDocInfo, int nTagNum, int
 		oBuffer.Skip(8);
 }
 
-CHWPRecordParaShape::CHWPRecordParaShape(CHWPDocInfo& oDocInfo, CXMLNode& oNode, int nVersion)
+CHWPRecordParaShape::CHWPRecordParaShape(CHWPDocInfo& oDocInfo, CXMLReader& oReader, EHanType eType)
 	: CHWPRecord(EHWPTag::HWPTAG_PARA_SHAPE, 0, 0), m_pParent(&oDocInfo),
       m_eAlign(EHorizontalAlign::JUSTIFY), m_bWidowOrphan(false), m_bKeepWithNext(false),
       m_bPageBreakBefore(false), m_eVertAlign(EVerticalAlign::BASELINE), m_eHeadingType(EHeadingType::NONE),
-      m_bConnect(false), m_bIgnoreMargin(false), m_bParaTailShape(false)
+      m_bConnect(false), m_bIgnoreMargin(false), m_bParaTailShape(false), m_nIndent(0), m_nMarginLeft(0),
+      m_nMarginRight(0), m_nMarginPrev(0), m_nMarginNext(0)
 {
-	m_shTabDef = oNode.GetAttributeInt(L"tabPrIDRef");
-	m_chCondense = (HWP_BYTE)oNode.GetAttributeInt(L"condense");
+	//В HWPX  в данной ноде данный пишутся по типу данный в нодах
+	//В HWPML в данной ноде данные пишутся по типу данные в аргументах
+	
+	if (EHanType::HWPX == eType)
+	{
+		START_READ_ATTRIBUTES(oReader)
+		{
+			if (GetAttributeName(EAttribute::TabDef, eType))
+				m_shTabDef = oReader.GetInt();
+			else if (GetAttributeName(EAttribute::Condense, eType) == sAttributeName)
+				m_chCondense = (HWP_BYTE)oReader.GetInt();
+			else if (GetAttributeName(EAttribute::FontLineHeight, eType) == sAttributeName)
+				m_bFontLineHeight = oReader.GetBool();
+			else if (GetAttributeName(EAttribute::SnapToGrid, eType) == sAttributeName)
+				m_bSnapToGrid = oReader.GetBool();
+		}
+		END_READ_ATTRIBUTES(oReader)
 
-	m_bFontLineHeight = oNode.GetAttributeBool(L"fontLineHeight");
-	m_bSnapToGrid = oNode.GetAttributeBool(L"snapToGrid");
+		RecursiveParaShape(oReader);
+		return;
+	}
+	else if (EHanType::HWPML != eType)
+		return;
 
-	for (CXMLNode& oChild : oNode.GetChilds())
-		RecursiveParaShape(oChild);
+	START_READ_ATTRIBUTES(oReader)
+	{
+		if ("Align" == sAttributeName)
+			m_eAlign = ::HWP::GetHorizontalAlign(oReader.GetTextA(), eType);
+		else if ("VerAlign" == sAttributeName)
+			m_eVertAlign = ::HWP::GetVerticalAlign(oReader.GetTextA(), eType);
+		else if ("HeadingType" == sAttributeName)
+			m_eHeadingType = ::HWP::GetHeadingType(oReader.GetTextA(), eType);
+		else if ("Heading" == sAttributeName)
+			m_shHeadingIdRef = oReader.GetInt();
+		else if ("Level" == sAttributeName)
+			m_chHeadingLevel = (HWP_BYTE)oReader.GetInt();
+		else if ("TabDef" == sAttributeName)
+			m_shTabDef = oReader.GetInt();
+		else if ("BreakLatinWord" == sAttributeName)
+		{
+			const std::string sType{oReader.GetTextA()};
+			
+			if ("KeepWord" == sType)
+				m_chBreakLatinWord = 0;
+			else if ("BreakWord" == sType)
+				m_chBreakLatinWord = 1;
+			else if ("Hyphenation" == sType)
+				m_chBreakLatinWord = 2;
+		}
+		else if ("BreakNonLatinWord" == sAttributeName)
+		{
+			//TODO:: проверить соответсвие hwpx и hwpml
+		}
+		else if ("Condense" == sAttributeName)
+			m_chCondense = (HWP_BYTE)oReader.GetInt();
+		else if ("WidowOrphan" == sAttributeName)
+			m_bWidowOrphan = oReader.GetBool();
+		else if ("KeepWithNext" == sAttributeName)
+			m_bKeepWithNext = oReader.GetBool();
+		else if ("KeepLines" == sAttributeName)
+		{ /*TODO:: проверить соответсвие hwpx и hwpml*/ }
+		else if ("PageBreakBefore" == sAttributeName)
+			m_bPageBreakBefore = oReader.GetBool();
+		else if ("FontLineHeight" == sAttributeName)
+			m_bFontLineHeight = oReader.GetBool();
+		else if ("SnapToGrid" == sAttributeName)
+			m_bSnapToGrid = oReader.GetBool();
+		else if ("LineWrap" == sAttributeName)
+		{
+			const std::string sType{oReader.GetTextA()};
+
+			if ("Break" == sType)
+				m_chLineWrap = 0;
+			else if ("Squeeze" == sType)
+				m_chLineWrap = 1;
+			else if ("Keep" == sType)
+				m_chLineWrap = 2;
+		}
+		else if ("AutoSpaceEAsianEng" == sAttributeName)
+			m_bAutoSpaceEAsianEng = oReader.GetBool();
+		else if ("AutoSpaceEAsianNum" == sAttributeName)
+			m_bAutoSpaceEAsianNum = oReader.GetBool();
+	}
+	END_READ_ATTRIBUTES(oReader)
+
+	WHILE_READ_NEXT_NODE_WITH_NAME(oReader)
+	{
+		if ("PARAMARGIN" == sNodeName)
+		{
+			START_READ_ATTRIBUTES(oReader)
+			{
+				if ("Indent" == sAttributeName)
+					m_nIndent = oReader.GetInt();
+				else if ("Left" == sAttributeName)
+					m_nMarginLeft = oReader.GetInt();
+				else if ("Right" == sAttributeName)
+					m_nMarginRight = oReader.GetInt();
+				else if ("Prev" == sAttributeName)
+					m_nMarginPrev = oReader.GetInt();
+				else if ("Next" == sAttributeName)
+					m_nMarginNext = oReader.GetInt();
+				else if ("LineSpacingType" == sAttributeName)
+				{
+					const std::string sType{oReader.GetTextA()};
+
+					if ("Percent" == sType)
+						m_nLineSpacingType = 0;
+					else if ("Fixed" == sType)
+						m_nLineSpacingType = 1;
+					else if ("BetweenLines" == sType)
+						m_nLineSpacingType = 2;
+					else if ("AtLeast" == sType)
+						m_nLineSpacingType = 4;
+				}
+				else if ("LineSpacing" == sAttributeName)
+					m_nLineSpacing = oReader.GetInt();
+			}
+			END_READ_ATTRIBUTES(oReader)
+		}
+		else if ("PARABORDER" == sNodeName)
+		{
+			START_READ_ATTRIBUTES(oReader)
+			{
+				if ("BorderFill" == sAttributeName)
+					m_shBorderFill = oReader.GetInt();
+				else if ("OffsetLeft" == sAttributeName)
+					m_shOffsetLeft = oReader.GetInt();
+				else if ("OffsetRigth" == sAttributeName)
+					m_shOffsetRight = oReader.GetInt();
+				else if ("OffsetTop" == sAttributeName)
+					m_shOffsetTop = oReader.GetInt();
+				else if ("OffsetBottom" == sAttributeName)
+					m_shOffsetBottom = oReader.GetInt();
+				else if ("Connect" == sAttributeName)
+					m_bConnect = oReader.GetBool();
+				else if ("IgnoreMargin" == sAttributeName)
+					m_bIgnoreMargin = oReader.GetBool();
+			}
+			END_READ_ATTRIBUTES(oReader)
+		}
+	}
+	END_WHILE
 }
 
-void CHWPRecordParaShape::RecursiveParaShape(CXMLNode& oNode)
+void CHWPRecordParaShape::RecursiveParaShape(CXMLReader& oReader)
 {
-	if (L"hh:align" == oNode.GetName())
+	WHILE_READ_NEXT_NODE_WITH_NAME(oReader)
 	{
-		m_eAlign = ::HWP::GetHorizontalAlign(oNode.GetAttribute(L"horizontal"));
-		m_eVertAlign = ::HWP::GetVerticalAlign(oNode.GetAttribute(L"vertical"));
+		if ("hh:align" == sNodeName)
+		{
+			START_READ_ATTRIBUTES(oReader)
+			{
+				if ("horizontal" == sAttributeName)
+					m_eAlign = ::HWP::GetHorizontalAlign(oReader.GetTextA(), EHanType::HWPX);
+				else if ("vertical" == sAttributeName)
+					m_eVertAlign = ::HWP::GetVerticalAlign(oReader.GetTextA(), EHanType::HWPX);
+			}
+			END_READ_ATTRIBUTES(oReader)
+		}
+		else if ("hh:heading" == sNodeName)
+		{
+			START_READ_ATTRIBUTES(oReader)
+			{
+				if ("type" == sAttributeName)
+					m_eHeadingType = ::HWP::GetHeadingType(oReader.GetTextA(), EHanType::HWPX);
+				else if ("idRef" == sAttributeName)
+					m_shHeadingIdRef = oReader.GetInt();
+				else if ("level" == sAttributeName)
+					m_chHeadingLevel = (HWP_BYTE)oReader.GetInt();
+			}
+			END_READ_ATTRIBUTES(oReader)
+		}
+		else if ("hh:breakSetting" == sNodeName)
+		{
+			START_READ_ATTRIBUTES(oReader)
+			{
+				if ("breakLatinWord" == sAttributeName)
+				{
+					const std::string sType{oReader.GetTextA()};
+
+					if ("KEEP_WORD" == sType)
+						m_chBreakLatinWord = 0;
+					else if ("BREAK_WORD" == sType)
+						m_chBreakLatinWord = 1;
+				}
+				else if ("breakNonLatinWord" == sAttributeName)
+				{
+					const std::string sType{oReader.GetTextA()};
+
+					if ("KEEP_WORD" == sType)
+						m_chBreakNonLatinWord = 0;
+					else if ("BREAK_WORD" == sType)
+						m_chBreakNonLatinWord = 1;
+				}
+				else if ("widowOrphan" == sAttributeName)
+					m_bWidowOrphan = oReader.GetBool();
+				else if ("keepWithNext" == sAttributeName)
+					m_bKeepWithNext = oReader.GetBool();
+				else if ("pageBreakBefore" == sAttributeName)
+					m_bPageBreakBefore = oReader.GetBool();
+				else if ("lineWrap" == sAttributeName)
+				{
+					const std::string sType{oReader.GetTextA()};
+
+					if ("BREAK" == sType)
+						m_chLineWrap = 0;
+					else if ("SQUEEZE" == sType)
+						m_chLineWrap = 1;
+				}
+			}
+			END_READ_ATTRIBUTES(oReader)
+		}
+		else if ("hh:lineSpacing" == sNodeName)
+		{
+			START_READ_ATTRIBUTES(oReader)
+			{
+				if ("type" == sAttributeName)
+				{
+					const std::string sType{oReader.GetTextA()};
+
+					if ("PERCENT" == sType)
+						m_nLineSpacingType = 0;
+					else if ("FIXED" == sType)
+						m_nLineSpacingType = 1;
+					else if ("BETWEENLINES" == sType)
+						m_nLineSpacingType = 2;
+					else if ("AT_LEAST" == sType)
+						m_nLineSpacingType = 4;
+				}
+				else if ("value" == sAttributeName)
+					m_nLineSpacing = oReader.GetInt();
+			}
+			END_READ_ATTRIBUTES(oReader)
+		}
+		else if ("hh:border" == sNodeName)
+		{
+			START_READ_ATTRIBUTES(oReader)
+			{
+				if ("borderFillIDRef" == sAttributeName)
+					m_shBorderFill = oReader.GetInt();
+				else if ("offsetLeft" == sAttributeName)
+					m_shOffsetLeft = oReader.GetInt();
+				else if ("offsetRight" == sAttributeName)
+					m_shOffsetRight = oReader.GetInt();
+				else if ("offsetTop" == sAttributeName)
+					m_shOffsetTop = oReader.GetInt();
+				else if ("offsetBottom" == sAttributeName)
+					m_shOffsetBottom = oReader.GetInt();
+				else if ("connect" == sAttributeName)
+					m_bConnect = oReader.GetBool();
+				else if ("ignoreMargin" == sAttributeName)
+					m_bIgnoreMargin = oReader.GetBool();
+			}
+			END_READ_ATTRIBUTES(oReader)
+		}
+		else if ("hh:autoSpacing" == sNodeName)
+		{
+			START_READ_ATTRIBUTES(oReader)
+			{
+				if ("eAsianEng" == sAttributeName)
+					m_bAutoSpaceEAsianEng = oReader.GetBool();
+				else if ("eAsianNum" == sAttributeName)
+					m_bAutoSpaceEAsianNum = oReader.GetBool();
+			}
+			END_READ_ATTRIBUTES(oReader)
+		}
+		else if ("hc:intent" == sNodeName)
+			m_nIndent = oReader.GetAttributeInt("value");
+		else if ("hc:left" == sNodeName)
+			m_nMarginLeft = oReader.GetAttributeInt("value");
+		else if ("hc:right" == sNodeName)
+			m_nMarginRight = oReader.GetAttributeInt("value");
+		else if ("hc:prev" == sNodeName)
+			m_nMarginPrev = oReader.GetAttributeInt("value");
+		else if ("hc:next" == sNodeName)
+			m_nMarginNext = oReader.GetAttributeInt("value");
+		else if ("hh:margin"  == sNodeName ||
+		         "hp:switch"  == sNodeName ||
+		         "hp:default" == sNodeName)
+			RecursiveParaShape(oReader);
 	}
-	else if (L"hh:heading" == oNode.GetName())
-	{
-		m_eHeadingType = ::HWP::GetHeadingType(oNode.GetAttribute(L"type"));
-		m_shHeadingIdRef = oNode.GetAttributeInt(L"idRef");
-		m_chHeadingLevel = (HWP_BYTE)oNode.GetAttributeInt(L"level");
-	}
-	else if (L"hh:breakSetting" == oNode.GetName())
-	{
-		HWP_STRING sType = oNode.GetAttribute(L"breakLatinWord");
-
-		if (L"KEEP_WORD" == sType)
-			m_chBreakLatinWord = 0;
-		else if (L"BREAK_WORD" == sType)
-			m_chBreakLatinWord = 1;
-
-		sType = oNode.GetAttribute(L"breakNonLatinWord");
-
-		if (L"KEEP_WORD" == sType)
-			m_chBreakNonLatinWord = 0;
-		else if (L"BREAK_WORD" == sType)
-			m_chBreakNonLatinWord = 1;
-
-		m_bWidowOrphan = oNode.GetAttributeBool(L"widowOrphan");
-		m_bKeepWithNext = oNode.GetAttributeBool(L"keepWithNext");
-		m_bPageBreakBefore = oNode.GetAttributeBool(L"pageBreakBefore");
-
-		sType = oNode.GetAttribute(L"lineWrap");
-
-		if (L"BREAK" == sType)
-			m_chLineWrap = 0;
-		else if (L"SQUEEZE" == sType)
-			m_chLineWrap = 1;
-	}
-	else if (L"hh:lineSpacing" == oNode.GetName())
-	{
-		HWP_STRING sType = oNode.GetAttribute(L"type");
-
-		if (L"PERCENT" == sType)
-			m_nLineSpacingType = 0;
-		else if (L"FIXED" == sType)
-			m_nLineSpacingType = 1;
-		else if (L"BETWEENLINES" == sType)
-			m_nLineSpacingType = 2;
-		else if (L"AT_LEAST" == sType)
-			m_nLineSpacingType = 4;
-
-		m_nLineSpacing = oNode.GetAttributeInt(L"value");
-	}
-	else if (L"hh:border" == oNode.GetName())
-	{
-		m_shBorderFill = oNode.GetAttributeInt(L"borderFillIDRef");
-		m_shOffsetLeft = oNode.GetAttributeInt(L"offsetLeft");
-		m_shOffsetRight = oNode.GetAttributeInt(L"offsetRight");
-		m_shOffsetTop = oNode.GetAttributeInt(L"offsetTop");
-		m_shOffsetBottom = oNode.GetAttributeInt(L"offsetBottom");
-
-		m_bConnect = oNode.GetAttributeBool(L"connect");
-		m_bIgnoreMargin = oNode.GetAttributeBool(L"ignoreMargin");
-	}
-	else if (L"hh:autoSpacing" == oNode.GetName())
-	{
-		m_bAutoSpaceEAsianEng = oNode.GetAttributeBool(L"eAsianEng");
-		m_bAutoSpaceEAsianNum = oNode.GetAttributeBool(L"eAsianNum");
-	}
-	else if (L"hc:intent" == oNode.GetName())
-		m_nIndent = oNode.GetAttributeInt(L"value");
-	else if (L"hc:left" == oNode.GetName())
-		m_nMarginLeft = oNode.GetAttributeInt(L"value");
-	else if (L"hc:right" == oNode.GetName())
-		m_nMarginRight = oNode.GetAttributeInt(L"value");
-	else if (L"hc:prev" == oNode.GetName())
-		m_nMarginPrev = oNode.GetAttributeInt(L"value");
-	else if (L"hc:next" == oNode.GetName())
-		m_nMarginNext = oNode.GetAttributeInt(L"value");
-	else if (L"hp:switch" == oNode.GetName() ||
-	         L"hp:case" == oNode.GetName() ||
-	         L"hp:default" == oNode.GetName() ||
-	         L"hh:margin" == oNode.GetName())
-	{
-		for (CXMLNode& oChild : oNode.GetChilds())
-			RecursiveParaShape(oChild);
-	}
+	END_WHILE
 }
 
 EHorizontalAlign CHWPRecordParaShape::GetHorizantalAlign() const
@@ -291,6 +497,21 @@ int CHWPRecordParaShape::GetMarginNext() const
 int CHWPRecordParaShape::GetIndent() const
 {
 	return m_nIndent;
+}
+
+int CHWPRecordParaShape::GetLeftIndent() const
+{
+	return m_nMarginLeft;
+}
+
+int CHWPRecordParaShape::GetRightIndent() const
+{
+	return m_nMarginRight;
+}
+
+short CHWPRecordParaShape::GetTabDef() const
+{
+	return m_shTabDef;
 }
 
 bool CHWPRecordParaShape::KeepWithNext() const

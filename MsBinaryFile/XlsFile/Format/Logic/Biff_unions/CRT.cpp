@@ -305,6 +305,52 @@ const bool CRT::loadContent(BinProcessor& proc)
 	return true;
 }
 
+const bool CRT::saveContent(BinProcessor& proc)
+{
+    if(m_ChartFormat == nullptr)
+        return false;
+    proc.mandatory(*m_ChartFormat);
+    proc.mandatory<Begin>();
+    if(m_ChartType != nullptr)
+    {
+        proc.mandatory(*m_ChartType);
+        if("BopPop" == m_ChartType->getClassName())
+        {
+            BopPop *bp = dynamic_cast<BopPop*>(m_ChartType.get());
+            if(bp->m_Custom != nullptr)
+                proc.mandatory(*(bp->m_Custom));
+        }
+    }
+	proc.mandatory<CrtLink>();
+	if(m_SeriesList != nullptr)
+		proc.mandatory(*m_SeriesList);
+	if(m_Chart3d != nullptr)
+		proc.mandatory(*m_Chart3d);
+	if(m_LD != nullptr)
+		proc.mandatory(*m_LD);
+	if(m_DROPBAR[0] != nullptr)
+		proc.mandatory(*m_DROPBAR[0]);
+	if(m_DROPBAR[1] != nullptr)
+		proc.mandatory(*m_DROPBAR[1]);
+	for(auto i : m_arCrtLine)
+	{
+		if(i != nullptr)
+			proc.mandatory(*i);
+		auto castedPtr = static_cast<CrtLine*>(i.get());
+		if(castedPtr->m_LineFormat != nullptr)
+			proc.mandatory(*(castedPtr->m_LineFormat));
+	}
+	for(auto i : m_arDFTTEXT)
+		if(i != nullptr)
+			proc.mandatory(*i);
+	if(m_DataLabExtContents != nullptr)
+		proc.mandatory(*m_DataLabExtContents);
+	if(m_SS!= nullptr)
+		proc.mandatory(*m_SS);
+    proc.mandatory<End>();
+    return true;
+}
+
 std::wstring CRT::getOoxChartType()
 {
 	switch(m_ChartType->get_type())

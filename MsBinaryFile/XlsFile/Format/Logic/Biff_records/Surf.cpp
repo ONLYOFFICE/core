@@ -59,6 +59,14 @@ void Surf::readFields(CFRecord& record)
 	f3DPhongShade	= GETBIT(flags, 1);
 }
 
+void Surf::writeFields(CFRecord& record)
+{
+    unsigned short flags = 0;
+    SETBIT(flags, 0, fFillSurface)
+    SETBIT(flags, 1, f3DPhongShade)
+    record << flags;
+}
+
 int Surf::serialize(std::wostream & _stream)
 {
 	CP_XML_WRITER(_stream)    

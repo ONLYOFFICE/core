@@ -83,14 +83,14 @@ public:
     void load(CFRecord& record) override {}
 	void save(CFRecord& record) override {}
 
-    int		rowFirst;
-    int		rowLast;
-	bool	rowFirstRelative;
-	bool	rowLastRelative;
-    int		columnFirst;
-    int		columnLast;
-	bool	columnFirstRelative;
-	bool	columnLastRelative;
+    int		rowFirst = 0;
+    int		rowLast = 0;
+    bool	rowFirstRelative = 0;
+    bool	rowLastRelative = 0;
+    int		columnFirst = 0;
+    int		columnLast = 0;
+    bool	columnFirstRelative = 0;
+    bool	columnLastRelative = 0;
 
 	mutable std::wstring to_string_cache;
 
@@ -206,8 +206,13 @@ public:
 			switch (rel_info)
 			{
 			case rel_Present:
-				colFirst = (columnFirst >> 2) << 2;
-				colLast = (columnLast >> 2) << 2;
+				SETBITS(colFirst, 0, 13, columnFirst);
+				SETBIT(colFirst, 14, columnFirstRelative);
+				SETBIT(colFirst, 15, rowFirstRelative);
+
+				SETBITS(colLast, 0, 13, columnLast);
+				SETBIT(colLast, 14, columnLastRelative);
+				SETBIT(colLast, 15, rowLastRelative);
 				break;
 			case rel_Absent:
 				colFirst = columnFirst;

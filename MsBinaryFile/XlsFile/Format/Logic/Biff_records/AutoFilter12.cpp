@@ -109,5 +109,27 @@ void AutoFilter12::readFields(CFRecord& record)
 	}
 }
 
+void AutoFilter12::writeFields(CFRecord& record)
+{
+	_UINT16 flags = 0;
+	frtRefHeader.rt = 0x087E;
+	record << frtRefHeader << iEntry << fHideArrow << ft << cft << cCriteria << cDateGroupings;
+	bool fWorksheetAutoFilter = false;
+	if(idList == 0xFFFFFFFF)
+		fWorksheetAutoFilter = true;
+	SETBIT(flags, 3, fWorksheetAutoFilter)
+	record << flags;
+	record.reserveNunBytes(4);
+	record << idList;
+
+	_GUID_ guid_num;
+	if(!guidSview.empty())
+		STR::bstr2guid(guidSview, guid_num);
+	record << guid_num;
+	if(rgb != nullptr)
+		rgb->save(record);
+
+}
+
 } // namespace XLS
 

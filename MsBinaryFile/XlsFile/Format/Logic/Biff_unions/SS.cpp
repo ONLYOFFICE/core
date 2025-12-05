@@ -305,7 +305,7 @@ int SS::serialize_default(std::wostream & _stream, int series_type, int ind )
 				if ((line) && (line->lns == (_UINT16)5)) ind = -1;
 			}
 
-			if (ind >= 0 && m_isAutoLine)
+			if (ind >= 0 && default_series_line_color->size() > ind &&  m_isAutoLine)
 			{
 				CP_XML_NODE(L"a:ln")
 				{
@@ -444,7 +444,8 @@ int SS::serialize(std::wostream & _stream, int series_type, int indPt)
 						{
 							CP_XML_NODE(L"a:srgbClr")
 							{
-								CP_XML_ATTR(L"val",  default_series_line_color[ind]);		
+								if(default_series_line_color->size() > ind)
+									CP_XML_ATTR(L"val",  default_series_line_color[ind]);
 							}
 						}
 						CP_XML_NODE(L"a:prstDash")

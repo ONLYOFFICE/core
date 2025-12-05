@@ -148,7 +148,7 @@ int MarkerFormat::serialize(std::wostream & _stream, int index, BaseObjectPtr _G
 						{
 							CP_XML_NODE(L"a:srgbClr")
 							{
-								CP_XML_ATTR(L"val", (false == fAuto || index < 0) ? rgbBack.strRGB : default_marker_color[index]);
+								CP_XML_ATTR(L"val", (false == fAuto || index < 0 || index > default_marker_color->size()) ? rgbBack.strRGB : default_marker_color[index]);
 							}
 						}
 					}
@@ -158,7 +158,7 @@ int MarkerFormat::serialize(std::wostream & _stream, int index, BaseObjectPtr _G
 						{
 							CP_XML_NODE(L"a:srgbClr")
 							{
-								CP_XML_ATTR(L"val", (false == fAuto || index < 0) ? rgbFore.strRGB : default_marker_color[index]);
+								CP_XML_ATTR(L"val", (false == fAuto || index < 0 || index > default_marker_color->size()) ? rgbFore.strRGB : default_marker_color[index]);
 							}
 						}
 						CP_XML_NODE(L"a:prstDash") { CP_XML_ATTR(L"val", L"solid"); }

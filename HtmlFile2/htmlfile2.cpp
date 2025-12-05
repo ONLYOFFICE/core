@@ -288,7 +288,8 @@ struct CTextSettings
 
 	CTextSettings(const CTextSettings& oTS) :
 		bBdo(oTS.bBdo), bPre(oTS.bPre), bQ(oTS.bQ), bAddSpaces(oTS.bAddSpaces), bMergeText(oTS.bMergeText),
-	    nLi(oTS.nLi), bNumberingLi(oTS.bNumberingLi), sPStyle(oTS.sPStyle), eTextMode(oTS.eTextMode)
+	    nLi(oTS.nLi), bNumberingLi(oTS.bNumberingLi), sPStyle(oTS.sPStyle), eTextMode(oTS.eTextMode),
+	    oAdditionalStyle(oTS.oAdditionalStyle)
 	{}
 
 	void AddPStyle(const std::wstring& wsStyle)
@@ -1443,6 +1444,11 @@ bool CanUseThisPath(const std::wstring& wsPath, const std::wstring& wsSrcPath, c
 		return false;
 
 	return true;
+}
+
+ bool UnreadableNode(const std::wstring& wsNodeName)
+{
+	return L"head" == wsNodeName || L"meta" == wsNodeName || L"style" == wsNodeName;
 }
 
 class CHtmlFile2_Private
@@ -3066,11 +3072,10 @@ private:
 	bool readInside (NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors, CTextSettings& oTS, const std::wstring& sName)
 	{
 		//TODO:: обработать все варианты return'а
-
 		if(sName == L"#text")
 			return ReadText(oXml, sSelectors, oTS);
 
-		if (TagIsUnprocessed(sName))
+		if (UnreadableNode(sName) || TagIsUnprocessed(sName))
 			return false;
 
 		std::wstring sNote = GetSubClass(oXml, sSelectors);
@@ -3924,8 +3929,6 @@ private:
 		if(m_oLightReader.IsEmptyNode())
 			return false;
 
-		GetSubClass(oXml, arSelectors);
-
 		CloseP(oXml, arSelectors);
 
 		CTextSettings oTSLi(oTS);
@@ -3966,6 +3969,8 @@ private:
 			m_oNumberXml.WriteString(wsStart);
 			m_oNumberXml.WriteString(L"\"/><w:numFmt w:val=\"decimal\"/><w:isLgl w:val=\"false\"/><w:suff w:val=\"tab\"/><w:lvlText w:val=\"%9.\"/><w:lvlJc w:val=\"right\"/><w:pPr><w:ind w:left=\"6469\" w:hanging=\"180\"/></w:pPr></w:lvl></w:abstractNum>");
 		}
+		else
+			oTSLi.bNumberingLi = false;
 
 		CTextSettings oTSList{oTSLi};
 
@@ -3987,7 +3992,6 @@ private:
 		}
 
 		CloseP(oXml, arSelectors);
-		arSelectors.pop_back();
 
 		return true;
 	}

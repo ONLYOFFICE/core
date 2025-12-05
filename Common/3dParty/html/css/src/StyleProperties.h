@@ -2,9 +2,10 @@
 #define STYLEPROPERTIES_H
 
 #include <map>
+#include <optional>
 #include <string>
+#include <variant>
 #include <vector>
-#include <sstream>
 
 #include "../../../../DesktopEditor/graphics/Matrix.h"
 #include "CUnitMeasureConverter.h"
@@ -16,33 +17,34 @@ namespace NSCSS
 	#define NEXT_LEVEL UINT_MAX, true
 
 	template<typename T>
-	class CValue
+	class CValueBase
 	{
-		friend class CString;
-		friend class CMatrix;
-		friend class CDigit;
-		friend class CColor;
-		friend class CEnum;
-		friend class CURL;
+	protected:
+		CValueBase()
+			: m_unLevel(0), m_bImportant(false)
+		{}
+		CValueBase(const CValueBase& oValue)
+			: m_oValue(oValue.m_oValue), m_unLevel(oValue.m_unLevel), m_bImportant(oValue.m_bImportant)
+		{}
+
+		CValueBase(const T& oValue, unsigned int unLevel, bool bImportant)
+		    : m_oValue(oValue), m_unLevel(unLevel), m_bImportant(bImportant)
+		{}
 
 		T            m_oValue;
 		unsigned int m_unLevel;
 		bool         m_bImportant;
 	public:
-		CValue(const T& oValue, unsigned int unLevel, bool bImportant) :
-		    m_oValue(oValue), m_unLevel(unLevel), m_bImportant(bImportant)
-		{
-		}
+		virtual bool Empty() const = 0;
+		virtual void Clear() = 0;
 
 		virtual bool SetValue(const std::wstring& wsValue, unsigned int unLevel, bool bHardMode) = 0;
 
-		virtual bool Empty() const = 0;
-		virtual void Clear() = 0;
 		virtual int ToInt() const = 0;
 		virtual double ToDouble() const = 0;
 		virtual std::wstring ToWString() const = 0;
 
-		static void Equation(CValue &oFirstValue, CValue &oSecondValue)
+		static void Equation(CValueBase &oFirstValue, CValueBase &oSecondValue)
 		{
 			if (oFirstValue.m_bImportant && !oSecondValue.m_bImportant && oFirstValue.Empty())
 				oSecondValue.Clear();
@@ -57,18 +59,22 @@ namespace NSCSS
 			}
 		}
 
-		static bool LevelIsSame(const CValue& oFirstValue, const CValue& oSecondValue)
+		static bool LevelIsSame(const CValueBase& oFirstValue, const CValueBase& oSecondValue)
 		{
 			return oFirstValue.m_unLevel == oSecondValue.m_unLevel;
 		}
 
-		bool operator==(const T& oValue) const { return m_oValue == oValue; }
-		bool operator>=(const T& oValue) const { return m_oValue >= oValue; }
-		bool operator<=(const T& oValue) const { return m_oValue <= oValue; }
-		bool operator> (const T& oValue) const { return m_oValue > oValue; }
-		bool operator< (const T& oValue) const { return m_oValue < oValue; }
+		bool operator==(const T& oValue) const
+		{
+			return m_oValue == oValue;
+		}
 
-		virtual CValue& operator =(const CValue& oValue)
+		bool operator!=(const T& oValue) const
+		{
+			return m_oValue != oValue;
+		}
+
+		virtual CValueBase& operator =(const CValueBase& oValue)
 		{
 			m_oValue     = oValue.m_oValue;
 			m_unLevel    = oValue.m_unLevel;
@@ -77,36 +83,53 @@ namespace NSCSS
 			return *this;
 		}
 
-		virtual CValue& operator =(const T& oValue)
+		virtual CValueBase& operator+=(const CValueBase& oValue)
 		{
-			//m_oValue = oValue.m_oValue;
-			return *this;
-		}
-
-		virtual CValue& operator+=(const CValue& oValue)
-		{
-			if (m_unLevel > oValue.m_unLevel || (m_bImportant && !oValue.m_bImportant) || oValue.Empty())
+			if (m_unLevel > oValue.m_unLevel || (m_bImportant && !oValue.m_bImportant) || Empty())
 				return *this;
 
-			m_oValue     = oValue.m_oValue;
-			m_unLevel    = oValue.m_unLevel;
-			m_bImportant = oValue.m_bImportant;
+			*this = oValue;
 
 			return *this;
 		}
 
-		virtual bool operator==(const CValue& oValue) const
+		virtual bool operator==(const CValueBase& oValue) const
 		{
 			return m_oValue == oValue.m_oValue;
 		}
 
-		virtual bool operator!=(const CValue& oValue) const
+		virtual bool operator!=(const CValueBase& oValue) const
 		{
-			return m_oValue != oValue.m_oValue;
+			return !(*this == oValue);
 		}
 	};
 
-	class CString : public CValue<std::wstring>
+	template<typename T>
+	class CValueOptional : public CValueBase<std::optional<T>>
+	{
+	protected:
+		CValueOptional()
+			: CValueBase<std::optional<T>>()
+		{}
+
+		CValueOptional(const T& oValue, unsigned int unLevel, bool bImportant)
+			: CValueBase<std::optional<T>>(oValue, unLevel, bImportant)
+		{}
+
+	public:
+		virtual bool Empty() const override
+		{
+			return !this->m_oValue.has_value();
+		}
+		void Clear() override
+		{
+			this->m_oValue.reset();
+			this->m_unLevel = 0;
+			this->m_bImportant = false;
+		}
+	};
+
+	class CString : public CValueOptional<std::wstring>
 	{
 	public:
 		CString();
@@ -117,30 +140,29 @@ namespace NSCSS
 		bool SetValue(const std::wstring& wsValue, const std::map<std::wstring, std::wstring>& arValiableValues, unsigned int unLevel, bool bHardMode);
 
 		bool Empty() const override;
-		void Clear() override;
 
 		int          ToInt()     const override;
 		double       ToDouble()  const override;
 		std::wstring ToWString() const override;
-
-		CString& operator+=(const CString& oString);
 	};
 
-	class CDigit : public CValue<double>
+	class CDigit : public CValueOptional<double>
 	{
 		UnitMeasure m_enUnitMeasure;
 
 		double ConvertValue(double dPrevValue, UnitMeasure enUnitMeasure) const;
+
+		template <typename Operation>
+		CDigit ApplyOperation(const CDigit& oDigit, Operation operation) const;
 	public:
 		CDigit();
-		CDigit(double dValue);
-		CDigit(double dValue, unsigned int unLevel, bool bImportant = false);
+		CDigit(const double& dValue);
+		CDigit(const double& dValue, unsigned int unLevel, bool bImportant = false);
 
 		bool SetValue(const std::wstring& wsValue, unsigned int unLevel = 0, bool bHardMode = true) override;
 		bool SetValue(const CDigit& oValue);
 		bool SetValue(const double& dValue, UnitMeasure enUnitMeasure, unsigned int unLevel = 0, bool bHardMode = true);
 
-		bool Empty() const override;
 		bool Zero() const;
 		void Clear() override;
 
@@ -156,7 +178,7 @@ namespace NSCSS
 
 		UnitMeasure GetUnitMeasure() const;
 
-		bool operator==(const double& oValue) const;
+		bool operator==(const double& dValue) const;
 		bool operator==(const CDigit& oDigit) const;
 
 		bool operator!=(const double& oValue) const;
@@ -186,6 +208,8 @@ namespace NSCSS
 
 		bool Empty() const;
 
+		int ToInt() const;
+
 		bool operator==(const TRGB& oRGB) const;
 		bool operator!=(const TRGB& oRGB) const;
 	};
@@ -211,31 +235,58 @@ namespace NSCSS
 	
 	typedef enum
 	{
-		ColorEmpty,
 		ColorNone,
 		ColorRGB,
 		ColorHEX,
 		ColorUrl,
 		ColorContextStroke,
 		ColorContextFill
-	} ColorType;
+	} EColorType;
 
-	class CColor : public CValue<void*>
+	class CColorValue
+	{
+		using color_value = std::variant<std::monostate, std::wstring, TRGB, CURL>;
+	protected:
+		EColorType  m_eType;
+	public:
+		CColorValue();
+		CColorValue(const CColorValue& oValue);
+		CColorValue(const std::wstring& wsValue);
+		CColorValue(const TRGB& oValue);
+		CColorValue(const CURL& oValue);
+
+		EColorType GetType() const;
+
+		bool operator==(const CColorValue& oValue) const;
+
+		color_value m_oValue;
+	};
+
+	class CColorValueContextStroke : public CColorValue
+	{
+	public:
+		CColorValueContextStroke();
+	};
+
+	class CColorValueContextFill : public CColorValue
+	{
+	public:
+		CColorValueContextFill();
+	};
+
+	class CColor : public CValueOptional<CColorValue>
 	{
 	public:
 		CColor();
-		CColor(const CColor& oColor);
-		~CColor();
 
 		bool SetValue(const std::wstring& wsValue, unsigned int unLevel = 0, bool bHardMode = true) override;
 		bool SetOpacity(const std::wstring& wsValue, unsigned int unLevel = 0, bool bHardMode = true);
 
-		bool Empty() const override;
 		bool None() const;
 		bool Url() const;
 		void Clear() override;
 
-		ColorType GetType() const;
+		EColorType GetType() const;
 
 		double GetOpacity() const;
 
@@ -248,21 +299,14 @@ namespace NSCSS
 
 		static TRGB ConvertHEXtoRGB(const std::wstring& wsValue);
 		static std::wstring ConvertRGBtoHEX(const TRGB& oValue);
-
-		bool operator==(const CColor& oColor) const;
-		bool operator!=(const CColor& oColor) const;
-
-		CColor& operator =(const CColor& oColor);
-		CColor& operator+=(const CColor& oColor);
 	private:
-		CDigit    m_oOpacity;
-		ColorType m_enType;
+		CDigit m_oOpacity;
 
 		void SetEmpty(unsigned int unLevel = 0);
 		void SetRGB(unsigned char uchR, unsigned char uchG, unsigned char uchB);
 		void SetRGB(const TRGB& oRGB);
 		void SetHEX(const std::wstring& wsValue);
-		void SetUrl(const std::wstring& wsValue);
+		bool SetUrl(const std::wstring& wsValue);
 		void SetNone();
 	};
 
@@ -279,7 +323,7 @@ namespace NSCSS
 
 	typedef std::vector<std::pair<std::vector<double>, TransformType>> MatrixValues;
 
-	class CMatrix : public CValue<MatrixValues>
+	class CMatrix : public CValueBase<MatrixValues>
 	{
 		std::vector<std::wstring> CutTransforms(const std::wstring& wsValue) const;
 	public:
@@ -306,22 +350,15 @@ namespace NSCSS
 		CMatrix& operator-=(const CMatrix& oMatrix);
 	};
 
-	class CEnum : public CValue<int>
+	class CEnum : public CValueOptional<int>
 	{
+		int m_nDefaultValue;
 		std::map<std::wstring, int> m_mMap;
 	public:
 		CEnum();
 
 		bool SetValue(const std::wstring& wsValue, unsigned int unLevel, bool bHardMode) override;
 		void SetMapping(const std::map<std::wstring, int>& mMap, int nDefaulvalue = -1);
-
-		bool Empty() const override;
-		void Clear() override;
-
-		CEnum &operator =(int nValue);
-
-		bool operator==(int nValue) const;
-		bool operator!=(int nValue) const;
 
 		int ToInt() const override;
 	private:

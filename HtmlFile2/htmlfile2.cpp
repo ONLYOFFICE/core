@@ -3912,9 +3912,6 @@ private:
 
 	bool ReadListElement(NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& arSelectors, CTextSettings& oTS)
 	{
-		if (OpenP(oXml))
-			wrP(oXml, arSelectors, oTS);
-
 		const bool bResult{readStream(oXml, arSelectors, oTS)};
 
 		CloseP(oXml, arSelectors);

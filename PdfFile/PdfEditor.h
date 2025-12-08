@@ -82,7 +82,6 @@ public:
 	CPdfEditor(const std::wstring& _wsSrcFile, const std::wstring& _wsPassword, const std::wstring& _wsDstFile, CPdfReader* _pReader, CPdfWriter* _pWriter, Mode nMode = Mode::Unknown);
 
 	void SetMode(Mode nMode);
-	bool IncrementalUpdates();
 
 	int  GetError();
 	void Close();
@@ -109,6 +108,8 @@ public:
 	bool MergePages(const std::wstring& wsPath);
 
 private:
+	bool IncrementalUpdates();
+	void NewFrom();
 	void GetPageTree(XRef* xref, Object* pPagesRefObj, PdfWriter::CPageTree* pPageParent = NULL);
 	bool SplitPages(const int* arrPageIndex, unsigned int unLength, PDFDoc* _pDoc, int nStartRefID);
 	bool ChangeFullNameParent(int nParent, const std::string& sPrefixForm, std::vector<int>& arrRename);

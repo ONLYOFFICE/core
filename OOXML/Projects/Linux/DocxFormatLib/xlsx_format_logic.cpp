@@ -97,6 +97,6 @@
 #include "../../../XlsxFormat/SharedStrings/SharedStrings.cpp"
 #include "../../../XlsxFormat/Timelines/Timeline.cpp"
 #include "../../../XlsxFormat/Workbook/Metadata.cpp"
-#include "../../../XlsxFormat/RichData/RdRichValue.cpp"
+#include "../../../XlsxFormat/RichData/RdRichData.cpp"
 #include "../../../XlsxFormat/Pivot/PivotCacheChildOther.cpp"
 #include "../../../XlsxFormat/Pivot/PivotHierarchies.cpp"

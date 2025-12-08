@@ -59,7 +59,7 @@
 #include "Slicer/Slicer.h"
 #include "NamedSheetViews/NamedSheetViews.h"
 #include "Timelines/Timeline.h"
-#include "RichData/RdRichValue.h"
+#include "RichData/RdRichData.h"
 #include "Workbook/Metadata.h"
 
 #include "Table/Table.h"

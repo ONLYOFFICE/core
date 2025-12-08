@@ -1457,5 +1457,21 @@ namespace SimpleTypes
 			typeFloat = 2 //...
 		};
 		DEFINE_SIMPLE_TYPE(CXmlDataType, EXmlDataType, typeString)
+
+		enum ERichValueValueType
+		{
+			typeBoolean = 0,
+			typeNumber = 1,
+			typeError = 2,
+			typeText = 3,
+			typeInteger = 4,
+			typeRichValue = 5,
+			typeRichArray = 6,
+			typePropertyBag = 7
+		};
+		DEFINE_SIMPLE_TYPE(CRichValueFallbackType, ERichValueValueType, typeText)
+
+		DEFINE_SIMPLE_TYPE(CRichValueValueType, ERichValueValueType, typeNumber)
+
 	}// Spreadsheet
 } // SimpleTypes

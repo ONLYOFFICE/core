@@ -144,8 +144,11 @@ namespace OOX
 				if (L"pivotTable" == sName)
 				{
 					CTimelineCachePivotTable* pPivotTable = new CTimelineCachePivotTable();
-					*pPivotTable = oReader;
-					m_arrItems.push_back(pPivotTable);
+					if (pPivotTable)
+					{
+						pPivotTable->fromXML(oReader);
+						m_arrItems.push_back(pPivotTable);
+					}
 				}
 			}
 		}
@@ -255,8 +258,11 @@ namespace OOX
 				if (L"timeline" == sName)
 				{
 					CTimeline* pTimeline = new CTimeline();
-					*pTimeline = oReader;
-					m_arrItems.push_back(pTimeline);
+					if (pTimeline)
+					{
+						pTimeline->fromXML(oReader);
+						m_arrItems.push_back(pTimeline);
+					}
 				}
 			}
 		}
@@ -649,8 +655,11 @@ xmlns:xr10=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision10\"
 				if (L"timelineRef" == sName)
 				{
 					CTimelineRef* pTimelineRef = new CTimelineRef();
-					*pTimelineRef = oReader;
-					m_arrItems.push_back(pTimelineRef);
+					if (pTimelineRef)
+					{
+						pTimelineRef->fromXML(oReader);
+						m_arrItems.push_back(pTimelineRef);
+					}
 				}
 			}
 		}
@@ -726,8 +735,11 @@ xmlns:xr10=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision10\"
 				if (L"timelineCacheRef" == sName)
 				{
 					CTimelineCacheRef* pTimelineCacheRef = new CTimelineCacheRef();
-					*pTimelineCacheRef = oReader;
-					m_arrItems.push_back(pTimelineCacheRef);
+					if (pTimelineCacheRef)
+					{
+						pTimelineCacheRef->fromXML(oReader);
+						m_arrItems.push_back(pTimelineCacheRef);
+					}
 				}
 			}
 		}
@@ -811,8 +823,11 @@ xmlns:xr10=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision10\"
 				if (L"timelineStyle" == sName)
 				{
 					CTimelineStyle* pStyle = new CTimelineStyle();
-					*pStyle = oReader;
-					m_arrItems.push_back(pStyle);
+					if (pStyle)
+					{
+						pStyle->fromXML(oReader);
+						m_arrItems.push_back(pStyle);
+					}
 				}
 			}
 		}
@@ -873,8 +888,11 @@ xmlns:xr10=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision10\"
 				if (L"timelineStyleElement" == sName)
 				{
 					CTimelineStyleElement* pStyle = new CTimelineStyleElement();
-					*pStyle = oReader;
-					m_arrItems.push_back(pStyle);
+					if (pStyle)
+					{
+						pStyle->fromXML(oReader);
+						m_arrItems.push_back(pStyle);
+					}
 				}
 			}
 		}

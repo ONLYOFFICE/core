@@ -102,6 +102,17 @@ namespace OOX
 		class CMdxSet;
 		class CMetadataStrings;
 		class CMetadataStringIndex;
+
+		class CRichValueData;
+		class CRichValue;
+		class CRichValueFallback;
+		class CRichValueStructures;
+		class CRichValueStructure;
+		class CRichValueTypesInfo;
+		class CRichValueTypeReservedKey;
+		class CRichValueType;
+		class CRichValueTypeReservedKey;
+		class CRichValueTypeKeyFlags;
 	}
 }
 
@@ -265,6 +276,16 @@ namespace BinXlsxRW
 		void WriteMdxKPI(OOX::Spreadsheet::CMdxKPI* pMdxKPI);
 		void WriteMdxMemeberProp(OOX::Spreadsheet::CMdxMemeberProp* pMdxMemeberProp);
 		void WriteMetadataStringIndex(OOX::Spreadsheet::CMetadataStringIndex* pStringIndex);
+
+		void WriteRichValueData(OOX::Spreadsheet::CRichValueData* pData);
+		void WriteRichValue(OOX::Spreadsheet::CRichValue* pData);
+		void WriteRichValueFallback(OOX::Spreadsheet::CRichValueFallback* pData);
+		void WriteRichValueStructures(OOX::Spreadsheet::CRichValueStructures* pStructures);
+		void WriteRichValueStructure(OOX::Spreadsheet::CRichValueStructure* pStructure);
+		void WriteRichValueTypes(OOX::Spreadsheet::CRichValueTypesInfo* pTypesInfo);
+		void WriteRichValueType(OOX::Spreadsheet::CRichValueType* pTypeInfo);
+		void WriteRichValueTypeKeyFlags(OOX::Spreadsheet::CRichValueTypeKeyFlags* pKeyFlags);
+		void WriteRichValueTypeReservedKey(OOX::Spreadsheet::CRichValueTypeReservedKey* pReservedKey);
 	};
 	class BinaryPersonTableWriter
 	{

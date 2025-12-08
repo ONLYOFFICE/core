@@ -3428,6 +3428,10 @@ CAnnot::CAnnot(PDFDoc* pdfDoc, AcroFormField* pField, int nStartRefID)
 	m_pRect[1] = m_dHeight - m_pRect[3];
 	m_pRect[2] = m_pRect[2] - m_dX;
 	m_pRect[3] = m_dHeight - dTemp;
+	if (m_pRect[0] > m_pRect[2])
+		std::swap(m_pRect[0], m_pRect[2]);
+	if (m_pRect[1] > m_pRect[3])
+		std::swap(m_pRect[1], m_pRect[3]);
 
 	// 0 - Уникальное имя - NM
 	if (pField->fieldLookup("NM", &oObj)->isString())
@@ -3563,6 +3567,11 @@ CAnnot::CAnnot(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex, int nStartRefI
 		m_pRect[1] = m_dHeight - ArrGetNum(&oObj, 3);
 		m_pRect[2] = ArrGetNum(&oObj, 2) - m_dX;
 		m_pRect[3] = m_dHeight - ArrGetNum(&oObj, 1);
+
+		if (m_pRect[0] > m_pRect[2])
+			std::swap(m_pRect[0], m_pRect[2]);
+		if (m_pRect[1] > m_pRect[3])
+			std::swap(m_pRect[1], m_pRect[3]);
 	}
 	oObj.free();
 

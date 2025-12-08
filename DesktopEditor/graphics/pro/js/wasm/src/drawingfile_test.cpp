@@ -2144,6 +2144,44 @@ int main(int argc, char* argv[])
 						std::cout << nPathLength << ", ";
 					}
 				}
+				else if (sType == "Link")
+				{
+					nFlags = READ_INT(pAnnots + i);
+					i += 4;
+					if (nFlags & (1 << 0))
+					{
+						std::cout << std::endl << "A ";
+						ReadAction(pAnnots, i);
+						std::cout << std::endl;
+					}
+					if (nFlags & (1 << 1))
+					{
+						std::cout << std::endl << "PA ";
+						ReadAction(pAnnots, i);
+						std::cout << std::endl;
+					}
+					if (nFlags & (1 << 2))
+					{
+						std::string arrHighlighting[] = {"none", "invert", "push", "outline"};
+						nPathLength = READ_BYTE(pAnnots + i);
+						i += 1;
+						std::cout << "Highlight " << arrHighlighting[nPathLength] << ", ";
+					}
+					if (nFlags & (1 << 3))
+					{
+						std::cout << "QuadPoints";
+						int nQuadPointsLength = READ_INT(pAnnots + i);
+						i += 4;
+
+						for (int j = 0; j < nQuadPointsLength; ++j)
+						{
+							nPathLength = READ_INT(pAnnots + i);
+							i += 4;
+							std::cout << " " << (double)nPathLength / 100.0;
+						}
+						std::cout << ", ";
+					}
+				}
 
 				std::cout << std::endl << "]" << std::endl;
 			}

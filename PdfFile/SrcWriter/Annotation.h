@@ -194,6 +194,7 @@ namespace PdfWriter
 		void SetOMetadata(const std::wstring& wsOMetadata);
 		void SetC(const std::vector<double>& arrC);
 
+		void RemoveAP();
 		void APFromFakePage();
 		virtual CAnnotAppearanceObject* StartAP(int nRotate);
 		TRect& GetRect() { return m_oRect; }
@@ -224,6 +225,20 @@ namespace PdfWriter
 
 		void SetParentID(CAnnotation* pAnnot);
 	};
+	class CLinkAnnotation : public CAnnotation
+	{
+	public:
+		CLinkAnnotation(CXref* pXref);
+		EAnnotType GetAnnotationType() const override
+		{
+			return AnnotLink;
+		}
+
+		void SetH(BYTE nH);
+		void SetQuadPoints(const std::vector<double>& arrQuadPoints);
+		void SetA(CAction* pAction);
+		void SetPA(CAction* pAction);
+	};
 	class CMarkupAnnotation : public CAnnotation
 	{
 	protected:
@@ -242,20 +257,9 @@ namespace PdfWriter
 		void SetCD(const std::wstring& wsCD);
 		void SetSubj(const std::wstring& wsSubj);
 
-		void RemoveAP();
+
 		void SetIRTID(CAnnotation* pAnnot);
 		CPopupAnnotation* CreatePopup();
-	};
-	class CLinkAnnotation : public CAnnotation
-	{
-	public:
-		CLinkAnnotation(CXref* pXref, CDestination* pDestination);
-		EAnnotType GetAnnotationType() const override
-		{
-			return AnnotLink;
-		}
-		void SetBorderStyle  (float fWidth, unsigned short nDashOn, unsigned short nDashOff);
-		void SetHighlightMode(EAnnotHighlightMode eMode);
 	};
 	class CTextAnnotation : public CMarkupAnnotation
 	{
@@ -274,15 +278,6 @@ namespace PdfWriter
 		void SetStateModel(BYTE nStateModel);
 
 		void SetAP();
-	};
-	class CUriLinkAnnotation : public CAnnotation
-	{
-	public:
-		CUriLinkAnnotation(CXref* pXref, const char* sUri);
-		EAnnotType GetAnnotationType() const override
-		{
-			return AnnotLink;
-		}
 	};
 	class CInkAnnotation : public CMarkupAnnotation
 	{
@@ -623,6 +618,27 @@ namespace PdfWriter
 	{
 	public:
 		CSignatureWidget(CXref* pXref);
+	};
+
+	class CDestLinkAnnotation : public CAnnotation
+	{
+	public:
+		CDestLinkAnnotation(CXref* pXref, CDestination* pDestination);
+		EAnnotType GetAnnotationType() const override
+		{
+			return AnnotLink;
+		}
+		void SetBorderStyle  (float fWidth, unsigned short nDashOn, unsigned short nDashOff);
+		void SetHighlightMode(EAnnotHighlightMode eMode);
+	};
+	class CUriLinkAnnotation : public CAnnotation
+	{
+	public:
+		CUriLinkAnnotation(CXref* pXref, const char* sUri);
+		EAnnotType GetAnnotationType() const override
+		{
+			return AnnotLink;
+		}
 	};
 }
 #endif // _PDF_WRITER_SRC_ANNOTATION_H

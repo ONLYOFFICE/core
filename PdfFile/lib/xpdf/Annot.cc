@@ -1691,6 +1691,7 @@ void Annot::draw(Gfx *gfx, GBool printing) {
   // draw the appearance stream
   isLink = type && !type->cmp("Link");
 #ifdef BUILDING_WASM_MODULE
+  isLink = gFalse;
   if (type && !type->cmp("Stamp"))
   {
     gfx->drawStamp(&appearance);

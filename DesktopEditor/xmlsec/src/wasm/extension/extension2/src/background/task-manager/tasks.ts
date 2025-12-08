@@ -1,7 +1,8 @@
 import {openPopup} from "../utils.ts";
 import {messageTypes} from "../../common/message-const.ts";
 import {sendToPopup} from "../../content/messenger.ts";
-import KeyStorage from "../../common/key-storage.ts";
+// @ts-ignore
+import {KeyStorage} from "../../../../key-storage/key-storage.js";
 import {ab2base64, base642ui} from "../../common/utils.ts";
 import getCrypto from "../../common/crypto.ts";
 

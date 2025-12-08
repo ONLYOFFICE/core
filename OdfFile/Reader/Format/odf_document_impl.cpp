@@ -786,6 +786,43 @@ void odf_document::Impl::parse_styles(office_element *element)
             break;
         }
        
+        
+		if(document)
+		{
+			office_master_styles * master_style = dynamic_cast<office_master_styles *>( document->office_master_styles_.get() );
+			if (!master_style)
+				break;
+			if(master_style->style_master_page_.size() > 1)
+			{
+				for (size_t i = 1; i < master_style->style_master_page_.size(); i++)
+				{
+					
+					office_element_ptr & elm = master_style->style_master_page_[i];
+			
+					style_master_page * master_page = dynamic_cast<style_master_page *>(elm.get());
+					if (!master_page)
+						continue;
+					
+					 std::wstring ws_style_name = master_page->attlist_.style_name_.get_value_or(L"");
+					
+					for(unsigned int t = 0; t < i;t++)
+					{
+						office_element_ptr& elm_prev = master_style->style_master_page_[t];
+						style_master_page* master_page_prev = dynamic_cast<style_master_page*>(elm_prev.get());
+						if(!master_page_prev)
+							continue;
+						if(ws_style_name == master_page_prev->attlist_.style_name_.get_value_or(L""))
+						{
+							master_page->attlist_.style_name_ = ws_style_name + L"_" + std::to_wstring(master_style->style_master_page_.size());
+							context_->styleContainer().set_new_name_master_page(L"",master_page->attlist_.style_name_.get_value_or(L""));
+							break;
+						}
+						
+					}
+				}
+			}
+		}
+		
         // parse automatic styles - эти стили используют объекты которые в оазис находятся в этом же документе
 		//переопределяем имя - иначе при поиске может возникнуть коллизия.
         do
@@ -876,7 +913,6 @@ void odf_document::Impl::parse_styles(office_element *element)
                     _CP_LOG << L"[warning] error reading master page\n";
                     continue;
                 }
-
                 const std::wstring styleName = masterPage->attlist_.style_name_.get_value_or(L"");
                 const std::wstring pageLayoutName = masterPage->attlist_.style_page_layout_name_.get_value_or(L"");
 

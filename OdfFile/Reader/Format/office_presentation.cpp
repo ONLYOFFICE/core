@@ -165,8 +165,49 @@ void office_presentation::pptx_convert(oox::pptx_conversion_context & Context)
 
 	collect_page_names(Context);
 
+	
+	std::vector<std::pair<std::wstring,std::wstring>>* vec_name_master_page = &(Context.root()->odf_context().styleContainer().get_vec_new_name());
+	unsigned int pos_in_vec = 0;
+	if(!vec_name_master_page->empty())
+	{
+		for (size_t i = 0; i < pages_.size(); i++)
+		{
+			 if(i >= 1)
+			{
+				office_element_ptr & elm = pages_[i];
+				draw_page* page = dynamic_cast<draw_page*>(elm.get());
+				for(size_t t = 0 ; t < i ; t++)
+				{
+					office_element_ptr & elm_prev_page = pages_[t];
+					draw_page* prev_page = dynamic_cast<draw_page*>(elm_prev_page.get());
+					if(page->attlist_.master_page_name_.get_value_or(L"") == prev_page->attlist_.master_page_name_.get_value_or(L"") && page->attlist_.page_layout_name_.get_value_or(L"") != prev_page->attlist_.page_layout_name_.get_value_or(L""))
+					{
+						page->attlist_.master_page_name_  = (*vec_name_master_page)[pos_in_vec].second;
+						(*vec_name_master_page)[pos_in_vec].first = page->attlist_.page_layout_name_.get_value_or(L"");
+						pos_in_vec++;
+						break;
+					}
+				}
+			}
+			if(pos_in_vec == vec_name_master_page->size())
+				break;
+		}
+	}
 	for (size_t i = 0; i < pages_.size(); i++)
-    {
+	{
+		if(!vec_name_master_page->empty())
+		{
+			office_element_ptr & elm = pages_[i];
+			draw_page* page = dynamic_cast<draw_page*>(elm.get());
+			for(size_t i = 0; i<vec_name_master_page->size();i++)
+			{
+				if(page->attlist_.page_layout_name_ == (*vec_name_master_page)[i].first)
+				{
+					page->attlist_.master_page_name_ = (*vec_name_master_page)[i].second;
+					break;
+				}
+			}
+		}	
         pages_[i]->pptx_convert(Context);
     }
     Context.end_office_presentation();

@@ -350,6 +350,16 @@ namespace cpdoccore {
 				master_page = res->second;
 			return master_page;
 		}
+		
+		void styles_container::set_new_name_master_page(std::wstring ws_name_layout, std::wstring ws_new_name)
+		{
+			vec_new_name_master_page.push_back({ws_name_layout,ws_new_name});
+		}
+		
+		std::vector<std::pair<std::wstring, std::wstring> >& styles_container::get_vec_new_name()
+		{
+			return vec_new_name_master_page;
+		}
 
 		style_instance* styles_container::style_default_by_type(style_family::type Type) const
 		{

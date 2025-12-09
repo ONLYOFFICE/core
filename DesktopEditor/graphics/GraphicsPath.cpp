@@ -1515,3 +1515,31 @@ namespace Aggplus
 		return false;
 	}
 }
+
+HRESULT IRenderer::AddPath(const Aggplus::CGraphicsPath& path)
+{
+	if (path.GetPointCount() == 0)
+		return S_FALSE;
+
+	unsigned length = path.GetPointCount() + path.GetCloseCount();
+	auto points = path.GetPoints(0, length);
+
+	for (unsigned i = 0; i < length; i++)
+	{
+		if (path.IsCurvePoint(i))
+		{
+			PathCommandCurveTo(points[i].X, points[i].Y,
+					   points[i + 1].X, points[i + 1].Y,
+					   points[i + 2].X, points[i + 2].Y);
+			i += 2;
+		}
+		else if (path.IsMovePoint(i))
+			PathCommandMoveTo(points[i].X, points[i].Y);
+		else if (path.IsLinePoint(i))
+			PathCommandLineTo(points[i].X, points[i].Y);
+		else
+			PathCommandClose();
+	}
+
+	return S_OK;
+}

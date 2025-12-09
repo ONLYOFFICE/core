@@ -750,7 +750,10 @@ namespace NSOnlineOfficeBinToPdf
 							clipRect = Aggplus::RectF_T<double>(left, top, width, height);
 
 						if (isStretch)
+						{
+							clipRect.Offset(transMatrRot.tx() - old_t5, transMatrRot.ty() - old_t6);
 							pRenderer->BrushRect(true, clipRect.X, clipRect.Y, clipRect.Width, clipRect.Height);
+						}
 					}
 
 					clipPath.AddRectangle(clipRect.X, clipRect.Y, clipRect.Width, clipRect.Height);

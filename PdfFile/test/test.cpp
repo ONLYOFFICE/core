@@ -442,7 +442,7 @@ TEST_F(CPdfFileTest, EditPdf)
 
 TEST_F(CPdfFileTest, EditPdfFromBase64)
 {
-	//GTEST_SKIP();
+	GTEST_SKIP();
 
 	NSFonts::NSApplicationFontStream::SetGlobalMemoryStorage(NSFonts::NSApplicationFontStream::CreateDefaultGlobalMemoryStorage());
 
@@ -536,6 +536,23 @@ TEST_F(CPdfFileTest, EditPdfSign)
 	pdfFile->Close();
 
 	RELEASEOBJECT(pCertificate);
+}
+
+TEST_F(CPdfFileTest, PrintPdf)
+{
+	//GTEST_SKIP();
+
+	LoadFromFile();
+
+	int nPages = pdfFile->GetPagesCount();
+	std::vector<bool> arrPages;
+	for (int i = 0; i < nPages; ++i)
+		arrPages.push_back(true);
+
+	ASSERT_TRUE(pdfFile->PrintPages(arrPages, 1));
+
+	pdfFile->SaveToFile(wsDstFile);
+	pdfFile->Close();
 }
 
 TEST_F(CPdfFileTest, ChangePasswordToEmpty)

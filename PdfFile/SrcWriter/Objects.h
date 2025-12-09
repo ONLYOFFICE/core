@@ -434,6 +434,7 @@ namespace PdfWriter
 		}
 		static CArrayObject* CreateBox(const TBox& oBox);
 		static CArrayObject* CreateBox(double dL, double dB, double dR, double dT);
+		static CArrayObject* CreateMatrix(double* m);
 		virtual CObjectBase* Copy(CObjectBase* pOut = NULL) const;
 		void FromXml(const std::wstring& sXml);
 

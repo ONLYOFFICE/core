@@ -3,7 +3,8 @@ import Login from "../login/login.tsx";
 import {getStorageMasterPassword, initCheckOpenedPopup, setStorageMasterPassword} from "../../../utils/utils.ts";
 import {useTaskManager} from "../../../task-manager/task-manager.ts";
 import {Dashboard} from "../dashboard/dashboard.tsx";
-import KeyStorage from "../../../../common/key-storage.ts";
+// @ts-ignore
+import {KeyStorage} from "../../../../../../key-storage/key-storage.js";
 import {KeyPair, KeyUsages} from "../../../../common/keys/keys.ts";
 import getCrypto from "../../../../common/crypto.ts";
 import {Ed25519KeyGenParams} from "../../../../common/keys/params.ts";

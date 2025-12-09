@@ -41,32 +41,6 @@ import {selectUserJSON} from "./utils.ts";
 		});
 	};
 
-
-	function ExtensionStorageManager() {
-		StorageManager.call(ExtensionStorageManager);
-	}
-	ExtensionStorageManager.prototype = Object.create(StorageManager);
-	ExtensionStorageManager.prototype.constructor = ExtensionStorageManager;
-	ExtensionStorageManager.prototype.getStorageKeys = function() {
-		return browser.storage.local.get("keys").then(function(item) {
-			if (item && Array.isArray(item.keys)) {
-				return item.keys;
-			}
-			return [];
-		});
-	};
-	ExtensionStorageManager.prototype.getMasterPassword = function() {
-		return browser.storage.local.get("masterPassword").then(function(item) {
-			return item.masterPassword ? item.masterPassword : null;
-		});
-	};
-	ExtensionStorageManager.prototype.setStorageKeys = function(jsonKeys) {
-		return browser.storage.local.set({keys: jsonKeys});
-	}
-	ExtensionStorageManager.prototype.setMasterPasswordWithKeys = function(jsonKeys) {
-		return browser.storage.local.set({keys: jsonKeys});
-	}
-
 	function KeyStorage(storageManager) {
 		this.keys = [];
 		this.storageManager = storageManager;
@@ -100,15 +74,14 @@ import {selectUserJSON} from "./utils.ts";
 		return this.writeKeys();
 	};
 
-	KeyStorage.prototype.getExportedKeys = function(encryptPassword) {
-		const masterPasswordPromise = typeof encryptPassword === "string" ? Promise.resolve(encryptPassword) : this.getMasterPassword();
+	KeyStorage.prototype.export = function() {
 		const oThis = this;
-		return masterPasswordPromise.then(function(masterPassword) {
+		return this.getMasterPassword().then(function(masterPassword) {
 			if (typeof masterPassword !== "string") {
 				return [];
 			}
 			const exportedKeyPromise = oThis.keys.map(function(key) {
-				return key.toJSON(masterPassword);
+				return key.export(masterPassword);
 			});
 
 			return Promise.all(exportedKeyPromise);
@@ -117,7 +90,7 @@ import {selectUserJSON} from "./utils.ts";
 
 	KeyStorage.prototype.writeKeys = function() {
 		const oThis = this;
-		return this.getExportedKeys().then(function(exportedKeys) {
+		return this.export().then(function(exportedKeys) {
 			oThis.setStorageKeys(exportedKeys);
 		});
 	};
@@ -132,13 +105,13 @@ import {selectUserJSON} from "./utils.ts";
 
 	KeyStorage.prototype.changeMasterPassword = function(newMasterPassword) {
 		const oThis = this;
-		return this.getExportedKeys(newMasterPassword).then(function(keys) {
+		return this.export(newMasterPassword).then(function(keys) {
 			return oThis.storageManager.setMasterPasswordWithKeys(newMasterPassword, keys);
 		});
 	};
 
 	KeyStorage.prototype.exportKeys = function() {
-		return this.getExportedKeys().then(function(data) {
+		return this.export().then(function(data) {
 			const passwordInfo = {
 				encrypt: false,
 				data: data

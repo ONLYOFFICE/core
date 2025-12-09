@@ -737,11 +737,13 @@ CBooleanOperations::CBooleanOperations(const CGraphicsPath& path1,
 									   const CGraphicsPath& path2,
 									   BooleanOpType op,
 									   long fillType,
-									   bool isLuminosity) :
+									   bool isLuminosity,
+									   bool isSelf) :
 	Op(op),
 	Close1(path1.Is_poly_closed()),
 	Close2(path2.Is_poly_closed()),
 	IsLuminosity(isLuminosity),
+	IsSelf(isSelf),
 	FillType(fillType),
 	Path1(path1),
 	Path2(path2)
@@ -784,10 +786,9 @@ bool CBooleanOperations::IsSelfInters(const CGraphicsPath& p)
 void CBooleanOperations::TraceBoolean()
 {
 	bool reverse = false;
-	bool self = Path1 == Path2;
 	if (((Op == Subtraction || Op == Exclusion) ^
 		 Path1.IsClockwise() ^
-		 Path2.IsClockwise()) && !self)
+		 Path2.IsClockwise()) && !IsSelf)
 		reverse = true;
 
 	PreparePath(Path1, 1, Segments1, Curves1);
@@ -798,7 +799,7 @@ void CBooleanOperations::TraceBoolean()
 
 	GetIntersection();
 
-	if (self)
+	if (IsSelf)
 	{
 		if (Op == Subtraction)
 			return;
@@ -821,6 +822,11 @@ void CBooleanOperations::TraceBoolean()
 		}
 
 		CreateNewPath(adj_matr);
+		return;
+	}
+	else if (Path1 == Path2)
+	{
+		Result = std::move(Path1);
 		return;
 	}
 
@@ -2355,7 +2361,7 @@ CGraphicsPath CalcBooleanOperation(const CGraphicsPath& path1,
 		CBooleanOperations o;
 		if (i > skip_end2 && o.IsSelfInters(paths2[i]))
 		{
-			CBooleanOperations operation(paths2[i], paths2[i], Intersection, fillType, isLuminosity);
+			CBooleanOperations operation(paths2[i], paths2[i], Intersection, fillType, isLuminosity, true);
 			CGraphicsPath p = std::move(operation.GetResult());
 
 			std::vector<CGraphicsPath> tmp_paths = p.GetSubPaths();
@@ -2370,7 +2376,7 @@ CGraphicsPath CalcBooleanOperation(const CGraphicsPath& path1,
 			CBooleanOperations o2;
 			if (j > skip_end1 && o2.IsSelfInters(paths1[j]))
 			{
-				CBooleanOperations operation(paths1[j], paths1[j], Intersection, fillType, isLuminosity);
+				CBooleanOperations operation(paths1[j], paths1[j], Intersection, fillType, isLuminosity, true);
 				CGraphicsPath p = std::move(operation.GetResult());
 
 				std::vector<CGraphicsPath> tmp_paths = p.GetSubPaths();
@@ -2380,7 +2386,7 @@ CGraphicsPath CalcBooleanOperation(const CGraphicsPath& path1,
 					paths1.insert(paths1.begin() + i + k, tmp_paths[k]);
 			}
 
-			CBooleanOperations operation(paths1[j], paths2[i], op, fillType, isLuminosity);
+			CBooleanOperations operation(paths1[j], paths2[i], op, fillType, isLuminosity, false);
 			paths.push_back(operation.GetResult());
 		}
 

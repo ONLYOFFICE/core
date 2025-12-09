@@ -202,12 +202,10 @@ core_win_64 {
 
 core_linux {
 	DEFINES += LINUX _LINUX
-
-    QMAKE_CUSTOM_SYSROOT = $$(QMAKE_CUSTOM_SYSROOT)
-	QMAKE_CUSTOM_SYSROOT_BIN = $$(QMAKE_CUSTOM_SYSROOT)/usr/bin/
-
     core_linux_64 {
 	    !linux_arm64 { # x86_64
+	        QMAKE_CUSTOM_SYSROOT = $$(QMAKE_CUSTOM_SYSROOT)
+			QMAKE_CUSTOM_SYSROOT_BIN = $$(QMAKE_CUSTOM_SYSROOT)/usr/bin/
 		    QMAKE_CUSTOM_SYSROOT_LIB = $$(QMAKE_CUSTOM_SYSROOT)/usr/lib/x86_64-linux-gnu
 			!isEmpty(QMAKE_CUSTOM_SYSROOT) {
 			    message("using custom sysroot $$QMAKE_CUSTOM_SYSROOT")
@@ -255,10 +253,10 @@ linux_arm64 {
 			QMAKE_OBJCOPY     = $$join(ARM64_TOOLCHAIN_BIN_FULL, , , "objcopy")
 			QMAKE_NM          = $$join(ARM64_TOOLCHAIN_BIN_FULL, , , "nm -P")
 			QMAKE_STRIP       = $$join(ARM64_TOOLCHAIN_BIN_FULL, , , "strip")
-
 		}
 	}
 }
+
 gcc {
     COMPILER_VERSION = $$system($$QMAKE_CXX " -dumpversion")
 	COMPILER_MAJOR_VERSION_ARRAY = $$split(COMPILER_VERSION, ".")

@@ -1170,6 +1170,34 @@ HRESULT CGraphicsRenderer::PathCommandTextEx(const std::wstring& bsUnicodeText, 
     return PathCommandText(bsUnicodeText, x, y, w, h);
 }
 
+HRESULT CGraphicsRenderer::AddPath(const Aggplus::CGraphicsPath& path)
+{
+	if (path.GetPointCount() == 0)
+		return S_FALSE;
+
+	size_t length = path.GetPointCount() + path.GetCloseCount();
+	std::vector<Aggplus::PointD> points = path.GetPoints(0, length);
+
+	for (size_t i = 0; i < length; i++)
+	{
+		if (path.IsCurvePoint(i))
+		{
+			PathCommandCurveTo(points[i].X, points[i].Y,
+							   points[i + 1].X, points[i + 1].Y,
+							   points[i + 2].X, points[i + 2].Y);
+			i += 2;
+		}
+		else if (path.IsMovePoint(i))
+			PathCommandMoveTo(points[i].X, points[i].Y);
+		else if (path.IsLinePoint(i))
+			PathCommandLineTo(points[i].X, points[i].Y);
+		else
+			PathCommandClose();
+	}
+
+	return S_OK;
+}
+
 //-------- Функции для вывода изображений ---------------------------------------------------
 HRESULT CGraphicsRenderer::DrawImage(IGrObject* pImage, const double& x, const double& y, const double& w, const double& h)
 {

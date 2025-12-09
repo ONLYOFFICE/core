@@ -428,6 +428,11 @@ BYTE* CPdfFile::GetWidgets()
 		return NULL;
 	return m_pInternal->pReader->GetWidgets();
 }
+void CPdfFile::SetPageFonts(int nPageIndex)
+{
+	if (m_pInternal->pReader)
+		m_pInternal->pReader->SetFonts(nPageIndex);
+}
 BYTE* CPdfFile::GetAnnotEmbeddedFonts()
 {
 	if (!m_pInternal->pReader)

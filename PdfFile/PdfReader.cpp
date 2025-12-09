@@ -1387,6 +1387,24 @@ BYTE* CPdfReader::GetWidgets()
 	oRes.ClearWithoutAttack();
 	return bRes;
 }
+void CPdfReader::SetFonts(int _nPageIndex)
+{
+	if (m_vPDFContext.empty())
+		return;
+
+	PDFDoc* pDoc = NULL;
+	PdfReader::CPdfFontList* pFontList = NULL;
+	GetPageIndex(_nPageIndex, &pDoc, &pFontList);
+
+	const std::map<Ref, PdfReader::TFontEntry*>& mapFonts = pFontList->GetFonts();
+	for (std::map<Ref, PdfReader::TFontEntry*>::const_iterator it = mapFonts.begin(); it != mapFonts.end(); ++it)
+	{
+		PdfReader::TFontEntry* pEntry = it->second;
+		if (!pEntry)
+			continue;
+		m_mFonts.insert(std::make_pair(pEntry->wsFontName, pEntry->wsFilePath));
+	}
+}
 BYTE* CPdfReader::GetFonts(bool bStandart)
 {
 	NSWasm::CData oRes;

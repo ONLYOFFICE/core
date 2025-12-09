@@ -135,6 +135,7 @@ public:
 	bool UndoRedact();
 	int GetRotate(int nPageIndex);
 	int GetMaxRefID();
+	void SetPageFonts(int nPageIndex);
 	BYTE* GetWidgets();
 	BYTE* GetAnnotEmbeddedFonts();
 	BYTE* GetAnnotStandardFonts();

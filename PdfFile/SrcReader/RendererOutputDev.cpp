@@ -347,7 +347,7 @@ namespace PdfReader
 	}
 	void CPdfFontList::Remove(Ref oRef)
 	{
-		CRefFontMap::iterator oPos = m_oFontMap.find(oRef);
+		std::map<Ref, TFontEntry*>::iterator oPos = m_oFontMap.find(oRef);
 		if (m_oFontMap.end() != oPos)
 		{
 			TFontEntry* pEntry = oPos->second;
@@ -385,13 +385,17 @@ namespace PdfReader
 	}
 	TFontEntry* CPdfFontList::Lookup(Ref& oRef)
 	{
-		CRefFontMap::const_iterator oPos = m_oFontMap.find(oRef);
+		std::map<Ref, TFontEntry*>::const_iterator oPos = m_oFontMap.find(oRef);
 		return m_oFontMap.end() == oPos ? NULL : oPos->second;
 	}
 	void CPdfFontList::Add(Ref& oRef, TFontEntry* pFontEntry)
 	{
 		// До вызова данной функции надо проверять есть ли элемент с данным ключом
 		m_oFontMap.insert(std::pair<Ref, TFontEntry*>(oRef, pFontEntry));
+	}
+	const std::map<Ref, TFontEntry*>& CPdfFontList::GetFonts()
+	{
+		return m_oFontMap;
 	}
 	//--------------------------------------------------------------------------------------
 	// RendererOutputDev
@@ -1562,6 +1566,7 @@ namespace PdfReader
 			pEntry->unLenGID       = (unsigned int)nLen;
 			pEntry->unLenUnicode   = (unsigned int)nToUnicodeLen;
 			pEntry->bAvailable     = true;
+			pEntry->bFontSubstitution = bFontSubstitution;
 		}
 		else if (NULL != pEntry)
 		{
@@ -1589,6 +1594,14 @@ namespace PdfReader
 		{
 			m_pRenderer->put_FontPath(wsFileName);
 			m_pRenderer->put_FontName(wsFontName);
+			if (c_nDocxWriter == m_lRendererType)
+			{
+				TFontEntry oEntry;
+				if (!m_pFontList->GetFont(pFont->getID(), &oEntry))
+					return;
+				if (oEntry.bFontSubstitution)
+					m_pRenderer->CommandLong(c_nFontSubstitution, 0);
+			}
 		}
 	}
 	void RendererOutputDev::stroke(GfxState* pGState)
@@ -2562,11 +2575,8 @@ namespace PdfReader
 				m_pRenderer->put_FontPath(sFontPath);
 		}
 
-		LONG lRendererType = 0;
-		m_pRenderer->get_Type(&lRendererType);
-
 		bool bIsEmulateBold = false;
-		if (c_nDocxWriter == lRendererType && 2 == nRenderMode)
+		if (c_nDocxWriter == m_lRendererType && 2 == nRenderMode)
 			bIsEmulateBold = (S_OK == m_pRenderer->CommandLong(c_nSupportPathTextAsText, 0)) ? true : false;
 
 		if (bIsEmulateBold)

@@ -111,6 +111,7 @@ public:
 	int FindRefNum(int nObjID, PDFDoc** pDoc = NULL, int* nStartRefID = NULL);
 	int GetPageIndex(int nPageIndex, PDFDoc** pDoc = NULL, PdfReader::CPdfFontList** pFontList = NULL, int* nStartRefID = NULL);
 
+	void SetFonts(int nPageIndex);
 	BYTE* GetStructure();
 	BYTE* GetLinks(int nPageIndex);
 	BYTE* GetWidgets();

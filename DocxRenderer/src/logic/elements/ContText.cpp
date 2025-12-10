@@ -150,7 +150,7 @@ namespace NSDocxRenderer
 			cont->m_arSymWidths.push_back(m_arSymWidths[i]);
 			cont->m_arOriginLefts.push_back(m_arOriginLefts[i]);
 
-			if (!m_arGids.empty())
+			if (!m_arGids.empty() && cont->m_bCollectMetaInfo)
 				cont->m_arGids.push_back(m_arGids[i]);
 		}
 
@@ -1249,6 +1249,7 @@ namespace NSDocxRenderer
 			ar_widths.push_back(avg_width);
 		}
 
+		pCont->m_bCollectMetaInfo = bCollectMetaInfo;
 		pCont->SetText(oText, ar_widths, std::move(gids), std::move(origin_lefts));
 		pCont->m_bIsRtl = CContText::IsUnicodeRtl(oText.at(0));
 
@@ -1282,7 +1283,6 @@ namespace NSDocxRenderer
 		}
 		pCont->m_bWriteStyleRaw = bWriteStyleRaw;
 		pCont->m_bFontSubstitution = bFontSubstitution;
-		pCont->m_bCollectMetaInfo = bCollectMetaInfo;
 
 		if (pCont->IsDiacritical())
 		{

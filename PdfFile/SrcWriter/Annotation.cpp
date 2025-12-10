@@ -2046,6 +2046,14 @@ namespace PdfWriter
 		else
 			pOwner->Add("V", new CStringObject(sV.c_str(), true));
 	}
+	void CCheckBoxWidget::SetDV(const std::wstring& wsDV)
+	{
+		std::string sValue = U_TO_UTF8(wsDV);
+		CDictObject* pOwner = GetObjOwnValue("DV");
+		if (!pOwner)
+			pOwner = this;
+		pOwner->Add("DV", sValue.c_str());
+	}
 	void CCheckBoxWidget::SetStyle(BYTE nStyle)
 	{
 		m_nStyle = ECheckBoxStyle(nStyle);

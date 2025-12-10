@@ -476,7 +476,7 @@ namespace PdfWriter
 		void SetMEOptions(const int& nMEOptions);
 		void SetTU(const std::wstring& wsTU);
 		void SetDS(const std::wstring& wsDS);
-		void SetDV(const std::wstring& wsDV);
+		virtual void SetDV(const std::wstring& wsDV);
 		void SetT (const std::wstring& wsT);
 		void SetBC(const std::vector<double>& arrBC);
 		void SetBG(const std::vector<double>& arrBG);
@@ -555,6 +555,7 @@ namespace PdfWriter
 		CCheckBoxWidget(CXref* pXref, EWidgetType nSubtype = WidgetCheckbox);
 
 		void SetV(const std::wstring& wsV);
+		virtual void SetDV(const std::wstring& wsDV) override;
 		void SetOpt(const std::vector< std::pair<std::wstring, std::wstring> >& arrOpt);
 		void SetStyle(BYTE nStyle);
 		ECheckBoxStyle GetStyle() { return m_nStyle; }

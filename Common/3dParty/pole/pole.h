@@ -90,7 +90,7 @@ static std::wstring convertUtf16ToWString(const UTF16 * Data, int nLength)
         return std::wstring();
     }
 
-    std::wstring wstr ((wchar_t *) pStrUtf32);
+    std::wstring wstr ((wchar_t *) pStrUtf32, nLength);
 
     delete [] pStrUtf32;
     return wstr;

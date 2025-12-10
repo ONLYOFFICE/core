@@ -2,13 +2,15 @@
 #define STYLEPROPERTIES_H
 
 #include <map>
-#include <optional>
 #include <string>
-#include <variant>
 #include <vector>
 
 #include "../../../../DesktopEditor/graphics/Matrix.h"
 #include "CUnitMeasureConverter.h"
+
+#include <boost/optional.hpp>
+#include "boost/blank.hpp"
+#include <boost/variant2/variant.hpp>
 
 namespace NSCSS
 {
@@ -64,6 +66,23 @@ namespace NSCSS
 			return oFirstValue.m_unLevel == oSecondValue.m_unLevel;
 		}
 
+		friend bool operator==(const CValueBase& oLeftValue, const CValueBase& oRightValue)
+		{
+			if (oLeftValue.Empty() && oRightValue.Empty())
+				return true;
+
+			if (( oLeftValue.Empty() && !oRightValue.Empty()) ||
+			    (!oLeftValue.Empty() &&  oRightValue.Empty()))
+				return false;
+
+			return oLeftValue.m_oValue == oRightValue.m_oValue;
+		}
+
+		friend bool operator!=(const CValueBase& oLeftValue, const CValueBase& oRightValue)
+		{
+			return !(oLeftValue == oRightValue);
+		}
+
 		bool operator==(const T& oValue) const
 		{
 			return m_oValue == oValue;
@@ -92,28 +111,18 @@ namespace NSCSS
 
 			return *this;
 		}
-
-		virtual bool operator==(const CValueBase& oValue) const
-		{
-			return m_oValue == oValue.m_oValue;
-		}
-
-		virtual bool operator!=(const CValueBase& oValue) const
-		{
-			return !(*this == oValue);
-		}
 	};
 
 	template<typename T>
-	class CValueOptional : public CValueBase<std::optional<T>>
+	class CValueOptional : public CValueBase<boost::optional<T>>
 	{
 	protected:
 		CValueOptional()
-			: CValueBase<std::optional<T>>()
+			: CValueBase<boost::optional<T>>()
 		{}
 
 		CValueOptional(const T& oValue, unsigned int unLevel, bool bImportant)
-			: CValueBase<std::optional<T>>(oValue, unLevel, bImportant)
+			: CValueBase<boost::optional<T>>(oValue, unLevel, bImportant)
 		{}
 
 	public:
@@ -126,6 +135,14 @@ namespace NSCSS
 			this->m_oValue.reset();
 			this->m_unLevel = 0;
 			this->m_bImportant = false;
+		}
+
+		bool operator==(const T& oValue) const
+		{
+			if (!this->m_oValue.has_value())
+				return false;
+
+			return this->m_oValue.value() == oValue;
 		}
 	};
 
@@ -245,7 +262,7 @@ namespace NSCSS
 
 	class CColorValue
 	{
-		using color_value = std::variant<std::monostate, std::wstring, TRGB, CURL>;
+		using color_value = boost::variant2::variant<boost::blank, std::wstring, TRGB, CURL>;
 	protected:
 		EColorType  m_eType;
 	public:

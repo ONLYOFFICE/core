@@ -483,7 +483,7 @@ namespace NSCSS
 	}
 
 	CColorValue::CColorValue()
-		: m_eType(EColorType::ColorNone), m_oValue(std::monostate())
+		: m_eType(EColorType::ColorNone)
 	{}
 
 	CColorValue::CColorValue(const CColorValue& oValue)
@@ -606,7 +606,7 @@ namespace NSCSS
 	void CColor::SetNone()
 	{
 		Clear();
-		m_oValue = CColorValue();
+		m_oValue.reset();
 	}
 
 	char NormalizeNegativeColorValue(INT nValue)
@@ -761,9 +761,9 @@ namespace NSCSS
 		switch(m_oValue->GetType())
 		{
 			case ColorRGB:
-				return std::get<TRGB>(m_oValue->m_oValue).ToInt();
+				return boost::variant2::get<TRGB>(m_oValue->m_oValue).ToInt();
 			case ColorHEX:
-				return ConvertHEXtoRGB(std::get<std::wstring>(m_oValue->m_oValue)).ToInt();
+				return ConvertHEXtoRGB(boost::variant2::get<std::wstring>(m_oValue->m_oValue)).ToInt();
 			default:
 				return 0;
 		}
@@ -781,9 +781,9 @@ namespace NSCSS
 
 		switch(m_oValue->GetType())
 		{
-			case ColorRGB: return ConvertRGBtoHEX(std::get<TRGB>(m_oValue->m_oValue));
-			case ColorHEX: return std::get<std::wstring>(m_oValue->m_oValue);
-			case ColorUrl: return  std::get<CURL>(m_oValue->m_oValue).GetValue();
+			case ColorRGB: return ConvertRGBtoHEX(boost::variant2::get<TRGB>(m_oValue->m_oValue));
+			case ColorHEX: return boost::variant2::get<std::wstring>(m_oValue->m_oValue);
+			case ColorUrl: return  boost::variant2::get<CURL>(m_oValue->m_oValue).GetValue();
 			default: return std::wstring();
 		}
 	}
@@ -796,9 +796,9 @@ namespace NSCSS
 		switch(m_oValue->GetType())
 		{
 			case ColorRGB:
-				return ConvertRGBtoHEX(std::get<TRGB>(m_oValue->m_oValue));
+				return ConvertRGBtoHEX(boost::variant2::get<TRGB>(m_oValue->m_oValue));
 			case ColorHEX:
-				return std::get<std::wstring>(m_oValue->m_oValue);
+				return boost::variant2::get<std::wstring>(m_oValue->m_oValue);
 			default:
 				return std::wstring();
 		}
@@ -813,8 +813,8 @@ namespace NSCSS
 
 		switch(m_oValue->GetType())
 		{
-			case ColorRGB: oCurrentColor = std::get<TRGB>(m_oValue->m_oValue); break;
-			case ColorHEX: oCurrentColor = ConvertHEXtoRGB(std::get<std::wstring>(m_oValue->m_oValue)); break;
+			case ColorRGB: oCurrentColor = boost::variant2::get<TRGB>(m_oValue->m_oValue); break;
+			case ColorHEX: oCurrentColor = ConvertHEXtoRGB(boost::variant2::get<std::wstring>(m_oValue->m_oValue)); break;
 			default: return L"none";
 		}
 
@@ -843,8 +843,8 @@ namespace NSCSS
 
 		switch(m_oValue->GetType())
 		{
-			case ColorRGB: return std::get<TRGB>(m_oValue->m_oValue);
-			case ColorHEX: return ConvertHEXtoRGB(std::get<std::wstring>(m_oValue->m_oValue));
+			case ColorRGB: return boost::variant2::get<TRGB>(m_oValue->m_oValue);
+			case ColorHEX: return ConvertHEXtoRGB(boost::variant2::get<std::wstring>(m_oValue->m_oValue));
 			default: return TRGB();
 		}
 	}
@@ -1390,7 +1390,7 @@ namespace NSCSS
 		       m_oHAlign     == oDisplay.m_oHAlign  &&
 		       m_oVAlign     == oDisplay.m_oVAlign  &&
 		       m_oDisplay    == oDisplay.m_oDisplay &&
-		       m_eWhiteSpace == oDisplay.m_eWhiteSpace.ToInt();
+		       m_eWhiteSpace == oDisplay.m_eWhiteSpace;
 	}
 
 	// STROKE

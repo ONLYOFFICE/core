@@ -111,9 +111,9 @@ namespace NSDocxRenderer
 		             std::vector<unsigned int>&& arGids,
 		             std::vector<double>&& arOriginLefts);
 
-		void AddSymBack(uint32_t cSym, double dWidth, unsigned int nGid, double dLeft);
-		void AddSymFront(uint32_t cSym, double dWidth, unsigned int nGid, double dLeft);
-		void SetSym(uint32_t cSym, double dWidth, unsigned int nGid, double dLeft);
+		void AddSymBack(uint32_t cSym, double dWidth, double dLeft, unsigned int nGid = 0);
+		void AddSymFront(uint32_t cSym, double dWidth, double dLeft, unsigned int nGid = 0);
+		void SetSym(uint32_t cSym, double dWidth, double dLeft, unsigned int nGid = 0);
 
 		void RemoveLastSym();
 

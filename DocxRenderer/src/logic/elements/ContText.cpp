@@ -91,6 +91,8 @@ namespace NSDocxRenderer
 		for (size_t i = 0; i < rCont.m_arOriginLefts.size(); ++i)
 			m_arOriginLefts[i] = rCont.m_arOriginLefts[i];
 
+		m_bFontSubstitution = rCont.m_bFontSubstitution;
+
 		return *this;
 	}
 
@@ -147,7 +149,9 @@ namespace NSDocxRenderer
 		{
 			cont->m_arSymWidths.push_back(m_arSymWidths[i]);
 			cont->m_arOriginLefts.push_back(m_arOriginLefts[i]);
-			cont->m_arGids.push_back(m_arGids[i]);
+
+			if (!m_arGids.empty())
+				cont->m_arGids.push_back(m_arGids[i]);
 		}
 
 		m_oText = m_oText.substr(0, index + 1);
@@ -156,7 +160,9 @@ namespace NSDocxRenderer
 
 		m_arSymWidths.resize(index + 1);
 		m_arOriginLefts.resize(index + 1);
-		m_arGids.resize(index + 1);
+
+		if (!m_arGids.empty())
+			m_arGids.resize(index + 1);
 
 		m_bPossibleHorSplit = false;
 
@@ -750,12 +756,10 @@ namespace NSDocxRenderer
 			m_arSymWidths.push_back(w);
 			m_dWidth += w;
 			m_oText += oText.at(i);
+			m_arOriginLefts.push_back(arOriginLefts[i]);
 
 			if (!arGids.empty() && m_bCollectMetaInfo)
 				m_arGids.push_back(arGids[i]);
-
-			if (!m_arOriginLefts.empty() && m_bCollectMetaInfo)
-			m_arOriginLefts.push_back(arOriginLefts[i]);
 		}
 		m_dRight = m_dLeft + m_dWidth;
 	}
@@ -786,13 +790,10 @@ namespace NSDocxRenderer
 				m_arGids.push_back(gid);
 		}
 
-		if (!arOriginLefts.empty() && m_bCollectMetaInfo)
-		{
-			auto ar_lefts = m_arOriginLefts;
-			m_arOriginLefts = arOriginLefts;
-			for (auto& left : ar_lefts)
-				m_arOriginLefts.push_back(left);
-		}
+		auto ar_lefts = m_arOriginLefts;
+		m_arOriginLefts = arOriginLefts;
+		for (auto& left : ar_lefts)
+			m_arOriginLefts.push_back(left);
 	}
 	void CContText::SetText(const NSStringUtils::CStringUTF32& oText,
 	                        const std::vector<double>& arSymWidths,
@@ -808,15 +809,13 @@ namespace NSDocxRenderer
 			m_dWidth += w;
 		}
 		m_dRight = m_dLeft + m_dWidth;
+		m_arOriginLefts = std::move(arOriginLefts);
 
 		if (m_bCollectMetaInfo)
-		{
 			m_arGids = std::move(arGids);
-			m_arOriginLefts = std::move(arOriginLefts);
-		}
 	}
 
-	void CContText::AddSymBack(uint32_t cSym, double dWidth, unsigned int nGid, double dLeft)
+	void CContText::AddSymBack(uint32_t cSym, double dWidth, double dLeft, unsigned int nGid)
 	{
 		bool is_space_twice = m_oText.at(m_oText.length() - 1) == c_SPACE_SYM && cSym == c_SPACE_SYM;
 
@@ -828,16 +827,17 @@ namespace NSDocxRenderer
 		{
 			m_arSymWidths.push_back(dWidth);
 			m_oText += cSym;
+			m_arOriginLefts.push_back(dLeft);
+
 			if (m_bCollectMetaInfo)
 			{
 				m_arGids.push_back(nGid);
-				m_arOriginLefts.push_back(dLeft);
 			}
 		}
 		m_dWidth += dWidth;
 		m_dRight = m_dLeft + m_dWidth;
 	}
-	void CContText::AddSymFront(uint32_t cSym, double dWidth, unsigned int nGid, double dLeft)
+	void CContText::AddSymFront(uint32_t cSym, double dWidth, double dLeft, unsigned int nGid)
 	{
 		NSStringUtils::CStringUTF32 text;
 		text += cSym;
@@ -848,13 +848,13 @@ namespace NSDocxRenderer
 		m_dWidth = m_dRight - m_dLeft;
 
 		m_arSymWidths.insert(m_arSymWidths.begin(), dWidth);
+		m_arOriginLefts.insert(m_arOriginLefts.begin(), dLeft);
 		if (m_bCollectMetaInfo)
 		{
 			m_arGids.insert(m_arGids.begin(), nGid);
-			m_arOriginLefts.insert(m_arOriginLefts.begin(), dLeft);
 		}
 	}
-	void CContText::SetSym(uint32_t cSym, double dWidth, unsigned int nGid, double dLeft)
+	void CContText::SetSym(uint32_t cSym, double dWidth, double dLeft, unsigned int nGid)
 	{
 		m_oText = L"";
 		m_oText += cSym;
@@ -866,13 +866,13 @@ namespace NSDocxRenderer
 		m_arSymWidths.clear();
 		m_arSymWidths.push_back(dWidth);
 
+		m_arOriginLefts.clear();
+		m_arOriginLefts.push_back(dLeft);
+
 		if (m_bCollectMetaInfo)
 		{
 			m_arGids.clear();
 			m_arGids.push_back(nGid);
-
-			m_arOriginLefts.clear();
-			m_arOriginLefts.push_back(dLeft);
 		}
 	}
 	void CContText::RemoveLastSym()
@@ -881,13 +881,10 @@ namespace NSDocxRenderer
 		m_dWidth -= m_arSymWidths[m_arSymWidths.size() - 1];
 		m_dRight = m_dLeft + m_dWidth;
 		m_arSymWidths.resize(m_arSymWidths.size() - 1);
-
+		m_arOriginLefts.resize(m_arOriginLefts.size() - 1);
 
 		if (!m_arGids.empty() && m_bCollectMetaInfo)
 			m_arGids.resize(m_arGids.size() - 1);
-
-		if (!m_arOriginLefts.empty() && m_bCollectMetaInfo)
-			m_arOriginLefts.resize(m_arOriginLefts.size() - 1);
 	}
 	uint32_t CContText::GetLastSym() const
 	{
@@ -1161,14 +1158,11 @@ namespace NSDocxRenderer
 		}
 
 		std::vector<double> origin_lefts;
-		if (bCollectMetaInfo)
+		double curr_origin_left = dLeft;
+		for (size_t i = 0; i < oText.length(); ++i)
 		{
-			double curr_origin_left = dLeft;
-			for (size_t i = 0; i < oText.length(); ++i)
-			{
-				origin_lefts.push_back(curr_origin_left);
-				curr_origin_left += dWidth / oText.length();
-			}
+			origin_lefts.push_back(curr_origin_left);
+			curr_origin_left += dWidth / oText.length();
 		}
 
 		// if new text is close to current cont

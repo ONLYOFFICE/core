@@ -1166,11 +1166,17 @@ namespace NSDocxRenderer
 
 						if ((bIf1 && bIf6) || (bIf2 && bIf7) || (bIf4 && bIf8) || (bIf5 && bIf7))
 						{
-							cont->AddSymBack(d_sym->GetText().at(0), 0, d_sym->m_arGids.at(0), d_sym->m_arOriginLefts.at(0));
+							if (m_bCollectMetaInfo)
+								cont->AddSymBack(d_sym->GetText().at(0), 0,  d_sym->m_arOriginLefts.at(0), d_sym->m_arGids.at(0));
+							else
+								cont->AddSymBack(d_sym->GetText().at(0), 0, d_sym->m_arOriginLefts.at(0));
 						}
 						else if (bIf3 && bIf7)
 						{
-							cont->AddSymFront(d_sym->GetText().at(0), 0, d_sym->m_arGids.at(0), d_sym->m_arOriginLefts.at(0));
+							if (m_bCollectMetaInfo)
+								cont->AddSymFront(d_sym->GetText().at(0), 0,  d_sym->m_arOriginLefts.at(0), d_sym->m_arGids.at(0));
+							else
+								cont->AddSymFront(d_sym->GetText().at(0), 0, d_sym->m_arOriginLefts.at(0));
 						}
 						isBreak = true;
 						break;

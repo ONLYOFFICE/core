@@ -313,7 +313,7 @@ namespace NSDocxRenderer
 			auto last_sym = text[text.length() - 1];
 
 			if (last_sym != c_SPACE_SYM && m_arTextLines.size() != 1)
-				pLastCont->AddSymBack(c_SPACE_SYM, 0, 0, pLastCont->m_dRight);
+				pLastCont->AddSymBack(c_SPACE_SYM, 0, pLastCont->m_dRight, 0);
 		}
 	}
 }

@@ -77,6 +77,7 @@ namespace NSDocxRenderer
 		bool m_bIsAddBrEnd{false};
 		bool m_bWriteStyleRaw{false};
 		bool m_bPossibleHorSplit{false};
+		bool m_bCollectMetaInfo{false};
 
 		std::vector<unsigned int> m_arGids{};
 		std::vector<double> m_arOriginLefts{};
@@ -113,6 +114,7 @@ namespace NSDocxRenderer
 		void AddSymBack(uint32_t cSym, double dWidth, unsigned int nGid, double dLeft);
 		void AddSymFront(uint32_t cSym, double dWidth, unsigned int nGid, double dLeft);
 		void SetSym(uint32_t cSym, double dWidth, unsigned int nGid, double dLeft);
+
 		void RemoveLastSym();
 
 		uint32_t GetLastSym() const;

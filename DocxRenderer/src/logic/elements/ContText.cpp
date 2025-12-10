@@ -751,8 +751,10 @@ namespace NSDocxRenderer
 			m_dWidth += w;
 			m_oText += oText.at(i);
 
-			if (!arGids.empty())
+			if (!arGids.empty() && m_bCollectMetaInfo)
 				m_arGids.push_back(arGids[i]);
+
+			if (!m_arOriginLefts.empty() && m_bCollectMetaInfo)
 			m_arOriginLefts.push_back(arOriginLefts[i]);
 		}
 		m_dRight = m_dLeft + m_dWidth;
@@ -776,17 +778,21 @@ namespace NSDocxRenderer
 		m_dWidth += addtitional_width;
 		m_dLeft = m_dRight - m_dWidth;
 
-		if (!arGids.empty())
+		if (!arGids.empty() && m_bCollectMetaInfo)
 		{
 			auto ar_gids = m_arGids;
 			m_arGids = arGids;
 			for (auto& gid : ar_gids)
 				m_arGids.push_back(gid);
 		}
-		auto ar_lefts = m_arOriginLefts;
-		m_arOriginLefts = arOriginLefts;
-		for (auto& left : ar_lefts)
-			m_arOriginLefts.push_back(left);
+
+		if (!arOriginLefts.empty() && m_bCollectMetaInfo)
+		{
+			auto ar_lefts = m_arOriginLefts;
+			m_arOriginLefts = arOriginLefts;
+			for (auto& left : ar_lefts)
+				m_arOriginLefts.push_back(left);
+		}
 	}
 	void CContText::SetText(const NSStringUtils::CStringUTF32& oText,
 	                        const std::vector<double>& arSymWidths,
@@ -803,8 +809,11 @@ namespace NSDocxRenderer
 		}
 		m_dRight = m_dLeft + m_dWidth;
 
-		m_arGids = std::move(arGids);
-		m_arOriginLefts = std::move(arOriginLefts);
+		if (m_bCollectMetaInfo)
+		{
+			m_arGids = std::move(arGids);
+			m_arOriginLefts = std::move(arOriginLefts);
+		}
 	}
 
 	void CContText::AddSymBack(uint32_t cSym, double dWidth, unsigned int nGid, double dLeft)
@@ -819,8 +828,11 @@ namespace NSDocxRenderer
 		{
 			m_arSymWidths.push_back(dWidth);
 			m_oText += cSym;
-			m_arGids.push_back(nGid);
-			m_arOriginLefts.push_back(dLeft);
+			if (m_bCollectMetaInfo)
+			{
+				m_arGids.push_back(nGid);
+				m_arOriginLefts.push_back(dLeft);
+			}
 		}
 		m_dWidth += dWidth;
 		m_dRight = m_dLeft + m_dWidth;
@@ -836,8 +848,11 @@ namespace NSDocxRenderer
 		m_dWidth = m_dRight - m_dLeft;
 
 		m_arSymWidths.insert(m_arSymWidths.begin(), dWidth);
-		m_arGids.insert(m_arGids.begin(), nGid);
-		m_arOriginLefts.insert(m_arOriginLefts.begin(), dLeft);
+		if (m_bCollectMetaInfo)
+		{
+			m_arGids.insert(m_arGids.begin(), nGid);
+			m_arOriginLefts.insert(m_arOriginLefts.begin(), dLeft);
+		}
 	}
 	void CContText::SetSym(uint32_t cSym, double dWidth, unsigned int nGid, double dLeft)
 	{
@@ -851,11 +866,14 @@ namespace NSDocxRenderer
 		m_arSymWidths.clear();
 		m_arSymWidths.push_back(dWidth);
 
-		m_arGids.clear();
-		m_arGids.push_back(nGid);
+		if (m_bCollectMetaInfo)
+		{
+			m_arGids.clear();
+			m_arGids.push_back(nGid);
 
-		m_arOriginLefts.clear();
-		m_arOriginLefts.push_back(dLeft);
+			m_arOriginLefts.clear();
+			m_arOriginLefts.push_back(dLeft);
+		}
 	}
 	void CContText::RemoveLastSym()
 	{
@@ -863,8 +881,13 @@ namespace NSDocxRenderer
 		m_dWidth -= m_arSymWidths[m_arSymWidths.size() - 1];
 		m_dRight = m_dLeft + m_dWidth;
 		m_arSymWidths.resize(m_arSymWidths.size() - 1);
-		m_arGids.resize(m_arGids.size() - 1);
-		m_arOriginLefts.resize(m_arOriginLefts.size() - 1);
+
+
+		if (!m_arGids.empty() && m_bCollectMetaInfo)
+			m_arGids.resize(m_arGids.size() - 1);
+
+		if (!m_arOriginLefts.empty() && m_bCollectMetaInfo)
+			m_arOriginLefts.resize(m_arOriginLefts.size() - 1);
 	}
 	uint32_t CContText::GetLastSym() const
 	{
@@ -1265,6 +1288,7 @@ namespace NSDocxRenderer
 		}
 		pCont->m_bWriteStyleRaw = bWriteStyleRaw;
 		pCont->m_bFontSubstitution = bFontSubstitution;
+		pCont->m_bCollectMetaInfo = bCollectMetaInfo;
 
 		if (pCont->IsDiacritical())
 		{

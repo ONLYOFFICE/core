@@ -1038,7 +1038,13 @@ std::wstring RtfShading::RenderToOOX(RenderParameter oRenderParameter)
 	{
 		switch (m_eType)
 		{
-		case st_clshdrawnil:	sShading += L" w:val=\"nil\"";						break;
+        case st_clshdrawnil:
+        {
+            if (PROP_DEF != m_nBackColor)
+                sShading += L" w:val=\"clear\"";
+            else
+                sShading += L" w:val=\"nil\"";
+        }break;
 		case st_chbghoriz:		sShading += L" w:val=\"thinHorzStripehorzStripe\"";	break;
 		case st_chbgvert:		sShading += L" w:val=\"thinVertStripe\"";			break;
 		case st_chbgfdiag:		sShading += L" w:val=\"thinReverseDiagStripe\"";	break;

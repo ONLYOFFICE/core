@@ -524,6 +524,11 @@ namespace NSDocxRenderer
 		oWriter.WriteString(origin_gids);
 		oWriter.WriteString(L"\" />");
 
+		oWriter.WriteString(L"<metaorigin:fontsubstitution");
+		oWriter.WriteString(L" value=\"");
+		oWriter.AddInt(m_bFontSubstitution);
+		oWriter.WriteString(L"\" />");
+
 		oWriter.WriteString(L"</a:r>");
 	}
 	void CContText::ToBin(NSWasm::CData& oWriter) const
@@ -564,7 +569,7 @@ namespace NSDocxRenderer
 			origin_lefts += std::to_wstring(static_cast<int>(l * c_dMMToEMU)) + L";";
 
 		oWriter.WriteBYTE(5); oWriter.WriteStringUtf16(origin_lefts); // Origin lefts
-		oWriter.WriteBYTE(6); oWriter.WriteBool(m_bFontSubstitution); // Origin lefts
+		oWriter.WriteBYTE(6); oWriter.WriteBool(m_bFontSubstitution); // Font Substitution (just pass from pdf)
 
 		oWriter.WriteBYTE(kBin_g_nodeAttributeEnd);
 		oWriter.EndRecord();

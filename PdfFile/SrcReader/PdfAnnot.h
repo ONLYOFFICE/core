@@ -280,6 +280,7 @@ private:
 	std::string m_sAC;
 	std::string m_sAP_N_Yes;
 	double m_dA1, m_dA2;
+	std::vector< std::pair<std::string, std::string> > m_arrOpt;
 };
 
 class CAnnotWidgetTx final : public CAnnotWidget

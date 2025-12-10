@@ -704,6 +704,23 @@ void ReadInteractiveForms(BYTE* pWidgets, int& i)
 			i += 1;
 			std::cout << "Style " << arrStyle[nPathLength] << ", ";
 
+			if (nFlags & (1 << 10))
+			{
+				int nOptLength = READ_INT(pWidgets + i);
+				i += 4;
+				for (int j = 0; j < nOptLength; ++j)
+				{
+					nPathLength = READ_INT(pWidgets + i);
+					i += 4;
+					std::cout << std::to_string(j) << " Opt1 " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+					i += nPathLength;
+
+					nPathLength = READ_INT(pWidgets + i);
+					i += 4;
+					std::cout << std::to_string(j) << " Opt2 " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+					i += nPathLength;
+				}
+			}
 			if (nFlags & (1 << 14))
 			{
 				nPathLength = READ_INT(pWidgets + i);

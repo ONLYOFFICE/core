@@ -1206,6 +1206,20 @@ function readWidgetType(reader, rec, readDoubleFunc, readDouble2Func, readString
 			rec["value"] = readStringFunc.call(reader);
 		// 0 - check, 1 - cross, 2 - diamond, 3 - circle, 4 - star, 5 - square
 		rec["style"] = reader.readByte();
+		if (flags & (1 << 10))
+		{
+			let n = reader.readInt();
+			rec["opt"] = [];
+			for (let i = 0; i < n; ++i)
+			{
+				let opt1 = readStringFunc.call(reader);
+				let opt2 = readStringFunc.call(reader);
+				if (opt1 == "")
+					rec["opt"].push(opt2);
+				else
+					rec["opt"].push([opt2, opt1]);
+			}
+		}
 		if (flags & (1 << 14))
 			rec["ExportValue"] = readStringFunc.call(reader);
 		// 12.7.4.2.1

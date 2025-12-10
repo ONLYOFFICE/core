@@ -1164,8 +1164,54 @@ CAnnotWidgetBtn::CAnnotWidgetBtn(PDFDoc* pdfDoc, AcroFormField* pField, int nSta
 	}
 	oObj.free();
 
-	Object oMK;
 	AcroFormFieldType oType = pField->getAcroFormFieldType();
+	Object oOpt;
+	// 10 - Список значений
+	if (oType != acroFormFieldPushbutton && oField.dictLookup("Opt", &oOpt)->isArray())
+	{
+		m_unFlags |= (1 << 10);
+		int nOptLength = oOpt.arrayGetLength();
+		for (int j = 0; j < nOptLength; ++j)
+		{
+			Object oOptJ;
+			if (!oOpt.arrayGet(j, &oOptJ) || !(oOptJ.isString() || oOptJ.isArray()))
+			{
+				oOptJ.free();
+				continue;
+			}
+
+			std::string sOpt1, sOpt2;
+			if (oOptJ.isArray() && oOptJ.arrayGetLength() > 1)
+			{
+				Object oOptJ2;
+				if (oOptJ.arrayGet(0, &oOptJ2)->isString())
+				{
+					TextString* s = new TextString(oOptJ2.getString());
+					sOpt1 = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+					delete s;
+				}
+				oOptJ2.free();
+				if (oOptJ.arrayGet(1, &oOptJ2)->isString())
+				{
+					TextString* s = new TextString(oOptJ2.getString());
+					sOpt2 = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+					delete s;
+				}
+				oOptJ2.free();
+			}
+			else if (oOptJ.isString())
+			{
+				TextString* s = new TextString(oOptJ.getString());
+				sOpt2 = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+				delete s;
+			}
+			m_arrOpt.push_back(std::make_pair(sOpt1, sOpt2));
+			oOptJ.free();
+		}
+	}
+	oOpt.free();
+
+	Object oMK;
 	m_nStyle = (oType == acroFormFieldRadioButton ? 3 : 0);
 	if (pField->fieldLookup("MK", &oMK)->isDict())
 	{
@@ -1255,7 +1301,6 @@ CAnnotWidgetBtn::CAnnotWidgetBtn(PDFDoc* pdfDoc, AcroFormField* pField, int nSta
 	}
 	oMK.free();
 
-	Object oOpt;
 	pField->fieldLookup("Opt", &oOpt);
 
 	// 14 - Имя вкл состояния - AP - N - Yes
@@ -4386,6 +4431,15 @@ void CAnnotWidgetBtn::ToWASM(NSWasm::CData& oRes)
 	else
 	{
 		oRes.WriteBYTE(m_nStyle);
+		if (m_unFlags & (1 << 10))
+		{
+			oRes.AddInt(m_arrOpt.size());
+			for (int i = 0; i < m_arrOpt.size(); ++i)
+			{
+				oRes.WriteString(m_arrOpt[i].first);
+				oRes.WriteString(m_arrOpt[i].second);
+			}
+		}
 		if (m_unFlags & (1 << 14))
 			oRes.WriteString(m_sAP_N_Yes);
 	}

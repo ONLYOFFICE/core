@@ -32,7 +32,9 @@
 
 #include "Drawing.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Binary/CFStreamCacheWriter.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/ChartSheetSubstream.h"
 #include "../../PPTXFormat/Logic/Shape.h"
+#include "../Chart/Chart.h"
 
 namespace OOX
 {
@@ -249,6 +251,25 @@ namespace OOX
 
 			oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
 			IFileContainer::Write(oPath, oDirectory, oContent);
+		}
+		void CDrawing::toXLSChart(XLS::BaseObjectPtr chartStreamPtr)
+		{
+			auto ptr = static_cast<XLS::ChartSheetSubstream*>(chartStreamPtr.get());
+			for(auto anchor : m_arrItems)
+			{
+				if(anchor->m_oElement.IsInit())
+				{
+					auto anchorElem = anchor->m_oElement->GetElem();
+					auto graphicFrame =  static_cast<PPTX::Logic::GraphicFrame*>(anchorElem.GetPointer());
+					if(graphicFrame->chartRec.IsInit() && graphicFrame->chartRec->id_data.IsInit())
+					{
+						auto chartRid = graphicFrame->chartRec->id_data.get();
+						auto castedChart = Get<OOX::File>(chartRid);
+						auto ChartFile = static_cast<OOX::Spreadsheet::CChartFile*>(castedChart.GetPointer());
+						//todo chart processing
+					}
+				}
+			}
 		}
 		const OOX::FileType CDrawing::type() const
 		{

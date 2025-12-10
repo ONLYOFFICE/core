@@ -85,6 +85,8 @@ namespace OOX
 			virtual void read(const CPath& oRootPath, const CPath& oPath);
 			virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const;
 
+			void toXLSChart(XLS::BaseObjectPtr chartStreamPtr);
+
 			virtual const OOX::FileType type() const;
 
 			virtual const CPath DefaultDirectory() const;

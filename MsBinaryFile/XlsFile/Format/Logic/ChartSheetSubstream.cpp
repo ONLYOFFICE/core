@@ -443,6 +443,8 @@ const bool ChartSheetSubstream::saveContent(BinProcessor& proc)
         proc.mandatory(*m_PivotChartBits);
     if(m_SBaseRef != nullptr)
         proc.mandatory(*m_SBaseRef);
+	if(m_OBJECTS != nullptr)
+		proc.mandatory(*m_OBJECTS);
     proc.mandatory<Units>();
     if(m_CHARTFORMATS != nullptr)
         proc.mandatory(*m_CHARTFORMATS);

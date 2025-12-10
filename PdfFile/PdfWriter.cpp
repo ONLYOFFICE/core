@@ -2503,6 +2503,8 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 					else
 						pButtonWidget->Off();
 				}
+				if (nFlags & (1 << 10))
+					pButtonWidget->SetOpt(pPrB->GetOpt());
 			}
 		}
 		else if (oInfo.IsTextWidget())

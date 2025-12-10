@@ -1042,6 +1042,7 @@ const std::wstring& CAnnotFieldInfo::CWidgetAnnotPr::CButtonWidgetPr::GetCA() { 
 const std::wstring& CAnnotFieldInfo::CWidgetAnnotPr::CButtonWidgetPr::GetRC() { return m_wsRC; }
 const std::wstring& CAnnotFieldInfo::CWidgetAnnotPr::CButtonWidgetPr::GetAC() { return m_wsAC; }
 const std::wstring& CAnnotFieldInfo::CWidgetAnnotPr::CButtonWidgetPr::GetAP_N_Yes() { return m_wsAP_N_Yes; }
+const std::vector< std::pair<std::wstring, std::wstring> >& CAnnotFieldInfo::CWidgetAnnotPr::CButtonWidgetPr::GetOpt() { return m_arrOpt; }
 void CAnnotFieldInfo::CWidgetAnnotPr::CButtonWidgetPr::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, BYTE nType, int nFlags)
 {
 	if (nType == 27)
@@ -1082,6 +1083,17 @@ void CAnnotFieldInfo::CWidgetAnnotPr::CButtonWidgetPr::Read(NSOnlineOfficeBinToP
 		if (nFlags & (1 << 9))
 			m_wsV = pReader->ReadString();
 		m_nStyle = pReader->ReadByte();
+		if (nFlags & (1 << 10))
+		{
+			int n = pReader->ReadInt();
+			m_arrOpt.reserve(n);
+			for (int i = 0; i < n; ++i)
+			{
+				std::wstring s1 = pReader->ReadString();
+				std::wstring s2 = pReader->ReadString();
+				m_arrOpt.push_back(std::make_pair(s1, s2));
+			}
+		}
 		if (nFlags & (1 << 14))
 			m_wsAP_N_Yes = pReader->ReadString();
 	}

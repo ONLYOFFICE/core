@@ -555,6 +555,7 @@ namespace PdfWriter
 		CCheckBoxWidget(CXref* pXref, EWidgetType nSubtype = WidgetCheckbox);
 
 		void SetV(const std::wstring& wsV);
+		void SetOpt(const std::vector< std::pair<std::wstring, std::wstring> >& arrOpt);
 		void SetStyle(BYTE nStyle);
 		ECheckBoxStyle GetStyle() { return m_nStyle; }
 		void SetAP_N_Yes(const std::wstring& wsAP_N_Yes);

@@ -1405,6 +1405,123 @@ void ReplaceSpaces(std::wstring& wsValue)
 	}
 }
 
+std::wstring StandardizeHeaderId(const std::wstring& header)
+{
+	if (header.empty())
+		return std::wstring();
+
+	std::wstring result;
+	result.reserve(header.size());
+
+	// Флаг, указывающий, был ли предыдущий символ дефисом
+	bool prevWasHyphen = false;
+	bool inWhitespaceSequence = false;
+	wchar_t lowerC;
+
+	for (wchar_t c : header)
+	{
+		// Приведение к нижнему регистру
+		lowerC = std::tolower(c);
+
+		// Проверяем, является ли символ буквой или цифрой
+		if (std::iswalnum(lowerC))
+		{
+			result.push_back(lowerC);
+			prevWasHyphen = false;
+			inWhitespaceSequence = false;
+		}
+		// Проверяем, является ли символ пробельным (пробел, табуляция и т.д.)
+		else if (std::iswspace(lowerC))
+		{
+			// Заменяем последовательности пробельных символов на один дефис
+			if (!inWhitespaceSequence && !result.empty())
+			{
+				result.push_back(L'-');
+				inWhitespaceSequence = true;
+			}
+		}
+		// Проверяем, является ли символ дефисом или подчеркиванием
+		else if (c == L'-' || c == L'_')
+		{
+			// Добавляем дефис, если предыдущий символ не был дефисом
+			if (!prevWasHyphen && !result.empty())
+			{
+				result.push_back(L'-');
+				prevWasHyphen = true;
+			}
+			inWhitespaceSequence = false;
+		}
+		// Все остальные символы (знаки препинания) пропускаем
+		// Но если это буква в Unicode, мы можем её обработать
+		else if (std::iswalpha(lowerC))
+		{
+			// Для Unicode-символов, которые являются буквами
+			result.push_back(lowerC);
+			prevWasHyphen = false;
+			inWhitespaceSequence = false;
+		}
+		// Остальные символы игнорируем
+	}
+
+	// Удаляем дефисы в начале и конце
+	size_t start = 0;
+	size_t end = result.length();
+
+	while (start < end && result[start] == L'-')
+		++start;
+
+	while (end > start && result[end - 1] == L'-')
+		--end;
+
+	// Удаляем последовательные дефисы
+	std::wstring finalResult;
+	finalResult.reserve(end - start);
+
+	bool lastWasHyphen = false;
+	for (size_t i = start; i < end; i++)
+	{
+		if (result[i] == L'-')
+		{
+			if (!lastWasHyphen)
+			{
+				finalResult.push_back(L'-');
+				lastWasHyphen = true;
+			}
+		}
+		else
+		{
+			finalResult.push_back(result[i]);
+			lastWasHyphen = false;
+		}
+	}
+
+	return finalResult;
+}
+
+bool ElementInHeader(const std::vector<NSCSS::CNode> arSelsectors)
+{
+	for (const NSCSS::CNode& oNode : arSelsectors)
+	{
+		if (2 != oNode.m_wsName.length() && L'h' != oNode.m_wsName[0])
+			continue;
+
+		switch (GetHtmlTag(oNode.m_wsName))
+		{
+			case HTML_TAG(H1):
+			case HTML_TAG(H2):
+			case HTML_TAG(H3):
+			case HTML_TAG(H4):
+			case HTML_TAG(H5):
+			case HTML_TAG(H6):
+				return true;
+			default:
+				continue;
+		}
+	}
+
+	return false;
+}
+
 std::wstring EncodeXmlString(const std::wstring& s)
 {
 	std::wstring sRes = s;
@@ -1472,6 +1589,9 @@ private:
 	int m_nNumberingId; // ID списка
 	int m_nId;          // ID остальные элементы
 	int m_nShapeId;     // Id shape's
+
+	using anchors_map = std::map<std::wstring, std::wstring>;
+	anchors_map m_mAnchors; // Map якорей с индивидуальными id
 
 	NSStringUtils::CStringBuilder m_oStylesXml;   // styles.xml
 	NSStringUtils::CStringBuilder m_oDocXmlRels;  // document.xml.rels
@@ -2184,10 +2304,18 @@ private:
 		m_oState.m_bWasSpace = true;
 	}
 
-	void WriteBookmark(NSStringUtils::CStringBuilder* pXml, const std::wstring& wsId)
+	std::wstring AddAnchor(const std::wstring& wsAnchorValue)
+	{
+		const std::wstring wsAnchorId{L"anchor-" + std::to_wstring(m_mAnchors.size() + 1)};
+		m_mAnchors[wsAnchorValue] = wsAnchorId;
+
+		return wsAnchorId;
+	}
+
+	std::wstring WriteBookmark(NSStringUtils::CStringBuilder* pXml, const std::wstring& wsId)
 	{
 		if (NULL == pXml)
-			return;
+			return std::wstring();
 
 		const std::wstring sCrossId = std::to_wstring(m_mBookmarks.size() + 1);
 		std::wstring sName;
@@ -2196,7 +2324,13 @@ private:
 			sName = wsId + L"_" + std::to_wstring(++m_mBookmarks[wsId]);
 		else
 		{
-			sName = wsId;
+			const anchors_map::const_iterator itFound{m_mAnchors.find(wsId)};
+
+			if (m_mAnchors.end() != itFound)
+				sName = itFound->second;
+			else
+				sName = AddAnchor(wsId);
+
 			m_mBookmarks.insert({wsId, 1});
 		}
 
@@ -2204,8 +2338,20 @@ private:
 		pXml->WriteString(sCrossId);
 		pXml->WriteString(L"\" w:name=\"");
 		pXml->WriteEncodeXmlString(sName);
-		pXml->WriteString(L"\"/><w:bookmarkEnd w:id=\"");
-		pXml->WriteString(sCrossId);
+		pXml->WriteString(L"\"/>");
+
+		return sCrossId;
+	}
+
+	void WriteEmptyBookmark(NSStringUtils::CStringBuilder* pXml, const std::wstring& wsId)
+	{
+		const std::wstring wsCrossId{WriteBookmark(pXml, wsId)};
+
+		if (wsCrossId.empty())
+			return;
+
+		pXml->WriteString(L"<w:bookmarkEnd w:id=\"");
+		pXml->WriteString(wsCrossId);
 		pXml->WriteString(L"\"/>");
 	}
 
@@ -2285,7 +2431,7 @@ private:
 			else if(sName == L"id")
 			{
 				oNode.m_wsId = EncodeXmlString(m_oLightReader.GetText());
-				WriteBookmark(oXml, oNode.m_wsId);
+				WriteEmptyBookmark(oXml, oNode.m_wsId);
 
 				if (!m_oStylesCalculator.HaveStylesById(oNode.m_wsId))
 					oNode.m_wsId.clear();
@@ -2408,6 +2554,11 @@ private:
 		if (!bPre && sText.end() == std::find_if_not(sText.begin(), sText.end(), [](wchar_t wchChar){ return iswspace(wchChar) && 0xa0 != wchChar;}))
 			return false;
 
+		std::wstring wsHeaderId;
+
+		if (ElementInHeader(arSelectors))
+			wsHeaderId = StandardizeHeaderId(sText);
+
 		if(oTS.bBdo)
 			std::reverse(sText.begin(), sText.end());
 
@@ -2423,6 +2574,11 @@ private:
 		const std::wstring sPStyle = wrP(&oPPr, arSelectors, oTS);
 
 		WriteToStringBuilder(oPPr, *pXml);
+
+		std::wstring wsCrossId;
+
+		if (!wsHeaderId.empty())
+			WriteEmptyBookmark(pXml, wsHeaderId);
 
 		NSStringUtils::CStringBuilder oRPr;
 		std::wstring sRStyle;
@@ -4159,12 +4315,28 @@ private:
 		if(bCross)
 		{
 			m_oState.m_bInHyperlink = true;
-			oXml->WriteString(L"<w:hyperlink w:tooltip=\"Current Document\" w:anchor=\"");
+			oXml->WriteString(L"<w:hyperlink w:anchor=\"");
 			size_t nSharp = sRef.find('#');
+
+			std::wstring wsAnchorValue;
+
 			if(nSharp == std::wstring::npos)
-				oXml->WriteString(NSFile::GetFileName(sRef));
+				wsAnchorValue = NSFile::GetFileName(sRef);
 			else
-				oXml->WriteEncodeXmlString(sRef.c_str() + nSharp + 1);
+				wsAnchorValue = (sRef.c_str() + nSharp + 1);
+
+			if (!wsAnchorValue.empty())
+			{
+				const anchors_map::iterator itFound = m_mAnchors.find(wsAnchorValue);
+				std::wstring wsAnchorId;
+
+				if (m_mAnchors.end() != itFound)
+					wsAnchorId = itFound->second;
+				else
+					wsAnchorId = AddAnchor(wsAnchorValue);
+
+				oXml->WriteEncodeXmlString(wsAnchorId);
+			}
 		}
 		// Внешняя ссылка
 		else

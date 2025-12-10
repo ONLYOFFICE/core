@@ -235,6 +235,8 @@ namespace PdfWriter
 	{
 		m_pPages->Add(pObj);
 		(*m_pCount)++;
+		if (pObj->GetType() == object_type_DICT && ((CDictObject*)pObj)->GetDictType() == dict_type_PAGE)
+			((CPage*)pObj)->Add("Parent", this);
 	}
 	CObjectBase* CPageTree::GetObj(int nPageIndex)
 	{
@@ -259,8 +261,6 @@ namespace PdfWriter
 		if (nPageIndex >= m_pCount->Get())
 		{
 			AddPage(pPage);
-			if (pPage->GetType() == object_type_DICT && ((CDictObject*)pPage)->GetDictType() == dict_type_PAGE)
-				((CPage*)pPage)->Add("Parent", this);
 			return true;
 		}
 		int nI = 0;

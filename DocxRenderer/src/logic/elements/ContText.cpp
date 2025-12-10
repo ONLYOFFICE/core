@@ -564,6 +564,7 @@ namespace NSDocxRenderer
 			origin_lefts += std::to_wstring(static_cast<int>(l * c_dMMToEMU)) + L";";
 
 		oWriter.WriteBYTE(5); oWriter.WriteStringUtf16(origin_lefts); // Origin lefts
+		oWriter.WriteBYTE(6); oWriter.WriteBool(m_bFontSubstitution); // Origin lefts
 
 		oWriter.WriteBYTE(kBin_g_nodeAttributeEnd);
 		oWriter.EndRecord();
@@ -784,8 +785,8 @@ namespace NSDocxRenderer
 	}
 	void CContText::SetText(const NSStringUtils::CStringUTF32& oText,
 	                        const std::vector<double>& arSymWidths,
-	                        const std::vector<unsigned int>& arGids,
-	                        const std::vector<double>& arOriginLefts)
+	                        std::vector<unsigned int>&& arGids,
+	                        std::vector<double>&& arOriginLefts)
 	{
 		m_oText = oText;
 		m_arSymWidths.clear();
@@ -797,8 +798,8 @@ namespace NSDocxRenderer
 		}
 		m_dRight = m_dLeft + m_dWidth;
 
-		m_arGids = arGids;
-		m_arOriginLefts = arOriginLefts;
+		m_arGids = std::move(arGids);
+		m_arOriginLefts = std::move(arOriginLefts);
 	}
 
 	void CContText::AddSymBack(uint32_t cSym, double dWidth, unsigned int nGid, double dLeft)
@@ -1114,24 +1115,32 @@ namespace NSDocxRenderer
 	        const PUINT pGids,
 	        bool bForcedBold,
 	        bool bUseDefaultFont,
-	        bool bWriteStyleRaw)
+	        bool bWriteStyleRaw,
+	        bool bCollectMetaInfo,
+	        bool bFontSubstitution)
 	{
 		double dWidth = dRight - dLeft;
 		double dHeight = dBot - dTop;
 
 		std::vector<unsigned int> gids;
-		    for (size_t i = 0; i < oText.length(); ++i)
+		if (bCollectMetaInfo)
+		{
+			for (size_t i = 0; i < oText.length(); ++i)
 				if (pGids)
 					gids.push_back(pGids[i]);
 				else
 					gids.push_back(0);
+		}
 
 		std::vector<double> origin_lefts;
-		double curr_origin_left = dLeft;
-		for (size_t i = 0; i < oText.length(); ++i)
+		if (bCollectMetaInfo)
 		{
-			origin_lefts.push_back(curr_origin_left);
-			curr_origin_left += dWidth / oText.length();
+			double curr_origin_left = dLeft;
+			for (size_t i = 0; i < oText.length(); ++i)
+			{
+				origin_lefts.push_back(curr_origin_left);
+				curr_origin_left += dWidth / oText.length();
+			}
 		}
 
 		// if new text is close to current cont
@@ -1139,7 +1148,8 @@ namespace NSDocxRenderer
 		        fabs(m_pCurrCont->m_dBot - dBot) < c_dTHE_SAME_STRING_Y_PRECISION_MM &&
 		        m_oPrevFont.IsEqual2(&oFont) &&
 		        m_oPrevBrush.IsEqual(&oBrush) && !(
-		            oText.length() == 1 && CContText::IsUnicodeDiacriticalMark(oText.at(0))))
+		            oText.length() == 1 && CContText::IsUnicodeDiacriticalMark(oText.at(0))) &&
+		        bFontSubstitution == m_pCurrCont->m_bFontSubstitution)
 		{
 
 			double avg_width = dWidth / oText.length();
@@ -1217,7 +1227,7 @@ namespace NSDocxRenderer
 			ar_widths.push_back(avg_width);
 		}
 
-		pCont->SetText(oText, ar_widths, gids, origin_lefts);
+		pCont->SetText(oText, ar_widths, std::move(gids), std::move(origin_lefts));
 		pCont->m_bIsRtl = CContText::IsUnicodeRtl(oText.at(0));
 
 		pCont->m_dWidth = dWidth;
@@ -1249,6 +1259,7 @@ namespace NSDocxRenderer
 			pCont->m_oSelectedFont.Italic = m_pFontSelector->IsSelectedItalic();
 		}
 		pCont->m_bWriteStyleRaw = bWriteStyleRaw;
+		pCont->m_bFontSubstitution = bFontSubstitution;
 
 		if (pCont->IsDiacritical())
 		{

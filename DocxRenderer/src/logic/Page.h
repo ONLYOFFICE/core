@@ -46,8 +46,10 @@ namespace NSDocxRenderer
 		bool m_bIsGradient			   {false};
 		bool m_bUseDefaultFont		   {false};
 		bool m_bWriteStyleRaw		   {false};
+		bool m_bCollectMetaInfo        {false};
 		bool m_bIsBuildTables		   {false};
 		bool m_bIsLuminosityShapesFiled{false};
+		bool m_bFontSubstitution       {false};
 
 		CPage(NSFonts::IApplicationFonts* pAppFonts, const CManagers& oManagers);
 		~CPage();

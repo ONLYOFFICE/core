@@ -144,6 +144,7 @@ std::vector<std::wstring> CDocxRenderer::ScanPagePptx(IOfficeDrawingFile* pFile,
 	m_pInternal->m_oDocument.Init(false);
 	m_pInternal->m_oDocument.m_oCurrentPage.m_bUseDefaultFont = true;
 	m_pInternal->m_oDocument.m_oCurrentPage.m_bWriteStyleRaw = true;
+	m_pInternal->m_oDocument.m_oCurrentPage.m_bCollectMetaInfo = true;
 	m_pInternal->m_bIsSupportShapeCommands = true;
 
 	m_pInternal->m_eShapeSerializeType = ShapeSerializeType::sstXml;
@@ -160,6 +161,7 @@ NSWasm::CData CDocxRenderer::ScanPageBin(IOfficeDrawingFile* pFile, size_t nPage
 	m_pInternal->m_oDocument.Init(false);
 	m_pInternal->m_oDocument.m_oCurrentPage.m_bUseDefaultFont = true;
 	m_pInternal->m_oDocument.m_oCurrentPage.m_bWriteStyleRaw = true;
+	m_pInternal->m_oDocument.m_oCurrentPage.m_bCollectMetaInfo = true;
 	m_pInternal->m_bIsSupportShapeCommands = true;
 
 	DrawPage(pFile, nPage);
@@ -731,6 +733,10 @@ HRESULT CDocxRenderer::CommandLong(const LONG& lType, const LONG& lCommand)
 			return S_FALSE;
 
 		return S_OK;
+	}
+	if (c_nFontSubstitution == lType)
+	{
+		m_pInternal->m_oDocument.m_oCurrentPage.m_bFontSubstitution = true;
 	}
 	return S_OK;
 }

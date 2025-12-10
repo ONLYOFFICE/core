@@ -80,6 +80,7 @@ namespace NSDocxRenderer
 
 		std::vector<unsigned int> m_arGids{};
 		std::vector<double> m_arOriginLefts{};
+		bool m_bFontSubstitution = false;
 
 		CContText() = default;
 		CContText(CFontManager* pManager) : m_pManager(pManager) {}
@@ -106,8 +107,8 @@ namespace NSDocxRenderer
 		                  const std::vector<double>& arOriginLefts);
 		void SetText(const NSStringUtils::CStringUTF32& oText,
 		             const std::vector<double>& arSymWidths,
-		             const std::vector<unsigned int>& arGids,
-		             const std::vector<double>& arOriginLefts);
+		             std::vector<unsigned int>&& arGids,
+		             std::vector<double>&& arOriginLefts);
 
 		void AddSymBack(uint32_t cSym, double dWidth, unsigned int nGid, double dLeft);
 		void AddSymFront(uint32_t cSym, double dWidth, unsigned int nGid, double dLeft);
@@ -188,7 +189,9 @@ namespace NSDocxRenderer
 		        const PUINT pGids = nullptr,
 		        bool bForcedBold = false,
 		        bool bUseDefaultFont = false,
-		        bool bWriteStyleRaw = false);
+		        bool bWriteStyleRaw = false,
+		        bool bCollectMetaInfo = false,
+		        bool bFontSubstitution = false);
 
 		void NullCurrCont();
 		void Clear();

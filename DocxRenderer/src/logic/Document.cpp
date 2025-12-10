@@ -322,6 +322,7 @@ namespace NSDocxRenderer
 	HRESULT CDocument::put_FontName(std::wstring sName)
 	{
 		m_oCurrentPage.m_oFont.Name = sName;
+		m_oCurrentPage.m_bFontSubstitution = false;
 		return S_OK;
 	}
 	HRESULT CDocument::get_FontPath(std::wstring* sPath)

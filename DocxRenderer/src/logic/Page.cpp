@@ -342,7 +342,21 @@ namespace NSDocxRenderer
 			bForcedBold = true;
 
 		m_oManagers.pParagraphStyleManager->UpdateAvgFontSize(m_oFont.Size);
-		m_oContBuilder.AddUnicode(top, baseline, left, right, m_oFont, m_oBrush, m_oManagers.pFontManager, oText, pGids, bForcedBold, m_bUseDefaultFont, m_bWriteStyleRaw);
+		m_oContBuilder.AddUnicode(
+		            top,
+		            baseline,
+		            left,
+		            right,
+		            m_oFont,
+		            m_oBrush,
+		            m_oManagers.pFontManager,
+		            oText,
+		            pGids,
+		            bForcedBold,
+		            m_bUseDefaultFont,
+		            m_bWriteStyleRaw,
+		            m_bCollectMetaInfo
+		        );
 	}
 
 	void CPage::Analyze()

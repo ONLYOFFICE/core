@@ -47,6 +47,7 @@ namespace PdfWriter
     class CFontDict;
 	class CShading;
 	class CExtGrState;
+	class CDestination;
 }
 
 class CPdfWriter;
@@ -1636,6 +1637,7 @@ struct TDestinationInfo
 {
     TDestinationInfo(PdfWriter::CPage* page, const double& x, const double& y, const double& w, const double& h, const double& dx, const double& dy, const unsigned int& undpage)
     {
+		pDest      = NULL;
         pPage      = page;
         dX         = x;
         dY         = y;
@@ -1645,7 +1647,14 @@ struct TDestinationInfo
         dDestY     = dy;
         unDestPage = undpage;
     }
+	TDestinationInfo(PdfWriter::CDestination* dest, const unsigned int& undpage)
+	{
+		pDest      = dest;
+		pPage      = NULL;
+		unDestPage = undpage;
+	}
 
+	PdfWriter::CDestination* pDest;
     PdfWriter::CPage* pPage;
     double       dX;
     double       dY;

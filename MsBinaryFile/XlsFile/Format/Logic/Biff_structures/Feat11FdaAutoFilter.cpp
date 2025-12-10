@@ -53,7 +53,7 @@ void Feat11FdaAutoFilter::load(CFRecord& record)
 	}
 	record.skipNunBytes(2);	
 
-	if (cbAutoFilter > 0 && cbAutoFilter < 2080)
+	if (cbAutoFilter > 0 && cbAutoFilter < 2080 && (record.getDataSize() - record.getRdPtr()) >=  cbAutoFilter)
 	{
 		recAutoFilter.size = cbAutoFilter;
 		recAutoFilter.readFields(record);

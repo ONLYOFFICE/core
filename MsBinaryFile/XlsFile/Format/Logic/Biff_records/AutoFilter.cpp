@@ -72,7 +72,14 @@ void AutoFilter::readFields(CFRecord& record)
 {
 	size_t pos_record = record.getRdPtr();
 
-	if (size == 0xffffffff) size = record.getDataSize() - pos_record;
+
+	if (size == 0xffffffff)
+		size = record.getDataSize() - pos_record;
+	else if(record.getDataSize() < pos_record + size)
+	{
+		//size error
+		return;
+	}
 
 	if (size > 0)
 	{

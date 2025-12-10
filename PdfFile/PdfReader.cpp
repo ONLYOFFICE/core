@@ -1281,6 +1281,7 @@ BYTE* CPdfReader::GetLinks(int _nPageIndex)
 	NSWasm::CPageLink oLinks;
 
 	// Гиперссылка
+	/*
 	Links* pLinks = pDoc->getLinks(nPageIndex);
 	if (pLinks)
 	{
@@ -1358,6 +1359,7 @@ BYTE* CPdfReader::GetLinks(int _nPageIndex)
 		}
 	}
 	RELEASEOBJECT(pLinks);
+	*/
 
 	int nRotate = 0;
 #ifdef BUILDING_WASM_MODULE
@@ -2097,7 +2099,7 @@ int GetPageAnnots(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, PdfReader
 		}
 		else if (sType == "Link")
 		{
-
+			pAnnot = new PdfReader::CAnnotLink(pdfDoc, &oAnnotRef, nPageIndex, nStartRefID);
 		}
 		else if (sType == "FreeText")
 		{

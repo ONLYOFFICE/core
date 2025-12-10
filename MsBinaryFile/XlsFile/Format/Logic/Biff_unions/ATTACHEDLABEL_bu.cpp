@@ -153,7 +153,8 @@ const bool ATTACHEDLABEL::loadContent(BinProcessor& proc)
 	
 	proc.optional<CRTMLFRT>();
 
-	proc.mandatory<End>();			elements_.pop_back();
+	if(proc.mandatory<End>())
+		elements_.pop_back();
 
 	return true;
 }

@@ -704,6 +704,23 @@ void ReadInteractiveForms(BYTE* pWidgets, int& i)
 			i += 1;
 			std::cout << "Style " << arrStyle[nPathLength] << ", ";
 
+			if (nFlags & (1 << 10))
+			{
+				int nOptLength = READ_INT(pWidgets + i);
+				i += 4;
+				for (int j = 0; j < nOptLength; ++j)
+				{
+					nPathLength = READ_INT(pWidgets + i);
+					i += 4;
+					std::cout << std::to_string(j) << " Opt1 " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+					i += nPathLength;
+
+					nPathLength = READ_INT(pWidgets + i);
+					i += 4;
+					std::cout << std::to_string(j) << " Opt2 " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+					i += nPathLength;
+				}
+			}
 			if (nFlags & (1 << 14))
 			{
 				nPathLength = READ_INT(pWidgets + i);
@@ -2142,6 +2159,44 @@ int main(int argc, char* argv[])
 						nPathLength = READ_INT(pAnnots + i);
 						i += 4;
 						std::cout << nPathLength << ", ";
+					}
+				}
+				else if (sType == "Link")
+				{
+					nFlags = READ_INT(pAnnots + i);
+					i += 4;
+					if (nFlags & (1 << 0))
+					{
+						std::cout << std::endl << "A ";
+						ReadAction(pAnnots, i);
+						std::cout << std::endl;
+					}
+					if (nFlags & (1 << 1))
+					{
+						std::cout << std::endl << "PA ";
+						ReadAction(pAnnots, i);
+						std::cout << std::endl;
+					}
+					if (nFlags & (1 << 2))
+					{
+						std::string arrHighlighting[] = {"none", "invert", "push", "outline"};
+						nPathLength = READ_BYTE(pAnnots + i);
+						i += 1;
+						std::cout << "Highlight " << arrHighlighting[nPathLength] << ", ";
+					}
+					if (nFlags & (1 << 3))
+					{
+						std::cout << "QuadPoints";
+						int nQuadPointsLength = READ_INT(pAnnots + i);
+						i += 4;
+
+						for (int j = 0; j < nQuadPointsLength; ++j)
+						{
+							nPathLength = READ_INT(pAnnots + i);
+							i += 4;
+							std::cout << " " << (double)nPathLength / 100.0;
+						}
+						std::cout << ", ";
 					}
 				}
 

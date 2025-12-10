@@ -713,12 +713,13 @@ namespace DocFileFormat
 			}
 			else
 			{
-				for (size_t i = 1; i < arField.size(); i++)
+				//for (size_t i = 1; i < arField.size(); i++)
+				if (arField.size() > 1)
 				{
 					std::wstring f1 = arField[1];
-					int d = (int)f1.find(PAGEREF);
+					size_t d = f1.find(PAGEREF);
 
-					if (d > 0)
+					if (d != std::wstring::npos)
 					{
 						_writeWebHidden = true;
 						std::wstring _writeTocLink =f1.substr(d + 9);
@@ -729,10 +730,8 @@ namespace DocFileFormat
 						_writeAfterRun +=	XmlUtils::EncodeXmlString(_writeTocLink);
 						_writeAfterRun +=	std::wstring (L"\" w:history=\"1\">");
 
-						break;								
-						//cp = cpFieldSep1;
+						//break;								
 					}
-					//cpFieldSep1 = cpFieldSep2;
 				}
 				_skipRuns = 5; //with separator
 			}

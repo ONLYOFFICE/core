@@ -108,7 +108,7 @@ namespace Aggplus
 	{
 	public:
 		CBooleanOperations() {};
-		CBooleanOperations(const CGraphicsPath& path1, const CGraphicsPath& path2, BooleanOpType op, long fillType, bool isLuminosity);
+		CBooleanOperations(const CGraphicsPath& path1, const CGraphicsPath& path2, BooleanOpType op, long fillType, bool isLuminosity, bool isSelf);
 		~CBooleanOperations();
 		CGraphicsPath&& GetResult();
 		bool IsSelfInters(const CGraphicsPath& p);
@@ -166,6 +166,7 @@ namespace Aggplus
 		bool Close1 = true;
 		bool Close2 = true;
 		bool IsLuminosity = false;
+		bool IsSelf = false;
 
 		// c_nStroke, c_nWindingFillMode, c_nEvenOddFillMode
 		long FillType = c_nWindingFillMode;

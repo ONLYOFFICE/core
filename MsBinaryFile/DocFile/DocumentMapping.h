@@ -84,6 +84,7 @@ namespace DocFileFormat
 		std::wstring	m_shapeIdOwner;
 		std::wstring	getOLEObject() { return _lastOLEObject; }
 		bool m_bOleInPicture = false;
+        bool bPict = true;
 	protected:
 
 		int getListNumCache		(int fc, int fc_end);

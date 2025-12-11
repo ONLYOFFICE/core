@@ -783,6 +783,7 @@ namespace DocFileFormat
 				else
 				{
 					PictureDescriptor pic(chpxObj, m_document->DataStream, 0x7fffffff, m_document->nWordVersion);
+                    bPict = false;
 					
                     oleWriter.WriteNodeBegin (L"w:object", true);
                         oleWriter.WriteAttribute( L"w:dxaOrig", FormatUtils::IntToWideString( ( pic.dxaGoal + pic.dxaOrigin ) ) );
@@ -1068,85 +1069,90 @@ namespace DocFileFormat
 			}
 			else if (TextMark::Picture == code && fSpec)
 			{
-				PictureDescriptor oPicture (chpx, m_document->nWordVersion > 0 ? m_document->WordDocumentStream : m_document->DataStream, 0x7fffffff, m_document->nWordVersion);
+                if (bPict)
+                {
+                    PictureDescriptor oPicture (chpx, m_document->nWordVersion > 0 ? m_document->WordDocumentStream : m_document->DataStream, 0x7fffffff, m_document->nWordVersion);
 
-				bool isInline = _isTextBoxContent;
+                    bool isInline = _isTextBoxContent;
 
-				if (oPicture.embeddedData && oPicture.embeddedDataSize > 0)
-				{
-                    m_pXmlWriter->WriteNodeBegin (L"w:pict");
+                    if (oPicture.embeddedData && oPicture.embeddedDataSize > 0)
+                    {
+                        m_pXmlWriter->WriteNodeBegin (L"w:pict");
 					
-					VMLPictureMapping oVmlMapper(m_context, m_pXmlWriter, false, _caller, isInline);
-					oPicture.Convert (&oVmlMapper);
+                        VMLPictureMapping oVmlMapper(m_context, m_pXmlWriter, false, _caller, isInline);
+                        oPicture.Convert (&oVmlMapper);
 					
-                    m_pXmlWriter->WriteNodeEnd	 (L"w:pict");
-				}
-				else if ((oPicture.mfp.mm > 98) && (NULL != oPicture.shapeContainer)/* && (false == oPicture.shapeContainer->isLastIdentify())*/)
-				{
-					bool bPicture	= true;
-					bool m_bSkip	= false;
+                        m_pXmlWriter->WriteNodeEnd	 (L"w:pict");
+                    }
+                    else if ((oPicture.mfp.mm > 98) && (NULL != oPicture.shapeContainer)/* && (false == oPicture.shapeContainer->isLastIdentify())*/)
+                    {
+                        bool bPicture	= true;
+                        bool m_bSkip	= false;
 
-					if (oPicture.shapeContainer)
-					{
-						if (oPicture.shapeContainer->m_nShapeType != msosptPictureFrame)
-							bPicture = false;//шаблон 1.doc картинка в колонтитуле
+                        if (oPicture.shapeContainer)
+                        {
+                            if (oPicture.shapeContainer->m_nShapeType != msosptPictureFrame)
+                                bPicture = false;//шаблон 1.doc картинка в колонтитуле
 
-						m_bSkip = oPicture.shapeContainer->m_bSkip;
-					}
-					if (!m_bSkip)
-					{
-						bool bFormula	= false;
-						XMLTools::CStringXmlWriter pictWriter;
-						pictWriter.WriteNodeBegin (L"w:pict");
+                            m_bSkip = oPicture.shapeContainer->m_bSkip;
+                        }
+                        if (!m_bSkip)
+                        {
+                            bool bFormula	= false;
+                            XMLTools::CStringXmlWriter pictWriter;
+                            pictWriter.WriteNodeBegin (L"w:pict");
 
-						if (bPicture)
-						{
-							VMLPictureMapping oVmlMapper(m_context, &pictWriter, false, _caller, isInline);
-							oPicture.Convert (&oVmlMapper);
+                            if (bPicture)
+                            {
+                                VMLPictureMapping oVmlMapper(m_context, &pictWriter, false, _caller, isInline);
+                                oPicture.Convert (&oVmlMapper);
 							
-							if (oVmlMapper.m_isEmbedded)
-							{
-								OleObject ole ( chpx, m_document);
-								OleObjectMapping oleObjectMapping( &pictWriter, m_context, &oPicture, _caller, oVmlMapper.m_shapeId );
+                                if (oVmlMapper.m_isEmbedded)
+                                {
+                                    OleObject ole ( chpx, m_document);
+                                    OleObjectMapping oleObjectMapping( &pictWriter, m_context, &oPicture, _caller, oVmlMapper.m_shapeId );
 								
-								ole.isEquation = oVmlMapper.m_isEquation;
-								ole.isEmbedded = oVmlMapper.m_isEmbedded;
-								ole.embeddedData = oVmlMapper.m_embeddedData;
+                                    ole.isEquation = oVmlMapper.m_isEquation;
+                                    ole.isEmbedded = oVmlMapper.m_isEmbedded;
+                                    ole.embeddedData = oVmlMapper.m_embeddedData;
 							
-								ole.Convert( &oleObjectMapping );
-							}
-							else if (oVmlMapper.m_isEquation)
-							{
-								//нельзя в Run писать oMath
-								//m_pXmlWriter->WriteString(oVmlMapper.m_equationXml);
-								_writeAfterRun = oVmlMapper.m_equationXml;
-								bFormula = true;
-							}
-							else if (oVmlMapper.m_isBlob)
-							{
-								_writeAfterRun = oVmlMapper.m_blobXml;
-								bFormula = true;
-							}
-						}
-						else
-						{
-							VMLShapeMapping oVmlMapper(m_context, &pictWriter, NULL, &oPicture,  _caller, isInline, false);
-							oPicture.shapeContainer->Convert(&oVmlMapper);
-						}
+                                    ole.Convert( &oleObjectMapping );
+                                }
+                                else if (oVmlMapper.m_isEquation)
+                                {
+                                    //нельзя в Run писать oMath
+                                    //m_pXmlWriter->WriteString(oVmlMapper.m_equationXml);
+                                    _writeAfterRun = oVmlMapper.m_equationXml;
+                                    bFormula = true;
+                                }
+                                else if (oVmlMapper.m_isBlob)
+                                {
+                                    _writeAfterRun = oVmlMapper.m_blobXml;
+                                    bFormula = true;
+                                }
+                            }
+                            else
+                            {
+                                VMLShapeMapping oVmlMapper(m_context, &pictWriter, NULL, &oPicture,  _caller, isInline, false);
+                                oPicture.shapeContainer->Convert(&oVmlMapper);
+                            }
 						
-						pictWriter.WriteNodeEnd (L"w:pict");
+                            pictWriter.WriteNodeEnd (L"w:pict");
 
-						if (!bFormula)
-						{
-							m_pXmlWriter->WriteString(pictWriter.GetXmlString());
+                            if (!bFormula)
+                            {
+                                m_pXmlWriter->WriteString(pictWriter.GetXmlString());
 							
-							if ((false == _fieldLevels.empty()) && (_fieldLevels.back().bSeparate && !_fieldLevels.back().bResult))	//ege15.doc
-							{
-								_fieldLevels.back().bResult = true;
-							}//imrtemplate(endnotes).doc
-						}
-					}
-				}                   
+                                if ((false == _fieldLevels.empty()) && (_fieldLevels.back().bSeparate && !_fieldLevels.back().bResult))	//ege15.doc
+                                {
+                                    _fieldLevels.back().bResult = true;
+                                }//imrtemplate(endnotes).doc
+                            }
+                        }
+                    }
+                }
+                else
+                    bPict = true;
 			}
 			else if ((TextMark::AutoNumberedFootnoteReference == code) && fSpec)
 			{

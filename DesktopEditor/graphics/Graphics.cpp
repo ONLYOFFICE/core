@@ -2142,7 +2142,12 @@ namespace Aggplus
 			agg::trans_affine* full_trans = &m_oFullTransform.m_internal->m_agg_mtx;
 			double dDet = full_trans->determinant();
 
-			if (fabs(dDet) < 0.0001)
+			double sx = sqrt(full_trans->sx * full_trans->sx + full_trans->shx * full_trans->shx);
+			double sy = sqrt(full_trans->shy * full_trans->shy + full_trans->sy * full_trans->sy);
+			double scale = std::max(sx, sy);
+			double adaptive_threshold = 1.0 / (scale * scale * 10000.0);
+
+			if (fabs(dDet) < std::max(0.0001, adaptive_threshold))
 			{
 				path_copy.transform_all_paths(m_oFullTransform.m_internal->m_agg_mtx);
 				dWidth *= sqrt(fabs(dDet));
@@ -2240,6 +2245,8 @@ namespace Aggplus
 				LONG lCount2	= lCount / 2;
 
 				double dKoef = 1.0;
+				if (bIsUseIdentity)
+					dKoef = sqrt(fabs(m_oFullTransform.m_internal->m_agg_mtx.determinant()));
 
 				for (LONG i = 0; i < lCount2; ++i)
 				{

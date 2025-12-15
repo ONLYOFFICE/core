@@ -1846,6 +1846,19 @@ namespace NSDocxRenderer
 				}
 			}
 
+			// 2 lines in paragraph fix
+			for (size_t index = 0; index < ar_positions.size() - 1; ++index)
+			{
+				auto& line_top = text_lines[index];
+				auto& line_bot = text_lines[index + 1];
+
+				bool is_start = index == 0 || ar_delims[index - 1] == true;
+				bool is_end = index == ar_positions.size() - 1 || ar_delims[index + 1] == true;
+				bool is_diff = fabs(line_top->m_dHeight - line_bot->m_dHeight) > (line_top->m_dHeight + line_bot->m_dHeight) / 4;
+				if (is_start && is_end && is_diff)
+					ar_delims[index] = true;
+			}
+
 			// gap check
 			//
 			// bla-bla-bla

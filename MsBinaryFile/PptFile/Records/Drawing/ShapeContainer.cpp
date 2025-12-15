@@ -513,6 +513,7 @@ void CPPTElement::SetUpProperty(CElementPtr pElement, CTheme* pTheme, CSlideInfo
     }break;
     case fillFocus://relative position of the last color in the shaded fill
     {
+        pElement->m_oBrush.Focus = pProperty->m_lValue;
     }break;
     case fillShadePreset:
     {//value (int) from 0x00000088 through 0x0000009F or complex

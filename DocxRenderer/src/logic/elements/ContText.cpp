@@ -1137,6 +1137,7 @@ namespace NSDocxRenderer
 	        const NSStructures::CBrush& oBrush,
 	        CFontManager* pFontManager,
 	        const NSStringUtils::CStringUTF32& oText,
+	        size_t nOrder,
 	        const PUINT pGids,
 	        bool bForcedBold,
 	        bool bUseDefaultFont,
@@ -1217,6 +1218,7 @@ namespace NSDocxRenderer
 				m_pCurrCont->m_dBot = std::max(m_pCurrCont->m_dBot, dBot);
 				m_pCurrCont->m_dHeight = m_pCurrCont->m_dBot - m_pCurrCont->m_dTop;
 				m_pCurrCont->m_dWidth = m_pCurrCont->m_dRight - m_pCurrCont->m_dLeft;
+				m_pCurrCont->m_nOrder = nOrder;
 				return;
 			}
 		}
@@ -1283,6 +1285,7 @@ namespace NSDocxRenderer
 		}
 		pCont->m_bWriteStyleRaw = bWriteStyleRaw;
 		pCont->m_bFontSubstitution = bFontSubstitution;
+		pCont->m_nOrder = nOrder;
 
 		if (pCont->IsDiacritical())
 		{

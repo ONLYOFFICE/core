@@ -21,6 +21,7 @@ namespace NSDocxRenderer
 	{
 		RecalcWithNewItem(oCont.get());
 		m_arConts.push_back(oCont);
+		m_nOrder = std::max(m_nOrder, oCont->m_nOrder);
 	}
 	void CTextLine::AddConts(const std::vector<std::shared_ptr<CContText>>& arConts)
 	{

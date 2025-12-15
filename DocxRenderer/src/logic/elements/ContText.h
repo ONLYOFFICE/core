@@ -188,6 +188,7 @@ namespace NSDocxRenderer
 		        const NSStructures::CBrush& oBrush,
 		        CFontManager* pFontManager,
 		        const NSStringUtils::CStringUTF32& oText,
+		        size_t nOrder = 0,
 		        const PUINT pGids = nullptr,
 		        bool bForcedBold = false,
 		        bool bUseDefaultFont = false,

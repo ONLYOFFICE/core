@@ -268,7 +268,7 @@ namespace NSDocxRenderer
 
 		if (!skip_shape)
 		{
-			shape->m_nOrder = ++m_nShapeOrder;
+			shape->m_nOrder = ++m_nCurrentOrder;
 			m_arShapes.push_back(shape);
 		}
 	}
@@ -342,6 +342,7 @@ namespace NSDocxRenderer
 			bForcedBold = true;
 
 		m_oManagers.pParagraphStyleManager->UpdateAvgFontSize(m_oFont.Size);
+		m_nCurrentOrder++;
 		m_oContBuilder.AddUnicode(
 		            top,
 		            baseline,
@@ -351,6 +352,7 @@ namespace NSDocxRenderer
 		            m_oBrush,
 		            m_oManagers.pFontManager,
 		            oText,
+		            m_nCurrentOrder,
 		            pGids,
 		            bForcedBold,
 		            m_bUseDefaultFont,
@@ -483,8 +485,6 @@ namespace NSDocxRenderer
 		m_arShapes.erase(right, m_arShapes.end());
 
 		std::sort(m_arShapes.begin(), m_arShapes.end(), [] (const shape_ptr_t& s1, const shape_ptr_t& s2) {
-			if (s1->m_bIsBehindDoc && !s2->m_bIsBehindDoc) return true;
-			if (!s1->m_bIsBehindDoc && s2->m_bIsBehindDoc) return false;
 			return s1->m_nOrder < s2->m_nOrder;
 		});
 	}
@@ -1686,6 +1686,7 @@ namespace NSDocxRenderer
 			min_left = std::min(min_left, curr_line->m_dLeft);
 			max_right = std::max(max_right, curr_line->m_dRight);
 			paragraph->m_arTextLines.push_back(curr_line);
+			paragraph->m_nOrder = std::max(paragraph->m_nOrder, curr_line->m_nOrder);
 		};
 
 		auto build_paragraphs = [this, add_line, add_paragraph] (const std::vector<text_line_ptr_t>& text_lines) {
@@ -2559,6 +2560,7 @@ namespace NSDocxRenderer
 		pParagraph->m_dHeight = pLine->m_dHeight;
 		pParagraph->m_dRight = pLine->m_dRight;
 		pParagraph->m_dLineHeight = pParagraph->m_dHeight;
+		pParagraph->m_nOrder = pLine->m_nOrder;
 
 		if (pLine->m_pDominantShape)
 		{
@@ -2577,6 +2579,7 @@ namespace NSDocxRenderer
 		pShape->m_dWidth = pParagraph->m_dWidth;
 		pShape->m_dHeight = pParagraph->m_dHeight;
 		pShape->m_dRight = pParagraph->m_dRight;
+		pShape->m_nOrder = pParagraph->m_nOrder;
 		pShape->m_bIsBehindDoc = false;
 
 		return pShape;
@@ -2592,6 +2595,7 @@ namespace NSDocxRenderer
 		pShape->m_dBot = pParagraph->m_dBot;
 		pShape->m_dHeight = pParagraph->m_dHeight;
 		pShape->m_dWidth = pParagraph->m_dWidth;
+		pShape->m_nOrder = pParagraph->m_nOrder;
 
 		if (pParagraph->m_bIsNeedFirstLineIndent && pParagraph->m_dFirstLine < 0)
 			pParagraph->m_dLeftBorder = -pParagraph->m_dFirstLine;

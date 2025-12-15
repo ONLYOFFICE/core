@@ -173,6 +173,10 @@ import {selectUserJSON} from "./utils.ts";
 		key.setIsValid(false);
 		return this.writeKeys();
 	};
+	KeyStorage.prototype.generateKey = function (keyParams) {
+		const crypto = getCrypto();
+		return crypto.generateKey(keyParams);
+	};
 
 	return {
 		KeyStorage: KeyStorage,

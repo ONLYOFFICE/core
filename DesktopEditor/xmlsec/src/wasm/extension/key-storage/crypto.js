@@ -1,4 +1,3 @@
-import {KeyUsages} from "./keys/keys.ts";
 import {digestTypes, exportKeyFormats,} from "./keys/key-types.ts";
 import {AesGcmGenParams} from "./keys/params.ts";
 
@@ -17,7 +16,7 @@ CCryptoBase.prototype.digest = function(algorithm, data) {};
 CCryptoBase.prototype.verify = function(key, signature, data) {};
 CCryptoBase.prototype.decrypt = function(key, data) {};
 CCryptoBase.prototype.encrypt = function(key, data) {};
-CCryptoBase.prototype.generateKey = function(params, keyUsage) {};
+CCryptoBase.prototype.generateKey = function(params) {};
 CCryptoBase.prototype.wrapKey = function(format, key, masterPassword, salt, aesParams, keyUsage) {};
 CCryptoBase.prototype.unwrapKey = function(format, key, masterPassword, salt, aesParams, keyParams, keyUsage) {};
 CCryptoBase.prototype.getRandomValues = function(length) {};
@@ -53,7 +52,7 @@ CWebCrypto.prototype.getAesCryptoKey = function(masterPassword, salt) {
 			pwKey,
 			new AesGcmGenParams(),
 			false,
-			['wrapKey', 'unwrapKey']
+			['wrapKey', 'unwrapKey', 'encrypt', 'decrypt']
 		);
 	});
 };
@@ -81,18 +80,14 @@ CWebCrypto.prototype.sign = function(key, data) {
 	const cryptoKey = key.getCryptoKey();
 	const params = key.getCryptoParams();
 	return oThis.subtle.sign(cryptoKey, cryptoKey, data);
-	return this.getCryptoKeyFromWrapper(key, new KeyUsages(false, true)).then(function(cryptoKey) {
-		return oThis.subtle.sign(key.params, cryptoKey, data);
-	});
 }
 CWebCrypto.prototype.digest = function(algorithm, data) {
 	return this.subtle.digest(algorithm, data);
 }
 CWebCrypto.prototype.verify = function(key, signature, data) {
 	const oThis = this;
-	return this.getCryptoKeyFromWrapper(key, new KeyUsages(false, true)).then(function(cryptoKey) {
-		return oThis.subtle.verify(key.params, cryptoKey, signature, data);
-	});
+	const cryptoKey = key.getCryptoKey();
+	return oThis.subtle.verify(key.params, cryptoKey, signature, data);
 }
 CWebCrypto.prototype.decrypt = function(key, data) {
 	const oThis = this;
@@ -125,15 +120,13 @@ CWebCrypto.prototype.generateKey = function(params) {
 			const publicKeyBuffer = exportedKeys[0];
 			const privateKeyBuffer = exportedKeys[1];
 			if (params.isSign()) {
-				return WebSignKeyPair.fromCryptoBuffer(publicKeyBuffer, privateKeyBuffer);
+				return WebSignKeyPair.fromCryptoBuffer(publicKeyBuffer, privateKeyBuffer, importParams);
 			}
-			return WebEncryptKeyPair.fromCryptoBuffer(publicKeyBuffer, privateKeyBuffer);
+			return WebEncryptKeyPair.fromCryptoBuffer(publicKeyBuffer, privateKeyBuffer, importParams);
 		} else {
-			return WebSymmetricKey.fromCryptoBuffer(exportedKeys);
+			return WebSymmetricKey.fromCryptoBuffer(exportedKeys, importParams);
 		}
 	});
-
-
 };
 
 CWebCrypto.prototype.randomUUID = function() {

@@ -2046,6 +2046,14 @@ namespace PdfWriter
 		else
 			pOwner->Add("V", new CStringObject(sV.c_str(), true));
 	}
+	void CCheckBoxWidget::SetDV(const std::wstring& wsDV)
+	{
+		std::string sValue = U_TO_UTF8(wsDV);
+		CDictObject* pOwner = GetObjOwnValue("DV");
+		if (!pOwner)
+			pOwner = this;
+		pOwner->Add("DV", sValue.c_str());
+	}
 	void CCheckBoxWidget::SetStyle(BYTE nStyle)
 	{
 		m_nStyle = ECheckBoxStyle(nStyle);
@@ -2271,6 +2279,40 @@ namespace PdfWriter
 			sDA = bCAPS ? "0 G" : "0 g";
 		sDA += "\012";
 		return sDA;
+	}
+	void CCheckBoxWidget::SetOpt(const std::vector< std::pair<std::wstring, std::wstring> >& arrOpt)
+	{
+		if (arrOpt.empty())
+			return;
+
+		CArrayObject* pArray = new CArrayObject();
+		if (!pArray)
+			return;
+
+		CDictObject* pOwner = GetObjOwnValue("Opt");
+		if (!pOwner)
+			pOwner = this;
+		pOwner->Add("Opt", pArray);
+
+		for (const std::pair<std::wstring, std::wstring>& PV : arrOpt)
+		{
+			if (PV.first.empty())
+			{
+				std::string sValue = U_TO_UTF8(PV.second);
+				pArray->Add(new CStringObject(sValue.c_str(), true));
+			}
+			else
+			{
+				CArrayObject* pArray2 = new CArrayObject();
+				pArray->Add(pArray2);
+
+				std::string sValue = U_TO_UTF8(PV.first);
+				pArray2->Add(new CStringObject(sValue.c_str(), true));
+
+				sValue = U_TO_UTF8(PV.second);
+				pArray2->Add(new CStringObject(sValue.c_str(), true));
+			}
+		}
 	}
 	//----------------------------------------------------------------------------------------
 	// CTextWidget

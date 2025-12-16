@@ -107,6 +107,7 @@ public:
 			const std::wstring& GetRC();
 			const std::wstring& GetAC();
 			const std::wstring& GetAP_N_Yes();
+			const std::vector< std::pair<std::wstring, std::wstring> >& GetOpt();
 
 			void Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, BYTE nType, int nFlags);
 
@@ -125,6 +126,7 @@ public:
 			std::wstring m_wsRC;
 			std::wstring m_wsAC;
 			std::wstring m_wsAP_N_Yes;
+			std::vector< std::pair<std::wstring, std::wstring> > m_arrOpt;
 		};
 
 		class GRAPHICS_DECL CTextWidgetPr

@@ -78,7 +78,7 @@ const bool SHAREDSTRINGS::saveContent(BinProcessor& proc)
     auto castedSst = static_cast<SST*>(sstPtr.get());
     if(!castedSst->rgb.empty())
     {
-        const auto MaxRecordSize = 8224;
+		const auto MaxRecordSize = 8000;
         while(!castedSst->rgb.empty())
         {
             CFRecordPtr tempRecord(new CFRecord(rt_Continue, proc.getGlobalWorkbookInfo()));
@@ -86,8 +86,8 @@ const bool SHAREDSTRINGS::saveContent(BinProcessor& proc)
             while(!castedSst->rgb.empty())
             {
                 auto oldPose = tempRecord->getRdPtr();
-                *tempRecord << castedSst->rgb.at(0);
-                if(tempRecord->getRdPtr() > MaxRecordSize)
+				castedSst->rgb.at(0)->save(*tempRecord);
+				if(tempRecord->getRdPtr() >= MaxRecordSize)
                 {
                     tempRecord->RollRdPtrBack(tempRecord->getRdPtr() - oldPose);
                     break;

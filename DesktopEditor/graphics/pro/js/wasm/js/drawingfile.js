@@ -354,6 +354,11 @@ CFile.prototype["getFontByID"] = function(ID)
 	return this._getFontByID(ID);
 };
 
+CFile.prototype["getGIDByUnicode"] = function(ID)
+{
+	return this._getGIDByUnicode(ID);
+};
+
 CFile.prototype["setCMap"] = function(memoryBuffer)
 {
 	if (!this.nativeFile)

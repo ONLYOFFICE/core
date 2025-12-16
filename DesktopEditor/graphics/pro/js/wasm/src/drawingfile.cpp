@@ -150,6 +150,10 @@ WASM_EXPORT BYTE* GetFontBinary(CDrawingFile* pFile, char* path)
 {
 	return pFile->GetFontBinary(std::string(path));
 }
+WASM_EXPORT BYTE* GetGIDByUnicode(CDrawingFile* pFile, char* path)
+{
+	return pFile->GetGIDByUnicode(std::string(path));
+}
 WASM_EXPORT void DestroyTextInfo(CDrawingFile* pFile)
 {
 	return pFile->DestroyTextInfo();

@@ -940,6 +940,36 @@ void ReadInteractiveFormsFonts(CDrawingFile* pGrFile, int nType)
 
 			if (pFont)
 				free(pFont);
+
+			if (false)
+				continue;
+
+			pFont = GetGIDByUnicode(pGrFile, (char*)sFontName.c_str());
+			nLength2 = READ_INT(pFont);
+			i2 = 4;
+			nLength2 -= 4;
+
+			while (i2 < nLength2)
+			{
+				int nFontLength = READ_INT(pFont + i2);
+				i2 += 4;
+
+				std::cout << std::endl << "CIDtoUnicode" << std::endl;
+
+				for (int j = 0; j < nFontLength; ++j)
+				{
+					unsigned int code = READ_INT(pFont + i2);
+					i2 += 4;
+					unsigned int unicode = READ_INT(pFont + i2);
+					i2 += 4;
+					std::cout << "cid\t" << code << "\tunicode\t" << unicode << std::endl;
+				}
+
+				std::cout << std::endl;
+			}
+
+			if (pFont)
+				free(pFont);
 		}
 		std::cout << std::endl;
 	}

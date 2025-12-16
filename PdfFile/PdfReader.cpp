@@ -779,7 +779,10 @@ bool CPdfReader::RedactPage(int _nPageIndex, double* arrRedactBox, int nLengthX8
 	PDFDoc* pDoc = NULL;
 	int nPageIndex = GetPageIndex(_nPageIndex, &pDoc);
 	if (nPageIndex < 0 || !pDoc)
+	{
+		free(pChanges);
 		return false;
+	}
 
 	Page* pPage = pDoc->getCatalog()->getPage(nPageIndex);
 	PDFRectangle* cropBox = pPage->getCropBox();
@@ -1098,6 +1101,61 @@ std::wstring CPdfReader::GetInfo()
 	sRes += bTagged ? L"true}" : L"false}";
 
 	return sRes;
+}
+BYTE* CPdfReader::GetGIDByUnicode(const std::wstring& wsFontName)
+{
+	std::map<std::wstring, std::wstring>::const_iterator oIter = m_mFonts.find(wsFontName);
+	if (oIter == m_mFonts.end())
+		return NULL;
+
+	NSFonts::IFontsMemoryStorage* pStorage = NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage();
+	if (!pStorage)
+		return NULL;
+	NSFonts::IFontStream* pStream = pStorage->Get(oIter->second);
+	if (!pStream)
+		return NULL;
+
+	std::map<unsigned int, unsigned int> mGIDbyUnicode;
+	bool bFind = false;
+	for (CPdfReaderContext* pPDFContext : m_vPDFContext)
+	{
+		PdfReader::CPdfFontList* pFontList = pPDFContext->m_pFontList;
+
+		const std::map<Ref, PdfReader::TFontEntry*>& mapFonts = pFontList->GetFonts();
+		for (std::map<Ref, PdfReader::TFontEntry*>::const_iterator it = mapFonts.begin(); it != mapFonts.end(); ++it)
+		{
+			PdfReader::TFontEntry* pEntry = it->second;
+			if (!pEntry || pEntry->wsFilePath != oIter->second)
+				continue;
+			bFind = true;
+
+			for (int i = 0; i < pEntry->unLenUnicode; ++i)
+			{
+				if (pEntry->pCodeToUnicode[i])
+					mGIDbyUnicode[i] = pEntry->pCodeToUnicode[i];
+			}
+
+			break;
+		}
+
+		if (bFind)
+			break;
+	}
+
+	NSWasm::CData oRes;
+	oRes.SkipLen();
+	oRes.AddInt(mGIDbyUnicode.size());
+
+	for (std::map<unsigned int, unsigned int>::const_iterator it = mGIDbyUnicode.begin(); it != mGIDbyUnicode.end(); ++it)
+	{
+		oRes.AddInt(it->first);
+		oRes.AddInt(it->second);
+	}
+
+	oRes.WriteLen();
+	BYTE* bRes = oRes.GetBuffer();
+	oRes.ClearWithoutAttack();
+	return bRes;
 }
 std::wstring CPdfReader::GetFontPath(const std::wstring& wsFontName, bool bSave)
 {

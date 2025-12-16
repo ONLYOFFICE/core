@@ -98,6 +98,7 @@ public:
 	void GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY);
 	void DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak);
 	std::wstring GetInfo();
+	BYTE* GetGIDByUnicode(const std::wstring& wsFontName);
 	std::wstring GetFontPath(const std::wstring& wsFontName, bool bSave = true);
 	std::wstring ToXml(const std::wstring& wsXmlPath, bool isPrintStreams = false);
 	void ChangeLength(DWORD nLength) { m_nFileLength = nLength; }

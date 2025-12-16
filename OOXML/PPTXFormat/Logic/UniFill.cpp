@@ -213,10 +213,10 @@ namespace PPTX
 							switch (_at)
 							{
 								case 0:
-									pReader->Skip(4); // dpi
+									pFill->dpi = pReader->GetLong();
 									break;
 								case 1:
-									pReader->Skip(1); // rotWithShape
+									pFill->rotWithShape = pReader->GetBool();
 									break;
 								default:
 									break;
@@ -448,9 +448,8 @@ namespace PPTX
 						}
 
 						m_type = blipFill;
-						Fill = pFill;
-						break;
-					}
+						Fill = pFill;						
+					}break;
 					case FILL_TYPE_GRAD:
 					{
 						pReader->Skip(1);
@@ -535,9 +534,8 @@ namespace PPTX
 						}
 
 						m_type = gradFill;
-						Fill = pFill;
-						break;
-					}
+						Fill = pFill;						
+					}break;
 					case FILL_TYPE_PATT:
 					{
 						pReader->Skip(1);
@@ -587,8 +585,8 @@ namespace PPTX
 
 						m_type = pattFill;
 						Fill = pFill;
-						break;
-					}
+						
+					}break;
 					case FILL_TYPE_SOLID:
 					{
 						pReader->Skip(1); // type + len
@@ -599,24 +597,20 @@ namespace PPTX
 						pFill->Color.fromPPTY(pReader);
 
 						m_type = solidFill;
-						Fill = pFill;
-						break;
-					}
+						Fill = pFill;						
+					}break;
 					case FILL_TYPE_NOFILL:
 					{
 						m_type = noFill;
-						Fill = new PPTX::Logic::NoFill();
-						break;
-					}
+						Fill = new PPTX::Logic::NoFill();						
+					}break;
 					case FILL_TYPE_GRP:
 					{
 						m_type = grpFill;
-						Fill = new PPTX::Logic::GrpFill();
-						break;
-					}
+						Fill = new PPTX::Logic::GrpFill();						
+					}break;
 				}
 			}
-
 			pReader->Seek(read_end);
 		}
 		std::wstring UniFill::toXML() const

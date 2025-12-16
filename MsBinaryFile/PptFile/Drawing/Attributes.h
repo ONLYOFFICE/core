@@ -730,6 +730,7 @@ namespace ODRAW
         Gdiplus::RectF	Rect;
 
         double			LinearAngle;
+        int             Focus;
 
         std::vector<std::pair<CColor, double>> ColorsPosition;
 
@@ -815,6 +816,7 @@ namespace ODRAW
             TextureMode = c_BrushTextureModeStretch;
 
             LinearAngle = 0;
+            Focus = 0;
 
             TexturePath = L"";
 

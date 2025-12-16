@@ -232,11 +232,14 @@ namespace OOX
 		std::vector<XLS::BaseObjectPtr> CNumFmts::toXLS()
 		{
 			std::vector<XLS::BaseObjectPtr> fmtVector;
+			auto numFmt = 164;
 			for(auto i:m_arrItems)
 			{
+				i->m_oNumFmtId->m_eValue = numFmt;
 				if(i->m_oNumFmtId.IsInit() && i->m_oNumFmtId->m_eValue < 164)
 					continue;
 				fmtVector.push_back(i->toXLS());
+				numFmt++;
 			}
 			return fmtVector;
 		}

@@ -577,6 +577,7 @@ namespace OOX
 			m_oType.SetValue(SimpleTypes::Spreadsheet::celltypeNumber);
 			m_oShowPhonetic.FromBool(false);
 
+			m_oValueMetadata.reset();
 			m_oCellMetadata.reset();
 			m_oValue.Clean();
 			m_oFormula.Clean();

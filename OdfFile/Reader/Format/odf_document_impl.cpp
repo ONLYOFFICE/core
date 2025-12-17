@@ -785,13 +785,13 @@ void odf_document::Impl::parse_styles(office_element *element)
             _CP_LOG << L"[warning] empty styles\n";
             break;
         }
-       
         
 		if(document)
 		{
 			office_master_styles * master_style = dynamic_cast<office_master_styles *>( document->office_master_styles_.get() );
 			if (!master_style)
 				break;
+			unsigned int elements_master_page = master_style->style_master_page_.size();
 			if(master_style->style_master_page_.size() > 1)
 			{
 				for (size_t i = 1; i < master_style->style_master_page_.size(); i++)
@@ -813,7 +813,7 @@ void odf_document::Impl::parse_styles(office_element *element)
 							continue;
 						if(ws_style_name == master_page_prev->attlist_.style_name_.get_value_or(L""))
 						{
-							master_page->attlist_.style_name_ = ws_style_name + L"_" + std::to_wstring(master_style->style_master_page_.size());
+							master_page->attlist_.style_name_ = ws_style_name + L"_" + std::to_wstring(elements_master_page++);
 							context_->styleContainer().set_new_name_master_page(L"",master_page->attlist_.style_name_.get_value_or(L""));
 							break;
 						}

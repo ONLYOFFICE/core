@@ -332,12 +332,12 @@ void WriteEmptyParagraph(NSStringUtils::CStringBuilder* pXml, bool bVahish = fal
 	if (!bInP)
 		pXml->WriteString(L"<w:p><w:pPr>");
 
-	pXml->WriteString(L"<w:r><w:rPr><w:rFonts w:eastAsia=\"Times New Roman\"/>");
+	pXml->WriteString(L"<w:rPr><w:rFonts w:eastAsia=\"Times New Roman\"/>");
 
 	if (bVahish)
-		pXml->WriteString(L"<w:vanish/>");
+		pXml->WriteString(L"<w:sz w:val=\"2\"/><w:szCs w:val=\"2\"/><w:vanish/>");
 
-	pXml->WriteString(L"</w:rPr></w:r>");
+	pXml->WriteString(L"</w:rPr>");
 
 	if (!bInP)
 		pXml->WriteString(L"</w:pPr></w:p>");
@@ -1612,8 +1612,10 @@ private:
 
 		bool m_bBanUpdatePageData; // Запретить обновление данных о странице?
 
+		HtmlTag m_eLastElement;
+
 		TState()
-			: m_bInP(false), m_bInR(false), m_bInT(false), m_bWasPStyle(false), m_bWasSpace(true), m_bInHyperlink(false), m_bBanUpdatePageData(false)
+			: m_bInP(false), m_bInR(false), m_bInT(false), m_bWasPStyle(false), m_bWasSpace(true), m_bInHyperlink(false), m_bBanUpdatePageData(false), m_eLastElement(HTML_TAG(UNKNOWN))
 		{}
 	} m_oState;
 
@@ -3539,7 +3541,12 @@ private:
 		}
 
 		if (HTML_TAG(DIV) != eHtmlTag && HTML_TAG(ASIDE) != eHtmlTag)
+		{
+			if (bResult)
+				m_oState.m_eLastElement = eHtmlTag;
+
 			m_oState.m_bBanUpdatePageData = true;
+		}
 
 		readNote(oXml, sSelectors, sNote);
 		sSelectors.pop_back();
@@ -3916,6 +3923,9 @@ private:
 		if(m_oLightReader.IsEmptyNode())
 			return false;
 
+		if (HTML_TAG(TABLE) == m_oState.m_eLastElement)
+			WriteEmptyParagraph(oXml, true);
+
 		CTable oTable;
 		CTextSettings oTextSettings{oTS};
 		oTextSettings.sPStyle.clear();
@@ -4032,7 +4042,6 @@ private:
 		oTable.Shorten();
 		oTable.CompleteTable();
 		oTable.ConvertToOOXML(*oXml);
-		WriteEmptyParagraph(oXml, true);
 
 		return true;
 	}
@@ -4735,11 +4744,21 @@ private:
 		if (!m_oState.m_bInP)
 			return L"";
 
-		std::wstring sRStyle = GetStyle(*sSelectors.back().m_pCompiledStyle, false);
+		NSCSS::CCompiledStyle oMainStyle{*sSelectors.back().m_pCompiledStyle};
+		std::wstring sRSettings;
 
-		m_oXmlStyle.WriteLiteRStyle(oTS.oAdditionalStyle);
-		const std::wstring sRSettings = m_oXmlStyle.GetStyle();
-		m_oXmlStyle.Clear();
+		std::wstring sRStyle = GetStyle(oMainStyle, false);
+
+		if (!oTS.oAdditionalStyle.Empty())
+		{
+			NSCSS::CCompiledStyle oSettingStyle{oTS.oAdditionalStyle};
+
+			NSCSS::CCompiledStyle::StyleEquation(oMainStyle, oSettingStyle);
+
+			m_oXmlStyle.WriteLiteRStyle(oSettingStyle);
+			sRSettings = m_oXmlStyle.GetStyle();
+			m_oXmlStyle.Clear();
+		}
 
 		std::wstring wsFontSize;
 
@@ -4747,7 +4766,7 @@ private:
 
 		if (0 != nCalculatedFontChange)
 		{
-			int nFontSizeLevel{static_cast<int>((sSelectors.back().m_pCompiledStyle->m_oFont.Empty()) ? 3 : GetFontSizeLevel(sSelectors.back().m_pCompiledStyle->m_oFont.GetSize().ToInt(NSCSS::Point) * 2))};
+			int nFontSizeLevel{static_cast<int>((oMainStyle.m_oFont.Empty()) ? 3 : GetFontSizeLevel(oMainStyle.m_oFont.GetSize().ToInt(NSCSS::Point) * 2))};
 
 			nFontSizeLevel += nCalculatedFontChange;
 

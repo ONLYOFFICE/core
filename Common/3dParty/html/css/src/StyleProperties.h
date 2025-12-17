@@ -104,7 +104,7 @@ namespace NSCSS
 
 		virtual CValueBase& operator+=(const CValueBase& oValue)
 		{
-			if (m_unLevel > oValue.m_unLevel || (m_bImportant && !oValue.m_bImportant) || Empty())
+			if (m_unLevel > oValue.m_unLevel || (m_bImportant && !oValue.m_bImportant) || oValue.Empty())
 				return *this;
 
 			*this = oValue;

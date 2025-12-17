@@ -268,7 +268,7 @@ namespace NSDocxRenderer
 
 		if (!skip_shape)
 		{
-			shape->m_nOrder = ++m_nShapeOrder;
+			shape->m_nOrder = ++m_nCurrentOrder;
 			m_arShapes.push_back(shape);
 		}
 	}
@@ -342,7 +342,23 @@ namespace NSDocxRenderer
 			bForcedBold = true;
 
 		m_oManagers.pParagraphStyleManager->UpdateAvgFontSize(m_oFont.Size);
-		m_oContBuilder.AddUnicode(top, baseline, left, right, m_oFont, m_oBrush, m_oManagers.pFontManager, oText, bForcedBold, m_bUseDefaultFont, m_bWriteStyleRaw);
+		m_nCurrentOrder++;
+		m_oContBuilder.AddUnicode(
+		            top,
+		            baseline,
+		            left,
+		            right,
+		            m_oFont,
+		            m_oBrush,
+		            m_oManagers.pFontManager,
+		            oText,
+		            m_nCurrentOrder,
+		            pGids,
+		            bForcedBold,
+		            m_bUseDefaultFont,
+		            m_bWriteStyleRaw,
+		            m_bCollectMetaInfo
+		        );
 	}
 
 	void CPage::Analyze()
@@ -469,8 +485,6 @@ namespace NSDocxRenderer
 		m_arShapes.erase(right, m_arShapes.end());
 
 		std::sort(m_arShapes.begin(), m_arShapes.end(), [] (const shape_ptr_t& s1, const shape_ptr_t& s2) {
-			if (s1->m_bIsBehindDoc && !s2->m_bIsBehindDoc) return true;
-			if (!s1->m_bIsBehindDoc && s2->m_bIsBehindDoc) return false;
 			return s1->m_nOrder < s2->m_nOrder;
 		});
 	}
@@ -1152,11 +1166,17 @@ namespace NSDocxRenderer
 
 						if ((bIf1 && bIf6) || (bIf2 && bIf7) || (bIf4 && bIf8) || (bIf5 && bIf7))
 						{
-							cont->AddSymBack(d_sym->GetText().at(0), 0);
+							if (m_bCollectMetaInfo)
+								cont->AddSymBack(d_sym->GetText().at(0), 0,  d_sym->m_arOriginLefts.at(0), d_sym->m_arGids.at(0));
+							else
+								cont->AddSymBack(d_sym->GetText().at(0), 0, d_sym->m_arOriginLefts.at(0));
 						}
 						else if (bIf3 && bIf7)
 						{
-							cont->AddSymFront(d_sym->GetText().at(0), 0);
+							if (m_bCollectMetaInfo)
+								cont->AddSymFront(d_sym->GetText().at(0), 0,  d_sym->m_arOriginLefts.at(0), d_sym->m_arGids.at(0));
+							else
+								cont->AddSymFront(d_sym->GetText().at(0), 0, d_sym->m_arOriginLefts.at(0));
 						}
 						isBreak = true;
 						break;
@@ -1586,8 +1606,9 @@ namespace NSDocxRenderer
 		// lamda to setup and add paragpraph
 		auto add_paragraph = [this, &max_right, &min_left, &ar_paragraphs] (paragraph_ptr_t& paragraph) {
 
-			paragraph->m_dBot = paragraph->m_arTextLines.back()->m_dBot;
-			paragraph->m_dTop = paragraph->m_arTextLines.front()->m_dTop;
+			double additional_bottom = paragraph->m_arTextLines.front()->m_dTopWithMaxAscent - paragraph->m_arTextLines.front()->m_dTop;
+			paragraph->m_dBot = paragraph->m_arTextLines.back()->m_dBot + additional_bottom;
+			paragraph->m_dTop = paragraph->m_arTextLines.front()->m_dTopWithMaxAscent;
 			paragraph->m_dRight = max_right;
 			paragraph->m_dLeft = min_left;
 
@@ -1665,6 +1686,7 @@ namespace NSDocxRenderer
 			min_left = std::min(min_left, curr_line->m_dLeft);
 			max_right = std::max(max_right, curr_line->m_dRight);
 			paragraph->m_arTextLines.push_back(curr_line);
+			paragraph->m_nOrder = std::max(paragraph->m_nOrder, curr_line->m_nOrder);
 		};
 
 		auto build_paragraphs = [this, add_line, add_paragraph] (const std::vector<text_line_ptr_t>& text_lines) {
@@ -1823,6 +1845,19 @@ namespace NSDocxRenderer
 					if (!is_enum)
 						ar_delims[index] = true;
 				}
+			}
+
+			// 2 lines in paragraph fix
+			for (size_t index = 0; index < ar_positions.size() - 1; ++index)
+			{
+				auto& line_top = text_lines[index];
+				auto& line_bot = text_lines[index + 1];
+
+				bool is_start = index == 0 || ar_delims[index - 1] == true;
+				bool is_end = index == ar_positions.size() - 1 || ar_delims[index + 1] == true;
+				bool is_diff = fabs(line_top->m_dHeight - line_bot->m_dHeight) > (line_top->m_dHeight + line_bot->m_dHeight) / 4;
+				if (is_start && is_end && is_diff)
+					ar_delims[index] = true;
 			}
 
 			// gap check
@@ -2239,6 +2274,7 @@ namespace NSDocxRenderer
 				if (direction == eLineDirection::ldLeft) return crossing->p.x - p.x;
 				if (direction == eLineDirection::ldBot) return p.y - crossing->p.y;
 				if (direction == eLineDirection::ldTop) return crossing->p.y - p.y;
+				return 0;
 			};
 
 			while (diff() > c_dMAX_TABLE_LINE_WIDTH_MM)
@@ -2518,12 +2554,13 @@ namespace NSDocxRenderer
 
 		pParagraph->m_arTextLines.push_back(pLine);
 		pParagraph->m_dLeft = pLine->m_dLeft;
-		pParagraph->m_dTop = pLine->m_dTop;
-		pParagraph->m_dBot = pLine->m_dBot;
+		pParagraph->m_dTop = pLine->m_dTopWithMaxAscent;
+		pParagraph->m_dBot = pLine->m_dBot + (pLine->m_dTopWithMaxAscent - pLine->m_dTop);
 		pParagraph->m_dWidth = pLine->m_dWidth;
 		pParagraph->m_dHeight = pLine->m_dHeight;
 		pParagraph->m_dRight = pLine->m_dRight;
 		pParagraph->m_dLineHeight = pParagraph->m_dHeight;
+		pParagraph->m_nOrder = pLine->m_nOrder;
 
 		if (pLine->m_pDominantShape)
 		{
@@ -2542,6 +2579,7 @@ namespace NSDocxRenderer
 		pShape->m_dWidth = pParagraph->m_dWidth;
 		pShape->m_dHeight = pParagraph->m_dHeight;
 		pShape->m_dRight = pParagraph->m_dRight;
+		pShape->m_nOrder = pParagraph->m_nOrder;
 		pShape->m_bIsBehindDoc = false;
 
 		return pShape;
@@ -2557,6 +2595,7 @@ namespace NSDocxRenderer
 		pShape->m_dBot = pParagraph->m_dBot;
 		pShape->m_dHeight = pParagraph->m_dHeight;
 		pShape->m_dWidth = pParagraph->m_dWidth;
+		pShape->m_nOrder = pParagraph->m_nOrder;
 
 		if (pParagraph->m_bIsNeedFirstLineIndent && pParagraph->m_dFirstLine < 0)
 			pParagraph->m_dLeftBorder = -pParagraph->m_dFirstLine;

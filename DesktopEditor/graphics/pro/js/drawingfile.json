@@ -46,6 +46,7 @@
 		"_InitializeFontsRanges",
 		"_SetFontBinary",
 		"_GetFontBinary",
+		"_GetGIDByUnicode",
 		"_IsFontBinaryExist",
 		"_DestroyTextInfo",
 		"_IsNeedCMap",

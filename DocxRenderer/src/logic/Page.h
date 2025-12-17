@@ -46,8 +46,10 @@ namespace NSDocxRenderer
 		bool m_bIsGradient			   {false};
 		bool m_bUseDefaultFont		   {false};
 		bool m_bWriteStyleRaw		   {false};
+		bool m_bCollectMetaInfo        {false};
 		bool m_bIsBuildTables		   {false};
 		bool m_bIsLuminosityShapesFiled{false};
+		bool m_bFontSubstitution       {false};
 
 		CPage(NSFonts::IApplicationFonts* pAppFonts, const CManagers& oManagers);
 		~CPage();
@@ -229,6 +231,6 @@ namespace NSDocxRenderer
 		std::vector<shape_ptr_t> m_arLuminosityShapes;
 		std::vector<shape_ptr_t> m_arOneColorGradientShape;
 
-		size_t m_nShapeOrder = 0;
+		size_t m_nCurrentOrder = 0;
 	};
 }

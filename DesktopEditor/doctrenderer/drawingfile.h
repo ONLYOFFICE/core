@@ -490,6 +490,9 @@ public:
 				return NULL;
 		}
 
+		if (m_nType == 0)
+			((CPdfFile*)m_pFile)->SetPageFonts(nPageIndex);
+
 		BYTE* res = oRes.GetBuffer();
 		oRes.ClearWithoutAttack();
 		return res;
@@ -577,6 +580,13 @@ public:
 			}
 		}
 		return NULL;
+	}
+	BYTE* GetGIDByUnicode(const std::string& sPathA)
+	{
+		if (m_nType != 0)
+			return NULL;
+		std::wstring sFontName = UTF8_TO_U(sPathA);
+		return ((CPdfFile*)m_pFile)->GetGIDByUnicode(sFontName);
 	}
 
 	std::wstring GetFontBinaryNative(const std::wstring& sName)

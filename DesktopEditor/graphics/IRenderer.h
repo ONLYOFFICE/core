@@ -117,6 +117,7 @@ const long c_nDarkMode          = 0x0008;
 const long c_nUseDictionaryFonts = 0x0010;
 const long c_nPenWidth0As1px	= 0x0020;
 const long c_nSupportPathTextAsText = 0x0040;
+const long c_nFontSubstitution  = 0x0080;
 
 // типы рендерера
 const long c_nUnknownRenderer   = 0x0000;

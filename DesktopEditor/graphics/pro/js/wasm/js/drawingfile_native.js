@@ -172,6 +172,12 @@ CFile.prototype._getFontByID = function(ID)
 	return g_native_drawing_file["GetFontBinary"](ID);
 };
 
+CFile.prototype._getGIDByUnicode = function(ID)
+{
+	g_module_pointer.ptr = g_native_drawing_file["GetGIDByUnicode"](ID);
+	return g_module_pointer;
+}
+
 CFile.prototype._getInteractiveFormsFonts = function(type)
 {
 	g_module_pointer.ptr = g_native_drawing_file["GetInteractiveFormsFonts"](type);

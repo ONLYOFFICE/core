@@ -117,7 +117,7 @@ WASM_EXPORT unsigned int ASC_FT_SetCMapForCharCode(FT_Face face, unsigned int un
 		return 0;
 
 	if ( 0 == face->num_charmaps )
-		return unicode;
+		return 0;
 
 	unsigned int nCharIndex = 0;
 

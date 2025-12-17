@@ -566,7 +566,7 @@ namespace SVG
 
 		#define CALCULATE_ANGLE(firstPoint, secondPoint) std::atan2(secondPoint.dY - firstPoint.dY, secondPoint.dX - firstPoint.dX) * 180. / M_PI
 
-		if (!m_oMarkers.m_oStart.Empty() && NSCSS::NSProperties::ColorType::ColorUrl == m_oMarkers.m_oStart.GetType())
+		if (!m_oMarkers.m_oStart.Empty() && NSCSS::NSProperties::EColorType::ColorUrl == m_oMarkers.m_oStart.GetType())
 		{
 			CMarker *pStartMarker = dynamic_cast<CMarker*>(pFile->GetMarkedObject(m_oMarkers.m_oStart.ToWString()));
 
@@ -610,7 +610,7 @@ namespace SVG
 			}
 		}
 
-		if (!m_oMarkers.m_oMid.Empty() && NSCSS::NSProperties::ColorType::ColorUrl == m_oMarkers.m_oMid.GetType())
+		if (!m_oMarkers.m_oMid.Empty() && NSCSS::NSProperties::EColorType::ColorUrl == m_oMarkers.m_oMid.GetType())
 		{
 			CMarker *pMidMarker = dynamic_cast<CMarker*>(pFile->GetMarkedObject(m_oMarkers.m_oMid.ToWString()));
 
@@ -638,7 +638,7 @@ namespace SVG
 			}
 		}
 
-		if (!m_oMarkers.m_oEnd.Empty() && NSCSS::NSProperties::ColorType::ColorUrl == m_oMarkers.m_oEnd.GetType())
+		if (!m_oMarkers.m_oEnd.Empty() && NSCSS::NSProperties::EColorType::ColorUrl == m_oMarkers.m_oEnd.GetType())
 		{
 			CMarker *pEndMarker = dynamic_cast<CMarker*>(pFile->GetMarkedObject(m_oMarkers.m_oEnd.ToWString()));
 

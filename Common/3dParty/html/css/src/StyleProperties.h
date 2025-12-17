@@ -102,6 +102,13 @@ namespace NSCSS
 			return *this;
 		}
 
+		virtual CValueBase& operator =(const T& oValue)
+		{
+			m_oValue = oValue;
+
+			return *this;
+		}
+
 		virtual CValueBase& operator+=(const CValueBase& oValue)
 		{
 			if (m_unLevel > oValue.m_unLevel || (m_bImportant && !oValue.m_bImportant) || oValue.Empty())
@@ -117,14 +124,11 @@ namespace NSCSS
 	class CValueOptional : public CValueBase<boost::optional<T>>
 	{
 	protected:
-		CValueOptional()
-			: CValueBase<boost::optional<T>>()
-		{}
+		CValueOptional() = default;
 
-		CValueOptional(const T& oValue, unsigned int unLevel, bool bImportant)
-			: CValueBase<boost::optional<T>>(oValue, unLevel, bImportant)
+		CValueOptional(const T& oValue, unsigned int unLevel = 0, bool bImportant = false)
+		    : CValueBase<boost::optional<T>>(oValue, unLevel, bImportant)
 		{}
-
 	public:
 		virtual bool Empty() const override
 		{
@@ -144,13 +148,20 @@ namespace NSCSS
 
 			return this->m_oValue.value() == oValue;
 		}
+
+		virtual CValueOptional& operator=(const T& oValue)
+		{
+			this->m_oValue = oValue;
+
+			return *this;
+		}
 	};
 
 	class CString : public CValueOptional<std::wstring>
 	{
 	public:
-		CString();
-		CString(const std::wstring& wsValue, unsigned int unLevel, bool bImportant = false);
+		CString() = default;
+		CString(const std::wstring& wsValue, unsigned int unLevel = 0, bool bImportant = false);
 
 		bool SetValue(const std::wstring& wsValue, unsigned int unLevel, bool bHardMode) override;
 		bool SetValue(const std::wstring& wsValue, const std::vector<std::wstring>& arValiableValues, unsigned int unLevel, bool bHardMode);
@@ -161,20 +172,18 @@ namespace NSCSS
 		int          ToInt()     const override;
 		double       ToDouble()  const override;
 		std::wstring ToWString() const override;
+
+		bool operator==(const wchar_t* pValue) const;
+		bool operator!=(const wchar_t* pValue) const;
+
+		using CValueOptional<std::wstring>::operator=;
 	};
 
 	class CDigit : public CValueOptional<double>
 	{
-		UnitMeasure m_enUnitMeasure;
-
-		double ConvertValue(double dPrevValue, UnitMeasure enUnitMeasure) const;
-
-		template <typename Operation>
-		CDigit ApplyOperation(const CDigit& oDigit, Operation operation) const;
 	public:
 		CDigit();
-		CDigit(const double& dValue);
-		CDigit(const double& dValue, unsigned int unLevel, bool bImportant = false);
+		CDigit(const double& dValue, unsigned int unLevel = 0, bool bImportant = false);
 
 		bool SetValue(const std::wstring& wsValue, unsigned int unLevel = 0, bool bHardMode = true) override;
 		bool SetValue(const CDigit& oValue);
@@ -210,11 +219,19 @@ namespace NSCSS
 
 		CDigit& operator+=(const CDigit& oDigit);
 		CDigit& operator-=(const CDigit& oDigit);
-		CDigit& operator+=(double dValue);
-		CDigit& operator-=(double dValue);
-		CDigit& operator*=(double dValue);
-		CDigit& operator/=(double dValue);
-		CDigit& operator =(double dValue);
+		CDigit& operator+=(const double& dValue);
+		CDigit& operator-=(const double& dValue);
+		CDigit& operator*=(const double& dValue);
+		CDigit& operator/=(const double& dValue);
+
+		using CValueOptional<double>::operator=;
+	private:
+		UnitMeasure m_enUnitMeasure;
+
+		double ConvertValue(double dPrevValue, UnitMeasure enUnitMeasure) const;
+
+		template <typename Operation>
+		CDigit ApplyOperation(const CDigit& oDigit, Operation operation) const;
 	};
 
 	struct TRGB
@@ -316,6 +333,8 @@ namespace NSCSS
 
 		static TRGB ConvertHEXtoRGB(const std::wstring& wsValue);
 		static std::wstring ConvertRGBtoHEX(const TRGB& oValue);
+
+		using CValueOptional<CColorValue>::operator=;
 	private:
 		CDigit m_oOpacity;
 
@@ -365,12 +384,12 @@ namespace NSCSS
 		bool operator==(const CMatrix& oMatrix) const;
 		CMatrix& operator+=(const CMatrix& oMatrix);
 		CMatrix& operator-=(const CMatrix& oMatrix);
+
+		using CValueBase<MatrixValues>::operator=;
 	};
 
 	class CEnum : public CValueOptional<int>
 	{
-		int m_nDefaultValue;
-		std::map<std::wstring, int> m_mMap;
 	public:
 		CEnum();
 
@@ -378,9 +397,14 @@ namespace NSCSS
 		void SetMapping(const std::map<std::wstring, int>& mMap, int nDefaulvalue = -1);
 
 		int ToInt() const override;
+
+		using CValueOptional<int>::operator=;
 	private:
 		double ToDouble() const override;
 		std::wstring ToWString() const override;
+
+		int m_nDefaultValue;
+		std::map<std::wstring, int> m_mMap;
 	};
 
 	// PROPERTIES

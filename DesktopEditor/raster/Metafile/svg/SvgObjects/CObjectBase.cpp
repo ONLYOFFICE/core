@@ -153,7 +153,7 @@ namespace SVG
 
 	bool CObject::ApplyClip(IRenderer *pRenderer, const TClip *pClip, const CSvgFile *pFile, const TBounds &oBounds) const
 	{
-		if (NULL == pRenderer || NULL == pClip || NULL == pFile || pClip->m_oHref.Empty() || NSCSS::NSProperties::ColorType::ColorUrl != pClip->m_oHref.GetType())
+		if (NULL == pRenderer || NULL == pClip || NULL == pFile || pClip->m_oHref.Empty() || NSCSS::NSProperties::EColorType::ColorUrl != pClip->m_oHref.GetType())
 			return false;
 
 		if (pClip->m_oRule == L"evenodd")
@@ -169,7 +169,7 @@ namespace SVG
 
 	bool CObject::ApplyMask(IRenderer *pRenderer, const NSCSS::NSProperties::CColor *pMask, const CSvgFile *pFile, const TBounds &oBounds) const
 	{
-		if (NULL == pRenderer || NULL == pMask || NULL == pFile || NSCSS::NSProperties::ColorType::ColorUrl != pMask->GetType())
+		if (NULL == pRenderer || NULL == pMask || NULL == pFile || NSCSS::NSProperties::EColorType::ColorUrl != pMask->GetType())
 			return false;
 
 		return ApplyDef(pRenderer, pFile, pMask->ToWString(), oBounds);
@@ -358,7 +358,7 @@ namespace SVG
 
 	bool CRenderedObject::ApplyStroke(IRenderer *pRenderer, const TStroke *pStroke, bool bUseDefault, const CRenderedObject* pContextObject) const
 	{
-		if (NULL == pRenderer || NULL == pStroke || NSCSS::NSProperties::ColorType::ColorNone == pStroke->m_oColor.GetType() || (!bUseDefault && ((pStroke->m_oWidth.Empty() || pStroke->m_oWidth.Zero()) && pStroke->m_oColor.Empty())))
+		if (NULL == pRenderer || NULL == pStroke || NSCSS::NSProperties::EColorType::ColorNone == pStroke->m_oColor.GetType() || (!bUseDefault && ((pStroke->m_oWidth.Empty() || pStroke->m_oWidth.Zero()) && pStroke->m_oColor.Empty())))
 		{
 			pRenderer->put_PenSize(0);
 			return false;
@@ -369,12 +369,12 @@ namespace SVG
 		if (Equals(0., dStrokeWidth))
 			dStrokeWidth = 1.;
 
-		if (NSCSS::NSProperties::ColorType::ColorContextFill == pStroke->m_oColor.GetType() && NULL != pContextObject)
+		if (NSCSS::NSProperties::EColorType::ColorContextFill == pStroke->m_oColor.GetType() && NULL != pContextObject)
 			pRenderer->put_PenColor(pContextObject->m_oStyles.m_oFill.ToInt());
-		else if (NSCSS::NSProperties::ColorType::ColorContextStroke == pStroke->m_oColor.GetType() && NULL != pContextObject)
+		else if (NSCSS::NSProperties::EColorType::ColorContextStroke == pStroke->m_oColor.GetType() && NULL != pContextObject)
 			pRenderer->put_PenColor(pContextObject->m_oStyles.m_oStroke.m_oColor.ToInt());
 		else
-			pRenderer->put_PenColor((pStroke->m_oColor.Empty() || NSCSS::NSProperties::ColorType::ColorNone == pStroke->m_oColor.GetType()) ? 0 : pStroke->m_oColor.ToInt());
+			pRenderer->put_PenColor((pStroke->m_oColor.Empty() || NSCSS::NSProperties::EColorType::ColorNone == pStroke->m_oColor.GetType()) ? 0 : pStroke->m_oColor.ToInt());
 
 		pRenderer->put_PenSize(dStrokeWidth);
 		pRenderer->put_PenAlpha(255. * pStroke->m_oColor.GetOpacity());
@@ -401,18 +401,18 @@ namespace SVG
 
 	bool CRenderedObject::ApplyFill(IRenderer *pRenderer, const NSCSS::NSProperties::CColor *pFill, const CSvgFile *pFile, bool bUseDefault, const CRenderedObject* pContextObject) const
 	{
-		if (NULL == pRenderer || NULL == pFill || NSCSS::NSProperties::ColorType::ColorNone == pFill->GetType() || (!bUseDefault && pFill->Empty()))
+		if (NULL == pRenderer || NULL == pFill || NSCSS::NSProperties::EColorType::ColorNone == pFill->GetType() || (!bUseDefault && pFill->Empty()))
 		{
 			pRenderer->put_BrushType(c_BrushTypeNoFill);
 			return false;
 		}
-		else if (NSCSS::NSProperties::ColorType::ColorHEX == pFill->GetType() ||
-				 NSCSS::NSProperties::ColorType::ColorRGB == pFill->GetType())
+		else if (NSCSS::NSProperties::EColorType::ColorHEX == pFill->GetType() ||
+				 NSCSS::NSProperties::EColorType::ColorRGB == pFill->GetType())
 		{
 			pRenderer->put_BrushColor1((pFill->Empty() && bUseDefault) ? 0 : pFill->ToInt());
 			pRenderer->put_BrushType(c_BrushTypeSolid);
 		}
-		else if (NSCSS::NSProperties::ColorType::ColorUrl == pFill->GetType())
+		else if (NSCSS::NSProperties::EColorType::ColorUrl == pFill->GetType())
 		{
 			if (!ApplyDef(pRenderer, pFile, pFill->ToWString(), GetBounds()))
 			{
@@ -425,12 +425,12 @@ namespace SVG
 					return false;
 			}
 		}
-		else if (NSCSS::NSProperties::ColorType::ColorContextFill == pFill->GetType() && NULL != pContextObject)
+		else if (NSCSS::NSProperties::EColorType::ColorContextFill == pFill->GetType() && NULL != pContextObject)
 		{
 			if (!ApplyFill(pRenderer, &pContextObject->m_oStyles.m_oFill, pFile, bUseDefault, pContextObject))
 				return false;
 		}
-		else if (NSCSS::NSProperties::ColorType::ColorContextStroke == pFill->GetType() && NULL != pContextObject)
+		else if (NSCSS::NSProperties::EColorType::ColorContextStroke == pFill->GetType() && NULL != pContextObject)
 		{
 			if (!ApplyFill(pRenderer, &pContextObject->m_oStyles.m_oStroke.m_oColor, pFile, bUseDefault, pContextObject))
 				return false;

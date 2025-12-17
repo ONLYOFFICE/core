@@ -25,11 +25,8 @@ namespace NSCSS
 		return true;
 	}
 
-	CString::CString()
-	{}
-
-	CString::CString(const std::wstring &wsValue, unsigned int unLevel, bool bImportant)
-	    : CValueOptional(wsValue, unLevel, bImportant)
+	CString::CString(const std::wstring& wsValue, unsigned int unLevel, bool bImportant)
+		: CValueOptional(wsValue, unLevel, bImportant)
 	{}
 
 	bool CString::SetValue(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
@@ -142,6 +139,19 @@ namespace NSCSS
 		return m_oValue.value();
 	}
 
+	bool CString::operator==(const wchar_t* pValue) const
+	{
+		if (!m_oValue.has_value())
+			return (nullptr == pValue);
+
+		return m_oValue.value() == pValue;
+	}
+
+	bool CString::operator!=(const wchar_t* pValue) const
+	{
+		return !(operator==(pValue));
+	}
+
 	double CDigit::ConvertValue(double dPrevValue, UnitMeasure enUnitMeasure) const
 	{
 		if (CValueOptional::Empty())
@@ -172,9 +182,7 @@ namespace NSCSS
 		if (Empty() && !oDigit.Empty())
 			return oDigit;
 
-		CDigit oTemp;
-
-		oTemp.SetValue(operation(m_oValue.value(), oDigit.m_oValue.value()));
+		CDigit oTemp{operation(m_oValue.value(), oDigit.m_oValue.value()), 0, false};
 
 		oTemp.m_unLevel    = std::max(m_unLevel, oDigit.m_unLevel);
 		oTemp.m_bImportant = std::max(m_bImportant, oDigit.m_bImportant);
@@ -183,15 +191,11 @@ namespace NSCSS
 	}
 
 	CDigit::CDigit()
-	    : m_enUnitMeasure(None)
-	{}
-
-	CDigit::CDigit(const double& dValue)
-	    : CValueOptional(dValue, 0, false), m_enUnitMeasure(None)
+	    : m_enUnitMeasure(UnitMeasure::None)
 	{}
 
 	CDigit::CDigit(const double& dValue, unsigned int unLevel, bool bImportant)
-	    : CValueOptional(dValue, unLevel, bImportant), m_enUnitMeasure(None)
+		: CValueOptional(dValue, unLevel, bImportant), m_enUnitMeasure(UnitMeasure::None)
 	{}
 
 	bool CDigit::Zero() const
@@ -205,7 +209,7 @@ namespace NSCSS
 	void CDigit::Clear()
 	{
 		CValueOptional::Clear();
-		m_enUnitMeasure = None;
+		m_enUnitMeasure = UnitMeasure::None;
 	}
 	
 	void CDigit::ConvertTo(UnitMeasure enUnitMeasure, double dPrevValue)
@@ -289,7 +293,7 @@ namespace NSCSS
 
 	bool CDigit::operator!=(const CDigit &oDigit) const
 	{
-		return !(*this == oDigit);
+		return !(operator==(oDigit));
 	}
 
 	CDigit CDigit::operator+(const CDigit &oDigit) const
@@ -331,11 +335,11 @@ namespace NSCSS
 
 		if (Empty())
 		{
-			*this = oDigit;
+			operator=(oDigit);
 			return *this;
 		}
 		else if (NSCSS::Percent == oDigit.m_enUnitMeasure && !Empty())
-			*this *= oDigit.m_oValue.value() / 100.;
+			operator*=(oDigit.m_oValue.value() / 100.);
 		else
 			m_oValue.value() += oDigit.ToDouble(m_enUnitMeasure);
 
@@ -345,7 +349,7 @@ namespace NSCSS
 		return *this;
 	}
 
-	CDigit &CDigit::operator+=(double dValue)
+	CDigit &CDigit::operator+=(const double& dValue)
 	{
 		if (Empty())
 			m_oValue = dValue;
@@ -355,7 +359,7 @@ namespace NSCSS
 		return *this;
 	}
 
-	CDigit &CDigit::operator-=(double dValue)
+	CDigit &CDigit::operator-=(const double& dValue)
 	{
 		if (Empty())
 			m_oValue = -dValue;
@@ -365,7 +369,7 @@ namespace NSCSS
 		return *this;
 	}
 
-	CDigit &CDigit::operator*=(double dValue)
+	CDigit &CDigit::operator*=(const double& dValue)
 	{
 		if (!Empty())
 			m_oValue.value() *= dValue;
@@ -373,17 +377,11 @@ namespace NSCSS
 		return *this;
 	}
 
-	CDigit &CDigit::operator/=(double dValue)
+	CDigit &CDigit::operator/=(const double& dValue)
 	{
 		if (!Empty())
 			m_oValue.value() /= dValue;
 
-		return *this;
-	}
-
-	CDigit &CDigit::operator =(double dValue)
-	{
-		m_oValue = dValue;
 		return *this;
 	}
 

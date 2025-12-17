@@ -179,6 +179,36 @@ void MsoDrawing::prepareComment(const unsigned int CommentId)
 	}
 }
 
+void MsoDrawing::prepareChart(const unsigned int chartId, const unsigned int xPos, const unsigned int xOffset,
+		const unsigned int yPos, const unsigned int yOffset)
+{
+
+	auto fdgPtr = new ODRAW::OfficeArtFDG;
+	fdgPtr->rh_own.recInstance = chartId;
+	fdgPtr->csp = 1;
+	fdgPtr->spidCur = chartId;
+	rgChildRec.m_OfficeArtFDG = ODRAW::OfficeArtRecordPtr(fdgPtr);
+
+	auto spgrContainer = new ODRAW::OfficeArtSpgrContainer(ODRAW::OfficeArtRecord::CA_Chart);
+	rgChildRec.m_OfficeArtSpgrContainer = ODRAW::OfficeArtRecordPtr(spgrContainer);
+
+	auto SpContainer = new ODRAW::OfficeArtSpContainer(ODRAW::OfficeArtRecord::CA_Chart);
+	spgrContainer->m_OfficeArtSpgrContainerFileBlock.push_back(ODRAW::OfficeArtContainerPtr(SpContainer));
+	auto groupFSPGR = new ODRAW::OfficeArtFSPGR;
+	groupFSPGR->xLeft = xPos;
+	groupFSPGR->xRight = xOffset;
+	groupFSPGR->yTop = yPos;
+	groupFSPGR->yBottom = yOffset;
+	SpContainer->m_OfficeArtFSPGR = ODRAW::OfficeArtRecordPtr(groupFSPGR);
+
+	auto fsprPtr = new ODRAW::OfficeArtFSP;
+	SpContainer->m_OfficeArtFSP = ODRAW::OfficeArtRecordPtr(fsprPtr);
+	fsprPtr->shape_id = 0;
+	fsprPtr->spid = chartId;
+	fsprPtr->fGroup = true;
+	fsprPtr->fPatriarch = true;
+}
+
 
 } // namespace XLS
 

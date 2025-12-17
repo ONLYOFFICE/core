@@ -1,14 +1,7 @@
-const algorithmTypes = {
-	AES_GCM          : 1,
-	ED25519          : 2,
-	RSA_OAEP         : 3
-};
-export const digestTypes = {
-	SHA1: 1,
-	SHA256: 2,
-	SHA384: 3,
-	SHA512: 4,
-};
+import {c_oAscAlgorithmType} from "./defines";
+import {readLong, readBuffer} from "./serialize/reader";
+import {writeLong} from "./serialize/writer";
+
 function AlgorithmParams(type) {
 	this.type = type;
 	this.version = 1;
@@ -29,7 +22,7 @@ AlgorithmParams.import = function(reader) {
 AlgorithmParams.prototype.setVersion = function (version) {
 	this.version = version;
 };
-AlgorithmParams.prototype.export = function() {
+AlgorithmParams.prototype.export = function(writer) {
 	writeLong(writer, this.version);
 	switch (this.version) {
 		case 1: {
@@ -90,7 +83,7 @@ RSAKeyGenParams.prototype.getImportParams = function() {
 };
 
 function Ed25519ImportParams() {
-	AlgorithmParams.call(this, algorithmTypes.ED25519);
+	AlgorithmParams.call(this, c_oAscAlgorithmType.ED25519);
 }
 Ed25519ImportParams.prototype = Object.create(AlgorithmParams.prototype);
 Ed25519ImportParams.prototype.constructor = Ed25519ImportParams;
@@ -106,7 +99,7 @@ Ed25519KeyGenParams.prototype.getImportParams = function() {
 };
 
 function AesGcmCryptoParams(iv, tagLength) {
-	AlgorithmParams.call(this, algorithmTypes.AES_GCM);
+	AlgorithmParams.call(this, c_oAscAlgorithmType.AES_GCM);
 	this.iv = iv || null;
 	this.tagLength = typeof tagLength === "number" ? tagLength : null;
 }
@@ -163,8 +156,8 @@ AesKeyGenParams.prototype.getImportParams = function() {
 	return new AlgorithmParams(this.name);
 };
 
-function AesGcmGenParams() {
-	AesKeyGenParams.call(this, algorithmTypes.AES_GCM, 256);
+export function AesGcmGenParams() {
+	AesKeyGenParams.call(this, c_oAscAlgorithmType.AES_GCM, 256);
 }
 AesGcmGenParams.prototype = Object.create(AlgorithmParams.prototype);
 AesGcmGenParams.prototype.constructor = AesGcmGenParams;

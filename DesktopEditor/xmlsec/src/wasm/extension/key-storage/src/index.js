@@ -1,0 +1,1 @@
+export {StorageManager, KeyStorage} from './key-storage';

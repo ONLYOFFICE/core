@@ -1,10 +1,10 @@
-import {digestTypes, exportKeyFormats,} from "./keys/key-types.ts";
-import {AesGcmGenParams} from "./keys/params.ts";
-
+import {WebEncryptKeyPair, WebSignKeyPair, WebSymmetricKey} from "./keys";
+import {AesGcmGenParams} from "./params";
+import {c_oAscDigestType, c_oAscExportKeyFormat} from "./defines";
 
 const pbkdf2Parameters = {
 	iterations: 150000,
-	hash: digestTypes.SHA256,
+	hash: c_oAscDigestType.SHA256,
 	saltLength: 16
 };
 
@@ -59,21 +59,19 @@ CWebCrypto.prototype.getAesCryptoKey = function(masterPassword, salt) {
 
 CWebCrypto.prototype.wrapKey = function (format, key, masterPassword, salt, aesParams, keyUsage) {
 	const oThis = this;
-	return Promise.all([this.getAesCryptoKey(masterPassword, salt),  this.getCryptoKeyFromWrapper(key, keyUsage)]).then(function(cryptoKeys) {
+	const cryptoKey = key.getCryptoKey();
+	return Promise.all([this.getAesCryptoKey(masterPassword, salt),  cryptoKey]).then(function(cryptoKeys) {
 		return oThis.subtle.wrapKey(format, cryptoKeys[1], cryptoKeys[0], aesParams);
 	});
 	
 }
-CWebCrypto.prototype.unwrapKey = function(format, key, masterPassword, salt, aesParams, keyParams, keyUsages) {
+CWebCrypto.prototype.unwrapKey = function(format, key, masterPassword, salt, aesParams, keyParams) {
 	const oThis = this;
 	return this.getAesCryptoKey(masterPassword, salt).then(function(cryptoAesKey) {
 		return oThis.subtle.unwrapKey(format, key, cryptoAesKey, aesParams, keyParams, true, /*this.getKeyUsages(keyUsages)*/["sign"]);
 	}).then(function(cryptoKey) {
 		return oThis.subtle.exportKey(format, cryptoKey);
 	});
-}
-CWebCrypto.prototype.getCryptoKeyFromWrapper = function(key, keyUsages) {
-	return this.subtle.importKey(key.exportFormat, key.key, key.params, true, keyUsages);
 }
 CWebCrypto.prototype.sign = function(key, data) {
 	const oThis = this;
@@ -111,9 +109,9 @@ CWebCrypto.prototype.generateKey = function(params) {
 	const cryptoUsages = params.getCryptoUsages();
 	return this.subtle.generateKey(cryptoParams, true, cryptoUsages).then(function(cryptoKey) {
 		if (cryptoKey.privateKey && cryptoKey.publicKey) {
-			return Promise.all([oThis.subtle.exportKey(exportKeyFormats.spki, cryptoKey.publicKey), oThis.subtle.exportKey(exportKeyFormats.pkcs8, cryptoKey.privateKey)]);
+			return Promise.all([oThis.subtle.exportKey(c_oAscExportKeyFormat.spki, cryptoKey.publicKey), oThis.subtle.exportKey(c_oAscExportKeyFormat.pkcs8, cryptoKey.privateKey)]);
 		}
-		return oThis.subtle.exportKey(exportKeyFormats.raw, cryptoKey);
+		return oThis.subtle.exportKey(c_oAscExportKeyFormat.raw, cryptoKey);
 	}).then(function(exportedKeys) {
 		const importParams = params.getImportParams();
 		if (Array.isArray(exportedKeys)) {
@@ -133,6 +131,6 @@ CWebCrypto.prototype.randomUUID = function() {
 	return this.crypto.randomUUID();
 }
 
-function getCrypto() {
+export function getCrypto() {
 	return new CWebCrypto();
 }

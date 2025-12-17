@@ -1,25 +1,3 @@
-import getCrypto from "../crypto.ts";
-function writeString(memory) {
-
-}
-function writeBool() {
-
-}
-function writeLong() {
-
-}
-function writeByte() {
-
-}
-function writeDouble() {
-
-}
-function writeBuffer() {
-
-}
-function writeObject() {
-
-}
 function PromiseManager(initPromise) {
 	this.data = null;
 	this.error = null;
@@ -59,14 +37,7 @@ PromiseManager.prototype.handleResolvers = function() {
 		}
 	}
 };
-const c_oAscCipherKeyType = {
-	NoType: 0,
-	WebSymmetricKey: 1,
-	WebSignKeyPair: 2,
-	WebEncryptKeyPair: 3,
-	WebPublicKey: 4,
-	WebPrivateKey: 5,
-};
+
 
 
 function CryptoKeyBase() {
@@ -75,7 +46,7 @@ function CryptoKeyBase() {
 	this.uid = null;
 	this.version = 1;
 	this.params = null;
-	this.type = c_oAscCipherKeyType.NoType;
+	this.type = c_oAscKeyStorageType.NoType;
 }
 CryptoKeyBase.import = function(reader, version, symmetricKey) {};
 CryptoKeyBase.prototype.init = function() {
@@ -176,20 +147,20 @@ WebKeyPair.fromCryptoBuffer = function(publicKeyBuffer, privateKeyBuffer, import
 	return keyPair;
 };
 
-function WebSignKeyPair() {
+export function WebSignKeyPair() {
 	WebKeyPair.call(this);
-	this.type = c_oAscCipherKeyType.WebSignKeyPair;
+	this.type = c_oAscKeyStorageType.WebSignKeyPair;
 }
 WebSignKeyPair.prototype = Object.create(WebKeyPair.prototype);
 WebSignKeyPair.prototype.constructor = WebSignKeyPair;
 WebSignKeyPair.import = WebKeyPair.import;
 WebSignKeyPair.fromCryptoBuffer = WebKeyPair.fromCryptoBuffer;
 
-function WebEncryptKeyPair() {
+export function WebEncryptKeyPair() {
 	WebKeyPair.call(this);
 	this.privateKey = null;
 	this.publicKey = null;
-	this.type = c_oAscCipherKeyType.WebEncryptKeyPair;
+	this.type = c_oAscKeyStorageType.WebEncryptKeyPair;
 }
 WebEncryptKeyPair.prototype = Object.create(WebKeyPair.prototype);
 WebEncryptKeyPair.prototype.constructor = WebEncryptKeyPair;
@@ -200,7 +171,7 @@ function AsymmetricKey() {
 	this.binaryKey = null;
 	this.cryptoKey = null;
 	this.version = 1;
-	this.type = c_oAscCipherKeyType.NoType;
+	this.type = c_oAscKeyStorageType.NoType;
 }
 AsymmetricKey.prototype.setBinaryKey = function(binaryKey) {
 	this.binaryKey = binaryKey;
@@ -213,9 +184,9 @@ AsymmetricKey.prototype.setVersion = function(version) {
 };
 AsymmetricKey.prototype.changeMasterPassword = function(oldMasterPassword, newMasterPassword) {};
 
-function WebPrivateKey() {
+export function WebPrivateKey() {
 	AsymmetricKey.call(this);
-	this.type = c_oAscCipherKeyType.WebPrivateKey;
+	this.type = c_oAscKeyStorageType.WebPrivateKey;
 	this.salt = null;
 }
 WebPrivateKey.prototype = Object.create(AsymmetricKey.prototype);
@@ -259,7 +230,7 @@ WebPrivateKey.prototype.changeMasterPassword = function(oldMasterPassword, newMa
 
 
 
-function WebPublicKey() {
+export function WebPublicKey() {
 	AsymmetricKey.call(this);
 	this.binaryKey = null;
 	this.cryptoKey = null;
@@ -292,10 +263,10 @@ WebPublicKey.prototype.export = function(writer) {
 	}
 };
 
-function WebSymmetricKey() {
+export function WebSymmetricKey() {
 	CryptoKeyBase.call(this);
 	this.version = 1;
-	this.type = c_oAscCipherKeyType.WebSymmetricKey;
+	this.type = c_oAscKeyStorageType.WebSymmetricKey;
 	this.cryptoKey = null;
 	this.binaryKey = null;
 }

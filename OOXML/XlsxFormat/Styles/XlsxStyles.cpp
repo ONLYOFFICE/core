@@ -435,7 +435,7 @@ namespace OOX
 			}
 			if (m_oNumFmts.IsInit())
 			{
-				auto remap = [&](auto& xf)
+                auto remap = [&](OOX::Spreadsheet::CXfs* xf)
 				{
 					if (xf->m_oNumFmtId.IsInit())
 					{

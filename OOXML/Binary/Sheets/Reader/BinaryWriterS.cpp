@@ -5012,11 +5012,11 @@ void BinaryWorksheetTableWriter::WriteWorksheet(OOX::Spreadsheet::CSheet* pSheet
 				OOX::CPath pathImage = pImageFileCache->filename();
 				std::wstring	additionalPath;
 				int				additionalType = 0;
-				double dX = -1.0; //mm
-				double dY = -1.0;
+
 				double dW = -1.0; //mm
 				double dH = -1.0;
-				NSShapeImageGen::CMediaInfo oId = m_pOfficeDrawingConverter->m_pBinaryWriter->m_pCommon->m_pMediaManager->WriteImage(pathImage.GetPath(), dX, dY, dW, dH, additionalPath, additionalType);
+				
+				NSShapeImageGen::CMediaInfo oId = m_pOfficeDrawingConverter->m_pBinaryWriter->m_pCommon->m_pMediaManager->WriteImage(pathImage.GetPath(), dW, dH, additionalPath, additionalType);
 				nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::Picture);
 				m_oBcw.m_oStream.WriteStringW3(oId.GetPath2());
 				m_oBcw.WriteItemEnd(nCurPos);

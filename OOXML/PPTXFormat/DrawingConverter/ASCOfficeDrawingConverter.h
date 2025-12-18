@@ -197,7 +197,6 @@ namespace NSBinPptxRW
 			CElement(const CElement& oSrc);
 		};
 
-
         std::map<std::wstring, CShapePtr> m_mapShapeTypes;
 		std::map<std::wstring, nullable<OOX::Logic::CBinData>> m_mapBinDatas;
 
@@ -252,10 +251,6 @@ namespace NSBinPptxRW
         void SaveObjectExWriterInit     (NSBinPptxRW::CXmlWriter& oXmlWriter, int lDocType);
         void SaveObjectExWriterRelease  (NSBinPptxRW::CXmlWriter& oXmlWriter);
 
-		PPTX::Logic::SpTreeElem ObjectFromXml(const std::wstring& sXml, std::wstring** pMainProps);
-		std::wstring ObjectToVML		(const std::wstring& sXml);
-		std::wstring ObjectToDrawingML	(const std::wstring& sXml, int nDocType);
-
         std::wstring SaveObjectBackground(LONG lStart, LONG lLength);
 
         HRESULT GetRecordBinary     (long lRecordType, const std::wstring& sXml);
@@ -286,14 +281,10 @@ namespace NSBinPptxRW
         bool ParceObject        (const std::wstring& strXml, std::wstring** pMainProps);
         void SendMainProps      (const std::wstring& strMainProps, std::wstring**& pMainProps);
 
-		void ConvertDiagram		(PPTX::Logic::SpTreeElem *result, XmlUtils::CXmlNode& oNode, std::wstring**& pMainProps, bool bIsTop = true);
 		void ConvertShape		(PPTX::Logic::SpTreeElem *result, XmlUtils::CXmlNode& oNode, std::wstring**& pMainProps, bool bIsTop = true);
 		void ConvertGroup		(PPTX::Logic::SpTreeElem *result, XmlUtils::CXmlNode& oNode, std::wstring**& pMainProps, bool bIsTop = true);
 		void ConvertDrawing		(PPTX::Logic::SpTreeElem *result, XmlUtils::CXmlNode& oNode, std::wstring**& pMainProps, bool bIsTop = true);
 		void ConvertWordArtShape(PPTX::Logic::SpTreeElem* result, XmlUtils::CXmlNode& oNode, CPPTShape* pPPTShape);
-
-        std::wstring GetVMLShapeXml      (CPPTShape* pPPTShape);
-        std::wstring GetVMLShapeXml      (PPTX::Logic::SpTreeElem& oElem);
 
         void CheckBrushShape        (PPTX::Logic::SpTreeElem* oElem, XmlUtils::CXmlNode& oNode, CPPTShape* pPPTShape);
         void CheckPenShape          (PPTX::Logic::SpTreeElem* oElem, XmlUtils::CXmlNode& oNode, CPPTShape* pPPTShape);

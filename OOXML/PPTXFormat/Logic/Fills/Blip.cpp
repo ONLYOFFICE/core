@@ -302,9 +302,6 @@ namespace PPTX
 
 			pWriter->EndRecord();
 
-			double dX = pWriter->GetShapeX(); //mm
-			double dY = pWriter->GetShapeY();
-
 			double dW = pWriter->GetShapeWidth(); //mm
 			double dH = pWriter->GetShapeHeight();
 
@@ -335,21 +332,21 @@ namespace PPTX
 			NSShapeImageGen::CMediaInfo oId;
 			if (!dataFilepathImageA.empty())
 			{
-				oId = pWriter->m_pCommon->m_pMediaManager->WriteImage(dataFilepathImageA, dX, dY, dW, dH, additionalPath, additionalType);
+				oId = pWriter->m_pCommon->m_pMediaManager->WriteImage(dataFilepathImageA, dW, dH, additionalPath, additionalType);
 			}
 			else if (!dataFilepathImage.empty())
 			{
-				oId = pWriter->m_pCommon->m_pMediaManager->WriteImage(dataFilepathImage, dX, dY, dW, dH, additionalPath, additionalType);
+				oId = pWriter->m_pCommon->m_pMediaManager->WriteImage(dataFilepathImage, dW, dH, additionalPath, additionalType);
 			}
 			else if (!oleFilepathImage.empty())
 			{
 				std::wstring imagePath = oleFilepathImage;
-				oId = pWriter->m_pCommon->m_pMediaManager->WriteImage(imagePath, dX, dY, dW, dH, additionalPath, additionalType);
+				oId = pWriter->m_pCommon->m_pMediaManager->WriteImage(imagePath, dW, dH, additionalPath, additionalType);
 			}
 			else
 			{
 				std::wstring imagePath = this->GetFullPicName(pRels);
-				oId = pWriter->m_pCommon->m_pMediaManager->WriteImage(imagePath, dX, dY, dW, dH, additionalPath, additionalType);
+				oId = pWriter->m_pCommon->m_pMediaManager->WriteImage(imagePath, dW, dH, additionalPath, additionalType);
 			}
 
 			std::wstring s = oId.GetPath2();

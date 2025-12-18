@@ -244,7 +244,6 @@ namespace NSBinPptxRW
 			_INT32 Type;
 			_INT32 SeekPos;
 
-		public:
 			CSeekTableEntry();
 		};
 
@@ -276,9 +275,6 @@ namespace NSBinPptxRW
 		double	m_dCxCurShape;	//emu
 		double	m_dCyCurShape;
 
-		double	m_dXCurShape;
-		double	m_dYCurShape;
-
 		bool m_bInGroup = false;
 
 		BYTE*	GetBuffer();
@@ -288,8 +284,6 @@ namespace NSBinPptxRW
 
 		double	GetShapeWidth();
 		double	GetShapeHeight();
-		double	GetShapeX();
-		double	GetShapeY();
 
 		void	ClearCurShapePositionAndSizes();
 

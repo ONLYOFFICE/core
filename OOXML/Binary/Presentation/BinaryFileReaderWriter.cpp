@@ -731,19 +731,8 @@ namespace NSBinPptxRW
 			return -1;
 		return m_dCxCurShape / 36000;
 	}
-	double CBinaryFileWriter::GetShapeY()
-	{
-		return m_dYCurShape / 36000;
-	}
-	double CBinaryFileWriter::GetShapeX()
-	{
-		return m_dXCurShape / 36000; //mm
-	}
 	void CBinaryFileWriter::ClearCurShapePositionAndSizes()
 	{
-		m_dXCurShape = 0;
-		m_dYCurShape = 0;
-		
 		m_dCxCurShape = 0;
 		m_dCyCurShape = 0;
 
@@ -762,9 +751,6 @@ namespace NSBinPptxRW
 
 		m_dCxCurShape = 0;
 		m_dCyCurShape = 0;
-
-		m_dXCurShape = 0;
-		m_dYCurShape = 0;
 
 		m_bInGroup = false;
 	}

@@ -6,7 +6,7 @@ export function StorageManager() {
 
 }
 
-StorageManager.prototype.getStorageKeys = function () {
+StorageManager.prototype.getBinaryKeys = function () {
 	return new Promise(function (resolve) {
 		resolve([]);
 	});
@@ -30,12 +30,6 @@ StorageManager.prototype.setStorageKeys = function () {
 	});
 };
 
-StorageManager.prototype.setMasterPasswordWithKeys = function () {
-	return new Promise(function (resolve) {
-		resolve(null);
-	});
-};
-
 export function KeyStorage(storageManager) {
 	this.keys = [];
 	this.storageManager = storageManager;
@@ -43,24 +37,10 @@ export function KeyStorage(storageManager) {
 
 KeyStorage.prototype.loadKeysFromStorage = function () {
 	const oThis = this;
-	return this.storageManager.getStorageKeys().then(function (keys) {
-		return oThis.loadKeys(keys);
+	return this.storageManager.getBinaryKeys().then(function (binaryData) {
+		return oThis.import(binaryData);
 	}).then(function (loadedKeys) {
 		oThis.keys = loadedKeys;
-	});
-};
-
-KeyStorage.prototype.loadKeys = function (exportedKeys) {
-	return this.getMasterPassword().then(function (masterPassword) {
-		if (masterPassword === null) {
-			return [];
-		}
-
-		const promises = exportedKeys.map(function (key) {
-			return KeyPair.fromJSON(key, masterPassword);
-		});
-
-		return Promise.all(promises);
 	});
 };
 
@@ -108,8 +88,11 @@ KeyStorage.prototype.getMasterPassword = function () {
 
 KeyStorage.prototype.changeMasterPassword = function (newMasterPassword) {
 	const oThis = this;
-	return this.export(newMasterPassword).then(function (keys) {
-		return oThis.storageManager.setMasterPasswordWithKeys(newMasterPassword, keys);
+	this.storageManager.getMasterPassword().then(function(oldMasterPassword) {
+		const keys = oThis.keys.map(function(key) {
+			return key.changeMasterPassword(oldMasterPassword, newMasterPassword);
+		});
+		return Promise.all(keys);
 	});
 };
 

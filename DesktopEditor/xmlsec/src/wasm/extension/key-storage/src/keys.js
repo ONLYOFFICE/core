@@ -1,3 +1,9 @@
+import {initClass} from "./utils";
+import {c_oAscKeyStorageType} from "./defines";
+import {writeBool, writeBuffer, writeString} from "./serialize/writer";
+import {getCrypto} from "./crypto";
+import {readBool, readBuffer, readLong, readString} from "./serialize/reader";
+
 function PromiseManager(initPromise) {
 	this.data = null;
 	this.error = null;
@@ -90,8 +96,7 @@ function WebKeyPair() {
 	this.publicKey = null;
 	this.version = 1;
 }
-WebKeyPair.prototype = Object.create(CryptoKeyBase.prototype);
-WebKeyPair.prototype.constructor = WebKeyPair;
+initClass(WebKeyPair, CryptoKeyBase);
 WebKeyPair.import = function(reader) {
 	const keyPair = new this();
 	keyPair.setVersion(readLong(reader));
@@ -151,8 +156,7 @@ export function WebSignKeyPair() {
 	WebKeyPair.call(this);
 	this.type = c_oAscKeyStorageType.WebSignKeyPair;
 }
-WebSignKeyPair.prototype = Object.create(WebKeyPair.prototype);
-WebSignKeyPair.prototype.constructor = WebSignKeyPair;
+initClass(WebSignKeyPair, WebKeyPair);
 WebSignKeyPair.import = WebKeyPair.import;
 WebSignKeyPair.fromCryptoBuffer = WebKeyPair.fromCryptoBuffer;
 
@@ -162,8 +166,7 @@ export function WebEncryptKeyPair() {
 	this.publicKey = null;
 	this.type = c_oAscKeyStorageType.WebEncryptKeyPair;
 }
-WebEncryptKeyPair.prototype = Object.create(WebKeyPair.prototype);
-WebEncryptKeyPair.prototype.constructor = WebEncryptKeyPair;
+initClass(WebEncryptKeyPair, WebKeyPair);
 WebEncryptKeyPair.import = WebKeyPair.import;
 WebEncryptKeyPair.fromCryptoBuffer = WebKeyPair.fromCryptoBuffer;
 
@@ -189,9 +192,7 @@ export function WebPrivateKey() {
 	this.type = c_oAscKeyStorageType.WebPrivateKey;
 	this.salt = null;
 }
-WebPrivateKey.prototype = Object.create(AsymmetricKey.prototype);
-WebPrivateKey.prototype.constructor = WebPrivateKey;
-
+initClass(WebPrivateKey, AsymmetricKey);
 
 WebPrivateKey.import = function(reader) {
 	const key = new WebPrivateKey();
@@ -235,8 +236,8 @@ export function WebPublicKey() {
 	this.binaryKey = null;
 	this.cryptoKey = null;
 }
-WebPublicKey.prototype = Object.create(AsymmetricKey.prototype);
-WebPublicKey.prototype.constructor = WebPublicKey;
+initClass(WebPublicKey, AsymmetricKey);
+
 WebPublicKey.import = function(reader) {
 	const key = new WebPublicKey();
 	key.setVersion(readLong(reader));
@@ -270,8 +271,8 @@ export function WebSymmetricKey() {
 	this.cryptoKey = null;
 	this.binaryKey = null;
 }
-WebSymmetricKey.prototype = Object.create(CryptoKeyBase.prototype);
-WebSymmetricKey.prototype.constructor = WebSymmetricKey;
+initClass(WebSymmetricKey, AsymmetricKey);
+
 WebSymmetricKey.import = function(reader) {
 	const symmetricKey = new WebSymmetricKey();
 	symmetricKey.setVersion(readLong(reader));
@@ -293,6 +294,13 @@ WebSymmetricKey.fromCryptoBuffer = function(symmetricKeyBuffer, importParams) {
 	key.init();
 	key.setBinaryKey(symmetricKeyBuffer);
 	key.setParams(importParams);
+	return key;
+};
+WebSymmetricKey.fromCryptoKey = function(cryptoKey, pbkdfParams) {
+	const key = new WebSymmetricKey();
+	key.init();
+	key.setCryptoKey(cryptoKey);
+	key.setParams(pbkdfParams);
 	return key;
 };
 WebSymmetricKey.prototype.setBinaryKey = function(buffer) {

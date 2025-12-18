@@ -1709,7 +1709,6 @@ namespace PdfReader
 		m_pRendererOut->NewPDF(gfx->getDoc()->getXRef());
 
 		Gfx* m_gfx = new Gfx(gfx->getDoc(), m_pRendererOut, -1, pResourcesDict, dDpiX, dDpiY, &box, NULL, 0);
-		m_gfx->takeContentStreamStack(gfx);
 		m_gfx->display(pStream);
 
 		pFrame->ClearNoAttack();
@@ -1744,6 +1743,7 @@ namespace PdfReader
 		m_pRenderer->put_BrushTextureImage(oImage);
 		m_pRenderer->put_BrushTextureMode(c_BrushTextureModeTile);
 		m_pRenderer->put_BrushTextureAlpha(alpha);
+		m_pRenderer->put_BrushTransform({ pMatrix[0], pMatrix[1], pMatrix[2], pMatrix[3], pMatrix[4], pMatrix[5] });
 		m_pRenderer->BeginCommand(c_nImageType);
 
 		m_pRenderer->DrawPath(c_nWindingFillMode);

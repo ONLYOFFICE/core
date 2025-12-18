@@ -910,6 +910,10 @@ namespace NExtractTools
 
 			if (NULL != m_nCsvTxtEncoding)
 				nCsvEncoding = *m_nCsvTxtEncoding;
+			if(NSFile::GetFileExtention(*m_sFileFrom) == L"tsv")
+			{
+				cDelimiter = L"\t";
+			}
 			if (NULL != m_nCsvDelimiter)
 			{
 				switch (*m_nCsvDelimiter)

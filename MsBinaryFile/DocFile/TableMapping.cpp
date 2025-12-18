@@ -520,6 +520,19 @@ namespace DocFileFormat
 			}
 			while ( ( tai.fInTable ) && ( tai.iTap == _depth ) );
 
+            if (paragraphBeginCP < _cp && tableCell.IsEmpty() && cell && (documentMapping->m_document->Text->at(_cp-1) == 0x0007))
+            {
+                DocParagraph para(documentMapping, paragraphBeginCP, _cp);
+                tableCell.AddItem(para);
+
+                if (!tableCell.IsEmpty())
+                   tableRow.AddCell(tableCell);
+
+                if (!tableRow.IsEmpty())
+                    AddRow(tableRow);
+                ++_cp;
+            }
+
 			cpEnd = ( _cp - 1 );
 
 			documentMapping->_lastValidPapx = papxBackup;

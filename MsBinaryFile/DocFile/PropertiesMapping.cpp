@@ -439,6 +439,10 @@ namespace DocFileFormat
 		{
             val.SetValue( getBorderType( brc->brcType ));
 			border->AppendAttribute( val );
+            if (brc->dptLineWidth == 0xFF)
+            {
+                brc->dptLineWidth = 0;
+            }
 
             XMLTools::XMLAttribute sz( L"w:sz", FormatUtils::IntToWideString( brc->dptLineWidth ));
 			border->AppendAttribute( sz );

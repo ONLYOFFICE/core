@@ -295,7 +295,7 @@ const bool StringPtgParser::parseToPtgs(const std::wstring& assembled_formula, R
             }
             else if(SyntaxPtg::extract_PtgStr(it, itEnd, operand_str))
             {
-                rgce.addPtg(found_operand = OperandPtgPtr(new PtgStr(operand_str.c_str())));
+				rgce.addPtg(found_operand = OperandPtgPtr(new PtgStr(operand_str)));
             }
             else if(SyntaxPtg::extract_PtgRefErr(it, itEnd)) // Sequence is important (in pair with PtgErr)
             {

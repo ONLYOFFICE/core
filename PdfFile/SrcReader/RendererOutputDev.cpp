@@ -2470,7 +2470,8 @@ namespace PdfReader
 
 		std::wstring wsUnicodeText;
 
-		bool isCIDFont = pFont->isCIDFont();
+		bool isCIDFont = pFont->isCIDFont() == gTrue;
+		bool isIdentity = isCIDFont ? ((GfxCIDFont*)pFont)->usesIdentityEncoding() || ((GfxCIDFont*)pFont)->usesIdentityCIDToGID() || ((GfxCIDFont*)pFont)->ctuUsesCharCodeToUnicode() || pFont->getType() == fontCIDType0C : false;
 
 		if (NULL != oEntry.pCodeToUnicode && nCode < oEntry.unLenUnicode)
 		{
@@ -2496,20 +2497,20 @@ namespace PdfReader
 
 		unsigned int unGidsCount = 0;
 		unsigned int unGid       = 0;
-		if (NULL != oEntry.pCodeToGID && nCode < oEntry.unLenGID)
+		if (NULL != oEntry.pCodeToGID && nCode < oEntry.unLenGID && oEntry.pCodeToGID[nCode])
 		{
-			if (0 == (unGid = oEntry.pCodeToGID[nCode]))
-				unGidsCount = 0;
-			else
-				unGidsCount = 1;
+			unGid = oEntry.pCodeToGID[nCode];
+			unGidsCount = 1;
+
+			if (pFont->getType() == fontCIDType0COT && isCIDFont && isIdentity && oEntry.pCodeToUnicode && nCode < oEntry.unLenUnicode && !oEntry.pCodeToUnicode[nCode])
+				unGid = nCode;
 		}
 		else
 		{
-			if ((isCIDFont && (((GfxCIDFont*)pFont)->usesIdentityEncoding() || ((GfxCIDFont*)pFont)->usesIdentityCIDToGID() || ((GfxCIDFont*)pFont)->ctuUsesCharCodeToUnicode() || pFont->getType() == fontCIDType0C))
-					|| (!isCIDFont && wsUnicodeText.empty()))
+			if ((isCIDFont && isIdentity) || (!isCIDFont && wsUnicodeText.empty()))
 			{
-				int nCurCode = (0 == nCode ? 65534 : nCode);
-				unGid       = (unsigned int)nCurCode;
+				unsigned int nCurCode = (0 == nCode ? 65534 : nCode);
+				unGid       = nCurCode;
 				unGidsCount = 1;
 			}
 		}

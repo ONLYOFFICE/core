@@ -2473,7 +2473,7 @@ namespace PdfReader
 		bool isCIDFont = pFont->isCIDFont() == gTrue;
 		bool isIdentity = isCIDFont ? ((GfxCIDFont*)pFont)->usesIdentityEncoding() || ((GfxCIDFont*)pFont)->usesIdentityCIDToGID() || ((GfxCIDFont*)pFont)->ctuUsesCharCodeToUnicode() || pFont->getType() == fontCIDType0C : false;
 
-		if (NULL != oEntry.pCodeToUnicode && nCode < oEntry.unLenUnicode)
+		if (NULL != oEntry.pCodeToUnicode && nCode < oEntry.unLenUnicode && oEntry.pCodeToUnicode[nCode])
 		{
 			int unUnicode = oEntry.pCodeToUnicode[nCode];
 			wsUnicodeText = NSStringExt::CConverter::GetUnicodeFromUTF32((const unsigned int*)(&unUnicode), 1);
@@ -2483,7 +2483,7 @@ namespace PdfReader
 			if (isCIDFont)
 			{
 				// Значит кодировка была Identity-H или Identity-V, что означает, что исходные коды и есть юникодные значения
-				wsUnicodeText = (wchar_t(nCode));
+				wsUnicodeText = NSStringExt::CConverter::GetUnicodeFromUTF32((const unsigned int*)(&nCode), 1);
 			}
 			else
 			{

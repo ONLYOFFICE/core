@@ -1727,6 +1727,7 @@ namespace PdfReader
 		yMax = nY1 * dYStep + pBBox[1];
 		Transform(pMatrix, xMin, yMin, &xMin, &yMin);
 		Transform(pMatrix, xMax, yMax, &xMax, &yMax);
+		pGState->clearPath();
 		pGState->moveTo(xMin, yMin);
 		pGState->lineTo(xMax, yMin);
 		pGState->lineTo(xMax, yMax);
@@ -1743,7 +1744,7 @@ namespace PdfReader
 		m_pRenderer->put_BrushTextureImage(oImage);
 		m_pRenderer->put_BrushTextureMode(c_BrushTextureModeTile);
 		m_pRenderer->put_BrushTextureAlpha(alpha);
-		m_pRenderer->put_BrushTransform({ pMatrix[0], pMatrix[1], pMatrix[2], pMatrix[3], pMatrix[4], pMatrix[5] });
+		m_pRenderer->put_BrushTransform({ pMatrix[0], pMatrix[1], pMatrix[2], pMatrix[3], 0, 0 });
 		m_pRenderer->BeginCommand(c_nImageType);
 
 		m_pRenderer->DrawPath(c_nWindingFillMode);

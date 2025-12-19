@@ -25,4 +25,10 @@ export const c_oAscKeyStorageType = {
 	WebPublicKey: 4,
 	WebPrivateKey: 5,
 	Ed25519ImportParams: 6,
+	EncryptData: 7,
+	RSAOAEPImportParams: 8,
+	RSAOAEPKeyGenParams: 9,
+	Ed25519KeyGenParams: 10,
+	AesGCMCryptoParams: 11,
+	AesGCMKeyGenParams: 12
 };

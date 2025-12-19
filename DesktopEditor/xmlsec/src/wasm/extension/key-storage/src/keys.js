@@ -1,52 +1,11 @@
-import {initClass} from "./utils";
+import {CryptoBase, initClass} from "./utils";
 import {c_oAscKeyStorageType} from "./defines";
-import {writeBool, writeBuffer, writeString} from "./serialize/writer";
+import {BinaryWriter, writeBool, writeBuffer, writeLong, writeObject, writeString} from "./serialize/writer";
 import {getCrypto} from "./crypto";
-import {readBool, readBuffer, readLong, readString} from "./serialize/reader";
-
-function PromiseManager(initPromise) {
-	this.data = null;
-	this.error = null;
-	this.isResolved = false;
-	this.isRejected = false;
-	this.resolvers = [];
-	const oThis= this;
-	initPromise.then(function(data) {
-		oThis.isResolved = true;
-		oThis.data = data;
-	}).catch(function(error) {
-		oThis.isRejected = true;
-		oThis.error = error;
-	}).finally(function() {
-		oThis.handleResolvers();
-	});
-}
-PromiseManager.prototype.getPromise = function() {
-	const oThis = this;
-	return new Promise(function(resolve, reject) {
-		if (oThis.isResolved) {
-			resolve(oThis.data);
-		} else if (oThis.isRejected) {
-			reject(oThis.error);
-		} else {
-			oThis.resolvers.push({resolve: resolve, reject: reject});
-		}
-	});
-};
-PromiseManager.prototype.handleResolvers = function() {
-	while (this.resolvers.length) {
-		const resolver = this.resolvers.pop();
-		if (this.isResolved) {
-			resolver.resolve(this.data);
-		} else if (this.isRejected) {
-			resolver.reject(this.error);
-		}
-	}
-};
-
-
+import {BinaryReader, readBool, readBuffer, readLong, readObject, readString} from "./serialize/reader";
 
 function CryptoKeyBase() {
+	CryptoBase.call(this);
 	this.date = null;
 	this.isValid = false;
 	this.uid = null;
@@ -54,6 +13,7 @@ function CryptoKeyBase() {
 	this.params = null;
 	this.type = c_oAscKeyStorageType.NoType;
 }
+initClass(CryptoBase, CryptoKeyBase);
 CryptoKeyBase.import = function(reader, version, symmetricKey) {};
 CryptoKeyBase.prototype.init = function() {
 	const crypto = getCrypto();
@@ -154,21 +114,31 @@ WebKeyPair.fromCryptoBuffer = function(publicKeyBuffer, privateKeyBuffer, import
 
 export function WebSignKeyPair() {
 	WebKeyPair.call(this);
-	this.type = c_oAscKeyStorageType.WebSignKeyPair;
 }
-initClass(WebSignKeyPair, WebKeyPair);
+initClass(WebSignKeyPair, WebKeyPair, c_oAscKeyStorageType.WebSignKeyPair);
 WebSignKeyPair.import = WebKeyPair.import;
 WebSignKeyPair.fromCryptoBuffer = WebKeyPair.fromCryptoBuffer;
+WebEncryptKeyPair.prototype.verify = function (data) {
+	return this.publicKey.verify(data);
+};
+WebEncryptKeyPair.prototype.sign = function (data) {
+	return this.privateKey.sign(data);
+};
 
 export function WebEncryptKeyPair() {
 	WebKeyPair.call(this);
 	this.privateKey = null;
 	this.publicKey = null;
-	this.type = c_oAscKeyStorageType.WebEncryptKeyPair;
 }
-initClass(WebEncryptKeyPair, WebKeyPair);
+initClass(WebEncryptKeyPair, WebKeyPair, c_oAscKeyStorageType.WebEncryptKeyPair);
 WebEncryptKeyPair.import = WebKeyPair.import;
 WebEncryptKeyPair.fromCryptoBuffer = WebKeyPair.fromCryptoBuffer;
+WebEncryptKeyPair.prototype.encrypt = function (data) {
+	return this.publicKey.encrypt(data);
+};
+WebEncryptKeyPair.prototype.decrypt = function (data) {
+	return this.privateKey.decrypt(data);
+};
 
 function AsymmetricKey() {
 	this.binaryKey = null;
@@ -189,10 +159,9 @@ AsymmetricKey.prototype.changeMasterPassword = function(oldMasterPassword, newMa
 
 export function WebPrivateKey() {
 	AsymmetricKey.call(this);
-	this.type = c_oAscKeyStorageType.WebPrivateKey;
 	this.salt = null;
 }
-initClass(WebPrivateKey, AsymmetricKey);
+initClass(WebPrivateKey, AsymmetricKey, c_oAscKeyStorageType.WebPrivateKey);
 
 WebPrivateKey.import = function(reader) {
 	const key = new WebPrivateKey();
@@ -226,8 +195,15 @@ WebPrivateKey.prototype.setSalt = function(salt) {
 };
 WebPrivateKey.prototype.changeMasterPassword = function(oldMasterPassword, newMasterPassword) {
 	const oldPasswordKey = WebSymmetricKey.getFromPassword(oldMasterPassword, this.salt);
-
 }
+WebPrivateKey.prototype.decrypt = function(data) {
+	const crypto = getCrypto();
+	return crypto.decrypt(this, data);
+};
+WebPrivateKey.prototype.sign = function(data) {
+	const crypto = getCrypto();
+	return crypto.sign(this, data);
+};
 
 
 
@@ -236,7 +212,7 @@ export function WebPublicKey() {
 	this.binaryKey = null;
 	this.cryptoKey = null;
 }
-initClass(WebPublicKey, AsymmetricKey);
+initClass(WebPublicKey, AsymmetricKey, c_oAscKeyStorageType.WebPublicKey);
 
 WebPublicKey.import = function(reader) {
 	const key = new WebPublicKey();
@@ -263,15 +239,22 @@ WebPublicKey.prototype.export = function(writer) {
 		}
 	}
 };
+WebPublicKey.prototype.encrypt = function(data) {
+	const crypto = getCrypto();
+	return crypto.encrypt(this, data);
+};
+WebPublicKey.prototype.verify = function(data) {
+	const crypto = getCrypto();
+	return crypto.verify(this, data);
+};
 
 export function WebSymmetricKey() {
 	CryptoKeyBase.call(this);
 	this.version = 1;
-	this.type = c_oAscKeyStorageType.WebSymmetricKey;
 	this.cryptoKey = null;
 	this.binaryKey = null;
 }
-initClass(WebSymmetricKey, AsymmetricKey);
+initClass(WebSymmetricKey, AsymmetricKey, c_oAscKeyStorageType.WebSymmetricKey);
 
 WebSymmetricKey.import = function(reader) {
 	const symmetricKey = new WebSymmetricKey();
@@ -330,6 +313,61 @@ WebSymmetricKey.prototype.export = function(writer) {
 		}
 	}
 };
+WebSymmetricKey.prototype.encrypt = function(data) {
+	const crypto = getCrypto();
+	crypto.encrypt(this, data);
+};
+WebSymmetricKey.prototype.decrypt = function(data) {
+	const crypto = getCrypto();
+	crypto.decrypt(this, EncryptData.import(data));
+};
 
-
+export function EncryptData(encryptData, params) {
+	CryptoBase.call(this);
+	this.version = 1;
+	this.encryptData = encryptData || null;
+	this.params = params || null;
+}
+initClass(EncryptData, CryptoBase, c_oAscKeyStorageType.EncryptData);
+EncryptData.import = function(binaryData) {
+	const data = new EncryptData();
+	const reader = new BinaryReader(binaryData);
+	data.setVersion(readLong(reader));
+	switch (this.version) {
+		case 1: {
+			data.setEncryptParams(readObject(reader));
+			data.setEncryptData(readBuffer(reader));
+			break;
+		}
+		default: {
+			return null;
+		}
+	}
+	return data;
+};
+EncryptData.prototype.export = function (writer) {
+	writeLong(writer, this.version);
+	switch (this.version) {
+		case 1: {
+			writeObject(writer, this.params);
+			writeBuffer(writer, this.encryptData);
+			break;
+		}
+		default: {
+			break;
+		}
+	}
+};
+EncryptData.prototype.setEncryptData = function (encryptData) {
+	this.encryptData = encryptData;
+};
+EncryptData.prototype.setEncryptParams = function (params) {
+	this.params = params;
+};
+EncryptData.prototype.getEncryptParams = function () {
+	return this.params;
+};
+EncryptData.prototype.getEncryptData = function () {
+	return this.encryptData;
+};
 

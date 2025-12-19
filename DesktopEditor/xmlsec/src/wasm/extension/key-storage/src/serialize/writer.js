@@ -106,7 +106,7 @@ BinaryWriter.prototype.WriteBuffer = function(data, _pos, count)
 }
 BinaryWriter.prototype.WriteItem = function(type, fWrite)
 {
-	this.WriteByte(type);
+	this.WriteLong(type);
 	this.WriteItemWithLength(fWrite);
 };
 BinaryWriter.prototype.WriteItemWithLength = function(fWrite)
@@ -160,7 +160,7 @@ export function writeBuffer(writer, buffer) {
 }
 export function writeObject(writer, object) {
 	let isWrite = false;
-	const type = object && object.getType();
+	const type = object && object.getObjectType();
 	if (c_oAscObjectFactory[type]) {
 		isWrite = true;
 	}

@@ -118,16 +118,15 @@ export function readBuffer(reader) {
 
 export function readObject(reader) {
 	const isWrite = reader.GetBool();
+	let object = null;
 	if (isWrite) {
-		const type = reader.GetUChar();
+		const type = reader.GetLong();
 		var nStart = reader.cur;
 		var nEnd = nStart + reader.GetLong() + 4;
 		if (c_oAscObjectFactory[type]) {
-			const object = new c_oAscObjectFactory[type];
-			object.import(reader);
-			return object;
+			object = c_oAscObjectFactory[type].import(reader);
 		}
 		reader.Seek2(nEnd);
 	}
-	return null;
+	return object;
 }

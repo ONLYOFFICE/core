@@ -1,11 +1,13 @@
-import {c_oAscAlgorithmType} from "./defines";
+import {c_oAscAlgorithmType, c_oAscKeyStorageType} from "./defines";
 import {readLong, readBuffer} from "./serialize/reader";
-import {writeLong} from "./serialize/writer";
+import {writeBuffer, writeLong} from "./serialize/writer";
+import {CryptoBase, initClass} from "./utils";
 
-function AlgorithmParams(type) {
-	this.type = type;
+function AlgorithmParams() {
+	CryptoBase.call(this);
 	this.version = 1;
 }
+initClass(AlgorithmParams, CryptoBase);
 AlgorithmParams.import = function(reader) {
 	const params = new this();
 	params.setVersion(readLong(reader));
@@ -35,12 +37,11 @@ AlgorithmParams.prototype.export = function(writer) {
 	}
 };
 
-function RsaImportParams(name, hash) {
-	AlgorithmParams.call(this, name);
+function RsaImportParams(hash) {
+	AlgorithmParams.call(this);
 	this.hash = hash;
 }
-RsaImportParams.prototype = Object.create(AlgorithmParams.prototype);
-RsaImportParams.prototype.constructor = RsaImportParams;
+initClass(RsaImportParams, AlgorithmParams);
 RsaImportParams.import = function(reader) {
 	const params = new RsaImportParams();
 	params.setVersion(readLong(reader));
@@ -69,42 +70,47 @@ RsaImportParams.prototype.export = function(writer) {
 };
 RsaImportParams.prototype.setHash = function (hash) {
 	this.hash = hash;
+};
+export function RsaOAEPImportParams(hash) {
+	RsaImportParams.call(this, hash);
 }
+initClass(RsaOAEPImportParams, RsaImportParams, c_oAscKeyStorageType.RSAOAEPImportParams);
 
-function RSAKeyGenParams(name, hash, modulusLength, publicExponent) {
-	RsaImportParams.call(this, name, hash);
+function RSAKeyGenParams(hash, modulusLength, publicExponent) {
+	RsaImportParams.call(this, hash);
 	this.modulusLength = typeof modulusLength === "number" ? modulusLength : 2048;
 	this.publicExponent = publicExponent || new Uint8Array([0x01, 0x00, 0x01]);
 }
-RSAKeyGenParams.prototype = Object.create(RsaImportParams.prototype);
-RSAKeyGenParams.prototype.constructor = RSAKeyGenParams;
+initClass(RSAKeyGenParams, RsaImportParams);
 RSAKeyGenParams.prototype.getImportParams = function() {
-	return new RsaImportParams(this.name, this.hash);
+	return new RsaImportParams(this.hash);
 };
 
-function Ed25519ImportParams() {
-	AlgorithmParams.call(this, c_oAscAlgorithmType.ED25519);
+export function RsaOAEPKeyGenParams(hash, modulusLength, publicExponent) {
+	RSAKeyGenParams.call(this, hash, modulusLength, publicExponent);
 }
-Ed25519ImportParams.prototype = Object.create(AlgorithmParams.prototype);
-Ed25519ImportParams.prototype.constructor = Ed25519ImportParams;
+initClass(RsaOAEPImportParams, RsaImportParams, c_oAscKeyStorageType.RSAOAEPKeyGenParams);
+
+export function Ed25519ImportParams() {
+	AlgorithmParams.call(this);
+}
+initClass(Ed25519ImportParams, AlgorithmParams, c_oAscKeyStorageType.Ed25519ImportParams);
 Ed25519ImportParams.import = AlgorithmParams.import;
 
-function Ed25519KeyGenParams() {
+export function Ed25519KeyGenParams() {
 	Ed25519ImportParams.call(this);
 }
-Ed25519KeyGenParams.prototype = Object.create(AlgorithmParams.prototype);
-Ed25519KeyGenParams.prototype.constructor = Ed25519KeyGenParams;
+initClass(Ed25519KeyGenParams, Ed25519ImportParams, c_oAscKeyStorageType.Ed25519KeyGenParams);
 Ed25519KeyGenParams.prototype.getImportParams = function() {
 	return new Ed25519ImportParams();
 };
 
-function AesGcmCryptoParams(iv, tagLength) {
-	AlgorithmParams.call(this, c_oAscAlgorithmType.AES_GCM);
+export function AesGcmCryptoParams(iv, tagLength) {
+	AlgorithmParams.call(this);
 	this.iv = iv || null;
 	this.tagLength = typeof tagLength === "number" ? tagLength : null;
 }
-AesGcmCryptoParams.prototype = Object.create(AlgorithmParams.prototype);
-AesGcmCryptoParams.prototype.constructor = AesGcmCryptoParams;
+initClass(AesGcmCryptoParams, AlgorithmParams, c_oAscKeyStorageType.AesGCMCryptoParams);
 AesGcmCryptoParams.import = function (reader) {
 	const params = new AesGcmCryptoParams();
 	params.setVersion(readLong(reader));
@@ -145,21 +151,65 @@ AesGcmCryptoParams.prototype.init = function () {
 };
 
 
-
-function AesKeyGenParams(name, length) {
-	AlgorithmParams.call(this, name);
+function AesKeyGenParams(length) {
+	AlgorithmParams.call(this);
 	this.length = length;
 }
-AesKeyGenParams.prototype = Object.create(AlgorithmParams.prototype);
-AesKeyGenParams.prototype.constructor = AesKeyGenParams;
+initClass(AesKeyGenParams, AlgorithmParams);
 AesKeyGenParams.prototype.getImportParams = function() {
-	return new AlgorithmParams(this.name);
+	return new AlgorithmParams();
 };
 
-export function AesGcmGenParams() {
-	AesKeyGenParams.call(this, c_oAscAlgorithmType.AES_GCM, 256);
+export function AesGcmKeyGenParams() {
+	AesKeyGenParams.call(this,  256);
 }
-AesGcmGenParams.prototype = Object.create(AlgorithmParams.prototype);
-AesGcmGenParams.prototype.constructor = AesGcmGenParams;
+initClass(AesGcmKeyGenParams, AlgorithmParams, c_oAscKeyStorageType.AesGCMKeyGenParams);
+
+const PBKDFSaltLength = 16;
+export function PBKDF2Params() {
+	AlgorithmParams.call(this);
+	this.iterations = 600000;
+	this.hash = c_oAscDigestType.SHA256;
+	this.salt = null;
+}
+initClass(PBKDF2Params, AlgorithmParams, );
+PBKDF2Params.import = function(reader) {
+	const params = new PBKDF2Params();
+	params.setVerison(readLong(reader));
+	switch (params.version) {
+		case 1: {
+			this.setIterations(readLong(reader));
+			this.setHash(readLong(reader));
+			this.setSalt(readBuffer(reader));
+			break;
+		}
+		default: {
+			return null;
+		}
+	}
+	return params;
+}
+PBKDF2Params.prototype.export = function(writer) {
+	writeLong(this.version);
+	switch (this.version) {
+		case 1: {
+			writeLong(writer, this.iterations);
+			writeLong(writer, this.hash);
+			writeBuffer(writer, this.salt);
+			break;
+		}
+		default: {
+			break;
+		}
+	}
+}
+PBKDF2Params.prototype.getCryptoParams = function() {
+	return {
+		name: 'PBKDF2',
+		salt: this.salt,
+		iterations: this.iterations,
+		hash: getCryptoHash(this.hash)
+	};
+};
 
 

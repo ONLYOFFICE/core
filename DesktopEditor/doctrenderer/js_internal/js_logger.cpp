@@ -21,7 +21,7 @@ namespace NSJSBase
 
 		if (g_logger_file.length() == 1)
 		{
-			printf(details);
+			printf("%s", details);
 			printf(": %d\n", (int)(dwCur - g_logger_time));
 		}
 		else

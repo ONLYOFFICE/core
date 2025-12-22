@@ -37,6 +37,8 @@ namespace XLS
 
 PlotGrowth::PlotGrowth()
 {
+	dxPlotGrowth = 1;
+	dyPlotGrowth = 1;
 }
 
 

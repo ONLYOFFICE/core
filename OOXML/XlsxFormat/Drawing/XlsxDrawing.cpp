@@ -35,7 +35,11 @@
 #include "../../../MsBinaryFile/XlsFile/Format/Binary/CFStreamCacheWriter.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/ChartSheetSubstream.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/OBJECTS.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/CHARTFOMATS.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/FRAME.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/MsoDrawing.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Chart.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Frame.h"
 #include "../../PPTXFormat/Logic/Shape.h"
 #include "../Chart/Chart.h"
 
@@ -262,7 +266,10 @@ namespace OOX
 			ptr->m_OBJECTS = XLS::BaseObjectPtr(drawingObjectsPtr);
 			auto drawingPtr = new XLS::MsoDrawing(true);
 			drawingObjectsPtr->m_arrObject.emplace_back(XLS::BaseObjectPtr(drawingPtr), std::vector<XLS::BaseObjectPtr>());
-			//test
+
+			auto ChartFormatsPtr = new XLS::CHARTFORMATS;
+			ptr->m_CHARTFORMATS = XLS::BaseObjectPtr(ChartFormatsPtr);
+
 			for(auto anchor : m_arrItems)
 			{
 				if(anchor->m_oElement.IsInit())
@@ -281,11 +288,29 @@ namespace OOX
 							yOff = graphicFrame->xfrm->chOffY.get();
 						drawingPtr->prepareChart(1, xStart, xOff, yStart, yOff);
 					}
+					{
+
+						auto chartRect = new XLS::Chart;
+						if(anchor->m_oPos.IsInit() && anchor->m_oPos->m_oX.IsInit())
+							chartRect->x.dVal = anchor->m_oPos->m_oX->GetValue();
+						if(anchor->m_oPos.IsInit() && anchor->m_oPos->m_oY.IsInit())
+							chartRect->y.dVal = anchor->m_oPos->m_oY->GetValue();
+						if(anchor->m_oExt.IsInit() && anchor->m_oExt->m_oCx.IsInit())
+							chartRect->dx.dVal = anchor->m_oExt->m_oCx->GetValue();
+						if(anchor->m_oExt.IsInit() && anchor->m_oExt->m_oCy->GetValue())
+							chartRect->dy.dVal = anchor->m_oExt->m_oCy->GetValue();
+						ChartFormatsPtr->m_ChartRect = XLS::BaseObjectPtr(chartRect);
+					}
 					if(graphicFrame->chartRec.IsInit() && graphicFrame->chartRec->id_data.IsInit())
 					{
 						auto chartRid = graphicFrame->chartRec->id_data.get();
 						auto castedChart = Get<OOX::File>(chartRid);
 						auto ChartFile = static_cast<OOX::Spreadsheet::CChartFile*>(castedChart.GetPointer());
+
+						auto Frame = new XLS::FRAME;
+						ChartFormatsPtr->m_FRAME = XLS::BaseObjectPtr(Frame);
+						auto framePtr = new XLS::Frame;
+						Frame->m_Frame = XLS::BaseObjectPtr(framePtr);
 						//todo chart processing
 					}
 				}

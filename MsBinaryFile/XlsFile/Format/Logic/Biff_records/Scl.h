@@ -55,8 +55,8 @@ public:
 	static const ElementType	type = typeScl;
 
 //-----------------------------
-    _INT16 nscl = 0;
-    _INT16 dscl = 1;
+	_INT16 nscl = 117;
+	_INT16 dscl = 100;
 
 };
 

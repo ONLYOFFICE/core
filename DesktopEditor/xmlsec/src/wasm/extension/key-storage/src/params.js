@@ -1,4 +1,4 @@
-import {c_oAscAlgorithmType, c_oAscKeyStorageType} from "./defines";
+import {c_oAscAlgorithmType, c_oAscCryptoDigestType, c_oAscDigestType, c_oAscKeyStorageType} from "./defines";
 import {readLong, readBuffer} from "./serialize/reader";
 import {writeBuffer, writeLong} from "./serialize/writer";
 import {CryptoBase, initClass} from "./utils";
@@ -172,15 +172,15 @@ export function PBKDF2Params() {
 	this.hash = c_oAscDigestType.SHA256;
 	this.salt = null;
 }
-initClass(PBKDF2Params, AlgorithmParams, );
+initClass(PBKDF2Params, AlgorithmParams, c_oAscKeyStorageType.PBKDF2Params);
 PBKDF2Params.import = function(reader) {
 	const params = new PBKDF2Params();
 	params.setVerison(readLong(reader));
 	switch (params.version) {
 		case 1: {
-			this.setIterations(readLong(reader));
-			this.setHash(readLong(reader));
-			this.setSalt(readBuffer(reader));
+			params.setIterations(readLong(reader));
+			params.setHash(readLong(reader));
+			params.setSalt(readBuffer(reader));
 			break;
 		}
 		default: {
@@ -208,8 +208,17 @@ PBKDF2Params.prototype.getCryptoParams = function() {
 		name: 'PBKDF2',
 		salt: this.salt,
 		iterations: this.iterations,
-		hash: getCryptoHash(this.hash)
+		hash: c_oAscCryptoDigestType[this.hash]
 	};
+};
+PBKDF2Params.prototype.setIterations = function(reader) {
+	this.iterations = reader;
+};
+PBKDF2Params.prototype.setSalt = function(reader) {
+	this.iterations = reader;
+};
+PBKDF2Params.prototype.setHash = function(reader) {
+	this.iterations = reader;
 };
 
 

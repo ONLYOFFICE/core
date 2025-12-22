@@ -1,5 +1,5 @@
 export function ab2str(buf: ArrayBuffer) {
-    return String.fromCharCode(...new Uint8Array(buf));
+    return String.fromCharCode.apply(null, buf);
 }
 export function ab2base64(buf: ArrayBuffer) {
     const str = ab2str(buf);
@@ -17,10 +17,10 @@ export function str2ui(str: string) {
     return ui;
 }
 
-export const selectUserJSON = (callback: (file: File) => void) => {
+export const selectBinary = (callback: (file: File) => void) => {
     const input = document.createElement("input");
     input.type = "file";
-    input.accept = "application/json";
+    input.accept = "application/octet-stream";
     input.addEventListener("change", (e) => {
         const target = e.target as HTMLInputElement;
         const file = target.files?.[0];
@@ -30,3 +30,13 @@ export const selectUserJSON = (callback: (file: File) => void) => {
     });
     input.click();
 };
+
+export const downloadBinary = (data: Uint8Array) => {
+    const blob = new Blob([data], {type: "application/octet-stream"});
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `onlyoffice_keychain_${(new Date()).toISOString()}.bin`;
+    link.click();
+    URL.revokeObjectURL(url);
+}

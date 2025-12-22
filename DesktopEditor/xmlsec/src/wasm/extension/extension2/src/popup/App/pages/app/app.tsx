@@ -4,21 +4,19 @@ import {getStorageMasterPassword, initCheckOpenedPopup, setStorageMasterPassword
 import {useTaskManager} from "../../../task-manager/task-manager.ts";
 import {Dashboard} from "../dashboard/dashboard.tsx";
 // @ts-ignore
-import {KeyStorage} from "../../../../../../key-storage/key-storage.js";
-import {KeyPair, KeyUsages} from "../../../../common/keys/keys.ts";
-import getCrypto from "../../../../common/crypto.ts";
+import {StorageManager} from "../storage-manager/storage-manager.ts";
+import {KeyPair} from "../../../../common/keys/keys.ts";
 import {Ed25519KeyGenParams} from "../../../../common/keys/params.ts";
 import {ChangePasswordPage} from "../change-password/change-password.tsx";
 import {locations} from "../../../utils/locations.ts";
 import SelectKeysPage from "../select-keys/select-keys.tsx";
 import {messageTypes} from "../../../../common/message-const.ts";
-const keyStorage = new KeyStorage();
+const storageManager = new StorageManager();
 const generateKeys = async () => {
-    const crypto = getCrypto();
-    const cryptoPair = await crypto.generateKey(new Ed25519KeyGenParams(), new KeyUsages(false,true));
-    if (cryptoPair instanceof KeyPair) {
-        await keyStorage.addNewKeys([cryptoPair]);
-        return cryptoPair;
+    const key = await storageManager.generateKeys(new Ed25519KeyGenParams());
+    if (key) {
+        await storageManager.addNewKeys([key]);
+        return key;
     }
 };
 
@@ -31,8 +29,8 @@ export default function App() {
        (async () => {
            const storageMasterPassword = await getStorageMasterPassword();
            setLocalMasterPassword(storageMasterPassword);
-           await keyStorage.loadKeysFromStorage();
-           setKeys(keyStorage.getValidKeys());
+           await storageManager.loadKeysFromStorage();
+           setKeys(storageManager.getValidKeys());
         })();
         initCheckOpenedPopup();
     }, []);
@@ -56,7 +54,7 @@ export default function App() {
     };
 
     const handleSubmitNewMasterPassword = async (newMasterPassword: string) => {
-        await keyStorage.changeMasterPassword(newMasterPassword);
+        await storageManager.changeMasterPassword(newMasterPassword);
         setLocalMasterPassword(newMasterPassword);
         setLocation("");
     };
@@ -64,22 +62,21 @@ export default function App() {
     const handleGenerateKeys = async () => {
       const keyPair = await generateKeys();
       if (keyPair) {
-          setKeys(keyStorage.getValidKeys());
+          setKeys(storageManager.getValidKeys());
       }
     };
     const handleExportKeys = () => {
-        keyStorage.exportKeys();
+        storageManager.exportKeys();
     }
     const handleImportKeys = async () => {
-        keyStorage.importKeys(() => {setKeys(keyStorage.getValidKeys())});
+        storageManager.importKeys(() => {setKeys(storageManager.getValidKeys())});
     }
 
     const handleDeprecateKey = async (key: KeyPair) => {
-        await keyStorage.deprecateKey(key);
-        setKeys(keyStorage.getValidKeys());
+        await storageManager.deprecateKey(key);
+        setKeys(storageManager.getValidKeys());
     };
     const isLoggedOut = localMasterPassword === null;
-    console.log(location)
     return (
         <>
             {

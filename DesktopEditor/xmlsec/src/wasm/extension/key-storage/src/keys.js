@@ -1,6 +1,6 @@
 import {CryptoBase, initClass} from "./utils";
-import {c_oAscKeyStorageType} from "./defines";
-import {BinaryWriter, writeBool, writeBuffer, writeLong, writeObject, writeString} from "./serialize/writer";
+import {c_oAscExportKeyFormat, c_oAscKeyStorageType} from "./defines";
+import {writeBool, writeBuffer, writeLong, writeObject, writeString} from "./serialize/writer";
 import {getCrypto} from "./crypto";
 import {BinaryReader, readBool, readBuffer, readLong, readObject, readString} from "./serialize/reader";
 
@@ -93,6 +93,15 @@ WebKeyPair.prototype.export = function(writer) {
 		}
 	}
 };
+WebKeyPair.prototype.setParams = function(params) {
+	this.params = params;
+	if (this.publicKey) {
+		this.publicKey.setParams(params);
+	}
+	if (this.privateKey) {
+		this.privateKey.setParams(params);
+	}
+};
 WebKeyPair.prototype.setPublicKey = function(publicKey) {
 	this.publicKey = publicKey;
 };
@@ -110,6 +119,10 @@ WebKeyPair.fromCryptoBuffer = function(publicKeyBuffer, privateKeyBuffer, import
 	keyPair.setPrivateKey(privateKey);
 	keyPair.setParams(importParams);
 	return keyPair;
+};
+WebKeyPair.prototype.initKey = function (masterPassword) {
+	const crypto = getCrypto();
+	return Promise.all([crypto.initKey(this.publicKey), crypto.initKey(this.privateKey, masterPassword)]);
 };
 
 export function WebSignKeyPair() {
@@ -144,6 +157,7 @@ function AsymmetricKey() {
 	this.binaryKey = null;
 	this.cryptoKey = null;
 	this.version = 1;
+	this.params = null;
 	this.type = c_oAscKeyStorageType.NoType;
 }
 AsymmetricKey.prototype.setBinaryKey = function(binaryKey) {
@@ -156,12 +170,21 @@ AsymmetricKey.prototype.setVersion = function(version) {
 	this.version = version;
 };
 AsymmetricKey.prototype.changeMasterPassword = function(oldMasterPassword, newMasterPassword) {};
+AsymmetricKey.prototype.getCryptoKey = function() {
+	return this.cryptoKey;
+};
+AsymmetricKey.prototype.setParams = function(params) {
+	this.params = params;
+}
+AsymmetricKey.prototype.getImportCryptoParams = function() {
+	return this.params.getImportCryptoParams();
+};
 
 export function WebPrivateKey() {
 	AsymmetricKey.call(this);
 	this.salt = null;
 }
-initClass(WebPrivateKey, AsymmetricKey, c_oAscKeyStorageType.WebPrivateKey);
+initClass(WebPrivateKey, AsymmetricKey);
 
 WebPrivateKey.import = function(reader) {
 	const key = new WebPrivateKey();
@@ -204,15 +227,32 @@ WebPrivateKey.prototype.sign = function(data) {
 	const crypto = getCrypto();
 	return crypto.sign(this, data);
 };
+WebPrivateKey.prototype.getImportFormat = function () {
+	return c_oAscExportKeyFormat.pkcs8;
+}
 
+function WebPrivateSignKey() {
+	WebPrivateKey.call(this);
+}
+initClass(WebPrivateSignKey, WebPrivateKey, c_oAscKeyStorageType.WebPrivateSignKey);
+WebPrivateSignKey.prototype.getCryptoUsages = function () {
+	return ["sign"];
+};
 
+function WebPrivateEncryptKey() {
+	WebPrivateKey.call(this);
+}
+initClass(WebPrivateEncryptKey, WebPrivateKey, c_oAscKeyStorageType.WebPrivateEncryptKey);
+WebPrivateEncryptKey.prototype.getCryptoUsages = function () {
+	return ["decrypt"];
+};
 
 export function WebPublicKey() {
 	AsymmetricKey.call(this);
 	this.binaryKey = null;
 	this.cryptoKey = null;
 }
-initClass(WebPublicKey, AsymmetricKey, c_oAscKeyStorageType.WebPublicKey);
+initClass(WebPublicKey, AsymmetricKey);
 
 WebPublicKey.import = function(reader) {
 	const key = new WebPublicKey();
@@ -246,6 +286,25 @@ WebPublicKey.prototype.encrypt = function(data) {
 WebPublicKey.prototype.verify = function(data) {
 	const crypto = getCrypto();
 	return crypto.verify(this, data);
+};
+WebPublicKey.prototype.getImportFormat = function () {
+	return c_oAscExportKeyFormat.spki;
+}
+
+function WebPublicSignKey() {
+	WebPublicKey.call(this);
+}
+initClass(WebPublicSignKey, WebPublicKey, c_oAscKeyStorageType.WebPublicSignKey);
+WebPublicSignKey.prototype.getCryptoUsages = function () {
+	return ["verify"];
+};
+
+function WebPublicEncryptKey() {
+	WebPublicKey.call(this);
+}
+initClass(WebPublicEncryptKey, WebPublicKey, c_oAscKeyStorageType.WebPublicEncryptKey);
+WebPublicEncryptKey.prototype.getCryptoUsages = function () {
+	return ["encrypt"];
 };
 
 export function WebSymmetricKey() {
@@ -290,11 +349,7 @@ WebSymmetricKey.prototype.setBinaryKey = function(buffer) {
 	this.binaryKey = buffer;
 };
 WebSymmetricKey.prototype.getCryptoKey = function() {
-	if (!this.cryptoKey && this.binaryKey) {
-		const crypto = getCrypto();
-		this.cryptoKey = new PromiseManager();
-	}
-	return this.cryptoKey ? this.cryptoKey.getPromise() : Promise.resolve(null);
+	return this.cryptoKey;
 };
 
 

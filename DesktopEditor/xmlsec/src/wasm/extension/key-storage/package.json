@@ -1,9 +1,13 @@
 {
+  "name": "key-storage",
+  "version": "1.0.0",
+  "main": "dist/key-storage.es.js",
+  "files": ["dist"],
   "devDependencies": {
     "vite": "^7.3.0"
   },
   "scripts": {
-    "dev": "vite",
+    "dev": "vite build --watch",
     "build": "vite build",
     "preview": "vite preview"
   }

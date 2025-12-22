@@ -1,1 +1,1 @@
-export {StorageManager, KeyStorage} from './key-storage';
+export {KeyStorage} from './key-storage';

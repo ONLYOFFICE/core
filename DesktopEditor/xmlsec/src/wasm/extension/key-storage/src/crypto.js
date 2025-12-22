@@ -1,8 +1,7 @@
 import {EncryptData, WebEncryptKeyPair, WebSignKeyPair, WebSymmetricKey} from "./keys";
-import {AesGcmGenParams} from "./params";
-import {c_oAscDigestType, c_oAscExportKeyFormat} from "./defines";
-import {BinaryWriter, writeBuffer, writeLong} from "./serialize/writer";
-import {readBuffer, readLong} from "./serialize/reader";
+import {AesGcmKeyGenParams, PBKDF2Params} from "./params";
+import {c_oAscExportKeyFormat} from "./defines";
+import {BinaryWriter} from "./serialize/writer";
 import {initClass} from "./utils";
 
 function CCryptoBase() {
@@ -16,6 +15,7 @@ CCryptoBase.prototype.encrypt = function(key, data) {};
 CCryptoBase.prototype.generateKey = function(params) {};
 CCryptoBase.prototype.getRandomValues = function(length) {};
 CCryptoBase.prototype.randomUUID = function() {};
+CCryptoBase.prototype.initKey = function(key, masterPassword) {return Promise.resolve()};
 
 function CWebCrypto() {
 	CCryptoBase.call(this);
@@ -41,7 +41,7 @@ CWebCrypto.prototype.getAesCryptoKey = function(masterPassword, salt) {
 		return oThis.subtle.deriveKey(
 			pbkdfParams.getCryptoParams(),
 			pwKey,
-			new AesGcmGenParams(),
+			new AesGcmKeyGenParams(),
 			false,
 			['wrapKey', 'unwrapKey', 'encrypt', 'decrypt']
 		);
@@ -119,6 +119,24 @@ CWebCrypto.prototype.generateKey = function(params, password, salt) {
 CWebCrypto.prototype.randomUUID = function() {
 	return this.crypto.randomUUID();
 }
+CWebCrypto.prototype.initKey = function (key, masterPassword) {
+	const binaryKey = key.getBinaryKey();
+	const oThis = this;
+	let binaryKeyPromise;
+	if (masterPassword) {
+		const salt = key.getSalt();
+		binaryKeyPromise = this.getAesCryptoKey(masterPassword, salt).then(function(aesCryptoKey) {
+			return aesCryptoKey.decrypt(binaryKey);
+		});
+	} else {
+		binaryKeyPromise = Promise.resolve(binaryKey);
+	}
+	return binaryKeyPromise.then(function(binaryCryptoData) {
+		return oThis.subtle.importKey(key.getImportFormat(), binaryCryptoData, key.getImportCryptoParams() ,true, key.getCryptoUsages());
+	}).then(function (cryptoKey) {
+		key.setCryptoKey(cryptoKey);
+	});
+};
 
 export function getCrypto() {
 	return new CWebCrypto();

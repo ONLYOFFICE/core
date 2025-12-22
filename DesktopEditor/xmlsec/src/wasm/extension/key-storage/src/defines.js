@@ -11,6 +11,12 @@ export const c_oAscDigestType = {
 	SHA512: 4
 };
 
+export const c_oAscCryptoDigestType = {};
+c_oAscCryptoDigestType.SHA1 = "SHA-1";
+c_oAscCryptoDigestType.SHA256 = "SHA-256";
+c_oAscCryptoDigestType.SHA384 = "SHA-384";
+c_oAscCryptoDigestType.SHA512 = "SHA-512";
+
 export const c_oAscExportKeyFormat = {
 	pkcs8: "pkcs8",
 	spki: "spki",
@@ -22,13 +28,16 @@ export const c_oAscKeyStorageType = {
 	WebSymmetricKey: 1,
 	WebSignKeyPair: 2,
 	WebEncryptKeyPair: 3,
-	WebPublicKey: 4,
-	WebPrivateKey: 5,
 	Ed25519ImportParams: 6,
 	EncryptData: 7,
 	RSAOAEPImportParams: 8,
 	RSAOAEPKeyGenParams: 9,
 	Ed25519KeyGenParams: 10,
 	AesGCMCryptoParams: 11,
-	AesGCMKeyGenParams: 12
+	AesGCMKeyGenParams: 12,
+	PBKDF2Params: 14,
+	WebPrivateSignKey: 15,
+	WebPrivateEncryptKey: 16,
+	WebPublicSignKey: 17,
+	WebPublicEncryptKey: 18,
 };

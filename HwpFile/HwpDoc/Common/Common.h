@@ -11,6 +11,7 @@ namespace HWP
 typedef char16_t HWP_CHAR;
 typedef std::wstring HWP_STRING;
 typedef char HWP_BYTE;
+typedef short SINGLE;
 
 #define LIST std::list
 #define VECTOR std::vector
@@ -65,6 +66,28 @@ public:
 		if (0 == m_ulRef)
 			delete this;
 		return ulRet;
+	}
+};
+
+template<typename T>
+class ICollection
+{
+	VECTOR<const T*> m_arItems;
+public:
+	ICollection() = default;
+	~ICollection()
+	{
+		for (const T* pItem : m_arItems)
+			delete pItem;
+	}
+
+	bool AddItem(const T* pItem)
+	{
+		if(nullptr == pItem)
+			return false;
+
+		m_arItems.push_back(pItem);
+		return true;
 	}
 };
 }

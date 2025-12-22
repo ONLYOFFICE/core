@@ -22,6 +22,56 @@ DEFINES += HWPFILE_USE_DYNAMIC_LIBRARY \
 
 SOURCES += \
     HWPFile.cpp \
+    HwpDoc/Chart/Attribute.cpp \
+    HwpDoc/Chart/Axis.cpp \
+    HwpDoc/Chart/Backdrop.cpp \
+    HwpDoc/Chart/Bar.cpp \
+    HwpDoc/Chart/Brush.cpp \
+    HwpDoc/Chart/CategoryScale.cpp \
+    HwpDoc/Chart/Contour.cpp \
+    HwpDoc/Chart/ContourGradient.cpp \
+    HwpDoc/Chart/Coor.cpp \
+    HwpDoc/Chart/Coor3.cpp \
+    HwpDoc/Chart/DataGrid.cpp \
+    HwpDoc/Chart/DataPoint.cpp \
+    HwpDoc/Chart/DateScale.cpp \
+    HwpDoc/Chart/Doughnut.cpp \
+    HwpDoc/Chart/Elevation.cpp \
+    HwpDoc/Chart/Fill.cpp \
+    HwpDoc/Chart/Footnote.cpp \
+    HwpDoc/Chart/Frame.cpp \
+    HwpDoc/Chart/Gradient.cpp \
+    HwpDoc/Chart/HiLo.cpp \
+    HwpDoc/Chart/Intersection.cpp \
+    HwpDoc/Chart/LCoor.cpp \
+    HwpDoc/Chart/LRect.cpp \
+    HwpDoc/Chart/Label.cpp \
+    HwpDoc/Chart/Legend.cpp \
+    HwpDoc/Chart/Light.cpp \
+    HwpDoc/Chart/Location.cpp \
+    HwpDoc/Chart/Marker.cpp \
+    HwpDoc/Chart/Pen.cpp \
+    HwpDoc/Chart/Pie.cpp \
+    HwpDoc/Chart/Plot.cpp \
+    HwpDoc/Chart/Position.cpp \
+    HwpDoc/Chart/PrintInformation.cpp \
+    HwpDoc/Chart/Rect.cpp \
+    HwpDoc/Chart/Series.cpp \
+    HwpDoc/Chart/Shadow.cpp \
+    HwpDoc/Chart/StatLine.cpp \
+    HwpDoc/Chart/Surface.cpp \
+    HwpDoc/Chart/TextLayout.cpp \
+    HwpDoc/Chart/Tick.cpp \
+    HwpDoc/Chart/Title.cpp \
+    HwpDoc/Chart/ValueScale.cpp \
+    HwpDoc/Chart/View3D.cpp \
+    HwpDoc/Chart/VtChart.cpp \
+    HwpDoc/Chart/VtColor.cpp \
+    HwpDoc/Chart/VtFont.cpp \
+    HwpDoc/Chart/VtPicture.cpp \
+    HwpDoc/Chart/Wall.cpp \
+    HwpDoc/Chart/Weighting.cpp \
+    HwpDoc/Chart/XYZ.cpp \
     HwpDoc/Common/XMLReader.cpp \
     HwpDoc/Common/WriterContext.cpp \
     HwpDoc/Conversion/Converter2OOXML.cpp \
@@ -99,6 +149,58 @@ SOURCES += \
 
 HEADERS += \
     HWPFile.h \
+    HwpDoc/Chart/Attribute.h \
+    HwpDoc/Chart/Axis.h \
+    HwpDoc/Chart/Backdrop.h \
+    HwpDoc/Chart/Bar.h \
+    HwpDoc/Chart/Brush.h \
+    HwpDoc/Chart/CategoryScale.h \
+    HwpDoc/Chart/ChartObject.h \
+    HwpDoc/Chart/Contour.h \
+    HwpDoc/Chart/ContourGradient.h \
+    HwpDoc/Chart/Coor.h \
+    HwpDoc/Chart/Coor3.h \
+    HwpDoc/Chart/DataGrid.h \
+    HwpDoc/Chart/DataPoint.h \
+    HwpDoc/Chart/DateScale.h \
+    HwpDoc/Chart/Doughnut.h \
+    HwpDoc/Chart/Elevation.h \
+    HwpDoc/Chart/Fill.h \
+    HwpDoc/Chart/Footnote.h \
+    HwpDoc/Chart/Frame.h \
+    HwpDoc/Chart/Gradient.h \
+    HwpDoc/Chart/HiLo.h \
+    HwpDoc/Chart/Intersection.h \
+    HwpDoc/Chart/LCoor.h \
+    HwpDoc/Chart/LRect.h \
+    HwpDoc/Chart/Label.h \
+    HwpDoc/Chart/Legend.h \
+    HwpDoc/Chart/Light.h \
+    HwpDoc/Chart/Location.h \
+    HwpDoc/Chart/Marker.h \
+    HwpDoc/Chart/Pen.h \
+    HwpDoc/Chart/Pie.h \
+    HwpDoc/Chart/Plot.h \
+    HwpDoc/Chart/Position.h \
+    HwpDoc/Chart/PrintInformation.h \
+    HwpDoc/Chart/Rect.h \
+    HwpDoc/Chart/Series.h \
+    HwpDoc/Chart/Shadow.h \
+    HwpDoc/Chart/StatLine.h \
+    HwpDoc/Chart/Surface.h \
+    HwpDoc/Chart/TextLayout.h \
+    HwpDoc/Chart/Tick.h \
+    HwpDoc/Chart/Title.h \
+    HwpDoc/Chart/Types.h \
+    HwpDoc/Chart/ValueScale.h \
+    HwpDoc/Chart/View3D.h \
+    HwpDoc/Chart/VtChart.h \
+    HwpDoc/Chart/VtColor.h \
+    HwpDoc/Chart/VtFont.h \
+    HwpDoc/Chart/VtPicture.h \
+    HwpDoc/Chart/Wall.h \
+    HwpDoc/Chart/Weighting.h \
+    HwpDoc/Chart/XYZ.h \
     HwpDoc/Common/Common.h \
     HwpDoc/Common/NodeNames.h \
     HwpDoc/Common/WriterContext.h \

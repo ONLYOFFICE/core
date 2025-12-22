@@ -93,6 +93,7 @@ namespace PdfWriter
 	class CStreamData;
 	class CXObject;
 	class CObjectBase;
+	class CStringObject;
 	//----------------------------------------------------------------------------------------
 	// CDocument
 	//----------------------------------------------------------------------------------------
@@ -217,7 +218,8 @@ namespace PdfWriter
 		CDictObject*      GetAcroForm() { return m_pAcroForm; }
 		CResourcesDict*   CreateResourcesDict(bool bInline, bool bProcSet);
 		void              RemoveObj(CObjectBase* pObj);
-		void              SetEncryption(CEncryptDict* pEncrypt, PdfWriter::CObjectBase* pID);
+		void              SetEncryption(CEncryptDict* pEncrypt, CObjectBase* pID);
+		void              AddNameTree(CStringObject* pName, CDestination* pDest);
 	private:		  
 					  
 		char*             GetTTFontTag();

@@ -420,6 +420,23 @@ TEST_F(CPdfFileTest, MergePdf)
 	pdfFile->Close();
 }
 
+TEST_F(CPdfFileTest, RedactPdf)
+{
+	GTEST_SKIP();
+
+	LoadFromFile();
+	ASSERT_TRUE(pdfFile->EditPdf(wsDstFile));
+
+	pdfFile->SetEditType(1);
+
+	EXPECT_TRUE(pdfFile->EditPage(0));
+	{
+		DrawSmth();
+	}
+
+	pdfFile->Close();
+}
+
 TEST_F(CPdfFileTest, EditPdf)
 {
 	GTEST_SKIP();

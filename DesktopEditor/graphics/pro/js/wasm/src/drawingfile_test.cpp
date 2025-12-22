@@ -1194,7 +1194,7 @@ int main(int argc, char* argv[])
 	}
 
 	// RASTER
-	if (false)
+	if (true)
 	{
 		int i = nTestPage;
 		//for (int i = 0; i < nPagesCount; ++i)
@@ -2252,7 +2252,7 @@ int main(int argc, char* argv[])
 	}
 
 	// SCAN PAGE
-	if (true)
+	if (false)
 	{
 		BYTE* pScan = ScanPage(pGrFile, nTestPage, 2);
 		if (pScan)

@@ -207,17 +207,37 @@ core_linux {
 		CONFIG += core_linix_use_sysroot
 		message("using custom sysroot $$QMAKE_CUSTOM_SYSROOT")
 
-		QMAKE_CUSTOM_SYSROOT_BIN = $$(QMAKE_CUSTOM_SYSROOT)/usr/bin/
+		QMAKE_CUSTOM_SYSROOT_BIN = $$(QMAKE_CUSTOM_SYSROOT_BIN)
+		isEmpty(QMAKE_CUSTOM_SYSROOT_BIN) {
+			QMAKE_CUSTOM_SYSROOT_BIN = $$QMAKE_CUSTOM_SYSROOT/usr/bin
+		}
+		QMAKE_CUSTOM_SYSROOT_BIN = $$join(QMAKE_CUSTOM_SYSROOT_BIN, , , /)
 
-		QMAKE_CC          = $$join(QMAKE_CUSTOM_SYSROOT_BIN, , , "gcc")
-		QMAKE_CXX         = $$join(QMAKE_CUSTOM_SYSROOT_BIN, , , "g++")
-		QMAKE_LINK        = $$join(QMAKE_CUSTOM_SYSROOT_BIN, , , "g++")
-		QMAKE_LINK_SHLIB  = $$join(QMAKE_CUSTOM_SYSROOT_BIN, , , "g++")
+		contains(QMAKE_CUSTOM_SYSROOT_BIN, $$QMAKE_CUSTOM_SYSROOT) {
+			message("Using compilers from same sysroot")
+			QMAKE_CC          = $$join(QMAKE_CUSTOM_SYSROOT_BIN, , , "gcc")
+			QMAKE_CXX         = $$join(QMAKE_CUSTOM_SYSROOT_BIN, , , "g++")
+			QMAKE_LINK        = $$join(QMAKE_CUSTOM_SYSROOT_BIN, , , "g++")
+			QMAKE_LINK_SHLIB  = $$join(QMAKE_CUSTOM_SYSROOT_BIN, , , "g++")
+			QMAKE_AR          = $$join(QMAKE_CUSTOM_SYSROOT_BIN, , , "ar") cqs
+			QMAKE_RANLIB      = $$join(QMAKE_CUSTOM_SYSROOT_BIN, , , "ranlib")
+			QMAKE_STRIP       = $$join(QMAKE_CUSTOM_SYSROOT_BIN, , , "strip")
+		} else {
+			message("Using cross-compilers from host sysroot")
+			QMAKE_CC          = $$join(QMAKE_CUSTOM_SYSROOT_BIN, , , "aarch64-linux-gnu-gcc")
+			QMAKE_CXX         = $$join(QMAKE_CUSTOM_SYSROOT_BIN, , , "aarch64-linux-gnu-g++")
+			QMAKE_LINK        = $$join(QMAKE_CUSTOM_SYSROOT_BIN, , , "aarch64-linux-gnu-g++")
+			QMAKE_LINK_SHLIB  = $$join(QMAKE_CUSTOM_SYSROOT_BIN, , , "aarch64-linux-gnu-g++")
+			QMAKE_AR          = $$join(QMAKE_CUSTOM_SYSROOT_BIN, , , "aarch64-linux-gnu-ar") cqs
+			QMAKE_RANLIB      = $$join(QMAKE_CUSTOM_SYSROOT_BIN, , , "aarch64-linux-gnu-ranlib")
+			QMAKE_STRIP       = $$join(QMAKE_CUSTOM_SYSROOT_BIN, , , "aarch64-linux-gnu-strip")
+			QMAKE_OBJCOPY     = $$join(QMAKE_CUSTOM_SYSROOT_BIN, , , "aarch64-linux-gnu-objcopy")
+		}
 
 		QMAKE_CFLAGS      += --sysroot=$$QMAKE_CUSTOM_SYSROOT
 		QMAKE_CXXFLAGS    += --sysroot=$$QMAKE_CUSTOM_SYSROOT -std=gnu++1y
-		QMAKE_LFLAGS      += --sysroot=$$QMAKE_CUSTOM_SYSROOT
 
+		QMAKE_LFLAGS      += --sysroot=$$QMAKE_CUSTOM_SYSROOT
 		QMAKE_INCDIR      += $$QMAKE_CUSTOM_SYSROOT/usr/include
 	}
 }
@@ -342,29 +362,6 @@ core_linux_arm {
 linux_arm64 {
 	CORE_BUILDS_PLATFORM_PREFIX = linux_arm64
 	DEFINES += _ARM_ALIGN_
-
-	!core_linix_use_sysroot {
-		ARM64_TOOLCHAIN_BIN = $$(ARM64_TOOLCHAIN_BIN)
-		ARM64_TOOLCHAIN_BIN_PREFIX = $$(ARM64_TOOLCHAIN_BIN_PREFIX)
-
-		!isEmpty(ARM64_TOOLCHAIN_BIN){
-			!isEmpty(ARM64_TOOLCHAIN_BIN_PREFIX){
-				ARM64_TOOLCHAIN_BIN_FULL = $$ARM64_TOOLCHAIN_BIN/$$ARM64_TOOLCHAIN_BIN_PREFIX
-				message("using arm64 toolchain $$ARM64_TOOLCHAIN_BIN")
-
-				QMAKE_CC          = $$join(ARM64_TOOLCHAIN_BIN_FULL, , , "gcc")
-				QMAKE_CXX         = $$join(ARM64_TOOLCHAIN_BIN_FULL, , , "g++")
-				QMAKE_LINK        = $$join(ARM64_TOOLCHAIN_BIN_FULL, , , "g++")
-				QMAKE_LINK_SHLIB  = $$join(ARM64_TOOLCHAIN_BIN_FULL, , , "g++")
-
-				QMAKE_AR          = $$join(ARM64_TOOLCHAIN_BIN_FULL, , , "ar cqs")
-				QMAKE_OBJCOPY     = $$join(ARM64_TOOLCHAIN_BIN_FULL, , , "objcopy")
-				QMAKE_NM          = $$join(ARM64_TOOLCHAIN_BIN_FULL, , , "nm -P")
-				QMAKE_STRIP       = $$join(ARM64_TOOLCHAIN_BIN_FULL, , , "strip")
-
-			}
-		}
-	}
 }
 core_ios {
 	CORE_BUILDS_PLATFORM_PREFIX = ios

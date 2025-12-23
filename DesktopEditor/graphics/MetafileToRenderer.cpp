@@ -358,7 +358,6 @@ namespace NSOnlineOfficeBinToPdf
 		Aggplus::CGraphicsPath path;
 		Aggplus::CMatrix transMatrRot;
 		Aggplus::RectF_T<double> clipRect;
-		bool isClose = false;
 		bool isResetRot = false;
 		while (oReader.Check())
 		{
@@ -647,7 +646,6 @@ namespace NSOnlineOfficeBinToPdf
 			}
 			case ctPathCommandMoveTo:
 			{
-				if (isClose) isClose = false;
 				double m1 = oReader.ReadDouble();
 				double m2 = oReader.ReadDouble();
 				path.MoveTo(m1, m2);
@@ -674,7 +672,6 @@ namespace NSOnlineOfficeBinToPdf
 			case ctPathCommandClose:
 			{
 				path.CloseFigure();
-				isClose = true;
 				break;
 			}
 			case ctPathCommandEnd:
@@ -732,7 +729,11 @@ namespace NSOnlineOfficeBinToPdf
 						transMatrRot.Reset();
 						transMatrRot.RotateAt(agg::rad2deg(rot), cX, cY, Aggplus::MatrixOrderAppend);
 
+						double offX = old_t5 - transMatrRot.tx();
+						double offY = old_t6 - transMatrRot.ty();
+
 						drawPath.Transform(&transMatrRot);
+						pRenderer->SetTransform(1.0, 0.0, 0.0, 1.0, offX, offY);
 
 						if (isZeroPt && !isZeroRot && isStretch)
 							drawPath.GetBounds(left, top, width, height);
@@ -744,42 +745,40 @@ namespace NSOnlineOfficeBinToPdf
 							tmpPath.GetBounds(left, top, width, height);
 						}
 
-						pRenderer->SetTransform(1.0, 0.0, 0.0, 1.0, old_t5 - transMatrRot.tx(), old_t6 - transMatrRot.ty());
-
 						if (isZeroPt || !isStretch)
 							clipRect = Aggplus::RectF_T<double>(left, top, width, height);
 
 						if (isStretch)
 						{
-							clipRect.Offset(transMatrRot.tx() - old_t5, transMatrRot.ty() - old_t6);
+							if (!isZeroPt)
+								clipRect.Offset(-offX, -offY);
 							pRenderer->BrushRect(true, clipRect.X, clipRect.Y, clipRect.Width, clipRect.Height);
+						}
+						else
+						{
+							double tileOffX, tileOffY;
+							pRenderer->get_BrushOffset(tileOffX, tileOffY);
+							pRenderer->put_BrushOffset(tileOffX - offX, tileOffY - offY);
 						}
 					}
 
 					clipPath.AddRectangle(clipRect.X, clipRect.Y, clipRect.Width, clipRect.Height);
 					path = Aggplus::CalcBooleanOperation(drawPath, clipPath, Aggplus::Intersection);
+					clipRect = Aggplus::RectF_T<double>();
 				}
 
 				pRenderer->AddPath(path);
-
-				if (isClose)
-				{
-					pRenderer->PathCommandClose();
-					isClose = false;
-				}
-
 				pRenderer->DrawPath(fill);
 
 				if (isResetRot)
 				{
 					pRenderer->SetTransform(old_t1, old_t2, old_t3, old_t4, old_t5, old_t6);
+					transMatrRot.Reset();
 					isResetRot = false;
 				}
 
-				transMatrRot.Reset();
 				pRenderer->put_BrushScale(false, 1.0, 1.0);
 				pRenderer->put_BrushOffset(0.0, 0.0);
-				clipRect = Aggplus::RectF_T<double>();
 				break;
 			}
 			case ctDrawImageFromFile:

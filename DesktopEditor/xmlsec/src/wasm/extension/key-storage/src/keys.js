@@ -179,8 +179,14 @@ AsymmetricKey.prototype.setParams = function(params) {
 AsymmetricKey.prototype.getImportCryptoParams = function() {
 	return this.params.getImportCryptoParams();
 };
+AsymmetricKey.prototype.getBinaryKey = function() {
+	return this.binaryKey;
+};
+AsymmetricKey.prototype.getCryptoKey = function() {
+	return this.cryptoKey;
+};
 
-export function WebPrivateKey() {
+function WebPrivateKey() {
 	AsymmetricKey.call(this);
 	this.salt = null;
 }
@@ -231,7 +237,7 @@ WebPrivateKey.prototype.getImportFormat = function () {
 	return c_oAscExportKeyFormat.pkcs8;
 }
 
-function WebPrivateSignKey() {
+export function WebPrivateSignKey() {
 	WebPrivateKey.call(this);
 }
 initClass(WebPrivateSignKey, WebPrivateKey, c_oAscKeyStorageType.WebPrivateSignKey);
@@ -239,7 +245,7 @@ WebPrivateSignKey.prototype.getCryptoUsages = function () {
 	return ["sign"];
 };
 
-function WebPrivateEncryptKey() {
+export function WebPrivateEncryptKey() {
 	WebPrivateKey.call(this);
 }
 initClass(WebPrivateEncryptKey, WebPrivateKey, c_oAscKeyStorageType.WebPrivateEncryptKey);
@@ -247,7 +253,7 @@ WebPrivateEncryptKey.prototype.getCryptoUsages = function () {
 	return ["decrypt"];
 };
 
-export function WebPublicKey() {
+function WebPublicKey() {
 	AsymmetricKey.call(this);
 	this.binaryKey = null;
 	this.cryptoKey = null;
@@ -291,7 +297,7 @@ WebPublicKey.prototype.getImportFormat = function () {
 	return c_oAscExportKeyFormat.spki;
 }
 
-function WebPublicSignKey() {
+export function WebPublicSignKey() {
 	WebPublicKey.call(this);
 }
 initClass(WebPublicSignKey, WebPublicKey, c_oAscKeyStorageType.WebPublicSignKey);
@@ -299,7 +305,7 @@ WebPublicSignKey.prototype.getCryptoUsages = function () {
 	return ["verify"];
 };
 
-function WebPublicEncryptKey() {
+export function WebPublicEncryptKey() {
 	WebPublicKey.call(this);
 }
 initClass(WebPublicEncryptKey, WebPublicKey, c_oAscKeyStorageType.WebPublicEncryptKey);
@@ -348,11 +354,15 @@ WebSymmetricKey.fromCryptoKey = function(cryptoKey, pbkdfParams) {
 WebSymmetricKey.prototype.setBinaryKey = function(buffer) {
 	this.binaryKey = buffer;
 };
+WebSymmetricKey.prototype.getBinaryKey = function() {
+	return this.binaryKey;
+};
+WebSymmetricKey.prototype.setCryptoKey = function(cryptoKey) {
+	this.cryptoKey = cryptoKey;
+};
 WebSymmetricKey.prototype.getCryptoKey = function() {
 	return this.cryptoKey;
 };
-
-
 WebSymmetricKey.prototype.export = function(writer) {
 	writeLong(writer, this.version);
 	switch (this.version) {
@@ -370,12 +380,26 @@ WebSymmetricKey.prototype.export = function(writer) {
 };
 WebSymmetricKey.prototype.encrypt = function(data) {
 	const crypto = getCrypto();
-	crypto.encrypt(this, data);
+	return crypto.encrypt(this, data);
 };
 WebSymmetricKey.prototype.decrypt = function(data) {
 	const crypto = getCrypto();
-	crypto.decrypt(this, EncryptData.import(data));
+	return crypto.decrypt(this, EncryptData.import(data));
 };
+WebSymmetricKey.prototype.initKey = function(masterPassword) {
+	const crypto = getCrypto();
+	return crypto.initKey(this, masterPassword);
+};
+WebSymmetricKey.prototype.getImportFormat = function() {
+	return c_oAscExportKeyFormat.raw;
+};
+WebSymmetricKey.prototype.getImportCryptoParams = function() {
+
+};
+WebSymmetricKey.prototype.getCryptoUsages = function() {
+	return ["encrypt", "decrypt"];
+};
+
 
 export function EncryptData(encryptData, params) {
 	CryptoBase.call(this);

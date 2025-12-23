@@ -1,4 +1,10 @@
-import {c_oAscAlgorithmType, c_oAscCryptoDigestType, c_oAscDigestType, c_oAscKeyStorageType} from "./defines";
+import {
+	c_oAscCryptoAesType,
+	c_oAscCryptoDigestType,
+	c_oAscCryptoRsaType,
+	c_oAscDigestType,
+	c_oAscKeyStorageType
+} from "./defines";
 import {readLong, readBuffer} from "./serialize/reader";
 import {writeBuffer, writeLong} from "./serialize/writer";
 import {CryptoBase, initClass} from "./utils";
@@ -76,20 +82,34 @@ export function RsaOAEPImportParams(hash) {
 }
 initClass(RsaOAEPImportParams, RsaImportParams, c_oAscKeyStorageType.RSAOAEPImportParams);
 
-function RSAKeyGenParams(hash, modulusLength, publicExponent) {
+function RsaKeyGenParams(hash, modulusLength, publicExponent) {
 	RsaImportParams.call(this, hash);
 	this.modulusLength = typeof modulusLength === "number" ? modulusLength : 2048;
 	this.publicExponent = publicExponent || new Uint8Array([0x01, 0x00, 0x01]);
 }
-initClass(RSAKeyGenParams, RsaImportParams);
-RSAKeyGenParams.prototype.getImportParams = function() {
+initClass(RsaKeyGenParams, RsaImportParams);
+RsaKeyGenParams.prototype.getImportParams = function() {
 	return new RsaImportParams(this.hash);
+};
+RsaKeyGenParams.prototype.getKeyGenCryptoParams = function() {
+	return {
+		name: c_oAscCryptoRsaType[this.objectType],
+		modulusLength: this.modulusLength,
+		publicExponent: this.publicExponent,
+		hash: c_oAscCryptoDigestType[this.hash]
+	};
+};
+RsaKeyGenParams.prototype.getCryptoUsages = function() {
+	return ['sign', 'verify'];
 };
 
 export function RsaOAEPKeyGenParams(hash, modulusLength, publicExponent) {
-	RSAKeyGenParams.call(this, hash, modulusLength, publicExponent);
+	RsaKeyGenParams.call(this, hash, modulusLength, publicExponent);
 }
-initClass(RsaOAEPImportParams, RsaImportParams, c_oAscKeyStorageType.RSAOAEPKeyGenParams);
+initClass(RsaOAEPImportParams, RsaKeyGenParams, c_oAscKeyStorageType.RSAOAEPKeyGenParams);
+RsaOAEPKeyGenParams.prototype.getCryptoUsages = function() {
+	return ['encrypt', 'decrypt'];
+};
 
 export function Ed25519ImportParams() {
 	AlgorithmParams.call(this);
@@ -103,6 +123,14 @@ export function Ed25519KeyGenParams() {
 initClass(Ed25519KeyGenParams, Ed25519ImportParams, c_oAscKeyStorageType.Ed25519KeyGenParams);
 Ed25519KeyGenParams.prototype.getImportParams = function() {
 	return new Ed25519ImportParams();
+};
+Ed25519KeyGenParams.prototype.getKeyGenCryptoParams = function() {
+	return {
+		name: "Ed25519"
+	};
+};
+Ed25519KeyGenParams.prototype.getCryptoUsages = function() {
+	return ['sign', 'verify'];
 };
 
 export function AesGcmCryptoParams(iv, tagLength) {
@@ -159,11 +187,20 @@ initClass(AesKeyGenParams, AlgorithmParams);
 AesKeyGenParams.prototype.getImportParams = function() {
 	return new AlgorithmParams();
 };
+AesKeyGenParams.prototype.getKeyGenCryptoParams = function() {
+	return {
+		name: c_oAscCryptoAesType[this.objectType],
+		length: this.length
+	}
+};
+AesKeyGenParams.prototype.getCryptoUsages = function() {
+	return ['encrypt', 'decrypt'];
+};
 
 export function AesGcmKeyGenParams() {
 	AesKeyGenParams.call(this,  256);
 }
-initClass(AesGcmKeyGenParams, AlgorithmParams, c_oAscKeyStorageType.AesGCMKeyGenParams);
+initClass(AesGcmKeyGenParams, AesKeyGenParams, c_oAscKeyStorageType.AesGCMKeyGenParams);
 
 const PBKDFSaltLength = 16;
 export function PBKDF2Params() {
@@ -220,5 +257,3 @@ PBKDF2Params.prototype.setSalt = function(reader) {
 PBKDF2Params.prototype.setHash = function(reader) {
 	this.iterations = reader;
 };
-
-

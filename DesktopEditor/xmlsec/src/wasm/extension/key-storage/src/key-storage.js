@@ -39,14 +39,15 @@ KeyStorage.prototype.import = function (binaryData, masterPassword) {
 				}
 			}
 			const initKeys = keys.map(function (key) {
-				return key.init(masterPassword);
+				return key.initKey(masterPassword);
 			});
-			Promise.all(initKeys).then()
-			this.addKeys(keys).then;
-			break;
+			const oThis = this;
+			return Promise.all(initKeys).then(function() {
+				return oThis.addKeys(keys);
+			});
 		}
 		default: {
-			break;
+			return Promise.resolve();
 		}
 	}
 };
@@ -56,13 +57,6 @@ KeyStorage.prototype.changeMasterPassword = function (oldMasterPassword, newMast
 		return key.changeMasterPassword(oldMasterPassword, newMasterPassword);
 	});
 	return Promise.all(keys);
-};
-KeyStorage.prototype.changeMasterPassword = function (oldMasterPassword, newMasterPassword) {
-	const oThis = this;
-		const keys = oThis.keys.map(function(key) {
-			return key.changeMasterPassword(oldMasterPassword, newMasterPassword);
-		});
-		return Promise.all(keys);
 };
 KeyStorage.prototype.getKeyByGuid = function (guid) {
 	for (let i = 0; i < this.keys.length; i++) {
@@ -91,4 +85,7 @@ KeyStorage.prototype.addKeys = function (keys) {
 };
 KeyStorage.prototype.setKeys = function (keys) {
 	this.keys = keys;
+};
+KeyStorage.prototype.getKeyByPublicKey = function(publicKey) {
+
 };

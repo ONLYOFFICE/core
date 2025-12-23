@@ -1,5 +1,12 @@
 import {c_oAscKeyStorageType} from "./defines";
-import {EncryptData, WebEncryptKeyPair, WebPrivateKey, WebPublicKey, WebSignKeyPair, WebSymmetricKey} from "./keys";
+import {
+	EncryptData,
+	WebEncryptKeyPair, WebPrivateEncryptKey,
+	WebPrivateSignKey, WebPublicEncryptKey,
+	WebPublicSignKey,
+	WebSignKeyPair,
+	WebSymmetricKey
+} from "./keys";
 import {
 	AesGcmCryptoParams, AesGcmKeyGenParams,
 	Ed25519ImportParams,

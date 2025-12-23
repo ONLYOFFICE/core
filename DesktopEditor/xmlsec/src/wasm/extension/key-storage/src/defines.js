@@ -1,9 +1,3 @@
-export const c_oAscAlgorithmType = {
-	AES_GCM          : 1,
-	ED25519          : 2,
-	RSA_OAEP         : 3
-};
-
 export const c_oAscDigestType = {
 	SHA1: 1,
 	SHA256: 2,
@@ -41,3 +35,9 @@ export const c_oAscKeyStorageType = {
 	WebPublicSignKey: 17,
 	WebPublicEncryptKey: 18,
 };
+
+export const c_oAscCryptoRsaType = {};
+c_oAscCryptoRsaType[c_oAscKeyStorageType.RSAOAEPKeyGenParams] = "RSA-OAEP";
+
+export const c_oAscCryptoAesType = {};
+c_oAscCryptoAesType[c_oAscKeyStorageType.AesGCMKeyGenParams] = "AES-GCM";

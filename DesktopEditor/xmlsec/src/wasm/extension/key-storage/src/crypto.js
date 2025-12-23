@@ -43,7 +43,7 @@ CWebCrypto.prototype.getAesCryptoKey = function(masterPassword, salt) {
 			pwKey,
 			new AesGcmKeyGenParams(),
 			false,
-			['wrapKey', 'unwrapKey', 'encrypt', 'decrypt']
+			['encrypt', 'decrypt']
 		);
 	}).then(function(aesKey) {
 		return WebSymmetricKey.fromCryptoKey(aesKey, pbkdfParams);
@@ -86,7 +86,7 @@ CWebCrypto.prototype.exportKey = function(key) {
 }
 CWebCrypto.prototype.generateKey = function(params, password, salt) {
 	const oThis = this;
-	const cryptoParams = params.getCryptoParams();
+	const cryptoParams = params.getKeyGenCryptoParams();
 	const cryptoUsages = params.getCryptoUsages();
 	return this.getAesCryptoKey(password, salt).then(function(aesKey) {
 		return this.subtle.generateKey(cryptoParams, true, cryptoUsages).then(function(cryptoKey) {

@@ -1702,6 +1702,11 @@ CFile.prototype["readAnnotationsInfoFromBinary"] = function(AnnotInfo)
 };
 
 // SCAN PAGES
+CFile.prototype["scanPageFonts"] = function(page)
+{
+	this._setScanPageFonts(page);
+};
+
 CFile.prototype["scanPage"] = function(page, mode)
 {
 	let ptr = this._scanPage(page, mode);

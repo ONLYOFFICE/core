@@ -166,6 +166,10 @@ WASM_EXPORT void SetCMapData(CDrawingFile* pFile, BYTE* data, int size)
 {
 	pFile->SetCMapData(data, size);
 }
+WASM_EXPORT void SetScanPageFonts(CDrawingFile* pFile, int nPageIndex)
+{
+	return pFile->SetScanPageFonts(nPageIndex);
+}
 WASM_EXPORT BYTE* ScanPage(CDrawingFile* pFile, int nPageIndex, int mode)
 {
 	return pFile->ScanPage(nPageIndex, mode);

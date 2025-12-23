@@ -252,6 +252,11 @@ CFile.prototype._getInteractiveFormsAP = function(width, height, backgroundColor
 };
 
 // SCAN PAGES
+CFile.prototype._setScanPageFonts = function(page)
+{
+	g_native_drawing_file["SetScanPageFonts"](page);
+};
+
 CFile.prototype._scanPage = function(page, mode)
 {
 	g_module_pointer.ptr = g_native_drawing_file["ScanPage"](page, (mode === undefined) ? 0 : mode);

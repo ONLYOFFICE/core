@@ -108,6 +108,7 @@ namespace NSOnlineOfficeBinToPdf
 		ctBrushRectableEnabled 		    = 30,
 		ctBrushGradient                 = 31,
 		ctBrushTexturePath              = 32,
+		ctBrushResetRotation			= 33,
 
 		// font
 		ctFontXML						= 40,
@@ -153,6 +154,8 @@ namespace NSOnlineOfficeBinToPdf
 		ctPathCommandGetCurrentPoint	= 101,
 		ctPathCommandText				= 102,
 		ctPathCommandTextEx			    = 103,
+		ctPathCommandOffset				= 104,
+		ctPathCommandScale				= 105,
 
 		// image
 		ctDrawImage					    = 110,

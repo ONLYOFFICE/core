@@ -106,9 +106,10 @@ const bool FRAME::loadContent(BinProcessor& proc)
 
 const bool FRAME::saveContent(BinProcessor& proc)
 {
-	if(m_Frame == nullptr)
-		return false;
-	proc.mandatory(*m_Frame);
+	if(m_Frame != nullptr)
+		proc.mandatory(*m_Frame);
+	else
+		proc.mandatory<Frame>();
 	proc.mandatory<Begin>();
 	if(m_LineFormat != nullptr)
 		proc.mandatory(*m_LineFormat);

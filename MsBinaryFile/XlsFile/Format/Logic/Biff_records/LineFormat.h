@@ -54,12 +54,12 @@ public:
 	int serialize(std::wostream & _stream);
 //-----------------------------
 	LongRGB rgb;
-	_UINT16 lns = 0;
-	_UINT16 we = 0;
+	_UINT16 lns = 5;
+	_UINT16 we = 0xFFFF;
 	bool	fAuto = false;
 	bool	fAxisOn = false;
 	bool	fAutoCo = false;
-	IcvChart icv = 0;
+	IcvChart icv = 	0x004D;
 };
 
 } // namespace XLS

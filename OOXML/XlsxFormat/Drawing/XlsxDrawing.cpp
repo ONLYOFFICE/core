@@ -36,10 +36,8 @@
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/ChartSheetSubstream.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/OBJECTS.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/CHARTFOMATS.h"
-#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/FRAME.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/MsoDrawing.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Chart.h"
-#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Frame.h"
 #include "../../PPTXFormat/Logic/Shape.h"
 #include "../Chart/Chart.h"
 
@@ -306,11 +304,11 @@ namespace OOX
 						auto chartRid = graphicFrame->chartRec->id_data.get();
 						auto castedChart = Get<OOX::File>(chartRid);
 						auto ChartFile = static_cast<OOX::Spreadsheet::CChartFile*>(castedChart.GetPointer());
+						if(ChartFile->m_oChartSpace.m_spPr.IsInit())
+						{
+							ChartFormatsPtr->m_FRAME = ChartFile->m_oChartSpace.m_spPr->toXLSFrame();
+						}
 
-						auto Frame = new XLS::FRAME;
-						ChartFormatsPtr->m_FRAME = XLS::BaseObjectPtr(Frame);
-						auto framePtr = new XLS::Frame;
-						Frame->m_Frame = XLS::BaseObjectPtr(framePtr);
 						//todo chart processing
 					}
 				}

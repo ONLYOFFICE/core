@@ -35,6 +35,9 @@
 #include "PrstGeom.h"
 #include "CustGeom.h"
 
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/FRAME.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Frame.h"
+
 namespace PPTX
 {
 	namespace Logic
@@ -275,6 +278,13 @@ namespace PPTX
 			}
 
 			pReader->Seek(_end_rec);
+		}
+		XLS::BaseObjectPtr SpPr::toXLSFrame()const
+		{
+			auto Frame = new XLS::FRAME;
+			if(ln.IsInit())
+				Frame->m_LineFormat = ln->toXLS();
+			return XLS::BaseObjectPtr(Frame);
 		}
 		OOX::EElementType SpPr::getType () const
 		{

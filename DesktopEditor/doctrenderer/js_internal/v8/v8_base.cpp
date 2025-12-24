@@ -474,14 +474,11 @@ namespace NSJSBase
 			global->Set(context, v8::String::NewFromUtf8Literal(isolate, "self"), global).Check();
 			global->Set(context, v8::String::NewFromUtf8Literal(isolate, "native"), v8::Undefined(isolate)).Check();
 
-			LOGD("compiling and running snapshot code...");
 			// Compile
 			v8::Local<v8::String> source = v8::String::NewFromUtf8(isolate, script.c_str()).ToLocalChecked();
 			v8::Local<v8::Script> script = v8::Script::Compile(context, source).ToLocalChecked();
-			LOGD("compile status: %d", try_catch.Check());
 			// Run
 			script->Run(context).IsEmpty();
-			LOGD("run status: %d", try_catch.Check());
 
 			snapshotCreator.SetDefaultContext(context);
 		}

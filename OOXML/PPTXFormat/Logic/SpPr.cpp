@@ -284,6 +284,8 @@ namespace PPTX
 			auto Frame = new XLS::FRAME;
 			if(ln.IsInit())
 				Frame->m_LineFormat = ln->toXLS();
+			if(Fill.is_init())
+				Frame->m_AreaFormat = Fill.toXLS();
 			return XLS::BaseObjectPtr(Frame);
 		}
 		OOX::EElementType SpPr::getType () const

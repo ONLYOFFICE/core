@@ -62,11 +62,11 @@ public:
 	
 	_UINT16 fls = 0;
 	
-	bool fAuto = false;
+	bool fAuto = true;
 	bool fInvertNeg = false;
 	
 	IcvChart icvFore = 0;
-	IcvChart icvBack = 0;
+	IcvChart icvBack = 0x0009;
 };
 
 } // namespace XLS

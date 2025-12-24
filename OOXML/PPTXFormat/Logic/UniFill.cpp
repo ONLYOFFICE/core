@@ -34,6 +34,8 @@
 #include "../../../DesktopEditor/common/File.h"
 #include "../../../DesktopEditor/raster/ImageFileFormatChecker.h"
 
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/AreaFormat.h"
+
 namespace PPTX
 {
 	namespace Logic
@@ -645,6 +647,74 @@ namespace PPTX
 				}
 				Fill->toXmlWriter(pWriter);
 			}
+		}
+		XLS::BaseObjectPtr UniFill::toXLS() const
+		{
+			auto ptr = new XLS::AreaFormat;
+			if (Fill.is_init())
+			{
+				if(m_type == UniFill::Type::noFill)
+					ptr->fls = 0;
+				else
+				{
+					if(m_type == UniFill::Type::solidFill)
+					{
+						ptr->fls = 1;
+						auto solid = dynamic_cast<PPTX::Logic::SolidFill*>(Fill.GetPointer());
+						auto rgba = solid->Color.Color->GetRGBA(0);
+						ptr->rgbFore.red = GETBITS(rgba, 0, 1);
+						ptr->rgbFore.green = GETBITS(rgba, 2, 3);
+						ptr->rgbFore.blue = GETBITS(rgba, 4, 5);
+					}
+					else if(m_type == UniFill::Type::pattFill)
+					{
+						auto patt = dynamic_cast<PPTX::Logic::PattFill*>(Fill.GetPointer());
+
+						auto rgba = patt->fgClr.Color->GetRGBA(0);
+						ptr->rgbFore.red = GETBITS(rgba, 0, 1);
+						ptr->rgbFore.green = GETBITS(rgba, 2, 3);
+						ptr->rgbFore.blue = GETBITS(rgba, 4, 5);
+
+						rgba = patt->bgClr.Color->GetRGBA(0);
+						ptr->rgbBack.red = GETBITS(rgba, 0, 1);
+						ptr->rgbBack.green = GETBITS(rgba, 2, 3);
+						ptr->rgbBack.blue = GETBITS(rgba, 4, 5);
+						if(patt->prst->get() == L"pct50")
+							ptr->fls = 2;
+						else if(patt->prst->get() == L"pct25")
+							ptr->fls = 4;
+						else if(patt->prst->get() == L"dkHorz")
+							ptr->fls = 5;
+						else if(patt->prst->get() == L"dkVert")
+							ptr->fls = 6;
+						else if(patt->prst->get() == L"dnDiag")
+							ptr->fls = 7;
+						else if(patt->prst->get() == L"upDiag")
+							ptr->fls = 8;
+						else if(patt->prst->get() == L"smGrid")
+							ptr->fls = 9;
+						else if(patt->prst->get() == L"trellis")
+							ptr->fls = 0xA;
+						else if(patt->prst->get() == L"narHorz")
+							ptr->fls = 0xB;
+						else if(patt->prst->get() == L"ltVert")
+							ptr->fls = 0xC;
+						else if(patt->prst->get() == L"dashDnDiag")
+							ptr->fls = 0xD;
+						else if(patt->prst->get() == L"dashUpDiag")
+							ptr->fls = 0xE;
+						else if(patt->prst->get() == L"horzBrick")
+							ptr->fls = 0xF;
+						else if(patt->prst->get() == L"pct30")
+							ptr->fls = 0x10;
+						else if(patt->prst->get() == L"dotDmnd")
+							ptr->fls = 0x11;
+						else if(patt->prst->get() == L"pct5")
+							ptr->fls = 0x12;
+					}
+				}
+			}
+			return XLS::BaseObjectPtr(ptr);
 		}
 		bool UniFill::is_init() const
 		{

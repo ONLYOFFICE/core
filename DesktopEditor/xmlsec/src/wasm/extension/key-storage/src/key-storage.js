@@ -86,6 +86,13 @@ KeyStorage.prototype.addKeys = function (keys) {
 KeyStorage.prototype.setKeys = function (keys) {
 	this.keys = keys;
 };
-KeyStorage.prototype.getKeyByPublicKey = function(publicKey) {
-
+KeyStorage.prototype.getKeyByPublicKey = function(publicKeyData) {
+	const reader = new BinaryReader(publicKeyData, publicKeyData.length);
+	const publicKey = readObject(reader);
+	for (let i = 0; i < this.keys.length; i++) {
+		if (this.keys[i].isHavePublicKey(publicKey)) {
+			return this.keys[i];
+		}
+	}
+	return null;
 };

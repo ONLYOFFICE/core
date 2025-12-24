@@ -124,6 +124,9 @@ WebKeyPair.prototype.initKey = function (masterPassword) {
 	const crypto = getCrypto();
 	return Promise.all([crypto.initKey(this.publicKey), crypto.initKey(this.privateKey, masterPassword)]);
 };
+WebKeyPair.prototype.isHavePublicKey = function(publicKey) {
+	return this.publicKey.isEqual(publicKey);
+};
 
 export function WebSignKeyPair() {
 	WebKeyPair.call(this);
@@ -296,6 +299,9 @@ WebPublicKey.prototype.verify = function(data) {
 WebPublicKey.prototype.getImportFormat = function () {
 	return c_oAscExportKeyFormat.spki;
 }
+WebPublicKey.prototype.isEqual = function (publicKey) {
+	return this.binaryKey === publicKey.binaryKey;
+};
 
 export function WebPublicSignKey() {
 	WebPublicKey.call(this);
@@ -399,7 +405,9 @@ WebSymmetricKey.prototype.getImportCryptoParams = function() {
 WebSymmetricKey.prototype.getCryptoUsages = function() {
 	return ["encrypt", "decrypt"];
 };
-
+WebSymmetricKey.prototype.isHavePublicKey = function(publicKey) {
+	return false;
+};
 
 export function EncryptData(encryptData, params) {
 	CryptoBase.call(this);

@@ -886,12 +886,12 @@ namespace Aggplus
 		if (isCurve)
 		{
 			std::vector<PointD> points = GetPoints(idx, 4);
-			area = 3.0 * (points[3].Y - points[0].Y) * (points[1].X + points[2].X)
+			area = 3.0 * ((points[3].Y - points[0].Y) * (points[1].X + points[2].X)
 						  - (points[3].X - points[0].X) * (points[1].Y + points[2].Y)
 						  + points[1].Y * (points[0].X - points[2].X)
 						  - points[1].X * (points[0].Y - points[2].Y)
 						  + points[3].Y * (points[2].X + points[0].X / 3.0)
-						  - points[3].X * (points[2].Y + points[0].Y / 3.0) / 20.0;
+						  - points[3].X * (points[2].Y + points[0].Y / 3.0)) / 20.0;
 		}
 		else
 		{

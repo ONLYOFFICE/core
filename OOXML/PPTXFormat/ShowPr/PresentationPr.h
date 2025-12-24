@@ -35,10 +35,11 @@
 #include "../Logic/UniColor.h"
 #include "../Limit/BWMode.h"
 #include "../Logic/ExtP.h"
+#include "./CustomShowId.h"
 
 namespace PPTX
 {
-	namespace nsPresentationPr
+	namespace nsPresentation
 	{
 		class Browse;
 		class CustShow;
@@ -59,13 +60,13 @@ namespace PPTX
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
-			nullable<nsPresentationPr::Browse> Browse;
-			nullable<nsPresentationPr::CustShow> CustShow;
-			nullable<nsPresentationPr::Kiosk> Kiosk;
+			nullable<nsPresentation::Browse> Browse;
+			nullable<nsPresentation::CustomShowId> CustomShowId;
+			nullable<nsPresentation::Kiosk> Kiosk;
 			Logic::UniColor PenClr;
-			nullable<nsPresentationPr::Present> Present;
-			nullable<nsPresentationPr::SldAll> SldAll;
-			nullable<nsPresentationPr::SldRg> SldRg;
+			nullable<nsPresentation::Present> Present;
+			nullable<nsPresentation::SldAll> SldAll;
+			nullable<nsPresentation::SldRg> SldRg;
 
 			nullable_bool loop;
 			nullable_bool showAnimation;
@@ -99,6 +100,6 @@ namespace PPTX
 		protected:
 			virtual void FillParentPointersForChilds();
 		};
-	} // namespace nsPresentationPr
+	} // namespace nsPresentation
 } // namespace PPTX
 

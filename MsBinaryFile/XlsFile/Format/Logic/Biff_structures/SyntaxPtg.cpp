@@ -474,12 +474,12 @@ const bool SyntaxPtg::extract_PtgList(std::wstring::const_iterator& first, std::
 			ptgList.invalid = false;
 			ptgList.nonresident = false;
 			ptgList.ixti = ixti;
-            static boost::wregex reg_inside_table1(L"\\[#?[\\s\\w[:Unicode:]\\d.]+\\]");
-            static boost::wregex reg_inside_table2(L"\\[#[\\w[:Unicode:]][\\s\\w[:Unicode:]\\d.]*\\],\\[#[\\w[:Unicode:]][[:Unicode:]\\s\\w\\d.]*\\]");
-            static boost::wregex reg_inside_table3(L"^[,;:]?\\[#?[[:Unicode:]\\s\\w\\d.]+\\]");
-			static boost::wregex reg_inside_table4(L"\\[#?(\\[.+?\\]\\,)?(\\[.+?\\])?.+?\\]");
-			static boost::wregex reg_inside_table5(L"^[,;:]?\\[.+?\\]");
-			static boost::wregex reg_inside_table6(L"\\[\\]");
+			boost::wregex reg_inside_table1(L"\\[#?[\\s\\w[:Unicode:]\\d.]+\\]");
+			boost::wregex reg_inside_table2(L"\\[#[\\w[:Unicode:]][\\s\\w[:Unicode:]\\d.]*\\],\\[#[\\w[:Unicode:]][[:Unicode:]\\s\\w\\d.]*\\]");
+			boost::wregex reg_inside_table3(L"^[,;:]?\\[#?[[:Unicode:]\\s\\w\\d.]+\\]");
+			boost::wregex reg_inside_table4(L"\\[#?(\\[.+?\\]\\,)?(\\[.+?\\])?.+?\\]");
+			boost::wregex reg_inside_table5(L"^[,;:]?\\[.+?\\]");
+			boost::wregex reg_inside_table6(L"\\[\\]");
 
 			first = results[1].second;
 
@@ -512,16 +512,18 @@ const bool SyntaxPtg::extract_PtgList(std::wstring::const_iterator& first, std::
 					ptgList.rowType = 0x01;
 				}
 				else if (insider == L"[#Headers]")
-				{
-					if (boost::regex_search(first, last, results_1, reg_inside_table2))
+				{	auto tempResults = results_1;
+					if (boost::regex_search(first, last, tempResults, reg_inside_table2))
 					{
-						if (results_1.str(0) == L"[#Headers],[#Data]")
+						if (tempResults.str(0) == L"[#Headers],[#Data]")
 						{
 							ptgList.rowType = 0x06;
+							results_1 = tempResults;
 						}
 					}
 					else
 						ptgList.rowType = 0x02;
+
 				}
 				else if (insider == L"[#Totals]")
 				{

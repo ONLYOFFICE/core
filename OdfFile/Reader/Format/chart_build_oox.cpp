@@ -260,18 +260,36 @@ void object_odf_context::docx_convert(oox::docx_conversion_context & Context)
 	else if (object_type_ == 3 && office_math_)
 	{
 		bool in_draw_frame = Context.get_drawing_state_content();
+
+		Context.get_math_context().base_font_size_ = baseFontHeight_;
+		Context.get_math_context().base_font_name_ = baseFontName_;
+		Context.get_math_context().base_font_italic_ = baseFontItalic_;
+		Context.get_math_context().base_font_bold_ = baseFontBold_;
+		Context.get_math_context().base_alignment_ = in_draw_frame ? 0 : baseAlignment_;
+
+		if (!in_draw_frame && Context.get_paragraph_state())
+		{
+			style_paragraph_properties_ptr props = Context.current_paragraph_properties();
+			if (props && props->content_.fo_text_align_)
+			{
+				switch (props->content_.fo_text_align_->get_type())
+				{
+				case text_align::Left:			Context.get_math_context().base_alignment_ = 0;	break;
+				case text_align::Right:			Context.get_math_context().base_alignment_ = 2;	break;
+				case text_align::Center:		Context.get_math_context().base_alignment_ = 1;	break;
+				case text_align::Justify:		Context.get_math_context().base_alignment_ = 0; break;
+				case text_align::Start:			Context.get_math_context().base_alignment_ = Context.get_rtl() ? 2 : 0; break;
+				case text_align::End:			Context.get_math_context().base_alignment_ = Context.get_rtl() ? 0 : 2; break;
+				}
+			}
+		}
+
 		oox::StreamsManPtr prev = Context.get_stream_man();
 		
 		std::wstringstream temp_stream(Context.get_drawing_context().get_text_stream_frame());
 		Context.set_stream_man( boost::shared_ptr<oox::streams_man>( new oox::streams_man(temp_stream) ));	
 		
 		Context.reset_context_state();
-
-		Context.get_math_context().base_font_size_ = baseFontHeight_;	
-		Context.get_math_context().base_font_name_ = baseFontName_;
-		Context.get_math_context().base_alignment_ = in_draw_frame ? 0 : baseAlignment_;
-		Context.get_math_context().base_font_italic_ = baseFontItalic_;
-		Context.get_math_context().base_font_bold_ = baseFontBold_;
 
 		Context.start_math_formula();
 		office_math_->oox_convert(Context.get_math_context(), 2);
@@ -599,7 +617,7 @@ void object_odf_context::oox_convert(oox::oox_chart_context & chart_context)
 		if	(a.dimension_ == L"y" && y_enabled)continue;
 		if	(a.dimension_ == L"z" && z_enabled)continue;
 
-		if	(a.dimension_ == L"x")//могут быть типы 1, 2, 3, 4
+		if	(a.dimension_ == L"x")
 		{			
 			if (last_set_class == chart_class::scatter ||
 				last_set_class == chart_class::bubble) a.type_ = 2;
@@ -619,9 +637,6 @@ void object_odf_context::oox_convert(oox::oox_chart_context & chart_context)
 			a.type_ = 2;
 			if (last_set_class == chart_class::bar)
 			{
-				//вот нахрена свойства относящиеся к серии и самому чарту воткнули в оси ???? (ооо писали идиеты???)
-				//или это банальная ошибка которую так никогда и не исправили???
-				//overlap & gap-width
 				oox::oox_chart_ptr current = chart_context.get_current_chart();
 				current->set_graphic_properties(a.graphic_properties_);
 			}
@@ -635,7 +650,7 @@ void object_odf_context::oox_convert(oox::oox_chart_context & chart_context)
 			z_enabled = true;
 		}
 
-		chart_context.add_axis(a.type_, a);
+		chart_context.add_axis(a);
 	}
 
 	if (bIs3D.get_value_or(false))
@@ -645,7 +660,7 @@ void object_odf_context::oox_convert(oox::oox_chart_context & chart_context)
 			chart::axis a;
 			a.type_ = 0;	// blank
 
-			chart_context.add_axis(a.type_, a);
+			chart_context.add_axis(a);
 		}
 		chart_context.set_3D_chart (true);
 	}
@@ -1003,6 +1018,15 @@ void process_build_object::visit(chart_axis& val)
 							val.attlist_.chart_name_.get_value_or(L""),
 							val.attlist_.common_attlist_.chart_style_name_.get_value_or(L""));
 
+	if (val.attlist_.axis_type_)
+	{
+		if (val.attlist_.axis_type_->get_type() == odf_types::chart_axis_type::date)
+			object_odf_context_.axises_.back().type_ = 4;
+		else if (val.attlist_.axis_type_->get_type() == odf_types::chart_axis_type::text)
+			object_odf_context_.axises_.back().type_ = 1;
+
+	}
+
     ACCEPT_ALL_CONTENT(val.content_);
 
 	std::wstring style_name	= val.attlist_.common_attlist_.chart_style_name_.get_value_or(L"");
@@ -1106,11 +1130,11 @@ void process_build_object::visit(chart_mean_value & val)
 }
 void process_build_object::visit(chart_date_scale & val)
 {
-	object_odf_context_.axises_.back().type_ = 4;
+	//...
 }
 void process_build_object::visit(chartooo_date_scale & val)
 {
-	object_odf_context_.axises_.back().type_ = 4;
+	//...
 }
 void process_build_object::visit(chart_error_indicator & val)
 {

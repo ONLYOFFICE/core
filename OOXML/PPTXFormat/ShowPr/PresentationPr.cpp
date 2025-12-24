@@ -33,7 +33,7 @@
 #include "PresentationPr.h"
 
 #include "./Browse.h"
-#include "./CustShow.h"
+#include "./CustomShowId.h"
 #include "./Kiosk.h"
 #include "./Present.h"
 #include "./SldAll.h"
@@ -41,7 +41,7 @@
 
 namespace PPTX
 {
-	namespace nsPresentationPr
+	namespace nsPresentation
 	{
 		void ShowPr::fromXML(XmlUtils::CXmlNode& node)
 		{
@@ -51,7 +51,7 @@ namespace PPTX
 			XmlMacroReadAttributeBase(node, L"useTimings", useTimings);
 
 			Browse = node.ReadNodeNoNS(L"browse");
-			CustShow = node.ReadNodeNoNS(L"custShow");
+			CustomShowId = node.ReadNodeNoNS(L"custShow");
 			Kiosk = node.ReadNodeNoNS(L"kiosk");
 			XmlUtils::CXmlNode node1 = node.ReadNodeNoNS(L"penClr");
 			PenClr.GetColorFrom(node1);
@@ -73,7 +73,7 @@ namespace PPTX
 			oValue.WriteNullable(Kiosk);
 			oValue.WriteNullable(SldAll);
 			oValue.WriteNullable(SldRg);
-			oValue.WriteNullable(CustShow);
+			oValue.WriteNullable(CustomShowId);
 			oValue.Write(PenClr);
 
 			return XmlUtils::CreateNode(L"p:ShowPr", oAttr, oValue);
@@ -88,7 +88,7 @@ namespace PPTX
 			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 
 			pWriter->WriteRecord2(0, Browse);
-			pWriter->WriteRecord2(1, CustShow);
+			pWriter->WriteRecord2(1, CustomShowId);
 			pWriter->WriteRecord2(2, Kiosk);
 			pWriter->WriteRecord1(3, PenClr);
 			pWriter->WriteRecord2(4, Present);
@@ -113,7 +113,7 @@ namespace PPTX
 			pWriter->Write(Kiosk);
 			pWriter->Write(SldAll);
 			pWriter->Write(SldRg);
-			pWriter->Write(CustShow);
+			pWriter->Write(CustomShowId);
 			if(PenClr.is_init())
 			{
 				pWriter->WriteString(L"<p:penClr>");
@@ -154,19 +154,19 @@ namespace PPTX
 				{
 					case 0:
 					{
-						Browse = new nsPresentationPr::Browse();
+						Browse = new nsPresentation::Browse();
 						Browse->fromPPTY(pReader);
 						break;
 					}
 					case 1:
 					{
-						CustShow = new nsPresentationPr::CustShow();
-						CustShow->fromPPTY(pReader);
+						CustomShowId = new nsPresentation::CustomShowId();
+						CustomShowId->fromPPTY(pReader);
 						break;
 					}
 					case 2:
 					{
-						Kiosk = new nsPresentationPr::Kiosk();
+						Kiosk = new nsPresentation::Kiosk();
 						Kiosk->fromPPTY(pReader);
 						break;
 					}
@@ -177,19 +177,19 @@ namespace PPTX
 					}
 					case 4:
 					{
-						Present = new nsPresentationPr::Present();
+						Present = new nsPresentation::Present();
 						pReader->SkipRecord();
 						break;
 					}
 					case 5:
 					{
-						SldAll = new nsPresentationPr::SldAll();
+						SldAll = new nsPresentation::SldAll();
 						pReader->SkipRecord();
 						break;
 					}
 					case 6:
 					{
-						SldRg = new nsPresentationPr::SldRg();
+						SldRg = new nsPresentation::SldRg();
 						SldRg->fromPPTY(pReader);
 						break;
 					}
@@ -292,5 +292,5 @@ namespace PPTX
 		void PrintPr::FillParentPointersForChilds()
 		{
 		}
-	} // namespace nsPresentationPr
+	} // namespace nsPresentation
 } // namespace PPTX

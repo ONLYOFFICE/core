@@ -57,7 +57,7 @@ public:
 
 //-----------------------------
 	RefU ref_;
-	BYTE cUse;
+	BYTE cUse = 1;
     SharedParsedFormula formula;
 
     XLSB::UncheckedRfX rfx; //in biff12

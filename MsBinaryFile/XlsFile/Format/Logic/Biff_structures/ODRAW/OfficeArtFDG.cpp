@@ -50,5 +50,14 @@ void OfficeArtFDG::loadFields(XLS::CFRecord& record)
 	record >> csp >> spidCur;
 }
 
+void OfficeArtFDG::save(XLS::CFRecord& record)
+{
+	rh_own.recVer = 0;
+	rh_own.recType = 0xF008;
+	rh_own.recLen  = 0x00000008;
+	record << rh_own;
+	record << csp << spidCur;
+}
+
 
 } // namespace XLS

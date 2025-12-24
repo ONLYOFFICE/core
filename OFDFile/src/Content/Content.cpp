@@ -30,12 +30,12 @@ bool CContent::Read(CXmlReader& oLiteReader)
 	return false;
 }
 
-void CContent::Draw(IRenderer* pRenderer, const CCommonData& oCommonData) const
+void CContent::Draw(IRenderer* pRenderer, const CCommonData& oCommonData, EPageType ePageType) const
 {
 	if (nullptr == pRenderer)
 		return;
 
 	for (const CLayer* pLayer : m_arLayers)
-		pLayer->Draw(pRenderer, oCommonData);
+		pLayer->Draw(pRenderer, oCommonData, ePageType);
 }
 }

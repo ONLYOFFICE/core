@@ -247,7 +247,7 @@ namespace PPTX
 
 			if (m_oId.IsInit() && ole_file.IsInit() == false)
 			{
-				OOX::IFileContainer* pRels = pWriter->GetRels().GetPointer();
+				OOX::IFileContainer* pRels = pWriter->GetRelsPtr();
 
 				ole_file = GetOleObject(m_oId.get(), pRels);
 			}
@@ -398,8 +398,8 @@ namespace PPTX
 					DocWrapper::FontProcessor oFontProcessor;
 					NSBinPptxRW::CDrawingConverter oDrawingConverter;
 				
-					NSCommon::smart_ptr<OOX::IFileContainer>	old_rels	= pWriter->GetRels();
-					NSCommon::smart_ptr<PPTX::Theme>            old_theme	= *pWriter->m_pTheme;
+					OOX::IFileContainer* old_rels = pWriter->GetRelsPtr();
+					NSCommon::smart_ptr<PPTX::Theme> old_theme	= *pWriter->m_pTheme;
 
 					NSShapeImageGen::CMediaManager* old_manager = oDrawingConverter.m_pBinaryWriter->m_pCommon->m_pMediaManager;
 					oDrawingConverter.m_pBinaryWriter->m_pCommon->m_pMediaManager = pWriter->m_pCommon->m_pMediaManager;
@@ -494,7 +494,7 @@ namespace PPTX
 						oDrawingConverter.m_pBinaryWriter->WriteString1(2, ole_file->filename().GetFilename());
 					}
 		
-					pWriter->SetRels(old_rels);
+					pWriter->SetRelsPtr(old_rels);
 					*pWriter->m_pTheme = old_theme;
 					oDrawingConverter.m_pBinaryWriter->m_pCommon->m_pMediaManager = old_manager;
 //---------------------------------------------------------------------------------------------------------------------					
@@ -1331,7 +1331,7 @@ namespace PPTX
 			//else if ..layout, master
 			else if (pWriter)
 			{
-				pRels = pWriter->GetRels().GetPointer();
+				pRels = pWriter->GetRelsPtr();
 			}
 			if (pRels)
 			{

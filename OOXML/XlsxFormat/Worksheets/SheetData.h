@@ -152,6 +152,7 @@ namespace OOX
 			void fromXLSBExt (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nFlags);
             void fromBin(XLS::StreamCacheReaderPtr& reader, XLS::CFRecordPtr& record);
             void fromBin(XLS::BaseObjectPtr& obj, SimpleTypes::Spreadsheet::ECellFormulaType eType);
+			void toXls(XLS::BaseObjectPtr& obj);
             void toBin(XLS::BaseObjectPtr& obj);
             void toBin(XLS::CFRecordPtr& record, const XLS::CellRef& cellBaseRef);
 
@@ -230,6 +231,7 @@ namespace OOX
             void fromBin(XLS::BaseObjectPtr& obj);
             bool fromBin(XLS::StreamCacheReaderPtr& reader);
 			XLS::BaseObjectPtr toBin(sharedFormula &sharedFormulas);
+			void toXLS(XLS::BaseObjectPtr cellPtr);
             void toBin(XLS::StreamCacheWriterPtr& writer);
 
 			virtual EElementType getType () const;
@@ -309,6 +311,7 @@ namespace OOX
             void fromBin(XLS::BaseObjectPtr& obj);
             void fromBin(XLS::StreamCacheReaderPtr& reader);
             XLS::BaseObjectPtr toBin(sharedFormula &sharedFormulas);
+			XLS::BaseObjectPtr toXLS();
             void toBin(XLS::StreamCacheWriterPtr& writer);
             void WriteAttributes(XLS::StreamCacheWriterPtr& writer);
             //удалить хранимые ячейки и кэшировать данные для экономии памяти
@@ -363,6 +366,7 @@ namespace OOX
             void fromBin(XLS::BaseObjectPtr& obj);
             void fromBin(XLS::StreamCacheReaderPtr& reader);
 			XLS::BaseObjectPtr toBin();
+			XLS::BaseObjectPtr toXLS();
             void toBin(XLS::StreamCacheWriterPtr& writer);
 
 			virtual EElementType getType () const;

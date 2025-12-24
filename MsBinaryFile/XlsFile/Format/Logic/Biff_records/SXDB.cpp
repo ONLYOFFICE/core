@@ -67,5 +67,27 @@ void SXDB::readFields(CFRecord& record)
 	fEnableRefresh		= GETBIT(flags, 5);
 }
 
+void SXDB::writeFields(CFRecord& record)
+{
+	cchWho = rgb.getSize();
+	if(!cchWho)
+		cchWho = 0xFFFF;
+	unsigned short	flags = 0;
+	SETBIT(flags, 0, fSaveData)
+	SETBIT(flags, 1, fInvalid)
+	SETBIT(flags, 2, fRefreshOnLoad)
+	SETBIT(flags, 3, fOptimizeCache)
+	SETBIT(flags, 4, fBackgroundQuery)
+	SETBIT(flags, 5, fEnableRefresh)
+	record << crdbdb << idstm << flags;
+	record.reserveNunBytes(2);
+	record << cfdbdb << cfdbTot << crdbUsed << vsType << cchWho;
+
+	if (cchWho > 0 && cchWho < 0xffff)
+	{
+		record << rgb;
+	}
+}
+
 } // namespace XLS
 

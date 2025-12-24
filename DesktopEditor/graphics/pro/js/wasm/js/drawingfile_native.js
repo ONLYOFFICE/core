@@ -135,6 +135,27 @@ CFile.prototype._UndoMergePages = function()
 	return g_native_drawing_file["UnmergePages"]();
 };
 
+CFile.prototype._RedactPage = function(pageIndex, box, filler)
+{
+	let dataFiller = (undefined !== filler.byteLength) ? new Uint8Array(filler) : filler;
+	return g_native_drawing_file["RedactPage"](pageIndex, box, dataFiller);
+};
+
+CFile.prototype._UndoRedact = function()
+{
+	return g_native_drawing_file["UndoRedact"]();
+};
+
+CFile.prototype._CheckOwnerPassword = function(password)
+{
+	return true;
+}
+
+CFile.prototype._CheckPerm = function(perm)
+{
+	return true;
+}
+
 // FONTS
 CFile.prototype._isNeedCMap = function()
 {
@@ -150,6 +171,12 @@ CFile.prototype._getFontByID = function(ID)
 {
 	return g_native_drawing_file["GetFontBinary"](ID);
 };
+
+CFile.prototype._getGIDByUnicode = function(ID)
+{
+	g_module_pointer.ptr = g_native_drawing_file["GetGIDByUnicode"](ID);
+	return g_module_pointer;
+}
 
 CFile.prototype._getInteractiveFormsFonts = function(type)
 {
@@ -225,6 +252,11 @@ CFile.prototype._getInteractiveFormsAP = function(width, height, backgroundColor
 };
 
 // SCAN PAGES
+CFile.prototype._setScanPageFonts = function(page)
+{
+	g_native_drawing_file["SetScanPageFonts"](page);
+};
+
 CFile.prototype._scanPage = function(page, mode)
 {
 	g_module_pointer.ptr = g_native_drawing_file["ScanPage"](page, (mode === undefined) ? 0 : mode);

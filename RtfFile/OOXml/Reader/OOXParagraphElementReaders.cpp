@@ -971,15 +971,15 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 		{
 			bool res = false;
 			OOX::Logic::CAlternateContent *ooxAlt = dynamic_cast<OOX::Logic::CAlternateContent* >(ooxItem);
-
+            for (size_t i = 0; res == false && i < ooxAlt->m_arrChoiceItems.size(); i++)
+            {
+                res = Parse(oParam, oOutputParagraph, poStyle, oNewProperty, ooxAlt->m_arrChoiceItems[i]);
+            }
 			for (size_t i = 0; res == false && i < ooxAlt->m_arrFallbackItems.size(); i++)
 			{
 				res = Parse(oParam, oOutputParagraph, poStyle, oNewProperty, ooxAlt->m_arrFallbackItems[i]);
 			}			
-			for (size_t i = 0; res == false && i < ooxAlt->m_arrChoiceItems.size(); i++)
-			{
-				res = Parse(oParam, oOutputParagraph, poStyle, oNewProperty, ooxAlt->m_arrChoiceItems[i]);
-			}
+
 
 		}break;
 		case OOX::et_w_sym:

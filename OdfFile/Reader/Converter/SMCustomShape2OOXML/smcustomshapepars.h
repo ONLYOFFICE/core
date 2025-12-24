@@ -73,7 +73,7 @@ namespace OdfCustomShape
 	class CSMReader
 	{
 	public:
-		CSMReader(const std::wstring& wsStarMath);
+		CSMReader(const std::wstring& wsStarMath, const std::wstring& wsLeft,const std::wstring& wsTop,const std::wstring& wsRight,const std::wstring& wsBottom);
 		~CSMReader();
 		std::wstring GetElement(std::wstring::iterator& itStart, std::wstring::iterator& itEnd);
 		CElement* ReadingElement();
@@ -85,21 +85,25 @@ namespace OdfCustomShape
 		void RemovingTheParenthesisIterator();
 		void SetDoubleSign(const bool& bDoubleSign);
 		bool GetDoubleSign();
+		std::wstring GetLeft();
+		std::wstring GetTop();
+		std::wstring GetRight();
+		std::wstring GetBottom();
 	private:
 		std::wstring m_Formula;
 		std::wstring::iterator m_itStart;
 		std::wstring::iterator m_itEnd,m_itEndForBrecket;
 		std::stack<std::wstring::iterator> m_stEndBrecket;
-		std::wstring m_wsElement;
 		CElement* m_pElement;
 		bool m_bDoubleSign;
+		std::wstring m_wsElement,m_wsLeft,m_wsTop,m_wsRight,m_wsBottom;
 	};
 	class SMCustomShapePars
 	{
 	public:
 		SMCustomShapePars();
 		~SMCustomShapePars();
-		void StartParsSMCustomShape(const std::wstring& wsFormula);
+		void StartParsSMCustomShape(const std::wstring& wsFormula, const std::wstring &wsLeft, const std::wstring &wsTop, const std::wstring &wsRight, const std::wstring &wsBottom);
 		static CElement* ParseElement(CSMReader* pReader);
 		static void ParsString(CSMReader* pReader, std::vector<CElement*>& arVec);
 		std::vector<CElement*>& GetVector();
@@ -194,7 +198,7 @@ namespace OdfCustomShape
 		void ConversionOOXml(XmlUtils::CXmlWriter* pXmlWriter, const std::wstring& wsName = L"") override;
 		void ConversionElement(XmlUtils::CXmlWriter* pXmlWriter,CElement* pElement, std::wstring& wsFormula);
 		static TypeElement TypeCheckingByFunction(const std::wstring& wsFunction);
-		void ConvertBracketsForTrigonometry(XmlUtils::CXmlWriter *pXmlWriter, std::wstring &wsFormula);
+		bool ConvertBracketsForTrigonometry(XmlUtils::CXmlWriter *pXmlWriter, std::wstring &wsFormula, const TypeElement &enTypeFunc);
 		void CalculatingTheLogicalHeightOrWidth(XmlUtils::CXmlWriter* pXmlWriter);
 		static void CalculatingNumberName(std::wstring& wsNewName, std::wstring& wsOldNameFormula, unsigned int& uiNumberFormula);
 	private:

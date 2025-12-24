@@ -39,7 +39,7 @@
 
 namespace PPTX
 {
-	namespace nsPresentationPr
+	namespace nsPresentation
 	{
 		class ShowPr;
 		class PrintPr;
@@ -64,7 +64,7 @@ namespace PPTX
 		virtual const OOX::CPath DefaultFileName() const;
 
 		std::vector<Logic::UniColor> ClrMru;
-		nullable<nsPresentationPr::ShowPr>	showPr;
-		nullable<nsPresentationPr::PrintPr>	printPr;
+		nullable<nsPresentation::ShowPr>	showPr;
+		nullable<nsPresentation::PrintPr>	printPr;
 	};
 } // namespace PPTX

@@ -999,20 +999,21 @@ namespace MetaFile
 	{
 		std::wstring wsText;
 		for (const wchar_t& wChar : wsString)
-		    if (wChar == L'<')
+		{
+			if (wChar == L'<')
 			   wsText += L"&lt;";
-		    else if (wChar == L'>')
+			else if (wChar == L'>')
 			   wsText += L"&gt;";
-		    else if (wChar == L'&')
+			else if (wChar == L'&')
 			   wsText += L"&amp;";
-		    else if (wChar == L'\'')
+			else if (wChar == L'\'')
 			   wsText += L"&apos;";
-		    else if (wChar == L'"')
+			else if (wChar == L'"')
 			   wsText += L"&quot;";
 			else if (wChar == L'\r' || (wChar >= 0x00 && wChar <=0x1F))
 				continue;
-
-		    else wsText += wChar;
+			else wsText += wChar;
+		}
 		return wsText;
 	}
 

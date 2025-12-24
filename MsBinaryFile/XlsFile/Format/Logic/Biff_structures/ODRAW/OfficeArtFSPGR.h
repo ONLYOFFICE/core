@@ -50,17 +50,18 @@ public:
 
 	static const XLS::ElementType	type = XLS::typeOfficeArtFSPGR;
 	
-	virtual void loadFields(XLS::CFRecord& record);
+	virtual void loadFields(XLS::CFRecord& record) override;
+	void save(XLS::CFRecord& record) override;
 
-    _INT32 xLeft;
-    _INT32 yTop;
-    _INT32 xRight;
-    _INT32 yBottom;
+	_INT32 xLeft = 0;
+	_INT32 yTop = 0;
+	_INT32 xRight = 0;
+	_INT32 yBottom = 0;
 
-	int _x;
-	int _y;
-	int _cx;
-	int _cy;
+	int _x = 0;
+	int _y = 0;
+	int _cx = 0;
+	int _cy = 0;
 };
 
 typedef boost::shared_ptr<OfficeArtFSPGR> OfficeArtFSPGRPtr;

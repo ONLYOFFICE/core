@@ -53,6 +53,7 @@ void OfficeArtRecord::load(XLS::CFRecord& record)
 }
 
 
+
 bool OfficeArtRecord::IsThisHeaderMine(const OfficeArtRecordHeader& rh_check)
 {
 	return rh_check.recVer == rh_own.recVer && rh_check.recType == rh_own.recType;

@@ -30,6 +30,8 @@
 -(JSValue*) SplitPages : (JSValue*)arrPageIndexes : (JSValue*)data;
 -(JSValue*) MergePages : (JSValue*)data : (JSValue*)nMaxID : (JSValue*)sPrefixForm;
 -(JSValue*) UnmergePages;
+-(JSValue*) RedactPage : (JSValue*)nPageIndex : (JSValue*)arrRedactBox : (JSValue*)dataFiller;
+-(JSValue*) UndoRedact;
 @end
 
 @interface CJSCDrawingFileEmbed : NSObject<IJSCDrawingFileEmbed, JSEmbedObjectProtocol>
@@ -67,6 +69,8 @@ FUNCTION_WRAPPER_JS_1(FreeWasmData, FreeWasmData)
 FUNCTION_WRAPPER_JS_2(SplitPages, SplitPages)
 FUNCTION_WRAPPER_JS_3(MergePages, MergePages)
 FUNCTION_WRAPPER_JS_0(UnmergePages, UnmergePages)
+FUNCTION_WRAPPER_JS_3(RedactPage, RedactPage)
+FUNCTION_WRAPPER_JS_0(UndoRedact, UndoRedact)
 @end
 
 class CDrawingFileEmbedAdapter : public CJSEmbedObjectAdapterJSC

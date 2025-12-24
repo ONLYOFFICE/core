@@ -49,23 +49,30 @@ namespace PdfWriter
 	{
 		"Text",
 		"Link",
-		"Sound",
 		"FreeText",
-		"Stamp",
+		"Line",
 		"Square",
 		"Circle",
-		"StrikeOut",
-		"Highlight",
-		"Underline",
-		"Ink",
-		"FileAttachment",
-		"Popup",
-		"Line",
-		"Squiggly",
 		"Polygon",
 		"PolyLine",
+		"Highlight",
+		"Underline",
+		"Squiggly",
+		"StrikeOut",
+		"Stamp",
 		"Caret",
-		"Widget"
+		"Ink",
+		"Popup",
+		"FileAttachment",
+		"Sound",
+		"Movie",
+		"Widget",
+		"Screen",
+		"PrinterMark",
+		"TrapNet",
+		"Watermark",
+		"3D",
+		"Redact"
 	};
 	const static char* c_sAnnotIconNames[] =
 	{
@@ -351,6 +358,10 @@ namespace PdfWriter
 		pNormal->AddBBox(GetRect().fLeft, GetRect().fBottom, GetRect().fRight, GetRect().fTop);
 		pNormal->AddMatrix(1, 0, 0, 1, -GetRect().fLeft, -GetRect().fBottom);
 	}
+	void CAnnotation::RemoveAP()
+	{
+		Remove("AP");
+	}
 	//----------------------------------------------------------------------------------------
 	// CMarkupAnnotation
 	//----------------------------------------------------------------------------------------
@@ -408,18 +419,14 @@ namespace PdfWriter
 	{
 		Add("IRT", pAnnot);
 	}
-	void CMarkupAnnotation::RemoveAP()
-	{
-		Remove("AP");
-	}
 	//----------------------------------------------------------------------------------------
-	// CLinkAnnotation
+	// CDestLinkAnnotation
 	//----------------------------------------------------------------------------------------
-	CLinkAnnotation::CLinkAnnotation(CXref* pXref, CDestination* pDestination) : CAnnotation(pXref, AnnotLink)
+	CDestLinkAnnotation::CDestLinkAnnotation(CXref* pXref, CDestination* pDestination) : CAnnotation(pXref, AnnotLink)
 	{
 		Add("Dest", (CObjectBase*)pDestination);
 	}
-	void CLinkAnnotation::SetBorderStyle(float fWidth, unsigned short nDashOn, unsigned short nDashOff)
+	void CDestLinkAnnotation::SetBorderStyle(float fWidth, unsigned short nDashOn, unsigned short nDashOff)
 	{
         fWidth = std::max(fWidth, 0.f);
 
@@ -445,7 +452,7 @@ namespace PdfWriter
 			pDash->Add(nDashOff);
 		}
 	}
-	void CLinkAnnotation::SetHighlightMode(EAnnotHighlightMode eMode)
+	void CDestLinkAnnotation::SetHighlightMode(EAnnotHighlightMode eMode)
 	{
 		switch (eMode)
 		{
@@ -805,6 +812,50 @@ namespace PdfWriter
 		Add("AP", pAppearance);
 		CAnnotAppearanceObject* pNormal = pAppearance->GetNormal();
 		pNormal->DrawLine();
+	}
+	//----------------------------------------------------------------------------------------
+	// CLinkAnnotation
+	//----------------------------------------------------------------------------------------
+	CLinkAnnotation::CLinkAnnotation(CXref* pXref) : CAnnotation(pXref, AnnotLink)
+	{
+	}
+	void CLinkAnnotation::SetH(BYTE nH)
+	{
+		std::string sValue;
+		switch (nH)
+		{
+		case 0:
+		{ sValue = "N"; break; }
+		default:
+		case 1:
+		{ sValue = "I"; break; }
+		case 2:
+		{ sValue = "P"; break; }
+		case 3:
+		{ sValue = "O"; break; }
+		}
+		Add("H", sValue.c_str());
+	}
+	void CLinkAnnotation::SetQuadPoints(const std::vector<double>& arrQuadPoints)
+	{
+		CArrayObject* pArray = new CArrayObject();
+		if (!pArray)
+			return;
+		Add("QuadPoints", pArray);
+		for (int i = 0; i < arrQuadPoints.size(); ++i)
+			pArray->Add(i % 2 == 0 ? (arrQuadPoints[i] + m_dPageX) : (m_dPageH - arrQuadPoints[i]));
+	}
+	void CLinkAnnotation::SetA(CAction* pAction)
+	{
+		if (!pAction)
+			return;
+		Add("A", pAction);
+	}
+	void CLinkAnnotation::SetPA(CAction* pAction)
+	{
+		if (!pAction)
+			return;
+		Add("PA", pAction);
 	}
 	//----------------------------------------------------------------------------------------
 	// CPopupAnnotation
@@ -1214,6 +1265,69 @@ namespace PdfWriter
 		return m_pAPStream;
 	}
 	//----------------------------------------------------------------------------------------
+	// CRedactAnnotation
+	//----------------------------------------------------------------------------------------
+	CRedactAnnotation::CRedactAnnotation(CXref* pXref) : CMarkupAnnotation(pXref, AnnotRedact)
+	{
+	}
+	void CRedactAnnotation::SetDA(CFontDict* pFont, const double& dFontSize, const std::vector<double>& arrC)
+	{
+		const char* sFontName =  NULL;
+		if (pFont)
+		{
+			CResourcesDict* pFieldsResources = m_pDocument->GetFieldsResources();
+			sFontName = pFieldsResources->GetFontName(pFont);
+		}
+
+		std::vector<double> _arrC = arrC;
+		if (arrC.empty())
+			_arrC = {0};
+		std::string sDA = GetColor(_arrC, false);
+		if (sFontName)
+		{
+			sDA.append(" /");
+			sDA.append(sFontName);
+
+			sDA.append(" ");
+			sDA.append(std::to_string(dFontSize));
+			sDA.append(" Tf");
+		}
+
+		Add("DA", new CStringObject(sDA.c_str()));
+	}
+	void CRedactAnnotation::SetRepeat(bool bRepeat)
+	{
+		Add("Repeat", bRepeat);
+	}
+	void CRedactAnnotation::SetQ(BYTE nQ)
+	{
+		Add("Q", (int)nQ);
+	}
+	void CRedactAnnotation::SetOverlayText(const std::wstring& wsOverlayText)
+	{
+		std::string sValue = U_TO_UTF8(wsOverlayText);
+		Add("OverlayText", new CStringObject(sValue.c_str(), true));
+	}
+	void CRedactAnnotation::SetIC(const std::vector<double>& arrIC)
+	{
+		AddToVectorD(this, "IC", arrIC);
+	}
+	void CRedactAnnotation::SetOC(const std::vector<double>& arrOC)
+	{
+		AddToVectorD(this, "OC", arrOC);
+	}
+	void CRedactAnnotation::SetQuadPoints(const std::vector<double>& arrQuadPoints)
+	{
+		CArrayObject* pArray = new CArrayObject();
+		if (!pArray)
+			return;
+
+		Add("QuadPoints", pArray);
+
+		for (int i = 0; i < arrQuadPoints.size(); ++i)
+			pArray->Add(i % 2 == 0 ? (arrQuadPoints[i] + m_dPageX) : (m_dPageH - arrQuadPoints[i]));
+	}
+	//----------------------------------------------------------------------------------------
 	// CWidgetAnnotation
 	//----------------------------------------------------------------------------------------
 	CWidgetAnnotation::CWidgetAnnotation(CXref* pXref, EAnnotType eType) : CAnnotation(pXref, eType)
@@ -1405,10 +1519,8 @@ namespace PdfWriter
 		std::string sValue = U_TO_UTF8(wsT);
 		CDictObject* pOwner = GetObjOwnValue("T");
 		if (!pOwner)
-		{
 			pOwner = this;
-			pOwner->Add("T", new CStringObject(sValue.c_str(), true));
-		}
+		pOwner->Add("T", new CStringObject(sValue.c_str(), true));
 	}
 	void CWidgetAnnotation::SetBC(const std::vector<double>& arrBC)
 	{
@@ -1934,6 +2046,14 @@ namespace PdfWriter
 		else
 			pOwner->Add("V", new CStringObject(sV.c_str(), true));
 	}
+	void CCheckBoxWidget::SetDV(const std::wstring& wsDV)
+	{
+		std::string sValue = U_TO_UTF8(wsDV);
+		CDictObject* pOwner = GetObjOwnValue("DV");
+		if (!pOwner)
+			pOwner = this;
+		pOwner->Add("DV", sValue.c_str());
+	}
 	void CCheckBoxWidget::SetStyle(BYTE nStyle)
 	{
 		m_nStyle = ECheckBoxStyle(nStyle);
@@ -2077,11 +2197,18 @@ namespace PdfWriter
 	{
 		std::string sName = m_sAP_N_Yes.empty() ? "Yes" : m_sAP_N_Yes;
 		Add("AS", sName.c_str());
+
+		if (!m_nParentID)
+			Add("V", sName.c_str());
+
 		return sName;
 	}
 	void CCheckBoxWidget::Off()
 	{
 		Add("AS", "Off");
+
+		if (!m_nParentID)
+			Add("V", "Off");
 	}
 	void CCheckBoxWidget::SwitchAP(const std::string& sV, int nI)
 	{
@@ -2152,6 +2279,40 @@ namespace PdfWriter
 			sDA = bCAPS ? "0 G" : "0 g";
 		sDA += "\012";
 		return sDA;
+	}
+	void CCheckBoxWidget::SetOpt(const std::vector< std::pair<std::wstring, std::wstring> >& arrOpt)
+	{
+		if (arrOpt.empty())
+			return;
+
+		CArrayObject* pArray = new CArrayObject();
+		if (!pArray)
+			return;
+
+		CDictObject* pOwner = GetObjOwnValue("Opt");
+		if (!pOwner)
+			pOwner = this;
+		pOwner->Add("Opt", pArray);
+
+		for (const std::pair<std::wstring, std::wstring>& PV : arrOpt)
+		{
+			if (PV.first.empty())
+			{
+				std::string sValue = U_TO_UTF8(PV.second);
+				pArray->Add(new CStringObject(sValue.c_str(), true));
+			}
+			else
+			{
+				CArrayObject* pArray2 = new CArrayObject();
+				pArray->Add(pArray2);
+
+				std::string sValue = U_TO_UTF8(PV.first);
+				pArray2->Add(new CStringObject(sValue.c_str(), true));
+
+				sValue = U_TO_UTF8(PV.second);
+				pArray2->Add(new CStringObject(sValue.c_str(), true));
+			}
+		}
 	}
 	//----------------------------------------------------------------------------------------
 	// CTextWidget
@@ -2445,7 +2606,7 @@ namespace PdfWriter
 	void CActionURI::SetURI(const std::wstring& wsURI)
 	{
 		std::string sValue = U_TO_UTF8(wsURI);
-		Add("URI", new CStringObject(sValue.c_str(), true));
+		Add("URI", new CStringObject(sValue.c_str(), false, true));
 	}
 	//----------------------------------------------------------------------------------------
 	CActionHide::CActionHide(CXref* pXref) : CAction(pXref)

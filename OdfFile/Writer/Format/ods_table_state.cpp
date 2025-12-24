@@ -67,12 +67,11 @@ namespace odf_writer {
 namespace utils//////////////////////////////////////////// ОБЩАЯ хрень .. вытащить что ли в utils ???
 
 {
-	std::wstring convert_date(int date)
+	bool convert_date(__int64 date, std::wstring & date_str)
 	{
 		boost::gregorian::date date_ = boost::gregorian::date(1900, 1, 1) + boost::gregorian::date_duration( date - (date < 60 ? 1 : 2)); //29.02.1900
 
-		std::wstring date_str;
-
+		bool res = true;
 		try
 		{
 			date_str = boost::lexical_cast<std::wstring>(date_.year())
@@ -84,21 +83,25 @@ namespace utils//////////////////////////////////////////// ОБЩАЯ хрен�
 		catch (...)
 		{
 			date_str = std::to_wstring(date);
+			res = false;
 		}
-		return date_str;
+		return res;
 	}
-	std::wstring convert_date(const std::wstring & oox_date)
+	bool convert_date(const std::wstring & oox_date, std::wstring & odf_date)
 	{
-		int iDate = 0;
+		__int64 iDate = 0;
 
+		bool res = true;
 		try
 		{
-			iDate = boost::lexical_cast<int>(oox_date);
+			iDate = boost::lexical_cast<__int64>(oox_date);
 		}catch(...)
 		{
-			return oox_date;
+			res = false;
+			odf_date =  oox_date;
 		}
-		return convert_date(iDate);
+		res = convert_date(iDate, odf_date);
+		return res;
 	}
 	std::wstring convert_time(double dTime, bool bPT)
 	{
@@ -127,20 +130,31 @@ namespace utils//////////////////////////////////////////// ОБЩАЯ хрен�
 
 		return time_str;
 	}
-	std::wstring convert_date_time(const std::wstring & oox_time, office_value_type::type & type)
+	bool convert_date_time(const std::wstring & oox_date_time, office_value_type::type& odf_type, std::wstring& odf_date_time)
 	{
-		double dDateTime = 0;
+		double dDateTime = 0, dTime = 0;
+		__int64 nDate = 0;
 
-		try
+		bool res = true;
+
+		if (std::wstring::npos != oox_date_time.find(L"."))
 		{
-			dDateTime = boost::lexical_cast<double>(oox_time);
+			try
+			{
+				dDateTime = boost::lexical_cast<double>(oox_date_time);
+			}
+			catch (...)
+			{
+				odf_date_time = oox_date_time;
+				return false;
+			}
+			nDate = (int)dDateTime;
+			dTime = (dDateTime - nDate);
 		}
-		catch (...)
+		else
 		{
-			return oox_time;
+			nDate = boost::lexical_cast<__int64>(oox_date_time);
 		}
-		int nDate = (int)dDateTime;
-		double dTime = (dDateTime - nDate);
 
 		std::wstring sDate, sTime;
 		if (dTime > 0)
@@ -149,14 +163,23 @@ namespace utils//////////////////////////////////////////// ОБЩАЯ хрен�
 		}
 		if (nDate > 0)
 		{
-			sDate = convert_date(nDate);
-			type = office_value_type::Date;
+			res = convert_date(nDate, sDate);
+			odf_type = office_value_type::Date;
 		}
 		else 
-			type = office_value_type::Time;
+			odf_type = office_value_type::Time;
 		
 		// "1899-12-31T05:37:46.66569
-		return sDate + (sTime.empty() ? L"" : L"T" + sTime);
+		if (sDate.empty() && sTime.empty())
+		{
+			res = false;
+			odf_date_time = oox_date_time;
+		}
+		else
+		{
+			odf_date_time = sDate + (sTime.empty() ? L"" : L"T" + sTime);
+		}
+		return res;
 	}
 
 	std::wstring convert_time(const std::wstring & oox_time)
@@ -1345,26 +1368,31 @@ void ods_table_state::set_cell_value(const std::wstring & value, bool need_cash)
 			cell->attlist_.common_value_and_type_attlist_->office_boolean_value_ = value;
 			break;
 		case office_value_type::Date:
-		{
-			std::wstring date = utils::convert_date(value);
-			cell->attlist_.common_value_and_type_attlist_->office_date_value_ = date;
-			//cell->attlist_.common_value_and_type_attlist_->office_value_ = date;
-		}break;
 		case office_value_type::Time:
+		case office_value_type::DateTime:	
 		{
-			cell->attlist_.common_value_and_type_attlist_->office_time_value_ = utils::convert_time(value);
-		}break;
-		case office_value_type::DateTime:
-		{
-			std::wstring sVal = utils::convert_date_time(value, type);
+			std::wstring sVal;
+			bool result = utils::convert_date_time(value, type, sVal);
 			
-			//cell->attlist_.common_value_and_type_attlist_->office_value_ = sVal;
-			
-			if (type == office_value_type::Date)
-				cell->attlist_.common_value_and_type_attlist_->office_date_value_ = sVal;
-			else
-				cell->attlist_.common_value_and_type_attlist_->office_time_value_ = sVal;
 			cell->attlist_.common_value_and_type_attlist_->office_value_type_ = office_value_type(type);
+
+			if (result)
+			{
+				if (type == office_value_type::Date)
+					cell->attlist_.common_value_and_type_attlist_->office_date_value_ = sVal;
+				else
+					cell->attlist_.common_value_and_type_attlist_->office_time_value_ = sVal;
+			}
+			else
+			{
+				context_->start_text_context();
+				start_cell_text();
+				context_->text_context()->add_text_content(sVal); // "#FMT"
+				end_cell_text();
+
+				set_cell_text(context_->text_context(), true);
+				context_->end_text_context();
+			}
 		}break;
 		case office_value_type::Currency:
 		case office_value_type::Percentage:

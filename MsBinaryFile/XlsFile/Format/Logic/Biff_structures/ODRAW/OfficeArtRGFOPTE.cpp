@@ -141,6 +141,44 @@ void OfficeArtRGFOPTE::load(XLS::CFRecord& record)
 	rgfopte.clear();
 }
 
+
+void OfficeArtRGFOPTE::save(XLS::CFRecord& record)
+{
+	for(auto i : GroupShape_props)
+		if(i != nullptr)
+			i->save(record);
+	for(auto i : Shape_props)
+		if(i != nullptr)
+			i->save(record);
+	for(auto i : Blip_props)
+		if(i != nullptr)
+			i->save(record);
+	for(auto i : Text_props)
+		if(i != nullptr)
+			i->save(record);
+	for(auto i : Geometry_props)
+		if(i != nullptr)
+			i->save(record);
+	for(auto i : GeometryText_props)
+		if(i != nullptr)
+			i->save(record);
+	for(auto i : FillStyle_props)
+		if(i != nullptr)
+			i->save(record);
+	for(auto i : LineStyle_props)
+		if(i != nullptr)
+			i->save(record);
+	for(auto i : Shadow_props)
+		if(i != nullptr)
+			i->save(record);
+	for(auto i : Transform_props)
+		if(i != nullptr)
+			i->save(record);
+	for(auto i : Other_props)
+		if(i != nullptr)
+			i->save(record);
+}
+
 void OfficeArtRGFOPTE::SetOptionsCount(const unsigned short count)
 {
 	options_count = count;

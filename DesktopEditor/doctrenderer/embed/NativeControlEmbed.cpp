@@ -194,6 +194,9 @@ JSSmart<CJSValue> CNativeControlEmbed::ZipOpenBase64(JSSmart<CJSValue> name)
 
 JSSmart<CJSValue> CNativeControlEmbed::ZipFileAsString(JSSmart<CJSValue> name)
 {
+	if (m_pInternal->m_oZipWorker.m_sTmpFolder.empty())
+		return CJSContext::createUndefined();
+
 	BYTE* pData = NULL;
 	DWORD len = 0;
 	m_pInternal->m_oZipWorker.GetFileData(name->toStringW(), pData, len);
@@ -202,6 +205,9 @@ JSSmart<CJSValue> CNativeControlEmbed::ZipFileAsString(JSSmart<CJSValue> name)
 
 JSSmart<CJSValue> CNativeControlEmbed::ZipFileAsBinary(JSSmart<CJSValue> name)
 {
+	if (m_pInternal->m_oZipWorker.m_sTmpFolder.empty())
+		return CJSContext::createUndefined();
+
 	return CJSContext::createUint8Array(m_pInternal->m_oZipWorker.m_sTmpFolder + L"/" + name->toStringW());
 }
 

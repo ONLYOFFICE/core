@@ -31,8 +31,6 @@
  */
 #include "ASCOfficePPTXFile.h"
 
-#include "../PPTXEvent.h"
-
 #if defined(_WIN32) || defined (_WIN64)
     #include <windows.h>
     #include <shellapi.h>
@@ -45,8 +43,6 @@
 #endif
 
 #include "../../Binary/Presentation/PPTXWriter.h"
-
-#include "../PPTXEvent.h"
 #include "../../../Common/OfficeFileErrorDescription.h"
 
 CPPTXFile::CPPTXFile()

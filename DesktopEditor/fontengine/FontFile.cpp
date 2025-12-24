@@ -731,10 +731,10 @@ void CFontFile::CheckHintsSupport()
 int CFontFile::SetCMapForCharCode(long lUnicode, int *pnCMapIndex)
 {
 	*pnCMapIndex = -1;
-	if (!m_pFace)
+	if (!m_pFace || !m_pFace->num_charmaps)
 		return 0;
 
-	if ( m_bStringGID || 0 == m_pFace->num_charmaps )
+	if ( m_bStringGID )
 		return lUnicode;
 
 	int nCharIndex = 0;
@@ -1044,6 +1044,28 @@ int CFontFile::GetGIDByUnicode(int code)
 	}
 
 	return unGID;
+}
+
+int CFontFile::GetUnicodeByGID(int gid)
+{
+	if (!m_pFace)
+		return 0;
+
+	FT_ULong charcode;
+	FT_UInt gindex;
+
+	charcode = FT_Get_First_Char(m_pFace, &gindex);
+
+	while (gindex != 0)
+	{
+		if (gindex == gid)
+		{
+			return charcode;
+		}
+		charcode = FT_Get_Next_Char(m_pFace, charcode, &gindex);
+	}
+
+	return 0;
 }
 
 INT CFontFile::GetString(CGlyphString& oString)

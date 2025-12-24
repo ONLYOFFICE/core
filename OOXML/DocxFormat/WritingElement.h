@@ -33,6 +33,7 @@
 
 #include "../../DesktopEditor/xml/include/xmlutils.h"
 #include "../Base/SmartPtr.h"
+#include "../../OdfFile/Common/logging.h"
 
 namespace NSBinPptxRW
 {
@@ -1561,6 +1562,20 @@ namespace OOX
 		et_x_SingleXmlCell,
 		et_x_xmlCellPr,
 		et_x_xmlPr,
+
+		et_x_RichValueData,
+		et_x_RichValue,
+		et_x_RichValueFallback,
+		et_x_RichValueStructures,
+		et_x_RichValueStructure,
+		et_x_RichValueKey,
+		et_x_RichValueTypesInfo,
+		et_x_RichValueTypes,
+		et_x_RichValueType,
+		et_x_RichValueGlobalType,
+		et_x_RichValueTypeKeyFlags,
+		et_x_RichValueTypeReservedKey,
+		et_x_RichValueTypeReservedKeyFlag,
 
 		et_dr_Masters,
 		et_dr_Pages,

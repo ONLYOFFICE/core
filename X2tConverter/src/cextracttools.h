@@ -96,6 +96,7 @@ namespace NExtractTools
 		TCD_XLSB2XLST,
 		TCD_XLSX2XLSB,
 		TCD_XLST2XLSB,
+		TCD_XLSX2XLS,
 
 		TCD_PPTX2PPTT,
 		TCD_PPTT2PPTX,
@@ -145,6 +146,7 @@ namespace NExtractTools
 		TCD_DOC2DOCT_BIN,
 		TCD_DOC2DOCX,
 		TCD_DOC2DOCM,
+		TCD_COMPOUND2,
 		// xls 2
 		TCD_XLS2XLST,
 		TCD_XLS2XLST_BIN,
@@ -493,6 +495,8 @@ namespace NExtractTools
 	class InputParams
 	{
 	public:
+        std::wstring* m_sDefaultFontName;
+        int* m_nDefaultFontSize;
 		std::wstring* m_sKey;
 		std::wstring* m_sFileFrom;
 		std::wstring* m_sFileTo;
@@ -521,6 +525,7 @@ namespace NExtractTools
 		boost::unordered_map<int, std::vector<InputLimit>> m_mapInputLimits;
 		bool* m_bIsPDFA;
 		std::wstring* m_sConvertToOrigin;
+		std::wstring* m_sSigningKeyStorePath;
 		// output params
 		mutable bool m_bOutputConvertCorrupted;
 		mutable bool m_bMacro;
@@ -528,6 +533,8 @@ namespace NExtractTools
 	public:
 		InputParams()
 		{
+			m_sDefaultFontName = NULL;
+			m_nDefaultFontSize = NULL;
 			m_sKey = NULL;
 			m_sFileFrom = NULL;
 			m_sFileTo = NULL;
@@ -555,12 +562,15 @@ namespace NExtractTools
 			m_bIsNoBase64 = NULL;
 			m_bIsPDFA = NULL;
 			m_sConvertToOrigin = NULL;
+			m_sSigningKeyStorePath = NULL;
 
 			m_bOutputConvertCorrupted = false;
 			m_bMacro = false;
 		}
 		~InputParams()
 		{
+			RELEASEOBJECT(m_sDefaultFontName);
+			RELEASEOBJECT(m_nDefaultFontSize);
 			RELEASEOBJECT(m_sKey);
 			RELEASEOBJECT(m_sFileFrom);
 			RELEASEOBJECT(m_sFileTo);
@@ -588,6 +598,7 @@ namespace NExtractTools
 			RELEASEOBJECT(m_bIsNoBase64);
 			RELEASEOBJECT(m_bIsPDFA);
 			RELEASEOBJECT(m_sConvertToOrigin);
+			RELEASEOBJECT(m_sSigningKeyStorePath);
 		}
 
 		bool FromXmlFile(const std::wstring& sFilename)
@@ -686,6 +697,16 @@ namespace NExtractTools
 									RELEASEOBJECT(m_nFormatTo);
 									m_nFormatTo = new int(XmlUtils::GetInteger(sValue));
 								}
+								else if (_T("m_sDefaultFontName") == sName)
+								{
+									RELEASEOBJECT(m_sDefaultFontName);
+									m_sDefaultFontName = new std::wstring(sValue);
+								}
+								else if (_T("m_nDefaultFontSize") == sName)
+								{
+									RELEASEOBJECT(m_nDefaultFontSize);
+									m_nDefaultFontSize = new int(XmlUtils::GetInteger(sValue));
+								}
 								else if (_T("m_nCsvTxtEncoding") == sName)
 								{
 									RELEASEOBJECT(m_nCsvTxtEncoding);
@@ -776,6 +797,11 @@ namespace NExtractTools
 									RELEASEOBJECT(m_sConvertToOrigin);
 									m_sConvertToOrigin = new std::wstring(sValue);
 								}
+								else if (_T("m_sSigningKeyStorePath") == sName)
+								{
+									RELEASEOBJECT(m_sSigningKeyStorePath);
+									m_sSigningKeyStorePath = new std::wstring(sValue);
+								}
 							}
 							else if (_T("m_nCsvDelimiterChar") == sName)
 							{
@@ -864,6 +890,10 @@ namespace NExtractTools
 		{
 			return (NULL != m_sConvertToOrigin) ? (*m_sConvertToOrigin) : L"";
 		}
+		std::wstring getSigningKeyStorePath() const
+		{
+			return (NULL != m_sSigningKeyStorePath) ? (*m_sSigningKeyStorePath) : L"";
+		}
 		bool needConvertToOrigin(long nFormatFrom) const
 		{
 			COfficeFileFormatChecker FileFormatChecker;
@@ -880,6 +910,10 @@ namespace NExtractTools
 
 			if (NULL != m_nCsvTxtEncoding)
 				nCsvEncoding = *m_nCsvTxtEncoding;
+			if(NSFile::GetFileExtention(*m_sFileFrom) == L"tsv")
+			{
+				cDelimiter = L"\t";
+			}
 			if (NULL != m_nCsvDelimiter)
 			{
 				switch (*m_nCsvDelimiter)
@@ -990,7 +1024,6 @@ namespace NExtractTools
 					nFormatTo = AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM_PDF;
 					*m_nFormatTo = AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM_PDF;
 				}
-
 				if (NULL != m_oMailMergeSend)
 					eRes = TCD_MAILMERGE;
 				else if ((AVS_OFFICESTUDIO_FILE_DOCUMENT_XML == nFormatFrom) && 0 != (AVS_OFFICESTUDIO_FILE_OTHER & nFormatTo))
@@ -1029,6 +1062,8 @@ namespace NExtractTools
 					eRes = TCD_VBAPROJECT2XML;
 				else if (AVS_OFFICESTUDIO_FILE_UNKNOWN == nFormatFrom && AVS_OFFICESTUDIO_FILE_OTHER_ZIP == nFormatTo)
 					eRes = TCD_ZIPDIR;
+				else if (AVS_OFFICESTUDIO_FILE_OTHER_COMPOUND == nFormatFrom)
+					eRes = TCD_COMPOUND2;
 			}
 			else
 				eRes = TCD_ERROR;

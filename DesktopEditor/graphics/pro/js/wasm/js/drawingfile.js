@@ -145,9 +145,17 @@ CFile.prototype["isNeedPassword"] = function()
 {
 	return this._isNeedPassword;
 };
-CFile.prototype["SplitPages"] = function(arrPageIndex, arrayBufferChanges)
+CFile.prototype["CheckOwnerPassword"] = function(password)
 {
-	let ptr = this._SplitPages(arrPageIndex, arrayBufferChanges);
+	return this._CheckOwnerPassword(password);
+};
+CFile.prototype["CheckPerm"] = function(perm)
+{
+	return this._CheckPerm(perm);
+};
+CFile.prototype["SplitPages"] = function(arrOriginIndex, arrayBufferChanges)
+{
+	let ptr = this._SplitPages(arrOriginIndex, arrayBufferChanges);
 	let res = ptr.getMemory(true);
 	ptr.free();
 	return res;
@@ -159,6 +167,14 @@ CFile.prototype["MergePages"] = function(arrayBuffer, maxID, prefixForm)
 CFile.prototype["UndoMergePages"] = function()
 {
 	return this._UndoMergePages();
+};
+CFile.prototype["RedactPage"] = function(originIndex, arrRedactBox, arrayBufferFiller)
+{
+	return this._RedactPage(originIndex, arrRedactBox, arrayBufferFiller);
+};
+CFile.prototype["UndoRedact"] = function()
+{
+	return this._UndoRedact();
 };
 
 // INFO DOCUMENT
@@ -251,9 +267,9 @@ CFile.prototype["getStructure"] = function()
 	return res;
 };
 
-CFile.prototype["getLinks"] = function(pageIndex)
+CFile.prototype["getLinks"] = function(originIndex)
 {
-	let ptr = this._getLinks(pageIndex);
+	let ptr = this._getLinks(originIndex);
 	let reader = ptr.getReader();
 
 	if (!reader) return [];
@@ -276,11 +292,12 @@ CFile.prototype["getLinks"] = function(pageIndex)
 };
 
 // TEXT
-CFile.prototype["getGlyphs"] = function(pageIndex)
+CFile.prototype["getGlyphs"] = function(originIndex)
 {
+	let pageIndex = this.pages.findIndex(function(page) {
+		return page.originIndex == originIndex;
+	});
 	let page = this.pages[pageIndex];
-	if (page.originIndex == undefined)
-		return [];
 	if (page.fonts.length > 0)
 	{
 		// waiting fonts
@@ -288,7 +305,7 @@ CFile.prototype["getGlyphs"] = function(pageIndex)
 	}
 
 	this.lockPageNumForFontsLoader(pageIndex, UpdateFontsSource.Page);
-	let res = this._getGlyphs(page.originIndex);
+	let res = this._getGlyphs(originIndex);
 	// there is no need to delete the result; this buffer is used as a text buffer 
 	// for text commands on other pages. After receiving ALL text pages, 
 	// you need to call destroyTextInfo()
@@ -343,6 +360,11 @@ CFile.prototype["getInteractiveFormsStandardFonts"] = function()
 CFile.prototype["getFontByID"] = function(ID)
 {
 	return this._getFontByID(ID);
+};
+
+CFile.prototype["getGIDByUnicode"] = function(ID)
+{
+	return this._getGIDByUnicode(ID);
 };
 
 CFile.prototype["setCMap"] = function(memoryBuffer)
@@ -404,9 +426,9 @@ function readAction(reader, rec, readDoubleFunc, readStringFunc)
 			case 4:
 			{
 				rec["left"]   = readDoubleFunc.call(reader);
-				rec["bottom"] = readDoubleFunc.call(reader);
+				rec["top"] = readDoubleFunc.call(reader);
 				rec["right"]  = readDoubleFunc.call(reader);
-				rec["top"]    = readDoubleFunc.call(reader);
+				rec["bottom"]    = readDoubleFunc.call(reader);
 				break;
 			}
 			case 1:
@@ -612,6 +634,7 @@ function readAnnotType(reader, rec, readDoubleFunc, readDouble2Func, readStringF
 					oFont["vertical"] = readDoubleFunc.call(reader);
 				if (nFontFlag & (1 << 6))
 					oFont["actual"] = readStringFunc.call(reader);
+				oFont["rtl"] = (nFontFlag >> 7) & 1;
 				oFont["size"] = readDoubleFunc.call(reader);
 				oFont["color"] = [];
 				oFont["color"].push(readDouble2Func.call(reader));
@@ -1017,6 +1040,33 @@ function readAnnotType(reader, rec, readDoubleFunc, readDouble2Func, readStringF
 			rec["font"]["style"] = reader.readInt();
 		}
 	}
+	// Link
+	else if (rec["type"] == 1)
+	{
+		flags = reader.readInt();
+		if (flags & (1 << 0))
+		{
+			rec["A"] = {};
+			readAction(reader, rec["A"], readDoubleFunc, readStringFunc);
+		}
+		if (flags & (1 << 1))
+		{
+			rec["PA"] = {};
+			readAction(reader, rec["PA"], readDoubleFunc, readStringFunc);
+		}
+		// Selection mode - H
+		// 0 - none, 1 - invert, 2 - push, 3 - outline
+		if (flags & (1 << 2))
+			rec["highlight"] = reader.readByte();
+		// QuadPoints
+		if (flags & (1 << 3))
+		{
+			let n = reader.readInt();
+			rec["QuadPoints"] = [];
+			for (let i = 0; i < n; ++i)
+				rec["QuadPoints"].push(readDoubleFunc.call(reader));
+		}
+	}
 }
 function readWidgetType(reader, rec, readDoubleFunc, readDouble2Func, readStringFunc, isRead = false)
 {
@@ -1161,6 +1211,20 @@ function readWidgetType(reader, rec, readDoubleFunc, readDouble2Func, readString
 			rec["value"] = readStringFunc.call(reader);
 		// 0 - check, 1 - cross, 2 - diamond, 3 - circle, 4 - star, 5 - square
 		rec["style"] = reader.readByte();
+		if (flags & (1 << 10))
+		{
+			let n = reader.readInt();
+			rec["opt"] = [];
+			for (let i = 0; i < n; ++i)
+			{
+				let opt1 = readStringFunc.call(reader);
+				let opt2 = readStringFunc.call(reader);
+				if (opt1 == "")
+					rec["opt"].push(opt2);
+				else
+					rec["opt"].push([opt2, opt1]);
+			}
+		}
 		if (flags & (1 << 14))
 			rec["ExportValue"] = readStringFunc.call(reader);
 		// 12.7.4.2.1
@@ -1399,7 +1463,7 @@ CFile.prototype["getInteractiveFormsInfo"] = function()
 // optional nWidget     - rec["AP"]["i"]
 // optional sView       - N/D/R
 // optional sButtonView - state pushbutton-annotation - Off/Yes(or rec["ExportValue"])
-CFile.prototype["getInteractiveFormsAP"] = function(pageIndex, width, height, backgroundColor, nWidget, sView, sButtonView)
+CFile.prototype["getInteractiveFormsAP"] = function(originIndex, width, height, backgroundColor, nWidget, sView, sButtonView)
 {
 	let nView = -1;
 	if (sView)
@@ -1415,8 +1479,11 @@ CFile.prototype["getInteractiveFormsAP"] = function(pageIndex, width, height, ba
 	if (sButtonView)
 		nButtonView = (sButtonView == "Off" ? 0 : 1);
 
+	let pageIndex = this.pages.findIndex(function(page) {
+		return page.originIndex == originIndex;
+	});
 	this.lockPageNumForFontsLoader(pageIndex, UpdateFontsSource.Forms);
-	let ptr = this._getInteractiveFormsAP(width, height, backgroundColor, pageIndex, nWidget, nView, nButtonView);
+	let ptr = this._getInteractiveFormsAP(width, height, backgroundColor, originIndex, nWidget, nView, nButtonView);
 	let reader = ptr.getReader();
 	this.unlockPageNumForFontsLoader();
 	
@@ -1501,13 +1568,13 @@ CFile.prototype["getButtonIcons"] = function(pageIndex, width, height, backgroun
 	ptr.free();
 	return res;
 };
-// optional pageIndex - get annotations from specific page
-CFile.prototype["getAnnotationsInfo"] = function(pageIndex)
+// optional originIndex - get annotations from specific page
+CFile.prototype["getAnnotationsInfo"] = function(originIndex)
 {
 	if (!this.nativeFile)
 		return [];
 
-	let ptr = this._getAnnotationsInfo(pageIndex);
+	let ptr = this._getAnnotationsInfo(originIndex);
 	let reader = ptr.getReader();
 
 	if (!reader) return [];
@@ -1539,7 +1606,7 @@ CFile.prototype["getAnnotationsInfo"] = function(pageIndex)
 };
 // optional nAnnot ...
 // optional sView ...
-CFile.prototype["getAnnotationsAP"] = function(pageIndex, width, height, backgroundColor, nAnnot, sView)
+CFile.prototype["getAnnotationsAP"] = function(originIndex, width, height, backgroundColor, nAnnot, sView)
 {
 	let nView = -1;
 	if (sView)
@@ -1552,8 +1619,11 @@ CFile.prototype["getAnnotationsAP"] = function(pageIndex, width, height, backgro
 			nView = 2;
 	}
 
+	let pageIndex = this.pages.findIndex(function(page) {
+		return page.originIndex == originIndex;
+	});
 	this.lockPageNumForFontsLoader(pageIndex, UpdateFontsSource.Annotation);
-	let ptr = this._getAnnotationsAP(width, height, backgroundColor, pageIndex, nAnnot, nView);
+	let ptr = this._getAnnotationsAP(width, height, backgroundColor, originIndex, nAnnot, nView);
 	let reader = ptr.getReader();
 	this.unlockPageNumForFontsLoader();
 
@@ -1632,6 +1702,11 @@ CFile.prototype["readAnnotationsInfoFromBinary"] = function(AnnotInfo)
 };
 
 // SCAN PAGES
+CFile.prototype["scanPageFonts"] = function(page)
+{
+	this._setScanPageFonts(page);
+};
+
 CFile.prototype["scanPage"] = function(page, mode)
 {
 	let ptr = this._scanPage(page, mode);

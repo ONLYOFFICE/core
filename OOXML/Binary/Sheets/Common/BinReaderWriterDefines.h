@@ -29,8 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef XLSX_BIN_READER_WRITER_DEFINES
-#define XLSX_BIN_READER_WRITER_DEFINES
+#pragma once
 
 namespace BinXlsxRW
 {
@@ -239,7 +238,10 @@ namespace BinXlsxRW
 		TimelineCaches = 27,
 		TimelineCache = 28,
 		Metadata = 29,
-		XmlMap = 30
+		XmlMap = 30,
+		RdRichValue = 31,
+		RdRichValueStructure = 32,
+		RdRichValueTypes = 33
 	};}
 	namespace c_oSerWorkbookProtection {enum c_oSerWorkbookProtection{
 		AlgorithmName = 0,
@@ -249,8 +251,38 @@ namespace BinXlsxRW
 		LockStructure = 4,
 		LockWindows = 5,
 		Password = 6
-	}; }
-	
+	}; }	
+
+	namespace c_oSer_RichValue {enum c_oSer_RichValue {
+		RichValue = 0,
+		StructureIdx = 1,
+		Value = 2,
+		Fallback = 3,
+		FallbackValue = 4,
+		FallbackType = 5
+	};}
+
+	namespace c_oSer_RichStructures {enum c_oSer_RichStructures {
+		Structure = 0,
+		Type = 1,
+		ValueKey = 2,
+		ValueKeyType = 3,
+		ValueKeyName = 4
+	};}
+	namespace c_oSer_RichValueTypesInfo {enum c_oSer_RichValueTypesInfo {
+		Global = 0,
+		KeyFlags = 1,
+		Types = 2,
+		Type = 3,
+		Name = 4,
+		KeyFlagName = 5,
+		ReservedKey = 6,
+		ReservedKeyName = 7,
+		ReservedKeyFlags = 8,
+		FlagName = 9,
+		FlagValue = 10
+
+	};}
 	namespace c_oSerFileSharing {enum c_oSerFileSharing{
 		AlgorithmName = 0,
 		SpinCount = 1,
@@ -362,7 +394,8 @@ namespace BinXlsxRW
 		DateCompatibility = 1,
 		HidePivotFieldList = 2,
 		ShowPivotChartFilter = 3,
-		UpdateLinks = 4
+		UpdateLinks = 4,
+		CodeName = 5
 	};}
 	namespace c_oSerWorkbookViewTypes{enum c_oSerWorkbookViewTypes
 	{
@@ -1629,5 +1662,3 @@ namespace BinXlsxRW
 		Rho = 21
 	};}
 }
-
-#endif //

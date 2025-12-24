@@ -73,6 +73,10 @@ namespace PPTX
 		if (_presentation.is_init())
 		{
 			_presentation->commentAuthors = _presentation->Get(OOX::Presentation::FileTypes::CommentAuthors).smart_dynamic_cast<PPTX::Authors>();
+            if (false == _presentation->commentAuthors.IsInit())
+            {
+                _presentation->commentAuthors = _presentation->Get(OOX::Presentation::FileTypes::ModernCommentAuthors).smart_dynamic_cast<PPTX::Authors>();
+            }
 			
 			if (_presentation->IsExist(OOX::FileTypes::VbaProject))
 			{
@@ -186,18 +190,6 @@ namespace PPTX
 	{
 		return true;//FileContainer::exist(OOX::Presentation::FileTypes::Presentation);
 	}
-
-	//void Document::extractPictures(const OOX::CPath& path)
-	//{
-	//	OOX::CSystemUtility::CreateDirectories(path);
-	//	FileContainer::ExtractPictures(path);
-	//}
-
-	//void Document::extractPictures(const OOX::CPath& source, const OOX::CPath& path)
-	//{
-	//	//read(source);
-	//	extractPictures(path);
-	//}
 
 	long Document::CountFiles(const OOX::CPath& path)
 	{

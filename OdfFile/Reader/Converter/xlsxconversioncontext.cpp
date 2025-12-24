@@ -463,7 +463,7 @@ void xlsx_conversion_context::serialize_bookViews(std::wostream & strm)
 					{
 						for (size_t i = 0; i < sheets_.size(); i++)
 						{
-							if (false == sheets_[i]->external_ref().empty() && sheets_[i]->name() == *sActiveTable)
+							if (sheets_[i]->external_ref().empty() && sheets_[i]->name() == *sActiveTable)
 							{
 								CP_XML_ATTR(L"activeTab", i);
 								break;

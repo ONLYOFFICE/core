@@ -52,6 +52,17 @@ struct CPdfReaderContext
 	~CPdfReaderContext();
 };
 
+struct CPdfRedact
+{
+	int m_nPageIndex;
+	BYTE* m_pChanges;
+	int m_nChangeLength;
+	std::vector<double> m_arrRedactBox;
+
+	CPdfRedact() : m_nPageIndex(-1), m_pChanges(NULL), m_nChangeLength(0) {}
+	~CPdfRedact();
+};
+
 class CPdfReader
 {
 public:
@@ -82,9 +93,14 @@ public:
 	bool MergePages(BYTE* pData, DWORD nLength, const std::wstring& wsPassword = L"", int nMaxID = 0, const std::string& sPrefixForm = "");
 	bool MergePages(const std::wstring& wsFile, const std::wstring& wsPassword = L"", int nMaxID = 0, const std::string& sPrefixForm = "");
 	bool UnmergePages();
+	bool RedactPage(int nPageIndex, double* arrRedactBox, int nLengthX8, BYTE* pChanges, int nLength);
+	bool UndoRedact();
+	bool CheckOwnerPassword(const std::wstring& sPassword);
+	bool CheckPerm(int nPerm);
 	void GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY);
 	void DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak);
 	std::wstring GetInfo();
+	BYTE* GetGIDByUnicode(const std::wstring& wsFontName);
 	std::wstring GetFontPath(const std::wstring& wsFontName, bool bSave = true);
 	std::wstring ToXml(const std::wstring& wsXmlPath, bool isPrintStreams = false);
 	void ChangeLength(DWORD nLength) { m_nFileLength = nLength; }
@@ -94,9 +110,11 @@ public:
 	PDFDoc* GetPDFDocument(int PDFIndex);
 	int GetStartRefID(PDFDoc* pDoc);
 	int GetNumPagesBefore(PDFDoc* pDoc);
+	std::string GetPrefixForm(PDFDoc* pDoc);
 	int FindRefNum(int nObjID, PDFDoc** pDoc = NULL, int* nStartRefID = NULL);
 	int GetPageIndex(int nPageIndex, PDFDoc** pDoc = NULL, PdfReader::CPdfFontList** pFontList = NULL, int* nStartRefID = NULL);
 
+	void SetFonts(int nPageIndex);
 	BYTE* GetStructure();
 	BYTE* GetLinks(int nPageIndex);
 	BYTE* GetWidgets();
@@ -117,6 +135,7 @@ private:
 	DWORD                  m_nFileLength;
 	int                    m_eError;
 	std::vector<CPdfReaderContext*> m_vPDFContext;
+	std::vector<CPdfRedact*> m_vRedact;
 	std::map<std::wstring, std::wstring> m_mFonts;
 };
 

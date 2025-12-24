@@ -11,6 +11,8 @@
 #include "CtrlShapePolygon.h"
 #include "CtrlShapeConnectLine.h"
 
+#include "../Common/NodeNames.h"
+
 namespace HWP
 {
 CCtrlContainer::CCtrlContainer(const HWP_STRING& sCtrlID)
@@ -25,31 +27,33 @@ CCtrlContainer::CCtrlContainer(const HWP_STRING& sCtrlID, int nSize, CHWPStream&
 	: CCtrlGeneralShape(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
 
-CCtrlContainer::CCtrlContainer(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion)
-    : CCtrlGeneralShape(sCtrlID, oReader, nVersion)
+CCtrlContainer::CCtrlContainer(const HWP_STRING& sCtrlID, CXMLReader& oReader, EHanType eType)
+    : CCtrlGeneralShape(sCtrlID, oReader, eType)
 {
 	WHILE_READ_NEXT_NODE_WITH_NAME(oReader)
 	{
-		if ("hp:container" == sNodeName)
-			m_arShapes.push_back(new CCtrlContainer(L"noc$", oReader, nVersion));
-		else if ("hp:line" == sNodeName)
-			m_arShapes.push_back(new CCtrlShapeLine(L"nil$", oReader, nVersion));
-		else if ("hp:rect" == sNodeName)
-			m_arShapes.push_back(new CCtrlShapeRect(L"cer$", oReader, nVersion));
-		else if ("hp:ellipse" == sNodeName)
-			m_arShapes.push_back(new CCtrlShapeEllipse(L"lle$", oReader, nVersion));
-		else if ("hp:arc" == sNodeName)
-			m_arShapes.push_back(new CCtrlShapeArc(L"cra$", oReader, nVersion));
-		else if ("hp:polygon" == sNodeName)
-			m_arShapes.push_back(new CCtrlShapePolygon(L"lop$", oReader, nVersion));
-		else if ("hp:curve" == sNodeName)
-			m_arShapes.push_back(new CCtrlShapeCurve(L"ruc$", oReader, nVersion));
-		else if ("hp:connectLine" == sNodeName)
-			m_arShapes.push_back(new CCtrlShapeConnectLine(L"loc$", oReader, nVersion));
-		else if ("hp:pic" == sNodeName)
-			m_arShapes.push_back(new CCtrlShapePic(L"cip$", oReader, nVersion));
-		else if ("hp:ole" == sNodeName)
-			m_arShapes.push_back(new CCtrlShapeOle(L"elo$", oReader, nVersion));
+		if (GetNodeName(ENode::Container, eType) == sNodeName)
+			m_arShapes.push_back(new CCtrlContainer(L"noc$", oReader, eType));
+		else if (GetNodeName(ENode::Line, eType) == sNodeName)
+			m_arShapes.push_back(new CCtrlShapeLine(L"nil$", oReader, eType));
+		else if (GetNodeName(ENode::Rectangle, eType) == sNodeName)
+			m_arShapes.push_back(new CCtrlShapeRect(L"cer$", oReader, eType));
+		else if (GetNodeName(ENode::Ellipse, eType) == sNodeName)
+			m_arShapes.push_back(new CCtrlShapeEllipse(L"lle$", oReader, eType));
+		else if (GetNodeName(ENode::Arc, eType) == sNodeName)
+			m_arShapes.push_back(new CCtrlShapeArc(L"cra$", oReader, eType));
+		else if (GetNodeName(ENode::Polygon, eType) == sNodeName)
+			m_arShapes.push_back(new CCtrlShapePolygon(L"lop$", oReader, eType));
+		else if (GetNodeName(ENode::Curve, eType) == sNodeName)
+			m_arShapes.push_back(new CCtrlShapeCurve(L"ruc$", oReader, eType));
+		else if (GetNodeName(ENode::ConnectLine, eType) == sNodeName)
+			m_arShapes.push_back(new CCtrlShapeConnectLine(L"loc$", oReader, eType));
+		else if (GetNodeName(ENode::Picture, eType) == sNodeName)
+			m_arShapes.push_back(new CCtrlShapePic(L"cip$", oReader, eType));
+		else if (GetNodeName(ENode::Ole, eType) == sNodeName)
+			m_arShapes.push_back(new CCtrlShapeOle(L"elo$", oReader, eType));
+		else
+			CCtrlGeneralShape::ParseChildren(oReader, eType);
 	}
 	END_WHILE
 

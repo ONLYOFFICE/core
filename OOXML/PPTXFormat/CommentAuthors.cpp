@@ -39,38 +39,70 @@ namespace PPTX
 		void CommentAuthor::fromXML(XmlUtils::CXmlNode& node)
 		{
 			XmlMacroReadAttributeBase(node, L"id", id);
+			if (!bModern && id.IsInit())
+			{
+				idx = XmlUtils::GetInteger(*id);
+			}
 			XmlMacroReadAttributeBase(node, L"lastIdx", last_idx);
 			XmlMacroReadAttributeBase(node, L"clrIdx", clr_idx);
 			XmlMacroReadAttributeBase(node, L"name", name);
 			XmlMacroReadAttributeBase(node, L"initials", initials);
+			XmlMacroReadAttributeBase(node, L"userId", userId);
+			XmlMacroReadAttributeBase(node, L"providerId", providerId);
 		}
 		std::wstring CommentAuthor::toXML() const
 		{
-			return _T("");
+			return L"";
 		}
 		void CommentAuthor::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 		{
-			pWriter->StartNode(_T("p:cmAuthor"));
+			pWriter->StartNode(bModern ? L"p188:author" : L"p:cmAuthor");
 
 			pWriter->StartAttributes();
-			pWriter->WriteAttribute(_T("id"), id);
-			pWriter->WriteAttribute2(_T("name"), name);
-			pWriter->WriteAttribute(_T("initials"), initials);
-			pWriter->WriteAttribute(_T("lastIdx"), last_idx);
-			pWriter->WriteAttribute(_T("clrIdx"), clr_idx);
+			if (!bModern && idx.IsInit())
+			{
+				pWriter->WriteAttribute(L"id", *idx);
+			}
+			else
+			{
+				pWriter->WriteAttribute(L"id", id.IsInit() ? *id : std::to_wstring(*idx));
+			}
+			pWriter->WriteAttribute2(L"name", name);
+			pWriter->WriteAttribute(L"initials", initials);
+			if (last_idx.IsInit())
+			{
+				pWriter->WriteAttribute(L"lastIdx", last_idx);
+			}
+			else if(!bModern)
+			{
+				pWriter->WriteAttribute(L"lastIdx", 2147483647);
+			}
+			if (clr_idx.IsInit())
+			{
+				pWriter->WriteAttribute(L"clrIdx", clr_idx);
+			}
+			else if (!bModern)
+			{
+				pWriter->WriteAttribute(L"clrIdx", 0);
+			}
+			pWriter->WriteAttribute2(L"userId", userId);
+			pWriter->WriteAttribute2(L"providerId", providerId);
 			pWriter->EndAttributes();
 
-			pWriter->EndNode(_T("p:cmAuthor"));
+			pWriter->EndNode(bModern ? L"p188:author" : L"p:cmAuthor");
 		}
 		void CommentAuthor::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 		{
 			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-			pWriter->WriteInt2(0, id);
-			pWriter->WriteInt2(1, last_idx);
-			pWriter->WriteInt2(2, clr_idx);
-			pWriter->WriteString2(3, name);
-			pWriter->WriteString2(4, initials);
-			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+				pWriter->WriteInt2(0, idx);
+				pWriter->WriteInt2(1, last_idx);
+				pWriter->WriteInt2(2, clr_idx);
+				pWriter->WriteString2(3, name);
+				pWriter->WriteString2(4, initials);
+				pWriter->WriteString2(5, id);
+				pWriter->WriteString2(6, userId);
+				pWriter->WriteString2(7, providerId);
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 		}
 		void CommentAuthor::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 		{
@@ -87,7 +119,7 @@ namespace PPTX
 				switch (_at)
 				{
 				case 0:
-					id = pReader->GetLong();
+					idx = pReader->GetLong();
 					break;
 				case 1:
 					last_idx = pReader->GetLong();
@@ -101,12 +133,26 @@ namespace PPTX
 				case 4:
 					initials = pReader->GetString2();
 					break;
+				case 5:
+					id = pReader->GetString2();
+					break;
+				case 6:
+					userId = pReader->GetString2();
+					break;
+				case 7:
+					providerId = pReader->GetString2();
+					break;
 				default:
 					break;
 				}
 			}
 
 			pReader->Seek(_end_rec);
+			
+			if (false == idx.IsInit())
+			{
+				bModern = true;
+			}
 		}
 		void CommentAuthor::FillParentPointersForChilds()
 		{
@@ -128,17 +174,27 @@ namespace PPTX
 		XmlUtils::CXmlNode oNode;
 		oNode.FromXmlFile(filename.m_strFilename);
 
+		if (XmlUtils::GetNamespace(oNode.GetName()) == L"p188")
+			bModern = true;
+
 		std::vector<XmlUtils::CXmlNode> oNodes;
-		oNode.GetNodes(_T("p:cmAuthor"), oNodes);
-		size_t nCount = oNodes.size();
-		for (size_t i = 0; i < nCount; ++i)
+		oNode.GetNodes(L"*", oNodes);
+
+		for (size_t i = 0; i < oNodes.size(); ++i)
 		{
-			XmlUtils::CXmlNode & oCm = oNodes[i];
+			XmlUtils::CXmlNode& oCm = oNodes[i];
 
-			PPTX::Logic::CommentAuthor comm;
+			std::wstring strName = XmlUtils::GetNameNoNS(oCm.GetName());
 
-			m_arAuthors.push_back(comm);
-			m_arAuthors.back().fromXML(oCm);
+			if (strName == L"author" || strName == L"cmAuthor")
+			{
+				m_arAuthors.emplace_back();
+
+				if (XmlUtils::GetNamespace(oCm.GetName()) == L"p188")
+					m_arAuthors.back().bModern = true;
+				
+				m_arAuthors.back().fromXML(oCm);
+			}
 		}
 	}
 	void Authors::write(const OOX::CPath& filename, const OOX::CPath& directory, OOX::CContentTypes& content)const
@@ -147,7 +203,8 @@ namespace PPTX
 	}
 	const OOX::FileType Authors::type() const
 	{
-		return OOX::Presentation::FileTypes::CommentAuthors;
+		if (bModern) 	return OOX::Presentation::FileTypes::ModernCommentAuthors;
+		else			return OOX::Presentation::FileTypes::CommentAuthors;
 	}
 	const OOX::CPath Authors::DefaultDirectory() const
 	{
@@ -163,17 +220,23 @@ namespace PPTX
 	}
 	void Authors::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 	{
-		pWriter->StartNode(_T("p:cmAuthorLst"));
+		pWriter->StartNode(bModern ? L"p188:authorLst" : L"p:cmAuthorLst");
 
 		pWriter->StartAttributes();
-		pWriter->WriteAttribute(_T("xmlns:a"), PPTX::g_Namespaces.a.m_strLink);
-		pWriter->WriteAttribute(_T("xmlns:r"), PPTX::g_Namespaces.r.m_strLink);
-		pWriter->WriteAttribute(_T("xmlns:p"), PPTX::g_Namespaces.p.m_strLink);
+		pWriter->WriteAttribute(L"xmlns:a", PPTX::g_Namespaces.a.m_strLink);
+		pWriter->WriteAttribute(L"xmlns:r", PPTX::g_Namespaces.r.m_strLink);
+		pWriter->WriteAttribute(L"xmlns:p", PPTX::g_Namespaces.p.m_strLink);
+		if (bModern)
+			pWriter->WriteAttribute(L"xmlns:p188", L"http://schemas.microsoft.com/office/powerpoint/2018/8/main");
 		pWriter->EndAttributes();
 
-		pWriter->WriteArray2(m_arAuthors);
+		for (auto author : m_arAuthors)
+		{
+			author.bModern = bModern;
+			author.toXmlWriter(pWriter);
+		}
 
-		pWriter->EndNode(_T("p:cmAuthorLst"));
+		pWriter->EndNode(bModern ? L"p188:authorLst" : L"p:cmAuthorLst");
 	}
 	void Authors::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 	{
@@ -194,14 +257,13 @@ namespace PPTX
 					{
 						pReader->Skip(1);
 
-						PPTX::Logic::CommentAuthor comm;
-
-						m_arAuthors.push_back(comm);
+						m_arAuthors.emplace_back();
 						m_arAuthors.back().fromPPTY(pReader);
-					}
 
-					break;
-				}
+						if (m_arAuthors.back().bModern)
+							bModern = true;
+					}					
+				}break;
 				default:
 				{
 					pReader->SkipRecord();
@@ -209,8 +271,40 @@ namespace PPTX
 				}
 			}
 		}
-
 		pReader->Seek(end);
+
+		if (!bModern)
+		{
+			bool bNew = mapAuthors.empty();
+
+			for (auto &auth : m_arAuthors)
+			{
+				if (true == auth.idx.IsInit())
+					break;
+				if (false == auth.id.IsInit())
+					break;
+
+				if (bNew)
+				{
+					auth.idx = mapAuthors.size() + 1;
+					mapAuthors.insert(std::make_pair(*auth.id, *auth.idx));
+				}
+				else
+				{
+					std::map<std::wstring, int>::iterator pFind = mapAuthors.find(*auth.id);
+
+					if (pFind != mapAuthors.end())
+					{
+						auth.idx = pFind->second;
+					}
+					else
+					{
+						auth.idx = mapAuthors.size() + 1;
+						mapAuthors.insert(std::make_pair(*auth.id, *auth.idx));
+					}
+				}
+			}
+		}
 	}
 
 } // namespace PPTX

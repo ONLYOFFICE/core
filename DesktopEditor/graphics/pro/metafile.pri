@@ -121,7 +121,8 @@ METAFILE_PATH = $$PWD/../../raster/Metafile
 			$$METAFILE_PATH/svg/SvgObjects/CFont.h \
 			$$METAFILE_PATH/svg/SvgObjects/CStyle.h \
 			$$METAFILE_PATH/svg/SvgObjects/CObjectBase.h \
-			$$METAFILE_PATH/svg/SvgUtils.h
+			$$METAFILE_PATH/svg/SvgUtils.h \
+			$$METAFILE_PATH/svg/SvgReader.h
 
 		SOURCES += 	\
 			$$METAFILE_PATH/svg/CSvgFile.cpp \
@@ -145,7 +146,8 @@ METAFILE_PATH = $$PWD/../../raster/Metafile
 			$$METAFILE_PATH/svg/SvgObjects/CPolyline.cpp \
 			$$METAFILE_PATH/svg/SvgObjects/CFont.cpp \
 			$$METAFILE_PATH/svg/SvgObjects/CObjectBase.cpp \
-			$$METAFILE_PATH/svg/SvgObjects/CStyle.cpp
+			$$METAFILE_PATH/svg/SvgObjects/CStyle.cpp \
+			$$METAFILE_PATH/svg/SvgReader.cpp
 
 		CONFIG += css_calculator_without_xhtml
 

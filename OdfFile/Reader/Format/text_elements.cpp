@@ -91,7 +91,7 @@ void process_paragraph_drop_cap_attr(const paragraph_attrs & Attr, oox::docx_con
 	Context.get_drop_cap_context().Scale = style_drop_cap_->style_lines_;
 	
 	if (style_drop_cap_->style_distance_)
-		Context.get_drop_cap_context().Space = (int)(20.0 * (style_drop_cap_->style_distance_->get_value_unit(length::pt) + 5)+ 0.5);//формула ачуметь !! - подбор вручную
+		Context.get_drop_cap_context().Space = (int)(20.0 * (style_drop_cap_->style_distance_->get_value_unit(length::pt) ) );//формула ачуметь !! - подбор вручную
 
 	//font size пощитаем здесь .. так как его значение нужо в стиле параграфа (межстрочный интервал) - в (pt*20)
 	
@@ -294,6 +294,8 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context, _CP_OPT(std
 	
 	bool in_drawing	= false;
 
+    bool flag_for_emplicit_end = false;
+
  	if (Context.get_drawing_context().get_current_shape() || Context.get_drawing_context().get_current_frame())
 	{
 		in_drawing = true;
@@ -309,7 +311,7 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context, _CP_OPT(std
 		
 	bool bIsNewParagraph = true;
 	
-	bool is_empty = content_.empty();
+    bool is_empty = content_.empty();
 
 	if (Context.get_paragraph_state() && (Context.get_process_note() == oox::docx_conversion_context::noNote) && !in_drawing)
     {//вложеннные элементы ... или после графики embedded_linux_kernel_and_drivers_labs_zh_TW.odt
@@ -318,7 +320,7 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context, _CP_OPT(std
 		if (!Context.get_paragraph_keep())// например Appendix I_IPP.odt - tracked elements (
 		{
 			for (size_t i = 0; i < content_.size(); i++)
-			{
+            {
 				content_[i]->docx_convert(Context); 
 			}
 			if (!Context.get_delete_text_state())
@@ -356,18 +358,24 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context, _CP_OPT(std
 				next_masterPageName = boost::none;
         }
 		else next_masterPageName = boost::none;
-    } 
+    }
+
+    flag_for_emplicit_end = Context.get_implicit_end();
+
 	if (!Context.process_headers_footers_ && (next_section_ || next_end_section_)) // remove in text::section  - GreekSynopsis.odt
 	{
-		Context.get_section_context().get_last().is_dump_ = true;
-		is_empty = false;
+		if( !flag_for_emplicit_end )
+        {
+            Context.get_section_context().get_last().is_dump_ = true;
+            is_empty = false;
+        }
 	}
-	std::wstringstream strm;
-	if (Context.process_page_properties(strm))
-	{
-		Context.get_section_context().dump_ = strm.str();
-	}
-	process_paragraph_drop_cap_attr(attrs_, Context);
+    std::wstringstream strm;
+    if (Context.process_page_properties(strm))
+    {
+        Context.get_section_context().dump_ = strm.str();
+    }
+    process_paragraph_drop_cap_attr(attrs_, Context);
 
 	size_t index = 0;
 	if (Context.get_drop_cap_context().state() == 2)//active
@@ -843,8 +851,12 @@ void section::docx_convert(oox::docx_conversion_context & Context)
 					//is_empty = false;
 				}
 			}
-		} 
-		content_[i]->docx_convert(Context);
+        }
+        if(i == content_.size() - 1)
+        {
+            Context.set_implicit_end(true);
+        }
+        content_[i]->docx_convert(Context);
     }
 	if (bAddSection)
 	{

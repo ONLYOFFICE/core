@@ -467,15 +467,18 @@ bool COfficeFileFormatChecker::isHwpFile(POLE::Storage* storage)
 	if (storage == NULL)
 		return false;
 
-	unsigned char buffer[10];
+	unsigned char buffer[17];
 
-	POLE::Stream stream(storage, L"BodyText/Section0");
-	if (stream.read(buffer, 10) < 1)
-	{
-		return false;
-	}	
-	return true;
+	POLE::Stream stream(storage, L"FileHeader");
+
+	static constexpr const char* hwpFormatLine = "HWP Document File";
+
+	if (17 == stream.read(buffer, 17) && NULL != strstr((char*)buffer, hwpFormatLine))
+		return true;
+
+	return false;
 }
+
 bool COfficeFileFormatChecker::isXlsFormatFile(POLE::Storage *storage)
 {
 	if (storage == NULL)
@@ -547,6 +550,15 @@ bool COfficeFileFormatChecker::isPptFormatFile(POLE::Storage *storage)
 		return false;
 
 	return true;
+}
+
+bool COfficeFileFormatChecker::isCompoundFile(POLE::Storage* storage)
+{
+	if (storage == NULL) return false;
+
+	if (storage->GetAllStreams(L"/").size() == 1) return true;
+
+	return false;
 }
 
 std::wstring COfficeFileFormatChecker::getDocumentID(const std::wstring &_fileName)
@@ -746,6 +758,11 @@ bool COfficeFileFormatChecker::isOfficeFile(const std::wstring &_fileName)
 			nFileType = AVS_OFFICESTUDIO_FILE_OTHER_MS_VBAPROJECT;
 			return true;
 		}
+		else if (isCompoundFile(&storage))
+		{
+			nFileType = AVS_OFFICESTUDIO_FILE_OTHER_COMPOUND;
+			return true;
+		}
 		else if (isHwpFile(&storage))
 		{
 			nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_HWP;
@@ -805,6 +822,13 @@ bool COfficeFileFormatChecker::isOfficeFile(const std::wstring &_fileName)
 			return true;
 		}
 		else if (isMacFormatFile(fileName))
+		{
+			if (bufferDetect)
+				delete[] bufferDetect;
+			bufferDetect = NULL;
+			return true;
+		}
+		else if (isHwpxFile(fileName))
 		{
 			if (bufferDetect)
 				delete[] bufferDetect;
@@ -890,6 +914,10 @@ bool COfficeFileFormatChecker::isOfficeFile(const std::wstring &_fileName)
 		{
 			nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_MHT;
 		}
+		else if (isHwpmlFile(bufferDetect, sizeRead))
+		{
+			nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_HWPML;
+		}
 		//------------------------------------------------------------------------------------------------
 		file.CloseFile();
 	}
@@ -939,7 +967,7 @@ bool COfficeFileFormatChecker::isOfficeFile(const std::wstring &_fileName)
 		nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_MHT;
 	else if (0 == sExt.compare(L".md"))
 		nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_MD;
-	else if (0 == sExt.compare(L".csv") || 0 == sExt.compare(L".xls") || 0 == sExt.compare(L".xlsx") || 0 == sExt.compare(L".xlsb"))
+	else if (0 == sExt.compare(L".csv") || 0 == sExt.compare(L".tsv") || 0 == sExt.compare(L".xls") || 0 == sExt.compare(L".xlsx") || 0 == sExt.compare(L".xlsb"))
 		nFileType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV;
 	else if (0 == sExt.compare(L".html") || 0 == sExt.compare(L".htm"))
 		nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML;
@@ -959,6 +987,8 @@ bool COfficeFileFormatChecker::isOfficeFile(const std::wstring &_fileName)
 		nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_HWP;
 	else if (0 == sExt.compare(L".hwpx"))
 		nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_HWPX;
+	else if (0 == sExt.compare(L".hml"))
+		nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_HWPML;
 
 	if (nFileType != AVS_OFFICESTUDIO_FILE_UNKNOWN)
 		return true;
@@ -1403,6 +1433,31 @@ bool COfficeFileFormatChecker::isMacFormatFile(const std::wstring& fileName)
 	return true;
 }
 
+bool COfficeFileFormatChecker::isHwpxFile(const std::wstring &fileName)
+{
+	COfficeUtils oOfficeUtils;
+	
+	ULONG unSize = 0;
+	BYTE* pBuffer = NULL;
+
+	HRESULT hresult = oOfficeUtils.LoadFileFromArchive(fileName, L"mimetype", &pBuffer, unSize);
+
+	if (hresult != S_OK || NULL == pBuffer)
+		return false;
+
+	static constexpr const char* hwpxFormatLine = "application/hwp+zip";
+	bool bResult = false;
+	
+	if (19 <= unSize && NULL != strstr((char *)pBuffer, hwpxFormatLine))
+	{
+		nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_HWPX;
+		bResult = true;
+	}
+
+	delete[] pBuffer;
+	return bResult;
+}
+
 bool COfficeFileFormatChecker::isOpenOfficeFormatFile(const std::wstring &fileName, std::wstring &documentID)
 {
 	documentID.clear();
@@ -1568,6 +1623,28 @@ bool COfficeFileFormatChecker::isOpenOfficeFlatFormatFile(unsigned char *pBuffer
 
 	return false;
 }
+
+bool COfficeFileFormatChecker::isHwpmlFile(unsigned char *pBuffer, int dwBytes)
+{
+	if (NULL == pBuffer || dwBytes < 8)
+		return false;
+
+	for (unsigned int unPos = 0; unPos < dwBytes - 8; ++unPos)
+	{
+		if ('<' != pBuffer[unPos])
+			continue;
+
+		if (dwBytes - unPos >= 15 && '!' == pBuffer[unPos + 1] &&
+		     0 == memcmp(&pBuffer[unPos], "<!DOCTYPE HWPML", 15))
+			return true;
+
+		if (dwBytes - unPos >= 6 && 0 == memcmp(&pBuffer[unPos], "<HWPML", 6))
+			return true;
+	}
+
+	return false;
+}
+
 bool COfficeFileFormatChecker::isOOXFlatFormatFile(unsigned char *pBuffer, int dwBytes)
 {
 	if (dwBytes < 8)
@@ -1676,6 +1753,8 @@ std::wstring COfficeFileFormatChecker::GetExtensionByType(int type)
 		return L".hwp";
 	case AVS_OFFICESTUDIO_FILE_DOCUMENT_HWPX:
 		return L".hwpx";
+	case AVS_OFFICESTUDIO_FILE_DOCUMENT_HWPML:
+		return L".hml";
 	case AVS_OFFICESTUDIO_FILE_DOCUMENT_MD:
 		return L".md";
 
@@ -1861,6 +1940,8 @@ int COfficeFileFormatChecker::GetFormatByExtension(const std::wstring &sExt)
 		return AVS_OFFICESTUDIO_FILE_DOCUMENT_HWP;
 	if (L".hwpx" == ext)
 		return AVS_OFFICESTUDIO_FILE_DOCUMENT_HWPX;
+	if (L".hml" == ext)
+		return AVS_OFFICESTUDIO_FILE_DOCUMENT_HWPML;
 	if (L".md" == ext)
 		return AVS_OFFICESTUDIO_FILE_DOCUMENT_MD;
 

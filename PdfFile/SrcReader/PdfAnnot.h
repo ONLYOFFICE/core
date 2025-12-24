@@ -194,6 +194,7 @@ protected:
 	double m_dHeight; // Высота холста, для Y трансформации
 	double m_dX; // Смещение по X для трансформации
 	double m_pRect[4]; // Координаты
+	std::vector<double> m_arrC; // Специальный цвет
 
 private:
 	unsigned int m_unAnnotFlag; // Флаг аннотации - F
@@ -205,7 +206,6 @@ private:
 	std::string m_sM; // Дата последнего изменения
 	std::string m_sOUserID; // OO User ID
 	std::string m_sOMetadata; // OO метаданные формы
-	std::vector<double> m_arrC; // Специальный цвет
 	CBorderType* m_pBorder; // Граница
 };
 
@@ -247,7 +247,7 @@ private:
 	std::vector<double> m_arrTC; // Цвет текста - из DA
 	std::vector<double> m_arrBC; // Цвет границ - BC
 	std::vector<double> m_arrBG; // Цвет фона - BG
-	std::vector<CAction*> m_arrAction; // Действия
+	std::vector<CAction*> m_arrAction; // Действия - A&AA
 	BYTE m_nQ; // Выравнивание текста - Q
 	BYTE m_nH; // Режим выделения - H
 	std::string m_sTU; // Альтернативное имя поля, используется во всплывающей подсказке и сообщениях об ошибке - TU
@@ -280,6 +280,7 @@ private:
 	std::string m_sAC;
 	std::string m_sAP_N_Yes;
 	double m_dA1, m_dA2;
+	std::vector< std::pair<std::string, std::string> > m_arrOpt;
 };
 
 class CAnnotWidgetTx final : public CAnnotWidget
@@ -336,6 +337,25 @@ private:
 };
 
 //------------------------------------------------------------------------
+// PdfReader::CLinkAnnot
+//------------------------------------------------------------------------
+
+class CAnnotLink final : public CAnnot
+{
+public:
+	CAnnotLink(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex, int nStartRefID);
+	virtual ~CAnnotLink();
+
+	void ToWASM(NSWasm::CData& oRes) override;
+
+private:
+	BYTE m_nH; // Режим выделения - H
+	std::vector<double> m_arrQuadPoints; // Координаты - QuadPoints
+	CAction* m_pAction; // Действие - A&Dest
+	CAction* m_pPA; // URI действие - PA
+};
+
+//------------------------------------------------------------------------
 // PdfReader::CAnnotMarkup
 //------------------------------------------------------------------------
 
@@ -346,7 +366,7 @@ public:
 	{
 		bool bFind;
 		BYTE nAlign;
-		unsigned int unFontFlags; // 0 Bold, 1 Italic, 3 зачеркнутый, 4 подчеркнутый, 5 vertical-align, 6 actual font
+		unsigned int unFontFlags; // 0 Bold, 1 Italic, 3 зачеркнутый, 4 подчеркнутый, 5 vertical-align, 6 actual font, 7 RTL
 		double dFontSise;
 		double dVAlign;
 		double dColor[3];

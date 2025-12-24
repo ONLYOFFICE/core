@@ -54,7 +54,8 @@ SOURCES += \
 	../../DataTypes/borderstyle.cpp \
 	../../DataTypes/borderwidths.cpp \
 	../../DataTypes/calcext_type.cpp \
-	../../DataTypes/chartdatalabelnumber.cpp \
+        ../../DataTypes/chartaxistype.cpp \
+        ../../DataTypes/chartdatalabelnumber.cpp \
 	../../DataTypes/charterrorcategory.cpp \
 	../../DataTypes/chartinterpolation.cpp \
 	../../DataTypes/chartlabelarrangement.cpp \

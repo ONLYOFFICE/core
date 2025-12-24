@@ -298,23 +298,10 @@ namespace ZLibZipUtils
 
 			if (unzip_dir)
 			{
-				std::wstring current_path(unzip_dir);
-				current_path += L"/";
+				const std::wstring wsFilePath{NSSystemPath::ShortenPath(filenameW)};
 
-				std::wstring filename_inzip(filenameW);
-
-#ifdef _WIN32
-				replace_all_w(current_path, L"\\", L"/");
-				replace_all_w(filename_inzip, L"\\", L"/");
-#endif
-
-				std::wstring norm_path = NSSystemPath::NormalizePath(current_path + filename_inzip);
-				std::wstring norm_current_path = NSSystemPath::NormalizePath(current_path);
-
-				if (std::wstring::npos == norm_path.find(norm_current_path))
-				{
+				if (wsFilePath.size() > 3 && L'.' == wsFilePath[0] && L'.' == wsFilePath[1] && L'/' == wsFilePath[2])
 					return UNZ_INTERNALERROR;
-				}
 			}
 
 			//-------------------------------------------------------------------------------------------------

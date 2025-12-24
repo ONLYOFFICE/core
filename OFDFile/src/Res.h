@@ -9,8 +9,6 @@
 #include "Types/MultiMedia.h"
 #include "Types/CompositeGraphicUnit.h"
 
-#include "../../OfficeUtils/src/ZipFolder.h"
-
 namespace OFD
 {
 class CRes
@@ -31,6 +29,8 @@ public:
 	const CFont*                 GetFont(unsigned int unId) const;
 	const CMultiMedia*           GetMultiMedia(unsigned int unId) const;
 	const CCompositeGraphicUnit* GetCompositeGraphicUnit(unsigned int unId) const;
+
+	std::vector<const CDrawParam*> GetDrawParams() const;
 };
 }
 

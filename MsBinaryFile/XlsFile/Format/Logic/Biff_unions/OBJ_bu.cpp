@@ -63,5 +63,13 @@ const bool OBJ::loadContent(BinProcessor& proc)
 	return true;
 }
 
+const bool OBJ::saveContent(BinProcessor& proc)
+{
+	if(m_Obj == nullptr)
+		return  false;
+	proc.mandatory(*m_Obj);
+	return true;
+}
+
 } // namespace XLS
 

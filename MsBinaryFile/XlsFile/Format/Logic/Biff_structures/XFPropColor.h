@@ -58,11 +58,11 @@ public:
 	int serialize(std::wostream & stream, const std::wstring &sNode);
 	int deserialize(XmlUtils::CXmlLiteReader& oReader);
 
-	bool			fValidRGBA;
+	bool			fValidRGBA = true;
 	
 	unsigned char	xclrType;
 	unsigned char	icv;
-	short			nTintShade;
+	short			nTintShade = 0;
 	LongRGBA		dwRgba;
 
 //-------------------------------------------

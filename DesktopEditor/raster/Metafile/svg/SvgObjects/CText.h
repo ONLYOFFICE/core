@@ -12,15 +12,18 @@ namespace SVG
 {
 	class CTSpan : public CRenderedObject, public CContainer<CTSpan>
 	{
+		friend class CObject;
+	protected:
+		CTSpan(CSvgReader& oReader, CRenderedObject* pParent = NULL, NSFonts::IFontManager* pFontManager = NULL, const Point& oPosition = {});
+		CTSpan(const CTSpan& oTSpan, double dX, const std::wstring& wsText);
+		CTSpan(wchar_t wChar, const Point& oPosition, CRenderedObject* pParent = NULL, NSFonts::IFontManager* pFontManager = NULL);
 	public:
-		CTSpan(XmlUtils::CXmlNode& oNode, CRenderedObject* pParent = NULL, NSFonts::IFontManager* pFontManager = NULL, bool bCheckText = true);
-		CTSpan(const std::wstring& wsText, const Point& oPosition, CRenderedObject* pParent = NULL, NSFonts::IFontManager* pFontManager = NULL, bool bCheckText = true);
 		virtual ~CTSpan();
 
-		static CTSpan* Create(XmlUtils::CXmlNode& oNode, CRenderedObject* pParent = NULL, NSFonts::IFontManager* pFontManager = NULL);
-		static CTSpan* Create(const std::wstring& wsValue, const Point& oPosition, CRenderedObject* pParent = NULL, NSFonts::IFontManager* pFontManager = NULL, bool bCheckText = true);
-
+		void SetAttribute(const std::string& sName, CSvgReader& oReader) override;
 		void SetData(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false) override;
+
+		void ReadChildrens(CSvgReader& oReader, CSvgFile* pSvgFile) override;
 
 		bool Draw(IRenderer* pRenderer, const CSvgFile* pFile, CommandeMode oMode = CommandeModeDraw, const TSvgStyles* pOtherStyles = NULL, const CRenderedObject* pContexObject = NULL) const override;
 
@@ -29,19 +32,24 @@ namespace SVG
 		void InheritStyles(const CTSpan* pTSpan);
 	private:
 		void ApplyStyle(IRenderer* pRenderer, const TSvgStyles* pStyles, const CSvgFile* pFile, int& nTypePath, const CRenderedObject* pContexObject = NULL) const override;
-		void ApplyFont(IRenderer* pRenderer, double& dX, double& dY) const;
+		void ApplyFont(IRenderer* pRenderer, double& dX, double& dY, Aggplus::CMatrix& oOldMatrix) const;
 
+		void UpdateFontSize();
 		bool UseExternalFont(const CSvgFile* pFile, double dX, double dY, IRenderer* pRenderer, CommandeMode oMode = CommandeModeDraw, const TSvgStyles* pOtherStyles = NULL, const CRenderedObject* pContexObject = NULL) const;
 
-		TBounds GetBounds() const override;
+		TBounds GetBounds(SvgMatrix* pTransform = nullptr) const override;
 
 		double GetWidth() const;
 		void CorrectFontFamily(std::wstring& wsFontFamily) const;
 
 		void CalculatePosition(double& dX, double& dY) const;
 
-		void Normalize(IRenderer* pRenderer, double& dX, double& dY, double& dFontHeight) const;
+		void NormalizeFontSize(double& dFontHeight, double& dScaleX, double& dScaleY) const;
 		void SetPosition(const Point& oPosition);
+
+		void SetPositionFromParent(CRenderedObject* pParent);
+
+		double GetFontHeight() const;
 
 		std::vector<CTSpan> Split() const;
 
@@ -61,26 +69,25 @@ namespace SVG
 
 	class CText : public CTSpan
 	{
+		friend class CObject;
+	protected:
+		CText(CSvgReader& oReader, CRenderedObject* pParent = NULL, NSFonts::IFontManager* pFontManager = NULL);
 	public:
-		CText(XmlUtils::CXmlNode& oNode, CRenderedObject* pParent = NULL, NSFonts::IFontManager* pFontManager = NULL);
-
-		static CText* Create(XmlUtils::CXmlNode& oNode, CRenderedObject* pParent = NULL, NSFonts::IFontManager* pFontManager = NULL);
-
 		bool Draw(IRenderer* pRenderer, const CSvgFile* pFile, CommandeMode oMode = CommandeModeDraw, const TSvgStyles* pOtherStyles = NULL, const CRenderedObject* pContexObject = NULL) const override;
 	};
 
 	class CTextPath : public CText
 	{
+		friend class CObject;
+		CTextPath(CSvgReader& oReader, CRenderedObject* pParent = NULL, NSFonts::IFontManager* pFontManager = NULL);
 	public:
-		CTextPath(XmlUtils::CXmlNode& oNode, CRenderedObject* pParent = NULL, NSFonts::IFontManager* pFontManager = NULL, const CSvgFile* pFile = NULL);
+		void SetAttribute(const std::string& sName, CSvgReader& oReader) override;
 
 		bool Draw(IRenderer* pRenderer, const CSvgFile* pFile, CommandeMode oMode = CommandeModeDraw, const TSvgStyles* pOtherStyles = NULL, const CRenderedObject* pContexObject = NULL) const override;
-
-		static CTextPath* Create(XmlUtils::CXmlNode& oNode, CRenderedObject* pParent = NULL, NSFonts::IFontManager* pFontManager = NULL, const CSvgFile* pFile = NULL);
 	private:
 		void DrawGlyph(CTSpan* pTSpan, CMovingPath& oMovingPath, IRenderer* pRenderer, const CSvgFile* pFile, CommandeMode oMode, const CRenderedObject* pContexObject = NULL) const;
 
-		const CPath        *m_pPath;
+		std::wstring m_wsHref;
 	};
 }
 

@@ -48,15 +48,16 @@ public:
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
+	void writeFields(CFRecord& record);
 
 	static const ElementType type = typeSXPair;
 
-	unsigned short	isxvd;
-	short			iCache;
+	unsigned short	isxvd = 0;
+	short			iCache = 0;
 
-	bool			fFormula;
-	bool			fPhysical;
-	bool			fRelative;
+	bool			fFormula = false;
+	bool			fPhysical = false;
+	bool			fRelative = false;
 };
 
 } // namespace XLS

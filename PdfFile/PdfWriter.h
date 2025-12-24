@@ -54,6 +54,7 @@ namespace PdfWriter
 	class CImageDict;
 	class CShading;
 	class CExtGrState;
+	class RedactOutputDev;
 }
 
 namespace Aggplus
@@ -172,7 +173,7 @@ public:
 	HRESULT PathCommandArcTo(const double& dX, const double& dY, const double& dW, const double& dH, const double& dStartAngle, const double& dSweepAngle);
 	HRESULT PathCommandClose();
 	HRESULT PathCommandEnd();
-	HRESULT DrawPath(NSFonts::IApplicationFonts* pAppFonts, const std::wstring& wsTempDirectory, const LONG& lType);
+	HRESULT DrawPath(NSFonts::IApplicationFonts* pAppFonts, const std::wstring& wsTempDirectory, const LONG& lType, bool bIgnoreRedact = false);
 	HRESULT PathCommandStart();
 	HRESULT PathCommandGetCurrentPoint(double* dX, double* dY);
 	HRESULT PathCommandTextCHAR  (const LONG& lUnicode,                   const double& dX, const double& dY, const double& dW, const double& dH);
@@ -198,6 +199,7 @@ public:
 	HRESULT AddFormField (NSFonts::IApplicationFonts* pAppFonts, CFormFieldInfo* pFieldInfo, const std::wstring& wsTempDirectory);
 	HRESULT AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotFieldInfo* pFieldInfo);
 	HRESULT AddMetaData(const std::wstring& sMetaName, BYTE* pMetaData, DWORD nMetaLength);
+	HRESULT AddRedact(const std::vector<double>& arrRedact);
 	HRESULT get_ClipMode(LONG* lMode);
 	HRESULT put_ClipMode(const LONG& lMode);
 	//----------------------------------------------------------------------------------------
@@ -212,6 +214,7 @@ public:
 	// Дополнительные функции для дозаписи Pdf
 	//----------------------------------------------------------------------------------------
 	HRESULT EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWidgetsInfo* pFieldInfo, const std::wstring& wsTempDirectory);
+	void SetPage(PdfWriter::CPage* pPage);
 	bool EditPage(PdfWriter::CPage* pNewPage);
 	bool AddPage(int nPageIndex);
 	bool EditClose();
@@ -219,12 +222,16 @@ public:
 	void Sign(const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& wsPicturePath, ICertificate* pCertificate);
 	PdfWriter::CDocument* GetDocument();
 	PdfWriter::CPage*     GetPage();
+	IRenderer*            GetRenderer();
 	void AddFont(const std::wstring& wsFontName, const bool& bBold, const bool& bItalic, const std::wstring& wsFontPath, const LONG& lFaceIndex);
 	void SetHeadings(CHeadings* pCommand);
 	void SetNeedAddHelvetica(bool bNeedAddHelvetica);
 	void SetSplit(bool bSplit) { m_bSplit = bSplit; }
 
 private:
+	PdfWriter::CAction* GetAction(CAnnotFieldInfo::CActionFieldPr* pAction, bool bDeferred = false);
+	bool SkipRedact(const double& dX, const double& dY, const double& dW, const double& dH);
+	bool SkipRedact(const double& dX, const double& dY);
 	PdfWriter::CImageDict* LoadImage(Aggplus::CImage* pImage, BYTE nAlpha);
 	PdfWriter::CImageDict* DrawImage(Aggplus::CImage* pImage, const double& dX, const double& dY, const double& dW, const double& dH, const BYTE& nAlpha);
 	bool DrawText(unsigned char* pCodes, const unsigned int& unLen, const double& dX, const double& dY, const std::string& sPUA);
@@ -283,9 +290,12 @@ private:
 	std::vector<TDestinationInfo>m_vDestinations;
 	unsigned int                 m_unFieldsCounter;
 	CMultiLineTextManager        m_oLinesManager;
+	std::vector<double>          m_arrRedact;
 
 	bool                         m_bValid;
 	bool                         m_bSplit;
+
+	friend class PdfWriter::RedactOutputDev;
 };
 
 #endif // _PDF_WRITER_H

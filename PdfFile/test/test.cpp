@@ -294,9 +294,15 @@ TEST_F(CPdfFileTest, PdfToPdf)
 	LoadFromFile();
 	pdfFile->CreatePdf();
 
+	double dPageDpiX, dPageDpiY, dW, dH;
 	for (int i = 0; i < pdfFile->GetPagesCount(); i++)
 	{
 		pdfFile->NewPage();
+
+		pdfFile->GetPageInfo(i, &dW, &dH, &dPageDpiX, &dPageDpiY);
+		pdfFile->put_Width( dW / dPageDpiX * 25.4);
+		pdfFile->put_Height(dH / dPageDpiY * 25.4);
+
 		pdfFile->DrawPageOnRenderer(pdfFile, i, NULL);
 	}
 
@@ -410,6 +416,23 @@ TEST_F(CPdfFileTest, MergePdf)
 
 	std::wstring wsSplitFile = NSFile::GetProcessDirectory() + L"/test_split.pdf";
 	pdfFile->MergePages(wsSplitFile, 0, L"");
+
+	pdfFile->Close();
+}
+
+TEST_F(CPdfFileTest, RedactPdf)
+{
+	GTEST_SKIP();
+
+	LoadFromFile();
+	ASSERT_TRUE(pdfFile->EditPdf(wsDstFile));
+
+	pdfFile->SetEditType(1);
+
+	EXPECT_TRUE(pdfFile->EditPage(0));
+	{
+		DrawSmth();
+	}
 
 	pdfFile->Close();
 }

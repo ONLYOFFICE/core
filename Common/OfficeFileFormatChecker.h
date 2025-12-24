@@ -69,10 +69,12 @@ public:
 	bool isOpenOfficeFormatFile(const std::wstring& fileName, std::wstring& documentID);
 	bool isOnlyOfficeFormatFile(const std::wstring& fileName);
 	bool isMacFormatFile(const std::wstring& fileName);
+	bool isHwpxFile(const std::wstring& fileName);
 
 	bool isDocFormatFile(const std::wstring& fileName);
 	bool isXlsFormatFile(const std::wstring& fileName);
 
+	bool isCompoundFile     (POLE::Storage* storage);
 	bool isOleObjectFile(POLE::Storage* storage);
 	bool isDocFormatFile(POLE::Storage* storage);
 	bool isXlsFormatFile(POLE::Storage* storage);
@@ -99,6 +101,7 @@ public:
 	bool isPdfFormatFile(unsigned char* pBuffer, int dwBytes, std::wstring& documentID);
 	bool isPdfOformFormatFile(unsigned char* pBuffer, int dwBytes);
 	bool isOpenOfficeFlatFormatFile(unsigned char* pBuffer, int dwBytes);
+	bool isHwpmlFile(unsigned char* pBuffer, int dwBytes);
 
 	bool isBinaryDoctFormatFile(unsigned char* pBuffer, int dwBytes);
 	bool isBinaryXlstFormatFile(unsigned char* pBuffer, int dwBytes);

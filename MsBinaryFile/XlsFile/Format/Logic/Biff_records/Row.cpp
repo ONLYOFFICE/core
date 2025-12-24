@@ -151,6 +151,10 @@ void Row::writeFields(CFRecord& record)
 		_UINT16 rel_offset = 0xffff, flags1 = 0, flags2 = 0;
 		record.reserveNunBytes(2);// unused1
 
+		if(ixfe_val != 0)
+		{
+			ixfe_val += global_info_->cellStyleXfs_count;
+		}
 		if (ixfe_val != 0xffff)
 			ixfe_val_2b = ixfe_val;
 

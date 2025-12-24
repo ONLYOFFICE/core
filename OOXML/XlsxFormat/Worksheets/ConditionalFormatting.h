@@ -108,6 +108,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
             void fromBin(XLS::BaseObjectPtr& obj);
 			XLS::BaseObjectPtr toBin(const bool isIcon = false);
+			XLS::BiffStructurePtr toXLS(const bool isIcon = false);
             void toBin(XLS::StreamCacheWriterPtr& writer, const bool isIcon = false);
             XLS::BaseObjectPtr toBin14(const bool isIcon = false);
 
@@ -171,6 +172,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
             void fromBin(XLS::BaseObjectPtr& obj);
 			XLS::BaseObjectPtr toBin();
+			XLS::BiffStructurePtr toXLS();
             void toBin(XLS::StreamCacheWriterPtr& writer);
 			XLS::BaseObjectPtr toBin14();
 
@@ -207,6 +209,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
             void fromBin(XLS::BaseObjectPtr& obj);
 			XLS::BaseObjectPtr toBin();
+			XLS::BiffStructurePtr toXLS();
             void toBin(XLS::StreamCacheWriterPtr& writer);
 			XLS::BaseObjectPtr toBin14();
 
@@ -263,6 +266,7 @@ namespace OOX
             void fromBin(XLS::BaseObjectPtr& obj);
 			XLS::BaseObjectPtr toBin();
             void toBin(XLS::StreamCacheWriterPtr& writer);
+			XLS::BiffStructurePtr toXLS();
             XLS::BaseObjectPtr toBin14();
 
 			virtual EElementType getType () const;
@@ -311,6 +315,7 @@ namespace OOX
 			XLS::BaseObjectPtr toBin(const  XLS::CellRef &cellRef);
             void toBin(XLS::StreamCacheWriterPtr& writer, const  XLS::CellRef &cellRef);
             XLS::BaseObjectPtr toBin14(const  XLS::CellRef &cellRef);
+			XLS::BaseObjectPtr toXLS(const  XLS::CellRef &cellRef);
 
 			virtual EElementType getType () const;
 			bool isValid () const;
@@ -375,6 +380,7 @@ namespace OOX
 			XLS::BaseObjectPtr toBin();
             void toBin(XLS::StreamCacheWriterPtr& writer);
 			XLS::BaseObjectPtr toBin14();
+			void toXLS(XLS::BaseObjectPtr fmtsPtr);
 
 
 			virtual EElementType getType () const;

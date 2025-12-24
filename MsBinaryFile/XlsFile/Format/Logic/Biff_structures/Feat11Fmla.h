@@ -49,10 +49,11 @@ public:
 	static const ElementType type = typeFeat11Fmla;
 
 	virtual void load(CFRecord& record);
+	virtual void save(CFRecord& record);
 
 	ObjectParsedFormula fmla;
 
-	bool bFmlaExist;
+	bool bFmlaExist = false;
 };
 
 } // namespace XLS

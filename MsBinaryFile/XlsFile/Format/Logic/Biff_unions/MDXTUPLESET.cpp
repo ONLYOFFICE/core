@@ -100,7 +100,8 @@ const bool MDXTUPLESET::saveContent(BinProcessor& proc)
 					ContinueFrt12 continueRecord;
 					auto capacity = 4*(limit - currentPose);
 					continueRecord.rgb.reserve(capacity);
-					memcpy(continueRecord.rgb.data(), tempRecord.getCurStaticData<char>(), capacity);
+					auto CopyData =  tempRecord.getCurStaticData<char>() - tempRecord.getRdPtr();
+					memcpy(continueRecord.rgb.data(), CopyData, capacity);
 					proc.mandatory(continueRecord);
 				}
 				currentPose = limit;
@@ -129,7 +130,8 @@ const bool MDXTUPLESET::saveContent(BinProcessor& proc)
 					ContinueFrt12 continueRecord;
 					auto capacity = 4*(limit - currentPose);
 					continueRecord.rgb.reserve(capacity);
-					memcpy(continueRecord.rgb.data(), tempRecord.getCurStaticData<char>(), capacity);
+					auto CopyData =  tempRecord.getCurStaticData<char>() - tempRecord.getRdPtr();
+					memcpy(continueRecord.rgb.data(), CopyData, capacity);
 					proc.mandatory(continueRecord);
 				}
 				currentPose = limit;

@@ -42,10 +42,12 @@ BiffStructurePtr FtCblsData::clone()
 
 void FtCblsData::load(CFRecord& record)
 {
+	//ft(2 bytes) : Reserved.MUST be 0x0012.
+	//cb(2 bytes) : Reserved.MUST be 0x0008.
 	unsigned short ft, cb;
 	record >> ft >> cb;
 
-	if ( ft != 0x000a && cb != 0x000c)
+	if ( ft != 0x0012 && cb != 0x0008)
 	{
 		record.RollRdPtrBack(4);
 		return;
@@ -58,6 +60,19 @@ void FtCblsData::load(CFRecord& record)
 	record >> flags;
 	fNo3d = GETBIT(flags, 0);
 
+}
+
+void FtCblsData::save(CFRecord& record)
+{
+	{
+		unsigned short ft = 0x0012, cb = 0x0008;
+		record << ft << cb;
+	}
+	record << fChecked << accel;
+	record.reserveNunBytes(2);
+	unsigned short flags = 0;
+	SETBIT(flags, 0, fNo3d)
+	record << flags;
 }
 
 

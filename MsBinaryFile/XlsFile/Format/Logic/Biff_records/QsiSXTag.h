@@ -54,14 +54,14 @@ public:
 	static const ElementType type = typeQsiSXTag;
 
 	FrtHeaderOld	frtHeaderOld;
-	unsigned short	fSx = 0;
+	unsigned short	fSx = 1;
 
-	bool			fEnableRefresh = false;
+	bool			fEnableRefresh = true;
 	bool			fInvalid = false;
 	bool			fTensorEx = false;
 	
 	_UINT32			dwQsiFuture = 0;
-	unsigned char	verSxLastUpdated = 0;
+	unsigned char	verSxLastUpdated = 1;
 	unsigned char	verSxUpdatableMin = 0;
 
 	unsigned char	obCchName = 0x10;

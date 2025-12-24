@@ -208,6 +208,7 @@ namespace SimpleTypes
 
 			CHexColor(const std::wstring& wsStr);
 			const CHexColor &operator =(const std::wstring& wsStr);
+			const bool operator ==(const CHexColor& clr);
 			virtual std::wstring   ToString  () const;
 			void Set_R(unsigned char R);
 			void Set_G(unsigned char G);
@@ -979,8 +980,8 @@ namespace SimpleTypes
 			double m_dValue;
 			CDoubleOrAutomatic() : m_dValue(0){}
 			
-			CDoubleOrAutomatic(const double & val) { m_dValue = val; this->m_eValue = typeDouble; }
-			CDoubleOrAutomatic(const EDoubleOrAutomatic & val) { this->m_eValue = val; m_dValue = 0; }
+			CDoubleOrAutomatic(const double& val);
+			CDoubleOrAutomatic(const EDoubleOrAutomatic& val);
 
 			virtual EDoubleOrAutomatic FromString(const std::wstring &sValue);
 			double GetDoubleValue() const;
@@ -1456,5 +1457,21 @@ namespace SimpleTypes
 			typeFloat = 2 //...
 		};
 		DEFINE_SIMPLE_TYPE(CXmlDataType, EXmlDataType, typeString)
+
+		enum ERichValueValueType
+		{
+			typeBoolean = 0,
+			typeNumber = 1,
+			typeError = 2,
+			typeText = 3,
+			typeInteger = 4,
+			typeRichValue = 5,
+			typeRichArray = 6,
+			typePropertyBag = 7
+		};
+		DEFINE_SIMPLE_TYPE(CRichValueFallbackType, ERichValueValueType, typeText)
+
+		DEFINE_SIMPLE_TYPE(CRichValueValueType, ERichValueValueType, typeNumber)
+
 	}// Spreadsheet
 } // SimpleTypes

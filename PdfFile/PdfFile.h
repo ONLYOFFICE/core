@@ -92,6 +92,7 @@ public:
 	// --- EDIT ---
 	// Переходит в режим редактирования. Pdf уже должен быть открыт на чтение - LoadFromFile/LoadFromMemory
 	bool EditPdf(const std::wstring& wsDstFile = L"");
+	void SetEditType(int nType);
 	// Манипуляции со страницами возможны в режиме редактирования
 	bool EditPage  (int nPageIndex);
 	bool DeletePage(int nPageIndex);
@@ -130,8 +131,13 @@ public:
 	// Захватывает полученную память malloc data
 	bool MergePages(BYTE* data, DWORD length, int nMaxID = 0, const std::string& sPrefixForm = "");
 	bool UnmergePages();
+	bool RedactPage(int nPageIndex, double* arrRedactBox, int nLengthX8, BYTE* pChanges = NULL, int nLength = 0);
+	bool UndoRedact();
+	bool CheckOwnerPassword(const std::wstring& sPassword);
+	bool CheckPerm(int nPerm);
 	int GetRotate(int nPageIndex);
 	int GetMaxRefID();
+	void SetPageFonts(int nPageIndex);
 	BYTE* GetWidgets();
 	BYTE* GetAnnotEmbeddedFonts();
 	BYTE* GetAnnotStandardFonts();
@@ -141,6 +147,7 @@ public:
 	BYTE* GetAPWidget  (int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nWidget  = -1, const char* sView  = NULL, const char* sBView = NULL);
 	BYTE* GetAPAnnots  (int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nAnnot   = -1, const char* sView  = NULL);
 	BYTE* GetButtonIcon(int nBackgroundColor, int nPageIndex, bool bBase64 = false, int nBWidget = -1, const char* sIView = NULL);
+	BYTE* GetGIDByUnicode(const std::wstring& wsFontName);
 	std::wstring GetFontPath(const std::wstring& wsFontName);
 	std::wstring GetEmbeddedFontPath(const std::wstring& wsFontName);
 

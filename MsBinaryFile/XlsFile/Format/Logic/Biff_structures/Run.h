@@ -50,6 +50,7 @@ public:
 	static const ElementType	type = typeRun;
 	
 	virtual void load(CFRecord& record);
+	virtual void save(CFRecord& record);
 
 
 	FormatRun formatRun;

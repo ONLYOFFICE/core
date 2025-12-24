@@ -108,9 +108,12 @@ void SXEx::readFields(CFRecord& record)
 
 void SXEx::writeFields(CFRecord& record)
 {
-    cchErrorString = stError.getSize();
-    cchNullString = stDisplayNull.getSize();
-    cchTag = stTag.getSize();
+	if(stError.getSize())
+		cchErrorString = stError.getSize();
+	if(stDisplayNull.getSize())
+		cchNullString = stDisplayNull.getSize();
+	if(stTag.getSize())
+		cchTag = stTag.getSize();
     record << csxformat << cchErrorString << cchNullString << cchTag << csxselect;
     _UINT32 flags = 0;
     SETBIT(flags, 0, fAcrossPageLay)
@@ -124,10 +127,12 @@ void SXEx::writeFields(CFRecord& record)
     SETBIT(flags, 22, fDisplayNullString)
     SETBIT(flags, 23, fSubtotalHiddenPageItems)
     record << crwPage << ccolPage << flags;
-
-    cchPageFieldStyle = stPageFieldStyle.getSize();
-    cchTableStyle  = stTableStyle.getSize();
-    cchVacateStyle = stVacateStyle.getSize();
+	if(stPageFieldStyle.getSize())
+		cchPageFieldStyle = stPageFieldStyle.getSize();
+	if(stTableStyle.getSize())
+		cchTableStyle  = stTableStyle.getSize();
+	if(stVacateStyle.getSize())
+		cchVacateStyle = stVacateStyle.getSize();
     record << cchPageFieldStyle << cchTableStyle << cchVacateStyle;
     if (cchErrorString > 0 && cchErrorString != 0xffff)
     {

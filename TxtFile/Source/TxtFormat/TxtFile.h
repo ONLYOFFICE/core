@@ -44,6 +44,8 @@ public:
     const std::vector<std::string>	readAnsiOrCodePage();
     const std::vector<std::wstring>	readUnicodeFromBytes(char *file_data, long file_size);
     const std::vector<std::wstring>	readUnicode();
+    const std::vector<std::wstring> readUnicodeLines(int codePage);
+    const std::vector<std::string>  readUtf8Lines(int CodePage);
     //const std::vector<std::wstring>	readUnicodeWithOutBOM(); /// не используем
     const std::vector<std::wstring>	readBigEndian();
     const std::vector<std::string>	readUtf8();

@@ -29,11 +29,11 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef _SYSTEMUTILS_H
-#define _SYSTEMUTILS_H
+#pragma once
 
 #include <string>
 #include "../../Common/kernel_config.h"
+#include "../../OdfFile/Common/logging.h"
 
 #define VALUE_STRINGIFY(d) L##d
 #define VALUE_TO_STR(v)    VALUE_STRINGIFY(v)
@@ -59,11 +59,21 @@ namespace NSSystemUtils
 	static const wchar_t* gc_EnvLastModifiedBy = L"LAST_MODIFIED_BY";
 	static const wchar_t* gc_EnvModified = L"MODIFIED";
 	static const wchar_t* gc_EnvMemoryLimit = L"X2T_MEMORY_LIMIT";
-	static const wchar_t* gc_EnvMemoryLimitDefault = L"3GiB";
+	static const wchar_t* gc_EnvMemoryLimitDefault = L"4GiB";
+	static const wchar_t* gc_EnvSigningKeystorePassphrase = L"SIGNING_KEYSTORE_PASSPHRASE";
 
-    KERNEL_DECL std::string GetEnvVariableA(const std::wstring& strName);
-    KERNEL_DECL std::wstring GetEnvVariable(const std::wstring& strName);
-    KERNEL_DECL std::wstring GetAppDataDir();
-    KERNEL_DECL std::wstring GetBuildBranding();
+	KERNEL_DECL std::string GetEnvVariableA(const std::wstring& strName);
+	KERNEL_DECL std::wstring GetEnvVariable(const std::wstring& strName);
+	KERNEL_DECL std::wstring GetAppDataDir();
+	KERNEL_DECL std::wstring GetBuildBranding();
+
+	enum class SystemDirectoryType
+	{
+		Documents = 0,
+		Downloads = 1,
+		Desktop = 2,
+
+		Undefined = 255
+	};
+	KERNEL_DECL std::wstring GetSystemDirectory(const SystemDirectoryType& type);
 }
-#endif // _SYSTEMUTILS_H

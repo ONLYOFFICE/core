@@ -93,6 +93,8 @@ const bool PIVOTVD::saveContent(BinProcessor& proc)
             proc.mandatory(*i);
     if(m_SXVDEx != nullptr)
         proc.mandatory(*m_SXVDEx);
+	else
+		proc.mandatory<SXVDEx>();
     return true;
 }
 

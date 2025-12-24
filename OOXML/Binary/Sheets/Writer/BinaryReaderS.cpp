@@ -73,6 +73,7 @@
 #include "../../../XlsxFormat/Timelines/Timeline.h"
 #include "../../../XlsxFormat/Workbook/Metadata.h"
 #include "../../../XlsxFormat/Workbook/CustomsXml.h"
+#include "../../../XlsxFormat/RichData/RdRichData.h"
 
 #include "../../../DocxFormat/Media/VbaProject.h"
 #include "../../../DocxFormat/Media/JsaProject.h"
@@ -2443,6 +2444,8 @@ int BinaryWorkbookTableReader::ReadWorkbookTableContent(BYTE type, long length, 
 	else if (c_oSerWorkbookTypes::Metadata == type)
 	{
 		smart_ptr<OOX::Spreadsheet::CMetadataFile> oMetadataFile(new OOX::Spreadsheet::CMetadataFile(NULL));
+		if(m_oWorkbook.OOX::File::m_pMainDocument)
+			oMetadataFile->OOX::File::m_pMainDocument = m_oWorkbook.OOX::File::m_pMainDocument;
 		oMetadataFile->m_oMetadata.Init();
 		READ1_DEF(length, res, this->ReadMetadata, oMetadataFile->m_oMetadata.GetPointer());
 
@@ -2457,6 +2460,39 @@ int BinaryWorkbookTableReader::ReadWorkbookTableContent(BYTE type, long length, 
 		oXmlMapFile->fromPPTY(&m_oBufferedStream);
 
 		smart_ptr<OOX::File> oFile = oXmlMapFile.smart_dynamic_cast<OOX::File>();
+		m_oWorkbook.Add(oFile);
+	}
+	else if (c_oSerWorkbookTypes::RdRichValue == type)
+	{
+		smart_ptr<OOX::Spreadsheet::CRdRichValueFile> oRichValueFile(new OOX::Spreadsheet::CRdRichValueFile(NULL));
+		if (m_oWorkbook.OOX::File::m_pMainDocument)
+			oRichValueFile->OOX::File::m_pMainDocument = m_oWorkbook.OOX::File::m_pMainDocument;
+		oRichValueFile->m_oRvData.Init();
+		READ1_DEF(length, res, this->ReadRichValueData, oRichValueFile->m_oRvData.GetPointer());
+
+		smart_ptr<OOX::File> oFile = oRichValueFile.smart_dynamic_cast<OOX::File>();
+		m_oWorkbook.Add(oFile);
+	}
+	else if (c_oSerWorkbookTypes::RdRichValueStructure== type)
+	{
+		smart_ptr<OOX::Spreadsheet::CRdRichValueStructureFile> oRichStructureFile(new OOX::Spreadsheet::CRdRichValueStructureFile(NULL));
+		if (m_oWorkbook.OOX::File::m_pMainDocument)
+			oRichStructureFile->OOX::File::m_pMainDocument = m_oWorkbook.OOX::File::m_pMainDocument;
+		oRichStructureFile->m_oRvStructures.Init();
+		READ1_DEF(length, res, this->ReadRichValueStructures, oRichStructureFile->m_oRvStructures.GetPointer());
+
+		smart_ptr<OOX::File> oFile = oRichStructureFile.smart_dynamic_cast<OOX::File>();
+		m_oWorkbook.Add(oFile);
+	}
+	else if (c_oSerWorkbookTypes::RdRichValueTypes == type)
+	{
+		smart_ptr<OOX::Spreadsheet::CRdRichValueTypesFile> oRichValueTypesFile(new OOX::Spreadsheet::CRdRichValueTypesFile(NULL));
+		if (m_oWorkbook.OOX::File::m_pMainDocument)
+			oRichValueTypesFile->OOX::File::m_pMainDocument = m_oWorkbook.OOX::File::m_pMainDocument;
+		oRichValueTypesFile->m_oRvTypesInfo.Init();
+		READ1_DEF(length, res, this->ReadRichValueTypesInfo, oRichValueTypesFile->m_oRvTypesInfo.GetPointer());
+
+		smart_ptr<OOX::File> oFile = oRichValueTypesFile.smart_dynamic_cast<OOX::File>();
 		m_oWorkbook.Add(oFile);
 	}
 	else
@@ -2956,6 +2992,10 @@ int BinaryWorkbookTableReader::ReadWorkbookPr(BYTE type, long length, void* poRe
 	{
 		m_oWorkbook.m_oWorkbookPr->m_oUpdateLinks.Init();
 		m_oWorkbook.m_oWorkbookPr->m_oUpdateLinks->SetValueFromByte(m_oBufferedStream.GetUChar());
+	}
+	else if (c_oSerWorkbookPrTypes::CodeName == type)
+	{
+		m_oWorkbook.m_oWorkbookPr->m_oCodeName = m_oBufferedStream.GetString4(length);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -6302,9 +6342,13 @@ int BinaryWorksheetsTableReader::ReadDrawings(BYTE type, long length, void* poRe
 
     if (c_oSerWorksheetsTypes::Drawing == type)
 	{
+		LONG pos = m_oBufferedStream.GetPos();
+
 		OOX::Spreadsheet::CCellAnchor* pCellAnchor = new OOX::Spreadsheet::CCellAnchor(SimpleTypes::Spreadsheet::CCellAnchorType());
 		READ1_DEF(length, res, this->ReadDrawing, pCellAnchor);
 		
+		m_oBufferedStream.Seek(pos + length);
+
 		pCellAnchor->m_bShapeOle = false;
 		pCellAnchor->m_bShapeControl = false;
 
@@ -6320,7 +6364,7 @@ int BinaryWorksheetsTableReader::ReadDrawings(BYTE type, long length, void* poRe
 				{			
 					OOX::Spreadsheet::COleObject* pOleObject = new OOX::Spreadsheet::COleObject();
 					
-					if (oPic.oleObject->m_sProgId.IsInit())						pOleObject->m_oProgId = oPic.oleObject->m_sProgId.get();
+					if (oPic.oleObject->m_sProgId.IsInit()) pOleObject->m_oProgId = oPic.oleObject->m_sProgId.get();
 					if (oPic.oleObject->m_oDrawAspect.IsInit())
 					{
 						std::wstring sDrawAspect;
@@ -6454,9 +6498,8 @@ int BinaryWorksheetsTableReader::ReadDrawings(BYTE type, long length, void* poRe
 				oWriter.m_lObjectIdVML = m_pCurVmlDrawing->m_lObjectIdVML;
 
 				NSCommon::smart_ptr<PPTX::Logic::ClrMap> oClrMap;
-				NSCommon::smart_ptr<OOX::IFileContainer> oContainer = m_pCurVmlDrawing.smart_dynamic_cast<OOX::IFileContainer>();
 				
-				oShape.toXmlWriterVML(&oWriter, m_oSaveParams.pTheme, oClrMap, oContainer, false, true);
+				oShape.toXmlWriterVML(&oWriter, m_oSaveParams.pTheme, oClrMap, m_pCurVmlDrawing.GetPointer(), false, true);
 
 				std::wstring strXml = oWriter.GetXmlString();
 
@@ -6711,7 +6754,7 @@ int BinaryWorksheetsTableReader::ReadLegacyDrawingHFDrawings(BYTE type, long len
 			NSCommon::smart_ptr<OOX::IFileContainer> oContainer(pVmlDrawing);
 			oContainer.AddRef();
 
-			pSpTree->toXmlWriterVML(&oWriter, m_oSaveParams.pTheme, oClrMap, oContainer);
+			pSpTree->toXmlWriterVML(&oWriter, m_oSaveParams.pTheme, oClrMap, oContainer.GetPointer());
 			pVmlDrawing->m_lObjectIdVML = oWriter.m_lObjectIdVML;
 			pVmlDrawing->m_arObjectXml.push_back(oWriter.GetXmlString());
 		}
@@ -6956,8 +6999,17 @@ int BinaryWorksheetsTableReader::ReadRow(BYTE type, long length, void* poResult)
         if (NULL == m_oSaveParams.pCSVWriter && NULL == m_pCurStreamWriterBin)
 		{
 			pRow->toXMLStart(*m_pCurStreamWriter);
+			auto filePos = m_pCurStreamWriter->GetCurSize();
 			READ1_DEF(length, res, this->ReadCells, pRow);
-			pRow->toXMLEnd(*m_pCurStreamWriter);
+			// in case of empty row
+			if(m_pCurStreamWriter->GetCurSize() == filePos)
+			{
+
+				m_pCurStreamWriter->SetCurSize(filePos-1);
+				m_pCurStreamWriter->WriteString(_T("/>"));
+			}
+			else
+				pRow->toXMLEnd(*m_pCurStreamWriter);
 		}
         else if(m_pCurStreamWriterBin != NULL)
         {
@@ -7070,7 +7122,7 @@ int BinaryWorksheetsTableReader::ReadCell(BYTE type, long length, void* poResult
 	{
 		int nRow = m_oBufferedStream.GetLong();
 		int nCol = m_oBufferedStream.GetLong();
-		pCell->setRowCol(nRow - 1, nCol);
+		pCell->setRowCol(nRow, nCol);
 	}
 	else if (c_oSerCellTypes::Style == type)
 	{
@@ -7479,9 +7531,7 @@ void BinaryWorksheetsTableReader::GetControlVmlShape(void* pC)
 	{
 		NSCommon::smart_ptr<PPTX::Logic::ClrMap> oClrMap;
 
-		NSCommon::smart_ptr<OOX::IFileContainer> pContainer = m_pCurVmlDrawing.smart_dynamic_cast<OOX::IFileContainer>();
-
-		CalculateFill(XMLWRITER_DOC_TYPE_XLSX, oShape->spPr, oShape->style, m_oSaveParams.pTheme, oClrMap, pContainer, strFillAttr, strFillNode, false, false);
+		CalculateFill(XMLWRITER_DOC_TYPE_XLSX, oShape->spPr, oShape->style, m_oSaveParams.pTheme, oClrMap, m_pCurVmlDrawing.GetPointer(), strFillAttr, strFillNode, false, false);
 		CalculateLine(XMLWRITER_DOC_TYPE_XLSX, oShape->spPr, oShape->style, m_oSaveParams.pTheme, oClrMap, strStrokeAttr, strStrokeNode, false);
 	}
 	else
@@ -8714,6 +8764,217 @@ int BinaryCustomsReader::ReadCustomContent(BYTE type, long length, void* poResul
 	else if (c_oSerCustoms::Content == type)
 	{
 		pCustomXMLProps->m_oCustomXmlContentA = m_oBufferedStream.GetString2A();
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
+int BinaryWorkbookTableReader::ReadRichValueData(BYTE type, long length, void* poResult)
+{
+	int res = c_oSerConstants::ReadOk;
+	OOX::Spreadsheet::CRichValueData* pData = static_cast<OOX::Spreadsheet::CRichValueData*>(poResult);
+	
+	if (c_oSer_RichValue::RichValue == type)
+	{
+		OOX::Spreadsheet::CRichValue* pRichValue = new OOX::Spreadsheet::CRichValue();
+		READ1_DEF(length, res, this->ReadRichValue, pRichValue);
+		pData->m_arrItems.push_back(pRichValue);
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
+int BinaryWorkbookTableReader::ReadRichValueFallback(BYTE type, long length, void* poResult)
+{
+	int res = c_oSerConstants::ReadOk;
+
+	return res;
+}
+int BinaryWorkbookTableReader::ReadRichValue(BYTE type, long length, void* poResult)
+{
+	int res = c_oSerConstants::ReadOk;
+	OOX::Spreadsheet::CRichValue* pValue = static_cast<OOX::Spreadsheet::CRichValue*>(poResult);
+
+	if (c_oSer_RichValue::StructureIdx == type)
+	{
+		pValue->m_oS = m_oBufferedStream.GetULong();
+	}
+	else if (c_oSer_RichValue::Value == type)
+	{
+		std::wstring s = m_oBufferedStream.GetString3(length);
+		pValue->m_arrV.push_back(s);
+	}
+	else if (c_oSer_RichValue::Fallback == type)
+	{
+		pValue->m_oFb.Init();
+		READ1_DEF(length, res, this->ReadRichValueFallback, pValue->m_oFb.GetPointer());
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
+int BinaryWorkbookTableReader::ReadRichValueStructures(BYTE type, long length, void* poResult)
+{
+	int res = c_oSerConstants::ReadOk;
+	OOX::Spreadsheet::CRichValueStructures* pStructures = static_cast<OOX::Spreadsheet::CRichValueStructures*>(poResult);
+
+	if (c_oSer_RichStructures::Structure == type)
+	{
+		OOX::Spreadsheet::CRichValueStructure* pStructure = new OOX::Spreadsheet::CRichValueStructure();
+		READ1_DEF(length, res, this->ReadRichValueStructure, pStructure);
+		pStructures->m_arrItems.push_back(pStructure);
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
+int BinaryWorkbookTableReader::ReadRichValueStructure(BYTE type, long length, void* poResult)
+{
+	int res = c_oSerConstants::ReadOk;
+	OOX::Spreadsheet::CRichValueStructure* pStructure = static_cast<OOX::Spreadsheet::CRichValueStructure*>(poResult);
+
+	if (c_oSer_RichStructures::Type == type)
+	{
+		pStructure->m_oT = m_oBufferedStream.GetString3(length);
+	}
+	else if (c_oSer_RichStructures::ValueKey == type)
+	{
+		OOX::Spreadsheet::CRichValueKey* pValueKey = new OOX::Spreadsheet::CRichValueKey();
+		READ2_DEF_SPREADSHEET(length, res, this->ReadRichValueStructureValueKey, pValueKey);
+		pStructure->m_arrItems.push_back(pValueKey);
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
+int BinaryWorkbookTableReader::ReadRichValueStructureValueKey(BYTE type, long length, void* poResult)
+{
+	int res = c_oSerConstants::ReadOk;
+	OOX::Spreadsheet::CRichValueKey* pValueKey = static_cast<OOX::Spreadsheet::CRichValueKey*>(poResult);
+
+	if (c_oSer_RichStructures::ValueKeyName == type)
+	{
+		pValueKey->m_oN = m_oBufferedStream.GetString3(length);
+	}
+	else if (c_oSer_RichStructures::ValueKeyType == type)
+	{
+		pValueKey->m_oT.Init();
+		pValueKey->m_oT->SetValueFromByte(m_oBufferedStream.GetUChar());
+	}
+	return res;
+}
+int BinaryWorkbookTableReader::ReadRichValueTypesInfo(BYTE type, long length, void* poResult)
+{
+	int res = c_oSerConstants::ReadOk;
+	OOX::Spreadsheet::CRichValueTypesInfo* pTypesInfo = static_cast<OOX::Spreadsheet::CRichValueTypesInfo*>(poResult);
+
+	if (c_oSer_RichValueTypesInfo::Global == type)
+	{
+		pTypesInfo->m_oGlobal.Init();
+		READ1_DEF(length, res, this->ReadRichValueGlobal, pTypesInfo->m_oGlobal.GetPointer());
+	}
+	else if (c_oSer_RichValueTypesInfo::Types)
+	{
+		pTypesInfo->m_oTypes.Init();
+		READ1_DEF(length, res, this->ReadRichValueTypes, pTypesInfo->m_oTypes.GetPointer());
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
+int BinaryWorkbookTableReader::ReadRichValueGlobal(BYTE type, long length, void* poResult)
+{
+	int res = c_oSerConstants::ReadOk;
+	OOX::Spreadsheet::CRichValueGlobalType* pGlobalType = static_cast<OOX::Spreadsheet::CRichValueGlobalType*>(poResult);
+
+	if (c_oSer_RichValueTypesInfo::KeyFlags == type)
+	{
+		pGlobalType->m_oKeyFlags.Init();
+		READ1_DEF(length, res, this->ReadRichValueTypeKeyFlags, pGlobalType->m_oKeyFlags.GetPointer());
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
+int BinaryWorkbookTableReader::ReadRichValueTypes(BYTE type, long length, void* poResult)
+{
+	int res = c_oSerConstants::ReadOk;
+	OOX::Spreadsheet::CRichValueTypes* pTypes = static_cast<OOX::Spreadsheet::CRichValueTypes*>(poResult);
+	
+	if (c_oSer_RichValueTypesInfo::Type == type)
+	{
+		OOX::Spreadsheet::CRichValueType* pType = new OOX::Spreadsheet::CRichValueType();
+		READ1_DEF(length, res, this->ReadRichValueType, pType);
+		pTypes->m_arrItems.push_back(pType);
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
+int BinaryWorkbookTableReader::ReadRichValueType(BYTE type, long length, void* poResult)
+{
+	int res = c_oSerConstants::ReadOk;
+	OOX::Spreadsheet::CRichValueType* pType = static_cast<OOX::Spreadsheet::CRichValueType*>(poResult);
+
+	if (c_oSer_RichValueTypesInfo::Name == type)
+	{
+		pType->m_oName = m_oBufferedStream.GetString3(length);
+	}
+	else if (c_oSer_RichValueTypesInfo::KeyFlags == type)
+	{
+		pType->m_oKeyFlags.Init();
+		READ1_DEF(length, res, this->ReadRichValueTypeKeyFlags, pType->m_oKeyFlags.GetPointer());
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
+int BinaryWorkbookTableReader::ReadRichValueTypeKeyFlags(BYTE type, long length, void* poResult)
+{
+	int res = c_oSerConstants::ReadOk; 
+	OOX::Spreadsheet::CRichValueTypeKeyFlags* pKeyFlags = static_cast<OOX::Spreadsheet::CRichValueTypeKeyFlags*>(poResult);
+
+	if (c_oSer_RichValueTypesInfo::ReservedKey == type)
+	{
+		OOX::Spreadsheet::CRichValueTypeReservedKey* pKey = new OOX::Spreadsheet::CRichValueTypeReservedKey();
+		READ1_DEF(length, res, this->ReadRichValueReservedKey, pKey);
+		pKeyFlags->m_arrItems.push_back(pKey);
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
+int BinaryWorkbookTableReader::ReadRichValueReservedKey(BYTE type, long length, void* poResult)
+{
+	int res = c_oSerConstants::ReadOk;
+	OOX::Spreadsheet::CRichValueTypeReservedKey* pReservedKey = static_cast<OOX::Spreadsheet::CRichValueTypeReservedKey*>(poResult);
+
+	if (c_oSer_RichValueTypesInfo::ReservedKeyName == type)
+	{
+		pReservedKey->m_oName = m_oBufferedStream.GetString3(length);
+	}
+	else if (c_oSer_RichValueTypesInfo::ReservedKeyFlags == type)
+	{
+		OOX::Spreadsheet::CRichValueTypeReservedKeyFlag* pFlag = new OOX::Spreadsheet::CRichValueTypeReservedKeyFlag();
+		READ2_DEF_SPREADSHEET(length, res, this->ReadRichValueReservedKeyFlags, pFlag);
+		pReservedKey->m_arrItems.push_back(pFlag);
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
+int BinaryWorkbookTableReader::ReadRichValueReservedKeyFlags(BYTE type, long length, void* poResult)
+{
+	int res = c_oSerConstants::ReadOk;
+	OOX::Spreadsheet::CRichValueTypeReservedKeyFlag* pFlag = static_cast<OOX::Spreadsheet::CRichValueTypeReservedKeyFlag*>(poResult);
+
+	if (c_oSer_RichValueTypesInfo::FlagName == type)
+	{
+		pFlag->m_oName = m_oBufferedStream.GetString3(length);
+	}
+	else if (c_oSer_RichValueTypesInfo::FlagValue == type)
+	{
+		pFlag->m_oValue = m_oBufferedStream.GetBool();
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;

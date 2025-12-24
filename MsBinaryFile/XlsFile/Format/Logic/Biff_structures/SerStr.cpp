@@ -94,7 +94,11 @@ void SerStr::save(CFRecord& record)
 
 const std::wstring SerStr::toString() const
 {
-    return L"\"" + boost::algorithm::replace_all_copy(std::wstring(rgch), L"\"", L"\"\"") + L"\"";
+	std::wstring tempVal = rgch;
+	tempVal.erase(std::remove(tempVal.begin(), tempVal.end(), L'\0'), tempVal.end());
+	if(tempVal.size() > 255)
+		tempVal.resize(255);
+	return L"\"" + boost::algorithm::replace_all_copy(tempVal, L"\"", L"\"\"") + L"\"";
 }
 
 

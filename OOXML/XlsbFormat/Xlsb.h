@@ -68,6 +68,7 @@ namespace OOX
 
             XLS::GlobalWorkbookInfo* GetGlobalinfo();
             void PrepareSi();
+			void PrepareHlinks();
             void PrepareTableFormula();
             void LinkTables();
             void ReadSheetData();

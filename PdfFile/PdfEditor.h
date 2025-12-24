@@ -52,6 +52,7 @@ public:
 	CObjectsManager() : m_pDoc(NULL) {}
 
 	void AddObj(int nID, PdfWriter::CObjectBase* pObj);
+	void RemoveObj(int nID);
 	PdfWriter::CObjectBase* GetObj(int nID);
 	bool IncRefCount(int nID);
 	bool DecRefCount(int nID);
@@ -73,13 +74,14 @@ public:
 	{
 		Unknown,
 		ReadOnly,
-		WriteNew,
-		WriteAppend
+		Split,
+		WriteAppend,
+		WriteNew
 	};
 
-	CPdfEditor(const std::wstring& _wsSrcFile, const std::wstring& _wsPassword, const std::wstring& _wsDstFile, CPdfReader* _pReader, CPdfWriter* _pWriter);
+	CPdfEditor(const std::wstring& _wsSrcFile, const std::wstring& _wsPassword, const std::wstring& _wsDstFile, CPdfReader* _pReader, CPdfWriter* _pWriter, Mode nMode = Mode::Unknown);
 
-	bool IncrementalUpdates();
+	void SetMode(Mode nMode);
 
 	int  GetError();
 	void Close();
@@ -98,18 +100,33 @@ public:
 	void AddShapeXML(const std::string& sXML);
 	void EndMarkedContent();
 	bool IsBase14(const std::wstring& wsFontName, bool& bBold, bool& bItalic, std::wstring& wsFontPath);
+	void Redact(IAdvancedCommand* pCommand);
+	std::vector<double> WriteRedact(const std::vector<std::wstring>& arrID);
 
 	bool SplitPages(const int* arrPageIndex, unsigned int unLength);
 	void AfterSplitPages();
-	bool MergePages(const std::wstring& wsPath, const std::wstring& wsPrefixForm);
+	bool MergePages(const std::wstring& wsPath);
 
 private:
+	bool IncrementalUpdates();
+	void NewFrom();
 	void GetPageTree(XRef* xref, Object* pPagesRefObj, PdfWriter::CPageTree* pPageParent = NULL);
 	bool SplitPages(const int* arrPageIndex, unsigned int unLength, PDFDoc* _pDoc, int nStartRefID);
+	bool ChangeFullNameParent(int nParent, const std::string& sPrefixForm, std::vector<int>& arrRename);
+
+	struct CRedactData
+	{
+		std::wstring sID;
+		std::vector<double> arrQuads;
+		LONG nLenRender;
+		BYTE* pRender;
+		bool bDraw = false;
+	};
 
 	std::wstring m_wsSrcFile;
 	std::wstring m_wsDstFile;
 	std::wstring m_wsPassword;
+	std::vector<CRedactData> m_arrRedact;
 	std::map<std::wstring, std::wstring> m_mFonts;
 	CObjectsManager m_mObjManager;
 

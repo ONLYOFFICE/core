@@ -156,6 +156,27 @@ const bool PIVOTCACHE::loadContent(BinProcessor& proc)
 
 	return true;
 }
+const bool PIVOTCACHE::saveContent(BinProcessor& proc)
+{
+	if(m_SXDB == nullptr)
+		return false;
+	proc.mandatory(*m_SXDB);
+	if(m_SXDBEx != nullptr)
+		proc.mandatory(*m_SXDBEx);
+	else
+		proc.mandatory<SXDBEx>();
+	for(auto i : m_arSXFORMULA)
+		if(i != nullptr)
+			proc.mandatory(*i);
+	for(auto i : m_arFDB)
+		if(i != nullptr)
+			proc.mandatory(*i);
+	for(auto i : m_arDBB)
+		if(i != nullptr)
+			proc.mandatory(*i);
 
+	proc.mandatory<EOF_T>();
+	return true;
+}
 } // namespace XLS
 

@@ -95,7 +95,7 @@
 #define LIMIT_MAX_STRING_LEN      65535
 #define LIMIT_MAX_NAME_LEN        127
 
-#define LIMIT_MAX_ARRAY           8191
+#define LIMIT_MAX_ARRAY           65535
 #define LIMIT_MAX_DICT_ELEMENT    4095
 #define LIMIT_MAX_XREF_ELEMENT    8388607
 #define MAX_GENERATION_NUM        65535

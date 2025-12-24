@@ -216,6 +216,92 @@ namespace PPTX
 
 			pWriter->EndRecord();
 		}
+
+		void GradFill::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+		{
+			pReader->Skip(4); // len
+			BYTE _type = pReader->GetUChar(); // FILL_TYPE_GRAD
+			LONG _e = pReader->GetPos() + pReader->GetRecordSize() + 4;
+
+			pReader->Skip(1);
+
+			while (true)
+			{
+				BYTE _at = pReader->GetUChar_TypeNode();
+				if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+					break;
+
+				switch (_at)
+				{
+				case 0:
+					flip = pReader->GetUChar();
+					break;
+				case 1:
+					rotWithShape = pReader->GetBool();
+					break;
+				default:
+					break;
+				}
+			}
+
+			while (pReader->GetPos() < _e)
+			{
+				BYTE rec = pReader->GetUChar();
+
+				switch (rec)
+				{
+				case 0:
+				{
+					LONG _s1 = pReader->GetPos();
+					LONG _e1 = _s1 + pReader->GetLong() + 4;
+
+					ULONG _count = pReader->GetULong();
+					for (ULONG i = 0; i < _count; ++i)
+					{
+						if (pReader->GetPos() >= _e1)
+							break;
+
+						pReader->Skip(1); // type
+						pReader->Skip(4); // len
+
+						size_t _countGs = GsLst.size();
+						GsLst.push_back(Gs());
+
+						pReader->Skip(1); // start attr
+						pReader->Skip(1); // pos type
+						GsLst[_countGs].pos = pReader->GetLong();
+						pReader->Skip(1); // end attr
+
+						pReader->Skip(1);
+						GsLst[_countGs].color.fromPPTY(pReader);
+					}
+
+					pReader->Seek(_e1);
+				}break;
+				case 1:
+				{
+					lin = new PPTX::Logic::Lin();
+					lin->fromPPTY(pReader);
+				}break;
+				case 2:
+				{
+					path = new PPTX::Logic::Path();
+					path->fromPPTY(pReader);
+				}break;
+				case 3:
+				{
+					tileRect = new PPTX::Logic::Rect();
+					tileRect->m_name = L"a:tileRect";
+					tileRect->fromPPTY(pReader);
+				}break;
+				default:
+				{
+					pReader->SkipRecord();
+				}
+				}
+			}
+			pReader->Seek(_e);
+		}
 		void GradFill::Merge(GradFill& fill)const
 		{
 			if(flip.IsInit())

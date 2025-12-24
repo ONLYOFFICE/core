@@ -87,6 +87,11 @@ void Cell::load(CFRecord& record)
 }
 void Cell::save(CFRecord& record)
 {
+	auto globInfo = record.getGlobalWorkbookInfo();
+	if(ixfe != 0)
+	{
+		ixfe+= globInfo->cellStyleXfs_count;
+	}
     record << rw << col << ixfe;
 }
 

@@ -73,7 +73,7 @@ public:
     bool					fFormula = false;
     bool					fMissing = false;
 
-    short					iCache = 0;
+	short					iCache = -1;
     unsigned short			cchName = 0;
 	XLUnicodeStringNoCch	stName;
 

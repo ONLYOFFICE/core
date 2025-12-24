@@ -2,15 +2,23 @@
 
 namespace SVG 
 {
-	CGlyph::CGlyph(XmlUtils::CXmlNode &oNode)
-		: CPath(oNode)
+	CGlyph::CGlyph(CSvgReader& oReader, CSvgFile* pFile)
+		: CPath(oReader)
+	{}
+
+	void CGlyph::SetAttribute(const std::string& sName, CSvgReader& oReader)
 	{
-		std::wstring wsUnicode(oNode.GetAttribute(L"unicode"));
+		if ("unicode" == sName)
+		{
+			const std::wstring wsUnicode{oReader.GetText()};
 
-		if (!wsUnicode.empty())
-			m_wchUnicode = wsUnicode[0];
-
-		m_oHorizAdvX.SetValue(oNode.GetAttributeOrValue(L"horiz-adv-x"));
+			if (!wsUnicode.empty())
+				m_wchUnicode = wsUnicode[0];
+		}
+		else if ("horiz-adv-x" == sName)
+			m_oHorizAdvX.SetValue(oReader.GetText());
+		else
+			CPath::SetAttribute(sName, oReader);
 	}
 
 	wchar_t CGlyph::GetUnicode() const
@@ -18,21 +26,13 @@ namespace SVG
 		return m_wchUnicode;
 	}
 
-	CFontFace::CFontFace(XmlUtils::CXmlNode &oNode)
+	CFontFace::CFontFace(CSvgReader& oReader)
+	{}
+
+	CFont::CFont(CSvgReader& oReader, CSvgFile* pFile)
+		: CAppliedObject(oReader), m_pMissingGlyph(NULL)
 	{
-		
-	}
-
-	CFont::CFont(XmlUtils::CXmlNode &oNode)
-		: CAppliedObject(oNode), m_pMissingGlyph(NULL)
-	{
-		ParseGlyphs(oNode);
-
-		m_oArguments.m_wsFontVariant = oNode.GetAttribute(L"font-variant");
-		m_oArguments.m_wsFontStyle   = oNode.GetAttribute(L"font-style");
-		m_oArguments.m_wsFontWidght  = oNode.GetAttribute(L"font-weight");
-
-		m_oHorizAdvX.SetValue(oNode.GetAttributeOrValue(L"horiz-adv-x"));
+		ParseGlyphs(oReader, pFile);
 	}
 
 	CFont::~CFont()
@@ -41,6 +41,20 @@ namespace SVG
 			RELEASEOBJECT(oElement.second);
 
 		RELEASEOBJECT(m_pMissingGlyph);
+	}
+
+	void CFont::SetAttribute(const std::string& sName, CSvgReader& oReader)
+	{
+		if ("font-variant" == sName)
+			m_oArguments.m_wsFontVariant = oReader.GetText();
+		else if ("font-style" == sName)
+			m_oArguments.m_wsFontStyle = oReader.GetText();
+		else if ("font-weight" == sName)
+			m_oArguments.m_wsFontWidght = oReader.GetText();
+		else if ("horiz-adv-x" == sName)
+			m_oHorizAdvX.SetValue(oReader.GetText());
+		else
+			CAppliedObject::SetAttribute(sName, oReader);
 	}
 
 	void CFont::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
@@ -82,7 +96,7 @@ namespace SVG
 		{ \
 			oMatrix.Scale(1. / dGlyphScale, -1. / dGlyphScale); \
 			pRenderer->SetTransform(oMatrix.sx(), oMatrix.shy(), oMatrix.shx(), oMatrix.sy(), oMatrix.tx(), oMatrix.ty()); \
-		} \
+		}
 
 		for (wchar_t wchGlyph : wsText)
 		{
@@ -115,18 +129,13 @@ namespace SVG
 		return true;
 	}
 
-	void CFont::ParseGlyphs(XmlUtils::CXmlNode &oNode)
+	void CFont::ParseGlyphs(CSvgReader& oReader, CSvgFile* pFile)
 	{
-		std::vector<XmlUtils::CXmlNode> arChilds;
-
-		if (!oNode.GetChilds(arChilds) || arChilds.empty())
-			return;
-
-		for (XmlUtils::CXmlNode& oChild : arChilds)
+		WHILE_READ_NEXT_NODE_WITH_NAME(oReader)
 		{
-			if (L"glyph" == oChild.GetName())
+			if ("glyph" == sNodeName)
 			{
-				CGlyph *pGlyph = new CGlyph(oChild);
+				CGlyph *pGlyph = CObject::Create<CGlyph>(oReader, pFile, pFile);
 
 				if (NULL == pGlyph)
 					continue;
@@ -136,22 +145,17 @@ namespace SVG
 				else
 					delete pGlyph;
 			}
-			else if (L"missing-glyph" == oChild.GetName())
+			else if ("missing-glyph" == sNodeName)
 			{
-				std::vector<XmlUtils::CXmlNode> arMissingGlyphChilds;
-				if (!oChild.GetChilds(arMissingGlyphChilds) || arMissingGlyphChilds.empty())
-					continue;
-
-				for (XmlUtils::CXmlNode& oChildMissingGlyph : arMissingGlyphChilds)
+				WHILE_READ_NEXT_NODE_WITH_DEPTH_ONE_NAME(oReader, Child, "path")
 				{
-					if (L"path" == oChildMissingGlyph.GetName())
-					{
-						m_pMissingGlyph = new CPath(oChildMissingGlyph);
-						if (NULL != m_pMissingGlyph)
-							break;
-					}
+					m_pMissingGlyph = new CPath(oReader);
+					if (NULL != m_pMissingGlyph)
+						break;
 				}
+				END_WHILE
 			}
 		}
+		END_WHILE
 	}
 }

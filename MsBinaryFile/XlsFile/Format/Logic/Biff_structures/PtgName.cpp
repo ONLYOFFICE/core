@@ -82,7 +82,7 @@ void PtgName::writeFields(CFRecord& record)
 	}
     else if(record.getGlobalWorkbookInfo()->Version < 0x0800 )
 	{
-		record.reserveNunBytes(2);
+		//record.reserveNunBytes(2);
 	}
 
 	global_info = record.getGlobalWorkbookInfo();

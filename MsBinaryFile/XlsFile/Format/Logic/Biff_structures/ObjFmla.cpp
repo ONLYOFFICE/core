@@ -72,6 +72,22 @@ void ObjFmla::load(CFRecord& record)
 	}
 }
 
+void ObjFmla::save(CFRecord& record)
+{
+	record.reserveNunBytes(2);
+	auto cbPose = record.getRdPtr();
+	fmla.save(record);
+	if(is_part_of_FtPictFmla_)
+		embedInfo.save(record);
+	unsigned short cbFmla = record.getRdPtr() - cbPose;
+	record.RollRdPtrBack(cbFmla + 2);
+	if(cbFmla % 2 != 0)
+		cbFmla++;
+	record << cbFmla;
+	record.skipNunBytes(cbFmla);
+
+}
+
 
 } // namespace XLS
 

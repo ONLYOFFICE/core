@@ -53,11 +53,23 @@ void Feat11FdaAutoFilter::load(CFRecord& record)
 	}
 	record.skipNunBytes(2);	
 
-	if (cbAutoFilter > 0 && cbAutoFilter < 2080)
+	if (cbAutoFilter > 0 && cbAutoFilter < 2080 && (record.getDataSize() - record.getRdPtr()) >=  cbAutoFilter)
 	{
 		recAutoFilter.size = cbAutoFilter;
 		recAutoFilter.readFields(record);
 	}
+}
+
+void Feat11FdaAutoFilter::save(CFRecord& record)
+{
+	record.reserveNunBytes(6);
+
+	auto autofilterPos = record.getRdPtr();
+	recAutoFilter.writeFields(record);
+	cbAutoFilter = record.getRdPtr() - autofilterPos;
+	record.RollRdPtrBack(cbAutoFilter + 6);
+	record << cbAutoFilter;
+	record.skipNunBytes(cbAutoFilter + 2);
 }
 
 } // namespace XLS

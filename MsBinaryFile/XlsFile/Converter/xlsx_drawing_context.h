@@ -355,9 +355,15 @@ public:
 		_CP_OPT(int)	x_sel;
 		_CP_OPT(int)	x_sel_type;
 		_CP_OPT(int)	lct	;
+		_CP_OPT(int)	dx;
 		std::wstring	fmlaRange;
 		_CP_OPT(int)	drop_style;
 		_CP_OPT(int)	drop_lines;
+		_CP_OPT(bool)	checked;
+		_CP_OPT(bool)	_3D;
+		_CP_OPT(bool)	vscroll;
+		_CP_OPT(bool)	hscroll;
+		_CP_OPT(bool)	multiLine;
 	}object;
 //for group
 	std::vector<_drawing_state_ptr>		drawing_states;
@@ -521,6 +527,12 @@ public:
 		void set_object_fmlaRange	(const std::wstring & fmla);
 		void set_object_drop_style	(int val);
 		void set_object_drop_lines	(int val);
+		void set_object_dx			(int dx);
+		void set_object_checked		(bool val);
+		void set_object_multiLine	(bool val);
+		void set_object_vscroll		(bool val);
+		void set_object_hscroll		(bool val);
+		void set_object_3D			(bool val);
 //---------------------------------------------------------------------------------------------
 		void set_custom_rect		(_rect							& rect);
 		void set_custom_verticles	(std::vector<ODRAW::MSOPOINT>	& points);

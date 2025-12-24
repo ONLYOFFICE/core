@@ -248,28 +248,27 @@ namespace NSBinPptxRW
 			CSeekTableEntry();
 		};
 
-		CCommonWriter*								m_pCommon;
-		std::wstring								m_strMainFolder;
+		CCommonWriter* m_pCommon;
+		std::wstring m_strMainFolder;
 
-		BinDocxRW::CDocxSerializer *				m_pMainDocument;
+		BinDocxRW::CDocxSerializer* m_pMainDocument;
 
-		NSCommon::smart_ptr<PPTX::Theme>*			m_pTheme;
-		NSCommon::smart_ptr<PPTX::Logic::ClrMap>*	m_pClrMap;
+		NSCommon::smart_ptr<PPTX::Theme>* m_pTheme;
+		NSCommon::smart_ptr<PPTX::Logic::ClrMap>* m_pClrMap;
 		
-		void SetRels(NSCommon::smart_ptr<OOX::IFileContainer> container);
-		void SetRels(OOX::IFileContainer *container);
-		NSCommon::smart_ptr<OOX::IFileContainer> GetRels();
-
+		OOX::IFileContainer* GetRelsPtr();
+		void SetRelsPtr(OOX::IFileContainer *container);
+		
 	protected:
-		NSCommon::smart_ptr<OOX::IFileContainer>*	m_pCurrentContainer;
+		OOX::IFileContainer* m_pCurrentContainer = NULL;
 		
-		BYTE*		m_pStreamData;
-		BYTE*		m_pStreamCur;
-		_UINT32		m_lSize;
+		BYTE* m_pStreamData;
+		BYTE* m_pStreamCur;
+		_UINT32	m_lSize;
 
-		_UINT32		m_lPosition;
-		_UINT32		m_arStack[MAX_STACK_SIZE];
-		_UINT32		m_lStackPosition;
+		_UINT32 m_lPosition;
+		_UINT32 m_arStack[MAX_STACK_SIZE];
+		_UINT32 m_lStackPosition;
 		
 		std::vector<CSeekTableEntry> m_arMainTables;
 
@@ -500,20 +499,17 @@ namespace NSBinPptxRW
 		void StartNotes	(int nIndexSlide);
 		void StartThemeNotesMaster(int nIndexTheme);
 		
-		void WriteMasters (int nCount);
 		void WriteThemes (int nCount);
-		void WriteSlides (int nCount);
 		void WriteNotesMaster();
 
-		void WriteSlideComments	(int nComment);
-		void WritePresentationComments	(int nComment);
+		std::wstring WriteCustom(const std::wstring& file_name);
+		std::wstring WriteMaster(int nIndex);
+		std::wstring WriteSlide(int nIndex);
 
-		void WriteCustoms(int nCount);
-		
 		unsigned int WriteRels (const std::wstring& bsType, const std::wstring& bsTarget, const std::wstring& bsTargetMode);
 		unsigned int WriteHyperlink	(const std::wstring& strLink, const bool& bIsActionInit);		
 	
-		void EndPresentationRels (bool bIsCommentsAuthors = false, bool bIsVbaProject = false, bool bIsJsaProject = false  );
+		void EndPresentationRels (bool bIsVbaProject = false, bool bIsJsaProject = false  );
 		void CloseRels ();
 
 		void AddRels (const std::wstring& strRels);
@@ -526,7 +522,6 @@ namespace NSBinPptxRW
 	class CBinaryFileReader
 	{
 	protected:
-
 		BYTE*	m_pData = NULL;
 		LONG	m_lSize;
 		LONG	m_lPos;
@@ -536,11 +531,10 @@ namespace NSBinPptxRW
 
 		std::vector<CRelsGenerator*> m_stackRels;
 		int m_nCurrentRelsStack;
-		NSCommon::smart_ptr<OOX::IFileContainer>* m_pCurrentContainer = NULL;
+		OOX::IFileContainer* m_pCurrentContainer = NULL;
 	public:
-		void SetRels(NSCommon::smart_ptr<OOX::IFileContainer> container);
-		void SetRels(OOX::IFileContainer* container);
-		NSCommon::smart_ptr<OOX::IFileContainer> GetRels();
+		void SetRelsPtr(OOX::IFileContainer* container);		
+		OOX::IFileContainer* GetRelsPtr();
 
 		CRelsGenerator*					m_pRels = NULL;
 

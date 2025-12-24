@@ -64,7 +64,7 @@ namespace PPTX
 		}
 
 		void CalculateFill(BYTE lDocType, PPTX::Logic::SpPr& oSpPr, nullable<ShapeStyle>& pShapeStyle, NSCommon::smart_ptr<PPTX::Theme>& oTheme,
-			NSCommon::smart_ptr<PPTX::Logic::ClrMap>& oClrMap, NSCommon::smart_ptr<OOX::IFileContainer>& pContainer, std::wstring& strAttr, std::wstring& strNode, bool bOle, bool bSignature)
+			NSCommon::smart_ptr<PPTX::Logic::ClrMap>& oClrMap, OOX::IFileContainer* pContainer, std::wstring& strAttr, std::wstring& strNode, bool bOle, bool bSignature)
 		{
 			PPTX::Logic::UniFill fill;
 			DWORD ARGB = 0;
@@ -136,7 +136,7 @@ namespace PPTX
 
 					smart_ptr<OOX::File> pFileVml = pImageFileVml.smart_dynamic_cast<OOX::File>();
 
-					if (pContainer.IsInit())
+					if (pContainer)
 					{
 						pContainer->Add(strId, pFileVml);
 					}
@@ -705,7 +705,7 @@ namespace PPTX
 				return m_elem->toXML();
 			return L"";
 		}
-		void SpTreeElem::toXmlWriterVML	(NSBinPptxRW::CXmlWriter* pWriter, smart_ptr<PPTX::Theme>& oTheme, smart_ptr<PPTX::Logic::ClrMap>& oClrMap, NSCommon::smart_ptr<OOX::IFileContainer>& pContainer) const
+		void SpTreeElem::toXmlWriterVML	(NSBinPptxRW::CXmlWriter* pWriter, smart_ptr<PPTX::Theme>& oTheme, smart_ptr<PPTX::Logic::ClrMap>& oClrMap, OOX::IFileContainer* pContainer) const
 		{
 			if (m_elem.IsInit() == false) return;
 

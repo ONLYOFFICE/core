@@ -522,7 +522,10 @@ namespace SimpleTypes
 			bResult = false;
 			return 0;
 		}
-
+		const bool CHexColor::operator ==(const CHexColor& clr)
+		{
+			return (m_unA == clr.m_unA && m_unR == clr.m_unR && m_unG == clr.m_unG && m_unB == clr.m_unB);
+		}
 		EFontFamily CFontFamily::FromString(const std::wstring &sValue)
 		{
 			std::wstring oldValue = XmlUtils::GetLower(sValue);
@@ -2222,7 +2225,6 @@ namespace SimpleTypes
 
 			}
 		}
-
 		template<>
 		CDoubleOrAutomatic<typeAuto>::CDoubleOrAutomatic() : m_dValue(0){}
 
@@ -3445,6 +3447,65 @@ namespace SimpleTypes
 			case typeFloat: return L"float"; break;
 			}
 			return L"edit";
+		}
+		ERichValueValueType CRichValueFallbackType::FromString(const std::wstring& sValue)
+		{
+			if (L"b" == sValue)
+				this->m_eValue = typeBoolean;
+			else if (L"n" == sValue)
+				this->m_eValue = typeNumber;
+			else if (L"e" == sValue)
+				this->m_eValue = typeError;
+			else
+				this->m_eValue = typeText;
+			return this->m_eValue;
+		}
+		std::wstring CRichValueFallbackType::ToString() const
+		{
+			switch (this->m_eValue)
+			{
+			case typeBoolean: return L"b"; break;
+			case typeNumber: return L"n"; break;
+			case typeError: return L"e"; break;
+			}
+			return L"s";
+		}
+		ERichValueValueType CRichValueValueType::FromString(const std::wstring& sValue)
+		{
+			if (L"b" == sValue)
+				this->m_eValue = typeBoolean;
+			else if (L"n" == sValue)
+				this->m_eValue = typeNumber;
+			else if (L"e" == sValue)
+				this->m_eValue = typeError;
+			else if (L"r" == sValue)
+				this->m_eValue = typeRichValue;
+			else if (L"a" == sValue)
+				this->m_eValue = typeRichArray;
+			else if (L"spb" == sValue)
+				this->m_eValue = typePropertyBag;
+			else if (L"s" == sValue)
+				this->m_eValue = typeText;
+			else if (L"i" == sValue)
+				this->m_eValue = typeInteger;
+			else
+				this->m_eValue = typeNumber;
+			return this->m_eValue;
+		}
+		std::wstring CRichValueValueType::ToString() const
+		{
+			switch (this->m_eValue)
+			{
+			case typeBoolean: return L"b"; break;
+			case typeNumber: return L"d"; break;
+			case typeError: return L"e"; break;
+			case typeInteger: return L"i"; break;
+			case typeRichArray: return L"a"; break;
+			case typeRichValue: return L"r"; break;
+			case typePropertyBag: return L"spb"; break;
+			case typeText: return L"s"; break;
+			}
+			return L"d";
 		}
 	}// Spreadsheet
 } // SimpleTypes

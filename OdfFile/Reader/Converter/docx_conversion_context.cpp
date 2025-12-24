@@ -165,6 +165,37 @@ docx_conversion_context::docx_conversion_context(odf_reader::odf_document * _odf
 docx_conversion_context::~docx_conversion_context()
 {
 }
+
+void docx_conversion_context::set_implicit_end( bool _flag ) // fix bug with convert from docx to odt. Bug with break columns
+{
+    flag_implicit_end = _flag;
+}
+
+bool docx_conversion_context::get_implicit_end() const // fix bug with convert from docx to odt. Bug with break columns
+{
+    return flag_implicit_end;
+}
+
+void docx_conversion_context::set_inside_frame( bool flag )
+{
+	inside_frame = flag;
+}
+
+bool docx_conversion_context::get_inside_frame() const
+{
+	return inside_frame;
+}
+
+void docx_conversion_context::set_scale( const int _scale )
+{
+	scale_for_framePr = _scale;
+}
+
+int docx_conversion_context::get_scale() const
+{
+	return scale_for_framePr;
+}
+
 void docx_conversion_context::set_output_document(package::docx_document * document)
 {
 	output_document_ = document;
@@ -282,6 +313,7 @@ void docx_conversion_context::finish_paragraph()
 				get_comments_context().ref_end_.clear();	
 		}	
 		output_stream() << L"</w:p>";
+
 		end_changes(false);
 	}
 	
@@ -1599,7 +1631,7 @@ void docx_conversion_context::process_section(std::wostream & strm, odf_reader::
 }
 bool docx_conversion_context::process_page_properties(std::wostream & strm)
 {
-    if (is_next_dump_page_properties() || get_section_context().get_last().is_dump_)
+    if ( is_next_dump_page_properties() || get_section_context().get_last().is_dump_ )
     {
         std::wstring pageProperties = get_page_properties();
 		odf_reader::page_layout_instance * page_layout_instance_ = root()->odf_context().pageLayoutContainer().page_layout_by_name(pageProperties);
@@ -1617,7 +1649,7 @@ bool docx_conversion_context::process_page_properties(std::wostream & strm)
 					process_section( CP_XML_STREAM(), NULL);
 
 					CP_XML_NODE(L"w:type")
-					{				
+                    {
 						CP_XML_ATTR(L"w:val", L"continuous");
 					}
 				}
@@ -1725,7 +1757,7 @@ bool docx_conversion_context::in_automatic_style()
     return in_automatic_style_;
 }
 
-void docx_conversion_context::push_text_properties(const odf_reader::style_text_properties * TextProperties)
+void docx_conversion_context::push_text_properties(const odf_reader::style_text_properties* TextProperties)
 {
     state_.text_properties_stack_.push_back(TextProperties);
 }
@@ -1734,7 +1766,21 @@ void docx_conversion_context::pop_text_properties()
 {
     state_.text_properties_stack_.pop_back();
 }
+odf_reader::style_paragraph_properties_ptr docx_conversion_context::current_paragraph_properties()
+{
+	odf_reader::style_paragraph_properties_ptr cur;
+	if (paragraph_style_stack_.empty()) return cur;
 
+	if (odf_reader::style_instance* styleInst =
+		root()->odf_context().styleContainer().style_by_name(paragraph_style_stack_.back(), odf_types::style_family::Paragraph, process_headers_footers_))
+	{
+		odf_reader::paragraph_format_properties properties = odf_reader::calc_paragraph_properties_content(styleInst);
+
+		cur = boost::make_shared<odf_reader::style_paragraph_properties>();
+		cur->content_.apply_from(properties);
+	}
+	return cur;
+}
 odf_reader::style_text_properties_ptr docx_conversion_context::current_text_properties()
 {
     odf_reader::style_text_properties_ptr cur = boost::make_shared<odf_reader::style_text_properties>();
@@ -1746,12 +1792,10 @@ odf_reader::style_text_properties_ptr docx_conversion_context::current_text_prop
     }
     return cur;
 }
-
 void docx_conversion_context::set_page_break_after(int val)
 {
     page_break_after_ = val;
 }
-
 int docx_conversion_context::get_page_break_after()
 {
     return page_break_after_ ;
@@ -1768,13 +1812,10 @@ void docx_conversion_context::set_page_break_before(int val)
 {
     page_break_before_ = val;
 }
-
 int docx_conversion_context::get_page_break_before()
 {
     return page_break_before_;
 }
-
-
 void docx_conversion_context::add_page_properties(const std::wstring & StyleName)
 {
 	section_context::_section & s = section_context_.get_last();
@@ -2199,13 +2240,13 @@ int docx_conversion_context::process_paragraph_attr(odf_reader::text::paragraph_
 				{
 					odf_reader::list_style_container & list_styles = root()->odf_context().listStyleContainer();
 					
-					if (list_style_stack_.empty() && list_styles.outline_style() && !get_table_context().in_table())
+					if (/*outline_level < 9 && */list_style_stack_.empty() && list_styles.outline_style() && !get_table_context().in_table())
 					{
 						output_stream() << L"<w:numPr>";
-							output_stream() << L"<w:ilvl w:val=\"" << *outline_level - 1  << L"\"/>";
-							output_stream() << L"<w:numId w:val=\"" << list_styles.id_outline() << L"\"/>";
+						output_stream() << L"<w:ilvl w:val=\"" << *outline_level - 1  << L"\"/>";
+						output_stream() << L"<w:numId w:val=\"" << list_styles.id_by_name(id) << L"\"/>"; // check bug 51965
 						output_stream() << L"</w:numPr>";
-					}				   
+					}
 					output_stream() << L"<w:outlineLvl w:val=\"" << *outline_level << L"\"/>";
 				}
 

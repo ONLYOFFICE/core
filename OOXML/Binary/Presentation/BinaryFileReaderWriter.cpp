@@ -486,6 +486,7 @@ namespace NSBinPptxRW
 			case _CXIMAGE_FORMAT_WMF:
 			case _CXIMAGE_FORMAT_EMF:
 			case _CXIMAGE_FORMAT_GIF:
+			case _CXIMAGE_FORMAT_WEBP:
 			{
 				oPathOutput = m_strDstMedia + FILE_SEPARATOR_STR + strImage + strExts;
 
@@ -995,9 +996,9 @@ namespace NSBinPptxRW
 	CBinaryFileWriter::CBinaryFileWriter()
 	{
 		m_pMainDocument		= NULL;
+		m_pCurrentContainer = NULL;
 		m_pCommon			= new CCommonWriter();
-		//m_pCommonRels		= new NSCommon::smart_ptr<PPTX::CCommonRels>();
-		m_pCurrentContainer = new NSCommon::smart_ptr<OOX::IFileContainer>();
+
 		m_pTheme			= new NSCommon::smart_ptr<PPTX::Theme>();
 		m_pClrMap			= new NSCommon::smart_ptr<PPTX::Logic::ClrMap>();
 		
@@ -1005,26 +1006,21 @@ namespace NSBinPptxRW
 	}
 	CBinaryFileWriter::~CBinaryFileWriter()
 	{
+		m_pCurrentContainer = NULL;
 		RELEASEARRAYOBJECTS	(m_pStreamData);
 		RELEASEOBJECT		(m_pCommon);
 		//RELEASEOBJECT		(m_pCommonRels);
-		RELEASEOBJECT		(m_pCurrentContainer);
 		
 		RELEASEOBJECT		(m_pTheme);
 		RELEASEOBJECT		(m_pClrMap);
 	}
-	void CBinaryFileWriter::SetRels(NSCommon::smart_ptr<OOX::IFileContainer> container)
+	void CBinaryFileWriter::SetRelsPtr(OOX::IFileContainer *container)
 	{
-		*m_pCurrentContainer = container;
+		m_pCurrentContainer = container;
 	}
-	void CBinaryFileWriter::SetRels(OOX::IFileContainer *container)
+	OOX::IFileContainer* CBinaryFileWriter::GetRelsPtr()
 	{
-		*m_pCurrentContainer = NSCommon::smart_ptr<OOX::IFileContainer>(container);
-		m_pCurrentContainer->AddRef();
-	}
-	NSCommon::smart_ptr<OOX::IFileContainer> CBinaryFileWriter::GetRels()
-	{
-		return *m_pCurrentContainer;
+		return m_pCurrentContainer;
 	}
 	void CBinaryFileWriter::StartRecord(_INT32 lType)
 	{
@@ -1643,15 +1639,15 @@ namespace NSBinPptxRW
 
 		m_lNextRelsID = 3;
 	}
-	void CRelsGenerator::WriteMasters(int nCount)
+	std::wstring CRelsGenerator::WriteMaster(int nIndex)
 	{
-		for (int i = 0; i < nCount; ++i)
-		{
-			std::wstring strRels = L"<Relationship Id=\"rId" + std::to_wstring( m_lNextRelsID++ ) + 
-				L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideMaster\" Target=\"slideMasters/slideMaster" + 
-                std::to_wstring(i + 1) + L".xml\"/>";
-			m_pWriter->WriteString(strRels);
-		}
+		std::wstring rid = L"rId" + std::to_wstring(m_lNextRelsID++);
+		std::wstring strRels = L"<Relationship Id=\"" + rid +
+			L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideMaster\" Target=\"slideMasters/slideMaster" 
+			+ std::to_wstring(nIndex) + L".xml\"/>";
+		m_pWriter->WriteString(strRels);
+
+		return rid;
 	}
 	void CRelsGenerator::WriteThemes(int nCount)
 	{
@@ -1663,49 +1659,33 @@ namespace NSBinPptxRW
 			m_pWriter->WriteString(strRels);
 		}
 	}
-	void CRelsGenerator::WriteSlides(int nCount)
+	std::wstring CRelsGenerator::WriteSlide(int nIndex)
 	{
-		for (int i = 0; i < nCount; ++i)
-		{
-			std::wstring strRels = L"<Relationship Id=\"rId" + std::to_wstring( m_lNextRelsID++ ) + 
-				L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slide\" Target=\"slides/slide" + 
-				std::to_wstring(i + 1) + L".xml\"/>";
-			m_pWriter->WriteString(strRels);
-		}
-	}
-	void CRelsGenerator::WriteSlideComments(int nComment)
-	{
-		std::wstring strRels = L"<Relationship Id=\"rId" + std::to_wstring( m_lNextRelsID++ ) + 
-			L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/comments\" Target=\"../comments/comment" + 
-			std::to_wstring(nComment) + L".xml\"/>";
+		std::wstring rid = L"rId" + std::to_wstring(m_lNextRelsID++);
 
+		std::wstring strRels = L"<Relationship Id=\"" + rid +
+			L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slide\" Target=\"slides/slide" +
+			std::to_wstring(nIndex) + L".xml\"/>";
 		m_pWriter->WriteString(strRels);
+		
+		return rid;
 	}
+
 	void CRelsGenerator::WriteNotesMaster()
 	{
 		std::wstring strRels0 = L"<Relationship Id=\"rId" + std::to_wstring(m_lNextRelsID++) +
 				L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/notesMaster\" Target=\"notesMasters/notesMaster1.xml\"/>";
 		m_pWriter->WriteString(strRels0);			
 	}
-	void CRelsGenerator::WritePresentationComments(int nComment)
+	std::wstring CRelsGenerator::WriteCustom(const std::wstring & file_name)
 	{
-		std::wstring strRels = L"<Relationship Id=\"rId" + std::to_wstring( m_lNextRelsID++ ) +
-			L"\" Type=\"http://schemas.onlyoffice.com/comments\" Target=\"comments/comment" +
-			std::to_wstring(nComment) + L".xml\"/>";
-
-		m_pWriter->WriteString(strRels);
-	}
-	void CRelsGenerator::WriteCustoms(int nCount)
-	{
-		for (int i = 0; i < nCount; ++i)
-		{
-			std::wstring strRels = L"<Relationship Id=\"rId" + std::to_wstring(m_lNextRelsID++) +
-				L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXml\" Target=\"../customXml/item" +
-				std::to_wstring(i + 1) + L".xml\"/>";
+		std::wstring rid = L"rId" + std::to_wstring(m_lNextRelsID++);
+			std::wstring strRels = L"<Relationship Id=\"" + rid +
+				L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXml\" Target=\"../customXml/" + file_name + L"\"/>";
 			m_pWriter->WriteString(strRels);
-		}
+		return rid;
 	}
-	void CRelsGenerator::EndPresentationRels(bool bIsCommentsAuthors, bool bIsVbaProject, bool bIsJsaProject)
+	void CRelsGenerator::EndPresentationRels(bool bIsVbaProject, bool bIsJsaProject)
 	{
         std::wstring strRels1 = L"<Relationship Id=\"rId" + std::to_wstring(m_lNextRelsID++) +
                 L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/presProps\" Target=\"presProps.xml\" />";
@@ -1718,12 +1698,6 @@ namespace NSBinPptxRW
 		m_pWriter->WriteString(strRels2);
 		m_pWriter->WriteString(strRels3);
 
-		if (bIsCommentsAuthors)
-		{
-            std::wstring strRels4 = L"<Relationship Id=\"rId" + std::to_wstring(m_lNextRelsID++) +
-                    L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/commentAuthors\" Target=\"commentAuthors.xml\"/>";
-			m_pWriter->WriteString(strRels4);
-		}
 		if (bIsVbaProject)
 		{
             std::wstring strRels4 = L"<Relationship Id=\"rId" + std::to_wstring(m_lNextRelsID++) +
@@ -1964,12 +1938,12 @@ namespace NSBinPptxRW
 
 		m_pRels				= new CRelsGenerator();
 		m_nCurrentRelsStack = -1;
-		m_pCurrentContainer = new NSCommon::smart_ptr<OOX::IFileContainer>();
+		m_pCurrentContainer = NULL;
 	}
 	CBinaryFileReader::~CBinaryFileReader()
 	{
 		RELEASEOBJECT(m_pRels);
-		RELEASEOBJECT(m_pCurrentContainer);
+		m_pCurrentContainer = NULL;
 
 		size_t nCountStackRels = m_stackRels.size();
 		for (size_t i = 0; i < nCountStackRels; ++i)
@@ -1979,18 +1953,13 @@ namespace NSBinPptxRW
 		}
 		m_stackRels.clear();
 	}
-	void CBinaryFileReader::SetRels(NSCommon::smart_ptr<OOX::IFileContainer> container)
+	void CBinaryFileReader::SetRelsPtr(OOX::IFileContainer* container)
 	{
-		*m_pCurrentContainer = container;
+		m_pCurrentContainer = container;
 	}
-	void CBinaryFileReader::SetRels(OOX::IFileContainer* container)
+	OOX::IFileContainer* CBinaryFileReader::GetRelsPtr()
 	{
-		*m_pCurrentContainer = NSCommon::smart_ptr<OOX::IFileContainer>(container);
-		m_pCurrentContainer->AddRef();
-	}
-	NSCommon::smart_ptr<OOX::IFileContainer> CBinaryFileReader::GetRels()
-	{
-		return *m_pCurrentContainer;
+		return m_pCurrentContainer;
 	}
 	void CBinaryFileReader::SetMainDocument(BinDocxRW::CDocxSerializer* pMainDoc)
 	{

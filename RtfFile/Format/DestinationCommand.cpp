@@ -1130,10 +1130,22 @@ bool RtfCharPropsCommand::ExecuteCommand(RtfDocument& oDocument, RtfReader& oRea
 	COMMAND_RTF_BOOL( "b"			,	charProps->m_bBold,				sCommand, hasParameter, parameter)
 	COMMAND_RTF_BOOL( "caps"		,	charProps->m_bCaps,				sCommand, hasParameter, parameter)
 	COMMAND_RTF_INT	( "charscalex"	,	charProps->m_nScalex,			sCommand, hasParameter, parameter)
-	COMMAND_RTF_INT	( "cs"			,	charProps->m_nCharStyle,		sCommand, hasParameter, parameter)
+    //COMMAND_RTF_INT	( "cs"			,	charProps->m_nCharStyle,		sCommand, hasParameter, parameter)
 	COMMAND_RTF_INT	( "down"		,	charProps->m_nDown,				sCommand, hasParameter, parameter)
 	COMMAND_RTF_BOOL( "embo"		,	charProps->m_bEmbo,				sCommand, hasParameter, parameter)
 	COMMAND_RTF_INT	( "expndtw"		,	charProps->m_nCharacterSpacing,	sCommand, hasParameter, parameter)
+    else if ("cs" == sCommand)
+    {
+        if (true == hasParameter)
+            charProps->m_nCharStyle = parameter;
+#ifdef USE_STYLE_COLOR
+        if (charProps->m_nForeColor == PROP_DEF)
+            charProps->m_nForeColor = 0;
+        charProps->m_eUnderStyle = RtfCharProperty::uls_none;
+        charProps->m_bBold = 0;
+#endif
+    }
+
 	else if ( "expnd" == sCommand )
 	{
 		if ( hasParameter )
@@ -1159,8 +1171,18 @@ bool RtfCharPropsCommand::ExecuteCommand(RtfDocument& oDocument, RtfReader& oRea
 		else
 			charProps->m_bRightToLeft  = 1;
 	}
-	COMMAND_RTF_BOOL( "rtlch",		charProps->m_bRightToLeft,	sCommand, hasParameter, parameter)
-	COMMAND_RTF_INT	( "lang",		charProps->m_nLanguage,		sCommand, hasParameter, parameter)
+    else if ("rtlch" == sCommand)
+    {
+        if ( false == hasParameter || 0 != parameter )
+        {
+            charProps->m_bRightToLeft  = 1;
+            charProps->m_nComplexScript = 1;
+        }
+        else
+            charProps->m_bRightToLeft  = 0;
+    }
+    //COMMAND_RTF_BOOL( "rtlch",		charProps->m_bRightToLeft,	sCommand, hasParameter, parameter)
+    COMMAND_RTF_INT	( "lang",		charProps->m_nLanguage,		sCommand, hasParameter, parameter)
 	COMMAND_RTF_INT	( "langfe",		charProps->m_nLanguageAsian,sCommand, hasParameter, parameter)
 	
 	COMMAND_RTF_BOOL( "outl",		charProps->m_bOutline,		sCommand, hasParameter, parameter)
@@ -1185,9 +1207,16 @@ bool RtfCharPropsCommand::ExecuteCommand(RtfDocument& oDocument, RtfReader& oRea
 		else
 			charProps->m_eUnderStyle = RtfCharProperty::uls_Single;
 	}
+    else if ( "uld" == sCommand )
+    {
+        if ( hasParameter && 0 == parameter)
+            charProps->m_eUnderStyle = RtfCharProperty::uls_none;
+        else
+            charProps->m_eUnderStyle = RtfCharProperty::uls_Dotted;
+    }
 	//COMMAND_RTF_BOOL( "ul", charProps->m_bUnderline, sCommand, hasParameter, parameter)
 	COMMAND_RTF_INT ( "ulc",		charProps->m_nUnderlineColor, sCommand, hasParameter, parameter)
-	COMMAND_RTF_INT ( "uld",		charProps->m_eUnderStyle,	sCommand, true, RtfCharProperty::uls_Dotted)
+    //COMMAND_RTF_INT ( "uld",		charProps->m_eUnderStyle,	sCommand, true, RtfCharProperty::uls_Dotted)
 	COMMAND_RTF_INT ( "uldash",		charProps->m_eUnderStyle,	sCommand, true, RtfCharProperty::uls_Dashed)
 	COMMAND_RTF_INT ( "uldashd",	charProps->m_eUnderStyle,	sCommand, true, RtfCharProperty::uls_Dash_dotted)
 	COMMAND_RTF_INT ( "uldashdd",	charProps->m_eUnderStyle,	sCommand, true, RtfCharProperty::uls_Dash_dot_dotted)
@@ -1237,6 +1266,12 @@ bool RtfCharPropsCommand::ExecuteCommand(RtfDocument& oDocument, RtfReader& oRea
 	{
 		charProps->m_nCharacterSpacing  = PROP_DEF;
 	}
+#ifdef USE_STYLE_COLOR
+    else if (("sbasedon" == sCommand) && (charProps->m_bBold == PROP_DEF))
+    {
+        charProps->m_bBold = 0;
+    }
+#endif
 	else
 	{
 		if (RtfShadingCharCommand::ExecuteCommand( oDocument, oReader,sCommand, hasParameter, parameter, charProps->m_poShading))
@@ -2922,12 +2957,18 @@ void RtfShapeReader::ShapePropertyReader::ShapePropertyValueReader::PopState( Rt
 			int x = 0, y = 0;
 			try
 			{
-				x = XmlUtils::GetInteger(splitted[i].substr(0, pos));
+				if (PROP_DEF != m_oShape.m_nRelLeft)
+					x = XmlUtils::GetInteger(splitted[i].substr(0, pos)) - m_oShape.m_nRelLeft;
+				else
+					x = XmlUtils::GetInteger(splitted[i].substr(0, pos));
 			}
 			catch(...){}
 			try
 			{
-				y = XmlUtils::GetInteger(splitted[i].substr(pos + 1, splitted[i].length() - 1));
+				if (PROP_DEF != m_oShape.m_nRelTop)
+					y = XmlUtils::GetInteger(splitted[i].substr(pos + 1, splitted[i].length() - 1)) - m_oShape.m_nRelTop;
+				else
+					y = XmlUtils::GetInteger(splitted[i].substr(pos + 1, splitted[i].length() - 1));
 			}
 			catch(...){}
 
@@ -2951,10 +2992,10 @@ void RtfShapeReader::ShapePropertyReader::ShapePropertyValueReader::PopState( Rt
 			m_oShape.m_aPSegmentInfo.push_back( val );
 		}
 	}
-	else if ( L"geoBottom"		== m_sPropName ) m_oShape.m_nGeoBottom		= nValue;
-	else if ( L"geoLeft"		== m_sPropName ) m_oShape.m_nGeoLeft		= nValue;
-	else if ( L"geoRight"		== m_sPropName ) m_oShape.m_nGeoRight		= nValue;
-	else if ( L"geoTop"			== m_sPropName ) m_oShape.m_nGeoTop			= nValue;
+	else if (L"geoBottom" == m_sPropName) m_oShape.m_nGeoBottom = (PROP_DEF != m_oShape.m_nRelTop) ? nValue - m_oShape.m_nRelTop : nValue;
+	else if (L"geoLeft" == m_sPropName) m_oShape.m_nGeoLeft = (PROP_DEF != m_oShape.m_nRelLeft) ? nValue - m_oShape.m_nRelLeft : nValue;
+	else if (L"geoRight" == m_sPropName) m_oShape.m_nGeoRight = (PROP_DEF != m_oShape.m_nRelLeft) ? nValue - m_oShape.m_nRelLeft : nValue;
+	else if (L"geoTop" == m_sPropName) m_oShape.m_nGeoTop = (PROP_DEF != m_oShape.m_nRelTop) ? nValue - m_oShape.m_nRelTop : nValue;
 	//
 	else if ( L"dxWrapDistLeft"	== m_sPropName ) m_oShape.m_nWrapDistLeft	= RtfUtility::Emu2Twips( nValue );
 	else if ( L"dyWrapDistTop"	== m_sPropName ) m_oShape.m_nWrapDistTop	= RtfUtility::Emu2Twips( nValue );
@@ -3011,7 +3052,8 @@ void RtfShapeReader::ShapePropertyReader::ShapePropertyValueReader::PopState( Rt
 	else if ( L"fillColor"		== m_sPropName ) m_oShape.m_nFillColor		= nValue;
 	else if ( L"fillBackColor"	== m_sPropName ) m_oShape.m_nFillColor2		= nValue;
 	else if ( L"fillOpacity"	== m_sPropName ) m_oShape.m_nFillOpacity	= nValue * 100 / 65536;
-	else if ( L"fillAngle"		== m_sPropName ) m_oShape.m_nFillAngle		= nValue / 65536;
+    else if ( L"fillAngle"		== m_sPropName ) m_oShape.m_nFillAngle		= nValue / 65536 * 60000;
+   // else if ( L"fillAngle"		== m_sPropName ) m_oShape.m_nFillAngle		= nValue / 65536;
 	else if ( L"fillFocus"		== m_sPropName ) m_oShape.m_nFillFocus		= nValue;
 	else if ( L"fillShadeType"	== m_sPropName ) m_oShape.m_nFillShadeType	= nValue;
 	else if ( L"fillShadeColors"== m_sPropName )
@@ -3027,7 +3069,8 @@ void RtfShapeReader::ShapePropertyReader::ShapePropertyValueReader::PopState( Rt
 			
 			int pos = (int)splitted[i].find(L",");
 
-			int col = 0, pos_col = 0;
+            int col = 0;
+            double pos_col = 0;
 			try
 			{
 				col = XmlUtils::GetInteger(splitted[i].substr(0, pos));
@@ -3035,7 +3078,7 @@ void RtfShapeReader::ShapePropertyReader::ShapePropertyValueReader::PopState( Rt
 			catch(...){}
 			try
 			{
-				pos_col = XmlUtils::GetInteger(splitted[i].substr(pos + 1, splitted[i].length() - 1)) * 100 / 65536;
+                pos_col = XmlUtils::GetDouble(splitted[i].substr(pos + 1, splitted[i].length() - 1)) * 100 / 65536;
 			}
 			catch(...){}
 
@@ -5055,7 +5098,15 @@ bool RtfStyleTableReader::RtfStyleReader::ExecuteCommand(RtfDocument& oDocument,
 			m_oCurStyle->m_nID = parameter;
 		}
 	}
-	COMMAND_RTF_INT( "sbasedon",	m_oCurStyle->m_nBasedOn,			sCommand, hasParameter, parameter )
+#ifdef USE_STYLE_COLOR
+    COMMAND_RTF_INT( "sbasedon",	m_oCurStyle->m_nBasedOn,			sCommand, hasParameter, parameter );
+    if (m_oCurStyle->m_nBasedOn != PROP_DEF)
+    {
+        RtfCharPropsCommand::ExecuteCommand( oDocument, oReader, sCommand, hasParameter, parameter, &oReader.m_oState->m_oCharProp );
+    }
+#else
+    COMMAND_RTF_INT( "sbasedon",	m_oCurStyle->m_nBasedOn,			sCommand, hasParameter, parameter )
+#endif
 	COMMAND_RTF_INT( "snext",		m_oCurStyle->m_nNext,				sCommand, hasParameter, parameter )
 	COMMAND_RTF_INT( "slink",		m_oCurStyle->m_nLink,				sCommand, hasParameter, parameter )
 	COMMAND_RTF_BOOL( "sqformat",	m_oCurStyle->m_bQFormat,			sCommand, hasParameter, parameter )

@@ -8,6 +8,7 @@
 #include <cstdlib>
 #include <cfloat>
 #include <cctype>
+#include <cmath>
 
 #include "../../../DesktopEditor/common/Path.h"
 #include "../../../DesktopEditor/common/ProcessEnv.h"
@@ -146,8 +147,6 @@ inline std::wstring CombinePaths(const std::wstring& wsFirstPath, const std::wst
 
 inline bool GetStatusUsingExternalLocalFiles()
 {
-	return false;
-
 	if (NSProcessEnv::IsPresent(NSProcessEnv::Converter::gc_allowPrivateIP))
 		return NSProcessEnv::GetBoolValue(NSProcessEnv::Converter::gc_allowPrivateIP);
 
@@ -169,7 +168,7 @@ inline bool CanUseThisPath(const std::wstring& wsPath, const std::wstring& wsRoo
 
 inline bool IsZeroValue(const double& dValue)
 {
-	return DBL_EPSILON > std::abs(dValue);
+	return DBL_EPSILON > std::fabs(dValue);
 }
 }
 #endif // UTILS_H

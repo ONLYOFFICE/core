@@ -51,19 +51,20 @@ public:
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
+	void writeFields(CFRecord& record);
 
 	static const ElementType type = typeFeature11;
 
 	FrtRefHeaderU			frtRefHeaderU;
-	_UINT16					isf;
-	_UINT16					cref2;
-	_UINT32					cbFeatData;
+	_UINT16					isf = 0x0005;
+	_UINT16					cref2 = 0;
+	_UINT32					cbFeatData = 0;
 	BiffStructurePtrVector	refs2;
 	std::wstring			sqref;
 
 	TableFeatureType		rgbFeat;
 
-	bool bFeature12;
+	bool bFeature12 = false;
 };
 
 } // namespace XLS

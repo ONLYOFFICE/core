@@ -93,6 +93,7 @@ namespace PdfWriter
 	class CStreamData;
 	class CXObject;
 	class CObjectBase;
+	class CStringObject;
 	//----------------------------------------------------------------------------------------
 	// CDocument
 	//----------------------------------------------------------------------------------------
@@ -133,7 +134,8 @@ namespace PdfWriter
 		COutline*         GetOutlines() { return m_pOutlines; }
 		CDestination*     CreateDestination(CObjectBase* pPage, bool bInline = false);
 		bool              AddMetaData(const std::wstring& sMetaName, BYTE* pMetaData, DWORD nMetaLength);
-					      
+
+		void              AddExtGState(CExtGrState* pState);
 		CExtGrState*      GetExtGState(double dAlphaStroke = -1, double dAlphaFill = -1, EBlendMode eMode = blendmode_Unknown, int nStrokeAdjustment = -1);
 		CExtGrState*      GetStrokeAlpha(double dAlpha);
 		CExtGrState*      GetFillAlpha(double dAlpha);
@@ -147,6 +149,7 @@ namespace PdfWriter
 					      
 		CImageDict*       CreateImage();
 		CXObject*         CreateForm(CImageDict* pImage, const std::string& sName);
+		CXObject*         CreateForm();
 		CFont14*          CreateFont14(const std::wstring& wsFontPath, unsigned int unIndex, EStandard14Fonts eType);
 		CFont14*          FindFont14  (const std::wstring& wsFontPath, unsigned int unIndex);
 		CFontCidTrueType* CreateCidTrueTypeFont(const std::wstring& wsFontPath, unsigned int unIndex);
@@ -202,15 +205,21 @@ namespace PdfWriter
 		std::string       SetParentKids(int nParentID);
 		const std::map<int, CAnnotation*>& GetAnnots() { return m_mAnnotations; }
 		const std::map<int, CDictObject*>& GetParents() { return m_mParents; }
+		CDictObject*      GetXObject(int nID);
+		void              AddXObject(int nID, CDictObject* pXObject);
 		CPageTree*        GetPageTree() { return m_pPageTree; }
+		CEncryptDict*     GetEncrypt() { return m_pEncryptDict; }
 		void              AddShapeXML(const std::string& sXML);
 		void              EndShapeXML();
 		void              ClearPage();
+		void              ClearPageFull();
 		bool              EditXref(CXref* pXref);
 		void              SetAcroForm(CDictObject* pObj);
 		CDictObject*      GetAcroForm() { return m_pAcroForm; }
 		CResourcesDict*   CreateResourcesDict(bool bInline, bool bProcSet);
-		void              FreeHidden(CObjectBase* pObj);
+		void              RemoveObj(CObjectBase* pObj);
+		void              SetEncryption(CEncryptDict* pEncrypt, CObjectBase* pID);
+		void              AddNameTree(CStringObject* pName, CDestination* pDest);
 	private:		  
 					  
 		char*             GetTTFontTag();
@@ -312,6 +321,7 @@ namespace PdfWriter
 		std::map<int, CAnnotation*>        m_mAnnotations;
 		std::map<int, CDictObject*>        m_mParents;
 		std::map<int, CPage*>              m_mEditPages;
+		std::map<int, CDictObject*>        m_mXObjects;
 
 		friend class CFontCidTrueType;
 		friend class CFontTrueType;

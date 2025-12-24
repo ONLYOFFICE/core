@@ -6,7 +6,7 @@ export default defineConfig({
 		lib: {
 			formats: ['iife', 'es'],
 			entry: resolve(__dirname, 'src/index.js'),
-			name: 'KeyStorage',
+			name: 'KeyStorageLibrary',
 			fileName: (format) => `key-storage.${format}.js`
 		},
 		rollupOptions: {

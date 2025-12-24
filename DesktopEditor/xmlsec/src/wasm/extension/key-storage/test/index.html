@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Test variant</title>
+</head>
+<body>
+<button id="generate-key-button">Generate key</button>
+<div></div>
+<label for="public-key-input">Input data for public key</label>
+<input type="text" id="public-key-input" />
+<button id="get-key-button">Get key by public key</button>
+<div></div>
+<span>Selected key:</span>
+<span id="selected-key"></span>
+<div></div>
+<label for="data-input">Input data for encrypt</label>
+<input type="text" id="data-input" />
+<button id="encrypt-data-button">Encrypt</button>
+<div></div>
+<span>Encrypted data: </span>
+<span id="encrypted-data"></span>
+<div></div>
+<label for="encrypt-data-input">Input data for decrypt</label>
+<input type="text" id="encrypt-data-input" />
+<button id="decrypt-data-button">Decrypt</button>
+<div></div>
+<span>Decrypted data: </span>
+<span id="decrypted-data"></span>
+<div></div>
+<button id="save-storage-button">Save storage</button>
+<button id="load-storage-button">Load storage</button>
+
+<script src="../dist/key-storage.iife.js"></script>
+<script src="./storage-manager.js"></script>
+<script src="./index.js"></script>
+</body>
+</html>

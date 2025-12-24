@@ -100,6 +100,11 @@ public:
 
 	std::wstring get_last_paragraph_style_name();
 
+	void set_predump(const bool& bPredump);
+	bool get_lasttext();
+
+	void seroing_predump();
+
 	bool in_list_;
 	bool process_layouts_;
 
@@ -114,6 +119,7 @@ private:
 	bool in_paragraph;
 	bool in_comment;
 	bool is_predump;
+	bool is_lasttext;
 
 	odf_reader::styles_container * local_styles_ptr_;
 
@@ -163,7 +169,7 @@ private:
 
 pptx_text_context::Impl::Impl(odf_reader::odf_read_context & odf_contxt_, pptx_conversion_context & pptx_contxt_): 
 		odf_context_(odf_contxt_),	pptx_context_(pptx_contxt_),
-		paragraphs_cout_(0), in_paragraph(false),in_span(false), in_comment(false), field_type_(none)
+		paragraphs_cout_(0), in_paragraph(false),in_span(false),is_predump(false),is_lasttext(false), in_comment(false), field_type_(none)
 {
 	new_list_style_number_=0;
 	local_styles_ptr_ = NULL;
@@ -175,7 +181,10 @@ void pptx_text_context::Impl::add_text(const std::wstring & text)
 	if (field_type_)
 		field_value_ << text;
 	else
+	{
+		is_lasttext = true;
 		text_ << text;
+	}
 }
 void pptx_text_context::Impl::add_paragraph(const std::wstring & para)
 {
@@ -198,7 +207,6 @@ void pptx_text_context::Impl::start_paragraph(const std::wstring & styleName)
 		//}
 		//else/* (paragraph_style_name_ != styleName)*/
 		{
-			is_predump = true;
 			dump_paragraph();
 		}
 	}else
@@ -209,7 +217,6 @@ void pptx_text_context::Impl::start_paragraph(const std::wstring & styleName)
 	last_paragraph_style_name_	= paragraph_style_name_;
 	paragraph_style_name_		= styleName;
 	in_paragraph				= true;
-	is_predump					= false;
 }
 
 void pptx_text_context::Impl::end_paragraph()
@@ -396,8 +403,14 @@ void pptx_text_context::Impl::write_pPr(std::wostream & strm)
 	get_styles_context().start();
 
 	int level = list_style_stack_.size() - 1;		
-	if (is_predump)
-		level--;
+	if (is_predump && is_lasttext)
+	{
+		seroing_predump();
+		level = -1;
+	}
+	else
+		seroing_predump();
+
 
 	odf_reader::paragraph_format_properties paragraph_properties_;
 	
@@ -978,6 +991,32 @@ void pptx_text_context::set_process_layouts(bool val)
 std::wstring pptx_text_context::get_last_paragraph_style_name()
 {
 	return impl_->get_last_paragraph_style_name();
+}
+
+void pptx_text_context::set_predump(const bool &bPreDump)
+{
+	impl_->set_predump(bPreDump);
+}
+
+bool pptx_text_context::get_lasttext()
+{
+	return impl_->get_lasttext();
+}
+
+void pptx_text_context::Impl::set_predump(const bool& bPredump)
+{
+	is_predump = bPredump;
+}
+
+bool pptx_text_context::Impl::get_lasttext()
+{
+	return is_lasttext;
+}
+
+void pptx_text_context::Impl::seroing_predump()
+{
+	is_predump = false;
+	is_lasttext = false;
 }
 
 }

@@ -1184,17 +1184,17 @@ int main(int argc, char* argv[])
 		std::cout << "CheckPerm 4 Print " << CheckPerm(pGrFile, 3) << std::endl;
 	}
 
-	BYTE* pColor = new BYTE[12] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 	// REDACT
 	if (false)
 	{
+		BYTE* pColor = new BYTE[12] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 		int pRect[8] = { 307499, 217499, 307499, 1124999, 1799999, 1124999, 1799999, 217499 };
 		if (!RedactPage(pGrFile, nTestPage, pRect, 1, pColor, 12))
 			std::cout << "Redact false" << std::endl;
 	}
 
 	// RASTER
-	if (false)
+	if (true)
 	{
 		int i = nTestPage;
 		//for (int i = 0; i < nPagesCount; ++i)
@@ -2251,12 +2251,10 @@ int main(int argc, char* argv[])
 			free(pAnnotAP);
 	}
 
-	// SCAN PAGE
+	// SCAN PAGE Fonts
 	if (true)
 	{
-		BYTE* pScan = ScanPage(pGrFile, nTestPage, 2);
-		if (pScan)
-			free(pScan);
+		SetScanPageFonts(pGrFile, nTestPage);
 
 		ReadInteractiveFormsFonts(pGrFile, 1);
 		ReadInteractiveFormsFonts(pGrFile, 2);

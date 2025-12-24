@@ -51,6 +51,7 @@
 		"_DestroyTextInfo",
 		"_IsNeedCMap",
 		"_SetCMapData",
+		"_SetScanPageFonts",
 		"_ScanPage",
 		"_SplitPages",
 		"_MergePages",

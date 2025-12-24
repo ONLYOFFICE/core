@@ -1709,7 +1709,6 @@ namespace PdfReader
 		m_pRendererOut->NewPDF(gfx->getDoc()->getXRef());
 
 		Gfx* m_gfx = new Gfx(gfx->getDoc(), m_pRendererOut, -1, pResourcesDict, dDpiX, dDpiY, &box, NULL, 0);
-		m_gfx->takeContentStreamStack(gfx);
 		m_gfx->display(pStream);
 
 		pFrame->ClearNoAttack();
@@ -1728,6 +1727,7 @@ namespace PdfReader
 		yMax = nY1 * dYStep + pBBox[1];
 		Transform(pMatrix, xMin, yMin, &xMin, &yMin);
 		Transform(pMatrix, xMax, yMax, &xMax, &yMax);
+		pGState->clearPath();
 		pGState->moveTo(xMin, yMin);
 		pGState->lineTo(xMax, yMin);
 		pGState->lineTo(xMax, yMax);
@@ -1744,6 +1744,7 @@ namespace PdfReader
 		m_pRenderer->put_BrushTextureImage(oImage);
 		m_pRenderer->put_BrushTextureMode(c_BrushTextureModeTile);
 		m_pRenderer->put_BrushTextureAlpha(alpha);
+		m_pRenderer->put_BrushTransform({ pMatrix[0], pMatrix[1], pMatrix[2], pMatrix[3], 0, 0 });
 		m_pRenderer->BeginCommand(c_nImageType);
 
 		m_pRenderer->DrawPath(c_nWindingFillMode);
@@ -2469,9 +2470,10 @@ namespace PdfReader
 
 		std::wstring wsUnicodeText;
 
-		bool isCIDFont = pFont->isCIDFont();
+		bool isCIDFont = pFont->isCIDFont() == gTrue;
+		bool isIdentity = isCIDFont ? ((GfxCIDFont*)pFont)->usesIdentityEncoding() || ((GfxCIDFont*)pFont)->usesIdentityCIDToGID() || ((GfxCIDFont*)pFont)->ctuUsesCharCodeToUnicode() || pFont->getType() == fontCIDType0C : false;
 
-		if (NULL != oEntry.pCodeToUnicode && nCode < oEntry.unLenUnicode)
+		if (NULL != oEntry.pCodeToUnicode && nCode < oEntry.unLenUnicode && oEntry.pCodeToUnicode[nCode])
 		{
 			int unUnicode = oEntry.pCodeToUnicode[nCode];
 			wsUnicodeText = NSStringExt::CConverter::GetUnicodeFromUTF32((const unsigned int*)(&unUnicode), 1);
@@ -2481,7 +2483,7 @@ namespace PdfReader
 			if (isCIDFont)
 			{
 				// Значит кодировка была Identity-H или Identity-V, что означает, что исходные коды и есть юникодные значения
-				wsUnicodeText = (wchar_t(nCode));
+				wsUnicodeText = NSStringExt::CConverter::GetUnicodeFromUTF32((const unsigned int*)(&nCode), 1);
 			}
 			else
 			{
@@ -2495,20 +2497,20 @@ namespace PdfReader
 
 		unsigned int unGidsCount = 0;
 		unsigned int unGid       = 0;
-		if (NULL != oEntry.pCodeToGID && nCode < oEntry.unLenGID)
+		if (NULL != oEntry.pCodeToGID && nCode < oEntry.unLenGID && oEntry.pCodeToGID[nCode])
 		{
-			if (0 == (unGid = oEntry.pCodeToGID[nCode]))
-				unGidsCount = 0;
-			else
-				unGidsCount = 1;
+			unGid = oEntry.pCodeToGID[nCode];
+			unGidsCount = 1;
+
+			if (pFont->getType() == fontCIDType0COT && isCIDFont && isIdentity && oEntry.pCodeToUnicode && nCode < oEntry.unLenUnicode && !oEntry.pCodeToUnicode[nCode])
+				unGid = nCode;
 		}
 		else
 		{
-			if ((isCIDFont && (((GfxCIDFont*)pFont)->usesIdentityEncoding() || ((GfxCIDFont*)pFont)->usesIdentityCIDToGID() || ((GfxCIDFont*)pFont)->ctuUsesCharCodeToUnicode() || pFont->getType() == fontCIDType0C))
-					|| (!isCIDFont && wsUnicodeText.empty()))
+			if ((isCIDFont && isIdentity) || (!isCIDFont && wsUnicodeText.empty()))
 			{
-				int nCurCode = (0 == nCode ? 65534 : nCode);
-				unGid       = (unsigned int)nCurCode;
+				unsigned int nCurCode = (0 == nCode ? 65534 : nCode);
+				unGid       = nCurCode;
 				unGidsCount = 1;
 			}
 		}

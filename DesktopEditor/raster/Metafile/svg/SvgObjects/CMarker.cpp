@@ -8,8 +8,8 @@ namespace SVG
 		: CObject(oReader), m_enUnits{EMarkerUnits::StrokeWidth}, m_enOrient{EMarkerOrient::Angle},
 	      m_dAngle(0.), m_oBounds{0., 0., 0., 0.}
 	{
-		m_oWindow.m_oWidth.SetValue(3);
-		m_oWindow.m_oHeight.SetValue(3);
+		m_oWindow.m_oWidth.SetValue(3, NSCSS::Pixel);
+		m_oWindow.m_oHeight.SetValue(3, NSCSS::Pixel);
 	}
 
 	ObjectType CMarker::GetType() const

@@ -454,6 +454,20 @@ public:
 		if (m_nType == 0)
 			((CPdfFile*)m_pFile)->SetCMapMemory(data, size);
 	}
+	void SetScanPageFonts(int nPageIndex)
+	{
+		if (NULL == m_pImageStorage)
+			m_pImageStorage = NSDocxRenderer::CreateWasmImageStorage();
+
+		CDocxRenderer oRenderer(m_pApplicationFonts);
+		oRenderer.SetExternalImageStorage(m_pImageStorage);
+		oRenderer.SetTextAssociationType(NSDocxRenderer::TextAssociationType::tatParagraphToShape);
+
+		oRenderer.ScanPageBin(m_pFile, nPageIndex);
+
+		if (m_nType == 0)
+			((CPdfFile*)m_pFile)->SetPageFonts(nPageIndex);
+	}
 	BYTE* ScanPage(int nPageIndex, int mode)
 	{
 		if (NULL == m_pImageStorage)

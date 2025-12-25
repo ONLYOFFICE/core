@@ -318,7 +318,6 @@ core_linux {
 		QMAKE_LFLAGS += "-Wl,-rpath,\'\$$ORIGIN\'"
 		QMAKE_LFLAGS += "-Wl,-rpath,\'\$$ORIGIN/system\'"
 		QMAKE_LFLAGS += -Wl,--disable-new-dtags
-		QMAKE_LFLAGS_RELEASE += -Wl,-s
 
 		!disable_rpath_addon {
 			RUN_PATH_ADDON = $$(RUN_PATH_ADDON)
@@ -333,6 +332,10 @@ core_linux {
 core_linux {
 	equals(TEMPLATE, app):CONFIG += core_static_link_libstd
 	plugin:CONFIG += core_static_link_libstd
+
+
+	equals(TEMPLATE, app):QMAKE_LFLAGS_RELEASE += -Wl,-s
+	plugin:QMAKE_LFLAGS_RELEASE += -Wl,-s
 }
 
 core_win_32 {

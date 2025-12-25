@@ -1,6 +1,6 @@
 import {CryptoBase, initClass} from "./utils";
 import {c_oAscExportKeyFormat, c_oAscKeyStorageType} from "./defines";
-import {writeBool, writeBuffer, writeLong, writeObject, writeString} from "./serialize/writer";
+import {BinaryWriter, writeBool, writeBuffer, writeLong, writeObject, writeString} from "./serialize/writer";
 import {getCrypto} from "./crypto";
 import {BinaryReader, readBool, readBuffer, readLong, readObject, readString} from "./serialize/reader";
 
@@ -126,6 +126,11 @@ WebKeyPair.prototype.initKey = function (masterPassword) {
 };
 WebKeyPair.prototype.isHavePublicKey = function(publicKey) {
 	return this.publicKey.isEqual(publicKey);
+};
+WebKeyPair.prototype.getExportPublicKey =function() {
+	const writer = new BinaryWriter();
+	this.publicKey.export(writer);
+	return writer.GetData();
 };
 
 export function WebSignKeyPair() {
@@ -407,6 +412,9 @@ WebSymmetricKey.prototype.getCryptoUsages = function() {
 };
 WebSymmetricKey.prototype.isHavePublicKey = function(publicKey) {
 	return false;
+};
+WebSymmetricKey.prototype.getExportPublicKey = function() {
+	return null;
 };
 
 export function EncryptData(encryptData, params) {

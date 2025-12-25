@@ -202,12 +202,12 @@ export function AesGcmKeyGenParams() {
 }
 initClass(AesGcmKeyGenParams, AesKeyGenParams, c_oAscKeyStorageType.AesGCMKeyGenParams);
 
-const PBKDFSaltLength = 16;
-export function PBKDF2Params() {
+export const PBKDFSaltLength = 16;
+export function PBKDF2Params(isInit) {
 	AlgorithmParams.call(this);
-	this.iterations = 600000;
-	this.hash = c_oAscDigestType.SHA256;
-	this.salt = null;
+	this.iterations = isInit ? 600000 : null;
+	this.hash = isInit ? c_oAscDigestType.SHA256 : null;
+	this.salt = isInit ? getRandomValues(PBKDFSaltLength) : null;
 }
 initClass(PBKDF2Params, AlgorithmParams, c_oAscKeyStorageType.PBKDF2Params);
 PBKDF2Params.import = function(reader) {
@@ -248,12 +248,12 @@ PBKDF2Params.prototype.getCryptoParams = function() {
 		hash: c_oAscCryptoDigestType[this.hash]
 	};
 };
-PBKDF2Params.prototype.setIterations = function(reader) {
-	this.iterations = reader;
+PBKDF2Params.prototype.setIterations = function(iterations) {
+	this.iterations = iterations;
 };
-PBKDF2Params.prototype.setSalt = function(reader) {
-	this.iterations = reader;
+PBKDF2Params.prototype.setSalt = function(salt) {
+	this.salt = salt;
 };
-PBKDF2Params.prototype.setHash = function(reader) {
-	this.iterations = reader;
+PBKDF2Params.prototype.setHash = function(hash) {
+	this.hash = hash;
 };

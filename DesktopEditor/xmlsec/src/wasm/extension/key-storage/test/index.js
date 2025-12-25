@@ -60,15 +60,3 @@ loadStorageButton.addEventListener('click', (e) => {
 		});
 	}
 })
-
-
-
-
-
-
-
-
-
-
-
-

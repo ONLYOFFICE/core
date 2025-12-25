@@ -1,12 +1,22 @@
 import {getCrypto} from "./crypto";
 import {BinaryReader, readObject} from "./serialize/reader";
 import {BinaryWriter, writeObject} from "./serialize/writer";
+import {PBKDF2Params, PBKDFSaltLength} from "./params";
 
 export function KeyStorage() {
 	this.keys = [];
 	this.version = 1;
+	this.pbkdfParams = null;
+	this.cryptoKey = null;
 }
-
+KeyStorage.prototype.setMasterPassword = function(masterPassword) {
+	this.pbkdfParams = new PBKDF2Params(true);
+	const crypto = getCrypto();
+	const oThis = this;
+	return crypto.getAesCryptoKey(masterPassword, this.pbkdfParams).then(function(cryptoKey) {
+		oThis.cryptoKey = cryptoKey;
+	});
+};
 KeyStorage.prototype.export = function () {
 	const writer = new BinaryWriter();
 	writer.WriteLong(this.version);
@@ -53,10 +63,17 @@ KeyStorage.prototype.import = function (binaryData, masterPassword) {
 };
 KeyStorage.prototype.changeMasterPassword = function (oldMasterPassword, newMasterPassword) {
 	const oThis = this;
-	const keys = oThis.keys.map(function(key) {
-		return key.changeMasterPassword(oldMasterPassword, newMasterPassword);
+	const oldPBKDFParams = this.pbkdfParams;
+	const newPBKDFParams = new PBKDF2Params(true);
+	const crypto = getCrypto();
+	Promise.all([crypto.getAesCryptoKey(oldMasterPassword, oldPBKDFParams), crypto.getAesCryptoKey(newMasterPassword, newPBKDFParams)]).then(function(aesKeys) {
+		const keys = oThis.keys.map(function(key) {
+			return key.changeMasterPassword(aesKeys[0], aesKeys[1]);
+		});
+		return Promise.all(keys);
+	}).then(function() {
+		oThis.pbkdfParams = newPBKDFParams;
 	});
-	return Promise.all(keys);
 };
 KeyStorage.prototype.getKeyByGuid = function (guid) {
 	for (let i = 0; i < this.keys.length; i++) {

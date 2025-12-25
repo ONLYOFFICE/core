@@ -36,6 +36,7 @@
 
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/SERIESFORMAT.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Series.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/BRAI.h"
 
 namespace OOX
 {
@@ -6499,6 +6500,10 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 		XLS::BaseObjectPtr CT_BarSer::GetXLSFormat() const
 		{
 			auto seriesFormat = new XLS::SERIESFORMAT;
+			{
+				auto ai1 = new XLS::BRAI;
+				seriesFormat->m_arAI.push_back(XLS::BaseObjectPtr(ai1));
+			}
 			auto series = new XLS::Series;
 			series->sdtX = 1;
 			if(m_val != nullptr && m_val->m_numRef != nullptr)
@@ -6507,6 +6512,22 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 				{
 					series->cValx = m_val->m_numRef->m_numCache->m_pt.size();
 					series->cValy = m_val->m_numRef->m_numCache->m_pt.size();
+				}
+				{
+					auto ai2 = new XLS::BRAI;
+					ai2->id = 1;
+					if(m_val->m_numRef->m_f.IsInit())
+					{
+						ai2->rt = 2;
+						ai2->formula.parseStringFormula(m_val->m_numRef->m_f.get(), L"");
+					}
+					seriesFormat->m_arAI.push_back(XLS::BaseObjectPtr(ai2));
+					auto ai3 = new XLS::BRAI;
+					ai3->id = 2;
+					auto ai4 = new XLS::BRAI;
+					ai4->id = 3;
+					seriesFormat->m_arAI.push_back(XLS::BaseObjectPtr(ai3));
+					seriesFormat->m_arAI.push_back(XLS::BaseObjectPtr(ai4));
 				}
 			}
 			seriesFormat->m_Series = XLS::BaseObjectPtr(series);

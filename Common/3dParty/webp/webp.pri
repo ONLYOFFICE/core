@@ -19,12 +19,8 @@ core_windows {
 	}
 }
 
-core_linux | core_android {
+core_linux | core_android | core_mac | core_ios {
         LIBS += \
 	        -L$$WEBP_BUILD_PATH/$$CORE_BUILDS_CONFIGURATION_PREFIX/src/.libs -lwebp \
-		-L$$WEBP_BUILD_PATH/$$CORE_BUILDS_CONFIGURATION_PREFIX/sharpyuv/.libs -lsharpyuv
-}
-
-core_mac | core_ios {
-        LIBS += -L$$WEBP_BUILD_PATH/$$CORE_BUILDS_CONFIGURATION_PREFIX/src/.libs -lwebp
+			-L$$WEBP_BUILD_PATH/$$CORE_BUILDS_CONFIGURATION_PREFIX/sharpyuv/.libs -lsharpyuv
 }

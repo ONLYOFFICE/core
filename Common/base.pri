@@ -259,6 +259,7 @@ core_mac {
 	DEFINES += LINUX _LINUX MAC _MAC
 	QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.11
 	QMAKE_LFLAGS += -isysroot $$QMAKE_MAC_SDK_PATH
+	QMAKE_LFLAGS_RELEASE += -Wl,-s
 
 	# xcode15 add new linker
 	greaterThan(QMAKE_XCODE_VERSION, 1499) {
@@ -317,6 +318,7 @@ core_linux {
 		QMAKE_LFLAGS += "-Wl,-rpath,\'\$$ORIGIN\'"
 		QMAKE_LFLAGS += "-Wl,-rpath,\'\$$ORIGIN/system\'"
 		QMAKE_LFLAGS += -Wl,--disable-new-dtags
+		QMAKE_LFLAGS_RELEASE += -Wl,-s
 
 		!disable_rpath_addon {
 			RUN_PATH_ADDON = $$(RUN_PATH_ADDON)

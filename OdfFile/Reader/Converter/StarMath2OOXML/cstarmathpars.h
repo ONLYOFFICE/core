@@ -34,7 +34,7 @@
 #define CSTARMATHPARS_H
 #include "typeselements.h"
 #include "typeConversion.h"
-#include "TypeLanguage.h"
+#include "TextDirection.h"
 #include "TFormulaSize.h"
 #include <iostream>
 #include <vector>
@@ -232,9 +232,9 @@ namespace StarMath
 		void Parse(CStarMathReader* pReader) override;
 		void ParseEQN(CStarMathReader* pReader) override;
 		void ConversionToOOXML(XmlUtils::CXmlWriter* pXmlWrite) override;
-		void CheckingForArabicCharacters();
+		void CheckingTextDirection();
 		TFormulaSize GetSize() override;
-		TypeLanguage m_enTypeLang;
+		TextDirection m_enTypeLang;
 		std::wstring m_wsString;
 	};
 

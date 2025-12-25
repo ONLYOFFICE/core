@@ -915,7 +915,7 @@ namespace StarMath
 	}
 //class methods CElementString
 	CElementString::CElementString(const std::wstring& wsTokenString,const TypeConversion &enTypeConversion)
-		:CElement(TypeElement::String,enTypeConversion),m_enTypeLang(TypeLanguage::Russian),m_wsString(wsTokenString)
+		:CElement(TypeElement::String,enTypeConversion),m_enTypeLang(TextDirection::LeftToRight),m_wsString(wsTokenString)
 	{
 	}
 	CElementString::~CElementString()
@@ -939,21 +939,21 @@ namespace StarMath
 					break;
 			}
 		}
-		CheckingForArabicCharacters();
+		CheckingTextDirection();
 		pReader->ClearReader();
 	}
-	void CElementString::CheckingForArabicCharacters()
+	void CElementString::CheckingTextDirection()
 	{
-		bool bArabic;
+		bool bRightToLeft;
 		for(wchar_t cOneElement:m_wsString)
 		{
 			if(cOneElement <= 1791 && cOneElement >= 1536)
-				bArabic = true;
+				bRightToLeft = true;
 			else
 				return;
 		}
-		if(bArabic)
-			m_enTypeLang = TypeLanguage::Arabic;
+		if(bRightToLeft)
+			m_enTypeLang = TextDirection::RightToLeft;
 	}
 	void CElementString::ParseEQN(CStarMathReader *pReader)
 	{}

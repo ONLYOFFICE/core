@@ -24,7 +24,7 @@ SOURCES +=  $$PWD/cconversionsmtoooxml.cpp \
     $$PWD/cstarmathpars.cpp
 
 HEADERS += \
-    $$PWD/TypeLanguage.h \
+    $$PWD/TextDirection.h \
     $$PWD/cconversionsmtoooxml.h \
     $$CORE_ROOT_DIR\OOXML\Base\Unit.h \
     $$PWD/conversionmathformula.h \

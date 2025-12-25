@@ -105,7 +105,7 @@ namespace StarMath {
 		m_pXmlWrite->WriteNodeEnd(L"m:oMath",false,false);
 		m_pXmlWrite->WriteNodeEnd(L"m:oMathPara",false,false);
 	}
-	void CConversionSMtoOOXML::StandartProperties(XmlUtils::CXmlWriter* pXmlWrite, CAttribute* pAttribute, const TypeConversion &enTypeConversion, const TypeLanguage &enTypeLang)
+	void CConversionSMtoOOXML::StandartProperties(XmlUtils::CXmlWriter* pXmlWrite, CAttribute* pAttribute, const TypeConversion &enTypeConversion, const TextDirection &enTypeLang)
 	{
 		if(TypeConversion::docx == enTypeConversion || TypeConversion::undefine == enTypeConversion)
 		{
@@ -188,10 +188,10 @@ namespace StarMath {
 					pXmlWrite->WriteNodeBegin(L"w:strike",true);
 					pXmlWrite->WriteNodeEnd(L"w",true,true);
 				}
-				if(enTypeLang != TypeLanguage::Russian)
+				if(enTypeLang == TextDirection::RightToLeft)
 				{
 					switch (enTypeLang) {
-					case StarMath::TypeLanguage::Arabic:
+					case StarMath::TextDirection::RightToLeft:
 					{
 						pXmlWrite->WriteNodeBegin(L"w:rtl",true);
 						pXmlWrite->WriteNodeEnd(L"w",true,true);

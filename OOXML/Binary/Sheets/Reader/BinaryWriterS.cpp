@@ -7029,14 +7029,16 @@ void BinaryWorksheetTableWriter::WriteDrawing(const OOX::Spreadsheet::CWorksheet
 	if (pCellAnchor->m_oElement.IsInit() == false && 
 		pCellAnchor->m_sVmlSpId.IsInit() == false) return;
 
-	m_oBcw.m_oStream.ClearCurShapePositionAndSizes();
+	m_oBcw.m_oStream.ClearCurShapeSize();
 
 	WriteCellAnchor(pCellAnchor);
 
 	if (pCellAnchor->m_oExt.IsInit())
 	{
-		m_oBcw.m_oStream.m_dCxCurShape = pCellAnchor->m_oExt->m_oCx.IsInit() ? pCellAnchor->m_oExt->m_oCx->GetValue() : 0;
-		m_oBcw.m_oStream.m_dCyCurShape = pCellAnchor->m_oExt->m_oCy.IsInit() ? pCellAnchor->m_oExt->m_oCy->GetValue() : 0;
+		double cx = pCellAnchor->m_oExt->m_oCx.IsInit() ? pCellAnchor->m_oExt->m_oCx->GetValue() : 0;
+		double cy = pCellAnchor->m_oExt->m_oCy.IsInit() ? pCellAnchor->m_oExt->m_oCy->GetValue() : 0;
+
+		m_oBcw.m_oStream.SetCurShapeSize(cx, cy);
 	}
 	if (pCellAnchor->m_sVmlSpId.IsInit() && pVmlDrawing)
 	{

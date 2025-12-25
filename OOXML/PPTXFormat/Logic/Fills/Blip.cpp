@@ -302,8 +302,8 @@ namespace PPTX
 
 			pWriter->EndRecord();
 
-			double dW = pWriter->GetShapeWidth(); //mm
-			double dH = pWriter->GetShapeHeight();
+			double dW = pWriter->GetShapeWidth() / 12700. ; //emu to pt 
+			double dH = pWriter->GetShapeHeight() / 12700.;
 
 			OOX::IFileContainer* pRels = pWriter->GetRelsPtr();
 

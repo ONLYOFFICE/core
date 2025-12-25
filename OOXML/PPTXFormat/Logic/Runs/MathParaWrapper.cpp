@@ -160,9 +160,9 @@ xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\">\
 			{
 				pWriter->StartRecord(nRecordType);
 				long lDataSize = 0;
-				if(NULL != pWriter->m_pMainDocument)
+				if(NULL != pWriter->m_pDocxSerializer)
 				{
-					pWriter->m_pMainDocument->getBinaryContentElem(eElemType, pElem, *pWriter, lDataSize);
+					pWriter->m_pDocxSerializer->getBinaryContentElem(eElemType, pElem, *pWriter, lDataSize);
 				}
 				else
 				{
@@ -200,15 +200,15 @@ xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\">\
 			NSBinPptxRW::CDrawingConverter oDrawingConverter;
 
 			NSBinPptxRW::CImageManager2*	pOldImageManager = oDrawingConverter.m_pImageManager;
-			NSBinPptxRW::CBinaryFileReader* pOldReader = oDrawingConverter.m_pReader;
+			NSBinPptxRW::CBinaryFileReader* pOldReader = oDrawingConverter.m_pBinaryReader;
 
 			oDrawingConverter.m_pImageManager = pReader->m_pRels->m_pManager;
-			oDrawingConverter.m_pReader = pReader;
+			oDrawingConverter.m_pBinaryReader = pReader;
 
 			oDocxSerializer.m_pCurFileWriter = new Writers::FileWriter(L"", L"", true, BinDocxRW::g_nFormatVersion, &oDrawingConverter, L"");
 			oDocxSerializer.getXmlContentElem(eType, *pReader, sXml);
 
-			oDrawingConverter.m_pReader = pOldReader;
+			oDrawingConverter.m_pBinaryReader = pOldReader;
 			oDrawingConverter.m_pImageManager = pOldImageManager;
 			RELEASEOBJECT(oDocxSerializer.m_pCurFileWriter);
 

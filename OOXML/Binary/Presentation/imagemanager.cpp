@@ -468,8 +468,8 @@ namespace NSShapeImageGen
 		CMediaInfo oInfo;
 		std::map<std::wstring, CMediaInfo>::iterator pPair = m_mapMediaFiles.find(sMapKey);
 
-		LONG lWidth		= (LONG)(dWidth * 96 / 25.4);
-		LONG lHeight	= (LONG)(dHeight * 96 / 25.4);
+		LONG lWidth = (LONG)(dWidth * 4 / 3);
+		LONG lHeight = (LONG)(dHeight * 4 / 3);// px
 
 		if (m_mapMediaFiles.end() == pPair)
 		{

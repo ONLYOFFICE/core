@@ -55,9 +55,9 @@ public:
 	static const ElementType	type = typeSeries;
 
 //-----------------------------
-	_UINT16 sdtX = 0;
-	_UINT16 sdtY = 0;
-	_UINT16 sdtBSize = 0;
+	_UINT16 sdtX = 1;
+	_UINT16 sdtY = 0x0001;
+	_UINT16 sdtBSize =  0x0001;
 
 	_UINT16 cValx = 0;
 	_UINT16 cValy = 0;

@@ -307,6 +307,23 @@ namespace OOX
 						if(ChartFile->m_oChartSpace.m_spPr.IsInit())
 						{
 							ChartFormatsPtr->m_FRAME = ChartFile->m_oChartSpace.m_spPr->toXLSFrame();
+							if(ChartFile->m_oChartSpace.m_chart != nullptr &&  ChartFile->m_oChartSpace.m_chart->m_plotArea != nullptr)
+							{
+								for(auto chartIndex = 0; chartIndex < ChartFile->m_oChartSpace.m_chart->m_plotArea->m_Items.size(); chartIndex ++)
+								{
+									if(*ChartFile->m_oChartSpace.m_chart->m_plotArea->m_ItemsElementName0.at(chartIndex) == OOX::Spreadsheet::itemschoicetype5BARCHART)
+									{
+										auto barChart = static_cast<CT_BarChart*>(ChartFile->m_oChartSpace.m_chart->m_plotArea->m_Items.at(chartIndex));
+										for(auto ser : barChart->m_ser)
+										{
+											if(ser != nullptr)
+											{
+												ChartFormatsPtr->m_arSERIESFORMAT.push_back(ser->GetXLSFormat());
+											}
+										}
+									}
+								}
+							}
 						}
 
 						//todo chart processing

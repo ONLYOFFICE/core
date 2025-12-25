@@ -65,7 +65,7 @@ public:
 	bool fAuto = true;
 	bool fInvertNeg = false;
 	
-	IcvChart icvFore = 0;
+	IcvChart icvFore = 0x004D;
 	IcvChart icvBack = 0x0009;
 };
 

@@ -34,6 +34,9 @@
 #include "ChartSerialize.h"
 #include "../../../DesktopEditor/common/StringExt.h"
 
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/SERIESFORMAT.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Series.h"
+
 namespace OOX
 {
 namespace Spreadsheet 
@@ -6492,6 +6495,23 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
+		}
+		XLS::BaseObjectPtr CT_BarSer::GetXLSFormat() const
+		{
+			auto seriesFormat = new XLS::SERIESFORMAT;
+			auto series = new XLS::Series;
+			series->sdtX = 1;
+			if(m_val != nullptr && m_val->m_numRef != nullptr)
+			{
+				if(m_val->m_numRef->m_numCache != nullptr)
+				{
+					series->cValx = m_val->m_numRef->m_numCache->m_pt.size();
+					series->cValy = m_val->m_numRef->m_numCache->m_pt.size();
+				}
+			}
+			seriesFormat->m_Series = XLS::BaseObjectPtr(series);
+
+			return XLS::BaseObjectPtr(seriesFormat);
 		}
 		EElementType CT_BarSer::getType() { return et_ct_barser; }
 		

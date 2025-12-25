@@ -461,6 +461,8 @@ namespace NSJSBase
 		v8::SnapshotCreator snapshotCreator;
 		v8::Isolate* isolate = snapshotCreator.GetIsolate();
 		{
+			CV8TryCatch try_catch(isolate);
+
 			v8::HandleScope handle_scope(isolate);
 			// Create a new context
 			v8::Local<v8::Context> context = v8::Context::New(isolate);
@@ -472,11 +474,12 @@ namespace NSJSBase
 			global->Set(context, v8::String::NewFromUtf8Literal(isolate, "self"), global).Check();
 			global->Set(context, v8::String::NewFromUtf8Literal(isolate, "native"), v8::Undefined(isolate)).Check();
 
-			// Compile and run
+			// Compile
 			v8::Local<v8::String> source = v8::String::NewFromUtf8(isolate, script.c_str()).ToLocalChecked();
 			v8::Local<v8::Script> script = v8::Script::Compile(context, source).ToLocalChecked();
-
+			// Run
 			script->Run(context).IsEmpty();
+
 			snapshotCreator.SetDefaultContext(context);
 		}
 		v8::StartupData data = snapshotCreator.CreateBlob(v8::SnapshotCreator::FunctionCodeHandling::kKeep);

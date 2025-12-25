@@ -722,32 +722,25 @@ namespace NSBinPptxRW
 	double CBinaryFileWriter::GetShapeHeight()
 	{
 		if (m_dCyCurShape < 0.001)
-			return -1;
-		return m_dCyCurShape / 36000; //mm
+			return 0;
+		return m_dCyCurShape; //emu
 	}
 	double CBinaryFileWriter::GetShapeWidth()
 	{
 		if (m_dCxCurShape < 0.001)
-			return -1;
-		return m_dCxCurShape / 36000;
+			return 0;
+		return m_dCxCurShape;//emu
 	}
-	double CBinaryFileWriter::GetShapeY()
+	void CBinaryFileWriter::SetCurShapeSize(double Width, double Height)
 	{
-		return m_dYCurShape / 36000;
+		m_dCxCurShape = Width; //emu
+		m_dCyCurShape = Height; //emu
 	}
-	double CBinaryFileWriter::GetShapeX()
+
+	void CBinaryFileWriter::ClearCurShapeSize()
 	{
-		return m_dXCurShape / 36000; //mm
-	}
-	void CBinaryFileWriter::ClearCurShapePositionAndSizes()
-	{
-		m_dXCurShape = 0;
-		m_dYCurShape = 0;
-		
 		m_dCxCurShape = 0;
 		m_dCyCurShape = 0;
-
-		m_bInGroup = false;
 	}
 	void CBinaryFileWriter::Clear()
 	{
@@ -762,16 +755,6 @@ namespace NSBinPptxRW
 
 		m_dCxCurShape = 0;
 		m_dCyCurShape = 0;
-
-		m_dXCurShape = 0;
-		m_dYCurShape = 0;
-
-		m_bInGroup = false;
-	}
-
-	void CBinaryFileWriter::SetMainDocument(BinDocxRW::CDocxSerializer* pMainDoc)
-	{
-		m_pMainDocument = pMainDoc;
 	}
 
 	void CBinaryFileWriter::ClearNoAttack()
@@ -995,7 +978,7 @@ namespace NSBinPptxRW
 	}
 	CBinaryFileWriter::CBinaryFileWriter()
 	{
-		m_pMainDocument		= NULL;
+		m_pDocxSerializer = NULL;
 		m_pCurrentContainer = NULL;
 		m_pCommon			= new CCommonWriter();
 
@@ -1932,7 +1915,7 @@ namespace NSBinPptxRW
 
 	CBinaryFileReader::CBinaryFileReader()
 	{
-		m_pMainDocument		= NULL;
+		m_pDocxSerializer = NULL;
 		m_lNextId			= 0;
 		m_nDocumentType		= XMLWRITER_DOC_TYPE_PPTX;
 
@@ -1961,11 +1944,6 @@ namespace NSBinPptxRW
 	{
 		return m_pCurrentContainer;
 	}
-	void CBinaryFileReader::SetMainDocument(BinDocxRW::CDocxSerializer* pMainDoc)
-	{
-		m_pMainDocument = pMainDoc;
-	}
-
 	void CBinaryFileReader::Init(BYTE* pData, _INT32 lStart, _INT32 lSize)
 	{
 		m_pData = pData;

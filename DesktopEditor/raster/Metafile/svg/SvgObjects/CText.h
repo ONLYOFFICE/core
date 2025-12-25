@@ -44,10 +44,12 @@ namespace SVG
 
 		void CalculatePosition(double& dX, double& dY) const;
 
-		void Normalize(IRenderer* pRenderer, double& dX, double& dY, double& dFontHeight, Aggplus::CMatrix& oOldMatrix) const;
+		void NormalizeFontSize(double& dFontHeight, double& dScaleX, double& dScaleY) const;
 		void SetPosition(const Point& oPosition);
 
 		void SetPositionFromParent(CRenderedObject* pParent);
+
+		double GetFontHeight() const;
 
 		std::vector<CTSpan> Split() const;
 

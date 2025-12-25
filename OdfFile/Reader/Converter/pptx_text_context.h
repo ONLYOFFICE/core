@@ -114,6 +114,9 @@ public:
 	
 	std::wstring get_last_paragraph_style_name();
 
+	void set_predump(const bool& bPreDump);
+	bool get_lasttext();
+
 private:
 
 	class Impl;

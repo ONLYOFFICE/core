@@ -1569,6 +1569,48 @@ void CPdfEditor::Close()
 			pEncryptDict->UpdateKey(nCryptAlgorithm);
 		}
 
+		Object* pNameTree = pPDFDocument->getCatalog()->getNameTree();
+		Object oNames, oName, oDest;
+		if (pNameTree && pNameTree->isDict() && pNameTree->dictLookup("Names", &oNames)->isArray())
+		{
+			for (int i = 0; i < oNames.arrayGetLength(); i += 2)
+			{
+				if (oNames.arrayGet(i, &oName)->isString() && oNames.arrayGet(i + 1, &oDest)->isArray())
+				{
+					TextString* s = new TextString(oName.getString());
+					std::string sName = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+					PdfWriter::CStringObject* pName = new PdfWriter::CStringObject(sName.c_str(), !s->isPDFDocEncoding());
+					delete s;
+
+					PdfWriter::CDestination* pDest = NULL;
+					LinkDest* pLinkDest = new LinkDest(oDest.getArray());
+					if (pLinkDest && pLinkDest->isOk())
+					{
+						int nPage = 0;
+						if (pLinkDest->isPageRef())
+						{
+							Ref pageRef = pLinkDest->getPageRef();
+							nPage = pPDFDocument->findPage(pageRef.num, pageRef.gen);
+						}
+						else
+							nPage = pLinkDest->getPageNum();
+						pDest = pDoc->CreateDestination(pDoc->GetEditPage(nPage - 1), true);
+					}
+					delete pLinkDest;
+
+					if (pName && pDest)
+						pDoc->AddNameTree(pName, pDest);
+					else
+					{
+						delete pName;
+						delete pDest;
+					}
+				}
+				oName.free(); oDest.free();
+			}
+		}
+		oNames.free();
+
 		m_pWriter->EditClose();
 		m_pWriter->SaveToFile(m_wsDstFile);
 		return;

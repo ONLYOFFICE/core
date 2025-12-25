@@ -55,6 +55,7 @@ namespace PdfReader
 		unsigned int unLenGID;
 		unsigned int unLenUnicode;
 		bool         bAvailable;     // Доступен ли шрифт. Сделано для многопотоковости
+		bool         bFontSubstitution = false;
 		
 	};
 
@@ -69,13 +70,13 @@ namespace PdfReader
 		TFontEntry* Add(Ref oRef, const std::wstring& wsFileName, int* pCodeToGID, int* pCodeToUnicode, unsigned int unLenGID, unsigned int unLenUnicode);
 		void Clear();
 		bool GetFont(Ref* pRef, TFontEntry* pEntry);
+		const std::map<Ref, TFontEntry*>& GetFonts();
 	private:
 		TFontEntry* Lookup(Ref& oRef);
 		void Add(Ref& oRef, TFontEntry* pFontEntry);
 
 	private:
-		typedef std::map<Ref, TFontEntry*>  CRefFontMap;
-		CRefFontMap                         m_oFontMap;
+		std::map<Ref, TFontEntry*>          m_oFontMap;
 		NSCriticalSection::CRITICAL_SECTION m_oCS; // Критическая секция
 	};
 

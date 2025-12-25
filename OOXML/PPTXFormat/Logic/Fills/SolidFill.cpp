@@ -109,6 +109,17 @@ namespace PPTX
 
 			pWriter->EndRecord();
 		}
+		void SolidFill::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+		{
+			pReader->Skip(4); // len
+			BYTE _type = pReader->GetUChar(); // FILL_TYPE_SOLID
+			LONG _e = pReader->GetPos() + pReader->GetRecordSize() + 4;
+
+			pReader->Skip(1);
+
+			Color.fromPPTY(pReader);
+			pReader->Seek(_e);
+		}
 		void SolidFill::Merge(SolidFill& fill)const
 		{
 			if(Color.is_init())

@@ -362,6 +362,11 @@ CFile.prototype["getFontByID"] = function(ID)
 	return this._getFontByID(ID);
 };
 
+CFile.prototype["getGIDByUnicode"] = function(ID)
+{
+	return this._getGIDByUnicode(ID);
+};
+
 CFile.prototype["setCMap"] = function(memoryBuffer)
 {
 	if (!this.nativeFile)
@@ -1697,6 +1702,11 @@ CFile.prototype["readAnnotationsInfoFromBinary"] = function(AnnotInfo)
 };
 
 // SCAN PAGES
+CFile.prototype["scanPageFonts"] = function(page)
+{
+	this._setScanPageFonts(page);
+};
+
 CFile.prototype["scanPage"] = function(page, mode)
 {
 	let ptr = this._scanPage(page, mode);

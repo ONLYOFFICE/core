@@ -4320,7 +4320,7 @@ namespace OOX
 			auto rowPtr = new XLS::Row;
 			auto basePtr = XLS::BaseObjectPtr(rowPtr);
 			if(m_oR.IsInit())
-				rowPtr->rw = m_oR->GetValue();
+				rowPtr->rw = m_oR->GetValue() -1;
 			if(m_oOutlineLevel.IsInit())
 				rowPtr->iOutLevel = m_oOutlineLevel->GetValue();
 			if(m_oHidden.IsInit())

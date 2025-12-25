@@ -8928,7 +8928,7 @@ int Binary_DocumentTableReader::Read_Background(BYTE type, long length, void* po
 
 		if (oCDrawingProperty.bDataPos && oCDrawingProperty.bDataLength)
 		{
-			m_oFileWriter.m_pDrawingConverter->m_pReader->m_nDocumentType = m_oFileWriter.m_bGlossaryMode ? XMLWRITER_DOC_TYPE_DOCX_GLOSSARY : XMLWRITER_DOC_TYPE_DOCX;
+			m_oFileWriter.m_pDrawingConverter->m_pBinaryReader->m_nDocumentType = m_oFileWriter.m_bGlossaryMode ? XMLWRITER_DOC_TYPE_DOCX_GLOSSARY : XMLWRITER_DOC_TYPE_DOCX;
 		
 			long nCurPos = m_oBufferedStream.GetPos();
 			pBackground->sObject = m_oFileWriter.m_pDrawingConverter->SaveObjectBackground(oCDrawingProperty.DataPos, oCDrawingProperty.DataLength);

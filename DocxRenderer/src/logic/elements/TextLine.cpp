@@ -21,6 +21,7 @@ namespace NSDocxRenderer
 	{
 		RecalcWithNewItem(oCont.get());
 		m_arConts.push_back(oCont);
+		m_nOrder = std::max(m_nOrder, oCont->m_nOrder);
 	}
 	void CTextLine::AddConts(const std::vector<std::shared_ptr<CContText>>& arConts)
 	{
@@ -112,7 +113,7 @@ namespace NSDocxRenderer
 
 					wide_space->m_dHeight = pCurrent->m_dHeight;
 
-					wide_space->SetSym(c_SPACE_SYM, wide_space->m_dRight - wide_space->m_dLeft);
+					wide_space->SetSym(c_SPACE_SYM, wide_space->m_dRight - wide_space->m_dLeft, wide_space->m_dLeft, 0);
 					wide_space->m_pFontStyle = pFirst->m_pFontStyle;
 					wide_space->m_pShape = nullptr;
 					wide_space->m_iNumDuplicates = 0;
@@ -146,12 +147,12 @@ namespace NSDocxRenderer
 			{
 				if (!bIsSpaceDelta)
 				{
-					pFirst->AddTextBack(pCurrent->GetText(), pCurrent->GetSymWidths());
+					pFirst->AddTextBack(pCurrent->GetText(), pCurrent->GetSymWidths(), pCurrent->m_arGids, pCurrent->m_arOriginLefts);
 				}
 				else
 				{
-					pFirst->AddSymBack(c_SPACE_SYM, pCurrent->m_dLeft - pFirst->m_dRight);
-					pFirst->AddTextBack(pCurrent->GetText(), pCurrent->GetSymWidths());
+					pFirst->AddSymBack(c_SPACE_SYM, pCurrent->m_dLeft - pFirst->m_dRight, pFirst->m_dRight, 0);
+					pFirst->AddTextBack(pCurrent->GetText(), pCurrent->GetSymWidths(), pCurrent->m_arGids, pCurrent->m_arOriginLefts);
 				}
 
 				if (pFirst->m_pCont.expired())
@@ -166,9 +167,9 @@ namespace NSDocxRenderer
 				if (bIsSpaceDelta)
 				{
 					if (pFirst->GetNumberOfFeatures() <= pCurrent->GetNumberOfFeatures())
-						pFirst->AddSymBack(c_SPACE_SYM, pCurrent->m_dLeft - pFirst->m_dRight);
+						pFirst->AddSymBack(c_SPACE_SYM, pCurrent->m_dLeft - pFirst->m_dRight, pFirst->m_dRight, 0);
 					else
-						pCurrent->AddSymFront(c_SPACE_SYM, pCurrent->m_dLeft - pFirst->m_dRight);
+						pCurrent->AddSymFront(c_SPACE_SYM, pCurrent->m_dLeft - pFirst->m_dRight, pFirst->m_dRight, 0);
 				}
 				pFirst = pCurrent;
 			}

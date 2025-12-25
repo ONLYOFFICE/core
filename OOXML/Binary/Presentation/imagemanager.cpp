@@ -63,27 +63,18 @@ namespace NSShapeImageGen
 		m_pFontManager = NULL;
 	}
 
-	CMediaInfo CMediaManager::WriteImage(CBgraFrame& oImage, double& x, double& y, double& width, double& height)
+	CMediaInfo CMediaManager::WriteImage(CBgraFrame& oImage, double& width, double& height)
 	{
-		CMediaInfo info;
-		
-		if (height < 0)
-		{
-			FlipY(oImage);
-			height = -height;
-			y -= height;
-		}
-		
 		return GenerateImageID(oImage, (std::max)(1.0, width), (std::max)(1.0, height));
 	}
-	CMediaInfo CMediaManager::WriteImage(const std::string& strFile, double& x, double& y, double& width, double& height, const std::wstring& strAdditionalFile, int typeAdditionalFile)
+	CMediaInfo CMediaManager::WriteImage(const std::string& strFile, double& width, double& height, const std::wstring& strAdditionalFile, int typeAdditionalFile)
 	{
 		if (width < 0 && height < 0)
 			return GenerateImageID(strFile, L"", -1, -1, strAdditionalFile, typeAdditionalFile);
 
 		return GenerateImageID(strFile, L"", (std::max)(1.0, width), (std::max)(1.0, height), strAdditionalFile, typeAdditionalFile);
 	}
-	CMediaInfo CMediaManager::WriteImage(const std::wstring& strFile, double& x, double& y, double& width, double& height, const std::wstring& strAdditionalFile, int typeAdditionalFile)
+	CMediaInfo CMediaManager::WriteImage(const std::wstring& strFile, double& width, double& height, const std::wstring& strAdditionalFile, int typeAdditionalFile)
 	{
 		bool bIsDownload = false;
 		int n1 = (int)strFile.find(L"www");
@@ -477,8 +468,8 @@ namespace NSShapeImageGen
 		CMediaInfo oInfo;
 		std::map<std::wstring, CMediaInfo>::iterator pPair = m_mapMediaFiles.find(sMapKey);
 
-		LONG lWidth		= (LONG)(dWidth * 96 / 25.4);
-		LONG lHeight	= (LONG)(dHeight * 96 / 25.4);
+		LONG lWidth = (LONG)(dWidth * 4 / 3);
+		LONG lHeight = (LONG)(dHeight * 4 / 3);// px
 
 		if (m_mapMediaFiles.end() == pPair)
 		{
@@ -622,68 +613,5 @@ namespace NSShapeImageGen
 				return itPNG;
 		}
 		return itJPG;
-	}
-	void CMediaManager::FlipY(CBgraFrame& punkImage)
-	{
-		BYTE* pBuffer	= punkImage.get_Data();
-		LONG lWidth		= punkImage.get_Width();
-		LONG lHeight	= punkImage.get_Height();
-		LONG lStride	= punkImage.get_Stride();
-
-		if (lStride < 0)
-			lStride = -lStride;
-		
-		if ((lWidth * 4) != lStride)
-			return;
-
-		BYTE* pBufferMem = new BYTE[lStride];
-
-		BYTE* pBufferEnd = pBuffer + lStride * (lHeight - 1);
-
-		LONG lCountV = lHeight / 2;
-
-		for (LONG lIndexV = 0; lIndexV < lCountV; ++lIndexV)
-		{
-			memcpy(pBufferMem, pBuffer, lStride);
-			memcpy(pBuffer, pBufferEnd, lStride);
-			memcpy(pBufferEnd, pBufferMem, lStride);
-			
-			pBuffer		+= lStride;
-			pBufferEnd	-= lStride;
-		}
-
-		RELEASEARRAYOBJECTS(pBufferMem);
-	}
-	void CMediaManager::FlipX(CBgraFrame& punkImage)
-	{
-		BYTE* pBuffer	= punkImage.get_Data();
-		LONG lWidth		= punkImage.get_Width();
-		LONG lHeight	= punkImage.get_Height();
-		LONG lStride	= punkImage.get_Stride();
-
-		if (lStride < 0)
-			lStride = -lStride;
-		
-		if ((lWidth * 4) != lStride)
-		{
-			return;
-		}
-
-		DWORD* pBufferDWORD	= (DWORD*)pBuffer;
-
-		LONG lW2 = lWidth / 2;
-		for (LONG lIndexV = 0; lIndexV < lHeight; ++lIndexV)
-		{
-			DWORD* pMem1 = pBufferDWORD;
-			DWORD* pMem2 = pBufferDWORD + lWidth - 1;
-			
-			LONG lI = 0;
-			while (lI < lW2)
-			{
-				DWORD dwMem = *pMem1;
-				*pMem1++ = *pMem2;
-				*pMem2-- = dwMem;
-			}
-		}
 	}
 }

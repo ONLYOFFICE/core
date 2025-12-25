@@ -205,6 +205,10 @@ public:
 	bool m_bUseBounds;
 	CDoubleRect m_oBounds;
 
+	bool m_bIsScale;
+	double m_dScaleX;
+	double m_dScaleY;
+
 	BYTE Alpha;
 };
 }

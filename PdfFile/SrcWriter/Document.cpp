@@ -329,6 +329,38 @@ namespace PdfWriter
 		for (int i = 0; i < m_vMetaOForms.size(); ++i)
 			m_vMetaOForms[i]->Add("ID", new CBinaryObject(arrId, 16));
 	}
+	void CDocument::AddNameTree(CStringObject* pName, CDestination* pDest)
+	{
+		if (!m_pCatalog || !m_pXref)
+			return;
+
+		CDictObject* pDNames = dynamic_cast<CDictObject*>(m_pCatalog->Get("Names"));
+		if (!pDNames)
+		{
+			pDNames = new CDictObject();
+			m_pXref->Add(pDNames);
+			m_pCatalog->Add("Names", pDNames);
+		}
+
+		CDictObject* pDests = dynamic_cast<CDictObject*>(pDNames->Get("Dests"));
+		if (!pDests)
+		{
+			pDests = new CDictObject();
+			m_pXref->Add(pDests);
+			pDNames->Add("Dests", pDests);
+		}
+
+		CArrayObject* pANames = dynamic_cast<CArrayObject*>(pDests->Get("Names"));
+		if (!pANames)
+		{
+			pANames = new CArrayObject();
+			m_pXref->Add(pANames);
+			pDests->Add("Names", pANames);
+		}
+
+		pANames->Add(pName);
+		pANames->Add(pDest);
+	}
     void CDocument::PrepareEncryption()
 	{
 		CEncrypt* pEncrypt = m_pEncryptDict->GetEncrypt();

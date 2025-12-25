@@ -955,6 +955,30 @@ HRESULT CPdfFile::put_BrushTransform(const Aggplus::CMatrix& oMatrix)
 		return S_FALSE;
 	return m_pInternal->pWriter->put_BrushTransform(oMatrix);
 }
+HRESULT CPdfFile::get_BrushOffset(double& offsetX, double& offsetY) const
+{
+	if (!m_pInternal->pWriter)
+		return S_FALSE;
+	return m_pInternal->pWriter->get_BrushOffset(offsetX, offsetY);
+}
+HRESULT CPdfFile::put_BrushOffset(const double& offsetX, const double& offsetY)
+{
+	if (!m_pInternal->pWriter)
+		return S_FALSE;
+	return m_pInternal->pWriter->put_BrushOffset(offsetX, offsetY);
+}
+HRESULT CPdfFile::get_BrushScale(bool& isScale, double& scaleX, double& scaleY) const
+{
+	if (!m_pInternal->pWriter)
+		return S_FALSE;
+	return m_pInternal->pWriter->get_BrushScale(isScale, scaleX, scaleY);
+}
+HRESULT CPdfFile::put_BrushScale(bool isScale, const double& scaleX, const double& scaleY)
+{
+	if (!m_pInternal->pWriter)
+		return S_FALSE;
+	return m_pInternal->pWriter->put_BrushScale(isScale, scaleX, scaleY);
+}
 
 HRESULT CPdfFile::get_FontName(std::wstring* wsName)
 {

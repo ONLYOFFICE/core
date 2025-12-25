@@ -567,6 +567,26 @@ HRESULT CPdfWriter::put_BrushTransform(const Aggplus::CMatrix& oMatrix)
 	// TODO:
 	return S_OK;
 }
+HRESULT CPdfWriter::get_BrushOffset(double& offsetX, double& offsetY) const
+{
+	m_oBrush.GetBrushOffset(offsetX, offsetY);
+	return S_OK;
+}
+HRESULT CPdfWriter::put_BrushOffset(const double& offsetX, const double& offsetY)
+{
+	m_oBrush.SetBrushOffset(offsetX, offsetY);
+	return S_OK;
+}
+HRESULT CPdfWriter::get_BrushScale(bool& isScale, double& scaleX, double& scaleY) const
+{
+	m_oBrush.GetBrushScale(isScale, scaleX, scaleY);
+	return S_OK;
+}
+HRESULT CPdfWriter::put_BrushScale(bool isScale, const double& scaleX, const double& scaleY)
+{
+	m_oBrush.SetBrushScale(isScale, scaleX, scaleY);
+	return S_OK;
+}
 //----------------------------------------------------------------------------------------
 // Функции для работы со шрифтами
 //----------------------------------------------------------------------------------------
@@ -3912,8 +3932,11 @@ void CPdfWriter::UpdateBrush(NSFonts::IApplicationFonts* pAppFonts, const std::w
 			}
 			else
 			{
-				dL = MM_2_PT(oRect.dLeft);
-				dB = MM_2_PT(m_dPageHeight - oRect.dTop);
+				double dOffsetX, dOffsetY;
+				m_oBrush.GetBrushOffset(dOffsetX, dOffsetY);
+
+				dL = MM_2_PT(oRect.dLeft + dOffsetX);
+				dB = MM_2_PT(m_dPageHeight - oRect.dTop - dOffsetY);
 				dR = MM_2_PT(oRect.dLeft + oRect.dWidth);
 				dT = MM_2_PT(m_dPageHeight - oRect.dTop - oRect.dHeight);
 			}
@@ -3930,14 +3953,31 @@ void CPdfWriter::UpdateBrush(NSFonts::IApplicationFonts* pAppFonts, const std::w
 				dXStepSpacing = dW;
 				dYStepSpacing = dH;
 			}
-			else
+			else // Tile
 			{
 				// Размеры картинки заданы в пикселях. Размеры тайла - это размеры картинки в пунктах.
 				dW = (double)nImageW * 72.0 / 96.0;
 				dH = (double)nImageH * 72.0 / 96.0;
 
 				dT = dB;
+
+				bool isScale;
+				double scaleX, scaleY;
+				m_oBrush.GetBrushScale(isScale, scaleX, scaleY);
+				if (isScale)
+				{
+					dW *= scaleX;
+					dH *= scaleY;
+				}
 			}
+
+			PdfWriter::EImageTilePatternType ePatternType = PdfWriter::imagetilepatterntype_Default;
+			if (c_BrushTextureModeTileFlipX == lTextureMode)
+				ePatternType = PdfWriter::imagetilepatterntype_InverseX;
+			else if (c_BrushTextureModeTileFlipY == lTextureMode)
+				ePatternType = PdfWriter::imagetilepatterntype_InverseY;
+			else if (c_BrushTextureModeTileFlipXY == lTextureMode)
+				ePatternType = PdfWriter::imagetilepatterntype_InverseXY;
 
 			// Нам нужно, чтобы левый нижний угол границ нашего пата являлся точкой переноса для матрицы преобразования.
 			PdfWriter::CMatrix* pMatrix = m_pPage->GetTransform();
@@ -3945,7 +3985,8 @@ void CPdfWriter::UpdateBrush(NSFonts::IApplicationFonts* pAppFonts, const std::w
 			PdfWriter::CMatrix oPatternMatrix = *pMatrix;
 			oPatternMatrix.x = dL;
 			oPatternMatrix.y = dT;
-			m_pPage->SetPatternColorSpace(m_pDocument->CreateImageTilePattern(dW, dH, pImage, &oPatternMatrix, PdfWriter::imagetilepatterntype_Default, dXStepSpacing, dYStepSpacing));
+
+			m_pPage->SetPatternColorSpace(m_pDocument->CreateImageTilePattern(dW, dH, pImage, &oPatternMatrix, ePatternType, dXStepSpacing, dYStepSpacing));
 		}
 	}
 	else if (c_BrushTypeHatch1 == lBrushType)

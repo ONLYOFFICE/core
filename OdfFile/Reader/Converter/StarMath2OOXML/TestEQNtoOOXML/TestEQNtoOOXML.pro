@@ -15,6 +15,8 @@ ADD_DEPENDENCY(StarMathConverter)
 
 include($$CORE_ROOT_DIR/Common/3dParty/googletest/googletest.pri)
 
+
+
 SOURCES += main.cpp
 
 DESTDIR = $$PWD/build

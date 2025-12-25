@@ -34,6 +34,8 @@
 #define CSTARMATHPARS_H
 #include "typeselements.h"
 #include "typeConversion.h"
+#include "TextDirection.h"
+#include "TFormulaSize.h"
 #include <iostream>
 #include <vector>
 #include <iterator>
@@ -42,7 +44,6 @@
 #include <ctype.h>
 #include <cwctype>
 #include "../../../../DesktopEditor/xml/include/xmlwriter.h"
-#include "../../../../OOXML/Base/Unit.h" 
 
 namespace StarMath
 {
@@ -58,18 +59,6 @@ namespace StarMath
 		bool base_font_italic;
 	};
 	
-	struct TFormulaSize
-	{
-		TFormulaSize():m_iHeight(0),m_iWidth(0) {};
-		TFormulaSize(const unsigned int& iHeight,const unsigned int& iwidth):m_iHeight(iHeight),m_iWidth(iwidth) {};
-		float m_iHeight;
-		float m_iWidth;
-		void Zeroing()
-		{
-			this->m_iHeight = 0; 
-			this->m_iWidth = 0;
-		}
-	};
 	class CAttribute
 	{
 	public:
@@ -119,11 +108,12 @@ namespace StarMath
 	class CStarMathReader
 	{
 	public:
-		CStarMathReader(std::wstring::iterator& itStart, std::wstring::iterator& itEnd,const TypeConversion &enTypeConversion);
+		CStarMathReader(const std::wstring& wsFormula,const TypeConversion &enTypeConversion,const bool& bEQN = false);
 		~CStarMathReader();
 		bool GetToken();
 		//getting a subtype and setting the global type of a token to variables m_enUnderType and m_enGlobalType
 		void SetTypesToken();
+		void SetTypesTokenEQN();
 		void TokenProcessing(const std::wstring& wsToken = L"");
 		TypeElement GetGlobalType();
 		TypeElement GetLocalType();
@@ -145,10 +135,10 @@ namespace StarMath
 		//taking a token for a color in rgb form
 		int TakingElementForRGB();
 		void SetString(const std::wstring& wsToken);
-		void FindingTheEndOfParentheses();
+		void FindingTheEndOfParentheses(const bool bEQN = false);
 		void IteratorNullification();
 		void SettingTheIteratorToTheClosingBracket();
-		void ReadingTheNextToken();
+		void ReadingTheNextToken(bool bEQN = false);
 		void SetMarkForUnar(const bool& bMark);
 		bool GetMarkForUnar();
 		void SetTypeConversion(const TypeConversion &enTypeCon);
@@ -157,6 +147,7 @@ namespace StarMath
 		bool CheckTokenForGetElement(const wchar_t& cToken);
 		bool CheckIsalhpaForGetElement(const wchar_t& cToken,const wchar_t& cLastToken);
 		bool m_bMarkForUnar;
+		std::wstring m_wsFormula;
 		std::wstring::iterator m_itStart,m_itEnd;
 		TypeElement m_enGlobalType,m_enUnderType;
 		std::wstring m_wsLowerCaseToken,m_wsOriginalToken;
@@ -164,6 +155,7 @@ namespace StarMath
 		CAttribute* m_pBaseAttribute;
 		TypeConversion m_enTypeCon;
 		std::stack<std::wstring::iterator> m_stBracket,m_stCloseBracket;
+		bool m_bEQN;
 	};
 
 	class CElement
@@ -173,8 +165,9 @@ namespace StarMath
 		CElement(const TypeElement& enTypeBase, const TypeConversion& enTypeConversion);
 		virtual ~CElement();
 		virtual void Parse(CStarMathReader* pReader) = 0;
+		virtual void ParseEQN(CStarMathReader* pReader) = 0;
 		//The function creates the class we need (by determining the class type by a variable m_enGlobalType from the class CStarMathReader)
-		static CElement* CreateElement(CStarMathReader* pReader);
+		static CElement* CreateElement(CStarMathReader* pReader,const bool bEQN = false);
 		virtual void ConversionToOOXML(XmlUtils::CXmlWriter* pXmlWrite) = 0;
 		virtual void SetAttribute(CAttribute* pAttribute) = 0;
 		virtual TFormulaSize GetSize() = 0;
@@ -199,17 +192,20 @@ namespace StarMath
 		void SetLeftArg(CElement* pElement);
 		CElement* GetValueIndex();
 		CElement* GetLeftArg();
-		static TypeElement GetIndex(const std::wstring& wsCheckToken);
+		static TypeElement GetIndex(const std::wstring& wsCheckToken,const bool bEQN = false);
+		static TypeElement GetIndexOp(const std::wstring& wsCheckToken);
 		static bool GetUpperIndex(const TypeElement& enType);
 		static bool GetLowerIndex(const TypeElement& enType);
 		const TypeElement& GetType();
 	private:
 		void SetAttribute(CAttribute* pAttribute) override;
 		void Parse(CStarMathReader* pReader) override;
+		void ParseEQN(CStarMathReader* pReader) override;
 		void ConversionToOOXML(XmlUtils::CXmlWriter* pXmlWrite) override;
 		TFormulaSize GetSize() override;
 		void ConversionOfIndicesToValue(XmlUtils::CXmlWriter* pXmlWrite);
 		void ConversionOfIndicesAfterValue(XmlUtils::CXmlWriter* pXmlWrite);
+		void ParseIndex(CStarMathReader* pReader, CElement*& pElement);
 		CElement* m_pValueIndex;
 		CElement* m_pUpperIndex;
 		CElement* m_pLowerIndex;
@@ -218,7 +214,8 @@ namespace StarMath
 		CElement* m_pCsubIndex;
 		CElement* m_pCsupIndex;
 		CElement* m_pLeftArg;
-		TypeElement m_enTypeIndex;
+		TypeElement m_enTypeIndex,m_enTempTypeIndex;
+		bool m_bEQN;
 	};
 
 	class  CElementString: public CElement
@@ -233,8 +230,11 @@ namespace StarMath
 		void SetAttribute(CAttribute* pAttribute) override;
 	private:
 		void Parse(CStarMathReader* pReader) override;
+		void ParseEQN(CStarMathReader* pReader) override;
 		void ConversionToOOXML(XmlUtils::CXmlWriter* pXmlWrite) override;
+		void CheckingTextDirection();
 		TFormulaSize GetSize() override;
+		TextDirection m_enTypeLang;
 		std::wstring m_wsString;
 	};
 
@@ -248,7 +248,8 @@ namespace StarMath
 		void SetTypeBinOP(const TypeElement& enType);
 		CElement* GetRightArg();
 		CElement* GetLeftArg();
-		static TypeElement GetBinOperator(const std::wstring& wsToken);
+		static TypeElement GetBinOperator(const std::wstring& wsToken, const bool& bEQN = false);
+		static void WritingBinOperatorSymbol(std::wstring& wsSymbol,const TypeElement& enType);
 		static void UnaryCheck(CStarMathReader* pReader,CElement* pLastElement);
 		const TypeElement& GetType();
 		//checking for signs such as -,+,-+,+-.
@@ -257,6 +258,7 @@ namespace StarMath
 		void SetAttribute(CAttribute* pAttribute) override;
 		bool IsBinOperatorLowPrior();
 		void Parse(CStarMathReader* pReader) override;
+		void ParseEQN(CStarMathReader* pReader) override;
 		void ConversionToOOXML(XmlUtils::CXmlWriter* oXmlWrite) override;
 		TFormulaSize GetSize() override;
 		CElement* m_pLeftArgument;
@@ -277,11 +279,13 @@ namespace StarMath
 		CElement* GetToValue();
 		void SetName(const std::wstring& wsNameOp);
 		std::wstring GetName();
-		static TypeElement GetOperator(const std::wstring& wsToken);
+		static TypeElement GetOperator(const std::wstring& wsToken,const bool bEQN = false);
+		static TypeElement GetOperatorEQN(const std::wstring& wsToken);
 		static TypeElement GetFromOrTo(const std::wstring& wsToken);
 	private:
-		void SetAttribute(CAttribute* pAttribute);
+		void SetAttribute(CAttribute* pAttribute) override;
 		void Parse(CStarMathReader* pReader) override;
+		void ParseEQN(CStarMathReader* pReader) override;
 		void ConversionToOOXML(XmlUtils::CXmlWriter* oXmlWrite) override;
 		TFormulaSize GetSize() override;
 		CElement* m_pValueOperator;
@@ -291,6 +295,7 @@ namespace StarMath
 		CElement* m_pLowerIndex;
 		TypeElement m_enTypeOperator;
 		std::wstring m_wsName;
+		bool m_bEQN;
 	};
 
 	class CElementGrade: public CElement
@@ -305,6 +310,7 @@ namespace StarMath
 	private:
 		void SetAttribute(CAttribute* pAttribute) override;
 		void Parse(CStarMathReader* pReader) override;
+		void ParseEQN(CStarMathReader* pReader) override;
 		void ConversionToOOXML(XmlUtils::CXmlWriter* pXmlWrite) override;
 		TFormulaSize GetSize() override;
 		CElement* m_pValueGrade;
@@ -315,15 +321,18 @@ namespace StarMath
 	class CElementBracket: public CElement
 	{
 	public:
-		CElementBracket(const TypeElement& enType,const TypeConversion &enTypeConversion,const bool& bScalability = false);
+		CElementBracket(const TypeElement& enType, const TypeConversion &enTypeConversion, const bool& bScalability = false, const bool &bEQN = false);
 		virtual ~CElementBracket();
 		void SetBracketValue(const std::vector<CElement*>& arValue);
-		static TypeElement GetBracketOpen(const std::wstring& wsToken);
-		static TypeElement GetBracketClose(const std::wstring& wsToken);
+		static TypeElement GetBracketOpen(const std::wstring& wsToken, const bool bEQN = false, const bool bLeft = false);
+		static TypeElement GetBracketClose(const std::wstring& wsToken, const bool bEQN = false, const bool bLeft = false);
+		void SetLeftBracket(const TypeElement& enTypeLeftBracket);
+		void SetRightBracket(const TypeElement& enTypeRightBracket);
 		std::vector<CElement*> GetBracketValue();
 	private:
 		void SetAttribute(CAttribute* pAttribute) override;
 		void Parse(CStarMathReader* pReader) override;
+		void ParseEQN(CStarMathReader* pReader) override;
 		void ConversionToOOXML(XmlUtils::CXmlWriter* pXmlWrite) override;
 		TFormulaSize GetSize() override;
 		bool CheckMline(CElement* pElement);
@@ -331,12 +340,13 @@ namespace StarMath
 		TypeElement m_enTypeBracket,m_enLeftBracket,m_enRightBracket;
 		std::vector<CElement*> m_arBrecketValue;
 		bool m_bScalability;
+		bool m_bEQN;
 	};
 
 	class CElementBracketWithIndex: public CElement
 	{
 	public:
-		CElementBracketWithIndex(const TypeElement& enType,const TypeConversion &enTypeConversion);
+		CElementBracketWithIndex(const TypeElement& enType, const TypeConversion &enTypeConversion, const bool &bEQN = false);
 		virtual ~CElementBracketWithIndex();
 		void SetLeftArg(CElement* pElement);
 		void SetBracketValue(CElement* pElement);
@@ -346,11 +356,13 @@ namespace StarMath
 	private:
 		void SetAttribute(CAttribute* pAttribute) override;
 		void Parse(CStarMathReader* pReader) override;
+		void ParseEQN(CStarMathReader* pReader) override;
 		void ConversionToOOXML(XmlUtils::CXmlWriter* pXmlWrite) override;
 		TFormulaSize GetSize() override;
 		CElement* m_pLeftArg;
 		CElement* m_pValue;
 		TypeElement m_enTypeBracketWithIndex;
+		bool m_bEQN;
 	};
 
 	class CElementSetOperations: public CElement
@@ -362,11 +374,13 @@ namespace StarMath
 		CElement* GetLeftArg();
 		void SetRightArg(CElement* pElement);
 		CElement* GetRightArg();
-		static TypeElement GetSetOperation(const std::wstring& wsToken);
+		static TypeElement GetSetOperation(const std::wstring& wsToken,const bool& bEQN = false);
+		static void WritingSetOperationSymbol(std::wstring& wsSymbol,const TypeElement& enTypeSetOperation);
 		const TypeElement& GetType();
 	private:
 		void SetAttribute(CAttribute* pAttribute) override;
 		void Parse(CStarMathReader* pReader) override;
+		void ParseEQN(CStarMathReader* pReader) override;
 		void ConversionToOOXML(XmlUtils::CXmlWriter* pXmlWrite) override;
 		TFormulaSize GetSize() override;
 		CElement* m_pLeftArgument;
@@ -388,6 +402,7 @@ namespace StarMath
 	private:
 		void SetAttribute(CAttribute* pAttribute) override;
 		void Parse(CStarMathReader* pReader) override;
+		void ParseEQN(CStarMathReader* pReader) override;
 		void ConversionToOOXML(XmlUtils::CXmlWriter* pXmlWrite) override;
 		TFormulaSize GetSize() override;
 		CElement* m_pLeftArgument;
@@ -408,6 +423,7 @@ namespace StarMath
 	private:
 		void SetAttribute(CAttribute* pAttribute) override;
 		void Parse(CStarMathReader* pReader) override;
+		void ParseEQN(CStarMathReader* pReader) override;
 		void ConversionToOOXML(XmlUtils::CXmlWriter* pXmlWrite) override;
 		TFormulaSize GetSize() override;
 		CElement* m_pValue;
@@ -419,20 +435,30 @@ namespace StarMath
 	class CElementSpecialSymbol: public CElement
 	{
 	public:
-		CElementSpecialSymbol(const TypeElement& enType,const TypeConversion &enTypeConversion);
+		CElementSpecialSymbol(const TypeElement& enType,const TypeConversion &enTypeConversion,const bool& bEQN = false);
 		virtual ~CElementSpecialSymbol();
-		static TypeElement GetSpecialSymbol(std::wstring& wsToken);
+		static TypeElement GetSpecialSymbol(std::wstring& wsTokenLowerCase,std::wstring& wsTokenUpperCase,const bool& bEQN = false);
+		static TypeElement GetGreekSymbols(std::wstring& wsToken);
+		static TypeElement GetGreekSmallSymbols(std::wstring& wsToken);
+		static TypeElement GetArrowForEQN(std::wstring& wsToken);
+		static TypeElement GetMathOperatorForEQN(std::wstring& wsToken);
+		static TypeElement GetOtherMathOperatorForEQN(std::wstring& wsToken);
 		void SetValue(CElement* pValue);
 		const TypeElement GetType();
 	private:
 		void SetTypeSymbol();
 		void SetAttribute(CAttribute* pAttribute) override;
 		void Parse(CStarMathReader* pReader) override;
+		void ParseEQN(CStarMathReader* pReader) override;
 		void ConversionToOOXML(XmlUtils::CXmlWriter* pXmlWrite) override;
+		void WritingMathOperatorForEQN(std::wstring& wsToken);
+		void WritingOtherMathOpForEQN(std::wstring& wsToken);
+		void WritingArrowForEQN(std::wstring& wsToken);
 		TFormulaSize GetSize() override;
 		CElement* m_pValue;
 		TypeElement m_enTypeSpecial;
 		std::wstring m_wsType;
+		bool m_bEQN;
 	};
 
 	class CElementMatrix: public CElement
@@ -442,17 +468,22 @@ namespace StarMath
 		virtual ~CElementMatrix();
 		void SetFirstArgument(CElement* pElement);
 		void SetSecondArgument(CElement* pElement);
-		static TypeElement GetMatrix(const std::wstring& wsToken);
+		static TypeElement GetMatrix(const std::wstring& wsToken, const bool bEQN = false);
 	private:
 		void SetAttribute(CAttribute* pAttribute) override;
 		void Parse(CStarMathReader *pReader) override;
+		void ParseEQN(CStarMathReader* pReader) override;
 		void ConversionToOOXML(XmlUtils::CXmlWriter* pXmlWrite) override;
+		void ConversionMatrixEQN(XmlUtils::CXmlWriter* pXmlWriter);
 		void DimensionCalculation();
+		unsigned int CalculatingTheNumberOfColumns(const std::vector<CElement*>& arElements);
+		void FillingInColumns(XmlUtils::CXmlWriter* pXmlWriter,const unsigned int& i_ActualNumberColumns, unsigned int& i_NumberColumns);
 		TFormulaSize GetSize() override;
 		CElement* m_pFirstArgument;
 		CElement* m_pSecondArgument;
 		TypeElement m_enTypeMatrix;
 		unsigned int m_iDimension;
+		bool m_bEQN;
 	};
 
 	class CElementDiacriticalMark: public CElement
@@ -461,10 +492,11 @@ namespace StarMath
 		CElementDiacriticalMark(const TypeElement& enType,const TypeConversion &enTypeConversion);
 		virtual ~CElementDiacriticalMark();
 		void SetValueMark(CElement* pValue);
-		static TypeElement GetMark(const std::wstring& wsToken);
+		static TypeElement GetMark(const std::wstring& wsToken, const bool bEQN = false);
 	private:
 		void SetAttribute(CAttribute* pAttribute) override;
 		void Parse(CStarMathReader* pReader) override;
+		void ParseEQN(CStarMathReader* pReader) override;
 		void ConversionToOOXML(XmlUtils::CXmlWriter* pXmlWrite) override;
 		TFormulaSize GetSize() override;
 		CElement* m_pValueMark;
@@ -476,22 +508,24 @@ namespace StarMath
 	public:
 		CParserStarMathString();
 		~CParserStarMathString();
-		std::vector<CElement*> Parse(std::wstring& wsParseString,int iTypeConversion = 0);
+		std::vector<CElement*> Parse(const std::wstring& wsParseString, const int &iTypeConversion = 0);
+		std::vector<CElement*> ParseEQN(const std::wstring& wsParseString);
 		static CElement* ParseElement(CStarMathReader* pReader);
+		static CElement* ParseElementEQN(CStarMathReader* pReader);
 		//Function for adding a left argument (receives the argument itself and the element to which it needs to be added as input. Works with classes:CElementBinOperator,CElementConnection,CElementSetOperation).
 		static bool AddLeftArgument(CElement* pLeftArg,CElement* pElementWhichAdd,CStarMathReader* pReader);
 		static bool CheckForLeftArgument(const TypeElement& enType, const bool& bConnection = true);
-		static CElement* ReadingWithoutBracket(CStarMathReader* pReader,const bool& bConnection = true);
+		static CElement* ReadingWithoutBracket(CStarMathReader* pReader,const bool& bConnection = true,const bool& bEQN = false);
 		//checking the element (true if it is newline)
 		static bool CheckNewline(CElement* pElement);
 		static bool CheckGrid(CElement* pElement);
 		//adding an element to the array, checking that it is not empty and adding the left element, if there is one.
 		static void AddingAnElementToAnArray(std::vector<CElement*>& arrEquation,CElement* pAddElement,CStarMathReader* pReader);
 		//Receives the left element as input, reads the next one, if the next element has a higher priority and contains the left element, the element received at the input is passed to it. The entire structure is saved and returned.
-		static void ReadingElementsWithPriorities(CStarMathReader* pReader,CElement*& pLeftElement);
+		static void ReadingElementsWithPriorities(CStarMathReader* pReader,CElement*& pLeftElement, const bool bEQN = false);
 		//method for parsing indexes with attributes. If there is an attribute present when indexes are read, then all subsequent indexes are applied to the index with the attribute.
-		static void ReadingElementsWithAttributes(CStarMathReader* pReader,CElement*& pSavingElement);
-		static void ParsElementAddingToArray(CStarMathReader* pReader, std::vector<CElement*>& arElements);
+		static void ReadingElementsWithAttributes(CStarMathReader* pReader,CElement*& pSavingElement,const bool bEQN = false);
+		static void ParsElementAddingToArray(CStarMathReader* pReader, std::vector<CElement*>& arElements, const bool &bEQN = false);
 		void SetAlignment(const unsigned int& iAlignment);
 		const unsigned int& GetAlignment();
 		void SetBaseFont(const std::wstring& wsNameFont);

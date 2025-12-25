@@ -13,6 +13,7 @@
 #include <cstring>
 #include <sstream>
 #include <stack>
+#include <iterator>
 
 namespace StarMath
 {

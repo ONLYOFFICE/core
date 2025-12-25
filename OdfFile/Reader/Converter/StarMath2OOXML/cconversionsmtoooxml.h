@@ -31,7 +31,6 @@
  */
 #pragma once
 #include "cstarmathpars.h"
-#include "../../../../DesktopEditor/xml/include/xmlwriter.h"
 
 namespace StarMath {
 //delete XmlWrite
@@ -40,10 +39,10 @@ namespace StarMath {
 	public:
 		CConversionSMtoOOXML();
 		~CConversionSMtoOOXML();
-		void StartConversion(std::vector<CElement*> arPars, const unsigned int& iAlignment = 1);
-		static void StandartProperties(XmlUtils::CXmlWriter* pXmlWrite,CAttribute* pAttribute,const TypeConversion& enTypeConversion);
+		void StartConversion(const std::vector<CElement*> arPars, const unsigned int& iAlignment = 1);
+		static void StandartProperties(XmlUtils::CXmlWriter* pXmlWrite,CAttribute* pAttribute,const TypeConversion& enTypeConversion, const TextDirection& enTypeLang = TextDirection::LeftToRight);
 		static void PropertiesMFPR(const std::wstring& wsType,XmlUtils::CXmlWriter* pXmlWrite,CAttribute* pAttribute,const TypeConversion &enTypeConversion);
-		static void PropertiesNaryPr(const TypeElement& enTypeOp,bool bEmptySub,bool bEmptySup,XmlUtils::CXmlWriter* pXmlWrite,CAttribute* pAttribute,const TypeConversion &enTypeConversion);
+		static void PropertiesNaryPr(const TypeElement& enTypeOp,bool bEmptySub,bool bEmptySup,XmlUtils::CXmlWriter* pXmlWrite,CAttribute* pAttribute,const TypeConversion &enTypeConversion,const bool& bEQN = false);
 		static void PropertiesFuncPr(XmlUtils::CXmlWriter* pXmlWrite,CAttribute* pAttribute,const TypeConversion &enTypeConversion);
 		static void WriteNodeConversion(const std::wstring& wsNameBlock,CElement* pValueBlock,XmlUtils::CXmlWriter* pXmlWrite);
 		static void PropertiesDPr(XmlUtils::CXmlWriter* pXmlWrite,const std::wstring& wsOpenBracket,const std::wstring& wsCloseBracket,CAttribute* pAttribute,const TypeConversion &enTypeConversion,const TypeElement& enTypeBracket);

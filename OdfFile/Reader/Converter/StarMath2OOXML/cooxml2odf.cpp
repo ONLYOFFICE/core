@@ -1,5 +1,4 @@
 #include "cooxml2odf.h"
-#include <iterator>
 
 namespace StarMath
 {

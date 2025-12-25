@@ -340,9 +340,9 @@ TEST_F(CPdfFileTest, ConvertToRaster)
 	}
 }
 
-TEST_F(CPdfFileTest, ConvertToRasterBase64)
+TEST_F(CPdfFileTest, Base64ConvertToRaster)
 {
-	//GTEST_SKIP();
+	GTEST_SKIP();
 
 	// чтение и конвертации бинарника
 	NSFile::CFileBinary oFile;
@@ -494,7 +494,7 @@ TEST_F(CPdfFileTest, EditPdf)
 
 TEST_F(CPdfFileTest, EditPdfFromBase64)
 {
-	GTEST_SKIP();
+	//GTEST_SKIP();
 
 	NSFonts::NSApplicationFontStream::SetGlobalMemoryStorage(NSFonts::NSApplicationFontStream::CreateDefaultGlobalMemoryStorage());
 

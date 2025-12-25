@@ -273,6 +273,11 @@ core_mac {
 		QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.12
 		!apple_silicon:QMAKE_APPLE_DEVICE_ARCHS = x86_64
 	}
+
+	!core_debug {
+		equals(TEMPLATE, app):QMAKE_POST_LINK += strip $(TARGET)
+		# TODO: plugin!
+	}
 }
 
 core_linux_clang {

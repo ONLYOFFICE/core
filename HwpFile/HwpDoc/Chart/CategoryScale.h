@@ -1,9 +1,11 @@
 #ifndef CATEGORYSCALE_H
 #define CATEGORYSCALE_H
 
+#include "ChartObject.h"
+
 namespace HWP { namespace CHART
 {
-class CCategoryScale
+class CCategoryScale : public IChartObject
 {
 	bool m_bAuto;
 	int m_nDivisionsPerLabel;
@@ -11,6 +13,8 @@ class CCategoryScale
 	bool m_bLabelTick;
 public:
 	CCategoryScale();
+
+	bool Read(CHWPStream& oStream) override;
 };
 }}
 

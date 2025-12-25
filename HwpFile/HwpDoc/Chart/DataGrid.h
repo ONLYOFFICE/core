@@ -1,11 +1,11 @@
 #ifndef DATAGRID_H
 #define DATAGRID_H
 
-#include "../Common/Common.h"
+#include "ChartObject.h"
 
 namespace HWP { namespace CHART
 {
-class CDataGrid
+class CDataGrid : public IChartObject
 {
 	int m_nColumnCount;
 	HWP_STRING m_sColumnLabel;
@@ -17,6 +17,8 @@ class CDataGrid
 	int m_nRowLabelCount;
 public:
 	CDataGrid();
+
+	bool Read(CHWPStream& oStream) override;
 };
 }}
 

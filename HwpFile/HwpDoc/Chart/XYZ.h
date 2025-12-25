@@ -1,9 +1,11 @@
 #ifndef XYZ_H
 #define XYZ_H
 
+#include "ChartObject.h"
+
 namespace HWP { namespace CHART
 {
-class CXYZ
+class CXYZ : public IChartObject
 {
 	bool m_bAutomatic;
 	double m_dxIntersection;
@@ -11,6 +13,8 @@ class CXYZ
 	double m_dzIntersection;
 public:
 	CXYZ();
+
+	bool Read(CHWPStream& oStream) override;
 };
 }}
 

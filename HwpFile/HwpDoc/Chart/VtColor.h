@@ -15,7 +15,7 @@ class CVtColor : public IChartObject
 public:
 	CVtColor();
 
-	ETypes GetType() const override;
+	bool Read(CHWPStream& oStream) override;
 };
 }}
 

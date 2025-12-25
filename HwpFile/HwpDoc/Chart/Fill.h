@@ -7,7 +7,7 @@
 
 namespace HWP { namespace CHART
 {
-class CFill
+class CFill : public IChartObject
 {
 	CBrush m_oBrush;
 	// union
@@ -19,6 +19,8 @@ class CFill
 	CVtPicture m_oVtPicture;
 public:
 	CFill();
+
+	bool Read(CHWPStream& oStream) override;
 };
 }}
 

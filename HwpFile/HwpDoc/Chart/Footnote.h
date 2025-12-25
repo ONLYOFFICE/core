@@ -8,7 +8,7 @@
 
 namespace HWP { namespace CHART
 {
-class CFootnote
+class CFootnote : public IChartObject
 {
 	CBackdrop m_oBackdrop;
 	CLocation m_oLocation;
@@ -18,6 +18,8 @@ class CFootnote
 	CVtFont m_oVtFont;
 public:
 	CFootnote();
+
+	bool Read(CHWPStream& oStream) override;
 };
 }}
 

@@ -15,7 +15,7 @@ class CVtFont : public IChartObject
 public:
 	CVtFont();
 
-	ETypes GetType() const override;
+	bool Read(CHWPStream& oStream) override;
 };
 }}
 

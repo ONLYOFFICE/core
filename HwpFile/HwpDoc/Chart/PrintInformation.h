@@ -1,11 +1,11 @@
 #ifndef PRINTINFORMATION_H
 #define PRINTINFORMATION_H
 
-#include "../Common/Common.h"
+#include "ChartObject.h"
 
 namespace HWP { namespace CHART
 {
-class CPrintInformation
+class CPrintInformation : public IChartObject
 {
 	SINGLE m_snBottomMargin;
 	bool m_bCenterHorizontally;
@@ -19,6 +19,8 @@ class CPrintInformation
 	SINGLE m_snTopMargin;
 public:
 	CPrintInformation();
+
+	bool Read(CHWPStream& oStream) override;
 };
 }}
 

@@ -1,11 +1,11 @@
 #ifndef LIGHT_H
 #define LIGHT_H
 
-#include "../Common/Common.h"
+#include "Collection.h"
 
 namespace HWP { namespace CHART
 {
-class CLightSource
+class CLightSource : public IChartObject
 {
 	SINGLE m_snX;
 	SINGLE m_snY;
@@ -13,11 +13,13 @@ class CLightSource
 	SINGLE m_snIntensity;
 public:
 	CLightSource();
+
+	bool Read(CHWPStream& oStream) override;
 };
 
-using CLightSources = ICollection<CLightSource>;
+using CLightSources = CCollection<CLightSource>;
 
-class CLight
+class CLight : public IChartObject
 {
 	SINGLE m_snAmbientIntensity;
 	SINGLE m_snEdgeIntensity;
@@ -25,6 +27,8 @@ class CLight
 	CLightSources m_oLightSources;
 public:
 	CLight();
+
+	bool Read(CHWPStream& oStream) override;
 };
 }}
 

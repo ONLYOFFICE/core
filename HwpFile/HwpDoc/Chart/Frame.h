@@ -5,7 +5,7 @@
 
 namespace HWP { namespace CHART
 {
-class CFrame
+class CFrame : public IChartObject
 {
 	int m_nStyle;
 	SINGLE m_snWidth;
@@ -13,6 +13,8 @@ class CFrame
 	CVtColor m_oSpaceColor;
 public:
 	CFrame();
+
+	bool Read(CHWPStream& oStream) override;
 };
 }}
 

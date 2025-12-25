@@ -63,7 +63,7 @@ class CVtChart : public IChartObject
 public:
 	CVtChart();
 
-	ETypes GetType() const override;
+	bool Read(CHWPStream& oStream) override;
 };
 }}
 

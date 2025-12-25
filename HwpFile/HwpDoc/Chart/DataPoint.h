@@ -9,10 +9,11 @@
 #include "Marker.h"
 #include "Brush.h"
 #include "VtPicture.h"
+#include "Collection.h"
 
 namespace HWP { namespace CHART
 {
-class CDataPointLabel
+class CDataPointLabel : public IChartObject
 {
 	CBackdrop m_oBackdrop;
 	int m_nComponent;
@@ -28,9 +29,11 @@ class CDataPointLabel
 	CVtFont m_oVtFont;
 public:
 	CDataPointLabel();
+
+	bool Read(CHWPStream& oStream) override;
 };
 
-class CDataPoint
+class CDataPoint : public IChartObject
 {
 	CBrush m_oBrush;
 	CDataPointLabel m_oDataPointLabel;
@@ -40,9 +43,11 @@ class CDataPoint
 	CVtPicture m_oVtPicture;
 public:
 	CDataPoint();
+
+	bool Read(CHWPStream& oStream) override;
 };
 
-using CDataPoints = ICollection<CDataPoint>;
+using CDataPoints = CCollection<CDataPoint>;
 }}
 
 #endif // DATAPOINT_H

@@ -8,7 +8,7 @@
 
 namespace HWP { namespace CHART
 {
-class CElevation
+class CElevation : public IChartObject
 {
 	CAttributes m_oAttributes;
 	bool m_bAutoValues;
@@ -21,6 +21,8 @@ class CElevation
 	CSurface m_oSurface;
 public:
 	CElevation();
+
+	bool Read(CHWPStream& oStream) override;
 };
 }}
 

@@ -5,12 +5,14 @@
 
 namespace HWP { namespace CHART
 {
-class CHiLo
+class CHiLo : public IChartObject
 {
 	CVtColor m_oGainColor;
 	CVtColor m_oLossColor;
 public:
 	CHiLo();
+
+	bool Read(CHWPStream& oStream) override;
 };
 }}
 

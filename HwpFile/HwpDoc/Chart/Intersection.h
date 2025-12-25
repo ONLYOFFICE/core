@@ -1,9 +1,11 @@
 #ifndef INTERSECTION_H
 #define INTERSECTION_H
 
+#include "ChartObject.h"
+
 namespace HWP { namespace CHART
 {
-class CIntersection
+class CIntersection : public IChartObject
 {
 	bool m_bAuto;
 	int m_nAxisId;
@@ -12,6 +14,8 @@ class CIntersection
 	double m_dPoint;
 public:
 	CIntersection();
+
+	bool Read(CHWPStream& oStream) override;
 };
 }}
 

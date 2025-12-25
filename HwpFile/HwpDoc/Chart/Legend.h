@@ -8,7 +8,7 @@
 
 namespace HWP { namespace CHART
 {
-class CLegend
+class CLegend : public IChartObject
 {
 	CBackdrop m_oBackdrop;
 	CLocation m_oLocation;
@@ -16,6 +16,8 @@ class CLegend
 	CVtFont m_oVtFont;
 public:
 	CLegend();
+
+	bool Read(CHWPStream& oStream) override;
 };
 }}
 

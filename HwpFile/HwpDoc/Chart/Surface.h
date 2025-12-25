@@ -6,7 +6,7 @@
 
 namespace HWP { namespace CHART
 {
-class CSurface
+class CSurface : public IChartObject
 {
 	int m_nBase;
 	CBrush m_oBrush;
@@ -17,6 +17,8 @@ class CSurface
 	CPen m_oWireframePen;
 public:
 	CSurface();
+
+	bool Read(CHWPStream& oStream) override;
 };
 }}
 

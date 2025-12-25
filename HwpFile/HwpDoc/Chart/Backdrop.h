@@ -7,13 +7,15 @@
 
 namespace HWP { namespace CHART
 {
-class CBackdrop
+class CBackdrop : public IChartObject
 {
 	CFrame m_oFrame;
 	CFill m_oFill;
 	CShadow m_oShadow;
 public:
 	CBackdrop();
+
+	bool Read(CHWPStream& oStream) override;
 };
 }}
 

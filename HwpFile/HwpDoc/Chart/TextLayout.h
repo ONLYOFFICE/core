@@ -1,9 +1,11 @@
 #ifndef TEXTLAYOUT_H
 #define TEXTLAYOUT_H
 
+#include "ChartObject.h"
+
 namespace HWP { namespace CHART
 {
-class CTextLayout
+class CTextLayout : public IChartObject
 {
 	bool m_bWordWrap;
 	int m_nHorzAlignment;
@@ -11,6 +13,8 @@ class CTextLayout
 	int m_nVertAlignment;
 public:
 	CTextLayout();
+
+	bool Read(CHWPStream& oStream) override;
 };
 }}
 

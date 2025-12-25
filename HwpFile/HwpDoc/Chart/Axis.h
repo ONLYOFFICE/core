@@ -14,15 +14,17 @@
 
 namespace HWP { namespace CHART
 {
-class CAxisGrid
+class CAxisGrid : public IChartObject
 {
 	CPen m_oMajorPen;
 	CPen m_oMinorPen;
 public:
 	CAxisGrid();
+
+	bool Read(CHWPStream& oStream) override;
 };
 
-class CAxisScale
+class CAxisScale : public IChartObject
 {
 	bool m_bHide;
 	int m_nLogBase;
@@ -30,9 +32,11 @@ class CAxisScale
 	int m_nType;
 public:
 	CAxisScale();
+
+	bool Read(CHWPStream& oStream) override;
 };
 
-class CAxisTitle
+class CAxisTitle : public IChartObject
 {
 	CBackdrop m_oBackdrop;
 	HWP_STRING m_sText;
@@ -42,9 +46,11 @@ class CAxisTitle
 	CVtFont m_oVtFont;
 public:
 	CAxisTitle();
+
+	bool Read(CHWPStream& oStream) override;
 };
 
-class CAxis
+class CAxis : public IChartObject
 {
 	CAxisGrid m_oAxisGrid;
 	CAxisScale m_oAxisScale;
@@ -59,6 +65,8 @@ class CAxis
 	CValueScale m_oValueScale;
 public:
 	CAxis();
+
+	bool Read(CHWPStream& oStream) override;
 };
 }}
 

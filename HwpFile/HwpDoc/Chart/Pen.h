@@ -5,7 +5,7 @@
 
 namespace HWP { namespace CHART
 {
-class CPen
+class CPen : public IChartObject
 {
 	int m_nCap;
 	int m_nJoin;
@@ -15,6 +15,8 @@ class CPen
 	CVtColor m_oVtColor;
 public:
 	CPen();
+
+	bool Read(CHWPStream& oStream) override;
 };
 }}
 

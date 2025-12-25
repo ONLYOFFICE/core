@@ -5,12 +5,14 @@
 
 namespace HWP { namespace CHART
 {
-class CRect
+class CRect : public IChartObject
 {
 	CCoor m_oMin;
 	CCoor m_oMax;
 public:
 	CRect();
+
+	bool Read(CHWPStream& oStream) override;
 };
 }}
 

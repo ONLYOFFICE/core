@@ -4,10 +4,11 @@
 #include "Backdrop.h"
 #include "TextLayout.h"
 #include "VtFont.h"
+#include "Collection.h"
 
 namespace HWP { namespace CHART
 {
-class CLabel
+class CLabel : public IChartObject
 {
 	bool m_bAuto;
 	CBackdrop m_oBackdrop;
@@ -18,9 +19,11 @@ class CLabel
 	CVtFont m_oVtFont;
 public:
 	CLabel();
+
+	bool Read(CHWPStream& oStream) override;
 };
 
-using CLabels = ICollection<CLabel>;
+using CLabels = CCollection<CLabel>;
 }}
 
 #endif // LABEL_H

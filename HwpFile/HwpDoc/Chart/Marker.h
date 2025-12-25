@@ -6,7 +6,7 @@
 
 namespace HWP { namespace CHART
 {
-class CMarker
+class CMarker : public IChartObject
 {
 	CVtColor m_oFillColor;
 	CPen m_oPen;
@@ -16,6 +16,8 @@ class CMarker
 	CVtPicture m_oVtPicture;
 public:
 	CMarker();
+
+	bool Read(CHWPStream& oStream) override;
 };
 }}
 

@@ -43,12 +43,14 @@ public:
 	bool ReadFloat(float& fValue);
 	bool ReadDouble(double& dValue);
 	bool ReadLong(long long& lValue);
+	bool ReadLong(long& lValue);
 	bool ReadInt(int& nValue);
 	bool ReadColor(int& nValue);
 	bool ReadShort(short& shValue);
 	short ReadShort();
 	bool ReadByte(HWP_BYTE& chValue);
 	HWP_BYTE ReadByte();
+	bool ReadBool(bool& bValue);
 	bool ReadString(HWP_STRING& sValue, EStringCharacter eCharacter);
 	bool ReadString(HWP_STRING& sValue, int nLength, EStringCharacter eCharacter);
 	unsigned long ReadBytes(HWP_BYTE* pBytes, unsigned long unSize);
@@ -72,6 +74,7 @@ public:
 };
 
 #define CHECK_FLAG(value, flag) ((value) & flag) == flag
+#define DEFAULT_STRING_CHARACTER EStringCharacter::UTF16
 }
 
 #endif // HWPSTREAM_H

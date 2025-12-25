@@ -5,7 +5,7 @@
 
 namespace HWP { namespace CHART
 {
-class CContourGradient
+class CContourGradient : public IChartObject
 {
 	CVtColor m_oFromBrushColor;
 	CVtColor m_oToBrushColor;
@@ -13,6 +13,8 @@ class CContourGradient
 	CVtColor m_oToPenColor;
 public:
 	CContourGradient();
+
+	bool Read(CHWPStream& oStream) override;
 };
 }}
 

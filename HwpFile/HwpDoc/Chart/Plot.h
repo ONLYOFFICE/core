@@ -19,16 +19,18 @@
 
 namespace HWP { namespace CHART
 {
-class CPlotBase
+class CPlotBase : public IChartObject
 {
 	CBrush m_oBrush;
 	SINGLE m_snBaseHeight;
 	CPen m_oPen;
 public:
 	CPlotBase();
+
+	bool Read(CHWPStream& oStream) override;
 };
 
-class CPlot
+class CPlot : public IChartObject
 {
 	int m_nAngleUnit;
 	bool m_bAutoLayout;
@@ -63,6 +65,8 @@ class CPlot
 	SINGLE m_snzGap;
 public:
 	CPlot();
+
+	bool Read(CHWPStream& oStream) override;
 };
 }}
 

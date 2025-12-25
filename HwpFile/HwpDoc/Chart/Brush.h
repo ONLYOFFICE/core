@@ -5,7 +5,7 @@
 
 namespace HWP { namespace CHART
 {
-class CBrush
+class CBrush : public IChartObject
 {
 	CVtColor m_oFillColor;
 	int m_nIndex;
@@ -13,6 +13,8 @@ class CBrush
 	int m_nStyle;
 public:
 	CBrush();
+
+	bool Read(CHWPStream& oStream) override;
 };
 }}
 

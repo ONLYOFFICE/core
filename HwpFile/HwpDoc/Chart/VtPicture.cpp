@@ -7,8 +7,10 @@ CVtPicture::CVtPicture()
 
 }
 
-ETypes CVtPicture::GetType() const
+bool CVtPicture::Read(CHWPStream& oStream)
 {
-	return ETypes::VtPicture;
+	return oStream.ReadBool(m_bEmbedded) && oStream.ReadString(m_sFilename, DEFAULT_STRING_CHARACTER) &&
+	       oStream.ReadInt(m_nMap) && oStream.ReadInt(m_nType);
 }
+
 }}

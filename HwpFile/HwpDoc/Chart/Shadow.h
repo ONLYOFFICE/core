@@ -6,13 +6,15 @@
 
 namespace HWP { namespace CHART
 {
-class CShadow
+class CShadow : public IChartObject
 {
 	CBrush m_oBrush;
 	CCoor m_oOffset;
 	int m_nStyle;
 public:
 	CShadow();
+
+	bool Read(CHWPStream& oStream) override;
 };
 }}
 

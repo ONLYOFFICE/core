@@ -6,13 +6,15 @@
 
 namespace HWP { namespace CHART
 {
-class CWall
+class CWall : public IChartObject
 {
 	CBrush m_oBrush;
 	CPen m_oPen;
 	SINGLE m_snWidth;
 public:
 	CWall();
+
+	bool Read(CHWPStream& oStream) override;
 };
 }}
 

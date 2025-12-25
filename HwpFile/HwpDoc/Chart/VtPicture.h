@@ -14,7 +14,7 @@ class CVtPicture : public IChartObject
 public:
 	CVtPicture();
 
-	ETypes GetType() const override;
+	bool Read(CHWPStream& oStream) override;
 };
 }}
 

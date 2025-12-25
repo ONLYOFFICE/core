@@ -68,27 +68,5 @@ public:
 		return ulRet;
 	}
 };
-
-template<typename T>
-class ICollection
-{
-	VECTOR<const T*> m_arItems;
-public:
-	ICollection() = default;
-	~ICollection()
-	{
-		for (const T* pItem : m_arItems)
-			delete pItem;
-	}
-
-	bool AddItem(const T* pItem)
-	{
-		if(nullptr == pItem)
-			return false;
-
-		m_arItems.push_back(pItem);
-		return true;
-	}
-};
 }
 #endif // COMMON_H

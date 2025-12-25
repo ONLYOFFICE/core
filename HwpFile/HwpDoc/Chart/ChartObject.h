@@ -3,6 +3,7 @@
 
 #include "Types.h"
 #include "../Common/Common.h"
+#include "../HWPStream.h"
 
 namespace HWP { namespace CHART
 {
@@ -13,7 +14,8 @@ namespace HWP { namespace CHART
 	protected:
 		IChartObject() = default;
 	public:
-		virtual ETypes GetType() const = 0;
+		virtual bool Read(CHWPStream& oStream) = 0;
+		// virtual ETypes GetType() const = 0;
 	};
 }}
 

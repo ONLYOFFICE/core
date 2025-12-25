@@ -5,7 +5,7 @@
 
 namespace HWP { namespace CHART
 {
-class CStatLine
+class CStatLine : public IChartObject
 {
 	int m_nFlags;
 	int m_nStyle;
@@ -13,6 +13,8 @@ class CStatLine
 	SINGLE m_snWidth;
 public:
 	CStatLine();
+
+	bool Read(CHWPStream& oStream) override;
 };
 }}
 

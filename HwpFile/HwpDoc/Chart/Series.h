@@ -10,7 +10,7 @@
 
 namespace HWP { namespace CHART
 {
-class CSeriesLabel
+class CSeriesLabel : public IChartObject
 {
 	CBackdrop m_oBackdrop;
 	int m_nLineStyle;
@@ -22,17 +22,21 @@ class CSeriesLabel
 	CVtFont m_oVtFont;
 public:
 	CSeriesLabel();
+
+	bool Read(CHWPStream& oStream) override;
 };
 
-class CSeriesMarker
+class CSeriesMarker : public IChartObject
 {
 	bool m_bAuto;
 	bool m_bShow;
 public:
 	CSeriesMarker();
+
+	bool Read(CHWPStream& oStream) override;
 };
 
-class CSeries
+class CSeries : public IChartObject
 {
 	CBar m_oBar;
 	CDataPoints m_oDataPoints;
@@ -52,6 +56,8 @@ class CSeries
 	CStatLine m_oStatLine;
 public:
 	CSeries();
+
+	bool Read(CHWPStream& oStream) override;
 };
 }}
 

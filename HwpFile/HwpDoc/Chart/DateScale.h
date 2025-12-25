@@ -1,9 +1,11 @@
 #ifndef DATESCALE_H
 #define DATESCALE_H
 
+#include "ChartObject.h"
+
 namespace HWP { namespace CHART
 {
-class CDateScale
+class CDateScale : public IChartObject
 {
 	bool m_bAuto;
 	int m_nMajFreq;
@@ -15,6 +17,8 @@ class CDateScale
 	bool m_bSkipWeekend;
 public:
 	CDateScale();
+
+	bool Read(CHWPStream& oStream) override;
 };
 }}
 

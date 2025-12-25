@@ -138,6 +138,11 @@ bool CHWPStream::ReadLong(long long& lValue)
 	return true;
 }
 
+bool CHWPStream::ReadLong(long& lValue)
+{
+	return ReadInt((int&)lValue);
+}
+
 bool CHWPStream::ReadInt(int& nValue)
 {
 	if (m_pCur + 4 > m_pEnd)
@@ -202,6 +207,17 @@ HWP_BYTE CHWPStream::ReadByte()
 	++m_pCur;
 
 	return chValue;
+}
+
+bool CHWPStream::ReadBool(bool& bValue)
+{
+	if (m_pCur + 1 > m_pEnd)
+		return false;
+
+	bValue = (0x01 == m_pCur[0]);
+	++m_pCur;
+
+	return true;
 }
 
 void Trim(HWP_STRING& sValue)

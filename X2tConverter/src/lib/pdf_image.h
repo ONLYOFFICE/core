@@ -295,29 +295,65 @@ namespace NExtractTools
 	}
 
 	// from crossplatform (pdf)
-	std::string checkPrintPages(InputParams &params)
+	std::string checkPrintPages(InputParams &params, int &nType)
 	{
 		if (NULL == params.m_sJsonParams)
 			return "";
 
+		std::wstring sPages;
+		std::wstring::size_type posPrintPages = params.m_sJsonParams->find(L"\"printPages\":\"");
+		if (std::wstring::npos != posPrintPages)
+		{
+			posPrintPages += 14;
+			std::wstring::size_type posPrintPages2 = params.m_sJsonParams->find(L"\"", posPrintPages);
+			if (std::wstring::npos == posPrintPages2)
+				return "";
+
+			sPages = params.m_sJsonParams->substr(posPrintPages, posPrintPages2 - posPrintPages);
+		}
+
 		std::wstring::size_type posNativeOptions = params.m_sJsonParams->find(L"\"nativeOptions\"");
-		if (std::wstring::npos == posNativeOptions)
-			return "";
+		if (sPages.empty() && std::wstring::npos != posNativeOptions)
+		{
+			std::wstring::size_type posNativePages = params.m_sJsonParams->find(L"\"pages\":\"", posNativeOptions);
+			if (std::wstring::npos == posNativePages)
+				return "";
 
-		std::wstring::size_type posNativePages = params.m_sJsonParams->find(L"\"pages\":\"", posNativeOptions);
-		if (std::wstring::npos == posNativePages)
-			return "";
+			posNativePages += 9;
+			std::wstring::size_type posNativePages2 = params.m_sJsonParams->find(L"\"", posNativePages);
+			if (std::wstring::npos == posNativePages2)
+				return "";
 
-		posNativePages += 9;
-		std::wstring::size_type posNativePages2 = params.m_sJsonParams->find(L"\"", posNativePages);
-		if (std::wstring::npos == posNativePages2)
-			return "";
+			sPages = params.m_sJsonParams->substr(posNativePages, posNativePages2 - posNativePages);
+		}
 
-		std::wstring sPages = params.m_sJsonParams->substr(posNativePages, posNativePages2 - posNativePages);
+		std::wstring::size_type posLayout = params.m_sJsonParams->find(L"\"pdfLayout\":{");
+		if (std::wstring::npos != posLayout)
+		{
+			std::wstring::size_type posContent = params.m_sJsonParams->find(L"\"content\":\"", posLayout);
+			if (std::wstring::npos != posContent)
+			{
+				posContent += 11;
+				std::wstring::size_type posContent2 = params.m_sJsonParams->find(L"\"", posContent);
+				if (std::wstring::npos == posContent2)
+					return "";
+
+				std::wstring sType = params.m_sJsonParams->substr(posContent, posContent2 - posContent);
+				if (sType == L"doc")
+					nType = 0;
+				else if (sType == L"docAndMarkups")
+					nType = 1;
+				else if (sType == L"docAndStamps")
+					nType = 2;
+				else if (sType == L"formsOnly")
+					nType = 3;
+			}
+		}
+
 		if (L"all" == sPages)
 			return "";
 
-		if (L"current" == sPages)
+		if (L"current" == sPages && std::wstring::npos != posNativeOptions)
 		{
 			std::wstring::size_type posCurrentPage = params.m_sJsonParams->find(L"\"currentPage\":", posNativeOptions);
 			if (std::wstring::npos == posCurrentPage)
@@ -831,11 +867,12 @@ namespace NExtractTools
 
 		if (AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == nFormatTo)
 		{
-			std::string sPages = checkPrintPages(params);
+			int nType = -1;
+			std::string sPages = checkPrintPages(params, nType);
 
 			if (nFormatFrom == nFormatTo && !params.getIsPDFA())
 			{
-				if (!sPages.empty())
+				if (!sPages.empty() || nType != -1)
 				{
 					std::wstring sCurrentTmp = L"";
 					sCurrentTmp =NSFile::CFileBinary::CreateTempFileWithUniqueName(convertParams.m_sTempDir, L"PDF_");
@@ -846,17 +883,14 @@ namespace NExtractTools
 					oPdfPages.SetTempDirectory(convertParams.m_sTempDir);
 
 					std::wstring sPassword = params.getPassword();
-					if (oPdfPages.LoadFromFile(sFrom.c_str(), L"", sPassword, sPassword) && oPdfPages.EditPdf(sCurrentTmp))
+					if (oPdfPages.LoadFromFile(sFrom.c_str(), L"", sPassword, sPassword))
 					{
 						int nPagesCount = oPdfPages.GetPagesCount();
 						std::vector<bool> arPages = getPrintPages(convertParams.m_sPrintPages, nPagesCount);
 
-						for (int i = 0; i < nPagesCount; ++i)
-						{
-							if (!arPages[i])
-								oPdfPages.DeletePage(i);
-						}
+						oPdfPages.PrintPages(arPages, nType);
 
+						oPdfPages.SaveToFile(sCurrentTmp);
 						oPdfPages.Close();
 					}
 					else

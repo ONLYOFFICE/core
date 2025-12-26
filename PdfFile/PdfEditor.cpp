@@ -3013,14 +3013,14 @@ bool CPdfEditor::PrintPages(const std::vector<bool>& arrPages, int nFlag)
 				bRotate = true;
 				pageObj.dictGetValNF(nIndex, &oTemp);
 			}
-			else if (strcmp("Contents", chKey) == 0)
+			else if (nFlag != 3 && strcmp("Contents", chKey) == 0)
 			{
 				pageObj.dictGetValNF(nIndex, &oTemp);
 				PdfWriter::CObjectBase* pBase = DictToCDictObject2(&oTemp, pDoc, xref, &m_mObjManager, nStartRefID, 0, false);
 				pPage->Add(chKey, pBase);
 				continue;
 			}
-			else if (nFlag && strcmp("Annots", chKey) == 0) // TODO nFlag
+			else if (strcmp("Annots", chKey) == 0)
 			{
 				oTemp.free();
 				continue;
@@ -3064,11 +3064,17 @@ bool CPdfEditor::PrintPages(const std::vector<bool>& arrPages, int nFlag)
 		}
 		pPage->Fix();
 		pDoc->FixEditPage(pPage);
+
+		if (nFlag == 0)
+		{
+			pageObj.free();
+			continue;
+		}
+
 		double dCTM[6] = { 1, 0, 0, 1, 0, 0 };
 		double dInvMatrix[6] = { 1, 0, 0, 1, 0, 0 };
 		GetCTM(xref, &pageObj, dCTM);
 
-		// TODO Invert matrix
 		double det = dCTM[0] * dCTM[3] - dCTM[1] * dCTM[2];
 		if (fabs(det) > 1e-10)
 		{
@@ -3105,7 +3111,7 @@ bool CPdfEditor::PrintPages(const std::vector<bool>& arrPages, int nFlag)
 		pPage->EndText();
 
 		Object oAnnots;
-		if (!nFlag || !pageObj.dictLookup("Annots", &oAnnots)->isArray()) // TODO nFlag
+		if (!pageObj.dictLookup("Annots", &oAnnots)->isArray())
 		{
 			pageObj.free();
 			continue;
@@ -3128,7 +3134,14 @@ bool CPdfEditor::PrintPages(const std::vector<bool>& arrPages, int nFlag)
 				continue;
 			}
 
-			// TODO проверка соответствия типа пришедшему nFlag
+			char* sType = oType.getName();
+			if ((nFlag == 1 && (strcmp(sType, "StrikeOut") || strcmp(sType, "FreeText") || strcmp(sType, "Underline") || strcmp(sType, "Square") || strcmp(sType, "Circle") || strcmp(sType, "Polygon")
+			|| strcmp(sType, "PolyLine") || strcmp(sType, "Highlight") || strcmp(sType, "Line") || strcmp(sType, "Squiggly") || strcmp(sType, "Text") || strcmp(sType, "Caret") || strcmp(sType, "Ink")
+			|| strcmp(sType, "FileAttachment") || strcmp(sType, "Sound") || strcmp(sType, "Redact"))) || (nFlag == 2 && strcmp(sType, "Stamp")) || (nFlag == 3 && strcmp(sType, "Widget")))
+			{
+				oType.free(); oAnnot.free();
+				continue;
+			}
 			oType.free();
 
 			PdfWriter::CXObject* pForm = pDoc->CreateForm();
@@ -3256,7 +3269,6 @@ bool CPdfEditor::PrintPages(const std::vector<bool>& arrPages, int nFlag)
 			m[4] = m[4] * sx + tx;
 			m[5] = m[5] * sy + ty;
 
-			//pPage->Concat(m[0], m[1], m[2], m[3], m[4], m[5]);
 			pForm->Add("Matrix", PdfWriter::CArrayObject::CreateMatrix(m));
 
 			PdfWriter::CStream* pStream = pForm->GetStream();

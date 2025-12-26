@@ -120,9 +120,9 @@ WebKeyPair.fromCryptoBuffer = function(publicKeyBuffer, privateKeyBuffer, import
 	keyPair.setParams(importParams);
 	return keyPair;
 };
-WebKeyPair.prototype.initKey = function (masterPassword) {
+WebKeyPair.prototype.initKey = function (aesKey) {
 	const crypto = getCrypto();
-	return Promise.all([crypto.initKey(this.publicKey), crypto.initKey(this.privateKey, masterPassword)]);
+	return Promise.all([crypto.initKey(this.publicKey), crypto.initKey(this.privateKey, aesKey)]);
 };
 WebKeyPair.prototype.isHavePublicKey = function(publicKey) {
 	return this.publicKey.isEqual(publicKey);
@@ -132,7 +132,9 @@ WebKeyPair.prototype.getExportPublicKey =function() {
 	this.publicKey.export(writer);
 	return writer.GetData();
 };
-
+WebKeyPair.prototype.changeMasterPassword = function(oldAesKey, newAesKey) {
+	return this.privateKey.changeMasterPassword(oldAesKey, newAesKey);
+};
 export function WebSignKeyPair() {
 	WebKeyPair.call(this);
 }
@@ -177,7 +179,9 @@ AsymmetricKey.prototype.setCryptoKey = function(cryptoKey) {
 AsymmetricKey.prototype.setVersion = function(version) {
 	this.version = version;
 };
-AsymmetricKey.prototype.changeMasterPassword = function(oldMasterPassword, newMasterPassword) {};
+AsymmetricKey.prototype.changeMasterPassword = function(oldAesKey, newAesKey) {
+	return Promise.resolve();
+};
 AsymmetricKey.prototype.getCryptoKey = function() {
 	return this.cryptoKey;
 };
@@ -196,7 +200,6 @@ AsymmetricKey.prototype.getCryptoKey = function() {
 
 function WebPrivateKey() {
 	AsymmetricKey.call(this);
-	this.salt = null;
 }
 initClass(WebPrivateKey, AsymmetricKey);
 
@@ -206,7 +209,6 @@ WebPrivateKey.import = function(reader) {
 	switch (key.version) {
 		case 1: {
 			key.setBinaryKey(readBuffer(reader));
-			key.setSalt(readBuffer(reader));
 			break;
 		}
 		default:
@@ -219,7 +221,6 @@ WebPrivateKey.prototype.export = function(writer) {
 	switch (this.version) {
 		case 1: {
 			writeBuffer(writer, this.binaryKey);
-			writeBuffer(writer, this.salt);
 			break;
 		}
 		default: {
@@ -227,12 +228,6 @@ WebPrivateKey.prototype.export = function(writer) {
 		}
 	}
 };
-WebPrivateKey.prototype.setSalt = function(salt) {
-	this.salt = salt;
-};
-WebPrivateKey.prototype.changeMasterPassword = function(oldMasterPassword, newMasterPassword) {
-	const oldPasswordKey = WebSymmetricKey.getFromPassword(oldMasterPassword, this.salt);
-}
 WebPrivateKey.prototype.decrypt = function(data) {
 	const crypto = getCrypto();
 	return crypto.decrypt(this, data);
@@ -244,6 +239,14 @@ WebPrivateKey.prototype.sign = function(data) {
 WebPrivateKey.prototype.getImportFormat = function () {
 	return c_oAscExportKeyFormat.pkcs8;
 }
+WebPrivateKey.prototype.changeMasterPassword = function(oldAesKey, newAesKey) {
+	const oThis = this;
+	return oldAesKey.decrypt(this.binaryKey).then(function(decryptedKey) {
+		return newAesKey.encrypt(decryptedKey);
+	}).then(function(encryptedKey) {
+		oThis.binaryKey = encryptedKey;
+	});
+};
 
 export function WebPrivateSignKey() {
 	WebPrivateKey.call(this);
@@ -397,9 +400,9 @@ WebSymmetricKey.prototype.decrypt = function(data) {
 	const crypto = getCrypto();
 	return crypto.decrypt(this, EncryptData.import(data));
 };
-WebSymmetricKey.prototype.initKey = function(masterPassword) {
+WebSymmetricKey.prototype.initKey = function(aesKey) {
 	const crypto = getCrypto();
-	return crypto.initKey(this, masterPassword);
+	return crypto.initKey(this, aesKey);
 };
 WebSymmetricKey.prototype.getImportFormat = function() {
 	return c_oAscExportKeyFormat.raw;
@@ -416,6 +419,14 @@ WebSymmetricKey.prototype.isHavePublicKey = function(publicKey) {
 WebSymmetricKey.prototype.getExportPublicKey = function() {
 	return null;
 };
+WebSymmetricKey.prototype.changeMasterPassword = function(oldAesKey, newAesKey) {
+	const oThis= this;
+	return oldAesKey.decrypt(this.binaryKey).then(function(decryptedKey) {
+		return newAesKey.encrypt(decryptedKey);
+	}).then(function(encryptedKey) {
+		oThis.binaryKey = encryptedKey;
+	});
+}
 
 export function EncryptData(encryptData, params) {
 	CryptoBase.call(this);

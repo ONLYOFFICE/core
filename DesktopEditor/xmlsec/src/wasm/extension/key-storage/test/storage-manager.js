@@ -1,13 +1,14 @@
 const KeyStorage = KeyStorageLibrary.KeyStorage;
-
+const RsaOAEPKeyGenParams = KeyStorageLibrary.RsaOAEPKeyGenParams;
+const c_oAscDigestType = KeyStorageLibrary.c_oAscDigestType;
 
 function StorageManager() {
 	this.keyStorage = new KeyStorage();
 }
-StorageManager.prototype.generateKey = function (params) {
+StorageManager.prototype.generateAsymmetricKey = function () {
 	const oThis = this;
 	return this.askMasterPassword().then(function (masterPassword) {
-		return oThis.keyStorage.generateKey(params, masterPassword);
+		return oThis.keyStorage.generateKey(new RsaOAEPKeyGenParams(c_oAscDigestType.SHA256), masterPassword.toUtf8());
 	}).then(function (key) {
 		oThis.keyStorage.addKeys([key]);
 	});
@@ -26,7 +27,7 @@ StorageManager.prototype.getMasterPassword = function () {
 StorageManager.prototype.changeMasterPassword = function () {
 	const oldMasterPassword = prompt("Enter Old Master Password");
 	const newMasterPassword = prompt("Enter New Master Password");
-	this.keyStorage.changeMasterPassword(oldMasterPassword, newMasterPassword);
+	this.keyStorage.changeMasterPassword(oldMasterPassword.toUtf8(), newMasterPassword.toUtf8());
 };
 StorageManager.prototype.askMasterPassword = function () {
 	let masterPassword = this.getMasterPassword();
@@ -40,7 +41,9 @@ StorageManager.prototype.askMasterPassword = function () {
 			sessionStorage.setItem("masterPassword", masterPassword);
 		}
 	}
-
+	if (!this.keyStorage.isInit) {
+		this.keyStorage.init();
+	}
 	return Promise.resolve(masterPassword);
 };
 StorageManager.prototype.getKeyByPublicKey = function (binaryData) {
@@ -52,6 +55,6 @@ StorageManager.prototype.exportKeys = function () {
 StorageManager.prototype.importKeys = function (binaryData) {
 	const oThis = this;
 	return this.askMasterPassword().then(function (masterPassword) {
-		return oThis.keyStorage.import(binaryData, masterPassword);
+		return oThis.keyStorage.import(binaryData, masterPassword.toUtf8());
 	});
 };

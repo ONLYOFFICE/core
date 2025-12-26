@@ -7,7 +7,7 @@ import {
 } from "./defines";
 import {readLong, readBuffer} from "./serialize/reader";
 import {writeBuffer, writeLong} from "./serialize/writer";
-import {CryptoBase, initClass} from "./utils";
+import {CryptoBase, getRandomValues, initClass} from "./utils";
 
 function AlgorithmParams() {
 	CryptoBase.call(this);

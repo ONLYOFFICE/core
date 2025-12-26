@@ -7,21 +7,18 @@ export function KeyStorage() {
 	this.keys = [];
 	this.version = 1;
 	this.pbkdfParams = null;
-	this.cryptoKey = null;
+	this.isInit = false;
 }
-KeyStorage.prototype.setMasterPassword = function(masterPassword) {
+KeyStorage.prototype.init = function() {
 	this.pbkdfParams = new PBKDF2Params(true);
-	const crypto = getCrypto();
-	const oThis = this;
-	return crypto.getAesCryptoKey(masterPassword, this.pbkdfParams).then(function(cryptoKey) {
-		oThis.cryptoKey = cryptoKey;
-	});
+	this.isInit = true;
 };
 KeyStorage.prototype.export = function () {
 	const writer = new BinaryWriter();
 	writer.WriteLong(this.version);
 	switch (this.version) {
 		case 1: {
+			writeObject(writer, this.pbkdfParams);
 			writer.WriteLong(this.keys.length);
 			for (let i = 0; i < this.keys.length; i++) {
 				const key = this.keys[i];
@@ -36,10 +33,12 @@ KeyStorage.prototype.export = function () {
 	return writer.GetData();
 };
 KeyStorage.prototype.import = function (binaryData, masterPassword) {
+	const oThis = this;
 	const reader = new BinaryReader(binaryData, binaryData.length);
 	this.version = reader.GetLong();
 	switch (this.version) {
 		case 1: {
+			this.setPBKDFParams(readObject(reader));
 			const length = reader.GetLong();
 			const keys = [];
 			for (let i = 0; i < length; i++) {
@@ -48,12 +47,14 @@ KeyStorage.prototype.import = function (binaryData, masterPassword) {
 					keys.push(key);
 				}
 			}
-			const initKeys = keys.map(function (key) {
-				return key.initKey(masterPassword);
-			});
-			const oThis = this;
-			return Promise.all(initKeys).then(function() {
-				return oThis.addKeys(keys);
+			const crypto = getCrypto();
+			return crypto.getAesKey(masterPassword, this.pbkdfParams).then(function(aesKey) {
+				const initKeys = keys.map(function (key) {
+					return key.initKey(aesKey);
+				});
+				return Promise.all(initKeys).then(function() {
+					return oThis.addKeys(keys);
+				});
 			});
 		}
 		default: {
@@ -66,7 +67,7 @@ KeyStorage.prototype.changeMasterPassword = function (oldMasterPassword, newMast
 	const oldPBKDFParams = this.pbkdfParams;
 	const newPBKDFParams = new PBKDF2Params(true);
 	const crypto = getCrypto();
-	Promise.all([crypto.getAesCryptoKey(oldMasterPassword, oldPBKDFParams), crypto.getAesCryptoKey(newMasterPassword, newPBKDFParams)]).then(function(aesKeys) {
+	Promise.all([crypto.getAesKey(oldMasterPassword, oldPBKDFParams), crypto.getAesKey(newMasterPassword, newPBKDFParams)]).then(function(aesKeys) {
 		const keys = oThis.keys.map(function(key) {
 			return key.changeMasterPassword(aesKeys[0], aesKeys[1]);
 		});
@@ -93,9 +94,11 @@ KeyStorage.prototype.getValidKeys = function () {
 	}
 	return keys;
 };
-KeyStorage.prototype.generateKey = function (keyParams) {
+KeyStorage.prototype.generateKey = function (keyParams, masterPassword) {
 	const crypto = getCrypto();
-	return crypto.generateKey(keyParams);
+	return crypto.getAesKey(masterPassword, this.pbkdfParams).then(function(aesKey) {
+		return crypto.generateKey(keyParams, aesKey);
+	});
 };
 KeyStorage.prototype.addKeys = function (keys) {
 	this.keys.push.apply(this.keys, keys);
@@ -112,4 +115,7 @@ KeyStorage.prototype.getKeyByPublicKey = function(publicKeyData) {
 		}
 	}
 	return null;
+};
+KeyStorage.prototype.setPBKDFParams = function(params) {
+	this.pbkdfParams = params;
 };

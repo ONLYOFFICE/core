@@ -6,10 +6,10 @@ export const c_oAscDigestType = {
 };
 
 export const c_oAscCryptoDigestType = {};
-c_oAscCryptoDigestType.SHA1 = "SHA-1";
-c_oAscCryptoDigestType.SHA256 = "SHA-256";
-c_oAscCryptoDigestType.SHA384 = "SHA-384";
-c_oAscCryptoDigestType.SHA512 = "SHA-512";
+c_oAscCryptoDigestType[c_oAscDigestType.SHA1] = "SHA-1";
+c_oAscCryptoDigestType[c_oAscDigestType.SHA256] = "SHA-256";
+c_oAscCryptoDigestType[c_oAscDigestType.SHA384] = "SHA-384";
+c_oAscCryptoDigestType[c_oAscDigestType.SHA512] = "SHA-512";
 
 export const c_oAscExportKeyFormat = {
 	pkcs8: "pkcs8",

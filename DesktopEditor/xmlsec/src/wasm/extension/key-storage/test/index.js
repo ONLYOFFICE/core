@@ -15,7 +15,7 @@ const loadStorageButton = document.getElementById('load-storage-button');
 
 let selectedKey = null;
 generateKeyButton.addEventListener('click', (e) => {
-	storageManager.generateKey().then(function (key) {
+	storageManager.generateAsymmetricKey().then(function (key) {
 		selectedKeyDiv.textContent = key.getExportPublicKey().toBase64();
 		selectedKey = key;
 	});

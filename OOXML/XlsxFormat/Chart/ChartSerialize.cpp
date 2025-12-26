@@ -35,7 +35,9 @@
 #include "../../../DesktopEditor/common/StringExt.h"
 
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/SERIESFORMAT.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/SS.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Series.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/DataFormat.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/BRAI.h"
 
 namespace OOX
@@ -6529,6 +6531,24 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 					seriesFormat->m_arAI.push_back(XLS::BaseObjectPtr(ai3));
 					seriesFormat->m_arAI.push_back(XLS::BaseObjectPtr(ai4));
 				}
+			}
+			auto SeriesStyle = new XLS::SS;
+			seriesFormat->m_arPtSS.push_back(XLS::BaseObjectPtr(SeriesStyle));
+			{
+				auto dataFormat = new XLS::DataFormat;
+				SeriesStyle->m_DataFormat = XLS::BaseObjectPtr(dataFormat);
+				if(m_order.IsInit())
+					dataFormat->iss = m_order.get();
+				if(m_idx.IsInit())
+					dataFormat->yi = m_idx.get();
+
+			}
+			if(m_spPr.IsInit())
+			{
+				if(m_spPr->ln.IsInit())
+					SeriesStyle->m_LineFormat = m_spPr->ln->toXLS();
+				if(m_spPr->Fill.is_init())
+					SeriesStyle->m_AreaFormat = m_spPr->Fill.toXLS();
 			}
 			seriesFormat->m_Series = XLS::BaseObjectPtr(series);
 

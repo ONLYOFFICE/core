@@ -50,7 +50,7 @@ public:
 
 	static const ElementType type = typeDataFormat;
 
-	_UINT16 xi = 0;
+	_UINT16 xi = 0xFFFF;
 	_UINT16 yi = 0;
 	_UINT16 iss = 0;
 

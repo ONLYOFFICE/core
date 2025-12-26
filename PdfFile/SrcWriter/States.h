@@ -47,6 +47,7 @@ namespace PdfWriter
     class CFontDict;
 	class CShading;
 	class CExtGrState;
+	class CDestination;
 }
 
 class CPdfWriter;
@@ -1059,6 +1060,29 @@ public:
         lCount  = m_lShadingPointsCount;
     }
 
+	inline void GetBrushScale(bool& isScale, double& scaleX, double& scaleY) const
+	{
+		isScale = m_bIsScale;
+		scaleX = m_dScaleX;
+		scaleY = m_dScaleY;
+	}
+	inline void SetBrushScale(bool isScale, const double& scaleX, const double& scaleY)
+	{
+		m_bIsScale = isScale;
+		m_dScaleX = scaleX;
+		m_dScaleY = scaleY;
+	}
+	inline void GetBrushOffset(double& offsetX, double& offsetY) const
+	{
+		offsetX = m_dOffsetX;
+		offsetY = m_dOffsetY;
+	}
+	inline void SetBrushOffset(const double& offsetX, const double& offsetY)
+	{
+		m_dOffsetX = offsetX;
+		m_dOffsetY = offsetY;
+	}
+
 	inline double* GetDColor2(int& nSize)
 	{
 		nSize = m_nColor2Size;
@@ -1090,6 +1114,12 @@ private:
     double*      m_pShadingPoints;
     LONG         m_lShadingPointsCount;
     double       m_pShadingPattern[6]; // У линейного градиента x0, y0, x1, y1 (2 не используются), у радиального x0, y0, r0, x1, y1, r1
+
+	bool         m_bIsScale;
+	double       m_dScaleX;
+	double       m_dScaleY;
+	double       m_dOffsetX;
+	double       m_dOffsetY;
 
 	double m_dColor2[4];
 	int m_nColor2Size;
@@ -1636,6 +1666,7 @@ struct TDestinationInfo
 {
     TDestinationInfo(PdfWriter::CPage* page, const double& x, const double& y, const double& w, const double& h, const double& dx, const double& dy, const unsigned int& undpage)
     {
+		pDest      = NULL;
         pPage      = page;
         dX         = x;
         dY         = y;
@@ -1645,7 +1676,14 @@ struct TDestinationInfo
         dDestY     = dy;
         unDestPage = undpage;
     }
+	TDestinationInfo(PdfWriter::CDestination* dest, const unsigned int& undpage)
+	{
+		pDest      = dest;
+		pPage      = NULL;
+		unDestPage = undpage;
+	}
 
+	PdfWriter::CDestination* pDest;
     PdfWriter::CPage* pPage;
     double       dX;
     double       dY;

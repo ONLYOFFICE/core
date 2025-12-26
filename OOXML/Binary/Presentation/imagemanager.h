@@ -175,9 +175,9 @@ namespace NSShapeImageGen
 			m_mapMediaFiles.clear();
 		}
 
-		CMediaInfo WriteImage(CBgraFrame& punkImage, double& x, double& y, double& width, double& height);
-		CMediaInfo WriteImage(const std::string& strFile, double& x, double& y, double& width, double& height, const std::wstring& strAdditionalFile, int typeAdditionalFile);
-		CMediaInfo WriteImage(const std::wstring& strFile, double& x, double& y, double& width, double& height, const std::wstring& strAdditionalFile, int typeAdditionalFile);
+		CMediaInfo WriteImage(CBgraFrame& punkImage, double& width, double& height);
+		CMediaInfo WriteImage(const std::string& strFile, double& width, double& height, const std::wstring& strAdditionalFile, int typeAdditionalFile);
+		CMediaInfo WriteImage(const std::wstring& strFile, double& width, double& height, const std::wstring& strAdditionalFile, int typeAdditionalFile);
 		CMediaInfo WriteMedia(const std::wstring& strFile);
         void SetFontManager(NSFonts::IFontManager* pFontManager);
 	protected:
@@ -193,7 +193,5 @@ namespace NSShapeImageGen
 		CMediaInfo GenerateMediaID(const std::wstring& strFileName, const std::wstring & strUrl);
 		CMediaInfo GenerateImageID(std::string strFileName, const std::wstring & strUrl, double dWidth, double dHeight, const std::wstring& strAdditionalFile, int typeAdditionalFile);
 		MediaType GetImageType(CBgraFrame& pFrame);
-		void FlipY(CBgraFrame& punkImage);
-		void FlipX(CBgraFrame& punkImage);
 	};	
 }

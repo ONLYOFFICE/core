@@ -469,6 +469,11 @@ BYTE* CPdfFile::GetWidgets()
 		return NULL;
 	return m_pInternal->pReader->GetWidgets();
 }
+void CPdfFile::SetPageFonts(int nPageIndex)
+{
+	if (m_pInternal->pReader)
+		m_pInternal->pReader->SetFonts(nPageIndex);
+}
 BYTE* CPdfFile::GetAnnotEmbeddedFonts()
 {
 	if (!m_pInternal->pReader)
@@ -480,6 +485,12 @@ BYTE* CPdfFile::GetAnnotStandardFonts()
 	if (!m_pInternal->pReader)
 		return NULL;
 	return m_pInternal->pReader->GetFonts(true);
+}
+BYTE* CPdfFile::GetGIDByUnicode(const std::wstring& wsFontName)
+{
+	if (!m_pInternal->pReader)
+		return NULL;
+	return m_pInternal->pReader->GetGIDByUnicode(wsFontName);
 }
 std::wstring CPdfFile::GetFontPath(const std::wstring& wsFontName)
 {
@@ -966,6 +977,30 @@ HRESULT CPdfFile::put_BrushTransform(const Aggplus::CMatrix& oMatrix)
 	if (!m_pInternal->pWriter)
 		return S_FALSE;
 	return m_pInternal->pWriter->put_BrushTransform(oMatrix);
+}
+HRESULT CPdfFile::get_BrushOffset(double& offsetX, double& offsetY) const
+{
+	if (!m_pInternal->pWriter)
+		return S_FALSE;
+	return m_pInternal->pWriter->get_BrushOffset(offsetX, offsetY);
+}
+HRESULT CPdfFile::put_BrushOffset(const double& offsetX, const double& offsetY)
+{
+	if (!m_pInternal->pWriter)
+		return S_FALSE;
+	return m_pInternal->pWriter->put_BrushOffset(offsetX, offsetY);
+}
+HRESULT CPdfFile::get_BrushScale(bool& isScale, double& scaleX, double& scaleY) const
+{
+	if (!m_pInternal->pWriter)
+		return S_FALSE;
+	return m_pInternal->pWriter->get_BrushScale(isScale, scaleX, scaleY);
+}
+HRESULT CPdfFile::put_BrushScale(bool isScale, const double& scaleX, const double& scaleY)
+{
+	if (!m_pInternal->pWriter)
+		return S_FALSE;
+	return m_pInternal->pWriter->put_BrushScale(isScale, scaleX, scaleY);
 }
 
 HRESULT CPdfFile::get_FontName(std::wstring* wsName)

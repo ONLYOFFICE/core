@@ -886,12 +886,12 @@ namespace Aggplus
 		if (isCurve)
 		{
 			std::vector<PointD> points = GetPoints(idx, 4);
-			area = 3.0 * (points[3].Y - points[0].Y) * (points[1].X + points[2].X)
+			area = 3.0 * ((points[3].Y - points[0].Y) * (points[1].X + points[2].X)
 						  - (points[3].X - points[0].X) * (points[1].Y + points[2].Y)
 						  + points[1].Y * (points[0].X - points[2].X)
 						  - points[1].X * (points[0].Y - points[2].Y)
 						  + points[3].Y * (points[2].X + points[0].X / 3.0)
-						  - points[3].X * (points[2].Y + points[0].Y / 3.0) / 20.0;
+						  - points[3].X * (points[2].Y + points[0].Y / 3.0)) / 20.0;
 		}
 		else
 		{
@@ -1548,4 +1548,32 @@ namespace Aggplus
 
 		return false;
 	}
+}
+
+HRESULT IRenderer::AddPath(const Aggplus::CGraphicsPath& path)
+{
+	if (path.GetPointCount() == 0)
+		return S_FALSE;
+
+	size_t length = path.GetPointCount() + path.GetCloseCount();
+	std::vector<Aggplus::PointD> points = path.GetPoints(0, length);
+
+	for (size_t i = 0; i < length; i++)
+	{
+		if (path.IsCurvePoint(i))
+		{
+			PathCommandCurveTo(points[i].X, points[i].Y,
+							   points[i + 1].X, points[i + 1].Y,
+							   points[i + 2].X, points[i + 2].Y);
+			i += 2;
+		}
+		else if (path.IsMovePoint(i))
+			PathCommandMoveTo(points[i].X, points[i].Y);
+		else if (path.IsLinePoint(i))
+			PathCommandLineTo(points[i].X, points[i].Y);
+		else
+			PathCommandClose();
+	}
+
+	return S_OK;
 }

@@ -1243,7 +1243,7 @@ CDrawingConverter::CDrawingConverter()
     m_bIsUseConvertion2007  = true;
 	m_bNeedMainProps		= false;
     m_pBinaryWriter         = new NSBinPptxRW::CBinaryFileWriter();
-    m_pReader               = new NSBinPptxRW::CBinaryFileReader();
+    m_pBinaryReader               = new NSBinPptxRW::CBinaryFileReader();
     m_pImageManager         = new NSBinPptxRW::CImageManager2();
     m_pXmlWriter            = new NSBinPptxRW::CXmlWriter();
    
@@ -1255,30 +1255,30 @@ CDrawingConverter::~CDrawingConverter()
 	Clear();
 	RELEASEOBJECT(m_pOOXToVMLRenderer);
 	RELEASEOBJECT(m_pBinaryWriter);
-	RELEASEOBJECT(m_pReader);
+	RELEASEOBJECT(m_pBinaryReader);
 	RELEASEOBJECT(m_pImageManager);
 	RELEASEOBJECT(m_pXmlWriter);
 	RELEASEOBJECT(m_pTheme);
 	RELEASEOBJECT(m_pClrMap);
 }
-void CDrawingConverter::SetMainDocument(BinDocxRW::CDocxSerializer* pDocument)
+void CDrawingConverter::SetDocxSerializer(BinDocxRW::CDocxSerializer* pDocxSerializer)
 {
 	m_pBinaryWriter->ClearNoAttack();
 	m_pBinaryWriter->m_pCommon->m_pMediaManager->Clear();
 	
-	m_pBinaryWriter->SetMainDocument(pDocument);
-	m_pReader->SetMainDocument(pDocument);
+	m_pBinaryWriter->m_pDocxSerializer = pDocxSerializer;
+	m_pBinaryReader->m_pDocxSerializer = pDocxSerializer;
 	m_lNextId = 1;
 
-	m_pImageManager->m_nDocumentType = m_pReader->m_nDocumentType = XMLWRITER_DOC_TYPE_DOCX;
+	m_pImageManager->m_nDocumentType = m_pBinaryReader->m_nDocumentType = XMLWRITER_DOC_TYPE_DOCX;
 }
 
 void CDrawingConverter::SetSrcPath(const std::wstring& sPath, int nDocType)
 {
 	OOX::CPath path(sPath);
     
-	m_pReader->m_pRels->m_pManager  = m_pImageManager;
-    m_pReader->m_strFolder          = path.GetPath();
+	m_pBinaryReader->m_pRels->m_pManager  = m_pImageManager;
+    m_pBinaryReader->m_strFolder          = path.GetPath();
 
     m_pImageManager->m_nDocumentType = nDocType;
 }
@@ -1346,7 +1346,7 @@ void CDrawingConverter::AddShapeType(XmlUtils::CXmlNode& oNode)
 		m_mapShapeTypes.insert(std::make_pair(strId, pS));			
 	}
 }
-HRESULT CDrawingConverter::AddShapeType(const std::wstring& bsXml)
+void CDrawingConverter::AddShapeType(const std::wstring& bsXml)
 {
     std::wstring strXml = L"<main ";
 
@@ -1387,378 +1387,6 @@ HRESULT CDrawingConverter::AddShapeType(const std::wstring& bsXml)
 
 		AddShapeType(oNodeST);
     }
-
-	return S_OK;
-}
-
-PPTX::Logic::SpTreeElem CDrawingConverter::ObjectFromXml(const std::wstring& sXml, 	std::wstring** ppMainProps)
-{
-	PPTX::Logic::SpTreeElem oElem;
-    std::wstring sBegin(L"<main xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" \
-xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" \
-xmlns:p=\"urn:schemas-microsoft-com:office:powerpoint\" \
-xmlns:v=\"urn:schemas-microsoft-com:vml\" \
-xmlns:x=\"urn:schemas-microsoft-com:office:excel\" \
-xmlns:o=\"urn:schemas-microsoft-com:office:office\" \
-xmlns:w10=\"urn:schemas-microsoft-com:office:word\" \
-xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" \
-xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" \
-xmlns:ve=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" \
-xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" \
-xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" \
-xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" \
-xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" \
-xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" \
-xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" \
-xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" \
-xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" \
-xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" \
-xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" \
-xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\" \
-xmlns:pic=\"http://schemas.openxmlformats.org/drawingml/2006/picture\" \
-xmlns:xdr=\"http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing\">");
-    
-    std::wstring sEnd(L"</main>");
-    std::wstring strXml = sBegin + sXml + sEnd;
-
-	XmlUtils::CXmlNode oMainNode;
-	if (!oMainNode.FromXmlString(strXml))
-		return oElem;
-
-	std::vector<XmlUtils::CXmlNode> oNodes;
-    if (!oMainNode.GetNodes(L"*", oNodes))
-		return oElem;
-
-	for (size_t i = 0; i < oNodes.size(); ++i)
-	{
-		XmlUtils::CXmlNode & oParseNode = oNodes[i];
-
-		std::wstring strFullName = oParseNode.GetName();
-        std::wstring strNS       = XmlUtils::GetNamespace(strFullName);
-        std::wstring strName     = XmlUtils::GetNameNoNS(strFullName);
-
-        while (true)
-		{
-            if (strName == L"drawing")
-			{
-				ConvertDrawing(&oElem, oParseNode, ppMainProps, true);
-				break;
-			}
-            else if (strName == L"background")
-            {
-				ConvertShape(&oElem, oParseNode, ppMainProps, false);
-                break;
-             }
-            else if (strName == L"pict" || strName == L"object")
-			{
-				//сначала shape type
-				XmlUtils::CXmlNode oNodeST;
-				if (oParseNode.GetNode(L"v:shapetype", oNodeST))
-				{
-					AddShapeType(oNodeST);
-				}
-
-				std::vector<XmlUtils::CXmlNode> oChilds;
-                if (oParseNode.GetNodes(L"*", oChilds))
-				{
-					size_t lChildsCount = oChilds.size();
-                    bool bIsFound = false;
-					PPTX::Logic::SpTreeElem* pElem = NULL;
-					PPTX::Logic::COLEObject* pOle = NULL;
-					for (size_t k = 0; k < oChilds.size(); k++)
-					{
-						XmlUtils::CXmlNode & oNodeP = oChilds[k];
-
-						std::wstring strNameP = XmlUtils::GetNameNoNS(oNodeP.GetName());
-                        if (L"shape"     == strNameP ||
-                            L"rect"      == strNameP ||
-                            L"oval"      == strNameP ||
-                            L"line"      == strNameP ||
-                            L"background"== strNameP ||
-                            L"roundrect" == strNameP ||
-                            L"polyline"  == strNameP)
-						{
-
-							if(NULL == pElem)
-							{
-								pElem = new PPTX::Logic::SpTreeElem;	
-								ConvertShape(pElem, oNodeP, ppMainProps, true);
-
-#ifdef AVS_OFFICE_DRAWING_DUMP_XML_TEST
-								NSBinPptxRW::CXmlWriter oXmlW(m_pReader->m_nDocumentType);
-								pElem->toXmlWriter(&oXmlW);
-								std::wstring strXmlTemp = oXmlW.GetXmlString();
-#endif
-							}
-						}
-						else if (L"binData" == strNameP)
-						{
-							AddBinData(oNodeP);
-						}
-                        else if (L"OLEObject" == strNameP || L"objectEmbed" == strNameP)
-						{
-							pOle = new PPTX::Logic::COLEObject();
-							pOle->fromXML(oNodeP);
-						}
-                        else if (L"group" == strNameP)
-						{
-							if(NULL == pElem)
-							{
-								pElem = new PPTX::Logic::SpTreeElem;
-								ConvertGroup(pElem, oNodeP, ppMainProps, true);
-
-#ifdef AVS_OFFICE_DRAWING_DUMP_XML_TEST
-								NSBinPptxRW::CXmlWriter oXmlW(m_pReader->m_nDocumentType);
-								pElem->toXmlWriter(&oXmlW);
-								std::wstring strXmlTemp = oXmlW.GetXmlString();
-#endif
-							}
-						}
-						else if (L"drawing" == strNameP)
-						{
-							ConvertDrawing(pElem, oNodeP, ppMainProps, true);
-						}
-						else
-						{
-							continue;
-						}
-
-						if (bIsFound)
-							break;
-					}
-					if(NULL != pElem)
-					{
-						if(NULL != pOle && pOle->m_sProgId.IsInit() && (pOle->m_oId.IsInit() || pOle->m_OleObjectFile.IsInit()))
-						{
-							PPTX::Logic::Shape* pShape = dynamic_cast<PPTX::Logic::Shape*>(pElem->GetElem().operator ->());
-							if(NULL != pShape && pShape->spPr.Fill.Fill.IsInit())
-							{
-								bool bImageOle = false;
-
-								if (pShape->spPr.Fill.m_type == PPTX::Logic::UniFill::blipFill) bImageOle = true;
-								
-								PPTX::Logic::BlipFill oBlipFillNew;
-
-								if (!bImageOle)
-									oBlipFillNew.blip = new PPTX::Logic::Blip();
-
-								const PPTX::Logic::BlipFill& oBlipFill = bImageOle ? pShape->spPr.Fill.Fill.as<PPTX::Logic::BlipFill>() : oBlipFillNew;
-								
-								if(oBlipFill.blip.IsInit())
-								{
-									if (pOle->m_OleObjectFile.IsInit())
-									{
-										oBlipFill.blip->oleFilepathBin = pOle->m_OleObjectFile->filename().GetPath();
-									}
-									else if (pOle->m_oId.IsInit())
-									{
-										oBlipFill.blip->oleRid = pOle->m_oId.get().ToString();
-									}
-                                    if(strName == L"object")
-									{
-                                        int nDxaOrig = oParseNode.ReadAttributeInt(L"w:dxaOrig");
-                                        int nDyaOrig = oParseNode.ReadAttributeInt(L"w:dyaOrig");
-										if (nDxaOrig > 0 && nDyaOrig > 0)
-										{
-											pOle->m_oDxaOrig = nDxaOrig;
-											pOle->m_oDyaOrig = nDyaOrig;
-										}
-									}
-
-									PPTX::Logic::Pic *newElem = new PPTX::Logic::Pic();
-
-									newElem->blipFill	= oBlipFill;
-									newElem->spPr		= pShape->spPr;
-									newElem->style		= pShape->style;
-									newElem->oleObject.reset(pOle);
-									pOle = NULL;								
-									
-									pElem->InitElem(newElem);
-								}
-							}
-						}
-						m_pBinaryWriter->WriteRecord1(1, *pElem);
-					}
-					RELEASEOBJECT(pElem)
-					RELEASEOBJECT(pOle)
-				}
-
-				break;
-			}
-			else if (strName == L"oleObj")
-			{
-				nullable<PPTX::Logic::Pic> pic = oParseNode.ReadNode(_T("p:pic"));
-				if (pic.is_init())
-				{
-					pic->fromXMLOle(oParseNode); // todooo сделать норальный объект 
-
-					m_pBinaryWriter->WriteRecord2(1, pic);
-				}
-				break;
-			}
-			else if (strName == L"AlternateContent")
-			{
-				XmlUtils::CXmlNode oNodeDr;
-                if (oParseNode.GetNode(L"w:drawing", oNodeDr))
-				{
-                    strName = L"drawing";
-					oParseNode = oNodeDr;
-					continue;
-				}
-
-                if (oParseNode.GetNode(L"mc:Choice", oNodeDr))
-				{
-					oParseNode = oNodeDr;
-					continue;
-				}
-
-                if (oParseNode.GetNode(L"w:pict", oNodeDr))
-				{
-                    strName = L"pict";
-					oParseNode = oNodeDr;
-					continue;
-				}
-
-                if (oParseNode.GetNode(L"w:object", oNodeDr))
-				{
-                    strName = L"object";
-					oParseNode = oNodeDr;
-					continue;
-				}
-
-                if (oParseNode.GetNode(L"xdr:sp", oNodeDr))
-				{
-                    strName = L"sp";
-					oParseNode = oNodeDr;
-					continue;
-				}
-
-                if (oParseNode.GetNode(L"mc:Fallback", oNodeDr))
-				{
-					oParseNode = oNodeDr;
-					continue;
-				}				
-
-				break;
-			}
-			else
-			{
-				oElem = oParseNode;
-				break;
-			}
-		}
-	}
-	return oElem;
-}
-
-std::wstring CDrawingConverter::ObjectToDrawingML(const std::wstring& sXml, int nDocType)
-{
-	std::wstring *pMainProps	= new std::wstring();
-
-	PPTX::Logic::SpTreeElem oElem = ObjectFromXml(sXml, &pMainProps);
-	
-	if (oElem.is_init() == false) return L"";
-
-	NSBinPptxRW::CXmlWriter oXmlWriter(nDocType);
-	oXmlWriter.m_bIsUseOffice2007 = false;
-
-	oXmlWriter.m_bIsTop = true;
-	
-	oXmlWriter.WriteString(L"<w:drawing>");
-
-	bool bIsInline = false;
-	
-	std::wstring strMainProps = *pMainProps;
-	std::wstring strMainPropsTail;
-    
-	int nIndexF = (int)strMainProps.find(L"</wp:inline>");
-	if (-1 != nIndexF)
-	{
-		bIsInline = true;
-		strMainProps = strMainProps.substr(0, nIndexF);
-	}
-	else
-	{
-        nIndexF = (int)strMainProps.find(L"</wp:anchor>");
-		strMainProps = strMainProps.substr(0, nIndexF);
-	}
-
-	if (-1 == nIndexF)
-	{
-		oElem.toXmlWriter(&oXmlWriter);
-		return oXmlWriter.GetXmlString();
-	}
-
-    int nIndexTail = (int)strMainProps.find(L"<wp14:sizeRel");
-	if(-1 != nIndexTail)
-	{
-        strMainPropsTail    = strMainProps.substr( nIndexTail );
-        strMainProps        = strMainProps.substr(0, nIndexTail);
-	}
-
-	oXmlWriter.WriteString(strMainProps);
-
-	if (oElem.is<PPTX::Logic::SpTree>())
-	{
-        oXmlWriter.WriteString(L"<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">\
-<a:graphicData uri=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\">");
-	}
-	else if (oElem.is<PPTX::Logic::Pic>())
-	{
-        oXmlWriter.WriteString(L"<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">\
-<a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/picture\">");
-	}
-	else
-	{
-        oXmlWriter.WriteString(L"<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">\
-<a:graphicData uri=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\">");
-	}
-	oElem.toXmlWriter(&oXmlWriter);
-    oXmlWriter.WriteString(L"</a:graphicData></a:graphic>");
-
-	oXmlWriter.WriteString(strMainPropsTail);
-    oXmlWriter.WriteString(bIsInline ? L"</wp:inline>" : L"</wp:anchor>");
-
-    oXmlWriter.WriteString(L"</w:drawing>");
-
-	delete pMainProps;
-
-	return oXmlWriter.GetXmlString();
-}
-
-std::wstring CDrawingConverter::ObjectToVML	(const std::wstring& sXml)
-{
-	std::wstring *pMainProps	= new std::wstring();
-	
-	PPTX::Logic::SpTreeElem oElem = ObjectFromXml(sXml, &pMainProps);
-	
-	if (oElem.is_init() == false) return L"";
-	
-	NSBinPptxRW::CXmlWriter oXmlWriter(m_pReader->m_nDocumentType);
-	oXmlWriter.m_bIsUseOffice2007 = true;
-
-	oXmlWriter.m_bIsTop = true;
-	
-	if (NULL == m_pOOXToVMLRenderer)
-		m_pOOXToVMLRenderer = new COOXToVMLGeometry();
-	oXmlWriter.m_pOOXToVMLRenderer = m_pOOXToVMLRenderer;
-
-	oXmlWriter.WriteString(L"<w:pict>");
-
-	if (oElem.is<PPTX::Logic::SpTree>())
-	{
-		ConvertGroupVML(oElem, *pMainProps, oXmlWriter);
-	}
-	else if (oElem.is<PPTX::Logic::Shape>())
-	{
-		ConvertShapeVML(oElem, *pMainProps, oXmlWriter);
-	}
-
-    oXmlWriter.WriteString(L"</w:pict>");
-
-	delete pMainProps;
-
-	return oXmlWriter.GetXmlString();
 }
 
 HRESULT CDrawingConverter::AddObject(const std::wstring& bsXml, std::wstring** pMainProps)
@@ -1972,7 +1600,7 @@ bool CDrawingConverter::ParceObject(const std::wstring& strXml, std::wstring** p
 		return NULL;
 
 	m_pBinaryWriter->StartRecord(0);
-	m_pBinaryWriter->ClearCurShapePositionAndSizes();
+	m_pBinaryWriter->ClearCurShapeSize();
 
 	size_t lCount = oNodes.size();
 	for (size_t i = 0; i < lCount; ++i)
@@ -2082,11 +1710,6 @@ bool CDrawingConverter::ParceObject(const std::wstring& strXml, std::wstring** p
 						}
 						if ((pPicture) && (pPicture->blipFill.blip.IsInit()))
 						{
-							if (pPicture->spPr.xfrm.IsInit())
-							{// for bad replacemant image for ole
-								m_pBinaryWriter->m_dCxCurShape = pPicture->spPr.xfrm->extX.get_value_or(0);
-								m_pBinaryWriter->m_dCyCurShape = pPicture->spPr.xfrm->extY.get_value_or(0);
-							}
 							if (pOle->m_OleObjectFile.IsInit())
 							{
 								pPicture->blipFill.blip->oleFilepathBin = pOle->m_OleObjectFile->filename().GetPath();
@@ -2136,107 +1759,8 @@ bool CDrawingConverter::ParceObject(const std::wstring& strXml, std::wstring** p
 	}
 
 	m_pBinaryWriter->EndRecord();
-	return true;
 }
 
-void CDrawingConverter::ConvertDiagram(PPTX::Logic::SpTreeElem *result, XmlUtils::CXmlNode& oNode, std::wstring**& pMainProps, bool bIsTop)
-{
-	if (!result) return;
-
-	nullable<OOX::RId>		id_data;
-	nullable<OOX::RId>		id_drawing;
-
-	smart_ptr<OOX::File>	oFileData;
-	smart_ptr<OOX::File>	oFileDrawing;
-
-	OOX::CDiagramData*		pDiagramData	= NULL;
-	OOX::CDiagramDrawing*	pDiagramDrawing	= NULL;
-
-    XmlMacroReadAttributeBase(oNode, L"r:dm", id_data);
-	
-	if (id_data.IsInit() && m_pBinaryWriter->GetRelsPtr())
-	{
-		oFileData = m_pBinaryWriter->GetRelsPtr()->Find(*id_data);
-		
-		if (oFileData.is_init())
-		{
-			pDiagramData = dynamic_cast<OOX::CDiagramData*>(oFileData.GetPointer());										
-			if ((pDiagramData) && (pDiagramData->m_oDataModel.IsInit()))
-			{
-				for (size_t i = 0; (pDiagramData->m_oDataModel->m_oExtLst.IsInit()) && i < pDiagramData->m_oDataModel->m_oExtLst->m_arrExt.size(); i++)
-				{
-					if (pDiagramData->m_oDataModel->m_oExtLst->m_arrExt[i]->m_oDataModelExt.IsInit())
-					{
-						id_drawing = pDiagramData->m_oDataModel->m_oExtLst->m_arrExt[i]->m_oDataModelExt->m_oRelId;
-						break;
-					}
-				}
-			}
-		}
-		if (id_drawing.is_init() && m_pBinaryWriter->GetRelsPtr())
-		{
-			oFileDrawing = m_pBinaryWriter->GetRelsPtr()->Find(*id_drawing);
-			pDiagramDrawing = dynamic_cast<OOX::CDiagramDrawing*>(oFileDrawing.GetPointer());
-		}
-		if (!pDiagramDrawing && pDiagramData)
-		{
-		   OOX::CPath pathDiagramData = pDiagramData->m_strFilename;
-
-			int a1 = (int)pathDiagramData.GetFilename().find(L".");
-			std::wstring strId = pathDiagramData.GetFilename().substr(4, pathDiagramData.GetFilename().length() - 8);
-			
-			OOX::CPath pathDiagramDrawing = pathDiagramData.GetDirectory() + FILE_SEPARATOR_STR + L"drawing" + strId + L".xml";	
-
-			if (NSFile::CFileBinary::Exists(pathDiagramDrawing.GetPath()))
-			{
-				oFileDrawing = smart_ptr<OOX::File>(dynamic_cast<OOX::File*>(new OOX::CDiagramDrawing(NULL, pathDiagramDrawing)));
-				if (oFileDrawing.IsInit())
-					pDiagramDrawing = dynamic_cast<OOX::CDiagramDrawing*>(oFileDrawing.GetPointer());
-			}
-		}
-	}
-
-	if ((pDiagramDrawing) && (pDiagramDrawing->m_oShapeTree.IsInit()))
-	{
-		result->InitElem(new PPTX::Logic::SpTree(*pDiagramDrawing->m_oShapeTree));
-		//to correct write blipFill rId to binary
-		SetRelsPtr(pDiagramDrawing);
-	}
-	else
-	{//BG-FSC1.docx
-		//parse pDiagramData !!
-	}
-	if (result->is<PPTX::Logic::SpTree>())
-	{
-		PPTX::Logic::SpTree& _pElem = result->as<PPTX::Logic::SpTree>();
-		if (!_pElem.grpSpPr.xfrm.is_init())
-		{
-			_pElem.grpSpPr.xfrm = new PPTX::Logic::Xfrm();
-
-			_pElem.grpSpPr.xfrm->offX = m_pBinaryWriter->m_dXCurShape;
-			_pElem.grpSpPr.xfrm->offY = m_pBinaryWriter->m_dYCurShape;
-			_pElem.grpSpPr.xfrm->extX = m_pBinaryWriter->m_dCxCurShape;
-			_pElem.grpSpPr.xfrm->extY = m_pBinaryWriter->m_dCyCurShape;
-			_pElem.grpSpPr.xfrm->chOffX = (int)0;
-			_pElem.grpSpPr.xfrm->chOffY = (int)0;
-			_pElem.grpSpPr.xfrm->chExtX = m_pBinaryWriter->m_dCxCurShape;
-			_pElem.grpSpPr.xfrm->chExtY = m_pBinaryWriter->m_dCyCurShape;
-		}
-		else
-		{
-			if (!_pElem.grpSpPr.xfrm->offX.is_init())	_pElem.grpSpPr.xfrm->offX = m_pBinaryWriter->m_dXCurShape;
-			if (!_pElem.grpSpPr.xfrm->offY.is_init())	_pElem.grpSpPr.xfrm->offY = m_pBinaryWriter->m_dYCurShape;
-			if (!_pElem.grpSpPr.xfrm->extX.is_init())	_pElem.grpSpPr.xfrm->extX = m_pBinaryWriter->m_dCxCurShape;
-			if (!_pElem.grpSpPr.xfrm->extY.is_init())	_pElem.grpSpPr.xfrm->extY = m_pBinaryWriter->m_dCyCurShape;
-			
-			if (!_pElem.grpSpPr.xfrm->chOffX.is_init())	_pElem.grpSpPr.xfrm->chOffX = (int)0;
-			if (!_pElem.grpSpPr.xfrm->chOffY.is_init())	_pElem.grpSpPr.xfrm->chOffY = (int)0;
-			if (!_pElem.grpSpPr.xfrm->chExtX.is_init())	_pElem.grpSpPr.xfrm->chExtX = m_pBinaryWriter->m_dCxCurShape;
-			if (!_pElem.grpSpPr.xfrm->chExtY.is_init())	_pElem.grpSpPr.xfrm->chExtY = m_pBinaryWriter->m_dCyCurShape;
-		}
-					
-	}								
-}
 void CDrawingConverter::ConvertDrawing(PPTX::Logic::SpTreeElem *elem, XmlUtils::CXmlNode& oNodeShape, std::wstring**& pMainProps, bool bIsTop)
 {
 	if (!elem) return;
@@ -2251,13 +1775,12 @@ void CDrawingConverter::ConvertDrawing(PPTX::Logic::SpTreeElem *elem, XmlUtils::
 	{
 		XmlUtils::CXmlNode oNodeExt;
 
-		m_pBinaryWriter->m_dXCurShape = 0;
-		m_pBinaryWriter->m_dYCurShape = 0;
-
 		if (oNodeAnchorInline.GetNode(L"wp:extent", oNodeExt))
 		{
-			m_pBinaryWriter->m_dCxCurShape = oNodeExt.ReadAttributeInt(L"cx");
-			m_pBinaryWriter->m_dCyCurShape = oNodeExt.ReadAttributeInt(L"cy");
+			double cx = oNodeExt.ReadAttributeInt(L"cx");
+			double cy = oNodeExt.ReadAttributeInt(L"cy");
+		
+			m_pBinaryWriter->SetCurShapeSize(cx, cy);
 		}
 		XmlUtils::CXmlNode oNodeDocPr;
 		if (oNodeAnchorInline.GetNode(L"wp:docPr", oNodeDocPr))
@@ -2279,19 +1802,9 @@ void CDrawingConverter::ConvertDrawing(PPTX::Logic::SpTreeElem *elem, XmlUtils::
 			{
 				XmlUtils::CXmlNode &oNodeContent = oChilds[0];
 
-/*				if (L"dgm:relIds" == oNodeContent.GetName() && m_pBinaryWriter->m_pCurrentContainer->is_init())
-				{
-					ConvertDiagram(elem, oNodeContent, pMainProps, true);
-				}
-				else */if (L"wpc:wpc" == oNodeContent.GetName())
+				if (L"wpc:wpc" == oNodeContent.GetName())
 				{
 					PPTX::Logic::SpTree* pTree = new PPTX::Logic::SpTree();
-
-					pTree->grpSpPr.xfrm = new PPTX::Logic::Xfrm();
-					pTree->grpSpPr.xfrm->offX = m_pBinaryWriter->m_dXCurShape;
-					pTree->grpSpPr.xfrm->offY = m_pBinaryWriter->m_dYCurShape;
-					pTree->grpSpPr.xfrm->extX = m_pBinaryWriter->m_dCxCurShape;
-					pTree->grpSpPr.xfrm->extY = m_pBinaryWriter->m_dCyCurShape;
 
 					pTree->fromXML(oNodeContent);
 					elem->InitElem(pTree);
@@ -2973,12 +2486,6 @@ void CDrawingConverter::ConvertShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::CX
 		}
 		else
 		{
-			m_pBinaryWriter->m_dXCurShape = 0;
-			m_pBinaryWriter->m_dYCurShape = 0;
-
-			m_pBinaryWriter->m_dCxCurShape = 0;
-			m_pBinaryWriter->m_dCyCurShape = 0;
-
 			pSpPr->xfrm = new PPTX::Logic::Xfrm();
 			pSpPr->xfrm->offX = oProps.X;
 			pSpPr->xfrm->offY = oProps.Y;
@@ -3737,7 +3244,15 @@ void CDrawingConverter::ConvertGroup(PPTX::Logic::SpTreeElem *result, XmlUtils::
 			}
 		}
 	}
-	
+	std::wstring strStyle = oNode.GetAttribute(L"style");
+
+	PPTX::CCSS oCSSParser;
+	oCSSParser.LoadFromString2(strStyle);
+
+	CSpTreeElemProps oProps;
+	oProps.IsTop = bIsTop;
+	std::wstring strMainPos = GetDrawingMainProps(oNode, oCSSParser, oProps);
+
 	if (oNode.GetNodes(L"*", oNodes))
 	{
 		size_t nCount = oNodes.size();
@@ -3777,15 +3292,6 @@ void CDrawingConverter::ConvertGroup(PPTX::Logic::SpTreeElem *result, XmlUtils::
 				continue;
 		}
 	}
-
-    std::wstring strStyle = oNode.GetAttribute(L"style");
-
-	PPTX::CCSS oCSSParser;
-	oCSSParser.LoadFromString2(strStyle);
-
-	CSpTreeElemProps oProps;
-	oProps.IsTop = bIsTop;
-	std::wstring strMainPos = GetDrawingMainProps(oNode, oCSSParser, oProps);
 
 	LONG lCoordOriginX = 0;
 	LONG lCoordOriginY = 0;
@@ -4062,11 +3568,6 @@ std::wstring CDrawingConverter::GetDrawingMainProps(XmlUtils::CXmlNode& oNode, P
 	LONG width	= 0;
 	LONG height = 0;
 
-    pFind = oCssStyles.m_mapSettings.find(L"polyline_correct");
-	bool bIsPolyCorrect = (oCssStyles.m_mapSettings.end() != pFind) ? true : false;
-	if (bIsPolyCorrect)
-		dKoefSize = 1;
-
 	if (!bIsInline)
 	{
         pFind = oCssStyles.m_mapSettings.find(L"margin-left");
@@ -4176,11 +3677,10 @@ std::wstring CDrawingConverter::GetDrawingMainProps(XmlUtils::CXmlNode& oNode, P
 	oProps.Width	= width;
 	oProps.Height	= height;
 
-	m_pBinaryWriter->m_dXCurShape = left;
-	m_pBinaryWriter->m_dYCurShape = top;
-
-	m_pBinaryWriter->m_dCxCurShape = width;
-	m_pBinaryWriter->m_dCyCurShape = height;
+	if (oProps.IsTop)
+	{
+		m_pBinaryWriter->SetCurShapeSize(width, height); 
+	}
 
  	bool bExtendedSize = false;
 	XmlUtils::CXmlNode oNodeShadow = oNode.ReadNode(L"v:shadow");
@@ -4616,236 +4116,9 @@ std::wstring CDrawingConverter::GetDrawingMainProps(XmlUtils::CXmlNode& oNode, P
 	return oWriter.GetXmlString();
 }
 
-
-std::wstring CDrawingConverter::GetVMLShapeXml(PPTX::Logic::SpTreeElem& oElem)
-{
-	CPPTXShape* pShapePPTX = NULL;
-	if (oElem.is<PPTX::Logic::Shape>())
-	{
-		const PPTX::Logic::Shape& lpOriginShape = oElem.as<PPTX::Logic::Shape>();
-
-		if (lpOriginShape.spPr.Geometry.is<PPTX::Logic::PrstGeom>())
-		{
-			const PPTX::Logic::PrstGeom lpGeom = lpOriginShape.spPr.Geometry.as<PPTX::Logic::PrstGeom>();
-
-			OOXMLShapes::ShapeType _lspt = PPTX2EditorAdvanced::GetShapeTypeFromStr(lpGeom.prst.get());
-			if(_lspt != OOXMLShapes::sptNil) 
-			{
-				pShapePPTX = new CPPTXShape();
-				pShapePPTX->SetType(NSBaseShape::pptx, _lspt);
-
-				std::wstring strAdjustValues = lpGeom.GetODString();
-				pShapePPTX->LoadAdjustValuesList(strAdjustValues);
-			}
-		}
-		else if(lpOriginShape.spPr.Geometry.is<PPTX::Logic::CustGeom>())
-		{
-			const PPTX::Logic::CustGeom lpGeom = lpOriginShape.spPr.Geometry.as<PPTX::Logic::CustGeom>();
-			std::wstring strShape = lpGeom.GetODString();
-			pShapePPTX = new CPPTXShape();
-			pShapePPTX->LoadFromXML(strShape);
-		}
-		else
-		{
-			pShapePPTX = new CPPTXShape();
-			pShapePPTX->SetType(NSBaseShape::pptx, (int)OOXMLShapes::sptCRect);
-		}								
-	}
-
-	if (NULL != pShapePPTX)
-	{
-		NSGuidesVML::CConverterPPTXPPT oConverterPPTX_2_PPT;
-		oConverterPPTX_2_PPT.Convert(pShapePPTX);
-
-		std::wstring sDumpXml = GetVMLShapeXml(oConverterPPTX_2_PPT.GetConvertedShape());
-
-		return sDumpXml;
-	}
-
-    return L"";
-}
-
-std::wstring CDrawingConverter::GetVMLShapeXml(CPPTShape* pPPTShape)
-{
-	NSBinPptxRW::CXmlWriter oXmlWriter;
-    oXmlWriter.StartNode(L"v:shape");
-	oXmlWriter.StartAttributes();
-
-    std::wstring strCoordSize;
-	LONG lCoordW = 21600;
-	LONG lCoordH = 21600;
-	if (0 < pPPTShape->m_oPath.m_arParts.size())
-	{
-		lCoordW = pPPTShape->m_oPath.m_arParts[0].width;
-		lCoordH = pPPTShape->m_oPath.m_arParts[0].height;
-	}
-    strCoordSize = std::to_wstring(lCoordW) + L"," + std::to_wstring(lCoordH);
-    oXmlWriter.WriteAttribute(L"coordsize", strCoordSize);
-
-	int nAdjCount = (int)pPPTShape->m_arAdjustments.size();
-	if (nAdjCount > 0)
-	{
-        oXmlWriter.WriteString(L" adj=\"");
-
-		for (int i = 0; i < nAdjCount; ++i)
-		{
-			if (0 != i)
-			{
-                std::wstring s = L"," + std::to_wstring(pPPTShape->m_arAdjustments[i]);
-				oXmlWriter.WriteString(s);
-			}
-			else
-			{
-                oXmlWriter.WriteString(std::to_wstring(pPPTShape->m_arAdjustments[i]));
-			}
-		}
-
-        oXmlWriter.WriteString(L"\"");
-	}
-
-    oXmlWriter.WriteAttribute(L"path", pPPTShape->m_strPath);
-	oXmlWriter.EndAttributes();
-
-	std::vector<CFormula>& arGuides = pPPTShape->m_oManager.m_arFormulas;
-	int nGuides = (int)arGuides.size();
-	if (nGuides != 0)
-	{
-        oXmlWriter.StartNode(L"v:formulas");
-		oXmlWriter.StartAttributes();
-		oXmlWriter.EndAttributes();
-
-		for (int i = 0; i < nGuides; ++i)
-		{
-			CFormula& oGuide = arGuides[i];
-			if ((int)oGuide.m_eFormulaType >= VML_GUIDE_COUNT)
-				break;
-
-            oXmlWriter.WriteString(L"<v:f eqn=\"");
-			
-            oXmlWriter.WriteString(VML_GUIDE_TYPE[(int)oGuide.m_eFormulaType]);
-			
-			BYTE nParams = VML_GUIDE_PARAM_COUNT[(int)oGuide.m_eFormulaType];
-			if (nParams > 0)
-			{
-                std::wstring str;
-				if (oGuide.m_eType1 == ptAdjust)
-				{
-                    str = L" #";
-				}
-				else if (oGuide.m_eType1 == ptFormula)
-				{
-                    str = L" @";
-				}
-				else
-				{
-                    str = L" ";
-				}
-                str += std::to_wstring(oGuide.m_lParam1);
-                oXmlWriter.WriteString(str);
-			}
-			if (nParams > 1)
-			{
-                std::wstring str;
-				if (oGuide.m_eType2 == ptAdjust)
-				{
-                     str = L" #";
-				}
-				else if (oGuide.m_eType2 == ptFormula)
-				{
-                     str = L" @";
-				}
-				else
-				{
-                     str = L" ";
-				}
-                str += std::to_wstring(oGuide.m_lParam2);
-                oXmlWriter.WriteString(str);
-			}
-			if (nParams > 2)
-			{
-                std::wstring str ;
-				if (oGuide.m_eType3 == ptAdjust)
-				{
-                    str = L" #";
-				}
-				else if (oGuide.m_eType3 == ptFormula)
-				{
-                    str = L" @";
-				}
-				else
-				{
-                    str = L" ";
-				}
-                str += std::to_wstring(oGuide.m_lParam3);
-				oXmlWriter.WriteString(str);
-			}
-
-            oXmlWriter.WriteString(L"\"/>");
-		}
-
-        oXmlWriter.EndNode(L"v:formulas");
-
-		size_t nTextRectCount = pPPTShape->m_arStringTextRects.size();
-		if (0 < nTextRectCount)
-		{
-            oXmlWriter.WriteString(L"<v:path textboxrect=\"");
-
-			for (size_t i = 0; i < nTextRectCount; ++i)
-			{
-				if (0 != i)
-                    oXmlWriter.WriteString(L",");
-
-				oXmlWriter.WriteString(pPPTShape->m_arStringTextRects[i]);
-			}
-
-            oXmlWriter.WriteString(L"\"/>");
-		}
-
-		int nHandles = (int)pPPTShape->m_arHandles.size();
-		if (0 < nHandles)
-		{
-            oXmlWriter.StartNode(L"v:handles");
-			oXmlWriter.StartAttributes();
-			oXmlWriter.EndAttributes();
-
-			for (int i = 0; i < nHandles; ++i)
-			{
-                oXmlWriter.StartNode(L"v:h");
-				
-				CHandle_& oH = pPPTShape->m_arHandles[i];
-
-                if (oH.position != L"")
-                    oXmlWriter.WriteAttribute(L"position", oH.position);
-
-                if (oH.xrange != L"")
-                    oXmlWriter.WriteAttribute(L"xrange", oH.xrange);
-
-                if (oH.yrange != L"")
-                    oXmlWriter.WriteAttribute(L"yrange", oH.yrange);
-
-                if (oH.polar != L"")
-                    oXmlWriter.WriteAttribute(L"polar", oH.polar);
-
-                if (oH.radiusrange != L"")
-                    oXmlWriter.WriteAttribute(L"radiusrange", oH.radiusrange);
-
-                if (oH.switchHandle != L"")
-                    oXmlWriter.WriteAttribute(L"switch", oH.switchHandle);
-
-                oXmlWriter.WriteString(L"/>");
-			}
-
-            oXmlWriter.EndNode(L"v:handles");
-		}
-	}
-
-    oXmlWriter.EndNode(L"v:shape");
-	return oXmlWriter.GetXmlString();
-}
-
 void CDrawingConverter::SendMainProps(const std::wstring& strMainProps, std::wstring**& pMainProps)
 {
-	if (((m_pBinaryWriter) && (m_pBinaryWriter->m_pMainDocument)) || !m_pBinaryWriter || m_bNeedMainProps)
+	if (((m_pBinaryWriter) && (m_pBinaryWriter->m_pDocxSerializer)) || !m_pBinaryWriter || m_bNeedMainProps)
 	{
 		*pMainProps = new std::wstring();
 		**pMainProps = strMainProps;
@@ -5902,7 +5175,7 @@ HRESULT CDrawingConverter::LoadClrMap(const std::wstring& bsXml)
 	return S_OK;
 }
 
-HRESULT CDrawingConverter::SaveObject(LONG lStart, LONG lLength, const std::wstring& bsMainProps, std::wstring & sXml)
+void CDrawingConverter::SaveObject(LONG lStart, LONG lLength, const std::wstring& bsMainProps, std::wstring & sXml)
 {
 	bool bIsInline = false;
 	std::wstring strMainProps = bsMainProps;
@@ -5920,7 +5193,7 @@ HRESULT CDrawingConverter::SaveObject(LONG lStart, LONG lLength, const std::wstr
 	}
 
 	if (-1 == nIndexF)
-		return S_FALSE;
+		return;
 
     int nIndexTail = (int)strMainProps.find(L"<wp14:sizeRel");
 	if(-1 != nIndexTail)
@@ -5931,33 +5204,33 @@ HRESULT CDrawingConverter::SaveObject(LONG lStart, LONG lLength, const std::wstr
 
 	/*
     std::wstring strId = L"");
-    strId.Format(L"<wp:docPr id=\"%d\" name=\"\"/>"), m_pReader->GenerateNextId());
+    strId.Format(L"<wp:docPr id=\"%d\" name=\"\"/>"), m_pBinaryReader->GenerateNextId());
 	strMainProps += strId;
 	*/
 
     //strMainProps += L"<wp:cNvGraphicFramePr/>");
 
-	m_pReader->Seek(lStart);
+	m_pBinaryReader->Seek(lStart);
 	
 	++m_nCurrentIndexObject;
 
-	BYTE typeRec1 = m_pReader->GetUChar(); // must be 0;
-	LONG szRec1 = m_pReader->GetRecordSize();
-	LONG _e = m_pReader->GetPos() + szRec1 + 4;
+	BYTE typeRec1 = m_pBinaryReader->GetUChar(); // must be 0;
+	LONG szRec1 = m_pBinaryReader->GetRecordSize();
+	LONG _e = m_pBinaryReader->GetPos() + szRec1 + 4;
 
 	if (typeRec1 == 0 && szRec1 > 0)
 	{
-		BYTE typeRec2 = m_pReader->GetUChar(); // must be 1;
-		LONG szRec2 = m_pReader->GetLong();
+		BYTE typeRec2 = m_pBinaryReader->GetUChar(); // must be 1;
+		LONG szRec2 = m_pBinaryReader->GetLong();
 
 		if (typeRec2 == 1 && szRec2 > 0)
 		{
 			PPTX::Logic::SpTreeElem oElem;
 
-			if (m_pReader->m_nDocumentType == 0)
-				m_pReader->m_nDocumentType = XMLWRITER_DOC_TYPE_DOCX;
+			if (m_pBinaryReader->m_nDocumentType == 0)
+				m_pBinaryReader->m_nDocumentType = XMLWRITER_DOC_TYPE_DOCX;
 
-			oElem.fromPPTY(m_pReader);
+			oElem.fromPPTY(m_pBinaryReader);
 			bool bOle = false;
 			if (oElem.is<PPTX::Logic::Pic>())
 			{
@@ -5984,7 +5257,7 @@ HRESULT CDrawingConverter::SaveObject(LONG lStart, LONG lLength, const std::wstr
 					bSignatureLine = true;
 				}
 			}
-			NSBinPptxRW::CXmlWriter oXmlWriter(m_pReader->m_nDocumentType);
+			NSBinPptxRW::CXmlWriter oXmlWriter(m_pBinaryReader->m_nDocumentType);
 
 			oXmlWriter.m_lObjectIdVML = m_pXmlWriter->m_lObjectIdVML;
 			oXmlWriter.m_lObjectIdOle = m_pXmlWriter->m_lObjectIdOle;
@@ -6051,7 +5324,7 @@ HRESULT CDrawingConverter::SaveObject(LONG lStart, LONG lLength, const std::wstr
 		<a:graphicData uri=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\">");
 				}
 
-				if (m_pReader->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX)
+				if (m_pBinaryReader->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX)
 				{
 					PPTX::Logic::Xfrm *pXfrm = NULL;
 					if (oElem.getType() == OOX::et_pic)
@@ -6141,8 +5414,7 @@ HRESULT CDrawingConverter::SaveObject(LONG lStart, LONG lLength, const std::wstr
 		}
 	}
 
-	m_pReader->Seek(_e);
-	return S_OK;
+	m_pBinaryReader->Seek(_e);
 }
 void CDrawingConverter::SaveObjectExWriterInit(NSBinPptxRW::CXmlWriter& oXmlWriter, int nDocType)
 {
@@ -6162,33 +5434,33 @@ void CDrawingConverter::SaveObjectExWriterRelease(NSBinPptxRW::CXmlWriter& oXmlW
 	m_pXmlWriter->m_lObjectIdVML = oXmlWriter.m_lObjectIdVML;
 	m_pXmlWriter->m_lObjectIdOle = oXmlWriter.m_lObjectIdOle;
 }
-HRESULT CDrawingConverter::SaveObjectEx(LONG lStart, LONG lLength, const std::wstring& bsMainProps, int nDocType, std::wstring & sXml)
+void CDrawingConverter::SaveObjectEx(long lStart, long lLength, const std::wstring& sMainProps, int nDocType, std::wstring& sXml)
 {
 	m_pImageManager->m_nDocumentType = nDocType;
 	
 	if (XMLWRITER_DOC_TYPE_DOCX == nDocType || 
 		XMLWRITER_DOC_TYPE_DOCX_GLOSSARY == nDocType)	//docx
 	{
-		m_pReader->m_nDocumentType = nDocType;
-		return SaveObject(lStart, lLength, bsMainProps, sXml);
+		m_pBinaryReader->m_nDocumentType = nDocType;
+		return SaveObject(lStart, lLength, sMainProps, sXml);
 	}
 	else
 	{
 		PPTX::Logic::SpTreeElem oElem;
 
-		m_pReader->Seek(lStart);
+		m_pBinaryReader->Seek(lStart);
 
-		m_pReader->m_nDocumentType = nDocType;	
+		m_pBinaryReader->m_nDocumentType = nDocType;	
 		++m_nCurrentIndexObject;
 		
-		BYTE typeRec1   = m_pReader->GetUChar();    // must be 0;
-		LONG _e         = m_pReader->GetPos()   + m_pReader->GetLong() + 4;
-		
+		BYTE typeRec1 = m_pBinaryReader->GetUChar();    // must be 0;
+		LONG _e = m_pBinaryReader->GetPos() + m_pBinaryReader->GetLong() + 4;
+
 		try
 		{
-			m_pReader->Skip(5); // type record (must be 1) + 4 byte - len record
+			m_pBinaryReader->Skip(5); // type record (must be 1) + 4 byte - len record
 
-			oElem.fromPPTY(m_pReader);			
+			oElem.fromPPTY(m_pBinaryReader);			
 		}
 		catch(...)
 		{
@@ -6205,14 +5477,14 @@ HRESULT CDrawingConverter::SaveObjectEx(LONG lStart, LONG lLength, const std::ws
 			}
 		}
 		
-		m_pReader->m_nDocumentType = XMLWRITER_DOC_TYPE_PPTX;
+		m_pBinaryReader->m_nDocumentType = XMLWRITER_DOC_TYPE_PPTX;
 
 		NSBinPptxRW::CXmlWriter oXmlWriter;
 		SaveObjectExWriterInit(oXmlWriter, nDocType);
 
 		if(bOle)
 		{
-			ConvertPicVML(oElem, bsMainProps, oXmlWriter);
+			ConvertPicVML(oElem, sMainProps, oXmlWriter);
 		}
 		else
 		{
@@ -6224,26 +5496,25 @@ HRESULT CDrawingConverter::SaveObjectEx(LONG lStart, LONG lLength, const std::ws
 		SaveObjectExWriterRelease(oXmlWriter);
 		sXml = oXmlWriter.GetXmlString();
 	
-		m_pReader->Seek(_e);
+		m_pBinaryReader->Seek(_e);
 	}
-	return S_OK;
 }
 std::wstring CDrawingConverter::SaveObjectBackground(LONG lStart, LONG lLength)
 {
 	if (lLength < 1) return L"";
 
-	m_pReader->Seek(lStart);
+	m_pBinaryReader->Seek(lStart);
 
 	++m_nCurrentIndexObject;
-	BYTE typeRec1 = m_pReader->GetUChar(); // must be 0;
-	LONG _e = m_pReader->GetPos() + m_pReader->GetRecordSize() + 4;
+	BYTE typeRec1 = m_pBinaryReader->GetUChar(); // must be 0;
+	LONG _e = m_pBinaryReader->GetPos() + m_pBinaryReader->GetRecordSize() + 4;
 	
 	PPTX::Logic::SpTreeElem oElem;
 	try
 	{
-		m_pReader->Skip(5); // type record (must be 1) + 4 byte - len record
+		m_pBinaryReader->Skip(5); // type record (must be 1) + 4 byte - len record
 
-		oElem.fromPPTY(m_pReader);
+		oElem.fromPPTY(m_pBinaryReader);
 	}
 	catch(...)
 	{
@@ -6251,9 +5522,9 @@ std::wstring CDrawingConverter::SaveObjectBackground(LONG lStart, LONG lLength)
 	}
 
 	NSBinPptxRW::CXmlWriter oXmlWriter;
-	SaveObjectExWriterInit(oXmlWriter, m_pReader->m_nDocumentType);
+	SaveObjectExWriterInit(oXmlWriter, m_pBinaryReader->m_nDocumentType);
 
-	m_pReader->m_nDocumentType = XMLWRITER_DOC_TYPE_PPTX;
+	m_pBinaryReader->m_nDocumentType = XMLWRITER_DOC_TYPE_PPTX;
 
 	if (oElem.is<PPTX::Logic::Shape>())
 	{
@@ -6267,7 +5538,7 @@ std::wstring CDrawingConverter::SaveObjectBackground(LONG lStart, LONG lLength)
 
 	SaveObjectExWriterRelease(oXmlWriter);
 
-	m_pReader->Seek(_e);
+	m_pBinaryReader->Seek(_e);
 	return oXmlWriter.GetXmlString();
 }
 
@@ -6701,236 +5972,26 @@ void CDrawingConverter::ConvertMainPropsToVML(const std::wstring& bsMainProps, N
 	outWriter.m_strStyleMain = oWriter.GetXmlString();
 }
 
-//HRESULT CDrawingConverter::GetTxBodyBinary(const std::wstring& bsXml)
-//{
-//	XmlUtils::CXmlNode oNode;
-//	if (!oNode.FromXmlString((std::wstring)bsXml))
-//		return S_FALSE;
-//	
-//	PPTX::Logic::TxBody oTxBody(oNode);
-//
-//	//m_pBinaryWriter->ClearNoAttack();
-//	//ULONG lOldPos = m_pBinaryWriter->GetPosition();
-//	m_pBinaryWriter->m_pCommon->CheckFontPicker();
-//	//m_pBinaryWriter->m_pCommon->m_pNativePicker->Init(m_strFontDirectory);
-//
-//	m_pBinaryWriter->WriteRecord1(0, oTxBody);
-//
-//	//m_pBinaryWriter->SetPosition(lOldPos);
-//
-//	//m_pBinaryWriter->ClearNoAttack();
-//	return S_OK;
-//}
-
-//HRESULT CDrawingConverter::GetTxBodyXml(LONG lStart, std::wstring& sXml)
-//{
-//	m_pReader->Seek(lStart);
-//
-//	BYTE type = m_pReader->GetUChar();
-//    if (0 != type)
-//		return S_FALSE;
-//
-//	PPTX::Logic::TxBody oTxBody;
-//	oTxBody.fromPPTY(m_pReader);
-//
-//	NSBinPptxRW::CXmlWriter oWriter;
-//	oTxBody.toXmlWriterExcel(&oWriter);
-//
-//    sXml = oWriter.GetXmlString();
-//
-//	return S_OK;
-//}
-
-HRESULT CDrawingConverter::SetFontDir(const std::wstring& bsFontDir)
+void CDrawingConverter::SetFontDir(const std::wstring& bsFontDir)
 {
 	m_strFontDirectory = bsFontDir;
-	return S_OK;
-}
-
-HRESULT CDrawingConverter::GetRecordBinary(LONG lRecordType, const std::wstring& sXml)
-{
-    if (sXml.empty())
-		return S_FALSE;
-
-    std::wstring strXml = L"<main ";
-
-    strXml += L"\
-xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" \
-xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" \
-xmlns:o=\"urn:schemas-microsoft-com:office:office\" \
-xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" \
-xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" \
-xmlns:v=\"urn:schemas-microsoft-com:vml\" \
-xmlns:ve=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" \
-xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" \
-xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" \
-xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" \
-xmlns:w10=\"urn:schemas-microsoft-com:office:word\" \
-xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" \
-xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" \
-xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" \
-xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" \
-xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" \
-xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" \
-xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" \
-xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\" \
-xmlns:pic=\"http://schemas.openxmlformats.org/drawingml/2006/picture\" \
-xmlns:xdr=\"http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing\" \
-xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\"";
-
-    strXml += L">";
-    strXml += sXml;
-    strXml += L"</main>";
-
-	XmlUtils::CXmlNode oNodeMain;
-	if (!oNodeMain.FromXmlString(strXml))
-		return S_FALSE;
-
-	std::vector<XmlUtils::CXmlNode> oNodes;
-    if (!oNodeMain.GetNodes(L"*", oNodes))
-		return S_FALSE;
-
-	if (1 != oNodes.size())
-		return S_FALSE;
-
-	XmlUtils::CXmlNode & oNode = oNodes[0];
-
-	PPTX::WrapperWritingElement* pWritingElem = NULL;
-	switch (lRecordType)
-	{
-	case XMLWRITER_RECORD_TYPE_SPPR:
-		{
-			PPTX::Logic::SpPr* pSpPr = new PPTX::Logic::SpPr();
-			*pSpPr = oNode;
-
-			pWritingElem = (PPTX::WrapperWritingElement*)pSpPr;
-			break;
-		}
-	case XMLWRITER_RECORD_TYPE_CLRMAPOVR:
-		{
-			PPTX::Logic::ClrMap* pClrMap = new PPTX::Logic::ClrMap();
-			*pClrMap = oNode;
-
-			pWritingElem = (PPTX::WrapperWritingElement*)pClrMap;
-			break;
-		}
-	case XMLWRITER_RECORD_TYPE_TEXT_OUTLINE:
-		{
-			PPTX::Logic::Ln* pLn = new PPTX::Logic::Ln();
-			*pLn = oNode;
-
-			pWritingElem = (PPTX::WrapperWritingElement*)pLn;
-			break;
-		}
-	case XMLWRITER_RECORD_TYPE_TEXT_FILL:
-		{
-			PPTX::Logic::UniFill* pUniFill = new PPTX::Logic::UniFill();
-			pUniFill->GetFillFrom(oNode);
-
-			pWritingElem = (PPTX::WrapperWritingElement*)pUniFill;
-			break;
-		}
-	default:
-		break;
-	}
-
-	if (NULL == pWritingElem)
-		return S_FALSE;
-
-	//m_pBinaryWriter->ClearNoAttack();
-	m_pBinaryWriter->m_pCommon->CheckFontPicker();
-
-	//ULONG lOldPos = m_pBinaryWriter->GetPosition();
-
-	m_pBinaryWriter->WriteRecord1(0, *pWritingElem);
-	
-	
-	RELEASEOBJECT(pWritingElem);
-
-	//m_pBinaryWriter->SetPosition(lOldPos);
-
-	return S_OK;	
-}
-
-HRESULT CDrawingConverter::GetRecordXml(LONG lStart, LONG lLength, LONG lRecType, int nDocType, std::wstring & sXml)
-{
-	if (NULL == m_pReader)
-		return S_FALSE;
-
-	m_pReader->m_pRels->m_pManager->m_nDocumentType = nDocType;
-
-	m_pReader->Seek(lStart);
-	
-	BYTE typeRec1 = m_pReader->GetUChar();
-	
-	PPTX::WrapperWritingElement* pWritingElem = NULL;
-
-	switch (lRecType)
-	{
-	case XMLWRITER_RECORD_TYPE_SPPR:
-		{
-			pWritingElem = (PPTX::WrapperWritingElement*)(new PPTX::Logic::SpPr());
-			pWritingElem->fromPPTY(m_pReader);
-			break;
-		}
-	case XMLWRITER_RECORD_TYPE_CLRMAPOVR:
-		{
-			PPTX::Logic::ClrMap* pClrMap = new  PPTX::Logic::ClrMap();
-            pClrMap->m_name = L"a:clrMapOvr";
-			pWritingElem = (PPTX::WrapperWritingElement*)(pClrMap);
-			pWritingElem->fromPPTY(m_pReader);
-			break;
-		}
-	case XMLWRITER_RECORD_TYPE_TEXT_OUTLINE:
-		{
-			PPTX::Logic::Ln* pLn = new  PPTX::Logic::Ln();
-			pWritingElem = (PPTX::WrapperWritingElement*)(pLn);
-			pWritingElem->fromPPTY(m_pReader);
-			break;
-		}
-	case XMLWRITER_RECORD_TYPE_TEXT_FILL:
-		{
-			PPTX::Logic::UniFill* pUniFill = new  PPTX::Logic::UniFill();
-			pWritingElem = (PPTX::WrapperWritingElement*)(pUniFill);
-			pWritingElem->fromPPTY(m_pReader);
-			break;
-		}
-	default:
-		break;
-	}
-
-	if (NULL == pWritingElem)
-		return S_FALSE;
-
-	NSBinPptxRW::CXmlWriter oXmlWriter;
-	oXmlWriter.m_lDocType = (BYTE)nDocType;
-    oXmlWriter.m_bIsUseOffice2007 = false;
-	oXmlWriter.m_bIsTop = true;
-
-	pWritingElem->toXmlWriter(&oXmlWriter);
-
-    sXml = oXmlWriter.GetXmlString();
-
-	RELEASEOBJECT(pWritingElem);
-
-	return S_OK;
 }
 
 void CDrawingConverter::SetDstContentRels()
 {
-	 m_pReader->SetDstContentRels();
+	 m_pBinaryReader->SetDstContentRels();
 }
 void CDrawingConverter::SaveDstContentRels(const std::wstring& bsRelsPath)
 {
-	m_pReader->SaveDstContentRels(bsRelsPath);
+	m_pBinaryReader->SaveDstContentRels(bsRelsPath);
 }
 void CDrawingConverter::WriteRels (const std::wstring& bsType, const std::wstring& bsTarget, const std::wstring& bsTargetMode, unsigned int* lId)
 {
 	if (NULL == lId)				return;
-	if (NULL == m_pReader)			return;
-	if (NULL == m_pReader->m_pRels)	return;
+	if (NULL == m_pBinaryReader)			return;
+	if (NULL == m_pBinaryReader->m_pRels)	return;
 
-	*lId = m_pReader->m_pRels->WriteRels(bsType, bsTarget, bsTargetMode);
+	*lId = m_pBinaryReader->m_pRels->WriteRels(bsType, bsTarget, bsTargetMode);
 }
 void CDrawingConverter::Registration (const std::wstring& sType, const std::wstring& oDirectory, const std::wstring& oFilename)
 {
@@ -6940,13 +6001,12 @@ void CDrawingConverter::Registration (const std::wstring& sType, const std::wstr
 	m_pImageManager->m_pContentTypes->Registration(sType, OOX::CPath(oDirectory), OOX::CPath(oFilename));
 }
 
-HRESULT CDrawingConverter::SetFontPicker(COfficeFontPicker* pFontPicker)
+void CDrawingConverter::SetFontPicker(COfficeFontPicker* pFontPicker)
 {
 	m_pBinaryWriter->m_pCommon->CreateFontPicker(pFontPicker);
-	return S_OK;
 }
 
-HRESULT CDrawingConverter::SetAdditionalParam(const std::wstring& ParamName, BYTE *pArray, size_t szCount)
+void CDrawingConverter::SetAdditionalParam(const std::wstring& ParamName, BYTE *pArray, size_t szCount)
 {
     std::wstring name = ParamName;
     if (name == L"xfrm_override" && pArray)
@@ -6955,27 +6015,7 @@ HRESULT CDrawingConverter::SetAdditionalParam(const std::wstring& ParamName, BYT
 		
         m_oxfrm_override = new PPTX::Logic::Xfrm(*pXfrm);
     }
-    return S_OK;
-
 }
-HRESULT CDrawingConverter::GetAdditionalParam(const std::wstring& ParamName, BYTE **pArray, size_t& szCount)
-{
-    //std::wstring name = ParamName;
-    //if (name == L"SerializeImageManager")
-    //{
-    //    NSBinPptxRW::CBinaryFileWriter oWriter;
-
-    //    return oWriter.Serialize(m_pBinaryWriter->m_pCommon->m_pImageManager, pArray, szCount) ? S_OK : S_FALSE;
-    //}
-    //else if (name == L"SerializeImageManager2")
-    //{
-    //    NSBinPptxRW::CBinaryFileWriter oWriter;
-
-    //    return oWriter.Serialize(m_pImageManager, pArray, szCount) ? S_OK : S_FALSE;
-    //}
-    return S_OK;
-}
-
 OOX::CContentTypes* CDrawingConverter::GetContentTypes()
 {
 	return m_pImageManager->m_pContentTypes;

@@ -251,8 +251,38 @@ namespace BinXlsxRW
 		LockStructure = 4,
 		LockWindows = 5,
 		Password = 6
-	}; }
-	
+	}; }	
+
+	namespace c_oSer_RichValue {enum c_oSer_RichValue {
+		RichValue = 0,
+		StructureIdx = 1,
+		Value = 2,
+		Fallback = 3,
+		FallbackValue = 4,
+		FallbackType = 5
+	};}
+
+	namespace c_oSer_RichStructures {enum c_oSer_RichStructures {
+		Structure = 0,
+		Type = 1,
+		ValueKey = 2,
+		ValueKeyType = 3,
+		ValueKeyName = 4
+	};}
+	namespace c_oSer_RichValueTypesInfo {enum c_oSer_RichValueTypesInfo {
+		Global = 0,
+		KeyFlags = 1,
+		Types = 2,
+		Type = 3,
+		Name = 4,
+		KeyFlagName = 5,
+		ReservedKey = 6,
+		ReservedKeyName = 7,
+		ReservedKeyFlags = 8,
+		FlagName = 9,
+		FlagValue = 10
+
+	};}
 	namespace c_oSerFileSharing {enum c_oSerFileSharing{
 		AlgorithmName = 0,
 		SpinCount = 1,

@@ -409,7 +409,7 @@ namespace PPTX
 				}break;
 				case 4:
 				{
-					if (NULL != pReader->m_pMainDocument)
+					if (NULL != pReader->m_pDocxSerializer)
 					{
 						LONG lLenRec = pReader->GetLong();
 
@@ -418,7 +418,7 @@ namespace PPTX
 						BYTE* pData_Reader = pReader->GetData();
 
 						std::wstring sXmlContent;
-						pReader->m_pMainDocument->getXmlContent(*pReader, lLenRec, sXmlContent);
+						pReader->m_pDocxSerializer->getXmlContent(*pReader, lLenRec, sXmlContent);
 
 						std::wstring strC = L"<w:txbxContent>";
 						strC += sXmlContent;
@@ -505,7 +505,7 @@ namespace PPTX
 			pWriter->WriteRecord1(1, spPr);
 			pWriter->WriteRecord2(2, style);
 
-			if (pWriter->m_pMainDocument != NULL)
+			if (pWriter->m_pDocxSerializer != NULL)
 			{
 				if (oTextBoxShape.is_init())
 				{
@@ -514,7 +514,7 @@ namespace PPTX
 					pWriter->SetPosition(lPos);
 
 					pWriter->StartRecord(4);
-					pWriter->m_pMainDocument->getBinaryContentElem(OOX::et_w_sdtContent, oTextBoxShape.GetPointer(), *pWriter, lDataSize);
+					pWriter->m_pDocxSerializer->getBinaryContentElem(OOX::et_w_sdtContent, oTextBoxShape.GetPointer(), *pWriter, lDataSize);
 					pWriter->EndRecord();
 
 					if (oTextBoxBodyPr.is_init())
@@ -531,7 +531,7 @@ namespace PPTX
 					pWriter->SetPosition(lPos);
 
 					pWriter->StartRecord(4);
-					pWriter->m_pMainDocument->getBinaryContent(strTextBoxShape.get(), *pWriter, lDataSize);
+					pWriter->m_pDocxSerializer->getBinaryContent(strTextBoxShape.get(), *pWriter, lDataSize);
 					pWriter->EndRecord();
 
 					if (oTextBoxBodyPr.is_init())
@@ -550,7 +550,7 @@ namespace PPTX
 					ULONG lPos = pWriter->GetPosition();
 					pWriter->SetPosition(lPos);
 					pWriter->StartRecord(4);
-					pWriter->m_pMainDocument->getBinaryContent(strContent, *pWriter, lDataSize);
+					pWriter->m_pDocxSerializer->getBinaryContent(strContent, *pWriter, lDataSize);
 					pWriter->EndRecord();
 
 					pWriter->WriteRecord2(5, txBody->bodyPr);

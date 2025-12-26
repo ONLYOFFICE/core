@@ -70,6 +70,23 @@ public:
 		WidgetSignature = 33
 	};
 
+	class GRAPHICS_DECL CActionFieldPr
+	{
+	public:
+		CActionFieldPr();
+		~CActionFieldPr();
+
+		BYTE nKind;
+		BYTE nFlags;
+		BYTE nActionType;
+		int  nInt1;
+		double dD[4]{};
+		std::wstring wsType;
+		std::wstring wsStr1;
+		std::vector<std::wstring> arrStr;
+		CActionFieldPr* pNext;
+	};
+
 	class GRAPHICS_DECL CWidgetAnnotPr
 	{
 	public:
@@ -90,6 +107,7 @@ public:
 			const std::wstring& GetRC();
 			const std::wstring& GetAC();
 			const std::wstring& GetAP_N_Yes();
+			const std::vector< std::pair<std::wstring, std::wstring> >& GetOpt();
 
 			void Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, BYTE nType, int nFlags);
 
@@ -108,6 +126,7 @@ public:
 			std::wstring m_wsRC;
 			std::wstring m_wsAC;
 			std::wstring m_wsAP_N_Yes;
+			std::vector< std::pair<std::wstring, std::wstring> > m_arrOpt;
 		};
 
 		class GRAPHICS_DECL CTextWidgetPr
@@ -159,23 +178,6 @@ public:
 
 		};
 
-		class GRAPHICS_DECL CActionWidget
-		{
-		public:
-			CActionWidget();
-			~CActionWidget();
-
-			BYTE nKind;
-			BYTE nFlags;
-			BYTE nActionType;
-			int  nInt1;
-			double dD[4]{};
-			std::wstring wsType;
-			std::wstring wsStr1;
-			std::vector<std::wstring> arrStr;
-			CActionWidget* pNext;
-		};
-
 		CWidgetAnnotPr(BYTE nType);
 		~CWidgetAnnotPr();
 
@@ -199,7 +201,7 @@ public:
 		const std::vector<double>& GetTC();
 		const std::vector<double>& GetBC();
 		const std::vector<double>& GetBG();
-		const std::vector<CActionWidget*>& GetActions();
+		const std::vector<CActionFieldPr*>& GetActions();
 
 		CButtonWidgetPr*    GetButtonWidgetPr();
 		CTextWidgetPr*      GetTextWidgetPr();
@@ -229,7 +231,7 @@ public:
 		std::vector<double> m_arrTC;
 		std::vector<double> m_arrBC;
 		std::vector<double> m_arrBG;
-		std::vector<CActionWidget*> m_arrAction;
+		std::vector<CActionFieldPr*> m_arrAction;
 
 		CButtonWidgetPr*    m_pButtonPr;
 		CTextWidgetPr*      m_pTextPr;
@@ -389,7 +391,7 @@ public:
 	{
 	public:
 		bool IsOpen()      const;
-		int  GetFlag()     const;
+		int  GetFlag()    const;
 		int  GetParentID() const;
 
 		void Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader);
@@ -478,6 +480,28 @@ public:
 		std::vector<double> m_arrQuadPoints;
 	};
 
+	class GRAPHICS_DECL CLinkAnnotPr
+	{
+	public:
+		CLinkAnnotPr();
+		~CLinkAnnotPr();
+
+		BYTE GetH()    const;
+		int GetFlags() const;
+		const std::vector<double>& GetQuadPoints();
+		CActionFieldPr* GetA();
+		CActionFieldPr* GetPA();
+
+		void Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader);
+
+	private:
+		BYTE m_nH;
+		int m_nFlags;
+		std::vector<double> m_arrQuadPoints;
+		CActionFieldPr* m_pAction;
+		CActionFieldPr* m_pPA;
+	};
+
 	CAnnotFieldInfo();
 	virtual ~CAnnotFieldInfo();
 
@@ -518,6 +542,7 @@ public:
 	bool IsCaret()           const;
 	bool IsStamp()           const;
 	bool IsRedact()          const;
+	bool IsLink()            const;
 
 	CMarkupAnnotPr*       GetMarkupAnnotPr();
 	CTextAnnotPr*         GetTextAnnotPr();
@@ -531,6 +556,7 @@ public:
 	CCaretAnnotPr*        GetCaretAnnotPr();
 	CStampAnnotPr*        GetStampAnnotPr();
 	CRedactAnnotPr*       GetRedactAnnotPr();
+	CLinkAnnotPr*         GetLinkAnnotPr();
 	CWidgetAnnotPr*       GetWidgetAnnotPr();
 
 	bool Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector);
@@ -576,6 +602,7 @@ private:
 	CCaretAnnotPr*        m_pCaretPr;
 	CStampAnnotPr*        m_pStampPr;
 	CRedactAnnotPr*       m_pRedactPr;
+	CLinkAnnotPr*         m_pLinkPr;
 	CWidgetAnnotPr*       m_pWidgetPr;
 };
 
@@ -610,7 +637,7 @@ public:
 		std::wstring sTU;
 		std::vector<int> arrI;
 		std::vector<std::wstring> arrV;
-		std::vector<CAnnotFieldInfo::CWidgetAnnotPr::CActionWidget*> arrAction;
+		std::vector<CAnnotFieldInfo::CActionFieldPr*> arrAction;
 		std::vector< std::pair<std::wstring, std::wstring> > arrOpt;
 	};
 

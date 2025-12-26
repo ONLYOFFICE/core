@@ -69,7 +69,7 @@ namespace BinVsdxRW
 	
 		if (false == oFile.OpenFile(sSrcFileName)) return AVS_FILEUTILS_ERROR_CONVERT;
 
-		NSBinPptxRW::CBinaryFileReader& oBufferedStream = *pOfficeDrawingConverter->m_pReader;
+		NSBinPptxRW::CBinaryFileReader& oBufferedStream = *pOfficeDrawingConverter->m_pBinaryReader;
 
 		DWORD nBase64DataSize = 0;
 		BYTE* pBase64Data = new BYTE[oFile.GetFileSize()];

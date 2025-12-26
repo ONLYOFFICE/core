@@ -704,6 +704,23 @@ void ReadInteractiveForms(BYTE* pWidgets, int& i)
 			i += 1;
 			std::cout << "Style " << arrStyle[nPathLength] << ", ";
 
+			if (nFlags & (1 << 10))
+			{
+				int nOptLength = READ_INT(pWidgets + i);
+				i += 4;
+				for (int j = 0; j < nOptLength; ++j)
+				{
+					nPathLength = READ_INT(pWidgets + i);
+					i += 4;
+					std::cout << std::to_string(j) << " Opt1 " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+					i += nPathLength;
+
+					nPathLength = READ_INT(pWidgets + i);
+					i += 4;
+					std::cout << std::to_string(j) << " Opt2 " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+					i += nPathLength;
+				}
+			}
 			if (nFlags & (1 << 14))
 			{
 				nPathLength = READ_INT(pWidgets + i);
@@ -940,6 +957,36 @@ void ReadInteractiveFormsFonts(CDrawingFile* pGrFile, int nType)
 
 			if (pFont)
 				free(pFont);
+
+			if (false)
+				continue;
+
+			pFont = GetGIDByUnicode(pGrFile, (char*)sFontName.c_str());
+			nLength2 = READ_INT(pFont);
+			i2 = 4;
+			nLength2 -= 4;
+
+			while (i2 < nLength2)
+			{
+				int nFontLength = READ_INT(pFont + i2);
+				i2 += 4;
+
+				std::cout << std::endl << "CIDtoUnicode" << std::endl;
+
+				for (int j = 0; j < nFontLength; ++j)
+				{
+					unsigned int code = READ_INT(pFont + i2);
+					i2 += 4;
+					unsigned int unicode = READ_INT(pFont + i2);
+					i2 += 4;
+					std::cout << "cid\t" << code << "\tunicode\t" << unicode << std::endl;
+				}
+
+				std::cout << std::endl;
+			}
+
+			if (pFont)
+				free(pFont);
 		}
 		std::cout << std::endl;
 	}
@@ -1137,26 +1184,26 @@ int main(int argc, char* argv[])
 		std::cout << "CheckPerm 4 Print " << CheckPerm(pGrFile, 3) << std::endl;
 	}
 
-	BYTE* pColor = new BYTE[12] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 	// REDACT
 	if (false)
 	{
+		BYTE* pColor = new BYTE[12] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 		int pRect[8] = { 307499, 217499, 307499, 1124999, 1799999, 1124999, 1799999, 217499 };
 		if (!RedactPage(pGrFile, nTestPage, pRect, 1, pColor, 12))
 			std::cout << "Redact false" << std::endl;
 	}
 
-	int i = nTestPage;
-	//for (int i = 0; i < nPagesCount; ++i)
+	// RASTER
+	if (true)
 	{
-		// RASTER
-		if (true)
+		int i = nTestPage;
+		//for (int i = 0; i < nPagesCount; ++i)
 		{
 			nWidth  = READ_INT(pInfo + i * 16 + 12);
 			nHeight = READ_INT(pInfo + i * 16 + 16);
 
-			//nWidth  *= 3;
-			//nHeight *= 3;
+			//nWidth  *= 2;
+			//nHeight *= 2;
 
 			BYTE* res = NULL;
 			res = GetPixmap(pGrFile, i, nWidth, nHeight, 0xFFFFFF);
@@ -2144,6 +2191,44 @@ int main(int argc, char* argv[])
 						std::cout << nPathLength << ", ";
 					}
 				}
+				else if (sType == "Link")
+				{
+					nFlags = READ_INT(pAnnots + i);
+					i += 4;
+					if (nFlags & (1 << 0))
+					{
+						std::cout << std::endl << "A ";
+						ReadAction(pAnnots, i);
+						std::cout << std::endl;
+					}
+					if (nFlags & (1 << 1))
+					{
+						std::cout << std::endl << "PA ";
+						ReadAction(pAnnots, i);
+						std::cout << std::endl;
+					}
+					if (nFlags & (1 << 2))
+					{
+						std::string arrHighlighting[] = {"none", "invert", "push", "outline"};
+						nPathLength = READ_BYTE(pAnnots + i);
+						i += 1;
+						std::cout << "Highlight " << arrHighlighting[nPathLength] << ", ";
+					}
+					if (nFlags & (1 << 3))
+					{
+						std::cout << "QuadPoints";
+						int nQuadPointsLength = READ_INT(pAnnots + i);
+						i += 4;
+
+						for (int j = 0; j < nQuadPointsLength; ++j)
+						{
+							nPathLength = READ_INT(pAnnots + i);
+							i += 4;
+							std::cout << " " << (double)nPathLength / 100.0;
+						}
+						std::cout << ", ";
+					}
+				}
 
 				std::cout << std::endl << "]" << std::endl;
 			}
@@ -2166,12 +2251,13 @@ int main(int argc, char* argv[])
 			free(pAnnotAP);
 	}
 
-	// SCAN PAGE
-	if (false)
+	// SCAN PAGE Fonts
+	if (true)
 	{
-		BYTE* pScan = ScanPage(pGrFile, nTestPage, 1);
-		if (pScan)
-			free(pScan);
+		SetScanPageFonts(pGrFile, nTestPage);
+
+		ReadInteractiveFormsFonts(pGrFile, 1);
+		ReadInteractiveFormsFonts(pGrFile, 2);
 	}
 
 	Close(pGrFile);

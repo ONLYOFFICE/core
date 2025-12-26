@@ -454,6 +454,20 @@ public:
 		if (m_nType == 0)
 			((CPdfFile*)m_pFile)->SetCMapMemory(data, size);
 	}
+	void SetScanPageFonts(int nPageIndex)
+	{
+		if (NULL == m_pImageStorage)
+			m_pImageStorage = NSDocxRenderer::CreateWasmImageStorage();
+
+		CDocxRenderer oRenderer(m_pApplicationFonts);
+		oRenderer.SetExternalImageStorage(m_pImageStorage);
+		oRenderer.SetTextAssociationType(NSDocxRenderer::TextAssociationType::tatParagraphToShape);
+
+		oRenderer.ScanPageBin(m_pFile, nPageIndex);
+
+		if (m_nType == 0)
+			((CPdfFile*)m_pFile)->SetPageFonts(nPageIndex);
+	}
 	BYTE* ScanPage(int nPageIndex, int mode)
 	{
 		if (NULL == m_pImageStorage)
@@ -489,6 +503,9 @@ public:
 			default:
 				return NULL;
 		}
+
+		if (m_nType == 0)
+			((CPdfFile*)m_pFile)->SetPageFonts(nPageIndex);
 
 		BYTE* res = oRes.GetBuffer();
 		oRes.ClearWithoutAttack();
@@ -577,6 +594,13 @@ public:
 			}
 		}
 		return NULL;
+	}
+	BYTE* GetGIDByUnicode(const std::string& sPathA)
+	{
+		if (m_nType != 0)
+			return NULL;
+		std::wstring sFontName = UTF8_TO_U(sPathA);
+		return ((CPdfFile*)m_pFile)->GetGIDByUnicode(sFontName);
 	}
 
 	std::wstring GetFontBinaryNative(const std::wstring& sName)

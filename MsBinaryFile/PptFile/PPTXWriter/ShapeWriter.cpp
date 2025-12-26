@@ -349,17 +349,18 @@ std::wstring PPT::CShapeWriter::ConvertBrush(CBrush & brush)
         brush_writer.WriteString(L"</a:gsLst>");
         brush_writer.WriteString(L"<a:lin ang=\"");
         {
-            if (brush.LinearAngle < -180)	brush.LinearAngle += 180;
-            if (brush.LinearAngle > 180)	brush.LinearAngle -= 180;
+            double val = 360 - brush.LinearAngle;
+            val += 90;
 
-            double val = (90 - brush.LinearAngle) ;
-            if (val < 0)	val = 0;
-            if (val > 360)	val -= 360;
+            if (val < 0)	val += 360;
+            if (val >= 360)	val -= 360;
 
             std::wstring str = std::to_wstring((int)(val * 60000));
             brush_writer.WriteString(str);
         }
-        brush_writer.WriteString(L"\" scaled=\"1\"/>");
+        brush_writer.WriteString(L"\"");
+        //brush_writer.WriteString(L" scaled = \"1\"");
+        brush_writer.WriteString(L"/>");
         brush_writer.WriteString(L"</a:gradFill>");
     }
     else if(brush.Type == c_BrushTypePattern)

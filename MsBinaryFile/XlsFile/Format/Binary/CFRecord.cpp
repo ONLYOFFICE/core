@@ -49,6 +49,17 @@ CFRecord::CFRecord(CFStreamPtr stream, GlobalWorkbookInfoPtr global_info)
 	unsigned short size_short;
 	*stream >> size_short;
 	size_ = size_short;
+	const auto maxRecordSize = 8224;
+	if(size_ > maxRecordSize)
+	{
+		type_id_ = -1;
+	}
+	auto streamSize = stream->getStreamSize();
+	if(stream->getStreamPointer() + size_ > streamSize)
+	{
+		size_ = streamSize - stream->getStreamPointer();
+		type_id_ = -1;
+	}
 	data_ = new char[size_];
 	
 	unsigned long rec_data_pos = stream->getStreamPointer();

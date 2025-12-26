@@ -525,6 +525,7 @@ namespace NExtractTools
 		boost::unordered_map<int, std::vector<InputLimit>> m_mapInputLimits;
 		bool* m_bIsPDFA;
 		std::wstring* m_sConvertToOrigin;
+		std::wstring* m_sSigningKeyStorePath;
 		// output params
 		mutable bool m_bOutputConvertCorrupted;
 		mutable bool m_bMacro;
@@ -561,6 +562,7 @@ namespace NExtractTools
 			m_bIsNoBase64 = NULL;
 			m_bIsPDFA = NULL;
 			m_sConvertToOrigin = NULL;
+			m_sSigningKeyStorePath = NULL;
 
 			m_bOutputConvertCorrupted = false;
 			m_bMacro = false;
@@ -596,6 +598,7 @@ namespace NExtractTools
 			RELEASEOBJECT(m_bIsNoBase64);
 			RELEASEOBJECT(m_bIsPDFA);
 			RELEASEOBJECT(m_sConvertToOrigin);
+			RELEASEOBJECT(m_sSigningKeyStorePath);
 		}
 
 		bool FromXmlFile(const std::wstring& sFilename)
@@ -794,6 +797,11 @@ namespace NExtractTools
 									RELEASEOBJECT(m_sConvertToOrigin);
 									m_sConvertToOrigin = new std::wstring(sValue);
 								}
+								else if (_T("m_sSigningKeyStorePath") == sName)
+								{
+									RELEASEOBJECT(m_sSigningKeyStorePath);
+									m_sSigningKeyStorePath = new std::wstring(sValue);
+								}
 							}
 							else if (_T("m_nCsvDelimiterChar") == sName)
 							{
@@ -882,6 +890,10 @@ namespace NExtractTools
 		{
 			return (NULL != m_sConvertToOrigin) ? (*m_sConvertToOrigin) : L"";
 		}
+		std::wstring getSigningKeyStorePath() const
+		{
+			return (NULL != m_sSigningKeyStorePath) ? (*m_sSigningKeyStorePath) : L"";
+		}
 		bool needConvertToOrigin(long nFormatFrom) const
 		{
 			COfficeFileFormatChecker FileFormatChecker;
@@ -898,6 +910,10 @@ namespace NExtractTools
 
 			if (NULL != m_nCsvTxtEncoding)
 				nCsvEncoding = *m_nCsvTxtEncoding;
+			if(NSFile::GetFileExtention(*m_sFileFrom) == L"tsv")
+			{
+				cDelimiter = L"\t";
+			}
 			if (NULL != m_nCsvDelimiter)
 			{
 				switch (*m_nCsvDelimiter)

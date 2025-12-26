@@ -6805,7 +6805,7 @@ bool BinaryDocumentTableWriter::WriteDrawingPptx(OOX::WritingElement* item)
 	OOX::Logic::CDrawing*		pGraphicDrawing	= NULL;
 	PPTX::Logic::GraphicFrame*	pGraphic		= NULL;
 
-	m_oBcw.m_oStream.ClearCurShapePositionAndSizes();
+	m_oBcw.m_oStream.ClearCurShapeSize();
 
 	bool res = true;
 
@@ -6886,7 +6886,7 @@ void BinaryDocumentTableWriter::WriteDrawing(std::wstring* pXml, OOX::Logic::CDr
 	int nCurPos = 0;
 	bool bDeleteDrawing = false;
 
-	m_oBcw.m_oStream.m_dCxCurShape = m_oBcw.m_oStream.m_dCyCurShape = 0;
+	m_oBcw.m_oStream.ClearCurShapeSize();
 //pptxdata
 	if (pXml)
 	{
@@ -6927,8 +6927,7 @@ void BinaryDocumentTableWriter::WriteDrawing(std::wstring* pXml, OOX::Logic::CDr
 				const OOX::Drawing::CInline& pInline = img.m_oInline.get();
 				if (pInline.m_oExtent.IsInit())
 				{
-					m_oBcw.m_oStream.m_dCxCurShape = pInline.m_oExtent->m_oCx.GetValue();
-					m_oBcw.m_oStream.m_dCyCurShape = pInline.m_oExtent->m_oCy.GetValue();
+					m_oBcw.m_oStream.SetCurShapeSize(pInline.m_oExtent->m_oCx.GetValue(), pInline.m_oExtent->m_oCy.GetValue());
 				}
 			}
 			else if (img.m_oAnchor.IsInit())
@@ -6936,8 +6935,7 @@ void BinaryDocumentTableWriter::WriteDrawing(std::wstring* pXml, OOX::Logic::CDr
 				const OOX::Drawing::CAnchor& pAnchor = img.m_oAnchor.get();
 				if (pAnchor.m_oExtent.IsInit())
 				{
-					m_oBcw.m_oStream.m_dCxCurShape = pAnchor.m_oExtent->m_oCx.GetValue();
-					m_oBcw.m_oStream.m_dCyCurShape = pAnchor.m_oExtent->m_oCy.GetValue();
+					m_oBcw.m_oStream.SetCurShapeSize(pAnchor.m_oExtent->m_oCx.GetValue(), pAnchor.m_oExtent->m_oCy.GetValue());
 				}				
 			}
 		}

@@ -31,7 +31,6 @@
  */
 #include "cconversionsmtoooxml.h"
 #include "../../../../DesktopEditor/common/File.h"
-#include <fstream>
 namespace StarMath {
 
 	CConversionSMtoOOXML::CConversionSMtoOOXML(): m_pXmlWrite(nullptr)
@@ -43,7 +42,7 @@ namespace StarMath {
 			delete m_pXmlWrite;
 	}
 	//check XMLWrite(if not nullptr == delete)
-	void CConversionSMtoOOXML::StartConversion(std::vector<StarMath::CElement*> arPars, const unsigned int& iAlignment)
+	void CConversionSMtoOOXML::StartConversion(const std::vector<StarMath::CElement*> arPars, const unsigned int& iAlignment)
 	{
 		m_pXmlWrite = new XmlUtils::CXmlWriter;
 		if(!arPars.empty())
@@ -106,7 +105,7 @@ namespace StarMath {
 		m_pXmlWrite->WriteNodeEnd(L"m:oMath",false,false);
 		m_pXmlWrite->WriteNodeEnd(L"m:oMathPara",false,false);
 	}
-	void CConversionSMtoOOXML::StandartProperties(XmlUtils::CXmlWriter* pXmlWrite,CAttribute* pAttribute,const TypeConversion &enTypeConversion)
+	void CConversionSMtoOOXML::StandartProperties(XmlUtils::CXmlWriter* pXmlWrite, CAttribute* pAttribute, const TypeConversion &enTypeConversion, const TextDirection &enTypeLang)
 	{
 		if(TypeConversion::docx == enTypeConversion || TypeConversion::undefine == enTypeConversion)
 		{
@@ -189,6 +188,22 @@ namespace StarMath {
 					pXmlWrite->WriteNodeBegin(L"w:strike",true);
 					pXmlWrite->WriteNodeEnd(L"w",true,true);
 				}
+				if(enTypeLang == TextDirection::RightToLeft)
+				{
+					switch (enTypeLang) {
+					case StarMath::TextDirection::RightToLeft:
+					{
+						pXmlWrite->WriteNodeBegin(L"w:rtl",true);
+						pXmlWrite->WriteNodeEnd(L"w",true,true);
+						pXmlWrite->WriteNodeBegin(L"w:lang",true);
+						pXmlWrite->WriteAttribute(L"w:bidi",L"ar-SA");
+						pXmlWrite->WriteNodeEnd(L"w",true,true);
+						break;
+					}
+					default:
+						break;
+					}
+				}
 				pXmlWrite->WriteNodeEnd(L"w:rPr",false,false);
 			}
 		}
@@ -253,7 +268,7 @@ namespace StarMath {
 		WriteCtrlPrNode(pXmlWrite,pAttribute,enTypeConversion);
 		pXmlWrite->WriteNodeEnd(L"m:fPr",false,false);
 	}
-	void CConversionSMtoOOXML::PropertiesNaryPr(const TypeElement& enTypeOp,bool bEmptySub,bool bEmptySup,XmlUtils::CXmlWriter* pXmlWrite,CAttribute* pAttribute,const TypeConversion &enTypeConversion)
+	void CConversionSMtoOOXML::PropertiesNaryPr(const TypeElement& enTypeOp,bool bEmptySub,bool bEmptySup,XmlUtils::CXmlWriter* pXmlWrite,CAttribute* pAttribute,const TypeConversion &enTypeConversion,const bool& bEQN)
 	{
 		pXmlWrite->WriteNodeBegin(L"m:naryPr",false);
 		switch(enTypeOp)
@@ -284,10 +299,25 @@ namespace StarMath {
 		case TypeElement::lllint:
 		WriteChrNode(L"\u2230",pXmlWrite);
 		break;
+		case TypeElement::inter:
+		WriteChrNode(L"\u22C2",pXmlWrite);
+		break;
+		case TypeElement::UnionOp:
+		WriteChrNode(L"\u22C3",pXmlWrite);
+		break;
+		case TypeElement::bigvee:
+		WriteChrNode(L"\u22C1",pXmlWrite);
+		break;
+		case TypeElement::bigwedge:
+		WriteChrNode(L"\u22C0",pXmlWrite);
+		break;
 		default:
 		break;
 		}
-		WriteLimLocNode(L"undOvr",pXmlWrite);
+		 if(bEQN && (enTypeOp == TypeElement::Int || enTypeOp == TypeElement::iint || enTypeOp == TypeElement::iiint || enTypeOp == TypeElement::lint || enTypeOp == TypeElement::llint || enTypeOp == TypeElement::lllint))
+			WriteLimLocNode(L"subSup",pXmlWrite);
+		else
+			WriteLimLocNode(L"undOvr",pXmlWrite);
 		if(bEmptySub)
 		{
 			pXmlWrite->WriteNodeBegin(L"m:subHide",true);

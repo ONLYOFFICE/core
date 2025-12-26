@@ -567,6 +567,26 @@ HRESULT CPdfWriter::put_BrushTransform(const Aggplus::CMatrix& oMatrix)
 	// TODO:
 	return S_OK;
 }
+HRESULT CPdfWriter::get_BrushOffset(double& offsetX, double& offsetY) const
+{
+	m_oBrush.GetBrushOffset(offsetX, offsetY);
+	return S_OK;
+}
+HRESULT CPdfWriter::put_BrushOffset(const double& offsetX, const double& offsetY)
+{
+	m_oBrush.SetBrushOffset(offsetX, offsetY);
+	return S_OK;
+}
+HRESULT CPdfWriter::get_BrushScale(bool& isScale, double& scaleX, double& scaleY) const
+{
+	m_oBrush.GetBrushScale(isScale, scaleX, scaleY);
+	return S_OK;
+}
+HRESULT CPdfWriter::put_BrushScale(bool isScale, const double& scaleX, const double& scaleY)
+{
+	m_oBrush.SetBrushScale(isScale, scaleX, scaleY);
+	return S_OK;
+}
 //----------------------------------------------------------------------------------------
 // Функции для работы со шрифтами
 //----------------------------------------------------------------------------------------
@@ -1736,7 +1756,7 @@ void GetRCSpanStyle(CAnnotFieldInfo::CMarkupAnnotPr::CFontData* pFontData, NSStr
 		oRC.AddDouble(pFontData->dVAlign, 2);
 	}
 }
-PdfWriter::CAction* GetAction(PdfWriter::CDocument* m_pDocument, CAnnotFieldInfo::CWidgetAnnotPr::CActionWidget* pAction)
+PdfWriter::CAction* CPdfWriter::GetAction(CAnnotFieldInfo::CActionFieldPr* pAction, bool bDeferred)
 {
 	PdfWriter::CAction* pA = m_pDocument->CreateAction(pAction->nActionType);
 	if (!pA)
@@ -1748,7 +1768,7 @@ PdfWriter::CAction* GetAction(PdfWriter::CDocument* m_pDocument, CAnnotFieldInfo
 	case 1:
 	{
 		PdfWriter::CActionGoTo* ppA = (PdfWriter::CActionGoTo*)pA;
-		PdfWriter::CPage* pPageD = m_pDocument->GetPage(pAction->nInt1);
+		PdfWriter::CPage* pPageD = bDeferred ? m_pDocument->GetCurPage() : m_pDocument->GetPage(pAction->nInt1);
 		PdfWriter::CDestination* pDest = m_pDocument->CreateDestination(pPageD);
 		if (!pDest)
 			break;
@@ -1807,6 +1827,12 @@ PdfWriter::CAction* GetAction(PdfWriter::CDocument* m_pDocument, CAnnotFieldInfo
 			break;
 		}
 		}
+
+		if (bDeferred)
+		{
+			pPageD = m_pDocument->GetCurPage();
+			m_vDestinations.push_back(TDestinationInfo(pDest, pAction->nInt1));
+		}
 		break;
 	}
 	case 6:
@@ -1845,7 +1871,7 @@ PdfWriter::CAction* GetAction(PdfWriter::CDocument* m_pDocument, CAnnotFieldInfo
 
 	if (pAction->pNext)
 	{
-		PdfWriter::CAction* pANext = GetAction(m_pDocument, pAction->pNext);
+		PdfWriter::CAction* pANext = GetAction(pAction->pNext, bDeferred);
 		pA->SetNext(pANext);
 	}
 
@@ -2368,10 +2394,10 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 		else
 			pWidgetAnnot->Remove("MEOptions");
 
-		const std::vector<CAnnotFieldInfo::CWidgetAnnotPr::CActionWidget*> arrActions = pPr->GetActions();
-		for (CAnnotFieldInfo::CWidgetAnnotPr::CActionWidget* pAction : arrActions)
+		const std::vector<CAnnotFieldInfo::CActionFieldPr*> arrActions = pPr->GetActions();
+		for (CAnnotFieldInfo::CActionFieldPr* pAction : arrActions)
 		{
-			PdfWriter::CAction* pA = GetAction(m_pDocument, pAction);
+			PdfWriter::CAction* pA = GetAction(pAction);
 			pWidgetAnnot->AddAction(pA);
 		}
 
@@ -2497,6 +2523,8 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 					else
 						pButtonWidget->Off();
 				}
+				if (nFlags & (1 << 10))
+					pButtonWidget->SetOpt(pPrB->GetOpt());
 			}
 		}
 		else if (oInfo.IsTextWidget())
@@ -2646,6 +2674,35 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 		{
 			CAnnotFieldInfo::CWidgetAnnotPr::CSignatureWidgetPr* pPr = oInfo.GetWidgetAnnotPr()->GetSignatureWidgetPr();
 			PdfWriter::CSignatureWidget* pSignatureWidget = (PdfWriter::CSignatureWidget*)pAnnot;
+		}
+	}
+	else if (oInfo.IsLink())
+	{
+		CAnnotFieldInfo::CLinkAnnotPr* pPr = oInfo.GetLinkAnnotPr();
+		PdfWriter::CLinkAnnotation* pLinkAnnot = (PdfWriter::CLinkAnnotation*)pAnnot;
+
+		nFlags = pPr->GetFlags();
+		if (nFlags & (1 << 0))
+		{
+			PdfWriter::CAction* pA = GetAction(pPr->GetA(), true);
+			pLinkAnnot->SetA(pA);
+		}
+		if (nFlags & (1 << 1))
+		{
+			PdfWriter::CAction* pA = GetAction(pPr->GetPA(), true);
+			pLinkAnnot->SetPA(pA);
+		}
+		if (nFlags & (1 << 2))
+			pLinkAnnot->SetH(pPr->GetH());
+		if (nFlags & (1 << 3))
+			pLinkAnnot->SetQuadPoints(pPr->GetQuadPoints());
+
+		if (bRender)
+		{
+			pLinkAnnot->RemoveAP();
+			LONG nLen = 0;
+			BYTE* pRender = oInfo.GetRender(nLen);
+			DrawAP(pAnnot, pRender, nLen);
 		}
 	}
 
@@ -2982,10 +3039,10 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 			pParentObj->Add("Ff", pParent->nFieldFlag);
 		if (nFlags & (1 << 8))
 		{
-			const std::vector<CAnnotFieldInfo::CWidgetAnnotPr::CActionWidget*> arrActions = pParent->arrAction;
-			for (CAnnotFieldInfo::CWidgetAnnotPr::CActionWidget* pAction : arrActions)
+			const std::vector<CAnnotFieldInfo::CActionFieldPr*> arrActions = pParent->arrAction;
+			for (CAnnotFieldInfo::CActionFieldPr* pAction : arrActions)
 			{
-				PdfWriter::CAction* pA = GetAction(m_pDocument, pAction);
+				PdfWriter::CAction* pA = GetAction(pAction);
 				if (!pA)
 					continue;
 
@@ -3168,7 +3225,13 @@ bool CPdfWriter::EditClose()
 		TDestinationInfo& oInfo = m_vDestinations.at(nIndex);
 		if (nPagesCount > oInfo.unDestPage)
 		{
-			AddLink(oInfo.pPage, oInfo.dX, oInfo.dY, oInfo.dW, oInfo.dH, oInfo.dDestX, oInfo.dDestY, oInfo.unDestPage);
+			if (oInfo.pDest)
+			{
+				PdfWriter::CPage* pDestPage = m_pDocument->GetPage(oInfo.unDestPage);
+				oInfo.pDest->ChangePage(pDestPage);
+			}
+			else
+				AddLink(oInfo.pPage, oInfo.dX, oInfo.dY, oInfo.dW, oInfo.dH, oInfo.dDestX, oInfo.dDestY, oInfo.unDestPage);
 			m_vDestinations.erase(m_vDestinations.begin() + nIndex);
 			nIndex--;
 			nCount--;
@@ -3869,8 +3932,11 @@ void CPdfWriter::UpdateBrush(NSFonts::IApplicationFonts* pAppFonts, const std::w
 			}
 			else
 			{
-				dL = MM_2_PT(oRect.dLeft);
-				dB = MM_2_PT(m_dPageHeight - oRect.dTop);
+				double dOffsetX, dOffsetY;
+				m_oBrush.GetBrushOffset(dOffsetX, dOffsetY);
+
+				dL = MM_2_PT(oRect.dLeft + dOffsetX);
+				dB = MM_2_PT(m_dPageHeight - oRect.dTop - dOffsetY);
 				dR = MM_2_PT(oRect.dLeft + oRect.dWidth);
 				dT = MM_2_PT(m_dPageHeight - oRect.dTop - oRect.dHeight);
 			}
@@ -3887,14 +3953,31 @@ void CPdfWriter::UpdateBrush(NSFonts::IApplicationFonts* pAppFonts, const std::w
 				dXStepSpacing = dW;
 				dYStepSpacing = dH;
 			}
-			else
+			else // Tile
 			{
 				// Размеры картинки заданы в пикселях. Размеры тайла - это размеры картинки в пунктах.
 				dW = (double)nImageW * 72.0 / 96.0;
 				dH = (double)nImageH * 72.0 / 96.0;
 
 				dT = dB;
+
+				bool isScale;
+				double scaleX, scaleY;
+				m_oBrush.GetBrushScale(isScale, scaleX, scaleY);
+				if (isScale)
+				{
+					dW *= scaleX;
+					dH *= scaleY;
+				}
 			}
+
+			PdfWriter::EImageTilePatternType ePatternType = PdfWriter::imagetilepatterntype_Default;
+			if (c_BrushTextureModeTileFlipX == lTextureMode)
+				ePatternType = PdfWriter::imagetilepatterntype_InverseX;
+			else if (c_BrushTextureModeTileFlipY == lTextureMode)
+				ePatternType = PdfWriter::imagetilepatterntype_InverseY;
+			else if (c_BrushTextureModeTileFlipXY == lTextureMode)
+				ePatternType = PdfWriter::imagetilepatterntype_InverseXY;
 
 			// Нам нужно, чтобы левый нижний угол границ нашего пата являлся точкой переноса для матрицы преобразования.
 			PdfWriter::CMatrix* pMatrix = m_pPage->GetTransform();
@@ -3902,7 +3985,8 @@ void CPdfWriter::UpdateBrush(NSFonts::IApplicationFonts* pAppFonts, const std::w
 			PdfWriter::CMatrix oPatternMatrix = *pMatrix;
 			oPatternMatrix.x = dL;
 			oPatternMatrix.y = dT;
-			m_pPage->SetPatternColorSpace(m_pDocument->CreateImageTilePattern(dW, dH, pImage, &oPatternMatrix, PdfWriter::imagetilepatterntype_Default, dXStepSpacing, dYStepSpacing));
+
+			m_pPage->SetPatternColorSpace(m_pDocument->CreateImageTilePattern(dW, dH, pImage, &oPatternMatrix, ePatternType, dXStepSpacing, dYStepSpacing));
 		}
 	}
 	else if (c_BrushTypeHatch1 == lBrushType)

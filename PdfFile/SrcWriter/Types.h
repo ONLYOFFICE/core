@@ -51,6 +51,7 @@
 
 #ifdef __linux__
 #include <string.h>
+#include <limits>
 #endif
 
 namespace PdfWriter

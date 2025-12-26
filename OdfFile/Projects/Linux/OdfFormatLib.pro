@@ -19,7 +19,6 @@ include(../../../Common/base.pri)
 #BOOST
 include($$PWD/../../../Common/3dParty/boost/boost.pri)
 
-include($$PWD/../../Reader/Converter/StarMath2OOXML/StarMath2OOXML.pri)
 include($$PWD/../../Reader/Converter/SMCustomShape2OOXML/SMCustomShape2OOXML.pri)
 
 DEFINES +=  UNICODE \
@@ -32,6 +31,8 @@ precompile_header {
     PRECOMPILED_HEADER = precompiled.h
     HEADERS += precompiled.h
 }
+
+ADD_DEPENDENCY(StarMathConverter)
 
 core_release {
 SOURCES += \
@@ -323,6 +324,7 @@ SOURCES += \
 	../../Reader/Converter/xlsx_data_validation.cpp \
 	../../Reader/Converter/xlsx_utils.cpp \
 	../../Reader/Converter/xlsx_xf.cpp \
+	../../Reader/Converter/StarMath2OOXML/cooxml2odf.cpp \
 	\
 	../../Writer/Format/office_document.cpp \
 	../../Writer/Format/office_forms.cpp \
@@ -722,6 +724,7 @@ HEADERS += \
 	../../Reader/Converter/xlsx_xf.h \
 	../../Reader/Converter/conversionelement.h \
 	../../Reader/Converter/ConvertOO2OOX.h \
+	../../Reader/Converter/StarMath2OOXML/cooxml2odf.h \
 	\
 	../../Writer/Format/math_elementaries.h \
 	../../Writer/Format/math_elements.h \
@@ -827,5 +830,5 @@ HEADERS += \
 	../../Writer/Converter/Oox2OdfConverter.h \
 	../../Writer/Converter/VmlShapeTypes2Oox.h \
 	../../Writer/Converter/XlsxConverter.h \
-	../../Writer/Converter/PptxConverter.h
+	../../Writer/Converter/PptxConverter.h \
 

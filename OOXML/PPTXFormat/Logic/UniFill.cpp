@@ -186,437 +186,65 @@ namespace PPTX
 		void UniFill::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 		{
 			LONG read_start = pReader->GetPos();
-			LONG read_end = read_start + pReader->GetLong() + 4;
+			LONG read_end = read_start + pReader->GetRecordSize() + 4;
 
 			m_type = notInit;
 
 			if (pReader->GetPos() < read_end)
 			{
 				BYTE _type = pReader->GetUChar();
-				LONG _e = pReader->GetPos() + pReader->GetRecordSize() + 4;
+				pReader->Seek(read_start);
 
 				switch (_type)
 				{
 					case FILL_TYPE_BLIP:
 					{
-						pReader->Skip(1);
-
 						PPTX::Logic::BlipFill* pFill = new PPTX::Logic::BlipFill();
 						pFill->m_namespace = _T("a");
-						
-						while (true)
-						{
-							BYTE _at = pReader->GetUChar_TypeNode();
-							if (_at == NSBinPptxRW::g_nodeAttributeEnd)
-								break;
-
-							switch (_at)
-							{
-								case 0:
-									pReader->Skip(4); // dpi
-									break;
-								case 1:
-									pReader->Skip(1); // rotWithShape
-									break;
-								default:
-									break;
-							}
-						}
-
-						while (pReader->GetPos() < _e)
-						{
-							BYTE rec = pReader->GetUChar();
-
-							switch (rec)
-							{
-								case 0:
-								{
-									LONG _s2 = pReader->GetPos();
-									LONG _e2 = _s2 + pReader->GetLong() + 4;
-
-									pReader->Skip(1);
-
-									while (true)
-									{
-										BYTE _at = pReader->GetUChar_TypeNode();
-										if (NSBinPptxRW::g_nodeAttributeEnd == _at)
-											break;
-
-										if (_at == 0)
-											pReader->Skip(1);
-									}
-
-									while (pReader->GetPos() < _e2)
-									{
-										BYTE _t = pReader->GetUChar();
-
-										switch (_t)
-										{
-											case 0:
-											case 1:
-											{
-												// id. embed / link
-												pReader->Skip(4);												
-											}break;
-											case 10:
-											case 11:
-											{
-												// id. embed / link
-												pReader->GetString2();												
-											}break;
-											case 2:
-											{
-												if (!pFill->blip.is_init())
-													pFill->blip = new PPTX::Logic::Blip();	
-												
-												pReader->Skip(4);
-												ULONG count_effects = pReader->GetULong();
-												for (ULONG _eff = 0; _eff < count_effects; ++_eff)
-												{
-													pReader->Skip(1); // type 
-
-													pFill->blip->Effects.push_back(UniEffect());
-													pFill->blip->Effects.back().fromPPTY(pReader);
-
-													if (false == pFill->blip->Effects.back().is_init())
-													{
-														pFill->blip->Effects.pop_back();
-													}
-												}
-											}break;
-											case 3:
-											{
-												pReader->Skip(6); // len + start attributes + type
-
-												// -------------------
-												std::wstring strUrl = pReader->GetString2(true);
-												std::wstring strTempFile;
-												std::wstring strOrigBase64;
-
-
-												if (0 == strUrl.find(_T("data:")))
-												{
-													bool bBase64 = false;
-													
-													strOrigBase64 = strUrl;
-													int nFind = (int)strUrl.find(_T(","));
-
-													std::wstring sImageExtension;
-
-													std::wstring sFormatDataString = XmlUtils::GetLower(strUrl.substr(5, nFind - 5));
-													{
-														int nFind1 = (int)sFormatDataString.find(_T("base64"));
-														if (nFind1 >=0 ) bBase64 = true;
-														
-														nFind1 = (int)sFormatDataString.find(_T("image/"));
-														if (nFind1>=0)
-														{
-															int nFind2 = (int)sFormatDataString.find(_T(";"));
-															if (nFind2 < 0) nFind2  = (int)sFormatDataString.length();
-													
-															sImageExtension = sFormatDataString.substr(nFind1 + 6, nFind2 - 6 - nFind1);
-														}
-													}
-													strUrl.erase(0, nFind + 1);
-
-													std::string __s = std::string(strUrl.begin(), strUrl.end());
-													int len =(int)__s.length();
-													BYTE* pDstBuffer = NULL;
-													int dstLen = 0;
-
-													if (true)//(bBase64)
-													{ 
-														bBase64 = true;
-														int dstLenTemp = Base64::Base64DecodeGetRequiredLength(len);
-
-														pDstBuffer = new BYTE[dstLenTemp];
-														dstLen = dstLenTemp;
-														Base64::Base64Decode(__s.c_str(), len, pDstBuffer, &dstLen);
-													}
-													else
-													{
-														pDstBuffer = (BYTE*) __s.c_str();
-														dstLen = len;
-													}
-													CImageFileFormatChecker checker;
-													std::wstring detectImageExtension = checker.DetectFormatByData(pDstBuffer, dstLen);
-
-													if (false == detectImageExtension.empty())
-													{
-														sImageExtension = detectImageExtension;
-
-														//папки media может не быть в случае, когда все картинки base64(поскольку файл временный, папку media не создаем)
-														std::wstring tempFilePath = pReader->m_strFolder + FILE_SEPARATOR_STR;
-														
-														OOX::CPath pathTemp = NSFile::CFileBinary::CreateTempFileWithUniqueName(tempFilePath, _T("img")) + _T(".") + sImageExtension;
-
-														NSFile::CFileBinary oTempFile;
-														oTempFile.CreateFile(pathTemp.GetPath());
-														oTempFile.WriteFile((void*)pDstBuffer, (DWORD)dstLen);
-														oTempFile.CloseFile();
-														
-														strUrl = strTempFile =pathTemp.GetPath(); // strTempFile для удаления
-														if (bBase64)
-														{
-															RELEASEARRAYOBJECTS(pDstBuffer);
-														}
-													}
-													else
-													{// бяка
-														strUrl.clear();
-													}
-												}
-												else
-												{
-													if (0 != strUrl.find(_T("http:")) &&
-														0 != strUrl.find(_T("https:")) &&
-														0 != strUrl.find(_T("ftp:")) &&
-														0 != strUrl.find(_T("file:")))
-													{
-														if (0 == strUrl.find(_T("theme")))
-														{
-                                                            strUrl = pReader->m_strFolderExternalThemes + FILE_SEPARATOR_STR + strUrl;
-														}
-														else
-														{
-                                                            strUrl = pReader->m_strFolder + FILE_SEPARATOR_STR + _T("media") + FILE_SEPARATOR_STR + strUrl;
-														}
-													}
-												}
-												// -------------------													
-												
-												NSBinPptxRW::_relsGeneratorInfo oRelsGeneratorInfo = pReader->m_pRels->WriteImage(strUrl, pFill->additionalFiles, pFill->oleData, strOrigBase64);
-
-												// -------------------
-												if (!strTempFile.empty())
-												{
-                                                    CDirectory::DeleteFile(strTempFile);
-												}
-												// -------------------
-
-												if (!pFill->blip.is_init())
-													pFill->blip = new PPTX::Logic::Blip();
-
-												pFill->blip->embed = new OOX::RId(oRelsGeneratorInfo.nImageRId);
-												pFill->blip->imageFilepath = oRelsGeneratorInfo.sFilepathImage;
-												
-												if (pFill->blip.is_init())
-													pFill->blip->m_namespace = _T("a");
-
-												if(oRelsGeneratorInfo.nOleRId > 0)
-												{
-													pFill->blip->oleRid			= OOX::RId((size_t)oRelsGeneratorInfo.nOleRId).get();
-													pFill->blip->oleFilepathBin	= oRelsGeneratorInfo.sFilepathOle;
-												}
-												if(oRelsGeneratorInfo.nMediaRId > 0)
-												{
-													pFill->blip->mediaRid		= OOX::RId((size_t)oRelsGeneratorInfo.nMediaRId).get();
-													pFill->blip->mediaFilepath	= oRelsGeneratorInfo.sFilepathMedia;
-												}
-												pReader->Skip(1); // end attribute												
-											}break;
-											default:
-											{
-												pReader->SkipRecord();												
-											}break;
-										}
-									}
-
-									pReader->Seek(_e2);									
-								}break;
-								case 1:
-								{
-									pFill->srcRect = new PPTX::Logic::Rect();
-									pFill->srcRect->m_name = L"a:srcRect";
-									pFill->srcRect->fromPPTY(pReader);
-								}break;
-								case 2:
-								{
-									pFill->tile = new PPTX::Logic::Tile();
-									pFill->tile->fromPPTY(pReader);									
-								}break;
-								case 3:
-								{
-									pFill->stretch = new PPTX::Logic::Stretch();
-									pFill->stretch->fromPPTY(pReader);									
-								}break;
-								default:
-								{
-									pReader->SkipRecord();
-								}
-							}
-						}
+						pFill->fromPPTY(pReader);
 
 						m_type = blipFill;
-						Fill = pFill;
-						break;
-					}
+						Fill = pFill;						
+					}break;
 					case FILL_TYPE_GRAD:
 					{
-						pReader->Skip(1);
-
 						PPTX::Logic::GradFill* pFill = new PPTX::Logic::GradFill();
 						pFill->m_namespace = _T("a");
-
-						while (true)
-						{
-							BYTE _at = pReader->GetUChar_TypeNode();
-							if (_at == NSBinPptxRW::g_nodeAttributeEnd)
-								break;
-
-							switch (_at)
-							{
-								case 0:
-									pFill->flip = pReader->GetUChar();
-									break;
-								case 1:
-									pFill->rotWithShape = pReader->GetBool();
-									break;
-								default:
-									break;
-							}
-						}
-
-						while (pReader->GetPos() < _e)
-						{
-							BYTE rec = pReader->GetUChar();
-
-							switch (rec)
-							{
-								case 0:
-								{
-									LONG _s1 = pReader->GetPos();
-									LONG _e1 = _s1 + pReader->GetLong() + 4;
-
-									ULONG _count = pReader->GetULong();
-									for (ULONG i = 0; i < _count; ++i)
-									{
-										if (pReader->GetPos() >= _e1)
-											break;
-
-										pReader->Skip(1); // type
-										pReader->Skip(4); // len
-
-										size_t _countGs = pFill->GsLst.size();
-										pFill->GsLst.push_back(Gs());
-
-										pReader->Skip(1); // start attr
-										pReader->Skip(1); // pos type
-										pFill->GsLst[_countGs].pos = pReader->GetLong();
-										pReader->Skip(1); // end attr
-
-										pReader->Skip(1);
-										pFill->GsLst[_countGs].color.fromPPTY(pReader);
-									}
-
-									pReader->Seek(_e1);									
-								}break;
-								case 1:
-								{
-									pFill->lin = new PPTX::Logic::Lin();
-									pFill->lin->fromPPTY(pReader);									
-								}break;
-								case 2:
-								{
-									pFill->path = new PPTX::Logic::Path();
-									pFill->path->fromPPTY(pReader);									
-								}break;
-								case 3:
-								{
-									pFill->tileRect = new PPTX::Logic::Rect();
-									pFill->tileRect->m_name = L"a:tileRect";
-									pFill->tileRect->fromPPTY(pReader);									
-								}break;
-								default:
-								{
-									pReader->SkipRecord();
-								}
-							}
-						}
+						pFill->fromPPTY(pReader);
 
 						m_type = gradFill;
-						Fill = pFill;
-						break;
-					}
+						Fill = pFill;						
+					}break;
 					case FILL_TYPE_PATT:
 					{
-						pReader->Skip(1);
 						PPTX::Logic::PattFill* pFill = new PPTX::Logic::PattFill();
-
-						while (true)
-						{
-							BYTE _at = pReader->GetUChar_TypeNode();
-							if (_at == NSBinPptxRW::g_nodeAttributeEnd)
-								break;
-
-							switch (_at)
-							{
-								case 0:
-									pFill->prst = pReader->GetUChar();
-									break;									
-								default:
-									break;
-							}
-						}
-
-						while (pReader->GetPos() < _e)
-						{
-							BYTE rec = pReader->GetUChar();
-
-							switch (rec)
-							{
-								case 0:
-								{
-									pFill->fgClr.fromPPTY(pReader);
-									break;
-								}
-								case 1:
-								{
-									pFill->bgClr.fromPPTY(pReader);
-									break;
-								}
-								default:
-								{
-									// пока никаких настроек градиента нет
-									pReader->SkipRecord();
-								}
-							}
-						}
-
 						pFill->m_namespace = _T("a");
+						pFill->fromPPTY(pReader);
 
 						m_type = pattFill;
-						Fill = pFill;
-						break;
-					}
+						Fill = pFill;						
+					}break;
 					case FILL_TYPE_SOLID:
 					{
-						pReader->Skip(1); // type + len
-
 						PPTX::Logic::SolidFill* pFill = new PPTX::Logic::SolidFill();
 						pFill->m_namespace = _T("a");
-
-						pFill->Color.fromPPTY(pReader);
+						pFill->fromPPTY(pReader);
 
 						m_type = solidFill;
-						Fill = pFill;
-						break;
-					}
+						Fill = pFill;						
+					}break;
 					case FILL_TYPE_NOFILL:
 					{
 						m_type = noFill;
-						Fill = new PPTX::Logic::NoFill();
-						break;
-					}
+						Fill = new PPTX::Logic::NoFill();		
+					}break;
 					case FILL_TYPE_GRP:
 					{
 						m_type = grpFill;
-						Fill = new PPTX::Logic::GrpFill();
-						break;
-					}
+						Fill = new PPTX::Logic::GrpFill();						
+					}break;
 				}
 			}
-
 			pReader->Seek(read_end);
 		}
 		std::wstring UniFill::toXML() const

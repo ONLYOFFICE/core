@@ -329,6 +329,38 @@ namespace PdfWriter
 		for (int i = 0; i < m_vMetaOForms.size(); ++i)
 			m_vMetaOForms[i]->Add("ID", new CBinaryObject(arrId, 16));
 	}
+	void CDocument::AddNameTree(CStringObject* pName, CDestination* pDest)
+	{
+		if (!m_pCatalog || !m_pXref)
+			return;
+
+		CDictObject* pDNames = dynamic_cast<CDictObject*>(m_pCatalog->Get("Names"));
+		if (!pDNames)
+		{
+			pDNames = new CDictObject();
+			m_pXref->Add(pDNames);
+			m_pCatalog->Add("Names", pDNames);
+		}
+
+		CDictObject* pDests = dynamic_cast<CDictObject*>(pDNames->Get("Dests"));
+		if (!pDests)
+		{
+			pDests = new CDictObject();
+			m_pXref->Add(pDests);
+			pDNames->Add("Dests", pDests);
+		}
+
+		CArrayObject* pANames = dynamic_cast<CArrayObject*>(pDests->Get("Names"));
+		if (!pANames)
+		{
+			pANames = new CArrayObject();
+			m_pXref->Add(pANames);
+			pDests->Add("Names", pANames);
+		}
+
+		pANames->Add(pName);
+		pANames->Add(pDest);
+	}
     void CDocument::PrepareEncryption()
 	{
 		CEncrypt* pEncrypt = m_pEncryptDict->GetEncrypt();
@@ -676,6 +708,8 @@ namespace PdfWriter
 			pAnnot = new CStampAnnotation(m_pXref);
 		else if (m_nType == 25)
 			pAnnot = new CRedactAnnotation(m_pXref);
+		else if (m_nType == 1)
+			pAnnot = new CLinkAnnotation(m_pXref);
 
 		if (pAnnot)
 			m_pXref->Add(pAnnot);
@@ -738,7 +772,7 @@ namespace PdfWriter
 	}
 	CAnnotation* CDocument::CreateLinkAnnot(const TRect& oRect, CDestination* pDest)
 	{
-		CAnnotation* pAnnot = new CLinkAnnotation(m_pXref, pDest);
+		CAnnotation* pAnnot = new CDestLinkAnnotation(m_pXref, pDest);
 		pAnnot->SetRect(oRect);
 		m_pXref->Add(pAnnot);
 		return pAnnot;

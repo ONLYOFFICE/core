@@ -93,7 +93,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>DONT_WRITE_EMBEDDED_FONTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -114,7 +114,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>..\include;..\..\DesktopEditor\xml\libxml2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>DONT_WRITE_EMBEDDED_FONTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -285,6 +285,8 @@
     <ClCompile Include="..\..\Reader\Converter\SMCustomShape2OOXML\customshape.cpp" />
     <ClCompile Include="..\..\Reader\Converter\SMCustomShape2OOXML\smcustomshapepars.cpp" />
     <ClCompile Include="..\..\Reader\Converter\StarMath2OOXML\cconversionsmtoooxml.cpp" />
+    <ClCompile Include="..\..\Reader\Converter\StarMath2OOXML\conversionmathformula.cpp" />
+    <ClCompile Include="..\..\Reader\Converter\StarMath2OOXML\cooxml2odf.cpp" />
     <ClCompile Include="..\..\Reader\Converter\StarMath2OOXML\cstarmathpars.cpp" />
     <ClCompile Include="..\..\Reader\Converter\xlsxconversioncontext.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
@@ -684,8 +686,12 @@
     <ClInclude Include="..\..\Reader\Converter\SMCustomShape2OOXML\customshape.h" />
     <ClInclude Include="..\..\Reader\Converter\SMCustomShape2OOXML\smcustomshapepars.h" />
     <ClInclude Include="..\..\Reader\Converter\StarMath2OOXML\cconversionsmtoooxml.h" />
+    <ClInclude Include="..\..\Reader\Converter\StarMath2OOXML\conversionmathformula.h" />
+    <ClInclude Include="..\..\Reader\Converter\StarMath2OOXML\cooxml2odf.h" />
     <ClInclude Include="..\..\Reader\Converter\StarMath2OOXML\cstarmathpars.h" />
     <ClInclude Include="..\..\Reader\Converter\StarMath2OOXML\fontType.h" />
+    <ClInclude Include="..\..\Reader\Converter\StarMath2OOXML\TextDirection.h" />
+    <ClInclude Include="..\..\Reader\Converter\StarMath2OOXML\TFormulaSize.h" />
     <ClInclude Include="..\..\Reader\Converter\StarMath2OOXML\typeConversion.h" />
     <ClInclude Include="..\..\Reader\Converter\StarMath2OOXML\typeselements.h" />
     <ClInclude Include="..\..\Reader\Converter\xlsxconversioncontext.h" />

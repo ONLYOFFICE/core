@@ -133,6 +133,10 @@ public:
 	HRESULT put_BrushTextureImage(Aggplus::CImage* pImage);
 	HRESULT get_BrushTransform(Aggplus::CMatrix& oMatrix);
 	HRESULT put_BrushTransform(const Aggplus::CMatrix& oMatrix);
+	HRESULT get_BrushOffset(double& offsetX, double& offsetY) const;
+	HRESULT put_BrushOffset(const double& offsetX, const double& offsetY);
+	HRESULT get_BrushScale(bool& isScale, double& scaleX, double& scaleY) const;
+	HRESULT put_BrushScale(bool isScale, const double& scaleX, const double& scaleY);
 	//----------------------------------------------------------------------------------------
 	// Функции для работы со шрифтами
 	//----------------------------------------------------------------------------------------
@@ -229,6 +233,7 @@ public:
 	void SetSplit(bool bSplit) { m_bSplit = bSplit; }
 
 private:
+	PdfWriter::CAction* GetAction(CAnnotFieldInfo::CActionFieldPr* pAction, bool bDeferred = false);
 	bool SkipRedact(const double& dX, const double& dY, const double& dW, const double& dH);
 	bool SkipRedact(const double& dX, const double& dY);
 	PdfWriter::CImageDict* LoadImage(Aggplus::CImage* pImage, BYTE nAlpha);

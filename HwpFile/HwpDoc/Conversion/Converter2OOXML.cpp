@@ -21,6 +21,9 @@
 #include "../HWPElements/HWPRecordParaShape.h"
 #include "../HWPElements/HWPRecordCharShape.h"
 
+//For EQN
+#include "../../../OdfFile/Reader/Converter/StarMath2OOXML/conversionmathformula.h"
+
 #include "Transform.h"
 
 #define PARA_SPACING_SCALE 0.85
@@ -1245,17 +1248,17 @@ void CConverter2OOXML::WriteGeometryShape(const CCtrlGeneralShape* pGeneralShape
 
 void CConverter2OOXML::WriteEqEditShape(const CCtrlEqEdit* pEqEditShape, short shParaShapeID, short shParaStyleID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)
 {
-	//TODO:: добавить конвертацию eqn формулы в ooxml
 	++m_ushEquationCount;
 
 	WriteCaption((const CCtrlCommon*)pEqEditShape, oBuilder, oState);
 
 	OpenParagraph(shParaShapeID, shParaStyleID, oBuilder, oState);
 
-	oBuilder.WriteString(L"<w:r>");
+	oBuilder.WriteString(L"<w:r><w:t xml:space=\"preserve\">");
 
-	oBuilder.WriteString(L"<w:t xml:space=\"preserve\">");
-	oBuilder.WriteEncodeXmlString(pEqEditShape->GetEqn());
+	StarMath::CStarMathConverter oConverterStarMath;
+
+	oBuilder.WriteString(oConverterStarMath.ConvertEQNToOOXml(pEqEditShape->GetEqn()));
 	oBuilder.WriteString(L"</w:t></w:r>");
 }
 

@@ -111,10 +111,7 @@ CActionGoTo* getGoTo(PDFDoc* pdfDoc, LinkAction* oAct)
 	GString* str = ((LinkGoTo*)oAct)->getNamedDest();
 	LinkDest* pLinkDest = str ? pdfDoc->findDest(str) : ((LinkGoTo*)oAct)->getDest();
 	if (!pLinkDest)
-	{
-		RELEASEOBJECT(oAct);
 		return NULL;
-	}
 	CActionGoTo* ppRes = new CActionGoTo();
 	if (pLinkDest->isPageRef())
 	{

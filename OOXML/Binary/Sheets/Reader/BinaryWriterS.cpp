@@ -5012,11 +5012,11 @@ void BinaryWorksheetTableWriter::WriteWorksheet(OOX::Spreadsheet::CSheet* pSheet
 				OOX::CPath pathImage = pImageFileCache->filename();
 				std::wstring	additionalPath;
 				int				additionalType = 0;
-				double dX = -1.0; //mm
-				double dY = -1.0;
+
 				double dW = -1.0; //mm
 				double dH = -1.0;
-				NSShapeImageGen::CMediaInfo oId = m_pOfficeDrawingConverter->m_pBinaryWriter->m_pCommon->m_pMediaManager->WriteImage(pathImage.GetPath(), dX, dY, dW, dH, additionalPath, additionalType);
+				
+				NSShapeImageGen::CMediaInfo oId = m_pOfficeDrawingConverter->m_pBinaryWriter->m_pCommon->m_pMediaManager->WriteImage(pathImage.GetPath(), dW, dH, additionalPath, additionalType);
 				nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::Picture);
 				m_oBcw.m_oStream.WriteStringW3(oId.GetPath2());
 				m_oBcw.WriteItemEnd(nCurPos);
@@ -7029,14 +7029,16 @@ void BinaryWorksheetTableWriter::WriteDrawing(const OOX::Spreadsheet::CWorksheet
 	if (pCellAnchor->m_oElement.IsInit() == false && 
 		pCellAnchor->m_sVmlSpId.IsInit() == false) return;
 
-	m_oBcw.m_oStream.ClearCurShapePositionAndSizes();
+	m_oBcw.m_oStream.ClearCurShapeSize();
 
 	WriteCellAnchor(pCellAnchor);
 
 	if (pCellAnchor->m_oExt.IsInit())
 	{
-		m_oBcw.m_oStream.m_dCxCurShape = pCellAnchor->m_oExt->m_oCx.IsInit() ? pCellAnchor->m_oExt->m_oCx->GetValue() : 0;
-		m_oBcw.m_oStream.m_dCyCurShape = pCellAnchor->m_oExt->m_oCy.IsInit() ? pCellAnchor->m_oExt->m_oCy->GetValue() : 0;
+		double cx = pCellAnchor->m_oExt->m_oCx.IsInit() ? pCellAnchor->m_oExt->m_oCx->GetValue() : 0;
+		double cy = pCellAnchor->m_oExt->m_oCy.IsInit() ? pCellAnchor->m_oExt->m_oCy->GetValue() : 0;
+
+		m_oBcw.m_oStream.SetCurShapeSize(cx, cy);
 	}
 	if (pCellAnchor->m_sVmlSpId.IsInit() && pVmlDrawing)
 	{

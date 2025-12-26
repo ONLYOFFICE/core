@@ -50,6 +50,8 @@ namespace NSDocxRenderer
 		double m_dHeight {0.0};
 		double m_dWidth  {0.0};
 
+		size_t m_nOrder = 0;
+
 		CBaseItem();
 		CBaseItem(const CBaseItem& other);
 		CBaseItem(CBaseItem&& other);

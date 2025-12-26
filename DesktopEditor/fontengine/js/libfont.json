@@ -265,15 +265,15 @@
 	},
 	{
 		"folder": "../../",
-		"files": ["graphics/Image.cpp", "raster/BgraFrame.cpp", "raster/ImageFileFormatChecker.cpp", "graphics/Matrix.cpp"]
+		"files": ["graphics/Image.cpp", "raster/BgraFrame.cpp", "raster/ImageFileFormatChecker.cpp", "graphics/Matrix.cpp", "graphics/GraphicsPath.cpp"]
 	},
 	{
 		"folder": "../../agg-2.4/src/",
-		"files": ["agg_trans_affine.cpp"]
+		"files": ["agg_trans_affine.cpp", "agg_bezier_arc.cpp"]
 	},
 	{
 		"folder": "../../raster/",
-		"files": ["PICT/PICFile.cpp", "PICT/pic.cpp"]
+		"files": ["PICT/PICFile.cpp"]
 	},
 	{
 		"folder": "../../graphics/pro/js/qt/raster",

@@ -4726,9 +4726,9 @@ int BinaryWorksheetsTableReader::ReadWorksheet(boost::unordered_map<BYTE, std::v
 	SEEK_TO_POS_END(oLegacyDrawingHF);
 //-------------------------------------------------------------------------------------------------------------
 	SEEK_TO_POS_START(c_oSerWorksheetsTypes::Picture);
-		std::wstring sPicture = m_pOfficeDrawingConverter->m_pReader->m_strFolder + FILE_SEPARATOR_STR + _T("media")  + FILE_SEPARATOR_STR + m_oBufferedStream.GetString4(length);
+		std::wstring sPicture = m_pOfficeDrawingConverter->m_pBinaryReader->m_strFolder + FILE_SEPARATOR_STR + _T("media")  + FILE_SEPARATOR_STR + m_oBufferedStream.GetString4(length);
 		std::vector<smart_ptr<OOX::File>> additionalFiles;
-		NSBinPptxRW::_relsGeneratorInfo oRelsGeneratorInfo = m_pOfficeDrawingConverter->m_pReader->m_pRels->WriteImage(sPicture, additionalFiles, L"", L"");
+		NSBinPptxRW::_relsGeneratorInfo oRelsGeneratorInfo = m_pOfficeDrawingConverter->m_pBinaryReader->m_pRels->WriteImage(sPicture, additionalFiles, L"", L"");
 
 		NSCommon::smart_ptr<OOX::Image> pImageFileWorksheet(new OOX::Image(NULL, false));
 		pImageFileWorksheet->set_filename(oRelsGeneratorInfo.sFilepathImage, false);
@@ -5100,9 +5100,9 @@ int BinaryWorksheetsTableReader::ReadWorksheet(boost::unordered_map<BYTE, std::v
     SEEK_TO_POS_END2();
 //-------------------------------------------------------------------------------------------------------------
     SEEK_TO_POS_START(c_oSerWorksheetsTypes::Picture);
-        std::wstring sPicture = m_pOfficeDrawingConverter->m_pReader->m_strFolder + FILE_SEPARATOR_STR + _T("media")  + FILE_SEPARATOR_STR + m_oBufferedStream.GetString4(length);
+        std::wstring sPicture = m_pOfficeDrawingConverter->m_pBinaryReader->m_strFolder + FILE_SEPARATOR_STR + _T("media")  + FILE_SEPARATOR_STR + m_oBufferedStream.GetString4(length);
 		std::vector<smart_ptr<OOX::File>> additionalFiles;
-		NSBinPptxRW::_relsGeneratorInfo oRelsGeneratorInfo = m_pOfficeDrawingConverter->m_pReader->m_pRels->WriteImage(sPicture, additionalFiles, L"", L"");
+		NSBinPptxRW::_relsGeneratorInfo oRelsGeneratorInfo = m_pOfficeDrawingConverter->m_pBinaryReader->m_pRels->WriteImage(sPicture, additionalFiles, L"", L"");
 
         NSCommon::smart_ptr<OOX::Image> pImageFileWorksheet(new OOX::Image(NULL, false));
         pImageFileWorksheet->set_filename(oRelsGeneratorInfo.sFilepathImage, false);
@@ -9651,7 +9651,7 @@ int BinaryFileReader::ReadFile(const std::wstring& sSrcFileName, std::wstring sD
 		}
 		bool bIsNoBase64 = nVersion == g_nFormatVersionNoBase64;
 
-		NSBinPptxRW::CBinaryFileReader& oBufferedStream = *pOfficeDrawingConverter->m_pReader;
+		NSBinPptxRW::CBinaryFileReader& oBufferedStream = *pOfficeDrawingConverter->m_pBinaryReader;
 
 		int nDataSize = 0;
 		BYTE* pData = NULL;

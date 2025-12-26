@@ -348,68 +348,70 @@ namespace OOX
 			auto workbookPtr = static_cast<XLS::GlobalsSubstream*>(globalsStreamPtr.get());
 			auto FormatPtr = new XLS::FORMATTING;
 			workbookPtr->m_Formating = XLS::BaseObjectPtr(FormatPtr);
-
-			//prepare colors
-			m_oColors = OOX::Spreadsheet::CColors();
-			m_oColors->m_oIndexedColors.Init();
-			m_oColors->m_oMruColors.Init();
 			auto globalInfo = workbookPtr->global_info_;
+			//prepare colors
+			if(!m_oColors.IsInit())
 			{
-				for(auto i : globalInfo->colors_palette)
+				m_oColors = OOX::Spreadsheet::CColors();
+				m_oColors->m_oIndexedColors.Init();
+				m_oColors->m_oMruColors.Init();
 				{
-					nullable<CColor> tempColor;
-					tempColor.Init();
-					tempColor->m_oRgb.Init();
-					tempColor->m_oRgb->FromString(i.second);
-					SetColor(m_oColors.get(), tempColor);
-				}
-
-			}
-			if (m_oFonts.IsInit())
-			{
-				for(auto i : m_oFonts->m_arrItems)
-				{
-					SetColor(m_oColors.get(), i->m_oColor);
-				}
-			}
-			if(m_oFills.IsInit())
-			{
-				for(auto i : m_oFills->m_arrItems)
-				{
-					if(i->m_oPatternFill.IsInit())
+					for(auto i : globalInfo->colors_palette)
 					{
-						auto pattern = &i->m_oPatternFill;
-						SetColor(m_oColors.get(), (*pattern)->m_oBgColor);
-						SetColor(m_oColors.get(), (*pattern)->m_oFgColor);
+						nullable<CColor> tempColor;
+						tempColor.Init();
+						tempColor->m_oRgb.Init();
+						tempColor->m_oRgb->FromString(i.second);
+						SetColor(m_oColors.get(), tempColor);
+					}
+
+				}
+				if (m_oFonts.IsInit())
+				{
+					for(auto i : m_oFonts->m_arrItems)
+					{
+						SetColor(m_oColors.get(), i->m_oColor);
 					}
 				}
-			}
-			for(auto i : m_oBorders->m_arrItems)
-			{
-				if(i->m_oTop.IsInit())
+				if(m_oFills.IsInit())
 				{
-					SetColor(m_oColors.get(), i->m_oTop->m_oColor);
+					for(auto i : m_oFills->m_arrItems)
+					{
+						if(i->m_oPatternFill.IsInit())
+						{
+							auto pattern = &i->m_oPatternFill;
+							SetColor(m_oColors.get(), (*pattern)->m_oBgColor);
+							SetColor(m_oColors.get(), (*pattern)->m_oFgColor);
+						}
+					}
 				}
-				if(i->m_oBottom.IsInit())
+				for(auto i : m_oBorders->m_arrItems)
 				{
-					SetColor(m_oColors.get(), i->m_oBottom->m_oColor);
-				}
-				if(i->m_oStart.IsInit())
-				{
-					SetColor(m_oColors.get(), i->m_oStart->m_oColor);
-				}
-				if(i->m_oEnd.IsInit())
-				{
-					SetColor(m_oColors.get(), i->m_oEnd->m_oColor);
-				}
-				if(i->m_oDiagonal.IsInit())
-				{
-					SetColor(m_oColors.get(), i->m_oDiagonal->m_oColor);
+					if(i->m_oTop.IsInit())
+					{
+						SetColor(m_oColors.get(), i->m_oTop->m_oColor);
+					}
+					if(i->m_oBottom.IsInit())
+					{
+						SetColor(m_oColors.get(), i->m_oBottom->m_oColor);
+					}
+					if(i->m_oStart.IsInit())
+					{
+						SetColor(m_oColors.get(), i->m_oStart->m_oColor);
+					}
+					if(i->m_oEnd.IsInit())
+					{
+						SetColor(m_oColors.get(), i->m_oEnd->m_oColor);
+					}
+					if(i->m_oDiagonal.IsInit())
+					{
+						SetColor(m_oColors.get(), i->m_oDiagonal->m_oColor);
+					}
+
 				}
 
+				MapColors(m_oColors.get());
 			}
-
-			MapColors(m_oColors.get());
 			FormatPtr->m_Palette = m_oColors->toXLS();
 			if (m_oFonts.IsInit())
 			{
@@ -432,7 +434,30 @@ namespace OOX
 				FormatPtr->m_arFonts = m_oFonts->toXLS();
 			}
 			if (m_oNumFmts.IsInit())
+			{
+                auto remap = [&](OOX::Spreadsheet::CXfs* xf)
+				{
+					if (xf->m_oNumFmtId.IsInit())
+					{
+						auto val = xf->m_oNumFmtId->GetValue();
+						if (val)
+						{
+							auto it = m_oNumFmts->m_mapNumFmtIndex.find(val);
+							if (it != m_oNumFmts->m_mapNumFmtIndex.end())
+							{
+								xf->m_oNumFmtId = static_cast<unsigned int>(it->second + 164);
+							}
+						}
+					}
+				};
+
+				for (auto& cellStyleXF : m_oCellStyleXfs->m_arrItems)
+					remap(cellStyleXF);
+
+				for (auto& cellXF : m_oCellXfs->m_arrItems)
+					remap(cellXF);
 				FormatPtr->m_arFormats = m_oNumFmts->toXLS();
+			}
 			if(m_oCellStyleXfs.IsInit() || m_oCellXfs.IsInit())
 			{
 				auto xfs = new XLS::XFS;

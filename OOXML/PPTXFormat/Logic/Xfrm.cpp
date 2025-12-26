@@ -291,16 +291,18 @@ namespace PPTX
 		}
 		void Xfrm::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 		{
-			if (chExtX.IsInit() && extX.IsInit())
-				pWriter->m_dCxCurShape = pWriter->m_dCxCurShape * (double)*extX / (double)*chExtX;
-			else if (extX.IsInit())
-				pWriter->m_dCxCurShape = ((pWriter->m_bInGroup && pWriter->m_dCxCurShape > 0) ? pWriter->m_dCxCurShape : 1) * *extX;
-			
-			if (chExtY.IsInit() && extY.IsInit())
-				pWriter->m_dCyCurShape = pWriter->m_dCyCurShape * (double)*extY / (double)*chExtY;
-			else if (extY.IsInit())
-				pWriter->m_dCyCurShape = ((pWriter->m_bInGroup && pWriter->m_dCyCurShape > 0) ? pWriter->m_dCyCurShape : 1) * *extY;
+			if (pWriter->GetShapeWidth() < 1 || pWriter->GetShapeHeight() < 1)
+			{
+				double cx = 0, cy = 0;
+				
+				if (extX.IsInit())
+					cx = *extX;
 
+				if (extY.IsInit())
+					cy = *extY;
+
+				pWriter->SetCurShapeSize(cx, cy);
+			}
 			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
 			pWriter->WriteInt2(0, offX);
 			pWriter->WriteInt2(1, offY);

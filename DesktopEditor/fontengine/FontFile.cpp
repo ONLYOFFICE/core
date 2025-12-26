@@ -731,10 +731,10 @@ void CFontFile::CheckHintsSupport()
 int CFontFile::SetCMapForCharCode(long lUnicode, int *pnCMapIndex)
 {
 	*pnCMapIndex = -1;
-	if (!m_pFace)
+	if (!m_pFace || !m_pFace->num_charmaps)
 		return 0;
 
-	if ( m_bStringGID || 0 == m_pFace->num_charmaps )
+	if ( m_bStringGID )
 		return lUnicode;
 
 	int nCharIndex = 0;

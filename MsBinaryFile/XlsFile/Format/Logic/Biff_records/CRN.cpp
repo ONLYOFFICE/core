@@ -52,6 +52,12 @@ BaseObjectPtr CRN::clone()
 void CRN::readFields(CFRecord& record)
 {
 	record >> colLast >> colFirst >> row;
+	if(colFirst > colLast)
+	{
+		colFirst = 0;
+		colLast = 0;
+		return;
+	}
 	
 	for(int i = 0; i < colLast - colFirst + 1; ++i)
 	{
@@ -61,6 +67,11 @@ void CRN::readFields(CFRecord& record)
 		SerArPtr ser(SerAr::createSerAr(rec_type));
 		record >> *ser;
 		crnOper.push_back(ser);
+		if(record.getRdPtr() >= record.getDataSize())
+		{
+			colLast = colFirst + i;
+			break;
+		}
 	}
 }
 

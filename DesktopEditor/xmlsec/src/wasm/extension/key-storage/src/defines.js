@@ -34,6 +34,7 @@ export const c_oAscKeyStorageType = {
 	WebPrivateEncryptKey: 16,
 	WebPublicSignKey: 17,
 	WebPublicEncryptKey: 18,
+	RsaOAEPCryptoParams: 19
 };
 
 export const c_oAscCryptoRsaType = {};

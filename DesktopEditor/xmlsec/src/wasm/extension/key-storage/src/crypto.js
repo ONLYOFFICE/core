@@ -66,18 +66,19 @@ CWebCrypto.prototype.verify = function(key, signature, data) {
 CWebCrypto.prototype.decrypt = function(key, data) {
 	const oThis = this;
 	const cryptoKey = key.getCryptoKey();
-	const algorithm = data.getEncryptParams();
-	return oThis.subtle.decrypt(algorithm, cryptoKey, data.getEncryptData());
+	const encryptParams = data.getEncryptParams();
+	const algorithm = encryptParams.getCryptoParams();
+	return oThis.subtle.decrypt(algorithm, cryptoKey, data.getEncryptData()).then(function(data) {
+		return new Uint8Array(data);
+	});
 }
 CWebCrypto.prototype.encrypt = function(key, data) {
 		const cryptoKey = key.getCryptoKey();
 		const encryptParams = key.getEncryptParams();
 		const algorithm = encryptParams.getCryptoParams();
 		return this.subtle.encrypt(algorithm, cryptoKey, data).then(function (encryptedData) {
-			const data = new EncryptData(encryptedData, encryptParams);
-			const writer = new BinaryWriter();
-			data.export(writer);
-			return writer.GetData();
+			const encryptData = new EncryptData(encryptedData, encryptParams);
+			return encryptData.export();
 		});
 }
 CWebCrypto.prototype.exportKey = function(key) {
@@ -89,7 +90,9 @@ CWebCrypto.prototype.generateKey = function(params, aesKey) {
 	const oThis = this;
 	const cryptoParams = params.getKeyGenCryptoParams();
 	const cryptoUsages = params.getCryptoUsages();
+	let saveCryptoKey;
 	return this.subtle.generateKey(cryptoParams, true, cryptoUsages).then(function(cryptoKey) {
+		saveCryptoKey = cryptoKey;
 		if (cryptoKey.privateKey && cryptoKey.publicKey) {
 			const publicKey = oThis.subtle.exportKey(c_oAscExportKeyFormat.spki, cryptoKey.publicKey);
 			const privateKey = oThis.subtle.exportKey(c_oAscExportKeyFormat.pkcs8, cryptoKey.privateKey).then(function(data) {
@@ -106,11 +109,11 @@ CWebCrypto.prototype.generateKey = function(params, aesKey) {
 			const publicKeyBuffer = exportedKeys[0];
 			const privateKeyBuffer = exportedKeys[1];
 			if (params.isSign()) {
-				return WebSignKeyPair.fromCryptoBuffer(publicKeyBuffer, privateKeyBuffer, importParams);
+				return WebSignKeyPair.fromWebCrypto(publicKeyBuffer, saveCryptoKey.publicKey, privateKeyBuffer, saveCryptoKey.privateKey, importParams);
 			}
-			return WebEncryptKeyPair.fromCryptoBuffer(publicKeyBuffer, privateKeyBuffer, importParams);
+			return WebEncryptKeyPair.fromWebCrypto(publicKeyBuffer, saveCryptoKey.publicKey, privateKeyBuffer, saveCryptoKey.privateKey, importParams);
 		} else {
-			return WebSymmetricKey.fromCryptoBuffer(exportedKeys, importParams);
+			return WebSymmetricKey.fromWebCrypto(exportedKeys, saveCryptoKey, importParams);
 		}
 	});
 };

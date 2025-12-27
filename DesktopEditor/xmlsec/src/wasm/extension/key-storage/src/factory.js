@@ -10,7 +10,7 @@ import {
 import {
 	AesGcmCryptoParams, AesGcmKeyGenParams,
 	Ed25519ImportParams,
-	Ed25519KeyGenParams, PBKDF2Params,
+	Ed25519KeyGenParams, PBKDF2Params, RsaOAEPCryptoParams,
 	RsaOAEPImportParams,
 	RsaOAEPKeyGenParams
 } from "./params";
@@ -31,3 +31,4 @@ c_oAscObjectFactory[c_oAscKeyStorageType.WebPrivateSignKey] = WebPrivateSignKey;
 c_oAscObjectFactory[c_oAscKeyStorageType.WebPrivateEncryptKey] = WebPrivateEncryptKey;
 c_oAscObjectFactory[c_oAscKeyStorageType.WebPublicSignKey] = WebPublicSignKey;
 c_oAscObjectFactory[c_oAscKeyStorageType.WebPublicEncryptKey] = WebPublicEncryptKey;
+c_oAscObjectFactory[c_oAscKeyStorageType.RsaOAEPCryptoParams] = RsaOAEPCryptoParams;

@@ -84,7 +84,26 @@ export function RsaOAEPImportParams(hash) {
 	RsaImportParams.call(this, hash);
 }
 initClass(RsaOAEPImportParams, RsaImportParams, c_oAscKeyStorageType.RSAOAEPImportParams);
-
+RsaOAEPImportParams.prototype.getEncryptParams = function() {
+	return new RsaOAEPCryptoParams();
+};
+export function RsaOAEPCryptoParams() {
+	AlgorithmParams.call(this);
+}
+initClass(RsaOAEPCryptoParams, AlgorithmParams, c_oAscKeyStorageType.RsaOAEPCryptoParams);
+RsaOAEPCryptoParams.import = function(reader) {
+	const params = new RsaOAEPCryptoParams();
+	params.setVersion(readLong(reader));
+	return params;
+};
+RsaOAEPCryptoParams.prototype.export = function(writer) {
+	writeLong(writer, this.version);
+};
+RsaOAEPCryptoParams.prototype.getCryptoParams = function() {
+	return {
+		name: "RSA-OAEP"
+	}
+};
 function RsaKeyGenParams(hash, modulusLength, publicExponent) {
 	RsaImportParams.call(this, hash);
 	this.modulusLength = typeof modulusLength === "number" ? modulusLength : 2048;
@@ -113,7 +132,9 @@ initClass(RsaOAEPKeyGenParams, RsaKeyGenParams, c_oAscKeyStorageType.RSAOAEPKeyG
 RsaOAEPKeyGenParams.prototype.getCryptoUsages = function() {
 	return ['encrypt', 'decrypt'];
 };
-
+RsaOAEPKeyGenParams.prototype.getImportParams = function() {
+	return new RsaOAEPImportParams(this.hash);
+};
 export function Ed25519ImportParams() {
 	AlgorithmParams.call(this);
 }

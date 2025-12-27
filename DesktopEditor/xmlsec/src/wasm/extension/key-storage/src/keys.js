@@ -108,13 +108,15 @@ WebKeyPair.prototype.setPublicKey = function(publicKey) {
 WebKeyPair.prototype.setPrivateKey = function(privateKey) {
 	this.privateKey = privateKey;
 };
-WebKeyPair.fromCryptoBuffer = function(publicKeyBuffer, privateKeyBuffer, importParams) {
+WebKeyPair.fromWebCrypto = function(publicKeyBuffer, publicCryptoKey, privateKeyBuffer, privateCryptoKey, importParams) {
 	const keyPair = new this();
 	keyPair.init();
 	const publicKey = new (this.getPublicKeyConstructor())();
 	publicKey.setBinaryKey(publicKeyBuffer);
+	publicKey.setCryptoKey(publicCryptoKey);
 	const privateKey = new (this.getPrivateKeyConstructor())();
 	privateKey.setBinaryKey(privateKeyBuffer);
+	privateKey.setCryptoKey(privateCryptoKey);
 	keyPair.setPublicKey(publicKey);
 	keyPair.setPrivateKey(privateKey);
 	keyPair.setParams(importParams);
@@ -146,7 +148,7 @@ export function WebSignKeyPair() {
 }
 initClass(WebSignKeyPair, WebKeyPair, c_oAscKeyStorageType.WebSignKeyPair);
 WebSignKeyPair.import = WebKeyPair.import;
-WebSignKeyPair.fromCryptoBuffer = WebKeyPair.fromCryptoBuffer;
+WebSignKeyPair.fromWebCrypto = WebKeyPair.fromWebCrypto;
 WebSignKeyPair.getPublicKeyConstructor = function() {
 	return WebPublicSignKey;
 };
@@ -167,7 +169,7 @@ export function WebEncryptKeyPair() {
 }
 initClass(WebEncryptKeyPair, WebKeyPair, c_oAscKeyStorageType.WebEncryptKeyPair);
 WebEncryptKeyPair.import = WebKeyPair.import;
-WebEncryptKeyPair.fromCryptoBuffer = WebKeyPair.fromCryptoBuffer;
+WebEncryptKeyPair.fromWebCrypto = WebKeyPair.fromWebCrypto;
 WebEncryptKeyPair.getPublicKeyConstructor = function() {
 	return WebPublicEncryptKey;
 };
@@ -216,6 +218,9 @@ AsymmetricKey.prototype.getBinaryKey = function() {
 AsymmetricKey.prototype.getCryptoKey = function() {
 	return this.cryptoKey;
 };
+AsymmetricKey.prototype.getEncryptParams = function() {
+	return this.params.getEncryptParams();
+}
 
 function WebPrivateKey() {
 	AsymmetricKey.call(this);
@@ -249,7 +254,7 @@ WebPrivateKey.prototype.export = function(writer) {
 };
 WebPrivateKey.prototype.decrypt = function(data) {
 	const crypto = getCrypto();
-	return crypto.decrypt(this, data);
+	return crypto.decrypt(this, EncryptData.import(data));
 };
 WebPrivateKey.prototype.sign = function(data) {
 	const crypto = getCrypto();
@@ -372,7 +377,7 @@ WebSymmetricKey.import = function(reader) {
 	}
 	return symmetricKey;
 };
-WebSymmetricKey.fromCryptoBuffer = function(symmetricKeyBuffer, importParams) {
+WebSymmetricKey.fromWebCrypto = function(symmetricKeyBuffer, symmetricCryptoKey, importParams) {
 	const key = new WebSymmetricKey();
 	key.init();
 	key.setBinaryKey(symmetricKeyBuffer);
@@ -455,7 +460,7 @@ WebSymmetricKey.prototype.getEncryptParams = function() {
 export function EncryptData(encryptData, params) {
 	CryptoBase.call(this);
 	this.version = 1;
-	this.encryptData = encryptData || null;
+	this.encryptData = encryptData ? new Uint8Array(encryptData) : null;
 	this.params = params || null;
 }
 initClass(EncryptData, CryptoBase, c_oAscKeyStorageType.EncryptData);
@@ -463,7 +468,7 @@ EncryptData.import = function(binaryData) {
 	const data = new EncryptData();
 	const reader = new BinaryReader(binaryData);
 	data.setVersion(readLong(reader));
-	switch (this.version) {
+	switch (data.version) {
 		case 1: {
 			data.setEncryptParams(readObject(reader));
 			data.setEncryptData(readBuffer(reader));
@@ -475,7 +480,8 @@ EncryptData.import = function(binaryData) {
 	}
 	return data;
 };
-EncryptData.prototype.export = function (writer) {
+EncryptData.prototype.export = function () {
+	const writer = new BinaryWriter();
 	writeLong(writer, this.version);
 	switch (this.version) {
 		case 1: {
@@ -487,6 +493,7 @@ EncryptData.prototype.export = function (writer) {
 			break;
 		}
 	}
+	return writer.GetData();
 };
 EncryptData.prototype.setEncryptData = function (encryptData) {
 	this.encryptData = encryptData;
@@ -499,5 +506,8 @@ EncryptData.prototype.getEncryptParams = function () {
 };
 EncryptData.prototype.getEncryptData = function () {
 	return this.encryptData;
+};
+EncryptData.prototype.setVersion = function(version) {
+	this.version = version;
 };
 

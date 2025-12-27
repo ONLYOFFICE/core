@@ -28,14 +28,14 @@ getKeyButton.addEventListener('click', (e) => {
 });
 
 encryptKeyButton.addEventListener('click', (e) => {
-	selectedKey.encrypt(dataInput.value).then(function (binaryData) {
+	selectedKey.encrypt(dataInput.value.toUtf8(true)).then(function (binaryData) {
 		encryptedDataDiv.textContent = binaryData.toBase64();
 	});
 });
 
 decryptKeyButton.addEventListener('click', (e) => {
 	selectedKey.decrypt(Uint8Array.fromBase64(encryptDataInput.value)).then(function (binaryData) {
-		decryptedDataDiv.textContent = binaryData.toBase64();
+		decryptedDataDiv.textContent = String.fromUtf8(binaryData, 0, binaryData.length);
 	});
 });
 

@@ -30,6 +30,7 @@ CWebCrypto.prototype.getRandomValues = function(length) {
 }
 CWebCrypto.prototype.getAesKey = function(masterPassword, pbkdfParams) {
 	const oThis = this;
+	const aesKeyGenParams = new AesGcmKeyGenParams();
 	return this.subtle.importKey(
 		'raw',
 		masterPassword,
@@ -37,7 +38,6 @@ CWebCrypto.prototype.getAesKey = function(masterPassword, pbkdfParams) {
 		false,
 		['deriveKey']
 	).then(function(pwKey) {
-		const aesKeyGenParams = new AesGcmKeyGenParams();
 		return oThis.subtle.deriveKey(
 			pbkdfParams.getCryptoParams(),
 			pwKey,
@@ -46,7 +46,7 @@ CWebCrypto.prototype.getAesKey = function(masterPassword, pbkdfParams) {
 			['encrypt', 'decrypt']
 		);
 	}).then(function(aesKey) {
-		return WebSymmetricKey.fromCryptoKey(aesKey, pbkdfParams);
+		return WebSymmetricKey.fromCryptoKey(aesKey, aesKeyGenParams.getImportParams());
 	});
 };
 CWebCrypto.prototype.sign = function(key, data) {
@@ -71,9 +71,10 @@ CWebCrypto.prototype.decrypt = function(key, data) {
 }
 CWebCrypto.prototype.encrypt = function(key, data) {
 		const cryptoKey = key.getCryptoKey();
-		const algorithm = key.getEncryptParams();
+		const encryptParams = key.getEncryptParams();
+		const algorithm = encryptParams.getCryptoParams();
 		return this.subtle.encrypt(algorithm, cryptoKey, data).then(function (encryptedData) {
-			const data = new EncryptData(encryptedData, algorithm);
+			const data = new EncryptData(encryptedData, encryptParams);
 			const writer = new BinaryWriter();
 			data.export(writer);
 			return writer.GetData();

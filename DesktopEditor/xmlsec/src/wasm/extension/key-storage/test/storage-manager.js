@@ -11,6 +11,7 @@ StorageManager.prototype.generateAsymmetricKey = function () {
 		return oThis.keyStorage.generateKey(new RsaOAEPKeyGenParams(c_oAscDigestType.SHA256), masterPassword.toUtf8());
 	}).then(function (key) {
 		oThis.keyStorage.addKeys([key]);
+		return key;
 	});
 };
 StorageManager.prototype.getMasterPassword = function () {

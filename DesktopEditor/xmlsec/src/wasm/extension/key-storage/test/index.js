@@ -22,20 +22,19 @@ generateKeyButton.addEventListener('click', (e) => {
 });
 
 getKeyButton.addEventListener('click', (e) => {
-	storageManager.getKeyByPublicKey(Uint8Array.fromBase64(publicKeyInput.textContent)).then(function (key) {
-		selectedKeyDiv.textContent = key.getExportPublicKey().toBase64();
-		selectedKey = key;
-	});
+	const key = storageManager.getKeyByPublicKey(Uint8Array.fromBase64(publicKeyInput.value))
+	selectedKeyDiv.textContent = key.getExportPublicKey().toBase64();
+	selectedKey = key;
 });
 
 encryptKeyButton.addEventListener('click', (e) => {
-	selectedKey.encrypt(dataInput.textContent).then(function (binaryData) {
+	selectedKey.encrypt(dataInput.value).then(function (binaryData) {
 		encryptedDataDiv.textContent = binaryData.toBase64();
 	});
 });
 
 decryptKeyButton.addEventListener('click', (e) => {
-	selectedKey.decrypt(Uint8Array.fromBase64(encryptDataInput.textContent)).then(function (binaryData) {
+	selectedKey.decrypt(Uint8Array.fromBase64(encryptDataInput.value)).then(function (binaryData) {
 		decryptedDataDiv.textContent = binaryData.toBase64();
 	});
 });

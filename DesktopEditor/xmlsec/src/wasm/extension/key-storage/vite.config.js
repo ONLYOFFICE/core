@@ -13,6 +13,7 @@ export default defineConfig({
 			output: {
 				generatedCode: "es5"
 			}
-		}
+		},
+		minify: false
 	},
 })

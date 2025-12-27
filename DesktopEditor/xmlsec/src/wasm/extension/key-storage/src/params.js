@@ -42,6 +42,9 @@ AlgorithmParams.prototype.export = function(writer) {
 		}
 	}
 };
+AlgorithmParams.prototype.isSign = function() {
+	return false;
+};
 
 function RsaImportParams(hash) {
 	AlgorithmParams.call(this);
@@ -106,7 +109,7 @@ RsaKeyGenParams.prototype.getCryptoUsages = function() {
 export function RsaOAEPKeyGenParams(hash, modulusLength, publicExponent) {
 	RsaKeyGenParams.call(this, hash, modulusLength, publicExponent);
 }
-initClass(RsaOAEPImportParams, RsaKeyGenParams, c_oAscKeyStorageType.RSAOAEPKeyGenParams);
+initClass(RsaOAEPKeyGenParams, RsaKeyGenParams, c_oAscKeyStorageType.RSAOAEPKeyGenParams);
 RsaOAEPKeyGenParams.prototype.getCryptoUsages = function() {
 	return ['encrypt', 'decrypt'];
 };
@@ -177,15 +180,27 @@ AesGcmCryptoParams.prototype.init = function () {
 	this.iv = getRandomValues(12);
 	this.tagLength = 128;
 };
+AesGcmCryptoParams.prototype.getCryptoParams = function() {
+	return {
+		name: "AES-GCM",
+		iv: this.iv,
+		tagLength: this.tagLength
+	}
+};
 
+
+function AesImportParams() {
+	AlgorithmParams.call(this);
+}
+initClass(AesImportParams, AlgorithmParams);
 
 function AesKeyGenParams(length) {
-	AlgorithmParams.call(this);
+	AesImportParams.call(this);
 	this.length = length;
 }
-initClass(AesKeyGenParams, AlgorithmParams);
+initClass(AesKeyGenParams, AesImportParams);
 AesKeyGenParams.prototype.getImportParams = function() {
-	return new AlgorithmParams();
+	return new AesImportParams();
 };
 AesKeyGenParams.prototype.getKeyGenCryptoParams = function() {
 	return {
@@ -197,10 +212,23 @@ AesKeyGenParams.prototype.getCryptoUsages = function() {
 	return ['encrypt', 'decrypt'];
 };
 
+function AesGcmImportParams() {
+	AesImportParams.call(this);
+}
+initClass(AesGcmImportParams, AesImportParams);
+AesGcmImportParams.prototype.getEncryptParams = function() {
+	const cryptoParams = new AesGcmCryptoParams();
+	cryptoParams.init();
+	return cryptoParams;
+};
+
 export function AesGcmKeyGenParams() {
 	AesKeyGenParams.call(this,  256);
 }
 initClass(AesGcmKeyGenParams, AesKeyGenParams, c_oAscKeyStorageType.AesGCMKeyGenParams);
+AesGcmKeyGenParams.prototype.getImportParams = function() {
+	return new AesGcmImportParams();
+};
 
 export const PBKDFSaltLength = 16;
 export function PBKDF2Params(isInit) {

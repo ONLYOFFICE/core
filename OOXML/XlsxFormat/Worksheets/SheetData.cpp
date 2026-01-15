@@ -1667,7 +1667,7 @@ namespace OOX
 			CXlsxFlat *pXlsxFlat = dynamic_cast<CXlsxFlat*>(this->m_pMainDocument);
 			CXlsb *pXlsb = dynamic_cast<CXlsb*>(this->m_pMainDocument);
 
-			int nBaseRow = (pXlsxFlat || pXlsb )? 0 : 1; // xml/xlsb->xlsx
+			int nBaseRow = (pXlsxFlat)? 0 : 1; // xml/xlsb->xlsx
 
 			writer.WriteString(_T("<c"));
 			if (m_oRow.IsInit() && m_oCol.IsInit())
@@ -4769,7 +4769,7 @@ namespace OOX
                                 if(m_arrItems[i]->m_oR.IsInit())
                                     m_arrItems[i]->m_oR = m_arrItems[i]->m_oR->GetValue() + 1;
                                 if(!m_arrItems[i]->m_arrItems.empty() && m_arrItems[i]->m_arrItems.at(0)->m_oRow.IsInit())
-                                    m_arrItems[i]->m_arrItems.at(0)->m_oRow = m_arrItems[i]->m_oR->GetValue();
+									m_arrItems[i]->m_arrItems.at(0)->m_oRow = m_arrItems[i]->m_oR->GetValue()-1;
                                 m_arrItems[i]->toXML(writer);
                                 rowTimes--;
                             }

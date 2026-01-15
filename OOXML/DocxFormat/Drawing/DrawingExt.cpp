@@ -1191,6 +1191,7 @@ namespace OOX
                         auto ptr1 = static_cast<XLSB::TABLESLICERCACHE*>(ptr->m_TABLESLICERCACHE.get());
                         OOX::Drawing::COfficeArtExtension *oExt = new OOX::Drawing::COfficeArtExtension();
                         oExt->m_sUri = L"{2F2917AC-EB37-4324-AD4E-5DD8C200BD13}";
+						oExt->m_sAdditionalNamespace = L"xmlns:x15=\"http://schemas.microsoft.com/office/spreadsheetml/2010/11/main\"";
                         oExt->m_oTableSlicerCache = ptr1->m_BrtBeginTableSlicerCache;
 
                         if (oExt)

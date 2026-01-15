@@ -178,7 +178,10 @@ namespace NSDocxRenderer
 	}
 	bool CBaseItem::IsEqual(double dTop, double dBot, double dLeft, double dRight) const noexcept
 	{
-		return m_dLeft == dLeft && m_dTop == dTop && m_dBot == dBot && m_dRight == dRight;
+		return fabs(m_dLeft - dLeft) < c_dGRAPHICS_ERROR_MM &&
+			   fabs(m_dTop - dTop) < c_dGRAPHICS_ERROR_MM &&
+			   fabs(m_dBot - dBot) < c_dGRAPHICS_ERROR_MM &&
+			   fabs(m_dRight - dRight) < c_dGRAPHICS_ERROR_MM;
 	}
 	bool CBaseItem::operator==(const CBaseItem& other)
 	{

@@ -231,6 +231,8 @@ namespace NSDocxRenderer
 		std::vector<shape_ptr_t> m_arLuminosityShapes;
 		std::vector<shape_ptr_t> m_arOneColorGradientShape;
 
+		long m_lLastType = 0;
+
 		size_t m_nCurrentOrder = 0;
 	};
 }

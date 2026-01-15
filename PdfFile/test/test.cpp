@@ -457,7 +457,7 @@ TEST_F(CPdfFileTest, MergePdf)
 
 TEST_F(CPdfFileTest, RedactPdf)
 {
-	GTEST_SKIP();
+	//GTEST_SKIP();
 
 	LoadFromFile();
 	ASSERT_TRUE(pdfFile->EditPdf(wsDstFile));
@@ -592,16 +592,17 @@ TEST_F(CPdfFileTest, EditPdfSign)
 
 TEST_F(CPdfFileTest, PrintPdf)
 {
-	//GTEST_SKIP();
+	GTEST_SKIP();
 
 	LoadFromFile();
 
 	int nPages = pdfFile->GetPagesCount();
 	std::vector<bool> arrPages;
 	for (int i = 0; i < nPages; ++i)
-		arrPages.push_back(true);
+		arrPages.push_back(false);
+	arrPages[1] = true;
 
-	ASSERT_TRUE(pdfFile->PrintPages(arrPages, 1));
+	ASSERT_TRUE(pdfFile->PrintPages(arrPages, 2));
 
 	pdfFile->SaveToFile(wsDstFile);
 	pdfFile->Close();

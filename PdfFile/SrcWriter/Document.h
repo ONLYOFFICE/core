@@ -205,8 +205,6 @@ namespace PdfWriter
 		std::string       SetParentKids(int nParentID);
 		const std::map<int, CAnnotation*>& GetAnnots() { return m_mAnnotations; }
 		const std::map<int, CDictObject*>& GetParents() { return m_mParents; }
-		CDictObject*      GetXObject(int nID);
-		void              AddXObject(int nID, CDictObject* pXObject);
 		CPageTree*        GetPageTree() { return m_pPageTree; }
 		CEncryptDict*     GetEncrypt() { return m_pEncryptDict; }
 		void              AddShapeXML(const std::string& sXML);
@@ -321,7 +319,6 @@ namespace PdfWriter
 		std::map<int, CAnnotation*>        m_mAnnotations;
 		std::map<int, CDictObject*>        m_mParents;
 		std::map<int, CPage*>              m_mEditPages;
-		std::map<int, CDictObject*>        m_mXObjects;
 
 		friend class CFontCidTrueType;
 		friend class CFontTrueType;

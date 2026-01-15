@@ -1547,6 +1547,18 @@ namespace NSDocxRenderer
 			        v_type == eVerticalCrossingType::vctNoCrossingCurrentBelowNext;
 		};
 
+		auto calc_selected = [this] (cont_ptr_t cont) {
+			if (m_bUseDefaultFont)
+			{
+				cont->m_oSelectedSizes.dHeight = cont->m_dHeight;
+				cont->m_oSelectedSizes.dWidth = cont->m_dWidth;
+			}
+			else
+			{
+				cont->CalcSelected();
+			}
+		};
+
 		// линии из которых сделаем шейпы
 		for (size_t index = 0; index < m_arTextLines.size(); ++index)
 		{
@@ -1571,10 +1583,10 @@ namespace NSDocxRenderer
 					curr_line->CalcFirstWordWidth();
 
 					for (auto& cont : prev_line->m_arConts)
-						cont->CalcSelected();
+						calc_selected(cont);
 
 					for (auto& cont : curr_line->m_arConts)
-						cont->CalcSelected();
+						calc_selected(cont);
 
 					m_arShapes.push_back(CreateSingleLineShape(prev_line));
 					m_arShapes.push_back(CreateSingleLineShape(curr_line));

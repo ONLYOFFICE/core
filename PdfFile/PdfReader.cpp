@@ -1186,7 +1186,12 @@ BYTE* CPdfReader::GetGIDByUnicode(const std::wstring& wsFontName)
 			for (int i = 0; i < pEntry->unLenUnicode; ++i)
 			{
 				if (pEntry->pCodeToUnicode[i])
-					mGIDbyUnicode[i] = pEntry->pCodeToUnicode[i];
+				{
+					unsigned int unGID = i;
+					if (pEntry->pCodeToGID[i])
+						unGID = pEntry->pCodeToGID[i];
+					mGIDbyUnicode[unGID] = pEntry->pCodeToUnicode[i];
+				}
 			}
 
 			break;

@@ -37,12 +37,14 @@
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/SERIESFORMAT.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/SS.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/IVAXIS.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/DVAXIS.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Series.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/DataFormat.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/BRAI.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/SerToCrt.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Axis.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/CatSerRange.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/ValueRange.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/AxcExt.h"
 
 namespace OOX
@@ -3177,6 +3179,21 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
+		}
+		XLS::BaseObjectPtr CT_ValAx::toXLS()
+		{
+			auto dvAxis = new XLS::DVAXIS;
+			auto axis = new XLS::Axis;
+			axis->wType = 1;
+			dvAxis->m_Axis = XLS::BaseObjectPtr(axis);
+			auto valSerRange = new XLS::ValueRange;
+			valSerRange->fAutoMin = true;
+			valSerRange->fAutoMax = true;
+			valSerRange->fAutoMajor = true;
+			valSerRange->fAutoMinor = true;
+			valSerRange->fAutoCross = true;
+			dvAxis->m_ValueRange = XLS::BaseObjectPtr(valSerRange);
+			return XLS::BaseObjectPtr(dvAxis);
 		}
 		EElementType CT_ValAx::getType() { return et_ct_valax; }
 

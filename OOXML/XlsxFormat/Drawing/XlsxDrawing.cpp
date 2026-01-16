@@ -347,6 +347,18 @@ namespace OOX
 													}
 												}
 											}
+											if(barChart->m_axId.size() > 1)
+											{
+												auto vaxId = barChart->m_axId.at(1);
+												if(!ChartFile->m_oChartSpace.m_chart->m_plotArea->m_Items1.empty())
+												{
+													auto dvAx = static_cast<CT_ValAx*>(ChartFile->m_oChartSpace.m_chart->m_plotArea->m_Items1.at(0));
+													if(dvAx->m_axId.IsInit() && dvAx->m_axId.get() == vaxId)
+													{
+														axes->m_arAxes.push_back(dvAx->toXLS());
+													}
+												}
+											}
 										}
 									}
 								}

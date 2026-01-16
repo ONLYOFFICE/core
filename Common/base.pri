@@ -706,21 +706,29 @@ defineTest(UseSwift) {
 
 	SWIFT_GEN_HEADERS_PATH = $$PWD_ROOT_DIR/core_build/$$CORE_BUILDS_PLATFORM_PREFIX/$$CORE_BUILDS_CONFIGURATION_PREFIX
 
+	IOS_SDK_PATH = /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk
+	IOS_TARGET = arm64-apple-ios15.0
+	xcframework_platform_ios_simulator {
+		SWIFT_GEN_HEADERS_PATH = $$PWD_ROOT_DIR/core_build/$$CORE_BUILDS_PLATFORM_PREFIX/$$CORE_BUILDS_CONFIGURATION_PREFIX/simulator
+		IOS_SDK_PATH = /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk
+		IOS_TARGET = arm64-apple-ios15.0-simulator
+	}
+
 	swift_compiler.name = SwiftCompiler
 	swift_compiler.input = SWIFT_MAIN_FILE
 	swift_compiler.output = $$SWIFT_GEN_HEADERS_PATH/swift_module.o
 	swift_cmd = swiftc -c $$SWIFT_SOURCES \
-                -module-name SwiftModule \
-                -whole-module-optimization \
-                -emit-objc-header \
-                -emit-objc-header-path $$SWIFT_GEN_HEADERS_PATH/SwiftModule-Swift.h \
-                -emit-object \
-                -sdk /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk \
-                -target arm64-apple-ios15.0 \
-                -o $$SWIFT_GEN_HEADERS_PATH/swift_module.o \
-                -framework UIKit
+				-module-name SwiftModule \
+				-whole-module-optimization \
+				-emit-objc-header \
+				-emit-objc-header-path $$SWIFT_GEN_HEADERS_PATH/SwiftModule-Swift.h \
+				-emit-object \
+				-sdk $$IOS_SDK_PATH \
+				-target $$IOS_TARGET \
+				-o $$SWIFT_GEN_HEADERS_PATH/swift_module.o \
+				-framework UIKit
 
-	!empty(bridging_header) {
+	!isEmpty(bridging_header) {
 		swift_cmd += -import-objc-header $$bridging_header
 	}
 
@@ -745,9 +753,15 @@ defineTest(UseSwift) {
 	export(INCLUDEPATH)
 
 	core_ios|core_mac {
-		LIBS += -lswiftCore -lswiftFoundation -lswiftObjectiveC
-		LIBS += -framework UIKit
-		export(LIBS)
+		SWIFT_LIB_PATH = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphoneos
+		xcframework_platform_ios_simulator {
+			SWIFT_LIB_PATH = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphonesimulator
+		}
+		# Use clang with Swift library paths
+		QMAKE_LFLAGS += -L$$SWIFT_LIB_PATH
+		QMAKE_LFLAGS += -Xlinker -add_ast_path -Xlinker $$SWIFT_GEN_HEADERS_PATH/swift_module.o
+
+		export(QMAKE_LFLAGS)
 	}
 
 	OTHER_FILES += $$SWIFT_SOURCES

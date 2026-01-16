@@ -389,6 +389,8 @@ namespace NSOnlineOfficeBinToPdf
 				if (bIsPathOpened)
 				{
 					pRenderer->PathCommandEnd();
+					if (path.GetPointCount())
+						path.Reset();
 					pRenderer->EndCommand(c_nPathType);
 				}
 				bIsPathOpened = false;
@@ -633,6 +635,8 @@ namespace NSOnlineOfficeBinToPdf
 				if (bIsPathOpened)
 				{
 					pRenderer->PathCommandEnd();
+					if (path.GetPointCount())
+						path.Reset();
 					pRenderer->EndCommand(c_nPathType);
 				}
 
@@ -679,6 +683,8 @@ namespace NSOnlineOfficeBinToPdf
 				if (bIsPathOpened)
 				{
 					pRenderer->PathCommandEnd();
+					if (path.GetPointCount())
+						path.Reset();
 					pRenderer->EndCommand(c_nPathType);
 					bIsPathOpened = false;
 				}
@@ -855,6 +861,8 @@ namespace NSOnlineOfficeBinToPdf
 				if (bIsPathOpened)
 				{
 					pRenderer->PathCommandEnd();
+					if (path.GetPointCount())
+						path.Reset();
 					pRenderer->EndCommand(4);
 					bIsPathOpened = false;
 				}
@@ -868,8 +876,13 @@ namespace NSOnlineOfficeBinToPdf
 					pRenderer->EndCommand(4);
 					bIsPathOpened = false;
 				}
-				pRenderer->EndCommand((DWORD)(oReader.ReadInt()));
+				int nCommand = oReader.ReadInt();
+				if (path.GetPointCount() && nCommand == c_nClipType)
+					pRenderer->AddPath(path);
+				pRenderer->EndCommand((DWORD)nCommand);
 				pRenderer->PathCommandEnd();
+				if (path.GetPointCount())
+					path.Reset();
 				break;
 			}
 			case ctGradientFill:

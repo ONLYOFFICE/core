@@ -67,6 +67,7 @@ namespace NSDocxRenderer
 
 		// sizes
 		double m_dSpaceWidthMM{0};
+		double m_dSpacing{0};
 		CSelectedSizes m_oSelectedSizes{};
 
 		double m_dTopWithAscent{0};
@@ -121,7 +122,7 @@ namespace NSDocxRenderer
 
 		const NSStringUtils::CStringUTF32& GetText() const noexcept;
 		const std::vector<double>& GetSymWidths() const noexcept;
-		const std::vector<double> GetSymLefts() const noexcept;
+		const std::vector<double>& GetSymLefts() const noexcept;
 
 		std::shared_ptr<CContText> Split(size_t index);
 		std::shared_ptr<CContText> Split(double dLeft);
@@ -198,8 +199,8 @@ namespace NSDocxRenderer
 
 		void NullCurrCont();
 		void Clear();
-
 	private:
+
 		std::vector<cont_ptr_t> m_arConts;
 		std::vector<cont_ptr_t> m_arDiacs;
 
@@ -210,5 +211,6 @@ namespace NSDocxRenderer
 
 		CFontStyleManager* m_pFontStyleManager {nullptr};
 		CFontSelector* m_pFontSelector {nullptr};
+		double m_dPrevRight = 0;
 	};
 }

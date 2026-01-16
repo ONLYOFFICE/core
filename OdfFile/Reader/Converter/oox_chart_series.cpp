@@ -347,9 +347,9 @@ void oox_chart_series::oox_serialize_common(std::wostream & _Wostream)
 											double val = 0;
 
 											if (oox::IsNumber(v))
-											{		
+											{
 												try { val = boost::lexical_cast<double>(v);}
-												catch(...){}	
+												catch(...){}
 											}
 											CP_XML_NODE(L"c:v")
 											{

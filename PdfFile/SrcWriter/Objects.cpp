@@ -469,6 +469,21 @@ namespace PdfWriter
 
 		return pArray;
 	}
+	CArrayObject* CArrayObject::CreateMatrix(double* m)
+	{
+		CArrayObject* pArray = new CArrayObject();
+		if (!pArray)
+			return NULL;
+
+		pArray->Add(m[0]);
+		pArray->Add(m[1]);
+		pArray->Add(m[2]);
+		pArray->Add(m[3]);
+		pArray->Add(m[4]);
+		pArray->Add(m[5]);
+
+		return pArray;
+	}
 	CObjectBase* CArrayObject::Copy(CObjectBase* pOut) const
 	{
 		CArrayObject* pArray = pOut && pOut->GetType() == object_type_ARRAY ? (CArrayObject*)pOut : new CArrayObject();

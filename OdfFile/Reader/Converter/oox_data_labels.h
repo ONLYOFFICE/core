@@ -76,6 +76,11 @@ public:
 
 	void add_dLbl			(int ind, odf_reader::text_format_properties_ptr text_properties);
 	void set_common_dLbl	( odf_reader::text_format_properties_ptr text_properties);
+
+	void set_general_dLbls_status( bool flag );
+
+	bool get_general_dLbls_status() const;
+
    
 private:
 
@@ -88,6 +93,8 @@ private:
 	bool showPercent_;			// (Show Percent) §21.2.2.187
 	bool showSerName_;			// (Show Series Name) §21.2.2.188
 	bool showVal_;				// (Show Value) §21.2.2.189
+
+	bool set_genereal_dLbls = false;
 
 	int position_;
 

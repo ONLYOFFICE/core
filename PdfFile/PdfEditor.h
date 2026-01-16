@@ -107,6 +107,8 @@ public:
 	void AfterSplitPages();
 	bool MergePages(const std::wstring& wsPath);
 
+	bool PrintPages(const std::vector<bool>& arrPages, int nFlag);
+
 private:
 	bool IncrementalUpdates();
 	void NewFrom();

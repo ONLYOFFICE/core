@@ -151,6 +151,29 @@ bool CPdfFile::MergePages(const std::wstring& wsPath, int nMaxID, const std::wst
 		return m_pInternal->pEditor->MergePages(wsPath);
 	return false;
 }
+bool CPdfFile::PrintPages(const std::vector<bool>& arrPages, int nFlag)
+{
+	if (!m_pInternal->pReader)
+		return false;
+
+	m_pInternal->pReader->CleanUp();
+
+	RELEASEOBJECT(m_pInternal->pWriter);
+	m_pInternal->pWriter = new CPdfWriter(m_pInternal->pAppFonts, false, this, true, m_pInternal->wsTempFolder);
+
+	RELEASEOBJECT(m_pInternal->pEditor);
+	m_pInternal->pEditor = new CPdfEditor(m_pInternal->wsSrcFile, m_pInternal->wsPassword, L"", m_pInternal->pReader, m_pInternal->pWriter);
+	if (m_pInternal->pEditor->GetError())
+	{
+		RELEASEOBJECT(m_pInternal->pEditor);
+		return false;
+	}
+
+	bool bRes = m_pInternal->pEditor->PrintPages(arrPages, nFlag);
+
+	RELEASEOBJECT(m_pInternal->pEditor);
+	return bRes;
+}
 bool CPdfFile::MovePage(int nPageIndex, int nPos)
 {
 	if (!m_pInternal->pEditor)

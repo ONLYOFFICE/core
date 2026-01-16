@@ -54,6 +54,7 @@
 #include "SrcWriter/Outline.h"
 #include "SrcWriter/GState.h"
 #include "SrcWriter/RedactOutputDev.h"
+#include "SrcWriter/Image.h"
 
 #define AddToObject(oVal)\
 {\
@@ -2908,6 +2909,389 @@ bool CPdfEditor::MergePages(const std::wstring& wsPath)
 
 	return bRes;
 }
+bool CPdfEditor::PrintPages(const std::vector<bool>& arrPages, int nFlag)
+{
+	if (m_nMode != Mode::Unknown)
+		return false;
+
+	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
+	PdfWriter::CPageTree* pPageTree = pDoc->GetPageTree();
+	m_mObjManager.SetDoc(pDoc);
+
+	for (int i = 0; i < arrPages.size(); ++i)
+	{
+		if (!arrPages[i])
+			continue;
+
+		PdfWriter::CPage* pPage = new PdfWriter::CPage(pDoc);
+		pDoc->AddObject(pPage);
+		pPageTree->AddPage(pPage);
+		pDoc->AddEditPage(pPage, i);
+
+		PDFDoc* pPDFDocument = NULL;
+		PdfReader::CPdfFontList* pFontList = NULL;
+		int nStartRefID = 0;
+		int nPageIndex = m_pReader->GetPageIndex(i, &pPDFDocument, &pFontList, &nStartRefID);
+
+		Catalog* pCatalog = pPDFDocument->getCatalog();
+		XRef* xref = pPDFDocument->getXRef();
+		Ref* pPageRef = pCatalog->getPageRef(nPageIndex);
+		Object pageRefObj, pageObj;
+		pageRefObj.initRef(pPageRef->num, pPageRef->gen);
+		if (!pageRefObj.fetch(xref, &pageObj)->isDict())
+		{
+			pageObj.free(); pageRefObj.free();
+			continue;
+		}
+		m_mObjManager.AddObj(pPageRef->num + nStartRefID, pPage);
+		pageRefObj.free();
+
+		bool bResources = false, bMediaBox = false, bCropBox = false, bRotate = false;
+		for (int nIndex = 0; nIndex < pageObj.dictGetLength(); ++nIndex)
+		{
+			Object oTemp;
+			char* chKey = pageObj.dictGetKey(nIndex);
+			if (strcmp("Resources", chKey) == 0)
+			{
+				bResources = true;
+				Ref oResourcesRef = { -1, -1 };
+				if (pageObj.dictGetValNF(nIndex, &oTemp)->isRef())
+					oResourcesRef = oTemp.getRef();
+				oTemp.free();
+
+				PdfWriter::CObjectBase* pObj = oResourcesRef.num > 0 ? m_mObjManager.GetObj(oResourcesRef.num + nStartRefID) : NULL;
+				if (pObj)
+				{
+					pPage->Add(chKey, pObj);
+					m_mObjManager.IncRefCount(oResourcesRef.num + nStartRefID);
+					continue;
+				}
+
+				if (pageObj.dictGetVal(nIndex, &oTemp)->isDict())
+				{
+					PdfWriter::CResourcesDict* pDict = pDoc->CreateResourcesDict(oResourcesRef.num < 0, false);
+					if (oResourcesRef.num > 0)
+						m_mObjManager.AddObj(oResourcesRef.num + nStartRefID, pDict);
+					pPage->Add(chKey, pDict);
+					for (int nIndex = 0; nIndex < oTemp.dictGetLength(); ++nIndex)
+					{
+						Object oRes;
+						char* chKey2 = oTemp.dictGetKey(nIndex);
+						oTemp.dictGetValNF(nIndex, &oRes);
+						PdfWriter::CObjectBase* pBase = DictToCDictObject2(&oRes, pDoc, xref, &m_mObjManager, nStartRefID);
+						pDict->Add(chKey2, pBase);
+						oRes.free();
+					}
+
+					oTemp.free();
+					continue;
+				}
+				else
+				{
+					oTemp.free();
+					pageObj.dictGetValNF(nIndex, &oTemp);
+				}
+			}
+			else if (strcmp("Parent", chKey) == 0)
+			{
+				// Поля родителей страниц переносятся к самим страницам
+				oTemp.free();
+				continue;
+			}
+			else if (strcmp("MediaBox", chKey) == 0)
+			{
+				bMediaBox = true;
+				pageObj.dictGetValNF(nIndex, &oTemp);
+			}
+			else if (strcmp("CropBox", chKey) == 0)
+			{
+				bCropBox = true;
+				pageObj.dictGetValNF(nIndex, &oTemp);
+			}
+			else if (strcmp("Rotate", chKey) == 0)
+			{
+				bRotate = true;
+				pageObj.dictGetValNF(nIndex, &oTemp);
+			}
+			else if (strcmp("Contents", chKey) == 0)
+			{
+				if (nFlag != 3)
+				{
+					pageObj.dictGetValNF(nIndex, &oTemp);
+					PdfWriter::CObjectBase* pBase = DictToCDictObject2(&oTemp, pDoc, xref, &m_mObjManager, nStartRefID, 0, false);
+					pPage->Add(chKey, pBase);
+				}
+				continue;
+			}
+			else if (strcmp("Annots", chKey) == 0)
+			{
+				oTemp.free();
+				continue;
+			}
+			else
+				pageObj.dictGetValNF(nIndex, &oTemp);
+			PdfWriter::CObjectBase* pBase = DictToCDictObject2(&oTemp, pDoc, xref, &m_mObjManager, nStartRefID);
+			pPage->Add(chKey, pBase);
+			oTemp.free();
+		}
+		if (!bResources || !bMediaBox || !bCropBox || !bRotate)
+		{
+			Page* pOPage = pCatalog->getPage(nPageIndex);
+			if (!bMediaBox)
+			{
+				PDFRectangle* pRect = pOPage->getMediaBox();
+				pPage->Add("MediaBox", PdfWriter::CArrayObject::CreateBox(pRect->x1, pRect->y1, pRect->x2, pRect->y2));
+			}
+			if (!bCropBox && pOPage->isCropped())
+			{
+				PDFRectangle* pRect = pOPage->getCropBox();
+				pPage->Add("CropBox", PdfWriter::CArrayObject::CreateBox(pRect->x1, pRect->y1, pRect->x2, pRect->y2));
+			}
+			if (!bRotate)
+				pPage->Add("Rotate", pOPage->getRotate());
+			if (!bResources)
+			{
+				Dict* pResources = pOPage->getResourceDict();
+				PdfWriter::CResourcesDict* pDict = pDoc->CreateResourcesDict(true, false);
+				pPage->Add("Resources", pDict);
+				for (int nIndex = 0; nIndex < pResources->getLength(); ++nIndex)
+				{
+					Object oRes;
+					char* chKey2 = pResources->getKey(nIndex);
+					pResources->getValNF(nIndex, &oRes);
+					PdfWriter::CObjectBase* pBase = DictToCDictObject2(&oRes, pDoc, xref, &m_mObjManager, nStartRefID);
+					pDict->Add(chKey2, pBase);
+					oRes.free();
+				}
+			}
+		}
+		pPage->Fix();
+		pDoc->FixEditPage(pPage);
+
+		double dCTM[6] = { 1, 0, 0, 1, 0, 0 };
+		double dInvMatrix[6] = { 1, 0, 0, 1, 0, 0 };
+		GetCTM(xref, &pageObj, dCTM);
+
+		double det = dCTM[0] * dCTM[3] - dCTM[1] * dCTM[2];
+		if (fabs(det) > 1e-10)
+		{
+			double invDet = 1.0 / det;
+			dInvMatrix[0] =  dCTM[3] * invDet;
+			dInvMatrix[1] = -dCTM[1] * invDet;
+			dInvMatrix[2] = -dCTM[2] * invDet;
+			dInvMatrix[3] =  dCTM[0] * invDet;
+			dInvMatrix[4] = (dCTM[2] * dCTM[5] - dCTM[3] * dCTM[4]) * invDet;
+			dInvMatrix[5] = (dCTM[1] * dCTM[4] - dCTM[0] * dCTM[5]) * invDet;
+		}
+
+		PdfWriter::CStream* pStream = pPage->GetStream();
+		pStream->WriteReal(dInvMatrix[0]);
+		pStream->WriteChar(' ');
+		pStream->WriteReal(dInvMatrix[1]);
+		pStream->WriteChar(' ');
+		pStream->WriteReal(dInvMatrix[2]);
+		pStream->WriteChar(' ');
+		pStream->WriteReal(dInvMatrix[3]);
+		pStream->WriteChar(' ');
+		pStream->WriteReal(dInvMatrix[4]);
+		pStream->WriteChar(' ');
+		pStream->WriteReal(dInvMatrix[5]);
+		pStream->WriteStr(" cm\012");
+
+		pPage->SetStrokeColor(0, 0, 0);
+		pPage->SetFillColor(0, 0, 0);
+		pPage->SetExtGrState(pDoc->GetExtGState(255, 255));
+		pPage->BeginText();
+		pPage->SetCharSpace(0);
+		pPage->SetTextRenderingMode(PdfWriter::textrenderingmode_Fill);
+		pPage->SetHorizontalScaling(100);
+		pPage->EndText();
+
+		Object oAnnots;
+		if (!pageObj.dictLookup("Annots", &oAnnots)->isArray())
+		{
+			pageObj.free();
+			continue;
+		}
+		for (int i = 0; i < oAnnots.arrayGetLength(); ++i)
+		{
+			Object oAnnot, oType, oObj;
+			if (!oAnnots.arrayGet(i, &oAnnot)->isDict() || !oAnnot.dictLookup("Subtype", &oType)->isName() || !oAnnot.dictLookup("F", &oObj)->isInt())
+			{
+				oAnnot.free(); oType.free(); oObj.free();
+				continue;
+			}
+
+			int nFlags = oObj.getInt();
+			oObj.free();
+			// if Invisible || Hidden || !Print
+			if ((nFlags & (1 << 0)) || (nFlags & (1 << 1)) || !(nFlags & (1 << 2)))
+			{
+				oAnnot.free(); oType.free();
+				continue;
+			}
+
+			char* sType = oType.getName();
+			if (((nFlag == 0 || nFlag == 3) && strcmp(sType, "Widget")) || (nFlag == 2 && strcmp(sType, "Stamp") && strcmp(sType, "Widget")))
+			{
+				oType.free(); oAnnot.free();
+				continue;
+			}
+			oType.free();
+
+			// TODO Нужно ли генерировать внешний вид тем у кого его нет
+			Object oAP, oAPN;
+			if (!oAnnot.dictLookup("AP", &oAP)->isDict() || !oAP.dictLookup("N", &oAPN)->isStream())
+			{
+				oAP.free();
+				Object oTemp;
+				if (!oAPN.isDict() || !oAnnot.dictLookup("AS", &oObj)->isName() || !oAPN.dictLookup(oObj.getName(), &oTemp)->isStream())
+				{
+					oAnnot.free(); oTemp.free(); oAPN.free(); oObj.free();
+					continue;
+				}
+				oAPN.free();
+				oAPN = oTemp;
+			}
+			oAP.free();
+
+			PdfWriter::CXObject* pForm = pDoc->CreateForm();
+			pPage->GrSave();
+			pPage->ExecuteXObject(pForm);
+			pPage->GrRestore();
+
+			Object oTemp;
+			double m[6] = { 1, 0, 0, 1, 0, 0 }, bbox[4] = { 0, 0, 0, 0 }, rect[4] = { 0, 0, 0, 0 };
+			if (oAnnot.dictLookup("Rect", &oTemp)->isArray() && oTemp.arrayGetLength() == 4)
+			{
+				for (int j = 0; j < 4; ++j)
+				{
+					oTemp.arrayGet(j, &oObj);
+					rect[j] = oObj.isNum() ? oObj.getNum() : 0;
+					oObj.free();
+				}
+
+				if (rect[0] > rect[2])
+					std::swap(rect[0], rect[2]);
+				if (rect[1] > rect[3])
+					std::swap(rect[1], rect[3]);
+			}
+			oTemp.free();
+
+			Dict* pODict = oAPN.streamGetDict();
+			for (int nIndex = 0; nIndex < pODict->getLength(); ++nIndex)
+			{
+				char* chKey = pODict->getKey(nIndex);
+				if (strcmp("Length", chKey) == 0 || strcmp("Filter", chKey) == 0)
+				{
+					oTemp.free();
+					continue;
+				}
+				else if (strcmp("BBox", chKey) == 0 && pODict->getVal(nIndex, &oTemp)->isArray() && oTemp.arrayGetLength() == 4)
+				{
+					for (int j = 0; j < 4; ++j)
+					{
+						oTemp.arrayGet(j, &oObj);
+						bbox[j] = oObj.isNum() ? oObj.getNum() : 0;
+						oObj.free();
+					}
+
+					if (bbox[0] > bbox[2])
+						std::swap(bbox[0], bbox[2]);
+					if (bbox[1] > bbox[3])
+						std::swap(bbox[1], bbox[3]);
+				}
+				else if (strcmp("Matrix", chKey) == 0 && pODict->getVal(nIndex, &oTemp)->isArray() && oTemp.arrayGetLength() == 6)
+				{
+					for (int j = 0; j < 6; ++j)
+					{
+						oTemp.arrayGet(j, &oObj);
+						m[j] = oObj.getNum();
+						oObj.free();
+					}
+				}
+				oTemp.free();
+				pODict->getValNF(nIndex, &oTemp);
+				PdfWriter::CObjectBase* pBase = DictToCDictObject2(&oTemp, pDoc, xref, &m_mObjManager, nStartRefID);
+				pForm->Add(chKey, pBase);
+				oTemp.free();
+			}
+
+			double formXMin, formYMin, formXMax, formYMax, x, y, sx, sy;
+			x = bbox[0] * m[0] + bbox[1] * m[2] + m[4];
+			y = bbox[0] * m[1] + bbox[1] * m[3] + m[5];
+			formXMin = formXMax = x;
+			formYMin = formYMax = y;
+			x = bbox[0] * m[0] + bbox[3] * m[2] + m[4];
+			y = bbox[0] * m[1] + bbox[3] * m[3] + m[5];
+			if (x < formXMin)
+				formXMin = x;
+			else if (x > formXMax)
+				formXMax = x;
+			if (y < formYMin)
+				formYMin = y;
+			else if (y > formYMax)
+				formYMax = y;
+			x = bbox[2] * m[0] + bbox[1] * m[2] + m[4];
+			y = bbox[2] * m[1] + bbox[1] * m[3] + m[5];
+			if (x < formXMin)
+				formXMin = x;
+			else if (x > formXMax)
+				formXMax = x;
+			if (y < formYMin)
+				formYMin = y;
+			else if (y > formYMax)
+				formYMax = y;
+			x = bbox[2] * m[0] + bbox[3] * m[2] + m[4];
+			y = bbox[2] * m[1] + bbox[3] * m[3] + m[5];
+			if (x < formXMin)
+				formXMin = x;
+			else if (x > formXMax)
+				formXMax = x;
+			if (y < formYMin)
+				formYMin = y;
+			else if (y > formYMax)
+				formYMax = y;
+
+			if (formXMin == formXMax)
+				sx = 1;
+			else
+				sx = (rect[2] - rect[0]) / (formXMax - formXMin);
+			if (formYMin == formYMax)
+				sy = 1;
+			else
+				sy = (rect[3] - rect[1]) / (formYMax - formYMin);
+			double tx = -formXMin * sx + rect[0];
+			double ty = -formYMin * sy + rect[1];
+
+			m[0] *= sx;
+			m[1] *= sy;
+			m[2] *= sx;
+			m[3] *= sy;
+			m[4] = m[4] * sx + tx;
+			m[5] = m[5] * sy + ty;
+
+			pForm->Add("Matrix", PdfWriter::CArrayObject::CreateMatrix(m));
+
+			PdfWriter::CStream* pStream = pForm->GetStream();
+			Stream* pOStream = oAPN.getStream();
+			pOStream->reset();
+			int nChar = pOStream->getChar();
+			while (nChar != EOF)
+			{
+				pStream->WriteChar(nChar);
+				nChar = pOStream->getChar();
+			}
+
+			oAPN.free(); oAnnot.free();
+		}
+		oAnnots.free();
+
+		pageObj.free();
+	}
+
+	return true;
+}
 bool CPdfEditor::DeletePage(int nPageIndex)
 {
 	if (m_nMode == Mode::Unknown && !IncrementalUpdates())
@@ -3252,7 +3636,7 @@ bool CPdfEditor::EditAnnot(int _nPageIndex, int nID)
 			PdfWriter::CStream* pStream = new PdfWriter::CMemoryStream(nLength);
 			pAPN->SetStream(pStream);
 			pAPN->Add("Length", nLength);
-			Stream* pOStream = oAPN.getStream()->getUndecodedStream();
+			Stream* pOStream = oAPN.getStream();
 			pOStream->reset();
 			for (int nI = 0; nI < nLength; ++nI)
 				pStream->WriteChar(pOStream->getChar());

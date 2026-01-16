@@ -129,7 +129,10 @@ void oox_chart::oox_serialize_common(std::wostream & _Wostream)
 				CP_XML_ATTR(L"val", axisId_[i]);
 			}
 		}	
-		data_labels_.oox_serialize(_Wostream);
+		if( false == data_labels_.get_general_dLbls_status() )
+		{
+			data_labels_.oox_serialize(_Wostream);
+		}
 	}
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

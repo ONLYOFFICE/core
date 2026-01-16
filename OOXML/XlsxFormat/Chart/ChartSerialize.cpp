@@ -38,6 +38,7 @@
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/SS.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/IVAXIS.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/DVAXIS.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/CRT.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Series.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/DataFormat.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/BRAI.h"
@@ -46,6 +47,8 @@
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/CatSerRange.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/ValueRange.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/AxcExt.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/ChartFormat.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Bar.h"
 
 namespace OOX
 {
@@ -6738,6 +6741,38 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
+		}
+		XLS::BaseObjectPtr CT_BarChart::toXLS(unsigned short chartIndex)
+		{
+			auto ptr = new XLS::CRT;
+			auto chartFormat = new XLS::ChartFormat;
+			chartFormat->icrt = chartIndex;
+			ptr->m_ChartFormat = XLS::BaseObjectPtr(chartFormat);
+			auto chartType = new XLS::Bar;
+			ptr->m_ChartType = XLS::BaseObjectPtr(chartType);
+			if(m_overlap.IsInit())
+			{
+				_INT16 overlapVal = 0;
+				try
+				{
+					overlapVal = stoi(m_overlap.get());
+				}
+				catch (std::exception)
+				{}
+				chartType->pcOverlap = overlapVal;
+			}
+			if(m_gapWidth.IsInit())
+			{
+				_INT16 gapVal = 0;
+				try
+				{
+					gapVal = stoi(m_overlap.get());
+				}
+				catch (std::exception)
+				{}
+				chartType->pcGap = gapVal;
+			}
+			return XLS::BaseObjectPtr(ptr);
 		}
 		EElementType CT_BarChart::getType() { return et_ct_barchart; }
 		

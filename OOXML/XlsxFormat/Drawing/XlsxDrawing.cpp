@@ -313,6 +313,13 @@ namespace OOX
 							ChartFormatsPtr->m_FRAME = ChartFile->m_oChartSpace.m_spPr->toXLSFrame();
 							if(ChartFile->m_oChartSpace.m_chart != nullptr &&  ChartFile->m_oChartSpace.m_chart->m_plotArea != nullptr)
 							{
+								auto AxisParentUnion = new XLS::AXISPARENT;
+								auto axisparent = new XLS::AxisParent;
+								AxisParentUnion->m_AxisParent = XLS::BaseObjectPtr(axisparent);
+								ChartFormatsPtr->m_arAXISPARENT.push_back(XLS::BaseObjectPtr(AxisParentUnion));
+								auto pos = new XLS::Pos;
+								AxisParentUnion->m_Pos = XLS::BaseObjectPtr(pos);
+
 								for(auto chartIndex = 0; chartIndex < ChartFile->m_oChartSpace.m_chart->m_plotArea->m_Items.size(); chartIndex ++)
 								{
 									if(*ChartFile->m_oChartSpace.m_chart->m_plotArea->m_ItemsElementName0.at(chartIndex) == OOX::Spreadsheet::itemschoicetype5BARCHART)
@@ -327,12 +334,6 @@ namespace OOX
 										}
 										if(ChartFormatsPtr->m_arAXISPARENT.size() < 2)
 										{
-											auto AxisParentUnion = new XLS::AXISPARENT;
-											auto axisparent = new XLS::AxisParent;
-											AxisParentUnion->m_AxisParent = XLS::BaseObjectPtr(axisparent);
-											ChartFormatsPtr->m_arAXISPARENT.push_back(XLS::BaseObjectPtr(AxisParentUnion));
-											auto pos = new XLS::Pos;
-											AxisParentUnion->m_Pos = XLS::BaseObjectPtr(pos);
 											auto axes = new XLS::AXES;
 											AxisParentUnion->m_AXES = XLS::BaseObjectPtr(axes);
 											if(barChart->m_axId.size() > 0)
@@ -352,14 +353,16 @@ namespace OOX
 												auto vaxId = barChart->m_axId.at(1);
 												if(!ChartFile->m_oChartSpace.m_chart->m_plotArea->m_Items1.empty())
 												{
-													auto dvAx = static_cast<CT_ValAx*>(ChartFile->m_oChartSpace.m_chart->m_plotArea->m_Items1.at(0));
+													auto dvAx = static_cast<CT_ValAx*>(ChartFile->m_oChartSpace.m_chart->m_plotArea->m_Items1.at(1));
 													if(dvAx->m_axId.IsInit() && dvAx->m_axId.get() == vaxId)
 													{
 														axes->m_arAxes.push_back(dvAx->toXLS());
 													}
 												}
 											}
+
 										}
+										AxisParentUnion->m_arCRT.push_back(barChart->toXLS(chartIndex));
 									}
 								}
 							}

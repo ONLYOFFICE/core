@@ -327,13 +327,15 @@ namespace NSDocxRenderer
 			m_oManagers.pFontManager->SetStringGid(0);
 			m_oManagers.pFontManager->MeasureStringGids(pUnicodes, nCount, dTextX, dTextY, _x, _y, _w, _h, CFontManager::mtPosition);
 		}
-
 		_h = m_oManagers.pFontManager->GetFontHeight();
 
 		double baseline = dTextY + fBaseLineOffset;
 		double top = baseline - _h;
 		double left = dTextX;
-		double right = left + _w;
+		double right = dTextR;
+
+		if (left == right) // XPS
+			right = left + _w;
 
 		// use forced fold option
 		const auto& oParams = m_oManagers.pFontManager->GetFontSelectParams();
@@ -641,20 +643,8 @@ namespace NSDocxRenderer
 	{
 		for (auto& line : m_arTextLines)
 			for (auto& cont : line->m_arConts)
-			{
-				if (cont && cont->m_oSelectedSizes.dHeight == 0.0 && cont->m_oSelectedSizes.dWidth == 0.0)
-				{
-					if (m_bUseDefaultFont)
-					{
-						cont->m_oSelectedSizes.dHeight = cont->m_dHeight;
-						cont->m_oSelectedSizes.dWidth = cont->m_dWidth;
-					}
-					else
-					{
-						cont->CalcSelected();
-					}
-				}
-			}
+				if (cont && !m_bUseDefaultFont)
+					cont->CalcSelected();
 	}
 
 	void CPage::AnalyzeShapes()
@@ -835,7 +825,8 @@ namespace NSDocxRenderer
 		// шейпы из буквиц
 		for (auto&& drop_cap : drop_caps)
 		{
-			drop_cap->CalcSelected();
+			if (!m_bUseDefaultFont)
+				drop_cap->CalcSelected();
 
 			auto line = std::make_shared<CTextLine>();
 			line->AddCont(drop_cap);
@@ -1359,7 +1350,9 @@ namespace NSDocxRenderer
 		const auto center = pFirst->m_dTop + height / 2;
 
 		for (const auto& line : ver_lines)
-			if (line.pos > pFirst->m_dLeft && line.pos < pFirst->m_dRight && line.min <= center && line.max >= center)
+			if (line.pos - pFirst->m_dLeft > c_dGRAPHICS_ERROR_IN_LINES_MM &&
+			        pFirst->m_dRight - line.pos > c_dGRAPHICS_ERROR_IN_LINES_MM &&
+			        line.min <= center && line.max >= center)
 				return true;
 
 		return false;
@@ -1547,18 +1540,6 @@ namespace NSDocxRenderer
 			        v_type == eVerticalCrossingType::vctNoCrossingCurrentBelowNext;
 		};
 
-		auto calc_selected = [this] (cont_ptr_t cont) {
-			if (m_bUseDefaultFont)
-			{
-				cont->m_oSelectedSizes.dHeight = cont->m_dHeight;
-				cont->m_oSelectedSizes.dWidth = cont->m_dWidth;
-			}
-			else
-			{
-				cont->CalcSelected();
-			}
-		};
-
 		// линии из которых сделаем шейпы
 		for (size_t index = 0; index < m_arTextLines.size(); ++index)
 		{
@@ -1583,10 +1564,12 @@ namespace NSDocxRenderer
 					curr_line->CalcFirstWordWidth();
 
 					for (auto& cont : prev_line->m_arConts)
-						calc_selected(cont);
+						if (!m_bUseDefaultFont)
+							cont->CalcSelected();
 
 					for (auto& cont : curr_line->m_arConts)
-						calc_selected(cont);
+						if (!m_bUseDefaultFont)
+							cont->CalcSelected();
 
 					m_arShapes.push_back(CreateSingleLineShape(prev_line));
 					m_arShapes.push_back(CreateSingleLineShape(curr_line));
@@ -2568,7 +2551,7 @@ namespace NSDocxRenderer
 		pParagraph->m_dLeft = pLine->m_dLeft;
 		pParagraph->m_dTop = pLine->m_dTopWithMaxAscent;
 		pParagraph->m_dBot = pLine->m_dBot + (pLine->m_dTopWithMaxAscent - pLine->m_dTop);
-		pParagraph->m_dWidth = pLine->m_dWidth;
+		pParagraph->m_dWidth = pLine->m_dWidth * 1.05;
 		pParagraph->m_dHeight = pLine->m_dHeight;
 		pParagraph->m_dRight = pLine->m_dRight;
 		pParagraph->m_dLineHeight = pParagraph->m_dHeight;

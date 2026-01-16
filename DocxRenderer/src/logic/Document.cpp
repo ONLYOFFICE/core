@@ -572,8 +572,11 @@ namespace NSDocxRenderer
 			m_oPageBuilder.ClearNoAttack();
 
 			m_oCurrentPage.Analyze();
-			m_oCurrentPage.Record(m_oPageBuilder, m_lPageNum >= m_lNumberPages - 1);
-			m_arXmlString.push_back(NSFile::CUtf8Converter::GetUtf8StringFromUnicode2(m_oPageBuilder.GetBuffer(), (LONG)m_oPageBuilder.GetCurSize()));
+			if (m_bIsRecord)
+			{
+				m_oCurrentPage.Record(m_oPageBuilder, m_lPageNum >= m_lNumberPages - 1);
+				m_arXmlString.push_back(NSFile::CUtf8Converter::GetUtf8StringFromUnicode2(m_oPageBuilder.GetBuffer(), (LONG)m_oPageBuilder.GetCurSize()));
+			}
 
 			if (m_oPageBuilder.GetCurSize() > 100000000/*100Mb*/)
 				m_oPageBuilder.Clear();

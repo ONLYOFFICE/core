@@ -303,6 +303,18 @@ void Compute_HatchFill(draw_hatch * image_style,oox::oox_hatch_fill_ptr fill)
 		break;
 	}
 }
+
+double CalculatePos(double bBorder)
+{
+	if(bBorder < 60)
+		return 0;
+	if(bBorder >= 60 && bBorder <= 70)
+		return (60  - (bBorder - 60)*2);
+	else if(bBorder > 70 && bBorder <= 90)
+		return (40 - (bBorder - 70));
+	else return 10;
+}
+
 void Compute_GradientFill(draw_gradient* gradient_style, oox::oox_gradient_fill_ptr fill)
 {
 	int style = 0;
@@ -386,22 +398,49 @@ void Compute_GradientFill(draw_gradient* gradient_style, oox::oox_gradient_fill_
 			}break;
 			case gradient_style::radial:
 			case gradient_style::ellipsoid:
-			case gradient_style::square:
+			// case gradient_style::square:
 			case gradient_style::rectangular:
 			{
 				point.pos = 0;
-				if (gradient_style->draw_start_color_)		point.color_ref = gradient_style->draw_end_color_->get_hex_value();
+				if (gradient_style->draw_end_color_)		point.color_ref = gradient_style->draw_end_color_->get_hex_value();
 				//if (gradient_style->draw_start_intensity_)	point.opacity	= gradient_style->draw_end_intensity_->get_value();
 
 				fill->colors.push_back(point);
 
 				point.pos = 100;
-				if (gradient_style->draw_end_color_)		point.color_ref = gradient_style->draw_start_color_->get_hex_value();
+				if (gradient_style->draw_start_color_)		point.color_ref = gradient_style->draw_start_color_->get_hex_value();
 				//if (gradient_style->draw_end_intensity_)	point.opacity	= gradient_style->draw_start_intensity_->get_value();
 
 				fill->colors.push_back(point);
 			}break;
-		}
+			case gradient_style::square:
+			{
+				point.pos = 0;
+				if(gradient_style->draw_border_ && gradient_style->draw_border_->get_value() == 100)
+				{
+					if(gradient_style->draw_start_color_)
+						point.color_ref = gradient_style->draw_start_color_->get_hex_value();
+				}
+				else if (gradient_style->draw_end_color_)
+						point.color_ref = gradient_style->draw_end_color_->get_hex_value();
+				fill->colors.push_back(point);
+
+				if(gradient_style->draw_border_)
+				{
+					double bPos = CalculatePos(gradient_style->draw_border_->get_value());
+					if(bPos != 0)
+					{
+						point.pos = bPos;
+						if(gradient_style->draw_start_color_) point.color_ref = gradient_style->draw_start_color_->get_hex_value();
+						fill->colors.push_back(point);
+					}
+				}
+
+				point.pos = 100;
+				if (gradient_style->draw_start_color_)		point.color_ref = gradient_style->draw_start_color_->get_hex_value();
+				fill->colors.push_back(point);
+			}break;
+			}
 	}
 	
 	if (fill->style >= 1)
@@ -411,13 +450,18 @@ void Compute_GradientFill(draw_gradient* gradient_style, oox::oox_gradient_fill_
 
 		if (gradient_style->draw_cx_)
 		{
-			fill->rect[0] = 100 - gradient_style->draw_cx_->get_value();
-			fill->rect[2] = gradient_style->draw_cx_->get_value();
+			fill->rect[0] = gradient_style->draw_cx_->get_value();
+			fill->rect[2] = 100 - gradient_style->draw_cx_->get_value();
 		}
 		if (gradient_style->draw_cy_)
 		{
-			fill->rect[1] = 100 - gradient_style->draw_cy_->get_value();
-			fill->rect[3] = gradient_style->draw_cy_->get_value();
+			if(gradient_style->draw_border_ && gradient_style->draw_border_->get_value() <= 50)
+				fill->rect[1] = fill->rect[3] =00;
+			else
+			{
+				fill->rect[1] = gradient_style->draw_cy_->get_value();
+				fill->rect[3] = 100 - gradient_style->draw_cy_->get_value();
+			}
 		}
 	}
 }

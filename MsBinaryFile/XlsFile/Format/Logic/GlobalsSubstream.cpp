@@ -852,7 +852,7 @@ void GlobalsSubstream::UpdateXti()
 					else if (xti->itabFirst < global_info_->sheets_info.size())
 					{
 						strRange = XMLSTUFF::name2sheet_name(global_info_->sheets_info[xti->itabFirst].name, L"");
-						if (xti->itabFirst != xti->itabLast)
+						if (xti->itabFirst != xti->itabLast && global_info_->sheets_info.size() > xti->itabLast)
 						{
 							strRange += std::wstring(L":") + XMLSTUFF::name2sheet_name(global_info_->sheets_info[xti->itabLast].name, L"");
 						}

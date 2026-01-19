@@ -7,9 +7,9 @@ CFill::CFill()
 
 }
 
-bool CFill::Read(CHWPStream& oStream)
+bool CFill::Read(CChartStream& oStream)
 {
 	return m_oBrush.Read(oStream) && /*&&*/
-	       oStream.ReadInt(m_nStyle) && m_oVtPicture.Read(oStream);
+	       oStream.ReadInteger(m_nStyle) && m_oVtPicture.Read(oStream);
 }
 }}

@@ -7,15 +7,15 @@ namespace HWP { namespace CHART
 {
 class CIntersection : public IChartObject
 {
-	bool m_bAuto;
-	int m_nAxisId;
-	int m_nIndex;
-	bool m_bLabelsInsidePlot;
-	double m_dPoint;
+	CHART_BOOLEAN m_bAuto;
+	CHART_INTEGER m_nAxisId;
+	CHART_INTEGER m_nIndex;
+	CHART_BOOLEAN m_bLabelsInsidePlot;
+	CHART_DOUBLE m_dPoint;
 public:
 	CIntersection();
 
-	bool Read(CHWPStream& oStream) override;
+	bool Read(CChartStream& oStream) override;
 };
 }}
 

@@ -8,13 +8,13 @@ namespace HWP { namespace CHART
 class CBrush : public IChartObject
 {
 	CVtColor m_oFillColor;
-	int m_nIndex;
+	CHART_INTEGER m_nIndex;
 	CVtColor m_oPatternColor;
-	int m_nStyle;
+	CHART_INTEGER m_nStyle;
 public:
 	CBrush();
 
-	bool Read(CHWPStream& oStream) override;
+	bool Read(CChartStream& oStream) override;
 };
 }}
 

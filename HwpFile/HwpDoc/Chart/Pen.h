@@ -7,16 +7,16 @@ namespace HWP { namespace CHART
 {
 class CPen : public IChartObject
 {
-	int m_nCap;
-	int m_nJoin;
-	SINGLE m_snLimit;
-	int m_nStyle;
-	SINGLE m_snWidth;
+	CHART_INTEGER m_nCap;
+	CHART_INTEGER m_nJoin;
+	CHART_SINGLE m_snLimit;
+	CHART_INTEGER m_nStyle;
+	CHART_SINGLE m_snWidth;
 	CVtColor m_oVtColor;
 public:
 	CPen();
 
-	bool Read(CHWPStream& oStream) override;
+	bool Read(CChartStream& oStream) override;
 };
 }}
 

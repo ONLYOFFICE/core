@@ -7,8 +7,8 @@ CShadow::CShadow()
 
 }
 
-bool CShadow::Read(CHWPStream& oStream)
+bool CShadow::Read(CChartStream& oStream)
 {
-	return m_oBrush.Read(oStream) && m_oOffset.Read(oStream) && oStream.ReadInt(m_nStyle);
+	return m_oBrush.Read(oStream) && m_oOffset.Read(oStream) && oStream.ReadInteger(m_nStyle);
 }
 }}

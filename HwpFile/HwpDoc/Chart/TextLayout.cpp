@@ -7,9 +7,9 @@ CTextLayout::CTextLayout()
 
 }
 
-bool CTextLayout::Read(CHWPStream& oStream)
+bool CTextLayout::Read(CChartStream& oStream)
 {
-	return oStream.ReadBool(m_bWordWrap) && oStream.ReadInt(m_nHorzAlignment) &&
-	       oStream.ReadInt(m_nOrientation) && oStream.ReadInt(m_nVertAlignment);
+	return oStream.ReadBoolean(m_bWordWrap) && oStream.ReadInteger(m_nHorzAlignment) &&
+	       oStream.ReadInteger(m_nOrientation) && oStream.ReadInteger(m_nVertAlignment);
 }
 }}

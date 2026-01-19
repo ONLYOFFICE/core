@@ -7,7 +7,7 @@ CAxisGrid::CAxisGrid()
 
 }
 
-bool CAxisGrid::Read(CHWPStream& oStream)
+bool CAxisGrid::Read(CChartStream& oStream)
 {
 	return m_oMajorPen.Read(oStream) && m_oMinorPen.Read(oStream);
 }
@@ -17,10 +17,10 @@ CAxisScale::CAxisScale()
 
 }
 
-bool CAxisScale::Read(CHWPStream& oStream)
+bool CAxisScale::Read(CChartStream& oStream)
 {
-	return oStream.ReadBool(m_bHide) && oStream.ReadInt(m_nLogBase) &&
-	       oStream.ReadString(m_sPercentBasis, DEFAULT_STRING_CHARACTER) && oStream.ReadInt(m_nType);
+	return oStream.ReadBoolean(m_bHide) && oStream.ReadInteger(m_nLogBase) &&
+	       oStream.ReadString(m_sPercentBasis) && oStream.ReadInteger(m_nType);
 }
 
 CAxisTitle::CAxisTitle()
@@ -28,11 +28,11 @@ CAxisTitle::CAxisTitle()
 
 }
 
-bool CAxisTitle::Read(CHWPStream& oStream)
+bool CAxisTitle::Read(CChartStream& oStream)
 {
-	return m_oBackdrop.Read(oStream) && oStream.ReadString(m_sText, DEFAULT_STRING_CHARACTER) &&
-	       m_oTextLayout.Read(oStream) && oStream.ReadInt(m_nTextLength) &&
-	       oStream.ReadBool(m_bVisible) && m_oVtFont.Read(oStream);
+	return m_oBackdrop.Read(oStream) && oStream.ReadString(m_sText) &&
+	       m_oTextLayout.Read(oStream) && oStream.ReadInteger(m_nTextLength) &&
+	       oStream.ReadBoolean(m_bVisible) && m_oVtFont.Read(oStream);
 }
 
 CAxis::CAxis()
@@ -40,12 +40,12 @@ CAxis::CAxis()
 
 }
 
-bool CAxis::Read(CHWPStream& oStream)
+bool CAxis::Read(CChartStream& oStream)
 {
 	return m_oAxisGrid.Read(oStream) && m_oAxisScale.Read(oStream) &&
 	       m_oAxisTitle.Read(oStream) && m_oCategoryScale.Read(oStream) &&
 	       m_oDateScale.Read(oStream) && m_oIntersection.Read(oStream) &&
-	       m_oLabels.Read(oStream) && oStream.ReadInt(m_nLabelLevelCount) &&
+	       m_oLabels.Read(oStream) && oStream.ReadInteger(m_nLabelLevelCount) &&
 	       m_oPen.Read(oStream) && m_oTick.Read(oStream) && m_oValueScale.Read(oStream);
 }
 }}

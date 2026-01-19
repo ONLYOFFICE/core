@@ -7,9 +7,9 @@ CPlotBase::CPlotBase()
 
 }
 
-bool CPlotBase::Read(CHWPStream& oStream)
+bool CPlotBase::Read(CChartStream& oStream)
 {
-	return m_oBrush.Read(oStream) && oStream.ReadShort(m_snBaseHeight) && m_oPen.Read(oStream);
+	return m_oBrush.Read(oStream) && oStream.ReadSingle(m_snBaseHeight) && m_oPen.Read(oStream);
 }
 
 CPlot::CPlot()
@@ -17,23 +17,23 @@ CPlot::CPlot()
 
 }
 
-bool CPlot::Read(CHWPStream& oStream)
+bool CPlot::Read(CChartStream& oStream)
 {
-	return oStream.ReadInt(m_nAngleUnit) && oStream.ReadBool(m_bAutoLayout) &&
+	return oStream.ReadInteger(m_nAngleUnit) && oStream.ReadBoolean(m_bAutoLayout) &&
 	       m_oAxis.Read(oStream) && m_oBackdrop.Read(oStream) &&
-	       oStream.ReadShort(m_snBarGap) && oStream.ReadBool(m_bClockwise) &&
-	       oStream.ReadBool(m_bDataSeriesInRow) && oStream.ReadInt(m_nDefaultPercentBasis) &&
-	       oStream.ReadShort(m_snDepthToHeightRatio) && m_oDoughnut.Read(oStream) &&
+	       oStream.ReadSingle(m_snBarGap) && oStream.ReadBoolean(m_bClockwise) &&
+	       oStream.ReadBoolean(m_bDataSeriesInRow) && oStream.ReadInteger(m_nDefaultPercentBasis) &&
+	       oStream.ReadSingle(m_snDepthToHeightRatio) && m_oDoughnut.Read(oStream) &&
 	       m_oElevation.Read(oStream) && m_oLight.Read(oStream) &&
-	       m_oLocationRect.Read(oStream) && oStream.ReadShort(m_snMaxBubbleToAxisRatio) &&
+	       m_oLocationRect.Read(oStream) && oStream.ReadSingle(m_snMaxBubbleToAxisRatio) &&
 	       m_oPerspective.Read(oStream) && m_oPie.Read(oStream) &&
-	       m_oPlotBase.Read(oStream) && oStream.ReadInt(m_nProjection) &&
-	       oStream.ReadShort(m_snScaleAngle) && m_oSeries.Read(oStream) &&
-	       oStream.ReadInt(m_nSort) && oStream.ReadShort(m_snStartingAngle) &&
-	       oStream.ReadInt(m_nSubPlotLabelPosition) && oStream.ReadBool(m_bUniformAxis) &&
+	       m_oPlotBase.Read(oStream) && oStream.ReadInteger(m_nProjection) &&
+	       oStream.ReadSingle(m_snScaleAngle) && m_oSeries.Read(oStream) &&
+	       oStream.ReadInteger(m_nSort) && oStream.ReadSingle(m_snStartingAngle) &&
+	       oStream.ReadInteger(m_nSubPlotLabelPosition) && oStream.ReadBoolean(m_bUniformAxis) &&
 	       m_oView3D.Read(oStream) && m_oWall.Read(oStream) &&
-	       oStream.ReadShort(m_snWidthToHeightRatio) && m_oWeighting.Read(oStream) &&
-	       oStream.ReadShort(m_snxGap) && m_oXYZ.Read(oStream) &&
-	       oStream.ReadShort(m_snzGap);
+	       oStream.ReadSingle(m_snWidthToHeightRatio) && m_oWeighting.Read(oStream) &&
+	       oStream.ReadSingle(m_snxGap) && m_oXYZ.Read(oStream) &&
+	       oStream.ReadSingle(m_snzGap);
 }
 }}

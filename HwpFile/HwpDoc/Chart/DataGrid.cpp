@@ -7,11 +7,11 @@ CDataGrid::CDataGrid()
 
 }
 
-bool CDataGrid::Read(CHWPStream& oStream)
+bool CDataGrid::Read(CChartStream& oStream)
 {
-	return oStream.ReadInt(m_nColumnCount) && oStream.ReadString(m_sColumnLabel, DEFAULT_STRING_CHARACTER) &&
-	       oStream.ReadInt(m_nColumnLabelCount) && oStream.ReadInt(m_nCompositeColumnLabel) &&
-	       oStream.ReadString(m_sCompositeRowLabel, DEFAULT_STRING_CHARACTER) && oStream.ReadInt(m_nRowCount) &&
-	       oStream.ReadString(m_sRowLabel, DEFAULT_STRING_CHARACTER) && oStream.ReadInt(m_nRowLabelCount);
+	return oStream.ReadInteger(m_nColumnCount) && oStream.ReadString(m_sColumnLabel) &&
+	       oStream.ReadInteger(m_nColumnLabelCount) && oStream.ReadInteger(m_nCompositeColumnLabel) &&
+	       oStream.ReadString(m_sCompositeRowLabel) && oStream.ReadInteger(m_nRowCount) &&
+	       oStream.ReadString(m_sRowLabel) && oStream.ReadInteger(m_nRowLabelCount);
 }
 }}

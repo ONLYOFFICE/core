@@ -7,12 +7,12 @@ CElevation::CElevation()
 
 }
 
-bool CElevation::Read(CHWPStream& oStream)
+bool CElevation::Read(CChartStream& oStream)
 {
-	return m_oAttributes.Read(oStream) && oStream.ReadBool(m_bAutoValues) &&
-	       oStream.ReadInt(m_nColorType) && oStream.ReadInt(m_nColSmoothing) &&
+	return m_oAttributes.Read(oStream) && oStream.ReadBoolean(m_bAutoValues) &&
+	       oStream.ReadInteger(m_nColorType) && oStream.ReadInteger(m_nColSmoothing) &&
 	       m_oContour.Read(oStream) && m_oContourGradient.Read(oStream) &&
-	       oStream.ReadInt(m_nRowSmoothing) && oStream.ReadBool(m_bSeparateContourData) &&
+	       oStream.ReadInteger(m_nRowSmoothing) && oStream.ReadBoolean(m_bSeparateContourData) &&
 	       m_oSurface.Read(oStream);
 }
 }}

@@ -7,8 +7,8 @@ CTick::CTick()
 
 }
 
-bool CTick::Read(CHWPStream& oStream)
+bool CTick::Read(CChartStream& oStream)
 {
-	return oStream.ReadShort(m_snLength) && oStream.ReadInt(m_nStyle);
+	return oStream.ReadSingle(m_snLength) && oStream.ReadInteger(m_nStyle);
 }
 }}

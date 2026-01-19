@@ -22,51 +22,51 @@ namespace HWP { namespace CHART
 class CPlotBase : public IChartObject
 {
 	CBrush m_oBrush;
-	SINGLE m_snBaseHeight;
+	CHART_SINGLE m_snBaseHeight;
 	CPen m_oPen;
 public:
 	CPlotBase();
 
-	bool Read(CHWPStream& oStream) override;
+	bool Read(CChartStream& oStream) override;
 };
 
 class CPlot : public IChartObject
 {
-	int m_nAngleUnit;
-	bool m_bAutoLayout;
+	CHART_INTEGER m_nAngleUnit;
+	CHART_BOOLEAN m_bAutoLayout;
 	CAxis m_oAxis;
 	CBackdrop m_oBackdrop;
-	SINGLE m_snBarGap;
-	bool m_bClockwise;
-	bool m_bDataSeriesInRow;
-	int m_nDefaultPercentBasis;
-	SINGLE m_snDepthToHeightRatio;
+	CHART_SINGLE m_snBarGap;
+	CHART_BOOLEAN m_bClockwise;
+	CHART_BOOLEAN m_bDataSeriesInRow;
+	CHART_INTEGER m_nDefaultPercentBasis;
+	CHART_SINGLE m_snDepthToHeightRatio;
 	CCoor m_oDoughnut;
 	CElevation m_oElevation;
 	CLight m_oLight;
 	CRect m_oLocationRect;
-	SINGLE m_snMaxBubbleToAxisRatio;
+	CHART_SINGLE m_snMaxBubbleToAxisRatio;
 	CCoor3 m_oPerspective;
 	CPie m_oPie;
 	CPlotBase m_oPlotBase;
-	int m_nProjection;
-	SINGLE m_snScaleAngle;
+	CHART_INTEGER m_nProjection;
+	CHART_SINGLE m_snScaleAngle;
 	CSeries m_oSeries;
-	int m_nSort;
-	SINGLE m_snStartingAngle;
-	int m_nSubPlotLabelPosition;
-	bool m_bUniformAxis;
+	CHART_INTEGER m_nSort;
+	CHART_SINGLE m_snStartingAngle;
+	CHART_INTEGER m_nSubPlotLabelPosition;
+	CHART_BOOLEAN m_bUniformAxis;
 	CView3D m_oView3D;
 	CWall m_oWall;
-	SINGLE m_snWidthToHeightRatio;
+	CHART_SINGLE m_snWidthToHeightRatio;
 	CWeighting m_oWeighting;
-	SINGLE m_snxGap;
+	CHART_SINGLE m_snxGap;
 	CXYZ m_oXYZ;
-	SINGLE m_snzGap;
+	CHART_SINGLE m_snzGap;
 public:
 	CPlot();
 
-	bool Read(CHWPStream& oStream) override;
+	bool Read(CChartStream& oStream) override;
 };
 }}
 

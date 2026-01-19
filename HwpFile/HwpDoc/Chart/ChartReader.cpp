@@ -11,20 +11,16 @@ CChartReader::CChartReader()
 
 bool CChartReader::ReadFromOle(CHWPStream& oOleData)
 {
-	oOleData.Skip(44); //Unknown data
+	CChartStream oChartStream(&oOleData);
 
-	short shStoredNameLength;
-	oOleData.ReadShort(shStoredNameLength);
+	oChartStream.Skip(44); //Unknown data
 
-	HWP_STRING sStoredName;
-	oOleData.ReadString(sStoredName, shStoredNameLength, EStringCharacter::ASCII);
-
-	// if ("VtChart" == sStoredName)
-
+	CHART_STRING sStoredName;
+	oChartStream.ReadString(sStoredName);
 
 	CVtChart oVtChart;
 
-	if (!oVtChart.Read(oOleData))
+	if (!oVtChart.Read(oChartStream))
 		return false;
 
 	return false;

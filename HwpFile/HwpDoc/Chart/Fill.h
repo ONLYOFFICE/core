@@ -15,12 +15,12 @@ class CFill : public IChartObject
 	// 	CGradient m_oGradient;
 	// 	CVtPicture m_oPicture;
 	// } m_oGradient;
-	int m_nStyle;
+	CHART_INTEGER m_nStyle;
 	CVtPicture m_oVtPicture;
 public:
 	CFill();
 
-	bool Read(CHWPStream& oStream) override;
+	bool Read(CChartStream& oStream) override;
 };
 }}
 

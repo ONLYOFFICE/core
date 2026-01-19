@@ -10,14 +10,14 @@ class CMarker : public IChartObject
 {
 	CVtColor m_oFillColor;
 	CPen m_oPen;
-	SINGLE m_snSize;
-	int m_nStyle;
-	bool m_bVisible;
+	CHART_SINGLE m_snSize;
+	CHART_INTEGER m_nStyle;
+	CHART_BOOLEAN m_bVisible;
 	CVtPicture m_oVtPicture;
 public:
 	CMarker();
 
-	bool Read(CHWPStream& oStream) override;
+	bool Read(CChartStream& oStream) override;
 };
 }}
 

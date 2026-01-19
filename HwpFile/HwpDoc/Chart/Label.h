@@ -10,17 +10,17 @@ namespace HWP { namespace CHART
 {
 class CLabel : public IChartObject
 {
-	bool m_bAuto;
+	CHART_BOOLEAN m_bAuto;
 	CBackdrop m_oBackdrop;
-	HWP_STRING m_sFormat;
-	HWP_STRING m_sFormatLength;
-	bool m_bStanding;
+	CHART_STRING m_sFormat;
+	CHART_STRING m_sFormatLength;
+	CHART_BOOLEAN m_bStanding;
 	CTextLayout m_oTextLayout;
 	CVtFont m_oVtFont;
 public:
 	CLabel();
 
-	bool Read(CHWPStream& oStream) override;
+	bool Read(CChartStream& oStream) override;
 };
 
 using CLabels = CCollection<CLabel>;

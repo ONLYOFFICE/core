@@ -7,11 +7,11 @@ namespace HWP { namespace CHART
 {
 class CContour : public IChartObject
 {
-	int m_nDisplayType;
+	CHART_INTEGER m_nDisplayType;
 public:
 	CContour();
 
-	bool Read(CHWPStream& oStream) override;
+	bool Read(CChartStream& oStream) override;
 };
 }}
 

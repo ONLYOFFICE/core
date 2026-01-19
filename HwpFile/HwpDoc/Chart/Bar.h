@@ -7,12 +7,12 @@ namespace HWP { namespace CHART
 {
 class CBar : public IChartObject
 {
-	int m_nSides;
-	SINGLE m_snTopRatio;
+	CHART_INTEGER m_nSides;
+	CHART_SINGLE m_snTopRatio;
 public:
 	CBar();
 
-	bool Read(CHWPStream& oStream) override;
+	bool Read(CChartStream& oStream) override;
 };
 }}
 

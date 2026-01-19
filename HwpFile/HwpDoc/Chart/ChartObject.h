@@ -2,19 +2,18 @@
 #define CHARTOBJECT_H
 
 #include "Types.h"
-#include "../Common/Common.h"
-#include "../HWPStream.h"
+#include "ChartStream.h"
 
 namespace HWP { namespace CHART
 {
 	class IChartObject
 	{
-		long m_lId;
-		long m_lStoredtypeId;
+		CHART_LONG m_lId;
+		CHART_LONG m_lStoredtypeId;
 	protected:
 		IChartObject() = default;
 	public:
-		virtual bool Read(CHWPStream& oStream) = 0;
+		virtual bool Read(CChartStream& oStream) = 0;
 		// virtual ETypes GetType() const = 0;
 	};
 }}

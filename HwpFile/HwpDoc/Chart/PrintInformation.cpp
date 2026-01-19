@@ -7,12 +7,12 @@ CPrintInformation::CPrintInformation()
 
 }
 
-bool CPrintInformation::Read(CHWPStream& oStream)
+bool CPrintInformation::Read(CChartStream& oStream)
 {
-	return oStream.ReadShort(m_snBottomMargin) && oStream.ReadBool(m_bCenterHorizontally) &&
-	       oStream.ReadBool(m_bCenterVertically) && oStream.ReadBool(m_bLayoutForPrinter) &&
-	       oStream.ReadShort(m_snLeftMargin) && oStream.ReadBool(m_bMonochrome) &&
-	       oStream.ReadInt(m_nOrientation) && oStream.ReadShort(m_snRightMargin) &&
-	       oStream.ReadInt(m_nScaleType) && oStream.ReadShort(m_snTopMargin);
+	return oStream.ReadSingle(m_snBottomMargin) && oStream.ReadBoolean(m_bCenterHorizontally) &&
+	       oStream.ReadBoolean(m_bCenterVertically) && oStream.ReadBoolean(m_bLayoutForPrinter) &&
+	       oStream.ReadSingle(m_snLeftMargin) && oStream.ReadBoolean(m_bMonochrome) &&
+	       oStream.ReadInteger(m_nOrientation) && oStream.ReadSingle(m_snRightMargin) &&
+	       oStream.ReadInteger(m_nScaleType) && oStream.ReadSingle(m_snTopMargin);
 }
 }}

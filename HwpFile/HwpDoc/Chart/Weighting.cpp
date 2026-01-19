@@ -7,8 +7,8 @@ CWeighting::CWeighting()
 
 }
 
-bool CWeighting::Read(CHWPStream& oStream)
+bool CWeighting::Read(CChartStream& oStream)
 {
-	return oStream.ReadInt(m_nBasis) && oStream.ReadInt(m_nStyle);
+	return oStream.ReadInteger(m_nBasis) && oStream.ReadInteger(m_nStyle);
 }
 }}

@@ -12,7 +12,7 @@ class CLRect : public IChartObject
 public:
 	CLRect();
 
-	bool Read(CHWPStream& oStream) override;
+	bool Read(CChartStream& oStream) override;
 };
 }}
 

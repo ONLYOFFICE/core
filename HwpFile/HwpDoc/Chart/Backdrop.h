@@ -15,7 +15,7 @@ class CBackdrop : public IChartObject
 public:
 	CBackdrop();
 
-	bool Read(CHWPStream& oStream) override;
+	bool Read(CChartStream& oStream) override;
 };
 }}
 

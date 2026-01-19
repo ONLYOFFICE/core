@@ -7,13 +7,13 @@ namespace HWP { namespace CHART
 {
 class CCoor3 : public IChartObject
 {
-	SINGLE m_snX;
-	SINGLE m_snY;
-	SINGLE m_snZ;
+	CHART_SINGLE m_snX;
+	CHART_SINGLE m_snY;
+	CHART_SINGLE m_snZ;
 public:
 	CCoor3();
 
-	bool Read(CHWPStream& oStream) override;
+	bool Read(CChartStream& oStream) override;
 };
 }}
 

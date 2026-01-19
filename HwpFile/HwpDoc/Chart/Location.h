@@ -7,13 +7,13 @@ namespace HWP { namespace CHART
 {
 class CLocation : public IChartObject
 {
-	int m_nLocationType;
+	CHART_INTEGER m_nLocationType;
 	CRect m_oRect;
-	bool m_bVisible;
+	CHART_BOOLEAN m_bVisible;
 public:
 	CLocation();
 
-	bool Read(CHWPStream& oStream) override;
+	bool Read(CChartStream& oStream) override;
 };
 }}
 

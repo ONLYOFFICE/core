@@ -7,9 +7,9 @@ CBrush::CBrush()
 
 }
 
-bool CBrush::Read(CHWPStream& oStream)
+bool CBrush::Read(CChartStream& oStream)
 {
-	return m_oFillColor.Read(oStream) && oStream.ReadInt(m_nIndex) &&
-	       m_oPatternColor.Read(oStream) && oStream.ReadInt(m_nStyle);
+	return m_oFillColor.Read(oStream) && oStream.ReadInteger(m_nIndex) &&
+	       m_oPatternColor.Read(oStream) && oStream.ReadInteger(m_nStyle);
 }
 }}

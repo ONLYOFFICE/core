@@ -7,10 +7,10 @@ CLightSource::CLightSource()
 
 }
 
-bool CLightSource::Read(CHWPStream& oStream)
+bool CLightSource::Read(CChartStream& oStream)
 {
-	return oStream.ReadShort(m_snX) && oStream.ReadShort(m_snY) &&
-	       oStream.ReadShort(m_snZ) && oStream.ReadShort(m_snIntensity);
+	return oStream.ReadSingle(m_snX) && oStream.ReadSingle(m_snY) &&
+	       oStream.ReadSingle(m_snZ) && oStream.ReadSingle(m_snIntensity);
 }
 
 CLight::CLight()
@@ -18,9 +18,9 @@ CLight::CLight()
 
 }
 
-bool CLight::Read(CHWPStream& oStream)
+bool CLight::Read(CChartStream& oStream)
 {
-	return oStream.ReadShort(m_snAmbientIntensity) && oStream.ReadShort(m_snEdgeIntensity) &&
-	       oStream.ReadBool(m_bEdgeVisible) && m_oLightSources.Read(oStream);
+	return oStream.ReadSingle(m_snAmbientIntensity) && oStream.ReadSingle(m_snEdgeIntensity) &&
+	       oStream.ReadBoolean(m_bEdgeVisible) && m_oLightSources.Read(oStream);
 }
 }}

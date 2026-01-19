@@ -8,14 +8,14 @@ namespace HWP { namespace CHART
 class CVtFont : public IChartObject
 {
 	CVtColor m_oColor;
-	int m_nEffects;
-	HWP_STRING m_sName;
-	SINGLE m_snSize;
-	int m_nStyle;
+	CHART_INTEGER m_nEffects;
+	CHART_STRING m_sName;
+	CHART_SINGLE m_snSize;
+	CHART_INTEGER m_nStyle;
 public:
 	CVtFont();
 
-	bool Read(CHWPStream& oStream) override;
+	bool Read(CChartStream& oStream) override;
 };
 }}
 

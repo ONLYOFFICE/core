@@ -7,18 +7,18 @@ namespace HWP { namespace CHART
 {
 class CDataGrid : public IChartObject
 {
-	int m_nColumnCount;
-	HWP_STRING m_sColumnLabel;
-	int m_nColumnLabelCount;
-	int m_nCompositeColumnLabel;
-	HWP_STRING m_sCompositeRowLabel;
-	int m_nRowCount;
-	HWP_STRING m_sRowLabel;
-	int m_nRowLabelCount;
+	CHART_INTEGER m_nColumnCount;
+	CHART_STRING m_sColumnLabel;
+	CHART_INTEGER m_nColumnLabelCount;
+	CHART_INTEGER m_nCompositeColumnLabel;
+	CHART_STRING m_sCompositeRowLabel;
+	CHART_INTEGER m_nRowCount;
+	CHART_STRING m_sRowLabel;
+	CHART_INTEGER m_nRowLabelCount;
 public:
 	CDataGrid();
 
-	bool Read(CHWPStream& oStream) override;
+	bool Read(CChartStream& oStream) override;
 };
 }}
 

@@ -7,14 +7,14 @@ namespace HWP { namespace CHART
 {
 class CVtPicture : public IChartObject
 {
-	bool m_bEmbedded;
-	HWP_STRING m_sFilename;
-	int m_nMap;
-	int m_nType;
+	CHART_BOOLEAN m_bEmbedded;
+	CHART_STRING m_sFilename;
+	CHART_INTEGER m_nMap;
+	CHART_INTEGER m_nType;
 public:
 	CVtPicture();
 
-	bool Read(CHWPStream& oStream) override;
+	bool Read(CChartStream& oStream) override;
 };
 }}
 

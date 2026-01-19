@@ -7,12 +7,12 @@ namespace HWP { namespace CHART
 {
 class CPie : public IChartObject
 {
-	SINGLE m_snThicknessRatio;
-	SINGLE m_snTopRadiusRatio;
+	CHART_SINGLE m_snThicknessRatio;
+	CHART_SINGLE m_snTopRadiusRatio;
 public:
 	CPie();
 
-	bool Read(CHWPStream& oStream) override;
+	bool Read(CChartStream& oStream) override;
 };
 }}
 

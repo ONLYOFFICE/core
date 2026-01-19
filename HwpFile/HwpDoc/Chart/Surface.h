@@ -8,17 +8,17 @@ namespace HWP { namespace CHART
 {
 class CSurface : public IChartObject
 {
-	int m_nBase;
+	CHART_INTEGER m_nBase;
 	CBrush m_oBrush;
-	int m_nColWireframe;
-	int m_nDisplayType;
-	int m_nProjection;
-	int m_nRowWireframe;
+	CHART_INTEGER m_nColWireframe;
+	CHART_INTEGER m_nDisplayType;
+	CHART_INTEGER m_nProjection;
+	CHART_INTEGER m_nRowWireframe;
 	CPen m_oWireframePen;
 public:
 	CSurface();
 
-	bool Read(CHWPStream& oStream) override;
+	bool Read(CChartStream& oStream) override;
 };
 }}
 

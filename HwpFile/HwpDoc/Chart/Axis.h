@@ -21,33 +21,33 @@ class CAxisGrid : public IChartObject
 public:
 	CAxisGrid();
 
-	bool Read(CHWPStream& oStream) override;
+	bool Read(CChartStream& oStream) override;
 };
 
 class CAxisScale : public IChartObject
 {
-	bool m_bHide;
-	int m_nLogBase;
-	HWP_STRING m_sPercentBasis;
-	int m_nType;
+	CHART_BOOLEAN m_bHide;
+	CHART_INTEGER m_nLogBase;
+	CHART_STRING m_sPercentBasis;
+	CHART_INTEGER m_nType;
 public:
 	CAxisScale();
 
-	bool Read(CHWPStream& oStream) override;
+	bool Read(CChartStream& oStream) override;
 };
 
 class CAxisTitle : public IChartObject
 {
 	CBackdrop m_oBackdrop;
-	HWP_STRING m_sText;
+	CHART_STRING m_sText;
 	CTextLayout m_oTextLayout;
-	int m_nTextLength;
-	bool m_bVisible;
+	CHART_INTEGER m_nTextLength;
+	CHART_BOOLEAN m_bVisible;
 	CVtFont m_oVtFont;
 public:
 	CAxisTitle();
 
-	bool Read(CHWPStream& oStream) override;
+	bool Read(CChartStream& oStream) override;
 };
 
 class CAxis : public IChartObject
@@ -59,14 +59,14 @@ class CAxis : public IChartObject
 	CDateScale m_oDateScale;
 	CIntersection m_oIntersection;
 	CLabels m_oLabels;
-	int m_nLabelLevelCount;
+	CHART_INTEGER m_nLabelLevelCount;
 	CPen m_oPen;
 	CTick m_oTick;
 	CValueScale m_oValueScale;
 public:
 	CAxis();
 
-	bool Read(CHWPStream& oStream) override;
+	bool Read(CChartStream& oStream) override;
 };
 }}
 

@@ -7,7 +7,7 @@ CHiLo::CHiLo()
 
 }
 
-bool CHiLo::Read(CHWPStream& oStream)
+bool CHiLo::Read(CChartStream& oStream)
 {
 	return m_oGainColor.Read(oStream) && m_oLossColor.Read(oStream);
 }

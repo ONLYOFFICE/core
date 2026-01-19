@@ -12,7 +12,7 @@ class CHiLo : public IChartObject
 public:
 	CHiLo();
 
-	bool Read(CHWPStream& oStream) override;
+	bool Read(CChartStream& oStream) override;
 };
 }}
 

@@ -7,7 +7,7 @@ CContourGradient::CContourGradient()
 
 }
 
-bool CContourGradient::Read(CHWPStream& oStream)
+bool CContourGradient::Read(CChartStream& oStream)
 {
 	return m_oFromBrushColor.Read(oStream) && m_oToBrushColor.Read(oStream) &&
 	       m_oFromPenColor.Read(oStream) && m_oToPenColor.Read(oStream);

@@ -7,9 +7,9 @@ CPosition::CPosition()
 
 }
 
-bool CPosition::Read(CHWPStream& oStream)
+bool CPosition::Read(CChartStream& oStream)
 {
-	return oStream.ReadBool(m_bExcluded) && oStream.ReadBool(m_bHidden) &&
-	       oStream.ReadInt(m_nOrder) && oStream.ReadInt(m_nStackOrder);
+	return oStream.ReadBoolean(m_bExcluded) && oStream.ReadBoolean(m_bHidden) &&
+	       oStream.ReadInteger(m_nOrder) && oStream.ReadInteger(m_nStackOrder);
 }
 }}

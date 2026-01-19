@@ -7,10 +7,10 @@ CValueScale::CValueScale()
 
 }
 
-bool CValueScale::Read(CHWPStream& oStream)
+bool CValueScale::Read(CChartStream& oStream)
 {
-	return oStream.ReadBool(m_bAuto) && oStream.ReadInt(m_nMajorDivision) &&
+	return oStream.ReadBoolean(m_bAuto) && oStream.ReadInteger(m_nMajorDivision) &&
 	       oStream.ReadDouble(m_dMaximum) && oStream.ReadDouble(m_dMinimum) &&
-	       oStream.ReadInt(m_nMinorDivision);
+	       oStream.ReadInteger(m_nMinorDivision);
 }
 }}

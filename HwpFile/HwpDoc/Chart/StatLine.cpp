@@ -7,9 +7,9 @@ CStatLine::CStatLine()
 
 }
 
-bool CStatLine::Read(CHWPStream& oStream)
+bool CStatLine::Read(CChartStream& oStream)
 {
-	return oStream.ReadInt(m_nFlags) && oStream.ReadInt(m_nStyle) &&
-	       m_oVtColor.Read(oStream) && oStream.ReadShort(m_snWidth);
+	return oStream.ReadInteger(m_nFlags) && oStream.ReadInteger(m_nStyle) &&
+	       m_oVtColor.Read(oStream) && oStream.ReadSingle(m_snWidth);
 }
 }}

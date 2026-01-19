@@ -14,7 +14,7 @@ class CContourGradient : public IChartObject
 public:
 	CContourGradient();
 
-	bool Read(CHWPStream& oStream) override;
+	bool Read(CChartStream& oStream) override;
 };
 }}
 

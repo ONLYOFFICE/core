@@ -7,10 +7,10 @@ CVtFont::CVtFont()
 
 }
 
-bool CVtFont::Read(CHWPStream& oStream)
+bool CVtFont::Read(CChartStream& oStream)
 {
-	return m_oColor.Read(oStream) && oStream.ReadInt(m_nEffects) &&
-	       oStream.ReadString(m_sName, DEFAULT_STRING_CHARACTER) &&
-	       oStream.ReadShort(m_snSize) && oStream.ReadInt(m_nStyle);
+	return m_oColor.Read(oStream) && oStream.ReadInteger(m_nEffects) &&
+	       oStream.ReadString(m_sName) && oStream.ReadSingle(m_snSize) &&
+	       oStream.ReadInteger(m_nStyle);
 }
 }}

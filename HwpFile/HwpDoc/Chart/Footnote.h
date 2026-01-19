@@ -12,14 +12,14 @@ class CFootnote : public IChartObject
 {
 	CBackdrop m_oBackdrop;
 	CLocation m_oLocation;
-	HWP_STRING m_sText;
+	CHART_STRING m_sText;
 	CTextLayout m_oTextLayout;
-	int m_nTextLength;
+	CHART_INTEGER m_nTextLength;
 	CVtFont m_oVtFont;
 public:
 	CFootnote();
 
-	bool Read(CHWPStream& oStream) override;
+	bool Read(CChartStream& oStream) override;
 };
 }}
 

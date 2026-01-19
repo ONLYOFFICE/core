@@ -7,8 +7,8 @@ CContour::CContour()
 
 }
 
-bool CContour::Read(CHWPStream& oStream)
+bool CContour::Read(CChartStream& oStream)
 {
-	return oStream.ReadInt(m_nDisplayType);
+	return oStream.ReadInteger(m_nDisplayType);
 }
 }}

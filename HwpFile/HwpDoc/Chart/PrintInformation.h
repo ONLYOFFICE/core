@@ -7,20 +7,20 @@ namespace HWP { namespace CHART
 {
 class CPrintInformation : public IChartObject
 {
-	SINGLE m_snBottomMargin;
-	bool m_bCenterHorizontally;
-	bool m_bCenterVertically;
-	bool m_bLayoutForPrinter;
-	SINGLE m_snLeftMargin;
-	bool m_bMonochrome;
-	int m_nOrientation;
-	SINGLE m_snRightMargin;
-	int m_nScaleType;
-	SINGLE m_snTopMargin;
+	CHART_SINGLE m_snBottomMargin;
+	CHART_BOOLEAN m_bCenterHorizontally;
+	CHART_BOOLEAN m_bCenterVertically;
+	CHART_BOOLEAN m_bLayoutForPrinter;
+	CHART_SINGLE m_snLeftMargin;
+	CHART_BOOLEAN m_bMonochrome;
+	CHART_INTEGER m_nOrientation;
+	CHART_SINGLE m_snRightMargin;
+	CHART_INTEGER m_nScaleType;
+	CHART_SINGLE m_snTopMargin;
 public:
 	CPrintInformation();
 
-	bool Read(CHWPStream& oStream) override;
+	bool Read(CChartStream& oStream) override;
 };
 }}
 

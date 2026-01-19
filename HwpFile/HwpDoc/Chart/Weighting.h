@@ -7,12 +7,12 @@ namespace HWP { namespace CHART
 {
 class CWeighting : public IChartObject
 {
-	int m_nBasis;
-	int m_nStyle;
+	CHART_INTEGER m_nBasis;
+	CHART_INTEGER m_nStyle;
 public:
 	CWeighting();
 
-	bool Read(CHWPStream& oStream) override;
+	bool Read(CChartStream& oStream) override;
 };
 }}
 

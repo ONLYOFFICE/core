@@ -7,12 +7,11 @@ CLabel::CLabel()
 
 }
 
-bool CLabel::Read(CHWPStream& oStream)
+bool CLabel::Read(CChartStream& oStream)
 {
-	return oStream.ReadBool(m_bAuto) && m_oBackdrop.Read(oStream) &&
-	       oStream.ReadString(m_sFormat, DEFAULT_STRING_CHARACTER) &&
-	       oStream.ReadString(m_sFormatLength, DEFAULT_STRING_CHARACTER) &&
-	       oStream.ReadBool(m_bStanding) && m_oTextLayout.Read(oStream) &&
+	return oStream.ReadBoolean(m_bAuto) && m_oBackdrop.Read(oStream) &&
+	       oStream.ReadString(m_sFormat) && oStream.ReadString(m_sFormatLength) &&
+	       oStream.ReadBoolean(m_bStanding) && m_oTextLayout.Read(oStream) &&
 	       m_oVtFont.Read(oStream);
 }
 }}

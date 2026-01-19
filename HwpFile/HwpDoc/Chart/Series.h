@@ -13,17 +13,17 @@ namespace HWP { namespace CHART
 class CSeriesLabel : public IChartObject
 {
 	CBackdrop m_oBackdrop;
-	int m_nLineStyle;
-	int m_nLocationType;
+	CHART_INTEGER m_nLineStyle;
+	CHART_INTEGER m_nLocationType;
 	CCoor m_oOffset;
-	HWP_STRING m_sText;
+	CHART_STRING m_sText;
 	CTextLayout m_oTextLayout;
-	SINGLE m_snTextLength;
+	CHART_SINGLE m_snTextLength;
 	CVtFont m_oVtFont;
 public:
 	CSeriesLabel();
 
-	bool Read(CHWPStream& oStream) override;
+	bool Read(CChartStream& oStream) override;
 };
 
 class CSeriesMarker : public IChartObject
@@ -33,7 +33,7 @@ class CSeriesMarker : public IChartObject
 public:
 	CSeriesMarker();
 
-	bool Read(CHWPStream& oStream) override;
+	bool Read(CChartStream& oStream) override;
 };
 
 class CSeries : public IChartObject
@@ -42,22 +42,22 @@ class CSeries : public IChartObject
 	CDataPoints m_oDataPoints;
 	CPen m_oGuidelinePen;
 	CHiLo m_oHiLo;
-	HWP_STRING m_sLegendText;
+	CHART_STRING m_sLegendText;
 	CPen m_oPen;
 	CPosition m_oPosition;
-	bool m_bSecondaryAxis;
+	CHART_BOOLEAN m_bSecondaryAxis;
 	CSeriesLabel m_oSeriesLabel;
 	CSeriesMarker m_oSeriesMarker;
-	int m_nSeriesType;
-	bool m_bShowGuideLines;
-	bool m_bShowLine;
-	int m_nSmoothingFactor;
-	int m_nSmoothingType;
+	CHART_INTEGER m_nSeriesType;
+	CHART_BOOLEAN m_bShowGuideLines;
+	CHART_BOOLEAN m_bShowLine;
+	CHART_INTEGER m_nSmoothingFactor;
+	CHART_INTEGER m_nSmoothingType;
 	CStatLine m_oStatLine;
 public:
 	CSeries();
 
-	bool Read(CHWPStream& oStream) override;
+	bool Read(CChartStream& oStream) override;
 };
 }}
 

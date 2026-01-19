@@ -7,12 +7,12 @@ namespace HWP { namespace CHART
 {
 class CDoughnut : public IChartObject
 {
-	int m_nSides;
-	SINGLE m_snInteriorRatio;
+	CHART_INTEGER m_nSides;
+	CHART_SINGLE m_snInteriorRatio;
 public:
 	CDoughnut();
 
-	bool Read(CHWPStream& oStream) override;
+	bool Read(CChartStream& oStream) override;
 };
 }}
 

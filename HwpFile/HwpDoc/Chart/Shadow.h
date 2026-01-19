@@ -10,11 +10,11 @@ class CShadow : public IChartObject
 {
 	CBrush m_oBrush;
 	CCoor m_oOffset;
-	int m_nStyle;
+	CHART_INTEGER m_nStyle;
 public:
 	CShadow();
 
-	bool Read(CHWPStream& oStream) override;
+	bool Read(CChartStream& oStream) override;
 };
 }}
 

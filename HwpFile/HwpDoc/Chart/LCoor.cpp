@@ -7,7 +7,7 @@ CLCoor::CLCoor()
 
 }
 
-bool CLCoor::Read(CHWPStream& oStream)
+bool CLCoor::Read(CChartStream& oStream)
 {
 	return oStream.ReadLong(m_lX) && oStream.ReadLong(m_lY);
 }

@@ -7,18 +7,18 @@ namespace HWP { namespace CHART
 {
 class CDateScale : public IChartObject
 {
-	bool m_bAuto;
-	int m_nMajFreq;
-	int m_nMajInt;
-	double m_dMaximum;
-	double m_dMinimum;
-	int m_nMinFreq;
-	int m_nMinInt;
-	bool m_bSkipWeekend;
+	CHART_BOOLEAN m_bAuto;
+	CHART_INTEGER m_nMajFreq;
+	CHART_INTEGER m_nMajInt;
+	CHART_DOUBLE m_dMaximum;
+	CHART_DOUBLE m_dMinimum;
+	CHART_INTEGER m_nMinFreq;
+	CHART_INTEGER m_nMinInt;
+	CHART_BOOLEAN m_bSkipWeekend;
 public:
 	CDateScale();
 
-	bool Read(CHWPStream& oStream) override;
+	bool Read(CChartStream& oStream) override;
 };
 }}
 

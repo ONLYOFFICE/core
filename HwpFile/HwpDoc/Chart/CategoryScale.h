@@ -7,14 +7,14 @@ namespace HWP { namespace CHART
 {
 class CCategoryScale : public IChartObject
 {
-	bool m_bAuto;
-	int m_nDivisionsPerLabel;
-	int m_nDivisionsPerTick;
-	bool m_bLabelTick;
+	CHART_BOOLEAN m_bAuto;
+	CHART_INTEGER m_nDivisionsPerLabel;
+	CHART_INTEGER m_nDivisionsPerTick;
+	CHART_BOOLEAN m_bLabelTick;
 public:
 	CCategoryScale();
 
-	bool Read(CHWPStream& oStream) override;
+	bool Read(CChartStream& oStream) override;
 };
 }}
 

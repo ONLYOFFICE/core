@@ -7,12 +7,12 @@ namespace HWP { namespace CHART
 {
 class CLCoor : public IChartObject
 {
-	long m_lX;
-	long m_lY;
+	CHART_LONG m_lX;
+	CHART_LONG m_lY;
 public:
 	CLCoor();
 
-	bool Read(CHWPStream& oStream) override;
+	bool Read(CChartStream& oStream) override;
 };
 }}
 

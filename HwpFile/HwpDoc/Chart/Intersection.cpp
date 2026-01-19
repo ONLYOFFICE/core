@@ -7,10 +7,10 @@ CIntersection::CIntersection()
 
 }
 
-bool CIntersection::Read(CHWPStream& oStream)
+bool CIntersection::Read(CChartStream& oStream)
 {
-	return oStream.ReadBool(m_bAuto) && oStream.ReadInt(m_nAxisId) &&
-	       oStream.ReadInt(m_nIndex) && oStream.ReadBool(m_bLabelsInsidePlot) &&
+	return oStream.ReadBoolean(m_bAuto) && oStream.ReadInteger(m_nAxisId) &&
+	       oStream.ReadInteger(m_nIndex) && oStream.ReadBoolean(m_bLabelsInsidePlot) &&
 	       oStream.ReadDouble(m_dPoint);
 }
 }}

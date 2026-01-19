@@ -7,28 +7,28 @@ namespace HWP { namespace CHART
 {
 class CLightSource : public IChartObject
 {
-	SINGLE m_snX;
-	SINGLE m_snY;
-	SINGLE m_snZ;
-	SINGLE m_snIntensity;
+	CHART_SINGLE m_snX;
+	CHART_SINGLE m_snY;
+	CHART_SINGLE m_snZ;
+	CHART_SINGLE m_snIntensity;
 public:
 	CLightSource();
 
-	bool Read(CHWPStream& oStream) override;
+	bool Read(CChartStream& oStream) override;
 };
 
 using CLightSources = CCollection<CLightSource>;
 
 class CLight : public IChartObject
 {
-	SINGLE m_snAmbientIntensity;
-	SINGLE m_snEdgeIntensity;
-	bool m_bEdgeVisible;
+	CHART_SINGLE m_snAmbientIntensity;
+	CHART_SINGLE m_snEdgeIntensity;
+	CHART_BOOLEAN m_bEdgeVisible;
 	CLightSources m_oLightSources;
 public:
 	CLight();
 
-	bool Read(CHWPStream& oStream) override;
+	bool Read(CChartStream& oStream) override;
 };
 }}
 

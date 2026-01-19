@@ -7,7 +7,7 @@ CRect::CRect()
 
 }
 
-bool CRect::Read(CHWPStream& oStream)
+bool CRect::Read(CChartStream& oStream)
 {
 	return m_oMin.Read(oStream) && m_oMax.Read(oStream);
 }

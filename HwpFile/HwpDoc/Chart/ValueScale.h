@@ -7,15 +7,15 @@ namespace HWP { namespace CHART
 {
 class CValueScale : public IChartObject
 {
-	bool m_bAuto;
-	int m_nMajorDivision;
-	double m_dMaximum;
-	double m_dMinimum;
-	int m_nMinorDivision;
+	CHART_BOOLEAN m_bAuto;
+	CHART_INTEGER m_nMajorDivision;
+	CHART_DOUBLE m_dMaximum;
+	CHART_DOUBLE m_dMinimum;
+	CHART_INTEGER m_nMinorDivision;
 public:
 	CValueScale();
 
-	bool Read(CHWPStream& oStream) override;
+	bool Read(CChartStream& oStream) override;
 };
 }}
 

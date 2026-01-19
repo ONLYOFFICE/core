@@ -7,8 +7,8 @@ CBar::CBar()
 
 }
 
-bool CBar::Read(CHWPStream& oStream)
+bool CBar::Read(CChartStream& oStream)
 {
-	return oStream.ReadInt(m_nSides) && oStream.ReadShort(m_snTopRatio);
+	return oStream.ReadInteger(m_nSides) && oStream.ReadSingle(m_snTopRatio);
 }
 }}

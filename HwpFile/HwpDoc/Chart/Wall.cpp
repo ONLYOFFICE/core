@@ -7,8 +7,8 @@ CWall::CWall()
 
 }
 
-bool CWall::Read(CHWPStream& oStream)
+bool CWall::Read(CChartStream& oStream)
 {
-	return m_oBrush.Read(oStream) && m_oPen.Read(oStream) && oStream.ReadShort(m_snWidth);
+	return m_oBrush.Read(oStream) && m_oPen.Read(oStream) && oStream.ReadSingle(m_snWidth);
 }
 }}

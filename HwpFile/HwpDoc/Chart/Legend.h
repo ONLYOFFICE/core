@@ -17,7 +17,7 @@ class CLegend : public IChartObject
 public:
 	CLegend();
 
-	bool Read(CHWPStream& oStream) override;
+	bool Read(CChartStream& oStream) override;
 };
 }}
 

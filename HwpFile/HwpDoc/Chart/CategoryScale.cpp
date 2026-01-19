@@ -7,9 +7,9 @@ CCategoryScale::CCategoryScale()
 
 }
 
-bool CCategoryScale::Read(CHWPStream& oStream)
+bool CCategoryScale::Read(CChartStream& oStream)
 {
-	return oStream.ReadBool(m_bAuto) && oStream.ReadInt(m_nDivisionsPerLabel) &&
-	       oStream.ReadInt(m_nDivisionsPerTick) && oStream.ReadBool(m_bLabelTick);
+	return oStream.ReadBoolean(m_bAuto) && oStream.ReadInteger(m_nDivisionsPerLabel) &&
+	       oStream.ReadInteger(m_nDivisionsPerTick) && oStream.ReadBoolean(m_bLabelTick);
 }
 }}

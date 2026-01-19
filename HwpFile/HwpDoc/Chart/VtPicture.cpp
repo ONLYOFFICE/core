@@ -7,10 +7,10 @@ CVtPicture::CVtPicture()
 
 }
 
-bool CVtPicture::Read(CHWPStream& oStream)
+bool CVtPicture::Read(CChartStream& oStream)
 {
-	return oStream.ReadBool(m_bEmbedded) && oStream.ReadString(m_sFilename, DEFAULT_STRING_CHARACTER) &&
-	       oStream.ReadInt(m_nMap) && oStream.ReadInt(m_nType);
+	return oStream.ReadBoolean(m_bEmbedded) && oStream.ReadString(m_sFilename) &&
+	       oStream.ReadInteger(m_nMap) && oStream.ReadInteger(m_nType);
 }
 
 }}

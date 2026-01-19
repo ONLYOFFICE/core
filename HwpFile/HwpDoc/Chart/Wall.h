@@ -10,11 +10,11 @@ class CWall : public IChartObject
 {
 	CBrush m_oBrush;
 	CPen m_oPen;
-	SINGLE m_snWidth;
+	CHART_SINGLE m_snWidth;
 public:
 	CWall();
 
-	bool Read(CHWPStream& oStream) override;
+	bool Read(CChartStream& oStream) override;
 };
 }}
 

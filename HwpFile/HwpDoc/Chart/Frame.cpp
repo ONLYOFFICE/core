@@ -7,9 +7,9 @@ CFrame::CFrame()
 
 }
 
-bool CFrame::Read(CHWPStream& oStream)
+bool CFrame::Read(CChartStream& oStream)
 {
-	return oStream.ReadInt(m_nStyle) && oStream.ReadShort(m_snWidth) &&
+	return oStream.ReadInteger(m_nStyle) && oStream.ReadSingle(m_snWidth) &&
 	       m_oFrameColor.Read(oStream) && m_oSpaceColor.Read(oStream);
 }
 }}

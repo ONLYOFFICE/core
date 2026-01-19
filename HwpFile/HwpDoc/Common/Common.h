@@ -11,7 +11,6 @@ namespace HWP
 typedef char16_t HWP_CHAR;
 typedef std::wstring HWP_STRING;
 typedef char HWP_BYTE;
-typedef short SINGLE;
 
 #define LIST std::list
 #define VECTOR std::vector

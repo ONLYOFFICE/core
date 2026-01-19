@@ -16,21 +16,21 @@ namespace HWP { namespace CHART
 class CDataPointLabel : public IChartObject
 {
 	CBackdrop m_oBackdrop;
-	int m_nComponent;
-	bool m_bCustom;
-	int m_nLineStyle;
-	int m_nLocationType;
+	CHART_INTEGER m_nComponent;
+	CHART_BOOLEAN m_bCustom;
+	CHART_INTEGER m_nLineStyle;
+	CHART_INTEGER m_nLocationType;
 	CCoor m_oOffset;
-	HWP_STRING m_sPercentFormat;
-	HWP_STRING m_sText;
+	CHART_STRING m_sPercentFormat;
+	CHART_STRING m_sText;
 	CTextLayout m_oTextLayout;
-	int m_nTextLength;
-	HWP_STRING m_sValueFormat;
+	CHART_INTEGER m_nTextLength;
+	CHART_STRING m_sValueFormat;
 	CVtFont m_oVtFont;
 public:
 	CDataPointLabel();
 
-	bool Read(CHWPStream& oStream) override;
+	bool Read(CChartStream& oStream) override;
 };
 
 class CDataPoint : public IChartObject
@@ -38,13 +38,13 @@ class CDataPoint : public IChartObject
 	CBrush m_oBrush;
 	CDataPointLabel m_oDataPointLabel;
 	CPen m_oEdgePen;
-	SINGLE m_snOffset;
+	CHART_SINGLE m_snOffset;
 	CMarker m_oMarker;
 	CVtPicture m_oVtPicture;
 public:
 	CDataPoint();
 
-	bool Read(CHWPStream& oStream) override;
+	bool Read(CChartStream& oStream) override;
 };
 
 using CDataPoints = CCollection<CDataPoint>;

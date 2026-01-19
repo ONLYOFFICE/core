@@ -7,13 +7,12 @@ CSeriesLabel::CSeriesLabel()
 
 }
 
-bool CSeriesLabel::Read(CHWPStream& oStream)
+bool CSeriesLabel::Read(CChartStream& oStream)
 {
-	return m_oBackdrop.Read(oStream) && oStream.ReadInt(m_nLineStyle) &&
-	       oStream.ReadInt(m_nLocationType) && m_oOffset.Read(oStream) &&
-	       oStream.ReadString(m_sText, DEFAULT_STRING_CHARACTER) &&
-	       m_oTextLayout.Read(oStream) && oStream.ReadShort(m_snTextLength) &&
-	       m_oVtFont.Read(oStream);
+	return m_oBackdrop.Read(oStream) && oStream.ReadInteger(m_nLineStyle) &&
+	       oStream.ReadInteger(m_nLocationType) && m_oOffset.Read(oStream) &&
+	       oStream.ReadString(m_sText) && m_oTextLayout.Read(oStream) &&
+	       oStream.ReadSingle(m_snTextLength) && m_oVtFont.Read(oStream);
 }
 
 CSeriesMarker::CSeriesMarker()
@@ -21,9 +20,9 @@ CSeriesMarker::CSeriesMarker()
 
 }
 
-bool CSeriesMarker::Read(CHWPStream& oStream)
+bool CSeriesMarker::Read(CChartStream& oStream)
 {
-	return oStream.ReadBool(m_bAuto) && oStream.ReadBool(m_bShow);
+	return oStream.ReadBoolean(m_bAuto) && oStream.ReadBoolean(m_bShow);
 }
 
 CSeries::CSeries()
@@ -31,16 +30,15 @@ CSeries::CSeries()
 
 }
 
-bool CSeries::Read(CHWPStream& oStream)
+bool CSeries::Read(CChartStream& oStream)
 {
 	return m_oBar.Read(oStream) && m_oDataPoints.Read(oStream) &&
 	       m_oGuidelinePen.Read(oStream) && m_oHiLo.Read(oStream) &&
-	       oStream.ReadString(m_sLegendText, DEFAULT_STRING_CHARACTER) &&
-	       m_oPen.Read(oStream) && m_oPosition.Read(oStream) &&
-	       oStream.ReadBool(m_bSecondaryAxis) && m_oSeriesLabel.Read(oStream) &&
-	       m_oSeriesMarker.Read(oStream) && oStream.ReadInt(m_nSeriesType) &&
-	       oStream.ReadBool(m_bShowGuideLines) && oStream.ReadBool(m_bShowLine) &&
-	       oStream.ReadInt(m_nSmoothingFactor) && oStream.ReadInt(m_nSmoothingType) &&
-	       m_oStatLine.Read(oStream);
+	       oStream.ReadString(m_sLegendText) && m_oPen.Read(oStream) &&
+	       m_oPosition.Read(oStream) && oStream.ReadBoolean(m_bSecondaryAxis) &&
+	       m_oSeriesLabel.Read(oStream) && m_oSeriesMarker.Read(oStream) &&
+	       oStream.ReadInteger(m_nSeriesType) && oStream.ReadBoolean(m_bShowGuideLines) &&
+	       oStream.ReadBoolean(m_bShowLine) && oStream.ReadInteger(m_nSmoothingFactor) &&
+	       oStream.ReadInteger(m_nSmoothingType) && m_oStatLine.Read(oStream);
 }
 }}

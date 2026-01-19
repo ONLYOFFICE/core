@@ -7,9 +7,10 @@ CVtColor::CVtColor()
 
 }
 
-bool CVtColor::Read(CHWPStream& oStream)
+bool CVtColor::Read(CChartStream& oStream)
 {
-	return oStream.ReadBool(m_bAutomatic) && oStream.ReadInt(m_nBlue) &&
-	       oStream.ReadInt(m_nGreen) && oStream.ReadInt(m_nRed) && oStream.ReadInt(m_nValue);
+	return oStream.ReadBoolean(m_bAutomatic) && oStream.ReadInteger(m_nBlue) &&
+	       oStream.ReadInteger(m_nGreen) && oStream.ReadInteger(m_nRed) &&
+	       oStream.ReadInteger(m_nValue);
 }
 }}

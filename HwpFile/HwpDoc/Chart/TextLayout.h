@@ -7,14 +7,14 @@ namespace HWP { namespace CHART
 {
 class CTextLayout : public IChartObject
 {
-	bool m_bWordWrap;
-	int m_nHorzAlignment;
-	int m_nOrientation;
-	int m_nVertAlignment;
+	CHART_BOOLEAN m_bWordWrap;
+	CHART_INTEGER m_nHorzAlignment;
+	CHART_INTEGER m_nOrientation;
+	CHART_INTEGER m_nVertAlignment;
 public:
 	CTextLayout();
 
-	bool Read(CHWPStream& oStream) override;
+	bool Read(CChartStream& oStream) override;
 };
 }}
 

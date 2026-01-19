@@ -7,8 +7,8 @@ CView3D::CView3D()
 
 }
 
-bool CView3D::Read(CHWPStream& oStream)
+bool CView3D::Read(CChartStream& oStream)
 {
-	return oStream.ReadShort(m_snElevation) && oStream.ReadShort(m_snRotation);
+	return oStream.ReadSingle(m_snElevation) && oStream.ReadSingle(m_snRotation);
 }
 }}

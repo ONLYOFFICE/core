@@ -7,11 +7,11 @@ CDateScale::CDateScale()
 
 }
 
-bool CDateScale::Read(CHWPStream& oStream)
+bool CDateScale::Read(CChartStream& oStream)
 {
-	return oStream.ReadBool(m_bAuto) && oStream.ReadInt(m_nMajFreq) &&
-	       oStream.ReadInt(m_nMajInt) && oStream.ReadDouble(m_dMaximum) &&
-	       oStream.ReadDouble(m_dMinimum) && oStream.ReadInt(m_nMinFreq) &&
-	       oStream.ReadInt(m_nMinInt) && oStream.ReadBool(m_bSkipWeekend);
+	return oStream.ReadBoolean(m_bAuto) && oStream.ReadInteger(m_nMajFreq) &&
+	       oStream.ReadInteger(m_nMajInt) && oStream.ReadDouble(m_dMaximum) &&
+	       oStream.ReadDouble(m_dMinimum) && oStream.ReadInteger(m_nMinFreq) &&
+	       oStream.ReadInteger(m_nMinInt) && oStream.ReadBoolean(m_bSkipWeekend);
 }
 }}

@@ -7,9 +7,9 @@ CAttribute::CAttribute()
 
 }
 
-bool CAttribute::Read(CHWPStream& oStream)
+bool CAttribute::Read(CChartStream& oStream)
 {
 	return m_oBrush.Read(oStream) && m_oPen.Read(oStream) &&
-	       oStream.ReadString(m_sText, DEFAULT_STRING_CHARACTER) && oStream.ReadDouble(m_dValue);
+	       oStream.ReadString(m_sText) && oStream.ReadDouble(m_dValue);
 }
 }}

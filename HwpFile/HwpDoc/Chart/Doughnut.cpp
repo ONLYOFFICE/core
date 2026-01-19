@@ -7,8 +7,8 @@ CDoughnut::CDoughnut()
 
 }
 
-bool CDoughnut::Read(CHWPStream& oStream)
+bool CDoughnut::Read(CChartStream& oStream)
 {
-	return oStream.ReadInt(m_nSides) && oStream.ReadShort(m_snInteriorRatio);
+	return oStream.ReadInteger(m_nSides) && oStream.ReadSingle(m_snInteriorRatio);
 }
 }}

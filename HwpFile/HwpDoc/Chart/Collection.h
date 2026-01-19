@@ -26,9 +26,9 @@ public:
 		return true;
 	}
 
-	virtual bool Read(CHWPStream& oStream)
+	virtual bool Read(CChartStream& oStream) override
 	{
-		long lCount;
+		CHART_LONG lCount;
 
 		if (!oStream.ReadLong(lCount))
 			return false;

@@ -7,8 +7,8 @@ CPie::CPie()
 
 }
 
-bool CPie::Read(CHWPStream& oStream)
+bool CPie::Read(CChartStream& oStream)
 {
-	return oStream.ReadShort(m_snThicknessRatio) && oStream.ReadShort(m_snTopRadiusRatio);
+	return oStream.ReadSingle(m_snThicknessRatio) && oStream.ReadSingle(m_snTopRadiusRatio);
 }
 }}

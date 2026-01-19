@@ -7,12 +7,12 @@ namespace HWP { namespace CHART
 {
 class CView3D : public IChartObject
 {
-	SINGLE m_snElevation;
-	SINGLE m_snRotation;
+	CHART_SINGLE m_snElevation;
+	CHART_SINGLE m_snRotation;
 public:
 	CView3D();
 
-	bool Read(CHWPStream& oStream) override;
+	bool Read(CChartStream& oStream) override;
 };
 }}
 #endif // VIEW3D_H

@@ -11,18 +11,18 @@ namespace HWP { namespace CHART
 class CElevation : public IChartObject
 {
 	CAttributes m_oAttributes;
-	bool m_bAutoValues;
-	int m_nColorType;
-	int m_nColSmoothing;
+	CHART_BOOLEAN m_bAutoValues;
+	CHART_INTEGER m_nColorType;
+	CHART_INTEGER m_nColSmoothing;
 	CContour m_oContour;
 	CContourGradient m_oContourGradient;
-	int m_nRowSmoothing;
-	bool m_bSeparateContourData;
+	CHART_INTEGER m_nRowSmoothing;
+	CHART_BOOLEAN m_bSeparateContourData;
 	CSurface m_oSurface;
 public:
 	CElevation();
 
-	bool Read(CHWPStream& oStream) override;
+	bool Read(CChartStream& oStream) override;
 };
 }}
 

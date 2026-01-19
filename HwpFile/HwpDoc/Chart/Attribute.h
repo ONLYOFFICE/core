@@ -9,16 +9,14 @@ namespace HWP { namespace CHART
 {
 class CAttribute : public IChartObject
 {
-	using _type = HWP::CHART::CAttribute;
-
 	CBrush m_oBrush;
 	CPen m_oPen;
-	HWP_STRING m_sText;
-	double m_dValue;
+	CHART_STRING m_sText;
+	CHART_DOUBLE m_dValue;
 public:
 	CAttribute();
 
-	bool Read(CHWPStream& oStream) override;
+	bool Read(CChartStream& oStream) override;
 };
 
 using CAttributes = CCollection<CAttribute>;

@@ -7,12 +7,12 @@ namespace HWP { namespace CHART
 {
 class CTick : public IChartObject
 {
-	SINGLE m_snLength;
-	int m_nStyle;
+	CHART_SINGLE m_snLength;
+	CHART_INTEGER m_nStyle;
 public:
 	CTick();
 
-	bool Read(CHWPStream& oStream) override;
+	bool Read(CChartStream& oStream) override;
 };
 }}
 

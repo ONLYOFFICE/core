@@ -7,14 +7,14 @@ namespace HWP { namespace CHART
 {
 class CXYZ : public IChartObject
 {
-	bool m_bAutomatic;
-	double m_dxIntersection;
-	double m_dyIntersection;
-	double m_dzIntersection;
+	CHART_BOOLEAN m_bAutomatic;
+	CHART_DOUBLE m_dxIntersection;
+	CHART_DOUBLE m_dyIntersection;
+	CHART_DOUBLE m_dzIntersection;
 public:
 	CXYZ();
 
-	bool Read(CHWPStream& oStream) override;
+	bool Read(CChartStream& oStream) override;
 };
 }}
 

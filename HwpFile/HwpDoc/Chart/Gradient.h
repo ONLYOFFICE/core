@@ -5,13 +5,15 @@
 
 namespace HWP { namespace CHART
 {
-class CGradient
+class CGradient : public IChartObject
 {
 	CVtColor m_oFromColor;
-	int m_nStyle;
+	CHART_INTEGER m_nStyle;
 	CVtColor m_oToColor;
 public:
 	CGradient();
+
+	bool Read(CChartStream& oStream) override;
 };
 }}
 

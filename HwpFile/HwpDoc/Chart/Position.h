@@ -7,14 +7,14 @@ namespace HWP { namespace CHART
 {
 class CPosition : public IChartObject
 {
-	bool m_bExcluded;
-	bool m_bHidden;
-	int m_nOrder;
-	int m_nStackOrder;
+	CHART_BOOLEAN m_bExcluded;
+	CHART_BOOLEAN m_bHidden;
+	CHART_INTEGER m_nOrder;
+	CHART_INTEGER m_nStackOrder;
 public:
 	CPosition();
 
-	bool Read(CHWPStream& oStream) override;
+	bool Read(CChartStream& oStream) override;
 };
 }}
 

@@ -7,15 +7,15 @@ namespace HWP { namespace CHART
 {
 class CVtColor : public IChartObject
 {
-	bool m_bAutomatic;
-	int m_nBlue;
-	int m_nGreen;
-	int m_nRed;
-	int m_nValue;
+	CHART_BOOLEAN m_bAutomatic;
+	CHART_INTEGER m_nBlue;
+	CHART_INTEGER m_nGreen;
+	CHART_INTEGER m_nRed;
+	CHART_INTEGER m_nValue;
 public:
 	CVtColor();
 
-	bool Read(CHWPStream& oStream) override;
+	bool Read(CChartStream& oStream) override;
 };
 }}
 

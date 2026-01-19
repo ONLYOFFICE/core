@@ -7,11 +7,10 @@ CFootnote::CFootnote()
 
 }
 
-bool CFootnote::Read(CHWPStream& oStream)
+bool CFootnote::Read(CChartStream& oStream)
 {
 	return m_oBackdrop.Read(oStream) && m_oLocation.Read(oStream) &&
-	       oStream.ReadString(m_sText, DEFAULT_STRING_CHARACTER) &&
-	       m_oTextLayout.Read(oStream) && oStream.ReadInt(m_nTextLength) &&
-	       m_oVtFont.Read(oStream);
+	       oStream.ReadString(m_sText) && m_oTextLayout.Read(oStream) &&
+	       oStream.ReadInteger(m_nTextLength) && m_oVtFont.Read(oStream);
 }
 }}

@@ -7,8 +7,8 @@ CCoor::CCoor()
 
 }
 
-bool CCoor::Read(CHWPStream& oStream)
+bool CCoor::Read(CChartStream& oStream)
 {
-	return oStream.ReadShort(m_snX) && oStream.ReadShort(m_snY);
+	return oStream.ReadSingle(m_snX) && oStream.ReadSingle(m_snY);
 }
 }}

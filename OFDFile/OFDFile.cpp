@@ -17,7 +17,7 @@ COFDFile::~COFDFile()
 		delete m_pInternal;
 }
 
-bool COFDFile::LoadFromFile(const std::wstring& file, const std::wstring& options, const std::wstring& owner_password, const std::wstring& user_password)
+bool COFDFile::LoadFromFile(const std::wstring& file, const std::wstring& options, const wchar_t* owner_password, const wchar_t* user_password)
 {
 	if (nullptr == m_pInternal)
 		return false;
@@ -27,7 +27,7 @@ bool COFDFile::LoadFromFile(const std::wstring& file, const std::wstring& option
 	return m_pInternal->LoadFromFile(file);
 }
 
-bool COFDFile::LoadFromMemory(unsigned char* data, unsigned long length, const std::wstring& options, const std::wstring& owner_password, const std::wstring& user_password)
+bool COFDFile::LoadFromMemory(unsigned char* data, unsigned long length, const std::wstring& options, const wchar_t* owner_password, const wchar_t* user_password)
 {
 	if (nullptr == m_pInternal)
 		return false;

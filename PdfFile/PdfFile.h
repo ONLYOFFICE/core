@@ -112,8 +112,8 @@ public:
 	void ToXml(const std::wstring& sFile, bool bSaveStreams = false);
 
 	static bool GetMetaData(const std::wstring& sFile, const std::wstring& sMetaName, BYTE** pMetaData, DWORD& nMetaLength);
-	virtual bool LoadFromFile  (const std::wstring& file, const std::wstring& options = L"", const std::wstring& owner_password = L"", const std::wstring& user_password = L"");
-	virtual bool LoadFromMemory(BYTE* data, DWORD length, const std::wstring& options = L"", const std::wstring& owner_password = L"", const std::wstring& user_password = L"");
+	virtual bool LoadFromFile  (const std::wstring& file, const std::wstring& options = L"", const wchar_t* owner_password = NULL, const wchar_t* user_password = NULL);
+	virtual bool LoadFromMemory(BYTE* data, DWORD length, const std::wstring& options = L"", const wchar_t* owner_password = NULL, const wchar_t* user_password = NULL);
 	virtual NSFonts::IApplicationFonts* GetFonts();
 
 	virtual OfficeDrawingFileType GetType();
@@ -134,7 +134,7 @@ public:
 	bool UnmergePages();
 	bool RedactPage(int nPageIndex, double* arrRedactBox, int nLengthX8, BYTE* pChanges = NULL, int nLength = 0);
 	bool UndoRedact();
-	bool CheckOwnerPassword(const std::wstring& sPassword);
+	bool CheckOwnerPassword(const wchar_t* sPassword);
 	bool CheckPerm(int nPerm);
 	int GetRotate(int nPageIndex);
 	int GetMaxRefID();

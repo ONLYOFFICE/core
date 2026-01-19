@@ -479,7 +479,7 @@ namespace NExtractTools
 		pReader->SetTempDirectory(convertParams.m_sTempDir);
 
 		std::wstring sPassword = params.getPassword();
-		bool bResult = pReader->LoadFromFile(sFrom.c_str(), L"", sPassword, sPassword);
+		bool bResult = pReader->LoadFromFile(sFrom.c_str(), L"", sPassword.c_str(), sPassword.c_str());
 
 		if (bResult)
 		{
@@ -559,7 +559,7 @@ namespace NExtractTools
 		pReader->SetTempDirectory(convertParams.m_sTempDir);
 
 		std::wstring sPassword = params.getPassword();
-		bool bResult = pReader->LoadFromFile(sFrom.c_str(), L"", sPassword, sPassword);
+		bool bResult = pReader->LoadFromFile(sFrom.c_str(), L"", sPassword.c_str(), sPassword.c_str());
 
 		if (bResult)
 		{
@@ -753,13 +753,13 @@ namespace NExtractTools
 			oPdfResult.SetDocumentID(documentID);
 
 		std::wstring password = params.getPassword();
-		if (!oPdfResult.LoadFromFile(sFrom, L"", password, password))
+		if (!oPdfResult.LoadFromFile(sFrom, L"", password.c_str(), password.c_str()))
 		{
 			if (oPdfResult.GetError() == 4)
 			{
 				// if password does not changed - old password may be not sended
 				password = params.getSavePassword();
-				if (!oPdfResult.LoadFromFile(sFrom, L"", password, password))
+				if (!oPdfResult.LoadFromFile(sFrom, L"", password.c_str(), password.c_str()))
 					return false;
 
 				RELEASEOBJECT(params.m_sPassword);
@@ -900,7 +900,7 @@ namespace NExtractTools
 					oPdfPages.SetTempDirectory(convertParams.m_sTempDir);
 
 					std::wstring sPassword = params.getPassword();
-					if (oPdfPages.LoadFromFile(sFrom.c_str(), L"", sPassword, sPassword))
+					if (oPdfPages.LoadFromFile(sFrom.c_str(), L"", sPassword.c_str(), sPassword.c_str()))
 					{
 						int nPagesCount = oPdfPages.GetPagesCount();
 						std::vector<bool> arPages = getPrintPages(sPages, nPagesCount);
@@ -936,7 +936,7 @@ namespace NExtractTools
 					oPdfPages.SetTempDirectory(convertParams.m_sTempDir);
 
 					std::wstring sPassword = params.getPassword();
-					if (oPdfPages.LoadFromFile(sFrom.c_str(), L"", sPassword, sPassword))
+					if (oPdfPages.LoadFromFile(sFrom.c_str(), L"", sPassword.c_str(), sPassword.c_str()))
 					{
 						oPdfPages.ChangePassword(sCurrentTmp, params.getSavePassword());
 						oPdfPages.Close();
@@ -987,7 +987,7 @@ namespace NExtractTools
 					{
 						std::wstring password = params.getSavePassword();
 						CPdfFile oPdfResult(pApplicationFonts);
-						if (!oPdfResult.LoadFromFile(sFrom, L"", password, password))
+						if (!oPdfResult.LoadFromFile(sFrom, L"", password.c_str(), password.c_str()))
 							return false;
 
 						if (!oPdfResult.EditPdf(sTo))
@@ -1100,7 +1100,7 @@ namespace NExtractTools
 				pReader->SetTempDirectory(convertParams.m_sTempDir);
 
 				std::wstring sPassword = params.getPassword();
-				pReader->LoadFromFile(sFrom, L"", sPassword, sPassword);
+				pReader->LoadFromFile(sFrom, L"", sPassword.c_str(), sPassword.c_str());
 
 				if ((AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == nFormatFrom ||
 					 AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDFA == nFormatFrom)

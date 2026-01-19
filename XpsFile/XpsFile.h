@@ -50,9 +50,9 @@ public:
     virtual ~CXpsFile();
 
     virtual bool LoadFromFile(const std::wstring& file, const std::wstring& options = L"",
-                                    const std::wstring& owner_password = L"", const std::wstring& user_password = L"");
+							  const wchar_t* owner_password = NULL, const wchar_t* user_password = NULL);
     virtual bool LoadFromMemory(BYTE* data, DWORD length, const std::wstring& options = L"",
-                                const std::wstring& owner_password = L"", const std::wstring& user_password = L"");
+								const wchar_t* owner_password = NULL, const wchar_t* user_password = NULL);
 
     virtual void Close();
     virtual NSFonts::IApplicationFonts* GetFonts();

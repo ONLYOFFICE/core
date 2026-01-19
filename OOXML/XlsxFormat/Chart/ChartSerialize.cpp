@@ -6766,7 +6766,7 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 				_INT16 gapVal = 0;
 				try
 				{
-					gapVal = stoi(m_overlap.get());
+					gapVal = stoi(m_gapWidth.get());
 				}
 				catch (std::exception)
 				{}

@@ -701,54 +701,98 @@ ADD_INC_PATH = $$(ADDITIONAL_INCLUDE_PATH)
 SWIFT_SOURCES=
 defineTest(UseSwift) {
 	isEmpty(SWIFT_SOURCES): return(false)
-
-	bridging_header = $$1
-
-	SWIFT_GEN_HEADERS_PATH = $$PWD_ROOT_DIR/core_build/$$CORE_BUILDS_PLATFORM_PREFIX/$$CORE_BUILDS_CONFIGURATION_PREFIX
-
-	swift_compiler.name = SwiftCompiler
-	swift_compiler.input = SWIFT_MAIN_FILE
-	swift_compiler.output = $$SWIFT_GEN_HEADERS_PATH/swift_module.o
-	swift_cmd = swiftc -c $$SWIFT_SOURCES \
-                -module-name SwiftModule \
-                -whole-module-optimization \
-                -emit-objc-header \
-                -emit-objc-header-path $$SWIFT_GEN_HEADERS_PATH/SwiftModule-Swift.h \
-                -emit-object \
-                -sdk /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk \
-                -target arm64-apple-ios15.0 \
-                -o $$SWIFT_GEN_HEADERS_PATH/swift_module.o \
-                -framework UIKit
-
-	!empty(bridging_header) {
-		swift_cmd += -import-objc-header $$bridging_header
+	# work only on ios and mac
+	!core_ios:!core_mac {
+		return(false)
 	}
 
-	swift_compiler.commands = $$swift_cmd
-	swift_compiler.CONFIG = target_predeps no_link
-	swift_compiler.variable_out = OBJECTS
+	# path to the bridging header that exposes Objective-C code to Swift
+	BRIDGING_HEADER = $$1
+	# sdk and toolchain (set from environment variables)
+	SDK_PATH = $$(SDK_PATH)
+	XCODE_TOOLCHAIN_PATH = $$(XCODE_TOOLCHAIN_PATH)
 
-	export(swift_compiler.name)
-	export(swift_compiler.input)
-	export(swift_compiler.output)
-	export(swift_compiler.commands)
-	export(swift_compiler.CONFIG)
-	export(swift_compiler.variable_out)
+	IOS_TARGET_PLATFORM = apple-ios11.0
+	SWIFT_GEN_HEADERS_PATH = $$PWD_ROOT_DIR/core_build/$$CORE_BUILDS_PLATFORM_PREFIX/$$CORE_BUILDS_CONFIGURATION_PREFIX
+	ARCHS = arm64
+	# simulator
+	xcframework_platform_ios_simulator {
+		IOS_TARGET_PLATFORM = $${IOS_TARGET_PLATFORM}-simulator
+		SWIFT_GEN_HEADERS_PATH = $$SWIFT_GEN_HEADERS_PATH/simulator
+		ARCHS += x86_64
+	}
 
-	QMAKE_EXTRA_COMPILERS += swift_compiler
+	# add swift compiler for each architecture
+	SWIFT_COMPILERS_OUT =
+	for(ARCH, ARCHS) {
+		COMPILER_NAME = swift_compiler_$${ARCH}
+		COMPILER_OUTPUT = $$SWIFT_GEN_HEADERS_PATH/swift_module_$${ARCH}.o
+		SWIFT_COMPILERS_OUT += $$COMPILER_OUTPUT
+
+		$${COMPILER_NAME}.name = SwiftCompiler_$${ARCH}
+		$${COMPILER_NAME}.input = SWIFT_SOURCES
+		$${COMPILER_NAME}.output = $$COMPILER_OUTPUT
+		SWIFT_CMD = swiftc -c $$SWIFT_SOURCES \
+					-module-name SwiftModule \
+					-whole-module-optimization \
+					-emit-objc-header \
+					-emit-objc-header-path $$SWIFT_GEN_HEADERS_PATH/SwiftModule-Swift.h \
+					-emit-object \
+					-sdk $$SDK_PATH \
+					-target $${ARCH}-$${IOS_TARGET_PLATFORM} \
+					-o $$COMPILER_OUTPUT \
+					-framework UIKit
+
+		!isEmpty(BRIDGING_HEADER) {
+			SWIFT_CMD += -import-objc-header $$BRIDGING_HEADER
+		}
+
+		$${COMPILER_NAME}.commands = $$SWIFT_CMD
+		$${COMPILER_NAME}.CONFIG = combine target_predeps no_link
+
+		export($${COMPILER_NAME}.name)
+		export($${COMPILER_NAME}.input)
+		export($${COMPILER_NAME}.output)
+		export($${COMPILER_NAME}.commands)
+		export($${COMPILER_NAME}.CONFIG)
+		QMAKE_EXTRA_COMPILERS += $${COMPILER_NAME}
+	}
+
+	# add lipo tool execution to form universal binary
+	LIPO_OUT = $$SWIFT_GEN_HEADERS_PATH/swift_module.o
+	lipo_tool.name = LipoTool
+	# as input for lipo_tool we set SWIFT_SOURCES (not SWIFT_COMPILERS_OUT as it won't be executed otherwise!)
+	lipo_tool.input = SWIFT_SOURCES
+	# compiled swift sources go into depends
+	lipo_tool.depends = $$SWIFT_COMPILERS_OUT
+	lipo_tool.output = $$LIPO_OUT
+	lipo_tool.commands = lipo -create $$SWIFT_COMPILERS_OUT -output $$LIPO_OUT
+	lipo_tool.CONFIG = combine target_predeps no_link
+	lipo_tool.variable_out = OBJECTS
+
+	export(lipo_tool.name)
+	export(lipo_tool.input)
+	export(lipo_tool.depends)
+	export(lipo_tool.output)
+	export(lipo_tool.commands)
+	export(lipo_tool.CONFIG)
+	export(lipo_tool.variable_out)
+	QMAKE_EXTRA_COMPILERS += lipo_tool
+
 	export(QMAKE_EXTRA_COMPILERS)
-
-	SWIFT_MAIN_FILE = $$first(SWIFT_SOURCES)
-	export(SWIFT_MAIN_FILE)
 
 	INCLUDEPATH += $$SWIFT_GEN_HEADERS_PATH
 	export(INCLUDEPATH)
 
-	core_ios|core_mac {
-		LIBS += -lswiftCore -lswiftFoundation -lswiftObjectiveC
-		LIBS += -framework UIKit
-		export(LIBS)
+	# link with libs from toolchain
+	SWIFT_LIB_PATH = $$XCODE_TOOLCHAIN_PATH/usr/lib/swift/iphoneos
+	xcframework_platform_ios_simulator {
+		SWIFT_LIB_PATH = $$XCODE_TOOLCHAIN_PATH/usr/lib/swift/iphonesimulator
 	}
+	LIBS += -L$$SWIFT_LIB_PATH
+	LIBS += -lswiftCore -lswiftFoundation -lswiftObjectiveC
+
+	export(LIBS)
 
 	OTHER_FILES += $$SWIFT_SOURCES
 	export(OTHER_FILES)

@@ -522,7 +522,7 @@ namespace DocFileFormat
 			}
 			while ( ( tai.fInTable ) && ( tai.iTap == _depth ) );
 
-            if (paragraphBeginCP < _cp && tableCell.IsEmpty() && cell && (documentMapping->m_document->Text->at(_cp-1) == 0x0007))
+            if (paragraphBeginCP < _cp && tableCell.IsEmpty()/* && cell*/ && (documentMapping->m_document->Text->at(_cp-1) == 0x0007))
             {
                 DocParagraph para(documentMapping, paragraphBeginCP, _cp);
                 tableCell.AddItem(para);

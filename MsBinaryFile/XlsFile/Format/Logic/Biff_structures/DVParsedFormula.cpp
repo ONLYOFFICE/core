@@ -64,7 +64,7 @@ void DVParsedFormula::load(CFRecord& record, bool bLoad)
         record >> cce;
     }
 
-	if (bLoad) 
+	if (bLoad && record.getRdPtr() + cce <= record.getDataSize())
 		return load(record);
 	else
 	{

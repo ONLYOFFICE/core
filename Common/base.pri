@@ -118,13 +118,13 @@ win32:contains(QMAKE_TARGET.arch, arm64): {
 }
 
 linux-clang-libc++ {
-    CONFIG += core_linux
+	CONFIG += core_linux
 	CONFIG += core_linux_64
 	CONFIG += core_linux_clang
 	message("linux-64-clang-libc++")
 }
 linux-clang-libc++-32 {
-    CONFIG += core_linux
+	CONFIG += core_linux
 	CONFIG += core_linux_32
 	CONFIG += core_linux_clang
 	message("linux-32-clang-libc++")
@@ -180,9 +180,9 @@ mac {
 	!core_ios {
 		CONFIG += core_mac
 		CONFIG += core_mac_64
-
-		DEFINES += _LIBCPP_ENABLE_CXX17_REMOVED_UNARY_BINARY_FUNCTION
 	}
+
+	DEFINES += _LIBCPP_ENABLE_CXX17_REMOVED_UNARY_BINARY_FUNCTION
 }
 
 # DEFINES
@@ -243,7 +243,7 @@ core_linux {
 }
 
 gcc {
-    COMPILER_VERSION = $$system($$QMAKE_CXX " -dumpversion")
+	COMPILER_VERSION = $$system($$QMAKE_CXX " -dumpversion")
 	COMPILER_MAJOR_VERSION_ARRAY = $$split(COMPILER_VERSION, ".")
 	COMPILER_MAJOR_VERSION = $$member(COMPILER_MAJOR_VERSION_ARRAY, 0)
 	lessThan(COMPILER_MAJOR_VERSION, 5): CONFIG += build_gcc_less_5
@@ -349,7 +349,7 @@ core_win_64 {
 	CORE_BUILDS_PLATFORM_PREFIX = win_64
 }
 core_win_arm64 {
-    CORE_BUILDS_PLATFORM_PREFIX = win_arm64
+	CORE_BUILDS_PLATFORM_PREFIX = win_arm64
 }
 core_linux_32 {
 	CORE_BUILDS_PLATFORM_PREFIX = linux_32
@@ -697,3 +697,61 @@ ADD_INC_PATH = $$(ADDITIONAL_INCLUDE_PATH)
 !disable_precompiled_header {
 	CONFIG += precompile_header
 }
+
+SWIFT_SOURCES=
+defineTest(UseSwift) {
+	isEmpty(SWIFT_SOURCES): return(false)
+
+	bridging_header = $$1
+
+	SWIFT_GEN_HEADERS_PATH = $$PWD_ROOT_DIR/core_build/$$CORE_BUILDS_PLATFORM_PREFIX/$$CORE_BUILDS_CONFIGURATION_PREFIX
+
+	swift_compiler.name = SwiftCompiler
+	swift_compiler.input = SWIFT_MAIN_FILE
+	swift_compiler.output = $$SWIFT_GEN_HEADERS_PATH/swift_module.o
+	swift_cmd = swiftc -c $$SWIFT_SOURCES \
+                -module-name SwiftModule \
+                -whole-module-optimization \
+                -emit-objc-header \
+                -emit-objc-header-path $$SWIFT_GEN_HEADERS_PATH/SwiftModule-Swift.h \
+                -emit-object \
+                -sdk /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk \
+                -target arm64-apple-ios15.0 \
+                -o $$SWIFT_GEN_HEADERS_PATH/swift_module.o \
+                -framework UIKit
+
+	!empty(bridging_header) {
+		swift_cmd += -import-objc-header $$bridging_header
+	}
+
+	swift_compiler.commands = $$swift_cmd
+	swift_compiler.CONFIG = target_predeps no_link
+	swift_compiler.variable_out = OBJECTS
+
+	export(swift_compiler.name)
+	export(swift_compiler.input)
+	export(swift_compiler.output)
+	export(swift_compiler.commands)
+	export(swift_compiler.CONFIG)
+	export(swift_compiler.variable_out)
+
+	QMAKE_EXTRA_COMPILERS += swift_compiler
+	export(QMAKE_EXTRA_COMPILERS)
+
+	SWIFT_MAIN_FILE = $$first(SWIFT_SOURCES)
+	export(SWIFT_MAIN_FILE)
+
+	INCLUDEPATH += $$SWIFT_GEN_HEADERS_PATH
+	export(INCLUDEPATH)
+
+	core_ios|core_mac {
+		LIBS += -lswiftCore -lswiftFoundation -lswiftObjectiveC
+		LIBS += -framework UIKit
+		export(LIBS)
+	}
+
+	OTHER_FILES += $$SWIFT_SOURCES
+	export(OTHER_FILES)
+	return(true)
+}
+

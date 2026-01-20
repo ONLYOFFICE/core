@@ -415,6 +415,7 @@ namespace DocFileFormat
 			TableCell	tableCell	( documentMapping, _cp );
 
 			bool bBadMarker = false;
+            bool cell = false;
 			do
 			{
 				fc = documentMapping->m_document->FindFileCharPos(_cp);
@@ -473,6 +474,7 @@ namespace DocFileFormat
 							tableRow.AddCell(tableCell);
 							tableCell.Clear();
 							paragraphBeginCP = (_cp + 1);
+                            cell = true;
 						}
 					}
 					else if ( IsRowMarker( _cp ) )

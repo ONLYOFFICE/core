@@ -304,11 +304,11 @@ void Compute_HatchFill(draw_hatch * image_style,oox::oox_hatch_fill_ptr fill)
 	}
 }
 
-double CalculatePos(double bBorder)
+double CalculatePos(double dBorder)
 {
-	if(bBorder < 60) return 0;
-	if(bBorder >= 60 && bBorder <= 70) return (60  - (bBorder - 60)*2);
-	if(bBorder > 70 && bBorder <= 90) return (40 - (bBorder - 70));
+	if(dBorder < 60) return 0;
+	if(dBorder >= 60 && dBorder <= 70) return (60  - (dBorder - 60)*2);
+	if(dBorder > 70 && dBorder <= 90) return (40 - (dBorder - 70));
 	return 10;
 }
 
@@ -424,10 +424,10 @@ void Compute_GradientFill(draw_gradient* gradient_style, oox::oox_gradient_fill_
 
 				if(gradient_style->draw_border_)
 				{
-					double bPos = CalculatePos(gradient_style->draw_border_->get_value());
-					if(bPos != 0)
+					double dPos = CalculatePos(gradient_style->draw_border_->get_value());
+					if(dPos != 0)
 					{
-						point.pos = bPos;
+						point.pos = dPos;
 						if(gradient_style->draw_start_color_) point.color_ref = gradient_style->draw_start_color_->get_hex_value();
 						fill->colors.push_back(point);
 					}

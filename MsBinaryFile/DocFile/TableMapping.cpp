@@ -415,6 +415,7 @@ namespace DocFileFormat
 			TableCell	tableCell	( documentMapping, _cp );
 
 			bool bBadMarker = false;
+            bool cell = false;
 			do
 			{
 				fc = documentMapping->m_document->FindFileCharPos(_cp);
@@ -473,6 +474,7 @@ namespace DocFileFormat
 							tableRow.AddCell(tableCell);
 							tableCell.Clear();
 							paragraphBeginCP = (_cp + 1);
+                            cell = true;
 						}
 					}
 					else if ( IsRowMarker( _cp ) )
@@ -520,7 +522,7 @@ namespace DocFileFormat
 			}
 			while ( ( tai.fInTable ) && ( tai.iTap == _depth ) );
 
-            if (paragraphBeginCP < _cp && tableCell.IsEmpty()/* && cell*/ && (documentMapping->m_document->Text->at(_cp-1) == 0x0007))
+            if (paragraphBeginCP < _cp && tableCell.IsEmpty() && cell && (documentMapping->m_document->Text->at(_cp-1) == 0x0007))
             {
                 DocParagraph para(documentMapping, paragraphBeginCP, _cp);
                 tableCell.AddItem(para);

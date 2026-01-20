@@ -28,6 +28,8 @@
 
 #include <boost/regex.hpp>
 
+#include "HTMLReader.h"
+
 #ifndef VALUE2STR
 #define VALUE_TO_STRING(x) #x
 #define VALUE2STR(x) VALUE_TO_STRING(x)
@@ -267,7 +269,7 @@ struct CTextSettings
 	bool bPre; // Сохранение форматирования (Сохранение пробелов, табуляций, переносов строк)
 	bool bQ;   // Цитата
 	bool bAddSpaces; // Добавлять пробелы перед текстом?
-	bool bMergeText; // Объединять подяр идущий текст в 1?
+	bool bMergeText; // Объединять подряд идущий текст в 1?
 	int  nLi;  // Уровень списка
 	bool bNumberingLi; // Является ли список нумерованным
 
@@ -2488,16 +2490,6 @@ private:
 		sSelectors.push_back(NSCSS::CNode(L"html", L"", L""));
 		
 		GetSubClass(&m_oDocXml, sSelectors);
-		/*
-		std::wstring sCrossId = std::to_wstring(m_nCrossId++);
-		m_oDocXml.WriteString(L"<w:bookmarkStart w:id=\"");
-		m_oDocXml.WriteString(sCrossId);
-		m_oDocXml.WriteString(L"\" w:name=\"");
-		m_oDocXml.WriteString(sFileName);
-		m_oDocXml.WriteString(L"\"/><w:bookmarkEnd w:id=\"");
-		m_oDocXml.WriteString(sCrossId);
-		m_oDocXml.WriteString(L"\"/>");
-		*/
 
 		if (!sSelectors.back().m_mAttributes.empty())
 		{
@@ -2688,7 +2680,9 @@ private:
 		pXml->WriteEncodeXmlString(wsNote);
 		pXml->WriteString(L"\"</w:instrText></w:r>");
 		pXml->WriteString(L"<w:r><w:fldChar w:fldCharType=\"separate\"/></w:r>");
+
 		const bool bResult = readStream(pXml, arSelectors, oTS);
+
 		pXml->WriteString(L"<w:r><w:fldChar w:fldCharType=\"end\"/></w:r>");
 		wsNote.clear();
 
@@ -5122,6 +5116,10 @@ void CHtmlFile2::SetCoreDirectory(const std::wstring& wsFolder)
 
 HRESULT CHtmlFile2::OpenHtml(const std::wstring& sSrc, const std::wstring& sDst, CHtmlParams* oParams)
 {
+	HTML::CHTMLReader oHTMLReader;
+
+	oHTMLReader.ReadFromFile(sSrc);
+
 	if(!m_internal->m_oLightReader.IsValid())
 		if(!IsHtmlFile(sSrc))
 			return S_FALSE;

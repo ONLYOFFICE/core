@@ -11,7 +11,6 @@
 #include "../../../DesktopEditor/common/File.h"
 #include "../../../DesktopEditor/common/Directory.h"
 #include "../../../DesktopEditor/common/StringBuilder.h"
-#include "../../../DesktopEditor/xml/include/xmlutils.h"
 #include "../../../UnicodeConverter/UnicodeConverter.h"
 #include "../../../HtmlFile2/src/StringFinder.h"
 

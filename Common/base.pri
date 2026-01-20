@@ -701,18 +701,23 @@ ADD_INC_PATH = $$(ADDITIONAL_INCLUDE_PATH)
 SWIFT_SOURCES=
 defineTest(UseSwift) {
 	isEmpty(SWIFT_SOURCES): return(false)
+	# work only on ios and mac
+	!core_ios:!core_mac {
+		return(false)
+	}
 
+	# path to the bridging header that exposes Objective-C code to Swift
 	BRIDGING_HEADER = $$1
+	# sdk and toolchain (set from environment variables)
+	SDK_PATH = $$(SDK_PATH)
+	XCODE_TOOLCHAIN_PATH = $$(XCODE_TOOLCHAIN_PATH)
 
-	# TODO: move IOS_SDK_PATH and IOS_TARGET_PLATFORM to build_tools
-	IOS_SDK_PATH = /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk
 	IOS_TARGET_PLATFORM = apple-ios11.0
 	SWIFT_GEN_HEADERS_PATH = $$PWD_ROOT_DIR/core_build/$$CORE_BUILDS_PLATFORM_PREFIX/$$CORE_BUILDS_CONFIGURATION_PREFIX
 	ARCHS = arm64
 	# simulator
 	xcframework_platform_ios_simulator {
-		IOS_SDK_PATH = /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk
-		IOS_TARGET_PLATFORM = apple-ios11.0-simulator
+		IOS_TARGET_PLATFORM = $${IOS_TARGET_PLATFORM}-simulator
 		SWIFT_GEN_HEADERS_PATH = $$SWIFT_GEN_HEADERS_PATH/simulator
 		ARCHS += x86_64
 	}
@@ -733,7 +738,7 @@ defineTest(UseSwift) {
 					-emit-objc-header \
 					-emit-objc-header-path $$SWIFT_GEN_HEADERS_PATH/SwiftModule-Swift.h \
 					-emit-object \
-					-sdk $$IOS_SDK_PATH \
+					-sdk $$SDK_PATH \
 					-target $${ARCH}-$${IOS_TARGET_PLATFORM} \
 					-o $$COMPILER_OUTPUT \
 					-framework UIKit
@@ -755,9 +760,10 @@ defineTest(UseSwift) {
 
 	# add lipo tool execution to form universal binary
 	LIPO_OUT = $$SWIFT_GEN_HEADERS_PATH/swift_module.o
-
 	lipo_tool.name = LipoTool
+	# as input for lipo_tool we set SWIFT_SOURCES (not SWIFT_COMPILERS_OUT as it won't be executed otherwise!)
 	lipo_tool.input = SWIFT_SOURCES
+	# compiled swift sources go into depends
 	lipo_tool.depends = $$SWIFT_COMPILERS_OUT
 	lipo_tool.output = $$LIPO_OUT
 	lipo_tool.commands = lipo -create $$SWIFT_COMPILERS_OUT -output $$LIPO_OUT
@@ -778,18 +784,15 @@ defineTest(UseSwift) {
 	INCLUDEPATH += $$SWIFT_GEN_HEADERS_PATH
 	export(INCLUDEPATH)
 
-	# TODO: change linking ???
-	core_ios|core_mac {
-		SWIFT_LIB_PATH = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphoneos
-		xcframework_platform_ios_simulator {
-			SWIFT_LIB_PATH = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphonesimulator
-		}
-		# Use clang with Swift library paths
-		QMAKE_LFLAGS += -L$$SWIFT_LIB_PATH
-		QMAKE_LFLAGS += -Xlinker -add_ast_path -Xlinker $$LIPO_OUT
-
-		export(QMAKE_LFLAGS)
+	# link with libs from toolchain
+	SWIFT_LIB_PATH = $$XCODE_TOOLCHAIN_PATH/usr/lib/swift/iphoneos
+	xcframework_platform_ios_simulator {
+		SWIFT_LIB_PATH = $$XCODE_TOOLCHAIN_PATH/usr/lib/swift/iphonesimulator
 	}
+	LIBS += -L$$SWIFT_LIB_PATH
+	LIBS += -lswiftCore -lswiftFoundation -lswiftObjectiveC
+
+	export(LIBS)
 
 	OTHER_FILES += $$SWIFT_SOURCES
 	export(OTHER_FILES)

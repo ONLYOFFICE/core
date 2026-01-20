@@ -54,6 +54,20 @@ public:
 	CPdfEditor* pEditor;
 };
 
+wchar_t* CopyWideString(const wchar_t* src)
+{
+	if (!src)
+		return nullptr;
+
+	size_t len = wcslen(src) + 1;
+	wchar_t* dst = new wchar_t[len];
+
+	wcsncpy(dst, src, len - 1);
+	dst[len - 1] = L'\0';
+
+	return dst;
+}
+
 // ------------------------------------------------------------------------
 
 CPdfFile::CPdfFile(NSFonts::IApplicationFonts* pAppFonts)
@@ -317,11 +331,7 @@ bool CPdfFile::LoadFromFile(const std::wstring& file, const std::wstring& option
 		return false;
 	m_pInternal->wsSrcFile  = file;
 	if (owner_password)
-	{
-		size_t nLen = wcslen(owner_password) + 1;
-		m_pInternal->wsPassword = new wchar_t[nLen];
-		wcscpy_s(m_pInternal->wsPassword, nLen, owner_password);
-	}
+		m_pInternal->wsPassword = CopyWideString(owner_password);
 	if (!m_pInternal->wsTempFolder.empty())
 		m_pInternal->pReader->SetTempDirectory(m_pInternal->wsTempFolder);
 	return m_pInternal->pReader->LoadFromFile(m_pInternal->pAppFonts, file, owner_password, user_password) && (m_pInternal->pReader->GetError() == 0);
@@ -333,11 +343,7 @@ bool CPdfFile::LoadFromMemory(BYTE* data, DWORD length, const std::wstring& opti
 		return false;
 	m_pInternal->wsSrcFile.clear();
 	if (owner_password)
-	{
-		size_t nLen = wcslen(owner_password) + 1;
-		m_pInternal->wsPassword = new wchar_t[nLen];
-		wcscpy_s(m_pInternal->wsPassword, nLen, owner_password);
-	}
+		m_pInternal->wsPassword = CopyWideString(owner_password);
 	return m_pInternal->pReader->LoadFromMemory(m_pInternal->pAppFonts, data, length, owner_password, user_password) && (m_pInternal->pReader->GetError() == 0);
 }
 NSFonts::IApplicationFonts* CPdfFile::GetFonts()
@@ -417,11 +423,7 @@ bool CPdfFile::CheckOwnerPassword(const wchar_t* sPassword)
 		return false;
 	bool bRes = m_pInternal->pReader->CheckOwnerPassword(sPassword);
 	if (bRes && sPassword)
-	{
-		size_t nLen = wcslen(sPassword) + 1;
-		m_pInternal->wsPassword = new wchar_t[nLen];
-		wcscpy_s(m_pInternal->wsPassword, nLen, sPassword);
-	}
+		m_pInternal->wsPassword = CopyWideString(sPassword);
 	else if (m_pInternal->wsPassword)
 		bRes = m_pInternal->pReader->CheckOwnerPassword(m_pInternal->wsPassword);
 

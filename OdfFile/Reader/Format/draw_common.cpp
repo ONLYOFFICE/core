@@ -306,13 +306,10 @@ void Compute_HatchFill(draw_hatch * image_style,oox::oox_hatch_fill_ptr fill)
 
 double CalculatePos(double bBorder)
 {
-	if(bBorder < 60)
-		return 0;
-	if(bBorder >= 60 && bBorder <= 70)
-		return (60  - (bBorder - 60)*2);
-	else if(bBorder > 70 && bBorder <= 90)
-		return (40 - (bBorder - 70));
-	else return 10;
+	if(bBorder < 60) return 0;
+	if(bBorder >= 60 && bBorder <= 70) return (60  - (bBorder - 60)*2);
+	if(bBorder > 70 && bBorder <= 90) return (40 - (bBorder - 70));
+	return 10;
 }
 
 void Compute_GradientFill(draw_gradient* gradient_style, oox::oox_gradient_fill_ptr fill)

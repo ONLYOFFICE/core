@@ -38,10 +38,13 @@
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/CHARTFOMATS.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/AXISPARENT.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/AXES.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/ATTACHEDLABEL.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/MsoDrawing.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Chart.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/AxisParent.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Pos.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Text.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/ObjectLink.h"
 #include "../../PPTXFormat/Logic/Shape.h"
 #include "../Chart/Chart.h"
 
@@ -370,6 +373,18 @@ namespace OOX
 					}
 				}
 			}
+			auto labelUnion = new XLS::ATTACHEDLABEL;
+			auto textRecord = new XLS::Text;
+			textRecord->wBkgMode = 1;
+			auto textPos = new XLS::Pos;
+			textPos->mdBotRt = 2;
+			textPos->mdTopLt = 2;
+			labelUnion->m_Pos = XLS::BaseObjectPtr(textPos);
+			auto objLink = new XLS::ObjectLink;
+			objLink->wLinkObj = 1;
+			labelUnion->m_ObjectLink = XLS::BaseObjectPtr(objLink);
+			labelUnion->m_TextProperties = XLS::BaseObjectPtr(textRecord);
+			ChartFormatsPtr->m_arATTACHEDLABEL.push_back(XLS::BaseObjectPtr(labelUnion));
 		}
 		const OOX::FileType CDrawing::type() const
 		{

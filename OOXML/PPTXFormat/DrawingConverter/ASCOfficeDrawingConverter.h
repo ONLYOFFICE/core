@@ -220,7 +220,7 @@ namespace NSBinPptxRW
 		void AddShapeType(XmlUtils::CXmlNode& oNode);
 		void AddBinData(XmlUtils::CXmlNode& oNode);
 
-        HRESULT AddObject(const std::wstring& sXml, std::wstring** pMainProps);
+        bool AddObject(const std::wstring& sXml, std::wstring* pMainProps = NULL);
 
 		void ConvertVml(const std::wstring& sXml, std::vector<nullable<PPTX::Logic::SpTreeElem>> &elements, NSCommon::nullable<OOX::WritingElement> &anchor);
 
@@ -263,8 +263,8 @@ namespace NSBinPptxRW
 
 		int m_nCurrentIndexObject;
 		IRenderer* m_pOOXToVMLRenderer;
+		
 		bool m_bIsUseConvertion2007;
-		bool m_bNeedMainProps;
 
 		NSCommon::smart_ptr<PPTX::Theme>* m_pTheme;
 		NSCommon::smart_ptr<PPTX::Logic::ClrMap>* m_pClrMap;
@@ -274,12 +274,12 @@ namespace NSBinPptxRW
 	protected:
 		nullable<PPTX::Logic::Xfrm> m_oxfrm_override;
 
-		bool ParceObject(const std::wstring& strXml, std::wstring** pMainProps);
-		void SendMainProps(const std::wstring& strMainProps, std::wstring**& pMainProps);
+		bool ParceObject(const std::wstring& strXml, std::wstring* pMainProps = NULL);
+		void SendMainProps(const std::wstring& strMainProps, std::wstring* pMainProps = NULL);
 
-		void ConvertShape(PPTX::Logic::SpTreeElem* result, XmlUtils::CXmlNode& oNode, std::wstring**& pMainProps, bool bIsTop = true);
-		void ConvertGroup(PPTX::Logic::SpTreeElem* result, XmlUtils::CXmlNode& oNode, std::wstring**& pMainProps, bool bIsTop = true);
-		void ConvertDrawing(PPTX::Logic::SpTreeElem* result, XmlUtils::CXmlNode& oNode, std::wstring**& pMainProps, bool bIsTop = true);
+		void ConvertShape(PPTX::Logic::SpTreeElem* result, XmlUtils::CXmlNode& oNode, std::wstring* pMainProps = NULL, bool bIsTop = true);
+		void ConvertGroup(PPTX::Logic::SpTreeElem* result, XmlUtils::CXmlNode& oNode, std::wstring* pMainProps = NULL, bool bIsTop = true);
+		void ConvertDrawing(PPTX::Logic::SpTreeElem* result, XmlUtils::CXmlNode& oNode, std::wstring* pMainProps = NULL, bool bIsTop = true);
 		void ConvertWordArtShape(PPTX::Logic::SpTreeElem* result, XmlUtils::CXmlNode& oNode, CPPTShape* pPPTShape);
 
 		void CheckBrushShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils::CXmlNode& oNode, CPPTShape* pPPTShape);

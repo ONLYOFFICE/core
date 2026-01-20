@@ -6890,20 +6890,21 @@ void BinaryDocumentTableWriter::WriteDrawing(std::wstring* pXml, OOX::Logic::CDr
 //pptxdata
 	if (pXml)
 	{
-		std::wstring* bstrOutputXml = NULL;
+		std::wstring strOutputXml;
+
 		m_oBcw.m_oStream.WriteBYTE(c_oSerImageType2::PptxData);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
 
 		nCurPos = m_oBcw.WriteItemWithLengthStart();
-			HRESULT hRes = m_pOfficeDrawingConverter->AddObject(*pXml, &bstrOutputXml);
+			bool bRes = m_pOfficeDrawingConverter->AddObject(*pXml, &strOutputXml);
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 
-		if (S_OK == hRes && NULL != bstrOutputXml)
+		if (bRes && false == strOutputXml.empty())
 		{
 			std::wstring sBegin(_T("<root xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\"><w:drawing>"));
 
 			std::wstring sEnd(_T("</w:drawing></root>"));
-			std::wstring sDrawingXml = sBegin +  *bstrOutputXml + sEnd;
+			std::wstring sDrawingXml = sBegin +  strOutputXml + sEnd;
 
 			XmlUtils::CXmlLiteReader oReader;
 			if (oReader.FromString(sDrawingXml))
@@ -6915,7 +6916,6 @@ void BinaryDocumentTableWriter::WriteDrawing(std::wstring* pXml, OOX::Logic::CDr
 			}
 			bDeleteDrawing = true;
 		}
-		RELEASEOBJECT(bstrOutputXml);
 	}
 	else if (pGraphic)
 	{

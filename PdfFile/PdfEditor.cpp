@@ -956,7 +956,7 @@ void CObjectsManager::DeleteObjTree(Object* obj, XRef* xref, int nStartRefID)
 }
 void CObjectsManager::SetDoc(PdfWriter::CDocument* pDoc) { m_pDoc = pDoc; }
 
-CPdfEditor::CPdfEditor(const std::wstring& _wsSrcFile, const std::wstring& _wsPassword, const std::wstring& _wsDstFile, CPdfReader* _pReader, CPdfWriter* _pWriter, Mode nMode)
+CPdfEditor::CPdfEditor(const std::wstring& _wsSrcFile, const wchar_t* _wsPassword, const std::wstring& _wsDstFile, CPdfReader* _pReader, CPdfWriter* _pWriter, Mode nMode)
 {
 	m_wsSrcFile  = _wsSrcFile;
 	m_wsDstFile  = _wsDstFile;
@@ -1018,11 +1018,16 @@ bool CPdfEditor::IncrementalUpdates()
 	std::string sPathUtf8Old = U_TO_UTF8(m_wsSrcFile);
 	if (sPathUtf8Old == sPathUtf8New || NSSystemPath::NormalizePath(sPathUtf8Old) == NSSystemPath::NormalizePath(sPathUtf8New))
 	{
-		GString* owner_pswd = NSStrings::CreateString(m_wsPassword);
-		GString* user_pswd  = NSStrings::CreateString(m_wsPassword);
+		GString* owner_pswd = NULL;
+		GString* user_pswd  = NULL;
+		if (m_wsPassword)
+		{
+			owner_pswd = NSStrings::CreateString(m_wsPassword);
+			user_pswd  = NSStrings::CreateString(m_wsPassword);
+		}
 		GBool bRes = pPDFDocument->makeWritable(true, owner_pswd, user_pswd);
-		delete owner_pswd;
-		delete user_pswd;
+		RELEASEOBJECT(owner_pswd);
+		RELEASEOBJECT(user_pswd);
 		if (!bRes)
 			return false;
 	}
@@ -1689,11 +1694,16 @@ void CPdfEditor::Close()
 	std::string sPathUtf8Old = U_TO_UTF8(m_wsSrcFile);
 	if (sPathUtf8Old == sPathUtf8New || NSSystemPath::NormalizePath(sPathUtf8Old) == NSSystemPath::NormalizePath(sPathUtf8New))
 	{
-		GString* owner_pswd = NSStrings::CreateString(m_wsPassword);
-		GString* user_pswd  = NSStrings::CreateString(m_wsPassword);
+		GString* owner_pswd = NULL;
+		GString* user_pswd  = NULL;
+		if (m_wsPassword)
+		{
+			owner_pswd = NSStrings::CreateString(m_wsPassword);
+			user_pswd  = NSStrings::CreateString(m_wsPassword);
+		}
 		pPDFDocument->makeWritable(false, owner_pswd, user_pswd);
-		delete owner_pswd;
-		delete user_pswd;
+		RELEASEOBJECT(owner_pswd);
+		RELEASEOBJECT(user_pswd);
 
 		NSFile::CFileBinary oFile;
 		if (oFile.OpenFile(m_wsSrcFile))

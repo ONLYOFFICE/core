@@ -120,7 +120,7 @@ public:
 	}
 
 public:
-	bool OpenFile(const std::wstring& sFile, const std::wstring& sPassword)
+	bool OpenFile(const std::wstring& sFile, const wchar_t* sPassword)
 	{
 		CloseFile();
 
@@ -171,7 +171,7 @@ public:
 
 		return m_pFile ? true : false;
 	}
-	bool OpenFile(BYTE* data, LONG size, const std::wstring& sPassword)
+	bool OpenFile(BYTE* data, LONG size, const wchar_t* sPassword)
 	{
 		CloseFile();
 
@@ -245,7 +245,7 @@ public:
 
 		return 0;
 	}
-	bool CheckOwnerPassword(const std::wstring& sPassword)
+	bool CheckOwnerPassword(const wchar_t* sPassword)
 	{
 		if (m_nType == 0)
 			return ((CPdfFile*)m_pFile)->CheckOwnerPassword(sPassword);

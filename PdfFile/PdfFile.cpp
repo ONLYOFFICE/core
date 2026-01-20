@@ -45,7 +45,7 @@ class CPdfFile_Private
 {
 public:
 	std::wstring wsSrcFile;
-	std::wstring wsPassword;
+	wchar_t* wsPassword;
 	std::wstring wsTempFolder;
 	NSFonts::IApplicationFonts* pAppFonts;
 
@@ -64,12 +64,14 @@ CPdfFile::CPdfFile(NSFonts::IApplicationFonts* pAppFonts)
 	m_pInternal->pWriter = NULL;
 	m_pInternal->pReader = NULL;
 	m_pInternal->pEditor = NULL;
+	m_pInternal->wsPassword = NULL;
 }
 CPdfFile::~CPdfFile()
 {
 	RELEASEOBJECT(m_pInternal->pWriter);
 	RELEASEOBJECT(m_pInternal->pReader);
 	RELEASEOBJECT(m_pInternal->pEditor);
+	RELEASEOBJECT(m_pInternal->wsPassword);
 	RELEASEOBJECT(m_pInternal);
 }
 NSFonts::IFontManager* CPdfFile::GetFontManager()
@@ -308,24 +310,34 @@ bool CPdfFile::GetMetaData(const std::wstring& sFile, const std::wstring& sMetaN
 
 	return true;
 }
-bool CPdfFile::LoadFromFile(const std::wstring& file, const std::wstring& options, const std::wstring& owner_password, const std::wstring& user_password)
+bool CPdfFile::LoadFromFile(const std::wstring& file, const std::wstring& options, const wchar_t* owner_password, const wchar_t* user_password)
 {
 	m_pInternal->pReader = new CPdfReader(m_pInternal->pAppFonts);
 	if (!m_pInternal->pReader)
 		return false;
 	m_pInternal->wsSrcFile  = file;
-	m_pInternal->wsPassword = owner_password;
+	if (owner_password)
+	{
+		size_t nLen = wcslen(owner_password) + 1;
+		m_pInternal->wsPassword = new wchar_t[nLen];
+		wcscpy_s(m_pInternal->wsPassword, nLen, owner_password);
+	}
 	if (!m_pInternal->wsTempFolder.empty())
 		m_pInternal->pReader->SetTempDirectory(m_pInternal->wsTempFolder);
 	return m_pInternal->pReader->LoadFromFile(m_pInternal->pAppFonts, file, owner_password, user_password) && (m_pInternal->pReader->GetError() == 0);
 }
-bool CPdfFile::LoadFromMemory(BYTE* data, DWORD length, const std::wstring& options, const std::wstring& owner_password, const std::wstring& user_password)
+bool CPdfFile::LoadFromMemory(BYTE* data, DWORD length, const std::wstring& options, const wchar_t* owner_password, const wchar_t* user_password)
 {
 	m_pInternal->pReader = new CPdfReader(m_pInternal->pAppFonts);
 	if (!m_pInternal->pReader)
 		return false;
 	m_pInternal->wsSrcFile.clear();
-	m_pInternal->wsPassword = owner_password;
+	if (owner_password)
+	{
+		size_t nLen = wcslen(owner_password) + 1;
+		m_pInternal->wsPassword = new wchar_t[nLen];
+		wcscpy_s(m_pInternal->wsPassword, nLen, owner_password);
+	}
 	return m_pInternal->pReader->LoadFromMemory(m_pInternal->pAppFonts, data, length, owner_password, user_password) && (m_pInternal->pReader->GetError() == 0);
 }
 NSFonts::IApplicationFonts* CPdfFile::GetFonts()
@@ -399,14 +411,18 @@ bool CPdfFile::UndoRedact()
 		return true;
 	return m_pInternal->pReader->UndoRedact();
 }
-bool CPdfFile::CheckOwnerPassword(const std::wstring& sPassword)
+bool CPdfFile::CheckOwnerPassword(const wchar_t* sPassword)
 {
 	if (!m_pInternal->pReader)
 		return false;
 	bool bRes = m_pInternal->pReader->CheckOwnerPassword(sPassword);
-	if (bRes)
-		m_pInternal->wsPassword = sPassword;
-	else if (!m_pInternal->wsPassword.empty())
+	if (bRes && sPassword)
+	{
+		size_t nLen = wcslen(sPassword) + 1;
+		m_pInternal->wsPassword = new wchar_t[nLen];
+		wcscpy_s(m_pInternal->wsPassword, nLen, sPassword);
+	}
+	else if (m_pInternal->wsPassword)
 		bRes = m_pInternal->pReader->CheckOwnerPassword(m_pInternal->wsPassword);
 
 	return bRes;

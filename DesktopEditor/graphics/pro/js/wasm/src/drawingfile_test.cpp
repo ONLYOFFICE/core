@@ -1072,7 +1072,7 @@ int main(int argc, char* argv[])
 	if (!NSFile::CFileBinary::ReadAllBytes(sFilePath, &pFileData, nFileDataLen))
 		return 1;
 
-	CDrawingFile* pGrFile = Open(pFileData, (LONG)nFileDataLen, "");
+	CDrawingFile* pGrFile = Open(pFileData, (LONG)nFileDataLen, NULL);
 	int nError = GetErrorCode(pGrFile);
 
 	if (nError != 0)
@@ -1080,7 +1080,7 @@ int main(int argc, char* argv[])
 		Close(pGrFile);
 		if (nError == 4)
 		{
-			std::string sPassword = "123456";
+			std::string sPassword = "";
 			pGrFile = Open(pFileData, nFileDataLen, sPassword.c_str());
 		}
 		else
@@ -1175,7 +1175,7 @@ int main(int argc, char* argv[])
 	// OWNER PASSWORD
 	if (false)
 	{
-		std::string sPassword = "gfhjkmgfhjkm";
+		std::string sPassword = "";
 		std::cout << "CheckPerm 4 Edit "  << CheckPerm(pGrFile, 4) << std::endl;
 		std::cout << "CheckPerm 4 Print " << CheckPerm(pGrFile, 3) << std::endl;
 
@@ -2252,7 +2252,7 @@ int main(int argc, char* argv[])
 	}
 
 	// SCAN PAGE Fonts
-	if (true)
+	if (false)
 	{
 		SetScanPageFonts(pGrFile, nTestPage);
 

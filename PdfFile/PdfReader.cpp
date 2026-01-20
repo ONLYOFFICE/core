@@ -393,7 +393,7 @@ void CPdfReader::SetCMapFile(const std::wstring& sFile)
 	((GlobalParamsAdaptor*)globalParams)->SetCMapFile(sFile);
 }
 
-bool CPdfReader::LoadFromFile(NSFonts::IApplicationFonts* pAppFonts, const std::wstring& wsSrcPath, const std::wstring& wsOwnerPassword, const std::wstring& wsUserPassword)
+bool CPdfReader::LoadFromFile(NSFonts::IApplicationFonts* pAppFonts, const std::wstring& wsSrcPath, const wchar_t* wsOwnerPassword, const wchar_t* wsUserPassword)
 {
 	Clear();
 	RELEASEINTERFACE(m_pFontManager);
@@ -411,7 +411,7 @@ bool CPdfReader::LoadFromFile(NSFonts::IApplicationFonts* pAppFonts, const std::
 	}
 	return MergePages(wsSrcPath, wsOwnerPassword);
 }
-bool CPdfReader::LoadFromMemory(NSFonts::IApplicationFonts* pAppFonts, BYTE* data, DWORD length, const std::wstring& wsOwnerPassword, const std::wstring& wsUserPassword)
+bool CPdfReader::LoadFromMemory(NSFonts::IApplicationFonts* pAppFonts, BYTE* data, DWORD length, const wchar_t* wsOwnerPassword, const wchar_t* wsUserPassword)
 {
 	Clear();
 	RELEASEINTERFACE(m_pFontManager);
@@ -680,7 +680,7 @@ bool CPdfReader::ValidMetaData()
 
 	return bRes;
 }
-bool CPdfReader::MergePages(BYTE* pData, DWORD nLength, const std::wstring& wsPassword, int nMaxID, const std::string& sPrefixForm)
+bool CPdfReader::MergePages(BYTE* pData, DWORD nLength, const wchar_t* wsPassword, int nMaxID, const std::string& sPrefixForm)
 {
 	if (m_eError)
 	{
@@ -688,8 +688,13 @@ bool CPdfReader::MergePages(BYTE* pData, DWORD nLength, const std::wstring& wsPa
 		return false;
 	}
 
-	GString* owner_pswd = NSStrings::CreateString(wsPassword);
-	GString* user_pswd  = NSStrings::CreateString(wsPassword);
+	GString* owner_pswd = NULL;
+	GString* user_pswd  = NULL;
+	if (wsPassword)
+	{
+		owner_pswd = NSStrings::CreateString(wsPassword);
+		user_pswd  = NSStrings::CreateString(wsPassword);
+	}
 
 	Object obj;
 	obj.initNull();
@@ -707,8 +712,8 @@ bool CPdfReader::MergePages(BYTE* pData, DWORD nLength, const std::wstring& wsPa
 	PDFDoc* pDoc = pContext->m_pDocument;
 	m_vPDFContext.push_back(pContext);
 
-	delete owner_pswd;
-	delete user_pswd;
+	RELEASEOBJECT(owner_pswd);
+	RELEASEOBJECT(user_pswd);
 
 	m_eError = pDoc ? pDoc->getErrorCode() : errMemory;
 	if (!pDoc || !pDoc->isOk())
@@ -724,12 +729,19 @@ bool CPdfReader::MergePages(BYTE* pData, DWORD nLength, const std::wstring& wsPa
 
 	return true;
 }
-bool CPdfReader::MergePages(const std::wstring& wsFile, const std::wstring& wsPassword, int nMaxID, const std::string& sPrefixForm)
+bool CPdfReader::MergePages(const std::wstring& wsFile, const wchar_t* wsPassword, int nMaxID, const std::string& sPrefixForm)
 {
 	if (m_eError)
 			return false;
-	GString* owner_pswd = NSStrings::CreateString(wsPassword);
-	GString* user_pswd  = NSStrings::CreateString(wsPassword);
+
+	GString* owner_pswd = NULL;
+	GString* user_pswd  = NULL;
+	if (wsPassword)
+	{
+		owner_pswd = NSStrings::CreateString(wsPassword);
+		user_pswd  = NSStrings::CreateString(wsPassword);
+	}
+
 	// конвертим путь в utf8 - под виндой они сконвертят в юникод, а на остальных - так и надо
 	std::string sPathUtf8 = U_TO_UTF8(wsFile);
 
@@ -744,8 +756,8 @@ bool CPdfReader::MergePages(const std::wstring& wsFile, const std::wstring& wsPa
 	PDFDoc* pDoc = pContext->m_pDocument;
 	m_vPDFContext.push_back(pContext);
 
-	delete owner_pswd;
-	delete user_pswd;
+	RELEASEOBJECT(owner_pswd);
+	RELEASEOBJECT(user_pswd);
 
 	m_eError = pDoc ? pDoc->getErrorCode() : errMemory;
 	if (!pDoc || !pDoc->isOk())
@@ -810,12 +822,12 @@ bool CPdfReader::UndoRedact()
 	m_vRedact.pop_back();
 	return true;
 }
-bool CPdfReader::CheckOwnerPassword(const std::wstring& wsPassword)
+bool CPdfReader::CheckOwnerPassword(const wchar_t* wsPassword)
 {
 	PDFDoc* pDoc = m_vPDFContext.front()->m_pDocument;
 	XRef* xref = pDoc->getXRef();
 
-	if (!xref->isEncrypted())
+	if (!xref->isEncrypted() || !wsPassword)
 		return true;
 
 	Object* pTrailerDict = xref->getTrailerDict();

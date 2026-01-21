@@ -353,7 +353,7 @@ namespace NExtractTools
 						res = TCD_XLST2XLTX;
 					else if (0 == sExt2.compare(L".bin"))
 						res = TCD_T2BIN;
-					else if (0 == sExt2.compare(L".csv"))
+					else if (0 == sExt2.compare(L".csv") || 0 == sExt2.compare(L".tsv") || 0 == sExt2.compare(L".scsv") || 0 == sExt2.compare(L".tsv"))
 						res = TCD_XLST2CSV;
 					else if (0 == sExt2.compare(L".xlsb"))
 						res = TCD_XLST2XLSB;

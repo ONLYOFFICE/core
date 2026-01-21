@@ -6759,7 +6759,7 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 				}
 				catch (std::exception)
 				{}
-				chartType->pcOverlap = overlapVal;
+				chartType->pcOverlap -= overlapVal;
 			}
 			if(m_gapWidth.IsInit())
 			{

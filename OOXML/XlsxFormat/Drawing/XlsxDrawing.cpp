@@ -267,10 +267,6 @@ namespace OOX
 		void CDrawing::toXLSChart(XLS::BaseObjectPtr chartStreamPtr)
 		{
 			auto ptr = static_cast<XLS::ChartSheetSubstream*>(chartStreamPtr.get());
-			auto drawingObjectsPtr = new XLS::OBJECTS(true);
-			ptr->m_OBJECTS = XLS::BaseObjectPtr(drawingObjectsPtr);
-			auto drawingPtr = new XLS::MsoDrawing(true);
-			drawingObjectsPtr->m_arrObject.emplace_back(XLS::BaseObjectPtr(drawingPtr), std::vector<XLS::BaseObjectPtr>());
 
 			auto ChartFormatsPtr = new XLS::CHARTFORMATS;
 			ptr->m_CHARTFORMATS = XLS::BaseObjectPtr(ChartFormatsPtr);
@@ -281,18 +277,6 @@ namespace OOX
 				{
 					auto anchorElem = anchor->m_oElement->GetElem();
 					auto graphicFrame =  static_cast<PPTX::Logic::GraphicFrame*>(anchorElem.GetPointer());
-					{
-						auto xStart = 0 , xOff = 0, yStart = 0, yOff = 0;
-						if(anchor->m_oPos.IsInit() && anchor->m_oPos->m_oX.IsInit())
-							xStart = anchor->m_oPos->m_oX->GetValue();
-						if(anchor->m_oPos.IsInit() && anchor->m_oPos->m_oY.IsInit())
-							yStart = anchor->m_oPos->m_oY->GetValue();
-						if(graphicFrame->xfrm.IsInit() && graphicFrame->xfrm->chOffX.IsInit())
-							xOff = graphicFrame->xfrm->chOffX.get();
-						if(graphicFrame->xfrm.IsInit() && graphicFrame->xfrm->chOffY.IsInit())
-							yOff = graphicFrame->xfrm->chOffY.get();
-						drawingPtr->prepareChart(1, xStart, xOff, yStart, yOff);
-					}
 					{
 
 						auto chartRect = new XLS::Chart;

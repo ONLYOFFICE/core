@@ -391,7 +391,8 @@ namespace PdfWriter
 				((CProxyObject*)pOut)->m_pObject->SetRef(m_pObject->GetObjId(), m_pObject->GetGenNo());
 				return pOut;
 			}
-			CProxyObject* pRes = new CProxyObject(m_pObject && m_pObject->IsIndirect() ? m_pObject : new CObjectBase());
+			bool bObj = m_pObject && m_pObject->IsIndirect();
+			CProxyObject* pRes = new CProxyObject(bObj ? m_pObject : new CObjectBase(), !bObj);
 			if (m_pObject)
 				pRes->Get()->SetRef(m_pObject->GetObjId(), m_pObject->GetGenNo());
 			return pRes;

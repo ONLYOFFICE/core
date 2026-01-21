@@ -407,11 +407,15 @@ const bool ChartSheetSubstream::loadContent(BinProcessor& proc)
 
 const bool ChartSheetSubstream::saveContent(BinProcessor& proc)
 {
-    {
-        BOF bof;
-        bof.dt= 0x0020;
-        proc.mandatory(bof);
-    }
+	auto globInfo = proc.getGlobalWorkbookInfo();
+	{
+		if(globInfo->sheets_info.size() > globInfo->current_sheet)
+			globInfo->sheets_info.at(globInfo->current_sheet).StreamPos = proc.GetRecordPosition();
+
+		BOF bof;
+		bof.dt= 0x0020;
+		proc.mandatory(bof);
+	}
     if(m_WriteProtect != nullptr)
         proc.mandatory(*m_WriteProtect);
     if(m_SheetExt != nullptr)

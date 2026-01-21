@@ -218,7 +218,7 @@ namespace OOX
 				objectVector.push_back(i->toBin());
 			return objectVector;
 		}
-		void CSheets::toXLS(XLS::BaseObjectPtr stream)
+		void CSheets::toXLS(XLS::BaseObjectPtr stream, const std::vector<_UINT16> &SheetTypes)
 		{
 			auto streamPtr = static_cast<XLS::GlobalsSubstream*>(stream.get());
 			auto tabIdArray = new XLS::RRTabId;
@@ -242,6 +242,8 @@ namespace OOX
 					else
 						tempSheet->name_ = std::wstring(L"sheet" + std::to_wstring(SheetNum));
 					streamPtr->m_arBUNDLESHEET.push_back(XLS::BaseObjectPtr(tempSheetUnion));
+					if(SheetTypes.size() > SheetNum-1)
+						tempSheet->dt = SheetTypes.at(SheetNum-1);
 					SheetNum++;
 				}
 		}

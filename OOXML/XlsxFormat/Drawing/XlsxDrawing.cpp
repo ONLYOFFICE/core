@@ -373,18 +373,6 @@ namespace OOX
 					}
 				}
 			}
-			auto labelUnion = new XLS::ATTACHEDLABEL;
-			auto textRecord = new XLS::Text;
-			textRecord->wBkgMode = 1;
-			auto textPos = new XLS::Pos;
-			textPos->mdBotRt = 2;
-			textPos->mdTopLt = 2;
-			labelUnion->m_Pos = XLS::BaseObjectPtr(textPos);
-			auto objLink = new XLS::ObjectLink;
-			objLink->wLinkObj = 1;
-			labelUnion->m_ObjectLink = XLS::BaseObjectPtr(objLink);
-			labelUnion->m_TextProperties = XLS::BaseObjectPtr(textRecord);
-			ChartFormatsPtr->m_arATTACHEDLABEL.push_back(XLS::BaseObjectPtr(labelUnion));
 		}
 		const OOX::FileType CDrawing::type() const
 		{

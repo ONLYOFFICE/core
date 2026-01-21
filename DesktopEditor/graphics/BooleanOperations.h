@@ -37,6 +37,7 @@ namespace Aggplus
 
 		bool IsValid(const BooleanOpType& op) const noexcept;
 		bool IsEmpty() const noexcept;
+		bool Equals(const Segment& other)	  const noexcept;
 		bool operator==(const Segment& other) const noexcept;
 		bool operator!=(const Segment& other) const noexcept;
 	};
@@ -82,6 +83,7 @@ namespace Aggplus
 		void Flip() noexcept;
 
 		bool IsStraight()	const noexcept;
+		bool Equals(const Curve& other)		const noexcept;
 		bool operator==(const Curve& other) const noexcept;
 		bool operator!=(const Curve& other) const noexcept;
 	};
@@ -159,6 +161,7 @@ namespace Aggplus
 		bool IsOneCurvePath(int pathIndex) const noexcept;
 		void AddOffsets(std::vector<double>& offsets, const Curve& curve, bool end);
 		bool CheckLocation(std::shared_ptr<Location> loc, bool start) const noexcept;
+		bool IsOnlyEnds() const noexcept;
 
 	private:
 		BooleanOpType Op = Intersection;

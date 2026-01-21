@@ -186,7 +186,6 @@ int main(int argc, char** argv)
 
 	if (false)
 	{
-		// if need disable js engine cache
 		oBuilder.WriteString(L"<m_sSigningKeyStorePath>");
 
 		oBuilder.WriteEncodeXmlString(curr_dir + wsep + L"certificate.pfx");

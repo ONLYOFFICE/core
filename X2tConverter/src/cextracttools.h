@@ -529,6 +529,7 @@ namespace NExtractTools
 		// output params
 		mutable bool m_bOutputConvertCorrupted;
 		mutable bool m_bMacro;
+		std::wstring* m_sCmapDir;
 
 	public:
 		InputParams()
@@ -566,6 +567,8 @@ namespace NExtractTools
 
 			m_bOutputConvertCorrupted = false;
 			m_bMacro = false;
+
+			m_sCmapDir = NULL;
 		}
 		~InputParams()
 		{
@@ -599,6 +602,7 @@ namespace NExtractTools
 			RELEASEOBJECT(m_bIsPDFA);
 			RELEASEOBJECT(m_sConvertToOrigin);
 			RELEASEOBJECT(m_sSigningKeyStorePath);
+			RELEASEOBJECT(m_sCmapDir);
 		}
 
 		bool FromXmlFile(const std::wstring& sFilename)
@@ -801,6 +805,11 @@ namespace NExtractTools
 								{
 									RELEASEOBJECT(m_sSigningKeyStorePath);
 									m_sSigningKeyStorePath = new std::wstring(sValue);
+								}
+								else if (_T("m_sCmapDir") == sName)
+								{
+									RELEASEOBJECT(m_sCmapDir);
+									m_sCmapDir = new std::wstring(sValue);
 								}
 							}
 							else if (_T("m_nCsvDelimiterChar") == sName)

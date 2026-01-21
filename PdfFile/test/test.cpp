@@ -273,7 +273,7 @@ TEST_F(CPdfFileTest, PdfBinToPng)
 
 TEST_F(CPdfFileTest, PdfFromBin)
 {
-	GTEST_SKIP();
+	//GTEST_SKIP();
 
 	pdfFile->CreatePdf();
 	EXPECT_HRESULT_SUCCEEDED(pdfFile->OnlineWordToPdfFromBinary(NSFile::GetProcessDirectory() + L"/pdf.bin", wsDstFile));
@@ -592,16 +592,17 @@ TEST_F(CPdfFileTest, EditPdfSign)
 
 TEST_F(CPdfFileTest, PrintPdf)
 {
-	//GTEST_SKIP();
+	GTEST_SKIP();
 
 	LoadFromFile();
 
 	int nPages = pdfFile->GetPagesCount();
 	std::vector<bool> arrPages;
 	for (int i = 0; i < nPages; ++i)
-		arrPages.push_back(true);
+		arrPages.push_back(false);
+	arrPages[1] = true;
 
-	ASSERT_TRUE(pdfFile->PrintPages(arrPages, 1));
+	ASSERT_TRUE(pdfFile->PrintPages(arrPages, 2));
 
 	pdfFile->SaveToFile(wsDstFile);
 	pdfFile->Close();

@@ -92,6 +92,7 @@ int CDocxRenderer::Convert(IOfficeDrawingFile* pFile, const std::wstring& sDst, 
 	m_pInternal->m_oDocument.m_oCurrentPage.m_bUseDefaultFont = false;
 	m_pInternal->m_oDocument.m_oCurrentPage.m_bWriteStyleRaw = false;
 	m_pInternal->m_bIsSupportShapeCommands = false;
+	m_pInternal->m_oDocument.m_bIsRecord = true;
 
 	if (bIsOutCompress)
 		m_pInternal->m_oDocument.m_strTempDirectory = NSDirectory::CreateDirectoryWithUniqueName(m_pInternal->m_sTempDirectory);
@@ -130,6 +131,7 @@ std::vector<std::wstring> CDocxRenderer::ScanPage(IOfficeDrawingFile* pFile, siz
 	m_pInternal->m_oDocument.m_oCurrentPage.m_bUseDefaultFont = true;
 	m_pInternal->m_oDocument.m_oCurrentPage.m_bWriteStyleRaw = true;
 	m_pInternal->m_bIsSupportShapeCommands = false;
+	m_pInternal->m_oDocument.m_bIsRecord = false;
 
 	DrawPage(pFile, nPage);
 
@@ -146,6 +148,7 @@ std::vector<std::wstring> CDocxRenderer::ScanPagePptx(IOfficeDrawingFile* pFile,
 	m_pInternal->m_oDocument.m_oCurrentPage.m_bWriteStyleRaw = true;
 	m_pInternal->m_oDocument.m_oCurrentPage.m_bCollectMetaInfo = true;
 	m_pInternal->m_bIsSupportShapeCommands = true;
+	m_pInternal->m_oDocument.m_bIsRecord = false;
 
 	m_pInternal->m_eShapeSerializeType = ShapeSerializeType::sstXml;
 	DrawPage(pFile, nPage);

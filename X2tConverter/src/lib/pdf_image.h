@@ -483,6 +483,13 @@ namespace NExtractTools
 
 		if (bResult)
 		{
+			if ((AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == nFormatFrom ||
+				 AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDFA == nFormatFrom)
+				&& params.m_sCmapDir)
+			{
+				((CPdfFile*)pReader)->SetCMapFolder(*params.m_sCmapDir);
+			}
+
 			int nPagesCount = pReader->GetPagesCount();
 
 			bool bIsUsePages = convertParams.m_sPrintPages.empty() ? false : true;
@@ -556,6 +563,13 @@ namespace NExtractTools
 
 		if (bResult)
 		{
+			if ((AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == nFormatFrom ||
+				 AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDFA == nFormatFrom)
+				&& params.m_sCmapDir)
+			{
+				((CPdfFile*)pReader)->SetCMapFolder(*params.m_sCmapDir);
+			}
+
 			// default as in CMetafileToRenderterRaster
 			int nRasterFormat = 4;
 			int nSaveType = 2;
@@ -1087,6 +1101,13 @@ namespace NExtractTools
 
 				std::wstring sPassword = params.getPassword();
 				pReader->LoadFromFile(sFrom, L"", sPassword, sPassword);
+
+				if ((AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == nFormatFrom ||
+					 AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDFA == nFormatFrom)
+					&& params.m_sCmapDir)
+				{
+					((CPdfFile*)pReader)->SetCMapFolder(*params.m_sCmapDir);
+				}
 
 				// pdf -> txt via TxtRenderer
 				if (nFormatTo == AVS_OFFICESTUDIO_FILE_DOCUMENT_TXT && nFormatFrom == AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF)

@@ -194,16 +194,20 @@ namespace NSDocxRenderer
 				continue;
 
 			const auto& text = cont->GetText();
-			auto ar_widths = cont->GetSymWidths();
+			auto ar_lefts = cont->GetSymLefts();
+			auto ar_width = cont->GetSymWidths();
 			for (size_t i = 0; i < text.length(); ++i)
 			{
 				if (text.at(i) == c_SPACE_SYM)
 				{
-					m_dFirstWordWidth = width;
+					if (i == 0)
+						m_dFirstWordWidth = cont->m_dLeft - m_dLeft;
+					else
+						m_dFirstWordWidth = ar_lefts[i - 1] - m_dLeft + ar_width[i - 1];
 					is_done = true;
 					break;
 				}
-				width += ar_widths[i];
+
 			}
 			if (is_done)
 				break;

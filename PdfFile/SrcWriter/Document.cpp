@@ -1610,17 +1610,6 @@ namespace PdfWriter
 	{
 		m_mParents[nID] = pParent;
 	}
-	void CDocument::AddXObject(int nID, CDictObject* pXObject)
-	{
-		m_mXObjects[nID] = pXObject;
-	}
-	CDictObject* CDocument::GetXObject(int nID)
-	{
-		std::map<int, CDictObject*>::iterator p = m_mXObjects.find(nID);
-		if (p != m_mXObjects.end())
-			return p->second;
-		return NULL;
-	}
 	CDictObject* CDocument::CreateParent(int nID)
 	{
 		CDictObject* pParent = new CDictObject();

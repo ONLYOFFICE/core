@@ -605,6 +605,12 @@ public:
 			evp = EVP_sha512();
 		else if (m_alg == OOXML_HASH_ALG_ECDSA_384)
 			evp = EVP_sha384();
+		else if (m_alg == OOXML_HASH_ALG_SHA256)
+			evp = EVP_sha256();
+		else if (m_alg == OOXML_HASH_ALG_SHA384)
+			evp = EVP_sha384();
+		else if (m_alg == OOXML_HASH_ALG_SHA512)
+			evp = EVP_sha512();
 
 		if (!PKCS7_sign_add_signer(pkcs7, m_cert, m_key, evp, 0))
 		{

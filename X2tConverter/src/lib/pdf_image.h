@@ -46,6 +46,38 @@
 
 namespace NExtractTools
 {
+	static int pdfSign(const std::wstring& file, NSFonts::IApplicationFonts* fonts, InputParams& params, ConvertParams& convertParams)
+	{
+		ICertificate* certificate = NSSign::loadCertificate(params);
+		if (!certificate)
+			return 1;
+
+		std::wstring pdfTemp = combinePath(convertParams.m_sTempDir, L"pdf_sign.pdf");
+		NSFile::CFileBinary::Move(file, pdfTemp);
+
+		CPdfFile pdfFile(fonts);
+		pdfFile.SetTempDirectory(convertParams.m_sTempDir);
+		std::wstring password = params.getSavePassword();
+
+		if (!pdfFile.LoadFromFile(pdfTemp, L"", password.c_str(), password.c_str()))
+			return 2;
+
+		if (!pdfFile.EditPdf(file))
+			return 2;
+
+		if (!pdfFile.EditPage(0))
+			return 2;
+
+		pdfFile.Sign(0, 0, 0, 0, L"", certificate);
+		pdfFile.Close();
+
+		RELEASEOBJECT(certificate);
+		return 0;
+	}
+}
+
+namespace NExtractTools
+{
 	_UINT32 bin2pdf(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
 	{
 		NSFonts::IApplicationFonts* pApplicationFonts = createApplicationFonts(params);
@@ -76,6 +108,12 @@ namespace NExtractTools
 		{
 			nRet = S_OK == pdfWriter.OnlineWordToPdf(sFrom, sTo, &oBufferParams) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
 		}
+
+		if (0 == nRet)
+		{
+			pdfSign(sTo, pApplicationFonts, params, convertParams);
+		}
+
 		RELEASEOBJECT(pApplicationFonts);
 		return nRet;
 	}
@@ -245,6 +283,12 @@ namespace NExtractTools
 
 			int nReg = (convertParams.m_bIsPaid == false) ? 0 : 1;
 			nRes = (S_OK == pdfWriter.OnlineWordToPdfFromBinary(sPdfBinFile, sTo, &oBufferParams)) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
+
+			if (0 == nRes)
+			{
+				pdfSign(sTo, pApplicationFonts, params, convertParams);
+			}
+
 			RELEASEOBJECT(pApplicationFonts);
 		}
 		// удаляем sPdfBinFile, потому что он не в Temp
@@ -1040,7 +1084,14 @@ namespace NExtractTools
 				convertParams.m_sPrintPages = sPages;
 				nRes = PdfDjvuXpsToRenderer(&pReader, &pdfWriter, sFrom, nFormatFrom, sTo, params, convertParams, pApplicationFonts);
 				if (SUCCEEDED_X2T(nRes))
+				{
 					nRes = S_OK == pdfWriter.SaveToFile(sTo) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+
+					if (0 == nRes)
+					{
+						pdfSign(sTo, pApplicationFonts, params, convertParams);
+					}
+				}
 				RELEASEOBJECT(pReader);
 			}
 		}

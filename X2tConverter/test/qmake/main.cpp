@@ -1,8 +1,33 @@
+#ifdef _WIN32
+#include <Windows.h>
+#endif
+
 #include "../../../DesktopEditor/common/Directory.h"
 #include "../../../DesktopEditor/common/StringBuilder.h"
 #include "../../../DesktopEditor/fontengine/ApplicationFontsWorker.h"
 #include "../../../Common/OfficeFileFormatChecker.h"
 #include "../../src/dylib/x2t.h"
+
+static void SetEnvValueA(const std::string& sName, const std::string& sValue)
+{
+#ifdef WIN32
+	std::wstring sNameW = UTF8_TO_U(sName);
+	std::wstring sValueW = UTF8_TO_U(sValue);
+
+	_wputenv_s(sNameW.c_str(), sValueW.c_str());
+#else
+	static char buffer[100000]; // on all process
+	static int offset = 0;
+
+	std::string tmp = sName + "=" + sValue;
+	size_t len = tmp.length();
+
+	memcpy(buffer + offset, tmp.c_str(), sizeof(char) * len);
+	buffer[offset + len] = '\0';
+	putenv(buffer + offset);
+	offset += (len + 1);
+#endif
+}
 
 void CheckFonts(const std::wstring& fontsDir, bool isUseSystem = true, const std::vector<std::wstring>& addtitionalFontsDirs = {})
 {
@@ -157,6 +182,17 @@ int main(int argc, char** argv)
 			oBuilder.WriteString(L"<format>3</format>");
 
 		oBuilder.WriteString(L"</m_oThumbnail>");
+	}
+
+	if (false)
+	{
+		// if need disable js engine cache
+		oBuilder.WriteString(L"<m_sSigningKeyStorePath>");
+
+		oBuilder.WriteEncodeXmlString(curr_dir + wsep + L"certificate.pfx");
+		SetEnvValueA("SIGNING_KEYSTORE_PASSPHRASE", "123");
+
+		oBuilder.WriteString(L"</m_sSigningKeyStorePath>");
 	}
 
 	oBuilder.WriteString(L"</TaskQueueDataConvert>");

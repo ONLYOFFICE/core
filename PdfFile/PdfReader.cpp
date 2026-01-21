@@ -318,6 +318,15 @@ bool CPdfReader::IsNeedCMap()
 					continue;
 				}
 
+				Object oRefDR;
+				if (oAnnot.dictLookupNF("DR", &oRefDR)->isRef() && std::find(arrUniqueResources.begin(), arrUniqueResources.end(), oRefDR.getRef().num) != arrUniqueResources.end())
+				{
+					oRefDR.free(); oAnnot.free();
+					continue;
+				}
+				arrUniqueResources.push_back(oRefDR.getRef().num);
+				oRefDR.free();
+
 				Object oDR;
 				if (oAnnot.dictLookup("DR", &oDR)->isDict() && scanFonts(oDR.getDict(), arrCMap, 0, arrUniqueResources))
 				{

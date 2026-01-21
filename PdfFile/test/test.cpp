@@ -375,6 +375,36 @@ TEST_F(CPdfFileTest, Base64ConvertToRaster)
 	imageWriter.ConvertBuffer(pBuffer, nBufferLen);
 }
 
+TEST_F(CPdfFileTest, BinConvertToRaster)
+{
+	GTEST_SKIP();
+
+	// чтение и конвертации бинарника
+	NSFile::CFileBinary oFile;
+	ASSERT_TRUE(oFile.OpenFile(NSFile::GetProcessDirectory() + L"/pdf.bin"));
+
+	DWORD dwFileSize = oFile.GetFileSize();
+	BYTE* pFileContent = new BYTE[dwFileSize];
+	if (!pFileContent)
+	{
+		oFile.CloseFile();
+		FAIL();
+	}
+
+	DWORD dwReaded;
+	oFile.ReadFile(pFileContent, dwFileSize, dwReaded);
+	oFile.CloseFile();
+
+	NSOnlineOfficeBinToPdf::CMetafileToRenderterRaster imageWriter(NULL);
+	imageWriter.SetIsOnlyFirst(true);
+	imageWriter.SetMediaDirectory(NSFile::GetProcessDirectory());
+	imageWriter.SetApplication(pApplicationFonts);
+	imageWriter.SetRasterFormat(4);
+	imageWriter.SetFileName(NSFile::GetProcessDirectory() + L"/resO/res.png");
+
+	imageWriter.ConvertBuffer(pFileContent, dwFileSize);
+}
+
 TEST_F(CPdfFileTest, VerifySign)
 {
 	GTEST_SKIP();

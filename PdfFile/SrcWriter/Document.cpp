@@ -1923,7 +1923,7 @@ namespace PdfWriter
 			m_pLastXref->WriteToStream(pStream, pEncrypt);
 
 		RELEASEOBJECT(pStream);
-		unsigned int nSizeXRef = m_pXref->GetSizeXRef();
+		unsigned int nSizeXRef = m_pXref->GetSizeXRef() + (bNeedStreamXRef ? 1 : 0);
 		m_pXref = m_pLastXref;
 		Sign(wsPath, nSizeXRef, bNeedStreamXRef);
 		RELEASEOBJECT(m_pEncryptDict);

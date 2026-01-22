@@ -1521,6 +1521,7 @@ namespace OOX
 			{}
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			XLS::BaseObjectPtr GetXLSFormat(unsigned int chartIndex);
 			EElementType getType();
 		};
 		class CT_OfPieChart
@@ -1664,6 +1665,7 @@ namespace OOX
 
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			XLS::BaseObjectPtr toXLS(const unsigned short chartIndex, XLS::BaseObjectPtr ChartFormatsPtr);
 			EElementType getType();
 		};
 		class CT_ScatterSer : public CBaseSer

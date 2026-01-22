@@ -39,6 +39,7 @@
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/IVAXIS.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/DVAXIS.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/CRT.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/CHARTFOMATS.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Series.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/DataFormat.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/BRAI.h"
@@ -6742,8 +6743,16 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
 		}
-		XLS::BaseObjectPtr CT_BarChart::toXLS(unsigned short chartIndex)
+		XLS::BaseObjectPtr CT_BarChart::toXLS(unsigned short chartIndex, XLS::BaseObjectPtr ChartFormats)
 		{
+			auto ChartFormatsPtr =  static_cast<XLS::CHARTFORMATS*>(ChartFormats.get());
+			for(auto ser : m_ser)
+			{
+				if(ser != nullptr)
+				{
+					ChartFormatsPtr->m_arSERIESFORMAT.push_back(ser->GetXLSFormat(chartIndex));
+				}
+			}
 			auto ptr = new XLS::CRT;
 			auto chartFormat = new XLS::ChartFormat;
 			chartFormat->icrt = chartIndex;
@@ -6761,6 +6770,9 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 				{}
 				chartType->pcOverlap -= overlapVal;
 			}
+			if(m_barDir.IsInit() && m_barDir->m_eValue == 0)
+				chartType->fTranspose = true;
+
 			if(m_gapWidth.IsInit())
 			{
 				_INT16 gapVal = 0;

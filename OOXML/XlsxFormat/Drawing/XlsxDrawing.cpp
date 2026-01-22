@@ -301,24 +301,13 @@ namespace OOX
 							if(ChartFile->m_oChartSpace.m_chart != nullptr &&  ChartFile->m_oChartSpace.m_chart->m_plotArea != nullptr)
 							{
 								auto AxisParentUnion = new XLS::AXISPARENT;
-								auto axisparent = new XLS::AxisParent;
-								AxisParentUnion->m_AxisParent = XLS::BaseObjectPtr(axisparent);
 								ChartFormatsPtr->m_arAXISPARENT.push_back(XLS::BaseObjectPtr(AxisParentUnion));
-								auto pos = new XLS::Pos;
-								AxisParentUnion->m_Pos = XLS::BaseObjectPtr(pos);
 
 								for(auto chartIndex = 0; chartIndex < ChartFile->m_oChartSpace.m_chart->m_plotArea->m_Items.size(); chartIndex ++)
 								{
 									if(*ChartFile->m_oChartSpace.m_chart->m_plotArea->m_ItemsElementName0.at(chartIndex) == OOX::Spreadsheet::itemschoicetype5BARCHART)
 									{
 										auto barChart = static_cast<CT_BarChart*>(ChartFile->m_oChartSpace.m_chart->m_plotArea->m_Items.at(chartIndex));
-										for(auto ser : barChart->m_ser)
-										{
-											if(ser != nullptr)
-											{
-												ChartFormatsPtr->m_arSERIESFORMAT.push_back(ser->GetXLSFormat(chartIndex));
-											}
-										}
 										if(ChartFormatsPtr->m_arAXISPARENT.size() < 2)
 										{
 											auto axes = new XLS::AXES;
@@ -349,7 +338,7 @@ namespace OOX
 											}
 
 										}
-										AxisParentUnion->m_arCRT.push_back(barChart->toXLS(chartIndex));
+										AxisParentUnion->m_arCRT.push_back(barChart->toXLS(chartIndex, ptr->m_CHARTFORMATS));
 									}
 								}
 							}

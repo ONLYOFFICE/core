@@ -592,12 +592,8 @@ void style_tab_stop::docx_convert(oox::docx_conversion_context & Context, bool c
 	{
 		current_tab_width_twips = PageWidthTwips - LeftPageMarginTwips - RightPageMarginTwips - margin_right;
 	}
-	else
-	{
-		current_tab_width_twips = PageWidthTwips - LeftPageMarginTwips - RightPageMarginTwips - margin_left - margin_right;
-	}
 
-	if( tab_pos > current_tab_width_twips )
+	if( tab_pos > current_tab_width_twips && current_tab_width_twips != 0.0 )
 	{
 		tab_pos = current_tab_width_twips;
 		tab_pos -= 300;

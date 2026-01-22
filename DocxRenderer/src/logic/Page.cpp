@@ -1601,8 +1601,7 @@ namespace NSDocxRenderer
 		// lamda to setup and add paragpraph
 		auto add_paragraph = [this, &max_right, &min_left, &ar_paragraphs] (paragraph_ptr_t& paragraph) {
 
-			double additional_bottom = paragraph->m_arTextLines.front()->m_dTopWithMaxAscent - paragraph->m_arTextLines.front()->m_dTop;
-			paragraph->m_dBot = paragraph->m_arTextLines.back()->m_dBot + additional_bottom;
+			paragraph->m_dBot = paragraph->m_arTextLines.back()->m_dBotWithMaxDescent;
 			paragraph->m_dTop = paragraph->m_arTextLines.front()->m_dTopWithMaxAscent;
 			paragraph->m_dRight = max_right;
 			paragraph->m_dLeft = min_left;
@@ -2550,8 +2549,8 @@ namespace NSDocxRenderer
 		pParagraph->m_arTextLines.push_back(pLine);
 		pParagraph->m_dLeft = pLine->m_dLeft;
 		pParagraph->m_dTop = pLine->m_dTopWithMaxAscent;
-		pParagraph->m_dBot = pLine->m_dBot + (pLine->m_dTopWithMaxAscent - pLine->m_dTop);
-		pParagraph->m_dWidth = pLine->m_dWidth * 1.05;
+		pParagraph->m_dBot = pLine->m_dBotWithMaxDescent;
+		pParagraph->m_dWidth = pLine->m_dWidth * 1.1;
 		pParagraph->m_dHeight = pLine->m_dHeight;
 		pParagraph->m_dRight = pLine->m_dRight;
 		pParagraph->m_dLineHeight = pParagraph->m_dHeight;

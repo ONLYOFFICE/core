@@ -51,6 +51,8 @@ namespace PdfWriter
 	class CDocument;
 	class CPage;
 	class CFontCidTrueType;
+	class CFont14;
+	class CFontEmbedded;
 	class CImageDict;
 	class CShading;
 	class CExtGrState;
@@ -243,6 +245,8 @@ private:
 	bool PathCommandDrawText(unsigned int* pUnicodes, unsigned int unLen, const double& dX, const double& dY, const unsigned int* pGids = NULL);
 	int  IsEmbeddedBase14(const std::wstring& wsFontName);
 	bool GetBaseFont14(const std::wstring& wsFontName, int nBase14);
+	bool IsEmbeddedFont(const std::wstring& wsName);
+	bool GetEmbeddedFont(const std::wstring& wsFontName);
 	bool UpdateFont();
 	bool FindFontPath(const std::wstring& wsFontName, const bool& bBold, const bool& bItalic, std::wstring& wsFontPath, LONG& lFaceIndex);
 	bool GetFontPath(const std::wstring& wsFontName, const bool& bBold, const bool& bItalic, std::wstring& wsFontPath, LONG& lFaceIndex);
@@ -274,6 +278,7 @@ private:
 	PdfWriter::CPage*            m_pPage;
 	PdfWriter::CFontCidTrueType* m_pFont;
 	PdfWriter::CFont14*          m_pFont14;
+	PdfWriter::CFontEmbedded*    m_pFontEmbedded;
 	PdfWriter::CShading*         m_pShading;
 	PdfWriter::CExtGrState*      m_pShadingExtGrState;
 

@@ -32,8 +32,29 @@
 #ifndef _PDF_READER_FONT_H
 #define _PDF_READER_FONT_H
 
-#include "../lib/xpdf/PDFDoc.h"
+#include <vector>
+#include <string>
+#include <map>
 
+#include "../lib/xpdf/PDFDoc.h"
+#include "../lib/xpdf/AcroForm.h"
+
+#include "../../DesktopEditor/graphics/pro/Fonts.h"
+
+#include "RendererOutputDev.h"
+#include "PdfAnnot.h"
+
+namespace PdfReader
+{
+std::string GetRCFromDS(const std::string& sDS, Object* pContents, const std::vector<double>& arrCFromDA);
 bool IsNeedCMap(PDFDoc* pDoc);
+bool IsBaseFont(const std::wstring& wsName);
+std::map<std::wstring, std::wstring> GetAllFonts(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList* pFontList, bool bIsNeedCMap);
+std::wstring GetFontData(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList, Object* oFontRef, std::string& sFontName, std::string& sActualFontName, bool& bBold, bool& bItalic, bool bIsNeedCMap = false);
+bool GetFontFromAP(PDFDoc* pdfDoc, AcroFormField* pField, Object* oFontRef, std::string& sFontKey);
+std::map<std::wstring, std::wstring> GetAnnotFont(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList, Object* oAnnotRef);
+std::map<std::wstring, std::wstring> GetFreeTextFont(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList* pFontList, Object* oAnnotRef, std::vector<CAnnotMarkup::CFontData*>& arrRC);
+bool FindFonts(Object* oStream, int nDepth, Object* oResFonts);
+}
 
 #endif // _PDF_READER_FONT_H

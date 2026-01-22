@@ -1072,7 +1072,14 @@ HRESULT CPdfFile::put_FontName(const std::wstring& wsName)
 			}
 		}
 		else
-			wsFont = sSub;
+		{
+			const std::map<std::wstring, std::wstring>& mFonts = m_pInternal->pReader->GetFonts();
+			auto it = mFonts.find(sSub);
+			if (it != mFonts.end())
+				wsFontPath = it->second;
+			else
+				wsFont = sSub;
+		}
 		m_pInternal->pWriter->AddFont(wsFont, bBold, bItalic, wsFontPath, 0);
 	}
 	return m_pInternal->pWriter->put_FontName(wsFont);

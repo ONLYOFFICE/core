@@ -99,4 +99,9 @@ namespace PdfWriter
 
 		return ushCode;
 	}
+
+	CFontEmbedded::CFontEmbedded(CXref* pXref, CDocument* pDocument) : CFontDict(pXref, pDocument)
+	{
+
+	}
 }

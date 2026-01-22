@@ -58,6 +58,12 @@ namespace PdfWriter
 		std::vector<unsigned int>              m_vWidths;
 
 	};
+
+	class CFontEmbedded : public CFontDict
+	{
+	public:
+		CFontEmbedded(CXref* pXref, CDocument* pDocument);
+	};
 }
 
 #endif // _PDF_WRITER_SRC_FONT14_H

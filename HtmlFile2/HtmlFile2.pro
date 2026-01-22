@@ -41,6 +41,7 @@ HEADERS += htmlfile2.h \
 	Common.h \
 	HTML2OOXMLInterpretator.h \
 	HTMLInterpretator.h \
+	HTMLParams.h \
 	HTMLReader.h \
 	Tags/HTMLTags.h \
 	Tags/HTMLTags2OOXML.h \

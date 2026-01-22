@@ -2565,7 +2565,7 @@ private:
 
 		NSStringUtils::CStringBuilder oPPr;
 
-		const std::wstring sPStyle = wrP(&oPPr, arSelectors, oTS);
+		wrP(&oPPr, arSelectors, oTS);
 
 		WriteToStringBuilder(oPPr, *pXml);
 
@@ -2582,9 +2582,6 @@ private:
 			sRStyle = wrRPr(&oRPr, arSelectors, oTS);
 
 			WriteToStringBuilder(oRPr, *pXml);
-
-			if (oTS.bQ)
-				pXml->WriteString(L"<w:t xml:space=\"preserve\">&quot;</w:t>");
 		}
 
 		if (oTS.bQ)
@@ -2600,10 +2597,7 @@ private:
 			while (std::wstring::npos != unBegin)
 			{
 				if (OpenR(pXml))
-				{
-					pXml->WriteString(L"<w:test/>");
 					WriteToStringBuilder(oRPr, *pXml);
-				}
 
 				OpenT(pXml);
 				if (unEnd == std::wstring::npos)
@@ -2676,7 +2670,7 @@ private:
 		wrP(pXml, arSelectors, oTS);
 		const std::wstring wsName{L"Bookmark" + std::to_wstring(m_mBookmarks.size() + 1)};
 		m_mBookmarks.insert(std::make_pair(wsName, m_mBookmarks.size() + 1));
-		pXml->WriteString(L"<w:r><w:fldChar w:fldCharType=\"begin\"/></w:r><w:r><w:instrText>HYPERLINK  \\l \"" + wsName + L"\" \\o \"");
+		pXml->WriteString(L"<w:r><w:fldChar w:fldCharType=\"begin\"/></w:r><w:r><w:instrText>HYPERLINK \\l \"" + wsName + L"\" \\o \"");
 		pXml->WriteEncodeXmlString(wsNote);
 		pXml->WriteString(L"\"</w:instrText></w:r>");
 		pXml->WriteString(L"<w:r><w:fldChar w:fldCharType=\"separate\"/></w:r>");
@@ -2695,7 +2689,7 @@ private:
 			return false;
 
 		CTextSettings oTSR(oTS);
-		oTSR.oAdditionalStyle.m_oFont.SetWeight(L"bold", UINT_MAX, true);
+		// oTSR.oAdditionalStyle.m_oFont.SetWeight(L"bold", UINT_MAX, true);
 
 		return readStream(pXml, arSelectors, oTSR);
 	}
@@ -3837,7 +3831,7 @@ private:
 			CTextSettings oNewSettings{oTS};
 
 			const std::wstring wsHighlight{sSelectors.back().m_pCompiledStyle->m_oBackground.GetColor()
-				        .EquateToColor({{{0,   0,   0},   L"black"},    {{0,   0,   255}, L"blue"},      {{0,   255, 255}, L"cyan"},
+			             .EquateToColor({{{0,   0,   0},   L"black"},    {{0,   0,   255}, L"blue"},      {{0,   255, 255}, L"cyan"},
 			                            {{0,   255, 0},   L"green"},    {{255, 0,   255}, L"magenta"},   {{255, 0,   0},   L"red"},
 			                             {{255, 255, 0},   L"yellow"},   {{255, 255, 255}, L"white"},     {{0,   0,   139}, L"darkBlue"},
 			                             {{0,   139, 139}, L"darkCyan"}, {{0,   100, 0},   L"darkGreen"}, {{139, 0,   139}, L"darkMagenta"},
@@ -5118,7 +5112,7 @@ HRESULT CHtmlFile2::OpenHtml(const std::wstring& sSrc, const std::wstring& sDst,
 {
 	HTML::CHTMLReader oHTMLReader;
 
-	oHTMLReader.ReadFromFile(sSrc);
+	return oHTMLReader.ConvertFromTo(sSrc, sDst);
 
 	if(!m_internal->m_oLightReader.IsValid())
 		if(!IsHtmlFile(sSrc))

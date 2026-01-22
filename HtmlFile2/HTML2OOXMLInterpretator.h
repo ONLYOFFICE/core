@@ -5,7 +5,6 @@
 #include "../DesktopEditor/common/StringBuilder.h"
 
 #include "../Common/3dParty/html/css/src/xhtml/CDocumentStyle.h"
-#include "../Common/3dParty/html/css/src/CNode.h"
 #include "../TextSettings.h"
 #include "HTMLInterpretator.h"
 
@@ -25,7 +24,8 @@ class CHTML2OOXMLInterpretator : public IHTMLInterpretator
 
 	XmlString *m_pCurrentDocument; //Текущее место записи
 
-	NSCSS::CDocumentStyle m_oXmlStyle; // Ooxml стиль
+	NSCSS::CDocumentStyle m_oXmlStyle;      // Ooxml стиль
+	NSCSS::NSProperties::CPage m_oPageData; // Стили страницы
 
 	struct TState
 	{
@@ -47,6 +47,8 @@ class CHTML2OOXMLInterpretator : public IHTMLInterpretator
 		{}
 	} m_oState;
 
+	CTextSettings m_oTextSettings;
+
 	int m_nFootnoteId;  // ID сноски
 	int m_nHyperlinkId; // ID ссылки
 	int m_nNumberingId; // ID списка
@@ -56,9 +58,13 @@ class CHTML2OOXMLInterpretator : public IHTMLInterpretator
 	std::map<std::wstring, std::wstring> m_mFootnotes; // Сноски
 	std::map<std::wstring, UINT>         m_mBookmarks; // Закладки
 	using anchors_map = std::map<std::wstring, std::wstring>;
-	anchors_map m_mAnchors; // Map якорей с индивидуальными id
+	anchors_map                          m_mAnchors; // Map якорей с индивидуальными id
+	std::map<std::wstring, UINT>         m_mDivs;      // Div элементы
 public:
 	CHTML2OOXMLInterpretator();
+
+	void Begin(const std::wstring& wsDst, const THtmlParams* pParams) override;
+	void End(const std::wstring& wsDst) override;
 
 	bool OpenP();
 	bool OpenR();
@@ -68,20 +74,33 @@ public:
 	void CloseR();
 	void CloseT();
 
-	void OpenCrossHyperlink(const std::wstring& wsRef, std::vector<NSCSS::CNode>& arSelectors, CTextSettings& oTS);
-	void OpenExternalHyperlink(const std::wstring& wsRef, const std::wstring& wsTooltip, std::vector<NSCSS::CNode>& arSelectors, CTextSettings& oTS);
+	void BeginBlock(std::vector<NSCSS::CNode>& arSelectors) override;
+	void EndBlock(bool bAddBlock, std::vector<NSCSS::CNode>& arSelectors) override;
+
+	void OpenCrossHyperlink(const std::wstring& wsRef, std::vector<NSCSS::CNode>& arSelectors);
+	void OpenExternalHyperlink(const std::wstring& wsRef, const std::wstring& wsTooltip, std::vector<NSCSS::CNode>& arSelectors);
 
 	void CloseCrossHyperlink(std::vector<NSCSS::CNode>& arSelectors, std::wstring wsFootnote, const std::wstring& wsRef);
 	void CloseExternalHyperlink();
 
-	std::wstring WritePPr(std::vector<NSCSS::CNode>& arSelectors, CTextSettings& oTS);
+	void OpenFldChar(const std::wstring& wsNote);
+	void CloseFldChar();
 
+	std::wstring WritePPr(const std::vector<NSCSS::CNode>& arSelectors);
+	std::wstring WriteRPr(XmlString& oXml, const std::vector<NSCSS::CNode>& arSelectors);
+
+	bool WriteText(const std::wstring& wsText, const std::vector<NSCSS::CNode>& arSelectors) override;
+	void WriteBr(std::vector<NSCSS::CNode>& arSelectors);
 	void WriteEmptyParagraph(bool bVahish = false, bool bInP = false) override;
+	void WriteSpace();
 
+	void WriteEmptyBookmark(const std::wstring& wsId);
 	std::wstring WriteBookmark(const std::wstring& wsId);
 	std::wstring AddAnchor(const std::wstring& wsAnchorValue);
 
 	std::wstring GetStyle(const NSCSS::CCompiledStyle& oStyle, bool bParagraphStyle);
+
+	CTextSettings& GetTextSettings();
 
 	XmlString& GetStylesXml();
 	XmlString& GetDocRelsXml();

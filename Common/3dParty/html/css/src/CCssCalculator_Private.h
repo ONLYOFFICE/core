@@ -27,6 +27,7 @@ namespace NSCSS
 		void AddStylesFromFile(const std::wstring& wsFileName);
 
 		void ClearEmbeddedStyles();
+		void ClearDefaultStyles();
 		void ClearAllowedStyleFiles();
 		void ClearStylesFromFile(const std::wstring& wsFileName);
 
@@ -38,6 +39,7 @@ namespace NSCSS
 		#endif
 
 		const CElement* FindElement(const std::wstring& wsSelector) const;
+		const CElement* FindDefaultElement(const std::wstring& wsSelector) const;
 	private:
 		typedef struct
 		{
@@ -49,6 +51,7 @@ namespace NSCSS
 		std::set<std::wstring> m_arAllowedStyleFiles;
 		std::vector<TStyleFileData*> m_arStyleFiles;
 		std::map<std::wstring, CElement*> m_mEmbeddedStyleData;
+		std::map<std::wstring, CElement*> m_mDefaultStyleData;
 
 		#ifdef CSS_CALCULATOR_WITH_XHTML
 		typedef struct
@@ -78,6 +81,8 @@ namespace NSCSS
 		void GetOutputData(KatanaOutput* oOutput, std::map<std::wstring, CElement*>& mStyleData);
 
 		const CElement* FindSelectorFromStyleData(const std::wstring& wsSelector, const std::map<std::wstring, CElement*>& mStyleData) const;
+
+		void InitDefaultStyles();
 	};
 
 	class CCssCalculator_Private

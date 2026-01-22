@@ -42,6 +42,23 @@ namespace NSCSS
 		return m_wsName.empty() && m_wsClass.empty() && m_wsId.empty() && m_wsStyle.empty();
 	}
 
+	bool CNode::GetAttributeValue(const std::wstring& wsAttributeName, std::wstring& wsAttributeValue) const
+	{
+		const std::map<std::wstring, std::wstring>::const_iterator itFound{m_mAttributes.find(wsAttributeName)};
+
+		if (m_mAttributes.cend() == itFound)
+			return false;
+
+		wsAttributeValue = itFound->second;
+		return true;
+	}
+
+	std::wstring CNode::GetAttributeValue(const std::wstring& wsAttributeName) const
+	{
+		const std::map<std::wstring, std::wstring>::const_iterator itFound{m_mAttributes.find(wsAttributeName)};
+		return (m_mAttributes.cend() != itFound) ? itFound->second : std::wstring();
+	}
+
 	#ifdef CSS_CALCULATOR_WITH_XHTML
 	void CNode::SetCompiledStyle(CCompiledStyle* pCompiledStyle)
 	{

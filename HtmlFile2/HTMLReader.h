@@ -7,14 +7,16 @@
 #include "HTMLInterpretator.h"
 #include "Tags/HTMLTags.h"
 
+#include "../Common/3dParty/html/gumbo-parser/src/gumbo.h"
+
 namespace HTML
 {
+#define HtmlTag GumboTag
+
 class CHTMLReader
 {
 	XmlUtils::CXmlLiteReader m_oLightReader;   // SAX Reader
 	NSCSS::CCssCalculator    m_oStylesCalculator; // Css калькулятор
-
-	NSCSS::NSProperties::CPage m_oPageData; // Стили страницы
 
 	std::wstring m_sTmp;  // Temp папка
 	std::wstring m_sSrc;  // Директория источника
@@ -29,7 +31,7 @@ public:
 	CHTMLReader();
 	~CHTMLReader();
 
-	HRESULT ReadFromFile(const std::wstring& wsFileName);
+	HRESULT ConvertFromTo(const std::wstring& wsFrom, const std::wstring& wsTo);
 private:
 	bool IsHTML();
 
@@ -43,12 +45,16 @@ private:
 	void ReadHead();
 	void ReadBody();
 
-	bool ReadStream(std::vector<NSCSS::CNode>& arSelectors, CTextSettings& oTS, bool bInsertEmptyP = false);
-	bool ReadInside(std::vector<NSCSS::CNode>& arSelectors, CTextSettings& oTS);
+	bool ReadStream(std::vector<NSCSS::CNode>& arSelectors, bool bInsertEmptyP = false);
+	bool ReadInside(std::vector<NSCSS::CNode>& arSelectors);
 
-	bool ReadA(std::vector<NSCSS::CNode>& arSelectors, CTextSettings& oTS);
+	bool ReadText(std::vector<NSCSS::CNode>& arSelectors);
+	bool ReadA(std::vector<NSCSS::CNode>& arSelectors);
+	bool ReadBr(std::vector<NSCSS::CNode>& arSelectors);
 
-	void GetSubClass(std::vector<NSCSS::CNode>& sSelectors);
+	bool ReadDefaultTag(HtmlTag eTag, std::vector<NSCSS::CNode>& arSelectors);
+
+	void GetSubClass(std::vector<NSCSS::CNode>& arSelectors);
 };
 }
 

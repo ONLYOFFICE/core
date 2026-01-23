@@ -73,7 +73,7 @@ public:
 	bool fAutoText = false;
 	bool fGenerated = false;
 	bool fDeleted = false;
-	bool fAutoMode = false;
+	bool fAutoMode = true;
 	bool fShowLabelAndPerc = false;
 	bool fShowPercent = false;
 	bool fShowBubbleSizes = false;

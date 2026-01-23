@@ -4067,47 +4067,10 @@ void CPdfEditor::ClearPage()
 	Dict* pResources = pOPage->getResourceDict();
 	if (pResources)
 	{
-		Object oFonts;
-		if (pResources->lookup("Font", &oFonts)->isDict())
-		{
-			for (int i = 0, nLength = oFonts.dictGetLength(); i < nLength; ++i)
-			{
-				Object oFontRef, oFont;
-				if (!oFonts.dictGetValNF(i, &oFontRef)->isRef())
-				{
-					oFontRef.free();
-					continue;
-				}
-
-				if (!xref->fetch(oFontRef.getRefNum(), oFontRef.getRefGen(), &oFont)->isDict())
-				{
-					oFont.free(); oFontRef.free();
-					continue;
-				}
-
-				GfxFont* gfxFont = GfxFont::makeFont(xref, "F", oFontRef.getRef(), oFont.getDict());
-				if (gfxFont)
-				{
-					Ref oEmbRef;
-					std::wstring wsFontBaseName = NSStrings::GetStringFromUTF32(gfxFont->getName());
-
-					if (gfxFont->getEmbeddedFontID(&oEmbRef) || PdfReader::IsBaseFont(wsFontBaseName))
-					{
-						std::wstring wsFileName, wsFontName;
-						PdfReader::RendererOutputDev::GetFont(xref, m_pReader->GetFontManager(), pFontList, gfxFont, wsFileName, wsFontName);
-					}
-
-					RELEASEOBJECT(gfxFont);
-				}
-
-				oFont.free(); oFontRef.free();
-			}
-
-			m_pReader->SetFonts(m_nEditPage);
-		}
-		oFonts.free();
+		std::vector<int> arrUniqueResources;
+		ScanAndProcessFonts(pPDFDocument, xref, pResources, 0, arrUniqueResources, pFontList);
+		m_pReader->SetFonts(m_nEditPage);
 	}
-
 	oAnnots.free();
 }
 void CPdfEditor::AddShapeXML(const std::string& sXML)
@@ -4353,4 +4316,146 @@ std::vector<double> CPdfEditor::WriteRedact(const std::vector<std::wstring>& arr
 		m_arrRedact[i].bDraw = true;
 	}
 	return arrRes;
+}
+void CPdfEditor::ScanAndProcessFonts(PDFDoc* pPDFDocument, XRef* xref, Dict* pResources, int nDepth, std::vector<int>& arrUniqueResources, PdfReader::CPdfFontList* pFontList)
+{
+	if (nDepth > 5 || !pResources)
+		return;
+
+	NSFonts::IFontManager* pFontManager = m_pReader->GetFontManager();
+
+	// Обработка Font
+	Object oFonts;
+	if (pResources->lookup("Font", &oFonts)->isDict())
+	{
+		for (int i = 0, nLength = oFonts.dictGetLength(); i < nLength; ++i)
+		{
+			Object oFontRef, oFont;
+			const char* sFontKey = oFonts.dictGetKey(i);
+
+			if (!oFonts.dictGetValNF(i, &oFontRef)->isRef())
+			{
+				oFontRef.free();
+				continue;
+			}
+
+			if (!xref->fetch(oFontRef.getRefNum(), oFontRef.getRefGen(), &oFont)->isDict())
+			{
+				oFont.free(); oFontRef.free();
+				continue;
+			}
+
+			GfxFont* gfxFont = GfxFont::makeFont(xref, "F", oFontRef.getRef(), oFont.getDict());
+			if (gfxFont)
+			{
+				Ref oEmbRef;
+				std::wstring wsFontBaseName = NSStrings::GetStringFromUTF32(gfxFont->getName());
+
+				if (gfxFont->getEmbeddedFontID(&oEmbRef) || PdfReader::IsBaseFont(wsFontBaseName))
+				{
+					std::wstring wsFileName, wsFontName;
+					PdfReader::RendererOutputDev::GetFont(xref, pFontManager, pFontList, gfxFont, wsFileName, wsFontName);
+
+					// Собираем информацию о встроенном шрифте
+					if (gfxFont->getEmbeddedFontID(&oEmbRef) && !PdfReader::IsBaseFont(wsFontBaseName))
+					{
+						PdfReader::TFontEntry pFontEntry;
+						Ref nFontRef = oFontRef.getRef();
+						if (pFontList->GetFont(&nFontRef, &pFontEntry))
+						{
+							std::map<unsigned int, unsigned int> mGIDToWidth, mUnicodeToCode, mGIDToCode;
+							PdfReader::CollectFontWidths(gfxFont, oFont.getDict(), mGIDToWidth);
+							for (int nIndex = 0; nIndex < pFontEntry.unLenUnicode; ++nIndex)
+							{
+								if (pFontEntry.pCodeToUnicode[nIndex])
+									mUnicodeToCode[pFontEntry.pCodeToUnicode[nIndex]] = nIndex;
+							}
+							for (int nIndex = 0; nIndex < pFontEntry.unLenGID; ++nIndex)
+							{
+								if (pFontEntry.pCodeToGID[nIndex])
+									mGIDToCode[pFontEntry.pCodeToGID[nIndex]] = nIndex;
+							}
+							m_pWriter->AddEmbeddedFontInfo(wsFontName, wsFileName, sFontKey, static_cast<PdfWriter::EFontType>(gfxFont->getType()), mGIDToWidth, mUnicodeToCode, mGIDToCode);
+						}
+					}
+				}
+
+				RELEASEOBJECT(gfxFont);
+			}
+
+			oFont.free(); oFontRef.free();
+		}
+	}
+	oFonts.free();
+
+	// Обработка XObject
+	auto fScanFonts = [this, pPDFDocument, xref, nDepth, &arrUniqueResources, pFontList](Dict* pResources, const char* sName)
+	{
+		Object oObject;
+		if (!pResources->lookup(sName, &oObject)->isDict())
+		{
+			oObject.free();
+			return;
+		}
+		for (int i = 0, nLength = oObject.dictGetLength(); i < nLength; ++i)
+		{
+			Object oXObj, oResources;
+			if (!oObject.dictGetVal(i, &oXObj)->isStream() || !oXObj.streamGetDict()->lookup("Resources", &oResources)->isDict())
+			{
+				oXObj.free(); oResources.free();
+				continue;
+			}
+			Object oRef;
+			if (oXObj.streamGetDict()->lookupNF("Resources", &oRef)->isRef() &&
+				std::find(arrUniqueResources.begin(), arrUniqueResources.end(), oRef.getRef().num) != arrUniqueResources.end())
+			{
+				oXObj.free(); oResources.free(); oRef.free();
+				continue;
+			}
+			arrUniqueResources.push_back(oRef.getRef().num);
+			oXObj.free(); oRef.free();
+
+			ScanAndProcessFonts(pPDFDocument, xref, oResources.getDict(), nDepth + 1, arrUniqueResources, pFontList);
+			oResources.free();
+		}
+		oObject.free();
+	};
+
+	fScanFonts(pResources, "XObject");
+	fScanFonts(pResources, "Pattern");
+
+	// Обработка ExtGState
+	Object oExtGState;
+	if (!pResources->lookup("ExtGState", &oExtGState)->isDict())
+	{
+		oExtGState.free();
+		return;
+	}
+	for (int i = 0, nLength = oExtGState.dictGetLength(); i < nLength; ++i)
+	{
+		Object oGS, oSMask, oSMaskGroup, oResources;
+		if (!oExtGState.dictGetVal(i, &oGS)->isDict() ||
+			!oGS.dictLookup("SMask", &oSMask)->isDict() ||
+			!oSMask.dictLookup("G", &oSMaskGroup)->isStream() ||
+			!oSMaskGroup.streamGetDict()->lookup("Resources", &oResources)->isDict())
+		{
+			oGS.free(); oSMask.free(); oSMaskGroup.free(); oResources.free();
+			continue;
+		}
+		oGS.free(); oSMask.free();
+
+		Object oRef;
+		if (oSMaskGroup.streamGetDict()->lookupNF("Resources", &oRef)->isRef() &&
+			std::find(arrUniqueResources.begin(), arrUniqueResources.end(), oRef.getRef().num) != arrUniqueResources.end())
+		{
+			oSMaskGroup.free(); oResources.free(); oRef.free();
+			continue;
+		}
+		arrUniqueResources.push_back(oRef.getRef().num);
+		oSMaskGroup.free(); oRef.free();
+
+		ScanAndProcessFonts(pPDFDocument, xref, oResources.getDict(), nDepth + 1, arrUniqueResources, pFontList);
+		oResources.free();
+	}
+	oExtGState.free();
 }

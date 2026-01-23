@@ -63,6 +63,25 @@ namespace PdfWriter
 	{
 	public:
 		CFontEmbedded(CXref* pXref, CDocument* pDocument);
+
+		bool LoadFont(const std::string& sFontKey, EFontType eFontType, const std::map<unsigned int, unsigned int>& mGIDToWidth);
+
+		EFontType GetFontType() { return m_eFontType; }
+		unsigned int GetWidth(unsigned short ushCode);
+		unsigned int EncodeUnicode(const unsigned int& unGID, const unsigned int& unUnicode);
+		unsigned int EncodeGID(const unsigned int& unGID);
+		const char* GetFontKey() const { return m_sFontKey.c_str(); }
+		void SetUnicodeToCode(const std::map<unsigned int, unsigned int>& mUnicodeToCode);
+		void SetGIDToCode(const std::map<unsigned int, unsigned int>& mGIDToCode);
+
+	private:
+		std::string m_sFontKey;
+		EFontType m_eFontType;
+
+		unsigned short m_ushCodesCount;
+		std::map<unsigned int, unsigned int> m_mUnicodeToCode;
+		std::map<unsigned int, unsigned int> m_mGIDToCode;
+		std::map<unsigned int, unsigned int> m_mGIDToWidth; // GID -> Width в единицах em
 	};
 }
 

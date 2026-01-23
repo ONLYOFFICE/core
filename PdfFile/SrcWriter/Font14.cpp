@@ -100,8 +100,69 @@ namespace PdfWriter
 		return ushCode;
 	}
 
-	CFontEmbedded::CFontEmbedded(CXref* pXref, CDocument* pDocument) : CFontDict(pXref, pDocument)
+	CFontEmbedded::CFontEmbedded(CXref* pXref, CDocument* pDocument) : CFontDict(pXref, pDocument), m_eFontType(fontUnknownType), m_ushCodesCount(0)
 	{
+	}
+	bool CFontEmbedded::LoadFont(const std::string& sFontKey, EFontType eFontType, const std::map<unsigned int, unsigned int>& mGIDToWidth)
+	{
+		m_sFontKey = sFontKey;
+		m_eFontType = eFontType;
+		m_mGIDToWidth = mGIDToWidth;
 
+		return true;
+	}
+
+	unsigned int CFontEmbedded::GetWidth(unsigned short ushCode)
+	{
+		// Находим GID по коду
+		unsigned int unGID = 0;
+		for (auto& pair : m_mGIDToCode)
+		{
+			if (pair.second == ushCode)
+			{
+				unGID = pair.first;
+				break;
+			}
+		}
+
+		if (unGID == 0)
+			return 0;
+
+		// Возвращаем ширину из карты
+		auto it = m_mGIDToWidth.find(unGID);
+		if (it != m_mGIDToWidth.end())
+			return it->second;
+
+		return 0;
+	}
+
+	unsigned int CFontEmbedded::EncodeUnicode(const unsigned int& unGID, const unsigned int& unUnicode)
+	{
+		auto oIter = m_mUnicodeToCode.find(unUnicode);
+		if (oIter != m_mUnicodeToCode.end())
+			return oIter->second;
+
+		unsigned int ushCode = EncodeGID(unGID);
+		m_mUnicodeToCode.insert(std::pair<unsigned int, unsigned short>(unUnicode, ushCode));
+		return ushCode;
+	}
+
+	unsigned int CFontEmbedded::EncodeGID(const unsigned int& unGID)
+	{
+		auto oIter = m_mGIDToCode.find(unGID);
+		if (oIter != m_mGIDToCode.end())
+			return oIter->second;
+
+		unsigned int ushCode = m_ushCodesCount++;
+		m_mGIDToCode.insert(std::pair<unsigned int, unsigned short>(unGID, ushCode));
+		return ushCode;
+	}
+	void CFontEmbedded::SetUnicodeToCode(const std::map<unsigned int, unsigned int>& mUnicodeToCode)
+	{
+		m_mUnicodeToCode = mUnicodeToCode;
+	}
+	void CFontEmbedded::SetGIDToCode(const std::map<unsigned int, unsigned int>& mGIDToCode)
+	{
+		m_mGIDToCode = mGIDToCode;
 	}
 }

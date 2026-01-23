@@ -3597,9 +3597,6 @@ bool CPdfWriter::IsEmbeddedFont(const std::wstring& wsName)
 {
 	if (wsName.find(L"Embedded: ") != 0)
 		return false;
-
-	// TODO нужна проверка на наличие шрифта в ресурсах страницы
-
 	// Исключаем Base14 шрифты
 	int nBase14 = IsEmbeddedBase14(wsName);
 	return nBase14 < 0;
@@ -3609,16 +3606,19 @@ bool CPdfWriter::GetEmbeddedFont(const std::wstring& wsFontName)
 	std::wstring wsFontPath = m_oFont.GetPath();
 	LONG lFaceIndex         = m_oFont.GetFaceIndex();
 	if (!FindFontPath(wsFontName, m_oFont.IsBold(), m_oFont.IsItalic(), wsFontPath, lFaceIndex))
-	{
-		// Шрифт не найден в кэше
 		return false;
-	}
 	if (m_bSplit)
 		return false;
 	if (!m_pFontManager->LoadFontFromFile(wsFontPath, lFaceIndex, m_oFont.GetSize(), 72, 72))
 		return false;
-	m_pFontEmbedded = m_pDocument->CreateFontEmbedded(wsFontPath, lFaceIndex);
+	m_pFontEmbedded = m_pDocument->FindFontEmbedded(wsFontPath, lFaceIndex);
 	return !!m_pFontEmbedded;
+}
+void CPdfWriter::AddEmbeddedFontInfo(const std::wstring& wsFontName, const std::wstring& wsFilePath, const std::string& sFontKey, PdfWriter::EFontType eFontType,
+									 const std::map<unsigned int, unsigned int>& mGIDToWidth, const std::map<unsigned int, unsigned int>& mUnicodeToCode, const std::map<unsigned int, unsigned int>& mGIDToCode)
+{
+	AddFont(L"Embedded: " + wsFontName, false, false, wsFilePath, 0);
+	m_pDocument->CreateFontEmbedded(wsFilePath, 0, sFontKey, eFontType, mGIDToWidth, mUnicodeToCode, mGIDToCode);
 }
 bool CPdfWriter::UpdateFont()
 {
@@ -4220,6 +4220,19 @@ unsigned char* CPdfWriter::EncodeGID(const unsigned int& unGID, const unsigned i
 		unsigned char* pCodes = new unsigned char[2];
 		pCodes[0] = (*pUnicodes >> 8) & 0xFF;
 		pCodes[1] = *pUnicodes & 0xFF;
+		return pCodes;
+	}
+
+	if (m_pFontEmbedded)
+	{
+		unsigned short ushCode = m_pFontEmbedded->EncodeUnicode(unGID, *pUnicodes);
+
+		// Для CFontEmbedded ширины уже загружены, ничего не добавляем
+
+		unsigned char* pCodes = new unsigned char[2];
+		pCodes[0] = (ushCode >> 8) & 0xFF;
+		pCodes[1] = ushCode & 0xFF;
+
 		return pCodes;
 	}
 

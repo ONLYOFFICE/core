@@ -890,4 +890,115 @@ std::map<std::wstring, std::wstring> GetFreeTextFont(PDFDoc* pdfDoc, NSFonts::IF
 
 	return mRes;
 }
+void CollectFontWidths(GfxFont* gfxFont, Dict* pFontDict, std::map<unsigned int, unsigned int>& mGIDToWidth)
+{
+	// Пытаемся получить ширины из словаря Widths
+	Object oWidths;
+	if (pFontDict->lookup("Widths", &oWidths)->isArray())
+	{
+		Object oFirstChar;
+		int nFirstChar = 0;
+		if (pFontDict->lookup("FirstChar", &oFirstChar)->isInt())
+			nFirstChar = oFirstChar.getInt();
+		oFirstChar.free();
+
+		for (int i = 0; i < oWidths.arrayGetLength(); ++i)
+		{
+			Object oWidth;
+			if (oWidths.arrayGet(i, &oWidth)->isNum())
+			{
+				unsigned int nGID = nFirstChar + i;
+				unsigned int nWidth = (unsigned int)oWidth.getNum();
+				mGIDToWidth[nGID] = nWidth;
+			}
+			oWidth.free();
+		}
+	}
+	oWidths.free();
+
+	// Для CID шрифтов обрабатываем DW и W
+	Object oDescendantFonts;
+	if (pFontDict->lookup("DescendantFonts", &oDescendantFonts)->isArray() && oDescendantFonts.arrayGetLength() > 0)
+	{
+		Object oCIDFont;
+		if (oDescendantFonts.arrayGet(0, &oCIDFont)->isDict())
+		{
+			// Получаем DW (default width)
+			Object oDW;
+			int nDefaultWidth = 1000;
+			if (oCIDFont.dictLookup("DW", &oDW)->isInt())
+				nDefaultWidth = oDW.getInt();
+			oDW.free();
+
+			// Получаем W (widths array)
+			Object oW;
+			if (oCIDFont.dictLookup("W", &oW)->isArray())
+			{
+				int i = 0;
+				while (i < oW.arrayGetLength())
+				{
+					Object oStart, oSecond, oThird;
+					if (!oW.arrayGet(i, &oStart)->isInt())
+					{
+						oStart.free();
+						break;
+					}
+
+					if (i + 1 >= oW.arrayGetLength())
+					{
+						oStart.free();
+						break;
+					}
+
+					oW.arrayGet(i + 1, &oSecond);
+
+					if (oSecond.isArray())
+					{
+						// Format: c [w1 w2 ... wn]
+						int nStartCID = oStart.getInt();
+						for (int j = 0; j < oSecond.arrayGetLength(); ++j)
+						{
+							Object oWidth;
+							if (oSecond.arrayGet(j, &oWidth)->isNum())
+								mGIDToWidth[nStartCID + j] = (unsigned int)oWidth.getNum();
+							oWidth.free();
+						}
+						i += 2;
+					}
+					else if (oSecond.isInt())
+					{
+						// Format: cfirst clast w
+						if (i + 2 >= oW.arrayGetLength())
+						{
+							oStart.free(); oSecond.free();
+							break;
+						}
+
+						oW.arrayGet(i + 2, &oThird);
+						if (oThird.isNum())
+						{
+							int nStartCID = oStart.getInt();
+							int nEndCID = oSecond.getInt();
+							unsigned int nWidth = (unsigned int)oThird.getNum();
+							for (int cid = nStartCID; cid <= nEndCID; ++cid)
+								mGIDToWidth[cid] = nWidth;
+						}
+						oThird.free();
+						i += 3;
+					}
+					else
+					{
+						oStart.free(); oSecond.free();
+						break;
+					}
+
+					oStart.free(); oSecond.free();
+				}
+			}
+			oW.free();
+		}
+		oCIDFont.free();
+	}
+	oDescendantFonts.free();
+}
 }

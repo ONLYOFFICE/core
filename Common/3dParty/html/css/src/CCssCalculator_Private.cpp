@@ -661,8 +661,8 @@ namespace NSCSS
 					std::vector<std::wstring> arClasses = NS_STATIC_FUNCTIONS::GetWordsW(oNode->m_wsClass, false, L" ");
 
 					arNodes.push_back(std::accumulate(arClasses.begin(), arClasses.end(), std::wstring(),
-													  [](std::wstring sRes, const std::wstring& sClass)
-														{return sRes += L'.' + sClass + L' ';}));
+					                                  [](std::wstring sRes, const std::wstring& sClass)
+					                                  {return sRes += L'.' + sClass + L' ';}));
 				}
 				else
 					arNodes.push_back(L'.' + oNode->m_wsClass);

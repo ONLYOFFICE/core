@@ -1,18 +1,19 @@
-#ifndef HTML2OOXMLINTERPRETATOR_H
-#define HTML2OOXMLINTERPRETATOR_H
+#ifndef OOXMLINTERPRETATOR_H
+#define OOXMLINTERPRETATOR_H
 
 // #include "HTMLInterpretator.h"
 #include "../DesktopEditor/common/StringBuilder.h"
 
 #include "../Common/3dParty/html/css/src/xhtml/CDocumentStyle.h"
-#include "../TextSettings.h"
+#include "../Common/3dParty/html/css/src/CCssCalculator.h"
 #include "HTMLInterpretator.h"
 
 namespace HTML
 {
 using XmlString = NSStringUtils::CStringBuilder;
 
-class CHTML2OOXMLInterpretator : public IHTMLInterpretator
+struct TImageData;
+class COOXMLInterpretator : public IHTMLInterpretator
 {
 	XmlString m_oStylesXml;   // styles.xml
 	XmlString m_oDocXmlRels;  // document.xml.rels
@@ -26,6 +27,8 @@ class CHTML2OOXMLInterpretator : public IHTMLInterpretator
 
 	NSCSS::CDocumentStyle m_oXmlStyle;      // Ooxml стиль
 	NSCSS::NSProperties::CPage m_oPageData; // Стили страницы
+
+	NSCSS::CCssCalculator *m_pStylesCalculator;
 
 	struct TState
 	{
@@ -47,8 +50,6 @@ class CHTML2OOXMLInterpretator : public IHTMLInterpretator
 		{}
 	} m_oState;
 
-	CTextSettings m_oTextSettings;
-
 	int m_nFootnoteId;  // ID сноски
 	int m_nHyperlinkId; // ID ссылки
 	int m_nNumberingId; // ID списка
@@ -61,7 +62,9 @@ class CHTML2OOXMLInterpretator : public IHTMLInterpretator
 	anchors_map                          m_mAnchors; // Map якорей с индивидуальными id
 	std::map<std::wstring, UINT>         m_mDivs;      // Div элементы
 public:
-	CHTML2OOXMLInterpretator();
+	COOXMLInterpretator();
+
+	void SetCSSCalculator(NSCSS::CCssCalculator* pCSSCalculator);
 
 	void Begin(const std::wstring& wsDst, const THtmlParams* pParams) override;
 	void End(const std::wstring& wsDst) override;
@@ -70,27 +73,53 @@ public:
 	bool OpenR();
 	bool OpenT();
 
-	void CloseP(std::vector<NSCSS::CNode>& sSelectors);
+	void CloseP();
 	void CloseR();
 	void CloseT();
 
-	void BeginBlock(std::vector<NSCSS::CNode>& arSelectors) override;
-	void EndBlock(bool bAddBlock, std::vector<NSCSS::CNode>& arSelectors) override;
+	void BeginBlock() override;
+	void EndBlock(bool bAddBlock) override;
 
-	void OpenCrossHyperlink(const std::wstring& wsRef, std::vector<NSCSS::CNode>& arSelectors);
-	void OpenExternalHyperlink(const std::wstring& wsRef, const std::wstring& wsTooltip, std::vector<NSCSS::CNode>& arSelectors);
+	//Conversion methods
+	bool OpenAnchor(const std::vector<NSCSS::CNode>& arSelectors) override;
+	void CloseAnchor(const std::vector<NSCSS::CNode>& arSelectors) override;
 
-	void CloseCrossHyperlink(std::vector<NSCSS::CNode>& arSelectors, std::wstring wsFootnote, const std::wstring& wsRef);
-	void CloseExternalHyperlink();
+	void Break(const std::vector<NSCSS::CNode>& arSelectors) override;
 
-	void OpenFldChar(const std::wstring& wsNote);
-	void CloseFldChar();
+	bool OpenAbbreviation(const std::vector<NSCSS::CNode>& arSelectors) override;
+	void CloseAbbreviation(const std::vector<NSCSS::CNode>& arSelectors) override;
+
+	bool OpenBold(const std::vector<NSCSS::CNode>& arSelectors) override { return true; };
+	void CloseBold(const std::vector<NSCSS::CNode>& arSelectors) override {};
+
+	bool OpenBidirectional(const std::vector<NSCSS::CNode>& arSelectors) override { return true; }; //TODO:: проверить необходимо ли для md
+	void CloseBidirectional(const std::vector<NSCSS::CNode>& arSelectors) override {};
+
+	bool OpenItalic(const std::vector<NSCSS::CNode>& arSelectors) override { return true; };
+	void CloseItalic(const std::vector<NSCSS::CNode>& arSelectors) override {};
+
+	bool OpenPreformatted(const std::vector<NSCSS::CNode>& arSelectors) override { return true; }; //TODO:: проверить необходимо ли для md
+	void ClosePreformatted(const std::vector<NSCSS::CNode>& arSelectors) override {};
+
+	bool OpenKBD(const std::vector<NSCSS::CNode>& arSelectors) override { return true; }; //TODO:: проверить необходимо ли для md
+	void CloseKBD(const std::vector<NSCSS::CNode>& arSelectors) override {};
+
+	bool OpenStrikethrough(const std::vector<NSCSS::CNode>& arSelectors) override { return true; }; //TODO:: проверить необходимо ли для md
+	void CloseStrikethrough(const std::vector<NSCSS::CNode>& arSelectors) override {};
+
+	bool OpenUnderline(const std::vector<NSCSS::CNode>& arSelectors) override { return true; }; //TODO:: проверить необходимо ли для md
+	void CloseUnderline(const std::vector<NSCSS::CNode>& arSelectors) override {};
+
+	bool OpenQuotation(const std::vector<NSCSS::CNode>& arSelectors) override { return true; }; //TODO:: проверить необходимо ли для md
+	void CloseQuotation(const std::vector<NSCSS::CNode>& arSelectors) override {}
+
+	bool OpenHeader(const std::vector<NSCSS::CNode>& arSelectors) override { return true; };;
+	void CloseHeader(const std::vector<NSCSS::CNode>& arSelectors) override {};
 
 	std::wstring WritePPr(const std::vector<NSCSS::CNode>& arSelectors);
 	std::wstring WriteRPr(XmlString& oXml, const std::vector<NSCSS::CNode>& arSelectors);
 
 	bool WriteText(const std::wstring& wsText, const std::vector<NSCSS::CNode>& arSelectors) override;
-	void WriteBr(std::vector<NSCSS::CNode>& arSelectors);
 	void WriteEmptyParagraph(bool bVahish = false, bool bInP = false) override;
 	void WriteSpace();
 
@@ -98,9 +127,13 @@ public:
 	std::wstring WriteBookmark(const std::wstring& wsId);
 	std::wstring AddAnchor(const std::wstring& wsAnchorValue);
 
+	void WriteImage(const std::vector<NSCSS::CNode>& arSelectors);
+	void WriteAlternativeImage(const std::wstring& wsAlt, const std::wstring& wsSrc, const TImageData& oImageData);
+	void WriteEmptyImage(int nWidth, int nHeight, const std::wstring& wsName = L"", const std::wstring& wsDescr = L"");
+
 	std::wstring GetStyle(const NSCSS::CCompiledStyle& oStyle, bool bParagraphStyle);
 
-	CTextSettings& GetTextSettings();
+	void UpdatePageStyle(const std::vector<NSCSS::CNode>& arSelectors);
 
 	XmlString& GetStylesXml();
 	XmlString& GetDocRelsXml();
@@ -117,4 +150,4 @@ public:
 };
 }
 
-#endif // HTML2OOXMLINTERPRETATOR_H
+#endif // OOXMLINTERPRETATOR_H

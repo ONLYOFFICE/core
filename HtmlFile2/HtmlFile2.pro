@@ -33,7 +33,8 @@ ADD_DEPENDENCY(kernel, UnicodeConverter, graphics, kernel_network)
 
 SOURCES += htmlfile2.cpp \
     ./Interpretators/OOXMLInterpretator.cpp \
-    HTMLReader.cpp
+    HTMLReader.cpp \
+    Tags/OOXMLTags.cpp
 
 HEADERS += htmlfile2.h \
 	./src/StringFinder.h \
@@ -42,4 +43,6 @@ HEADERS += htmlfile2.h \
 	./Interpretators/OOXMLInterpretator.h \
 	./Interpretators/HTMLInterpretator.h \
 	HTMLParams.h \
-	HTMLReader.h
+	HTMLReader.h \
+	./Tags/HTMLTags.h \
+	Tags/OOXMLTags.h

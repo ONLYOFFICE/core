@@ -8,6 +8,7 @@
 
 #include "Common.h"
 #include "Interpretators/OOXMLInterpretator.h"
+#include "Tags/OOXMLTags.h"
 
 namespace HTML
 {
@@ -156,12 +157,6 @@ inline HtmlTag GetHtmlTag(const std::wstring& wsStrTag);
 inline bool UnreadableNode(const std::wstring& wsNodeName);
 inline bool TagIsUnprocessed(const std::wstring& wsTagName);
 
-#define ADD_OOXML_TAG(tag_name, struct_name)\
-	m_mTags[HTML_TAG(tag_name)] = new struct_name<CHTML2OOXMLInterpretator>((CHTML2OOXMLInterpretator*)m_pInterpretator)
-
-#define ADD_EMPTY_OOXML_TAG(tag_name, struct_name)\
-	m_mTags[HTML_TAG(tag_name)] = new struct_name<CHTML2OOXMLInterpretator>()
-
 CHTMLReader::CHTMLReader()
 	: m_pInterpretator(nullptr)
 {
@@ -173,26 +168,28 @@ CHTMLReader::CHTMLReader()
 	pInterpretator->SetCSSCalculator(&m_oCSSCalculator);
 	m_pInterpretator = pInterpretator;
 
-	// ADD_EMPTY_OOXML_TAG(B, TBold);
-	// ADD_EMPTY_OOXML_TAG(BR, TCenter);
-	// ADD_EMPTY_OOXML_TAG(I, TItalic);
-	// ADD_EMPTY_OOXML_TAG(CODE, TCode);
-	// ADD_EMPTY_OOXML_TAG(S, TStrike);
-	// ADD_EMPTY_OOXML_TAG(U, TUnderline);
-	// ADD_EMPTY_OOXML_TAG(MARK, TMark);
-	// ADD_EMPTY_OOXML_TAG(SUP, TSup);
-	// ADD_EMPTY_OOXML_TAG(SUB, TSub);
-	// ADD_EMPTY_OOXML_TAG(DD, TDD);
-	// ADD_EMPTY_OOXML_TAG(H1, THeader);
+	m_mTags[HTML_TAG(A)]    = std::make_shared<TAnchor<COOXMLInterpretator>>(pInterpretator);
+	m_mTags[HTML_TAG(ABBR)] = std::make_shared<TAnchor<COOXMLInterpretator>>(pInterpretator);
+	m_mTags[HTML_TAG(BR)]   = std::make_shared<TBreak<COOXMLInterpretator>>(pInterpretator);
+	m_mTags[HTML_TAG(DIV)]  = std::make_shared<TDivision<COOXMLInterpretator>>(pInterpretator);
+	m_mTags[HTML_TAG(IMG)]  = std::make_shared<TImage<COOXMLInterpretator>>(pInterpretator);
 
-	// ADD_OOXML_TAG(A, TAnchor);
-	// ADD_OOXML_TAG(ABBR, TAbbr);
-	// ADD_OOXML_TAG(BR, TBr);
-	// ADD_OOXML_TAG(BDO, TBidirectional);
-	// ADD_OOXML_TAG(Q, TQuotation);
-	// ADD_OOXML_TAG(SPAN, TSpan);
-	// ADD_OOXML_TAG(PRE, TPreformatted);
-	// ADD_OOXML_TAG(PRE, TDiv);
+	std::shared_ptr<ITag> oIgnoredTag{std::make_shared<TEmptyTag>()};
+
+	m_mTags[HTML_TAG(B)]      = oIgnoredTag;
+	m_mTags[HTML_TAG(I)]      = oIgnoredTag;
+	m_mTags[HTML_TAG(PRE)]    = oIgnoredTag;
+	m_mTags[HTML_TAG(CENTER)] = oIgnoredTag;
+	m_mTags[HTML_TAG(KBD)]    = oIgnoredTag;
+	m_mTags[HTML_TAG(S)]      = oIgnoredTag;
+	m_mTags[HTML_TAG(U)]      = oIgnoredTag;
+	m_mTags[HTML_TAG(MARK)]   = oIgnoredTag;
+	m_mTags[HTML_TAG(SUP)]    = oIgnoredTag;
+	m_mTags[HTML_TAG(DD)]     = oIgnoredTag;
+	m_mTags[HTML_TAG(Q)]      = oIgnoredTag;
+	m_mTags[HTML_TAG(BDO)]    = oIgnoredTag;
+	m_mTags[HTML_TAG(SPAN)]   = oIgnoredTag;
+	m_mTags[HTML_TAG(H1)]     = oIgnoredTag;
 }
 
 CHTMLReader::~CHTMLReader()
@@ -496,19 +493,19 @@ bool CHTMLReader::ReadInside(std::vector<NSCSS::CNode>& arSelectors)
 		}
 		case HTML_TAG(ABBR):
 		{
-			bResult = ReadAbbreviation(arSelectors);
+			bResult = ReadDefaultTag(HTML_TAG(ABBR), arSelectors);
 			break;
 		}
 		case HTML_TAG(B):
 		case HTML_TAG(STRONG):
 		{
-			bResult = ReadBold(arSelectors);
+			bResult = ReadDefaultTag(HTML_TAG(B), arSelectors);
 			break;
 		}
 		case HTML_TAG(BDO):
 		case HTML_TAG(BDI):
 		{
-			bResult = ReadBidirectional(arSelectors);
+			bResult = ReadDefaultTag(HTML_TAG(BDO), arSelectors);
 			break;
 		}
 		case HTML_TAG(BR):
@@ -518,7 +515,7 @@ bool CHTMLReader::ReadInside(std::vector<NSCSS::CNode>& arSelectors)
 		}
 		case HTML_TAG(CENTER):
 		{
-			bResult = ReadStream(arSelectors);
+			bResult = ReadDefaultTag(HTML_TAG(CENTER), arSelectors);
 			break;
 		}
 		case HTML_TAG(CITE):
@@ -527,26 +524,26 @@ bool CHTMLReader::ReadInside(std::vector<NSCSS::CNode>& arSelectors)
 		case HTML_TAG(I):
 		case HTML_TAG(VAR):
 		{
-			bResult = ReadItalic(arSelectors);
+			bResult = ReadDefaultTag(HTML_TAG(I), arSelectors);
 			break;
 		}
 		case HTML_TAG(CODE):
 		case HTML_TAG(SAMP):
 		case HTML_TAG(TT):
 		{
-			bResult = ReadPreformatted(arSelectors);
+			bResult = ReadDefaultTag(HTML_TAG(PRE), arSelectors);
 			break;
 		}
 		case HTML_TAG(KBD):
 		{
-			bResult = ReadKBD(arSelectors);
+			bResult = ReadDefaultTag(HTML_TAG(KBD), arSelectors);
 			break;
 		}
 		case HTML_TAG(DEL):
 		case HTML_TAG(S):
 		case HTML_TAG(STRIKE):
 		{
-			bResult = ReadStrikethrough(arSelectors);
+			bResult = ReadDefaultTag(HTML_TAG(S), arSelectors);
 			break;
 		}
 		// case HTML_TAG(FONT):
@@ -554,35 +551,31 @@ bool CHTMLReader::ReadInside(std::vector<NSCSS::CNode>& arSelectors)
 		// 	bResult = m_pInterpretator->ReadFont(oXml, sSelectors, oTS);
 		// 	break;
 		// }
-		// case HTML_TAG(IMG):
-		// {
-		// 	bResult = m_pInterpretator->readImage(oXml, sSelectors, oTS);
-		// 	break;
-		// }
+		case HTML_TAG(IMG):
+		{
+			bResult = ReadDefaultTag(HTML_TAG(IMG), arSelectors);
+			break;
+		}
 		case HTML_TAG(INS):
 		case HTML_TAG(U):
 		{
-			bResult = ReadUnderline(arSelectors);
+			bResult = ReadDefaultTag(HTML_TAG(U), arSelectors);
 			break;
 		}
 		case HTML_TAG(MARK):
 		{
-			bResult = ReadStream(arSelectors);
+			bResult = ReadDefaultTag(HTML_TAG(MARK), arSelectors);
 			break;
 		}
 		case HTML_TAG(Q):
 		{
-			bResult = ReadQuotation(arSelectors);
+			bResult = ReadDefaultTag(HTML_TAG(Q), arSelectors);
 			break;
 		}
 		case HTML_TAG(SUP):
-		{
-			bResult = ReadStream(arSelectors);
-			break;
-		}
 		case HTML_TAG(SUB):
 		{
-			bResult = ReadStream(arSelectors);
+			bResult = ReadDefaultTag(HTML_TAG(SUP), arSelectors);
 			break;
 		}
 		// case HTML_TAG(SVG):
@@ -623,12 +616,12 @@ bool CHTMLReader::ReadInside(std::vector<NSCSS::CNode>& arSelectors)
 		}
 		case HTML_TAG(SPAN):
 		{
-			bResult = ReadStream(arSelectors);
+			bResult = ReadDefaultTag(HTML_TAG(SPAN), arSelectors);
 			break;
 		}
 		case HTML_TAG(NOBR):
 		{
-			bResult = ReadPreformatted(arSelectors);
+			bResult = ReadDefaultTag(HTML_TAG(PRE), arSelectors);
 			break;
 		}
 		// case HTML_TAG(BASEFONT):
@@ -661,12 +654,12 @@ bool CHTMLReader::ReadInside(std::vector<NSCSS::CNode>& arSelectors)
 			{
 				case HTML_TAG(ADDRESS):
 				{
-					bResult = ReadItalic(arSelectors);
+					bResult = ReadDefaultTag(HTML_TAG(I), arSelectors);;
 					break;
 				}
 				case HTML_TAG(DD):
 				{
-					bResult = ReadStream(arSelectors);
+					bResult = ReadDefaultTag(HTML_TAG(DD), arSelectors);;
 					break;
 				}
 				case HTML_TAG(H1):
@@ -676,14 +669,13 @@ bool CHTMLReader::ReadInside(std::vector<NSCSS::CNode>& arSelectors)
 				case HTML_TAG(H5):
 				case HTML_TAG(H6):
 				{
-					bResult = ReadHeader(arSelectors);
+					bResult = ReadDefaultTag(HTML_TAG(H1), arSelectors);
 					break;
 				}
 				case HTML_TAG(ASIDE):
 				case HTML_TAG(DIV):
 				{
-					m_pInterpretator->UpdatePageStyle(arSelectors);
-					bResult = ReadStream(arSelectors);
+					bResult = ReadDefaultTag(HTML_TAG(DIV), arSelectors);
 					break;
 				}
 		// 		case HTML_TAG(BLOCKQUOTE):
@@ -691,32 +683,26 @@ bool CHTMLReader::ReadInside(std::vector<NSCSS::CNode>& arSelectors)
 		// 			bResult = ReadBlockquote(&oXmlData, sSelectors, oTS);
 		// 			break;
 		// 		}
-		// 		case HTML_TAG(ARTICLE):
-		// 		case HTML_TAG(HEADER):
-		// 		case HTML_TAG(MAIN):
-		// 		case HTML_TAG(SUMMARY):
-		// 		case HTML_TAG(FOOTER):
-		// 		case HTML_TAG(NAV):
-		// 		case HTML_TAG(FIGCAPTION):
-		// 		case HTML_TAG(FORM):
-		// 		case HTML_TAG(OPTION):
-		// 		case HTML_TAG(DT):
-		// 		case HTML_TAG(P):
-		// 		case HTML_TAG(SECTION):
-		// 		case HTML_TAG(FIGURE):
-		// 		case HTML_TAG(DL):
-		// 		case HTML_TAG(LEGEND):
-		// 		case HTML_TAG(MAP):
-		// 		case HTML_TAG(H1):
-		// 		case HTML_TAG(H2):
-		// 		case HTML_TAG(H3):
-		// 		case HTML_TAG(H4):
-		// 		case HTML_TAG(H5):
-		// 		case HTML_TAG(H6):
-		// 		{
-		// 			bResult = readStream(&oXmlData, sSelectors, oTS);
-		// 			break;
-		// 		}
+				case HTML_TAG(ARTICLE):
+				case HTML_TAG(HEADER):
+				case HTML_TAG(MAIN):
+				case HTML_TAG(SUMMARY):
+				case HTML_TAG(FOOTER):
+				case HTML_TAG(NAV):
+				case HTML_TAG(FIGCAPTION):
+				case HTML_TAG(FORM):
+				case HTML_TAG(OPTION):
+				case HTML_TAG(DT):
+				case HTML_TAG(P):
+				case HTML_TAG(SECTION):
+				case HTML_TAG(FIGURE):
+				case HTML_TAG(DL):
+				case HTML_TAG(LEGEND):
+				case HTML_TAG(MAP):
+				{
+					bResult = ReadStream(arSelectors);
+					break;
+				}
 		// 		case HTML_TAG(HR):
 		// 		{
 		// 			bResult = ReadHr(&oXmlData, sSelectors, oTS);
@@ -744,7 +730,7 @@ bool CHTMLReader::ReadInside(std::vector<NSCSS::CNode>& arSelectors)
 				case HTML_TAG(PRE):
 				case HTML_TAG(XMP):
 				{
-					bResult = ReadPreformatted(arSelectors);
+					bResult = ReadDefaultTag(HTML_TAG(PRE), arSelectors);
 					break;
 				}
 		// 		case HTML_TAG(TABLE):
@@ -808,45 +794,38 @@ bool CHTMLReader::ReadText(std::vector<NSCSS::CNode>& arSelectors)
 
 bool CHTMLReader::ReadAnchor(std::vector<NSCSS::CNode>& arSelectors)
 {
-	m_pInterpretator->OpenAnchor(arSelectors);
+	if (!m_mTags[HTML_TAG(A)]->Open(arSelectors))
+		return false;
 
-	if(!ReadStream(arSelectors))
-		m_pInterpretator->WriteEmptyParagraph(true, true);
+	if (!ReadStream(arSelectors))
+		m_pInterpretator->WriteEmptyParagraph(true);
 
-	m_pInterpretator->CloseAnchor(arSelectors);
+	m_mTags[HTML_TAG(A)]->Close(arSelectors);
 
 	return true;
-}
-
-#define CREATE_DEFAULT_READ(PROPERTY_NAME)\
-bool CHTMLReader::Read##PROPERTY_NAME(std::vector<NSCSS::CNode>& arSelectors)\
-{\
-	if (!m_pInterpretator->Open##PROPERTY_NAME(arSelectors))\
-		return false;\
-\
-	const bool bResult{ReadStream(arSelectors)};\
-\
-	m_pInterpretator->Close##PROPERTY_NAME(arSelectors);\
-\
-	return bResult;\
 }
 
 bool CHTMLReader::ReadBreak(const std::vector<NSCSS::CNode>& arSelectors)
 {
-	m_pInterpretator->Break(arSelectors);
+	if (!m_mTags[HTML_TAG(BR)]->Open(arSelectors))
+		return false;
+
+	m_mTags[HTML_TAG(BR)]->Close(arSelectors);
+
 	return true;
 }
 
-CREATE_DEFAULT_READ(Abbreviation)
-CREATE_DEFAULT_READ(Bold)
-CREATE_DEFAULT_READ(Bidirectional)
-CREATE_DEFAULT_READ(Italic)
-CREATE_DEFAULT_READ(Preformatted)
-CREATE_DEFAULT_READ(KBD)
-CREATE_DEFAULT_READ(Strikethrough)
-CREATE_DEFAULT_READ(Underline)
-CREATE_DEFAULT_READ(Quotation)
-CREATE_DEFAULT_READ(Header)
+bool CHTMLReader::ReadDefaultTag(UINT unTag, std::vector<NSCSS::CNode>& arSelectors)
+{
+	if (!m_mTags[unTag]->Open(arSelectors))
+		return false;
+
+	const bool bResult{ReadStream(arSelectors)};
+
+	m_mTags[unTag]->Close(arSelectors);
+
+	return bResult;
+}
 
 void CHTMLReader::GetSubClass(std::vector<NSCSS::CNode>& arSelectors)
 {

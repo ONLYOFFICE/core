@@ -5,6 +5,7 @@
 #include "../DesktopEditor/xml/include/xmlutils.h"
 
 #include "Interpretators/HTMLInterpretator.h"
+#include "Tags/HTMLTags.h"
 
 namespace HTML
 {
@@ -23,7 +24,7 @@ class CHTMLReader
 
 	IHTMLInterpretator *m_pInterpretator;
 
-	// std::map<unsigned int, ITag*> m_mTags;
+	std::unordered_map<UINT, std::shared_ptr<ITag>> m_mTags;
 public:
 	CHTMLReader();
 	~CHTMLReader();
@@ -54,16 +55,7 @@ private:
 	bool ReadAnchor(std::vector<NSCSS::CNode>& arSelectors);
 	bool ReadBreak(const std::vector<NSCSS::CNode>& arSelectors);
 
-	bool ReadAbbreviation(std::vector<NSCSS::CNode>& arSelectors);
-	bool ReadBold(std::vector<NSCSS::CNode>& arSelectors);
-	bool ReadBidirectional(std::vector<NSCSS::CNode>& arSelectors);
-	bool ReadItalic(std::vector<NSCSS::CNode>& arSelectors);
-	bool ReadPreformatted(std::vector<NSCSS::CNode>& arSelectors);
-	bool ReadKBD(std::vector<NSCSS::CNode>& arSelectors);
-	bool ReadStrikethrough(std::vector<NSCSS::CNode>& arSelectors);
-	bool ReadUnderline(std::vector<NSCSS::CNode>& arSelectors);
-	bool ReadQuotation(std::vector<NSCSS::CNode>& arSelectors);
-	bool ReadHeader(std::vector<NSCSS::CNode>& arSelectors);
+	bool ReadDefaultTag(UINT unTag, std::vector<NSCSS::CNode>& arSelectors);
 
 	void GetSubClass(std::vector<NSCSS::CNode>& arSelectors);
 };

@@ -2,11 +2,13 @@
 
 #include <cwctype>
 
-#include "../DesktopEditor/common/File.h"
-#include "../DesktopEditor/common/Directory.h"
-#include "../DesktopEditor/common/SystemUtils.h"
+#include "../../DesktopEditor/common/File.h"
+#include "../../DesktopEditor/common/Directory.h"
+#include "../../DesktopEditor/common/SystemUtils.h"
 
-#include "src/Languages.h"
+#include "../../DesktopEditor/graphics/pro/Graphics.h"
+
+#include "../src/Languages.h"
 
 #include <iostream>
 #include <ostream>
@@ -33,31 +35,6 @@ namespace HTML
 #define DEFAULT_IMAGE_WIDTH  304800
 #define DEFAULT_IMAGE_HEIGHT 304800
 
-struct TImageData
-{
-	UINT m_unWidth;
-	UINT m_unHeight;
-
-	int m_nHSpace;
-	int m_nVSpace;
-
-	std::wstring m_wsAlign;
-
-	TImageData()
-	    : m_unWidth(0), m_unHeight(0), m_nHSpace(0), m_nVSpace(0), m_wsAlign(L"left")
-	{}
-
-	bool ZeroSize() const
-	{
-		return 0 == m_unWidth || 0 == m_unHeight;
-	}
-
-	bool ZeroSpaces() const
-	{
-		return 0 == m_nHSpace && 0 == m_nVSpace;
-	}
-};
-
 inline bool ElementInTable(const std::vector<NSCSS::CNode>& arSelectors);
 inline void WriteToStringBuilder(NSStringUtils::CStringBuilder& oSrcStringBuilder, NSStringUtils::CStringBuilder& oDstStringBuilder);
 inline bool ElementInHeader(const std::vector<NSCSS::CNode> arSelsectors);
@@ -70,13 +47,16 @@ inline void replace_all(std::wstring& s, const std::wstring& s1, const std::wstr
 inline std::wstring EncodeXmlString(std::wstring wsString);
 
 COOXMLInterpretator::COOXMLInterpretator()
-	: m_pCurrentDocument(&m_oDocXml), m_nFootnoteId(1), m_nHyperlinkId(1), m_nNumberingId(1), m_nId(1), m_nShapeId(1)
+	: m_nFootnoteId(1), m_nHyperlinkId(1), m_nNumberingId(1), m_nId(1), m_nShapeId(1), m_pFonts(nullptr)
 {
 	m_oPageData.SetWidth (DEFAULT_PAGE_WIDTH,  NSCSS::UnitMeasure::Twips, 0, true);
 	m_oPageData.SetHeight(DEFAULT_PAGE_HEIGHT, NSCSS::UnitMeasure::Twips, 0, true);
 	m_oPageData.SetMargin(1440,                NSCSS::UnitMeasure::Twips, 0, true);
 	m_oPageData.SetFooter(720,                 NSCSS::UnitMeasure::Twips, 0, true);
 	m_oPageData.SetHeader(720,                 NSCSS::UnitMeasure::Twips, 0, true);
+
+	m_arStates.push(TState());
+	m_arStates.top().m_pCurrentDocument = &m_oDocXml;
 }
 
 void COOXMLInterpretator::SetCSSCalculator(NSCSS::CCssCalculator* pCSSCalculator)
@@ -307,7 +287,7 @@ void COOXMLInterpretator::End(const std::wstring& wsDst)
 		oRelsWriter.CloseFile();
 	}
 
-	if (m_oState.m_bInP)
+	if (m_arStates.top().m_bInP)
 		m_oDocXml.WriteString(L"</w:p>");
 
 	m_oDocXml.WriteString(L"<w:sectPr w:rsidR=\"0007083F\" w:rsidRPr=\"0007083F\" w:rsidSect=\"0007612E\">");
@@ -380,79 +360,82 @@ void COOXMLInterpretator::End(const std::wstring& wsDst)
 
 bool COOXMLInterpretator::OpenP()
 {
-	if (m_oState.m_bInP)
+	if (m_arStates.top().m_bInP)
 		return false;
 
-	m_pCurrentDocument->WriteString(L"<w:p>");
-	m_oState.m_bInP = true;
-	m_oState.m_bWasPStyle = false;
+	m_arStates.top().m_pCurrentDocument->WriteString(L"<w:p>");
+	m_arStates.top().m_bInP = true;
+	m_arStates.top().m_bWasPStyle = false;
 
 	return true;
 }
 
 bool COOXMLInterpretator::OpenR()
 {
-	if (m_oState.m_bInR)
+	if (m_arStates.top().m_bInR)
 		return false;
 
-	m_pCurrentDocument->WriteString(L"<w:r>");
-	m_oState.m_bInR = true;
+	m_arStates.top().m_pCurrentDocument->WriteString(L"<w:r>");
+	m_arStates.top().m_bInR = true;
 	return true;
 }
 
 bool COOXMLInterpretator::OpenT()
 {
-	if (m_oState.m_bInT)
+	if (m_arStates.top().m_bInT)
 		return false;
 
-	m_pCurrentDocument->WriteString(L"<w:t xml:space=\"preserve\">");
-	m_oState.m_bInT = true;
+	m_arStates.top().m_pCurrentDocument->WriteString(L"<w:t xml:space=\"preserve\">");
+	m_arStates.top().m_bInT = true;
 	return true;
 }
 
 void COOXMLInterpretator::CloseP()
 {
-	m_oState.m_bWasSpace = true;
+	m_arStates.top().m_bWasSpace = true;
 
-	if (!m_oState.m_bInP)
+	if (!m_arStates.top().m_bInP)
 		return;
 
 	CloseT();
 	CloseR();
 
-	m_pCurrentDocument->WriteString(L"</w:p>");
-	m_oState.m_bInP = false;
+	m_arStates.top().m_pCurrentDocument->WriteString(L"</w:p>");
+	m_arStates.top().m_bInP = false;
 }
 
 void COOXMLInterpretator::CloseR()
 {
-	if (!m_oState.m_bInR)
+	if (!m_arStates.top().m_bInR)
 		return;
 
-	m_pCurrentDocument->WriteString(L"</w:r>");
-	m_oState.m_bInR = false;
+	m_arStates.top().m_pCurrentDocument->WriteString(L"</w:r>");
+	m_arStates.top().m_bInR = false;
 }
 
 void COOXMLInterpretator::CloseT()
 {
-	if (!m_oState.m_bInT)
+	if (!m_arStates.top().m_bInT)
 		return;
 
-	m_pCurrentDocument->WriteString(L"</w:t>");
-	m_oState.m_bInT = false;
+	m_arStates.top().m_pCurrentDocument->WriteString(L"</w:t>");
+	m_arStates.top().m_bInT = false;
 }
 
 void COOXMLInterpretator::BeginBlock()
 {
-	m_pCurrentDocument = new XmlString();
+	m_arStates.top().m_pCurrentDocument = new XmlString();
 	//Сохранить состояние
+
+	SaveState();
+	m_arStates.top().CreateNewCurrentDocument();
 
 	CloseP();
 }
 
 void COOXMLInterpretator::EndBlock(bool bAddBlock)
 {
-	if (m_pCurrentDocument == &m_oDocXml)
+	if (m_arStates.top().m_pCurrentDocument == &m_oDocXml)
 		return;
 
 	// 	readNote(&oXmlData, sSelectors, sNote);
@@ -460,62 +443,71 @@ void COOXMLInterpretator::EndBlock(bool bAddBlock)
 	CloseP();
 
 	if (bAddBlock)
-		WriteToStringBuilder(*m_pCurrentDocument, m_oDocXml);
+		WriteToStringBuilder(*m_arStates.top().m_pCurrentDocument, m_oDocXml);
 	// 	else
 	// 		m_oState = oCurentState;
 
-	delete m_pCurrentDocument;
-	m_pCurrentDocument = &m_oDocXml;
+	RollBackState();
 }
 
-bool COOXMLInterpretator::OpenAnchor(const std::vector<NSCSS::CNode>& arSelectors)
+void COOXMLInterpretator::SaveState()
 {
-	std::wstring wsRef, wsAlt, wsName;
-	bool bCross = false;
+	m_arStates.push(m_arStates.top());
+}
 
-	if (arSelectors.back().GetAttributeValue(L"href", wsRef) && wsRef.find('#') != std::wstring::npos)
-		bCross = true;
+void COOXMLInterpretator::RollBackState()
+{
+	if(m_arStates.size() > 1)
+		m_arStates.pop();
+}
 
-	if (arSelectors.back().GetAttributeValue(L"name", wsName))
-		WriteBookmark(wsName);
+void COOXMLInterpretator::SetCurrentDocument(XmlString* pNewDocument)
+{
+	SaveState();
 
-	arSelectors.back().GetAttributeValue(L"alt", wsAlt);
+	m_arStates.top().m_pCurrentDocument = pNewDocument;
+	m_arStates.top().m_bRemoveCurrentDocument = false;
+}
 
-	std::wstring wsTooltip(wsRef);
-
-	arSelectors.back().GetAttributeValue(L"title", wsTooltip);
-
-	if (!OpenP())
-		CloseR();
-	else
-		WritePPr(arSelectors);
-
-	if (bCross)
+void COOXMLInterpretator::Break(const std::vector<NSCSS::CNode>& arSelectors)
+{
+	if (m_arStates.top().m_bInP)
 	{
-		m_oState.m_bInHyperlink = true;
-
-		m_pCurrentDocument->WriteString(L"<w:hyperlink w:anchor=\"");
-		const size_t nSharp = wsRef.find('#');
-
-		std::wstring wsAnchorValue;
-
-		if(nSharp == std::wstring::npos)
-			wsAnchorValue = NSFile::GetFileName(wsRef);
-		else
-			wsAnchorValue = (wsRef.c_str() + nSharp + 1);
-
-		if (!wsAnchorValue.empty())
-			m_pCurrentDocument->WriteEncodeXmlString(AddAnchor(wsAnchorValue));
-
-		m_pCurrentDocument->WriteString(L"\">");
-
-		return true;
+		OpenR();
+		if(arSelectors.back().m_pCompiledStyle->m_oText.GetAlign() == L"both")
+			m_arStates.top().m_pCurrentDocument->WriteString(L"<w:tab/>");
+		m_arStates.top().m_pCurrentDocument->WriteString(L"<w:br/>");
+		CloseR();
 	}
+	else
+		WriteEmptyParagraph();
 
-	// Пишем рельсы
+	m_arStates.top().m_bWasSpace = true;
+}
+
+void COOXMLInterpretator::OpenCrossHyperlink(const std::wstring& wsRef, const std::vector<NSCSS::CNode>& arSelectors)
+{
+	m_arStates.top().m_pCurrentDocument->WriteString(L"<w:hyperlink w:anchor=\"");
+	const size_t nSharp = wsRef.find('#');
+
+	std::wstring wsAnchorValue;
+
+	if(nSharp == std::wstring::npos)
+		wsAnchorValue = NSFile::GetFileName(wsRef);
+	else
+		wsAnchorValue = (wsRef.c_str() + nSharp + 1);
+
+	if (!wsAnchorValue.empty())
+		m_arStates.top().m_pCurrentDocument->WriteEncodeXmlString(AddAnchor(wsAnchorValue));
+
+	m_arStates.top().m_pCurrentDocument->WriteString(L"\">");
+}
+
+void COOXMLInterpretator::OpenExternalHyperlink(const std::wstring& wsRef, const std::wstring& wsTooltip, const std::vector<NSCSS::CNode>& arSelectors)
+{
 	XmlString& oRelationshipXml(m_oDocXmlRels);
 
-	if (*&m_pCurrentDocument == &m_oNoteXml)
+	if (*&m_arStates.top().m_pCurrentDocument == &m_oNoteXml)
 		oRelationshipXml = m_oNoteXmlRels;
 
 	oRelationshipXml.WriteString(L"<Relationship Id=\"rHyp");
@@ -524,130 +516,70 @@ bool COOXMLInterpretator::OpenAnchor(const std::vector<NSCSS::CNode>& arSelector
 	oRelationshipXml.WriteEncodeXmlString(wsRef);
 	oRelationshipXml.WriteString(L"\" TargetMode=\"External\"/>");
 
-	m_oState.m_bInHyperlink = true;
+	m_arStates.top().m_bInHyperlink = true;
 	// Пишем в document.xml
-	m_pCurrentDocument->WriteString(L"<w:hyperlink w:tooltip=\"");
-	m_pCurrentDocument->WriteEncodeXmlString(wsTooltip);
-	m_pCurrentDocument->WriteString(L"\" r:id=\"rHyp");
-	m_pCurrentDocument->WriteString(std::to_wstring(m_nHyperlinkId++));
-	m_pCurrentDocument->WriteString(L"\">");
-
-	return true;
+	m_arStates.top().m_pCurrentDocument->WriteString(L"<w:hyperlink w:tooltip=\"");
+	m_arStates.top().m_pCurrentDocument->WriteEncodeXmlString(wsTooltip);
+	m_arStates.top().m_pCurrentDocument->WriteString(L"\" r:id=\"rHyp");
+	m_arStates.top().m_pCurrentDocument->WriteString(std::to_wstring(m_nHyperlinkId++));
+	m_arStates.top().m_pCurrentDocument->WriteString(L"\">");
 }
 
-void COOXMLInterpretator::CloseAnchor(const std::vector<NSCSS::CNode>& arSelectors)
+void COOXMLInterpretator::CloseCrossHyperlink(const std::vector<NSCSS::CNode>& arSelectors, std::wstring wsFootnote, const std::wstring& wsRef)
 {
-	bool bCross = false;
-	std::wstring wsFootnote;
-
-	if (arSelectors.back().m_wsStyle.find(L"mso-footnote-id") != std::wstring::npos)
-		wsFootnote = arSelectors.back().m_wsStyle.substr(arSelectors.back().m_wsStyle.rfind(L':') + 1);
-	else
-	{
-		if (arSelectors.back().GetAttributeValue(L"epub:type", wsFootnote) && wsFootnote.find(L"noteref"))
-			wsFootnote = L"href";
-	}
-
-	std::wstring wsRef;
-
-	if (arSelectors.back().GetAttributeValue(L"href", wsRef))
-	{
-		if(wsRef.find('#') != std::wstring::npos)
-			bCross = true;
-	}
-
-	if (!m_oState.m_bInP)
+	if (!m_arStates.top().m_bInP)
 		return;
 
-	if (m_oState.m_bInHyperlink)
+	CloseExternalHyperlink();
+
+	if (wsFootnote == L"href")
+		wsFootnote = wsRef.substr(wsRef.find('#') + 1);
+
+	bool bFootnote = false;
+	if (arSelectors.size() > 1)
 	{
-		CloseT();
-		CloseR();
-		m_pCurrentDocument->WriteString(L"</w:hyperlink>");
-		m_oState.m_bInHyperlink = false;
+		const NSCSS::CNode& oNode = arSelectors[arSelectors.size() - 2];
+		bFootnote = oNode.m_wsName == L"p" && oNode.m_wsClass == L"MsoFootnoteText";
 	}
 
-	if (bCross)
+	// Сноска
+	if (!wsFootnote.empty())
 	{
-		if (wsFootnote == L"href")
-			wsFootnote = wsRef.substr(wsRef.find('#') + 1);
-
-		bool bFootnote = false;
-		if (arSelectors.size() > 1)
+		if (!bFootnote)
 		{
-			const NSCSS::CNode& oNode = arSelectors[arSelectors.size() - 2];
-			bFootnote = oNode.m_wsName == L"p" && oNode.m_wsClass == L"MsoFootnoteText";
+			std::wstring sFootnoteID = std::to_wstring(m_nFootnoteId++);
+			OpenR();
+			m_arStates.top().m_pCurrentDocument->WriteString(L"<w:rPr><w:rStyle w:val=\"footnote\"/></w:rPr><w:footnoteReference w:id=\"");
+			m_arStates.top().m_pCurrentDocument->WriteString(sFootnoteID);
+			m_arStates.top().m_pCurrentDocument->WriteString(L"\"/>");
+			CloseR();
+			m_mFootnotes.insert(std::make_pair(wsFootnote, sFootnoteID));
 		}
-
-		// Сноска
-		if (!wsFootnote.empty())
+		else
 		{
-			if (!bFootnote)
-			{
-				std::wstring sFootnoteID = std::to_wstring(m_nFootnoteId++);
-				OpenR();
-				m_pCurrentDocument->WriteString(L"<w:rPr><w:rStyle w:val=\"footnote\"/></w:rPr><w:footnoteReference w:id=\"");
-				m_pCurrentDocument->WriteString(sFootnoteID);
-				m_pCurrentDocument->WriteString(L"\"/>");
-				CloseR();
-				m_mFootnotes.insert(std::make_pair(wsFootnote, sFootnoteID));
-			}
-			else
-			{
-				OpenR();
-				m_pCurrentDocument->WriteString(L"<w:rPr><w:rStyle w:val=\"footnote\"/></w:rPr><w:footnoteRef/>");
-				CloseR();
-			}
+			OpenR();
+			m_arStates.top().m_pCurrentDocument->WriteString(L"<w:rPr><w:rStyle w:val=\"footnote\"/></w:rPr><w:footnoteRef/>");
+			CloseR();
 		}
 	}
 }
 
-void COOXMLInterpretator::Break(const std::vector<NSCSS::CNode>& arSelectors)
+void COOXMLInterpretator::CloseExternalHyperlink()
 {
-	if (m_oState.m_bInP)
-	{
-		OpenR();
-		if(arSelectors.back().m_pCompiledStyle->m_oText.GetAlign() == L"both")
-			m_pCurrentDocument->WriteString(L"<w:tab/>");
-		m_pCurrentDocument->WriteString(L"<w:br/>");
-		CloseR();
-	}
-	else
-		WriteEmptyParagraph(false, m_oState.m_bInP);
+	if (!m_arStates.top().m_bInP && !m_arStates.top().m_bInHyperlink)
+		return;
 
-	m_oState.m_bWasSpace = true;
-}
-
-bool COOXMLInterpretator::OpenAbbreviation(const std::vector<NSCSS::CNode>& arSelectors)
-{
-	std::wstring wsTitle;
-
-	if (!arSelectors.back().GetAttributeValue(L"title", wsTitle))
-		return false;
-
-	WritePPr(arSelectors);
-
-	const std::wstring wsName{L"Bookmark" + std::to_wstring(m_mBookmarks.size() + 1)};
-	m_mBookmarks.insert(std::make_pair(wsName, m_mBookmarks.size() + 1));
-
-	m_pCurrentDocument->WriteString(L"<w:r><w:fldChar w:fldCharType=\"begin\"/></w:r><w:r><w:instrText>HYPERLINK \\l \"" + wsName + L"\" \\o \"");
-	m_pCurrentDocument->WriteEncodeXmlString(wsTitle);
-	m_pCurrentDocument->WriteString(L"\"</w:instrText></w:r>");
-	m_pCurrentDocument->WriteString(L"<w:r><w:fldChar w:fldCharType=\"separate\"/></w:r>");
-
-	return true;
-}
-
-void COOXMLInterpretator::CloseAbbreviation(const std::vector<NSCSS::CNode>& arSelectors)
-{
-	m_pCurrentDocument->WriteString(L"<w:r><w:fldChar w:fldCharType=\"end\"/></w:r>");
+	CloseT();
+	CloseR();
+	m_arStates.top().m_pCurrentDocument->WriteString(L"</w:hyperlink>");
+	m_arStates.top().m_bInHyperlink = false;
 }
 
 std::wstring COOXMLInterpretator::WritePPr(const std::vector<NSCSS::CNode>& arSelectors)
 {
 	OpenP();
 
-	if (m_oState.m_bWasPStyle)
+	if (m_arStates.top().m_bWasPStyle)
 		return L"";
 
 	std::wstring sPStyle = GetStyle(*arSelectors.back().m_pCompiledStyle, true);
@@ -662,13 +594,13 @@ std::wstring COOXMLInterpretator::WritePPr(const std::vector<NSCSS::CNode>& arSe
 	// const std::wstring sPSettings = m_oXmlStyle.GetStyle();
 	// m_oXmlStyle.Clear();
 
-	m_pCurrentDocument->WriteNodeBegin(L"w:pPr");
+	m_arStates.top().m_pCurrentDocument->WriteNodeBegin(L"w:pPr");
 
 	if (!sPStyle.empty())
 	{
-		m_pCurrentDocument->WriteString(L"<w:pStyle w:val=\"");
-		m_pCurrentDocument->WriteString(sPStyle);
-		m_pCurrentDocument->WriteString(L"\"/>");
+		m_arStates.top().m_pCurrentDocument->WriteString(L"<w:pStyle w:val=\"");
+		m_arStates.top().m_pCurrentDocument->WriteString(sPStyle);
+		m_arStates.top().m_pCurrentDocument->WriteString(L"\"/>");
 	}
 
 	int nLiLevel{-1};
@@ -687,19 +619,19 @@ std::wstring COOXMLInterpretator::WritePPr(const std::vector<NSCSS::CNode>& arSe
 	}
 
 	if (nLiLevel >= 0)
-		m_pCurrentDocument->WriteString(L"<w:numPr><w:ilvl w:val=\"" + std::to_wstring(nLiLevel) + L"\"/><w:numId w:val=\"" +
-		                                (bNumberingLi ? L"1" : std::to_wstring(m_nNumberingId)) + L"\"/></w:numPr>");
+		m_arStates.top().m_pCurrentDocument->WriteString(L"<w:numPr><w:ilvl w:val=\"" + std::to_wstring(nLiLevel) + L"\"/><w:numId w:val=\"" +
+		                                                 (bNumberingLi ? L"1" : std::to_wstring(m_nNumberingId)) + L"\"/></w:numPr>");
 
 	// m_pCurrentDocument->WriteString(oTS.sPStyle + sPSettings);
-	m_pCurrentDocument->WriteNodeEnd(L"w:pPr");
-	m_oState.m_bWasPStyle = true;
+	m_arStates.top().m_pCurrentDocument->WriteNodeEnd(L"w:pPr");
+	m_arStates.top().m_bWasPStyle = true;
 
 	return sPStyle;
 }
 
 std::wstring COOXMLInterpretator::WriteRPr(XmlString& oXml, const std::vector<NSCSS::CNode>& arSelectors)
 {
-	if (!m_oState.m_bInP)
+	if (!m_arStates.top().m_bInP)
 		return L"";
 
 	NSCSS::CCompiledStyle *pMainStyle{arSelectors.back().m_pCompiledStyle};
@@ -806,7 +738,7 @@ bool COOXMLInterpretator::WriteText(const std::wstring& wsText, const std::vecto
 	if(bBidirectional)
 		std::reverse(wsNormalizeText.begin(), wsNormalizeText.end());
 
-	const bool bInT = m_oState.m_bInT;
+	const bool bInT = m_arStates.top().m_bInT;
 
 	//TODO:: сделать так, чтобы параграф (со своими стилями) открывался при чтении сооответствующей ноды, а не при чтении текста
 	OpenP();
@@ -824,13 +756,13 @@ bool COOXMLInterpretator::WriteText(const std::wstring& wsText, const std::vecto
 	if (OpenR())
 	{
 		sRStyle = WriteRPr(oRPr, arSelectors);
-		WriteToStringBuilder(oRPr, *m_pCurrentDocument);
+		WriteToStringBuilder(oRPr, *m_arStates.top().m_pCurrentDocument);
 	}
 
 	if (bQuotation)
-		m_pCurrentDocument->WriteString(L"<w:t xml:space=\"preserve\">&quot;</w:t>");
+		m_arStates.top().m_pCurrentDocument->WriteString(L"<w:t xml:space=\"preserve\">&quot;</w:t>");
 
-	if (!bPreformatted && bAddSpaces && m_oState.m_bInP && !m_oState.m_bInR && !iswspace(wsNormalizeText.front()) && !iswpunct(wsNormalizeText.front()) && !m_oState.m_bWasSpace)
+	if (!bPreformatted && bAddSpaces && m_arStates.top().m_bInP && !m_arStates.top().m_bInR && !iswspace(wsNormalizeText.front()) && !iswpunct(wsNormalizeText.front()) && !m_arStates.top().m_bWasSpace)
 	{
 		if (pCompiledStyle->m_oDisplay.GetVAlign().Empty() || L"normal" == pCompiledStyle->m_oDisplay.GetVAlign().ToWString())
 			WriteSpace();
@@ -843,25 +775,25 @@ bool COOXMLInterpretator::WriteText(const std::wstring& wsText, const std::vecto
 		while (std::wstring::npos != unBegin)
 		{
 			if (OpenR())
-				WriteToStringBuilder(oRPr, *m_pCurrentDocument);
+				WriteToStringBuilder(oRPr, *m_arStates.top().m_pCurrentDocument);
 
 			OpenT();
 			if (unEnd == std::wstring::npos)
 			{
-				m_pCurrentDocument->WriteEncodeXmlString(wsNormalizeText.c_str() + unBegin, wsNormalizeText.length() - unBegin);
+				m_arStates.top().m_pCurrentDocument->WriteEncodeXmlString(wsNormalizeText.c_str() + unBegin, wsNormalizeText.length() - unBegin);
 				break;
 			}
 
 			if (unBegin != unEnd)
 			{
-				m_pCurrentDocument->WriteEncodeXmlString(wsNormalizeText.c_str() + unBegin, unEnd - unBegin);
+				m_arStates.top().m_pCurrentDocument->WriteEncodeXmlString(wsNormalizeText.c_str() + unBegin, unEnd - unBegin);
 				CloseT();
 			}
 
 			if (L'\n' == wsNormalizeText[unEnd])
-				m_pCurrentDocument->WriteString(L"<w:br/>");
+				m_arStates.top().m_pCurrentDocument->WriteString(L"<w:br/>");
 			else if (L'\t' == wsNormalizeText[unEnd])
-				m_pCurrentDocument->WriteString(L"<w:tab/>");
+				m_arStates.top().m_pCurrentDocument->WriteString(L"<w:tab/>");
 
 			unBegin = unEnd + 1;
 			unEnd = wsNormalizeText.find_first_of(L"\n\r\t", unBegin);
@@ -873,27 +805,27 @@ bool COOXMLInterpretator::WriteText(const std::wstring& wsText, const std::vecto
 
 		if (!wsNormalizeText.empty() && L'\t' == wsNormalizeText[0])
 		{
-			m_pCurrentDocument->WriteString(L"<w:tab/>");
+			m_arStates.top().m_pCurrentDocument->WriteString(L"<w:tab/>");
 			wsNormalizeText.erase(0, 1);
 		}
 
-		if (!wsNormalizeText.empty() && std::iswspace(wsNormalizeText.front()) && m_oState.m_bWasSpace)
+		if (!wsNormalizeText.empty() && std::iswspace(wsNormalizeText.front()) && m_arStates.top().m_bWasSpace)
 			wsNormalizeText.erase(0, 1);
 
 		OpenT();
 
-		if (bMergedText && !m_oState.m_bWasSpace && bInT && !bPreformatted)
-			m_pCurrentDocument->WriteEncodeXmlString(L" ");
+		if (bMergedText && !m_arStates.top().m_bWasSpace && bInT && !bPreformatted)
+			m_arStates.top().m_pCurrentDocument->WriteEncodeXmlString(L" ");
 
 		if (!wsNormalizeText.empty())
 		{
-			m_oState.m_bWasSpace = std::iswspace(wsNormalizeText.back());
-			m_pCurrentDocument->WriteEncodeXmlString(wsNormalizeText);
+			m_arStates.top().m_bWasSpace = std::iswspace(wsNormalizeText.back());
+			m_arStates.top().m_pCurrentDocument->WriteEncodeXmlString(wsNormalizeText);
 		}
 	}
 
 	if (bQuotation)
-		m_pCurrentDocument->WriteString(L"<w:t xml:space=\"preserve\">&quot;</w:t>");
+		m_arStates.top().m_pCurrentDocument->WriteString(L"<w:t xml:space=\"preserve\">&quot;</w:t>");
 
 	CloseT();
 
@@ -906,25 +838,25 @@ bool COOXMLInterpretator::WriteText(const std::wstring& wsText, const std::vecto
 void COOXMLInterpretator::WriteEmptyParagraph(bool bVahish, bool bInP)
 {
 	if (!bInP)
-		m_pCurrentDocument->WriteString(L"<w:p><w:pPr>");
+		m_arStates.top().m_pCurrentDocument->WriteString(L"<w:p><w:pPr>");
 
-	m_pCurrentDocument->WriteString(L"<w:rPr><w:rFonts w:eastAsia=\"Times New Roman\"/>");
+	m_arStates.top().m_pCurrentDocument->WriteString(L"<w:rPr><w:rFonts w:eastAsia=\"Times New Roman\"/>");
 
 	if (bVahish)
-		m_pCurrentDocument->WriteString(L"<w:sz w:val=\"2\"/><w:szCs w:val=\"2\"/><w:vanish/>");
+		m_arStates.top().m_pCurrentDocument->WriteString(L"<w:sz w:val=\"2\"/><w:szCs w:val=\"2\"/><w:vanish/>");
 
-	m_pCurrentDocument->WriteString(L"</w:rPr>");
+	m_arStates.top().m_pCurrentDocument->WriteString(L"</w:rPr>");
 
 	if (!bInP)
-		m_pCurrentDocument->WriteString(L"</w:pPr></w:p>");
+		m_arStates.top().m_pCurrentDocument->WriteString(L"</w:pPr></w:p>");
 }
 
 void COOXMLInterpretator::WriteSpace()
 {
 	OpenR();
-	m_pCurrentDocument->WriteString(L"<w:rPr><w:rFonts w:eastAsia=\"Times New Roman\"/></w:rPr><w:t xml:space=\"preserve\"> </w:t>");
+	m_arStates.top().m_pCurrentDocument->WriteString(L"<w:rPr><w:rFonts w:eastAsia=\"Times New Roman\"/></w:rPr><w:t xml:space=\"preserve\"> </w:t>");
 	CloseR();
-	m_oState.m_bWasSpace = true;
+	m_arStates.top().m_bWasSpace = true;
 }
 
 void COOXMLInterpretator::WriteEmptyBookmark(const std::wstring& wsId)
@@ -934,9 +866,14 @@ void COOXMLInterpretator::WriteEmptyBookmark(const std::wstring& wsId)
 	if (wsCrossId.empty())
 		return;
 
-	m_pCurrentDocument->WriteString(L"<w:bookmarkEnd w:id=\"");
-	m_pCurrentDocument->WriteString(wsCrossId);
-	m_pCurrentDocument->WriteString(L"\"/>");
+	m_arStates.top().m_pCurrentDocument->WriteString(L"<w:bookmarkEnd w:id=\"");
+	m_arStates.top().m_pCurrentDocument->WriteString(wsCrossId);
+	m_arStates.top().m_pCurrentDocument->WriteString(L"\"/>");
+}
+
+std::wstring COOXMLInterpretator::AddLiteBookmark()
+{
+	return m_mBookmarks.insert(std::make_pair(L"Bookmark" + std::to_wstring(m_mBookmarks.size() + 1), m_mBookmarks.size() + 1)).first->first;
 }
 
 std::wstring COOXMLInterpretator::WriteBookmark(const std::wstring& wsId)
@@ -958,11 +895,11 @@ std::wstring COOXMLInterpretator::WriteBookmark(const std::wstring& wsId)
 		m_mBookmarks.insert({wsId, 1});
 	}
 
-	m_pCurrentDocument->WriteString(L"<w:bookmarkStart w:id=\"");
-	m_pCurrentDocument->WriteString(sCrossId);
-	m_pCurrentDocument->WriteString(L"\" w:name=\"");
-	m_pCurrentDocument->WriteEncodeXmlString(sName);
-	m_pCurrentDocument->WriteString(L"\"/>");
+	m_arStates.top().m_pCurrentDocument->WriteString(L"<w:bookmarkStart w:id=\"");
+	m_arStates.top().m_pCurrentDocument->WriteString(sCrossId);
+	m_arStates.top().m_pCurrentDocument->WriteString(L"\" w:name=\"");
+	m_arStates.top().m_pCurrentDocument->WriteEncodeXmlString(sName);
+	m_arStates.top().m_pCurrentDocument->WriteString(L"\"/>");
 
 	return sCrossId;
 }
@@ -980,60 +917,56 @@ std::wstring COOXMLInterpretator::AddAnchor(const std::wstring& wsAnchorValue)
 	return wsAnchorId;
 }
 
-void COOXMLInterpretator::WriteImage(const std::vector<NSCSS::CNode>& arSelectors)
+void COOXMLInterpretator::WriteImage(const TImageData& oImageData, const std::wstring& wsId)
 {
-	const std::wstring wsAlt{arSelectors.back().GetAttributeValue(L"alt")};
-	const std::wstring wsSrc{arSelectors.back().GetAttributeValue(L"src")};
+	OpenR();
 
-	TImageData oImageData;
+	XmlString* pCurrentDocument{m_arStates.top().m_pCurrentDocument};
 
-	std::wstring wsTempValue;
-	NSCSS::NSProperties::CDigit oTempDigit;
-
-	#define GET_UNIT_DATA(variable_data, data_variable)\
-	if (NSCSS::UnitMeasure::None == data_variable.GetUnitMeasure())\
-		variable_data = static_cast<UINT>(NSCSS::CUnitMeasureConverter::ConvertPx(data_variable.ToDouble(), NSCSS::Inch, 96) * 914400);\
-	else\
-		variable_data = static_cast<UINT>(data_variable.ToDouble(NSCSS::Inch) * 914400)
-
-	#define READ_IMAGE_DATA(name_data, variable_data)\
-	if (arSelectors.back().GetAttributeValue(name_data, wsTempValue))\
-	{\
-		if (oTempDigit.SetValue(wsTempValue))\
-		{\
-			GET_UNIT_DATA(variable_data, oTempDigit);\
-		}\
-	}
-
-	READ_IMAGE_DATA(L"width", oImageData.m_unWidth);
-	READ_IMAGE_DATA(L"height", oImageData.m_unHeight);
-	READ_IMAGE_DATA(L"hspace", oImageData.m_nHSpace);
-	READ_IMAGE_DATA(L"vspace", oImageData.m_nVSpace);
-
-	if (nullptr != arSelectors.back().m_pCompiledStyle)
+	// Пишем в document.xml
+	if (oImageData.ZeroSpaces())
 	{
-		oTempDigit = arSelectors.back().m_pCompiledStyle->m_oDisplay.GetWidth();
-
-		if (0 == oImageData.m_unWidth && !oTempDigit.Empty())
-		{
-			GET_UNIT_DATA(oImageData.m_unWidth, oTempDigit);
-		}
-
-		oTempDigit = arSelectors.back().m_pCompiledStyle->m_oDisplay.GetHeight();
-
-		if (0 == oImageData.m_unHeight && !oTempDigit.Empty())
-		{
-			GET_UNIT_DATA(oImageData.m_unHeight, oTempDigit);
-		}
+		pCurrentDocument->WriteString(L"<w:drawing><wp:inline distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\"><wp:extent cx=\"");
+		pCurrentDocument->WriteString(std::to_wstring(oImageData.m_unWidth));
+		pCurrentDocument->WriteString(L"\" cy=\"");
+		pCurrentDocument->WriteString(std::to_wstring(oImageData.m_unHeight));
+		pCurrentDocument->WriteString(L"\"/><wp:docPr id=\"");
+		pCurrentDocument->WriteString(wsId);
+		pCurrentDocument->WriteString(L"\" name=\"Picture " + wsId + L"\"/><a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\"><a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/picture\"><pic:pic xmlns:pic=\"http://schemas.openxmlformats.org/drawingml/2006/picture\"><pic:nvPicPr><pic:cNvPr id=\"");
+		pCurrentDocument->WriteString(wsId);
+		pCurrentDocument->WriteString(L"\" name=\"Picture " + wsId + L"\"/><pic:cNvPicPr></pic:cNvPicPr></pic:nvPicPr><pic:blipFill><a:blip r:embed=\"rPic");
+		pCurrentDocument->WriteString(wsId);
+		pCurrentDocument->WriteString(L"\"/><a:stretch/></pic:blipFill><pic:spPr bwMode=\"auto\"><a:xfrm><a:off x=\"0\" y=\"0\"/><a:ext cx=\"");
+		pCurrentDocument->WriteString(std::to_wstring(oImageData.m_unWidth));
+		pCurrentDocument->WriteString(L"\" cy=\"");
+		pCurrentDocument->WriteString(std::to_wstring(oImageData.m_unHeight));
+		pCurrentDocument->WriteString(L"\"/></a:xfrm><a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing>");
 	}
-
-	if (wsSrc.empty())
+	else
 	{
-		WriteAlternativeImage(wsAlt, wsSrc, oImageData);
-		return;
+		pCurrentDocument->WriteString(L"<w:rPr><w:noProof/></w:rPr><w:drawing>");
+		pCurrentDocument->WriteString(L"<wp:anchor distT=\"" + std::to_wstring(oImageData.m_nHSpace) + L"\" distB=\"" + std::to_wstring(oImageData.m_nHSpace) + L"\" distL=\"" + std::to_wstring(oImageData.m_nVSpace) + L"\" distR=\"" + std::to_wstring(oImageData.m_nVSpace) + L"\" simplePos=\"0\" relativeHeight=\"251658240\" behindDoc=\"0\" locked=\"0\" layoutInCell=\"1\" allowOverlap=\"0\">");
+		pCurrentDocument->WriteString(L"<wp:simplePos x=\"0\" y=\"0\"/>");
+		pCurrentDocument->WriteString(L"<wp:positionH relativeFrom=\"column\"><wp:align>" + oImageData.m_wsAlign + L"</wp:align></wp:positionH>");
+		pCurrentDocument->WriteString(L"<wp:positionV relativeFrom=\"line\"><wp:posOffset>0</wp:posOffset></wp:positionV>");
+		pCurrentDocument->WriteString(L"<wp:extent cx=\"" + std::to_wstring(oImageData.m_unWidth) + L"\" cy=\"" + std::to_wstring(oImageData.m_unHeight) + L"\"/>");
+		pCurrentDocument->WriteString(L"<wp:effectExtent l=\"0\" t=\"0\" r=\"0\" b=\"0\"/>");
+		pCurrentDocument->WriteString(L"<wp:wrapSquare wrapText=\"bothSides\"/>");
+		pCurrentDocument->WriteString(L"<wp:docPr id=\"" + wsId + L"\" name=\"Picture " + wsId + L"\"/>");
+		pCurrentDocument->WriteString(L"<wp:cNvGraphicFramePr><a:graphicFrameLocks xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" noChangeAspect=\"1\"/></wp:cNvGraphicFramePr>");
+		pCurrentDocument->WriteString(L"<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">");
+		pCurrentDocument->WriteString(L"<a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/picture\">");
+		pCurrentDocument->WriteString(L"<pic:pic xmlns:pic=\"http://schemas.openxmlformats.org/drawingml/2006/picture\">");
+		pCurrentDocument->WriteString(L"<pic:nvPicPr><pic:cNvPr id=\"" + wsId + L"\" name=\"Picture " + wsId + L"\"/>");
+		pCurrentDocument->WriteString(L"<pic:cNvPicPr><a:picLocks noChangeAspect=\"1\" noChangeArrowheads=\"1\"/></pic:cNvPicPr></pic:nvPicPr>");
+		pCurrentDocument->WriteString(L"<pic:blipFill><a:blip r:link=\"rPic" + wsId + L"\"><a:extLst><a:ext uri=\"{28A0092B-C50C-407E-A947-70E740481C1C}\"><a14:useLocalDpi xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\" val=\"0\"/></a:ext></a:extLst></a:blip><a:srcRect/><a:stretch><a:fillRect/></a:stretch></pic:blipFill>");
+		pCurrentDocument->WriteString(L"<pic:spPr bwMode=\"auto\"><a:xfrm><a:off x=\"0\" y=\"0\"/><a:ext cx=\"" + std::to_wstring(oImageData.m_unWidth) + L"\" cy=\"" + std::to_wstring(oImageData.m_unHeight) + L"\"/></a:xfrm>");
+		pCurrentDocument->WriteString(L"<a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom><a:noFill/><a:ln><a:noFill/></a:ln></pic:spPr></pic:pic></a:graphicData></a:graphic>");
+		pCurrentDocument->WriteString(L"<wp14:sizeRelH relativeFrom=\"page\"><wp14:pctWidth>0</wp14:pctWidth></wp14:sizeRelH><wp14:sizeRelV relativeFrom=\"page\"><wp14:pctHeight>0</wp14:pctHeight></wp14:sizeRelV>");
+		pCurrentDocument->WriteString(L"</wp:anchor></w:drawing>");
 	}
 
-	bool bRes = false;
+	CloseR();
 }
 
 void COOXMLInterpretator::WriteAlternativeImage(const std::wstring& wsAlt, const std::wstring& wsSrc, const TImageData& oImageData)
@@ -1056,27 +989,36 @@ void COOXMLInterpretator::WriteEmptyImage(int nWidth, int nHeight, const std::ws
 	OpenR();
 
 	#define WRITE_ENCODE_ARGUMENT(argumentName, argumentValue) \
-	m_pCurrentDocument->WriteString(L" " + std::wstring(argumentName) + L"=\""); \
-	m_pCurrentDocument->WriteEncodeXmlString(argumentValue); \
-	m_pCurrentDocument->WriteString(L"\"")
+	m_arStates.top().m_pCurrentDocument->WriteString(L" " + std::wstring(argumentName) + L"=\""); \
+	m_arStates.top().m_pCurrentDocument->WriteEncodeXmlString(argumentValue); \
+	m_arStates.top().m_pCurrentDocument->WriteString(L"\"")
 
-	m_pCurrentDocument->WriteString(L"<w:rPr><w:noProof/></w:rPr><w:drawing><wp:inline distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\"><wp:extent cx=\"" + std::to_wstring(nWidth) + L"\" cy=\"" + std::to_wstring(nHeight) + L"\"/><wp:effectExtent l=\"0\" t=\"0\" r=\"0\" b=\"0\"/>");
-	m_pCurrentDocument->WriteString(L"<wp:docPr id=\"" + std::to_wstring(m_nId - 7) + L"\"");
+	m_arStates.top().m_pCurrentDocument->WriteString(L"<w:rPr><w:noProof/></w:rPr><w:drawing><wp:inline distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\"><wp:extent cx=\"" + std::to_wstring(nWidth) + L"\" cy=\"" + std::to_wstring(nHeight) + L"\"/><wp:effectExtent l=\"0\" t=\"0\" r=\"0\" b=\"0\"/>");
+	m_arStates.top().m_pCurrentDocument->WriteString(L"<wp:docPr id=\"" + std::to_wstring(m_nId - 7) + L"\"");
 	WRITE_ENCODE_ARGUMENT(L"name", wsName);
 	WRITE_ENCODE_ARGUMENT(L"descr", wsDescr);
-	m_pCurrentDocument->WriteString(L"/>");
-	m_pCurrentDocument->WriteString(L"<wp:cNvGraphicFramePr><a:graphicFrameLocks xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" noChangeAspect=\"1\"/></wp:cNvGraphicFramePr>");
-	m_pCurrentDocument->WriteString(L"<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\"><a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/picture\"><pic:pic xmlns:pic=\"http://schemas.openxmlformats.org/drawingml/2006/picture\">");
-	m_pCurrentDocument->WriteString(L"<pic:nvPicPr><pic:cNvPr id=\"0\"");
+	m_arStates.top().m_pCurrentDocument->WriteString(L"/>");
+	m_arStates.top().m_pCurrentDocument->WriteString(L"<wp:cNvGraphicFramePr><a:graphicFrameLocks xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" noChangeAspect=\"1\"/></wp:cNvGraphicFramePr>");
+	m_arStates.top().m_pCurrentDocument->WriteString(L"<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\"><a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/picture\"><pic:pic xmlns:pic=\"http://schemas.openxmlformats.org/drawingml/2006/picture\">");
+	m_arStates.top().m_pCurrentDocument->WriteString(L"<pic:nvPicPr><pic:cNvPr id=\"0\"");
 	WRITE_ENCODE_ARGUMENT(L"name", wsName);
 	WRITE_ENCODE_ARGUMENT(L"descr", wsDescr);
-	m_pCurrentDocument->WriteString(L"/>");
-	m_pCurrentDocument->WriteString(L"<pic:cNvPicPr><a:picLocks noChangeAspect=\"1\" noChangeArrowheads=\"1\"/></pic:cNvPicPr></pic:nvPicPr>");
-	m_pCurrentDocument->WriteString(L"<pic:blipFill><a:blip r:link=\"rId" + std::to_wstring(m_nId++) + L"\"><a:extLst><a:ext uri=\"{28A0092B-C50C-407E-A947-70E740481C1C}\"><a14:useLocalDpi xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\" val=\"0\"/></a:ext></a:extLst></a:blip><a:srcRect/><a:stretch><a:fillRect/></a:stretch></pic:blipFill>");
-	m_pCurrentDocument->WriteString(L"<pic:spPr bwMode=\"auto\"><a:xfrm><a:off x=\"0\" y=\"0\"/><a:ext cx=\"" + std::to_wstring(nWidth) + L"\" cy=\"" + std::to_wstring(nHeight) + L"\"/></a:xfrm><a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom><a:noFill/><a:ln><a:noFill/></a:ln></pic:spPr>");
-	m_pCurrentDocument->WriteString(L"</pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing>");
+	m_arStates.top().m_pCurrentDocument->WriteString(L"/>");
+	m_arStates.top().m_pCurrentDocument->WriteString(L"<pic:cNvPicPr><a:picLocks noChangeAspect=\"1\" noChangeArrowheads=\"1\"/></pic:cNvPicPr></pic:nvPicPr>");
+	m_arStates.top().m_pCurrentDocument->WriteString(L"<pic:blipFill><a:blip r:link=\"rId" + std::to_wstring(m_nId++) + L"\"><a:extLst><a:ext uri=\"{28A0092B-C50C-407E-A947-70E740481C1C}\"><a14:useLocalDpi xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\" val=\"0\"/></a:ext></a:extLst></a:blip><a:srcRect/><a:stretch><a:fillRect/></a:stretch></pic:blipFill>");
+	m_arStates.top().m_pCurrentDocument->WriteString(L"<pic:spPr bwMode=\"auto\"><a:xfrm><a:off x=\"0\" y=\"0\"/><a:ext cx=\"" + std::to_wstring(nWidth) + L"\" cy=\"" + std::to_wstring(nHeight) + L"\"/></a:xfrm><a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom><a:noFill/><a:ln><a:noFill/></a:ln></pic:spPr>");
+	m_arStates.top().m_pCurrentDocument->WriteString(L"</pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing>");
 
 	CloseR();
+}
+
+void COOXMLInterpretator::WriteImageRels(const std::wstring& wsImageId, const std::wstring& wsImageName)
+{
+	m_oDocXmlRels.WriteString(L"<Relationship Id=\"rPic");
+	m_oDocXmlRels.WriteString(wsImageId);
+	m_oDocXmlRels.WriteString(L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image\" Target=\"media/i");
+	m_oDocXmlRels.WriteEncodeXmlString(wsImageName);
+	m_oDocXmlRels.WriteString(L"\"/>");
 }
 
 std::wstring COOXMLInterpretator::GetStyle(const NSCSS::CCompiledStyle& oStyle, bool bParagraphStyle)
@@ -1092,6 +1034,24 @@ void COOXMLInterpretator::UpdatePageStyle(const std::vector<NSCSS::CNode>& arSel
 {
 	if (nullptr != m_pStylesCalculator)
 		m_pStylesCalculator->CalculatePageStyle(m_oPageData, arSelectors);
+}
+
+std::wstring COOXMLInterpretator::FindFootnote(const std::wstring& wsId)
+{
+	const std::map<std::wstring, std::wstring>::const_iterator itFound{m_mFootnotes.find(wsId)};
+	return (itFound != m_mFootnotes.cend()) ? itFound->second : std::wstring();
+}
+
+void COOXMLInterpretator::OpenFootnote(const std::wstring& wsFootnoteID)
+{
+	m_oNoteXml.WriteString(L"<w:footnote w:id=\"");
+	m_oNoteXml.WriteString(wsFootnoteID);
+	m_oNoteXml.WriteString(L"\">");
+}
+
+void COOXMLInterpretator::CloseFootnote()
+{
+	m_oNoteXml.WriteString(L"</w:footnote>");
 }
 
 XmlString& COOXMLInterpretator::GetStylesXml()
@@ -1131,7 +1091,45 @@ XmlString& COOXMLInterpretator::GetWebSettingsXml()
 
 XmlString& COOXMLInterpretator::GetCurrentDocument()
 {
-	return *m_pCurrentDocument;
+	return *m_arStates.top().m_pCurrentDocument;
+}
+
+NSFonts::IApplicationFonts* COOXMLInterpretator::GetFonts()
+{
+	if (nullptr == m_pFonts)
+	{
+		m_pFonts = NSFonts::NSApplication::Create();
+
+		if (NULL != m_pFonts)
+			m_pFonts->Initialize();
+	}
+
+	return m_pFonts;
+}
+
+std::wstring COOXMLInterpretator::GetMediaDir() const
+{
+	return m_wsDstPath + L"/word/media/";
+}
+
+std::wstring COOXMLInterpretator::GetTempDir() const
+{
+	return m_wsTempDir;
+}
+
+std::wstring COOXMLInterpretator::GetSrcPath() const
+{
+	return m_wsSrcPath;
+}
+
+std::wstring COOXMLInterpretator::GetBasePath() const
+{
+	return m_wsBasePath;
+}
+
+std::wstring COOXMLInterpretator::GetCorePath() const
+{
+	return m_wsCorePath;
 }
 
 void COOXMLInterpretator::PrintData()

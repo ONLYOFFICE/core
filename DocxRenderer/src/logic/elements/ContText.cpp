@@ -658,6 +658,7 @@ namespace NSDocxRenderer
 
 	bool CContText::IsEqual(const CContText *pCont) const noexcept
 	{
+		bool bIf0 = IsFontsEqual(m_oSelectedFont, pCont->m_oSelectedFont);
 		bool bIf1 = m_pFontStyle->wsFontStyleId == pCont->m_pFontStyle->wsFontStyleId;
 		bool bIf2 = m_bIsStrikeoutPresent == pCont->m_bIsStrikeoutPresent;
 		bool bIf3 = m_bIsDoubleStrikeout == pCont->m_bIsDoubleStrikeout;
@@ -674,7 +675,7 @@ namespace NSDocxRenderer
 		bool bIf14 = m_eVertAlignType == eVertAlignType::vatUnknown && pCont->m_eVertAlignType == eVertAlignType::vatBase;
 		bool bIf15 = m_eVertAlignType == eVertAlignType::vatBase && pCont->m_eVertAlignType == eVertAlignType::vatUnknown;
 
-		return (bIf1 && bIf2 && bIf3 && bIf4 && bIf5 && bIf6 && bIf7 &&
+		return (bIf0 && bIf1 && bIf2 && bIf3 && bIf4 && bIf5 && bIf6 && bIf7 &&
 		        bIf8 && bIf9 && bIf10 && bIf11 && bIf12 && (bIf13 || bIf14 || bIf15));
 	}
 
@@ -1089,6 +1090,19 @@ namespace NSDocxRenderer
 	bool CContText::IsUnicodeDiacriticalMark(uint32_t cSym)
 	{
 		return 0x0300 <= cSym && 0x036F >= cSym;
+	}
+	bool CContText::IsFontsEqual(const NSStructures::CFont& oFont1, const NSStructures::CFont& oFont2)
+	{
+		bool res = oFont1.Name == oFont2.Name;
+		res = res && oFont1.Path == oFont2.Path;
+		res = res && oFont1.FaceIndex == oFont2.FaceIndex;
+		res = res && oFont1.StringGID == oFont2.StringGID;
+		res = res && oFont1.Size == oFont2.Size;
+		res = res && oFont1.Bold == oFont2.Bold;
+		res = res && oFont1.Italic == oFont2.Italic;
+		res = res && oFont1.Underline == oFont2.Underline;
+		res = res && oFont1.Strikeout == oFont2.Strikeout;
+		return res;
 	}
 
 	double CContText::CalculateSpace() const noexcept

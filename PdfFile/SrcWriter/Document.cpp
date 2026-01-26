@@ -897,15 +897,13 @@ namespace PdfWriter
 		return NULL;
 	}
 	CFontEmbedded* CDocument::CreateFontEmbedded(const std::wstring& wsFontPath, unsigned int unIndex, const std::string& sFontKey, EFontType nType,
-												 const std::map<unsigned int, unsigned int>& mGIDToWidth, const std::map<unsigned int, unsigned int>& mUnicodeToCode, const std::map<unsigned int, unsigned int>& mGIDToCode)
+												 const std::map<unsigned int, unsigned int>& mCodeToWidth, const std::map<unsigned int, unsigned int>& mCodeToUnicode, const std::map<unsigned int, unsigned int>& mCodeToGID)
 	{
 		CFontEmbedded* pFont = FindFontEmbedded(wsFontPath, unIndex);
 		if (pFont)
 			return pFont;
 		pFont = new CFontEmbedded(m_pXref, this);
-		pFont->LoadFont(sFontKey, nType, mGIDToWidth);
-		pFont->SetUnicodeToCode(mUnicodeToCode);
-		pFont->SetGIDToCode(mGIDToCode);
+		pFont->LoadFont(sFontKey, nType, mCodeToWidth, mCodeToUnicode, mCodeToGID);
 		m_vFontsEmbedded.push_back(TFontInfo(wsFontPath, unIndex, pFont));
 		return pFont;
 	}

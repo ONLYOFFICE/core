@@ -4363,19 +4363,19 @@ void CPdfEditor::ScanAndProcessFonts(PDFDoc* pPDFDocument, XRef* xref, Dict* pRe
 						Ref nFontRef = oFontRef.getRef();
 						if (pFontList->GetFont(&nFontRef, &pFontEntry))
 						{
-							std::map<unsigned int, unsigned int> mGIDToWidth, mUnicodeToCode, mGIDToCode;
-							PdfReader::CollectFontWidths(gfxFont, oFont.getDict(), mGIDToWidth);
+							std::map<unsigned int, unsigned int> mCodeToWidth, mCodeToUnicode, mCodeToGID;
+							PdfReader::CollectFontWidths(gfxFont, oFont.getDict(), mCodeToWidth);
 							for (int nIndex = 0; nIndex < pFontEntry.unLenUnicode; ++nIndex)
 							{
 								if (pFontEntry.pCodeToUnicode[nIndex])
-									mUnicodeToCode[pFontEntry.pCodeToUnicode[nIndex]] = nIndex;
+									mCodeToUnicode[nIndex] = pFontEntry.pCodeToUnicode[nIndex];
 							}
 							for (int nIndex = 0; nIndex < pFontEntry.unLenGID; ++nIndex)
 							{
 								if (pFontEntry.pCodeToGID[nIndex])
-									mGIDToCode[pFontEntry.pCodeToGID[nIndex]] = nIndex;
+									mCodeToGID[nIndex] = pFontEntry.pCodeToGID[nIndex];
 							}
-							m_pWriter->AddEmbeddedFontInfo(wsFontName, wsFileName, sFontKey, static_cast<PdfWriter::EFontType>(gfxFont->getType()), mGIDToWidth, mUnicodeToCode, mGIDToCode);
+							m_pWriter->AddEmbeddedFontInfo(wsFontName, wsFileName, sFontKey, static_cast<PdfWriter::EFontType>(gfxFont->getType()), mCodeToWidth, mCodeToUnicode, mCodeToGID);
 						}
 					}
 				}

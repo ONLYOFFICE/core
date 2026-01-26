@@ -58,6 +58,28 @@ namespace PdfWriter
 		std::vector<unsigned int>              m_vWidths;
 
 	};
+
+	class CFontEmbedded : public CFontDict
+	{
+	public:
+		CFontEmbedded(CXref* pXref, CDocument* pDocument);
+
+		bool LoadFont(const std::string& sFontKey, EFontType eFontType, const std::map<unsigned int, unsigned int>& mCodeToWidth, const std::map<unsigned int, unsigned int>& mCodeToUnicode, const std::map<unsigned int, unsigned int>& mCodeToGID);
+
+		EFontType GetFontType() { return m_eFontType; }
+		unsigned int GetWidth(unsigned short ushCode);
+		unsigned int EncodeUnicode(const unsigned int& unGID, const unsigned int& unUnicode);
+		unsigned int EncodeGID(const unsigned int& unGID);
+		const char* GetFontKey() const { return m_sFontKey.c_str(); }
+
+	private:
+		std::string m_sFontKey;
+		EFontType m_eFontType;
+
+		std::map<unsigned int, unsigned int> m_mCodeToUnicode;
+		std::map<unsigned int, unsigned int> m_mCodeToGID;
+		std::map<unsigned int, unsigned int> m_mCodeToWidth; // Code -> Width в единицах em
+	};
 }
 
 #endif // _PDF_WRITER_SRC_FONT14_H

@@ -639,6 +639,7 @@ SOURCES += \
 	$$PDF_ROOT_DIR/SrcReader/Adaptors.cpp \
 	$$PDF_ROOT_DIR/SrcReader/GfxClip.cpp \
 	$$PDF_ROOT_DIR/SrcReader/PdfAnnot.cpp \
+	$$PDF_ROOT_DIR/SrcReader/PdfFont.cpp \
 	$$PDF_ROOT_DIR/Resources/BaseFonts.cpp \
 	$$PDF_ROOT_DIR/Resources/CMapMemory/cmap_memory.cpp
 
@@ -664,6 +665,7 @@ HEADERS +=\
 	$$PDF_ROOT_DIR/SrcReader/MemoryUtils.h \
 	$$PDF_ROOT_DIR/SrcReader/GfxClip.h \
 	$$PDF_ROOT_DIR/SrcReader/FontsWasm.h \
+	$$PDF_ROOT_DIR/SrcReader/PdfFont.h \
 	$$PDF_ROOT_DIR/SrcReader/PdfAnnot.h
 
 DEFINES += CRYPTOPP_DISABLE_ASM

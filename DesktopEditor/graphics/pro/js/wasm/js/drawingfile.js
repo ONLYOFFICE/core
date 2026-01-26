@@ -1047,11 +1047,15 @@ function readAnnotType(reader, rec, readDoubleFunc, readDouble2Func, readStringF
 		if (flags & (1 << 0))
 		{
 			rec["A"] = {};
+			if (isRead)
+				readStringFunc.call(reader);
 			readAction(reader, rec["A"], readDoubleFunc, readStringFunc);
 		}
 		if (flags & (1 << 1))
 		{
 			rec["PA"] = {};
+			if (isRead)
+				readStringFunc.call(reader);
 			readAction(reader, rec["PA"], readDoubleFunc, readStringFunc);
 		}
 		// Selection mode - H

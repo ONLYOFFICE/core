@@ -9,8 +9,6 @@
 
 namespace HTML
 {
-#define HtmlTag GumboTag
-
 class CHTMLReader
 {
 	XmlUtils::CXmlLiteReader m_oLightReader;   // SAX Reader
@@ -53,8 +51,8 @@ private:
 	bool ReadText(std::vector<NSCSS::CNode>& arSelectors);
 
 	bool ReadAnchor(std::vector<NSCSS::CNode>& arSelectors);
-	bool ReadBreak(const std::vector<NSCSS::CNode>& arSelectors);
-
+	bool ReadTable(std::vector<NSCSS::CNode>& arSelectors);
+	bool ReadEmptyTag(UINT unTag, const std::vector<NSCSS::CNode>& arSelectors);
 	bool ReadDefaultTag(UINT unTag, std::vector<NSCSS::CNode>& arSelectors);
 
 	void GetSubClass(std::vector<NSCSS::CNode>& arSelectors);

@@ -107,11 +107,13 @@ class COOXMLInterpretator : public IHTMLInterpretator
 	int m_nId;          // ID остальные элементы
 	int m_nShapeId;     // Id shape's
 
+	std::stack<std::wstring> m_arDivId;
+	bool m_bWasDivs;
+
 	std::map<std::wstring, std::wstring> m_mFootnotes; // Сноски
 	std::map<std::wstring, UINT>         m_mBookmarks; // Закладки
 	using anchors_map = std::map<std::wstring, std::wstring>;
 	anchors_map                          m_mAnchors; // Map якорей с индивидуальными id
-	std::map<std::wstring, UINT>         m_mDivs;      // Div элементы
 
 	NSFonts::IApplicationFonts*          m_pFonts;     // Необходимо для оптимизации работы со шрифтами
 public:
@@ -165,6 +167,9 @@ public:
 	std::wstring GetStyle(const NSCSS::CCompiledStyle& oStyle, bool bParagraphStyle);
 
 	void UpdatePageStyle(const std::vector<NSCSS::CNode>& arSelectors);
+	void SetBaseFont(const std::wstring& wsFontStyles);
+	void SetDivId(const std::wstring& wsDivId);
+	void RollBackDivId();
 
 	std::wstring FindFootnote(const std::wstring& wsId);
 	void OpenFootnote(const std::wstring& wsFootnoteID);
@@ -179,6 +184,7 @@ public:
 	XmlString& GetWebSettingsXml();
 	XmlString& GetCurrentDocument();
 
+	const NSCSS::NSProperties::CPage* GetPageData() const;
 	NSFonts::IApplicationFonts* GetFonts();
 
 	std::wstring GetMediaDir() const;

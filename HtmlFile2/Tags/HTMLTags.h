@@ -67,6 +67,12 @@ CREATE_TAG(TPreformatted);
 CREATE_TAG(THeader);
 CREATE_TAG(TDivision);
 CREATE_TAG(TImage);
-
+CREATE_TAG(TFont);
+CREATE_TAG(TInput);
+CREATE_TAG(TBaseFont);
+CREATE_TAG(TBlockquote);
+CREATE_TAG(THorizontalRule);
+CREATE_TAG(TList);
+CREATE_TAG(TListElement);
 }
 #endif // HTMLTAGS_H

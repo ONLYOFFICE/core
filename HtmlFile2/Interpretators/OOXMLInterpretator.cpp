@@ -47,7 +47,7 @@ inline void replace_all(std::wstring& s, const std::wstring& s1, const std::wstr
 inline std::wstring EncodeXmlString(std::wstring wsString);
 
 COOXMLInterpretator::COOXMLInterpretator()
-	: m_nFootnoteId(1), m_nHyperlinkId(1), m_nNumberingId(1), m_nId(1), m_nShapeId(1), m_pFonts(nullptr)
+	: m_nFootnoteId(1), m_nHyperlinkId(1), m_nNumberingId(1), m_nId(1), m_nShapeId(1), m_bWasDivs(false), m_pFonts(nullptr)
 {
 	m_oPageData.SetWidth (DEFAULT_PAGE_WIDTH,  NSCSS::UnitMeasure::Twips, 0, true);
 	m_oPageData.SetHeight(DEFAULT_PAGE_HEIGHT, NSCSS::UnitMeasure::Twips, 0, true);
@@ -346,7 +346,7 @@ void COOXMLInterpretator::End(const std::wstring& wsDst)
 	}
 
 	// webSettings.xml
-	if (!m_mDivs.empty())
+	if (!m_bWasDivs)
 		m_oWebSettings.WriteString(L"</w:divs>");
 
 	m_oWebSettings.WriteString(L"</w:webSettings>");
@@ -587,7 +587,7 @@ std::wstring COOXMLInterpretator::WritePPr(const std::vector<NSCSS::CNode>& arSe
 	if (sPStyle.empty() && !ElementInTable(arSelectors))
 		sPStyle = L"normal-web";
 
-	if (sPStyle.empty() /*&& oTS.sPStyle.empty() && 0 > oTS.nLi*/)
+	if (sPStyle.empty() && m_arDivId.empty() /*&& oTS.sPStyle.empty() && 0 > oTS.nLi*/)
 		return L"";
 
 	// m_oXmlStyle.WriteLitePStyle(oTS.oAdditionalStyle);
@@ -622,6 +622,8 @@ std::wstring COOXMLInterpretator::WritePPr(const std::vector<NSCSS::CNode>& arSe
 		m_arStates.top().m_pCurrentDocument->WriteString(L"<w:numPr><w:ilvl w:val=\"" + std::to_wstring(nLiLevel) + L"\"/><w:numId w:val=\"" +
 		                                                 (bNumberingLi ? L"1" : std::to_wstring(m_nNumberingId)) + L"\"/></w:numPr>");
 
+	if (!m_arDivId.empty())
+		m_arStates.top().m_pCurrentDocument->WriteString(L"<w:divId w:val=\"" + m_arDivId.top() + L"\"/>");
 	// m_pCurrentDocument->WriteString(oTS.sPStyle + sPSettings);
 	m_arStates.top().m_pCurrentDocument->WriteNodeEnd(L"w:pPr");
 	m_arStates.top().m_bWasPStyle = true;
@@ -1036,6 +1038,24 @@ void COOXMLInterpretator::UpdatePageStyle(const std::vector<NSCSS::CNode>& arSel
 		m_pStylesCalculator->CalculatePageStyle(m_oPageData, arSelectors);
 }
 
+void COOXMLInterpretator::SetBaseFont(const std::wstring& wsFontStyles)
+{
+	if (nullptr != m_pStylesCalculator)
+		m_pStylesCalculator->AddStyles(wsFontStyles);
+}
+
+void COOXMLInterpretator::SetDivId(const std::wstring& wsDivId)
+{
+	m_arDivId.push(wsDivId);
+	m_bWasDivs = true;
+}
+
+void COOXMLInterpretator::RollBackDivId()
+{
+	if (!m_arDivId.empty())
+		m_arDivId.pop();
+}
+
 std::wstring COOXMLInterpretator::FindFootnote(const std::wstring& wsId)
 {
 	const std::map<std::wstring, std::wstring>::const_iterator itFound{m_mFootnotes.find(wsId)};
@@ -1092,6 +1112,11 @@ XmlString& COOXMLInterpretator::GetWebSettingsXml()
 XmlString& COOXMLInterpretator::GetCurrentDocument()
 {
 	return *m_arStates.top().m_pCurrentDocument;
+}
+
+const NSCSS::NSProperties::CPage* COOXMLInterpretator::GetPageData() const
+{
+	return &m_oPageData;
 }
 
 NSFonts::IApplicationFonts* COOXMLInterpretator::GetFonts()

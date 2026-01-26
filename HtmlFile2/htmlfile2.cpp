@@ -5,9 +5,11 @@
 #include <map>
 #include <vector>
 #include <algorithm>
-#include <iostream>
 
-#include "../Common/3dParty/html/htmltoxhtml.h"
+#include "htmlfile2.h"
+
+#ifdef USE_OLD_HTML_CONVERTER
+#include "../Common/3dParty/html/htmltoxhtml.h".
 #include "../Common/3dParty/html/css/src/CCssCalculator.h"
 #include "../Common/3dParty/html/css/src/xhtml/CDocumentStyle.h"
 #include "../Common/Network/FileTransporter/include/FileTransporter.h"
@@ -23,12 +25,9 @@
 #include "../DesktopEditor/raster/BgraFrame.h"
 #include "../DesktopEditor/graphics/pro/Graphics.h"
 
-#include "htmlfile2.h"
 #include "src/Languages.h"
 
 #include <boost/regex.hpp>
-
-#include "HTMLReader.h"
 
 #ifndef VALUE2STR
 #define VALUE_TO_STRING(x) #x
@@ -4082,71 +4081,7 @@ private:
 		if(m_oLightReader.IsEmptyNode())
 			return false;
 
-		CloseP(oXml, arSelectors);
 
-		CTextSettings oTSLi(oTS);
-
-		++oTSLi.nLi;
-
-		//Нумерованный список
-		if (L"ol" == arSelectors.back().m_wsName)
-		{
-			int nStart = 1;
-			while(m_oLightReader.MoveToNextAttribute())
-				if(m_oLightReader.GetName() == L"start")
-					nStart = NSStringFinder::ToInt(m_oLightReader.GetText(), 1);
-			m_oLightReader.MoveToElement();
-
-			oTSLi.bNumberingLi = true;
-
-			const std::wstring wsStart(std::to_wstring(nStart));
-			m_oNumberXml.WriteString(L"<w:abstractNum w:abstractNumId=\"");
-			m_oNumberXml.WriteString(std::to_wstring(m_nNumberingId++));
-			m_oNumberXml.WriteString(L"\"><w:multiLevelType w:val=\"hybridMultilevel\"/><w:lvl w:ilvl=\"0\"><w:start w:val=\"");
-			m_oNumberXml.WriteString(wsStart);
-			m_oNumberXml.WriteString(L"\"/><w:numFmt w:val=\"decimal\"/><w:isLgl w:val=\"false\"/><w:suff w:val=\"tab\"/><w:lvlText w:val=\"%1.\"/><w:lvlJc w:val=\"left\"/><w:pPr><w:ind w:left=\"709\" w:hanging=\"360\"/></w:pPr></w:lvl><w:lvl w:ilvl=\"1\"><w:start w:val=\"");
-			m_oNumberXml.WriteString(wsStart);
-			m_oNumberXml.WriteString(L"\"/><w:numFmt w:val=\"decimal\"/><w:isLgl w:val=\"false\"/><w:suff w:val=\"tab\"/><w:lvlText w:val=\"%2.\"/><w:lvlJc w:val=\"left\"/><w:pPr><w:ind w:left=\"1429\" w:hanging=\"360\"/></w:pPr></w:lvl><w:lvl w:ilvl=\"2\"><w:start w:val=\"");
-			m_oNumberXml.WriteString(wsStart);
-			m_oNumberXml.WriteString(L"\"/><w:numFmt w:val=\"decimal\"/><w:isLgl w:val=\"false\"/><w:suff w:val=\"tab\"/><w:lvlText w:val=\"%3.\"/><w:lvlJc w:val=\"right\"/><w:pPr><w:ind w:left=\"2149\" w:hanging=\"180\"/></w:pPr></w:lvl><w:lvl w:ilvl=\"3\"><w:start w:val=\"");
-			m_oNumberXml.WriteString(wsStart);
-			m_oNumberXml.WriteString(L"\"/><w:numFmt w:val=\"decimal\"/><w:isLgl w:val=\"false\"/><w:suff w:val=\"tab\"/><w:lvlText w:val=\"%4.\"/><w:lvlJc w:val=\"left\"/><w:pPr><w:ind w:left=\"2869\" w:hanging=\"360\"/></w:pPr></w:lvl><w:lvl w:ilvl=\"4\"><w:start w:val=\"");
-			m_oNumberXml.WriteString(wsStart);
-			m_oNumberXml.WriteString(L"\"/><w:numFmt w:val=\"decimal\"/><w:isLgl w:val=\"false\"/><w:suff w:val=\"tab\"/><w:lvlText w:val=\"%5.\"/><w:lvlJc w:val=\"left\"/><w:pPr><w:ind w:left=\"3589\" w:hanging=\"360\"/></w:pPr></w:lvl><w:lvl w:ilvl=\"5\"><w:start w:val=\"");
-			m_oNumberXml.WriteString(wsStart);
-			m_oNumberXml.WriteString(L"\"/><w:numFmt w:val=\"decimal\"/><w:isLgl w:val=\"false\"/><w:suff w:val=\"tab\"/><w:lvlText w:val=\"%6.\"/><w:lvlJc w:val=\"right\"/><w:pPr><w:ind w:left=\"4309\" w:hanging=\"180\"/></w:pPr></w:lvl><w:lvl w:ilvl=\"6\"><w:start w:val=\"");
-			m_oNumberXml.WriteString(wsStart);
-			m_oNumberXml.WriteString(L"\"/><w:numFmt w:val=\"decimal\"/><w:isLgl w:val=\"false\"/><w:suff w:val=\"tab\"/><w:lvlText w:val=\"%7.\"/><w:lvlJc w:val=\"left\"/><w:pPr><w:ind w:left=\"5029\" w:hanging=\"360\"/></w:pPr></w:lvl><w:lvl w:ilvl=\"7\"><w:start w:val=\"");
-			m_oNumberXml.WriteString(wsStart);
-			m_oNumberXml.WriteString(L"\"/><w:numFmt w:val=\"decimal\"/><w:isLgl w:val=\"false\"/><w:suff w:val=\"tab\"/><w:lvlText w:val=\"%8.\"/><w:lvlJc w:val=\"left\"/><w:pPr><w:ind w:left=\"5749\" w:hanging=\"360\"/></w:pPr></w:lvl><w:lvl w:ilvl=\"8\"><w:start w:val=\"");
-			m_oNumberXml.WriteString(wsStart);
-			m_oNumberXml.WriteString(L"\"/><w:numFmt w:val=\"decimal\"/><w:isLgl w:val=\"false\"/><w:suff w:val=\"tab\"/><w:lvlText w:val=\"%9.\"/><w:lvlJc w:val=\"right\"/><w:pPr><w:ind w:left=\"6469\" w:hanging=\"180\"/></w:pPr></w:lvl></w:abstractNum>");
-		}
-		else
-			oTSLi.bNumberingLi = false;
-
-		CTextSettings oTSList{oTSLi};
-
-		oTSList.oAdditionalStyle.m_oMargin.SetTop   (100, NSCSS::UnitMeasure::Twips, 0, true);
-		oTSList.oAdditionalStyle.m_oMargin.SetBottom(100, NSCSS::UnitMeasure::Twips, 0, true);
-
-		int nDeath = m_oLightReader.GetDepth();
-		while(m_oLightReader.ReadNextSiblingNode2(nDeath))
-		{
-			const std::wstring wsName = m_oLightReader.GetName();
-
-			if (L"li" == wsName)
-				ReadListElement(oXml, arSelectors, oTSList);
-			else
-			{
-				CloseP(oXml, arSelectors);
-				readInside(oXml, arSelectors, oTSLi, wsName);
-			}
-		}
-
-		CloseP(oXml, arSelectors);
-
-		return true;
 	}
 
 	bool readLi     (NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors, CTextSettings& oTS, bool bType)
@@ -5069,51 +5004,65 @@ private:
 		return true;
 	}
 };
+#else
+#include "HTMLReader.h"
+#endif
 
 CHtmlFile2::CHtmlFile2()
 {
+	#ifdef USE_OLD_HTML_CONVERTER
 	m_internal = new CHtmlFile2_Private();
+	#endif
 }
 
 CHtmlFile2::~CHtmlFile2()
 {
+	#ifdef USE_OLD_HTML_CONVERTER
 	RELEASEOBJECT(m_internal);
+	#endif
 }
 
 bool CHtmlFile2::IsHtmlFile(const std::wstring& sFile)
 {
+	#ifdef USE_OLD_HTML_CONVERTER
 	// Конвертируем в xhtml
 	if(!m_internal->htmlXhtml(sFile))
 		return false;
 	// Читаем html
 	return m_internal->isHtml();
+	#endif
+	return true;
 }
 
 bool CHtmlFile2::IsMhtFile(const std::wstring& sFile)
 {
+	#ifdef USE_OLD_HTML_CONVERTER
 	// Конвертируем в xhtml
 	if(!m_internal->mhtXhtml(sFile))
 		return false;
 	// Читаем html
 	return m_internal->isHtml();
+	#endif
+	return true;
 }
 
 void CHtmlFile2::SetTmpDirectory(const std::wstring& sFolder)
 {
+	#ifdef USE_OLD_HTML_CONVERTER
 	m_internal->m_sTmp = NSSystemPath::NormalizePath(sFolder);
+	#endif
 }
 
 void CHtmlFile2::SetCoreDirectory(const std::wstring& wsFolder)
 {
+	#ifdef USE_OLD_HTML_CONVERTER
 	m_internal->m_sCore = NSSystemPath::NormalizePath(wsFolder);
+	#endif
 }
 
 HRESULT CHtmlFile2::OpenHtml(const std::wstring& sSrc, const std::wstring& sDst, CHtmlParams* oParams)
 {
-	HTML::CHTMLReader oHTMLReader;
-
-	return oHTMLReader.ConvertFromTo(sSrc, sDst);
-
+	#ifdef USE_OLD_HTML_CONVERTER
 	if(!m_internal->m_oLightReader.IsValid())
 		if(!IsHtmlFile(sSrc))
 			return S_FALSE;
@@ -5132,10 +5081,15 @@ HRESULT CHtmlFile2::OpenHtml(const std::wstring& sSrc, const std::wstring& sDst,
 	m_internal->readSrc();
 	m_internal->write();
 	return S_OK;
+	#else
+	HTML::CHTMLReader oHTMLReader;
+	return oHTMLReader.ConvertFromTo(sSrc, sDst);
+	#endif
 }
 
 HRESULT CHtmlFile2::OpenMht(const std::wstring& sSrc, const std::wstring& sDst, CHtmlParams* oParams)
 {
+	#ifdef USE_OLD_HTML_CONVERTER
 	if(!m_internal->m_oLightReader.IsValid())
 		if(!IsMhtFile(sSrc))
 			return S_FALSE;
@@ -5154,10 +5108,14 @@ HRESULT CHtmlFile2::OpenMht(const std::wstring& sSrc, const std::wstring& sDst, 
 	m_internal->readSrc();
 	m_internal->write();
 	return S_OK;
+	#else
+	return S_FALSE;
+	#endif
 }
 
 HRESULT CHtmlFile2::OpenBatchHtml(const std::vector<std::wstring>& sSrc, const std::wstring& sDst, CHtmlParams* oParams)
 {
+	#ifdef USE_OLD_HTML_CONVERTER
 	m_internal->m_sDst = sDst;
 	m_internal->CreateDocxEmpty(oParams);
 	bool bFirst = true;
@@ -5194,8 +5152,11 @@ HRESULT CHtmlFile2::OpenBatchHtml(const std::vector<std::wstring>& sSrc, const s
 
 	m_internal->write();
 	return S_OK;
+	#endif
+	return S_FALSE;
 }
 
+#ifdef USE_OLD_HTML_CONVERTER
 std::wstring CTableRow::ConvertToOOXML(const CTable& oTable, int nInstruction)
 {
 	if (m_arCells.empty())
@@ -5351,3 +5312,4 @@ std::wstring CTableCell::ConvertToOOXML(const CTable& oTable, UINT unColumnNumbe
 
 	return oCell.GetData();
 }
+#endif

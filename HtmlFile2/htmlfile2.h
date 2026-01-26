@@ -76,7 +76,9 @@ class CHtmlFile2_Private;
 class HTMLFILE2_DECL_EXPORT CHtmlFile2
 {
 private:
+    #ifdef USE_OLD_HTML_CONVERTER
     CHtmlFile2_Private* m_internal;
+    #endif
 public:
     CHtmlFile2();
     ~CHtmlFile2();

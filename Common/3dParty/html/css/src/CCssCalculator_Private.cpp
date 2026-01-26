@@ -521,6 +521,10 @@ namespace NSCSS
 		                                                    {L"font-size", L"20pt"},
 		                                                    {L"margin-top", L"0"},
 		                                                    {L"margin-bottom", L"0"}});
+		m_mDefaultStyleData[L"blockquote"] = new CElement(L"blockquote", {{L"margin", L"0px"}});
+		m_mDefaultStyleData[L"ul"] = new CElement(L"ul", {{L"margin-top", L"100tw"},
+		                                                  {L"margin-bottom", L"100tw"}});
+		m_mDefaultStyleData[L"textarea"] = new CElement(L"textarea", {{L"border", L"1px solid black"}});
 	}
 
 	CCssCalculator_Private::CCssCalculator_Private()
@@ -710,6 +714,12 @@ namespace NSCSS
 
 		if (L"xmp" == wsNodeName || L"nobr" == wsNodeName)
 			return L"pre";
+
+		if (L"ol" == wsNodeName)
+			return L"ul";
+
+		if (L"fieldset" == wsNodeName)
+			return L"textarea";
 
 		return wsNodeName;
 	}

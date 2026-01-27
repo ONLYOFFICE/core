@@ -301,101 +301,102 @@ namespace OOX
 						if(ChartFile->m_oChartSpace.m_spPr.IsInit())
 						{
 							ChartFormatsPtr->m_FRAME = ChartFile->m_oChartSpace.m_spPr->toXLSFrame();
-							if(ChartFile->m_oChartSpace.m_chart != nullptr &&  ChartFile->m_oChartSpace.m_chart->m_plotArea != nullptr)
+						}
+						if(ChartFile->m_oChartSpace.m_chart != nullptr &&  ChartFile->m_oChartSpace.m_chart->m_plotArea != nullptr)
+						{
+							auto AxisParentUnion = new XLS::AXISPARENT;
+							ChartFormatsPtr->m_arAXISPARENT.push_back(XLS::BaseObjectPtr(AxisParentUnion));
+
+							for(auto chartIndex = 0; chartIndex < ChartFile->m_oChartSpace.m_chart->m_plotArea->m_Items.size(); chartIndex ++)
 							{
-								auto AxisParentUnion = new XLS::AXISPARENT;
-								ChartFormatsPtr->m_arAXISPARENT.push_back(XLS::BaseObjectPtr(AxisParentUnion));
-
-								for(auto chartIndex = 0; chartIndex < ChartFile->m_oChartSpace.m_chart->m_plotArea->m_Items.size(); chartIndex ++)
+								if(*ChartFile->m_oChartSpace.m_chart->m_plotArea->m_ItemsElementName0.at(chartIndex) == OOX::Spreadsheet::itemschoicetype5BARCHART)
 								{
-									if(*ChartFile->m_oChartSpace.m_chart->m_plotArea->m_ItemsElementName0.at(chartIndex) == OOX::Spreadsheet::itemschoicetype5BARCHART)
+									auto barChart = static_cast<CT_BarChart*>(ChartFile->m_oChartSpace.m_chart->m_plotArea->m_Items.at(chartIndex));
+									if(ChartFormatsPtr->m_arAXISPARENT.size() < 2)
 									{
-										auto barChart = static_cast<CT_BarChart*>(ChartFile->m_oChartSpace.m_chart->m_plotArea->m_Items.at(chartIndex));
-										if(ChartFormatsPtr->m_arAXISPARENT.size() < 2)
+										auto axes = new XLS::AXES;
+										AxisParentUnion->m_AXES = XLS::BaseObjectPtr(axes);
+										if(barChart->m_axId.size() > 0)
 										{
-											auto axes = new XLS::AXES;
-											AxisParentUnion->m_AXES = XLS::BaseObjectPtr(axes);
-											if(barChart->m_axId.size() > 0)
+											auto vaxId = barChart->m_axId.at(0);
+											if(!ChartFile->m_oChartSpace.m_chart->m_plotArea->m_Items1.empty())
 											{
-												auto vaxId = barChart->m_axId.at(0);
-												if(!ChartFile->m_oChartSpace.m_chart->m_plotArea->m_Items1.empty())
+												auto ivAx = static_cast<CT_CatAx*>(ChartFile->m_oChartSpace.m_chart->m_plotArea->m_Items1.at(0));
+												if(ivAx->m_axId.IsInit() && ivAx->m_axId.get() == vaxId)
 												{
-													auto ivAx = static_cast<CT_CatAx*>(ChartFile->m_oChartSpace.m_chart->m_plotArea->m_Items1.at(0));
-													if(ivAx->m_axId.IsInit() && ivAx->m_axId.get() == vaxId)
-													{
-														axes->m_arAxes.push_back(ivAx->toXLS());
-													}
+													axes->m_arAxes.push_back(ivAx->toXLS());
 												}
 											}
-											if(barChart->m_axId.size() > 1)
-											{
-												auto vaxId = barChart->m_axId.at(1);
-												if(!ChartFile->m_oChartSpace.m_chart->m_plotArea->m_Items1.empty())
-												{
-													auto dvAx = static_cast<CT_ValAx*>(ChartFile->m_oChartSpace.m_chart->m_plotArea->m_Items1.at(1));
-													if(dvAx->m_axId.IsInit() && dvAx->m_axId.get() == vaxId)
-													{
-														axes->m_arAxes.push_back(dvAx->toXLS());
-													}
-												}
-											}
-
 										}
-										AxisParentUnion->m_arCRT.push_back(barChart->toXLS(chartIndex, ptr->m_CHARTFORMATS));
+										if(barChart->m_axId.size() > 1)
+										{
+											auto vaxId = barChart->m_axId.at(1);
+											if(!ChartFile->m_oChartSpace.m_chart->m_plotArea->m_Items1.empty())
+											{
+												auto dvAx = static_cast<CT_ValAx*>(ChartFile->m_oChartSpace.m_chart->m_plotArea->m_Items1.at(1));
+												if(dvAx->m_axId.IsInit() && dvAx->m_axId.get() == vaxId)
+												{
+													axes->m_arAxes.push_back(dvAx->toXLS());
+												}
+											}
+										}
+
 									}
-									else if(*ChartFile->m_oChartSpace.m_chart->m_plotArea->m_ItemsElementName0.at(chartIndex) == OOX::Spreadsheet::itemschoicetype5PIECHART)
-									{
-										auto PieChart = static_cast<CT_PieChart*>(ChartFile->m_oChartSpace.m_chart->m_plotArea->m_Items.at(chartIndex));
-										AxisParentUnion->m_arCRT.push_back(PieChart->toXLS(chartIndex, ptr->m_CHARTFORMATS));
-									}
-									else if(*ChartFile->m_oChartSpace.m_chart->m_plotArea->m_ItemsElementName0.at(chartIndex) == OOX::Spreadsheet::itemschoicetype5LINECHART)
-									{
-										auto LineChart = static_cast<CT_LineChart*>(ChartFile->m_oChartSpace.m_chart->m_plotArea->m_Items.at(chartIndex));
-										AxisParentUnion->m_arCRT.push_back(LineChart->toXLS(chartIndex, ptr->m_CHARTFORMATS));
-									}
-									else if(*ChartFile->m_oChartSpace.m_chart->m_plotArea->m_ItemsElementName0.at(chartIndex) == OOX::Spreadsheet::itemschoicetype5AREACHART)
-									{
-										auto AreaChart = static_cast<CT_AreaChart*>(ChartFile->m_oChartSpace.m_chart->m_plotArea->m_Items.at(chartIndex));
-										AxisParentUnion->m_arCRT.push_back(AreaChart->toXLS(chartIndex, ptr->m_CHARTFORMATS));
-									}
-									else if(*ChartFile->m_oChartSpace.m_chart->m_plotArea->m_ItemsElementName0.at(chartIndex) == OOX::Spreadsheet::itemschoicetype5SURFACECHART)
-									{
-										auto SurfaceChart = static_cast<CT_Surface*>(ChartFile->m_oChartSpace.m_chart->m_plotArea->m_Items.at(chartIndex));
-										AxisParentUnion->m_arCRT.push_back(SurfaceChart->toXLS(chartIndex, ptr->m_CHARTFORMATS));
-									}
-									else if(*ChartFile->m_oChartSpace.m_chart->m_plotArea->m_ItemsElementName0.at(chartIndex) == OOX::Spreadsheet::itemschoicetype5SCATTERCHART)
-									{
-										auto ScatterChart = static_cast<CT_ScatterChart*>(ChartFile->m_oChartSpace.m_chart->m_plotArea->m_Items.at(chartIndex));
-										AxisParentUnion->m_arCRT.push_back(ScatterChart->toXLS(chartIndex, ptr->m_CHARTFORMATS));
-									}
+									AxisParentUnion->m_arCRT.push_back(barChart->toXLS(chartIndex, ptr->m_CHARTFORMATS));
+								}
+								else if(*ChartFile->m_oChartSpace.m_chart->m_plotArea->m_ItemsElementName0.at(chartIndex) == OOX::Spreadsheet::itemschoicetype5PIECHART)
+								{
+									auto PieChart = static_cast<CT_PieChart*>(ChartFile->m_oChartSpace.m_chart->m_plotArea->m_Items.at(chartIndex));
+									AxisParentUnion->m_arCRT.push_back(PieChart->toXLS(chartIndex, ptr->m_CHARTFORMATS));
+								}
+								else if(*ChartFile->m_oChartSpace.m_chart->m_plotArea->m_ItemsElementName0.at(chartIndex) == OOX::Spreadsheet::itemschoicetype5LINECHART)
+								{
+									auto LineChart = static_cast<CT_LineChart*>(ChartFile->m_oChartSpace.m_chart->m_plotArea->m_Items.at(chartIndex));
+									AxisParentUnion->m_arCRT.push_back(LineChart->toXLS(chartIndex, ptr->m_CHARTFORMATS));
+								}
+								else if(*ChartFile->m_oChartSpace.m_chart->m_plotArea->m_ItemsElementName0.at(chartIndex) == OOX::Spreadsheet::itemschoicetype5AREACHART)
+								{
+									auto AreaChart = static_cast<CT_AreaChart*>(ChartFile->m_oChartSpace.m_chart->m_plotArea->m_Items.at(chartIndex));
+									AxisParentUnion->m_arCRT.push_back(AreaChart->toXLS(chartIndex, ptr->m_CHARTFORMATS));
+								}
+								else if(*ChartFile->m_oChartSpace.m_chart->m_plotArea->m_ItemsElementName0.at(chartIndex) == OOX::Spreadsheet::itemschoicetype5SURFACECHART)
+								{
+									auto SurfaceChart = static_cast<CT_SurfaceChart*>(ChartFile->m_oChartSpace.m_chart->m_plotArea->m_Items.at(chartIndex));
+									AxisParentUnion->m_arCRT.push_back(SurfaceChart->toXLS(chartIndex, ptr->m_CHARTFORMATS));
+								}
+								else if(*ChartFile->m_oChartSpace.m_chart->m_plotArea->m_ItemsElementName0.at(chartIndex) == OOX::Spreadsheet::itemschoicetype5SCATTERCHART)
+								{
+									auto ScatterChart = static_cast<CT_ScatterChart*>(ChartFile->m_oChartSpace.m_chart->m_plotArea->m_Items.at(chartIndex));
+									AxisParentUnion->m_arCRT.push_back(ScatterChart->toXLS(chartIndex, ptr->m_CHARTFORMATS));
 								}
 							}
-							if(ChartFile->m_oChartSpace.m_chart->m_title != nullptr && ChartFile->m_oChartSpace.m_chart->m_title->m_tx != nullptr)
-							{
-								auto labelUnion = new XLS::ATTACHEDLABEL;
-								auto textRecord = new XLS::Text;
-								textRecord->wBkgMode = 1;
-								textRecord->at = 2;
-								textRecord->vat = 1;
-								auto textPos = new XLS::Pos;
-								textPos->mdBotRt = 2;
-								textPos->mdTopLt = 2;
-								labelUnion->m_Pos = XLS::BaseObjectPtr(textPos);
-								auto objLink = new XLS::ObjectLink;
-								objLink->wLinkObj = 1;
-								auto seriesText = new XLS::SeriesText;
-								seriesText->stText = ChartFile->m_oChartSpace.m_chart->m_title->m_tx->m_oRich->GetText();
-								auto aiUnion = new XLS::AI;
-								auto brai = new XLS::BRAI;
-								brai->rt = 1;
-								aiUnion->m_BRAI = XLS::BaseObjectPtr(brai);
-								aiUnion->m_SeriesText = XLS::BaseObjectPtr(seriesText);
-								labelUnion->m_AI = XLS::BaseObjectPtr(aiUnion);
-								labelUnion->m_ObjectLink = XLS::BaseObjectPtr(objLink);
-								labelUnion->m_TextProperties = XLS::BaseObjectPtr(textRecord);
-								ChartFormatsPtr->m_arATTACHEDLABEL.push_back(XLS::BaseObjectPtr(labelUnion));
-							}
 						}
+						if(ChartFile->m_oChartSpace.m_chart->m_title != nullptr && ChartFile->m_oChartSpace.m_chart->m_title->m_tx != nullptr)
+						{
+							auto labelUnion = new XLS::ATTACHEDLABEL;
+							auto textRecord = new XLS::Text;
+							textRecord->wBkgMode = 1;
+							textRecord->at = 2;
+							textRecord->vat = 1;
+							auto textPos = new XLS::Pos;
+							textPos->mdBotRt = 2;
+							textPos->mdTopLt = 2;
+							labelUnion->m_Pos = XLS::BaseObjectPtr(textPos);
+							auto objLink = new XLS::ObjectLink;
+							objLink->wLinkObj = 1;
+							auto seriesText = new XLS::SeriesText;
+							seriesText->stText = ChartFile->m_oChartSpace.m_chart->m_title->m_tx->m_oRich->GetText();
+							auto aiUnion = new XLS::AI;
+							auto brai = new XLS::BRAI;
+							brai->rt = 1;
+							aiUnion->m_BRAI = XLS::BaseObjectPtr(brai);
+							aiUnion->m_SeriesText = XLS::BaseObjectPtr(seriesText);
+							labelUnion->m_AI = XLS::BaseObjectPtr(aiUnion);
+							labelUnion->m_ObjectLink = XLS::BaseObjectPtr(objLink);
+							labelUnion->m_TextProperties = XLS::BaseObjectPtr(textRecord);
+							ChartFormatsPtr->m_arATTACHEDLABEL.push_back(XLS::BaseObjectPtr(labelUnion));
+						}
+
 					}
 				}
 			}

@@ -199,6 +199,13 @@ core_win_64 {
 	DEFINES += WIN64 _WIN64
 }
 
+defineTest(startsWith) {
+    tmp = $$2
+    tmp ~= s,^$$re_escape($$1),,
+    !equals(tmp, $$2): return(true)
+    return(false)
+}
+
 core_linux {
 	DEFINES += LINUX _LINUX
 
@@ -213,7 +220,7 @@ core_linux {
 		}
 		QMAKE_CUSTOM_SYSROOT_BIN = $$join(QMAKE_CUSTOM_SYSROOT_BIN, , , /)
 
-		contains(QMAKE_CUSTOM_SYSROOT_BIN, $$QMAKE_CUSTOM_SYSROOT) {
+		startsWith($$QMAKE_CUSTOM_SYSROOT, $$QMAKE_CUSTOM_SYSROOT_BIN) {
 			message("Using compilers from same sysroot")
 			QMAKE_CC          = $$join(QMAKE_CUSTOM_SYSROOT_BIN, , , "gcc")
 			QMAKE_CXX         = $$join(QMAKE_CUSTOM_SYSROOT_BIN, , , "g++")

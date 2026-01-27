@@ -117,6 +117,8 @@ public:
 	void set_predump(const bool& bPreDump);
 	bool get_lasttext();
 
+	void set_line_break(bool& bLineBreak);
+
 private:
 
 	class Impl;

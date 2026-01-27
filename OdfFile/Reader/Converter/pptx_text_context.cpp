@@ -105,6 +105,8 @@ public:
 
 	void seroing_predump();
 
+	void set_line_break(bool& bLineBreak);
+
 	bool in_list_;
 	bool process_layouts_;
 
@@ -120,6 +122,7 @@ private:
 	bool in_comment;
 	bool is_predump;
 	bool is_lasttext;
+	bool is_line_break;
 
 	odf_reader::styles_container * local_styles_ptr_;
 
@@ -169,7 +172,7 @@ private:
 
 pptx_text_context::Impl::Impl(odf_reader::odf_read_context & odf_contxt_, pptx_conversion_context & pptx_contxt_): 
 		odf_context_(odf_contxt_),	pptx_context_(pptx_contxt_),
-		paragraphs_cout_(0), in_paragraph(false),in_span(false),is_predump(false),is_lasttext(false), in_comment(false), field_type_(none)
+		paragraphs_cout_(0), in_paragraph(false),in_span(false),is_predump(false),is_lasttext(false),is_line_break(false), in_comment(false), field_type_(none)
 {
 	new_list_style_number_=0;
 	local_styles_ptr_ = NULL;
@@ -348,10 +351,19 @@ void pptx_text_context::Impl::ApplyListProperties(odf_reader::paragraph_format_p
 
 		if (list_properties->text_space_before_)
 		{
-			double spaceBeforeTwip = list_properties->text_space_before_->get_value_unit(odf_types::length::pt);
+			double spaceBeforeTwip;
+			odf_types::length::unit tempTypeUnit = odf_types::length::pt;
+			if(propertiesOut.fo_margin_left_)
+			{
+				tempTypeUnit = propertiesOut.fo_margin_left_->get_length().get_unit();
+				spaceBeforeTwip = list_properties->text_space_before_->get_value_unit(tempTypeUnit);
+				spaceBeforeTwip += propertiesOut.fo_margin_left_->get_length().get_value();
+			}
+			else
+				spaceBeforeTwip = list_properties->text_space_before_->get_value_unit(tempTypeUnit);
 			if (spaceBeforeTwip > 0)
 			{
-				propertiesOut.fo_margin_left_ = odf_types::length(spaceBeforeTwip, odf_types::length::pt);
+				propertiesOut.fo_margin_left_ = odf_types::length(spaceBeforeTwip, tempTypeUnit);
 			}
 		}
 		else if(!propertiesOut.fo_margin_left_)
@@ -614,20 +626,41 @@ void pptx_text_context::Impl::dump_run()
 	//if (content.length() <1 &&  span_style_name_.length()<1) return ;      ... провеить с пустыми строками нужны ли  ...
 
 	if (content.length() > 0)
-	{		
-		CP_XML_WRITER(run_)
+	{
+		if(is_line_break)
 		{
-			CP_XML_NODE(L"a:r")
+			CP_XML_WRITER(run_)
 			{
-				write_rPr(CP_XML_STREAM());   
-
-				CP_XML_NODE(L"a:t")
+				CP_XML_NODE(L"a:br")
 				{
-					//CP_XML_ATTR(L"xml:space", L"preserve"); 
-					CP_XML_STREAM() << content;
-				}
-			 }
-			text_.str(std::wstring());			
+					write_rPr(CP_XML_STREAM());
+
+					// CP_XML_NODE(L"a:t")
+					// {
+					// 	//CP_XML_ATTR(L"xml:space", L"preserve");
+					// 	CP_XML_STREAM() << content;
+					// }
+				 }
+				text_.str(std::wstring());
+			}
+			is_line_break = false;
+		}
+		else
+		{
+			CP_XML_WRITER(run_)
+			{
+				CP_XML_NODE(L"a:r")
+				{
+					write_rPr(CP_XML_STREAM());
+
+					CP_XML_NODE(L"a:t")
+					{
+						//CP_XML_ATTR(L"xml:space", L"preserve");
+						CP_XML_STREAM() << content;
+					}
+				 }
+				text_.str(std::wstring());
+			}
 		}
 	}
 	else
@@ -1003,6 +1036,11 @@ bool pptx_text_context::get_lasttext()
 	return impl_->get_lasttext();
 }
 
+void pptx_text_context::set_line_break(bool& bLineBreak)
+{
+	impl_->set_line_break(bLineBreak);
+}
+
 void pptx_text_context::Impl::set_predump(const bool& bPredump)
 {
 	is_predump = bPredump;
@@ -1017,6 +1055,11 @@ void pptx_text_context::Impl::seroing_predump()
 {
 	is_predump = false;
 	is_lasttext = false;
+}
+
+void pptx_text_context::Impl::set_line_break(bool& bLineBreak)
+{
+	is_line_break = bLineBreak;
 }
 
 }

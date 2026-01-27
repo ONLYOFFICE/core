@@ -53,6 +53,7 @@
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Pie.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Line.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Area.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Surf.h"
 
 namespace OOX
 {
@@ -9447,6 +9448,19 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
+		}
+		XLS::BaseObjectPtr CT_Surface::toXLS(const unsigned short chartIndex, XLS::BaseObjectPtr ChartFormats)
+		{
+			auto ChartFormatsPtr =  static_cast<XLS::CHARTFORMATS*>(ChartFormats.get());
+
+			auto ptr = new XLS::CRT;
+			auto chartFormat = new XLS::ChartFormat;
+			chartFormat->icrt = chartIndex;
+			ptr->m_ChartFormat = XLS::BaseObjectPtr(chartFormat);
+			auto chartType = new XLS::Surf;
+			ptr->m_ChartType = XLS::BaseObjectPtr(chartType);
+
+			return XLS::BaseObjectPtr(ptr);
 		}
 		EElementType CT_Surface::getType() { return et_ct_surface; }
 		

@@ -353,6 +353,11 @@ namespace OOX
 										auto LineChart = static_cast<CT_LineChart*>(ChartFile->m_oChartSpace.m_chart->m_plotArea->m_Items.at(chartIndex));
 										AxisParentUnion->m_arCRT.push_back(LineChart->toXLS(chartIndex, ptr->m_CHARTFORMATS));
 									}
+									else if(*ChartFile->m_oChartSpace.m_chart->m_plotArea->m_ItemsElementName0.at(chartIndex) == OOX::Spreadsheet::itemschoicetype5AREACHART)
+									{
+										auto AreaChart = static_cast<CT_AreaChart*>(ChartFile->m_oChartSpace.m_chart->m_plotArea->m_Items.at(chartIndex));
+										AxisParentUnion->m_arCRT.push_back(AreaChart->toXLS(chartIndex, ptr->m_CHARTFORMATS));
+									}
 								}
 							}
 							if(ChartFile->m_oChartSpace.m_chart->m_title != nullptr && ChartFile->m_oChartSpace.m_chart->m_title->m_tx != nullptr)

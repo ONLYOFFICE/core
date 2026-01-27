@@ -1876,6 +1876,7 @@ namespace OOX
 			{}
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			XLS::BaseObjectPtr GetXLSFormat(const _UINT32 chartIndex)const;
 			EElementType getType();
 		};
 		class CT_Area3DChart
@@ -1915,6 +1916,7 @@ namespace OOX
 
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			XLS::BaseObjectPtr toXLS(const unsigned short chartIndex, XLS::BaseObjectPtr ChartFormatsPtr);
 			EElementType getType();
 		};
 		class CT_PlotArea

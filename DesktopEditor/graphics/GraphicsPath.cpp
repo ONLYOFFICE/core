@@ -1007,16 +1007,18 @@ namespace Aggplus
 	bool CGraphicsPath::operator==(const CGraphicsPath& other) noexcept
 	{
 		unsigned pointsCount = GetPointCount(),
-			otherPointsCount = other.GetPointCount();
+				 otherPointsCount = other.GetPointCount();
 
 		if (pointsCount != otherPointsCount)
 			return false;
 
 		std::vector<PointD> points = GetPoints(0, pointsCount),
-			otherPoints = other.GetPoints(0, otherPointsCount);
+							otherPoints = other.GetPoints(0, otherPointsCount);
+
+		bool reverse = IsClockwise() ^ other.IsClockwise();
 
 		for (unsigned i = 0; i < pointsCount; i++)
-			if (!points[i].Equals(otherPoints[i]))
+			if (!points[i].Equals(otherPoints[reverse ? pointsCount - i - 1 : i]))
 				return false;
 
 		return true;

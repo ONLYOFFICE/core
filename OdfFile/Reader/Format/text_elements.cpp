@@ -394,7 +394,7 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context, _CP_OPT(std
 	
 	process_list_bullet_style(Context);
 
-    int textStyle = Context.process_paragraph_attr(&attrs_);
+	int textStyle = Context.process_paragraph_attr(&attrs_);
 
     Context.add_note_reference();
 	

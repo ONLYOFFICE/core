@@ -1431,6 +1431,10 @@ void docx_conversion_context::process_styles()
                 
 				_Wostream << L"<w:style w:styleId=\"" << id << L"\" w:type=\"" << StyleTypeOdf2Docx(arStyles[i]->type()) << L"\""; 
 
+				status_para[id] = false;
+
+				set_temp_style_name(id);
+
 				if (bDefault)  // style
 				{
 					_Wostream << L" w:default=\"1\"";
@@ -1484,10 +1488,9 @@ void docx_conversion_context::process_styles()
                 if (odf_reader::style_content * content = arStyles[i]->content())
                 {
 					get_tabs_context().clear();
-					calc_tab_stops(arStyles[i].get(), get_tabs_context());
-					
+					calc_tab_stops(arStyles[i].get(), get_tabs_context());					
 					get_styles_context().start_process_style(arStyles[i].get());
-                    content->docx_convert(*this, true);
+					content->docx_convert(*this, true);
                     get_styles_context().end_process_style();
                 }
 
@@ -1815,6 +1818,14 @@ void docx_conversion_context::set_page_break_before(int val)
 int docx_conversion_context::get_page_break_before()
 {
     return page_break_before_;
+}
+void docx_conversion_context::set_temp_style_name( const std::wstring& _name )
+{
+	temp_name = _name;
+}
+std::wstring docx_conversion_context::get_temp_style_name() const
+{
+	return temp_name;
 }
 void docx_conversion_context::add_page_properties(const std::wstring & StyleName)
 {
@@ -2224,7 +2235,6 @@ int docx_conversion_context::process_paragraph_attr(odf_reader::text::paragraph_
 						get_section_context().dump_.clear();
 					}
 				}
-
 				output_stream() << L"<w:pStyle w:val=\"" << id << L"\" />";
 
 				if (!get_text_tracked_context().dumpPPr_.empty())
@@ -2236,7 +2246,7 @@ int docx_conversion_context::process_paragraph_attr(odf_reader::text::paragraph_
 				serialize_list_properties(output_stream());
 				
 				//if ((Attr->outline_level_) && (*Attr->outline_level_ > 0))
-				if (outline_level)
+				if ( outline_level && status_para[id] == false )
 				{
 					odf_reader::list_style_container & list_styles = root()->odf_context().listStyleContainer();
 					
@@ -2244,7 +2254,7 @@ int docx_conversion_context::process_paragraph_attr(odf_reader::text::paragraph_
 					{
 						output_stream() << L"<w:numPr>";
 						output_stream() << L"<w:ilvl w:val=\"" << *outline_level - 1  << L"\"/>";
-						output_stream() << L"<w:numId w:val=\"" << list_styles.id_by_name(id) << L"\"/>"; // check bug 51965
+						output_stream() << L"<w:numId w:val=\"" << list_styles.id_outline() << L"\"/>"; // check bug 51965
 						output_stream() << L"</w:numPr>";
 					}
 					output_stream() << L"<w:outlineLvl w:val=\"" << *outline_level << L"\"/>";

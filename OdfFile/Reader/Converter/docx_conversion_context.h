@@ -876,6 +876,9 @@ public:
 
 	void set_page_break		(bool val);
     bool get_page_break		();
+
+	void set_temp_style_name( const std::wstring& val );
+	std::wstring get_temp_style_name() const;
 	
 	void			add_page_properties		(const std::wstring & StyleName);
     std::wstring	get_page_properties		();
@@ -994,6 +997,7 @@ public:
 	drop_cap_context		& get_drop_cap_context()		{ return drop_cap_context_; }
 	
 	styles_map	styles_map_;
+	std::unordered_map<std::wstring,bool> status_para{};
 	bool		process_headers_footers_;
 	bool		delayed_converting_;
 	bool		convert_delayed_enabled_;
@@ -1016,6 +1020,8 @@ public:
 	int get_scale() const;
 
 private:
+
+	std::wstring temp_name;
 
     bool flag_implicit_end = false;
 

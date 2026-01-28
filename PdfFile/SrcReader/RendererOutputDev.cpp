@@ -741,7 +741,7 @@ namespace PdfReader
 		pFontInfo = pFontManager->GetFontInfoByParams(oFontSelect);
 		return pFontInfo;
 	}
-	void RendererOutputDev::GetFont(XRef* pXref, NSFonts::IFontManager* pFontManager, CPdfFontList* pFontList, GfxFont* pFont, std::wstring& wsFileName, std::wstring& wsFontName)
+	void RendererOutputDev::GetFont(XRef* pXref, NSFonts::IFontManager* pFontManager, CPdfFontList* pFontList, GfxFont* pFont, std::wstring& wsFileName, std::wstring& wsFontName, bool bNotFullName)
 	{
 		wsFileName = L"";
 		wsFontName = L"";
@@ -1459,7 +1459,8 @@ namespace PdfReader
 			// Обрежем индекс у FontName, если он есть
 			if (wsFontName.empty())
 				wsFontName = wsFontBaseName;
-			EraseSubsetTag(wsFontName);
+			if (bNotFullName)
+				EraseSubsetTag(wsFontName);
 
 			pEntry->wsFilePath     = wsFileName;
 			pEntry->wsFontName     = wsFontName;
@@ -1491,7 +1492,7 @@ namespace PdfReader
 
 		std::wstring wsFileName = L"";
 		std::wstring wsFontName = L"";
-		GetFont(m_pXref, m_pFontManager, m_pFontList, pFont, wsFileName, wsFontName);
+		GetFont(m_pXref, m_pFontManager, m_pFontList, pFont, wsFileName, wsFontName, false);
 
 		if (!wsFileName.empty())
 		{

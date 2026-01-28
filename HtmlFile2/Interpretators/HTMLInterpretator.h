@@ -1,8 +1,9 @@
 #ifndef HTMLINTERPRETATOR_H
 #define HTMLINTERPRETATOR_H
 
-#include "../Common/3dParty/html/css/src/CNode.h"
+#include "../../Common/3dParty/html/css/src/CNode.h"
 #include "HTMLParams.h"
+#include "../Common.h"
 
 namespace HTML
 {
@@ -21,6 +22,9 @@ public:
 
 	virtual void BeginBlock() = 0;
 	virtual void EndBlock(bool bAddBlock) = 0;
+
+	virtual void SetDataOutput(XmlString* pOutputData) = 0; // Задаем место вывода для интерпретатора
+	virtual void RevertDataOutput() = 0; // Возвращаем место вывода к исходному
 
 	#ifdef _DEBUG
 	virtual void PrintData() = 0;

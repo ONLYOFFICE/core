@@ -6,7 +6,7 @@
 #include "../../DesktopEditor/common/Directory.h"
 #include "../../DesktopEditor/common/SystemUtils.h"
 
-#include "../../DesktopEditor/graphics/pro/Graphics.h"
+#include "../../DesktopEditor/graphics/pro/Fonts.h"
 
 #include "../src/Languages.h"
 
@@ -36,15 +36,12 @@ namespace HTML
 #define DEFAULT_IMAGE_HEIGHT 304800
 
 inline bool ElementInTable(const std::vector<NSCSS::CNode>& arSelectors);
-inline void WriteToStringBuilder(NSStringUtils::CStringBuilder& oSrcStringBuilder, NSStringUtils::CStringBuilder& oDstStringBuilder);
 inline bool ElementInHeader(const std::vector<NSCSS::CNode> arSelsectors);
 inline std::wstring StandardizeHeaderId(const std::wstring& wsHeader);
 inline int CalculateFontChange(const std::vector<NSCSS::CNode>& arSelectors);
 inline UINT GetFontSizeLevel(UINT unFontSize);
 inline UINT GetFontSizeByLevel(UINT unLevel);
 inline void ReplaceSpaces(std::wstring& wsValue);
-inline void replace_all(std::wstring& s, const std::wstring& s1, const std::wstring& s2);
-inline std::wstring EncodeXmlString(std::wstring wsString);
 
 COOXMLInterpretator::COOXMLInterpretator()
 	: m_nFootnoteId(1), m_nHyperlinkId(1), m_nNumberingId(1), m_nId(1), m_nShapeId(1), m_bWasDivs(false), m_pFonts(nullptr)
@@ -346,7 +343,7 @@ void COOXMLInterpretator::End(const std::wstring& wsDst)
 	}
 
 	// webSettings.xml
-	if (!m_bWasDivs)
+	if (m_bWasDivs)
 		m_oWebSettings.WriteString(L"</w:divs>");
 
 	m_oWebSettings.WriteString(L"</w:webSettings>");
@@ -424,9 +421,6 @@ void COOXMLInterpretator::CloseT()
 
 void COOXMLInterpretator::BeginBlock()
 {
-	m_arStates.top().m_pCurrentDocument = new XmlString();
-	//Сохранить состояние
-
 	SaveState();
 	m_arStates.top().CreateNewCurrentDocument();
 
@@ -447,6 +441,19 @@ void COOXMLInterpretator::EndBlock(bool bAddBlock)
 	// 	else
 	// 		m_oState = oCurentState;
 
+	RollBackState();
+}
+
+void COOXMLInterpretator::SetDataOutput(XmlString* pOutputData)
+{
+	SaveState();
+	m_arStates.top().m_pCurrentDocument = pOutputData;
+	m_arStates.top().m_bRemoveCurrentDocument = false;
+}
+
+void COOXMLInterpretator::RevertDataOutput()
+{
+	CloseP();
 	RollBackState();
 }
 
@@ -1167,27 +1174,6 @@ inline bool ElementInTable(const std::vector<NSCSS::CNode>& arSelectors)
 	return arSelectors.crend() != std::find_if(arSelectors.crbegin(), arSelectors.crend(), [](const NSCSS::CNode& oNode) { return L"table" == oNode.m_wsName; });
 }
 
-inline void WriteToStringBuilder(NSStringUtils::CStringBuilder& oSrcStringBuilder, NSStringUtils::CStringBuilder& oDstStringBuilder)
-{
-	if (oSrcStringBuilder.GetCurSize() < MAX_STRING_BLOCK_SIZE)
-	{
-		oDstStringBuilder.Write(oSrcStringBuilder);
-		return;
-	}
-
-	size_t ulSize = oSrcStringBuilder.GetCurSize();
-	size_t ulCurrentBlockSize = 0, ulPosition = 0;
-
-	while (ulSize > 0)
-	{
-		ulCurrentBlockSize = std::min(ulSize, MAX_STRING_BLOCK_SIZE);
-		oDstStringBuilder.WriteString(oSrcStringBuilder.GetSubData(ulPosition, ulCurrentBlockSize));
-
-		ulSize -= ulCurrentBlockSize;
-		ulPosition += ulCurrentBlockSize;
-	}
-}
-
 inline bool ElementInHeader(const std::vector<NSCSS::CNode> arSelsectors)
 {
 	for (const NSCSS::CNode& oNode : arSelsectors)
@@ -1364,31 +1350,5 @@ inline void ReplaceSpaces(std::wstring& wsValue)
 
 		itBegin = std::find_if(itBegin + 1, wsValue.cend(), [](wchar_t wchValue){ return std::iswspace(wchValue) && 0xa0 != wchValue; });
 	}
-}
-
-inline void ReplaceAll(std::wstring& s, const std::wstring& s1, const std::wstring& s2)
-{
-	size_t pos = s.find(s1);
-	size_t l = s2.length();
-	while (pos != std::string::npos)
-	{
-		if (!(s1 == L"&" && s2 == L"&amp;" && s.length() > pos + 4 && s[pos] == L'&' && s[pos + 1] == L'a' && s[pos + 2] == L'm' && s[pos + 3] == L'p' && s[pos + 4] == L';'))
-			s.replace(pos, s1.length(), s2);
-		pos = s.find(s1, pos + l);
-	}
-}
-
-inline std::wstring EncodeXmlString(std::wstring wsString)
-{
-	ReplaceAll(wsString, L"&", L"&amp;");
-	ReplaceAll(wsString, L"<", L"&lt;");
-	ReplaceAll(wsString, L">", L"&gt;");
-	ReplaceAll(wsString, L"\"", L"&quot;");
-	ReplaceAll(wsString, L"\'", L"&#39;");
-	ReplaceAll(wsString, L"\n", L"&#xA;");
-	ReplaceAll(wsString, L"\r", L"&#xD;");
-	ReplaceAll(wsString, L"\t", L"&#x9;");
-
-	return wsString;
 }
 }

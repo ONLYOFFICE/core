@@ -13,6 +13,7 @@ DEFINES += CSSCALCULATOR_LIBRARY_STATIC
 DEFINES += CSS_CALCULATOR_WITH_XHTML
 DEFINES += DISABLE_RUBY_SUPPORT
 DEFINES += MDCONVERTER_DECL_EXPORT
+DEFINES += HTML_NORMALIZER_DECL_EXPORT
 
 CORE_ROOT_DIR = $$PWD/..
 PWD_ROOT_DIR = $$PWD
@@ -34,6 +35,7 @@ ADD_DEPENDENCY(kernel, UnicodeConverter, graphics, kernel_network)
 SOURCES += htmlfile2.cpp \
     ./Interpretators/OOXMLInterpretator.cpp \
     HTMLReader.cpp \
+    Table.cpp \
     Tags/OOXMLTags.cpp
 
 HEADERS += htmlfile2.h \
@@ -45,4 +47,5 @@ HEADERS += htmlfile2.h \
 	HTMLParams.h \
 	HTMLReader.h \
 	./Tags/HTMLTags.h \
+	Table.h \
 	Tags/OOXMLTags.h

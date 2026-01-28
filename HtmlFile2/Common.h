@@ -2,10 +2,15 @@
 #define COMMON_H
 
 #include <string>
+#include "../../DesktopEditor/common/StringBuilder.h"
 
 namespace HTML
 {
-void replace_all(std::wstring& s, const std::wstring& s1, const std::wstring& s2)
+#define MAX_STRING_BLOCK_SIZE (size_t)10485760
+
+using XmlString = NSStringUtils::CStringBuilder;
+
+inline void replace_all(std::wstring& s, const std::wstring& s1, const std::wstring& s2)
 {
 	size_t pos = s.find(s1);
 	size_t l = s2.length();
@@ -17,7 +22,7 @@ void replace_all(std::wstring& s, const std::wstring& s1, const std::wstring& s2
 	}
 }
 
-std::wstring EncodeXmlString(const std::wstring& s)
+inline std::wstring EncodeXmlString(const std::wstring& s)
 {
 	std::wstring sRes = s;
 
@@ -32,6 +37,28 @@ std::wstring EncodeXmlString(const std::wstring& s)
 
 	return sRes;
 }
+
+inline void WriteToStringBuilder(NSStringUtils::CStringBuilder& oSrcStringBuilder, NSStringUtils::CStringBuilder& oDstStringBuilder)
+{
+	if (oSrcStringBuilder.GetCurSize() < MAX_STRING_BLOCK_SIZE)
+	{
+		oDstStringBuilder.Write(oSrcStringBuilder);
+		return;
+	}
+
+	size_t ulSize = oSrcStringBuilder.GetCurSize();
+	size_t ulCurrentBlockSize = 0, ulPosition = 0;
+
+	while (ulSize > 0)
+	{
+		ulCurrentBlockSize = std::min(ulSize, MAX_STRING_BLOCK_SIZE);
+		oDstStringBuilder.WriteString(oSrcStringBuilder.GetSubData(ulPosition, ulCurrentBlockSize));
+
+		ulSize -= ulCurrentBlockSize;
+		ulPosition += ulCurrentBlockSize;
+	}
+}
+
 }
 
 #endif // COMMON_H

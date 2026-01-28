@@ -2,7 +2,6 @@
 #define OOXMLINTERPRETATOR_H
 
 // #include "HTMLInterpretator.h"
-#include "../../DesktopEditor/common/StringBuilder.h"
 
 #include "../../Common/3dParty/html/css/src/xhtml/CDocumentStyle.h"
 #include "../../Common/3dParty/html/css/src/CCssCalculator.h"
@@ -13,8 +12,6 @@ namespace NSFonts { class IApplicationFonts; }
 
 namespace HTML
 {
-using XmlString = NSStringUtils::CStringBuilder;
-
 struct TImageData
 {
 	UINT m_unWidth;
@@ -134,6 +131,9 @@ public:
 
 	void BeginBlock() override;
 	void EndBlock(bool bAddBlock) override;
+
+	void SetDataOutput(XmlString* pOutputData) override;
+	void RevertDataOutput() override;
 
 	void SaveState();
 	void RollBackState();

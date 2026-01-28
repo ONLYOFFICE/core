@@ -5,114 +5,154 @@
 #include "../Interpretators/OOXMLInterpretator.h"
 #include <stack>
 
-namespace XmlUtils { class CXmlLiteReader; }
-
 namespace HTML
 {
 template<>
-struct TAnchor<COOXMLInterpretator> : public TTag<COOXMLInterpretator>
+class CAnchor<COOXMLInterpretator> : public CTag<COOXMLInterpretator>
 {
-	TAnchor(COOXMLInterpretator* pInterpretator);
-	virtual bool Open(const std::vector<NSCSS::CNode>& arSelectors) override;
+public:
+	CAnchor(COOXMLInterpretator* pInterpretator);
+	virtual bool Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData = boost::any()) override;
 	virtual void Close(const std::vector<NSCSS::CNode>& arSelectors) override;
 };
 
 template<>
-struct TAbbr<COOXMLInterpretator> : public TTag<COOXMLInterpretator>
+class CAbbr<COOXMLInterpretator> : public CTag<COOXMLInterpretator>
 {
-	TAbbr(COOXMLInterpretator* pInterpretator);
-	virtual bool Open(const std::vector<NSCSS::CNode>& arSelectors) override;
+public:
+	CAbbr(COOXMLInterpretator* pInterpretator);
+	virtual bool Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData = boost::any()) override;
 	virtual void Close(const std::vector<NSCSS::CNode>& arSelectors) override;
 };
 
 template<>
-struct TBreak<COOXMLInterpretator> : public TTag<COOXMLInterpretator>
+class CBreak<COOXMLInterpretator> : public CTag<COOXMLInterpretator>
 {
-	TBreak(COOXMLInterpretator* pInterpretator);
-	virtual bool Open(const std::vector<NSCSS::CNode>& arSelectors) override;
+public:
+	CBreak(COOXMLInterpretator* pInterpretator);
+	virtual bool Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData = boost::any()) override;
 	virtual void Close(const std::vector<NSCSS::CNode>& arSelectors) override;
 };
 
 template<>
-struct TDivision<COOXMLInterpretator> : public TTag<COOXMLInterpretator>
+class CDivision<COOXMLInterpretator> : public CTag<COOXMLInterpretator>
 {
 	std::stack<UINT> m_arFootnoteIDs;
-
-	TDivision(COOXMLInterpretator* pInterpretator);
-	virtual bool Open(const std::vector<NSCSS::CNode>& arSelectors) override;
+public:
+	CDivision(COOXMLInterpretator* pInterpretator);
+	virtual bool Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData = boost::any()) override;
 	virtual void Close(const std::vector<NSCSS::CNode>& arSelectors) override;
 };
 
 template<>
-struct TImage<COOXMLInterpretator> : public TTag<COOXMLInterpretator>
+class CImage<COOXMLInterpretator> : public CTag<COOXMLInterpretator>
 {
 	std::vector<std::wstring> m_arrImages;
-	XmlUtils::CXmlLiteReader* m_pXmlReader; //TODO:: подумать как можно иначе получить текс в svg теге
-
-	TImage(COOXMLInterpretator* pInterpretator, XmlUtils::CXmlLiteReader* pXmlReader);
-	virtual bool Open(const std::vector<NSCSS::CNode>& arSelectors) override;
+public:
+	CImage(COOXMLInterpretator* pInterpretator);
+	virtual bool Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData = boost::any()) override;
 	virtual void Close(const std::vector<NSCSS::CNode>& arSelectors) override;
 };
 
 template<>
-struct TFont<COOXMLInterpretator> : public TTag<COOXMLInterpretator>
+class CFont<COOXMLInterpretator> : public CTag<COOXMLInterpretator>
 {
-	TFont(COOXMLInterpretator* pInterpretator);
-	virtual bool Open(const std::vector<NSCSS::CNode>& arSelectors) override;
+public:
+	CFont(COOXMLInterpretator* pInterpretator);
+	virtual bool Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData = boost::any()) override;
 	virtual void Close(const std::vector<NSCSS::CNode>& arSelectors) override;
 };
 
 template<>
-struct TInput<COOXMLInterpretator> : public TTag<COOXMLInterpretator>
+class CInput<COOXMLInterpretator> : public CTag<COOXMLInterpretator>
 {
-	TInput(COOXMLInterpretator* pInterpretator);
-	virtual bool Open(const std::vector<NSCSS::CNode>& arSelectors) override;
+public:
+	CInput(COOXMLInterpretator* pInterpretator);
+	virtual bool Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData = boost::any()) override;
 	virtual void Close(const std::vector<NSCSS::CNode>& arSelectors) override;
 };
 
 template<>
-struct TBaseFont<COOXMLInterpretator> : public TTag<COOXMLInterpretator>
+class CBaseFont<COOXMLInterpretator> : public CTag<COOXMLInterpretator>
 {
-	TBaseFont(COOXMLInterpretator* pInterpretator);
-	virtual bool Open(const std::vector<NSCSS::CNode>& arSelectors) override;
+public:
+	CBaseFont(COOXMLInterpretator* pInterpretator);
+	virtual bool Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData = boost::any()) override;
 	virtual void Close(const std::vector<NSCSS::CNode>& arSelectors) override;
 };
 
 template<>
-struct TBlockquote<COOXMLInterpretator> : public TTag<COOXMLInterpretator>
+class CBlockquote<COOXMLInterpretator> : public CTag<COOXMLInterpretator>
 {
 	std::map<std::wstring, UINT>  m_mDivs;
-
-	TBlockquote(COOXMLInterpretator* pInterpretator);
-	virtual bool Open(const std::vector<NSCSS::CNode>& arSelectors) override;
+public:
+	CBlockquote(COOXMLInterpretator* pInterpretator);
+	virtual bool Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData = boost::any()) override;
 	virtual void Close(const std::vector<NSCSS::CNode>& arSelectors) override;
 };
 
 template<>
-struct THorizontalRule<COOXMLInterpretator> : public TTag<COOXMLInterpretator>
+class CHorizontalRule<COOXMLInterpretator> : public CTag<COOXMLInterpretator>
 {
 	UINT m_unShapeId;
-
-	THorizontalRule(COOXMLInterpretator* pInterpretator);
-	virtual bool Open(const std::vector<NSCSS::CNode>& arSelectors) override;
+public:
+	CHorizontalRule(COOXMLInterpretator* pInterpretator);
+	virtual bool Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData = boost::any()) override;
 	virtual void Close(const std::vector<NSCSS::CNode>& arSelectors) override;
 };
 
 template<>
-struct TList<COOXMLInterpretator> : public TTag<COOXMLInterpretator>
+class CList<COOXMLInterpretator> : public CTag<COOXMLInterpretator>
 {
 	UINT m_unNumberingId;
-
-	TList(COOXMLInterpretator* pInterpretator);
-	virtual bool Open(const std::vector<NSCSS::CNode>& arSelectors) override;
+public:
+	CList(COOXMLInterpretator* pInterpretator);
+	virtual bool Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData = boost::any()) override;
 	virtual void Close(const std::vector<NSCSS::CNode>& arSelectors) override;
 };
 
 template<>
-struct TListElement<COOXMLInterpretator> : public TTag<COOXMLInterpretator>
+class CListElement<COOXMLInterpretator> : public CTag<COOXMLInterpretator>
 {
-	TListElement(COOXMLInterpretator* pInterpretator);
-	virtual bool Open(const std::vector<NSCSS::CNode>& arSelectors) override;
+public:
+	CListElement(COOXMLInterpretator* pInterpretator);
+	virtual bool Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData = boost::any()) override;
+	virtual void Close(const std::vector<NSCSS::CNode>& arSelectors) override;
+};
+
+template<>
+class CCaption<COOXMLInterpretator> : public CTag<COOXMLInterpretator>
+{
+public:
+	CCaption(COOXMLInterpretator* pInterpretator);
+	virtual bool Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData = boost::any()) override;
+	virtual void Close(const std::vector<NSCSS::CNode>& arSelectors) override;
+};
+
+template<>
+class CTable<COOXMLInterpretator> : public CTag<COOXMLInterpretator>
+{
+public:
+	CTable(COOXMLInterpretator* pInterpretator);
+	virtual bool Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData = boost::any()) override;
+	virtual void Close(const std::vector<NSCSS::CNode>& arSelectors) override;
+};
+
+template<>
+class CTableRow<COOXMLInterpretator> : public CTag<COOXMLInterpretator>
+{
+public:
+	CTableRow(COOXMLInterpretator* pInterpretator);
+	virtual bool Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData = boost::any()) override;
+	virtual void Close(const std::vector<NSCSS::CNode>& arSelectors) override;
+};
+
+template<>
+class CTableCell<COOXMLInterpretator> : public CTag<COOXMLInterpretator>
+{
+public:
+	CTableCell(COOXMLInterpretator* pInterpretator);
+	virtual bool Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData = boost::any()) override;
 	virtual void Close(const std::vector<NSCSS::CNode>& arSelectors) override;
 };
 }

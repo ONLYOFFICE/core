@@ -6,6 +6,7 @@
 
 #include "Interpretators/HTMLInterpretator.h"
 #include "Tags/HTMLTags.h"
+#include "Table.h"
 
 namespace HTML
 {
@@ -51,9 +52,14 @@ private:
 	bool ReadText(std::vector<NSCSS::CNode>& arSelectors);
 
 	bool ReadAnchor(std::vector<NSCSS::CNode>& arSelectors);
-	bool ReadTable(std::vector<NSCSS::CNode>& arSelectors);
+	bool ReadSVG(const std::vector<NSCSS::CNode>& arSelectors);
 	bool ReadEmptyTag(UINT unTag, const std::vector<NSCSS::CNode>& arSelectors);
 	bool ReadDefaultTag(UINT unTag, std::vector<NSCSS::CNode>& arSelectors);
+
+	bool ReadTable(std::vector<NSCSS::CNode>& arSelectors);
+	void ReadTableCaption(CStorageTable& oTable, std::vector<NSCSS::CNode>& arSelectors);
+	void ReadTableRows(CStorageTable& oTable, std::vector<NSCSS::CNode>& arSelectors, ERowParseMode eMode);
+	void ReadTableColspan(CStorageTable& oTable);
 
 	void GetSubClass(std::vector<NSCSS::CNode>& arSelectors);
 };

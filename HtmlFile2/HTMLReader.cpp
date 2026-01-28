@@ -4,11 +4,16 @@
 #include "../DesktopEditor/common/File.h"
 #include "../DesktopEditor/common/Path.h"
 
-#include "../Common/3dParty/html/gumbo-parser/src/gumbo.h"
+#include "../Common/3dParty/html/htmltoxhtml.h"
 
 #include "Common.h"
 #include "Interpretators/OOXMLInterpretator.h"
 #include "Tags/OOXMLTags.h"
+
+#include "../../Common/3dParty/html/gumbo-parser/src/gumbo.h"
+#include "../src/StringFinder.h"
+
+#include <boost/tuple/tuple.hpp>
 
 namespace HTML
 {
@@ -170,20 +175,24 @@ CHTMLReader::CHTMLReader()
 	pInterpretator->SetCSSCalculator(&m_oCSSCalculator);
 	m_pInterpretator = pInterpretator;
 
-	m_mTags[HTML_TAG(A)]          = std::make_shared<TAnchor        <COOXMLInterpretator>>(pInterpretator);
-	m_mTags[HTML_TAG(ABBR)]       = std::make_shared<TAnchor        <COOXMLInterpretator>>(pInterpretator);
-	m_mTags[HTML_TAG(BR)]         = std::make_shared<TBreak         <COOXMLInterpretator>>(pInterpretator);
-	m_mTags[HTML_TAG(DIV)]        = std::make_shared<TDivision      <COOXMLInterpretator>>(pInterpretator);
-	m_mTags[HTML_TAG(IMG)]        = std::make_shared<TImage         <COOXMLInterpretator>>(pInterpretator, &m_oLightReader);
-	m_mTags[HTML_TAG(FONT)]       = std::make_shared<TFont          <COOXMLInterpretator>>(pInterpretator);
-	m_mTags[HTML_TAG(INPUT)]      = std::make_shared<TInput         <COOXMLInterpretator>>(pInterpretator);
-	m_mTags[HTML_TAG(BASEFONT)]   = std::make_shared<TBaseFont      <COOXMLInterpretator>>(pInterpretator);
-	m_mTags[HTML_TAG(BLOCKQUOTE)] = std::make_shared<TBlockquote    <COOXMLInterpretator>>(pInterpretator);
-	m_mTags[HTML_TAG(HR)]         = std::make_shared<THorizontalRule<COOXMLInterpretator>>(pInterpretator);
-	m_mTags[HTML_TAG(UL)]         = std::make_shared<TList          <COOXMLInterpretator>>(pInterpretator);
-	m_mTags[HTML_TAG(LI)]         = std::make_shared<TListElement   <COOXMLInterpretator>>(pInterpretator);
+	m_mTags[HTML_TAG(A)]          = std::make_shared<CAnchor        <COOXMLInterpretator>>(pInterpretator);
+	m_mTags[HTML_TAG(ABBR)]       = std::make_shared<CAnchor        <COOXMLInterpretator>>(pInterpretator);
+	m_mTags[HTML_TAG(BR)]         = std::make_shared<CBreak         <COOXMLInterpretator>>(pInterpretator);
+	m_mTags[HTML_TAG(DIV)]        = std::make_shared<CDivision      <COOXMLInterpretator>>(pInterpretator);
+	m_mTags[HTML_TAG(IMG)]        = std::make_shared<CImage         <COOXMLInterpretator>>(pInterpretator);
+	m_mTags[HTML_TAG(FONT)]       = std::make_shared<CFont          <COOXMLInterpretator>>(pInterpretator);
+	m_mTags[HTML_TAG(INPUT)]      = std::make_shared<CInput         <COOXMLInterpretator>>(pInterpretator);
+	m_mTags[HTML_TAG(BASEFONT)]   = std::make_shared<CBaseFont      <COOXMLInterpretator>>(pInterpretator);
+	m_mTags[HTML_TAG(BLOCKQUOTE)] = std::make_shared<CBlockquote    <COOXMLInterpretator>>(pInterpretator);
+	m_mTags[HTML_TAG(HR)]         = std::make_shared<CHorizontalRule<COOXMLInterpretator>>(pInterpretator);
+	m_mTags[HTML_TAG(UL)]         = std::make_shared<CList          <COOXMLInterpretator>>(pInterpretator);
+	m_mTags[HTML_TAG(LI)]         = std::make_shared<CListElement   <COOXMLInterpretator>>(pInterpretator);
+	m_mTags[HTML_TAG(CAPTION)]    = std::make_shared<CCaption       <COOXMLInterpretator>>(pInterpretator);
+	m_mTags[HTML_TAG(TABLE)]      = std::make_shared<CTable         <COOXMLInterpretator>>(pInterpretator);
+	m_mTags[HTML_TAG(TR)]         = std::make_shared<CTableRow      <COOXMLInterpretator>>(pInterpretator);
+	m_mTags[HTML_TAG(TD)]         = std::make_shared<CTableCell     <COOXMLInterpretator>>(pInterpretator);
 
-	std::shared_ptr<ITag> oIgnoredTag{std::make_shared<TEmptyTag>()};
+	std::shared_ptr<ITag> oIgnoredTag{std::make_shared<CEmptyTag>()};
 
 	m_mTags[HTML_TAG(B)]      = oIgnoredTag;
 	m_mTags[HTML_TAG(I)]      = oIgnoredTag;
@@ -273,7 +282,7 @@ bool CHTMLReader::HTML2XHTML(const std::wstring& wsFileName)
 			sFileContent.replace(nFind, nFindEnd - nFind, "1.0");
 	}
 
-	// const std::wstring sRes{htmlToXhtml(sFileContent, bNeedConvert)};
+	const std::wstring sRes{htmlToXhtml(sFileContent, bNeedConvert)};
 
 	#ifdef SAVE_NORMALIZED_HTML
 	#if 1 == SAVE_NORMALIZED_HTML
@@ -286,7 +295,7 @@ bool CHTMLReader::HTML2XHTML(const std::wstring& wsFileName)
 	#endif
 	#endif
 
-	return m_oLightReader.FromString(UTF8_TO_U(sFileContent));
+	return m_oLightReader.FromString(sRes);
 }
 
 void CHTMLReader::ReadStyle()
@@ -446,7 +455,7 @@ bool CHTMLReader::ReadStream(std::vector<NSCSS::CNode>& arSelectors, bool bInser
 		if (!bInsertEmptyP)
 			return false;
 
-		m_pInterpretator->WriteEmptyParagraph(true, true);
+		m_pInterpretator->WriteEmptyParagraph();
 		return true;
 
 		// WriteEmptyParagraph(sSelectors, oTS);
@@ -470,7 +479,7 @@ bool CHTMLReader::ReadStream(std::vector<NSCSS::CNode>& arSelectors, bool bInser
 	} while(m_oLightReader.ReadNextSiblingNode2(nDeath));
 
 	if (!bResult && bInsertEmptyP)
-		m_pInterpretator->WriteEmptyParagraph(true, true);
+		m_pInterpretator->WriteEmptyParagraph();
 
 	return bResult;
 }
@@ -561,9 +570,14 @@ bool CHTMLReader::ReadInside(std::vector<NSCSS::CNode>& arSelectors)
 			break;
 		}
 		case HTML_TAG(IMG):
-		case HTML_TAG(SVG):
+
 		{
 			bResult = ReadDefaultTag(HTML_TAG(IMG), arSelectors);
+			break;
+		}
+		case HTML_TAG(SVG):
+		{
+			bResult = ReadSVG(arSelectors);
 			break;
 		}
 		case HTML_TAG(INS):
@@ -803,6 +817,16 @@ bool CHTMLReader::ReadAnchor(std::vector<NSCSS::CNode>& arSelectors)
 	return true;
 }
 
+bool CHTMLReader::ReadSVG(const std::vector<NSCSS::CNode>& arSelectors)
+{
+	if (!m_mTags[HTML_TAG(IMAGE)]->Open(arSelectors, &m_oLightReader))
+		return false;
+
+	m_mTags[HTML_TAG(IMAGE)]->Close(arSelectors);
+
+	return true;
+}
+
 bool CHTMLReader::ReadTable(std::vector<NSCSS::CNode>& arSelectors)
 {
 	if(m_oLightReader.IsEmptyNode())
@@ -811,45 +835,43 @@ bool CHTMLReader::ReadTable(std::vector<NSCSS::CNode>& arSelectors)
 	// if (HTML_TAG(TABLE) == m_oState.m_eLastElement)
 	// 	WriteEmptyParagraph(oXml, true);
 
-	CTable oTable;
-	CTextSettings oTextSettings{oTS};
-	oTextSettings.sPStyle.clear();
+	CStorageTable oTable;
 
-	NSCSS::CCompiledStyle *pStyle = sSelectors.back().m_pCompiledStyle;
+	NSCSS::CCompiledStyle *pStyle = arSelectors.back().m_pCompiledStyle;
 
 	//Table styles
 	std::wstring wsFrame;
+	std::wstring wsValue;
 
-	for (const std::pair<std::wstring, std::wstring>& oArgument : sSelectors.back().m_mAttributes)
+	if (arSelectors.back().GetAttributeValue(L"border", wsValue))
 	{
-		if (L"border" == oArgument.first)
+		const int nWidth = NSStringFinder::ToInt(wsValue);
+
+		if (0 < nWidth)
 		{
-			const int nWidth = NSStringFinder::ToInt(oArgument.second);
+			oTable.SetRules(L"all");
 
-			if (0 < nWidth)
+			if (pStyle->m_oBorder.Empty())
 			{
-				oTable.SetRules(L"all");
-
-				if (!pStyle->m_oBorder.Empty())
-					continue;
-
 				pStyle->m_oBorder.SetStyle(L"outset",  0, true);
 				pStyle->m_oBorder.SetWidth(nWidth,     NSCSS::UnitMeasure::Point, 0, true);
 				pStyle->m_oBorder.SetColor(L"auto",    0, true);
 			}
-			else if (pStyle->m_oBorder.Empty())
-			{
-				pStyle->m_oBorder.SetNone(0, true);
-				oTable.SetRules(L"none");
-			}
 		}
-		else if (L"cellpadding" == oArgument.first)
-			pStyle->m_oPadding.SetValues(oArgument.second + L"px", 0, true);
-		else if (L"rules" == oArgument.first)
-			oTable.SetRules(oArgument.second);
-		else if (L"frame" == oArgument.first)
-			wsFrame = oArgument.second;
+		else if (pStyle->m_oBorder.Empty())
+		{
+			pStyle->m_oBorder.SetNone(0, true);
+			oTable.SetRules(L"none");
+		}
 	}
+
+	if (arSelectors.back().GetAttributeValue(L"cellpadding", wsValue))
+		pStyle->m_oPadding.SetValues(wsValue + L"px", 0, true);
+
+	if (arSelectors.back().GetAttributeValue(L"rules", wsValue))
+		oTable.SetRules(wsValue);
+
+	arSelectors.back().GetAttributeValue(L"frame", wsFrame);
 
 	if (!wsFrame.empty() && pStyle->m_oBorder.Empty())
 	{
@@ -892,8 +914,8 @@ bool CHTMLReader::ReadTable(std::vector<NSCSS::CNode>& arSelectors)
 
 	if (pStyle->m_oBorder.GetCollapse() == NSCSS::NSProperties::BorderCollapse::Collapse)
 		oTable.SetCellSpacing(0);
-	else if (sSelectors.back().m_mAttributes.end() != sSelectors.back().m_mAttributes.find(L"cellspacing"))
-		oTable.SetCellSpacing(NSStringFinder::ToInt(sSelectors.back().m_mAttributes[L"cellspacing"]));
+	else if (arSelectors.back().GetAttributeValue(L"cellspacing", wsValue))
+		oTable.SetCellSpacing(NSStringFinder::ToInt(wsValue));
 	else if (pStyle->m_oBorder.GetCollapse() == NSCSS::NSProperties::BorderCollapse::Separate)
 		oTable.SetCellSpacing(15);
 
@@ -908,27 +930,268 @@ bool CHTMLReader::ReadTable(std::vector<NSCSS::CNode>& arSelectors)
 	while(m_oLightReader.ReadNextSiblingNode(nDeath))
 	{
 		const std::wstring sName = m_oLightReader.GetName();
-		GetSubClass(oXml, sSelectors);
+		GetSubClass(arSelectors);
 
 		if(sName == L"caption")
-			ParseTableCaption(oTable, sSelectors, oTS);
+			ReadTableCaption(oTable, arSelectors);
 		if(sName == L"thead")
-			ParseTableRows(oTable, sSelectors, oTextSettings, ERowParseMode::ParseModeHeader);
+			ReadTableRows(oTable, arSelectors, ERowParseMode::Header);
 		if(sName == L"tbody")
-			ParseTableRows(oTable, sSelectors, oTextSettings, ERowParseMode::ParseModeBody);
+			ReadTableRows(oTable, arSelectors, ERowParseMode::Body);
 		else if(sName == L"tfoot")
-			ParseTableRows(oTable, sSelectors, oTextSettings, ERowParseMode::ParseModeFoother);
+			ReadTableRows(oTable, arSelectors, ERowParseMode::Foother);
 		else if (sName == L"colgroup")
-			ParseTableColspan(oTable);
+			ReadTableColspan(oTable);
 
 		arSelectors.pop_back();
 	}
 
 	oTable.Shorten();
 	oTable.CompleteTable();
-	oTable.ConvertToOOXML(*oXml);
+	// oTable.ConvertToOOXML(*oXml);
+
+	if (!m_mTags[HTML_TAG(TABLE)]->Open(arSelectors, &oTable))
+		return false;
+
+	#define CONVERT_ROWS(rows, parse_mode)\
+	{\
+	const std::vector<CStorageTableRow*> arRows{rows};\
+	\
+	for (UINT unRow = 0; unRow < arRows.size(); ++unRow)\
+	{\
+		if (!m_mTags[HTML_TAG(TR)]->Open(arSelectors, boost::tuple<CStorageTableRow&, const CStorageTable&>(*arRows[unRow], oTable)))\
+			continue;\
+		\
+		const std::vector<CStorageTableCell*>& arCells{arRows[unRow]->GetCells()};\
+		ERowPosition eRowPosition{ERowPosition::Middle};\
+	\
+		if (0 == unRow)\
+			eRowPosition = ERowPosition::First;\
+		else if (arRows.size() - 1 == unRow)\
+			eRowPosition = ERowPosition::Last;\
+	\
+		for (UINT unCol = 0; unCol < arCells.size(); ++unCol)\
+		{\
+			m_mTags[HTML_TAG(TD)]->Open(arSelectors, boost::tuple<CStorageTableCell&, const CStorageTable&, UINT, ERowParseMode, ERowPosition>(*arCells[unCol], oTable, unCol, parse_mode, eRowPosition));\
+			m_mTags[HTML_TAG(TD)]->Close(arSelectors);\
+		}\
+	\
+		m_mTags[HTML_TAG(TR)]->Close(arSelectors);\
+	}}
+
+	for (const std::vector<CStorageTableRow*>& arHeader : oTable.GetHeaders())
+		CONVERT_ROWS(arHeader, ERowParseMode::Header)
+
+	CONVERT_ROWS(oTable.GetRows(), ERowParseMode::Body)
+	CONVERT_ROWS(oTable.GetFoothers(), ERowParseMode::Foother)
+
+	m_mTags[HTML_TAG(TABLE)]->Close(arSelectors);
 
 	return true;
+}
+
+void CHTMLReader::ReadTableCaption(CStorageTable& oTable, std::vector<NSCSS::CNode>& arSelectors)
+{
+	if (nullptr == m_pInterpretator)
+		return;
+
+	GetSubClass(arSelectors);
+	m_pInterpretator->SetDataOutput(oTable.GetCaptionData());
+
+	arSelectors.back().m_pCompiledStyle->m_oDisplay.SetVAlign(L"center", arSelectors.size());
+
+	ReadDefaultTag(HTML_TAG(CAPTION), arSelectors);
+
+	m_pInterpretator->RevertDataOutput();
+	arSelectors.pop_back();
+}
+
+void CalculateCellStyles(TTableCellStyle* pCellStyle, std::vector<NSCSS::CNode>& arSelectors)
+{
+	if (NULL == pCellStyle)
+		return;
+
+	pCellStyle->m_wsVAlign    = arSelectors.back().m_pCompiledStyle->m_oDisplay.GetVAlign().ToWString();
+	pCellStyle->m_wsHAlign    = arSelectors.back().m_pCompiledStyle->m_oDisplay.GetHAlign().ToWString();
+	pCellStyle->m_oBackground = arSelectors.back().m_pCompiledStyle->m_oBackground.GetColor();
+	pCellStyle->m_oHeight     = arSelectors.back().m_pCompiledStyle->m_oDisplay.GetHeight();
+	pCellStyle->m_oWidth      = arSelectors.back().m_pCompiledStyle->m_oDisplay.GetWidth();
+	pCellStyle->m_oPadding    = arSelectors.back().m_pCompiledStyle->m_oPadding;
+	pCellStyle->m_oBorder     = arSelectors.back().m_pCompiledStyle->m_oBorder;
+
+	if (pCellStyle->m_wsHAlign.empty())
+		pCellStyle->m_wsHAlign = arSelectors.back().m_pCompiledStyle->m_oText.GetAlign().ToWString();
+}
+
+struct TRowspanElement
+{
+	UINT  m_unRowSpan;
+	UINT  m_unColumnIndex;
+	const CStorageTableCell* m_pCell;
+
+	TRowspanElement(UINT unRowSpan, UINT unColumnIndex, const CStorageTableCell* pCell)
+		: m_unRowSpan(unRowSpan), m_unColumnIndex(unColumnIndex), m_pCell(pCell)
+	{}
+};
+
+void CHTMLReader::ReadTableRows(CStorageTable& oTable, std::vector<NSCSS::CNode>& arSelectors, ERowParseMode eMode)
+{
+	std::vector<TRowspanElement> arRowspanElements;
+	std::vector<CStorageTableRow*>      arRows;
+
+	int nDeath = m_oLightReader.GetDepth();
+	while (m_oLightReader.ReadNextSiblingNode(nDeath))
+	{
+		if (L"tr" != m_oLightReader.GetName())
+			continue;
+
+		GetSubClass(arSelectors);
+
+		CStorageTableRow *pRow = new CStorageTableRow();
+
+		for (std::vector<TRowspanElement>::iterator itElement = arRowspanElements.begin(); itElement < arRowspanElements.end();)
+		{
+			pRow->InsertCell(CStorageTableCell::CreateEmpty(itElement->m_pCell->GetColspan(), true, itElement->m_pCell->GetStyles()), itElement->m_unColumnIndex);
+
+			itElement->m_unRowSpan--;
+			if (1 == itElement->m_unRowSpan)
+				itElement = arRowspanElements.erase(itElement);
+			else
+				++itElement;
+		}
+
+		UINT unColumnIndex = 0;
+		int nTrDepth = m_oLightReader.GetDepth();
+		while (m_oLightReader.ReadNextSiblingNode(nTrDepth))
+		{
+			CStorageTableCell *pCell = new CStorageTableCell();
+
+			if (NULL == pCell)
+				continue;
+
+			GetSubClass(arSelectors);
+
+			std::vector<NSCSS::CNode> arNewSelectors{(std::vector<NSCSS::CNode>::const_iterator)std::find_if(arSelectors.begin(), arSelectors.end(), [](const NSCSS::CNode& oNode){ return L"table" == oNode.m_wsName; }), arSelectors.cend()};
+
+			CalculateCellStyles(pCell->GetStyles(), arNewSelectors);
+
+			std::wstring wsValue;
+
+			if (arSelectors.back().GetAttributeValue(L"colspan", wsValue))
+				pCell->SetColspan(NSStringFinder::ToInt(wsValue, 1), pRow->GetIndex());
+
+			if (arSelectors.back().GetAttributeValue(L"rowspan", wsValue))
+			{
+				pCell->SetRowspan(NSStringFinder::ToInt(wsValue, 1));
+
+				if (1 != pCell->GetRowspan())
+					arRowspanElements.push_back({pCell->GetRowspan(), unColumnIndex, pCell});
+			}
+
+			// Читаем th. Ячейка заголовка таблицы. Выравнивание посередине. Выделяется полужирным
+			if(m_oLightReader.GetName() == L"th")
+			{
+				if (pCell->GetStyles()->m_wsHAlign.empty())
+					arSelectors.back().m_pCompiledStyle->m_oText.SetAlign(L"center", arSelectors.size());
+
+				arSelectors.back().m_pCompiledStyle->m_oFont.SetWeight(L"bold", arSelectors.size());
+
+				m_pInterpretator->SetDataOutput(pCell->GetData());
+				ReadStream(arSelectors, true);
+				m_pInterpretator->RevertDataOutput();
+			}
+			// Читаем td. Ячейка таблицы
+			else if(m_oLightReader.GetName() == L"td")
+			{
+				m_pInterpretator->SetDataOutput(pCell->GetData());
+				ReadStream(arSelectors, true);
+				m_pInterpretator->RevertDataOutput();
+			}
+
+			if (pRow->GetIndex() == MAXCOLUMNSINTABLE - 1)
+			{
+				while (m_oLightReader.ReadNextSiblingNode(nTrDepth))
+				{
+					if (L"td" != m_oLightReader.GetName() && L"th" != m_oLightReader.GetName())
+						continue;
+
+					GetSubClass(arSelectors);
+					m_pInterpretator->SetDataOutput(pCell->GetData());
+					ReadStream(arSelectors);
+					m_pInterpretator->RevertDataOutput();
+					arSelectors.pop_back();
+				}
+			}
+
+			pRow->AddCell(pCell);
+			arSelectors.pop_back();
+
+			++unColumnIndex;
+
+			if (pRow->GetIndex() == MAXCOLUMNSINTABLE)
+				break;
+		}
+
+		arSelectors.pop_back();
+		arRows.push_back(pRow);
+	}
+
+	oTable.AddRows(arRows, eMode);
+}
+
+void CHTMLReader::ReadTableColspan(CStorageTable& oTable)
+{
+	std::vector<NSCSS::CNode> arNodes;
+	GetSubClass(arNodes);
+
+	CTableColgroup *pColgroup = new CTableColgroup(arNodes.back());
+
+	if (NULL == pColgroup)
+		return;
+
+	oTable.AddColgroup(pColgroup);
+
+	const int nDeath = m_oLightReader.GetDepth();
+	if (!m_oLightReader.IsEmptyNode() && m_oLightReader.ReadNextSiblingNode2(nDeath))
+	{
+		do
+		{
+			if (L"col" != m_oLightReader.GetName())
+				continue;
+
+			GetSubClass(arNodes);
+
+			CTableCol *pCol = new CTableCol(arNodes.back());
+
+			if (NULL == pCol)
+			{
+				arNodes.pop_back();
+				continue;
+			}
+
+			CalculateCellStyles(pCol->GetStyle(), arNodes);
+			arNodes.pop_back();
+
+			if (NULL == pCol)
+				continue;
+
+			pColgroup->AddCol(pCol);
+		} while(m_oLightReader.ReadNextSiblingNode2(nDeath));
+	}
+
+	if(pColgroup->Empty())
+	{
+		std::map<std::wstring, std::wstring>::const_iterator itFound = arNodes.begin()->m_mAttributes.find(L"span");
+
+		CTableCol *pCol = new CTableCol((arNodes.begin()->m_mAttributes.cend() != itFound) ? NSStringFinder::ToInt(itFound->second, 1) : 1);
+
+		if (NULL == pCol)
+			return;
+
+		CalculateCellStyles(pCol->GetStyle(), arNodes);
+
+		pColgroup->AddCol(pCol);
+	}
 }
 
 bool CHTMLReader::ReadEmptyTag(UINT unTag, const std::vector<NSCSS::CNode>& arSelectors)

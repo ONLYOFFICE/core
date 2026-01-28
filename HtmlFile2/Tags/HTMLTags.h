@@ -2,20 +2,23 @@
 #define HTMLTAGS_H
 
 #include "../Common/3dParty/html/css/src/CNode.h"
+#include <boost/any.hpp>
 
 namespace HTML
 {
-struct ITag
+class ITag
 {
+public:
 	virtual ~ITag() = default;
-	virtual bool Open(const std::vector<NSCSS::CNode>& arSelectors)  = 0;
+	virtual bool Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData = boost::any())  = 0;
 	virtual void Close(const std::vector<NSCSS::CNode>& arSelectors) = 0;
 };
 
-struct TEmptyTag : public ITag
+class CEmptyTag : public ITag
 {
-	virtual ~TEmptyTag() = default;
-	virtual bool Open(const std::vector<NSCSS::CNode>& arSelectors)
+public:
+	virtual ~CEmptyTag() = default;
+	virtual bool Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData = boost::any())
 	{
 		return true;
 	};
@@ -23,15 +26,16 @@ struct TEmptyTag : public ITag
 };
 
 template<class T>
-struct TTag : public ITag
+class CTag : public ITag
 {
+protected:
 	T* m_pInterpretator;
-
-	TTag(T* pInterpretator)
+public:
+	CTag(T* pInterpretator)
 		: m_pInterpretator(pInterpretator)
 	{}
-	virtual ~TTag() = default;
-	virtual bool Open(const std::vector<NSCSS::CNode>& arSelectors) = 0;
+	virtual ~CTag() = default;
+	virtual bool Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData = boost::any()) = 0;
 	virtual void Close(const std::vector<NSCSS::CNode>& arSelectors) = 0;
 
 	bool ValidInterpretator() const
@@ -42,37 +46,43 @@ struct TTag : public ITag
 
 #define CREATE_TAG(tag_name)\
 template<class T>\
-struct tag_name : public TTag<T>\
+class tag_name : public CTag<T>\
 {\
+public:\
 	virtual bool Open(const std::vector<NSCSS::CNode>& arSelectors)  = 0;\
 	virtual void Close(const std::vector<NSCSS::CNode>& arSelectors) = 0;\
 }
 
-CREATE_TAG(TAnchor);
-CREATE_TAG(TAbbr);
-CREATE_TAG(TBold);
-CREATE_TAG(TBidirectional);
-CREATE_TAG(TBreak);
-CREATE_TAG(TCenter);
-CREATE_TAG(TItalic);
-CREATE_TAG(TKbd);
-CREATE_TAG(TStrike);
-CREATE_TAG(TUnderline);
-CREATE_TAG(TMark);
-CREATE_TAG(TQuotation);
-CREATE_TAG(TSup);
-CREATE_TAG(TSpan);
-CREATE_TAG(TDD);
-CREATE_TAG(TPreformatted);
-CREATE_TAG(THeader);
-CREATE_TAG(TDivision);
-CREATE_TAG(TImage);
-CREATE_TAG(TFont);
-CREATE_TAG(TInput);
-CREATE_TAG(TBaseFont);
-CREATE_TAG(TBlockquote);
-CREATE_TAG(THorizontalRule);
-CREATE_TAG(TList);
-CREATE_TAG(TListElement);
+CREATE_TAG(CAnchor);
+CREATE_TAG(CAbbr);
+CREATE_TAG(CBold);
+CREATE_TAG(CBidirectional);
+CREATE_TAG(CBreak);
+CREATE_TAG(CCenter);
+CREATE_TAG(CItalic);
+CREATE_TAG(CKbd);
+CREATE_TAG(CStrike);
+CREATE_TAG(CUnderline);
+CREATE_TAG(CMark);
+CREATE_TAG(CQuotation);
+CREATE_TAG(CSup);
+CREATE_TAG(CSpan);
+CREATE_TAG(CDD);
+CREATE_TAG(CPreformatted);
+CREATE_TAG(CHeader);
+CREATE_TAG(CDivision);
+CREATE_TAG(CImage);
+CREATE_TAG(CFont);
+CREATE_TAG(CInput);
+CREATE_TAG(CBaseFont);
+CREATE_TAG(CBlockquote);
+CREATE_TAG(CHorizontalRule);
+CREATE_TAG(CList);
+CREATE_TAG(CListElement);
+CREATE_TAG(CCaption);
+CREATE_TAG(CTable);
+CREATE_TAG(CTableRow);
+CREATE_TAG(CTableCell);
+
 }
 #endif // HTMLTAGS_H

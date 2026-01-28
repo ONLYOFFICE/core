@@ -57,7 +57,7 @@ namespace BinXlsxRW{
 	{
 	}
 
-    void CXlsxSerializer::CreateXlsxFolders(const std::wstring& sXmlOptions, const std::wstring& sDstPath,  std::wstring& sMediaPath, std::wstring& sEmbedPath)
+    void CXlsxSerializer::CreateXlsxFolders(const std::wstring& sDstPath,  std::wstring& sMediaPath, std::wstring& sEmbedPath)
 	{
         OOX::CPath pathMediaDir = sDstPath + FILE_SEPARATOR_STR + _T("xl") + FILE_SEPARATOR_STR + _T("media");
 		OOX::CPath pathEmbedDir = sDstPath + FILE_SEPARATOR_STR + _T("xl") + FILE_SEPARATOR_STR + _T("embeddings");
@@ -304,10 +304,9 @@ namespace BinXlsxRW{
 		NSDirectory::CreateDirectory(sTempDir);
 		OOX::CPath oPath(sTempDir.c_str());
 	//шиблонные папки
-        std::wstring sXmlOptions = _T("");
         std::wstring sMediaPath;// will be filled by 'CreateXlsxFolders' method
         std::wstring sEmbedPath; // will be filled by 'CreateXlsxFolders' method
-		CreateXlsxFolders (sXmlOptions, sTempDir, sMediaPath, sEmbedPath);
+		CreateXlsxFolders (sTempDir, sMediaPath, sEmbedPath);
 	//заполняем Xlsx
 		OOX::Spreadsheet::CXlsx oXlsx;
 		helper.toXlsx(oXlsx);

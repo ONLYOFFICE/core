@@ -58,7 +58,7 @@ CPPTXFile::~CPPTXFile()
 {
 	RELEASEOBJECT(m_pPptxDocument);
 }
-_UINT32 CPPTXFile::LoadFromFile(std::wstring sSrcFileName, std::wstring sDstPath, std::wstring sXMLOptions)
+_UINT32 CPPTXFile::LoadFromFile(std::wstring sSrcFileName, std::wstring sDstPath)
 {
 	std::wstring localTempDir(sDstPath);
     if(!localTempDir.empty())
@@ -107,7 +107,7 @@ _UINT32 CPPTXFile::LoadFromFile(std::wstring sSrcFileName, std::wstring sDstPath
 
 	return 0;
 }
-_UINT32 CPPTXFile::SaveToFile(std::wstring sDstFileName, std::wstring sSrcPath, std::wstring sXMLOptions)
+_UINT32 CPPTXFile::SaveToFile(std::wstring sDstFileName, std::wstring sSrcPath)
 {
 	if (NULL == m_pPptxDocument)
 		return AVS_FILEUTILS_ERROR_CONVERT;

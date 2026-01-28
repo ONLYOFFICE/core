@@ -282,14 +282,15 @@ namespace NExtractTools
 		oCXlsxSerializer.setIsNoBase64(params.getIsNoBase64());
 		oCXlsxSerializer.setFontDir(params.getFontPath());
 
-        std::wstring sXmlOptions = params.getXmlOptions();
 		std::wstring sMediaPath; // will be filled by 'CreateXlsxFolders' method
 		std::wstring sEmbedPath; // will be filled by 'CreateXlsxFolders' method
 
-		oCXlsxSerializer.CreateXlsxFolders(sXmlOptions, convertParams.m_sTempResultOOXMLDirectory, sMediaPath, sEmbedPath);
+		oCXlsxSerializer.CreateXlsxFolders(convertParams.m_sTempResultOOXMLDirectory, sMediaPath, sEmbedPath);
 
 		if (SUCCEEDED_X2T(nRes))
 		{
+			std::wstring sXmlOptions = params.getXmlOptions();
+
 			nRes = oCXlsxSerializer.loadFromFile(sTargetBin, convertParams.m_sTempResultOOXMLDirectory, sXmlOptions, sMediaPath, sEmbedPath);
 			params.m_bMacro = oCXlsxSerializer.getMacroEnabled();
 		}

@@ -420,6 +420,8 @@ namespace NExtractTools
 				}
 				break;
 				case AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV:
+				case AVS_OFFICESTUDIO_FILE_SPREADSHEET_TSV:
+				case AVS_OFFICESTUDIO_FILE_SPREADSHEET_SCSV:
 				{
 					if (0 == sExt2.compare(L".xlsx"))
 						res = TCD_CSV2XLSX;

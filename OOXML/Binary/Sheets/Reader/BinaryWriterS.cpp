@@ -9075,7 +9075,7 @@ BinaryFileWriter::~BinaryFileWriter()
 	RELEASEOBJECT(m_oBcw);
 }
 _UINT32 BinaryFileWriter::Open(const std::wstring& sInputDir, const std::wstring& sFileDst, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager,
-    NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter, const std::wstring& sXMLOptions, bool bIsNoBase64)
+NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter, const std::wstring& sXMLOptions, bool bIsNoBase64)
 {
 	_UINT32 result = 0;
 

@@ -1907,8 +1907,8 @@ namespace PPTX
 
 			BinXlsxRW::SaveParams oSaveParams(sDrawingsPath, sEmbeddingsPath, sThemePath, oDrawingConverter.GetContentTypes(), NULL, true);
 
-			std::wstring sXmlOptions, sMediaPath, sEmbedPath;
-			BinXlsxRW::CXlsxSerializer::CreateXlsxFolders(sXmlOptions, sDstEmbeddedTemp, sMediaPath, sEmbedPath);
+			std::wstring sMediaPath, sEmbedPath;
+			BinXlsxRW::CXlsxSerializer::CreateXlsxFolders(sDstEmbeddedTemp, sMediaPath, sEmbedPath);
 
 			boost::unordered_map<std::wstring, size_t>	old_enum_map = oXlsx.m_mapEnumeratedGlobal;
 
@@ -1953,7 +1953,7 @@ namespace PPTX
 
 			oDrawingConverter.m_pBinaryReader->Init(pData, 0, length);
 
-			std::wstring sXmlOptions, sMediaPath, sEmbedPath;
+			std::wstring sMediaPath, sEmbedPath;
 			BinVsdxRW::CVsdxSerializer::CreateVsdxFolders(sDstEmbeddedTemp, sMediaPath, sEmbedPath);
 
 			oDrawingConverter.SetDstPath(sDstEmbeddedTemp + FILE_SEPARATOR_STR + L"visio");

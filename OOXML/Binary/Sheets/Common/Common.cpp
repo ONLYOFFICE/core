@@ -37,6 +37,7 @@
 #include "../../../../Common/Base64.h"
 #include "../../../../DesktopEditor/common/Types.h"
 #include "../../../../DesktopEditor/raster/ImageFileFormatChecker.h"
+#include "../../../../Common/OfficeFileFormats.h"
 
 #ifndef DISABLE_FILE_DOWNLOADER
 	#include "../../../../Common/Network/FileTransporter/include/FileTransporter.h"
@@ -114,17 +115,20 @@ namespace SerializeCommon
 	{
 		result = BinXlsxRW::c_oFileTypes::XLSX;
 		nCodePage = 46;		//default 46 временно CP_UTF8
-		sDelimiter = L";"; // default
 		cSaveFileType = BinXlsxRW::c_oFileTypes::XLSX;// default
         Lcid = -1;// default
 
+		sDelimiter = L","; // default common
+
+		nullable<SimpleTypes::CUnsignedDecimalNumber> csvFormat;
 		nullable<SimpleTypes::CUnsignedDecimalNumber> fileType;
 		nullable<SimpleTypes::CUnsignedDecimalNumber> codePage;
 		nullable<SimpleTypes::CUnsignedDecimalNumber> saveFileType;
         nullable<SimpleTypes::CDecimalNumber> LcidParam;
-        nullable<std::wstring> delimiter;
+		nullable<std::wstring> delimiter;
+		
+		sDelimiter = L","; // default common
 
-		// Read options
 		XmlUtils::CXmlLiteReader oReader;
         if (true != oReader.FromString(sXMLOptions) || true != oReader.IsValid())
 			return;
@@ -140,13 +144,20 @@ namespace SerializeCommon
 			if (L"fileOptions" == sName)
 			{
 				WritingElement_ReadAttributes_Start(oReader)
-				WritingElement_ReadAttributes_Read_if (oReader, L"fileType", fileType)
-				WritingElement_ReadAttributes_Read_else_if (oReader, L"codePage", codePage)
-				WritingElement_ReadAttributes_Read_else_if (oReader, L"delimiter", delimiter)
-                WritingElement_ReadAttributes_Read_else_if (oReader, L"Lcid", LcidParam)
-				WritingElement_ReadAttributes_Read_else_if (oReader, L"saveFileType", saveFileType)
+					WritingElement_ReadAttributes_Read_if		(oReader, L"fileType", fileType)
+					WritingElement_ReadAttributes_Read_else_if	(oReader, L"codePage", codePage)
+					WritingElement_ReadAttributes_Read_else_if	(oReader, L"delimiter", delimiter)
+					WritingElement_ReadAttributes_Read_else_if	(oReader, L"Lcid", LcidParam)
+					WritingElement_ReadAttributes_Read_else_if	(oReader, L"saveFileType", saveFileType)
+					WritingElement_ReadAttributes_Read_else_if  (oReader, L"csvFormat", csvFormat)
 				WritingElement_ReadAttributes_End(oReader)
 				
+				if (csvFormat.IsInit())
+				{
+					if (AVS_OFFICESTUDIO_FILE_SPREADSHEET_TSV == csvFormat->GetValue()) sDelimiter = L"\t";
+					else if (AVS_OFFICESTUDIO_FILE_SPREADSHEET_SCSV == csvFormat->GetValue()) sDelimiter = L";";
+				}
+
 				if (fileType.IsInit())
 					result = (BYTE)fileType->GetValue();
 				if (codePage.IsInit())
@@ -156,9 +167,7 @@ namespace SerializeCommon
                 if(LcidParam.IsInit())
                     Lcid = LcidParam->GetValue();
 				if (delimiter.IsInit())
-				{
 					sDelimiter = delimiter.get();
-				}
 				break;
 			}
 		}

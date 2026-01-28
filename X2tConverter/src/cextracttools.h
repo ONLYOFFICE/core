@@ -505,6 +505,7 @@ namespace NExtractTools
 		int* m_nFormatTo;
 		int* m_nCsvTxtEncoding;
 		int* m_nCsvDelimiter;
+		int* m_nCsvFormat;
 		std::wstring* m_sCsvDelimiterChar;
 		int* m_nLcid;
 		bool* m_bPaid;
@@ -542,6 +543,7 @@ namespace NExtractTools
 			m_sTitle = NULL;
 			m_nFormatFrom = new int(AVS_OFFICESTUDIO_FILE_UNKNOWN);
 			m_nFormatTo = NULL;
+			m_nCsvFormat = NULL;
 			m_nCsvTxtEncoding = NULL;
 			m_nCsvDelimiter = NULL;
 			m_sCsvDelimiterChar = NULL;
@@ -580,6 +582,7 @@ namespace NExtractTools
 			RELEASEOBJECT(m_sTitle);
 			RELEASEOBJECT(m_nFormatFrom);
 			RELEASEOBJECT(m_nFormatTo);
+			RELEASEOBJECT(m_nCsvFormat);
 			RELEASEOBJECT(m_nCsvTxtEncoding);
 			RELEASEOBJECT(m_nCsvDelimiter);
 			RELEASEOBJECT(m_sCsvDelimiterChar);
@@ -913,22 +916,20 @@ namespace NExtractTools
 		std::wstring getXmlOptions()
 		{
 			std::wstring sRes;
-			int nCsvEncoding = 46; // 65001 utf8
+			int nTxtCsvEncoding = 46; // 65001 utf8
 			std::wstring cDelimiter = L",";
-            int LcId = -1;
+			int LcId = -1;
 
 			if (NULL != m_nCsvTxtEncoding)
-				nCsvEncoding = *m_nCsvTxtEncoding;
+				nTxtCsvEncoding = *m_nCsvTxtEncoding;
 
-			std::wstring sExt = (m_nFormatTo && *m_nFormatTo == AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV) ?	(NSFile::GetFileExtention(*m_sFileTo)) : 
-																											(NSFile::GetFileExtention(*m_sFileFrom));			
-			if(sExt == L"tsv")
+			if (m_nCsvFormat)
 			{
-				cDelimiter = L"\t";
-			}
-			else if (sExt == L"cssv")
-			{
-				cDelimiter = L";";
+				switch (*m_nCsvFormat)
+				{
+				case AVS_OFFICESTUDIO_FILE_SPREADSHEET_TSV: cDelimiter = L"\t"; break;
+				case AVS_OFFICESTUDIO_FILE_SPREADSHEET_SCSV: cDelimiter = L";"; break;
+				}
 			}
 			if (NULL != m_nCsvDelimiter)
 			{
@@ -956,35 +957,57 @@ namespace NExtractTools
 				cDelimiter = *m_sCsvDelimiterChar;
 			}
 
-            if(m_nLcid != NULL)
-            {
-                LcId = *m_nLcid;
-            }
+			if (m_nLcid != NULL)
+			{
+				LcId = *m_nLcid;
+			}
 
 			int nFileType = 1;
-			if (NULL != m_nFormatFrom && AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV == *m_nFormatFrom)
+			if (NULL != m_nFormatFrom && (	AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV == *m_nFormatFrom ||
+											AVS_OFFICESTUDIO_FILE_SPREADSHEET_TSV == *m_nFormatFrom ||
+											AVS_OFFICESTUDIO_FILE_SPREADSHEET_SCSV == *m_nFormatFrom))
+			{
 				nFileType = 2;
+			}
 			else if (NULL != m_nFormatFrom && AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSB == *m_nFormatFrom)
+			{
 				nFileType = 4;
+			}
 
 			std::wstring sSaveType;
 			if (NULL != m_nFormatTo)
 			{
 				if (AVS_OFFICESTUDIO_FILE_OTHER_JSON == *m_nFormatTo)
-					sSaveType = _T(" saveFileType='3'");
-				else if (AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV == *m_nFormatTo)
+				{
+					sSaveType = L" saveFileType='3'";
+				}
+				else if (	AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV == *m_nFormatTo ||
+							AVS_OFFICESTUDIO_FILE_SPREADSHEET_TSV == *m_nFormatTo ||
+							AVS_OFFICESTUDIO_FILE_SPREADSHEET_SCSV == *m_nFormatTo)
+				{
 					nFileType = 2;
+				}
 				else if (AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSB == *m_nFormatTo)
+				{
 					nFileType = 4;
+				}
 			}
 			sRes = L"<xmlOptions><fileOptions fileType='" + std::to_wstring(nFileType);
-			sRes += L"' codePage='" + std::to_wstring(nCsvEncoding);
+			sRes += L"' codePage='" + std::to_wstring(nTxtCsvEncoding);
+			if (m_nCsvFormat)
+			{
+				sRes += L"' csvFormat='" + std::to_wstring(*m_nCsvFormat);
+			}
 			if (m_bMacro)
+			{
 				sRes += L"' macro='1";
-            if(LcId != -1)
-                sRes += L"' Lcid='" + std::to_wstring(LcId);
+			}
+			if (LcId != -1)
+			{
+				sRes += L"' Lcid='" + std::to_wstring(LcId);
+			}
 			sRes += L"' delimiter='" + XmlUtils::EncodeXmlStringExtend(cDelimiter) + L"' " + sSaveType;
-			sRes += L"/><TXTOptions><Encoding>" + std::to_wstring(nCsvEncoding) + L"</Encoding></TXTOptions></xmlOptions>";
+			sRes += L"/></xmlOptions>";
 
 			return sRes;
 		}
@@ -1105,7 +1128,9 @@ namespace NExtractTools
 					m_nCsvTxtEncoding = new int(nCodePage);
 				}
 			}
-			else if (AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV == nFormatFrom)
+			else if (	AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV == nFormatFrom ||
+						AVS_OFFICESTUDIO_FILE_SPREADSHEET_TSV == nFormatFrom ||
+						AVS_OFFICESTUDIO_FILE_SPREADSHEET_SCSV == nFormatFrom)
 			{
 				std::wstring sExt = NSFile::GetFileExtention(*m_sFileFrom);
 				if (sExt == L"tsv")

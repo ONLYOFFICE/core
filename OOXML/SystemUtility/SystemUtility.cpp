@@ -249,7 +249,7 @@ namespace OOX
 		if (!bIsPoint)
 			++nFind;
 
-		return m_strFilename.substr(nFind);
+		return XmlUtils::GetLower(m_strFilename.substr(nFind));
 	}
 	void CPath::SetExtention(const std::wstring& ext)
 	{

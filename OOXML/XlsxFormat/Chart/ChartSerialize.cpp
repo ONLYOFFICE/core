@@ -56,6 +56,7 @@
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Surf.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Scatter.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Radar.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/RadarArea.h"
 
 namespace OOX
 {
@@ -7799,8 +7800,12 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			auto chartFormat = new XLS::ChartFormat;
 			chartFormat->icrt = chartIndex;
 			ptr->m_ChartFormat = XLS::BaseObjectPtr(chartFormat);
-			auto chartType = new XLS::Radar;
-			ptr->m_ChartType = XLS::BaseObjectPtr(chartType);
+			XLS::BaseObjectPtr chartType;
+			if(m_radarStyle.IsInit() && m_radarStyle->m_eValue == 2)
+				chartType = XLS::BaseObjectPtr(new XLS::RadarArea);
+			else
+				chartType = XLS::BaseObjectPtr(new XLS::Radar);
+			ptr->m_ChartType = chartType;
 
 			return XLS::BaseObjectPtr(ptr);
 		}

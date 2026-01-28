@@ -3279,8 +3279,8 @@ void CAnnotAP::Init(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFon
 	m_gfx = new Gfx(pdfDoc, m_pRendererOut, nPageIndex, pPage->getAttrs()->getResourceDict(), 72.0, 72.0, &box, crop ? cropBox : (PDFRectangle *)NULL, 0, NULL, NULL);
 
 	// Координаты внешнего вида
-	m_dRx1 = (m_dx1 - m_dCropX) * m_dWScale - 1;
-	m_dRy1 = (pdfDoc->getPageCropHeight(nPageIndex) - m_dy2 + m_dCropY) * m_dHScale - 1;
+	m_dRx1 = ((m_bIsStamp ? m_dx1S: m_dx1) - m_dCropX) * m_dWScale - 1;
+	m_dRy1 = (pdfDoc->getPageCropHeight(nPageIndex) - (m_bIsStamp ? m_dy2S : m_dy2) + m_dCropY) * m_dHScale - 1;
 }
 void CAnnotAP::Init(Object* oAnnot)
 {
@@ -3294,6 +3294,8 @@ void CAnnotAP::Init(Object* oAnnot)
 
 		if (m_bIsStamp)
 		{
+			m_dx1S = m_dx1;
+			m_dy2S = m_dy2;
 			double m[6] = { 1, 0, 0, 1, 0, 0 }, bbox[4] = { m_dx1, m_dy1, m_dx2, m_dy2 };
 
 			oObj.free();

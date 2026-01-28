@@ -2252,8 +2252,9 @@ int main(int argc, char* argv[])
 	}
 
 	// SCAN PAGE Fonts
-	if (false)
+	if (true)
 	{
+		//ScanPage(pGrFile, nTestPage, 2);
 		SetScanPageFonts(pGrFile, nTestPage);
 
 		ReadInteractiveFormsFonts(pGrFile, 1);

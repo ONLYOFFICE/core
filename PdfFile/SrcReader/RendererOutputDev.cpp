@@ -45,6 +45,7 @@
 #include "../lib/xpdf/CharCodeToUnicode.h"
 #include "../lib/xpdf/TextString.h"
 #include "XmlUtils.h"
+#include "PdfFont.h"
 
 #include "../../DesktopEditor/graphics/pro/Graphics.h"
 #include "../../DesktopEditor/graphics/Image.h"
@@ -64,7 +65,6 @@
 #else
 #include "../../DesktopEditor/graphics/pro/js/wasm/src/serialize.h"
 #include "FontsWasm.h"
-#include "PdfFont.h"
 #define FONTS_USE_ONLY_MEMORY_STREAMS
 #endif
 

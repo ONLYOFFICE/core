@@ -1418,6 +1418,9 @@ void docx_conversion_context::process_styles()
         _Wostream << L"</w:docDefaults>";
 
 		std::wstring default_style;
+		std::wstring curr_name_of_normal_style;
+
+		bool haveNormalStyle = false;
 
 		for (size_t i = 0; i < arStyles.size(); i++)
 		{
@@ -1428,7 +1431,7 @@ void docx_conversion_context::process_styles()
                 const std::wstring id = styles_map_.get(arStyles[i]->name(), arStyles[i]->type());
 				bool bDefault = (arStyles[i]->style_class() == L"default");
 				bool bDisplayed = (arStyles[i]->type() == odf_types::style_family::Paragraph);
-                
+
 				_Wostream << L"<w:style w:styleId=\"" << id << L"\" w:type=\"" << StyleTypeOdf2Docx(arStyles[i]->type()) << L"\""; 
 
 				status_para[id] = false;
@@ -1451,6 +1454,12 @@ void docx_conversion_context::process_styles()
 				_Wostream << L">";
                 
 				const std::wstring displayName = StyleDisplayName(arStyles[i]->name(), arStyles[i]->display_name(), arStyles[i]->type(), bDisplayed);
+
+				if( displayName == L"Normal" )
+				{
+					haveNormalStyle = true;
+					curr_name_of_normal_style = id;
+				}
 
 				_Wostream << L"<w:name w:val=\"" << XmlUtils::EncodeXmlString(displayName) << L"\"/>";
 
@@ -1478,6 +1487,13 @@ void docx_conversion_context::process_styles()
 				{
 				    const std::wstring nextId = styles_map_.get(next->name(), next->type());
 				    _Wostream << L"<w:next w:val=\"" << nextId << "\"/>";
+				}
+				else
+				{
+					if( !arStyles[i]->is_default() && haveNormalStyle)
+					{
+						_Wostream << L"<w:next w:val=\"" << curr_name_of_normal_style << "\"/>";
+					}
 				}
                 //else if (arStyles[i]->is_default())
                 //{

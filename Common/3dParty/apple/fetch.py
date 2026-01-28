@@ -6,12 +6,13 @@ import os
 if not base.is_dir("glm"):
     base.cmd("git", ["clone", "https://github.com/g-truc/glm.git"])
     base.cmd_in_dir("glm", "git", ["checkout", "33b4a621a697a305bc3a7610d290677b96beb181", "--quiet"])
+    base.replaceInFile("./glm/glm/detail/func_common.inl", "vec<L, T, Q> v;", "vec<L, T, Q> v{};")
 
 if not base.is_dir("mdds"):
     base.cmd("git", ["clone", "https://github.com/kohei-us/mdds.git"])
     base.cmd_in_dir("mdds", "git", ["checkout", "0783158939c6ce4b0b1b89e345ab983ccb0f0ad0"], "--quiet")
 
-    fix_cpp_version  = "#if __cplusplus < 201402L\n"
+    fix_cpp_version  = "#if __cplusplus < 201703L\n"
     fix_cpp_version += "#ifndef _MSC_VER\n"
     fix_cpp_version += "namespace std {\n"
     fix_cpp_version += "  template<bool __v>\n"

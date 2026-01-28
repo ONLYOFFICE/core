@@ -197,7 +197,7 @@
 	},
 	{
 		"folder": "../../../../PdfFile/SrcReader/",
-		"files": ["Adaptors.cpp", "GfxClip.cpp", "RendererOutputDev.cpp", "JPXStream2.cpp", "PdfAnnot.cpp"]
+		"files": ["Adaptors.cpp", "GfxClip.cpp", "RendererOutputDev.cpp", "JPXStream2.cpp", "PdfAnnot.cpp", "PdfFont.cpp"]
 	},
 	{
 		"folder": "../../../../PdfFile/SrcWriter/",

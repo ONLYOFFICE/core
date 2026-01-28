@@ -194,6 +194,30 @@ bool scanAPfonts(Object* oAnnot, const std::vector<std::string>& arrCMap, std::v
 	oAP.free();
 	return bRes;
 }
+bool CheckFontNameStyle(std::wstring& sName, const std::wstring& sStyle)
+{
+	size_t nPos = 0;
+	size_t nLenReplace = sStyle.length();
+	bool bRet = false;
+
+	std::wstring sName2 = sName;
+	NSStringExt::ToLower(sName2);
+
+	while (std::wstring::npos != (nPos = sName2.find(sStyle, nPos)))
+	{
+		size_t nOffset = 0;
+		if ((nPos > 0) && (sName2.at(nPos - 1) == '-' || sName2.at(nPos - 1) == ','))
+		{
+			--nPos;
+			++nOffset;
+		}
+
+		bRet = true;
+		sName.erase(nPos, nLenReplace + nOffset);
+		sName2.erase(nPos, nLenReplace + nOffset);
+	}
+	return bRet;
+}
 
 namespace PdfReader
 {
@@ -537,7 +561,7 @@ std::wstring GetFontData(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CP
 		RendererOutputDev::GetFont(xref, pFontManager, pFontList, gfxFont, wsFileName, wsFontName);
 
 		sFontName = U_TO_UTF8(wsFontName);
-		RendererOutputDev::CheckFontStylePDF(wsFontName, bBold, bItalic);
+		CheckFontStylePDF(wsFontName, bBold, bItalic);
 		if (!bBold)
 			bBold = gfxFont->isBold();
 		if (!bItalic)
@@ -549,21 +573,7 @@ std::wstring GetFontData(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CP
 		NSFonts::CFontInfo* pFontInfo = RendererOutputDev::GetFontByParams(xref, pFontManager, gfxFont, wsFBN);
 		if (pFontInfo && !pFontInfo->m_wsFontPath.empty())
 		{
-			if (wsFontBaseName.length() > 7 && wsFontBaseName.at(6) == '+')
-			{
-				bool bIsRemove = true;
-				for (int nIndex = 0; nIndex < 6; nIndex++)
-				{
-					wchar_t nChar = wsFontBaseName.at(nIndex);
-					if (nChar < 'A' || nChar > 'Z')
-					{
-						bIsRemove = false;
-						break;
-					}
-				}
-				if (bIsRemove)
-					wsFontBaseName.erase(0, 7);
-			}
+			EraseSubsetTag(wsFontBaseName);
 
 			wsFileName = pFontInfo->m_wsFontPath;
 			sFontName  = U_TO_UTF8(wsFontBaseName);
@@ -841,21 +851,7 @@ std::map<std::wstring, std::wstring> GetFreeTextFont(PDFDoc* pdfDoc, NSFonts::IF
 					}
 				}
 				std::wstring wsFontBaseName = pFontInfo->m_wsFontName;
-				if (wsFontBaseName.length() > 7 && wsFontBaseName.at(6) == '+')
-				{
-					bool bIsRemove = true;
-					for (int nIndex = 0; nIndex < 6; nIndex++)
-					{
-						wchar_t nChar = wsFontBaseName.at(nIndex);
-						if (nChar < 'A' || nChar > 'Z')
-						{
-							bIsRemove = false;
-							break;
-						}
-					}
-					if (bIsRemove)
-						wsFontBaseName.erase(0, 7);
-				}
+				EraseSubsetTag(wsFontBaseName);
 
 				if (bFindFreeText)
 				{
@@ -1000,5 +996,59 @@ void CollectFontWidths(GfxFont* gfxFont, Dict* pFontDict, std::map<unsigned int,
 		oCIDFont.free();
 	}
 	oDescendantFonts.free();
+}
+void CheckFontStylePDF(std::wstring& sName, bool& bBold, bool& bItalic)
+{
+	EraseSubsetTag(sName);
+
+	CheckFontNameStyle(sName, L"condensedbold");
+	CheckFontNameStyle(sName, L"semibold");
+	CheckFontNameStyle(sName, L"regular");
+
+	CheckFontNameStyle(sName, L"ultraexpanded");
+	CheckFontNameStyle(sName, L"extraexpanded");
+	CheckFontNameStyle(sName, L"semiexpanded");
+	CheckFontNameStyle(sName, L"expanded");
+
+	CheckFontNameStyle(sName, L"ultracondensed");
+	CheckFontNameStyle(sName, L"extracondensed");
+	CheckFontNameStyle(sName, L"semicondensed");
+	CheckFontNameStyle(sName, L"condensedlight");
+	CheckFontNameStyle(sName, L"condensed");
+	//CheckFontNameStyle(sName, L"light");
+
+	if (CheckFontNameStyle(sName, L"bold_italic"))  { bBold = true; bItalic = true; }
+	if (CheckFontNameStyle(sName, L"bold_oblique")) { bBold = true; bItalic = true; }
+
+	if (CheckFontNameStyle(sName, L"boldmt")) bBold = true;
+	if (CheckFontNameStyle(sName, L"bold"))   bBold = true;
+
+	if (CheckFontNameStyle(sName, L"italicmt")) bItalic = true;
+	if (CheckFontNameStyle(sName, L"italic"))   bItalic = true;
+	if (CheckFontNameStyle(sName, L"oblique"))  bItalic = true;
+
+	//if (CheckFontNameStyle(sName, L"bolditalicmt")) { bBold = true; bItalic = true; }
+	//if (CheckFontNameStyle(sName, L"bolditalic")) { bBold = true; bItalic = true; }
+	//if (CheckFontNameStyle(sName, L"boldoblique")) { bBold = true; bItalic = true; }
+}
+bool EraseSubsetTag(std::wstring& sFontName)
+{
+	bool bIsRemove = false;
+	if (sFontName.length() > 7 && sFontName.at(6) == '+')
+	{
+		bIsRemove = true;
+		for (int nIndex = 0; nIndex < 6; nIndex++)
+		{
+			wchar_t nChar = sFontName.at(nIndex);
+			if (nChar < 'A' || nChar > 'Z')
+			{
+				bIsRemove = false;
+				break;
+			}
+		}
+		if (bIsRemove)
+			sFontName.erase(0, 7);
+	}
+	return bIsRemove;
 }
 }

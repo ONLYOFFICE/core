@@ -959,9 +959,9 @@ BYTE* CPdfReader::GetGIDByUnicode(const std::wstring& wsFontName)
 
 	std::map<unsigned int, unsigned int> mGIDbyUnicode;
 	bool bFind = false;
-	for (CPdfReaderContext* pPDFContext : m_vPDFContext)
+	for (int nPDF = 0; nPDF < m_vPDFContext.size(); ++nPDF)
 	{
-		PdfReader::CPdfFontList* pFontList = pPDFContext->m_pFontList;
+		PdfReader::CPdfFontList* pFontList = m_vPDFContext[nPDF]->m_pFontList;
 
 		const std::map<Ref, PdfReader::TFontEntry*>& mapFonts = pFontList->GetFonts();
 		for (std::map<Ref, PdfReader::TFontEntry*>::const_iterator it = mapFonts.begin(); it != mapFonts.end(); ++it)
@@ -970,15 +970,18 @@ BYTE* CPdfReader::GetGIDByUnicode(const std::wstring& wsFontName)
 			if (!pEntry || pEntry->wsFilePath != oIter->second)
 				continue;
 			bFind = true;
-
 			for (int i = 0; i < pEntry->unLenUnicode; ++i)
 			{
-				if (pEntry->pCodeToUnicode[i])
+				if (pEntry->pCodeToUnicode && pEntry->pCodeToUnicode[i])
 				{
 					unsigned int unGID = i;
-					if (pEntry->pCodeToGID[i])
+					if (pEntry->pCodeToGID && pEntry->pCodeToGID[i])
+					{
 						unGID = pEntry->pCodeToGID[i];
-					mGIDbyUnicode[unGID] = pEntry->pCodeToUnicode[i];
+						mGIDbyUnicode[unGID] = pEntry->pCodeToUnicode[i];
+					}
+					else if (pEntry->bIsIdentity)
+						mGIDbyUnicode.insert(std::make_pair(unGID, pEntry->pCodeToUnicode[i]));
 				}
 			}
 

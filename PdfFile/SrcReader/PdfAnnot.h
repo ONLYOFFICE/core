@@ -147,6 +147,7 @@ private:
 	double m_dRWScale, m_dRHScale;
 	double m_dWTale, m_dHTale;
 	double m_dRx1, m_dRy1;
+	double m_dx1S, m_dy2S;
 	int m_nWidth, m_nHeight;
 	std::vector<CAnnotAPView*> m_arrAP;
 	bool m_bIsStamp;

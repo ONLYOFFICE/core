@@ -427,6 +427,14 @@ void docx_serialize_common(std::wostream & strm, _docx_drawing & val)
 			CP_XML_ATTR_OPT_ENCODE_STRING(L"descr", descr);
 			
 			oox_serialize_action(CP_XML_STREAM(), val.action);
+			
+			if (val.hyperlinkRId.empty() == false)
+			{
+				CP_XML_NODE(L"a:hlinkClick")
+				{
+					CP_XML_ATTR(L"r:id", val.hyperlinkRId);
+				}
+			}
 		}
 
 		CP_XML_NODE(L"wp:cNvGraphicFramePr")

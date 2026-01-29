@@ -165,7 +165,10 @@ NSWasm::CData CDocxRenderer::ScanPageBin(IOfficeDrawingFile* pFile, size_t nPage
 	m_pInternal->m_oDocument.m_oCurrentPage.m_bUseDefaultFont = true;
 	m_pInternal->m_oDocument.m_oCurrentPage.m_bWriteStyleRaw = true;
 	m_pInternal->m_oDocument.m_oCurrentPage.m_bCollectMetaInfo = true;
+	m_pInternal->m_oDocument.m_bIsRecord = false;
 	m_pInternal->m_bIsSupportShapeCommands = true;
+	m_pInternal->m_oDocument.m_oFontStyleManager.Clear();
+	m_pInternal->m_oDocument.m_oFontSelector.ClearCache();
 
 	DrawPage(pFile, nPage);
 

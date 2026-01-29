@@ -70,6 +70,8 @@ namespace NSDocxRenderer
 		m_oContBuilder.Clear();
 		m_arCompleteObjectsXml.clear();
 		m_arLuminosityShapes.clear();
+
+		m_bFontSubstitution = false;
 	}
 
 	CPage::~CPage()
@@ -759,6 +761,19 @@ namespace NSDocxRenderer
 		for (auto& line : m_arTextLines)
 			if (line && line->m_arConts.empty())
 				line = nullptr;
+
+		for (auto& line : m_arTextLines)
+			if (line)
+			{
+				bool is_remove = true;
+				for(auto& cont : line->m_arConts)
+					if (cont && !cont->IsOnlySpaces())
+						is_remove = false;
+
+				if (is_remove)
+					line = nullptr;
+			}
+
 
 		auto right = MoveNullptr(m_arTextLines.begin(), m_arTextLines.end());
 		m_arTextLines.erase(right, m_arTextLines.end());
@@ -1653,16 +1668,17 @@ namespace NSDocxRenderer
 			paragraph->MergeLines();
 
 			// Correct first line position
-			if (paragraph->m_dLineHeight > firstLine->m_dHeight)
+			double firstLine_height = firstLine->m_dBotWithMaxDescent - firstLine->m_dTopWithMaxAscent;
+			if (paragraph->m_dLineHeight > firstLine_height)
 			{
-				double offset = paragraph->m_dLineHeight - firstLine->m_dHeight;
+				double offset = paragraph->m_dLineHeight - firstLine_height;
 				paragraph->m_dTop -= offset;
 				paragraph->m_dBot -= offset;
 			}
 			else
 			{
-				double ascent = /*baseline*/firstLine->m_dBot - firstLine->m_dTopWithMaxAscent;
-				double newAscent = ascent * paragraph->m_dLineHeight / firstLine->m_dHeight;
+				double ascent = firstLine->m_dBot - firstLine->m_dTopWithMaxAscent;
+				double newAscent = ascent * paragraph->m_dLineHeight / firstLine_height;
 				double offset = ascent - newAscent;
 				paragraph->m_dTop += offset;
 				paragraph->m_dBot += offset;
@@ -2601,8 +2617,8 @@ namespace NSDocxRenderer
 		pParagraph->m_dLeft = pLine->m_dLeft;
 		pParagraph->m_dTop = pLine->m_dTopWithMaxAscent;
 		pParagraph->m_dBot = pLine->m_dBotWithMaxDescent;
-		pParagraph->m_dWidth = pLine->m_dWidth * 1.2;
-		pParagraph->m_dHeight = pLine->m_dHeight;
+		pParagraph->m_dWidth = pLine->m_dWidth;
+		pParagraph->m_dHeight = pLine->m_dBotWithMaxDescent - pLine->m_dTopWithMaxAscent;
 		pParagraph->m_dRight = pLine->m_dRight;
 		pParagraph->m_dLineHeight = pParagraph->m_dHeight;
 		pParagraph->m_nOrder = pLine->m_nOrder;
@@ -2619,11 +2635,11 @@ namespace NSDocxRenderer
 		pShape->m_eType = CShape::eShapeType::stTextBox;
 
 		pShape->m_dLeft = pParagraph->m_dLeft;
+		pShape->m_dRight = pParagraph->m_dRight * 1.025;
 		pShape->m_dTop = pParagraph->m_dTop;
 		pShape->m_dBot = pParagraph->m_dBot;
-		pShape->m_dWidth = pParagraph->m_dWidth;
+		pShape->m_dWidth = pShape->m_dRight - pShape->m_dLeft;
 		pShape->m_dHeight = pParagraph->m_dHeight;
-		pShape->m_dRight = pParagraph->m_dRight;
 		pShape->m_nOrder = pParagraph->m_nOrder;
 		pShape->m_bIsBehindDoc = false;
 
@@ -2635,11 +2651,12 @@ namespace NSDocxRenderer
 		auto pShape = std::make_shared<CShape>();
 
 		pShape->m_dLeft = pParagraph->m_dLeft;
-		pShape->m_dTop = pParagraph->m_dTop;
 		pShape->m_dRight =  pParagraph->m_dRight;
+		if (pParagraph->m_arTextLines.size() == 1) pShape->m_dRight *= 1.025;
+		pShape->m_dTop = pParagraph->m_dTop;
 		pShape->m_dBot = pParagraph->m_dBot;
 		pShape->m_dHeight = pParagraph->m_dHeight;
-		pShape->m_dWidth = pParagraph->m_dWidth;
+		pShape->m_dWidth = pShape->m_dRight - pShape->m_dLeft;
 		pShape->m_nOrder = pParagraph->m_nOrder;
 
 		if (pParagraph->m_bIsNeedFirstLineIndent && pParagraph->m_dFirstLine < 0)

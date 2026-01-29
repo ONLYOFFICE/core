@@ -2598,7 +2598,7 @@ namespace NSDocxRenderer
 		pParagraph->m_dLeft = pLine->m_dLeft;
 		pParagraph->m_dTop = pLine->m_dTopWithMaxAscent;
 		pParagraph->m_dBot = pLine->m_dBotWithMaxDescent;
-		pParagraph->m_dWidth = pLine->m_dWidth * 1.1;
+		pParagraph->m_dWidth = pLine->m_dWidth * 1.2;
 		pParagraph->m_dHeight = pLine->m_dHeight;
 		pParagraph->m_dRight = pLine->m_dRight;
 		pParagraph->m_dLineHeight = pParagraph->m_dHeight;

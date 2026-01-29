@@ -1905,6 +1905,7 @@ namespace OOX
 
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			XLS::BaseObjectPtr toXLS(const unsigned short chartIndex, XLS::BaseObjectPtr ChartFormatsPtr);
 			EElementType getType();
 		};
 		class CT_AreaChart

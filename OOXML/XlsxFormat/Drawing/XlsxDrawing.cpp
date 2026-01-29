@@ -369,6 +369,11 @@ namespace OOX
 									auto AreaChart = static_cast<CT_AreaChart*>(ChartFile->m_oChartSpace.m_chart->m_plotArea->m_Items.at(chartIndex));
 									AxisParentUnion->m_arCRT.push_back(AreaChart->toXLS(chartIndex, ptr->m_CHARTFORMATS));
 								}
+								else if(*ChartFile->m_oChartSpace.m_chart->m_plotArea->m_ItemsElementName0.at(chartIndex) == OOX::Spreadsheet::itemschoicetype5AREA3DCHART)
+								{
+									auto AreaChart = static_cast<CT_Area3DChart*>(ChartFile->m_oChartSpace.m_chart->m_plotArea->m_Items.at(chartIndex));
+									AxisParentUnion->m_arCRT.push_back(AreaChart->toXLS(chartIndex, ptr->m_CHARTFORMATS));
+								}
 								else if(*ChartFile->m_oChartSpace.m_chart->m_plotArea->m_ItemsElementName0.at(chartIndex) == OOX::Spreadsheet::itemschoicetype5SURFACECHART)
 								{
 									auto SurfaceChart = static_cast<CT_SurfaceChart*>(ChartFile->m_oChartSpace.m_chart->m_plotArea->m_Items.at(chartIndex));

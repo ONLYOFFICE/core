@@ -191,12 +191,15 @@ namespace OOX
 	}
 	std::wstring CCustomXMLProps::toXML() const
 	{
+		std::wstring guid = m_oItemID.ToString();
 		std::wstring sXml = L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ds:datastoreItem ds:itemID=\"";
-		sXml += m_oItemID.ToString();
+		sXml += m_oItemID.ToString(false);
 		sXml += L"\" xmlns:ds=\"http://schemas.openxmlformats.org/officeDocument/2006/customXml\">";
 
 		if (m_oShemaRefs.IsInit())
 			sXml += m_oShemaRefs->toXML();
+		else
+			sXml += L"<ds:schemaRefs/>";
 
 		sXml += L"</ds:datastoreItem>";
 

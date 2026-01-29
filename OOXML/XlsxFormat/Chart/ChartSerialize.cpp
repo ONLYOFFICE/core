@@ -57,6 +57,7 @@
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Scatter.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Radar.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/RadarArea.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Chart3d.h"
 
 namespace OOX
 {
@@ -7083,6 +7084,33 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
 		}
+		XLS::BaseObjectPtr CT_Pie3DChart::toXLS(const unsigned short chartIndex, XLS::BaseObjectPtr ChartFormats)
+		{
+			auto ChartFormatsPtr =  static_cast<XLS::CHARTFORMATS*>(ChartFormats.get());
+			for(auto ser : m_ser)
+			{
+				if(ser != nullptr)
+				{
+					ChartFormatsPtr->m_arSERIESFORMAT.push_back(ser->GetXLSFormat(chartIndex));
+				}
+			}
+			auto ptr = new XLS::CRT;
+			auto chartFormat = new XLS::ChartFormat;
+			chartFormat->icrt = chartIndex;
+			ptr->m_ChartFormat = XLS::BaseObjectPtr(chartFormat);
+			auto chartType = new XLS::Pie;
+			auto chart3Dpart = new XLS::Chart3d;
+			chart3Dpart->anElev = 30;
+			chart3Dpart->pcDist = 30;
+			chart3Dpart->pcHeightPie = 100;
+			chart3Dpart->pcDepth = 100;
+			chart3Dpart->pcGap = 150;
+			ptr->m_Chart3d = XLS::BaseObjectPtr(chart3Dpart);
+			ptr->m_ChartType = XLS::BaseObjectPtr(chartType);
+
+			return XLS::BaseObjectPtr(ptr);
+		}
+
 		EElementType CT_Pie3DChart::getType() { return et_ct_pie3dchart; }
 		
 		CT_PieChart::CT_PieChart()

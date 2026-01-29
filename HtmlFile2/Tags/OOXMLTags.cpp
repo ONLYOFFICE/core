@@ -5,7 +5,6 @@
 
 #include "../../Common/Network/FileTransporter/include/FileTransporter.h"
 
-#include "../../DesktopEditor/xml/include/xmlutils.h"
 #include "../../DesktopEditor/raster/BgraFrame.h"
 #include "../../DesktopEditor/graphics/pro/Graphics.h"
 #include "../../DesktopEditor/common/Base64.h"
@@ -34,11 +33,11 @@ bool UpdateImageData(const std::wstring& wsImagePath, TImageData& oImageData);
 
 const static double HTML_FONTS[7] = {7.5, 10, 12, 13.5, 18, 24, 36};
 
-CAnchor<COOXMLInterpretator>::CAnchor(COOXMLInterpretator* pInterpretator)
-    : CTag(pInterpretator)
+CAnchor<COOXMLWriter>::CAnchor(COOXMLWriter* pWriter)
+	: CTag(pWriter)
 {}
 
-bool CAnchor<COOXMLInterpretator>::Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData)
+bool CAnchor<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData)
 {
 	if (!ValidInterpretator())
 		return false;
@@ -50,29 +49,29 @@ bool CAnchor<COOXMLInterpretator>::Open(const std::vector<NSCSS::CNode>& arSelec
 		bCross = true;
 
 	if (arSelectors.back().GetAttributeValue(L"name", wsName))
-		m_pInterpretator->WriteBookmark(wsName);
+		m_pWriter->WriteBookmark(wsName);
 
 	arSelectors.back().GetAttributeValue(L"alt", wsAlt);
 
-	if (!m_pInterpretator->OpenP())
-		m_pInterpretator->CloseR();
+	if (!m_pWriter->OpenP())
+		m_pWriter->CloseR();
 	else
-		m_pInterpretator->WritePPr(arSelectors);
+		m_pWriter->WritePPr(arSelectors);
 
 	if (bCross)
-		m_pInterpretator->OpenCrossHyperlink(wsRef, arSelectors);
+		m_pWriter->OpenCrossHyperlink(wsRef, arSelectors);
 	else
 	{
 		std::wstring wsTooltip(wsRef);
 		arSelectors.back().GetAttributeValue(L"title", wsTooltip);
 
-		m_pInterpretator->OpenExternalHyperlink(wsRef, wsTooltip, arSelectors);
+		m_pWriter->OpenExternalHyperlink(wsRef, wsTooltip, arSelectors);
 	}
 
 	return true;
 }
 
-void CAnchor<COOXMLInterpretator>::Close(const std::vector<NSCSS::CNode>& arSelectors)
+void CAnchor<COOXMLWriter>::Close(const std::vector<NSCSS::CNode>& arSelectors)
 {
 	if (!ValidInterpretator())
 		return;
@@ -101,17 +100,17 @@ void CAnchor<COOXMLInterpretator>::Close(const std::vector<NSCSS::CNode>& arSele
 		if (wsFootnote == L"href")
 			wsFootnote = wsRef.substr(wsRef.find('#') + 1);
 
-		m_pInterpretator->CloseCrossHyperlink(arSelectors, wsFootnote, wsRef);
+		m_pWriter->CloseCrossHyperlink(arSelectors, wsFootnote, wsRef);
 	}
 	else
-		m_pInterpretator->CloseExternalHyperlink();
+		m_pWriter->CloseExternalHyperlink();
 }
 
-CAbbr<COOXMLInterpretator>::CAbbr(COOXMLInterpretator* pInterpretator)
-	: CTag(pInterpretator)
+CAbbr<COOXMLWriter>::CAbbr(COOXMLWriter* pWriter)
+	: CTag(pWriter)
 {}
 
-bool CAbbr<COOXMLInterpretator>::Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData)
+bool CAbbr<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData)
 {
 	if (!ValidInterpretator())
 		return false;
@@ -121,11 +120,11 @@ bool CAbbr<COOXMLInterpretator>::Open(const std::vector<NSCSS::CNode>& arSelecto
 	if (!arSelectors.back().GetAttributeValue(L"title", wsTitle))
 		return false;
 
-	m_pInterpretator->WritePPr(arSelectors);
+	m_pWriter->WritePPr(arSelectors);
 
-	XmlString* pCurrentDocument{&m_pInterpretator->GetCurrentDocument()};
+	XmlString* pCurrentDocument{m_pWriter->GetCurrentDocument()};
 
-	pCurrentDocument->WriteString(L"<w:r><w:fldChar w:fldCharType=\"begin\"/></w:r><w:r><w:instrText>HYPERLINK \\l \"" + m_pInterpretator->AddLiteBookmark() + L"\" \\o \"");
+	pCurrentDocument->WriteString(L"<w:r><w:fldChar w:fldCharType=\"begin\"/></w:r><w:r><w:instrText>HYPERLINK \\l \"" + m_pWriter->AddLiteBookmark() + L"\" \\o \"");
 	pCurrentDocument->WriteEncodeXmlString(wsTitle);
 	pCurrentDocument->WriteString(L"\"</w:instrText></w:r>");
 	pCurrentDocument->WriteString(L"<w:r><w:fldChar w:fldCharType=\"separate\"/></w:r>");
@@ -133,41 +132,41 @@ bool CAbbr<COOXMLInterpretator>::Open(const std::vector<NSCSS::CNode>& arSelecto
 	return true;
 }
 
-void CAbbr<COOXMLInterpretator>::Close(const std::vector<NSCSS::CNode>& arSelectors)
+void CAbbr<COOXMLWriter>::Close(const std::vector<NSCSS::CNode>& arSelectors)
 {
 	if (!ValidInterpretator())
 		return;
 
-	m_pInterpretator->GetCurrentDocument().WriteString(L"<w:r><w:fldChar w:fldCharType=\"end\"/></w:r>");
+	m_pWriter->GetCurrentDocument()->WriteString(L"<w:r><w:fldChar w:fldCharType=\"end\"/></w:r>");
 }
 
-CBreak<COOXMLInterpretator>::CBreak(COOXMLInterpretator* pInterpretator)
-	: CTag(pInterpretator)
+CBreak<COOXMLWriter>::CBreak(COOXMLWriter* pWriter)
+	: CTag(pWriter)
 {}
 
-bool CBreak<COOXMLInterpretator>::Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData)
+bool CBreak<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData)
 {
 	if (!ValidInterpretator())
 		return false;
 
-	m_pInterpretator->Break(arSelectors);
+	m_pWriter->Break(arSelectors);
 
 	return true;
 }
 
-void CBreak<COOXMLInterpretator>::Close(const std::vector<NSCSS::CNode>& arSelectors)
+void CBreak<COOXMLWriter>::Close(const std::vector<NSCSS::CNode>& arSelectors)
 {}
 
-CDivision<COOXMLInterpretator>::CDivision(COOXMLInterpretator* pInterpretator)
-	: CTag(pInterpretator)
+CDivision<COOXMLWriter>::CDivision(COOXMLWriter* pWriter)
+	: CTag(pWriter)
 {}
 
-bool CDivision<COOXMLInterpretator>::Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData)
+bool CDivision<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData)
 {
 	if (!ValidInterpretator())
 		return false;
 
-	m_pInterpretator->UpdatePageStyle(arSelectors);
+	m_pWriter->UpdatePageStyle(arSelectors);
 
 	UINT unMsoFootnote = 0;
 
@@ -181,15 +180,15 @@ bool CDivision<COOXMLInterpretator>::Open(const std::vector<NSCSS::CNode>& arSel
 
 	if (!arSelectors.back().m_wsId.empty())
 	{
-		wsFootnoteID = m_pInterpretator->FindFootnote(arSelectors.back().m_wsId);
+		wsFootnoteID = m_pWriter->FindFootnote(arSelectors.back().m_wsId);
 
 		if (!wsFootnoteID.empty())
 			++unMsoFootnote;
 
 		if (unMsoFootnote >= 2 && !wsFootnoteID.empty())
 		{
-			m_pInterpretator->OpenFootnote(wsFootnoteID);
-			m_pInterpretator->SetCurrentDocument(&m_pInterpretator->GetNotesXml());
+			m_pWriter->OpenFootnote(wsFootnoteID);
+			m_pWriter->SetCurrentDocument(&m_pWriter->GetNotesXml());
 		}
 	}
 
@@ -198,50 +197,45 @@ bool CDivision<COOXMLInterpretator>::Open(const std::vector<NSCSS::CNode>& arSel
 	return true;
 }
 
-void CDivision<COOXMLInterpretator>::Close(const std::vector<NSCSS::CNode>& arSelectors)
+void CDivision<COOXMLWriter>::Close(const std::vector<NSCSS::CNode>& arSelectors)
 {
 	if (!ValidInterpretator() || m_arFootnoteIDs.empty())
 		return;
 
 	if (m_arFootnoteIDs.top() >= 2)
 	{
-		m_pInterpretator->CloseFootnote();
-		m_pInterpretator->RollBackState();
+		m_pWriter->CloseFootnote();
+		m_pWriter->RollBackState();
 	}
 
 	m_arFootnoteIDs.pop();
 }
 
-CImage<COOXMLInterpretator>::CImage(COOXMLInterpretator* pInterpretator)
-	: CTag(pInterpretator)
+CImage<COOXMLWriter>::CImage(COOXMLWriter* pWriter)
+	: CTag(pWriter)
 {}
 
-bool CImage<COOXMLInterpretator>::Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData)
+bool CImage<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData)
 {
 	if (!ValidInterpretator())
 		return false;
 
 	if (L"svg" == arSelectors.back().m_wsName)
 	{
-		if (oExtraData.empty() || typeid(XmlUtils::CXmlLiteReader*) != oExtraData.type())
+		if (oExtraData.empty() || typeid(const std::wstring&) != oExtraData.type())
 			return false;
 
-		XmlUtils::CXmlLiteReader *pXmlReader{boost::any_cast<XmlUtils::CXmlLiteReader*>(oExtraData)};
+		const std::wstring wsImagePath{m_pWriter->GetMediaDir() + L'i' + std::to_wstring(m_arrImages.size()) + L".png"};
 
-		if (nullptr == pXmlReader)
-			return false;
-
-		const std::wstring wsImagePath{m_pInterpretator->GetMediaDir() + L'i' + std::to_wstring(m_arrImages.size()) + L".png"};
-
-		if (!ReadSVG(pXmlReader->GetOuterXml(), m_pInterpretator->GetFonts(), m_pInterpretator->GetTempDir(), wsImagePath))
+		if (!ReadSVG(boost::any_cast<const std::wstring&>(oExtraData), m_pWriter->GetFonts(), m_pWriter->GetTempDir(), wsImagePath))
 			return false;
 
 		TImageData oNewImageData;
 		if (!UpdateImageData(wsImagePath, oNewImageData))
 			return false;
 
-		m_pInterpretator->WritePPr(arSelectors);
-		m_pInterpretator->WriteImage(oNewImageData, std::to_wstring(m_arrImages.size()));
+		m_pWriter->WritePPr(arSelectors);
+		m_pWriter->WriteImage(oNewImageData, std::to_wstring(m_arrImages.size()));
 		return true;
 	}
 
@@ -292,17 +286,17 @@ bool CImage<COOXMLInterpretator>::Open(const std::vector<NSCSS::CNode>& arSelect
 
 	if (wsSrc.empty())
 	{
-		m_pInterpretator->WriteAlternativeImage(wsAlt, wsSrc, oImageData);
+		m_pWriter->WriteAlternativeImage(wsAlt, wsSrc, oImageData);
 		return true;
 	}
 
 	bool bRes = false;
 	std::wstring wsExtention;
-	const std::wstring wsImagePath{m_pInterpretator->GetMediaDir() + L'i' + std::to_wstring(m_arrImages.size())};
+	const std::wstring wsImagePath{m_pWriter->GetMediaDir() + L'i' + std::to_wstring(m_arrImages.size())};
 
 	// Предполагаем картинку в Base64
 	if (wsSrc.length() > 4 && wsSrc.substr(0, 4) == L"data" && wsSrc.find(L"/", 4) != std::wstring::npos)
-		bRes = ReadBase64(wsSrc, wsImagePath, m_pInterpretator->GetFonts(), m_pInterpretator->GetTempDir(), wsExtention);
+		bRes = ReadBase64(wsSrc, wsImagePath, m_pWriter->GetFonts(), m_pWriter->GetTempDir(), wsExtention);
 
 	const bool bIsAllowExternalLocalFiles = GetStatusUsingExternalLocalFiles();
 
@@ -310,9 +304,9 @@ bool CImage<COOXMLInterpretator>::Open(const std::vector<NSCSS::CNode>& arSelect
 	{
 		wsSrc = NSSystemPath::ShortenPath(wsSrc);
 
-		if (!CanUseThisPath(wsSrc, m_pInterpretator->GetSrcPath(), m_pInterpretator->GetCorePath(), bIsAllowExternalLocalFiles))
+		if (!CanUseThisPath(wsSrc, m_pWriter->GetSrcPath(), m_pWriter->GetCorePath(), bIsAllowExternalLocalFiles))
 		{
-			m_pInterpretator->WriteAlternativeImage(wsAlt, wsSrc, oImageData);
+			m_pWriter->WriteAlternativeImage(wsAlt, wsSrc, oImageData);
 			return true;
 		}
 	}
@@ -329,7 +323,7 @@ bool CImage<COOXMLInterpretator>::Open(const std::vector<NSCSS::CNode>& arSelect
 			wsExtention.erase(itFound, wsExtention.cend());
 	}
 
-	const std::wstring wsBasePath{m_pInterpretator->GetBasePath()};
+	const std::wstring wsBasePath{m_pWriter->GetBasePath()};
 
 	// Предполагаем картинку в сети
 	if (!bRes &&
@@ -339,13 +333,13 @@ bool CImage<COOXMLInterpretator>::Open(const std::vector<NSCSS::CNode>& arSelect
 		const std::wstring wsDst = wsImagePath + L'.' + ((!wsExtention.empty()) ? wsExtention : L"png");
 
 		// Проверка gc_allowNetworkRequest предполагается в kernel_network
-		NSNetwork::NSFileTransport::CFileDownloader oDownloadImg(m_pInterpretator->GetBasePath() + wsSrc, false);
+		NSNetwork::NSFileTransport::CFileDownloader oDownloadImg(m_pWriter->GetBasePath() + wsSrc, false);
 		oDownloadImg.SetFilePath(wsDst);
 		bRes = oDownloadImg.DownloadSync();
 
 		if (!bRes)
 		{
-			m_pInterpretator->WriteAlternativeImage(wsAlt, wsSrc, oImageData);
+			m_pWriter->WriteAlternativeImage(wsAlt, wsSrc, oImageData);
 			return true;
 		}
 
@@ -354,7 +348,7 @@ bool CImage<COOXMLInterpretator>::Open(const std::vector<NSCSS::CNode>& arSelect
 			std::wstring wsFileData;
 
 			if (!NSFile::CFileBinary::ReadAllTextUtf8(wsDst, wsFileData) ||
-			    !ReadSVG(wsFileData, m_pInterpretator->GetFonts(), m_pInterpretator->GetTempDir(), wsImagePath))
+			    !ReadSVG(wsFileData, m_pWriter->GetFonts(), m_pWriter->GetTempDir(), wsImagePath))
 				bRes = false;
 
 			NSFile::CFileBinary::Remove(wsDst);
@@ -373,7 +367,7 @@ bool CImage<COOXMLInterpretator>::Open(const std::vector<NSCSS::CNode>& arSelect
 	{
 		if (NotValidExtension(wsExtention))
 		{
-			m_pInterpretator->WriteAlternativeImage(wsAlt, wsSrc, oImageData);
+			m_pWriter->WriteAlternativeImage(wsAlt, wsSrc, oImageData);
 			return true;
 		}
 
@@ -391,40 +385,40 @@ bool CImage<COOXMLInterpretator>::Open(const std::vector<NSCSS::CNode>& arSelect
 	{
 		const std::wstring wsDst = wsImagePath + L'.' + wsExtention;
 
-		if (!m_pInterpretator->GetBasePath().empty())
+		if (!m_pWriter->GetBasePath().empty())
 		{
 			if (!bRes)
-				bRes = CopyImage(NSSystemPath::Combine(m_pInterpretator->GetBasePath(), wsSrc), m_pInterpretator->GetSrcPath(), wsDst, bIsAllowExternalLocalFiles);
+				bRes = CopyImage(NSSystemPath::Combine(m_pWriter->GetBasePath(), wsSrc), m_pWriter->GetSrcPath(), wsDst, bIsAllowExternalLocalFiles);
 			if (!bRes)
-				bRes = CopyImage(NSSystemPath::Combine(m_pInterpretator->GetSrcPath(), NSSystemPath::Combine(m_pInterpretator->GetBasePath(), wsSrc)), m_pInterpretator->GetSrcPath(), wsDst, bIsAllowExternalLocalFiles);
+				bRes = CopyImage(NSSystemPath::Combine(m_pWriter->GetSrcPath(), NSSystemPath::Combine(m_pWriter->GetBasePath(), wsSrc)), m_pWriter->GetSrcPath(), wsDst, bIsAllowExternalLocalFiles);
 		}
 		if (!bRes)
-			bRes = CopyImage(NSSystemPath::Combine(m_pInterpretator->GetSrcPath(), wsSrc), m_pInterpretator->GetSrcPath(), wsDst, bIsAllowExternalLocalFiles);
+			bRes = CopyImage(NSSystemPath::Combine(m_pWriter->GetSrcPath(), wsSrc), m_pWriter->GetSrcPath(), wsDst, bIsAllowExternalLocalFiles);
 		if (!bRes)
-			bRes = CopyImage(m_pInterpretator->GetSrcPath() + L"/" + NSFile::GetFileName(wsSrc), m_pInterpretator->GetSrcPath(), wsDst, bIsAllowExternalLocalFiles);
+			bRes = CopyImage(m_pWriter->GetSrcPath() + L"/" + NSFile::GetFileName(wsSrc), m_pWriter->GetSrcPath(), wsDst, bIsAllowExternalLocalFiles);
 		if (!bRes)
-			bRes = CopyImage(wsSrc, m_pInterpretator->GetSrcPath(), wsDst, bIsAllowExternalLocalFiles);
+			bRes = CopyImage(wsSrc, m_pWriter->GetSrcPath(), wsDst, bIsAllowExternalLocalFiles);
 	}
 
 	if (!bRes)
-		m_pInterpretator->WriteAlternativeImage(wsAlt, wsSrc, oImageData);
+		m_pWriter->WriteAlternativeImage(wsAlt, wsSrc, oImageData);
 	else
 	{
 		m_arrImages.push_back(wsSrc);
 
-		m_pInterpretator->WritePPr(arSelectors);
+		m_pWriter->WritePPr(arSelectors);
 
 		const std::wstring wsImageID{std::to_wstring(m_arrImages.size())};
 
 		if (nImageId < 0)
 		{
-			m_pInterpretator->WriteImageRels(wsImageID, wsImageID + L'.' + wsExtention);
+			m_pWriter->WriteImageRels(wsImageID, wsImageID + L'.' + wsExtention);
 			m_arrImages.push_back(wsSrc);
 		}
 
 		if (!oImageData.ZeroSize())
 		{
-			m_pInterpretator->WriteImage(oImageData, wsImageID);
+			m_pWriter->WriteImage(oImageData, wsImageID);
 			return true;
 		}
 
@@ -432,20 +426,20 @@ bool CImage<COOXMLInterpretator>::Open(const std::vector<NSCSS::CNode>& arSelect
 		if (!UpdateImageData(wsImagePath + L'.' + wsExtention, oNewImageData))
 			return false;
 
-		m_pInterpretator->WriteImage(oNewImageData, wsImageID);
+		m_pWriter->WriteImage(oNewImageData, wsImageID);
 	}
 
 	return true;
 }
 
-void CImage<COOXMLInterpretator>::Close(const std::vector<NSCSS::CNode>& arSelectors)
+void CImage<COOXMLWriter>::Close(const std::vector<NSCSS::CNode>& arSelectors)
 {}
 
-CFont<COOXMLInterpretator>::CFont(COOXMLInterpretator* pInterpretator)
-	: CTag(pInterpretator)
+CFont<COOXMLWriter>::CFont(COOXMLWriter* pWriter)
+	: CTag(pWriter)
 {}
 
-bool CFont<COOXMLInterpretator>::Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData)
+bool CFont<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData)
 {
 	if (!ValidInterpretator())
 		return false;
@@ -480,14 +474,14 @@ bool CFont<COOXMLInterpretator>::Open(const std::vector<NSCSS::CNode>& arSelecto
 	return true;
 }
 
-void CFont<COOXMLInterpretator>::Close(const std::vector<NSCSS::CNode>& arSelectors)
+void CFont<COOXMLWriter>::Close(const std::vector<NSCSS::CNode>& arSelectors)
 {}
 
-CInput<COOXMLInterpretator>::CInput(COOXMLInterpretator* pInterpretator)
-	: CTag(pInterpretator)
+CInput<COOXMLWriter>::CInput(COOXMLWriter* pWriter)
+	: CTag(pWriter)
 {}
 
-bool CInput<COOXMLInterpretator>::Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData)
+bool CInput<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData)
 {
 	if (!ValidInterpretator())
 		return false;
@@ -504,26 +498,26 @@ bool CInput<COOXMLInterpretator>::Open(const std::vector<NSCSS::CNode>& arSelect
 
 	if(!wsValue.empty())
 	{
-		m_pInterpretator->WritePPr(arSelectors);
-		m_pInterpretator->OpenR();
-		m_pInterpretator->WriteRPr(m_pInterpretator->GetCurrentDocument(), arSelectors);
-		m_pInterpretator->OpenT();
-		m_pInterpretator->GetCurrentDocument().WriteEncodeXmlString(wsValue + L' ');
-		m_pInterpretator->CloseT();
-		m_pInterpretator->CloseR();
+		m_pWriter->WritePPr(arSelectors);
+		m_pWriter->OpenR();
+		m_pWriter->WriteRPr(*(m_pWriter->GetCurrentDocument()), arSelectors);
+		m_pWriter->OpenT();
+		m_pWriter->GetCurrentDocument()->WriteEncodeXmlString(wsValue + L' ');
+		m_pWriter->CloseT();
+		m_pWriter->CloseR();
 	}
 
 	return true;
 }
 
-void CInput<COOXMLInterpretator>::Close(const std::vector<NSCSS::CNode>& arSelectors)
+void CInput<COOXMLWriter>::Close(const std::vector<NSCSS::CNode>& arSelectors)
 {}
 
-CBaseFont<COOXMLInterpretator>::CBaseFont(COOXMLInterpretator* pInterpretator)
-	: CTag(pInterpretator)
+CBaseFont<COOXMLWriter>::CBaseFont(COOXMLWriter* pWriter)
+	: CTag(pWriter)
 {}
 
-bool CBaseFont<COOXMLInterpretator>::Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData)
+bool CBaseFont<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData)
 {
 	if (!ValidInterpretator())
 		return false;
@@ -556,19 +550,19 @@ bool CBaseFont<COOXMLInterpretator>::Open(const std::vector<NSCSS::CNode>& arSel
 	if (wsFontStyles.empty())
 		return false;
 
-	m_pInterpretator->SetBaseFont(L"*{" + wsFontStyles + L'}');
+	m_pWriter->SetBaseFont(L"*{" + wsFontStyles + L'}');
 
 	return true;
 }
 
-void CBaseFont<COOXMLInterpretator>::Close(const std::vector<NSCSS::CNode>& arSelectors)
+void CBaseFont<COOXMLWriter>::Close(const std::vector<NSCSS::CNode>& arSelectors)
 {}
 
-CBlockquote<COOXMLInterpretator>::CBlockquote(COOXMLInterpretator* pInterpretator)
-	: CTag(pInterpretator)
+CBlockquote<COOXMLWriter>::CBlockquote(COOXMLWriter* pWriter)
+	: CTag(pWriter)
 {}
 
-bool CBlockquote<COOXMLInterpretator>::Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData)
+bool CBlockquote<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData)
 {
 	if (!ValidInterpretator())
 		return false;
@@ -579,13 +573,13 @@ bool CBlockquote<COOXMLInterpretator>::Open(const std::vector<NSCSS::CNode>& arS
 
 	if (m_mDivs.end() != itFound)
 	{
-		m_pInterpretator->SetDivId(std::to_wstring(itFound->second));
+		m_pWriter->SetDivId(std::to_wstring(itFound->second));
 		return true;
 	}
 
 	const std::wstring wsId{std::to_wstring(m_mDivs.size() + 1)};
 
-	XmlString &oWebSettings{m_pInterpretator->GetWebSettingsXml()};
+	XmlString &oWebSettings{m_pWriter->GetWebSettingsXml()};
 
 	if (m_mDivs.empty())
 		oWebSettings.WriteString(L"<w:divs>");
@@ -599,7 +593,7 @@ bool CBlockquote<COOXMLInterpretator>::Open(const std::vector<NSCSS::CNode>& arS
 	INT nMarTop    = (!bInTable) ? 100 : 0;
 	INT nMarBottom = (!bInTable) ? 100 : 0;
 
-	const NSCSS::NSProperties::CPage *pPageData{m_pInterpretator->GetPageData()};
+	const NSCSS::NSProperties::CPage *pPageData{m_pWriter->GetPageData()};
 
 	if (!pStyle->m_oMargin.GetLeft().Empty() && !pStyle->m_oMargin.GetLeft().Zero())
 		nMarLeft  = pStyle->m_oMargin.GetLeft().ToInt(NSCSS::Twips, pPageData->GetWidth().ToInt(NSCSS::Twips));
@@ -632,24 +626,24 @@ bool CBlockquote<COOXMLInterpretator>::Open(const std::vector<NSCSS::CNode>& arS
 
 	m_mDivs.insert(std::make_pair(wsKeyWord, m_mDivs.size() + 1));
 
-	m_pInterpretator->SetDivId(wsId);
+	m_pWriter->SetDivId(wsId);
 
 	return true;
 }
 
-void CBlockquote<COOXMLInterpretator>::Close(const std::vector<NSCSS::CNode>& arSelectors)
+void CBlockquote<COOXMLWriter>::Close(const std::vector<NSCSS::CNode>& arSelectors)
 {
 	if (!ValidInterpretator())
 		return;
 
-	m_pInterpretator->RollBackDivId();
+	m_pWriter->RollBackDivId();
 }
 
-CHorizontalRule<COOXMLInterpretator>::CHorizontalRule(COOXMLInterpretator* pInterpretator)
-	: CTag(pInterpretator), m_unShapeId(1)
+CHorizontalRule<COOXMLWriter>::CHorizontalRule(COOXMLWriter* pWriter)
+	: CTag(pWriter), m_unShapeId(1)
 {}
 
-bool CHorizontalRule<COOXMLInterpretator>::Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData)
+bool CHorizontalRule<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData)
 {
 	if (!ValidInterpretator())
 		return false;
@@ -688,13 +682,13 @@ bool CHorizontalRule<COOXMLInterpretator>::Open(const std::vector<NSCSS::CNode>&
 	if (arSelectors.back().GetAttributeValue(L"width", wsValue))
 		oWidth.SetValue(wsValue);
 
-	XmlString& oCurrentDocument{m_pInterpretator->GetCurrentDocument()};
+	XmlString& oCurrentDocument{*m_pWriter->GetCurrentDocument()};
 
-	m_pInterpretator->OpenP();
+	m_pWriter->OpenP();
 	oCurrentDocument.WriteString(L"<w:pPr><w:jc w:val=\"" + wsAlign + L"\"/></w:pPr>");
-	m_pInterpretator->OpenR();
+	m_pWriter->OpenR();
 
-	const NSCSS::NSProperties::CPage *pPageData{m_pInterpretator->GetPageData()};
+	const NSCSS::NSProperties::CPage *pPageData{m_pWriter->GetPageData()};
 
 	const unsigned int unPageWidth{static_cast<unsigned int>((pPageData->GetWidth().ToDouble(NSCSS::Inch) - pPageData->GetMargin().GetLeft().ToDouble(NSCSS::Inch) - pPageData->GetMargin().GetRight().ToDouble(NSCSS::Inch)) * 914400.)};
 
@@ -738,33 +732,33 @@ bool CHorizontalRule<COOXMLInterpretator>::Open(const std::vector<NSCSS::CNode>&
 
 	oCurrentDocument.WriteString(L"</wps:spPr><wps:bodyPr/></wps:wsp></a:graphicData></a:graphic></wp:inline></w:drawing></mc:Choice></mc:AlternateContent>");
 
-	m_pInterpretator->CloseP();
+	m_pWriter->CloseP();
 
 	++m_unShapeId;
 
 	return true;
 }
 
-void CHorizontalRule<COOXMLInterpretator>::Close(const std::vector<NSCSS::CNode>& arSelectors)
+void CHorizontalRule<COOXMLWriter>::Close(const std::vector<NSCSS::CNode>& arSelectors)
 {}
 
-CList<COOXMLInterpretator>::CList(COOXMLInterpretator* pInterpretator)
-	: CTag(pInterpretator), m_unNumberingId(1)
+CList<COOXMLWriter>::CList(COOXMLWriter* pWriter)
+	: CTag(pWriter), m_unNumberingId(1)
 {}
 
-bool CList<COOXMLInterpretator>::Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData)
+bool CList<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData)
 {
 	if (!ValidInterpretator())
 		return false;
 
-	m_pInterpretator->CloseP();
+	m_pWriter->CloseP();
 
 	//Нумерованный список
 	if (L"ol" == arSelectors.back().m_wsName)
 	{
 		const int nStart{NSStringFinder::ToInt(arSelectors.back().GetAttributeValue(L"start"), 1)};
 
-		XmlString& oNumberXml{m_pInterpretator->GetNumberingXml()};
+		XmlString& oNumberXml{m_pWriter->GetNumberingXml()};
 
 		const std::wstring wsStart(std::to_wstring(nStart));
 		oNumberXml.WriteString(L"<w:abstractNum w:abstractNumId=\"");
@@ -793,29 +787,29 @@ bool CList<COOXMLInterpretator>::Open(const std::vector<NSCSS::CNode>& arSelecto
 	return true;
 }
 
-void CList<COOXMLInterpretator>::Close(const std::vector<NSCSS::CNode>& arSelectors)
+void CList<COOXMLWriter>::Close(const std::vector<NSCSS::CNode>& arSelectors)
 {
 	if (!ValidInterpretator())
 		return;
 
-	m_pInterpretator->CloseP();
+	m_pWriter->CloseP();
 }
 
-CListElement<COOXMLInterpretator>::CListElement(COOXMLInterpretator* pInterpretator)
-	: CTag(pInterpretator)
+CListElement<COOXMLWriter>::CListElement(COOXMLWriter* pWriter)
+	: CTag(pWriter)
 {}
 
-bool CListElement<COOXMLInterpretator>::Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData)
+bool CListElement<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData)
 {
 	return ValidInterpretator();
 }
 
-void CListElement<COOXMLInterpretator>::Close(const std::vector<NSCSS::CNode>& arSelectors)
+void CListElement<COOXMLWriter>::Close(const std::vector<NSCSS::CNode>& arSelectors)
 {
 	if (!ValidInterpretator())
 		return;
 
-	m_pInterpretator->CloseP();
+	m_pWriter->CloseP();
 }
 
 inline bool ElementInTable(const std::vector<NSCSS::CNode>& arSelectors)
@@ -1068,26 +1062,26 @@ bool UpdateImageData(const std::wstring& wsImagePath, TImageData& oImageData)
 	return true;
 }
 
-CCaption<COOXMLInterpretator>::CCaption(COOXMLInterpretator* pInterpretator)
-	: CTag(pInterpretator)
+CCaption<COOXMLWriter>::CCaption(COOXMLWriter* pWriter)
+	: CTag(pWriter)
 {}
 
-bool CCaption<COOXMLInterpretator>::Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData)
+bool CCaption<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData)
 {
 	if (!ValidInterpretator())
 		return false;
 
-	m_pInterpretator->WritePPr(arSelectors);
+	m_pWriter->WritePPr(arSelectors);
 
 	return true;
 }
 
-void CCaption<COOXMLInterpretator>::Close(const std::vector<NSCSS::CNode>& arSelectors)
+void CCaption<COOXMLWriter>::Close(const std::vector<NSCSS::CNode>& arSelectors)
 {
 	if (!ValidInterpretator())
 		return;
 
-	m_pInterpretator->CloseP();
+	m_pWriter->CloseP();
 }
 
 std::wstring CreateBorders(const NSCSS::NSProperties::CBorder& oBorder, const NSCSS::NSProperties::CIndent* pPadding = NULL, bool bAddIntermediateLines = false, TTableStyles::ETableRules enTableRule = TTableStyles::ETableRules::None)
@@ -1156,11 +1150,11 @@ std::wstring CreateDefaultBorder(std::wstring wsSideName)
 	return L"<w:" + wsSideName + L" w:val=\"single\" w:sz=\"1\" w:space=\"0\" w:color=\"auto\"/>";
 }
 
-CTable<COOXMLInterpretator>::CTable(COOXMLInterpretator* pInterpretator)
-	: CTag(pInterpretator)
+CTable<COOXMLWriter>::CTable(COOXMLWriter* pWriter)
+	: CTag(pWriter)
 {}
 
-bool CTable<COOXMLInterpretator>::Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData)
+bool CTable<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData)
 {
 	if (!ValidInterpretator() || oExtraData.empty() || typeid(CStorageTable*) != oExtraData.type())
 		return false;
@@ -1170,7 +1164,7 @@ bool CTable<COOXMLInterpretator>::Open(const std::vector<NSCSS::CNode>& arSelect
 	if (pStorageTable->Empty())
 		return false;
 
-	XmlString& oCurrentDocument{m_pInterpretator->GetCurrentDocument()};
+	XmlString& oCurrentDocument{*m_pWriter->GetCurrentDocument()};
 
 	oCurrentDocument.WriteNodeBegin(L"w:tbl");
 	oCurrentDocument.WriteNodeBegin(L"w:tblPr");
@@ -1252,37 +1246,32 @@ bool CTable<COOXMLInterpretator>::Open(const std::vector<NSCSS::CNode>& arSelect
 	return true;
 }
 
-void CTable<COOXMLInterpretator>::Close(const std::vector<NSCSS::CNode>& arSelectors)
+void CTable<COOXMLWriter>::Close(const std::vector<NSCSS::CNode>& arSelectors)
 {
 	if (!ValidInterpretator())
 		return;
 
-	m_pInterpretator->GetCurrentDocument().WriteNodeEnd(L"w:tbl");
+	m_pWriter->GetCurrentDocument()->WriteNodeEnd(L"w:tbl");
 }
 
-CTableRow<COOXMLInterpretator>::CTableRow(COOXMLInterpretator* pInterpretator)
-	: CTag(pInterpretator)
+CTableRow<COOXMLWriter>::CTableRow(COOXMLWriter* pWriter)
+	: CTag(pWriter)
 {}
 
-bool CTableRow<COOXMLInterpretator>::Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData)
+bool CTableRow<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData)
 {
-	using DataForRow = boost::tuple<CStorageTableRow&, const CStorageTable&>;
+	using DataForRow = boost::tuple<const TTableRowStyle&, const CStorageTable&, ERowParseMode, ERowPosition>;
 
 	if (!ValidInterpretator() || oExtraData.empty() || typeid(DataForRow) != oExtraData.type())
 		return false;
 
 	const DataForRow& oDataForRow(boost::any_cast<DataForRow>(oExtraData));
-	CStorageTableRow& oStorageTableRow{boost::get<0>(oDataForRow)};
-
-	if (oStorageTableRow.Empty())
-		return false;
-
-	XmlString& oCurrentDocument{m_pInterpretator->GetCurrentDocument()};
+	XmlString& oCurrentDocument{*m_pWriter->GetCurrentDocument()};
 
 	oCurrentDocument.WriteNodeBegin(L"w:tr");
 
 	const TTableStyles& oTableStyles{boost::get<1>(oDataForRow).GetTableStyles()};
-	const TTableRowStyle oTableRowStyles{oStorageTableRow.GetStyles()};
+	const TTableRowStyle oTableRowStyles{boost::get<0>(oDataForRow)};
 
 	if (!oTableRowStyles.Empty() || 0 < oTableStyles.m_nCellSpacing)
 	{
@@ -1303,16 +1292,16 @@ bool CTableRow<COOXMLInterpretator>::Open(const std::vector<NSCSS::CNode>& arSel
 	return true;
 }
 
-void HTML::CTableRow<COOXMLInterpretator>::Close(const std::vector<NSCSS::CNode>& arSelectors)
+void HTML::CTableRow<COOXMLWriter>::Close(const std::vector<NSCSS::CNode>& arSelectors)
 {
 	if (!ValidInterpretator())
 		return;
 
-	m_pInterpretator->GetCurrentDocument().WriteNodeEnd(L"w:tr");
+	m_pWriter->GetCurrentDocument()->WriteNodeEnd(L"w:tr");
 }
 
-CTableCell<COOXMLInterpretator>::CTableCell(COOXMLInterpretator* pInterpretator)
-	: CTag(pInterpretator)
+CTableCell<COOXMLWriter>::CTableCell(COOXMLWriter* pWriter)
+	: CTag(pWriter)
 {}
 
 std::wstring CalculateSidesToClean(UINT unColumnNumber, const std::vector<CTableColgroup*>& arColgroups, UINT unMaxColumns)
@@ -1341,7 +1330,7 @@ std::wstring CalculateSidesToClean(UINT unColumnNumber, const std::vector<CTable
 	return std::wstring();
 }
 
-bool CTableCell<COOXMLInterpretator>::Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData)
+bool CTableCell<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData)
 {
 	using DataForCell = boost::tuple<CStorageTableCell&, const CStorageTable&, UINT, ERowParseMode, ERowPosition>;
 
@@ -1351,7 +1340,7 @@ bool CTableCell<COOXMLInterpretator>::Open(const std::vector<NSCSS::CNode>& arSe
 	const DataForCell& oDataForCell{boost::any_cast<const DataForCell>(oExtraData)};
 	CStorageTableCell& oStorageTableCell{boost::get<0>(oDataForCell)};
 
-	XmlString& oCurrentDocument{m_pInterpretator->GetCurrentDocument()};
+	XmlString& oCurrentDocument{*m_pWriter->GetCurrentDocument()};
 
 	oCurrentDocument.WriteNodeBegin(L"w:tc");
 	oCurrentDocument.WriteNodeBegin(L"w:tcPr");
@@ -1456,19 +1445,14 @@ bool CTableCell<COOXMLInterpretator>::Open(const std::vector<NSCSS::CNode>& arSe
 	oCurrentDocument += L"<w:hideMark/>";
 	oCurrentDocument.WriteNodeEnd(L"w:tcPr");
 
-	if (0 != oStorageTableCell.GetData()->GetCurSize())
-		WriteToStringBuilder(*oStorageTableCell.GetData(), oCurrentDocument);
-	else
-		m_pInterpretator->WriteEmptyParagraph();
-
 	return true;
 }
 
-	void HTML::CTableCell<COOXMLInterpretator>::Close(const std::vector<NSCSS::CNode>& arSelectors)
+	void HTML::CTableCell<COOXMLWriter>::Close(const std::vector<NSCSS::CNode>& arSelectors)
 	{
 		if (!ValidInterpretator())
 			return;
 
-		m_pInterpretator->GetCurrentDocument().WriteNodeEnd(L"w:tc");
+		m_pWriter->GetCurrentDocument()->WriteNodeEnd(L"w:tc");
 	}
 }

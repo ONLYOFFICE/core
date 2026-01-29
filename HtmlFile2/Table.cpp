@@ -600,8 +600,15 @@ void CStorageTable::AddColgroup(CTableColgroup* pElement)
 
 void CStorageTable::RecalculateMaxColumns()
 {
+	for (const std::vector<CStorageTableRow*>& arHeaders : m_arHeaders)
+		for (const CStorageTableRow* pHeader : arHeaders)
+			m_unMaxColumns = std::max(m_unMaxColumns, pHeader->GetIndex());
+
 	for (const CStorageTableRow* pRow : m_arRows)
 		m_unMaxColumns = std::max(m_unMaxColumns, pRow->GetIndex());
+
+	for (const CStorageTableRow* pFoother : m_arFoother)
+		m_unMaxColumns = std::max(m_unMaxColumns, pFoother->GetIndex());
 }
 
 void CStorageTable::Shorten()

@@ -33,8 +33,10 @@ include($$CORE_ROOT_DIR/Common/3dParty/boost/boost.pri)
 ADD_DEPENDENCY(kernel, UnicodeConverter, graphics, kernel_network)
 
 SOURCES += htmlfile2.cpp \
-    ./Interpretators/OOXMLInterpretator.cpp \
+    ./Writers/OOXMLWriter.cpp \
     HTMLReader.cpp \
+    Tags/MDTags.cpp \
+    Writers/MDWriter.cpp \
     Table.cpp \
     Tags/OOXMLTags.cpp
 
@@ -42,10 +44,12 @@ HEADERS += htmlfile2.h \
 	./src/StringFinder.h \
 	./src/Languages.h \
 	Common.h \
-	./Interpretators/OOXMLInterpretator.h \
-	./Interpretators/HTMLInterpretator.h \
+	./Writers/OOXMLWriter.h \
+	./Writers/IWriter.h \
 	HTMLParams.h \
 	HTMLReader.h \
 	./Tags/HTMLTags.h \
+	Tags/MDTags.h \
+	Writers/MDWriter.h \
 	Table.h \
 	Tags/OOXMLTags.h

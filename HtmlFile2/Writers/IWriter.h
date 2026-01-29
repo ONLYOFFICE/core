@@ -1,5 +1,5 @@
-#ifndef HTMLINTERPRETATOR_H
-#define HTMLINTERPRETATOR_H
+#ifndef IWRITER_H
+#define IWRITER_H
 
 #include "../../Common/3dParty/html/css/src/CNode.h"
 #include "HTMLParams.h"
@@ -7,11 +7,11 @@
 
 namespace HTML
 {
-class IHTMLInterpretator
+class IWriter
 {
 public:
-	IHTMLInterpretator() = default;
-	virtual ~IHTMLInterpretator() = default;
+	IWriter() = default;
+	virtual ~IWriter() = default;
 
 	virtual void Begin(const std::wstring& wsDst, const THtmlParams* pParams) = 0;
 	virtual void End(const std::wstring& wsDst) = 0;
@@ -26,10 +26,8 @@ public:
 	virtual void SetDataOutput(XmlString* pOutputData) = 0; // Задаем место вывода для интерпретатора
 	virtual void RevertDataOutput() = 0; // Возвращаем место вывода к исходному
 
-	#ifdef _DEBUG
-	virtual void PrintData() = 0;
-	#endif
+	virtual XmlString* GetCurrentDocument() const = 0;
 };
 }
 
-#endif // HTMLINTERPRETATOR_H
+#endif // IWRITER_H

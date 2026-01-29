@@ -4,7 +4,7 @@
 #include "../Common/3dParty/html/css/src/CCssCalculator.h"
 #include "../DesktopEditor/xml/include/xmlutils.h"
 
-#include "Interpretators/HTMLInterpretator.h"
+#include "Writers/IWriter.h"
 #include "Tags/HTMLTags.h"
 #include "Table.h"
 
@@ -21,19 +21,20 @@ class CHTMLReader
 	std::wstring m_sBase; // Полный базовый адрес
 	std::wstring m_sCore; // Путь до корневого файла (используется для работы с Epub)
 
-	IHTMLInterpretator *m_pInterpretator;
+	IWriter *m_pWriter;
 
 	std::unordered_map<UINT, std::shared_ptr<ITag>> m_mTags;
 public:
 	CHTMLReader();
 	~CHTMLReader();
 
-	void SetInterpretator(IHTMLInterpretator* pInterpretator);
-
 	HRESULT ConvertFromTo(const std::wstring& wsFrom, const std::wstring& wsTo);
 
 	NSCSS::CCssCalculator* GetCSSCalculator();
 private:
+	void InitOOXMLTags();
+	void InitMDTags();
+
 	bool IsHTML();
 
 	bool HTML2XHTML(const std::wstring& wsFileName);

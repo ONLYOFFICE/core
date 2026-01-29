@@ -1,159 +1,147 @@
-#ifndef OOXMLTAGS_H
-#define OOXMLTAGS_H
+#ifndef MDTAGS_H
+#define MDTAGS_H
 
 #include "HTMLTags.h"
-#include "../Writers/OOXMLWriter.h"
+#include "../Writers/MDWriter.h"
 
 namespace HTML
 {
 template<>
-class CAnchor<COOXMLWriter> : public CTag<COOXMLWriter>
+class CAnchor<CMDWriter> : public CTag<CMDWriter>
 {
 public:
-	CAnchor(COOXMLWriter* pInterpretator);
+	CAnchor(CMDWriter* pWriter);
 	virtual bool Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData = boost::any()) override;
 	virtual void Close(const std::vector<NSCSS::CNode>& arSelectors) override;
 };
 
 template<>
-class CAbbr<COOXMLWriter> : public CTag<COOXMLWriter>
+class CBold<CMDWriter> : public CTag<CMDWriter>
 {
 public:
-	CAbbr(COOXMLWriter* pInterpretator);
+	CBold(CMDWriter* pWriter);
 	virtual bool Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData = boost::any()) override;
 	virtual void Close(const std::vector<NSCSS::CNode>& arSelectors) override;
 };
 
 template<>
-class CBreak<COOXMLWriter> : public CTag<COOXMLWriter>
+class CBreak<CMDWriter> : public CTag<CMDWriter>
 {
 public:
-	CBreak(COOXMLWriter* pInterpretator);
+	CBreak(CMDWriter* pWriter);
 	virtual bool Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData = boost::any()) override;
 	virtual void Close(const std::vector<NSCSS::CNode>& arSelectors) override;
 };
 
 template<>
-class CDivision<COOXMLWriter> : public CTag<COOXMLWriter>
+class CItalic<CMDWriter> : public CTag<CMDWriter>
 {
-	std::stack<UINT> m_arFootnoteIDs;
 public:
-	CDivision(COOXMLWriter* pInterpretator);
+	CItalic(CMDWriter* pWriter);
 	virtual bool Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData = boost::any()) override;
 	virtual void Close(const std::vector<NSCSS::CNode>& arSelectors) override;
 };
 
 template<>
-class CImage<COOXMLWriter> : public CTag<COOXMLWriter>
+class CStrike<CMDWriter> : public CTag<CMDWriter>
 {
-	std::vector<std::wstring> m_arrImages;
 public:
-	CImage(COOXMLWriter* pInterpretator);
+	CStrike(CMDWriter* pWriter);
 	virtual bool Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData = boost::any()) override;
 	virtual void Close(const std::vector<NSCSS::CNode>& arSelectors) override;
 };
 
 template<>
-class CFont<COOXMLWriter> : public CTag<COOXMLWriter>
+class CUnderline<CMDWriter> : public CTag<CMDWriter>
 {
 public:
-	CFont(COOXMLWriter* pInterpretator);
+	CUnderline(CMDWriter* pWriter);
 	virtual bool Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData = boost::any()) override;
 	virtual void Close(const std::vector<NSCSS::CNode>& arSelectors) override;
 };
 
 template<>
-class CInput<COOXMLWriter> : public CTag<COOXMLWriter>
+class CQuotation<CMDWriter> : public CTag<CMDWriter>
 {
 public:
-	CInput(COOXMLWriter* pInterpretator);
+	CQuotation(CMDWriter* pWriter);
 	virtual bool Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData = boost::any()) override;
 	virtual void Close(const std::vector<NSCSS::CNode>& arSelectors) override;
 };
 
 template<>
-class CBaseFont<COOXMLWriter> : public CTag<COOXMLWriter>
+class CPreformatted<CMDWriter> : public CTag<CMDWriter>
 {
 public:
-	CBaseFont(COOXMLWriter* pInterpretator);
+	CPreformatted(CMDWriter* pWriter);
 	virtual bool Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData = boost::any()) override;
 	virtual void Close(const std::vector<NSCSS::CNode>& arSelectors) override;
 };
 
 template<>
-class CBlockquote<COOXMLWriter> : public CTag<COOXMLWriter>
+class CHeader<CMDWriter> : public CTag<CMDWriter>
 {
-	std::map<std::wstring, UINT>  m_mDivs;
 public:
-	CBlockquote(COOXMLWriter* pInterpretator);
+	CHeader(CMDWriter* pWriter);
 	virtual bool Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData = boost::any()) override;
 	virtual void Close(const std::vector<NSCSS::CNode>& arSelectors) override;
 };
 
 template<>
-class CHorizontalRule<COOXMLWriter> : public CTag<COOXMLWriter>
+class CImage<CMDWriter> : public CTag<CMDWriter>
 {
-	UINT m_unShapeId;
 public:
-	CHorizontalRule(COOXMLWriter* pInterpretator);
+	CImage(CMDWriter* pWriter);
 	virtual bool Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData = boost::any()) override;
 	virtual void Close(const std::vector<NSCSS::CNode>& arSelectors) override;
 };
 
 template<>
-class CList<COOXMLWriter> : public CTag<COOXMLWriter>
+class CHorizontalRule<CMDWriter> : public CTag<CMDWriter>
 {
-	UINT m_unNumberingId;
 public:
-	CList(COOXMLWriter* pInterpretator);
+	CHorizontalRule(CMDWriter* pWriter);
 	virtual bool Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData = boost::any()) override;
 	virtual void Close(const std::vector<NSCSS::CNode>& arSelectors) override;
 };
 
 template<>
-class CListElement<COOXMLWriter> : public CTag<COOXMLWriter>
+class CBlockquote<CMDWriter> : public CTag<CMDWriter>
 {
+	UINT m_unIndex;
 public:
-	CListElement(COOXMLWriter* pInterpretator);
+	CBlockquote(CMDWriter* pWriter);
 	virtual bool Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData = boost::any()) override;
 	virtual void Close(const std::vector<NSCSS::CNode>& arSelectors) override;
 };
 
 template<>
-class CCaption<COOXMLWriter> : public CTag<COOXMLWriter>
+class CTable<CMDWriter> : public CTag<CMDWriter>
 {
 public:
-	CCaption(COOXMLWriter* pInterpretator);
+	CTable(CMDWriter* pWriter);
 	virtual bool Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData = boost::any()) override;
 	virtual void Close(const std::vector<NSCSS::CNode>& arSelectors) override;
 };
 
 template<>
-class CTable<COOXMLWriter> : public CTag<COOXMLWriter>
+class CTableRow<CMDWriter> : public CTag<CMDWriter>
 {
+	UINT m_unLastRowType;
 public:
-	CTable(COOXMLWriter* pInterpretator);
+	CTableRow(CMDWriter* pWriter);
 	virtual bool Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData = boost::any()) override;
 	virtual void Close(const std::vector<NSCSS::CNode>& arSelectors) override;
 };
 
 template<>
-class CTableRow<COOXMLWriter> : public CTag<COOXMLWriter>
+class CTableCell<CMDWriter> : public CTag<CMDWriter>
 {
 public:
-	CTableRow(COOXMLWriter* pInterpretator);
-	virtual bool Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData = boost::any()) override;
-	virtual void Close(const std::vector<NSCSS::CNode>& arSelectors) override;
-};
-
-template<>
-class CTableCell<COOXMLWriter> : public CTag<COOXMLWriter>
-{
-public:
-	CTableCell(COOXMLWriter* pInterpretator);
+	CTableCell(CMDWriter* pWriter);
 	virtual bool Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData = boost::any()) override;
 	virtual void Close(const std::vector<NSCSS::CNode>& arSelectors) override;
 };
 }
 
-#endif // OOXMLTAGS_H
+#endif // MDTAGS_H

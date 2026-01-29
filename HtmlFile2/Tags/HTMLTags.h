@@ -29,10 +29,10 @@ template<class T>
 class CTag : public ITag
 {
 protected:
-	T* m_pInterpretator;
+	T* m_pWriter;
 public:
-	CTag(T* pInterpretator)
-		: m_pInterpretator(pInterpretator)
+	CTag(T* pWriter)
+		: m_pWriter(pWriter)
 	{}
 	virtual ~CTag() = default;
 	virtual bool Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData = boost::any()) = 0;
@@ -40,7 +40,7 @@ public:
 
 	bool ValidInterpretator() const
 	{
-		return nullptr != m_pInterpretator;
+		return nullptr != m_pWriter;
 	}
 };
 

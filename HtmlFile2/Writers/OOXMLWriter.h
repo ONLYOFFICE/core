@@ -1,11 +1,11 @@
-#ifndef OOXMLINTERPRETATOR_H
-#define OOXMLINTERPRETATOR_H
+#ifndef OOXMLWRITER_H
+#define OOXMLWRITER_H
 
 // #include "HTMLInterpretator.h"
 
 #include "../../Common/3dParty/html/css/src/xhtml/CDocumentStyle.h"
 #include "../../Common/3dParty/html/css/src/CCssCalculator.h"
-#include "HTMLInterpretator.h"
+#include "IWriter.h"
 #include <stack>
 
 namespace NSFonts { class IApplicationFonts; }
@@ -37,7 +37,7 @@ struct TImageData
 	}
 };
 
-class COOXMLInterpretator : public IHTMLInterpretator
+class COOXMLWriter : public IWriter
 {
 	std::wstring m_wsDstPath; // Директория назначения
 	std::wstring m_wsTempDir; // Temp папка
@@ -114,7 +114,7 @@ class COOXMLInterpretator : public IHTMLInterpretator
 
 	NSFonts::IApplicationFonts*          m_pFonts;     // Необходимо для оптимизации работы со шрифтами
 public:
-	COOXMLInterpretator();
+	COOXMLWriter();
 
 	void SetCSSCalculator(NSCSS::CCssCalculator* pCSSCalculator);
 
@@ -182,7 +182,7 @@ public:
 	XmlString& GetNotesXml();
 	XmlString& GetNumberingXml();
 	XmlString& GetWebSettingsXml();
-	XmlString& GetCurrentDocument();
+	XmlString* GetCurrentDocument() const override;
 
 	const NSCSS::NSProperties::CPage* GetPageData() const;
 	NSFonts::IApplicationFonts* GetFonts();
@@ -192,11 +192,7 @@ public:
 	std::wstring GetSrcPath()  const;
 	std::wstring GetBasePath() const;
 	std::wstring GetCorePath() const;
-
-	#ifdef _DEBUG
-	virtual void PrintData() override;
-	#endif
 };
 }
 
-#endif // OOXMLINTERPRETATOR_H
+#endif // OOXMLWRITER_H

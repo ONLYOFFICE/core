@@ -328,8 +328,8 @@ namespace NSDocxRenderer
 			m_oManagers.pFontManager->MeasureStringGids(pUnicodes, nCount, dTextX, dTextY, _x, _y, _w, _h, CFontManager::mtPosition);
 		}
 		_h = m_oManagers.pFontManager->GetFontHeight();
-
 		double baseline = dTextY + fBaseLineOffset;
+
 		double top = baseline - _h;
 		double left = dTextX;
 		double right = dTextR;
@@ -1601,8 +1601,9 @@ namespace NSDocxRenderer
 		// lamda to setup and add paragpraph
 		auto add_paragraph = [this, &max_right, &min_left, &ar_paragraphs] (paragraph_ptr_t& paragraph) {
 
+			std::shared_ptr<CTextLine>& firstLine = paragraph->m_arTextLines.front();
 			paragraph->m_dBot = paragraph->m_arTextLines.back()->m_dBotWithMaxDescent;
-			paragraph->m_dTop = paragraph->m_arTextLines.front()->m_dTopWithMaxAscent;
+			paragraph->m_dTop = firstLine->m_dTopWithMaxAscent;
 			paragraph->m_dRight = max_right;
 			paragraph->m_dLeft = min_left;
 
@@ -1618,6 +1619,22 @@ namespace NSDocxRenderer
 			paragraph->m_wsStyleId = m_oManagers.pParagraphStyleManager->GetDefaultParagraphStyleId(*paragraph);
 
 			paragraph->MergeLines();
+
+			// Correct first line position
+			if (paragraph->m_dLineHeight > firstLine->m_dHeight)
+			{
+				double offset = paragraph->m_dLineHeight - firstLine->m_dHeight;
+				paragraph->m_dTop -= offset;
+				paragraph->m_dBot -= offset;
+			}
+			else
+			{
+				double ascent = /*baseline*/firstLine->m_dBot - firstLine->m_dTopWithMaxAscent;
+				double newAscent = ascent * paragraph->m_dLineHeight / firstLine->m_dHeight;
+				double offset = ascent - newAscent;
+				paragraph->m_dTop += offset;
+				paragraph->m_dBot += offset;
+			}
 
 			// setting TextAlignmentType
 			if (paragraph->m_arTextLines.size() > 1)

@@ -124,6 +124,9 @@ namespace NSDocxRenderer
 		const CFontMetrics& GetFontMetrics() const noexcept;
 
 		double GetFontHeight() const;
+		double GetFontAscent() const;
+		double GetFontDescent() const;
+
 		double GetSpaceWidthMM() const;
 
 		void SetStringGid(const LONG& lGid);

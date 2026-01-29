@@ -1245,12 +1245,11 @@ namespace NSDocxRenderer
 		pCont->m_dWidth = dWidth;
 		pCont->m_dRight = dRight;
 
-		double font_size = oFont.Size;
-		double em_height = oMetrics.dEmHeight;
-		double ratio = font_size / em_height * c_dPtToMM;
+		double ascent = pFontManager->GetFontAscent();
+		double descent = pFontManager->GetFontDescent();
 
-		pCont->m_dTopWithAscent = pCont->m_dBot - (oMetrics.dAscent * ratio);
-		pCont->m_dBotWithDescent = pCont->m_dBot + (oMetrics.dDescent * ratio);
+		pCont->m_dTopWithAscent = pCont->m_dBot - ascent;
+		pCont->m_dBotWithDescent = pCont->m_dBot + fabs(descent);
 		pCont->m_dSpaceWidthMM = pFontManager->GetSpaceWidthMM();
 
 		pCont->m_wsOriginFontName = oFont.Name;

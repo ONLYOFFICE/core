@@ -40,6 +40,7 @@
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/DVAXIS.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/CRT.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/CHARTFOMATS.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/LD.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Series.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/DataFormat.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/BRAI.h"
@@ -58,6 +59,7 @@
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Radar.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/RadarArea.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Chart3d.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Legend.h"
 
 namespace OOX
 {
@@ -1811,6 +1813,16 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
+		}
+		XLS::BaseObjectPtr CT_Legend::toXLS()
+		{
+			auto ptr = new XLS::LD;
+			auto legendPtr = new XLS::Legend;
+			legendPtr->fAutoPosition = true;
+			legendPtr->fAutoPosX = true;
+			legendPtr->fAutoPosY = true;
+			ptr->m_Legend = XLS::BaseObjectPtr(legendPtr);
+			return XLS::BaseObjectPtr(ptr);
 		}
 		EElementType CT_Legend::getType() { return et_ct_Legend; }
 		CT_Layout::CT_Layout()

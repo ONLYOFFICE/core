@@ -57,7 +57,7 @@ public:
 	_UINT32	y = 0;
 	_UINT32	dx = 0;
 	_UINT32	dy = 0;
-	unsigned char	wSpace = 0;
+	unsigned char	wSpace = 1;
 
 	bool fAutoPosition = false;
 	bool fAutoPosX = false;

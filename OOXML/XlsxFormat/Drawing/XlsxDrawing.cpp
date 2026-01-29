@@ -40,6 +40,7 @@
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/AXES.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/ATTACHEDLABEL.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/AI.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/CRT.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/MsoDrawing.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Chart.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/AxisParent.h"
@@ -312,39 +313,9 @@ namespace OOX
 								if(*ChartFile->m_oChartSpace.m_chart->m_plotArea->m_ItemsElementName0.at(chartIndex) == OOX::Spreadsheet::itemschoicetype5BARCHART)
 								{
 									auto barChart = static_cast<CT_BarChart*>(ChartFile->m_oChartSpace.m_chart->m_plotArea->m_Items.at(chartIndex));
-									if(ChartFormatsPtr->m_arAXISPARENT.size() < 2)
-									{
-										auto axes = new XLS::AXES;
-										AxisParentUnion->m_AXES = XLS::BaseObjectPtr(axes);
-										if(barChart->m_axId.size() > 0)
-										{
-											auto vaxId = barChart->m_axId.at(0);
-											if(!ChartFile->m_oChartSpace.m_chart->m_plotArea->m_Items1.empty())
-											{
-												auto ivAx = static_cast<CT_CatAx*>(ChartFile->m_oChartSpace.m_chart->m_plotArea->m_Items1.at(0));
-												if(ivAx->m_axId.IsInit() && ivAx->m_axId.get() == vaxId)
-												{
-													axes->m_arAxes.push_back(ivAx->toXLS());
-												}
-											}
-										}
-										if(barChart->m_axId.size() > 1)
-										{
-											auto vaxId = barChart->m_axId.at(1);
-											if(!ChartFile->m_oChartSpace.m_chart->m_plotArea->m_Items1.empty())
-											{
-												auto dvAx = static_cast<CT_ValAx*>(ChartFile->m_oChartSpace.m_chart->m_plotArea->m_Items1.at(1));
-												if(dvAx->m_axId.IsInit() && dvAx->m_axId.get() == vaxId)
-												{
-													axes->m_arAxes.push_back(dvAx->toXLS());
-												}
-											}
-										}
-
-									}
 									AxisParentUnion->m_arCRT.push_back(barChart->toXLS(chartIndex, ptr->m_CHARTFORMATS));
 								}
-								if(*ChartFile->m_oChartSpace.m_chart->m_plotArea->m_ItemsElementName0.at(chartIndex) == OOX::Spreadsheet::itemschoicetype5BAR3DCHART)
+								else if(*ChartFile->m_oChartSpace.m_chart->m_plotArea->m_ItemsElementName0.at(chartIndex) == OOX::Spreadsheet::itemschoicetype5BAR3DCHART)
 								{
 									auto barChart = static_cast<CT_Bar3DChart*>(ChartFile->m_oChartSpace.m_chart->m_plotArea->m_Items.at(chartIndex));
 									AxisParentUnion->m_arCRT.push_back(barChart->toXLS(chartIndex, ptr->m_CHARTFORMATS));
@@ -394,7 +365,14 @@ namespace OOX
 									auto ScatterChart = static_cast<CT_RadarChart*>(ChartFile->m_oChartSpace.m_chart->m_plotArea->m_Items.at(chartIndex));
 									AxisParentUnion->m_arCRT.push_back(ScatterChart->toXLS(chartIndex, ptr->m_CHARTFORMATS));
 								}
+
+								if(ChartFile->m_oChartSpace.m_chart->m_legend != nullptr && !AxisParentUnion->m_arCRT.empty())
+								{
+									auto crtPtr = static_cast<XLS::CRT*>(AxisParentUnion->m_arCRT.back().get());
+									crtPtr->m_LD = ChartFile->m_oChartSpace.m_chart->m_legend->toXLS();
+								}
 							}
+
 						}
 						if(ChartFile->m_oChartSpace.m_chart->m_title != nullptr && ChartFile->m_oChartSpace.m_chart->m_title->m_tx != nullptr)
 						{

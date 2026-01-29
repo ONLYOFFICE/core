@@ -26,7 +26,8 @@ CDrawingFileEmbed::~CDrawingFileEmbed()
 
 JSSmart<CJSValue> CDrawingFileEmbed::OpenFile(JSSmart<CJSValue> sFile, JSSmart<CJSValue> sPassword)
 {
-	bool bResult = m_pFile->OpenFile(sFile->toStringW(), sPassword->isString() ? sPassword->toStringW() : L"");
+	std::wstring wsPassword = sPassword->isString() ? sPassword->toStringW() : L"";
+	bool bResult = m_pFile->OpenFile(sFile->toStringW(), sPassword->isString() ? wsPassword.c_str() : NULL);
 	return CJSContext::createBool(bResult);
 }
 JSSmart<CJSValue> CDrawingFileEmbed::CloseFile()

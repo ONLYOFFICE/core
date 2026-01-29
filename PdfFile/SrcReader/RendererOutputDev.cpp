@@ -45,6 +45,7 @@
 #include "../lib/xpdf/CharCodeToUnicode.h"
 #include "../lib/xpdf/TextString.h"
 #include "XmlUtils.h"
+#include "PdfFont.h"
 
 #include "../../DesktopEditor/graphics/pro/Graphics.h"
 #include "../../DesktopEditor/graphics/Image.h"
@@ -75,88 +76,12 @@
 
 namespace PdfReader
 {
-	bool CheckFontNameStyle(std::wstring& sName, const std::wstring& sStyle)
-	{
-		size_t nPos = 0;
-		size_t nLenReplace = sStyle.length();
-		bool bRet = false;
-
-		std::wstring sName2 = sName;
-		NSStringExt::ToLower(sName2);
-
-		while (std::wstring::npos != (nPos = sName2.find(sStyle, nPos)))
-		{
-			size_t nOffset = 0;
-			if ((nPos > 0) && (sName2.at(nPos - 1) == '-' || sName2.at(nPos - 1) == ','))
-			{
-				--nPos;
-				++nOffset;
-			}
-
-			bRet = true;
-			sName.erase(nPos, nLenReplace + nOffset);
-			sName2.erase(nPos, nLenReplace + nOffset);
-		}
-		return bRet;
-	}
-
-	void RendererOutputDev::CheckFontStylePDF(std::wstring& sName, bool& bBold, bool& bItalic)
-	{
-		if (sName.length() > 7 && sName.at(6) == '+')
-		{
-			bool bIsRemove = true;
-			for (int nIndex = 0; nIndex < 6; nIndex++)
-			{
-				wchar_t nChar = sName.at(nIndex);
-				if (nChar < 'A' || nChar > 'Z')
-				{
-					bIsRemove = false;
-					break;
-				}
-			}
-			if (bIsRemove)
-			{
-				sName.erase(0, 7);
-			}
-		}
-
-		CheckFontNameStyle(sName, L"condensedbold");
-		CheckFontNameStyle(sName, L"semibold");
-		CheckFontNameStyle(sName, L"regular");
-
-		CheckFontNameStyle(sName, L"ultraexpanded");
-		CheckFontNameStyle(sName, L"extraexpanded");
-		CheckFontNameStyle(sName, L"semiexpanded");
-		CheckFontNameStyle(sName, L"expanded");
-
-		CheckFontNameStyle(sName, L"ultracondensed");
-		CheckFontNameStyle(sName, L"extracondensed");
-		CheckFontNameStyle(sName, L"semicondensed");
-		CheckFontNameStyle(sName, L"condensedlight");
-		CheckFontNameStyle(sName, L"condensed");
-		//CheckFontNameStyle(sName, L"light");
-
-		if (CheckFontNameStyle(sName, L"bold_italic"))  { bBold = true; bItalic = true; }
-		if (CheckFontNameStyle(sName, L"bold_oblique")) { bBold = true; bItalic = true; }
-
-		if (CheckFontNameStyle(sName, L"boldmt")) bBold = true;
-		if (CheckFontNameStyle(sName, L"bold"))   bBold = true;
-
-		if (CheckFontNameStyle(sName, L"italicmt")) bItalic = true;
-		if (CheckFontNameStyle(sName, L"italic"))   bItalic = true;
-		if (CheckFontNameStyle(sName, L"oblique"))  bItalic = true;
-
-		//if (CheckFontNameStyle(sName, L"bolditalicmt")) { bBold = true; bItalic = true; }
-		//if (CheckFontNameStyle(sName, L"bolditalic")) { bBold = true; bItalic = true; }
-		//if (CheckFontNameStyle(sName, L"boldoblique")) { bBold = true; bItalic = true; }
-	}
-
 	void CheckFontNamePDF(std::wstring& sName, NSFonts::CFontSelectFormat* format)
 	{
 		bool bBold   = false;
 		bool bItalic = false;
 
-		RendererOutputDev::CheckFontStylePDF(sName, bBold, bItalic);
+		CheckFontStylePDF(sName, bBold, bItalic);
 
 		if (format)
 		{
@@ -816,7 +741,7 @@ namespace PdfReader
 		pFontInfo = pFontManager->GetFontInfoByParams(oFontSelect);
 		return pFontInfo;
 	}
-	void RendererOutputDev::GetFont(XRef* pXref, NSFonts::IFontManager* pFontManager, CPdfFontList* pFontList, GfxFont* pFont, std::wstring& wsFileName, std::wstring& wsFontName)
+	void RendererOutputDev::GetFont(XRef* pXref, NSFonts::IFontManager* pFontManager, CPdfFontList* pFontList, GfxFont* pFont, std::wstring& wsFileName, std::wstring& wsFontName, bool bNotFullName)
 	{
 		wsFileName = L"";
 		wsFontName = L"";
@@ -1534,30 +1459,8 @@ namespace PdfReader
 			// Обрежем индекс у FontName, если он есть
 			if (wsFontName.empty())
 				wsFontName = wsFontBaseName;
-			if (wsFontName.length() > 7)
-			{
-				bool bIsIndex = true;
-				if ('+' != wsFontName.at(6))
-					bIsIndex = false;
-
-				if (bIsIndex)
-				{
-					for (int nIndex = 0; nIndex < 6; nIndex++)
-					{
-						int nChar = wsFontName.at(nIndex);
-						if (nChar < 'A' || nChar > 'Z')
-						{
-							bIsIndex = false;
-							break;
-						}
-					}
-				}
-
-				if (bIsIndex)
-				{
-					wsFontName.erase(0, 7);
-				}
-			}
+			if (bNotFullName)
+				EraseSubsetTag(wsFontName);
 
 			pEntry->wsFilePath     = wsFileName;
 			pEntry->wsFontName     = wsFontName;
@@ -1567,6 +1470,7 @@ namespace PdfReader
 			pEntry->unLenUnicode   = (unsigned int)nToUnicodeLen;
 			pEntry->bAvailable     = true;
 			pEntry->bFontSubstitution = bFontSubstitution;
+			pEntry->bIsIdentity = pFont->isCIDFont() == gTrue ? ((GfxCIDFont*)pFont)->usesIdentityEncoding() || ((GfxCIDFont*)pFont)->usesIdentityCIDToGID() || ((GfxCIDFont*)pFont)->ctuUsesCharCodeToUnicode() || pFont->getType() == fontCIDType0C : false;
 		}
 		else if (NULL != pEntry)
 		{
@@ -1588,7 +1492,7 @@ namespace PdfReader
 
 		std::wstring wsFileName = L"";
 		std::wstring wsFontName = L"";
-		GetFont(m_pXref, m_pFontManager, m_pFontList, pFont, wsFileName, wsFontName);
+		GetFont(m_pXref, m_pFontManager, m_pFontList, pFont, wsFileName, wsFontName, false);
 
 		if (!wsFileName.empty())
 		{
@@ -2471,8 +2375,6 @@ namespace PdfReader
 		std::wstring wsUnicodeText;
 
 		bool isCIDFont = pFont->isCIDFont() == gTrue;
-		bool isIdentity = isCIDFont ? ((GfxCIDFont*)pFont)->usesIdentityEncoding() || ((GfxCIDFont*)pFont)->usesIdentityCIDToGID() || ((GfxCIDFont*)pFont)->ctuUsesCharCodeToUnicode() || pFont->getType() == fontCIDType0C : false;
-
 		if (NULL != oEntry.pCodeToUnicode && nCode < oEntry.unLenUnicode && oEntry.pCodeToUnicode[nCode])
 		{
 			int unUnicode = oEntry.pCodeToUnicode[nCode];
@@ -2502,12 +2404,12 @@ namespace PdfReader
 			unGid = oEntry.pCodeToGID[nCode];
 			unGidsCount = 1;
 
-			if (pFont->getType() == fontCIDType0COT && isCIDFont && isIdentity && oEntry.pCodeToUnicode && nCode < oEntry.unLenUnicode && !oEntry.pCodeToUnicode[nCode])
+			if (pFont->getType() == fontCIDType0COT && isCIDFont && oEntry.bIsIdentity && oEntry.pCodeToUnicode && nCode < oEntry.unLenUnicode && !oEntry.pCodeToUnicode[nCode])
 				unGid = nCode;
 		}
 		else
 		{
-			if ((isCIDFont && isIdentity) || (!isCIDFont && wsUnicodeText.empty()))
+			if ((isCIDFont && oEntry.bIsIdentity) || (!isCIDFont && wsUnicodeText.empty()))
 			{
 				unsigned int nCurCode = (0 == nCode ? 65534 : nCode);
 				unGid       = nCurCode;

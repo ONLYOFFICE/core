@@ -81,9 +81,7 @@ namespace NExtractTools
 			BinDocxRW::CDocxSerializer m_oCDocxSerializer;
 
 			m_oCDocxSerializer.setFontDir(params.getFontPath());
-
-			std::wstring sXmlOptions;
-			_UINT32 res = m_oCDocxSerializer.saveToFile(sTo, sResultDocxDir, sXmlOptions, convertParams.m_sTempDir) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+			_UINT32 res = m_oCDocxSerializer.saveToFile(sTo, sResultDocxDir, convertParams.m_sTempDir) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
 
 			return res;
 		}
@@ -108,7 +106,6 @@ namespace NExtractTools
 
 		m_oCDocxSerializer.setFontDir(params.getFontPath());
 
-		std::wstring sXmlOptions = _T("");
 		std::wstring sThemePath; // will be filled by 'CreateDocxFolders' method
 		std::wstring sMediaPath; // will be filled by 'CreateDocxFolders' method
 		std::wstring sEmbedPath; // will be filled by 'CreateDocxFolders' method
@@ -117,7 +114,7 @@ namespace NExtractTools
 
 		if (SUCCEEDED_X2T(nRes))
 		{
-			nRes = m_oCDocxSerializer.loadFromFile(sTargetBin, sResultDocxDir, sXmlOptions, sThemePath, sMediaPath, sEmbedPath) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
+			nRes = m_oCDocxSerializer.loadFromFile(sTargetBin, sResultDocxDir, sThemePath, sMediaPath, sEmbedPath) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
 			if (SUCCEEDED_X2T(nRes))
 			{
 				// docx folder to rtf

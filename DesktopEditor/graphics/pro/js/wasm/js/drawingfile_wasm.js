@@ -106,7 +106,7 @@ CFile.prototype._openFile = function(buffer, password)
 	}
 
 	let passwordPtr = 0;
-	if (password)
+	if (password !== undefined)
 	{
 		let passwordBuf = password.toUtf8();
 		passwordPtr = Module["_malloc"](passwordBuf.length);
@@ -227,7 +227,7 @@ CFile.prototype._UndoRedact = function()
 CFile.prototype._CheckOwnerPassword = function(password)
 {
 	let passwordPtr = 0;
-	if (password)
+	if (password !== undefined)
 	{
 		let passwordBuf = password.toUtf8();
 		passwordPtr = Module["_malloc"](passwordBuf.length);

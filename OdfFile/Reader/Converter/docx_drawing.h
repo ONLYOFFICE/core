@@ -66,6 +66,8 @@ public:
     std::wstring relativeHeight;
     std::wstring behindDoc;
 
+	std::wstring hyperlinkRId;
+
 	int posOffsetV;
 	int posOffsetH;
 

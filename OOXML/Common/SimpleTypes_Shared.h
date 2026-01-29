@@ -107,7 +107,7 @@ namespace SimpleTypes
 		CGuid();
 
 		bool FromString(const std::wstring &sValue);
-		std::wstring ToString () const;
+		std::wstring ToString (bool braces = true) const;
 
 		SimpleTypes_DefaultString(CGuid)
 

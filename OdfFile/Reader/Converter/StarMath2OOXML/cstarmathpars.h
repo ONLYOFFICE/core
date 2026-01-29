@@ -30,21 +30,19 @@
  *
  */
 
-#ifndef CSTARMATHPARS_H
-#define CSTARMATHPARS_H
-#include "typeselements.h"
+#pragma once
+
+#include <vector>
+#include <stack>
+#include <queue>
+#include <cwctype>
+
+#include "../../../../DesktopEditor/xml/include/xmlwriter.h"
+
 #include "typeConversion.h"
 #include "TextDirection.h"
 #include "TFormulaSize.h"
-#include <iostream>
-#include <vector>
-#include <iterator>
-#include <stack>
-#include <queue>
-#include <ctype.h>
-#include <cwctype>
-#include "../../../../DesktopEditor/xml/include/xmlwriter.h"
-
+#include "typeselements.h"
 namespace StarMath
 {
 	class CStarMathReader;
@@ -544,5 +542,3 @@ namespace StarMath
 		std::queue<TFormulaSize> m_qSize;
 	};
 }
-
-#endif // CSTARMATHPARS_H

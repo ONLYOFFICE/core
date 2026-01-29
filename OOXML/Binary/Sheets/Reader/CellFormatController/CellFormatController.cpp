@@ -249,7 +249,9 @@ int CellFormatController::ProcessCellType(OOX::Spreadsheet::CCell *pCell, const 
         }
         else if(!hasDate && hasTime)
         {
-            pCell_->m_oValue->m_sText = std::to_wstring(digitalDate);
+			wchar_t buf[32];
+			swprintf(buf, sizeof(buf)/sizeof(buf[0]), L"%.17g", digitalDate);
+			pCell_->m_oValue->m_sText = std::wstring(buf);
 			std::map<std::wstring, unsigned int>::iterator pFind = mapDataNumber_.find(DefaultTimeFormat);
             pCell_->m_oStyle = pFind->second;
 			if(pCell->m_oRow.IsInit() && pCell->m_oRow.get() <= maxCustomWidthRow)
@@ -259,7 +261,9 @@ int CellFormatController::ProcessCellType(OOX::Spreadsheet::CCell *pCell, const 
         }
         else if(hasDate && hasTime)
         {
-            pCell_->m_oValue->m_sText = std::to_wstring(digitalDate);
+			wchar_t buf[32];
+			swprintf(buf, sizeof(buf)/sizeof(buf[0]), L"%.17g", digitalDate);
+			pCell_->m_oValue->m_sText = std::wstring(buf);
             std::map<std::wstring, unsigned int>::iterator pFind = mapDataNumber_.find(DefaultDateTimeFormat);
             pCell_->m_oStyle = pFind->second;
 			if(pCell->m_oRow.IsInit() && pCell->m_oRow.get() <= maxCustomWidthRow)

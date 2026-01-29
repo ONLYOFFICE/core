@@ -63,7 +63,7 @@ namespace NExtractTools
 		if (SUCCEEDED_X2T(nRes))
 		{
 			BinDocxRW::CDocxSerializer m_oCDocxSerializer;
-			nRes = m_oCDocxSerializer.saveToFile(sTo, sResultDocxDir, params.getXmlOptions(), convertParams.m_sTempDir) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+			nRes = m_oCDocxSerializer.saveToFile(sTo, sResultDocxDir, convertParams.m_sTempDir) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
 		}
 		return nRes;
 	}

@@ -159,6 +159,8 @@ namespace NSDocxRenderer
 		static bool IsUnicodeSymbol(uint32_t symbol);
 		static bool IsUnicodeDiacriticalMark(uint32_t symbol);
 
+		static bool IsFontsEqual(const NSStructures::CFont& oFont1, const NSStructures::CFont& oFont2);
+
 	private:
 		NSStringUtils::CStringUTF32 m_oText{};
 		std::vector<double> m_arSymWidths{};

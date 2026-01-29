@@ -46,6 +46,38 @@
 
 namespace NExtractTools
 {
+	static int pdfSign(const std::wstring& file, NSFonts::IApplicationFonts* fonts, InputParams& params, ConvertParams& convertParams)
+	{
+		ICertificate* certificate = NSSign::loadCertificate(params);
+		if (!certificate)
+			return 1;
+
+		std::wstring pdfTemp = combinePath(convertParams.m_sTempDir, L"pdf_sign.pdf");
+		NSFile::CFileBinary::Move(file, pdfTemp);
+
+		CPdfFile pdfFile(fonts);
+		pdfFile.SetTempDirectory(convertParams.m_sTempDir);
+		std::wstring password = params.getSavePassword();
+
+		if (!pdfFile.LoadFromFile(pdfTemp, L"", password.c_str(), password.c_str()))
+			return 2;
+
+		if (!pdfFile.EditPdf(file))
+			return 2;
+
+		if (!pdfFile.EditPage(0))
+			return 2;
+
+		pdfFile.Sign(0, 0, 0, 0, L"", certificate);
+		pdfFile.Close();
+
+		RELEASEOBJECT(certificate);
+		return 0;
+	}
+}
+
+namespace NExtractTools
+{
 	_UINT32 bin2pdf(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
 	{
 		NSFonts::IApplicationFonts* pApplicationFonts = createApplicationFonts(params);
@@ -76,6 +108,12 @@ namespace NExtractTools
 		{
 			nRet = S_OK == pdfWriter.OnlineWordToPdf(sFrom, sTo, &oBufferParams) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
 		}
+
+		if (0 == nRet)
+		{
+			pdfSign(sTo, pApplicationFonts, params, convertParams);
+		}
+
 		RELEASEOBJECT(pApplicationFonts);
 		return nRet;
 	}
@@ -245,6 +283,12 @@ namespace NExtractTools
 
 			int nReg = (convertParams.m_bIsPaid == false) ? 0 : 1;
 			nRes = (S_OK == pdfWriter.OnlineWordToPdfFromBinary(sPdfBinFile, sTo, &oBufferParams)) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
+
+			if (0 == nRes)
+			{
+				pdfSign(sTo, pApplicationFonts, params, convertParams);
+			}
+
 			RELEASEOBJECT(pApplicationFonts);
 		}
 		// удаляем sPdfBinFile, потому что он не в Temp
@@ -479,10 +523,17 @@ namespace NExtractTools
 		pReader->SetTempDirectory(convertParams.m_sTempDir);
 
 		std::wstring sPassword = params.getPassword();
-		bool bResult = pReader->LoadFromFile(sFrom.c_str(), L"", sPassword, sPassword);
+		bool bResult = pReader->LoadFromFile(sFrom.c_str(), L"", sPassword.c_str(), sPassword.c_str());
 
 		if (bResult)
 		{
+			if ((AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == nFormatFrom ||
+				 AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDFA == nFormatFrom)
+				&& params.m_sCmapDir)
+			{
+				((CPdfFile*)pReader)->SetCMapFolder(*params.m_sCmapDir);
+			}
+
 			int nPagesCount = pReader->GetPagesCount();
 
 			bool bIsUsePages = convertParams.m_sPrintPages.empty() ? false : true;
@@ -552,10 +603,17 @@ namespace NExtractTools
 		pReader->SetTempDirectory(convertParams.m_sTempDir);
 
 		std::wstring sPassword = params.getPassword();
-		bool bResult = pReader->LoadFromFile(sFrom.c_str(), L"", sPassword, sPassword);
+		bool bResult = pReader->LoadFromFile(sFrom.c_str(), L"", sPassword.c_str(), sPassword.c_str());
 
 		if (bResult)
 		{
+			if ((AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == nFormatFrom ||
+				 AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDFA == nFormatFrom)
+				&& params.m_sCmapDir)
+			{
+				((CPdfFile*)pReader)->SetCMapFolder(*params.m_sCmapDir);
+			}
+
 			// default as in CMetafileToRenderterRaster
 			int nRasterFormat = 4;
 			int nSaveType = 2;
@@ -739,13 +797,13 @@ namespace NExtractTools
 			oPdfResult.SetDocumentID(documentID);
 
 		std::wstring password = params.getPassword();
-		if (!oPdfResult.LoadFromFile(sFrom, L"", password, password))
+		if (!oPdfResult.LoadFromFile(sFrom, L"", password.c_str(), password.c_str()))
 		{
 			if (oPdfResult.GetError() == 4)
 			{
 				// if password does not changed - old password may be not sended
 				password = params.getSavePassword();
-				if (!oPdfResult.LoadFromFile(sFrom, L"", password, password))
+				if (!oPdfResult.LoadFromFile(sFrom, L"", password.c_str(), password.c_str()))
 					return false;
 
 				RELEASEOBJECT(params.m_sPassword);
@@ -886,7 +944,7 @@ namespace NExtractTools
 					oPdfPages.SetTempDirectory(convertParams.m_sTempDir);
 
 					std::wstring sPassword = params.getPassword();
-					if (oPdfPages.LoadFromFile(sFrom.c_str(), L"", sPassword, sPassword))
+					if (oPdfPages.LoadFromFile(sFrom.c_str(), L"", sPassword.c_str(), sPassword.c_str()))
 					{
 						int nPagesCount = oPdfPages.GetPagesCount();
 						std::vector<bool> arPages = getPrintPages(sPages, nPagesCount);
@@ -922,7 +980,7 @@ namespace NExtractTools
 					oPdfPages.SetTempDirectory(convertParams.m_sTempDir);
 
 					std::wstring sPassword = params.getPassword();
-					if (oPdfPages.LoadFromFile(sFrom.c_str(), L"", sPassword, sPassword))
+					if (oPdfPages.LoadFromFile(sFrom.c_str(), L"", sPassword.c_str(), sPassword.c_str()))
 					{
 						oPdfPages.ChangePassword(sCurrentTmp, params.getSavePassword());
 						oPdfPages.Close();
@@ -973,7 +1031,7 @@ namespace NExtractTools
 					{
 						std::wstring password = params.getSavePassword();
 						CPdfFile oPdfResult(pApplicationFonts);
-						if (!oPdfResult.LoadFromFile(sFrom, L"", password, password))
+						if (!oPdfResult.LoadFromFile(sFrom, L"", password.c_str(), password.c_str()))
 							return false;
 
 						if (!oPdfResult.EditPdf(sTo))
@@ -1026,7 +1084,14 @@ namespace NExtractTools
 				convertParams.m_sPrintPages = sPages;
 				nRes = PdfDjvuXpsToRenderer(&pReader, &pdfWriter, sFrom, nFormatFrom, sTo, params, convertParams, pApplicationFonts);
 				if (SUCCEEDED_X2T(nRes))
+				{
 					nRes = S_OK == pdfWriter.SaveToFile(sTo) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+
+					if (0 == nRes)
+					{
+						pdfSign(sTo, pApplicationFonts, params, convertParams);
+					}
+				}
 				RELEASEOBJECT(pReader);
 			}
 		}
@@ -1086,7 +1151,14 @@ namespace NExtractTools
 				pReader->SetTempDirectory(convertParams.m_sTempDir);
 
 				std::wstring sPassword = params.getPassword();
-				pReader->LoadFromFile(sFrom, L"", sPassword, sPassword);
+				pReader->LoadFromFile(sFrom, L"", sPassword.c_str(), sPassword.c_str());
+
+				if ((AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == nFormatFrom ||
+					 AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDFA == nFormatFrom)
+					&& params.m_sCmapDir)
+				{
+					((CPdfFile*)pReader)->SetCMapFolder(*params.m_sCmapDir);
+				}
 
 				// pdf -> txt via TxtRenderer
 				if (nFormatTo == AVS_OFFICESTUDIO_FILE_DOCUMENT_TXT && nFormatFrom == AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF)

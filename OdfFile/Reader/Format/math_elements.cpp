@@ -119,6 +119,8 @@ void math_semantics::oox_convert(oox::math_context &Context, int iTypeConversion
         oConverterStarMath.SetBaseItalic(Context.base_font_italic_);
         oConverterStarMath.SetBaseBold(Context.base_font_bold_);
 
+		std::wstring ws_conversion_result_sm_to_ooxml = oConverterStarMath.ConvertStarMathToOOXml(annotation_text,iTypeConversion);
+
         std::queue<StarMath::TFormulaSize> sizes = oConverterStarMath.GetFormulaSize();
 
         for (;!sizes.empty(); sizes.pop())
@@ -128,7 +130,7 @@ void math_semantics::oox_convert(oox::math_context &Context, int iTypeConversion
 
             Context.height += sizes.front().m_iHeight;
         }
-        Context.output_stream() << oConverterStarMath.ConvertStarMathToOOXml(annotation_text,iTypeConversion);
+        Context.output_stream() << ws_conversion_result_sm_to_ooxml;
     }
 
     if (!result)

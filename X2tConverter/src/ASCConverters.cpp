@@ -223,13 +223,12 @@ namespace NExtractTools
 								m_oCDocxSerializer.setIsNoBase64(params.getIsNoBase64());
 								m_oCDocxSerializer.setFontDir(params.getFontPath());
 
-								std::wstring sXmlOptions;
 								std::wstring sThemePath; // will be filled by 'CreateDocxFolders' method
 								std::wstring sMediaPath; // will be filled by 'CreateDocxFolders' method
 								std::wstring sEmbedPath; // will be filled by 'CreateDocxFolders' method
 
 								m_oCDocxSerializer.CreateDocxFolders(sTempDocx, sThemePath, sMediaPath, sEmbedPath);
-								nRes = m_oCDocxSerializer.loadFromFile(sFilePathIn, sTempDocx, sXmlOptions, sThemePath, sMediaPath, sEmbedPath) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+								nRes = m_oCDocxSerializer.loadFromFile(sFilePathIn, sTempDocx, sThemePath, sMediaPath, sEmbedPath) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
 								if (SUCCEEDED_X2T(nRes))
 								{
 									std::wstring sTempUnencrypted = convertParams.m_sTempDir + FILE_SEPARATOR_STR + wsFilePathInFilename + L"_unencrypted";
@@ -779,7 +778,8 @@ namespace NExtractTools
 			convertParams.m_bTempIsXmlOptions = true;
 			nRes = xlsx_dir2xlst(sFrom, sTo, params, convertParams);
 		}
-		else if ((0 != (AVS_OFFICESTUDIO_FILE_IMAGE & nFormatTo)) || AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == nFormatTo || AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV == nFormatTo)
+		else if ((0 != (AVS_OFFICESTUDIO_FILE_IMAGE & nFormatTo)) || AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == nFormatTo 
+			|| AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV == nFormatTo || AVS_OFFICESTUDIO_FILE_SPREADSHEET_TSV == nFormatTo || AVS_OFFICESTUDIO_FILE_SPREADSHEET_SCSV == nFormatTo)
 		{
 			if (params.needConvertToOrigin(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX) &&
 				((0 != (AVS_OFFICESTUDIO_FILE_IMAGE & nFormatTo)) || AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == nFormatTo))
@@ -808,7 +808,9 @@ namespace NExtractTools
 				NSDirectory::CreateDirectory(sXlstDir);
 				std::wstring sTFile = combinePath(sXlstDir, L"Editor.bin");
 
-				if (AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV == nFormatTo)
+				if (AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV == nFormatTo ||
+					AVS_OFFICESTUDIO_FILE_SPREADSHEET_TSV == nFormatTo ||
+					AVS_OFFICESTUDIO_FILE_SPREADSHEET_SCSV == nFormatTo)
 				{
 					convertParams.m_bTempIsXmlOptions = false;
 					nRes = xlsx_dir2xlst_bin(sFrom, sTFile, params, convertParams);
@@ -831,7 +833,9 @@ namespace NExtractTools
 	_UINT32 fromXlsxDir(const std::wstring& sFrom, const std::wstring& sTo, int nFormatTo, InputParams& params, ConvertParams& convertParams)
 	{
 		_UINT32 nRes = 0;
-		if (0 != (AVS_OFFICESTUDIO_FILE_SPREADSHEET & nFormatTo) && AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV != nFormatTo)
+		if (0 != (AVS_OFFICESTUDIO_FILE_SPREADSHEET & nFormatTo)	&& AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV != nFormatTo
+																	&& AVS_OFFICESTUDIO_FILE_SPREADSHEET_TSV != nFormatTo
+																	&& AVS_OFFICESTUDIO_FILE_SPREADSHEET_SCSV != nFormatTo)
 		{
 			if (AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX == nFormatTo ||
 				AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSM == nFormatTo ||
@@ -910,7 +914,9 @@ namespace NExtractTools
 			std::wstring sFromDir = NSDirectory::GetFolderPath(sFrom);
 			nRes = dir2zip(sFromDir, sTo);
 		}
-		else if (AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV == nFormatTo)
+		else if (	AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV == nFormatTo || 
+					AVS_OFFICESTUDIO_FILE_SPREADSHEET_TSV == nFormatTo ||
+					AVS_OFFICESTUDIO_FILE_SPREADSHEET_SCSV == nFormatTo)
 		{
 			nRes = xlst_bin2csv(sFrom, sTo, params, convertParams);
 		}
@@ -971,7 +977,7 @@ namespace NExtractTools
 		}
 
 		_UINT32 nRes = 0;
-		if ((AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV == nFormatFrom) &&
+		if ((AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV == nFormatFrom || AVS_OFFICESTUDIO_FILE_SPREADSHEET_TSV == nFormatFrom || AVS_OFFICESTUDIO_FILE_SPREADSHEET_SCSV == nFormatFrom) &&
 			(AVS_OFFICESTUDIO_FILE_CANVAS_SPREADSHEET == nFormatTo || AVS_OFFICESTUDIO_FILE_OTHER_JSON == nFormatTo))
 		{
 			nRes = csv2xlst_bin(sFrom, sTo, params, convertParams);
@@ -1086,7 +1092,9 @@ namespace NExtractTools
 			{
 				nRes = package2ooxml_dir(sFrom, sXlsxDir, params, convertParams);
 			}
-			else if (AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV == nFormatFrom)
+			else if (	AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV == nFormatFrom ||
+						AVS_OFFICESTUDIO_FILE_SPREADSHEET_TSV == nFormatFrom ||
+						AVS_OFFICESTUDIO_FILE_SPREADSHEET_SCSV == nFormatFrom)
 			{
 				nRes = csv2xlsx_dir(sFrom, sXlsxDir, params, convertParams);
 				*params.m_nFormatFrom = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX;
@@ -1631,8 +1639,12 @@ namespace NExtractTools
 
 		if (TCD_ERROR == conversion)
 		{
-			if (AVS_OFFICESTUDIO_FILE_DOCUMENT_TXT == nFormatFrom || AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV == nFormatFrom)
+			if (AVS_OFFICESTUDIO_FILE_DOCUMENT_TXT == nFormatFrom	|| AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV == nFormatFrom 
+																	|| AVS_OFFICESTUDIO_FILE_SPREADSHEET_TSV == nFormatFrom
+																	|| AVS_OFFICESTUDIO_FILE_SPREADSHEET_SCSV == nFormatFrom)
+			{
 				return AVS_FILEUTILS_ERROR_CONVERT_NEED_PARAMS;
+			}
 			else
 			{
 				// print out conversion direction error

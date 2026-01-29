@@ -203,6 +203,8 @@ void paragraph_format_properties::docx_convert(oox::docx_conversion_context & Co
 					bListEnabled = false;
 
 				_pPr << L"<w:numPr>";
+				    auto temp_name = Context.get_temp_style_name();
+					Context.status_para[temp_name] = true;
 					if (bListEnabled && level < 9 && bOutlineList)
 					{
 						_pPr << L"<w:ilvl w:val=\"" << level - 1 << L"\"/>";
@@ -592,12 +594,8 @@ void style_tab_stop::docx_convert(oox::docx_conversion_context & Context, bool c
 	{
 		current_tab_width_twips = PageWidthTwips - LeftPageMarginTwips - RightPageMarginTwips - margin_right;
 	}
-	else
-	{
-		current_tab_width_twips = PageWidthTwips - LeftPageMarginTwips - RightPageMarginTwips - margin_left - margin_right;
-	}
 
-	if( tab_pos > current_tab_width_twips )
+	if( tab_pos > current_tab_width_twips && current_tab_width_twips != 0.0 )
 	{
 		tab_pos = current_tab_width_twips;
 		tab_pos -= 300;

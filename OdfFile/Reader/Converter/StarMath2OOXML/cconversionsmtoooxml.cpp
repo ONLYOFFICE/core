@@ -29,8 +29,11 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+
 #include "cconversionsmtoooxml.h"
+#include "cstarmathpars.h"
 #include "../../../../DesktopEditor/common/File.h"
+
 namespace StarMath {
 
 	CConversionSMtoOOXML::CConversionSMtoOOXML(): m_pXmlWrite(nullptr)

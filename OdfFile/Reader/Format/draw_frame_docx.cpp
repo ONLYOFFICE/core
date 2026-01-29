@@ -1089,6 +1089,7 @@ void draw_shape::docx_convert(oox::docx_conversion_context & Context)
 	drawing.inGroup		= Context.get_drawing_context().in_group();
 	drawing.lined		= lined_shape_;
 	drawing.connector	= connector_;
+	drawing.hyperlinkRId = Context.get_drawing_context().draw_hyperlinkRId;
 
 	drawing.sub_type	= sub_type_;
 	drawing.additional	= additional_;//сюда могут добавиться свойства ...
@@ -1514,8 +1515,9 @@ void draw_g::docx_convert(oox::docx_conversion_context & Context)
 	
 	Context.get_drawing_context().add_name_object(name.get_value_or(L"Group"));
 
-	drawing.id		= Context.get_drawing_context().get_current_shape_id();
-	drawing.name	= Context.get_drawing_context().get_current_object_name();
+	drawing.id = Context.get_drawing_context().get_current_shape_id();
+	drawing.name = Context.get_drawing_context().get_current_object_name();
+	drawing.hyperlinkRId = Context.get_drawing_context().draw_hyperlinkRId;
 
 //--------------------------------------------------
 	common_draw_docx_convert(Context, common_draw_attlists_, &drawing);
@@ -1628,9 +1630,10 @@ void draw_frame::docx_convert(oox::docx_conversion_context & Context)
 	
 	oox::_docx_drawing* drawing = dynamic_cast<oox::_docx_drawing *>(oox_drawing_.get()); 
 	
-	drawing->id			= Context.get_drawing_context().get_current_frame_id();
-	drawing->name		= Context.get_drawing_context().get_current_object_name();
-	drawing->inGroup	= Context.get_drawing_context().in_group();
+	drawing->id = Context.get_drawing_context().get_current_frame_id();
+	drawing->name = Context.get_drawing_context().get_current_object_name();
+	drawing->inGroup = Context.get_drawing_context().in_group();
+	drawing->hyperlinkRId = Context.get_drawing_context().draw_hyperlinkRId;
 
 	if (svg_title_)
 		svg_title_->docx_convert(Context);
@@ -1931,10 +1934,11 @@ void draw_control::docx_convert(oox::docx_conversion_context & Context)
 //--------------------------------------------------------------------------------------------------
 	oox::_docx_drawing drawing = oox::_docx_drawing();
 
-	drawing.type	= oox::typeShape;
-	drawing.id		= Context.get_drawing_context().get_current_shape_id();
-	drawing.name	= Context.get_drawing_context().get_current_object_name();
-	drawing.inGroup	= Context.get_drawing_context().in_group();
+	drawing.type = oox::typeShape;
+	drawing.id = Context.get_drawing_context().get_current_shape_id();
+	drawing.name = Context.get_drawing_context().get_current_object_name();
+	drawing.inGroup = Context.get_drawing_context().in_group();
+	drawing.hyperlinkRId = Context.get_drawing_context().draw_hyperlinkRId;
 	drawing.sub_type = 1;
 	
 //---------------------------------------------------------------------------------------------------------

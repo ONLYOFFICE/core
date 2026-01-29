@@ -270,6 +270,7 @@ namespace DocFileFormat
 		int		cp							=	initialCp;
 		int		fc							=	m_document->FindFileCharPos(cp); 
 		int		fcEnd						=	m_document->FindFileCharPos(cpEnd);
+        bool    PBookmark                   = false;
 
 		ParagraphPropertyExceptions* papx	=	findValidPapx(fc);
 
@@ -338,6 +339,7 @@ namespace DocFileFormat
 		if ((chpxs != NULL) && (chpxFcs != NULL) && !chpxFcs->empty())//? второе
 		{
 			size_t i = 0;
+            bool changechpx = false;
 
 			// write a runs for each CHPX
 			for (size_t it = 0; it < chpxs->size(); ++it)
@@ -346,9 +348,18 @@ namespace DocFileFormat
 
 				int fcChpxStart	=	((chpxFcs) && (i < chpxFcs->size())) ? chpxFcs->at(i) : fc;
 				int fcChpxEnd	=	fcEnd;
-				
-				if ((chpxFcs) && ( i < chpxFcs->size() - 1))
-					fcChpxEnd = chpxFcs->at(i + 1);
+                if (i > 0)
+                {
+                    int previous    =   chpxFcs->at(i-1);
+                    if ((fcChpxStart != fc) && (previous > fcChpxStart))
+                    {
+                        fcChpxStart = previous;
+                        changechpx = true;
+                    }
+                }
+
+                if ((chpxFcs) && ( i < chpxFcs->size() - 1))
+                    fcChpxEnd = chpxFcs->at(i + 1);
 
 				//it's the first chpx and it starts before the paragraph
 
@@ -396,13 +407,17 @@ namespace DocFileFormat
 						{
 							for (std::vector<std::vector<wchar_t> >::iterator iter = runs->begin(); iter != runs->end(); ++iter)
 							{
-								if (writeBookmarks(cp))
+                                if (writeBookmarks(cp, PBookmark))
 								{
 									cp = writeRun(&(*iter), chpxs->at(it), cp);
 								}
+                                PBookmark = true;
+                                if (cp == m_document->FIB->m_RgLw97.ccpText - 1)
+                                    writeBookmarks(cp, PBookmark);
 							}
 
 							RELEASEOBJECT(runs);
+                            PBookmark = false;
 						}
 					}
 					else
@@ -427,7 +442,13 @@ namespace DocFileFormat
 						}
 						else
 						{
-							cp = writeRun(chpxChars, chpxs->at(it), cp);
+                            if (changechpx == true)
+                            {
+                                size_t a = it - 1;
+                                cp = writeRun(chpxChars, chpxs->at(a), cp);
+                            }
+                            else
+                                cp = writeRun(chpxChars, chpxs->at(it), cp);
 						}
 					}
 				}
@@ -1955,22 +1976,77 @@ namespace DocFileFormat
 		}
 		return true;
 	}
-	bool DocumentMapping::writeBookmarks(int cp)
+    bool DocumentMapping::writeBookmarks(int cp, bool para)
 	{
 		bool result =	true;
+        static std::vector<int> openedInThisPara;
+        static std::set<int> allClosedIds;
+        static int nextIdForSequence = 0;
 
-		for (size_t b = 0; b < m_document->BookmarkStartEndCPs.size(); ++b)
-		{
-			if (m_document->BookmarkStartEndCPs[b].start == cp)
-			{
-				result = writeBookmarkStart(b);
-			}
+        for (size_t b = 0; b < m_document->BookmarkStartEndCPs.size(); ++b)
+        {
+            if (m_document->BookmarkStartEndCPs[b].start == cp)
+            {
+                int xmlId = b;
 
-			if (m_document->BookmarkStartEndCPs[b].end == cp)
-			{
-				result = writeBookmarkEnd(b);  
-			}
-		}
+                result = writeBookmarkStart(xmlId);
+                openedInThisPara.push_back(xmlId);
+            }
+        }
+
+        bool hasPositionClosings = false;
+        int positionClosingCount = 0;
+
+        for (size_t b = 0; b < m_document->BookmarkStartEndCPs.size(); ++b)
+        {
+            if (m_document->BookmarkStartEndCPs[b].end == cp)
+            {
+                hasPositionClosings = true;
+                positionClosingCount++;
+            }
+        }
+
+        if (hasPositionClosings)
+        {
+
+            for (int i = 0; i < positionClosingCount; i++)
+            {
+                if (!openedInThisPara.empty())
+                {
+                    int idToClose = openedInThisPara[0];
+                    result = writeBookmarkEnd(idToClose);
+                    allClosedIds.insert(idToClose);
+                    openedInThisPara.erase(openedInThisPara.begin());
+                }
+                else
+                {
+                    while (allClosedIds.find(nextIdForSequence) != allClosedIds.end())
+                    {
+                        nextIdForSequence++;
+                    }
+
+                    result = writeBookmarkEnd(nextIdForSequence);
+                    allClosedIds.insert(nextIdForSequence);
+                    nextIdForSequence++;
+                }
+            }
+        }
+        else if (para)
+        {
+            while (allClosedIds.find(nextIdForSequence) != allClosedIds.end())
+            {
+                nextIdForSequence++;
+            }
+
+            result = writeBookmarkEnd(nextIdForSequence);
+            allClosedIds.insert(nextIdForSequence);
+            nextIdForSequence++;
+        }
+
+        if (para)
+        {
+            openedInThisPara.clear();
+        }
 
 		return result;
 	}

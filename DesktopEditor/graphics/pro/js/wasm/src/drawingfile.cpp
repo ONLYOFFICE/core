@@ -80,7 +80,7 @@ WASM_EXPORT CDrawingFile* Open(BYTE* data, LONG size, const char* password)
 	std::wstring sPassword = L"";
 	if (NULL != password)
 		sPassword = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)password, strlen(password));
-	pFile->OpenFile(data, size, sPassword);
+	pFile->OpenFile(data, size, password ? sPassword.c_str() : NULL);
 	return pFile;
 }
 WASM_EXPORT int GetType(CDrawingFile* pFile)
@@ -204,7 +204,7 @@ WASM_EXPORT int CheckOwnerPassword(CDrawingFile* pFile, const char* password)
 	std::wstring sPassword = L"";
 	if (NULL != password)
 		sPassword = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)password, strlen(password));
-	return pFile->CheckOwnerPassword(sPassword) ? 1 : 0;
+	return pFile->CheckOwnerPassword(password ? sPassword.c_str() : NULL) ? 1 : 0;
 }
 WASM_EXPORT int CheckPerm(CDrawingFile* pFile, int nPermFlag)
 {

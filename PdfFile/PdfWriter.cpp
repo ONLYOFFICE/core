@@ -191,6 +191,7 @@ CPdfWriter::CPdfWriter(NSFonts::IApplicationFonts* pAppFonts, bool isPDFA, IRend
 	m_pPage       = NULL;
 	m_pFont       = NULL;
 	m_pFont14     = NULL;
+	m_pFontEmbedded = NULL;
 	m_lClipMode   = 0;
 
 	m_unFieldsCounter     = 0;
@@ -221,7 +222,7 @@ int CPdfWriter::SaveToFile(const std::wstring& wsPath)
 	if (!IsValid())
 		return 1;
 
-	if (!m_pFont && !m_pFont14 && !m_pDocument->IsPDFA() && m_bNeedAddHelvetica)
+	if (!m_pFont && !m_pFont14 && !m_pFontEmbedded && !m_pDocument->IsPDFA() && m_bNeedAddHelvetica)
 	{
 		m_bNeedUpdateTextFont = false;
 		m_pFont14 = m_pDocument->CreateFont14(L"Helvetica", 0, PdfWriter::EStandard14Fonts::standard14fonts_Helvetica);
@@ -2251,6 +2252,8 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 			PdfWriter::CFontDict* pFont = m_pFont;
 			if (m_pFont14)
 				pFont = m_pFont14;
+			else if (m_pFontEmbedded)
+				pFont = m_pFontEmbedded;
 			pFreeTextAnnot->SetDA(pFont, m_oFont.GetSize(), oInfo.GetC());
 		}
 		else if (oInfo.IsCaret())
@@ -2554,7 +2557,7 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 			if (nFlags & (1 << 13))
 			{
 				pTextWidget->SetAPV();
-				m_pFont14 = NULL; m_pFont = NULL;
+				m_pFont14 = NULL; m_pFont = NULL; m_pFontEmbedded = NULL;
 				m_bNeedUpdateTextFont = true;
 
 				LONG nLen = 0;
@@ -2564,6 +2567,8 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 				PdfWriter::CFontDict* pFont = NULL;
 				if (m_pFont14)
 					pFont = m_pFont14;
+				else if (m_pFontEmbedded)
+					pFont = m_pFontEmbedded;
 				else if (m_pFont)
 					pFont = m_pDocument->CreateTrueTypeFont(m_pFont);
 				else
@@ -2577,6 +2582,8 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 						UpdateFont();
 					if (m_pFont14)
 						pFont = m_pFont14;
+					else if (m_pFontEmbedded)
+						pFont = m_pFontEmbedded;
 					else if (m_pFont)
 						pFont = m_pDocument->CreateTrueTypeFont(m_pFont);
 				}
@@ -2625,7 +2632,7 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 			if (nFlags & (1 << 15))
 			{
 				pChoiceWidget->SetAPV();
-				m_pFont14 = NULL; m_pFont = NULL;
+				m_pFont14 = NULL; m_pFont = NULL; m_pFontEmbedded = NULL;
 				m_bNeedUpdateTextFont = true;
 
 				LONG nLen = 0;
@@ -2635,6 +2642,8 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 				PdfWriter::CFontDict* pFont = NULL;
 				if (m_pFont14)
 					pFont = m_pFont14;
+				else if (m_pFontEmbedded)
+					pFont = m_pFontEmbedded;
 				else if (m_pFont)
 					pFont = m_pDocument->CreateTrueTypeFont(m_pFont);
 				else
@@ -2648,6 +2657,8 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 						UpdateFont();
 					if (m_pFont14)
 						pFont = m_pFont14;
+					else if (m_pFontEmbedded)
+						pFont = m_pFontEmbedded;
 					else if (m_pFont)
 						pFont = m_pDocument->CreateTrueTypeFont(m_pFont);
 				}
@@ -3454,6 +3465,8 @@ bool CPdfWriter::DrawText(unsigned char* pCodes, const unsigned int& unLen, cons
 	PdfWriter::CFontDict* pFont = m_pFont;
 	if (m_pFont14)
 		pFont = m_pFont14;
+	if (m_pFontEmbedded)
+		pFont = m_pFontEmbedded;
 	pText->SetFont(pFont);
 	pText->SetSize(m_oFont.GetSize());
 	pText->SetColor(m_oBrush.GetColor1());
@@ -3580,10 +3593,38 @@ bool CPdfWriter::GetBaseFont14(const std::wstring& wsFontName, int nBase14)
 	m_pFont14 = m_pDocument->CreateFont14(wsFontPath, lFaceIndex, nType);
 	return !!m_pFont14;
 }
+bool CPdfWriter::IsEmbeddedFont(const std::wstring& wsName)
+{
+	if (wsName.find(L"Embedded: ") != 0)
+		return false;
+	// Исключаем Base14 шрифты
+	int nBase14 = IsEmbeddedBase14(wsName);
+	return nBase14 < 0;
+}
+bool CPdfWriter::GetEmbeddedFont(const std::wstring& wsFontName)
+{
+	std::wstring wsFontPath = m_oFont.GetPath();
+	LONG lFaceIndex         = m_oFont.GetFaceIndex();
+	if (!FindFontPath(wsFontName, m_oFont.IsBold(), m_oFont.IsItalic(), wsFontPath, lFaceIndex))
+		return false;
+	if (m_bSplit)
+		return false;
+	if (!m_pFontManager->LoadFontFromFile(wsFontPath, lFaceIndex, m_oFont.GetSize(), 72, 72))
+		return false;
+	m_pFontEmbedded = m_pDocument->FindFontEmbedded(wsFontPath, lFaceIndex);
+	return !!m_pFontEmbedded;
+}
+void CPdfWriter::AddEmbeddedFontInfo(const std::wstring& wsFontName, const std::wstring& wsFilePath, const std::string& sFontKey, PdfWriter::EFontType eFontType,
+									 const std::map<unsigned int, unsigned int>& mCodeToWidth, const std::map<unsigned int, unsigned int>& mCodeToUnicode, const std::map<unsigned int, unsigned int>& mCodeToGID)
+{
+	AddFont(L"Embedded: " + wsFontName, false, false, wsFilePath, 0);
+	m_pDocument->CreateFontEmbedded(wsFilePath, 0, sFontKey, eFontType, mCodeToWidth, mCodeToUnicode, mCodeToGID);
+}
 bool CPdfWriter::UpdateFont()
 {
 	m_bNeedUpdateTextFont = false;
 	m_pFont14 = NULL;
+	m_pFontEmbedded = NULL;
 
 	std::wstring wsFontPath = m_oFont.GetPath();
 	LONG lFaceIndex         = m_oFont.GetFaceIndex();
@@ -3592,6 +3633,11 @@ bool CPdfWriter::UpdateFont()
 		std::wstring wsFontName = m_oFont.GetName();
 		int nBase14 = IsEmbeddedBase14(wsFontName);
 		if (nBase14 >= 0 && GetBaseFont14(wsFontName, nBase14))
+		{
+			m_pFont = NULL;
+			return true;
+		}
+		if (IsEmbeddedFont(wsFontName) && GetEmbeddedFont(wsFontName))
 		{
 			m_pFont = NULL;
 			return true;
@@ -4174,6 +4220,19 @@ unsigned char* CPdfWriter::EncodeGID(const unsigned int& unGID, const unsigned i
 		unsigned char* pCodes = new unsigned char[2];
 		pCodes[0] = (*pUnicodes >> 8) & 0xFF;
 		pCodes[1] = *pUnicodes & 0xFF;
+		return pCodes;
+	}
+
+	if (m_pFontEmbedded)
+	{
+		unsigned short ushCode = m_pFontEmbedded->EncodeUnicode(unGID, *pUnicodes);
+
+		// Для CFontEmbedded ширины уже загружены, ничего не добавляем
+
+		unsigned char* pCodes = new unsigned char[2];
+		pCodes[0] = (ushCode >> 8) & 0xFF;
+		pCodes[1] = ushCode & 0xFF;
+
 		return pCodes;
 	}
 

@@ -6607,11 +6607,10 @@ void BinaryWorksheetTableWriter::WriteControls(const OOX::Spreadsheet::CWorkshee
 
 				nCurPos3 = m_oBcw.WriteItemStart(c_oSerControlTypes::Shape);
 
-				std::wstring* pMainProps = NULL;
 				OOX::IFileContainer* oldRels = m_pOfficeDrawingConverter->GetRelsPtr();
 				m_pOfficeDrawingConverter->SetRelsPtr(pVmlDrawing);
 
-				m_pOfficeDrawingConverter->AddObject(L"<pict>" + pFind->second.sXml + L"</pict>", &pMainProps);
+				m_pOfficeDrawingConverter->AddObject(L"<pict>" + pFind->second.sXml + L"</pict>");
 
 				m_pOfficeDrawingConverter->SetRelsPtr(oldRels);
 				m_oBcw.WriteItemEnd(nCurPos3);
@@ -7067,14 +7066,11 @@ void BinaryWorksheetTableWriter::WriteDrawing(const OOX::Spreadsheet::CWorksheet
             OOX::IFileContainer* oldRels = m_pOfficeDrawingConverter->GetRelsPtr();
 			m_pOfficeDrawingConverter->SetRelsPtr(pVmlDrawing);
 
-			std::wstring* bstrOutputXml = NULL;
-			
 			m_oBcw.m_oStream.WriteBYTE(c_oSer_DrawingType::pptxDrawing);			
 			int nCurPos = m_oBcw.WriteItemWithLengthStart();			
-				m_pOfficeDrawingConverter->AddObject(sVmlXml, &bstrOutputXml);			
+				m_pOfficeDrawingConverter->AddObject(sVmlXml);			
 				m_pOfficeDrawingConverter->SetRelsPtr(oldRels);
 			m_oBcw.WriteItemWithLengthEnd(nCurPos);					
-			RELEASEOBJECT(bstrOutputXml);
 		}
 	}
 	else if (pCellAnchor->m_oElement.IsInit())
@@ -7273,11 +7269,9 @@ void BinaryWorksheetTableWriter::WriteLegacyDrawingHFDrawing(const OOX::CVmlDraw
 		sVmlXml += oVmlShape.sXml; //add vml shape xml
 		sVmlXml += L"</v:object>";
 
-		std::wstring* bstrOutputXml = NULL;
 		nCurPos = m_oBcw.WriteItemStart(c_oSer_LegacyDrawingHF::DrawingShape);
-		m_pOfficeDrawingConverter->AddObject(sVmlXml, &bstrOutputXml);
+		m_pOfficeDrawingConverter->AddObject(sVmlXml);
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
-		RELEASEOBJECT(bstrOutputXml);
 }
 
 void BinaryWorksheetTableWriter::WriteFromTo(const OOX::Spreadsheet::CFromTo& oFromTo)
@@ -9081,7 +9075,7 @@ BinaryFileWriter::~BinaryFileWriter()
 	RELEASEOBJECT(m_oBcw);
 }
 _UINT32 BinaryFileWriter::Open(const std::wstring& sInputDir, const std::wstring& sFileDst, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager,
-    NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter, const std::wstring& sXMLOptions, bool bIsNoBase64)
+NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter, const std::wstring& sXMLOptions, bool bIsNoBase64)
 {
 	_UINT32 result = 0;
 

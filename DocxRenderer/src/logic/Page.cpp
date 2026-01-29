@@ -193,14 +193,17 @@ namespace NSDocxRenderer
 
 		if (!m_arShapes.empty())
 		{
-			auto& last_shape = m_arShapes.back();
-			if (last_shape->IsEqual(top, bot, left, right) && rotation == last_shape->m_dRotation)
+			auto& last_shape = m_arShapes.back();			
+			if (last_shape->IsEqual(top, bot, left, right) && rotation == last_shape->m_dRotation && lType != m_lLastType && m_lLastType != 0)
 			{
 				set_fill_mode(last_shape);
+				// Reset stroke/fill logic
+				m_lLastType = 0;
 				return;
 			}
 		}
 
+		m_lLastType = lType;
 		auto shape = std::make_shared<CShape>();
 		shape->m_oPen.Size *= transform_det;
 		set_fill_mode(shape);

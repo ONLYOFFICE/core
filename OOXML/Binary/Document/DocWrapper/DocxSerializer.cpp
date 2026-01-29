@@ -198,7 +198,7 @@ BinDocxRW::CDocxSerializer::~CDocxSerializer()
 	RELEASEOBJECT(m_pParamsWriter);
 	RELEASEOBJECT(m_pCurFileWriter);
 }
-bool BinDocxRW::CDocxSerializer::saveToFile(const std::wstring& sDstFileName, const std::wstring& sSrcPath, const std::wstring& sXMLOptions, const std::wstring& sTempPath)
+bool BinDocxRW::CDocxSerializer::saveToFile(const std::wstring& sDstFileName, const std::wstring& sSrcPath, const std::wstring& sTempPath)
 {
 	OOX::CPath pathMain(sDstFileName);
     
@@ -317,7 +317,7 @@ bool BinDocxRW::CDocxSerializer::CreateDocxFolders(std::wstring strDirectory, st
 
 	return res;
 }
-bool BinDocxRW::CDocxSerializer::loadFromFile(const std::wstring& sSrcFileName, const std::wstring& sDstPath, const std::wstring& sXMLOptions, const std::wstring& sThemePath, const std::wstring& sMediaPath, const std::wstring& sEmbedPath)
+bool BinDocxRW::CDocxSerializer::loadFromFile(const std::wstring& sSrcFileName, const std::wstring& sDstPath, const std::wstring& sThemePath, const std::wstring& sMediaPath, const std::wstring& sEmbedPath)
 {
 	RELEASEOBJECT(m_pCurFileWriter);
 	

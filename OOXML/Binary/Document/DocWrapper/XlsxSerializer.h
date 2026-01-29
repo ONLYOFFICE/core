@@ -64,7 +64,7 @@ namespace BinXlsxRW {
         _UINT32 loadFromFile	(const std::wstring& sSrcFileName, const std::wstring& sDstPath, const std::wstring& sXMLOptions, const std::wstring& sMediaDir, const std::wstring& sEmbedPath);
         _UINT32 saveToFile		(const std::wstring& sDstPath, const std::wstring& sSrcFileName, const std::wstring& sXMLOptions);
 //------------------------------------------------		
-        static void CreateXlsxFolders  (const std::wstring& sXmlOptions, const std::wstring& sDstPath, std::wstring& sMediaPath, std::wstring& sEmbedPath);
+        static void CreateXlsxFolders  (const std::wstring& sDstPath, std::wstring& sMediaPath, std::wstring& sEmbedPath);
 		
 		void setTempDir			(const std::wstring& sTempDir);
         void setFontDir			(const std::wstring& sFontDir);

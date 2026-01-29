@@ -896,6 +896,27 @@ namespace PdfWriter
 		}
 		return NULL;
 	}
+	CFontEmbedded* CDocument::CreateFontEmbedded(const std::wstring& wsFontPath, unsigned int unIndex, const std::string& sFontKey, EFontType nType,
+												 const std::map<unsigned int, unsigned int>& mCodeToWidth, const std::map<unsigned int, unsigned int>& mCodeToUnicode, const std::map<unsigned int, unsigned int>& mCodeToGID)
+	{
+		CFontEmbedded* pFont = FindFontEmbedded(wsFontPath, unIndex);
+		if (pFont)
+			return pFont;
+		pFont = new CFontEmbedded(m_pXref, this);
+		pFont->LoadFont(sFontKey, nType, mCodeToWidth, mCodeToUnicode, mCodeToGID);
+		m_vFontsEmbedded.push_back(TFontInfo(wsFontPath, unIndex, pFont));
+		return pFont;
+	}
+	CFontEmbedded* CDocument::FindFontEmbedded(const std::wstring& wsFontPath, unsigned int unIndex)
+	{
+		for (int nIndex = 0, nCount = m_vFontsEmbedded.size(); nIndex < nCount; nIndex++)
+		{
+			TFontInfo& oInfo = m_vFontsEmbedded.at(nIndex);
+			if (wsFontPath == oInfo.wsPath && unIndex == oInfo.unIndex)
+				return (CFontEmbedded*)oInfo.pFont;
+		}
+		return NULL;
+	}
 	CFontCidTrueType* CDocument::CreateCidTrueTypeFont(const std::wstring& wsFontPath, unsigned int unIndex)
 	{
 		CFontCidTrueType* pFont = FindCidTrueTypeFont(wsFontPath, unIndex);
@@ -1923,7 +1944,7 @@ namespace PdfWriter
 			m_pLastXref->WriteToStream(pStream, pEncrypt);
 
 		RELEASEOBJECT(pStream);
-		unsigned int nSizeXRef = m_pXref->GetSizeXRef();
+		unsigned int nSizeXRef = m_pXref->GetSizeXRef() + (bNeedStreamXRef ? 1 : 0);
 		m_pXref = m_pLastXref;
 		Sign(wsPath, nSizeXRef, bNeedStreamXRef);
 		RELEASEOBJECT(m_pEncryptDict);

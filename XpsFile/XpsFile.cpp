@@ -104,7 +104,7 @@ void CXpsFile::SetTempDirectory(const std::wstring& wsPath)
     m_pInternal->m_wsTempFolder = new CFolderSystem(wsTempFolder);
 }
 bool CXpsFile::LoadFromFile(const std::wstring& wsSrcFileName, const std::wstring& wsXmlOptions,
-                            const std::wstring& owner_password, const std::wstring& user_password)
+							const wchar_t* owner_password, const wchar_t* user_password)
 {
 	Close();
 
@@ -122,7 +122,7 @@ bool CXpsFile::LoadFromFile(const std::wstring& wsSrcFileName, const std::wstrin
 	return true;
 }
 bool CXpsFile::LoadFromMemory(BYTE* data, DWORD length, const std::wstring& options,
-                              const std::wstring& owner_password, const std::wstring& user_password)
+							  const wchar_t* owner_password, const wchar_t* user_password)
 {
     Close();
 

@@ -1418,6 +1418,9 @@ void docx_conversion_context::process_styles()
         _Wostream << L"</w:docDefaults>";
 
 		std::wstring default_style;
+		std::wstring curr_name_of_normal_style;
+
+		bool haveNormalStyle = false;
 
 		for (size_t i = 0; i < arStyles.size(); i++)
 		{
@@ -1428,8 +1431,12 @@ void docx_conversion_context::process_styles()
                 const std::wstring id = styles_map_.get(arStyles[i]->name(), arStyles[i]->type());
 				bool bDefault = (arStyles[i]->style_class() == L"default");
 				bool bDisplayed = (arStyles[i]->type() == odf_types::style_family::Paragraph);
-                
+
 				_Wostream << L"<w:style w:styleId=\"" << id << L"\" w:type=\"" << StyleTypeOdf2Docx(arStyles[i]->type()) << L"\""; 
+
+				status_para[id] = false;
+
+				set_temp_style_name(id);
 
 				if (bDefault)  // style
 				{
@@ -1447,6 +1454,12 @@ void docx_conversion_context::process_styles()
 				_Wostream << L">";
                 
 				const std::wstring displayName = StyleDisplayName(arStyles[i]->name(), arStyles[i]->display_name(), arStyles[i]->type(), bDisplayed);
+
+				if( displayName == L"Normal" )
+				{
+					haveNormalStyle = true;
+					curr_name_of_normal_style = id;
+				}
 
 				_Wostream << L"<w:name w:val=\"" << XmlUtils::EncodeXmlString(displayName) << L"\"/>";
 
@@ -1475,6 +1488,13 @@ void docx_conversion_context::process_styles()
 				    const std::wstring nextId = styles_map_.get(next->name(), next->type());
 				    _Wostream << L"<w:next w:val=\"" << nextId << "\"/>";
 				}
+				else
+				{
+					if( !arStyles[i]->is_default() && haveNormalStyle)
+					{
+						_Wostream << L"<w:next w:val=\"" << curr_name_of_normal_style << "\"/>";
+					}
+				}
                 //else if (arStyles[i]->is_default())
                 //{
                 //    // self
@@ -1484,10 +1504,9 @@ void docx_conversion_context::process_styles()
                 if (odf_reader::style_content * content = arStyles[i]->content())
                 {
 					get_tabs_context().clear();
-					calc_tab_stops(arStyles[i].get(), get_tabs_context());
-					
+					calc_tab_stops(arStyles[i].get(), get_tabs_context());					
 					get_styles_context().start_process_style(arStyles[i].get());
-                    content->docx_convert(*this, true);
+					content->docx_convert(*this, true);
                     get_styles_context().end_process_style();
                 }
 
@@ -1815,6 +1834,14 @@ void docx_conversion_context::set_page_break_before(int val)
 int docx_conversion_context::get_page_break_before()
 {
     return page_break_before_;
+}
+void docx_conversion_context::set_temp_style_name( const std::wstring& _name )
+{
+	temp_name = _name;
+}
+std::wstring docx_conversion_context::get_temp_style_name() const
+{
+	return temp_name;
 }
 void docx_conversion_context::add_page_properties(const std::wstring & StyleName)
 {
@@ -2224,7 +2251,6 @@ int docx_conversion_context::process_paragraph_attr(odf_reader::text::paragraph_
 						get_section_context().dump_.clear();
 					}
 				}
-
 				output_stream() << L"<w:pStyle w:val=\"" << id << L"\" />";
 
 				if (!get_text_tracked_context().dumpPPr_.empty())
@@ -2236,7 +2262,7 @@ int docx_conversion_context::process_paragraph_attr(odf_reader::text::paragraph_
 				serialize_list_properties(output_stream());
 				
 				//if ((Attr->outline_level_) && (*Attr->outline_level_ > 0))
-				if (outline_level)
+				if ( outline_level && status_para[id] == false )
 				{
 					odf_reader::list_style_container & list_styles = root()->odf_context().listStyleContainer();
 					
@@ -2244,7 +2270,7 @@ int docx_conversion_context::process_paragraph_attr(odf_reader::text::paragraph_
 					{
 						output_stream() << L"<w:numPr>";
 						output_stream() << L"<w:ilvl w:val=\"" << *outline_level - 1  << L"\"/>";
-						output_stream() << L"<w:numId w:val=\"" << list_styles.id_by_name(id) << L"\"/>"; // check bug 51965
+						output_stream() << L"<w:numId w:val=\"" << list_styles.id_outline() << L"\"/>"; // check bug 51965
 						output_stream() << L"</w:numPr>";
 					}
 					output_stream() << L"<w:outlineLvl w:val=\"" << *outline_level << L"\"/>";

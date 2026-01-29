@@ -74,9 +74,11 @@ namespace DocFileFormat
                     {
                         n = totalSize / elementSize;
 
-                        if (totalSize % elementSize != 0)
+                        if (totalSize % elementSize != 0 && structureLength == 6)
                         {
-                            n += 1;
+                            structureLength = 4;
+                            elementSize = structureLength + CP_LENGTH;
+                            n = totalSize/elementSize;
                         }
                     }
 				}

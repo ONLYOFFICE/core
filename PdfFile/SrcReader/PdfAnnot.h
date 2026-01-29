@@ -147,6 +147,7 @@ private:
 	double m_dRWScale, m_dRHScale;
 	double m_dWTale, m_dHTale;
 	double m_dRx1, m_dRy1;
+	double m_dx1S, m_dy2S;
 	int m_nWidth, m_nHeight;
 	std::vector<CAnnotAPView*> m_arrAP;
 	bool m_bIsStamp;
@@ -700,22 +701,6 @@ private:
 	std::vector<int> m_arrCO; // Порядок вычислений - CO
 	std::vector<CAnnotParent*> m_arrParents; // Родительские Fields
 	std::vector<CAnnotWidget*> m_arrAnnots;
-};
-
-//------------------------------------------------------------------------
-// PdfReader::CAnnotFonts
-//------------------------------------------------------------------------
-
-class CAnnotFonts final
-{
-public:
-	static bool IsBaseFont(const std::wstring& wsName);
-	static std::map<std::wstring, std::wstring> GetAllFonts(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList* pFontList, bool bIsNeedCMap);
-	static std::wstring GetFontData(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList, Object* oFontRef, std::string& sFontName, std::string& sActualFontName, bool& bBold, bool& bItalic, bool bIsNeedCMap = false);
-	static bool GetFontFromAP(PDFDoc* pdfDoc, AcroFormField* pField, Object* oFontRef, std::string& sFontKey);
-	static std::map<std::wstring, std::wstring> GetAnnotFont(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList, Object* oAnnotRef);
-	static std::map<std::wstring, std::wstring> GetFreeTextFont(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList* pFontList, Object* oAnnotRef, std::vector<CAnnotMarkup::CFontData*>& arrRC);
-	static bool FindFonts(Object* oStream, int nDepth, Object* oResFonts);
 };
 
 }

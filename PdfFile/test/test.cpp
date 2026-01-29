@@ -96,7 +96,7 @@ public:
 		if (!bResult)
 		{
 			std::wstring wsPassword = L"123456";
-			bResult = pdfFile->LoadFromFile(_wsSrcFile.empty() ? wsSrcFile : _wsSrcFile, L"", wsPassword, wsPassword);
+			bResult = pdfFile->LoadFromFile(_wsSrcFile.empty() ? wsSrcFile : _wsSrcFile, L"", wsPassword.c_str(), wsPassword.c_str());
 		}
 
 		ASSERT_TRUE(bResult);
@@ -375,6 +375,36 @@ TEST_F(CPdfFileTest, Base64ConvertToRaster)
 	imageWriter.ConvertBuffer(pBuffer, nBufferLen);
 }
 
+TEST_F(CPdfFileTest, BinConvertToRaster)
+{
+	GTEST_SKIP();
+
+	// чтение и конвертации бинарника
+	NSFile::CFileBinary oFile;
+	ASSERT_TRUE(oFile.OpenFile(NSFile::GetProcessDirectory() + L"/pdf.bin"));
+
+	DWORD dwFileSize = oFile.GetFileSize();
+	BYTE* pFileContent = new BYTE[dwFileSize];
+	if (!pFileContent)
+	{
+		oFile.CloseFile();
+		FAIL();
+	}
+
+	DWORD dwReaded;
+	oFile.ReadFile(pFileContent, dwFileSize, dwReaded);
+	oFile.CloseFile();
+
+	NSOnlineOfficeBinToPdf::CMetafileToRenderterRaster imageWriter(NULL);
+	imageWriter.SetIsOnlyFirst(true);
+	imageWriter.SetMediaDirectory(NSFile::GetProcessDirectory());
+	imageWriter.SetApplication(pApplicationFonts);
+	imageWriter.SetRasterFormat(4);
+	imageWriter.SetFileName(NSFile::GetProcessDirectory() + L"/resO/res.png");
+
+	imageWriter.ConvertBuffer(pFileContent, dwFileSize);
+}
+
 TEST_F(CPdfFileTest, VerifySign)
 {
 	GTEST_SKIP();
@@ -457,7 +487,7 @@ TEST_F(CPdfFileTest, MergePdf)
 
 TEST_F(CPdfFileTest, RedactPdf)
 {
-	//GTEST_SKIP();
+	GTEST_SKIP();
 
 	LoadFromFile();
 	ASSERT_TRUE(pdfFile->EditPdf(wsDstFile));
@@ -494,7 +524,7 @@ TEST_F(CPdfFileTest, EditPdf)
 
 TEST_F(CPdfFileTest, EditPdfFromBase64)
 {
-	GTEST_SKIP();
+	//GTEST_SKIP();
 
 	NSFonts::NSApplicationFontStream::SetGlobalMemoryStorage(NSFonts::NSApplicationFontStream::CreateDefaultGlobalMemoryStorage());
 

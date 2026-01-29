@@ -74,6 +74,7 @@ namespace PdfWriter
 	class CImageDict;
 	class CFontDict;
 	class CFont14;
+	class CFontEmbedded;
 	class CFontCidTrueType;
 	class CFontTrueType;
 	class CJbig2Global;
@@ -152,6 +153,9 @@ namespace PdfWriter
 		CXObject*         CreateForm();
 		CFont14*          CreateFont14(const std::wstring& wsFontPath, unsigned int unIndex, EStandard14Fonts eType);
 		CFont14*          FindFont14  (const std::wstring& wsFontPath, unsigned int unIndex);
+		CFontEmbedded*    CreateFontEmbedded(const std::wstring& wsFontPath, unsigned int unIndex, const std::string& sFontKey, EFontType nType,
+											 const std::map<unsigned int, unsigned int>& mCodeToWidth, const std::map<unsigned int, unsigned int>& mCodeToUnicode, const std::map<unsigned int, unsigned int>& mCodeToGID);
+		CFontEmbedded*    FindFontEmbedded  (const std::wstring& wsFontPath, unsigned int unIndex);
 		CFontCidTrueType* CreateCidTrueTypeFont(const std::wstring& wsFontPath, unsigned int unIndex);
 		CFontCidTrueType* FindCidTrueTypeFont(const std::wstring& wsFontPath, unsigned int unIndex);
 		CFontTrueType*    CreateTrueTypeFont(const std::wstring& wsFontPath, unsigned int unIndex);
@@ -305,6 +309,7 @@ namespace PdfWriter
 		std::vector<TFontInfo>             m_vCidTTFonts;
 		std::vector<TFontInfo>             m_vTTFonts;
 		std::vector<TFontInfo>             m_vFonts14;
+		std::vector<TFontInfo>             m_vFontsEmbedded;
 		CFont14*                           m_pDefaultCheckBoxFont;
 		CDictObject*                       m_pTransparencyGroup;
 		std::vector<CFontCidTrueType*>     m_vFreeTypeFonts;

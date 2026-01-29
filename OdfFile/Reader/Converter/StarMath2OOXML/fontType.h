@@ -30,6 +30,7 @@
  *
  */
 #pragma once
+
 namespace StarMath
 {
 enum class TypeFont

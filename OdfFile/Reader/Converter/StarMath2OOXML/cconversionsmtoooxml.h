@@ -30,17 +30,30 @@
  *
  */
 #pragma once
-#include "cstarmathpars.h"
 
+#include <vector>
+#include <string>
+
+#include "typeConversion.h"
+#include "TextDirection.h"
+#include "typeselements.h"
+
+namespace XmlUtils
+{
+class CXmlWriter;
+}
 namespace StarMath {
 //delete XmlWrite
-	class CConversionSMtoOOXML
+    class CElement;
+    class CAttribute;
+
+    class CConversionSMtoOOXML
 	{
 	public:
 		CConversionSMtoOOXML();
 		~CConversionSMtoOOXML();
 		void StartConversion(const std::vector<CElement*> arPars, const unsigned int& iAlignment = 1);
-		static void StandartProperties(XmlUtils::CXmlWriter* pXmlWrite,CAttribute* pAttribute,const TypeConversion& enTypeConversion, const TextDirection& enTypeLang = TextDirection::LeftToRight);
+        static void StandartProperties(XmlUtils::CXmlWriter* pXmlWrite, CAttribute* pAttribute,const TypeConversion& enTypeConversion, const TextDirection& enTypeLang = TextDirection::LeftToRight);
 		static void PropertiesMFPR(const std::wstring& wsType,XmlUtils::CXmlWriter* pXmlWrite,CAttribute* pAttribute,const TypeConversion &enTypeConversion);
 		static void PropertiesNaryPr(const TypeElement& enTypeOp,bool bEmptySub,bool bEmptySup,XmlUtils::CXmlWriter* pXmlWrite,CAttribute* pAttribute,const TypeConversion &enTypeConversion,const bool& bEQN = false);
 		static void PropertiesFuncPr(XmlUtils::CXmlWriter* pXmlWrite,CAttribute* pAttribute,const TypeConversion &enTypeConversion);

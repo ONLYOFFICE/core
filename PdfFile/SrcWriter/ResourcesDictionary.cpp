@@ -34,6 +34,7 @@
 #include "Utils.h"
 #include "GState.h"
 #include "Image.h"
+#include "Font14.h"
 
 namespace PdfWriter
 {
@@ -68,6 +69,10 @@ namespace PdfWriter
 	}
 	const char* CResourcesDict::GetFontName(CFontDict* pFont)
 	{
+		CFontEmbedded* pEmbedded = dynamic_cast<CFontEmbedded*>(pFont);
+		if (pEmbedded)
+			return pEmbedded->GetFontKey();
+
 		if (!m_pFonts)
 		{
 			m_pFonts = new CDictObject();

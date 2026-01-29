@@ -136,8 +136,6 @@ DocxConverter::DocxConverter(const std::wstring & path, bool bTemplate) : docx_f
     odt_context     = new odf_writer::odt_conversion_context(output_document);
 	drawingConverter = new NSBinPptxRW::CDrawingConverter;
 
-	drawingConverter->m_bNeedMainProps = true;
-
 //set flags to default
 	current_section_properties	= NULL;
     last_section_properties		= NULL;

@@ -6518,6 +6518,48 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
 		}
+		XLS::BaseObjectPtr CT_Bar3DChart::toXLS(const unsigned short chartIndex, XLS::BaseObjectPtr ChartFormats)
+		{
+			auto ChartFormatsPtr =  static_cast<XLS::CHARTFORMATS*>(ChartFormats.get());
+			for(auto ser : m_ser)
+			{
+				if(ser != nullptr)
+				{
+					ChartFormatsPtr->m_arSERIESFORMAT.push_back(ser->GetXLSFormat(chartIndex));
+				}
+			}
+			auto ptr = new XLS::CRT;
+			auto chartFormat = new XLS::ChartFormat;
+			chartFormat->icrt = chartIndex;
+			ptr->m_ChartFormat = XLS::BaseObjectPtr(chartFormat);
+			auto chartType = new XLS::Bar;
+			ptr->m_ChartType = XLS::BaseObjectPtr(chartType);
+			if(m_barDir.IsInit() && m_barDir->m_eValue == 0)
+				chartType->fTranspose = true;
+
+			if(m_gapWidth.IsInit())
+			{
+				_INT16 gapVal = 0;
+				try
+				{
+					gapVal = stoi(m_gapWidth.get());
+				}
+				catch (std::exception)
+				{}
+				chartType->pcGap = gapVal;
+			}
+			auto chart3Dpart = new XLS::Chart3d;
+			chart3Dpart->anRot = 20;
+			chart3Dpart->anElev = 15;
+			chart3Dpart->pcDist = 30;
+			chart3Dpart->pcHeight3D = 63;
+			chart3Dpart->pcDepth = 100;
+			chart3Dpart->pcGap = 150;
+			chart3Dpart->fNotPieChart = true;
+			chart3Dpart->fCluster = true;
+			ptr->m_Chart3d = XLS::BaseObjectPtr(chart3Dpart);
+			return XLS::BaseObjectPtr(ptr);
+		}
 		EElementType CT_Bar3DChart::getType() { return et_ct_bar3dchart; }
 		
 		ST_BarDir CBarDir::FromString(const std::wstring &sValue)

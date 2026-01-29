@@ -8419,6 +8419,35 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
 		}
+		XLS::BaseObjectPtr CT_Line3DChart::toXLS(const unsigned short chartIndex, XLS::BaseObjectPtr ChartFormats)
+		{
+			auto ChartFormatsPtr =  static_cast<XLS::CHARTFORMATS*>(ChartFormats.get());
+			for(auto ser : m_ser)
+			{
+				if(ser != nullptr)
+				{
+					ChartFormatsPtr->m_arSERIESFORMAT.push_back(ser->GetXLSFormat(chartIndex));
+				}
+			}
+			auto ptr = new XLS::CRT;
+			auto chartFormat = new XLS::ChartFormat;
+			chartFormat->icrt = chartIndex;
+			ptr->m_ChartFormat = XLS::BaseObjectPtr(chartFormat);
+			auto chartType = new XLS::Line;
+			ptr->m_ChartType = XLS::BaseObjectPtr(chartType);
+
+			auto chart3Dpart = new XLS::Chart3d;
+			chart3Dpart->anRot = 20;
+			chart3Dpart->anElev = 15;
+			chart3Dpart->pcDist = 30;
+			chart3Dpart->pcHeight3D = 63;
+			chart3Dpart->pcDepth = 100;
+			chart3Dpart->pcGap = 150;
+			chart3Dpart->fNotPieChart = true;
+			chart3Dpart->fCluster = true;
+			ptr->m_Chart3d = XLS::BaseObjectPtr(chart3Dpart);
+			return XLS::BaseObjectPtr(ptr);
+		}
 		EElementType CT_Line3DChart::getType() { return et_ct_line3dchart; }
 		
 		ST_Grouping CGrouping::FromString(const std::wstring &sValue)

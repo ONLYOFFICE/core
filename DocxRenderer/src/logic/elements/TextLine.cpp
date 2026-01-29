@@ -245,15 +245,15 @@ namespace NSDocxRenderer
 			return eVerticalCrossingType::vctCurrentInsideNext;
 
 		else if (this_top < other_top && this_bot > other_bot)
-			return  eVerticalCrossingType::vctCurrentOutsideNext;
+			return eVerticalCrossingType::vctCurrentOutsideNext;
 
 		else if (this_top < other_top && this_bot < other_bot && this_bot > other_top &&
-		    this_bot - other_top > c_dLINE_DISTANCE_ERROR_MM)
-			return  eVerticalCrossingType::vctCurrentAboveNext;
+		    this_bot - other_top > c_dOVERLAP_TEXT_LINE_ERROR_MM)
+			return eVerticalCrossingType::vctCurrentAboveNext;
 
 		else if (this_top > other_top && this_bot > other_bot && this_top < other_bot &&
-		         other_bot - this_top > c_dLINE_DISTANCE_ERROR_MM)
-			return  eVerticalCrossingType::vctCurrentBelowNext;
+		         other_bot - this_top > c_dOVERLAP_TEXT_LINE_ERROR_MM)
+			return eVerticalCrossingType::vctCurrentBelowNext;
 
 		else if (this_top == other_top && this_bot == other_bot &&
 		         m_dLeft == pLine->m_dLeft && m_dRight == pLine->m_dRight)
@@ -261,22 +261,22 @@ namespace NSDocxRenderer
 
 		else if (fabs(this_top - other_top) < c_dTHE_SAME_STRING_Y_PRECISION_MM &&
 		         fabs(this_bot - other_bot) < c_dTHE_SAME_STRING_Y_PRECISION_MM)
-			return  eVerticalCrossingType::vctTopAndBottomBordersMatch;
+			return eVerticalCrossingType::vctTopAndBottomBordersMatch;
 
 		else if (fabs(this_top - other_top) < c_dTHE_SAME_STRING_Y_PRECISION_MM)
-			return  eVerticalCrossingType::vctTopBorderMatch;
+			return eVerticalCrossingType::vctTopBorderMatch;
 
 		else if (fabs(this_bot - other_bot) < c_dTHE_SAME_STRING_Y_PRECISION_MM)
-			return  eVerticalCrossingType::vctBottomBorderMatch;
+			return eVerticalCrossingType::vctBottomBorderMatch;
 
-		else if (other_top - this_bot > -c_dLINE_DISTANCE_ERROR_MM)
-			return  eVerticalCrossingType::vctNoCrossingCurrentAboveNext;
+		else if (other_top - this_bot > -c_dOVERLAP_TEXT_LINE_ERROR_MM)
+			return eVerticalCrossingType::vctNoCrossingCurrentAboveNext;
 
-		else if (this_top - other_bot > -c_dLINE_DISTANCE_ERROR_MM)
-			return  eVerticalCrossingType::vctNoCrossingCurrentBelowNext;
+		else if (this_top - other_bot > -c_dOVERLAP_TEXT_LINE_ERROR_MM)
+			return eVerticalCrossingType::vctNoCrossingCurrentBelowNext;
 
 		else
-			return  eVerticalCrossingType::vctUnknown;
+			return eVerticalCrossingType::vctUnknown;
 	}
 
 	void CTextLine::RecalcWithNewItem(const CContText* pCont)

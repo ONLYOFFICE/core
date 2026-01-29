@@ -282,10 +282,12 @@ namespace NSDocxRenderer
 	void CTextLine::RecalcWithNewItem(const CContText* pCont)
 	{
 		CBaseItem::RecalcWithNewItem(pCont);
-		if (m_dTopWithMaxAscent == 0.0) m_dTopWithMaxAscent = pCont->m_dTopWithAscent;
-		else m_dTopWithMaxAscent = std::min(m_dTopWithMaxAscent, pCont->m_dTopWithAscent);
-
-		m_dBotWithMaxDescent = std::max(m_dBotWithMaxDescent, pCont->m_dBotWithDescent);
+		if (!pCont->IsOnlySpaces())
+		{
+			if (m_dTopWithMaxAscent == 0.0) m_dTopWithMaxAscent = pCont->m_dTopWithAscent;
+			else m_dTopWithMaxAscent = std::min(m_dTopWithMaxAscent, pCont->m_dTopWithAscent);
+			m_dBotWithMaxDescent = std::max(m_dBotWithMaxDescent, pCont->m_dBotWithDescent);
+		}
 	}
 
 	void CTextLine::SetVertAlignType(const eVertAlignType& oType)

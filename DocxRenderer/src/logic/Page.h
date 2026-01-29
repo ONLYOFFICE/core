@@ -194,9 +194,11 @@ namespace NSDocxRenderer
 
 		bool IsVerticalLineBetween(text_line_ptr_t pFirst, text_line_ptr_t pSecond) const noexcept;
 		bool IsHorizontalLineBetween(text_line_ptr_t pFirst, text_line_ptr_t pSecond) const noexcept;
+		bool IsTextLineBetween(text_line_ptr_t pFirst, text_line_ptr_t pSecond) const noexcept;
 
 		bool IsVerticalLineTrough(base_item_ptr_t pFirst) const noexcept;
 		bool IsHorizontalLineTrough(base_item_ptr_t pFirst) const noexcept;
+		bool IsTextLineTrough(base_item_ptr_t pFirst) const noexcept;
 
 		void ToXml(NSStringUtils::CStringBuilder& oWriter) const noexcept;
 		void WriteSectionToFile(bool bLastPage, NSStringUtils::CStringBuilder& oWriter) const noexcept;

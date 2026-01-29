@@ -1342,6 +1342,21 @@ namespace NSDocxRenderer
 
 		return IsHorizontalLineTrough(dummy_cont);
 	}
+	bool CPage::IsTextLineBetween(text_line_ptr_t pFirst, text_line_ptr_t pSecond) const noexcept
+	{
+		double left = std::min(pFirst->m_dLeft, pSecond->m_dLeft);
+		double right = std::max(pFirst->m_dRight, pSecond->m_dRight);
+		double top = std::min(pFirst->m_dBotWithMaxDescent, pSecond->m_dBotWithMaxDescent);
+		double bot = std::max(pFirst->m_dTopWithMaxAscent, pSecond->m_dTopWithMaxAscent);
+
+		auto dummy_cont = std::make_shared<CContText>();
+		dummy_cont->m_dLeft = left - c_dGRAPHICS_ERROR_MM;
+		dummy_cont->m_dRight = right + c_dGRAPHICS_ERROR_MM;
+		dummy_cont->m_dTop = top - c_dGRAPHICS_ERROR_MM;
+		dummy_cont->m_dBot = bot + c_dGRAPHICS_ERROR_MM;
+
+		return IsTextLineTrough(dummy_cont);
+	}
 
 	bool CPage::IsVerticalLineTrough(base_item_ptr_t pFirst) const noexcept
 	{
@@ -1365,6 +1380,20 @@ namespace NSDocxRenderer
 
 		for (const auto& line : hor_lines)
 			if (line.pos > pFirst->m_dTop && line.pos < pFirst->m_dBot && line.min <= center && line.max >= center)
+				return true;
+
+		return false;
+	}
+	bool CPage::IsTextLineTrough(base_item_ptr_t pFirst) const noexcept
+	{
+		const auto width = pFirst->m_dRight - pFirst->m_dLeft;
+		const auto center = pFirst->m_dLeft + width / 2;
+
+		for (const auto& text_line : m_arShapes)
+			if (text_line && text_line->m_eType == CShape::eShapeType::stTextBox && text_line->m_dBot > pFirst->m_dTop &&
+			        text_line->m_dBot < pFirst->m_dBot &&
+			        text_line->m_dLeft <= center &&
+			        text_line->m_dRight >= center)
 				return true;
 
 		return false;
@@ -1438,7 +1467,7 @@ namespace NSDocxRenderer
 
 		for (const auto& line : m_arTextLines)
 		{
-			if (fabs(line->m_dBotWithMaxDescent - curr_bot) < 4 * c_dTHE_SAME_STRING_Y_PRECISION_MM)
+			if (fabs(line->m_dBot - curr_bot) < 4 * c_dTHE_SAME_STRING_Y_PRECISION_MM)
 			{
 				bot_aligned_text_lines.back().push_back(line);
 			}
@@ -1446,7 +1475,7 @@ namespace NSDocxRenderer
 			{
 				bot_aligned_text_lines.push_back({});
 				bot_aligned_text_lines.back().push_back(line);
-				curr_bot = line->m_dBotWithMaxDescent;
+				curr_bot = line->m_dBot;
 			}
 		}
 
@@ -1932,6 +1961,8 @@ namespace NSDocxRenderer
 			for (size_t index = 0; index < ar_positions.size() - 1; ++index)
 			{
 				if (IsHorizontalLineBetween(text_lines[index], text_lines[index + 1]))
+					ar_delims[index] = true;
+				if (IsTextLineBetween(text_lines[index], text_lines[index + 1]))
 					ar_delims[index] = true;
 			}
 

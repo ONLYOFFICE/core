@@ -977,8 +977,10 @@ namespace NSDocxRenderer
 	 eHorizontalCrossingType eHType)
 	{
 
+		double first_height = pFirstCont->m_dBotWithDescent - pFirstCont->m_dTopWithAscent;
 		bool bIf1 = eVType == eVerticalCrossingType::vctCurrentAboveNext ||
-		        eVType == eVerticalCrossingType::vctCurrentInsideNext;
+		        eVType == eVerticalCrossingType::vctCurrentInsideNext &&
+		        pSecondCont->m_dBot - pFirstCont->m_dBot > first_height * 0.2;
 
 		bool bIf2 = eVType == eVerticalCrossingType::vctCurrentBelowNext;
 

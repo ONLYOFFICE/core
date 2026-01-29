@@ -66,6 +66,8 @@ namespace NSDocxRenderer
 		std::sort(m_arConts.begin(), m_arConts.end(), [] (const cont_ptr_t& a, const cont_ptr_t& b) {
 			if (!a) return false;
 			if (!b) return true;
+			if (fabs(a->m_dLeft - b->m_dLeft) < c_dTHE_SAME_STRING_X_PRECISION_MM)
+				return a->m_dRight < b->m_dRight;
 			return a->m_dLeft < b->m_dLeft;
 		});
 
@@ -245,12 +247,12 @@ namespace NSDocxRenderer
 		else if (this_top < other_top && this_bot > other_bot)
 			return  eVerticalCrossingType::vctCurrentOutsideNext;
 
-		else if (this_top < other_top && this_bot < other_bot &&
-		         (this_bot >= other_top || fabs(this_bot - other_top) < c_dTHE_SAME_STRING_Y_PRECISION_MM))
+		else if (this_top < other_top && this_bot < other_bot && this_bot > other_top &&
+		    this_bot - other_top > c_dLINE_DISTANCE_ERROR_MM)
 			return  eVerticalCrossingType::vctCurrentAboveNext;
 
-		else if (this_top > other_top && this_bot > other_bot &&
-		         (this_top <= other_bot || fabs(this_top - other_bot) < c_dTHE_SAME_STRING_Y_PRECISION_MM))
+		else if (this_top > other_top && this_bot > other_bot && this_top < other_bot &&
+		         other_bot - this_top > c_dLINE_DISTANCE_ERROR_MM)
 			return  eVerticalCrossingType::vctCurrentBelowNext;
 
 		else if (this_top == other_top && this_bot == other_bot &&
@@ -267,10 +269,10 @@ namespace NSDocxRenderer
 		else if (fabs(this_bot - other_bot) < c_dTHE_SAME_STRING_Y_PRECISION_MM)
 			return  eVerticalCrossingType::vctBottomBorderMatch;
 
-		else if (this_bot < other_top)
+		else if (other_top - this_bot > -c_dLINE_DISTANCE_ERROR_MM)
 			return  eVerticalCrossingType::vctNoCrossingCurrentAboveNext;
 
-		else if (this_top > other_bot)
+		else if (this_top - other_bot > -c_dLINE_DISTANCE_ERROR_MM)
 			return  eVerticalCrossingType::vctNoCrossingCurrentBelowNext;
 
 		else

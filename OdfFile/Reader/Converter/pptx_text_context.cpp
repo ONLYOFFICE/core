@@ -210,6 +210,7 @@ void pptx_text_context::Impl::start_paragraph(const std::wstring & styleName)
 		//}
 		//else/* (paragraph_style_name_ != styleName)*/
 		{
+			is_predump = true;
 			dump_paragraph();
 		}
 	}else
@@ -220,6 +221,7 @@ void pptx_text_context::Impl::start_paragraph(const std::wstring & styleName)
 	last_paragraph_style_name_	= paragraph_style_name_;
 	paragraph_style_name_		= styleName;
 	in_paragraph				= true;
+	is_predump = false;
 }
 
 void pptx_text_context::Impl::end_paragraph()

@@ -218,6 +218,25 @@ namespace DocFileFormat
 				m_oXmlWriter.WriteNodeBegin( L"w:noPunctuationKerning",  TRUE );
 				m_oXmlWriter.WriteNodeEnd( L"",  TRUE );
 			}
+            if (dop->doptypography->iJustification != 0)
+            {
+                m_oXmlWriter.WriteNodeBegin(L"w:characterSpacingControl", TRUE);
+
+                const wchar_t* spacingValue = L"doNotCompress";
+
+                switch(dop->doptypography->iJustification)
+                {
+                case 1:
+                    spacingValue = L"compressPunctuation";
+                    break;
+                case 2:
+                    spacingValue = L"compressPunctuationAndJapaneseKana";
+                    break;
+                }
+
+                m_oXmlWriter.WriteAttribute(L"w:val", spacingValue);
+                m_oXmlWriter.WriteNodeEnd(L"", TRUE);
+            }
 		}
 
 		//footnote properties

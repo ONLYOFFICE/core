@@ -369,7 +369,15 @@ void pptx_text_context::Impl::ApplyListProperties(odf_reader::paragraph_format_p
 		else if(!propertiesOut.fo_margin_left_)
 			propertiesOut.fo_margin_left_ = odf_types::length(0, odf_types::length::pt);
 
-		propertiesOut.fo_text_indent_ = list_properties->text_min_label_width_;
+		if(propertiesOut.fo_text_indent_ && list_properties->text_min_label_width_)
+		{
+			odf_types::length::unit tempTypeUnit = propertiesOut.fo_text_indent_->get_length().get_unit();
+			double dNewIndent = propertiesOut.fo_text_indent_->get_length().get_value();
+			dNewIndent += list_properties->text_min_label_width_->get_value_unit(tempTypeUnit);
+			propertiesOut.fo_text_indent_ = odf_types::length(dNewIndent, tempTypeUnit);
+		}
+		else if(list_properties->text_min_label_width_)
+			propertiesOut.fo_text_indent_ = list_properties->text_min_label_width_;
 
 		if (list_properties->fo_width_)
 		{

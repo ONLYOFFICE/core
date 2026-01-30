@@ -3614,12 +3614,6 @@ bool CPdfWriter::GetEmbeddedFont(const std::wstring& wsFontName)
 	m_pFontEmbedded = m_pDocument->FindFontEmbedded(wsFontPath, lFaceIndex);
 	return !!m_pFontEmbedded;
 }
-void CPdfWriter::AddEmbeddedFontInfo(const std::wstring& wsFontName, const std::wstring& wsFilePath, const std::string& sFontKey, PdfWriter::EFontType eFontType,
-									 const std::map<unsigned int, unsigned int>& mCodeToWidth, const std::map<unsigned int, unsigned int>& mCodeToUnicode, const std::map<unsigned int, unsigned int>& mCodeToGID)
-{
-	AddFont(L"Embedded: " + wsFontName, false, false, wsFilePath, 0);
-	m_pDocument->CreateFontEmbedded(wsFilePath, 0, sFontKey, eFontType, mCodeToWidth, mCodeToUnicode, mCodeToGID);
-}
 bool CPdfWriter::UpdateFont()
 {
 	m_bNeedUpdateTextFont = false;

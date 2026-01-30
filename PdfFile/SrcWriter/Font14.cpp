@@ -113,7 +113,6 @@ namespace PdfWriter
 
 		return true;
 	}
-
 	unsigned int CFontEmbedded::GetWidth(unsigned short ushCode)
 	{
 		// Возвращаем ширину из карты
@@ -123,7 +122,6 @@ namespace PdfWriter
 
 		return 0;
 	}
-
 	unsigned int CFontEmbedded::EncodeUnicode(const unsigned int& unGID, const unsigned int& unUnicode)
 	{
 		for (auto& pair : m_mCodeToUnicode)
@@ -135,7 +133,6 @@ namespace PdfWriter
 			m_mCodeToUnicode.insert(std::pair<unsigned int, unsigned short>(ushCode, unUnicode));
 		return ushCode;
 	}
-
 	unsigned int CFontEmbedded::EncodeGID(const unsigned int& unGID)
 	{
 		for (auto& pair : m_mCodeToGID)

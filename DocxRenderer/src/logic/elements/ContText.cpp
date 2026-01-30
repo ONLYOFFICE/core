@@ -208,34 +208,34 @@ namespace NSDocxRenderer
 			return eVerticalCrossingType::vctCurrentInsideNext;
 
 		else if (this_top < other_top && this_bot > other_bot)
-			return  eVerticalCrossingType::vctCurrentOutsideNext;
+			return eVerticalCrossingType::vctCurrentOutsideNext;
 
-		else if (this_top < other_top && this_bot < other_bot &&
-		         (this_bot >= other_top || fabs(this_bot - other_top) < c_dTHE_SAME_STRING_Y_PRECISION_MM))
-			return  eVerticalCrossingType::vctCurrentAboveNext;
+		else if (this_top < other_top && this_bot < other_bot && this_bot > other_top &&
+		    this_bot - other_top > c_dOVERLAP_TEXT_LINE_ERROR_MM)
+			return eVerticalCrossingType::vctCurrentAboveNext;
 
-		else if (this_top > other_top && this_bot > other_bot &&
-		         (this_top <= other_bot || fabs(this_top - other_bot) < c_dTHE_SAME_STRING_Y_PRECISION_MM))
-			return  eVerticalCrossingType::vctCurrentBelowNext;
+		else if (this_top > other_top && this_bot > other_bot && this_top < other_bot &&
+		         other_bot - this_top > c_dOVERLAP_TEXT_LINE_ERROR_MM)
+			return eVerticalCrossingType::vctCurrentBelowNext;
 
 		else if (this_top == other_top && this_bot == other_bot)
 			return  eVerticalCrossingType::vctDublicate;
 
 		else if (fabs(this_top - other_top) < c_dTHE_SAME_STRING_Y_PRECISION_MM &&
 		         fabs(this_bot - other_bot) < c_dTHE_SAME_STRING_Y_PRECISION_MM)
-			return  eVerticalCrossingType::vctTopAndBottomBordersMatch;
+			return eVerticalCrossingType::vctTopAndBottomBordersMatch;
 
 		else if (fabs(this_top - other_top) < c_dTHE_SAME_STRING_Y_PRECISION_MM)
-			return  eVerticalCrossingType::vctTopBorderMatch;
+			return eVerticalCrossingType::vctTopBorderMatch;
 
 		else if (fabs(this_bot - other_bot) < c_dTHE_SAME_STRING_Y_PRECISION_MM)
-			return  eVerticalCrossingType::vctBottomBorderMatch;
+			return eVerticalCrossingType::vctBottomBorderMatch;
 
-		else if (this_bot < other_top)
-			return  eVerticalCrossingType::vctNoCrossingCurrentAboveNext;
+		else if (other_top - this_bot > -c_dOVERLAP_TEXT_LINE_ERROR_MM)
+			return eVerticalCrossingType::vctNoCrossingCurrentAboveNext;
 
-		else if (this_top > other_bot)
-			return  eVerticalCrossingType::vctNoCrossingCurrentBelowNext;
+		else if (this_top - other_bot > -c_dOVERLAP_TEXT_LINE_ERROR_MM)
+			return eVerticalCrossingType::vctNoCrossingCurrentBelowNext;
 
 		else
 			return  eVerticalCrossingType::vctUnknown;
@@ -895,12 +895,12 @@ namespace NSDocxRenderer
 	 eHorizontalCrossingType eHType)
 	{
 		//Условие пересечения по вертикали
-		bool bIf1 = eVType == eVerticalCrossingType::vctCurrentAboveNext; //текущий cont выше
-		bool bIf2 = eVType == eVerticalCrossingType::vctCurrentBelowNext; //текущий cont ниже
+		bool bIf1 = eVType == eVerticalCrossingType::vctCurrentAboveNext;
+		bool bIf2 = eVType == eVerticalCrossingType::vctCurrentBelowNext;
 
 		//Условие пересечения по горизонтали
-		bool bIf3 = eHType == eHorizontalCrossingType::hctCurrentLeftOfNext; //текущий cont левее
-		bool bIf4 = eHType == eHorizontalCrossingType::hctCurrentRightOfNext; //текущий cont правее
+		bool bIf3 = eHType == eHorizontalCrossingType::hctCurrentLeftOfNext;
+		bool bIf4 = eHType == eHorizontalCrossingType::hctCurrentRightOfNext;
 
 		//Размеры шрифта и текст должны бать одинаковыми
 		bool bIf5 = pFirstCont->m_pFontStyle->dFontSize == pSecondCont->m_pFontStyle->dFontSize;
@@ -916,9 +916,7 @@ namespace NSDocxRenderer
 		bool bIf11 = pFirstCont->m_pFontStyle->oBrush.Color1 == c_iGreyColor2;
 		bool bIf12 = pSecondCont->m_pFontStyle->oBrush.Color1 == c_iGreyColor2;
 
-		//note Каждый символ с Emboss или Engrave разбиваются на 3 символа с разными цветами
-		//note Логика подобрана для конкретного примера - возможно нужно будет ее обобщить.
-		//todo существует проблема неправильного определением FontEffects с физически пересекаемыми строчками - файл generaltest.pdf p.14
+		// каждый символ с Emboss или Engrave разбиваются на 3 символа с разными цветами
 		if (bIf5 && bIf6)
 		{
 			if (bIf12 && pFirstCont->m_bIsEmbossPresent)
@@ -978,8 +976,10 @@ namespace NSDocxRenderer
 	 eHorizontalCrossingType eHType)
 	{
 
+		double first_height = pFirstCont->m_dBotWithDescent - pFirstCont->m_dTopWithAscent;
 		bool bIf1 = eVType == eVerticalCrossingType::vctCurrentAboveNext ||
-		        eVType == eVerticalCrossingType::vctCurrentInsideNext;
+		        eVType == eVerticalCrossingType::vctCurrentInsideNext &&
+		        pSecondCont->m_dBot - pFirstCont->m_dBot > first_height * 0.2;
 
 		bool bIf2 = eVType == eVerticalCrossingType::vctCurrentBelowNext;
 
@@ -1259,12 +1259,11 @@ namespace NSDocxRenderer
 		pCont->m_dWidth = dWidth;
 		pCont->m_dRight = dRight;
 
-		double font_size = oFont.Size;
-		double em_height = oMetrics.dEmHeight;
-		double ratio = font_size / em_height * c_dPtToMM;
+		double ascent = pFontManager->GetFontAscent();
+		double descent = pFontManager->GetFontDescent();
 
-		pCont->m_dTopWithAscent = pCont->m_dBot - (oMetrics.dAscent * ratio);
-		pCont->m_dBotWithDescent = pCont->m_dBot + (oMetrics.dDescent * ratio);
+		pCont->m_dTopWithAscent = pCont->m_dBot - ascent;
+		pCont->m_dBotWithDescent = pCont->m_dBot + fabs(descent);
 		pCont->m_dSpaceWidthMM = pFontManager->GetSpaceWidthMM();
 
 		pCont->m_wsOriginFontName = oFont.Name;

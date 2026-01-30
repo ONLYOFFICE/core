@@ -66,6 +66,8 @@ namespace NSDocxRenderer
 		std::sort(m_arConts.begin(), m_arConts.end(), [] (const cont_ptr_t& a, const cont_ptr_t& b) {
 			if (!a) return false;
 			if (!b) return true;
+			if (fabs(a->m_dLeft - b->m_dLeft) < c_dTHE_SAME_STRING_X_PRECISION_MM)
+				return a->m_dRight < b->m_dRight;
 			return a->m_dLeft < b->m_dLeft;
 		});
 
@@ -243,15 +245,15 @@ namespace NSDocxRenderer
 			return eVerticalCrossingType::vctCurrentInsideNext;
 
 		else if (this_top < other_top && this_bot > other_bot)
-			return  eVerticalCrossingType::vctCurrentOutsideNext;
+			return eVerticalCrossingType::vctCurrentOutsideNext;
 
-		else if (this_top < other_top && this_bot < other_bot &&
-		         (this_bot >= other_top || fabs(this_bot - other_top) < c_dTHE_SAME_STRING_Y_PRECISION_MM))
-			return  eVerticalCrossingType::vctCurrentAboveNext;
+		else if (this_top < other_top && this_bot < other_bot && this_bot > other_top &&
+		    this_bot - other_top > c_dOVERLAP_TEXT_LINE_ERROR_MM)
+			return eVerticalCrossingType::vctCurrentAboveNext;
 
-		else if (this_top > other_top && this_bot > other_bot &&
-		         (this_top <= other_bot || fabs(this_top - other_bot) < c_dTHE_SAME_STRING_Y_PRECISION_MM))
-			return  eVerticalCrossingType::vctCurrentBelowNext;
+		else if (this_top > other_top && this_bot > other_bot && this_top < other_bot &&
+		         other_bot - this_top > c_dOVERLAP_TEXT_LINE_ERROR_MM)
+			return eVerticalCrossingType::vctCurrentBelowNext;
 
 		else if (this_top == other_top && this_bot == other_bot &&
 		         m_dLeft == pLine->m_dLeft && m_dRight == pLine->m_dRight)
@@ -259,31 +261,33 @@ namespace NSDocxRenderer
 
 		else if (fabs(this_top - other_top) < c_dTHE_SAME_STRING_Y_PRECISION_MM &&
 		         fabs(this_bot - other_bot) < c_dTHE_SAME_STRING_Y_PRECISION_MM)
-			return  eVerticalCrossingType::vctTopAndBottomBordersMatch;
+			return eVerticalCrossingType::vctTopAndBottomBordersMatch;
 
 		else if (fabs(this_top - other_top) < c_dTHE_SAME_STRING_Y_PRECISION_MM)
-			return  eVerticalCrossingType::vctTopBorderMatch;
+			return eVerticalCrossingType::vctTopBorderMatch;
 
 		else if (fabs(this_bot - other_bot) < c_dTHE_SAME_STRING_Y_PRECISION_MM)
-			return  eVerticalCrossingType::vctBottomBorderMatch;
+			return eVerticalCrossingType::vctBottomBorderMatch;
 
-		else if (this_bot < other_top)
-			return  eVerticalCrossingType::vctNoCrossingCurrentAboveNext;
+		else if (other_top - this_bot > -c_dOVERLAP_TEXT_LINE_ERROR_MM)
+			return eVerticalCrossingType::vctNoCrossingCurrentAboveNext;
 
-		else if (this_top > other_bot)
-			return  eVerticalCrossingType::vctNoCrossingCurrentBelowNext;
+		else if (this_top - other_bot > -c_dOVERLAP_TEXT_LINE_ERROR_MM)
+			return eVerticalCrossingType::vctNoCrossingCurrentBelowNext;
 
 		else
-			return  eVerticalCrossingType::vctUnknown;
+			return eVerticalCrossingType::vctUnknown;
 	}
 
 	void CTextLine::RecalcWithNewItem(const CContText* pCont)
 	{
 		CBaseItem::RecalcWithNewItem(pCont);
-		if (m_dTopWithMaxAscent == 0.0) m_dTopWithMaxAscent = pCont->m_dTopWithAscent;
-		else m_dTopWithMaxAscent = std::min(m_dTopWithMaxAscent, pCont->m_dTopWithAscent);
-
-		m_dBotWithMaxDescent = std::max(m_dBotWithMaxDescent, pCont->m_dBotWithDescent);
+		if (!pCont->IsOnlySpaces())
+		{
+			if (m_dTopWithMaxAscent == 0.0) m_dTopWithMaxAscent = pCont->m_dTopWithAscent;
+			else m_dTopWithMaxAscent = std::min(m_dTopWithMaxAscent, pCont->m_dTopWithAscent);
+			m_dBotWithMaxDescent = std::max(m_dBotWithMaxDescent, pCont->m_dBotWithDescent);
+		}
 	}
 
 	void CTextLine::SetVertAlignType(const eVertAlignType& oType)

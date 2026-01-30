@@ -581,6 +581,16 @@ namespace NSDocxRenderer
 	{
 		return c_dPtToMM * (m_oFontMetrics.dLineSpacing * m_oFont.Size) / m_oFontMetrics.dEmHeight;
 	}
+	double CFontManager::GetFontAscent() const
+	{
+		//double tmp = m_oFontMetrics.dAscent;
+		double tmp = m_oFontMetrics.dLineSpacing - fabs(m_oFontMetrics.dDescent);
+		return c_dPtToMM * (tmp * m_oFont.Size) / m_oFontMetrics.dEmHeight;
+	}
+	double CFontManager::GetFontDescent() const
+	{
+		return c_dPtToMM * (m_oFontMetrics.dDescent * m_oFont.Size) / m_oFontMetrics.dEmHeight;
+	}
 	double CFontManager::GetSpaceWidthMM() const
 	{
 		double dSpaceWidthMM = 0.0;

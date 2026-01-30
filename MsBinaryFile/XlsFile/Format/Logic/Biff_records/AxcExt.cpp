@@ -69,7 +69,7 @@ void AxcExt::readFields(CFRecord& record)
 
 void AxcExt::writeFields(CFRecord& record)
 {
-	unsigned char flags = 0;
+	unsigned short flags = 0;
 	SETBIT(flags, 0, fAutoMin)
 	SETBIT(flags, 1, fAutoMax)
 	SETBIT(flags, 2, fAutoMajor)

@@ -53,6 +53,7 @@
 #include "../../Binary/XlsbFormat/FileTypes_SpreadsheetBin.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Binary/CFStreamCacheWriter.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/WorksheetSubstream.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/ChartSheetSubstream.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/PAGESETUP.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/SORTANDFILTER.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/CONDFMTS.h"
@@ -372,6 +373,27 @@ namespace OOX
 		}
 		XLS::BaseObjectPtr CWorksheet::toXLS()
 		{
+			if(m_bIsChartSheet)
+			{
+				auto chartSheetPtr = new XLS::ChartSheetSubstream(0);
+				XLS::BaseObjectPtr objPtr(chartSheetPtr);
+				if(m_oPageSetup.IsInit())
+					chartSheetPtr->m_PAGESETUP = m_oPageSetup->toXLS();
+				else
+					{
+						auto pageSetup = new XLS::PAGESETUP;
+						chartSheetPtr->m_PAGESETUP = XLS::BaseObjectPtr(pageSetup);
+					}
+				if(m_oDrawing.IsInit() && m_oDrawing->m_oId.IsInit())
+				{
+					RId drawingId = m_oDrawing->m_oId->GetValue();
+					auto castedDrawing = Get<OOX::File>(drawingId);
+					auto drawingPtr = static_cast<OOX::Spreadsheet::CDrawing*>(castedDrawing.GetPointer());
+					drawingPtr->toXLSChart(objPtr);
+				}
+				return objPtr;
+
+			}
 			auto worksheetPtr = new XLS::WorksheetSubstream(0);
 			auto sheetPtr = XLS::BaseObjectPtr(worksheetPtr);
 			if(m_oSortState.IsInit() || m_oAutofilter.IsInit())
@@ -462,8 +484,6 @@ namespace OOX
 						worksheetPtr->m_arPIVOTVIEW.push_back(tempPivot->m_oPivotTableDefinition->toXLS());
 				}
 			}
-
-
 			return sheetPtr;
 		}
         void CWorksheet::WriteBin(XLS::StreamCacheWriterPtr& writer) const

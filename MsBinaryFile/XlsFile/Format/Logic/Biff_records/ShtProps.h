@@ -56,8 +56,8 @@ public:
 
 //-----------------------------
     bool fManSerAlloc = false;
-    bool fManPlotArea = false;
-    bool fPlotVisOnly = false;
+	bool fManPlotArea = false;
+	bool fPlotVisOnly = true;
     bool fNotSizeWith = false;
     bool fAlwaysAutoPlotArea = false;
     unsigned char	mdBlank = 0;

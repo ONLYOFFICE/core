@@ -62,6 +62,8 @@ public:
 	virtual			void useContinueRecords	(CFRecord& record);
 
 	void prepareComment	(const unsigned int CommentId);
+	void prepareChart	(const unsigned int chartId, const unsigned int xPos, const unsigned int xOffset,
+		const unsigned int yPos, const unsigned int yOffset );
 
 //-----------------------------
 	ODRAW::OfficeArtDgContainer rgChildRec;

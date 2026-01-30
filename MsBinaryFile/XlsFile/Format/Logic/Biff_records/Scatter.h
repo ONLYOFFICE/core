@@ -54,8 +54,8 @@ public:
 	int	serialize(std::wostream & _stream);
 
 //-----------------------------
-    _UINT16 pcBubbleSizeRatio = 0;
-    _UINT16 wBubbleSize = 0;
+	_UINT16 pcBubbleSizeRatio = 100;
+	_UINT16 wBubbleSize = 1;
     bool fBubbles = false;
     bool fShowNegBubbles = false;
     bool fHasShadow = false;

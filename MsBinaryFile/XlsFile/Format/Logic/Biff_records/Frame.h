@@ -54,7 +54,7 @@ public:
 //-----------------------------
 	_UINT16 frt = 0;
 	bool fAutoSize = false;
-	bool fAutoPosition = false;
+	bool fAutoPosition = true;
 
 };
 

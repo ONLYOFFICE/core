@@ -71,6 +71,7 @@ void Legend::writeFields(CFRecord& record)
 {
 	unsigned short flags = 0;
 	SETBIT(flags, 0, fAutoPosition)
+	SETBIT(flags, 1, 1) //reserved
 	SETBIT(flags, 2, fAutoPosX)
 	SETBIT(flags, 3, fAutoPosY)
 	SETBIT(flags, 4, fVert)

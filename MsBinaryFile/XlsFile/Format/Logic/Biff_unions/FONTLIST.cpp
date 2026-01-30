@@ -95,5 +95,24 @@ const bool FONTLIST::loadContent(BinProcessor& proc)
 	return true;
 }
 
+const bool FONTLIST::saveContent(BinProcessor& proc)
+{
+	if(m_fontList == nullptr)
+		return  false;
+	proc.mandatory(*m_fontList);
+	if(m_startObject != nullptr)
+		proc.mandatory(*m_startObject);
+	for(auto i : m_fonts)
+	{
+		if(i.first != nullptr)
+			proc.mandatory(*i.first);
+		if(i.second != nullptr)
+			proc.mandatory(*i.second);
+	}
+	if(m_endObject != nullptr)
+		proc.mandatory(*m_endObject);
+	return true;
+}
+
 } // namespace XLS
 

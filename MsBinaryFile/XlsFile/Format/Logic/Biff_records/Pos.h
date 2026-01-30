@@ -57,8 +57,8 @@ public:
 
 	static const ElementType	type = typePos;
 
-    _UINT16 mdTopLt = 0;
-    _UINT16 mdBotRt = 0;
+	_UINT16 mdTopLt = 2;
+	_UINT16 mdBotRt = 2;
 	
     _INT16 x1 = 0;
     _INT16 y1 = 0;

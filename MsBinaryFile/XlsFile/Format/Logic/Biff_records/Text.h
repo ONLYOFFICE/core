@@ -56,10 +56,10 @@ public:
 
 	int serialize(std::wostream & _stream);
 
-	unsigned char	at = 0;
-	unsigned char	vat = 0;
+	unsigned char	at = 2;
+	unsigned char	vat = 2;
 
-	_UINT16			wBkgMode = 0;
+	_UINT16			wBkgMode = 1;
 	LongRGB			rgbText;
 
 	_INT32			x = 0;
@@ -73,7 +73,7 @@ public:
 	bool fAutoText = false;
 	bool fGenerated = false;
 	bool fDeleted = false;
-	bool fAutoMode = false;
+	bool fAutoMode = true;
 	bool fShowLabelAndPerc = false;
 	bool fShowPercent = false;
 	bool fShowBubbleSizes = false;

@@ -72,6 +72,7 @@ namespace PPTX
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+			XLS::BaseObjectPtr toXLSFrame() const;
 
 			void Merge(SpPr& spPr)const;
 

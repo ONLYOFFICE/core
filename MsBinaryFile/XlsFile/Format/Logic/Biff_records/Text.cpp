@@ -40,7 +40,7 @@ Text::Text()
 	is_area			= false;
 	dlp				= false;
 	iReadingOrder	= 0;
-	icvText			= 0xff; 
+	icvText			= 0;
 }
 
 

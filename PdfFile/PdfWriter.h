@@ -233,8 +233,6 @@ public:
 	void SetHeadings(CHeadings* pCommand);
 	void SetNeedAddHelvetica(bool bNeedAddHelvetica);
 	void SetSplit(bool bSplit) { m_bSplit = bSplit; }
-	void AddEmbeddedFontInfo(const std::wstring& wsFontName, const std::wstring& wsFilePath, const std::string& sFontKey, PdfWriter::EFontType eFontType,
-							 const std::map<unsigned int, unsigned int>& mCodeToWidth, const std::map<unsigned int, unsigned int>& mCodeToUnicode, const std::map<unsigned int, unsigned int>& mCodeToGID);
 
 private:
 	PdfWriter::CAction* GetAction(CAnnotFieldInfo::CActionFieldPr* pAction, bool bDeferred = false);

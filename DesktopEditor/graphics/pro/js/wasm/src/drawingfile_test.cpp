@@ -1194,7 +1194,7 @@ int main(int argc, char* argv[])
 	}
 
 	// RASTER
-	if (true)
+	if (false)
 	{
 		int i = nTestPage;
 		//for (int i = 0; i < nPagesCount; ++i)
@@ -1364,7 +1364,7 @@ int main(int argc, char* argv[])
 	}
 
 	// INTERACTIVE FORMS
-	if (true)
+	if (false)
 	{
 		ReadInteractiveFormsFonts(pGrFile, 1);
 		ReadInteractiveFormsFonts(pGrFile, 2);
@@ -1483,7 +1483,7 @@ int main(int argc, char* argv[])
 	}
 
 	// ANNOTS
-	if (true)
+	if (false)
 	{
 		BYTE* pAnnots = GetAnnotationsInfo(pGrFile, -1);
 		nLength = READ_INT(pAnnots);
@@ -2254,7 +2254,6 @@ int main(int argc, char* argv[])
 	// SCAN PAGE Fonts
 	if (true)
 	{
-		//ScanPage(pGrFile, nTestPage, 2);
 		SetScanPageFonts(pGrFile, nTestPage);
 
 		ReadInteractiveFormsFonts(pGrFile, 1);

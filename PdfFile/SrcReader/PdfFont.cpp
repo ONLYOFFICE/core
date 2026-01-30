@@ -558,7 +558,7 @@ std::wstring GetFontData(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CP
 	if (gfxFont->getEmbeddedFontID(&oEmbRef) || IsBaseFont(wsFontBaseName))
 	{
 		std::wstring wsFontName;
-		RendererOutputDev::GetFont(xref, pFontManager, pFontList, gfxFont, wsFileName, wsFontName);
+		RendererOutputDev::GetFont(xref, pFontManager, pFontList, gfxFont, wsFileName, wsFontName, false);
 
 		sFontName = U_TO_UTF8(wsFontName);
 		CheckFontStylePDF(wsFontName, bBold, bItalic);

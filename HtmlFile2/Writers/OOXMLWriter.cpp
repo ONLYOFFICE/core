@@ -10,9 +10,6 @@
 
 #include "../src/Languages.h"
 
-#include <iostream>
-#include <ostream>
-
 namespace HTML
 {
 #ifndef VALUE2STR
@@ -697,12 +694,10 @@ std::wstring COOXMLWriter::WriteRPr(XmlString& oXml, const std::vector<NSCSS::CN
 	return sRStyle;
 }
 
-bool COOXMLWriter::WriteText(const std::wstring& wsText, const std::vector<NSCSS::CNode>& arSelectors)
+bool COOXMLWriter::WriteText(std::wstring wsText, const std::vector<NSCSS::CNode>& arSelectors)
 {
 	if (wsText.empty())
 		return false;
-
-	std::wstring wsNormalizeText(wsText);
 
 	bool bBidirectional{false}, bPreformatted{false}, bQuotation{false}, bAddSpaces{true}, bMergedText{false};
 
@@ -736,16 +731,16 @@ bool COOXMLWriter::WriteText(const std::wstring& wsText, const std::vector<NSCSS
 		}
 	}
 
-	if (!bPreformatted && wsNormalizeText.end() == std::find_if_not(wsNormalizeText.begin(), wsNormalizeText.end(), [](wchar_t wchChar){ return iswspace(wchChar) && 0xa0 != wchChar;}))
+	if (!bPreformatted && wsText.end() == std::find_if_not(wsText.begin(), wsText.end(), [](wchar_t wchChar){ return iswspace(wchChar) && 0xa0 != wchChar;}))
 		return false;
 
 	std::wstring wsHeaderId;
 
 	if (ElementInHeader(arSelectors))
-		wsHeaderId = StandardizeHeaderId(wsNormalizeText);
+		wsHeaderId = StandardizeHeaderId(wsText);
 
 	if(bBidirectional)
-		std::reverse(wsNormalizeText.begin(), wsNormalizeText.end());
+		std::reverse(wsText.begin(), wsText.end());
 
 	const bool bInT = m_arStates.top().m_bInT;
 
@@ -771,7 +766,7 @@ bool COOXMLWriter::WriteText(const std::wstring& wsText, const std::vector<NSCSS
 	if (bQuotation)
 		m_arStates.top().m_pCurrentDocument->WriteString(L"<w:t xml:space=\"preserve\">&quot;</w:t>");
 
-	if (!bPreformatted && bAddSpaces && m_arStates.top().m_bInP && !m_arStates.top().m_bInR && !iswspace(wsNormalizeText.front()) && !iswpunct(wsNormalizeText.front()) && !m_arStates.top().m_bWasSpace)
+	if (!bPreformatted && bAddSpaces && m_arStates.top().m_bInP && !m_arStates.top().m_bInR && !iswspace(wsText.front()) && !iswpunct(wsText.front()) && !m_arStates.top().m_bWasSpace)
 	{
 		if (pCompiledStyle->m_oDisplay.GetVAlign().Empty() || L"normal" == pCompiledStyle->m_oDisplay.GetVAlign().ToWString())
 			WriteSpace();
@@ -779,7 +774,7 @@ bool COOXMLWriter::WriteText(const std::wstring& wsText, const std::vector<NSCSS
 
 	if(bPreformatted)
 	{
-		size_t unBegin = 0, unEnd = wsNormalizeText.find_first_of(L"\n\r\t");
+		size_t unBegin = 0, unEnd = wsText.find_first_of(L"\n\r\t");
 
 		while (std::wstring::npos != unBegin)
 		{
@@ -789,47 +784,47 @@ bool COOXMLWriter::WriteText(const std::wstring& wsText, const std::vector<NSCSS
 			OpenT();
 			if (unEnd == std::wstring::npos)
 			{
-				m_arStates.top().m_pCurrentDocument->WriteEncodeXmlString(wsNormalizeText.c_str() + unBegin, wsNormalizeText.length() - unBegin);
+				m_arStates.top().m_pCurrentDocument->WriteEncodeXmlString(wsText.c_str() + unBegin, wsText.length() - unBegin);
 				break;
 			}
 
 			if (unBegin != unEnd)
 			{
-				m_arStates.top().m_pCurrentDocument->WriteEncodeXmlString(wsNormalizeText.c_str() + unBegin, unEnd - unBegin);
+				m_arStates.top().m_pCurrentDocument->WriteEncodeXmlString(wsText.c_str() + unBegin, unEnd - unBegin);
 				CloseT();
 			}
 
-			if (L'\n' == wsNormalizeText[unEnd])
+			if (L'\n' == wsText[unEnd])
 				m_arStates.top().m_pCurrentDocument->WriteString(L"<w:br/>");
-			else if (L'\t' == wsNormalizeText[unEnd])
+			else if (L'\t' == wsText[unEnd])
 				m_arStates.top().m_pCurrentDocument->WriteString(L"<w:tab/>");
 
 			unBegin = unEnd + 1;
-			unEnd = wsNormalizeText.find_first_of(L"\n\r\t", unBegin);
+			unEnd = wsText.find_first_of(L"\n\r\t", unBegin);
 		}
 	}
 	else
 	{
-		ReplaceSpaces(wsNormalizeText);
+		ReplaceSpaces(wsText);
 
-		if (!wsNormalizeText.empty() && L'\t' == wsNormalizeText[0])
+		if (!wsText.empty() && L'\t' == wsText[0])
 		{
 			m_arStates.top().m_pCurrentDocument->WriteString(L"<w:tab/>");
-			wsNormalizeText.erase(0, 1);
+			wsText.erase(0, 1);
 		}
 
-		if (!wsNormalizeText.empty() && std::iswspace(wsNormalizeText.front()) && m_arStates.top().m_bWasSpace)
-			wsNormalizeText.erase(0, 1);
+		if (!wsText.empty() && std::iswspace(wsText.front()) && m_arStates.top().m_bWasSpace)
+			wsText.erase(0, 1);
 
 		OpenT();
 
 		if (bMergedText && !m_arStates.top().m_bWasSpace && bInT && !bPreformatted)
 			m_arStates.top().m_pCurrentDocument->WriteEncodeXmlString(L" ");
 
-		if (!wsNormalizeText.empty())
+		if (!wsText.empty())
 		{
-			m_arStates.top().m_bWasSpace = std::iswspace(wsNormalizeText.back());
-			m_arStates.top().m_pCurrentDocument->WriteEncodeXmlString(wsNormalizeText);
+			m_arStates.top().m_bWasSpace = std::iswspace(wsText.back());
+			m_arStates.top().m_pCurrentDocument->WriteEncodeXmlString(wsText);
 		}
 	}
 

@@ -38,7 +38,7 @@ public:
 	virtual bool Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData = boost::any()) = 0;
 	virtual void Close(const std::vector<NSCSS::CNode>& arSelectors) = 0;
 
-	bool ValidInterpretator() const
+	bool ValidWriter() const
 	{
 		return nullptr != m_pWriter;
 	}
@@ -83,6 +83,7 @@ CREATE_TAG(CCaption);
 CREATE_TAG(CTable);
 CREATE_TAG(CTableRow);
 CREATE_TAG(CTableCell);
+CREATE_TAG(CCode);
 
 }
 #endif // HTMLTAGS_H

@@ -452,6 +452,11 @@ bool CStorageTable::HaveColgroups() const
 	return !m_arColgroups.empty();
 }
 
+bool CStorageTable::HaveHeader() const
+{
+	return !m_arHeaders.empty();
+}
+
 UINT CStorageTable::GetRowCount() const
 {
 	return m_arRows.size();

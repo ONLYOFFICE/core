@@ -108,7 +108,6 @@ public:
 template<>
 class CBlockquote<CMDWriter> : public CTag<CMDWriter>
 {
-	UINT m_unIndex;
 public:
 	CBlockquote(CMDWriter* pWriter);
 	virtual bool Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData = boost::any()) override;
@@ -137,11 +136,40 @@ public:
 template<>
 class CTableCell<CMDWriter> : public CTag<CMDWriter>
 {
+	UINT m_unNeedEmptyCells;
 public:
 	CTableCell(CMDWriter* pWriter);
 	virtual bool Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData = boost::any()) override;
 	virtual void Close(const std::vector<NSCSS::CNode>& arSelectors) override;
 };
+
+template<>
+class CList<CMDWriter> : public CTag<CMDWriter>
+{
+public:
+	CList(CMDWriter* pWriter);
+	virtual bool Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData = boost::any()) override;
+	virtual void Close(const std::vector<NSCSS::CNode>& arSelectors) override;
+};
+
+template<>
+class CListElement<CMDWriter> : public CTag<CMDWriter>
+{
+public:
+	CListElement(CMDWriter* pWriter);
+	virtual bool Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData = boost::any()) override;
+	virtual void Close(const std::vector<NSCSS::CNode>& arSelectors) override;
+};
+
+template<>
+class CCode<CMDWriter> : public CTag<CMDWriter>
+{
+public:
+	CCode(CMDWriter* pWriter);
+	virtual bool Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData = boost::any()) override;
+	virtual void Close(const std::vector<NSCSS::CNode>& arSelectors) override;
+};
+
 }
 
 #endif // MDTAGS_H

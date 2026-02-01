@@ -276,11 +276,14 @@ void CHTMLReader::InitMDTags()
 	m_mTags[HTML_TAG(TABLE)]      = std::make_shared<CTable         <CMDWriter>>(pWriter);
 	m_mTags[HTML_TAG(TR)]         = std::make_shared<CTableRow      <CMDWriter>>(pWriter);
 	m_mTags[HTML_TAG(TD)]         = std::make_shared<CTableCell     <CMDWriter>>(pWriter);
+	m_mTags[HTML_TAG(OL)]         = std::make_shared<CList          <CMDWriter>>(pWriter);
+	m_mTags[HTML_TAG(LI)]         = std::make_shared<CListElement   <CMDWriter>>(pWriter);
+	m_mTags[HTML_TAG(PRE)]        = std::make_shared<CPreformatted  <CMDWriter>>(pWriter);
 
-	std::shared_ptr<ITag> oPreformatted{std::make_shared<CPreformatted  <CMDWriter>>(pWriter)};
+	std::shared_ptr<ITag> oCode{std::make_shared<CCode<CMDWriter>>(pWriter)};
 
-	m_mTags[HTML_TAG(PRE)] = oPreformatted;
-	m_mTags[HTML_TAG(KBD)] = oPreformatted;
+	m_mTags[HTML_TAG(CODE)] = oCode;
+	m_mTags[HTML_TAG(KBD)]  = oCode;
 
 	std::shared_ptr<ITag> oIgnoredTag{std::make_shared<CEmptyTag>()};
 
@@ -603,8 +606,9 @@ bool CHTMLReader::ReadInside(std::vector<NSCSS::CNode>& arSelectors)
 		case HTML_TAG(CODE):
 		case HTML_TAG(SAMP):
 		case HTML_TAG(TT):
+		case HTML_TAG(OUTPUT):
 		{
-			bResult = ReadDefaultTag(HTML_TAG(PRE), arSelectors);
+			bResult = ReadDefaultTag(HTML_TAG(CODE), arSelectors);
 			break;
 		}
 		case HTML_TAG(KBD):
@@ -701,7 +705,6 @@ bool CHTMLReader::ReadInside(std::vector<NSCSS::CNode>& arSelectors)
 		case HTML_TAG(DATA):
 		case HTML_TAG(OBJECT):
 		case HTML_TAG(NOSCRIPT):
-		case HTML_TAG(OUTPUT):
 		case HTML_TAG(TIME):
 		case HTML_TAG(SMALL):
 		case HTML_TAG(PROGRESS):
@@ -1003,7 +1006,6 @@ bool CHTMLReader::ReadTable(std::vector<NSCSS::CNode>& arSelectors)
 
 	oTable.Shorten();
 	oTable.CompleteTable();
-	// oTable.ConvertToOOXML(*oXml);
 
 	if (!m_mTags[HTML_TAG(TABLE)]->Open(arSelectors, &oTable))
 		return false;
@@ -1021,14 +1023,14 @@ bool CHTMLReader::ReadTable(std::vector<NSCSS::CNode>& arSelectors)
 		else if (arRows.size() - 1 == unRow)\
 			eRowPosition = ERowPosition::Last;\
 		\
-		if (!m_mTags[HTML_TAG(TR)]->Open(arSelectors, boost::tuple<const TTableRowStyle&, const CStorageTable&, ERowParseMode, ERowPosition>(arRows[unRow]->GetStyles(), oTable, parse_mode, eRowPosition)))\
+		if (!m_mTags[HTML_TAG(TR)]->Open(arSelectors, boost::tuple<const TTableRowStyle*, const CStorageTable&, ERowParseMode, ERowPosition>(&arRows[unRow]->GetStyles(), oTable, parse_mode, eRowPosition)))\
 			continue;\
 		\
 		const std::vector<CStorageTableCell*>& arCells{arRows[unRow]->GetCells()};\
 		\
 		for (UINT unCol = 0; unCol < arCells.size(); ++unCol)\
 		{\
-			m_mTags[HTML_TAG(TD)]->Open(arSelectors, boost::tuple<CStorageTableCell&, const CStorageTable&, UINT, ERowParseMode, ERowPosition>(*arCells[unCol], oTable, unCol, parse_mode, eRowPosition));\
+			m_mTags[HTML_TAG(TD)]->Open(arSelectors, boost::tuple<const CStorageTableCell&, const CStorageTable&, UINT, ERowParseMode, ERowPosition>(*arCells[unCol], oTable, unCol, parse_mode, eRowPosition));\
 			\
 			if (0 != arCells[unCol]->GetData()->GetCurSize())\
 				WriteToStringBuilder(*(arCells[unCol]->GetData()), *(m_pWriter->GetCurrentDocument()));\
@@ -1041,8 +1043,16 @@ bool CHTMLReader::ReadTable(std::vector<NSCSS::CNode>& arSelectors)
 		m_mTags[HTML_TAG(TR)]->Close(arSelectors);\
 	}}
 
-	for (const std::vector<CStorageTableRow*>& arHeader : oTable.GetHeaders())
-		CONVERT_ROWS(arHeader, ERowParseMode::Header)
+	if (!oTable.HaveHeader())
+	{
+		if (m_mTags[HTML_TAG(TR)]->Open(arSelectors, boost::tuple<const TTableRowStyle*, const CStorageTable&, ERowParseMode, ERowPosition>(nullptr, oTable, ERowParseMode::Header, ERowPosition::First)))
+			m_mTags[HTML_TAG(TR)]->Close(arSelectors);
+	}
+	else
+	{
+		for (const std::vector<CStorageTableRow*>& arHeader : oTable.GetHeaders())
+			CONVERT_ROWS(arHeader, ERowParseMode::Header)
+	}
 
 	CONVERT_ROWS(oTable.GetRows(), ERowParseMode::Body)
 	CONVERT_ROWS(oTable.GetFoothers(), ERowParseMode::Foother)

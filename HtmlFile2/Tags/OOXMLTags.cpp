@@ -39,7 +39,7 @@ CAnchor<COOXMLWriter>::CAnchor(COOXMLWriter* pWriter)
 
 bool CAnchor<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData)
 {
-	if (!ValidInterpretator())
+	if (!ValidWriter())
 		return false;
 
 	std::wstring wsRef, wsAlt, wsName;
@@ -73,7 +73,7 @@ bool CAnchor<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, c
 
 void CAnchor<COOXMLWriter>::Close(const std::vector<NSCSS::CNode>& arSelectors)
 {
-	if (!ValidInterpretator())
+	if (!ValidWriter())
 		return;
 
 	bool bCross = false;
@@ -112,7 +112,7 @@ CAbbr<COOXMLWriter>::CAbbr(COOXMLWriter* pWriter)
 
 bool CAbbr<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData)
 {
-	if (!ValidInterpretator())
+	if (!ValidWriter())
 		return false;
 
 	std::wstring wsTitle;
@@ -134,7 +134,7 @@ bool CAbbr<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, con
 
 void CAbbr<COOXMLWriter>::Close(const std::vector<NSCSS::CNode>& arSelectors)
 {
-	if (!ValidInterpretator())
+	if (!ValidWriter())
 		return;
 
 	m_pWriter->GetCurrentDocument()->WriteString(L"<w:r><w:fldChar w:fldCharType=\"end\"/></w:r>");
@@ -146,7 +146,7 @@ CBreak<COOXMLWriter>::CBreak(COOXMLWriter* pWriter)
 
 bool CBreak<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData)
 {
-	if (!ValidInterpretator())
+	if (!ValidWriter())
 		return false;
 
 	m_pWriter->Break(arSelectors);
@@ -163,7 +163,7 @@ CDivision<COOXMLWriter>::CDivision(COOXMLWriter* pWriter)
 
 bool CDivision<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData)
 {
-	if (!ValidInterpretator())
+	if (!ValidWriter())
 		return false;
 
 	m_pWriter->UpdatePageStyle(arSelectors);
@@ -199,7 +199,7 @@ bool CDivision<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors,
 
 void CDivision<COOXMLWriter>::Close(const std::vector<NSCSS::CNode>& arSelectors)
 {
-	if (!ValidInterpretator() || m_arFootnoteIDs.empty())
+	if (!ValidWriter() || m_arFootnoteIDs.empty())
 		return;
 
 	if (m_arFootnoteIDs.top() >= 2)
@@ -217,7 +217,7 @@ CImage<COOXMLWriter>::CImage(COOXMLWriter* pWriter)
 
 bool CImage<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData)
 {
-	if (!ValidInterpretator())
+	if (!ValidWriter())
 		return false;
 
 	if (L"svg" == arSelectors.back().m_wsName)
@@ -441,7 +441,7 @@ CFont<COOXMLWriter>::CFont(COOXMLWriter* pWriter)
 
 bool CFont<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData)
 {
-	if (!ValidInterpretator())
+	if (!ValidWriter())
 		return false;
 
 	std::wstring wsValue;
@@ -483,7 +483,7 @@ CInput<COOXMLWriter>::CInput(COOXMLWriter* pWriter)
 
 bool CInput<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData)
 {
-	if (!ValidInterpretator())
+	if (!ValidWriter())
 		return false;
 
 	std::wstring wsValue{arSelectors.back().GetAttributeValue(L"value")};
@@ -519,7 +519,7 @@ CBaseFont<COOXMLWriter>::CBaseFont(COOXMLWriter* pWriter)
 
 bool CBaseFont<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData)
 {
-	if (!ValidInterpretator())
+	if (!ValidWriter())
 		return false;
 
 	std::wstring wsFontStyles, wsValue;
@@ -564,7 +564,7 @@ CBlockquote<COOXMLWriter>::CBlockquote(COOXMLWriter* pWriter)
 
 bool CBlockquote<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData)
 {
-	if (!ValidInterpretator())
+	if (!ValidWriter())
 		return false;
 
 	const std::wstring wsKeyWord{arSelectors.back().m_wsName};
@@ -633,7 +633,7 @@ bool CBlockquote<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelector
 
 void CBlockquote<COOXMLWriter>::Close(const std::vector<NSCSS::CNode>& arSelectors)
 {
-	if (!ValidInterpretator())
+	if (!ValidWriter())
 		return;
 
 	m_pWriter->RollBackDivId();
@@ -645,7 +645,7 @@ CHorizontalRule<COOXMLWriter>::CHorizontalRule(COOXMLWriter* pWriter)
 
 bool CHorizontalRule<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData)
 {
-	if (!ValidInterpretator())
+	if (!ValidWriter())
 		return false;
 
 	for (const NSCSS::CNode& item : arSelectors)
@@ -748,7 +748,7 @@ CList<COOXMLWriter>::CList(COOXMLWriter* pWriter)
 
 bool CList<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData)
 {
-	if (!ValidInterpretator())
+	if (!ValidWriter())
 		return false;
 
 	m_pWriter->CloseP();
@@ -789,7 +789,7 @@ bool CList<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, con
 
 void CList<COOXMLWriter>::Close(const std::vector<NSCSS::CNode>& arSelectors)
 {
-	if (!ValidInterpretator())
+	if (!ValidWriter())
 		return;
 
 	m_pWriter->CloseP();
@@ -801,12 +801,12 @@ CListElement<COOXMLWriter>::CListElement(COOXMLWriter* pWriter)
 
 bool CListElement<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData)
 {
-	return ValidInterpretator();
+	return ValidWriter();
 }
 
 void CListElement<COOXMLWriter>::Close(const std::vector<NSCSS::CNode>& arSelectors)
 {
-	if (!ValidInterpretator())
+	if (!ValidWriter())
 		return;
 
 	m_pWriter->CloseP();
@@ -1068,7 +1068,7 @@ CCaption<COOXMLWriter>::CCaption(COOXMLWriter* pWriter)
 
 bool CCaption<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData)
 {
-	if (!ValidInterpretator())
+	if (!ValidWriter())
 		return false;
 
 	m_pWriter->WritePPr(arSelectors);
@@ -1078,7 +1078,7 @@ bool CCaption<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, 
 
 void CCaption<COOXMLWriter>::Close(const std::vector<NSCSS::CNode>& arSelectors)
 {
-	if (!ValidInterpretator())
+	if (!ValidWriter())
 		return;
 
 	m_pWriter->CloseP();
@@ -1156,7 +1156,7 @@ CTable<COOXMLWriter>::CTable(COOXMLWriter* pWriter)
 
 bool CTable<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData)
 {
-	if (!ValidInterpretator() || oExtraData.empty() || typeid(CStorageTable*) != oExtraData.type())
+	if (!ValidWriter() || oExtraData.empty() || typeid(CStorageTable*) != oExtraData.type())
 		return false;
 
 	CStorageTable* pStorageTable{boost::any_cast<CStorageTable*>(oExtraData)};
@@ -1248,7 +1248,7 @@ bool CTable<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, co
 
 void CTable<COOXMLWriter>::Close(const std::vector<NSCSS::CNode>& arSelectors)
 {
-	if (!ValidInterpretator())
+	if (!ValidWriter())
 		return;
 
 	m_pWriter->GetCurrentDocument()->WriteNodeEnd(L"w:tbl");
@@ -1260,9 +1260,9 @@ CTableRow<COOXMLWriter>::CTableRow(COOXMLWriter* pWriter)
 
 bool CTableRow<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData)
 {
-	using DataForRow = boost::tuple<const TTableRowStyle&, const CStorageTable&, ERowParseMode, ERowPosition>;
+	using DataForRow = boost::tuple<const TTableRowStyle*, const CStorageTable&, ERowParseMode, ERowPosition>;
 
-	if (!ValidInterpretator() || oExtraData.empty() || typeid(DataForRow) != oExtraData.type())
+	if (!ValidWriter() || oExtraData.empty() || typeid(DataForRow) != oExtraData.type())
 		return false;
 
 	const DataForRow& oDataForRow(boost::any_cast<DataForRow>(oExtraData));
@@ -1271,17 +1271,17 @@ bool CTableRow<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors,
 	oCurrentDocument.WriteNodeBegin(L"w:tr");
 
 	const TTableStyles& oTableStyles{boost::get<1>(oDataForRow).GetTableStyles()};
-	const TTableRowStyle oTableRowStyles{boost::get<0>(oDataForRow)};
+	const TTableRowStyle* pTableRowStyles{boost::get<0>(oDataForRow)};
 
-	if (!oTableRowStyles.Empty() || 0 < oTableStyles.m_nCellSpacing)
+	if (nullptr != pTableRowStyles && (!pTableRowStyles->Empty() || 0 < oTableStyles.m_nCellSpacing))
 	{
 		oCurrentDocument.WriteNodeBegin(L"w:trPr");
 
-		if (oTableRowStyles.m_bIsHeader)
+		if (pTableRowStyles->m_bIsHeader)
 			oCurrentDocument += L"<w:tblHeader/>";
 
-		if (0 < oTableRowStyles.m_unMaxHeight)
-			oCurrentDocument += L"<w:trHeight w:val=\"" + std::to_wstring(oTableRowStyles.m_unMaxHeight) + L"\"/>";
+		if (0 < pTableRowStyles->m_unMaxHeight)
+			oCurrentDocument += L"<w:trHeight w:val=\"" + std::to_wstring(pTableRowStyles->m_unMaxHeight) + L"\"/>";
 
 		if (0 < oTableStyles.m_nCellSpacing)
 			oCurrentDocument += L"<w:tblCellSpacing w:w=\"" + std::to_wstring(oTableStyles.m_nCellSpacing) + L"\" w:type=\"dxa\"/>";
@@ -1294,7 +1294,7 @@ bool CTableRow<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors,
 
 void HTML::CTableRow<COOXMLWriter>::Close(const std::vector<NSCSS::CNode>& arSelectors)
 {
-	if (!ValidInterpretator())
+	if (!ValidWriter())
 		return;
 
 	m_pWriter->GetCurrentDocument()->WriteNodeEnd(L"w:tr");
@@ -1332,13 +1332,13 @@ std::wstring CalculateSidesToClean(UINT unColumnNumber, const std::vector<CTable
 
 bool CTableCell<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData)
 {
-	using DataForCell = boost::tuple<CStorageTableCell&, const CStorageTable&, UINT, ERowParseMode, ERowPosition>;
+	using DataForCell = boost::tuple<const CStorageTableCell&, const CStorageTable&, UINT, ERowParseMode, ERowPosition>;
 
-	if (!ValidInterpretator() || oExtraData.empty() || typeid(DataForCell) != oExtraData.type())
+	if (!ValidWriter() || oExtraData.empty() || typeid(DataForCell) != oExtraData.type())
 		return false;
 
 	const DataForCell& oDataForCell{boost::any_cast<const DataForCell>(oExtraData)};
-	CStorageTableCell& oStorageTableCell{boost::get<0>(oDataForCell)};
+	const CStorageTableCell& oStorageTableCell{boost::get<0>(oDataForCell)};
 
 	XmlString& oCurrentDocument{*m_pWriter->GetCurrentDocument()};
 
@@ -1450,7 +1450,7 @@ bool CTableCell<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors
 
 	void HTML::CTableCell<COOXMLWriter>::Close(const std::vector<NSCSS::CNode>& arSelectors)
 	{
-		if (!ValidInterpretator())
+		if (!ValidWriter())
 			return;
 
 		m_pWriter->GetCurrentDocument()->WriteNodeEnd(L"w:tc");

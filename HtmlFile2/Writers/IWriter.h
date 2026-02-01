@@ -16,7 +16,7 @@ public:
 	virtual void Begin(const std::wstring& wsDst, const THtmlParams* pParams) = 0;
 	virtual void End(const std::wstring& wsDst) = 0;
 
-	virtual bool WriteText(const std::wstring& wsText, const std::vector<NSCSS::CNode>& arSelectors) = 0;
+	virtual bool WriteText(std::wstring wsText, const std::vector<NSCSS::CNode>& arSelectors) = 0;
 
 	virtual void WriteEmptyParagraph(bool bVahish = false, bool bInP = false) = 0;
 

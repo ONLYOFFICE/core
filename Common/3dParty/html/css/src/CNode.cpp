@@ -17,8 +17,7 @@ namespace NSCSS
 	      m_wsStyle(oNode.m_wsStyle), m_mAttributes(oNode.m_mAttributes)
 	{
 		#ifdef CSS_CALCULATOR_WITH_XHTML
-		m_pCompiledStyle = new CCompiledStyle();
-		*m_pCompiledStyle = *oNode.m_pCompiledStyle;
+		m_pCompiledStyle = new CCompiledStyle(*oNode.m_pCompiledStyle);
 		#endif
 	}
 
@@ -112,9 +111,9 @@ namespace NSCSS
 	bool CNode::operator==(const CNode& oNode) const
 	{
 		return((m_wsId == oNode.m_wsId)       &&
-			   (m_wsName == oNode.m_wsName)   &&
-			   (m_wsClass == oNode.m_wsClass) &&
-			  (m_wsStyle == oNode.m_wsStyle) &&
-			  (m_mAttributes == oNode.m_mAttributes));
+		       (m_wsName == oNode.m_wsName)   &&
+		       (m_wsClass == oNode.m_wsClass) &&
+		       (m_wsStyle == oNode.m_wsStyle) &&
+		       (m_mAttributes == oNode.m_mAttributes));
 	}
 }

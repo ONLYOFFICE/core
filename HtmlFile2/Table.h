@@ -201,6 +201,7 @@ public:
 	bool Empty() const;
 	bool HaveCaption();
 	bool HaveColgroups() const;
+	bool HaveHeader() const;
 	UINT GetRowCount() const;
 	const TTableStyles& GetTableStyles() const;
 	const TTableCellStyle* GetColStyle(UINT unColumnNumber) const;

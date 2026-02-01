@@ -78,9 +78,9 @@ class COOXMLWriter : public IWriter
 
 		TState()
 			: m_bInP(false), m_bInR(false), m_bInT(false),
-		      m_bWasPStyle(false), m_bWasSpace(true), m_bInHyperlink(false),
-		      m_bBanUpdatePageData(false), m_pCurrentDocument(nullptr),
-		      m_bRemoveCurrentDocument(false)/*, m_eLastElement(HTML_TAG(UNKNOWN))*/
+			  m_bWasPStyle(false), m_bWasSpace(true), m_bInHyperlink(false),
+			  m_bBanUpdatePageData(false), m_pCurrentDocument(nullptr),
+			  m_bRemoveCurrentDocument(false)/*, m_eLastElement(HTML_TAG(UNKNOWN))*/
 		{}
 
 		~TState()
@@ -150,7 +150,7 @@ public:
 	std::wstring WritePPr(const std::vector<NSCSS::CNode>& arSelectors);
 	std::wstring WriteRPr(XmlString& oXml, const std::vector<NSCSS::CNode>& arSelectors);
 
-	bool WriteText(const std::wstring& wsText, const std::vector<NSCSS::CNode>& arSelectors) override;
+	bool WriteText(std::wstring wsText, const std::vector<NSCSS::CNode>& arSelectors) override;
 	void WriteEmptyParagraph(bool bVahish = false, bool bInP = false) override;
 	void WriteSpace();
 

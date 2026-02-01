@@ -29,11 +29,11 @@ namespace NSCSS
 
 		for (size_t i = 0; i < arLeftSelectors.size(); ++i)
 		{
-			if (arLeftSelectors[i] < arRightSelectors[i])
-				return true;
+			if (!(arLeftSelectors[i] < arRightSelectors[i]))
+				return false;
 		}
 
-		return false;
+		return true;
 	}
 
 	CStyleStorage::CStyleStorage()
@@ -556,9 +556,9 @@ namespace NSCSS
 			return true;
 		}
 
-		const std::map<std::vector<CNode>, CCompiledStyle>::iterator oItem = m_mUsedStyles.find(arSelectors);
+		const std::map<std::vector<CNode>, CCompiledStyle>::const_iterator oItem = m_mUsedStyles.find(arSelectors);
 
-		if (oItem != m_mUsedStyles.end())
+		if (oItem != m_mUsedStyles.cend())
 		{
 			arSelectors.back().SetCompiledStyle(new CCompiledStyle(oItem->second));
 			return true;

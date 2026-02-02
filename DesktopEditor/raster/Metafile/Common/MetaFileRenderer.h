@@ -863,12 +863,17 @@ namespace MetaFile
 		void PathClip(const CPath& oPath, int nClipMode, TXForm *pTransform = NULL)
 		{
 			double dM11, dM12, dM21, dM22, dX, dY;
+			GetTransform(&dM11, &dM12, &dM21, &dM22, &dX, &dY);
 
 			if (NULL != pTransform)
-			{
-				GetTransform(&dM11, &dM12, &dM21, &dM22, &dX, &dY);
-				SetTransform(pTransform->M11, pTransform->M12, pTransform->M21, pTransform->M22, pTransform->Dx, pTransform->Dy);
-			}
+				SetTransform(pTransform->M11, pTransform->M12,
+				             pTransform->M21, pTransform->M22,
+				             pTransform->Dx - m_pFile->GetDCBounds().Left,
+				             pTransform->Dy - m_pFile->GetDCBounds().Top);
+			else
+				SetTransform(dM11, dM12, dM21, dM22,
+				             dX - m_pFile->GetDCBounds().Left,
+				             dY - m_pFile->GetDCBounds().Top);
 
 			oPath.DrawOn(this, false, false, nClipMode);
 
@@ -914,7 +919,7 @@ namespace MetaFile
 
 			m_bStartedPath = false;
 		}
-		void SetTransform(double& dM11, double& dM12, double& dM21, double& dM22, double& dX, double& dY)
+		void SetTransform(const double& dM11, const double& dM12, const double& dM21, const double& dM22, const double& dX, const double& dY)
 		{
 			double dKoefX = m_dScaleX;
 			double dKoefY = m_dScaleY;

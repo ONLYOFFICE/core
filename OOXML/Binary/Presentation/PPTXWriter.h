@@ -39,6 +39,7 @@
 
 #include "../../PPTXFormat/NotesSlide.h"
 #include "../../DocxFormat/VmlDrawing.h"
+#include "../../PPTXFormat/HandoutMaster.h"
 
 namespace NSBinPptxRW
 {
@@ -68,6 +69,10 @@ namespace NSBinPptxRW
 		std::vector<LONG>					m_arNotesSlides_Master;
 		std::vector<LONG>					m_arNotesMasters_Theme;
 		
+		std::vector<PPTX::HandoutMaster>	m_arHandoutMasters;
+		std::vector<LONG>					m_arHandoutSlides_Master;
+		std::vector<LONG>					m_arHandoutMasters_Theme;
+
 		PPTX::Document						m_oDocument;
 		PPTX::Presentation					m_oPresentation;
 		PPTX::TableStyles					m_oTableStyles;
@@ -100,6 +105,7 @@ namespace NSBinPptxRW
 		void CreateDefaultTableStyles();
 		void CreateDefaultPresProps();
 		void CreateDefaultNotesMasters(int nIndexTheme);
+		void CreateDefaultHandoutMasters(int nIndexTheme);
 		void CreateDefaultNote();
 	};
 }

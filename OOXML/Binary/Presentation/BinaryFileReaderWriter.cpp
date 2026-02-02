@@ -1581,6 +1581,16 @@ namespace NSBinPptxRW
                 std::to_wstring(nIndexTheme + 1) + L".xml\"/>";
 		m_pWriter->WriteString(s);
 	}
+	void CRelsGenerator::StartThemeHandoutMaster(int nIndexTheme)
+	{
+		m_pWriter->WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
+		m_pWriter->WriteString(L"<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">");
+
+		std::wstring s = L"<Relationship Id=\"rId" + std::to_wstring(m_lNextRelsID++) +
+			L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme\" Target=\"../theme/theme" +
+			std::to_wstring(nIndexTheme + 1) + L".xml\"/>";
+		m_pWriter->WriteString(s);
+	}
 	void CRelsGenerator::StartLayout(int nIndexTheme)
 	{
 		m_pWriter->WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
@@ -1653,13 +1663,18 @@ namespace NSBinPptxRW
 		
 		return rid;
 	}
-
 	void CRelsGenerator::WriteNotesMaster()
 	{
 		std::wstring strRels0 = L"<Relationship Id=\"rId" + std::to_wstring(m_lNextRelsID++) +
-				L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/notesMaster\" Target=\"notesMasters/notesMaster1.xml\"/>";
-		m_pWriter->WriteString(strRels0);			
+			L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/notesMaster\" Target=\"notesMasters/notesMaster1.xml\"/>";
+		m_pWriter->WriteString(strRels0);
 	}
+	void CRelsGenerator::WriteHandoutMaster()
+	{
+		std::wstring strRels0 = L"<Relationship Id=\"rId" + std::to_wstring(m_lNextRelsID++) +
+				L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/handoutMaster\" Target=\"handoutMasters/handoutMaster1.xml\"/>";
+		m_pWriter->WriteString(strRels0);			
+	}	
 	std::wstring CRelsGenerator::WriteCustom(const std::wstring & file_name)
 	{
 		std::wstring rid = L"rId" + std::to_wstring(m_lNextRelsID++);

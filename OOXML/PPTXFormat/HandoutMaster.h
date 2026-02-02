@@ -52,19 +52,24 @@ namespace PPTX
 		HandoutMaster(OOX::Document* pMain, const OOX::CPath& filename, FileMap& map);
 		virtual ~HandoutMaster();
 
-	public:
 		virtual void read(const OOX::CPath& filename, FileMap& map);
 		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, OOX::CContentTypes& content) const;
 
-	public:
 		virtual const OOX::FileType type() const;
 
 		virtual const OOX::CPath DefaultDirectory() const;
 		virtual const OOX::CPath DefaultFileName() const;
 
-	public:
-		Logic::CSld			cSld;
-		Logic::ClrMap		clrMap;
+		virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+		virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+		virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+
+		void ApplyRels();
+
+		Logic::CSld cSld;
+		Logic::ClrMap clrMap;
 		nullable<Logic::HF> hf;
+		
+		smart_ptr<Theme> theme_;
 	};
 } // namespace PPTX

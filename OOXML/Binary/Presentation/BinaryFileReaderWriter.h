@@ -162,12 +162,14 @@ namespace NSBinPptxRW
         std::map<size_t, LONG> layouts;
         std::map<size_t, LONG> notes;
         std::map<size_t, LONG> notesMasters;
+		std::map<size_t, LONG> handoutMasters;
 
         std::vector<_masterSlideInfo>	m_oRels;
         std::vector<LONG>				m_oSlide_Layout_Rels;
 		std::vector<LONG>				m_oSlide_Notes_Rels;
 		std::vector<LONG>				m_oNote_Rels;
 		std::vector<LONG>				m_oNotesMasters_Rels;
+		std::vector<LONG>				m_oHandoutMasters_Rels;
 
 		NSShapeImageGen::CMediaManager*	m_pMediaManager;
 		
@@ -488,10 +490,13 @@ namespace NSBinPptxRW
 		void StartLayout (int nIndexTheme);
 		void StartSlide (int nIndexSlide, int nIndexLayout, int nIndexNotes);
 		void StartNotes	(int nIndexSlide);
-		void StartThemeNotesMaster(int nIndexTheme);
-		
+
 		void WriteThemes (int nCount);
 		void WriteNotesMaster();
+		void WriteHandoutMaster();
+		
+		void StartThemeNotesMaster(int nIndexTheme);
+		void StartThemeHandoutMaster(int nIndexTheme);
 
 		std::wstring WriteCustom(const std::wstring& file_name);
 		std::wstring WriteMaster(int nIndex);

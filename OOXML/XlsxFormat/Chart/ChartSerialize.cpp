@@ -1821,6 +1821,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			legendPtr->fAutoPosition = true;
 			legendPtr->fAutoPosX = true;
 			legendPtr->fAutoPosY = true;
+			legendPtr->fVert = true;
+			legendPtr->fWasDataTable = true;
 			ptr->m_Legend = XLS::BaseObjectPtr(legendPtr);
 			return XLS::BaseObjectPtr(ptr);
 		}

@@ -2072,7 +2072,7 @@ int docx_conversion_context::process_paragraph_style(_CP_OPT(std::wstring) style
         else
         {
             const std::wstring id = styles_map_.get( styleInst->name(), styleInst->type() );
-            output_stream() << L"<w:pPr>";
+			output_stream() << L"<w:pPr>";
 
 			output_stream() << L"<w:pStyle w:val=\"" << id << L"\" />";
 
@@ -2305,7 +2305,7 @@ void docx_conversion_context::process_page_break_after(const odf_reader::style_i
             if (inst->content() && inst->content()->get_style_paragraph_properties())
             {
                 _CP_OPT(odf_types::fo_break) fo_break_val = inst->content()->get_style_paragraph_properties()->content_.fo_break_after_;
-                if (fo_break_val)
+				if (fo_break_val)
                 {
 					set_page_break_after(fo_break_val->get_type());
 					break;

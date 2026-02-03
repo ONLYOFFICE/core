@@ -1461,6 +1461,8 @@ namespace PdfReader
 				wsFontName = wsFontBaseName;
 			if (bNotFullName)
 				EraseSubsetTag(wsFontName);
+			else
+				wsFontName += (L" " + std::to_wstring(pFont->getID()->num));
 
 			pEntry->wsFilePath     = wsFileName;
 			pEntry->wsFontName     = wsFontName;

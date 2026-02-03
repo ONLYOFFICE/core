@@ -105,13 +105,13 @@ namespace NSHeif {
 
 	inline bool CHeifFile::Decode(heif_context* ctx, CBgraFrame* frame, bool isRGBA)
 	{
-		heif_image_handle* handle;
+		heif_image_handle* handle = nullptr;
 		defer(heif_image_handle_release(handle););
 
 		if (IsError(heif_context_get_primary_image_handle(ctx, &handle)))
 			return false;
 
-		heif_image* img;
+		heif_image* img = nullptr;
 		defer(heif_image_release(img););
 
 		if (IsError(heif_decode_image(handle, &img, heif_colorspace_RGB, heif_chroma_444, nullptr)))

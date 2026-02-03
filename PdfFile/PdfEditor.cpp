@@ -4350,14 +4350,14 @@ void CPdfEditor::ScanAndProcessFonts(PDFDoc* pPDFDocument, XRef* xref, Dict* pRe
 			{
 				Ref oEmbRef;
 				std::wstring wsFontBaseName = NSStrings::GetStringFromUTF32(gfxFont->getName());
-
-				if (gfxFont->getEmbeddedFontID(&oEmbRef) || PdfReader::IsBaseFont(wsFontBaseName))
+				GfxFontLoc* pFontLoc = NULL;
+				if (gfxFont->getEmbeddedFontID(&oEmbRef) || PdfReader::IsBaseFont(wsFontBaseName) || ((pFontLoc = gfxFont->locateFont(xref, false)) && NSStrings::GetStringFromUTF32(pFontLoc->path).length()))
 				{
 					std::wstring wsFileName, wsFontName;
 					PdfReader::RendererOutputDev::GetFont(xref, pFontManager, pFontList, gfxFont, wsFileName, wsFontName, false);
 
 					// Собираем информацию о встроенном шрифте
-					if (gfxFont->getEmbeddedFontID(&oEmbRef) && !PdfReader::IsBaseFont(wsFontBaseName))
+					if (!PdfReader::IsBaseFont(wsFontBaseName))
 					{
 						PdfReader::TFontEntry pFontEntry;
 						Ref nFontRef = oFontRef.getRef();
@@ -4384,6 +4384,7 @@ void CPdfEditor::ScanAndProcessFonts(PDFDoc* pPDFDocument, XRef* xref, Dict* pRe
 					}
 				}
 
+				RELEASEOBJECT(pFontLoc);
 				RELEASEOBJECT(gfxFont);
 			}
 

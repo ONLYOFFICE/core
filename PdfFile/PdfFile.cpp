@@ -1072,12 +1072,30 @@ HRESULT CPdfFile::put_FontName(const std::wstring& wsName)
 			}
 			m_pInternal->pWriter->AddFont(wsFont, bBold, bItalic, wsFontPath, 0);
 		}
-		else
+		else if (wsFontPath.empty())
 		{
-			const std::map<std::wstring, std::wstring>& mFonts = m_pInternal->pReader->GetFonts();
-			auto it = mFonts.find(sSub);
-			if (it != mFonts.end())
-				wsFontPath = it->second;
+			size_t lastSpace = wsName.find_last_of(L' ');
+			if (lastSpace != std::wstring::npos)
+			{
+				std::wstring numberStr = wsName.substr(lastSpace + 1);
+				int nTargetCode = std::stoi(numberStr);
+				const std::map<std::wstring, std::wstring>& mFonts = m_pInternal->pReader->GetFonts();
+				auto it = std::find_if(mFonts.begin(), mFonts.end(), [nTargetCode](const auto& pair)
+				{
+					const std::wstring& key = pair.first;
+					size_t pos = key.rfind(L' ');
+					if (pos != std::wstring::npos)
+					{
+						int keyCode = std::stoi(key.substr(pos + 1));
+						return keyCode == nTargetCode;
+					}
+					return false;
+				});
+				if (it != mFonts.end())
+					wsFont = L"Embedded: " + it->first;
+				else
+					wsFont = wsName.substr(10, lastSpace - 10);
+			}
 			else
 				wsFont = sSub;
 		}

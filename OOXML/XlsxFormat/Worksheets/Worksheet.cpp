@@ -380,10 +380,12 @@ namespace OOX
 				if(m_oPageSetup.IsInit())
 					chartSheetPtr->m_PAGESETUP = m_oPageSetup->toXLS();
 				else
-					{
-						auto pageSetup = new XLS::PAGESETUP;
-						chartSheetPtr->m_PAGESETUP = XLS::BaseObjectPtr(pageSetup);
-					}
+				{
+					auto pageSetup = new XLS::PAGESETUP;
+					chartSheetPtr->m_PAGESETUP = XLS::BaseObjectPtr(pageSetup);
+				}
+				if(m_oSheetViews.IsInit())
+					chartSheetPtr->m_arWINDOW = m_oSheetViews->toXLS();
 				if(m_oDrawing.IsInit() && m_oDrawing->m_oId.IsInit())
 				{
 					RId drawingId = m_oDrawing->m_oId->GetValue();

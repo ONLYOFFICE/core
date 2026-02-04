@@ -901,7 +901,10 @@ namespace PdfWriter
 	{
 		CFontEmbedded* pFont = FindFontEmbedded(wsFontPath, unIndex);
 		if (pFont)
+		{
+			pFont->UpdateKey(sFontKey);
 			return pFont;
+		}
 		pFont = new CFontEmbedded(m_pXref, this);
 		pFont->LoadFont(sFontKey, nType, mCodeToWidth, mCodeToUnicode, mCodeToGID);
 		m_vFontsEmbedded.push_back(TFontInfo(wsFontPath, unIndex, pFont));

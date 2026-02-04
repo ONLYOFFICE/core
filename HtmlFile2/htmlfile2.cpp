@@ -5012,6 +5012,8 @@ CHtmlFile2::CHtmlFile2()
 {
 	#ifdef USE_OLD_HTML_CONVERTER
 	m_internal = new CHtmlFile2_Private();
+	#else
+	m_pReader = new HTML::CHTMLReader();
 	#endif
 }
 
@@ -5019,37 +5021,37 @@ CHtmlFile2::~CHtmlFile2()
 {
 	#ifdef USE_OLD_HTML_CONVERTER
 	RELEASEOBJECT(m_internal);
+	#else
+	RELEASEOBJECT(m_pReader);
 	#endif
 }
 
+#ifdef USE_OLD_HTML_CONVERTER
 bool CHtmlFile2::IsHtmlFile(const std::wstring& sFile)
 {
-	#ifdef USE_OLD_HTML_CONVERTER
 	// Конвертируем в xhtml
 	if(!m_internal->htmlXhtml(sFile))
 		return false;
 	// Читаем html
 	return m_internal->isHtml();
-	#endif
-	return true;
 }
 
 bool CHtmlFile2::IsMhtFile(const std::wstring& sFile)
 {
-	#ifdef USE_OLD_HTML_CONVERTER
 	// Конвертируем в xhtml
 	if(!m_internal->mhtXhtml(sFile))
 		return false;
 	// Читаем html
 	return m_internal->isHtml();
-	#endif
-	return true;
 }
+#endif
 
-void CHtmlFile2::SetTmpDirectory(const std::wstring& sFolder)
+void CHtmlFile2::SetTempDirectory(const std::wstring& wsFolder)
 {
 	#ifdef USE_OLD_HTML_CONVERTER
-	m_internal->m_sTmp = NSSystemPath::NormalizePath(sFolder);
+	m_internal->m_sTmp = NSSystemPath::NormalizePath(wsFolder);
+	#else
+	m_pReader->SetTempDirectory(wsFolder);
 	#endif
 }
 
@@ -5057,37 +5059,54 @@ void CHtmlFile2::SetCoreDirectory(const std::wstring& wsFolder)
 {
 	#ifdef USE_OLD_HTML_CONVERTER
 	m_internal->m_sCore = NSSystemPath::NormalizePath(wsFolder);
+	#else
+	m_pReader->SetCoreDirectory(wsFolder);
 	#endif
 }
 
-HRESULT CHtmlFile2::OpenHtml(const std::wstring& sSrc, const std::wstring& sDst, CHtmlParams* oParams)
+HRESULT CHtmlFile2::ConvertHTML2OOXML(const std::wstring& wsPath, const std::wstring& wsDirectory, HTML::THTMLParameters* pParametrs)
 {
-	#ifdef USE_OLD_HTML_CONVERTER
+	#ifndef USE_OLD_HTML_CONVERTER
+	if (nullptr == m_pReader)
+		return S_FALSE;
+
+	return m_pReader->ConvertHTML2OOXML(wsPath, wsDirectory, pParametrs);
+	#else
 	if(!m_internal->m_oLightReader.IsValid())
 		if(!IsHtmlFile(sSrc))
 			return S_FALSE;
 
 	m_internal->m_sSrc = NSSystemPath::GetDirectoryName(sSrc);
 	m_internal->m_sDst = sDst;
-	m_internal->CreateDocxEmpty(oParams);
+	m_internal->CreateDocxEmpty(pParametrs);
 	m_internal->readStyle();
 
 	// Переходим в начало
 	if(!m_internal->m_oLightReader.MoveToStart())
 		return S_FALSE;
 
-	if(oParams && oParams->m_bNeedPageBreakBefore)
+	if(pParametrs && pParametrs->m_bNeedPageBreakBefore)
 		m_internal->PageBreakBefore();
+
 	m_internal->readSrc();
 	m_internal->write();
 	return S_OK;
-	#else
-	HTML::CHTMLReader oHTMLReader;
-	return oHTMLReader.ConvertFromTo(sSrc, sDst);
 	#endif
 }
 
-HRESULT CHtmlFile2::OpenMht(const std::wstring& sSrc, const std::wstring& sDst, CHtmlParams* oParams)
+HRESULT CHtmlFile2::ConvertHTML2Markdown(const std::wstring& wsPath, const std::wstring& wsFinalFile, HTML::TMarkdownParameters* pParametrs)
+{
+	#ifdef USE_OLD_HTML_CONVERTER
+		return S_FALSE;
+	#else
+	if (nullptr == m_pReader)
+		return S_FALSE;
+
+	return m_pReader->ConvertHTML2Markdown(wsPath, wsFinalFile, pParametrs);
+	#endif
+}
+
+HRESULT CHtmlFile2::OpenMht(const std::wstring& sSrc, const std::wstring& sDst)
 {
 	#ifdef USE_OLD_HTML_CONVERTER
 	if(!m_internal->m_oLightReader.IsValid())
@@ -5113,7 +5132,7 @@ HRESULT CHtmlFile2::OpenMht(const std::wstring& sSrc, const std::wstring& sDst, 
 	#endif
 }
 
-HRESULT CHtmlFile2::OpenBatchHtml(const std::vector<std::wstring>& sSrc, const std::wstring& sDst, CHtmlParams* oParams)
+HRESULT CHtmlFile2::OpenBatchHtml(const std::vector<std::wstring>& sSrc, const std::wstring& sDst)
 {
 	#ifdef USE_OLD_HTML_CONVERTER
 	m_internal->m_sDst = sDst;

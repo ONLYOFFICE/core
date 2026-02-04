@@ -7,14 +7,14 @@
 
 namespace HTML
 {
-CMDWriter::CMDWriter(const TMDParametrs& oMDParametrs)
+CMDWriter::CMDWriter(const TMarkdownParameters& oMDParametrs)
 	: m_oMDParametrs(oMDParametrs)
 {
 	m_arStates.push(TState{});
 	m_arStates.top().m_pCurrentDocument = &m_oDocument;
 }
 
-void CMDWriter::Begin(const std::wstring& wsDst, const THtmlParams* pParams)
+void CMDWriter::Begin(const std::wstring& wsDst)
 {
 
 }
@@ -117,7 +117,7 @@ void CMDWriter::RevertDataOutput()
 	RollBackState();
 }
 
-TMDParametrs CMDWriter::GetParametrs() const
+TMarkdownParameters CMDWriter::GetParametrs() const
 {
 	return m_oMDParametrs;
 }

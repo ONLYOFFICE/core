@@ -1,11 +1,11 @@
-#ifndef HTMLPARAMS_H
-#define HTMLPARAMS_H
+#ifndef HTMLPARAMETERS_H
+#define HTMLPARAMETERS_H
 
 #include <string>
 
 namespace HTML
 {
-struct THtmlParams
+struct THTMLParameters
 {
 	std::wstring m_sGenres;      // Жанры
 	std::wstring m_sAuthors;     // Авторы
@@ -17,7 +17,7 @@ struct THtmlParams
 	std::wstring m_sdocDefaults; // Стиль docDefaults
 	std::wstring m_sNormal;      // Стиль normal
 
-	THtmlParams() : m_bNeedPageBreakBefore(false) {}
+	THTMLParameters() : m_bNeedPageBreakBefore(false) {}
 
 	void SetNormal(const std::wstring& sStyle)
 	{
@@ -66,4 +66,4 @@ struct THtmlParams
 };
 }
 
-#endif // HTMLPARAMS_H
+#endif // HTMLPARAMETERS_H

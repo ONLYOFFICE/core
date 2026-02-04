@@ -46,9 +46,10 @@ HEADERS += htmlfile2.h \
 	Common.h \
 	./Writers/OOXMLWriter.h \
 	./Writers/IWriter.h \
-	HTMLParams.h \
+	HTMLParameters.h \
 	HTMLReader.h \
 	./Tags/HTMLTags.h \
+	MarkdownParameters.h \
 	Tags/MDTags.h \
 	Writers/MDWriter.h \
 	Table.h \

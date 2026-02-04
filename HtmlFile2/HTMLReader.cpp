@@ -170,10 +170,7 @@ inline bool TagIsUnprocessed(const std::wstring& wsTagName);
 
 CHTMLReader::CHTMLReader()
 	: m_pWriter(nullptr)
-{
-	// InitOOXMLTags();
-	InitMDTags();
-}
+{}
 
 CHTMLReader::~CHTMLReader()
 {
@@ -181,41 +178,63 @@ CHTMLReader::~CHTMLReader()
 		delete m_pWriter;
 }
 
-HRESULT CHTMLReader::ConvertFromTo(const std::wstring& wsFrom, const std::wstring& wsTo)
+void CHTMLReader::SetTempDirectory(const std::wstring& wsPath)
 {
-	if (nullptr == m_pWriter || !HTML2XHTML(wsFrom) || !m_oLightReader.IsValid() || !IsHTML())
-		return S_FALSE;
-
-	m_pWriter->Begin(wsTo, nullptr);
-
-	m_sSrc = NSSystemPath::GetDirectoryName(wsFrom);
-	// m_sDst = sDst;
-
-	m_oLightReader.MoveToStart();
-	m_oLightReader.ReadNextNode();
-	ReadStyle();
-
-	// Переходим в начало
-	if(!m_oLightReader.MoveToStart())
-		return S_FALSE;
-
-	// if(oParams && oParams->m_bNeedPageBreakBefore)
-	// 	m_internal->PageBreakBefore();
-
-	ReadDocument();
-
-	m_pWriter->End(wsTo);
-	return S_OK;
+	m_wsTempDirectory = wsPath;
 }
 
-void CHTMLReader::InitOOXMLTags()
+void CHTMLReader::SetCoreDirectory(const std::wstring& wsPath)
 {
+	m_wsCoreDirectory = wsPath;
+}
+
+HRESULT CHTMLReader::ConvertHTML2OOXML(const std::wstring& wsPath, const std::wstring& wsDirectory, THTMLParameters* pParameters)
+{
+	InitOOXMLTags(pParameters);
+
+	m_wsDstDirectory = wsDirectory;
+
+	return ConvertHTML(wsPath, wsDirectory);
+}
+
+HRESULT CHTMLReader::ConvertHTML2Markdown(const std::wstring& wsPath, const std::wstring& wsFinalFile, TMarkdownParameters* pParameters)
+{
+	InitMDTags();
+	return ConvertHTML(wsPath, wsFinalFile);
+}
+
+void CHTMLReader::Clear()
+{
+	if (nullptr != m_pWriter)
+		delete m_pWriter;
+
+	m_mTags.clear();
+
+	m_wsTempDirectory.clear();
+	m_wsSrcDirectory .clear();
+	m_wsDstDirectory .clear();
+	m_wsBaseDirectory.clear();
+	m_wsCoreDirectory.clear();
+}
+
+void CHTMLReader::InitOOXMLTags(THTMLParameters* pParametrs)
+{
+	Clear();
+
 	COOXMLWriter *pWriter = new COOXMLWriter();
 
 	if (nullptr == pWriter)
 		return;
 
 	pWriter->SetCSSCalculator(&m_oCSSCalculator);
+	pWriter->SetHTMLParameters(pParametrs);
+
+	pWriter->SetSrcDirectory (m_wsSrcDirectory);
+	pWriter->SetDstDirectory (m_wsDstDirectory);
+	pWriter->SetTempDirectory(m_wsTempDirectory);
+	pWriter->SetBaseDirectory(m_wsBaseDirectory);
+	pWriter->SetCoreDirectory(m_wsCoreDirectory);
+
 	m_pWriter = pWriter;
 
 	m_mTags[HTML_TAG(A)]          = std::make_shared<CAnchor        <COOXMLWriter>>(pWriter);
@@ -228,7 +247,7 @@ void CHTMLReader::InitOOXMLTags()
 	m_mTags[HTML_TAG(BASEFONT)]   = std::make_shared<CBaseFont      <COOXMLWriter>>(pWriter);
 	m_mTags[HTML_TAG(BLOCKQUOTE)] = std::make_shared<CBlockquote    <COOXMLWriter>>(pWriter);
 	m_mTags[HTML_TAG(HR)]         = std::make_shared<CHorizontalRule<COOXMLWriter>>(pWriter);
-	m_mTags[HTML_TAG(UL)]         = std::make_shared<CList          <COOXMLWriter>>(pWriter);
+	m_mTags[HTML_TAG(OL)]         = std::make_shared<CList          <COOXMLWriter>>(pWriter);
 	m_mTags[HTML_TAG(LI)]         = std::make_shared<CListElement   <COOXMLWriter>>(pWriter);
 	m_mTags[HTML_TAG(CAPTION)]    = std::make_shared<CCaption       <COOXMLWriter>>(pWriter);
 	m_mTags[HTML_TAG(TABLE)]      = std::make_shared<CTable         <COOXMLWriter>>(pWriter);
@@ -251,6 +270,7 @@ void CHTMLReader::InitOOXMLTags()
 	m_mTags[HTML_TAG(BDO)]    = oIgnoredTag;
 	m_mTags[HTML_TAG(SPAN)]   = oIgnoredTag;
 	m_mTags[HTML_TAG(H1)]     = oIgnoredTag;
+	m_mTags[HTML_TAG(CODE)]     = oIgnoredTag;
 }
 
 void CHTMLReader::InitMDTags()
@@ -356,6 +376,33 @@ bool CHTMLReader::HTML2XHTML(const std::wstring& wsFileName)
 	return m_oLightReader.FromString(sRes);
 }
 
+HRESULT CHTMLReader::ConvertHTML(const std::wstring& wsPath, const std::wstring& wsDirectory)
+{
+	if (nullptr == m_pWriter || !HTML2XHTML(wsPath) || !m_oLightReader.IsValid() || !IsHTML())
+		return S_FALSE;
+
+	m_pWriter->Begin(wsDirectory);
+
+	m_wsSrcDirectory = NSSystemPath::GetDirectoryName(wsPath);
+	// m_sDst = sDst;
+
+	m_oLightReader.MoveToStart();
+	m_oLightReader.ReadNextNode();
+	ReadStyle();
+
+	// Переходим в начало
+	if(!m_oLightReader.MoveToStart())
+		return S_FALSE;
+
+	// if(oParams && oParams->m_bNeedPageBreakBefore)
+	// 	m_internal->PageBreakBefore();
+
+	ReadDocument();
+
+	m_pWriter->End(wsDirectory);
+	return S_OK;
+}
+
 void CHTMLReader::ReadStyle()
 {
 	if(m_oLightReader.IsEmptyNode())
@@ -422,7 +469,7 @@ void CHTMLReader::ReadStyleFromNetwork()
 	// Стиль в сети
 	if(sRef.substr(0, 4) == L"http")
 	{
-		sFName = m_sTmp + L'/' + sFName;
+		sFName = m_wsTempDirectory + L'/' + sFName;
 		NSNetwork::NSFileTransport::CFileDownloader oDownloadStyle(sRef, false);
 		oDownloadStyle.SetFilePath(sFName);
 		if(oDownloadStyle.DownloadSync())
@@ -433,8 +480,8 @@ void CHTMLReader::ReadStyleFromNetwork()
 	}
 	else
 	{
-		m_oCSSCalculator.AddStylesFromFile(m_sSrc + L'/' + sFName);
-		m_oCSSCalculator.AddStylesFromFile(m_sSrc + L'/' + sRef);
+		m_oCSSCalculator.AddStylesFromFile(m_wsSrcDirectory + L'/' + sFName);
+		m_oCSSCalculator.AddStylesFromFile(m_wsSrcDirectory + L'/' + sRef);
 	}
 }
 
@@ -463,7 +510,7 @@ void CHTMLReader::ReadHead()
 		const std::wstring wsName = m_oLightReader.GetName();
 		// Базовый адрес
 		if (L"base" == wsName)
-			m_sBase = GetArgumentValue(m_oLightReader, L"href");
+			m_wsBaseDirectory = GetArgumentValue(m_oLightReader, L"href");
 	}
 
 	m_oLightReader.MoveToElement();

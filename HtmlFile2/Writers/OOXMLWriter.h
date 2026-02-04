@@ -1,11 +1,11 @@
 #ifndef OOXMLWRITER_H
 #define OOXMLWRITER_H
 
-// #include "HTMLInterpretator.h"
-
 #include "../../Common/3dParty/html/css/src/xhtml/CDocumentStyle.h"
 #include "../../Common/3dParty/html/css/src/CCssCalculator.h"
+#include "../HTMLParameters.h"
 #include "IWriter.h"
+
 #include <stack>
 
 namespace NSFonts { class IApplicationFonts; }
@@ -39,11 +39,11 @@ struct TImageData
 
 class COOXMLWriter : public IWriter
 {
-	std::wstring m_wsDstPath; // Директория назначения
-	std::wstring m_wsTempDir; // Temp папка
-	std::wstring m_wsSrcPath; // Директория источника
-	std::wstring m_wsBasePath; // Полный базовый адрес
-	std::wstring m_wsCorePath; // Путь до корневого файла (используется для работы с Epub)
+	const std::wstring *m_pDstPath;  // Директория назначения
+	const std::wstring *m_pTempDir;  // Temp папка
+	const std::wstring *m_pSrcPath;  // Директория источника
+	const std::wstring *m_pBasePath; // Полный базовый адрес
+	const std::wstring *m_pCorePath; // Путь до корневого файла (используется для работы с Epub)
 
 	XmlString m_oStylesXml;   // styles.xml
 	XmlString m_oDocXmlRels;  // document.xml.rels
@@ -57,6 +57,7 @@ class COOXMLWriter : public IWriter
 	NSCSS::NSProperties::CPage m_oPageData; // Стили страницы
 
 	NSCSS::CCssCalculator *m_pStylesCalculator;
+	THTMLParameters *m_pHTMLParameters;
 
 	struct TState
 	{
@@ -72,15 +73,11 @@ class COOXMLWriter : public IWriter
 		XmlString *m_pCurrentDocument; //Текущее место записи
 		bool m_bRemoveCurrentDocument;
 
-		// std::wstring m_wsNote;
-
-		// HtmlTag m_eLastElement;
-
 		TState()
 			: m_bInP(false), m_bInR(false), m_bInT(false),
 			  m_bWasPStyle(false), m_bWasSpace(true), m_bInHyperlink(false),
 			  m_bBanUpdatePageData(false), m_pCurrentDocument(nullptr),
-			  m_bRemoveCurrentDocument(false)/*, m_eLastElement(HTML_TAG(UNKNOWN))*/
+			  m_bRemoveCurrentDocument(false)
 		{}
 
 		~TState()
@@ -117,8 +114,15 @@ public:
 	COOXMLWriter();
 
 	void SetCSSCalculator(NSCSS::CCssCalculator* pCSSCalculator);
+	void SetHTMLParameters(THTMLParameters* pHTMLParameters);
 
-	void Begin(const std::wstring& wsDst, const THtmlParams* pParams) override;
+	void SetSrcDirectory (const std::wstring& wsPath);
+	void SetDstDirectory (const std::wstring& wsPath);
+	void SetTempDirectory(const std::wstring& wsPath);
+	void SetBaseDirectory(const std::wstring& wsPath);
+	void SetCoreDirectory(const std::wstring& wsPath);
+
+	void Begin(const std::wstring& wsDst) override;
 	void End(const std::wstring& wsDst) override;
 
 	bool OpenP();

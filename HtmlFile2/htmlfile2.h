@@ -5,6 +5,9 @@
 #include <vector>
 #include "../DesktopEditor/common/Types.h"
 
+#include "HTMLParameters.h"
+#include "MarkdownParameters.h"
+
 #ifndef HTMLFILE2_USE_DYNAMIC_LIBRARY
 #define HTMLFILE2_DECL_EXPORT
 #else
@@ -12,84 +15,46 @@
 #define HTMLFILE2_DECL_EXPORT Q_DECL_EXPORT
 #endif
 
-struct CHtmlParams
-{
-    std::wstring m_sGenres;      // Жанры
-    std::wstring m_sAuthors;     // Авторы
-    std::wstring m_sBookTitle;   // Название
-    std::wstring m_sDate;        // Дата
-    std::wstring m_sDescription; // описание
-    std::wstring m_sLanguage;    // Язык
-    bool m_bNeedPageBreakBefore; // Новый html с новой страницы
-    std::wstring m_sdocDefaults; // Стиль docDefaults
-    std::wstring m_sNormal;      // Стиль normal
-
-    CHtmlParams() : m_bNeedPageBreakBefore(false) {}
-
-    void SetNormal(const std::wstring& sStyle)
-    {
-        m_sNormal = sStyle;
-    }
-
-    void SetDocDefaults(const std::wstring& sStyle)
-    {
-        m_sdocDefaults = sStyle;
-    }
-
-    void SetPageBreakBefore(bool bNeed)
-    {
-        m_bNeedPageBreakBefore = bNeed;
-    }
-
-    void SetDate(const std::wstring& sDate)
-    {
-        m_sDate = sDate;
-    }
-
-    void SetDescription(const std::wstring& sDescription)
-    {
-        m_sDescription = sDescription;
-    }
-
-    void SetGenres(const std::wstring& sGenres)
-    {
-        m_sGenres = sGenres;
-    }
-
-    void SetAuthors(const std::wstring& sAuthors)
-    {
-        m_sAuthors = sAuthors;
-    }
-
-    void SetTitle(const std::wstring& sTitle)
-    {
-        m_sBookTitle = sTitle;
-    }
-
-    void SetLanguage(const std::wstring& sLanguage)
-    {
-        m_sLanguage = sLanguage;
-    }
-};
-
+#ifdef USE_OLD_HTML_CONVERTER
 class CHtmlFile2_Private;
+#else
+namespace HTML { class CHTMLReader; }
+#endif
+
 class HTMLFILE2_DECL_EXPORT CHtmlFile2
 {
 private:
     #ifdef USE_OLD_HTML_CONVERTER
     CHtmlFile2_Private* m_internal;
+    #else
+    HTML::CHTMLReader* m_pReader;
     #endif
 public:
     CHtmlFile2();
     ~CHtmlFile2();
 
-    bool IsHtmlFile(const std::wstring& sFile);
-    bool IsMhtFile (const std::wstring& sFile);
-    void SetTmpDirectory(const std::wstring& sFolder);
+    #ifdef USE_OLD_HTML_CONVERTER
+    bool IsHtmlFile(const std::wstring& wsFile);
+    bool IsMhtFile (const std::wstring& wsFile);
+    #endif
+
+    void SetTempDirectory(const std::wstring& wsFolder);
     void SetCoreDirectory(const std::wstring& wsFolder);
-    HRESULT OpenHtml(const std::wstring& sPath, const std::wstring& sDirectory, CHtmlParams* oParams = NULL);
-    HRESULT OpenMht (const std::wstring& sPath, const std::wstring& sDirectory, CHtmlParams* oParams = NULL);
-    HRESULT OpenBatchHtml(const std::vector<std::wstring>& sPath, const std::wstring& sDirectory, CHtmlParams* oParams = NULL);
+
+    HRESULT ConvertHTML2OOXML   (const std::wstring& wsPath, const std::wstring& wsDirectory, HTML::THTMLParameters*     pParametrs = nullptr);
+    HRESULT ConvertHTML2Markdown(const std::wstring& wsPath, const std::wstring& wsFinalFile, HTML::TMarkdownParameters* pParametrs = nullptr);
+
+    HRESULT ConvertMHT2OOXML    (const std::wstring& sPath,  const std::wstring& sDirectory,  HTML::THTMLParameters*     pParametrs = nullptr);
+    HRESULT ConvertMHT2Markdown (const std::wstring& sPath,  const std::wstring& sDirectory,  HTML::TMarkdownParameters* pParametrs = nullptr);
+
+    HRESULT ConvertHTML2OOXML   (const std::vector<std::wstring>& arPaths, const std::wstring& wsDirectory, HTML::THTMLParameters*     pParametrs = nullptr);
+    HRESULT ConvertHTML2Markdown(const std::vector<std::wstring>& arPaths, const std::wstring& wsDirectory, HTML::TMarkdownParameters* pParametrs = nullptr);
+
+    HRESULT ConvertMHT2OOXML    (const std::vector<std::wstring>& arPaths, const std::wstring& wsDirectory, HTML::THTMLParameters*     pParametrs = nullptr);
+    HRESULT ConvertMHT2Markdown (const std::vector<std::wstring>& arPaths, const std::wstring& wsDirectory, HTML::TMarkdownParameters* pParametrs = nullptr);
+
+    HRESULT OpenMht (const std::wstring& sPath, const std::wstring& sDirectory);
+    HRESULT OpenBatchHtml(const std::vector<std::wstring>& sPath, const std::wstring& sDirectory);
 };
 
 #endif // _HTMLFILE2_HTMLFILE2_H

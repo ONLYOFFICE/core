@@ -2,17 +2,12 @@
 #define MDWRITER_H
 
 #include "IWriter.h"
+#include "../MarkdownParameters.h"
+
 #include <stack>
 
 namespace HTML
 {
-struct TMDParametrs
-{
-	bool m_bUseAlternativeHTMLTags = false; //Использовать html теги там, где нет стандартной реализации в md(например для подчеркиваний)
-	WCHAR m_wchUnorderedList = L'-'; // Возможные варианты в md: -, +, *
-	WCHAR m_wchOrderedList = L'.'; // Возможные варианты в md: ., )
-};
-
 class CMDWriter : public IWriter
 {
 	XmlString m_oDocument;
@@ -37,11 +32,11 @@ class CMDWriter : public IWriter
 	};
 
 	std::stack<TState> m_arStates;
-	TMDParametrs m_oMDParametrs;
+	TMarkdownParameters m_oMDParametrs;
 public:
-	CMDWriter(const TMDParametrs& oMDParametrs);
+	CMDWriter(const TMarkdownParameters& oMDParametrs);
 
-	void Begin(const std::wstring& wsDst, const THtmlParams* pParams) override;
+	void Begin(const std::wstring& wsDst) override;
 	void End(const std::wstring& wsDst)  override;
 
 	bool WriteText(std::wstring wsText, const std::vector<NSCSS::CNode>& arSelectors) override;
@@ -54,7 +49,7 @@ public:
 	void SetDataOutput(XmlString* pOutputData) override;
 	void RevertDataOutput() override;
 
-	TMDParametrs GetParametrs() const;
+	TMarkdownParameters GetParametrs() const;
 	void WriteString(const std::wstring& wsString, bool bSpecialString = false);
 	XmlString* GetCurrentDocument() const override;
 

@@ -2,7 +2,6 @@
 #define IWRITER_H
 
 #include "../../Common/3dParty/html/css/src/CNode.h"
-#include "HTMLParams.h"
 #include "../Common.h"
 
 namespace HTML
@@ -13,7 +12,7 @@ public:
 	IWriter() = default;
 	virtual ~IWriter() = default;
 
-	virtual void Begin(const std::wstring& wsDst, const THtmlParams* pParams) = 0;
+	virtual void Begin(const std::wstring& wsDst) = 0;
 	virtual void End(const std::wstring& wsDst) = 0;
 
 	virtual bool WriteText(std::wstring wsText, const std::vector<NSCSS::CNode>& arSelectors) = 0;

@@ -41,7 +41,10 @@ inline UINT GetFontSizeByLevel(UINT unLevel);
 inline void ReplaceSpaces(std::wstring& wsValue);
 
 COOXMLWriter::COOXMLWriter()
-	: m_nFootnoteId(1), m_nHyperlinkId(1), m_nNumberingId(1), m_nId(1), m_nShapeId(1), m_bWasDivs(false), m_pFonts(nullptr)
+	: m_pDstPath(nullptr), m_pTempDir(nullptr), m_pSrcPath(nullptr),
+	  m_pBasePath(nullptr), m_pCorePath(nullptr), m_pHTMLParameters(nullptr),
+	  m_nFootnoteId(1), m_nHyperlinkId(1), m_nNumberingId(1), m_nId(1),
+	  m_nShapeId(1), m_bWasDivs(false), m_pFonts(nullptr)
 {
 	m_oPageData.SetWidth (DEFAULT_PAGE_WIDTH,  NSCSS::UnitMeasure::Twips, 0, true);
 	m_oPageData.SetHeight(DEFAULT_PAGE_HEIGHT, NSCSS::UnitMeasure::Twips, 0, true);
@@ -58,7 +61,37 @@ void COOXMLWriter::SetCSSCalculator(NSCSS::CCssCalculator* pCSSCalculator)
 	m_pStylesCalculator = pCSSCalculator;
 }
 
-void COOXMLWriter::Begin(const std::wstring& wsDst, const THtmlParams* pParams)
+void COOXMLWriter::SetHTMLParameters(THTMLParameters* pHTMLParameters)
+{
+	m_pHTMLParameters = pHTMLParameters;
+}
+
+void COOXMLWriter::SetSrcDirectory(const std::wstring& wsPath)
+{
+	m_pSrcPath = &wsPath;
+}
+
+void COOXMLWriter::SetDstDirectory(const std::wstring& wsPath)
+{
+	m_pDstPath = &wsPath;
+}
+
+void COOXMLWriter::SetTempDirectory(const std::wstring& wsPath)
+{
+	m_pTempDir = &wsPath;
+}
+
+void COOXMLWriter::SetBaseDirectory(const std::wstring& wsPath)
+{
+	m_pBasePath = &wsPath;
+}
+
+void COOXMLWriter::SetCoreDirectory(const std::wstring& wsPath)
+{
+	m_pCorePath = &wsPath;
+}
+
+void COOXMLWriter::Begin(const std::wstring& wsDst)
 {
 	// Создаем пустые папки
 	NSDirectory::CreateDirectory(wsDst + L"/_rels");
@@ -152,41 +185,41 @@ void COOXMLWriter::Begin(const std::wstring& wsDst, const THtmlParams* pParams)
 
 	// core.xml
 	std::wstring sCore = L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><cp:coreProperties xmlns:cp=\"http://schemas.openxmlformats.org/package/2006/metadata/core-properties\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:dcterms=\"http://purl.org/dc/terms/\" xmlns:dcmitype=\"http://purl.org/dc/dcmitype/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">";
-	if(pParams)
+	if(nullptr != m_pHTMLParameters)
 	{
-		if(!pParams->m_sBookTitle.empty())
+		if(!m_pHTMLParameters->m_sBookTitle.empty())
 		{
 			sCore += L"<dc:title>";
-			sCore += EncodeXmlString(pParams->m_sBookTitle);
+			sCore += EncodeXmlString(m_pHTMLParameters->m_sBookTitle);
 			sCore += L"</dc:title>";
 		}
-		if(!pParams->m_sAuthors.empty())
+		if(!m_pHTMLParameters->m_sAuthors.empty())
 		{
 			sCore += L"<dc:creator>";
-			sCore += EncodeXmlString(pParams->m_sAuthors);
+			sCore += EncodeXmlString(m_pHTMLParameters->m_sAuthors);
 			sCore += L"</dc:creator>";
 		}
-		if(!pParams->m_sGenres.empty())
+		if(!m_pHTMLParameters->m_sGenres.empty())
 		{
 			sCore += L"<dc:subject>";
-			sCore += EncodeXmlString(pParams->m_sGenres);
+			sCore += EncodeXmlString(m_pHTMLParameters->m_sGenres);
 			sCore += L"</dc:subject>";
 		}
-		if(!pParams->m_sDate.empty())
+		if(!m_pHTMLParameters->m_sDate.empty())
 		{
 			sCore += L"<dcterms:created xsi:type=\"dcterms:W3CDTF\">";
-			sCore += EncodeXmlString(pParams->m_sDate);
+			sCore += EncodeXmlString(m_pHTMLParameters->m_sDate);
 			sCore += L"</dcterms:created>";
 		}
-		if(!pParams->m_sDescription.empty())
+		if(!m_pHTMLParameters->m_sDescription.empty())
 		{
 			sCore += L"<dc:description>";
-			sCore += EncodeXmlString(pParams->m_sDescription);
+			sCore += EncodeXmlString(m_pHTMLParameters->m_sDescription);
 			sCore += L"</dc:description>";
 		}
-		if (!pParams->m_sLanguage.empty())
+		if (!m_pHTMLParameters->m_sLanguage.empty())
 		{
-			wsCurrentLanguage = IndentifyLanguage(pParams->m_sLanguage);
+			wsCurrentLanguage = IndentifyLanguage(m_pHTMLParameters->m_sLanguage);
 
 			sCore += L"<dc:language>";
 			sCore += wsCurrentLanguage;
@@ -220,8 +253,8 @@ void COOXMLWriter::Begin(const std::wstring& wsDst, const THtmlParams* pParams)
 	m_nId += 7;
 
 	// docDefaults по умолчанию
-	if(pParams && !pParams->m_sdocDefaults.empty())
-		m_oStylesXml += pParams->m_sdocDefaults;
+	if(m_pHTMLParameters && !m_pHTMLParameters->m_sdocDefaults.empty())
+		m_oStylesXml += m_pHTMLParameters->m_sdocDefaults;
 	else
 	{
 		m_oStylesXml += L"<w:rPrDefault><w:rPr>";
@@ -234,8 +267,8 @@ void COOXMLWriter::Begin(const std::wstring& wsDst, const THtmlParams* pParams)
 	}
 
 	// normal по умолчанию
-	if(pParams && !pParams->m_sNormal.empty())
-		m_oStylesXml += pParams->m_sNormal;
+	if(m_pHTMLParameters && !m_pHTMLParameters->m_sNormal.empty())
+		m_oStylesXml += m_pHTMLParameters->m_sNormal;
 	else
 	{
 		m_oStylesXml += L"<w:style w:type=\"paragraph\" w:styleId=\"normal\" w:default=\"1\"><w:name w:val=\"Normal\"/><w:qFormat/><w:rPr><w:rFonts w:eastAsiaTheme=\"minorEastAsia\"/>";
@@ -1136,27 +1169,27 @@ NSFonts::IApplicationFonts* COOXMLWriter::GetFonts()
 
 std::wstring COOXMLWriter::GetMediaDir() const
 {
-	return m_wsDstPath + L"/word/media/";
+	return ((nullptr != m_pDstPath) ? *m_pDstPath : std::wstring()) + L"/word/media/";
 }
 
 std::wstring COOXMLWriter::GetTempDir() const
 {
-	return m_wsTempDir;
+	return (nullptr != m_pTempDir) ? *m_pTempDir : std::wstring();
 }
 
 std::wstring COOXMLWriter::GetSrcPath() const
 {
-	return m_wsSrcPath;
+	return (nullptr != m_pSrcPath) ? *m_pSrcPath : std::wstring();
 }
 
 std::wstring COOXMLWriter::GetBasePath() const
 {
-	return m_wsBasePath;
+	return (nullptr != m_pBasePath) ? *m_pBasePath : std::wstring();
 }
 
 std::wstring COOXMLWriter::GetCorePath() const
 {
-	return m_wsCorePath;
+	return (nullptr != m_pCorePath) ? *m_pCorePath : std::wstring();
 }
 
 inline bool ElementInTable(const std::vector<NSCSS::CNode>& arSelectors)

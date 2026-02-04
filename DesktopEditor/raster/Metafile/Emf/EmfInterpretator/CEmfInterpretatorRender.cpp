@@ -143,7 +143,7 @@ namespace MetaFile
 			m_pMetaFileRenderer->UpdateDC();
 	}
 
-	void CEmfInterpretatorRender::SetTransform(double &dM11, double &dM12, double &dM21, double &dM22, double &dX, double &dY)
+	void CEmfInterpretatorRender::SetTransform(const double& dM11, const double& dM12, const double& dM21, const double& dM22, const double& dX, const double& dY)
 	{
 		if (NULL != m_pMetaFileRenderer)
 			m_pMetaFileRenderer->SetTransform(dM11, dM12, dM21, dM22, dX, dY);

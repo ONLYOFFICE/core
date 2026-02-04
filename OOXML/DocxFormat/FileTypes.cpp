@@ -192,7 +192,7 @@ namespace OOX
 												L"diagrams/data", true, true);
 
 		const FileType DiagramQuickStyle(L"diagrams", L"quickStyle.xml",
-												L"application/vnd.openxmlformats-officedocument.drawingml.diagramQuickStyle+xml",
+												L"application/vnd.openxmlformats-officedocument.drawingml.diagramStyle+xml",
 												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/diagramQuickStyle",
 												L"diagrams/quickStyle", true, true);
 

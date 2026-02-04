@@ -307,6 +307,12 @@ namespace OOX
 						{
 							auto AxisParentUnion = new XLS::AXISPARENT;
 							ChartFormatsPtr->m_arAXISPARENT.push_back(XLS::BaseObjectPtr(AxisParentUnion));
+							auto axisPos = new XLS::Pos;
+							axisPos->x1 = -1000;
+							axisPos->y1 = -1000;
+							axisPos->x2 = 1000;
+							axisPos->y2 = 2500;
+							AxisParentUnion->m_Pos = XLS::BaseObjectPtr(axisPos);
 
 							for(auto chartIndex = 0; chartIndex < ChartFile->m_oChartSpace.m_chart->m_plotArea->m_Items.size(); chartIndex ++)
 							{

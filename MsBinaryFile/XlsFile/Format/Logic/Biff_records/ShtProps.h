@@ -56,10 +56,10 @@ public:
 
 //-----------------------------
     bool fManSerAlloc = false;
-	bool fManPlotArea = false;
+	bool fManPlotArea = true;
 	bool fPlotVisOnly = true;
     bool fNotSizeWith = false;
-    bool fAlwaysAutoPlotArea = false;
+	bool fAlwaysAutoPlotArea = true;
     unsigned char	mdBlank = 0;
 };
 

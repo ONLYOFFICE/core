@@ -343,7 +343,6 @@ namespace NSCSS
 		void SetRGB(const TRGB& oRGB);
 		void SetHEX(const std::wstring& wsValue);
 		bool SetUrl(const std::wstring& wsValue);
-		void SetNone();
 	};
 
 	typedef enum

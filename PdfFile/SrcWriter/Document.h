@@ -33,6 +33,7 @@
 #define _PDF_WRITER_SRC_DOCUMENT_H
 
 #include <vector>
+#include <deque>
 #include <string>
 #include "Types.h"
 
@@ -195,7 +196,9 @@ namespace PdfWriter
 		bool              AddToFile(const std::wstring& wsPath, CXref* pXref, CDictObject* pTrailer, CXref* pInfoXref, CInfoDict* pInfo);
 		void              AddObject(CObjectBase* pObj);
 		bool              MovePage(int nPageIndex, int nPos);
-		void              Sign(const TRect& oRect, CImageDict* pImage, ICertificate* pCert);
+		void              Sign(const TRect& oRect, CImageDict* pImage);
+		bool              PrepareSignature(BYTE** pDataToSign, DWORD& dwDataLength);
+		bool              FinalizeSignature(BYTE* pSignedData, DWORD dwDataLength);
 		bool              EditAnnot (CXref* pXref, CAnnotation* pAnnot,  int nID);
 		void              AddParent(int nID, CDictObject* pParent);
 		CDictObject*      CreateParent(int nID);
@@ -255,18 +258,27 @@ namespace PdfWriter
 		};
 		struct TSignatureInfo
 		{
-			TSignatureInfo(const TRect& _oRect, CPage* _pPage, CImageDict* _pImage, ICertificate* _pCertificate)
+			TSignatureInfo(const TRect& _oRect, CPage* _pPage, CImageDict* _pImage)
 			{
 				oRect  = _oRect;
 				pPage  = _pPage;
 				pImage = _pImage;
-				pCertificate = _pCertificate;
+
+				nSizeXRef = 0;
+				bNeedStreamXRef = false;
+				pField = NULL;
+				pXref = NULL;
 			}
 
 			TRect oRect;
 			CPage* pPage;
 			CImageDict* pImage;
-			ICertificate* pCertificate;
+
+			std::wstring wsPath;
+			unsigned int nSizeXRef;
+			bool bNeedStreamXRef;
+			CSignatureField* pField;
+			CXref* pXref;
 		};
 		struct TImageInfo
 		{
@@ -296,7 +308,7 @@ namespace PdfWriter
 		CStreamData*                       m_pMetaData;
 		bool                               m_bEncrypt;
 		CEncryptDict*                      m_pEncryptDict;
-		std::vector<TSignatureInfo>        m_vSignatures;
+		std::deque<TSignatureInfo*>        m_vSignatures;
 		std::vector<TImageInfo>            m_vImages;
 		unsigned int                       m_unFormFields;
 		unsigned int                       m_unCompressMode;

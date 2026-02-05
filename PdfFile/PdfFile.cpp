@@ -102,11 +102,23 @@ void CPdfFile::Close()
 	else if (m_pInternal->pReader)
 		m_pInternal->pReader->Close();
 }
-void CPdfFile::Sign(const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& wsPicturePath, ICertificate* pCertificate)
+void CPdfFile::Sign(const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& wsPicturePath)
 {
 	if (!m_pInternal->pWriter)
 		return;
-	m_pInternal->pWriter->Sign(dX, dY, dW, dH, wsPicturePath, pCertificate);
+	m_pInternal->pWriter->Sign(dX, dY, dW, dH, wsPicturePath);
+}
+bool CPdfFile::PrepareSignature(BYTE** pDataToSign, DWORD& dwDataLength)
+{
+	if (!m_pInternal->pWriter)
+		return false;
+	return m_pInternal->pWriter->PrepareSignature(pDataToSign, dwDataLength);
+}
+bool CPdfFile::FinalizeSignature(BYTE* pSignedData, DWORD dwDataLength)
+{
+	if (!m_pInternal->pWriter)
+		return false;
+	return m_pInternal->pWriter->FinalizeSignature(pSignedData, dwDataLength);
 }
 void CPdfFile::SetDocumentInfo(const std::wstring& wsTitle, const std::wstring& wsCreator, const std::wstring& wsSubject, const std::wstring& wsKeywords)
 {
@@ -133,6 +145,12 @@ bool CPdfFile::EditPdf(const std::wstring& wsDstFile)
 	RELEASEOBJECT(m_pInternal->pEditor);
 	m_pInternal->pEditor = new CPdfEditor(m_pInternal->wsSrcFile, m_pInternal->wsPassword, wsDstFile, m_pInternal->pReader, m_pInternal->pWriter);
 	return m_pInternal->pEditor->GetError() == 0;
+}
+void CPdfFile::EditClose()
+{
+	if (m_pInternal->pEditor)
+		m_pInternal->pEditor->Close();
+	RELEASEOBJECT(m_pInternal->pEditor);
 }
 void CPdfFile::SetEditType(int nType)
 {

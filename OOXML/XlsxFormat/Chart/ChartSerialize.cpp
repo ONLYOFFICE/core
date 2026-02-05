@@ -41,6 +41,7 @@
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/CRT.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/CHARTFOMATS.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/LD.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/AXS.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Series.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/DataFormat.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/BRAI.h"
@@ -60,6 +61,9 @@
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/RadarArea.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Chart3d.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Legend.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/AxisLine.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/LineFormat.h"
+
 
 namespace OOX
 {
@@ -3219,6 +3223,23 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			valSerRange->fAutoMinor = true;
 			valSerRange->fAutoCross = true;
 			dvAxis->m_ValueRange = XLS::BaseObjectPtr(valSerRange);
+
+			if(m_majorGridlines != nullptr)
+			{
+				auto axs = new XLS::AXS;
+				dvAxis->m_AXS = XLS::BaseObjectPtr(axs);
+				auto axisline = new XLS::AxisLine;
+				axisline->id = 1;
+				XLS::AXS::_axis_line_format lnFmt;
+				lnFmt.axisLine = XLS::BaseObjectPtr(axisline);
+				auto lineFmt = new XLS::LineFormat;
+				lnFmt.lineFormat = XLS::BaseObjectPtr(lineFmt);
+
+				lineFmt->lns = 0;
+				lineFmt->we = 0;
+				axs->m_AxisLine_Format.push_back(lnFmt);
+			}
+
 			return XLS::BaseObjectPtr(dvAxis);
 		}
 		EElementType CT_ValAx::getType() { return et_ct_valax; }

@@ -102,6 +102,9 @@ namespace NSCSS
 		if(m_wsStyle != oNode.m_wsStyle)
 			return m_wsStyle < oNode.m_wsStyle;
 
+		if (m_mAttributes.size() != oNode.m_mAttributes.size())
+			return m_mAttributes.size() < oNode.m_mAttributes.size();
+
 		if (m_mAttributes != oNode.m_mAttributes)
 			return m_mAttributes < oNode.m_mAttributes;
 

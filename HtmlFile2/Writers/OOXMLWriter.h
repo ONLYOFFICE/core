@@ -68,16 +68,13 @@ class COOXMLWriter : public IWriter
 		bool m_bWasSpace;    // Был пробел?
 		bool m_bInHyperlink; // <w:hyperlink> открыт?
 
-		bool m_bBanUpdatePageData; // Запретить обновление данных о странице?
-
 		XmlString *m_pCurrentDocument; //Текущее место записи
 		bool m_bRemoveCurrentDocument;
 
-		TState()
+		TState(XmlString *pCurrentDocument)
 			: m_bInP(false), m_bInR(false), m_bInT(false),
 			  m_bWasPStyle(false), m_bWasSpace(true), m_bInHyperlink(false),
-			  m_bBanUpdatePageData(false), m_pCurrentDocument(nullptr),
-			  m_bRemoveCurrentDocument(false)
+			  m_pCurrentDocument(pCurrentDocument), m_bRemoveCurrentDocument(false)
 		{}
 
 		~TState()
@@ -97,9 +94,10 @@ class COOXMLWriter : public IWriter
 
 	int m_nFootnoteId;  // ID сноски
 	int m_nHyperlinkId; // ID ссылки
-	int m_nNumberingId; // ID списка
-	int m_nId;          // ID остальные элементы
-	int m_nShapeId;     // Id shape's
+	int m_nListId;      // ID списка
+	int m_nElementId;   // ID остальные элементы
+
+	bool m_bBanUpdatePageData; // Запретить обновление данных о странице?
 
 	std::stack<std::wstring> m_arDivId;
 	bool m_bWasDivs;
@@ -174,6 +172,9 @@ public:
 	void SetBaseFont(const std::wstring& wsFontStyles);
 	void SetDivId(const std::wstring& wsDivId);
 	void RollBackDivId();
+
+	void IncreaseListId();
+	int GetListId() const;
 
 	std::wstring FindFootnote(const std::wstring& wsId);
 	void OpenFootnote(const std::wstring& wsFootnoteID);

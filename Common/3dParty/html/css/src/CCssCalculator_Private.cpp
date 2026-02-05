@@ -19,21 +19,23 @@ namespace NSCSS
 {
 	bool operator<(const std::vector<NSCSS::CNode> &arLeftSelectors, const std::vector<NSCSS::CNode> &arRightSelectors)
 	{
-		const size_t& sizeLeftSelectors = arLeftSelectors.size();
-		const size_t& sizeRightSelectors = arRightSelectors.size();
-
-		if (sizeLeftSelectors < sizeRightSelectors)
+		if (arLeftSelectors.size() < arRightSelectors.size())
 			return true;
-		else if (sizeLeftSelectors > sizeRightSelectors)
+		else if (arLeftSelectors.size() > arRightSelectors.size())
 			return false;
 
 		for (size_t i = 0; i < arLeftSelectors.size(); ++i)
 		{
-			if (!(arLeftSelectors[i] < arRightSelectors[i]))
+			if (arLeftSelectors[i] == arRightSelectors[i])
+				continue;
+
+			if (arLeftSelectors[i] < arRightSelectors[i])
+				return true;
+			else if (arRightSelectors[i] < arLeftSelectors[i])
 				return false;
 		}
 
-		return true;
+		return false;
 	}
 
 	CStyleStorage::CStyleStorage()
@@ -514,8 +516,8 @@ namespace NSCSS
 		m_mDefaultStyleData[L"s"] = new CElement(L"s", {{L"text-decoration", L"line-through"}});
 		m_mDefaultStyleData[L"u"] = new CElement(L"u", {{L"text-decoration", L"underline"}});
 		m_mDefaultStyleData[L"mark"] = new CElement(L"mark", {{L"background-color", L"yellow"}});
-		m_mDefaultStyleData[L"sup"] = new CElement(L"sup", {{L"vertical-align", L"super"}});
-		m_mDefaultStyleData[L"sub"] = new CElement(L"sub", {{L"vertical-align", L"sub"}});
+		m_mDefaultStyleData[L"sup"] = new CElement(L"sup", {{L"vertical-align", L"top"}});
+		m_mDefaultStyleData[L"sub"] = new CElement(L"sub", {{L"vertical-align", L"bottom"}});
 		m_mDefaultStyleData[L"dd"] = new CElement(L"dd", {{L"margin-left", L"720tw"}});
 		m_mDefaultStyleData[L"pre"] = new CElement(L"pre", {{L"font-family", L"Courier New"},
 		                                                    {L"font-size", L"20pt"},

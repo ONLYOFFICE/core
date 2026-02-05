@@ -5,7 +5,6 @@
 #include <cwctype>
 #include <functional>
 
-#include <iostream>
 #include "../ConstValues.h"
 
 #define DEFAULTFONTNAME L"Times New Roman"
@@ -477,6 +476,19 @@ std::wstring CXmlElement::ConvertRStyle(bool bIsLite) const
 			{
 				if (oItem.second == L"true")
 					sRStyle += L"<w:vanish/>";
+				break;
+			}
+			case CSSProperties::RunnerProperties::R_Strike:
+			{
+				sRStyle += L"<w:" + oItem.second + L"/>";
+				break;
+			}
+			case CSSProperties::RunnerProperties::R_VertAlign:
+			{
+				if (L"top" == oItem.second)
+					sRStyle += L"<w:vertAlign w:val=\"superscript\"/>";
+				else if (L"bottom" == oItem.second)
+					sRStyle += L"<w:vertAlign w:val=\"subscript\"/>";
 				break;
 			}
 			default:

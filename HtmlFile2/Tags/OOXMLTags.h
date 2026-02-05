@@ -103,7 +103,6 @@ public:
 template<>
 class CList<COOXMLWriter> : public CTag<COOXMLWriter>
 {
-	UINT m_unNumberingId;
 public:
 	CList(COOXMLWriter* pInterpretator);
 	virtual bool Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData = boost::any()) override;

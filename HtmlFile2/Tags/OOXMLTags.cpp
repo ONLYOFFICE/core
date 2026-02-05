@@ -567,6 +567,8 @@ bool CBlockquote<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelector
 	if (!ValidWriter())
 		return false;
 
+	//TODO:: когда Blockquote в Blockquote, то к первому нужно добавлять <w:divsChild>
+
 	const std::wstring wsKeyWord{arSelectors.back().m_wsName};
 
 	std::map<std::wstring, UINT>::const_iterator itFound = m_mDivs.find(wsKeyWord);
@@ -743,7 +745,7 @@ void CHorizontalRule<COOXMLWriter>::Close(const std::vector<NSCSS::CNode>& arSel
 {}
 
 CList<COOXMLWriter>::CList(COOXMLWriter* pWriter)
-	: CTag(pWriter), m_unNumberingId(1)
+	: CTag(pWriter)
 {}
 
 bool CList<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData)
@@ -762,7 +764,7 @@ bool CList<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, con
 
 		const std::wstring wsStart(std::to_wstring(nStart));
 		oNumberXml.WriteString(L"<w:abstractNum w:abstractNumId=\"");
-		oNumberXml.WriteString(std::to_wstring(m_unNumberingId++));
+		oNumberXml.WriteString(std::to_wstring(m_pWriter->GetListId()));
 		oNumberXml.WriteString(L"\"><w:multiLevelType w:val=\"hybridMultilevel\"/><w:lvl w:ilvl=\"0\"><w:start w:val=\"");
 		oNumberXml.WriteString(wsStart);
 		oNumberXml.WriteString(L"\"/><w:numFmt w:val=\"decimal\"/><w:isLgl w:val=\"false\"/><w:suff w:val=\"tab\"/><w:lvlText w:val=\"%1.\"/><w:lvlJc w:val=\"left\"/><w:pPr><w:ind w:left=\"709\" w:hanging=\"360\"/></w:pPr></w:lvl><w:lvl w:ilvl=\"1\"><w:start w:val=\"");
@@ -782,6 +784,8 @@ bool CList<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, con
 		oNumberXml.WriteString(L"\"/><w:numFmt w:val=\"decimal\"/><w:isLgl w:val=\"false\"/><w:suff w:val=\"tab\"/><w:lvlText w:val=\"%8.\"/><w:lvlJc w:val=\"left\"/><w:pPr><w:ind w:left=\"5749\" w:hanging=\"360\"/></w:pPr></w:lvl><w:lvl w:ilvl=\"8\"><w:start w:val=\"");
 		oNumberXml.WriteString(wsStart);
 		oNumberXml.WriteString(L"\"/><w:numFmt w:val=\"decimal\"/><w:isLgl w:val=\"false\"/><w:suff w:val=\"tab\"/><w:lvlText w:val=\"%9.\"/><w:lvlJc w:val=\"right\"/><w:pPr><w:ind w:left=\"6469\" w:hanging=\"180\"/></w:pPr></w:lvl></w:abstractNum>");
+
+		m_pWriter->IncreaseListId();
 	}
 
 	return true;
@@ -1266,14 +1270,18 @@ bool CTableRow<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors,
 		return false;
 
 	const DataForRow& oDataForRow(boost::any_cast<DataForRow>(oExtraData));
+	const TTableRowStyle* pTableRowStyles{boost::get<0>(oDataForRow)};
+
+	if (nullptr == pTableRowStyles)
+		return false;
+
 	XmlString& oCurrentDocument{*m_pWriter->GetCurrentDocument()};
 
 	oCurrentDocument.WriteNodeBegin(L"w:tr");
 
 	const TTableStyles& oTableStyles{boost::get<1>(oDataForRow).GetTableStyles()};
-	const TTableRowStyle* pTableRowStyles{boost::get<0>(oDataForRow)};
 
-	if (nullptr != pTableRowStyles && (!pTableRowStyles->Empty() || 0 < oTableStyles.m_nCellSpacing))
+	if (!pTableRowStyles->Empty() || 0 < oTableStyles.m_nCellSpacing)
 	{
 		oCurrentDocument.WriteNodeBegin(L"w:trPr");
 

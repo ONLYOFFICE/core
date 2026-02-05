@@ -554,34 +554,44 @@ void CHTMLReader::ReadBody()
 
 bool CHTMLReader::ReadStream(std::vector<NSCSS::CNode>& arSelectors, bool bInsertEmptyP)
 {
-	int nDeath = m_oLightReader.GetDepth();
-	if(m_oLightReader.IsEmptyNode() || !m_oLightReader.ReadNextSiblingNode2(nDeath))
-	{
-		if (!bInsertEmptyP)
-			return false;
+	if (nullptr == m_pWriter)
+		return false;
 
-		m_pWriter->WriteEmptyParagraph();
-		return true;
-
-		// WriteEmptyParagraph(sSelectors, oTS);
-		// if (bInsertEmptyP)
-		// {
-		// 	wrP(oXml, sSelectors, oTS);
-		// 	wrRPr(oXml, sSelectors, oTS);
-		// 	CloseP(oXml, sSelectors);
-		// 	m_oState.m_bInP = false;
-
-		// 	return true;
-		// }
-	}
-
+	const int nDepth{m_oLightReader.GetDepth()};
 	bool bResult = false;
+	XmlUtils::XmlNodeType eNodeType = XmlUtils::XmlNodeType_EndElement;
 
-	do
+	while (m_oLightReader.Read(eNodeType) && m_oLightReader.GetDepth() >= nDepth && XmlUtils::XmlNodeType_EndElement != eNodeType)
 	{
-		if (ReadInside(arSelectors))
-			bResult = true;
-	} while(m_oLightReader.ReadNextSiblingNode2(nDeath));
+		if (eNodeType == XmlUtils::XmlNodeType_Text ||
+		    eNodeType == XmlUtils::XmlNodeType_Whitespace ||
+		    eNodeType == XmlUtils::XmlNodeType_SIGNIFICANT_WHITESPACE ||
+		    eNodeType == XmlUtils::XmlNodeType_CDATA)
+		{
+			const char* pValue = m_oLightReader.GetTextChar();
+
+			if('\0' != pValue[0])
+			{
+				std::wstring wsText;
+				NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)pValue, (LONG)strlen(pValue), wsText);
+
+				if (wsText.empty())
+					continue;
+
+				arSelectors.push_back(NSCSS::CNode{L"#text", L"", L""});
+				m_oCSSCalculator.CalculateCompiledStyle(arSelectors);
+
+				bResult = m_pWriter->WriteText(wsText, arSelectors);
+
+				arSelectors.pop_back();
+			}
+		}
+		else if (eNodeType == XmlUtils::XmlNodeType_Element)
+		{
+			if (ReadInside(arSelectors))
+				bResult = true;
+		}
+	}
 
 	if (!bResult && bInsertEmptyP)
 		m_pWriter->WriteEmptyParagraph();
@@ -678,7 +688,7 @@ bool CHTMLReader::ReadInside(std::vector<NSCSS::CNode>& arSelectors)
 		case HTML_TAG(IMG):
 
 		{
-			bResult = ReadDefaultTag(HTML_TAG(IMG), arSelectors);
+			bResult = ReadEmptyTag(HTML_TAG(IMG), arSelectors);
 			break;
 		}
 		case HTML_TAG(SVG):
@@ -936,9 +946,6 @@ bool CHTMLReader::ReadTable(std::vector<NSCSS::CNode>& arSelectors)
 {
 	if(m_oLightReader.IsEmptyNode())
 		return false;
-
-	// if (HTML_TAG(TABLE) == m_oState.m_eLastElement)
-	// 	WriteEmptyParagraph(oXml, true);
 
 	CStorageTable oTable;
 

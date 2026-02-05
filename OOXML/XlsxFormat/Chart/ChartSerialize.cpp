@@ -3232,11 +3232,9 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 				axisline->id = 1;
 				XLS::AXS::_axis_line_format lnFmt;
 				lnFmt.axisLine = XLS::BaseObjectPtr(axisline);
-				auto lineFmt = new XLS::LineFormat;
-				lnFmt.lineFormat = XLS::BaseObjectPtr(lineFmt);
 
-				lineFmt->lns = 0;
-				lineFmt->we = 0;
+				if(m_majorGridlines->m_spPr.IsInit() && m_majorGridlines->m_spPr->ln.IsInit())
+					lnFmt.lineFormat = m_majorGridlines->m_spPr->ln->toXLS();
 				axs->m_AxisLine_Format.push_back(lnFmt);
 			}
 

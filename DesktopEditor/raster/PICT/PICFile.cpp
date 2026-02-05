@@ -40,7 +40,12 @@
 CPictFile::CPictFile()
 {
 	m_pRenderer = NSGraphics::Create();
-	m_pFontManager = NSFonts::NSFontManager::Create();
+	NSFonts::IApplicationFonts* app_fonts = NSFonts::NSApplication::Create();
+	app_fonts->Initialize();
+	m_pFontManager = app_fonts->GenerateFontManager();
+	NSFonts::IFontsCache* fonts_cache = NSFonts::NSFontCache::Create();
+	fonts_cache->SetStreams(app_fonts->GetStreams());
+	m_pFontManager->SetOwnerCache(fonts_cache);
 	m_pRenderer->SetFontManager(m_pFontManager);
 }
 

@@ -84,7 +84,9 @@ bool CMDWriter::WriteText(std::wstring wsText, const std::vector<NSCSS::CNode>& 
 	if (!bPreformatted && !InCode())
 		ReplaceSpaces(wsText);
 
+	ApplyAlternativeTags(pCompiledStyle);
 	WriteString(wsText);
+	ApplyAlternativeTags(pCompiledStyle, true);
 
 	if (L'\n' == wsText.back())
 		m_arStates.top().m_bNeedBreakLine = false;
@@ -251,5 +253,22 @@ void CMDWriter::RollBackState()
 {
 	if (m_arStates.size() > 1)
 		m_arStates.pop();
+}
+
+void CMDWriter::ApplyAlternativeTags(const NSCSS::CCompiledStyle* pCompiledStyle, bool bIsCloseTag)
+{
+	if (nullptr == pCompiledStyle || !m_oMDParametrs.m_bUseAlternativeHTMLTags)
+		return;
+
+	if (pCompiledStyle->m_oText.Underline())
+		GetCurrentDocument()->WriteString(bIsCloseTag ? L"</u>" : L"<u>");
+
+	if (L"top" == pCompiledStyle->m_oDisplay.GetVAlign().ToWString())
+		GetCurrentDocument()->WriteString(bIsCloseTag ? L"</sup>" : L"<sup>");
+	else if (L"bottom" == pCompiledStyle->m_oDisplay.GetVAlign().ToWString())
+		GetCurrentDocument()->WriteString(bIsCloseTag ? L"</sub>" : L"<sub>");
+
+	if (L"FFFF00" == pCompiledStyle->m_oBackground.GetColor().ToHEX())
+		GetCurrentDocument()->WriteString(bIsCloseTag ? L"</mark>" : L"<mark>");
 }
 }

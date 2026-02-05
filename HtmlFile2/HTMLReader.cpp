@@ -287,7 +287,6 @@ void CHTMLReader::InitMDTags()
 	m_mTags[HTML_TAG(BR)]         = std::make_shared<CBreak         <CMDWriter>>(pWriter);
 	m_mTags[HTML_TAG(I)]          = std::make_shared<CItalic        <CMDWriter>>(pWriter);
 	m_mTags[HTML_TAG(S)]          = std::make_shared<CStrike        <CMDWriter>>(pWriter);
-	m_mTags[HTML_TAG(U)]          = std::make_shared<CUnderline     <CMDWriter>>(pWriter);
 	m_mTags[HTML_TAG(Q)]          = std::make_shared<CQuotation     <CMDWriter>>(pWriter);
 	m_mTags[HTML_TAG(H1)]         = std::make_shared<CHeader        <CMDWriter>>(pWriter);
 	m_mTags[HTML_TAG(IMG)]        = std::make_shared<CImage         <CMDWriter>>(pWriter);
@@ -319,6 +318,7 @@ void CHTMLReader::InitMDTags()
 	m_mTags[HTML_TAG(BDO)]      = oIgnoredTag;
 	m_mTags[HTML_TAG(SPAN)]     = oIgnoredTag;
 	m_mTags[HTML_TAG(CAPTION)]  = oIgnoredTag;
+	m_mTags[HTML_TAG(U)]        = oIgnoredTag;
 }
 
 bool CHTMLReader::IsHTML()

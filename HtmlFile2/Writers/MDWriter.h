@@ -81,6 +81,8 @@ public:
 private:
 	void SaveState();
 	void RollBackState();
+
+	void ApplyAlternativeTags(const NSCSS::CCompiledStyle* pCompiledStyle, bool bIsCloseTag = false);
 };
 }
 

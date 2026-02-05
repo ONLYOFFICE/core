@@ -52,15 +52,6 @@ public:
 };
 
 template<>
-class CUnderline<CMDWriter> : public CTag<CMDWriter>
-{
-public:
-	CUnderline(CMDWriter* pWriter);
-	virtual bool Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData = boost::any()) override;
-	virtual void Close(const std::vector<NSCSS::CNode>& arSelectors) override;
-};
-
-template<>
 class CQuotation<CMDWriter> : public CTag<CMDWriter>
 {
 public:
@@ -169,7 +160,6 @@ public:
 	virtual bool Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData = boost::any()) override;
 	virtual void Close(const std::vector<NSCSS::CNode>& arSelectors) override;
 };
-
 }
 
 #endif // MDTAGS_H

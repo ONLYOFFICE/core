@@ -122,30 +122,6 @@ void CStrike<CMDWriter>::Close(const std::vector<NSCSS::CNode>& arSelectors)
 	m_pWriter->WriteString(L"~~", true);
 }
 
-CUnderline<CMDWriter>::CUnderline(CMDWriter* pWriter)
-	: CTag(pWriter)
-{}
-
-bool CUnderline<CMDWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData)
-{
-	if (!ValidWriter())
-		return false;
-
-	if (m_pWriter->GetParametrs().m_bUseAlternativeHTMLTags)
-		m_pWriter->WriteString(L"<u>", true);
-
-	return true;
-}
-
-void CUnderline<CMDWriter>::Close(const std::vector<NSCSS::CNode>& arSelectors)
-{
-	if (!ValidWriter())
-		return;
-
-	if (m_pWriter->GetParametrs().m_bUseAlternativeHTMLTags)
-		m_pWriter->WriteString(L"</u>", true);
-}
-
 CQuotation<CMDWriter>::CQuotation(CMDWriter* pWriter)
 	: CTag(pWriter)
 {}
@@ -483,5 +459,4 @@ void CCode<CMDWriter>::Close(const std::vector<NSCSS::CNode>& arSelectors)
 
 	m_pWriter->OutCode();
 }
-
 }

@@ -85,7 +85,7 @@ namespace NSCSS
 
 	std::wstring CDocumentStyle::GetIdAndClear()
 	{
-		std::wstring sId = m_sId;
+		const std::wstring sId = m_sId;
 		Clear();
 		return sId;
 	}
@@ -190,12 +190,9 @@ namespace NSCSS
 			if (!oParentStyle.Empty())
 			{
 				oParentStyle.AddBasicProperties(BProperties::B_BasedOn, L"normal");
-				oParentStyle.AddBasicProperties(BProperties::B_StyleId, L"(" + oParentStyle.GetStyleId() + L")");
+				oParentStyle.AddBasicProperties(BProperties::B_StyleId, oParentStyle.GetStyleId());
 				if (!bIsPStyle)
-				{
-					oParentStyle.AddBasicProperties(BProperties::B_StyleId, oParentStyle.GetStyleId() + L"-c");
 					oParentStyle.AddBasicProperties(BProperties::B_Type, L"character");
-				}
 			}
 		}
 

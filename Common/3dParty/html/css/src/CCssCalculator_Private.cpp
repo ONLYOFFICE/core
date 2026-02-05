@@ -553,6 +553,11 @@ namespace NSCSS
 				arSelectors.back().m_pCompiledStyle->m_oBorder.Clear();
 			}
 
+			if (arSelectors.size() > 1)
+				arSelectors.back().m_pCompiledStyle->AddParent(arSelectors[arSelectors.size() - 2].m_wsName);
+
+			arSelectors.back().m_pCompiledStyle->SetID(L"text-" + std::to_wstring(++m_nCountNodes));
+
 			return true;
 		}
 
@@ -592,7 +597,8 @@ namespace NSCSS
 			if (0 != i)
 				*arSelectors[i].m_pCompiledStyle += *arSelectors[i - 1].m_pCompiledStyle;
 
-			arSelectors[i].m_pCompiledStyle->AddParent(arSelectors[i].m_wsName);
+			if (i != arSelectors.size() - 1)
+				arSelectors[i].m_pCompiledStyle->AddParent(arSelectors[i].m_wsName);
 
 			if (!bInTable)
 				bInTable = IsTableElement(arSelectors[i].m_wsName);

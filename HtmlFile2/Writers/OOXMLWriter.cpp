@@ -1060,9 +1060,7 @@ void COOXMLWriter::WriteImageRels(const std::wstring& wsImageId, const std::wstr
 
 std::wstring COOXMLWriter::GetStyle(const NSCSS::CCompiledStyle& oStyle, bool bParagraphStyle)
 {
-	if ((bParagraphStyle && !m_oXmlStyle.WritePStyle(oStyle)) || (!bParagraphStyle && !m_oXmlStyle.WriteRStyle(oStyle)))
-		return L"";
-
+	(bParagraphStyle) ? m_oXmlStyle.WritePStyle(oStyle) : m_oXmlStyle.WriteRStyle(oStyle);
 	m_oStylesXml.WriteString(m_oXmlStyle.GetStyle());
 	return m_oXmlStyle.GetIdAndClear();
 }

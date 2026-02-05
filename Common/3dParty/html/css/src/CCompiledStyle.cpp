@@ -34,6 +34,8 @@ namespace NSCSS
 
 	CCompiledStyle& CCompiledStyle::operator+= (const CCompiledStyle &oElement)
 	{
+		m_arParentsStyles.insert(oElement.m_arParentsStyles.begin(), oElement.m_arParentsStyles.end());
+
 		if (oElement.Empty())
 			return *this;
 
@@ -48,8 +50,6 @@ namespace NSCSS
 
 		if (!oElement.m_sId.empty())
 			m_sId += L'+' + oElement.m_sId;
-
-		m_arParentsStyles.insert(oElement.m_arParentsStyles.begin(), oElement.m_arParentsStyles.end());
 
 		return *this;
 	}

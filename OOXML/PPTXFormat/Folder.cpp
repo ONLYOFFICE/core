@@ -43,6 +43,7 @@
 #include "Slide.h"
 #include "NotesMaster.h"
 #include "NotesSlide.h"
+#include "HandoutMaster.h"
 
 #include <map>
 
@@ -147,6 +148,18 @@ namespace PPTX
 			if (OOX::Presentation::FileTypes::NotesMaster == curType)
             {
                 smart_ptr<PPTX::NotesMaster> pointer = pPair->second.smart_dynamic_cast<PPTX::NotesMaster>();
+                if (pointer.is_init())
+                    pointer->ApplyRels();
+            }
+        }
+
+        for (std::map<std::wstring, smart_ptr<OOX::File>>::const_iterator pPair = map.m_map.begin(); pPair != map.m_map.end(); ++pPair)
+        {
+            const OOX::FileType& curType = pPair->second->type();
+
+            if (OOX::Presentation::FileTypes::HandoutMaster == curType)
+            {
+                smart_ptr<PPTX::HandoutMaster> pointer = pPair->second.smart_dynamic_cast<PPTX::HandoutMaster>();
                 if (pointer.is_init())
                     pointer->ApplyRels();
             }

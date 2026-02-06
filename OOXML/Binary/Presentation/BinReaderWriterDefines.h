@@ -91,7 +91,9 @@ namespace NSBinPptxRW
 			SlideNotesRels	= 45,
 			NotesRels		= 46,
 			NotesMastersRels= 47,
-			CustomProperties= 48
+			CustomProperties= 48,
+			HandoutMastersRels = 49
+
 		};
 	}
 }

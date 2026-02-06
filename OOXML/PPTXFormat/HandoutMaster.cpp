@@ -51,16 +51,89 @@ namespace PPTX
 		XmlUtils::CXmlNode oNode;
 		oNode.FromXmlFile(filename.m_strFilename);
 
-		cSld = oNode.ReadNode(_T("p:cSld"));
+		cSld = oNode.ReadNode(L"p:cSld");
 		cSld.SetParentFilePointer(this);
 
-		clrMap = oNode.ReadNode(_T("p:clrMap"));
+		clrMap = oNode.ReadNode(L"p:clrMap");
 		clrMap.SetParentFilePointer(this);
 
-		hf = oNode.ReadNode(_T("p:hf"));
+		hf = oNode.ReadNode(L"p:hf");
 
 		if (hf.is_init())
 			hf->SetParentFilePointer(this);
+	}
+	void HandoutMaster::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+	{
+		pWriter->StartRecord(NSBinPptxRW::NSMainTables::HandoutMasters);
+
+		pWriter->WriteRecord1(0, cSld);
+		pWriter->WriteRecord1(1, clrMap);
+		pWriter->WriteRecord2(2, hf);
+
+		pWriter->EndRecord();
+	}
+	void HandoutMaster::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+	{
+		pWriter->StartNode(L"p:handoutMaster");
+
+		pWriter->StartAttributes();
+		pWriter->WriteAttribute(L"xmlns:a", PPTX::g_Namespaces.a.m_strLink);
+		pWriter->WriteAttribute(L"xmlns:r", PPTX::g_Namespaces.r.m_strLink);
+		pWriter->WriteAttribute(L"xmlns:p", PPTX::g_Namespaces.p.m_strLink);
+		pWriter->EndAttributes();
+
+		cSld.toXmlWriter(pWriter);
+
+		clrMap.toXmlWriter(pWriter);
+		pWriter->Write(hf);
+
+		pWriter->EndNode(L"p:handoutMaster");
+	}
+	void HandoutMaster::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+	{
+		pReader->Skip(1); // type
+		LONG end = pReader->GetPos() + pReader->GetRecordSize() + 4;
+
+		while (pReader->GetPos() < end)
+		{
+			BYTE _rec = pReader->GetUChar();
+
+			switch (_rec)
+			{
+			case 0:
+			{
+				cSld.fromPPTY(pReader);
+				break;
+			}
+			case 1:
+			{
+				clrMap.fromPPTY(pReader);
+				break;
+			}
+			case 2:
+			{
+				hf = new Logic::HF();
+				hf->fromPPTY(pReader);
+				break;
+			}
+			default:
+			{
+				pReader->SkipRecord();
+				break;
+			}
+			}
+		}
+
+		pReader->Seek(end);
+	}
+	void HandoutMaster::ApplyRels()
+	{
+		theme_ = (FileContainer::Get(OOX::FileTypes::Theme)).smart_dynamic_cast<PPTX::Theme>();
+		
+		if (theme_.IsInit())
+		{
+			theme_->SetColorMap(clrMap);
+		}
 	}
 	void HandoutMaster::write(const OOX::CPath& filename, const OOX::CPath& directory, OOX::CContentTypes& content)const
 	{

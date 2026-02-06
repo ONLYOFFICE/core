@@ -555,6 +555,9 @@ namespace NSDocxRenderer
 		std::wstring origin_lefts{};
 		for (auto& l : m_arOriginLefts)
 			origin_lefts += std::to_wstring(static_cast<int>(l * c_dMMToEMU)) + L";";
+		// add offset for last symbol
+		if (!m_arSymWidths.empty())
+			origin_lefts += std::to_wstring(static_cast<int>((m_arOriginLefts.back() + m_arSymWidths.back()) * c_dMMToEMU)) + L";";
 
 		oWriter.WriteBYTE(5); oWriter.WriteStringUtf16(origin_lefts); // Origin lefts
 		oWriter.WriteBYTE(6); oWriter.WriteBool(m_bFontSubstitution); // Font Substitution (just pass from pdf)

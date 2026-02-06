@@ -42,5 +42,11 @@ namespace Writers
 		DefaultNotesMasterWriter();
 		void Write(std::wstring fileName);
     };
+    class DefaultHandoutMasterWriter
+    {
+    public:
+        DefaultHandoutMasterWriter();
+        void Write(std::wstring fileName);
+    };
 }
 

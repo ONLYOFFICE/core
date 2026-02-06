@@ -358,7 +358,7 @@ namespace SVG
 
 	bool CRenderedObject::ApplyStroke(IRenderer *pRenderer, const TStroke *pStroke, bool bUseDefault, const CRenderedObject* pContextObject) const
 	{
-		if (NULL == pRenderer || NULL == pStroke || NSCSS::NSProperties::EColorType::ColorNone == pStroke->m_oColor.GetType() || (!bUseDefault && ((pStroke->m_oWidth.Empty() || pStroke->m_oWidth.Zero()) && pStroke->m_oColor.Empty())))
+		if (NULL == pRenderer || NULL == pStroke || pStroke->m_oColor.None() || (!bUseDefault && ((pStroke->m_oWidth.Empty() || pStroke->m_oWidth.Zero()) && pStroke->m_oColor.Empty())))
 		{
 			pRenderer->put_PenSize(0);
 			return false;
@@ -401,7 +401,7 @@ namespace SVG
 
 	bool CRenderedObject::ApplyFill(IRenderer *pRenderer, const NSCSS::NSProperties::CColor *pFill, const CSvgFile *pFile, bool bUseDefault, const CRenderedObject* pContextObject) const
 	{
-		if (NULL == pRenderer || NULL == pFill || NSCSS::NSProperties::EColorType::ColorNone == pFill->GetType() || (!bUseDefault && pFill->Empty()))
+		if (NULL == pRenderer || NULL == pFill || pFill->None() || (!bUseDefault && pFill->Empty()))
 		{
 			pRenderer->put_BrushType(c_BrushTypeNoFill);
 			return false;

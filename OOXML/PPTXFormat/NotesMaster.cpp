@@ -56,17 +56,17 @@ namespace PPTX
 		XmlUtils::CXmlNode oNode;
 		oNode.FromXmlFile(filename.m_strFilename);
 
-		cSld = oNode.ReadNode(_T("p:cSld"));
+		cSld = oNode.ReadNode(L"p:cSld");
 		cSld.SetParentFilePointer(this);
 
-		clrMap = oNode.ReadNode(_T("p:clrMap"));
+		clrMap = oNode.ReadNode(L"p:clrMap");
 		clrMap.SetParentFilePointer(this);
 
-		hf = oNode.ReadNode(_T("p:hf"));
+		hf = oNode.ReadNode(L"p:hf");
 		if (hf.IsInit())
 			hf->SetParentFilePointer(this);
 
-		notesStyle = oNode.ReadNode(_T("p:notesStyle"));
+		notesStyle = oNode.ReadNode(L"p:notesStyle");
 		if (notesStyle.is_init())
 			notesStyle->SetParentFilePointer(this);
 	}
@@ -111,12 +111,12 @@ namespace PPTX
 	}
 	void NotesMaster::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 	{
-		pWriter->StartNode(_T("p:notesMaster"));
+		pWriter->StartNode(L"p:notesMaster");
 
 		pWriter->StartAttributes();
-		pWriter->WriteAttribute(_T("xmlns:a"), PPTX::g_Namespaces.a.m_strLink);
-		pWriter->WriteAttribute(_T("xmlns:r"), PPTX::g_Namespaces.r.m_strLink);
-		pWriter->WriteAttribute(_T("xmlns:p"), PPTX::g_Namespaces.p.m_strLink);
+		pWriter->WriteAttribute(L"xmlns:a", PPTX::g_Namespaces.a.m_strLink);
+		pWriter->WriteAttribute(L"xmlns:r", PPTX::g_Namespaces.r.m_strLink);
+		pWriter->WriteAttribute(L"xmlns:p", PPTX::g_Namespaces.p.m_strLink);
 		pWriter->EndAttributes();
 
 		cSld.toXmlWriter(pWriter);
@@ -125,7 +125,7 @@ namespace PPTX
 		pWriter->Write(hf);
 		pWriter->Write(notesStyle);
 
-		pWriter->EndNode(_T("p:notesMaster"));
+		pWriter->EndNode(L"p:notesMaster");
 	}
 	void NotesMaster::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 	{
@@ -198,8 +198,8 @@ namespace PPTX
 			{
 				if (pMasterShape->nvSpPr.nvPr.ph.is_init())
 				{
-					std::wstring lIdx	= pMasterShape->nvSpPr.nvPr.ph->idx.get_value_or(_T(""));
-					std::wstring lType	= pMasterShape->nvSpPr.nvPr.ph->type.get_value_or(_T("body"));
+					std::wstring lIdx	= pMasterShape->nvSpPr.nvPr.ph->idx.get_value_or(L"");
+					std::wstring lType	= pMasterShape->nvSpPr.nvPr.ph->type.get_value_or(L"body");
 
 					if (lType == L"ctrTitle") lType = L"title";
 

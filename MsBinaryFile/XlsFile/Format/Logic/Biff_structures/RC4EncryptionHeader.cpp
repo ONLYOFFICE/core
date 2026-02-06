@@ -77,8 +77,6 @@ void RC4EncryptionHeader::load(XLS::CFRecord& record)
 		_UINT32 Reserved1;		record >> Reserved1;
 		_UINT32 Reserved2;		record >> Reserved2;
 
-		int pos		= record.getRdPtr();
-		int size	= record.getDataSize();
 
 		std::wstring providerName;
 		record >> providerName;
@@ -86,7 +84,11 @@ void RC4EncryptionHeader::load(XLS::CFRecord& record)
 	//EncryptionVerifier
 
 		record >> crypt_data_aes.saltSize;
-		
+
+		int pos		= record.getRdPtr();
+		int size	= record.getDataSize();
+		if(pos + crypt_data_aes.saltSize > size)
+			return;
 		unsigned char *pDataRead = new unsigned char[crypt_data_aes.saltSize];		
 		memcpy(pDataRead, record.getCurData<unsigned char>(), crypt_data_aes.saltSize);
 		record.skipNunBytes(crypt_data_aes.saltSize);

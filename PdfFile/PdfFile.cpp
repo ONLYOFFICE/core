@@ -1070,6 +1070,7 @@ HRESULT CPdfFile::put_FontName(const std::wstring& wsName)
 					oFile.CloseFile();
 				}
 			}
+			m_pInternal->pWriter->AddFont(wsFont, bBold, bItalic, wsFontPath, 0);
 		}
 		else
 		{
@@ -1080,7 +1081,6 @@ HRESULT CPdfFile::put_FontName(const std::wstring& wsName)
 			else
 				wsFont = sSub;
 		}
-		m_pInternal->pWriter->AddFont(wsFont, bBold, bItalic, wsFontPath, 0);
 	}
 	return m_pInternal->pWriter->put_FontName(wsFont);
 }

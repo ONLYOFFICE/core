@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef PPTX_SLIDES_NOTESSLIDE_INCLUDE_H_
-#define PPTX_SLIDES_NOTESSLIDE_INCLUDE_H_
 
 #include "WrapperFile.h"
 #include "FileContainer.h"
@@ -79,5 +77,3 @@ namespace PPTX
 		smart_ptr<Theme>			theme_;
 	};
 } // namespace PPTX
-
-#endif // PPTX_SLIDES_NOTESSLIDE_INCLUDE_H_

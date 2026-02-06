@@ -232,7 +232,7 @@ namespace PdfWriter
 		SaveToStream((CStream*)pStream);
 		delete pStream;
 
-		Sign(wsPath, m_pXref->GetSizeXRef());
+		Sign(wsPath, m_pXref->GetSizeXRef() + 1, true);
 
 		return true;
 	}
@@ -1988,7 +1988,9 @@ namespace PdfWriter
 			m_pXref = pXrefBefore;
 			return false;
 		}
-		m_pXref->SetPrevAddr(pSI->nPrevAddr ? pSI->nPrevAddr : pXrefBefore->GetPrevAddr());
+		if (!pSI->nPrevAddr)
+			pSI->nPrevAddr = pXrefBefore->GetPrevAddr();
+		m_pXref->SetPrevAddr(pSI->nPrevAddr);
 
 		// Создаем поле подписи
 		CSignatureField* pField = CreateSignatureField();
@@ -2017,6 +2019,7 @@ namespace PdfWriter
 			m_pXref = pXrefBefore;
 			return false;
 		}
+		pSI->nFileSizeBefore = pStream->Size();
 
 		// Вычисляем размер для Contents
 		unsigned int nContentsSize = 7000 + pStream->Size() / 1000 + 1000;
@@ -2075,6 +2078,50 @@ namespace PdfWriter
 		std::wstring wsPath = pSI->wsPath;
 		if (wsPath.empty() || !pSI->pField)
 			return false;
+
+		// Если подписание не удалось
+		if (!pSignedData || dwDataLength == 0)
+		{
+			unsigned int nFileSizeBefore = pSI->nFileSizeBefore;
+
+			// Обрезаем файл
+			NSFile::CFileBinary::Truncate(wsPath, nFileSizeBefore);
+
+			CXref* pXref = pSI->pXref;
+			m_vSignatures.pop_front();
+
+			pSI->pPage->DeleteAnnotation(pSI->pField->GetObjId());
+
+			if (m_pAcroForm)
+			{
+				CArrayObject* ppFields = (CArrayObject*)m_pAcroForm->Get("Fields");
+				for (int i = 0; i < ppFields->GetCount(); ++i)
+				{
+					CObjectBase* pObj = ppFields->Get(i);
+					if (pObj->GetObjId() == pSI->pField->GetObjId())
+					{
+						CObjectBase* pDelete = ppFields->Remove(i);
+						if (pDelete->GetType() == object_type_UNKNOWN)
+							RELEASEOBJECT(pDelete);
+						break;
+					}
+				}
+			}
+
+			// Продолжаем со следующей подписью
+			if (!m_vSignatures.empty())
+			{
+				CXref* pPrev = pXref;
+				while (pPrev->GetPrev())
+					pPrev = pPrev->GetPrev();
+
+				Sign(wsPath, pSI->nSizeXRef, bNeedStreamXRef, pSI->nPrevAddr);
+			}
+			delete pSI;
+			delete pXref;
+
+			return true; // Успешно откатили
+		}
 
 		CFileStream* pStream = new CFileStream();
 		if (!pStream || !pStream->OpenFile(wsPath, false))

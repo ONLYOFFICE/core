@@ -633,11 +633,14 @@ TEST_F(CPdfFileTest, EditPdfSign)
 		BYTE* pDatatoWrite = NULL;
 		unsigned int dwLenDatatoWrite = 0;
 		// Предположим, что для подписи 1 произошло не успешное подписание, и данные остались пустыми
-		pCertificate->SignPKCS7(pDataToSign, dwDataLength, pDatatoWrite, dwLenDatatoWrite);
+		if (i % 2 == 0)
+			pCertificate->SignPKCS7(pDataToSign, dwDataLength, pDatatoWrite, dwLenDatatoWrite);
+		RELEASEARRAYOBJECTS(pDataToSign);
 
 		// Обязательно FinalizeSignature - он либо заполнит данные, либо сделает подпись пустой
 		pdfFile->FinalizeSignature(pDatatoWrite, dwLenDatatoWrite);
 
+		RELEASEARRAYOBJECTS(pDatatoWrite);
 		RELEASEOBJECT(pCertificate);
 	}
 

@@ -267,6 +267,7 @@ namespace PdfWriter
 
 				nSizeXRef = 0;
 				nPrevAddr = 0;
+				nFileSizeBefore = 0;
 				bNeedStreamXRef = false;
 				pField = NULL;
 				pXref = NULL;
@@ -279,6 +280,7 @@ namespace PdfWriter
 			std::wstring wsPath;
 			unsigned int nSizeXRef;
 			unsigned int nPrevAddr;
+			unsigned int nFileSizeBefore;
 			bool bNeedStreamXRef;
 			CSignatureField* pField;
 			CXref* pXref;

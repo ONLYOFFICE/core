@@ -272,7 +272,7 @@ namespace PdfWriter
                 pByteRange->Add(0);
                 pByteRange->Add(m_nLen1);
                 pByteRange->Add(m_nOffset2);
-                pByteRange->Add(nFileEnd - m_nOffset2);
+				pByteRange->Add(nFileEnd - m_nOffset2);
 
                 pStream->Seek(m_nByteRangeBegin, EWhenceMode::SeekSet);
                 pStream->Write(pByteRange, NULL);
@@ -304,27 +304,18 @@ namespace PdfWriter
 			pStream->Read(*pDataForSignature, &dwLenReadData);
             if ((int)dwLenReadData != m_nLen1)
             {
-                RELEASEARRAYOBJECTS(pDataForSignature);
+				RELEASEARRAYOBJECTS(*pDataForSignature);
                 return;
             }
 
             pStream->Seek(m_nOffset2, EWhenceMode::SeekSet);
-            dwLenReadData = nFileEnd - m_nOffset2;
+			dwLenReadData = nFileEnd - m_nOffset2;
 			pStream->Read(*pDataForSignature + m_nLen1, &dwLenReadData);
-            if ((int)dwLenReadData != nFileEnd - m_nOffset2)
+			if ((int)dwLenReadData != nFileEnd - m_nOffset2)
             {
-                RELEASEARRAYOBJECTS(pDataForSignature);
+				RELEASEARRAYOBJECTS(*pDataForSignature);
                 return;
             }
-
-			/*
-            BYTE* pDatatoWrite = NULL;
-            unsigned int dwLenDatatoWrite;
-            m_pCertificate->SignPKCS7(pDataForSignature, dwLenDataForSignature, pDatatoWrite, dwLenDatatoWrite);
-            RELEASEARRAYOBJECTS(pDataForSignature);
-            if (!pDatatoWrite)
-                return;
-			*/
         }
     }
 	bool CSignatureDict::FinalizeSignature(CStream* pStream, BYTE* pSignedData, DWORD dwDataLength)

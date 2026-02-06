@@ -1956,7 +1956,6 @@ namespace PdfWriter
 		unsigned int nSizeXRef = m_pXref->GetSizeXRef() + (bNeedStreamXRef ? 1 : 0);
 		m_pXref = m_pLastXref;
 		Sign(wsPath, nSizeXRef, bNeedStreamXRef);
-		// TODO проверить RELEASEOBJECT(m_pEncryptDict);
 
 		return true;
 	}
@@ -1989,6 +1988,7 @@ namespace PdfWriter
 			m_pXref = pXrefBefore;
 			return false;
 		}
+		m_pXref->SetPrevAddr(pSI->nPrevAddr ? pSI->nPrevAddr : pXrefBefore->GetPrevAddr());
 
 		// Создаем поле подписи
 		CSignatureField* pField = CreateSignatureField();
@@ -2094,17 +2094,23 @@ namespace PdfWriter
 		delete pSI;
 
 		m_vSignatures.pop_front();
-		Sign(wsPath, pXref->GetSizeXRef() + (bNeedStreamXRef ? 1 : 0), bNeedStreamXRef);
-		delete pXref;
+		CXref* pPrev = pXref;
+		while (pPrev->GetPrev()) pPrev = pPrev->GetPrev();
+		Sign(wsPath, pPrev->GetSizeXRef() + (bNeedStreamXRef ? 1 : 0), bNeedStreamXRef, pXref->GetPrevAddr());
+
+		// delete pXref
+		pPrev->SetPrev(m_pXref);
+		m_pXref = pXref;
 
 		return true;
 	}
-	void CDocument::Sign(const std::wstring& wsPath, unsigned int nSizeXRef, bool bNeedStreamXRef)
+	void CDocument::Sign(const std::wstring& wsPath, unsigned int nSizeXRef, bool bNeedStreamXRef, unsigned int nPrevAddr)
 	{
 		if (!m_vSignatures.empty())
 		{
 			m_vSignatures[0]->wsPath = wsPath;
 			m_vSignatures[0]->nSizeXRef = nSizeXRef;
+			m_vSignatures[0]->nPrevAddr = nPrevAddr;
 			m_vSignatures[0]->bNeedStreamXRef = bNeedStreamXRef;
 		}
 	}

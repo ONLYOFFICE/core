@@ -116,7 +116,7 @@ public:
 	}
 	ICertificate* GetCertificate()
 	{
-		std::wstring wsCertificateFile = NSFile::GetProcessDirectory() + L"/cert.pfx";
+		std::wstring wsCertificateFile = NSFile::GetProcessDirectory() + L"/pfx.pfx";
 		std::wstring wsPrivateKeyFile  = L"";
 		std::string sCertificateFilePassword = "123456";
 		std::string sPrivateFilePassword = "";

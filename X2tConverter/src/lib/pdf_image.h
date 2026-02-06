@@ -53,7 +53,7 @@ namespace NExtractTools
 			return 1;
 
 		std::wstring pdfTemp = combinePath(convertParams.m_sTempDir, L"pdf_sign.pdf");
-		NSFile::CFileBinary::Move(file, pdfTemp);
+		NSFile::CFileBinary::Copy(file, pdfTemp);
 
 		CPdfFile pdfFile(fonts);
 		pdfFile.SetTempDirectory(convertParams.m_sTempDir);
@@ -68,9 +68,29 @@ namespace NExtractTools
 		if (!pdfFile.EditPage(0))
 			return 2;
 
-		pdfFile.Sign(0, 0, 0, 0, L"", certificate);
+		pdfFile.Sign(0, 0, 0, 0, L"");
 		pdfFile.Close();
 
+		BYTE* pDataToSign = NULL;
+		DWORD dwDataLength = 0;
+		if (!pdfFile.PrepareSignature(&pDataToSign, dwDataLength))
+		{
+			RELEASEARRAYOBJECTS(pDataToSign);
+			return 2;
+		}
+
+		BYTE* pDatatoWrite = NULL;
+		unsigned int dwLenDatatoWrite = 0;
+		certificate->SignPKCS7(pDataToSign, dwDataLength, pDatatoWrite, dwLenDatatoWrite);
+		RELEASEARRAYOBJECTS(pDataToSign);
+
+		if (!pdfFile.FinalizeSignature(pDatatoWrite, dwLenDatatoWrite))
+		{
+			RELEASEARRAYOBJECTS(pDatatoWrite);
+			return 2;
+		}
+
+		RELEASEARRAYOBJECTS(pDatatoWrite);
 		RELEASEOBJECT(certificate);
 		return 0;
 	}

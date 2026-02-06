@@ -669,6 +669,7 @@ TEST_F(CPdfFileTest, PdfToPdfSign)
 		pdfFile->Sign(10, 10, 100, 100, NSFile::GetProcessDirectory() + L"/test.jpeg");
 	}
 
+	// Сначала SaveToFile, затем подписание, потом Close
 	pdfFile->SaveToFile(wsDstFile);
 
 	for (int i = 0; i < nPages; ++i)

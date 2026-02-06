@@ -56,7 +56,7 @@ public:
 
 //-----------------------------
 	_INT16 catCross = 0;
-	_INT16 catLabel = 0;
+	_INT16 catLabel = 1;
 	_INT16 catMark = 0;
 	
 	bool fBetween = false;

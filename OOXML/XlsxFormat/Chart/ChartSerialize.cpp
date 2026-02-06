@@ -2974,7 +2974,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			ivAxis->m_AXS = XLS::BaseObjectPtr(axs);
 			auto catSerRange = new XLS::CatSerRange;
 			catSerRange->catCross = 1;
-			catSerRange->catLabel = 1;
+			if(m_tickLblSkip.IsInit())
+				catSerRange->catLabel = m_tickLblSkip.get();
 			catSerRange->catMark = 1;
 			catSerRange->fBetween = true;
 			ivAxis->m_CatSerRange = XLS::BaseObjectPtr(catSerRange);
@@ -3001,6 +3002,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 					lnFmt.lineFormat = m_spPr->ln->toXLS();
 					auto lnFmtptr = static_cast<XLS::LineFormat*>(lnFmt.lineFormat.get());
 					lnFmtptr->fAxisOn = true;
+					if(m_spPr->Fill.m_type == PPTX::Logic::UniFill::noFill)
+						lnFmtptr->lns = 5;
 				}
 				axs->m_AxisLine_Format.push_back(lnFmt);
 			}
@@ -3014,6 +3017,34 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 				if(m_majorGridlines->m_spPr.IsInit() && m_majorGridlines->m_spPr->ln.IsInit())
 					lnFmt.lineFormat = m_majorGridlines->m_spPr->ln->toXLS();
 				axs->m_AxisLine_Format.push_back(lnFmt);
+			}
+			auto tickPtr = new XLS::Tick;
+			axs->m_Tick = XLS::BaseObjectPtr(tickPtr);
+			if(m_tickLblPos.IsInit())
+			{
+				switch (m_tickLblPos->GetValue())
+				{
+					case OOX::Spreadsheet::ST_TickLblPos::st_ticklblposNONE:
+					{
+						tickPtr->tlt = 0;
+						break;
+					}
+					case OOX::Spreadsheet::ST_TickLblPos::st_ticklblposLOW:
+					{
+						tickPtr->tlt = 1;
+						break;
+					}
+					case OOX::Spreadsheet::ST_TickLblPos::st_ticklblposHIGH:
+					{
+						tickPtr->tlt = 2;
+						break;
+					}
+					case OOX::Spreadsheet::ST_TickLblPos::st_ticklblposNEXTTO:
+					{
+						tickPtr->tlt = 3;
+						break;
+					}
+				}
 			}
 
 			return XLS::BaseObjectPtr(ivAxis);
@@ -3265,6 +3296,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 					lnFmt.lineFormat = m_spPr->ln->toXLS();
 					auto lnFmtptr = static_cast<XLS::LineFormat*>(lnFmt.lineFormat.get());
 					lnFmtptr->fAxisOn = true;
+					if(m_spPr->Fill.m_type == PPTX::Logic::UniFill::noFill)
+						lnFmtptr->lns = 5;
 				}
 				axs->m_AxisLine_Format.push_back(lnFmt);
 			}

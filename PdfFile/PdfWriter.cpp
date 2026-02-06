@@ -3238,7 +3238,13 @@ bool CPdfWriter::EditClose()
 		{
 			if (oInfo.pDest)
 			{
-				PdfWriter::CPage* pDestPage = m_pDocument->GetPage(oInfo.unDestPage);
+				PdfWriter::CObjectBase* pDestPage = m_pDocument->GetPageObj(oInfo.unDestPage);
+				if (pDestPage->GetType() == PdfWriter::object_type_UNKNOWN)
+				{
+					PdfWriter::CObjectBase* pBase = new PdfWriter::CObjectBase();
+					pBase->SetRef(pDestPage->GetObjId(), pDestPage->GetGenNo());
+					pDestPage = new PdfWriter::CProxyObject(pBase, true);
+				}
 				oInfo.pDest->ChangePage(pDestPage);
 			}
 			else
@@ -3256,7 +3262,7 @@ void CPdfWriter::PageRotate(int nRotate)
 	if (m_pPage)
 		m_pPage->SetRotate(nRotate);
 }
-void CPdfWriter::Sign(const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& wsPicturePath, ICertificate* pCertificate)
+void CPdfWriter::Sign(const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& wsPicturePath)
 {
 	PdfWriter::CImageDict* pImage = NULL;
 	if (!wsPicturePath.empty())
@@ -3265,9 +3271,21 @@ void CPdfWriter::Sign(const double& dX, const double& dY, const double& dW, cons
 		pImage = LoadImage(&oImage, 255);
 	}
 
-	m_pDocument->Sign(PdfWriter::TRect(MM_2_PT(dX), m_pPage->GetHeight() - MM_2_PT(dY), MM_2_PT(dX + dW), m_pPage->GetHeight() - MM_2_PT(dY + dH)),
-					  pImage, pCertificate);
+	m_pDocument->Sign(PdfWriter::TRect(MM_2_PT(dX), m_pPage->GetHeight() - MM_2_PT(dY), MM_2_PT(dX + dW), m_pPage->GetHeight() - MM_2_PT(dY + dH)), pImage);
 }
+bool CPdfWriter::PrepareSignature(BYTE** pDataToSign, DWORD& dwDataLength)
+{
+	if (!m_pDocument)
+		return false;
+	return m_pDocument->PrepareSignature(pDataToSign, dwDataLength);
+}
+bool CPdfWriter::FinalizeSignature(BYTE* pSignedData, DWORD dwDataLength)
+{
+	if (!m_pDocument)
+		return false;
+	return m_pDocument->FinalizeSignature(pSignedData, dwDataLength);
+}
+
 //----------------------------------------------------------------------------------------
 // Внутренние функции
 //----------------------------------------------------------------------------------------

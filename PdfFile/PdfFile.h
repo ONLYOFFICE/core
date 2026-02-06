@@ -92,6 +92,7 @@ public:
 	// --- EDIT ---
 	// Переходит в режим редактирования. Pdf уже должен быть открыт на чтение - LoadFromFile/LoadFromMemory
 	bool EditPdf(const std::wstring& wsDstFile = L"");
+	void EditClose();
 	void SetEditType(int nType);
 	// Манипуляции со страницами возможны в режиме редактирования
 	bool EditPage  (int nPageIndex);
@@ -159,7 +160,9 @@ public:
 	void RotatePage   (int nRotate);
 	void SetPassword  (const std::wstring& wsPassword);
 	void SetDocumentID(const std::wstring& wsDocumentID);
-	void Sign(const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& wsPicturePath, ICertificate* pCertificate);
+	void Sign(const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& wsPicturePath);
+	bool PrepareSignature(BYTE** pDataToSign, DWORD& dwDataLength);
+	bool FinalizeSignature(BYTE* pSignedData, DWORD dwDataLength);
 	void SetDocumentInfo(const std::wstring& wsTitle, const std::wstring& wsCreator, const std::wstring& wsSubject, const std::wstring& wsKeywords);
 	void AddMetaData(const std::wstring& sMetaName, BYTE* pMetaData, DWORD nMetaLength);
 

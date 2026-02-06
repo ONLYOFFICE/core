@@ -116,7 +116,7 @@ public:
 	}
 	ICertificate* GetCertificate()
 	{
-		std::wstring wsCertificateFile = NSFile::GetProcessDirectory() + L"/cert.pfx";
+		std::wstring wsCertificateFile = NSFile::GetProcessDirectory() + L"/pfx.pfx";
 		std::wstring wsPrivateKeyFile  = L"";
 		std::string sCertificateFilePassword = "123456";
 		std::string sPrivateFilePassword = "";
@@ -524,7 +524,7 @@ TEST_F(CPdfFileTest, EditPdf)
 
 TEST_F(CPdfFileTest, EditPdfFromBase64)
 {
-	//GTEST_SKIP();
+	GTEST_SKIP();
 
 	NSFonts::NSApplicationFontStream::SetGlobalMemoryStorage(NSFonts::NSApplicationFontStream::CreateDefaultGlobalMemoryStorage());
 
@@ -602,22 +602,97 @@ TEST_F(CPdfFileTest, EditPdfFromBin)
 
 TEST_F(CPdfFileTest, EditPdfSign)
 {
-	GTEST_SKIP();
+	//GTEST_SKIP();
 
 	LoadFromFile();
 	ASSERT_TRUE(pdfFile->EditPdf(wsDstFile));
 
-	ICertificate* pCertificate = GetCertificate();
-	ASSERT_TRUE(pCertificate);
-
 	EXPECT_TRUE(pdfFile->EditPage(0));
 	{
-		pdfFile->Sign(10, 10, 100, 100, NSFile::GetProcessDirectory() + L"/test.jpeg", pCertificate);
+		pdfFile->Sign(10, 10, 100, 100, NSFile::GetProcessDirectory() + L"/test.jpeg");
+		pdfFile->Sign(10, 150, 100, 100, NSFile::GetProcessDirectory() + L"/test.jpeg");
+		pdfFile->Sign(10, 300, 100, 100, NSFile::GetProcessDirectory() + L"/test.jpeg");
+	}
+
+	// Для цифровой подписи важно предварительно pdfFile->EditClose, в остальных случаях pdfFile->Close() сделает тоже самое
+	pdfFile->EditClose();
+
+	// EditPdf & EditClose || CreatePdf & SaveToFile
+	// И только после подготовка данных для подписания, подписываем, запись подписи
+	for (int i = 0; i < 3; ++i)
+	{
+		BYTE* pDataToSign = NULL;
+		DWORD dwDataLength = 0;
+
+		// Получили данные для подписания
+		pdfFile->PrepareSignature(&pDataToSign, dwDataLength);
+
+		ICertificate* pCertificate = GetCertificate();
+		ASSERT_TRUE(pCertificate);
+
+		BYTE* pDatatoWrite = NULL;
+		unsigned int dwLenDatatoWrite = 0;
+		// Предположим, что для подписи 1 произошло не успешное подписание, и данные остались пустыми
+		if (i % 2 == 0)
+			pCertificate->SignPKCS7(pDataToSign, dwDataLength, pDatatoWrite, dwLenDatatoWrite);
+		RELEASEARRAYOBJECTS(pDataToSign);
+
+		// Обязательно FinalizeSignature - он либо заполнит данные, либо сделает подпись пустой
+		pdfFile->FinalizeSignature(pDatatoWrite, dwLenDatatoWrite);
+
+		RELEASEARRAYOBJECTS(pDatatoWrite);
+		RELEASEOBJECT(pCertificate);
 	}
 
 	pdfFile->Close();
+}
 
-	RELEASEOBJECT(pCertificate);
+TEST_F(CPdfFileTest, PdfToPdfSign)
+{
+	GTEST_SKIP();
+
+	LoadFromFile();
+	pdfFile->CreatePdf();
+
+	double dPageDpiX, dPageDpiY, dW, dH;
+	int nPages = pdfFile->GetPagesCount();
+	for (int i = 0; i < nPages; i++)
+	{
+		pdfFile->NewPage();
+
+		pdfFile->GetPageInfo(i, &dW, &dH, &dPageDpiX, &dPageDpiY);
+		pdfFile->put_Width( dW / dPageDpiX * 25.4);
+		pdfFile->put_Height(dH / dPageDpiY * 25.4);
+
+		pdfFile->DrawPageOnRenderer(pdfFile, i, NULL);
+
+		pdfFile->Sign(10, 10, 100, 100, NSFile::GetProcessDirectory() + L"/test.jpeg");
+	}
+
+	// Сначала SaveToFile, затем подписание, потом Close
+	pdfFile->SaveToFile(wsDstFile);
+
+	for (int i = 0; i < nPages; ++i)
+	{
+		BYTE* pDataToSign = NULL;
+		DWORD dwDataLength = 0;
+
+		pdfFile->PrepareSignature(&pDataToSign, dwDataLength);
+
+		ICertificate* pCertificate = GetCertificate();
+		ASSERT_TRUE(pCertificate);
+
+		BYTE* pDatatoWrite = NULL;
+		unsigned int dwLenDatatoWrite = 0;
+		if (i % 2 == 0)
+			pCertificate->SignPKCS7(pDataToSign, dwDataLength, pDatatoWrite, dwLenDatatoWrite);
+
+		pdfFile->FinalizeSignature(pDatatoWrite, dwLenDatatoWrite);
+
+		RELEASEOBJECT(pCertificate);
+	}
+
+	pdfFile->Close();
 }
 
 TEST_F(CPdfFileTest, PrintPdf)

@@ -1232,7 +1232,8 @@ namespace PdfWriter
 			if (pObj->GetObjId() == nID)
 			{
 				CObjectBase* pDelete = pArray->Remove(i);
-				RELEASEOBJECT(pDelete);
+				if (pDelete->GetType() == object_type_UNKNOWN)
+					RELEASEOBJECT(pDelete);
 				return true;
 			}
 		}

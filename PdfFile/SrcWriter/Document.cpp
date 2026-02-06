@@ -424,6 +424,12 @@ namespace PdfWriter
 
 		return m_pPageTree->GetPage(unPage);
 	}
+	CObjectBase* CDocument::GetPageObj(const unsigned int& unPage)
+	{
+		if (unPage >= m_pPageTree->GetCount())
+			return NULL;
+		return m_pPageTree->GetObj(unPage);
+	}
 	CPage* CDocument::GetEditPage(const unsigned int& unPage)
 	{
 		CPage* pRes = NULL;

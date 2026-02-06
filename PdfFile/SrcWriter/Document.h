@@ -127,6 +127,7 @@ namespace PdfWriter
 
 		CPage*            AddPage();
 		CPage*            GetPage    (const unsigned int& unPage);
+		CObjectBase*      GetPageObj (const unsigned int& unPage);
 		CPage*            GetEditPage(const unsigned int& unPage);
 		int               FindPage   (CPage* pPage);
 		unsigned int      GetPagesCount() const;

@@ -3238,7 +3238,13 @@ bool CPdfWriter::EditClose()
 		{
 			if (oInfo.pDest)
 			{
-				PdfWriter::CPage* pDestPage = m_pDocument->GetPage(oInfo.unDestPage);
+				PdfWriter::CObjectBase* pDestPage = m_pDocument->GetPageObj(oInfo.unDestPage);
+				if (pDestPage->GetType() == PdfWriter::object_type_UNKNOWN)
+				{
+					PdfWriter::CObjectBase* pBase = new PdfWriter::CObjectBase();
+					pBase->SetRef(pDestPage->GetObjId(), pDestPage->GetGenNo());
+					pDestPage = new PdfWriter::CProxyObject(pBase, true);
+				}
 				oInfo.pDest->ChangePage(pDestPage);
 			}
 			else

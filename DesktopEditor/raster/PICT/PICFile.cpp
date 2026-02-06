@@ -40,13 +40,14 @@
 CPictFile::CPictFile()
 {
 	m_pRenderer = NSGraphics::Create();
-	m_pFontManager = NSFonts::NSFontManager::Create();
-	m_pRenderer->SetFontManager(m_pFontManager);
 }
 
 CPictFile::~CPictFile()
 {
-	RELEASEINTERFACE(m_pFontManager);
+	if (m_pAppFonts)
+		RELEASEINTERFACE(m_pAppFonts);
+	if (m_pFontManager)
+		RELEASEINTERFACE(m_pFontManager);
 	RELEASEINTERFACE(m_pRenderer);
 }
 
@@ -1671,6 +1672,7 @@ void CPictFile::DrawArc()
 void CPictFile::ReadAndDrawText(int x, int y)
 {
 	InitializeRenderer();
+	InitializeFonts();
 
 	char text[256];
 	char byte_len = fgetc(m_pFile);
@@ -1693,6 +1695,20 @@ void CPictFile::ReadAndDrawText(int x, int y)
 	m_pRenderer->BeginCommand(c_nTextGraphicType);
 	m_pRenderer->CommandDrawText(ws_text, x, y, 0.0, 0.0);
 	m_pRenderer->EndCommand(c_nTextGraphicType);
+}
+
+void CPictFile::InitializeFonts()
+{
+	if (m_pAppFonts)
+		return;
+
+	m_pAppFonts = NSFonts::NSApplication::Create();
+	m_pAppFonts->Initialize();
+	m_pFontManager = m_pAppFonts->GenerateFontManager();
+	NSFonts::IFontsCache* fonts_cache = NSFonts::NSFontCache::Create();
+	fonts_cache->SetStreams(m_pAppFonts->GetStreams());
+	m_pFontManager->SetOwnerCache(fonts_cache);
+	m_pRenderer->SetFontManager(m_pFontManager);
 }
 
 void CPictFile::InitializeRenderer()

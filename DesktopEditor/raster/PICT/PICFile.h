@@ -247,6 +247,7 @@ private:
 	void DrawArc();
 	void ReadAndDrawText(int x, int y);
 
+	void InitializeFonts();
 	void InitializeRenderer();
 
 private:
@@ -275,6 +276,7 @@ private:
 	std::vector<Aggplus::Point> m_arLastPolygon{};
 
 	NSGraphics::IGraphicsRenderer* m_pRenderer{nullptr};
+	NSFonts::IApplicationFonts* m_pAppFonts{nullptr};
 	NSFonts::IFontManager* m_pFontManager{nullptr};
 };
 

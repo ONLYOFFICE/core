@@ -1939,7 +1939,8 @@ namespace DocFileFormat
 				//{
 				//	m_pXmlWriter->WriteAttribute( L"w:customMarkFollows", L"1");
 				//}
-				m_pXmlWriter->WriteAttribute( L"w:id", FormatUtils::IntToWideString(_footnoteNr++ ) );
+                _footnoteNr++;
+                m_pXmlWriter->WriteAttribute( L"w:id", FormatUtils::IntToWideString(_footnoteNr ) );
 				m_pXmlWriter->WriteNodeEnd( L"", true );
 			}
 		}

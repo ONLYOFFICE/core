@@ -63,6 +63,7 @@
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Legend.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/AxisLine.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/LineFormat.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Tick.h"
 
 
 namespace OOX
@@ -2969,6 +2970,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			auto axis = new XLS::Axis;
 			axis->wType = 0;
 			ivAxis->m_Axis = XLS::BaseObjectPtr(axis);
+			auto axs = new XLS::AXS;
+			ivAxis->m_AXS = XLS::BaseObjectPtr(axs);
 			auto catSerRange = new XLS::CatSerRange;
 			catSerRange->catCross = 1;
 			catSerRange->catLabel = 1;
@@ -2986,6 +2989,32 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			axcExt->fAutoMinor = true;
 			axcExt->fDateAxis = true;
 			ivAxis->m_AxcExt = XLS::BaseObjectPtr(axcExt);
+
+			if(m_spPr.IsInit())
+			{
+				auto axisline = new XLS::AxisLine;
+				axisline->id = 0;
+				XLS::AXS::_axis_line_format lnFmt;
+				lnFmt.axisLine = XLS::BaseObjectPtr(axisline);
+				if(m_spPr->ln.IsInit())
+				{
+					lnFmt.lineFormat = m_spPr->ln->toXLS();
+					auto lnFmtptr = static_cast<XLS::LineFormat*>(lnFmt.lineFormat.get());
+					lnFmtptr->fAxisOn = true;
+				}
+				axs->m_AxisLine_Format.push_back(lnFmt);
+			}
+			if(m_majorGridlines != nullptr)
+			{
+				auto axisline = new XLS::AxisLine;
+				axisline->id = 1;
+				XLS::AXS::_axis_line_format lnFmt;
+				lnFmt.axisLine = XLS::BaseObjectPtr(axisline);
+
+				if(m_majorGridlines->m_spPr.IsInit() && m_majorGridlines->m_spPr->ln.IsInit())
+					lnFmt.lineFormat = m_majorGridlines->m_spPr->ln->toXLS();
+				axs->m_AxisLine_Format.push_back(lnFmt);
+			}
 
 			return XLS::BaseObjectPtr(ivAxis);
 		}
@@ -3214,6 +3243,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 		{
 			auto dvAxis = new XLS::DVAXIS;
 			auto axis = new XLS::Axis;
+			auto axs = new XLS::AXS;
+			dvAxis->m_AXS = XLS::BaseObjectPtr(axs);
 			axis->wType = 1;
 			dvAxis->m_Axis = XLS::BaseObjectPtr(axis);
 			auto valSerRange = new XLS::ValueRange;
@@ -3223,11 +3254,22 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			valSerRange->fAutoMinor = true;
 			valSerRange->fAutoCross = true;
 			dvAxis->m_ValueRange = XLS::BaseObjectPtr(valSerRange);
-
+			if(m_spPr.IsInit())
+			{
+				auto axisline = new XLS::AxisLine;
+				axisline->id = 0;
+				XLS::AXS::_axis_line_format lnFmt;
+				lnFmt.axisLine = XLS::BaseObjectPtr(axisline);
+				if(m_spPr->ln.IsInit())
+				{
+					lnFmt.lineFormat = m_spPr->ln->toXLS();
+					auto lnFmtptr = static_cast<XLS::LineFormat*>(lnFmt.lineFormat.get());
+					lnFmtptr->fAxisOn = true;
+				}
+				axs->m_AxisLine_Format.push_back(lnFmt);
+			}
 			if(m_majorGridlines != nullptr)
 			{
-				auto axs = new XLS::AXS;
-				dvAxis->m_AXS = XLS::BaseObjectPtr(axs);
 				auto axisline = new XLS::AxisLine;
 				axisline->id = 1;
 				XLS::AXS::_axis_line_format lnFmt;
@@ -3237,6 +3279,35 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 					lnFmt.lineFormat = m_majorGridlines->m_spPr->ln->toXLS();
 				axs->m_AxisLine_Format.push_back(lnFmt);
 			}
+			auto tickPtr = new XLS::Tick;
+			axs->m_Tick = XLS::BaseObjectPtr(tickPtr);
+			if(m_tickLblPos.IsInit())
+			{
+				switch (m_tickLblPos->GetValue())
+				{
+					case OOX::Spreadsheet::ST_TickLblPos::st_ticklblposNONE:
+					{
+						tickPtr->tlt = 0;
+						break;
+					}
+					case OOX::Spreadsheet::ST_TickLblPos::st_ticklblposLOW:
+					{
+						tickPtr->tlt = 1;
+						break;
+					}
+					case OOX::Spreadsheet::ST_TickLblPos::st_ticklblposHIGH:
+					{
+						tickPtr->tlt = 2;
+						break;
+					}
+					case OOX::Spreadsheet::ST_TickLblPos::st_ticklblposNEXTTO:
+					{
+						tickPtr->tlt = 3;
+						break;
+					}
+				}
+			}
+
 
 			return XLS::BaseObjectPtr(dvAxis);
 		}

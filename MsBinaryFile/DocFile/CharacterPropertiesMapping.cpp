@@ -113,10 +113,46 @@ namespace DocFileFormat
 	{
 		//Todo сделать определение симольного шрифта через fontManager
 		//Заглушка под Google Docs, они пишут bullet в Arial
-        if (-1 != m_sAsciiFont.find (L"Arial") && -1 != m_sEastAsiaFont.find (L"Arial") && -1 != m_shAnsiFont.find (L"Arial"))
-			return false;
+        const std::wstring* fonts[] = {&m_sAsciiFont, &m_sEastAsiaFont, &m_shAnsiFont};
+        for (const auto& pFont : fonts)
+        {
+            if (!pFont->empty())
+            {
+                std::wstring fontLower = *pFont;
 
-		return true;
+                for (size_t i = 0; i < fontLower.length(); ++i)
+                    fontLower[i] = towlower(fontLower[i]);
+
+
+                if (fontLower == L"symbol" ||
+                    fontLower.find(L"wingdings") != std::wstring::npos ||
+                    fontLower == L"webdings" ||
+                    fontLower == L"marlett" ||
+                    fontLower == L"mt extra" ||
+                    fontLower.find(L"dingbats") != std::wstring::npos ||
+                    fontLower.find(L"zapf") != std::wstring::npos)
+                {
+                    return true;
+                }
+
+
+                if (fontLower.find(L"times") != std::wstring::npos ||
+                    fontLower.find(L"arial") != std::wstring::npos ||
+                    fontLower.find(L"courier") != std::wstring::npos ||
+                    fontLower.find(L"calibri") != std::wstring::npos ||
+                    fontLower.find(L"cambria") != std::wstring::npos ||
+                    fontLower.find(L"georgia") != std::wstring::npos ||
+                    fontLower.find(L"verdana") != std::wstring::npos ||
+                    fontLower.find(L"tahoma") != std::wstring::npos ||
+                    fontLower.find(L"helvetica") != std::wstring::npos ||
+                    fontLower.find(L"segoe") != std::wstring::npos)
+                {
+                    return false;
+                }
+            }
+        }
+
+        return true;
 	}
 
 	/*========================================================================================================*/

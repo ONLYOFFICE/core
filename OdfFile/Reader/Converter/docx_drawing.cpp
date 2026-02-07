@@ -513,12 +513,16 @@ void docx_serialize_wps(std::wostream & strm, _docx_drawing & val)
 				{
 					CP_XML_NODE(L"wp:extent")
 					{
-						if (val.cx > 0 || val.cy > 0)
+						if (val.cx > 0 && val.cy > 0)
 						{
 							CP_XML_ATTR(L"cx", val.cx);
 							CP_XML_ATTR(L"cy", val.cy);
 						}
-
+						else
+						{
+							CP_XML_ATTR(L"cx", 180000);
+							CP_XML_ATTR(L"cy", 180000);
+						}
 					}
 					serialize_null_extent(CP_XML_STREAM());
 				}

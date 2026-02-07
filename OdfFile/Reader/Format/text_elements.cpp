@@ -437,7 +437,7 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context, _CP_OPT(std
 		}
 		else
 		{
-			content_[i]->docx_convert(Context); 
+			content_[i]->docx_convert(Context);
 			
 			if (Context.get_drop_cap_context().state() > 0)		
 				Context.get_drop_cap_context().state(0);//disable

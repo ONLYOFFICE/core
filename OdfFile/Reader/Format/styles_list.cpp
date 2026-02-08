@@ -937,7 +937,7 @@ void text_list_level_style_image::pptx_convert(oox::pptx_conversion_context & Co
 				
 				CP_XML_NODE(L"a:buSzPts")
 				{
-					CP_XML_ATTR(L"val", (int)(width_pt * 100));
+					CP_XML_ATTR(L"val", (int)((width_pt + height_pt ) * 77));
 				}
 			}
 			CP_XML_NODE(L"a:buBlip")

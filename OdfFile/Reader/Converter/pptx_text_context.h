@@ -37,6 +37,7 @@
 
 #include "oox_conversion_context.h"
 #include "../../DataTypes/stylefamily.h"
+#include "../DataTypes/length.h"
 
 namespace cpdoccore {
 namespace odf_reader
@@ -118,6 +119,11 @@ public:
 	bool get_lasttext();
 
 	void set_line_break(bool& bLineBreak);
+
+	void set_svg_height_width(odf_types::length svg_height,odf_types::length svg_width);
+
+	_CP_OPT(odf_types::length) get_svg_height();
+	_CP_OPT(odf_types::length) get_svg_width();
 
 private:
 

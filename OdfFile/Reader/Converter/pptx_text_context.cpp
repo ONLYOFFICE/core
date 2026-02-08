@@ -107,6 +107,11 @@ public:
 
 	void set_line_break(bool& bLineBreak);
 
+	void set_svg_height_width(odf_types::length svg_height,odf_types::length svg_width);
+
+	_CP_OPT(odf_types::length) get_svg_width();
+	_CP_OPT(odf_types::length) get_svg_height();
+
 	bool in_list_;
 	bool process_layouts_;
 
@@ -152,6 +157,8 @@ private:
     bool first_element_list_item_;
 
 	_CP_OPT(odf_types::length) last_run_font_size_;
+	_CP_OPT(odf_types::length) svg_heightVal;
+	_CP_OPT(odf_types::length) svg_widthVal;
     
     int new_list_style_number_;	// счетчик для нумерации имен созданных в процессе конвертации стилей
    
@@ -162,7 +169,6 @@ private:
 	std::wstring find_list_rename(const std::wstring & ListStyleName);
 	std::wstring current_list_style();
 ///////////////////////////
-
 	field_type field_type_;
 	std::wstringstream field_value_;
 
@@ -1051,6 +1057,21 @@ void pptx_text_context::set_line_break(bool& bLineBreak)
 	impl_->set_line_break(bLineBreak);
 }
 
+void pptx_text_context::set_svg_height_width(odf_types::length svg_height,odf_types::length svg_width)
+{
+	impl_->set_svg_height_width(svg_height,svg_width);
+}
+
+_CP_OPT(odf_types::length) pptx_text_context::get_svg_height()
+{
+	return impl_->get_svg_height();
+}
+
+_CP_OPT(odf_types::length) pptx_text_context::get_svg_width()
+{
+	return impl_->get_svg_width();
+}
+
 void pptx_text_context::Impl::set_predump(const bool& bPredump)
 {
 	is_predump = bPredump;
@@ -1070,6 +1091,22 @@ void pptx_text_context::Impl::seroing_predump()
 void pptx_text_context::Impl::set_line_break(bool& bLineBreak)
 {
 	is_line_break = bLineBreak;
+}
+
+void pptx_text_context::Impl::set_svg_height_width(odf_types::length svg_height,odf_types::length svg_width)
+{
+	svg_heightVal = svg_height;
+	svg_widthVal = svg_width;
+}
+
+_CP_OPT(odf_types::length) pptx_text_context::Impl::get_svg_height()
+{
+	return svg_heightVal;
+}
+
+_CP_OPT(odf_types::length) pptx_text_context::Impl::get_svg_width()
+{
+	return svg_widthVal;
 }
 
 }

@@ -284,6 +284,20 @@ void paragraph_format_properties::pptx_convert(oox::pptx_conversion_context & Co
         w_right = pptx_process_margin(fo_margin_right_, length::emu, 1.);
         w_firstLine = pptx_process_margin(fo_text_indent_,length::emu, 1.);
 
+		_CP_OPT(odf_types::length) svg_heightValue = Context.get_text_context().get_svg_height();
+		_CP_OPT(odf_types::length) svg_widthValue = Context.get_text_context().get_svg_width();
+
+		std::wstring ws_svg_height,ws_svg_width;
+
+		ws_svg_height = std::to_wstring((int)(0.5 + 1. * svg_heightValue->get_value_unit(length::emu)));
+        ws_svg_width = std::to_wstring((int)(0.5 + 1. * svg_widthValue->get_value_unit(length::emu)));
+
+		if(!ws_svg_width.empty() && !w_left.empty())
+		{
+			double d_left = std::stod(w_left),d_svg_width = std::stod(ws_svg_width);
+			if(d_left>d_svg_width)
+				w_left = L"0";
+		}
 		//if (w_left.empty())			w_left = L"0";
 		//if (w_right.empty())		w_right = L"0";
 		//if (w_firstLine.empty())	w_hanging = L"0";

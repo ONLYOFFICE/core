@@ -198,6 +198,8 @@ namespace NExtractTools
 	DECLARE_CONVERT_FUNC(doct_bin2html);
 	DECLARE_CONVERT_FUNC(doct_bin2html_zip);
 
+	DECLARE_CONVERT_FUNC(html2md);
+
 	// mht
 	DECLARE_CONVERT_FUNC(mht2docx_dir);
 

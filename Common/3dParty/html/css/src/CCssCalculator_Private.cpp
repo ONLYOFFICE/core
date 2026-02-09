@@ -511,7 +511,6 @@ namespace NSCSS
 		m_mDefaultStyleData[L"i"] = new CElement(L"i", {{L"font-style", L"italic"}});
 		m_mDefaultStyleData[L"code"] = new CElement(L"code", {{L"font-family", L"Courier New"}});
 		m_mDefaultStyleData[L"kbd"] = new CElement(L"kbd", {{L"font-family", L"Courier New"},
-		                                                    {L"font-size", L"20pt"},
 		                                                    {L"font_weight", L"bold"}});
 		m_mDefaultStyleData[L"s"] = new CElement(L"s", {{L"text-decoration", L"line-through"}});
 		m_mDefaultStyleData[L"u"] = new CElement(L"u", {{L"text-decoration", L"underline"}});
@@ -520,7 +519,6 @@ namespace NSCSS
 		m_mDefaultStyleData[L"sub"] = new CElement(L"sub", {{L"vertical-align", L"bottom"}});
 		m_mDefaultStyleData[L"dd"] = new CElement(L"dd", {{L"margin-left", L"720tw"}});
 		m_mDefaultStyleData[L"pre"] = new CElement(L"pre", {{L"font-family", L"Courier New"},
-		                                                    {L"font-size", L"20pt"},
 		                                                    {L"margin-top", L"0"},
 		                                                    {L"margin-bottom", L"0"}});
 		m_mDefaultStyleData[L"blockquote"] = new CElement(L"blockquote", {{L"margin", L"0px"}});

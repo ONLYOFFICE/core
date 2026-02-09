@@ -49,34 +49,10 @@ bool CAnchor<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, c
 		bCross = true;
 
 	if (arSelectors.back().GetAttributeValue(L"name", wsName))
-		m_pWriter->WriteBookmark(wsName);
+		m_pWriter->WriteEmptyBookmark(wsName);
 
 	arSelectors.back().GetAttributeValue(L"alt", wsAlt);
 
-	if (!m_pWriter->OpenP())
-		m_pWriter->CloseR();
-	else
-		m_pWriter->WritePPr(arSelectors);
-
-	if (bCross)
-		m_pWriter->OpenCrossHyperlink(wsRef, arSelectors);
-	else
-	{
-		std::wstring wsTooltip(wsRef);
-		arSelectors.back().GetAttributeValue(L"title", wsTooltip);
-
-		m_pWriter->OpenExternalHyperlink(wsRef, wsTooltip, arSelectors);
-	}
-
-	return true;
-}
-
-void CAnchor<COOXMLWriter>::Close(const std::vector<NSCSS::CNode>& arSelectors)
-{
-	if (!ValidWriter())
-		return;
-
-	bool bCross = false;
 	std::wstring wsFootnote;
 
 	if (arSelectors.back().m_wsStyle.find(L"mso-footnote-id") != std::wstring::npos)
@@ -87,23 +63,32 @@ void CAnchor<COOXMLWriter>::Close(const std::vector<NSCSS::CNode>& arSelectors)
 			wsFootnote = L"href";
 	}
 
-	std::wstring wsRef;
-
-	if (arSelectors.back().GetAttributeValue(L"href", wsRef))
+	bool bFootnote = false;
+	if (arSelectors.size() > 1)
 	{
-		if(wsRef.find('#') != std::wstring::npos)
-			bCross = true;
+		const NSCSS::CNode& oNode = arSelectors[arSelectors.size() - 2];
+		bFootnote = oNode.m_wsName == L"p" && oNode.m_wsClass == L"MsoFootnoteText";
 	}
 
 	if (bCross)
-	{
-		if (wsFootnote == L"href")
-			wsFootnote = wsRef.substr(wsRef.find('#') + 1);
-
-		m_pWriter->CloseCrossHyperlink(arSelectors, wsFootnote, wsRef);
-	}
+		m_pWriter->SetHyperlinkData(wsRef, L"", true, wsFootnote, bFootnote);
 	else
-		m_pWriter->CloseExternalHyperlink();
+	{
+		std::wstring wsTooltip(wsRef);
+		arSelectors.back().GetAttributeValue(L"title", wsTooltip);
+
+		m_pWriter->SetHyperlinkData(wsRef, wsTooltip, false, wsFootnote, bFootnote);
+	}
+
+	return true;
+}
+
+void CAnchor<COOXMLWriter>::Close(const std::vector<NSCSS::CNode>& arSelectors)
+{
+	if (!ValidWriter())
+		return;
+
+	m_pWriter->ClearHyperlinkData();
 }
 
 CAbbr<COOXMLWriter>::CAbbr(COOXMLWriter* pWriter)
@@ -208,6 +193,7 @@ void CDivision<COOXMLWriter>::Close(const std::vector<NSCSS::CNode>& arSelectors
 		m_pWriter->RollBackState();
 	}
 
+	m_pWriter->CloseP();
 	m_arFootnoteIDs.pop();
 }
 
@@ -330,6 +316,12 @@ bool CImage<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, co
 	    ((!wsBasePath.empty() && wsBasePath.length() > 4 && wsBasePath.substr(0, 4) == L"http") ||
 	      (wsSrc.length() > 4 && wsSrc.substr(0, 4) == L"http")))
 	{
+		if (!wsExtention.empty() && NotValidExtension(wsExtention))
+		{
+			m_pWriter->WriteAlternativeImage(wsAlt, wsSrc, oImageData);
+			return true;
+		}
+
 		const std::wstring wsDst = wsImagePath + L'.' + ((!wsExtention.empty()) ? wsExtention : L"png");
 
 		// Проверка gc_allowNetworkRequest предполагается в kernel_network
@@ -404,11 +396,10 @@ bool CImage<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, co
 		m_pWriter->WriteAlternativeImage(wsAlt, wsSrc, oImageData);
 	else
 	{
-		m_arrImages.push_back(wsSrc);
-
 		m_pWriter->WritePPr(arSelectors);
 
 		const std::wstring wsImageID{std::to_wstring(m_arrImages.size())};
+		m_arrImages.push_back(wsSrc);
 
 		if (nImageId < 0)
 		{
@@ -1256,6 +1247,7 @@ void CTable<COOXMLWriter>::Close(const std::vector<NSCSS::CNode>& arSelectors)
 		return;
 
 	m_pWriter->GetCurrentDocument()->WriteNodeEnd(L"w:tbl");
+	m_pWriter->WriteEmptyParagraph(true);
 }
 
 CTableRow<COOXMLWriter>::CTableRow(COOXMLWriter* pWriter)

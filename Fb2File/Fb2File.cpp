@@ -2170,7 +2170,7 @@ HRESULT CFb2File::FromHtml(const std::wstring& sHtmlFile, const std::wstring& sD
 	RELEASEARRAYOBJECTS(pData);
 
 	//XmlUtils::CXmlLiteReader oIndexHtml;
-	std::wstring xhtml = htmlToXhtml(sContent, bNeedConvert);
+	std::wstring xhtml = HTML::htmlToXhtml(sContent, bNeedConvert);
 
 	if (!m_internal->m_oLightReader.FromString(xhtml))
 		return S_FALSE;

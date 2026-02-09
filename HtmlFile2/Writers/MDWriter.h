@@ -43,6 +43,8 @@ public:
 
 	void WriteEmptyParagraph(bool bVahish = false, bool bInP = false) override;
 
+	void PageBreak() override;
+
 	void BeginBlock() override;
 	void EndBlock(bool bAddBlock) override;
 

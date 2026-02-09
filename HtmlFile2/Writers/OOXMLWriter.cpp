@@ -40,11 +40,11 @@ inline UINT GetFontSizeLevel(UINT unFontSize);
 inline UINT GetFontSizeByLevel(UINT unLevel);
 inline void ReplaceSpaces(std::wstring& wsValue);
 
-COOXMLWriter::COOXMLWriter()
+COOXMLWriter::COOXMLWriter(THTMLParameters* pHTMLParameters, NSCSS::CCssCalculator* pCSSCalculator)
 	: m_pDstPath(nullptr), m_pTempDir(nullptr), m_pSrcPath(nullptr),
-	  m_pBasePath(nullptr), m_pCorePath(nullptr), m_pHTMLParameters(nullptr),
-	  m_nFootnoteId(1), m_nHyperlinkId(1), m_nListId(1), m_nElementId(1),
-	  m_bBanUpdatePageData(false), m_bWasDivs(false), m_pFonts(nullptr)
+	  m_pBasePath(nullptr), m_pCorePath(nullptr), m_pStylesCalculator(pCSSCalculator),
+	  m_pHTMLParameters(pHTMLParameters), m_nFootnoteId(1), m_nHyperlinkId(1), m_nListId(1),
+	  m_nElementId(1), m_bBanUpdatePageData(false), m_bWasDivs(false), m_pFonts(nullptr)
 {
 	m_oPageData.SetWidth (DEFAULT_PAGE_WIDTH,  NSCSS::UnitMeasure::Twips, 0, true);
 	m_oPageData.SetHeight(DEFAULT_PAGE_HEIGHT, NSCSS::UnitMeasure::Twips, 0, true);
@@ -54,16 +54,6 @@ COOXMLWriter::COOXMLWriter()
 
 	m_arStates.push(TState(nullptr));
 	m_arStates.top().m_pCurrentDocument = &m_oDocXml;
-}
-
-void COOXMLWriter::SetCSSCalculator(NSCSS::CCssCalculator* pCSSCalculator)
-{
-	m_pStylesCalculator = pCSSCalculator;
-}
-
-void COOXMLWriter::SetHTMLParameters(THTMLParameters* pHTMLParameters)
-{
-	m_pHTMLParameters = pHTMLParameters;
 }
 
 void COOXMLWriter::SetSrcDirectory(const std::wstring& wsPath)
@@ -401,6 +391,8 @@ bool COOXMLWriter::OpenR()
 	if (m_arStates.top().m_bInR)
 		return false;
 
+	OpenHyperlink();
+
 	m_arStates.top().m_pCurrentDocument->WriteString(L"<w:r>");
 	m_arStates.top().m_bInR = true;
 	return true;
@@ -416,6 +408,22 @@ bool COOXMLWriter::OpenT()
 	return true;
 }
 
+void COOXMLWriter::OpenHyperlink()
+{
+	if (m_arStates.top().m_bInHyperlink)
+		return;
+
+	if (!m_arStates.top().m_wsHref.empty())
+	{
+		if (m_arStates.top().m_bISCrossHyperlink)
+			OpenCrossHyperlink(m_arStates.top().m_wsHref);
+		else
+			OpenExternalHyperlink(m_arStates.top().m_wsHref, m_arStates.top().m_wsTooltip);
+
+		m_arStates.top().m_bInHyperlink = true;
+	}
+}
+
 void COOXMLWriter::CloseP()
 {
 	m_arStates.top().m_bWasSpace = true;
@@ -425,6 +433,7 @@ void COOXMLWriter::CloseP()
 
 	CloseT();
 	CloseR();
+	CloseHyperlink();
 
 	m_arStates.top().m_pCurrentDocument->WriteString(L"</w:p>");
 	m_arStates.top().m_bInP = false;
@@ -446,6 +455,36 @@ void COOXMLWriter::CloseT()
 
 	m_arStates.top().m_pCurrentDocument->WriteString(L"</w:t>");
 	m_arStates.top().m_bInT = false;
+}
+
+void COOXMLWriter::CloseHyperlink()
+{
+	if (!m_arStates.top().m_bInHyperlink)
+		return;
+
+	m_arStates.top().m_pCurrentDocument->WriteString(L"</w:hyperlink>");
+	m_arStates.top().m_bInHyperlink = false;
+
+	// Сноска
+	if (m_arStates.top().m_wsFootnote.empty())
+		return;
+
+	if (!m_arStates.top().m_bIsFootnote)
+	{
+		std::wstring sFootnoteID = std::to_wstring(m_nFootnoteId++);
+		OpenR();
+		m_arStates.top().m_pCurrentDocument->WriteString(L"<w:rPr><w:rStyle w:val=\"footnote\"/></w:rPr><w:footnoteReference w:id=\"");
+		m_arStates.top().m_pCurrentDocument->WriteString(sFootnoteID);
+		m_arStates.top().m_pCurrentDocument->WriteString(L"\"/>");
+		CloseR();
+		m_mFootnotes.insert(std::make_pair(m_arStates.top().m_wsFootnote, sFootnoteID));
+	}
+	else
+	{
+		OpenR();
+		m_arStates.top().m_pCurrentDocument->WriteString(L"<w:rPr><w:rStyle w:val=\"footnote\"/></w:rPr><w:footnoteRef/>");
+		CloseR();
+	}
 }
 
 void COOXMLWriter::BeginBlock()
@@ -534,7 +573,35 @@ void COOXMLWriter::Break(const std::vector<NSCSS::CNode>& arSelectors)
 	m_arStates.top().m_bWasSpace = true;
 }
 
-void COOXMLWriter::OpenCrossHyperlink(const std::wstring& wsRef, const std::vector<NSCSS::CNode>& arSelectors)
+void COOXMLWriter::SetHyperlinkData(const std::wstring& wsRef, const std::wstring& wsTooltip, bool bIsCross, const std::wstring& wsFootnote, bool bIsFootnote)
+{
+	CloseHyperlink();
+
+	//TODO:: подумать как лучше сделать работу с гиперссылками
+	m_arStates.top().m_wsHref = wsRef;
+	m_arStates.top().m_wsTooltip = wsTooltip;
+	m_arStates.top().m_bISCrossHyperlink = bIsCross;
+	m_arStates.top().m_wsFootnote = wsFootnote;
+	m_arStates.top().m_bIsFootnote = bIsFootnote;
+}
+
+void COOXMLWriter::ClearHyperlinkData()
+{
+	m_arStates.top().m_wsHref.clear();
+	m_arStates.top().m_wsTooltip.clear();
+	m_arStates.top().m_bISCrossHyperlink = false;
+	m_arStates.top().m_wsFootnote.clear();
+	m_arStates.top().m_bIsFootnote = false;
+}
+
+void COOXMLWriter::PageBreak()
+{
+	OpenP();
+	GetCurrentDocument()->WriteString(L"<w:pPr><w:pageBreakBefore/></w:pPr>");
+	CloseP();
+}
+
+void COOXMLWriter::OpenCrossHyperlink(const std::wstring& wsRef)
 {
 	m_arStates.top().m_pCurrentDocument->WriteString(L"<w:hyperlink w:anchor=\"");
 	const size_t nSharp = wsRef.find('#');
@@ -552,7 +619,7 @@ void COOXMLWriter::OpenCrossHyperlink(const std::wstring& wsRef, const std::vect
 	m_arStates.top().m_pCurrentDocument->WriteString(L"\">");
 }
 
-void COOXMLWriter::OpenExternalHyperlink(const std::wstring& wsRef, const std::wstring& wsTooltip, const std::vector<NSCSS::CNode>& arSelectors)
+void COOXMLWriter::OpenExternalHyperlink(const std::wstring& wsRef, const std::wstring& wsTooltip)
 {
 	XmlString& oRelationshipXml(m_oDocXmlRels);
 
@@ -647,7 +714,6 @@ std::wstring COOXMLWriter::WritePPr(const std::vector<NSCSS::CNode>& arSelectors
 		break;
 	}
 
-
 	if (sPStyle.empty() && m_arDivId.empty() && wsAnchor.empty())
 		return L"";
 
@@ -662,6 +728,7 @@ std::wstring COOXMLWriter::WritePPr(const std::vector<NSCSS::CNode>& arSelectors
 
 	int nLiLevel{-1};
 	bool bNumberingLi{false};
+	bool bInTable{false};
 
 	for (const NSCSS::CNode& oNode : arSelectors)
 	{
@@ -669,6 +736,11 @@ std::wstring COOXMLWriter::WritePPr(const std::vector<NSCSS::CNode>& arSelectors
 			bNumberingLi = true;
 		else if (L"ul" == oNode.m_wsName)
 			bNumberingLi = false;
+		else if (L"table" ==  oNode.m_wsName)
+		{
+			bInTable = true;
+			continue;
+		}
 		else
 			continue;
 
@@ -679,20 +751,15 @@ std::wstring COOXMLWriter::WritePPr(const std::vector<NSCSS::CNode>& arSelectors
 		m_arStates.top().m_pCurrentDocument->WriteString(L"<w:numPr><w:ilvl w:val=\"" + std::to_wstring(nLiLevel) + L"\"/><w:numId w:val=\"" +
 		                                                 (!bNumberingLi ? L"1" : std::to_wstring(m_nListId)) + L"\"/></w:numPr>");
 
-	if (!m_arDivId.empty())
+	if (!m_arDivId.empty() && !bInTable)
 		m_arStates.top().m_pCurrentDocument->WriteString(L"<w:divId w:val=\"" + m_arDivId.top() + L"\"/>");
-	// m_pCurrentDocument->WriteString(oTS.sPStyle + sPSettings);
+
 	m_arStates.top().m_pCurrentDocument->WriteNodeEnd(L"w:pPr");
 
 	m_arStates.top().m_bWasPStyle = true;
 
 	if (!wsAnchor.empty())
-	{
-		// const anchors_map::const_iterator itAnchor{m_mAnchors.find(wsAnchor)};
-
-		// if (m_mAnchors.cend() != itAnchor)
 		WriteEmptyBookmark(wsAnchor);
-	}
 
 	return sPStyle;
 }
@@ -797,7 +864,6 @@ bool COOXMLWriter::WriteText(std::wstring wsText, const std::vector<NSCSS::CNode
 
 	const bool bInT = m_arStates.top().m_bInT;
 
-	//TODO:: сделать так, чтобы параграф (со своими стилями) открывался при чтении сооответствующей ноды, а не при чтении текста
 	OpenP();
 
 	WritePPr(arSelectors);

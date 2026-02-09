@@ -162,6 +162,96 @@ const static std::map<std::wstring, HtmlTag> m_HTML_TAGS
 	ADD_TAG(L"svg", SVG)
 };
 
+bool HTML2XHTML(const std::wstring& wsFileName, XmlUtils::CXmlLiteReader& oLiteReader)
+{
+	BYTE* pData;
+	DWORD nLength;
+	if (!NSFile::CFileBinary::ReadAllBytes(wsFileName, &pData, nLength))
+		return false;
+
+	std::string sFileContent = XmlUtils::GetUtf8FromFileContent(pData, nLength);
+
+	bool bNeedConvert = true;
+	if (nLength > 4)
+	{
+		if (pData[0] == 0xFF && pData[1] == 0xFE && !(pData[2] == 0x00 && pData[3] == 0x00))
+			bNeedConvert = false;
+		if (pData[0] == 0xFE && pData[1] == 0xFF)
+			bNeedConvert = false;
+
+		if (pData[0] == 0xFF && pData[1] == 0xFE && pData[2] == 0x00 && pData[3] == 0x00)
+			bNeedConvert = false;
+		if (pData[0] == 0 && pData[1] == 0 && pData[2] == 0xFE && pData[3] == 0xFF)
+			bNeedConvert = false;
+	}
+
+	RELEASEARRAYOBJECTS(pData);
+
+	size_t nFind = sFileContent.find("version=\"");
+	if(nFind != std::string::npos)
+	{
+		nFind += 9;
+		size_t nFindEnd = sFileContent.find("\"", nFind);
+		if(nFindEnd != std::string::npos)
+			sFileContent.replace(nFind, nFindEnd - nFind, "1.0");
+	}
+
+	const std::wstring sRes{htmlToXhtml(sFileContent, bNeedConvert)};
+
+	#ifdef SAVE_NORMALIZED_HTML
+	#if 1 == SAVE_NORMALIZED_HTML
+	NSFile::CFileBinary oWriter;
+	if (oWriter.CreateFileW(L"res.html"))
+	{
+		oWriter.WriteStringUTF8(sRes);
+		oWriter.CloseFile();
+	}
+	#endif
+	#endif
+
+	return oLiteReader.FromString(sRes);
+}
+
+bool MHT2XHTML(const std::wstring& wsFileName, XmlUtils::CXmlLiteReader& oLiteReader)
+{
+	NSFile::CFileBinary file;
+	if (!file.OpenFile(wsFileName))
+		return false;
+
+	unsigned char* buffer = new unsigned char[4096];
+	if (!buffer)
+	{
+		file.CloseFile();
+		return false;
+	}
+
+	DWORD dwReadBytes = 0;
+	file.ReadFile(buffer, 4096, dwReadBytes);
+	file.CloseFile();
+	std::string xml_string = XmlUtils::GetUtf8FromFileContent(buffer, dwReadBytes);
+
+	const std::string sContentType = NSStringFinder::FindProperty(xml_string, "content-type", ":", ";");
+	bool bRes = false;
+
+	if(NSStringFinder::Equals(sContentType, "multipart/related"))
+	{
+		BYTE* pData;
+		DWORD nLength;
+		if (!NSFile::CFileBinary::ReadAllBytes(wsFileName, &pData, nLength))
+			return false;
+
+		std::string sFileContent = XmlUtils::GetUtf8FromFileContent(pData, nLength);
+		RELEASEARRAYOBJECTS(pData);
+		const std::wstring sRes = mhtToXhtml(sFileContent);
+		bRes = oLiteReader.FromString(sRes);
+	}
+	else
+		bRes = HTML2XHTML(wsFileName, oLiteReader);
+
+	RELEASEARRAYOBJECTS(buffer);
+	return bRes;
+}
+
 inline std::wstring GetArgumentValue(XmlUtils::CXmlLiteReader& oLiteReader, const std::wstring& wsArgumentName, const std::wstring& wsDefaultValue = L"");
 inline bool CheckArgumentMath(const std::wstring& wsNodeName, const std::wstring& wsStyleName);
 inline HtmlTag GetHtmlTag(const std::wstring& wsStrTag);
@@ -190,17 +280,42 @@ void CHTMLReader::SetCoreDirectory(const std::wstring& wsPath)
 
 HRESULT CHTMLReader::ConvertHTML2OOXML(const std::wstring& wsPath, const std::wstring& wsDirectory, THTMLParameters* pParameters)
 {
-	InitOOXMLTags(pParameters);
-
-	m_wsDstDirectory = wsDirectory;
-
-	return ConvertHTML(wsPath, wsDirectory);
+	return InitAndConvert2OOXML({wsPath}, wsDirectory, HTML2XHTML, pParameters);
 }
 
 HRESULT CHTMLReader::ConvertHTML2Markdown(const std::wstring& wsPath, const std::wstring& wsFinalFile, TMarkdownParameters* pParameters)
 {
-	InitMDTags();
-	return ConvertHTML(wsPath, wsFinalFile);
+	return InitAndConvert2Markdown({wsPath}, wsFinalFile, HTML2XHTML, pParameters);
+}
+
+HRESULT CHTMLReader::ConvertHTML2OOXML(const std::vector<std::wstring>& arPaths, const std::wstring& wsDirectory, THTMLParameters* pParameters)
+{
+	return InitAndConvert2OOXML(arPaths, wsDirectory, HTML2XHTML, pParameters);
+}
+
+HRESULT CHTMLReader::ConvertHTML2Markdown(const std::vector<std::wstring>& arPaths, const std::wstring& wsFinalFile, TMarkdownParameters* pParameters)
+{
+	return InitAndConvert2Markdown(arPaths, wsFinalFile, HTML2XHTML, pParameters);
+}
+
+HRESULT CHTMLReader::ConvertMHT2OOXML(const std::wstring& wsPath, const std::wstring& wsDirectory, THTMLParameters* pParameters)
+{
+	return InitAndConvert2OOXML({wsPath}, wsDirectory, MHT2XHTML, pParameters);
+}
+
+HRESULT CHTMLReader::ConvertMHT2Markdown(const std::wstring& wsPath, const std::wstring& wsFinalFile, TMarkdownParameters* pParameters)
+{
+	return InitAndConvert2Markdown({wsPath}, wsFinalFile, MHT2XHTML, pParameters);
+}
+
+HRESULT CHTMLReader::ConvertMHT2OOXML(const std::vector<std::wstring>& arPaths, const std::wstring& wsDirectory, THTMLParameters* pParameters)
+{
+	return InitAndConvert2OOXML(arPaths, wsDirectory, MHT2XHTML, pParameters);
+}
+
+HRESULT CHTMLReader::ConvertMHT2Markdown(const std::vector<std::wstring>& arPaths, const std::wstring& wsFinalFile, TMarkdownParameters* pParameters)
+{
+	return InitAndConvert2Markdown(arPaths, wsFinalFile, MHT2XHTML, pParameters);
 }
 
 void CHTMLReader::Clear()
@@ -221,13 +336,10 @@ void CHTMLReader::InitOOXMLTags(THTMLParameters* pParametrs)
 {
 	Clear();
 
-	COOXMLWriter *pWriter = new COOXMLWriter();
+	COOXMLWriter *pWriter = new COOXMLWriter(pParametrs, &m_oCSSCalculator);
 
 	if (nullptr == pWriter)
 		return;
-
-	pWriter->SetCSSCalculator(&m_oCSSCalculator);
-	pWriter->SetHTMLParameters(pParametrs);
 
 	pWriter->SetSrcDirectory (m_wsSrcDirectory);
 	pWriter->SetDstDirectory (m_wsDstDirectory);
@@ -270,12 +382,12 @@ void CHTMLReader::InitOOXMLTags(THTMLParameters* pParametrs)
 	m_mTags[HTML_TAG(BDO)]    = oIgnoredTag;
 	m_mTags[HTML_TAG(SPAN)]   = oIgnoredTag;
 	m_mTags[HTML_TAG(H1)]     = oIgnoredTag;
-	m_mTags[HTML_TAG(CODE)]     = oIgnoredTag;
+	m_mTags[HTML_TAG(CODE)]   = oIgnoredTag;
 }
 
-void CHTMLReader::InitMDTags()
+void CHTMLReader::InitMDTags(TMarkdownParameters* pParametrs)
 {
-	CMDWriter *pWriter = new CMDWriter({});
+	CMDWriter *pWriter = new CMDWriter((nullptr != pParametrs) ? *pParametrs : TMarkdownParameters{});
 
 	if (nullptr == pWriter)
 		return;
@@ -326,65 +438,56 @@ bool CHTMLReader::IsHTML()
 	return ((m_oLightReader.MoveToStart() && m_oLightReader.ReadNextNode()) ? m_oLightReader.GetName() == L"html" : false);
 }
 
-bool CHTMLReader::HTML2XHTML(const std::wstring& wsFileName)
+HRESULT CHTMLReader::InitAndConvert2OOXML(const std::vector<std::wstring>& arPaths, const std::wstring& wsDirectory, Convert_Func Convertation, THTMLParameters* pParameters)
 {
-	BYTE* pData;
-	DWORD nLength;
-	if (!NSFile::CFileBinary::ReadAllBytes(wsFileName, &pData, nLength))
-		return false;
+	InitOOXMLTags(pParameters);
+	m_wsDstDirectory = wsDirectory;
 
-	std::string sFileContent = XmlUtils::GetUtf8FromFileContent(pData, nLength);
-
-	bool bNeedConvert = true;
-	if (nLength > 4)
-	{
-		if (pData[0] == 0xFF && pData[1] == 0xFE && !(pData[2] == 0x00 && pData[3] == 0x00))
-			bNeedConvert = false;
-		if (pData[0] == 0xFE && pData[1] == 0xFF)
-			bNeedConvert = false;
-
-		if (pData[0] == 0xFF && pData[1] == 0xFE && pData[2] == 0x00 && pData[3] == 0x00)
-			bNeedConvert = false;
-		if (pData[0] == 0 && pData[1] == 0 && pData[2] == 0xFE && pData[3] == 0xFF)
-			bNeedConvert = false;
-	}
-
-	RELEASEARRAYOBJECTS(pData);
-
-	size_t nFind = sFileContent.find("version=\"");
-	if(nFind != std::string::npos)
-	{
-		nFind += 9;
-		size_t nFindEnd = sFileContent.find("\"", nFind);
-		if(nFindEnd != std::string::npos)
-			sFileContent.replace(nFind, nFindEnd - nFind, "1.0");
-	}
-
-	const std::wstring sRes{htmlToXhtml(sFileContent, bNeedConvert)};
-
-	#ifdef SAVE_NORMALIZED_HTML
-	#if 1 == SAVE_NORMALIZED_HTML
-	NSFile::CFileBinary oWriter;
-	if (oWriter.CreateFileW(m_sTmp + L"/res.html"))
-	{
-		oWriter.WriteStringUTF8(sRes);
-		oWriter.CloseFile();
-	}
-	#endif
-	#endif
-
-	return m_oLightReader.FromString(sRes);
-}
-
-HRESULT CHTMLReader::ConvertHTML(const std::wstring& wsPath, const std::wstring& wsDirectory)
-{
-	if (nullptr == m_pWriter || !HTML2XHTML(wsPath) || !m_oLightReader.IsValid() || !IsHTML())
-		return S_FALSE;
+	HRESULT lResult{S_FALSE};
 
 	m_pWriter->Begin(wsDirectory);
 
+	for (const std::wstring& wsPath : arPaths)
+	{
+		if (Convert(wsPath, Convertation))
+		{
+			lResult = S_OK;
+
+			if (nullptr != pParameters && pParameters->m_bNeedPageBreakBefore)
+				m_pWriter->PageBreak();
+		}
+	}
+
+	m_pWriter->End(wsDirectory);
+
+	return lResult;
+}
+
+HRESULT CHTMLReader::InitAndConvert2Markdown(const std::vector<std::wstring>& arPaths, const std::wstring& wsFinalFile, Convert_Func Convertation, TMarkdownParameters* pParameters)
+{
+	InitMDTags(pParameters);
+
+	HRESULT lResult{S_FALSE};
+
+	m_pWriter->Begin(L"");
+
+	for (const std::wstring& wsPath : arPaths)
+	{
+		if (Convert(wsPath, Convertation))
+			lResult = S_OK;
+	}
+
+	m_pWriter->End(wsFinalFile);
+
+	return lResult;
+}
+
+bool CHTMLReader::Convert(const std::wstring& wsPath, Convert_Func Convertation)
+{
+	if (nullptr == m_pWriter || !Convertation(wsPath, m_oLightReader) || !m_oLightReader.IsValid() || !IsHTML())
+		return false;
+
 	m_wsSrcDirectory = NSSystemPath::GetDirectoryName(wsPath);
-	// m_sDst = sDst;
 
 	m_oLightReader.MoveToStart();
 	m_oLightReader.ReadNextNode();
@@ -394,13 +497,9 @@ HRESULT CHTMLReader::ConvertHTML(const std::wstring& wsPath, const std::wstring&
 	if(!m_oLightReader.MoveToStart())
 		return S_FALSE;
 
-	// if(oParams && oParams->m_bNeedPageBreakBefore)
-	// 	m_internal->PageBreakBefore();
-
 	ReadDocument();
 
-	m_pWriter->End(wsDirectory);
-	return S_OK;
+	return true;
 }
 
 void CHTMLReader::ReadStyle()
@@ -438,16 +537,16 @@ void CHTMLReader::ReadStyle()
 
 void CHTMLReader::ReadStyle2()
 {
-	std::wstring sName = m_oLightReader.GetName();
+	const std::wstring wsName = m_oLightReader.GetName();
 	// Стиль по ссылке
-	if(sName == L"link")
+	if(wsName == L"link")
 	{
 		while(m_oLightReader.MoveToNextAttribute())
 			ReadStyleFromNetwork();
 		m_oLightReader.MoveToElement();
 	}
 	// тэг style содержит стили для styles.xml
-	else if(sName == L"style")
+	else if(wsName == L"style")
 		m_oCSSCalculator.AddStyles(m_oLightReader.GetText2());
 
 	const int nDeath = m_oLightReader.GetDepth();
@@ -492,10 +591,10 @@ void CHTMLReader::ReadDocument()
 	int nDeath = m_oLightReader.GetDepth();
 	while(m_oLightReader.ReadNextSiblingNode(nDeath))
 	{
-		std::wstring sName = m_oLightReader.GetName();
-		if(sName == L"head")
+		const std::wstring wsName = m_oLightReader.GetName();
+		if(wsName == L"head")
 			ReadHead();
-		else if(sName == L"body")
+		else if(wsName == L"body")
 			ReadBody();
 	}
 }
@@ -524,12 +623,11 @@ void CHTMLReader::ReadBody()
 
 	GetSubClass(arSelectors);
 
-	/*
-	if (!sSelectors.back().m_mAttributes.empty())
+	if (!arSelectors.back().m_mAttributes.empty())
 	{
-		std::map<std::wstring, std::wstring>::iterator itFound = sSelectors.back().m_mAttributes.find(L"bgcolor");
+		std::map<std::wstring, std::wstring>::iterator itFound = arSelectors.back().m_mAttributes.find(L"bgcolor");
 
-		if (sSelectors.back().m_mAttributes.end() != itFound)
+		if (arSelectors.back().m_mAttributes.end() != itFound)
 		{
 			NSCSS::NSProperties::CColor oColor;
 			oColor.SetValue(itFound->second);
@@ -539,15 +637,14 @@ void CHTMLReader::ReadBody()
 				const std::wstring wsHEXColor{oColor.ToHEX()};
 
 				if (!wsHEXColor.empty())
-					m_oDocXml.WriteString(L"<w:background w:color=\"" + wsHEXColor + L"\"/>");
+					m_pWriter->GetCurrentDocument()->WriteString(L"<w:background w:color=\"" + wsHEXColor + L"\"/>");
 
-				sSelectors.back().m_mAttributes.erase(itFound);
+				arSelectors.back().m_mAttributes.erase(itFound);
 			}
 		}
 	}
 
 	m_oLightReader.MoveToElement();
-	*/
 
 	ReadStream(arSelectors);
 }
@@ -557,41 +654,23 @@ bool CHTMLReader::ReadStream(std::vector<NSCSS::CNode>& arSelectors, bool bInser
 	if (nullptr == m_pWriter)
 		return false;
 
-	const int nDepth{m_oLightReader.GetDepth()};
-	bool bResult = false;
-	XmlUtils::XmlNodeType eNodeType = XmlUtils::XmlNodeType_EndElement;
+	bool bResult{false};
 
-	while (m_oLightReader.Read(eNodeType) && m_oLightReader.GetDepth() >= nDepth && XmlUtils::XmlNodeType_EndElement != eNodeType)
+	const int nDeath = m_oLightReader.GetDepth();
+	if(m_oLightReader.IsEmptyNode() || !m_oLightReader.ReadNextSiblingNode2(nDeath))
 	{
-		if (eNodeType == XmlUtils::XmlNodeType_Text ||
-		    eNodeType == XmlUtils::XmlNodeType_Whitespace ||
-		    eNodeType == XmlUtils::XmlNodeType_SIGNIFICANT_WHITESPACE ||
-		    eNodeType == XmlUtils::XmlNodeType_CDATA)
-		{
-			const char* pValue = m_oLightReader.GetTextChar();
+		if (!bInsertEmptyP)
+			return false;
 
-			if('\0' != pValue[0])
-			{
-				std::wstring wsText;
-				NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)pValue, (LONG)strlen(pValue), wsText);
-
-				if (wsText.empty())
-					continue;
-
-				arSelectors.push_back(NSCSS::CNode{L"#text", L"", L""});
-				m_oCSSCalculator.CalculateCompiledStyle(arSelectors);
-
-				bResult = m_pWriter->WriteText(wsText, arSelectors);
-
-				arSelectors.pop_back();
-			}
-		}
-		else if (eNodeType == XmlUtils::XmlNodeType_Element)
-		{
-			if (ReadInside(arSelectors))
-				bResult = true;
-		}
+		m_pWriter->WriteEmptyParagraph();
+		return true;
 	}
+
+	do
+	{
+		if (ReadInside(arSelectors))
+			bResult = true;
+	} while(m_oLightReader.ReadNextSiblingNode2(nDeath));
 
 	if (!bResult && bInsertEmptyP)
 		m_pWriter->WriteEmptyParagraph();
@@ -603,10 +682,10 @@ bool CHTMLReader::ReadInside(std::vector<NSCSS::CNode>& arSelectors)
 {
 	const std::wstring wsName{m_oLightReader.GetName()};
 
-	//TODO:: обработать все варианты return'а
 	if(wsName == L"#text")
 		return ReadText(arSelectors);
 
+	//TODO:: обработать все варианты return'а
 	if (UnreadableNode(wsName) || TagIsUnprocessed(wsName))
 		return false;
 
@@ -621,7 +700,7 @@ bool CHTMLReader::ReadInside(std::vector<NSCSS::CNode>& arSelectors)
 		case HTML_TAG(A):
 		case HTML_TAG(AREA):
 		{
-			bResult = ReadAnchor(arSelectors);
+			bResult = ReadDefaultTag(HTML_TAG(A), arSelectors);
 			break;
 		}
 		case HTML_TAG(ABBR):
@@ -892,15 +971,6 @@ bool CHTMLReader::ReadInside(std::vector<NSCSS::CNode>& arSelectors)
 		}
 	}
 
-	// if (HTML_TAG(DIV) != eHtmlTag && HTML_TAG(ASIDE) != eHtmlTag)
-	// {
-	// 	if (bResult)
-	// 		m_oState.m_eLastElement = eHtmlTag;
-
-	// 	m_oState.m_bBanUpdatePageData = true;
-	// }
-
-	// readNote(oXml, sSelectors, sNote);
 	arSelectors.pop_back();
 	return bResult;
 }
@@ -919,25 +989,12 @@ bool CHTMLReader::ReadText(std::vector<NSCSS::CNode>& arSelectors)
 	return bResult;
 }
 
-bool CHTMLReader::ReadAnchor(std::vector<NSCSS::CNode>& arSelectors)
-{
-	if (nullptr == m_pWriter || !m_mTags[HTML_TAG(A)]->Open(arSelectors))
-		return false;
-
-	if (!ReadStream(arSelectors))
-		m_pWriter->WriteEmptyParagraph(true);
-
-	m_mTags[HTML_TAG(A)]->Close(arSelectors);
-
-	return true;
-}
-
 bool CHTMLReader::ReadSVG(const std::vector<NSCSS::CNode>& arSelectors)
 {
-	if (!m_mTags[HTML_TAG(IMAGE)]->Open(arSelectors, m_oLightReader.GetOuterXml()))
+	if (!m_mTags[HTML_TAG(IMG)]->Open(arSelectors, m_oLightReader.GetOuterXml()))
 		return false;
 
-	m_mTags[HTML_TAG(IMAGE)]->Close(arSelectors);
+	m_mTags[HTML_TAG(IMG)]->Close(arSelectors);
 
 	return true;
 }

@@ -19,6 +19,8 @@ public:
 
 	virtual void WriteEmptyParagraph(bool bVahish = false, bool bInP = false) = 0;
 
+	virtual void PageBreak() = 0;
+
 	virtual void BeginBlock() = 0;
 	virtual void EndBlock(bool bAddBlock) = 0;
 

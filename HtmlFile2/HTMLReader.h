@@ -37,20 +37,29 @@ public:
 	HRESULT ConvertHTML2OOXML   (const std::wstring& wsPath, const std::wstring& wsDirectory, THTMLParameters*     pParameters = nullptr);
 	HRESULT ConvertHTML2Markdown(const std::wstring& wsPath, const std::wstring& wsFinalFile, TMarkdownParameters* pParameters = nullptr);
 
-	HRESULT ConvertMHT2OOXML    (const std::wstring& sPath,  const std::wstring& sDirectory,  THTMLParameters*     pParameters = nullptr);
-	HRESULT ConvertMHT2Markdown (const std::wstring& sPath,  const std::wstring& sDirectory,  TMarkdownParameters* pParameters = nullptr);
+	HRESULT ConvertHTML2OOXML   (const std::vector<std::wstring>& arPaths, const std::wstring& wsDirectory, THTMLParameters*     pParameters = nullptr);
+	HRESULT ConvertHTML2Markdown(const std::vector<std::wstring>& arPaths, const std::wstring& wsFinalFile, TMarkdownParameters* pParameters = nullptr);
+
+	HRESULT ConvertMHT2OOXML    (const std::wstring& wsPath,  const std::wstring& wsDirectory,  THTMLParameters*     pParameters = nullptr);
+	HRESULT ConvertMHT2Markdown (const std::wstring& wsPath,  const std::wstring& wsFinalFile,  TMarkdownParameters* pParameters = nullptr);
+
+	HRESULT ConvertMHT2OOXML    (const std::vector<std::wstring>& arPaths,  const std::wstring& wsDirectory,  THTMLParameters*     pParameters = nullptr);
+	HRESULT ConvertMHT2Markdown (const std::vector<std::wstring>& arPaths,  const std::wstring& wsFinalFile,  TMarkdownParameters* pParameters = nullptr);
 
 	NSCSS::CCssCalculator* GetCSSCalculator();
 private:
 	void Clear();
 	void InitOOXMLTags(THTMLParameters* pParametrs = nullptr);
-	void InitMDTags();
+	void InitMDTags(TMarkdownParameters* pParametrs = nullptr);
 
 	bool IsHTML();
 
-	bool HTML2XHTML(const std::wstring& wsFileName);
+	typedef std::function<bool(const std::wstring&, XmlUtils::CXmlLiteReader&)> Convert_Func;
 
-	HRESULT ConvertHTML(const std::wstring& wsPath, const std::wstring& wsDirectory);
+	HRESULT InitAndConvert2OOXML(const std::vector<std::wstring>& arPaths, const std::wstring& wsDirectory, Convert_Func Convertation, THTMLParameters* pParameters = nullptr);
+	HRESULT InitAndConvert2Markdown(const std::vector<std::wstring>& arPaths, const std::wstring& wsFinalFile, Convert_Func Convertation, TMarkdownParameters* pParameters = nullptr);
+
+	bool Convert(const std::wstring& wsPath, Convert_Func Convertation);
 
 	void ReadStyle();
 	void ReadStyle2();
@@ -65,7 +74,6 @@ private:
 
 	bool ReadText(std::vector<NSCSS::CNode>& arSelectors);
 
-	bool ReadAnchor(std::vector<NSCSS::CNode>& arSelectors);
 	bool ReadSVG(const std::vector<NSCSS::CNode>& arSelectors);
 	bool ReadEmptyTag(UINT unTag, const std::vector<NSCSS::CNode>& arSelectors);
 	bool ReadDefaultTag(UINT unTag, std::vector<NSCSS::CNode>& arSelectors);

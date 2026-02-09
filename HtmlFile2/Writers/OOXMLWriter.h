@@ -66,7 +66,13 @@ class COOXMLWriter : public IWriter
 		bool m_bInT;         // <w:t> открыт?
 		bool m_bWasPStyle;   // <w:pStyle> записан?
 		bool m_bWasSpace;    // Был пробел?
+
 		bool m_bInHyperlink; // <w:hyperlink> открыт?
+		std::wstring m_wsTooltip;
+		std::wstring m_wsHref;
+		std::wstring m_wsFootnote;
+		bool m_bIsFootnote;
+		bool m_bISCrossHyperlink;
 
 		XmlString *m_pCurrentDocument; //Текущее место записи
 		bool m_bRemoveCurrentDocument;
@@ -74,6 +80,7 @@ class COOXMLWriter : public IWriter
 		TState(XmlString *pCurrentDocument)
 			: m_bInP(false), m_bInR(false), m_bInT(false),
 			  m_bWasPStyle(false), m_bWasSpace(true), m_bInHyperlink(false),
+			  m_bIsFootnote(false), m_bISCrossHyperlink(false),
 			  m_pCurrentDocument(pCurrentDocument), m_bRemoveCurrentDocument(false)
 		{}
 
@@ -109,10 +116,7 @@ class COOXMLWriter : public IWriter
 
 	NSFonts::IApplicationFonts*          m_pFonts;     // Необходимо для оптимизации работы со шрифтами
 public:
-	COOXMLWriter();
-
-	void SetCSSCalculator(NSCSS::CCssCalculator* pCSSCalculator);
-	void SetHTMLParameters(THTMLParameters* pHTMLParameters);
+	COOXMLWriter(THTMLParameters* pHTMLParameters = nullptr, NSCSS::CCssCalculator* pCSSCalculator = nullptr);
 
 	void SetSrcDirectory (const std::wstring& wsPath);
 	void SetDstDirectory (const std::wstring& wsPath);
@@ -126,10 +130,14 @@ public:
 	bool OpenP();
 	bool OpenR();
 	bool OpenT();
+	void OpenHyperlink();
 
 	void CloseP();
 	void CloseR();
 	void CloseT();
+	void CloseHyperlink();
+
+	void PageBreak() override;
 
 	void BeginBlock() override;
 	void EndBlock(bool bAddBlock) override;
@@ -144,8 +152,11 @@ public:
 
 	void Break(const std::vector<NSCSS::CNode>& arSelectors);
 
-	void OpenCrossHyperlink(const std::wstring& wsRef, const std::vector<NSCSS::CNode>& arSelectors);
-	void OpenExternalHyperlink(const std::wstring& wsRef, const std::wstring& wsTooltip, const std::vector<NSCSS::CNode>& arSelectors);
+	void SetHyperlinkData(const std::wstring& wsRef, const std::wstring& wsTooltip, bool bIsCross, const std::wstring& wsFootnote, bool bIsFootnote);
+	void ClearHyperlinkData();
+
+	void OpenCrossHyperlink(const std::wstring& wsRef);
+	void OpenExternalHyperlink(const std::wstring& wsRef, const std::wstring& wsTooltip);
 	void CloseCrossHyperlink(const std::vector<NSCSS::CNode>& arSelectors, std::wstring wsFootnote, const std::wstring& wsRef);
 	void CloseExternalHyperlink();
 

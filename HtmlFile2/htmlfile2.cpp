@@ -5106,15 +5106,15 @@ HRESULT CHtmlFile2::ConvertHTML2Markdown(const std::wstring& wsPath, const std::
 	#endif
 }
 
-HRESULT CHtmlFile2::OpenMht(const std::wstring& sSrc, const std::wstring& sDst)
+HRESULT CHtmlFile2::ConvertMHT2OOXML(const std::wstring& wsPath, const std::wstring& wsDirectory, HTML::THTMLParameters* pParametrs)
 {
 	#ifdef USE_OLD_HTML_CONVERTER
 	if(!m_internal->m_oLightReader.IsValid())
-		if(!IsMhtFile(sSrc))
+		if(!IsMhtFile(wsPath))
 			return S_FALSE;
 
-	m_internal->m_sSrc = NSSystemPath::GetDirectoryName(sSrc);
-	m_internal->m_sDst = sDst;
+	m_internal->m_sSrc = NSSystemPath::GetDirectoryName(wsPath);
+	m_internal->m_sDst = sDirectory;
 	m_internal->CreateDocxEmpty(oParams);
 	m_internal->readStyle();
 
@@ -5128,22 +5128,37 @@ HRESULT CHtmlFile2::OpenMht(const std::wstring& sSrc, const std::wstring& sDst)
 	m_internal->write();
 	return S_OK;
 	#else
-	return S_FALSE;
+	if (nullptr == m_pReader)
+		return S_FALSE;
+
+	return m_pReader->ConvertMHT2OOXML(wsPath, wsDirectory, pParametrs);
 	#endif
 }
 
-HRESULT CHtmlFile2::OpenBatchHtml(const std::vector<std::wstring>& sSrc, const std::wstring& sDst)
+HRESULT CHtmlFile2::ConvertMHT2Markdown(const std::wstring& wsPath, const std::wstring& wsFinalFile, HTML::TMarkdownParameters* pParametrs)
 {
 	#ifdef USE_OLD_HTML_CONVERTER
-	m_internal->m_sDst = sDst;
+	return S_FALSE;
+	#else
+	if (nullptr == m_pReader)
+		return S_FALSE;
+
+	return m_pReader->ConvertMHT2Markdown(wsPath, wsFinalFile, pParametrs);
+	#endif
+}
+
+HRESULT CHtmlFile2::ConvertHTML2OOXML(const std::vector<std::wstring>& arPaths, const std::wstring& wsDirectory, HTML::THTMLParameters* pParametrs)
+{
+	#ifdef USE_OLD_HTML_CONVERTER
+	m_internal->m_sDst = wsDirectory;
 	m_internal->CreateDocxEmpty(oParams);
 	bool bFirst = true;
 
-	for(const std::wstring& sS : sSrc)
+	for(const std::wstring& sS : arPaths)
 	{
-#ifdef _DEBUG
+	#ifdef _DEBUG
 		std::wcout << NSFile::GetFileName(sS) << std::endl;
-#endif
+	#endif
 
 		m_internal->m_sSrc = NSSystemPath::GetDirectoryName(sS);
 		if(!IsHtmlFile(sS))
@@ -5171,8 +5186,48 @@ HRESULT CHtmlFile2::OpenBatchHtml(const std::vector<std::wstring>& sSrc, const s
 
 	m_internal->write();
 	return S_OK;
+	#else
+	if (nullptr == m_pReader)
+		return S_FALSE;
+
+	return m_pReader->ConvertHTML2OOXML(arPaths, wsDirectory, pParametrs);
 	#endif
+}
+
+HRESULT CHtmlFile2::ConvertHTML2Markdown(const std::vector<std::wstring>& arPaths, const std::wstring& wsFinalFile, HTML::TMarkdownParameters* pParametrs)
+{
+	#ifdef USE_OLD_HTML_CONVERTER
 	return S_FALSE;
+	#else
+	if (nullptr == m_pReader)
+		return S_FALSE;
+
+	return m_pReader->ConvertHTML2Markdown(arPaths, wsFinalFile, pParametrs);
+	#endif
+}
+
+HRESULT CHtmlFile2::ConvertMHT2OOXML(const std::vector<std::wstring>& arPaths, const std::wstring& wsDirectory, HTML::THTMLParameters* pParametrs)
+{
+	#ifdef USE_OLD_HTML_CONVERTER
+	return S_FALSE;
+	#else
+	if (nullptr == m_pReader)
+		return S_FALSE;
+
+	return m_pReader->ConvertMHT2OOXML(arPaths, wsDirectory, pParametrs);
+	#endif
+}
+
+HRESULT CHtmlFile2::ConvertMHT2Markdown(const std::vector<std::wstring>& arPaths, const std::wstring& wsFinalFile, HTML::TMarkdownParameters* pParametrs)
+{
+	#ifdef USE_OLD_HTML_CONVERTER
+	return S_FALSE;
+	#else
+	if (nullptr == m_pReader)
+		return S_FALSE;
+
+	return m_pReader->ConvertMHT2Markdown(arPaths, wsFinalFile, pParametrs);
+	#endif
 }
 
 #ifdef USE_OLD_HTML_CONVERTER

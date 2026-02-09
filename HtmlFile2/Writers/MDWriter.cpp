@@ -95,8 +95,10 @@ bool CMDWriter::WriteText(std::wstring wsText, const std::vector<NSCSS::CNode>& 
 }
 
 void CMDWriter::WriteEmptyParagraph(bool bVahish, bool bInP)
-{
-}
+{}
+
+void CMDWriter::PageBreak()
+{}
 
 void CMDWriter::BeginBlock()
 {

@@ -44,17 +44,14 @@ public:
     HRESULT ConvertHTML2OOXML   (const std::wstring& wsPath, const std::wstring& wsDirectory, HTML::THTMLParameters*     pParametrs = nullptr);
     HRESULT ConvertHTML2Markdown(const std::wstring& wsPath, const std::wstring& wsFinalFile, HTML::TMarkdownParameters* pParametrs = nullptr);
 
-    HRESULT ConvertMHT2OOXML    (const std::wstring& sPath,  const std::wstring& sDirectory,  HTML::THTMLParameters*     pParametrs = nullptr);
-    HRESULT ConvertMHT2Markdown (const std::wstring& sPath,  const std::wstring& sDirectory,  HTML::TMarkdownParameters* pParametrs = nullptr);
+    HRESULT ConvertMHT2OOXML    (const std::wstring& wsPath,  const std::wstring& wsDirectory,  HTML::THTMLParameters*     pParametrs = nullptr);
+    HRESULT ConvertMHT2Markdown (const std::wstring& wsPath,  const std::wstring& wsFinalFile,  HTML::TMarkdownParameters* pParametrs = nullptr);
 
     HRESULT ConvertHTML2OOXML   (const std::vector<std::wstring>& arPaths, const std::wstring& wsDirectory, HTML::THTMLParameters*     pParametrs = nullptr);
-    HRESULT ConvertHTML2Markdown(const std::vector<std::wstring>& arPaths, const std::wstring& wsDirectory, HTML::TMarkdownParameters* pParametrs = nullptr);
+    HRESULT ConvertHTML2Markdown(const std::vector<std::wstring>& arPaths, const std::wstring& wsFinalFile, HTML::TMarkdownParameters* pParametrs = nullptr);
 
     HRESULT ConvertMHT2OOXML    (const std::vector<std::wstring>& arPaths, const std::wstring& wsDirectory, HTML::THTMLParameters*     pParametrs = nullptr);
-    HRESULT ConvertMHT2Markdown (const std::vector<std::wstring>& arPaths, const std::wstring& wsDirectory, HTML::TMarkdownParameters* pParametrs = nullptr);
-
-    HRESULT OpenMht (const std::wstring& sPath, const std::wstring& sDirectory);
-    HRESULT OpenBatchHtml(const std::vector<std::wstring>& sPath, const std::wstring& sDirectory);
+    HRESULT ConvertMHT2Markdown (const std::vector<std::wstring>& arPaths, const std::wstring& wsFinalFile, HTML::TMarkdownParameters* pParametrs = nullptr);
 };
 
 #endif // _HTMLFILE2_HTMLFILE2_H

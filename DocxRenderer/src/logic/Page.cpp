@@ -277,6 +277,10 @@ namespace NSDocxRenderer
 			m_arShapes.push_back(shape);
 		}
 	}
+	bool CPage::IsCurrVectorClockwise() const
+	{
+		return m_oCurrVectorGraphics.IsClockwise();
+	}
 
 	void CPage::AddText(
 	        const PUINT pUnicodes,

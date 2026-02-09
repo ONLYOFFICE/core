@@ -68,6 +68,7 @@ namespace NSDocxRenderer
 		void PathEnd();
 		void PathClose();
 		void DrawPath(LONG lType, const std::shared_ptr<CImageInfo> pInfo);
+		bool IsCurrVectorClockwise() const;
 
 		void AddText(
 		        const PUINT pUnicodes,

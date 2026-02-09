@@ -982,17 +982,17 @@ namespace NSDocxRenderer
 		double first_height = pFirstCont->m_dBotWithDescent - pFirstCont->m_dTopWithAscent;
 		bool bIf1 = eVType == eVerticalCrossingType::vctCurrentAboveNext ||
 		        eVType == eVerticalCrossingType::vctCurrentInsideNext &&
-		        pSecondCont->m_dBot - pFirstCont->m_dBot > first_height * 0.2;
+		        pSecondCont->m_dBotWithDescent - pFirstCont->m_dBotWithDescent > first_height * 0.2;
 
 		bool bIf2 = eVType == eVerticalCrossingType::vctCurrentBelowNext;
 
 		bool bIf3 = (eHType == eHorizontalCrossingType::hctNoCrossingCurrentLeftOfNext ||
 		             eHType == eHorizontalCrossingType::hctCurrentLeftOfNext) &&
-		        fabs(pFirstCont->m_dRight - pSecondCont->m_dLeft) < c_dTHE_STRING_X_PRECISION_MM * 3;
+		        fabs(pFirstCont->m_dRight - pSecondCont->m_dLeft) < c_dTHE_STRING_X_PRECISION_MM;
 
 		bool bIf4 = (eHType == eHorizontalCrossingType::hctNoCrossingCurrentRightOfNext ||
 		             eHType == eHorizontalCrossingType::hctCurrentRightOfNext) &&
-		        fabs(pFirstCont->m_dLeft - pSecondCont->m_dRight) < c_dTHE_STRING_X_PRECISION_MM * 3;
+		        fabs(pFirstCont->m_dLeft - pSecondCont->m_dRight) < c_dTHE_STRING_X_PRECISION_MM;
 
 		//Размеры шрифта должны бать разными
         bool bIf5 = pFirstCont->m_pFontStyle->dFontSize * 0.8 > pSecondCont->m_pFontStyle->dFontSize;

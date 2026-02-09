@@ -1953,10 +1953,8 @@ namespace NSDocxRenderer
 
 				if (position.right && !position.left)
 					diff = line_with_first_left - curr_min_left;
-				else if (position.left || ar_indents[index])
+				else if (position.left || ar_indents[index] || position.center)
 					diff = curr_max_right - line_with_first_right;
-				else if (position.center)
-					continue;
 
 				if (diff <= 0)
 					continue;

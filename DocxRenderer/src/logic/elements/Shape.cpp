@@ -1311,8 +1311,8 @@ namespace NSDocxRenderer
 			{
 				oWriter.StartRecord(2);
 				oWriter.WriteBYTE(kBin_g_nodeAttributeStart);
-				oWriter.WriteBYTE(0); oWriter.AddInt(100);
-				oWriter.WriteBYTE(1); oWriter.AddInt(100);
+				oWriter.WriteBYTE(0); oWriter.AddInt(100 * 1000);
+				oWriter.WriteBYTE(1); oWriter.AddInt(100 * 1000);
 				oWriter.WriteBYTE(kBin_g_nodeAttributeEnd);
 				oWriter.EndRecord();
 			}

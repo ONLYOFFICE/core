@@ -308,9 +308,6 @@ namespace NSDocxRenderer
 			}
 		}
 	}
-	void CVectorGraphics::Reverse()
-	{
-	}
 	bool CVectorGraphics::IsClockwise() const
 	{
 		if (m_arData.empty())

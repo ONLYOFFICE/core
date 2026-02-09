@@ -906,7 +906,9 @@ namespace NSDocxRenderer
 								pNextLine->m_pLine = pCurrLine;
 							}
 						}
-						else if (!is_font_effect && pCurrCont->IsDuplicate(pNextCont.get(), eVType, eHType))
+						else if (!is_font_effect && pCurrCont->IsDuplicate(pNextCont.get(), eVType, eHType)
+								&& (fabs(pCurrCont->m_dLeft - pNextCont->m_dLeft) < c_dTHE_STRING_X_PRECISION_MM ||
+									fabs(pCurrCont->m_dRight - pNextCont->m_dRight) < c_dTHE_STRING_X_PRECISION_MM))
 						{
 							pNextCont = nullptr;
 							pCurrCont->m_iNumDuplicates++;

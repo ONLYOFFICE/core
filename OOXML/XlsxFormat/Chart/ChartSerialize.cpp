@@ -3018,6 +3018,17 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 					lnFmt.lineFormat = m_majorGridlines->m_spPr->ln->toXLS();
 				axs->m_AxisLine_Format.push_back(lnFmt);
 			}
+			if(m_minorGridlines != nullptr)
+			{
+				auto axisline = new XLS::AxisLine;
+				axisline->id = 2;
+				XLS::AXS::_axis_line_format lnFmt;
+				lnFmt.axisLine = XLS::BaseObjectPtr(axisline);
+
+				if(m_minorGridlines->m_spPr.IsInit() && m_minorGridlines->m_spPr->ln.IsInit())
+					lnFmt.lineFormat = m_minorGridlines->m_spPr->ln->toXLS();
+				axs->m_AxisLine_Format.push_back(lnFmt);
+			}
 			auto tickPtr = new XLS::Tick;
 			axs->m_Tick = XLS::BaseObjectPtr(tickPtr);
 			if(m_tickLblPos.IsInit())
@@ -3276,7 +3287,10 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			auto axis = new XLS::Axis;
 			auto axs = new XLS::AXS;
 			dvAxis->m_AXS = XLS::BaseObjectPtr(axs);
-			axis->wType = 1;
+			if(m_axPos.IsInit() && m_axPos->GetValue() == OOX::Spreadsheet::ST_AxPos::st_axposL)
+				axis->wType = 0;
+			else
+				axis->wType = 1;
 			dvAxis->m_Axis = XLS::BaseObjectPtr(axis);
 			auto valSerRange = new XLS::ValueRange;
 			valSerRange->fAutoMin = true;
@@ -3310,6 +3324,17 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 
 				if(m_majorGridlines->m_spPr.IsInit() && m_majorGridlines->m_spPr->ln.IsInit())
 					lnFmt.lineFormat = m_majorGridlines->m_spPr->ln->toXLS();
+				axs->m_AxisLine_Format.push_back(lnFmt);
+			}
+			if(m_minorGridlines != nullptr)
+			{
+				auto axisline = new XLS::AxisLine;
+				axisline->id = 2;
+				XLS::AXS::_axis_line_format lnFmt;
+				lnFmt.axisLine = XLS::BaseObjectPtr(axisline);
+
+				if(m_minorGridlines->m_spPr.IsInit() && m_minorGridlines->m_spPr->ln.IsInit())
+					lnFmt.lineFormat = m_minorGridlines->m_spPr->ln->toXLS();
 				axs->m_AxisLine_Format.push_back(lnFmt);
 			}
 			auto tickPtr = new XLS::Tick;
@@ -7565,7 +7590,7 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 					series->cValy = m_yVal->m_numRef->m_numCache->m_pt.size();
 				{
 					auto ai2 = new XLS::BRAI;
-					ai2->id = 1;
+					ai2->id = 2;
 					if(m_xVal->m_numRef->m_f.IsInit())
 					{
 						ai2->rt = 2;
@@ -7573,7 +7598,12 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 					}
 					seriesFormat->m_arAI.push_back(XLS::BaseObjectPtr(ai2));
 					auto ai3 = new XLS::BRAI;
-					ai3->id = 2;
+					ai3->id = 1;
+					if(m_yVal->m_numRef->m_f.IsInit())
+					{
+						ai3->rt = 2;
+						ai3->formula.parseStringFormula(m_yVal->m_numRef->m_f.get(), L"");
+					}
 					auto ai4 = new XLS::BRAI;
 					ai4->id = 3;
 					seriesFormat->m_arAI.push_back(XLS::BaseObjectPtr(ai3));

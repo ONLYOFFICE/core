@@ -31,7 +31,7 @@ namespace NSDocxRenderer
 		struct CPathCommand
 		{
 			ePathCommandType type;
-			std::list<Point> points;
+			std::vector<Point> points;
 		};
 
 		CVectorGraphics() noexcept;
@@ -79,6 +79,7 @@ namespace NSDocxRenderer
 		void Rotate(const double& rotation);
 		void Transform(const Aggplus::CMatrix& matrix);
 		void DrawOnRenderer(IRenderer* renderer) const noexcept;
+		bool IsClockwise() const;
 
 		static CVectorGraphics CalcBoolean(const CVectorGraphics& vg1, const CVectorGraphics& vg2, long clipType, long fillType = c_nWindingFillMode, bool isLuminosity = false);
 

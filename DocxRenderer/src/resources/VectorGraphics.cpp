@@ -195,7 +195,7 @@ namespace NSDocxRenderer
 		double x0 = m_arData.back().points.back().x;
 		double y0 = m_arData.back().points.back().y;
 
-		std::list<Point> points = {{x1, y1}, {x2, y2}, {x3, y3}};
+		std::vector<Point> points = {{x1, y1}, {x2, y2}, {x3, y3}};
 		ePathCommandType type = ePathCommandType::pctCurve;
 		m_arData.push_back({type, points});
 
@@ -307,6 +307,48 @@ namespace NSDocxRenderer
 				            points[2].x, points[2].y);
 			}
 		}
+	}
+	void CVectorGraphics::Reverse()
+	{
+	}
+	bool CVectorGraphics::IsClockwise() const
+	{
+		if (m_arData.empty())
+			return false;
+
+		double area = 0;
+		double last_x = 0;
+		double last_y = 0;
+		bool is_first = true;
+		for (const auto& command : m_arData)
+		{
+			if (is_first)
+			{
+				is_first = false;
+				last_x = command.points.back().x;
+				last_y = command.points.back().y;
+				continue;
+			}
+			if (command.type == ePathCommandType::pctClose)
+				break;
+
+			const auto& points = command.points;
+			if (command.type == ePathCommandType::pctCurve)
+			{
+				area += 3.0 * ((points[2].y - last_y) * (points[0].x + points[1].x)
+				              - (points[2].x - last_x) * (points[0].y + points[1].y)
+				              + points[0].y * (last_x - points[1].x)
+				              - points[0].x * (last_y - points[1].y)
+				              + points[2].y * (points[1].x + last_x / 3.0)
+				              - points[2].x * (points[1].y + last_y / 3.0)) / 20.0;
+			}
+			else
+				area += (points[0].y * last_x - points[0].x * last_y) / 2.0;
+
+			last_x = command.points.back().x;
+			last_y = command.points.back().y;
+		}
+		return area >= 0;
 	}
 
 	// ClipRegionTypeWinding = 0x0000;

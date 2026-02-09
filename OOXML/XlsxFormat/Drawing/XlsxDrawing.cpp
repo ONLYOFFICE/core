@@ -413,25 +413,31 @@ namespace OOX
 								}
 
 								if(ChartFormatsPtr->m_arAXISPARENT.size() < 2)
-								{
-										if(catAxId != -1 && !ChartFile->m_oChartSpace.m_chart->m_plotArea->m_Items1.empty())
+								{		for(auto axPose = 0; axPose < ChartFile->m_oChartSpace.m_chart->m_plotArea->m_ItemsElementName1.size(); axPose++)
 										{
-											auto ivAx = static_cast<CT_CatAx*>(ChartFile->m_oChartSpace.m_chart->m_plotArea->m_Items1.at(0));
-											if(ivAx->m_axId.IsInit() && ivAx->m_axId.get() == catAxId)
+											if(ChartFile->m_oChartSpace.m_chart->m_plotArea->m_ItemsElementName1[axPose] != nullptr && ChartFile->m_oChartSpace.m_chart->m_plotArea->m_Items1.size() > axPose)
 											{
-												axes->m_arAxes.push_back(ivAx->toXLS());
-											}
-										}
-										if(valAxId != -1 && !ChartFile->m_oChartSpace.m_chart->m_plotArea->m_Items1.empty())
-										{
-											auto dvAx = static_cast<CT_ValAx*>(ChartFile->m_oChartSpace.m_chart->m_plotArea->m_Items1.at(1));
-											if(dvAx->m_axId.IsInit() && dvAx->m_axId.get() == valAxId)
-											{
-												axes->m_arAxes.push_back(dvAx->toXLS());
+												auto AxType = *ChartFile->m_oChartSpace.m_chart->m_plotArea->m_ItemsElementName1[axPose];
+												switch (AxType)
+												{
+													case ItemsChoiceType6::itemschoicetype6CATAX:
+													{
+														auto ivAx = static_cast<CT_CatAx*>(ChartFile->m_oChartSpace.m_chart->m_plotArea->m_Items1.at(axPose));
+														axes->m_arAxes.push_back(ivAx->toXLS());
+														break;
+													}
+													case ItemsChoiceType6::itemschoicetype6VALAX:
+													{
+														auto dvAx = static_cast<CT_ValAx*>(ChartFile->m_oChartSpace.m_chart->m_plotArea->m_Items1.at(1));
+														axes->m_arAxes.push_back(dvAx->toXLS());
+														break;
+													}
+													default:
+													break;
+												}
 											}
 										}
 								}
-
 								if(ChartFile->m_oChartSpace.m_chart->m_legend != nullptr && !AxisParentUnion->m_arCRT.empty())
 								{
 									auto crtPtr = static_cast<XLS::CRT*>(AxisParentUnion->m_arCRT.back().get());

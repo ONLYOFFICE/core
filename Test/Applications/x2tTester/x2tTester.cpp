@@ -696,7 +696,8 @@ void Cx2tTester::Convert(const std::vector<std::wstring>& files, bool bNoDirecto
 		// setup csv & txt additional params
 		if(m_bIsFilenameCsvTxtParams
 		        || input_ext == L"txt"
-		        || input_ext == L"csv")
+		        || input_ext == L"csv"
+		        || input_ext == L"tsv")
 		{
 			std::wstring find_str = L"[cp";
 			size_t pos1 = input_filename.find(find_str);
@@ -713,7 +714,7 @@ void Cx2tTester::Convert(const std::vector<std::wstring>& files, bool bNoDirecto
 				break;
 			}
 
-		if(m_bIsFilenameCsvTxtParams || input_ext == L"csv")
+		if(m_bIsFilenameCsvTxtParams || input_ext == L"csv" || input_ext == L"tsv")
 		{
 			std::wstring find_str = L"[del%";
 			size_t pos1 = input_filename.find(find_str);

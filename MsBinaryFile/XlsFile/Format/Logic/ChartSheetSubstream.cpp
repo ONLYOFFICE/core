@@ -409,7 +409,7 @@ const bool ChartSheetSubstream::saveContent(BinProcessor& proc)
 {
 	auto globInfo = proc.getGlobalWorkbookInfo();
 	{
-		if(globInfo->sheets_info.size() > globInfo->current_sheet)
+		if(separate &&	globInfo->sheets_info.size() > globInfo->current_sheet)
 			globInfo->sheets_info.at(globInfo->current_sheet).StreamPos = proc.GetRecordPosition();
 
 		BOF bof;

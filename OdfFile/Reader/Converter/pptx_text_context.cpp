@@ -107,6 +107,11 @@ public:
 
 	void set_line_break(bool& bLineBreak);
 
+	void set_svg_height_width(const odf_types::length& svg_height,const odf_types::length& svg_width);
+
+	_CP_OPT(odf_types::length) get_svg_width();
+	_CP_OPT(odf_types::length) get_svg_height();
+
 	bool in_list_;
 	bool process_layouts_;
 
@@ -152,6 +157,8 @@ private:
     bool first_element_list_item_;
 
 	_CP_OPT(odf_types::length) last_run_font_size_;
+	_CP_OPT(odf_types::length) svg_heightVal;
+	_CP_OPT(odf_types::length) svg_widthVal;
     
     int new_list_style_number_;	// счетчик для нумерации имен созданных в процессе конвертации стилей
    
@@ -162,7 +169,6 @@ private:
 	std::wstring find_list_rename(const std::wstring & ListStyleName);
 	std::wstring current_list_style();
 ///////////////////////////
-
 	field_type field_type_;
 	std::wstringstream field_value_;
 
@@ -210,6 +216,7 @@ void pptx_text_context::Impl::start_paragraph(const std::wstring & styleName)
 		//}
 		//else/* (paragraph_style_name_ != styleName)*/
 		{
+			is_predump = true;
 			dump_paragraph();
 		}
 	}else
@@ -220,6 +227,7 @@ void pptx_text_context::Impl::start_paragraph(const std::wstring & styleName)
 	last_paragraph_style_name_	= paragraph_style_name_;
 	paragraph_style_name_		= styleName;
 	in_paragraph				= true;
+	is_predump = false;
 }
 
 void pptx_text_context::Impl::end_paragraph()
@@ -369,7 +377,18 @@ void pptx_text_context::Impl::ApplyListProperties(odf_reader::paragraph_format_p
 		else if(!propertiesOut.fo_margin_left_)
 			propertiesOut.fo_margin_left_ = odf_types::length(0, odf_types::length::pt);
 
-		propertiesOut.fo_text_indent_ = list_properties->text_min_label_width_;
+		if(list_properties->text_min_label_width_)
+		{
+			odf_types::length::unit tempTypeUnit = propertiesOut.fo_text_indent_ ? propertiesOut.fo_text_indent_->get_length().get_unit():list_properties->text_min_label_width_->get_unit();
+			double d_MinLabelWidth = (list_properties->text_min_label_width_->get_value_unit(tempTypeUnit) > 0 ? list_properties->text_min_label_width_->get_value_unit(tempTypeUnit): 0);
+			if(propertiesOut.fo_text_indent_)
+			{
+				double dNewIndent = propertiesOut.fo_text_indent_->get_length().get_value() + d_MinLabelWidth;
+				propertiesOut.fo_text_indent_ = odf_types::length(dNewIndent, tempTypeUnit);
+			}
+			else
+				propertiesOut.fo_text_indent_ = odf_types::length(d_MinLabelWidth,tempTypeUnit);
+		}
 
 		if (list_properties->fo_width_)
 		{
@@ -1041,6 +1060,21 @@ void pptx_text_context::set_line_break(bool& bLineBreak)
 	impl_->set_line_break(bLineBreak);
 }
 
+void pptx_text_context::set_svg_height_width(const odf_types::length &svg_height, const odf_types::length &svg_width)
+{
+	impl_->set_svg_height_width(svg_height,svg_width);
+}
+
+_CP_OPT(odf_types::length) pptx_text_context::get_svg_height()
+{
+	return impl_->get_svg_height();
+}
+
+_CP_OPT(odf_types::length) pptx_text_context::get_svg_width()
+{
+	return impl_->get_svg_width();
+}
+
 void pptx_text_context::Impl::set_predump(const bool& bPredump)
 {
 	is_predump = bPredump;
@@ -1060,6 +1094,22 @@ void pptx_text_context::Impl::seroing_predump()
 void pptx_text_context::Impl::set_line_break(bool& bLineBreak)
 {
 	is_line_break = bLineBreak;
+}
+
+void pptx_text_context::Impl::set_svg_height_width(const odf_types::length &svg_height, const odf_types::length &svg_width)
+{
+	svg_heightVal = svg_height;
+	svg_widthVal = svg_width;
+}
+
+_CP_OPT(odf_types::length) pptx_text_context::Impl::get_svg_height()
+{
+	return svg_heightVal;
+}
+
+_CP_OPT(odf_types::length) pptx_text_context::Impl::get_svg_width()
+{
+	return svg_widthVal;
 }
 
 }

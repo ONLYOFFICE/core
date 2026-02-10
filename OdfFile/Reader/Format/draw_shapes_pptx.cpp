@@ -182,6 +182,8 @@ void draw_shape::common_pptx_convert(oox::pptx_conversion_context & Context)
 		//set fill & stroke to text
 	}
 
+	Context.get_text_context().set_svg_height_width(svg_heightVal.get(),svg_widthVal.get());
+
 	for (size_t i = 0; i < content_.size(); i++)
     {
         content_[i]->pptx_convert(Context);

@@ -1220,7 +1220,10 @@ bool CPdfEditor::IncrementalUpdates()
 			pEncryptDict->SetRef(0, 0);
 			pEncryptDict->Fix();
 
-			pEncryptDict->SetPasswords(m_wsPassword, m_wsPassword);
+			std::wstring sPassword;
+			if (m_wsPassword)
+				sPassword = m_wsPassword;
+			pEncryptDict->SetPasswords(sPassword, sPassword);
 			if (!pEncryptDict->UpdateKey(nCryptAlgorithm))
 			{
 				pagesRefObj.free();
@@ -1538,7 +1541,10 @@ void CPdfEditor::Close()
 			int nCryptAlgorithm = encAlgorithm;
 
 			Object* pTrailerDict = xref->getTrailerDict();
-			pDoc->SetPasswords(m_wsPassword, m_wsPassword);
+			std::wstring sPassword;
+			if (m_wsPassword)
+				sPassword = m_wsPassword;
+			pDoc->SetPasswords(sPassword, sPassword);
 			PdfWriter::CEncryptDict* pEncryptDict = pDoc->GetEncrypt();
 
 			// Нужно получить словарь Encrypt БЕЗ дешифровки, поэтому времено отключаем encrypted в xref

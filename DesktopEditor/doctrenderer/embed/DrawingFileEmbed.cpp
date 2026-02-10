@@ -137,6 +137,10 @@ JSSmart<CJSValue> CDrawingFileEmbed::DestroyTextInfo()
 	m_pFile->DestroyTextInfo();
 	return CJSContext::createUndefined();
 }
+JSSmart<CJSValue> CDrawingFileEmbed::GetGIDByUnicode(JSSmart<CJSValue> sId)
+{
+	return WasmMemoryToJS(m_pFile->GetGIDByUnicode(sId->toStringW()));
+}
 JSSmart<CJSValue> CDrawingFileEmbed::IsNeedCMap()
 {
 	return CJSContext::createBool(false);
@@ -144,6 +148,11 @@ JSSmart<CJSValue> CDrawingFileEmbed::IsNeedCMap()
 JSSmart<CJSValue> CDrawingFileEmbed::ScanPage(JSSmart<CJSValue> nPageIndex, JSSmart<CJSValue> mode)
 {
 	return WasmMemoryToJS(m_pFile->ScanPage(nPageIndex->toInt32(), mode->toInt32()));
+}
+JSSmart<CJSValue> CDrawingFileEmbed::SetScanPageFonts(JSSmart<CJSValue> nPageIndex)
+{
+	m_pFile->SetScanPageFonts(nPageIndex->toInt32());
+	return CJSContext::createUndefined();
 }
 
 JSSmart<CJSValue> CDrawingFileEmbed::GetImageBase64(JSSmart<CJSValue> rId)
@@ -241,6 +250,17 @@ JSSmart<CJSValue> CDrawingFileEmbed::UndoRedact()
 	if (m_pFile)
 		return CJSContext::createBool(m_pFile->UndoRedact());
 	return CJSContext::createBool(false);
+}
+
+JSSmart<CJSValue> CDrawingFileEmbed::CheckOwnerPassword(JSSmart<CJSValue> sPassword)
+{
+	std::wstring wsPassword = sPassword->isString() ? sPassword->toStringW() : L"";
+	bool bResult = m_pFile->CheckOwnerPassword(sPassword->isString() ? wsPassword.c_str() : NULL);
+	return CJSContext::createBool(bResult);
+}
+JSSmart<CJSValue> CDrawingFileEmbed::CheckPerm(JSSmart<CJSValue> nPerm)
+{
+	return CJSContext::createBool(m_pFile->CheckPerm(nPerm->toInt32()));
 }
 
 bool EmbedDrawingFile(JSSmart<NSJSBase::CJSContext>& context, IOfficeDrawingFile* pFile)

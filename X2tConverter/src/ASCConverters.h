@@ -202,6 +202,7 @@ namespace NExtractTools
 
 	// mht
 	DECLARE_CONVERT_FUNC(mht2docx_dir);
+	DECLARE_CONVERT_FUNC(mht2md);
 
 	// epub
 	DECLARE_CONVERT_FUNC(epub2docx_dir);

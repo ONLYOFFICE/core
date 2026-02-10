@@ -14,8 +14,8 @@
 #include "Writers/MDWriter.h"
 #include "Tags/MDTags.h"
 
-#include "../../Common/3dParty/html/gumbo-parser/src/gumbo.h"
-#include "../src/StringFinder.h"
+#include "../Common/3dParty/html/gumbo-parser/src/gumbo.h"
+#include "src/StringFinder.h"
 
 #include <boost/tuple/tuple.hpp>
 

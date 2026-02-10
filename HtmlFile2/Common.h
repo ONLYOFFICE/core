@@ -2,7 +2,7 @@
 #define COMMON_H
 
 #include <string>
-#include "../../DesktopEditor/common/StringBuilder.h"
+#include "../DesktopEditor/common/StringBuilder.h"
 
 namespace HTML
 {

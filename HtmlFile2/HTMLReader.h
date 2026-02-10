@@ -1,6 +1,8 @@
 #ifndef HTMLREADER_H
 #define HTMLREADER_H
 
+#include <unordered_map>
+
 #include "../Common/3dParty/html/css/src/CCssCalculator.h"
 #include "../DesktopEditor/xml/include/xmlutils.h"
 

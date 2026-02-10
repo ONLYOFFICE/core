@@ -23,7 +23,7 @@ void CMDWriter::End(const std::wstring& wsDst)
 {
 	NSFile::CFileBinary oDocument;
 
-	if (!oDocument.CreateFileW(L"result.md"))
+	if (!oDocument.CreateFileW(wsDst))
 		return;
 
 	oDocument.WriteStringUTF8(m_oDocument.GetData());

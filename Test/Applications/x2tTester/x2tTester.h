@@ -156,6 +156,7 @@ private:
 
 	std::wstring m_defaultCsvTxtEndcoding;
 	std::wstring m_defaultCsvDelimiter;
+	std::wstring m_defaultTsvDelimiter;
 
 
 	unsigned long m_timeout;

@@ -602,6 +602,12 @@ public:
 		std::wstring sFontName = UTF8_TO_U(sPathA);
 		return ((CPdfFile*)m_pFile)->GetGIDByUnicode(sFontName);
 	}
+	BYTE* GetGIDByUnicode(const std::wstring& wsPathA)
+	{
+		if (m_nType != 0)
+			return NULL;
+		return ((CPdfFile*)m_pFile)->GetGIDByUnicode(wsPathA);
+	}
 
 	std::wstring GetFontBinaryNative(const std::wstring& sName)
 	{

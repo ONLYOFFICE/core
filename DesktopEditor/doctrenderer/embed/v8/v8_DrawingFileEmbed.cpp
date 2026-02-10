@@ -26,8 +26,10 @@ namespace NSDrawingFileEmbed
 	FUNCTION_WRAPPER_V8_1(_GetFontBinary, GetFontBinary)
 	FUNCTION_WRAPPER_V8_1(_GetGlyphs, GetGlyphs)
 	FUNCTION_WRAPPER_V8_0(_DestroyTextInfo, DestroyTextInfo)
+	FUNCTION_WRAPPER_V8_1(_GetGIDByUnicode, GetGIDByUnicode)
 	FUNCTION_WRAPPER_V8_0(_IsNeedCMap, IsNeedCMap)
 	FUNCTION_WRAPPER_V8_2(_ScanPage, ScanPage)
+	FUNCTION_WRAPPER_V8_1(_SetScanPageFonts, SetScanPageFonts)
 	FUNCTION_WRAPPER_V8_1(_GetImageBase64, GetImageBase64)
 	FUNCTION_WRAPPER_V8_1(_FreeWasmData, FreeWasmData)
 	FUNCTION_WRAPPER_V8_2(_SplitPages, SplitPages)
@@ -35,6 +37,8 @@ namespace NSDrawingFileEmbed
 	FUNCTION_WRAPPER_V8_0(_UnmergePages, UnmergePages)
 	FUNCTION_WRAPPER_V8_3(_RedactPage, RedactPage)
 	FUNCTION_WRAPPER_V8_0(_UndoRedact, UndoRedact)
+	FUNCTION_WRAPPER_V8_1(_CheckOwnerPassword, CheckOwnerPassword)
+	FUNCTION_WRAPPER_V8_1(_CheckPerm, CheckPerm)
 
 	v8::Handle<v8::ObjectTemplate> CreateTemplate(v8::Isolate* isolate)
 	{
@@ -60,8 +64,10 @@ namespace NSDrawingFileEmbed
 		NSV8Objects::Template_Set(result, "GetFontBinary",	_GetFontBinary);
 		NSV8Objects::Template_Set(result, "GetGlyphs",	_GetGlyphs);
 		NSV8Objects::Template_Set(result, "DestroyTextInfo",	_DestroyTextInfo);
+		NSV8Objects::Template_Set(result, "GetGIDByUnicode",	_GetGIDByUnicode);
 		NSV8Objects::Template_Set(result, "IsNeedCMap",	_IsNeedCMap);
 		NSV8Objects::Template_Set(result, "ScanPage",	_ScanPage);
+		NSV8Objects::Template_Set(result, "SetScanPageFonts",	_SetScanPageFonts);
 		NSV8Objects::Template_Set(result, "GetImageBase64",	_GetImageBase64);
 		NSV8Objects::Template_Set(result, "FreeWasmData",	_FreeWasmData);
 		NSV8Objects::Template_Set(result, "SplitPages",	_SplitPages);
@@ -69,6 +75,8 @@ namespace NSDrawingFileEmbed
 		NSV8Objects::Template_Set(result, "UnmergePages",	_UnmergePages);
 		NSV8Objects::Template_Set(result, "RedactPage",	_RedactPage);
 		NSV8Objects::Template_Set(result, "UndoRedact",	_UndoRedact);
+		NSV8Objects::Template_Set(result, "CheckOwnerPassword",	_CheckOwnerPassword);
+		NSV8Objects::Template_Set(result, "CheckPerm",	_CheckPerm);
 
 		return handle_scope.Escape(result);
 	}

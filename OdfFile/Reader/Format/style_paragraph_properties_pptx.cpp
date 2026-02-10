@@ -287,10 +287,11 @@ void paragraph_format_properties::pptx_convert(oox::pptx_conversion_context & Co
 		_CP_OPT(odf_types::length) svg_heightValue = Context.get_text_context().get_svg_height();
 		_CP_OPT(odf_types::length) svg_widthValue = Context.get_text_context().get_svg_width();
 
-		std::wstring ws_svg_height,ws_svg_width;
-
-		ws_svg_height = std::to_wstring((int)(0.5 + 1. * svg_heightValue->get_value_unit(length::emu)));
-        ws_svg_width = std::to_wstring((int)(0.5 + 1. * svg_widthValue->get_value_unit(length::emu)));
+		std::wstring ws_svg_height(L""),ws_svg_width(L"");
+		if(svg_heightValue)
+			ws_svg_height = std::to_wstring((int)(0.5 + 1. * svg_heightValue->get_value_unit(length::emu)));
+		if(svg_widthValue)
+			ws_svg_width = std::to_wstring((int)(0.5 + 1. * svg_widthValue->get_value_unit(length::emu)));
 
 		if(!ws_svg_width.empty() && !w_left.empty())
 		{

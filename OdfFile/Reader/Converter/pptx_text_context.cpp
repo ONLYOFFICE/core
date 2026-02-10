@@ -107,7 +107,7 @@ public:
 
 	void set_line_break(bool& bLineBreak);
 
-	void set_svg_height_width(odf_types::length svg_height,odf_types::length svg_width);
+	void set_svg_height_width(const odf_types::length& svg_height,const odf_types::length& svg_width);
 
 	_CP_OPT(odf_types::length) get_svg_width();
 	_CP_OPT(odf_types::length) get_svg_height();
@@ -377,15 +377,18 @@ void pptx_text_context::Impl::ApplyListProperties(odf_reader::paragraph_format_p
 		else if(!propertiesOut.fo_margin_left_)
 			propertiesOut.fo_margin_left_ = odf_types::length(0, odf_types::length::pt);
 
-		if(propertiesOut.fo_text_indent_ && list_properties->text_min_label_width_)
+		if(list_properties->text_min_label_width_)
 		{
-			odf_types::length::unit tempTypeUnit = propertiesOut.fo_text_indent_->get_length().get_unit();
-			double dNewIndent = propertiesOut.fo_text_indent_->get_length().get_value();
-			dNewIndent += list_properties->text_min_label_width_->get_value_unit(tempTypeUnit);
-			propertiesOut.fo_text_indent_ = odf_types::length(dNewIndent, tempTypeUnit);
+			odf_types::length::unit tempTypeUnit = propertiesOut.fo_text_indent_ ? propertiesOut.fo_text_indent_->get_length().get_unit():list_properties->text_min_label_width_->get_unit();
+			double d_MinLabelWidth = (list_properties->text_min_label_width_->get_value_unit(tempTypeUnit) > 0 ? list_properties->text_min_label_width_->get_value_unit(tempTypeUnit): 0);
+			if(propertiesOut.fo_text_indent_)
+			{
+				double dNewIndent = propertiesOut.fo_text_indent_->get_length().get_value() + d_MinLabelWidth;
+				propertiesOut.fo_text_indent_ = odf_types::length(dNewIndent, tempTypeUnit);
+			}
+			else
+				propertiesOut.fo_text_indent_ = odf_types::length(d_MinLabelWidth,tempTypeUnit);
 		}
-		else if(list_properties->text_min_label_width_)
-			propertiesOut.fo_text_indent_ = list_properties->text_min_label_width_;
 
 		if (list_properties->fo_width_)
 		{
@@ -1057,7 +1060,7 @@ void pptx_text_context::set_line_break(bool& bLineBreak)
 	impl_->set_line_break(bLineBreak);
 }
 
-void pptx_text_context::set_svg_height_width(odf_types::length svg_height,odf_types::length svg_width)
+void pptx_text_context::set_svg_height_width(const odf_types::length &svg_height, const odf_types::length &svg_width)
 {
 	impl_->set_svg_height_width(svg_height,svg_width);
 }
@@ -1093,7 +1096,7 @@ void pptx_text_context::Impl::set_line_break(bool& bLineBreak)
 	is_line_break = bLineBreak;
 }
 
-void pptx_text_context::Impl::set_svg_height_width(odf_types::length svg_height,odf_types::length svg_width)
+void pptx_text_context::Impl::set_svg_height_width(const odf_types::length &svg_height, const odf_types::length &svg_width)
 {
 	svg_heightVal = svg_height;
 	svg_widthVal = svg_width;

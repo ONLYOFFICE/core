@@ -268,6 +268,7 @@ CFormatsList CFormatsList::GetOutputExts()
 	list.m_documents.push_back(L"ott");
 	list.m_documents.push_back(L"rtf");
 	list.m_documents.push_back(L"txt");
+	list.m_documents.push_back(L"md");
 
 	list.m_presentations.push_back(L"pptt");
 	list.m_presentations.push_back(L"odp");
@@ -326,6 +327,7 @@ Cx2tTester::Cx2tTester(const std::wstring& configPath)
 	m_bConvertBeforeExtract = false;
 
 	m_defaultCsvDelimiter = L";";
+	m_defaultTsvDelimiter = L"\t";
 	m_defaultCsvTxtEndcoding = L"UTF-8";
 	m_inputFormatsList = CFormatsList::GetDefaultExts();
 	m_outputFormatsList = CFormatsList::GetOutputExts();
@@ -691,7 +693,10 @@ void Cx2tTester::Convert(const std::vector<std::wstring>& files, bool bNoDirecto
 			NSDirectory::CreateDirectories(output_files_directory);
 
 		std::wstring csvTxtEncodingS = m_defaultCsvTxtEndcoding;
-		std::wstring csvDelimiter = m_defaultCsvDelimiter;
+		std::wstring delimiter = m_defaultCsvDelimiter;
+		if (input_ext == L"tsv")
+			delimiter = m_defaultTsvDelimiter;
+
 
 		// setup csv & txt additional params
 		if(m_bIsFilenameCsvTxtParams
@@ -720,7 +725,7 @@ void Cx2tTester::Convert(const std::vector<std::wstring>& files, bool bNoDirecto
 			size_t pos1 = input_filename.find(find_str);
 			size_t pos2 = input_filename.find(L"]", pos1 + 1);
 			if(pos1 != std::wstring::npos && pos2 != std::wstring::npos)
-				csvDelimiter = (wchar_t)std::stoi(input_filename.substr(pos1 + find_str.size(), pos2 - pos1 - find_str.size()), nullptr, 16);
+				delimiter = (wchar_t)std::stoi(input_filename.substr(pos1 + find_str.size(), pos2 - pos1 - find_str.size()), nullptr, 16);
 		}
 
 		std::wstring password;
@@ -756,7 +761,7 @@ void Cx2tTester::Convert(const std::vector<std::wstring>& files, bool bNoDirecto
 		converter->SetTrough(bTrough);
 		converter->SetXmlErrorsDirectory(m_errorsXmlDirectory);
 		converter->SetCsvTxtEncoding(csvTxtEncoding);
-		converter->SetCsvDelimiter(csvDelimiter);
+		converter->SetCsvDelimiter(delimiter);
 		converter->SetPassword(password);
 		converter->SetTimeout(m_timeout);
 		converter->SetFilesCount(files.size(), i + 1);
@@ -1067,7 +1072,7 @@ DWORD CConverter::ThreadProc()
 		}
 
 		// csv & txt needs encoding param
-		if(m_inputExt == L"txt" || m_inputExt == L"csv")
+		if(m_inputExt == L"txt" || m_inputExt == L"csv" || m_inputExt == L"tsv")
 		{
 			builder.WriteString(L"<m_nCsvTxtEncoding>");
 			builder.WriteEncodeXmlString(std::to_wstring(m_csvTxtEncoding));
@@ -1075,7 +1080,7 @@ DWORD CConverter::ThreadProc()
 		}
 
 		// csv needs delimiter param
-		if(m_inputExt == L"csv")
+		if(m_inputExt == L"csv" || m_inputExt == L"tsv")
 		{
 			builder.WriteString(L"<m_nCsvDelimiterChar>");
 			builder.WriteEncodeXmlString(m_csvDelimiter);

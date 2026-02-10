@@ -231,6 +231,7 @@ CFormatsList CFormatsList::GetDefaultExts()
 	list.m_spreadsheets.push_back(L"ods");
 	list.m_spreadsheets.push_back(L"ots");
 	list.m_spreadsheets.push_back(L"sxc");
+	list.m_spreadsheets.push_back(L"tsv");
 	list.m_spreadsheets.push_back(L"xls");
 	list.m_spreadsheets.push_back(L"xlsb");
 	list.m_spreadsheets.push_back(L"xlsm");
@@ -282,6 +283,7 @@ CFormatsList CFormatsList::GetOutputExts()
 	list.m_spreadsheets.push_back(L"csv");
 	list.m_spreadsheets.push_back(L"ods");
 	list.m_spreadsheets.push_back(L"ots");
+	list.m_spreadsheets.push_back(L"tsv");
 	list.m_spreadsheets.push_back(L"xlsb");
 	list.m_spreadsheets.push_back(L"xlsm");
 	list.m_spreadsheets.push_back(L"xlsx");

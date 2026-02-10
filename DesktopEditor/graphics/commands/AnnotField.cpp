@@ -70,7 +70,7 @@ CAnnotFieldInfo::CActionFieldPr* ReadAction(NSOnlineOfficeBinToPdf::CBufferReade
 		case 6:
 		case 7:
 		{
-			pRes->nFlags = pReader->ReadByte();
+			pRes->nFlags = pReader->ReadInt();
 			if (pRes->nFlags & (1 << 0))
 				pRes->dD[0] = pReader->ReadDouble();
 			if (pRes->nFlags & (1 << 1))

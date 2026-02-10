@@ -429,7 +429,7 @@ function readAction(reader, rec, readDoubleFunc, readStringFunc)
 			case 6:
 			case 7:
 			{
-				let nFlag = reader.readByte();
+				let nFlag = reader.readInt();
 				if (nFlag & (1 << 0))
 					rec["left"] = readDoubleFunc.call(reader);
 				if (nFlag & (1 << 1))

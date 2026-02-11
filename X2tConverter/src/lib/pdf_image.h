@@ -43,23 +43,65 @@
 #include "../../../OfficeUtils/src/ZipFolder.h"
 
 #include "common.h"
+#include <algorithm>
 
 namespace NExtractTools
 {
+	static bool ParseByteRange(const BYTE* pData, DWORD dwLength, DWORD outRange[4])
+	{
+		const BYTE pPattern[] = "ByteRange";
+		const size_t nPatternLen = 9;
+
+		const BYTE* it = std::find_end(pData, pData + dwLength, pPattern, pPattern + nPatternLen);
+		if (it == pData + dwLength)
+			return false;
+
+		it += nPatternLen;
+
+		while (it < pData + dwLength && *it != '[')
+		{
+			if (*it != ' ' && *it != '\t' && *it != '\r' && *it != '\n')
+				return false;
+			++it;
+		}
+		if (it >= pData + dwLength)
+			return false;
+
+		++it;
+
+		for (int i = 0; i < 4; ++i)
+		{
+			while (it < pData + dwLength && (*it == ' ' || *it == '\t'))
+				++it;
+			if (it >= pData + dwLength)
+				return false;
+
+			if (*it < '0' || *it > '9')
+				return false;
+
+			DWORD nValue = 0;
+			while (it < pData + dwLength && *it >= '0' && *it <= '9')
+			{
+				nValue = nValue * 10 + (*it - '0');
+				++it;
+			}
+			outRange[i] = nValue;
+		}
+
+		while (it < pData + dwLength && (*it == ' ' || *it == '\t'))
+			++it;
+		if (it >= pData + dwLength || *it != ']')
+			return false;
+
+		return true;
+	}
 	static int pdfSign(const std::wstring& file, NSFonts::IApplicationFonts* fonts, InputParams& params, ConvertParams& convertParams)
 	{
-		ICertificate* certificate = NSSign::loadCertificate(params);
-		if (!certificate)
-			return 1;
-
-		std::wstring pdfTemp = combinePath(convertParams.m_sTempDir, L"pdf_sign.pdf");
-		NSFile::CFileBinary::Copy(file, pdfTemp);
-
 		CPdfFile pdfFile(fonts);
 		pdfFile.SetTempDirectory(convertParams.m_sTempDir);
 		std::wstring password = params.getSavePassword();
 
-		if (!pdfFile.LoadFromFile(pdfTemp, L"", password.c_str(), password.c_str()))
+		if (!pdfFile.LoadFromFile(file, L"", password.c_str(), password.c_str()))
 			return 2;
 
 		if (!pdfFile.EditPdf(file))
@@ -71,27 +113,44 @@ namespace NExtractTools
 		pdfFile.Sign(0, 0, 0, 0, L"");
 		pdfFile.Close();
 
-		BYTE* pDataToSign = NULL;
-		DWORD dwDataLength = 0;
-		if (!pdfFile.PrepareSignature(&pDataToSign, dwDataLength))
-		{
-			RELEASEARRAYOBJECTS(pDataToSign);
+		if (!pdfFile.PrepareSignature(file))
 			return 2;
-		}
+
+		return 0;
+
+		// Below is an example of parsing and signing
+
+		BYTE* pDataFile = NULL;
+		DWORD dwDataLength = 0;
+
+		NSFile::CFileBinary::ReadAllBytes(file, &pDataFile, dwDataLength);
+
+		DWORD aByteRange[4] = {0};
+		if (!ParseByteRange(pDataFile, dwDataLength, aByteRange))
+			return 2;
+		if (aByteRange[0] + aByteRange[1] > dwDataLength || aByteRange[2] + aByteRange[3] > dwDataLength)
+			return 2;
+
+		DWORD dwDataSignLength = aByteRange[1] + aByteRange[3];
+		BYTE* pDataToSign = new BYTE[dwDataSignLength];
+		memcpy(pDataToSign, pDataFile + aByteRange[0], aByteRange[1]);
+		memcpy(pDataToSign + aByteRange[1], pDataFile + aByteRange[2], aByteRange[3]);
+		RELEASEARRAYOBJECTS(pDataFile);
+
+		ICertificate* certificate = NSSign::loadCertificate(params);
+		if (!certificate)
+			return 1;
 
 		BYTE* pDatatoWrite = NULL;
 		unsigned int dwLenDatatoWrite = 0;
-		certificate->SignPKCS7(pDataToSign, dwDataLength, pDatatoWrite, dwLenDatatoWrite);
+		certificate->SignPKCS7(pDataToSign, dwDataSignLength, pDatatoWrite, dwLenDatatoWrite);
 		RELEASEARRAYOBJECTS(pDataToSign);
 
-		if (!pdfFile.FinalizeSignature(pDatatoWrite, dwLenDatatoWrite))
-		{
-			RELEASEARRAYOBJECTS(pDatatoWrite);
-			return 2;
-		}
+		pdfFile.FinalizeSignature(pDatatoWrite, dwLenDatatoWrite);
 
 		RELEASEARRAYOBJECTS(pDatatoWrite);
 		RELEASEOBJECT(certificate);
+
 		return 0;
 	}
 }
@@ -129,7 +188,7 @@ namespace NExtractTools
 			nRet = S_OK == pdfWriter.OnlineWordToPdf(sFrom, sTo, &oBufferParams) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
 		}
 
-		if (0 == nRet)
+		if (0 == nRet && params.getSigningKeyStorePath() == L"_placeholder_")
 		{
 			pdfSign(sTo, pApplicationFonts, params, convertParams);
 		}
@@ -304,7 +363,7 @@ namespace NExtractTools
 			int nReg = (convertParams.m_bIsPaid == false) ? 0 : 1;
 			nRes = (S_OK == pdfWriter.OnlineWordToPdfFromBinary(sPdfBinFile, sTo, &oBufferParams)) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
 
-			if (0 == nRes)
+			if (0 == nRes && params.getSigningKeyStorePath() == L"_placeholder_")
 			{
 				pdfSign(sTo, pApplicationFonts, params, convertParams);
 			}
@@ -1107,7 +1166,7 @@ namespace NExtractTools
 				{
 					nRes = S_OK == pdfWriter.SaveToFile(sTo) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
 
-					if (0 == nRes)
+					if (0 == nRes && params.getSigningKeyStorePath() == L"_placeholder_")
 					{
 						pdfSign(sTo, pApplicationFonts, params, convertParams);
 					}

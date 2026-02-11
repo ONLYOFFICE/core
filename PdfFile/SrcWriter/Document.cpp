@@ -1963,19 +1963,15 @@ namespace PdfWriter
 	{
 		m_vSignatures.push_back(new TSignatureInfo(oRect, m_pCurPage ? m_pCurPage : m_pPageTree->GetPage(0), pImage));
 	}
-	bool CDocument::PrepareSignature(BYTE** pDataToSign, DWORD& dwDataLength)
+	bool CDocument::PrepareSignature(const std::wstring& wsPath)
 	{
 		// Сначала нужно сохранить основной файл
 		// Это должно быть сделано в AddToFile или SaveToFile ПЕРЕД вызовом этого метода
 
-		if (m_vSignatures.empty())
+		if (m_vSignatures.empty() || wsPath.empty())
 			return false;
 
 		TSignatureInfo* pSI = m_vSignatures[0];
-
-		std::wstring wsPath = pSI->wsPath;
-		if (wsPath.empty())
-			return false;
 
 		unsigned int nSizeXRef = pSI->nSizeXRef;
 		bool bNeedStreamXRef = pSI->bNeedStreamXRef;
@@ -2059,7 +2055,7 @@ namespace PdfWriter
 			pSI->pXref = pXref;
 		}
 
-		pField->GetSignatureDict()->WriteToStream(pStream, pStream->Size(), pDataToSign, dwDataLength);
+		pField->GetSignatureDict()->WriteToStream(pStream, pStream->Size());
 
 		// Восстанавливаем XRef
 		m_pXref = pXrefBefore;

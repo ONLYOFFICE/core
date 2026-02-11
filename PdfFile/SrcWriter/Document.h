@@ -198,7 +198,7 @@ namespace PdfWriter
 		void              AddObject(CObjectBase* pObj);
 		bool              MovePage(int nPageIndex, int nPos);
 		void              Sign(const TRect& oRect, CImageDict* pImage);
-		bool              PrepareSignature(BYTE** pDataToSign, DWORD& dwDataLength);
+		bool              PrepareSignature(const std::wstring& wsPath);
 		bool              FinalizeSignature(BYTE* pSignedData, DWORD dwDataLength);
 		bool              EditAnnot (CXref* pXref, CAnnotation* pAnnot,  int nID);
 		void              AddParent(int nID, CDictObject* pParent);

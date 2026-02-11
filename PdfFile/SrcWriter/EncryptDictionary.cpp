@@ -259,7 +259,7 @@ namespace PdfWriter
 			}
 		}
 	}
-	void CSignatureDict::WriteToStream(CStream* pStream, int nFileEnd, BYTE** pDataForSignature, DWORD& dwLenDataForSignature)
+	void CSignatureDict::WriteToStream(CStream* pStream, int nFileEnd)
     {
         // Запись ByteRange
         if (m_nByteRangeBegin > 0 && m_nByteRangeEnd > 0 && m_nByteRangeBegin < m_nByteRangeEnd && m_nByteRangeEnd < nFileEnd)
@@ -290,32 +290,6 @@ namespace PdfWriter
                 }
             }
             RELEASEOBJECT(pByteRange);
-        }
-        // Запись Contents
-		if (m_nLen1 > 0 && m_nOffset2 > 0 && m_nLen1 < m_nOffset2 && m_nOffset2 < nFileEnd)
-        {
-			dwLenDataForSignature = m_nLen1 + nFileEnd - m_nOffset2;
-			*pDataForSignature = new BYTE[dwLenDataForSignature];
-			if (!*pDataForSignature)
-                return;
-
-            pStream->Seek(0, EWhenceMode::SeekSet);
-            unsigned int dwLenReadData = m_nLen1;
-			pStream->Read(*pDataForSignature, &dwLenReadData);
-            if ((int)dwLenReadData != m_nLen1)
-            {
-				RELEASEARRAYOBJECTS(*pDataForSignature);
-                return;
-            }
-
-            pStream->Seek(m_nOffset2, EWhenceMode::SeekSet);
-			dwLenReadData = nFileEnd - m_nOffset2;
-			pStream->Read(*pDataForSignature + m_nLen1, &dwLenReadData);
-			if ((int)dwLenReadData != nFileEnd - m_nOffset2)
-            {
-				RELEASEARRAYOBJECTS(*pDataForSignature);
-                return;
-            }
         }
     }
 	bool CSignatureDict::FinalizeSignature(CStream* pStream, BYTE* pSignedData, DWORD dwDataLength)

@@ -3273,11 +3273,11 @@ void CPdfWriter::Sign(const double& dX, const double& dY, const double& dW, cons
 
 	m_pDocument->Sign(PdfWriter::TRect(MM_2_PT(dX), m_pPage->GetHeight() - MM_2_PT(dY), MM_2_PT(dX + dW), m_pPage->GetHeight() - MM_2_PT(dY + dH)), pImage);
 }
-bool CPdfWriter::PrepareSignature(BYTE** pDataToSign, DWORD& dwDataLength)
+bool CPdfWriter::PrepareSignature(const std::wstring& wsPath)
 {
 	if (!m_pDocument)
 		return false;
-	return m_pDocument->PrepareSignature(pDataToSign, dwDataLength);
+	return m_pDocument->PrepareSignature(wsPath);
 }
 bool CPdfWriter::FinalizeSignature(BYTE* pSignedData, DWORD dwDataLength)
 {

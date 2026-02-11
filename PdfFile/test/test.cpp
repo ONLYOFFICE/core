@@ -40,6 +40,8 @@
 #include "../../DjVuFile/DjVu.h"
 #include "../PdfFile.h"
 
+#include <algorithm>
+
 class CPdfFileTest : public testing::Test
 {
 protected:
@@ -524,7 +526,7 @@ TEST_F(CPdfFileTest, EditPdf)
 
 TEST_F(CPdfFileTest, EditPdfFromBase64)
 {
-	//GTEST_SKIP();
+	GTEST_SKIP();
 
 	NSFonts::NSApplicationFontStream::SetGlobalMemoryStorage(NSFonts::NSApplicationFontStream::CreateDefaultGlobalMemoryStorage());
 
@@ -600,9 +602,58 @@ TEST_F(CPdfFileTest, EditPdfFromBin)
 	pdfFile->Close();
 }
 
+bool ParseByteRange(const BYTE* pData, DWORD dwLength, DWORD outRange[4])
+{
+	const BYTE pPattern[] = "ByteRange";
+	const size_t nPatternLen = 9;
+
+	const BYTE* it = std::find_end(pData, pData + dwLength, pPattern, pPattern + nPatternLen);
+	if (it == pData + dwLength)
+		return false;
+
+	it += nPatternLen;
+
+	while (it < pData + dwLength && *it != '[')
+	{
+		if (*it != ' ' && *it != '\t' && *it != '\r' && *it != '\n')
+			return false;
+		++it;
+	}
+	if (it >= pData + dwLength)
+		return false;
+
+	++it;
+
+	for (int i = 0; i < 4; ++i)
+	{
+		while (it < pData + dwLength && (*it == ' ' || *it == '\t'))
+			++it;
+		if (it >= pData + dwLength)
+			return false;
+
+		if (*it < '0' || *it > '9')
+			return false;
+
+		DWORD nValue = 0;
+		while (it < pData + dwLength && *it >= '0' && *it <= '9')
+		{
+			nValue = nValue * 10 + (*it - '0');
+			++it;
+		}
+		outRange[i] = nValue;
+	}
+
+	while (it < pData + dwLength && (*it == ' ' || *it == '\t'))
+		++it;
+	if (it >= pData + dwLength || *it != ']')
+		return false;
+
+	return true;
+}
+
 TEST_F(CPdfFileTest, EditPdfSign)
 {
-	GTEST_SKIP();
+	//GTEST_SKIP();
 
 	LoadFromFile();
 	ASSERT_TRUE(pdfFile->EditPdf(wsDstFile));
@@ -619,24 +670,33 @@ TEST_F(CPdfFileTest, EditPdfSign)
 
 	// EditPdf & EditClose || CreatePdf & SaveToFile
 	// И только после подготовка данных для подписания, подписываем, запись подписи
-	std::wstring wsSignPath = wsTempDir + L"/pdf_sign.pdf";
 	for (int i = 0; i < 3; ++i)
 	{
-		pdfFile->PrepareSignature(wsSignPath);
+		pdfFile->PrepareSignature(wsDstFile);
 
 		ICertificate* pCertificate = GetCertificate();
 		ASSERT_TRUE(pCertificate);
 
-		BYTE* pDataToSign = NULL;
+		BYTE* pDataFile = NULL;
 		DWORD dwDataLength = 0;
 
-		NSFile::CFileBinary::ReadAllBytes(wsSignPath, &pDataToSign, dwDataLength);
+		NSFile::CFileBinary::ReadAllBytes(wsDstFile, &pDataFile, dwDataLength);
+
+		DWORD aByteRange[4] = {0};
+		ASSERT_TRUE(ParseByteRange(pDataFile, dwDataLength, aByteRange));
+		ASSERT_TRUE(aByteRange[0] + aByteRange[1] <= dwDataLength);
+		ASSERT_TRUE(aByteRange[2] + aByteRange[3] <= dwDataLength);
+
+		DWORD dwDataSignLength = aByteRange[1] + aByteRange[3];
+		BYTE* pDataToSign = new BYTE[dwDataSignLength];
+		memcpy(pDataToSign, pDataFile + aByteRange[0], aByteRange[1]);
+		memcpy(pDataToSign + aByteRange[1], pDataFile + aByteRange[2], aByteRange[3]);
+
+		RELEASEARRAYOBJECTS(pDataFile);
 
 		BYTE* pDatatoWrite = NULL;
 		unsigned int dwLenDatatoWrite = 0;
-		// Предположим, что для подписи 1 произошло не успешное подписание, и данные остались пустыми
-		if (i % 2 == 0)
-			pCertificate->SignPKCS7(pDataToSign, dwDataLength, pDatatoWrite, dwLenDatatoWrite);
+		pCertificate->SignPKCS7(pDataToSign, dwDataSignLength, pDatatoWrite, dwLenDatatoWrite);
 		RELEASEARRAYOBJECTS(pDataToSign);
 
 		// Обязательно FinalizeSignature - он либо заполнит данные, либо сделает подпись пустой
@@ -676,14 +736,13 @@ TEST_F(CPdfFileTest, PdfToPdfSign)
 
 	for (int i = 0; i < nPages; ++i)
 	{
-		BYTE* pDataToSign = NULL;
-		DWORD dwDataLength = 0;
-
-		pdfFile->PrepareSignature(&pDataToSign, dwDataLength);
+		pdfFile->PrepareSignature(wsDstFile);
 
 		ICertificate* pCertificate = GetCertificate();
 		ASSERT_TRUE(pCertificate);
 
+		BYTE* pDataToSign = NULL;
+		DWORD dwDataLength = 0;
 		BYTE* pDatatoWrite = NULL;
 		unsigned int dwLenDatatoWrite = 0;
 		if (i % 2 == 0)

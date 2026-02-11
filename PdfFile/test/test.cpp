@@ -709,53 +709,6 @@ TEST_F(CPdfFileTest, EditPdfSign)
 	pdfFile->Close();
 }
 
-TEST_F(CPdfFileTest, PdfToPdfSign)
-{
-	GTEST_SKIP();
-
-	LoadFromFile();
-	pdfFile->CreatePdf();
-
-	double dPageDpiX, dPageDpiY, dW, dH;
-	int nPages = pdfFile->GetPagesCount();
-	for (int i = 0; i < nPages; i++)
-	{
-		pdfFile->NewPage();
-
-		pdfFile->GetPageInfo(i, &dW, &dH, &dPageDpiX, &dPageDpiY);
-		pdfFile->put_Width( dW / dPageDpiX * 25.4);
-		pdfFile->put_Height(dH / dPageDpiY * 25.4);
-
-		pdfFile->DrawPageOnRenderer(pdfFile, i, NULL);
-
-		pdfFile->Sign(10, 10, 100, 100, NSFile::GetProcessDirectory() + L"/test.jpeg");
-	}
-
-	// Сначала SaveToFile, затем подписание, потом Close
-	pdfFile->SaveToFile(wsDstFile);
-
-	for (int i = 0; i < nPages; ++i)
-	{
-		pdfFile->PrepareSignature(wsDstFile);
-
-		ICertificate* pCertificate = GetCertificate();
-		ASSERT_TRUE(pCertificate);
-
-		BYTE* pDataToSign = NULL;
-		DWORD dwDataLength = 0;
-		BYTE* pDatatoWrite = NULL;
-		unsigned int dwLenDatatoWrite = 0;
-		if (i % 2 == 0)
-			pCertificate->SignPKCS7(pDataToSign, dwDataLength, pDatatoWrite, dwLenDatatoWrite);
-
-		pdfFile->FinalizeSignature(pDatatoWrite, dwLenDatatoWrite);
-
-		RELEASEOBJECT(pCertificate);
-	}
-
-	pdfFile->Close();
-}
-
 TEST_F(CPdfFileTest, PrintPdf)
 {
 	GTEST_SKIP();

@@ -118,7 +118,7 @@ namespace NExtractTools
 
 		return 0;
 
-		// Ниже пример парсинга
+		// Below is an example of parsing and signing
 
 		BYTE* pDataFile = NULL;
 		DWORD dwDataLength = 0;

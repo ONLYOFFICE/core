@@ -3724,7 +3724,7 @@ void CActionGoTo::ToWASM(NSWasm::CData& oRes)
 	case destFitV:
 	case destFitBV:
 	{
-		oRes.WriteBYTE(unKindFlag);
+		oRes.AddInt(unKindFlag);
 		if (unKindFlag & (1 << 0))
 			oRes.AddDouble(pRect[0]);
 		if (unKindFlag & (1 << 1))

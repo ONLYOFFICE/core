@@ -3790,9 +3790,9 @@ void BinaryDocumentTableWriter::WriteAltChunk(OOX::Media& oAltChunkFile, OOX::CS
 		case AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML:
 		{
 			CHtmlFile2 htmlConvert;
-			CHtmlParams	paramsHtml;
+			HTML::THTMLParameters paramsHtml;
 
-			htmlConvert.SetTmpDirectory(sTempDir);
+			htmlConvert.SetTempDirectory(sTempDir);
 
 			if (styles)
 			{
@@ -3814,14 +3814,14 @@ void BinaryDocumentTableWriter::WriteAltChunk(OOX::Media& oAltChunkFile, OOX::CS
 				}
 			}
 
-			result = (S_OK == htmlConvert.OpenHtml(file_name_inp, sResultDocxDir, &paramsHtml));
+			result = (S_OK == htmlConvert.ConvertHTML2OOXML(file_name_inp, sResultDocxDir, &paramsHtml));
 		}break;
 		case AVS_OFFICESTUDIO_FILE_DOCUMENT_MHT:
 		{
 			CHtmlFile2 htmlConvert;
-			htmlConvert.SetTmpDirectory(sTempDir);
+			htmlConvert.SetTempDirectory(sTempDir);
 
-			result = (S_OK == htmlConvert.OpenMht(file_name_inp, sResultDocxDir));
+			result = (S_OK == htmlConvert.ConvertMHT2OOXML(file_name_inp, sResultDocxDir));
 		}break;
 #endif
 		case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX:

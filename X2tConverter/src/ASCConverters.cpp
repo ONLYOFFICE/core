@@ -606,6 +606,11 @@ namespace NExtractTools
 
 			nRes = fromDocument(wsTempFile, AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML, params, convertParams);
 		}
+		else if (AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML == nFormatFrom &&
+		         AVS_OFFICESTUDIO_FILE_DOCUMENT_MD   == nFormatTo)
+		{
+			nRes = html2md(sFrom, sTo, params, convertParams);
+		}
 		else
 		{
 			std::wstring sDocxDir = combinePath(convertParams.m_sTempDir, L"docx_unpacked");

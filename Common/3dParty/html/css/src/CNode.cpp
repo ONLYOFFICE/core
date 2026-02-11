@@ -17,8 +17,7 @@ namespace NSCSS
 	      m_wsStyle(oNode.m_wsStyle), m_mAttributes(oNode.m_mAttributes)
 	{
 		#ifdef CSS_CALCULATOR_WITH_XHTML
-		m_pCompiledStyle = new CCompiledStyle();
-		*m_pCompiledStyle = *oNode.m_pCompiledStyle;
+		m_pCompiledStyle = new CCompiledStyle(*oNode.m_pCompiledStyle);
 		#endif
 	}
 
@@ -40,6 +39,23 @@ namespace NSCSS
 	bool CNode::Empty() const
 	{
 		return m_wsName.empty() && m_wsClass.empty() && m_wsId.empty() && m_wsStyle.empty();
+	}
+
+	bool CNode::GetAttributeValue(const std::wstring& wsAttributeName, std::wstring& wsAttributeValue) const
+	{
+		const std::map<std::wstring, std::wstring>::const_iterator itFound{m_mAttributes.find(wsAttributeName)};
+
+		if (m_mAttributes.cend() == itFound)
+			return false;
+
+		wsAttributeValue = itFound->second;
+		return true;
+	}
+
+	std::wstring CNode::GetAttributeValue(const std::wstring& wsAttributeName) const
+	{
+		const std::map<std::wstring, std::wstring>::const_iterator itFound{m_mAttributes.find(wsAttributeName)};
+		return (m_mAttributes.cend() != itFound) ? itFound->second : std::wstring();
 	}
 
 	#ifdef CSS_CALCULATOR_WITH_XHTML
@@ -86,6 +102,9 @@ namespace NSCSS
 		if(m_wsStyle != oNode.m_wsStyle)
 			return m_wsStyle < oNode.m_wsStyle;
 
+		if (m_mAttributes.size() != oNode.m_mAttributes.size())
+			return m_mAttributes.size() < oNode.m_mAttributes.size();
+
 		if (m_mAttributes != oNode.m_mAttributes)
 			return m_mAttributes < oNode.m_mAttributes;
 
@@ -95,9 +114,9 @@ namespace NSCSS
 	bool CNode::operator==(const CNode& oNode) const
 	{
 		return((m_wsId == oNode.m_wsId)       &&
-			   (m_wsName == oNode.m_wsName)   &&
-			   (m_wsClass == oNode.m_wsClass) &&
-			  (m_wsStyle == oNode.m_wsStyle) &&
-			  (m_mAttributes == oNode.m_mAttributes));
+		       (m_wsName == oNode.m_wsName)   &&
+		       (m_wsClass == oNode.m_wsClass) &&
+		       (m_wsStyle == oNode.m_wsStyle) &&
+		       (m_mAttributes == oNode.m_mAttributes));
 	}
 }

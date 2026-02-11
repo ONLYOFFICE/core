@@ -1,0 +1,276 @@
+#include "MDWriter.h"
+
+#include <cwctype>
+
+#include "../../DesktopEditor/common/File.h"
+#include "../../Common/3dParty/html/css/src/CCompiledStyle.h"
+
+namespace HTML
+{
+CMDWriter::CMDWriter(const TMarkdownParameters& oMDParametrs)
+	: m_oMDParametrs(oMDParametrs)
+{
+	m_arStates.push(TState{});
+	m_arStates.top().m_pCurrentDocument = &m_oDocument;
+}
+
+void CMDWriter::Begin(const std::wstring& wsDst)
+{
+
+}
+
+void CMDWriter::End(const std::wstring& wsDst)
+{
+	NSFile::CFileBinary oDocument;
+
+	if (!oDocument.CreateFileW(wsDst))
+		return;
+
+	oDocument.WriteStringUTF8(m_oDocument.GetData());
+	oDocument.CloseFile();
+}
+
+inline void ReplaceSpaces(std::wstring& wsValue)
+{
+	// boost::wregex oRegex(L"\\s+");
+	// wsValue = boost::regex_replace(wsValue, oRegex, L" ");
+
+	std::wstring::const_iterator itBegin = std::find_if(wsValue.cbegin(), wsValue.cend(), [](wchar_t wchValue){ return std::iswspace(wchValue) && 0xa0 != wchValue; });
+	std::wstring::const_iterator itEnd;
+
+	while (wsValue.cend() != itBegin)
+	{
+		itEnd = std::find_if(itBegin, wsValue.cend(), [](wchar_t wchValue){ return !std::iswspace(wchValue) || 0xa0 == wchValue; });
+
+		wsValue.replace(itBegin, itEnd, L" ");
+
+		itBegin = std::find_if(itBegin + 1, wsValue.cend(), [](wchar_t wchValue){ return std::iswspace(wchValue) && 0xa0 != wchValue; });
+	}
+}
+
+bool CMDWriter::WriteText(std::wstring wsText, const std::vector<NSCSS::CNode>& arSelectors)
+{
+	bool bPreformatted{InPreformatted()};
+
+	const NSCSS::CCompiledStyle* pCompiledStyle{arSelectors.back().m_pCompiledStyle};
+
+	if (!bPreformatted && nullptr != arSelectors.back().m_pCompiledStyle)
+	{
+		// TODO::поведение должно быть немного разное (реализовать)
+		switch(pCompiledStyle->m_oDisplay.GetWhiteSpace().ToInt())
+		{
+			case NSCSS::NSProperties::EWhiteSpace::Pre:
+			case NSCSS::NSProperties::EWhiteSpace::Pre_Wrap:
+			case NSCSS::NSProperties::EWhiteSpace::Pre_Line:
+				bPreformatted = true;
+			default:
+				break;
+		}
+	}
+
+	if (!bPreformatted && wsText.end() == std::find_if_not(wsText.begin(), wsText.end(), [](wchar_t wchChar){ return iswspace(wchChar) && 0xa0 != wchChar;}))
+		return false;
+
+	if (bPreformatted && !m_arStates.top().m_bEmptyLine)
+		GetCurrentDocument()->AddCharSafe(L'\n');
+
+	//Пока корректно работает только для текста (необходимо проверить и с другими нодами)
+	if (m_arStates.top().m_bEmptyLine)
+	{
+		for (UINT unIndex = 0; unIndex < GetLevelBlockquote(); ++unIndex)
+			WriteString(L"> ", true);
+	}
+
+	if (!bPreformatted && !InCode())
+		ReplaceSpaces(wsText);
+
+	ApplyAlternativeTags(pCompiledStyle);
+	WriteString(wsText);
+	ApplyAlternativeTags(pCompiledStyle, true);
+
+	if (L'\n' == wsText.back())
+		m_arStates.top().m_bNeedBreakLine = false;
+
+	return true;
+}
+
+void CMDWriter::WriteEmptyParagraph(bool bVahish, bool bInP)
+{}
+
+void CMDWriter::PageBreak()
+{}
+
+void CMDWriter::BeginBlock()
+{
+	WriteBreakLine();
+}
+
+void CMDWriter::EndBlock(bool bAddBlock)
+{
+	WriteBreakLine();
+}
+
+void CMDWriter::SetDataOutput(XmlString* pOutputData)
+{
+	SaveState();
+	m_arStates.top().m_pCurrentDocument = pOutputData;
+}
+
+void CMDWriter::RevertDataOutput()
+{
+	RollBackState();
+}
+
+TMarkdownParameters CMDWriter::GetParametrs() const
+{
+	return m_oMDParametrs;
+}
+
+void CMDWriter::WriteString(const std::wstring& wsString, bool bSpecialString)
+{
+	GetCurrentDocument()->WriteString(wsString);
+
+	if (m_arStates.top().m_bEmptyLine)
+		m_arStates.top().m_bEmptyLine = wsString.empty();
+
+	if (!bSpecialString)
+		m_arStates.top().m_bNeedBreakLine = true;
+}
+
+XmlString* CMDWriter::GetCurrentDocument() const
+{
+	return m_arStates.top().m_pCurrentDocument;
+}
+
+void CMDWriter::WriteBreakLine(bool bNeedChecked)
+{
+	if (bNeedChecked && !m_arStates.top().m_bNeedBreakLine)
+		return;
+
+	GetCurrentDocument()->WriteString(L"  \n");
+	m_arStates.top().m_bNeedBreakLine = false;
+	m_arStates.top().m_bEmptyLine = true;
+}
+
+void CMDWriter::EnteredBlockquote()
+{
+	m_arStates.top().m_unLevelBlockquote++;
+}
+
+void CMDWriter::OutBlockquote()
+{
+	if (m_arStates.top().m_unLevelBlockquote > 0)
+		m_arStates.top().m_unLevelBlockquote--;
+}
+
+UINT CMDWriter::GetLevelBlockquote()
+{
+	return m_arStates.top().m_unLevelBlockquote;
+}
+
+void CMDWriter::EnteredTable()
+{
+	m_arStates.top().m_bInTable = true;
+}
+
+void CMDWriter::OutTable()
+{
+	m_arStates.top().m_bInTable = false;
+}
+
+bool CMDWriter::InTable() const
+{
+	return m_arStates.top().m_bInTable;
+}
+
+void CMDWriter::EnteredPreformatted()
+{
+	m_arStates.top().m_bInPreformatted = true;
+}
+
+void CMDWriter::OutPreformatted()
+{
+	m_arStates.top().m_bInPreformatted = false;
+}
+
+bool CMDWriter::InPreformatted() const
+{
+	return m_arStates.top().m_bInPreformatted;
+}
+
+void CMDWriter::EnteredCode()
+{
+	m_arStates.top().m_bInCode = true;
+}
+
+void CMDWriter::OutCode()
+{
+	m_arStates.top().m_bInCode = false;
+}
+
+bool CMDWriter::InCode() const
+{
+	return m_arStates.top().m_bInCode;
+}
+
+void CMDWriter::EnteredList(bool bOrderedList)
+{
+	SaveState();
+	m_arStates.top().m_bInList = true;
+	m_arStates.top().m_bIsOrederedList = bOrderedList;
+	m_arStates.top().m_unLevelList++;
+}
+
+void CMDWriter::OutList()
+{
+	RollBackState();
+}
+
+void CMDWriter::IncreaseIndexOrderedList()
+{
+	m_arStates.top().m_unIndexListElement++;
+}
+
+bool CMDWriter::InOrederedList() const
+{
+	return m_arStates.top().m_bIsOrederedList;
+}
+
+UINT CMDWriter::GetIndexOrderedList() const
+{
+	return m_arStates.top().m_unIndexListElement;
+}
+
+UINT CMDWriter::GetLevelList() const
+{
+	return m_arStates.top().m_unLevelList;
+}
+
+void CMDWriter::SaveState()
+{
+	m_arStates.push(m_arStates.top());
+}
+
+void CMDWriter::RollBackState()
+{
+	if (m_arStates.size() > 1)
+		m_arStates.pop();
+}
+
+void CMDWriter::ApplyAlternativeTags(const NSCSS::CCompiledStyle* pCompiledStyle, bool bIsCloseTag)
+{
+	if (nullptr == pCompiledStyle || !m_oMDParametrs.m_bUseAlternativeHTMLTags)
+		return;
+
+	if (pCompiledStyle->m_oText.Underline())
+		GetCurrentDocument()->WriteString(bIsCloseTag ? L"</u>" : L"<u>");
+
+	if (L"top" == pCompiledStyle->m_oDisplay.GetVAlign().ToWString())
+		GetCurrentDocument()->WriteString(bIsCloseTag ? L"</sup>" : L"<sup>");
+	else if (L"bottom" == pCompiledStyle->m_oDisplay.GetVAlign().ToWString())
+		GetCurrentDocument()->WriteString(bIsCloseTag ? L"</sub>" : L"<sub>");
+
+	if (L"FFFF00" == pCompiledStyle->m_oBackground.GetColor().ToHEX())
+		GetCurrentDocument()->WriteString(bIsCloseTag ? L"</mark>" : L"<mark>");
+}
+}

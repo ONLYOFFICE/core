@@ -632,18 +632,8 @@ namespace MetaFile
 		if (wsPath.empty())
 			return;
 
-		const std::wstring wsClipId = L"PATHCLIP_" + ConvertToWString(++m_unNumberDefs, 0);
-		std::wstring wsValue  = L"<path d=\"" + wsPath + L"\"";
-
-		const int nOffsetLeft{-m_pParser->GetDCBounds().Left};
-		const int nOffsetTop {-m_pParser->GetDCBounds().Top};
-
-		if (0 != nOffsetLeft || 0 != nOffsetTop)
-			wsValue += L" transform=\"translate(" + std::to_wstring(nOffsetLeft) + L',' + std::to_wstring(nOffsetTop) + L")\"";
-
-		wsValue += L"/>";
-
-		m_oClip.AddClipValue(wsClipId, wsValue, nClipMode);
+		m_oClip.AddClipValue(L"PATHCLIP_" + ConvertToWString(++m_unNumberDefs, 0),
+		                     L"<path d=\"" + wsPath + L"\"/>", nClipMode);
 	}
 
 	void CInterpretatorSvgBase::AddStroke(NodeAttributes &arAttributes) const

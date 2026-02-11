@@ -3284,6 +3284,10 @@ namespace MetaFile
 	void CEmfPlusParser::Read_EMFPLUS_SETCLIPRECT(unsigned short unShFlags)
 	{
 		short shCM = ExpressValue(unShFlags, 8, 11);
+
+		if (0 == shCM)
+			shCM = RGN_COPY;
+
 		TEmfPlusRectF oRect;
 
 		m_oStream >> oRect;

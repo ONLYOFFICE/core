@@ -481,6 +481,8 @@ namespace NSOnlineOfficeBinToPdf
 				double m3 = oReader.ReadDouble();
 				double m4 = oReader.ReadDouble();
 
+				clipRect = Aggplus::RectF_T<double>(m1, m2, m3, m4);
+
 				long type;
 				pRenderer->get_BrushTextureMode(&type);
 				if (type != c_BrushTextureModeStretch)
@@ -489,7 +491,6 @@ namespace NSOnlineOfficeBinToPdf
 					m2 = 0.0;
 				}
 
-				clipRect = Aggplus::RectF_T<double>(m1, m2, m3, m4);
 				pRenderer->BrushRect(bIsEnableBrushRect ? 1 : 0, m1, m2, m3, m4);
 				break;
 			}

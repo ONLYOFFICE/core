@@ -97,6 +97,7 @@ public:
 	OfficeArtRecordPtr m_OfficeArtFSP;
 	OfficeArtRecordPtr m_OfficeArtAnchor;
 	OfficeArtRecordPtr m_oOfficeArtFOPT;
+	OfficeArtRecordPtr m_oOfficeArtClientData;
 };
 
 class OfficeArtClientData : public OfficeArtRecord
@@ -107,6 +108,7 @@ public:
 	XLS::BiffStructurePtr clone() { return XLS::BiffStructurePtr(new OfficeArtClientData(*this)); }
 	
 	void loadFields(XLS::CFRecord& record);
+	void save(XLS::CFRecord& record);
 
 	static const XLS::ElementType	type = XLS::typeOfficeArtClientData;
 

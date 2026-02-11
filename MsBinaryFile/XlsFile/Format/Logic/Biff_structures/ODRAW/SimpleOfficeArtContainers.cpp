@@ -63,6 +63,14 @@ void OfficeArtClientData::loadFields(XLS::CFRecord& record)
 	{
 	}
 }
+void OfficeArtClientData::save(XLS::CFRecord& record)
+{
+	rh_own.recVer = 0x00;
+	rh_own.recInstance = 0;
+	rh_own.recType = 0xF011;
+	rh_own.recLen =  0;
+	record << rh_own;
+}
 void OfficeArtSolverContainer::loadFields(XLS::CFRecord& record)
 {
 	//array of OfficeArtSolverContainerFileBlock
@@ -192,6 +200,8 @@ void OfficeArtSpContainer::save(XLS::CFRecord& record)
 		m_oOfficeArtFOPT->save(record);
 	if(m_OfficeArtAnchor != nullptr)
 		m_OfficeArtAnchor->save(record);
+	if(m_oOfficeArtClientData != nullptr)
+		m_oOfficeArtClientData->save(record);
 
 
 	//calculating size

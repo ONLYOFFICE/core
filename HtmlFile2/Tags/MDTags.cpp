@@ -207,8 +207,8 @@ bool CImage<CMDWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, const
 
 	std::wstring wsAlt, wsSrc, wsTitle;
 
-	if (!(arSelectors.back().GetAttributeValue(L"src", wsSrc) &&
-	    arSelectors.back().GetAttributeValue(L"alt", wsAlt)))
+	if (!arSelectors.back().GetAttributeValue(L"src", wsSrc) &&
+	    !arSelectors.back().GetAttributeValue(L"alt", wsAlt))
 		return false;
 
 	arSelectors.back().GetAttributeValue(L"title", wsTitle);

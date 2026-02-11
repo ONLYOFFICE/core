@@ -48,18 +48,19 @@ namespace NExtractTools
 {
 	static int pdfSign(const std::wstring& file, NSFonts::IApplicationFonts* fonts, InputParams& params, ConvertParams& convertParams)
 	{
+		/*
 		ICertificate* certificate = NSSign::loadCertificate(params);
 		if (!certificate)
 			return 1;
-
 		std::wstring pdfTemp = combinePath(convertParams.m_sTempDir, L"pdf_sign.pdf");
 		NSFile::CFileBinary::Copy(file, pdfTemp);
+		*/
 
 		CPdfFile pdfFile(fonts);
 		pdfFile.SetTempDirectory(convertParams.m_sTempDir);
 		std::wstring password = params.getSavePassword();
 
-		if (!pdfFile.LoadFromFile(pdfTemp, L"", password.c_str(), password.c_str()))
+		if (!pdfFile.LoadFromFile(file, L"", password.c_str(), password.c_str()))
 			return 2;
 
 		if (!pdfFile.EditPdf(file))
@@ -71,14 +72,14 @@ namespace NExtractTools
 		pdfFile.Sign(0, 0, 0, 0, L"");
 		pdfFile.Close();
 
+		if (!pdfFile.PrepareSignature(file))
+			return 2;
+
+		return 0;
+
+		/*
 		BYTE* pDataToSign = NULL;
 		DWORD dwDataLength = 0;
-		if (!pdfFile.PrepareSignature(&pDataToSign, dwDataLength))
-		{
-			RELEASEARRAYOBJECTS(pDataToSign);
-			return 2;
-		}
-
 		BYTE* pDatatoWrite = NULL;
 		unsigned int dwLenDatatoWrite = 0;
 		certificate->SignPKCS7(pDataToSign, dwDataLength, pDatatoWrite, dwLenDatatoWrite);
@@ -93,6 +94,7 @@ namespace NExtractTools
 		RELEASEARRAYOBJECTS(pDatatoWrite);
 		RELEASEOBJECT(certificate);
 		return 0;
+		*/
 	}
 }
 
@@ -129,7 +131,7 @@ namespace NExtractTools
 			nRet = S_OK == pdfWriter.OnlineWordToPdf(sFrom, sTo, &oBufferParams) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
 		}
 
-		if (0 == nRet)
+		if (0 == nRet && params.getSigningKeyStorePath() == L"_placeholder_")
 		{
 			pdfSign(sTo, pApplicationFonts, params, convertParams);
 		}
@@ -304,7 +306,7 @@ namespace NExtractTools
 			int nReg = (convertParams.m_bIsPaid == false) ? 0 : 1;
 			nRes = (S_OK == pdfWriter.OnlineWordToPdfFromBinary(sPdfBinFile, sTo, &oBufferParams)) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
 
-			if (0 == nRes)
+			if (0 == nRes && params.getSigningKeyStorePath() == L"_placeholder_")
 			{
 				pdfSign(sTo, pApplicationFonts, params, convertParams);
 			}
@@ -1107,7 +1109,7 @@ namespace NExtractTools
 				{
 					nRes = S_OK == pdfWriter.SaveToFile(sTo) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
 
-					if (0 == nRes)
+					if (0 == nRes && params.getSigningKeyStorePath() == L"_placeholder_")
 					{
 						pdfSign(sTo, pApplicationFonts, params, convertParams);
 					}

@@ -76,7 +76,7 @@ namespace PdfWriter
 		}
 
 		void WriteToStream(CStream* pStream, CEncrypt* pEncrypt) override;
-		void WriteToStream(CStream* pStream, int nFileEnd, BYTE** pDataToSign, DWORD& dwDataLength);
+		void WriteToStream(CStream* pStream, int nFileEnd);
 		bool FinalizeSignature(CStream* pStream, BYTE* pSignedData, DWORD dwDataLength);
 
 		void SetContentsSize(unsigned int nSize);

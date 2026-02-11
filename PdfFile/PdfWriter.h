@@ -226,7 +226,7 @@ public:
 	bool EditClose();
 	void PageRotate(int nRotate);
 	void Sign(const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& wsPicturePath);
-	bool PrepareSignature(BYTE** pDataToSign, DWORD& dwDataLength);
+	bool PrepareSignature(const std::wstring& wsPath);
 	bool FinalizeSignature(BYTE* pSignedData, DWORD dwDataLength);
 	PdfWriter::CDocument* GetDocument();
 	PdfWriter::CPage*     GetPage();

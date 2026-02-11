@@ -619,16 +619,18 @@ TEST_F(CPdfFileTest, EditPdfSign)
 
 	// EditPdf & EditClose || CreatePdf & SaveToFile
 	// И только после подготовка данных для подписания, подписываем, запись подписи
+	std::wstring wsSignPath = wsTempDir + L"/pdf_sign.pdf";
 	for (int i = 0; i < 3; ++i)
 	{
-		BYTE* pDataToSign = NULL;
-		DWORD dwDataLength = 0;
-
-		// Получили данные для подписания
-		pdfFile->PrepareSignature(&pDataToSign, dwDataLength);
+		pdfFile->PrepareSignature(wsSignPath);
 
 		ICertificate* pCertificate = GetCertificate();
 		ASSERT_TRUE(pCertificate);
+
+		BYTE* pDataToSign = NULL;
+		DWORD dwDataLength = 0;
+
+		NSFile::CFileBinary::ReadAllBytes(wsSignPath, &pDataToSign, dwDataLength);
 
 		BYTE* pDatatoWrite = NULL;
 		unsigned int dwLenDatatoWrite = 0;

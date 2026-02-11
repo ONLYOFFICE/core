@@ -108,11 +108,11 @@ void CPdfFile::Sign(const double& dX, const double& dY, const double& dW, const 
 		return;
 	m_pInternal->pWriter->Sign(dX, dY, dW, dH, wsPicturePath);
 }
-bool CPdfFile::PrepareSignature(BYTE** pDataToSign, DWORD& dwDataLength)
+bool CPdfFile::PrepareSignature(const std::wstring& wsPath)
 {
 	if (!m_pInternal->pWriter)
 		return false;
-	return m_pInternal->pWriter->PrepareSignature(pDataToSign, dwDataLength);
+	return m_pInternal->pWriter->PrepareSignature(wsPath);
 }
 bool CPdfFile::FinalizeSignature(BYTE* pSignedData, DWORD dwDataLength)
 {

@@ -863,17 +863,12 @@ namespace MetaFile
 		void PathClip(const CPath& oPath, int nClipMode, TXForm *pTransform = NULL)
 		{
 			double dM11, dM12, dM21, dM22, dX, dY;
-			GetTransform(&dM11, &dM12, &dM21, &dM22, &dX, &dY);
 
 			if (NULL != pTransform)
-				SetTransform(pTransform->M11, pTransform->M12,
-				             pTransform->M21, pTransform->M22,
-				             pTransform->Dx - m_pFile->GetDCBounds().Left,
-				             pTransform->Dy - m_pFile->GetDCBounds().Top);
-			else
-				SetTransform(dM11, dM12, dM21, dM22,
-				             dX - m_pFile->GetDCBounds().Left,
-				             dY - m_pFile->GetDCBounds().Top);
+			{
+				GetTransform(&dM11, &dM12, &dM21, &dM22, &dX, &dY);
+				SetTransform(pTransform->M11, pTransform->M12, pTransform->M21, pTransform->M22, pTransform->Dx, pTransform->Dy);
+			}
 
 			oPath.DrawOn(this, false, false, nClipMode);
 

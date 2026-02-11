@@ -18,8 +18,8 @@ namespace MetaFile
 
 	void CEmfInterpretatorRender::ChangeConditional()
 	{
-			if (NULL != m_pMetaFileRenderer)
-				m_pMetaFileRenderer->ChangeConditional();
+		if (NULL != m_pMetaFileRenderer)
+			m_pMetaFileRenderer->ChangeConditional();
 	}
 
 	void CEmfInterpretatorRender::Begin()

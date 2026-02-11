@@ -108,7 +108,7 @@ namespace NExtractTools
 		oCXlsxSerializer.setIsNoBase64(params.getIsNoBase64());
 		oCXlsxSerializer.setFontDir(params.getFontPath());
 
-		return oCXlsxSerializer.saveToFile(sTo, sFrom, params.getXmlOptions());
+		return oCXlsxSerializer.saveToFile(sTo, sFrom, params.getXmlOptionsFrom());
 	}
 	_UINT32 xlsxflat2xlsx(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
 	{
@@ -123,7 +123,7 @@ namespace NExtractTools
 		oCXlsxSerializer.setFontDir(params.getFontPath());
 		oCXlsxSerializer.setMacroEnabled(params.m_bMacro);
 
-		_UINT32 nRes = oCXlsxSerializer.xml2Xlsx(sFrom, sTo, params.getXmlOptions());
+		_UINT32 nRes = oCXlsxSerializer.xml2Xlsx(sFrom, sTo, params.getXmlOptionsFrom());
 
 		return nRes;
 	}
@@ -147,7 +147,7 @@ namespace NExtractTools
 			oCXlsxSerializer.setIsNoBase64(params.getIsNoBase64());
 			oCXlsxSerializer.setFontDir(params.getFontPath());
 
-			nRes = oCXlsxSerializer.saveToFile(sTo, sFrom, convertParams.m_bTempIsXmlOptions ? params.getXmlOptions() : L"");
+			nRes = oCXlsxSerializer.saveToFile(sTo, sFrom, convertParams.m_bTempIsXmlOptions ? params.getXmlOptionsFrom() : L"");
 		}
 
 		convertParams.m_sTempParamOOXMLFile = L"";
@@ -289,7 +289,7 @@ namespace NExtractTools
 
 		if (SUCCEEDED_X2T(nRes))
 		{
-			std::wstring sXmlOptions = params.getXmlOptions();
+			std::wstring sXmlOptions = params.getXmlOptionsTo();
 
 			nRes = oCXlsxSerializer.loadFromFile(sTargetBin, convertParams.m_sTempResultOOXMLDirectory, sXmlOptions, sMediaPath, sEmbedPath);
 			params.m_bMacro = oCXlsxSerializer.getMacroEnabled();

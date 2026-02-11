@@ -42,13 +42,13 @@ namespace NExtractTools
 		params.m_bMacro = false; 
 
 		CTxtXmlFile txtFile;
-		std::wstring xml_options = params.getXmlOptions();
+		std::wstring xml_options = params.getXmlOptionsFrom();
 		return txtFile.txt_LoadFromFile(sFrom, sTo, xml_options);
 	}
 	_UINT32 docx_dir2txt(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
 	{
 		CTxtXmlFile txtFile;
-		return txtFile.txt_SaveToFile(sTo, sFrom, params.getXmlOptions());
+		return txtFile.txt_SaveToFile(sTo, sFrom, params.getXmlOptionsTo());
 	}
 
 	_UINT32 txt2doct_bin(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
@@ -59,7 +59,7 @@ namespace NExtractTools
 		CTxtXmlFile txtFile;
 		params.m_bMacro = false;
 
-		_UINT32 nRes = txtFile.txt_LoadFromFile(sFrom, sResultDocxDir, params.getXmlOptions());
+		_UINT32 nRes = txtFile.txt_LoadFromFile(sFrom, sResultDocxDir, params.getXmlOptionsFrom());
 		if (SUCCEEDED_X2T(nRes))
 		{
 			BinDocxRW::CDocxSerializer m_oCDocxSerializer;

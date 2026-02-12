@@ -1809,7 +1809,7 @@ PdfWriter::CAction* CPdfWriter::GetAction(CAnnotFieldInfo::CActionFieldPr* pActi
 		}
 		case 4:
 		{
-			pDest->SetFitR(pAction->dD[0] + dPageDX, dPageDH - pAction->dD[1], pAction->dD[2] + dPageDX, dPageDH - pAction->dD[3]);
+			pDest->SetFitR(pAction->dD[0] + dPageDX, dPageDH - pAction->dD[3], pAction->dD[2] + dPageDX, dPageDH - pAction->dD[1]);
 			break;
 		}
 		case 5:

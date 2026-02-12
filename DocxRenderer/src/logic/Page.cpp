@@ -581,7 +581,7 @@ namespace NSDocxRenderer
 			shape_ref_ptr_t val = m_arShapes[i];
 			shape_ref_ptr_t next_val = m_arShapes[i + 1];
 
-			if (!val.get() || ! next_val.get())
+			if (!val.get() || !next_val.get() || next_val.get()->m_nOrder - val.get()->m_nOrder != 1)
 				continue;
 
 			next_val.get()->TryMergeShape(val.get());

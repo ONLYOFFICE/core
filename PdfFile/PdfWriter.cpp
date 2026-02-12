@@ -3623,7 +3623,7 @@ bool CPdfWriter::GetEmbeddedFont(const std::wstring& wsFontName)
 {
 	std::wstring wsFontPath = m_oFont.GetPath();
 	LONG lFaceIndex         = m_oFont.GetFaceIndex();
-	if (!FindFontPath(wsFontName, m_oFont.IsBold(), m_oFont.IsItalic(), wsFontPath, lFaceIndex))
+	if (!FindFontPath(wsFontName, false, false, wsFontPath, lFaceIndex))
 		return false;
 	if (m_bSplit)
 		return false;

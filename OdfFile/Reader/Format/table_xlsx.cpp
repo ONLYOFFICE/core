@@ -968,8 +968,17 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
 					Context.get_num_format_context().end_complex_format();
 
 					num_format = Context.get_num_format_context().get_last_format();
-					num_format_type = Context.get_num_format_context().type();
+					num_format_type = Context.get_num_format_context().type();					
 				}
+			}
+			if (attr.office_value_type_)
+			{
+				if (num_format_type != attr.office_value_type_->get_type())
+				{// reset from cell 
+					num_format_type = attr.office_value_type_->get_type();
+					num_format.clear();
+				}
+				
 			}
 		}
 //----------------------------------------------------------------------------------------------------------------------------------

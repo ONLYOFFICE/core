@@ -4381,10 +4381,7 @@ void CPdfEditor::ScanAndProcessFonts(PDFDoc* pPDFDocument, XRef* xref, Dict* pRe
 								if (pFontEntry.pCodeToGID[nIndex])
 									mCodeToGID[nIndex] = pFontEntry.pCodeToGID[nIndex];
 							}
-							bool bBold = false, bItalic = false;
-							std::wstring wsCheckFontName = wsFontName;
-							PdfReader::CheckFontStylePDF(wsCheckFontName, bBold, bItalic);
-							m_pWriter->AddFont(L"Embedded: " + wsFontName, bBold, bItalic, wsFileName, 0);
+							m_pWriter->AddFont(L"Embedded: " + wsFontName, false, false, wsFileName, 0);
 							m_pWriter->GetDocument()->CreateFontEmbedded(wsFileName, 0, sFontKey, static_cast<PdfWriter::EFontType>(gfxFont->getType()), mCodeToWidth, mCodeToUnicode, mCodeToGID);
 						}
 					}

@@ -458,6 +458,10 @@ namespace OOX
 		{
 			return m_arrItems.empty();
 		}
+		bool CDrawing::IsChart()
+		{
+			return (!IsEmpty() && m_arrItems.back()->m_oElement.IsInit() && m_arrItems.back()->m_oElement->is<PPTX::Logic::GraphicFrame>());
+		}
 		void CDrawing::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
 		}

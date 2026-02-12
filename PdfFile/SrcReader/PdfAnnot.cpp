@@ -3730,7 +3730,7 @@ void CActionGoTo::ToWASM(NSWasm::CData& oRes)
 		if (unKindFlag & (1 << 1))
 			oRes.AddDouble(pRect[1]);
 		if (unKindFlag & (1 << 2))
-			oRes.AddDouble(pRect[3]);
+			oRes.AddDouble(pRect[2]);
 		break;
 	}
 	case destFitR:

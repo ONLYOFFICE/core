@@ -287,7 +287,10 @@ namespace NSDoctRenderer
 
 			JSSmart<CJSObject> js_objectApi = api_js_maybe_null;
 			if (!js_objectApi.IsInit() || js_objectApi->isUndefined())
-				js_objectApi = global_js->get("Api")->toObject();
+			{
+				JSSmart<CJSObject> js_objectAsc = global_js->get("Asc")->toObject();
+				js_objectApi = js_objectAsc->get("editor")->toObject();
+			}
 
 			bool bIsBreak = false;
 			if (js_objectApi->isUndefined() || !js_objectApi->isObject())
@@ -687,7 +690,8 @@ namespace NSDoctRenderer
 						bIsBreak = true;
 					}
 
-					js_objectApi = global_js->get("Api")->toObject();
+					JSSmart<CJSObject> js_objectAsc = global_js->get("Asc")->toObject();
+					js_objectApi = js_objectAsc->get("editor")->toObject();
 					if (try_catch->Check())
 					{
 						strError = L"code=\"open\"";

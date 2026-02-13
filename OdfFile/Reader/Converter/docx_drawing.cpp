@@ -536,8 +536,49 @@ void docx_serialize_wps(std::wostream & strm, _docx_drawing & val, oox::docx_con
 						}
 						else
 						{
-							CP_XML_ATTR(L"cx", 180000);
-							CP_XML_ATTR(L"cy", 180000);
+							double fontSize = 0.0;
+
+							std::wstring fontName = Context.get_current_fontName();
+
+							if( Context.get_current_fontSize() > 0 )
+							{
+								fontSize = Context.get_current_fontSize();
+							}
+							else if( Context.get_drop_cap_context().FontSize > 0 )
+							{
+								fontSize = Context.get_drop_cap_context().FontSize;
+							}
+							else
+							{
+								fontSize = Context.get_current_fontSize_from_default_style();
+							}
+
+							if( fontName.empty() )
+							{
+								fontName = L"Times New Roman";
+							}
+
+							if( fontSize <= 0 )
+							{
+								fontSize = 12.0; // default
+							}
+
+							std::pair<double, double> maxDigitSize_ = utils::GetMaxDigitSizePixels(fontName, fontSize, 96., 0, Context.get_mediaitems()->applicationFonts());
+
+							double cx = get_value_emu(convert_symbol_size(1.76 * Context.get_math_context().width,  maxDigitSize_.first, false));
+							double cy = get_value_emu(convert_symbol_size(1.76 * Context.get_math_context().height, maxDigitSize_.second, false));
+
+							if (cx > val.cx)
+								val.cx = cx;
+
+							if (cy > val.cy)
+								val.cy = cy;
+
+							CP_XML_NODE(L"wp:extent")
+							{
+								CP_XML_ATTR(L"cx", val.cx);
+								CP_XML_ATTR(L"cy", val.cy);
+							}
 						}
 					}
 					serialize_null_extent(CP_XML_STREAM());

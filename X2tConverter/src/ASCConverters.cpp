@@ -606,10 +606,30 @@ namespace NExtractTools
 
 			nRes = fromDocument(wsTempFile, AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML, params, convertParams);
 		}
-		else if (AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML == nFormatFrom &&
-		         AVS_OFFICESTUDIO_FILE_DOCUMENT_MD   == nFormatTo)
+		else if (AVS_OFFICESTUDIO_FILE_DOCUMENT_MD   == nFormatTo &&
+		         (0 != (AVS_OFFICESTUDIO_FILE_DOCUMENT & nFormatFrom)))
 		{
-			nRes = html2md(sFrom, sTo, params, convertParams);
+			if (AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML == nFormatFrom)
+				nRes = html2md(sFrom, sTo, params, convertParams);
+			else
+			{
+				std::wstring *pMainFileTo{params.m_sFileTo};
+				int *pMainFormatTo{params.m_nFormatTo};
+
+				params.m_sFileTo   = new std::wstring{combinePath(convertParams.m_sTempDir, L"IntermediateFile.html")};
+				params.m_nFormatTo = new int{AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML};
+
+				nRes = fromDocument(sFrom, *params.m_nFormatFrom, params, convertParams);
+
+				if (S_OK == nRes)
+					nRes = html2md(*params.m_sFileTo, sTo, params, convertParams);
+
+				RELEASEOBJECT(params.m_sFileTo);
+				RELEASEOBJECT(params.m_nFormatTo);
+
+				params.m_sFileTo   = pMainFileTo;
+				params.m_nFormatTo = pMainFormatTo;
+			}
 		}
 		else
 		{

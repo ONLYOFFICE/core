@@ -1095,6 +1095,9 @@ bool CHTMLReader::ReadTable(std::vector<NSCSS::CNode>& arSelectors)
 	oTable.SetAlign(pStyle->m_oDisplay.GetHAlign().ToWString());
 	//------
 
+	if (!m_mTags[HTML_TAG(TABLE)]->Open(arSelectors, &oTable))
+		return false;
+
 	int nDeath = m_oLightReader.GetDepth();
 	while(m_oLightReader.ReadNextSiblingNode(nDeath))
 	{
@@ -1117,9 +1120,6 @@ bool CHTMLReader::ReadTable(std::vector<NSCSS::CNode>& arSelectors)
 
 	oTable.Shorten();
 	oTable.CompleteTable();
-
-	if (!m_mTags[HTML_TAG(TABLE)]->Open(arSelectors, &oTable))
-		return false;
 
 	#define CONVERT_ROWS(rows, parse_mode)\
 	{\

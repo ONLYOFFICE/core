@@ -102,12 +102,14 @@ void CMDWriter::PageBreak()
 
 void CMDWriter::BeginBlock()
 {
-	WriteBreakLine();
+	if (!m_arStates.top().m_bInList)
+		WriteBreakLine();
 }
 
 void CMDWriter::EndBlock(bool bAddBlock)
 {
-	WriteBreakLine();
+	if (!m_arStates.top().m_bInTable)
+		WriteBreakLine();
 }
 
 void CMDWriter::SetDataOutput(XmlString* pOutputData)

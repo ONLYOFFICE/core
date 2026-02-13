@@ -49,17 +49,22 @@ bool CBold<CMDWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, const 
 	if (!ValidWriter())
 		return false;
 
+	if (m_pWriter->IsBold())
+		return true;
+
 	m_pWriter->WriteString(L"**", true);
+	m_pWriter->EneteredBold();
 
 	return true;
 }
 
 void CBold<CMDWriter>::Close(const std::vector<NSCSS::CNode>& arSelectors)
 {
-	if (!ValidWriter())
+	if (!ValidWriter() || !m_pWriter->IsBold())
 		return;
 
 	m_pWriter->WriteString(L"**", true);
+	m_pWriter->OutBold();
 }
 
 CBreak<CMDWriter>::CBreak(CMDWriter* pWriter)
@@ -88,17 +93,22 @@ bool CItalic<CMDWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, cons
 	if (!ValidWriter())
 		return false;
 
+	if (m_pWriter->IsItalic())
+		return true;
+
 	m_pWriter->WriteString(L"*", true);
+	m_pWriter->EneteredItalic();
 
 	return true;
 }
 
 void CItalic<CMDWriter>::Close(const std::vector<NSCSS::CNode>& arSelectors)
 {
-	if (!ValidWriter())
+	if (!ValidWriter() || !m_pWriter->IsItalic())
 		return;
 
 	m_pWriter->WriteString(L"*", true);
+	m_pWriter->OutItalic();
 }
 
 CStrike<CMDWriter>::CStrike(CMDWriter* pWriter)
@@ -110,17 +120,22 @@ bool CStrike<CMDWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, cons
 	if (!ValidWriter())
 		return false;
 
+	if (m_pWriter->IsStrike())
+		return true;
+
 	m_pWriter->WriteString(L"~~", true);
+	m_pWriter->EneteredStrike();
 
 	return true;
 }
 
 void CStrike<CMDWriter>::Close(const std::vector<NSCSS::CNode>& arSelectors)
 {
-	if (!ValidWriter())
+	if (!ValidWriter() || !m_pWriter->IsStrike())
 		return;
 
 	m_pWriter->WriteString(L"~~", true);
+	m_pWriter->OutStrike();
 }
 
 CQuotation<CMDWriter>::CQuotation(CMDWriter* pWriter)
@@ -131,8 +146,6 @@ bool CQuotation<CMDWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, c
 {
 	if (!ValidWriter())
 		return false;
-
-	// m_pWriter->WriteString(L"> ", true);
 
 	return true;
 }

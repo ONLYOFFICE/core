@@ -21,6 +21,10 @@ class CMDWriter : public IWriter
 
 		UINT m_unLevelBlockquote{0};
 
+		bool m_bBold{false};
+		bool m_bItalic{false};
+		bool m_bStrike{false};
+
 		bool m_bInTable{false};
 		bool m_bInPreformatted{false};
 		bool m_bInCode{false};
@@ -56,6 +60,18 @@ public:
 	XmlString* GetCurrentDocument() const override;
 
 	void WriteBreakLine(bool bNeedChecked = true);
+
+	void EneteredBold();
+	void OutBold();
+	bool IsBold();
+
+	void EneteredItalic();
+	void OutItalic();
+	bool IsItalic();
+
+	void EneteredStrike();
+	void OutStrike();
+	bool IsStrike();
 
 	void EnteredBlockquote();
 	void OutBlockquote();

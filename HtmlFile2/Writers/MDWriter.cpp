@@ -54,7 +54,7 @@ bool CMDWriter::WriteText(std::wstring wsText, const std::vector<NSCSS::CNode>& 
 
 	const NSCSS::CCompiledStyle* pCompiledStyle{arSelectors.back().m_pCompiledStyle};
 
-	if (!bPreformatted && nullptr != arSelectors.back().m_pCompiledStyle)
+	if (!bPreformatted && nullptr != pCompiledStyle)
 	{
 		// TODO::поведение должно быть немного разное (реализовать)
 		switch(pCompiledStyle->m_oDisplay.GetWhiteSpace().ToInt())
@@ -84,9 +84,41 @@ bool CMDWriter::WriteText(std::wstring wsText, const std::vector<NSCSS::CNode>& 
 	if (!bPreformatted && !InCode())
 		ReplaceSpaces(wsText);
 
+	bool bNeedBold{false}, bNeedItalic{false}, bNeedStrike{false};
+
+	if (nullptr != pCompiledStyle)
+	{
+		if (!IsBold() && pCompiledStyle->m_oFont.Bold())
+			bNeedBold = true;
+
+		if (!IsItalic() && pCompiledStyle->m_oFont.Italic())
+			bNeedItalic = true;
+
+		if (!IsStrike() && pCompiledStyle->m_oText.LineThrough())
+			bNeedStrike = true;
+	}
+
+	if (bNeedBold)
+		WriteString(L"**");
+
+	if (bNeedItalic)
+		WriteString(L"*");
+
+	if (bNeedStrike)
+		WriteString(L"~~");
+
 	ApplyAlternativeTags(pCompiledStyle);
 	WriteString(wsText);
 	ApplyAlternativeTags(pCompiledStyle, true);
+
+	if (bNeedBold)
+		WriteString(L"**");
+
+	if (bNeedItalic)
+		WriteString(L"*");
+
+	if (bNeedStrike)
+		WriteString(L"~~");
 
 	if (L'\n' == wsText.back())
 		m_arStates.top().m_bNeedBreakLine = false;
@@ -152,6 +184,51 @@ void CMDWriter::WriteBreakLine(bool bNeedChecked)
 	GetCurrentDocument()->WriteString(L"  \n");
 	m_arStates.top().m_bNeedBreakLine = false;
 	m_arStates.top().m_bEmptyLine = true;
+}
+
+void CMDWriter::EneteredBold()
+{
+	m_arStates.top().m_bBold = true;
+}
+
+void CMDWriter::OutBold()
+{
+	m_arStates.top().m_bBold = false;
+}
+
+bool CMDWriter::IsBold()
+{
+	return m_arStates.top().m_bBold;
+}
+
+void CMDWriter::EneteredItalic()
+{
+	m_arStates.top().m_bItalic = true;
+}
+
+void CMDWriter::OutItalic()
+{
+	m_arStates.top().m_bItalic = false;
+}
+
+bool CMDWriter::IsItalic()
+{
+	return m_arStates.top().m_bItalic;
+}
+
+void CMDWriter::EneteredStrike()
+{
+	m_arStates.top().m_bStrike = true;
+}
+
+void CMDWriter::OutStrike()
+{
+	m_arStates.top().m_bStrike = false;
+}
+
+bool CMDWriter::IsStrike()
+{
+	return m_arStates.top().m_bStrike;
 }
 
 void CMDWriter::EnteredBlockquote()

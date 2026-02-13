@@ -758,7 +758,7 @@ namespace PdfReader
 
 			std::wstring wsTempFileName = L"";
 			Ref oEmbRef;
-			bool bFontSubstitution = false;
+			bool bFontSubstitution = false, bFontBase14 = false;
 			std::wstring wsFontBaseName = NSStrings::GetStringFromUTF32(pFont->getName());
 			if (wsFontBaseName.empty())
 				wsFontBaseName = L"Helvetica";
@@ -1049,6 +1049,7 @@ namespace PdfReader
 				oFile.WriteFile((BYTE*)pData14, nSize14);
 				oFile.CloseFile();
 				wsFileName = wsTempFileName;
+				bFontBase14 = true;
 
 				eFontType = fontTrueType;
 			}
@@ -1066,6 +1067,7 @@ namespace PdfReader
 			}())
 			{
 				wsFileName = wsFontBaseName;
+				bFontBase14 = true;
 				NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Add(wsFileName, oMemoryFontStream.m_pData, (LONG)oMemoryFontStream.m_nSize, true);
 			}
 #endif
@@ -1461,7 +1463,7 @@ namespace PdfReader
 				wsFontName = wsFontBaseName;
 			if (bNotFullName)
 				EraseSubsetTag(wsFontName);
-			else
+			else if (!bFontBase14)
 				wsFontName += (L" " + std::to_wstring(pFont->getID()->num));
 
 			pEntry->wsFilePath     = wsFileName;

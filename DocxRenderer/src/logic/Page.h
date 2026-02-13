@@ -50,6 +50,7 @@ namespace NSDocxRenderer
 		bool m_bIsBuildTables		   {false};
 		bool m_bIsLuminosityShapesFiled{false};
 		bool m_bFontSubstitution       {false};
+		bool m_bFirstParagraphLineCorrection{false};
 
 		CPage(NSFonts::IApplicationFonts* pAppFonts, const CManagers& oManagers);
 		~CPage();

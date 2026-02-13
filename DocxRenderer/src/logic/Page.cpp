@@ -517,7 +517,7 @@ namespace NSDocxRenderer
 			            cont->CalculateSpace() * c_dSPACE_WIDTH_COEF;
 
 			if (curr_line && fabs(curr_line->m_dBot - cont->m_dBot) <= c_dTHE_SAME_STRING_Y_PRECISION_MM &&
-			        fabs(curr_line->m_dRight - cont->m_dLeft) <= 3 * space_width)
+			        fabs(curr_line->m_dRight - cont->m_dLeft) <= 4 * space_width)
 			{
 				curr_line->AddCont(cont);
 				continue;
@@ -1410,14 +1410,10 @@ namespace NSDocxRenderer
 	}
 	bool CPage::IsTextLineTrough(base_item_ptr_t pFirst) const noexcept
 	{
-		const auto width = pFirst->m_dRight - pFirst->m_dLeft;
-		const auto center = pFirst->m_dLeft + width / 2;
-
 		for (const auto& text_line : m_arShapes)
 			if (text_line && text_line->m_eType == CShape::eShapeType::stTextBox && text_line->m_dBot > pFirst->m_dTop &&
-			        text_line->m_dBot < pFirst->m_dBot &&
-			        text_line->m_dLeft <= center &&
-			        text_line->m_dRight >= center)
+			        text_line->m_dBot < pFirst->m_dBot && !(
+			        text_line->m_dRight < pFirst->m_dLeft || text_line->m_dLeft > pFirst->m_dRight))
 				return true;
 
 		return false;

@@ -2808,5 +2808,45 @@ void docx_conversion_context::add_jsaProject(const std::string &content)
 	output_document_->get_content_types_file().add_or_find_default(L"bin");
 }
 
+const std::wstring docx_conversion_context::get_current_fontName()
+{
+	auto textProps = current_text_properties();
+	if( textProps )
+	{
+		if( textProps->content_.fo_font_family_ )
+		{
+			return *textProps->content_.fo_font_family_;
+		}
+		else if( textProps->content_.style_font_name_ )
+		{
+			return *textProps->content_.style_font_name_;
+		}
+	}
+
+	return L"";
+}
+
+const double docx_conversion_context::get_current_fontSize_from_default_style()
+{
+	auto defaultStyle = root()->odf_context().styleContainer().style_default_by_type(odf_types::style_family::Paragraph);
+
+	if( defaultStyle )
+	{
+		const auto content = defaultStyle->content();
+
+		if( content )
+		{
+			const auto textProps = content->get_style_text_properties();
+
+			if( textProps && textProps->content_.fo_font_size_ )
+			{
+				return textProps->content_.fo_font_size_->get_length().get_value_unit(odf_types::length::pt);
+			}
+		}
+	}
+
+	return 0.0;
+}
+
 }
 }

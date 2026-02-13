@@ -1024,6 +1024,10 @@ public:
 
 	int get_scale() const;
 
+	const std::wstring get_current_fontName();
+
+	const double get_current_fontSize_from_default_style();
+
 private:
 
 	std::wstring temp_name;

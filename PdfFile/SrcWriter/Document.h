@@ -197,7 +197,7 @@ namespace PdfWriter
 		bool              AddToFile(const std::wstring& wsPath, CXref* pXref, CDictObject* pTrailer, CXref* pInfoXref, CInfoDict* pInfo);
 		void              AddObject(CObjectBase* pObj);
 		bool              MovePage(int nPageIndex, int nPos);
-		void              Sign(const TRect& oRect, CImageDict* pImage);
+		void              Sign(const TRect& oRect, CImageDict* pImage, const std::wstring &wsReason, const std::wstring &wsContact, const std::wstring &wsName, const std::wstring &wsLocation);
 		bool              PrepareSignature(const std::wstring& wsPath);
 		bool              FinalizeSignature(BYTE* pSignedData, DWORD dwDataLength);
 		bool              EditAnnot (CXref* pXref, CAnnotation* pAnnot,  int nID);
@@ -259,11 +259,17 @@ namespace PdfWriter
 		};
 		struct TSignatureInfo
 		{
-			TSignatureInfo(const TRect& _oRect, CPage* _pPage, CImageDict* _pImage)
+			TSignatureInfo(const TRect& _oRect, CPage* _pPage, CImageDict* _pImage,
+						   const std::wstring& _wsReason, const std::wstring& _wsContact, const std::wstring & _wsName, const std::wstring &_wsLocation)
 			{
 				oRect  = _oRect;
 				pPage  = _pPage;
 				pImage = _pImage;
+
+				wsReason = _wsReason;
+				wsContact = _wsContact;
+				wsName = _wsName;
+				wsLocation = _wsLocation;
 
 				nSizeXRef = 0;
 				nPrevAddr = 0;
@@ -276,6 +282,11 @@ namespace PdfWriter
 			TRect oRect;
 			CPage* pPage;
 			CImageDict* pImage;
+
+			std::wstring wsReason;
+			std::wstring wsContact;
+			std::wstring wsName;
+			std::wstring wsLocation;
 
 			std::wstring wsPath;
 			unsigned int nSizeXRef;

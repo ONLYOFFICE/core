@@ -1959,9 +1959,9 @@ namespace PdfWriter
 
 		return true;
 	}
-	void CDocument::Sign(const TRect& oRect, CImageDict* pImage)
+	void CDocument::Sign(const TRect& oRect, CImageDict* pImage, const std::wstring &wsReason, const std::wstring &wsContact, const std::wstring &wsName, const std::wstring &wsLocation)
 	{
-		m_vSignatures.push_back(new TSignatureInfo(oRect, m_pCurPage ? m_pCurPage : m_pPageTree->GetPage(0), pImage));
+		m_vSignatures.push_back(new TSignatureInfo(oRect, m_pCurPage ? m_pCurPage : m_pPageTree->GetPage(0), pImage, wsReason, wsContact, wsName, wsLocation));
 	}
 	bool CDocument::PrepareSignature(const std::wstring& wsPath)
 	{
@@ -2000,12 +2000,20 @@ namespace PdfWriter
 		// Настраиваем поле
 		pSI->pField = pField;
 		m_pAcroForm->Add("SigFlags", 3);
-		pField->GetSignatureDict()->SetDate();
+		pField->SetDate();
 		pField->AddPageRect(pSI->pPage, pSI->oRect);
 		pField->Add("F", 132);
 		pField->SetFieldName("Sig" + std::to_string(++m_unFormFields));
 		if (pSI->pImage)
 			pField->SetAppearance(pSI->pImage);
+		if (!pSI->wsReason.empty())
+			pField->SetReason(pSI->wsReason);
+		if (!pSI->wsContact.empty())
+			pField->SetContact(pSI->wsContact);
+		if (!pSI->wsName.empty())
+			pField->SetName(pSI->wsName);
+		if (!pSI->wsLocation.empty())
+			pField->SetLocation(pSI->wsLocation);
 
 		// Открываем файл для дозаписи
 		CFileStream* pStream = new CFileStream();

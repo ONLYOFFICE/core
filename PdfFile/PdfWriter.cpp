@@ -3262,7 +3262,8 @@ void CPdfWriter::PageRotate(int nRotate)
 	if (m_pPage)
 		m_pPage->SetRotate(nRotate);
 }
-void CPdfWriter::Sign(const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& wsPicturePath)
+void CPdfWriter::Sign(const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& wsPicturePath,
+					  const std::wstring &wsReason, const std::wstring &wsContact, const std::wstring &wsName, const std::wstring &wsLocation)
 {
 	PdfWriter::CImageDict* pImage = NULL;
 	if (!wsPicturePath.empty())
@@ -3271,7 +3272,7 @@ void CPdfWriter::Sign(const double& dX, const double& dY, const double& dW, cons
 		pImage = LoadImage(&oImage, 255);
 	}
 
-	m_pDocument->Sign(PdfWriter::TRect(MM_2_PT(dX), m_pPage->GetHeight() - MM_2_PT(dY), MM_2_PT(dX + dW), m_pPage->GetHeight() - MM_2_PT(dY + dH)), pImage);
+	m_pDocument->Sign(PdfWriter::TRect(MM_2_PT(dX), m_pPage->GetHeight() - MM_2_PT(dY), MM_2_PT(dX + dW), m_pPage->GetHeight() - MM_2_PT(dY + dH)), pImage, wsReason, wsContact, wsName, wsLocation);
 }
 bool CPdfWriter::PrepareSignature(const std::wstring& wsPath)
 {

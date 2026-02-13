@@ -97,6 +97,9 @@ public:
 	bool InOrederedList() const;
 	UINT GetIndexOrderedList() const;
 	UINT GetLevelList() const;
+
+	void SetLinePrefix(const std::wstring& wsPrefix);
+	void ClearLinePrefix();
 private:
 	void SaveState();
 	void RollBackState();

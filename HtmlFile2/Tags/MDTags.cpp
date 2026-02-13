@@ -400,6 +400,7 @@ bool CList<CMDWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, const 
 	if (!ValidWriter())
 		return false;
 
+	m_pWriter->WriteBreakLine();
 	m_pWriter->EnteredList(L"ol" == arSelectors.back().m_wsName);
 
 	if (!m_pWriter->InOrederedList())

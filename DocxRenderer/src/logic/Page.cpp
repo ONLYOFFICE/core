@@ -1674,22 +1674,24 @@ namespace NSDocxRenderer
 			paragraph->MergeLines();
 
 			// Correct first line position
-			double firstLine_height = firstLine->m_dBotWithMaxDescent - firstLine->m_dTopWithMaxAscent;
-			if (paragraph->m_dLineHeight > firstLine_height)
+			if (m_bFirstParagraphLineCorrection)
 			{
-				double offset = paragraph->m_dLineHeight - firstLine_height;
-				paragraph->m_dTop -= offset;
-				paragraph->m_dBot -= offset;
+				double firstLine_height = firstLine->m_dBotWithMaxDescent - firstLine->m_dTopWithMaxAscent;
+				if (paragraph->m_dLineHeight > firstLine_height)
+				{
+					double offset = paragraph->m_dLineHeight - firstLine_height;
+					paragraph->m_dTop -= offset;
+					paragraph->m_dBot -= offset;
+				}
+				else
+				{
+					double ascent = firstLine->m_dBot - firstLine->m_dTopWithMaxAscent;
+					double newAscent = ascent * paragraph->m_dLineHeight / firstLine_height;
+					double offset = ascent - newAscent;
+					paragraph->m_dTop += offset;
+					paragraph->m_dBot += offset;
+				}
 			}
-			else
-			{
-				double ascent = firstLine->m_dBot - firstLine->m_dTopWithMaxAscent;
-				double newAscent = ascent * paragraph->m_dLineHeight / firstLine_height;
-				double offset = ascent - newAscent;
-				paragraph->m_dTop += offset;
-				paragraph->m_dBot += offset;
-			}
-
 			// setting TextAlignmentType
 			if (paragraph->m_arTextLines.size() > 1)
 			{
@@ -1935,6 +1937,9 @@ namespace NSDocxRenderer
 
 			double curr_max_right = text_lines[0]->m_dRight;
 			double curr_min_left = text_lines[0]->m_dLeft;
+
+			double line_with_first_right_min = std::numeric_limits<double>::max();
+			double line_with_first_left_max = std::numeric_limits<double>::lowest();
 			for (size_t index = 0; index < ar_positions.size() - 1; ++index)
 			{
 				Position position = ar_positions[index];
@@ -1945,6 +1950,10 @@ namespace NSDocxRenderer
 				{
 					curr_max_right = line_bot->m_dRight;
 					curr_min_left = line_bot->m_dLeft;
+
+					line_with_first_right_min = std::numeric_limits<double>::max();
+					line_with_first_left_max = std::numeric_limits<double>::lowest();
+
 					continue;
 				}
 
@@ -1952,15 +1961,18 @@ namespace NSDocxRenderer
 				double line_with_first_right = line_top->m_dRight + line_bot->m_dFirstWordWidth;
 				double line_with_first_left = line_top->m_dLeft - line_bot->m_dFirstWordWidth;
 
+				line_with_first_right_min = std::min(line_with_first_right_min, line_with_first_right);
+				line_with_first_left_max = std::max(line_with_first_left_max, line_with_first_left);
+
 				curr_max_right = std::max(curr_max_right, line_bot->m_dRight);
 				curr_min_left = std::min(curr_min_left, line_bot->m_dLeft);
 
 				double diff = 0;
 
 				if (position.right && !position.left)
-					diff = line_with_first_left - curr_min_left;
+					diff = line_with_first_left_max - curr_min_left;
 				else if (position.left || ar_indents[index] || position.center)
-					diff = curr_max_right - line_with_first_right;
+					diff = curr_max_right - line_with_first_right_min;
 
 				if (diff <= 0)
 					continue;
@@ -1969,6 +1981,8 @@ namespace NSDocxRenderer
 					ar_delims[index] = true;
 					curr_max_right = line_bot->m_dRight;
 					curr_min_left = line_bot->m_dLeft;
+					line_with_first_right_min = std::numeric_limits<double>::max();
+					line_with_first_left_max = std::numeric_limits<double>::lowest();
 				}
 			}
 

@@ -102,11 +102,11 @@ void CPdfFile::Close()
 	else if (m_pInternal->pReader)
 		m_pInternal->pReader->Close();
 }
-void CPdfFile::Sign(const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& wsPicturePath)
+void CPdfFile::Sign(const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& wsPicturePath, CPDFSignatureInfo* pSigInfo)
 {
 	if (!m_pInternal->pWriter)
 		return;
-	m_pInternal->pWriter->Sign(dX, dY, dW, dH, wsPicturePath);
+	m_pInternal->pWriter->Sign(dX, dY, dW, dH, wsPicturePath, pSigInfo->m_wsReason, pSigInfo->m_wsContact, pSigInfo->m_wsName, pSigInfo->m_wsLocation);
 }
 bool CPdfFile::PrepareSignature(const std::wstring& wsPath)
 {

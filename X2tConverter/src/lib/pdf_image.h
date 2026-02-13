@@ -101,7 +101,10 @@ namespace NExtractTools
 		pdfFile.SetTempDirectory(convertParams.m_sTempDir);
 		std::wstring password = params.getSavePassword();
 
-		if (!pdfFile.LoadFromFile(file, L"", password.c_str(), password.c_str()))
+		std::wstring pdfTemp = combinePath(convertParams.m_sTempDir, L"pdf_sign.pdf");
+		NSFile::CFileBinary::Copy(file, pdfTemp);
+
+		if (!pdfFile.LoadFromFile(pdfTemp, L"", password.c_str(), password.c_str()))
 			return 2;
 
 		if (!pdfFile.EditPdf(file))
@@ -110,7 +113,43 @@ namespace NExtractTools
 		if (!pdfFile.EditPage(0))
 			return 2;
 
-		pdfFile.Sign(0, 0, 0, 0, L"");
+		CPDFSignatureInfo oSigInfo;
+		auto extractJsonValue = [](const std::wstring* jsonParams, const std::wstring& key, std::wstring::size_type startPos) -> std::wstring
+		{
+			std::wstring searchPattern = L"\"" + key + L"\":\"";
+			std::wstring::size_type pos = jsonParams->find(searchPattern, startPos);
+			if (std::wstring::npos == pos)
+				return L"";
+
+			pos += searchPattern.length();
+			std::wstring::size_type posEnd = jsonParams->find(L"\"", pos);
+			if (std::wstring::npos == posEnd)
+				return L"";
+
+			return jsonParams->substr(pos, posEnd - pos);
+		};
+
+		if (params.m_sJsonParams)
+		{
+			std::wstring::size_type posLayout = params.m_sJsonParams->find(L"\"pdfLayout\":{");
+			if (std::wstring::npos != posLayout)
+			{
+				std::wstring::size_type posSignature = params.m_sJsonParams->find(L"\"signature\":{", posLayout);
+				if (std::wstring::npos != posSignature)
+				{
+					std::wstring::size_type posSignature2 = params.m_sJsonParams->find(L"}", posSignature);
+					if (std::wstring::npos == posSignature2)
+						return 2;
+
+					oSigInfo.m_wsReason   = extractJsonValue(params.m_sJsonParams, L"reason", posSignature);
+					oSigInfo.m_wsContact  = extractJsonValue(params.m_sJsonParams, L"contactInfo", posSignature);
+					oSigInfo.m_wsName     = extractJsonValue(params.m_sJsonParams, L"name", posSignature);
+					oSigInfo.m_wsLocation = extractJsonValue(params.m_sJsonParams, L"location", posSignature);
+				}
+			}
+		}
+
+		pdfFile.Sign(0, 0, 0, 0, L"", &oSigInfo);
 		pdfFile.Close();
 
 		if (!pdfFile.PrepareSignature(file))
@@ -190,7 +229,7 @@ namespace NExtractTools
 
 		if (0 == nRet && params.getSigningKeyStorePath() == L"_placeholder_")
 		{
-			pdfSign(sTo, pApplicationFonts, params, convertParams);
+			nRet = pdfSign(sTo, pApplicationFonts, params, convertParams);
 		}
 
 		RELEASEOBJECT(pApplicationFonts);
@@ -365,7 +404,7 @@ namespace NExtractTools
 
 			if (0 == nRes && params.getSigningKeyStorePath() == L"_placeholder_")
 			{
-				pdfSign(sTo, pApplicationFonts, params, convertParams);
+				nRes = pdfSign(sTo, pApplicationFonts, params, convertParams);
 			}
 
 			RELEASEOBJECT(pApplicationFonts);
@@ -1168,7 +1207,7 @@ namespace NExtractTools
 
 					if (0 == nRes && params.getSigningKeyStorePath() == L"_placeholder_")
 					{
-						pdfSign(sTo, pApplicationFonts, params, convertParams);
+						nRes = pdfSign(sTo, pApplicationFonts, params, convertParams);
 					}
 				}
 				RELEASEOBJECT(pReader);

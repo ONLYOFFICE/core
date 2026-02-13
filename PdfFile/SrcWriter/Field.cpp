@@ -1628,6 +1628,12 @@ namespace PdfWriter
 		Add("FT", "Sig");
 		m_pResources = NULL;
 	}
+	void CSignatureField::SetLocation(const std::wstring& wsValue)
+	{
+		if (!m_pSig || wsValue.empty())
+			return;
+		m_pSig->SetLocation(U_TO_UTF8(wsValue));
+	}
 	void CSignatureField::SetName(const std::wstring& wsValue)
 	{
 		if (!m_pSig || wsValue.empty())
@@ -1646,13 +1652,9 @@ namespace PdfWriter
 			return;
 		m_pSig->SetContact(U_TO_UTF8(wsValue));
 	}
-	void CSignatureField::SetCert()
+	void CSignatureField::SetDate()
 	{
-
-	}
-	void CSignatureField::SetDate(bool bDate)
-	{
-		if (!m_pSig || !bDate)
+		if (!m_pSig)
 			return;
 		m_pSig->SetDate();
 	}

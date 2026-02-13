@@ -59,6 +59,14 @@ public:
 		m_bIsUsePicker = false;
 	}
 };
+class CPDFSignatureInfo
+{
+public:
+	std::wstring m_wsReason;
+	std::wstring m_wsContact;
+	std::wstring m_wsName;
+	std::wstring m_wsLocation;
+};
 
 namespace PdfFile
 {
@@ -160,7 +168,7 @@ public:
 	void RotatePage   (int nRotate);
 	void SetPassword  (const std::wstring& wsPassword);
 	void SetDocumentID(const std::wstring& wsDocumentID);
-	void Sign(const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& wsPicturePath);
+	void Sign(const double& dX = 0, const double& dY = 0, const double& dW = 0, const double& dH = 0, const std::wstring& wsPicturePath = L"", CPDFSignatureInfo* pSigInfo = NULL);
 	bool PrepareSignature(const std::wstring& wsPath);
 	bool FinalizeSignature(BYTE* pSignedData, DWORD dwDataLength);
 	void SetDocumentInfo(const std::wstring& wsTitle, const std::wstring& wsCreator, const std::wstring& wsSubject, const std::wstring& wsKeywords);

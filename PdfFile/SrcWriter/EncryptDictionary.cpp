@@ -343,6 +343,10 @@ namespace PdfWriter
         // Значение следует использовать когда невозможно извлечь имя из подписи или сертификата подписавшего.
         Add("Name", new CStringObject(sName.c_str()));
     }
+	void CSignatureDict::SetLocation(const std::string& sLocation)
+	{
+		Add("Location", new CStringObject(sLocation.c_str()));
+	}
     void CSignatureDict::SetReason(const std::string& sReason)
     {
         // Reason - Строка, Причина подписания, например (Я согласен)

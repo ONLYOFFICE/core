@@ -81,6 +81,7 @@ namespace PdfWriter
 
 		void SetContentsSize(unsigned int nSize);
 		void SetName(const std::string& sName);
+		void SetLocation(const std::string& sLocation);
 		void SetReason(const std::string& sReason);
 		void SetContact(const std::string& sContacts);
 		void SetDate();

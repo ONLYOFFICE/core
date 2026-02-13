@@ -1,5 +1,6 @@
 #include "MDTags.h"
 
+#include "../src/StringFinder.h"
 #include "../Table.h"
 
 #include <boost/tuple/tuple.hpp>
@@ -388,6 +389,14 @@ bool CList<CMDWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, const 
 
 	m_pWriter->EnteredList(L"ol" == arSelectors.back().m_wsName);
 
+	if (!m_pWriter->InOrederedList())
+		return true;
+
+	std::wstring wsIndex;
+
+	if (arSelectors.back().GetAttributeValue(L"start", wsIndex))
+		m_pWriter->SetIndexOrderedList(NSStringFinder::ToInt(wsIndex, 1));
+
 	return true;
 }
 
@@ -413,8 +422,8 @@ bool CListElement<CMDWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors,
 
 	if (m_pWriter->InOrederedList())
 	{
-		m_pWriter->IncreaseIndexOrderedList();
 		m_pWriter->WriteString(std::to_wstring(m_pWriter->GetIndexOrderedList()) + m_pWriter->GetParametrs().m_wchOrderedList + L' ');
+		m_pWriter->IncreaseIndexOrderedList();
 	}
 	else
 		m_pWriter->WriteString({m_pWriter->GetParametrs().m_wchUnorderedList, L' '});

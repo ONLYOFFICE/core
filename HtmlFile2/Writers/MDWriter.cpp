@@ -228,6 +228,11 @@ void CMDWriter::OutList()
 	RollBackState();
 }
 
+void CMDWriter::SetIndexOrderedList(UINT unIndex)
+{
+	m_arStates.top().m_unIndexListElement = unIndex;
+}
+
 void CMDWriter::IncreaseIndexOrderedList()
 {
 	m_arStates.top().m_unIndexListElement++;

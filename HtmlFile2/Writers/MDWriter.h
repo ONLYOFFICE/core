@@ -28,7 +28,7 @@ class CMDWriter : public IWriter
 		bool m_bInList{false};
 		bool m_bIsOrederedList{false};
 		UINT m_unLevelList{0};
-		UINT m_unIndexListElement{0};
+		UINT m_unIndexListElement{1};
 	};
 
 	std::stack<TState> m_arStates;
@@ -75,6 +75,7 @@ public:
 
 	void EnteredList(bool bOrderedList);
 	void OutList();
+	void SetIndexOrderedList(UINT unIndex);
 	void IncreaseIndexOrderedList();
 
 	bool InOrederedList() const;

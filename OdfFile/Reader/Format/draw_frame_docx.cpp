@@ -1663,9 +1663,7 @@ void draw_frame::docx_convert(oox::docx_conversion_context & Context)
 		}
 		Context.add_new_run(L"");
 	}
-
-	drawing->serialize(Context.output_stream()/*, Context.get_drawing_state_content()*/);
-
+	drawing->serialize(Context.output_stream()/*, Context.get_drawing_state_content()*/, Context);
 	if (!Context.get_drawing_context().in_group() && !runState)
 	{
 		Context.finish_run();

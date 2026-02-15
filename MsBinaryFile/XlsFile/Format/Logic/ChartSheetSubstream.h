@@ -81,6 +81,7 @@ public:
 	BaseObjectPtr				m_PrintSize;
 	BaseObjectPtr				m_Palette;
 	BaseObjectPtr				m_WriteProtect;
+	bool						separate = true;
 	
 private:
 

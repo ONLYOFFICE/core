@@ -306,7 +306,15 @@ namespace OOX
 						if(ChartFile->m_oChartSpace.m_chart != nullptr &&  ChartFile->m_oChartSpace.m_chart->m_plotArea != nullptr)
 						{
 							auto AxisParentUnion = new XLS::AXISPARENT;
+							auto axes = new XLS::AXES;
+							AxisParentUnion->m_AXES = XLS::BaseObjectPtr(axes);
 							ChartFormatsPtr->m_arAXISPARENT.push_back(XLS::BaseObjectPtr(AxisParentUnion));
+							auto axisPos = new XLS::Pos;
+							axisPos->x1 = -1000;
+							axisPos->y1 = -1000;
+							axisPos->x2 = 1000;
+							axisPos->y2 = 2500;
+							AxisParentUnion->m_Pos = XLS::BaseObjectPtr(axisPos);
 
 							for(auto chartIndex = 0; chartIndex < ChartFile->m_oChartSpace.m_chart->m_plotArea->m_Items.size(); chartIndex ++)
 							{
@@ -342,7 +350,7 @@ namespace OOX
 								}
 								else if(*ChartFile->m_oChartSpace.m_chart->m_plotArea->m_ItemsElementName0.at(chartIndex) == OOX::Spreadsheet::itemschoicetype5AREACHART)
 								{
-									auto AreaChart = static_cast<CT_AreaChart*>(ChartFile->m_oChartSpace.m_chart->m_plotArea->m_Items.at(chartIndex));
+									auto AreaChart = static_cast<CT_AreaChart*>(ChartFile->m_oChartSpace.m_chart->m_plotArea->m_Items.at(chartIndex));			
 									AxisParentUnion->m_arCRT.push_back(AreaChart->toXLS(chartIndex, ptr->m_CHARTFORMATS));
 								}
 								else if(*ChartFile->m_oChartSpace.m_chart->m_plotArea->m_ItemsElementName0.at(chartIndex) == OOX::Spreadsheet::itemschoicetype5AREA3DCHART)
@@ -366,13 +374,39 @@ namespace OOX
 									AxisParentUnion->m_arCRT.push_back(ScatterChart->toXLS(chartIndex, ptr->m_CHARTFORMATS));
 								}
 
+								if(ChartFormatsPtr->m_arAXISPARENT.size() < 2)
+								{
+									for(auto axPose = 0; axPose < ChartFile->m_oChartSpace.m_chart->m_plotArea->m_ItemsElementName1.size(); axPose++)
+									{
+										if(ChartFile->m_oChartSpace.m_chart->m_plotArea->m_ItemsElementName1[axPose] != nullptr && ChartFile->m_oChartSpace.m_chart->m_plotArea->m_Items1.size() > axPose)
+										{
+											auto AxType = *ChartFile->m_oChartSpace.m_chart->m_plotArea->m_ItemsElementName1[axPose];
+											switch (AxType)
+											{
+												case ItemsChoiceType6::itemschoicetype6CATAX:
+												{
+													auto ivAx = static_cast<CT_CatAx*>(ChartFile->m_oChartSpace.m_chart->m_plotArea->m_Items1.at(axPose));
+													axes->m_arAxes.push_back(ivAx->toXLS());
+													break;
+												}
+												case ItemsChoiceType6::itemschoicetype6VALAX:
+												{
+													auto dvAx = static_cast<CT_ValAx*>(ChartFile->m_oChartSpace.m_chart->m_plotArea->m_Items1.at(axPose));
+													axes->m_arAxes.push_back(dvAx->toXLS());
+													break;
+												}
+												default:
+												break;
+											}
+										}
+									}
+								}
 								if(ChartFile->m_oChartSpace.m_chart->m_legend != nullptr && !AxisParentUnion->m_arCRT.empty())
 								{
 									auto crtPtr = static_cast<XLS::CRT*>(AxisParentUnion->m_arCRT.back().get());
 									crtPtr->m_LD = ChartFile->m_oChartSpace.m_chart->m_legend->toXLS();
 								}
 							}
-
 						}
 						if(ChartFile->m_oChartSpace.m_chart->m_title != nullptr && ChartFile->m_oChartSpace.m_chart->m_title->m_tx != nullptr)
 						{
@@ -423,6 +457,10 @@ namespace OOX
 		bool CDrawing::IsEmpty()
 		{
 			return m_arrItems.empty();
+		}
+		bool CDrawing::IsChart()
+		{
+			return (!IsEmpty() && m_arrItems.back()->m_oElement.IsInit() && m_arrItems.back()->m_oElement->is<PPTX::Logic::GraphicFrame>());
 		}
 		void CDrawing::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{

@@ -52,14 +52,15 @@ public:
 	static const XLS::ElementType	type = XLS::typeOfficeArtClientAnchorChart;
 		
 	virtual void loadFields(XLS::CFRecord& record);
+	virtual void save(XLS::CFRecord& record);
 
 // 	bool fMove; // This attribute is ignored for chart sheets
 	bool fSize;
 
-    int lx1;
-    int ly1;
-    int lx2;
-    int ly2;
+	int lx1 = 0;
+	int ly1 = 0;
+	int lx2 = 0;
+	int ly2 = 0;
 };
 
 typedef boost::shared_ptr<OfficeArtClientAnchorChart> OfficeArtClientAnchorChartPtr;

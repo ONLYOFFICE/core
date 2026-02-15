@@ -99,6 +99,7 @@ namespace OOX
 			virtual SimpleTypes::Spreadsheet::ECellAnchorType getAnchorType () const;
 
 			bool isValid() const;
+			void getAnchorPos(_INT32 &colL, _INT32 &dxL, _INT32 &rwT, _INT32 &dyT, _INT32 &colR, _INT32 &dxR, _INT32 &rwB, _INT32 &dyB);
 
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);

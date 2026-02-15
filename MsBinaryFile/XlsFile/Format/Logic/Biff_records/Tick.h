@@ -60,10 +60,10 @@ public:
 	unsigned char	tktMajor = 0;
 	unsigned char	tktMinor = 0;
 	unsigned char	tlt = 0;
-	unsigned char	wBkgMode = 0;
+	unsigned char	wBkgMode = 1;
 	LongRGB rgb;
 
-	bool fAutoCo = false;
+	bool fAutoCo = true;
 	bool fAutoMode = false;
 	unsigned char	rot = 0;
 	bool fAutoRot = false;

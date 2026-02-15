@@ -56,5 +56,17 @@ void OfficeArtClientAnchorChart::loadFields(XLS::CFRecord& record)
 
 }
 
+void OfficeArtClientAnchorChart::save(XLS::CFRecord& record)
+{
+	rh_own.recVer = 0;
+	rh_own.recType = 0xF010;
+	rh_own.recLen  = 0x00000012;
+	record << rh_own;
+	unsigned short flags = 3;
+
+	record << flags << lx1 << ly1 << lx2 << ly2;
+
+}
+
 
 } // namespace XLS

@@ -112,6 +112,11 @@ public:
 	_CP_OPT(odf_types::length) get_svg_width();
 	_CP_OPT(odf_types::length) get_svg_height();
 
+	void set_style_name(const bool& bStyleName);
+	bool get_has_style_name();
+
+	void set_header(const bool& bHeader);
+
 	bool in_list_;
 	bool process_layouts_;
 
@@ -128,6 +133,8 @@ private:
 	bool is_predump;
 	bool is_lasttext;
 	bool is_line_break;
+	bool has_style_name;
+	bool header;
 
 	odf_reader::styles_container * local_styles_ptr_;
 
@@ -178,7 +185,7 @@ private:
 
 pptx_text_context::Impl::Impl(odf_reader::odf_read_context & odf_contxt_, pptx_conversion_context & pptx_contxt_): 
 		odf_context_(odf_contxt_),	pptx_context_(pptx_contxt_),
-		paragraphs_cout_(0), in_paragraph(false),in_span(false),is_predump(false),is_lasttext(false),is_line_break(false), in_comment(false), field_type_(none)
+		paragraphs_cout_(0), in_paragraph(false),in_span(false),is_predump(false),is_lasttext(false),is_line_break(false),has_style_name(false),header(false), in_comment(false), field_type_(none)
 {
 	new_list_style_number_=0;
 	local_styles_ptr_ = NULL;
@@ -191,7 +198,8 @@ void pptx_text_context::Impl::add_text(const std::wstring & text)
 		field_value_ << text;
 	else
 	{
-		is_lasttext = true;
+		if(!has_style_name)
+			is_lasttext = true;
 		text_ << text;
 	}
 }
@@ -216,7 +224,8 @@ void pptx_text_context::Impl::start_paragraph(const std::wstring & styleName)
 		//}
 		//else/* (paragraph_style_name_ != styleName)*/
 		{
-			is_predump = true;
+			if(is_lasttext)
+				is_predump = true;
 			dump_paragraph();
 		}
 	}else
@@ -377,18 +386,18 @@ void pptx_text_context::Impl::ApplyListProperties(odf_reader::paragraph_format_p
 		else if(!propertiesOut.fo_margin_left_)
 			propertiesOut.fo_margin_left_ = odf_types::length(0, odf_types::length::pt);
 
-		if(list_properties->text_min_label_width_)
-		{
-			odf_types::length::unit tempTypeUnit = propertiesOut.fo_text_indent_ ? propertiesOut.fo_text_indent_->get_length().get_unit():list_properties->text_min_label_width_->get_unit();
-			double d_MinLabelWidth = (list_properties->text_min_label_width_->get_value_unit(tempTypeUnit) > 0 ? list_properties->text_min_label_width_->get_value_unit(tempTypeUnit): 0);
-			if(propertiesOut.fo_text_indent_)
-			{
-				double dNewIndent = propertiesOut.fo_text_indent_->get_length().get_value() + d_MinLabelWidth;
-				propertiesOut.fo_text_indent_ = odf_types::length(dNewIndent, tempTypeUnit);
-			}
-			else
-				propertiesOut.fo_text_indent_ = odf_types::length(d_MinLabelWidth,tempTypeUnit);
-		}
+		// if(list_properties->text_min_label_width_)
+		// {
+		// 	odf_types::length::unit tempTypeUnit = propertiesOut.fo_text_indent_ ? propertiesOut.fo_text_indent_->get_length().get_unit():list_properties->text_min_label_width_->get_unit();
+		// 	double d_MinLabelWidth = (list_properties->text_min_label_width_->get_value_unit(tempTypeUnit) > 0 ? list_properties->text_min_label_width_->get_value_unit(tempTypeUnit): 0);
+		// 	if(propertiesOut.fo_text_indent_)
+		// 	{
+		// 		double dNewIndent = propertiesOut.fo_text_indent_->get_length().get_value()< d_MinLabelWidth ? d_MinLabelWidth:propertiesOut.fo_text_indent_->get_length().get_value();
+		// 		propertiesOut.fo_text_indent_ = odf_types::length(dNewIndent, tempTypeUnit);
+		// 	}
+		// 	else
+		// 		propertiesOut.fo_text_indent_ = odf_types::length(d_MinLabelWidth,tempTypeUnit);
+		// }
 
 		if (list_properties->fo_width_)
 		{
@@ -434,7 +443,7 @@ void pptx_text_context::Impl::write_pPr(std::wostream & strm)
 	get_styles_context().start();
 
 	int level = list_style_stack_.size() - 1;		
-	if (is_predump && is_lasttext)
+	if (is_predump || header)
 	{
 		seroing_predump();
 		level = -1;
@@ -1075,6 +1084,21 @@ _CP_OPT(odf_types::length) pptx_text_context::get_svg_width()
 	return impl_->get_svg_width();
 }
 
+void pptx_text_context::set_style_name(const bool& bStyleName)
+{
+	impl_->set_style_name(bStyleName);
+}
+
+bool pptx_text_context::get_has_style_name()
+{
+	return impl_->get_has_style_name();
+}
+
+void pptx_text_context::set_header(const bool& bHeader)
+{
+	impl_->set_header(bHeader);
+}
+
 void pptx_text_context::Impl::set_predump(const bool& bPredump)
 {
 	is_predump = bPredump;
@@ -1110,6 +1134,21 @@ _CP_OPT(odf_types::length) pptx_text_context::Impl::get_svg_height()
 _CP_OPT(odf_types::length) pptx_text_context::Impl::get_svg_width()
 {
 	return svg_widthVal;
+}
+
+void pptx_text_context::Impl::set_style_name(const bool& bStyleName)
+{
+	has_style_name = bStyleName;
+}
+
+bool pptx_text_context::Impl::get_has_style_name()
+{
+	return has_style_name;
+}
+
+void pptx_text_context::Impl::set_header(const bool& bHeader)
+{
+	header = bHeader;
 }
 
 }

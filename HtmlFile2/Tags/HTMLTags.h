@@ -84,6 +84,7 @@ CREATE_TAG(CTable);
 CREATE_TAG(CTableRow);
 CREATE_TAG(CTableCell);
 CREATE_TAG(CCode);
+CREATE_TAG(CHTML);
 
 }
 #endif // HTMLTAGS_H

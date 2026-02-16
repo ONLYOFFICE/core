@@ -27,6 +27,8 @@ namespace HTML
 #define UNKNOWN_TAG GumboTag::GUMBO_TAG_UNKNOWN
 #define HtmlTag GumboTag
 
+#define TAGS_COUNT 32
+
 const static std::map<std::wstring, HtmlTag> m_HTML_TAGS
 {
 	ADD_TAG(L"a", A),
@@ -341,6 +343,9 @@ void CHTMLReader::InitOOXMLTags(THTMLParameters* pParametrs)
 	if (nullptr == pWriter)
 		return;
 
+	if (nullptr != m_pWriter)
+		delete m_pWriter;
+
 	pWriter->SetSrcDirectory (m_wsSrcDirectory);
 	pWriter->SetDstDirectory (m_wsDstDirectory);
 	pWriter->SetTempDirectory(m_wsTempDirectory);
@@ -348,6 +353,9 @@ void CHTMLReader::InitOOXMLTags(THTMLParameters* pParametrs)
 	pWriter->SetCoreDirectory(m_wsCoreDirectory);
 
 	m_pWriter = pWriter;
+
+	m_mTags.clear();
+	m_mTags.reserve(TAGS_COUNT);
 
 	m_mTags[HTML_TAG(A)]          = std::make_shared<CAnchor        <COOXMLWriter>>(pWriter);
 	m_mTags[HTML_TAG(ABBR)]       = std::make_shared<CAnchor        <COOXMLWriter>>(pWriter);
@@ -365,6 +373,7 @@ void CHTMLReader::InitOOXMLTags(THTMLParameters* pParametrs)
 	m_mTags[HTML_TAG(TABLE)]      = std::make_shared<CTable         <COOXMLWriter>>(pWriter);
 	m_mTags[HTML_TAG(TR)]         = std::make_shared<CTableRow      <COOXMLWriter>>(pWriter);
 	m_mTags[HTML_TAG(TD)]         = std::make_shared<CTableCell     <COOXMLWriter>>(pWriter);
+	m_mTags[HTML_TAG(HTML)]       = std::make_shared<CHTML          <COOXMLWriter>>(pWriter);
 
 	std::shared_ptr<ITag> oIgnoredTag{std::make_shared<CEmptyTag>()};
 
@@ -392,7 +401,13 @@ void CHTMLReader::InitMDTags(TMarkdownParameters* pParametrs)
 	if (nullptr == pWriter)
 		return;
 
+	if (nullptr != m_pWriter)
+		delete m_pWriter;
+
 	m_pWriter = pWriter;
+
+	m_mTags.clear();
+	m_mTags.reserve(TAGS_COUNT);
 
 	m_mTags[HTML_TAG(A)]          = std::make_shared<CAnchor        <CMDWriter>>(pWriter);
 	m_mTags[HTML_TAG(B)]          = std::make_shared<CBold          <CMDWriter>>(pWriter);
@@ -431,6 +446,7 @@ void CHTMLReader::InitMDTags(TMarkdownParameters* pParametrs)
 	m_mTags[HTML_TAG(SPAN)]     = oIgnoredTag;
 	m_mTags[HTML_TAG(CAPTION)]  = oIgnoredTag;
 	m_mTags[HTML_TAG(U)]        = oIgnoredTag;
+	m_mTags[HTML_TAG(HTML)]     = oIgnoredTag;
 }
 
 bool CHTMLReader::IsHTML()
@@ -623,30 +639,19 @@ void CHTMLReader::ReadBody()
 
 	GetSubClass(arSelectors);
 
-	if (!arSelectors.back().m_mAttributes.empty())
-	{
-		std::map<std::wstring, std::wstring>::iterator itFound = arSelectors.back().m_mAttributes.find(L"bgcolor");
+	if (!m_mTags[HTML_TAG(HTML)]->Open(arSelectors))
+		return;
 
-		if (arSelectors.back().m_mAttributes.end() != itFound)
-		{
-			NSCSS::NSProperties::CColor oColor;
-			oColor.SetValue(itFound->second);
+	std::map<std::wstring, std::wstring>::iterator itFound = arSelectors.back().m_mAttributes.find(L"bgcolor");
 
-			if (!oColor.Empty() && !oColor.None())
-			{
-				const std::wstring wsHEXColor{oColor.ToHEX()};
-
-				if (!wsHEXColor.empty())
-					m_pWriter->GetCurrentDocument()->WriteString(L"<w:background w:color=\"" + wsHEXColor + L"\"/>");
-
-				arSelectors.back().m_mAttributes.erase(itFound);
-			}
-		}
-	}
+	if (arSelectors.back().m_mAttributes.end() != itFound)
+		arSelectors.back().m_mAttributes.erase(itFound);
 
 	m_oLightReader.MoveToElement();
 
 	ReadStream(arSelectors);
+
+	m_mTags[HTML_TAG(HTML)]->Close(arSelectors);
 }
 
 bool CHTMLReader::ReadStream(std::vector<NSCSS::CNode>& arSelectors, bool bInsertEmptyP)

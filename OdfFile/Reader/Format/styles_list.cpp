@@ -591,7 +591,7 @@ void text_list_level_style_number::pptx_convert(oox::pptx_conversion_context & C
 
 	//int level = text_list_level_style_attr_.get_text_level();
 	
-	std::wstring num_format;
+	std::wstring num_format, num_format_none(L"");
 
 	if ((number_attr_.common_num_format_attlist_.style_num_format_ ) && 
 		(number_attr_.common_num_format_attlist_.style_num_format_->get_type() != style_numformat::none))
@@ -622,7 +622,10 @@ void text_list_level_style_number::pptx_convert(oox::pptx_conversion_context & C
 			else
 				num_format += L"Period";
 		}
-	}		
+	}
+	else if((number_attr_.common_num_format_attlist_.style_num_format_ ) &&
+			(number_attr_.common_num_format_attlist_.style_num_format_->get_type() == style_numformat::none))
+			num_format_none = L"⠀";
 	
 	CP_XML_WRITER(strm)
 	{ 	
@@ -638,6 +641,13 @@ void text_list_level_style_number::pptx_convert(oox::pptx_conversion_context & C
 			{
 				CP_XML_ATTR(L"startAt", number_attr_.text_start_value_);
 				CP_XML_ATTR(L"type", num_format);
+			}
+		}
+		if(!num_format_none.empty())
+		{
+			CP_XML_NODE(L"a:buChar")
+			{
+				CP_XML_ATTR(L"char", num_format_none);
 			}
 		}
 	} 

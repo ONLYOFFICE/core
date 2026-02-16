@@ -674,7 +674,7 @@ void _oox_drawing::serialize_bodyPr(std::wostream & strm, const std::wstring & n
 
 					if (((iWrap) && (*iWrap == 0))) // для текста устанавливаем значение square. Так у нас визуальное соотвествие при конвертации
 						CP_XML_ATTR(L"wrap", L"square");
-					else if((is_math_formula) && (*is_math_formula))
+					else if((iWrap && *iWrap == 2) || ((is_math_formula) && (*is_math_formula)))
 					{
 						CP_XML_ATTR(L"wrap", L"none");
 					}

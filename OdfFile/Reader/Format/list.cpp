@@ -151,10 +151,14 @@ void list_header::pptx_convert(oox::pptx_conversion_context & Context)
 
 	//заголовок это не элемент списка
 
+	Context.get_text_context().set_header(true);
+
 	for (size_t i = 0; i < content_.size(); i++)
     {
         content_[i]->pptx_convert(Context);
     }
+
+	Context.get_text_context().set_header(false);
 }
 std::wostream & list_header::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {

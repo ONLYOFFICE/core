@@ -45,7 +45,8 @@ public:
     enum type
     {
         NoWrap,
-        Wrap
+        Wrap,
+        no_wrap_in_fo_wrap_option,
     };
 
     wrap_option() {}
@@ -57,6 +58,11 @@ public:
     {
         return type_;
     };
+
+    void set_type(const wrap_option::type& wo_type)
+    {
+        type_ = wo_type;
+    }
     
     static wrap_option parse(const std::wstring & Str);
 

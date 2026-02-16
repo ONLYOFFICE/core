@@ -125,6 +125,11 @@ public:
 	_CP_OPT(odf_types::length) get_svg_height();
 	_CP_OPT(odf_types::length) get_svg_width();
 
+	void set_style_name(const bool& bStyleName);
+	bool get_has_style_name();
+
+	void set_header(const bool& bHeader);
+
 private:
 
 	class Impl;

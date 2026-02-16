@@ -71,8 +71,17 @@ bool CMDWriter::WriteText(std::wstring wsText, const std::vector<NSCSS::CNode>& 
 	if (!bPreformatted && wsText.end() == std::find_if_not(wsText.begin(), wsText.end(), [](wchar_t wchChar){ return iswspace(wchChar) && 0xa0 != wchChar;}))
 		return false;
 
-	if (bPreformatted && !m_arStates.top().m_bEmptyLine)
-		GetCurrentDocument()->AddCharSafe(L'\n');
+	if (bPreformatted && !m_arStates.top().m_bEmptyLine && !m_arStates.top().m_bInTable)
+	{
+		for (std::vector<NSCSS::CNode>::const_reverse_iterator itElement{arSelectors.crbegin()}; itElement < arSelectors.crend(); ++itElement)
+		{
+			if (L"pre" == itElement->m_wsName)
+			{
+				GetCurrentDocument()->AddCharSafe(L'\n');
+				break;
+			}
+		}
+	}
 
 	//Пока корректно работает только для текста (необходимо проверить и с другими нодами)
 	if (m_arStates.top().m_bEmptyLine)
@@ -171,6 +180,23 @@ void CMDWriter::WriteString(const std::wstring& wsString, bool bSpecialString)
 		m_arStates.top().m_bNeedBreakLine = true;
 }
 
+void CMDWriter::WriteOpenSpecialString(const std::wstring& wsString)
+{
+	if (m_arStates.top().m_wsLastSpecialString == wsString)
+		GetCurrentDocument()->WriteString(L" ");
+
+	m_arStates.top().m_wsLastSpecialString.clear();
+
+	WriteString(wsString, true);
+}
+
+void CMDWriter::WriteCloseSpecialString(const std::wstring& wsString)
+{
+	m_arStates.top().m_wsLastSpecialString = wsString;
+
+	WriteString(wsString, true);
+}
+
 XmlString* CMDWriter::GetCurrentDocument() const
 {
 	return m_arStates.top().m_pCurrentDocument;
@@ -197,8 +223,10 @@ void CMDWriter::WriteBreakLine(bool bNeedChecked)
 	}
 
 	GetCurrentDocument()->WriteString(L"  \n");
+
 	m_arStates.top().m_bEmptyLine = true;
 	m_arStates.top().m_bNeedBreakLine = false;
+	m_arStates.top().m_wsLastSpecialString.clear();
 }
 
 void CMDWriter::EneteredBold()

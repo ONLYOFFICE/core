@@ -33,6 +33,8 @@ class CMDWriter : public IWriter
 		bool m_bIsOrederedList{false};
 		UINT m_unLevelList{0};
 		UINT m_unIndexListElement{1};
+
+		std::wstring m_wsLastSpecialString;
 	};
 
 	std::stack<TState> m_arStates;
@@ -56,7 +58,11 @@ public:
 	void RevertDataOutput() override;
 
 	TMarkdownParameters GetParametrs() const;
+
 	void WriteString(const std::wstring& wsString, bool bSpecialString = false);
+	void WriteOpenSpecialString(const std::wstring& wsString);
+	void WriteCloseSpecialString(const std::wstring& wsString);
+
 	XmlString* GetCurrentDocument() const override;
 
 	void WriteBreakLine(bool bNeedChecked = true);

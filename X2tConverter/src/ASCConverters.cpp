@@ -585,13 +585,24 @@ namespace NExtractTools
 		}
 		else if (AVS_OFFICESTUDIO_FILE_DOCUMENT_PAGES == nFormatFrom)
 		{
-			const std::wstring wsTempFile = combinePath(convertParams.m_sTempDir, L"IntermediateFile.odf");
-			const int nIntermediateResult = pages2odf(sFrom, wsTempFile, params, convertParams);
+			std::wstring wsTempFile{combinePath(convertParams.m_sTempDir, L"IntermediateFile.odf")};
+			const int nIntermediateResult{static_cast<int>(pages2odf(sFrom, wsTempFile, params, convertParams))};
 
 			if (S_OK != nIntermediateResult)
 				return nIntermediateResult;
 
+			std::wstring *pMainFileFrom{params.m_sFileFrom};
+			int *pMainFormatFrom{params.m_nFormatFrom};
+
+			params.m_sFileFrom   = &wsTempFile;
+			params.m_nFormatFrom = new int{AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT_FLAT};
+
 			nRes = fromDocument(wsTempFile, AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT_FLAT, params, convertParams);
+
+			RELEASEOBJECT(params.m_nFormatFrom);
+
+			params.m_sFileFrom   = pMainFileFrom;
+			params.m_nFormatFrom = pMainFormatFrom;
 		}
 		else if (AVS_OFFICESTUDIO_FILE_DOCUMENT_MD == nFormatFrom)
 		{

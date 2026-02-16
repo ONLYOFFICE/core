@@ -3162,17 +3162,19 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 
 		bool bReplase = false;
 		int nID = pP->GetObjId();
-		if (nID > 0)
+		for (int i = 0; i < pKids->GetCount(); ++i)
 		{
-			for (int i = 0; i < pKids->GetCount(); ++i)
+			PdfWriter::CObjectBase* pKid = pKids->Get(i);
+			if (nID > 0 && pKid->GetObjId() == nID)
 			{
-				PdfWriter::CObjectBase* pKid = pKids->Get(i);
-				if (pKid->GetObjId() == nID)
-				{
-					pKids->Insert(pKid, pP, true);
-					bReplase = true;
-					break;
-				}
+				pKids->Insert(pKid, pP, true);
+				bReplase = true;
+				break;
+			}
+			else if (pKid == pP)
+			{
+				bReplase = true;
+				break;
 			}
 		}
 		if (!bReplase)

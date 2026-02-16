@@ -1,4 +1,4 @@
-/*
+ï»¿/*
  * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
@@ -267,7 +267,7 @@ anchor=\"b\"/><a:lstStyle><a:lvl1pPr algn=\"l\"><a:defRPr sz=\"1200\"/></a:lvl1p
 </p:cNvPr><p:cNvSpPr><a:spLocks noGrp=\"1\"/></p:cNvSpPr><p:nvPr><p:ph type=\"sldNum\" sz=\"quarter\" idx=\"3\"/></p:nvPr></p:nvSpPr><p:spPr><a:xfrm>\
 <a:off x=\"3884613\" y=\"8685213\"/><a:ext cx=\"2971800\" cy=\"458787\"/></a:xfrm><a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom></p:spPr><p:txBody>\
 <a:bodyPr vert=\"horz\" lIns=\"91440\" tIns=\"45720\" rIns=\"91440\" bIns=\"45720\" rtlCol=\"0\" anchor=\"b\"/><a:lstStyle><a:lvl1pPr algn=\"r\"><a:defRPr sz=\"1200\"/>\
-</a:lvl1pPr></a:lstStyle><a:p><a:fld id=\"{D7F4AEF4-93E6-4B70-916A-B30E3EBEE0F3}\" type=\"slidenum\"><a:rPr smtClean=\"0\"/><a:t>‹#›</a:t></a:fld><a:endParaRPr/>\
+</a:lvl1pPr></a:lstStyle><a:p><a:fld id=\"{D7F4AEF4-93E6-4B70-916A-B30E3EBEE0F3}\" type=\"slidenum\"><a:rPr smtClean=\"0\"/><a:t>â€¹#â€º</a:t></a:fld><a:endParaRPr/>\
 </a:p></p:txBody></p:sp></p:spTree><p:extLst><p:ext uri=\"{BB962C8B-B14F-4D97-AF65-F5344CB8AC3E}\">\
 <p14:creationId xmlns:p14=\"http://schemas.microsoft.com/office/powerpoint/2010/main\" val=\"2429687043\"/></p:ext></p:extLst></p:cSld>\
 <p:clrMap bg1=\"lt1\" tx1=\"dk1\" bg2=\"lt2\" tx2=\"dk2\" accent1=\"accent1\" accent2=\"accent2\" accent3=\"accent3\" accent4=\"accent4\" accent5=\"accent5\" accent6=\"accent6\" \

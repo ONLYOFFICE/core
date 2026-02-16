@@ -190,8 +190,12 @@ void graphic_format_properties::apply_to(std::vector<_property> & properties)
 		if (common_padding_attlist_.fo_padding_bottom_) 
 			properties.push_back(_property(L"text-padding-bottom",	common_padding_attlist_.fo_padding_bottom_->get_value_unit(length::emu)));
 	}
-	if (fo_wrap_option_)	
+	if (fo_wrap_option_)
+	{
+		if(fo_wrap_option_->get_type() == odf_types::wrap_option::type::NoWrap)
+			fo_wrap_option_->set_type(odf_types::wrap_option::type::no_wrap_in_fo_wrap_option);
 		properties.push_back(_property(L"text-wrap", (int)fo_wrap_option_->get_type()));
+	}
 }
 void graphic_format_properties::apply_from(const graphic_format_properties *Other)
 {

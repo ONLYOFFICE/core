@@ -181,6 +181,15 @@ void CMDWriter::WriteBreakLine(bool bNeedChecked)
 	if (bNeedChecked && !m_arStates.top().m_bNeedBreakLine)
 		return;
 
+	if (m_arStates.top().m_bInTable && bNeedChecked)
+	{
+		if (m_oMDParametrs.m_bUseAlternativeHTMLTags)
+			WriteString(L"</br>");
+
+		m_arStates.top().m_bNeedBreakLine = false;
+		return;
+	}
+
 	if (m_arStates.top().m_bEmptyLine)
 	{
 		for (UINT unIndex = 0; unIndex < GetLevelBlockquote(); ++unIndex)

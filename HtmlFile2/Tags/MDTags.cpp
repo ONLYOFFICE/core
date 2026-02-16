@@ -344,7 +344,7 @@ bool CTableRow<CMDWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, co
 			m_pWriter->WriteString(L"|-");
 
 		m_pWriter->WriteString(L"|");
-		m_pWriter->WriteBreakLine();
+		m_pWriter->WriteBreakLine(false);
 	}
 
 	m_pWriter->WriteString(L"| ");
@@ -358,7 +358,7 @@ void CTableRow<CMDWriter>::Close(const std::vector<NSCSS::CNode>& arSelectors)
 	if (!ValidWriter())
 		return;
 
-	m_pWriter->WriteBreakLine();
+	m_pWriter->WriteBreakLine(false);
 }
 
 CTableCell<CMDWriter>::CTableCell(CMDWriter* pWriter)

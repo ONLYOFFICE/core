@@ -46,6 +46,7 @@ public:
 	static const XLS::ElementType type = XLS::typeOfficeArtDggContainer;
 
 	void loadFields(XLS::CFRecord& record);
+	void save(XLS::CFRecord& record);
 
 	OfficeArtRecordPtr		m_OfficeArtBStoreContainer;
 	OfficeArtRecordPtr		m_OfficeArtColorMRUContainer;

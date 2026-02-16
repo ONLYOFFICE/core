@@ -125,6 +125,24 @@ void OfficeArtDggContainer::loadFields(XLS::CFRecord& record)
 	}
 }
 
+void OfficeArtDggContainer::save(XLS::CFRecord& record)
+{
+	rh_own.recVer = 0xF;
+	rh_own.recInstance = 0;
+	rh_own.recType =  0xF000;
+	record << rh_own;
+	auto sizePos = record.getRdPtr();
+
+	if(m_OfficeArtFDGGBlock != nullptr)
+		m_OfficeArtFDGGBlock->save(record);
+	//calculating size
+	rh_own.recLen = record.getRdPtr() - sizePos;
+	record.RollRdPtrBack(rh_own.recLen + 4);
+	auto recLen = rh_own.recLen;
+	record << recLen;
+	record.skipNunBytes(rh_own.recLen);
+}
+
 void OfficeArtSpgrContainer::loadFields(XLS::CFRecord& record)
 {
 	OfficeArtContainer::loadFields(record);

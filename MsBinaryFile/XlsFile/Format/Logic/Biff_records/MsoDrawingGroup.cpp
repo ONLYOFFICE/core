@@ -64,5 +64,10 @@ void MsoDrawingGroup::readFields(CFRecord& record)
 	record >> rgChildRec;
 }
 
+void MsoDrawingGroup::writeFields(CFRecord& record)
+{
+	rgChildRec.save(record);
+}
+
 } // namespace XLS
 

@@ -431,7 +431,7 @@ bool CListElement<CMDWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors,
 	if (!ValidWriter())
 		return false;
 
-	for (UINT unLevelList = 0; unLevelList < m_pWriter->GetLevelList() - 1; ++unLevelList)
+	for (UINT unLevelList = 0; unLevelList < m_pWriter->GetLevelList(); ++unLevelList)
 		m_pWriter->WriteString(L"  ");
 
 	if (m_pWriter->InOrederedList())

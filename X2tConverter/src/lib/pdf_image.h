@@ -155,9 +155,8 @@ namespace NExtractTools
 		if (!pdfFile.PrepareSignature(file))
 			return 2;
 
-		return 0;
-
-		// Below is an example of parsing and signing
+		if (params.getSigningKeyStorePath() == L"_placeholder_")
+			return 0;
 
 		BYTE* pDataFile = NULL;
 		DWORD dwDataLength = 0;
@@ -227,7 +226,7 @@ namespace NExtractTools
 			nRet = S_OK == pdfWriter.OnlineWordToPdf(sFrom, sTo, &oBufferParams) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
 		}
 
-		if (0 == nRet && params.getSigningKeyStorePath() == L"_placeholder_")
+		if (0 == nRet && !params.getSigningKeyStorePath().empty())
 		{
 			nRet = pdfSign(sTo, pApplicationFonts, params, convertParams);
 		}
@@ -402,7 +401,7 @@ namespace NExtractTools
 			int nReg = (convertParams.m_bIsPaid == false) ? 0 : 1;
 			nRes = (S_OK == pdfWriter.OnlineWordToPdfFromBinary(sPdfBinFile, sTo, &oBufferParams)) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
 
-			if (0 == nRes && params.getSigningKeyStorePath() == L"_placeholder_")
+			if (0 == nRes && !params.getSigningKeyStorePath().empty())
 			{
 				nRes = pdfSign(sTo, pApplicationFonts, params, convertParams);
 			}
@@ -1205,7 +1204,7 @@ namespace NExtractTools
 				{
 					nRes = S_OK == pdfWriter.SaveToFile(sTo) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
 
-					if (0 == nRes && params.getSigningKeyStorePath() == L"_placeholder_")
+					if (0 == nRes && !params.getSigningKeyStorePath().empty())
 					{
 						nRes = pdfSign(sTo, pApplicationFonts, params, convertParams);
 					}

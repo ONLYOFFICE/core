@@ -1739,17 +1739,19 @@ namespace PdfWriter
 			}
 			bool bReplase = false;
 			int nID = pWidget->GetObjId();
-			if (nID > 0)
+			for (int i = 0; i < pKids->GetCount(); ++i)
 			{
-				for (int i = 0; i < pKids->GetCount(); ++i)
+				CObjectBase* pKid = pKids->Get(i);
+				if (nID > 0 && pKid->GetObjId() == nID)
 				{
-					CObjectBase* pKid = pKids->Get(i);
-					if (pKid->GetObjId() == nID)
-					{
-						pKids->Insert(pKid, pWidget, true);
-						bReplase = true;
-						break;
-					}
+					pKids->Insert(pKid, pWidget, true);
+					bReplase = true;
+					break;
+				}
+				else if (pKid == pWidget)
+				{
+					bReplase = true;
+					break;
 				}
 			}
 			if (!bReplase)

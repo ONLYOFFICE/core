@@ -354,6 +354,8 @@ bool CTableRow<CMDWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, co
 	if (!ValidWriter() || oExtraData.empty() || typeid(DataForRow) != oExtraData.type())
 		return false;
 
+	m_pWriter->EnteredTable();
+
 	const DataForRow& oDataForRow(boost::any_cast<DataForRow>(oExtraData));
 	const CStorageTable& oStorageTable{boost::get<1>(oDataForRow)};
 

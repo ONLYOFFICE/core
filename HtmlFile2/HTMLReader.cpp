@@ -1100,9 +1100,6 @@ bool CHTMLReader::ReadTable(std::vector<NSCSS::CNode>& arSelectors)
 	oTable.SetAlign(pStyle->m_oDisplay.GetHAlign().ToWString());
 	//------
 
-	if (!m_mTags[HTML_TAG(TABLE)]->Open(arSelectors, &oTable))
-		return false;
-
 	int nDeath = m_oLightReader.GetDepth();
 	while(m_oLightReader.ReadNextSiblingNode(nDeath))
 	{
@@ -1149,7 +1146,10 @@ bool CHTMLReader::ReadTable(std::vector<NSCSS::CNode>& arSelectors)
 			m_mTags[HTML_TAG(TD)]->Open(arSelectors, boost::tuple<const CStorageTableCell&, const CStorageTable&, UINT, ERowParseMode, ERowPosition>(*arCells[unCol], oTable, unCol, parse_mode, eRowPosition));\
 			\
 			if (0 != arCells[unCol]->GetData()->GetCurSize())\
+			{\
 				WriteToStringBuilder(*(arCells[unCol]->GetData()), *(m_pWriter->GetCurrentDocument()));\
+				arCells[unCol]->GetData()->Clear();\
+			}\
 			else\
 				m_pWriter->WriteEmptyParagraph();\
 			\
@@ -1158,6 +1158,9 @@ bool CHTMLReader::ReadTable(std::vector<NSCSS::CNode>& arSelectors)
 		\
 		m_mTags[HTML_TAG(TR)]->Close(arSelectors);\
 	}}
+
+	if (!m_mTags[HTML_TAG(TABLE)]->Open(arSelectors, &oTable))
+		return false;
 
 	if (!oTable.HaveHeader())
 	{

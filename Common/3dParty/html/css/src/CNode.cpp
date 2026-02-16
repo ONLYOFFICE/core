@@ -113,8 +113,7 @@ namespace NSCSS
 
 	bool CNode::operator==(const CNode& oNode) const
 	{
-		return((m_wsId == oNode.m_wsId)       &&
-		       (m_wsName == oNode.m_wsName)   &&
+		return((m_wsName == oNode.m_wsName)   &&
 		       (m_wsClass == oNode.m_wsClass) &&
 		       (m_wsStyle == oNode.m_wsStyle) &&
 		       (m_mAttributes == oNode.m_mAttributes));

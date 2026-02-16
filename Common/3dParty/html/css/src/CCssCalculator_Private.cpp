@@ -563,7 +563,7 @@ namespace NSCSS
 
 		const std::map<std::vector<CNode>, CCompiledStyle>::const_iterator oItem = m_mUsedStyles.find(arSelectors);
 
-		if (oItem != m_mUsedStyles.cend())
+		if (oItem != m_mUsedStyles.cend() && (arSelectors.back().m_wsId.empty() || !HaveStylesById(arSelectors.back().m_wsId)))
 		{
 			arSelectors.back().SetCompiledStyle(new CCompiledStyle(oItem->second));
 			return true;

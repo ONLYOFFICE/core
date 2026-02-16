@@ -400,6 +400,25 @@ namespace NExtractTools
 			{
 				nRes = docx_dir2txt(sFromWithChanges, sTo, params, convertParams);
 			}
+			else if (AVS_OFFICESTUDIO_FILE_DOCUMENT_MD == nFormatTo)
+			{
+				std::wstring *wsMainTo{params.m_sFileTo};
+				int *nMainFormatTo{params.m_nFormatTo};
+
+				params.m_sFileTo = new std::wstring(combinePath(convertParams.m_sTempDir, L"IntermediateFile.html"));
+				params.m_nFormatTo = new int(AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML);
+
+				nRes = fromDocxDir(sFrom, *params.m_sFileTo, *params.m_nFormatTo, params, convertParams);
+
+				if (S_OK == nRes)
+					nRes = html2md(*params.m_sFileTo, *wsMainTo, params, convertParams);
+
+				RELEASEOBJECT(params.m_sFileTo);
+				RELEASEOBJECT(params.m_nFormatTo);
+
+				params.m_sFileTo   = wsMainTo;
+				params.m_nFormatTo = nMainFormatTo;
+			}
 			else
 				nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
 		}

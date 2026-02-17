@@ -341,10 +341,7 @@ namespace NSDocxRenderer
 
 		double top = baseline - _h;
 		double left = dTextX;
-		double right = dTextR;
-
-		if (left == right) // XPS
-			right = left + _w;
+		double right = left + _w;
 
 		// use forced fold option
 		const auto& oParams = m_oManagers.pFontManager->GetFontSelectParams();

@@ -999,6 +999,11 @@ namespace NExtractTools
 			}
 
 			std::wstring sSaveType;
+			if ((NULL != m_nFormatTo) && (AVS_OFFICESTUDIO_FILE_OTHER_JSON == *m_nFormatTo))
+			{
+				sSaveType = L" saveFileType='3'";
+			}
+
 			sRes = L"<xmlOptions><fileOptions fileType='" + std::to_wstring(nFileType);
 			sRes += L"' codePage='" + std::to_wstring(nTxtCsvEncoding);
 			if (m_nCsvFormatFrom)

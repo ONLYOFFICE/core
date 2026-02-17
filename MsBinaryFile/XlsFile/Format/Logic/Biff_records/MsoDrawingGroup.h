@@ -53,7 +53,10 @@ public:
 	void readFields(CFRecord& record);
 	void writeFields(CFRecord& record);
 
+	void prepareChart(unsigned int count);
+
 	ODRAW::OfficeArtDggContainer rgChildRec;
+	unsigned int drawingCount = 0;
 
 
 };

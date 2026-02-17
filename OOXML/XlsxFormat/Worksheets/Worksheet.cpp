@@ -61,9 +61,11 @@
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/CONDFMT12.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/OBJECTS.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/FEAT11.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/GlobalsSubstream.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/CondFmt12.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/MsoDrawing.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Obj.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/MsoDrawingGroup.h"
 
 #include "../../../OdfFile/Common/logging.h"
 
@@ -374,7 +376,7 @@ namespace OOX
 			}
 
 		}
-		XLS::BaseObjectPtr CWorksheet::toXLS()
+		XLS::BaseObjectPtr CWorksheet::toXLS(XLS::BaseObjectPtr globalsPtr)
 		{
 			if(m_bIsChartSheet)
 			{
@@ -464,6 +466,21 @@ namespace OOX
 				auto drawingPtr = static_cast<OOX::Spreadsheet::CDrawing*>(castedDrawing.GetPointer());
 				if(drawingPtr->IsChart())
 				{
+
+					{
+						auto workbookStream = static_cast<XLS::GlobalsSubstream*>(globalsPtr.get());
+						XLS::MsoDrawingGroup* drawingGroupPtr;
+						if(workbookStream->m_arMSODRAWINGGROUP.empty())
+						{
+							drawingGroupPtr = new XLS::MsoDrawingGroup;
+							workbookStream->m_arMSODRAWINGGROUP.push_back(XLS::BaseObjectPtr(drawingGroupPtr));
+						}
+						else
+						{
+							drawingGroupPtr = static_cast<XLS::MsoDrawingGroup*>(workbookStream->m_arMSODRAWINGGROUP.back().get());
+						}
+						drawingGroupPtr->drawingCount++;
+					}
 					auto Objects = new XLS::OBJECTS(false);
 					auto objectsPtr =  XLS::BaseObjectPtr(Objects);
 					auto drawingObj = new XLS::MsoDrawing(false);

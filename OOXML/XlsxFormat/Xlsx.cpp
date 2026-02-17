@@ -225,7 +225,7 @@ bool OOX::Spreadsheet::CXlsx::WriteXLS(const CPath& oFilePath)
 	auto CastedGlobalsStram = static_cast<XLS::GlobalsSubstream*>(workbookStream->m_GlobalsSubstream.get());
 	CastedGlobalsStram->global_info_ = writer.globalInfoPtr;
 	for(auto i : m_arWorksheets)
-		workbookStream->m_arWorksheetSubstream.push_back(i->toXLS());
+		workbookStream->m_arWorksheetSubstream.push_back(i->toXLS(workbookStream->m_GlobalsSubstream));
 	CastedGlobalsStram->m_arSUPBOOK.push_back(m_pWorkbook->WriteXtiRefsXLS());
 	if(m_pSharedStrings != nullptr)
 		m_pSharedStrings->toXLS(workbookStream->m_GlobalsSubstream);

@@ -95,6 +95,19 @@ bool operator == (office_value_type & t1, office_value_type & t2)
 
     return false;
 }
+bool operator != (const office_value_type& t1, office_value_type::type& t2)
+{
+    if (t1.get_type() == office_value_type::Float)
+    {
+        if (t2 == office_value_type::Float || t2 == office_value_type::Scientific || t2 == office_value_type::Fraction) return false;
+        return true;
+    }
+    else
+    {
+        return (t1.get_type() != t2);
+    }
+    return false;
+}
 office_value_type office_value_type::parse(const std::wstring & Str)
 {
     std::wstring tmp = Str;

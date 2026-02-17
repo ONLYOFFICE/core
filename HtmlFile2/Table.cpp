@@ -79,7 +79,7 @@ TTableCellStyle& TTableCellStyle::operator+=(const TTableCellStyle* pCellStyle)
 }
 
 CStorageTableCell::CStorageTableCell()
-	: m_unColspan(1), m_unRowSpan(1), m_bIsMerged(false), m_bIsEmpty(false)
+	: m_unColspan(1), m_unRowSpan(1), m_bIsMerged(false), m_bIsEmpty(false), m_oData(30)
 {}
 
 CStorageTableCell::CStorageTableCell(UINT unColspan, UINT unRowspan, bool bIsMerged, bool bIsEmpty)

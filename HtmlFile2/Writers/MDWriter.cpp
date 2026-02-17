@@ -54,7 +54,7 @@ bool CMDWriter::WriteText(std::wstring wsText, const std::vector<NSCSS::CNode>& 
 
 	const NSCSS::CCompiledStyle* pCompiledStyle{arSelectors.back().m_pCompiledStyle};
 
-	if (!bPreformatted && nullptr != arSelectors.back().m_pCompiledStyle)
+	if (!bPreformatted && nullptr != pCompiledStyle)
 	{
 		// TODO::поведение должно быть немного разное (реализовать)
 		switch(pCompiledStyle->m_oDisplay.GetWhiteSpace().ToInt())
@@ -71,8 +71,17 @@ bool CMDWriter::WriteText(std::wstring wsText, const std::vector<NSCSS::CNode>& 
 	if (!bPreformatted && wsText.end() == std::find_if_not(wsText.begin(), wsText.end(), [](wchar_t wchChar){ return iswspace(wchChar) && 0xa0 != wchChar;}))
 		return false;
 
-	if (bPreformatted && !m_arStates.top().m_bEmptyLine)
-		GetCurrentDocument()->AddCharSafe(L'\n');
+	if (bPreformatted && !m_arStates.top().m_bEmptyLine && !m_arStates.top().m_bInTable)
+	{
+		for (std::vector<NSCSS::CNode>::const_reverse_iterator itElement{arSelectors.crbegin()}; itElement < arSelectors.crend(); ++itElement)
+		{
+			if (L"pre" == itElement->m_wsName)
+			{
+				GetCurrentDocument()->AddCharSafe(L'\n');
+				break;
+			}
+		}
+	}
 
 	//Пока корректно работает только для текста (необходимо проверить и с другими нодами)
 	if (m_arStates.top().m_bEmptyLine)
@@ -84,9 +93,41 @@ bool CMDWriter::WriteText(std::wstring wsText, const std::vector<NSCSS::CNode>& 
 	if (!bPreformatted && !InCode())
 		ReplaceSpaces(wsText);
 
+	bool bNeedBold{false}, bNeedItalic{false}, bNeedStrike{false};
+
+	if (nullptr != pCompiledStyle)
+	{
+		if (!IsBold() && pCompiledStyle->m_oFont.Bold())
+			bNeedBold = true;
+
+		if (!IsItalic() && pCompiledStyle->m_oFont.Italic())
+			bNeedItalic = true;
+
+		if (!IsStrike() && pCompiledStyle->m_oText.LineThrough())
+			bNeedStrike = true;
+	}
+
+	if (bNeedBold)
+		WriteString(L"**");
+
+	if (bNeedItalic)
+		WriteString(L"*");
+
+	if (bNeedStrike)
+		WriteString(L"~~");
+
 	ApplyAlternativeTags(pCompiledStyle);
 	WriteString(wsText);
 	ApplyAlternativeTags(pCompiledStyle, true);
+
+	if (bNeedBold)
+		WriteString(L"**");
+
+	if (bNeedItalic)
+		WriteString(L"*");
+
+	if (bNeedStrike)
+		WriteString(L"~~");
 
 	if (L'\n' == wsText.back())
 		m_arStates.top().m_bNeedBreakLine = false;
@@ -139,6 +180,23 @@ void CMDWriter::WriteString(const std::wstring& wsString, bool bSpecialString)
 		m_arStates.top().m_bNeedBreakLine = true;
 }
 
+void CMDWriter::WriteOpenSpecialString(const std::wstring& wsString)
+{
+	if (m_arStates.top().m_wsLastSpecialString == wsString)
+		GetCurrentDocument()->WriteString(L" ");
+
+	m_arStates.top().m_wsLastSpecialString.clear();
+
+	WriteString(wsString, true);
+}
+
+void CMDWriter::WriteCloseSpecialString(const std::wstring& wsString)
+{
+	m_arStates.top().m_wsLastSpecialString = wsString;
+
+	WriteString(wsString, true);
+}
+
 XmlString* CMDWriter::GetCurrentDocument() const
 {
 	return m_arStates.top().m_pCurrentDocument;
@@ -149,9 +207,71 @@ void CMDWriter::WriteBreakLine(bool bNeedChecked)
 	if (bNeedChecked && !m_arStates.top().m_bNeedBreakLine)
 		return;
 
+	if (m_arStates.top().m_bInTable && bNeedChecked)
+	{
+		if (m_oMDParametrs.m_bUseAlternativeHTMLTags)
+			WriteString(L"</br>");
+
+		m_arStates.top().m_bNeedBreakLine = false;
+		return;
+	}
+
+	if (m_arStates.top().m_bEmptyLine)
+	{
+		for (UINT unIndex = 0; unIndex < GetLevelBlockquote(); ++unIndex)
+			WriteString(L"> ", true);
+	}
+
 	GetCurrentDocument()->WriteString(L"  \n");
-	m_arStates.top().m_bNeedBreakLine = false;
+
 	m_arStates.top().m_bEmptyLine = true;
+	m_arStates.top().m_bNeedBreakLine = false;
+	m_arStates.top().m_wsLastSpecialString.clear();
+}
+
+void CMDWriter::EneteredBold()
+{
+	m_arStates.top().m_bBold = true;
+}
+
+void CMDWriter::OutBold()
+{
+	m_arStates.top().m_bBold = false;
+}
+
+bool CMDWriter::IsBold()
+{
+	return m_arStates.top().m_bBold;
+}
+
+void CMDWriter::EneteredItalic()
+{
+	m_arStates.top().m_bItalic = true;
+}
+
+void CMDWriter::OutItalic()
+{
+	m_arStates.top().m_bItalic = false;
+}
+
+bool CMDWriter::IsItalic()
+{
+	return m_arStates.top().m_bItalic;
+}
+
+void CMDWriter::EneteredStrike()
+{
+	m_arStates.top().m_bStrike = true;
+}
+
+void CMDWriter::OutStrike()
+{
+	m_arStates.top().m_bStrike = false;
+}
+
+bool CMDWriter::IsStrike()
+{
+	return m_arStates.top().m_bStrike;
 }
 
 void CMDWriter::EnteredBlockquote()
@@ -226,6 +346,11 @@ void CMDWriter::EnteredList(bool bOrderedList)
 void CMDWriter::OutList()
 {
 	RollBackState();
+}
+
+void CMDWriter::SetIndexOrderedList(UINT unIndex)
+{
+	m_arStates.top().m_unIndexListElement = unIndex;
 }
 
 void CMDWriter::IncreaseIndexOrderedList()

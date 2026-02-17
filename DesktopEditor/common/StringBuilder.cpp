@@ -195,6 +195,16 @@ namespace NSStringUtils
 		m_pDataCur = m_pData;
 		m_lSizeCur = m_lSize;
 	}
+
+	CStringBuilder::CStringBuilder(size_t nSize)
+	{
+		m_lSize = nSize;
+		m_pData = (wchar_t*)malloc(m_lSize * sizeof(wchar_t));
+
+		m_lSizeCur = 0;
+		m_pDataCur = m_pData;
+		return;
+	}
 	CStringBuilder::~CStringBuilder()
 	{
 		if (NULL != m_pData)

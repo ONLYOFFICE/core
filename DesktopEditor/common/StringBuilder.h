@@ -86,6 +86,7 @@ namespace NSStringUtils
 
 	public:
 		CStringBuilder();
+		CStringBuilder(size_t nSize);
 		virtual ~CStringBuilder();
 
 		virtual void AddSize(size_t nSize);

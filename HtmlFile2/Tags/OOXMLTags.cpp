@@ -1300,8 +1300,8 @@ void HTML::CTableRow<COOXMLWriter>::Close(const std::vector<NSCSS::CNode>& arSel
 	m_pWriter->GetCurrentDocument()->WriteNodeEnd(L"w:tr");
 }
 
-CTableCell<COOXMLWriter>::CTableCell(COOXMLWriter* pWriter)
-	: CTag(pWriter)
+CTableCell<COOXMLWriter>::CTableCell(COOXMLWriter* pInterpretator)
+	: CTag(pInterpretator)
 {}
 
 std::wstring CalculateSidesToClean(UINT unColumnNumber, const std::vector<CTableColgroup*>& arColgroups, UINT unMaxColumns)
@@ -1448,11 +1448,45 @@ bool CTableCell<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors
 	return true;
 }
 
-	void HTML::CTableCell<COOXMLWriter>::Close(const std::vector<NSCSS::CNode>& arSelectors)
-	{
-		if (!ValidWriter())
-			return;
+void HTML::CTableCell<COOXMLWriter>::Close(const std::vector<NSCSS::CNode>& arSelectors)
+{
+	if (!ValidWriter())
+		return;
 
-		m_pWriter->GetCurrentDocument()->WriteNodeEnd(L"w:tc");
+	m_pWriter->GetCurrentDocument()->WriteNodeEnd(L"w:tc");
+}
+
+CHTML<COOXMLWriter>::CHTML(COOXMLWriter* pInterpretator)
+	: CTag(pInterpretator)
+{}
+
+bool CHTML<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData)
+{
+	if (!ValidWriter())
+		return false;
+
+	if (!arSelectors.back().m_mAttributes.empty())
+	{
+		std::wstring wsBackground;
+		if (arSelectors.back().GetAttributeValue(L"bgcolor", wsBackground))
+		{
+			NSCSS::NSProperties::CColor oColor;
+			oColor.SetValue(wsBackground);
+
+			if (!oColor.Empty() && !oColor.None())
+			{
+				const std::wstring wsHEXColor{oColor.ToHEX()};
+
+				if (!wsHEXColor.empty())
+					m_pWriter->GetCurrentDocument()->WriteString(L"<w:background w:color=\"" + wsHEXColor + L"\"/>");
+			}
+		}
 	}
+
+	return true;
+}
+
+void CHTML<COOXMLWriter>::Close(const std::vector<NSCSS::CNode>& arSelectors)
+{}
+
 }

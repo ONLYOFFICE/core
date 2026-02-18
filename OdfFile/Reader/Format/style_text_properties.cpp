@@ -704,7 +704,7 @@ void text_format_properties::docx_serialize(std::wostream & _rPr, fonts_containe
 	if (text_display_)
 	{
 		if (text_display_->get_type() == text_display::None)
-			_rPr << L"<w:vanish />";        
+			_rPr << L"<w:vanish w:val=\"true\"/>";
 	}    
 	// underline
 	{
@@ -1149,7 +1149,7 @@ void text_format_properties::docx_convert(oox::docx_conversion_context & Context
     if (text_display_)
     {
         if (text_display_->get_type() == text_display::None)
-            _rPr << L"<w:vanish/>";        
+			_rPr << L"<w:vanish w:val=\"true\"/>";
     }    
     // underline
     {

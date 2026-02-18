@@ -687,8 +687,21 @@ void docx_serialize_wps(std::wostream & strm, _docx_drawing & val, oox::docx_con
 
 						std::pair<double, double> maxDigitSize_ = utils::GetMaxDigitSizePixels(fontName, fontSize, 96., 0, Context.get_mediaitems()->applicationFonts());
 
-						double cx = get_value_emu(convert_symbol_size(1.76 * Context.get_math_context().width,  maxDigitSize_.first, false));
-						double cy = get_value_emu(convert_symbol_size(1.76 * Context.get_math_context().height, maxDigitSize_.second, false));
+						double cx, cy;
+
+						double mathHeight = Context.get_math_context().height;
+						double mathWidth = Context.get_math_context().width;
+
+						if( mathHeight <= 0 || mathWidth <= 0)
+						{
+							cx = get_value_emu(convert_symbol_size(1.76,  maxDigitSize_.first,  false));
+							cy = get_value_emu(convert_symbol_size(1.76,  maxDigitSize_.second, false));
+						}
+						else
+						{
+							cx = get_value_emu(convert_symbol_size(1.76 * mathWidth,  maxDigitSize_.first, false));
+							cy = get_value_emu(convert_symbol_size(1.76 * mathHeight, maxDigitSize_.second, false));
+						}
 
 						if (cx > val.cx)
 							val.cx = cx;

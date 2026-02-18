@@ -624,7 +624,7 @@ void text_list_level_style_number::pptx_convert(oox::pptx_conversion_context & C
 		}
 	}
 	else if((number_attr_.common_num_format_attlist_.style_num_format_ ) &&
-			(number_attr_.common_num_format_attlist_.style_num_format_->get_type() == style_numformat::none))
+			(number_attr_.common_num_format_attlist_.style_num_format_->get_type() == style_numformat::none) && listLevelProperties->text_min_label_width_.has_value())
 			num_format_none = L"⠀";
 	
 	CP_XML_WRITER(strm)

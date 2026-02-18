@@ -293,11 +293,21 @@ void paragraph_format_properties::pptx_convert(oox::pptx_conversion_context & Co
 		if(svg_widthValue)
 			ws_svg_width = std::to_wstring((int)(0.5 + 1. * svg_widthValue->get_value_unit(length::emu)));
 
-		if(!ws_svg_width.empty() && !w_left.empty())
+		if(!ws_svg_width.empty())
 		{
-			double d_left = std::stod(w_left),d_svg_width = std::stod(ws_svg_width);
-			if(d_left>d_svg_width)
-				w_left = L"0";
+			double d_svg_width = std::stod(ws_svg_width);
+			if(!w_left.empty())
+			{
+				double d_left = std::stod(w_left);
+				if(d_left>d_svg_width)
+					w_left = L"0";
+			}
+			if(!w_firstLine.empty())
+			{
+				double d_first_line = std::stod(w_firstLine);
+				if(d_first_line > d_svg_width)
+					w_firstLine = L"0";
+			}
 		}
 		//if (w_left.empty())			w_left = L"0";
 		//if (w_right.empty())		w_right = L"0";

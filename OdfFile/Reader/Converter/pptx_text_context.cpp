@@ -369,7 +369,7 @@ void pptx_text_context::Impl::ApplyListProperties(odf_reader::paragraph_format_p
 		if (list_properties->text_space_before_)
 		{
 			double spaceBeforeTwip;
-			odf_types::length::unit tempTypeUnit = odf_types::length::pt;
+			odf_types::length::unit tempTypeUnit = list_properties->text_space_before_->get_unit();
 			if(propertiesOut.fo_margin_left_)
 			{
 				tempTypeUnit = propertiesOut.fo_margin_left_->get_length().get_unit();
@@ -386,18 +386,8 @@ void pptx_text_context::Impl::ApplyListProperties(odf_reader::paragraph_format_p
 		else if(!propertiesOut.fo_margin_left_)
 			propertiesOut.fo_margin_left_ = odf_types::length(0, odf_types::length::pt);
 
-		// if(list_properties->text_min_label_width_)
-		// {
-		// 	odf_types::length::unit tempTypeUnit = propertiesOut.fo_text_indent_ ? propertiesOut.fo_text_indent_->get_length().get_unit():list_properties->text_min_label_width_->get_unit();
-		// 	double d_MinLabelWidth = (list_properties->text_min_label_width_->get_value_unit(tempTypeUnit) > 0 ? list_properties->text_min_label_width_->get_value_unit(tempTypeUnit): 0);
-		// 	if(propertiesOut.fo_text_indent_)
-		// 	{
-		// 		double dNewIndent = propertiesOut.fo_text_indent_->get_length().get_value()< d_MinLabelWidth ? d_MinLabelWidth:propertiesOut.fo_text_indent_->get_length().get_value();
-		// 		propertiesOut.fo_text_indent_ = odf_types::length(dNewIndent, tempTypeUnit);
-		// 	}
-		// 	else
-		// 		propertiesOut.fo_text_indent_ = odf_types::length(d_MinLabelWidth,tempTypeUnit);
-		// }
+		if(list_properties->text_min_label_width_.has_value() && list_properties->text_min_label_width_->get_value() > 0 && (!propertiesOut.fo_text_indent_.has_value() || (propertiesOut.fo_text_indent_.has_value() && propertiesOut.fo_text_indent_->get_length().get_value() == 0)))
+			propertiesOut.fo_text_indent_ = list_properties->text_min_label_width_;
 
 		if (list_properties->fo_width_)
 		{

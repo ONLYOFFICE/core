@@ -538,6 +538,13 @@ void docx_serialize_wps(std::wostream & strm, _docx_drawing & val, oox::docx_con
 						{
 							double fontSize = 0.0;
 
+							int page_count = Context.get_pages_count_coefficient();
+
+							if( page_count <= 1 )
+							{
+								page_count = 2; // default
+							}
+
 							std::wstring fontName = Context.get_current_fontName();
 
 							if( Context.get_current_fontSize() > 0 )
@@ -572,7 +579,7 @@ void docx_serialize_wps(std::wostream & strm, _docx_drawing & val, oox::docx_con
 
 							if( mathHeight <= 0 || mathWidth <= 0)
 							{
-								cx = get_value_emu(convert_symbol_size(1.76,  maxDigitSize_.first,  false));
+								cx = get_value_emu(convert_symbol_size(1.76 * page_count,  maxDigitSize_.first,  false));
 								cy = get_value_emu(convert_symbol_size(1.76,  maxDigitSize_.second, false));
 							}
 							else
@@ -673,6 +680,13 @@ void docx_serialize_wps(std::wostream & strm, _docx_drawing & val, oox::docx_con
 					{
 						double fontSize = 0.0;
 
+						int page_count = Context.get_pages_count_coefficient();
+
+						if( page_count <= 1 )
+						{
+							page_count = 2; // default
+						}
+
 						std::wstring fontName = Context.get_current_fontName();
 
 						if( Context.get_current_fontSize() > 0 )
@@ -707,7 +721,7 @@ void docx_serialize_wps(std::wostream & strm, _docx_drawing & val, oox::docx_con
 
 						if( mathHeight <= 0 || mathWidth <= 0)
 						{
-							cx = get_value_emu(convert_symbol_size(1.76,  maxDigitSize_.first,  false));
+							cx = get_value_emu(convert_symbol_size(1.76 * page_count,  maxDigitSize_.first,  false));
 							cy = get_value_emu(convert_symbol_size(1.76,  maxDigitSize_.second, false));
 						}
 						else

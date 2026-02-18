@@ -2848,5 +2848,14 @@ const double docx_conversion_context::get_current_fontSize_from_default_style()
 	return 0.0;
 }
 
+int docx_conversion_context::get_pages_count_coefficient()
+{
+	auto pages_count = *root()->odf_context().DocProps().page_count_;
+
+	if( pages_count > 0 && pages_count < 10 ) return 1;
+	else if ( pages_count > 9 && pages_count < 100 ) return 2;
+	else if ( pages_count > 99 && pages_count < 1000 ) return 3;
+}
+
 }
 }

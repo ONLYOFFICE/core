@@ -1028,6 +1028,8 @@ public:
 
 	const double get_current_fontSize_from_default_style();
 
+	int get_pages_count_coefficient();
+
 private:
 
 	std::wstring temp_name;

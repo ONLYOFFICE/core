@@ -120,7 +120,7 @@ public:
 
 	void set_line_break(bool& bLineBreak);
 
-	void set_svg_height_width(const odf_types::length& svg_height,const odf_types::length& svg_width);
+	void set_svg_height_width(const _CP_OPT(odf_types::length)& svg_height,const _CP_OPT(odf_types::length)& svg_width);
 
 	_CP_OPT(odf_types::length) get_svg_height();
 	_CP_OPT(odf_types::length) get_svg_width();

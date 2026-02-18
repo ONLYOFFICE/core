@@ -107,7 +107,7 @@ public:
 
 	void set_line_break(bool& bLineBreak);
 
-	void set_svg_height_width(const odf_types::length& svg_height,const odf_types::length& svg_width);
+	void set_svg_height_width(const _CP_OPT(odf_types::length)& svg_height,const _CP_OPT(odf_types::length)& svg_width);
 
 	_CP_OPT(odf_types::length) get_svg_width();
 	_CP_OPT(odf_types::length) get_svg_height();
@@ -1069,9 +1069,9 @@ void pptx_text_context::set_line_break(bool& bLineBreak)
 	impl_->set_line_break(bLineBreak);
 }
 
-void pptx_text_context::set_svg_height_width(const odf_types::length &svg_height, const odf_types::length &svg_width)
+void pptx_text_context::set_svg_height_width(const _CP_OPT(odf_types::length) &svg_height, const _CP_OPT(odf_types::length) &svg_width)
 {
-	impl_->set_svg_height_width(svg_height,svg_width);
+	impl_->set_svg_height_width(svg_height, svg_width);
 }
 
 _CP_OPT(odf_types::length) pptx_text_context::get_svg_height()
@@ -1120,7 +1120,7 @@ void pptx_text_context::Impl::set_line_break(bool& bLineBreak)
 	is_line_break = bLineBreak;
 }
 
-void pptx_text_context::Impl::set_svg_height_width(const odf_types::length &svg_height, const odf_types::length &svg_width)
+void pptx_text_context::Impl::set_svg_height_width(const _CP_OPT(odf_types::length) &svg_height, const _CP_OPT(odf_types::length) &svg_width)
 {
 	svg_heightVal = svg_height;
 	svg_widthVal = svg_width;

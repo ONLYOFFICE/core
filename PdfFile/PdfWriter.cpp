@@ -2473,7 +2473,7 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 
 				pButtonWidget->SetStyle(pPrB->GetStyle());
 
-				if (!pButtonWidget->Get("DA"))
+				//if (!pButtonWidget->Get("DA"))
 				{
 					PdfWriter::CFontDict* pFont = pFontTT;
 					dFontSize = oInfo.GetWidgetAnnotPr()->GetFontSize();
@@ -2503,7 +2503,7 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 				}
 
 				// ВНЕШНИЙ ВИД
-				if (!pButtonWidget->Get("AP"))
+				//if (!pButtonWidget->Get("AP"))
 					pButtonWidget->SetAP(nR);
 
 				if (nFlags & (1 << 9))

@@ -4166,7 +4166,7 @@ void CPdfEditor::Redact(IAdvancedCommand* _pCommand)
 	PDFDoc* pPDFDocument = NULL;
 	PdfReader::CPdfFontList* pFontList = NULL;
 	int nStartRefID = 0;
-	PDFRectangle* cropBox = NULL;
+	PDFRectangle* cropBox = NULL, *mediaBox = NULL;
 	int nPageIndex = -1;
 	Page* pPage = NULL;
 	bool bEditPage = IsEditPage();
@@ -4178,13 +4178,16 @@ void CPdfEditor::Redact(IAdvancedCommand* _pCommand)
 			return;
 		pPage = pPDFDocument->getCatalog()->getPage(nPageIndex);
 		cropBox = pPage->getCropBox();
+		mediaBox = pPage->getMediaBox();
 	}
 	else
 	{
 		cropBox = new PDFRectangle();
 		PdfWriter::CPage* pWPage = pDoc->GetCurPage();
-		cropBox->x2 = pWPage->GetWidth();
-		cropBox->y2 = pWPage->GetHeight();
+		PdfWriter::TBox oBox = pWPage->GetBox("MediaBox");
+		mediaBox = new PDFRectangle(oBox.fLeft, oBox.fBottom, oBox.fRight, oBox.fTop);
+		oBox = pWPage->GetBox("CropBox");
+		cropBox = new PDFRectangle(oBox.fLeft, oBox.fBottom, oBox.fRight, oBox.fTop);
 	}
 
 	std::vector<double> arrAllQuads;
@@ -4197,8 +4200,8 @@ void CPdfEditor::Redact(IAdvancedCommand* _pCommand)
 		m_arrRedact.back().arrQuads = pRedact->arrQuadPoints;
 		for (int i = 0; i < pRedact->arrQuadPoints.size(); i += 2)
 		{
-			arrAllQuads.push_back(pRedact->arrQuadPoints[i + 0] + cropBox->x1);
-			arrAllQuads.push_back(cropBox->y2 - pRedact->arrQuadPoints[i + 1]);
+			arrAllQuads.push_back(pRedact->arrQuadPoints[i + 0] + cropBox->x1 - mediaBox->x1);
+			arrAllQuads.push_back(cropBox->y2 - pRedact->arrQuadPoints[i + 1] - mediaBox->y1);
 		}
 		int nFlags = pRedact->nFlag;
 		if (nFlags & (1 << 0))
@@ -4230,6 +4233,7 @@ void CPdfEditor::Redact(IAdvancedCommand* _pCommand)
 	else
 	{
 		RELEASEOBJECT(cropBox);
+		RELEASEOBJECT(mediaBox);
 	}
 }
 std::vector<double> CPdfEditor::WriteRedact(const std::vector<std::wstring>& arrID)
@@ -4382,7 +4386,8 @@ void CPdfEditor::ScanAndProcessFonts(PDFDoc* pPDFDocument, XRef* xref, Dict* pRe
 									mCodeToGID[nIndex] = pFontEntry.pCodeToGID[nIndex];
 							}
 							m_pWriter->AddFont(L"Embedded: " + wsFontName, false, false, wsFileName, 0);
-							m_pWriter->GetDocument()->CreateFontEmbedded(wsFileName, 0, sFontKey, static_cast<PdfWriter::EFontType>(gfxFont->getType()), mCodeToWidth, mCodeToUnicode, mCodeToGID);
+							PdfWriter::CObjectBase* pObj =  m_mObjManager.GetObj(nFontRef.num);
+							m_pWriter->GetDocument()->CreateFontEmbedded(wsFileName, 0, sFontKey, static_cast<PdfWriter::EFontType>(gfxFont->getType()), pObj, mCodeToWidth, mCodeToUnicode, mCodeToGID);
 						}
 					}
 				}

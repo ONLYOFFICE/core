@@ -41,6 +41,7 @@
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/ATTACHEDLABEL.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/AI.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/CRT.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/PAGESETUP.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/MsoDrawing.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Chart.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/AxisParent.h"
@@ -268,15 +269,18 @@ namespace OOX
 			oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
 			IFileContainer::Write(oPath, oDirectory, oContent);
 		}
-		void CDrawing::toXLSChart(XLS::BaseObjectPtr chartStreamPtr)
+		void CDrawing::toXLSChart(std::vector<XLS::BaseObjectPtr> &chartVector)
 		{
-			auto ptr = static_cast<XLS::ChartSheetSubstream*>(chartStreamPtr.get());
-
-			auto ChartFormatsPtr = new XLS::CHARTFORMATS;
-			ptr->m_CHARTFORMATS = XLS::BaseObjectPtr(ChartFormatsPtr);
-
 			for(auto anchor : m_arrItems)
 			{
+				auto ptr = new XLS::ChartSheetSubstream(0);
+				ptr->separate = false;
+				auto pageSetup = new XLS::PAGESETUP;
+				ptr->m_PAGESETUP = XLS::BaseObjectPtr(pageSetup);
+
+				auto ChartFormatsPtr = new XLS::CHARTFORMATS;
+				ptr->m_CHARTFORMATS = XLS::BaseObjectPtr(ChartFormatsPtr);
+
 				if(anchor->m_oElement.IsInit())
 				{
 					auto anchorElem = anchor->m_oElement->GetElem();
@@ -436,6 +440,7 @@ namespace OOX
 
 					}
 				}
+				chartVector.push_back(XLS::BaseObjectPtr(ptr));
 			}
 		}
 		const OOX::FileType CDrawing::type() const

@@ -65,9 +65,11 @@ const bool OBJ::loadContent(BinProcessor& proc)
 
 const bool OBJ::saveContent(BinProcessor& proc)
 {
-	if(m_Obj == nullptr)
-		return  false;
-	proc.mandatory(*m_Obj);
+	if(m_Obj != nullptr)
+		proc.mandatory(*m_Obj);
+	for(auto i : m_arrChart)
+		if(i != nullptr)
+			proc.mandatory(*i);
 	return true;
 }
 

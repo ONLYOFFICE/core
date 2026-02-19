@@ -1181,6 +1181,11 @@ bool OOXShapeReader::ParseShape( ReaderParameter oParam, RtfShapePtr& pOutput)
 		PPTX::Logic::CustGeom& geometry = ooxShape->spPr.Geometry.as<PPTX::Logic::CustGeom>();
 		pOutput->m_nShapeType = SimpleTypes::Vml::sptNotPrimitive;
 		strXml = geometry.toXML();
+        size_t pos = strXml.find(L'>');
+        if (pos != std::wstring::npos)
+        {
+            strXml.insert(pos, L" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\"");
+        }
 	}
 	if (ooxShape->spPr.Geometry.getType() == OOX::et_a_prstGeom)
 	{

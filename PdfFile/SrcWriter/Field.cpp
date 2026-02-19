@@ -3302,7 +3302,7 @@ namespace PdfWriter
 			return;
 
 		double dBorder = 1;
-		EBorderType nBorderType = EBorderType::Inset;
+		EBorderType nBorderType = EBorderType::Solid;
 		if (m_pAnnot->HaveBorder())
 		{
 			dBorder = m_pAnnot->GetBorderWidth();

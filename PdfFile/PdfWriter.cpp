@@ -1775,21 +1775,17 @@ PdfWriter::CAction* CPdfWriter::GetAction(CAnnotFieldInfo::CActionFieldPr* pActi
 			break;
 		ppA->SetDestination(pDest);
 
-		PdfWriter::CArrayObject* pPageBoxD = (PdfWriter::CArrayObject*)pPageD->Get("CropBox");
-		if (!pPageBoxD)
-			pPageBoxD = (PdfWriter::CArrayObject*)pPageD->Get("MediaBox");
-		if (!pPageBoxD)
+		PdfWriter::TBox oCropBox = pPageD->GetBox("CropBox");
+		if (oCropBox.IsEmpty())
+			oCropBox = pPageD->GetBox("MediaBox");
+		if (oCropBox.IsEmpty())
 			return NULL;
-		PdfWriter::CObjectBase* pD = pPageBoxD->Get(3);
-		double dPageDH = pD->GetType() == PdfWriter::object_type_NUMBER ? ((PdfWriter::CNumberObject*)pD)->Get() : ((PdfWriter::CRealObject*)pD)->Get();
-		pD = pPageBoxD->Get(0);
-		double dPageDX = pD->GetType() == PdfWriter::object_type_NUMBER ? ((PdfWriter::CNumberObject*)pD)->Get() : ((PdfWriter::CRealObject*)pD)->Get();
 
 		switch (pAction->nKind)
 		{
 		case 0:
 		{
-			pDest->SetXYZ(pAction->dD[0] + dPageDX, dPageDH - pAction->dD[1], pAction->dD[2]);
+			pDest->SetXYZ(pAction->dD[0] + oCropBox.fLeft, oCropBox.fTop - pAction->dD[1], pAction->dD[2]);
 			break;
 		}
 		case 1:
@@ -1799,17 +1795,17 @@ PdfWriter::CAction* CPdfWriter::GetAction(CAnnotFieldInfo::CActionFieldPr* pActi
 		}
 		case 2:
 		{
-			pDest->SetFitH(dPageDH - pAction->dD[1]);
+			pDest->SetFitH(oCropBox.fTop - pAction->dD[1]);
 			break;
 		}
 		case 3:
 		{
-			pDest->SetFitV(pAction->dD[0] + dPageDX);
+			pDest->SetFitV(pAction->dD[0] + oCropBox.fLeft);
 			break;
 		}
 		case 4:
 		{
-			pDest->SetFitR(pAction->dD[0] + dPageDX, dPageDH - pAction->dD[3], pAction->dD[2] + dPageDX, dPageDH - pAction->dD[1]);
+			pDest->SetFitR(pAction->dD[0] + oCropBox.fLeft, oCropBox.fTop - pAction->dD[3], pAction->dD[2] + oCropBox.fLeft, oCropBox.fTop - pAction->dD[1]);
 			break;
 		}
 		case 5:
@@ -1819,12 +1815,12 @@ PdfWriter::CAction* CPdfWriter::GetAction(CAnnotFieldInfo::CActionFieldPr* pActi
 		}
 		case 6:
 		{
-			pDest->SetFitBH(dPageDH - pAction->dD[1]);
+			pDest->SetFitBH(oCropBox.fTop - pAction->dD[1]);
 			break;
 		}
 		case 7:
 		{
-			pDest->SetFitBV(pAction->dD[0] + dPageDX);
+			pDest->SetFitBV(pAction->dD[0] + oCropBox.fLeft);
 			break;
 		}
 		}
@@ -1925,21 +1921,13 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 	if (!pAnnot)
 		return S_FALSE;
 	double dX1, dY1, dX2, dY2;
-	PdfWriter::CArrayObject* pPageBox = (PdfWriter::CArrayObject*)pPage->Get("CropBox");
-	if (!pPageBox)
-		pPageBox = (PdfWriter::CArrayObject*)pPage->Get("MediaBox");
-	PdfWriter::CObjectBase* pD = pPageBox->Get(3);
-	double dPageH = pD->GetType() == PdfWriter::object_type_NUMBER ? ((PdfWriter::CNumberObject*)pD)->Get() : ((PdfWriter::CRealObject*)pD)->Get();
-	pD = pPageBox->Get(0);
-	double dPageX = pD->GetType() == PdfWriter::object_type_NUMBER ? ((PdfWriter::CNumberObject*)pD)->Get() : ((PdfWriter::CRealObject*)pD)->Get();
-	pPageBox = (PdfWriter::CArrayObject*)pPage->Get("MediaBox");
-	pD = pPageBox->Get(3);
-	double dPageY = pD->GetType() == PdfWriter::object_type_NUMBER ? ((PdfWriter::CNumberObject*)pD)->Get() : ((PdfWriter::CRealObject*)pD)->Get();
-	dPageY -= dPageH;
+	PdfWriter::TBox oCropBox = pPage->GetBox("CropBox");
+	if (oCropBox.IsEmpty())
+		oCropBox = pPage->GetBox("MediaBox");
 	oInfo.GetBounds(dX1, dY1, dX2, dY2);
-	pAnnot->SetRect({dPageX + dX1, dPageH - dY1, dPageX + dX2, dPageH - dY2});
+	pAnnot->SetRect({dX1 + oCropBox.fLeft, oCropBox.fTop - dY1, dX2 + oCropBox.fLeft, oCropBox.fTop - dY2});
 
-	pAnnot->SetPage(pPage, pPage->GetWidth(), dPageH, dPageX, dPageY);
+	pAnnot->SetPage(pPage, pPage->GetWidth(), oCropBox.fTop, oCropBox.fLeft, oCropBox.fBottom);
 	pAnnot->SetAnnotFlag(oInfo.GetAnnotFlag());
 	pAnnot->SetDocument(m_pDocument);
 
@@ -2288,10 +2276,10 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 				pPr->GetInRect(dRD1, dRD2, dRD3, dRD4);
 				PdfWriter::CArrayObject* pArray = new PdfWriter::CArrayObject();
 				pAP->Add("BBox", pArray);
-				pArray->Add(dRD1 + dPageX);
-				pArray->Add(dPageH - dRD4);
-				pArray->Add(dRD3 + dPageX);
-				pArray->Add(dPageH - dRD2);
+				pArray->Add(dRD1 + oCropBox.fLeft);
+				pArray->Add(oCropBox.fTop - dRD4);
+				pArray->Add(dRD3 + oCropBox.fLeft);
+				pArray->Add(oCropBox.fTop - dRD2);
 				pStampAnnot->SetAPStream(pAP);
 			}
 
@@ -2730,18 +2718,19 @@ HRESULT CPdfWriter::AddRedact(const std::vector<double>& arrRedact)
 		return S_OK;
 	m_arrRedact = arrRedact;
 
-	PdfWriter::CArrayObject* pPageBox = (PdfWriter::CArrayObject*)m_pPage->Get("CropBox");
-	if (!pPageBox)
-		pPageBox = (PdfWriter::CArrayObject*)m_pPage->Get("MediaBox");
-	PdfWriter::CObjectBase* pD = pPageBox->Get(3);
-	double dPageH = pD->GetType() == PdfWriter::object_type_NUMBER ? ((PdfWriter::CNumberObject*)pD)->Get() : ((PdfWriter::CRealObject*)pD)->Get();
-	pD = pPageBox->Get(0);
-	double dPageX = pD->GetType() == PdfWriter::object_type_NUMBER ? ((PdfWriter::CNumberObject*)pD)->Get() : ((PdfWriter::CRealObject*)pD)->Get();
+	PdfWriter::TBox oCropBox = m_pPage->GetBox("CropBox");
+	if (oCropBox.IsEmpty())
+		oCropBox = m_pPage->GetBox("MediaBox");
 
 	for (int i = 0; i < m_arrRedact.size(); i += 2)
 	{
-		m_arrRedact[i + 0] += dPageX;
-		m_arrRedact[i + 1] = dPageH - m_arrRedact[i + 1];
+		int posInBlock = (i / 2) % 4 + 1;
+		if (posInBlock == 1 || posInBlock == 4)
+			m_arrRedact[i + 0] -= 0.001;
+		else
+			m_arrRedact[i + 0] += 0.001;
+
+		m_arrRedact[i + 1] = oCropBox.fTop - m_arrRedact[i + 1];
 	}
 
 	return S_OK;
@@ -4314,7 +4303,10 @@ PdfWriter::CAnnotAppearanceObject* CPdfWriter::DrawAP(PdfWriter::CAnnotation* pA
 	PdfWriter::CPage* pFakePage = new PdfWriter::CPage(m_pDocument);
 	m_pPage = pFakePage;
 	m_pDocument->SetCurPage(pFakePage);
-	m_pPage->StartTransform(1, 0, 0, 1, -pAnnot->GetPageX(), pAnnot->GetPageY());
+	PdfWriter::TBox oCropBox = pCurPage->GetBox("CropBox");
+	if (oCropBox.IsEmpty())
+		oCropBox = pCurPage->GetBox("MediaBox");
+	m_pPage->StartTransform(1, 0, 0, 1, -pAnnot->GetPageX(), pCurPage->GetHeight() - oCropBox.fTop);
 
 	PdfWriter::CAnnotAppearanceObject* pAP = pAnnot->StartAP(0);
 
@@ -4344,7 +4336,8 @@ void CPdfWriter::DrawWidgetAP(PdfWriter::CAnnotation* pA, BYTE* pRender, LONG nL
 	PdfWriter::CPage* pFakePage = new PdfWriter::CPage(m_pDocument);
 	m_pPage = pFakePage;
 	m_pDocument->SetCurPage(pFakePage);
-	double dY = pAnnot->GetRect().fBottom;
+	PdfWriter::TBox oMediaBox = pCurPage->GetBox("MediaBox");
+	double dY = pAnnot->GetRect().fBottom + oMediaBox.fBottom;
 	if (nRotate == 90 || nRotate == 270)
 	{
 		double dW = pAnnot->GetWidth();
@@ -4354,7 +4347,7 @@ void CPdfWriter::DrawWidgetAP(PdfWriter::CAnnotation* pA, BYTE* pRender, LONG nL
 			dDiff *= 2.0;
 		dY -= dDiff;
 	}
-	m_oTransform.Set(1, 0, 0, 1, PT_2_MM(-pAnnot->GetPageX() - pAnnot->GetRect().fLeft), PT_2_MM(dY));
+	m_oTransform.Set(1, 0, 0, 1, PT_2_MM(pAnnot->GetPageX() - pAnnot->GetRect().fLeft), PT_2_MM(dY));
 
 	PdfWriter::CAnnotAppearanceObject* pAP = pAnnot->StartAP(nRotate);
 

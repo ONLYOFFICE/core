@@ -103,10 +103,12 @@ namespace PdfWriter
 	CFontEmbedded::CFontEmbedded(CXref* pXref, CDocument* pDocument) : CFontDict(pXref, pDocument), m_eFontType(fontUnknownType)
 	{
 	}
-	bool CFontEmbedded::LoadFont(const std::string& sFontKey, EFontType eFontType, const std::map<unsigned int, unsigned int>& mCodeToWidth, const std::map<unsigned int, unsigned int>& mCodeToUnicode, const std::map<unsigned int, unsigned int>& mCodeToGID)
+	bool CFontEmbedded::LoadFont(const std::string& sFontKey, EFontType eFontType, CObjectBase* pObj,
+								 const std::map<unsigned int, unsigned int>& mCodeToWidth, const std::map<unsigned int, unsigned int>& mCodeToUnicode, const std::map<unsigned int, unsigned int>& mCodeToGID)
 	{
 		m_sFontKey = sFontKey;
 		m_eFontType = eFontType;
+		m_pObj = pObj;
 		m_mCodeToWidth = mCodeToWidth;
 		m_mCodeToUnicode = mCodeToUnicode;
 		m_mCodeToGID = mCodeToGID;

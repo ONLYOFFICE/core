@@ -202,6 +202,11 @@ XmlString* CMDWriter::GetCurrentDocument() const
 	return m_arStates.top().m_pCurrentDocument;
 }
 
+bool CMDWriter::SupportNestedTables() const
+{
+	return false;
+}
+
 void CMDWriter::WriteBreakLine(bool bNeedChecked)
 {
 	if (bNeedChecked && !m_arStates.top().m_bNeedBreakLine)
@@ -229,7 +234,7 @@ void CMDWriter::WriteBreakLine(bool bNeedChecked)
 	m_arStates.top().m_wsLastSpecialString.clear();
 }
 
-void CMDWriter::EneteredBold()
+void CMDWriter::EnteredBold()
 {
 	m_arStates.top().m_bBold = true;
 }
@@ -244,7 +249,7 @@ bool CMDWriter::IsBold()
 	return m_arStates.top().m_bBold;
 }
 
-void CMDWriter::EneteredItalic()
+void CMDWriter::EnteredItalic()
 {
 	m_arStates.top().m_bItalic = true;
 }
@@ -259,7 +264,7 @@ bool CMDWriter::IsItalic()
 	return m_arStates.top().m_bItalic;
 }
 
-void CMDWriter::EneteredStrike()
+void CMDWriter::EnteredStrike()
 {
 	m_arStates.top().m_bStrike = true;
 }

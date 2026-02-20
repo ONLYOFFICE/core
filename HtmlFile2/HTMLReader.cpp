@@ -1009,6 +1009,19 @@ bool CHTMLReader::ReadTable(std::vector<NSCSS::CNode>& arSelectors)
 	if(m_oLightReader.IsEmptyNode())
 		return false;
 
+	if (nullptr != m_pWriter && !m_pWriter->SupportNestedTables())
+	{
+		//Временно разруливаем это тут, так как по текущей логике мы сначала
+		//читаем всю таблицу и её вложенные элементы, а потом приступаем к конвертации,
+		//поэтому конвертору уже приходят вложенные таблицы, что в MD запрещено
+		for (std::vector<NSCSS::CNode>::const_reverse_iterator itElement{arSelectors.crbegin() + 1}; itElement < arSelectors.crend(); ++itElement)
+			if (L"table" == itElement->m_wsName)
+				return false;
+
+		if (nullptr != dynamic_cast<CMDWriter*>(m_pWriter))
+			((CMDWriter*)m_pWriter)->EnteredTable();
+	}
+
 	CStorageTable oTable;
 
 	NSCSS::CCompiledStyle *pStyle = arSelectors.back().m_pCompiledStyle;
@@ -1099,6 +1112,9 @@ bool CHTMLReader::ReadTable(std::vector<NSCSS::CNode>& arSelectors)
 	oTable.SetMargin(pStyle->m_oMargin);
 	oTable.SetAlign(pStyle->m_oDisplay.GetHAlign().ToWString());
 	//------
+
+	//TODO:: переписать работу с таблицами без предварительной конвертации ячеек и хранения их внутренних данных
+	//Читаем содержимое таблицы -> считаем ячейки -> нормализуем таблицу -> конвертим таблицу
 
 	int nDeath = m_oLightReader.GetDepth();
 	while(m_oLightReader.ReadNextSiblingNode(nDeath))

@@ -65,17 +65,19 @@ public:
 
 	XmlString* GetCurrentDocument() const override;
 
+	bool SupportNestedTables() const override;
+
 	void WriteBreakLine(bool bNeedChecked = true);
 
-	void EneteredBold();
+	void EnteredBold();
 	void OutBold();
 	bool IsBold();
 
-	void EneteredItalic();
+	void EnteredItalic();
 	void OutItalic();
 	bool IsItalic();
 
-	void EneteredStrike();
+	void EnteredStrike();
 	void OutStrike();
 	bool IsStrike();
 

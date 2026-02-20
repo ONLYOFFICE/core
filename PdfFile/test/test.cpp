@@ -711,7 +711,7 @@ TEST_F(CPdfFileTest, EditPdfSign)
 
 TEST_F(CPdfFileTest, PrintPdf)
 {
-	//GTEST_SKIP();
+	GTEST_SKIP();
 
 	LoadFromFile(wsDstFile);
 

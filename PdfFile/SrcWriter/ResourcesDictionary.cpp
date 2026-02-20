@@ -91,7 +91,7 @@ namespace PdfWriter
 			}
 		}
 
-		const char *sKey = m_pFonts->GetKey(pEmbedded ? pEmbedded->GetObj() : pFont);
+		const char *sKey = m_pFonts->GetKey(pEmbedded ? pEmbedded->GetObj2() : pFont);
 		if (!sKey)
 		{
 			// если фонт не зарегистрирован в ресурсах, тогда регистрируем его
@@ -108,7 +108,7 @@ namespace PdfWriter
 			pPointer = (char*)StrCpy(sFontName, "F", pEndPointer);
 			ItoA(pPointer, m_unFontsCount, pEndPointer);
 			m_pFonts->Add(sFontName, pEmbedded ? pEmbedded->GetObj() : pFont);
-			sKey = m_pFonts->GetKey(pEmbedded ? pEmbedded->GetObj() : pFont);
+			sKey = m_pFonts->GetKey(pEmbedded ? pEmbedded->GetObj2() : pFont);
 			if (sEmbeddedFontKey)
 				pEmbedded->UpdateKey(sKey);
 		}

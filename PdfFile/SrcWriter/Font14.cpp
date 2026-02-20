@@ -142,4 +142,14 @@ namespace PdfWriter
 				return pair.first;
 		return 0;
 	}
+	CObjectBase* CFontEmbedded::GetObj()
+	{
+		if (m_pObj->GetType() != object_type_UNKNOWN)
+			return m_pObj;
+		return new PdfWriter::CProxyObject(m_pObj, true);
+	}
+	CObjectBase* CFontEmbedded::GetObj2()
+	{
+		return m_pObj;
+	}
 }

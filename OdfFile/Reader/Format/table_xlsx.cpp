@@ -973,7 +973,7 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
 			}
 			if (attr.office_value_type_)
 			{
-				if (attr.office_value_type_.get() != num_format_type)
+				if (attr.office_value_type_.get() != num_format_type && num_format_type != office_value_type::Custom)
 				{// reset from cell 
 					num_format_type = attr.office_value_type_->get_type();
 					num_format.clear();

@@ -200,6 +200,8 @@ public:
 	XmlString& GetWebSettingsXml();
 	XmlString* GetCurrentDocument() const override;
 
+	bool SupportNestedTables() const override;
+
 	const NSCSS::NSProperties::CPage* GetPageData() const;
 	NSFonts::IApplicationFonts* GetFonts();
 

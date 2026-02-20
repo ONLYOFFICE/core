@@ -53,7 +53,7 @@ bool CBold<CMDWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, const 
 		return true;
 
 	m_pWriter->WriteOpenSpecialString(L"**");
-	m_pWriter->EneteredBold();
+	m_pWriter->EnteredBold();
 
 	return true;
 }
@@ -97,7 +97,7 @@ bool CItalic<CMDWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, cons
 		return true;
 
 	m_pWriter->WriteOpenSpecialString(L"*");
-	m_pWriter->EneteredItalic();
+	m_pWriter->EnteredItalic();
 
 	return true;
 }
@@ -124,7 +124,7 @@ bool CStrike<CMDWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, cons
 		return true;
 
 	m_pWriter->WriteOpenSpecialString(L"~~");
-	m_pWriter->EneteredStrike();
+	m_pWriter->EnteredStrike();
 
 	return true;
 }
@@ -309,7 +309,7 @@ CTable<CMDWriter>::CTable(CMDWriter* pWriter)
 
 bool CTable<CMDWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData)
 {
-	if (!ValidWriter() || m_pWriter->InTable()) //В MD не поддерживаются вложенные таблицы
+	if (!ValidWriter() /*|| m_pWriter->InTable()*/) //В MD не поддерживаются вложенные таблицы (пока разруливаем в парсере)
 		return false;
 
 	m_pWriter->WriteBreakLine();

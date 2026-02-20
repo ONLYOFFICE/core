@@ -1659,7 +1659,11 @@ namespace NSDocxRenderer
 			paragraph->m_dRightBorder = m_dWidth - paragraph->m_dRight;
 			paragraph->m_dLeftBorder = min_left;
 
-			paragraph->m_dLineHeight = paragraph->m_dHeight / paragraph->m_arTextLines.size();
+			if (paragraph->m_arTextLines.size() == 1)
+				paragraph->m_dLineHeight = paragraph->m_dHeight;
+			else
+				paragraph->m_dLineHeight = (paragraph->m_dBot - firstLine->m_dBotWithMaxDescent) / (paragraph->m_arTextLines.size() - 1);
+
 			paragraph->m_bIsNeedFirstLineIndent = false;
 			paragraph->m_dFirstLine = 0;
 			paragraph->m_wsStyleId = m_oManagers.pParagraphStyleManager->GetDefaultParagraphStyleId(*paragraph);
@@ -1674,7 +1678,6 @@ namespace NSDocxRenderer
 				{
 					double offset = paragraph->m_dLineHeight - firstLine_height;
 					paragraph->m_dTop -= offset;
-					paragraph->m_dBot -= offset;
 				}
 				else
 				{
@@ -1682,9 +1685,10 @@ namespace NSDocxRenderer
 					double newAscent = ascent * paragraph->m_dLineHeight / firstLine_height;
 					double offset = ascent - newAscent;
 					paragraph->m_dTop += offset;
-					paragraph->m_dBot += offset;
 				}
+				paragraph->m_dHeight = paragraph->m_dBot - paragraph->m_dTop;
 			}
+
 			// setting TextAlignmentType
 			if (paragraph->m_arTextLines.size() > 1)
 			{

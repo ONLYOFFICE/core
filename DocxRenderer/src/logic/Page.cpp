@@ -195,12 +195,14 @@ namespace NSDocxRenderer
 
 		if (!m_arShapes.empty())
 		{
-			auto& last_shape = m_arShapes.back();			
-			if (last_shape->IsEqual(top, bot, left, right) && rotation == last_shape->m_dRotation && lType != m_lLastType && m_lLastType != 0)
+			auto& last_shape = m_arShapes.back();
+			bool is_type_diff = lType == c_nStroke && (m_lLastType == c_nWindingFillMode || m_lLastType == c_nEvenOddFillMode);
+			is_type_diff = is_type_diff || (m_lLastType == c_nStroke && (lType == c_nWindingFillMode || m_lLastType == c_nEvenOddFillMode));
+			if (last_shape->IsEqual(top, bot, left, right) && rotation == last_shape->m_dRotation && is_type_diff && m_lLastType != 0)
 			{
 				set_fill_mode(last_shape);
-				// Reset stroke/fill logic
-				m_lLastType = 0;
+				if (pInfo) DrawImage(last_shape, pInfo, image_vector);
+				m_lLastType = 0; // reset stroke/fill logic
 				return;
 			}
 		}

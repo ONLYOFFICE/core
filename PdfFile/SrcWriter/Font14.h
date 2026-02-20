@@ -71,7 +71,8 @@ namespace PdfWriter
 		unsigned int GetWidth(unsigned short ushCode);
 		unsigned int EncodeUnicode(const unsigned int& unGID, const unsigned int& unUnicode);
 		unsigned int EncodeGID(const unsigned int& unGID);
-		CObjectBase* GetObj() { return m_pObj; }
+		CObjectBase* GetObj();
+		CObjectBase* GetObj2();
 		const char* GetFontKey() const { return m_sFontKey.c_str(); }
 		void UpdateKey(const std::string& sFontKey) { m_sFontKey = sFontKey; }
 

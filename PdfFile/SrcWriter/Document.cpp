@@ -2267,4 +2267,13 @@ namespace PdfWriter
 	{
 		m_pCurPage->ClearContentFull(m_pXref);
 	}
+	CObjectBase* CDocument::FindObjByID(unsigned int nObjectId)
+	{
+		TXrefEntry* pRes = NULL;
+		if (m_pLastXref)
+			pRes = m_pLastXref->GetEntryByObjectId(nObjectId);
+		if (!pRes)
+			pRes = m_pXref->GetEntryByObjectId(nObjectId);
+		return pRes? pRes->pObject : NULL;
+	}
 }

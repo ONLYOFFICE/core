@@ -4385,6 +4385,11 @@ void CPdfEditor::ScanAndProcessFonts(PDFDoc* pPDFDocument, XRef* xref, Dict* pRe
 							}
 							m_pWriter->AddFont(L"Embedded: " + wsFontName, false, false, wsFileName, 0);
 							PdfWriter::CObjectBase* pObj =  m_mObjManager.GetObj(nFontRef.num);
+							if (!pObj)
+							{
+								pObj = new PdfWriter::CObjectBase();
+								pObj->SetRef(nFontRef.num, nFontRef.gen);
+							}
 							m_pWriter->GetDocument()->CreateFontEmbedded(wsFileName, 0, sFontKey, static_cast<PdfWriter::EFontType>(gfxFont->getType()), pObj, mCodeToWidth, mCodeToUnicode, mCodeToGID);
 						}
 					}

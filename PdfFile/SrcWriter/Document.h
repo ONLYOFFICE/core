@@ -226,6 +226,7 @@ namespace PdfWriter
 		void              RemoveObj(CObjectBase* pObj);
 		void              SetEncryption(CEncryptDict* pEncrypt, CObjectBase* pID);
 		void              AddNameTree(CStringObject* pName, CDestination* pDest);
+		CObjectBase*      FindObjByID(unsigned int nObjectId);
 	private:		  
 					  
 		char*             GetTTFontTag();

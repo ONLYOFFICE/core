@@ -31,6 +31,7 @@
  */
 
 #include "OfficeArtDgContainer.h"
+#include "SimpleOfficeArtContainers.h"
 
 namespace ODRAW
 {
@@ -147,29 +148,39 @@ void OfficeArtDgContainer::loadFields(XLS::CFRecord& record)
 
 void OfficeArtDgContainer::save(XLS::CFRecord& record)
 {
-	rh_own.recVer = 0xF;
-	rh_own.recInstance = 0;
-	rh_own.recType =  0xF002;
-	record << rh_own;
-	auto sizePos = record.getRdPtr();
-	if(m_OfficeArtFDG != nullptr)
-		m_OfficeArtFDG->save(record);
-	if(m_OfficeArtFRITContainer != nullptr)
-		m_OfficeArtFRITContainer->save(record);
-	if(m_OfficeArtSpgrContainer != nullptr)
-		m_OfficeArtSpgrContainer->save(record);
+	auto sizePos = 0;
+	if(first)
+	{
+		rh_own.recVer = 0xF;
+		rh_own.recInstance = 0;
+		rh_own.recType =  0xF002;
+		record << rh_own;
+		sizePos = record.getRdPtr();
+		if(m_OfficeArtFDG != nullptr)
+			m_OfficeArtFDG->save(record);
+		if(m_OfficeArtFRITContainer != nullptr)
+			m_OfficeArtFRITContainer->save(record);
+		if(m_OfficeArtSpgrContainer != nullptr)
+		{
+			auto castedContainer = static_cast<OfficeArtSpgrContainer*>(m_OfficeArtSpgrContainer.get());
+			castedContainer->rh_own.recLen += totalSize;
+			m_OfficeArtSpgrContainer->save(record);
+		}
+	}
 	for(auto i : m_OfficeArtSpContainer)
 		if(i != nullptr)
 			i->save(record);
 	if(m_OfficeArtSpgrContainerFileBlock != nullptr)
 		m_OfficeArtSpgrContainerFileBlock->save(record);
-
-	//calculating size
-	rh_own.recLen = record.getRdPtr() - sizePos;
-	record.RollRdPtrBack(rh_own.recLen + 4);
-	auto recLen = rh_own.recLen;
-	record << recLen;
-	record.skipNunBytes(rh_own.recLen);
+	if(first)
+	{
+		//calculating size
+		rh_own.recLen = record.getRdPtr() - sizePos;
+		record.RollRdPtrBack(rh_own.recLen + 4);
+		auto recLen = rh_own.recLen + totalSize;
+		record << recLen;
+		record.skipNunBytes(rh_own.recLen);
+	}
 }
 
 } // namespace ODRAW

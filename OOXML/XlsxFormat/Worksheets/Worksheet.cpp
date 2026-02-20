@@ -482,16 +482,27 @@ namespace OOX
 					std::vector<XLS::BaseObjectPtr> charts;
 					drawingPtr->toXLSChart(charts);
 					auto chartIndex = 0;
+
+					auto shapeCount = drawingGroupPtr->drawingCount+1;
 					for(auto anchor : drawingPtr->m_arrItems)
 					{
 						auto drawingObj = new XLS::MsoDrawing(false);
 						{
 							auto left = 0, leftOff = 0, right = 0, righOff = 0, top = 0, topOff = 0, bot = 0, botOff = 0;
 							anchor->getAnchorPos(left, leftOff, top, topOff, right, righOff, bot, botOff);
-							drawingObj->prepareChart(drawingGroupPtr->drawingCount, left, right, top, bot, leftOff, righOff, topOff, botOff);
+							if(anchor != *drawingPtr->m_arrItems.begin())
+								drawingObj->rgChildRec.first = false;
+							drawingObj->prepareChart(shapeCount, left, right, top, bot, leftOff, righOff, topOff, botOff);
 						}
+
 						std::pair<XLS::BaseObjectPtr, std::vector<XLS::BaseObjectPtr>> objPair;
-						objPair.first = XLS::MsoDrawingPtr(drawingObj);
+						{
+							auto drawingObjPtr = XLS::MsoDrawingPtr(drawingObj);
+							objPair.first = drawingObjPtr;
+
+							if(drawingObj->rgChildRec.first)
+								Objects->m_MsoDrawing = drawingObjPtr;
+						}
 						auto objPt = new XLS::Obj(Objects->m_MsoDrawing);
 						objPt->cmo.ot = 5;
 						objPt->cmo.fPrint = true;
@@ -507,6 +518,7 @@ namespace OOX
 						Objects->m_arrObject.push_back(objPair);
 						chartIndex++;
 						drawingGroupPtr->drawingCount++;
+						shapeCount += 1;
 					}
 					worksheetPtr->m_OBJECTS = objectsPtr;
 				}

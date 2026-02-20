@@ -171,10 +171,11 @@ void OfficeArtSpgrContainer::save(XLS::CFRecord& record)
 		i->save(record);
 
 	//calculating size
-	rh_own.recLen = record.getRdPtr() - sizePos;
-	record.RollRdPtrBack(rh_own.recLen + 4);
+	auto recSize = record.getRdPtr() - sizePos;
+	rh_own.recLen += recSize;
+	record.RollRdPtrBack(recSize + 4);
 	record << rh_own.recLen;
-	record.skipNunBytes(rh_own.recLen);
+	record.skipNunBytes(recSize);
 }
 
 void OfficeArtSpContainer::loadFields(XLS::CFRecord& record)

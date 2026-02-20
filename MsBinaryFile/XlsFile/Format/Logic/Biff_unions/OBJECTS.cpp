@@ -178,6 +178,19 @@ const bool OBJECTS::saveContent(BinProcessor& proc)
 	for(auto i : m_arrObject)
 	{
 		if(i.first != nullptr)
+		{
+			auto castedDrawing = static_cast<MsoDrawing*>(i.first.get());
+			if(!castedDrawing->rgChildRec.first && m_MsoDrawing != nullptr)
+			{
+				CFRecord writingRecord(1, proc.getGlobalWorkbookInfo());
+				castedDrawing->writeFields(writingRecord);
+				m_MsoDrawing->rgChildRec.totalSize += writingRecord.getRdPtr();
+			}
+		}
+	}
+	for(auto i : m_arrObject)
+	{
+		if(i.first != nullptr)
 			proc.mandatory(*i.first);
 		for(auto j : i.second)
 			if(j != nullptr)

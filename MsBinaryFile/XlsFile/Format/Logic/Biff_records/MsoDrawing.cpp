@@ -186,35 +186,44 @@ void MsoDrawing::prepareChart(const unsigned int chartId, const unsigned int x1,
 		const unsigned int y1, const unsigned int y2, const unsigned int x1Offset, const unsigned int x2Offset,
 		const unsigned int y1Offset,const unsigned int y2Offset)
 {
-
-	auto fdgPtr = new ODRAW::OfficeArtFDG;
-	fdgPtr->rh_own.recInstance = chartId;
-	fdgPtr->spidCur = chartId;
-	rgChildRec.m_OfficeArtFDG = ODRAW::OfficeArtRecordPtr(fdgPtr);
-
-	auto spgrContainer = new ODRAW::OfficeArtSpgrContainer(ODRAW::OfficeArtRecord::CA_Chart);
-	rgChildRec.m_OfficeArtSpgrContainer = ODRAW::OfficeArtRecordPtr(spgrContainer);
-
+	if(rgChildRec.first)
 	{
-		auto SpContainer = new ODRAW::OfficeArtSpContainer(ODRAW::OfficeArtRecord::CA_Chart);
-		spgrContainer->m_OfficeArtSpgrContainerFileBlock.push_back(ODRAW::OfficeArtContainerPtr(SpContainer));
-		auto groupFSPGR = new ODRAW::OfficeArtFSPGR;
-		groupFSPGR->xLeft = x1;
-		groupFSPGR->xRight = x2;
-		groupFSPGR->yTop = y1;
-		groupFSPGR->yBottom = y2;
-		SpContainer->m_OfficeArtFSPGR = ODRAW::OfficeArtRecordPtr(groupFSPGR);
+		auto fdgPtr = new ODRAW::OfficeArtFDG;
+		fdgPtr->rh_own.recInstance = chartId;
+		fdgPtr->spidCur = chartId;
+		rgChildRec.m_OfficeArtFDG = ODRAW::OfficeArtRecordPtr(fdgPtr);
 
-		auto fsprPtr = new ODRAW::OfficeArtFSP;
-		SpContainer->m_OfficeArtFSP = ODRAW::OfficeArtRecordPtr(fsprPtr);
-		fsprPtr->shape_id = 0;
-		fsprPtr->spid = chartId;
-		fsprPtr->fGroup = true;
-		fsprPtr->fPatriarch = true;
+		auto spgrContainer = new ODRAW::OfficeArtSpgrContainer(ODRAW::OfficeArtRecord::CA_Chart);
+		rgChildRec.m_OfficeArtSpgrContainer = ODRAW::OfficeArtRecordPtr(spgrContainer);
+
+		{
+			auto SpContainer = new ODRAW::OfficeArtSpContainer(ODRAW::OfficeArtRecord::CA_Chart);
+			spgrContainer->m_OfficeArtSpgrContainerFileBlock.push_back(ODRAW::OfficeArtContainerPtr(SpContainer));
+			auto groupFSPGR = new ODRAW::OfficeArtFSPGR;
+			groupFSPGR->xLeft = x1;
+			groupFSPGR->xRight = x2;
+			groupFSPGR->yTop = y1;
+			groupFSPGR->yBottom = y2;
+			SpContainer->m_OfficeArtFSPGR = ODRAW::OfficeArtRecordPtr(groupFSPGR);
+
+			auto fsprPtr = new ODRAW::OfficeArtFSP;
+			SpContainer->m_OfficeArtFSP = ODRAW::OfficeArtRecordPtr(fsprPtr);
+			fsprPtr->shape_id = 0;
+			fsprPtr->spid = chartId-1;
+			fsprPtr->fGroup = true;
+			fsprPtr->fPatriarch = true;
+		}
+		fdgPtr->csp = spgrContainer->m_OfficeArtSpgrContainerFileBlock.size()+1;
 	}
 	{
 		auto SpContainer = new ODRAW::OfficeArtSpContainer(ODRAW::OfficeArtRecord::CA_Chart);
-		spgrContainer->m_OfficeArtSpgrContainerFileBlock.push_back(ODRAW::OfficeArtContainerPtr(SpContainer));
+		if(rgChildRec.first && rgChildRec.m_OfficeArtSpgrContainer != nullptr)
+		{
+			auto spgrContainer = static_cast<ODRAW::OfficeArtSpgrContainer*>(rgChildRec.m_OfficeArtSpgrContainer.get());
+			spgrContainer->m_OfficeArtSpgrContainerFileBlock.push_back(ODRAW::OfficeArtContainerPtr(SpContainer));
+		}
+		else
+			rgChildRec.m_OfficeArtSpContainer.push_back(ODRAW::OfficeArtContainerPtr(SpContainer));
 
 		auto fsprPtr = new ODRAW::OfficeArtFSP;
 		SpContainer->m_OfficeArtFSP = ODRAW::OfficeArtRecordPtr(fsprPtr);
@@ -235,7 +244,6 @@ void MsoDrawing::prepareChart(const unsigned int chartId, const unsigned int x1,
 		auto clientData = new ODRAW::OfficeArtClientData;
 		SpContainer->m_oOfficeArtClientData = ODRAW::OfficeArtRecordPtr(clientData);
 	}
-	fdgPtr->csp = spgrContainer->m_OfficeArtSpgrContainerFileBlock.size();
 }
 
 

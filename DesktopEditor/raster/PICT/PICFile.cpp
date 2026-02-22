@@ -1717,6 +1717,12 @@ void CPictFile::InitializeRenderer()
 		return;
 
 	m_pFrameData = new BYTE[4 * m_oImgData.m_nWidth * m_oImgData.m_nHeight];
+	unsigned int back = 0xffffff;
+	unsigned int *pData32 = (unsigned int*)m_pFrameData;
+	unsigned int *pData32End = pData32 + m_oImgData.m_nWidth *  m_oImgData.m_nHeight;
+	while (pData32 < pData32End)
+		*pData32++ = back;
+
 	m_oFrame.put_Data(m_pFrameData);
 	m_oFrame.put_Width(m_oImgData.m_nWidth);
 	m_oFrame.put_Height(m_oImgData.m_nHeight);

@@ -2,6 +2,7 @@
 
 #include "../Common/Network/FileTransporter/include/FileTransporter.h"
 #include "../DesktopEditor/common/File.h"
+#include "../DesktopEditor/common/Directory.h"
 #include "../DesktopEditor/common/Path.h"
 
 #include "../Common/3dParty/html/htmltoxhtml.h"
@@ -261,18 +262,22 @@ inline bool UnreadableNode(const std::wstring& wsNodeName);
 inline bool TagIsUnprocessed(const std::wstring& wsTagName);
 
 CHTMLReader::CHTMLReader()
-	: m_pWriter(nullptr)
+	: m_bIsTempDirOwner(true), m_pWriter(nullptr)
 {}
 
 CHTMLReader::~CHTMLReader()
 {
 	if (nullptr != m_pWriter)
 		delete m_pWriter;
+
+	if (m_bIsTempDirOwner && !m_wsTempDirectory.empty())
+		NSDirectory::DeleteDirectory(m_wsTempDirectory);
 }
 
 void CHTMLReader::SetTempDirectory(const std::wstring& wsPath)
 {
 	m_wsTempDirectory = wsPath;
+	m_bIsTempDirOwner = m_wsTempDirectory.empty();
 }
 
 void CHTMLReader::SetCoreDirectory(const std::wstring& wsPath)
@@ -327,7 +332,6 @@ void CHTMLReader::Clear()
 
 	m_mTags.clear();
 
-	m_wsTempDirectory.clear();
 	m_wsSrcDirectory .clear();
 	m_wsDstDirectory .clear();
 	m_wsBaseDirectory.clear();
@@ -502,6 +506,11 @@ bool CHTMLReader::Convert(const std::wstring& wsPath, Convert_Func Convertation)
 {
 	if (nullptr == m_pWriter || !Convertation(wsPath, m_oLightReader) || !m_oLightReader.IsValid() || !IsHTML())
 		return false;
+
+	if (m_wsTempDirectory.empty())
+	{
+		m_wsTempDirectory = NSDirectory::CreateDirectoryWithUniqueName(NSDirectory::GetTempPath());
+	}
 
 	m_wsSrcDirectory = NSSystemPath::GetDirectoryName(wsPath);
 

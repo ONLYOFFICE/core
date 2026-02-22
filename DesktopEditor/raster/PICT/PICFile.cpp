@@ -985,6 +985,8 @@ bool CPictFile::DecodeData()
 			m_oImgData.m_pPixelData	= (BYTE*)malloc(4 * m_oImgData.m_nHeight * m_oImgData.m_nWidth);
 		if (m_oFrame.get_Data())
 			memcpy(m_oImgData.m_pPixelData, m_oFrame.get_Data(), 4 * m_oImgData.m_nHeight * m_oImgData.m_nWidth);
+		else
+			memset(m_oImgData.m_pPixelData, 255, m_oImgData.m_nWidth * m_oImgData.m_nHeight * 4);
 	}
 
 	return true;

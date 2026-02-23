@@ -4011,7 +4011,8 @@ void CPdfEditor::ClearPage()
 {
 	PDFDoc* pPDFDocument = NULL;
 	PdfReader::CPdfFontList* pFontList = NULL;
-	int nPageIndex = m_pReader->GetPageIndex(m_nEditPage, &pPDFDocument, &pFontList);
+	int nStartRefID = 0;
+	int nPageIndex = m_pReader->GetPageIndex(m_nEditPage, &pPDFDocument, &pFontList, &nStartRefID);
 	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
 	if (nPageIndex < 0 || !pPDFDocument || !pDoc)
 		return;
@@ -4074,7 +4075,7 @@ void CPdfEditor::ClearPage()
 	if (pResources)
 	{
 		std::vector<int> arrUniqueResources;
-		ScanAndProcessFonts(pPDFDocument, xref, pResources, 0, arrUniqueResources, pFontList);
+		ScanAndProcessFonts(pPDFDocument, xref, pResources, 0, arrUniqueResources, pFontList, nStartRefID);
 		m_pReader->SetFonts(m_nEditPage);
 	}
 	oAnnots.free();
@@ -4325,7 +4326,7 @@ std::vector<double> CPdfEditor::WriteRedact(const std::vector<std::wstring>& arr
 	}
 	return arrRes;
 }
-void CPdfEditor::ScanAndProcessFonts(PDFDoc* pPDFDocument, XRef* xref, Dict* pResources, int nDepth, std::vector<int>& arrUniqueResources, PdfReader::CPdfFontList* pFontList)
+void CPdfEditor::ScanAndProcessFonts(PDFDoc* pPDFDocument, XRef* xref, Dict* pResources, int nDepth, std::vector<int>& arrUniqueResources, PdfReader::CPdfFontList* pFontList, int nStartRefID)
 {
 	if (nDepth > 5 || !pResources)
 		return;
@@ -4384,7 +4385,7 @@ void CPdfEditor::ScanAndProcessFonts(PDFDoc* pPDFDocument, XRef* xref, Dict* pRe
 									mCodeToGID[nIndex] = pFontEntry.pCodeToGID[nIndex];
 							}
 							m_pWriter->AddFont(L"Embedded: " + wsFontName, false, false, wsFileName, 0);
-							PdfWriter::CObjectBase* pObj =  m_mObjManager.GetObj(nFontRef.num);
+							PdfWriter::CObjectBase* pObj =  m_mObjManager.GetObj(nFontRef.num + nStartRefID);
 							if (!pObj)
 							{
 								pObj = new PdfWriter::CObjectBase();
@@ -4405,7 +4406,7 @@ void CPdfEditor::ScanAndProcessFonts(PDFDoc* pPDFDocument, XRef* xref, Dict* pRe
 	oFonts.free();
 
 	// Обработка XObject
-	auto fScanFonts = [this, pPDFDocument, xref, nDepth, &arrUniqueResources, pFontList](Dict* pResources, const char* sName)
+	auto fScanFonts = [this, pPDFDocument, xref, nDepth, &arrUniqueResources, pFontList, nStartRefID](Dict* pResources, const char* sName)
 	{
 		Object oObject;
 		if (!pResources->lookup(sName, &oObject)->isDict())
@@ -4431,7 +4432,7 @@ void CPdfEditor::ScanAndProcessFonts(PDFDoc* pPDFDocument, XRef* xref, Dict* pRe
 			arrUniqueResources.push_back(oRef.getRef().num);
 			oXObj.free(); oRef.free();
 
-			ScanAndProcessFonts(pPDFDocument, xref, oResources.getDict(), nDepth + 1, arrUniqueResources, pFontList);
+			ScanAndProcessFonts(pPDFDocument, xref, oResources.getDict(), nDepth + 1, arrUniqueResources, pFontList, nStartRefID);
 			oResources.free();
 		}
 		oObject.free();
@@ -4470,7 +4471,7 @@ void CPdfEditor::ScanAndProcessFonts(PDFDoc* pPDFDocument, XRef* xref, Dict* pRe
 		arrUniqueResources.push_back(oRef.getRef().num);
 		oSMaskGroup.free(); oRef.free();
 
-		ScanAndProcessFonts(pPDFDocument, xref, oResources.getDict(), nDepth + 1, arrUniqueResources, pFontList);
+		ScanAndProcessFonts(pPDFDocument, xref, oResources.getDict(), nDepth + 1, arrUniqueResources, pFontList, nStartRefID);
 		oResources.free();
 	}
 	oExtGState.free();

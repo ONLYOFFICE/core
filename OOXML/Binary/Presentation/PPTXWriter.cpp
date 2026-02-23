@@ -683,6 +683,7 @@ namespace NSBinPptxRW
 				}
 				else
 				{
+					m_arHandoutMasters_Theme.emplace_back();
 					CreateDefaultHandoutMasters(m_arHandoutMasters_Theme[0]);
 				}
 			}

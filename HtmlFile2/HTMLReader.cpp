@@ -1,8 +1,6 @@
 #include "HTMLReader.h"
 
 #include "../Common/Network/FileTransporter/include/FileTransporter.h"
-#include "../DesktopEditor/common/File.h"
-#include "../DesktopEditor/common/Directory.h"
 #include "../DesktopEditor/common/Path.h"
 
 #include "../Common/3dParty/html/htmltoxhtml.h"
@@ -19,6 +17,9 @@
 #include "src/StringFinder.h"
 
 #include <boost/tuple/tuple.hpp>
+
+#include "../DesktopEditor/common/Directory.h"
+#include "../DesktopEditor/common/File.h"
 
 namespace HTML
 {

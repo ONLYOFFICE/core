@@ -46,7 +46,6 @@ namespace NSDocxRenderer
 		std::wstring m_strDstMedia    {};
 
 		double m_dRotation {0.0};
-		size_t m_nOrder  {0};
 
 		bool m_bIsNoFill    {true};
 		bool m_bIsNoStroke  {true};

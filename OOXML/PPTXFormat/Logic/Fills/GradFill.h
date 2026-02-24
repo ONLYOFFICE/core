@@ -62,6 +62,7 @@ namespace PPTX
 			virtual std::wstring toXML() const;
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
 			void Merge(GradFill& fill) const;
 			UniColor GetFrontColor() const;

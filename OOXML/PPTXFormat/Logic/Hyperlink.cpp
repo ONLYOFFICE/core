@@ -163,7 +163,7 @@ namespace PPTX
 		}		
 		void Hyperlink::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 		{
-			OOX::IFileContainer* pRels = pWriter->GetRels().GetPointer();
+			OOX::IFileContainer* pRels = pWriter->GetRelsPtr();
 
 			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
 

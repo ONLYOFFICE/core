@@ -86,7 +86,6 @@ namespace ComplexTypes
 			nullable_string m_sXPath;
 //ext w15
 			nullable_string m_sStoreItemChecksum;
-
 		};
 
 		//--------------------------------------------------------------------------------
@@ -577,7 +576,9 @@ namespace OOX
 			nullable<ComplexTypes::Word::String> m_oTag;
             nullable<ComplexTypes::Word::COnOff2> m_oTemporary;
 			nullable<ComplexTypes::Word::CSdtText> m_oText;
-			nullable<CSdtCheckBox> m_oCheckbox;
+			nullable<CSdtCheckBox> m_oCheckbox;			
+			nullable_bool m_oRepeatingSectionItem;
+			nullable_bool m_oRepeatingSection;
 
 			nullable<CFormPr> m_oFormPr; //Not from specification
 			nullable<CTextFormPr> m_oTextFormPr; //Not from specification

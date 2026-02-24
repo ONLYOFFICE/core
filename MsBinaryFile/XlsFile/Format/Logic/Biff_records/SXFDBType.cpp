@@ -54,5 +54,10 @@ void SXFDBType::readFields(CFRecord& record)
 	record >> wTypeSql; 
 }
 
+void SXFDBType::writeFields(CFRecord& record)
+{
+	record << wTypeSql;
+}
+
 } // namespace XLS
 

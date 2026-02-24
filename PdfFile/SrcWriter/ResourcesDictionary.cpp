@@ -34,6 +34,7 @@
 #include "Utils.h"
 #include "GState.h"
 #include "Image.h"
+#include "Font14.h"
 
 namespace PdfWriter
 {
@@ -77,7 +78,20 @@ namespace PdfWriter
 			Add("Font", m_pFonts);
 		}
 
-		const char *sKey = m_pFonts->GetKey(pFont);
+		CFontEmbedded* pEmbedded = dynamic_cast<CFontEmbedded*>(pFont);
+		const char* sEmbeddedFontKey = NULL;
+		if (pEmbedded)
+		{
+			sEmbeddedFontKey = pEmbedded->GetFontKey();
+			CObjectBase* pObj = m_pFonts->Get(sEmbeddedFontKey);
+			if (!pObj)
+			{
+				m_pFonts->Add(sEmbeddedFontKey, pEmbedded->GetObj());
+				return sEmbeddedFontKey;
+			}
+		}
+
+		const char *sKey = m_pFonts->GetKey(pEmbedded ? pEmbedded->GetObj2() : pFont);
 		if (!sKey)
 		{
 			// если фонт не зарегистрирован в ресурсах, тогда регистрируем его
@@ -93,8 +107,10 @@ namespace PdfWriter
 
 			pPointer = (char*)StrCpy(sFontName, "F", pEndPointer);
 			ItoA(pPointer, m_unFontsCount, pEndPointer);
-			m_pFonts->Add(sFontName, pFont);
-			sKey = m_pFonts->GetKey(pFont);
+			m_pFonts->Add(sFontName, pEmbedded ? pEmbedded->GetObj() : pFont);
+			sKey = m_pFonts->GetKey(pEmbedded ? pEmbedded->GetObj2() : pFont);
+			if (sEmbeddedFontKey)
+				pEmbedded->UpdateKey(sKey);
 		}
 
 		return sKey;

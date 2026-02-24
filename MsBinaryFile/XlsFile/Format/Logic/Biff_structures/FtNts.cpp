@@ -60,6 +60,19 @@ void FtNts::load(CFRecord& record)
 	record.skipNunBytes(4);
 }
 
+void FtNts::save(CFRecord& record)
+{
+	{
+		unsigned short ft = 0x000D, cb = 0x0016;
+		record << ft << cb;
+	}
+	_GUID_ guid_num;
+	if(!guid.empty())
+		STR::bstr2guid(guid, guid_num);
+	record << guid_num << fSharedNote;
+	record.reserveNunBytes(4);
+}
+
 
 } // namespace XLS
 

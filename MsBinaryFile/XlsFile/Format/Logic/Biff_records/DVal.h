@@ -56,7 +56,7 @@ public:
     bool fWnClosed = 0;
     _UINT32	xLeft = 0;
     _UINT32	yTop = 0;
-    _INT32	idObj = 0;
+	_INT32	idObj = -1;
     _UINT32	idvMac = 0;
 
 };

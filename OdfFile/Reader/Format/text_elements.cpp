@@ -91,7 +91,7 @@ void process_paragraph_drop_cap_attr(const paragraph_attrs & Attr, oox::docx_con
 	Context.get_drop_cap_context().Scale = style_drop_cap_->style_lines_;
 	
 	if (style_drop_cap_->style_distance_)
-		Context.get_drop_cap_context().Space = (int)(20.0 * (style_drop_cap_->style_distance_->get_value_unit(length::pt) + 5)+ 0.5);//формула ачуметь !! - подбор вручную
+		Context.get_drop_cap_context().Space = (int)(20.0 * (style_drop_cap_->style_distance_->get_value_unit(length::pt) ) );//формула ачуметь !! - подбор вручную
 
 	//font size пощитаем здесь .. так как его значение нужо в стиле параграфа (межстрочный интервал) - в (pt*20)
 	
@@ -394,7 +394,7 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context, _CP_OPT(std
 	
 	process_list_bullet_style(Context);
 
-    int textStyle = Context.process_paragraph_attr(&attrs_);
+	int textStyle = Context.process_paragraph_attr(&attrs_);
 
     Context.add_note_reference();
 	
@@ -437,7 +437,7 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context, _CP_OPT(std
 		}
 		else
 		{
-			content_[i]->docx_convert(Context); 
+			content_[i]->docx_convert(Context);
 			
 			if (Context.get_drop_cap_context().state() > 0)		
 				Context.get_drop_cap_context().state(0);//disable
@@ -708,6 +708,14 @@ void list::pptx_convert(oox::pptx_conversion_context & Context)
     bool continue_ = continue_numbering_.get_value_or(false);
     Context.get_text_context().start_list(style_name_, continue_);
 
+	bool style_name(false);
+
+	if(!Context.get_text_context().get_has_style_name() && !style_name_.empty())
+	{
+		style_name = true;
+		Context.get_text_context().set_style_name(style_name);
+	}
+
     if (list_header_)
         list_header_->pptx_convert(Context);
 
@@ -717,6 +725,9 @@ void list::pptx_convert(oox::pptx_conversion_context & Context)
     }
 
     Context.get_text_context().end_list();
+
+	if(style_name)
+		Context.get_text_context().set_style_name(false);
 }
 // text:soft-page-break
 //////////////////////////////////////////////////////////////////////////////////////////////////

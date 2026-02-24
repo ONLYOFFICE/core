@@ -52,7 +52,9 @@ void CFGradientInterpItem::load(CFRecord& record)
 void CFGradientInterpItem::save(CFRecord& record)
 {
     cfvo.save(record);
-    record << numDomain;
+	Xnum numDom;
+	numDom.data.value = numDomain;
+	record << numDom;
     //record.skipNunBytes(8);
     //int val;
     //record >> val; numDomain = val << 32;
@@ -141,10 +143,10 @@ void CFGradient::save(CFRecord& record)
     record << flags;
     for(auto i : rgInterp)
         if(i!= nullptr)
-            record << i;
+			record << *i;
     for(auto i : rgCurve)
         if(i!= nullptr)
-            record << i;
+			record << *i;
 }
 int CFGradient::serialize(std::wostream & stream)
 {

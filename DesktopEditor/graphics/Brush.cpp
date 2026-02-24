@@ -419,6 +419,7 @@ namespace Aggplus
 		m_bReleaseImage = FALSE;
 		Alpha = 255;
         m_bUseBounds = false;
+		m_bIsScale = false;
 	}
 
 	CBrushTexture::CBrushTexture(const std::wstring& strName, WrapMode wrapMode) : CBrush(BrushTypeTextureFill), m_wrapMode(wrapMode)
@@ -427,6 +428,7 @@ namespace Aggplus
 		m_bReleaseImage = TRUE;
 		Alpha = 255;
         m_bUseBounds = false;
+		m_bIsScale = false;
 	}
 
 	CBrushTexture::CBrushTexture(CImage *pImage, WrapMode wrapMode) : CBrush(BrushTypeTextureFill), m_wrapMode(wrapMode)
@@ -435,6 +437,7 @@ namespace Aggplus
 		m_bReleaseImage = FALSE;
 		Alpha = 255;
         m_bUseBounds = false;
+		m_bIsScale = false;
 	}
 	
 	CBrushTexture::~CBrushTexture() 

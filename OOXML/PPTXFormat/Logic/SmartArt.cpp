@@ -170,17 +170,16 @@ namespace PPTX
 
 			if (!result && pWriter)
 			{
-				OOX::IFileContainer	* pRels = pWriter->GetRels().GetPointer();
+				OOX::IFileContainer	* pRels = pWriter->GetRelsPtr();
 				result = LoadDrawing(pRels);
 			}
 		}
 		void SmartArt::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 		{
-			NSCommon::smart_ptr<OOX::IFileContainer> documentContainer = pWriter->GetRels();
-			OOX::IFileContainer* pDocumentRels = documentContainer.is_init() ? documentContainer.GetPointer() : NULL;
+			OOX::IFileContainer* pDocumentRels = pWriter->GetRelsPtr();
 
-			BinDocxRW::CDocxSerializer *main_document = pWriter->m_pMainDocument;
-			pWriter->m_pMainDocument = NULL;
+			BinDocxRW::CDocxSerializer *main_document = pWriter->m_pDocxSerializer;
+			pWriter->m_pDocxSerializer = NULL;
 			if (id_data.IsInit())
 			{
 				smart_ptr<OOX::File> oFileData;
@@ -212,14 +211,14 @@ namespace PPTX
 
 					if (pDiagramDrawing)
 					{
-						pWriter->SetRels(dynamic_cast<OOX::IFileContainer*>(oFileDrawing.GetPointer()));
+						pWriter->SetRelsPtr(dynamic_cast<OOX::IFileContainer*>(oFileDrawing.GetPointer()));
 
 						pWriter->StartRecord(0);
 						pDiagramDrawing->toPPTY(pWriter);
 						pWriter->EndRecord();
 					}
 
-					pWriter->SetRels(dynamic_cast<OOX::IFileContainer*>(oFileData.GetPointer()));
+					pWriter->SetRelsPtr(dynamic_cast<OOX::IFileContainer*>(oFileData.GetPointer()));
 
 					pWriter->StartRecord(1);
 					pDiagramData->toPPTY(pWriter);
@@ -238,7 +237,7 @@ namespace PPTX
 
 				if (pDiagramColors)
 				{
-					pWriter->SetRels(dynamic_cast<OOX::IFileContainer*>(oFileColors.GetPointer()));
+					pWriter->SetRelsPtr(dynamic_cast<OOX::IFileContainer*>(oFileColors.GetPointer()));
 
 					pWriter->StartRecord(2);
 					pDiagramColors->toPPTY(pWriter);
@@ -256,7 +255,7 @@ namespace PPTX
 
 				if (pDiagramLayout)
 				{
-					pWriter->SetRels(dynamic_cast<OOX::IFileContainer*>(oFileLayout.GetPointer()));
+					pWriter->SetRelsPtr(dynamic_cast<OOX::IFileContainer*>(oFileLayout.GetPointer()));
 
 					pWriter->StartRecord(3);
 					pDiagramLayout->toPPTY(pWriter);
@@ -273,15 +272,15 @@ namespace PPTX
 				OOX::CDiagramQuickStyle* pDiagramStyle = dynamic_cast<OOX::CDiagramQuickStyle*>(oFileStyle.GetPointer());
 				if (pDiagramStyle)
 				{
-					pWriter->SetRels(dynamic_cast<OOX::IFileContainer*>(oFileStyle.GetPointer()));
+					pWriter->SetRelsPtr(dynamic_cast<OOX::IFileContainer*>(oFileStyle.GetPointer()));
 
 					pWriter->StartRecord(4);
 					pDiagramStyle->toPPTY(pWriter);
 					pWriter->EndRecord();
 				}
 			}
-			pWriter->SetRels(documentContainer);
-			pWriter->m_pMainDocument = main_document;
+			pWriter->SetRelsPtr(pDocumentRels);
+			pWriter->m_pDocxSerializer = main_document;
 		}
 		void SmartArt::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 		{
@@ -491,7 +490,7 @@ namespace PPTX
 		}
 		void ChartRec::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 		{
-			OOX::IFileContainer* pRels = pWriter->GetRels().GetPointer();
+			OOX::IFileContainer* pRels = pWriter->GetRelsPtr();
 
 			smart_ptr<OOX::File> file;
 			if(id_data.IsInit())
@@ -544,8 +543,8 @@ namespace PPTX
 							DocWrapper::FontProcessor oFontProcessor;
 							NSBinPptxRW::CDrawingConverter oDrawingConverter;
 
-							NSCommon::smart_ptr<OOX::IFileContainer>	old_rels = pWriter->GetRels();
-							NSCommon::smart_ptr<PPTX::Theme>            old_theme = *pWriter->m_pTheme;
+							OOX::IFileContainer* old_rels = pWriter->GetRelsPtr();
+							NSCommon::smart_ptr<PPTX::Theme> old_theme = *pWriter->m_pTheme;
 
 							NSShapeImageGen::CMediaManager* old_manager = oDrawingConverter.m_pBinaryWriter->m_pCommon->m_pMediaManager;
 							oDrawingConverter.m_pBinaryWriter->m_pCommon->m_pMediaManager = pWriter->m_pCommon->m_pMediaManager;
@@ -596,7 +595,7 @@ namespace PPTX
 
 							delete pXlsxEmbedded;
 							//------------------------------
-							pWriter->SetRels(old_rels);
+							pWriter->SetRelsPtr(old_rels);
 							*pWriter->m_pTheme = old_theme;
 							oDrawingConverter.m_pBinaryWriter->m_pCommon->m_pMediaManager = old_manager;
 
@@ -623,12 +622,12 @@ namespace PPTX
 	//----------------------------------------------------------------
 			NSBinPptxRW::CDrawingConverter oDrawingConverter;
 			NSBinPptxRW::CBinaryFileWriter *pOldDrawingWriter = oDrawingConverter.m_pBinaryWriter;
-			BinDocxRW::CDocxSerializer *pOldMainDocument = pWriter->m_pMainDocument;
+			BinDocxRW::CDocxSerializer *pOldMainDocument = pWriter->m_pDocxSerializer;
 			
-			pWriter->m_pMainDocument = NULL;
+			pWriter->m_pDocxSerializer = NULL;
 			oDrawingConverter.m_pBinaryWriter = pWriter;
-			smart_ptr<OOX::IFileContainer> oldRels = oDrawingConverter.GetRels();
-			oDrawingConverter.SetRels(file.smart_dynamic_cast<OOX::IFileContainer>());
+			OOX::IFileContainer* oldRels = oDrawingConverter.GetRelsPtr();
+			oDrawingConverter.SetRelsPtr(dynamic_cast<OOX::IFileContainer*>(file.GetPointer()));
 		
 			BinXlsxRW::BinaryChartWriter oBinaryChartWriter(*pWriter, &oDrawingConverter);	
 			if (pChart.IsInit())
@@ -670,10 +669,10 @@ namespace PPTX
 				}
 			}
 	//----------------------------------------------------------------
-			oDrawingConverter.SetRels(oldRels);
+			oDrawingConverter.SetRelsPtr(oldRels);
 			
 			oDrawingConverter.m_pBinaryWriter = pOldDrawingWriter;
-			pWriter->m_pMainDocument = pOldMainDocument;
+			pWriter->m_pDocxSerializer = pOldMainDocument;
 
 		}
 		std::wstring ChartRec::toXML() const
@@ -708,10 +707,10 @@ namespace PPTX
 			NSBinPptxRW::CDrawingConverter	oDrawingConverter;
 
 			NSBinPptxRW::CImageManager2*	pOldImageManager	= oDrawingConverter.m_pImageManager;
-			NSBinPptxRW::CBinaryFileReader* pOldReader			= oDrawingConverter.m_pReader;
+			NSBinPptxRW::CBinaryFileReader* pOldReader			= oDrawingConverter.m_pBinaryReader;
  			
 			oDrawingConverter.m_pImageManager = pReader->m_pRels->m_pManager;
-			oDrawingConverter.m_pReader = pReader;
+			oDrawingConverter.m_pBinaryReader = pReader;
 
 			oXlsxSerializer.setDrawingConverter(&oDrawingConverter);
 
@@ -746,8 +745,8 @@ namespace PPTX
 					id_data = new OOX::RId(nRId);
 				}
 			}
-			oDrawingConverter.m_pReader			= pOldReader;
-			oDrawingConverter.m_pImageManager	= pOldImageManager;
+			oDrawingConverter.m_pBinaryReader = pOldReader;
+			oDrawingConverter.m_pImageManager = pOldImageManager;
 		}
 		void ChartRec::FillParentPointersForChilds()
 		{

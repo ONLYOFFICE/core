@@ -112,6 +112,7 @@ namespace oox
         std::wstring	name;
         int				sub_type; //odf
 
+
         _INT32			x, y;
         _INT32			cx, cy;
 
@@ -125,6 +126,7 @@ namespace oox
 
 		_action_desc				action;
 		std::vector<_hlink_desc>	hlinks;
+		std::wstring	hyperlink;
 
         std::vector<odf_reader::_property> additional;
 

@@ -85,7 +85,8 @@ void number_style_base::oox_convert_impl(oox::num_format_context & Context)
 	case typeNumberPercentageStyle:	Context.type(odf_types::office_value_type::Percentage);		break;
 	case typeNumberDataStyle:		Context.type(odf_types::office_value_type::Date);			break;
 	case typeNumberTimeStyle:		Context.type(odf_types::office_value_type::Time);			break;
-	}
+    case typeNumberNumberStyle:		Context.type(odf_types::office_value_type::Float);			break;
+    }
 
 	for (size_t i = 0; i < content_.size(); i++)
     {

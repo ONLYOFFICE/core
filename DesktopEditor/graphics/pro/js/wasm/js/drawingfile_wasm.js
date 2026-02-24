@@ -106,7 +106,7 @@ CFile.prototype._openFile = function(buffer, password)
 	}
 
 	let passwordPtr = 0;
-	if (password)
+	if (password !== undefined)
 	{
 		let passwordBuf = password.toUtf8();
 		passwordPtr = Module["_malloc"](passwordBuf.length);
@@ -224,6 +224,29 @@ CFile.prototype._UndoRedact = function()
 	return Module["_UndoRedact"](this.nativeFile) == 1;
 };
 
+CFile.prototype._CheckOwnerPassword = function(password)
+{
+	let passwordPtr = 0;
+	if (password !== undefined)
+	{
+		let passwordBuf = password.toUtf8();
+		passwordPtr = Module["_malloc"](passwordBuf.length);
+		Module["HEAP8"].set(passwordBuf, passwordPtr);
+	}
+
+	let bRes = Module["_CheckOwnerPassword"](this.nativeFile, passwordPtr);
+
+	if (passwordPtr)
+		Module["_free"](passwordPtr);
+
+	return bRes == 1;
+}
+
+CFile.prototype._CheckPerm = function(perm)
+{
+	return Module["_CheckPerm"](this.nativeFile, perm) == 1;
+}
+
 // FONTS
 CFile.prototype._isNeedCMap = function()
 {
@@ -262,6 +285,19 @@ CFile.prototype._getFontByID = function(ID)
 	g_module_pointer.free();
 	return res;
 };
+
+CFile.prototype._getGIDByUnicode = function(ID)
+{
+	if (ID === undefined)
+		return null;
+
+	let idBuffer = ID.toUtf8();
+	let idPointer = Module["_malloc"](idBuffer.length);
+	Module["HEAP8"].set(idBuffer, idPointer);
+	g_module_pointer.ptr = Module["_GetGIDByUnicode"](this.nativeFile, idPointer);
+	Module["_free"](idPointer);
+	return g_module_pointer;
+}
 
 CFile.prototype._getInteractiveFormsFonts = function(type)
 {
@@ -337,6 +373,11 @@ CFile.prototype._getInteractiveFormsAP = function(width, height, backgroundColor
 };
 
 // SCAN PAGES
+CFile.prototype._setScanPageFonts = function(page)
+{
+	Module["_SetScanPageFonts"](this.nativeFile, page);
+};
+
 CFile.prototype._scanPage = function(page, mode)
 {
 	g_module_pointer.ptr = Module["_ScanPage"](this.nativeFile, page, (mode === undefined) ? 0 : mode);

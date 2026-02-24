@@ -21,6 +21,9 @@
 #include "../HWPElements/HWPRecordParaShape.h"
 #include "../HWPElements/HWPRecordCharShape.h"
 
+//For EQN
+#include "../../../OdfFile/Reader/Converter/StarMath2OOXML/conversionmathformula.h"
+
 #include "Transform.h"
 
 #define PARA_SPACING_SCALE 0.85
@@ -792,7 +795,8 @@ void CConverter2OOXML::WriteTable(const CCtrlTable* pTable, short shParaShapeID,
 				}
 			}
 
-			unColIndex += oValue.second->GetColSpan() - 1;
+			if (oValue.second->GetColSpan() > 1)
+				unColIndex += oValue.second->GetColSpan() - 1;
 		}
 	}
 
@@ -828,10 +832,16 @@ void CConverter2OOXML::WriteTable(const CCtrlTable* pTable, short shParaShapeID,
 
 	oBuilder.WriteString(L"</w:tbl>");
 
-	oState.m_oLastNode.m_eType = TConversionState::TLastNode::ELastNodeType::Table;
 	oState.m_oLastNode.m_unParaIndex = oState.m_unParaIndex;
-
 	oState.m_bInTable = bTableInTable;
+
+	if (oState.m_bInTable)
+	{
+		oBuilder.WriteString(L"<w:p><w:r><w:rPr><w:vanish/></w:rPr></w:r></w:p>");
+		oState.m_oLastNode.m_eType = TConversionState::TLastNode::ELastNodeType::Paragraph;
+	}
+	else
+		oState.m_oLastNode.m_eType = TConversionState::TLastNode::ELastNodeType::Table;
 }
 
 void CConverter2OOXML::WriteTableProperties(const CCtrlTable* pTable, short shParaShapeID, short shParaStyleID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)
@@ -881,10 +891,10 @@ void CConverter2OOXML::WriteCell(const CTblCell* pCell, NSStringUtils::CStringBu
 	oBuilder.WriteString(L"<w:tcPr>");
 	oBuilder.WriteString(L"<w:tcW w:w=\"" + std::to_wstring(Transform::HWPUINT2Twips(pCell->GetWidth())) + L"\" w:type=\"dxa\"/>");
 
-	if (1 != pCell->GetColSpan())
+	if (1 < pCell->GetColSpan())
 		oBuilder.WriteString(L"<w:gridSpan w:val=\"" + std::to_wstring(pCell->GetColSpan()) + L"\"/>");
 
-	if (1 != pCell->GetRowSpan())
+	if (1 < pCell->GetRowSpan())
 		oBuilder.WriteString(L"<w:vMerge w:val=\"" + HWP_STRING(((ECellCreator::FILE == eCellCreator) ? L"restart" : L"continue")) + L"\"/>");
 
 	WriteCellProperties(pCell->GetBorderFillID(), oBuilder);
@@ -1245,18 +1255,16 @@ void CConverter2OOXML::WriteGeometryShape(const CCtrlGeneralShape* pGeneralShape
 
 void CConverter2OOXML::WriteEqEditShape(const CCtrlEqEdit* pEqEditShape, short shParaShapeID, short shParaStyleID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)
 {
-	//TODO:: добавить конвертацию eqn формулы в ooxml
 	++m_ushEquationCount;
 
 	WriteCaption((const CCtrlCommon*)pEqEditShape, oBuilder, oState);
 
 	OpenParagraph(shParaShapeID, shParaStyleID, oBuilder, oState);
 
-	oBuilder.WriteString(L"<w:r>");
+	oBuilder.WriteString(L"<w:r/>");
 
-	oBuilder.WriteString(L"<w:t xml:space=\"preserve\">");
-	oBuilder.WriteEncodeXmlString(pEqEditShape->GetEqn());
-	oBuilder.WriteString(L"</w:t></w:r>");
+	StarMath::CStarMathConverter oConverterStarMath;
+	oBuilder.WriteString(oConverterStarMath.ConvertEQNToOOXml(pEqEditShape->GetEqn()));
 }
 
 void CConverter2OOXML::WriteOleShape(const CCtrlShapeOle* pOleShape, short shParaShapeID, short shParaStyleID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)

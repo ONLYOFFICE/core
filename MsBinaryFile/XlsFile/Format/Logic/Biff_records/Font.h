@@ -72,7 +72,7 @@ public:
 	bool fCondense = false;
 	bool fExtend = false;
 
-	_UINT16 icv = 8;
+	_UINT16 icv = 0;
 	_UINT16 bls = 400;
 	_UINT16 sss = 0;
 	unsigned char uls = 0;

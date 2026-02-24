@@ -58,5 +58,15 @@ void FtMacro::load(CFRecord& record)
 	fmla.load(record);
 }
 
+void FtMacro::save(CFRecord& record)
+{
+	if(!fExist)
+		return;
+	unsigned short ft = 0x0004;
+	record << ft;
+	fmla.save(record);
+
+}
+
 } // namespace XLS
 

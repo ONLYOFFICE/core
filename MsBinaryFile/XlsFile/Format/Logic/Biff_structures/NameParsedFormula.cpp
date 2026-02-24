@@ -70,25 +70,32 @@ void NameParsedFormula::load(CFRecord& record)
 
 void NameParsedFormula::save(CFRecord& record)
 {
-	_UINT32 size = 0;	
-
-	auto saving = [&](BiffStructure& rgceORrgb)
+	if (record.getGlobalWorkbookInfo()->Version < 0x0800)
 	{
-		record << size;
+		rgce.save(record);
+		rgcb.save(record);
+	}
+	else
+	{
+		_UINT32 size = 0;
+		auto saving = [&](BiffStructure& rgceORrgb)
+		{
+			record << size;
 
-		auto rdPtr = record.getRdPtr();
+			auto rdPtr = record.getRdPtr();
 
-		rgceORrgb.save(record);
+			rgceORrgb.save(record);
 
-		size = record.getRdPtr() - rdPtr;
+			size = record.getRdPtr() - rdPtr;
 
-		record.RollRdPtrBack(size + 4);
-		record << size;
-		record.skipNunBytes(size);
-	};
+			record.RollRdPtrBack(size + 4);
+			record << size;
+			record.skipNunBytes(size);
+		};
 
-	saving(rgce);
-	saving(rgcb);
+		saving(rgce);
+		saving(rgcb);
+	}
 }
 
 } // namespace XLS

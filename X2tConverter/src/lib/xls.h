@@ -75,7 +75,7 @@ namespace NExtractTools
 
 			oCXlsxSerializer.setFontDir(params.getFontPath());
 
-			return oCXlsxSerializer.saveToFile(sTo, sResultXlsxDir, params.getXmlOptions());
+			return oCXlsxSerializer.saveToFile(sTo, sResultXlsxDir, params.getXmlOptionsFrom());
 		}
 		return nRes;
 	}

@@ -53,6 +53,7 @@ public:
 	static const XLS::ElementType	type = XLS::typeOfficeArtFOPT;
 	
 	virtual void loadFields(XLS::CFRecord& record);
+	virtual void save(XLS::CFRecord& record);
 
 	const unsigned short GetInstanceToStore();
 

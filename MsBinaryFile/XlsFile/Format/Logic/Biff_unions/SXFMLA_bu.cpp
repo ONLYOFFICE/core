@@ -119,6 +119,22 @@ const bool SXFMLA::loadContent(BinProcessor& proc)
 	return true;
 }
 
+const bool SXFMLA::saveContent(BinProcessor& proc)
+{
+	if(m_SxFmla == nullptr)
+		return false;
+	proc.mandatory(*m_SxFmla);
+	for(auto i : m_arPivotSxNames)
+	{
+		if(i.name != nullptr)
+			proc.mandatory(*i.name);
+		for(auto j : i.pair)
+			if(j != nullptr)
+				proc.mandatory(*j);
+	}
+	return true;
+}
+
 void SXFMLA::serialize_attr(CP_ATTR_NODE)
 {
 	if (!m_SxFmla) return;

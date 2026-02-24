@@ -145,6 +145,14 @@ CFile.prototype["isNeedPassword"] = function()
 {
 	return this._isNeedPassword;
 };
+CFile.prototype["CheckOwnerPassword"] = function(password)
+{
+	return this._CheckOwnerPassword(password);
+};
+CFile.prototype["CheckPerm"] = function(perm)
+{
+	return this._CheckPerm(perm);
+};
 CFile.prototype["SplitPages"] = function(arrOriginIndex, arrayBufferChanges)
 {
 	let ptr = this._SplitPages(arrOriginIndex, arrayBufferChanges);
@@ -354,6 +362,26 @@ CFile.prototype["getFontByID"] = function(ID)
 	return this._getFontByID(ID);
 };
 
+CFile.prototype["getGIDByUnicode"] = function(ID)
+{
+	let ptr = this._getGIDByUnicode(ID);
+	let reader = ptr.getReader();
+	if (!reader)
+		return {};
+
+	let res = {};
+	let nFontLength = reader.readInt();
+	for (let i = 0; i < nFontLength; i++)
+	{
+		let np1 = reader.readInt();
+		let np2 = reader.readInt();
+		res[np2] = np1;
+	}
+
+	ptr.free();
+	return res;
+};
+
 CFile.prototype["setCMap"] = function(memoryBuffer)
 {
 	if (!this.nativeFile)
@@ -401,7 +429,7 @@ function readAction(reader, rec, readDoubleFunc, readStringFunc)
 			case 6:
 			case 7:
 			{
-				let nFlag = reader.readByte();
+				let nFlag = reader.readInt();
 				if (nFlag & (1 << 0))
 					rec["left"] = readDoubleFunc.call(reader);
 				if (nFlag & (1 << 1))
@@ -413,9 +441,9 @@ function readAction(reader, rec, readDoubleFunc, readStringFunc)
 			case 4:
 			{
 				rec["left"]   = readDoubleFunc.call(reader);
-				rec["bottom"] = readDoubleFunc.call(reader);
+				rec["top"] = readDoubleFunc.call(reader);
 				rec["right"]  = readDoubleFunc.call(reader);
-				rec["top"]    = readDoubleFunc.call(reader);
+				rec["bottom"]    = readDoubleFunc.call(reader);
 				break;
 			}
 			case 1:
@@ -1027,6 +1055,37 @@ function readAnnotType(reader, rec, readDoubleFunc, readDouble2Func, readStringF
 			rec["font"]["style"] = reader.readInt();
 		}
 	}
+	// Link
+	else if (rec["type"] == 1)
+	{
+		flags = reader.readInt();
+		if (flags & (1 << 0))
+		{
+			rec["A"] = {};
+			if (isRead)
+				readStringFunc.call(reader);
+			readAction(reader, rec["A"], readDoubleFunc, readStringFunc);
+		}
+		if (flags & (1 << 1))
+		{
+			rec["PA"] = {};
+			if (isRead)
+				readStringFunc.call(reader);
+			readAction(reader, rec["PA"], readDoubleFunc, readStringFunc);
+		}
+		// Selection mode - H
+		// 0 - none, 1 - invert, 2 - push, 3 - outline
+		if (flags & (1 << 2))
+			rec["highlight"] = reader.readByte();
+		// QuadPoints
+		if (flags & (1 << 3))
+		{
+			let n = reader.readInt();
+			rec["QuadPoints"] = [];
+			for (let i = 0; i < n; ++i)
+				rec["QuadPoints"].push(readDoubleFunc.call(reader));
+		}
+	}
 }
 function readWidgetType(reader, rec, readDoubleFunc, readDouble2Func, readStringFunc, isRead = false)
 {
@@ -1171,6 +1230,20 @@ function readWidgetType(reader, rec, readDoubleFunc, readDouble2Func, readString
 			rec["value"] = readStringFunc.call(reader);
 		// 0 - check, 1 - cross, 2 - diamond, 3 - circle, 4 - star, 5 - square
 		rec["style"] = reader.readByte();
+		if (flags & (1 << 10))
+		{
+			let n = reader.readInt();
+			rec["opt"] = [];
+			for (let i = 0; i < n; ++i)
+			{
+				let opt1 = readStringFunc.call(reader);
+				let opt2 = readStringFunc.call(reader);
+				if (opt1 == "")
+					rec["opt"].push(opt2);
+				else
+					rec["opt"].push([opt2, opt1]);
+			}
+		}
 		if (flags & (1 << 14))
 			rec["ExportValue"] = readStringFunc.call(reader);
 		// 12.7.4.2.1
@@ -1648,6 +1721,11 @@ CFile.prototype["readAnnotationsInfoFromBinary"] = function(AnnotInfo)
 };
 
 // SCAN PAGES
+CFile.prototype["scanPageFonts"] = function(page)
+{
+	this._setScanPageFonts(page);
+};
+
 CFile.prototype["scanPage"] = function(page, mode)
 {
 	let ptr = this._scanPage(page, mode);

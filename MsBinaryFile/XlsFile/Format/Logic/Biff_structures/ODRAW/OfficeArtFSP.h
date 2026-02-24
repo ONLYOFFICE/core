@@ -48,29 +48,30 @@ class OfficeArtFSP : public OfficeArtRecord
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(OfficeArtFSP)
 public:
 	OfficeArtFSP();
-	XLS::BiffStructurePtr clone();
+	XLS::BiffStructurePtr clone() override;
 
-	virtual void loadFields(XLS::CFRecord& record);
+	virtual void loadFields(XLS::CFRecord& record) override;
+	void save(XLS::CFRecord& record) override;
 
 	static const XLS::ElementType	type = XLS::typeOfficeArtFSP;
 
 	const unsigned short GetInstanceToStore();
 
-	_UINT16	shape_id;
-	_UINT32	spid;
+	_UINT16	shape_id = 0;
+	_UINT32	spid = 0;
 
-	bool fGroup;
-	bool fChild;
-	bool fPatriarch;
-	bool fDeleted;
-	bool fOleShape;
-	bool fHaveMaster;
-	bool fFlipH;
-	bool fFlipV;
-	bool fConnector;
-	bool fHaveAnchor;
-	bool fBackground;
-	bool fHaveSpt;
+	bool fGroup = false;
+	bool fChild = false;
+	bool fPatriarch = false;
+	bool fDeleted = false;
+	bool fOleShape = false;
+	bool fHaveMaster = false;
+	bool fFlipH = false;
+	bool fFlipV = false;
+	bool fConnector = false;
+	bool fHaveAnchor = false;
+	bool fBackground = false;
+	bool fHaveSpt = false;
 };
 
 typedef boost::shared_ptr<OfficeArtFSP> OfficeArtFSPPtr;

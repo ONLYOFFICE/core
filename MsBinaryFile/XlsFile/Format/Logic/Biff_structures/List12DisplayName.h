@@ -50,6 +50,7 @@ public:
 	static const ElementType	type = typeList12DisplayName;
 	
 	virtual void load(CFRecord& record);
+	virtual void save(CFRecord& record);
 
 
 	XLUnicodeString stListName;

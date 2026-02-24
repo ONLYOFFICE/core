@@ -60,5 +60,16 @@ void SXPair::readFields(CFRecord& record)
 	fRelative	= GETBIT(flags, 4);
 }
 
+void SXPair::writeFields(CFRecord& record)
+{
+	record << isxvd << iCache;
+	unsigned short flags = 0;
+	SETBIT(flags, 0, fFormula)
+	SETBIT(flags, 3, fPhysical)
+	SETBIT(flags, 4, fRelative)
+	record.reserveNunBytes(2);
+	record << flags;
+}
+
 } // namespace XLS
 

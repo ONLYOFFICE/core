@@ -332,5 +332,39 @@ void Obj::readFields(CFRecord& record)
 
 }
 
+void Obj::writeFields(CFRecord& record)
+{
+	record << cmo;
+	if(cmo.ot == 0x08)
+		record << pictFormat << pictFlags;
+	else if((cmo.ot >= 0x10 && cmo.ot <= 0x12) || cmo.ot == 0x14)
+		record << sbs;
+	else if(cmo.ot ==  0x19)
+		record << nts;
+	record << macro;
+	if(cmo.ot == 0x08)
+		record << pictFmla;
+	if(cmo.ot== 0x0B || cmo.ot == 0x0C || (cmo.ot >= 0x10 && cmo.ot <= 0x12) || cmo.ot == 0x14)
+	{
+		if(cmo.ot== 0x0B || cmo.ot == 0x0C)
+			linkFmla.ft =  0x0B;
+		else
+			linkFmla.ft =  0x0E;
+		record << linkFmla;
+	}
+	if(cmo.ot== 0x0B || cmo.ot == 0x0C)
+		record << checkBox;
+	if(cmo.ot == 0x0C)
+		record << radioButton;
+	else if(cmo.ot == 0x0D)
+		record << edit;
+	else if(cmo.ot == 0x12 || cmo.ot == 0x14)
+		list.save(record, cmo.ot);
+	else if(cmo.ot == 0x13)
+		record << gbo;
+	if(cmo.ot != 0x12 && cmo.ot != 0x14)
+		record.reserveNunBytes(4);
+}
+
 } // namespace XLS
 

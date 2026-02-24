@@ -75,7 +75,6 @@ const bool StringPtgParser::parseToPtgs(const std::wstring& assembled_formula, R
 
     for(std::wstring::const_iterator it = assembled_formula.begin(), itEnd = assembled_formula.end(); it != itEnd;)
     {
-        #pragma region Operators
         if(SyntaxPtg::is_operators(it, itEnd) || SyntaxPtg::is_PtgIsect(it, itEnd))
         {
             OperatorPtgPtr found_operator;
@@ -184,8 +183,6 @@ const bool StringPtgParser::parseToPtgs(const std::wstring& assembled_formula, R
             ptg_stack.push(found_operator);
             last_ptg = found_operator;
         }
-        #pragma endregion
-        #pragma region Parenthesis
         else if(SyntaxPtg::extract_LeftParenthesis(it, itEnd))
         {
             PtgFuncPtr func;
@@ -250,8 +247,6 @@ const bool StringPtgParser::parseToPtgs(const std::wstring& assembled_formula, R
                 rgce.addPtg(last_ptg);
             operand_expected = false;
         }
-        #pragma endregion
-        #pragma region Comma and PtgUnion
         else if(SyntaxPtg::extract_comma(it, itEnd))
         {
             SyntaxPtg::remove_extraSymbols(it, itEnd);
@@ -278,8 +273,6 @@ const bool StringPtgParser::parseToPtgs(const std::wstring& assembled_formula, R
             last_ptg = left_p; // PtgParen. Mostly to differ unary and binary minuses and pluses
             operand_expected = true;
         }
-        #pragma endregion
-        #pragma region Operands
         else
         {
             OperandPtgPtr found_operand;
@@ -295,7 +288,7 @@ const bool StringPtgParser::parseToPtgs(const std::wstring& assembled_formula, R
             }
             else if(SyntaxPtg::extract_PtgStr(it, itEnd, operand_str))
             {
-                rgce.addPtg(found_operand = OperandPtgPtr(new PtgStr(operand_str.c_str())));
+				rgce.addPtg(found_operand = OperandPtgPtr(new PtgStr(operand_str)));
             }
             else if(SyntaxPtg::extract_PtgRefErr(it, itEnd)) // Sequence is important (in pair with PtgErr)
             {
@@ -409,16 +402,17 @@ const bool StringPtgParser::parseToPtgs(const std::wstring& assembled_formula, R
                     rgce.addPtg(PtgPtr(new PtgName(number,  OperandPtg::ptg_REFERENCE)));
                 }
             }
-            else if(SyntaxPtg::extract_UndefinedName(it, itEnd)) // Shall be placed strongly after extract_PtgName
-            {
-                rgce.addPtg(found_operand = OperandPtgPtr(new PtgErr(L"#REF!")));
-            }
 
             else if(SyntaxPtg::extract_PtgArray(it, itEnd, operand_str))
             {
                 rgce.addPtg(found_operand = OperandPtgPtr(new PtgArray(OperandPtg::ptg_ARRAY)));
                 rgb.addPtg(PtgPtr(new PtgExtraArray(operand_str)));
             }
+			else if(SyntaxPtg::extract_UndefinedName(it, itEnd)) // Shall be placed strongly after extract_PtgName
+			{
+				rgce.addPtg(found_operand = OperandPtgPtr(new PtgErr(L"#REF!")));
+			}
+
 
             else
             {
@@ -436,7 +430,6 @@ const bool StringPtgParser::parseToPtgs(const std::wstring& assembled_formula, R
                 union_expected = false;
             }
         }
-        #pragma endregion
     }
 
     while(ptg_stack.size())

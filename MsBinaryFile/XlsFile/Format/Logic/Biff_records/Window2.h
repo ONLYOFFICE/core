@@ -63,7 +63,7 @@ public:
 	bool fDspGuts = true; // *
 	bool fFrozenNoSplit = false;
 	bool fSelected = false; // *
-	bool fPaged = true;
+	bool fPaged = false;
 	bool fSLV = false;
 
 	bool is_contained_in_chart_substream = false;

@@ -64,18 +64,18 @@ public:
 
     bool			fAcrossPageLay = false;
     unsigned char	cWrapPage = 0;
-    bool			fEnableWizard = false;
-    bool			fEnableDrilldown = false;
-    bool			fEnableFieldDialog = false;
-    bool			fPreserveFormatting = false;
-    bool			fMergeLabels = false;
-    bool			fDisplayErrorString = false;
-    bool			fDisplayNullString = false;
-    bool			fSubtotalHiddenPageItems = false;
+	bool			fEnableWizard = true;
+	bool			fEnableDrilldown = true;
+	bool			fEnableFieldDialog = true;
+	bool			fPreserveFormatting = true;
+	bool			fMergeLabels = false;
+	bool			fDisplayErrorString = false;
+	bool			fDisplayNullString = true;
+	bool			fSubtotalHiddenPageItems = false;
 
-    unsigned short	cchPageFieldStyle = 0;
-    unsigned short	cchTableStyle = 0;
-    unsigned short	cchVacateStyle = 0;
+	unsigned short	cchPageFieldStyle = 0xFFFF;
+	unsigned short	cchTableStyle = 0xFFFF;
+	unsigned short	cchVacateStyle = 0xFFFF;
 
 	XLUnicodeStringNoCch	stError;
 	XLUnicodeStringNoCch	stDisplayNull;

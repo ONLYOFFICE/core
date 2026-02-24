@@ -188,7 +188,7 @@ SOURCES += \
 	../../../XlsxFormat/ExternalLinks/ExternalLinkPath.cpp \
 	../../../XlsxFormat/ExternalLinks/ExternalLinks.cpp \
         ../../../XlsxFormat/Workbook/Metadata.cpp \
-        ../../../XlsxFormat/RichData/RdRichValue.cpp \
+        ../../../XlsxFormat/RichData/RdRichData.cpp \
         ../../../XlsxFormat/Ole/OleObjects.cpp \
         ../../../VsdxFormat/Vsdx.cpp \
         ../../../VsdxFormat/VisioPages.cpp \

@@ -102,11 +102,14 @@ const bool AXISPARENT::loadContent(BinProcessor& proc)
 const bool AXISPARENT::saveContent(BinProcessor& proc)
 {
 	if(m_AxisParent == nullptr)
-		return false;
-	proc.mandatory(*m_AxisParent);
+		proc.mandatory<AxisParent>();
+	else
+		proc.mandatory(*m_AxisParent);
 	proc.mandatory<Begin>();
 	if(m_Pos != nullptr)
 		proc.mandatory(*m_Pos);
+	else
+		proc.mandatory<Pos>();
 	if(m_AXES != nullptr)
 		proc.mandatory(*m_AXES);
 	for(auto i: m_arCRT)

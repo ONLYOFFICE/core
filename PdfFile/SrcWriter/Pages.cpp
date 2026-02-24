@@ -235,6 +235,8 @@ namespace PdfWriter
 	{
 		m_pPages->Add(pObj);
 		(*m_pCount)++;
+		if (pObj->GetType() == object_type_DICT && ((CDictObject*)pObj)->GetDictType() == dict_type_PAGE)
+			((CPage*)pObj)->Add("Parent", this);
 	}
 	CObjectBase* CPageTree::GetObj(int nPageIndex)
 	{
@@ -259,8 +261,6 @@ namespace PdfWriter
 		if (nPageIndex >= m_pCount->Get())
 		{
 			AddPage(pPage);
-			if (pPage->GetType() == object_type_DICT && ((CDictObject*)pPage)->GetDictType() == dict_type_PAGE)
-				((CPage*)pPage)->Add("Parent", this);
 			return true;
 		}
 		int nI = 0;
@@ -542,34 +542,32 @@ namespace PdfWriter
         TBox oBox = GetMediaBox();
         return oBox.fTop - oBox.fBottom;
 	}
-	TBox          CPage::GetMediaBox()
+	TBox CPage::GetBox(const std::string& sBox)
 	{
-		TBox oMediaBox = TRect( 0, 0, 0, 0 );
+		TBox oBox = TRect( 0, 0, 0, 0 );
 
-		CArrayObject* pArray = GetMediaBoxItem();
+		CArrayObject* pArray = (CArrayObject*)Get(sBox);
 
 		if (pArray)
 		{
-			CRealObject* pReal;
+			PdfWriter::CObjectBase* pD = pArray->Get(0);
+			oBox.fLeft = pD->GetType() == PdfWriter::object_type_NUMBER ? ((PdfWriter::CNumberObject*)pD)->Get() : ((PdfWriter::CRealObject*)pD)->Get();
 
-			pReal = (CRealObject*)pArray->Get(0);
-			if (pReal)
-				oMediaBox.fLeft = pReal->Get();
+			pD = pArray->Get(1);
+			oBox.fBottom = pD->GetType() == PdfWriter::object_type_NUMBER ? ((PdfWriter::CNumberObject*)pD)->Get() : ((PdfWriter::CRealObject*)pD)->Get();
 
-			pReal = (CRealObject*)pArray->Get(1);
-			if (pReal)
-				oMediaBox.fBottom = pReal->Get();
+			pD = pArray->Get(2);
+			oBox.fRight = pD->GetType() == PdfWriter::object_type_NUMBER ? ((PdfWriter::CNumberObject*)pD)->Get() : ((PdfWriter::CRealObject*)pD)->Get();
 
-			pReal = (CRealObject*)pArray->Get(2);
-			if (pReal)
-				oMediaBox.fRight = pReal->Get();
-
-			pReal = (CRealObject*)pArray->Get(3);
-			if (pReal)
-				oMediaBox.fTop = pReal->Get();
+			pD = pArray->Get(3);
+			oBox.fTop = pD->GetType() == PdfWriter::object_type_NUMBER ? ((PdfWriter::CNumberObject*)pD)->Get() : ((PdfWriter::CRealObject*)pD)->Get();
 		}
 
-		return oMediaBox;
+		return oBox;
+	}
+	TBox          CPage::GetMediaBox()
+	{
+		return GetBox("MediaBox");
 	}
     void CPage::SetMediaBoxValue(unsigned int unIndex, double dValue)
 	{
@@ -611,9 +609,9 @@ namespace PdfWriter
 
 		return (CResourcesDict*)pObject;
 	}
-	CObjectBase*  CPage::GetCropBoxItem()
+	CArrayObject* CPage::GetCropBoxItem()
 	{
-		return Get("CropBox");
+		return (CArrayObject*)Get("CropBox");
 	}
 	CObjectBase*  CPage::GetRotateItem()
 	{
@@ -1232,7 +1230,8 @@ namespace PdfWriter
 			if (pObj->GetObjId() == nID)
 			{
 				CObjectBase* pDelete = pArray->Remove(i);
-				RELEASEOBJECT(pDelete);
+				if (pDelete->GetType() == object_type_UNKNOWN)
+					RELEASEOBJECT(pDelete);
 				return true;
 			}
 		}
@@ -1819,7 +1818,7 @@ namespace PdfWriter
 			return false;
 
 		m_vWords.push_back(pText);
-		double dShift = (pLastText->m_dCurX - dX) * 1000 / dSize;
+		double dShift = (pLastText->m_dCurX - dX) * 1000 / (dSize ? dSize : 1);
 		m_vShifts.push_back(dShift);
 		return true;
 	}

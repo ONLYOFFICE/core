@@ -47,10 +47,11 @@ public:
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
+	void writeFields(CFRecord& record);
 
 	static const ElementType type = typeSXFDBType;
 
-	short	wTypeSql; //ODBCType enum
+	short	wTypeSql = 0; //ODBCType enum
 };
 
 } // namespace XLS

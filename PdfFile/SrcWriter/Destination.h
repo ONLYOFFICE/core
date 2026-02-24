@@ -41,6 +41,7 @@ namespace PdfWriter
 	public:
 		CDestination(CObjectBase* pPage, CXref* pXref, bool bInline = false);
 		bool IsValid() const;
+		void ChangePage(CObjectBase* pPage);
 		void SetXYZ  (float fLeft, float fTop, float fZoom);
 		void SetFit  ();
 		void SetFitH (float fTop);

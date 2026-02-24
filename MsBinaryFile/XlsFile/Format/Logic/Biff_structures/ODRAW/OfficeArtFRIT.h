@@ -50,6 +50,7 @@ public:
 	static const XLS::ElementType	type = XLS::typeOfficeArtFRIT;
 
 	virtual void load(XLS::CFRecord& record);
+	virtual void save(XLS::CFRecord& record);
 
 
 public:

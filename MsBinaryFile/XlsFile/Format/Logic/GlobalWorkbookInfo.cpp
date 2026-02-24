@@ -96,6 +96,7 @@ std::unordered_map<int, std::wstring>				GlobalWorkbookInfo::mapTableNames_stati
 std::unordered_map<int, std::vector<std::wstring>>	GlobalWorkbookInfo::mapTableColumnNames_static;
 std::vector<std::wstring>							GlobalWorkbookInfo::arDefineNames_static;
 std::unordered_map<int, std::vector<int>>			GlobalWorkbookInfo::mapXtiTables_static;
+std::unordered_map<int, std::wstring>				GlobalWorkbookInfo::mapTableRefsStatic;
 
 GlobalWorkbookInfo::GlobalWorkbookInfo(const unsigned short code_page, XlsConverter * converter) :	CodePage(code_page), xls_converter(converter)
 {
@@ -198,6 +199,7 @@ GlobalWorkbookInfo::~GlobalWorkbookInfo()
 	mapTableNames_static.clear();
 	mapTableColumnNames_static.clear();
 	arDefineNames_static.clear();
+	mapTableRefsStatic.clear();
 }
 
 const size_t GlobalWorkbookInfo::RegisterBorderId(const BorderInfo& border)

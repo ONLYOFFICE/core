@@ -2544,10 +2544,13 @@ void XlsConverter::convert(XLS::Obj * obj)
 			std::wstring objectId_bin = xlsx_context->get_mediaitems().add_control_activeX(target_bin);
 
 			NSFile::CFileBinary file;
-			if ( file.CreateFileW(xlsx_context->get_mediaitems().activeX_path() + target_bin) )
-			{		
-				file.WriteFile(xls_global_info->controls_data.first.get() + obj->pictFmla.lPosInCtlStm, obj->pictFmla.cbBufInCtlStm);
-				file.CloseFile();
+			if(xls_global_info->controls_data.second >= obj->pictFmla.lPosInCtlStm + obj->pictFmla.cbBufInCtlStm)
+			{
+				if ( file.CreateFileW(xlsx_context->get_mediaitems().activeX_path() + target_bin) )
+				{
+					file.WriteFile(xls_global_info->controls_data.first.get() + obj->pictFmla.lPosInCtlStm, obj->pictFmla.cbBufInCtlStm);
+					file.CloseFile();
+				}
 			}
 			std::wstring objectId_xml = xlsx_context->start_activeX();	
 			xlsx_context->get_drawing_context().set_control_activeX(objectId_xml);

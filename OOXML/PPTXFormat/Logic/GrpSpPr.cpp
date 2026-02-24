@@ -195,9 +195,6 @@ namespace PPTX
 			pWriter->WriteLimit2(0, bwMode);
 			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 
-			pWriter->m_dCxCurShape = pWriter->m_dCyCurShape = 1;
-			pWriter->m_bInGroup = true;
-
 			pWriter->WriteRecord2(0, xfrm);
 			pWriter->WriteRecord1(1, Fill);
 			pWriter->WriteRecord1(2, EffectList);

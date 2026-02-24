@@ -366,7 +366,7 @@ void line_break::docx_convert(oox::docx_conversion_context & Context)
 {
 	bool in_drawing	= false;
 
- 	if (Context.get_drawing_context().get_current_shape() || Context.get_drawing_context().get_current_frame())
+	if (Context.get_drawing_context().get_current_shape() || Context.get_drawing_context().get_current_frame())
 	{
 		in_drawing = true;
 
@@ -387,6 +387,8 @@ void line_break::xlsx_convert(oox::xlsx_conversion_context & Context)
 }
 void line_break::pptx_convert(oox::pptx_conversion_context & Context)
 {
+    bool bLineBreak = true;
+    Context.get_text_context().set_line_break(bLineBreak);
     Context.get_text_context().add_text(L"\n");
 }
 

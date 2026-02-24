@@ -959,7 +959,10 @@ void OOXShapeReader::Parse(ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::L
 
 			if (bColorsSet)
 			{
-				pOutput->m_aFillShadeColors.push_back(std::make_pair((int)nColor, oox_grad_fill->GsLst[i].pos));
+                double pos_docx = oox_grad_fill->GsLst[i].pos;
+                double pos_percent = pos_docx / 1000;
+                pOutput->m_aFillShadeColors.push_back(std::make_pair((int)nColor, pos_percent));
+                //pOutput->m_aFillShadeColors.push_back(std::make_pair((int)nColor, oox_grad_fill->GsLst[i].pos));
 			}
 		}
 	}

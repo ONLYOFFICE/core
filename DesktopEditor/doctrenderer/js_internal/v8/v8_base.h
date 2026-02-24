@@ -62,7 +62,13 @@ v8::Local<v8::String> CreateV8String(v8::Isolate* i, const std::string& str);
 #include <android/log.h>
 #define  LOGW(...)  __android_log_print(ANDROID_LOG_WARN, "js", __VA_ARGS__)
 #define  LOGE(...)  __android_log_print(ANDROID_LOG_ERROR, "js", __VA_ARGS__)
-#endif
+#ifdef _DEBUG
+#define  LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG, "js", __VA_ARGS__)
+#else
+// should be disabled for release builds
+#define  LOGD(...)
+#endif	// _DEBUG
+#endif	// ANDROID_LOGS
 
 #endif
 
@@ -797,6 +803,9 @@ namespace NSJSBase
 
 	public:
 		CV8TryCatch() : CJSTryCatch(), try_catch(V8IsolateOneArg)
+		{
+		}
+		CV8TryCatch(v8::Isolate* isolate) : CJSTryCatch(), try_catch(isolate)
 		{
 		}
 		virtual ~CV8TryCatch()

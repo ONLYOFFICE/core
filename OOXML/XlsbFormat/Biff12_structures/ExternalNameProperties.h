@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
@@ -53,8 +53,8 @@ namespace XLSB
         void load(XLS::CFRecord& record) override;
 		void save(XLS::CFRecord& record) override;
 
-        bool        fBuiltIn;
-        _UINT32     iSheet;
+		bool        fBuiltIn = 0;
+		_UINT32     iSheet = 0;
     };
 
 }   // namespace XLSB

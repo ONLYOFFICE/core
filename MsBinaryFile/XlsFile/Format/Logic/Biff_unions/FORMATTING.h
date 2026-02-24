@@ -59,8 +59,8 @@ public:
 
 	BaseObjectPtr				m_Styles;
 	BaseObjectPtr				m_XFS;
-    //std::vector<BaseObjectPtr>	m_arFormats; in global
-    //std::vector<BaseObjectPtr>	m_arFonts; in global
+	std::vector<BaseObjectPtr>	m_arFormats;
+	std::vector<BaseObjectPtr>	m_arFonts;
 	BaseObjectPtr				m_Palette;
 	BaseObjectPtr				m_ClrtClient;
 	std::vector<BaseObjectPtr>	m_arDXF;

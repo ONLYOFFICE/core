@@ -145,7 +145,7 @@ std::wstring HyperlinkObject::loadHyperlinkString(XLS::CFRecord& record)
 	_INT32 size = 0;
 	record >> size;
 
-	if (size < 1) return L"";
+	if (size < 1 || record.getRdPtr() + size > record.getDataSize()) return L"";
 
 	_INT32 size_record = record.getDataSize() - record.getRdPtr();
 	if (size > size_record)
@@ -162,7 +162,8 @@ std::wstring HyperlinkObject::loadHyperlinkString(XLS::CFRecord& record)
 }
 void HyperlinkObject::saveHyperlinkString(XLS::CFRecord& record, std::wstring hlinkString)
 {
-    _INT32 size = hlinkString.size();
+	hlinkString += L'\0';
+	_INT32 size = hlinkString.size();
     record << size;
     for(auto i : hlinkString)
     {

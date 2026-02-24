@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
@@ -38,6 +38,8 @@
 #include "../../Common/SimpleTypes_Shared.h"
 #include "../../XlsbFormat/Biff12_unions/FMTS.h"
 #include "../../XlsbFormat/Biff12_records/BeginFmts.h"
+
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Format.h"
 
 namespace OOX
 {
@@ -99,6 +101,15 @@ namespace OOX
 				ptr->ifmt = 5;
 
 			return objectPtr;
+		}
+		XLS::BaseObjectPtr CNumFmt::toXLS()
+		{
+			auto fmt = new XLS::Format;
+			if(m_oNumFmtId.IsInit())
+				fmt->ifmt = m_oNumFmtId->GetValue();
+			if(m_oFormatCode.IsInit())
+				fmt->stFormat = m_oFormatCode.get();
+			return XLS::BaseObjectPtr(fmt);
 		}
 		EElementType CNumFmt::getType () const
 		{
@@ -217,6 +228,20 @@ namespace OOX
 			}
             beginfmt->cfmts = fmts->m_arBrtFmt.size();
 			return objectPtr;
+		}
+		std::vector<XLS::BaseObjectPtr> CNumFmts::toXLS()
+		{
+			std::vector<XLS::BaseObjectPtr> fmtVector;
+			auto numFmt = 164;
+			for(auto i:m_arrItems)
+			{
+				i->m_oNumFmtId->m_eValue = numFmt;
+				if(i->m_oNumFmtId.IsInit() && i->m_oNumFmtId->m_eValue < 164)
+					continue;
+				fmtVector.push_back(i->toXLS());
+				numFmt++;
+			}
+			return fmtVector;
 		}
 		EElementType CNumFmts::getType () const
 		{

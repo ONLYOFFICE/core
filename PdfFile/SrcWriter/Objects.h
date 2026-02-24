@@ -391,8 +391,10 @@ namespace PdfWriter
 				((CProxyObject*)pOut)->m_pObject->SetRef(m_pObject->GetObjId(), m_pObject->GetGenNo());
 				return pOut;
 			}
-			CProxyObject* pRes = new CProxyObject(new CObjectBase(), true);
-			pRes->Get()->SetRef(m_pObject->GetObjId(), m_pObject->GetGenNo());
+			bool bObj = m_pObject && m_pObject->IsIndirect();
+			CProxyObject* pRes = new CProxyObject(bObj ? m_pObject : new CObjectBase(), !bObj);
+			if (m_pObject)
+				pRes->Get()->SetRef(m_pObject->GetObjId(), m_pObject->GetGenNo());
 			return pRes;
 		}
 		EObjectType GetType() const
@@ -434,6 +436,7 @@ namespace PdfWriter
 		}
 		static CArrayObject* CreateBox(const TBox& oBox);
 		static CArrayObject* CreateBox(double dL, double dB, double dR, double dT);
+		static CArrayObject* CreateMatrix(double* m);
 		virtual CObjectBase* Copy(CObjectBase* pOut = NULL) const;
 		void FromXml(const std::wstring& sXml);
 
@@ -492,6 +495,7 @@ namespace PdfWriter
 		unsigned int GetSize() { return m_mList.size(); }
 		std::map<std::string, CObjectBase*> GetDict() { return m_mList; }
 		void FromXml(const std::wstring& sXml);
+		void ClearStream();
 
 	protected:
 		std::map<std::string, CObjectBase*> m_mList;
@@ -527,6 +531,10 @@ namespace PdfWriter
 		void         SetPrev(CXref* pPrev)
 		{
 			m_pPrev  = pPrev;
+		}
+		CXref*       GetPrev()
+		{
+			return m_pPrev;
 		}
 		void         SetPrevAddr(unsigned int unAddr)
 		{

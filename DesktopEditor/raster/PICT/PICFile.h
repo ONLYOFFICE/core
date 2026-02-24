@@ -247,6 +247,7 @@ private:
 	void DrawArc();
 	void ReadAndDrawText(int x, int y);
 
+	void InitializeFonts();
 	void InitializeRenderer();
 
 private:
@@ -257,8 +258,8 @@ private:
 	CBgraFrame m_oFrame{};
 	BYTE* m_pFrameData{nullptr};
 
-	size_t m_nPenHeight{0};
-	size_t m_nPenWidth{0};
+	size_t m_nPenHeight{1};
+	size_t m_nPenWidth{1};
 
 	int m_nFontStyle{0};
 	int m_nFontSize{0};
@@ -275,6 +276,7 @@ private:
 	std::vector<Aggplus::Point> m_arLastPolygon{};
 
 	NSGraphics::IGraphicsRenderer* m_pRenderer{nullptr};
+	NSFonts::IApplicationFonts* m_pAppFonts{nullptr};
 	NSFonts::IFontManager* m_pFontManager{nullptr};
 };
 

@@ -89,6 +89,7 @@ namespace OOX
 
 			void fromBin(XLS::BaseObjectPtr& obj);
 			XLS::BaseObjectPtr toBin();
+			XLS::BiffStructurePtr toXLS();
 			virtual EElementType getType () const;
 
 		private:

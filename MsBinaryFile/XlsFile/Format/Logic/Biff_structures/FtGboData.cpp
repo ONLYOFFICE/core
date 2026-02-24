@@ -61,6 +61,18 @@ void FtGboData::load(CFRecord& record)
 	fNo3d = GETBIT(flags, 0);
 }
 
+void FtGboData::save(CFRecord& record)
+{
+	{
+		unsigned short ft = 0x000F, cb =  0x0006;
+		record << ft << cb;
+	}
+	record << accel;
+	record.reserveNunBytes(2);
+	unsigned short flags = 0;
+	SETBIT(flags, 0, fNo3d)
+	record << flags;
+}
 
 } // namespace XLS
 

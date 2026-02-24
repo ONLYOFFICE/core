@@ -31,7 +31,8 @@
  */
 
 #include "math_elements.h"
-#include "../Converter/StarMath2OOXML/cconversionsmtoooxml.h"
+// #include "../Converter/StarMath2OOXML/cconversionsmtoooxml.h"
+#include "../Converter/StarMath2OOXML/conversionmathformula.h"
 
 namespace cpdoccore { 
 
@@ -109,18 +110,18 @@ void math_semantics::oox_convert(oox::math_context &Context, int iTypeConversion
     if (!annotation_text.empty())
     {
         result = true;
-        StarMath::CParserStarMathString parser;
-        StarMath::CConversionSMtoOOXML converter;
-       
-        parser.SetBaseFont(Context.base_font_name_);
-        parser.SetBaseSize(Context.base_font_size_);
-        parser.SetBaseAlignment(Context.base_alignment_);
-        parser.SetBaseItalic(Context.base_font_italic_);
-        parser.SetBaseBold(Context.base_font_bold_);
 
-        converter.StartConversion(parser.Parse(annotation_text,iTypeConversion),parser.GetAlignment());
+        StarMath::CStarMathConverter oConverterStarMath;
 
-        auto sizes = parser.GetFormulaSize();
+        oConverterStarMath.SetBaseFont(Context.base_font_name_);
+        oConverterStarMath.SetBaseSize(Context.base_font_size_);
+        oConverterStarMath.SetBaseAlignment(Context.base_alignment_);
+        oConverterStarMath.SetBaseItalic(Context.base_font_italic_);
+        oConverterStarMath.SetBaseBold(Context.base_font_bold_);
+
+		std::wstring ws_conversion_result_sm_to_ooxml = oConverterStarMath.ConvertStarMathToOOXml(annotation_text,iTypeConversion);
+
+        std::queue<StarMath::TFormulaSize> sizes = oConverterStarMath.GetFormulaSize();
 
         for (;!sizes.empty(); sizes.pop())
         {
@@ -129,12 +130,12 @@ void math_semantics::oox_convert(oox::math_context &Context, int iTypeConversion
 
             Context.height += sizes.front().m_iHeight;
         }
-        Context.output_stream() << converter.GetOOXML();
+        Context.output_stream() << ws_conversion_result_sm_to_ooxml;
     }
 
     if (!result)
     {
- 		Context.output_stream() << L"<m:oMathPara xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\">";
+        Context.output_stream() << L"<m:oMathPara xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\">";
         Context.output_stream() << L"<m:oMath xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\">";
         for (size_t i = 0; i < content_.size(); i++)
         {

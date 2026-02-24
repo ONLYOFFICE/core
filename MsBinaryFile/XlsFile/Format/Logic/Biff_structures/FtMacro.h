@@ -49,9 +49,10 @@ public:
 	static const ElementType	type = typeFtMacro;
 
 	virtual void load(CFRecord& record);
+	virtual void save(CFRecord& record);
 
 	ObjFmla fmla;
-	bool	fExist;
+	bool	fExist = false;
 };
 
 } // namespace XLS

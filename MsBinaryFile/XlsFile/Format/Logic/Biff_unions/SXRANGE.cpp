@@ -114,6 +114,26 @@ const bool SXRANGE::loadContent(BinProcessor& proc)
 	return true;
 }
 
+const bool SXRANGE::saveContent(BinProcessor& proc)
+{
+	if(m_SXRng == nullptr)
+		return false;
+	proc.mandatory(*m_SXRng);
+	if(!m_arSXNum.empty())
+	{
+		for(auto i : m_arSXNum)
+			if(i != nullptr)
+				proc.mandatory(*i);
+	}
+	else if (!m_arSXDtr.empty())
+	{
+		for(auto i : m_arSXDtr)
+			if(i!= nullptr)
+				proc.mandatory(*i);
+	}
+	return true;
+}
+
 int SXRANGE::serialize(std::wostream & strm)
 {
 	SXRng* rng = dynamic_cast<SXRng*>(m_SXRng.get());

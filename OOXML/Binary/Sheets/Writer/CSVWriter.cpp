@@ -70,7 +70,9 @@ public:
 	void End();
 	void Close();
 
+	int m_nColStartBeginning = 1;
 private:
+
 	NSFile::CFileBinary m_oFile;
 	OOX::Spreadsheet::CXlsx& m_oXlsx;
 	unsigned int m_nCodePage;
@@ -217,6 +219,11 @@ void CSVWriter::Close()
 {
 	if (impl_)
 		impl_->Close();
+}
+void CSVWriter::SetColStartBeginning(int val)
+{
+	if (impl_)
+		impl_->m_nColStartBeginning = val;
 }
 //---------------------------------------------------------------------------------------------------------------------------------
 static std::wstring replace_unwanted(boost::wsmatch const & what)
@@ -696,7 +703,7 @@ CSVWriter::Impl::Impl(OOX::Spreadsheet::CXlsx &m_oXlsx, unsigned int m_nCodePage
 	m_sEscape = _T("\"\n");
 	m_sEscape += m_sDelimiter;
 	m_nRowCurrent = 1;
-	m_nColCurrent = 1;
+	m_nColCurrent = m_nColStartBeginning;
 	m_bIsWriteCell = false;
 	m_bStartRow = true;
 	m_bStartCell = true;
@@ -769,7 +776,7 @@ void CSVWriter::Impl::WriteRowStart(OOX::Spreadsheet::CRow *pRow)
 	}
 	m_bStartRow = false;
 	m_bStartCell = true;
-	m_nColCurrent = 1;
+	m_nColCurrent = m_nColStartBeginning;
 	m_bIsWriteCell = false;
 }
 void CSVWriter::Impl::WriteCell(OOX::Spreadsheet::CCell *pCell)
@@ -883,6 +890,10 @@ void CSVWriter::Impl::WriteCell(OOX::Spreadsheet::CCell *pCell)
 			}
 			sCellValue = ConvertValueCellToString(sCellValue, format_type, format_code);
 		}
+	}
+	else if (pCell->m_oRichText.IsInit())
+	{
+		sCellValue = pCell->m_oRichText->ToString();
 	}
 	if (pCell->m_oFormula.IsInit() && sCellValue.empty())
 	{

@@ -55,5 +55,10 @@ void SxFmla::readFields(CFRecord& record)
 	fmla.load(record);
 }
 
+void SxFmla::writeFields(CFRecord& record)
+{
+	fmla.save(record);
+}
+
 } // namespace XLS
 

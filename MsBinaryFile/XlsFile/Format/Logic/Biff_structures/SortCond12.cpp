@@ -89,11 +89,7 @@ void SortCond12::save(CFRecord& record)
 			record << cfflag;
 			break;
 	}
-	if(cchSt)
-	{
-		stSslist.setSize(cchSt);
-		record >> stSslist;
-	}
+
 	cchSt = stSslist.getSize();
 	record << cchSt;
 	if(cchSt)

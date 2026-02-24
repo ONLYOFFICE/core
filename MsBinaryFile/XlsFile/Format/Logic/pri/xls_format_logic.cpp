@@ -666,6 +666,7 @@
 #include "../Biff_structures/BIFF12/SxOs.cpp"
 #include "../Biff_structures/BIFF12/SxSu.cpp"
 #include "../Biff_structures/FutureFunctionParser.cpp"
+#include "../Biff_structures/CFFilter.cpp"
 
 #include "../Biff_unions/AI.cpp"
 #include "../Biff_unions/ATTACHEDLABEL_bu.cpp"

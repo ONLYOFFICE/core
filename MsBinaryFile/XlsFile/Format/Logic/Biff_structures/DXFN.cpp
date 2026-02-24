@@ -180,6 +180,10 @@ void DXFN::save(CFRecord& record)
     {
         record << dxfbdr;
     }
+	if(ibitAtrPat)
+	{
+		record << dxfpat;
+	}
     if(ibitAtrProt)
     {
         record << dxfprot;

@@ -50,11 +50,12 @@ public:
 	static const ElementType type = typeObjFmla;
 
 	virtual void load(CFRecord& record);
+	virtual void save(CFRecord& record);
 
 	ObjectParsedFormula fmla;
 
-	bool bFmlaExist;
-	bool bInfoExist;
+	bool bFmlaExist = false;
+	bool bInfoExist = false;
 
 	PictFmlaEmbedInfo embedInfo;
 private:

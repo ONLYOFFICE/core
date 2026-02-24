@@ -75,6 +75,17 @@ const bool DVAL::loadContent(BinProcessor& proc)
 	return true;
 }
 
+const bool DVAL::saveContent(BinProcessor& proc)
+{
+	if(m_DVal == nullptr)
+		return false;
+	proc.mandatory(*m_DVal);
+	for(auto i : m_arDv)
+		if(i != nullptr)
+			proc.mandatory(*i);
+	return true;
+}
+
 int DVAL::serialize(std::wostream & stream)
 {
 	if (!m_DVal)		return 0;

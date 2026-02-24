@@ -54,5 +54,10 @@ void SxErr::readFields(CFRecord& record)
 	record >> wbe;
 }
 
+void SxErr::writeFields(CFRecord& record)
+{
+	record << wbe;
+}
+
 } // namespace XLS
 

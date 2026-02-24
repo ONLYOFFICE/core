@@ -92,7 +92,7 @@ void CFParsedFormula::save(CFRecord& record)
 
 		cce = record.getRdPtr() - rdPtr;
 
-		record.RollRdPtrBack(cce + 4);
+		record.RollRdPtrBack(cce + 2);
 		record << cce;
 		record.skipNunBytes(cce);
 	}

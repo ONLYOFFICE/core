@@ -52,7 +52,7 @@ bool DigitReader::ReadDigit(const std::wstring &value, std::wstring &digit, std:
 		return false;
     }
 
-    if ((0 == *pEndPtr) || (pEndPtr != value.c_str() && (value.c_str() + length  - pEndPtr) <= 4))
+	if ((0 == *pEndPtr) || (pEndPtr != value.c_str() && (value.c_str() + length  - pEndPtr) <= 1))
 	{
 	std::wstring postfix;
 	auto length = value.length();
@@ -88,6 +88,9 @@ bool DigitReader::ReadDigit(const std::wstring &value, std::wstring &digit, std:
 					format = DefaultPercentFormat;
                     return true;
 				}
+				else
+					return false;
+				/*
 				else if(currency.CheckPostfix(postfix))
 				{
 					digit = std::to_wstring(dValue);
@@ -116,6 +119,7 @@ bool DigitReader::ReadDigit(const std::wstring &value, std::wstring &digit, std:
 					}
 					format = data_format;
 				}
+				*/
 			}
 			else
 			{

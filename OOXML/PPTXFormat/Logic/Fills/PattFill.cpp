@@ -159,6 +159,52 @@ namespace PPTX
 
 			pWriter->EndRecord();
 		}
+		void PattFill::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+		{
+			pReader->Skip(4); // len
+			BYTE _type = pReader->GetUChar(); // FILL_TYPE_PATT
+			LONG _e = pReader->GetPos() + pReader->GetRecordSize() + 4;
+
+			pReader->Skip(1);
+
+			while (true)
+			{
+				BYTE _at = pReader->GetUChar_TypeNode();
+				if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+					break;
+
+				switch (_at)
+				{
+				case 0:
+					prst = pReader->GetUChar();
+					break;
+				default:
+					break;
+				}
+			}
+
+			while (pReader->GetPos() < _e)
+			{
+				BYTE rec = pReader->GetUChar();
+
+				switch (rec)
+				{
+					case 0:
+					{
+						fgClr.fromPPTY(pReader);					
+					}break;
+					case 1:
+					{
+						bgClr.fromPPTY(pReader);					
+					}break;
+					default:
+					{
+						pReader->SkipRecord();
+					}
+				}
+			}
+			pReader->Seek(_e);
+		}
 		void PattFill::FillParentPointersForChilds()
 		{
 			fgClr.SetParentPointer(this);

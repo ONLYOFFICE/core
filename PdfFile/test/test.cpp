@@ -40,6 +40,8 @@
 #include "../../DjVuFile/DjVu.h"
 #include "../PdfFile.h"
 
+#include <algorithm>
+
 class CPdfFileTest : public testing::Test
 {
 protected:
@@ -96,7 +98,7 @@ public:
 		if (!bResult)
 		{
 			std::wstring wsPassword = L"123456";
-			bResult = pdfFile->LoadFromFile(_wsSrcFile.empty() ? wsSrcFile : _wsSrcFile, L"", wsPassword, wsPassword);
+			bResult = pdfFile->LoadFromFile(_wsSrcFile.empty() ? wsSrcFile : _wsSrcFile, L"", wsPassword.c_str(), wsPassword.c_str());
 		}
 
 		ASSERT_TRUE(bResult);
@@ -116,7 +118,7 @@ public:
 	}
 	ICertificate* GetCertificate()
 	{
-		std::wstring wsCertificateFile = NSFile::GetProcessDirectory() + L"/cert.pfx";
+		std::wstring wsCertificateFile = NSFile::GetProcessDirectory() + L"/pfx.pfx";
 		std::wstring wsPrivateKeyFile  = L"";
 		std::string sCertificateFilePassword = "123456";
 		std::string sPrivateFilePassword = "";
@@ -340,6 +342,71 @@ TEST_F(CPdfFileTest, ConvertToRaster)
 	}
 }
 
+TEST_F(CPdfFileTest, Base64ConvertToRaster)
+{
+	GTEST_SKIP();
+
+	// чтение и конвертации бинарника
+	NSFile::CFileBinary oFile;
+	ASSERT_TRUE(oFile.OpenFile(NSFile::GetProcessDirectory() + L"/base64.txt"));
+
+	DWORD dwFileSize = oFile.GetFileSize();
+	BYTE* pFileContent = new BYTE[dwFileSize];
+	if (!pFileContent)
+	{
+		oFile.CloseFile();
+		FAIL();
+	}
+
+	DWORD dwReaded;
+	oFile.ReadFile(pFileContent, dwFileSize, dwReaded);
+	oFile.CloseFile();
+
+	int nBufferLen = NSBase64::Base64DecodeGetRequiredLength(dwFileSize);
+	BYTE* pBuffer = new BYTE[nBufferLen];
+
+	NSBase64::Base64Decode((const char*)pFileContent, dwFileSize, pBuffer, &nBufferLen);
+
+	NSOnlineOfficeBinToPdf::CMetafileToRenderterRaster imageWriter(NULL);
+	imageWriter.SetIsOnlyFirst(false);
+	imageWriter.SetMediaDirectory(NSFile::GetProcessDirectory());
+	imageWriter.SetApplication(pApplicationFonts);
+	imageWriter.SetRasterFormat(4);
+	imageWriter.SetFileName(NSFile::GetProcessDirectory() + L"/resO/res.png");
+
+	imageWriter.ConvertBuffer(pBuffer, nBufferLen);
+}
+
+TEST_F(CPdfFileTest, BinConvertToRaster)
+{
+	GTEST_SKIP();
+
+	// чтение и конвертации бинарника
+	NSFile::CFileBinary oFile;
+	ASSERT_TRUE(oFile.OpenFile(NSFile::GetProcessDirectory() + L"/pdf.bin"));
+
+	DWORD dwFileSize = oFile.GetFileSize();
+	BYTE* pFileContent = new BYTE[dwFileSize];
+	if (!pFileContent)
+	{
+		oFile.CloseFile();
+		FAIL();
+	}
+
+	DWORD dwReaded;
+	oFile.ReadFile(pFileContent, dwFileSize, dwReaded);
+	oFile.CloseFile();
+
+	NSOnlineOfficeBinToPdf::CMetafileToRenderterRaster imageWriter(NULL);
+	imageWriter.SetIsOnlyFirst(true);
+	imageWriter.SetMediaDirectory(NSFile::GetProcessDirectory());
+	imageWriter.SetApplication(pApplicationFonts);
+	imageWriter.SetRasterFormat(4);
+	imageWriter.SetFileName(NSFile::GetProcessDirectory() + L"/resO/res.png");
+
+	imageWriter.ConvertBuffer(pFileContent, dwFileSize);
+}
+
 TEST_F(CPdfFileTest, VerifySign)
 {
 	GTEST_SKIP();
@@ -416,6 +483,23 @@ TEST_F(CPdfFileTest, MergePdf)
 
 	std::wstring wsSplitFile = NSFile::GetProcessDirectory() + L"/test_split.pdf";
 	pdfFile->MergePages(wsSplitFile, 0, L"");
+
+	pdfFile->Close();
+}
+
+TEST_F(CPdfFileTest, RedactPdf)
+{
+	GTEST_SKIP();
+
+	LoadFromFile();
+	ASSERT_TRUE(pdfFile->EditPdf(wsDstFile));
+
+	pdfFile->SetEditType(1);
+
+	EXPECT_TRUE(pdfFile->EditPage(0));
+	{
+		DrawSmth();
+	}
 
 	pdfFile->Close();
 }
@@ -518,6 +602,55 @@ TEST_F(CPdfFileTest, EditPdfFromBin)
 	pdfFile->Close();
 }
 
+bool ParseByteRange(const BYTE* pData, DWORD dwLength, DWORD outRange[4])
+{
+	const BYTE pPattern[] = "ByteRange";
+	const size_t nPatternLen = 9;
+
+	const BYTE* it = std::find_end(pData, pData + dwLength, pPattern, pPattern + nPatternLen);
+	if (it == pData + dwLength)
+		return false;
+
+	it += nPatternLen;
+
+	while (it < pData + dwLength && *it != '[')
+	{
+		if (*it != ' ' && *it != '\t' && *it != '\r' && *it != '\n')
+			return false;
+		++it;
+	}
+	if (it >= pData + dwLength)
+		return false;
+
+	++it;
+
+	for (int i = 0; i < 4; ++i)
+	{
+		while (it < pData + dwLength && (*it == ' ' || *it == '\t'))
+			++it;
+		if (it >= pData + dwLength)
+			return false;
+
+		if (*it < '0' || *it > '9')
+			return false;
+
+		DWORD nValue = 0;
+		while (it < pData + dwLength && *it >= '0' && *it <= '9')
+		{
+			nValue = nValue * 10 + (*it - '0');
+			++it;
+		}
+		outRange[i] = nValue;
+	}
+
+	while (it < pData + dwLength && (*it == ' ' || *it == '\t'))
+		++it;
+	if (it >= pData + dwLength || *it != ']')
+		return false;
+
+	return true;
+}
+
 TEST_F(CPdfFileTest, EditPdfSign)
 {
 	GTEST_SKIP();
@@ -525,17 +658,73 @@ TEST_F(CPdfFileTest, EditPdfSign)
 	LoadFromFile();
 	ASSERT_TRUE(pdfFile->EditPdf(wsDstFile));
 
-	ICertificate* pCertificate = GetCertificate();
-	ASSERT_TRUE(pCertificate);
-
 	EXPECT_TRUE(pdfFile->EditPage(0));
 	{
-		pdfFile->Sign(10, 10, 100, 100, NSFile::GetProcessDirectory() + L"/test.jpeg", pCertificate);
+		pdfFile->Sign(10, 10, 100, 100, NSFile::GetProcessDirectory() + L"/test.jpeg");
+		pdfFile->Sign(10, 150, 100, 100, NSFile::GetProcessDirectory() + L"/test.jpeg");
+		pdfFile->Sign(10, 300, 100, 100, NSFile::GetProcessDirectory() + L"/test.jpeg");
+	}
+
+	// Для цифровой подписи важно предварительно pdfFile->EditClose, в остальных случаях pdfFile->Close() сделает тоже самое
+	pdfFile->EditClose();
+
+	// EditPdf & EditClose || CreatePdf & SaveToFile
+	// И только после подготовка данных для подписания, подписываем, запись подписи
+	for (int i = 0; i < 3; ++i)
+	{
+		pdfFile->PrepareSignature(wsDstFile);
+
+		ICertificate* pCertificate = GetCertificate();
+		ASSERT_TRUE(pCertificate);
+
+		BYTE* pDataFile = NULL;
+		DWORD dwDataLength = 0;
+
+		NSFile::CFileBinary::ReadAllBytes(wsDstFile, &pDataFile, dwDataLength);
+
+		DWORD aByteRange[4] = {0};
+		ASSERT_TRUE(ParseByteRange(pDataFile, dwDataLength, aByteRange));
+		ASSERT_TRUE(aByteRange[0] + aByteRange[1] <= dwDataLength);
+		ASSERT_TRUE(aByteRange[2] + aByteRange[3] <= dwDataLength);
+
+		DWORD dwDataSignLength = aByteRange[1] + aByteRange[3];
+		BYTE* pDataToSign = new BYTE[dwDataSignLength];
+		memcpy(pDataToSign, pDataFile + aByteRange[0], aByteRange[1]);
+		memcpy(pDataToSign + aByteRange[1], pDataFile + aByteRange[2], aByteRange[3]);
+
+		RELEASEARRAYOBJECTS(pDataFile);
+
+		BYTE* pDatatoWrite = NULL;
+		unsigned int dwLenDatatoWrite = 0;
+		pCertificate->SignPKCS7(pDataToSign, dwDataSignLength, pDatatoWrite, dwLenDatatoWrite);
+		RELEASEARRAYOBJECTS(pDataToSign);
+
+		// Обязательно FinalizeSignature - он либо заполнит данные, либо сделает подпись пустой
+		pdfFile->FinalizeSignature(pDatatoWrite, dwLenDatatoWrite);
+
+		RELEASEARRAYOBJECTS(pDatatoWrite);
+		RELEASEOBJECT(pCertificate);
 	}
 
 	pdfFile->Close();
+}
 
-	RELEASEOBJECT(pCertificate);
+TEST_F(CPdfFileTest, PrintPdf)
+{
+	GTEST_SKIP();
+
+	LoadFromFile(wsDstFile);
+
+	int nPages = pdfFile->GetPagesCount();
+	std::vector<bool> arrPages;
+	for (int i = 0; i < nPages; ++i)
+		arrPages.push_back(false);
+	arrPages[0] = true;
+
+	ASSERT_TRUE(pdfFile->PrintPages(arrPages, 2));
+
+	pdfFile->SaveToFile(NSFile::GetProcessDirectory() + L"/test3.pdf");
+	pdfFile->Close();
 }
 
 TEST_F(CPdfFileTest, ChangePasswordToEmpty)

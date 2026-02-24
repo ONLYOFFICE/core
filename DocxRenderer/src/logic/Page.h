@@ -46,8 +46,11 @@ namespace NSDocxRenderer
 		bool m_bIsGradient			   {false};
 		bool m_bUseDefaultFont		   {false};
 		bool m_bWriteStyleRaw		   {false};
+		bool m_bCollectMetaInfo        {false};
 		bool m_bIsBuildTables		   {false};
 		bool m_bIsLuminosityShapesFiled{false};
+		bool m_bFontSubstitution       {false};
+		bool m_bFirstParagraphLineCorrection{false};
 
 		CPage(NSFonts::IApplicationFonts* pAppFonts, const CManagers& oManagers);
 		~CPage();
@@ -66,6 +69,7 @@ namespace NSDocxRenderer
 		void PathEnd();
 		void PathClose();
 		void DrawPath(LONG lType, const std::shared_ptr<CImageInfo> pInfo);
+		bool IsCurrVectorClockwise() const;
 
 		void AddText(
 		        const PUINT pUnicodes,
@@ -192,9 +196,11 @@ namespace NSDocxRenderer
 
 		bool IsVerticalLineBetween(text_line_ptr_t pFirst, text_line_ptr_t pSecond) const noexcept;
 		bool IsHorizontalLineBetween(text_line_ptr_t pFirst, text_line_ptr_t pSecond) const noexcept;
+		bool IsTextLineBetween(text_line_ptr_t pFirst, text_line_ptr_t pSecond) const noexcept;
 
 		bool IsVerticalLineTrough(base_item_ptr_t pFirst) const noexcept;
 		bool IsHorizontalLineTrough(base_item_ptr_t pFirst) const noexcept;
+		bool IsTextLineTrough(base_item_ptr_t pFirst) const noexcept;
 
 		void ToXml(NSStringUtils::CStringBuilder& oWriter) const noexcept;
 		void WriteSectionToFile(bool bLastPage, NSStringUtils::CStringBuilder& oWriter) const noexcept;
@@ -229,6 +235,8 @@ namespace NSDocxRenderer
 		std::vector<shape_ptr_t> m_arLuminosityShapes;
 		std::vector<shape_ptr_t> m_arOneColorGradientShape;
 
-		size_t m_nShapeOrder = 0;
+		long m_lLastType = 0;
+
+		size_t m_nCurrentOrder = 0;
 	};
 }

@@ -60,23 +60,23 @@ namespace NSStringFinder
 		return sValue;
 	}
 
-	std::string FindProperty(const std::string& sString, const std::string& sProperty, const std::string& sDelimiter, const std::string& sEnding, const size_t& unStarting, size_t& unEndPosition)
+	inline std::string FindProperty(const std::string& sString, const std::string& sProperty, const std::string& sDelimiter, const std::string& sEnding, const size_t& unStarting, size_t& unEndPosition)
 	{
 		return FindPropertyTemplate<char>(sString, sProperty, sDelimiter, sEnding, unStarting, unEndPosition);
 	}
 
-	std::wstring FindProperty(const std::wstring& wsString, const std::wstring& wsProperty, const std::wstring& wsDelimiter, const std::wstring& wsEnding, const size_t& unStarting, size_t& unEndPosition)
+	inline std::wstring FindProperty(const std::wstring& wsString, const std::wstring& wsProperty, const std::wstring& wsDelimiter, const std::wstring& wsEnding, const size_t& unStarting, size_t& unEndPosition)
 	{
 		return FindPropertyTemplate<wchar_t>(wsString, wsProperty, wsDelimiter, wsEnding, unStarting, unEndPosition);
 	}
 
-	std::string FindProperty(const std::string& sString, const std::string& sProperty, const std::string& sDelimiter, const std::string& sEnding, const size_t& unStarting = 0)
+	inline std::string FindProperty(const std::string& sString, const std::string& sProperty, const std::string& sDelimiter, const std::string& sEnding, const size_t& unStarting = 0)
 	{
 		size_t unEndPosition = 0;
 		return FindPropertyTemplate<char>(sString, sProperty, sDelimiter, sEnding, unStarting, unEndPosition);
 	}
 
-	std::wstring FindProperty(const std::wstring& wsString, const std::wstring& wsProperty, const std::wstring& wsDelimiter, const std::wstring& wsEnding, const size_t& unStarting = 0)
+	inline std::wstring FindProperty(const std::wstring& wsString, const std::wstring& wsProperty, const std::wstring& wsDelimiter, const std::wstring& wsEnding, const size_t& unStarting = 0)
 	{
 		size_t unEndPosition = 0;
 		return FindPropertyTemplate<wchar_t>(wsString, wsProperty, wsDelimiter, wsEnding, unStarting, unEndPosition);
@@ -130,12 +130,12 @@ namespace NSStringFinder
 		return oData;
 	}
 
-	TFoundedData<char> FindProperty(const std::string& sString, const std::string& sProperty, const std::vector<std::string>& arDelimiters, const std::vector<std::string>& arEndings, const size_t& unStarting = 0)
+	inline TFoundedData<char> FindProperty(const std::string& sString, const std::string& sProperty, const std::vector<std::string>& arDelimiters, const std::vector<std::string>& arEndings, const size_t& unStarting = 0)
 	{
 		return FindPropertyTemplate<char>(sString, sProperty, arDelimiters, arEndings, unStarting);
 	}
 
-	TFoundedData<wchar_t> FindProperty(const std::wstring& wsString, const std::wstring& wsProperty, const std::vector<std::wstring>& arDelimiters, const std::vector<std::wstring>& arEndings, const size_t& unStarting = 0)
+	inline TFoundedData<wchar_t> FindProperty(const std::wstring& wsString, const std::wstring& wsProperty, const std::vector<std::wstring>& arDelimiters, const std::vector<std::wstring>& arEndings, const size_t& unStarting = 0)
 	{
 		return FindPropertyTemplate<wchar_t>(wsString, wsProperty, arDelimiters, arEndings, unStarting);
 	}
@@ -154,12 +154,12 @@ namespace NSStringFinder
 		return true;
 	}
 
-	bool RemoveEmptyTag(std::string& sValue, const std::string& sTagName, size_t unStart = 0)
+	inline bool RemoveEmptyTag(std::string& sValue, const std::string& sTagName, size_t unStart = 0)
 	{
 		return RemoveEmptyTagTemplate<char>(sValue, sTagName, unStart);
 	}
 
-	bool RemoveEmptyTag(std::wstring& sValue, const std::wstring& sTagName, size_t unStart = 0)
+	inline bool RemoveEmptyTag(std::wstring& sValue, const std::wstring& sTagName, size_t unStart = 0)
 	{
 		return RemoveEmptyTagTemplate<wchar_t>(sValue, sTagName, unStart);
 	}
@@ -223,7 +223,7 @@ namespace NSStringFinder
 		return !boost::algorithm::ifind_first(sString, sValue).empty();
 	}
 
-	int ToInt(const std::wstring& oValue, int nMinValue = 0)
+	inline int ToInt(const std::wstring& oValue, int nMinValue = 0)
 	{
 		boost::wregex oRegex(LR"((-?\.\d+|-?\d+(\.\d+)?))");
 
@@ -237,7 +237,7 @@ namespace NSStringFinder
 		return std::max(nMinValue, nValue);
 	}
 	
-	int ToDouble(const std::wstring& oValue, double dMinValue = 0.)
+	inline int ToDouble(const std::wstring& oValue, double dMinValue = 0.)
 	{
 		boost::wregex oRegex(LR"((-?\.\d+|-?\d+(\.\d+)?))");
 

@@ -88,6 +88,8 @@ namespace DocFileFormat
 
 		BorderCode( unsigned char* bytes, int size );
 		BorderCode( const BorderCode& bc );
+        unsigned char GetType() const { return brcType; }
+        bool GetNil() {return fNil;}
 
 		bool operator == ( const BorderCode& bc );
 		bool operator != ( const BorderCode& bc );

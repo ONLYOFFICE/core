@@ -117,6 +117,7 @@ const long c_nDarkMode          = 0x0008;
 const long c_nUseDictionaryFonts = 0x0010;
 const long c_nPenWidth0As1px	= 0x0020;
 const long c_nSupportPathTextAsText = 0x0040;
+const long c_nFontSubstitution  = 0x0080;
 
 // типы рендерера
 const long c_nUnknownRenderer   = 0x0000;
@@ -168,7 +169,10 @@ public:
 	AdvancedCommandType GetCommandType() { return m_nCommandType; }
 };
 
-namespace Aggplus { class CImage; }
+namespace Aggplus {
+	class CImage;
+	class CGraphicsPath;
+}
 
 // IRenderer
 class IRenderer : public IGrObject
@@ -240,6 +244,32 @@ public:
 	virtual HRESULT put_BrushTransform(const Aggplus::CMatrix& oMatrix) = 0;
 	virtual HRESULT get_BrushLinearAngle(double* dAngle)				= 0;
 	virtual HRESULT put_BrushLinearAngle(const double& dAngle)			= 0;
+	virtual HRESULT get_BrushOffset(double& offsetX, double& offsetY) const
+	{
+		UNUSED_VARIABLE(offsetX);
+		UNUSED_VARIABLE(offsetY);
+		return S_OK;
+	}
+	virtual HRESULT put_BrushOffset(const double& offsetX, const double& offsetY)
+	{
+		UNUSED_VARIABLE(offsetX);
+		UNUSED_VARIABLE(offsetY);
+		return S_OK;
+	}
+	virtual HRESULT get_BrushScale(bool& isScale, double& scaleX, double& scaleY) const
+	{
+		UNUSED_VARIABLE(isScale);
+		UNUSED_VARIABLE(scaleX);
+		UNUSED_VARIABLE(scaleY);
+		return S_OK;
+	}
+	virtual HRESULT put_BrushScale(bool isScale, const double& scaleX, const double& scaleY)
+	{
+		UNUSED_VARIABLE(isScale);
+		UNUSED_VARIABLE(scaleX);
+		UNUSED_VARIABLE(scaleY);
+		return S_OK;
+	}
 	virtual HRESULT BrushRect(const INT& val, const double& left, const double& top, const double& width, const double& height) = 0;
 	virtual HRESULT BrushBounds(const double& left, const double& top, const double& width, const double& height) = 0;
 
@@ -298,6 +328,8 @@ public:
 
 	virtual HRESULT PathCommandTextExCHAR(const LONG& c, const LONG& gid, const double& x, const double& y, const double& w, const double& h) = 0;
 	virtual HRESULT PathCommandTextEx(const std::wstring& sText, const unsigned int* pGids, const unsigned int nGidsCount, const double& x, const double& y, const double& w, const double& h) = 0;
+
+	HRESULT AddPath(const Aggplus::CGraphicsPath& path);
 
 	//-------- Функции для вывода изображений ---------------------------------------------------
 	virtual HRESULT DrawImage(IGrObject* pImage, const double& x, const double& y, const double& w, const double& h)		= 0;

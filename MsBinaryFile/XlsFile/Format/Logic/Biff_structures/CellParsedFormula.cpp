@@ -65,6 +65,7 @@ void CellParsedFormula::load(CFRecord& record)
         //	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
         //}
         //else
+		if(record.getRdPtr() + cce <= record.getDataSize())
         {
             rgce.load(record, cce);
             rgcb.load(record, rgce.getPtgs(), is_part_of_a_revision_);

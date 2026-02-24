@@ -544,9 +544,6 @@
     <ClInclude Include="..\..\..\XlsxFormat\Timelines\Timeline.h">
       <Filter>XlsxFormat\Timelines</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\XlsxFormat\RichData\RdRichValue.h">
-      <Filter>XlsxFormat\RichData</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\XlsxFormat\Workbook\Metadata.h">
       <Filter>XlsxFormat\Workbook</Filter>
     </ClInclude>
@@ -582,9 +579,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\VsdxFormat\VisioOthers.h">
       <Filter>VsdxFormat</Filter>
-	</ClInclude>
+    </ClInclude>
     <ClInclude Include="..\..\..\XlsxFormat\Workbook\CustomsXml.h">
       <Filter>XlsxFormat\Workbook</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsxFormat\RichData\RdRichData.h">
+      <Filter>XlsxFormat\RichData</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -996,9 +996,6 @@
     <ClCompile Include="..\..\..\XlsxFormat\Timelines\Timeline.cpp">
       <Filter>XlsxFormat\Timelines</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\XlsxFormat\RichData\RdRichValue.cpp">
-      <Filter>XlsxFormat\RichData</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\XlsxFormat\Workbook\Metadata.cpp">
       <Filter>XlsxFormat\Workbook</Filter>
     </ClCompile>
@@ -1037,6 +1034,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\XlsxFormat\Workbook\CustomsXml.cpp">
       <Filter>XlsxFormat\Workbook</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsxFormat\RichData\RdRichData.cpp">
+      <Filter>XlsxFormat\RichData</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

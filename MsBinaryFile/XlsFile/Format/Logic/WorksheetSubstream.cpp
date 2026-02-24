@@ -767,6 +767,9 @@ const bool WorksheetSubstream::saveContent(BinProcessor& proc)
 	if(m_CELLTABLE != nullptr)
 		proc.mandatory(*m_CELLTABLE);
 
+	if(m_OBJECTS != nullptr)
+		proc.mandatory(*m_OBJECTS);
+
 	for(auto i : m_arHFPicture)
 		if( i!= nullptr)
 			proc.mandatory(*i);
@@ -813,6 +816,9 @@ const bool WorksheetSubstream::saveContent(BinProcessor& proc)
 	if(m_SheetExt != nullptr)
 		proc.mandatory(*m_SheetExt);
 	for(auto i : m_arFEAT)
+		if(i != nullptr)
+			proc.mandatory(*i);
+	for(auto i : m_arFEAT11)
 		if(i != nullptr)
 			proc.mandatory(*i);
 	for(auto i : m_arRECORD12)

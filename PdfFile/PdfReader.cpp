@@ -42,6 +42,7 @@
 
 #include "SrcReader/Adaptors.h"
 #include "SrcReader/PdfAnnot.h"
+#include "SrcReader/PdfFont.h"
 #include "Resources/BaseFonts.h"
 
 #include "lib/xpdf/PDFDoc.h"
@@ -54,6 +55,7 @@
 #include "lib/xpdf/Link.h"
 #include "lib/xpdf/TextOutputDev.h"
 #include "lib/xpdf/AcroForm.h"
+#include "lib/xpdf/SecurityHandler.h"
 #include "lib/goo/GList.h"
 
 NSFonts::IFontManager* InitFontManager(NSFonts::IApplicationFonts* pAppFonts)
@@ -64,137 +66,6 @@ NSFonts::IFontManager* InitFontManager(NSFonts::IApplicationFonts* pAppFonts)
 	m_pFontManager->SetOwnerCache(pMeasurerCache);
 	pMeasurerCache->SetCacheSize(1);
 	return m_pFontManager;
-}
-bool scanFonts(Dict *pResources, const std::vector<std::string>& arrCMap, int nDepth, std::vector<int>& arrUniqueResources)
-{
-	if (nDepth > 5)
-		return false;
-	Object oFonts;
-	if (pResources->lookup("Font", &oFonts)->isDict())
-	{
-		for (int i = 0, nLength = oFonts.dictGetLength(); i < nLength; ++i)
-		{
-			Object oFont, oEncoding;
-			if (!oFonts.dictGetVal(i, &oFont)->isDict() || !oFont.dictLookup("Encoding", &oEncoding)->isName())
-			{
-				oFont.free(); oEncoding.free();
-				continue;
-			}
-			oFont.free();
-			char* sName = oEncoding.getName();
-			if (std::find(arrCMap.begin(), arrCMap.end(), sName) != arrCMap.end())
-			{
-				oEncoding.free(); oFonts.free();
-				return true;
-			}
-			oEncoding.free();
-		}
-	}
-	oFonts.free();
-
-	auto fScanFonts = [pResources, nDepth, &arrUniqueResources](const std::vector<std::string>& arrCMap, const char* sName)
-	{
-		Object oObject;
-		if (!pResources->lookup(sName, &oObject)->isDict())
-		{
-			oObject.free();
-			return false;
-		}
-		for (int i = 0, nLength = oObject.dictGetLength(); i < nLength; ++i)
-		{
-			Object oXObj, oResources;
-			if (!oObject.dictGetVal(i, &oXObj)->isStream() || !oXObj.streamGetDict()->lookup("Resources", &oResources)->isDict())
-			{
-				oXObj.free(); oResources.free();
-				continue;
-			}
-			Object oRef;
-			if (oXObj.streamGetDict()->lookupNF("Resources", &oRef)->isRef() && std::find(arrUniqueResources.begin(), arrUniqueResources.end(), oRef.getRef().num) != arrUniqueResources.end())
-			{
-				oXObj.free(); oResources.free(); oRef.free();
-				continue;
-			}
-			arrUniqueResources.push_back(oRef.getRef().num);
-			oXObj.free(); oRef.free();
-			if (scanFonts(oResources.getDict(), arrCMap, nDepth + 1, arrUniqueResources))
-			{
-				oResources.free(); oObject.free();
-				return true;
-			}
-			oResources.free();
-		}
-		oObject.free();
-		return false;
-	};
-
-	if (fScanFonts(arrCMap, "XObject") || fScanFonts(arrCMap, "Pattern"))
-		return true;
-
-	Object oExtGState;
-	if (!pResources->lookup("ExtGState", &oExtGState)->isDict())
-	{
-		oExtGState.free();
-		return false;
-	}
-	for (int i = 0, nLength = oExtGState.dictGetLength(); i < nLength; ++i)
-	{
-		Object oGS, oSMask, oSMaskGroup, oResources;
-		if (!oExtGState.dictGetVal(i, &oGS)->isDict() || !oGS.dictLookup("SMask", &oSMask)->isDict() || !oSMask.dictLookup("G", &oSMaskGroup)->isStream() || !oSMaskGroup.streamGetDict()->lookup("Resources", &oResources)->isDict())
-		{
-			oGS.free(); oSMask.free(); oSMaskGroup.free(); oResources.free();
-			continue;
-		}
-		oGS.free(); oSMask.free();
-		Object oRef;
-		if (oSMaskGroup.streamGetDict()->lookupNF("Resources", &oRef)->isRef() && std::find(arrUniqueResources.begin(), arrUniqueResources.end(), oRef.getRef().num) != arrUniqueResources.end())
-		{
-			oSMaskGroup.free(); oResources.free(); oRef.free();
-			continue;
-		}
-		arrUniqueResources.push_back(oRef.getRef().num);
-		oSMaskGroup.free(); oRef.free();
-		if (scanFonts(oResources.getDict(), arrCMap, nDepth + 1, arrUniqueResources))
-		{
-			oResources.free(); oExtGState.free();
-			return true;
-		}
-		oResources.free();
-	}
-	oExtGState.free();
-
-	return false;
-}
-bool scanAPfonts(Object* oAnnot, const std::vector<std::string>& arrCMap, std::vector<int>& arrUniqueResources)
-{
-	Object oAP;
-	if (!oAnnot->dictLookup("AP", &oAP)->isDict())
-	{
-		oAP.free();
-		return false;
-	}
-	auto fScanAPView = [&arrUniqueResources](Object* oAP, const std::vector<std::string>& arrCMap, const char* sName)
-	{
-		Object oAPi, oRes;
-		if (!oAP->dictLookup(sName, &oAPi)->isStream() || !oAPi.streamGetDict()->lookup("Resources", &oRes)->isDict())
-		{
-			oAPi.free(); oRes.free();
-			return false;
-		}
-		Object oRef;
-		if (oAPi.streamGetDict()->lookupNF("Resources", &oRef)->isRef() && std::find(arrUniqueResources.begin(), arrUniqueResources.end(), oRef.getRef().num) != arrUniqueResources.end())
-		{
-			oAPi.free(); oRes.free(); oRef.free();
-			return false;
-		}
-		arrUniqueResources.push_back(oRef.getRef().num);
-		oAPi.free(); oRef.free();
-		bool bRes = scanFonts(oRes.getDict(), arrCMap, 0, arrUniqueResources);
-		oRes.free();
-		return bRes;
-	};
-	bool bRes = fScanAPView(&oAP, arrCMap, "N") || fScanAPView(&oAP, arrCMap, "D") || fScanAPView(&oAP, arrCMap, "R");
-	oAP.free();
-	return bRes;
 }
 
 CPdfReaderContext::~CPdfReaderContext()
@@ -268,108 +139,14 @@ bool CPdfReader::IsNeedCMap()
 	if (m_vPDFContext.empty())
 		return false;
 
-	std::vector<std::string> arrCMap = {"GB-EUC-H", "GB-EUC-V", "GB-H", "GB-V", "GBpc-EUC-H", "GBpc-EUC-V", "GBK-EUC-H",
-"GBK-EUC-V", "GBKp-EUC-H", "GBKp-EUC-V", "GBK2K-H", "GBK2K-V", "GBT-H", "GBT-V", "GBTpc-EUC-H", "GBTpc-EUC-V",
-"UniGB-UCS2-H", "UniGB-UCS2-V", "UniGB-UTF8-H", "UniGB-UTF8-V", "UniGB-UTF16-H", "UniGB-UTF16-V", "UniGB-UTF32-H",
-"UniGB-UTF32-V", "B5pc-H", "B5pc-V", "B5-H", "B5-V", "HKscs-B5-H", "HKscs-B5-V", "HKdla-B5-H", "HKdla-B5-V",
-"HKdlb-B5-H", "HKdlb-B5-V", "HKgccs-B5-H", "HKgccs-B5-V", "HKm314-B5-H", "HKm314-B5-V", "HKm471-B5-H",
-"HKm471-B5-V", "ETen-B5-H", "ETen-B5-V", "ETenms-B5-H", "ETenms-B5-V", "ETHK-B5-H", "ETHK-B5-V", "CNS-EUC-H",
-"CNS-EUC-V", "CNS1-H", "CNS1-V", "CNS2-H", "CNS2-V", "UniCNS-UCS2-H", "UniCNS-UCS2-V", "UniCNS-UTF8-H",
-"UniCNS-UTF8-V", "UniCNS-UTF16-H", "UniCNS-UTF16-V", "UniCNS-UTF32-H", "UniCNS-UTF32-V", "78-EUC-H", "78-EUC-V",
-"78-H", "78-V", "78-RKSJ-H", "78-RKSJ-V", "78ms-RKSJ-H", "78ms-RKSJ-V","83pv-RKSJ-H", "90ms-RKSJ-H", "90ms-RKSJ-V",
-"90msp-RKSJ-H", "90msp-RKSJ-V", "90pv-RKSJ-H", "90pv-RKSJ-V", "Add-H", "Add-V", "Add-RKSJ-H", "Add-RKSJ-V",
-"EUC-H", "EUC-V", "Ext-RKSJ-H", "Ext-RKSJ-V", "H", "V", "NWP-H", "NWP-V", "RKSJ-H", "RKSJ-V", "UniJIS-UCS2-H",
-"UniJIS-UCS2-V", "UniJIS-UCS2-HW-H", "UniJIS-UCS2-HW-V", "UniJIS-UTF8-H", "UniJIS-UTF8-V", "UniJIS-UTF16-H",
-"UniJIS-UTF16-V", "UniJIS-UTF32-H", "UniJIS-UTF32-V", "UniJIS2004-UTF8-H", "UniJIS2004-UTF8-V", "UniJIS2004-UTF16-H",
-"UniJIS2004-UTF16-V", "UniJIS2004-UTF32-H", "UniJIS2004-UTF32-V", "UniJISPro-UCS2-V", "UniJISPro-UCS2-HW-V",
-"UniJISPro-UTF8-V", "UniJISX0213-UTF32-H", "UniJISX0213-UTF32-V", "UniJISX02132004-UTF32-H", "UniJISX02132004-UTF32-V",
-"WP-Symbol", "Hankaku", "Hiragana", "Katakana", "Roman", "KSC-EUC-H", "KSC-EUC-V", "KSC-H", "KSC-V", "KSC-Johab-H",
-"KSC-Johab-V", "KSCms-UHC-H", "KSCms-UHC-V", "KSCms-UHC-HW-H", "KSCms-UHC-HW-V", "KSCpc-EUC-H", "KSCpc-EUC-V",
-"UniKS-UCS2-H", "UniKS-UCS2-V", "UniKS-UTF8-H", "UniKS-UTF8-V", "UniKS-UTF16-H", "UniKS-UTF16-V", "UniKS-UTF32-H",
-"UniKS-UTF32-V", "UniAKR-UTF8-H", "UniAKR-UTF16-H", "UniAKR-UTF32-H"};
-	std::vector<int> arrUniqueResources;
-
 	for (CPdfReaderContext* pPDFContext : m_vPDFContext)
 	{
 		PDFDoc* pDoc = pPDFContext->m_pDocument;
 		if (!pDoc || !pDoc->getCatalog())
 			continue;
 
-		for (int nPage = 1, nLastPage = pDoc->getNumPages(); nPage <= nLastPage; ++nPage)
-		{
-			Page* pPage = pDoc->getCatalog()->getPage(nPage);
-			Dict* pResources = pPage->getResourceDict();
-			if (pResources && scanFonts(pResources, arrCMap, 0, arrUniqueResources))
-				return true;
-
-			Object oAnnots;
-			if (!pPage->getAnnots(&oAnnots)->isArray())
-			{
-				oAnnots.free();
-				continue;
-			}
-			for (int i = 0, nNum = oAnnots.arrayGetLength(); i < nNum; ++i)
-			{
-				Object oAnnot;
-				if (!oAnnots.arrayGet(i, &oAnnot)->isDict())
-				{
-					oAnnot.free();
-					continue;
-				}
-
-				Object oDR;
-				if (oAnnot.dictLookup("DR", &oDR)->isDict() && scanFonts(oDR.getDict(), arrCMap, 0, arrUniqueResources))
-				{
-					oDR.free(); oAnnot.free(); oAnnots.free();
-					return true;
-				}
-				oDR.free();
-
-				if (scanAPfonts(&oAnnot, arrCMap, arrUniqueResources))
-				{
-					oAnnot.free(); oAnnots.free();
-					return true;
-				}
-				oAnnot.free();
-			}
-			oAnnots.free();
-		}
-
-		AcroForm* pAcroForms = pDoc->getCatalog()->getForm();
-		if (!pAcroForms)
-			continue;
-		Object oDR;
-		Object* oAcroForm = pAcroForms->getAcroFormObj();
-		if (oAcroForm->dictLookup("DR", &oDR)->isDict() && scanFonts(oDR.getDict(), arrCMap, 0, arrUniqueResources))
-		{
-			oDR.free();
+		if (PdfReader::IsNeedCMap(pDoc))
 			return true;
-		}
-		oDR.free();
-
-		for (int i = 0, nNum = pAcroForms->getNumFields(); i < nNum; ++i)
-		{
-			AcroFormField* pField = pAcroForms->getField(i);
-
-			if (pField->getResources(&oDR)->isDict() && scanFonts(oDR.getDict(), arrCMap, 0, arrUniqueResources))
-			{
-				oDR.free();
-				return true;
-			}
-			oDR.free();
-
-			Object oWidgetRef, oWidget;
-			pField->getFieldRef(&oWidgetRef);
-			oWidgetRef.fetch(pDoc->getXRef(), &oWidget);
-			oWidgetRef.free();
-
-			if (scanAPfonts(&oWidget, arrCMap, arrUniqueResources))
-			{
-				oWidget.free();
-				return true;
-			}
-			oWidget.free();
-		}
 	}
 	return false;
 }
@@ -380,7 +157,7 @@ void CPdfReader::SetCMapMemory(BYTE* pData, DWORD nSizeData)
 	if (m_vPDFContext.empty())
 		return;
 	CPdfReaderContext* pPDFContext = m_vPDFContext.back();
-	std::map<std::wstring, std::wstring> mFonts = PdfReader::CAnnotFonts::GetAllFonts(pPDFContext->m_pDocument, m_pFontManager, pPDFContext->m_pFontList, false);
+	std::map<std::wstring, std::wstring> mFonts = PdfReader::GetAllFonts(pPDFContext->m_pDocument, m_pFontManager, pPDFContext->m_pFontList, false);
 	m_mFonts.insert(mFonts.begin(), mFonts.end());
 }
 void CPdfReader::SetCMapFolder(const std::wstring& sFolder)
@@ -392,7 +169,7 @@ void CPdfReader::SetCMapFile(const std::wstring& sFile)
 	((GlobalParamsAdaptor*)globalParams)->SetCMapFile(sFile);
 }
 
-bool CPdfReader::LoadFromFile(NSFonts::IApplicationFonts* pAppFonts, const std::wstring& wsSrcPath, const std::wstring& wsOwnerPassword, const std::wstring& wsUserPassword)
+bool CPdfReader::LoadFromFile(NSFonts::IApplicationFonts* pAppFonts, const std::wstring& wsSrcPath, const wchar_t* wsOwnerPassword, const wchar_t* wsUserPassword)
 {
 	Clear();
 	RELEASEINTERFACE(m_pFontManager);
@@ -410,7 +187,7 @@ bool CPdfReader::LoadFromFile(NSFonts::IApplicationFonts* pAppFonts, const std::
 	}
 	return MergePages(wsSrcPath, wsOwnerPassword);
 }
-bool CPdfReader::LoadFromMemory(NSFonts::IApplicationFonts* pAppFonts, BYTE* data, DWORD length, const std::wstring& wsOwnerPassword, const std::wstring& wsUserPassword)
+bool CPdfReader::LoadFromMemory(NSFonts::IApplicationFonts* pAppFonts, BYTE* data, DWORD length, const wchar_t* wsOwnerPassword, const wchar_t* wsUserPassword)
 {
 	Clear();
 	RELEASEINTERFACE(m_pFontManager);
@@ -679,7 +456,7 @@ bool CPdfReader::ValidMetaData()
 
 	return bRes;
 }
-bool CPdfReader::MergePages(BYTE* pData, DWORD nLength, const std::wstring& wsPassword, int nMaxID, const std::string& sPrefixForm)
+bool CPdfReader::MergePages(BYTE* pData, DWORD nLength, const wchar_t* wsPassword, int nMaxID, const std::string& sPrefixForm)
 {
 	if (m_eError)
 	{
@@ -687,8 +464,13 @@ bool CPdfReader::MergePages(BYTE* pData, DWORD nLength, const std::wstring& wsPa
 		return false;
 	}
 
-	GString* owner_pswd = NSStrings::CreateString(wsPassword);
-	GString* user_pswd  = NSStrings::CreateString(wsPassword);
+	GString* owner_pswd = NULL;
+	GString* user_pswd  = NULL;
+	if (wsPassword)
+	{
+		owner_pswd = NSStrings::CreateString(wsPassword);
+		user_pswd  = NSStrings::CreateString(wsPassword);
+	}
 
 	Object obj;
 	obj.initNull();
@@ -706,8 +488,8 @@ bool CPdfReader::MergePages(BYTE* pData, DWORD nLength, const std::wstring& wsPa
 	PDFDoc* pDoc = pContext->m_pDocument;
 	m_vPDFContext.push_back(pContext);
 
-	delete owner_pswd;
-	delete user_pswd;
+	RELEASEOBJECT(owner_pswd);
+	RELEASEOBJECT(user_pswd);
 
 	m_eError = pDoc ? pDoc->getErrorCode() : errMemory;
 	if (!pDoc || !pDoc->isOk())
@@ -718,17 +500,24 @@ bool CPdfReader::MergePages(BYTE* pData, DWORD nLength, const std::wstring& wsPa
 		return false;
 	}
 
-	std::map<std::wstring, std::wstring> mFonts = PdfReader::CAnnotFonts::GetAllFonts(pDoc, m_pFontManager, pContext->m_pFontList, IsNeedCMap());
+	std::map<std::wstring, std::wstring> mFonts = PdfReader::GetAllFonts(pDoc, m_pFontManager, pContext->m_pFontList, IsNeedCMap());
 	m_mFonts.insert(mFonts.begin(), mFonts.end());
 
 	return true;
 }
-bool CPdfReader::MergePages(const std::wstring& wsFile, const std::wstring& wsPassword, int nMaxID, const std::string& sPrefixForm)
+bool CPdfReader::MergePages(const std::wstring& wsFile, const wchar_t* wsPassword, int nMaxID, const std::string& sPrefixForm)
 {
 	if (m_eError)
 			return false;
-	GString* owner_pswd = NSStrings::CreateString(wsPassword);
-	GString* user_pswd  = NSStrings::CreateString(wsPassword);
+
+	GString* owner_pswd = NULL;
+	GString* user_pswd  = NULL;
+	if (wsPassword)
+	{
+		owner_pswd = NSStrings::CreateString(wsPassword);
+		user_pswd  = NSStrings::CreateString(wsPassword);
+	}
+
 	// конвертим путь в utf8 - под виндой они сконвертят в юникод, а на остальных - так и надо
 	std::string sPathUtf8 = U_TO_UTF8(wsFile);
 
@@ -743,8 +532,8 @@ bool CPdfReader::MergePages(const std::wstring& wsFile, const std::wstring& wsPa
 	PDFDoc* pDoc = pContext->m_pDocument;
 	m_vPDFContext.push_back(pContext);
 
-	delete owner_pswd;
-	delete user_pswd;
+	RELEASEOBJECT(owner_pswd);
+	RELEASEOBJECT(user_pswd);
 
 	m_eError = pDoc ? pDoc->getErrorCode() : errMemory;
 	if (!pDoc || !pDoc->isOk())
@@ -754,7 +543,7 @@ bool CPdfReader::MergePages(const std::wstring& wsFile, const std::wstring& wsPa
 		return false;
 	}
 
-	std::map<std::wstring, std::wstring> mFonts = PdfReader::CAnnotFonts::GetAllFonts(pDoc, m_pFontManager, pContext->m_pFontList, IsNeedCMap());
+	std::map<std::wstring, std::wstring> mFonts = PdfReader::GetAllFonts(pDoc, m_pFontManager, pContext->m_pFontList, IsNeedCMap());
 	m_mFonts.insert(mFonts.begin(), mFonts.end());
 
 	return true;
@@ -779,17 +568,21 @@ bool CPdfReader::RedactPage(int _nPageIndex, double* arrRedactBox, int nLengthX8
 	PDFDoc* pDoc = NULL;
 	int nPageIndex = GetPageIndex(_nPageIndex, &pDoc);
 	if (nPageIndex < 0 || !pDoc)
+	{
+		free(pChanges);
 		return false;
+	}
 
 	Page* pPage = pDoc->getCatalog()->getPage(nPageIndex);
-	PDFRectangle* cropBox = pPage->getCropBox();
+	PDFRectangle* cropBox  = pPage->getCropBox();
+	PDFRectangle* mediaBox = pPage->getMediaBox();
 
 	CPdfRedact* pRedact = new CPdfRedact();
 	pRedact->m_nPageIndex = _nPageIndex;
 	for (int i = 0; i < nLengthX8 * 8; i += 2)
 	{
-		pRedact->m_arrRedactBox.push_back(arrRedactBox[i + 0] + cropBox->x1);
-		pRedact->m_arrRedactBox.push_back(cropBox->y2 - arrRedactBox[i + 1]);
+		pRedact->m_arrRedactBox.push_back(arrRedactBox[i + 0] + cropBox->x1 - mediaBox->x1);
+		pRedact->m_arrRedactBox.push_back(cropBox->y2 - arrRedactBox[i + 1] - mediaBox->y1);
 	}
 	pRedact->m_pChanges = pChanges;
 	pRedact->m_nChangeLength = nLength;
@@ -805,6 +598,59 @@ bool CPdfReader::UndoRedact()
 	delete pRedact;
 	m_vRedact.pop_back();
 	return true;
+}
+bool CPdfReader::CheckOwnerPassword(const wchar_t* wsPassword)
+{
+	PDFDoc* pDoc = m_vPDFContext.front()->m_pDocument;
+	XRef* xref = pDoc->getXRef();
+
+	if (!xref->isEncrypted() || !wsPassword)
+		return true;
+
+	Object* pTrailerDict = xref->getTrailerDict();
+	Object encrypt;
+	SecurityHandler* secHdlr = NULL;
+	xref->offEncrypted();
+	if (pTrailerDict->dictLookup("Encrypt", &encrypt) && encrypt.isDict())
+		secHdlr = SecurityHandler::make(pDoc, &encrypt);
+	encrypt.free();
+
+	if (!secHdlr || secHdlr->isUnencrypted())
+	{
+		RELEASEOBJECT(secHdlr);
+		xref->onEncrypted();
+		return true;
+	}
+
+	bool bRes = false;
+	GString* owner_pswd = NSStrings::CreateString(wsPassword);
+	if (secHdlr->checkEncryption(owner_pswd, NULL) && secHdlr->getOwnerPasswordOk())
+	{
+		bRes = true;
+		xref->setEncryption(secHdlr->getPermissionFlags(), secHdlr->getOwnerPasswordOk(), secHdlr->getFileKey(),
+							secHdlr->getFileKeyLength(), secHdlr->getEncVersion(), secHdlr->getEncAlgorithm());
+	}
+	else
+		xref->onEncrypted();
+
+	delete owner_pswd;
+	delete secHdlr;
+	return bRes;
+}
+bool CPdfReader::CheckPerm(int nPerm)
+{
+	PDFDoc* pDoc = m_vPDFContext.front()->m_pDocument;
+	XRef* xref = pDoc->getXRef();
+
+	if (!xref->isEncrypted())
+		return true;
+
+	CryptAlgorithm encAlgorithm;
+	GBool ownerPasswordOk;
+	int permFlags, keyLength, encVersion;
+	xref->getEncryption(&permFlags, &ownerPasswordOk, &keyLength, &encVersion, &encAlgorithm);
+
+	return ownerPasswordOk || (permFlags & (1 << --nPerm));
 }
 void CPdfReader::DrawPageOnRenderer(IRenderer* pRenderer, int _nPageIndex, bool* pbBreak)
 {
@@ -838,6 +684,7 @@ void CPdfReader::DrawPageOnRenderer(IRenderer* pRenderer, int _nPageIndex, bool*
 
 	Page* pPage = pDoc->getCatalog()->getPage(nPageIndex);
 	PDFRectangle* cropBox = pPage->getCropBox();
+	PDFRectangle* mediaBox = pPage->getMediaBox();
 	pRenderer->SetTransform(1, 0, 0, 1, 0, 0);
 	for (int i = 0 ; i < m_vRedact.size(); ++i)
 	{
@@ -859,10 +706,10 @@ void CPdfReader::DrawPageOnRenderer(IRenderer* pRenderer, int _nPageIndex, bool*
 
 				pRenderer->PathCommandEnd();
 				pRenderer->put_BrushColor1(lColor);
-				pRenderer->PathCommandMoveTo(PdfReader::PDFCoordsToMM(m_vRedact[i]->m_arrRedactBox[j + 0] - cropBox->x1), PdfReader::PDFCoordsToMM(cropBox->y2 - m_vRedact[i]->m_arrRedactBox[j + 1]));
-				pRenderer->PathCommandLineTo(PdfReader::PDFCoordsToMM(m_vRedact[i]->m_arrRedactBox[j + 2] - cropBox->x1), PdfReader::PDFCoordsToMM(cropBox->y2 - m_vRedact[i]->m_arrRedactBox[j + 3]));
-				pRenderer->PathCommandLineTo(PdfReader::PDFCoordsToMM(m_vRedact[i]->m_arrRedactBox[j + 6] - cropBox->x1), PdfReader::PDFCoordsToMM(cropBox->y2 - m_vRedact[i]->m_arrRedactBox[j + 7]));
-				pRenderer->PathCommandLineTo(PdfReader::PDFCoordsToMM(m_vRedact[i]->m_arrRedactBox[j + 4] - cropBox->x1), PdfReader::PDFCoordsToMM(cropBox->y2 - m_vRedact[i]->m_arrRedactBox[j + 5]));
+				pRenderer->PathCommandMoveTo(PdfReader::PDFCoordsToMM(m_vRedact[i]->m_arrRedactBox[j + 0] - cropBox->x1 + mediaBox->x1), PdfReader::PDFCoordsToMM(cropBox->y2 + mediaBox->y1 - m_vRedact[i]->m_arrRedactBox[j + 1]));
+				pRenderer->PathCommandLineTo(PdfReader::PDFCoordsToMM(m_vRedact[i]->m_arrRedactBox[j + 2] - cropBox->x1 + mediaBox->x1), PdfReader::PDFCoordsToMM(cropBox->y2 + mediaBox->y1 - m_vRedact[i]->m_arrRedactBox[j + 3]));
+				pRenderer->PathCommandLineTo(PdfReader::PDFCoordsToMM(m_vRedact[i]->m_arrRedactBox[j + 6] - cropBox->x1 + mediaBox->x1), PdfReader::PDFCoordsToMM(cropBox->y2 + mediaBox->y1 - m_vRedact[i]->m_arrRedactBox[j + 7]));
+				pRenderer->PathCommandLineTo(PdfReader::PDFCoordsToMM(m_vRedact[i]->m_arrRedactBox[j + 4] - cropBox->x1 + mediaBox->x1), PdfReader::PDFCoordsToMM(cropBox->y2 + mediaBox->y1 - m_vRedact[i]->m_arrRedactBox[j + 5]));
 				pRenderer->PathCommandClose();
 				pRenderer->DrawPath(c_nWindingFillMode);
 				pRenderer->PathCommandEnd();
@@ -1099,6 +946,69 @@ std::wstring CPdfReader::GetInfo()
 
 	return sRes;
 }
+BYTE* CPdfReader::GetGIDByUnicode(const std::wstring& wsFontName)
+{
+	std::map<std::wstring, std::wstring>::const_iterator oIter = m_mFonts.find(wsFontName);
+	if (oIter == m_mFonts.end())
+		return NULL;
+
+	NSFonts::IFontsMemoryStorage* pStorage = NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage();
+	if (!pStorage)
+		return NULL;
+	NSFonts::IFontStream* pStream = pStorage->Get(oIter->second);
+	if (!pStream)
+		return NULL;
+
+	std::map<unsigned int, unsigned int> mGIDbyUnicode;
+	bool bFind = false;
+	for (int nPDF = 0; nPDF < m_vPDFContext.size(); ++nPDF)
+	{
+		PdfReader::CPdfFontList* pFontList = m_vPDFContext[nPDF]->m_pFontList;
+
+		const std::map<Ref, PdfReader::TFontEntry*>& mapFonts = pFontList->GetFonts();
+		for (std::map<Ref, PdfReader::TFontEntry*>::const_iterator it = mapFonts.begin(); it != mapFonts.end(); ++it)
+		{
+			PdfReader::TFontEntry* pEntry = it->second;
+			if (!pEntry || pEntry->wsFilePath != oIter->second)
+				continue;
+			bFind = true;
+			for (int i = 0; i < pEntry->unLenUnicode; ++i)
+			{
+				if (pEntry->pCodeToUnicode && pEntry->pCodeToUnicode[i])
+				{
+					unsigned int unGID = i;
+					if (pEntry->pCodeToGID && pEntry->pCodeToGID[i])
+					{
+						unGID = pEntry->pCodeToGID[i];
+						mGIDbyUnicode[unGID] = pEntry->pCodeToUnicode[i];
+					}
+					else if (pEntry->bIsIdentity)
+						mGIDbyUnicode.insert(std::make_pair(unGID, pEntry->pCodeToUnicode[i]));
+				}
+			}
+
+			break;
+		}
+
+		if (bFind)
+			break;
+	}
+
+	NSWasm::CData oRes;
+	oRes.SkipLen();
+	oRes.AddInt(mGIDbyUnicode.size());
+
+	for (std::map<unsigned int, unsigned int>::const_iterator it = mGIDbyUnicode.begin(); it != mGIDbyUnicode.end(); ++it)
+	{
+		oRes.AddInt(it->first);
+		oRes.AddInt(it->second);
+	}
+
+	oRes.WriteLen();
+	BYTE* bRes = oRes.GetBuffer();
+	oRes.ClearWithoutAttack();
+	return bRes;
+}
 std::wstring CPdfReader::GetFontPath(const std::wstring& wsFontName, bool bSave)
 {
 	std::map<std::wstring, std::wstring>::const_iterator oIter = m_mFonts.find(wsFontName);
@@ -1227,6 +1137,7 @@ BYTE* CPdfReader::GetLinks(int _nPageIndex)
 	NSWasm::CPageLink oLinks;
 
 	// Гиперссылка
+	/*
 	Links* pLinks = pDoc->getLinks(nPageIndex);
 	if (pLinks)
 	{
@@ -1304,6 +1215,7 @@ BYTE* CPdfReader::GetLinks(int _nPageIndex)
 		}
 	}
 	RELEASEOBJECT(pLinks);
+	*/
 
 	int nRotate = 0;
 #ifdef BUILDING_WASM_MODULE
@@ -1387,6 +1299,24 @@ BYTE* CPdfReader::GetWidgets()
 	oRes.ClearWithoutAttack();
 	return bRes;
 }
+void CPdfReader::SetFonts(int _nPageIndex)
+{
+	if (m_vPDFContext.empty())
+		return;
+
+	PDFDoc* pDoc = NULL;
+	PdfReader::CPdfFontList* pFontList = NULL;
+	GetPageIndex(_nPageIndex, &pDoc, &pFontList);
+
+	const std::map<Ref, PdfReader::TFontEntry*>& mapFonts = pFontList->GetFonts();
+	for (std::map<Ref, PdfReader::TFontEntry*>::const_iterator it = mapFonts.begin(); it != mapFonts.end(); ++it)
+	{
+		PdfReader::TFontEntry* pEntry = it->second;
+		if (!pEntry)
+			continue;
+		m_mFonts.insert(std::make_pair(pEntry->wsFontName, pEntry->wsFilePath));
+	}
+}
 BYTE* CPdfReader::GetFonts(bool bStandart)
 {
 	NSWasm::CData oRes;
@@ -1398,7 +1328,7 @@ BYTE* CPdfReader::GetFonts(bool bStandart)
 
 	for (std::map<std::wstring, std::wstring>::const_iterator it = m_mFonts.begin(); it != m_mFonts.end(); ++it)
 	{
-		if (PdfReader::CAnnotFonts::IsBaseFont(it->second))
+		if (PdfReader::IsBaseFont(it->second))
 		{
 			if (bStandart)
 			{
@@ -2043,7 +1973,7 @@ int GetPageAnnots(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, PdfReader
 		}
 		else if (sType == "Link")
 		{
-
+			pAnnot = new PdfReader::CAnnotLink(pdfDoc, &oAnnotRef, nPageIndex, nStartRefID);
 		}
 		else if (sType == "FreeText")
 		{
@@ -2208,7 +2138,7 @@ BYTE* CPdfReader::GetAPAnnots(int nRasterW, int nRasterH, int nBackgroundColor, 
 			continue;
 		}
 
-		if (oAnnot.dictLookupNF("IRT", &oObj)->isRef())
+		if (sType == "Text" && oAnnot.dictLookupNF("IRT", &oObj)->isRef())
 		{
 			oObj.free(); oAnnotRef.free(); oAnnot.free();
 			continue;

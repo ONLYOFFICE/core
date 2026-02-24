@@ -86,7 +86,7 @@ namespace NExtractTools
 			m_oCDocxSerializer.setFontDir(params.getFontPath());
 
 			// bool bRes = m_oCDocxSerializer.saveToFile (sResDoct, sSrcDocx, sTemp);
-			nRes = m_oCDocxSerializer.saveToFile(sTo, sFrom, params.getXmlOptions(), convertParams.m_sTempDir) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+			nRes = m_oCDocxSerializer.saveToFile(sTo, sFrom, convertParams.m_sTempDir) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
 		}
 		// clear tmp param for this method
 		convertParams.m_sTempParamOOXMLFile = L"";
@@ -179,7 +179,7 @@ namespace NExtractTools
 
 		if (SUCCEEDED_X2T(nRes))
 		{
-			nRes = m_oCDocxSerializer.loadFromFile(sTargetBin, convertParams.m_sTempResultOOXMLDirectory, sXmlOptions, sThemePath, sMediaPath, sEmbedPath) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
+			nRes = m_oCDocxSerializer.loadFromFile(sTargetBin, convertParams.m_sTempResultOOXMLDirectory, sThemePath, sMediaPath, sEmbedPath) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
 			params.m_bMacro = m_oCDocxSerializer.getMacroEnabled();
 		}
 		// удаляем EditorWithChanges, потому что он не в Temp
@@ -207,7 +207,7 @@ namespace NExtractTools
 		m_oCDocxSerializer.setIsNoBase64(params.getIsNoBase64());
 		m_oCDocxSerializer.setFontDir(params.getFontPath());
 
-		_UINT32 nRes = m_oCDocxSerializer.saveToFile(sTo, sFrom, params.getXmlOptions(), convertParams.m_sTempDir) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+		_UINT32 nRes = m_oCDocxSerializer.saveToFile(sTo, sFrom, convertParams.m_sTempDir) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
 
 		return nRes;
 	}

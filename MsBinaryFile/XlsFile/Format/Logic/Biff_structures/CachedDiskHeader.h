@@ -48,12 +48,13 @@ public:
 	static const ElementType	type = typeCachedDiskHeader;
 	
 	virtual void load(CFRecord& record);
+	virtual void save(CFRecord& record);
 
-	_UINT32			cbdxfHdrDisk;
+	_UINT32			cbdxfHdrDisk = 0;
 	DXFN12List		rgHdrDisk;
 	XLUnicodeString	strStyleName;
 
-	bool	fSaveStyleName;
+	bool	fSaveStyleName = false;
 
 };
 

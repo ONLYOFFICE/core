@@ -58,7 +58,7 @@ public:
 	bool			fCol = false;
 	bool			fCaseSensitive = false;
 	bool			fAltMethod = false;
-	unsigned char	sfp = false;
+	unsigned char	sfp = 0; // sheet for default
 
 	_UINT32			cconditions = 0;
 	_UINT32			idParent = 0;

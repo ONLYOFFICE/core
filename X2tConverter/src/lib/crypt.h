@@ -95,7 +95,6 @@ namespace NExtractTools
 			case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTM:
 			case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSB:
 			{
-				const std::wstring &sXmlOptions = params.getXmlOptions();
 				return xlsx2xlst_bin(sResultDecryptFile, sTo, params, convertParams);
 			}
 			break;
@@ -116,7 +115,6 @@ namespace NExtractTools
 			break;
 			case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX_FLAT:
 			{
-				const std::wstring &sXmlOptions = params.getXmlOptions();
 				return xlsxflat2xlst_bin(sResultDecryptFile, sTo, params, convertParams);
 			}
 			break;

@@ -575,6 +575,7 @@ enum ElementType
 	typeCFMultistate,
 	typeCFDatabar,
 	typeCFGradient,
+	typeCFFilter,
 	typeCFVO,
 	typeCondFmtStructure,
 	typeControlInfo,

@@ -65,6 +65,17 @@ void List12TableStyleClientInfo::load(CFRecord& record)
 	record >> stListStyleName;
 }
 
+void List12TableStyleClientInfo::save(CFRecord& record)
+{
+	unsigned short flags = 0;
+	SETBIT(flags, 0, fFirstColumn)
+	SETBIT(flags, 1, fLastColumn)
+	SETBIT(flags, 2, fRowStripes)
+	SETBIT(flags, 3, fColumnStripes)
+	SETBIT(flags, 6, fDefaultStyle)
+	record << flags << stListStyleName;
+}
+
 
 } // namespace XLS
 

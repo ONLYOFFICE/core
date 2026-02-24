@@ -53,5 +53,10 @@ void SXNum::readFields(CFRecord& record)
 	record >> num;
 }
 
+void SXNum::writeFields(CFRecord& record)
+{
+	record << num;
+}
+
 } // namespace XLS
 

@@ -123,12 +123,12 @@ namespace Spreadsheet
 	}
 	void CXmlMapsFile::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter)
 	{
-		smart_ptr<OOX::IFileContainer> rels_old = pWriter->GetRels();
-		pWriter->SetRels(dynamic_cast<OOX::IFileContainer*>((CMapInfo*)this));
+		OOX::IFileContainer* rels_old = pWriter->GetRelsPtr();
+		pWriter->SetRelsPtr(dynamic_cast<OOX::IFileContainer*>((CMapInfo*)this));
 
 		pWriter->WriteRecord2(0, m_MapInfo);
 
-		pWriter->SetRels(rels_old);
+		pWriter->SetRelsPtr(rels_old);
 	}
 //--------------------------------------------------------------------------------------------------------------
 	EElementType CMapInfo::getType() const

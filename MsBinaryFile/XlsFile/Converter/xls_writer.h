@@ -44,7 +44,10 @@ class XlsWriter
 public:
 	bool Open(const std::wstring &fileName);
 	bool WriteWorkbook(XLS::BaseObjectPtr streamObject);
+	bool WritePivotCache(XLS::BaseObjectPtr streamObject, _UINT32 cacheId);
 	bool WriteStreamObject(std::wstring &streamName, XLS::BaseObjectPtr streamObject);
+
+	boost::shared_ptr<XLS::GlobalWorkbookInfo> globalInfoPtr;
 private:
     std::wstring fileName_ = L"";
 

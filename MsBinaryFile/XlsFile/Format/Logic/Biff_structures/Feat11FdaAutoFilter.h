@@ -50,6 +50,7 @@ public:
 	static const ElementType	type = typeFeat11FdaAutoFilter;
 	
 	virtual void load(CFRecord& record);
+	virtual void save(CFRecord& record);
 
 	_UINT32	cbAutoFilter;
 	AutoFilter recAutoFilter;

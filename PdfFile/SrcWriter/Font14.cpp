@@ -99,4 +99,57 @@ namespace PdfWriter
 
 		return ushCode;
 	}
+
+	CFontEmbedded::CFontEmbedded(CXref* pXref, CDocument* pDocument) : CFontDict(pXref, pDocument), m_eFontType(fontUnknownType)
+	{
+	}
+	bool CFontEmbedded::LoadFont(const std::string& sFontKey, EFontType eFontType, CObjectBase* pObj,
+								 const std::map<unsigned int, unsigned int>& mCodeToWidth, const std::map<unsigned int, unsigned int>& mCodeToUnicode, const std::map<unsigned int, unsigned int>& mCodeToGID)
+	{
+		m_sFontKey = sFontKey;
+		m_eFontType = eFontType;
+		m_pObj = pObj;
+		m_mCodeToWidth = mCodeToWidth;
+		m_mCodeToUnicode = mCodeToUnicode;
+		m_mCodeToGID = mCodeToGID;
+
+		return true;
+	}
+	unsigned int CFontEmbedded::GetWidth(unsigned short ushCode)
+	{
+		// Возвращаем ширину из карты
+		auto it = m_mCodeToWidth.find(ushCode);
+		if (it != m_mCodeToWidth.end())
+			return it->second;
+
+		return 0;
+	}
+	unsigned int CFontEmbedded::EncodeUnicode(const unsigned int& unGID, const unsigned int& unUnicode)
+	{
+		for (auto& pair : m_mCodeToUnicode)
+			if (pair.second == unUnicode)
+				return pair.first;
+
+		unsigned int ushCode = EncodeGID(unGID);
+		if (ushCode)
+			m_mCodeToUnicode.insert(std::pair<unsigned int, unsigned short>(ushCode, unUnicode));
+		return ushCode;
+	}
+	unsigned int CFontEmbedded::EncodeGID(const unsigned int& unGID)
+	{
+		for (auto& pair : m_mCodeToGID)
+			if (pair.second == unGID)
+				return pair.first;
+		return 0;
+	}
+	CObjectBase* CFontEmbedded::GetObj()
+	{
+		if (m_pObj->GetType() != object_type_UNKNOWN)
+			return m_pObj;
+		return new PdfWriter::CProxyObject(m_pObj);
+	}
+	CObjectBase* CFontEmbedded::GetObj2()
+	{
+		return m_pObj;
+	}
 }

@@ -47,6 +47,7 @@ public:
 	BaseObjectPtr clone();
 
 	virtual const bool loadContent(BinProcessor& proc);
+	virtual const bool saveContent(BinProcessor& proc);
 	int serialize(std::wostream & stream, size_t index);
 
 	static const ElementType	type = typeFEAT11;

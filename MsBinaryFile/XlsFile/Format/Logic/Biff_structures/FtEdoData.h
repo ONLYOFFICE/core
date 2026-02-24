@@ -51,13 +51,14 @@ public:
 	static const ElementType type = typeFtEdoData;
 
 	virtual void load(CFRecord& record);
+	virtual void save(CFRecord& record);
 
-	unsigned short ivtEdit;
-	Boolean<unsigned short> fMultiLine;
-	unsigned short fVScroll;
-	unsigned short id;
+	unsigned short ivtEdit = 0;
+	Boolean<unsigned short> fMultiLine = false;
+	unsigned short fVScroll = 0;
+	unsigned short id = 0;
 
-	bool fExist;
+	bool fExist = false;
 };
 
 } // namespace XLS

@@ -54,21 +54,22 @@ public:
 	static const ElementType type = typeFtLbsData;
 
 	virtual void load(CFRecord& record, const unsigned short ot);
+	virtual void save(CFRecord& record, const unsigned short ot);
 
 	virtual void load(CFRecord& record){}
 
 	ObjFmla fmla;
-	unsigned short cLines;
-	unsigned short iSel;
+	unsigned short cLines = 0;
+	unsigned short iSel = 0;
 
-	bool fUseCB;
-	bool fValidPlex;
-	bool fValidIds;
-	bool fNo3d;
-	unsigned char wListSelType;
-	unsigned char lct;
+	bool fUseCB = false;
+	bool fValidPlex = false;
+	bool fValidIds = false;
+	bool fNo3d = false;
+	unsigned char wListSelType = 0;
+	unsigned char lct = 0;
 
-	unsigned short idEdit;
+	unsigned short idEdit = 0;
 
 	LbsDropDataPtr dropData;
 	std::vector<XLUnicodeString> rgLines;

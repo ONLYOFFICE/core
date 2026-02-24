@@ -552,6 +552,15 @@ bool COfficeFileFormatChecker::isPptFormatFile(POLE::Storage *storage)
 	return true;
 }
 
+bool COfficeFileFormatChecker::isCompoundFile(POLE::Storage* storage)
+{
+	if (storage == NULL) return false;
+
+	if (storage->GetAllStreams(L"/").size() == 1) return true;
+
+	return false;
+}
+
 std::wstring COfficeFileFormatChecker::getDocumentID(const std::wstring &_fileName)
 {
 #if defined(_WIN32) || defined(_WIN32_WCE) || defined(_WIN64)
@@ -747,6 +756,11 @@ bool COfficeFileFormatChecker::isOfficeFile(const std::wstring &_fileName)
 		else if (isVbaProjectFile(&storage))
 		{
 			nFileType = AVS_OFFICESTUDIO_FILE_OTHER_MS_VBAPROJECT;
+			return true;
+		}
+		else if (isCompoundFile(&storage))
+		{
+			nFileType = AVS_OFFICESTUDIO_FILE_OTHER_COMPOUND;
 			return true;
 		}
 		else if (isHwpFile(&storage))
@@ -953,7 +967,12 @@ bool COfficeFileFormatChecker::isOfficeFile(const std::wstring &_fileName)
 		nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_MHT;
 	else if (0 == sExt.compare(L".md"))
 		nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_MD;
-	else if (0 == sExt.compare(L".csv") || 0 == sExt.compare(L".xls") || 0 == sExt.compare(L".xlsx") || 0 == sExt.compare(L".xlsb"))
+	else if (0 == sExt.compare(L".tsv"))
+		nFileType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_TSV;
+	else if (0 == sExt.compare(L".scsv"))
+		nFileType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_SCSV;	
+	else if (0 == sExt.compare(L".csv") || 0 == sExt.compare(L".tsv") || 0 == sExt.compare(L".dsv") || 0 == sExt.compare(L".cssv")
+		|| 0 == sExt.compare(L".xls") || 0 == sExt.compare(L".xlsx") || 0 == sExt.compare(L".xlsb"))
 		nFileType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV;
 	else if (0 == sExt.compare(L".html") || 0 == sExt.compare(L".htm"))
 		nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML;
@@ -1785,6 +1804,10 @@ std::wstring COfficeFileFormatChecker::GetExtensionByType(int type)
 		return L".ods";
 	case AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV:
 		return L".csv";
+	case AVS_OFFICESTUDIO_FILE_SPREADSHEET_TSV:
+		return L".tsv";
+	case AVS_OFFICESTUDIO_FILE_SPREADSHEET_SCSV:
+		return L".scsv";
 	case AVS_OFFICESTUDIO_FILE_SPREADSHEET_ODS_FLAT:
 		return L".fods";
 	case AVS_OFFICESTUDIO_FILE_SPREADSHEET_OTS:
@@ -1974,7 +1997,11 @@ int COfficeFileFormatChecker::GetFormatByExtension(const std::wstring &sExt)
 		return AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSB;
 	if (L".xls" == ext)
 		return AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLS;
-	if (L".csv" == ext)
+	if (L".tsv" == ext)
+		return AVS_OFFICESTUDIO_FILE_SPREADSHEET_TSV;
+	if (L".scsv" == ext)
+		return AVS_OFFICESTUDIO_FILE_SPREADSHEET_SCSV;
+	if (L".csv" == ext || L".dsv" == ext)
 		return AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV;
 	if (L".fods" == ext)
 		return AVS_OFFICESTUDIO_FILE_SPREADSHEET_ODS_FLAT;

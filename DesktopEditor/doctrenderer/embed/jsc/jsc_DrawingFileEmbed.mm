@@ -23,8 +23,10 @@
 -(JSValue*) GetFontBinary : (JSValue*)Id;
 -(JSValue*) GetGlyphs : (JSValue*)nPageIndex;
 -(JSValue*) DestroyTextInfo;
+-(JSValue*) GetGIDByUnicode : (JSValue*)sId;
 -(JSValue*) IsNeedCMap;
 -(JSValue*) ScanPage : (JSValue*)nPageIndex : (JSValue*)mode;
+-(JSValue*) SetScanPageFonts : (JSValue*)nPageIndex;
 -(JSValue*) GetImageBase64 : (JSValue*)rId;
 -(JSValue*) FreeWasmData : (JSValue*)typedArray;
 -(JSValue*) SplitPages : (JSValue*)arrPageIndexes : (JSValue*)data;
@@ -32,6 +34,8 @@
 -(JSValue*) UnmergePages;
 -(JSValue*) RedactPage : (JSValue*)nPageIndex : (JSValue*)arrRedactBox : (JSValue*)dataFiller;
 -(JSValue*) UndoRedact;
+-(JSValue*) CheckOwnerPassword : (JSValue*)sPassword;
+-(JSValue*) CheckPerm : (JSValue*)nPerm;
 @end
 
 @interface CJSCDrawingFileEmbed : NSObject<IJSCDrawingFileEmbed, JSEmbedObjectProtocol>
@@ -62,8 +66,10 @@ FUNCTION_WRAPPER_JS_6(GetAnnotationsAP, GetAnnotationsAP)
 FUNCTION_WRAPPER_JS_1(GetFontBinary, GetFontBinary)
 FUNCTION_WRAPPER_JS_1(GetGlyphs, GetGlyphs)
 FUNCTION_WRAPPER_JS_0(DestroyTextInfo, DestroyTextInfo)
+FUNCTION_WRAPPER_JS_1(GetGIDByUnicode, GetGIDByUnicode)
 FUNCTION_WRAPPER_JS_0(IsNeedCMap, IsNeedCMap)
 FUNCTION_WRAPPER_JS_2(ScanPage, ScanPage)
+FUNCTION_WRAPPER_JS_1(SetScanPageFonts, SetScanPageFonts)
 FUNCTION_WRAPPER_JS_1(GetImageBase64, GetImageBase64)
 FUNCTION_WRAPPER_JS_1(FreeWasmData, FreeWasmData)
 FUNCTION_WRAPPER_JS_2(SplitPages, SplitPages)
@@ -71,6 +77,8 @@ FUNCTION_WRAPPER_JS_3(MergePages, MergePages)
 FUNCTION_WRAPPER_JS_0(UnmergePages, UnmergePages)
 FUNCTION_WRAPPER_JS_3(RedactPage, RedactPage)
 FUNCTION_WRAPPER_JS_0(UndoRedact, UndoRedact)
+FUNCTION_WRAPPER_JS_1(CheckOwnerPassword, CheckOwnerPassword)
+FUNCTION_WRAPPER_JS_1(CheckPerm, CheckPerm)
 @end
 
 class CDrawingFileEmbedAdapter : public CJSEmbedObjectAdapterJSC

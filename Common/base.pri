@@ -118,13 +118,13 @@ win32:contains(QMAKE_TARGET.arch, arm64): {
 }
 
 linux-clang-libc++ {
-    CONFIG += core_linux
+	CONFIG += core_linux
 	CONFIG += core_linux_64
 	CONFIG += core_linux_clang
 	message("linux-64-clang-libc++")
 }
 linux-clang-libc++-32 {
-    CONFIG += core_linux
+	CONFIG += core_linux
 	CONFIG += core_linux_32
 	CONFIG += core_linux_clang
 	message("linux-32-clang-libc++")
@@ -180,9 +180,9 @@ mac {
 	!core_ios {
 		CONFIG += core_mac
 		CONFIG += core_mac_64
-
-		DEFINES += _LIBCPP_ENABLE_CXX17_REMOVED_UNARY_BINARY_FUNCTION
 	}
+
+	DEFINES += _LIBCPP_ENABLE_CXX17_REMOVED_UNARY_BINARY_FUNCTION
 }
 
 # DEFINES
@@ -199,6 +199,13 @@ core_win_64 {
 	DEFINES += WIN64 _WIN64
 }
 
+defineTest(startsWith) {
+    tmp = $$2
+    tmp ~= s,^$$re_escape($$1),,
+    !equals(tmp, $$2): return(true)
+    return(false)
+}
+
 core_linux {
 	DEFINES += LINUX _LINUX
 
@@ -213,7 +220,7 @@ core_linux {
 		}
 		QMAKE_CUSTOM_SYSROOT_BIN = $$join(QMAKE_CUSTOM_SYSROOT_BIN, , , /)
 
-		contains(QMAKE_CUSTOM_SYSROOT_BIN, $$QMAKE_CUSTOM_SYSROOT) {
+		startsWith($$QMAKE_CUSTOM_SYSROOT, $$QMAKE_CUSTOM_SYSROOT_BIN) {
 			message("Using compilers from same sysroot")
 			QMAKE_CC          = $$join(QMAKE_CUSTOM_SYSROOT_BIN, , , "gcc")
 			QMAKE_CXX         = $$join(QMAKE_CUSTOM_SYSROOT_BIN, , , "g++")
@@ -243,7 +250,7 @@ core_linux {
 }
 
 gcc {
-    COMPILER_VERSION = $$system($$QMAKE_CXX " -dumpversion")
+	COMPILER_VERSION = $$system($$QMAKE_CXX " -dumpversion")
 	COMPILER_MAJOR_VERSION_ARRAY = $$split(COMPILER_VERSION, ".")
 	COMPILER_MAJOR_VERSION = $$member(COMPILER_MAJOR_VERSION_ARRAY, 0)
 	lessThan(COMPILER_MAJOR_VERSION, 5): CONFIG += build_gcc_less_5
@@ -349,7 +356,7 @@ core_win_64 {
 	CORE_BUILDS_PLATFORM_PREFIX = win_64
 }
 core_win_arm64 {
-    CORE_BUILDS_PLATFORM_PREFIX = win_arm64
+	CORE_BUILDS_PLATFORM_PREFIX = win_arm64
 }
 core_linux_32 {
 	CORE_BUILDS_PLATFORM_PREFIX = linux_32
@@ -697,3 +704,105 @@ ADD_INC_PATH = $$(ADDITIONAL_INCLUDE_PATH)
 !disable_precompiled_header {
 	CONFIG += precompile_header
 }
+
+SWIFT_SOURCES=
+defineTest(UseSwift) {
+	isEmpty(SWIFT_SOURCES): return(false)
+	# work only on ios and mac
+	!core_ios:!core_mac {
+		return(false)
+	}
+
+	# path to the bridging header that exposes Objective-C code to Swift
+	BRIDGING_HEADER = $$1
+	# sdk and toolchain (set from environment variables)
+	SDK_PATH = $$(SDK_PATH)
+	XCODE_TOOLCHAIN_PATH = $$(XCODE_TOOLCHAIN_PATH)
+
+	IOS_TARGET_PLATFORM = apple-ios11.0
+	SWIFT_GEN_HEADERS_PATH = $$PWD_ROOT_DIR/core_build/$$CORE_BUILDS_PLATFORM_PREFIX/$$CORE_BUILDS_CONFIGURATION_PREFIX
+	ARCHS = arm64
+	# simulator
+	xcframework_platform_ios_simulator {
+		IOS_TARGET_PLATFORM = $${IOS_TARGET_PLATFORM}-simulator
+		SWIFT_GEN_HEADERS_PATH = $$SWIFT_GEN_HEADERS_PATH/simulator
+		ARCHS += x86_64
+	}
+
+	# add swift compiler for each architecture
+	SWIFT_COMPILERS_OUT =
+	for(ARCH, ARCHS) {
+		COMPILER_NAME = swift_compiler_$${ARCH}
+		COMPILER_OUTPUT = $$SWIFT_GEN_HEADERS_PATH/swift_module_$${ARCH}.o
+		SWIFT_COMPILERS_OUT += $$COMPILER_OUTPUT
+
+		$${COMPILER_NAME}.name = SwiftCompiler_$${ARCH}
+		$${COMPILER_NAME}.input = SWIFT_SOURCES
+		$${COMPILER_NAME}.output = $$COMPILER_OUTPUT
+		SWIFT_CMD = swiftc -c $$SWIFT_SOURCES \
+					-module-name SwiftModule \
+					-whole-module-optimization \
+					-emit-objc-header \
+					-emit-objc-header-path $$SWIFT_GEN_HEADERS_PATH/SwiftModule-Swift.h \
+					-emit-object \
+					-sdk $$SDK_PATH \
+					-target $${ARCH}-$${IOS_TARGET_PLATFORM} \
+					-o $$COMPILER_OUTPUT \
+					-framework UIKit
+
+		!isEmpty(BRIDGING_HEADER) {
+			SWIFT_CMD += -import-objc-header $$BRIDGING_HEADER
+		}
+
+		$${COMPILER_NAME}.commands = $$SWIFT_CMD
+		$${COMPILER_NAME}.CONFIG = combine target_predeps no_link
+
+		export($${COMPILER_NAME}.name)
+		export($${COMPILER_NAME}.input)
+		export($${COMPILER_NAME}.output)
+		export($${COMPILER_NAME}.commands)
+		export($${COMPILER_NAME}.CONFIG)
+		QMAKE_EXTRA_COMPILERS += $${COMPILER_NAME}
+	}
+
+	# add lipo tool execution to form universal binary
+	LIPO_OUT = $$SWIFT_GEN_HEADERS_PATH/swift_module.o
+	lipo_tool.name = LipoTool
+	# as input for lipo_tool we set SWIFT_SOURCES (not SWIFT_COMPILERS_OUT as it won't be executed otherwise!)
+	lipo_tool.input = SWIFT_SOURCES
+	# compiled swift sources go into depends
+	lipo_tool.depends = $$SWIFT_COMPILERS_OUT
+	lipo_tool.output = $$LIPO_OUT
+	lipo_tool.commands = lipo -create $$SWIFT_COMPILERS_OUT -output $$LIPO_OUT
+	lipo_tool.CONFIG = combine target_predeps no_link
+	lipo_tool.variable_out = OBJECTS
+
+	export(lipo_tool.name)
+	export(lipo_tool.input)
+	export(lipo_tool.depends)
+	export(lipo_tool.output)
+	export(lipo_tool.commands)
+	export(lipo_tool.CONFIG)
+	export(lipo_tool.variable_out)
+	QMAKE_EXTRA_COMPILERS += lipo_tool
+
+	export(QMAKE_EXTRA_COMPILERS)
+
+	INCLUDEPATH += $$SWIFT_GEN_HEADERS_PATH
+	export(INCLUDEPATH)
+
+	# link with libs from toolchain
+	SWIFT_LIB_PATH = $$XCODE_TOOLCHAIN_PATH/usr/lib/swift/iphoneos
+	xcframework_platform_ios_simulator {
+		SWIFT_LIB_PATH = $$XCODE_TOOLCHAIN_PATH/usr/lib/swift/iphonesimulator
+	}
+	LIBS += -L$$SWIFT_LIB_PATH
+	LIBS += -lswiftCore -lswiftFoundation -lswiftObjectiveC
+
+	export(LIBS)
+
+	OTHER_FILES += $$SWIFT_SOURCES
+	export(OTHER_FILES)
+	return(true)
+}
+

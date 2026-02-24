@@ -42,7 +42,7 @@ CDjVuFile::~CDjVuFile()
 		delete m_pImplementation;
 }
 bool CDjVuFile::LoadFromFile(const std::wstring& file, const std::wstring& options,
-                                const std::wstring& owner_password, const std::wstring& user_password)
+							 const wchar_t* owner_password, const wchar_t* user_password)
 {
     if (m_pImplementation)
         return m_pImplementation->LoadFromFile(file, options);
@@ -50,7 +50,7 @@ bool CDjVuFile::LoadFromFile(const std::wstring& file, const std::wstring& optio
     return false;
 }
 bool CDjVuFile::LoadFromMemory(BYTE* data, DWORD length, const std::wstring& options,
-                               const std::wstring& owner_password, const std::wstring& user_password)
+							   const wchar_t* owner_password, const wchar_t* user_password)
 {
     if (m_pImplementation)
         return m_pImplementation->LoadFromMemory(data, length, options);

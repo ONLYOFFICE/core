@@ -1286,9 +1286,9 @@ namespace BinXlsxRW
 		if (length < 1 || !pData)
 			return c_oSerConstants::ReadUnknown;
 		
-		fileOut = new OOX::OleObject(NULL, true, m_pOfficeDrawingConverter->m_pReader->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX);
+		fileOut = new OOX::OleObject(NULL, true, m_pOfficeDrawingConverter->m_pBinaryReader->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX);
 		
-		int id = m_pOfficeDrawingConverter->m_pReader->m_nCountEmbedded++;
+		int id = m_pOfficeDrawingConverter->m_pBinaryReader->m_nCountEmbedded++;
 
 		bool bMacroEnabled = false;
 		std::wstring sXlsxFilename = L"Microsoft_Excel_Worksheet" + std::to_wstring(id) + (bMacroEnabled ? L".xlsm" : L".xlsx");
@@ -1297,12 +1297,11 @@ namespace BinXlsxRW
 		if (file.CreateFileW(m_oSaveParams.sEmbeddingsPath + FILE_SEPARATOR_STR + sXlsxFilename))
 		{
 			file.WriteFile(pData, length);
-			file.WriteFile(pData, length);
 			file.CloseFile();
 		}
 		fileOut->set_filename(m_oSaveParams.sEmbeddingsPath + FILE_SEPARATOR_STR + sXlsxFilename, false);
 
-		m_pOfficeDrawingConverter->m_pReader->m_pRels->m_pManager->m_pContentTypes->AddDefault(bMacroEnabled ? L"xlsm" : L"xlsx");
+		m_pOfficeDrawingConverter->m_pBinaryReader->m_pRels->m_pManager->m_pContentTypes->AddDefault(bMacroEnabled ? L"xlsm" : L"xlsx");
 	}
 	int BinaryChartReader::ReadCT_XlsxBin(BYTE *pData, long length, NSCommon::smart_ptr<OOX::Media> & file)
 	{
@@ -1315,9 +1314,9 @@ namespace BinXlsxRW
 		
 		if (false == sDstEmbeddedTemp.empty())
 		{
-			file = new OOX::OleObject(NULL, true, m_pOfficeDrawingConverter->m_pReader->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX);
+			file = new OOX::OleObject(NULL, true, m_pOfficeDrawingConverter->m_pBinaryReader->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX);
 
-			int id = m_pOfficeDrawingConverter->m_pReader->m_nCountEmbedded++;
+			int id = m_pOfficeDrawingConverter->m_pBinaryReader->m_nCountEmbedded++;
 
 			OOX::Spreadsheet::CXlsx			oXlsx;
 			BinXlsxRW::BinaryFileReader		oEmbeddedReader;
@@ -1329,22 +1328,22 @@ namespace BinXlsxRW
 
 			BinXlsxRW::SaveParams oSaveParams(sDrawingsPath, sEmbeddingsPath, sThemePath, oDrawingConverter.GetContentTypes(), NULL, false);
 
-			std::wstring sXmlOptions, sMediaPath, sEmbedPath;
-			BinXlsxRW::CXlsxSerializer::CreateXlsxFolders(sXmlOptions, sDstEmbeddedTemp, sMediaPath, sEmbedPath);
+			std::wstring sMediaPath, sEmbedPath;
+			BinXlsxRW::CXlsxSerializer::CreateXlsxFolders(sDstEmbeddedTemp, sMediaPath, sEmbedPath);
 
 			boost::unordered_map<std::wstring, size_t>	old_enum_map = oXlsx.m_mapEnumeratedGlobal;
 
 			oXlsx.m_mapEnumeratedGlobal.clear();
 
-			oDrawingConverter.m_pReader->Init(pData, 0, length);
+			oDrawingConverter.m_pBinaryReader->Init(pData, 0, length);
 
 			oDrawingConverter.SetDstPath(sDstEmbeddedTemp + FILE_SEPARATOR_STR + L"xl");
-			oDrawingConverter.SetSrcPath(m_pOfficeDrawingConverter->m_pReader->m_strFolder, XMLWRITER_DOC_TYPE_XLSX);
+			oDrawingConverter.SetSrcPath(m_pOfficeDrawingConverter->m_pBinaryReader->m_strFolder, XMLWRITER_DOC_TYPE_XLSX);
 
 			oDrawingConverter.SetMediaDstPath(sMediaPath);
 			oDrawingConverter.SetEmbedDstPath(sEmbedPath);
 
-			oEmbeddedReader.ReadMainTable(oXlsx, *oDrawingConverter.m_pReader, m_pOfficeDrawingConverter->m_pReader->m_strFolder, sDstEmbeddedTemp, oSaveParams, &oDrawingConverter);
+			oEmbeddedReader.ReadMainTable(oXlsx, *oDrawingConverter.m_pBinaryReader, m_pOfficeDrawingConverter->m_pBinaryReader->m_strFolder, sDstEmbeddedTemp, oSaveParams, &oDrawingConverter);
 
 			oXlsx.PrepareToWrite();
 
@@ -1358,7 +1357,7 @@ namespace BinXlsxRW
 
 			file->set_filename(sDstEmbedded + FILE_SEPARATOR_STR + sXlsxFilename, false);
 
-			m_pOfficeDrawingConverter->m_pReader->m_pRels->m_pManager->m_pContentTypes->AddDefault(oSaveParams.bMacroEnabled ? L"xlsm" : L"xlsx");
+			m_pOfficeDrawingConverter->m_pBinaryReader->m_pRels->m_pManager->m_pContentTypes->AddDefault(oSaveParams.bMacroEnabled ? L"xlsm" : L"xlsx");
 		
 			NSDirectory::DeleteDirectory(sDstEmbeddedTemp);
 		}
@@ -7424,8 +7423,8 @@ namespace BinXlsxRW
 			{
 				OOX::CChartDrawing* pDrawing = (OOX::CChartDrawing*)oFile.GetPointer();
 				
-				smart_ptr<OOX::IFileContainer> oldRels = m_pOfficeDrawingConverter->GetRels();
-				m_pOfficeDrawingConverter->SetRels(pDrawing);
+				OOX::IFileContainer* oldRels = m_pOfficeDrawingConverter->GetRelsPtr();
+				m_pOfficeDrawingConverter->SetRelsPtr(pDrawing);
 				
 				int nCurPos = m_oBcw.WriteItemStart(c_oserct_chartspaceUSERSHAPES);
 
@@ -7433,8 +7432,8 @@ namespace BinXlsxRW
 					m_oBcw.m_oStream.WriteLONG(pDrawing->m_arrItems.size());
 				m_oBcw.WriteItemEnd(nCurPos1);
 				
-				smart_ptr<OOX::IFileContainer> oldRelsStream = m_oBcw.m_oStream.GetRels();
-				m_oBcw.m_oStream.SetRels(pDrawing);
+				OOX::IFileContainer* oldRelsStream = m_oBcw.m_oStream.GetRelsPtr();
+				m_oBcw.m_oStream.SetRelsPtr(pDrawing);
 
 				for (size_t i = 0; i < pDrawing->m_arrItems.size(); i++)
 				{
@@ -7448,8 +7447,8 @@ namespace BinXlsxRW
 				
 				m_oBcw.WriteItemEnd(nCurPos);
 				
-				m_oBcw.m_oStream.SetRels(oldRelsStream);
-				m_pOfficeDrawingConverter->SetRels(oldRels);
+				m_oBcw.m_oStream.SetRelsPtr(oldRelsStream);
+				m_pOfficeDrawingConverter->SetRelsPtr(oldRels);
 			}
 		}	
 	}

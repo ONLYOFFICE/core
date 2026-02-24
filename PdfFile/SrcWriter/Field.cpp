@@ -1628,6 +1628,12 @@ namespace PdfWriter
 		Add("FT", "Sig");
 		m_pResources = NULL;
 	}
+	void CSignatureField::SetLocation(const std::wstring& wsValue)
+	{
+		if (!m_pSig || wsValue.empty())
+			return;
+		m_pSig->SetLocation(U_TO_UTF8(wsValue));
+	}
 	void CSignatureField::SetName(const std::wstring& wsValue)
 	{
 		if (!m_pSig || wsValue.empty())
@@ -1646,13 +1652,9 @@ namespace PdfWriter
 			return;
 		m_pSig->SetContact(U_TO_UTF8(wsValue));
 	}
-	void CSignatureField::SetCert()
+	void CSignatureField::SetDate()
 	{
-
-	}
-	void CSignatureField::SetDate(bool bDate)
-	{
-		if (!m_pSig || !bDate)
+		if (!m_pSig)
 			return;
 		m_pSig->SetDate();
 	}
@@ -3222,56 +3224,59 @@ namespace PdfWriter
 		}
 
 		// Граница
-		if (dBorder != 1)
+		if (pAnnot->HaveBC())
 		{
-			m_pStream->WriteReal(dBorder);
-			m_pStream->WriteStr(" w\012");
-		}
-		if (nBorderType == EBorderType::Dashed)
-			m_pStream->WriteStr(m_pAnnot->GetBorderDash().c_str());
-		m_pStream->WriteStr(pAnnot->GetBCforAP().c_str());
-		m_pStream->WriteStr("\012q\012");
-		m_pStream->WriteStr("1 0 0 1 ");
-		m_pStream->WriteReal(dCX);
-		m_pStream->WriteChar(' ');
-		m_pStream->WriteReal(dCY);
-		m_pStream->WriteStr(" cm\012");
-
-		StreamWriteCircle(m_pStream, 0, 0, dR - dBorder / 2.0);
-		m_pStream->WriteStr("s\012Q\012");
-
-		if (nBorderType == EBorderType::Beveled || nBorderType == EBorderType::Inset)
-		{
-			double ca = cos(45.0 / 180.0 * M_PI);
-			double cx = 0, cy = 0, r = dR - dBorder * 1.5;
-			double bezierCircle = 0.55228475 * r;
-			std::string sBG = pAnnot->GetBGforAP(-0.250977, true);
-			if (sBG.empty())
-				sBG = "0.749023 G";
-
-			if (nBorderType == EBorderType::Inset)
-				m_pStream->WriteStr(bN ? "0.501953 G" : "0 G");
-			else // Beveled
-				m_pStream->WriteStr(bN ? "1 G" : sBG.c_str());
-
+			if (dBorder != 1)
+			{
+				m_pStream->WriteReal(dBorder);
+				m_pStream->WriteStr(" w\012");
+			}
+			if (nBorderType == EBorderType::Dashed)
+				m_pStream->WriteStr(m_pAnnot->GetBorderDash().c_str());
+			m_pStream->WriteStr(pAnnot->GetBCforAP().c_str());
 			m_pStream->WriteStr("\012q\012");
-			StreamWriteCM(m_pStream, ca, ca, -ca, ca, dCX, dCY);
-			StreamWriteXYMove(m_pStream, cx + r, cy);
-			StreamWriteXYCurve(m_pStream, cx + r, cy + bezierCircle, cx + bezierCircle, cy + r, cx, cy + r);
-			StreamWriteXYCurve(m_pStream, cx - bezierCircle, cy + r, cx - r, cy + bezierCircle, cx - r, cy);
-			m_pStream->WriteStr("S\012Q\012");
+			m_pStream->WriteStr("1 0 0 1 ");
+			m_pStream->WriteReal(dCX);
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(dCY);
+			m_pStream->WriteStr(" cm\012");
 
-			if (nBorderType == EBorderType::Inset)
-				m_pStream->WriteStr(bN ? "0.75293 G" : "1 G");
-			else // Beveled
-				m_pStream->WriteStr(bN ? sBG.c_str() : "1 G");
+			StreamWriteCircle(m_pStream, 0, 0, dR - dBorder / 2.0);
+			m_pStream->WriteStr("s\012Q\012");
 
-			m_pStream->WriteStr("\012q\012");
-			StreamWriteCM(m_pStream, ca, ca, -ca, ca, dCX, dCY);
-			StreamWriteXYMove(m_pStream, cx - r, cy);
-			StreamWriteXYCurve(m_pStream, cx - r, cy - bezierCircle, cx - bezierCircle, cy - r, cx, cy - r);
-			StreamWriteXYCurve(m_pStream, cx + bezierCircle, cy - r, cx + r, cy - bezierCircle, cx + r, cy);
-			m_pStream->WriteStr("S\012Q\012");
+			if (nBorderType == EBorderType::Beveled || nBorderType == EBorderType::Inset)
+			{
+				double ca = cos(45.0 / 180.0 * M_PI);
+				double cx = 0, cy = 0, r = dR - dBorder * 1.5;
+				double bezierCircle = 0.55228475 * r;
+				std::string sBG = pAnnot->GetBGforAP(-0.250977, true);
+				if (sBG.empty())
+					sBG = "0.749023 G";
+
+				if (nBorderType == EBorderType::Inset)
+					m_pStream->WriteStr(bN ? "0.501953 G" : "0 G");
+				else // Beveled
+					m_pStream->WriteStr(bN ? "1 G" : sBG.c_str());
+
+				m_pStream->WriteStr("\012q\012");
+				StreamWriteCM(m_pStream, ca, ca, -ca, ca, dCX, dCY);
+				StreamWriteXYMove(m_pStream, cx + r, cy);
+				StreamWriteXYCurve(m_pStream, cx + r, cy + bezierCircle, cx + bezierCircle, cy + r, cx, cy + r);
+				StreamWriteXYCurve(m_pStream, cx - bezierCircle, cy + r, cx - r, cy + bezierCircle, cx - r, cy);
+				m_pStream->WriteStr("S\012Q\012");
+
+				if (nBorderType == EBorderType::Inset)
+					m_pStream->WriteStr(bN ? "0.75293 G" : "1 G");
+				else // Beveled
+					m_pStream->WriteStr(bN ? sBG.c_str() : "1 G");
+
+				m_pStream->WriteStr("\012q\012");
+				StreamWriteCM(m_pStream, ca, ca, -ca, ca, dCX, dCY);
+				StreamWriteXYMove(m_pStream, cx - r, cy);
+				StreamWriteXYCurve(m_pStream, cx - r, cy - bezierCircle, cx - bezierCircle, cy - r, cx, cy - r);
+				StreamWriteXYCurve(m_pStream, cx + bezierCircle, cy - r, cx + r, cy - bezierCircle, cx + r, cy);
+				m_pStream->WriteStr("S\012Q\012");
+			}
 		}
 
 		// Установлен
@@ -3297,7 +3302,7 @@ namespace PdfWriter
 			return;
 
 		double dBorder = 1;
-		EBorderType nBorderType = EBorderType::Inset;
+		EBorderType nBorderType = EBorderType::Solid;
 		if (m_pAnnot->HaveBorder())
 		{
 			dBorder = m_pAnnot->GetBorderWidth();
@@ -3328,59 +3333,62 @@ namespace PdfWriter
 		}
 
 		// Граница
-		if (nBorderType == EBorderType::Beveled || nBorderType == EBorderType::Inset)
+		if (pAnnot->HaveBC())
 		{
-			std::string sBG = pAnnot->GetBGforAP(-0.250977);
-			if (sBG.empty())
-				sBG = "0.749023 g";
+			if (nBorderType == EBorderType::Beveled || nBorderType == EBorderType::Inset)
+			{
+				std::string sBG = pAnnot->GetBGforAP(-0.250977);
+				if (sBG.empty())
+					sBG = "0.749023 g";
 
-			if (nBorderType == EBorderType::Inset)
-				m_pStream->WriteStr(bN ? "0.501953 g" : "0 g");
-			else // Beveled
-				m_pStream->WriteStr(bN ? "1 g" : sBG.c_str());
+				if (nBorderType == EBorderType::Inset)
+					m_pStream->WriteStr(bN ? "0.501953 g" : "0 g");
+				else // Beveled
+					m_pStream->WriteStr(bN ? "1 g" : sBG.c_str());
+				m_pStream->WriteStr("\012");
+
+				StreamWriteXYMove(m_pStream, dBorder, dBorder);
+				StreamWriteXYLine(m_pStream, dBorder, dH - dBorder);
+				StreamWriteXYLine(m_pStream, dW - dBorder, dH - dBorder);
+				StreamWriteXYLine(m_pStream, dW - dBorder * 2.0, dH - dBorder * 2.0);
+				StreamWriteXYLine(m_pStream, dBorder * 2.0, dH - dBorder * 2.0);
+				StreamWriteXYLine(m_pStream, dBorder * 2.0, dBorder * 2.0);
+				m_pStream->WriteStr("f\012");
+
+				if (nBorderType == EBorderType::Inset)
+					m_pStream->WriteStr(bN ? "0.75293 g" : "1 g");
+				else // Beveled
+					m_pStream->WriteStr(bN ? sBG.c_str() : "1 g");
+				m_pStream->WriteStr("\012");
+
+				StreamWriteXYMove(m_pStream, dW - dBorder, dH - dBorder);
+				StreamWriteXYLine(m_pStream, dW - dBorder, dBorder);
+				StreamWriteXYLine(m_pStream, dBorder, dBorder);
+				StreamWriteXYLine(m_pStream, dBorder * 2.0, dBorder * 2.0);
+				StreamWriteXYLine(m_pStream, dW - dBorder * 2.0, dBorder * 2.0);
+				StreamWriteXYLine(m_pStream, dW - dBorder * 2.0, dH - dBorder * 2.0);
+				m_pStream->WriteStr("f\012");
+			}
+
+			if (dBorder != 1)
+			{
+				m_pStream->WriteReal(dBorder);
+				m_pStream->WriteStr(" w\012");
+			}
+			if (nBorderType == EBorderType::Dashed)
+				m_pStream->WriteStr(m_pAnnot->GetBorderDash().c_str());
+			m_pStream->WriteStr(pAnnot->GetBCforAP().c_str());
 			m_pStream->WriteStr("\012");
 
-			StreamWriteXYMove(m_pStream, dBorder, dBorder);
-			StreamWriteXYLine(m_pStream, dBorder, dH - dBorder);
-			StreamWriteXYLine(m_pStream, dW - dBorder, dH - dBorder);
-			StreamWriteXYLine(m_pStream, dW - dBorder * 2.0, dH - dBorder * 2.0);
-			StreamWriteXYLine(m_pStream, dBorder * 2.0, dH - dBorder * 2.0);
-			StreamWriteXYLine(m_pStream, dBorder * 2.0, dBorder * 2.0);
-			m_pStream->WriteStr("f\012");
-
-			if (nBorderType == EBorderType::Inset)
-				m_pStream->WriteStr(bN ? "0.75293 g" : "1 g");
-			else // Beveled
-				m_pStream->WriteStr(bN ? sBG.c_str() : "1 g");
-			m_pStream->WriteStr("\012");
-
-			StreamWriteXYMove(m_pStream, dW - dBorder, dH - dBorder);
-			StreamWriteXYLine(m_pStream, dW - dBorder, dBorder);
-			StreamWriteXYLine(m_pStream, dBorder, dBorder);
-			StreamWriteXYLine(m_pStream, dBorder * 2.0, dBorder * 2.0);
-			StreamWriteXYLine(m_pStream, dW - dBorder * 2.0, dBorder * 2.0);
-			StreamWriteXYLine(m_pStream, dW - dBorder * 2.0, dH - dBorder * 2.0);
-			m_pStream->WriteStr("f\012");
+			if (nBorderType == EBorderType::Underline)
+			{
+				StreamWriteXYMove(m_pStream, 0, dBorder / 2.0);
+				StreamWriteXYLine(m_pStream, dW, dBorder / 2.0);
+			}
+			else
+				StreamWriteRect(m_pStream, dBorder / 2.0, dBorder / 2.0, dW - dBorder, dH - dBorder);
+			m_pStream->WriteStr("s\012Q\012");
 		}
-
-		if (dBorder != 1)
-		{
-			m_pStream->WriteReal(dBorder);
-			m_pStream->WriteStr(" w\012");
-		}
-		if (nBorderType == EBorderType::Dashed)
-			m_pStream->WriteStr(m_pAnnot->GetBorderDash().c_str());
-		m_pStream->WriteStr(pAnnot->GetBCforAP().c_str());
-		m_pStream->WriteStr("\012");
-
-		if (nBorderType == EBorderType::Underline)
-		{
-			StreamWriteXYMove(m_pStream, 0, dBorder / 2.0);
-			StreamWriteXYLine(m_pStream, dW, dBorder / 2.0);
-		}
-		else
-			StreamWriteRect(m_pStream, dBorder / 2.0, dBorder / 2.0, dW - dBorder, dH - dBorder);
-		m_pStream->WriteStr("s\012Q\012");
 
 		// Установлен
 		if (!bSet)

@@ -672,8 +672,12 @@ void _oox_drawing::serialize_bodyPr(std::wostream & strm, const std::wstring & n
 					_CP_OPT(int)	iWrap;
 					odf_reader::GetProperty(prop, L"text-wrap", iWrap);
 
-					if (((iWrap) && (*iWrap == 0)) || ((is_math_formula) && (*is_math_formula)))
+					if (((iWrap) && (*iWrap == 0))) // для текста устанавливаем значение square. Так у нас визуальное соотвествие при конвертации
+						CP_XML_ATTR(L"wrap", L"square");
+					else if((iWrap && *iWrap == 2) || ((is_math_formula) && (*is_math_formula)))
+					{
 						CP_XML_ATTR(L"wrap", L"none");
+					}
 				}
 			}
 

@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,13 +29,26 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#pragma once
 
-#include "logging.h"
-#include <iostream>
-
-namespace cpdoccore {
-
-logging< std::wostream > logging_err(std::wcerr);
-logging< std::wostream > logging_cout(std::wcout);
-
+#ifndef STARMATH_USE_DYNAMIC_LIBRARY
+#define STARMATH_DECL_EXPORT
+#else
+#include "../../../../DesktopEditor/common/base_export.h"
+#define STARMATH_DECL_EXPORT Q_DECL_EXPORT
+#endif
+namespace StarMath
+{
+	struct STARMATH_DECL_EXPORT TFormulaSize
+	{
+		TFormulaSize():m_iHeight(0),m_iWidth(0) {};
+		TFormulaSize(const unsigned int& iHeight,const unsigned int& iwidth):m_iHeight(iHeight),m_iWidth(iwidth) {};
+		float m_iHeight;
+		float m_iWidth;
+		void Zeroing()
+		{
+			this->m_iHeight = 0;
+			this->m_iWidth = 0;
+		}
+	};
 }

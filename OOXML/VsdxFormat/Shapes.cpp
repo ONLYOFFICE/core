@@ -152,11 +152,11 @@ namespace OOX
 			pWriter->WriteDoubleReal2(8, CompressionLevel);
 			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 
-			if (Rel.IsInit() && Rel->Rid.IsInit())
+			if (Rel.IsInit() && Rel->Rid.IsInit() && pWriter->GetRelsPtr())
 			{
 				CPath out = pWriter->m_pCommon->m_pMediaManager->m_strDstMedia;
 
-				smart_ptr<OOX::File> pFile = pWriter->GetRels()->Find(Rel->Rid->GetValue());
+				smart_ptr<OOX::File> pFile = pWriter->GetRelsPtr()->Find(Rel->Rid->GetValue());
 				OOX::OleObject* pOleObject = dynamic_cast<OOX::OleObject*>(pFile.GetPointer());
 
 				CPath image_path;
@@ -361,9 +361,11 @@ namespace OOX
 				}
 				
 				smart_ptr<OOX::File> oFile(pOle);
-
-				Rel.Init(); Rel->Rid.Init();
-				Rel->Rid->SetValue(pReader->GetRels()->Add(oFile).get());
+				if (pReader->GetRelsPtr())
+				{
+					Rel.Init(); Rel->Rid.Init();
+					Rel->Rid->SetValue(pReader->GetRelsPtr()->Add(oFile).get());
+				}
 
 				if (image_filename_dst.empty() == false)
 				{
@@ -387,8 +389,11 @@ namespace OOX
 				pImage->set_filename(pReader->m_pRels->m_pManager->GetDstMedia() + FILE_SEPARATOR_STR + image_filename_dst, false);
 
 				smart_ptr<OOX::File> oFile(pImage);
-				Rel.Init(); Rel->Rid.Init();
-				Rel->Rid->SetValue(pReader->GetRels()->Add(oFile).get());
+				if (pReader->GetRelsPtr())
+				{
+					Rel.Init(); Rel->Rid.Init();
+					Rel->Rid->SetValue(pReader->GetRelsPtr()->Add(oFile).get());
+				}
 			}
 		}
 		void CForeignData::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const

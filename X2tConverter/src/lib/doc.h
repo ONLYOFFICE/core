@@ -90,9 +90,7 @@ namespace NExtractTools
 
 			m_oCDocxSerializer.setFontDir(params.getFontPath());
 
-			std::wstring xml_options = params.getXmlOptions();
-
-			nRes =  m_oCDocxSerializer.saveToFile (sTo, sResultDocxDir, xml_options, convertParams.m_sTempDir) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+			nRes =  m_oCDocxSerializer.saveToFile (sTo, sResultDocxDir, convertParams.m_sTempDir) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
 		}
 		return nRes;
 	}

@@ -140,6 +140,7 @@ void paragraph_format_properties::docx_convert(oox::docx_conversion_context & Co
 	const odf_reader::style_instance *style_inst = Context.get_styles_context().get_current_processed_style();
 
 	std::wstringstream & _pPr = Context.get_styles_context().paragraph_nodes();
+	std::wostream & _rPr	= Context.get_styles_context().text_style();
  
 	CP_XML_WRITER(_pPr)
 	{
@@ -202,6 +203,8 @@ void paragraph_format_properties::docx_convert(oox::docx_conversion_context & Co
 					bListEnabled = false;
 
 				_pPr << L"<w:numPr>";
+				    auto temp_name = Context.get_temp_style_name();
+					Context.status_para[temp_name] = true;
 					if (bListEnabled && level < 9 && bOutlineList)
 					{
 						_pPr << L"<w:ilvl w:val=\"" << level - 1 << L"\"/>";
@@ -257,14 +260,20 @@ void paragraph_format_properties::docx_convert(oox::docx_conversion_context & Co
 			CP_XML_NODE(L"w:keepNext");
 			CP_XML_NODE(L"w:framePr")
 			{
+				if( !Context.get_inside_frame() )
+				{
+					Context.set_inside_frame(true);
+				}
+
 				CP_XML_ATTR(L"w:dropCap", L"drop");
 				if (Context.get_drop_cap_context().Scale > 0)
 				{
 					CP_XML_ATTR(L"w:lines",Context.get_drop_cap_context().Scale);
+					Context.set_scale( Context.get_drop_cap_context().Scale );
 				}
-				else
+				if( Context.get_drop_cap_context().Space > 0 )
 				{
-					CP_XML_ATTR(L"w:hSpace", Context.get_drop_cap_context().Space);	
+					CP_XML_ATTR(L"w:hSpace", Context.get_drop_cap_context().Space);
 				}
 				CP_XML_ATTR(L"w:wrap", L"around"); 
 				CP_XML_ATTR(L"w:hAnchor", L"text");
@@ -275,9 +284,17 @@ void paragraph_format_properties::docx_convert(oox::docx_conversion_context & Co
 			{
 				CP_XML_ATTR(L"w:after", 0); 
 				if (Context.get_drop_cap_context().FontSize > 0)
+				{
 					CP_XML_ATTR(L"w:line", Context.get_drop_cap_context().FontSize);
+				}
+				else if ( Context.get_inside_frame() && Context.get_drop_cap_context().Scale < 5 )
+				{
+					CP_XML_ATTR(L"w:line", 240 * ( Context.get_drop_cap_context().Scale ));
+				}
 				else
+				{
 					CP_XML_ATTR(L"w:line", 240);
+				}
 				CP_XML_ATTR(L"w:lineRule", L"exact");
 			}
 			CP_XML_NODE(L"w:textAlignment"){CP_XML_ATTR(L"w:val", L"baseline");}
@@ -295,7 +312,7 @@ void paragraph_format_properties::docx_convert(oox::docx_conversion_context & Co
 				val = L"false";
 			else if (fo_break_before_->get_type() == fo_break::Page)
 				val = L"true";
-			else 
+			else
 				Context.set_page_break_before(fo_break_before_->get_type());
 
 			if (!val.empty())
@@ -425,25 +442,26 @@ void paragraph_format_properties::docx_convert(oox::docx_conversion_context & Co
 #endif
 			std::wstring w_left, w_right, w_hanging;
 
-            w_left = docx_process_margin(fo_margin_left_, 20.0);
-            w_right = docx_process_margin(fo_margin_right_, 20.0);
+			w_left = docx_process_margin(fo_margin_left_, 20.0);
+			w_right = docx_process_margin(fo_margin_right_, 20.0);
 			w_hanging = docx_process_margin(fo_text_indent_, -20.0);
 
 			if (w_left.empty()) w_left = L"0";
 			if (w_right.empty()) w_right = L"0";
 			if (w_hanging.empty()) w_hanging = L"0";
-	                
+
 		   CP_XML_NODE(L"w:ind")
 		   {
-				CP_XML_ATTR(L"w:start", w_left);
+
+			    CP_XML_ATTR(L"w:start", w_left);
 				CP_XML_ATTR(L"w:end", w_right);
-		        
+
 				if (Context.get_drop_cap_context().state() != 1 )//состояние сразу после добавления буквицы - не нужны ни отступы, ни висячие
 				{
 					if (!w_hanging.empty())
 						CP_XML_ATTR(L"w:hanging", w_hanging);
 				}
-			}
+		    }
 		}
 
 		if (style_vertical_align_ && Context.get_drop_cap_context().state() != 2)
@@ -491,10 +509,10 @@ void paragraph_format_properties::docx_convert(oox::docx_conversion_context & Co
 
 	Context.get_tabs_context().docx_convert(Context);
 
-	//if (style_tab_stops_)	
-	//{
-	//	style_tab_stops_->docx_convert(Context);
-	//}
+	// if (style_tab_stops_)
+	// {
+	// 	style_tab_stops_->docx_convert(Context);
+	// }
 }
 void style_tab_stops::docx_convert(oox::docx_conversion_context & Context)
 {
@@ -519,7 +537,7 @@ void style_tab_stop::docx_convert(oox::docx_conversion_context & Context, bool c
 		
 	double tab_pos_offset = (!Context.get_paragraph_state() || Context.is_table_content()) ? margin_left : 0;
 
-	double tab_pos = 20.0 * style_position_.get_value_unit(length::pt) + tab_pos_offset;
+	double tab_pos = 20.0 * style_position_.get_value_unit(length::pt);
 	double min_tab_pos = 20.0 * def_tab.get_value_unit(length::pt) ;
 
 	if (tab_pos < min_tab_pos)
@@ -537,8 +555,62 @@ void style_tab_stop::docx_convert(oox::docx_conversion_context & Context, bool c
 		}
 	}
 
+	const double PtPerCm = 28.346;
+	const double TwPerPt = 20.0;
+
+	double PageWidthTwips       =   0;
+	double LeftPageMarginTwips  =   0;
+	double RightPageMarginTwips =   0;
+
+	std::wstring curr_name_layout = Context.get_master_page_name();
+
+	auto pp = Context.root()->odf_context().pageLayoutContainer().page_layout_by_style(curr_name_layout);
+
+	if( pp && pp->properties() )
+	{
+		auto page_attributes = pp->properties()->attlist_;
+
+		if( page_attributes.fo_page_width_.is_initialized() )
+		{
+			PageWidthTwips = page_attributes.fo_page_width_->get_value_unit(odf_types::length::cm) * PtPerCm * TwPerPt;
+		}
+
+		if( page_attributes.common_horizontal_margin_attlist_.fo_margin_left_.is_initialized() )
+		{
+			LeftPageMarginTwips = page_attributes.common_horizontal_margin_attlist_.fo_margin_left_->get_length().get_value_unit(odf_types::length::cm) * PtPerCm * TwPerPt;
+		}
+
+		if( page_attributes.common_horizontal_margin_attlist_.fo_margin_right_.is_initialized() )
+		{
+			RightPageMarginTwips = page_attributes.common_horizontal_margin_attlist_.fo_margin_right_->get_length().get_value_unit(odf_types::length::cm) * PtPerCm * TwPerPt;
+		}
+	}
+
+	if( style_type_.is_initialized() )
+	{
+		switch ( style_type_->get_type() )
+		{
+		case style_type::Right:
+		{
+			int total_tabs = Context.get_tabs_context().tabs.size();
+
+			if( total_tabs <= 1 )
+			{
+				tab_pos += tab_pos_offset;
+			}
+			break;
+		}
+		}
+	}
+
+	double available_width = PageWidthTwips - LeftPageMarginTwips - RightPageMarginTwips;
+
+	if ( available_width > 0 && tab_pos > available_width )
+	{
+		tab_pos = available_width;
+	}
 	_pPr << L" w:val=\"" << val << "\"";
-    _pPr << L" w:pos=\"" << (int)tab_pos << "\"";
+	_pPr << L" w:pos=\"" << static_cast<int>(tab_pos) << "\"";
 	
 	std::wstring leader;
 

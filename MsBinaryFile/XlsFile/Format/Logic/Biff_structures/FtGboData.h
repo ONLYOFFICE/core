@@ -49,13 +49,14 @@ public:
 	BiffStructurePtr clone();
 
 	virtual void load(CFRecord& record);
+	virtual void save(CFRecord& record);
 
 	static const ElementType type = typeFtGboData;
 
-	unsigned short accel;
-	bool fNo3d;
+	unsigned short accel = 0;
+	bool fNo3d = false;
 
-	bool fExist;
+	bool fExist = false;
 };
 
 } // namespace XLS

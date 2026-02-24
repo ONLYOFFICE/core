@@ -45,13 +45,14 @@ public:
 	static const ElementType	type = typeControlInfo;
 	
 	virtual void load(CFRecord& record);
+	virtual void save(CFRecord& record);
 
-	bool	fDefault;
-	bool	fHelp;
-	bool	fCancel;
-	bool	fDismiss;
+	bool	fDefault = false;
+	bool	fHelp = false;
+	bool	fCancel = false;
+	bool	fDismiss = false;
 
-	_UINT16	accel1;
+	_UINT16	accel1 = 0;
 };
 
 } // namespace XLS

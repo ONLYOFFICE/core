@@ -1311,8 +1311,8 @@ namespace NSDocxRenderer
 			{
 				oWriter.StartRecord(2);
 				oWriter.WriteBYTE(kBin_g_nodeAttributeStart);
-				oWriter.WriteBYTE(0); oWriter.AddInt(100);
-				oWriter.WriteBYTE(1); oWriter.AddInt(100);
+				oWriter.WriteBYTE(0); oWriter.AddInt(100 * 1000);
+				oWriter.WriteBYTE(1); oWriter.AddInt(100 * 1000);
 				oWriter.WriteBYTE(kBin_g_nodeAttributeEnd);
 				oWriter.EndRecord();
 			}
@@ -1343,7 +1343,7 @@ namespace NSDocxRenderer
 			// WriteRecord WriteBodyPr
 			oWriter.StartRecord(0);
 			oWriter.WriteBYTE(kBin_g_nodeAttributeStart);
-			oWriter.WriteBYTE(1); oWriter.WriteBYTE(1);      // anchor
+			oWriter.WriteBYTE(1); oWriter.WriteBYTE(4);      // anchor
 			oWriter.WriteBYTE(2); oWriter.WriteBool(false);  // anchorCtr
 			oWriter.WriteBYTE(3); oWriter.AddInt(0);         // bIns
 			oWriter.WriteBYTE(4); oWriter.WriteBool(true);   // compatLnSpc

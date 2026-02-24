@@ -36,6 +36,7 @@
 namespace NSStringUtils
 {
 	class CStringBuilder;
+    class CStringBuilderA;
 }
 
 namespace Txt2Docx
@@ -50,7 +51,7 @@ namespace Txt2Docx
 		
 		void convert();
 		void read	(const std::wstring& path);
-		void write	(NSStringUtils::CStringBuilder & stringWriter/*const std::wstring& path*/);
+        void write	(NSStringUtils::CStringBuilderA & stringWriter/*const std::wstring& path*/);
 
 	private:
 		Converter_Impl * converter_;

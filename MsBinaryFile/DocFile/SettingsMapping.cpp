@@ -218,6 +218,25 @@ namespace DocFileFormat
 				m_oXmlWriter.WriteNodeBegin( L"w:noPunctuationKerning",  TRUE );
 				m_oXmlWriter.WriteNodeEnd( L"",  TRUE );
 			}
+            if (dop->doptypography->iJustification != 0)
+            {
+                m_oXmlWriter.WriteNodeBegin(L"w:characterSpacingControl", TRUE);
+
+                const wchar_t* spacingValue = L"doNotCompress";
+
+                switch(dop->doptypography->iJustification)
+                {
+                case 1:
+                    spacingValue = L"compressPunctuation";
+                    break;
+                case 2:
+                    spacingValue = L"compressPunctuationAndJapaneseKana";
+                    break;
+                }
+
+                m_oXmlWriter.WriteAttribute(L"w:val", spacingValue);
+                m_oXmlWriter.WriteNodeEnd(L"", TRUE);
+            }
 		}
 
 		//footnote properties
@@ -237,6 +256,16 @@ namespace DocFileFormat
 		{
 			appendValueAttribute( &footnotePr, L"w:pos",  FormatUtils::MapValueToWideString( dop->Fpc, &FootnotePositionMap[0][0], 4, 12  ) );
 		}
+
+        XMLTools::XMLElement footnoteMinusOne( L"w:footnote" );
+        XMLTools::XMLAttribute idAttrMinusOne( L"w:id", L"-1" );
+        footnoteMinusOne.AppendAttribute( idAttrMinusOne );
+        footnotePr.AppendChild( footnoteMinusOne );
+
+        XMLTools::XMLElement footnoteZero( L"w:footnote" );
+        XMLTools::XMLAttribute idAttrZero( L"w:id", L"0" );
+        footnoteZero.AppendAttribute( idAttrZero );
+        footnotePr.AppendChild( footnoteZero );
 
 		if ( footnotePr.GetAttributeCount() > 0 )
 		{

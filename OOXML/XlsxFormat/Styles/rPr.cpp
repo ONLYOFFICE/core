@@ -40,6 +40,8 @@
 #include "../../XlsbFormat/Biff12_records/MRUColor.h"
 #include "../../XlsbFormat/Biff12_records/Color14.h"
 
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Palette.h"
+
 #include "../ComplexTypes_Spreadsheet.h"
 
 namespace OOX
@@ -87,6 +89,23 @@ namespace OOX
 				ptr->bBlue = 0;
 			}
 			return objectPtr;
+		}
+		XLS::BiffStructurePtr CRgbColor::toXLS()
+		{
+			auto ptr = new XLS::LongRGB;
+			if(m_oRgb.IsInit())
+			{
+				ptr->red = m_oRgb->Get_R();
+				ptr->green = m_oRgb->Get_G();
+				ptr->blue = m_oRgb->Get_B();
+			}
+			else
+			{
+				ptr->red = 0;
+				ptr->green = 0;
+				ptr->blue = 0;
+			}
+			return XLS::BiffStructurePtr(ptr);
 		}
 		EElementType CRgbColor::getType () const
 		{

@@ -114,6 +114,7 @@ namespace OOX
 
 			void fromBin(XLS::BaseObjectPtr& obj);
 			XLS::BaseObjectPtr toBin();
+			XLS::BaseObjectPtr toXLS(XLS::BaseObjectPtr objectsPointer, unsigned int id, const std::wstring &author);
 
 			virtual EElementType getType () const;
 
@@ -160,6 +161,7 @@ namespace OOX
 
 			void readBin(const CPath& oPath);
 			XLS::BaseObjectPtr WriteBin() const;
+			std::vector<XLS::BaseObjectPtr> toXLS(XLS::BaseObjectPtr objectsPtr) const;
 			virtual void read(const CPath& oPath);
 			virtual void read(const CPath& oRootPath, const CPath& oPath);
 			virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const;

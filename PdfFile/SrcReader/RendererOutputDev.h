@@ -55,6 +55,8 @@ namespace PdfReader
 		unsigned int unLenGID;
 		unsigned int unLenUnicode;
 		bool         bAvailable;     // Доступен ли шрифт. Сделано для многопотоковости
+		bool         bFontSubstitution = false;
+		bool         bIsIdentity = false;
 		
 	};
 
@@ -69,13 +71,13 @@ namespace PdfReader
 		TFontEntry* Add(Ref oRef, const std::wstring& wsFileName, int* pCodeToGID, int* pCodeToUnicode, unsigned int unLenGID, unsigned int unLenUnicode);
 		void Clear();
 		bool GetFont(Ref* pRef, TFontEntry* pEntry);
+		const std::map<Ref, TFontEntry*>& GetFonts();
 	private:
 		TFontEntry* Lookup(Ref& oRef);
 		void Add(Ref& oRef, TFontEntry* pFontEntry);
 
 	private:
-		typedef std::map<Ref, TFontEntry*>  CRefFontMap;
-		CRefFontMap                         m_oFontMap;
+		std::map<Ref, TFontEntry*>          m_oFontMap;
 		NSCriticalSection::CRITICAL_SECTION m_oCS; // Критическая секция
 	};
 
@@ -223,12 +225,12 @@ namespace PdfReader
 		virtual void endMarkedContent(GfxState *state) override;
 		//----- Вывод картинок
 		bool ReadImage(Aggplus::CImage* pImageRes, Object *pRef, Stream *pStream);
-		virtual void drawImageMask(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GBool bInvert, GBool bInlineImage, GBool interpolate) override;
-		virtual void setSoftMaskFromImageMask(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GBool bInvert, GBool bInlineImage, GBool interpolate) override;
-		virtual void drawImage(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap, int *pMaskColors, GBool bInlineImg, GBool interpolate) override;
-		virtual void drawMaskedImage(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap,
+		virtual void drawImageMask(GfxState *pGState, Gfx *gfx, Object *pRef, Stream *pStream, int nWidth, int nHeight, GBool bInvert, GBool bInlineImage, GBool interpolate) override;
+		virtual void setSoftMaskFromImageMask(GfxState *pGState, Gfx *gfx, Object *pRef, Stream *pStream, int nWidth, int nHeight, GBool bInvert, GBool bInlineImage, GBool interpolate) override;
+		virtual void drawImage(GfxState *pGState, Gfx *gfx, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap, int *pMaskColors, GBool bInlineImg, GBool interpolate) override;
+		virtual void drawMaskedImage(GfxState *pGState, Gfx *gfx, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap,
 									 Object* pMaskRef, Stream *pMaskStream, int nMaskWidth, int nMaskHeight, GBool bMaskInvert, GBool interpolate) override;
-		virtual void drawSoftMaskedImage(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap,
+		virtual void drawSoftMaskedImage(GfxState *pGState, Gfx *gfx, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap,
 										 Object *maskRef, Stream *pMaskStream, int nMaskWidth, int nMaskHeight, GfxImageColorMap *pMaskColorMap, double *pMatte, GBool interpolate) override;
 		//----- Transparency groups и SMasks
 		virtual void beginTransparencyGroup(GfxState *pGState, double *pBBox, GfxColorSpace *pBlendingColorSpace, GBool bIsolated, GBool bKnockout, GBool bForSoftMask) override;
@@ -243,8 +245,7 @@ namespace PdfReader
 			m_pbBreak = pbBreak;
 		}
 		static NSFonts::CFontInfo* GetFontByParams(XRef* pXref, NSFonts::IFontManager* pFontManager, GfxFont* pFont, std::wstring& wsFontBaseName);
-		static void GetFont(XRef* pXref, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList, GfxFont* pFont, std::wstring& wsFileName, std::wstring& wsFontName);
-		static void CheckFontStylePDF(std::wstring& sName, bool& bBold, bool& bItalic);
+		static void GetFont(XRef* pXref, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList, GfxFont* pFont, std::wstring& wsFileName, std::wstring& wsFontName, bool bNotFullName = true);
 
 	private:
 		struct GfxOutputState

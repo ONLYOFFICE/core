@@ -51,6 +51,8 @@ namespace PdfWriter
 	class CDocument;
 	class CPage;
 	class CFontCidTrueType;
+	class CFont14;
+	class CFontEmbedded;
 	class CImageDict;
 	class CShading;
 	class CExtGrState;
@@ -133,6 +135,10 @@ public:
 	HRESULT put_BrushTextureImage(Aggplus::CImage* pImage);
 	HRESULT get_BrushTransform(Aggplus::CMatrix& oMatrix);
 	HRESULT put_BrushTransform(const Aggplus::CMatrix& oMatrix);
+	HRESULT get_BrushOffset(double& offsetX, double& offsetY) const;
+	HRESULT put_BrushOffset(const double& offsetX, const double& offsetY);
+	HRESULT get_BrushScale(bool& isScale, double& scaleX, double& scaleY) const;
+	HRESULT put_BrushScale(bool isScale, const double& scaleX, const double& scaleY);
 	//----------------------------------------------------------------------------------------
 	// Функции для работы со шрифтами
 	//----------------------------------------------------------------------------------------
@@ -219,7 +225,10 @@ public:
 	bool AddPage(int nPageIndex);
 	bool EditClose();
 	void PageRotate(int nRotate);
-	void Sign(const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& wsPicturePath, ICertificate* pCertificate);
+	void Sign(const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& wsPicturePath,
+			  const std::wstring &wsReason, const std::wstring &wsContact, const std::wstring &wsName, const std::wstring &wsLocation);
+	bool PrepareSignature(const std::wstring& wsPath);
+	bool FinalizeSignature(BYTE* pSignedData, DWORD dwDataLength);
 	PdfWriter::CDocument* GetDocument();
 	PdfWriter::CPage*     GetPage();
 	IRenderer*            GetRenderer();
@@ -229,6 +238,7 @@ public:
 	void SetSplit(bool bSplit) { m_bSplit = bSplit; }
 
 private:
+	PdfWriter::CAction* GetAction(CAnnotFieldInfo::CActionFieldPr* pAction, bool bDeferred = false);
 	bool SkipRedact(const double& dX, const double& dY, const double& dW, const double& dH);
 	bool SkipRedact(const double& dX, const double& dY);
 	PdfWriter::CImageDict* LoadImage(Aggplus::CImage* pImage, BYTE nAlpha);
@@ -238,6 +248,8 @@ private:
 	bool PathCommandDrawText(unsigned int* pUnicodes, unsigned int unLen, const double& dX, const double& dY, const unsigned int* pGids = NULL);
 	int  IsEmbeddedBase14(const std::wstring& wsFontName);
 	bool GetBaseFont14(const std::wstring& wsFontName, int nBase14);
+	bool IsEmbeddedFont(const std::wstring& wsName);
+	bool GetEmbeddedFont(const std::wstring& wsFontName);
 	bool UpdateFont();
 	bool FindFontPath(const std::wstring& wsFontName, const bool& bBold, const bool& bItalic, std::wstring& wsFontPath, LONG& lFaceIndex);
 	bool GetFontPath(const std::wstring& wsFontName, const bool& bBold, const bool& bItalic, std::wstring& wsFontPath, LONG& lFaceIndex);
@@ -269,6 +281,7 @@ private:
 	PdfWriter::CPage*            m_pPage;
 	PdfWriter::CFontCidTrueType* m_pFont;
 	PdfWriter::CFont14*          m_pFont14;
+	PdfWriter::CFontEmbedded*    m_pFontEmbedded;
 	PdfWriter::CShading*         m_pShading;
 	PdfWriter::CExtGrState*      m_pShadingExtGrState;
 

@@ -411,7 +411,10 @@ void draw_text_box::pptx_convert(oox::pptx_conversion_context & Context)
 
 	for (size_t i = 0; i < content_.size(); i++)
     {
+        (i > 0 && Context.get_text_context().get_lasttext() && content_[i-1]->get_type() == cpdoccore::ElementType::typeTextP ? Context.get_text_context().set_predump(true): Context.get_text_context().set_predump(false));
+
         content_[i]->pptx_convert(Context);
+
     }
 	
 	std::wstring text_content_ = Context.get_text_context().end_object();

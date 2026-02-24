@@ -925,4 +925,10 @@ void CBrushState::Reset()
     m_pShadingColors      = NULL;
     m_pShadingPoints      = NULL;
     m_lShadingPointsCount = 0;
+
+	m_bIsScale = false;
+	m_dScaleX = 1.0;
+	m_dScaleY = 1.0;
+	m_dOffsetX = 0.0;
+	m_dOffsetY = 0.0;
 }

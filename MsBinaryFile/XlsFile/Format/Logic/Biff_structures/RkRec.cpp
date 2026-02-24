@@ -49,6 +49,11 @@ void RkRec::load(CFRecord& record)
 }
 void RkRec::save(CFRecord& record)
 {
+	auto globInfo = record.getGlobalWorkbookInfo();
+	if(ixfe != 0)
+	{
+		ixfe+= globInfo->cellStyleXfs_count;
+	}
     record << ixfe << RK_;
 }
 

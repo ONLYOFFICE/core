@@ -61,5 +61,11 @@ void SXDBB::readFields(CFRecord& record)
 	record.skipNunBytes(size);
 }
 
+void SXDBB::writeFields(CFRecord& record)
+{
+	if(size && blob)
+		record.appendRawDataToStatic(blob.get(), size);
+}
+
 } // namespace XLS
 

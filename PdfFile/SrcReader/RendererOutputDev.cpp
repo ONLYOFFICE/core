@@ -44,7 +44,9 @@
 #include "../lib/xpdf/PDFDoc.h"
 #include "../lib/xpdf/CharCodeToUnicode.h"
 #include "../lib/xpdf/TextString.h"
+#include "../lib/xpdf/Decrypt.h"
 #include "XmlUtils.h"
+#include "PdfFont.h"
 
 #include "../../DesktopEditor/graphics/pro/Graphics.h"
 #include "../../DesktopEditor/graphics/Image.h"
@@ -75,88 +77,12 @@
 
 namespace PdfReader
 {
-	bool CheckFontNameStyle(std::wstring& sName, const std::wstring& sStyle)
-	{
-		size_t nPos = 0;
-		size_t nLenReplace = sStyle.length();
-		bool bRet = false;
-
-		std::wstring sName2 = sName;
-		NSStringExt::ToLower(sName2);
-
-		while (std::wstring::npos != (nPos = sName2.find(sStyle, nPos)))
-		{
-			size_t nOffset = 0;
-			if ((nPos > 0) && (sName2.at(nPos - 1) == '-' || sName2.at(nPos - 1) == ','))
-			{
-				--nPos;
-				++nOffset;
-			}
-
-			bRet = true;
-			sName.erase(nPos, nLenReplace + nOffset);
-			sName2.erase(nPos, nLenReplace + nOffset);
-		}
-		return bRet;
-	}
-
-	void RendererOutputDev::CheckFontStylePDF(std::wstring& sName, bool& bBold, bool& bItalic)
-	{
-		if (sName.length() > 7 && sName.at(6) == '+')
-		{
-			bool bIsRemove = true;
-			for (int nIndex = 0; nIndex < 6; nIndex++)
-			{
-				wchar_t nChar = sName.at(nIndex);
-				if (nChar < 'A' || nChar > 'Z')
-				{
-					bIsRemove = false;
-					break;
-				}
-			}
-			if (bIsRemove)
-			{
-				sName.erase(0, 7);
-			}
-		}
-
-		CheckFontNameStyle(sName, L"condensedbold");
-		CheckFontNameStyle(sName, L"semibold");
-		CheckFontNameStyle(sName, L"regular");
-
-		CheckFontNameStyle(sName, L"ultraexpanded");
-		CheckFontNameStyle(sName, L"extraexpanded");
-		CheckFontNameStyle(sName, L"semiexpanded");
-		CheckFontNameStyle(sName, L"expanded");
-
-		CheckFontNameStyle(sName, L"ultracondensed");
-		CheckFontNameStyle(sName, L"extracondensed");
-		CheckFontNameStyle(sName, L"semicondensed");
-		CheckFontNameStyle(sName, L"condensedlight");
-		CheckFontNameStyle(sName, L"condensed");
-		//CheckFontNameStyle(sName, L"light");
-
-		if (CheckFontNameStyle(sName, L"bold_italic"))  { bBold = true; bItalic = true; }
-		if (CheckFontNameStyle(sName, L"bold_oblique")) { bBold = true; bItalic = true; }
-
-		if (CheckFontNameStyle(sName, L"boldmt")) bBold = true;
-		if (CheckFontNameStyle(sName, L"bold"))   bBold = true;
-
-		if (CheckFontNameStyle(sName, L"italicmt")) bItalic = true;
-		if (CheckFontNameStyle(sName, L"italic"))   bItalic = true;
-		if (CheckFontNameStyle(sName, L"oblique"))  bItalic = true;
-
-		//if (CheckFontNameStyle(sName, L"bolditalicmt")) { bBold = true; bItalic = true; }
-		//if (CheckFontNameStyle(sName, L"bolditalic")) { bBold = true; bItalic = true; }
-		//if (CheckFontNameStyle(sName, L"boldoblique")) { bBold = true; bItalic = true; }
-	}
-
 	void CheckFontNamePDF(std::wstring& sName, NSFonts::CFontSelectFormat* format)
 	{
 		bool bBold   = false;
 		bool bItalic = false;
 
-		RendererOutputDev::CheckFontStylePDF(sName, bBold, bItalic);
+		CheckFontStylePDF(sName, bBold, bItalic);
 
 		if (format)
 		{
@@ -175,6 +101,125 @@ namespace PdfReader
 	inline int luminosity(BYTE* p)
 	{
 		return (p[2]*77 + p[1]*150 + p[0]*29) >> 8;
+	}
+	std::wstring ComputeFontHash(XRef* pXref, GfxFont* pFont)
+	{
+		MD5State oMD5;
+		md5Start(&oMD5);
+
+		Ref* pRef = pFont->getID();
+		Object oRefObj, oFontObj;
+		oRefObj.initRef(pRef->num, pRef->gen);
+		oRefObj.fetch(pXref, &oFontObj);
+		oRefObj.free();
+
+		if (oFontObj.isDict())
+		{
+			const char* aFontObjNames[] = { "Name", "Subtype", "BaseFont", "Encoding" };
+			for (const char* sKey : aFontObjNames)
+			{
+				Object oItem;
+				oFontObj.dictLookup(sKey, &oItem);
+				if (oItem.isName())
+					md5Append(&oMD5, (BYTE*)oItem.getName(), strlen(oItem.getName()));
+				oItem.free();
+			}
+
+			Object oDescObj, oDescendantFonts;
+			oFontObj.dictLookup("FontDescriptor", &oDescObj);
+			if (!oDescObj.isDict())
+			{
+				oDescObj.free();
+				if (oFontObj.dictLookup("DescendantFonts", &oDescendantFonts)->isArray())
+				{
+					Object oDescendant;
+					if (oDescendantFonts.arrayGet(0, &oDescendant)->isDict())
+						oDescendant.dictLookup("FontDescriptor", &oDescObj);
+					oDescendant.free();
+				}
+				oDescendantFonts.free();
+			}
+
+			if (oDescObj.isDict())
+			{
+				Object oItem;
+
+				oDescObj.dictLookup("FontName", &oItem);
+				if (oItem.isName())
+					md5Append(&oMD5, (BYTE*)oItem.getName(), strlen(oItem.getName()));
+				oItem.free();
+
+				const char* aMetricNames[] = {
+					"Flags", "ItalicAngle", "Ascent", "Descent",
+					"CapHeight", "XHeight", "StemV", "StemH"
+				};
+				for (const char* sName : aMetricNames)
+				{
+					oDescObj.dictLookup(sName, &oItem);
+					if (oItem.isInt())
+					{
+						int nVal = oItem.getInt();
+						md5Append(&oMD5, (BYTE*)&nVal, sizeof(int));
+					}
+					oItem.free();
+				}
+
+				oDescObj.dictLookup("FontBBox", &oItem);
+				if (oItem.isArray() && oItem.arrayGetLength() == 4)
+				{
+					for (int i = 0; i < 4; i++)
+					{
+						Object oCoord;
+						if (oItem.arrayGet(i, &oCoord)->isInt())
+						{
+							int nVal = oCoord.getInt();
+							md5Append(&oMD5, (BYTE*)&nVal, sizeof(int));
+						}
+						oCoord.free();
+					}
+				}
+				oItem.free();
+			}
+			oDescObj.free();
+		}
+		oFontObj.free();
+
+		Ref oEmbRef;
+		if (pFont->getEmbeddedFontID(&oEmbRef))
+		{
+			Object oRefObj, oStreamObj;
+			oRefObj.initRef(oEmbRef.num, oEmbRef.gen);
+			oRefObj.fetch(pXref, &oStreamObj);
+			oRefObj.free();
+
+			if (oStreamObj.isStream())
+			{
+				oStreamObj.streamReset();
+				const int nMaxBytes = 512;
+				BYTE aBuf[nMaxBytes];
+				int nRead = 0;
+				int nChar;
+				while (nRead < nMaxBytes && (nChar = oStreamObj.streamGetChar()) != EOF)
+					aBuf[nRead++] = (BYTE)nChar;
+
+				oStreamObj.streamClose();
+				md5Append(&oMD5, aBuf, nRead);
+			}
+			oStreamObj.free();
+		}
+
+		md5Finish(&oMD5);
+
+		static const char aHexChars[] = "0123456789ABCDEF";
+		std::string sHex;
+		sHex.reserve(32);
+		for (int i = 0; i < 16; i++)
+		{
+			sHex += aHexChars[(oMD5.digest[i] >> 4) & 0x0F];
+			sHex += aHexChars[oMD5.digest[i] & 0x0F];
+		}
+
+		return UTF8_TO_U(sHex);
 	}
 }
 
@@ -347,7 +392,7 @@ namespace PdfReader
 	}
 	void CPdfFontList::Remove(Ref oRef)
 	{
-		CRefFontMap::iterator oPos = m_oFontMap.find(oRef);
+		std::map<Ref, TFontEntry*>::iterator oPos = m_oFontMap.find(oRef);
 		if (m_oFontMap.end() != oPos)
 		{
 			TFontEntry* pEntry = oPos->second;
@@ -385,13 +430,17 @@ namespace PdfReader
 	}
 	TFontEntry* CPdfFontList::Lookup(Ref& oRef)
 	{
-		CRefFontMap::const_iterator oPos = m_oFontMap.find(oRef);
+		std::map<Ref, TFontEntry*>::const_iterator oPos = m_oFontMap.find(oRef);
 		return m_oFontMap.end() == oPos ? NULL : oPos->second;
 	}
 	void CPdfFontList::Add(Ref& oRef, TFontEntry* pFontEntry)
 	{
 		// До вызова данной функции надо проверять есть ли элемент с данным ключом
 		m_oFontMap.insert(std::pair<Ref, TFontEntry*>(oRef, pFontEntry));
+	}
+	const std::map<Ref, TFontEntry*>& CPdfFontList::GetFonts()
+	{
+		return m_oFontMap;
 	}
 	//--------------------------------------------------------------------------------------
 	// RendererOutputDev
@@ -812,7 +861,7 @@ namespace PdfReader
 		pFontInfo = pFontManager->GetFontInfoByParams(oFontSelect);
 		return pFontInfo;
 	}
-	void RendererOutputDev::GetFont(XRef* pXref, NSFonts::IFontManager* pFontManager, CPdfFontList* pFontList, GfxFont* pFont, std::wstring& wsFileName, std::wstring& wsFontName)
+	void RendererOutputDev::GetFont(XRef* pXref, NSFonts::IFontManager* pFontManager, CPdfFontList* pFontList, GfxFont* pFont, std::wstring& wsFileName, std::wstring& wsFontName, bool bNotFullName)
 	{
 		wsFileName = L"";
 		wsFontName = L"";
@@ -829,7 +878,7 @@ namespace PdfReader
 
 			std::wstring wsTempFileName = L"";
 			Ref oEmbRef;
-			bool bFontSubstitution = false;
+			bool bFontSubstitution = false, bFontBase14 = false;
 			std::wstring wsFontBaseName = NSStrings::GetStringFromUTF32(pFont->getName());
 			if (wsFontBaseName.empty())
 				wsFontBaseName = L"Helvetica";
@@ -1120,6 +1169,7 @@ namespace PdfReader
 				oFile.WriteFile((BYTE*)pData14, nSize14);
 				oFile.CloseFile();
 				wsFileName = wsTempFileName;
+				bFontBase14 = true;
 
 				eFontType = fontTrueType;
 			}
@@ -1137,6 +1187,7 @@ namespace PdfReader
 			}())
 			{
 				wsFileName = wsFontBaseName;
+				bFontBase14 = true;
 				NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Add(wsFileName, oMemoryFontStream.m_pData, (LONG)oMemoryFontStream.m_nSize, true);
 			}
 #endif
@@ -1530,30 +1581,10 @@ namespace PdfReader
 			// Обрежем индекс у FontName, если он есть
 			if (wsFontName.empty())
 				wsFontName = wsFontBaseName;
-			if (wsFontName.length() > 7)
-			{
-				bool bIsIndex = true;
-				if ('+' != wsFontName.at(6))
-					bIsIndex = false;
-
-				if (bIsIndex)
-				{
-					for (int nIndex = 0; nIndex < 6; nIndex++)
-					{
-						int nChar = wsFontName.at(nIndex);
-						if (nChar < 'A' || nChar > 'Z')
-						{
-							bIsIndex = false;
-							break;
-						}
-					}
-				}
-
-				if (bIsIndex)
-				{
-					wsFontName.erase(0, 7);
-				}
-			}
+			if (bNotFullName)
+				EraseSubsetTag(wsFontName);
+			else if (!bFontBase14 && !bFontSubstitution)
+				wsFontName += (L" " + ComputeFontHash(pXref, pFont));
 
 			pEntry->wsFilePath     = wsFileName;
 			pEntry->wsFontName     = wsFontName;
@@ -1562,6 +1593,8 @@ namespace PdfReader
 			pEntry->unLenGID       = (unsigned int)nLen;
 			pEntry->unLenUnicode   = (unsigned int)nToUnicodeLen;
 			pEntry->bAvailable     = true;
+			pEntry->bFontSubstitution = bFontSubstitution;
+			pEntry->bIsIdentity = pFont->isCIDFont() == gTrue ? ((GfxCIDFont*)pFont)->usesIdentityEncoding() || ((GfxCIDFont*)pFont)->usesIdentityCIDToGID() || ((GfxCIDFont*)pFont)->ctuUsesCharCodeToUnicode() || pFont->getType() == fontCIDType0C : false;
 		}
 		else if (NULL != pEntry)
 		{
@@ -1583,12 +1616,20 @@ namespace PdfReader
 
 		std::wstring wsFileName = L"";
 		std::wstring wsFontName = L"";
-		GetFont(m_pXref, m_pFontManager, m_pFontList, pFont, wsFileName, wsFontName);
+		GetFont(m_pXref, m_pFontManager, m_pFontList, pFont, wsFileName, wsFontName, false);
 
 		if (!wsFileName.empty())
 		{
 			m_pRenderer->put_FontPath(wsFileName);
 			m_pRenderer->put_FontName(wsFontName);
+			if (c_nDocxWriter == m_lRendererType)
+			{
+				TFontEntry oEntry;
+				if (!m_pFontList->GetFont(pFont->getID(), &oEntry))
+					return;
+				if (oEntry.bFontSubstitution)
+					m_pRenderer->CommandLong(c_nFontSubstitution, 0);
+			}
 		}
 	}
 	void RendererOutputDev::stroke(GfxState* pGState)
@@ -1714,6 +1755,7 @@ namespace PdfReader
 		yMax = nY1 * dYStep + pBBox[1];
 		Transform(pMatrix, xMin, yMin, &xMin, &yMin);
 		Transform(pMatrix, xMax, yMax, &xMax, &yMax);
+		pGState->clearPath();
 		pGState->moveTo(xMin, yMin);
 		pGState->lineTo(xMax, yMin);
 		pGState->lineTo(xMax, yMax);
@@ -1730,6 +1772,7 @@ namespace PdfReader
 		m_pRenderer->put_BrushTextureImage(oImage);
 		m_pRenderer->put_BrushTextureMode(c_BrushTextureModeTile);
 		m_pRenderer->put_BrushTextureAlpha(alpha);
+		m_pRenderer->put_BrushTransform({ pMatrix[0], pMatrix[1], pMatrix[2], pMatrix[3], 0, 0 });
 		m_pRenderer->BeginCommand(c_nImageType);
 
 		m_pRenderer->DrawPath(c_nWindingFillMode);
@@ -2455,9 +2498,8 @@ namespace PdfReader
 
 		std::wstring wsUnicodeText;
 
-		bool isCIDFont = pFont->isCIDFont();
-
-		if (NULL != oEntry.pCodeToUnicode && nCode < oEntry.unLenUnicode)
+		bool isCIDFont = pFont->isCIDFont() == gTrue;
+		if (NULL != oEntry.pCodeToUnicode && nCode < oEntry.unLenUnicode && oEntry.pCodeToUnicode[nCode])
 		{
 			int unUnicode = oEntry.pCodeToUnicode[nCode];
 			wsUnicodeText = NSStringExt::CConverter::GetUnicodeFromUTF32((const unsigned int*)(&unUnicode), 1);
@@ -2467,7 +2509,7 @@ namespace PdfReader
 			if (isCIDFont)
 			{
 				// Значит кодировка была Identity-H или Identity-V, что означает, что исходные коды и есть юникодные значения
-				wsUnicodeText = (wchar_t(nCode));
+				wsUnicodeText = NSStringExt::CConverter::GetUnicodeFromUTF32((const unsigned int*)(&nCode), 1);
 			}
 			else
 			{
@@ -2481,20 +2523,20 @@ namespace PdfReader
 
 		unsigned int unGidsCount = 0;
 		unsigned int unGid       = 0;
-		if (NULL != oEntry.pCodeToGID && nCode < oEntry.unLenGID)
+		if (NULL != oEntry.pCodeToGID && nCode < oEntry.unLenGID && oEntry.pCodeToGID[nCode])
 		{
-			if (0 == (unGid = oEntry.pCodeToGID[nCode]))
-				unGidsCount = 0;
-			else
-				unGidsCount = 1;
+			unGid = oEntry.pCodeToGID[nCode];
+			unGidsCount = 1;
+
+			if (pFont->getType() == fontCIDType0COT && isCIDFont && oEntry.bIsIdentity && oEntry.pCodeToUnicode && nCode < oEntry.unLenUnicode && !oEntry.pCodeToUnicode[nCode])
+				unGid = nCode;
 		}
 		else
 		{
-			if ((isCIDFont && (((GfxCIDFont*)pFont)->usesIdentityEncoding() || ((GfxCIDFont*)pFont)->usesIdentityCIDToGID() || ((GfxCIDFont*)pFont)->ctuUsesCharCodeToUnicode() || pFont->getType() == fontCIDType0C))
-					|| (!isCIDFont && wsUnicodeText.empty()))
+			if ((isCIDFont && oEntry.bIsIdentity) || (!isCIDFont && wsUnicodeText.empty()))
 			{
-				int nCurCode = (0 == nCode ? 65534 : nCode);
-				unGid       = (unsigned int)nCurCode;
+				unsigned int nCurCode = (0 == nCode ? 65534 : nCode);
+				unGid       = nCurCode;
 				unGidsCount = 1;
 			}
 		}
@@ -2562,11 +2604,8 @@ namespace PdfReader
 				m_pRenderer->put_FontPath(sFontPath);
 		}
 
-		LONG lRendererType = 0;
-		m_pRenderer->get_Type(&lRendererType);
-
 		bool bIsEmulateBold = false;
-		if (c_nDocxWriter == lRendererType && 2 == nRenderMode)
+		if (c_nDocxWriter == m_lRendererType && 2 == nRenderMode)
 			bIsEmulateBold = (S_OK == m_pRenderer->CommandLong(c_nSupportPathTextAsText, 0)) ? true : false;
 
 		if (bIsEmulateBold)
@@ -2707,7 +2746,7 @@ namespace PdfReader
 			RELEASEOBJECT(pCommand);
 		}
 	}
-	void RendererOutputDev::drawImageMask(GfxState* pGState, Object* pRef, Stream* pStream, int nWidth, int nHeight, GBool bInvert, GBool bInlineImage, GBool interpolate)
+	void RendererOutputDev::drawImageMask(GfxState* pGState, Gfx *gfx, Object* pRef, Stream* pStream, int nWidth, int nHeight, GBool bInvert, GBool bInlineImage, GBool interpolate)
 	{
 		if (m_bDrawOnlyText || pGState->getFillColorSpace()->isNonMarking())
 			return;
@@ -2783,7 +2822,7 @@ namespace PdfReader
 		DoTransform(arrMatrix, &dShiftX, &dShiftY, true);
 		m_pRenderer->DrawImage(&oImage, dShiftX, dShiftY, PDFCoordsToMM(1), PDFCoordsToMM(1));
 	}
-	void RendererOutputDev::setSoftMaskFromImageMask(GfxState* pGState, Object* pRef, Stream* pStream, int nWidth, int nHeight, GBool bInvert, GBool bInlineImage, GBool interpolate)
+	void RendererOutputDev::setSoftMaskFromImageMask(GfxState* pGState, Gfx *gfx, Object* pRef, Stream* pStream, int nWidth, int nHeight, GBool bInvert, GBool bInlineImage, GBool interpolate)
 	{
 		if (m_bDrawOnlyText || pGState->getFillColorSpace()->isNonMarking())
 			return;
@@ -2886,7 +2925,87 @@ namespace PdfReader
 		}
 		return isMask;
 	}
+	BYTE* BufferFromImageStream(GfxState* pGState, Stream* pStream, int nWidth, int nHeight, GfxImageColorMap* pColorMap, int* pMaskColors)
+	{
+		int nBufferSize = 4 * nWidth * nHeight;
+		if (nBufferSize < 1)
+			return NULL;
 
+		BYTE* pBufferPtr = new(std::nothrow) BYTE[nBufferSize];
+		if (!pBufferPtr)
+			return NULL;
+
+		int nComponentsCount = pColorMap->getNumPixelComps();
+		BYTE unAlpha = std::min(255, std::max(0, int(pGState->getFillOpacity() * 255)));
+
+		// Пишем данные в pBufferPtr
+		ImageStream* pImageStream = new ImageStream(pStream, nWidth, nComponentsCount, pColorMap->getBits());
+		pImageStream->reset();
+
+		int nComps = pImageStream->getComps();
+		int nCheckWidth = std::min(nWidth, pImageStream->getVals() / nComps);
+		GfxRenderingIntent intent = pGState->getRenderingIntent();
+
+		// fast realization for some colorspaces (for wasm module)
+		int nColorMapType = pColorMap->getFillType();
+		GfxColorComp** pColorMapLookup = pColorMap->getLookup();
+		if (!pColorMapLookup)
+			nColorMapType = 0;
+
+		for (int nY = nHeight - 1; nY >= 0; --nY)
+		{
+			BYTE* pLine = pImageStream->getLine();
+			BYTE* pLineDst = pBufferPtr + 4 * nWidth * nY;
+
+			if (!pLine)
+			{
+				memset(pLineDst, 0, 4 * nWidth);
+				continue;
+			}
+
+			for (int nX = 0; nX < nCheckWidth; ++nX)
+			{
+				if (2 == nColorMapType)
+				{
+					pLineDst[2] = colToByte(clip01(pColorMapLookup[0][pLine[0]]));
+					pLineDst[1] = colToByte(clip01(pColorMapLookup[1][pLine[1]]));
+					pLineDst[0] = colToByte(clip01(pColorMapLookup[2][pLine[2]]));
+				}
+				else if (1 == nColorMapType)
+				{
+					pLineDst[0] = pLineDst[1] = pLineDst[2] = colToByte(clip01(pColorMapLookup[0][pLine[0]]));
+				}
+				else if (3 == nColorMapType)
+				{
+					pLineDst[2] = colToByte(clip01(pColorMapLookup[0][pLine[0]]));
+					pLineDst[1] = colToByte(clip01(pColorMapLookup[1][pLine[1]]));
+					pLineDst[0] = colToByte(clip01(pColorMapLookup[2][pLine[2]]));
+					pLineDst[3] = colToByte(clip01(pColorMapLookup[3][pLine[3]]));
+				}
+				else
+				{
+					GfxRGB oRGB;
+					pColorMap->getRGB(pLine, &oRGB, intent);
+					pLineDst[0] = colToByte(oRGB.b);
+					pLineDst[1] = colToByte(oRGB.g);
+					pLineDst[2] = colToByte(oRGB.r);
+				}
+
+				if (pMaskColors && CheckMask(nComponentsCount, pMaskColors, pLine))
+					pLineDst[3] = 0;
+				else if (3 != nColorMapType)
+					pLineDst[3] = unAlpha;
+
+				pLine += nComps;
+				pLineDst += 4;
+			}
+		}
+
+		pImageStream->close();
+		delete pImageStream;
+
+		return pBufferPtr;
+	}
 	bool RendererOutputDev::ReadImage(Aggplus::CImage* pImageRes, Object* pRef, Stream* pStream)
 	{
 		Object oIm;
@@ -2924,7 +3043,7 @@ namespace PdfReader
 		RELEASEARRAYOBJECTS(pBuffer);
 		return false;
 	}
-	void RendererOutputDev::drawImage(GfxState* pGState, Object* pRef, Stream* pStream, int nWidth, int nHeight, GfxImageColorMap* pColorMap, int* pMaskColors, GBool bInlineImg, GBool interpolate)
+	void RendererOutputDev::drawImage(GfxState* pGState, Gfx *gfx, Object* pRef, Stream* pStream, int nWidth, int nHeight, GfxImageColorMap* pColorMap, int* pMaskColors, GBool bInlineImg, GBool interpolate)
 	{
 		if (m_bDrawOnlyText)
 			return;
@@ -2937,79 +3056,9 @@ namespace PdfReader
 		// Чтение jpeg через cximage происходит быстрее чем через xpdf на ~40%
 		if (pMaskColors || unAlpha != 255 || (nSK != strDCT || nComponentsCount != 3 || !ReadImage(&oImage, pRef, pStream)))
 		{
-			int nBufferSize = 4 * nWidth * nHeight;
-			if (nBufferSize < 1)
-				return;
-
-			BYTE* pBufferPtr = new(std::nothrow) BYTE[nBufferSize];
+			BYTE* pBufferPtr = BufferFromImageStream(pGState, pStream, nWidth, nHeight, pColorMap, pMaskColors);
 			if (!pBufferPtr)
 				return;
-
-			// Пишем данные в pBufferPtr
-			ImageStream* pImageStream = new ImageStream(pStream, nWidth, nComponentsCount, pColorMap->getBits());
-			pImageStream->reset();
-
-			int nComps = pImageStream->getComps();
-			int nCheckWidth = std::min(nWidth, pImageStream->getVals() / nComps);
-			GfxRenderingIntent intent = pGState->getRenderingIntent();
-
-			// fast realization for some colorspaces (for wasm module)
-			int nColorMapType = pColorMap->getFillType();
-			GfxColorComp** pColorMapLookup = pColorMap->getLookup();
-			if (!pColorMapLookup)
-				nColorMapType = 0;
-
-			for (int nY = nHeight - 1; nY >= 0; --nY)
-			{
-				BYTE* pLine = pImageStream->getLine();
-				BYTE* pLineDst = pBufferPtr + 4 * nWidth * nY;
-
-				if (!pLine)
-				{
-					memset(pLineDst, 0, 4 * nWidth);
-					continue;
-				}
-
-				for (int nX = 0; nX < nCheckWidth; ++nX)
-				{
-					if (2 == nColorMapType)
-					{
-						pLineDst[2] = colToByte(clip01(pColorMapLookup[0][pLine[0]]));
-						pLineDst[1] = colToByte(clip01(pColorMapLookup[1][pLine[1]]));
-						pLineDst[0] = colToByte(clip01(pColorMapLookup[2][pLine[2]]));
-					}
-					else if (1 == nColorMapType)
-					{
-						pLineDst[0] = pLineDst[1] = pLineDst[2] = colToByte(clip01(pColorMapLookup[0][pLine[0]]));
-					}
-					else if (3 == nColorMapType)
-					{
-						pLineDst[2] = colToByte(clip01(pColorMapLookup[0][pLine[0]]));
-						pLineDst[1] = colToByte(clip01(pColorMapLookup[1][pLine[1]]));
-						pLineDst[0] = colToByte(clip01(pColorMapLookup[2][pLine[2]]));
-						pLineDst[3] = colToByte(clip01(pColorMapLookup[3][pLine[3]]));
-					}
-					else
-					{
-						GfxRGB oRGB;
-						pColorMap->getRGB(pLine, &oRGB, intent);
-						pLineDst[0] = colToByte(oRGB.b);
-						pLineDst[1] = colToByte(oRGB.g);
-						pLineDst[2] = colToByte(oRGB.r);
-					}
-
-					if (pMaskColors && CheckMask(nComponentsCount, pMaskColors, pLine))
-						pLineDst[3] = 0;
-					else if (3 != nColorMapType)
-						pLineDst[3] = unAlpha;
-
-					pLine += nComps;
-					pLineDst += 4;
-				}
-			}
-
-			pImageStream->close();
-			delete pImageStream;
 
 			oImage.Create(pBufferPtr, nWidth, nHeight, -4 * nWidth);
 		}
@@ -3031,13 +3080,13 @@ namespace PdfReader
 		DoTransform(arrMatrix, &dShiftX, &dShiftY, true);
 		m_pRenderer->DrawImage(&oImage, dShiftX, dShiftY, PDFCoordsToMM(1), PDFCoordsToMM(1));
 	}
-	void RendererOutputDev::drawMaskedImage(GfxState* pGState, Object* pRef, Stream* pStream, int nWidth, int nHeight, GfxImageColorMap* pColorMap, Object* pStreamRef, Stream* pMaskStream, int nMaskWidth, int nMaskHeight, GBool bMaskInvert, GBool interpolate)
+	void RendererOutputDev::drawMaskedImage(GfxState* pGState, Gfx *gfx, Object* pRef, Stream* pStream, int nWidth, int nHeight, GfxImageColorMap* pColorMap, Object* pStreamRef, Stream* pMaskStream, int nMaskWidth, int nMaskHeight, GBool bMaskInvert, GBool interpolate)
 	{
 		if (m_bDrawOnlyText)
 			return;
 
 		if (nMaskWidth <= 0 || nMaskHeight <= 0)
-			drawImage(pGState, pRef, pStream, nWidth, nHeight, pColorMap, NULL, false, interpolate);
+			drawImage(pGState, gfx, pRef, pStream, nWidth, nHeight, pColorMap, NULL, false, interpolate);
 
 		if (nMaskWidth > nWidth || nMaskHeight > nHeight)
 		{
@@ -3054,7 +3103,7 @@ namespace PdfReader
 			maskDecode.arrayAdd(&decodeHigh);
 			maskColorMap = new GfxImageColorMap(1, &maskDecode, new GfxDeviceGrayColorSpace());
 			maskDecode.free();
-			drawSoftMaskedImage(pGState, pRef, pStream, nWidth, nHeight,
+			drawSoftMaskedImage(pGState, gfx, pRef, pStream, nWidth, nHeight,
 								pColorMap, pStreamRef, pMaskStream, nMaskWidth, nMaskHeight, maskColorMap, NULL, interpolate);
 			delete maskColorMap;
 			return;
@@ -3176,7 +3225,7 @@ namespace PdfReader
 		DoTransform(arrMatrix, &dShiftX, &dShiftY, true);
 		m_pRenderer->DrawImage(&oImage, dShiftX, dShiftY, PDFCoordsToMM(1), PDFCoordsToMM(1));
 	}
-	void RendererOutputDev::drawSoftMaskedImage(GfxState* pGState, Object* pRef, Stream* pStream, int nWidth, int nHeight, GfxImageColorMap* pColorMap, Object* maskRef, Stream* pMaskStream, int nMaskWidth, int nMaskHeight, GfxImageColorMap* pMaskColorMap, double* pMatteColor, GBool interpolate)
+	void RendererOutputDev::drawSoftMaskedImage(GfxState* pGState, Gfx *gfx, Object* pRef, Stream* pStream, int nWidth, int nHeight, GfxImageColorMap* pColorMap, Object* maskRef, Stream* pMaskStream, int nMaskWidth, int nMaskHeight, GfxImageColorMap* pMaskColorMap, double* pMatteColor, GBool interpolate)
 	{
 		if (m_bDrawOnlyText)
 			return;
@@ -3190,33 +3239,9 @@ namespace PdfReader
 
 		if (nComponentsCount != 3 || pStream->getKind() != strDCT || !ReadImage(&oImage, pRef, pStream))
 		{
-			BYTE* pBufferPtr = new(std::nothrow) BYTE[nBufferSize];
+			BYTE* pBufferPtr = BufferFromImageStream(pGState, pStream, nWidth, nHeight, pColorMap, NULL);
 			if (!pBufferPtr)
 				return;
-
-			// Пишем данные в pBufferPtr
-			ImageStream* pImageStream = new ImageStream(pStream, nWidth, pColorMap->getNumPixelComps(), pColorMap->getBits());
-			pImageStream->reset();
-
-			BYTE unPixel[4] = { 0, 0, 0, 0 };
-			for (int nY = nHeight - 1; nY >= 0; --nY)
-			{
-				int nIndex = 4 * nY * nWidth;
-				for (int nX = 0; nX < nWidth; ++nX)
-				{
-					pImageStream->getPixel(unPixel);
-					GfxRGB oRGB;
-					pColorMap->getRGB(unPixel, &oRGB, gfxRenderingIntentAbsoluteColorimetric);
-					pBufferPtr[nIndex + 0] = colToByte(oRGB.b);
-					pBufferPtr[nIndex + 1] = colToByte(oRGB.g);
-					pBufferPtr[nIndex + 2] = colToByte(oRGB.r);
-					pBufferPtr[nIndex + 3] = 255;
-
-					nIndex += 4;
-				}
-			}
-			delete pImageStream;
-
 			oImage.Create(pBufferPtr, nWidth, nHeight, -4 * nWidth);
 		}
 
@@ -3331,16 +3356,54 @@ namespace PdfReader
 			ImageStream* pSMaskStream = new ImageStream(pMaskStream, nMaskWidth, pMaskColorMap->getNumPixelComps(), pMaskColorMap->getBits());
 			pSMaskStream->reset();
 
+			// Быстрая реализация для масок
+			int nMaskColorMapType = pMaskColorMap->getFillType();
+			GfxColorComp** pMaskColorMapLookup = pMaskColorMap->getLookup();
+			if (!pMaskColorMapLookup)
+				nMaskColorMapType = 0;
+			int nMaskComps = pSMaskStream->getComps();
+			int nMaskCheckWidth = std::min(nMaskWidth, pSMaskStream->getVals() / nMaskComps);
+
 			BYTE unAlpha = 0;
 			for (int nY = nMaskHeight - 1; nY >= 0; --nY)
 			{
+				BYTE* pMaskLine = pSMaskStream->getLine();
 				int nIndex = 4 * nY * nMaskWidth;
-				for (int nX = 0; nX < nMaskWidth; ++nX)
+				if (!pMaskLine)
 				{
-					pSMaskStream->getPixel(&unAlpha);
-					GfxGray oGray;
-					pMaskColorMap->getGray(&unAlpha, &oGray, GfxRenderingIntent::gfxRenderingIntentAbsoluteColorimetric);
-					pBufferPtr[nIndex + 3] = (BYTE)(colToByte(oGray) * dAlphaKoef);
+					// Заполняем прозрачностью, если линия не прочитана
+					for (int nX = 0; nX < nMaskWidth; ++nX)
+					{
+						pBufferPtr[nIndex + 3] = 0;
+						nIndex += 4;
+					}
+					continue;
+				}
+
+				for (int nX = 0; nX < nMaskCheckWidth; ++nX)
+				{
+					BYTE unAlpha = 0;
+
+					// Оптимизированные случаи для разных цветовых пространств
+					if (1 == nMaskColorMapType)
+					{
+						unAlpha = colToByte(clip01(pMaskColorMapLookup[0][pMaskLine[0]]));
+					}
+					else if (2 == nMaskColorMapType || 3 == nMaskColorMapType)
+					{
+						unAlpha = colToByte(clip01(0.3 * pMaskColorMapLookup[0][pMaskLine[0]] +
+												  0.59 * pMaskColorMapLookup[1][pMaskLine[1]] +
+												  0.11 * pMaskColorMapLookup[2][pMaskLine[2]] + 0.5));
+					}
+					else
+					{
+						GfxGray oGray;
+						pMaskColorMap->getGray(pMaskLine, &oGray, GfxRenderingIntent::gfxRenderingIntentAbsoluteColorimetric);
+						unAlpha = colToByte(oGray);
+					}
+
+					pBufferPtr[nIndex + 3] = (BYTE)(unAlpha * dAlphaKoef);
+					pMaskLine += nMaskComps;
 					nIndex += 4;
 				}
 			}

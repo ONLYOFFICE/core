@@ -54,7 +54,7 @@ public:
     _UINT32		colFirst = 0;
     _UINT32		colLast = 0;
     _UINT32		coldx = 0;
-	IXFCell		ixfe = 0xffff;
+	IXFCell		ixfe = 0;
     _UINT32     ixfeXLSB = 0xffffffff;
 
 	bool fHidden = false;

@@ -74,5 +74,14 @@ void List12::readFields(CFRecord& record)
 		rgbList12->load(record);
 }
 
+void List12::writeFields(CFRecord& record)
+{
+	frtHeader.rt = 0x0877;
+	record << frtHeader << lsd << idList;
+
+	if(rgbList12 != nullptr)
+		rgbList12->save(record);
+}
+
 } // namespace XLS
 

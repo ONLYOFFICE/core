@@ -43,6 +43,155 @@
 #include "../../../OfficeUtils/src/ZipFolder.h"
 
 #include "common.h"
+#include <algorithm>
+
+namespace NExtractTools
+{
+	static bool ParseByteRange(const BYTE* pData, DWORD dwLength, DWORD outRange[4])
+	{
+		const BYTE pPattern[] = "ByteRange";
+		const size_t nPatternLen = 9;
+
+		const BYTE* it = std::find_end(pData, pData + dwLength, pPattern, pPattern + nPatternLen);
+		if (it == pData + dwLength)
+			return false;
+
+		it += nPatternLen;
+
+		while (it < pData + dwLength && *it != '[')
+		{
+			if (*it != ' ' && *it != '\t' && *it != '\r' && *it != '\n')
+				return false;
+			++it;
+		}
+		if (it >= pData + dwLength)
+			return false;
+
+		++it;
+
+		for (int i = 0; i < 4; ++i)
+		{
+			while (it < pData + dwLength && (*it == ' ' || *it == '\t'))
+				++it;
+			if (it >= pData + dwLength)
+				return false;
+
+			if (*it < '0' || *it > '9')
+				return false;
+
+			DWORD nValue = 0;
+			while (it < pData + dwLength && *it >= '0' && *it <= '9')
+			{
+				nValue = nValue * 10 + (*it - '0');
+				++it;
+			}
+			outRange[i] = nValue;
+		}
+
+		while (it < pData + dwLength && (*it == ' ' || *it == '\t'))
+			++it;
+		if (it >= pData + dwLength || *it != ']')
+			return false;
+
+		return true;
+	}
+	static int pdfSign(const std::wstring& file, NSFonts::IApplicationFonts* fonts, InputParams& params, ConvertParams& convertParams)
+	{
+		CPdfFile pdfFile(fonts);
+		pdfFile.SetTempDirectory(convertParams.m_sTempDir);
+		std::wstring password = params.getSavePassword();
+
+		std::wstring pdfTemp = combinePath(convertParams.m_sTempDir, L"pdf_sign.pdf");
+		NSFile::CFileBinary::Copy(file, pdfTemp);
+
+		if (!pdfFile.LoadFromFile(pdfTemp, L"", password.c_str(), password.c_str()))
+			return 2;
+
+		if (!pdfFile.EditPdf(file))
+			return 2;
+
+		if (!pdfFile.EditPage(0))
+			return 2;
+
+		CPDFSignatureInfo oSigInfo;
+		auto extractJsonValue = [](const std::wstring* jsonParams, const std::wstring& key, std::wstring::size_type startPos) -> std::wstring
+		{
+			std::wstring searchPattern = L"\"" + key + L"\":\"";
+			std::wstring::size_type pos = jsonParams->find(searchPattern, startPos);
+			if (std::wstring::npos == pos)
+				return L"";
+
+			pos += searchPattern.length();
+			std::wstring::size_type posEnd = jsonParams->find(L"\"", pos);
+			if (std::wstring::npos == posEnd)
+				return L"";
+
+			return jsonParams->substr(pos, posEnd - pos);
+		};
+
+		if (params.m_sJsonParams)
+		{
+			std::wstring::size_type posLayout = params.m_sJsonParams->find(L"\"pdfLayout\":{");
+			if (std::wstring::npos != posLayout)
+			{
+				std::wstring::size_type posSignature = params.m_sJsonParams->find(L"\"signature\":{", posLayout);
+				if (std::wstring::npos != posSignature)
+				{
+					std::wstring::size_type posSignature2 = params.m_sJsonParams->find(L"}", posSignature);
+					if (std::wstring::npos == posSignature2)
+						return 2;
+
+					oSigInfo.m_wsReason   = extractJsonValue(params.m_sJsonParams, L"reason", posSignature);
+					oSigInfo.m_wsContact  = extractJsonValue(params.m_sJsonParams, L"contactInfo", posSignature);
+					oSigInfo.m_wsName     = extractJsonValue(params.m_sJsonParams, L"name", posSignature);
+					oSigInfo.m_wsLocation = extractJsonValue(params.m_sJsonParams, L"location", posSignature);
+				}
+			}
+		}
+
+		pdfFile.Sign(0, 0, 0, 0, L"", &oSigInfo);
+		pdfFile.Close();
+
+		if (!pdfFile.PrepareSignature(file))
+			return 2;
+
+		if (params.getSigningKeyStorePath() == L"_placeholder_")
+			return 0;
+
+		BYTE* pDataFile = NULL;
+		DWORD dwDataLength = 0;
+
+		NSFile::CFileBinary::ReadAllBytes(file, &pDataFile, dwDataLength);
+
+		DWORD aByteRange[4] = {0};
+		if (!ParseByteRange(pDataFile, dwDataLength, aByteRange))
+			return 2;
+		if (aByteRange[0] + aByteRange[1] > dwDataLength || aByteRange[2] + aByteRange[3] > dwDataLength)
+			return 2;
+
+		DWORD dwDataSignLength = aByteRange[1] + aByteRange[3];
+		BYTE* pDataToSign = new BYTE[dwDataSignLength];
+		memcpy(pDataToSign, pDataFile + aByteRange[0], aByteRange[1]);
+		memcpy(pDataToSign + aByteRange[1], pDataFile + aByteRange[2], aByteRange[3]);
+		RELEASEARRAYOBJECTS(pDataFile);
+
+		ICertificate* certificate = NSSign::loadCertificate(params);
+		if (!certificate)
+			return 1;
+
+		BYTE* pDatatoWrite = NULL;
+		unsigned int dwLenDatatoWrite = 0;
+		certificate->SignPKCS7(pDataToSign, dwDataSignLength, pDatatoWrite, dwLenDatatoWrite);
+		RELEASEARRAYOBJECTS(pDataToSign);
+
+		pdfFile.FinalizeSignature(pDatatoWrite, dwLenDatatoWrite);
+
+		RELEASEARRAYOBJECTS(pDatatoWrite);
+		RELEASEOBJECT(certificate);
+
+		return 0;
+	}
+}
 
 namespace NExtractTools
 {
@@ -76,6 +225,12 @@ namespace NExtractTools
 		{
 			nRet = S_OK == pdfWriter.OnlineWordToPdf(sFrom, sTo, &oBufferParams) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
 		}
+
+		if (0 == nRet && !params.getSigningKeyStorePath().empty())
+		{
+			nRet = pdfSign(sTo, pApplicationFonts, params, convertParams);
+		}
+
 		RELEASEOBJECT(pApplicationFonts);
 		return nRet;
 	}
@@ -245,6 +400,12 @@ namespace NExtractTools
 
 			int nReg = (convertParams.m_bIsPaid == false) ? 0 : 1;
 			nRes = (S_OK == pdfWriter.OnlineWordToPdfFromBinary(sPdfBinFile, sTo, &oBufferParams)) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
+
+			if (0 == nRes && !params.getSigningKeyStorePath().empty())
+			{
+				nRes = pdfSign(sTo, pApplicationFonts, params, convertParams);
+			}
+
 			RELEASEOBJECT(pApplicationFonts);
 		}
 		// удаляем sPdfBinFile, потому что он не в Temp
@@ -295,29 +456,65 @@ namespace NExtractTools
 	}
 
 	// from crossplatform (pdf)
-	std::string checkPrintPages(InputParams &params)
+	std::string checkPrintPages(InputParams &params, int &nType)
 	{
 		if (NULL == params.m_sJsonParams)
 			return "";
 
+		std::wstring sPages;
+		std::wstring::size_type posPrintPages = params.m_sJsonParams->find(L"\"printPages\":\"");
+		if (std::wstring::npos != posPrintPages)
+		{
+			posPrintPages += 14;
+			std::wstring::size_type posPrintPages2 = params.m_sJsonParams->find(L"\"", posPrintPages);
+			if (std::wstring::npos == posPrintPages2)
+				return "";
+
+			sPages = params.m_sJsonParams->substr(posPrintPages, posPrintPages2 - posPrintPages);
+		}
+
 		std::wstring::size_type posNativeOptions = params.m_sJsonParams->find(L"\"nativeOptions\"");
-		if (std::wstring::npos == posNativeOptions)
-			return "";
+		if (sPages.empty() && std::wstring::npos != posNativeOptions)
+		{
+			std::wstring::size_type posNativePages = params.m_sJsonParams->find(L"\"pages\":\"", posNativeOptions);
+			if (std::wstring::npos == posNativePages)
+				return "";
 
-		std::wstring::size_type posNativePages = params.m_sJsonParams->find(L"\"pages\":\"", posNativeOptions);
-		if (std::wstring::npos == posNativePages)
-			return "";
+			posNativePages += 9;
+			std::wstring::size_type posNativePages2 = params.m_sJsonParams->find(L"\"", posNativePages);
+			if (std::wstring::npos == posNativePages2)
+				return "";
 
-		posNativePages += 9;
-		std::wstring::size_type posNativePages2 = params.m_sJsonParams->find(L"\"", posNativePages);
-		if (std::wstring::npos == posNativePages2)
-			return "";
+			sPages = params.m_sJsonParams->substr(posNativePages, posNativePages2 - posNativePages);
+		}
 
-		std::wstring sPages = params.m_sJsonParams->substr(posNativePages, posNativePages2 - posNativePages);
+		std::wstring::size_type posLayout = params.m_sJsonParams->find(L"\"pdfLayout\":{");
+		if (std::wstring::npos != posLayout)
+		{
+			std::wstring::size_type posContent = params.m_sJsonParams->find(L"\"content\":\"", posLayout);
+			if (std::wstring::npos != posContent)
+			{
+				posContent += 11;
+				std::wstring::size_type posContent2 = params.m_sJsonParams->find(L"\"", posContent);
+				if (std::wstring::npos == posContent2)
+					return "";
+
+				std::wstring sType = params.m_sJsonParams->substr(posContent, posContent2 - posContent);
+				if (sType == L"doc")
+					nType = 0;
+				else if (sType == L"docAndMarkups")
+					nType = 1;
+				else if (sType == L"docAndStamps")
+					nType = 2;
+				else if (sType == L"formsOnly")
+					nType = 3;
+			}
+		}
+
 		if (L"all" == sPages)
 			return "";
 
-		if (L"current" == sPages)
+		if (L"current" == sPages && std::wstring::npos != posNativeOptions)
 		{
 			std::wstring::size_type posCurrentPage = params.m_sJsonParams->find(L"\"currentPage\":", posNativeOptions);
 			if (std::wstring::npos == posCurrentPage)
@@ -347,6 +544,9 @@ namespace NExtractTools
 
 	std::vector<bool> getPrintPages(const std::string &sPages, int nPagesCount)
 	{
+		if (sPages.empty())
+			return std::vector<bool>(nPagesCount, true);
+
 		const char *buffer = sPages.c_str();
 
 		size_t nCur = 0;
@@ -440,10 +640,17 @@ namespace NExtractTools
 		pReader->SetTempDirectory(convertParams.m_sTempDir);
 
 		std::wstring sPassword = params.getPassword();
-		bool bResult = pReader->LoadFromFile(sFrom.c_str(), L"", sPassword, sPassword);
+		bool bResult = pReader->LoadFromFile(sFrom.c_str(), L"", sPassword.c_str(), sPassword.c_str());
 
 		if (bResult)
 		{
+			if ((AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == nFormatFrom ||
+				 AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDFA == nFormatFrom)
+				&& params.m_sCmapDir)
+			{
+				((CPdfFile*)pReader)->SetCMapFolder(*params.m_sCmapDir);
+			}
+
 			int nPagesCount = pReader->GetPagesCount();
 
 			bool bIsUsePages = convertParams.m_sPrintPages.empty() ? false : true;
@@ -513,10 +720,17 @@ namespace NExtractTools
 		pReader->SetTempDirectory(convertParams.m_sTempDir);
 
 		std::wstring sPassword = params.getPassword();
-		bool bResult = pReader->LoadFromFile(sFrom.c_str(), L"", sPassword, sPassword);
+		bool bResult = pReader->LoadFromFile(sFrom.c_str(), L"", sPassword.c_str(), sPassword.c_str());
 
 		if (bResult)
 		{
+			if ((AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == nFormatFrom ||
+				 AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDFA == nFormatFrom)
+				&& params.m_sCmapDir)
+			{
+				((CPdfFile*)pReader)->SetCMapFolder(*params.m_sCmapDir);
+			}
+
 			// default as in CMetafileToRenderterRaster
 			int nRasterFormat = 4;
 			int nSaveType = 2;
@@ -700,13 +914,13 @@ namespace NExtractTools
 			oPdfResult.SetDocumentID(documentID);
 
 		std::wstring password = params.getPassword();
-		if (!oPdfResult.LoadFromFile(sFrom, L"", password, password))
+		if (!oPdfResult.LoadFromFile(sFrom, L"", password.c_str(), password.c_str()))
 		{
 			if (oPdfResult.GetError() == 4)
 			{
 				// if password does not changed - old password may be not sended
 				password = params.getSavePassword();
-				if (!oPdfResult.LoadFromFile(sFrom, L"", password, password))
+				if (!oPdfResult.LoadFromFile(sFrom, L"", password.c_str(), password.c_str()))
 					return false;
 
 				RELEASEOBJECT(params.m_sPassword);
@@ -831,14 +1045,15 @@ namespace NExtractTools
 
 		if (AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == nFormatTo)
 		{
-			std::string sPages = checkPrintPages(params);
+			int nType = -1;
+			std::string sPages = checkPrintPages(params, nType);
 
 			if (nFormatFrom == nFormatTo && !params.getIsPDFA())
 			{
-				if (!sPages.empty())
+				if (!sPages.empty() || nType != -1)
 				{
 					std::wstring sCurrentTmp = L"";
-					sCurrentTmp =NSFile::CFileBinary::CreateTempFileWithUniqueName(convertParams.m_sTempDir, L"PDF_");
+					sCurrentTmp = NSFile::CFileBinary::CreateTempFileWithUniqueName(convertParams.m_sTempDir, L"PDF_");
 					if (NSFile::CFileBinary::Exists(sCurrentTmp))
 						NSFile::CFileBinary::Remove(sCurrentTmp);
 
@@ -846,17 +1061,14 @@ namespace NExtractTools
 					oPdfPages.SetTempDirectory(convertParams.m_sTempDir);
 
 					std::wstring sPassword = params.getPassword();
-					if (oPdfPages.LoadFromFile(sFrom.c_str(), L"", sPassword, sPassword) && oPdfPages.EditPdf(sCurrentTmp))
+					if (oPdfPages.LoadFromFile(sFrom.c_str(), L"", sPassword.c_str(), sPassword.c_str()))
 					{
 						int nPagesCount = oPdfPages.GetPagesCount();
-						std::vector<bool> arPages = getPrintPages(convertParams.m_sPrintPages, nPagesCount);
+						std::vector<bool> arPages = getPrintPages(sPages, nPagesCount);
 
-						for (int i = 0; i < nPagesCount; ++i)
-						{
-							if (!arPages[i])
-								oPdfPages.DeletePage(i);
-						}
+						oPdfPages.PrintPages(arPages, nType);
 
+						oPdfPages.SaveToFile(sCurrentTmp);
 						oPdfPages.Close();
 					}
 					else
@@ -885,7 +1097,7 @@ namespace NExtractTools
 					oPdfPages.SetTempDirectory(convertParams.m_sTempDir);
 
 					std::wstring sPassword = params.getPassword();
-					if (oPdfPages.LoadFromFile(sFrom.c_str(), L"", sPassword, sPassword))
+					if (oPdfPages.LoadFromFile(sFrom.c_str(), L"", sPassword.c_str(), sPassword.c_str()))
 					{
 						oPdfPages.ChangePassword(sCurrentTmp, params.getSavePassword());
 						oPdfPages.Close();
@@ -936,7 +1148,7 @@ namespace NExtractTools
 					{
 						std::wstring password = params.getSavePassword();
 						CPdfFile oPdfResult(pApplicationFonts);
-						if (!oPdfResult.LoadFromFile(sFrom, L"", password, password))
+						if (!oPdfResult.LoadFromFile(sFrom, L"", password.c_str(), password.c_str()))
 							return false;
 
 						if (!oPdfResult.EditPdf(sTo))
@@ -989,7 +1201,14 @@ namespace NExtractTools
 				convertParams.m_sPrintPages = sPages;
 				nRes = PdfDjvuXpsToRenderer(&pReader, &pdfWriter, sFrom, nFormatFrom, sTo, params, convertParams, pApplicationFonts);
 				if (SUCCEEDED_X2T(nRes))
+				{
 					nRes = S_OK == pdfWriter.SaveToFile(sTo) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+
+					if (0 == nRes && !params.getSigningKeyStorePath().empty())
+					{
+						nRes = pdfSign(sTo, pApplicationFonts, params, convertParams);
+					}
+				}
 				RELEASEOBJECT(pReader);
 			}
 		}
@@ -1049,7 +1268,14 @@ namespace NExtractTools
 				pReader->SetTempDirectory(convertParams.m_sTempDir);
 
 				std::wstring sPassword = params.getPassword();
-				pReader->LoadFromFile(sFrom, L"", sPassword, sPassword);
+				pReader->LoadFromFile(sFrom, L"", sPassword.c_str(), sPassword.c_str());
+
+				if ((AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == nFormatFrom ||
+					 AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDFA == nFormatFrom)
+					&& params.m_sCmapDir)
+				{
+					((CPdfFile*)pReader)->SetCMapFolder(*params.m_sCmapDir);
+				}
 
 				// pdf -> txt via TxtRenderer
 				if (nFormatTo == AVS_OFFICESTUDIO_FILE_DOCUMENT_TXT && nFormatFrom == AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF)

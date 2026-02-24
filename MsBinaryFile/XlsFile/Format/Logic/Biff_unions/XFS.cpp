@@ -112,22 +112,23 @@ const bool XFS::loadContent(BinProcessor& proc)
 }
 
 const bool XFS::saveContent(BinProcessor& proc)
-{   for (auto i: m_arCellXFs)
-        if(i!= nullptr)
-            proc.mandatory(*i);
-	if(m_arCellXFs.empty())
+{
+	auto globInfo = proc.getGlobalWorkbookInfo();
+	for(auto i = 0; i < 16; i++)
 	{
-		size_t cellId = 0;
-		size_t StyleId = 0;
-		XF styleXf(cellId, StyleId);
-		proc.mandatory(styleXf);
-		XF cellXf(cellId, StyleId);
-		cellXf.fStyle = false;
-		proc.mandatory(cellXf);
+		size_t index = 0;
+		XF cellStyleMandatory(index, index);
+		cellStyleMandatory.fStyle = true;
+		proc.mandatory(cellStyleMandatory);
 	}
-    for (auto i: m_arCellStyles)
+	for (auto i: m_arCellStyles)
+		if(i!= nullptr)
+			proc.mandatory(*i);
+	globInfo->cellStyleXfs_count = m_arCellStyles.size() + 16; // styles + 16 mandatory styles
+	for (auto i: m_arCellXFs)
         if(i!= nullptr)
             proc.mandatory(*i);
+	globInfo->cellXfs_count = m_arCellXFs.size();
     if(m_XFCRC != nullptr )
     {
         proc.mandatory(*m_XFCRC);

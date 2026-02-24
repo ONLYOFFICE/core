@@ -52,7 +52,7 @@ public:
 
 	int serialize(std::wostream & stream);
 
-    unsigned char	alc = 0;
+	unsigned char	alc = 0xFF;
     bool			fWrap = 0;
     unsigned char	alcv = 0;
     bool			fJustLast = 0;

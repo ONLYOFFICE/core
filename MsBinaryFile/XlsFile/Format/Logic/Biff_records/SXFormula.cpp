@@ -56,5 +56,11 @@ void SXFormula::readFields(CFRecord& record)
 	record >> reserved >> ifdb;
 }
 
+void SXFormula::writeFields(CFRecord& record)
+{
+	record.reserveNunBytes(2);
+	record << ifdb;
+}
+
 } // namespace XLS
 

@@ -101,10 +101,13 @@ const bool PIVOTCACHEDEFINITION::loadContent(BinProcessor& proc)
 }
 const bool PIVOTCACHEDEFINITION::saveContent(BinProcessor& proc)
 {
-    if(m_SXStreamID == nullptr || m_SXVS == nullptr)
+	if(m_SXStreamID == nullptr)
         return false;
     proc.mandatory(*m_SXStreamID);
-    proc.mandatory(*m_SXVS);
+	if(m_SXVS != nullptr)
+		proc.mandatory(*m_SXVS);
+	else
+		proc.mandatory<SXVS>();
     if(m_SXSRC != nullptr)
         proc.mandatory(*m_SXSRC);
     return true;

@@ -76,6 +76,10 @@ void SxView::readFields(CFRecord& record)
 
 void SxView::writeFields(CFRecord& record)
 {
+	auto globInfo = record.getGlobalWorkbookInfo();
+	auto cacheIndex = globInfo->mapPivotCacheIndex.find(iCache);
+	if(cacheIndex != globInfo->mapPivotCacheIndex.end())
+		iCache = cacheIndex->second;
     unsigned short flags = 0;
     record << ref << rwFirstHead << rwFirstData << colFirstData << iCache;
     record.reserveNunBytes(2);

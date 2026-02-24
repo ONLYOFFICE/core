@@ -154,8 +154,8 @@ void Dv::writeFields(CFRecord& record)
         SETBIT(flags, 18, fShowInputMsg)
         SETBIT(flags, 19, fShowErrorMsg)
         SETBITS(flags, 20, 23, typOperator)
-        SETBIT(flags, 24, fDVMinFmla)
-        SETBIT(flags, 25, fDVMaxFmla)
+		//SETBIT(flags, 24, fDVMinFmla)
+		//SETBIT(flags, 25, fDVMaxFmla)
     }
     else
     {
@@ -174,9 +174,17 @@ void Dv::writeFields(CFRecord& record)
 	if (record.getGlobalWorkbookInfo()->Version < 0x0800)
 	{
 		XLUnicodeString    PromptTitle_(PromptTitle);
+		if(PromptTitle.empty())
+			PromptTitle_ = std::wstring (1, L'\0');
 		XLUnicodeString    ErrorTitle_(ErrorTitle);
+		if(ErrorTitle.empty())
+			ErrorTitle_ = std::wstring (1, L'\0');
 		XLUnicodeString    Prompt_(Prompt);
+		if(Prompt.empty())
+			Prompt_ = std::wstring (1, L'\0');
 		XLUnicodeString    Error_(Error);
+		if(Error.empty())
+			Error_ = std::wstring (1, L'\0');
 
 		record << PromptTitle_ << ErrorTitle_ << Prompt_ << Error_;
 	}

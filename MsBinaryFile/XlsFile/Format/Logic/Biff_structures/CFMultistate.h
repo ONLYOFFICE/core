@@ -53,8 +53,8 @@ public:
     unsigned char cStates = 0;
     unsigned char iIconSet = 0;
 
-	bool fIconOnly;
-	bool fReverse;
+	bool fIconOnly = false;
+	bool fReverse = false;
 
 	std::vector<CFMStateItemPtr> rgStates;
 };

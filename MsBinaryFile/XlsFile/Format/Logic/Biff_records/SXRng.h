@@ -48,12 +48,13 @@ public:
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
+	void writeFields(CFRecord& record);
 
 	static const ElementType type = typeSXRng;
 
-	bool			fAutoStart;
-	bool			fAutoEnd;
-	unsigned char	iByType;
+	bool			fAutoStart = false;
+	bool			fAutoEnd = false;
+	unsigned char	iByType = 0;
 };
 
 } // namespace XLS

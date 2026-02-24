@@ -53,18 +53,19 @@ public:
 	static const XLS::ElementType	type = XLS::typeOfficeArtClientAnchorSheet;
 	
 	virtual void loadFields(XLS::CFRecord& record);
+	virtual void save(XLS::CFRecord& record);
 
-	bool fMove;
-	bool fSize;
+	bool fMove = true;
+	bool fSize = true;
 
-	XLS::Col256U	colL;
-	short			dxL;
-	XLS::RwU		rwT;
-	short			dyT;
-	XLS::Col256U	colR;
-	short			dxR;
-	XLS::RwU		rwB;
-	short			dyB;
+	XLS::Col256U	colL = 0;
+	short			dxL = 0;
+	XLS::RwU		rwT = 0;
+	short			dyT = 0;
+	XLS::Col256U	colR = 0;
+	short			dxR = 0;
+	XLS::RwU		rwB = 0;
+	short			dyB = 0;
 
 //-----------------------------------------------------------------------------
 	XLS::GlobalWorkbookInfoPtr global_info;

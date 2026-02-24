@@ -56,6 +56,10 @@ void FrtHeaderOld::load(CFRecord& record)
 	record >> rt >> grbitFrt;
 }
 
+void FrtHeaderOld::save(CFRecord& record)
+{
+	record << rt << grbitFrt;
+}
 
 } // namespace XLS
 

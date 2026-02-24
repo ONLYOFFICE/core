@@ -91,7 +91,7 @@ namespace XLS
 
 			std::pair<boost::shared_array<unsigned char>, size_t> data;
 
-			if (StreamSize + StreamOffset < StreamDescriptorArrayOffset)
+			if (StreamSize + StreamOffset <= StreamDescriptorArrayOffset)
 			{
 				data.first = boost::shared_array<BYTE>(new BYTE[StreamSize]);
 				data.second = StreamSize;

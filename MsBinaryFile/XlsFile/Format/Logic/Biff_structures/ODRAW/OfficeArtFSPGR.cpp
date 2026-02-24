@@ -56,5 +56,15 @@ void OfficeArtFSPGR::loadFields(XLS::CFRecord& record)
 	_cy = (std::max)(yTop, yBottom) - _y;	
 }
 
+void OfficeArtFSPGR::save(XLS::CFRecord& record)
+{
+	rh_own.recVer = 1;
+	rh_own.recInstance = 0;
+	rh_own.recType =   0xF009;
+	rh_own.recLen = 0x00000010;
+	record << rh_own;
+	record << xLeft << yTop << xRight << yBottom;
+}
+
 
 } // namespace XLS

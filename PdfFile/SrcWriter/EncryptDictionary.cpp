@@ -39,10 +39,10 @@
 #include "../../Common/3dParty/cryptopp/md5.h"
 #include "../../UnicodeConverter/UnicodeConverter.h"
 
-#define SET_BINARY_PARAM(Name, set_func) \
+#define SET_BINARY_PARAM(Name, set_func, max_len) \
     pObj = Get(Name);\
     if (pObj && pObj->GetType() == object_type_BINARY)\
-        m_pEncrypt->set_func(((CBinaryObject*)pObj)->GetValue(), ((CBinaryObject*)pObj)->GetLength());
+        m_pEncrypt->set_func(((CBinaryObject*)pObj)->GetValue(), std::min((int)((CBinaryObject*)pObj)->GetLength(), max_len));
 #define SET_NUMBER_PARAM(Name, set_func) \
     pObj = Get(Name);\
     if (pObj && pObj->GetType() == object_type_NUMBER)\
@@ -66,12 +66,12 @@ namespace PdfWriter
     void CEncryptDict::Fix()
     {
         CObjectBase* pObj = NULL;
-        SET_BINARY_PARAM("O", SetO);
-        SET_BINARY_PARAM("U", SetU);
-        SET_BINARY_PARAM("OE", SetOE);
-        SET_BINARY_PARAM("UE", SetUE);
-        SET_BINARY_PARAM("Perms", SetPerms);
-        SET_BINARY_PARAM("ID", SetID);
+		SET_BINARY_PARAM("O", SetO, 48);
+		SET_BINARY_PARAM("U", SetU, 48);
+		SET_BINARY_PARAM("OE", SetOE, 32);
+		SET_BINARY_PARAM("UE", SetUE, 32);
+		SET_BINARY_PARAM("Perms", SetPerms, 16);
+		SET_BINARY_PARAM("ID", SetID, 16);
         pObj = Get("ID");
         if (pObj && pObj->GetType() == object_type_BINARY)
             m_pEncrypt->m_unIDLength = ((CBinaryObject*)pObj)->GetLength();
@@ -223,32 +223,6 @@ namespace PdfWriter
         Add("Filter", "Adobe.PPKLite");
         Add("SubFilter", "adbe.pkcs7.detached");
 
-        unsigned int unDigestLength = 15000;
-        BYTE* pDigest = new BYTE[unDigestLength];
-        memset(pDigest, 0, unDigestLength);
-        Add("Contents", new CBinaryObject(pDigest, unDigestLength));
-        RELEASEARRAYOBJECTS(pDigest);
-
-        CArrayObject* pByteRange = new CArrayObject();
-        if (!pByteRange)
-            return;
-        Add("ByteRange", pByteRange);
-        pByteRange->Add(0);
-        pByteRange->Add(1234567890);
-        pByteRange->Add(1234567890);
-        pByteRange->Add(1234567890);
-
-        // Reference - Массив справочных словарей сигнатур
-
-        // Changes - Массив из трех чисел, который указывает изменения в документе в порядке: количество измененных страниц,
-        // количество измененных полей и количество заполненных полей
-        // Порядок подписей определяется значением ByteRange. Поскольку каждая подпись приводит к добавочному сохранению,
-        // более поздние подписи имеют большее значение длины
-
-        // Prop_Build - Словарь, который может использоваться обработчиком подписи для записи информации о состоянии компьютерной среды,
-        // используемой для подписи, такой как имя обработчика, используемого для создания подписи, дата сборки программного обеспечения,
-        // версия, и операционная система. Спецификация словаря PDF Signature Build содержит рекомендации по использованию этого словаря
-
         m_nLen1 = 0;
         m_nOffset2 = 0;
         m_nByteRangeBegin = 0;
@@ -259,36 +233,29 @@ namespace PdfWriter
     }
 	void CSignatureDict::WriteToStream(CStream* pStream, CEncrypt* pEncrypt)
 	{
-		for (auto const &oIter : m_mList)
+		for (std::map<std::string, CObjectBase*>::const_iterator oIter = m_mList.begin(); oIter != m_mList.end(); ++oIter)
 		{
-			CObjectBase* pObject = oIter.second;
-			if (!pObject)
+			CObjectBase* pObject = oIter->second;
+			if (!pObject || pObject->IsHidden())
 				continue;
 
-			if (pObject->IsHidden())
+			int nBegin, nEnd;
+			pStream->WriteEscapeName(oIter->first.c_str());
+			pStream->WriteChar(' ');
+			nBegin = pStream->Tell();
+			// Цифровая подпись не шифруется
+			pStream->Write(pObject, oIter->first == "Contents" ? NULL : pEncrypt);
+			nEnd = pStream->Tell();
+			pStream->WriteStr("\012");
+			if (oIter->first == "Contents")
 			{
-				// ничего не делаем
+				m_nLen1  = nBegin;
+				m_nOffset2 = nEnd;
 			}
-			else
+			if (oIter->first == "ByteRange")
 			{
-				int nBegin, nEnd;
-				pStream->WriteEscapeName(oIter.first.c_str());
-				pStream->WriteChar(' ');
-				nBegin = pStream->Tell();
-				// Цифровая подпись не шифруется
-				pStream->Write(pObject, oIter.first == "Contents" ? NULL : pEncrypt);
-				nEnd = pStream->Tell();
-				pStream->WriteStr("\012");
-				if (oIter.first == "Contents")
-				{
-					m_nLen1  = nBegin;
-					m_nOffset2 = nEnd;
-				}
-				if (oIter.first == "ByteRange")
-				{
-					m_nByteRangeBegin = nBegin;
-					m_nByteRangeEnd   = nEnd;
-				}
+				m_nByteRangeBegin = nBegin;
+				m_nByteRangeEnd   = nEnd;
 			}
 		}
 	}
@@ -305,7 +272,7 @@ namespace PdfWriter
                 pByteRange->Add(0);
                 pByteRange->Add(m_nLen1);
                 pByteRange->Add(m_nOffset2);
-                pByteRange->Add(nFileEnd - m_nOffset2);
+				pByteRange->Add(nFileEnd - m_nOffset2);
 
                 pStream->Seek(m_nByteRangeBegin, EWhenceMode::SeekSet);
                 pStream->Write(pByteRange, NULL);
@@ -324,64 +291,62 @@ namespace PdfWriter
             }
             RELEASEOBJECT(pByteRange);
         }
-        // Запись Contents
-        if (m_pCertificate && m_nLen1 > 0 && m_nOffset2 > 0 && m_nLen1 < m_nOffset2 && m_nOffset2 < nFileEnd)
-        {
-            DWORD dwLenDataForSignature = m_nLen1 + nFileEnd - m_nOffset2;
-            BYTE* pDataForSignature = new BYTE[dwLenDataForSignature];
-            if (!pDataForSignature)
-                return;
-
-            pStream->Seek(0, EWhenceMode::SeekSet);
-            unsigned int dwLenReadData = m_nLen1;
-            pStream->Read(pDataForSignature, &dwLenReadData);
-            if ((int)dwLenReadData != m_nLen1)
-            {
-                RELEASEARRAYOBJECTS(pDataForSignature);
-                return;
-            }
-
-            pStream->Seek(m_nOffset2, EWhenceMode::SeekSet);
-            dwLenReadData = nFileEnd - m_nOffset2;
-            pStream->Read(pDataForSignature + m_nLen1, &dwLenReadData);
-            if ((int)dwLenReadData != nFileEnd - m_nOffset2)
-            {
-                RELEASEARRAYOBJECTS(pDataForSignature);
-                return;
-            }
-
-            BYTE* pDatatoWrite = NULL;
-            unsigned int dwLenDatatoWrite;
-            m_pCertificate->SignPKCS7(pDataForSignature, dwLenDataForSignature, pDatatoWrite, dwLenDatatoWrite);
-            RELEASEARRAYOBJECTS(pDataForSignature);
-            if (!pDatatoWrite)
-                return;
-
-            pStream->Seek(m_nLen1, EWhenceMode::SeekSet);
-            CBinaryObject* pContents = new CBinaryObject(pDatatoWrite, dwLenDatatoWrite);
-            RELEASEARRAYOBJECTS(pDatatoWrite);
-            if (!pContents)
-                return;
-            // Цифровая подпись не шифруется
-            pStream->Write(pContents, NULL);
-            RELEASEOBJECT(pContents);
-
-            // Стереть лишний >
-            BYTE cChar = '0';
-            pStream->Seek(pStream->Tell() - 1, EWhenceMode::SeekSet);
-            pStream->Write(&cChar, 1);
-        }
     }
-    void CSignatureDict::SetCert(ICertificate* pCert)
-    {
-        m_pCertificate = pCert;
-    }
-    void CSignatureDict::SetName(const std::string& sName)
+	bool CSignatureDict::FinalizeSignature(CStream* pStream, BYTE* pSignedData, DWORD dwDataLength)
+	{
+		if (!pSignedData)
+			return false;
+
+		// Записываем подписанные данные в Contents
+		if (dwDataLength > m_nContentsSize)
+		{
+			// Подпись не влезает! Ошибка расчета размера
+			return false;
+		}
+
+		pStream->Seek(m_nLen1, EWhenceMode::SeekSet);
+		CBinaryObject* pContents = new CBinaryObject(pSignedData, dwDataLength);
+		if (!pContents)
+			return false;
+
+		// Цифровая подпись не шифруется
+		pStream->Write(pContents, NULL);
+		delete pContents;
+
+		// Стираем лишний '>' если нужно
+		BYTE cChar = '0';
+		pStream->Seek(pStream->Tell() - 1, EWhenceMode::SeekSet);
+		pStream->Write(&cChar, 1);
+
+		return true;
+	}
+	void CSignatureDict::SetContentsSize(unsigned int nSize)
+	{
+		m_nContentsSize = nSize;
+
+		BYTE* pDigest = new BYTE[m_nContentsSize];
+		memset(pDigest, 0, m_nContentsSize);
+		Add("Contents", new CBinaryObject(pDigest, m_nContentsSize, false));
+
+		CArrayObject* pByteRange = new CArrayObject();
+		if (!pByteRange)
+			return;
+		Add("ByteRange", pByteRange);
+		pByteRange->Add(0);
+		pByteRange->Add(1234567890);
+		pByteRange->Add(1234567890);
+		pByteRange->Add(1234567890);
+	}
+	void CSignatureDict::SetName(const std::string& sName)
     {
         // Name - Cтрока, Имя лица или органа, подписавшего документ.
         // Значение следует использовать когда невозможно извлечь имя из подписи или сертификата подписавшего.
         Add("Name", new CStringObject(sName.c_str()));
     }
+	void CSignatureDict::SetLocation(const std::string& sLocation)
+	{
+		Add("Location", new CStringObject(sLocation.c_str()));
+	}
     void CSignatureDict::SetReason(const std::string& sReason)
     {
         // Reason - Строка, Причина подписания, например (Я согласен)

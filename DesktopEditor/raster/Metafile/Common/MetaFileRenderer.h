@@ -914,7 +914,7 @@ namespace MetaFile
 
 			m_bStartedPath = false;
 		}
-		void SetTransform(double& dM11, double& dM12, double& dM21, double& dM22, double& dX, double& dY)
+		void SetTransform(const double& dM11, const double& dM12, const double& dM21, const double& dM22, const double& dX, const double& dY)
 		{
 			double dKoefX = m_dScaleX;
 			double dKoefY = m_dScaleY;
@@ -1270,19 +1270,6 @@ namespace MetaFile
 
 			if ((NULL != pDataDash && 0 != unSizeDash) || PS_SOLID != ulPenStyle)
 			{
-				// Дублированный код из Graphics
-				// Без этого используется оригинальный код в Graphics, который отрисовывает уже неверно
-				double dDashWidth{dWidth};
-
-				if (!Equals(dWidthMinSize, dWidth))
-				{
-					double dDet = oMatrix.Determinant();
-
-					if (fabs(dDet) < 0.0001)
-						dDashWidth *= dSqrtDet;
-				}
-				// -----------------------------
-
 				if (NULL != pDataDash && 0 != unSizeDash)
 				{
 					m_pRenderer->put_PenDashOffset(pPen->GetDashOffset());
@@ -1290,7 +1277,7 @@ namespace MetaFile
 					std::vector<double> arDashes(unSizeDash);
 
 					for (unsigned int unIndex = 0; unIndex < unSizeDash; ++unIndex)
-						arDashes[unIndex] = pDataDash[unIndex] * dDashWidth;
+						arDashes[unIndex] = pDataDash[unIndex] * dWidth;
 
 					m_pRenderer->PenDashPattern(arDashes.data(), unSizeDash);
 
@@ -1304,35 +1291,35 @@ namespace MetaFile
 					{
 						case PS_DASH:
 						{
-							arDashPattern.push_back(9 * dDashWidth);
-							arDashPattern.push_back(3 * dDashWidth);
+							arDashPattern.push_back(9 * dWidth);
+							arDashPattern.push_back(3 * dWidth);
 
 							break;
 						}
 						case PS_DOT:
 						{
-							arDashPattern.push_back(3 * dDashWidth);
-							arDashPattern.push_back(3 * dDashWidth);
+							arDashPattern.push_back(3 * dWidth);
+							arDashPattern.push_back(3 * dWidth);
 
 							break;
 						}
 						case PS_DASHDOT:
 						{
-							arDashPattern.push_back(9 * dDashWidth);
-							arDashPattern.push_back(6 * dDashWidth);
-							arDashPattern.push_back(3 * dDashWidth);
-							arDashPattern.push_back(6 * dDashWidth);
+							arDashPattern.push_back(9 * dWidth);
+							arDashPattern.push_back(6 * dWidth);
+							arDashPattern.push_back(3 * dWidth);
+							arDashPattern.push_back(6 * dWidth);
 
 							break;
 						}
 						case PS_DASHDOTDOT:
 						{
-							arDashPattern.push_back(9 * dDashWidth);
-							arDashPattern.push_back(6 * dDashWidth);
-							arDashPattern.push_back(3 * dDashWidth);
-							arDashPattern.push_back(6 * dDashWidth);
-							arDashPattern.push_back(3 * dDashWidth);
-							arDashPattern.push_back(6 * dDashWidth);
+							arDashPattern.push_back(9 * dWidth);
+							arDashPattern.push_back(6 * dWidth);
+							arDashPattern.push_back(3 * dWidth);
+							arDashPattern.push_back(6 * dWidth);
+							arDashPattern.push_back(3 * dWidth);
+							arDashPattern.push_back(6 * dWidth);
 
 							break;
 						}

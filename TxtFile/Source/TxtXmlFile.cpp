@@ -43,6 +43,8 @@
 #include "../../OOXML/DocxFormat/App.h"
 #include "../../OOXML/DocxFormat/Core.h"
 
+#include "../../OOXML/Common/SimpleTypes_Shared.h"
+
 namespace NSBinPptxRW
 {
 	class  CDrawingConverter;
@@ -55,37 +57,38 @@ CTxtXmlFile::CTxtXmlFile()
 {
 }
 
-static int ParseTxtOptions(const std::wstring & sXmlOptions)
+static void ParseTxtOptions(const std::wstring & sXmlOptions, int &encoding, int &lcid)
 {
-	int encoding = -1;
-	
-	XmlUtils::CXmlLiteReader xmlReader;
-	
-	if (xmlReader.FromString(sXmlOptions))
+	encoding = -1;
+	lcid = -1;
+
+	XmlUtils::CXmlLiteReader oReader;	
+	if (oReader.FromString(sXmlOptions))
 	{
-		xmlReader.ReadNextNode();//root - <Options>
+		nullable<SimpleTypes::CUnsignedDecimalNumber> codePage;
+		nullable<SimpleTypes::CDecimalNumber> LcidParam;
 
-		int nCurDepth = xmlReader.GetDepth();
-		while ( xmlReader.ReadNextSiblingNode( nCurDepth ) )
+		oReader.ReadNextNode();//root - <Options>
+		int nCurDepth = oReader.GetDepth();
+		while (oReader.ReadNextSiblingNode(nCurDepth))
 		{
-			std::wstring sName = xmlReader.GetName();
-
-			if (sName == _T("TXTOptions"))
+			std::wstring sName = oReader.GetName();
+			if (L"fileOptions" == sName)
 			{
-				int nCurDepth1 = xmlReader.GetDepth();
-				while ( xmlReader.ReadNextSiblingNode( nCurDepth1 ) )
-				{
-					std::wstring sName1 = xmlReader.GetName();
-					if (sName1 == _T("Encoding"))
-					{
-						std::wstring strValue = xmlReader.GetText2();
-						encoding = XmlUtils::GetInteger(strValue);
-					}
-				}
+				WritingElement_ReadAttributes_Start(oReader)
+					WritingElement_ReadAttributes_Read_if(oReader, L"codePage", codePage)
+					WritingElement_ReadAttributes_Read_else_if(oReader, L"Lcid", LcidParam)
+				WritingElement_ReadAttributes_End(oReader)
+
+				if (codePage.IsInit())
+					encoding = (UINT)codePage->GetValue();
+				if (LcidParam.IsInit())
+					lcid = LcidParam->GetValue();
+
+				break;
 			}
 		}
 	}
-	return encoding;
 }
 
 
@@ -98,13 +101,15 @@ _UINT32 CTxtXmlFile::txt_LoadFromFile(const std::wstring & sSrcFileName, const s
 
 	try
 	{
-		int encoding  = ParseTxtOptions(sXMLOptions);
+		int encoding, lcid;
+		ParseTxtOptions(sXMLOptions, encoding, lcid);
 
 		Txt2Docx::Converter converter( encoding);
 		converter.read(sSrcFileName);
-		converter.convert();
-		converter.write(pDocxWriter->get_document_writer().m_oContent);
-	}
+       // converter.convert();
+       // converter.write(pDocxWriter->get_document_writer().m_oContent);
+        converter.write(pDocxWriter->get_document_writer().m_oContentutf8);
+    }
 	catch(...)
 	{
 		return AVS_FILEUTILS_ERROR_CONVERT;
@@ -131,7 +136,8 @@ _UINT32 CTxtXmlFile::txt_SaveToFile(const std::wstring & sDstFileName, const std
 		{
 			converter.convert();
 
-			int encoding = ParseTxtOptions(sXMLOptions);
+			int encoding, lcid;
+			ParseTxtOptions(sXMLOptions, encoding, lcid);
 
 			if (encoding == EncodingType::Utf8)
 				result = converter.writeUtf8(sDstFileName);

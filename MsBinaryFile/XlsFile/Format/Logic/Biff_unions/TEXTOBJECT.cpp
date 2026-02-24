@@ -65,5 +65,89 @@ const bool TEXTOBJECT::loadContent(BinProcessor& proc)
 	return true;
 }
 
+const bool TEXTOBJECT::saveContent(BinProcessor& proc)
+{
+	if(m_TxO == nullptr)
+		return false;
+	proc.mandatory(*m_TxO);
+	
+	auto castedObj = static_cast<TxO*>(m_TxO.get());
+	if(castedObj->cchText > 0)
+	{
+		auto textPointer = 0;
+		{
+			auto fragmentSize = (castedObj->cchText * 2) + 1;
+			{
+				XLS::Continue continueRec;
+				if(fragmentSize > 8224)
+					fragmentSize = 8224;
+				continueRec.m_iDataSize = fragmentSize;
+				continueRec.m_pData = new char[fragmentSize];
+				continueRec.m_pData[0] = 1; // wchar byte
+				memcpy(continueRec.m_pData+1, castedObj->rawText.value().data(), fragmentSize -1);
+				proc.mandatory(continueRec);
+			}
+			textPointer+= (fragmentSize-1) / 2;
+		}
+
+		// if cchText is too large for 1 continue
+		while(textPointer < castedObj->cchText)
+		{
+			auto fragmentSize = (castedObj->cchText - textPointer)*2;
+			{
+				XLS::Continue continueRec;
+				if(fragmentSize > 8224)
+					fragmentSize = 8224;
+				continueRec.m_iDataSize = fragmentSize;
+				continueRec.m_pData = new char[fragmentSize];
+				memcpy(continueRec.m_pData, castedObj->rawText.value().data() + textPointer, fragmentSize);
+				proc.mandatory(continueRec);
+			}
+			textPointer+= fragmentSize / 2;
+		}
+	}
+	if(castedObj->cbRuns > 0)
+	{
+		unsigned int runsCounter = 0;
+		while(runsCounter < castedObj->TxOruns.rgTxoRuns.size())
+		{
+			auto fragmentSize = 0;
+			if((castedObj->TxOruns.rgTxoRuns.size() - runsCounter + 1) * 8 > 8224)
+				fragmentSize = 1028;
+			else
+				break;
+			XLS::Continue continueRec;
+			continueRec.m_iDataSize = fragmentSize;
+			continueRec.m_pData = new char[fragmentSize];
+			CFRecord tempRec(rt_Continue, proc.getGlobalWorkbookInfo());
+			for(auto i = runsCounter; i <  (runsCounter + fragmentSize/8); i++)
+			{
+				castedObj->TxOruns.rgTxoRuns[i]->save(tempRec);
+			}
+
+			auto copyData = tempRec.getCurStaticData<char>() - tempRec.getRdPtr();
+			memcpy(continueRec.m_pData, copyData, fragmentSize);
+			proc.mandatory(continueRec);
+			runsCounter += fragmentSize/8;
+		}
+		{
+			auto fragmentSize = (castedObj->TxOruns.rgTxoRuns.size() - runsCounter +1) * 8;
+			XLS::Continue continueRec;
+			continueRec.m_iDataSize = fragmentSize;
+			continueRec.m_pData = new char[fragmentSize];
+			CFRecord tempRec(rt_Continue, proc.getGlobalWorkbookInfo());
+			for(auto i = runsCounter; i <  castedObj->TxOruns.rgTxoRuns.size(); i++)
+			{
+				castedObj->TxOruns.rgTxoRuns[i]->save(tempRec);
+			}
+			castedObj->TxOruns.lastRun.save(tempRec);
+			auto copyData = tempRec.getCurStaticData<char>() - tempRec.getRdPtr();
+			memcpy(continueRec.m_pData, copyData, fragmentSize);
+			proc.mandatory(continueRec);
+		}
+	}
+	return true;
+}
+
 } // namespace XLS
 

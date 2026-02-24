@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
@@ -33,10 +33,13 @@
 #include "Colors.h"
 
 #include "../../Common/SimpleTypes_Shared.h"
+#include "../../Common/SimpleTypes_Spreadsheet.h"
 
 #include "../../XlsbFormat/Biff12_unions/COLORPALETTE.h"
 #include "../../XlsbFormat/Biff12_unions/INDEXEDCOLORS.h"
 #include "../../XlsbFormat/Biff12_unions/MRUCOLORS.h"
+
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Palette.h"
 
 namespace OOX
 {
@@ -118,6 +121,18 @@ namespace OOX
 			}
 
 			return objectPtr;
+		}
+		XLS::BaseObjectPtr CColors::toXLS()
+		{
+			auto ptr = new XLS::Palette;
+
+			if(m_oIndexedColors.IsInit())
+			{
+				for(auto i : m_oIndexedColors->mapIndexedColors)
+					ptr->rgColor.push_back(i.second->toXLS());
+			}
+
+			return XLS::BaseObjectPtr(ptr);
 		}
 		EElementType CColors::getType () const
 		{

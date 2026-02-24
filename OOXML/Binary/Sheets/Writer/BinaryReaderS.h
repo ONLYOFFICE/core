@@ -280,7 +280,23 @@ namespace BinXlsxRW
 		int ReadMdxMemeberProp(BYTE type, long length, void* poResult);
 		int ReadMetadataStringIndex(BYTE type, long length, void* poResult);
 		int ReadDynamicArrayProperties(BYTE type, long length, void* poResult);
-        OOX::Spreadsheet::CXlsb* m_pXlsb = NULL;
+        
+		int ReadRichValueData(BYTE type, long length, void* poResult);
+		int ReadRichValueFallback(BYTE type, long length, void* poResult);
+		int ReadRichValue(BYTE type, long length, void* poResult);
+		int ReadRichValueStructures(BYTE type, long length, void* poResult);
+		int ReadRichValueStructure(BYTE type, long length, void* poResult);
+		int ReadRichValueStructureValueKey(BYTE type, long length, void* poResult);
+		int ReadRichValueTypesInfo(BYTE type, long length, void* poResult);
+		int ReadRichValueTypes(BYTE type, long length, void* poResult);
+		int ReadRichValueType(BYTE type, long length, void* poResult);
+		int ReadRichValueGlobal(BYTE type, long length, void* poResult);
+		int ReadRichValueTypeKeyFlags(BYTE type, long length, void* poResult);
+		int ReadRichValueReservedKey(BYTE type, long length, void* poResult);
+		int ReadRichValueReservedKeyFlags(BYTE type, long length, void* poResult);
+
+//--------------------------------------------------------------------------------------------------		
+		OOX::Spreadsheet::CXlsb* m_pXlsb = NULL;
 	};
 	class BinaryCommentReader : public Binary_CommonReader
 	{

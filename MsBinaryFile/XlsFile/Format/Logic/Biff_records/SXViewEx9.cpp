@@ -64,5 +64,18 @@ void SXViewEx9::readFields(CFRecord& record)
 	fRepeatItemsOnEachPrintedPage	= GETBIT(flags2, 5);
 }
 
+void SXViewEx9::writeFields(CFRecord& record)
+{
+	unsigned short flags = 0;
+	_UINT32 flags2 = 0;
+	SETBIT(flags, 1, fFrtAlert)
+	SETBIT(flags2, 1, fPrintTitles)
+	SETBIT(flags2, 2, fLineMode)
+	SETBIT(flags2, 5, fRepeatItemsOnEachPrintedPage)
+	record << rt << flags;
+	record.reserveNunBytes(4);
+	record << flags2 << itblAutoFmt << chGrand;
+}
+
 } // namespace XLS
 

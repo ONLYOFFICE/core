@@ -53,14 +53,13 @@ public:
 		cbRuns				= 0;
 		sp_enabled			= false;
 		preserve_enabled	= false;
-		hAlignment			= 0;
-		vAlignment			= 0;
 	}
 	~TxO();
 
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
+	void writeFields(CFRecord& record);
 
 	static const ElementType	type = typeTxO;
 
@@ -70,19 +69,20 @@ public:
 
 	GlobalWorkbookInfoPtr	global_info;
 
-	unsigned char			hAlignment;
-	unsigned char			vAlignment;
+	unsigned char			hAlignment = 1;
+	unsigned char			vAlignment = 1;
 
-	unsigned char			fLockText;
-	unsigned char			fJustLast;
-	unsigned char			fSecretEdit;
+	unsigned char			fLockText = 0;
+	unsigned char			fJustLast = 0;
+	unsigned char			fSecretEdit = 0;
 
-	_UINT16					rot;
+	_UINT16					rot = 0;
 
 	ControlInfo				controlInfo;
+	bool					fcontrolInfoExist = false;
 
-	_UINT16					cchText;
-	_UINT16					cbRuns;
+	_UINT16					cchText = 0;
+	_UINT16					cbRuns = 0;
 	FontIndex				ifntEmpty;
 	ObjFmla					fmla;
 	TxORuns					TxOruns;

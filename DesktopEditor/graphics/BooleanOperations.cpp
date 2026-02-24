@@ -85,6 +85,13 @@ bool Segment::IsEmpty() const noexcept
 	return Id == 0 && Index == -1 && P.IsZero() && HI.IsZero() && HO.IsZero();
 }
 
+bool Segment::Equals(const Segment& other) const noexcept
+{
+	return isZero(P.X - other.P.X) && isZero(P.Y - other.P.Y) &&
+		   isZero(HI.X - other.HI.X) && isZero(HI.Y - other.HI.Y) &&
+		   isZero(HO.X - other.HO.X) && isZero(HO.Y - other.HO.Y);
+}
+
 bool Segment::operator==(const Segment& other) const noexcept
 {
 	return (Index == other.Index) && (Id == other.Id);
@@ -690,6 +697,12 @@ bool Curve::IsStraight() const noexcept
 	return !Segment2.IsCurve;
 }
 
+bool Curve::Equals(const Curve& other) const noexcept
+{
+	return Segment1.Equals(other.Segment1) &&
+		   Segment2.Equals(other.Segment2);
+}
+
 bool Curve::operator==(const Curve& other) const noexcept
 {
 	return Segment1 == other.Segment1 &&
@@ -737,11 +750,13 @@ CBooleanOperations::CBooleanOperations(const CGraphicsPath& path1,
 									   const CGraphicsPath& path2,
 									   BooleanOpType op,
 									   long fillType,
-									   bool isLuminosity) :
+									   bool isLuminosity,
+									   bool isSelf) :
 	Op(op),
 	Close1(path1.Is_poly_closed()),
 	Close2(path2.Is_poly_closed()),
 	IsLuminosity(isLuminosity),
+	IsSelf(isSelf),
 	FillType(fillType),
 	Path1(path1),
 	Path2(path2)
@@ -784,10 +799,9 @@ bool CBooleanOperations::IsSelfInters(const CGraphicsPath& p)
 void CBooleanOperations::TraceBoolean()
 {
 	bool reverse = false;
-	bool self = Path1 == Path2;
 	if (((Op == Subtraction || Op == Exclusion) ^
 		 Path1.IsClockwise() ^
-		 Path2.IsClockwise()) && !self)
+		 Path2.IsClockwise()) && !IsSelf)
 		reverse = true;
 
 	PreparePath(Path1, 1, Segments1, Curves1);
@@ -798,7 +812,7 @@ void CBooleanOperations::TraceBoolean()
 
 	GetIntersection();
 
-	if (self)
+	if (IsSelf)
 	{
 		if (Op == Subtraction)
 			return;
@@ -823,8 +837,13 @@ void CBooleanOperations::TraceBoolean()
 		CreateNewPath(adj_matr);
 		return;
 	}
+	else if (Path1 == Path2)
+	{
+		Result = std::move(Path1);
+		return;
+	}
 
-	if (!Locations.empty())
+	if (!Locations.empty() && !IsOnlyEnds())
 	{
 		int length = static_cast<int>(Locations.size());
 		for (int i = 0; i < length; i++)
@@ -1839,7 +1858,7 @@ void CBooleanOperations::GetCurveIntersection(const Curve& curve1, const Curve& 
 				AddCurveIntersection(flip ? curve2 : curve1, flip ? curve1 : curve2,
 									 flip ? curve2 : curve1, flip ? curve1 : curve2, flip);
 
-			if (Locations.size() == before && (!straight || Locations.empty()))
+			if (Locations.size() == before && (!straight /*|| Locations.empty()*/))
 			{
 				double t = curve2.GetTimeOf(curve1.Segment1.P);
 				if (t != -1.0)
@@ -2052,17 +2071,27 @@ bool CBooleanOperations::IsInside(const Segment& segment) const
 
 void CBooleanOperations::SetWinding()
 {
-	if (Locations.empty() || (Locations.size() == 2 && Locations[0]->Ends))
+	if (Locations.empty() || (Locations.size() == 2 && Locations[0]->Ends) || IsOnlyEnds())
 	{
-		Segment s1, s2;
+		Segment s1 = Segments1[0], s2 = Segments2[0];
 
 		for (const auto& s : Segments1)
-			if (!s.Inters)
+		{
+			bool skip = false;
+			for (const auto& ss : Segments2)
+				skip = skip || !s.Equals(ss);
+			if (!s.Inters && !skip)
 				s1 = s;
+		}
 
 		for (const auto& s : Segments2)
-			if (!s.Inters)
+		{
+			bool skip = false;
+			for (const auto& ss : Segments1)
+				skip = skip || !s.Equals(ss);
+			if (!s.Inters && !skip)
 				s2 = s;
+		}
 
 		bool winding = IsInside(s1);
 
@@ -2279,8 +2308,8 @@ bool CBooleanOperations::IsOneCurvePath(int pathIndex) const noexcept
 void CBooleanOperations::AddLocation(Curve curve1, Curve curve2, double t1,
 									 double t2, bool overlap, bool filter, bool ends)
 {
-	bool	excludeStart = !overlap &&	GetPreviousCurve(curve1) == curve2,
-			excludeEnd = !overlap && curve1 != curve2 && GetNextCurve(curve1) == curve2;
+	bool	excludeStart = !overlap &&	GetPreviousCurve(curve1).Equals(curve2),
+			excludeEnd = !overlap && curve1 != curve2 && GetNextCurve(curve1).Equals(curve2);
 	double	tMin = CURVETIME_EPSILON,
 			tMax = 1 - tMin;
 
@@ -2339,6 +2368,18 @@ bool CBooleanOperations::CheckLocation(std::shared_ptr<Location> loc, bool start
 	return false;
 }
 
+bool CBooleanOperations::IsOnlyEnds() const noexcept
+{
+	bool onlyEnds1 = true;
+	bool onlyEnds2 = true;
+	for (const auto& l : Locations)
+	{
+		onlyEnds1 = onlyEnds1 && l->Ends;
+		onlyEnds2 = onlyEnds2 && l->Inters->Ends;
+	}
+	return onlyEnds1 || onlyEnds2;
+}
+
 CGraphicsPath CalcBooleanOperation(const CGraphicsPath& path1,
 								   const CGraphicsPath& path2,
 								   BooleanOpType op,
@@ -2355,7 +2396,7 @@ CGraphicsPath CalcBooleanOperation(const CGraphicsPath& path1,
 		CBooleanOperations o;
 		if (i > skip_end2 && o.IsSelfInters(paths2[i]))
 		{
-			CBooleanOperations operation(paths2[i], paths2[i], Intersection, fillType, isLuminosity);
+			CBooleanOperations operation(paths2[i], paths2[i], Intersection, fillType, isLuminosity, true);
 			CGraphicsPath p = std::move(operation.GetResult());
 
 			std::vector<CGraphicsPath> tmp_paths = p.GetSubPaths();
@@ -2370,7 +2411,7 @@ CGraphicsPath CalcBooleanOperation(const CGraphicsPath& path1,
 			CBooleanOperations o2;
 			if (j > skip_end1 && o2.IsSelfInters(paths1[j]))
 			{
-				CBooleanOperations operation(paths1[j], paths1[j], Intersection, fillType, isLuminosity);
+				CBooleanOperations operation(paths1[j], paths1[j], Intersection, fillType, isLuminosity, true);
 				CGraphicsPath p = std::move(operation.GetResult());
 
 				std::vector<CGraphicsPath> tmp_paths = p.GetSubPaths();
@@ -2380,7 +2421,7 @@ CGraphicsPath CalcBooleanOperation(const CGraphicsPath& path1,
 					paths1.insert(paths1.begin() + i + k, tmp_paths[k]);
 			}
 
-			CBooleanOperations operation(paths1[j], paths2[i], op, fillType, isLuminosity);
+			CBooleanOperations operation(paths1[j], paths2[i], op, fillType, isLuminosity, false);
 			paths.push_back(operation.GetResult());
 		}
 

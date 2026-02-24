@@ -147,6 +147,7 @@ private:
 	double m_dRWScale, m_dRHScale;
 	double m_dWTale, m_dHTale;
 	double m_dRx1, m_dRy1;
+	double m_dx1S, m_dy2S;
 	int m_nWidth, m_nHeight;
 	std::vector<CAnnotAPView*> m_arrAP;
 	bool m_bIsStamp;
@@ -247,7 +248,7 @@ private:
 	std::vector<double> m_arrTC; // Цвет текста - из DA
 	std::vector<double> m_arrBC; // Цвет границ - BC
 	std::vector<double> m_arrBG; // Цвет фона - BG
-	std::vector<CAction*> m_arrAction; // Действия
+	std::vector<CAction*> m_arrAction; // Действия - A&AA
 	BYTE m_nQ; // Выравнивание текста - Q
 	BYTE m_nH; // Режим выделения - H
 	std::string m_sTU; // Альтернативное имя поля, используется во всплывающей подсказке и сообщениях об ошибке - TU
@@ -280,6 +281,7 @@ private:
 	std::string m_sAC;
 	std::string m_sAP_N_Yes;
 	double m_dA1, m_dA2;
+	std::vector< std::pair<std::string, std::string> > m_arrOpt;
 };
 
 class CAnnotWidgetTx final : public CAnnotWidget
@@ -333,6 +335,25 @@ public:
 private:
 	unsigned int m_unFlags;
 	unsigned int m_unRefNumParent; // Номер ссылки на объект родителя
+};
+
+//------------------------------------------------------------------------
+// PdfReader::CLinkAnnot
+//------------------------------------------------------------------------
+
+class CAnnotLink final : public CAnnot
+{
+public:
+	CAnnotLink(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex, int nStartRefID);
+	virtual ~CAnnotLink();
+
+	void ToWASM(NSWasm::CData& oRes) override;
+
+private:
+	BYTE m_nH; // Режим выделения - H
+	std::vector<double> m_arrQuadPoints; // Координаты - QuadPoints
+	CAction* m_pAction; // Действие - A&Dest
+	CAction* m_pPA; // URI действие - PA
 };
 
 //------------------------------------------------------------------------
@@ -680,22 +701,6 @@ private:
 	std::vector<int> m_arrCO; // Порядок вычислений - CO
 	std::vector<CAnnotParent*> m_arrParents; // Родительские Fields
 	std::vector<CAnnotWidget*> m_arrAnnots;
-};
-
-//------------------------------------------------------------------------
-// PdfReader::CAnnotFonts
-//------------------------------------------------------------------------
-
-class CAnnotFonts final
-{
-public:
-	static bool IsBaseFont(const std::wstring& wsName);
-	static std::map<std::wstring, std::wstring> GetAllFonts(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList* pFontList, bool bIsNeedCMap);
-	static std::wstring GetFontData(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList, Object* oFontRef, std::string& sFontName, std::string& sActualFontName, bool& bBold, bool& bItalic, bool bIsNeedCMap = false);
-	static bool GetFontFromAP(PDFDoc* pdfDoc, AcroFormField* pField, Object* oFontRef, std::string& sFontKey);
-	static std::map<std::wstring, std::wstring> GetAnnotFont(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList, Object* oAnnotRef);
-	static std::map<std::wstring, std::wstring> GetFreeTextFont(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList* pFontList, Object* oAnnotRef, std::vector<CAnnotMarkup::CFontData*>& arrRC);
-	static bool FindFonts(Object* oStream, int nDepth, Object* oResFonts);
 };
 
 }

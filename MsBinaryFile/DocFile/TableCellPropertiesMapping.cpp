@@ -190,7 +190,7 @@ namespace DocFileFormat
 
 						}
 
-						if (!IsTableBordersDefined(tapx->grpprl))
+                        if (!IsTableBordersDefined(tapx->grpprl) || ( _tcDef.brcTop->GetType() != 0) || ( _tcDef.brcLeft->GetType() != 0) ||( _tcDef.brcRight->GetType() != 0) ||( _tcDef.brcBottom->GetType() != 0))
 						{
 							_brcTop = std::shared_ptr<BorderCode>(new BorderCode(*_tcDef.brcTop));
 							_brcLeft = std::shared_ptr<BorderCode>(new BorderCode(*_tcDef.brcLeft));
@@ -443,28 +443,28 @@ namespace DocFileFormat
 		}
 
 		//append borders
-		if (_brcTop)
+        if ((_brcTop && _brcTop->GetType() != 0) || (_brcTop && _brcTop->GetNil()))
 		{
             XMLTools::XMLElement topBorder( L"w:top" );
 			appendBorderAttributes(_brcTop.get(), &topBorder);
 			addOrSetBorder(_tcBorders, &topBorder );
 		}
 
-		if (_brcLeft )
+        if ((_brcLeft && _brcLeft->GetType() != 0) || (_brcLeft && _brcLeft->GetNil()))
 		{
             XMLTools::XMLElement leftBorder( L"w:left" );
 			appendBorderAttributes(_brcLeft.get(), &leftBorder);
 			addOrSetBorder(_tcBorders, &leftBorder);
 		}
 
-		if (_brcBottom)
+        if ((_brcBottom && _brcBottom->GetType() != 0) || (_brcBottom && _brcBottom->GetNil()))
 		{
             XMLTools::XMLElement bottomBorder( L"w:bottom" );
 			appendBorderAttributes(_brcBottom.get(), &bottomBorder);
 			addOrSetBorder(_tcBorders, &bottomBorder);
 		}
 
-		if (_brcRight)
+        if ((_brcRight && _brcRight->GetType() != 0) || (_brcRight && _brcRight->GetNil()))
 		{
             XMLTools::XMLElement rightBorder( L"w:right" );
 			appendBorderAttributes( _brcRight.get(), &rightBorder );

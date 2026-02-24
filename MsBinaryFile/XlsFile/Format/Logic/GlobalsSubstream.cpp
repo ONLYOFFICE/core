@@ -701,11 +701,14 @@ const bool GlobalsSubstream::saveContent(BinProcessor& proc)
 		proc.mandatory(*m_Formating);
 	else
 		proc.mandatory<FORMATTING>();
-	if(globalInfoPtr && !globalInfoPtr->arPIVOTCACHEDEFINITION.empty())
-	{
-		for(auto i : globalInfoPtr->arPIVOTCACHEDEFINITION)
+	//if(globalInfoPtr && !globalInfoPtr->arPIVOTCACHEDEFINITION.empty())
+	//{
+		//for(auto i : globalInfoPtr->arPIVOTCACHEDEFINITION)
+			//proc.mandatory(*i);
+	//}
+	for(auto i : m_arPIVOTCACHEDEFINITION)
+		if(i != nullptr)
 			proc.mandatory(*i);
-	}
 	for(auto i : m_arUserBView)
 		if(i != nullptr)
 			proc.mandatory(*i);
@@ -849,7 +852,7 @@ void GlobalsSubstream::UpdateXti()
 					else if (xti->itabFirst < global_info_->sheets_info.size())
 					{
 						strRange = XMLSTUFF::name2sheet_name(global_info_->sheets_info[xti->itabFirst].name, L"");
-						if (xti->itabFirst != xti->itabLast)
+						if (xti->itabFirst != xti->itabLast && global_info_->sheets_info.size() > xti->itabLast)
 						{
 							strRange += std::wstring(L":") + XMLSTUFF::name2sheet_name(global_info_->sheets_info[xti->itabLast].name, L"");
 						}

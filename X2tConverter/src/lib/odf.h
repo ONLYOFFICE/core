@@ -125,7 +125,6 @@ namespace NExtractTools
 					case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTM:
 					case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSB:
 					{
-						const std::wstring &sXmlOptions = params.getXmlOptions();
 						convertParams.m_bTempIsXmlOptions = false;
 						return xlsx_dir2xlst_bin(sTempUnpackedOox, sTo, params, convertParams);
 					}
@@ -189,7 +188,7 @@ namespace NExtractTools
 
 			m_oCDocxSerializer.setFontDir(params.getFontPath());
 
-			nRes = m_oCDocxSerializer.saveToFile(sTo, sTempUnpackedOox, params.getXmlOptions(), convertParams.m_sTempDir) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+			nRes = m_oCDocxSerializer.saveToFile(sTo, sTempUnpackedOox, convertParams.m_sTempDir) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
 		}
 
 		return nRes;

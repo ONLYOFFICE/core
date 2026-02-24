@@ -270,6 +270,7 @@ namespace DocFileFormat
 		int		cp							=	initialCp;
 		int		fc							=	m_document->FindFileCharPos(cp); 
 		int		fcEnd						=	m_document->FindFileCharPos(cpEnd);
+        bool    PBookmark                   = false;
 
 		ParagraphPropertyExceptions* papx	=	findValidPapx(fc);
 
@@ -346,9 +347,9 @@ namespace DocFileFormat
 
 				int fcChpxStart	=	((chpxFcs) && (i < chpxFcs->size())) ? chpxFcs->at(i) : fc;
 				int fcChpxEnd	=	fcEnd;
-				
-				if ((chpxFcs) && ( i < chpxFcs->size() - 1))
-					fcChpxEnd = chpxFcs->at(i + 1);
+
+                if ((chpxFcs) && ( i < chpxFcs->size() - 1))
+                    fcChpxEnd = chpxFcs->at(i + 1);
 
 				//it's the first chpx and it starts before the paragraph
 
@@ -396,13 +397,17 @@ namespace DocFileFormat
 						{
 							for (std::vector<std::vector<wchar_t> >::iterator iter = runs->begin(); iter != runs->end(); ++iter)
 							{
-								if (writeBookmarks(cp))
+                                if (writeBookmarks(cp, PBookmark))
 								{
 									cp = writeRun(&(*iter), chpxs->at(it), cp);
 								}
+                                PBookmark = true;
+                                if (cp == m_document->FIB->m_RgLw97.ccpText - 1)
+                                    writeBookmarks(cp, PBookmark);
 							}
 
 							RELEASEOBJECT(runs);
+                            PBookmark = false;
 						}
 					}
 					else
@@ -427,7 +432,7 @@ namespace DocFileFormat
 						}
 						else
 						{
-							cp = writeRun(chpxChars, chpxs->at(it), cp);
+                            cp = writeRun(chpxChars, chpxs->at(it), cp);
 						}
 					}
 				}
@@ -606,6 +611,7 @@ namespace DocFileFormat
         std::wstring PAGE		( L"PAGE" );
         std::wstring SHAPE		( L"SHAPE" );
 		std::wstring NREF		( L"NREF");
+        std::wstring Tocn        (L"Toc");
 
 		if (arField.empty() == false)
 			f = arField[0];
@@ -629,14 +635,16 @@ namespace DocFileFormat
 		bool bSHAPE			= search( f.begin(), f.end(), SHAPE.begin(),		SHAPE.end())			!= f.end();
 		bool bNREF			= search( f.begin(), f.end(), NREF.begin(),			NREF.end())				!= f.end();
 
-		bool bPAGEREF = false; 
+        bool bPAGEREF = false;
+        bool bTocn = false;
 		if (bHYPERLINK && arField.size() > 1)
 		{
 			std::wstring f1 = arField[1];
 			bPAGEREF	= search( f1.begin(), f1.end(), PAGEREF.begin(), PAGEREF.end())	!= f1.end();
+            bTocn       = search( f1.begin(), f1.end(), Tocn.begin(), Tocn.end())	!= f1.end();
 		}			
 
-		if (bTOC)
+        if (bTOC || bTocn)
 			_bContentWrite = true;
 
 		if ( bFORM )
@@ -710,12 +718,13 @@ namespace DocFileFormat
 			}
 			else
 			{
-				for (size_t i = 1; i < arField.size(); i++)
+				//for (size_t i = 1; i < arField.size(); i++)
+				if (arField.size() > 1)
 				{
 					std::wstring f1 = arField[1];
-					int d = (int)f1.find(PAGEREF);
+					size_t d = f1.find(PAGEREF);
 
-					if (d > 0)
+					if (d != std::wstring::npos)
 					{
 						_writeWebHidden = true;
 						std::wstring _writeTocLink =f1.substr(d + 9);
@@ -726,10 +735,8 @@ namespace DocFileFormat
 						_writeAfterRun +=	XmlUtils::EncodeXmlString(_writeTocLink);
 						_writeAfterRun +=	std::wstring (L"\" w:history=\"1\">");
 
-						break;								
-						//cp = cpFieldSep1;
+						//break;								
 					}
-					//cpFieldSep1 = cpFieldSep2;
 				}
 				_skipRuns = 5; //with separator
 			}
@@ -781,6 +788,7 @@ namespace DocFileFormat
 				else
 				{
 					PictureDescriptor pic(chpxObj, m_document->DataStream, 0x7fffffff, m_document->nWordVersion);
+                    bPict = false;
 					
                     oleWriter.WriteNodeBegin (L"w:object", true);
                         oleWriter.WriteAttribute( L"w:dxaOrig", FormatUtils::IntToWideString( ( pic.dxaGoal + pic.dxaOrigin ) ) );
@@ -1066,85 +1074,90 @@ namespace DocFileFormat
 			}
 			else if (TextMark::Picture == code && fSpec)
 			{
-				PictureDescriptor oPicture (chpx, m_document->nWordVersion > 0 ? m_document->WordDocumentStream : m_document->DataStream, 0x7fffffff, m_document->nWordVersion);
+                if (bPict)
+                {
+                    PictureDescriptor oPicture (chpx, m_document->nWordVersion > 0 ? m_document->WordDocumentStream : m_document->DataStream, 0x7fffffff, m_document->nWordVersion);
 
-				bool isInline = _isTextBoxContent;
+                    bool isInline = _isTextBoxContent;
 
-				if (oPicture.embeddedData && oPicture.embeddedDataSize > 0)
-				{
-                    m_pXmlWriter->WriteNodeBegin (L"w:pict");
+                    if (oPicture.embeddedData && oPicture.embeddedDataSize > 0)
+                    {
+                        m_pXmlWriter->WriteNodeBegin (L"w:pict");
 					
-					VMLPictureMapping oVmlMapper(m_context, m_pXmlWriter, false, _caller, isInline);
-					oPicture.Convert (&oVmlMapper);
+                        VMLPictureMapping oVmlMapper(m_context, m_pXmlWriter, false, _caller, isInline);
+                        oPicture.Convert (&oVmlMapper);
 					
-                    m_pXmlWriter->WriteNodeEnd	 (L"w:pict");
-				}
-				else if ((oPicture.mfp.mm > 98) && (NULL != oPicture.shapeContainer)/* && (false == oPicture.shapeContainer->isLastIdentify())*/)
-				{
-					bool bPicture	= true;
-					bool m_bSkip	= false;
+                        m_pXmlWriter->WriteNodeEnd	 (L"w:pict");
+                    }
+                    else if ((oPicture.mfp.mm > 98) && (NULL != oPicture.shapeContainer)/* && (false == oPicture.shapeContainer->isLastIdentify())*/)
+                    {
+                        bool bPicture	= true;
+                        bool m_bSkip	= false;
 
-					if (oPicture.shapeContainer)
-					{
-						if (oPicture.shapeContainer->m_nShapeType != msosptPictureFrame)
-							bPicture = false;//шаблон 1.doc картинка в колонтитуле
+                        if (oPicture.shapeContainer)
+                        {
+                            if (oPicture.shapeContainer->m_nShapeType != msosptPictureFrame)
+                                bPicture = false;//шаблон 1.doc картинка в колонтитуле
 
-						m_bSkip = oPicture.shapeContainer->m_bSkip;
-					}
-					if (!m_bSkip)
-					{
-						bool bFormula	= false;
-						XMLTools::CStringXmlWriter pictWriter;
-						pictWriter.WriteNodeBegin (L"w:pict");
+                            m_bSkip = oPicture.shapeContainer->m_bSkip;
+                        }
+                        if (!m_bSkip)
+                        {
+                            bool bFormula	= false;
+                            XMLTools::CStringXmlWriter pictWriter;
+                            pictWriter.WriteNodeBegin (L"w:pict");
 
-						if (bPicture)
-						{
-							VMLPictureMapping oVmlMapper(m_context, &pictWriter, false, _caller, isInline);
-							oPicture.Convert (&oVmlMapper);
+                            if (bPicture)
+                            {
+                                VMLPictureMapping oVmlMapper(m_context, &pictWriter, false, _caller, isInline);
+                                oPicture.Convert (&oVmlMapper);
 							
-							if (oVmlMapper.m_isEmbedded)
-							{
-								OleObject ole ( chpx, m_document);
-								OleObjectMapping oleObjectMapping( &pictWriter, m_context, &oPicture, _caller, oVmlMapper.m_shapeId );
+                                if (oVmlMapper.m_isEmbedded)
+                                {
+                                    OleObject ole ( chpx, m_document);
+                                    OleObjectMapping oleObjectMapping( &pictWriter, m_context, &oPicture, _caller, oVmlMapper.m_shapeId );
 								
-								ole.isEquation = oVmlMapper.m_isEquation;
-								ole.isEmbedded = oVmlMapper.m_isEmbedded;
-								ole.embeddedData = oVmlMapper.m_embeddedData;
+                                    ole.isEquation = oVmlMapper.m_isEquation;
+                                    ole.isEmbedded = oVmlMapper.m_isEmbedded;
+                                    ole.embeddedData = oVmlMapper.m_embeddedData;
 							
-								ole.Convert( &oleObjectMapping );
-							}
-							else if (oVmlMapper.m_isEquation)
-							{
-								//нельзя в Run писать oMath
-								//m_pXmlWriter->WriteString(oVmlMapper.m_equationXml);
-								_writeAfterRun = oVmlMapper.m_equationXml;
-								bFormula = true;
-							}
-							else if (oVmlMapper.m_isBlob)
-							{
-								_writeAfterRun = oVmlMapper.m_blobXml;
-								bFormula = true;
-							}
-						}
-						else
-						{
-							VMLShapeMapping oVmlMapper(m_context, &pictWriter, NULL, &oPicture,  _caller, isInline, false);
-							oPicture.shapeContainer->Convert(&oVmlMapper);
-						}
+                                    ole.Convert( &oleObjectMapping );
+                                }
+                                else if (oVmlMapper.m_isEquation)
+                                {
+                                    //нельзя в Run писать oMath
+                                    //m_pXmlWriter->WriteString(oVmlMapper.m_equationXml);
+                                    _writeAfterRun = oVmlMapper.m_equationXml;
+                                    bFormula = true;
+                                }
+                                else if (oVmlMapper.m_isBlob)
+                                {
+                                    _writeAfterRun = oVmlMapper.m_blobXml;
+                                    bFormula = true;
+                                }
+                            }
+                            else
+                            {
+                                VMLShapeMapping oVmlMapper(m_context, &pictWriter, NULL, &oPicture,  _caller, isInline, false);
+                                oPicture.shapeContainer->Convert(&oVmlMapper);
+                            }
 						
-						pictWriter.WriteNodeEnd (L"w:pict");
+                            pictWriter.WriteNodeEnd (L"w:pict");
 
-						if (!bFormula)
-						{
-							m_pXmlWriter->WriteString(pictWriter.GetXmlString());
+                            if (!bFormula)
+                            {
+                                m_pXmlWriter->WriteString(pictWriter.GetXmlString());
 							
-							if ((false == _fieldLevels.empty()) && (_fieldLevels.back().bSeparate && !_fieldLevels.back().bResult))	//ege15.doc
-							{
-								_fieldLevels.back().bResult = true;
-							}//imrtemplate(endnotes).doc
-						}
-					}
-				}                   
+                                if ((false == _fieldLevels.empty()) && (_fieldLevels.back().bSeparate && !_fieldLevels.back().bResult))	//ege15.doc
+                                {
+                                    _fieldLevels.back().bResult = true;
+                                }//imrtemplate(endnotes).doc
+                            }
+                        }
+                    }
+                }
+                else
+                    bPict = true;
 			}
 			else if ((TextMark::AutoNumberedFootnoteReference == code) && fSpec)
 			{
@@ -1910,7 +1923,8 @@ namespace DocFileFormat
 				//{
 				//	m_pXmlWriter->WriteAttribute( L"w:customMarkFollows", L"1");
 				//}
-				m_pXmlWriter->WriteAttribute( L"w:id", FormatUtils::IntToWideString(_footnoteNr++ ) );
+                _footnoteNr++;
+                m_pXmlWriter->WriteAttribute( L"w:id", FormatUtils::IntToWideString(_footnoteNr ) );
 				m_pXmlWriter->WriteNodeEnd( L"", true );
 			}
 		}
@@ -1947,22 +1961,77 @@ namespace DocFileFormat
 		}
 		return true;
 	}
-	bool DocumentMapping::writeBookmarks(int cp)
+    bool DocumentMapping::writeBookmarks(int cp, bool para)
 	{
 		bool result =	true;
+        static std::vector<int> openedInThisPara;
+        static std::set<int> allClosedIds;
+        static int nextIdForSequence = 0;
 
-		for (size_t b = 0; b < m_document->BookmarkStartEndCPs.size(); ++b)
-		{
-			if (m_document->BookmarkStartEndCPs[b].start == cp)
-			{
-				result = writeBookmarkStart(b);
-			}
+        for (size_t b = 0; b < m_document->BookmarkStartEndCPs.size(); ++b)
+        {
+            if (m_document->BookmarkStartEndCPs[b].start == cp)
+            {
+                int xmlId = b;
 
-			if (m_document->BookmarkStartEndCPs[b].end == cp)
-			{
-				result = writeBookmarkEnd(b);  
-			}
-		}
+                result = writeBookmarkStart(xmlId);
+                openedInThisPara.push_back(xmlId);
+            }
+        }
+
+        bool hasPositionClosings = false;
+        int positionClosingCount = 0;
+
+        for (size_t b = 0; b < m_document->BookmarkStartEndCPs.size(); ++b)
+        {
+            if (m_document->BookmarkStartEndCPs[b].end == cp)
+            {
+                hasPositionClosings = true;
+                positionClosingCount++;
+            }
+        }
+
+        if (hasPositionClosings)
+        {
+
+            for (int i = 0; i < positionClosingCount; i++)
+            {
+                if (!openedInThisPara.empty())
+                {
+                    int idToClose = openedInThisPara[0];
+                    result = writeBookmarkEnd(idToClose);
+                    allClosedIds.insert(idToClose);
+                    openedInThisPara.erase(openedInThisPara.begin());
+                }
+                else
+                {
+                    while (allClosedIds.find(nextIdForSequence) != allClosedIds.end())
+                    {
+                        nextIdForSequence++;
+                    }
+
+                    result = writeBookmarkEnd(nextIdForSequence);
+                    allClosedIds.insert(nextIdForSequence);
+                    nextIdForSequence++;
+                }
+            }
+        }
+        else if (para)
+        {
+            while (allClosedIds.find(nextIdForSequence) != allClosedIds.end())
+            {
+                nextIdForSequence++;
+            }
+
+            result = writeBookmarkEnd(nextIdForSequence);
+            allClosedIds.insert(nextIdForSequence);
+            nextIdForSequence++;
+        }
+
+        if (para)
+        {
+            openedInThisPara.clear();
+        }
 
 		return result;
 	}

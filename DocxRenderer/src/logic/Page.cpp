@@ -70,6 +70,8 @@ namespace NSDocxRenderer
 		m_oContBuilder.Clear();
 		m_arCompleteObjectsXml.clear();
 		m_arLuminosityShapes.clear();
+
+		m_bFontSubstitution = false;
 	}
 
 	CPage::~CPage()
@@ -194,13 +196,18 @@ namespace NSDocxRenderer
 		if (!m_arShapes.empty())
 		{
 			auto& last_shape = m_arShapes.back();
-			if (last_shape->IsEqual(top, bot, left, right) && rotation == last_shape->m_dRotation)
+			bool is_type_diff = lType == c_nStroke && (m_lLastType == c_nWindingFillMode || m_lLastType == c_nEvenOddFillMode);
+			is_type_diff = is_type_diff || (m_lLastType == c_nStroke && (lType == c_nWindingFillMode || m_lLastType == c_nEvenOddFillMode));
+			if (last_shape->IsEqual(top, bot, left, right) && rotation == last_shape->m_dRotation && is_type_diff && m_lLastType != 0)
 			{
 				set_fill_mode(last_shape);
+				if (pInfo) DrawImage(last_shape, pInfo, image_vector);
+				m_lLastType = 0; // reset stroke/fill logic
 				return;
 			}
 		}
 
+		m_lLastType = lType;
 		auto shape = std::make_shared<CShape>();
 		shape->m_oPen.Size *= transform_det;
 		set_fill_mode(shape);
@@ -268,9 +275,13 @@ namespace NSDocxRenderer
 
 		if (!skip_shape)
 		{
-			shape->m_nOrder = ++m_nShapeOrder;
+			shape->m_nOrder = ++m_nCurrentOrder;
 			m_arShapes.push_back(shape);
 		}
+	}
+	bool CPage::IsCurrVectorClockwise() const
+	{
+		return m_oCurrVectorGraphics.IsClockwise();
 	}
 
 	void CPage::AddText(
@@ -327,10 +338,9 @@ namespace NSDocxRenderer
 			m_oManagers.pFontManager->SetStringGid(0);
 			m_oManagers.pFontManager->MeasureStringGids(pUnicodes, nCount, dTextX, dTextY, _x, _y, _w, _h, CFontManager::mtPosition);
 		}
-
 		_h = m_oManagers.pFontManager->GetFontHeight();
-
 		double baseline = dTextY + fBaseLineOffset;
+
 		double top = baseline - _h;
 		double left = dTextX;
 		double right = left + _w;
@@ -342,7 +352,23 @@ namespace NSDocxRenderer
 			bForcedBold = true;
 
 		m_oManagers.pParagraphStyleManager->UpdateAvgFontSize(m_oFont.Size);
-		m_oContBuilder.AddUnicode(top, baseline, left, right, m_oFont, m_oBrush, m_oManagers.pFontManager, oText, bForcedBold, m_bUseDefaultFont, m_bWriteStyleRaw);
+		m_nCurrentOrder++;
+		m_oContBuilder.AddUnicode(
+		            top,
+		            baseline,
+		            left,
+		            right,
+		            m_oFont,
+		            m_oBrush,
+		            m_oManagers.pFontManager,
+		            oText,
+		            m_nCurrentOrder,
+		            pGids,
+		            bForcedBold,
+		            m_bUseDefaultFont,
+		            m_bWriteStyleRaw,
+		            m_bCollectMetaInfo
+		        );
 	}
 
 	void CPage::Analyze()
@@ -469,8 +495,6 @@ namespace NSDocxRenderer
 		m_arShapes.erase(right, m_arShapes.end());
 
 		std::sort(m_arShapes.begin(), m_arShapes.end(), [] (const shape_ptr_t& s1, const shape_ptr_t& s2) {
-			if (s1->m_bIsBehindDoc && !s2->m_bIsBehindDoc) return true;
-			if (!s1->m_bIsBehindDoc && s2->m_bIsBehindDoc) return false;
 			return s1->m_nOrder < s2->m_nOrder;
 		});
 	}
@@ -492,7 +516,7 @@ namespace NSDocxRenderer
 			            cont->CalculateSpace() * c_dSPACE_WIDTH_COEF;
 
 			if (curr_line && fabs(curr_line->m_dBot - cont->m_dBot) <= c_dTHE_SAME_STRING_Y_PRECISION_MM &&
-			        fabs(curr_line->m_dRight - cont->m_dLeft) <= 3 * space_width)
+			        fabs(curr_line->m_dRight - cont->m_dLeft) <= 4 * space_width)
 			{
 				curr_line->AddCont(cont);
 				continue;
@@ -556,7 +580,7 @@ namespace NSDocxRenderer
 			shape_ref_ptr_t val = m_arShapes[i];
 			shape_ref_ptr_t next_val = m_arShapes[i + 1];
 
-			if (!val.get() || ! next_val.get())
+			if (!val.get() || !next_val.get() || next_val.get()->m_nOrder - val.get()->m_nOrder != 1)
 				continue;
 
 			next_val.get()->TryMergeShape(val.get());
@@ -627,20 +651,8 @@ namespace NSDocxRenderer
 	{
 		for (auto& line : m_arTextLines)
 			for (auto& cont : line->m_arConts)
-			{
-				if (cont && cont->m_oSelectedSizes.dHeight == 0.0 && cont->m_oSelectedSizes.dWidth == 0.0)
-				{
-					if (m_bUseDefaultFont)
-					{
-						cont->m_oSelectedSizes.dHeight = cont->m_dHeight;
-						cont->m_oSelectedSizes.dWidth = cont->m_dWidth;
-					}
-					else
-					{
-						cont->CalcSelected();
-					}
-				}
-			}
+				if (cont && !m_bUseDefaultFont)
+					cont->CalcSelected();
 	}
 
 	void CPage::AnalyzeShapes()
@@ -753,6 +765,19 @@ namespace NSDocxRenderer
 			if (line && line->m_arConts.empty())
 				line = nullptr;
 
+		for (auto& line : m_arTextLines)
+			if (line)
+			{
+				bool is_remove = true;
+				for(auto& cont : line->m_arConts)
+					if (cont && !cont->IsOnlySpaces())
+						is_remove = false;
+
+				if (is_remove)
+					line = nullptr;
+			}
+
+
 		auto right = MoveNullptr(m_arTextLines.begin(), m_arTextLines.end());
 		m_arTextLines.erase(right, m_arTextLines.end());
 
@@ -821,7 +846,8 @@ namespace NSDocxRenderer
 		// шейпы из буквиц
 		for (auto&& drop_cap : drop_caps)
 		{
-			drop_cap->CalcSelected();
+			if (!m_bUseDefaultFont)
+				drop_cap->CalcSelected();
 
 			auto line = std::make_shared<CTextLine>();
 			line->AddCont(drop_cap);
@@ -883,7 +909,9 @@ namespace NSDocxRenderer
 								pNextLine->m_pLine = pCurrLine;
 							}
 						}
-						else if (!is_font_effect && pCurrCont->IsDuplicate(pNextCont.get(), eVType, eHType))
+						else if (!is_font_effect && pCurrCont->IsDuplicate(pNextCont.get(), eVType, eHType)
+								&& (fabs(pCurrCont->m_dLeft - pNextCont->m_dLeft) < c_dTHE_STRING_X_PRECISION_MM ||
+									fabs(pCurrCont->m_dRight - pNextCont->m_dRight) < c_dTHE_STRING_X_PRECISION_MM))
 						{
 							pNextCont = nullptr;
 							pCurrCont->m_iNumDuplicates++;
@@ -1152,11 +1180,17 @@ namespace NSDocxRenderer
 
 						if ((bIf1 && bIf6) || (bIf2 && bIf7) || (bIf4 && bIf8) || (bIf5 && bIf7))
 						{
-							cont->AddSymBack(d_sym->GetText().at(0), 0);
+							if (m_bCollectMetaInfo)
+								cont->AddSymBack(d_sym->GetText().at(0), 0,  d_sym->m_arOriginLefts.at(0), d_sym->m_arGids.at(0));
+							else
+								cont->AddSymBack(d_sym->GetText().at(0), 0, d_sym->m_arOriginLefts.at(0));
 						}
 						else if (bIf3 && bIf7)
 						{
-							cont->AddSymFront(d_sym->GetText().at(0), 0);
+							if (m_bCollectMetaInfo)
+								cont->AddSymFront(d_sym->GetText().at(0), 0,  d_sym->m_arOriginLefts.at(0), d_sym->m_arGids.at(0));
+							else
+								cont->AddSymFront(d_sym->GetText().at(0), 0, d_sym->m_arOriginLefts.at(0));
 						}
 						isBreak = true;
 						break;
@@ -1331,6 +1365,21 @@ namespace NSDocxRenderer
 
 		return IsHorizontalLineTrough(dummy_cont);
 	}
+	bool CPage::IsTextLineBetween(text_line_ptr_t pFirst, text_line_ptr_t pSecond) const noexcept
+	{
+		double left = std::min(pFirst->m_dLeft, pSecond->m_dLeft);
+		double right = std::max(pFirst->m_dRight, pSecond->m_dRight);
+		double top = std::min(pFirst->m_dBotWithMaxDescent, pSecond->m_dBotWithMaxDescent);
+		double bot = std::max(pFirst->m_dTopWithMaxAscent, pSecond->m_dTopWithMaxAscent);
+
+		auto dummy_cont = std::make_shared<CContText>();
+		dummy_cont->m_dLeft = left - c_dGRAPHICS_ERROR_MM;
+		dummy_cont->m_dRight = right + c_dGRAPHICS_ERROR_MM;
+		dummy_cont->m_dTop = top - c_dGRAPHICS_ERROR_MM;
+		dummy_cont->m_dBot = bot + c_dGRAPHICS_ERROR_MM;
+
+		return IsTextLineTrough(dummy_cont);
+	}
 
 	bool CPage::IsVerticalLineTrough(base_item_ptr_t pFirst) const noexcept
 	{
@@ -1339,7 +1388,9 @@ namespace NSDocxRenderer
 		const auto center = pFirst->m_dTop + height / 2;
 
 		for (const auto& line : ver_lines)
-			if (line.pos > pFirst->m_dLeft && line.pos < pFirst->m_dRight && line.min <= center && line.max >= center)
+			if (line.pos - pFirst->m_dLeft > c_dGRAPHICS_ERROR_IN_LINES_MM &&
+			        pFirst->m_dRight - line.pos > c_dGRAPHICS_ERROR_IN_LINES_MM &&
+			        line.min <= center && line.max >= center)
 				return true;
 
 		return false;
@@ -1352,6 +1403,16 @@ namespace NSDocxRenderer
 
 		for (const auto& line : hor_lines)
 			if (line.pos > pFirst->m_dTop && line.pos < pFirst->m_dBot && line.min <= center && line.max >= center)
+				return true;
+
+		return false;
+	}
+	bool CPage::IsTextLineTrough(base_item_ptr_t pFirst) const noexcept
+	{
+		for (const auto& text_line : m_arShapes)
+			if (text_line && text_line->m_eType == CShape::eShapeType::stTextBox && text_line->m_dBot > pFirst->m_dTop &&
+			        text_line->m_dBot < pFirst->m_dBot && !(
+			        text_line->m_dRight < pFirst->m_dLeft || text_line->m_dLeft > pFirst->m_dRight))
 				return true;
 
 		return false;
@@ -1425,7 +1486,7 @@ namespace NSDocxRenderer
 
 		for (const auto& line : m_arTextLines)
 		{
-			if (fabs(line->m_dBotWithMaxDescent - curr_bot) < 4 * c_dTHE_SAME_STRING_Y_PRECISION_MM)
+			if (fabs(line->m_dBot - curr_bot) < 4 * c_dTHE_SAME_STRING_Y_PRECISION_MM)
 			{
 				bot_aligned_text_lines.back().push_back(line);
 			}
@@ -1433,7 +1494,7 @@ namespace NSDocxRenderer
 			{
 				bot_aligned_text_lines.push_back({});
 				bot_aligned_text_lines.back().push_back(line);
-				curr_bot = line->m_dBotWithMaxDescent;
+				curr_bot = line->m_dBot;
 			}
 		}
 
@@ -1551,10 +1612,12 @@ namespace NSDocxRenderer
 					curr_line->CalcFirstWordWidth();
 
 					for (auto& cont : prev_line->m_arConts)
-						cont->CalcSelected();
+						if (!m_bUseDefaultFont)
+							cont->CalcSelected();
 
 					for (auto& cont : curr_line->m_arConts)
-						cont->CalcSelected();
+						if (!m_bUseDefaultFont)
+							cont->CalcSelected();
 
 					m_arShapes.push_back(CreateSingleLineShape(prev_line));
 					m_arShapes.push_back(CreateSingleLineShape(curr_line));
@@ -1586,8 +1649,9 @@ namespace NSDocxRenderer
 		// lamda to setup and add paragpraph
 		auto add_paragraph = [this, &max_right, &min_left, &ar_paragraphs] (paragraph_ptr_t& paragraph) {
 
-			paragraph->m_dBot = paragraph->m_arTextLines.back()->m_dBot;
-			paragraph->m_dTop = paragraph->m_arTextLines.front()->m_dTop;
+			std::shared_ptr<CTextLine>& firstLine = paragraph->m_arTextLines.front();
+			paragraph->m_dBot = paragraph->m_arTextLines.back()->m_dBotWithMaxDescent;
+			paragraph->m_dTop = firstLine->m_dTopWithMaxAscent;
 			paragraph->m_dRight = max_right;
 			paragraph->m_dLeft = min_left;
 
@@ -1597,12 +1661,35 @@ namespace NSDocxRenderer
 			paragraph->m_dRightBorder = m_dWidth - paragraph->m_dRight;
 			paragraph->m_dLeftBorder = min_left;
 
-			paragraph->m_dLineHeight = paragraph->m_dHeight / paragraph->m_arTextLines.size();
+			if (paragraph->m_arTextLines.size() == 1)
+				paragraph->m_dLineHeight = paragraph->m_dHeight;
+			else
+				paragraph->m_dLineHeight = (paragraph->m_dBot - firstLine->m_dBotWithMaxDescent) / (paragraph->m_arTextLines.size() - 1);
+
 			paragraph->m_bIsNeedFirstLineIndent = false;
 			paragraph->m_dFirstLine = 0;
 			paragraph->m_wsStyleId = m_oManagers.pParagraphStyleManager->GetDefaultParagraphStyleId(*paragraph);
 
 			paragraph->MergeLines();
+
+			// Correct first line position
+			if (m_bFirstParagraphLineCorrection)
+			{
+				double firstLine_height = firstLine->m_dBotWithMaxDescent - firstLine->m_dTopWithMaxAscent;
+				if (paragraph->m_dLineHeight > firstLine_height)
+				{
+					double offset = paragraph->m_dLineHeight - firstLine_height;
+					paragraph->m_dTop -= offset;
+				}
+				else
+				{
+					double ascent = firstLine->m_dBot - firstLine->m_dTopWithMaxAscent;
+					double newAscent = ascent * paragraph->m_dLineHeight / firstLine_height;
+					double offset = ascent - newAscent;
+					paragraph->m_dTop += offset;
+				}
+				paragraph->m_dHeight = paragraph->m_dBot - paragraph->m_dTop;
+			}
 
 			// setting TextAlignmentType
 			if (paragraph->m_arTextLines.size() > 1)
@@ -1665,6 +1752,7 @@ namespace NSDocxRenderer
 			min_left = std::min(min_left, curr_line->m_dLeft);
 			max_right = std::max(max_right, curr_line->m_dRight);
 			paragraph->m_arTextLines.push_back(curr_line);
+			paragraph->m_nOrder = std::max(paragraph->m_nOrder, curr_line->m_nOrder);
 		};
 
 		auto build_paragraphs = [this, add_line, add_paragraph] (const std::vector<text_line_ptr_t>& text_lines) {
@@ -1825,6 +1913,19 @@ namespace NSDocxRenderer
 				}
 			}
 
+			// 2 lines in paragraph fix
+			for (size_t index = 0; index < ar_positions.size() - 1; ++index)
+			{
+				auto& line_top = text_lines[index];
+				auto& line_bot = text_lines[index + 1];
+
+				bool is_start = index == 0 || ar_delims[index - 1] == true;
+				bool is_end = index == ar_positions.size() - 1 || ar_delims[index + 1] == true;
+				bool is_diff = fabs(line_top->m_dHeight - line_bot->m_dHeight) > (line_top->m_dHeight + line_bot->m_dHeight) / 4;
+				if (is_start && is_end && is_diff)
+					ar_delims[index] = true;
+			}
+
 			// gap check
 			//
 			// bla-bla-bla
@@ -1835,6 +1936,9 @@ namespace NSDocxRenderer
 
 			double curr_max_right = text_lines[0]->m_dRight;
 			double curr_min_left = text_lines[0]->m_dLeft;
+
+			double line_with_first_right_min = std::numeric_limits<double>::max();
+			double line_with_first_left_max = std::numeric_limits<double>::lowest();
 			for (size_t index = 0; index < ar_positions.size() - 1; ++index)
 			{
 				Position position = ar_positions[index];
@@ -1845,6 +1949,10 @@ namespace NSDocxRenderer
 				{
 					curr_max_right = line_bot->m_dRight;
 					curr_min_left = line_bot->m_dLeft;
+
+					line_with_first_right_min = std::numeric_limits<double>::max();
+					line_with_first_left_max = std::numeric_limits<double>::lowest();
+
 					continue;
 				}
 
@@ -1852,17 +1960,18 @@ namespace NSDocxRenderer
 				double line_with_first_right = line_top->m_dRight + line_bot->m_dFirstWordWidth;
 				double line_with_first_left = line_top->m_dLeft - line_bot->m_dFirstWordWidth;
 
+				line_with_first_right_min = std::min(line_with_first_right_min, line_with_first_right);
+				line_with_first_left_max = std::max(line_with_first_left_max, line_with_first_left);
+
 				curr_max_right = std::max(curr_max_right, line_bot->m_dRight);
 				curr_min_left = std::min(curr_min_left, line_bot->m_dLeft);
 
 				double diff = 0;
 
 				if (position.right && !position.left)
-					diff = line_with_first_left - curr_min_left;
-				else if (position.left || ar_indents[index])
-					diff = curr_max_right - line_with_first_right;
-				else if (position.center)
-					continue;
+					diff = line_with_first_left_max - curr_min_left;
+				else if (position.left || ar_indents[index] || position.center)
+					diff = curr_max_right - line_with_first_right_min;
 
 				if (diff <= 0)
 					continue;
@@ -1871,6 +1980,8 @@ namespace NSDocxRenderer
 					ar_delims[index] = true;
 					curr_max_right = line_bot->m_dRight;
 					curr_min_left = line_bot->m_dLeft;
+					line_with_first_right_min = std::numeric_limits<double>::max();
+					line_with_first_left_max = std::numeric_limits<double>::lowest();
 				}
 			}
 
@@ -1886,6 +1997,8 @@ namespace NSDocxRenderer
 			for (size_t index = 0; index < ar_positions.size() - 1; ++index)
 			{
 				if (IsHorizontalLineBetween(text_lines[index], text_lines[index + 1]))
+					ar_delims[index] = true;
+				if (IsTextLineBetween(text_lines[index], text_lines[index + 1]))
 					ar_delims[index] = true;
 			}
 
@@ -2239,6 +2352,7 @@ namespace NSDocxRenderer
 				if (direction == eLineDirection::ldLeft) return crossing->p.x - p.x;
 				if (direction == eLineDirection::ldBot) return p.y - crossing->p.y;
 				if (direction == eLineDirection::ldTop) return crossing->p.y - p.y;
+				return 0;
 			};
 
 			while (diff() > c_dMAX_TABLE_LINE_WIDTH_MM)
@@ -2518,12 +2632,13 @@ namespace NSDocxRenderer
 
 		pParagraph->m_arTextLines.push_back(pLine);
 		pParagraph->m_dLeft = pLine->m_dLeft;
-		pParagraph->m_dTop = pLine->m_dTop;
-		pParagraph->m_dBot = pLine->m_dBot;
+		pParagraph->m_dTop = pLine->m_dTopWithMaxAscent;
+		pParagraph->m_dBot = pLine->m_dBotWithMaxDescent;
 		pParagraph->m_dWidth = pLine->m_dWidth;
-		pParagraph->m_dHeight = pLine->m_dHeight;
+		pParagraph->m_dHeight = pLine->m_dBotWithMaxDescent - pLine->m_dTopWithMaxAscent;
 		pParagraph->m_dRight = pLine->m_dRight;
 		pParagraph->m_dLineHeight = pParagraph->m_dHeight;
+		pParagraph->m_nOrder = pLine->m_nOrder;
 
 		if (pLine->m_pDominantShape)
 		{
@@ -2537,11 +2652,12 @@ namespace NSDocxRenderer
 		pShape->m_eType = CShape::eShapeType::stTextBox;
 
 		pShape->m_dLeft = pParagraph->m_dLeft;
+		pShape->m_dRight = pParagraph->m_dRight * 1.025;
 		pShape->m_dTop = pParagraph->m_dTop;
 		pShape->m_dBot = pParagraph->m_dBot;
-		pShape->m_dWidth = pParagraph->m_dWidth;
+		pShape->m_dWidth = pShape->m_dRight - pShape->m_dLeft;
 		pShape->m_dHeight = pParagraph->m_dHeight;
-		pShape->m_dRight = pParagraph->m_dRight;
+		pShape->m_nOrder = pParagraph->m_nOrder;
 		pShape->m_bIsBehindDoc = false;
 
 		return pShape;
@@ -2552,11 +2668,13 @@ namespace NSDocxRenderer
 		auto pShape = std::make_shared<CShape>();
 
 		pShape->m_dLeft = pParagraph->m_dLeft;
-		pShape->m_dTop = pParagraph->m_dTop;
 		pShape->m_dRight =  pParagraph->m_dRight;
+		if (pParagraph->m_arTextLines.size() == 1) pShape->m_dRight *= 1.025;
+		pShape->m_dTop = pParagraph->m_dTop;
 		pShape->m_dBot = pParagraph->m_dBot;
 		pShape->m_dHeight = pParagraph->m_dHeight;
-		pShape->m_dWidth = pParagraph->m_dWidth;
+		pShape->m_dWidth = pShape->m_dRight - pShape->m_dLeft;
+		pShape->m_nOrder = pParagraph->m_nOrder;
 
 		if (pParagraph->m_bIsNeedFirstLineIndent && pParagraph->m_dFirstLine < 0)
 			pParagraph->m_dLeftBorder = -pParagraph->m_dFirstLine;

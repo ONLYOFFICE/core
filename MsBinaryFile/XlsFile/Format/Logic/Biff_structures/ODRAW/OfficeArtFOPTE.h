@@ -63,6 +63,7 @@ protected:
 	virtual void load(XLS::CFRecord& record);
 	void load(IBinaryReader* reader);
 public:
+	void save(XLS::CFRecord& record);
 	XLS::BiffStructurePtr clone();
 
 	static const XLS::ElementType type = XLS::typeOfficeArtFOPTE;
@@ -1067,50 +1068,44 @@ public:
 			{
 				case ODRAW::rtLineTo:
 				{
-					for (_UINT16 j = 0; j < m_arSegments[i].m_nCount; ++j)
-					{
-						if (valuePointer + 1 > m_arPoints.size())
-						{
-							break;
+                    if (valuePointer + 1 > m_arPoints.size())
+                    {
+                        break;
 
-							strVmlPath += L"l";
-							strVmlPath += std::to_wstring(m_arPoints[0].x);
-							strVmlPath += L",";
-							strVmlPath += std::to_wstring(m_arPoints[0].y);
+                        strVmlPath += L"l";
+                        strVmlPath += std::to_wstring(m_arPoints[0].x);
+                        strVmlPath += L",";
+                        strVmlPath += std::to_wstring(m_arPoints[0].y);
 							
-							++valuePointer;
-						}
-						else
-						{
-							strVmlPath += L"l";
-							strVmlPath += std::to_wstring(m_arPoints[valuePointer].x );
-							strVmlPath += L",";
-							strVmlPath += std::to_wstring(m_arPoints[valuePointer].y );
+                        ++valuePointer;
+                    }
+                    else
+                    {
+                        strVmlPath += L"l";
+                        strVmlPath += std::to_wstring(m_arPoints[valuePointer].x );
+                        strVmlPath += L",";
+                        strVmlPath += std::to_wstring(m_arPoints[valuePointer].y );
 							
-							++valuePointer;
-						}
-					}
+                        ++valuePointer;
+                    }
 				}break;
 				case ODRAW::rtCurveTo:
 				{
-					for (_UINT16 j = 0; j < m_arSegments[i].m_nCount; ++j)
-					{
-						if (valuePointer + 3 > m_arPoints.size()) 
-							break;
-						strVmlPath += L"c";
-						strVmlPath += std::to_wstring(m_arPoints[valuePointer].x );
-						strVmlPath += L",";
-						strVmlPath += std::to_wstring(m_arPoints[valuePointer].y );
-						strVmlPath += L",";
-						strVmlPath += std::to_wstring(m_arPoints[valuePointer + 1].x );
-						strVmlPath += L",";
-						strVmlPath += std::to_wstring(m_arPoints[valuePointer + 1].y );
-						strVmlPath += L",";
-						strVmlPath += std::to_wstring(m_arPoints[valuePointer + 2].x );
-						strVmlPath += L",";
-						strVmlPath += std::to_wstring(m_arPoints[valuePointer + 2].y );
-						valuePointer += 3;
-					}
+                    if (valuePointer + 3 > m_arPoints.size())
+                        break;
+                    strVmlPath += L"c";
+                    strVmlPath += std::to_wstring(m_arPoints[valuePointer].x );
+                    strVmlPath += L",";
+                    strVmlPath += std::to_wstring(m_arPoints[valuePointer].y );
+                    strVmlPath += L",";
+                    strVmlPath += std::to_wstring(m_arPoints[valuePointer + 1].x );
+                    strVmlPath += L",";
+                    strVmlPath += std::to_wstring(m_arPoints[valuePointer + 1].y );
+                    strVmlPath += L",";
+                    strVmlPath += std::to_wstring(m_arPoints[valuePointer + 2].x );
+                    strVmlPath += L",";
+                    strVmlPath += std::to_wstring(m_arPoints[valuePointer + 2].y );
+                    valuePointer += 3;
 				}break;
 				case ODRAW::rtMoveTo:
 				{
@@ -1125,6 +1120,16 @@ public:
 					}
 				}
 				break;
+                case ODRAW::rtNoFill:
+                {
+                    strVmlPath += L"nf";
+                }
+                break;
+                case ODRAW::rtNoStroke:
+                {
+                    strVmlPath += L"ns";
+                }
+                break;
 				case ODRAW::rtClose:
 				{
 					strVmlPath += L"x";

@@ -147,8 +147,6 @@ inline std::wstring CombinePaths(const std::wstring& wsFirstPath, const std::wst
 
 inline bool GetStatusUsingExternalLocalFiles()
 {
-	return false;
-
 	if (NSProcessEnv::IsPresent(NSProcessEnv::Converter::gc_allowPrivateIP))
 		return NSProcessEnv::GetBoolValue(NSProcessEnv::Converter::gc_allowPrivateIP);
 

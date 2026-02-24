@@ -34,8 +34,6 @@
 
 #include "Objects.h"
 
-#include "../../DesktopEditor/xmlsec/src/include/Certificate.h"
-
 namespace PdfWriter
 {
 	class CEncrypt;
@@ -79,17 +77,19 @@ namespace PdfWriter
 
 		void WriteToStream(CStream* pStream, CEncrypt* pEncrypt) override;
 		void WriteToStream(CStream* pStream, int nFileEnd);
-		void SetCert(ICertificate* pCert);
+		bool FinalizeSignature(CStream* pStream, BYTE* pSignedData, DWORD dwDataLength);
 
+		void SetContentsSize(unsigned int nSize);
 		void SetName(const std::string& sName);
+		void SetLocation(const std::string& sLocation);
 		void SetReason(const std::string& sReason);
 		void SetContact(const std::string& sContacts);
 		void SetDate();
 	private:
-		ICertificate* m_pCertificate;
+		unsigned int m_nContentsSize; // Размер Contents
 
-		int m_nLen1;    // Длина  первого интервала сигнатуры
-		int m_nOffset2; // Начало второго интервала сигнатуры
+		int m_nLen1;    // Длина  первого интервала
+		int m_nOffset2; // Начало второго интервала
 
 		int m_nByteRangeBegin; // Смещение начала массива ByteRange
 		int m_nByteRangeEnd;   // Смещение конца  массива ByteRange

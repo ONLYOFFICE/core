@@ -58,6 +58,12 @@ namespace PdfWriter
 
 		return true;
 	}
+	void CDestination::ChangePage(CObjectBase* pPage)
+	{
+		if (!pPage)
+			return;
+		Insert(Get(0, false), pPage, true);
+	}
 	void CDestination::PrepareArray()
 	{
 		if (m_arrList.size() > 1)

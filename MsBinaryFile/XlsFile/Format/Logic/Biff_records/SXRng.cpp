@@ -60,5 +60,14 @@ void SXRng::readFields(CFRecord& record)
 	iByType		= GETBITS(flags, 2, 4);
 }
 
+void SXRng::writeFields(CFRecord& record)
+{
+	unsigned short flags = 0;
+	SETBIT(flags, 0, fAutoStart)
+	SETBIT(flags, 1, fAutoEnd)
+	SETBITS(flags, 2, 4, iByType)
+	record << flags;
+}
+
 } // namespace XLS
 

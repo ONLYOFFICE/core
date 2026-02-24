@@ -49,10 +49,11 @@ public:
 	static const ElementType	type = typeTxOLastRun;
 	
 	virtual void load(CFRecord& record);
+	virtual void save(CFRecord& record);
 
 
 public:	
-	_UINT16 cchText;
+	_UINT16 cchText = 0;
 };
 
 typedef boost::shared_ptr<TxOLastRun> TxOLastRunPtr;

@@ -146,11 +146,11 @@ public:
 		bool					use_image_replace;
 	};
 
-    drawing_context() : objects_count_(0),  current_shape_(NULL),shape_text_content_(L""),zero_string_(L""),current_level_(0),current_shape_id_ (0){}
+    drawing_context() : objects_count_(0), current_shape_(NULL), current_level_(0), current_shape_id_ (0) {}
     
     void start_frame(odf_reader::draw_frame * drawFrame) 
     { 
-        current_object_name_ = L"";
+        current_object_name_.clear();
  		current_level_++;
         objects_count_++; 
 
@@ -163,26 +163,28 @@ public:
 		current_level_++;
         objects_count_++; 
 		
-		current_shape_id_		= objects_count_;
-        current_object_name_	= L"";
-        current_shape_			= drawShape;
+        current_object_name_.clear();
+
+		current_shape_id_ = objects_count_;
+        current_shape_ = drawShape;
     }
     void start_control(odf_reader::draw_control * drawControl) 
     { 
 		current_level_++;
         objects_count_++; 
 		
-		current_shape_id_		= objects_count_;
-        current_object_name_	= L"";
-        current_control_		= drawControl;
+        current_object_name_.clear();
+
+		current_shape_id_ = objects_count_;
+        current_control_ = drawControl;
     }
 	void start_group() 
     { 
 		current_level_++;
         objects_count_++; 
 		
-		current_shape_id_		= objects_count_;
-        current_object_name_	= L"";
+		current_shape_id_ = objects_count_;
+        current_object_name_.clear();
 		
 		groups_.push_back(_group());
     }
@@ -225,6 +227,7 @@ public:
 		current_level_--;
 		frames_.pop_back();
 		caption_.clear();
+		draw_hyperlinkRId.clear();
 	}
 
 	std::wstring & get_text_stream_frame()
@@ -261,6 +264,7 @@ public:
 		shape_text_content_.clear();
 		current_shape_id_ = 0;
 		caption_.clear();
+		draw_hyperlinkRId.clear();
 	}
 	void stop_control()
 	{
@@ -269,6 +273,7 @@ public:
 		shape_text_content_.clear();
 		current_shape_id_ = 0;
 		caption_.clear();
+		draw_hyperlinkRId.clear();
 	}
 	void stop_group()
 	{
@@ -278,8 +283,8 @@ public:
 	
 	int get_current_frame_id() const 
 	{
-		if (false == frames_.empty())	return frames_.back().id;
-		else					return 0;
+		if (false == frames_.empty()) return frames_.back().id;
+		else return 0;
 	}
 	bool	in_group()						{ return !groups_.empty(); }
     int		get_current_level()		const	{ return current_level_; }
@@ -299,25 +304,25 @@ public:
 		caption_ = value;
 	}
 	
+	std::wstring draw_hyperlinkRId;
 private:
-	std::wstring			shape_text_content_;
+	std::wstring shape_text_content_;
 
-	std::wstring			current_object_name_;
-    unsigned int			objects_count_;
+	std::wstring current_object_name_;
+    unsigned int objects_count_;
 	
-	int						current_level_;
+	int current_level_;
 	
-	std::vector<_group>		groups_;
-	std::vector<_frame>		frames_; 
+	std::vector<_group> groups_;
+	std::vector<_frame> frames_; 
    
 	odf_reader::draw_shape *current_shape_; 
-	size_t					current_shape_id_;
+	size_t current_shape_id_;
 
 	odf_reader::draw_control*current_control_; 
 
-	std::wstring			zero_string_;
-	std::wstring			caption_;
-
+	std::wstring zero_string_;
+	std::wstring caption_;
 };
 
 class section_context : boost::noncopyable
@@ -876,6 +881,9 @@ public:
 
 	void set_page_break		(bool val);
     bool get_page_break		();
+
+	void set_temp_style_name( const std::wstring& val );
+	std::wstring get_temp_style_name() const;
 	
 	void			add_page_properties		(const std::wstring & StyleName);
     std::wstring	get_page_properties		();
@@ -994,6 +1002,7 @@ public:
 	drop_cap_context		& get_drop_cap_context()		{ return drop_cap_context_; }
 	
 	styles_map	styles_map_;
+	std::unordered_map<std::wstring,bool> status_para{};
 	bool		process_headers_footers_;
 	bool		delayed_converting_;
 	bool		convert_delayed_enabled_;
@@ -1007,9 +1016,27 @@ public:
 
     bool get_implicit_end() const;
 
+	void set_inside_frame( bool flag );
+
+	bool get_inside_frame() const;
+
+	void set_scale( const int _scale );
+
+	int get_scale() const;
+
+	const std::wstring get_current_fontName();
+
+	const double get_current_fontSize_from_default_style();
+
 private:
 
+	std::wstring temp_name;
+
     bool flag_implicit_end = false;
+
+	bool inside_frame = false;
+
+	int scale_for_framePr = 0;
 
 	struct _context_state
 	{

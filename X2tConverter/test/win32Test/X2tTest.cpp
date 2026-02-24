@@ -47,6 +47,7 @@
 		#pragma comment(lib, "../../../build/lib/win_64/DEBUG/kernel_network.lib")
 		#pragma comment(lib, "../../../build/lib/win_64/DEBUG/kernel.lib")
 		#pragma comment(lib, "../../../build/lib/win_64/DEBUG/UnicodeConverter.lib")
+		#pragma comment(lib, "../../../build/lib/win_64/DEBUG/ooxmlsignature.lib")
 		#pragma comment(lib, "../../../build/lib/win_64/DEBUG/CryptoPPLib.lib")
 #else
 		#pragma comment(lib, "../../../build/lib/win_64/doctrenderer.lib")
@@ -63,6 +64,7 @@
 		#pragma comment(lib, "../../../build/lib/win_64/kernel_network.lib")
 		#pragma comment(lib, "../../../build/lib/win_64/kernel.lib")
 		#pragma comment(lib, "../../../build/lib/win_64/UnicodeConverter.lib")
+		#pragma comment(lib, "../../../build/lib/win_64/ooxmlsignature.lib")
 		#pragma comment(lib, "../../../build/lib/win_64/CryptoPPLib.lib")
 #endif
 	#pragma comment(lib, "../../../Common/3dParty/icu/win_64/build//icuuc.lib")
@@ -83,6 +85,7 @@
 		#pragma comment(lib, "../../../build/lib/win_32/DEBUG/kernel.lib")
 		#pragma comment(lib, "../../../build/lib/win_32/DEBUG/kernel_network.lib")
 		#pragma comment(lib, "../../../build/lib/win_32/DEBUG/UnicodeConverter.lib")
+		#pragma comment(lib, "../../../build/lib/win_32/DEBUG/ooxmlsignature.lib")
 		#pragma comment(lib, "../../../build/lib/win_32/DEBUG/CryptoPPLib.lib")
 #else
 		#pragma comment(lib, "../../../build/lib/win_32/doctrenderer.lib")
@@ -100,6 +103,7 @@
 		#pragma comment(lib, "../../../build/lib/win_32/kernel_network.lib")
 		#pragma comment(lib, "../../../build/lib/win_32/kernel.lib")
 		#pragma comment(lib, "../../../build/lib/win_32/UnicodeConverter.lib")
+		#pragma comment(lib, "../../../build/lib/win_32/ooxmlsignature.lib")
 		#pragma comment(lib, "../../../build/lib/win_32/CryptoPPLib.lib")
 #endif
 		#pragma comment(lib, "../../../Common/3dParty/icu/win_32/build/icuuc.lib")

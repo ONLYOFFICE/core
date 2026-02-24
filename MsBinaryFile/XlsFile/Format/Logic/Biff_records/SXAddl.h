@@ -49,10 +49,11 @@ public:
 	BiffStructurePtr clone();
 	
 	virtual void load(CFRecord& record);
+	virtual void save(CFRecord& record);
 
 	static const ElementType type = typeStringSegmentedSXADDL;
 
-	_UINT32				cchTotal;
+	_UINT32				cchTotal = 0;
 	XLUnicodeString		string;
 };
 
@@ -66,15 +67,16 @@ public:
 	
 	virtual BaseObjectPtr clone();
 	virtual void readFields(CFRecord& record);
+	virtual void writeFields(CFRecord& record);
 
 	static const ElementType	type = typeSXAddl;
 
-	bool				bStartElement;
-	bool				bEndElement;
+	bool				bStartElement = false;
+	bool				bEndElement = false;
 
-	_UINT32				frtHeaderOld;
-	unsigned char		sxc;
-	unsigned char		sxd;
+	_UINT32				frtHeaderOld = 0x0864;
+	unsigned char		sxc = 0;
+	unsigned char		sxd = 0;
 	BiffStructurePtr	content;
 private:
 	BiffStructurePtr createSxcView		(CFRecord& record);
@@ -171,6 +173,7 @@ public:
 	static const ElementType	type = typeSXAddl;
 
 	virtual void load(CFRecord& record);
+	virtual void save(CFRecord& record);
 
 	XLUnicodeStringSegmentedSXADDL stName;
 };
@@ -199,15 +202,16 @@ public:
 	~SXAddl_SXCView_SXDTableStyleClient(){}
 
 	virtual void load(CFRecord& record);
+	virtual void save(CFRecord& record);
 
 	static const ElementType	type = typeSXAddl;
 
-	bool fLastColumn;
-	bool fRowStrips;
-	bool fColumnStrips;
-	bool fRowHeaders;
-	bool fColumnHeaders;
-	bool fDefaultStyle;
+	bool fLastColumn = false;
+	bool fRowStrips = false;
+	bool fColumnStrips = false;
+	bool fRowHeaders = false;
+	bool fColumnHeaders = false;
+	bool fDefaultStyle = false;
 
 	LPWideString stName;
 };
@@ -289,12 +293,13 @@ public:
 	~SXAddl_SXCCache_SXDVer10Info(){}
 
 	virtual void load(CFRecord& record);
+	virtual void save(CFRecord& record);
 
 	static const ElementType	type = typeSXAddl;
 
-	_INT32 citmGhostMax;
-	unsigned char bVerCacheLastRefresh;
-	unsigned char bVerCacheRefreshableMin;
+	_INT32 citmGhostMax = 0;
+	unsigned char bVerCacheLastRefresh = 0;
+	unsigned char bVerCacheRefreshableMin = 0;
 
 	unsigned char numDateCopy[8];
 };
@@ -464,19 +469,20 @@ public:
     ~SXAddl_SXCView_SXDVer10Info(){}
 
     virtual void load(CFRecord& record);
+	virtual void save(CFRecord& record);
 
     static const ElementType	type = typeSXAddl;
 
-    unsigned char   bVerSxMacro;
-    bool            fDisplayImmediateItems;
-    bool            fEnableDataEd;
-    bool            fDisableFList;
-    bool            fReenterOnLoadOnce;
-    bool            fNotViewCalculatedMembers;
-    bool            fNotVisualTotals;
-    bool            fPageMultipleItemLabel;
-    bool            fTensorFillCv;
-    bool            fHideDDData;
+	unsigned char   bVerSxMacro = 0;
+	bool            fDisplayImmediateItems = false;
+	bool            fEnableDataEd = false;
+	bool            fDisableFList = false;
+	bool            fReenterOnLoadOnce = false;
+	bool            fNotViewCalculatedMembers = false;
+	bool            fNotVisualTotals = false;
+	bool            fPageMultipleItemLabel = false;
+	bool            fTensorFillCv = false;
+	bool            fHideDDData = false;
 };
 class SXAddl_SXCView_SXDVer12Info: public BiffStructure
 {

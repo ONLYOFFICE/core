@@ -66,7 +66,10 @@ namespace DocFileFormat
 			brcType = bytes[5];
 
 			short val = FormatUtils::BytesToInt16( bytes, 6, size );
-			dptSpace = val & 0x001F;
+            if (val == -1)
+                dptSpace = 0;
+            else
+                dptSpace = val & 0x001F;
 
 			//not sure if this is correct, the values from the spec are definitly wrong:
 			fShadow = FormatUtils::BitmaskToBool( val, 0x20 );

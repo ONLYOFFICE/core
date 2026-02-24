@@ -47,10 +47,11 @@ public:
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
+	void writeFields(CFRecord& record);
 
 	static const ElementType type = typeSxErr;
 
-	unsigned short wbe;
+	unsigned short wbe = 0;
 };
 
 } // namespace XLS

@@ -47,7 +47,7 @@ void InitLocalInfo()
 {
     InfoMap = std::map<_INT32, LocalInfo>
     {
-        {-1, LocalInfo{-1, L"default", L"-", L"215", 0, 3}},
+		{-1, LocalInfo{-1, L"default", L".", L"135", 0, 3}},
         {1, LocalInfo{1, L"ar", L"/", L"134", 28, 13}},
         {4, LocalInfo{4, L"zh-Hans", L"/", L"520", 3, 3}},
         {5, LocalInfo{5, L"cs", L".", L"135", 4, 3}},

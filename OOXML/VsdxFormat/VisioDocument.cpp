@@ -1461,8 +1461,8 @@ namespace Draw
 	{
 		pReader->Skip(1); // type
 		
-		smart_ptr<OOX::IFileContainer> rels_old = pReader->GetRels();
-		pReader->SetRels(dynamic_cast<OOX::IFileContainer*>((CDocumentFile*)this));
+		OOX::IFileContainer* rels_old = pReader->GetRelsPtr();
+		pReader->SetRelsPtr(dynamic_cast<OOX::IFileContainer*>((CDocumentFile*)this));
 
 		LONG end = pReader->GetPos() + pReader->GetRecordSize() + 4;
 
@@ -1513,7 +1513,10 @@ namespace Draw
 				pMaster->fromPPTY(pReader);
 				smart_ptr<OOX::File> oFile(pMaster);
 
-				pReader->GetRels()->Add(oFile);
+				if (pReader->GetRelsPtr())
+				{
+					pReader->GetRelsPtr()->Add(oFile);
+				}
 			}break;
 			case 8:
 			{
@@ -1521,7 +1524,10 @@ namespace Draw
 				pPage->fromPPTY(pReader);
 				smart_ptr<OOX::File> oFile(pPage);
 
-				pReader->GetRels()->Add(oFile);
+				if (pReader->GetRelsPtr())
+				{
+					pReader->GetRelsPtr()->Add(oFile);
+				}
 			}break;
 			case 9:
 			{
@@ -1529,7 +1535,10 @@ namespace Draw
 				pConnections->fromPPTY(pReader);
 				smart_ptr<OOX::File> oFile(pConnections);
 
-				pReader->GetRels()->Add(oFile);
+				if (pReader->GetRelsPtr())
+				{
+					pReader->GetRelsPtr()->Add(oFile);
+				}
 			}break;
 			case 10:
 			{
@@ -1537,7 +1546,10 @@ namespace Draw
 				pRecordsets->fromPPTY(pReader);
 				smart_ptr<OOX::File> oFile(pRecordsets);
 
-				pReader->GetRels()->Add(oFile);
+				if (pReader->GetRelsPtr())
+				{
+					pReader->GetRelsPtr()->Add(oFile);
+				}
 			}break;
 			case 11:
 			{
@@ -1545,7 +1557,10 @@ namespace Draw
 				pSolutions->fromPPTY(pReader);
 				smart_ptr<OOX::File> oFile(pSolutions);
 
-				pReader->GetRels()->Add(oFile);
+				if (pReader->GetRelsPtr())
+				{
+					pReader->GetRelsPtr()->Add(oFile);
+				}
 			}break;
 			case 12:
 			{
@@ -1553,7 +1568,10 @@ namespace Draw
 				pValidation->fromPPTY(pReader);
 				smart_ptr<OOX::File> oFile(pValidation);
 
-				pReader->GetRels()->Add(oFile);
+				if (pReader->GetRelsPtr())
+				{
+					pReader->GetRelsPtr()->Add(oFile);
+				}
 			}break;
 			case 13:
 			{
@@ -1561,7 +1579,10 @@ namespace Draw
 				pComments->fromPPTY(pReader);
 				smart_ptr<OOX::File> oFile(pComments);
 
-				pReader->GetRels()->Add(oFile);
+				if (pReader->GetRelsPtr())
+				{
+					pReader->GetRelsPtr()->Add(oFile);
+				}
 			}break;
 			case 14:
 			{
@@ -1569,7 +1590,10 @@ namespace Draw
 				pWindows->fromPPTY(pReader);
 				smart_ptr<OOX::File> oFile(pWindows);
 
-				pReader->GetRels()->Add(oFile);
+				if (pReader->GetRelsPtr())
+				{
+					pReader->GetRelsPtr()->Add(oFile);
+				}
 			}break;
 			case 15:
 			{
@@ -1579,7 +1603,10 @@ namespace Draw
 				pTheme->fromPPTY(pReader);
 				smart_ptr<OOX::File> oFile(pTheme);
 
-				pReader->GetRels()->Add(oFile);
+				if (pReader->GetRelsPtr())
+				{
+					pReader->GetRelsPtr()->Add(oFile);
+				}
 			}break;
 			case 16:
 			{
@@ -1589,7 +1616,10 @@ namespace Draw
 					pVbaProject->fromPPTY(pReader);
 					smart_ptr<OOX::File> oFile(pVbaProject);
 
-					pReader->GetRels()->Add(oFile);
+					if (pReader->GetRelsPtr())
+					{
+						pReader->GetRelsPtr()->Add(oFile);
+					}
 				}
 				else
 				{
@@ -1611,7 +1641,10 @@ namespace Draw
 
 				smart_ptr<OOX::JsaProject> oFileJsaProject(new OOX::JsaProject(NULL));
 				smart_ptr<OOX::File> oFile = oFileJsaProject.smart_dynamic_cast<OOX::File>();
-				pReader->GetRels()->Add(oFile);
+				if (pReader->GetRelsPtr())
+				{
+					pReader->GetRelsPtr()->Add(oFile);
+				}
 
 				pReader->m_pRels->m_pManager->m_pContentTypes->AddDefault(oJsaProject.GetExtention(false));
 			}break;
@@ -1622,7 +1655,7 @@ namespace Draw
 			}
 		}
 		pReader->Seek(end);
-		pReader->SetRels(rels_old);
+		pReader->SetRelsPtr(rels_old);
 	}
 	void OOX::Draw::CDocumentFile::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 	{

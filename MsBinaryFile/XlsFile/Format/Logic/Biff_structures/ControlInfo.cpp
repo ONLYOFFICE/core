@@ -55,6 +55,19 @@ void ControlInfo::load(CFRecord& record)
 	record.skipNunBytes(2);	// reserved2
 }
 
+void ControlInfo::save(CFRecord& record)
+{
+	unsigned short flags = 0;
+
+	SETBIT(flags, 0, fDefault)
+	SETBIT(flags, 1, fHelp)
+	SETBIT(flags, 2, fCancel)
+	SETBIT(flags, 3, fDismiss)
+
+	record << flags << accel1;
+	record.reserveNunBytes(2);
+}
+
 
 } // namespace XLS
 

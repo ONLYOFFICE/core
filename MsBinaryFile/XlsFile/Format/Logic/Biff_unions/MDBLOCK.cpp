@@ -90,7 +90,8 @@ const bool MDBLOCK::saveContent(BinProcessor& proc)
 				CFRecord TempRecord(rt_ContinueFrt12, proc.getGlobalWorkbookInfo());
 				for(auto i = Stpos; i < Stpos+ tempLen; i++)
 					TempRecord << *(castedPtr->rgmdir[i]);
-				memcpy(continueRecord.rgb.data(), (TempRecord.getCurStaticData<char>()), tempLen*8);
+				auto copyData = TempRecord.getCurStaticData<char>() - TempRecord.getRdPtr();
+				memcpy(continueRecord.rgb.data(), copyData, tempLen*8);
 				proc.mandatory(continueRecord);
 			}
 			Stpos+=tempLen;

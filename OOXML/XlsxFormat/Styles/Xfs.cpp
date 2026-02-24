@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
@@ -41,6 +41,9 @@
 
 #include "../../XlsbFormat/Biff12_unions/CELLSTYLEXFS.h"
 #include "../../XlsbFormat/Biff12_unions/CELLXFS.h"
+
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/XFS.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/XF.h"
 
 namespace OOX
 {
@@ -297,6 +300,14 @@ namespace OOX
 			else
 				ptr->fLocked = true;
 		}
+		void CProtection::toXLS(XLS::BaseObjectPtr& obj)
+		{
+			auto ptr = static_cast<XLS::XF*>(obj.get());
+			if(m_oHidden.IsInit())
+				ptr->fHidden = m_oHidden->GetValue();
+			if(m_oLocked.IsInit())
+				ptr->fLocked = m_oLocked->GetValue();
+		}
 		EElementType CProtection::getType () const
 		{
 			return et_x_Protection;
@@ -450,6 +461,53 @@ namespace OOX
 
 			return objectPtr;
 		}
+		XLS::BaseObjectPtr CXfs::toXLS()
+		{
+			size_t id = 0;
+			auto ptr = new XLS::XF(id, id);
+			XLS::BaseObjectPtr objectPtr(ptr);
+			if(m_oFontId.IsInit())
+				ptr->font_index = m_oFontId->GetValue();
+			if(m_oNumFmtId.IsInit())
+				ptr->ifmt = m_oNumFmtId->GetValue();
+			if(m_oPivotButton.IsInit())
+				ptr->fsxButton = m_oPivotButton->GetValue();
+			if(m_oQuotePrefix.IsInit())
+				ptr->f123Prefix = m_oQuotePrefix->GetValue();
+
+			if (m_oXfId.IsInit())
+				ptr->ixfParent = m_oXfId->GetValue();
+			else
+				ptr->ixfParent = 0xFFF;
+
+			if(m_oAligment.IsInit())
+			{
+				m_oAligment->toBin(objectPtr);
+			}
+			else
+			{
+				ptr->alc = 0;
+				ptr->alcV = 2;
+			}
+			if(m_oProtection.IsInit())
+				m_oProtection->toXLS(objectPtr);
+
+
+			if(m_oApplyAlignment.IsInit())
+				ptr->fAtrAlc = m_oApplyAlignment->GetValue();
+
+			if(m_oApplyBorder.IsInit())
+				ptr->fAtrBdr = m_oApplyBorder->GetValue();
+			if(m_oApplyFill.IsInit())
+				ptr->fAtrPat = m_oApplyFill->GetValue();
+			if(m_oApplyFont.IsInit())
+				ptr->fAtrFnt = m_oApplyFont->GetValue();
+			if(m_oApplyNumberFormat.IsInit())
+				ptr->fAtrNum = m_oApplyNumberFormat->GetValue();
+			if(m_oApplyProtection.IsInit())
+				ptr->fAtrProt = m_oApplyProtection->GetValue();
+			return objectPtr;
+		}
 		void CXfs::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
 			WritingElement_ReadAttributes_Start( oReader )
@@ -561,6 +619,17 @@ namespace OOX
 			ptr1->cxfs = ptr->m_arBrtXF.size();
 			return objectPtr;
 		}
+		void CCellXfs::toXLS(XLS::BaseObjectPtr Xfs)
+		{
+			auto ptr = static_cast<XLS::XFS*>(Xfs.get());
+			for(auto i:m_arrItems)
+			{
+				auto CellXf = i->toXLS();
+				auto castedXF = static_cast<XLS::XF*>(CellXf.get());
+				castedXF->fStyle = false;
+				ptr->m_arCellXFs.push_back(CellXf);
+			}
+		}
 		EElementType CCellXfs::getType () const
 		{
 			return et_x_CellXfs;
@@ -653,6 +722,17 @@ namespace OOX
 				ptr->m_arBrtXF.push_back(i->toBin());
 			ptr1->cxfs = ptr->m_arBrtXF.size();
 			return objectPtr;
+		}
+		void CCellStyleXfs::toXLS(XLS::BaseObjectPtr Xfs)
+		{
+			auto ptr = static_cast<XLS::XFS*>(Xfs.get());
+			for(auto i:m_arrItems)
+			{
+				auto styleXf = i->toXLS();
+				auto castedXF = static_cast<XLS::XF*>(styleXf.get());
+				castedXF->fStyle = true;
+				ptr->m_arCellStyles.push_back(styleXf);
+			}
 		}
 		void CCellStyleXfs::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{

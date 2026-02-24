@@ -80,7 +80,7 @@ WASM_EXPORT CDrawingFile* Open(BYTE* data, LONG size, const char* password)
 	std::wstring sPassword = L"";
 	if (NULL != password)
 		sPassword = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)password, strlen(password));
-	pFile->OpenFile(data, size, sPassword);
+	pFile->OpenFile(data, size, password ? sPassword.c_str() : NULL);
 	return pFile;
 }
 WASM_EXPORT int GetType(CDrawingFile* pFile)
@@ -150,6 +150,10 @@ WASM_EXPORT BYTE* GetFontBinary(CDrawingFile* pFile, char* path)
 {
 	return pFile->GetFontBinary(std::string(path));
 }
+WASM_EXPORT BYTE* GetGIDByUnicode(CDrawingFile* pFile, char* path)
+{
+	return pFile->GetGIDByUnicode(std::string(path));
+}
 WASM_EXPORT void DestroyTextInfo(CDrawingFile* pFile)
 {
 	return pFile->DestroyTextInfo();
@@ -161,6 +165,10 @@ WASM_EXPORT int  IsNeedCMap(CDrawingFile* pFile)
 WASM_EXPORT void SetCMapData(CDrawingFile* pFile, BYTE* data, int size)
 {
 	pFile->SetCMapData(data, size);
+}
+WASM_EXPORT void SetScanPageFonts(CDrawingFile* pFile, int nPageIndex)
+{
+	return pFile->SetScanPageFonts(nPageIndex);
 }
 WASM_EXPORT BYTE* ScanPage(CDrawingFile* pFile, int nPageIndex, int mode)
 {
@@ -190,6 +198,17 @@ WASM_EXPORT int RedactPage(CDrawingFile* pFile, int nPageIndex, int* arrRedactBo
 WASM_EXPORT int UndoRedact(CDrawingFile* pFile)
 {
 	return pFile->UndoRedact() ? 1 : 0;
+}
+WASM_EXPORT int CheckOwnerPassword(CDrawingFile* pFile, const char* password)
+{
+	std::wstring sPassword = L"";
+	if (NULL != password)
+		sPassword = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)password, strlen(password));
+	return pFile->CheckOwnerPassword(password ? sPassword.c_str() : NULL) ? 1 : 0;
+}
+WASM_EXPORT int CheckPerm(CDrawingFile* pFile, int nPermFlag)
+{
+	return pFile->CheckPerm(nPermFlag) ? 1 : 0;
 }
 
 WASM_EXPORT void* GetImageBase64(CDrawingFile* pFile, int rId)

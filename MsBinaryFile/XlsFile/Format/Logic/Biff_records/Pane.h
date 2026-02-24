@@ -55,12 +55,12 @@ public:
 
 	static const ElementType type = typePane;
 
-    _UINT16		x;
-	_UINT16		y;
+	_UINT16		x = 0;
+	_UINT16		y = 0;
     //_UINT16		rwTop;
-    UncheckedRw     rwTop;
+	UncheckedRw     rwTop = 0;
     //_UINT16		colLeft;
-    UncheckedCol    colLeft;
+	UncheckedCol    colLeft = 0;
     PaneType	pnnAcct; //4 byte in biff12
 	
 	std::wstring	topLeftCell;
@@ -68,9 +68,9 @@ public:
     //biff12
     Xnum    xnumXSplit;
     Xnum    xnumYSplit;
-    bool    fFrozen;
-    bool    fFrozenNoSplit;
-    _UINT32 pnnAcct_xlsb;
+	bool    fFrozen = false;
+	bool    fFrozenNoSplit = false;
+	_UINT32 pnnAcct_xlsb = 0;
 };
 
 } // namespace XLS

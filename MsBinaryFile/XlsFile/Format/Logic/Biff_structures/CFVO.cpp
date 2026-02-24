@@ -59,7 +59,9 @@ void CFVO::save(CFRecord& record)
     {
         fmla.save(record);
     }
-    else if(cfvoType != 2 && cfvoType != 3)
+	else
+		record.reserveNunBytes(2);
+	if(cfvoType != 2 && cfvoType != 3)
     {
         record << numValue;
     }

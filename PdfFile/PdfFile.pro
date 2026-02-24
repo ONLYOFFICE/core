@@ -61,6 +61,7 @@ SOURCES += \
 	SrcReader/RendererOutputDev.cpp \
     SrcReader/Adaptors.cpp \
     SrcReader/PdfAnnot.cpp \
+	SrcReader/PdfFont.cpp \
     SrcReader/GfxClip.cpp
 
 HEADERS += \
@@ -68,6 +69,7 @@ HEADERS += \
     SrcReader/Adaptors.h \
     SrcReader/MemoryUtils.h \
     SrcReader/PdfAnnot.h \
+	SrcReader/PdfFont.h \
     SrcReader/GfxClip.h
 
 # Base fonts

@@ -92,6 +92,8 @@ int CDocxRenderer::Convert(IOfficeDrawingFile* pFile, const std::wstring& sDst, 
 	m_pInternal->m_oDocument.m_oCurrentPage.m_bUseDefaultFont = false;
 	m_pInternal->m_oDocument.m_oCurrentPage.m_bWriteStyleRaw = false;
 	m_pInternal->m_bIsSupportShapeCommands = false;
+	m_pInternal->m_oDocument.m_bIsRecord = true;
+	m_pInternal->m_oDocument.m_oCurrentPage.m_bFirstParagraphLineCorrection = true;
 
 	if (bIsOutCompress)
 		m_pInternal->m_oDocument.m_strTempDirectory = NSDirectory::CreateDirectoryWithUniqueName(m_pInternal->m_sTempDirectory);
@@ -129,7 +131,9 @@ std::vector<std::wstring> CDocxRenderer::ScanPage(IOfficeDrawingFile* pFile, siz
 	m_pInternal->m_oDocument.Init(false);
 	m_pInternal->m_oDocument.m_oCurrentPage.m_bUseDefaultFont = true;
 	m_pInternal->m_oDocument.m_oCurrentPage.m_bWriteStyleRaw = true;
+	m_pInternal->m_oDocument.m_oCurrentPage.m_bFirstParagraphLineCorrection = true;
 	m_pInternal->m_bIsSupportShapeCommands = false;
+	m_pInternal->m_oDocument.m_bIsRecord = false;
 
 	DrawPage(pFile, nPage);
 
@@ -144,7 +148,10 @@ std::vector<std::wstring> CDocxRenderer::ScanPagePptx(IOfficeDrawingFile* pFile,
 	m_pInternal->m_oDocument.Init(false);
 	m_pInternal->m_oDocument.m_oCurrentPage.m_bUseDefaultFont = true;
 	m_pInternal->m_oDocument.m_oCurrentPage.m_bWriteStyleRaw = true;
+	m_pInternal->m_oDocument.m_oCurrentPage.m_bCollectMetaInfo = true;
+	m_pInternal->m_oDocument.m_oCurrentPage.m_bFirstParagraphLineCorrection = true;
 	m_pInternal->m_bIsSupportShapeCommands = true;
+	m_pInternal->m_oDocument.m_bIsRecord = false;
 
 	m_pInternal->m_eShapeSerializeType = ShapeSerializeType::sstXml;
 	DrawPage(pFile, nPage);
@@ -160,7 +167,12 @@ NSWasm::CData CDocxRenderer::ScanPageBin(IOfficeDrawingFile* pFile, size_t nPage
 	m_pInternal->m_oDocument.Init(false);
 	m_pInternal->m_oDocument.m_oCurrentPage.m_bUseDefaultFont = true;
 	m_pInternal->m_oDocument.m_oCurrentPage.m_bWriteStyleRaw = true;
+	m_pInternal->m_oDocument.m_oCurrentPage.m_bCollectMetaInfo = true;
+	m_pInternal->m_oDocument.m_oCurrentPage.m_bFirstParagraphLineCorrection = true;
+	m_pInternal->m_oDocument.m_bIsRecord = false;
 	m_pInternal->m_bIsSupportShapeCommands = true;
+	m_pInternal->m_oDocument.m_oFontStyleManager.Clear();
+	m_pInternal->m_oDocument.m_oFontSelector.ClearCache();
 
 	DrawPage(pFile, nPage);
 
@@ -731,6 +743,10 @@ HRESULT CDocxRenderer::CommandLong(const LONG& lType, const LONG& lCommand)
 			return S_FALSE;
 
 		return S_OK;
+	}
+	if (c_nFontSubstitution == lType)
+	{
+		m_pInternal->m_oDocument.m_oCurrentPage.m_bFontSubstitution = true;
 	}
 	return S_OK;
 }

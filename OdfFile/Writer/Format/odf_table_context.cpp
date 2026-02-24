@@ -527,8 +527,10 @@ void odf_table_context::change_current_column_width(double width)
 	else
 	{
 		double old_width = column_properties->attlist_.style_column_width_->get_value_unit(length::pt);
-		if (old_width < width/* && width < impl_->odf_context_->page_layout_context()->current_page_width_*/ && old_width < 9)
+		if (old_width < width/* && width < impl_->odf_context_->page_layout_context()->current_page_width_*/ && old_width < 5) // check bug 51597
+		{
 			column_properties->attlist_.style_column_width_ = length_;
+		}
 	}
 }
 

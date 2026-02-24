@@ -141,7 +141,7 @@ public:
 
 	void reset();
 
-	void add(const odf_reader::office_element_ptr & element, double margin_left);
+	void add(const odf_reader::office_element_ptr & element, double margin_left, double margin_right);
 	void docx_convert(oox::docx_conversion_context & Context);
 };
 class styles_context : boost::noncopyable

@@ -33,6 +33,7 @@
 #define _PDF_WRITER_SRC_DOCUMENT_H
 
 #include <vector>
+#include <deque>
 #include <string>
 #include "Types.h"
 
@@ -74,6 +75,7 @@ namespace PdfWriter
 	class CImageDict;
 	class CFontDict;
 	class CFont14;
+	class CFontEmbedded;
 	class CFontCidTrueType;
 	class CFontTrueType;
 	class CJbig2Global;
@@ -93,6 +95,7 @@ namespace PdfWriter
 	class CStreamData;
 	class CXObject;
 	class CObjectBase;
+	class CStringObject;
 	//----------------------------------------------------------------------------------------
 	// CDocument
 	//----------------------------------------------------------------------------------------
@@ -124,6 +127,7 @@ namespace PdfWriter
 
 		CPage*            AddPage();
 		CPage*            GetPage    (const unsigned int& unPage);
+		CObjectBase*      GetPageObj (const unsigned int& unPage);
 		CPage*            GetEditPage(const unsigned int& unPage);
 		int               FindPage   (CPage* pPage);
 		unsigned int      GetPagesCount() const;
@@ -148,8 +152,12 @@ namespace PdfWriter
 					      
 		CImageDict*       CreateImage();
 		CXObject*         CreateForm(CImageDict* pImage, const std::string& sName);
+		CXObject*         CreateForm();
 		CFont14*          CreateFont14(const std::wstring& wsFontPath, unsigned int unIndex, EStandard14Fonts eType);
 		CFont14*          FindFont14  (const std::wstring& wsFontPath, unsigned int unIndex);
+		CFontEmbedded*    CreateFontEmbedded(const std::wstring& wsFontPath, unsigned int unIndex, const std::string& sFontKey, EFontType nType, CObjectBase* pObj,
+											 const std::map<unsigned int, unsigned int>& mCodeToWidth, const std::map<unsigned int, unsigned int>& mCodeToUnicode, const std::map<unsigned int, unsigned int>& mCodeToGID);
+		CFontEmbedded*    FindFontEmbedded  (const std::wstring& wsFontPath, unsigned int unIndex);
 		CFontCidTrueType* CreateCidTrueTypeFont(const std::wstring& wsFontPath, unsigned int unIndex);
 		CFontCidTrueType* FindCidTrueTypeFont(const std::wstring& wsFontPath, unsigned int unIndex);
 		CFontTrueType*    CreateTrueTypeFont(const std::wstring& wsFontPath, unsigned int unIndex);
@@ -189,7 +197,9 @@ namespace PdfWriter
 		bool              AddToFile(const std::wstring& wsPath, CXref* pXref, CDictObject* pTrailer, CXref* pInfoXref, CInfoDict* pInfo);
 		void              AddObject(CObjectBase* pObj);
 		bool              MovePage(int nPageIndex, int nPos);
-		void              Sign(const TRect& oRect, CImageDict* pImage, ICertificate* pCert);
+		void              Sign(const TRect& oRect, CImageDict* pImage, const std::wstring &wsReason, const std::wstring &wsContact, const std::wstring &wsName, const std::wstring &wsLocation);
+		bool              PrepareSignature(const std::wstring& wsPath);
+		bool              FinalizeSignature(BYTE* pSignedData, DWORD dwDataLength);
 		bool              EditAnnot (CXref* pXref, CAnnotation* pAnnot,  int nID);
 		void              AddParent(int nID, CDictObject* pParent);
 		CDictObject*      CreateParent(int nID);
@@ -204,6 +214,7 @@ namespace PdfWriter
 		const std::map<int, CAnnotation*>& GetAnnots() { return m_mAnnotations; }
 		const std::map<int, CDictObject*>& GetParents() { return m_mParents; }
 		CPageTree*        GetPageTree() { return m_pPageTree; }
+		CEncryptDict*     GetEncrypt() { return m_pEncryptDict; }
 		void              AddShapeXML(const std::string& sXML);
 		void              EndShapeXML();
 		void              ClearPage();
@@ -213,6 +224,9 @@ namespace PdfWriter
 		CDictObject*      GetAcroForm() { return m_pAcroForm; }
 		CResourcesDict*   CreateResourcesDict(bool bInline, bool bProcSet);
 		void              RemoveObj(CObjectBase* pObj);
+		void              SetEncryption(CEncryptDict* pEncrypt, CObjectBase* pID);
+		void              AddNameTree(CStringObject* pName, CDestination* pDest);
+		CObjectBase*      FindObjByID(unsigned int nObjectId);
 	private:		  
 					  
 		char*             GetTTFontTag();
@@ -227,7 +241,7 @@ namespace PdfWriter
 		CShading*         CreateRadialShading(double dX0, double dY0, double dR0, double dX1, double dY1, double dR1, unsigned char* pColors, double* pPoints, int nCount);
 		bool              CheckAcroForm();
 		CRadioGroupField* FindRadioGroupField(const std::wstring& wsGroupName);
-		void              Sign(const std::wstring& wsPath, unsigned int nSizeXRef, bool bNeedStreamXRef = false);
+		void              Sign(const std::wstring& wsPath, unsigned int nSizeXRef, bool bNeedStreamXRef = false, unsigned int nPrevAddr = 0);
 
 	private:
 
@@ -246,18 +260,42 @@ namespace PdfWriter
 		};
 		struct TSignatureInfo
 		{
-			TSignatureInfo(const TRect& _oRect, CPage* _pPage, CImageDict* _pImage, ICertificate* _pCertificate)
+			TSignatureInfo(const TRect& _oRect, CPage* _pPage, CImageDict* _pImage,
+						   const std::wstring& _wsReason, const std::wstring& _wsContact, const std::wstring & _wsName, const std::wstring &_wsLocation)
 			{
 				oRect  = _oRect;
 				pPage  = _pPage;
 				pImage = _pImage;
-				pCertificate = _pCertificate;
+
+				wsReason = _wsReason;
+				wsContact = _wsContact;
+				wsName = _wsName;
+				wsLocation = _wsLocation;
+
+				nSizeXRef = 0;
+				nPrevAddr = 0;
+				nFileSizeBefore = 0;
+				bNeedStreamXRef = false;
+				pField = NULL;
+				pXref = NULL;
 			}
 
 			TRect oRect;
 			CPage* pPage;
 			CImageDict* pImage;
-			ICertificate* pCertificate;
+
+			std::wstring wsReason;
+			std::wstring wsContact;
+			std::wstring wsName;
+			std::wstring wsLocation;
+
+			std::wstring wsPath;
+			unsigned int nSizeXRef;
+			unsigned int nPrevAddr;
+			unsigned int nFileSizeBefore;
+			bool bNeedStreamXRef;
+			CSignatureField* pField;
+			CXref* pXref;
 		};
 		struct TImageInfo
 		{
@@ -287,7 +325,7 @@ namespace PdfWriter
 		CStreamData*                       m_pMetaData;
 		bool                               m_bEncrypt;
 		CEncryptDict*                      m_pEncryptDict;
-		std::vector<TSignatureInfo>        m_vSignatures;
+		std::deque<TSignatureInfo*>        m_vSignatures;
 		std::vector<TImageInfo>            m_vImages;
 		unsigned int                       m_unFormFields;
 		unsigned int                       m_unCompressMode;
@@ -300,6 +338,7 @@ namespace PdfWriter
 		std::vector<TFontInfo>             m_vCidTTFonts;
 		std::vector<TFontInfo>             m_vTTFonts;
 		std::vector<TFontInfo>             m_vFonts14;
+		std::vector<TFontInfo>             m_vFontsEmbedded;
 		CFont14*                           m_pDefaultCheckBoxFont;
 		CDictObject*                       m_pTransparencyGroup;
 		std::vector<CFontCidTrueType*>     m_vFreeTypeFonts;

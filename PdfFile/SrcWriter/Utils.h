@@ -144,6 +144,8 @@ namespace PdfWriter
 
 	// Пересечение многоугольников по теореме о разделяющей оси
 	bool SAT(const std::vector<CPoint>& poly1, const std::vector<CPoint>& poly2);
+	// Проверка, что все точки внутреннего полигона находятся внутри внешнего
+	bool isPolygonInsidePolygon(const std::vector<CPoint>& inner, const std::vector<CPoint>& outer);
 	// Проверка принадлежности точки выпуклому четырехугольнику
 	bool isPointInQuad(double px, double py,
 					   double x1, double y1, double x2, double y2,

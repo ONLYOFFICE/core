@@ -95,7 +95,7 @@ void SharedParsedFormula::save(CFRecord& record)
 
 			size = record.getRdPtr() - rdPtr;
 
-			record.RollRdPtrBack(size + 4);
+			record.RollRdPtrBack(size + 2);
 			record << size;
 			record.skipNunBytes(size);
 		};

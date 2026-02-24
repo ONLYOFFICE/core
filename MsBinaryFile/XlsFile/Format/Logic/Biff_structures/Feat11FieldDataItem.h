@@ -56,26 +56,27 @@ public:
 	static const ElementType type = typeFeat11FieldDataItem;
 	
 	virtual void load(CFRecord& record);
+	virtual void save(CFRecord& record);
 
-	_UINT32	idField;
-	_UINT32	lfdt;
-	_UINT32	lfxidt;
-	_UINT32	ilta;
-	_UINT32	cbFmtAgg;
-	_UINT32	istnAgg;
+	_UINT32	idField = 1;
+	_UINT32	lfdt = 1;
+	_UINT32	lfxidt = 0;
+	_UINT32	ilta = 0;
+	_UINT32	cbFmtAgg = 0;
+	_UINT32	istnAgg = 0;
 
-	bool	fAutoFilter;
-	bool	fAutoFilterHidden;
-	bool	fLoadXmapi;
-	bool	fLoadFmla;
-	bool	fLoadTotalFmla;
-	bool	fLoadTotalArray;
-	bool	fSaveStyleName;
-	bool	fLoadTotalStr;
-	bool	fAutoCreateCalcCol;
+	bool	fAutoFilter = false;
+	bool	fAutoFilterHidden = false;
+	bool	fLoadXmapi = false;
+	bool	fLoadFmla = false;
+	bool	fLoadTotalFmla = false;
+	bool	fLoadTotalArray = false;
+	bool	fSaveStyleName = false;
+	bool	fLoadTotalStr = false;
+	bool	fAutoCreateCalcCol = false;
 	
-	_UINT32	cbFmtInsertRow;
-	_UINT32	istnInsertRow;
+	_UINT32	cbFmtInsertRow = 0;
+	_UINT32	istnInsertRow = 0;
 
 	XLUnicodeString strFieldName;
 	XLUnicodeString strCaption;
@@ -91,13 +92,13 @@ public:
 	ListParsedArrayFormula	totalArrayFmla;
 	XLUnicodeString			strTotal;
 	Feat11WSSListInfo		wssInfo;
-	_UINT32					qsif;
+	_UINT32					qsif = 1;
 	CachedDiskHeader		dskHdrCache;
 
 //------------------------------------------------
-	_UINT32					lt;
-	bool					bDiskHdrCache;
-	bool					bFeature12;
+	_UINT32					lt = 0;
+	bool					bDiskHdrCache = false;
+	bool					bFeature12 = false;
 };
 
 typedef boost::shared_ptr<Feat11FieldDataItem> Feat11FieldDataItemPtr;
@@ -111,8 +112,9 @@ public:
 	static const ElementType	type = typeFeat11RgSharepointIdDel;
 	
 	virtual void load(CFRecord& record);
+	virtual void save(CFRecord& record);
 
-	_UINT16					cId;
+	_UINT16					cId = 0;
 	std::vector<_UINT32>	rgId;
 };
 
@@ -127,8 +129,9 @@ public:
 	static const ElementType	type = typeFeat11RgSharepointIdChange;
 	
 	virtual void load(CFRecord& record);
+	virtual void save(CFRecord& record);
 
-	_UINT16					cId;
+	_UINT16					cId = 0;
 	std::vector<_UINT32>	rgId;
 };
 
@@ -149,6 +152,7 @@ public:
 	static const ElementType	type = typeFeat11RgInvalidCells;
 	
 	virtual void load(CFRecord& record);
+	virtual void save(CFRecord& record);
 
 	_UINT16							cCellInvalid;
 	std::vector<Feat11CellStruct>	rgCellInvalid;

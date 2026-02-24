@@ -98,6 +98,8 @@ void Sxvd::writeFields(CFRecord& record)
 
     record << sxaxis << cSub << flags;
     cchName = stName.getSize();
+	if(cchName == 0)
+		cchName = 0xffff;
     record << cItm << cchName;
     if(cchName && cchName != 0xffff)
     {

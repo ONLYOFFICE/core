@@ -469,6 +469,21 @@ namespace PdfWriter
 
 		return pArray;
 	}
+	CArrayObject* CArrayObject::CreateMatrix(double* m)
+	{
+		CArrayObject* pArray = new CArrayObject();
+		if (!pArray)
+			return NULL;
+
+		pArray->Add(m[0]);
+		pArray->Add(m[1]);
+		pArray->Add(m[2]);
+		pArray->Add(m[3]);
+		pArray->Add(m[4]);
+		pArray->Add(m[5]);
+
+		return pArray;
+	}
 	CObjectBase* CArrayObject::Copy(CObjectBase* pOut) const
 	{
 		CArrayObject* pArray = pOut && pOut->GetType() == object_type_ARRAY ? (CArrayObject*)pOut : new CArrayObject();
@@ -788,6 +803,13 @@ namespace PdfWriter
 		while (oCoreReader.ReadNextSiblingNode(nDeath))
 			ReadDict(oCoreReader, this);
 	}
+	void CDictObject::ClearStream()
+	{
+		m_unFilter    = STREAM_FILTER_NONE;
+		m_unPredictor = STREAM_PREDICTOR_NONE;
+		if (m_pStream)
+			m_pStream->Clear();
+	}
 	//----------------------------------------------------------------------------------------
 	// CXref
 	//----------------------------------------------------------------------------------------
@@ -869,10 +891,7 @@ namespace PdfWriter
 
 		while (pXref)
 		{
-			if (pXref->m_arrEntries.size() + pXref->m_unStartOffset <= nObjectId)
-				return NULL;
-
-			if (pXref->m_unStartOffset <= nObjectId)
+			if (pXref->m_unStartOffset <= nObjectId && pXref->m_arrEntries.size() + pXref->m_unStartOffset > nObjectId)
 			{
 				for (unsigned int unIndex = 0, nCount = pXref->m_arrEntries.size(); unIndex < nCount; unIndex++)
 				{

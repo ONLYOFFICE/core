@@ -39,8 +39,44 @@
 
 #include "../../../DesktopEditor/graphics/pro/Fonts.h"
 
+#include "../../../DesktopEditor/common/SystemUtils.h"
+
+#include "../../../DesktopEditor/xmlsec/src/include/CertificateCommon.h"
+#include "../../../DesktopEditor/xmlsec/src/include/OOXMLSigner.h"
+
 namespace NExtractTools
 {
+	namespace NSSign
+	{
+		ICertificate* loadCertificate(InputParams& params)
+		{
+			std::wstring keyPath = params.getSigningKeyStorePath();
+			if (keyPath.empty())
+				return NULL;
+
+			ICertificate* certificate = NSCertificate::FromFiles(keyPath, "", L"", "");
+			if (!certificate)
+			{
+				std::string keyPass = NSSystemUtils::GetEnvVariableA(L"SIGNING_KEYSTORE_PASSPHRASE");
+				if (!keyPass.empty())
+					certificate = NSCertificate::FromFiles(keyPath, keyPass, L"", "");
+			}
+			return certificate;
+		}
+
+		int ooxmlSign(const std::wstring& folder, InputParams& params)
+		{
+			ICertificate* certificate = loadCertificate(params);
+			if (!certificate)
+				return 1;
+
+			COOXMLSigner oOOXMLSigner(folder, certificate);
+			int error = oOOXMLSigner.Sign();
+			RELEASEOBJECT(certificate);
+			return error;
+		}
+	}
+
 	// COMMON FUNCTIONS
 	NSFonts::IApplicationFonts* createApplicationFonts(InputParams& params)
 	{
@@ -169,6 +205,8 @@ namespace NExtractTools
 	// compress ooxml directory to archive and encrypt if needed.
 	_UINT32 dir2zipMscrypt(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
 	{
+		NSSign::ooxmlSign(sFrom, params);
+
 		_UINT32 nRes = S_OK;
 		if (params.hasSavePassword())
 		{
@@ -189,6 +227,7 @@ namespace NExtractTools
 	// Copy file sFromDir or sFromFile => sToDir/sToFile (compress directory, if sFromFile is empty)
 	_UINT32 CopyOOXOrigin(const std::wstring& sToDir, const std::wstring& sFromDir, const std::wstring& sToFile, const std::wstring& sFromFile)
 	{
+		// TODO: SIGN?
 		std::wstring sDstFile = combinePath(sToDir, sToFile);
 		if (sFromFile.empty())
 			return dir2zip(sFromDir, sDstFile);
@@ -267,6 +306,8 @@ namespace NExtractTools
 			_UINT32 nRes = func(sFrom, sUnpackedResult, params, convertParams);
 			if (SUCCEEDED_X2T(nRes))
 			{
+				NSSign::ooxmlSign(sUnpackedResult, params);
+
 				COfficeUtils oCOfficeUtils(NULL);
 				nRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sUnpackedResult, sTo, true)) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
 			}
@@ -455,6 +496,7 @@ namespace NExtractTools
 				}
 				else
 				{
+					NSSign::ooxmlSign(sOOXMLDir, params);
 					COfficeUtils oCOfficeUtils(NULL);
 					hRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sOOXMLDir, sTo, false)) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
 				}
@@ -463,6 +505,7 @@ namespace NExtractTools
 			{
 				if (!params.getDontSaveAdditional())
 				{
+					// TODO: Sign?
 					copyOrigin(sFrom, *params.m_sFileTo);
 				}
 				return AVS_FILEUTILS_ERROR_CONVERT_DRM;

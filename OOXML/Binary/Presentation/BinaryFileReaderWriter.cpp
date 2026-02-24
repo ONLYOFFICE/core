@@ -486,6 +486,7 @@ namespace NSBinPptxRW
 			case _CXIMAGE_FORMAT_WMF:
 			case _CXIMAGE_FORMAT_EMF:
 			case _CXIMAGE_FORMAT_GIF:
+			case _CXIMAGE_FORMAT_WEBP:
 			{
 				oPathOutput = m_strDstMedia + FILE_SEPARATOR_STR + strImage + strExts;
 
@@ -721,32 +722,25 @@ namespace NSBinPptxRW
 	double CBinaryFileWriter::GetShapeHeight()
 	{
 		if (m_dCyCurShape < 0.001)
-			return -1;
-		return m_dCyCurShape / 36000; //mm
+			return 0;
+		return m_dCyCurShape; //emu
 	}
 	double CBinaryFileWriter::GetShapeWidth()
 	{
 		if (m_dCxCurShape < 0.001)
-			return -1;
-		return m_dCxCurShape / 36000;
+			return 0;
+		return m_dCxCurShape;//emu
 	}
-	double CBinaryFileWriter::GetShapeY()
+	void CBinaryFileWriter::SetCurShapeSize(double Width, double Height)
 	{
-		return m_dYCurShape / 36000;
+		m_dCxCurShape = Width; //emu
+		m_dCyCurShape = Height; //emu
 	}
-	double CBinaryFileWriter::GetShapeX()
+
+	void CBinaryFileWriter::ClearCurShapeSize()
 	{
-		return m_dXCurShape / 36000; //mm
-	}
-	void CBinaryFileWriter::ClearCurShapePositionAndSizes()
-	{
-		m_dXCurShape = 0;
-		m_dYCurShape = 0;
-		
 		m_dCxCurShape = 0;
 		m_dCyCurShape = 0;
-
-		m_bInGroup = false;
 	}
 	void CBinaryFileWriter::Clear()
 	{
@@ -761,16 +755,6 @@ namespace NSBinPptxRW
 
 		m_dCxCurShape = 0;
 		m_dCyCurShape = 0;
-
-		m_dXCurShape = 0;
-		m_dYCurShape = 0;
-
-		m_bInGroup = false;
-	}
-
-	void CBinaryFileWriter::SetMainDocument(BinDocxRW::CDocxSerializer* pMainDoc)
-	{
-		m_pMainDocument = pMainDoc;
 	}
 
 	void CBinaryFileWriter::ClearNoAttack()
@@ -994,10 +978,10 @@ namespace NSBinPptxRW
 	}
 	CBinaryFileWriter::CBinaryFileWriter()
 	{
-		m_pMainDocument		= NULL;
+		m_pDocxSerializer = NULL;
+		m_pCurrentContainer = NULL;
 		m_pCommon			= new CCommonWriter();
-		//m_pCommonRels		= new NSCommon::smart_ptr<PPTX::CCommonRels>();
-		m_pCurrentContainer = new NSCommon::smart_ptr<OOX::IFileContainer>();
+
 		m_pTheme			= new NSCommon::smart_ptr<PPTX::Theme>();
 		m_pClrMap			= new NSCommon::smart_ptr<PPTX::Logic::ClrMap>();
 		
@@ -1005,26 +989,21 @@ namespace NSBinPptxRW
 	}
 	CBinaryFileWriter::~CBinaryFileWriter()
 	{
+		m_pCurrentContainer = NULL;
 		RELEASEARRAYOBJECTS	(m_pStreamData);
 		RELEASEOBJECT		(m_pCommon);
 		//RELEASEOBJECT		(m_pCommonRels);
-		RELEASEOBJECT		(m_pCurrentContainer);
 		
 		RELEASEOBJECT		(m_pTheme);
 		RELEASEOBJECT		(m_pClrMap);
 	}
-	void CBinaryFileWriter::SetRels(NSCommon::smart_ptr<OOX::IFileContainer> container)
+	void CBinaryFileWriter::SetRelsPtr(OOX::IFileContainer *container)
 	{
-		*m_pCurrentContainer = container;
+		m_pCurrentContainer = container;
 	}
-	void CBinaryFileWriter::SetRels(OOX::IFileContainer *container)
+	OOX::IFileContainer* CBinaryFileWriter::GetRelsPtr()
 	{
-		*m_pCurrentContainer = NSCommon::smart_ptr<OOX::IFileContainer>(container);
-		m_pCurrentContainer->AddRef();
-	}
-	NSCommon::smart_ptr<OOX::IFileContainer> CBinaryFileWriter::GetRels()
-	{
-		return *m_pCurrentContainer;
+		return m_pCurrentContainer;
 	}
 	void CBinaryFileWriter::StartRecord(_INT32 lType)
 	{
@@ -1602,6 +1581,16 @@ namespace NSBinPptxRW
                 std::to_wstring(nIndexTheme + 1) + L".xml\"/>";
 		m_pWriter->WriteString(s);
 	}
+	void CRelsGenerator::StartThemeHandoutMaster(int nIndexTheme)
+	{
+		m_pWriter->WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
+		m_pWriter->WriteString(L"<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">");
+
+		std::wstring s = L"<Relationship Id=\"rId" + std::to_wstring(m_lNextRelsID++) +
+			L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme\" Target=\"../theme/theme" +
+			std::to_wstring(nIndexTheme + 1) + L".xml\"/>";
+		m_pWriter->WriteString(s);
+	}
 	void CRelsGenerator::StartLayout(int nIndexTheme)
 	{
 		m_pWriter->WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
@@ -1674,13 +1663,18 @@ namespace NSBinPptxRW
 		
 		return rid;
 	}
-
 	void CRelsGenerator::WriteNotesMaster()
 	{
 		std::wstring strRels0 = L"<Relationship Id=\"rId" + std::to_wstring(m_lNextRelsID++) +
-				L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/notesMaster\" Target=\"notesMasters/notesMaster1.xml\"/>";
-		m_pWriter->WriteString(strRels0);			
+			L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/notesMaster\" Target=\"notesMasters/notesMaster1.xml\"/>";
+		m_pWriter->WriteString(strRels0);
 	}
+	void CRelsGenerator::WriteHandoutMaster()
+	{
+		std::wstring strRels0 = L"<Relationship Id=\"rId" + std::to_wstring(m_lNextRelsID++) +
+				L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/handoutMaster\" Target=\"handoutMasters/handoutMaster1.xml\"/>";
+		m_pWriter->WriteString(strRels0);			
+	}	
 	std::wstring CRelsGenerator::WriteCustom(const std::wstring & file_name)
 	{
 		std::wstring rid = L"rId" + std::to_wstring(m_lNextRelsID++);
@@ -1936,18 +1930,18 @@ namespace NSBinPptxRW
 
 	CBinaryFileReader::CBinaryFileReader()
 	{
-		m_pMainDocument		= NULL;
+		m_pDocxSerializer = NULL;
 		m_lNextId			= 0;
 		m_nDocumentType		= XMLWRITER_DOC_TYPE_PPTX;
 
 		m_pRels				= new CRelsGenerator();
 		m_nCurrentRelsStack = -1;
-		m_pCurrentContainer = new NSCommon::smart_ptr<OOX::IFileContainer>();
+		m_pCurrentContainer = NULL;
 	}
 	CBinaryFileReader::~CBinaryFileReader()
 	{
 		RELEASEOBJECT(m_pRels);
-		RELEASEOBJECT(m_pCurrentContainer);
+		m_pCurrentContainer = NULL;
 
 		size_t nCountStackRels = m_stackRels.size();
 		for (size_t i = 0; i < nCountStackRels; ++i)
@@ -1957,24 +1951,14 @@ namespace NSBinPptxRW
 		}
 		m_stackRels.clear();
 	}
-	void CBinaryFileReader::SetRels(NSCommon::smart_ptr<OOX::IFileContainer> container)
+	void CBinaryFileReader::SetRelsPtr(OOX::IFileContainer* container)
 	{
-		*m_pCurrentContainer = container;
+		m_pCurrentContainer = container;
 	}
-	void CBinaryFileReader::SetRels(OOX::IFileContainer* container)
+	OOX::IFileContainer* CBinaryFileReader::GetRelsPtr()
 	{
-		*m_pCurrentContainer = NSCommon::smart_ptr<OOX::IFileContainer>(container);
-		m_pCurrentContainer->AddRef();
+		return m_pCurrentContainer;
 	}
-	NSCommon::smart_ptr<OOX::IFileContainer> CBinaryFileReader::GetRels()
-	{
-		return *m_pCurrentContainer;
-	}
-	void CBinaryFileReader::SetMainDocument(BinDocxRW::CDocxSerializer* pMainDoc)
-	{
-		m_pMainDocument = pMainDoc;
-	}
-
 	void CBinaryFileReader::Init(BYTE* pData, _INT32 lStart, _INT32 lSize)
 	{
 		m_pData = pData;

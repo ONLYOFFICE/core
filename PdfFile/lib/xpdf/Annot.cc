@@ -1676,7 +1676,7 @@ void Annot::draw(Gfx *gfx, GBool printing) {
     return;
   }
 
-  if (annotObj.dictLookupNF("IRT", &oIRTObj)->isRef()) {
+  if (type && !type->cmp("Text") && annotObj.dictLookupNF("IRT", &oIRTObj)->isRef()) {
     annotObj.free(); oIRTObj.free();
     return;
   }
@@ -1691,6 +1691,7 @@ void Annot::draw(Gfx *gfx, GBool printing) {
   // draw the appearance stream
   isLink = type && !type->cmp("Link");
 #ifdef BUILDING_WASM_MODULE
+  isLink = gFalse;
   if (type && !type->cmp("Stamp"))
   {
     gfx->drawStamp(&appearance);

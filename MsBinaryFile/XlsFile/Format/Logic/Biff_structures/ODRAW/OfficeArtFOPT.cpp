@@ -53,6 +53,24 @@ void OfficeArtFOPT::loadFields(XLS::CFRecord& record)
 	record >> fopt;
 }
 
+void OfficeArtFOPT::save(XLS::CFRecord& record)
+{
+	rh_own.recVer = 3;
+	rh_own.recType = 0xF00B;
+	rh_own.recInstance = fopt.options_count;
+	record << rh_own;
+
+	auto sizePos = record.getRdPtr();
+
+	record << fopt;
+	//calculating size
+	rh_own.recLen = record.getRdPtr() - sizePos;
+	record.RollRdPtrBack(rh_own.recLen + 4);
+	auto recLen = rh_own.recLen;
+	record << recLen;
+	record.skipNunBytes(rh_own.recLen);
+}
+
 
 const unsigned short OfficeArtFOPT::GetInstanceToStore()
 {

@@ -128,6 +128,22 @@ void office_presentation::xlsx_convert(oox::xlsx_conversion_context & Context)
     Context.end_office_spreadsheet();
 }
 
+bool CheckPageLayout(std::vector<std::pair<std::wstring,std::wstring>>* vec_name_layout, draw_page* page, bool new_name)
+{
+	if(vec_name_layout->empty() || !page)
+		return true;
+	for(size_t i = 0; i < vec_name_layout->size();i++)
+	{
+		if((*vec_name_layout)[i].first == page->attlist_.page_layout_name_.get_value_or(L""))
+		{
+			if(new_name)
+				page->attlist_.master_page_name_ = (*vec_name_layout)[i].second;
+			return true;
+		}
+	}
+	return false;
+}
+
 void office_presentation::pptx_convert(oox::pptx_conversion_context & Context)
 {
     Context.start_office_presentation();
@@ -165,8 +181,43 @@ void office_presentation::pptx_convert(oox::pptx_conversion_context & Context)
 
 	collect_page_names(Context);
 
+	
+	std::vector<std::pair<std::wstring,std::wstring>>* vec_name_master_page = &(Context.root()->odf_context().styleContainer().get_vec_new_name());
+	unsigned int pos_in_vec = 0;
+	if(!vec_name_master_page->empty())
+	{
+		for (size_t i = 0; i < pages_.size(); i++)
+		{
+			 if(i >= 1)
+			{
+				office_element_ptr & elm = pages_[i];
+				draw_page* page = dynamic_cast<draw_page*>(elm.get());
+				if(CheckPageLayout(vec_name_master_page,page,true))
+					continue;
+				for(size_t t = 0 ; t < i ; t++)
+				{
+					office_element_ptr & elm_prev_page = pages_[t];
+					draw_page* prev_page = dynamic_cast<draw_page*>(elm_prev_page.get());
+					if(!prev_page)
+						break;
+					if(page->attlist_.master_page_name_.get_value_or(L"") == prev_page->attlist_.master_page_name_.get_value_or(L"") && page->attlist_.page_layout_name_.get_value_or(L"") != prev_page->attlist_.page_layout_name_.get_value_or(L""))
+					{
+						page->attlist_.master_page_name_  = (*vec_name_master_page)[pos_in_vec].second;
+						(*vec_name_master_page)[pos_in_vec].first = page->attlist_.page_layout_name_.get_value_or(L"");
+						pos_in_vec++;
+						break;
+					}
+				}
+			}
+			if(pos_in_vec == vec_name_master_page->size())
+				break;
+		}
+	}
 	for (size_t i = 0; i < pages_.size(); i++)
-    {
+	{
+		office_element_ptr & elm = pages_[i];
+		draw_page* page = dynamic_cast<draw_page*>(elm.get());
+		CheckPageLayout(vec_name_master_page,page,true);
         pages_[i]->pptx_convert(Context);
     }
     Context.end_office_presentation();

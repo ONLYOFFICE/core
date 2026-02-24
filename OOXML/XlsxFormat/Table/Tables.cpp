@@ -66,6 +66,10 @@
 
 #include "../../Binary/XlsbFormat/FileTypes_SpreadsheetBin.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Binary/CFStreamCacheWriter.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Feature11.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/List12.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/List12TableStyleClientInfo.h"
+
 namespace OOX
 {
 namespace Spreadsheet
@@ -178,6 +182,24 @@ namespace Spreadsheet
 		else
 			ptr->fRowStripes = false;
 		return objectPtr;
+	}
+	XLS::BaseObjectPtr CTableStyleInfo::toXLS()
+	{
+		auto ptr1 = new XLS::List12;
+		auto ptr = new XLS::List12TableStyleClientInfo;
+		ptr1->rgbList12 = XLS::BiffStructurePtr(ptr);
+		ptr1->lsd = 1;
+		if(m_oShowFirstColumn.IsInit())
+			ptr->fFirstColumn = m_oShowFirstColumn->GetValue();
+		if(m_oShowLastColumn.IsInit())
+			ptr->fLastColumn = m_oShowLastColumn->GetValue();
+		if(m_oShowColumnStripes.IsInit())
+			ptr->fColumnStripes = m_oShowColumnStripes->GetValue();
+		if(m_oShowRowStripes.IsInit())
+			ptr->fRowStripes = m_oShowRowStripes->GetValue();
+		if(m_oName.IsInit())
+			ptr->stListStyleName = m_oName.get();
+		return XLS::BaseObjectPtr(ptr1);
 	}
     void CTableStyleInfo::ReadAttributes(XLS::BaseObjectPtr& obj)
     {
@@ -471,6 +493,15 @@ namespace Spreadsheet
         }
         return objectPtr;
     }
+	XLS::BiffStructurePtr CTableColumn::toXLS()
+	{
+		auto ptr = new XLS::Feat11FieldDataItem(0, 0, 0);
+		if(m_oId.IsInit())
+			ptr->idField = m_oId->GetValue();
+		if(m_oName.IsInit())
+			ptr->strFieldName = m_oName.get();
+		return XLS::BiffStructurePtr(ptr);
+	}
     void CTableColumn::ReadAttributes(XLS::BaseObjectPtr& obj)
     {
         auto ptr = static_cast<XLSB::BeginListCol*>(obj.get());
@@ -737,6 +768,7 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
 			}
 		}
         XLS::GlobalWorkbookInfo::mapTableNames_static.emplace(m_oId->GetValue(), m_oName.get());
+		XLS::GlobalWorkbookInfo::mapTableRefsStatic.emplace(m_oId->GetValue(), m_oRef->GetValue());
 	}
     void CTable::fromBin(XLS::BaseObjectPtr& obj)
     {
@@ -896,6 +928,43 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
         if(m_oExtLst.IsInit())
             ptr->m_FRTTABLE = m_oExtLst->toBinTable();
 		return objectPtr;
+	}
+	XLS::BaseObjectPtr CTable::toXLS()
+	{
+		auto ptr = new XLS::Feature11;
+		if(m_oRef.IsInit())
+		{
+			auto tempref = new XLS::Ref8U;
+			tempref->fromString(m_oRef->GetValue());
+			ptr->refs2.push_back(XLS::BiffStructurePtr(tempref));
+			ptr->frtRefHeaderU.ref8 = *tempref;
+		}
+		if(m_oHeaderRowCount.IsInit() && m_oHeaderRowCount.get() == 0)
+		{
+			ptr->rgbFeat.crwHeader = 0;
+		}
+		if(m_oTotalsRowShown.IsInit() && m_oTotalsRowShown.get())
+		{
+			ptr->rgbFeat.crwTotals = 1;
+		}
+		if(m_oAutoFilter.IsInit())
+		{
+			ptr->rgbFeat.fPersistAutoFilter = true;
+			ptr->rgbFeat.fAutoFilter = true;
+			ptr->rgbFeat.fApplyAutoFilter  = true;
+		}
+		if(m_oName.IsInit())
+			ptr->rgbFeat.rgbName = m_oName.get();
+		if(m_oId.IsInit())
+		{
+			ptr->rgbFeat.idList = m_oId->GetValue();
+		}
+		if(m_oTableColumns.is_init())
+		{
+			for(auto i : m_oTableColumns->m_arrItems)
+				ptr->rgbFeat.arFieldData.push_back(i->toXLS());
+		}
+		return XLS::BaseObjectPtr(ptr);
 	}
 	void CTable::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{

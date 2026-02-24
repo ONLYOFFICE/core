@@ -48,11 +48,12 @@ public:
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
+	void writeFields(CFRecord& record);
 
 	static const ElementType type = typeSXDBEx;
 
 	DateAsNum	numDate;
-	_UINT32		cSxFormula; //count formulas
+	_UINT32		cSxFormula = 0; //count formulas
 
 
 };

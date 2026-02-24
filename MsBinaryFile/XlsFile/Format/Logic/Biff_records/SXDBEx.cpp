@@ -54,5 +54,10 @@ void SXDBEx::readFields(CFRecord& record)
 	record >> numDate >> cSxFormula;
 }
 
+void SXDBEx::writeFields(CFRecord& record)
+{
+	record << numDate << cSxFormula;
+}
+
 } // namespace XLS
 

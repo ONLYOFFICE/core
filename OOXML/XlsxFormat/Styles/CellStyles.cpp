@@ -38,6 +38,9 @@
 
 #include "../../XlsbFormat/Biff12_unions/STYLES.h"
 
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/STYLES.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Style.h"
+
 namespace OOX
 {
 	namespace Spreadsheet
@@ -106,6 +109,25 @@ namespace OOX
 			else
 				ptr->ixf = 0;
 			return objectPtr;
+		}
+		XLS::BaseObjectPtr CCellStyle::toXLS()
+		{
+			auto ptr = new XLS::Style;
+			if (m_oXfId.IsInit())
+				ptr->ixfe = m_oXfId->GetValue();
+			if(m_oBuiltinId.IsInit())
+			{
+				ptr->fBuiltIn = true;
+				ptr->builtInData.istyBuiltIn = m_oBuiltinId->GetValue();
+				if(m_oILevel.IsInit())
+					ptr->builtInData.iLevel = m_oILevel->GetValue();
+			}
+			else if (m_oName.IsInit())
+			{
+				ptr->fBuiltIn = false;
+				ptr->user = m_oName.get();
+			}
+			return XLS::BaseObjectPtr(ptr);
 		}
 		EElementType CCellStyle::getType () const
 		{
@@ -206,6 +228,15 @@ namespace OOX
 				ptr->m_arBrtStyle.push_back(i->toBin());
 			ptr1->cstyles = ptr->m_arBrtStyle.size();
 			return objectPtr;
+		}
+		XLS::BaseObjectPtr CCellStyles::toXLS()
+		{
+			auto ptr = new XLS::STYLES;
+			for(auto i:m_arrItems)
+			{
+				ptr->m_arStyles.push_back(std::make_pair(i->toXLS(), nullptr));
+			}
+			return XLS::BaseObjectPtr(ptr);
 		}
 		EElementType CCellStyles::getType () const
 		{

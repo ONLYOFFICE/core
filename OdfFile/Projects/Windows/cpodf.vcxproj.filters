@@ -166,6 +166,12 @@
     <ClCompile Include="..\..\Reader\Converter\SMCustomShape2OOXML\customshape.cpp">
       <Filter>custom shape</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\StarMath2OOXML\conversionmathformula.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\StarMath2OOXML\cooxml2odf.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Reader\Converter\conversionelement.h" />
@@ -340,6 +346,18 @@
     </ClInclude>
     <ClInclude Include="..\..\Reader\Converter\SMCustomShape2OOXML\customshape.h">
       <Filter>custom shape</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Reader\Converter\StarMath2OOXML\conversionmathformula.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Reader\Converter\StarMath2OOXML\cooxml2odf.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Reader\Converter\StarMath2OOXML\TextDirection.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Reader\Converter\StarMath2OOXML\TFormulaSize.h">
+      <Filter>math</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -122,6 +122,12 @@ void SXVDEx::writeFields(CFRecord& record)
         record.reserveNunBytes(8);
         record << stSubName;
     }
+	else
+	{
+		cchSubName = 0xffff;
+		record << cchSubName;
+		record.reserveNunBytes(8);
+	}
 }
 
 } // namespace XLS

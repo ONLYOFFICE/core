@@ -55,7 +55,7 @@ public:
 
     Rw				row = 0;
     Col				col = 0;
-    bool			fShow = false;
+	bool			fShow = true;
     bool			fRwHidden = false;
     bool			fColHidden = false;
     ObjId			idObj = 0;

@@ -63,8 +63,8 @@ namespace BinDocxRW
 		CDocxSerializer();
 		virtual ~CDocxSerializer();
 
-        bool loadFromFile   (const std::wstring& sSrcFileName, const std::wstring& sDstPath, const std::wstring& sXMLOptions, const std::wstring& sThemePath, const std::wstring& sMediaPath, const std::wstring& sEmbedPath);
-        bool saveToFile     (const std::wstring& sSrcFileName, const std::wstring& sDstPath, const std::wstring& sXMLOptions, const std::wstring& sTempPath);
+        bool loadFromFile   (const std::wstring& sSrcFileName, const std::wstring& sDstPath, const std::wstring& sThemePath, const std::wstring& sMediaPath, const std::wstring& sEmbedPath);
+        bool saveToFile     (const std::wstring& sSrcFileName, const std::wstring& sDstPath, const std::wstring& sTempPath);
 		
 		bool unpackageFile(const std::wstring& sSrcFileName, const std::wstring& sDstPath);
 		bool convertFlat(const std::wstring& sSrcFileName, const std::wstring& sDstPath, bool& bMacro, const std::wstring& sTempPath);

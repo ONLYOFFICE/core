@@ -59,6 +59,14 @@ public:
 		m_bIsUsePicker = false;
 	}
 };
+class CPDFSignatureInfo
+{
+public:
+	std::wstring m_wsReason;
+	std::wstring m_wsContact;
+	std::wstring m_wsName;
+	std::wstring m_wsLocation;
+};
 
 namespace PdfFile
 {
@@ -92,6 +100,7 @@ public:
 	// --- EDIT ---
 	// Переходит в режим редактирования. Pdf уже должен быть открыт на чтение - LoadFromFile/LoadFromMemory
 	bool EditPdf(const std::wstring& wsDstFile = L"");
+	void EditClose();
 	void SetEditType(int nType);
 	// Манипуляции со страницами возможны в режиме редактирования
 	bool EditPage  (int nPageIndex);
@@ -99,6 +108,7 @@ public:
 	bool AddPage   (int nPageIndex);
 	bool MovePage  (int nPageIndex, int nPos);
 	bool MergePages(const std::wstring& wsPath, int nMaxID = 0, const std::wstring& wsPrefixForm = L"");
+	bool PrintPages(const std::vector<bool>& arrPages, int nFlag);
 	HRESULT ChangePassword(const std::wstring& wsPath, const std::wstring& wsPassword = L"");
 
 	// --- READER ---
@@ -111,8 +121,8 @@ public:
 	void ToXml(const std::wstring& sFile, bool bSaveStreams = false);
 
 	static bool GetMetaData(const std::wstring& sFile, const std::wstring& sMetaName, BYTE** pMetaData, DWORD& nMetaLength);
-	virtual bool LoadFromFile  (const std::wstring& file, const std::wstring& options = L"", const std::wstring& owner_password = L"", const std::wstring& user_password = L"");
-	virtual bool LoadFromMemory(BYTE* data, DWORD length, const std::wstring& options = L"", const std::wstring& owner_password = L"", const std::wstring& user_password = L"");
+	virtual bool LoadFromFile  (const std::wstring& file, const std::wstring& options = L"", const wchar_t* owner_password = NULL, const wchar_t* user_password = NULL);
+	virtual bool LoadFromMemory(BYTE* data, DWORD length, const std::wstring& options = L"", const wchar_t* owner_password = NULL, const wchar_t* user_password = NULL);
 	virtual NSFonts::IApplicationFonts* GetFonts();
 
 	virtual OfficeDrawingFileType GetType();
@@ -133,8 +143,11 @@ public:
 	bool UnmergePages();
 	bool RedactPage(int nPageIndex, double* arrRedactBox, int nLengthX8, BYTE* pChanges = NULL, int nLength = 0);
 	bool UndoRedact();
+	bool CheckOwnerPassword(const wchar_t* sPassword);
+	bool CheckPerm(int nPerm);
 	int GetRotate(int nPageIndex);
 	int GetMaxRefID();
+	void SetPageFonts(int nPageIndex);
 	BYTE* GetWidgets();
 	BYTE* GetAnnotEmbeddedFonts();
 	BYTE* GetAnnotStandardFonts();
@@ -144,6 +157,7 @@ public:
 	BYTE* GetAPWidget  (int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nWidget  = -1, const char* sView  = NULL, const char* sBView = NULL);
 	BYTE* GetAPAnnots  (int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nAnnot   = -1, const char* sView  = NULL);
 	BYTE* GetButtonIcon(int nBackgroundColor, int nPageIndex, bool bBase64 = false, int nBWidget = -1, const char* sIView = NULL);
+	BYTE* GetGIDByUnicode(const std::wstring& wsFontName);
 	std::wstring GetFontPath(const std::wstring& wsFontName);
 	std::wstring GetEmbeddedFontPath(const std::wstring& wsFontName);
 
@@ -154,7 +168,9 @@ public:
 	void RotatePage   (int nRotate);
 	void SetPassword  (const std::wstring& wsPassword);
 	void SetDocumentID(const std::wstring& wsDocumentID);
-	void Sign(const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& wsPicturePath, ICertificate* pCertificate);
+	void Sign(const double& dX = 0, const double& dY = 0, const double& dW = 0, const double& dH = 0, const std::wstring& wsPicturePath = L"", CPDFSignatureInfo* pSigInfo = NULL);
+	bool PrepareSignature(const std::wstring& wsPath);
+	bool FinalizeSignature(BYTE* pSignedData, DWORD dwDataLength);
 	void SetDocumentInfo(const std::wstring& wsTitle, const std::wstring& wsCreator, const std::wstring& wsSubject, const std::wstring& wsKeywords);
 	void AddMetaData(const std::wstring& sMetaName, BYTE* pMetaData, DWORD nMetaLength);
 
@@ -232,6 +248,10 @@ public:
 	virtual HRESULT put_BrushTextureImage(Aggplus::CImage* pImage);
 	virtual HRESULT get_BrushTransform(Aggplus::CMatrix& oMatrix);
 	virtual HRESULT put_BrushTransform(const Aggplus::CMatrix& oMatrix);
+	virtual HRESULT get_BrushOffset(double& offsetX, double& offsetY) const;
+	virtual HRESULT put_BrushOffset(const double& offsetX, const double& offsetY);
+	virtual HRESULT get_BrushScale(bool& isScale, double& scaleX, double& scaleY) const;
+	virtual HRESULT put_BrushScale(bool isScale, const double& scaleX, const double& scaleY);
 	//----------------------------------------------------------------------------------------
 	// Функции для работы со шрифтами
 	//----------------------------------------------------------------------------------------

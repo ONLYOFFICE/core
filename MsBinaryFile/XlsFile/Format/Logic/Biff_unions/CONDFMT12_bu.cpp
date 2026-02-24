@@ -99,8 +99,10 @@ const bool CONDFMT12::loadContent(BinProcessor& proc)
 
 const bool CONDFMT12::saveContent(BinProcessor& proc)
 {
-    if(m_CondFmt12 != nullptr)
-        proc.mandatory(*m_CondFmt12);
+	if(m_CondFmt12 == nullptr)
+		return false;
+
+	proc.mandatory(*m_CondFmt12);
     for(auto i : m_arCF12)
         if(i != nullptr)
             proc.mandatory(*i);

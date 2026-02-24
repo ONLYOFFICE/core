@@ -35,6 +35,10 @@
 namespace XLS
 {
 
+CFExTemplateParams::CFExTemplateParams(): data{}
+{
+
+}
 
 BiffStructurePtr CFExTemplateParams::clone()
 {

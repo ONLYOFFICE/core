@@ -60,6 +60,7 @@ namespace NSSystemUtils
 	static const wchar_t* gc_EnvModified = L"MODIFIED";
 	static const wchar_t* gc_EnvMemoryLimit = L"X2T_MEMORY_LIMIT";
 	static const wchar_t* gc_EnvMemoryLimitDefault = L"4GiB";
+	static const wchar_t* gc_EnvSigningKeystorePassphrase = L"SIGNING_KEYSTORE_PASSPHRASE";
 
 	KERNEL_DECL std::string GetEnvVariableA(const std::wstring& strName);
 	KERNEL_DECL std::wstring GetEnvVariable(const std::wstring& strName);

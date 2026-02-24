@@ -50,16 +50,17 @@ public:
 	XLS::BiffStructurePtr clone();
 	
 	virtual void load(XLS::CFRecord& record);
+	virtual void save(XLS::CFRecord& record);
 	virtual void load(IBinaryReader* reader);
 
 	static const XLS::ElementType	type = XLS::typeOfficeArtRecordHeader;
 
 	const size_t size() const;
 
-	unsigned char	recVer;
-	unsigned short	recInstance;
-	unsigned short	recType;
-	_UINT32	recLen;
+	unsigned char	recVer =  0xF;
+	unsigned short	recInstance = 0;
+	unsigned short	recType = 0xF002;
+	_UINT32	recLen = 0;
 };
 
 typedef boost::shared_ptr<OfficeArtRecordHeader> OfficeArtRecordHeaderPtr;

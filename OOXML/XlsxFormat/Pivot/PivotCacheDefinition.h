@@ -239,6 +239,7 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			XLS::BaseObjectPtr toBin();
+			XLS::BaseObjectPtr toXLS();
             void fromBin(XLS::BaseObjectPtr& obj);
 			virtual EElementType getType () const
 			{
@@ -567,11 +568,13 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
             void fromBin(XLS::BaseObjectPtr& obj);
 			XLS::BaseObjectPtr toBin();
+			XLS::BaseObjectPtr toXLS(const _UINT32 &cacheId = 0);
 			virtual EElementType getType () const
 			{
 				return et_x_PivotCacheDefinition;
 			}
 			XLS::BaseObjectPtr writeAttributes();
+			XLS::BaseObjectPtr writeAttributesXLS();
             void ReadAttributes(XLS::BaseObjectPtr& obj);
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 	//----------

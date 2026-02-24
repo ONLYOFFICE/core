@@ -48,29 +48,30 @@ public:
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
+	void writeFields(CFRecord& record);
 
 	static const ElementType type = typeSXFDB;
 
-	bool			fAllAtoms;
-	bool			fSomeUnhashed;
-	bool			fUsed;
-	bool			fHasParent;
-	bool			fRangeGroup;
-	bool			fNumField;
-	bool			fTextEtcField;
-	bool			fnumMinMaxValid;
-	bool			fShortIitms;
-	bool			fNonDates;
-	bool			fDateInField;
-	bool			fServerBased;
-	bool			fCantGetUniqueItems;
-	bool			fCalculatedField;
-	unsigned short	ifdbParent;
-	unsigned short	ifdbBase;
-	unsigned short	citmUnq;
-	unsigned short	csxoper;
-	unsigned short	cisxoper;
-	unsigned short	catm;
+	bool			fAllAtoms = false;
+	bool			fSomeUnhashed = false;
+	bool			fUsed = false;
+	bool			fHasParent = false;
+	bool			fRangeGroup = false;
+	bool			fNumField = false;
+	bool			fTextEtcField = false;
+	bool			fnumMinMaxValid = false;
+	bool			fShortIitms = false;
+	bool			fNonDates = false;
+	bool			fDateInField = false;
+	bool			fServerBased = false;
+	bool			fCantGetUniqueItems = false;
+	bool			fCalculatedField = false;
+	unsigned short	ifdbParent = 0;
+	unsigned short	ifdbBase = 0;
+	unsigned short	citmUnq = 0;
+	unsigned short	csxoper = 0;
+	unsigned short	cisxoper = 0;
+	unsigned short	catm = 0;
 	XLUnicodeString	stFieldName;
 };
 

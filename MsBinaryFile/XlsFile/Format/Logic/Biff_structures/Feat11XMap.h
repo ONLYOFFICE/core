@@ -48,8 +48,9 @@ public:
 	static const ElementType type = typeFeat11XMapEntry2;
 
 	virtual void load(CFRecord& record);
+	virtual void save(CFRecord& record);
 
-	_UINT32			dwMapId;
+	_UINT32			dwMapId = 0;
 	XLUnicodeString	rgbXPath;
 };
 
@@ -63,9 +64,10 @@ public:
 	static const ElementType type = typeFeat11XMapEntry;
 
 	virtual void load(CFRecord& record);
+	virtual void save(CFRecord& record);
 
-	bool	fLoadXMap;
-	bool	fCanBeSingle;
+	bool	fLoadXMap = true;
+	bool	fCanBeSingle = true;
 
 	Feat11XMapEntry2 entry;
 };
@@ -80,6 +82,7 @@ public:
 	static const ElementType type = typeFeat11XMap;
 
 	virtual void load(CFRecord& record);
+	virtual void save(CFRecord& record);
 
 	std::vector<Feat11XMapEntry> rgXmap;
 

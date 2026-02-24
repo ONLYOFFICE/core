@@ -48,13 +48,14 @@ public:
 	static const ElementType	type = typeLbsDropData;
 
 	virtual void load(CFRecord& record);
+	virtual void save(CFRecord& record);
 
 
-	unsigned char wStyle;
-	bool fFiltered;
+	unsigned char wStyle = 0;
+	bool fFiltered = false;
 
-	unsigned short cLine;
-	unsigned short dxMin;
+	unsigned short cLine = 0;
+	unsigned short dxMin = 0;
 
 	XLUnicodeString str;
 

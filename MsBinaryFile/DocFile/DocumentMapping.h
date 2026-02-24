@@ -84,6 +84,7 @@ namespace DocFileFormat
 		std::wstring	m_shapeIdOwner;
 		std::wstring	getOLEObject() { return _lastOLEObject; }
 		bool m_bOleInPicture = false;
+        bool bPict = true;
 	protected:
 
 		int getListNumCache		(int fc, int fc_end);
@@ -117,7 +118,7 @@ namespace DocFileFormat
 		std::vector<int> searchAnnotation(std::vector<wchar_t>* chars, int initialCp);
 		std::vector<int> searchPermission(std::vector<wchar_t>* chars, int initialCp);
 
-		bool writeBookmarks		( int cp );
+        bool writeBookmarks		( int cp, bool para );
 		bool writeBookmarkStart	( short id );
 		bool writeBookmarkEnd	( short id );
 

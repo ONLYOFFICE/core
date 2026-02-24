@@ -26,7 +26,7 @@ def _loadLibrary(path):
         library_name = 'libdocbuilder.c.dylib'
         # if there is no dylib file, get library from framework
         if not os.path.exists(path + '/' + library_name):
-            path = path + '/docbuilder.c.framework'
+            path = path + '/docbuilder.c.framework/Versions/A'
             library_name = 'docbuilder.c'
 
     _lib = ctypes.CDLL(path + '/' + library_name)

@@ -14,7 +14,7 @@ include($$CORE_ROOT_DIR/Common/base.pri)
 
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lCryptoPPLib
 
-ADD_DEPENDENCY(kernel, UnicodeConverter, graphics)
+ADD_DEPENDENCY(kernel, UnicodeConverter, graphics, StarMathConverter)
 
 DEFINES += HWPFILE_USE_DYNAMIC_LIBRARY \
            CRYPTOPP_DISABLE_ASM 

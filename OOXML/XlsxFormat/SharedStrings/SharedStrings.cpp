@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
@@ -37,6 +37,12 @@
 #include "../../XlsbFormat/Biff12_records/BeginSst.h"
 #include "../../XlsbFormat/Biff12_unions/SHAREDSTRINGS.h"
 #include "../../XlsbFormat/Biff12_records/SSTItem.h"
+
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/GlobalsSubstream.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/WorkbookStreamObject.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/SST.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/SHAREDSTRINGS.h"
+
 
 #include "../../Binary/XlsbFormat/FileTypes_SpreadsheetBin.h"
 
@@ -122,6 +128,20 @@ namespace OOX
 				ptr->m_arBrtSSTItem.push_back(i->toBin());
 			}
 			return objectPtr;
+		}
+		void CSharedStrings::toXLS(XLS::BaseObjectPtr globalsSubstreamPtr) const
+		{
+			auto castedPtr = static_cast<XLS::GlobalsSubstream*>(globalsSubstreamPtr.get());
+			auto SharedStringsObj = new XLS::SHAREDSTRINGS(XLS::WorkbookStreamObject::DefaultCodePage);
+			auto Sst = new XLS::SST(XLS::WorkbookStreamObject::DefaultCodePage);
+			SharedStringsObj->sstPtr = XLS::BaseObjectPtr(Sst);
+
+			for(auto i:m_arrItems)
+			{
+				Sst->rgb.push_back(i->toXLS());
+			}
+
+			castedPtr->m_SHAREDSTRINGS = XLS::BaseObjectPtr(SharedStringsObj);
 		}
 		void CSharedStrings::read(const CPath& oPath)
 		{

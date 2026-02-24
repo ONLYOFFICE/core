@@ -154,7 +154,6 @@
     <ClCompile Include="..\..\Writer\Format\draw_shapes.cpp" />
     <ClCompile Include="..\..\Writer\Format\header_footer.cpp" />
     <ClCompile Include="..\..\Writer\Format\list.cpp" />
-    <ClCompile Include="..\..\Writer\Format\logging.cpp" />
     <ClCompile Include="..\..\Writer\Format\math_elementaries.cpp" />
     <ClCompile Include="..\..\Writer\Format\math_elements.cpp" />
     <ClCompile Include="..\..\Writer\Format\math_layout_elements.cpp" />

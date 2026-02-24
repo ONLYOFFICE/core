@@ -198,7 +198,7 @@ BinDocxRW::CDocxSerializer::~CDocxSerializer()
 	RELEASEOBJECT(m_pParamsWriter);
 	RELEASEOBJECT(m_pCurFileWriter);
 }
-bool BinDocxRW::CDocxSerializer::saveToFile(const std::wstring& sDstFileName, const std::wstring& sSrcPath, const std::wstring& sXMLOptions, const std::wstring& sTempPath)
+bool BinDocxRW::CDocxSerializer::saveToFile(const std::wstring& sDstFileName, const std::wstring& sSrcPath, const std::wstring& sTempPath)
 {
 	OOX::CPath pathMain(sDstFileName);
     
@@ -235,7 +235,7 @@ bool BinDocxRW::CDocxSerializer::saveToFile(const std::wstring& sDstFileName, co
 
 	oDrawingConverter.SetFontDir(m_sFontDir);
 	oDrawingConverter.SetFontPicker(pFontPicker);
-	oDrawingConverter.SetMainDocument(this);
+	oDrawingConverter.SetDocxSerializer(this);
 
     oDrawingConverter.SetDstPath(pathMain.GetDirectory() + FILE_SEPARATOR_STR + L"word");
 	oDrawingConverter.SetMediaDstPath(pathMedia.GetPath());
@@ -317,7 +317,7 @@ bool BinDocxRW::CDocxSerializer::CreateDocxFolders(std::wstring strDirectory, st
 
 	return res;
 }
-bool BinDocxRW::CDocxSerializer::loadFromFile(const std::wstring& sSrcFileName, const std::wstring& sDstPath, const std::wstring& sXMLOptions, const std::wstring& sThemePath, const std::wstring& sMediaPath, const std::wstring& sEmbedPath)
+bool BinDocxRW::CDocxSerializer::loadFromFile(const std::wstring& sSrcFileName, const std::wstring& sDstPath, const std::wstring& sThemePath, const std::wstring& sMediaPath, const std::wstring& sEmbedPath)
 {
 	RELEASEOBJECT(m_pCurFileWriter);
 	
@@ -383,7 +383,7 @@ bool BinDocxRW::CDocxSerializer::loadFromFile(const std::wstring& sSrcFileName, 
 		bool bIsNoBase64 = nVersion == g_nFormatVersionNoBase64;
 
 		NSBinPptxRW::CDrawingConverter oDrawingConverter;
-		NSBinPptxRW::CBinaryFileReader& oBufferedStream = *oDrawingConverter.m_pReader;
+		NSBinPptxRW::CBinaryFileReader& oBufferedStream = *oDrawingConverter.m_pBinaryReader;
 		int nDataSize = 0;
 		BYTE* pData = NULL;
 		if (!bIsNoBase64)
@@ -409,7 +409,7 @@ bool BinDocxRW::CDocxSerializer::loadFromFile(const std::wstring& sSrcFileName, 
 
 		if (NULL != pData)
 		{
-			oDrawingConverter.SetMainDocument(this);
+			oDrawingConverter.SetDocxSerializer(this);
 			oDrawingConverter.SetDstPath(sDstPath + FILE_SEPARATOR_STR + L"word");
 
 			oDrawingConverter.SetMediaDstPath(sMediaPath);

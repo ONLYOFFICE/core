@@ -67,6 +67,24 @@ void FtPioGrbit::load(CFRecord& record)
 	fAutoLoad	= GETBIT(flags, 9);
 }
 
+void FtPioGrbit::save(CFRecord& record)
+{
+	unsigned short ft =  0x0008, cb = 0x0002;
+	record << ft << cb;
+	unsigned short flags = 0;
+
+	SETBIT(flags, 0, fAutoPict)
+	SETBIT(flags, 1, fDde)
+	SETBIT(flags, 2, fPrintCalc)
+	SETBIT(flags, 3, fIcon)
+	SETBIT(flags, 4, fCtl)
+	SETBIT(flags, 5, fPrstm)
+	SETBIT(flags, 7, fCamera)
+	SETBIT(flags, 8, fDefaultSize)
+	SETBIT(flags, 9, fAutoLoad)
+
+	record << flags;
+}
 
 } // namespace XLS
 

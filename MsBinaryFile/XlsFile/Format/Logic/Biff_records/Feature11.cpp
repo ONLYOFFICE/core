@@ -90,5 +90,33 @@ void Feature11::readFields(CFRecord& record)
 	record >> rgbFeat;	
 }
 
+void Feature11::writeFields(CFRecord& record)
+{
+	frtRefHeaderU.grbitFrt.fFrtRef = true;
+	if(!bFeature12)
+	{
+		frtRefHeaderU.rt = 0x0872;
+	}
+	else
+		frtRefHeaderU.rt = 0x0878;
+	record << frtRefHeaderU << isf;
+	record.reserveNunBytes(5);
+	cref2 = refs2.size();
+	record << cref2;
+	//auto cbFeatDataPos = record.getRdPtr();
+	record.reserveNunBytes(4); //cbFeatData
+	record.reserveNunBytes(2);
+	for(auto i : refs2)
+		i->save(record);
+	//auto beginRgb = record.getRdPtr();
+	rgbFeat.save(record);
+	//auto endrgb = record.getRdPtr();
+	//cbFeatData = endrgb - beginRgb;
+	//record.RollRdPtrBack(endrgb - cbFeatDataPos);
+	//record << cbFeatData;
+	//record.skipNunBytes(endrgb - record.getRdPtr());
+
+}
+
 } // namespace XLS
 

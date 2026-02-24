@@ -627,15 +627,13 @@ namespace MetaFile
 	
 	void CInterpretatorSvgBase::PathClip(const CPath &oPath, int nClipMode, TXForm *pTransform)
 	{
-		std::wstring wsPath = CreatePath(oPath, pTransform);
+		const std::wstring wsPath = CreatePath(oPath, pTransform);
 
 		if (wsPath.empty())
 			return;
 
-		const std::wstring wsClipId = L"PATHCLIP_" + ConvertToWString(++m_unNumberDefs, 0);
-		const std::wstring wsValue  = L"<path d=\"" + wsPath + L"\"/>";
-
-		m_oClip.AddClipValue(wsClipId, wsValue, nClipMode);
+		m_oClip.AddClipValue(L"PATHCLIP_" + ConvertToWString(++m_unNumberDefs, 0),
+		                     L"<path d=\"" + wsPath + L"\"/>", nClipMode);
 	}
 
 	void CInterpretatorSvgBase::AddStroke(NodeAttributes &arAttributes) const

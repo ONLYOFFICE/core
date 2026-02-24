@@ -37,6 +37,9 @@ namespace XLS
 
 AreaFormat::AreaFormat()
 {
+	rgbFore.red = 0xFF;
+	rgbFore.green = 0xFF;
+	rgbFore.blue = 0xFF;
 }
 
 

@@ -66,6 +66,8 @@ public:
 	void End();
 	void Close();
 
+	void SetColStartBeginning(int val);
+
 private:
 	class Impl;
 	boost::shared_ptr<Impl> impl_;

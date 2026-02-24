@@ -322,6 +322,7 @@ namespace NSDocxRenderer
 	HRESULT CDocument::put_FontName(std::wstring sName)
 	{
 		m_oCurrentPage.m_oFont.Name = sName;
+		m_oCurrentPage.m_bFontSubstitution = false;
 		return S_OK;
 	}
 	HRESULT CDocument::get_FontPath(std::wstring* sPath)
@@ -571,8 +572,11 @@ namespace NSDocxRenderer
 			m_oPageBuilder.ClearNoAttack();
 
 			m_oCurrentPage.Analyze();
-			m_oCurrentPage.Record(m_oPageBuilder, m_lPageNum >= m_lNumberPages - 1);
-			m_arXmlString.push_back(NSFile::CUtf8Converter::GetUtf8StringFromUnicode2(m_oPageBuilder.GetBuffer(), (LONG)m_oPageBuilder.GetCurSize()));
+			if (m_bIsRecord)
+			{
+				m_oCurrentPage.Record(m_oPageBuilder, m_lPageNum >= m_lNumberPages - 1);
+				m_arXmlString.push_back(NSFile::CUtf8Converter::GetUtf8StringFromUnicode2(m_oPageBuilder.GetBuffer(), (LONG)m_oPageBuilder.GetCurSize()));
+			}
 
 			if (m_oPageBuilder.GetCurSize() > 100000000/*100Mb*/)
 				m_oPageBuilder.Clear();
@@ -644,11 +648,15 @@ namespace NSDocxRenderer
 		if ((nType > 0xFF) && (c_BrushTypeTexture == m_oCurrentPage.m_oBrush.Type))
 		{
 			double x = 0, y = 0, w = 0, h = 0;
+			if (m_oCurrentPage.IsCurrVectorClockwise())
+				h = -1; // to flip image later
+
 			if (m_oCurrentPage.m_oBrush.Image)
 				pInfo = m_oImageManager.WriteImage(m_oCurrentPage.m_oBrush.Image, x, y, w, h);
 			else
-				pInfo = m_oImageManager.WriteImage(m_oCurrentPage.m_oBrush.TexturePath, x, y, w, h);
+				pInfo = m_oImageManager.WriteImage(m_oCurrentPage.m_oBrush.TexturePath);
 		}
+
 		m_oCurrentPage.DrawPath(nType, pInfo);
 		return S_OK;
 	}
@@ -708,7 +716,7 @@ namespace NSDocxRenderer
 	}
 	HRESULT CDocument::DrawImageFromFile(const std::wstring& sVal, double fX, double fY, double fWidth, double fHeight)
 	{
-		m_oCurrentPage.WriteImage(m_oImageManager.WriteImage(sVal, fX, fY, fWidth, fHeight), fX, fY, fWidth, fHeight);
+		m_oCurrentPage.WriteImage(m_oImageManager.WriteImage(sVal), fX, fY, fWidth, fHeight);
 		return S_OK;
 	}
 	//------------------------------------------------------------------------------------------

@@ -193,7 +193,9 @@ public:
 
 	void save_(CFRecord& record)
 	{
-        size_t cch = cch_.get();
+		size_t cch = 0;
+		if(cch_.is_initialized())
+			cch = cch_.get();
         size_t struct_size = 0;
 
         bool is_wide = false;

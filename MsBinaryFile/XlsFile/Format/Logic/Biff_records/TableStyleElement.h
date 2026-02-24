@@ -54,9 +54,9 @@ public:
 	static const ElementType	type = typeTableStyleElement;
 
 //-----------------------------
-	_UINT32		tseType;
-	_UINT32		size;
-	_UINT32		index;
+	_UINT32		tseType = 19;
+	_UINT32		size = 1;
+	_UINT32		index = 0;
 	FrtHeader	frtHeader;
 };
 

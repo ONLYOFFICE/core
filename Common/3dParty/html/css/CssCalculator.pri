@@ -3,6 +3,8 @@ DEPENDPATH += $$PWD
 
 CORE_ROOT_DIR = $$PWD/../../../..
 
+include($$CORE_ROOT_DIR/Common/3dParty/boost/boost.pri)
+
 css_calculator_without_xhtml {
 	HEADERS += \
 		$$PWD/src/CCssCalculator_Private.h \

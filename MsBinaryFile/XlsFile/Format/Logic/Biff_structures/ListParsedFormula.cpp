@@ -96,7 +96,7 @@ void ListParsedFormula::save(CFRecord& record)
 		auto saving = [&](BiffStructure& rgceORrgb)
 		{
 			record << size;
-			record.reserveNunBytes(2); // unused
+			//record.reserveNunBytes(2); // unused
 
 			auto rdPtr = record.getRdPtr();
 
@@ -104,7 +104,7 @@ void ListParsedFormula::save(CFRecord& record)
 
 			size = record.getRdPtr() - rdPtr;
 
-			record.RollRdPtrBack(size + 4);
+			record.RollRdPtrBack(size + 2);
 			record << size;
 			record.skipNunBytes(size);
 		};

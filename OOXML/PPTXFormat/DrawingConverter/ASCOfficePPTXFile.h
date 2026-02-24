@@ -60,9 +60,9 @@ public:
 	CPPTXFile();
 	~CPPTXFile();
 
-	_UINT32 LoadFromFile(std::wstring sSrcFileName, std::wstring sDstPath, std::wstring sXMLOptions);
+	_UINT32 LoadFromFile(std::wstring sSrcFileName, std::wstring sDstPath);
 
-	_UINT32 SaveToFile(std::wstring sDstFileName, std::wstring sSrcPath, std::wstring sXMLOptions);
+	_UINT32 SaveToFile(std::wstring sDstFileName, std::wstring sSrcPath);
 
     void get_TempDirectory(std::wstring* pVal);
     HRESULT put_TempDirectory(std::wstring newVal);

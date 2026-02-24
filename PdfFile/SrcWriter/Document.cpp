@@ -232,7 +232,7 @@ namespace PdfWriter
 		SaveToStream((CStream*)pStream);
 		delete pStream;
 
-		Sign(wsPath, m_pXref->GetSizeXRef());
+		Sign(wsPath, m_pXref->GetSizeXRef() + 1, true);
 
 		return true;
 	}
@@ -280,6 +280,8 @@ namespace PdfWriter
 			pEncrypt = m_pEncryptDict->GetEncrypt();
 			PrepareEncryption();
 		}
+		else if (m_pEncryptDict)
+			pEncrypt = m_pEncryptDict->GetEncrypt();
 
 		m_pXref->WriteToStream(pStream, pEncrypt, true);
 	}
@@ -309,6 +311,55 @@ namespace PdfWriter
 
 		delete pStream;
 		return true;
+	}
+	void CDocument::SetEncryption(CEncryptDict* pEncrypt, PdfWriter::CObjectBase* _pID)
+	{
+		m_bEncrypt = false;
+		m_pEncryptDict = pEncrypt;
+
+		CArrayObject* pArrID = new CArrayObject();
+		m_pTrailer->Add("ID", pArrID);
+		BYTE arrId[16];
+
+		CEncryptDict::CreateId(m_pInfo, m_pXref, (BYTE*)arrId);
+
+		pArrID->Add(_pID->Copy());
+		pArrID->Add(new CBinaryObject(arrId, 16));
+
+		for (int i = 0; i < m_vMetaOForms.size(); ++i)
+			m_vMetaOForms[i]->Add("ID", new CBinaryObject(arrId, 16));
+	}
+	void CDocument::AddNameTree(CStringObject* pName, CDestination* pDest)
+	{
+		if (!m_pCatalog || !m_pXref)
+			return;
+
+		CDictObject* pDNames = dynamic_cast<CDictObject*>(m_pCatalog->Get("Names"));
+		if (!pDNames)
+		{
+			pDNames = new CDictObject();
+			m_pXref->Add(pDNames);
+			m_pCatalog->Add("Names", pDNames);
+		}
+
+		CDictObject* pDests = dynamic_cast<CDictObject*>(pDNames->Get("Dests"));
+		if (!pDests)
+		{
+			pDests = new CDictObject();
+			m_pXref->Add(pDests);
+			pDNames->Add("Dests", pDests);
+		}
+
+		CArrayObject* pANames = dynamic_cast<CArrayObject*>(pDests->Get("Names"));
+		if (!pANames)
+		{
+			pANames = new CArrayObject();
+			m_pXref->Add(pANames);
+			pDests->Add("Names", pANames);
+		}
+
+		pANames->Add(pName);
+		pANames->Add(pDest);
 	}
     void CDocument::PrepareEncryption()
 	{
@@ -372,6 +423,12 @@ namespace PdfWriter
 			return NULL;
 
 		return m_pPageTree->GetPage(unPage);
+	}
+	CObjectBase* CDocument::GetPageObj(const unsigned int& unPage)
+	{
+		if (unPage >= m_pPageTree->GetCount())
+			return NULL;
+		return m_pPageTree->GetObj(unPage);
 	}
 	CPage* CDocument::GetEditPage(const unsigned int& unPage)
 	{
@@ -657,6 +714,8 @@ namespace PdfWriter
 			pAnnot = new CStampAnnotation(m_pXref);
 		else if (m_nType == 25)
 			pAnnot = new CRedactAnnotation(m_pXref);
+		else if (m_nType == 1)
+			pAnnot = new CLinkAnnotation(m_pXref);
 
 		if (pAnnot)
 			m_pXref->Add(pAnnot);
@@ -719,7 +778,7 @@ namespace PdfWriter
 	}
 	CAnnotation* CDocument::CreateLinkAnnot(const TRect& oRect, CDestination* pDest)
 	{
-		CAnnotation* pAnnot = new CLinkAnnotation(m_pXref, pDest);
+		CAnnotation* pAnnot = new CDestLinkAnnotation(m_pXref, pDest);
 		pAnnot->SetRect(oRect);
 		m_pXref->Add(pAnnot);
 		return pAnnot;
@@ -754,14 +813,8 @@ namespace PdfWriter
 	{
 		return new CImageDict(m_pXref, this);
 	}
-	CXObject* CDocument::CreateForm(CImageDict* pImage, const std::string& sName)
+	CXObject* CDocument::CreateForm()
 	{
-		if (!pImage)
-			return NULL;
-
-		std::string sFrmName = "FRM" + sName;
-		std::string sImgName = "Img" + sName;
-
 		CXObject* pForm = new CXObject();
 		CStream* pStream = new CMemoryStream();
 		pForm->SetStream(m_pXref, pStream);
@@ -770,6 +823,18 @@ namespace PdfWriter
 		if (m_unCompressMode & COMP_TEXT)
 			pForm->SetFilter(STREAM_FILTER_FLATE_DECODE);
 #endif
+
+		return pForm;
+	}
+	CXObject* CDocument::CreateForm(CImageDict* pImage, const std::string& sName)
+	{
+		if (!pImage)
+			return NULL;
+
+		std::string sFrmName = "FRM" + sName;
+		std::string sImgName = "Img" + sName;
+
+		CXObject* pForm = CreateForm();
 		double dOriginW = pImage->GetWidth();
 		double dOriginH = pImage->GetHeight();
 		pForm->SetWidth(dOriginW);
@@ -807,6 +872,7 @@ namespace PdfWriter
 		pForm->Add("Subtype", "Form");
 		pForm->Add("Type", "XObject");
 
+		CStream* pStream = pForm->GetStream();
 		pStream->WriteStr("q\012");
 		pStream->WriteReal(dOriginW);
 		pStream->WriteStr(" 0 0 ");
@@ -833,6 +899,30 @@ namespace PdfWriter
 			TFontInfo& oInfo = m_vFonts14.at(nIndex);
 			if (wsFontPath == oInfo.wsPath && unIndex == oInfo.unIndex)
 				return (CFont14*)oInfo.pFont;
+		}
+		return NULL;
+	}
+	CFontEmbedded* CDocument::CreateFontEmbedded(const std::wstring& wsFontPath, unsigned int unIndex, const std::string& sFontKey, EFontType nType, CObjectBase* pObj,
+												 const std::map<unsigned int, unsigned int>& mCodeToWidth, const std::map<unsigned int, unsigned int>& mCodeToUnicode, const std::map<unsigned int, unsigned int>& mCodeToGID)
+	{
+		CFontEmbedded* pFont = FindFontEmbedded(wsFontPath, unIndex);
+		if (pFont)
+		{
+			pFont->UpdateKey(sFontKey);
+			return pFont;
+		}
+		pFont = new CFontEmbedded(NULL, this);
+		pFont->LoadFont(sFontKey, nType, pObj, mCodeToWidth, mCodeToUnicode, mCodeToGID);
+		m_vFontsEmbedded.push_back(TFontInfo(wsFontPath, unIndex, pFont));
+		return pFont;
+	}
+	CFontEmbedded* CDocument::FindFontEmbedded(const std::wstring& wsFontPath, unsigned int unIndex)
+	{
+		for (int nIndex = 0, nCount = m_vFontsEmbedded.size(); nIndex < nCount; nIndex++)
+		{
+			TFontInfo& oInfo = m_vFontsEmbedded.at(nIndex);
+			if (wsFontPath == oInfo.wsPath && unIndex == oInfo.unIndex)
+				return (CFontEmbedded*)oInfo.pFont;
 		}
 		return NULL;
 	}
@@ -1649,17 +1739,19 @@ namespace PdfWriter
 			}
 			bool bReplase = false;
 			int nID = pWidget->GetObjId();
-			if (nID > 0)
+			for (int i = 0; i < pKids->GetCount(); ++i)
 			{
-				for (int i = 0; i < pKids->GetCount(); ++i)
+				CObjectBase* pKid = pKids->Get(i);
+				if (nID > 0 && pKid->GetObjId() == nID)
 				{
-					CObjectBase* pKid = pKids->Get(i);
-					if (pKid->GetObjId() == nID)
-					{
-						pKids->Insert(pKid, pWidget, true);
-						bReplase = true;
-						break;
-					}
+					pKids->Insert(pKid, pWidget, true);
+					bReplase = true;
+					break;
+				}
+				else if (pKid == pWidget)
+				{
+					bReplase = true;
+					break;
 				}
 			}
 			if (!bReplase)
@@ -1863,99 +1955,217 @@ namespace PdfWriter
 			m_pLastXref->WriteToStream(pStream, pEncrypt);
 
 		RELEASEOBJECT(pStream);
-		unsigned int nSizeXRef = m_pXref->GetSizeXRef();
+		unsigned int nSizeXRef = m_pXref->GetSizeXRef() + (bNeedStreamXRef ? 1 : 0);
 		m_pXref = m_pLastXref;
 		Sign(wsPath, nSizeXRef, bNeedStreamXRef);
-		RELEASEOBJECT(m_pEncryptDict);
 
 		return true;
 	}
-	void CDocument::Sign(const TRect& oRect, CImageDict* pImage, ICertificate* pCertificate)
+	void CDocument::Sign(const TRect& oRect, CImageDict* pImage, const std::wstring &wsReason, const std::wstring &wsContact, const std::wstring &wsName, const std::wstring &wsLocation)
 	{
-		m_vSignatures.push_back({ oRect, m_pCurPage ? m_pCurPage : m_pPageTree->GetPage(0), pImage, pCertificate });
+		m_vSignatures.push_back(new TSignatureInfo(oRect, m_pCurPage ? m_pCurPage : m_pPageTree->GetPage(0), pImage, wsReason, wsContact, wsName, wsLocation));
 	}
-	void CDocument::Sign(const std::wstring& wsPath, unsigned int nSizeXRef, bool bNeedStreamXRef)
+	bool CDocument::PrepareSignature(const std::wstring& wsPath)
 	{
-		unsigned int nPrevAddr = m_pXref->GetPrevAddr();
-		std::vector<CXref*> vXRefForWrite;
-		for (unsigned int i = 0; i < m_vSignatures.size(); i++)
+		// Сначала нужно сохранить основной файл
+		// Это должно быть сделано в AddToFile или SaveToFile ПЕРЕД вызовом этого метода
+
+		if (m_vSignatures.empty() || wsPath.empty())
+			return false;
+
+		TSignatureInfo* pSI = m_vSignatures[0];
+
+		unsigned int nSizeXRef = pSI->nSizeXRef;
+		bool bNeedStreamXRef = pSI->bNeedStreamXRef;
+
+		// Создаем новый XRef для этой подписи
+		CXref* pXrefBefore = m_pXref;
+		m_pXref = new CXref(this, nSizeXRef);
+		if (!m_pXref)
 		{
-			CXref* pXrefBefore = m_pXref;
-			m_pXref = new CXref(this, nSizeXRef);
-			if (!m_pXref)
-			{
-				m_pXref = pXrefBefore;
-				continue;
-			}
-			m_pXref->SetPrevAddr(nPrevAddr);
-
-			CSignatureField* pField = CreateSignatureField();
-			if (!pField)
-			{
-				RELEASEOBJECT(m_pXref);
-				m_pXref = pXrefBefore;
-				continue;
-			}
-
-			m_pAcroForm->Add("SigFlags", 3);
-			pField->GetSignatureDict()->SetCert(m_vSignatures[i].pCertificate);
-			pField->GetSignatureDict()->SetDate();
-			pField->AddPageRect(m_vSignatures[i].pPage, m_vSignatures[i].oRect);
-			pField->Add("F", 132);
-			pField->SetFieldName("Sig" + std::to_string(i + m_unFormFields + 1));
-			if (m_vSignatures[i].pImage)
-				pField->SetAppearance(m_vSignatures[i].pImage);
-
-			CFileStream* pStream = new CFileStream();
-			if (!pStream || !pStream->OpenFile(wsPath, false))
-			{
-				RELEASEOBJECT(m_pXref);
-				m_pXref = pXrefBefore;
-				continue;
-			}
-
-			CXref* pXrefCatalog = new CXref(this, m_pCatalog->GetObjId());
-			if (pXrefCatalog)
-			{
-				pXrefCatalog->Add(m_pCatalog->Copy(), m_pCatalog->GetGenNo());
-				pXrefCatalog->SetPrev(m_pXref);
-			}
-
-			CXref* pXrefPage = new CXref(this, m_vSignatures[i].pPage->GetObjId());
-			if (pXrefPage)
-			{
-				pXrefPage->Add(m_vSignatures[i].pPage->Copy(), m_vSignatures[i].pPage->GetGenNo());
-				pXrefPage->SetPrev(pXrefCatalog);
-			}
-
-			CXref* pXref = new CXref(this, 0, 65535);
-			if (pXref)
-			{
-				pXref->SetPrev(pXrefPage);
-				CDictObject* pTrailer = pXref->GetTrailer();
-				m_pTrailer->Copy(pTrailer);
-
-				CEncrypt* pEncrypt = NULL;
-				if (m_bEncrypt && m_pEncryptDict)
-					pEncrypt = m_pEncryptDict->GetEncrypt();
-
-				pXref->WriteToStream(pStream, pEncrypt, bNeedStreamXRef);
-				nPrevAddr = pXref->GetPrevAddr();
-				nSizeXRef = m_pXref->GetSizeXRef();
-				vXRefForWrite.push_back(pXref);
-			}
-
-			RELEASEOBJECT(pStream);
-			pStream = new CFileStream();
-			if (pStream && pStream->OpenFile(wsPath, false))
-				pField->GetSignatureDict()->WriteToStream(pStream, pStream->Size());
-
 			m_pXref = pXrefBefore;
-			RELEASEOBJECT(pStream);
+			return false;
 		}
-		for (CXref* XRef : vXRefForWrite)
-			RELEASEOBJECT(XRef);
-		vXRefForWrite.clear();
+		if (!pSI->nPrevAddr)
+			pSI->nPrevAddr = pXrefBefore->GetPrevAddr();
+		m_pXref->SetPrevAddr(pSI->nPrevAddr);
+
+		// Создаем поле подписи
+		CSignatureField* pField = CreateSignatureField();
+		if (!pField)
+		{
+			delete m_pXref;
+			m_pXref = pXrefBefore;
+			return false;
+		}
+
+		// Настраиваем поле
+		pSI->pField = pField;
+		m_pAcroForm->Add("SigFlags", 3);
+		pField->SetDate();
+		pField->AddPageRect(pSI->pPage, pSI->oRect);
+		pField->Add("F", 132);
+		pField->SetFieldName("Sig" + std::to_string(++m_unFormFields));
+		if (pSI->pImage)
+			pField->SetAppearance(pSI->pImage);
+		if (!pSI->wsReason.empty())
+			pField->SetReason(pSI->wsReason);
+		if (!pSI->wsContact.empty())
+			pField->SetContact(pSI->wsContact);
+		if (!pSI->wsName.empty())
+			pField->SetName(pSI->wsName);
+		if (!pSI->wsLocation.empty())
+			pField->SetLocation(pSI->wsLocation);
+
+		// Открываем файл для дозаписи
+		CFileStream* pStream = new CFileStream();
+		if (!pStream || !pStream->OpenFile(wsPath, false))
+		{
+			delete m_pXref;
+			m_pXref = pXrefBefore;
+			return false;
+		}
+		pSI->nFileSizeBefore = pStream->Size();
+
+		// Вычисляем размер для Contents
+		unsigned int nContentsSize = 7000 + pStream->Size() / 1000 + 1000;
+		if (nContentsSize < 5000)
+			nContentsSize = 5000;
+		if (nContentsSize > 20000)
+			nContentsSize = 20000;
+		pField->GetSignatureDict()->SetContentsSize(nContentsSize);
+
+		// Записываем XRef и получаем информацию о расположении
+		CXref* pXrefCatalog = new CXref(this, m_pCatalog->GetObjId());
+		if (pXrefCatalog)
+		{
+			pXrefCatalog->Add(m_pCatalog->Copy(), m_pCatalog->GetGenNo());
+			pXrefCatalog->SetPrev(m_pXref);
+		}
+
+		CXref* pXrefPage = new CXref(this, pSI->pPage->GetObjId());
+		if (pXrefPage)
+		{
+			pXrefPage->Add(pSI->pPage->Copy(), pSI->pPage->GetGenNo());
+			pXrefPage->SetPrev(pXrefCatalog);
+		}
+
+		CXref* pXref = new CXref(this, 0, 65535);
+		if (pXref)
+		{
+			pXref->SetPrev(pXrefPage);
+			CDictObject* pTrailer = pXref->GetTrailer();
+			m_pTrailer->Copy(pTrailer);
+
+			CEncrypt* pEncrypt = NULL;
+			if (m_pEncryptDict)
+				pEncrypt = m_pEncryptDict->GetEncrypt();
+
+			pXref->WriteToStream(pStream, pEncrypt, bNeedStreamXRef);
+			pSI->pXref = pXref;
+		}
+
+		pField->GetSignatureDict()->WriteToStream(pStream, pStream->Size());
+
+		// Восстанавливаем XRef
+		m_pXref = pXrefBefore;
+
+		delete pStream;
+
+		return true;
+	}
+	bool CDocument::FinalizeSignature(BYTE* pSignedData, DWORD dwDataLength)
+	{
+		if (m_vSignatures.empty())
+			return false;
+
+		TSignatureInfo* pSI = m_vSignatures[0];
+		bool bNeedStreamXRef = pSI->bNeedStreamXRef;
+		std::wstring wsPath = pSI->wsPath;
+		if (wsPath.empty() || !pSI->pField)
+			return false;
+
+		// Если подписание не удалось
+		if (!pSignedData || dwDataLength == 0)
+		{
+			unsigned int nFileSizeBefore = pSI->nFileSizeBefore;
+
+			// Обрезаем файл
+			NSFile::CFileBinary::Truncate(wsPath, nFileSizeBefore);
+
+			CXref* pXref = pSI->pXref;
+			m_vSignatures.pop_front();
+
+			pSI->pPage->DeleteAnnotation(pSI->pField->GetObjId());
+
+			if (m_pAcroForm)
+			{
+				CArrayObject* ppFields = (CArrayObject*)m_pAcroForm->Get("Fields");
+				for (int i = 0; i < ppFields->GetCount(); ++i)
+				{
+					CObjectBase* pObj = ppFields->Get(i);
+					if (pObj->GetObjId() == pSI->pField->GetObjId())
+					{
+						CObjectBase* pDelete = ppFields->Remove(i);
+						if (pDelete->GetType() == object_type_UNKNOWN)
+							RELEASEOBJECT(pDelete);
+						break;
+					}
+				}
+			}
+
+			// Продолжаем со следующей подписью
+			if (!m_vSignatures.empty())
+			{
+				CXref* pPrev = pXref;
+				while (pPrev->GetPrev())
+					pPrev = pPrev->GetPrev();
+
+				Sign(wsPath, pSI->nSizeXRef, bNeedStreamXRef, pSI->nPrevAddr);
+			}
+			delete pSI;
+			delete pXref;
+
+			return true; // Успешно откатили
+		}
+
+		CFileStream* pStream = new CFileStream();
+		if (!pStream || !pStream->OpenFile(wsPath, false))
+		{
+			delete pStream;
+			return false;
+		}
+
+		if (!pSI->pField->GetSignatureDict() || !pSI->pField->GetSignatureDict()->FinalizeSignature(pStream, pSignedData, dwDataLength))
+		{
+			delete pStream;
+			return false;
+		}
+
+		CXref* pXref = pSI->pXref;
+		delete pStream;
+		delete pSI;
+
+		m_vSignatures.pop_front();
+		CXref* pPrev = pXref;
+		while (pPrev->GetPrev()) pPrev = pPrev->GetPrev();
+		Sign(wsPath, pPrev->GetSizeXRef() + (bNeedStreamXRef ? 1 : 0), bNeedStreamXRef, pXref->GetPrevAddr());
+
+		// delete pXref
+		pPrev->SetPrev(m_pXref);
+		m_pXref = pXref;
+
+		return true;
+	}
+	void CDocument::Sign(const std::wstring& wsPath, unsigned int nSizeXRef, bool bNeedStreamXRef, unsigned int nPrevAddr)
+	{
+		if (!m_vSignatures.empty())
+		{
+			m_vSignatures[0]->wsPath = wsPath;
+			m_vSignatures[0]->nSizeXRef = nSizeXRef;
+			m_vSignatures[0]->nPrevAddr = nPrevAddr;
+			m_vSignatures[0]->bNeedStreamXRef = bNeedStreamXRef;
+		}
 	}
 	void CDocument::AddShapeXML(const std::string& sXML)
 	{
@@ -2056,5 +2266,14 @@ namespace PdfWriter
 	void CDocument::ClearPageFull()
 	{
 		m_pCurPage->ClearContentFull(m_pXref);
+	}
+	CObjectBase* CDocument::FindObjByID(unsigned int nObjectId)
+	{
+		TXrefEntry* pRes = NULL;
+		if (m_pLastXref)
+			pRes = m_pLastXref->GetEntryByObjectId(nObjectId);
+		if (!pRes)
+			pRes = m_pXref->GetEntryByObjectId(nObjectId);
+		return pRes? pRes->pObject : NULL;
 	}
 }

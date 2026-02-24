@@ -45,20 +45,21 @@ public:
 	BiffStructurePtr clone();
 
 	virtual void load(CFRecord& record);
+	virtual void save(CFRecord& record);
 
 	static const ElementType type = typeFtCmo;
 
-	unsigned short ot;
-	unsigned short id;
+	unsigned short ot = 0;
+	unsigned short id = 0;
 
-	bool fLocked;
-	bool fDefaultSize;
-	bool fPublished;
-	bool fPrint;
-	bool fDisabled;
-	bool fUIObj;
-	bool fRecalcObj;
-	bool fRecalcObjAlways;
+	bool fLocked = false;
+	bool fDefaultSize = false;
+	bool fPublished = false;
+	bool fPrint = false;
+	bool fDisabled = false;
+	bool fUIObj = false;
+	bool fRecalcObj = false;
+	bool fRecalcObjAlways = false;
 };
 
 } // namespace XLS

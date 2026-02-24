@@ -93,6 +93,7 @@ namespace OOX
 			bool IsExtended();
             void fromBin(XLS::BaseObjectPtr& obj);
 			XLS::BaseObjectPtr toBin();
+			XLS::BaseObjectPtr toXLS();
             void toBin(XLS::StreamCacheWriterPtr& writer);
 			virtual EElementType getType () const;
 
@@ -138,6 +139,7 @@ namespace OOX
 
             void fromBin(XLS::BaseObjectPtr& obj);
 			XLS::BaseObjectPtr toBin();
+			XLS::BaseObjectPtr toXLS();
             void toBin(XLS::StreamCacheWriterPtr& writer);
 			virtual EElementType getType () const;
 

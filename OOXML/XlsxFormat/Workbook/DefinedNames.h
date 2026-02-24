@@ -61,6 +61,7 @@ namespace OOX
 
 			void fromBin(XLS::BaseObjectPtr& obj);
 			XLS::BaseObjectPtr toBin();
+			XLS::BaseObjectPtr toXLS();
 			virtual EElementType getType () const;
 
 		private:
@@ -104,6 +105,7 @@ namespace OOX
 
 			void fromBin(std::vector<XLS::BaseObjectPtr>& obj);
 			std::vector<XLS::BaseObjectPtr> toBin();
+			void toXLS(XLS::BaseObjectPtr substream);
 			std::vector<XLS::BaseObjectPtr> AddFutureFunctions(const _UINT32 namesStart);
 			virtual EElementType getType () const;
 

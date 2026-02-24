@@ -111,6 +111,7 @@ namespace PPTX
 			pWriter->WriteString2(0, attrName);
 			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 
+			pWriter->ClearCurShapeSize();
 			pWriter->WriteRecord2(0, bg);
 
 			pWriter->StartRecord(1);
@@ -122,7 +123,7 @@ namespace PPTX
 						pWriter->WriteULONG((_UINT32)spTree.SpTreeElems.size());
 						for (size_t i = 0; i < spTree.SpTreeElems.size(); i++)
 						{
-							pWriter->m_bInGroup = false;
+							pWriter->ClearCurShapeSize();
 							pWriter->WriteRecord1(0, spTree.SpTreeElems[i]);
 						}
 					pWriter->EndRecord();

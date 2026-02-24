@@ -46,16 +46,20 @@
 		"_InitializeFontsRanges",
 		"_SetFontBinary",
 		"_GetFontBinary",
+		"_GetGIDByUnicode",
 		"_IsFontBinaryExist",
 		"_DestroyTextInfo",
 		"_IsNeedCMap",
 		"_SetCMapData",
+		"_SetScanPageFonts",
 		"_ScanPage",
 		"_SplitPages",
 		"_MergePages",
 		"_UnmergePages",
 		"_RedactPage",
 		"_UndoRedact",
+		"_CheckOwnerPassword",
+		"_CheckPerm",
 		"_GetImageBase64",
 		"_GetImageBase64Len",
 		"_GetImageBase64Ptr",
@@ -193,7 +197,7 @@
 	},
 	{
 		"folder": "../../../../PdfFile/SrcReader/",
-		"files": ["Adaptors.cpp", "GfxClip.cpp", "RendererOutputDev.cpp", "JPXStream2.cpp", "PdfAnnot.cpp"]
+		"files": ["Adaptors.cpp", "GfxClip.cpp", "RendererOutputDev.cpp", "JPXStream2.cpp", "PdfAnnot.cpp", "PdfFont.cpp"]
 	},
 	{
 		"folder": "../../../../PdfFile/SrcWriter/",

@@ -65,5 +65,22 @@ void PictFmlaKey::load(CFRecord& record)
 }
 
 
+void PictFmlaKey::save(CFRecord& record)
+{
+	cbKey = keyBuf.size();
+	record << cbKey;
+	if(cbKey)
+	{
+		std::string str = std::string(keyBuf.begin(), keyBuf.end());
+		auto *buf = new unsigned char[str.size()];
+		memcpy(buf, str.data(), str.size());
+		record.appendRawDataToStatic(buf, str.size());
+		delete []buf;
+	}
+	fmlaLinkedCell.save(record);
+	fmlaListFillRange.save(record);
+}
+
+
 } // namespace XLS
 

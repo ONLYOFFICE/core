@@ -55,5 +55,21 @@ void CachedDiskHeader::load(CFRecord& record)
 	}
 }
 
+void CachedDiskHeader::save(CFRecord& record)
+{
+	record.reserveNunBytes(4);
+	auto sizePos = record.getRdPtr();
+	rgHdrDisk.save(record);
+	cbdxfHdrDisk = record.getRdPtr() - sizePos;
+	record.RollRdPtrBack(cbdxfHdrDisk + 4);
+	record << cbdxfHdrDisk;
+	record.skipNunBytes(cbdxfHdrDisk);
+	if (fSaveStyleName)
+	{
+		record << strStyleName;
+	}
+
+}
+
 } // namespace XLS
 

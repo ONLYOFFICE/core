@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
@@ -281,6 +281,8 @@ namespace NExtractTools
 						res = TCD_XLTM2XLSM;
 					else if (0 == sExt2.compare(L".xlsb"))
 						res = TCD_XLSX2XLSB;
+					else if (0 == sExt2.compare(L".xls"))
+						res = TCD_XLSX2XLS;
 				}
 				break;
 				case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSB:
@@ -351,7 +353,7 @@ namespace NExtractTools
 						res = TCD_XLST2XLTX;
 					else if (0 == sExt2.compare(L".bin"))
 						res = TCD_T2BIN;
-					else if (0 == sExt2.compare(L".csv"))
+					else if (0 == sExt2.compare(L".csv") || 0 == sExt2.compare(L".tsv") || 0 == sExt2.compare(L".scsv") || 0 == sExt2.compare(L".tsv"))
 						res = TCD_XLST2CSV;
 					else if (0 == sExt2.compare(L".xlsb"))
 						res = TCD_XLST2XLSB;
@@ -418,6 +420,8 @@ namespace NExtractTools
 				}
 				break;
 				case AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV:
+				case AVS_OFFICESTUDIO_FILE_SPREADSHEET_TSV:
+				case AVS_OFFICESTUDIO_FILE_SPREADSHEET_SCSV:
 				{
 					if (0 == sExt2.compare(L".xlsx"))
 						res = TCD_CSV2XLSX;

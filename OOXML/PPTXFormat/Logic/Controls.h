@@ -48,7 +48,7 @@ namespace PPTX
 			Control(OOX::Document *pMain = NULL) : WrapperWritingElement(pMain)
 			{
 			}
-			std::wstring GetVmlXmlBySpid(std::wstring spid, smart_ptr<OOX::IFileContainer> & rels) const ;
+			std::wstring GetVmlXmlBySpid(std::wstring spid, OOX::IFileContainer*& rels) const ;
 			
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const ;
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);

@@ -60,7 +60,7 @@ public:
 
 	bool fLeftToRight = false;
 	bool fPortrait = true;
-	bool fNoPls = false;
+	bool fNoPls = true;
 	bool fNoColor = false;
 	bool fDraft = false;
 	bool fNotes = false;

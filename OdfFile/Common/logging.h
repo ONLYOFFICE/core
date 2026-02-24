@@ -43,36 +43,49 @@ namespace cpdoccore
     class logging
     {
     public:
-        logging(Ostream &stream) : ostream_(stream)
+        logging(Ostream &stream, bool bTime) : ostream_(stream), bTime_(bTime)
         {}
 
         template <class T>
         Ostream & operator << (const T & t)
         {
+            if (bTime_)
+            {
 #if defined(_DEBUG) || defined(_LOGOUT_ALWAYS) 
-            std::chrono::system_clock::time_point now{ std::chrono::system_clock::now() };
-            std::time_t now_c = std::chrono::system_clock::to_time_t(now);
-            std::tm tm = *std::localtime(&now_c);
+                std::chrono::system_clock::time_point now{ std::chrono::system_clock::now() };
+                std::time_t now_c = std::chrono::system_clock::to_time_t(now);
+                std::tm tm = *std::localtime(&now_c);
 
-            auto duration_since_epoch = now.time_since_epoch();
-            auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(duration_since_epoch) % 1000;
+                auto duration_since_epoch = now.time_since_epoch();
+                auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(duration_since_epoch) % 1000;
 
-            ostream_ << std::put_time(&tm, L"%H:%M:%S") << L"." << milliseconds.count() << L"\t";
+                ostream_ << std::put_time(&tm, L"%H:%M:%S") << L"." << milliseconds.count() << L"\t";
 #endif
+            }
             ostream_ << t;
             return ostream_;
         }
 
     private:
         Ostream & ostream_;
+        bool bTime_ = true;
     };
 
     extern logging<std::wostream>     logging_cout;
     extern logging<std::wstringstream>logging_log;
+   
+    extern logging<std::wostream>     logging_cout_continue;
+    extern logging<std::wstringstream>logging_log_continue;
 }
 
 #if defined( _DEBUG) || defined(_LOGOUT_ALWAYS) 
     #define _CP_LOG cpdoccore::logging_cout
 #else
     #define _CP_LOG cpdoccore::logging_log
+#endif
+
+#if defined( _DEBUG) || defined(_LOGOUT_ALWAYS) 
+#define _CP_LOG_CONTINUE cpdoccore::logging_cout_continue
+#else
+#define _CP_LOG_CONTINUE cpdoccore::logging_log_continue
 #endif

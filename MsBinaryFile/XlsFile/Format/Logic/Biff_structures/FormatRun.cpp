@@ -35,6 +35,10 @@
 namespace XLS
 {
 
+FormatRun::FormatRun()
+{
+	ifnt.value() = 0;
+}
 
 BiffStructurePtr FormatRun::clone()
 {

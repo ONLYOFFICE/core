@@ -36,6 +36,7 @@
 #include "../fontengine/FontManager.h"
 #include "../raster/BgraFrame.h"
 #include "../common/StringExt.h"
+#include "GraphicsPath.h"
 
 // этот класс нужно переписать. должно работать как и в js
 // а не просто на каждом символе переключаться, если нужно
@@ -351,7 +352,13 @@ namespace NSOnlineOfficeBinToPdf
 		bool bIsPathOpened = false;
 		bool bIsEnableBrushRect = false;
 
+		double old_t1, old_t2, old_t3, old_t4, old_t5, old_t6;
+
 		CBufferReader oReader(pBuffer, lBufferLen);
+		Aggplus::CGraphicsPath path;
+		Aggplus::CMatrix transMatrRot;
+		Aggplus::RectF_T<double> clipRect;
+		bool isResetRot = false;
 		while (oReader.Check())
 		{
 			eCommand = (CommandType)(oReader.ReadByte());
@@ -382,6 +389,8 @@ namespace NSOnlineOfficeBinToPdf
 				if (bIsPathOpened)
 				{
 					pRenderer->PathCommandEnd();
+					if (path.GetPointCount())
+						path.Reset();
 					pRenderer->EndCommand(c_nPathType);
 				}
 				bIsPathOpened = false;
@@ -471,6 +480,17 @@ namespace NSOnlineOfficeBinToPdf
 				double m2 = oReader.ReadDouble();
 				double m3 = oReader.ReadDouble();
 				double m4 = oReader.ReadDouble();
+
+				clipRect = Aggplus::RectF_T<double>(m1, m2, m3, m4);
+
+				long type;
+				pRenderer->get_BrushTextureMode(&type);
+				if (type != c_BrushTextureModeStretch)
+				{
+					m1 = 0.0;
+					m2 = 0.0;
+				}
+
 				pRenderer->BrushRect(bIsEnableBrushRect ? 1 : 0, m1, m2, m3, m4);
 				break;
 			}
@@ -479,7 +499,10 @@ namespace NSOnlineOfficeBinToPdf
 				bIsEnableBrushRect = oReader.ReadBool();
 
 				if (!bIsEnableBrushRect)
+				{
 					pRenderer->BrushRect(bIsEnableBrushRect ? 1 : 0, 0, 0, 1, 1);
+					clipRect = Aggplus::RectF_T<double>();
+				}
 				break;
 			}
 			case ctBrushTexturePathOld:
@@ -590,6 +613,16 @@ namespace NSOnlineOfficeBinToPdf
 				pRenderer->put_BrushTextureAlpha(lAlpha);
 				break;
 			}
+			case ctBrushResetRotation:
+			{
+				pRenderer->GetTransform(&old_t1, &old_t2, &old_t3, &old_t4, &old_t5, &old_t6);
+
+				Aggplus::CMatrix mtr(old_t1, old_t2, old_t3, old_t4, old_t5, old_t6);
+				double rot = mtr.rotation();
+				transMatrRot.Rotate(agg::rad2deg(rot));
+				isResetRot = true;
+				break;
+			}
 			case ctSetTransform:
 			{
 				double m1 = oReader.ReadDouble();
@@ -606,11 +639,15 @@ namespace NSOnlineOfficeBinToPdf
 				if (bIsPathOpened)
 				{
 					pRenderer->PathCommandEnd();
+					if (path.GetPointCount())
+						path.Reset();
 					pRenderer->EndCommand(c_nPathType);
 				}
 
 				pRenderer->BeginCommand(c_nPathType);
 				pRenderer->PathCommandStart();
+				path.Reset();
+				path.StartFigure();
 
 				bIsPathOpened = true;
 				break;
@@ -619,14 +656,14 @@ namespace NSOnlineOfficeBinToPdf
 			{
 				double m1 = oReader.ReadDouble();
 				double m2 = oReader.ReadDouble();
-				pRenderer->PathCommandMoveTo(m1, m2);
+				path.MoveTo(m1, m2);
 				break;
 			}
 			case ctPathCommandLineTo:
 			{
 				double m1 = oReader.ReadDouble();
 				double m2 = oReader.ReadDouble();
-				pRenderer->PathCommandLineTo(m1, m2);
+				path.LineTo(m1, m2);
 				break;
 			}
 			case ctPathCommandCurveTo:
@@ -637,12 +674,12 @@ namespace NSOnlineOfficeBinToPdf
 				double m4 = oReader.ReadDouble();
 				double m5 = oReader.ReadDouble();
 				double m6 = oReader.ReadDouble();
-				pRenderer->PathCommandCurveTo(m1, m2, m3, m4, m5, m6);
+				path.CurveTo(m1, m2, m3, m4, m5, m6);
 				break;
 			}
 			case ctPathCommandClose:
 			{
-				pRenderer->PathCommandClose();
+				path.CloseFigure();
 				break;
 			}
 			case ctPathCommandEnd:
@@ -650,14 +687,107 @@ namespace NSOnlineOfficeBinToPdf
 				if (bIsPathOpened)
 				{
 					pRenderer->PathCommandEnd();
+					if (path.GetPointCount())
+						path.Reset();
 					pRenderer->EndCommand(c_nPathType);
 					bIsPathOpened = false;
 				}
 				break;
 			}
+			case ctPathCommandOffset:
+			{
+				double m1 = oReader.ReadDouble();
+				double m2 = oReader.ReadDouble();
+
+				pRenderer->put_BrushOffset(m1, m2);
+				break;
+			}
+			case ctPathCommandScale:
+			{
+				double m1 = oReader.ReadDouble();
+				double m2 = oReader.ReadDouble();
+
+				pRenderer->put_BrushScale(true, m1, m2);
+				break;
+			}
 			case ctDrawPath:
 			{
-				pRenderer->DrawPath(oReader.ReadInt());
+				long fill = oReader.ReadInt();
+				long type;
+				pRenderer->get_BrushType(&type);
+
+				if (fill != c_nStroke && type == c_BrushTypeTexture)
+				{
+					Aggplus::CGraphicsPath clipPath;
+					Aggplus::CGraphicsPath drawPath(path);
+
+					if (isResetRot)
+					{
+						pRenderer->get_BrushTextureMode(&type);
+						bool isStretch = type == c_BrushTextureModeStretch;
+
+						double left, top, width, height;
+						drawPath.GetBounds(left, top, width, height);
+
+						double rot = transMatrRot.rotation();
+						double cX = left + width / 2.0;
+						double cY = top + height / 2.0;
+
+						bool isZeroPt = clipRect.X < 0.1 && clipRect.X > -0.1 && clipRect.Y < 0.1 && clipRect.Y > -0.1;
+						bool isZeroRot = rot < 1e-6 && rot > -1e-6;
+
+						transMatrRot.Reset();
+						transMatrRot.RotateAt(agg::rad2deg(rot), cX, cY, Aggplus::MatrixOrderAppend);
+
+						double offX = old_t5 - transMatrRot.tx();
+						double offY = old_t6 - transMatrRot.ty();
+
+						drawPath.Transform(&transMatrRot);
+						pRenderer->SetTransform(1.0, 0.0, 0.0, 1.0, offX, offY);
+
+						if (isZeroPt && !isZeroRot && isStretch)
+							drawPath.GetBounds(left, top, width, height);
+						else
+						{
+							Aggplus::CGraphicsPath tmpPath;
+							tmpPath.AddRectangle(left, top, width, height);
+							tmpPath.Transform(&transMatrRot);
+							tmpPath.GetBounds(left, top, width, height);
+						}
+
+						if (isZeroPt || !isStretch)
+							clipRect = Aggplus::RectF_T<double>(left, top, width, height);
+
+						if (isStretch)
+						{
+							if (!isZeroPt)
+								clipRect.Offset(-offX, -offY);
+							pRenderer->BrushRect(true, clipRect.X, clipRect.Y, clipRect.Width, clipRect.Height);
+						}
+						else
+						{
+							double tileOffX, tileOffY;
+							pRenderer->get_BrushOffset(tileOffX, tileOffY);
+							pRenderer->put_BrushOffset(tileOffX - offX, tileOffY - offY);
+						}
+					}
+
+					clipPath.AddRectangle(clipRect.X, clipRect.Y, clipRect.Width, clipRect.Height);
+					path = Aggplus::CalcBooleanOperation(drawPath, clipPath, Aggplus::Intersection);
+				}
+
+				pRenderer->AddPath(path);
+				pRenderer->DrawPath(fill);
+
+				if (isResetRot)
+				{
+					pRenderer->SetTransform(old_t1, old_t2, old_t3, old_t4, old_t5, old_t6);
+					transMatrRot.Reset();
+					isResetRot = false;
+				}
+
+				pRenderer->put_BrushScale(false, 1.0, 1.0);
+				pRenderer->put_BrushOffset(0.0, 0.0);
 				break;
 			}
 			case ctDrawImageFromFile:
@@ -734,6 +864,8 @@ namespace NSOnlineOfficeBinToPdf
 				if (bIsPathOpened)
 				{
 					pRenderer->PathCommandEnd();
+					if (path.GetPointCount())
+						path.Reset();
 					pRenderer->EndCommand(4);
 					bIsPathOpened = false;
 				}
@@ -747,8 +879,13 @@ namespace NSOnlineOfficeBinToPdf
 					pRenderer->EndCommand(4);
 					bIsPathOpened = false;
 				}
-				pRenderer->EndCommand((DWORD)(oReader.ReadInt()));
+				int nCommand = oReader.ReadInt();
+				if (path.GetPointCount() && nCommand == c_nClipType)
+					pRenderer->AddPath(path);
+				pRenderer->EndCommand((DWORD)nCommand);
 				pRenderer->PathCommandEnd();
+				if (path.GetPointCount())
+					path.Reset();
 				break;
 			}
 			case ctGradientFill:
@@ -1132,6 +1269,10 @@ namespace NSOnlineOfficeBinToPdf
 				oReader.Skip(1);
 				break;
 			}
+			case ctBrushResetRotation:
+			{
+				break;
+			}
 			case ctSetTransform:
 			{
 				oReader.SkipInt(6);
@@ -1162,6 +1303,16 @@ namespace NSOnlineOfficeBinToPdf
 			}
 			case ctPathCommandEnd:
 			{
+				break;
+			}
+			case ctPathCommandOffset:
+			{
+				oReader.SkipInt(2);
+				break;
+			}
+			case ctPathCommandScale:
+			{
+				oReader.SkipInt(2);
 				break;
 			}
 			case ctDrawPath:

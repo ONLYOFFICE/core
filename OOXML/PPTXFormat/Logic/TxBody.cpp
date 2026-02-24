@@ -115,14 +115,37 @@ namespace PPTX
 		{
 			Paragrs.clear();
 
-			m_name		= node.GetName();
+			m_name = node.GetName();
 
-			bodyPr		= node.ReadNode(L"a:bodyPr");
-			lstStyle	= node.ReadNode(L"a:lstStyle");
-			sp3d		= node.ReadNode(L"a:sp3d");
+			std::vector<XmlUtils::CXmlNode> oNodes;
+			if (node.GetNodes(_T("*"), oNodes))
+			{
+				size_t count = oNodes.size();
+				for (size_t i = 0; i < count; ++i)
+				{
+					XmlUtils::CXmlNode& oNode = oNodes[i];
 
-			XmlMacroLoadArray(node, L"a:p", Paragrs, Paragraph);
+					std::wstring strName = XmlUtils::GetNameNoNS(oNode.GetName());
 
+					if (L"bodyPr" == strName)
+					{
+						bodyPr = oNode;
+					}
+					else if (L"lstStyle" == strName)
+					{
+						lstStyle = oNode;
+					}
+					else if (L"sp3d" == strName)
+					{
+						sp3d = oNode;
+					}
+					else if (L"p" == strName)
+					{
+						Paragrs.emplace_back();
+						Paragrs.back().fromXML(oNode);
+					}
+				}
+			}
 			FillParentPointersForChilds();
 		}
 		std::wstring TxBody::toXML() const

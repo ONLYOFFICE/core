@@ -53,6 +53,7 @@ public:
 	static const ElementType type = typeCOLUMNS;
 
 	BaseObjectPtr m_DefColWidth;
+	std::vector<BaseObjectPtr> m_colInfos;
 
 	GlobalWorkbookInfoPtr global_info_;
 };

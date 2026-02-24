@@ -49,6 +49,7 @@ public:
 	XLS::BiffStructurePtr clone();
 
 	virtual void load(XLS::CFRecord& record);
+	virtual void save(XLS::CFRecord& record);
 
 
 	static const XLS::ElementType	type = XLS::typeOfficeArtRGFOPTE;
@@ -68,7 +69,7 @@ public:
 	std::vector<OfficeArtFOPTEPtr> Transform_props;
 	std::vector<OfficeArtFOPTEPtr> Other_props;
 
-	unsigned short options_count;
+	unsigned short options_count = 0;
 };
 
 typedef boost::shared_ptr<OfficeArtRGFOPTE> OfficeArtRGFOPTEPtr;

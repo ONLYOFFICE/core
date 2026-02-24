@@ -365,7 +365,7 @@
     <ClInclude Include="..\..\..\XlsxFormat\Pivot\PivotCacheRecords.h" />
     <ClInclude Include="..\..\..\XlsxFormat\Pivot\PivotHierarchies.h" />
     <ClInclude Include="..\..\..\XlsxFormat\Pivot\PivotTable.h" />
-    <ClInclude Include="..\..\..\XlsxFormat\RichData\RdRichValue.h" />
+    <ClInclude Include="..\..\..\XlsxFormat\RichData\RdRichData.h" />
     <ClInclude Include="..\..\..\XlsxFormat\SharedStrings\PhoneticPr.h" />
     <ClInclude Include="..\..\..\XlsxFormat\SharedStrings\Run.h" />
     <ClInclude Include="..\..\..\XlsxFormat\SharedStrings\SharedStrings.h" />
@@ -538,7 +538,7 @@
     <ClCompile Include="..\..\..\XlsxFormat\Pivot\PivotCacheDefinitionExt.cpp" />
     <ClCompile Include="..\..\..\XlsxFormat\Pivot\PivotHierarchies.cpp" />
     <ClCompile Include="..\..\..\XlsxFormat\Pivot\Pivots.cpp" />
-    <ClCompile Include="..\..\..\XlsxFormat\RichData\RdRichValue.cpp" />
+    <ClCompile Include="..\..\..\XlsxFormat\RichData\RdRichData.cpp" />
     <ClCompile Include="..\..\..\XlsxFormat\SharedStrings\PhoneticPr.cpp" />
     <ClCompile Include="..\..\..\XlsxFormat\SharedStrings\XlsxRun.cpp" />
     <ClCompile Include="..\..\..\XlsxFormat\SharedStrings\SharedStrings.cpp" />

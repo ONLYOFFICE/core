@@ -76,6 +76,8 @@ void SXVI::writeFields(CFRecord& record)
     SETBIT(flags, 3, fFormula)
     SETBIT(flags, 4, fMissing)
     cchName = stName.getSize();
+	if(cchName == 0)
+		cchName = 0xFFFF;
 
     record << itmType << flags << iCache << cchName;
     if (cchName > 0 && cchName < 0xFFFF)

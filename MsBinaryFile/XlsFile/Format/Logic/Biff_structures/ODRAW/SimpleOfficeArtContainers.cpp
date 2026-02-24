@@ -63,6 +63,14 @@ void OfficeArtClientData::loadFields(XLS::CFRecord& record)
 	{
 	}
 }
+void OfficeArtClientData::save(XLS::CFRecord& record)
+{
+	rh_own.recVer = 0x00;
+	rh_own.recInstance = 0;
+	rh_own.recType = 0xF011;
+	rh_own.recLen =  0;
+	record << rh_own;
+}
 void OfficeArtSolverContainer::loadFields(XLS::CFRecord& record)
 {
 	//array of OfficeArtSolverContainerFileBlock
@@ -134,6 +142,23 @@ void OfficeArtSpgrContainer::loadFields(XLS::CFRecord& record)
 	//}
 
 }
+void OfficeArtSpgrContainer::save(XLS::CFRecord& record)
+{
+	rh_own.recVer = 0xF;
+	rh_own.recInstance = 0;
+	rh_own.recType = 0xF003;
+	record << rh_own;
+	auto sizePos = record.getRdPtr();
+	for(auto i : m_OfficeArtSpgrContainerFileBlock)
+		i->save(record);
+
+	//calculating size
+	rh_own.recLen = record.getRdPtr() - sizePos;
+	record.RollRdPtrBack(rh_own.recLen + 4);
+	record << rh_own.recLen;
+	record.skipNunBytes(rh_own.recLen);
+}
+
 void OfficeArtSpContainer::loadFields(XLS::CFRecord& record)
 {
 	OfficeArtContainer::loadFields(record);
@@ -157,6 +182,33 @@ void OfficeArtSpContainer::loadFields(XLS::CFRecord& record)
 		}
 	}
 
+}
+
+void OfficeArtSpContainer::save(XLS::CFRecord& record)
+{
+	rh_own.recVer = 0xF;
+	rh_own.recInstance = 0;
+	rh_own.recType = 0xF004;
+	record << rh_own;
+	auto sizePos = record.getRdPtr();
+
+	if(m_OfficeArtFSPGR != nullptr)
+		m_OfficeArtFSPGR->save(record);
+	if(m_OfficeArtFSP != nullptr)
+		m_OfficeArtFSP->save(record);
+	if(m_oOfficeArtFOPT != nullptr)
+		m_oOfficeArtFOPT->save(record);
+	if(m_OfficeArtAnchor != nullptr)
+		m_OfficeArtAnchor->save(record);
+	if(m_oOfficeArtClientData != nullptr)
+		m_oOfficeArtClientData->save(record);
+
+
+	//calculating size
+	rh_own.recLen = record.getRdPtr() - sizePos;
+	record.RollRdPtrBack(rh_own.recLen + 4);
+	record << rh_own.recLen;
+	record.skipNunBytes(rh_own.recLen);
 }
 
 } // namespace ODRAW

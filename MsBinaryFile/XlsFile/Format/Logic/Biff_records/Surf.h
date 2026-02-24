@@ -57,7 +57,7 @@ public:
 	int serialize(std::wostream & _stream);
 
 //-----------------------------
-    bool fFillSurface = false;
+	bool fFillSurface = true;
     bool f3DPhongShade = false;
 };
 

@@ -271,8 +271,8 @@ namespace Draw
 	}
 	void OOX::Draw::CRecordsetsFile::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 	{
-		smart_ptr<OOX::IFileContainer> rels_old = pReader->GetRels();
-		pReader->SetRels(dynamic_cast<OOX::IFileContainer*>((CRecordsetsFile*)this));
+		OOX::IFileContainer* rels_old = pReader->GetRelsPtr();
+		pReader->SetRelsPtr(dynamic_cast<OOX::IFileContainer*>((CRecordsetsFile*)this));
 
 		LONG end = pReader->GetPos() + pReader->GetRecordSize() + 4;
 
@@ -294,16 +294,16 @@ namespace Draw
 			}
 		}
 		pReader->Seek(end);
-		pReader->SetRels(rels_old);
+		pReader->SetRelsPtr(rels_old);
 	}
 	void OOX::Draw::CRecordsetsFile::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 	{
-		smart_ptr<OOX::IFileContainer> rels_old = pWriter->GetRels();
-		pWriter->SetRels(dynamic_cast<OOX::IFileContainer*>((CRecordsetsFile*)this));
+		OOX::IFileContainer* rels_old = pWriter->GetRelsPtr();
+		pWriter->SetRelsPtr(dynamic_cast<OOX::IFileContainer*>((CRecordsetsFile*)this));
 		
 		pWriter->WriteRecord2(0, DataRecordSets);
 
-		pWriter->SetRels(rels_old);
+		pWriter->SetRelsPtr(rels_old);
 	}
 	void OOX::Draw::CRecordsetsFile::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 	{
@@ -599,9 +599,9 @@ namespace Draw
 			if (type != 0xff)
 				pWriter->WriteRecord2(type, dynamic_cast<OOX::WritingElement*>(m_arrItems[i]));
 		}
-		if (Rel.IsInit() && Rel->Rid.IsInit())
+		if (Rel.IsInit() && Rel->Rid.IsInit() && pWriter->GetRelsPtr())
 		{
-			smart_ptr<OOX::File> pFile = pWriter->GetRels()->Find(Rel->Rid->GetValue());
+			smart_ptr<OOX::File> pFile = pWriter->GetRelsPtr()->Find(Rel->Rid->GetValue());
 			CRecordsetFile* pRecordset = dynamic_cast<CRecordsetFile*>(pFile.GetPointer());
 			if (pRecordset)
 			{
@@ -712,8 +712,11 @@ namespace Draw
 				pRecordset->fromPPTY(pReader);
 				smart_ptr<OOX::File> oFile(pRecordset);
 
-				Rel.Init(); Rel->Rid.Init();
-				Rel->Rid->SetValue(pReader->GetRels()->Add(oFile).get());
+				if (pReader->GetRelsPtr())
+				{
+					Rel.Init(); Rel->Rid.Init();
+					Rel->Rid->SetValue(pReader->GetRelsPtr()->Add(oFile).get());
+				}
 			}break;
 			default:
 			{

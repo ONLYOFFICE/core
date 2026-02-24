@@ -124,6 +124,14 @@ void OfficeArtFOPTE::load(IBinaryReader* _reader)
 	fBid		= GETBIT(flags, 14);
 	fComplex	= GETBIT(flags, 15);
 }
+void OfficeArtFOPTE::save(XLS::CFRecord& record)
+{
+	unsigned short flags = 0;
+	SETBITS(flags, 0, 13, opid)
+	SETBIT(flags, 14, fBid)
+	SETBIT(flags, 15, fComplex)
+	record << flags << op;
+}
 void OfficeArtFOPTE::load(XLS::CFRecord& record)
 {
 	unsigned short flags;

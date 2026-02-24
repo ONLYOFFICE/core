@@ -120,11 +120,19 @@ void DConRef::readFields(CFRecord& record)
 
 void DConRef::writeFields(CFRecord& record)
 {
+	if(cchFile == 0 && stFile== L"")
+	{
+		stFile = L'\x0002' + sheet_name;
+		cchFile = stFile.size();
+
+	}
     record << ref << cchFile;
     if (cchFile > 0 && cchFile < 0xffff)
     {
-        record << stFile;
-        record.reserveNunBytes(2);
+		XLUnicodeStringNoCch file;
+		file = stFile;
+		record << file;
+		//record.reserveNunBytes(2);
     }
 }
 

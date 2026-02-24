@@ -851,6 +851,11 @@ namespace PdfWriter
 	{
 		return m_unSize;
 	}
+	void CMemoryStream::Clear()
+	{
+		m_pCur   = m_pBuffer;
+		m_unSize = 0;
+	}
 	BYTE* CMemoryStream::GetBuffer()
 	{
 		return m_pBuffer;
@@ -1005,9 +1010,9 @@ namespace PdfWriter
 	{
 		switch (eMode)
 		{
-			case SeekCur: m_nFilePos += nPos; break;
-        case SeekEnd: m_nFilePos = std::max(0, (m_nFileSize - nPos)); break;
-			case SeekSet: m_nFilePos = nPos; break;
+		case SeekCur: m_nFilePos += nPos; break;
+		case SeekEnd: m_nFilePos = std::max(0, (m_nFileSize - nPos)); break;
+		case SeekSet: m_nFilePos = nPos; break;
 		}
 	}
 	int          CImageFileStream::Tell()

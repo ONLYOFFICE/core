@@ -46,13 +46,22 @@
 
 namespace PdfReader
 {
+struct CAnnotFontInfo
+{
+	std::wstring wsFontName;
+	std::wstring wsFontPath;
+	std::wstring wsActualFontName;
+	bool bBold   = false;
+	bool bItalic = false;
+};
+
 std::string GetRCFromDS(const std::string& sDS, Object* pContents, const std::vector<double>& arrCFromDA);
 bool IsNeedCMap(PDFDoc* pDoc);
 bool IsBaseFont(const std::wstring& wsName);
 std::map<std::wstring, std::wstring> GetAllFonts(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList* pFontList, bool bIsNeedCMap);
 std::wstring GetFontData(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList, Object* oFontRef, std::string& sFontName, std::string& sActualFontName, bool& bBold, bool& bItalic, bool bIsNeedCMap = false);
 bool GetFontFromAP(PDFDoc* pdfDoc, AcroFormField* pField, Object* oFontRef, std::string& sFontKey);
-std::map<std::wstring, std::wstring> GetAnnotFont(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList, Object* oAnnotRef);
+std::vector<CAnnotFontInfo> GetAnnotFontInfos(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList* pFontList, Object* oAnnotRef);
 std::map<std::wstring, std::wstring> GetFreeTextFont(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList* pFontList, Object* oAnnotRef, std::vector<CAnnotMarkup::CFontData*>& arrRC);
 bool FindFonts(Object* oStream, int nDepth, Object* oResFonts);
 void CollectFontWidths(GfxFont* gfxFont, Dict* pFontDict, std::map<unsigned int, unsigned int>& mGIDToWidth);

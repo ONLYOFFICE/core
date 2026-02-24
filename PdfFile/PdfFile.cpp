@@ -1097,7 +1097,7 @@ HRESULT CPdfFile::put_FontName(const std::wstring& wsName)
 			{
 				std::wstring sTargetHash = wsName.substr(lastSpace + 1);
 				const std::map<std::wstring, std::wstring>& mFonts = m_pInternal->pReader->GetFonts();
-				auto it = std::find_if(mFonts.begin(), mFonts.end(), [&sTargetHash](const std::pair<const std::wstring, std::wstring>& pair)
+				 std::map<std::wstring, std::wstring>::const_iterator it = std::find_if(mFonts.begin(), mFonts.end(), [&sTargetHash](const std::pair<const std::wstring, std::wstring>& pair)
 				{
 					const std::wstring& key = pair.first;
 					size_t pos = key.rfind(L' ');

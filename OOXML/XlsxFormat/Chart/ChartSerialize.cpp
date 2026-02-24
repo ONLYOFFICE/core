@@ -2968,10 +2968,7 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 		{
 			auto ivAxis = new XLS::IVAXIS;
 			auto axis = new XLS::Axis;
-			if(m_axPos.IsInit() && m_axPos->GetValue() == OOX::Spreadsheet::ST_AxPos::st_axposL)
-				axis->wType = 1;
-			else
-				axis->wType = 0;
+			axis->wType = 0;
 			ivAxis->m_Axis = XLS::BaseObjectPtr(axis);
 			auto axs = new XLS::AXS;
 			ivAxis->m_AXS = XLS::BaseObjectPtr(axs);

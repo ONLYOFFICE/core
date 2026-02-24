@@ -389,7 +389,10 @@ namespace OOX
 					auto drawingPtr = static_cast<OOX::Spreadsheet::CDrawing*>(castedDrawing.GetPointer());
 					drawingPtr->toXLSChart(chartVector);
 					if(!chartVector.empty())
+					{	auto castedStream = static_cast<XLS::ChartSheetSubstream*>(chartVector.back().get());
+						castedStream->separate = true;
 						return chartVector.back();
+					}
 					else
 					{
 						auto chartSheetPtr = new XLS::ChartSheetSubstream(0);

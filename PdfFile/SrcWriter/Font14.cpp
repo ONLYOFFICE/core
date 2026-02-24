@@ -146,7 +146,7 @@ namespace PdfWriter
 	{
 		if (m_pObj->GetType() != object_type_UNKNOWN)
 			return m_pObj;
-		return new PdfWriter::CProxyObject(m_pObj, true);
+		return new PdfWriter::CProxyObject(m_pObj);
 	}
 	CObjectBase* CFontEmbedded::GetObj2()
 	{

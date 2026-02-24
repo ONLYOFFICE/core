@@ -227,7 +227,7 @@ namespace OOX
 	}
 //------------------------------------------------------------------------------------------------------------------------
 	CDocument::CDocument(OOX::Document *pMain, OOX::FileType type)
-		: File(pMain), IFileContainer(pMain), WritingElement(pMain)
+		: File(pMain), IFileContainer(pMain), WritingElementWithChilds<>(pMain)
 	{
 		m_bMacroEnabled = false;
 			
@@ -254,7 +254,7 @@ namespace OOX
 		}
 	}
 	CDocument::CDocument(OOX::Document *pMain, const CPath& oRootPath, const CPath& oPath, OOX::FileType type)
-		: File(pMain), IFileContainer(pMain), WritingElement(pMain)
+		: File(pMain), IFileContainer(pMain), WritingElementWithChilds<>(pMain)
 	{
 		m_bMacroEnabled = false;
 
@@ -302,13 +302,13 @@ namespace OOX
 			docx->m_bGlossaryRead = false;
 		}
 	}
-	CDocument::CDocument(XmlUtils::CXmlNode& oNode) : File(NULL), IFileContainer(NULL), WritingElement(NULL)
+	CDocument::CDocument(XmlUtils::CXmlNode& oNode) : File(NULL), IFileContainer(NULL), WritingElementWithChilds<>(NULL)
 	{
 		m_bMacroEnabled = false;
 			
 		fromXML( oNode );
 	}
-	CDocument::CDocument(XmlUtils::CXmlLiteReader& oReader) : File(NULL), IFileContainer(NULL), WritingElement(NULL)
+	CDocument::CDocument(XmlUtils::CXmlLiteReader& oReader) : File(NULL), IFileContainer(NULL), WritingElementWithChilds<>(NULL)
 	{
 		m_bMacroEnabled = false;
 			
@@ -403,8 +403,7 @@ namespace OOX
 					{
 						if (document->m_arrSections.empty())
 						{
-							OOX::CDocument::_section section;
-							document->m_arrSections.push_back(section);
+							document->m_arrSections.emplace_back();
 						}
 						document->m_arrSections.back().sect = m_oSectPr.GetPointer();
 						document->m_arrSections.back().end_elm = document->m_arrItems.size(); //активный рутовый еще не добавлен
@@ -492,11 +491,7 @@ namespace OOX
 
 	void CDocument::ClearItems()
 	{
-        for ( size_t i = 0; i < m_arrItems.size(); ++i)
-		{
-            if ( m_arrItems[i] )delete m_arrItems[i];
-		}
-		m_arrItems.clear();
+		WritingElementWithChilds<>::ClearItems();
 //----------
 		m_arrSections.clear();
 	}

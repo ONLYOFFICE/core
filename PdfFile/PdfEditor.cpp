@@ -3452,8 +3452,12 @@ bool CPdfEditor::EditAnnot(int _nPageIndex, int nID)
 		pAnnot = new PdfWriter::CPolygonLineAnnotation(pXref);
 	else if (oType.isName("FreeText"))
 	{
-		std::map<std::wstring, std::wstring> mapFont = PdfReader::GetAnnotFont(pPDFDocument, m_pReader->GetFontManager(), pFontList, &oAnnotRef);
-		m_mFonts.insert(mapFont.begin(), mapFont.end());
+		std::vector<PdfReader::CAnnotFontInfo> arrFont = PdfReader::GetAnnotFontInfos(pPDFDocument, m_pReader->GetFontManager(), pFontList, &oAnnotRef);
+		for (int i = 0; i < arrFont.size(); ++i)
+		{
+			PdfReader::CAnnotFontInfo oFontInfo = arrFont[i];
+			m_mFonts.insert(std::make_pair(oFontInfo.wsFontName, oFontInfo.wsFontPath));
+		}
 		pAnnot = new PdfWriter::CFreeTextAnnotation(pXref);
 	}
 	else if (oType.isName("Caret"))

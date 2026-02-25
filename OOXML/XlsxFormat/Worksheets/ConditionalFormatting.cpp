@@ -3531,7 +3531,6 @@ XLS::BaseObjectPtr CConditionalFormattingRule::toXLS(const  XLS::CellRef &cellRe
 			ptr->icfTemplate = XLSB::CFTemp::CF_TEMPLATE_ABOVEAVERAGE;
 		if(m_oStdDev.IsInit())
 			ptr->rgbTemplateParms.data.averages.iParam =  m_oStdDev->GetValue();
-		ptr->rgce1.parseStringFormula(L"TRUE", L"");
 	}
 	else if (m_oType == SimpleTypes::Spreadsheet::ECfType::containsBlanks)
 	{
@@ -3614,6 +3613,8 @@ XLS::BaseObjectPtr CConditionalFormattingRule::toXLS(const  XLS::CellRef &cellRe
 		ptr->ipriority = m_oPriority->GetValue();
 	if(m_arrFormula.size() > 0)
 		ptr->rgce1.parseStringFormula(m_arrFormula[0].get().m_sText, L"");
+	else if(ptr->ct == 2)
+		ptr->rgce1.parseStringFormula(L"TRUE", L"");
 	if(m_arrFormula.size() > 1)
 		ptr->rgce2.parseStringFormula(m_arrFormula[1].get().m_sText, L"");
 	return XLS::BaseObjectPtr(ptr);

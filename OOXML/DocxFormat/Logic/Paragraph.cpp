@@ -185,10 +185,10 @@ namespace OOX
 						{
 							if (m_oParagraphProperty)
 							{
-								CParagraphProperty prop2(oItem);
-								CParagraphProperty newProp = CParagraphProperty::Merge(*m_oParagraphProperty, prop2);
-
-								pItem = m_oParagraphProperty = new CParagraphProperty(newProp);
+								pItem = new CParagraphProperty(*m_oParagraphProperty);
+								pItem->fromXML(oItem);
+								
+								m_oParagraphProperty = dynamic_cast<CParagraphProperty*>(pItem);
 							}
 							else
 							{
@@ -331,12 +331,10 @@ namespace OOX
 				{// c копией  .. для быстрого доступа/анализа
 					if (m_oParagraphProperty)
 					{
-						CParagraphProperty prop2(document);
-						prop2.fromXML(oReader);
+						pItem = new CParagraphProperty(*m_oParagraphProperty);
+						pItem->m_pMainDocument = document;
 
-						pItem = m_oParagraphProperty = new CParagraphProperty(CParagraphProperty::Merge(*m_oParagraphProperty, prop2));
-						m_arrItems.push_back( pItem );
-						continue;
+						m_oParagraphProperty = dynamic_cast<CParagraphProperty*>(pItem);
 					}
 					else
 					{
@@ -383,9 +381,21 @@ namespace OOX
 				}
 				else if (L"p" == sName)
 				{
-					int nDepthChild = oReader.GetDepth();
-
-					fromXML(nDepthChild, oReader);
+					WritingElementWithChilds* parent = dynamic_cast<WritingElementWithChilds*>(m_oParent);
+					if (parent)
+					{
+						WritingElement* pItemUpper = new CParagraph(document, parent);
+						if (pItemUpper)
+						{
+							pItemUpper->fromXML(oReader);
+							parent->m_arrItems.push_back(pItemUpper);
+						}
+					}
+					else
+					{
+						int nDepthChild = oReader.GetDepth();
+						fromXML(nDepthChild, oReader);
+					}
 				}
 				if ( pItem )
 				{

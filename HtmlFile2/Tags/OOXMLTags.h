@@ -153,6 +153,15 @@ public:
 	virtual bool Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData = boost::any()) override;
 	virtual void Close(const std::vector<NSCSS::CNode>& arSelectors) override;
 };
+
+template<>
+class CHTML<COOXMLWriter> : public CTag<COOXMLWriter>
+{
+public:
+	CHTML(COOXMLWriter* pInterpretator);
+	virtual bool Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData = boost::any()) override;
+	virtual void Close(const std::vector<NSCSS::CNode>& arSelectors) override;
+};
 }
 
 #endif // OOXMLTAGS_H

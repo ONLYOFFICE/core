@@ -891,10 +891,7 @@ namespace PdfWriter
 
 		while (pXref)
 		{
-			if (pXref->m_arrEntries.size() + pXref->m_unStartOffset <= nObjectId)
-				return NULL;
-
-			if (pXref->m_unStartOffset <= nObjectId)
+			if (pXref->m_unStartOffset <= nObjectId && pXref->m_arrEntries.size() + pXref->m_unStartOffset > nObjectId)
 			{
 				for (unsigned int unIndex = 0, nCount = pXref->m_arrEntries.size(); unIndex < nCount; unIndex++)
 				{

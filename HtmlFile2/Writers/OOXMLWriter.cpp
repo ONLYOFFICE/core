@@ -1261,6 +1261,11 @@ XmlString* COOXMLWriter::GetCurrentDocument() const
 	return m_arStates.top().m_pCurrentDocument;
 }
 
+bool COOXMLWriter::SupportNestedTables() const
+{
+	return true;
+}
+
 const NSCSS::NSProperties::CPage* COOXMLWriter::GetPageData() const
 {
 	return &m_oPageData;

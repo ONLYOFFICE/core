@@ -20,6 +20,7 @@ class CHTMLReader
 	XmlUtils::CXmlLiteReader m_oLightReader;   // SAX Reader
 	NSCSS::CCssCalculator    m_oCSSCalculator; // Css калькулятор
 
+	bool m_bIsTempDirOwner;
 	std::wstring m_wsTempDirectory; // Temp папка
 	std::wstring m_wsSrcDirectory;  // Директория источника
 	std::wstring m_wsDstDirectory;  // Директория назначения

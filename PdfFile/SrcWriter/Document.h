@@ -155,7 +155,7 @@ namespace PdfWriter
 		CXObject*         CreateForm();
 		CFont14*          CreateFont14(const std::wstring& wsFontPath, unsigned int unIndex, EStandard14Fonts eType);
 		CFont14*          FindFont14  (const std::wstring& wsFontPath, unsigned int unIndex);
-		CFontEmbedded*    CreateFontEmbedded(const std::wstring& wsFontPath, unsigned int unIndex, const std::string& sFontKey, EFontType nType,
+		CFontEmbedded*    CreateFontEmbedded(const std::wstring& wsFontPath, unsigned int unIndex, const std::string& sFontKey, EFontType nType, CObjectBase* pObj,
 											 const std::map<unsigned int, unsigned int>& mCodeToWidth, const std::map<unsigned int, unsigned int>& mCodeToUnicode, const std::map<unsigned int, unsigned int>& mCodeToGID);
 		CFontEmbedded*    FindFontEmbedded  (const std::wstring& wsFontPath, unsigned int unIndex);
 		CFontCidTrueType* CreateCidTrueTypeFont(const std::wstring& wsFontPath, unsigned int unIndex);
@@ -226,6 +226,7 @@ namespace PdfWriter
 		void              RemoveObj(CObjectBase* pObj);
 		void              SetEncryption(CEncryptDict* pEncrypt, CObjectBase* pID);
 		void              AddNameTree(CStringObject* pName, CDestination* pDest);
+		CObjectBase*      FindObjByID(unsigned int nObjectId);
 	private:		  
 					  
 		char*             GetTTFontTag();

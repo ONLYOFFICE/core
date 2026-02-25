@@ -713,17 +713,17 @@ TEST_F(CPdfFileTest, PrintPdf)
 {
 	GTEST_SKIP();
 
-	LoadFromFile();
+	LoadFromFile(wsDstFile);
 
 	int nPages = pdfFile->GetPagesCount();
 	std::vector<bool> arrPages;
 	for (int i = 0; i < nPages; ++i)
 		arrPages.push_back(false);
-	arrPages[1] = true;
+	arrPages[0] = true;
 
 	ASSERT_TRUE(pdfFile->PrintPages(arrPages, 2));
 
-	pdfFile->SaveToFile(wsDstFile);
+	pdfFile->SaveToFile(NSFile::GetProcessDirectory() + L"/test3.pdf");
 	pdfFile->Close();
 }
 

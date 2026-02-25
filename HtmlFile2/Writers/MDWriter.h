@@ -21,6 +21,10 @@ class CMDWriter : public IWriter
 
 		UINT m_unLevelBlockquote{0};
 
+		bool m_bBold{false};
+		bool m_bItalic{false};
+		bool m_bStrike{false};
+
 		bool m_bInTable{false};
 		bool m_bInPreformatted{false};
 		bool m_bInCode{false};
@@ -28,7 +32,9 @@ class CMDWriter : public IWriter
 		bool m_bInList{false};
 		bool m_bIsOrederedList{false};
 		UINT m_unLevelList{0};
-		UINT m_unIndexListElement{0};
+		UINT m_unIndexListElement{1};
+
+		std::wstring m_wsLastSpecialString;
 	};
 
 	std::stack<TState> m_arStates;
@@ -52,10 +58,28 @@ public:
 	void RevertDataOutput() override;
 
 	TMarkdownParameters GetParametrs() const;
+
 	void WriteString(const std::wstring& wsString, bool bSpecialString = false);
+	void WriteOpenSpecialString(const std::wstring& wsString);
+	void WriteCloseSpecialString(const std::wstring& wsString);
+
 	XmlString* GetCurrentDocument() const override;
 
+	bool SupportNestedTables() const override;
+
 	void WriteBreakLine(bool bNeedChecked = true);
+
+	void EnteredBold();
+	void OutBold();
+	bool IsBold();
+
+	void EnteredItalic();
+	void OutItalic();
+	bool IsItalic();
+
+	void EnteredStrike();
+	void OutStrike();
+	bool IsStrike();
 
 	void EnteredBlockquote();
 	void OutBlockquote();
@@ -75,11 +99,15 @@ public:
 
 	void EnteredList(bool bOrderedList);
 	void OutList();
+	void SetIndexOrderedList(UINT unIndex);
 	void IncreaseIndexOrderedList();
 
 	bool InOrederedList() const;
 	UINT GetIndexOrderedList() const;
 	UINT GetLevelList() const;
+
+	void SetLinePrefix(const std::wstring& wsPrefix);
+	void ClearLinePrefix();
 private:
 	void SaveState();
 	void RollBackState();

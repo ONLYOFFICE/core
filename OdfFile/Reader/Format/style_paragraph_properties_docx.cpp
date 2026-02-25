@@ -535,7 +535,7 @@ void style_tab_stop::docx_convert(oox::docx_conversion_context & Context, bool c
 
 	length def_tab =  length(1.0, length::cm);// в ms значение 0.8 не корректно оО
 		
-	//double tab_pos_offset = (!Context.get_paragraph_state() || Context.is_table_content()) ? margin_left : 0;
+	double tab_pos_offset = (!Context.get_paragraph_state() || Context.is_table_content()) ? margin_left : 0;
 
 	double tab_pos = 20.0 * style_position_.get_value_unit(length::pt);
 	double min_tab_pos = 20.0 * def_tab.get_value_unit(length::pt) ;
@@ -586,15 +586,29 @@ void style_tab_stop::docx_convert(oox::docx_conversion_context & Context, bool c
 		}
 	}
 
-	if( style_type_.is_initialized() && style_type_->get_type() == style_type::Right )
+	if( style_type_.is_initialized() )
 	{
-		double available_width = PageWidthTwips - LeftPageMarginTwips - RightPageMarginTwips;
-		if ( available_width > 0 )
+		switch ( style_type_->get_type() )
 		{
-			tab_pos = available_width;
+		case style_type::Right:
+		{
+			int total_tabs = Context.get_tabs_context().tabs.size();
+
+			if( total_tabs <= 1 )
+			{
+				tab_pos += tab_pos_offset;
+			}
+			break;
+		}
 		}
 	}
 
+	double available_width = PageWidthTwips - LeftPageMarginTwips - RightPageMarginTwips;
+
+	if ( available_width > 0 && tab_pos > available_width )
+	{
+		tab_pos = available_width;
+	}
 	_pPr << L" w:val=\"" << val << "\"";
 	_pPr << L" w:pos=\"" << static_cast<int>(tab_pos) << "\"";
 	

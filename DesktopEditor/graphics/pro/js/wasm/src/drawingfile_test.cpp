@@ -958,7 +958,7 @@ void ReadInteractiveFormsFonts(CDrawingFile* pGrFile, int nType)
 			if (pFont)
 				free(pFont);
 
-			if (false)
+			if (true)
 				continue;
 
 			pFont = GetGIDByUnicode(pGrFile, (char*)sFontName.c_str());

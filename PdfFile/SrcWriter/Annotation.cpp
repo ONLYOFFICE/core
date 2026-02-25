@@ -2274,7 +2274,9 @@ namespace PdfWriter
 	}
 	std::string CCheckBoxWidget::GetTC(bool bCAPS)
 	{
-		std::string sDA = GetColor(m_arrTC, bCAPS);
+		std::string sDA;
+		if (!m_arrTC.empty())
+			sDA = GetColor(m_arrTC, bCAPS);
 		if (sDA.empty())
 			sDA = bCAPS ? "0 G" : "0 g";
 		sDA += "\012";

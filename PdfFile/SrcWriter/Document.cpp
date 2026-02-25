@@ -902,7 +902,7 @@ namespace PdfWriter
 		}
 		return NULL;
 	}
-	CFontEmbedded* CDocument::CreateFontEmbedded(const std::wstring& wsFontPath, unsigned int unIndex, const std::string& sFontKey, EFontType nType,
+	CFontEmbedded* CDocument::CreateFontEmbedded(const std::wstring& wsFontPath, unsigned int unIndex, const std::string& sFontKey, EFontType nType, CObjectBase* pObj,
 												 const std::map<unsigned int, unsigned int>& mCodeToWidth, const std::map<unsigned int, unsigned int>& mCodeToUnicode, const std::map<unsigned int, unsigned int>& mCodeToGID)
 	{
 		CFontEmbedded* pFont = FindFontEmbedded(wsFontPath, unIndex);
@@ -911,8 +911,8 @@ namespace PdfWriter
 			pFont->UpdateKey(sFontKey);
 			return pFont;
 		}
-		pFont = new CFontEmbedded(m_pXref, this);
-		pFont->LoadFont(sFontKey, nType, mCodeToWidth, mCodeToUnicode, mCodeToGID);
+		pFont = new CFontEmbedded(NULL, this);
+		pFont->LoadFont(sFontKey, nType, pObj, mCodeToWidth, mCodeToUnicode, mCodeToGID);
 		m_vFontsEmbedded.push_back(TFontInfo(wsFontPath, unIndex, pFont));
 		return pFont;
 	}
@@ -1739,17 +1739,19 @@ namespace PdfWriter
 			}
 			bool bReplase = false;
 			int nID = pWidget->GetObjId();
-			if (nID > 0)
+			for (int i = 0; i < pKids->GetCount(); ++i)
 			{
-				for (int i = 0; i < pKids->GetCount(); ++i)
+				CObjectBase* pKid = pKids->Get(i);
+				if (nID > 0 && pKid->GetObjId() == nID)
 				{
-					CObjectBase* pKid = pKids->Get(i);
-					if (pKid->GetObjId() == nID)
-					{
-						pKids->Insert(pKid, pWidget, true);
-						bReplase = true;
-						break;
-					}
+					pKids->Insert(pKid, pWidget, true);
+					bReplase = true;
+					break;
+				}
+				else if (pKid == pWidget)
+				{
+					bReplase = true;
+					break;
 				}
 			}
 			if (!bReplase)
@@ -2264,5 +2266,14 @@ namespace PdfWriter
 	void CDocument::ClearPageFull()
 	{
 		m_pCurPage->ClearContentFull(m_pXref);
+	}
+	CObjectBase* CDocument::FindObjByID(unsigned int nObjectId)
+	{
+		TXrefEntry* pRes = NULL;
+		if (m_pLastXref)
+			pRes = m_pLastXref->GetEntryByObjectId(nObjectId);
+		if (!pRes)
+			pRes = m_pXref->GetEntryByObjectId(nObjectId);
+		return pRes? pRes->pObject : NULL;
 	}
 }

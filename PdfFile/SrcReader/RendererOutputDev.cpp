@@ -44,6 +44,7 @@
 #include "../lib/xpdf/PDFDoc.h"
 #include "../lib/xpdf/CharCodeToUnicode.h"
 #include "../lib/xpdf/TextString.h"
+#include "../lib/xpdf/Decrypt.h"
 #include "XmlUtils.h"
 #include "PdfFont.h"
 
@@ -100,6 +101,125 @@ namespace PdfReader
 	inline int luminosity(BYTE* p)
 	{
 		return (p[2]*77 + p[1]*150 + p[0]*29) >> 8;
+	}
+	std::wstring ComputeFontHash(XRef* pXref, GfxFont* pFont)
+	{
+		MD5State oMD5;
+		md5Start(&oMD5);
+
+		Ref* pRef = pFont->getID();
+		Object oRefObj, oFontObj;
+		oRefObj.initRef(pRef->num, pRef->gen);
+		oRefObj.fetch(pXref, &oFontObj);
+		oRefObj.free();
+
+		if (oFontObj.isDict())
+		{
+			const char* aFontObjNames[] = { "Name", "Subtype", "BaseFont", "Encoding" };
+			for (const char* sKey : aFontObjNames)
+			{
+				Object oItem;
+				oFontObj.dictLookup(sKey, &oItem);
+				if (oItem.isName())
+					md5Append(&oMD5, (BYTE*)oItem.getName(), strlen(oItem.getName()));
+				oItem.free();
+			}
+
+			Object oDescObj, oDescendantFonts;
+			oFontObj.dictLookup("FontDescriptor", &oDescObj);
+			if (!oDescObj.isDict())
+			{
+				oDescObj.free();
+				if (oFontObj.dictLookup("DescendantFonts", &oDescendantFonts)->isArray())
+				{
+					Object oDescendant;
+					if (oDescendantFonts.arrayGet(0, &oDescendant)->isDict())
+						oDescendant.dictLookup("FontDescriptor", &oDescObj);
+					oDescendant.free();
+				}
+				oDescendantFonts.free();
+			}
+
+			if (oDescObj.isDict())
+			{
+				Object oItem;
+
+				oDescObj.dictLookup("FontName", &oItem);
+				if (oItem.isName())
+					md5Append(&oMD5, (BYTE*)oItem.getName(), strlen(oItem.getName()));
+				oItem.free();
+
+				const char* aMetricNames[] = {
+					"Flags", "ItalicAngle", "Ascent", "Descent",
+					"CapHeight", "XHeight", "StemV", "StemH"
+				};
+				for (const char* sName : aMetricNames)
+				{
+					oDescObj.dictLookup(sName, &oItem);
+					if (oItem.isInt())
+					{
+						int nVal = oItem.getInt();
+						md5Append(&oMD5, (BYTE*)&nVal, sizeof(int));
+					}
+					oItem.free();
+				}
+
+				oDescObj.dictLookup("FontBBox", &oItem);
+				if (oItem.isArray() && oItem.arrayGetLength() == 4)
+				{
+					for (int i = 0; i < 4; i++)
+					{
+						Object oCoord;
+						if (oItem.arrayGet(i, &oCoord)->isInt())
+						{
+							int nVal = oCoord.getInt();
+							md5Append(&oMD5, (BYTE*)&nVal, sizeof(int));
+						}
+						oCoord.free();
+					}
+				}
+				oItem.free();
+			}
+			oDescObj.free();
+		}
+		oFontObj.free();
+
+		Ref oEmbRef;
+		if (pFont->getEmbeddedFontID(&oEmbRef))
+		{
+			Object oRefObj, oStreamObj;
+			oRefObj.initRef(oEmbRef.num, oEmbRef.gen);
+			oRefObj.fetch(pXref, &oStreamObj);
+			oRefObj.free();
+
+			if (oStreamObj.isStream())
+			{
+				oStreamObj.streamReset();
+				const int nMaxBytes = 512;
+				BYTE aBuf[nMaxBytes];
+				int nRead = 0;
+				int nChar;
+				while (nRead < nMaxBytes && (nChar = oStreamObj.streamGetChar()) != EOF)
+					aBuf[nRead++] = (BYTE)nChar;
+
+				oStreamObj.streamClose();
+				md5Append(&oMD5, aBuf, nRead);
+			}
+			oStreamObj.free();
+		}
+
+		md5Finish(&oMD5);
+
+		static const char aHexChars[] = "0123456789ABCDEF";
+		std::string sHex;
+		sHex.reserve(32);
+		for (int i = 0; i < 16; i++)
+		{
+			sHex += aHexChars[(oMD5.digest[i] >> 4) & 0x0F];
+			sHex += aHexChars[oMD5.digest[i] & 0x0F];
+		}
+
+		return UTF8_TO_U(sHex);
 	}
 }
 
@@ -1463,8 +1583,8 @@ namespace PdfReader
 				wsFontName = wsFontBaseName;
 			if (bNotFullName)
 				EraseSubsetTag(wsFontName);
-			else if (!bFontBase14)
-				wsFontName += (L" " + std::to_wstring(pFont->getID()->num));
+			else if (!bFontBase14 && !bFontSubstitution)
+				wsFontName += (L" " + ComputeFontHash(pXref, pFont));
 
 			pEntry->wsFilePath     = wsFileName;
 			pEntry->wsFontName     = wsFontName;

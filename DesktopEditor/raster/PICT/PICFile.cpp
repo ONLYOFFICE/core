@@ -985,6 +985,8 @@ bool CPictFile::DecodeData()
 			m_oImgData.m_pPixelData	= (BYTE*)malloc(4 * m_oImgData.m_nHeight * m_oImgData.m_nWidth);
 		if (m_oFrame.get_Data())
 			memcpy(m_oImgData.m_pPixelData, m_oFrame.get_Data(), 4 * m_oImgData.m_nHeight * m_oImgData.m_nWidth);
+		else
+			memset(m_oImgData.m_pPixelData, 255, m_oImgData.m_nWidth * m_oImgData.m_nHeight * 4);
 	}
 
 	return true;
@@ -1717,6 +1719,12 @@ void CPictFile::InitializeRenderer()
 		return;
 
 	m_pFrameData = new BYTE[4 * m_oImgData.m_nWidth * m_oImgData.m_nHeight];
+	unsigned int back = 0xffffff;
+	unsigned int *pData32 = (unsigned int*)m_pFrameData;
+	unsigned int *pData32End = pData32 + m_oImgData.m_nWidth *  m_oImgData.m_nHeight;
+	while (pData32 < pData32End)
+		*pData32++ = back;
+
 	m_oFrame.put_Data(m_pFrameData);
 	m_oFrame.put_Width(m_oImgData.m_nWidth);
 	m_oFrame.put_Height(m_oImgData.m_nHeight);

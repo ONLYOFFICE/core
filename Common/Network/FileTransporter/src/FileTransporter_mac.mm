@@ -188,7 +188,7 @@ namespace NSNetwork
 				else
 				{
 					NSURL* url = [NSURL URLWithString:escapedURL];
-					NSData* urlData = [NSData dataWithContentsOfURL:url];
+					NSData* urlData = [[NSData alloc] initWithContentsOfURL:url];
 					if ( urlData )
 					{
 						NSString* filePath = StringWToNSString(m_sDownloadFilePath);

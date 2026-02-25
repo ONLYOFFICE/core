@@ -42,7 +42,7 @@ namespace DocFileFormat
 		{
 			ShapeConcentricFill		=	true;
 			Joins					=	round;
-            Path					=	L"wr-21600,,21600,43200,,,21600,21600nfewr-21600,,21600,43200,,,21600,21600l,21600nsxe";
+            Path					=	L"wr-21600,,21600,43200,,,21600,21600nfe";
 
             Formulas.push_back( L"val #2");
             Formulas.push_back( L"val #3");

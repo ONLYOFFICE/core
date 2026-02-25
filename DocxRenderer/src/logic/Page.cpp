@@ -195,12 +195,14 @@ namespace NSDocxRenderer
 
 		if (!m_arShapes.empty())
 		{
-			auto& last_shape = m_arShapes.back();			
-			if (last_shape->IsEqual(top, bot, left, right) && rotation == last_shape->m_dRotation && lType != m_lLastType && m_lLastType != 0)
+			auto& last_shape = m_arShapes.back();
+			bool is_type_diff = lType == c_nStroke && (m_lLastType == c_nWindingFillMode || m_lLastType == c_nEvenOddFillMode);
+			is_type_diff = is_type_diff || (m_lLastType == c_nStroke && (lType == c_nWindingFillMode || m_lLastType == c_nEvenOddFillMode));
+			if (last_shape->IsEqual(top, bot, left, right) && rotation == last_shape->m_dRotation && is_type_diff && m_lLastType != 0)
 			{
 				set_fill_mode(last_shape);
-				// Reset stroke/fill logic
-				m_lLastType = 0;
+				if (pInfo) DrawImage(last_shape, pInfo, image_vector);
+				m_lLastType = 0; // reset stroke/fill logic
 				return;
 			}
 		}
@@ -341,10 +343,7 @@ namespace NSDocxRenderer
 
 		double top = baseline - _h;
 		double left = dTextX;
-		double right = dTextR;
-
-		if (left == right) // XPS
-			right = left + _w;
+		double right = left + _w;
 
 		// use forced fold option
 		const auto& oParams = m_oManagers.pFontManager->GetFontSelectParams();
@@ -1662,7 +1661,11 @@ namespace NSDocxRenderer
 			paragraph->m_dRightBorder = m_dWidth - paragraph->m_dRight;
 			paragraph->m_dLeftBorder = min_left;
 
-			paragraph->m_dLineHeight = paragraph->m_dHeight / paragraph->m_arTextLines.size();
+			if (paragraph->m_arTextLines.size() == 1)
+				paragraph->m_dLineHeight = paragraph->m_dHeight;
+			else
+				paragraph->m_dLineHeight = (paragraph->m_dBot - firstLine->m_dBotWithMaxDescent) / (paragraph->m_arTextLines.size() - 1);
+
 			paragraph->m_bIsNeedFirstLineIndent = false;
 			paragraph->m_dFirstLine = 0;
 			paragraph->m_wsStyleId = m_oManagers.pParagraphStyleManager->GetDefaultParagraphStyleId(*paragraph);
@@ -1677,7 +1680,6 @@ namespace NSDocxRenderer
 				{
 					double offset = paragraph->m_dLineHeight - firstLine_height;
 					paragraph->m_dTop -= offset;
-					paragraph->m_dBot -= offset;
 				}
 				else
 				{
@@ -1685,9 +1687,10 @@ namespace NSDocxRenderer
 					double newAscent = ascent * paragraph->m_dLineHeight / firstLine_height;
 					double offset = ascent - newAscent;
 					paragraph->m_dTop += offset;
-					paragraph->m_dBot += offset;
 				}
+				paragraph->m_dHeight = paragraph->m_dBot - paragraph->m_dTop;
 			}
+
 			// setting TextAlignmentType
 			if (paragraph->m_arTextLines.size() > 1)
 			{

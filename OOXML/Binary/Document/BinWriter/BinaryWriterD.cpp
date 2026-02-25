@@ -3840,6 +3840,8 @@ void BinaryDocumentTableWriter::WriteAltChunk(OOX::Media& oAltChunkFile, OOX::CS
 	{
 		OOX::CDocx oDocx = OOX::CDocx(OOX::CPath(sResultDocxDir));
 
+		OOX::IFileContainer* oldRels = m_pOfficeDrawingConverter->GetRelsPtr();
+
 		if (oDocx.m_oMain.document)
 		{
 			ParamsDocumentWriter oParamsDocumentWriterEmb(oDocx.m_oMain.document);
@@ -3875,6 +3877,9 @@ void BinaryDocumentTableWriter::WriteAltChunk(OOX::Media& oAltChunkFile, OOX::CS
 			oParamsWriterEmb.m_pSettings = oDocx.m_oMain.settings;
 			oParamsWriterEmb.m_pCurRels = oParamsDocumentWriterEmb.m_pRels;
 
+			m_pOfficeDrawingConverter->SetRelsPtr(oParamsDocumentWriterEmb.m_pRels);
+			m_pOfficeDrawingConverter->Clear();
+			
 			BinaryDocumentTableWriter oBinaryDocumentEmbTableWriter(oParamsWriterEmb, oParamsDocumentWriterEmb, &oParamsWriterEmb.m_mapIgnoreComments, NULL);
 
 			oBinaryDocumentEmbTableWriter.WriteDocumentContent(oDocx.m_oMain.document->m_arrItems);
@@ -3900,10 +3905,14 @@ void BinaryDocumentTableWriter::WriteAltChunk(OOX::Media& oAltChunkFile, OOX::CS
 				oParamsWriterEmb.m_pEmbeddedStyles = oDocxFlat.m_pStyles.GetPointer();
 				oParamsWriterEmb.m_pEmbeddedNumbering = oDocxFlat.m_pNumbering.GetPointer();
 
+				m_pOfficeDrawingConverter->SetRelsPtr(oParamsDocumentWriterEmb.m_pRels);
+				m_pOfficeDrawingConverter->Clear();
+
 				BinaryDocumentTableWriter oBinaryDocumentEmbTableWriter(oParamsWriterEmb, oParamsDocumentWriterEmb, &oParamsWriterEmb.m_mapIgnoreComments, NULL);
 				oBinaryDocumentEmbTableWriter.WriteDocumentContent(oDocxFlat.m_pDocument->m_arrItems);
 			}
 		}
+		m_pOfficeDrawingConverter->SetRelsPtr(oldRels);
 	}
 	NSDirectory::DeleteDirectory(sResultDocxDir);
 }

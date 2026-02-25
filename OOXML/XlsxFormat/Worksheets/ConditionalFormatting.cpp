@@ -3525,9 +3525,13 @@ XLS::BaseObjectPtr CConditionalFormattingRule::toXLS(const  XLS::CellRef &cellRe
 	}
 	else if (m_oType == SimpleTypes::Spreadsheet::ECfType::aboveAverage)
 	{
-		ptr->icfTemplate = XLSB::CFTemp::CF_TEMPLATE_ABOVEAVERAGE;
+		if(m_oAboveAverage.IsInit() && !m_oAboveAverage->GetValue())
+			ptr->icfTemplate = XLSB::CFTemp::CF_TEMPLATE_BELOWAVERAGE;
+		else
+			ptr->icfTemplate = XLSB::CFTemp::CF_TEMPLATE_ABOVEAVERAGE;
 		if(m_oStdDev.IsInit())
 			ptr->rgbTemplateParms.data.averages.iParam =  m_oStdDev->GetValue();
+		ptr->rgce1.parseStringFormula(L"TRUE", L"");
 	}
 	else if (m_oType == SimpleTypes::Spreadsheet::ECfType::containsBlanks)
 	{

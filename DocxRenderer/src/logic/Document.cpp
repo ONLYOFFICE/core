@@ -648,11 +648,15 @@ namespace NSDocxRenderer
 		if ((nType > 0xFF) && (c_BrushTypeTexture == m_oCurrentPage.m_oBrush.Type))
 		{
 			double x = 0, y = 0, w = 0, h = 0;
+			if (m_oCurrentPage.IsCurrVectorClockwise())
+				h = -1; // to flip image later
+
 			if (m_oCurrentPage.m_oBrush.Image)
 				pInfo = m_oImageManager.WriteImage(m_oCurrentPage.m_oBrush.Image, x, y, w, h);
 			else
-				pInfo = m_oImageManager.WriteImage(m_oCurrentPage.m_oBrush.TexturePath, x, y, w, h);
+				pInfo = m_oImageManager.WriteImage(m_oCurrentPage.m_oBrush.TexturePath);
 		}
+
 		m_oCurrentPage.DrawPath(nType, pInfo);
 		return S_OK;
 	}
@@ -712,7 +716,7 @@ namespace NSDocxRenderer
 	}
 	HRESULT CDocument::DrawImageFromFile(const std::wstring& sVal, double fX, double fY, double fWidth, double fHeight)
 	{
-		m_oCurrentPage.WriteImage(m_oImageManager.WriteImage(sVal, fX, fY, fWidth, fHeight), fX, fY, fWidth, fHeight);
+		m_oCurrentPage.WriteImage(m_oImageManager.WriteImage(sVal), fX, fY, fWidth, fHeight);
 		return S_OK;
 	}
 	//------------------------------------------------------------------------------------------

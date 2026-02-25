@@ -34,6 +34,7 @@
 #include "Worksheet.h"
 
 #include "../Comments/Comments.h"
+#include "../Drawing/Pos.h"
 #include "../Pivot/PivotTable.h"
 #include "../Comments/ThreadedComments.h"
 
@@ -61,6 +62,8 @@
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/OBJECTS.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/FEAT11.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/CondFmt12.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/MsoDrawing.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Obj.h"
 
 #include "../../../OdfFile/Common/logging.h"
 
@@ -380,10 +383,12 @@ namespace OOX
 				if(m_oPageSetup.IsInit())
 					chartSheetPtr->m_PAGESETUP = m_oPageSetup->toXLS();
 				else
-					{
-						auto pageSetup = new XLS::PAGESETUP;
-						chartSheetPtr->m_PAGESETUP = XLS::BaseObjectPtr(pageSetup);
-					}
+				{
+					auto pageSetup = new XLS::PAGESETUP;
+					chartSheetPtr->m_PAGESETUP = XLS::BaseObjectPtr(pageSetup);
+				}
+				if(m_oSheetViews.IsInit())
+					chartSheetPtr->m_arWINDOW = m_oSheetViews->toXLS();
 				if(m_oDrawing.IsInit() && m_oDrawing->m_oId.IsInit())
 				{
 					RId drawingId = m_oDrawing->m_oId->GetValue();
@@ -450,6 +455,48 @@ namespace OOX
 				worksheetPtr->m_CELLTABLE = m_oSheetData->toXLS();
 			if(m_oDataConsolidate.IsInit())
 				worksheetPtr->m_DCON = m_oDataConsolidate->toXLS();
+
+			if(m_oDrawing.IsInit() && m_oDrawing->m_oId.IsInit())
+			{
+
+				RId drawingId = m_oDrawing->m_oId->GetValue();
+				auto castedDrawing = Get<OOX::File>(drawingId);
+				auto drawingPtr = static_cast<OOX::Spreadsheet::CDrawing*>(castedDrawing.GetPointer());
+				if(drawingPtr->IsChart())
+				{
+					auto Objects = new XLS::OBJECTS(false);
+					auto objectsPtr =  XLS::BaseObjectPtr(Objects);
+					auto drawingObj = new XLS::MsoDrawing(false);
+
+					{
+						auto anchor = drawingPtr->m_arrItems.back();
+						auto anchorElem = drawingPtr->m_arrItems.back()->m_oElement->GetElem();
+						{
+							auto left = 0, leftOff = 0, right = 0, righOff = 0, top = 0, topOff = 0, bot = 0, botOff = 0;
+							anchor->getAnchorPos(left, leftOff, top, topOff, right, righOff, bot, botOff);
+							drawingObj->prepareChart(drawingId.getNumber(), left, right, top, bot, leftOff, righOff, topOff, botOff);
+						}
+					}
+					Objects->m_MsoDrawing = XLS::MsoDrawingPtr(drawingObj);
+					auto objPt = new XLS::Obj(Objects->m_MsoDrawing);
+					objPt->cmo.ot = 5;
+					objPt->cmo.fPrint = true;
+					objPt->cmo.fRecalcObj = true;
+					objPt->cmo.id = drawingId.getNumber();
+					std::pair<XLS::BaseObjectPtr, std::vector<XLS::BaseObjectPtr>> objPair;
+					objPair.first = XLS::BaseObjectPtr(objPt);
+					auto chartSheetPtr = new XLS::ChartSheetSubstream(0);
+					chartSheetPtr->separate = false;
+					auto pageSetup = new XLS::PAGESETUP;
+					chartSheetPtr->m_PAGESETUP = XLS::BaseObjectPtr(pageSetup);
+					XLS::BaseObjectPtr StreamobjPtr(chartSheetPtr);
+
+					drawingPtr->toXLSChart(StreamobjPtr);
+					objPair.second.push_back(StreamobjPtr);
+					Objects->m_arrObject.push_back(objPair);
+					worksheetPtr->m_OBJECTS = objectsPtr;
+				}
+			}
 			/*if(m_pComments != nullptr)
 			{
 				if(worksheetPtr->m_OBJECTS == nullptr)

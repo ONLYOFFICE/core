@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
@@ -264,6 +264,39 @@ namespace OOX
 			if(false == m_oElement->is_init())
 				return false;
 			return true;
+		}
+		void CCellAnchor::getAnchorPos(_INT32 &colL, _INT32 &dxL, _INT32 &rwT, _INT32 &dyT, _INT32 &colR, _INT32 &dxR, _INT32 &rwB, _INT32 &dyB)
+		{
+			if(m_oAnchorType == SimpleTypes::Spreadsheet::ECellAnchorType::cellanchorAbsolute)
+			{
+
+			}
+			else if(m_oAnchorType == SimpleTypes::Spreadsheet::ECellAnchorType::cellanchorTwoCell)
+			{
+				if(m_oFrom.IsInit())
+				{
+					if(m_oFrom->m_oCol.IsInit())
+						colL = m_oFrom->m_oCol->GetValue();
+					if(m_oFrom->m_oRow.IsInit())
+						rwT = m_oFrom->m_oRow->GetValue();
+					if(m_oFrom->m_oRowOff.IsInit())
+						dyT = m_oFrom->m_oRowOff->GetValue();
+					if(m_oFrom->m_oColOff.IsInit())
+						dxL = m_oFrom->m_oColOff->GetValue();
+				}
+				if(m_oTo.IsInit())
+				{
+					if(m_oTo->m_oCol.IsInit())
+						colR = m_oTo->m_oCol->GetValue();
+					if(m_oTo->m_oRow.IsInit())
+						rwB = m_oTo->m_oRow->GetValue();
+					if(m_oFrom->m_oRowOff.IsInit())
+						dyB = m_oFrom->m_oRowOff->GetValue();
+					if(m_oFrom->m_oColOff.IsInit())
+						dxR = m_oFrom->m_oColOff->GetValue();
+				}
+
+			}
 		}
 		void CCellAnchor::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{

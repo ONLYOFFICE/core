@@ -843,7 +843,7 @@ xmlns:xr2=\"http://schemas.microsoft.com/office/spreadsheetml/2015/revision2\"\
 			for(auto i:XLS::GlobalWorkbookInfo::arXti_External_static)
 			{
 				auto xti(new XLS::XTI);
-				xti->iSupBook = i.iSup;
+				xti->iSupBook = 0;
 				xti->itabFirst = i.itabFirst;
 				xti->itabLast = i.itabLast;
 				sheetPtr->rgXTI.push_back(XLS::BiffStructurePtr(xti));

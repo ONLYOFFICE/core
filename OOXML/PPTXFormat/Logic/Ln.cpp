@@ -43,8 +43,6 @@ namespace PPTX
 		}
 		void Ln::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
-			//m_eDashType   = OOX::Drawing::linedashtypeUnknown;
-
 			m_name = oReader.GetName();
 
 			ReadAttributes( oReader );
@@ -70,7 +68,8 @@ namespace PPTX
 				else if (	L"gradFill"	== sName ||
 							L"noFill"	== sName ||
 							L"pattFill"	== sName ||
-							L"solidFill"	== sName )
+							L"solidFill"== sName ||
+							L"blipFill" == sName)
 				{
 					Fill.fromXML(oReader);
 				}

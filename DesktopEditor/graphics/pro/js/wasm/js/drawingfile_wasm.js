@@ -296,22 +296,7 @@ CFile.prototype._getGIDByUnicode = function(ID)
 	Module["HEAP8"].set(idBuffer, idPointer);
 	g_module_pointer.ptr = Module["_GetGIDByUnicode"](this.nativeFile, idPointer);
 	Module["_free"](idPointer);
-
-	let reader = g_module_pointer.getReader();
-	if (!reader)
-		return null;
-
-	let res = {};
-	let nFontLength = reader.readInt();
-	for (let i = 0; i < nFontLength; i++)
-	{
-		let np1 = reader.readInt();
-		let np2 = reader.readInt();
-		res[np2] = np1;
-	}
-
-	g_module_pointer.free();
-	return res;
+	return g_module_pointer;
 }
 
 CFile.prototype._getInteractiveFormsFonts = function(type)

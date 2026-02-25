@@ -37,6 +37,9 @@
 #include "../Biff_structures/ODRAW/OfficeArtFSPGR.h"
 #include "../Biff_structures/ODRAW/SimpleOfficeArtContainers.h"
 #include "../Biff_structures/ODRAW/OfficeArtFOPT.h"
+#include "../Biff_structures/ODRAW/OfficeArtClientAnchorChart.h"
+#include "../Biff_structures/ODRAW/OfficeArtClientAnchorSheet.h"
+#include "../Biff_structures/ODRAW/SimpleOfficeArtContainers.h"
 
 namespace XLS
 {
@@ -179,34 +182,60 @@ void MsoDrawing::prepareComment(const unsigned int CommentId)
 	}
 }
 
-void MsoDrawing::prepareChart(const unsigned int chartId, const unsigned int xPos, const unsigned int xOffset,
-		const unsigned int yPos, const unsigned int yOffset)
+void MsoDrawing::prepareChart(const unsigned int chartId, const unsigned int x1, const unsigned int x2,
+		const unsigned int y1, const unsigned int y2, const unsigned int x1Offset, const unsigned int x2Offset,
+		const unsigned int y1Offset,const unsigned int y2Offset)
 {
 
 	auto fdgPtr = new ODRAW::OfficeArtFDG;
 	fdgPtr->rh_own.recInstance = chartId;
-	fdgPtr->csp = 1;
 	fdgPtr->spidCur = chartId;
 	rgChildRec.m_OfficeArtFDG = ODRAW::OfficeArtRecordPtr(fdgPtr);
 
 	auto spgrContainer = new ODRAW::OfficeArtSpgrContainer(ODRAW::OfficeArtRecord::CA_Chart);
 	rgChildRec.m_OfficeArtSpgrContainer = ODRAW::OfficeArtRecordPtr(spgrContainer);
 
-	auto SpContainer = new ODRAW::OfficeArtSpContainer(ODRAW::OfficeArtRecord::CA_Chart);
-	spgrContainer->m_OfficeArtSpgrContainerFileBlock.push_back(ODRAW::OfficeArtContainerPtr(SpContainer));
-	auto groupFSPGR = new ODRAW::OfficeArtFSPGR;
-	groupFSPGR->xLeft = xPos;
-	groupFSPGR->xRight = xOffset;
-	groupFSPGR->yTop = yPos;
-	groupFSPGR->yBottom = yOffset;
-	SpContainer->m_OfficeArtFSPGR = ODRAW::OfficeArtRecordPtr(groupFSPGR);
+	{
+		auto SpContainer = new ODRAW::OfficeArtSpContainer(ODRAW::OfficeArtRecord::CA_Chart);
+		spgrContainer->m_OfficeArtSpgrContainerFileBlock.push_back(ODRAW::OfficeArtContainerPtr(SpContainer));
+		auto groupFSPGR = new ODRAW::OfficeArtFSPGR;
+		groupFSPGR->xLeft = x1;
+		groupFSPGR->xRight = x2;
+		groupFSPGR->yTop = y1;
+		groupFSPGR->yBottom = y2;
+		SpContainer->m_OfficeArtFSPGR = ODRAW::OfficeArtRecordPtr(groupFSPGR);
 
-	auto fsprPtr = new ODRAW::OfficeArtFSP;
-	SpContainer->m_OfficeArtFSP = ODRAW::OfficeArtRecordPtr(fsprPtr);
-	fsprPtr->shape_id = 0;
-	fsprPtr->spid = chartId;
-	fsprPtr->fGroup = true;
-	fsprPtr->fPatriarch = true;
+		auto fsprPtr = new ODRAW::OfficeArtFSP;
+		SpContainer->m_OfficeArtFSP = ODRAW::OfficeArtRecordPtr(fsprPtr);
+		fsprPtr->shape_id = 0;
+		fsprPtr->spid = chartId;
+		fsprPtr->fGroup = true;
+		fsprPtr->fPatriarch = true;
+	}
+	{
+		auto SpContainer = new ODRAW::OfficeArtSpContainer(ODRAW::OfficeArtRecord::CA_Chart);
+		spgrContainer->m_OfficeArtSpgrContainerFileBlock.push_back(ODRAW::OfficeArtContainerPtr(SpContainer));
+
+		auto fsprPtr = new ODRAW::OfficeArtFSP;
+		SpContainer->m_OfficeArtFSP = ODRAW::OfficeArtRecordPtr(fsprPtr);
+		fsprPtr->shape_id = 1;
+		fsprPtr->spid = chartId;
+		fsprPtr->fHaveMaster = true;
+		fsprPtr->fFlipV = true;
+		auto clientAnchor = new ODRAW::OfficeArtClientAnchorSheet;
+		clientAnchor->colL = x1;
+		clientAnchor->dxL = x1Offset;
+		clientAnchor->colR = x2;
+		clientAnchor->dxR = x2Offset;
+		clientAnchor->rwT = y1;
+		clientAnchor->dyT = y1Offset;
+		clientAnchor->rwB = y2;
+		clientAnchor->dyB = y2Offset;
+		SpContainer->m_OfficeArtAnchor = ODRAW::OfficeArtRecordPtr(clientAnchor);
+		auto clientData = new ODRAW::OfficeArtClientData;
+		SpContainer->m_oOfficeArtClientData = ODRAW::OfficeArtRecordPtr(clientData);
+	}
+	fdgPtr->csp = spgrContainer->m_OfficeArtSpgrContainerFileBlock.size();
 }
 
 

@@ -7,7 +7,6 @@
 #include <iterator>
 #include <map>
 
-#include <iostream>
 #include "../../../../../DesktopEditor/common/File.h"
 #include "StaticFunctions.h"
 #include "ConstValues.h"
@@ -18,14 +17,16 @@ namespace NSCSS
 {
 	typedef std::map<std::wstring, std::wstring>::const_iterator styles_iterator;
 
-	CCompiledStyle::CCompiledStyle() : m_nDpi(96), m_UnitMeasure(Point), m_dCoreFontSize(DEFAULT_FONT_SIZE)
+	CCompiledStyle::CCompiledStyle()
+		: m_nDpi(96), m_UnitMeasure(Point), m_dCoreFontSize(DEFAULT_FONT_SIZE)
 	{}
 
 	CCompiledStyle::CCompiledStyle(const CCompiledStyle& oStyle) :
 		m_arParentsStyles(oStyle.m_arParentsStyles), m_sId(oStyle.m_sId),
 		m_nDpi(oStyle.m_nDpi), m_UnitMeasure(oStyle.m_UnitMeasure), m_dCoreFontSize(oStyle.m_dCoreFontSize),
 		m_oFont(oStyle.m_oFont), m_oMargin(oStyle.m_oMargin), m_oPadding(oStyle.m_oPadding), m_oBackground(oStyle.m_oBackground),
-		m_oText(oStyle.m_oText), m_oBorder(oStyle.m_oBorder), m_oDisplay(oStyle.m_oDisplay), m_oTransform(oStyle.m_oTransform){}
+		m_oText(oStyle.m_oText), m_oBorder(oStyle.m_oBorder), m_oDisplay(oStyle.m_oDisplay), m_oTransform(oStyle.m_oTransform)
+	{}
 
 	CCompiledStyle::~CCompiledStyle()
 	{
@@ -34,6 +35,8 @@ namespace NSCSS
 
 	CCompiledStyle& CCompiledStyle::operator+= (const CCompiledStyle &oElement)
 	{
+		m_arParentsStyles.insert(oElement.m_arParentsStyles.begin(), oElement.m_arParentsStyles.end());
+
 		if (oElement.Empty())
 			return *this;
 
@@ -48,8 +51,6 @@ namespace NSCSS
 
 		if (!oElement.m_sId.empty())
 			m_sId += L'+' + oElement.m_sId;
-
-		m_arParentsStyles.insert(oElement.m_arParentsStyles.begin(), oElement.m_arParentsStyles.end());
 
 		return *this;
 	}

@@ -349,7 +349,7 @@ bool CImageFileFormatChecker::isSvgFile(BYTE* pBuffer,DWORD dwBytes)
 {
 	if (eFileType)return false;
 
-	if ( (6 <= dwBytes) &&(0x3C == pBuffer[0] && 0x3F == pBuffer[1]  && 0x78 == pBuffer[2] && 0x6D == pBuffer[3]
+    if ( (6 <= dwBytes) && (0x3C == pBuffer[0] && 0x3F == pBuffer[1]  && 0x78 == pBuffer[2] && 0x6D == pBuffer[3]
 						   && 0x6C == pBuffer[4] && 0x20 == pBuffer[5]))
 	{
 		std::string sXml_part = std::string((char*)pBuffer, dwBytes);
@@ -358,6 +358,11 @@ bool CImageFileFormatChecker::isSvgFile(BYTE* pBuffer,DWORD dwBytes)
 			return true;
 		}
 	}
+    else if ( (6 <= dwBytes) && (0x3C == pBuffer[0] && 's' == pBuffer[1]  && 'v' == pBuffer[2] && 'g' == pBuffer[3]
+                                  && 0x20 == pBuffer[4]))
+    {
+        return true;
+    }
 	return false;
 }
 

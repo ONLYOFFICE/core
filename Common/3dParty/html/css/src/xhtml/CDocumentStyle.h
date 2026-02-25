@@ -12,16 +12,19 @@ namespace NSCSS
 	{
 		CCompiledStyle m_oStyle;
 		bool m_bIsPStyle;
+		std::wstring m_wsFinalId;
 
 	public:
 		CStyleUsed(const CCompiledStyle& oStyle, bool bIsPStyle);
 
+		void SetFinalId(const std::wstring& wsFinalId);
+
 		bool operator==(const CStyleUsed& oUsedStyle) const;
 
-		std::wstring getId();
+		std::wstring GetId() const;
 	};
 
-	static const std::vector<std::wstring> Names_Standard_Styles = {L"a", L"li", L"h1", L"h2", L"h3", L"h4", L"h5", L"h6",L"p", L"div"};
+	static const std::vector<std::wstring> Names_Standard_Styles = {L"a", L"a-c", L"li", L"h1", L"h2", L"h3", L"h4", L"h5", L"h6", L"h1-c", L"h2-c", L"h3-c", L"h4-c", L"h5-c", L"h6-c"};
 
 	class CSSCALCULATOR_EXPORT CDocumentStyle
 	{
@@ -36,12 +39,12 @@ namespace NSCSS
 		std::wstring m_sStyle;
 		std::wstring m_sId;
 
-		void CombineStandardStyles(const std::vector<std::wstring>& arStandartedStyles, CXmlElement& oElement);
-		void CreateStandardStyle  (const std::wstring& sNameStyle, CXmlElement& oElement);
-		void ConvertStyle         (const NSCSS::CCompiledStyle& oStyle, CXmlElement& oElement, bool bIsPStyle);
+		bool CombineStandardStyles(const std::vector<std::wstring>& arStandartedStyles, CXmlElement& oElement);
+		bool CreateStandardStyle  (const std::wstring& sNameStyle, CXmlElement& oElement);
+		bool ConvertStyle         (const NSCSS::CCompiledStyle& oStyle, CXmlElement& oElement, bool bIsPStyle);
 
-		void SetRStyle(const NSCSS::CCompiledStyle& oStyle, CXmlElement& oXmlElement, bool bIsLite = false);
-		void SetPStyle(const NSCSS::CCompiledStyle& oStyle, CXmlElement& oXmlElement, bool bIsLite = false);
+		bool SetRStyle(const NSCSS::CCompiledStyle& oStyle, CXmlElement& oXmlElement, bool bIsLite = false);
+		bool SetPStyle(const NSCSS::CCompiledStyle& oStyle, CXmlElement& oXmlElement, bool bIsLite = false);
 
 		void SetBorderStyle(const NSCSS::CCompiledStyle& oStyle, CXmlElement& oXmlElement, const PProperties& enBorderProperty);
 	public:

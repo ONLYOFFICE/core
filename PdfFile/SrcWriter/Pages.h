@@ -195,13 +195,14 @@ namespace PdfWriter
 		void      ClearContentFull(CXref* pXref);
 		CResourcesDict* GetResourcesItem();
 		void      AddResource(CXref* pXref = NULL);
+		TBox      GetBox(const std::string& sBox);
 
 	private:
 
 		void          Init(CDocument* pDocument);
 		void          EllipseArc(double dX, double dY, double dXRad, double dYRad, double dAngle1, double dAngle2, bool bClockDirection);
 		CArrayObject* GetMediaBoxItem();
-		CObjectBase*  GetCropBoxItem();
+		CArrayObject* GetCropBoxItem();
         CObjectBase*  GetRotateItem();
 		TBox          GetMediaBox();
 		void          SetMediaBoxValue(unsigned int unIndex, double dValue);

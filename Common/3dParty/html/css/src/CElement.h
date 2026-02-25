@@ -22,6 +22,7 @@ namespace NSCSS
 
 	public:
 		CElement();
+		CElement(const std::wstring& wsSelector, std::map<std::wstring, std::wstring> mStyle);
 		~CElement();
 
 		std::wstring GetSelector() const;

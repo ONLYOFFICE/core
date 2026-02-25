@@ -5820,8 +5820,7 @@ namespace OOX
 								{
 									isPlaceholder = true;
 									std::wstring sGUID = sAuthor.substr(3);
-									//todo IsZero() is added to fix comments with zero ids(5.4.0)(bug 42947). Remove after few releases
-									if (L"{00000000-0000-0000-0000-000000000000}" == sGUID && pComment->m_oRef.IsInit())
+									if (pComment->m_oRef.IsInit())
 									{
 										for (std::unordered_map<std::wstring, CThreadedComment*>::iterator it = pThreadedComments->m_mapTopLevelThreadedComments.begin(); it != pThreadedComments->m_mapTopLevelThreadedComments.end(); ++it)
 										{

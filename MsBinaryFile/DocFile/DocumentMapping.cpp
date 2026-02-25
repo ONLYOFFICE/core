@@ -339,7 +339,6 @@ namespace DocFileFormat
 		if ((chpxs != NULL) && (chpxFcs != NULL) && !chpxFcs->empty())//? второе
 		{
 			size_t i = 0;
-            bool changechpx = false;
 
 			// write a runs for each CHPX
 			for (size_t it = 0; it < chpxs->size(); ++it)
@@ -348,15 +347,6 @@ namespace DocFileFormat
 
 				int fcChpxStart	=	((chpxFcs) && (i < chpxFcs->size())) ? chpxFcs->at(i) : fc;
 				int fcChpxEnd	=	fcEnd;
-                if (i > 0)
-                {
-                    int previous    =   chpxFcs->at(i-1);
-                    if ((fcChpxStart != fc) && (previous > fcChpxStart))
-                    {
-                        fcChpxStart = previous;
-                        changechpx = true;
-                    }
-                }
 
                 if ((chpxFcs) && ( i < chpxFcs->size() - 1))
                     fcChpxEnd = chpxFcs->at(i + 1);
@@ -442,13 +432,7 @@ namespace DocFileFormat
 						}
 						else
 						{
-                            if (changechpx == true)
-                            {
-                                size_t a = it - 1;
-                                cp = writeRun(chpxChars, chpxs->at(a), cp);
-                            }
-                            else
-                                cp = writeRun(chpxChars, chpxs->at(it), cp);
+                            cp = writeRun(chpxChars, chpxs->at(it), cp);
 						}
 					}
 				}
@@ -1939,7 +1923,8 @@ namespace DocFileFormat
 				//{
 				//	m_pXmlWriter->WriteAttribute( L"w:customMarkFollows", L"1");
 				//}
-				m_pXmlWriter->WriteAttribute( L"w:id", FormatUtils::IntToWideString(_footnoteNr++ ) );
+                _footnoteNr++;
+                m_pXmlWriter->WriteAttribute( L"w:id", FormatUtils::IntToWideString(_footnoteNr ) );
 				m_pXmlWriter->WriteNodeEnd( L"", true );
 			}
 		}

@@ -1220,7 +1220,10 @@ bool CPdfEditor::IncrementalUpdates()
 			pEncryptDict->SetRef(0, 0);
 			pEncryptDict->Fix();
 
-			pEncryptDict->SetPasswords(m_wsPassword, m_wsPassword);
+			std::wstring sPassword;
+			if (m_wsPassword)
+				sPassword = m_wsPassword;
+			pEncryptDict->SetPasswords(sPassword, sPassword);
 			if (!pEncryptDict->UpdateKey(nCryptAlgorithm))
 			{
 				pagesRefObj.free();
@@ -1538,7 +1541,10 @@ void CPdfEditor::Close()
 			int nCryptAlgorithm = encAlgorithm;
 
 			Object* pTrailerDict = xref->getTrailerDict();
-			pDoc->SetPasswords(m_wsPassword, m_wsPassword);
+			std::wstring sPassword;
+			if (m_wsPassword)
+				sPassword = m_wsPassword;
+			pDoc->SetPasswords(sPassword, sPassword);
 			PdfWriter::CEncryptDict* pEncryptDict = pDoc->GetEncrypt();
 
 			// Нужно получить словарь Encrypt БЕЗ дешифровки, поэтому времено отключаем encrypted в xref
@@ -3446,8 +3452,12 @@ bool CPdfEditor::EditAnnot(int _nPageIndex, int nID)
 		pAnnot = new PdfWriter::CPolygonLineAnnotation(pXref);
 	else if (oType.isName("FreeText"))
 	{
-		std::map<std::wstring, std::wstring> mapFont = PdfReader::GetAnnotFont(pPDFDocument, m_pReader->GetFontManager(), pFontList, &oAnnotRef);
-		m_mFonts.insert(mapFont.begin(), mapFont.end());
+		std::vector<PdfReader::CAnnotFontInfo> arrFont = PdfReader::GetAnnotFontInfos(pPDFDocument, m_pReader->GetFontManager(), pFontList, &oAnnotRef);
+		for (int i = 0; i < arrFont.size(); ++i)
+		{
+			PdfReader::CAnnotFontInfo oFontInfo = arrFont[i];
+			m_mFonts.insert(std::make_pair(oFontInfo.wsFontName, oFontInfo.wsFontPath));
+		}
 		pAnnot = new PdfWriter::CFreeTextAnnotation(pXref);
 	}
 	else if (oType.isName("Caret"))
@@ -4005,7 +4015,8 @@ void CPdfEditor::ClearPage()
 {
 	PDFDoc* pPDFDocument = NULL;
 	PdfReader::CPdfFontList* pFontList = NULL;
-	int nPageIndex = m_pReader->GetPageIndex(m_nEditPage, &pPDFDocument, &pFontList);
+	int nStartRefID = 0;
+	int nPageIndex = m_pReader->GetPageIndex(m_nEditPage, &pPDFDocument, &pFontList, &nStartRefID);
 	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
 	if (nPageIndex < 0 || !pPDFDocument || !pDoc)
 		return;
@@ -4068,7 +4079,7 @@ void CPdfEditor::ClearPage()
 	if (pResources)
 	{
 		std::vector<int> arrUniqueResources;
-		ScanAndProcessFonts(pPDFDocument, xref, pResources, 0, arrUniqueResources, pFontList);
+		ScanAndProcessFonts(pPDFDocument, xref, pResources, 0, arrUniqueResources, pFontList, nStartRefID);
 		m_pReader->SetFonts(m_nEditPage);
 	}
 	oAnnots.free();
@@ -4177,8 +4188,10 @@ void CPdfEditor::Redact(IAdvancedCommand* _pCommand)
 	{
 		cropBox = new PDFRectangle();
 		PdfWriter::CPage* pWPage = pDoc->GetCurPage();
-		cropBox->x2 = pWPage->GetWidth();
-		cropBox->y2 = pWPage->GetHeight();
+		PdfWriter::TBox oBox = pWPage->GetBox("CropBox");
+		if (oBox.IsEmpty())
+			oBox = pWPage->GetBox("MediaBox");
+		cropBox = new PDFRectangle(oBox.fLeft, oBox.fBottom, oBox.fRight, oBox.fTop);
 	}
 
 	std::vector<double> arrAllQuads;
@@ -4191,7 +4204,7 @@ void CPdfEditor::Redact(IAdvancedCommand* _pCommand)
 		m_arrRedact.back().arrQuads = pRedact->arrQuadPoints;
 		for (int i = 0; i < pRedact->arrQuadPoints.size(); i += 2)
 		{
-			arrAllQuads.push_back(pRedact->arrQuadPoints[i + 0] + cropBox->x1);
+			arrAllQuads.push_back(pRedact->arrQuadPoints[i + 0]);
 			arrAllQuads.push_back(cropBox->y2 - pRedact->arrQuadPoints[i + 1]);
 		}
 		int nFlags = pRedact->nFlag;
@@ -4317,7 +4330,7 @@ std::vector<double> CPdfEditor::WriteRedact(const std::vector<std::wstring>& arr
 	}
 	return arrRes;
 }
-void CPdfEditor::ScanAndProcessFonts(PDFDoc* pPDFDocument, XRef* xref, Dict* pResources, int nDepth, std::vector<int>& arrUniqueResources, PdfReader::CPdfFontList* pFontList)
+void CPdfEditor::ScanAndProcessFonts(PDFDoc* pPDFDocument, XRef* xref, Dict* pResources, int nDepth, std::vector<int>& arrUniqueResources, PdfReader::CPdfFontList* pFontList, int nStartRefID)
 {
 	if (nDepth > 5 || !pResources)
 		return;
@@ -4350,14 +4363,14 @@ void CPdfEditor::ScanAndProcessFonts(PDFDoc* pPDFDocument, XRef* xref, Dict* pRe
 			{
 				Ref oEmbRef;
 				std::wstring wsFontBaseName = NSStrings::GetStringFromUTF32(gfxFont->getName());
-
-				if (gfxFont->getEmbeddedFontID(&oEmbRef) || PdfReader::IsBaseFont(wsFontBaseName))
+				GfxFontLoc* pFontLoc = NULL;
+				if (gfxFont->getEmbeddedFontID(&oEmbRef) || PdfReader::IsBaseFont(wsFontBaseName) || ((pFontLoc = gfxFont->locateFont(xref, false)) && NSStrings::GetStringFromUTF32(pFontLoc->path).length()))
 				{
 					std::wstring wsFileName, wsFontName;
 					PdfReader::RendererOutputDev::GetFont(xref, pFontManager, pFontList, gfxFont, wsFileName, wsFontName, false);
 
 					// Собираем информацию о встроенном шрифте
-					if (gfxFont->getEmbeddedFontID(&oEmbRef) && !PdfReader::IsBaseFont(wsFontBaseName))
+					if (!PdfReader::IsBaseFont(wsFontBaseName))
 					{
 						PdfReader::TFontEntry pFontEntry;
 						Ref nFontRef = oFontRef.getRef();
@@ -4375,15 +4388,19 @@ void CPdfEditor::ScanAndProcessFonts(PDFDoc* pPDFDocument, XRef* xref, Dict* pRe
 								if (pFontEntry.pCodeToGID[nIndex])
 									mCodeToGID[nIndex] = pFontEntry.pCodeToGID[nIndex];
 							}
-							bool bBold = false, bItalic = false;
-							std::wstring wsCheckFontName = wsFontName;
-							PdfReader::CheckFontStylePDF(wsCheckFontName, bBold, bItalic);
-							m_pWriter->AddFont(L"Embedded: " + wsFontName, bBold, bItalic, wsFileName, 0);
-							m_pWriter->GetDocument()->CreateFontEmbedded(wsFileName, 0, sFontKey, static_cast<PdfWriter::EFontType>(gfxFont->getType()), mCodeToWidth, mCodeToUnicode, mCodeToGID);
+							m_pWriter->AddFont(L"Embedded: " + wsFontName, false, false, wsFileName, 0);
+							PdfWriter::CObjectBase* pObj =  m_mObjManager.GetObj(nFontRef.num + nStartRefID);
+							if (!pObj)
+							{
+								pObj = new PdfWriter::CObjectBase();
+								pObj->SetRef(nFontRef.num, nFontRef.gen);
+							}
+							m_pWriter->GetDocument()->CreateFontEmbedded(wsFileName, 0, sFontKey, static_cast<PdfWriter::EFontType>(gfxFont->getType()), pObj, mCodeToWidth, mCodeToUnicode, mCodeToGID);
 						}
 					}
 				}
 
+				RELEASEOBJECT(pFontLoc);
 				RELEASEOBJECT(gfxFont);
 			}
 
@@ -4393,7 +4410,7 @@ void CPdfEditor::ScanAndProcessFonts(PDFDoc* pPDFDocument, XRef* xref, Dict* pRe
 	oFonts.free();
 
 	// Обработка XObject
-	auto fScanFonts = [this, pPDFDocument, xref, nDepth, &arrUniqueResources, pFontList](Dict* pResources, const char* sName)
+	auto fScanFonts = [this, pPDFDocument, xref, nDepth, &arrUniqueResources, pFontList, nStartRefID](Dict* pResources, const char* sName)
 	{
 		Object oObject;
 		if (!pResources->lookup(sName, &oObject)->isDict())
@@ -4419,7 +4436,7 @@ void CPdfEditor::ScanAndProcessFonts(PDFDoc* pPDFDocument, XRef* xref, Dict* pRe
 			arrUniqueResources.push_back(oRef.getRef().num);
 			oXObj.free(); oRef.free();
 
-			ScanAndProcessFonts(pPDFDocument, xref, oResources.getDict(), nDepth + 1, arrUniqueResources, pFontList);
+			ScanAndProcessFonts(pPDFDocument, xref, oResources.getDict(), nDepth + 1, arrUniqueResources, pFontList, nStartRefID);
 			oResources.free();
 		}
 		oObject.free();
@@ -4458,7 +4475,7 @@ void CPdfEditor::ScanAndProcessFonts(PDFDoc* pPDFDocument, XRef* xref, Dict* pRe
 		arrUniqueResources.push_back(oRef.getRef().num);
 		oSMaskGroup.free(); oRef.free();
 
-		ScanAndProcessFonts(pPDFDocument, xref, oResources.getDict(), nDepth + 1, arrUniqueResources, pFontList);
+		ScanAndProcessFonts(pPDFDocument, xref, oResources.getDict(), nDepth + 1, arrUniqueResources, pFontList, nStartRefID);
 		oResources.free();
 	}
 	oExtGState.free();

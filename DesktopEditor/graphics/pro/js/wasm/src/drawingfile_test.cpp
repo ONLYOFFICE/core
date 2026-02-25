@@ -958,7 +958,7 @@ void ReadInteractiveFormsFonts(CDrawingFile* pGrFile, int nType)
 			if (pFont)
 				free(pFont);
 
-			if (false)
+			if (true)
 				continue;
 
 			pFont = GetGIDByUnicode(pGrFile, (char*)sFontName.c_str());
@@ -1364,7 +1364,7 @@ int main(int argc, char* argv[])
 	}
 
 	// INTERACTIVE FORMS
-	if (false)
+	if (true)
 	{
 		ReadInteractiveFormsFonts(pGrFile, 1);
 		ReadInteractiveFormsFonts(pGrFile, 2);
@@ -1483,7 +1483,7 @@ int main(int argc, char* argv[])
 	}
 
 	// ANNOTS
-	if (false)
+	if (true)
 	{
 		BYTE* pAnnots = GetAnnotationsInfo(pGrFile, -1);
 		nLength = READ_INT(pAnnots);
@@ -2252,7 +2252,7 @@ int main(int argc, char* argv[])
 	}
 
 	// SCAN PAGE Fonts
-	if (true)
+	if (false)
 	{
 		SetScanPageFonts(pGrFile, nTestPage);
 

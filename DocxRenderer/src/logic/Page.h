@@ -50,6 +50,7 @@ namespace NSDocxRenderer
 		bool m_bIsBuildTables		   {false};
 		bool m_bIsLuminosityShapesFiled{false};
 		bool m_bFontSubstitution       {false};
+		bool m_bFirstParagraphLineCorrection{false};
 
 		CPage(NSFonts::IApplicationFonts* pAppFonts, const CManagers& oManagers);
 		~CPage();
@@ -68,6 +69,7 @@ namespace NSDocxRenderer
 		void PathEnd();
 		void PathClose();
 		void DrawPath(LONG lType, const std::shared_ptr<CImageInfo> pInfo);
+		bool IsCurrVectorClockwise() const;
 
 		void AddText(
 		        const PUINT pUnicodes,

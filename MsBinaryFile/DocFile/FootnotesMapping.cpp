@@ -43,11 +43,10 @@ namespace DocFileFormat
 	{
 		m_document = static_cast<WordDocument*>( visited );
 
-		if ( m_document && ( m_document->FIB->m_RgLw97.ccpFtn > 0 ) )
-		{
 			m_context->_docx->RegisterFootnotes();
 
-			int id = 0;
+            int id = 1;
+            int index = 0;
 
 			m_pXmlWriter->WriteNodeBegin( L"w:footnotes", TRUE );
 
@@ -71,21 +70,21 @@ namespace DocFileFormat
 			m_pXmlWriter->WriteAttribute( L"mc:Ignorable", L"w14 wp14" );
 			m_pXmlWriter->WriteNodeEnd( L"", TRUE, FALSE );
 
-			//m_pXmlWriter->WriteNodeBegin( L"w:footnote", TRUE );
-			//m_pXmlWriter->WriteAttribute( L"w:type", L"separator");
-			//m_pXmlWriter->WriteAttribute( L"w:id", L"-1");
-			//m_pXmlWriter->WriteNodeEnd( L"", TRUE, FALSE );
+            m_pXmlWriter->WriteNodeBegin( L"w:footnote", TRUE );
+            m_pXmlWriter->WriteAttribute( L"w:type", L"separator");
+            m_pXmlWriter->WriteAttribute( L"w:id", L"-1");
+            m_pXmlWriter->WriteNodeEnd( L"", TRUE, FALSE );
 
-			//m_pXmlWriter->WriteString(L"<w:p><w:pPr><w:spacing w:lineRule=\"auto\" w:line=\"240\" w:after=\"0\"/></w:pPr><w:r></w:r><w:r><w:separator/></w:r></w:p>");
-			//m_pXmlWriter->WriteNodeEnd( L"w:footnote");
+            m_pXmlWriter->WriteString(L"<w:p><w:pPr><w:pBdr/><w:spacing/><w:ind/><w:rPr/></w:pPr><w:r><w:separator/></w:r><w:r/></w:p>");
+            m_pXmlWriter->WriteNodeEnd( L"w:footnote");
 
-			//m_pXmlWriter->WriteNodeBegin( L"w:footnote", TRUE );
-			//m_pXmlWriter->WriteAttribute( L"w:type", L"continuationSeparator");
-			//m_pXmlWriter->WriteAttribute( L"w:id", L"0");
-			//m_pXmlWriter->WriteNodeEnd( L"", TRUE, FALSE );
+            m_pXmlWriter->WriteNodeBegin( L"w:footnote", TRUE );
+            m_pXmlWriter->WriteAttribute( L"w:type", L"continuationSeparator");
+            m_pXmlWriter->WriteAttribute( L"w:id", L"0");
+            m_pXmlWriter->WriteNodeEnd( L"", TRUE, FALSE );
 
-			//m_pXmlWriter->WriteString(L"<w:p><w:pPr><w:spacing w:lineRule=\"auto\" w:line=\"240\" w:after=\"0\"/></w:pPr><w:r></w:r><w:r><w:continuationSeparator/></w:r></w:p>");
-			//m_pXmlWriter->WriteNodeEnd( L"w:footnote");
+            m_pXmlWriter->WriteString(L"<w:p><w:pPr><w:pBdr/><w:spacing/><w:ind/><w:rPr/></w:pPr><w:r><w:continuationSeparator/></w:r><w:r/></w:p>");
+            m_pXmlWriter->WriteNodeEnd( L"w:footnote");
 
 			int cp = m_document->FIB->m_RgLw97.ccpText;
 
@@ -95,7 +94,7 @@ namespace DocFileFormat
 				m_pXmlWriter->WriteAttribute( L"w:id", FormatUtils::IntToWideString( id ));
 				m_pXmlWriter->WriteNodeEnd( L"", TRUE, FALSE );
 
-				while ( ( cp - m_document->FIB->m_RgLw97.ccpText ) < (*m_document->IndividualFootnotesPlex)[id + 1] )
+                while ( ( cp - m_document->FIB->m_RgLw97.ccpText ) < (*m_document->IndividualFootnotesPlex)[index + 1] )
 				{
 					int cpStart = cp;
 
@@ -122,12 +121,12 @@ namespace DocFileFormat
 				}
 
 				m_pXmlWriter->WriteNodeEnd( L"w:footnote");
+                index++;
 				id++;
 			}
 
 			m_pXmlWriter->WriteNodeEnd( L"w:footnotes");
 
 			m_context->_docx->FootnotesXML = std::wstring(m_pXmlWriter->GetXmlString());
-		}
 	}
 }

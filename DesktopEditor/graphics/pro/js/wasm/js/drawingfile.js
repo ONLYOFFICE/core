@@ -364,7 +364,22 @@ CFile.prototype["getFontByID"] = function(ID)
 
 CFile.prototype["getGIDByUnicode"] = function(ID)
 {
-	return this._getGIDByUnicode(ID);
+	let ptr = this._getGIDByUnicode(ID);
+	let reader = ptr.getReader();
+	if (!reader)
+		return {};
+
+	let res = {};
+	let nFontLength = reader.readInt();
+	for (let i = 0; i < nFontLength; i++)
+	{
+		let np1 = reader.readInt();
+		let np2 = reader.readInt();
+		res[np2] = np1;
+	}
+
+	ptr.free();
+	return res;
 };
 
 CFile.prototype["setCMap"] = function(memoryBuffer)
@@ -414,7 +429,7 @@ function readAction(reader, rec, readDoubleFunc, readStringFunc)
 			case 6:
 			case 7:
 			{
-				let nFlag = reader.readByte();
+				let nFlag = reader.readInt();
 				if (nFlag & (1 << 0))
 					rec["left"] = readDoubleFunc.call(reader);
 				if (nFlag & (1 << 1))

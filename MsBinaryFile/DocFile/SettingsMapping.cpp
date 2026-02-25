@@ -257,6 +257,16 @@ namespace DocFileFormat
 			appendValueAttribute( &footnotePr, L"w:pos",  FormatUtils::MapValueToWideString( dop->Fpc, &FootnotePositionMap[0][0], 4, 12  ) );
 		}
 
+        XMLTools::XMLElement footnoteMinusOne( L"w:footnote" );
+        XMLTools::XMLAttribute idAttrMinusOne( L"w:id", L"-1" );
+        footnoteMinusOne.AppendAttribute( idAttrMinusOne );
+        footnotePr.AppendChild( footnoteMinusOne );
+
+        XMLTools::XMLElement footnoteZero( L"w:footnote" );
+        XMLTools::XMLAttribute idAttrZero( L"w:id", L"0" );
+        footnoteZero.AppendAttribute( idAttrZero );
+        footnotePr.AppendChild( footnoteZero );
+
 		if ( footnotePr.GetAttributeCount() > 0 )
 		{
 			m_oXmlWriter.WriteString( footnotePr.GetXMLString() );

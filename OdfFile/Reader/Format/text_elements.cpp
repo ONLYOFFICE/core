@@ -437,7 +437,7 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context, _CP_OPT(std
 		}
 		else
 		{
-			content_[i]->docx_convert(Context); 
+			content_[i]->docx_convert(Context);
 			
 			if (Context.get_drop_cap_context().state() > 0)		
 				Context.get_drop_cap_context().state(0);//disable
@@ -708,6 +708,14 @@ void list::pptx_convert(oox::pptx_conversion_context & Context)
     bool continue_ = continue_numbering_.get_value_or(false);
     Context.get_text_context().start_list(style_name_, continue_);
 
+	bool style_name(false);
+
+	if(!Context.get_text_context().get_has_style_name() && !style_name_.empty())
+	{
+		style_name = true;
+		Context.get_text_context().set_style_name(style_name);
+	}
+
     if (list_header_)
         list_header_->pptx_convert(Context);
 
@@ -717,6 +725,9 @@ void list::pptx_convert(oox::pptx_conversion_context & Context)
     }
 
     Context.get_text_context().end_list();
+
+	if(style_name)
+		Context.get_text_context().set_style_name(false);
 }
 // text:soft-page-break
 //////////////////////////////////////////////////////////////////////////////////////////////////

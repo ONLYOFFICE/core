@@ -64,11 +64,11 @@ namespace NExtractTools
 			else
 				*params.m_nFormatFrom = AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV;
 		}
-		if (!params.m_nCsvFormat)
-			params.m_nCsvFormat = new int(AVS_OFFICESTUDIO_FILE_UNKNOWN);
-		*params.m_nCsvFormat = *params.m_nFormatFrom;
+		if (!params.m_nCsvFormatFrom)
+			params.m_nCsvFormatFrom = new int(AVS_OFFICESTUDIO_FILE_UNKNOWN);
+		*params.m_nCsvFormatFrom = *params.m_nFormatFrom;
 
-		SerializeCommon::ReadFileType(params.getXmlOptions(), fileType, nCodePage, sDelimiter, saveFileType, lcid);
+		SerializeCommon::ReadFileType(params.getXmlOptionsFrom(), fileType, nCodePage, sDelimiter, saveFileType, lcid);
 
 		CSVReader csvReader;
 		csvReader.readToxmlCache_ = true;
@@ -81,7 +81,6 @@ namespace NExtractTools
 			OOX::CContentTypes oContentTypes;
 				nRes = oXlsx.Write(sTo, oContentTypes) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
 		}
-
 		return nRes;
 	}
 	_UINT32 xlsx_dir2csv(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
@@ -114,7 +113,7 @@ namespace NExtractTools
 					else
 						*params.m_nFormatTo = AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV;
             }
-            sXMLOptions = params.getXmlOptions();//_T("<XmlOptions><fileOptions fileType=\"2\"/></XmlOptions>");
+            sXMLOptions = params.getXmlOptionsTo();//_T("<XmlOptions><fileOptions fileType=\"2\"/></XmlOptions>");
 
 			nRes = oCXlsxSerializer.loadFromFile(sResultXlstFileEditor, sTo, sXMLOptions, sMediaPath, sEmbedPath);
 		}
@@ -145,11 +144,11 @@ namespace NExtractTools
 			else
 				*params.m_nFormatFrom = AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV;
 		}
-		if (!params.m_nCsvFormat)
-			params.m_nCsvFormat = new int(AVS_OFFICESTUDIO_FILE_UNKNOWN);
-		*params.m_nCsvFormat = *params.m_nFormatFrom;
+		if (!params.m_nCsvFormatFrom)
+			params.m_nCsvFormatFrom = new int(AVS_OFFICESTUDIO_FILE_UNKNOWN);
+		*params.m_nCsvFormatFrom = *params.m_nFormatFrom;
 
-		return oCXlsxSerializer.saveToFile(sTo, sFrom, params.getXmlOptions());
+		return oCXlsxSerializer.saveToFile(sTo, sFrom, params.getXmlOptionsFrom());
 	}
 	_UINT32 xlst_bin2csv(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
 	{
@@ -179,7 +178,7 @@ namespace NExtractTools
 
 			oCXlsxSerializer.CreateXlsxFolders(sResultCsvDir, sMediaPath, sEmbedPath);
 
-			std::wstring sXmlOptions = params.getXmlOptions();
+			std::wstring sXmlOptions = params.getXmlOptionsTo();
 			nRes = oCXlsxSerializer.loadFromFile(sTargetBin, sTo, sXmlOptions, sMediaPath, sEmbedPath);
 		}
 		// удаляем EditorWithChanges, потому что он не в Temp
@@ -235,10 +234,10 @@ namespace NExtractTools
 		else
 			*params.m_nFormatTo = AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV;
 
-		if (!params.m_nCsvFormat)
-			params.m_nCsvFormat = new int(AVS_OFFICESTUDIO_FILE_UNKNOWN);
-		*params.m_nCsvFormat = *params.m_nFormatTo;
+		if (!params.m_nCsvFormatTo)
+			params.m_nCsvFormatTo = new int(AVS_OFFICESTUDIO_FILE_UNKNOWN);
+		*params.m_nCsvFormatTo = *params.m_nFormatTo;
 
-		return oCXlsxSerializer.loadFromFile(sTempXlstFileEditor, sCSV, params.getXmlOptions(), sMediaPath, sEmbedPath);
+		return oCXlsxSerializer.loadFromFile(sTempXlstFileEditor, sCSV, params.getXmlOptionsTo(), sMediaPath, sEmbedPath);
 	}
 }

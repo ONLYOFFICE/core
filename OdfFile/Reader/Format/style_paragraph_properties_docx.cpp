@@ -537,7 +537,7 @@ void style_tab_stop::docx_convert(oox::docx_conversion_context & Context, bool c
 		
 	double tab_pos_offset = (!Context.get_paragraph_state() || Context.is_table_content()) ? margin_left : 0;
 
-	double tab_pos = 20.0 * style_position_.get_value_unit(length::pt) + tab_pos_offset;
+	double tab_pos = 20.0 * style_position_.get_value_unit(length::pt);
 	double min_tab_pos = 20.0 * def_tab.get_value_unit(length::pt) ;
 
 	if (tab_pos < min_tab_pos)
@@ -586,21 +586,29 @@ void style_tab_stop::docx_convert(oox::docx_conversion_context & Context, bool c
 		}
 	}
 
-
-
-	double current_tab_width_twips = 0;
-
-	if( style_type_.is_initialized() && style_type_->get_type() == style_type::Left )
+	if( style_type_.is_initialized() )
 	{
-		current_tab_width_twips = PageWidthTwips - LeftPageMarginTwips - RightPageMarginTwips - margin_right;
+		switch ( style_type_->get_type() )
+		{
+		case style_type::Right:
+		{
+			int total_tabs = Context.get_tabs_context().tabs.size();
+
+			if( total_tabs <= 1 )
+			{
+				tab_pos += tab_pos_offset;
+			}
+			break;
+		}
+		}
 	}
 
-	if( tab_pos > current_tab_width_twips && current_tab_width_twips != 0.0 )
-	{
-		tab_pos = current_tab_width_twips;
-		tab_pos -= 300;
-	}
+	double available_width = PageWidthTwips - LeftPageMarginTwips - RightPageMarginTwips;
 
+	if ( available_width > 0 && tab_pos > available_width )
+	{
+		tab_pos = available_width;
+	}
 	_pPr << L" w:val=\"" << val << "\"";
 	_pPr << L" w:pos=\"" << static_cast<int>(tab_pos) << "\"";
 	

@@ -324,12 +324,12 @@ namespace PdfWriter
 		CSignatureField(CXref* pXref, CDocument* pDocument);
 		CSignatureDict* GetSignatureDict () { return m_pSig; }
 
+		void SetLocation(const std::wstring& wsValue);
 		void SetName(const std::wstring& wsValue);
 		void SetContact(const std::wstring& wsValue);
 		void SetReason(const std::wstring& wsValue);
 		void SetPicture(const std::wstring& wsPath);
-		void SetCert();
-		void SetDate(bool bDate);
+		void SetDate();
 		void SetAppearance(CImageDict* pImage = NULL);
 		virtual CResourcesDict* GetResourcesDict();
 

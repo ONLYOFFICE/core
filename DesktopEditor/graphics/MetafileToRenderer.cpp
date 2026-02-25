@@ -481,6 +481,8 @@ namespace NSOnlineOfficeBinToPdf
 				double m3 = oReader.ReadDouble();
 				double m4 = oReader.ReadDouble();
 
+				clipRect = Aggplus::RectF_T<double>(m1, m2, m3, m4);
+
 				long type;
 				pRenderer->get_BrushTextureMode(&type);
 				if (type != c_BrushTextureModeStretch)
@@ -489,7 +491,6 @@ namespace NSOnlineOfficeBinToPdf
 					m2 = 0.0;
 				}
 
-				clipRect = Aggplus::RectF_T<double>(m1, m2, m3, m4);
 				pRenderer->BrushRect(bIsEnableBrushRect ? 1 : 0, m1, m2, m3, m4);
 				break;
 			}
@@ -498,7 +499,10 @@ namespace NSOnlineOfficeBinToPdf
 				bIsEnableBrushRect = oReader.ReadBool();
 
 				if (!bIsEnableBrushRect)
+				{
 					pRenderer->BrushRect(bIsEnableBrushRect ? 1 : 0, 0, 0, 1, 1);
+					clipRect = Aggplus::RectF_T<double>();
+				}
 				break;
 			}
 			case ctBrushTexturePathOld:
@@ -770,7 +774,6 @@ namespace NSOnlineOfficeBinToPdf
 
 					clipPath.AddRectangle(clipRect.X, clipRect.Y, clipRect.Width, clipRect.Height);
 					path = Aggplus::CalcBooleanOperation(drawPath, clipPath, Aggplus::Intersection);
-					clipRect = Aggplus::RectF_T<double>();
 				}
 
 				pRenderer->AddPath(path);

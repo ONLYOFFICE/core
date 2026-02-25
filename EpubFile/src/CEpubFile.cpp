@@ -142,7 +142,7 @@ HRESULT CEpubFile::Convert(const std::wstring& sInputFile, const std::wstring& s
     */
 
     CHtmlFile2 oFile;
-    CHtmlParams oFileParams;
+    HTML::THTMLParameters oFileParams;
 
     oFileParams.SetAuthors     (m_oBookInfo.GetCreators());
     oFileParams.SetGenres      (m_oBookInfo.GetSubjects());
@@ -155,7 +155,7 @@ HRESULT CEpubFile::Convert(const std::wstring& sInputFile, const std::wstring& s
 
     std::wstring sDocxFileTempDir = m_sTempDir + L"/tmp";
     NSDirectory::CreateDirectory(sDocxFileTempDir);
-    oFile.SetTmpDirectory(sDocxFileTempDir);
+    oFile.SetTempDirectory(sDocxFileTempDir);
     oFile.SetCoreDirectory(NSFile::GetDirectoryName(sContent));
 
     std::vector<std::wstring> arFiles;
@@ -182,7 +182,7 @@ HRESULT CEpubFile::Convert(const std::wstring& sInputFile, const std::wstring& s
         sOutputDir = sOutputFile;
 
     NSDirectory::CreateDirectory(sOutputDir);
-    HRESULT hRes = oFile.OpenBatchHtml(arFiles, sOutputDir, &oFileParams);
+    HRESULT hRes = oFile.ConvertHTML2OOXML(arFiles, sOutputDir, &oFileParams);
     if (bIsOutCompress && S_OK == hRes)
         hRes = oOfficeUtils.CompressFileOrDirectory(sOutputDir, sOutputFile);
 

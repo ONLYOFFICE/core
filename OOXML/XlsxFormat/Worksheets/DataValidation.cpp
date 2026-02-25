@@ -359,6 +359,8 @@ xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\">");
 			}
 			else
 				ptr->valType = XLS::typeDvNone;
+			if(ptr->valType == XLS::typeDvList)
+				ptr->fStrLookup = true;
 			if(m_oAllowBlank.IsInit())
 				ptr->fAllowBlank = m_oAllowBlank->GetValue();
 			else
@@ -443,9 +445,31 @@ xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\">");
 				ptr->sqref.strValue = m_oSqRef.get();
 
 			if(m_oFormula1.IsInit())
+			{
+				if(ptr->valType == XLS::typeDvList)
+				{
+					size_t pos = 0;
+					while ((pos =  m_oFormula1->m_sText.find(L"," , pos)) != std::wstring::npos)
+					{
+						m_oFormula1->m_sText.replace(pos, 1, std::wstring(1, L'\0'));
+						pos += 1;
+					}
+				}
 				ptr->formula1 = m_oFormula1->m_sText;
+			}
 			if(m_oFormula2.IsInit())
+			{
+				if(ptr->valType == XLS::typeDvList)
+				{
+					size_t pos = 0;
+					while ((pos =  m_oFormula2->m_sText.find(L"," , pos)) != std::wstring::npos)
+					{
+						m_oFormula2->m_sText.replace(pos, 1, std::wstring(1, L'\0'));
+						pos += 1;
+					}
+				}
 				ptr->formula2 = m_oFormula2->m_sText;
+			}
 
 			return XLS::BaseObjectPtr(ptr);
 		}

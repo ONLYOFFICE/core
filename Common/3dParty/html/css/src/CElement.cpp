@@ -9,6 +9,13 @@ namespace NSCSS
 	CElement::CElement()
 	{
 	}
+
+	CElement::CElement(const std::wstring& wsSelector, std::map<std::wstring, std::wstring> mStyle)
+		: m_mStyle(mStyle), m_sSelector(wsSelector), m_sFullSelector(wsSelector)
+	{
+		UpdateWeight();
+	}
+
 	CElement::~CElement()
 	{
 		for (CElement* oElement : m_arPrevElements)
@@ -18,7 +25,6 @@ namespace NSCSS
 				continue;
 
 		m_mStyle.clear();
-
 	}
 
 	std::wstring CElement::GetSelector() const

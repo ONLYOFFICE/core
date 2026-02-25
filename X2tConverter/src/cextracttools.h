@@ -503,10 +503,14 @@ namespace NExtractTools
 		std::wstring* m_sTitle;
 		int* m_nFormatFrom;
 		int* m_nFormatTo;
-		int* m_nCsvTxtEncoding;
-		int* m_nCsvDelimiter;
-		int* m_nCsvFormat;
-		std::wstring* m_sCsvDelimiterChar;
+		int* m_nCsvTxtEncodingFrom;
+		int* m_nCsvDelimiterFrom;
+		int* m_nCsvFormatFrom;
+		std::wstring* m_sCsvDelimiterCharFrom;
+		int* m_nCsvTxtEncodingTo;
+		int* m_nCsvDelimiterTo;
+		int* m_nCsvFormatTo;
+		std::wstring* m_sCsvDelimiterCharTo;
 		int* m_nLcid;
 		bool* m_bPaid;
 		bool* m_bFromChanges;
@@ -543,10 +547,14 @@ namespace NExtractTools
 			m_sTitle = NULL;
 			m_nFormatFrom = new int(AVS_OFFICESTUDIO_FILE_UNKNOWN);
 			m_nFormatTo = NULL;
-			m_nCsvFormat = NULL;
-			m_nCsvTxtEncoding = NULL;
-			m_nCsvDelimiter = NULL;
-			m_sCsvDelimiterChar = NULL;
+			m_nCsvFormatFrom = NULL;
+			m_nCsvTxtEncodingFrom = NULL;
+			m_nCsvDelimiterFrom = NULL;
+			m_sCsvDelimiterCharFrom = NULL;
+			m_nCsvFormatTo = NULL;
+			m_nCsvTxtEncodingTo = NULL;
+			m_nCsvDelimiterTo = NULL;
+			m_sCsvDelimiterCharTo = NULL;
 			m_nLcid = NULL;
 			m_bPaid = NULL;
 			m_bFromChanges = NULL;
@@ -582,10 +590,14 @@ namespace NExtractTools
 			RELEASEOBJECT(m_sTitle);
 			RELEASEOBJECT(m_nFormatFrom);
 			RELEASEOBJECT(m_nFormatTo);
-			RELEASEOBJECT(m_nCsvFormat);
-			RELEASEOBJECT(m_nCsvTxtEncoding);
-			RELEASEOBJECT(m_nCsvDelimiter);
-			RELEASEOBJECT(m_sCsvDelimiterChar);
+			RELEASEOBJECT(m_nCsvFormatFrom);
+			RELEASEOBJECT(m_nCsvTxtEncodingFrom);
+			RELEASEOBJECT(m_nCsvDelimiterFrom);
+			RELEASEOBJECT(m_sCsvDelimiterCharFrom);
+			RELEASEOBJECT(m_nCsvFormatTo);
+			RELEASEOBJECT(m_nCsvTxtEncodingTo);
+			RELEASEOBJECT(m_nCsvDelimiterTo);
+			RELEASEOBJECT(m_sCsvDelimiterCharTo);
 			RELEASEOBJECT(m_nLcid);
 			RELEASEOBJECT(m_bPaid);
 			RELEASEOBJECT(m_bFromChanges);
@@ -716,18 +728,27 @@ namespace NExtractTools
 								}
 								else if (_T("m_nCsvTxtEncoding") == sName)
 								{
-									RELEASEOBJECT(m_nCsvTxtEncoding);
-									m_nCsvTxtEncoding = new int(XmlUtils::GetInteger(sValue));
+									RELEASEOBJECT(m_nCsvTxtEncodingFrom);
+									m_nCsvTxtEncodingFrom = new int(XmlUtils::GetInteger(sValue));
+									
+									RELEASEOBJECT(m_nCsvTxtEncodingTo);
+									m_nCsvTxtEncodingTo = new int(XmlUtils::GetInteger(sValue));
 								}
 								else if (_T("m_nCsvDelimiter") == sName)
 								{
-									RELEASEOBJECT(m_nCsvDelimiter);
-									m_nCsvDelimiter = new int(XmlUtils::GetInteger(sValue));
+									RELEASEOBJECT(m_nCsvDelimiterFrom);
+									m_nCsvDelimiterFrom = new int(XmlUtils::GetInteger(sValue));
+									
+									RELEASEOBJECT(m_nCsvDelimiterTo);
+									m_nCsvDelimiterTo = new int(XmlUtils::GetInteger(sValue));
 								}
 								else if (_T("m_nCsvDelimiterChar") == sName)
 								{
-									RELEASEOBJECT(m_sCsvDelimiterChar);
-									m_sCsvDelimiterChar = new std::wstring(sValue);
+									RELEASEOBJECT(m_sCsvDelimiterCharFrom);
+									m_sCsvDelimiterCharFrom = new std::wstring(sValue);
+									
+									RELEASEOBJECT(m_sCsvDelimiterCharTo);
+									m_sCsvDelimiterCharTo = new std::wstring(sValue);
 								}
 								else if (_T("m_nLcid") == sName)
 								{
@@ -820,8 +841,11 @@ namespace NExtractTools
 								std::wstring sNil;
 								if (!oXmlNode.GetAttributeIfExist(L"xsi:nil", sNil))
 								{
-									RELEASEOBJECT(m_sCsvDelimiterChar);
-									m_sCsvDelimiterChar = new std::wstring(L"");
+									RELEASEOBJECT(m_sCsvDelimiterCharFrom);
+									m_sCsvDelimiterCharFrom = new std::wstring(L"");
+									
+									RELEASEOBJECT(m_sCsvDelimiterCharTo);
+									m_sCsvDelimiterCharTo = new std::wstring(L"");
 								}
 							}
 						}
@@ -913,27 +937,27 @@ namespace NExtractTools
 			size_t index = getConvertToOrigin().find(sExt);
 			return std::wstring::npos != index;
 		}
-		std::wstring getXmlOptions()
+		std::wstring getXmlOptionsFrom()
 		{
 			std::wstring sRes;
 			int nTxtCsvEncoding = 46; // 65001 utf8
 			std::wstring cDelimiter = L",";
 			int LcId = -1;
 
-			if (NULL != m_nCsvTxtEncoding)
-				nTxtCsvEncoding = *m_nCsvTxtEncoding;
+			if (NULL != m_nCsvTxtEncodingFrom)
+				nTxtCsvEncoding = *m_nCsvTxtEncodingFrom;
 
-			if (m_nCsvFormat)
+			if (m_nCsvFormatFrom)
 			{
-				switch (*m_nCsvFormat)
+				switch (*m_nCsvFormatFrom)
 				{
 				case AVS_OFFICESTUDIO_FILE_SPREADSHEET_TSV: cDelimiter = L"\t"; break;
 				case AVS_OFFICESTUDIO_FILE_SPREADSHEET_SCSV: cDelimiter = L";"; break;
 				}
 			}
-			if (NULL != m_nCsvDelimiter)
+			if (NULL != m_nCsvDelimiterFrom)
 			{
-				switch (*m_nCsvDelimiter)
+				switch (*m_nCsvDelimiterFrom)
 				{
 				case TCSVD_TAB:
 					cDelimiter = L"\t";
@@ -952,9 +976,9 @@ namespace NExtractTools
 					break;
 				}
 			}
-			if (NULL != m_sCsvDelimiterChar)
+			if (NULL != m_sCsvDelimiterCharFrom)
 			{
-				cDelimiter = *m_sCsvDelimiterChar;
+				cDelimiter = *m_sCsvDelimiterCharFrom;
 			}
 
 			if (m_nLcid != NULL)
@@ -975,15 +999,91 @@ namespace NExtractTools
 			}
 
 			std::wstring sSaveType;
+			if ((NULL != m_nFormatTo) && (AVS_OFFICESTUDIO_FILE_OTHER_JSON == *m_nFormatTo))
+			{
+				sSaveType = L" saveFileType='3'";
+			}
+
+			sRes = L"<xmlOptions><fileOptions fileType='" + std::to_wstring(nFileType);
+			sRes += L"' codePage='" + std::to_wstring(nTxtCsvEncoding);
+			if (m_nCsvFormatFrom)
+			{
+				sRes += L"' csvFormat='" + std::to_wstring(*m_nCsvFormatFrom);
+			}
+			if (m_bMacro)
+			{
+				sRes += L"' macro='1";
+			}
+			if (LcId != -1)
+			{
+				sRes += L"' Lcid='" + std::to_wstring(LcId);
+			}
+			sRes += L"' delimiter='" + XmlUtils::EncodeXmlStringExtend(cDelimiter) + L"' " + sSaveType;
+			sRes += L"/></xmlOptions>";
+
+			return sRes;
+		}
+		std::wstring getXmlOptionsTo()
+		{
+			std::wstring sRes;
+			int nTxtCsvEncoding = 46; // 65001 utf8
+			std::wstring cDelimiter = L",";
+			int LcId = -1;
+
+			if (NULL != m_nCsvTxtEncodingTo)
+				nTxtCsvEncoding = *m_nCsvTxtEncodingTo;
+
+			if (m_nCsvFormatTo)
+			{
+				switch (*m_nCsvFormatTo)
+				{
+				case AVS_OFFICESTUDIO_FILE_SPREADSHEET_TSV: cDelimiter = L"\t"; break;
+				case AVS_OFFICESTUDIO_FILE_SPREADSHEET_SCSV: cDelimiter = L";"; break;
+				}
+			}
+			if (NULL != m_nCsvDelimiterTo)
+			{
+				switch (*m_nCsvDelimiterTo)
+				{
+				case TCSVD_TAB:
+					cDelimiter = L"\t";
+					break;
+				case TCSVD_SEMICOLON:
+					cDelimiter = L";";
+					break;
+				case TCSVD_COLON:
+					cDelimiter = L":";
+					break;
+				case TCSVD_COMMA:
+					cDelimiter = L",";
+					break;
+				case TCSVD_SPACE:
+					cDelimiter = L" ";
+					break;
+				}
+			}
+			if (NULL != m_sCsvDelimiterCharTo)
+			{
+				cDelimiter = *m_sCsvDelimiterCharTo;
+			}
+
+			if (m_nLcid != NULL)
+			{
+				LcId = *m_nLcid;
+			}
+
+			int nFileType = 1;
+
+			std::wstring sSaveType;
 			if (NULL != m_nFormatTo)
 			{
 				if (AVS_OFFICESTUDIO_FILE_OTHER_JSON == *m_nFormatTo)
 				{
 					sSaveType = L" saveFileType='3'";
 				}
-				else if (	AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV == *m_nFormatTo ||
-							AVS_OFFICESTUDIO_FILE_SPREADSHEET_TSV == *m_nFormatTo ||
-							AVS_OFFICESTUDIO_FILE_SPREADSHEET_SCSV == *m_nFormatTo)
+				else if (AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV == *m_nFormatTo ||
+					AVS_OFFICESTUDIO_FILE_SPREADSHEET_TSV == *m_nFormatTo ||
+					AVS_OFFICESTUDIO_FILE_SPREADSHEET_SCSV == *m_nFormatTo)
 				{
 					nFileType = 2;
 				}
@@ -994,9 +1094,9 @@ namespace NExtractTools
 			}
 			sRes = L"<xmlOptions><fileOptions fileType='" + std::to_wstring(nFileType);
 			sRes += L"' codePage='" + std::to_wstring(nTxtCsvEncoding);
-			if (m_nCsvFormat)
+			if (m_nCsvFormatTo)
 			{
-				sRes += L"' csvFormat='" + std::to_wstring(*m_nCsvFormat);
+				sRes += L"' csvFormat='" + std::to_wstring(*m_nCsvFormatTo);
 			}
 			if (m_bMacro)
 			{
@@ -1112,7 +1212,7 @@ namespace NExtractTools
 		{
 			TConversionDirection eRes = TCD_AUTO;
 			int nFormatFrom = *m_nFormatFrom;
-			if (AVS_OFFICESTUDIO_FILE_DOCUMENT_TXT == nFormatFrom && NULL == m_nCsvTxtEncoding)
+			if (AVS_OFFICESTUDIO_FILE_DOCUMENT_TXT == nFormatFrom && NULL == m_nCsvTxtEncodingFrom)
 			{
 				int nCodePage = getEncodingByContent();
 				if (nCodePage < 0)
@@ -1125,7 +1225,7 @@ namespace NExtractTools
 				}
 				else
 				{
-					m_nCsvTxtEncoding = new int(nCodePage);
+					m_nCsvTxtEncodingFrom = new int(nCodePage);
 				}
 			}
 			else if (	AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV == nFormatFrom ||
@@ -1135,27 +1235,27 @@ namespace NExtractTools
 				std::wstring sExt = NSFile::GetFileExtention(*m_sFileFrom);
 				if (sExt == L"tsv")
 				{
-					RELEASEOBJECT(m_sCsvDelimiterChar);
-					m_sCsvDelimiterChar = new std::wstring(L"\t");
+					RELEASEOBJECT(m_sCsvDelimiterCharFrom);
+					m_sCsvDelimiterCharFrom = new std::wstring(L"\t");
 				}
 				else if (sExt == L"cssv")
 				{
-					RELEASEOBJECT(m_sCsvDelimiterChar);
-					m_sCsvDelimiterChar = new std::wstring(L";");
+					RELEASEOBJECT(m_sCsvDelimiterCharFrom);
+					m_sCsvDelimiterCharFrom = new std::wstring(L";");
 				}
-				if (!m_nCsvTxtEncoding)
+				if (!m_nCsvTxtEncodingFrom)
 				{
 					int nCodePage = getEncodingByContent();
 					if (nCodePage >= 0)
-						m_nCsvTxtEncoding = new int(nCodePage);
+						m_nCsvTxtEncodingFrom = new int(nCodePage);
 				}
-				if (NULL == m_nCsvTxtEncoding || (NULL == m_nCsvDelimiter && NULL == m_sCsvDelimiterChar))
+				if (NULL == m_nCsvTxtEncodingFrom || (NULL == m_nCsvDelimiterFrom && NULL == m_sCsvDelimiterCharFrom))
 				{
 					if (isEmptyFile())
 					{
-						if (!m_nCsvDelimiter && !m_sCsvDelimiterChar)
+						if (!m_nCsvDelimiterFrom && !m_sCsvDelimiterCharFrom)
 						{
-							m_sCsvDelimiterChar = new std::wstring(L",");
+							m_sCsvDelimiterCharFrom = new std::wstring(L",");
 						}
 						eRes = TCD_ERROR; // ???
 					}

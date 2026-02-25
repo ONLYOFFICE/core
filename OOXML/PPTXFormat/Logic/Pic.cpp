@@ -841,6 +841,10 @@ namespace PPTX
 				{
 					pVml = parentFileAs<PPTX::SlideMaster>().Vml.GetPointer();
 				}
+				else if (parentFileIs<PPTX::SlideLayout>())
+				{
+					pVml = parentFileAs<PPTX::SlideLayout>().Vml.GetPointer();
+				}
 				if (oleObject->m_sShapeId.IsInit() && pVml && !blipFill.blip->embed.IsInit() && blipFill.blip->oleFilepathImage.empty())
 				{					
 					std::map<std::wstring, OOX::CVmlDrawing::_vml_shape>::iterator pFind = pVml->m_mapShapes.find(*oleObject->m_sShapeId);
@@ -1727,6 +1731,7 @@ namespace PPTX
             XmlMacroReadAttributeBase(node, L"progId",	oleObject->m_sProgId);
             XmlMacroReadAttributeBase(node, L"r:id",	oleObject->m_oId);
 			XmlMacroReadAttributeBase(node, L"name", oleObject->m_oName);
+			XmlMacroReadAttributeBase(node, L"spid", oleObject->m_sShapeId);
 
 			if (false == oleObject->m_oId.IsInit())
 			{
@@ -1758,7 +1763,6 @@ namespace PPTX
 				}
 				blipFill.blip->oleRid = oleObject->m_oId->get();
 			}
-            XmlMacroReadAttributeBase(node, L"spid",	oleObject->m_sShapeId);
 		}
 		void Pic::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{

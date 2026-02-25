@@ -94,6 +94,7 @@ namespace OOX
 
 			const CPath& GetReadPath();
 			bool IsEmpty();
+			bool IsChart();
 
 		private:
 			CPath m_oReadPath;

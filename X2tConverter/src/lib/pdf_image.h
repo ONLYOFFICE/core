@@ -43,21 +43,66 @@
 #include "../../../OfficeUtils/src/ZipFolder.h"
 
 #include "common.h"
+#include <algorithm>
 
 namespace NExtractTools
 {
+	static bool ParseByteRange(const BYTE* pData, DWORD dwLength, DWORD outRange[4])
+	{
+		const BYTE pPattern[] = "ByteRange";
+		const size_t nPatternLen = 9;
+
+		const BYTE* it = std::find_end(pData, pData + dwLength, pPattern, pPattern + nPatternLen);
+		if (it == pData + dwLength)
+			return false;
+
+		it += nPatternLen;
+
+		while (it < pData + dwLength && *it != '[')
+		{
+			if (*it != ' ' && *it != '\t' && *it != '\r' && *it != '\n')
+				return false;
+			++it;
+		}
+		if (it >= pData + dwLength)
+			return false;
+
+		++it;
+
+		for (int i = 0; i < 4; ++i)
+		{
+			while (it < pData + dwLength && (*it == ' ' || *it == '\t'))
+				++it;
+			if (it >= pData + dwLength)
+				return false;
+
+			if (*it < '0' || *it > '9')
+				return false;
+
+			DWORD nValue = 0;
+			while (it < pData + dwLength && *it >= '0' && *it <= '9')
+			{
+				nValue = nValue * 10 + (*it - '0');
+				++it;
+			}
+			outRange[i] = nValue;
+		}
+
+		while (it < pData + dwLength && (*it == ' ' || *it == '\t'))
+			++it;
+		if (it >= pData + dwLength || *it != ']')
+			return false;
+
+		return true;
+	}
 	static int pdfSign(const std::wstring& file, NSFonts::IApplicationFonts* fonts, InputParams& params, ConvertParams& convertParams)
 	{
-		ICertificate* certificate = NSSign::loadCertificate(params);
-		if (!certificate)
-			return 1;
-
-		std::wstring pdfTemp = combinePath(convertParams.m_sTempDir, L"pdf_sign.pdf");
-		NSFile::CFileBinary::Move(file, pdfTemp);
-
 		CPdfFile pdfFile(fonts);
 		pdfFile.SetTempDirectory(convertParams.m_sTempDir);
 		std::wstring password = params.getSavePassword();
+
+		std::wstring pdfTemp = combinePath(convertParams.m_sTempDir, L"pdf_sign.pdf");
+		NSFile::CFileBinary::Copy(file, pdfTemp);
 
 		if (!pdfFile.LoadFromFile(pdfTemp, L"", password.c_str(), password.c_str()))
 			return 2;
@@ -68,10 +113,82 @@ namespace NExtractTools
 		if (!pdfFile.EditPage(0))
 			return 2;
 
-		pdfFile.Sign(0, 0, 0, 0, L"", certificate);
+		CPDFSignatureInfo oSigInfo;
+		auto extractJsonValue = [](const std::wstring* jsonParams, const std::wstring& key, std::wstring::size_type startPos) -> std::wstring
+		{
+			std::wstring searchPattern = L"\"" + key + L"\":\"";
+			std::wstring::size_type pos = jsonParams->find(searchPattern, startPos);
+			if (std::wstring::npos == pos)
+				return L"";
+
+			pos += searchPattern.length();
+			std::wstring::size_type posEnd = jsonParams->find(L"\"", pos);
+			if (std::wstring::npos == posEnd)
+				return L"";
+
+			return jsonParams->substr(pos, posEnd - pos);
+		};
+
+		if (params.m_sJsonParams)
+		{
+			std::wstring::size_type posLayout = params.m_sJsonParams->find(L"\"pdfLayout\":{");
+			if (std::wstring::npos != posLayout)
+			{
+				std::wstring::size_type posSignature = params.m_sJsonParams->find(L"\"signature\":{", posLayout);
+				if (std::wstring::npos != posSignature)
+				{
+					std::wstring::size_type posSignature2 = params.m_sJsonParams->find(L"}", posSignature);
+					if (std::wstring::npos == posSignature2)
+						return 2;
+
+					oSigInfo.m_wsReason   = extractJsonValue(params.m_sJsonParams, L"reason", posSignature);
+					oSigInfo.m_wsContact  = extractJsonValue(params.m_sJsonParams, L"contactInfo", posSignature);
+					oSigInfo.m_wsName     = extractJsonValue(params.m_sJsonParams, L"name", posSignature);
+					oSigInfo.m_wsLocation = extractJsonValue(params.m_sJsonParams, L"location", posSignature);
+				}
+			}
+		}
+
+		pdfFile.Sign(0, 0, 0, 0, L"", &oSigInfo);
 		pdfFile.Close();
 
+		if (!pdfFile.PrepareSignature(file))
+			return 2;
+
+		if (params.getSigningKeyStorePath() == L"_placeholder_")
+			return 0;
+
+		BYTE* pDataFile = NULL;
+		DWORD dwDataLength = 0;
+
+		NSFile::CFileBinary::ReadAllBytes(file, &pDataFile, dwDataLength);
+
+		DWORD aByteRange[4] = {0};
+		if (!ParseByteRange(pDataFile, dwDataLength, aByteRange))
+			return 2;
+		if (aByteRange[0] + aByteRange[1] > dwDataLength || aByteRange[2] + aByteRange[3] > dwDataLength)
+			return 2;
+
+		DWORD dwDataSignLength = aByteRange[1] + aByteRange[3];
+		BYTE* pDataToSign = new BYTE[dwDataSignLength];
+		memcpy(pDataToSign, pDataFile + aByteRange[0], aByteRange[1]);
+		memcpy(pDataToSign + aByteRange[1], pDataFile + aByteRange[2], aByteRange[3]);
+		RELEASEARRAYOBJECTS(pDataFile);
+
+		ICertificate* certificate = NSSign::loadCertificate(params);
+		if (!certificate)
+			return 1;
+
+		BYTE* pDatatoWrite = NULL;
+		unsigned int dwLenDatatoWrite = 0;
+		certificate->SignPKCS7(pDataToSign, dwDataSignLength, pDatatoWrite, dwLenDatatoWrite);
+		RELEASEARRAYOBJECTS(pDataToSign);
+
+		pdfFile.FinalizeSignature(pDatatoWrite, dwLenDatatoWrite);
+
+		RELEASEARRAYOBJECTS(pDatatoWrite);
 		RELEASEOBJECT(certificate);
+
 		return 0;
 	}
 }
@@ -109,9 +226,9 @@ namespace NExtractTools
 			nRet = S_OK == pdfWriter.OnlineWordToPdf(sFrom, sTo, &oBufferParams) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
 		}
 
-		if (0 == nRet)
+		if (0 == nRet && !params.getSigningKeyStorePath().empty())
 		{
-			pdfSign(sTo, pApplicationFonts, params, convertParams);
+			nRet = pdfSign(sTo, pApplicationFonts, params, convertParams);
 		}
 
 		RELEASEOBJECT(pApplicationFonts);
@@ -284,9 +401,9 @@ namespace NExtractTools
 			int nReg = (convertParams.m_bIsPaid == false) ? 0 : 1;
 			nRes = (S_OK == pdfWriter.OnlineWordToPdfFromBinary(sPdfBinFile, sTo, &oBufferParams)) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
 
-			if (0 == nRes)
+			if (0 == nRes && !params.getSigningKeyStorePath().empty())
 			{
-				pdfSign(sTo, pApplicationFonts, params, convertParams);
+				nRes = pdfSign(sTo, pApplicationFonts, params, convertParams);
 			}
 
 			RELEASEOBJECT(pApplicationFonts);
@@ -1087,9 +1204,9 @@ namespace NExtractTools
 				{
 					nRes = S_OK == pdfWriter.SaveToFile(sTo) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
 
-					if (0 == nRes)
+					if (0 == nRes && !params.getSigningKeyStorePath().empty())
 					{
-						pdfSign(sTo, pApplicationFonts, params, convertParams);
+						nRes = pdfSign(sTo, pApplicationFonts, params, convertParams);
 					}
 				}
 				RELEASEOBJECT(pReader);

@@ -2083,7 +2083,7 @@ int docx_conversion_context::process_paragraph_style(_CP_OPT(std::wstring) style
         else
         {
             const std::wstring id = styles_map_.get( styleInst->name(), styleInst->type() );
-            output_stream() << L"<w:pPr>";
+			output_stream() << L"<w:pPr>";
 
 			output_stream() << L"<w:pStyle w:val=\"" << id << L"\" />";
 
@@ -2315,7 +2315,7 @@ void docx_conversion_context::process_page_break_after(const odf_reader::style_i
             if (inst->content() && inst->content()->get_style_paragraph_properties())
             {
                 _CP_OPT(odf_types::fo_break) fo_break_val = inst->content()->get_style_paragraph_properties()->content_.fo_break_after_;
-                if (fo_break_val)
+				if (fo_break_val)
                 {
 					set_page_break_after(fo_break_val->get_type());
 					break;
@@ -2806,6 +2806,46 @@ void docx_conversion_context::add_jsaProject(const std::string &content)
 	
 	output_document_->get_word_files().add_jsaProject(content);
 	output_document_->get_content_types_file().add_or_find_default(L"bin");
+}
+
+const std::wstring docx_conversion_context::get_current_fontName()
+{
+	auto textProps = current_text_properties();
+	if( textProps )
+	{
+		if( textProps->content_.fo_font_family_ )
+		{
+			return *textProps->content_.fo_font_family_;
+		}
+		else if( textProps->content_.style_font_name_ )
+		{
+			return *textProps->content_.style_font_name_;
+		}
+	}
+
+	return L"";
+}
+
+const double docx_conversion_context::get_current_fontSize_from_default_style()
+{
+	auto defaultStyle = root()->odf_context().styleContainer().style_default_by_type(odf_types::style_family::Paragraph);
+
+	if( defaultStyle )
+	{
+		const auto content = defaultStyle->content();
+
+		if( content )
+		{
+			const auto textProps = content->get_style_text_properties();
+
+			if( textProps && textProps->content_.fo_font_size_ )
+			{
+				return textProps->content_.fo_font_size_->get_length().get_value_unit(odf_types::length::pt);
+			}
+		}
+	}
+
+	return 0.0;
 }
 
 }

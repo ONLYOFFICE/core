@@ -1261,12 +1261,10 @@ void CConverter2OOXML::WriteEqEditShape(const CCtrlEqEdit* pEqEditShape, short s
 
 	OpenParagraph(shParaShapeID, shParaStyleID, oBuilder, oState);
 
-	oBuilder.WriteString(L"<w:r><w:t xml:space=\"preserve\">");
+	oBuilder.WriteString(L"<w:r/>");
 
 	StarMath::CStarMathConverter oConverterStarMath;
-
 	oBuilder.WriteString(oConverterStarMath.ConvertEQNToOOXml(pEqEditShape->GetEqn()));
-	oBuilder.WriteString(L"</w:t></w:r>");
 }
 
 void CConverter2OOXML::WriteOleShape(const CCtrlShapeOle* pOleShape, short shParaShapeID, short shParaStyleID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)

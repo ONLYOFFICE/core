@@ -102,11 +102,23 @@ void CPdfFile::Close()
 	else if (m_pInternal->pReader)
 		m_pInternal->pReader->Close();
 }
-void CPdfFile::Sign(const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& wsPicturePath, ICertificate* pCertificate)
+void CPdfFile::Sign(const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& wsPicturePath, CPDFSignatureInfo* pSigInfo)
 {
 	if (!m_pInternal->pWriter)
 		return;
-	m_pInternal->pWriter->Sign(dX, dY, dW, dH, wsPicturePath, pCertificate);
+	m_pInternal->pWriter->Sign(dX, dY, dW, dH, wsPicturePath, pSigInfo->m_wsReason, pSigInfo->m_wsContact, pSigInfo->m_wsName, pSigInfo->m_wsLocation);
+}
+bool CPdfFile::PrepareSignature(const std::wstring& wsPath)
+{
+	if (!m_pInternal->pWriter)
+		return false;
+	return m_pInternal->pWriter->PrepareSignature(wsPath);
+}
+bool CPdfFile::FinalizeSignature(BYTE* pSignedData, DWORD dwDataLength)
+{
+	if (!m_pInternal->pWriter)
+		return false;
+	return m_pInternal->pWriter->FinalizeSignature(pSignedData, dwDataLength);
 }
 void CPdfFile::SetDocumentInfo(const std::wstring& wsTitle, const std::wstring& wsCreator, const std::wstring& wsSubject, const std::wstring& wsKeywords)
 {
@@ -133,6 +145,12 @@ bool CPdfFile::EditPdf(const std::wstring& wsDstFile)
 	RELEASEOBJECT(m_pInternal->pEditor);
 	m_pInternal->pEditor = new CPdfEditor(m_pInternal->wsSrcFile, m_pInternal->wsPassword, wsDstFile, m_pInternal->pReader, m_pInternal->pWriter);
 	return m_pInternal->pEditor->GetError() == 0;
+}
+void CPdfFile::EditClose()
+{
+	if (m_pInternal->pEditor)
+		m_pInternal->pEditor->Close();
+	RELEASEOBJECT(m_pInternal->pEditor);
 }
 void CPdfFile::SetEditType(int nType)
 {
@@ -1072,12 +1090,29 @@ HRESULT CPdfFile::put_FontName(const std::wstring& wsName)
 			}
 			m_pInternal->pWriter->AddFont(wsFont, bBold, bItalic, wsFontPath, 0);
 		}
-		else
+		else if (wsFontPath.empty())
 		{
-			const std::map<std::wstring, std::wstring>& mFonts = m_pInternal->pReader->GetFonts();
-			auto it = mFonts.find(sSub);
-			if (it != mFonts.end())
-				wsFontPath = it->second;
+			size_t lastSpace = wsName.find_last_of(L' ');
+			if (lastSpace != std::wstring::npos)
+			{
+				std::wstring sTargetHash = wsName.substr(lastSpace + 1);
+				const std::map<std::wstring, std::wstring>& mFonts = m_pInternal->pReader->GetFonts();
+				 std::map<std::wstring, std::wstring>::const_iterator it = std::find_if(mFonts.begin(), mFonts.end(), [&sTargetHash](const std::pair<const std::wstring, std::wstring>& pair)
+				{
+					const std::wstring& key = pair.first;
+					size_t pos = key.rfind(L' ');
+					if (pos != std::wstring::npos)
+					{
+						std::wstring sKeyHash = key.substr(pos + 1);
+						return sKeyHash == sTargetHash;
+					}
+					return false;
+				});
+				if (it != mFonts.end())
+					wsFont = L"Embedded: " + it->first;
+				else
+					wsFont = wsName.substr(10, lastSpace - 10);
+			}
 			else
 				wsFont = sSub;
 		}

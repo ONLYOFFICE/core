@@ -1264,7 +1264,11 @@ namespace MetaFile
 		
 		if (NULL != m_pPath)
 		{
-			m_pDC->GetClip()->SetPath(*m_pPath, unRegionMode, m_pDC->GetFinalTransform(GM_ADVANCED));
+			TEmfXForm oTransform{m_pDC->GetFinalTransform(GM_ADVANCED)};
+			oTransform.Dx -= GetDCBounds().Left;
+			oTransform.Dy -= GetDCBounds().Top;
+
+			m_pDC->GetClip()->SetPath(*m_pPath, unRegionMode, oTransform);
 			RELEASEOBJECT(m_pPath);
 			UpdateOutputDC();
 		}

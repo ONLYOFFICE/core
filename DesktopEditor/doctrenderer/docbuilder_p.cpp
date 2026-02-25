@@ -347,11 +347,11 @@ bool CV8RealTimeWorker::OpenFile(const std::wstring& sBasePath, const std::wstri
 	}
 
 	if (!bIsBreak)
-		bIsBreak = !this->ExecuteCommand(L"Api.asc_nativeInitBuilder();");
+		bIsBreak = !this->ExecuteCommand(L"Asc.editor.asc_nativeInitBuilder();");
 	if (!bIsBreak)
-		bIsBreak = !this->ExecuteCommand(L"Api.asc_SetSilentMode(true);");
+		bIsBreak = !this->ExecuteCommand(L"Asc.editor.asc_SetSilentMode(true);");
 	if (!bIsBreak)
-		bIsBreak = !this->ExecuteCommand(L"Api.asc_showComments();");
+		bIsBreak = !this->ExecuteCommand(L"Asc.editor.asc_showComments();");
 
 	LOGGER_SPEED_LAP("open");
 
@@ -425,7 +425,7 @@ bool CV8RealTimeWorker::SaveFileWithChanges(int type, const std::wstring& _path,
 		bIsSilentMode = true;
 
 	if (bIsSilentMode)
-		this->ExecuteCommand(L"Api.asc_SetSilentMode(false);", NULL, isEnterContext);
+		this->ExecuteCommand(L"Asc.editor.asc_SetSilentMode(false);", NULL, isEnterContext);
 
 	std::wstring strError;
 	bool bIsError = Doct_renderer_SaveFile_ForBuilder(_formatDst,
@@ -437,7 +437,7 @@ bool CV8RealTimeWorker::SaveFileWithChanges(int type, const std::wstring& _path,
 													  sJsonParams);
 
 	if (bIsSilentMode)
-		this->ExecuteCommand(L"Api.asc_SetSilentMode(true);", NULL, isEnterContext);
+		this->ExecuteCommand(L"Asc.editor.asc_SetSilentMode(true);", NULL, isEnterContext);
 
 	if (isEnterContext)
 		m_context->Exit();
@@ -1507,7 +1507,7 @@ namespace NSDoctRenderer
 					if (m_pInternal->m_oParams.m_bSaveWithDoctrendererMode)
 					{
 						// перед сохранением в такой схеме нужно скинуть изменения
-						this->ExecuteCommand(L"Api.asc_Save();");
+						this->ExecuteCommand(L"Asc.editor.asc_Save();");
 					}
 
 					const wchar_t* sParams = NULL;

@@ -83,8 +83,8 @@ namespace NExtractTools
 		params.m_bMacro = false;
 
 		CHtmlFile2 oFile;
-		oFile.SetTmpDirectory(convertParams.m_sTempDir);
-		return (S_OK == oFile.OpenBatchHtml(arFiles, sTo)) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+		oFile.SetTempDirectory(convertParams.m_sTempDir);
+		return (S_OK == oFile.ConvertHTML2OOXML(arFiles, sTo)) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
 	}
 	_UINT32 html2docx_dir(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
 	{
@@ -129,8 +129,14 @@ namespace NExtractTools
 	_UINT32 mht2docx_dir(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
 	{
 		CHtmlFile2 oFile;
-		oFile.SetTmpDirectory(convertParams.m_sTempDir);
-		return (S_OK == oFile.OpenMht(sFrom, sTo)) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+		oFile.SetTempDirectory(convertParams.m_sTempDir);
+		return (S_OK == oFile.ConvertMHT2OOXML(sFrom, sTo)) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+	}
+	_UINT32 mht2md(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
+	{
+		CHtmlFile2 oFile;
+		oFile.SetTempDirectory(convertParams.m_sTempDir);
+		return (S_OK == oFile.ConvertMHT2Markdown(sFrom, sTo)) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
 	}
 	// epub
 	_UINT32 epub2docx_dir(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
@@ -257,5 +263,13 @@ namespace NExtractTools
 	_UINT32 md2html(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
 	{
 		return Md::ConvertMdFileToHtml(sFrom, sTo) ? S_OK : AVS_FILEUTILS_ERROR_CONVERT;
+	}
+
+	// html -> markdown
+	_UINT32 html2md(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
+	{
+		CHtmlFile2 oFile;
+		oFile.SetTempDirectory(convertParams.m_sTempDir);
+		return (S_OK == oFile.ConvertHTML2Markdown(sFrom, sTo)) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
 	}
 }

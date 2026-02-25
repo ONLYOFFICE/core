@@ -73,6 +73,10 @@ namespace PdfWriter
 			fRight  = dR;
 			fTop    = dT;
 		}
+		bool IsEmpty()
+		{
+			return fLeft == 0.0 && fBottom == 0.0 && fRight == 0.0 && fTop == 0.0;
+		}
 
 		double fLeft;
 		double fBottom;

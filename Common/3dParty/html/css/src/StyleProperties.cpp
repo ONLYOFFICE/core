@@ -600,12 +600,6 @@ namespace NSCSS
 
 		return true;
 	}
-	
-	void CColor::SetNone()
-	{
-		Clear();
-		m_oValue.reset();
-	}
 
 	char NormalizeNegativeColorValue(INT nValue)
 	{
@@ -647,18 +641,21 @@ namespace NSCSS
 		}
 		else if (L"none" == wsNewValue || wsNewValue == L"transparent")
 		{
-			SetNone();
+			Clear();
+			m_oValue = CColorValue();
 			bResult = true;
 		}
 		else if (L"context-stroke" == wsNewValue)
 		{
 			Clear();
 			m_oValue = CColorValueContextStroke();
+			bResult = true;
 		}
 		else if (L"context-fill" == wsNewValue)
 		{
 			Clear();
 			m_oValue = CColorValueContextFill();
+			bResult = true;
 		}
 		else if (10 <= wsNewValue.length() && wsNewValue.substr(0, 3) == L"rgb")
 		{

@@ -366,7 +366,7 @@ void line_break::docx_convert(oox::docx_conversion_context & Context)
 {
 	bool in_drawing	= false;
 
- 	if (Context.get_drawing_context().get_current_shape() || Context.get_drawing_context().get_current_frame())
+	if (Context.get_drawing_context().get_current_shape() || Context.get_drawing_context().get_current_frame())
 	{
 		in_drawing = true;
 

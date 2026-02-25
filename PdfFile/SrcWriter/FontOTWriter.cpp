@@ -153,7 +153,7 @@ namespace PdfWriter
 	typedef std::map<unsigned short, ByteList> UShortToByteList;
 	struct EncodingsInfo
 	{
-		EncodingsInfo() { mEncoding = NULL; }
+		EncodingsInfo() { mEncoding = NULL; mEncodingsCount = 0; }
 
 		long long mEncodingStart;
 		long long mEncodingEnd;
@@ -4738,12 +4738,12 @@ namespace PdfWriter
 
 			// assuming that 0 is in the subset glyphs IDs, which does not require encoding
 			// get the encodings count
-			BYTE encodingGlyphsCount = std::min((BYTE)(inSubsetGlyphIDs.size() - 1), encodingInfo->mEncodingsCount);
+			BYTE encodingGlyphsCount = inSubsetGlyphIDs.empty() ? 0 : std::min((BYTE)(inSubsetGlyphIDs.size() - 1), encodingInfo->mEncodingsCount);
 
 			mPrimitivesWriter->WriteCard8(encodingGlyphsCount);
 			for (BYTE i = 0; i < encodingGlyphsCount; ++i)
 			{
-				if (inSubsetGlyphIDs[i + 1] < encodingInfo->mEncodingsCount)
+				if (inSubsetGlyphIDs[i + 1] < encodingInfo->mEncodingsCount && inSubsetGlyphIDs[i + 1] > 0)
 					mPrimitivesWriter->WriteCard8(encodingInfo->mEncoding[inSubsetGlyphIDs[i + 1] - 1]);
 				else
 					mPrimitivesWriter->WriteCard8(0);
@@ -4778,7 +4778,7 @@ namespace PdfWriter
 		{
 			int i = 1;
 			for (; it != inSubsetGlyphIDs.end(); ++it, ++i)
-				mPrimitivesWriter->WriteSID(inCIDMapping ? (*inCIDMapping)[i] : i);
+				mPrimitivesWriter->WriteSID(inCIDMapping && i < (int)inCIDMapping->size() ? (*inCIDMapping)[i] : i);
 
 		}
 		else

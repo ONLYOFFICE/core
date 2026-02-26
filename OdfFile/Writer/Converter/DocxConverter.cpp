@@ -5089,9 +5089,9 @@ bool DocxConverter::convert(OOX::Logic::CTableProperty *oox_table_pr, odf_writer
 			{
 				if ( oox_table_pr->m_oTblW->m_oW->IsPercent() == false)
 				{
-					const double PtPerCm = 28.3464567;  // points(пунктов) в сантиметре. (72 pt / 2.54 см =  28.3464567)
-					const double TwPerPt = 20.0;         // twips в пункте
-					const double TwPerCm = PtPerCm * TwPerPt;  // 566.929134 twips в сантиметре
+					const double PtPerCm = 72 / 2.54;
+					const double TwPerPt = 20.0;
+					const double TwPerCm = PtPerCm * TwPerPt;
 					const double WidthCm = oox_table_pr->m_oTblW->m_oW->GetValue() / TwPerCm;
 					odt_context->table_context()->set_default_column_width(WidthCm);
 					table_properties->content_.style_width_ = odf_types::length(WidthCm, odf_types::length::cm);

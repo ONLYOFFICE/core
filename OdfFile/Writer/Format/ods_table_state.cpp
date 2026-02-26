@@ -155,11 +155,11 @@ namespace utils//////////////////////////////////////////// ОБЩАЯ хрен�
 		{
 			nDate = boost::lexical_cast<__int64>(oox_date_time);
 		}
-
+		bool bPT = (nDate < 1);
 		std::wstring sDate, sTime;
 		if (dTime > 0)
 		{
-			sTime = convert_time(dTime, false);
+			sTime = convert_time(dTime, bPT);
 		}
 		if (nDate > 0)
 		{
@@ -177,7 +177,14 @@ namespace utils//////////////////////////////////////////// ОБЩАЯ хрен�
 		}
 		else
 		{
-			odf_date_time = sDate + (sTime.empty() ? L"" : L"T" + sTime);
+			if (bPT)
+			{
+				odf_date_time = L"PT" + sTime;
+			}
+			else
+			{
+				odf_date_time = sDate + (sTime.empty() ? L"" : L"T" + sTime);
+			}
 		}
 		return res;
 	}

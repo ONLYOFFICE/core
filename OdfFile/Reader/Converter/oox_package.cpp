@@ -443,9 +443,10 @@ void embeddings::write(const std::wstring & RootPath)
 			items[i].type == typeControlProps ||
 			items[i].type == typeControl))
 		{
+			size_t pos_off = items[i].outputName.rfind(L"/");
+			size_t pos = items[i].outputName.rfind(L".");
 
-			int pos = items[i].outputName.rfind(L".");
-			std::wstring extension = pos >= 0 ? items[i].outputName.substr(pos + 1) : L"";
+			std::wstring extension = (pos != std::wstring::npos && pos > pos_off) ? items[i].outputName.substr(pos + 1) : L"";
 
 			content_types.add_or_find_default(extension);
 

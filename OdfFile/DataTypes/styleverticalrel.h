@@ -67,9 +67,10 @@ public:
     {		
 		switch(type_)
 		{
-		case vertical_rel::Page:        return L"page"; 
-		case vertical_rel::PageContent: return L"margin"; 
-		case vertical_rel::Paragraph:   return L"paragraph"; 
+        case vertical_rel::Page:             return L"page";
+        case vertical_rel::PageContent:      return L"margin";
+        case vertical_rel::Paragraph:        return L"paragraph";
+        case vertical_rel::ParagraphContent: return L"paragraph";
 		} 
 		return L"margin";
 	}

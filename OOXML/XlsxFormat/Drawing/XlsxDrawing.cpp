@@ -314,10 +314,10 @@ namespace OOX
 							AxisParentUnion->m_AXES = XLS::BaseObjectPtr(axes);
 							ChartFormatsPtr->m_arAXISPARENT.push_back(XLS::BaseObjectPtr(AxisParentUnion));
 							auto axisPos = new XLS::Pos;
-							axisPos->x1 = -1000;
-							axisPos->y1 = -1000;
-							axisPos->x2 = 1000;
-							axisPos->y2 = 2500;
+							axisPos->x1 = 0;
+							axisPos->y1 = 0;
+							axisPos->x2 = 4000;
+							axisPos->y2 = 3800;
 							AxisParentUnion->m_Pos = XLS::BaseObjectPtr(axisPos);
 
 							for(auto chartIndex = 0; chartIndex < ChartFile->m_oChartSpace.m_chart->m_plotArea->m_Items.size(); chartIndex ++)
@@ -422,6 +422,11 @@ namespace OOX
 							auto textPos = new XLS::Pos;
 							textPos->mdBotRt = 2;
 							textPos->mdTopLt = 2;
+							textPos->x1 = 2000;
+							textPos->x2 = 2300;
+							textPos->y1 = 3900;
+							textPos->y2 = 4000;
+
 							labelUnion->m_Pos = XLS::BaseObjectPtr(textPos);
 							auto objLink = new XLS::ObjectLink;
 							objLink->wLinkObj = 1;

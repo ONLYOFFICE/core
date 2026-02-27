@@ -379,29 +379,6 @@ namespace OOX
 		}
 		XLS::BaseObjectPtr CWorksheet::toXLS(XLS::BaseObjectPtr globalsPtr)
 		{
-			if(m_bIsChartSheet)
-			{
-
-				if(m_oDrawing.IsInit() && m_oDrawing->m_oId.IsInit())
-				{	std::vector<XLS::BaseObjectPtr> chartVector;
-					RId drawingId = m_oDrawing->m_oId->GetValue();
-					auto castedDrawing = Get<OOX::File>(drawingId);
-					auto drawingPtr = static_cast<OOX::Spreadsheet::CDrawing*>(castedDrawing.GetPointer());
-					drawingPtr->toXLSChart(chartVector);
-					if(!chartVector.empty())
-					{	auto castedStream = static_cast<XLS::ChartSheetSubstream*>(chartVector.back().get());
-						castedStream->separate = true;
-						return chartVector.back();
-					}
-					else
-					{
-						auto chartSheetPtr = new XLS::ChartSheetSubstream(0);
-						return XLS::BaseObjectPtr(chartSheetPtr);
-					}
-				}
-
-
-			}
 			auto worksheetPtr = new XLS::WorksheetSubstream(0);
 			auto sheetPtr = XLS::BaseObjectPtr(worksheetPtr);
 			if(m_oSortState.IsInit() || m_oAutofilter.IsInit())

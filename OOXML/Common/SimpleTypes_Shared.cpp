@@ -267,7 +267,7 @@ namespace SimpleTypes
 	std::wstring CGuid::ToString  (bool braces) const
 	{
 		std::wstringstream sstream;
-		sstream << boost::wformat( L"%08x-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x" ) % m_oGUID.a % m_oGUID.b % m_oGUID.c % m_oGUID.d % m_oGUID.e % m_oGUID.f % m_oGUID.g % m_oGUID.h % m_oGUID.i % m_oGUID.j % m_oGUID.k;
+		sstream << boost::wformat( L"%08X-%04X-%04X-%02X%0X-%02X%02X%02X%02X%02X%02X" ) % m_oGUID.a % m_oGUID.b % m_oGUID.c % m_oGUID.d % m_oGUID.e % m_oGUID.f % m_oGUID.g % m_oGUID.h % m_oGUID.i % m_oGUID.j % m_oGUID.k;
 		std::wstring res = (braces ? L"{" : L"") + sstream.str() + (braces ? L"}" : L"");
 		return res;
 	}

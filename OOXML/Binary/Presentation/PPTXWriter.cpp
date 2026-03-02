@@ -681,11 +681,6 @@ namespace NSBinPptxRW
 						m_oReader.m_pRels->SaveRels(pathFileRels.GetPath());
 					}
 				}
-				else
-				{
-					m_arHandoutMasters_Theme.emplace_back();
-					CreateDefaultHandoutMasters(m_arHandoutMasters_Theme[0]);
-				}
 			}
 	// slides
 			int nComment = 1;
@@ -974,6 +969,8 @@ namespace NSBinPptxRW
 				}
 
 				m_oPresentation.notesMasterIdLst.clear();
+				m_oPresentation.handoutMasterIdLst.clear();
+			
 				if (bNotesMasterPresent)
 				{
 					m_oPresentation.notesMasterIdLst.push_back(PPTX::Logic::XmlId(L"p:notesMasterId"));

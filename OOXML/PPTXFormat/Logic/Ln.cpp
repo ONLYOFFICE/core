@@ -348,15 +348,24 @@ namespace PPTX
 							}
 							else if(scheme->val.get() == L"bg1")
 							{
-								ptr->icv= 13;
+								ptr->icv= 0x4E;
+								ptr->rgb.blue = 0xff;
+								ptr->rgb.red = 0xff;
+								ptr->rgb.green = 0xff;
 							}
 							else if(scheme->val.get() == L"accent1")
 							{
-								ptr->icv = 4;
+								ptr->icv = 0x30;
+								ptr->rgb.blue = 0xC4;
+								ptr->rgb.red = 0x44;
+								ptr->rgb.green = 0x72;
 							}
 							else if(scheme->val.get() == L"accent2")
 							{
-								ptr->icv = 5;
+								ptr->icv = 0x35;
+								ptr->rgb.red = 0xed;
+								ptr->rgb.green = 0x7d;
+								ptr->rgb.blue = 0x31;
 							}
 						}
 					}

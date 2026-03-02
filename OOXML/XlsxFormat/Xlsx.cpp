@@ -224,11 +224,7 @@ bool OOX::Spreadsheet::CXlsx::WriteXLS(const CPath& oFilePath)
 	workbookStream->m_GlobalsSubstream = m_pWorkbook->toXLS();
 	auto CastedGlobalsStram = static_cast<XLS::GlobalsSubstream*>(workbookStream->m_GlobalsSubstream.get());
 	CastedGlobalsStram->global_info_ = writer.globalInfoPtr;
-	for(auto i : m_arWorksheets)
-		workbookStream->m_arWorksheetSubstream.push_back(i->toXLS(workbookStream->m_GlobalsSubstream));
-	CastedGlobalsStram->m_arSUPBOOK.push_back(m_pWorkbook->WriteXtiRefsXLS());
-	if(m_pSharedStrings != nullptr)
-		m_pSharedStrings->toXLS(workbookStream->m_GlobalsSubstream);
+
 	auto themesPtr = m_pWorkbook->Find(OOX::FileTypes::Theme);
 	if(!(themesPtr->type() == OOX::FileTypes::Unknown))
 	{	auto counter = 0;
@@ -266,6 +262,13 @@ bool OOX::Spreadsheet::CXlsx::WriteXLS(const CPath& oFilePath)
 			writer.globalInfoPtr->RegisterPaletteColor(counter, sStream.str());
 		}
 	}
+
+	for(auto i : m_arWorksheets)
+		workbookStream->m_arWorksheetSubstream.push_back(i->toXLS(workbookStream->m_GlobalsSubstream));
+	CastedGlobalsStram->m_arSUPBOOK.push_back(m_pWorkbook->WriteXtiRefsXLS());
+	if(m_pSharedStrings != nullptr)
+		m_pSharedStrings->toXLS(workbookStream->m_GlobalsSubstream);
+
 	if(m_pStyles != nullptr)
 		m_pStyles->toXLS(workbookStream->m_GlobalsSubstream);
 

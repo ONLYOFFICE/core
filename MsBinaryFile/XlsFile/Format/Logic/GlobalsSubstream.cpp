@@ -671,9 +671,6 @@ const bool GlobalsSubstream::saveContent(BinProcessor& proc)
 		proc.mandatory(*m_CodeName);
 	if(m_FNGROUPS != nullptr)
 		proc.mandatory(*m_FNGROUPS);
-	for(auto i : m_arLBL)
-		if(i != nullptr)
-			proc.mandatory(*i);
 	if(m_PROTECTION != nullptr)
 		proc.mandatory(*m_PROTECTION);
 	else
@@ -729,6 +726,9 @@ const bool GlobalsSubstream::saveContent(BinProcessor& proc)
 	else
 		proc.mandatory<Country>();
 	for(auto i: m_arSUPBOOK)
+		if(i != nullptr)
+			proc.mandatory(*i);
+	for(auto i : m_arLBL)
 		if(i != nullptr)
 			proc.mandatory(*i);
 	for(auto i : m_arMSODRAWINGGROUP)

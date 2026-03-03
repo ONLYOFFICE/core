@@ -522,13 +522,16 @@ namespace OOX
 					auto feat11 = static_cast< XLS::FEAT11*>(worksheetPtr->m_arFEAT11.back().get());
 					XLS::FEAT11::_data featData;
 					auto tempTable = static_cast<CTableFile*>(file.GetPointer());
-					featData.m_Feature = tempTable->m_oTable->toXLS();
-					if(tempTable->m_oTable->m_oTableStyleInfo.IsInit())
+					if(tempTable->m_oTable.IsInit())
 					{
-						featData.m_arList12.push_back(tempTable->m_oTable->m_oTableStyleInfo->toXLS());
-					}
+						featData.m_Feature = tempTable->m_oTable->toXLS();
+						if(tempTable->m_oTable->m_oTableStyleInfo.IsInit())
+						{
+							featData.m_arList12.push_back(tempTable->m_oTable->m_oTableStyleInfo->toXLS());
+						}
 
-					feat11->m_arFEAT.push_back(featData);
+						feat11->m_arFEAT.push_back(featData);
+					}
 				}
 				else if(file->type() == OOX::SpreadsheetBin::FileTypes::PivotTableBin)
 				{

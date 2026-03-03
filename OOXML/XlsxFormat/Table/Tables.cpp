@@ -962,7 +962,14 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
 		if(m_oTableColumns.is_init())
 		{
 			for(auto i : m_oTableColumns->m_arrItems)
+			{
 				ptr->rgbFeat.arFieldData.push_back(i->toXLS());
+				if(ptr->rgbFeat.crwHeader == 0 && ptr->rgbFeat.fSingleCell == false)
+				{
+					auto castedCol = static_cast<XLS::Feat11FieldDataItem*>(ptr->rgbFeat.arFieldData.back().get());
+					castedCol->bDiskHdrCache = true;
+				}
+			}
 		}
 		return XLS::BaseObjectPtr(ptr);
 	}

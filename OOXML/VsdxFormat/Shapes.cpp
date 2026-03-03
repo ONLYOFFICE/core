@@ -1225,6 +1225,7 @@ namespace OOX
 				}break;
 				case 1:
 				{
+					pReader->Skip(4); // size
 					content = pReader->GetString2();
 				}break;
 				default:

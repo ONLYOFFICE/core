@@ -67,6 +67,19 @@ namespace PdfWriter
 			pProcset->Add(new CNameObject("ImageI"));
 		}
 	}
+	CObjectBase* CResourcesDict::Copy(CObjectBase* pOut) const
+	{
+		CResourcesDict* pDict = pOut && pOut->GetType() == object_type_DICT ? dynamic_cast<CResourcesDict*>(pOut) : new CResourcesDict(NULL, true, false);
+		if (!pDict)
+			return NULL;
+
+		for (auto const &oIter : m_mList)
+			pDict->Add(oIter.first, oIter.second->Copy());
+
+		pDict->Fix();
+
+		return pDict;
+	}
 	const char* CResourcesDict::GetFontName(CFontDict* pFont)
 	{
 		if (!m_pFonts)

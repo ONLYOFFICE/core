@@ -416,7 +416,49 @@ PdfWriter::CObjectBase* DictToCDictObject2(Object* obj, PdfWriter::CDocument* pD
 		for (int nIndex = 0; nIndex < obj->dictGetLength(); ++nIndex)
 		{
 			char* chKey = obj->dictGetKey(nIndex);
-			obj->dictGetValNF(nIndex, &oTemp);
+			if (strcmp("Resources", chKey) == 0)
+			{
+				Ref oResourcesRef = { -1, -1 };
+				if (obj->dictGetValNF(nIndex, &oTemp)->isRef())
+					oResourcesRef = oTemp.getRef();
+				oTemp.free();
+
+				PdfWriter::CObjectBase* pObj = oResourcesRef.num > 0 ? pManager->GetObj(oResourcesRef.num + nStartRefID) : NULL;
+				if (pObj)
+				{
+					pDict->Add(chKey, pObj);
+					pManager->IncRefCount(oResourcesRef.num + nStartRefID);
+					continue;
+				}
+
+				if (obj->dictGetVal(nIndex, &oTemp)->isDict())
+				{
+					PdfWriter::CResourcesDict* pResDict = pDoc->CreateResourcesDict(oResourcesRef.num < 0, false);
+					if (oResourcesRef.num > 0)
+						pManager->AddObj(oResourcesRef.num + nStartRefID, pResDict);
+					pDict->Add(chKey, pResDict);
+					for (int nIndex2 = 0; nIndex2 < oTemp.dictGetLength(); ++nIndex2)
+					{
+						Object oRes;
+						char* chKey2 = oTemp.dictGetKey(nIndex2);
+						oTemp.dictGetValNF(nIndex2, &oRes);
+						pBase = DictToCDictObject2(&oRes, pDoc, xref, pManager, nStartRefID, 0, bUndecodedStream);
+						pResDict->Add(chKey2, pBase);
+						oRes.free();
+					}
+					pResDict->Fix();
+
+					oTemp.free();
+					continue;
+				}
+				else
+				{
+					oTemp.free();
+					obj->dictGetValNF(nIndex, &oTemp);
+				}
+			}
+			else
+				obj->dictGetValNF(nIndex, &oTemp);
 			pBase = DictToCDictObject2(&oTemp, pDoc, xref, pManager, nStartRefID, 0, bUndecodedStream);
 			pDict->Add(chKey, pBase);
 			oTemp.free();
@@ -470,7 +512,49 @@ PdfWriter::CObjectBase* DictToCDictObject2(Object* obj, PdfWriter::CDocument* pD
 				oTemp.free();
 				continue;
 			}
-			pODict->getValNF(nIndex, &oTemp);
+			else if (strcmp("Resources", chKey) == 0)
+			{
+				Ref oResourcesRef = { -1, -1 };
+				if (pODict->getValNF(nIndex, &oTemp)->isRef())
+					oResourcesRef = oTemp.getRef();
+				oTemp.free();
+
+				PdfWriter::CObjectBase* pObj = oResourcesRef.num > 0 ? pManager->GetObj(oResourcesRef.num + nStartRefID) : NULL;
+				if (pObj)
+				{
+					pDict->Add(chKey, pObj);
+					pManager->IncRefCount(oResourcesRef.num + nStartRefID);
+					continue;
+				}
+
+				if (pODict->getVal(nIndex, &oTemp)->isDict())
+				{
+					PdfWriter::CResourcesDict* pResDict = pDoc->CreateResourcesDict(oResourcesRef.num < 0, false);
+					if (oResourcesRef.num > 0)
+						pManager->AddObj(oResourcesRef.num + nStartRefID, pResDict);
+					pDict->Add(chKey, pResDict);
+					for (int nIndex2 = 0; nIndex2 < oTemp.dictGetLength(); ++nIndex2)
+					{
+						Object oRes;
+						char* chKey2 = oTemp.dictGetKey(nIndex2);
+						oTemp.dictGetValNF(nIndex2, &oRes);
+						pBase = DictToCDictObject2(&oRes, pDoc, xref, pManager, nStartRefID, 0, bUndecodedStream);
+						pResDict->Add(chKey2, pBase);
+						oRes.free();
+					}
+					pResDict->Fix();
+
+					oTemp.free();
+					continue;
+				}
+				else
+				{
+					oTemp.free();
+					pODict->getValNF(nIndex, &oTemp);
+				}
+			}
+			else
+				pODict->getValNF(nIndex, &oTemp);
 			pBase = DictToCDictObject2(&oTemp, pDoc, xref, pManager, nStartRefID);
 			pDict->Add(chKey, pBase);
 			oTemp.free();
@@ -2337,11 +2421,11 @@ bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength, PDFD
 					if (oResourcesRef.num > 0)
 						m_mObjManager.AddObj(oResourcesRef.num + nStartRefID, pDict);
 					pPage->Add(chKey, pDict);
-					for (int nIndex = 0; nIndex < oTemp.dictGetLength(); ++nIndex)
+					for (int nIndex2 = 0; nIndex2 < oTemp.dictGetLength(); ++nIndex2)
 					{
 						Object oRes;
-						char* chKey2 = oTemp.dictGetKey(nIndex);
-						oTemp.dictGetValNF(nIndex, &oRes);
+						char* chKey2 = oTemp.dictGetKey(nIndex2);
+						oTemp.dictGetValNF(nIndex2, &oRes);
 						PdfWriter::CObjectBase* pBase = DictToCDictObject2(&oRes, pDoc, xref, &m_mObjManager, nStartRefID);
 						pDict->Add(chKey2, pBase);
 						oRes.free();
@@ -4051,7 +4135,35 @@ void CPdfEditor::ClearPage()
 	pageObj.free();
 
 	if (m_nMode == Mode::Split || m_nMode == Mode::WriteNew)
+	{
+		PdfWriter::CPage* pPage = pDoc->GetCurPage();
+		auto removeContentObj = [&](PdfWriter::CObjectBase* pObj)
+		{
+			if (pObj->GetType() == PdfWriter::object_type_DICT)
+			{
+				PdfWriter::CObjectBase* pLength = ((PdfWriter::CDictObject*)pObj)->Get("Length");
+				if (pLength)
+				{
+					int nLengthID = m_mObjManager.FindObj(pLength);
+					m_mObjManager.RemoveObj(nLengthID);
+				}
+			}
+			int nObjID = m_mObjManager.FindObj(pObj);
+			m_mObjManager.RemoveObj(nObjID);
+		};
+
+		PdfWriter::CObjectBase* pObjContents = pPage->Get("Contents");
+		if (pObjContents && pObjContents->GetType() == PdfWriter::object_type_ARRAY)
+		{
+			PdfWriter::CArrayObject* pContents = (PdfWriter::CArrayObject*)pObjContents;
+			for (int i = 0; i < pContents->GetCount(); ++i)
+				removeContentObj(pContents->Get(i));
+		}
+		else if (pObjContents)
+			removeContentObj(pObjContents);
+
 		pDoc->ClearPageFull();
+	}
 	else
 		pDoc->ClearPage();
 

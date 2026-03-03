@@ -46,6 +46,8 @@ namespace PdfWriter
 	public:
 		CResourcesDict(CXref* pXref, bool bInline, bool bProcSet);
 
+		virtual CObjectBase* Copy(CObjectBase* pOut) const override;
+
 		const char* GetFontName(CFontDict* pFont);
 		const char* GetExtGrStateName(CExtGrState* pState);
 		const char* GetXObjectName(CObjectBase* pXObject);

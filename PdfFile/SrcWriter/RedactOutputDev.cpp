@@ -521,6 +521,7 @@ void ApplyRedactToGray(const std::vector<double>& arrQuadPoints, BYTE* pImage, i
 RedactOutputDev::RedactOutputDev(CPdfWriter* pRenderer, CObjectsManager* pObjMng, int nStartRefID)
 {
 	m_pXref = NULL;
+	m_pResources = NULL;
 
 	m_pRenderer = pRenderer;
 	m_mObjManager = pObjMng;
@@ -565,6 +566,32 @@ void RedactOutputDev::startPage(int nPageIndex, GfxState *pGState)
 	m_pPage = m_pDoc->GetEditPage(nPageIndex);
 	m_pRenderer->EditPage(m_pPage);
 	m_pDoc->SetCurPage(m_pPage);
+
+	auto removeContentObj = [&](PdfWriter::CObjectBase* pObj)
+	{
+		if (pObj->GetType() == PdfWriter::object_type_DICT)
+		{
+			PdfWriter::CObjectBase* pLength = ((PdfWriter::CDictObject*)pObj)->Get("Length");
+			if (pLength)
+			{
+				int nLengthID = m_mObjManager->FindObj(pLength);
+				m_mObjManager->RemoveObj(nLengthID);
+			}
+		}
+		int nObjID = m_mObjManager->FindObj(pObj);
+		m_mObjManager->RemoveObj(nObjID);
+	};
+
+	PdfWriter::CObjectBase* pObjContents = m_pPage->Get("Contents");
+	if (pObjContents && pObjContents->GetType() == PdfWriter::object_type_ARRAY)
+	{
+		PdfWriter::CArrayObject* pContents = (PdfWriter::CArrayObject*)pObjContents;
+		for (int i = 0; i < pContents->GetCount(); ++i)
+			removeContentObj(pContents->Get(i));
+	}
+	else if (pObjContents)
+		removeContentObj(pObjContents);
+
 	m_pDoc->ClearPageFull();
 }
 void RedactOutputDev::endPage()
@@ -1374,11 +1401,16 @@ void RedactOutputDev::drawForm(GfxState *pGState, Gfx *gfx, Ref id, const char* 
 	pObj = pOrigForm->Get("Matrix");
 	if (pObj)
 		pNewForm->Add("Matrix", pObj->Copy());
+
+	PdfWriter::CResourcesDict* pNewResources = NULL;
 	pObj = pOrigForm->Get("Resources");
 	if (pObj)
+	{
 		pNewForm->Add("Resources", pObj->Copy());
+		pNewResources = dynamic_cast<CResourcesDict*>(pNewForm->Get("Resources"));
+	}
 
-	PdfWriter::CResourcesDict* pResources = GetResources(gfx);
+	PdfWriter::CResourcesDict* pResources = GetResources(gfx, pNewForm);
 	if (pResources)
 		name = pResources->GetXObjectName(pNewForm);
 
@@ -1391,6 +1423,7 @@ void RedactOutputDev::drawForm(GfxState *pGState, Gfx *gfx, Ref id, const char* 
 	RedactOutputDev* pFormOutputDev = new RedactOutputDev(m_pRenderer, m_mObjManager, m_nStartRefID);
 	pFormOutputDev->NewPDF(m_pXref);
 	pFormOutputDev->m_pPage = pFakePage;
+	pFormOutputDev->m_pResources = pNewResources;
 	std::vector<double> arrFormQuadPoints;
 	double dInvMatrix[6] = { 1, 0, 0, 1, 0, 0 };
 	InvertMatrix(m_arrMatrix, dInvMatrix);
@@ -1886,8 +1919,11 @@ CObjectBase* RedactOutputDev::CreateImage(Gfx *gfx, int nWidth, int nHeight, uns
 
 	return pObj;
 }
-CResourcesDict* RedactOutputDev::GetResources(Gfx *gfx)
+CResourcesDict* RedactOutputDev::GetResources(Gfx *gfx, CDictObject* pNewForm)
 {
+	if (m_pResources)
+		return m_pResources;
+
 	PdfWriter::CResourcesDict* pResources = NULL;
 	Object* pContent = gfx->getTopContentStreamStack();
 	if (pContent && pContent->isRef())
@@ -1901,7 +1937,7 @@ CResourcesDict* RedactOutputDev::GetResources(Gfx *gfx)
 			if (!pResources)
 			{
 				pResources = new PdfWriter::CResourcesDict(NULL, true, false);
-				pDictForm->Add("Resources", pResources);
+				(pNewForm ? pNewForm : pDictForm)->Add("Resources", pResources);
 			}
 		}
 	}

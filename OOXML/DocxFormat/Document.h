@@ -127,7 +127,7 @@ namespace OOX
 	//--------------------------------------------------------------------------------
 	// CDocument 17.2.3 (Part 1)
 	//--------------------------------------------------------------------------------
-	class CDocument : public OOX::File, public IFileContainer, public WritingElement
+	class CDocument : public OOX::File, public IFileContainer, public WritingElementWithChilds<>
 	{
 	public:
 		CDocument(OOX::Document *pMain = NULL, OOX::FileType type = OOX::FileTypes::Document);
@@ -171,8 +171,6 @@ namespace OOX
 
 		nullable<OOX::Logic::CSectionProperty>	m_oSectPr;
 		nullable<OOX::Logic::CBackground>		m_oBackground;
-
-        std::vector<WritingElement*>			m_arrItems; 
 //---------------------------------------------------------------------------------------------
 		struct _section
 		{

@@ -244,18 +244,9 @@ namespace SimpleTypes
 			return false;
 		m_oGUID.c = (unsigned int)unTemp;
 
-		if (splitted[3].size() == 3)
-		{
-			sMidValue = splitted[3].substr(0, 2) + L"0" + splitted[3].substr(2, 1);
-			HexToInt(sMidValue, unTemp);
-			m_oGUID.d = (unsigned int)unTemp;
-		}
-		else
-		{
-			if (!HexToInt(splitted[3], unTemp))
-				return false;
-			m_oGUID.d = (unsigned int)unTemp;
-		}
+		if (!HexToInt(splitted[3], unTemp))
+			return false;
+		m_oGUID.d = (unsigned int)unTemp;
 
 		sMidValue = splitted[4].substr(0, 2);
 		if (!HexToInt(sMidValue, unTemp))

@@ -2997,7 +2997,7 @@ void BinaryWorkbookTableWriter::WriteConnection(const OOX::Spreadsheet::CConnect
 	if (connection.m_oUId.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerConnectionsTypes::UId);
-		m_oBcw.m_oStream.WriteStringW(*connection.m_oUId);
+		m_oBcw.m_oStream.WriteStringW(connection.m_oUId->ToString());
 	}
 	if(connection.m_oCredentials.IsInit())
 	{
@@ -3904,7 +3904,7 @@ void BinaryWorkbookTableWriter::WriteTimelineCache(OOX::Spreadsheet::CTimelineCa
 	if (pTimelineCache->m_oUid.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSer_TimelineCache::Uid);
-		m_oBcw.m_oStream.WriteStringW3(*pTimelineCache->m_oUid);
+		m_oBcw.m_oStream.WriteStringW3(pTimelineCache->m_oUid->ToString());
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}
 	if (pTimelineCache->m_oPivotTables.IsInit())
@@ -4666,7 +4666,7 @@ void BinaryPersonTableWriter::WritePerson(OOX::Spreadsheet::CPerson& oPerson)
 	if(oPerson.id.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSer_Person::id);
-		m_oBcw.m_oStream.WriteStringW3(oPerson.id.get());
+		m_oBcw.m_oStream.WriteStringW3(oPerson.id->ToString());
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}
 	if(oPerson.providerId.IsInit())
@@ -7986,7 +7986,7 @@ void BinaryWorksheetTableWriter::WritemBreak(const OOX::Spreadsheet::CBreak& oBr
 	}
 }
 void BinaryWorksheetTableWriter::WriteConditionalFormattings(std::vector<OOX::Spreadsheet::CConditionalFormatting*>& arrConditionalFormatting,
-	std::map<std::wstring, OOX::Spreadsheet::CConditionalFormattingRule*>& mapCFRuleEx, bool isExt)
+	std::unordered_map<std::wstring, OOX::Spreadsheet::CConditionalFormattingRule*>& mapCFRuleEx, bool isExt)
 {
 	int nCurPos = 0;
 	for (size_t nIndex = 0, nLength = arrConditionalFormatting.size(); nIndex < nLength; ++nIndex)
@@ -7999,7 +7999,7 @@ void BinaryWorksheetTableWriter::WriteConditionalFormattings(std::vector<OOX::Sp
 	}
 }
 void BinaryWorksheetTableWriter::WriteConditionalFormatting(const OOX::Spreadsheet::CConditionalFormatting& oConditionalFormatting,
-	std::map<std::wstring, OOX::Spreadsheet::CConditionalFormattingRule*>& mapCFRuleEx, bool isExt)
+	std::unordered_map<std::wstring, OOX::Spreadsheet::CConditionalFormattingRule*>& mapCFRuleEx, bool isExt)
 {
 	int nCurPos = 0;
 
@@ -8026,12 +8026,12 @@ void BinaryWorksheetTableWriter::WriteConditionalFormatting(const OOX::Spreadshe
 	}
 }
 void BinaryWorksheetTableWriter::WriteConditionalFormattingRule(const OOX::Spreadsheet::CConditionalFormattingRule& oConditionalFormattingRule,
-	std::map<std::wstring, OOX::Spreadsheet::CConditionalFormattingRule*>& mapCFRuleEx, bool isExt)
+	std::unordered_map<std::wstring, OOX::Spreadsheet::CConditionalFormattingRule*>& mapCFRuleEx, bool isExt)
 {
-	std::map<std::wstring, OOX::Spreadsheet::CConditionalFormattingRule*>::iterator pFind;
+	std::unordered_map<std::wstring, OOX::Spreadsheet::CConditionalFormattingRule*>::iterator pFind;
 	if (oConditionalFormattingRule.m_oExtId.IsInit())
 	{
-		 pFind = mapCFRuleEx.find(*oConditionalFormattingRule.m_oExtId);
+		 pFind = mapCFRuleEx.find(oConditionalFormattingRule.m_oExtId->ToString());
 
 		 if (pFind != mapCFRuleEx.end())
 		 {
@@ -8830,7 +8830,7 @@ void BinaryWorksheetTableWriter::WriteTimeline(OOX::Spreadsheet::CTimeline* pTim
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSer_Timeline::Uid);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
-		m_oBcw.m_oStream.WriteStringW(*pTimeline->m_oUid);
+		m_oBcw.m_oStream.WriteStringW(pTimeline->m_oUid->ToString());
 	}
 	if (pTimeline->m_oScrollPosition.IsInit())
 	{

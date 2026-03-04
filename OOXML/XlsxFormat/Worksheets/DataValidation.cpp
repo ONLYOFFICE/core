@@ -114,11 +114,12 @@ namespace OOX
 			writer.WriteString(L"<" + node_name);
 			if (bExtendedWrite)
 			{
-				if (false == m_oUuid.IsInit())
+				if (false == m_oUid.IsInit())
 				{
-					m_oUuid = L"{" + XmlUtils::GenerateGuid() + L"}";
+					m_oUid.Init();
+					m_oUid->Generate();
 				}
-				WritingStringNullableAttrString(L"xr:uid", m_oUuid, m_oUuid.get());
+				WritingStringNullableAttrString(L"xr:uid", m_oUid, m_oUid->ToString());
 			}
 			else
 			{

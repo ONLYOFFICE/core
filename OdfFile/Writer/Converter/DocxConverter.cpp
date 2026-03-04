@@ -83,6 +83,7 @@
 
 #include "../../../OOXML/Common/SimpleTypes_Spreadsheet.h"
 #include "../../../OOXML/Common/SimpleTypes_Word.h"
+#include "../../../OOXML/Common/SimpleTypes_Shared.h"
 #include "../../../OOXML/PPTXFormat/DrawingConverter/ASCOfficeDrawingConverter.h"
 
 using namespace cpdoccore;

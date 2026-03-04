@@ -77,6 +77,7 @@
 #include "../../../OOXML/PPTXFormat/Presentation/PresentationChildElements.h"
 #include "../../../OOXML/DocxFormat/Core.h"
 #include "../../../OOXML/DocxFormat/App.h"
+#include "../../../OOXML/Common/SimpleTypes_Shared.h"
 
 #include "../Format/odp_conversion_context.h"
 

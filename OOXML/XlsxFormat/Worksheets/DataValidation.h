@@ -39,6 +39,7 @@ namespace SimpleTypes
 	class COnOff;
 	class CDecimalNumber;
 	class CUnsignedDecimalNumber;
+	class CGuid;
 
 	namespace Spreadsheet
 	{
@@ -117,7 +118,7 @@ namespace OOX
 
 			nullable_string									m_oSqRef; // ToDo переделать на тип "sqref" (18.18.76) - последовательность "ref", разделенные пробелом
 			nullable_string									m_oList;
-			mutable nullable_string							m_oUuid;
+			mutable nullable<SimpleTypes::CGuid>			m_oUid;
 			nullable<CDataValidationFormula>				m_oFormula1;
 			nullable<CDataValidationFormula>				m_oFormula2;
 		};

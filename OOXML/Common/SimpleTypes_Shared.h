@@ -104,36 +104,38 @@ namespace SimpleTypes
 	class CGuid
 	{
 	public:
-		CGuid();
-
-		bool FromString(const std::wstring &sValue);
-		std::wstring ToString (bool braces = true) const;
-
-		SimpleTypes_DefaultString(CGuid)
-
-		bool IsZero();
-
-	private:
-
-		bool HexToInt(std::wstring& sValue, T_ULONG64& unResult);
-		int	 HexToInt(int nHex, bool &bResult);
-
-	public:
 		struct TGuid
 		{
 			unsigned int   a;
 			unsigned short b;
 			unsigned short c;
-			unsigned char  d;
+			unsigned short d;
 			unsigned char  e;
 			unsigned char  f;
 			unsigned char  g;
 			unsigned char  h;
 			unsigned char  i;
 			unsigned char  j;
-			unsigned char  k;
 		} m_oGUID;
+
+		CGuid();
+		void Generate();
+
+		bool FromString(const std::wstring &sValue);
+		std::wstring ToString (bool braces = true) const;
+		
+		SimpleTypes_DefaultString(CGuid)
+
+		bool IsZero();
+
+	private:
+		bool HexToInt(std::wstring& sValue, T_ULONG64& unResult);
+		int	 HexToInt(int nHex, bool &bResult);
 	};
+	bool operator!= (const CGuid& g1, const CGuid& g2);
+	bool operator== (CGuid& g1, CGuid& g2);
+	bool operator== (const CGuid& g1, const CGuid& g2);
+	std::wostream& operator << (std::wostream& _Wostream, const CGuid& _Val);
 
 	//--------------------------------------------------------------------------------
 	// HexColorRGB 22.9.2.5 (Part 1)

@@ -72,7 +72,7 @@ namespace Spreadsheet
 		writer.StartNode(sName);
 		writer.StartAttributes();
 		WritingNullable(m_oColId, writer.WriteAttribute(L"colId", *m_oColId););
-		WritingNullable(m_oId, writer.WriteAttributeEncodeXml(L"id", *m_oId););
+		WritingNullable(m_oId, writer.WriteAttributeEncodeXml(L"id", m_oId->ToString()););
 		writer.EndAttributes();
 		WritingNullable(m_oDxf, m_oDxf->toXMLWithNS(writer, L"", L"dxf", L"x:"););
 //		WritingNullable(m_oRichSortCondition, m_oRichSortCondition->toXML(writer, L"richSortCondition"););
@@ -83,7 +83,10 @@ namespace Spreadsheet
 	{
 		pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
 		pWriter->WriteUInt2(0, m_oColId);
-		pWriter->WriteString2(1, m_oId);
+		if (m_oId.IsInit())
+		{
+			pWriter->WriteString1(1, m_oId->ToString());
+		}
 		pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 
 		if (m_oDxf.is_init())
@@ -457,7 +460,7 @@ namespace Spreadsheet
 	{
 		writer.StartNode(sName);
 		writer.StartAttributes();
-		WritingNullable(m_oFilterId, writer.WriteAttributeEncodeXml(L"filterId", *m_oFilterId););
+		WritingNullable(m_oFilterId, writer.WriteAttributeEncodeXml(L"filterId", m_oFilterId->ToString()););
 		WritingNullable(m_oRef, writer.WriteAttributeEncodeXml(L"ref", *m_oRef););
 		WritingNullable(m_oTableId, writer.WriteAttribute(L"tableId", *m_oTableId););
 		writer.EndAttributes();
@@ -472,7 +475,10 @@ namespace Spreadsheet
 	void CNsvFilter::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 	{
 		pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-		pWriter->WriteString2(0, m_oFilterId);
+		if (m_oFilterId.IsInit())
+		{
+			pWriter->WriteString1(0, m_oFilterId->ToString());
+		}
 		pWriter->WriteString2(1, m_oRef);
 		pWriter->WriteUInt2(2, m_oTableId);
 		pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
@@ -578,7 +584,7 @@ namespace Spreadsheet
 		writer.StartNode(sName);
 		writer.StartAttributes();
 		WritingNullable(m_oName, writer.WriteAttributeEncodeXml(L"name", *m_oName););
-		WritingNullable(m_oId, writer.WriteAttributeEncodeXml(L"id", *m_oId););
+		WritingNullable(m_oId, writer.WriteAttributeEncodeXml(L"id", m_oId->ToString()););
 		writer.EndAttributes();
 		for(size_t i = 0; i < m_arrItems.size(); ++i)
 		{
@@ -591,7 +597,10 @@ namespace Spreadsheet
 	{
 		pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
 		pWriter->WriteString2(0, m_oName);
-		pWriter->WriteString2(1, m_oId);
+		if (m_oId.IsInit())
+		{
+			pWriter->WriteString1(1, m_oId->ToString());
+		}
 		pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 
 		pWriter->WriteRecordArrayOfPointers(0, 0, m_arrItems);

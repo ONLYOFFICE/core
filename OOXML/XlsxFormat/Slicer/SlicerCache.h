@@ -444,11 +444,10 @@ namespace OOX
 			{
 				return et_x_SlicerCacheDefinition;
 			}
-			//Attributes
 			nullable_string m_oName;
 			nullable<SimpleTypes::CGuid> m_oUid;
 			nullable_string m_oSourceName;
-			//Members
+
 			std::vector<CSlicerCachePivotTable> m_oPivotTables;
 			nullable<CSlicerCacheData> m_oData;
 			nullable<OOX::Drawing::COfficeArtExtensionList> m_oExtLst;

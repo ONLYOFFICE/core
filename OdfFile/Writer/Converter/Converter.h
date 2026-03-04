@@ -365,6 +365,7 @@ namespace SimpleTypes
 	{
 		class CCssStyle;
 	}
+	class CGuid;
 }
 namespace PPTX
 {

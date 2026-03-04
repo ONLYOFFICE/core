@@ -185,7 +185,7 @@ namespace OOX
 		{
 			writer.WriteString(L"<timeline");
 				WritingStringNullableAttrEncodeXmlString2(L"name", m_oName);
-				WritingStringNullableAttrEncodeXmlString2(L"xr10:uid", m_oUid);
+				WritingStringNullableAttrEncodeXmlString(L"xr10:uid", m_oUid, m_oUid->ToString());
 				WritingStringNullableAttrEncodeXmlString2(L"cache", m_oCache);
 				WritingStringNullableAttrEncodeXmlString2(L"caption", m_oCaption);
 				WritingStringNullableAttrInt2(L"level", m_oLevel);
@@ -447,7 +447,7 @@ mc:Ignorable=\"xr10\" \
 xmlns:xr10=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision10\"");
 
 			WritingStringNullableAttrEncodeXmlString2(L"name", m_oName);
-			WritingStringNullableAttrEncodeXmlString2(L"xr10:uid", m_oUid);
+			WritingStringNullableAttrEncodeXmlString(L"xr10:uid", m_oUid, m_oUid->ToString());
 			WritingStringNullableAttrEncodeXmlString2(L"sourceName", m_oSourceName);
 
 			writer.WriteString(L">");

@@ -73,6 +73,8 @@
 #include "../../../OOXML/PPTXFormat/Logic/HeadingVariant.h"
 
 #include "../../../OOXML/XlsxFormat/Worksheets/Sparkline.h"
+#include "../../../OOXML/Common/SimpleTypes_Shared.h"
+
 #include "../../../OfficeCryptReader/source/CryptTransform.h"
 #include "../../../DesktopEditor/common/Directory.h"
 #include "../../../DesktopEditor/common/SystemUtils.h"

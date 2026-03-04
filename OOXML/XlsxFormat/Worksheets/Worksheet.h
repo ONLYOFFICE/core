@@ -152,7 +152,7 @@ namespace OOX
 			CComments			*m_pComments;
 			CThreadedComments	*m_pThreadedComments;
 
-			std::map<std::wstring, CConditionalFormattingRule*> m_mapConditionalFormattingEx;
+			std::unordered_map<std::wstring, CConditionalFormattingRule*> m_mapConditionalFormattingEx;
 //--------------------------------------------------------------------------------------------
 
 			std::map<std::wstring, CCommentItem*> m_mapComments;

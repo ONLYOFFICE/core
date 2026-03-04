@@ -1432,7 +1432,10 @@ namespace PPTX
 				oAttr.Write(L"xmlns:vt", L"http://schemas.microsoft.com/office/visio/2012/theme");
 			}
 			oAttr.Write(L"schemeEnum", schemeEnum);
-			oAttr.Write(L"schemeGUID", schemeGUID);
+			if (schemeGUID.IsInit())
+			{
+				oAttr.Write(L"schemeGUID", schemeGUID->ToString());
+			}
 
 			XmlUtils::CNodeValue oValue;
 
@@ -1441,8 +1444,11 @@ namespace PPTX
 		void SchemeID::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 		{
 			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-			pWriter->WriteUInt2(0, schemeEnum);
-			pWriter->WriteString2(1, schemeGUID);
+				pWriter->WriteUInt2(0, schemeEnum);
+				if (schemeGUID.IsInit())
+				{
+					pWriter->WriteString1(1, schemeGUID->ToString());
+				}
 			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 		}
 		void SchemeID::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
@@ -1453,7 +1459,10 @@ namespace PPTX
 				pWriter->WriteAttribute(L"xmlns:vt", L"http://schemas.microsoft.com/office/visio/2012/theme");
 			}
 			pWriter->WriteAttribute2(L"schemeEnum", schemeEnum);
-			pWriter->WriteAttribute2(L"schemeGUID", schemeGUID);
+			if (schemeGUID.IsInit())
+			{
+				pWriter->WriteAttribute(L"schemeGUID", schemeGUID->ToString());
+			}
 			pWriter->EndAttributes();
 			pWriter->EndNode(L"vt:schemeID");
 		}

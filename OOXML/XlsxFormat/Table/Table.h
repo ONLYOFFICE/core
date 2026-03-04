@@ -37,6 +37,7 @@
 
 namespace SimpleTypes
 {
+	class CGuid;
 	namespace Spreadsheet
 	{
 		class CTableType;
@@ -197,7 +198,7 @@ namespace OOX
 			nullable<SimpleTypes::Spreadsheet::CTotalsRowFunction> m_oTotalsRowFunction;
 			nullable_string m_oTotalsRowLabel;
 			nullable_string m_oUniqueName;
-			nullable_string m_oUid;
+			nullable<SimpleTypes::CGuid> m_oUid;
 
 			nullable_string m_oTotalsRowFormula;
 			nullable_string m_oCalculatedColumnFormula;

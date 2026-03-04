@@ -2502,10 +2502,13 @@ void CConditionalFormattingRule::toXML2(NSStringUtils::CStringBuilder& writer, b
 		{
 			if (false == m_oId.IsInit())
 			{
-				WritingStringAttrString(L"id", L"{" + XmlUtils::GenerateGuid() + L"}");
-			}
-			else
-				WritingStringNullableAttrString(L"id", m_oId, m_oId.get());
+                SimpleTypes::CGuid newGuid; newGuid.Generate();
+                WritingStringNullableAttrString(L"id", m_oId, newGuid.ToString());
+            }
+            else
+            {
+                WritingStringNullableAttrString(L"id", m_oId, m_oId->ToString());
+            }
 		}
 	writer.WriteString(L">");
 
@@ -2667,7 +2670,7 @@ XLS::BaseObjectPtr CConditionalFormattingRule::toBin(const  XLS::CellRef &cellRe
         extPtr->m_BrtCFRuleExt = XLS::BaseObjectPtr{beginExt};
         ptr->m_FRTCFRULE = XLS::BaseObjectPtr{extPtr};
 
-        beginExt->guid = m_oExtId.get();
+        beginExt->guid = m_oExtId->ToString();
         auto ruleBegin(new XLSB::FRTBegin);
         ruleBegin->productVersion.product = 0;
         ruleBegin->productVersion.version = 0;
@@ -2701,7 +2704,7 @@ void CConditionalFormattingRule::toBin(XLS::StreamCacheWriterPtr& writer, const 
         auto beginExt(new XLSB::CFRuleExt);
         ext.m_BrtCFRuleExt = XLS::BaseObjectPtr{beginExt};
 
-        beginExt->guid = m_oExtId.get();
+        beginExt->guid = m_oExtId->ToString();
         auto ruleBegin(new XLSB::FRTBegin);
         ext.m_BrtFRTBegin = XLS::BaseObjectPtr{ruleBegin};
         ext.write(writer, nullptr);
@@ -3214,7 +3217,7 @@ XLS::BaseObjectPtr CConditionalFormattingRule::WriteAttributes14(const  XLS::Cel
     if(m_oId.IsInit())
     {
         ptr->fGuid = true;
-        ptr->guid = m_oId.get();
+        ptr->guid = m_oId->ToString();
     }
     if(m_oText.IsInit())
         ptr->strParam = m_oText.get();

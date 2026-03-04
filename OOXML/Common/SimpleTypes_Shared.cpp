@@ -32,11 +32,13 @@
 
 #include "SimpleTypes_Shared.h"
 #include "SimpleTypes_Word.h"
-#include <sstream>
-#include "boost/lexical_cast.hpp"
-#include "boost/format.hpp"
 #include "../Base/Unit.h"
 
+#include "boost/lexical_cast.hpp"
+#include "boost/format.hpp"
+#include <boost/algorithm/string.hpp>
+
+#include <sstream>
 // Здесь представлены все простые типы SharedML из спецификации Office Open Xml (22.8)
 namespace SimpleTypes
 {
@@ -177,22 +179,119 @@ namespace SimpleTypes
 	//--------------------------------------------------------------------------------
 	// Guid 22.9.2.4 (Part 1)
 	//--------------------------------------------------------------------------------
-
-	CGuid::CGuid() {}
-
+	_UINT32 Rand32()
+	{
+		//rand returns integral value range between 0 and RAND_MAX.(RAND_MAX at least 32767.)
+		static bool init = false;   /* ensure different random header each time */
+		if (!init)
+		{
+			init = true;
+			srand((unsigned int)time(NULL));
+		}
+		return std::rand();
+	}
+	CGuid::CGuid() 
+	{
+		TGuid oZeroGUID = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+		m_oGUID = oZeroGUID;
+	}
+	void CGuid::Generate()
+	{
+		m_oGUID.a = Rand32();
+		m_oGUID.b = Rand32() & 0xffff;
+		m_oGUID.c = ((Rand32() & 0x0fff) | 0x4000); //number of the form 4xxx (4 indicates the UUID version)
+		m_oGUID.d = (Rand32() & 0x3fff) + 0x8000; //in the range[0x8000, 0xbfff]
+		m_oGUID.e = Rand32() & 0xff;
+		m_oGUID.f = Rand32() & 0xff;
+		m_oGUID.g = Rand32() & 0xff;
+		m_oGUID.h = Rand32() & 0xff;
+		m_oGUID.i = Rand32() & 0xff;
+		m_oGUID.j = Rand32() & 0xff;
+	}
 	bool CGuid::FromString(const std::wstring &sValue)
 	{
 		// GUID "{00000000-5BD2-4BC8-9F70-7020E1357FB2}"
 
-		TGuid oZeroGUID = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+		TGuid oZeroGUID = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 		m_oGUID = oZeroGUID;
+
+		if (sValue.length() < 36 && sValue.length() > 38)
+			return false;
+
+		T_ULONG64 unTemp = 0;
+		std::wstring sMidValue;
+
+		size_t start = 0, end = sValue.size();
+		if (sValue.front() == L'{') start++;
+		if (sValue.back() == L'}') end--;
+
+		std::wstring sValueTmp = sValue.substr(start, end - start);
+		std::vector<std::wstring> splitted;
+
+		boost::algorithm::split(splitted, sValueTmp, boost::algorithm::is_any_of(L"-"), boost::algorithm::token_compress_on);
+
+		if (splitted.size() != 5) return false;
+
+		if (!HexToInt(splitted[0], unTemp))
+			return false;
+		m_oGUID.a = (unsigned int)unTemp;
+
+		if (!HexToInt(splitted[1], unTemp))
+			return false;
+		m_oGUID.b = (unsigned int)unTemp;
+
+		if (!HexToInt(splitted[2], unTemp))
+			return false;
+		m_oGUID.c = (unsigned int)unTemp;
+
+		if (splitted[3].size() == 3)
+		{
+			sMidValue = splitted[3].substr(0, 2) + L"0" + splitted[3].substr(2, 1);
+			HexToInt(sMidValue, unTemp);
+			m_oGUID.d = (unsigned int)unTemp;
+		}
+		else
+		{
+			if (!HexToInt(splitted[3], unTemp))
+				return false;
+			m_oGUID.d = (unsigned int)unTemp;
+		}
+
+		sMidValue = splitted[4].substr(0, 2);
+		if (!HexToInt(sMidValue, unTemp))
+			return false;
+		m_oGUID.e = (unsigned char)unTemp;
+
+		sMidValue = splitted[4].substr(2, 2);
+		if (!HexToInt(sMidValue, unTemp))
+			return false;
+		m_oGUID.f = (unsigned char)unTemp;
+
+		sMidValue = splitted[4].substr(4, 2);
+		if (!HexToInt(sMidValue, unTemp))
+			return false;
+		m_oGUID.g = (unsigned char)unTemp;
+
+		sMidValue = splitted[4].substr(6, 2);
+		if (!HexToInt(sMidValue, unTemp))
+			return false;
+		m_oGUID.h = (unsigned char)unTemp;
+
+		sMidValue = splitted[4].substr(8, 2);
+		if (!HexToInt(sMidValue, unTemp))
+			return false;
+		m_oGUID.i = (unsigned char)unTemp;
+
+		sMidValue = splitted[4].substr(10, 2);
+		if (!HexToInt(sMidValue, unTemp))
+			return false;
+		m_oGUID.j = (unsigned char)unTemp;
+
+		return true;
 
 		if ( sValue.length() != 38 )
 			return false;
 
-		T_ULONG64 unTemp = 0;
-
-		std::wstring sMidValue;
 		sMidValue = sValue.substr( 1, 8 );
 
 		if ( !HexToInt( sMidValue, unTemp ) )
@@ -212,54 +311,47 @@ namespace SimpleTypes
 
 		m_oGUID.c = (unsigned short)unTemp;
 
-		sMidValue = sValue.substr( 20, 2 );
+		sMidValue = sValue.substr( 20, 4 );
 		if ( !HexToInt( sMidValue, unTemp ) )
 			return false;
 
-		m_oGUID.d = (unsigned char)unTemp;
-
-
-		sMidValue = sValue.substr( 22, 2 );
-		if ( !HexToInt( sMidValue, unTemp ) )
-			return false;
-
-		m_oGUID.e = (unsigned char)unTemp;
+		m_oGUID.d = (unsigned short)unTemp;
 
 		sMidValue = sValue.substr( 25, 2 );
 		if ( !HexToInt( sMidValue, unTemp ) )
 			return false;
 
-		m_oGUID.f = (unsigned char)unTemp;
+		m_oGUID.e = (unsigned char)unTemp;
 
 		sMidValue = sValue.substr( 27, 2 );
 		if ( !HexToInt( sMidValue, unTemp ) )
 			return false;
 
-		m_oGUID.g = (unsigned char)unTemp;
+		m_oGUID.f = (unsigned char)unTemp;
 
 		sMidValue = sValue.substr( 29, 2 );
 		if ( !HexToInt( sMidValue, unTemp ) )
 			return false;
 
-		m_oGUID.h = (unsigned char)unTemp;
+		m_oGUID.g = (unsigned char)unTemp;
 
 		sMidValue = sValue.substr( 31, 2 );
 		if ( !HexToInt( sMidValue, unTemp ) )
 			return false;
 
-		m_oGUID.i = (unsigned char)unTemp;
+		m_oGUID.h = (unsigned char)unTemp;
 
 		sMidValue = sValue.substr( 33, 2 );
 		if ( !HexToInt( sMidValue, unTemp ) )
 			return false;
 
-		m_oGUID.j = (unsigned char)unTemp;
+		m_oGUID.i = (unsigned char)unTemp;
 
 		sMidValue = sValue.substr( 35, 2 );
 		if ( !HexToInt( sMidValue, unTemp ) )
 			return false;
 
-		m_oGUID.k = (unsigned char)unTemp;
+		m_oGUID.j = (unsigned char)unTemp;
 
 		return true;
 	}
@@ -267,14 +359,15 @@ namespace SimpleTypes
 	std::wstring CGuid::ToString  (bool braces) const
 	{
 		std::wstringstream sstream;
-		sstream << boost::wformat( L"%08X-%04X-%04X-%02X%02X-%02X%02X%02X%02X%02X%02X" ) % m_oGUID.a % m_oGUID.b % m_oGUID.c % m_oGUID.d % m_oGUID.e % m_oGUID.f % m_oGUID.g % m_oGUID.h % m_oGUID.i % m_oGUID.j % m_oGUID.k;
+
+		sstream << boost::wformat( L"%08X-%04X-%04X-%04X-%02X%02X%02X%02X%02X%02X" ) % m_oGUID.a % m_oGUID.b % m_oGUID.c % m_oGUID.d % m_oGUID.e % m_oGUID.f % m_oGUID.g % m_oGUID.h % m_oGUID.i % m_oGUID.j;
 		std::wstring res = (braces ? L"{" : L"") + sstream.str() + (braces ? L"}" : L"");
 		return res;
 	}
 
 	bool CGuid::IsZero()
 	{
-		return 0 == m_oGUID.a && 0 == m_oGUID.b && 0 == m_oGUID.c && 0 == m_oGUID.d && 0 == m_oGUID.e && 0 == m_oGUID.f && 0 == m_oGUID.g && 0 == m_oGUID.h && 0 == m_oGUID.i && 0 == m_oGUID.j && 0 == m_oGUID.k;
+		return 0 == m_oGUID.a && 0 == m_oGUID.b && 0 == m_oGUID.c && 0 == m_oGUID.d && 0 == m_oGUID.e && 0 == m_oGUID.f && 0 == m_oGUID.g && 0 == m_oGUID.h && 0 == m_oGUID.i && 0 == m_oGUID.j;
 	}
 
 	bool CGuid::HexToInt(std::wstring& sValue, T_ULONG64& unResult)
@@ -300,7 +393,43 @@ namespace SimpleTypes
 
 		return 0;
 	}
-
+	bool operator== (CGuid& g1, CGuid& g2)
+	{
+		if (g1.m_oGUID.a == g2.m_oGUID.a && 
+			g1.m_oGUID.b == g2.m_oGUID.b &&
+			g1.m_oGUID.c == g2.m_oGUID.c &&
+			g1.m_oGUID.d == g2.m_oGUID.d &&
+			g1.m_oGUID.e == g2.m_oGUID.e &&
+			g1.m_oGUID.f == g2.m_oGUID.f &&
+			g1.m_oGUID.g == g2.m_oGUID.g &&
+			g1.m_oGUID.h == g2.m_oGUID.h &&
+			g1.m_oGUID.i == g2.m_oGUID.i &&
+			g1.m_oGUID.j == g2.m_oGUID.j) return true;
+		else return false;
+	}
+	bool operator== (const CGuid& g1, const CGuid& g2)
+	{
+		if (g1.m_oGUID.a == g2.m_oGUID.a &&
+			g1.m_oGUID.b == g2.m_oGUID.b &&
+			g1.m_oGUID.c == g2.m_oGUID.c &&
+			g1.m_oGUID.d == g2.m_oGUID.d &&
+			g1.m_oGUID.e == g2.m_oGUID.e &&
+			g1.m_oGUID.f == g2.m_oGUID.f &&
+			g1.m_oGUID.g == g2.m_oGUID.g &&
+			g1.m_oGUID.h == g2.m_oGUID.h &&
+			g1.m_oGUID.i == g2.m_oGUID.i &&
+			g1.m_oGUID.j == g2.m_oGUID.j) return true;
+		else return false;
+	}
+	bool operator!= (const CGuid& g1, const CGuid& g2)
+	{
+		return !(g1 == g2);
+	}
+	std::wostream& operator << (std::wostream& _Wostream, const CGuid& g)
+	{
+		_Wostream << g.ToString();
+		return _Wostream;
+	}
 	//--------------------------------------------------------------------------------
 	// HexColorRGB 22.9.2.5 (Part 1)
 	//--------------------------------------------------------------------------------

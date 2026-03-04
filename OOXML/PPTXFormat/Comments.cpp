@@ -630,10 +630,19 @@ namespace PPTX
 //----------------------------------------------------------------------------------------------------------------------------------------------------
 		void Comment::fromXML(XmlUtils::CXmlNode& node)
 		{
-			XmlMacroReadAttributeBase(node, L"authorId", authorId);
-			if (!bModern)
+			nullable_string sAuthorId;
+			XmlMacroReadAttributeBase(node, L"authorId", sAuthorId);
+
+			if (sAuthorId.IsInit())
 			{
-				authorIdx = XmlUtils::GetInteger(*authorId);
+				if (!bModern)
+				{
+					authorIdx = XmlUtils::GetInteger(*sAuthorId);
+				}
+				else
+				{
+					authorId = *sAuthorId;
+				}
 			}
 			XmlMacroReadAttributeBase(node, L"dt", dt);
 			XmlMacroReadAttributeBase(node, L"idx", idx);
@@ -762,10 +771,13 @@ namespace PPTX
 				pWriter->StartNode(L"p188:cm");
 				pWriter->StartAttributes();
 				
-				pWriter->WriteAttribute(L"id", id);
+				if (id.IsInit())
+				{
+					pWriter->WriteAttribute(L"id", id->ToString());
+				}
 				if (authorId.IsInit())
 				{
-					pWriter->WriteAttribute(L"authorId", *authorId);
+					pWriter->WriteAttribute(L"authorId", authorId->ToString());
 				}
 				else
 				{
@@ -831,7 +843,7 @@ namespace PPTX
 				}
 				else if (id.IsInit())
 				{
-					int int_id = XmlUtils::GetHex(id->c_str());
+					int int_id = id->m_oGUID.a & id->m_oGUID.b & id->m_oGUID.j; // ??? may be new 
 					pWriter->WriteAttribute(L"idx", abs(int_id));
 				}
 				pWriter->EndAttributes();
@@ -940,9 +952,15 @@ namespace PPTX
 		
 			pWriter->StartRecord(100);
 				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-					pWriter->WriteString2(0, id);
+				if (id.IsInit())
+				{
+					pWriter->WriteString1(0, id->ToString());
+				}
 					pWriter->WriteString2(1, created);
-					pWriter->WriteString2(2, authorId);
+				if (authorId.IsInit())
+				{
+					pWriter->WriteString1(2, authorId->ToString());
+				}
 					pWriter->WriteString2(3, status);
 					pWriter->WriteString2(4, startDate);
 					pWriter->WriteString2(5, dueDate);
@@ -1264,7 +1282,8 @@ namespace PPTX
 				if (true == comm.idx.IsInit() && true == comm.authorIdx.IsInit())
 					break;
 
-				std::map<std::wstring, int>::iterator pFind = authors->mapAuthors.find(*comm.authorId);
+				//std::map<std::wstring, int>::iterator pFind = authors->mapAuthors.find(*comm.authorId);
+				std::map<std::wstring, int>::iterator pFind = authors->mapAuthors.find(comm.authorId->ToString());
 
 				if (pFind != authors->mapAuthors.end())
 				{
@@ -1273,7 +1292,7 @@ namespace PPTX
 				else
 				{
 					comm.authorIdx = authors->mapAuthors.size() + 1;
-					authors->mapAuthors.insert(std::make_pair(*comm.authorId, *comm.authorIdx));
+					authors->mapAuthors.insert(std::make_pair(comm.authorId->ToString(), *comm.authorIdx));
 				}
 				//todooo idx new generate ??? (now id->idx)
 			}

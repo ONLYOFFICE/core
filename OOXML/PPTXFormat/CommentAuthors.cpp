@@ -38,10 +38,18 @@ namespace PPTX
 	{
 		void CommentAuthor::fromXML(XmlUtils::CXmlNode& node)
 		{
-			XmlMacroReadAttributeBase(node, L"id", id);
-			if (!bModern && id.IsInit())
+			nullable_string sId;
+			XmlMacroReadAttributeBase(node, L"id", sId);
+			if (sId.IsInit())
 			{
-				idx = XmlUtils::GetInteger(*id);
+				if (bModern)
+				{
+					id = *sId;
+				}
+				else
+				{
+					idx = XmlUtils::GetInteger(*sId);
+				}
 			}
 			XmlMacroReadAttributeBase(node, L"lastIdx", last_idx);
 			XmlMacroReadAttributeBase(node, L"clrIdx", clr_idx);
@@ -65,7 +73,7 @@ namespace PPTX
 			}
 			else
 			{
-				pWriter->WriteAttribute(L"id", id.IsInit() ? *id : std::to_wstring(*idx));
+				pWriter->WriteAttribute(L"id", id.IsInit() ? id->ToString() : std::to_wstring(*idx));
 			}
 			pWriter->WriteAttribute2(L"name", name);
 			pWriter->WriteAttribute(L"initials", initials);
@@ -99,7 +107,10 @@ namespace PPTX
 				pWriter->WriteInt2(2, clr_idx);
 				pWriter->WriteString2(3, name);
 				pWriter->WriteString2(4, initials);
-				pWriter->WriteString2(5, id);
+			if (id.IsInit())
+			{
+				pWriter->WriteString1(5, id->ToString());
+			}
 				pWriter->WriteString2(6, userId);
 				pWriter->WriteString2(7, providerId);
 				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
@@ -287,11 +298,12 @@ namespace PPTX
 				if (bNew)
 				{
 					auth.idx = mapAuthors.size() + 1;
-					mapAuthors.insert(std::make_pair(*auth.id, *auth.idx));
+					mapAuthors.insert(std::make_pair(auth.id->ToString(), *auth.idx));
 				}
 				else
 				{
-					std::map<std::wstring, int>::iterator pFind = mapAuthors.find(*auth.id);
+					//std::map<std::wstring, int>::iterator pFind = mapAuthors.find(*auth.id);
+					std::map<std::wstring, int>::iterator pFind = mapAuthors.find(auth.id->ToString());
 
 					if (pFind != mapAuthors.end())
 					{
@@ -300,7 +312,7 @@ namespace PPTX
 					else
 					{
 						auth.idx = mapAuthors.size() + 1;
-						mapAuthors.insert(std::make_pair(*auth.id, *auth.idx));
+						mapAuthors.insert(std::make_pair(auth.id->ToString(), *auth.idx));
 					}
 				}
 			}

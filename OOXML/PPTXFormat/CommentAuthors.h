@@ -30,13 +30,12 @@
  *
  */
 #pragma once
-#ifndef PPTX_COMMENTS_COMMENTSAUTHORS_H_
-#define PPTX_COMMENTS_COMMENTSAUTHORS_H_
 
 #include "WrapperFile.h"
 #include "FileContainer.h"
 #include "FileTypes.h"
 #include "WrapperWritingElement.h"
+#include "../Common/SimpleTypes_Shared.h"
 
 namespace PPTX
 {
@@ -56,7 +55,7 @@ namespace PPTX
 
 //------------------------------------------------------------------------------------------
 //modern
-			nullable_string	id; //Guid
+			nullable<SimpleTypes::CGuid> id;
 			nullable_string	userId;
 			nullable_string	providerId;
 
@@ -81,6 +80,7 @@ namespace PPTX
 		std::vector<PPTX::Logic::CommentAuthor> m_arAuthors;
 //--------------------------------------------------------------------------------------
 		bool bModern = false;
+		//std::map<std::wstring, int> mapAuthors;
 		std::map<std::wstring, int> mapAuthors;
 //--------------------------------------------------------------------------------------
 		Authors(OOX::Document* pMain);
@@ -101,4 +101,3 @@ namespace PPTX
 	};
 } // namespace PPTX
 
-#endif // PPTX_COMMENTS_COMMENTSAUTHORS_H_

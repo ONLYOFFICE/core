@@ -59,6 +59,7 @@ namespace SimpleTypes
 	class CFunctionOperator;
 	class CAlgorithmType;
 	class CParameterId;
+	class CGuid;
 }
 
 namespace PPTX
@@ -331,7 +332,7 @@ namespace OOX
 			nullable_string	m_loTypeId;
 			nullable_bool	m_phldr;
 			nullable_string	m_phldrT;
-			nullable_string	m_presAssocID; //guid modelId
+			nullable<SimpleTypes::CGuid> m_presAssocID;
 			nullable_string	m_presName;
 			nullable_int	m_presStyleCnt;
 			nullable_int	m_presStyleIdx;
@@ -367,9 +368,9 @@ namespace OOX
 			nullable<PPTX::Logic::TxBody>	m_oTxBody;
 			nullable<Diagram::CPropertySet> m_oPrSet;
 			
-			nullable_string m_sModelId;	//guid
+			nullable<SimpleTypes::CGuid> m_sModelId;
 			nullable<SimpleTypes::CPtTypes> m_oType;
-			nullable_string m_sCxnId;	//guid
+			nullable<SimpleTypes::CGuid> m_sCxnId;
 		};
 
 		class CPtLst : public WritingElementWithChilds<OOX::Diagram::CPt>
@@ -414,7 +415,7 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-			nullable_string m_sModelId;	//guid or int
+			nullable<SimpleTypes::CGuid> m_sModelId;
 			nullable_string m_sType; // parOf, presOf, presParOf, unknownRelationship
 
 			nullable_string m_sDestId; // ...

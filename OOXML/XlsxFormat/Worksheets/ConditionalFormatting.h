@@ -34,12 +34,14 @@
 #include "../WritingElement.h"
 #include "../../Base/Nullable.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/CellRef.h"
+#include "../../Common/SimpleTypes_Shared.h"
 
 namespace SimpleTypes
 {
 	class COnOff;
 	class CDecimalNumber;
 	class CUnsignedDecimalNumber;
+	class CGuid;
 
 	namespace Spreadsheet
 	{
@@ -343,13 +345,13 @@ namespace OOX
 			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oRank;
 			nullable<SimpleTypes::CDecimalNumber>				m_oStdDev;
 			nullable<SimpleTypes::COnOff>						m_oStopIfTrue;
-			nullable<std::wstring>								m_oId;
+			nullable<SimpleTypes::CGuid>						m_oId;
 			nullable<std::wstring>								m_oText;
 			nullable<SimpleTypes::Spreadsheet::ST_TimePeriod>	m_oTimePeriod;
 			nullable<SimpleTypes::Spreadsheet::ST_CfType>		m_oType;
 
 			nullable<OOX::Drawing::COfficeArtExtensionList>		m_oExtLst;
-			nullable_string										m_oExtId;
+			nullable<SimpleTypes::CGuid>						m_oExtId;
 
 			nullable<CIconSet>					m_oIconSet;
 			nullable<CColorScale>				m_oColorScale;
@@ -381,7 +383,6 @@ namespace OOX
             void toBin(XLS::StreamCacheWriterPtr& writer);
 			XLS::BaseObjectPtr toBin14();
 			void toXLS(XLS::BaseObjectPtr fmtsPtr);
-
 
 			virtual EElementType getType () const;
 			bool IsUsage();

@@ -35,11 +35,13 @@
 
 #include "../../Reader/Converter/StarMath2OOXML/cooxml2odf.h"
 
-#include "../../OOXML/DocxFormat/DocxFlat.h"
-#include "../../OOXML/DocxFormat/Math/OMath.h"
-#include "../../OOXML/DocxFormat/Math/oMathContent.h"
-#include "../../OOXML/DocxFormat/Math/oMathPara.h"
- 
+#include "../../../OOXML/DocxFormat/DocxFlat.h"
+#include "../../../OOXML/DocxFormat/Math/OMath.h"
+#include "../../../OOXML/DocxFormat/Math/oMathContent.h"
+#include "../../../OOXML/DocxFormat/Math/oMathPara.h"
+
+#include "../../../OOXML/Common/SimpleTypes_Shared.h"
+
 #include "../Format/odf_conversion_context.h"
 #include "../Format/math_layout_elements.h"
 #include "../Format/math_limit_elements.h"

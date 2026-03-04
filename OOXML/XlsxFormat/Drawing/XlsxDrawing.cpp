@@ -412,7 +412,7 @@ namespace OOX
 								}
 							}
 						}
-						if(ChartFile->m_oChartSpace.m_chart->m_title != nullptr && ChartFile->m_oChartSpace.m_chart->m_title->m_tx != nullptr)
+
 						{
 							auto labelUnion = new XLS::ATTACHEDLABEL;
 							auto textRecord = new XLS::Text;
@@ -429,7 +429,12 @@ namespace OOX
 							auto objLink = new XLS::ObjectLink;
 							objLink->wLinkObj = 1;
 							auto seriesText = new XLS::SeriesText;
-							seriesText->stText = ChartFile->m_oChartSpace.m_chart->m_title->m_tx->m_oRich->GetText();
+							if(ChartFile->m_oChartSpace.m_chart->m_title != nullptr && ChartFile->m_oChartSpace.m_chart->m_title->m_tx != nullptr)
+								seriesText->stText = ChartFile->m_oChartSpace.m_chart->m_title->m_tx->m_oRich->GetText();
+							else
+							{
+								textRecord->fAutoText = true;
+							}
 							auto aiUnion = new XLS::AI;
 							auto brai = new XLS::BRAI;
 							brai->rt = 1;

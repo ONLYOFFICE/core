@@ -230,7 +230,6 @@ void MsoDrawing::prepareChart(const unsigned int chartId, const unsigned int x1,
 		fsprPtr->shape_id = 1;
 		fsprPtr->spid = chartId;
 		fsprPtr->fHaveMaster = true;
-		fsprPtr->fFlipV = true;
 		auto clientAnchor = new ODRAW::OfficeArtClientAnchorSheet;
 		clientAnchor->colL = x1;
 		clientAnchor->dxL = x1Offset;

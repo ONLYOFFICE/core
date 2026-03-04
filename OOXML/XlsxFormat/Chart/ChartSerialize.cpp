@@ -3297,7 +3297,7 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			valSerRange->fAutoMax = true;
 			valSerRange->fAutoMajor = true;
 			valSerRange->fAutoMinor = true;
-			valSerRange->fAutoCross = true;
+			valSerRange->numCross.data.value = 0;
 			dvAxis->m_ValueRange = XLS::BaseObjectPtr(valSerRange);
 			if(m_spPr.IsInit())
 			{

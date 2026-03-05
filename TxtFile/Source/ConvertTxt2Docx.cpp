@@ -46,6 +46,60 @@
 
 namespace Txt2Docx
 {
+    namespace
+    {
+        bool isEmoji(const std::string& utf8Char)
+        {
+            if (utf8Char.empty()) return false;
+
+            unsigned char c = utf8Char[0];
+            uint32_t codePoint = 0;
+
+            if ((c & 0xF8) == 0xF0 && utf8Char.length() >= 4)
+            {
+                codePoint = ((utf8Char[0] & 0x07) << 18) |
+                            ((utf8Char[1] & 0x3F) << 12) |
+                            ((utf8Char[2] & 0x3F) << 6)  |
+                            (utf8Char[3] & 0x3F);
+            }
+            else if ((c & 0xF0) == 0xE0 && utf8Char.length() >= 3)
+            {
+                codePoint = ((utf8Char[0] & 0x0F) << 12) |
+                            ((utf8Char[1] & 0x3F) << 6)  |
+                            (utf8Char[2] & 0x3F);
+            }
+            else
+            {
+                return false;
+            }
+
+            return (codePoint >= 0x1F300 && codePoint <= 0x1F9FF) ||
+                (codePoint >= 0x2600 && codePoint <= 0x27BF) ||
+                (codePoint >= 0x2B00 && codePoint <= 0x2BFF) ||
+                (codePoint >= 0xFE00 && codePoint <= 0xFE0F) ||
+                (codePoint >= 0x1F900 && codePoint <= 0x1F9FF) ||
+                codePoint == 0x00A9 || codePoint == 0x00AE;
+        }
+
+        std::string escapeXml(const std::string& text)
+        {
+            std::string result;
+            result.reserve(text.length() * 2);
+            for (char ch : text)
+            {
+                switch (ch)
+                {
+                case '&': result += "&amp;"; break;
+                case '<': result += "&lt;"; break;
+                case '>': result += "&gt;"; break;
+                case '"': result += "&quot;"; break;
+                case '\'': result += "&apos;"; break;
+                default: result += ch; break;
+                }
+            }
+            return result;
+        }
+    }
 	class Converter_Impl
 	{
 	public:
@@ -158,8 +212,8 @@ namespace Txt2Docx
     void Converter::write(NSStringUtils::CStringBuilderA &stringWriter)
     {
         const char* fontName = "Courier New";
+        const char* emojiFontName = "Segoe UI Emoji";
         const char* defaultSpacing = "<w:spacing w:after=\"0\" w:line=\"240\" w:lineRule=\"auto\"/>";
-
         for (const std::string &lineRaw : converter_->m_inputFile.m_listContentutf8)
         {
             std::string line = lineRaw;
@@ -176,32 +230,86 @@ namespace Txt2Docx
             stringWriter.WriteString(fontName);
             stringWriter.WriteString("\"/></w:rPr></w:pPr>");
 
-            size_t start = 0;
-            while (true)
+            size_t i = 0;
+            while (i < line.length())
             {
-                size_t pos = line.find('\x09', start);
-                std::string segment = (pos == std::string::npos) ? line.substr(start) : line.substr(start, pos - start);
+                unsigned char c = line[i];
 
-                if (!segment.empty())
+                if ((c & 0xF0) == 0xF0 || (c & 0xE0) == 0xE0)
                 {
-                    stringWriter.WriteString("<w:r><w:rPr><w:rFonts w:ascii=\"");
-                    stringWriter.WriteString(fontName);
-                    stringWriter.WriteString("\" w:hAnsi=\"");
-                    stringWriter.WriteString(fontName);
-                    stringWriter.WriteString("\" w:cs=\"");
-                    stringWriter.WriteString(fontName);
-                    stringWriter.WriteString("\"/></w:rPr><w:t xml:space=\"preserve\">");
-                    stringWriter.WriteString(segment.c_str());
-                    stringWriter.WriteString("</w:t></w:r>");
+                    int possibleLen = ((c & 0xF0) == 0xF0) ? 4 : 3;
+
+                    if (i + possibleLen <= line.length())
+                    {
+                        std::string possible = line.substr(i, possibleLen);
+
+                        if (isEmoji(possible))
+                        {
+                            stringWriter.WriteString("<w:r><w:rPr><w:rFonts w:ascii=\"");
+                            stringWriter.WriteString(emojiFontName);
+                            stringWriter.WriteString("\" w:hAnsi=\"");
+                            stringWriter.WriteString(emojiFontName);
+                            stringWriter.WriteString("\" w:cs=\"");
+                            stringWriter.WriteString(emojiFontName);
+                            stringWriter.WriteString("\"/></w:rPr><w:t xml:space=\"preserve\">");
+                            stringWriter.WriteString(possible.c_str());
+                            stringWriter.WriteString("</w:t></w:r>");
+
+                            i += possibleLen;
+                            continue;
+                        }
+                    }
                 }
 
-                if (pos == std::string::npos)
-                    break;
+                size_t textStart = i;
+                while (i < line.length())
+                {
+                    unsigned char next = line[i];
+                    if ((next & 0xF0) == 0xF0 || (next & 0xE0) == 0xE0)
+                    {
+                        int checkLen = ((next & 0xF0) == 0xF0) ? 4 : 3;
+                        if (i + checkLen <= line.length())
+                        {
+                            std::string check = line.substr(i, checkLen);
+                            if (isEmoji(check))
+                                break;
+                        }
+                    }
+                    i++;
+                }
 
-                stringWriter.WriteString("<w:tab/>");
-                start = pos + 1;
+                std::string textSegment = line.substr(textStart, i - textStart);
+
+                size_t tabStart = 0;
+                while (true)
+                {
+                    size_t tabPos = textSegment.find('\x09', tabStart);
+                    std::string seg = (tabPos == std::string::npos) ?
+                                          textSegment.substr(tabStart) :
+                                          textSegment.substr(tabStart, tabPos - tabStart);
+
+                    if (!seg.empty())
+                    {
+                        std::string escaped = escapeXml(seg);
+
+                        stringWriter.WriteString("<w:r><w:rPr><w:rFonts w:ascii=\"");
+                        stringWriter.WriteString(fontName);
+                        stringWriter.WriteString("\" w:hAnsi=\"");
+                        stringWriter.WriteString(fontName);
+                        stringWriter.WriteString("\" w:cs=\"");
+                        stringWriter.WriteString(fontName);
+                        stringWriter.WriteString("\"/></w:rPr><w:t xml:space=\"preserve\">");
+                        stringWriter.WriteString(escaped.c_str());
+                        stringWriter.WriteString("</w:t></w:r>");
+                    }
+
+                    if (tabPos == std::string::npos)
+                        break;
+
+                    stringWriter.WriteString("<w:r><w:tab/></w:r>");
+                    tabStart = tabPos + 1;
+                }
             }
-
             stringWriter.WriteString("</w:p>");
         }
     }

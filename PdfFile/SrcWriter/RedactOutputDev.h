@@ -201,7 +201,7 @@ namespace PdfWriter
 		void DoStateOp();
 		void DrawXObject(const char* name);
 		CObjectBase* CreateImage(Gfx *gfx, int nWidth, int nHeight, unsigned int nFilter, int nBPC, const char* sCS);
-		CResourcesDict* GetResources(Gfx *gfx, CDictObject* pNewForm);
+		CResourcesDict* GetResources(Gfx *gfx, CDictObject* pNewForm = NULL);
 
 		XRef* m_pXref;
 		std::vector<double> m_arrQuadPoints;

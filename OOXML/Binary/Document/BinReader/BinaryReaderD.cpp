@@ -235,7 +235,7 @@ else if (c_oSerBordersType::bottom == type)\
 	}\
 	else if (c_oSerProp_RevisionType::Date == type)\
 	{\
-		poResult->m_oDate.Init(); poResult->m_oDate->SetValue(m_oBufferedStream.GetString3(length));\
+		poResult->m_oDate = m_oBufferedStream.GetString3(length);\
 	}\
 	else if (c_oSerProp_RevisionType::Id == type)\
 	{\
@@ -5381,8 +5381,7 @@ int Binary_DocumentTableReader::ReadMoveFromRangeStart(BYTE type, long length, v
     {
         std::wstring strValue = m_oBufferedStream.GetString3(length);
 
-		pMoveFromRangeStart->m_oDate.Init();
-        pMoveFromRangeStart->m_oDate->SetValue(strValue);
+		pMoveFromRangeStart->m_oDate = strValue;
 	}
 	else if (c_oSerMoveRange::DisplacedByCustomXml == type)
 	{
@@ -5431,8 +5430,7 @@ int Binary_DocumentTableReader::ReadMoveToRangeStart(BYTE type, long length, voi
     {
         std::wstring strValue = m_oBufferedStream.GetString3(length);
 
-		pMoveToRangeStart->m_oDate.Init();
-        pMoveToRangeStart->m_oDate->SetValue(strValue);
+		pMoveToRangeStart->m_oDate = strValue;
 	}
 	else if (c_oSerMoveRange::DisplacedByCustomXml == type)
 	{
@@ -9926,10 +9924,7 @@ int Binary_DocumentTableReader::ReadSdtPrDate(BYTE type, long length, void* poRe
 	OOX::Logic::CDate* pDate = static_cast<OOX::Logic::CDate*>(poResult);
 	if (c_oSerSdt::FullDate == type)
 	{
-        std::wstring sVal = m_oBufferedStream.GetString3(length);
-
-        pDate->m_oFullDate.Init();
-        pDate->m_oFullDate->SetValue(sVal);
+		pDate->m_oFullDate = m_oBufferedStream.GetString3(length);
 	}
 	else if (c_oSerSdt::Calendar == type)
 	{

@@ -8414,7 +8414,7 @@ void BinaryDocumentTableWriter::WriteSdtPrDate(const OOX::Logic::CDate& oDate)
 	if (oDate.m_oFullDate.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::FullDate);
-		m_oBcw.m_oStream.WriteStringW3(oDate.m_oFullDate->GetValue());
+		m_oBcw.m_oStream.WriteStringW3(oDate.m_oFullDate->ToString());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
 	if (oDate.m_oCalendar.IsInit())
@@ -8763,7 +8763,7 @@ void BinaryCommentsTableWriter::WriteCommentsContent(OOX::CComments& oComments, 
 					CCommentWriteTemp* pCommentWriteTemp = pPair->second;
 					if (pCommentExtensible->m_oDateUtc.IsInit())
 					{
-						pCommentWriteTemp->sDateUtc = pCommentExtensible->m_oDateUtc->GetValue();
+						pCommentWriteTemp->sDateUtc = pCommentExtensible->m_oDateUtc->ToString();
 					}
 				}
 			}

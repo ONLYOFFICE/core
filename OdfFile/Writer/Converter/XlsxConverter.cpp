@@ -1123,7 +1123,50 @@ void XlsxConverter::convert(OOX::Spreadsheet::CCommentItem * oox_comment)
 	{
 		ods_context->set_comment_color(L"CCFFFF"); //default ms
 	}
-	if (oox_comment->m_oText.IsInit())
+	if (oox_comment->m_pThreadedComment)
+	{
+		convert(oox_comment->m_pThreadedComment->m_oText.GetPointer());
+		ods_context->text_context()->end_paragraph();
+
+		for (auto reply : oox_comment->m_pThreadedComment->m_arrReplies)
+		{
+			ods_context->text_context()->start_paragraph();
+
+			if (reply->personId.IsInit() && xlsx_mapPersons.IsInit())
+			{
+				std::wstring sTextReply;
+
+				std::unordered_map<std::wstring, OOX::Spreadsheet::CPerson*>::iterator pFind = xlsx_mapPersons->find(reply->personId->ToString());
+				if (pFind != xlsx_mapPersons->end())
+				{
+					if ((pFind->second) && (pFind->second->displayName.IsInit()))
+					{
+						sTextReply += *pFind->second->displayName;
+					}
+					if (reply->dT.IsInit())
+					{
+						std::wstring sDate = reply->dT->ToString();
+
+						if (sDate.empty() == false)
+						{
+							size_t pos = sDate.find(L"T"); 
+							if (pos != std::wstring::npos) sDate[pos] = L' ';
+							sTextReply += L" (" + sDate + L")";
+						}
+					}
+				}
+				sTextReply += L": ";
+				if (reply->m_oText.IsInit())
+				{
+					sTextReply += reply->m_oText->m_sText;
+				}
+				ods_context->add_text_content(sTextReply);
+			}
+
+			ods_context->text_context()->end_paragraph();
+		}
+	}
+	else if (oox_comment->m_oText.IsInit())
 	{
 		for(size_t i = 0; i < oox_comment->m_oText->m_arrItems.size(); ++i)
 		{

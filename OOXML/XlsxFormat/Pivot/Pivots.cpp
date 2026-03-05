@@ -4380,7 +4380,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			ptr->stRefreshedWho = L"Aspose";
 
 		if (m_oRefreshedDateIso.IsInit())
-			ptr->xnumRefreshedDate.data.value = std::stod(m_oRefreshedDateIso->GetValue());
+			ptr->xnumRefreshedDate.data.value = std::stod(m_oRefreshedDateIso->ToString());
 
 		if (m_oRefreshedVersion.IsInit())
 			ptr->bVerCacheLastRefresh = m_oRefreshedVersion->GetValue();
@@ -5175,8 +5175,8 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			ptr->citems = 0;
 		if(m_oMinDate.IsInit() && m_oMaxDate.IsInit())
 		{
-			ptr->xnumMin.data.value = getExcelTimeFromDate(m_oMinDate->GetValue());
-			ptr->xnumMax.data.value = getExcelTimeFromDate(m_oMaxDate->GetValue());
+			ptr->xnumMin.data.value = getExcelTimeFromDate(m_oMinDate->ToString());
+			ptr->xnumMax.data.value = getExcelTimeFromDate(m_oMaxDate->ToString());
 		}
 		else if(m_oMinValue.IsInit() && m_oMaxValue.IsInit())
 		{
@@ -5727,8 +5727,8 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			ptr->xnumBy.data.value = 1;
 		if(m_oStartDate.IsInit() && m_oEndDate.IsInit())
 		{
-			ptr->xnumStart.data.value = getExcelTimeFromDate(m_oStartDate->GetValue());
-			ptr->xnumEnd.data.value = getExcelTimeFromDate(m_oEndDate->GetValue());
+			ptr->xnumStart.data.value = getExcelTimeFromDate(m_oStartDate->ToString());
+			ptr->xnumEnd.data.value = getExcelTimeFromDate(m_oEndDate->ToString());
 		}
 		else
 		{
@@ -6454,7 +6454,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			if(m_oCount.IsInit())
 				ptr->info.cIMemProps = m_oCount->GetValue();
 			if(m_oValue.IsInit())
-				ptr->datetime.fromString(m_oValue->GetValue());
+				ptr->datetime.fromString(m_oValue->ToString());
             ptr->datetime.yr += 1900;
             ptr->datetime.mon += 1;
 			for(auto i:m_arrItems)
@@ -6468,7 +6468,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
             ptr1->m_source = XLS::BaseObjectPtr{ptr};
 			XLS::BaseObjectPtr objectPtr(ptr1);
 			if(m_oValue.IsInit())
-				ptr->datetime.fromString(m_oValue->GetValue());
+				ptr->datetime.fromString(m_oValue->ToString());
             ptr->datetime.yr += 1900;
             ptr->datetime.mon += 1;
 
@@ -8037,7 +8037,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			{
 				auto dataValue = static_cast<CPivotDateTimeValue*>(i);
 				if(dataValue->m_oValue.IsInit())
-					operPtr->value = dataValue->m_oValue->GetValue();
+					operPtr->value = dataValue->m_oValue->ToString();
 				operPtr->bDate = true;
 				ptr->m_arSXOPER.push_back(XLS::BaseObjectPtr(operPtr));
 				continue;
@@ -8073,7 +8073,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
                     auto record = writer->getNextRecord(XLSB::rt_PCDIDatetime);
                     XLSB::PCDIDateTime recordVal;
                     if(dataValue->m_oValue.IsInit())
-                        recordVal.fromString(dataValue->m_oValue->GetValue());
+                        recordVal.fromString(dataValue->m_oValue->ToString());
                     *record << recordVal;
                     writer->storeNextRecord(record);
                     continue;

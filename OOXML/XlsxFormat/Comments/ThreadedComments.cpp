@@ -396,7 +396,7 @@ namespace OOX
 		{
 			if(dT.IsInit() && elem.dT.IsInit())
 			{
-				return dT->GetValue() < elem.dT->GetValue();
+				return dT->ToString() < elem.dT->ToString();
 			}
 			return true;
 		}

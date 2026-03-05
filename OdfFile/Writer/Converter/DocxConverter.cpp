@@ -1267,10 +1267,10 @@ void DocxConverter::convert(OOX::Logic::CIns *oox_ins)
 {
 	if (oox_ins == NULL) return;
 	
-	std::wstring	author	= oox_ins->m_sAuthor.IsInit()	? oox_ins->m_sAuthor.get2()		: L"";
-	std::wstring	userId	= oox_ins->m_sUserId.IsInit()	? oox_ins->m_sUserId.get2()		: L"";
-	int				id		= oox_ins->m_oId.IsInit()		? oox_ins->m_oId->GetValue()	: -1;
-	std::wstring	date	= oox_ins->m_oDate.IsInit()		? oox_ins->m_oDate->GetValue()	: L"";
+	std::wstring	author	= oox_ins->m_sAuthor.IsInit()	? oox_ins->m_sAuthor.get2() : L"";
+	std::wstring	userId	= oox_ins->m_sUserId.IsInit()	? oox_ins->m_sUserId.get2() : L"";
+	int				id		= oox_ins->m_oId.IsInit()		? oox_ins->m_oId->GetValue() : -1;
+	std::wstring	date	= oox_ins->m_oDate.IsInit()		? oox_ins->m_oDate->ToString() : L"";
 			
 	bool start_change = odt_context->start_change(id, 1, author, userId, date);
 
@@ -1286,10 +1286,10 @@ int DocxConverter::convert(ComplexTypes::Word::CTrackChange *oox_change, int typ
 {
 	if (!oox_change) return -1;
 
-	std::wstring	author	= oox_change->m_sAuthor.IsInit()	? oox_change->m_sAuthor.get2()		: L"";
-	std::wstring	userId	= oox_change->m_sUserId.IsInit()	? oox_change->m_sUserId.get2()		: L"";
-	int				id		= oox_change->m_oId.IsInit()		? oox_change->m_oId->GetValue()		: -1;
-	std::wstring	date	= oox_change->m_oDate.IsInit()		? oox_change->m_oDate->GetValue()	: L"";
+	std::wstring	author	= oox_change->m_sAuthor.IsInit()	? oox_change->m_sAuthor.get2() : L"";
+	std::wstring	userId	= oox_change->m_sUserId.IsInit()	? oox_change->m_sUserId.get2() : L"";
+	int				id		= oox_change->m_oId.IsInit()		? oox_change->m_oId->GetValue()	: -1;
+	std::wstring	date	= oox_change->m_oDate.IsInit()		? oox_change->m_oDate->ToString() : L"";
 
 	if (!odt_context->start_change(id, type, author, userId, date)) return -1;
 
@@ -1299,10 +1299,10 @@ int DocxConverter::convert(OOX::Logic::CSectPrChange *oox_sect_prop_change)
 {
 	if (!oox_sect_prop_change) return -1;
 
-	std::wstring	author	= oox_sect_prop_change->m_sAuthor.IsInit()	? oox_sect_prop_change->m_sAuthor.get2()		: L"";
-	std::wstring	userId	= oox_sect_prop_change->m_sUserId.IsInit()	? oox_sect_prop_change->m_sUserId.get2()		: L"";
-	int				id		= oox_sect_prop_change->m_oId.IsInit()		? oox_sect_prop_change->m_oId->GetValue()		: -1;
-	std::wstring	date	= oox_sect_prop_change->m_oDate.IsInit()	? oox_sect_prop_change->m_oDate->GetValue()		: L"";
+	std::wstring	author	= oox_sect_prop_change->m_sAuthor.IsInit()	? oox_sect_prop_change->m_sAuthor.get2() : L"";
+	std::wstring	userId	= oox_sect_prop_change->m_sUserId.IsInit()	? oox_sect_prop_change->m_sUserId.get2() : L"";
+	int				id		= oox_sect_prop_change->m_oId.IsInit()		? oox_sect_prop_change->m_oId->GetValue() : -1;
+	std::wstring	date	= oox_sect_prop_change->m_oDate.IsInit()	? oox_sect_prop_change->m_oDate->ToString()	: L"";
 
 	if (odt_context->start_change(id, 3, author, userId, date))
 	{
@@ -1316,10 +1316,10 @@ int DocxConverter::convert(OOX::Logic::CPPrChange *oox_para_prop_change)
 {
 	if (!oox_para_prop_change) return -1;
 
-	std::wstring	author	= oox_para_prop_change->m_sAuthor.IsInit()	? oox_para_prop_change->m_sAuthor.get2()		: L"";
-	std::wstring	userId	= oox_para_prop_change->m_sUserId.IsInit()	? oox_para_prop_change->m_sUserId.get2()		: L"";
-	int				id		= oox_para_prop_change->m_oId.IsInit()		? oox_para_prop_change->m_oId->GetValue()		: -1;
-	std::wstring	date	= oox_para_prop_change->m_oDate.IsInit()	? oox_para_prop_change->m_oDate->GetValue()		: L"";
+	std::wstring	author	= oox_para_prop_change->m_sAuthor.IsInit()	? oox_para_prop_change->m_sAuthor.get2() : L"";
+	std::wstring	userId	= oox_para_prop_change->m_sUserId.IsInit()	? oox_para_prop_change->m_sUserId.get2() : L"";
+	int				id		= oox_para_prop_change->m_oId.IsInit()		? oox_para_prop_change->m_oId->GetValue() : -1;
+	std::wstring	date	= oox_para_prop_change->m_oDate.IsInit()	? oox_para_prop_change->m_oDate->ToString()	: L"";
 	std::wstring	style_name;
 
 	if (oox_para_prop_change->m_pParPr.IsInit())
@@ -1368,10 +1368,10 @@ int DocxConverter::convert(OOX::Logic::CRPrChange *oox_run_prop_change)
 {
 	if (!oox_run_prop_change) return -1;
 		
-	std::wstring	author	= oox_run_prop_change->m_sAuthor.IsInit()	? oox_run_prop_change->m_sAuthor.get2()		: L"";
-	std::wstring	userId	= oox_run_prop_change->m_sUserId.IsInit()	? oox_run_prop_change->m_sUserId.get2()		: L"";
-	int				id		= oox_run_prop_change->m_oId.IsInit()		? oox_run_prop_change->m_oId->GetValue()	: -1;
-	std::wstring	date	= oox_run_prop_change->m_oDate.IsInit()		? oox_run_prop_change->m_oDate->GetValue()	: L"";
+	std::wstring	author	= oox_run_prop_change->m_sAuthor.IsInit()	? oox_run_prop_change->m_sAuthor.get2() : L"";
+	std::wstring	userId	= oox_run_prop_change->m_sUserId.IsInit()	? oox_run_prop_change->m_sUserId.get2() : L"";
+	int				id		= oox_run_prop_change->m_oId.IsInit()		? oox_run_prop_change->m_oId->GetValue() : -1;
+	std::wstring	date	= oox_run_prop_change->m_oDate.IsInit()		? oox_run_prop_change->m_oDate->ToString() : L"";
 	std::wstring	style_name;
 
 	if (oox_run_prop_change->m_pRunPr.IsInit())
@@ -1393,10 +1393,10 @@ int DocxConverter::convert(OOX::Logic::CTrPrChange *oox_tr_prop_change)
 {
 	if (!oox_tr_prop_change) return -1;
 	
-	std::wstring	author	= oox_tr_prop_change->m_sAuthor.IsInit()	? oox_tr_prop_change->m_sAuthor.get2()		: L"";
-	std::wstring	userId	= oox_tr_prop_change->m_sUserId.IsInit()	? oox_tr_prop_change->m_sUserId.get2()		: L"";
-	int				id		= oox_tr_prop_change->m_oId.IsInit()		? oox_tr_prop_change->m_oId->GetValue()		: -1;
-	std::wstring	date	= oox_tr_prop_change->m_oDate.IsInit()		? oox_tr_prop_change->m_oDate->GetValue()	: L"";
+	std::wstring	author	= oox_tr_prop_change->m_sAuthor.IsInit()	? oox_tr_prop_change->m_sAuthor.get2() : L"";
+	std::wstring	userId	= oox_tr_prop_change->m_sUserId.IsInit()	? oox_tr_prop_change->m_sUserId.get2() : L"";
+	int				id		= oox_tr_prop_change->m_oId.IsInit()		? oox_tr_prop_change->m_oId->GetValue() : -1;
+	std::wstring	date	= oox_tr_prop_change->m_oDate.IsInit()		? oox_tr_prop_change->m_oDate->ToString() : L"";
 	std::wstring	style_name;
 
 	odf_writer::odf_style_state_ptr style_state = odt_context->styles_context()->last_state(style_family::Text);
@@ -1416,10 +1416,10 @@ int DocxConverter::convert(OOX::Logic::CTcPrChange *oox_tc_prop_change)
 {
 	if (!oox_tc_prop_change) return -1;
 
-	std::wstring	author	= oox_tc_prop_change->m_sAuthor.IsInit()	? oox_tc_prop_change->m_sAuthor.get2()		: L"";
-	std::wstring	userId	= oox_tc_prop_change->m_sUserId.IsInit()	? oox_tc_prop_change->m_sUserId.get2()		: L"";
-	int				id		= oox_tc_prop_change->m_oId.IsInit()		? oox_tc_prop_change->m_oId->GetValue()		: -1;
-	std::wstring	date	= oox_tc_prop_change->m_oDate.IsInit()		? oox_tc_prop_change->m_oDate->GetValue()	: L"";
+	std::wstring	author	= oox_tc_prop_change->m_sAuthor.IsInit()	? oox_tc_prop_change->m_sAuthor.get2() : L"";
+	std::wstring	userId	= oox_tc_prop_change->m_sUserId.IsInit()	? oox_tc_prop_change->m_sUserId.get2() : L"";
+	int				id		= oox_tc_prop_change->m_oId.IsInit()		? oox_tc_prop_change->m_oId->GetValue() : -1;
+	std::wstring	date	= oox_tc_prop_change->m_oDate.IsInit()		? oox_tc_prop_change->m_oDate->ToString() : L"";
 	std::wstring	style_name;
 
 	if (oox_tc_prop_change->m_pTcPr.IsInit())
@@ -1438,10 +1438,10 @@ int DocxConverter::convert(OOX::Logic::CTblPrChange *oox_table_prop_change)
 {
 	if (!oox_table_prop_change) return -1;
 	
-	std::wstring	author	= oox_table_prop_change->m_sAuthor.IsInit()	? oox_table_prop_change->m_sAuthor.get2()		: L"";
-	std::wstring	userId	= oox_table_prop_change->m_sUserId.IsInit()	? oox_table_prop_change->m_sUserId.get2()		: L"";
-	int				id		= oox_table_prop_change->m_oId.IsInit()		? oox_table_prop_change->m_oId->GetValue()		: -1;
-	std::wstring	date	= oox_table_prop_change->m_oDate.IsInit()	? oox_table_prop_change->m_oDate->GetValue()	: L"";
+	std::wstring	author	= oox_table_prop_change->m_sAuthor.IsInit()	? oox_table_prop_change->m_sAuthor.get2() : L"";
+	std::wstring	userId	= oox_table_prop_change->m_sUserId.IsInit()	? oox_table_prop_change->m_sUserId.get2() : L"";
+	int				id		= oox_table_prop_change->m_oId.IsInit()		? oox_table_prop_change->m_oId->GetValue() : -1;
+	std::wstring	date	= oox_table_prop_change->m_oDate.IsInit()	? oox_table_prop_change->m_oDate->ToString() : L"";
 	std::wstring	style_name;
 
 	if (oox_table_prop_change->m_pTblPr.IsInit())
@@ -1469,10 +1469,10 @@ void DocxConverter::convert(OOX::Logic::CDel *oox_del)
 {
 	if (oox_del == NULL) return;
 
-	std::wstring	author	= oox_del->m_sAuthor.IsInit()	? oox_del->m_sAuthor.get2()		: L"";
-	std::wstring	userId	= oox_del->m_sUserId.IsInit()	? oox_del->m_sUserId.get2()		: L"";
-	int				id		= oox_del->m_oId.IsInit()		? oox_del->m_oId->GetValue()	: -1;
-	std::wstring	date	= oox_del->m_oDate.IsInit()		? oox_del->m_oDate->GetValue()	: L"";
+	std::wstring	author	= oox_del->m_sAuthor.IsInit()	? oox_del->m_sAuthor.get2() : L"";
+	std::wstring	userId	= oox_del->m_sUserId.IsInit()	? oox_del->m_sUserId.get2() : L"";
+	int				id		= oox_del->m_oId.IsInit()		? oox_del->m_oId->GetValue() : -1;
+	std::wstring	date	= oox_del->m_oDate.IsInit()		? oox_del->m_oDate->ToString() : L"";
 
 	bool res_change  = odt_context->start_change(id, 2, author, userId, date);
 
@@ -4479,8 +4479,8 @@ void DocxConverter::convert(OOX::CComment* oox_comment)
 	
 	odt_context->start_comment_content();
 	{
-		if (oox_comment->m_oAuthor.IsInit())	odt_context->comment_context()->set_author	(*oox_comment->m_oAuthor);
-		if (oox_comment->m_oDate.IsInit())		odt_context->comment_context()->set_date	(oox_comment->m_oDate->GetValue());
+		if (oox_comment->m_oAuthor.IsInit())	odt_context->comment_context()->set_author(*oox_comment->m_oAuthor);
+		if (oox_comment->m_oDate.IsInit())		odt_context->comment_context()->set_date(oox_comment->m_oDate->ToString());
 		if (oox_comment->m_oInitials.IsInit())	{}
 
 		for (size_t i = 0; i < oox_comment->m_arrItems.size(); ++i)
@@ -4561,8 +4561,8 @@ void DocxConverter::convert_comment(int oox_comm_id)
 			{				
 				odt_context->start_comment_content();
 				{
-					if (oox_comment->m_oAuthor.IsInit())	odt_context->comment_context()->set_author	(*oox_comment->m_oAuthor);
-					if (oox_comment->m_oDate.IsInit())		odt_context->comment_context()->set_date	(oox_comment->m_oDate->GetValue());
+					if (oox_comment->m_oAuthor.IsInit())	odt_context->comment_context()->set_author(*oox_comment->m_oAuthor);
+					if (oox_comment->m_oDate.IsInit())		odt_context->comment_context()->set_date(oox_comment->m_oDate->ToString());
 					if (oox_comment->m_oInitials.IsInit())	{}
 
 					for (size_t i = 0; i < oox_comment->m_arrItems.size(); ++i)

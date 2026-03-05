@@ -324,7 +324,7 @@ namespace OOX
 			if ( m_oDate.IsInit() )
 			{
 				sResult += L"w:date=\"";
-				sResult += m_oDate->GetValue();
+				sResult += m_oDate->ToString();
 				sResult += L"\" ";
 			}
 

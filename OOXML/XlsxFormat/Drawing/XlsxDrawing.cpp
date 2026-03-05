@@ -303,11 +303,13 @@ namespace OOX
 						auto chartRid = graphicFrame->chartRec->id_data.get();
 						auto castedChart = Get<OOX::File>(chartRid);
 						auto ChartFile = static_cast<OOX::Spreadsheet::CChartFile*>(castedChart.GetPointer());
+						if(ChartFile->m_oChartSpace.m_chart == nullptr)
+							continue;
 						if(ChartFile->m_oChartSpace.m_spPr.IsInit())
 						{
 							ChartFormatsPtr->m_FRAME = ChartFile->m_oChartSpace.m_spPr->toXLSFrame();
 						}
-						if(ChartFile->m_oChartSpace.m_chart != nullptr &&  ChartFile->m_oChartSpace.m_chart->m_plotArea != nullptr)
+						if(ChartFile->m_oChartSpace.m_chart->m_plotArea != nullptr)
 						{
 							auto AxisParentUnion = new XLS::AXISPARENT;
 							auto axes = new XLS::AXES;

@@ -464,43 +464,46 @@ namespace OOX
 					auto chartIndex = 0;
 
 					auto shapeCount = drawingGroupPtr->drawingCount+1;
-					for(auto anchor : drawingPtr->m_arrItems)
+					if(!charts.empty())
 					{
-						auto drawingObj = new XLS::MsoDrawing(false);
+						for(auto anchor : drawingPtr->m_arrItems)
 						{
-							auto left = 0, leftOff = 0, right = 0, righOff = 0, top = 0, topOff = 0, bot = 0, botOff = 0;
-							anchor->getAnchorPos(left, leftOff, top, topOff, right, righOff, bot, botOff);
-							if(anchor != *drawingPtr->m_arrItems.begin())
-								drawingObj->rgChildRec.first = false;
-							drawingObj->prepareChart(shapeCount, left, right, top, bot, leftOff, righOff, topOff, botOff);
+							auto drawingObj = new XLS::MsoDrawing(false);
+							{
+								auto left = 0, leftOff = 0, right = 0, righOff = 0, top = 0, topOff = 0, bot = 0, botOff = 0;
+								anchor->getAnchorPos(left, leftOff, top, topOff, right, righOff, bot, botOff);
+								if(anchor != *drawingPtr->m_arrItems.begin())
+									drawingObj->rgChildRec.first = false;
+								drawingObj->prepareChart(shapeCount, left, right, top, bot, leftOff, righOff, topOff, botOff);
+							}
+
+							std::pair<XLS::BaseObjectPtr, std::vector<XLS::BaseObjectPtr>> objPair;
+							{
+								auto drawingObjPtr = XLS::MsoDrawingPtr(drawingObj);
+								objPair.first = drawingObjPtr;
+
+								if(drawingObj->rgChildRec.first)
+									Objects->m_MsoDrawing = drawingObjPtr;
+							}
+							auto objPt = new XLS::Obj(Objects->m_MsoDrawing);
+							objPt->cmo.ot = 5;
+							objPt->cmo.fPrint = true;
+							objPt->cmo.fRecalcObj = true;
+							objPt->cmo.id = drawingGroupPtr->drawingCount;
+
+							auto objUnion = new XLS::OBJ(Objects->m_MsoDrawing);
+							objUnion->m_Obj = XLS::BaseObjectPtr(objPt);
+
+							if(charts.size() > chartIndex)
+								objUnion->m_arrChart.push_back(charts.at(chartIndex));
+							objPair.second.push_back(XLS::BaseObjectPtr(objUnion));
+							Objects->m_arrObject.push_back(objPair);
+							chartIndex++;
+							drawingGroupPtr->drawingCount++;
+							shapeCount += 1;
 						}
-
-						std::pair<XLS::BaseObjectPtr, std::vector<XLS::BaseObjectPtr>> objPair;
-						{
-							auto drawingObjPtr = XLS::MsoDrawingPtr(drawingObj);
-							objPair.first = drawingObjPtr;
-
-							if(drawingObj->rgChildRec.first)
-								Objects->m_MsoDrawing = drawingObjPtr;
-						}
-						auto objPt = new XLS::Obj(Objects->m_MsoDrawing);
-						objPt->cmo.ot = 5;
-						objPt->cmo.fPrint = true;
-						objPt->cmo.fRecalcObj = true;
-						objPt->cmo.id = drawingGroupPtr->drawingCount;
-
-						auto objUnion = new XLS::OBJ(Objects->m_MsoDrawing);
-						objUnion->m_Obj = XLS::BaseObjectPtr(objPt);
-
-						if(charts.size() > chartIndex)
-							objUnion->m_arrChart.push_back(charts.at(chartIndex));
-						objPair.second.push_back(XLS::BaseObjectPtr(objUnion));
-						Objects->m_arrObject.push_back(objPair);
-						chartIndex++;
-						drawingGroupPtr->drawingCount++;
-						shapeCount += 1;
+						worksheetPtr->m_OBJECTS = objectsPtr;
 					}
-					worksheetPtr->m_OBJECTS = objectsPtr;
 				}
 			}
 			/*if(m_pComments != nullptr)

@@ -160,7 +160,7 @@ void paragraph_format_properties::docx_convert(oox::docx_conversion_context & Co
 		}
 		if (Context.get_rtl()) //может быть он установился от стиля родителя !!
 		{
-			_pPr << L"<w:bidi/>";
+			_pPr << L"<w:bidi w:val=\"1\"/>";
 		}
 		
 		odf_reader::list_style_container & list_styles = Context.root()->odf_context().listStyleContainer();
@@ -231,6 +231,15 @@ void paragraph_format_properties::docx_convert(oox::docx_conversion_context & Co
 				case text_align::Justify:		jc = L"both";	break;
 				case text_align::Start:			jc = Context.get_rtl() ? L"end": L"start"; break;
 				case text_align::End:			jc = Context.get_rtl() ? L"start": L"end"; break;
+			}
+
+			if( Context.get_rtl() )
+			{
+				switch(fo_text_align_->get_type())
+				{
+				    case text_align::Left:			jc = L"right";	break;
+				    case text_align::Right:			jc = L"left";	break;
+				}
 			}
 
 			if (!jc.empty()) CP_XML_NODE(L"w:jc"){CP_XML_ATTR(L"w:val", jc );}

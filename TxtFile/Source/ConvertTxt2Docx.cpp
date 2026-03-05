@@ -306,7 +306,7 @@ namespace Txt2Docx
                     if (tabPos == std::string::npos)
                         break;
 
-                    stringWriter.WriteString("<w:tab/>");
+                    stringWriter.WriteString("<w:r><w:tab/></w:r>");
                     tabStart = tabPos + 1;
                 }
             }

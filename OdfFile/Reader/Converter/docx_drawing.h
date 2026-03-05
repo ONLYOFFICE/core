@@ -44,10 +44,11 @@ namespace oox {
 class _docx_drawing : public _oox_drawing
 { 
 public:
-	_docx_drawing() : _oox_drawing(), parallel(0), isInline(false), inFrame(false), number_wrapped_paragraphs(0), posOffsetV(0), posOffsetH(0)
+	_docx_drawing() : _oox_drawing(), parallel(0), isInline(false), m_isChar(false), inFrame(false), number_wrapped_paragraphs(0), posOffsetV(0), posOffsetH(0)
 	{
 	}
 	bool isInline;
+	bool m_isChar;
 	bool inFrame;
     
 	unsigned int parallel;

@@ -577,7 +577,7 @@ namespace OOX
 			}
 			if (m_oId.IsInit())
 			{
-				sResult += L"<" + sNamespace + L"id>" + *m_oId + L"</" + sNamespace + L"id>";
+				sResult += L"<" + sNamespace + L"id>" + m_oId->ToString() + L"</" + sNamespace + L"id>";
 			}
 			if (m_oChartDataLabel.IsInit())
 			{

@@ -225,6 +225,7 @@ struct ods_comment_state
 	_INT32 col = -1;
 	_INT32 row = -1;
 	std::wstring author;
+	std::wstring date_time;
 
 	office_element_ptr elm;
 
@@ -472,7 +473,7 @@ public:
 	
 	void add_definded_expression(office_element_ptr & elm);
 
-    void start_comment(_INT32 col, _INT32 row, std::wstring & author);
+    void start_comment(_INT32 col, _INT32 row, std::wstring & author, std::wstring& date_time);
 		void set_comment_rect(double l, double t, double w, double h);
 		void set_comment_visible(bool val);
 		void set_comment_color(const std::wstring & color);

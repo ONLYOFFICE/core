@@ -33,6 +33,7 @@
 
 #include "../WritingElement.h"
 #include "../../Base/Nullable.h"
+#include "../../Common/SimpleTypes_Shared.h"
 
 #include "../FileTypes_Spreadsheet.h"
 #include "../../DocxFormat/IFileContainer.h"
@@ -68,9 +69,8 @@ namespace OOX
 			{
 				return et_x_Slicer;
 			}
-			//Attributes
 			nullable_string m_oName;
-			nullable_string m_oUid;
+			nullable<SimpleTypes::CGuid> m_oUid;
 			nullable_string m_oCache;
 			nullable_string m_oCaption;
 			nullable_uint m_oStartItem;//0
@@ -80,7 +80,7 @@ namespace OOX
 			nullable_string m_oStyle;
 			nullable_bool m_oLockedPosition;//False
 			nullable_uint m_oRowHeight;
-			//Members
+
 			nullable<OOX::Drawing::COfficeArtExtensionList> m_oExtLst;
 		};
 

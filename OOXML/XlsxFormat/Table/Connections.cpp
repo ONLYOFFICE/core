@@ -53,10 +53,11 @@
 #include "../../XlsbFormat/Biff12_records/RangePr15.h"
 
 #include "../../DocxFormat/Drawing/DrawingExt.h"
-#include "../../Common/SimpleTypes_Shared.h"
-#include "../../Common/SimpleTypes_Spreadsheet.h"
 
 #include "../../Binary/XlsbFormat/FileTypes_SpreadsheetBin.h"
+
+#include "../../Common/SimpleTypes_Shared.h"
+#include "../../Common/SimpleTypes_Spreadsheet.h"
 
 namespace OOX
 {
@@ -930,7 +931,7 @@ namespace OOX
 
 			writer.WriteString(L"<connection");
 			WritingStringNullableAttrInt(L"id", m_oId, m_oId->GetValue())
-				WritingStringNullableAttrString(L"xr16:uid", m_oUId, *m_oUId)
+				WritingStringNullableAttrString(L"xr16:uid", m_oUId, m_oUId->ToString())
 				WritingStringNullableAttrEncodeXmlString(L"odcFile", m_oOdcFile, *m_oOdcFile)
 				WritingStringNullableAttrBool2(L"keepAlive", m_oKeepAlive)
 				WritingStringNullableAttrEncodeXmlString(L"name", m_oName, *m_oName)

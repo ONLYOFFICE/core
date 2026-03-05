@@ -33,6 +33,7 @@
 
 #include "./../WrapperWritingElement.h"
 #include "../Logic/UniColor.h"
+#include "../../Common/SimpleTypes_Shared.h"
 
 namespace PPTX
 {
@@ -53,7 +54,7 @@ namespace PPTX
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
 			nullable_uint schemeEnum;
-			nullable_string schemeGUID;
+			nullable<SimpleTypes::CGuid> schemeGUID;
 
 			bool bSchemas = false;
 		};

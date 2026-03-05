@@ -117,7 +117,7 @@ namespace OOX
 
 			nullable<ComplexTypes::Word::String>	m_oName;
 			nullable<ComplexTypes::Word::String>	m_oDescription;
-			nullable<ComplexTypes::Word::String>	m_oGuid;
+			nullable<ComplexTypes::Word::String>	m_oGuid; // guid !!!! ????
 			nullable<ComplexTypes::Word::String>	m_oStyle;
 			nullable<CDocPartCategory>				m_oCategory;
 			nullable<CDocPartTypes>					m_oTypes;

@@ -217,7 +217,6 @@ namespace NSCommon
 				this->m_pPointer = new Type( cwsValue );
 			return *this;
 		}
-
 		nullable<Type>& operator=(const nullable<Type> &oOther)
 		{
 			RELEASEOBJECT(this->m_pPointer);

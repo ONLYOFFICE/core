@@ -38,6 +38,7 @@
 namespace SimpleTypes
 {
 	class CUnsignedDecimalNumber;
+	class CGuid;
 
 	namespace Spreadsheet
 	{
@@ -339,7 +340,7 @@ namespace OOX
 			nullable_string		m_oName;
 			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oId;
 			nullable_string		m_oIdExt;
-			nullable_string		m_oUId;
+			nullable<SimpleTypes::CGuid> m_oUId;
 
 			nullable<CDbPr>		m_oDbPr;
 			nullable<COlapPr>	m_oOlapPr;

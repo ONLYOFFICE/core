@@ -84,7 +84,7 @@ public:
     void add_merge_cells(const std::wstring & ref);
 	void add_hyperlink(const std::wstring & ref, const std::wstring & link, const std::wstring & display, const std::wstring & location);
 
-	void start_comment		(int col, int row, std::wstring & author);
+	void start_comment		(int col, int row, std::wstring & author, std::wstring& date_time);
 	void set_comment_rect	(double l, double t, double w, double h);
 	void set_comment_visible(bool val);
 	void set_comment_color	(const std::wstring & color);

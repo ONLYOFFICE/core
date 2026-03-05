@@ -34,6 +34,7 @@
 #include "../Table/Autofilter.h"
 #include "../../DocxFormat/IFileContainer.h"
 #include "../../Common/SimpleTypes_Spreadsheet.h"
+#include "../../Common/SimpleTypes_Shared.h"
 
 namespace OOX
 {
@@ -189,7 +190,7 @@ namespace OOX
 		public:
 			nullable_string m_oName;
 			nullable_string m_oSourceName;
-			nullable_string m_oUid;
+			nullable<SimpleTypes::CGuid> m_oUid;
 
 			nullable<CTimelineCachePivotTables> m_oPivotTables;
 			nullable<CTimelineState> m_oState;
@@ -218,7 +219,7 @@ namespace OOX
 		public:
 			nullable_string m_oName;
 			nullable_string m_oCaption;
-			nullable_string m_oUid;
+			nullable<SimpleTypes::CGuid> m_oUid;
 			nullable_string m_oScrollPosition;
 			nullable_string m_oCache;
 			nullable_uint m_oSelectionLevel;

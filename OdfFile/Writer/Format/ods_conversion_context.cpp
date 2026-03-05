@@ -308,9 +308,9 @@ void ods_conversion_context::end_row()
 	}
 }
 //////////////////////
-void ods_conversion_context::start_comment(int col, int row, std::wstring & author)
+void ods_conversion_context::start_comment(int col, int row, std::wstring & author, std::wstring& date_time)
 {
-	current_table()->start_comment(col, row, author);
+	current_table()->start_comment(col, row, author, date_time);
 	start_text_context();
 ////////////////
 	office_element_ptr paragr_elm;

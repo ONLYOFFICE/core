@@ -888,6 +888,10 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, union_comm
     {
         drawing->isInline = true;
     }
+	if( anchor && anchor->get_type() == anchor_type::Char )
+	{
+		drawing->m_isChar = true;
+	}
 	if (attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_transform_)
 	{
 		std::wstring transformStr = attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_transform_.get();

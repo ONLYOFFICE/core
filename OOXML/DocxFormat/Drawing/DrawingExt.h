@@ -34,6 +34,10 @@
 #include "../../Base/Nullable.h"
 #include "../WritingElement.h"
 
+namespace SimpleTypes
+{
+	class CGuid;
+}
 namespace OOX
 {
 	class RId;
@@ -139,7 +143,7 @@ namespace OOX
             nullable<OOX::Spreadsheet::CSparklineGroups>            m_oSparklineGroups;
             nullable<CDataModelExt>                                 m_oDataModelExt;
             nullable<OOX::Spreadsheet::CAltTextTable>               m_oAltTextTable;
-            nullable_string											m_oId;
+            nullable<SimpleTypes::CGuid>							m_oId;
             nullable<OOX::Spreadsheet::CDataValidations>            m_oDataValidations;
 
             nullable<OOX::Spreadsheet::CConnection>                 m_oConnection;

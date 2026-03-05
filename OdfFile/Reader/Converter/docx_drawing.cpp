@@ -522,10 +522,10 @@ void docx_serialize_wps(std::wostream & strm, _docx_drawing & val, oox::docx_con
 		CP_XML_NODE(L"w:drawing")
 		{
 			std::wstring	 strWp = L"wp:anchor";
-			if (val.isInline)strWp = L"wp:inline";
+			if (val.isInline || val.m_isChar)strWp = L"wp:inline";
 			CP_XML_NODE(strWp)
 			{		
-				if (val.isInline)
+				if (val.isInline || val.m_isChar)
 				{
 					CP_XML_NODE(L"wp:extent")
 					{

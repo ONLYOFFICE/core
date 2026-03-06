@@ -415,6 +415,15 @@ bool CxImageBMP::DibReadBitmapInfo(CxFile* fh, BITMAPINFOHEADER *pdib)
 
 	bihtoh(pdib);
 
+	unsigned long long stride = ((unsigned long long)pdib->biWidth * pdib->biBitCount + 31) / 32 * 4;
+
+	unsigned long long height = std::llabs((long long)pdib->biHeight);
+
+	unsigned long long expected = stride * height;
+
+	if ((unsigned long long)pdib->biSize + expected > fh->Size())
+		return false;
+
     switch (pdib->biSize) // what type of bitmap info is this?
     {
         case sizeof(BITMAPINFOHEADER):

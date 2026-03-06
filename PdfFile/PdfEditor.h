@@ -82,6 +82,7 @@ public:
 	CPdfEditor(const std::wstring& _wsSrcFile, const wchar_t* _wsPassword, const std::wstring& _wsDstFile, CPdfReader* _pReader, CPdfWriter* _pWriter, Mode nMode = Mode::Unknown);
 
 	void SetMode(Mode nMode);
+	void RedactInfo(int nFlag);
 
 	int  GetError();
 	void Close();
@@ -140,6 +141,7 @@ private:
 	// 0 - Дозапись. pReader и pWriter работают с одним файлом
 	// 1 - Split. pReader и pWriter работают с разными файлами
 	Mode m_nMode;
+	int m_nRedactInfo;
 	int m_nEditPage;
 	int m_nOriginIndex;
 };

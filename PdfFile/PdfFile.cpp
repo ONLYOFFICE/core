@@ -140,7 +140,7 @@ bool CPdfFile::EditPdf(const std::wstring& wsDstFile)
 	m_pInternal->pReader->CleanUp();
 
 	RELEASEOBJECT(m_pInternal->pWriter);
-	m_pInternal->pWriter = new CPdfWriter(m_pInternal->pAppFonts, false, this, true, m_pInternal->wsTempFolder);
+	m_pInternal->pWriter = new CPdfWriter(m_pInternal->pAppFonts, false, this, false, m_pInternal->wsTempFolder);
 
 	RELEASEOBJECT(m_pInternal->pEditor);
 	m_pInternal->pEditor = new CPdfEditor(m_pInternal->wsSrcFile, m_pInternal->wsPassword, wsDstFile, m_pInternal->pReader, m_pInternal->pWriter);
@@ -158,6 +158,12 @@ void CPdfFile::SetEditType(int nType)
 		return;
 	if (nType == 1)
 		m_pInternal->pEditor->SetMode(CPdfEditor::Mode::WriteNew);
+}
+void CPdfFile::RedactInfo(int nFlag)
+{
+	if (!m_pInternal->pEditor)
+		return;
+	m_pInternal->pEditor->RedactInfo(nFlag);
 }
 bool CPdfFile::EditPage(int nPageIndex)
 {

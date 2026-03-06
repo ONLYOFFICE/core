@@ -95,6 +95,7 @@ namespace PdfWriter
 		m_pTransparencyGroup = NULL;
 		m_pFreeTypeLibrary  = NULL;
 		m_bPDFAConformance	= false;
+		m_nRedactInfo       = 0;
 		m_pAcroForm         = NULL;
 		m_pFieldsResources  = NULL;
 	}
@@ -495,6 +496,10 @@ namespace PdfWriter
 	void CDocument::SetPDFAConformanceMode(bool isPDFA)
 	{
 		m_bPDFAConformance = isPDFA;		
+	}
+	void CDocument::SetRedactInfo(int nFlag)
+	{
+		m_nRedactInfo = nFlag;
 	}
 	bool CDocument::IsPDFA() const
 	{

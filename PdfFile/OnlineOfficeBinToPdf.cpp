@@ -153,6 +153,7 @@ namespace NSOnlineOfficeBinToPdf
 		MovePage   = 4,
 		MergePages = 5,
 		SetType    = 6,
+		RedactInfo = 7,
 		Undefined  = 255
 	};
 
@@ -248,6 +249,11 @@ namespace NSOnlineOfficeBinToPdf
 			case AddCommandType::SetType:
 			{
 				pPdf->SetEditType(1);
+				break;
+			}
+			case AddCommandType::RedactInfo:
+			{
+				pPdf->RedactInfo(nPageNum);
 				break;
 			}
 			default:

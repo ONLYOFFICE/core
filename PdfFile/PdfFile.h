@@ -102,6 +102,7 @@ public:
 	bool EditPdf(const std::wstring& wsDstFile = L"");
 	void EditClose();
 	void SetEditType(int nType);
+	void RedactInfo(int nFlag);
 	// Манипуляции со страницами возможны в режиме редактирования
 	bool EditPage  (int nPageIndex);
 	bool DeletePage(int nPageIndex);

@@ -1053,6 +1053,7 @@ CPdfEditor::CPdfEditor(const std::wstring& _wsSrcFile, const wchar_t* _wsPasswor
 	m_nEditPage  = -1;
 	m_nError     = 0;
 	m_nMode      = Mode::Unknown;
+	m_nRedactInfo = 0;
 
 	PDFDoc* pPDFDocument = m_pReader->GetPDFDocument(0);
 	if (!pPDFDocument)
@@ -1082,6 +1083,7 @@ void CPdfEditor::SetMode(Mode nMode)
 	else if (m_nMode == Mode::WriteNew)
 	{
 		PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
+		pDoc->CreateNew();
 		PdfWriter::CPageTree* pPageTree = pDoc->GetPageTree();
 		m_mObjManager.SetDoc(pDoc);
 		int nPages = m_pReader->GetNumPages();
@@ -1090,6 +1092,13 @@ void CPdfEditor::SetMode(Mode nMode)
 
 		NewFrom();
 	}
+}
+void CPdfEditor::RedactInfo(int nFlag)
+{
+	if (m_nMode != Mode::Unknown)
+		return;
+	m_pWriter->GetDocument()->RedactInfo(nFlag);
+	m_nRedactInfo = nFlag;
 }
 bool CPdfEditor::IncrementalUpdates()
 {
@@ -1100,6 +1109,7 @@ bool CPdfEditor::IncrementalUpdates()
 	PDFDoc* pPDFDocument = m_pReader->GetPDFDocument(0);
 	XRef* xref = pPDFDocument->getXRef();
 	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
+	pDoc->CreateNew();
 
 	std::string sPathUtf8New = U_TO_UTF8(m_wsDstFile);
 	std::string sPathUtf8Old = U_TO_UTF8(m_wsSrcFile);

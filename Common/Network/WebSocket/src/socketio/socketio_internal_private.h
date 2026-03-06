@@ -38,6 +38,8 @@
 #include <memory>
 #include "../../../../../DesktopEditor/graphics/BaseThread.h"
 
+#define _LOGGER_SOCKETS
+
 namespace NSNetwork
 {
     namespace NSWebSocket
@@ -124,6 +126,10 @@ namespace NSNetwork
                 }
 
                 //webSocket.connect(url, queryDst, sio::string_message::create(sAuth));
+#ifdef _LOGGER_SOCKETS
+                m_socket->set_proxy_basic_auth("http://127.0.0.1:9090", "", "");
+#endif
+
                 m_connecting_in_process = true;
                 m_socket->connect(m_base->url, queryDst, objAuth);
 

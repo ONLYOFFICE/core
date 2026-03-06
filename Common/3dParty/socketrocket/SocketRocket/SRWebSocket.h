@@ -72,6 +72,10 @@ extern NSString *const SRHTTPResponseErrorKey;
 // Optional array of cookies (NSHTTPCookie objects) to apply to the connections
 @property (nonatomic, readwrite) NSArray * requestCookies;
 
+// Optional proxy configuration dictionary (kCFStreamPropertyHTTPProxy format).
+// Set before calling -open. Example: Proxyman at 127.0.0.1:9090.
+@property (nonatomic, strong) NSDictionary *proxyDictionary;
+
 // This returns the negotiated protocol.
 // It will be nil until after the handshake completes.
 @property (nonatomic, readonly, copy) NSString *protocol;

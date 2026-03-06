@@ -48,7 +48,7 @@
 }
 
 - (void)open
-{   
+{
     if (m_url && m_url.length)
     {
         NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:m_url]];
@@ -58,6 +58,19 @@
                                                         protocols:nil
                                    allowsUntrustedSSLCertificates:YES];
             self.socket.delegate = self;
+
+#ifdef _LOGGER_SOCKETS
+            self.socket.proxyDictionary = @{
+                (NSString *)kCFNetworkProxiesHTTPEnable:  @YES,
+                (NSString *)kCFNetworkProxiesHTTPProxy:   @"127.0.0.1",
+                (NSString *)kCFNetworkProxiesHTTPPort:    @9090,
+                (NSString *)kCFNetworkProxiesHTTPSEnable: @YES,
+                (NSString *)kCFNetworkProxiesHTTPSProxy:  @"127.0.0.1",
+                (NSString *)kCFNetworkProxiesHTTPSPort:   @9090
+            };
+            NSLog(@"[SocketRocket] Proxyman proxy enabled: 127.0.0.1:9090");
+#endif
+
             [self.socket open];
         }
     }
@@ -65,7 +78,7 @@
 
 - (void)send:(NSString*)message
 {
-#if _LOGGER_SOCKETS
+#ifdef _LOGGER_SOCKETS
         
     NSLog(@"------------------- SEND TO SOCKET -------------------");
     NSLog(@"%@", message);
@@ -101,7 +114,7 @@
 
 - (void)webSocket:(SRWebSocket *)webSocket didReceiveMessage:(id)message
 {
-#if _LOGGER_SOCKETS
+#ifdef _LOGGER_SOCKETS
         
     NSLog(@"------------------- SOCKET RECEIVE MESSAGE -------------------");
     NSLog(@"%@", message);
@@ -119,7 +132,7 @@
 {
     m_listener->onOpen();
 
-#if _LOGGER_SOCKETS
+#ifdef _LOGGER_SOCKETS
         
     NSLog(@"------------------- SOCKET OPEN -------------------");
     NSLog(@"URL : %@", webSocket.url);
@@ -134,7 +147,7 @@
 {
     m_listener->onError(error.localizedDescription.stdstring);
 
-#if _LOGGER_SOCKETS
+#ifdef _LOGGER_SOCKETS
     
     NSLog(@"---------------------------------------------------------");
     NSLog(@"------------------- SOCKET ERROR : %@ ------------", error);
@@ -147,7 +160,7 @@
 {
     m_listener->onClose(code, reason.stdstring); 
 
-#if _LOGGER_SOCKETS
+#ifdef _LOGGER_SOCKETS
         
     NSLog(@"---------------------------------------------------------");
     NSLog(@"------------------- SOCKET CLOSE : %@ -----------", reason);
@@ -158,7 +171,7 @@
 
 - (void)webSocket:(SRWebSocket *)webSocket didReceivePong:(NSData *)pongPayload
 {           
-#if _LOGGER_SOCKETS
+#ifdef _LOGGER_SOCKETS
         
     NSString *str = [[NSString alloc] initWithData:pongPayload encoding:NSUTF8StringEncoding];
         

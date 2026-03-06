@@ -619,7 +619,16 @@ static __strong NSData *CRLFCRLF;
     
     _inputStream.delegate = self;
     _outputStream.delegate = self;
-    
+
+    if (self.proxyDictionary) {
+        CFReadStreamSetProperty((__bridge CFReadStreamRef)_inputStream,
+                                kCFStreamPropertyHTTPProxy,
+                                (__bridge CFDictionaryRef)self.proxyDictionary);
+        CFWriteStreamSetProperty((__bridge CFWriteStreamRef)_outputStream,
+                                 kCFStreamPropertyHTTPProxy,
+                                 (__bridge CFDictionaryRef)self.proxyDictionary);
+    }
+
     [self setupNetworkServiceType:_urlRequest.networkServiceType];
 }
 

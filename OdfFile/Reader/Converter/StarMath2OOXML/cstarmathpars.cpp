@@ -3275,6 +3275,16 @@ namespace StarMath
 				m_enTempTypeIndex = m_enTypeIndex;
 				m_enTypeIndex = pReader->GetLocalType();
 			}while(GetUpperIndex(pReader->GetLocalType()) || GetLowerIndex(pReader->GetLocalType()));
+			if(m_pLsubIndex != nullptr && m_pLsupIndex == nullptr)
+			{
+				m_pLsupIndex = new CElementString(L"⠀",pReader->GetTypeConversion());
+				m_pLsupIndex->SetAttribute(pReader->GetBaseAttribute());
+			}
+			else if(m_pLsupIndex != nullptr && m_pLsubIndex == nullptr)
+			{
+				m_pLsubIndex = new CElementString(L"⠀",pReader->GetTypeConversion());
+				m_pLsubIndex->SetAttribute(pReader->GetBaseAttribute());
+			}
 		}
 	}
 	void CElementIndex::ParseEQN(CStarMathReader *pReader)

@@ -130,7 +130,7 @@ namespace NSUnicodeConverter
 
         static std::string fromUnicode(const wchar_t* sInput, const unsigned int& nInputLen, const char* converterName)
         {
-            if (nInputLen > 0)
+            if (nInputLen <= 0)
                 return "";
 
             NSString* sEncodingCF = StringAToNSString(std::string(converterName));

@@ -187,12 +187,55 @@ namespace PPTX
 		{
 			if (m_geometry.is_init())
 				m_geometry->toPPTY(pWriter);
+			if (hr.is_init())
+				hr->toPPTY(pWriter);
+		}
+		void HorizontalRule::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+		{
+			pWriter->StartRecord(GEOMETRY_TYPE_HORIZONTALRULE);
+
+			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+				pWriter->WriteBool2(0, noshade);
+				pWriter->WriteString2(1, align);
+				pWriter->WriteDoubleReal2(1, pct);
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+			pWriter->EndRecord();
+		}
+		void HorizontalRule::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+		{
+			LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
+			pReader->Skip(1); // start attributes
+			while (true)
+			{
+				BYTE _at = pReader->GetUChar_TypeNode();
+				if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+					break;
+
+				switch (_at)
+				{
+				case 0:
+				{
+					noshade = pReader->GetBool();
+				}break;
+				case 1:
+				{
+					align = pReader->GetString2();
+				}break;
+				case 2:
+				{
+					pct = pReader->GetDoubleReal();
+				}break;
+				default:
+					break;
+				}
+			}
+			pReader->Seek(_end_rec);
 		}
 		void Geometry::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 		{
 			LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
 
-			if (pReader->GetPos() < _end_rec)
+			while (pReader->GetPos() < _end_rec)
 			{
 				BYTE _t = pReader->GetUChar();
 
@@ -452,6 +495,13 @@ namespace PPTX
 
 					m_geometry.reset(pGeom);
 				}
+				else if (GEOMETRY_TYPE_HORIZONTALRULE == _t)
+				{
+					hr.Init();
+					hr->fromPPTY(pReader);
+				}
+				else
+					break;
 			}
 
 			pReader->Seek(_end_rec);

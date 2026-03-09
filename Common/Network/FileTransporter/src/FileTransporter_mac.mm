@@ -112,39 +112,28 @@ namespace NSNetwork
 			return pString;
 		}
 
-			   // Safely creates an NSURL from a string that may already be percent-encoded or not.
-			   //
-			   // Problem with [NSURL URLWithString:]: it accepts malformed URLs silently on older iOS
-			   // versions but returns nil on newer ones (iOS 15+), causing inconsistent behaviour.
-			   //
-			   // Problem with stringByAddingPercentEncodingWithAllowedCharacters + URLQueryAllowedCharacterSet:
-			   // URLQueryAllowedCharacterSet is designed only for the query portion of a URL.
-			   // Applied to a full URL it double-encodes already-encoded sequences (e.g. %20 -> %2520)
-			   // and may encode characters that are legal in other URL components, breaking the URL.
-			   //
-			   // NSURLComponents is the correct API: it validates the full URL structure, does not
-			   // re-encode already-encoded sequences, and returns nil for truly malformed input.
-			   // Returns an autoreleased NSURL*, or nil if the string cannot be made into a valid URL.
+		// NSURLComponents correctly handles mixed input (already-encoded + raw characters)
+		// without double-encoding, but normalises unreserved percent-sequences (%5F → _).
+		// If preserving the exact encoding is required, use [NSURL URLWithString:] instead.
 		static NSURL* SafeURLFromString(NSString* urlString)
 		{
 			if (!urlString || urlString.length == 0)
 				return nil;
 
-				   // Primary path: NSURLComponents validates and parses without breaking existing encoding.
-			NSURLComponents* components = [NSURLComponents componentsWithString:urlString];
-			NSURL* url = components.URL;
+			NSURL* url = [NSURL URLWithString:urlString];
 			if (url)
 				return url;
 
-				   // Fallback: the string contains unencoded characters (spaces, cyrillic, brackets, etc.).
-				   // URLFragmentAllowedCharacterSet covers all URL components, unlike URLQueryAllowedCharacterSet.
-			NSString* encoded = [urlString stringByAddingPercentEncodingWithAllowedCharacters:
-											   [NSCharacterSet URLFragmentAllowedCharacterSet]];
+			// Fallback: the string contains unencoded characters (spaces, cyrillic,
+			// brackets, etc.). URLFragmentAllowedCharacterSet includes '%', so
+			// existing percent-sequences won't be double-encoded.
+			NSString* encoded =
+				[urlString stringByAddingPercentEncodingWithAllowedCharacters:
+							   [NSCharacterSet URLFragmentAllowedCharacterSet]];
 			if (!encoded)
 				return nil;
 
-			components = [NSURLComponents componentsWithString:encoded];
-			return components.URL;
+			return [NSURL URLWithString:encoded];
 		}
 
 		class CFileTransporterBaseCocoa : public CFileTransporterBase

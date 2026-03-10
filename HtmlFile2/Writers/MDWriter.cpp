@@ -48,6 +48,78 @@ inline void ReplaceSpaces(std::wstring& wsValue)
 	}
 }
 
+void ReplaceSpecialCharsInEdges(std::wstring& wsText)
+{
+	// Шестнадцатеричные коды заменяемых символов
+	const wchar_t SP  {0x20};    // пробел
+	const wchar_t NBSP{0xA0};    // неразрывный пробел
+	const wchar_t ENSP{0x2002};  // en space
+	const wchar_t EMSP{0x2003};  // em space
+
+	// Соответствующие HTML-последовательности
+	const std::wstring NBSP_REP{L"&nbsp;"};
+	const std::wstring ENSP_REP{L"&ensp;"};
+	const std::wstring EMSP_REP{L"&emsp;"};
+
+	auto is_special = [&](wchar_t c) -> bool {
+		return c == SP || c == NBSP || c == ENSP || c == EMSP;
+	};
+
+	size_t unFirstNormal{0};
+	while (unFirstNormal < wsText.size() && is_special(wsText[unFirstNormal]))
+		++unFirstNormal;
+
+	if (unFirstNormal == wsText.size())
+	{
+		std::wstring wsResult;
+		wsResult.reserve(wsText.size() * 6);  // каждый символ заменится на 6
+		for (wchar_t c : wsText)
+		{
+			if (c == SP || c == NBSP) wsResult.append(NBSP_REP);
+			else if (c == ENSP)       wsResult.append(ENSP_REP);
+			else if (c == EMSP)       wsResult.append(EMSP_REP);
+			else                      wsResult.push_back(c); // не должно случиться
+		}
+		wsText = std::move(wsResult);
+		return;
+	}
+
+	size_t unLastNormal{wsText.size() - 1};
+	while (unLastNormal > unFirstNormal && is_special(wsText[unLastNormal]))
+		--unLastNormal;
+
+	const size_t unLeftCount {unFirstNormal};
+	const size_t unRightCount{wsText.size() - 1 - unLastNormal};
+
+	const size_t unNormalLen{unLastNormal - unFirstNormal + 1};
+	const size_t unNewLen   {unNormalLen + unLeftCount * 6 + unRightCount * 6};
+
+	std::wstring wsResult;
+	wsResult.reserve(unNewLen);
+
+	for (size_t i = 0; i < unLeftCount; ++i)
+	{
+		wchar_t c = wsText[i];
+		if (c == SP || c == NBSP) wsResult.append(NBSP_REP);
+		else if (c == ENSP)       wsResult.append(ENSP_REP);
+		else if (c == EMSP)       wsResult.append(EMSP_REP);
+	}
+
+	for (size_t i = unFirstNormal; i <= unLastNormal; ++i)
+		wsResult.push_back(wsText[i]);
+
+	// Правая часть (заменяем)
+	for (size_t i = unLastNormal + 1; i < wsText.size(); ++i)
+	{
+		wchar_t c = wsText[i];
+		if (c == SP || c == NBSP) wsResult.append(NBSP_REP);
+		else if (c == ENSP)       wsResult.append(ENSP_REP);
+		else if (c == EMSP)       wsResult.append(EMSP_REP);
+	}
+
+	wsText = std::move(wsResult);
+}
+
 bool CMDWriter::WriteText(std::wstring wsText, const std::vector<NSCSS::CNode>& arSelectors)
 {
 	bool bPreformatted{InPreformatted()};
@@ -91,7 +163,10 @@ bool CMDWriter::WriteText(std::wstring wsText, const std::vector<NSCSS::CNode>& 
 	}
 
 	if (!bPreformatted && !InCode())
+	{
 		ReplaceSpaces(wsText);
+		ReplaceSpecialCharsInEdges(wsText);
+	}
 
 	bool bNeedBold{false}, bNeedItalic{false}, bNeedStrike{false};
 

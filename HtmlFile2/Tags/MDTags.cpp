@@ -255,8 +255,6 @@ void CImage<CMDWriter>::Close(const std::vector<NSCSS::CNode>& arSelectors)
 {
 	if (!ValidWriter())
 		return;
-
-	m_pWriter->WriteBreakLine();
 }
 
 CHorizontalRule<CMDWriter>::CHorizontalRule(CMDWriter* pWriter)

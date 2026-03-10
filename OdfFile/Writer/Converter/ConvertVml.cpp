@@ -1064,6 +1064,11 @@ namespace Oox2Odf
 			odf_context()->drawing_context()->set_no_fill();
 			odf_context()->drawing_context()->end_area_properties();
 		}
+
+		if (vml_common->m_oHr.IsInit() && (*vml_common->m_oHr))
+		{
+			odf_context()->drawing_context()->set_horizontal_rule();
+		}
 	}
 	void OoxConverter::convert(OOX::Vml::CGroup *vml_group)
 	{

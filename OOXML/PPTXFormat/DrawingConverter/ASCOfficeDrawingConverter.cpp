@@ -2395,7 +2395,7 @@ void CDrawingConverter::ConvertShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::CX
 		nullable_bool hr;
 		XmlMacroReadAttributeBase(oNodeShape, L"o:hr", hr);
 
-		if (hr.IsInit())
+		if (hr.IsInit() && *hr)
 		{
 			pSpPr->Geometry.hr.Init();
 			XmlMacroReadAttributeBase(oNodeShape, L"o:hrpct", pSpPr->Geometry.hr->pct);

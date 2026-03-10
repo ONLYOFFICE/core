@@ -123,32 +123,36 @@ namespace PdfWriter
 		if (!m_pCatalog)
 			return false;
 
-		m_pCatalog->SetPageMode(pagemode_UseNone);
-		m_pCatalog->SetPageLayout(pagelayout_OneColumn);
+		if (!m_nRedactInfo)
+		{
+			m_pCatalog->SetPageMode(pagemode_UseNone);
+			m_pCatalog->SetPageLayout(pagelayout_OneColumn);
+		}
 
 		m_pPageTree = m_pCatalog->GetRoot();
 		if (!m_pPageTree)
 			return false;
 
-		m_pInfo = new CInfoDict(m_pXref);
-		if (!m_pInfo)
-			return false;
+		if (~m_nRedactInfo & (1 << 0))
+			m_pInfo = new CInfoDict(m_pXref);
+		if (m_pInfo)
+		{
+			m_pInfo->SetTime(InfoCreationDate);
+			m_pInfo->SetTime(InfoModaDate);
 
-		m_pInfo->SetTime(InfoCreationDate);
-		m_pInfo->SetTime(InfoModaDate);
+			std::wstring sCreator = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvApplicationName);
+			if (sCreator.empty())
+				sCreator = NSSystemUtils::gc_EnvApplicationNameDefault;
+			std::string sCreatorA = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sCreator);
 
-		std::wstring sCreator = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvApplicationName);
-		if (sCreator.empty())
-			sCreator = NSSystemUtils::gc_EnvApplicationNameDefault;
-		std::string sCreatorA = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sCreator);
+	#if defined(INTVER)
+			std::string sVersion = VALUE2STR(INTVER);
+			sCreatorA += ("/" + sVersion);
+	#endif
 
-#if defined(INTVER)
-		std::string sVersion = VALUE2STR(INTVER);
-		sCreatorA += ("/" + sVersion);
-#endif
-
-		m_pInfo->SetInfo(InfoProducer, sCreatorA.c_str());
-		m_pInfo->SetInfo(InfoCreator, sCreatorA.c_str());
+			m_pInfo->SetInfo(InfoProducer, sCreatorA.c_str());
+			m_pInfo->SetInfo(InfoCreator, sCreatorA.c_str());
+		}
 
 		if (IsPDFA())
 		{
@@ -256,7 +260,8 @@ namespace PdfWriter
 	}
     void CDocument::SaveToStream(CStream* pStream)
 	{
-		m_pCatalog->AddMetadata(m_pXref, m_pInfo);
+		if (~m_nRedactInfo & (1 << 0))
+			m_pCatalog->AddMetadata(m_pXref, m_pInfo);
 
 		// Пишем заголовок
 		if (IsPDFA())
@@ -272,7 +277,8 @@ namespace PdfWriter
 
 		// Добавляем в Trailer необходимые элементы 
 		m_pTrailer->Add("Root", m_pCatalog);
-		m_pTrailer->Add("Info", m_pInfo);
+		if (~m_nRedactInfo & (1 << 0))
+			m_pTrailer->Add("Info", m_pInfo);
 
 		// Шифруем документ, если это необходимо
 		CEncrypt* pEncrypt = NULL;

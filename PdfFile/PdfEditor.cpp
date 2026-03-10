@@ -1097,8 +1097,19 @@ void CPdfEditor::RedactInfo(int nFlag)
 {
 	if (m_nMode != Mode::Unknown)
 		return;
-	m_pWriter->GetDocument()->RedactInfo(nFlag);
+	m_pWriter->GetDocument()->SetRedactInfo(nFlag);
 	m_nRedactInfo = nFlag;
+	// 0 - Metadata
+	// 1 - FileAttachments
+	// 2 - Bookmarks
+	// 3 - Embedded search index
+	// 4 - Comments and markups
+	// 5 - Form Fields
+	// 6 - Hidden text
+	// 7 - Hidden layers
+	// 8 - Deleted or cropped content
+	// 9 - Links, actions and JavaScripts
+	// 10 - Overlapping Objects
 }
 bool CPdfEditor::IncrementalUpdates()
 {
@@ -1678,6 +1689,8 @@ void CPdfEditor::Close()
 			pEncryptDict->UpdateKey(nCryptAlgorithm);
 		}
 
+		if (~m_nRedactInfo & (1 << 3))
+		{
 		Object* pNameTree = pPDFDocument->getCatalog()->getNameTree();
 		Object oNames, oName, oDest;
 		if (pNameTree && pNameTree->isDict() && pNameTree->dictLookup("Names", &oNames)->isArray())
@@ -1719,6 +1732,7 @@ void CPdfEditor::Close()
 			}
 		}
 		oNames.free();
+		}
 
 		m_pWriter->EditClose();
 		m_pWriter->SaveToFile(m_wsDstFile);

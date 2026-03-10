@@ -81,10 +81,6 @@ public:
 
 	bool get_general_dLbls_status() const;
 
-	void setLineChart( bool flag );
-
-	bool getLineChart() const;
-
    
 private:
 
@@ -101,8 +97,6 @@ private:
 	bool set_genereal_dLbls = false;
 
 	int position_;
-
-	bool IsLineChart = false;
 
 	odf_reader::text_format_properties_ptr					textPr_;
 	std::map<int, odf_reader::text_format_properties_ptr>	dLbls_;

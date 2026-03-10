@@ -158,21 +158,12 @@ void oox_chart_series::parse_properties()
 		if (!data_labels_)	data_labels_ = oox_data_labels();
 		data_labels_->set_formatCode(formatCode, bLinkData.get_value_or(false));
 	}
-	auto val = intVal;
 	odf_reader::GetProperty(content_.properties_, L"label-position", intVal);
-	if( val.has_value() && !intVal.has_value() )
-	{
-		intVal = val;
-	}
 	if (intVal && labelPosEnabled_)
 	{
 		if (!data_labels_)	data_labels_ = oox_data_labels();
 		
 		data_labels_->set_position(*intVal); 
-	}
-	if( content_.class_ == odf_types::chart_class::type::line )
-	{
-		data_labels_->setLineChart(true);
 	}
 }
 

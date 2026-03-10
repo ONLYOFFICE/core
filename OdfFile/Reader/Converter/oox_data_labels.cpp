@@ -71,6 +71,16 @@ void oox_data_labels::add_dLbl(int ind, odf_reader::text_format_properties_ptr t
 	dLbls_.insert(std::make_pair(ind, text_properties));
 }
 
+void oox_data_labels::setLineChart( bool flag )
+{
+	IsLineChart = flag;
+}
+
+bool oox_data_labels::getLineChart() const
+{
+	return IsLineChart;
+}
+
 void oox_data_labels::oox_serialize(std::wostream & _Wostream)
 {
     CP_XML_WRITER(_Wostream)
@@ -94,7 +104,17 @@ void oox_data_labels::oox_serialize(std::wostream & _Wostream)
 					case 6: CP_XML_ATTR(L"val", L"l");		break;
 					case 7: CP_XML_ATTR(L"val", L"inBase");	break;
 					case 9: CP_XML_ATTR(L"val", L"r");		break;
-					case 10: CP_XML_ATTR(L"val", L"outEnd");break;
+					case 10:
+					{
+						if( getLineChart() )
+						{
+							CP_XML_ATTR(L"val", L"t");break;
+						}
+						else
+						{
+							CP_XML_ATTR(L"val", L"outEnd");break;
+						}
+					}
 					case 11: CP_XML_ATTR(L"val", L"t");		break;
 					case 12: CP_XML_ATTR(L"val", L"t");		break;
 					case 5: //CP_XML_ATTR(L"val", L"inEnd");	break;

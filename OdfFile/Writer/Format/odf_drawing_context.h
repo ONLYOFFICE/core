@@ -227,6 +227,8 @@ public:
 	
 	void get_size			( _CP_OPT(double) & width_pt, _CP_OPT(double) & height_pt);
 	void set_size			( _CP_OPT(double) & width_pt, _CP_OPT(double) & height_pt, bool reset_always = false);
+
+	void set_horizontal_rule();
 	
 	void set_name			(const std::wstring & name);
 	void set_description	(const std::wstring & descr);

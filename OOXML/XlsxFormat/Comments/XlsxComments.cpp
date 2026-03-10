@@ -60,6 +60,7 @@
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/TxO.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/MsoDrawing.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/XLUnicodeRichExtendedString.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/ODRAW/SimpleOfficeArtContainers.h"
 
 namespace OOX
 {
@@ -294,6 +295,15 @@ namespace OOX
 				objectsPtr->m_arrObject.back().second.push_back(XLS::BaseObjectPtr(objUnion));
 
 				//txo writing
+				auto txDrawingObj = new XLS::MsoDrawing(false);
+				txDrawingObj->rgChildRec.first = false;
+				auto textboxPtr = new ODRAW::OfficeArtClientTextbox;
+				txDrawingObj->rgChildRec.m_OfficeArtSpContainer.push_back(ODRAW::OfficeArtRecordPtr(textboxPtr));
+				std::pair<XLS::BaseObjectPtr, std::vector<XLS::BaseObjectPtr>> ObjPair;
+
+				ObjPair.first = XLS::BaseObjectPtr(txDrawingObj);
+				objectsPtr->m_arrObject.push_back(ObjPair);
+
 				auto textUnion = new XLS::TEXTOBJECT(objUnion->mso_drawing_);
 				objectsPtr->m_arrObject.back().second.push_back(XLS::BaseObjectPtr(textUnion));
 				auto textPtr = new XLS::TxO(objUnion->mso_drawing_);
@@ -486,10 +496,10 @@ namespace OOX
 				std::pair<XLS::BaseObjectPtr, std::vector<XLS::BaseObjectPtr>> objPair;
 
 				auto drawingPtr = new XLS::MsoDrawing(false);
-				drawingPtr->prepareComment(1);
+				drawingPtr->prepareComment(1, 0, 0);
 				objPair.first = XLS::BaseObjectPtr(drawingPtr);
 				objectsPtr->m_arrObject.push_back(objPair);
-				unsigned int id = 1;
+				unsigned int id = 0;
 				for(auto i : m_oCommentList->m_arrItems)
 				{
 					std::wstring authorName = L"none";

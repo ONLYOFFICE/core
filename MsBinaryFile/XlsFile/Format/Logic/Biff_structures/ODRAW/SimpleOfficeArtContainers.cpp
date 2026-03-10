@@ -57,6 +57,15 @@ void OfficeArtClientTextbox::loadFields(XLS::CFRecord& record)
 	}
 }
 
+void OfficeArtClientTextbox::save(XLS::CFRecord& record)
+{
+	rh_own.recVer = 0x00;
+	rh_own.recInstance = 0;
+	rh_own.recType = 0xF00D;
+	rh_own.recLen =  0;
+	record << rh_own;
+}
+
 void OfficeArtClientData::loadFields(XLS::CFRecord& record)
 {
 	if (rh_own.recLen > 0)

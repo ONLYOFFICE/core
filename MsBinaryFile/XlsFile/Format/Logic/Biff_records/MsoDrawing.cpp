@@ -137,7 +137,7 @@ const bool MsoDrawing::isEndingRecord(CFRecord& record)
 	return ODRAW::OfficeArtDgContainer::CheckIfContainerSizeOK(record);
 }
 
-void MsoDrawing::prepareComment(const unsigned int CommentId)
+void MsoDrawing::prepareComment(const unsigned int CommentId, const unsigned int row, const unsigned int col)
 {
 
 	auto spgrContainer = new ODRAW::OfficeArtSpgrContainer(ODRAW::OfficeArtRecord::CA_Sheet);
@@ -175,11 +175,18 @@ void MsoDrawing::prepareComment(const unsigned int CommentId)
 	fsprPtr->fHaveAnchor = true;
 	fsprPtr->fHaveSpt = true;
 
+	auto clientAnchor = new ODRAW::OfficeArtClientAnchorSheet;
+	clientAnchor->colL = col;
 
-	{
-		//todo add mandatory optrions writing
-		//auto textboxOpt = new ODRAW::OfficeArtFOPT;
-	}
+	clientAnchor->colR = col;
+
+	clientAnchor->rwT = row;
+
+	clientAnchor->rwB = row;
+
+	TextboxContainer->m_OfficeArtAnchor = ODRAW::OfficeArtRecordPtr(clientAnchor);
+	auto clientData = new ODRAW::OfficeArtClientData;
+	TextboxContainer->m_oOfficeArtClientData = ODRAW::OfficeArtRecordPtr(clientData);
 }
 
 void MsoDrawing::prepareChart(const unsigned int chartId, const unsigned int x1, const unsigned int x2,

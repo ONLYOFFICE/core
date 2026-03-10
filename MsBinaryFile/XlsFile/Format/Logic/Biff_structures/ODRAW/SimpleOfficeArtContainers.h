@@ -172,6 +172,7 @@ public:
 	XLS::BiffStructurePtr clone() { return XLS::BiffStructurePtr(new OfficeArtClientTextbox(*this)); }
 	
 	void loadFields(XLS::CFRecord& record);
+	void save(XLS::CFRecord& record);
 
 	static const XLS::ElementType	type = XLS::typeOfficeArtClientTextbox;
 };

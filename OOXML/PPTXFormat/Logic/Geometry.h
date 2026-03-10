@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef PPTX_LOGIC_GEOMETRY_INCLUDE_H_
-#define PPTX_LOGIC_GEOMETRY_INCLUDE_H_
 
 #include "./../WrapperWritingElement.h"
 #include "PrstGeom.h"
@@ -41,6 +39,17 @@ namespace PPTX
 {
 	namespace Logic
 	{
+		class HorizontalRule
+		{
+		public:
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+
+			HorizontalRule() {}
+			nullable_bool noshade;
+			nullable_double pct;
+			nullable_string align;
+		};
 		class Geometry : public WrapperWritingElement
 		{
 		public:
@@ -69,6 +78,7 @@ namespace PPTX
 
 			smart_ptr<WrapperWritingElement> m_geometry;
 
+			nullable<HorizontalRule> hr;
 		protected:
 			virtual void FillParentPointersForChilds();
 
@@ -78,5 +88,3 @@ namespace PPTX
 		};
 	} // namespace Logic
 } // namespace PPTX
-
-#endif // PPTX_LOGIC_GEOMETRY_INCLUDE_H_

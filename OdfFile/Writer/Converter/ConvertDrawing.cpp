@@ -983,6 +983,11 @@ void OoxConverter::convert(PPTX::Logic::SpPr *oox_spPr, PPTX::Logic::ShapeStyle*
 	convert(prstGeom);
 	convert(custGeom);
 
+	if (oox_spPr->Geometry.hr.IsInit())
+	{
+		odf_context()->drawing_context()->set_horizontal_rule();
+	}
+
 	bool bLine = odf_context()->drawing_context()->isLineShape();
 
 	if (custGeom && !custGeom->cxnLst.empty() && !odf_context()->drawing_context()->isCustomClosed())

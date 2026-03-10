@@ -2336,6 +2336,18 @@ void odf_drawing_context::get_size( _CP_OPT(double) & width_pt, _CP_OPT(double) 
 		height_pt	= impl_->anchor_settings_.svg_height_->get_value_unit(length::pt);
 	}
 }
+void odf_drawing_context::set_horizontal_rule()
+{
+	//if (!impl_->current_graphic_properties) return;
+	//impl_->current_graphic_properties->common_draw_rel_size_attlist_.style_rel_width_ = odf_types::percent(100);
+	
+	draw_base* draw = dynamic_cast<draw_base*>(impl_->current_level_.back().elm.get());
+
+	if (draw)
+	{
+		draw->common_draw_attlists_.rel_size_.style_rel_width_ = odf_types::percent(100);
+	}
+}
 void odf_drawing_context::set_size( _CP_OPT(double) & width_pt, _CP_OPT(double) & height_pt, bool reset_always)
 {
 	impl_->current_drawing_state_.cx_ = width_pt;

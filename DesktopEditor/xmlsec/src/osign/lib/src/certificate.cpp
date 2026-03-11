@@ -2,6 +2,7 @@
 #include "./utils.h"
 
 #include "../../../../../../Common/3dParty/openssl/common/common_openssl.h"
+#include <openssl/opensslv.h>
 #include <openssl/rand.h>
 #include <openssl/bio.h>
 #include <openssl/err.h>
@@ -12,9 +13,11 @@
 #include <openssl/sha.h>
 #include <openssl/ssl.h>
 #include <openssl/crypto.h>
-#include <openssl/engine.h>
 #include <openssl/evp.h>
 #include <openssl/conf.h>
+#if OPENSSL_VERSION_MAJOR < 3
+#include <openssl/engine.h>
+#endif
 #include <ctime>
 
 #include <iostream>
@@ -39,12 +42,13 @@ namespace OSign
 	tm ASN1_GetTimeT(ASN1_TIME* time)
 	{
 		struct tm t;
-		const char* str = (const char*) time->data;
+		const char* str = (const char*)ASN1_STRING_get0_data(time);
 		size_t i = 0;
+		int tag = ASN1_STRING_type(time);
 
 		memset(&t, 0, sizeof(t));
 
-		if (time->type == V_ASN1_UTCTIME)
+		if (tag == V_ASN1_UTCTIME)
 		{
 			/* two digit year */
 			t.tm_year = (str[i++] - '0') * 10;
@@ -52,7 +56,7 @@ namespace OSign
 			if (t.tm_year < 70)
 				t.tm_year += 100;
 		}
-		else if (time->type == V_ASN1_GENERALIZEDTIME)
+		else if (tag == V_ASN1_GENERALIZEDTIME)
 		{
 			/* four digit year */
 			t.tm_year = (str[i++] - '0') * 1000;
@@ -104,8 +108,10 @@ namespace OSign
 			if (!g_is_initialize)
 			{
 				g_is_initialize = true;
+#if OPENSSL_VERSION_MAJOR < 3
 				ERR_load_crypto_strings();
 				OpenSSL_add_all_algorithms();
+#endif
 			}
 		}
 
@@ -285,7 +291,7 @@ namespace OSign
 				X509_EXTENSION* ext = X509_get_ext(m_internal->m_cert, subjectAltNameLoc);
 				ASN1_OCTET_STRING* oData = X509_EXTENSION_get_data(ext);
 
-				std::string sDataString = std::string((char*)oData->data, oData->length);
+				std::string sDataString = std::string((const char*)ASN1_STRING_get0_data(oData), ASN1_STRING_length(oData));
 				std::string::size_type posStart = 0;
 				std::string::size_type posEnd = sDataString.find(';');
 

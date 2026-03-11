@@ -34,6 +34,7 @@
 #include "../cximage/CxImage/ximage.h"
 #include "ImageFileFormatChecker.h"
 #include "../graphics/Image.h"
+#include "../graphics/tests/TestPngGif/CxImage_Addon.h"
 
 #if CXIMAGE_SUPPORT_JP2
 #include "Jp2/J2kFile.h"
@@ -396,6 +397,14 @@ void CBgraFrame::put_Data(BYTE* pData)
 {
 	m_pData = pData;
 }
+int CBgraFrame::get_DataSize()
+{
+    return m_lDataSize;
+}
+void CBgraFrame::put_DataSize(int size)
+{
+    m_lDataSize = size;
+}
 
 bool CBgraFrame::IsGrayScale()
 {
@@ -519,6 +528,31 @@ bool CBgraFrame::OpenFile(const std::wstring& strFileName, unsigned int nFileTyp
 
 	return true;
 }
+
+bool CBgraFrame::GetSpecializedGIFInfo(const std::wstring &strFileName, unsigned int nFileType)
+{
+    m_nFileType = nFileType;
+
+    if (nFileType == 0)
+    {
+        CImageFileFormatChecker checker(strFileName);
+        m_nFileType = checker.eFileType;
+    }
+
+    NSFile::CFileBinary oFile;
+    if (!oFile.OpenFile(strFileName))
+        return false;
+
+    CxImage_Addon* wrapimg = new CxImage_Addon();
+
+    if(!wrapimg->GetSpecializedGIFInfo(oFile.GetFileNative(), m_nFileType))
+        return false;
+
+    put_Data(wrapimg->GetData());
+    put_DataSize(wrapimg->GetDataSize());
+
+    return true;
+}
 bool CBgraFrame::Decode(BYTE* pBuffer, int nSize, unsigned int nFileType)
 {
 	m_nFileType = nFileType;
@@ -607,6 +641,20 @@ bool CBgraFrame::SaveFile(const std::wstring& strFileName, unsigned int nFileTyp
 
 	oFile.CloseFile();
 	return true;
+}
+bool CBgraFrame::SaveGetInsideFromFile(const std::wstring &strFileName)
+{
+    if (m_pData == NULL)
+        return false;
+
+    NSFile::CFileBinary oFile;
+    if (!oFile.CreateFileW(strFileName))
+        return false;
+
+    oFile.WriteFile(m_pData, m_lDataSize);
+
+    oFile.CloseFile();
+    return true;
 }
 bool CBgraFrame::Encode(BYTE*& pBuffer, int& nSize, unsigned int nFileType)
 {

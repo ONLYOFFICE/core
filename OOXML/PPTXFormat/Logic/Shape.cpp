@@ -871,7 +871,7 @@ namespace PPTX
 				pWriter->WriteAttribute(L"o:hr", L"t");
 				pWriter->WriteAttribute(L"o:hrstd", L"t");
 				pWriter->WriteAttribute(L"o:hralign", spPr.Geometry.hr->align);
-				pWriter->WriteAttribute(L"o:hpct", spPr.Geometry.hr->pct);
+				pWriter->WriteAttribute(L"o:hrpct", spPr.Geometry.hr->pct);
 			}
 			pWriter->EndAttributes();
 

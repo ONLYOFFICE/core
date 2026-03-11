@@ -5311,7 +5311,7 @@ void CDrawingConverter::SaveObject(LONG lStart, LONG lLength, const std::wstring
 			else if (bHorizontalRule)
 			{
 				oXmlWriter.WriteString(L"<w:pict>");
-				ConvertShapeVML(oElem, bsMainProps, oXmlWriter, true);
+				ConvertShapeVML(oElem, bsMainProps, oXmlWriter);
 				oXmlWriter.WriteString(L"</w:pict>");
 			}
 			else

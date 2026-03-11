@@ -314,6 +314,12 @@ namespace OOX
 					auto castedText = static_cast<XLS::XLUnicodeRichExtendedString*>(extendedText.get());
 					textPtr->rawText = castedText->str_;
 					textPtr->TxOruns.lastRun.cchText = castedText->str_.size();
+					{
+						XLS::RunPtr TextRun(new XLS::Run);
+						TextRun->formatRun.ich = 0;
+						TextRun->formatRun.ifnt.setValue(0);
+						textPtr->TxOruns.rgTxoRuns.push_back(TextRun);
+					}
 					for(auto i : castedText->rgRun)
 					{
 						XLS::RunPtr TextRun(new XLS::Run);
@@ -497,7 +503,8 @@ namespace OOX
 
 				auto drawingPtr = new XLS::MsoDrawing(false);
 				drawingPtr->prepareComment(1, 0, 0);
-				objPair.first = XLS::BaseObjectPtr(drawingPtr);
+				objectsPtr->m_MsoDrawing = XLS::MsoDrawingPtr(drawingPtr);
+				objPair.first = objectsPtr->m_MsoDrawing;
 				objectsPtr->m_arrObject.push_back(objPair);
 				unsigned int id = 0;
 				for(auto i : m_oCommentList->m_arrItems)

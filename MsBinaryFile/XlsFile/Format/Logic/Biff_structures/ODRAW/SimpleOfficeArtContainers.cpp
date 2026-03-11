@@ -235,7 +235,8 @@ void OfficeArtSpContainer::save(XLS::CFRecord& record)
 	//calculating size
 	rh_own.recLen = record.getRdPtr() - sizePos;
 	record.RollRdPtrBack(rh_own.recLen + 4);
-	record << rh_own.recLen;
+	_UINT32	fullSize = rh_own.recLen + extraSize;
+	record << fullSize;
 	record.skipNunBytes(rh_own.recLen);
 }
 

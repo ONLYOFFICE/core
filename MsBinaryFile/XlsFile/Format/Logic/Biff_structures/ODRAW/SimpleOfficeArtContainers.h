@@ -99,6 +99,7 @@ public:
 	OfficeArtRecordPtr m_OfficeArtAnchor;
 	OfficeArtRecordPtr m_oOfficeArtFOPT;
 	OfficeArtRecordPtr m_oOfficeArtClientData;
+	unsigned int extraSize = 0;
 };
 
 class OfficeArtClientData : public OfficeArtRecord

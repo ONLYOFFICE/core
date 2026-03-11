@@ -76,10 +76,10 @@ public:
 	virtual void ReadComplexData(XLS::CFRecord& record);	
 	virtual void ReadComplexData(IBinaryReader* reader);
 
-	unsigned short opid;
-	bool fBid;
-	bool fComplex;
-    _INT32 op;
+	unsigned short opid = 0;
+	bool fBid = false;
+	bool fComplex = false;
+	_INT32 op = 0;
 };
 
 class FillColor : public OfficeArtFOPTE

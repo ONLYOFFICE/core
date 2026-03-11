@@ -159,6 +159,7 @@ void MsoDrawing::prepareComment(const unsigned int CommentId, const unsigned int
 	}
 
 	auto TextboxContainer = new ODRAW::OfficeArtSpContainer(ODRAW::OfficeArtRecord::CA_Sheet);
+	TextboxContainer->extraSize += 8;
 
 
 	auto fdgPtr = new ODRAW::OfficeArtFDG;
@@ -176,13 +177,54 @@ void MsoDrawing::prepareComment(const unsigned int CommentId, const unsigned int
 	fsprPtr->fHaveSpt = true;
 
 	auto clientAnchor = new ODRAW::OfficeArtClientAnchorSheet;
-	clientAnchor->colL = col;
-
-	clientAnchor->colR = col;
-
+	clientAnchor->colL = col+1;
+	clientAnchor->colR = col+3;
 	clientAnchor->rwT = row;
+	clientAnchor->rwB = row+4;
 
-	clientAnchor->rwB = row;
+	{
+		auto commentOptions = new ODRAW::OfficeArtFOPT;
+		{
+			auto txId = new ODRAW::OfficeArtFOPTE;
+			txId->opid = 0x0080;
+			txId->op = CommentId;
+			commentOptions->fopt.Text_props.push_back(ODRAW::OfficeArtFOPTEPtr(txId));
+		}
+		{
+			auto txId = new ODRAW::OfficeArtFOPTE;
+			txId->opid = 0x008B;
+			txId->op = 2;
+			commentOptions->fopt.Text_props.push_back(ODRAW::OfficeArtFOPTEPtr(txId));
+		}
+		{
+			auto txId = new ODRAW::OfficeArtFOPTE;
+			txId->opid = 0x00BF;
+			txId->op = 0x00080008;
+			commentOptions->fopt.Text_props.push_back(ODRAW::OfficeArtFOPTEPtr(txId));
+		}
+		{
+			auto txId = new ODRAW::OfficeArtFOPTE;
+			txId->opid = 0x0158;
+			txId->op = 0x0000;
+			commentOptions->fopt.Text_props.push_back(ODRAW::OfficeArtFOPTEPtr(txId));
+		}
+
+		{
+			auto txId = new ODRAW::OfficeArtFOPTE;
+			txId->opid = 0x0181;
+			txId->op = 0x08000050;
+			commentOptions->fopt.Text_props.push_back(ODRAW::OfficeArtFOPTEPtr(txId));
+		}
+		{
+			auto txId = new ODRAW::OfficeArtFOPTE;
+			txId->opid = 0x03BF;
+			txId->op = 0x00020002;
+			commentOptions->fopt.Text_props.push_back(ODRAW::OfficeArtFOPTEPtr(txId));
+		}
+
+		commentOptions->fopt.options_count += 6;
+		TextboxContainer->m_oOfficeArtFOPT = ODRAW::OfficeArtRecordPtr(commentOptions);
+	}
 
 	TextboxContainer->m_OfficeArtAnchor = ODRAW::OfficeArtRecordPtr(clientAnchor);
 	auto clientData = new ODRAW::OfficeArtClientData;

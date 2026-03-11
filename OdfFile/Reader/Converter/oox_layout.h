@@ -49,6 +49,11 @@ public:
     //size_t borderId(const odf_reader::style_table_cell_properties_attlist * cellProp, bool & is_default);
 
     void oox_serialize(std::wostream & _Wostream);/* const;*/
+
+    _CP_OPT(double) x;
+    _CP_OPT(double) y;
+    _CP_OPT(double) w;
+    _CP_OPT(double) h;
 };
 
 }

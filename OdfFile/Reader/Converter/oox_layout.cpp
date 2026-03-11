@@ -46,19 +46,52 @@ void oox_layout::oox_serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE(L"c:layout")
         {
-			//CP_XML_NODE(L"c:manualLayout") //вручную созданное описание и место
-			//{
-			//	CP_XML_NODE(L"c:layoutTarget") //вручную созданное описание и место
-			//	{
-			//		CP_XML_ATTR(L"val", "inner"); //все позиции относительно внешнего объекта (а не документа в целом)
-			//	}
-			//	//<c:xMode val="edge"/> 
-			//	//<c:yMode val="edge"/>
-			//	//<c:x val="3.9382768941490093E-2"/>
-			//	//<c:y val="0.37756627842484747"/>
-			//	//<c:w val="0.67611762675758824"/>
-			//	//<c:h val="0.53420410427066001"/>
-			//}
+			if( x || y || w || h )
+			{
+				CP_XML_NODE(L"c:manualLayout")
+				{
+					CP_XML_NODE(L"c:layoutTarget")
+					{
+						CP_XML_ATTR(L"val", L"outer");
+					}
+					CP_XML_NODE(L"c:xMode")
+					{
+						CP_XML_ATTR(L"val", L"edge");
+					}
+					CP_XML_NODE(L"c:yMode")
+					{
+						CP_XML_ATTR(L"val", L"edge");
+					}
+					if( x )
+					{
+						CP_XML_NODE(L"c:x")
+						{
+							CP_XML_ATTR(L"val", std::to_wstring(*x)); // падает тут
+						}
+					}
+					if( y )
+					{
+						CP_XML_NODE(L"c:y")
+						{
+							CP_XML_ATTR(L"val", std::to_wstring(*y));
+						}
+					}
+					if( w )
+					{
+						CP_XML_NODE(L"c:w")
+						{
+							CP_XML_ATTR(L"val", std::to_wstring(*w));
+						}
+					}
+					if( h )
+					{
+						CP_XML_NODE(L"c:h")
+						{
+							CP_XML_ATTR(L"val", std::to_wstring(*h));
+						}
+					}
+				}
+			}
         }
     }
 

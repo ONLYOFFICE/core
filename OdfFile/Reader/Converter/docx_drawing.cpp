@@ -522,10 +522,10 @@ void docx_serialize_wps(std::wostream & strm, _docx_drawing & val, oox::docx_con
 		CP_XML_NODE(L"w:drawing")
 		{
 			std::wstring	 strWp = L"wp:anchor";
-			if (val.isInline)strWp = L"wp:inline";
+			if (val.isInline || val.m_isChar)strWp = L"wp:inline";
 			CP_XML_NODE(strWp)
 			{		
-				if (val.isInline)
+				if (val.isInline || val.m_isChar)
 				{
 					CP_XML_NODE(L"wp:extent")
 					{
@@ -624,7 +624,17 @@ void docx_serialize_wps(std::wostream & strm, _docx_drawing & val, oox::docx_con
 						
 						CP_XML_ATTR(L"relativeFrom", relativeFrom);
 
-						if (val.styleHorizontalPos &&
+						bool init = val.posOffsetH == 0 || val.posOffsetH;
+
+						if( init )
+						{
+							CP_XML_NODE(L"wp:posOffset")
+							{
+								CP_XML_STREAM() << val.posOffsetH;
+							}
+						}
+
+						else if (val.styleHorizontalPos &&
 							val.styleHorizontalPos->get_type() != odf_types::horizontal_pos::FromLeft &&
 							val.styleHorizontalPos->get_type() != odf_types::horizontal_pos::Outside)
 						{
@@ -633,7 +643,10 @@ void docx_serialize_wps(std::wostream & strm, _docx_drawing & val, oox::docx_con
 						}
 						else
 						{
-							CP_XML_NODE(L"wp:posOffset") {CP_XML_STREAM() << val.posOffsetH;}
+							CP_XML_NODE(L"wp:posOffset")
+							{
+								CP_XML_STREAM() << 0;
+							}
 						}			     
 					}
 
@@ -644,7 +657,17 @@ void docx_serialize_wps(std::wostream & strm, _docx_drawing & val, oox::docx_con
 
 						CP_XML_ATTR(L"relativeFrom", relativeFrom);
 
-						if (val.styleVerticalPos && 
+						bool init = val.posOffsetV == 0 || val.posOffsetV;
+
+						if( init )
+						{
+							CP_XML_NODE(L"wp:posOffset")
+							{
+								CP_XML_STREAM() << val.posOffsetV;
+							}
+						}
+
+						else if (val.styleVerticalPos &&
 							val.styleVerticalPos->get_type() != odf_types::vertical_pos::FromTop &&
 							val.styleVerticalPos->get_type() != odf_types::vertical_pos::Below)
 						{
@@ -657,7 +680,7 @@ void docx_serialize_wps(std::wostream & strm, _docx_drawing & val, oox::docx_con
 						{
 							CP_XML_NODE(L"wp:posOffset")
 							{
-								CP_XML_STREAM() << val.posOffsetV;                    
+								CP_XML_STREAM() << 0;
 							}
 						}
 					}

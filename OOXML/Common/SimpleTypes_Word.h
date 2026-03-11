@@ -356,9 +356,6 @@ namespace SimpleTypes
 	public:
 		CDateTime();
 
-		std::wstring GetValue() const;
-		void    SetValue(const std::wstring &sValue);
-
 		std::wstring FromString(const std::wstring &sValue);
 		std::wstring ToString  () const;
 

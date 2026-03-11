@@ -211,7 +211,7 @@ XLS::BaseObjectPtr CSlicer::toBin()
     if(m_oName.IsInit())
 		ptr->stName = m_oName.get();
 	else if(m_oUid.IsInit())
-		ptr->stName = m_oUid.get();
+		ptr->stName = m_oUid->ToString();
 	else
         ptr->stName = 0xFFFFFFFF;
 	if(m_oCache.IsInit())
@@ -270,7 +270,7 @@ void CSlicer::toXML(NSStringUtils::CStringBuilder& writer, const std::wstring& s
 	writer.StartNode(sName);
 	writer.StartAttributes();
 	WritingNullable(m_oName, writer.WriteAttributeEncodeXml(L"name", *m_oName););
-	WritingNullable(m_oUid, writer.WriteAttributeEncodeXml(L"xr10:uid", *m_oUid););
+	WritingNullable(m_oUid, writer.WriteAttributeEncodeXml(L"xr10:uid", m_oUid->ToString()););
 	WritingNullable(m_oCache, writer.WriteAttributeEncodeXml(L"cache", *m_oCache););
 	WritingNullable(m_oCaption, writer.WriteAttributeEncodeXml(L"caption", *m_oCaption););
 	WritingNullable(m_oStartItem, writer.WriteAttribute(L"startItem", *m_oStartItem););
@@ -287,17 +287,20 @@ void CSlicer::toXML(NSStringUtils::CStringBuilder& writer, const std::wstring& s
 void CSlicer::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 {
 	pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-	pWriter->WriteString2(0, m_oName);
-	pWriter->WriteString2(1, m_oUid);
-	pWriter->WriteString2(2, m_oCache);
-	pWriter->WriteString2(3, m_oCaption);
-	pWriter->WriteUInt2(4, m_oStartItem);
-	pWriter->WriteUInt2(5, m_oColumnCount);
-	pWriter->WriteBool2(6, m_oShowCaption);
-	pWriter->WriteUInt2(7, m_oLevel);
-	pWriter->WriteString2(8, m_oStyle);
-	pWriter->WriteBool2(9, m_oLockedPosition);
-	pWriter->WriteUInt2(10, m_oRowHeight);
+		pWriter->WriteString2(0, m_oName);
+	if (m_oUid.IsInit())
+	{
+		pWriter->WriteString1(1, m_oUid->ToString());
+	}
+		pWriter->WriteString2(2, m_oCache);
+		pWriter->WriteString2(3, m_oCaption);
+		pWriter->WriteUInt2(4, m_oStartItem);
+		pWriter->WriteUInt2(5, m_oColumnCount);
+		pWriter->WriteBool2(6, m_oShowCaption);
+		pWriter->WriteUInt2(7, m_oLevel);
+		pWriter->WriteString2(8, m_oStyle);
+		pWriter->WriteBool2(9, m_oLockedPosition);
+		pWriter->WriteUInt2(10, m_oRowHeight);
 	pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 
 //	pWriter->WriteRecord2(0, m_oExtLst);

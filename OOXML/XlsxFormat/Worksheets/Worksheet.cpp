@@ -910,8 +910,8 @@ namespace OOX
 
 						if (m_oExtLst->m_arrExt[i]->m_arrConditionalFormatting[j]->m_arrItems[k]->m_oId.IsInit())
 						{
-							std::wstring id = m_oExtLst->m_arrExt[i]->m_arrConditionalFormatting[j]->m_arrItems[k]->m_oId.get2();
-							m_mapConditionalFormattingEx.insert(std::make_pair(id, m_oExtLst->m_arrExt[i]->m_arrConditionalFormatting[j]->m_arrItems[k]));
+							SimpleTypes::CGuid & guid = *m_oExtLst->m_arrExt[i]->m_arrConditionalFormatting[j]->m_arrItems[k]->m_oId;
+							m_mapConditionalFormattingEx.insert(std::make_pair(guid.ToString(), m_oExtLst->m_arrExt[i]->m_arrConditionalFormatting[j]->m_arrItems[k]));
 						}
 					}
 				}

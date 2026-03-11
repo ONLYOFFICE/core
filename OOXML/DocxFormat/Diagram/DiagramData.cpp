@@ -707,7 +707,8 @@ namespace OOX
 			pWriter->WriteString2(19, m_loTypeId);
 			pWriter->WriteBool2(20, m_phldr);
 			pWriter->WriteString2(21, m_phldrT);
-			pWriter->WriteString2(22, m_presAssocID);
+			if (m_presAssocID.IsInit())
+				pWriter->WriteString1(22, m_presAssocID->ToString());
 			pWriter->WriteString2(23, m_presName);
 			pWriter->WriteInt2(24, m_presStyleCnt);
 			pWriter->WriteInt2(25, m_presStyleIdx);
@@ -748,7 +749,8 @@ namespace OOX
 			pWriter->WriteAttribute(L"custSzX", m_custSzX);
 			pWriter->WriteAttribute(L"custSzY", m_custSzY);
 			pWriter->WriteAttribute(L"custT", m_custT);
-			pWriter->WriteAttribute(L"presAssocID", m_presAssocID);
+			if (m_presAssocID.IsInit())
+				pWriter->WriteAttribute(L"presAssocID", m_presAssocID->ToString());
 			pWriter->WriteAttribute(L"presName", m_presName);
 			pWriter->WriteAttribute(L"presStyleLbl", m_presStyleLbl);
 			pWriter->WriteAttribute(L"presStyleIdx", m_presStyleIdx);
@@ -891,10 +893,18 @@ namespace OOX
 	void Diagram::CPt::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 	{
 		pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-			pWriter->WriteString2(0, m_sModelId);
+			if (m_sModelId.IsInit())
+			{
+				pWriter->WriteString1(0, m_sModelId->ToString());
+			}
 			if (m_oType.IsInit())
+			{
 				pWriter->WriteByte1(1, m_oType->GetValue());
-			pWriter->WriteString2(2, m_sCxnId);			
+			}
+			if (m_sCxnId.IsInit())
+			{
+				pWriter->WriteString1(2, m_sCxnId->ToString());
+			}	
 		pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 
 		pWriter->WriteRecord2(0, m_oSpPr);
@@ -906,10 +916,18 @@ namespace OOX
 	void Diagram::CPt::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 	{
 		pWriter->StartNode(L"dgm:pt");
-			pWriter->WriteAttribute(L"modelId", m_sModelId);
+			if (m_sModelId.IsInit())
+			{
+				pWriter->WriteAttribute(L"modelId", m_sModelId->ToString());
+			}
 			if (m_oType.IsInit())
+			{
 				pWriter->WriteAttribute2(L"type", m_oType->ToString());
-			pWriter->WriteAttribute(L"cxnId", m_sCxnId);
+			}
+			if (m_sCxnId.IsInit())
+			{
+				pWriter->WriteAttribute(L"cxnId", m_sCxnId->ToString());
+			}
 		pWriter->EndAttributes();
 
 		if (m_oPrSet.IsInit())
@@ -1098,7 +1116,10 @@ namespace OOX
 	void Diagram::CCxn::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 	{
 		pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-			pWriter->WriteString2(0, m_sModelId);
+		if (m_sModelId.IsInit())
+		{
+			pWriter->WriteString1(0, m_sModelId->ToString());
+		}
 			pWriter->WriteString2(1, m_sType);
 			pWriter->WriteString2(2, m_sDestId);
 			pWriter->WriteString2(3, m_sDestOrd);
@@ -1114,7 +1135,10 @@ namespace OOX
 	{
 		pWriter->StartNode(L"dgm:cxn");
 		
-		pWriter->WriteAttribute(L"modelId", m_sModelId);
+		if (m_sModelId.IsInit())
+		{
+			pWriter->WriteAttribute(L"modelId", m_sModelId->ToString());
+		}
 		pWriter->WriteAttribute(L"type", m_sType);
 		pWriter->WriteAttribute(L"srcId", m_sSrcId);
 		pWriter->WriteAttribute(L"destId", m_sDestId);

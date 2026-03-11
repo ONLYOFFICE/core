@@ -36,6 +36,7 @@
 #include "../../../OOXML/XlsxFormat/Drawing/Pos.h"
 #include "../../../OOXML/XlsxFormat/Worksheets/Worksheet.h"
 #include "../../../OOXML/XlsxFormat/Comments/Comments.h"
+#include "../../../OOXML/XlsxFormat/Comments/ThreadedComments.h"
 #include "../../../OOXML/XlsxFormat/SharedStrings/SharedStrings.h"
 #include "../../../OOXML/XlsxFormat/Styles/Styles.h"
 #include "../../../OOXML/XlsxFormat/Styles/NumFmts.h"
@@ -57,6 +58,8 @@
 #include "../../../OOXML/DocxFormat/VmlDrawing.h"
 #include "../../../OOXML/DocxFormat/Media/ActiveX.h"
 #include "../../../OOXML/DocxFormat/Drawing/DrawingExt.h"
+
+#include "../../../OOXML/Common/SimpleTypes_Shared.h"
 
 #include "../Format/ods_conversion_context.h"
 
@@ -166,6 +169,9 @@ bool XlsxConverter::convertDocument()
     if (!ods_context)       return false;
    
 	if (!xlsx_document && !xlsx_flat_document) return false;
+
+	if (xlsx_document && xlsx_document->m_pWorkbook && xlsx_document->m_pWorkbook->m_pPersonList)
+		xlsx_mapPersons = xlsx_document->m_pWorkbook->m_pPersonList->GetPersonList();
 
 	ods_context->start_document();
 
@@ -1079,8 +1085,28 @@ void XlsxConverter::convert(OOX::Spreadsheet::CCommentItem * oox_comment)
 	int row = oox_comment->m_nRow.IsInit() ? oox_comment->m_nRow.get()+1 : -1;
 
 	std::wstring author = oox_comment->m_sAuthor.IsInit() ? oox_comment->m_sAuthor.get() : L"";
+	std::wstring date_time;
 
-	ods_context->start_comment(col, row, author);	
+	if (oox_comment->m_pThreadedComment)
+	{
+		if ((oox_comment->m_pThreadedComment)->personId.IsInit() && xlsx_mapPersons.IsInit())
+		{			
+			std::unordered_map<std::wstring, OOX::Spreadsheet::CPerson*>::iterator pFind = xlsx_mapPersons->find(oox_comment->m_pThreadedComment->personId->ToString());
+			if (pFind != xlsx_mapPersons->end())
+			{
+				if ((pFind->second) && (pFind->second->displayName.IsInit()))
+				{
+					author = *pFind->second->displayName;
+				}
+			}
+		}
+		if (oox_comment->m_pThreadedComment->dT.IsInit())
+		{
+			date_time = oox_comment->m_pThreadedComment->dT->ToString();
+		}
+	}
+
+	ods_context->start_comment(col, row, author, date_time);
 	if (oox_comment->m_dLeftMM.IsInit() &&  oox_comment->m_dTopMM.IsInit() && oox_comment->m_dWidthMM.IsInit() && oox_comment->m_dHeightMM.IsInit())
 	{
 		ods_context->set_comment_rect(oox_comment->m_dLeftMM.get(), oox_comment->m_dTopMM.get(), oox_comment->m_dWidthMM.get(), oox_comment->m_dHeightMM.get());
@@ -1097,7 +1123,50 @@ void XlsxConverter::convert(OOX::Spreadsheet::CCommentItem * oox_comment)
 	{
 		ods_context->set_comment_color(L"CCFFFF"); //default ms
 	}
-	if (oox_comment->m_oText.IsInit())
+	if (oox_comment->m_pThreadedComment)
+	{
+		convert(oox_comment->m_pThreadedComment->m_oText.GetPointer());
+		ods_context->text_context()->end_paragraph();
+
+		for (auto reply : oox_comment->m_pThreadedComment->m_arrReplies)
+		{
+			ods_context->text_context()->start_paragraph();
+
+			if (reply->personId.IsInit() && xlsx_mapPersons.IsInit())
+			{
+				std::wstring sTextReply;
+
+				std::unordered_map<std::wstring, OOX::Spreadsheet::CPerson*>::iterator pFind = xlsx_mapPersons->find(reply->personId->ToString());
+				if (pFind != xlsx_mapPersons->end())
+				{
+					if ((pFind->second) && (pFind->second->displayName.IsInit()))
+					{
+						sTextReply += *pFind->second->displayName;
+					}
+					if (reply->dT.IsInit())
+					{
+						std::wstring sDate = reply->dT->ToString();
+
+						if (sDate.empty() == false)
+						{
+							size_t pos = sDate.find(L"T"); 
+							if (pos != std::wstring::npos) sDate[pos] = L' ';
+							sTextReply += L" (" + sDate + L")";
+						}
+					}
+				}
+				sTextReply += L": ";
+				if (reply->m_oText.IsInit())
+				{
+					sTextReply += reply->m_oText->m_sText;
+				}
+				ods_context->add_text_content(sTextReply);
+			}
+
+			ods_context->text_context()->end_paragraph();
+		}
+	}
+	else if (oox_comment->m_oText.IsInit())
 	{
 		for(size_t i = 0; i < oox_comment->m_oText->m_arrItems.size(); ++i)
 		{
@@ -3421,7 +3490,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CSparklineGroup* sparklineGroup)
 {
 	if (!sparklineGroup) return;
 
-	if (sparklineGroup->m_oUId.IsInit()) ods_context->current_table()->set_sparkline_id(*sparklineGroup->m_oUId);
+	if (sparklineGroup->m_oUId.IsInit()) ods_context->current_table()->set_sparkline_id(sparklineGroup->m_oUId->ToString());
 	if (sparklineGroup->m_oManualMax.IsInit()) ods_context->current_table()->set_sparkline_manual_max(sparklineGroup->m_oManualMax->GetValue());
 	if (sparklineGroup->m_oManualMin.IsInit()) ods_context->current_table()->set_sparkline_manual_min(sparklineGroup->m_oManualMin->GetValue());
 	if (sparklineGroup->m_oLineWeight.IsInit()) ods_context->current_table()->set_sparkline_line_weight(sparklineGroup->m_oLineWeight->GetValue());
@@ -3476,7 +3545,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CAltTextTable *alt_text)
 }
 
 void XlsxConverter::convert(OOX::Spreadsheet::CConditionalFormatting *oox_cond_fmt, 
-							std::map<std::wstring, OOX::Spreadsheet::CConditionalFormattingRule*>& mapCFRuleEx, bool isExt)
+							std::unordered_map<std::wstring, OOX::Spreadsheet::CConditionalFormattingRule*>& mapCFRuleEx, bool isExt)
 {
 	if (!oox_cond_fmt)return;
 
@@ -3501,14 +3570,14 @@ void XlsxConverter::convert(OOX::Spreadsheet::CConditionalFormatting *oox_cond_f
 	}
 }
 void XlsxConverter::convert(OOX::Spreadsheet::CConditionalFormattingRule *oox_cond_rule,
-							std::map<std::wstring, OOX::Spreadsheet::CConditionalFormattingRule*>& mapCFRuleEx, bool isExt)
+							std::unordered_map<std::wstring, OOX::Spreadsheet::CConditionalFormattingRule*>& mapCFRuleEx, bool isExt)
 {
 	if (!oox_cond_rule) return;
 
-	std::map<std::wstring, OOX::Spreadsheet::CConditionalFormattingRule*>::iterator pFind;
+	std::unordered_map<std::wstring, OOX::Spreadsheet::CConditionalFormattingRule*>::iterator pFind;
 	if (oox_cond_rule->m_oExtId.IsInit())
 	{
-		pFind = mapCFRuleEx.find(*oox_cond_rule->m_oExtId);
+		pFind = mapCFRuleEx.find(oox_cond_rule->m_oExtId->ToString());
 
 		if (pFind != mapCFRuleEx.end())
 		{

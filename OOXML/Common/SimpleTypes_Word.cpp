@@ -776,28 +776,25 @@ namespace SimpleTypes
 
 	CDateTime::CDateTime() {}
 
-	std::wstring CDateTime::GetValue() const
-	{
-		return m_sValue;
-	}
+	//std::wstring CDateTime::GetValue() const
+	//{
+	//	return m_sValue;
+	//}
 
-	void CDateTime::SetValue(const std::wstring &sValue)
-	{
-		m_sValue = sValue;
-	}
+	//void CDateTime::SetValue(const std::wstring &sValue)
+	//{
+	//	m_sValue = sValue;
+	//}
 
 	std::wstring CDateTime::FromString(const std::wstring &sValue)
 	{
 		m_sValue = sValue;
-
 		return m_sValue;
 	}
-
-	std::wstring CDateTime::ToString  () const
+	std::wstring CDateTime::ToString () const
 	{
 		return m_sValue;
 	}
-
 	//--------------------------------------------------------------------------------
 	// DecimalNumberOrPercent 17.18.11 (Part 1)
 	//--------------------------------------------------------------------------------

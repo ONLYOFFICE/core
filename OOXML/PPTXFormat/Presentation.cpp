@@ -421,13 +421,18 @@ namespace PPTX
 		pWriter->EndAttributes();
 
 		pWriter->WriteArray(L"p:sldMasterIdLst", sldMasterIdLst);
-		pWriter->WriteArray(L"p:notesMasterIdLst", notesMasterIdLst);
-		pWriter->WriteArray(L"p:handoutMasterIdLst", handoutMasterIdLst);
-		pWriter->WriteArray(L"p:embeddedFontLst", embeddedFontLst);
+
 		pWriter->WriteArray(L"p:sldIdLst", sldIdLst);
+
+		pWriter->WriteArray(L"p:notesMasterIdLst", notesMasterIdLst);
+		
+		pWriter->WriteArray(L"p:handoutMasterIdLst", handoutMasterIdLst);
 
 		pWriter->Write(sldSz);
 		pWriter->Write(notesSz);
+		
+		pWriter->WriteArray(L"p:embeddedFontLst", embeddedFontLst);
+
 		pWriter->Write(photoAlbum);
 		pWriter->Write(kinsoku);
 

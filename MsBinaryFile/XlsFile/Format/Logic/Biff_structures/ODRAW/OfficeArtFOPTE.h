@@ -1068,25 +1068,28 @@ public:
 			{
 				case ODRAW::rtLineTo:
 				{
-                    if (valuePointer + 1 > m_arPoints.size())
+                    for (_UINT16 j = 0; j < m_arSegments[i].m_nCount; j++)
                     {
-                        break;
+                        if (valuePointer + 1 > m_arPoints.size())
+                        {
+                            break;
 
-                        strVmlPath += L"l";
-                        strVmlPath += std::to_wstring(m_arPoints[0].x);
-                        strVmlPath += L",";
-                        strVmlPath += std::to_wstring(m_arPoints[0].y);
+                            strVmlPath += L"l";
+                            strVmlPath += std::to_wstring(m_arPoints[0].x);
+                            strVmlPath += L",";
+                            strVmlPath += std::to_wstring(m_arPoints[0].y);
 							
-                        ++valuePointer;
-                    }
-                    else
-                    {
-                        strVmlPath += L"l";
-                        strVmlPath += std::to_wstring(m_arPoints[valuePointer].x );
-                        strVmlPath += L",";
-                        strVmlPath += std::to_wstring(m_arPoints[valuePointer].y );
+                            ++valuePointer;
+                        }
+                        else
+                        {
+                            strVmlPath += L"l";
+                            strVmlPath += std::to_wstring(m_arPoints[valuePointer].x );
+                            strVmlPath += L",";
+                            strVmlPath += std::to_wstring(m_arPoints[valuePointer].y );
 							
-                        ++valuePointer;
+                            ++valuePointer;
+                        }
                     }
 				}break;
 				case ODRAW::rtCurveTo:

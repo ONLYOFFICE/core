@@ -111,6 +111,8 @@ namespace OOX
 		class CPivotTableFile;
 		class CPivotTableDefinition;
 		class CPivotCacheDefinition;
+
+		class CPerson;
 	}
 }
 
@@ -166,6 +168,8 @@ namespace Oox2Odf
 		OOX::Spreadsheet::CXlsx					*xlsx_document;
 		OOX::IFileContainer						*xlsx_current_container; 
 		
+		nullable<std::unordered_map<std::wstring, OOX::Spreadsheet::CPerson*>> xlsx_mapPersons;
+
 		odf_writer::ods_conversion_context		*ods_context;
 
 		void convert_sheets();
@@ -234,9 +238,9 @@ namespace Oox2Odf
 		void convert(OOX::Spreadsheet::CDataValidations				*oox_validations);
 		void convert(OOX::Spreadsheet::CDataValidation				*oox_validation);
 		void convert(OOX::Spreadsheet::CConditionalFormatting		*oox_cond_fmtc,
-							std::map<std::wstring, OOX::Spreadsheet::CConditionalFormattingRule*>& mapCFRuleEx, bool isExt);
+							std::unordered_map<std::wstring, OOX::Spreadsheet::CConditionalFormattingRule*>& mapCFRuleEx, bool isExt);
 		void convert(OOX::Spreadsheet::CConditionalFormattingRule	*oox_cond_rule,
-							std::map<std::wstring, OOX::Spreadsheet::CConditionalFormattingRule*>& mapCFRuleEx, bool isExt);
+							std::unordered_map<std::wstring, OOX::Spreadsheet::CConditionalFormattingRule*>& mapCFRuleEx, bool isExt);
 		void convert(OOX::Spreadsheet::CAutofilter					*oox_filter);
 		void convert(OOX::Spreadsheet::CFilterColumn				*oox_filter_column);
 		void convert(OOX::Spreadsheet::CDataBar						*oox_cond_databar);

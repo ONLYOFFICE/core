@@ -506,12 +506,25 @@ namespace OOX
 					}
 				}
 			}
-			/*if(m_pComments != nullptr)
+			if(m_pComments != nullptr)
 			{
 				if(worksheetPtr->m_OBJECTS == nullptr)
 					worksheetPtr->m_OBJECTS = XLS::BaseObjectPtr(new XLS::OBJECTS(false));
 				worksheetPtr->m_arNote = m_pComments->toXLS(worksheetPtr->m_OBJECTS);
-			}*///will be later
+				auto workbookStream = static_cast<XLS::GlobalsSubstream*>(globalsPtr.get());
+				XLS::MsoDrawingGroup* drawingGroupPtr;
+
+				if(workbookStream->m_arMSODRAWINGGROUP.empty())
+				{
+					drawingGroupPtr = new XLS::MsoDrawingGroup;
+					workbookStream->m_arMSODRAWINGGROUP.push_back(XLS::BaseObjectPtr(drawingGroupPtr));
+				}
+				else
+				{
+					drawingGroupPtr = static_cast<XLS::MsoDrawingGroup*>(workbookStream->m_arMSODRAWINGGROUP.back().get());
+				}
+				drawingGroupPtr->drawingCount++;
+			}//will be later
 			if(m_oTableParts.IsInit())
 			{
 				auto feat11 = new XLS::FEAT11;

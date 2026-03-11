@@ -280,6 +280,24 @@ namespace OOX
 
 			auto objectsPtr = static_cast<XLS::OBJECTS*>(objectsPointer.get());
 			{
+				std::pair<XLS::BaseObjectPtr, std::vector<XLS::BaseObjectPtr>> objPair;
+				auto drawingPtr = new XLS::MsoDrawing(false);
+				if(id > 1)
+				{
+					drawingPtr->rgChildRec.first = false;
+					objPair.first = XLS::MsoDrawingPtr(drawingPtr);
+				}
+				else
+				{
+					objectsPtr->m_MsoDrawing = XLS::MsoDrawingPtr(drawingPtr);
+					objPair.first = objectsPtr->m_MsoDrawing;
+				}
+				drawingPtr->prepareComment(id, ptr->note_sh.row, ptr->note_sh.col);
+
+				objectsPtr->m_arrObject.push_back(objPair);
+			}
+
+			{
 				auto objUnion = new XLS::OBJ(boost::dynamic_pointer_cast<XLS::MsoDrawing>(objectsPtr->m_arrObject.back().first));
 				//object writing
 				auto objPtr = new XLS::Obj(objUnion->mso_drawing_);
@@ -498,15 +516,7 @@ namespace OOX
 			std::vector<XLS::BaseObjectPtr> objectVector;
 			if(m_oCommentList.IsInit())
 			{
-				auto objectsPtr = static_cast<XLS::OBJECTS*>(objectsPointer.get());
-				std::pair<XLS::BaseObjectPtr, std::vector<XLS::BaseObjectPtr>> objPair;
-
-				auto drawingPtr = new XLS::MsoDrawing(false);
-				drawingPtr->prepareComment(1, 0, 0);
-				objectsPtr->m_MsoDrawing = XLS::MsoDrawingPtr(drawingPtr);
-				objPair.first = objectsPtr->m_MsoDrawing;
-				objectsPtr->m_arrObject.push_back(objPair);
-				unsigned int id = 0;
+				unsigned int id = 1;
 				for(auto i : m_oCommentList->m_arrItems)
 				{
 					std::wstring authorName = L"none";

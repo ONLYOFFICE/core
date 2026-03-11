@@ -139,11 +139,10 @@ const bool MsoDrawing::isEndingRecord(CFRecord& record)
 
 void MsoDrawing::prepareComment(const unsigned int CommentId, const unsigned int row, const unsigned int col)
 {
-
-	auto spgrContainer = new ODRAW::OfficeArtSpgrContainer(ODRAW::OfficeArtRecord::CA_Sheet);
-	rgChildRec.m_OfficeArtSpgrContainer = ODRAW::OfficeArtRecordPtr(spgrContainer);
-
+	if(rgChildRec.first)
 	{
+		auto spgrContainer = new ODRAW::OfficeArtSpgrContainer(ODRAW::OfficeArtRecord::CA_Sheet);
+		rgChildRec.m_OfficeArtSpgrContainer = ODRAW::OfficeArtRecordPtr(spgrContainer);
 		auto ShapeGroup = new ODRAW::OfficeArtSpContainer(ODRAW::OfficeArtRecord::CA_Sheet);
 		auto groupFsp = new ODRAW::OfficeArtFSP;
 		ShapeGroup->m_OfficeArtFSP = ODRAW::OfficeArtRecordPtr(groupFsp);
@@ -167,7 +166,13 @@ void MsoDrawing::prepareComment(const unsigned int CommentId, const unsigned int
 	fdgPtr->csp = 2;
 	fdgPtr->spidCur = CommentId+1;
 	rgChildRec.m_OfficeArtFDG = ODRAW::OfficeArtRecordPtr(fdgPtr);
-	spgrContainer->m_OfficeArtSpgrContainerFileBlock.push_back(ODRAW::OfficeArtContainerPtr(TextboxContainer));
+	if(rgChildRec.first)
+	{
+		auto spgrContainer = static_cast<ODRAW::OfficeArtSpgrContainer*>(rgChildRec.m_OfficeArtSpgrContainer.get());
+		spgrContainer->m_OfficeArtSpgrContainerFileBlock.push_back(ODRAW::OfficeArtContainerPtr(TextboxContainer));
+	}
+	else
+		rgChildRec.m_OfficeArtSpContainer.push_back(ODRAW::OfficeArtContainerPtr(TextboxContainer));
 
 	auto fsprPtr = new ODRAW::OfficeArtFSP;
 	TextboxContainer->m_OfficeArtFSP = ODRAW::OfficeArtRecordPtr(fsprPtr);

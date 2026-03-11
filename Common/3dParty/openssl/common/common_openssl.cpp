@@ -31,6 +31,7 @@
  */
 
 #include "./common_openssl.h"
+#include <openssl/opensslv.h>
 #include <openssl/sha.h>
 #include <openssl/rsa.h>
 #include <openssl/bio.h>
@@ -138,18 +139,24 @@ namespace NSOpenSSL
 		publicKey = NULL;
 		privateKey = NULL;
 
-		RSA* rsa = RSA_new();
-		BIGNUM *exponent = BN_new();
-
-		BN_set_word(exponent, RSA_F4);
-		int result = RSA_generate_multi_prime_key(rsa, 2048, 2, exponent, NULL);
-		if (0 == result)
+		EVP_PKEY* pkey = NULL;
+		EVP_PKEY_CTX* pctx = EVP_PKEY_CTX_new_id(EVP_PKEY_RSA, NULL);
+		if (!pctx)
 			return false;
+
+		if (EVP_PKEY_keygen_init(pctx) <= 0 ||
+		    EVP_PKEY_CTX_set_rsa_keygen_bits(pctx, 2048) <= 0 ||
+		    EVP_PKEY_keygen(pctx, &pkey) <= 0)
+		{
+			EVP_PKEY_CTX_free(pctx);
+			return false;
+		}
+		EVP_PKEY_CTX_free(pctx);
 
 		if (true)
 		{
 			BIO* bio = BIO_new(BIO_s_mem());
-			if (PEM_write_bio_RSAPrivateKey(bio, rsa, NULL, NULL, 0, NULL, NULL))
+			if (PEM_write_bio_PrivateKey(bio, pkey, NULL, NULL, 0, NULL, NULL))
 			{
 				int key_length = BIO_pending(bio);
 				privateKey = openssl_alloc(key_length + 1);
@@ -168,7 +175,7 @@ namespace NSOpenSSL
 		if (true)
 		{
 			BIO* bio = BIO_new(BIO_s_mem());
-			if (PEM_write_bio_RSA_PUBKEY(bio, rsa))
+			if (PEM_write_bio_PUBKEY(bio, pkey))
 			{
 				int key_length = BIO_pending(bio);
 				publicKey = openssl_alloc(key_length + 1);
@@ -185,8 +192,7 @@ namespace NSOpenSSL
 			BIO_free_all(bio);
 		}
 
-		BN_free(exponent);
-		RSA_free(rsa);
+		EVP_PKEY_free(pkey);
 
 		return (NULL != publicKey && NULL != privateKey) ? true : false;
 	}
@@ -551,7 +557,6 @@ namespace NSOpenSSL
 	bool AES_Encrypt(int type, const unsigned char* key, const unsigned char* iv, const unsigned char* data, const unsigned int& size, unsigned char*& data_crypt, unsigned int& data_crypt_len)
 	{
 		EVP_CIPHER_CTX* ctx = EVP_CIPHER_CTX_new();
-		EVP_CIPHER_CTX_init(ctx);
 		EVP_EncryptInit_ex(ctx, _get_cipher_aes(type), NULL, key, iv);
 		EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_IVLEN, 16, NULL);
 		int out_len1 = (int)size + AES_BLOCK_SIZE;
@@ -561,13 +566,11 @@ namespace NSOpenSSL
 		EVP_EncryptFinal_ex(ctx, data_crypt + out_len1, &out_len2);
 		data_crypt_len = out_len1 + out_len2;
 		EVP_CIPHER_CTX_free(ctx);
-		EVP_cleanup();
 		return true;
 	}
 	bool AES_Decrypt(int type, const unsigned char* key, const unsigned char* iv, const unsigned char* data, const unsigned int& size, unsigned char*& data_decrypt, unsigned int& data_decrypt_len)
 	{
 		EVP_CIPHER_CTX* ctx = EVP_CIPHER_CTX_new();
-		EVP_CIPHER_CTX_init(ctx);
 		EVP_DecryptInit_ex(ctx, _get_cipher_aes(type), NULL, key, iv);
 		EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_IVLEN, 16, NULL);
 		int out_len1 = (int)size;
@@ -577,7 +580,6 @@ namespace NSOpenSSL
 		EVP_DecryptFinal_ex(ctx, data_decrypt + out_len1, &out_len2);
 		data_decrypt_len = out_len1 + out_len2;
 		EVP_CIPHER_CTX_free(ctx);
-		EVP_cleanup();
 		return true;
 	}
 

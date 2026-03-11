@@ -164,9 +164,10 @@ namespace Oox2Odf
         virtual std::wstring						find_link_by_id (const std::wstring & sId, int t, bool & bExternal);
 		virtual NSCommon::smart_ptr<OOX::File>		find_file_by_id (const std::wstring & sId);
 
-		void			convert		(OOX::WritingElement *oox_unknown);		
-		std::wstring	dump_text	(OOX::WritingElement *oox_unknown);
-    private:
+		void convert(OOX::WritingElement *oox_unknown);		
+		void convert(OOX::Logic::CSdtContent* oox_sdt);
+		std::wstring dump_text(OOX::WritingElement *oox_unknown);
+	private:
 		bool current_bidi_set = false;
 		struct _section
 		{
@@ -195,7 +196,6 @@ namespace Oox2Odf
 		void convert_comment		(int oox_comm_id);
         void convert_hdr_ftr		(std::wstring sId);
 
-		void convert(OOX::Logic::CSdtContent			*oox_sdt);
 		void convert(OOX::Logic::CBackground			*oox_background, int type);
 		void convert(OOX::Logic::CBgPict				*oox_background, int type);
 		void convert(OOX::Logic::CSdt					*oox_sdt);

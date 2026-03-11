@@ -1555,7 +1555,11 @@ void DocxConverter::convert(OOX::Logic::CParagraphProperty	*oox_paragraph_pr,
 	
 	if (text_properties && text_properties->fo_font_size_)
 	{
-		current_font_size.push_back(text_properties->fo_font_size_->get_length().get_value_unit(odf_types::length::pt));
+		double font_size_pt = text_properties->fo_font_size_->get_length().get_value_unit(odf_types::length::pt);
+		if (font_size_pt > 2)
+		{
+			current_font_size.push_back(font_size_pt);
+		}
 	}
 	if (oox_paragraph_pr->m_oSpacing.IsInit())
 	{
@@ -2964,7 +2968,7 @@ void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_pr, odf_writer::te
 	{
 		double font_size_pt = oox_run_pr->m_oSz->m_oVal->ToPoints();
 		
-		if (!current_bidi_set) current_font_size.push_back(font_size_pt);
+		if (!current_bidi_set && font_size_pt > 2) current_font_size.push_back(font_size_pt);
 		
 		OoxConverter::convert(font_size_pt, text_properties->fo_font_size_);		
 	}

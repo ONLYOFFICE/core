@@ -906,6 +906,8 @@ void OoxConverter::convert(PPTX::Logic::Shape *oox_shape)
 
 	convert(&oox_shape->nvSpPr);	
 
+	DocxConverter* docx_converter = dynamic_cast<DocxConverter*>(this);
+
 	if (oox_shape->txXfrm.IsInit() == false)
 	{
 		if (oox_shape->oTextBoxShape.IsInit()) //docx sdt
@@ -933,6 +935,34 @@ void OoxConverter::convert(PPTX::Logic::Shape *oox_shape)
 					odf_context()->drawing_context()->set_text( odf_context()->text_context());
 				
 				odf_context()->end_text_context();	
+			}
+		}
+		else if (oox_shape->strTextBoxShape.is_init() && docx_converter)//после конвертации старого шейпа (vml)
+		{
+			XmlUtils::CXmlLiteReader oReader;
+
+			std::wstring sBegin(_T("<root xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\">"));
+			std::wstring sEnd(_T("</root>"));
+			std::wstring bsTxContentTemp = sBegin + *oox_shape->strTextBoxShape + sEnd;
+
+			if (oReader.FromString(bsTxContentTemp))
+			{
+				oReader.ReadNextNode();//root
+				oReader.ReadNextNode();//v:textbox
+				std::wstring sRootName = XmlUtils::GetNameNoNS(oReader.GetName());
+				if (_T("textbox") == sRootName)
+					oReader.ReadNextNode();//w:txbxContent
+		
+				OOX::Logic::CSdtContent oSdtContent;
+				oSdtContent.fromXML(oReader);
+
+				odf_context()->start_text_context();
+
+				docx_converter->convert(&oSdtContent);
+				convert(oox_shape->oTextBoxBodyPr.GetPointer());
+				
+				odf_context()->drawing_context()->set_text(odf_context()->text_context());
+				odf_context()->end_text_context();
 			}
 		}
 		else

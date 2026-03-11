@@ -3004,7 +3004,7 @@ void CDrawingConverter::ConvertWordArtShape(PPTX::Logic::SpTreeElem* elem, XmlUt
 		}
 		std::wstring strRPr, strPPr;
 
-		strPPr = L"<w:jc w:val=\"center\"/>";
+		strPPr = L"<w:jc w:val=\"center\"/><w:spacing w:after=\"0\" w:before=\"0\"/>";
 
 		if (bBold) strRPr += L"<w:b/><w:bCs/>";
 		if (bItalic) strRPr += L"<w:i/><w:iCs/>";
@@ -3200,9 +3200,14 @@ void CDrawingConverter::ConvertWordArtShape(PPTX::Logic::SpTreeElem* elem, XmlUt
 
 		for (size_t i = 0; i < wordArtString.size(); i++)
 		{
-			std::wstring sParaRun = L"<w:r><w:rPr>" + strRPr + L"</w:rPr>" + L"<w:t>" + wordArtString[i] + L"</w:t></w:r>";
+			std::vector<std::wstring> arrPara;
+			boost::algorithm::split(arrPara, wordArtString[i], boost::algorithm::is_any_of(L"\n"), boost::algorithm::token_compress_on);
 
-			sTxbxContent += L"<w:p><w:pPr>" + strPPr + L"<w:rPr>" + strRPr + L"</w:rPr></w:pPr>" + sParaRun + L"</w:p>";
+			for (auto p : arrPara)
+			{
+				std::wstring sParaRun = L"<w:r><w:rPr>" + strRPr + L"</w:rPr>" + L"<w:t>" + p + L"</w:t></w:r>";
+				sTxbxContent += L"<w:p><w:pPr>" + strPPr + L"<w:rPr>" + strRPr + L"</w:rPr></w:pPr>" + sParaRun + L"</w:p>";
+			}
 		}
 		sTxbxContent += L"</w:txbxContent>";
 		pShape->strTextBoxShape = sTxbxContent;

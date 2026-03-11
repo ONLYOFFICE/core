@@ -963,7 +963,7 @@ void OoxConverter::convert(double oox_font_size,  _CP_OPT(odf_types::font_size) 
 
 	 odf_length = odf_types::length(oox_font_size, odf_types::length::pt);
 	 
-	 if (odf_length)
+	 if (odf_length && oox_font_size > 2)
 		 odf_font_size = odf_types::font_size(odf_length.get());
 }
 void OoxConverter::convert(OOX::JsaProject *jsaProject)

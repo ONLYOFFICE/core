@@ -206,6 +206,7 @@ public:
     _CP_OPT(double)				style_legend_expansion_aspect_ratio_;
 	
 	odf_types::common_draw_position_attlist		common_draw_position_attlist_;
+    odf_types::common_draw_size_attlist         common_draw_size_attlist_;
 	common_chart_attlist						common_attlist_;
 
 };

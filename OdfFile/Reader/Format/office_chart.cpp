@@ -182,6 +182,8 @@ void chart_legend_attlist::add_attributes( const xml::attributes_wc_ptr & Attrib
     CP_APPLY_ATTR(L"style:legend-expansion", style_legend_expansion_);
     CP_APPLY_ATTR(L"style:legend-expansion-aspect-ratio", style_legend_expansion_aspect_ratio_);
     common_attlist_.add_attributes(Attributes);
+
+    common_draw_size_attlist_.add_attributes(Attributes);
 }
 
 /////////////////////

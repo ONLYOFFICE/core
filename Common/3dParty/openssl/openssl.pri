@@ -28,12 +28,15 @@ core_ios {
 
 }
 
-core_windows {
-    LIBS += $$OPENSSL_LIBS_DIRECTORY/libssl.lib
-	LIBS += $$OPENSSL_LIBS_DIRECTORY/libcrypto.lib
+use_system_openssl {
+    LIBS += -lssl -lcrypto
 } else {
-    LIBS += $$OPENSSL_LIBS_DIRECTORY/libssl.a
-	LIBS += $$OPENSSL_LIBS_DIRECTORY/libcrypto.a
+    core_windows {
+        LIBS += $$OPENSSL_LIBS_DIRECTORY/libssl.lib
+        LIBS += $$OPENSSL_LIBS_DIRECTORY/libcrypto.lib
+    } else {
+        LIBS += $$OPENSSL_LIBS_DIRECTORY/libssl.a
+        LIBS += $$OPENSSL_LIBS_DIRECTORY/libcrypto.a
+    }
+    INCLUDEPATH += $$OPENSSL_LIBS_DIRECTORY/../include
 }
-
-INCLUDEPATH += $$OPENSSL_LIBS_DIRECTORY/../include

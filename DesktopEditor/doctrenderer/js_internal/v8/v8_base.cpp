@@ -618,7 +618,7 @@ namespace NSJSBase
 	// this function is called when method from embedded object is called
 	void _Call(const v8::FunctionCallbackInfo<v8::Value>& args)
 	{
-		CJSEmbedObject* _this = (CJSEmbedObject*)unwrap_native(args.Holder());
+		CJSEmbedObject* _this = (CJSEmbedObject*)unwrap_native(args.V8Holder());
 		CJSFunctionArgumentsV8 _args(&args, 0);
 		JSSmart<CJSValue> funcIndex = js_value(args.Data());
 		CJSEmbedObjectAdapterV8* _adapter = static_cast<CJSEmbedObjectAdapterV8*>(_this->getAdapter());

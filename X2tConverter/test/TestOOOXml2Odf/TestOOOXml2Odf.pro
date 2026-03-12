@@ -27,7 +27,7 @@ INCLUDEPATH += $$CORE_ROOT_DIR/Common
 INCLUDEPATH += $$CORE_ROOT_DIR/OOXML/PPTXFormat/Logic
 
 
-LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lCryptoPPLib 
+include($$CORE_ROOT_DIR/Common/3dParty/cryptopp/cryptopp.pri)
 LIBS += -L$$CORE_BOOST_LIBS
 
 win32 {

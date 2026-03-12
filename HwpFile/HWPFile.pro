@@ -12,12 +12,11 @@ PWD_ROOT_DIR = $$PWD
 
 include($$CORE_ROOT_DIR/Common/base.pri)
 
-LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lCryptoPPLib
+include($$CORE_ROOT_DIR/Common/3dParty/cryptopp/cryptopp.pri)
 
 ADD_DEPENDENCY(kernel, UnicodeConverter, graphics, StarMathConverter)
 
-DEFINES += HWPFILE_USE_DYNAMIC_LIBRARY \
-           CRYPTOPP_DISABLE_ASM 
+DEFINES += HWPFILE_USE_DYNAMIC_LIBRARY
 
 
 SOURCES += \

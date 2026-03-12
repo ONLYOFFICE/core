@@ -259,10 +259,12 @@ namespace NSJSBase
 		m_internal->m_contextPersistent.Reset();
 		// destroy native object in the weak handles before isolate disposal
 		v8::Isolate* isolate = m_internal->m_isolate;
+#ifndef V8_VERSION_121_PLUS
 		{
 			v8::Isolate::Scope scope(isolate);
 			isolate->VisitHandlesWithClassIds(WeakHandleVisitor::getInstance());
 		}
+#endif
 		isolate->Dispose();
 		m_internal->m_isolate = NULL;
 	}

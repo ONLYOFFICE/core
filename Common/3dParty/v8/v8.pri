@@ -1,3 +1,15 @@
+use_system_v8 {
+    CONFIG += c++2a
+    CONFIG += use_v8_monolith
+    DEFINES += V8_VERSION_89_PLUS
+    DEFINES += V8_VERSION_121_PLUS
+    DEFINES += V8_COMPRESS_POINTERS
+    DEFINES += DISABLE_MEMORY_LIMITATION
+
+    INCLUDEPATH += /usr/include/v8
+    LIBS += -lv8_monolith -lpthread
+} else {
+
 CORE_V8_PATH_OVERRIDE=$$PWD
 !v8_version_60:CONFIG += v8_version_89
 
@@ -86,3 +98,5 @@ core_mac {
 core_android {
     LIBS += -L$$CORE_V8_PATH_LIBS -lv8_monolith
 }
+
+} # !use_system_v8

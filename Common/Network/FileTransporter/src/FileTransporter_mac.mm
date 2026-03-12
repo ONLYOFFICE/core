@@ -105,11 +105,37 @@ namespace NSNetwork
 	{
 		static NSString* StringWToNSString ( const std::wstring& Str )
 		{
+			// Returns +1 retained NSString (alloc/init). Caller must release in non-ARC.
 			NSString* pString = [ [ NSString alloc ]
-					initWithBytes : (char*)Str.data() length : Str.size() * sizeof(wchar_t)
-			  encoding : CFStringConvertEncodingToNSStringEncoding ( kCFStringEncodingUTF32LE ) ];
+				initWithBytes : (char*)Str.data() length : Str.size() * sizeof(wchar_t)
+					 encoding : CFStringConvertEncodingToNSStringEncoding ( kCFStringEncodingUTF32LE ) ];
 			return pString;
 		}
+
+		// NSURLComponents correctly handles mixed input (already-encoded + raw characters)
+		// without double-encoding, but normalises unreserved percent-sequences (%5F → _).
+		// If preserving the exact encoding is required, use [NSURL URLWithString:] instead.
+		static NSURL* SafeURLFromString(NSString* urlString)
+		{
+			if (!urlString || urlString.length == 0)
+				return nil;
+
+			NSURL* url = [NSURL URLWithString:urlString];
+			if (url)
+				return url;
+
+			// Fallback: the string contains unencoded characters (spaces, cyrillic,
+			// brackets, etc.). URLFragmentAllowedCharacterSet includes '%', so
+			// existing percent-sequences won't be double-encoded.
+			NSString* encoded =
+				[urlString stringByAddingPercentEncodingWithAllowedCharacters:
+							   [NSCharacterSet URLFragmentAllowedCharacterSet]];
+			if (!encoded)
+				return nil;
+
+			return [NSURL URLWithString:encoded];
+		}
+
 		class CFileTransporterBaseCocoa : public CFileTransporterBase
 		{
 		public :
@@ -145,83 +171,162 @@ namespace NSNetwork
 					return 0;
 #endif
 
+				// stringURL: +1 retained (alloc/init). Must be released on all exit paths in non-ARC.
 				NSString* stringURL = StringWToNSString(m_sDownloadFileUrl);
-				NSString* escapedURL = [stringURL stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+				NSURL* url = SafeURLFromString(stringURL);
 
-				int nResult = 1;
-
-				if (m_pSession)
+				if (!url)
 				{
-					NSURLRequest* urlRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:escapedURL]];
-
-					__block NSData* result = nil;
-					dispatch_semaphore_t sem = dispatch_semaphore_create(0);
-
-					NSURLSession* _session = ((CSessionMAC*)m_pSession->m_pInternal)->m_session;
-					if (nil == _session)
-						_session = [NSURLSession sharedSession];
-
-					[[_session dataTaskWithRequest:urlRequest
-											completionHandler:^(NSData *data, NSURLResponse* response, NSError *error) {
-						if (error == nil)
-							result = data;
-
-						dispatch_semaphore_signal(sem);
-					}] resume];
-
-					dispatch_semaphore_wait(sem, DISPATCH_TIME_FOREVER);
-
-					if (result)
-					{
-						NSString* filePath = StringWToNSString(m_sDownloadFilePath);
-						[result writeToFile:filePath atomically:YES];
-
-						nResult = 0;
-					}
-					else
-					{
-						nResult = 1;
-					}
-
-					return nResult;
-				}
-				else
-				{
-					NSURL* url = [NSURL URLWithString:escapedURL];
-					NSData* urlData = [[NSData alloc] initWithContentsOfURL:url];
-					if ( urlData )
-					{
-						NSString* filePath = StringWToNSString(m_sDownloadFilePath);
-						[urlData writeToFile:filePath atomically:YES];
-
-	#if defined(_IOS)
-						return 0;
-	#else
-	#ifndef _ASC_USE_ARC_
-						if (!GetARCEnabled())
-						{
-							[stringURL release];
-							//[url release];
-							[urlData release];
-						}
-	#endif
-	#endif
-						return 0;
-					}
-
-	#if defined(_IOS)
+					NSLog(@"[DownloadFile] Invalid URL: %@", stringURL);
+#if !defined(_IOS)
+#ifndef _ASC_USE_ARC_
+					if (!GetARCEnabled())
+						[stringURL release];
+#endif
+#endif
 					return 1;
-	#else
-	#ifndef _ASC_USE_ARC_
+				}
+
+				// Select session. If the caller provided one, prefer it; fall back to the shared
+				// singleton. [NSURLSession sharedSession] is a singleton -- never retain/release it.
+				NSURLSession* session = nil;
+				if (m_pSession && m_pSession->m_pInternal)
+				{
+					CSessionMAC* sessionInternal = (CSessionMAC*)m_pSession->m_pInternal;
+					session = sessionInternal->m_session;
+				}
+				if (!session)
+					session = [NSURLSession sharedSession];
+
+				// NSData initWithContentsOfURL / dataWithContentsOfURL must NOT be used for HTTP:
+				// - Fails silently on CDN responses with Transfer-Encoding: chunked
+				//   (returns NSCocoaErrorDomain Code=256 on some iOS versions)
+				// - Does not follow HTTP redirects reliably
+				// - Ignores Content-Encoding (gzip, br)
+				// - Has no timeout, can block indefinitely
+				// NSURLSession handles all of the above correctly on all supported iOS/macOS versions.
+				NSURLRequest* urlRequest = [NSURLRequest requestWithURL:url];
+
+				dispatch_semaphore_t sem = dispatch_semaphore_create(0);
+
+				// In non-ARC, __block variables are NOT automatically retained by the block.
+				// |data| passed to the completion handler is autoreleased; without an explicit
+				// retain it may be deallocated before semaphore_wait returns on the calling thread.
+				// We therefore retain inside the block and release after use below.
+				__block NSData* resultData = nil;
+
+				NSURLSessionDataTask* task =
+					[session dataTaskWithRequest:urlRequest
+						completionHandler:^(NSData* data, NSURLResponse* response, NSError* error)
+						{
+							if (error)
+							{
+								NSLog(@"[DownloadFile] Network error: %@, URL: %@", error, url);
+							}
+							else if ([response isKindOfClass:[NSHTTPURLResponse class]])
+							{
+								NSInteger status = [(NSHTTPURLResponse*)response statusCode];
+								if (status >= 200 && status < 300)
+								{
+#if !defined(_IOS)
+#ifndef _ASC_USE_ARC_
+									if (!GetARCEnabled())
+										resultData = [data retain];
+									else
+#endif
+#endif
+										resultData = data;
+								}
+								else
+								{
+									NSLog(@"[DownloadFile] HTTP %ld, URL: %@", (long)status, url);
+								}
+							}
+							else
+							{
+								// Non-HTTP scheme (e.g. file://) -- accept unconditionally.
+#if !defined(_IOS)
+#ifndef _ASC_USE_ARC_
+								if (!GetARCEnabled())
+									resultData = [data retain];
+								else
+#endif
+#endif
+									resultData = data;
+							}
+
+							dispatch_semaphore_signal(sem);
+						}];
+
+				[task resume];
+
+				// 60-second hard timeout. DISPATCH_TIME_FOREVER must not be used: if the network
+				// stack silently drops the connection the completion handler may never fire,
+				// leaving this thread suspended indefinitely (deadlock).
+				const int64_t kTimeoutSeconds = 60;
+				dispatch_time_t timeout = dispatch_time(DISPATCH_TIME_NOW, kTimeoutSeconds * NSEC_PER_SEC);
+				long waitResult = dispatch_semaphore_wait(sem, timeout);
+
+				// dispatch_semaphore_create returns a +1 object. Release it in non-ARC.
+				// In ARC (including all iOS targets) GCD objects are managed automatically.
+#if !defined(_IOS)
+#ifndef _ASC_USE_ARC_
+				if (!GetARCEnabled())
+					dispatch_release(sem);
+#endif
+#endif
+
+				if (waitResult != 0)
+				{
+					// Timeout expired. Cancel the in-flight task so that the completion handler
+					// is called with NSURLErrorCancelled (data == nil), preventing it from writing
+					// to resultData after we return and corrupting memory in non-ARC.
+					[task cancel];
+					NSLog(@"[DownloadFile] Timeout after %llds, URL: %@", (long long)kTimeoutSeconds, url);
+#if !defined(_IOS)
+#ifndef _ASC_USE_ARC_
 					if (!GetARCEnabled())
 					{
+						// resultData could theoretically be non-nil if the completion handler
+						// raced with the timeout check on a multicore device before cancel ran.
+						[resultData release];
 						[stringURL release];
-						//[url release];
 					}
-	#endif
-	#endif
+#endif
+#endif
 					return 1;
 				}
+
+				if (!resultData)
+				{
+#if !defined(_IOS)
+#ifndef _ASC_USE_ARC_
+					if (!GetARCEnabled())
+						[stringURL release];
+#endif
+#endif
+					return 1;
+				}
+
+				// filePath: +1 retained (alloc/init). Must be released in non-ARC.
+				NSString* filePath = StringWToNSString(m_sDownloadFilePath);
+				BOOL written = [resultData writeToFile:filePath atomically:YES];
+
+				if (!written)
+					NSLog(@"[DownloadFile] Failed to write file: %@", filePath);
+
+#if !defined(_IOS)
+#ifndef _ASC_USE_ARC_
+				if (!GetARCEnabled())
+				{
+					[resultData release];
+					[filePath release];
+					[stringURL release];
+				}
+#endif
+#endif
+
+				return written ? 0 : 1;
 			}
 
 			virtual int UploadData() override

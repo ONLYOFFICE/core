@@ -576,22 +576,22 @@ void number_month::oox_convert(oox::num_format_context & Context)
     {
         if (number_style_.get_value_or(L"short") == L"long")
         {
-            strm << L"mm";
+            strm << (Context.get_shield() ? L"MM" : L"mm");
         }
         else
         {
-            strm << L"m";
+            strm << (Context.get_shield() ? L"M" : L"m");
         }
     }
     else
     {
         if (number_style_.get_value_or(L"short") == L"long")
         {
-            strm << L"mmmm";
+            strm << (Context.get_shield() ? L"MMMM" : L"mmmm");
         }
         else
         {
-            strm << L"mmm";
+            strm << (Context.get_shield() ? L"MMM" : L"mmm");
         }
     }
 }

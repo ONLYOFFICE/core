@@ -48,8 +48,10 @@ namespace oox {
 class num_format_context : boost::noncopyable
 {
 public:
-	num_format_context(odf_reader::odf_read_context & odfContext);
+	num_format_context(odf_reader::odf_read_context & odfContext, bool bShield = false);
     ~num_format_context();
+
+	bool get_shield();
 
     void start_format(const std::wstring & style_name);
     std::wostream & output();

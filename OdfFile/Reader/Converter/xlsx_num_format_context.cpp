@@ -52,49 +52,55 @@ public:
 class num_format_context::Impl
 {
 public:
-    Impl(): in_convert_style_(false)
-    {}
+    Impl(bool _bShield) : in_convert_style_(false), bShield(_bShield)
+    {
+        last_date_format_ = bShield ? L"'yyyy'.'mmmm'.'dd'" : L"yyyy.mmmm.dd";
+        last_time_format_ = bShield ? L"'hh':'mm':'ss'" : L"hh:mm:ss";
+    }
 
     std::wstring current_style_name_;
     std::wstringstream stream_;
 
     void reset_current()
     {
-        current_style_name_ = L"";
+        current_style_name_.clear();
         stream_.str(std::wstring());  
         in_convert_style_ = false;
 		type_ = odf_types::office_value_type::Custom;
     }
+    bool bShield = false;
 
     std::wstring last_format_;
-	std::wstring last_date_format_ = L"yyyy.mmmm.dd";
-	std::wstring last_time_format_ = L"hh:mm:ss";
+    std::wstring last_date_format_;
+    std::wstring last_time_format_;
 
 	odf_types::office_value_type type_ = odf_types::office_value_type::Custom;
 
     bool in_convert_style_;
 };
 
-num_format_context::num_format_context(odf_reader::odf_read_context & odfContext): odf_context_(odfContext), impl_(new Impl()), impl2_(new Impl2())
+bool num_format_context::get_shield()
+{
+    return impl_->bShield;
+}
+num_format_context::num_format_context(odf_reader::odf_read_context & odfContext, bool bShield) : 
+    odf_context_(odfContext), impl_(new Impl(bShield)), impl2_(new Impl2())
 {
 }
 
 num_format_context::~num_format_context()
 {
 }
-
 void num_format_context::start_format(const std::wstring & style_name)
 {
 	impl_->reset_current();
     impl_->current_style_name_ = style_name;
     impl_->in_convert_style_ = true;
 }
-
 std::wostream & num_format_context::output()
 {
     return impl_->stream_;
 }
-
 void num_format_context::end_format()
 {    
     impl_->last_format_ = impl_->stream_.str();
@@ -105,7 +111,6 @@ void num_format_context::end_format()
 	if (impl_->type_ == odf_types::office_value_type::Time)
 		impl_->last_time_format_ = impl_->last_format_;
 }
-
 std::wstring num_format_context::get_last_format() const
 {
     return impl_->last_format_;

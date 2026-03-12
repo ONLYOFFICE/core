@@ -714,7 +714,6 @@ private:
     virtual void add_child_element(xml::sax* Reader, const std::wstring& Ns, const std::wstring& Name);
     virtual void add_text(const std::wstring & Text);
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(text_placeholder);
 //-------------------------------------------------------------------------------------------------------------------
 // text:page-number
@@ -748,9 +747,8 @@ private:
 	_CP_OPT(int)						text_page_adjust_;
 	_CP_OPT(std::wstring)				text_select_page_; //todooo to type
 
-	office_element_ptr					text_;        
+	office_element_ptr text_;        
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(text_page_number);
 //-------------------------------------------------------------------------------------------------------------------
 // text:page-count
@@ -776,14 +774,12 @@ public:
 	_CP_OPT(odf_types::style_numformat)	style_num_format_;
 	_CP_OPT(odf_types::Bool)			style_num_letter_sync_;
   
-	office_element_ptr			text_;    
+	office_element_ptr text_;    
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
 	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
-    virtual void add_text(const std::wstring & Text);
-    
+    virtual void add_text(const std::wstring & Text);    
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(text_page_count);
 //-------------------------------------------------------------------------------------------------------------------
 // text:date 
@@ -805,19 +801,16 @@ public:
  	virtual void xlsx_serialize(std::wostream & _Wostream, oox::xlsx_conversion_context & Context);
 	std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
 	
-	_CP_OPT(std::wstring)		style_data_style_name_;
-	_CP_OPT(odf_types::Bool)	text_fixed_;
-	_CP_OPT(std::wstring)		text_date_value_;//with format
+	_CP_OPT(std::wstring) style_data_style_name_;
+	_CP_OPT(odf_types::Bool) text_fixed_;
+	_CP_OPT(std::wstring) text_date_value_;//with format
   
-	office_element_ptr			text_;    
-
+    office_element_ptr_array content_;
 private:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
-	void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
-    void add_text(const std::wstring & Text);
-    
+    void add_child_element(xml::sax* Reader, const std::wstring& Ns, const std::wstring& Name);
+    void add_text(const std::wstring & Text);    
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(text_date);
 //-------------------------------------------------------------------------------------------------------------------
 // text:modification-date
@@ -840,9 +833,8 @@ public:
 	_CP_OPT(odf_types::Bool)text_fixed_;
 	_CP_OPT(std::wstring)	text_date_value_;//with format
   
-	office_element_ptr		text_;    
+	office_element_ptr text_;    
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(text_modification_date);
 
 //-------------------------------------------------------------------------------------------------------------------
@@ -866,18 +858,16 @@ public:
    
 	std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
 
-	_CP_OPT(std::wstring)	style_data_style_name_;
-	_CP_OPT(odf_types::Bool)text_fixed_;
-	_CP_OPT(std::wstring)	text_time_value_;//with format
-  
-	office_element_ptr		text_;    
+    _CP_OPT(std::wstring) style_data_style_name_;
+    _CP_OPT(odf_types::Bool) text_fixed_;
+    _CP_OPT(std::wstring) text_time_value_; //with format
 
+    office_element_ptr_array content_;
 private:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
-	void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
+    void add_child_element(xml::sax* Reader, const std::wstring& Ns, const std::wstring& Name);
     void add_text(const std::wstring & Text);
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(text_time);
 
 //-------------------------------------------------------------------------------------------------------------------

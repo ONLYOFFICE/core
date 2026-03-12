@@ -155,7 +155,8 @@ docx_conversion_context::docx_conversion_context(odf_reader::odf_document * _odf
 	process_headers_footers_	(false),
 	current_process_comment_	(false),
 	odf_document_				(_odf_document),
-	math_context_				(_odf_document->odf_context().fontContainer(), false)
+	math_context_				(_odf_document->odf_context().fontContainer(), false),
+	num_format_context_			(_odf_document->odf_context(), true)
 {
 	mediaitems_ = boost::make_shared<mediaitems>(odf_document_->get_folder());
 	chart_drawing_handle_ =  boost::make_shared<xlsx_drawing_context_handle>(mediaitems_);

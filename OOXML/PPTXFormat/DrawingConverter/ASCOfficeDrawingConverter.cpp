@@ -3201,11 +3201,11 @@ void CDrawingConverter::ConvertWordArtShape(PPTX::Logic::SpTreeElem* elem, XmlUt
 		for (size_t i = 0; i < wordArtString.size(); i++)
 		{
 			std::vector<std::wstring> arrPara;
-			boost::algorithm::split(arrPara, wordArtString[i], boost::algorithm::is_any_of(L"\n"), boost::algorithm::token_compress_on);
+			boost::algorithm::split(arrPara, wordArtString[i], boost::algorithm::is_any_of(L"\n"), boost::algorithm::token_compress_off);
 
-			for (auto p : arrPara)
+			for (const auto& p : arrPara)
 			{
-				std::wstring sParaRun = L"<w:r><w:rPr>" + strRPr + L"</w:rPr>" + L"<w:t>" + p + L"</w:t></w:r>";
+				std::wstring sParaRun = L"<w:r><w:rPr>" + strRPr + L"</w:rPr>" + L"<w:t>" + XmlUtils::EncodeXmlString(p) + L"</w:t></w:r>";
 				sTxbxContent += L"<w:p><w:pPr>" + strPPr + L"<w:rPr>" + strRPr + L"</w:rPr></w:pPr>" + sParaRun + L"</w:p>";
 			}
 		}

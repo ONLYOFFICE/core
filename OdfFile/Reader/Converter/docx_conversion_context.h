@@ -44,6 +44,7 @@
 #include "oox_conversion_context.h"
 #include "oox_chart_context.h"
 #include "xlsx_drawing_context.h"
+#include "xlsx_num_format_context.h"
 
 #include "headers_footers.h"
 #include "hyperlinks.h"
@@ -930,7 +931,8 @@ public:
 	forms_context		& get_forms_context()		{ return forms_context_; }
 	tabs_context		& get_tabs_context()		{ return tabs_context_;}
 	table_content_context & get_table_content_context()	{ return table_content_context_;}
-	
+	num_format_context	& get_num_format_context()	{ return num_format_context_; }
+
 	xlsx_drawing_context_handle_ptr & get_chart_drawing_handle() { return chart_drawing_handle_;} 
 
 	void set_drawing_text_props (const std::wstring &props);
@@ -1077,7 +1079,7 @@ private:
 	forms_context			forms_context_;
 	tabs_context			tabs_context_;
 	table_content_context	table_content_context_;
-       
+	num_format_context		num_format_context_;
     boost::shared_ptr<streams_man> streams_man_;
 
     package::docx_document		* output_document_;

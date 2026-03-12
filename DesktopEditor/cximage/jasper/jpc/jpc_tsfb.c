@@ -119,7 +119,7 @@ void jpc_tsfb_destroy(jpc_tsfb_t *tsfb)
 	free(tsfb);
 }
 
-int jpc_tsfb_analyze2(jpc_tsfb_t *tsfb, int *a, int xstart, int ystart,
+int jpc_tsfb_analyze2(jpc_tsfb_t *tsfb, jpc_fix_t *a, int xstart, int ystart,
   int width, int height, int stride, int numlvls)
 {
 	if (width > 0 && height > 0) {
@@ -150,7 +150,7 @@ int jpc_tsfb_analyze(jpc_tsfb_t *tsfb, jas_seq2d_t *a)
 #endif
 }
 
-int jpc_tsfb_synthesize2(jpc_tsfb_t *tsfb, int *a, int xstart, int ystart,
+int jpc_tsfb_synthesize2(jpc_tsfb_t *tsfb, jpc_fix_t *a, int xstart, int ystart,
   int width, int height, int stride, int numlvls)
 {
 	if (numlvls > 0) {

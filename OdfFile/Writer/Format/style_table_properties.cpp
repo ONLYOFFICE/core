@@ -70,7 +70,7 @@ void table_format_properties::serialize(std::wostream & _Wostream,const wchar_t 
 			CP_XML_ATTR_OPT(L"style:may-break-between-rows", style_may_break_between_rows_);
 			CP_XML_ATTR_OPT(L"table:border-model", table_border_model_);
 			CP_XML_ATTR_OPT(L"table:display", table_display_);
-			CP_XML_ATTR_OPT(L"tableooo:tab-color", tableooo_tab_color_);			
+			CP_XML_ATTR_OPT(L"table:tab-color", table_tab_color_);			
 
 			common_writing_mode_attlist_.serialize(CP_GET_XML_NODE());
 			common_horizontal_margin_attlist_.serialize(CP_GET_XML_NODE());
@@ -100,7 +100,7 @@ void table_format_properties::apply_from(const table_format_properties & Other)
 	_CP_APPLY_PROP(style_may_break_between_rows_, Other.style_may_break_between_rows_);
 	_CP_APPLY_PROP(table_border_model_			, Other.table_border_model_);
 	_CP_APPLY_PROP(table_display_				, Other.table_display_);
-	_CP_APPLY_PROP(tableooo_tab_color_			, Other.tableooo_tab_color_);			
+	_CP_APPLY_PROP(table_tab_color_				, Other.table_tab_color_);			
 	_CP_APPLY_PROP(table_align_					, Other.table_align_);
 
 	common_writing_mode_attlist_.apply_from(Other.common_writing_mode_attlist_);

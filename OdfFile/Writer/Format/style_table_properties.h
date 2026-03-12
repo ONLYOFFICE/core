@@ -71,7 +71,7 @@ public:
     _CP_OPT(odf_types::border_model)	table_border_model_;
     _CP_OPT(odf_types::Bool)			table_display_;
     _CP_OPT(odf_types::table_align)		table_align_;
-	_CP_OPT(odf_types::color)			tableooo_tab_color_;
+	_CP_OPT(odf_types::color)			table_tab_color_;
 	
 	odf_types::common_horizontal_margin_attlist		common_horizontal_margin_attlist_;
     odf_types::common_vertical_margin_attlist		common_vertical_margin_attlist_;

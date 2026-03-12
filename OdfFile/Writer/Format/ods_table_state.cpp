@@ -344,7 +344,7 @@ void ods_table_state::set_table_tab_color(_CP_OPT(color) & _color)
 	style_table_properties *table_properties = office_table_style_->content_.add_get_style_table_properties();
 	if (table_properties == NULL)return;
 
-	table_properties->content_.tableooo_tab_color_ = _color;
+	table_properties->content_.table_tab_color_ = _color;
 }
 void ods_table_state::set_table_style(office_element_ptr & elm)
 {	

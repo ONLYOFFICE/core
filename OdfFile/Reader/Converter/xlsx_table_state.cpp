@@ -655,11 +655,11 @@ void xlsx_table_state::serialize_table_format (std::wostream & strm)
 			CP_XML_NODE(L"sheetPr")
 			{
 				//at filterMode="false">
-				if (table_prop->content().tableooo_tab_color_)
+				if (table_prop->content().table_tab_color_)
 				{
 					CP_XML_NODE(L"tabColor")
 					{
-						CP_XML_ATTR(L"rgb", table_prop->content().tableooo_tab_color_->get_hex_value());	
+						CP_XML_ATTR(L"rgb", table_prop->content().table_tab_color_->get_hex_value());	
 					}
 				}
 				//<pageSetUpPr fitToPage="true"/>

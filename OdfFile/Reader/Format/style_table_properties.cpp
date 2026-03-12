@@ -68,8 +68,9 @@ void table_format_properties::add_attributes( const xml::attributes_wc_ptr & Att
 	CP_APPLY_ATTR(L"table:align",					table_align_);
     CP_APPLY_ATTR(L"table:border-model",			table_border_model_);
     CP_APPLY_ATTR(L"table:display",					table_display_);
-	CP_APPLY_ATTR(L"tableooo:tab-color",			tableooo_tab_color_);			
-	CP_APPLY_ATTR(L"style:use-optimal-column-width",style_use_optimal_column_width_);
+	CP_APPLY_ATTR(L"tableooo:tab-color",			table_tab_color_);			
+    CP_APPLY_ATTR(L"table:tab-color",               table_tab_color_);
+    CP_APPLY_ATTR(L"style:use-optimal-column-width",style_use_optimal_column_width_);
 }
 
 bool table_format_properties::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name, document_context * Context)

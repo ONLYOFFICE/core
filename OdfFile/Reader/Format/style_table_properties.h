@@ -80,7 +80,7 @@ public:
     _CP_OPT(odf_types::border_model)	table_border_model_;
     _CP_OPT(odf_types::table_align)		table_align_;
     _CP_OPT(bool)						table_display_;	
-	_CP_OPT(odf_types::color)			tableooo_tab_color_;
+	_CP_OPT(odf_types::color)			table_tab_color_;
        
     _CP_OPT(odf_types::Bool)			style_use_optimal_column_width_; //not specification
 	office_element_ptr					style_background_image_;

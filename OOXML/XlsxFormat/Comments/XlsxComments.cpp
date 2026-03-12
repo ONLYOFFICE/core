@@ -282,15 +282,15 @@ namespace OOX
 			{
 				std::pair<XLS::BaseObjectPtr, std::vector<XLS::BaseObjectPtr>> objPair;
 				auto drawingPtr = new XLS::MsoDrawing(false);
-				if(id > 1)
-				{
-					drawingPtr->rgChildRec.first = false;
-					objPair.first = XLS::MsoDrawingPtr(drawingPtr);
-				}
-				else
+				if(objectsPtr->m_MsoDrawing == nullptr)
 				{
 					objectsPtr->m_MsoDrawing = XLS::MsoDrawingPtr(drawingPtr);
 					objPair.first = objectsPtr->m_MsoDrawing;
+				}
+				else
+				{
+					drawingPtr->rgChildRec.first = false;
+					objPair.first = XLS::MsoDrawingPtr(drawingPtr);
 				}
 				drawingPtr->prepareComment(id, ptr->note_sh.row, ptr->note_sh.col);
 
@@ -514,9 +514,10 @@ namespace OOX
 		std::vector<XLS::BaseObjectPtr> CComments::toXLS(XLS::BaseObjectPtr objectsPointer) const
 		{
 			std::vector<XLS::BaseObjectPtr> objectVector;
+			auto objectsPtr = static_cast<XLS::OBJECTS*>(objectsPointer.get());
 			if(m_oCommentList.IsInit())
 			{
-				unsigned int id = 1;
+				unsigned int id = objectsPtr->m_arrObject.size();
 				for(auto i : m_oCommentList->m_arrItems)
 				{
 					std::wstring authorName = L"none";

@@ -154,18 +154,16 @@ void MsoDrawing::prepareComment(const unsigned int CommentId, const unsigned int
 		auto groupFSPGR = new ODRAW::OfficeArtFSPGR;
 		ShapeGroup->m_OfficeArtFSPGR = ODRAW::OfficeArtRecordPtr(groupFSPGR);
 
+		auto fdgPtr = new ODRAW::OfficeArtFDG;
+		fdgPtr->rh_own.recInstance = CommentId;
+		rgChildRec.m_OfficeArtFDG = ODRAW::OfficeArtRecordPtr(fdgPtr);
+
 		spgrContainer->m_OfficeArtSpgrContainerFileBlock.push_back(ODRAW::OfficeArtContainerPtr(ShapeGroup));
 	}
 
 	auto TextboxContainer = new ODRAW::OfficeArtSpContainer(ODRAW::OfficeArtRecord::CA_Sheet);
 	TextboxContainer->extraSize += 8;
 
-
-	auto fdgPtr = new ODRAW::OfficeArtFDG;
-	fdgPtr->rh_own.recInstance = CommentId;
-	fdgPtr->csp = 2;
-	fdgPtr->spidCur = CommentId+1;
-	rgChildRec.m_OfficeArtFDG = ODRAW::OfficeArtRecordPtr(fdgPtr);
 	if(rgChildRec.first)
 	{
 		auto spgrContainer = static_cast<ODRAW::OfficeArtSpgrContainer*>(rgChildRec.m_OfficeArtSpgrContainer.get());
@@ -267,7 +265,6 @@ void MsoDrawing::prepareChart(const unsigned int chartId, const unsigned int x1,
 			fsprPtr->fGroup = true;
 			fsprPtr->fPatriarch = true;
 		}
-		fdgPtr->csp = spgrContainer->m_OfficeArtSpgrContainerFileBlock.size()+1;
 	}
 	{
 		auto SpContainer = new ODRAW::OfficeArtSpContainer(ODRAW::OfficeArtRecord::CA_Chart);

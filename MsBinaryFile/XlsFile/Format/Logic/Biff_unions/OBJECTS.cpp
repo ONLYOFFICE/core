@@ -41,6 +41,7 @@
 #include "../Biff_records/Continue.h"
 #include "../Biff_records/Obj.h"
 #include "../Biff_records/IMDATA.h"
+#include "../Biff_structures/ODRAW/OfficeArtFDG.h"
 
 namespace XLS
 {
@@ -185,6 +186,12 @@ const bool OBJECTS::saveContent(BinProcessor& proc)
 				CFRecord writingRecord(1, proc.getGlobalWorkbookInfo());
 				castedDrawing->writeFields(writingRecord);
 				m_MsoDrawing->rgChildRec.totalSize += writingRecord.getRdPtr();
+			}
+			else if(castedDrawing->rgChildRec.first && castedDrawing->rgChildRec.m_OfficeArtFDG != nullptr)
+			{
+				auto fdg = static_cast<ODRAW::OfficeArtFDG*>(castedDrawing->rgChildRec.m_OfficeArtFDG.get());
+				fdg->csp = m_arrObject.size()+1;
+				fdg->spidCur = fdg->csp;
 			}
 		}
 	}

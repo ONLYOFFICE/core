@@ -1374,6 +1374,25 @@ namespace Aggplus
 		}
 	}
 
+	template<class span_gen_type>
+	void CGraphics::render_blendmode(span_gen_type& sg, span_alloc_type& span_allocator, BYTE Alpha)
+	{
+		if (m_nBlendMode != agg::comp_op_src_over)
+		{
+			typedef agg::renderer_scanline_aa<comp_renderer_type, span_alloc_type, span_gen_type> aa_renderer_type;
+			pixfmt_type_comp pixfmt(m_frame_buffer.ren_buf(), m_nBlendMode);
+			comp_renderer_type ren_base(pixfmt);
+			aa_renderer_type ri(ren_base, span_allocator, sg);
+			render_scanlines_alpha(ri, Alpha);
+		}
+		else
+		{
+			typedef agg::renderer_scanline_aa<base_renderer_type, span_alloc_type, span_gen_type> renderer_type;
+			renderer_type ri(m_frame_buffer.ren_base(), span_allocator, sg);
+			render_scanlines_alpha(ri, Alpha);
+		}
+	}
+
 	template<class Renderer>
 	void CGraphics::render_scanlines(Renderer& ren)
 	{
@@ -1417,12 +1436,9 @@ namespace Aggplus
 		if (m_nBlendMode != agg::comp_op_src_over)
 		{
 			typedef agg::renderer_scanline_aa_solid<comp_renderer_type> solid_comp_renderer_type;
-			solid_comp_renderer_type ren_solid;
-			comp_renderer_type ren_base;
 			pixfmt_type_comp pixfmt(m_frame_buffer.ren_buf(), m_nBlendMode);
-
-			ren_base.attach(pixfmt);
-			ren_solid.attach(ren_base);
+			comp_renderer_type ren_base(pixfmt);
+			solid_comp_renderer_type ren_solid(ren_base);
 
 			ren_solid.color(dwColor.GetAggColor());
 			render_scanlines(ren_solid);
@@ -1727,6 +1743,70 @@ namespace Aggplus
 		}
 	}
 
+	template<typename pixfmt>
+	void CGraphics::DoFillPathTextureClampSz2_Impl(agg::rendering_buffer& PatRendBuff, interpolator_type_linear& interpolator, span_alloc_type& span_allocator, int nCurrentMode, BYTE Alpha)
+	{
+		typedef agg::image_accessor_clone<pixfmt> img_source_type;
+		pixfmt          img_pixf(PatRendBuff);
+		img_source_type img_src(img_pixf);
+
+		switch (nCurrentMode)
+		{
+		case 0:
+		{
+			typedef agg::span_image_filter_rgba_nn<img_source_type, interpolator_type_linear> span_gen_type;
+			span_gen_type sg(img_src, interpolator);
+			render_blendmode(sg, span_allocator, Alpha);
+			break;
+		}
+		case 1:
+		{
+			typedef agg::span_image_filter_rgba_bilinear<img_source_type, interpolator_type_linear> span_gen_type;
+			span_gen_type sg(img_src, interpolator);
+			render_blendmode(sg, span_allocator, Alpha);
+			break;
+		}
+		case 2:
+		{
+			typedef agg::span_image_filter_rgba_2x2<img_source_type, interpolator_type_linear> span_gen_type;
+			agg::image_filter_lut filter;
+			filter.calculate(agg::image_filter_bicubic(), false);
+			span_gen_type sg(img_src, interpolator, filter);
+			render_blendmode(sg, span_allocator, Alpha);
+			break;
+		}
+		case 3:
+		{
+			typedef agg::span_image_filter_rgba_2x2<img_source_type, interpolator_type_linear> span_gen_type;
+			agg::image_filter_lut filter;
+			filter.calculate(agg::image_filter_spline16(), false);
+			span_gen_type sg(img_src, interpolator, filter);
+			render_blendmode(sg, span_allocator, Alpha);
+			break;
+		}
+		case 4:
+		{
+			typedef agg::span_image_filter_rgba_2x2<img_source_type, interpolator_type_linear> span_gen_type;
+			agg::image_filter_lut filter;
+			filter.calculate(agg::image_filter_blackman256(), false);
+			span_gen_type sg(img_src, interpolator, filter);
+			render_blendmode(sg, span_allocator, Alpha);
+			break;
+		}
+		case 255:
+		{
+			typedef agg::span_image_resample_rgba_affine_for_draw<img_source_type> span_gen_type;
+			agg::image_filter_lut filter;
+			filter.calculate(agg::image_filter_bilinear(), false);
+			span_gen_type sg(img_src, interpolator, filter);
+			render_blendmode(sg, span_allocator, Alpha);
+			break;
+		}
+		default:
+			break;
+		}
+	}
+
 	void CGraphics::DoFillPathTextureClampSz2(const CMatrix &mImgMtx, const void *pImgBuff, DWORD dwImgWidth, DWORD dwImgHeight, int nImgStride, BYTE Alpha)
 	{
 		span_alloc_type span_allocator;
@@ -1738,158 +1818,11 @@ namespace Aggplus
 		PatRendBuff.attach((BYTE*)pImgBuff, dwImgWidth, dwImgHeight, nImgStride);
 
 		int nCurrentMode = 255;
+
 		if (!m_bSwapRGB)
-		{
-			typedef agg::pixfmt_bgra32     pixfmt;
-			typedef agg::image_accessor_clone<pixfmt> img_source_type;
-
-			pixfmt          img_pixf(PatRendBuff);
-			img_source_type img_src(img_pixf);
-
-			switch (nCurrentMode)
-			{
-			case 0:
-			{
-				typedef agg::span_image_filter_rgba_nn<img_source_type, interpolator_type_linear> span_gen_type;
-				typedef agg::renderer_scanline_aa<base_renderer_type, span_alloc_type, span_gen_type> renderer_type;
-				span_gen_type sg(img_src, interpolator);
-				renderer_type ri(m_frame_buffer.ren_base(), span_allocator, sg);
-				render_scanlines_alpha(ri, Alpha);
-				break;
-			}
-			case 1:
-			{
-				typedef agg::span_image_filter_rgba_bilinear<img_source_type, interpolator_type_linear> span_gen_type;
-				typedef agg::renderer_scanline_aa<base_renderer_type, span_alloc_type, span_gen_type> renderer_type;
-				span_gen_type sg(img_src, interpolator);
-				renderer_type ri(m_frame_buffer.ren_base(), span_allocator, sg);
-				render_scanlines_alpha(ri, Alpha);
-				break;
-			}
-			case 2:
-			{
-				typedef agg::span_image_filter_rgba_2x2<img_source_type, interpolator_type_linear> span_gen_type;
-				typedef agg::renderer_scanline_aa<base_renderer_type, span_alloc_type, span_gen_type> renderer_type;
-				agg::image_filter_lut filter;
-				filter.calculate(agg::image_filter_bicubic(), false);
-				span_gen_type sg(img_src, interpolator, filter);
-				renderer_type ri(m_frame_buffer.ren_base(), span_allocator, sg);
-				render_scanlines_alpha(ri, Alpha);
-				break;
-			}
-			case 3:
-			{
-				typedef agg::span_image_filter_rgba_2x2<img_source_type, interpolator_type_linear> span_gen_type;
-				typedef agg::renderer_scanline_aa<base_renderer_type, span_alloc_type, span_gen_type> renderer_type;
-				agg::image_filter_lut filter;
-				filter.calculate(agg::image_filter_spline16(), false);
-				span_gen_type sg(img_src, interpolator, filter);
-				renderer_type ri(m_frame_buffer.ren_base(), span_allocator, sg);
-				render_scanlines_alpha(ri, Alpha);
-				break;
-			}
-			case 4:
-			{
-				typedef agg::span_image_filter_rgba_2x2<img_source_type, interpolator_type_linear> span_gen_type;
-				typedef agg::renderer_scanline_aa<base_renderer_type, span_alloc_type, span_gen_type> renderer_type;
-				agg::image_filter_lut filter;
-				filter.calculate(agg::image_filter_blackman256(), false);
-				span_gen_type sg(img_src, interpolator, filter);
-				renderer_type ri(m_frame_buffer.ren_base(), span_allocator, sg);
-				render_scanlines_alpha(ri, Alpha);
-				break;
-			}
-			case 255:
-			{
-				typedef agg::span_image_resample_rgba_affine_for_draw<img_source_type> span_gen_type;
-				typedef agg::renderer_scanline_aa<base_renderer_type, span_alloc_type, span_gen_type> renderer_type;
-				agg::image_filter_lut filter;
-				filter.calculate(agg::image_filter_bilinear(), false);
-				span_gen_type sg(img_src, interpolator, filter);
-				renderer_type ri(m_frame_buffer.ren_base(), span_allocator, sg);
-				render_scanlines_alpha(ri, Alpha);
-				break;
-			}
-			default:
-				break;
-			}
-		}
+			DoFillPathTextureClampSz2_Impl<agg::pixfmt_bgra32>(PatRendBuff, interpolator, span_allocator, nCurrentMode, Alpha);
 		else
-		{
-			typedef agg::pixfmt_rgba32     pixfmt;
-			typedef agg::image_accessor_clone<pixfmt> img_source_type;
-
-			pixfmt          img_pixf(PatRendBuff);
-			img_source_type img_src(img_pixf);
-
-			switch (nCurrentMode)
-			{
-			case 0:
-			{
-				typedef agg::span_image_filter_rgba_nn<img_source_type, interpolator_type_linear> span_gen_type;
-				typedef agg::renderer_scanline_aa<base_renderer_type, span_alloc_type, span_gen_type> renderer_type;
-				span_gen_type sg(img_src, interpolator);
-				renderer_type ri(m_frame_buffer.ren_base(), span_allocator, sg);
-				render_scanlines_alpha(ri, Alpha);
-				break;
-			}
-			case 1:
-			{
-				typedef agg::span_image_filter_rgba_bilinear<img_source_type, interpolator_type_linear> span_gen_type;
-				typedef agg::renderer_scanline_aa<base_renderer_type, span_alloc_type, span_gen_type> renderer_type;
-				span_gen_type sg(img_src, interpolator);
-				renderer_type ri(m_frame_buffer.ren_base(), span_allocator, sg);
-				render_scanlines_alpha(ri, Alpha);
-				break;
-			}
-			case 2:
-			{
-				typedef agg::span_image_filter_rgba_2x2<img_source_type, interpolator_type_linear> span_gen_type;
-				typedef agg::renderer_scanline_aa<base_renderer_type, span_alloc_type, span_gen_type> renderer_type;
-				agg::image_filter_lut filter;
-				filter.calculate(agg::image_filter_bicubic(), false);
-				span_gen_type sg(img_src, interpolator, filter);
-				renderer_type ri(m_frame_buffer.ren_base(), span_allocator, sg);
-				render_scanlines_alpha(ri, Alpha);
-				break;
-			}
-			case 3:
-			{
-				typedef agg::span_image_filter_rgba_2x2<img_source_type, interpolator_type_linear> span_gen_type;
-				typedef agg::renderer_scanline_aa<base_renderer_type, span_alloc_type, span_gen_type> renderer_type;
-				agg::image_filter_lut filter;
-				filter.calculate(agg::image_filter_spline16(), false);
-				span_gen_type sg(img_src, interpolator, filter);
-				renderer_type ri(m_frame_buffer.ren_base(), span_allocator, sg);
-				render_scanlines_alpha(ri, Alpha);
-				break;
-			}
-			case 4:
-			{
-				typedef agg::span_image_filter_rgba_2x2<img_source_type, interpolator_type_linear> span_gen_type;
-				typedef agg::renderer_scanline_aa<base_renderer_type, span_alloc_type, span_gen_type> renderer_type;
-				agg::image_filter_lut filter;
-				filter.calculate(agg::image_filter_blackman256(), false);
-				span_gen_type sg(img_src, interpolator, filter);
-				renderer_type ri(m_frame_buffer.ren_base(), span_allocator, sg);
-				render_scanlines_alpha(ri, Alpha);
-				break;
-			}
-			case 255:
-			{
-				typedef agg::span_image_resample_rgba_affine_for_draw<img_source_type> span_gen_type;
-				typedef agg::renderer_scanline_aa<base_renderer_type, span_alloc_type, span_gen_type> renderer_type;
-				agg::image_filter_lut filter;
-				filter.calculate(agg::image_filter_bilinear(), false);
-				span_gen_type sg(img_src, interpolator, filter);
-				renderer_type ri(m_frame_buffer.ren_base(), span_allocator, sg);
-				render_scanlines_alpha(ri, Alpha);
-				break;
-			}
-			default:
-				break;
-			}
-		}
+			DoFillPathTextureClampSz2_Impl<agg::pixfmt_rgba32>(PatRendBuff, interpolator, span_allocator, nCurrentMode, Alpha);
 	}
 
 	template<class ColorSpacePix>

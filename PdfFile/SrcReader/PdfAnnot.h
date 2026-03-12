@@ -357,6 +357,26 @@ private:
 };
 
 //------------------------------------------------------------------------
+// PdfReader::CScreenAnnot
+//------------------------------------------------------------------------
+
+class CAnnotScreen final : public CAnnot
+{
+public:
+	CAnnotScreen(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex, int nStartRefID);
+	virtual ~CAnnotScreen();
+
+	void ToWASM(NSWasm::CData& oRes) override;
+
+private:
+	unsigned int m_unR; // Поворот аннотации относительно страницы - R
+	std::string m_sT; // Title
+	std::vector<double> m_arrBC; // Цвет границ - BC
+	std::vector<double> m_arrBG; // Цвет фона - BG
+	std::vector<CAction*> m_arrAction; // Действия - A&AA
+};
+
+//------------------------------------------------------------------------
 // PdfReader::CAnnotMarkup
 //------------------------------------------------------------------------
 

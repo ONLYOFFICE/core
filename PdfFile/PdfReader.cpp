@@ -2018,6 +2018,10 @@ int GetPageAnnots(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, PdfReader
 			pRedact->SetFont(pdfDoc, pFontManager, pFontList, &oAnnotRef);
 			pAnnot = pRedact;
 		}
+		// else if (sType == "Screen")
+		// {
+		// 	pAnnot = new PdfReader::CAnnotScreen(pdfDoc, &oAnnotRef, nPageIndex, nStartRefID);
+		// }
 		// else if (sType == "FileAttachment")
 		// {
 		// 	pAnnot = new PdfReader::CAnnotFileAttachment(pdfDoc, &oAnnotRef, nPageIndex, nStartRefID);

@@ -41,6 +41,7 @@
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/ATTACHEDLABEL.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/AI.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/CRT.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/PAGESETUP.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/MsoDrawing.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Chart.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/AxisParent.h"
@@ -268,15 +269,18 @@ namespace OOX
 			oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
 			IFileContainer::Write(oPath, oDirectory, oContent);
 		}
-		void CDrawing::toXLSChart(XLS::BaseObjectPtr chartStreamPtr)
+		void CDrawing::toXLSChart(std::vector<XLS::BaseObjectPtr> &chartVector)
 		{
-			auto ptr = static_cast<XLS::ChartSheetSubstream*>(chartStreamPtr.get());
-
-			auto ChartFormatsPtr = new XLS::CHARTFORMATS;
-			ptr->m_CHARTFORMATS = XLS::BaseObjectPtr(ChartFormatsPtr);
-
 			for(auto anchor : m_arrItems)
 			{
+				auto ptr = new XLS::ChartSheetSubstream(0);
+				ptr->separate = false;
+				auto pageSetup = new XLS::PAGESETUP;
+				ptr->m_PAGESETUP = XLS::BaseObjectPtr(pageSetup);
+
+				auto ChartFormatsPtr = new XLS::CHARTFORMATS;
+				ptr->m_CHARTFORMATS = XLS::BaseObjectPtr(ChartFormatsPtr);
+
 				if(anchor->m_oElement.IsInit())
 				{
 					auto anchorElem = anchor->m_oElement->GetElem();
@@ -299,21 +303,23 @@ namespace OOX
 						auto chartRid = graphicFrame->chartRec->id_data.get();
 						auto castedChart = Get<OOX::File>(chartRid);
 						auto ChartFile = static_cast<OOX::Spreadsheet::CChartFile*>(castedChart.GetPointer());
+						if(ChartFile->m_oChartSpace.m_chart == nullptr)
+							continue;
 						if(ChartFile->m_oChartSpace.m_spPr.IsInit())
 						{
 							ChartFormatsPtr->m_FRAME = ChartFile->m_oChartSpace.m_spPr->toXLSFrame();
 						}
-						if(ChartFile->m_oChartSpace.m_chart != nullptr &&  ChartFile->m_oChartSpace.m_chart->m_plotArea != nullptr)
+						if(ChartFile->m_oChartSpace.m_chart->m_plotArea != nullptr)
 						{
 							auto AxisParentUnion = new XLS::AXISPARENT;
 							auto axes = new XLS::AXES;
 							AxisParentUnion->m_AXES = XLS::BaseObjectPtr(axes);
 							ChartFormatsPtr->m_arAXISPARENT.push_back(XLS::BaseObjectPtr(AxisParentUnion));
 							auto axisPos = new XLS::Pos;
-							axisPos->x1 = -1000;
-							axisPos->y1 = -1000;
-							axisPos->x2 = 1000;
-							axisPos->y2 = 2500;
+							axisPos->x1 = 0;
+							axisPos->y1 = 200;
+							axisPos->x2 = 4000;
+							axisPos->y2 = 3800;
 							AxisParentUnion->m_Pos = XLS::BaseObjectPtr(axisPos);
 
 							for(auto chartIndex = 0; chartIndex < ChartFile->m_oChartSpace.m_chart->m_plotArea->m_Items.size(); chartIndex ++)
@@ -408,7 +414,7 @@ namespace OOX
 								}
 							}
 						}
-						if(ChartFile->m_oChartSpace.m_chart->m_title != nullptr && ChartFile->m_oChartSpace.m_chart->m_title->m_tx != nullptr)
+
 						{
 							auto labelUnion = new XLS::ATTACHEDLABEL;
 							auto textRecord = new XLS::Text;
@@ -418,11 +424,19 @@ namespace OOX
 							auto textPos = new XLS::Pos;
 							textPos->mdBotRt = 2;
 							textPos->mdTopLt = 2;
+							textPos->x1 = 150;
+							textPos->y1 = 25;
+
 							labelUnion->m_Pos = XLS::BaseObjectPtr(textPos);
 							auto objLink = new XLS::ObjectLink;
 							objLink->wLinkObj = 1;
 							auto seriesText = new XLS::SeriesText;
-							seriesText->stText = ChartFile->m_oChartSpace.m_chart->m_title->m_tx->m_oRich->GetText();
+							if(ChartFile->m_oChartSpace.m_chart->m_title != nullptr && ChartFile->m_oChartSpace.m_chart->m_title->m_tx != nullptr)
+								seriesText->stText = ChartFile->m_oChartSpace.m_chart->m_title->m_tx->m_oRich->GetText();
+							else
+							{
+								textRecord->fAutoText = true;
+							}
 							auto aiUnion = new XLS::AI;
 							auto brai = new XLS::BRAI;
 							brai->rt = 1;
@@ -436,6 +450,7 @@ namespace OOX
 
 					}
 				}
+				chartVector.push_back(XLS::BaseObjectPtr(ptr));
 			}
 		}
 		const OOX::FileType CDrawing::type() const

@@ -269,7 +269,14 @@ namespace OOX
 		{
 			if(m_oAnchorType == SimpleTypes::Spreadsheet::ECellAnchorType::cellanchorAbsolute)
 			{
-
+				if(m_oPos.IsInit() && m_oPos->m_oX.IsInit())
+					colL = m_oPos->m_oX->GetValue()/30;
+				if(m_oPos.IsInit() && m_oExt->m_oCx.IsInit())
+					colR = colL + m_oExt->m_oCx->GetValue()/35;
+				if(m_oPos.IsInit() && m_oPos->m_oY.IsInit())
+					rwT = m_oPos->m_oY->GetValue()/30;
+				if(m_oPos.IsInit() && m_oExt->m_oCy.IsInit())
+					rwB = rwT + m_oExt->m_oCy->GetValue()/15;
 			}
 			else if(m_oAnchorType == SimpleTypes::Spreadsheet::ECellAnchorType::cellanchorTwoCell)
 			{

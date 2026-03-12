@@ -31,6 +31,8 @@
  */
 
 #include "MsoDrawingGroup.h"
+#include "../Biff_structures/ODRAW/SimpleOfficeArtContainers.h"
+#include "../Biff_structures/ODRAW/OfficeArtFDGGBlock.h"
 
 namespace XLS
 {
@@ -62,6 +64,28 @@ void MsoDrawingGroup::readFields(CFRecord& record)
 	}
 
 	record >> rgChildRec;
+}
+
+void MsoDrawingGroup::writeFields(CFRecord& record)
+{
+	rgChildRec.save(record);
+}
+
+void MsoDrawingGroup::prepareChart(unsigned int count)
+{
+	if(!drawingCount)
+		return;
+	auto fdggblock = new ODRAW::OfficeArtFDGGBlock;
+	rgChildRec.m_OfficeArtFDGGBlock = ODRAW::OfficeArtRecordPtr(fdggblock);
+	fdggblock->cdgSaved = count;
+	fdggblock->cspSaved = count;
+	for(auto i = 0; i < count; i++)
+	{
+		ODRAW::OfficeArtIDCL idcl;
+		idcl.cspidCur = i;
+		idcl.dgid = i;
+		fdggblock->Rgidcl.push_back(idcl);
+	}
 }
 
 } // namespace XLS

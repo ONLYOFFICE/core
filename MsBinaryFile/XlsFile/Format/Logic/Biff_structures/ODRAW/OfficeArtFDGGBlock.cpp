@@ -61,4 +61,17 @@ void OfficeArtFDGGBlock::loadFields(XLS::CFRecord& record)
 	}
 }
 
+void OfficeArtFDGGBlock::save(XLS::CFRecord& record)
+{
+	rh_own.recVer = 0;
+	rh_own.recInstance = 0;
+	rh_own.recType =  0xF006;
+	rh_own.recLen = 0x10 + Rgidcl.size()*8;
+	record << rh_own;
+	_UINT32 cidcl = Rgidcl.size()+1;
+	record << spidMax << cidcl << cspSaved << cdgSaved;
+	for(auto i : Rgidcl)
+		i.save(record);
+}
+
 } // namespace XLS

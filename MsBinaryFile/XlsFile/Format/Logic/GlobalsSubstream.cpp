@@ -102,6 +102,7 @@
 #include "Biff_records/ExternName.h"
 #include "Biff_records/ExternSheet.h"
 #include "Biff_records/Continue.h"
+#include "Biff_records/MsoDrawingGroup.h"
 //#include "Biff_records/XCT.h"
 //#include "Biff_records/CRN.h"
 
@@ -670,9 +671,6 @@ const bool GlobalsSubstream::saveContent(BinProcessor& proc)
 		proc.mandatory(*m_CodeName);
 	if(m_FNGROUPS != nullptr)
 		proc.mandatory(*m_FNGROUPS);
-	for(auto i : m_arLBL)
-		if(i != nullptr)
-			proc.mandatory(*i);
 	if(m_PROTECTION != nullptr)
 		proc.mandatory(*m_PROTECTION);
 	else
@@ -730,6 +728,15 @@ const bool GlobalsSubstream::saveContent(BinProcessor& proc)
 	for(auto i: m_arSUPBOOK)
 		if(i != nullptr)
 			proc.mandatory(*i);
+	for(auto i : m_arLBL)
+		if(i != nullptr)
+			proc.mandatory(*i);
+	for(auto i : m_arMSODRAWINGGROUP)
+	{
+		auto drawingGroup = static_cast<MsoDrawingGroup*>(i.get());
+		drawingGroup->prepareChart(drawingGroup->drawingCount);
+		proc.mandatory(*drawingGroup);
+	}
 	if(m_SHAREDSTRINGS != nullptr)
 		proc.mandatory(*m_SHAREDSTRINGS);
 	if(m_ExtSST != nullptr)

@@ -372,6 +372,7 @@ void CF12::writeFields(CFRecord& record)
 						else if (dxfObj.m_oNumFmt->m_oFormatCode.IsInit())
 						{
 							dxf.dxfn->fIfmtUser = true;
+							dxf.dxfn->ifmtNinch = false;
 							dxf.dxfn->dxfnum.user_defined.fmt = dxfObj.m_oNumFmt->m_oFormatCode.get();
 						}
 					}

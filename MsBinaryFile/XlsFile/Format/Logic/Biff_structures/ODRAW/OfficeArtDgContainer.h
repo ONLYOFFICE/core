@@ -62,6 +62,8 @@ public:
 	OfficeArtRecordPtr					m_OfficeArtSpgrContainer;
 	std::vector<OfficeArtRecordPtr>		m_OfficeArtSpContainer; 
 	OfficeArtRecordPtr					m_OfficeArtSpgrContainerFileBlock;
+	bool								first = true;
+	unsigned int totalSize = 0;
 };
 
 typedef boost::shared_ptr<OfficeArtDgContainer> OfficeArtDgContainerPtr;

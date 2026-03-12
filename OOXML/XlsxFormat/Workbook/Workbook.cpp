@@ -468,20 +468,7 @@ namespace OOX
 			auto objectPtr = XLS::BaseObjectPtr(globalsSubstream);
 			if(m_oSheets.IsInit())
 			{
-				std::vector<_UINT16> SheetTypes;
-				for(auto i: m_oSheets->m_arrItems)
-				{
-					_UINT16 type = 0;
-					if(i->m_oRid.IsInit())
-					{
-						RId rid(i->m_oRid->GetValue());
-						auto sheetFile = Get<OOX::File>(rid);
-						if(sheetFile->type() == OOX::Spreadsheet::FileTypes::Chartsheets)
-							type = 2;
-					}
-					SheetTypes.push_back(type);
-				}
-				m_oSheets->toXLS(objectPtr, SheetTypes);
+				m_oSheets->toXLS(objectPtr);
 			}
 			if(m_oDefinedNames.IsInit())
 				m_oDefinedNames->toXLS(objectPtr);

@@ -50,10 +50,11 @@ public:
 	static const XLS::ElementType	type = XLS::typeOfficeArtIDCL;
 	
 	virtual void load(XLS::CFRecord& record);
+	virtual void save(XLS::CFRecord& record);
 
 
-	_UINT32 dgid;
-	_UINT32 cspidCur;
+	_UINT32 dgid = 0;
+	_UINT32 cspidCur = 0;
 };
 
 typedef boost::shared_ptr<OfficeArtIDCL> OfficeArtIDCLPtr;

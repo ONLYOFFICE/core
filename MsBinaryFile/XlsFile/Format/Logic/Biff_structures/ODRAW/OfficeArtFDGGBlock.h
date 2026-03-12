@@ -53,10 +53,11 @@ public:
 	static const XLS::ElementType	type = XLS::typeOfficeArtFDGGBlock;
 	
 	virtual void loadFields(XLS::CFRecord& record);
+	virtual void save(XLS::CFRecord& record);
 
-	_UINT32 spidMax;
-	_UINT32 cspSaved;
-	_UINT32 cdgSaved;
+	_UINT32 spidMax =  0x02FFD7FF;
+	_UINT32 cspSaved = 1;
+	_UINT32 cdgSaved = 0;
 	
 	std::vector<OfficeArtIDCL> Rgidcl;
 };

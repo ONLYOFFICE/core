@@ -46,6 +46,7 @@ public:
 	static const XLS::ElementType type = XLS::typeOfficeArtDggContainer;
 
 	void loadFields(XLS::CFRecord& record);
+	void save(XLS::CFRecord& record);
 
 	OfficeArtRecordPtr		m_OfficeArtBStoreContainer;
 	OfficeArtRecordPtr		m_OfficeArtColorMRUContainer;
@@ -98,6 +99,7 @@ public:
 	OfficeArtRecordPtr m_OfficeArtAnchor;
 	OfficeArtRecordPtr m_oOfficeArtFOPT;
 	OfficeArtRecordPtr m_oOfficeArtClientData;
+	unsigned int extraSize = 0;
 };
 
 class OfficeArtClientData : public OfficeArtRecord
@@ -171,6 +173,7 @@ public:
 	XLS::BiffStructurePtr clone() { return XLS::BiffStructurePtr(new OfficeArtClientTextbox(*this)); }
 	
 	void loadFields(XLS::CFRecord& record);
+	void save(XLS::CFRecord& record);
 
 	static const XLS::ElementType	type = XLS::typeOfficeArtClientTextbox;
 };

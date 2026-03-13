@@ -37,5 +37,19 @@
 #define ZLIB_ADDON_FLAG_WINDOWS_SHARED_WRITE    2
 #endif
 
-void zlip_set_addition_flag(int flag);
-int zlip_get_addition_flag();
+#if defined(__GNUC__) && __GNUC__ >= 4
+#define ZLIB_ADDON_EXPORT __attribute__((visibility("default")))
+#else
+#define ZLIB_ADDON_EXPORT
+#endif
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+ZLIB_ADDON_EXPORT void zlip_set_addition_flag(int flag);
+ZLIB_ADDON_EXPORT int zlip_get_addition_flag();
+
+#ifdef __cplusplus
+}
+#endif

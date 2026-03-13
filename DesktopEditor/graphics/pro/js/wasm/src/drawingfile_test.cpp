@@ -1,7 +1,7 @@
 #include <iostream>
 
-#include "../../../../raster/BgraFrame.h"
-#include "../../../../raster/ImageFileFormatChecker.h"
+#include "../../../../../raster/BgraFrame.h"
+#include "../../../../../raster/ImageFileFormatChecker.h"
 #include "../../../../../common/File.h"
 #include "../../../../../common/StringBuilder.h"
 #include "drawingfile.cpp"

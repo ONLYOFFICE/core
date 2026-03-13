@@ -59,6 +59,7 @@ public:
 		Ink = 14,
 		Popup = 15,
 		FileAttachment = 16,
+		Screen = 20,
 		Redact = 25,
 		Widget = 26,
 		WidgetPushButton = 27,
@@ -502,6 +503,72 @@ public:
 		CActionFieldPr* m_pPA;
 	};
 
+	class GRAPHICS_DECL CFileAttachmentAnnotPr
+	{
+	public:
+		CFileAttachmentAnnotPr();
+		~CFileAttachmentAnnotPr();
+
+		int GetFileFlag() const;
+		const std::wstring& GetName();
+		const std::wstring& GetFS();
+		const std::wstring& GetF();
+		const std::wstring& GetUF();
+		const std::wstring& GetDOS();
+		const std::wstring& GetMac();
+		const std::wstring& GetUnix();
+		const std::wstring& GetDesc();
+		const std::wstring& GetFileF();
+		const std::wstring& GetFileUF();
+		const std::wstring& GetFileDOS();
+		const std::wstring& GetFileMac();
+		const std::wstring& GetFileUnix();
+		const std::pair<std::wstring, std::wstring>& GetID();
+
+		void Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, int nFlags);
+
+	private:
+		int m_nFileFlag;
+		std::wstring m_wsName;
+		std::wstring m_wsFS;
+		std::wstring m_wsF;
+		std::wstring m_wsUF;
+		std::wstring m_wsDOS;
+		std::wstring m_wsMac;
+		std::wstring m_wsUnix;
+		std::wstring m_wsDesc;
+		std::wstring m_wsFileF;
+		std::wstring m_wsFileUF;
+		std::wstring m_wsFileDOS;
+		std::wstring m_wsFileMac;
+		std::wstring m_wsFileUnix;
+		std::pair<std::wstring, std::wstring> m_wsID;
+	};
+
+	class GRAPHICS_DECL CScreenAnnotPr
+	{
+	public:
+		CScreenAnnotPr();
+		~CScreenAnnotPr();
+
+		int GetR()     const;
+		int GetFlags() const;
+		const std::wstring& GetT();
+		const std::vector<double>& GetBC();
+		const std::vector<double>& GetBG();
+		const std::vector<CActionFieldPr*>& GetActions();
+
+		void Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader);
+
+	private:
+		int m_nR;
+		int m_nFlags;
+		std::wstring m_wsT;
+		std::vector<double> m_arrBC;
+		std::vector<double> m_arrBG;
+		std::vector<CActionFieldPr*> m_arrAction;
+	};
+
 	CAnnotFieldInfo();
 	virtual ~CAnnotFieldInfo();
 
@@ -543,21 +610,25 @@ public:
 	bool IsStamp()           const;
 	bool IsRedact()          const;
 	bool IsLink()            const;
+	bool IsFileAttachment()  const;
+	bool IsScreen()          const;
 
-	CMarkupAnnotPr*       GetMarkupAnnotPr();
-	CTextAnnotPr*         GetTextAnnotPr();
-	CInkAnnotPr*          GetInkAnnotPr();
-	CLineAnnotPr*         GetLineAnnotPr();
-	CTextMarkupAnnotPr*   GetTextMarkupAnnotPr();
-	CSquareCircleAnnotPr* GetSquareCircleAnnotPr();
-	CPolygonLineAnnotPr*  GetPolygonLineAnnotPr();
-	CPopupAnnotPr*        GetPopupAnnotPr();
-	CFreeTextAnnotPr*     GetFreeTextAnnotPr();
-	CCaretAnnotPr*        GetCaretAnnotPr();
-	CStampAnnotPr*        GetStampAnnotPr();
-	CRedactAnnotPr*       GetRedactAnnotPr();
-	CLinkAnnotPr*         GetLinkAnnotPr();
-	CWidgetAnnotPr*       GetWidgetAnnotPr();
+	CMarkupAnnotPr*         GetMarkupAnnotPr();
+	CTextAnnotPr*           GetTextAnnotPr();
+	CInkAnnotPr*            GetInkAnnotPr();
+	CLineAnnotPr*           GetLineAnnotPr();
+	CTextMarkupAnnotPr*     GetTextMarkupAnnotPr();
+	CSquareCircleAnnotPr*   GetSquareCircleAnnotPr();
+	CPolygonLineAnnotPr*    GetPolygonLineAnnotPr();
+	CPopupAnnotPr*          GetPopupAnnotPr();
+	CFreeTextAnnotPr*       GetFreeTextAnnotPr();
+	CCaretAnnotPr*          GetCaretAnnotPr();
+	CStampAnnotPr*          GetStampAnnotPr();
+	CRedactAnnotPr*         GetRedactAnnotPr();
+	CLinkAnnotPr*           GetLinkAnnotPr();
+	CFileAttachmentAnnotPr* GetFileAttachmentAnnotPr();
+	CScreenAnnotPr*         GetScreenAnnotPr();
+	CWidgetAnnotPr*         GetWidgetAnnotPr();
 
 	bool Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector);
 
@@ -590,20 +661,22 @@ private:
 	LONG         m_nRenderLen;
 	BYTE*        m_pRender;
 
-	CMarkupAnnotPr*       m_pMarkupPr;
-	CTextAnnotPr*         m_pTextPr;
-	CInkAnnotPr*          m_pInkPr;
-	CLineAnnotPr*         m_pLinePr;
-	CTextMarkupAnnotPr*   m_pTextMarkupPr;
-	CSquareCircleAnnotPr* m_pSquareCirclePr;
-	CPolygonLineAnnotPr*  m_pPolygonLinePr;
-	CPopupAnnotPr*        m_pPopupPr;
-	CFreeTextAnnotPr*     m_pFreeTextPr;
-	CCaretAnnotPr*        m_pCaretPr;
-	CStampAnnotPr*        m_pStampPr;
-	CRedactAnnotPr*       m_pRedactPr;
-	CLinkAnnotPr*         m_pLinkPr;
-	CWidgetAnnotPr*       m_pWidgetPr;
+	CMarkupAnnotPr*         m_pMarkupPr;
+	CTextAnnotPr*           m_pTextPr;
+	CInkAnnotPr*            m_pInkPr;
+	CLineAnnotPr*           m_pLinePr;
+	CTextMarkupAnnotPr*     m_pTextMarkupPr;
+	CSquareCircleAnnotPr*   m_pSquareCirclePr;
+	CPolygonLineAnnotPr*    m_pPolygonLinePr;
+	CPopupAnnotPr*          m_pPopupPr;
+	CFreeTextAnnotPr*       m_pFreeTextPr;
+	CCaretAnnotPr*          m_pCaretPr;
+	CStampAnnotPr*          m_pStampPr;
+	CRedactAnnotPr*         m_pRedactPr;
+	CLinkAnnotPr*           m_pLinkPr;
+	CFileAttachmentAnnotPr* m_pFileAttachmentPr;
+	CScreenAnnotPr*         m_pScreenPr;
+	CWidgetAnnotPr*         m_pWidgetPr;
 };
 
 class GRAPHICS_DECL CAnnotFieldDelete : public IAdvancedCommand

@@ -2392,6 +2392,18 @@ void CDrawingConverter::ConvertShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::CX
 			}
 		}	
 //-------------------------------------------------------------------------------------------------------------------
+		nullable_bool hr;
+		XmlMacroReadAttributeBase(oNodeShape, L"o:hr", hr);
+
+		if (hr.IsInit() && *hr)
+		{
+			pSpPr->Geometry.hr.Init();
+			XmlMacroReadAttributeBase(oNodeShape, L"o:hrpct", pSpPr->Geometry.hr->pct);
+			XmlMacroReadAttributeBase(oNodeShape, L"o:hralign", pSpPr->Geometry.hr->align);
+			XmlMacroReadAttributeBase(oNodeShape, L"o:hrnoshade", pSpPr->Geometry.hr->noshade);
+		}
+
+//-------------------------------------------------------------------------------------------------------------------
 		XmlUtils::CXmlNode oNodeG;
 		oNodeG.FromXmlString(strXmlPPTX);
 		pSpPr->Geometry = oNodeG;
@@ -2401,6 +2413,14 @@ void CDrawingConverter::ConvertShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::CX
 		PPTX::CCSS oCSSParser;
 		oCSSParser.LoadFromString2(strStyle);
 
+		std::map<std::wstring, std::wstring>::iterator pFind = oCSSParser.m_mapSettings.find(L"visibility");
+		if (oCSSParser.m_mapSettings.end() != pFind)
+		{
+			if (L"hidden" == pFind->second)
+				bHidden = true;
+			else if (L"visible" == pFind->second)
+				bHidden = false;
+		}
 		if (bHidden && false == bIsTop)
 		{
 			pCNvPr->hidden = true;
@@ -4909,6 +4929,7 @@ void CDrawingConverter::CheckPenShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils::
 		pSpPr->ln->w = size;
 		pPPTShape->m_bIsStroked = true;
 	}
+
     XmlUtils::CXmlNode oNodeStroke = oNode.ReadNode(L"v:stroke");
 	if (oNodeStroke.IsValid())
 	{
@@ -5229,7 +5250,7 @@ void CDrawingConverter::SaveObject(LONG lStart, LONG lLength, const std::wstring
 			if (oElem.is<PPTX::Logic::Pic>())
 			{
 				PPTX::Logic::Pic& oPic = oElem.as<PPTX::Logic::Pic>();
-				if(oPic.oleObject.IsInit())
+				if (oPic.oleObject.IsInit())
 				{
 					bOle = oPic.oleObject->isValid();
 					if (oPic.oleObject->m_oDxaOrig.IsInit() == false)
@@ -5246,9 +5267,18 @@ void CDrawingConverter::SaveObject(LONG lStart, LONG lLength, const std::wstring
 			if (oElem.is<PPTX::Logic::Shape>())
 			{
 				PPTX::Logic::Shape& oShape = oElem.as<PPTX::Logic::Shape>();
-				if(oShape.signatureLine.IsInit())
+				if (oShape.signatureLine.IsInit())
 				{
 					bSignatureLine = true;
+				}
+			}
+			bool bHorizontalRule = false;
+			if (oElem.is<PPTX::Logic::Shape>())
+			{
+				PPTX::Logic::Shape& oShape = oElem.as<PPTX::Logic::Shape>();
+				if (oShape.spPr.Geometry.hr.IsInit())
+				{
+					bHorizontalRule = true;
 				}
 			}
 			NSBinPptxRW::CXmlWriter oXmlWriter(m_pBinaryReader->m_nDocumentType);
@@ -5263,14 +5293,20 @@ void CDrawingConverter::SaveObject(LONG lStart, LONG lLength, const std::wstring
 				m_pOOXToVMLRenderer = new COOXToVMLGeometry();
 			oXmlWriter.m_pOOXToVMLRenderer = m_pOOXToVMLRenderer;
 
-			if(bOle)
+			if (bOle)
 			{
 				ConvertPicVML(oElem, bsMainProps, oXmlWriter);
 			}
-			else if(bSignatureLine)
+			else if (bSignatureLine)
 			{
 				oXmlWriter.WriteString(L"<w:pict>");
 				ConvertShapeVML(oElem, bsMainProps, oXmlWriter, true);
+				oXmlWriter.WriteString(L"</w:pict>");
+			}
+			else if (bHorizontalRule)
+			{
+				oXmlWriter.WriteString(L"<w:pict>");
+				ConvertShapeVML(oElem, bsMainProps, oXmlWriter);
 				oXmlWriter.WriteString(L"</w:pict>");
 			}
 			else

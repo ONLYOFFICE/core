@@ -765,7 +765,7 @@ namespace NSCommon
 	protected:
 		bool set(const std::wstring& value)
 		{
-			if ((L"true" == value) || (L"1" == value))
+			if ((L"true" == value) || (L"1" == value) || (L"t" == value))
 				return true;
 			return false;
 		}

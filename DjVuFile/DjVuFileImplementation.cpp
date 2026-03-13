@@ -726,7 +726,7 @@ unsigned char* CDjVuFileImplementation::ConvertToPixels(int nPageIndex, int nRas
 		GP<DjVuImage> pPage = m_pDoc->get_page(nPageIndex);
 		//pPage->wait_for_complete_decode();
 		pPage->set_rotate(0);
-		return ConvertToPixels(pPage, nRasterW, nRasterH, bIsFlip);
+		return ConvertToPixels(pPage, nRasterW, nRasterH, bIsFlip, true);
 	}
 	catch (...)
 	{
@@ -734,11 +734,11 @@ unsigned char* CDjVuFileImplementation::ConvertToPixels(int nPageIndex, int nRas
 	return NULL;
 }
 
-unsigned char* CDjVuFileImplementation::ConvertToPixels(GP<DjVuImage>& pPage, int nImageW, int nImageH, bool bFlip)
+unsigned char* CDjVuFileImplementation::ConvertToPixels(GP<DjVuImage>& pPage, int nImageW, int nImageH, bool bFlip, bool bIsSwapRGB)
 {
 	BYTE* pBufferDst = NULL;
 
-	auto processPixmap = [&](GP<GPixmap> pImage, bool bFlip = false)
+	auto processPixmap = [&](GP<GPixmap> pImage, bool bFlip = false, bool bIsSwapRGB = false)
 	{
 		pBufferDst = new BYTE[4 * nImageW * nImageH];
 
@@ -749,7 +749,10 @@ unsigned char* CDjVuFileImplementation::ConvertToPixels(GP<DjVuImage>& pPage, in
 			GPixel* pLine = pImage->operator[](nRow);
 			for (int i = 0; i < nImageW; ++i)
 			{
-				*pBuffer++ = 0xFF000000 | pLine->r << 16 | pLine->g << 8 | pLine->b;
+				if (bIsSwapRGB)
+					*pBuffer++ = 0xFF000000 | pLine->b << 16 | pLine->g << 8 | pLine->r;
+				else
+					*pBuffer++ = 0xFF000000 | pLine->r << 16 | pLine->g << 8 | pLine->b;
 				++pLine;
 			}
 		}
@@ -790,7 +793,7 @@ unsigned char* CDjVuFileImplementation::ConvertToPixels(GP<DjVuImage>& pPage, in
 	if (pPage->is_legal_photo() || pPage->is_legal_compound())
 	{
 		GP<GPixmap> pImage = pPage->get_pixmap(oRectAll, oRectAll);
-		processPixmap(pImage, bFlip);
+		processPixmap(pImage, bFlip, bIsSwapRGB);
 	}
 	else if (pPage->is_legal_bilevel())
 	{
@@ -802,7 +805,7 @@ unsigned char* CDjVuFileImplementation::ConvertToPixels(GP<DjVuImage>& pPage, in
 		GP<GPixmap> pImage = pPage->get_pixmap(oRectAll, oRectAll);
 		if (pImage)
 		{
-			processPixmap(pImage, bFlip);
+			processPixmap(pImage, bFlip, bIsSwapRGB);
 		}
 		else
 		{

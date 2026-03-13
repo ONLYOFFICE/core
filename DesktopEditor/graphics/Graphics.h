@@ -430,6 +430,9 @@ public:
 
 protected:
 
+	template<class span_gen_type>
+	void render_blendmode(span_gen_type& sg, span_alloc_type& span_allocator, BYTE Alpha);
+
 	template<class Renderer>
 	void render_scanlines(Renderer& ren);
 	template<class Rasterizer, class Renderer>
@@ -447,6 +450,9 @@ protected:
     //--test
 	void DoFillPathHatch(CBrushHatch *pBrush);
 	void DoFillPathTextureClampSz(const CMatrix &mImgMtx, const void *pImgBuff, DWORD dwImgWidth, DWORD dwImgHeight, int nImgStride);
+
+	template<typename pixfmt>
+	void DoFillPathTextureClampSz2_Impl(agg::rendering_buffer& PatRendBuff, interpolator_type_linear& interpolator, span_alloc_type& span_allocator, int nCurrentMode, BYTE Alpha);
 	void DoFillPathTextureClampSz2(const CMatrix &mImgMtx, const void *pImgBuff, DWORD dwImgWidth, DWORD dwImgHeight, int nImgStride, BYTE Alpha = 255);
     
     template<class ColorSpacePix>

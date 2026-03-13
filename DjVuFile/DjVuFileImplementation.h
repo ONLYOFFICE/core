@@ -83,7 +83,7 @@ public:
 
 private:
 
-	unsigned char* ConvertToPixels(GP<DjVuImage>& pPage, int nRasterW, int nRasterH, bool bIsFlip = false);
+	unsigned char* ConvertToPixels(GP<DjVuImage>& pPage, int nRasterW, int nRasterH, bool bIsFlip = false, bool bIsSwapRGB = false);
 
 	void               CreateFrame(IRenderer* pRenderer, GP<DjVuImage>& pImage, int nPage, XmlUtils::CXmlNode& oText);
     void               CreatePdfFrame(IRenderer* pRenderer, GP<DjVuImage>& pImage, int nPage, XmlUtils::CXmlNode& oText);

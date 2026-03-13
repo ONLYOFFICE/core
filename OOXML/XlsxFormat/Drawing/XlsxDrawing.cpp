@@ -50,6 +50,10 @@
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/ObjectLink.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/BRAI.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/SeriesText.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/MsoDrawingGroup.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Obj.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/WorksheetSubstream.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/GlobalsSubstream.h"
 #include "../../PPTXFormat/Logic/Shape.h"
 #include "../Chart/Chart.h"
 
@@ -453,6 +457,48 @@ namespace OOX
 				chartVector.push_back(XLS::BaseObjectPtr(ptr));
 			}
 		}
+		void CDrawing::toXlsPic(XLS::BaseObjectPtr GlobalsSubstream, XLS::BaseObjectPtr WorksheetStream)
+		{
+			auto worksheet = static_cast<XLS::WorksheetSubstream*>(WorksheetStream.get());
+			auto workbook = static_cast<XLS::GlobalsSubstream*>(GlobalsSubstream.get());
+			XLS::OBJECTS *wsObjects;
+
+
+			XLS::MsoDrawingGroup* drawingGroupPtr;
+			if(workbook->m_arMSODRAWINGGROUP.empty())
+			{
+				drawingGroupPtr = new XLS::MsoDrawingGroup;
+				workbook->m_arMSODRAWINGGROUP.push_back(XLS::BaseObjectPtr(drawingGroupPtr));
+			}
+			else
+			{
+				drawingGroupPtr = static_cast<XLS::MsoDrawingGroup*>(workbook->m_arMSODRAWINGGROUP.back().get());
+			}
+
+			if(worksheet->m_OBJECTS == nullptr)
+			{
+				wsObjects = new XLS::OBJECTS(false);
+				worksheet->m_OBJECTS = XLS::BaseObjectPtr(wsObjects);
+			}
+			else
+				wsObjects = static_cast<XLS::OBJECTS*>(worksheet->m_OBJECTS.get());
+			for(auto anchor : m_arrItems)
+			{
+				auto drawing = new XLS::MsoDrawing(false);
+				auto drawingPtr = XLS::MsoDrawingPtr(drawing);
+				drawing->preparePic(0,0,0,0,0);
+				std::pair<XLS::BaseObjectPtr, std::vector<XLS::BaseObjectPtr>> objPair;
+				auto objPt = new XLS::Obj(drawingPtr);
+				objPt->cmo.ot = 0x8;
+				objPt->cmo.id = 0;
+				objPt->cmo.fPrint = true;
+				objPair.first = drawingPtr;
+				objPair.second.push_back(XLS::BaseObjectPtr(objPt));
+				wsObjects->m_arrObject.push_back(objPair);
+				drawingGroupPtr->drawingCount++;
+			}
+			//todo pic conversion
+		}
 		const OOX::FileType CDrawing::type() const
 		{
 			return OOX::Spreadsheet::FileTypes::Drawings;
@@ -476,6 +522,10 @@ namespace OOX
 		bool CDrawing::IsChart()
 		{
 			return (!IsEmpty() && m_arrItems.back()->m_oElement.IsInit() && m_arrItems.back()->m_oElement->is<PPTX::Logic::GraphicFrame>());
+		}
+		bool CDrawing::IsPic()
+		{
+			return (!IsEmpty() && m_arrItems.back()->m_oElement.IsInit() && m_arrItems.back()->m_oElement->is<PPTX::Logic::Pic>());
 		}
 		void CDrawing::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{

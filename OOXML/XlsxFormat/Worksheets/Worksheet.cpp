@@ -505,6 +505,11 @@ namespace OOX
 						worksheetPtr->m_OBJECTS = objectsPtr;
 					}
 				}
+				else if(drawingPtr->IsPic())
+				{
+					drawingPtr->toXlsPic(globalsPtr, sheetPtr);
+					//pic conversion
+				}
 			}
 			if(m_pComments != nullptr)
 			{

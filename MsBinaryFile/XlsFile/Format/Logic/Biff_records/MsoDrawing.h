@@ -62,6 +62,7 @@ public:
 	virtual			void useContinueRecords	(CFRecord& record);
 
 	void prepareComment	(const unsigned int CommentId, const unsigned int row, const unsigned int col);
+	void preparePic	(const unsigned int picId, const unsigned int row1, const unsigned int row2, const unsigned int col1, const unsigned int col2);
 	void prepareChart	(const unsigned int chartId, const unsigned int x1, const unsigned int x2,
 		const unsigned int y1, const unsigned int y2, const unsigned int x1Offset = 0, const unsigned int x2Offset = 0,
 		const unsigned int y1Offset = 0,const unsigned int y2Offset = 0);

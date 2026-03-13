@@ -86,6 +86,7 @@ namespace OOX
 			virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const;
 
 			void toXLSChart(std::vector<XLS::BaseObjectPtr> &chartVector);
+			void toXlsPic(XLS::BaseObjectPtr GlobalsSubstream, XLS::BaseObjectPtr WorksheetStream);
 
 			virtual const OOX::FileType type() const;
 
@@ -95,6 +96,7 @@ namespace OOX
 			const CPath& GetReadPath();
 			bool IsEmpty();
 			bool IsChart();
+			bool IsPic();
 
 		private:
 			CPath m_oReadPath;

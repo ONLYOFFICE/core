@@ -3,11 +3,13 @@ use_system_v8 {
     CONFIG += use_v8_monolith
     DEFINES += V8_VERSION_89_PLUS
     DEFINES += V8_VERSION_121_PLUS
-    DEFINES += V8_COMPRESS_POINTERS
     DEFINES += DISABLE_MEMORY_LIMITATION
+    # Node.js V8 does not enable pointer compression by default
+    # and snapshots require sdkjs compiled from source
+    # so neither V8_COMPRESS_POINTERS nor V8_SUPPORT_SNAPSHOTS are defined
 
     INCLUDEPATH += /usr/include/v8
-    LIBS += -lv8_monolith -lpthread
+    LIBS += -lv8 -lpthread
 } else {
 
 CORE_V8_PATH_OVERRIDE=$$PWD

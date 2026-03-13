@@ -162,13 +162,11 @@ namespace PPTX
 			pWriter->WriteString2(0, charset);
 			pWriter->WriteString2(1, panose);
 			pWriter->WriteString2(2, pitchFamily);
+			
+			pWriter->WriteString1(3, typeface);			
 
-			/*
-			pWriter->WriteString1(3, typeface);
-			*/
-
-			std::wstring sPick = pWriter->m_pCommon->m_pNativePicker->GetTypefacePick(*this);
-			pWriter->WriteString1(3, sPick);
+			//std::wstring sPick = pWriter->m_pCommon->m_pNativePicker->GetTypefacePick(*this);
+			//pWriter->WriteString1(3, sPick);
 
 			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 		}

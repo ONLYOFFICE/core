@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef PPTX_LOGIC_FONTCOLLECTION_INCLUDE_H_
-#define PPTX_LOGIC_FONTCOLLECTION_INCLUDE_H_
 
 #include "./../WrapperWritingElement.h"
 #include "TextFont.h"
@@ -48,7 +46,6 @@ namespace PPTX
 
 			FontCollection& operator=(const FontCollection& oSrc);
 
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual std::wstring toXML() const;
 
@@ -56,13 +53,11 @@ namespace PPTX
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
-		public:
 			TextFont					latin;
 			TextFont					ea;
 			TextFont					cs;
 			std::vector<SupplementalFont> Fonts;
 
-		public:
 			std::wstring m_name;
 
 		protected:
@@ -70,5 +65,3 @@ namespace PPTX
 		};
 	} // namespace Logic
 } // namespace PPTX
-
-#endif // PPTX_LOGIC_FONTCOLLECTION_INCLUDE_H_

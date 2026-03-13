@@ -486,11 +486,16 @@ namespace OOX
 			{
 				auto drawing = new XLS::MsoDrawing(false);
 				auto drawingPtr = XLS::MsoDrawingPtr(drawing);
-				drawing->preparePic(0,0,0,0,0);
+				{
+					auto shapeCount = drawingGroupPtr->drawingCount+1;
+					auto left = 0, leftOff = 0, right = 0, righOff = 0, top = 0, topOff = 0, bot = 0, botOff = 0;
+					anchor->getAnchorPos(left, leftOff, top, topOff, right, righOff, bot, botOff);
+					drawing->prepareChart(shapeCount,left,right,top,bot);
+				}
 				std::pair<XLS::BaseObjectPtr, std::vector<XLS::BaseObjectPtr>> objPair;
 				auto objPt = new XLS::Obj(drawingPtr);
 				objPt->cmo.ot = 0x8;
-				objPt->cmo.id = 0;
+				objPt->cmo.id = drawingGroupPtr->drawingCount+1;
 				objPt->cmo.fPrint = true;
 				objPair.first = drawingPtr;
 				objPair.second.push_back(XLS::BaseObjectPtr(objPt));

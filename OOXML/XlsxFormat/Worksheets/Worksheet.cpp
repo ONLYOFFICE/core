@@ -445,8 +445,14 @@ namespace OOX
 				if(drawingPtr->IsChart())
 				{
 					XLS::MsoDrawingGroup* drawingGroupPtr;
-					auto Objects = new XLS::OBJECTS(false);
-					auto objectsPtr =  XLS::BaseObjectPtr(Objects);
+					XLS::OBJECTS* Objects;
+					if(worksheetPtr->m_OBJECTS == nullptr)
+					{
+						Objects = new XLS::OBJECTS(false);
+						worksheetPtr->m_OBJECTS = XLS::BaseObjectPtr(Objects);
+					}
+					else
+						Objects = static_cast<XLS::OBJECTS*>(worksheetPtr->m_OBJECTS.get());
 					{
 						auto workbookStream = static_cast<XLS::GlobalsSubstream*>(globalsPtr.get());
 						if(workbookStream->m_arMSODRAWINGGROUP.empty())
@@ -502,7 +508,6 @@ namespace OOX
 							drawingGroupPtr->drawingCount++;
 							shapeCount += 1;
 						}
-						worksheetPtr->m_OBJECTS = objectsPtr;
 					}
 				}
 				else if(drawingPtr->IsPic())

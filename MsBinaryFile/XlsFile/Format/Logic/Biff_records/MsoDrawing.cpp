@@ -296,32 +296,5 @@ void MsoDrawing::prepareChart(const unsigned int chartId, const unsigned int x1,
 	}
 }
 
-void MsoDrawing::preparePic(const unsigned int picId, const unsigned int row1, const unsigned int row2, const unsigned int col1, const unsigned int col2)
-{
-	if(rgChildRec.first)
-	{
-		auto spgrContainer = new ODRAW::OfficeArtSpgrContainer(ODRAW::OfficeArtRecord::CA_Sheet);
-		rgChildRec.m_OfficeArtSpgrContainer = ODRAW::OfficeArtRecordPtr(spgrContainer);
-		auto ShapeGroup = new ODRAW::OfficeArtSpContainer(ODRAW::OfficeArtRecord::CA_Sheet);
-		auto groupFsp = new ODRAW::OfficeArtFSP;
-		ShapeGroup->m_OfficeArtFSP = ODRAW::OfficeArtRecordPtr(groupFsp);
-		groupFsp->shape_id = 0;
-		groupFsp->fGroup = true;
-		groupFsp->fPatriarch = true;
-		groupFsp->spid = picId;
-
-		auto groupFSPGR = new ODRAW::OfficeArtFSPGR;
-		ShapeGroup->m_OfficeArtFSPGR = ODRAW::OfficeArtRecordPtr(groupFSPGR);
-
-		auto fdgPtr = new ODRAW::OfficeArtFDG;
-		fdgPtr->rh_own.recInstance = picId;
-		rgChildRec.m_OfficeArtFDG = ODRAW::OfficeArtRecordPtr(fdgPtr);
-
-		spgrContainer->m_OfficeArtSpgrContainerFileBlock.push_back(ODRAW::OfficeArtContainerPtr(ShapeGroup));
-	}
-	//todo pic conversion
-}
-
-
 } // namespace XLS
 

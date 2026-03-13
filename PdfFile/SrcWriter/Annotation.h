@@ -239,6 +239,25 @@ namespace PdfWriter
 		void SetA(CAction* pAction);
 		void SetPA(CAction* pAction);
 	};
+	class CScreenAnnotation : public CAnnotation
+	{
+	private:
+		CDictObject* m_pMK;
+
+		void CheckMK();
+	public:
+		CScreenAnnotation(CXref* pXref);
+		EAnnotType GetAnnotationType() const override
+		{
+			return AnnotScreen;
+		}
+
+		void SetR(const int& nR);
+		void SetT(const std::wstring& wsT);
+		void SetBC(const std::vector<double>& arrBC);
+		void SetBG(const std::vector<double>& arrBG);
+		void AddAction(CAction* pAction);
+	};
 	class CMarkupAnnotation : public CAnnotation
 	{
 	protected:
@@ -429,6 +448,10 @@ namespace PdfWriter
 		void SetIC(const std::vector<double>& arrIC);
 		void SetOC(const std::vector<double>& arrOC);
 		void SetQuadPoints(const std::vector<double>& arrQuadPoints);
+	};
+	class CFileAttachmentAnnotation : public CMarkupAnnotation
+	{
+
 	};
 	class CWidgetAnnotation : public CAnnotation
 	{

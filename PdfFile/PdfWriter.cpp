@@ -2319,6 +2319,10 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 				pRedactAnnot->SetDA(pFontTT, dFontSize, pPr->GetFontColor());
 			}
 		}
+		else if (oInfo.IsFileAttachment())
+		{
+
+		}
 	}
 	else if (oInfo.IsPopup())
 	{
@@ -2702,6 +2706,34 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 			LONG nLen = 0;
 			BYTE* pRender = oInfo.GetRender(nLen);
 			DrawAP(pAnnot, pRender, nLen);
+		}
+	}
+	else if (oInfo.IsScreen())
+	{
+		CAnnotFieldInfo::CScreenAnnotPr* pPr = oInfo.GetScreenAnnotPr();
+		PdfWriter::CScreenAnnotation* pScreenAnnot = (PdfWriter::CScreenAnnotation*)pAnnot;
+
+		int nR = 0;
+		nFlags = pPr->GetFlags();
+		if (nFlags & (1 << 0))
+			pScreenAnnot->SetT(pPr->GetT());
+		if (nFlags & (1 << 1))
+			pScreenAnnot->SetBC(pPr->GetBC());
+		if (nFlags & (1 << 2))
+		{
+			nR = pPr->GetR();
+			pScreenAnnot->SetR(nR);
+		}
+		if (nFlags & (1 << 3))
+			pScreenAnnot->SetBG(pPr->GetBG());
+		if (nFlags & (1 << 4))
+		{
+			const std::vector<CAnnotFieldInfo::CActionFieldPr*> arrActions = pPr->GetActions();
+			for (CAnnotFieldInfo::CActionFieldPr* pAction : arrActions)
+			{
+				PdfWriter::CAction* pA = GetAction(pAction);
+				pScreenAnnot->AddAction(pA);
+			}
 		}
 	}
 

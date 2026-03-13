@@ -858,6 +858,68 @@ namespace PdfWriter
 		Add("PA", pAction);
 	}
 	//----------------------------------------------------------------------------------------
+	// CScreenAnnotation
+	//----------------------------------------------------------------------------------------
+	CScreenAnnotation::CScreenAnnotation(CXref* pXref) : CAnnotation(pXref, AnnotScreen)
+	{
+		m_pMK = NULL;
+	}
+	void CScreenAnnotation::CheckMK()
+	{
+		if (!m_pMK)
+		{
+			CObjectBase* pMK = Get("MK");
+			if (pMK && pMK->GetType() == object_type_DICT)
+			{
+				m_pMK = (CDictObject*)pMK;
+				return;
+			}
+
+			m_pMK = new CDictObject();
+			Add("MK", m_pMK);
+		}
+	}
+	void CScreenAnnotation::SetR(const int& nR)
+	{
+		CheckMK();
+		m_pMK->Add("R", nR);
+	}
+	void CScreenAnnotation::SetT(const std::wstring& wsT)
+	{
+		std::string sValue = U_TO_UTF8(wsT);
+		Add("T", new CStringObject(sValue.c_str(), true));
+	}
+	void CScreenAnnotation::SetBC(const std::vector<double>& arrBC)
+	{
+		CheckMK();
+		AddToVectorD(m_pMK, "BC", arrBC);
+	}
+	void CScreenAnnotation::SetBG(const std::vector<double>& arrBG)
+	{
+		CheckMK();
+		AddToVectorD(m_pMK, "BG", arrBG);
+	}
+	void CScreenAnnotation::AddAction(CAction* pAction)
+	{
+		if (!pAction)
+			return;
+
+		if (pAction->m_sType == "A")
+		{
+			Add(pAction->m_sType.c_str(), pAction);
+			return;
+		}
+
+		CDictObject* pAA = (CDictObject*)Get("AA");
+		if (!pAA)
+		{
+			pAA = new CDictObject();
+			Add("AA", pAA);
+		}
+
+		pAA->Add(pAction->m_sType.c_str(), pAction);
+	}
+	//----------------------------------------------------------------------------------------
 	// CPopupAnnotation
 	//----------------------------------------------------------------------------------------
 	CPopupAnnotation::CPopupAnnotation(CXref* pXref) : CAnnotation(pXref, AnnotPopup)

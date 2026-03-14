@@ -1,3 +1,7 @@
+use_system_heif {
+    LIBS += -lheif -lde265 -lx265
+} else {
+
 DEFINES += LIBHEIF_STATIC_BUILD
 
 HEIF_BUILDS_PLATFORM_PREFIX = $$CORE_BUILDS_PLATFORM_PREFIX
@@ -40,3 +44,5 @@ core_mac | core_ios {
 		-L$$PWD/libde265/build/$$HEIF_BUILDS_PLATFORM_PREFIX/$$CORE_BUILDS_CONFIGURATION_PREFIX/libde265 -lde265 \
 		-L$$HEIF_BUILD_PATH/libheif -lheif
 }
+
+} # !use_system_heif

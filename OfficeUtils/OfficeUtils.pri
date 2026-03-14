@@ -12,8 +12,18 @@ build_zlib_as_sources {
 
 INCLUDEPATH += \
     $$PWD/src/zlib-1.2.11/contrib/minizip \
-    $$PWD/src/zlib-1.2.11 \
     $$PWD/src
+
+use_system_zlib {
+    # Force-include zlib_addon.h so vendored minizip sources (unzip.c,
+    # iowin32.c) see the addon flags that the vendored zlib.h normally
+    # pulls in.
+    QMAKE_CFLAGS += -include $$PWD/src/zlib_addon.h
+    QMAKE_CXXFLAGS += -include $$PWD/src/zlib_addon.h
+    LIBS += -lz
+} else {
+    INCLUDEPATH += $$PWD/src/zlib-1.2.11
+}
 
 SOURCES +=  \
     $$PWD/src/OfficeUtils.cpp \
@@ -31,7 +41,7 @@ core_windows {
 SOURCES +=  \
     $$PWD/src/zlib-1.2.11/contrib/minizip/iowin32.c
 }
-build_all_zlib {
+!use_system_zlib:build_all_zlib {
 SOURCES += \
     $$PWD/src/zlib-1.2.11/adler32.c \
     $$PWD/src/zlib-1.2.11/compress.c \

@@ -36,7 +36,7 @@ LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lDocxFormatLib
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lXlsbFormatLib
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lXlsFormatLib
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lCompoundFileLib
-LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lCryptoPPLib
+include($$CORE_ROOT_DIR/Common/3dParty/cryptopp/cryptopp.pri)
 
 ADD_DEPENDENCY(graphics, kernel, UnicodeConverter, kernel_network, Fb2File, PdfFile, HtmlFile2, EpubFile, XpsFile, OFDFile, DjVuFile, doctrenderer, DocxRenderer, IWorkFile, HWPFile)
 

@@ -83,6 +83,7 @@
 #include "jasper/jas_malloc.h"
 #include "jasper/jas_math.h"
 
+#include "jpc_fix.h"
 #include "jpc_qmfb.h"
 #include "jpc_tsfb.h"
 #include "jpc_math.h"
@@ -96,7 +97,7 @@
 
 int jpc_ft_analyze(jpc_fix_t *a, int xstart, int ystart, int width, int height,
   int stride);
-int jpc_ft_synthesize(int *a, int xstart, int ystart, int width, int height,
+int jpc_ft_synthesize(jpc_fix_t *a, int xstart, int ystart, int width, int height,
   int stride);
 
 int jpc_ns_analyze(jpc_fix_t *a, int xstart, int ystart, int width, int height,
@@ -1592,7 +1593,7 @@ int jpc_ft_analyze(jpc_fix_t *a, int xstart, int ystart, int width, int height,
 
 }
 
-int jpc_ft_synthesize(int *a, int xstart, int ystart, int width, int height,
+int jpc_ft_synthesize(jpc_fix_t *a, int xstart, int ystart, int width, int height,
   int stride)
 {
 	int numrows = height;

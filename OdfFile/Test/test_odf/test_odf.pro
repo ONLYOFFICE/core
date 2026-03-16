@@ -9,6 +9,7 @@ CONFIG   -= app_bundle
 
 CONFIG += core_static_link_libstd
 CONFIG += build_x2t_as_library
+CONFIG += core_no_gtest_main
 
 CORE_ROOT_DIR = $$PWD/../../../../core
 
@@ -37,4 +38,3 @@ SOURCES += \
 #    audio.cpp\
 #    interactions.cpp
 
-SOURCES -= $$CORE_GTEST_PATH/src/gtest_main.cc

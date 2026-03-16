@@ -6,6 +6,7 @@ DEFINES += BUILD_X2T_AS_LIBRARY_DYLIB
 
 X2T_DIR = $$PWD/../../X2tConverter
 
+CONFIG += core_no_gtest_main
 include($$X2T_DIR/build/Qt/X2tConverter.pri)
 include($$X2T_DIR/../Common/3dParty/googletest/googletest.pri)
 
@@ -22,7 +23,6 @@ HEADERS += common.h
 DESTDIR = $$CORE_BUILDS_BINARY_PATH
 
 
-SOURCES -= $$CORE_GTEST_PATH/src/gtest_main.cc
 SOURCES -= ../../../Common/OfficeFileFormatChecker2.cpp
 SOURCES -= ../../src/cextracttools.cpp
 SOURCES -= ../../src/ASCConverters.cpp

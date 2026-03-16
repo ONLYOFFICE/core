@@ -22,7 +22,13 @@ namespace NSJSBase
 		// initialize all V8 inspector stuff
 		m_pChannel.reset(new CV8InspectorChannelImpl(m_pIsolate, fOnResponse));
 		m_pInspector = v8_inspector::V8Inspector::create(m_pIsolate, this);
+#ifdef V8_VERSION_121_PLUS
+		m_pSession = m_pInspector->connect(m_nContextGroupId, m_pChannel.get(), v8_inspector::StringView(),
+		    v8_inspector::V8Inspector::kFullyTrusted,
+		    v8_inspector::V8Inspector::kNotWaitingForDebugger);
+#else
 		m_pSession = m_pInspector->connect(m_nContextGroupId, m_pChannel.get(), v8_inspector::StringView());
+#endif
 		context->SetAlignedPointerInEmbedderData(1, this);
 
 		v8_inspector::StringView oContextName = convertToStringView("inspector" + std::to_string(nContextGroupId));

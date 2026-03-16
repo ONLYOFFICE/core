@@ -5,9 +5,9 @@
 #include "../DesktopEditor/common/Directory.h"
 
 // For decrypt
-#include "../../Common/3dParty/cryptopp/modes.h"
-#include "../../Common/3dParty/cryptopp/aes.h"
-#include "../../Common/3dParty/cryptopp/filters.h"
+#include <cryptopp/modes.h>
+#include <cryptopp/aes.h>
+#include <cryptopp/filters.h>
 // ----------
 
 #define DEFAULT_BUFFER_SIZE 8096

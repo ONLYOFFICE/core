@@ -11,6 +11,7 @@
 #include <unistd.h>
 #endif
 
+#include <openssl/opensslv.h>
 #include <openssl/bio.h>
 #include <openssl/err.h>
 #include <openssl/pem.h>
@@ -21,10 +22,15 @@
 #include <openssl/sha.h>
 #include <openssl/ssl.h>
 #include <openssl/crypto.h>
-#include <openssl/engine.h>
 #include <openssl/evp.h>
 #include <openssl/conf.h>
 #include <openssl/rand.h>
+#if OPENSSL_VERSION_MAJOR >= 3
+#include <openssl/param_build.h>
+#include <openssl/core_names.h>
+#else
+#include <openssl/engine.h>
+#endif
 
 #include <map>
 #include <memory>
@@ -126,9 +132,11 @@ public:
 		if (!g_is_initialize)
 		{
 			g_is_initialize = true;
+#if OPENSSL_VERSION_MAJOR < 3
 			ERR_load_crypto_strings();
 			OpenSSL_add_all_algorithms();
 			OPENSSL_config(NULL);
+#endif
 		}
 
 		m_cert = NULL;
@@ -146,9 +154,11 @@ public:
 		if (g_is_initialize)
 		{
 			g_is_initialize = false;
+#if OPENSSL_VERSION_MAJOR < 3
 			EVP_cleanup();
 			CRYPTO_cleanup_all_ex_data();
 			ERR_free_strings();
+#endif
 		}
 	}
 
@@ -188,6 +198,17 @@ public:
 				m_alg = OOXML_HASH_ALG_ECDSA_512;
 			}
 
+#if OPENSSL_VERSION_MAJOR >= 3
+			pctx = EVP_PKEY_CTX_new_from_name(NULL, "EC", NULL);
+			if (!pctx)
+				return false;
+			EVP_PKEY_keygen_init(pctx);
+			OSSL_PARAM params[2];
+			const char* group_name = OBJ_nid2sn(crypto_nid);
+			params[0] = OSSL_PARAM_construct_utf8_string("group", (char*)group_name, 0);
+			params[1] = OSSL_PARAM_construct_end();
+			EVP_PKEY_CTX_set_params(pctx, params);
+#else
 			EC_GROUP* group = EC_GROUP_new_by_curve_name(crypto_nid);
 
 			EC_GROUP_set_asn1_flag(group, OPENSSL_EC_NAMED_CURVE);
@@ -204,6 +225,7 @@ public:
 
 			EVP_PKEY_free(tmp);
 			EC_GROUP_free(group);
+#endif
 		}
 		else if (0 == key_alg.find("rsa"))
 		{
@@ -380,10 +402,10 @@ public:
 			return "";
 		}
 
-		if (asn1_serial->type == V_ASN1_NEG_INTEGER)
+		if (BN_is_negative(bn))
 		{
 			std::string sPositive = "1";
-			for (int i = 0; i < asn1_serial->length; ++i)
+			for (int i = 0; i < ASN1_STRING_length(asn1_serial); ++i)
 				sPositive += "00";
 			BIGNUM* pn = NULL;
 			int res = BN_hex2bn(&pn, sPositive.c_str());
@@ -564,18 +586,18 @@ public:
 			return true;
 		}
 
-		EVP_MD_CTX* pCtx = EVP_MD_CTX_create();
+		EVP_MD_CTX* pCtx = EVP_MD_CTX_new();
 		const EVP_MD* pDigest = Get_EVP_MD(nHashAlg);
 
-		int nError = EVP_SignInit(pCtx, pDigest);
-		nError = EVP_SignUpdate(pCtx, pData, nSize);
+		int nError = EVP_DigestSignInit(pCtx, NULL, pDigest, NULL, m_key);
+		nError = EVP_DigestSignUpdate(pCtx, pData, nSize);
 
 		BYTE pSignature[4096];
-		unsigned int nSignatureLen = 0;
+		size_t nSignatureLen = sizeof(pSignature);
 
-		nError = EVP_SignFinal(pCtx, pSignature, &nSignatureLen, m_key);
+		nError = EVP_DigestSignFinal(pCtx, pSignature, &nSignatureLen);
 
-		EVP_MD_CTX_destroy(pCtx);
+		EVP_MD_CTX_free(pCtx);
 
 		if (nSignatureLen > 0)
 		{
@@ -830,22 +852,21 @@ public:
 			return (1 == nVer) ? true : false;
 		}
 
-		EVP_MD_CTX* pCtx = EVP_MD_CTX_create();
+		EVP_MD_CTX* pCtx = EVP_MD_CTX_new();
 		const EVP_MD* pDigest = Get_EVP_MD(nAlg);
 
-		int n1 = EVP_VerifyInit(pCtx, pDigest);
+		EVP_PKEY* pubkey = X509_get_pubkey(m_cert);
 
 		BYTE* pDigestValue = NULL;
 		int nDigestLen = 0;
 		NSFile::CBase64Converter::Decode(sXmlSignature.c_str(), (int)sXmlSignature.length(), pDigestValue, nDigestLen);
 
-		int n2 = EVP_VerifyUpdate(pCtx, (BYTE*)sXml.c_str(), (size_t)sXml.length());
+		EVP_DigestVerifyInit(pCtx, NULL, pDigest, NULL, pubkey);
+		EVP_DigestVerifyUpdate(pCtx, (BYTE*)sXml.c_str(), (size_t)sXml.length());
 
-		EVP_PKEY* pubkey = X509_get_pubkey(m_cert);
+		int n3 = EVP_DigestVerifyFinal(pCtx, pDigestValue, (size_t)nDigestLen);
 
-		int n3 = EVP_VerifyFinal(pCtx, pDigestValue, (unsigned int)nDigestLen, pubkey);
-
-		EVP_MD_CTX_destroy(pCtx);
+		EVP_MD_CTX_free(pCtx);
 		EVP_PKEY_FREE(pubkey);
 
 		RELEASEARRAYOBJECTS(pDigestValue);

@@ -109,9 +109,8 @@ use_external_jpeg2000 {
 }
 
 # PdfWriter
-DEFINES += CRYPTOPP_DISABLE_ASM \
-           NOMINMAX
-LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lCryptoPPLib
+DEFINES += NOMINMAX
+include($$CORE_ROOT_DIR/Common/3dParty/cryptopp/cryptopp.pri)
 
 core_linux {
     DEFINES += HAVE_UNISTD_H \

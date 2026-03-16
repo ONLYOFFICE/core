@@ -668,8 +668,7 @@ HEADERS +=\
 	$$PDF_ROOT_DIR/SrcReader/PdfFont.h \
 	$$PDF_ROOT_DIR/SrcReader/PdfAnnot.h
 
-DEFINES += CRYPTOPP_DISABLE_ASM
-LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lCryptoPPLib
+include($$CORE_ROOT_DIR/Common/3dParty/cryptopp/cryptopp.pri)
 
 # PdfWriter
 HEADERS += \

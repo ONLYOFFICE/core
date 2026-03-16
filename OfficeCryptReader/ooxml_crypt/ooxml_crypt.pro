@@ -10,15 +10,14 @@ PWD_ROOT_DIR = $$PWD
 include($$CORE_ROOT_DIR/Common/base.pri)
 include($$CORE_ROOT_DIR/Common/3dParty/boost/boost.pri)
 
-LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lCryptoPPLib -lCompoundFileLib
+include($$CORE_ROOT_DIR/Common/3dParty/cryptopp/cryptopp.pri)
+LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lCompoundFileLib
 ADD_DEPENDENCY(UnicodeConverter, kernel)
 
 include($$CORE_ROOT_DIR/Common/3dParty/icu/icu.pri)
 
 CONFIG += open_ssl_common
 include($$CORE_ROOT_DIR/Common/3dParty/openssl/openssl.pri)
-
-DEFINES += CRYPTOPP_DISABLE_ASM
 DESTDIR = $$CORE_BUILDS_BINARY_PATH
 
 HEADERS += \

@@ -630,7 +630,6 @@ core_windows {
 	QMAKE_CXXFLAGS += -Wall -Wno-ignored-qualifiers
 }
 
-DEFINES += CRYPTOPP_DISABLE_ASM
 }
 
 core_ios|core_mac {

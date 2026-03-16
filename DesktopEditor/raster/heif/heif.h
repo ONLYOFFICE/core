@@ -1,5 +1,5 @@
 #include "../BgraFrame.h"
-#include "../../Common/3dParty/heif/libheif/libheif/api/libheif/heif.h"
+#include <libheif/heif.h>
 #include "../../UnicodeConverter/UnicodeConverter.h"
 
 namespace NSHeif {

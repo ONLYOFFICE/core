@@ -121,10 +121,10 @@ if not base.is_dir("harfbuzz"):
   else:
     qmake_content_lines.append("")
 
-  if (base.is_file("./harfbuzz.pri")):
-    base.delete_file("./harfbuzz.pri")
+  if (base.is_file("./harfbuzz_sources.pri")):
+    base.delete_file("./harfbuzz_sources.pri")
 
-  with open("./harfbuzz.pri", "w") as file:
+  with open("./harfbuzz_sources.pri", "w") as file:
     file.write("\n".join(qmake_content_lines))
 
   #base.delete_file("./harfbuzz/src/hb-ft.cc")

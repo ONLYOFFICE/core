@@ -36,7 +36,7 @@
 
 #include <ctime>
 
-#include "../../Common/3dParty/cryptopp/md5.h"
+#include <cryptopp/md5.h>
 #include "../../UnicodeConverter/UnicodeConverter.h"
 
 #define SET_BINARY_PARAM(Name, set_func, max_len) \

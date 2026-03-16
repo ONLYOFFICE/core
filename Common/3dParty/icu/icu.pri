@@ -1,3 +1,7 @@
+use_system_icu {
+    LIBS += -licuuc -licudata
+} else {
+
 ICU_MAJOR_VER = 74
 
 core_windows {
@@ -62,3 +66,5 @@ core_android {
     LIBS        += $$PWD/android/build/$$CORE_BUILDS_PLATFORM_PREFIX_DST/libicuuc.a
     LIBS        += $$PWD/android/build/$$CORE_BUILDS_PLATFORM_PREFIX_DST/libicudata.a
 }
+
+} # !use_system_icu

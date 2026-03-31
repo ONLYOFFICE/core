@@ -34,6 +34,7 @@
 #include "./../../DesktopEditor/common/File.h"
 #include "./../../Common/3dParty/openssl/common/common_openssl.h"
 #include <iostream>
+#include <fstream>
 #include <map>
 #include <vector>
 
@@ -248,7 +249,8 @@ int main(int argc, char** argv)
 			std::cout << "1) encrypt/decrypt" << std::endl;
 			std::cout << "decrypt command removes all user info" << std::endl;
 			std::cout << "ooxml_crypt --file=path_to_document --encrypt --password=password" << std::endl;
-			std::cout << "ooxml_crypt --file=path_to_document --decrypt --password=password" << std::endl;
+			std::cout << "ooxml_crypt --file=path_to_document --decrypt --password-file=/path/to/password" << std::endl;
+			std::cout << "ooxml_crypt --file=path_to_document --decrypt --password-stdin" << std::endl;
 			std::cout << std::endl;
 
 			std::cout << "2) print info" << std::endl;
@@ -296,8 +298,39 @@ int main(int argc, char** argv)
 			file_path = param.substr(7);
 			continue;
 		}
+		if (0 == param.find(L"--password-file="))
+		{
+			std::wstring wFilePath = param.substr(16);
+			std::string sFilePath = U_TO_UTF8(wFilePath);
+			std::ifstream ifs(sFilePath);
+			if (ifs.is_open())
+			{
+				std::string sPassword;
+				if (std::getline(ifs, sPassword))
+				{
+					file_password = UTF8_TO_U(sPassword);
+				}
+				ifs.close();
+			}
+			else
+			{
+				std::wcerr << L"error: cannot open password file" << std::endl;
+				return 1;
+			}
+			continue;
+		}
+		if (0 == param.find(L"--password-stdin"))
+		{
+			std::string sPassword;
+			if (std::getline(std::cin, sPassword))
+			{
+				file_password = UTF8_TO_U(sPassword);
+			}
+			continue;
+		}
 		if (0 == param.find(L"--password="))
 		{
+			std::wcerr << L"WARNING: Password visible in process listing. Use --password-file or --password-stdin instead." << std::endl;
 			file_password = param.substr(11);
 			continue;
 		}

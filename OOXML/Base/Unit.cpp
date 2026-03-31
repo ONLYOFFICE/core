@@ -32,6 +32,17 @@
 #include "Unit.h"
 #include <cwchar>
 
+#if defined(__linux__)
+#include <sys/random.h>   // getrandom()
+#elif defined(_WIN32) || defined(_WIN64)
+#include <windows.h>
+#include <bcrypt.h>
+#pragma comment(lib, "bcrypt.lib")
+#endif
+#include <stdexcept>
+#include <cstdio>
+#include <cerrno>
+
 
 double Cm_To_Mm     (const double &dValue)
 {
@@ -753,42 +764,70 @@ namespace XmlUtils
 		return sstream.str();
 	}
 
-	int Rand()
+	static void SecureRandomBytes(unsigned char* buf, size_t len)
 	{
-		//rand returns integral value range between 0 and RAND_MAX.(RAND_MAX at least 32767.)
-		static bool init = false;   /* ensure different random header each time */
-		if (!init)
+#if defined(__linux__)
+		size_t filled = 0;
+		while (filled < len)
 		{
-			init = true;
-			srand((unsigned int) time(NULL));
+			ssize_t ret = getrandom(buf + filled, len - filled, 0);
+			if (ret < 0)
+			{
+				if (errno == EINTR)
+					continue;
+				break;
+			}
+			filled += (size_t)ret;
 		}
-		return std::rand();
+		if (filled == len)
+			return;
+#endif
+		FILE* f = fopen("/dev/urandom", "rb");
+		if (f)
+		{
+			size_t read_total = 0;
+			while (read_total < len)
+			{
+				size_t n = fread(buf + read_total, 1, len - read_total, f);
+				if (n == 0)
+					break;
+				read_total += n;
+			}
+			fclose(f);
+			if (read_total == len)
+				return;
+		}
+		throw std::runtime_error("Failed to generate secure random bytes");
 	}
+
+	static unsigned int SecureRand()
+	{
+		unsigned int val;
+		SecureRandomBytes(reinterpret_cast<unsigned char*>(&val), sizeof(val));
+		return val;
+	}
+
 	int GenerateInt()
 	{
-		//todo c++11 <random>
-		return ((Rand() & 0x7FFF) | ((Rand() & 0x7FFF) << 15) | ((Rand() & 0x3) << 30));
+		return (int)(SecureRand() & 0x7FFFFFFF);
 	}
 
 	std::wstring GenerateGuid()
 	{
-		std::wstring result;
-		//#if defined (_WIN32) || defined(_WIN64)
-		//		GUID guid;
-		//		CoCreateGuid(&guid);
-		//
-		//		OLECHAR* guidString;
-		//		StringFromCLSID(guid, &guidString);
-		//
-		//		result = std::wstring(guidString);
-		//
-		//		CoTaskMemFree(guidString);
-		//#else
+		unsigned char bytes[16];
+		SecureRandomBytes(bytes, 16);
+
+		bytes[6] = (bytes[6] & 0x0F) | 0x40;
+		bytes[8] = (bytes[8] & 0x3F) | 0x80;
+
 		std::wstringstream sstream;
-		sstream << boost::wformat(L"%04X%04X-%04X-%04X-%04X-%04X%04X%04X") % (Rand() & 0xff) % (Rand() & 0xff) % (Rand() & 0xff) % ((Rand() & 0x0fff) | 0x4000) % ((Rand() % 0x3fff) + 0x8000) %  (Rand() & 0xff) % (Rand() & 0xff) % (Rand() & 0xff);
-		result = sstream.str();
-		//#endif
-		return result;
+		sstream << boost::wformat(L"%02X%02X%02X%02X-%02X%02X-%02X%02X-%02X%02X-%02X%02X%02X%02X%02X%02X")
+			% bytes[0]  % bytes[1]  % bytes[2]  % bytes[3]
+			% bytes[4]  % bytes[5]
+			% bytes[6]  % bytes[7]
+			% bytes[8]  % bytes[9]
+			% bytes[10] % bytes[11] % bytes[12] % bytes[13] % bytes[14] % bytes[15];
+		return sstream.str();
 	}
 	std::wstring DoubleToString( double value, wchar_t* format )
 	{

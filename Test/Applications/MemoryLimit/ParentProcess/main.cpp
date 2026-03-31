@@ -1,5 +1,7 @@
 #include <iostream>
 #include <cstdlib>
+#include <unistd.h>
+#include <sys/wait.h>
 
 #include "../../../../Common/3dParty/misc/proclimits.h"
 
@@ -35,9 +37,15 @@ int main(int argc, char *argv[])
 	}
 	cout << "Allocated:" <<strlen(alloc)<< endl;
 
-	cout << "Start system:" <<proc.c_str()<< endl;
-	std::system(proc.c_str());
-	cout << "End system:" <<proc.c_str()<< endl;
+	cout << "Start exec:" <<proc.c_str()<< endl;
+	pid_t pid = fork();
+	if (pid == 0) {
+		execlp(proc.c_str(), proc.c_str(), (char*)NULL);
+		_exit(127);
+	}
+	int status = 0;
+	waitpid(pid, &status, 0);
+	cout << "End exec:" <<proc.c_str()<< endl;
 	cout << "Allocated:" <<strlen(alloc)<< endl;
 	cout << "End" << endl;
 	return 0;

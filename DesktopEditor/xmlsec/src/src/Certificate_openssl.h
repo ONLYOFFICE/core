@@ -143,6 +143,15 @@ public:
 			X509_FREE(m_cert);
 		if (NULL != m_key)
 			EVP_PKEY_FREE(m_key);
+
+		// SECURITY AUDIT: m_id stores plaintext passwords (keyPath;SEP;keyPassword;SEP;certPath;SEP;certPassword).
+		// GetId() exposes this to callers. OPENSSL_cleanse reduces the post-destruction heap exposure window.
+		// TODO: separate credential storage from identity to fully eliminate in-lifetime password leakage.
+		if (!m_id.empty())
+		{
+			OPENSSL_cleanse(&m_id[0], m_id.size());
+		}
+
 		if (g_is_initialize)
 		{
 			g_is_initialize = false;

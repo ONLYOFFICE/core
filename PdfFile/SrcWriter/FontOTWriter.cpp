@@ -36,6 +36,11 @@
 #include <list>
 #include <set>
 
+#if defined(__linux__)
+#include <sys/random.h>
+#endif
+#include <climits>
+
 namespace PdfWriter
 {
 #define N_STD_STRINGS 391
@@ -3666,10 +3671,40 @@ namespace PdfWriter
 		if (!status)
 			return NULL;
 
-		CharStringOperand newOperand;
+		unsigned char rnd_bytes[4];
+#if defined(__linux__)
+		ssize_t ret = getrandom(rnd_bytes, sizeof(rnd_bytes), 0);
+		if (ret != (ssize_t)sizeof(rnd_bytes))
+		{
+			FILE* f = fopen("/dev/urandom", "rb");
+			if (f)
+			{
+				if (fread(rnd_bytes, 1, sizeof(rnd_bytes), f) != sizeof(rnd_bytes))
+					return NULL;
+				fclose(f);
+			}
+			else
+				return NULL;
+		}
+#else
+		FILE* f = fopen("/dev/urandom", "rb");
+		if (!f)
+			return NULL;
+		if (fread(rnd_bytes, 1, sizeof(rnd_bytes), f) != sizeof(rnd_bytes))
+		{
+			fclose(f);
+			return NULL;
+		}
+		fclose(f);
+#endif
+		unsigned int rnd_val = (unsigned int)rnd_bytes[0]
+			| ((unsigned int)rnd_bytes[1] << 8)
+			| ((unsigned int)rnd_bytes[2] << 16)
+			| ((unsigned int)rnd_bytes[3] << 24);
 
+		CharStringOperand newOperand;
 		newOperand.IsInteger = false;
-		newOperand.RealValue = ((double)rand() + 1) / ((double)RAND_MAX + 1);
+		newOperand.RealValue = ((double)(rnd_val & 0x7FFFFFFF) + 1.0) / ((double)0x80000000);
 
 		mOperandStack.push_back(newOperand);
 		return inProgramCounter;

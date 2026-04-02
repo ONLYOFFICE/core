@@ -56,6 +56,8 @@
 #ifdef LINUX
 #include <unistd.h>
 #include <stdio.h>
+#include <spawn.h>
+#include <sys/wait.h>
 #endif
 
 // Misc
@@ -1259,30 +1261,72 @@ private:
 	{
 		std::wstring sResult = L"";
 
-		std::wstring sCommand = m_sVbmPath + L" " + sArgs;
-
 #ifdef WIN32
+		std::wstring sCommand = m_sVbmPath + L" " + sArgs;
 		std::array<wchar_t, 128> aBuffer;
 		FILE* pipe = _wpopen(sCommand.c_str(), L"r");
-#endif
-#ifdef LINUX
-		std::array<char, 128> aBuffer;
-		FILE* pipe = popen(U_TO_UTF8(sCommand).c_str(), "r");
-#endif
-		if (!pipe)
-			return sResult;
-
-#ifdef WIN32
-		while ( fgetws(aBuffer.data(), 128, pipe) != NULL )
+		if (pipe)
 		{
-			sResult += aBuffer.data();
+			while ( fgetws(aBuffer.data(), 128, pipe) != NULL )
+			{
+				sResult += aBuffer.data();
+			}
+			_pclose(pipe);
 		}
 #endif
 #ifdef LINUX
-		while ( fgets(aBuffer.data(), 128, pipe) != NULL )
+		// posix_spawn avoids shell command injection (vs popen which interprets metacharacters)
+		std::string sBinary = U_TO_UTF8(m_sVbmPath);
+		std::string sArgsUtf8 = U_TO_UTF8(sArgs);
+
+		std::vector<std::string> vecArgs;
+		vecArgs.push_back(sBinary);
 		{
-			std::string sBuf = aBuffer.data();
-			sResult += UTF8_TO_U(sBuf);
+			std::istringstream iss(sArgsUtf8);
+			std::string arg;
+			while (iss >> arg)
+				vecArgs.push_back(arg);
+		}
+
+		std::vector<char*> argv;
+		for (auto& a : vecArgs)
+			argv.push_back(&a[0]);
+		argv.push_back(nullptr);
+
+		int pipefd[2];
+		if (pipe(pipefd) == 0)
+		{
+			posix_spawn_file_actions_t actions;
+			posix_spawn_file_actions_init(&actions);
+			posix_spawn_file_actions_adddup2(&actions, pipefd[1], STDOUT_FILENO);
+			posix_spawn_file_actions_addclose(&actions, pipefd[1]);
+			posix_spawn_file_actions_addclose(&actions, pipefd[0]);
+
+			pid_t pid = 0;
+			if (posix_spawnp(&pid, sBinary.c_str(), &actions, nullptr, argv.data(), nullptr) == 0)
+			{
+				close(pipefd[1]); // Close write end in parent
+
+				char aBuffer[128];
+				ssize_t bytesRead;
+				while ((bytesRead = read(pipefd[0], aBuffer, sizeof(aBuffer) - 1)) > 0)
+				{
+					aBuffer[bytesRead] = '\0';
+					std::string sBuf = aBuffer;
+					sResult += UTF8_TO_U(sBuf);
+				}
+				close(pipefd[0]);
+
+				int status = 0;
+				waitpid(pid, &status, 0);
+			}
+			else
+			{
+				close(pipefd[0]);
+				close(pipefd[1]);
+			}
+
+			posix_spawn_file_actions_destroy(&actions);
 		}
 #endif
 

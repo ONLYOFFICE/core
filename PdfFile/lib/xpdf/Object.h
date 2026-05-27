@@ -227,6 +227,21 @@ private:
 #endif
 };
 
+// RAII wrapper for xpdf Object: automatically calls free() when leaving scope.
+// Object{} is constructed as objNone and free() on it is safe, so reusing
+// a single variable is not necessary — create a new guard in each block.
+struct CObjectGuard
+{
+	Object o;
+	CObjectGuard() = default;
+	~CObjectGuard() { o.free(); }
+	CObjectGuard(const CObjectGuard&) = delete;
+	CObjectGuard& operator=(const CObjectGuard&) = delete;
+	Object* operator->() { return &o; }
+	Object& operator*()  { return o; }
+	Object* get()        { return &o; }
+};
+
 //------------------------------------------------------------------------
 // Array accessors.
 //------------------------------------------------------------------------

@@ -36,6 +36,8 @@
 #include "PdfFont.h"
 #include "Adaptors.h"
 
+#include <string_view>
+
 #include "../lib/xpdf/TextString.h"
 #include "../lib/xpdf/GfxFont.h"
 #include "../lib/xpdf/Lexer.h"
@@ -61,7 +63,9 @@
 #define FONTS_USE_ONLY_MEMORY_STREAMS
 #endif
 
-const std::vector<std::string> arrCMap = {"GB-EUC-H", "GB-EUC-V", "GB-H", "GB-V", "GBpc-EUC-H", "GBpc-EUC-V", "GBK-EUC-H",
+namespace
+{
+constexpr std::string_view arrCMap[] = {"GB-EUC-H", "GB-EUC-V", "GB-H", "GB-V", "GBpc-EUC-H", "GBpc-EUC-V", "GBK-EUC-H",
 "GBK-EUC-V", "GBKp-EUC-H", "GBKp-EUC-V", "GBK2K-H", "GBK2K-V", "GBT-H", "GBT-V", "GBTpc-EUC-H", "GBTpc-EUC-V",
 "UniGB-UCS2-H", "UniGB-UCS2-V", "UniGB-UTF8-H", "UniGB-UTF8-V", "UniGB-UTF16-H", "UniGB-UTF16-V", "UniGB-UTF32-H",
 "UniGB-UTF32-V", "B5pc-H", "B5pc-V", "B5-H", "B5-V", "HKscs-B5-H", "HKscs-B5-V", "HKdla-B5-H", "HKdla-B5-V",
@@ -81,7 +85,12 @@ const std::vector<std::string> arrCMap = {"GB-EUC-H", "GB-EUC-V", "GB-H", "GB-V"
 "UniKS-UCS2-H", "UniKS-UCS2-V", "UniKS-UTF8-H", "UniKS-UTF8-V", "UniKS-UTF16-H", "UniKS-UTF16-V", "UniKS-UTF32-H",
 "UniKS-UTF32-V", "UniAKR-UTF8-H", "UniAKR-UTF16-H", "UniAKR-UTF32-H"};
 
-bool scanFonts(Dict *pResources, const std::vector<std::string>& arrCMap, int nDepth, std::vector<int>& arrUniqueResources)
+bool IsCMapName(const char* sName)
+{
+	return std::find(std::begin(arrCMap), std::end(arrCMap), std::string_view(sName)) != std::end(arrCMap);
+}
+
+bool scanFonts(Dict *pResources, int nDepth, std::vector<int>& arrUniqueResources)
 {
 	if (nDepth > 5)
 		return false;
@@ -98,7 +107,7 @@ bool scanFonts(Dict *pResources, const std::vector<std::string>& arrCMap, int nD
 			}
 			oFont.free();
 			char* sName = oEncoding.getName();
-			if (std::find(arrCMap.begin(), arrCMap.end(), sName) != arrCMap.end())
+			if (IsCMapName(sName))
 			{
 				oEncoding.free(); oFonts.free();
 				return true;
@@ -108,7 +117,7 @@ bool scanFonts(Dict *pResources, const std::vector<std::string>& arrCMap, int nD
 	}
 	oFonts.free();
 
-	auto fScanFonts = [pResources, nDepth, &arrUniqueResources](const std::vector<std::string>& arrCMap, const char* sName)
+	auto fScanFonts = [pResources, nDepth, &arrUniqueResources](const char* sName)
 	{
 		Object oObject;
 		if (!pResources->lookup(sName, &oObject)->isDict())
@@ -132,7 +141,7 @@ bool scanFonts(Dict *pResources, const std::vector<std::string>& arrCMap, int nD
 			}
 			arrUniqueResources.push_back(oRef.getRef().num);
 			oXObj.free(); oRef.free();
-			if (scanFonts(oResources.getDict(), arrCMap, nDepth + 1, arrUniqueResources))
+			if (scanFonts(oResources.getDict(), nDepth + 1, arrUniqueResources))
 			{
 				oResources.free(); oObject.free();
 				return true;
@@ -143,7 +152,7 @@ bool scanFonts(Dict *pResources, const std::vector<std::string>& arrCMap, int nD
 		return false;
 	};
 
-	if (fScanFonts(arrCMap, "XObject") || fScanFonts(arrCMap, "Pattern"))
+	if (fScanFonts("XObject") || fScanFonts("Pattern"))
 		return true;
 
 	Object oExtGState;
@@ -169,7 +178,7 @@ bool scanFonts(Dict *pResources, const std::vector<std::string>& arrCMap, int nD
 		}
 		arrUniqueResources.push_back(oRef.getRef().num);
 		oSMaskGroup.free(); oRef.free();
-		if (scanFonts(oResources.getDict(), arrCMap, nDepth + 1, arrUniqueResources))
+		if (scanFonts(oResources.getDict(), nDepth + 1, arrUniqueResources))
 		{
 			oResources.free(); oExtGState.free();
 			return true;
@@ -180,7 +189,7 @@ bool scanFonts(Dict *pResources, const std::vector<std::string>& arrCMap, int nD
 
 	return false;
 }
-bool scanAPfonts(Object* oAnnot, const std::vector<std::string>& arrCMap, std::vector<int>& arrUniqueResources)
+bool scanAPfonts(Object* oAnnot, std::vector<int>& arrUniqueResources)
 {
 	Object oAP;
 	if (!oAnnot->dictLookup("AP", &oAP)->isDict())
@@ -188,7 +197,7 @@ bool scanAPfonts(Object* oAnnot, const std::vector<std::string>& arrCMap, std::v
 		oAP.free();
 		return false;
 	}
-	auto fScanAPView = [&arrUniqueResources](Object* oAP, const std::vector<std::string>& arrCMap, const char* sName)
+	auto fScanAPView = [&arrUniqueResources](Object* oAP, const char* sName)
 	{
 		Object oAPi, oRes;
 		if (!oAP->dictLookup(sName, &oAPi)->isStream() || !oAPi.streamGetDict()->lookup("Resources", &oRes)->isDict())
@@ -204,11 +213,11 @@ bool scanAPfonts(Object* oAnnot, const std::vector<std::string>& arrCMap, std::v
 		}
 		arrUniqueResources.push_back(oRef.getRef().num);
 		oAPi.free(); oRef.free();
-		bool bRes = scanFonts(oRes.getDict(), arrCMap, 0, arrUniqueResources);
+		bool bRes = scanFonts(oRes.getDict(), 0, arrUniqueResources);
 		oRes.free();
 		return bRes;
 	};
-	bool bRes = fScanAPView(&oAP, arrCMap, "N") || fScanAPView(&oAP, arrCMap, "D") || fScanAPView(&oAP, arrCMap, "R");
+	bool bRes = fScanAPView(&oAP, "N") || fScanAPView(&oAP, "D") || fScanAPView(&oAP, "R");
 	oAP.free();
 	return bRes;
 }
@@ -219,46 +228,46 @@ std::wstring ComputeFontHash(XRef* pXref, GfxFont* pFont)
 	md5Start(&oMD5);
 
 	Ref* pRef = pFont->getID();
-	Object oRefObj, oFontObj;
-	oRefObj.initRef(pRef->num, pRef->gen);
-	oRefObj.fetch(pXref, &oFontObj);
-	oRefObj.free();
+	CObjectGuard oFontObj;
+	{
+		CObjectGuard oRefObj;
+		oRefObj->initRef(pRef->num, pRef->gen);
+		oRefObj->fetch(pXref, oFontObj.get());
+	}
 
-	if (oFontObj.isDict())
+	if (oFontObj->isDict())
 	{
 		const char* aFontObjNames[] = { "Name", "Subtype", "BaseFont", "Encoding" };
 		for (const char* sKey : aFontObjNames)
 		{
-			Object oItem;
-			oFontObj.dictLookup(sKey, &oItem);
-			if (oItem.isName())
-				md5Append(&oMD5, (BYTE*)oItem.getName(), strlen(oItem.getName()));
-			oItem.free();
+			CObjectGuard oItem;
+			oFontObj->dictLookup(sKey, oItem.get());
+			if (oItem->isName())
+				md5Append(&oMD5, (BYTE*)oItem->getName(), strlen(oItem->getName()));
 		}
 
-		Object oDescObj, oDescendantFonts;
-		oFontObj.dictLookup("FontDescriptor", &oDescObj);
-		if (!oDescObj.isDict())
+		CObjectGuard oDescObj;
+		oFontObj->dictLookup("FontDescriptor", oDescObj.get());
+		if (!oDescObj->isDict())
 		{
-			oDescObj.free();
-			if (oFontObj.dictLookup("DescendantFonts", &oDescendantFonts)->isArray())
+			oDescObj->free();
+			CObjectGuard oDescendantFonts;
+			if (oFontObj->dictLookup("DescendantFonts", oDescendantFonts.get())->isArray())
 			{
-				Object oDescendant;
-				if (oDescendantFonts.arrayGet(0, &oDescendant)->isDict())
-					oDescendant.dictLookup("FontDescriptor", &oDescObj);
-				oDescendant.free();
+				CObjectGuard oDescendant;
+				if (oDescendantFonts->arrayGet(0, oDescendant.get())->isDict())
+					oDescendant->dictLookup("FontDescriptor", oDescObj.get());
 			}
-			oDescendantFonts.free();
 		}
 
-		if (oDescObj.isDict())
+		if (oDescObj->isDict())
 		{
-			Object oItem;
-
-			oDescObj.dictLookup("FontName", &oItem);
-			if (oItem.isName())
-				md5Append(&oMD5, (BYTE*)oItem.getName(), strlen(oItem.getName()));
-			oItem.free();
+			{
+				CObjectGuard oItem;
+				oDescObj->dictLookup("FontName", oItem.get());
+				if (oItem->isName())
+					md5Append(&oMD5, (BYTE*)oItem->getName(), strlen(oItem->getName()));
+			}
 
 			const char* aMetricNames[] = {
 				"Flags", "ItalicAngle", "Ascent", "Descent",
@@ -266,57 +275,55 @@ std::wstring ComputeFontHash(XRef* pXref, GfxFont* pFont)
 			};
 			for (const char* sName : aMetricNames)
 			{
-				oDescObj.dictLookup(sName, &oItem);
-				if (oItem.isInt())
+				CObjectGuard oItem;
+				oDescObj->dictLookup(sName, oItem.get());
+				if (oItem->isInt())
 				{
-					int nVal = oItem.getInt();
+					int nVal = oItem->getInt();
 					md5Append(&oMD5, (BYTE*)&nVal, sizeof(int));
 				}
-				oItem.free();
 			}
 
-			oDescObj.dictLookup("FontBBox", &oItem);
-			if (oItem.isArray() && oItem.arrayGetLength() == 4)
+			CObjectGuard oBBox;
+			oDescObj->dictLookup("FontBBox", oBBox.get());
+			if (oBBox->isArray() && oBBox->arrayGetLength() == 4)
 			{
 				for (int i = 0; i < 4; i++)
 				{
-					Object oCoord;
-					if (oItem.arrayGet(i, &oCoord)->isInt())
+					CObjectGuard oCoord;
+					if (oBBox->arrayGet(i, oCoord.get())->isInt())
 					{
-						int nVal = oCoord.getInt();
+						int nVal = oCoord->getInt();
 						md5Append(&oMD5, (BYTE*)&nVal, sizeof(int));
 					}
-					oCoord.free();
 				}
 			}
-			oItem.free();
 		}
-		oDescObj.free();
 	}
-	oFontObj.free();
 
 	Ref oEmbRef;
 	if (pFont->getEmbeddedFontID(&oEmbRef))
 	{
-		Object oRefObj, oStreamObj;
-		oRefObj.initRef(oEmbRef.num, oEmbRef.gen);
-		oRefObj.fetch(pXref, &oStreamObj);
-		oRefObj.free();
-
-		if (oStreamObj.isStream())
+		CObjectGuard oStreamObj;
 		{
-			oStreamObj.streamReset();
+			CObjectGuard oRefObj;
+			oRefObj->initRef(oEmbRef.num, oEmbRef.gen);
+			oRefObj->fetch(pXref, oStreamObj.get());
+		}
+
+		if (oStreamObj->isStream())
+		{
+			oStreamObj->streamReset();
 			const int nMaxBytes = 512;
 			BYTE aBuf[nMaxBytes];
 			int nRead = 0;
 			int nChar;
-			while (nRead < nMaxBytes && (nChar = oStreamObj.streamGetChar()) != EOF)
+			while (nRead < nMaxBytes && (nChar = oStreamObj->streamGetChar()) != EOF)
 				aBuf[nRead++] = (BYTE)nChar;
 
-			oStreamObj.streamClose();
+			oStreamObj->streamClose();
 			md5Append(&oMD5, aBuf, nRead);
 		}
-		oStreamObj.free();
 	}
 
 	md5Finish(&oMD5);
@@ -500,6 +507,40 @@ double CheckFontStylePDF(std::wstring& sName, bool& bBold, bool& bItalic)
 
 	return dStretch;
 }
+double CheckFontNamePDF(std::wstring& sName, NSFonts::CFontSelectFormat* format)
+{
+	bool bBold   = false;
+	bool bItalic = false;
+
+	double dStretch = CheckFontStylePDF(sName, bBold, bItalic);
+
+	if (format)
+	{
+		if (bBold)
+			format->bBold = new INT(1);
+		if (bItalic)
+			format->bItalic = new INT(1);
+	}
+
+	return dStretch;
+}
+int GetAnnotFontNamePenalty(const std::wstring& sCandNorm, const std::wstring& sReqNorm)
+{
+	if (sReqNorm.empty())
+		return 0;
+	if (sCandNorm.empty())
+		return 10000;
+
+	if (sCandNorm == sReqNorm)
+		return 0;
+
+	bool bCandInReq = sReqNorm.find(sCandNorm) != std::wstring::npos;
+	bool bReqInCand = sCandNorm.find(sReqNorm) != std::wstring::npos;
+	if (bCandInReq || bReqInCand)
+		return 500;
+
+	return 10000;
+}
 std::wstring Normalize(const std::wstring& wsName)
 {
 	std::wstring s = wsName;
@@ -528,6 +569,55 @@ std::wstring Normalize(const std::wstring& wsName)
 	s.erase(std::remove_if(s.begin(), s.end(), [](wchar_t c){ return c == L' ' || c == L'-' || c == L'_'; }), s.end());
 	return s;
 };
+USHORT StretchToWidthClass(double fStretch)
+{
+	if (fStretch <= 0.50)  return 1; // Ultra-condensed
+	if (fStretch <= 0.625) return 2; // Extra-condensed
+	if (fStretch <= 0.75)  return 3; // Condensed
+	if (fStretch <= 0.875) return 4; // Semi-condensed
+	if (fStretch <= 1.0)   return 5; // Normal
+	if (fStretch <= 1.125) return 6; // Semi-expanded
+	if (fStretch <= 1.25)  return 7; // Expanded
+	if (fStretch <= 1.50)  return 8; // Extra-expanded
+	return 9;                        // Ultra-expanded
+}
+const PdfReader::CAnnotFontInfo* FindMatchInAnnotFonts(const std::vector<PdfReader::CAnnotFontInfo>& annotFonts, const std::wstring& wsRCName, bool bBold, bool bItalic)
+{
+	std::wstring wsReqNorm = Normalize(wsRCName);
+
+	const PdfReader::CAnnotFontInfo* pBestMatch = nullptr;
+	int nBestPenalty = INT_MAX;
+
+	for (const auto& fi : annotFonts)
+	{
+		int nNamePenalty = GetAnnotFontNamePenalty(Normalize(fi.wsFontName), wsReqNorm);
+		if (!fi.wsActualFontName.empty())
+		{
+			int nActualPenalty = GetAnnotFontNamePenalty(Normalize(fi.wsActualFontName), wsReqNorm);
+			if (nActualPenalty < nNamePenalty)
+				nNamePenalty = nActualPenalty;
+		}
+
+		if (nNamePenalty >= 5000)
+			continue;
+
+		int nBoldPenalty   = (fi.bBold   != bBold)   ? 1 : 0;
+		int nItalicPenalty = (fi.bItalic != bItalic)  ? 4 : 0;
+
+		int nTotalPenalty = nNamePenalty + nBoldPenalty + nItalicPenalty;
+
+		if (nTotalPenalty < nBestPenalty)
+		{
+			nBestPenalty = nTotalPenalty;
+			pBestMatch   = &fi;
+		}
+
+		if (nTotalPenalty == 0)
+			break;
+	}
+
+	return pBestMatch;
+}
 
 class CMemoryFontStream
 {
@@ -612,10 +702,11 @@ public:
 		m_nPos = 0;
 	}
 };
-static int readFromMemoryStream(void* data)
+int readFromMemoryStream(void* data)
 {
 	return ((CMemoryFontStream*)data)->getChar();
 }
+} // anonymous namespace
 
 namespace PdfReader
 {
@@ -739,7 +830,7 @@ bool IsNeedCMap(PDFDoc* pDoc)
 	{
 		Page* pPage = pDoc->getCatalog()->getPage(nPage);
 		Dict* pResources = pPage->getResourceDict();
-		if (pResources && scanFonts(pResources, arrCMap, 0, arrUniqueResources))
+		if (pResources && scanFonts(pResources, 0, arrUniqueResources))
 			return true;
 
 		Object oAnnots;
@@ -767,14 +858,14 @@ bool IsNeedCMap(PDFDoc* pDoc)
 			oRefDR.free();
 
 			Object oDR;
-			if (oAnnot.dictLookup("DR", &oDR)->isDict() && scanFonts(oDR.getDict(), arrCMap, 0, arrUniqueResources))
+			if (oAnnot.dictLookup("DR", &oDR)->isDict() && scanFonts(oDR.getDict(), 0, arrUniqueResources))
 			{
 				oDR.free(); oAnnot.free(); oAnnots.free();
 				return true;
 			}
 			oDR.free();
 
-			if (scanAPfonts(&oAnnot, arrCMap, arrUniqueResources))
+			if (scanAPfonts(&oAnnot, arrUniqueResources))
 			{
 				oAnnot.free(); oAnnots.free();
 				return true;
@@ -799,7 +890,7 @@ bool IsNeedCMap(PDFDoc* pDoc)
 	arrUniqueResources.push_back(oRefDR.getRef().num);
 	oRefDR.free();
 
-	if (oAcroForm->dictLookup("DR", &oDR)->isDict() && scanFonts(oDR.getDict(), arrCMap, 0, arrUniqueResources))
+	if (oAcroForm->dictLookup("DR", &oDR)->isDict() && scanFonts(oDR.getDict(), 0, arrUniqueResources))
 	{
 		oDR.free();
 		return true;
@@ -810,7 +901,7 @@ bool IsNeedCMap(PDFDoc* pDoc)
 	{
 		AcroFormField* pField = pAcroForms->getField(i);
 
-		if (pField->getResources(&oDR)->isDict() && scanFonts(oDR.getDict(), arrCMap, 0, arrUniqueResources))
+		if (pField->getResources(&oDR)->isDict() && scanFonts(oDR.getDict(), 0, arrUniqueResources))
 		{
 			oDR.free();
 			return true;
@@ -822,7 +913,7 @@ bool IsNeedCMap(PDFDoc* pDoc)
 		oWidgetRef.fetch(pDoc->getXRef(), &oWidget);
 		oWidgetRef.free();
 
-		if (scanAPfonts(&oWidget, arrCMap, arrUniqueResources))
+		if (scanAPfonts(&oWidget, arrUniqueResources))
 		{
 			oWidget.free();
 			return true;
@@ -1216,60 +1307,6 @@ std::vector<CAnnotFontInfo> GetAnnotFontInfos(PDFDoc* pdfDoc, NSFonts::IFontMana
 	oFonts.free(); oAnnot.free();
 	return result;
 }
-int GetAnnotFontNamePenalty(const std::wstring& sCandNorm, const std::wstring& sReqNorm)
-{
-	if (sReqNorm.empty())
-		return 0;
-	if (sCandNorm.empty())
-		return 10000;
-
-	if (sCandNorm == sReqNorm)
-		return 0;
-
-	bool bCandInReq = sReqNorm.find(sCandNorm) != std::wstring::npos;
-	bool bReqInCand = sCandNorm.find(sReqNorm) != std::wstring::npos;
-	if (bCandInReq || bReqInCand)
-		return 500;
-
-	return 10000;
-}
-const CAnnotFontInfo* FindMatchInAnnotFonts(const std::vector<CAnnotFontInfo>& annotFonts, const std::wstring& wsRCName, bool bBold, bool bItalic)
-{
-	std::wstring wsReqNorm = Normalize(wsRCName);
-
-	const CAnnotFontInfo* pBestMatch = nullptr;
-	int nBestPenalty = INT_MAX;
-
-	for (const auto& fi : annotFonts)
-	{
-		int nNamePenalty = GetAnnotFontNamePenalty(Normalize(fi.wsFontName), wsReqNorm);
-		if (!fi.wsActualFontName.empty())
-		{
-			int nActualPenalty = GetAnnotFontNamePenalty(Normalize(fi.wsActualFontName), wsReqNorm);
-			if (nActualPenalty < nNamePenalty)
-				nNamePenalty = nActualPenalty;
-		}
-
-		if (nNamePenalty >= 5000)
-			continue;
-
-		int nBoldPenalty   = (fi.bBold   != bBold)   ? 1 : 0;
-		int nItalicPenalty = (fi.bItalic != bItalic)  ? 4 : 0;
-
-		int nTotalPenalty = nNamePenalty + nBoldPenalty + nItalicPenalty;
-
-		if (nTotalPenalty < nBestPenalty)
-		{
-			nBestPenalty = nTotalPenalty;
-			pBestMatch   = &fi;
-		}
-
-		if (nTotalPenalty == 0)
-			break;
-	}
-
-	return pBestMatch;
-}
 
 std::map<std::wstring, std::wstring> GetFreeTextFont(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList* pFontList, Object* oAnnotRef, std::vector<CFontData*>& arrRC)
 {
@@ -1401,147 +1438,98 @@ std::map<std::wstring, std::wstring> GetFreeTextFont(PDFDoc* pdfDoc, NSFonts::IF
 int CollectFontWidths(Dict* pFontDict, std::map<unsigned int, unsigned int>& mGIDToWidth)
 {
 	int nDefaultWidth = 1000;
-	// Try to get widths from Widths dictionary
-	Object oWidths;
-	if (pFontDict->lookup("Widths", &oWidths)->isArray())
+	// Widths array (simple fonts)
 	{
-		Object oFirstChar;
-		int nFirstChar = 0;
-		if (pFontDict->lookup("FirstChar", &oFirstChar)->isInt())
-			nFirstChar = oFirstChar.getInt();
-		oFirstChar.free();
-
-		for (int i = 0; i < oWidths.arrayGetLength(); ++i)
+		CObjectGuard oWidths;
+		if (pFontDict->lookup("Widths", oWidths.get())->isArray())
 		{
-			Object oWidth;
-			if (oWidths.arrayGet(i, &oWidth)->isNum())
-			{
-				unsigned int nGID = nFirstChar + i;
-				unsigned int nWidth = (unsigned int)oWidth.getNum();
-				mGIDToWidth[nGID] = nWidth;
-			}
-			oWidth.free();
-		}
-	}
-	oWidths.free();
+			int nFirstChar = 0;
+			CObjectGuard oFirstChar;
+			if (pFontDict->lookup("FirstChar", oFirstChar.get())->isInt())
+				nFirstChar = oFirstChar->getInt();
 
-	// For CID fonts, process DW and W
-	Object oDescendantFonts;
-	if (pFontDict->lookup("DescendantFonts", &oDescendantFonts)->isArray() && oDescendantFonts.arrayGetLength() > 0)
-	{
-		Object oCIDFont;
-		if (oDescendantFonts.arrayGet(0, &oCIDFont)->isDict())
-		{
-			// Get DW (default width)
-			Object oDW;
-			if (oCIDFont.dictLookup("DW", &oDW)->isInt())
-				nDefaultWidth = oDW.getInt();
-			oDW.free();
-
-			// Get W (widths array)
-			Object oW;
-			if (oCIDFont.dictLookup("W", &oW)->isArray())
+			for (int i = 0; i < oWidths->arrayGetLength(); ++i)
 			{
-				int i = 0;
-				while (i < oW.arrayGetLength())
+				CObjectGuard oWidth;
+				if (oWidths->arrayGet(i, oWidth.get())->isNum())
 				{
-					Object oStart, oSecond, oThird;
-					if (!oW.arrayGet(i, &oStart)->isInt())
-					{
-						oStart.free();
-						break;
-					}
-
-					if (i + 1 >= oW.arrayGetLength())
-					{
-						oStart.free();
-						break;
-					}
-
-					oW.arrayGet(i + 1, &oSecond);
-
-					if (oSecond.isArray())
-					{
-						// Format: c [w1 w2 ... wn]
-						int nStartCID = oStart.getInt();
-						for (int j = 0; j < oSecond.arrayGetLength(); ++j)
-						{
-							Object oWidth;
-							if (oSecond.arrayGet(j, &oWidth)->isNum())
-								mGIDToWidth[nStartCID + j] = (unsigned int)oWidth.getNum();
-							oWidth.free();
-						}
-						i += 2;
-					}
-					else if (oSecond.isInt())
-					{
-						// Format: cfirst clast w
-						if (i + 2 >= oW.arrayGetLength())
-						{
-							oStart.free(); oSecond.free();
-							break;
-						}
-
-						oW.arrayGet(i + 2, &oThird);
-						if (oThird.isNum())
-						{
-							int nStartCID = oStart.getInt();
-							int nEndCID = oSecond.getInt();
-							unsigned int nWidth = (unsigned int)oThird.getNum();
-							for (int cid = nStartCID; cid <= nEndCID; ++cid)
-								mGIDToWidth[cid] = nWidth;
-						}
-						oThird.free();
-						i += 3;
-					}
-					else
-					{
-						oStart.free(); oSecond.free();
-						break;
-					}
-
-					oStart.free(); oSecond.free();
+					unsigned int nGID = nFirstChar + i;
+					mGIDToWidth[nGID] = (unsigned int)oWidth->getNum();
 				}
 			}
-			oW.free();
 		}
-		oCIDFont.free();
 	}
-	oDescendantFonts.free();
+
+	// CID fonts: DW + W
+	CObjectGuard oDescendantFonts;
+	if (!pFontDict->lookup("DescendantFonts", oDescendantFonts.get())->isArray() || oDescendantFonts->arrayGetLength() <= 0)
+		return nDefaultWidth;
+
+	CObjectGuard oCIDFont;
+	if (!oDescendantFonts->arrayGet(0, oCIDFont.get())->isDict())
+		return nDefaultWidth;
+
+	{
+		CObjectGuard oDW;
+		if (oCIDFont->dictLookup("DW", oDW.get())->isInt())
+			nDefaultWidth = oDW->getInt();
+	}
+
+	CObjectGuard oW;
+	if (!oCIDFont->dictLookup("W", oW.get())->isArray())
+		return nDefaultWidth;
+
+	int i = 0;
+	while (i < oW->arrayGetLength())
+	{
+		CObjectGuard oStart;
+		if (!oW->arrayGet(i, oStart.get())->isInt())
+			break;
+		if (i + 1 >= oW->arrayGetLength())
+			break;
+
+		CObjectGuard oSecond;
+		oW->arrayGet(i + 1, oSecond.get());
+
+		if (oSecond->isArray())
+		{
+			// Format: c [w1 w2 ... wn]
+			int nStartCID = oStart->getInt();
+			for (int j = 0; j < oSecond->arrayGetLength(); ++j)
+			{
+				CObjectGuard oWidth;
+				if (oSecond->arrayGet(j, oWidth.get())->isNum())
+					mGIDToWidth[nStartCID + j] = (unsigned int)oWidth->getNum();
+			}
+			i += 2;
+		}
+		else if (oSecond->isInt())
+		{
+			// Format: cfirst clast w
+			if (i + 2 >= oW->arrayGetLength())
+				break;
+
+			CObjectGuard oThird;
+			oW->arrayGet(i + 2, oThird.get());
+			if (oThird->isNum())
+			{
+				int nStartCID = oStart->getInt();
+				int nEndCID = oSecond->getInt();
+				unsigned int nWidth = (unsigned int)oThird->getNum();
+				for (int cid = nStartCID; cid <= nEndCID; ++cid)
+					mGIDToWidth[cid] = nWidth;
+			}
+			i += 3;
+		}
+		else
+		{
+			break;
+		}
+	}
 
 	return nDefaultWidth;
 }
 
-double CheckFontNamePDF(std::wstring& sName, NSFonts::CFontSelectFormat* format)
-{
-	bool bBold   = false;
-	bool bItalic = false;
-
-	double dStretch = CheckFontStylePDF(sName, bBold, bItalic);
-
-	if (format)
-	{
-		if (bBold)
-			format->bBold = new INT(1);
-		if (bItalic)
-			format->bItalic = new INT(1);
-	}
-
-	return dStretch;
-}
-
-USHORT StretchToWidthClass(double fStretch)
-{
-	if (fStretch <= 0.50)  return 1; // Ultra-condensed
-	if (fStretch <= 0.625) return 2; // Extra-condensed
-	if (fStretch <= 0.75)  return 3; // Condensed
-	if (fStretch <= 0.875) return 4; // Semi-condensed
-	if (fStretch <= 1.0)   return 5; // Normal
-	if (fStretch <= 1.125) return 6; // Semi-expanded
-	if (fStretch <= 1.25)  return 7; // Expanded
-	if (fStretch <= 1.50)  return 8; // Extra-expanded
-	return 9;                        // Ultra-expanded
-}
 NSFonts::CFontInfo* GetFontByParams(XRef* pXref, NSFonts::IFontManager* pFontManager, GfxFont* pFont, std::wstring& wsFontBaseName, double& dStretch)
 {
 	NSFonts::CFontInfo* pFontInfo = NULL;
@@ -2415,77 +2403,79 @@ CType3FontMetrics* BuildType3FontMetrics(XRef* pXref, GfxFont* pFont)
 	CType3FontMetrics* pMetrics = new CType3FontMetrics();
 
 	Ref* pRef = pFont->getID();
-	Object oRefObj, oFontObj;
-	oRefObj.initRef(pRef->num, pRef->gen);
-	oRefObj.fetch(pXref, &oFontObj);
-	oRefObj.free();
-
-	if (!oFontObj.isDict())
+	CObjectGuard oFontObj;
 	{
-		oFontObj.free();
-		return pMetrics;
+		CObjectGuard oRefObj;
+		oRefObj->initRef(pRef->num, pRef->gen);
+		oRefObj->fetch(pXref, oFontObj.get());
 	}
 
-	Object oItem;
+	if (!oFontObj->isDict())
+		return pMetrics;
 
-	if (oFontObj.dictLookup("FontMatrix", &oItem)->isArray() && oItem.arrayGetLength() == 6)
 	{
-		for (int i = 0; i < 6; ++i)
+		CObjectGuard oMatrix;
+		if (oFontObj->dictLookup("FontMatrix", oMatrix.get())->isArray() && oMatrix->arrayGetLength() == 6)
 		{
-			Object oVal;
-			if (oItem.arrayGet(i, &oVal)->isNum())
-				pMetrics->arrFontMatrix[i] = oVal.getNum();
-			oVal.free();
+			for (int i = 0; i < 6; ++i)
+			{
+				CObjectGuard oVal;
+				if (oMatrix->arrayGet(i, oVal.get())->isNum())
+					pMetrics->arrFontMatrix[i] = oVal->getNum();
+			}
 		}
 	}
-	oItem.free();
 
 	if (pMetrics->arrFontMatrix[0] > 0)
 		pMetrics->dUnitsPerEm = std::round(1.0 / pMetrics->arrFontMatrix[0]);
 	else
 		pMetrics->dUnitsPerEm = 1000;
 
-	if (oFontObj.dictLookup("FontBBox", &oItem)->isArray() && oItem.arrayGetLength() == 4)
 	{
-		Object oVal;
-		if (oItem.arrayGet(0, &oVal)->isNum()) pMetrics->dLLx = oVal.getNum(); oVal.free();
-		if (oItem.arrayGet(1, &oVal)->isNum()) pMetrics->dLLy = oVal.getNum(); oVal.free();
-		if (oItem.arrayGet(2, &oVal)->isNum()) pMetrics->dURx = oVal.getNum(); oVal.free();
-		if (oItem.arrayGet(3, &oVal)->isNum()) pMetrics->dURy = oVal.getNum(); oVal.free();
-
-		double dTextY1 = pMetrics->arrFontMatrix[3] * pMetrics->dLLy;
-		double dTextY2 = pMetrics->arrFontMatrix[3] * pMetrics->dURy;
-
-		pMetrics->dAscent  = std::round(std::max(dTextY2 / pMetrics->arrFontMatrix[0], 0.0));
-		pMetrics->dDescent = std::round(std::abs(std::min(dTextY1 / pMetrics->arrFontMatrix[0], 0.0)));
-
-		if (pMetrics->dAscent == 0 && pMetrics->dDescent == 0)
+		CObjectGuard oBBox;
+		if (oFontObj->dictLookup("FontBBox", oBBox.get())->isArray() && oBBox->arrayGetLength() == 4)
 		{
-			pMetrics->dAscent  = pMetrics->dUnitsPerEm * 0.8;
-			pMetrics->dDescent = pMetrics->dUnitsPerEm * 0.2;
+			CObjectGuard oV0, oV1, oV2, oV3;
+			if (oBBox->arrayGet(0, oV0.get())->isNum()) pMetrics->dLLx = oV0->getNum();
+			if (oBBox->arrayGet(1, oV1.get())->isNum()) pMetrics->dLLy = oV1->getNum();
+			if (oBBox->arrayGet(2, oV2.get())->isNum()) pMetrics->dURx = oV2->getNum();
+			if (oBBox->arrayGet(3, oV3.get())->isNum()) pMetrics->dURy = oV3->getNum();
+
+			double dTextY1 = pMetrics->arrFontMatrix[3] * pMetrics->dLLy;
+			double dTextY2 = pMetrics->arrFontMatrix[3] * pMetrics->dURy;
+
+			pMetrics->dAscent  = std::round(std::max(dTextY2 / pMetrics->arrFontMatrix[0], 0.0));
+			pMetrics->dDescent = std::round(std::abs(std::min(dTextY1 / pMetrics->arrFontMatrix[0], 0.0)));
+
+			if (pMetrics->dAscent == 0 && pMetrics->dDescent == 0)
+			{
+				pMetrics->dAscent  = pMetrics->dUnitsPerEm * 0.8;
+				pMetrics->dDescent = pMetrics->dUnitsPerEm * 0.2;
+			}
 		}
 	}
-	oItem.free();
 
 	int nFirstChar = 0;
-	if (oFontObj.dictLookup("FirstChar", &oItem)->isInt())
-		nFirstChar = oItem.getInt();
-	oItem.free();
-
-	if (oFontObj.dictLookup("Widths", &oItem)->isArray())
 	{
-		int nWidthsLen = oItem.arrayGetLength();
-		for (int i = 0; i < nWidthsLen; ++i)
+		CObjectGuard oFirstChar;
+		if (oFontObj->dictLookup("FirstChar", oFirstChar.get())->isInt())
+			nFirstChar = oFirstChar->getInt();
+	}
+
+	{
+		CObjectGuard oWidths;
+		if (oFontObj->dictLookup("Widths", oWidths.get())->isArray())
 		{
-			Object oVal;
-			if (oItem.arrayGet(i, &oVal)->isNum())
-				pMetrics->mapWidths[nFirstChar + i] = oVal.getNum();
-			oVal.free();
+			int nWidthsLen = oWidths->arrayGetLength();
+			for (int i = 0; i < nWidthsLen; ++i)
+			{
+				CObjectGuard oVal;
+				if (oWidths->arrayGet(i, oVal.get())->isNum())
+					pMetrics->mapWidths[nFirstChar + i] = oVal->getNum();
+			}
 		}
 	}
-	oItem.free();
 
-	oFontObj.free();
 	return pMetrics;
 }
 }

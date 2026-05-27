@@ -94,132 +94,80 @@ bool scanFonts(Dict *pResources, int nDepth, std::vector<int>& arrUniqueResource
 {
 	if (nDepth > 5)
 		return false;
-	Object oFonts;
-	if (pResources->lookup("Font", &oFonts)->isDict())
+
 	{
-		for (int i = 0, nLength = oFonts.dictGetLength(); i < nLength; ++i)
+		CObjectGuard oFonts;
+		if (pResources->lookup("Font", oFonts.get())->isDict())
 		{
-			Object oFont, oEncoding;
-			if (!oFonts.dictGetVal(i, &oFont)->isDict() || !oFont.dictLookup("Encoding", &oEncoding)->isName())
+			for (int i = 0, nLength = oFonts->dictGetLength(); i < nLength; ++i)
 			{
-				oFont.free(); oEncoding.free();
-				continue;
+				CObjectGuard oFont, oEncoding;
+				if (!oFonts->dictGetVal(i, oFont.get())->isDict() || !oFont->dictLookup("Encoding", oEncoding.get())->isName())
+					continue;
+				if (IsCMapName(oEncoding->getName()))
+					return true;
 			}
-			oFont.free();
-			char* sName = oEncoding.getName();
-			if (IsCMapName(sName))
-			{
-				oEncoding.free(); oFonts.free();
-				return true;
-			}
-			oEncoding.free();
 		}
 	}
-	oFonts.free();
 
 	auto fScanFonts = [pResources, nDepth, &arrUniqueResources](const char* sName)
 	{
-		Object oObject;
-		if (!pResources->lookup(sName, &oObject)->isDict())
-		{
-			oObject.free();
+		CObjectGuard oObject;
+		if (!pResources->lookup(sName, oObject.get())->isDict())
 			return false;
-		}
-		for (int i = 0, nLength = oObject.dictGetLength(); i < nLength; ++i)
+		for (int i = 0, nLength = oObject->dictGetLength(); i < nLength; ++i)
 		{
-			Object oXObj, oResources;
-			if (!oObject.dictGetVal(i, &oXObj)->isStream() || !oXObj.streamGetDict()->lookup("Resources", &oResources)->isDict())
-			{
-				oXObj.free(); oResources.free();
+			CObjectGuard oXObj, oResources;
+			if (!oObject->dictGetVal(i, oXObj.get())->isStream() || !oXObj->streamGetDict()->lookup("Resources", oResources.get())->isDict())
 				continue;
-			}
-			Object oRef;
-			if (oXObj.streamGetDict()->lookupNF("Resources", &oRef)->isRef() && std::find(arrUniqueResources.begin(), arrUniqueResources.end(), oRef.getRef().num) != arrUniqueResources.end())
-			{
-				oXObj.free(); oResources.free(); oRef.free();
+			CObjectGuard oRef;
+			if (oXObj->streamGetDict()->lookupNF("Resources", oRef.get())->isRef() && std::find(arrUniqueResources.begin(), arrUniqueResources.end(), oRef->getRef().num) != arrUniqueResources.end())
 				continue;
-			}
-			arrUniqueResources.push_back(oRef.getRef().num);
-			oXObj.free(); oRef.free();
-			if (scanFonts(oResources.getDict(), nDepth + 1, arrUniqueResources))
-			{
-				oResources.free(); oObject.free();
+			arrUniqueResources.push_back(oRef->getRef().num);
+			if (scanFonts(oResources->getDict(), nDepth + 1, arrUniqueResources))
 				return true;
-			}
-			oResources.free();
 		}
-		oObject.free();
 		return false;
 	};
 
 	if (fScanFonts("XObject") || fScanFonts("Pattern"))
 		return true;
 
-	Object oExtGState;
-	if (!pResources->lookup("ExtGState", &oExtGState)->isDict())
-	{
-		oExtGState.free();
+	CObjectGuard oExtGState;
+	if (!pResources->lookup("ExtGState", oExtGState.get())->isDict())
 		return false;
-	}
-	for (int i = 0, nLength = oExtGState.dictGetLength(); i < nLength; ++i)
+	for (int i = 0, nLength = oExtGState->dictGetLength(); i < nLength; ++i)
 	{
-		Object oGS, oSMask, oSMaskGroup, oResources;
-		if (!oExtGState.dictGetVal(i, &oGS)->isDict() || !oGS.dictLookup("SMask", &oSMask)->isDict() || !oSMask.dictLookup("G", &oSMaskGroup)->isStream() || !oSMaskGroup.streamGetDict()->lookup("Resources", &oResources)->isDict())
-		{
-			oGS.free(); oSMask.free(); oSMaskGroup.free(); oResources.free();
+		CObjectGuard oGS, oSMask, oSMaskGroup, oResources;
+		if (!oExtGState->dictGetVal(i, oGS.get())->isDict() || !oGS->dictLookup("SMask", oSMask.get())->isDict() || !oSMask->dictLookup("G", oSMaskGroup.get())->isStream() || !oSMaskGroup->streamGetDict()->lookup("Resources", oResources.get())->isDict())
 			continue;
-		}
-		oGS.free(); oSMask.free();
-		Object oRef;
-		if (oSMaskGroup.streamGetDict()->lookupNF("Resources", &oRef)->isRef() && std::find(arrUniqueResources.begin(), arrUniqueResources.end(), oRef.getRef().num) != arrUniqueResources.end())
-		{
-			oSMaskGroup.free(); oResources.free(); oRef.free();
+		CObjectGuard oRef;
+		if (oSMaskGroup->streamGetDict()->lookupNF("Resources", oRef.get())->isRef() && std::find(arrUniqueResources.begin(), arrUniqueResources.end(), oRef->getRef().num) != arrUniqueResources.end())
 			continue;
-		}
-		arrUniqueResources.push_back(oRef.getRef().num);
-		oSMaskGroup.free(); oRef.free();
-		if (scanFonts(oResources.getDict(), nDepth + 1, arrUniqueResources))
-		{
-			oResources.free(); oExtGState.free();
+		arrUniqueResources.push_back(oRef->getRef().num);
+		if (scanFonts(oResources->getDict(), nDepth + 1, arrUniqueResources))
 			return true;
-		}
-		oResources.free();
 	}
-	oExtGState.free();
 
 	return false;
 }
 bool scanAPfonts(Object* oAnnot, std::vector<int>& arrUniqueResources)
 {
-	Object oAP;
-	if (!oAnnot->dictLookup("AP", &oAP)->isDict())
-	{
-		oAP.free();
+	CObjectGuard oAP;
+	if (!oAnnot->dictLookup("AP", oAP.get())->isDict())
 		return false;
-	}
 	auto fScanAPView = [&arrUniqueResources](Object* oAP, const char* sName)
 	{
-		Object oAPi, oRes;
-		if (!oAP->dictLookup(sName, &oAPi)->isStream() || !oAPi.streamGetDict()->lookup("Resources", &oRes)->isDict())
-		{
-			oAPi.free(); oRes.free();
+		CObjectGuard oAPi, oRes;
+		if (!oAP->dictLookup(sName, oAPi.get())->isStream() || !oAPi->streamGetDict()->lookup("Resources", oRes.get())->isDict())
 			return false;
-		}
-		Object oRef;
-		if (oAPi.streamGetDict()->lookupNF("Resources", &oRef)->isRef() && std::find(arrUniqueResources.begin(), arrUniqueResources.end(), oRef.getRef().num) != arrUniqueResources.end())
-		{
-			oAPi.free(); oRes.free(); oRef.free();
+		CObjectGuard oRef;
+		if (oAPi->streamGetDict()->lookupNF("Resources", oRef.get())->isRef() && std::find(arrUniqueResources.begin(), arrUniqueResources.end(), oRef->getRef().num) != arrUniqueResources.end())
 			return false;
-		}
-		arrUniqueResources.push_back(oRef.getRef().num);
-		oAPi.free(); oRef.free();
-		bool bRes = scanFonts(oRes.getDict(), 0, arrUniqueResources);
-		oRes.free();
-		return bRes;
+		arrUniqueResources.push_back(oRef->getRef().num);
+		return scanFonts(oRes->getDict(), 0, arrUniqueResources);
 	};
-	bool bRes = fScanAPView(&oAP, "N") || fScanAPView(&oAP, "D") || fScanAPView(&oAP, "R");
-	oAP.free();
-	return bRes;
+	return fScanAPView(oAP.get(), "N") || fScanAPView(oAP.get(), "D") || fScanAPView(oAP.get(), "R");
 }
 
 std::wstring ComputeFontHash(XRef* pXref, GfxFont* pFont)
@@ -833,92 +781,65 @@ bool IsNeedCMap(PDFDoc* pDoc)
 		if (pResources && scanFonts(pResources, 0, arrUniqueResources))
 			return true;
 
-		Object oAnnots;
-		if (!pPage->getAnnots(&oAnnots)->isArray())
-		{
-			oAnnots.free();
+		CObjectGuard oAnnots;
+		if (!pPage->getAnnots(oAnnots.get())->isArray())
 			continue;
-		}
-		for (int i = 0, nNum = oAnnots.arrayGetLength(); i < nNum; ++i)
+
+		for (int i = 0, nNum = oAnnots->arrayGetLength(); i < nNum; ++i)
 		{
-			Object oAnnot;
-			if (!oAnnots.arrayGet(i, &oAnnot)->isDict())
-			{
-				oAnnot.free();
+			CObjectGuard oAnnot;
+			if (!oAnnots->arrayGet(i, oAnnot.get())->isDict())
 				continue;
-			}
 
-			Object oRefDR;
-			if (oAnnot.dictLookupNF("DR", &oRefDR)->isRef() && std::find(arrUniqueResources.begin(), arrUniqueResources.end(), oRefDR.getRef().num) != arrUniqueResources.end())
-			{
-				oRefDR.free(); oAnnot.free();
+			CObjectGuard oRefDR;
+			if (oAnnot->dictLookupNF("DR", oRefDR.get())->isRef() && std::find(arrUniqueResources.begin(), arrUniqueResources.end(), oRefDR->getRef().num) != arrUniqueResources.end())
 				continue;
-			}
-			arrUniqueResources.push_back(oRefDR.getRef().num);
-			oRefDR.free();
+			arrUniqueResources.push_back(oRefDR->getRef().num);
 
-			Object oDR;
-			if (oAnnot.dictLookup("DR", &oDR)->isDict() && scanFonts(oDR.getDict(), 0, arrUniqueResources))
-			{
-				oDR.free(); oAnnot.free(); oAnnots.free();
+			CObjectGuard oDR;
+			if (oAnnot->dictLookup("DR", oDR.get())->isDict() && scanFonts(oDR->getDict(), 0, arrUniqueResources))
 				return true;
-			}
-			oDR.free();
 
-			if (scanAPfonts(&oAnnot, arrUniqueResources))
-			{
-				oAnnot.free(); oAnnots.free();
+			if (scanAPfonts(oAnnot.get(), arrUniqueResources))
 				return true;
-			}
-			oAnnot.free();
 		}
-		oAnnots.free();
 	}
 
 	AcroForm* pAcroForms = pDoc->getCatalog()->getForm();
 	if (!pAcroForms)
 		return false;
-	Object oDR;
 	Object* oAcroForm = pAcroForms->getAcroFormObj();
 
-	Object oRefDR;
-	if (oAcroForm->dictLookupNF("DR", &oRefDR)->isRef() && std::find(arrUniqueResources.begin(), arrUniqueResources.end(), oRefDR.getRef().num) != arrUniqueResources.end())
-	{
-		oRefDR.free();
+	CObjectGuard oRefDR;
+	if (oAcroForm->dictLookupNF("DR", oRefDR.get())->isRef() && std::find(arrUniqueResources.begin(), arrUniqueResources.end(), oRefDR->getRef().num) != arrUniqueResources.end())
 		return false;
-	}
-	arrUniqueResources.push_back(oRefDR.getRef().num);
-	oRefDR.free();
+	arrUniqueResources.push_back(oRefDR->getRef().num);
 
-	if (oAcroForm->dictLookup("DR", &oDR)->isDict() && scanFonts(oDR.getDict(), 0, arrUniqueResources))
 	{
-		oDR.free();
-		return true;
+		CObjectGuard oDR;
+		if (oAcroForm->dictLookup("DR", oDR.get())->isDict() && scanFonts(oDR->getDict(), 0, arrUniqueResources))
+			return true;
 	}
-	oDR.free();
 
 	for (int i = 0, nNum = pAcroForms->getNumFields(); i < nNum; ++i)
 	{
 		AcroFormField* pField = pAcroForms->getField(i);
 
-		if (pField->getResources(&oDR)->isDict() && scanFonts(oDR.getDict(), 0, arrUniqueResources))
 		{
-			oDR.free();
-			return true;
+			CObjectGuard oDR;
+			if (pField->getResources(oDR.get())->isDict() && scanFonts(oDR->getDict(), 0, arrUniqueResources))
+				return true;
 		}
-		oDR.free();
 
-		Object oWidgetRef, oWidget;
-		pField->getFieldRef(&oWidgetRef);
-		oWidgetRef.fetch(pDoc->getXRef(), &oWidget);
-		oWidgetRef.free();
-
-		if (scanAPfonts(&oWidget, arrUniqueResources))
+		CObjectGuard oWidget;
 		{
-			oWidget.free();
-			return true;
+			CObjectGuard oWidgetRef;
+			pField->getFieldRef(oWidgetRef.get());
+			oWidgetRef->fetch(pDoc->getXRef(), oWidget.get());
 		}
-		oWidget.free();
+
+		if (scanAPfonts(oWidget.get(), arrUniqueResources))
+			return true;
 	}
 
 	return false;
@@ -1154,66 +1075,62 @@ bool GetFontFromAP(PDFDoc* pdfDoc, AcroFormField* pField, Object* oFontRef, std:
 {
 	bool bFindResources = false;
 
-	Object oAP, oN;
+	CObjectGuard oAP, oN;
 	XRef* xref = pdfDoc->getXRef();
-	if (pField->fieldLookup("AP", &oAP)->isDict() && oAP.dictLookup("N", &oN)->isStream())
-	{
-		Parser* parser = new Parser(xref, new Lexer(xref, &oN), gFalse);
+	if (!pField->fieldLookup("AP", oAP.get())->isDict() || !oAP->dictLookup("N", oN.get())->isStream())
+		return false;
 
-		bool bFindFont = false;
-		Object oObj1, oObj2, oObj3;
-		parser->getObj(&oObj1);
-		while (!oObj1.isEOF())
+	Parser* parser = new Parser(xref, new Lexer(xref, oN.get()), gFalse);
+
+	bool bFindFont = false;
+	CObjectGuard oObj1, oObj2, oObj3;
+	parser->getObj(oObj1.get());
+	while (!oObj1->isEOF())
+	{
+		if (oObj1->isName())
 		{
-			if (oObj1.isName())
+			parser->getObj(oObj2.get());
+			if (oObj2->isEOF())
+				break;
+			if (oObj2->isNum())
 			{
-				parser->getObj(&oObj2);
-				if (oObj2.isEOF())
+				parser->getObj(oObj3.get());
+				if (oObj3->isEOF())
 					break;
-				if (oObj2.isNum())
+				if (oObj3->isCmd("Tf"))
 				{
-					parser->getObj(&oObj3);
-					if (oObj3.isEOF())
-						break;
-					if (oObj3.isCmd("Tf"))
-					{
-						bFindFont = true;
-						break;
-					}
+					bFindFont = true;
+					break;
 				}
 			}
-			if (oObj2.isName())
-			{
-				oObj1.free();
-				oObj2.copy(&oObj1);
-				oObj2.free(); oObj3.free();
-				continue;
-			}
-			if (oObj3.isName())
-			{
-				oObj1.free();
-				oObj3.copy(&oObj1);
-				oObj3.free(); oObj2.free();
-				continue;
-			}
-			oObj1.free(); oObj2.free(); oObj3.free();
-
-			parser->getObj(&oObj1);
 		}
-
-		if (bFindFont && oObj1.isName())
+		if (oObj2->isName())
 		{
-			Object oR, oFonts;
-			bFindResources = oN.streamGetDict()->lookup("Resources", &oR)->isDict() && oR.dictLookup("Font", &oFonts)->isDict() && oFonts.dictLookupNF(oObj1.getName(), oFontRef)->isRef();
-			sFontKey = oObj1.getName();
-			oR.free(); oFonts.free();
+			oObj1->free();
+			oObj2->copy(oObj1.get());
+			oObj2->free(); oObj3->free();
+			continue;
 		}
+		if (oObj3->isName())
+		{
+			oObj1->free();
+			oObj3->copy(oObj1.get());
+			oObj3->free(); oObj2->free();
+			continue;
+		}
+		oObj1->free(); oObj2->free(); oObj3->free();
 
-		oObj1.free(); oObj2.free(); oObj3.free();
-		RELEASEOBJECT(parser);
+		parser->getObj(oObj1.get());
 	}
-	oAP.free(); oN.free();
 
+	if (bFindFont && oObj1->isName())
+	{
+		CObjectGuard oR, oFonts;
+		bFindResources = oN->streamGetDict()->lookup("Resources", oR.get())->isDict() && oR->dictLookup("Font", oFonts.get())->isDict() && oFonts->dictLookupNF(oObj1->getName(), oFontRef)->isRef();
+		sFontKey = oObj1->getName();
+	}
+
+	RELEASEOBJECT(parser);
 	return bFindResources;
 }
 bool FindFonts(Object* oStream, int nDepth, Object* oResFonts)
@@ -1221,78 +1138,56 @@ bool FindFonts(Object* oStream, int nDepth, Object* oResFonts)
 	if (nDepth > 5)
 		return false;
 
-	Object oResources;
-	if (!oStream->streamGetDict()->lookup("Resources", &oResources)->isDict())
-	{
-		oResources.free();
+	CObjectGuard oResources;
+	if (!oStream->streamGetDict()->lookup("Resources", oResources.get())->isDict())
 		return false;
-	}
 
-	if (oResources.dictLookup("Font", oResFonts)->isDict())
-	{
-		oResources.free();
+	// oResFonts — out-параметр, его освобождает вызывающий
+	if (oResources->dictLookup("Font", oResFonts)->isDict())
 		return true;
-	}
 
-	Object oXObject;
-	if (oResources.dictLookup("XObject", &oXObject)->isDict())
+	CObjectGuard oXObject;
+	if (oResources->dictLookup("XObject", oXObject.get())->isDict())
 	{
-		for (int i = 0, nLength = oXObject.dictGetLength(); i < nLength; ++i)
+		for (int i = 0, nLength = oXObject->dictGetLength(); i < nLength; ++i)
 		{
-			Object oXObj;
-			if (!oXObject.dictGetVal(i, &oXObj)->isStream())
-			{
-				oXObj.free();
+			CObjectGuard oXObj;
+			if (!oXObject->dictGetVal(i, oXObj.get())->isStream())
 				continue;
-			}
-			if (FindFonts(&oXObj, nDepth + 1, oResFonts))
-			{
-				oXObj.free(); oXObject.free(); oResources.free();
+			if (FindFonts(oXObj.get(), nDepth + 1, oResFonts))
 				return true;
-			}
-			oXObj.free();
 		}
 	}
-	oXObject.free(); oResources.free();
 	return false;
 }
 std::vector<CAnnotFontInfo> GetAnnotFontInfos(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList* pFontList, Object* oAnnotRef)
 {
 	std::vector<CAnnotFontInfo> result;
 
-	Object oAnnot, oObj;
 	XRef* pXref = pdfDoc->getXRef();
-	oAnnotRef->fetch(pXref, &oAnnot);
+	CObjectGuard oAnnot;
+	oAnnotRef->fetch(pXref, oAnnot.get());
 
-	Object oAP, oN;
-	if (!oAnnot.dictLookup("AP", &oAP)->isDict() || !oAP.dictLookup("N", &oN)->isStream())
+	CObjectGuard oN;
 	{
-		oAP.free(); oN.free(); oAnnot.free();
-		return result;
+		CObjectGuard oAP;
+		if (!oAnnot->dictLookup("AP", oAP.get())->isDict() || !oAP->dictLookup("N", oN.get())->isStream())
+			return result;
 	}
-	oAP.free();
 
-	Object oFonts;
-	if (!FindFonts(&oN, 0, &oFonts))
-	{
-		oN.free(); oFonts.free(); oAnnot.free();
+	CObjectGuard oFonts;
+	if (!FindFonts(oN.get(), 0, oFonts.get()))
 		return result;
-	}
-	oN.free();
 
-	for (int i = 0, nFonts = oFonts.dictGetLength(); i < nFonts; ++i)
+	for (int i = 0, nFonts = oFonts->dictGetLength(); i < nFonts; ++i)
 	{
-		Object oFontRef;
-		if (!oFonts.dictGetValNF(i, &oFontRef)->isRef())
-		{
-			oFontRef.free();
+		CObjectGuard oFontRef;
+		if (!oFonts->dictGetValNF(i, oFontRef.get())->isRef())
 			continue;
-		}
 
 		CAnnotFontInfo info;
 		std::string sFontName, sActualFontName;
-		info.wsFontPath = GetFontData(pdfDoc, pFontManager, pFontList, &oFontRef, sFontName, sActualFontName, info.bBold, info.bItalic);
-		oFontRef.free();
+		info.wsFontPath = GetFontData(pdfDoc, pFontManager, pFontList, oFontRef.get(), sFontName, sActualFontName, info.bBold, info.bItalic);
 
 		if (info.wsFontPath.empty() || IsBaseFont(info.wsFontPath))
 			continue;
@@ -1304,7 +1199,6 @@ std::vector<CAnnotFontInfo> GetAnnotFontInfos(PDFDoc* pdfDoc, NSFonts::IFontMana
 		result.push_back(info);
 	}
 
-	oFonts.free(); oAnnot.free();
 	return result;
 }
 

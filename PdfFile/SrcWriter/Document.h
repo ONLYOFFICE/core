@@ -125,9 +125,11 @@ namespace PdfWriter
         void              SetSubject (const std::string& sSubject);
         void              SetKeywords(const std::string& sKeywords);
 
-		void              SetPDFAConformanceMode(bool isPDFA);
 		void              SetRedactInfo(int nFlag);
+		void              SetPDFAConformanceMode(bool isPDFA);
+		void              SetPDFUAConformanceMode(bool isPDFUA);
 		bool              IsPDFA() const;
+		bool              IsPDFUA() const;
 
 		CPage*            AddPage();
 		CPage*            GetPage    (const unsigned int& unPage);
@@ -349,6 +351,7 @@ namespace PdfWriter
 		std::vector<CFontCidTrueType*>     m_vFreeTypeFonts;
 		FT_Library                         m_pFreeTypeLibrary;
 		bool                               m_bPDFAConformance;
+		bool                               m_bPDFUAConformance;
 		int                                m_nRedactInfo;
 		std::wstring                       m_wsDocumentID;
 		CDictObject*                       m_pAcroForm;

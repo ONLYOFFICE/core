@@ -70,7 +70,7 @@ namespace Aggplus
 class CPdfWriter
 {
 public:
-	CPdfWriter(NSFonts::IApplicationFonts* pAppFonts, bool isPDFA = false, IRenderer* pRenderer = NULL, bool bCreate = true, const std::wstring& wsTempDirectory = L"");
+	CPdfWriter(NSFonts::IApplicationFonts* pAppFonts, bool isPDFA = false, bool isPDFUA = false, IRenderer* pRenderer = NULL, bool bCreate = true, const std::wstring& wsTempDirectory = L"");
 	~CPdfWriter();
 	int          SaveToFile(const std::wstring& wsPath);
 	int          SaveToMemory(BYTE** pData, int* pLength);

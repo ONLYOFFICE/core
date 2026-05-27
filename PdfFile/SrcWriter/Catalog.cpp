@@ -79,6 +79,13 @@ namespace PdfWriter
 			Add("MarkInfo", pMarkInfo);
 			Add("StructTreeRoot", new CStructureTreeRoot(pXref));
 
+			if (pXref->IsPDFUA())
+			{
+				Add("Lang", new CStringObject("und"));
+				CDictObject* pVP = new CDictObject();
+				pVP->Add("DisplayDocTitle", true);
+				Add("ViewerPreferences", pVP);
+			}
 
 			CArrayObject* pArray = new CArrayObject();
 			Add("OutputIntents", pArray);

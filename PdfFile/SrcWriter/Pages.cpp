@@ -997,6 +997,9 @@ namespace PdfWriter
 
 		m_pStream->WriteStr("q\012");
 		m_pGrState = pState;
+
+		if (m_pDocument->IsPDFUA())
+			m_pStream->WriteStr("/Artifact BMC\012");
 	}
     void CPage::GrRestore()
 	{
@@ -1010,6 +1013,9 @@ namespace PdfWriter
 		CGrState* pPrev = m_pGrState->m_pPrev;
 		delete m_pGrState;
 		m_pGrState = pPrev;
+
+		if (m_pDocument->IsPDFUA())
+			m_pStream->WriteStr("EMC\012");
 
 		m_pStream->WriteStr("Q\012");
 	}

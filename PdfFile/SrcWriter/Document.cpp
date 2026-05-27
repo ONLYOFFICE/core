@@ -98,6 +98,7 @@ namespace PdfWriter
 		m_pTransparencyGroup = NULL;
 		m_pFreeTypeLibrary  = NULL;
 		m_bPDFAConformance	= false;
+		m_bPDFUAConformance = false;
 		m_nRedactInfo       = 0;
 		m_pAcroForm         = NULL;
 		m_pFieldsResources  = NULL;
@@ -508,6 +509,10 @@ namespace PdfWriter
 	{
 		m_bPDFAConformance = isPDFA;		
 	}
+	void CDocument::SetPDFUAConformanceMode(bool isPDFUA)
+	{
+		m_bPDFUAConformance = isPDFUA;
+	}
 	void CDocument::SetRedactInfo(int nFlag)
 	{
 		m_nRedactInfo = nFlag;
@@ -515,6 +520,10 @@ namespace PdfWriter
 	bool CDocument::IsPDFA() const
 	{
 		return m_bPDFAConformance;
+	}
+	bool CDocument::IsPDFUA() const
+	{
+		return m_bPDFUAConformance;
 	}
     void CDocument::AddPageLabel(EPageNumStyle eStyle, unsigned int unFirstPage, const char* sPrefix)
 	{

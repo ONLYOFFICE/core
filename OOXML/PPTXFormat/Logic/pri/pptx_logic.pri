@@ -33,12 +33,10 @@
 
 LOGIC_DIR = $$PWD/..
 
-core_release {
+build_monolith_objects {
 SOURCES += \
 	$$PWD/pptx_format_logic.cpp
-}
-
-core_debug {
+} else {
 SOURCES +=  \
 	$$LOGIC_DIR/Media/WavAudioFile.cpp \
 	$$LOGIC_DIR/Media/AudioCD.cpp \
@@ -566,4 +564,4 @@ HEADERS += \
 	../../../PPTXFormat/Theme.h \
 	../../../PPTXFormat/ViewProps.h \
 	../../../PPTXFormat/WrapperFile.h \
-	../../../PPTXFormat/WrapperWritingElement.h \
+	../../../PPTXFormat/WrapperWritingElement.h

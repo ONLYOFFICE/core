@@ -4179,6 +4179,11 @@ int Binary_SettingsTableReader::ReadSettings(BYTE type, long length, void* poRes
 		pSettings->m_oDisplayVerticalDrawingGridEvery.Init();
 		pSettings->m_oDisplayVerticalDrawingGridEvery->m_oVal = m_oBufferedStream.GetLong();
 	}
+	else if (c_oSer_SettingsType::CharacterSpacingControl == type)
+	{
+		pSettings->m_oCharacterSpacingControl.Init();
+		pSettings->m_oCharacterSpacingControl->m_oVal.SetValueFromByte(m_oBufferedStream.GetUChar());
+	}
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;

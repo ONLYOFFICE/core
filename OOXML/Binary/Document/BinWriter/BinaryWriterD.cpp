@@ -9157,6 +9157,12 @@ void BinarySettingsTableWriter::WriteSettingsContent(OOX::CSettings& oSettings, 
 		m_oBcw.m_oStream.WriteLONG(*oSettings.m_oDisplayVerticalDrawingGridEvery->m_oVal);
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
+	if (oSettings.m_oCharacterSpacingControl.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_SettingsType::CharacterSpacingControl);
+		m_oBcw.m_oStream.WriteBYTE(oSettings.m_oCharacterSpacingControl->m_oVal.GetValue());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
 };
 void BinarySettingsTableWriter::WriteMathPr(const OOX::Logic::CMathPr &pMathPr)
 {

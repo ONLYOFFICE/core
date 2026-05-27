@@ -483,16 +483,16 @@ namespace OOX
 			if(m_oPivotCaches.IsInit())
 			{
 				for(auto i : m_oPivotCaches->m_arrItems)
-				{	auto pivotCacheBin = i->toXLS();
-
+				{
 					if(!i->m_oCacheId.IsInit() || !i->m_oRid.IsInit() ||  !this->IsExist(i->m_oRid->GetValue()))
-					continue;
+						continue;
 					auto cacheFilePtr = this->Find(i->m_oRid->GetValue());
 					auto CachePtr = static_cast<CPivotCacheDefinitionFile*>(cacheFilePtr.GetPointer());
 					if(CachePtr->m_oPivotCashDefinition.IsInit() && CachePtr->m_oPivotCashDefinition->m_oCacheSource.IsInit()
 						&& CachePtr->m_oPivotCashDefinition->m_oCacheSource->m_oType.IsInit()
 						&& CachePtr->m_oPivotCashDefinition->m_oCacheSource->m_oType->GetValue() == SimpleTypes::Spreadsheet::ESourceCacheType::typeSourceWorksheet)
 					{
+						auto pivotCacheBin = i->toXLS();
 						auto source = CachePtr->m_oPivotCashDefinition->m_oCacheSource;
 						auto castedPivotCache = static_cast<XLS::PIVOTCACHEDEFINITION*>(pivotCacheBin.get());
 						auto cacheSourcePtr = new XLS::SXSRC;
@@ -514,8 +514,8 @@ namespace OOX
 							dref->m_DCon = XLS::BaseObjectPtr(conName);
 							conName->stName = source->m_oWorksheetSource->m_oName.get();
 						}
+						globalsSubstream->m_arPIVOTCACHEDEFINITION.push_back(pivotCacheBin);
 					}
-					globalsSubstream->m_arPIVOTCACHEDEFINITION.push_back(pivotCacheBin);
 				}
 			}
 			return objectPtr;

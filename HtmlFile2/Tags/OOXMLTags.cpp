@@ -75,20 +75,21 @@ const static double HTML_FONTS[7] = {7.5, 10, 12, 13.5, 18, 24, 36};
 void InitTagsForOOXML(std::map<int, std::shared_ptr<ITag> >& mTags, COOXMLWriter* pWriter)
 {
 	#define HTML_TAG(tag) GUMBO_TAG_##tag
+	#define ADD_TAG(tag_name, tag_class_name) mTags[HTML_TAG(tag_name)] = std::make_shared<C ##tag_class_name##OOXMLTag> (pWriter)
 
-	mTags[HTML_TAG(A)]          = std::make_shared<CAnchorOOXMLTag>        (pWriter);
-	mTags[HTML_TAG(ABBR)]       = std::make_shared<CAbbrOOXMLTag>          (pWriter);
-	mTags[HTML_TAG(BR)]         = std::make_shared<CBreakOOXMLTag>         (pWriter);
-	mTags[HTML_TAG(FONT)]       = std::make_shared<CFontOOXMLTag>          (pWriter);
-	mTags[HTML_TAG(INPUT)]      = std::make_shared<CInputOOXMLTag>         (pWriter);
-	mTags[HTML_TAG(BASEFONT)]   = std::make_shared<CBaseFontOOXMLTag>      (pWriter);
-	mTags[HTML_TAG(OL)]         = std::make_shared<CListOOXMLTag>          (pWriter);
-	mTags[HTML_TAG(LI)]         = std::make_shared<CListElementOOXMLTag>   (pWriter);
-	mTags[HTML_TAG(HTML)]       = std::make_shared<CHTMLOOXMLTag>          (pWriter);
-	mTags[HTML_TAG(DIV)]        = std::make_shared<CDivisionOOXMLTag>      (pWriter);
-	mTags[HTML_TAG(IMG)]        = std::make_shared<CImageOOXMLTag>         (pWriter);
-	mTags[HTML_TAG(BLOCKQUOTE)] = std::make_shared<CBlockquoteOOXMLTag>    (pWriter);
-	mTags[HTML_TAG(HR)]         = std::make_shared<CHorizontalRuleOOXMLTag>(pWriter);
+	ADD_TAG(A,          Anchor);
+	ADD_TAG(ABBR,       Abbr);
+	ADD_TAG(BR,         Break);
+	ADD_TAG(FONT,       Font);
+	ADD_TAG(INPUT,      Input);
+	ADD_TAG(BASEFONT,   BaseFont);
+	ADD_TAG(OL,         List);
+	ADD_TAG(LI,         ListElement);
+	ADD_TAG(HTML,       HTML);
+	ADD_TAG(DIV,        Division);
+	ADD_TAG(IMG,        Image);
+	ADD_TAG(BLOCKQUOTE, Blockquote);
+	ADD_TAG(HR,         HorizontalRule);
 }
 
 bool CAnchorOOXMLTag::Open(const std::vector<NSCSS::CNode>& arSelectors)

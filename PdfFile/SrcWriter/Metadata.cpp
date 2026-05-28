@@ -54,7 +54,7 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	// Metadata
 	//----------------------------------------------------------------------------------------
-	CMetadata::CMetadata(CXref* pXref, CInfoDict* pInfo)
+	CMetadata::CMetadata(CXref* pXref, CInfoDict* pInfo, const std::string& sAltTitle)
 	{
 		pXref->Add(this);
 
@@ -122,7 +122,7 @@ namespace PdfWriter
 		const char* sAuthor  = pInfo->GetInfo(InfoAuthor);
 		const char* sSubject = pInfo->GetInfo(InfoSubject);
 		if (pXref->IsPDFUA() && !sTitle)
-			sTitle = "Title";
+			sTitle = sAltTitle.c_str();
 		if (sTitle || sAuthor || sSubject)
 		{
 			sXML += "<rdf:Description rdf:about=\"\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\">\n";
@@ -160,9 +160,7 @@ namespace PdfWriter
 		if (pXref->IsPDFUA())
 		{
 			sXML += "<rdf:Description rdf:about=\"\" xmlns:pdfuaid=\"http://www.aiim.org/pdfua/ns/id/\">\n";
-			sXML += "<pdfuaid:part>1</pdfuaid:part><pdfuaid:rev>";
-			sXML += std::to_string(pInfo->GetDate().nYear);
-			sXML += "</pdfuaid:rev>\n";
+			sXML += "<pdfuaid:part>2</pdfuaid:part><pdfuaid:rev>2024</pdfuaid:rev>\n";
 			sXML += "</rdf:Description>";
 		}
 		else if (pXref->IsPDFA())

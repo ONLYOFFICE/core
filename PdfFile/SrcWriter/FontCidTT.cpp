@@ -396,8 +396,6 @@ namespace PdfWriter
 		pS->WriteStr(" beginbfchar\n");
 		for (unsigned short ushCode = 0; ushCode < m_ushCodesCount; ushCode++)
 		{
-			if (!m_mGlyphs[m_vCodeToGid[ushCode]])
-				continue;
 			pS->WriteChar('<');
 			pS->WriteHex(ushCode, 4);
 			pS->WriteStr("> <");
@@ -555,7 +553,7 @@ namespace PdfWriter
 				m_vGlypWidths.push_back((unsigned int)(m_pFace->glyph->metrics.width) * 1000 / m_pFace->units_per_EM);
 			}
 
-			for (int nSubIndex = 0; nSubIndex < m_pFace->glyph->num_subglyphs; nSubIndex++)
+			for (unsigned int nSubIndex = 0; nSubIndex < m_pFace->glyph->num_subglyphs; nSubIndex++)
 			{
 				FT_Int       nSubGID;
 				FT_UInt      unFlags;
@@ -566,7 +564,8 @@ namespace PdfWriter
 
 				m_mGlyphs.insert(std::pair<unsigned short, bool>(nSubGID, false));
 
-				EncodeGID(nSubGID, NULL, 0);
+				unsigned int unSubUnicode = GetUnicodeByGID(nSubGID);
+				EncodeGID(nSubGID, &unSubUnicode, 1);
 				FT_Load_Glyph(m_pFace, unGID, FT_LOAD_NO_SCALE | FT_LOAD_NO_RECURSE);
 			}
 		}
@@ -579,5 +578,17 @@ namespace PdfWriter
 		}
 
 		return ushCode;
+	}
+	int CFontCidTrueType::GetUnicodeByGID(int gid)
+	{
+		FT_UInt gindex = 0;
+		FT_ULong charcode = FT_Get_First_Char(m_pFace, &gindex);
+		while (gindex != 0)
+		{
+			if (gindex == gid)
+				return charcode;
+			charcode = FT_Get_Next_Char(m_pFace, charcode, &gindex);
+		}
+		return 0;
 	}
 }

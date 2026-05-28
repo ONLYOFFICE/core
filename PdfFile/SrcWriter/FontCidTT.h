@@ -106,6 +106,7 @@ namespace PdfWriter
 		~CFontCidTrueType();
 		unsigned short EncodeUnicode(const unsigned int& unUnicode);
 		unsigned short EncodeGID(const unsigned int& unGID, const unsigned int* pUnicodes, const unsigned int& unCount);
+		int GetUnicodeByGID(int gid);
 
 		bool           HaveChar(const unsigned int& unUnicode);
 		unsigned int   GetChar(const unsigned int& unUnicode);

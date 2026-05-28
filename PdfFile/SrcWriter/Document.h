@@ -240,7 +240,7 @@ namespace PdfWriter
 		void              AddFreeTypeFont(CFontCidTrueType* pFont);
         FT_Library        GetFreeTypeLibrary();
 		CExtGrState*      FindExtGrState(double dAlphaStroke = -1, double dAlphaFill = -1, EBlendMode eMode = blendmode_Unknown, int nStrokeAdjustment = -1);
-		void              SaveToStream(CStream* pStream);
+		void              SaveToStream(CStream* pStream, const std::string& sAltTitle = "");
 		void              PrepareEncryption();
 		CDictObject*      CreatePageLabel(EPageNumStyle eStyle, unsigned int unFirstPage, const char* sPrefix);
 		CShading*         CreateShading(CPage* pPage, double *pPattern, bool bAxial, unsigned char* pColors, unsigned char* pAlphas, double* pPoints, int nCount, CExtGrState*& pExtGrState);

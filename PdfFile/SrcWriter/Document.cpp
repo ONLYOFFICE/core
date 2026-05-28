@@ -69,8 +69,9 @@
 
 namespace PdfWriter
 {
-	const char* c_sPdfHeader = "%PDF-1.7\015%\315\312\322\251\015";
-	const char* c_sPdfAHeader = "%PDF-1.4\015%\315\312\322\251\015";
+	const char* c_sPdfHeader   = "%PDF-1.7";
+	const char* c_sPdfAHeader  = "%PDF-1.4";
+	const char* c_sPdfUAHeader = "%PDF-2.0";
 	//----------------------------------------------------------------------------------------
 	// CDocument
 	//----------------------------------------------------------------------------------------
@@ -98,6 +99,7 @@ namespace PdfWriter
 		m_pTransparencyGroup = NULL;
 		m_pFreeTypeLibrary  = NULL;
 		m_bPDFAConformance	= false;
+		m_bPDFUAConformance = false;
 		m_nRedactInfo       = 0;
 		m_pAcroForm         = NULL;
 		m_pFieldsResources  = NULL;
@@ -239,7 +241,14 @@ namespace PdfWriter
 		if (m_pJbig2)
 			m_pJbig2->FlushStreams();
 
-		SaveToStream((CStream*)pStream);
+		std::string sAltName;
+		if (IsPDFUA())
+		{
+			std::wstring wsAltName = NSFile::GetFileName(wsPath);
+			sAltName = U_TO_UTF8(wsAltName);
+		}
+
+		SaveToStream((CStream*)pStream, sAltName);
 		delete pStream;
 
 		Sign(wsPath, m_pXref->GetSizeXRef() + 1, true);
@@ -263,16 +272,19 @@ namespace PdfWriter
 		pStream->ClearWithoutAttack();
 		return true;
 	}
-    void CDocument::SaveToStream(CStream* pStream)
+	void CDocument::SaveToStream(CStream* pStream, const std::string& sAltTitle)
 	{
 		if (~m_nRedactInfo & (1 << 0))
-			m_pCatalog->AddMetadata(m_pXref, m_pInfo);
+			m_pCatalog->AddMetadata(m_pXref, m_pInfo, sAltTitle);
 
 		// Write header
-		if (IsPDFA())
+		if (IsPDFUA())
+			pStream->WriteStr(c_sPdfUAHeader);
+		else if (IsPDFA())
 			pStream->WriteStr(c_sPdfAHeader);
 		else
 			pStream->WriteStr(c_sPdfHeader);
+		pStream->WriteStr("\015%\315\312\322\251\015");
 		
 		if (false == m_wsDocumentID.empty())
 		{
@@ -508,6 +520,10 @@ namespace PdfWriter
 	{
 		m_bPDFAConformance = isPDFA;		
 	}
+	void CDocument::SetPDFUAConformanceMode(bool isPDFUA)
+	{
+		m_bPDFUAConformance = isPDFUA;
+	}
 	void CDocument::SetRedactInfo(int nFlag)
 	{
 		m_nRedactInfo = nFlag;
@@ -515,6 +531,10 @@ namespace PdfWriter
 	bool CDocument::IsPDFA() const
 	{
 		return m_bPDFAConformance;
+	}
+	bool CDocument::IsPDFUA() const
+	{
+		return m_bPDFUAConformance;
 	}
     void CDocument::AddPageLabel(EPageNumStyle eStyle, unsigned int unFirstPage, const char* sPrefix)
 	{
@@ -807,6 +827,13 @@ namespace PdfWriter
 		CAnnotation* pAnnot = new CDestLinkAnnotation(m_pXref, pDest);
 		pAnnot->SetRect(oRect);
 		m_pXref->Add(pAnnot);
+
+		if (IsPDFUA())
+		{
+			CStructureTreeRoot* pRoot = m_pCatalog->GetStructTreeRoot();
+			pRoot->AddAnnot(pAnnot, m_pCurPage, StructElemType::Link);
+		}
+
 		return pAnnot;
 	}
 	CAnnotation* CDocument::CreateUriLinkAnnot(const TRect& oRect, const char* sUrl)
@@ -814,6 +841,13 @@ namespace PdfWriter
 		CAnnotation* pAnnot = new CUriLinkAnnotation(m_pXref, sUrl);
 		pAnnot->SetRect(oRect);
 		m_pXref->Add(pAnnot);
+
+		if (IsPDFUA())
+		{
+			CStructureTreeRoot* pRoot = m_pCatalog->GetStructTreeRoot();
+			pRoot->AddAnnot(pAnnot, m_pCurPage, StructElemType::Link);
+		}
+
 		return pAnnot;
 	}
 	CAction* CDocument::CreateAction(BYTE nType)

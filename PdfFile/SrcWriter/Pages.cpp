@@ -501,6 +501,9 @@ namespace PdfWriter
 		Add("Type", "Page");
 		Add("Contents", m_pContents);
 		AddResource();
+
+		if (pXref->IsPDFUA())
+			Add("Tabs", "S");
 	}
 	CPage::~CPage()
 	{
@@ -997,6 +1000,9 @@ namespace PdfWriter
 
 		m_pStream->WriteStr("q\012");
 		m_pGrState = pState;
+
+		if (m_pDocument->IsPDFUA())
+			m_pStream->WriteStr("/Artifact <</Type /Layout>> BDC\012");
 	}
     void CPage::GrRestore()
 	{
@@ -1010,6 +1016,9 @@ namespace PdfWriter
 		CGrState* pPrev = m_pGrState->m_pPrev;
 		delete m_pGrState;
 		m_pGrState = pPrev;
+
+		if (m_pDocument->IsPDFUA())
+			m_pStream->WriteStr("EMC\012");
 
 		m_pStream->WriteStr("Q\012");
 	}

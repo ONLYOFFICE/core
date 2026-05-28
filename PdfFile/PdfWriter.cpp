@@ -161,7 +161,7 @@ Aggplus::CImage* ConvertMetafile(NSFonts::IApplicationFonts* pAppFonts, const st
 // CPdfRenderer
 //
 //----------------------------------------------------------------------------------------
-CPdfWriter::CPdfWriter(NSFonts::IApplicationFonts* pAppFonts, bool isPDFA, IRenderer* pRenderer, bool bCreate, const std::wstring& wsTempDirectory) : m_oCommandManager(this)
+CPdfWriter::CPdfWriter(NSFonts::IApplicationFonts* pAppFonts, bool isPDFA, bool isPDFUA, IRenderer* pRenderer, bool bCreate, const std::wstring& wsTempDirectory) : m_oCommandManager(this)
 {
 	// Create font manager with its own cache
 	m_pFontManager = pAppFonts->GenerateFontManager();
@@ -178,6 +178,8 @@ CPdfWriter::CPdfWriter(NSFonts::IApplicationFonts* pAppFonts, bool isPDFA, IRend
 
 	if (isPDFA)
 		m_pDocument->SetPDFAConformanceMode(true);
+	if (isPDFUA)
+		m_pDocument->SetPDFUAConformanceMode(true);
 
 	if (!m_pDocument || (bCreate && !m_pDocument->CreateNew()))
 	{

@@ -39,6 +39,7 @@
 #include "Metadata.h"
 #include "Streams.h"
 #include "ICCProfile.h"
+#include "Annotation.h"
 
 namespace PdfWriter
 {
@@ -62,11 +63,20 @@ namespace PdfWriter
 		"UseAttachments",
 		NULL
 	};
+	const static char* c_sStructElemType[] =
+	{
+		"Link",
+		"Form",
+		"Annot",
+		NULL
+	};
 	//----------------------------------------------------------------------------------------
 	// CCatalog
 	//----------------------------------------------------------------------------------------
 	CCatalog::CCatalog(CXref* pXref)
 	{
+		m_pStructTreeRoot = NULL;
+
 		pXref->Add(this);
 
 		Add("Type", "Catalog");
@@ -77,8 +87,16 @@ namespace PdfWriter
 			CDictObject* pMarkInfo = new CDictObject();
 			pMarkInfo->Add("Marked", true);
 			Add("MarkInfo", pMarkInfo);
-			Add("StructTreeRoot", new CStructureTreeRoot(pXref));
+			m_pStructTreeRoot = new CStructureTreeRoot(pXref);
+			Add("StructTreeRoot", m_pStructTreeRoot);
 
+			if (pXref->IsPDFUA())
+			{
+				Add("Lang", new CStringObject("en-US"));
+				CDictObject* pVP = new CDictObject();
+				pVP->Add("DisplayDocTitle", true);
+				Add("ViewerPreferences", pVP);
+			}
 
 			CArrayObject* pArray = new CArrayObject();
 			Add("OutputIntents", pArray);
@@ -183,18 +201,103 @@ namespace PdfWriter
 		pNums->Add(unPageNum);
 		pNums->Add(pPageLabel);
 	}
-	CMetadata*   CCatalog::AddMetadata(CXref* pXref, CInfoDict* pInfo)
+	CMetadata*   CCatalog::AddMetadata(CXref* pXref, CInfoDict* pInfo, const std::string& sAltTitle)
 	{
-		CMetadata* pMetadata = new CMetadata(pXref, pInfo);
+		CMetadata* pMetadata = new CMetadata(pXref, pInfo, sAltTitle);
 		Add("Metadata", pMetadata);
 		return pMetadata;
+	}
+	CStructureTreeRoot* CCatalog::GetStructTreeRoot()
+	{
+		return m_pStructTreeRoot;
 	}
 	//----------------------------------------------------------------------------------------
 	// CStructureTreeRoot
 	//----------------------------------------------------------------------------------------
 	CStructureTreeRoot::CStructureTreeRoot(CXref* pXref)
 	{
+		m_pXref = pXref;
+		m_nParentTreeKey = 0;
+		m_pNamespace     = NULL;
+		m_pParentTree    = NULL;
+		m_pDocumentElem  = NULL;
+		m_pDocumentK     = NULL;
+
 		pXref->Add(this);
 		Add("Type", "StructTreeRoot");
+
+		if (pXref->IsPDFUA())
+		{
+			CDictObject* m_pNamespace = new CDictObject();
+			pXref->Add(m_pNamespace);
+			m_pNamespace->Add("Type", "Namespace");
+			m_pNamespace->Add("NS", new CStringObject("http://iso.org/pdf2/ssn"));
+
+			CArrayObject* pNamespaces = new CArrayObject();
+			Add("Namespaces", pNamespaces);
+			pNamespaces->Add(m_pNamespace);
+
+			m_pDocumentElem = new CDictObject();
+			pXref->Add(m_pDocumentElem);
+			m_pDocumentElem->Add("Type", "StructElem");
+			m_pDocumentElem->Add("S", "Document");
+			m_pDocumentElem->Add("NS", m_pNamespace);
+			m_pDocumentElem->Add("P", this);
+
+			m_pDocumentK = new CArrayObject();
+			m_pDocumentElem->Add("K", m_pDocumentK);
+
+			Add("K", m_pDocumentElem);
+
+			m_pParentTree = new CDictObject();
+			pXref->Add(m_pParentTree);
+			CArrayObject* pNums = new CArrayObject();
+			m_pParentTree->Add("Nums", pNums);
+			Add("ParentTree", m_pParentTree);
+			Add("ParentTreeNextKey", 0);
+		}
+	}
+	void CStructureTreeRoot::AddAnnot(CAnnotation* pAnnot, CDictObject* pPage, StructElemType eType)
+	{
+		if (!m_pDocumentElem || !m_pDocumentK)
+			return;
+
+		int nKey = m_nParentTreeKey++;
+
+		pAnnot->Add("StructParent", nKey);
+		if (pAnnot->GetAnnotationType() == EAnnotType::AnnotWidget)
+		{
+			if (!pAnnot->Get("TU"))
+				pAnnot->Add("TU", new CStringObject(""));
+		}
+		else
+		{
+			if (!pAnnot->Get("Contents"))
+				pAnnot->Add("Contents", new CStringObject(""));
+		}
+
+		CDictObject* pObjR = new CDictObject();
+		pObjR->Add("Type", "OBJR");
+		pObjR->Add("Obj", pAnnot);
+		if (pPage)
+			pObjR->Add("Pg", pPage);
+
+		CDictObject* pLinkElem = new CDictObject();
+		m_pXref->Add(pLinkElem);
+		pLinkElem->Add("Type", "StructElem");
+		pLinkElem->Add("S", c_sStructElemType[(int)eType]);
+		pLinkElem->Add("NS", m_pNamespace);
+		pLinkElem->Add("P", m_pDocumentElem);
+		CArrayObject* pK = new CArrayObject();
+		pK->Add(pObjR);
+		pLinkElem->Add("K", pK);
+
+		m_pDocumentK->Add(pLinkElem);
+
+		CArrayObject* pNums = (CArrayObject*)m_pParentTree->Get("Nums");
+		pNums->Add(nKey);
+		pNums->Add(pLinkElem);
+
+		Add("ParentTreeNextKey", m_nParentTreeKey);
 	}
 }

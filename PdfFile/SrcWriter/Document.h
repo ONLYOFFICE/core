@@ -125,9 +125,11 @@ namespace PdfWriter
         void              SetSubject (const std::string& sSubject);
         void              SetKeywords(const std::string& sKeywords);
 
-		void              SetPDFAConformanceMode(bool isPDFA);
 		void              SetRedactInfo(int nFlag);
+		void              SetPDFAConformanceMode(bool isPDFA);
+		void              SetPDFUAConformanceMode(bool isPDFUA);
 		bool              IsPDFA() const;
+		bool              IsPDFUA() const;
 
 		CPage*            AddPage();
 		CPage*            GetPage    (const unsigned int& unPage);
@@ -238,7 +240,7 @@ namespace PdfWriter
 		void              AddFreeTypeFont(CFontCidTrueType* pFont);
         FT_Library        GetFreeTypeLibrary();
 		CExtGrState*      FindExtGrState(double dAlphaStroke = -1, double dAlphaFill = -1, EBlendMode eMode = blendmode_Unknown, int nStrokeAdjustment = -1);
-		void              SaveToStream(CStream* pStream);
+		void              SaveToStream(CStream* pStream, const std::string& sAltTitle = "");
 		void              PrepareEncryption();
 		CDictObject*      CreatePageLabel(EPageNumStyle eStyle, unsigned int unFirstPage, const char* sPrefix);
 		CShading*         CreateShading(CPage* pPage, double *pPattern, bool bAxial, unsigned char* pColors, unsigned char* pAlphas, double* pPoints, int nCount, CExtGrState*& pExtGrState);
@@ -349,6 +351,7 @@ namespace PdfWriter
 		std::vector<CFontCidTrueType*>     m_vFreeTypeFonts;
 		FT_Library                         m_pFreeTypeLibrary;
 		bool                               m_bPDFAConformance;
+		bool                               m_bPDFUAConformance;
 		int                                m_nRedactInfo;
 		std::wstring                       m_wsDocumentID;
 		CDictObject*                       m_pAcroForm;

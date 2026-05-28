@@ -57,7 +57,7 @@ namespace PdfWriter
 	public:
 		CStructureTreeRoot(CXref* pXref);
 
-		void AddAnnot(CAnnotation* pAnnot, CDictObject* pPage, StructElemType eType);
+		void AddAnnot(CDictObject* pAnnot, CDictObject* pPage, StructElemType eType);
 
 	private:
 		CXref* m_pXref;

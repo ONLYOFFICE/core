@@ -280,7 +280,7 @@ TEST_F(CPdfFileTest, PdfFromBin)
 {
 	GTEST_SKIP();
 
-	pdfFile->CreatePdf(PdfFile::PdfStandard::PDF_UA2);
+	pdfFile->CreatePdf();
 	EXPECT_HRESULT_SUCCEEDED(pdfFile->OnlineWordToPdfFromBinary(NSFile::GetProcessDirectory() + L"/pdf.bin", wsDstFile));
 }
 

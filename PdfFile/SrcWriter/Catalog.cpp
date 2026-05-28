@@ -82,22 +82,20 @@ namespace PdfWriter
 		Add("Type", "Catalog");
 		Add("Pages", new CPageTree(pXref));
 
+		CDictObject* pMarkInfo = new CDictObject();
+		pMarkInfo->Add("Marked", true);
+		Add("MarkInfo", pMarkInfo);
+
+		m_pStructTreeRoot = new CStructureTreeRoot(pXref);
+		Add("StructTreeRoot", m_pStructTreeRoot);
+
+		Add("Lang", new CStringObject("en-US"));
+		CDictObject* pVP = new CDictObject();
+		pVP->Add("DisplayDocTitle", true);
+		Add("ViewerPreferences", pVP);
+
 		if (pXref->IsPDFA())
 		{
-			CDictObject* pMarkInfo = new CDictObject();
-			pMarkInfo->Add("Marked", true);
-			Add("MarkInfo", pMarkInfo);
-			m_pStructTreeRoot = new CStructureTreeRoot(pXref);
-			Add("StructTreeRoot", m_pStructTreeRoot);
-
-			if (pXref->IsPDFUA())
-			{
-				Add("Lang", new CStringObject("en-US"));
-				CDictObject* pVP = new CDictObject();
-				pVP->Add("DisplayDocTitle", true);
-				Add("ViewerPreferences", pVP);
-			}
-
 			CArrayObject* pArray = new CArrayObject();
 			Add("OutputIntents", pArray);
 
@@ -218,46 +216,39 @@ namespace PdfWriter
 	{
 		m_pXref = pXref;
 		m_nParentTreeKey = 0;
-		m_pNamespace     = NULL;
-		m_pParentTree    = NULL;
-		m_pDocumentElem  = NULL;
-		m_pDocumentK     = NULL;
 
 		pXref->Add(this);
 		Add("Type", "StructTreeRoot");
 
-		if (pXref->IsPDFUA())
-		{
-			CDictObject* m_pNamespace = new CDictObject();
-			pXref->Add(m_pNamespace);
-			m_pNamespace->Add("Type", "Namespace");
-			m_pNamespace->Add("NS", new CStringObject("http://iso.org/pdf2/ssn"));
+		m_pNamespace = new CDictObject();
+		pXref->Add(m_pNamespace);
+		m_pNamespace->Add("Type", "Namespace");
+		m_pNamespace->Add("NS", new CStringObject("http://iso.org/pdf2/ssn"));
 
-			CArrayObject* pNamespaces = new CArrayObject();
-			Add("Namespaces", pNamespaces);
-			pNamespaces->Add(m_pNamespace);
+		CArrayObject* pNamespaces = new CArrayObject();
+		Add("Namespaces", pNamespaces);
+		pNamespaces->Add(m_pNamespace);
 
-			m_pDocumentElem = new CDictObject();
-			pXref->Add(m_pDocumentElem);
-			m_pDocumentElem->Add("Type", "StructElem");
-			m_pDocumentElem->Add("S", "Document");
-			m_pDocumentElem->Add("NS", m_pNamespace);
-			m_pDocumentElem->Add("P", this);
+		m_pDocumentElem = new CDictObject();
+		pXref->Add(m_pDocumentElem);
+		m_pDocumentElem->Add("Type", "StructElem");
+		m_pDocumentElem->Add("S", "Document");
+		m_pDocumentElem->Add("NS", m_pNamespace);
+		m_pDocumentElem->Add("P", this);
 
-			m_pDocumentK = new CArrayObject();
-			m_pDocumentElem->Add("K", m_pDocumentK);
+		m_pDocumentK = new CArrayObject();
+		m_pDocumentElem->Add("K", m_pDocumentK);
 
-			Add("K", m_pDocumentElem);
+		Add("K", m_pDocumentElem);
 
-			m_pParentTree = new CDictObject();
-			pXref->Add(m_pParentTree);
-			CArrayObject* pNums = new CArrayObject();
-			m_pParentTree->Add("Nums", pNums);
-			Add("ParentTree", m_pParentTree);
-			Add("ParentTreeNextKey", 0);
-		}
+		m_pParentTree = new CDictObject();
+		pXref->Add(m_pParentTree);
+		CArrayObject* pNums = new CArrayObject();
+		m_pParentTree->Add("Nums", pNums);
+		Add("ParentTree", m_pParentTree);
+		Add("ParentTreeNextKey", 0);
 	}
-	void CStructureTreeRoot::AddAnnot(CAnnotation* pAnnot, CDictObject* pPage, StructElemType eType)
+	void CStructureTreeRoot::AddAnnot(CDictObject* pAnnot, CDictObject* pPage, StructElemType eType)
 	{
 		if (!m_pDocumentElem || !m_pDocumentK)
 			return;
@@ -265,7 +256,7 @@ namespace PdfWriter
 		int nKey = m_nParentTreeKey++;
 
 		pAnnot->Add("StructParent", nKey);
-		if (pAnnot->GetAnnotationType() == EAnnotType::AnnotWidget)
+		if (pAnnot->GetDictType() != EDictType::dict_type_ANNOTATION || ((CAnnotation*)pAnnot)->GetAnnotationType() == EAnnotType::AnnotWidget)
 		{
 			if (!pAnnot->Get("TU"))
 				pAnnot->Add("TU", new CStringObject(""));

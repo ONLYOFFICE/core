@@ -1246,8 +1246,4 @@ namespace PdfWriter
 	{
 		return m_pDocument->IsPDFA();
 	}
-	bool CXref::IsPDFUA() const
-	{
-		return m_pDocument->IsPDFUA();
-	}
 }

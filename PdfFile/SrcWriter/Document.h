@@ -127,9 +127,7 @@ namespace PdfWriter
 
 		void              SetRedactInfo(int nFlag);
 		void              SetPDFAConformanceMode(bool isPDFA);
-		void              SetPDFUAConformanceMode(bool isPDFUA);
 		bool              IsPDFA() const;
-		bool              IsPDFUA() const;
 
 		CPage*            AddPage();
 		CPage*            GetPage    (const unsigned int& unPage);
@@ -184,6 +182,7 @@ namespace PdfWriter
 		CPictureField*    CreatePictureField();
 		CSignatureField*  CreateSignatureField();
 		CDateTimeField*   CreateDateTimeField();
+		void              AddWidget(CFieldBase* pWidget);
 		bool              CheckFieldName(CFieldBase* pField, const std::string& sName);
 
 		bool              HasImage(const std::wstring& wsImagePath, BYTE nAlpha);

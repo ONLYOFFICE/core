@@ -88,12 +88,6 @@ namespace PdfFile
 		errorFileIO        = 10,// Error reading/writing
 		errorMemory        = 11 // Memory exceed
 	} EError;
-	enum class PdfStandard
-	{
-		None,
-		PDF_A2,
-		PDF_UA2
-	};
 }
 
 class PDFFILE_DECL_EXPORT CPdfFile : public IOfficeDrawingFile, public IRenderer
@@ -175,7 +169,6 @@ public:
 	// --- WRITER ---
 
 	void CreatePdf    (bool isPDFA = false);
-	void CreatePdf    (PdfFile::PdfStandard eStandard);
 	int  SaveToFile   (const std::wstring& wsPath);
 	void RotatePage   (int nRotate);
 	void SetPassword  (const std::wstring& wsPassword);

@@ -500,10 +500,8 @@ namespace PdfWriter
 		Add("MediaBox", CArrayObject::CreateBox(0, 0, DEF_PAGE_WIDTH, DEF_PAGE_HEIGHT));
 		Add("Type", "Page");
 		Add("Contents", m_pContents);
+		Add("Tabs", "S");
 		AddResource();
-
-		if (pXref->IsPDFUA())
-			Add("Tabs", "S");
 	}
 	CPage::~CPage()
 	{
@@ -1001,8 +999,7 @@ namespace PdfWriter
 		m_pStream->WriteStr("q\012");
 		m_pGrState = pState;
 
-		if (m_pDocument->IsPDFUA())
-			m_pStream->WriteStr("/Artifact <</Type /Layout>> BDC\012");
+		m_pStream->WriteStr("/Artifact <</Type /Layout>> BDC\012");
 	}
     void CPage::GrRestore()
 	{
@@ -1017,8 +1014,7 @@ namespace PdfWriter
 		delete m_pGrState;
 		m_pGrState = pPrev;
 
-		if (m_pDocument->IsPDFUA())
-			m_pStream->WriteStr("EMC\012");
+		m_pStream->WriteStr("EMC\012");
 
 		m_pStream->WriteStr("Q\012");
 	}

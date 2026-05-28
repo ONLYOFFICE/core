@@ -264,7 +264,7 @@ bool OOX::Spreadsheet::CXlsx::WriteXLS(const CPath& oFilePath)
 			sStream << std::hex  << std::setw(6) << std::setfill(L'0')<< tempcolor.Color->GetARGB(0);
 			writer.globalInfoPtr->RegisterPaletteColor(counter, sStream.str());
 		}
-		CastedGlobalsStram->m_THEME = theme->toXLS();
+		CastedGlobalsStram->m_THEME = theme->toXLS(oFilePath);
 	}
 
 	for(auto i : m_arWorksheets)

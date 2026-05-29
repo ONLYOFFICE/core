@@ -1092,9 +1092,14 @@ void CAnnotWidget::SetFont(PDFDoc* pdfDoc, AcroFormField* pField, NSFonts::IFont
 	else
 		oFontRef.initRef(fontID.num, fontID.gen);
 
-	bool bBold = false, bItalic = false;
-	GetFontData(pdfDoc, pFontManager, pFontList, &oFontRef, m_sFontName, m_sActualFontName, bBold, bItalic);
-	oFontRef.free();
+	GetFontData(pdfDoc, pFontManager, pFontList, &oFontRef);
+
+	TFontEntry pEntry;
+	Ref nFontRef = oFontRef.getRef();
+	pFontList->GetFont(&nFontRef, &pEntry);
+
+	m_sFontName = U_TO_UTF8(pEntry.wsFontName);
+	m_sActualFontName = U_TO_UTF8(pEntry.wsActualFontName);
 
 	// 2 - Actual font
 	if (!m_sActualFontName.empty())
@@ -1104,10 +1109,12 @@ void CAnnotWidget::SetFont(PDFDoc* pdfDoc, AcroFormField* pField, NSFonts::IFont
 	if (!m_sFontKey.empty())
 		m_unFlags |= (1 << 4);
 
-	if (bBold)
+	if (pEntry.bBold)
 		m_unFontStyle |= (1 << 0);
-	if (bItalic)
+	if (pEntry.bItalic)
 		m_unFontStyle |= (1 << 1);
+
+	oFontRef.free();
 }
 void CAnnotWidget::SetButtonFont(PDFDoc* pdfDoc, AcroFormField* pField, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList)
 {
@@ -1119,8 +1126,16 @@ void CAnnotWidget::SetButtonFont(PDFDoc* pdfDoc, AcroFormField* pField, NSFonts:
 		return;
 	}
 
-	bool bBold = false, bItalic = false;
-	GetFontData(pdfDoc, pFontManager, pFontList, &oFontRef, m_sButtonFontName, m_sButtonFontName, bBold, bItalic);
+	GetFontData(pdfDoc, pFontManager, pFontList, &oFontRef);
+
+	TFontEntry pEntry;
+	Ref nFontRef = oFontRef.getRef();
+	pFontList->GetFont(&nFontRef, &pEntry);
+
+	m_sButtonFontName = U_TO_UTF8(pEntry.wsFontName);
+	if (!pEntry.wsActualFontName.empty())
+		m_sButtonFontName = U_TO_UTF8(pEntry.wsActualFontName);
+
 	if (!m_sButtonFontName.empty())
 		m_unFlags |= (1 << 19);
 
@@ -2298,16 +2313,22 @@ void CAnnotRedact::SetFont(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, 
 			continue;
 		}
 
-		std::string sFontName, sActualFontName;
-		bool bBold = false, bItalic = false;
-		std::wstring sFontPath = GetFontData(pdfDoc, pFontManager, pFontList, &oFontRef, m_sFontName, m_sActualFontName, bBold, bItalic);
-		oFontRef.free();
+		GetFontData(pdfDoc, pFontManager, pFontList, &oFontRef);
+
+		TFontEntry pEntry;
+		Ref nFontRef = oFontRef.getRef();
+		pFontList->GetFont(&nFontRef, &pEntry);
+
+		m_sFontName = U_TO_UTF8(pEntry.wsFontName);
+		m_sActualFontName = U_TO_UTF8(pEntry.wsActualFontName);
 
 		m_unFontStyle = 0;
-		if (bBold)
+		if (pEntry.bBold)
 			m_unFontStyle |= (1 << 0);
-		if (bItalic)
+		if (pEntry.bItalic)
 			m_unFontStyle |= (1 << 1);
+
+		oFontRef.free();
 	}
 
 	oFonts.free(); oAnnot.free();

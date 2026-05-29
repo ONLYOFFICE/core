@@ -52,7 +52,6 @@
 #include "../../DesktopEditor/common/File.h"
 #include "../../DesktopEditor/common/Array.h"
 #include "../../DesktopEditor/common/StringExt.h"
-#include "../../DesktopEditor/graphics/BaseThread.h"
 #include "../../DesktopEditor/graphics/commands/DocInfo.h"
 #include "../../DesktopEditor/graphics/AlphaMask.h"
 #include "../Resources/BaseFonts.h"
@@ -90,129 +89,6 @@ namespace PdfReader
 
 namespace PdfReader
 {
-	//--------------------------------------------------------------------------------------
-	// CFontList
-	//--------------------------------------------------------------------------------------
-	CPdfFontList::CPdfFontList()
-	{
-		m_oCS.InitializeCriticalSection();
-		m_oFontMap.clear();
-	}
-	CPdfFontList::~CPdfFontList()
-	{
-		m_oCS.DeleteCriticalSection();
-		Clear();
-	}
-	bool CPdfFontList::Find(Ref oRef, TFontEntry* pEntry)
-	{
-		CTemporaryCS* pCS = new CTemporaryCS(&m_oCS);
-
-		bool bResult = (NULL != (pEntry = Lookup(oRef)));
-
-		if (bResult)
-		{
-			// Font was found, but cannot be used yet because it is being loaded in a parallel thread
-			while (!pEntry->bAvailable)
-				NSThreads::Sleep(10);
-		}
-
-		RELEASEOBJECT(pCS);
-
-		return bResult;
-	}
-	bool CPdfFontList::Find2(Ref oRef, TFontEntry** ppEntry)
-	{
-		CTemporaryCS* pCS = new CTemporaryCS(&m_oCS);
-
-		bool bResult = (NULL != ((*ppEntry) = Lookup(oRef)));
-
-		if (bResult)
-		{
-			// Font was found, but cannot be used yet because it is being loaded in a parallel thread
-			while (!(*ppEntry)->bAvailable)
-				NSThreads::Sleep(10);
-		}
-
-		if (!bResult)
-		{
-			(*ppEntry) = Add(oRef, std::wstring(), NULL, NULL, 0, 0);
-			(*ppEntry)->bAvailable = false;
-		}
-
-		RELEASEOBJECT(pCS);
-
-		return bResult;
-	}
-	TFontEntry* CPdfFontList::Add(Ref oRef, const std::wstring& wsFileName, int* pCodeToGID, int* pCodeToUnicode, unsigned int unLenGID, unsigned int unLenUnicode)
-	{
-		// This function is only called from Find2, so no need to check if this font already exists
-		CTemporaryCS* pCS = new CTemporaryCS(&m_oCS);
-
-		TFontEntry* pNewEntry = new TFontEntry;
-		pNewEntry->wsFilePath     = wsFileName;
-		pNewEntry->pCodeToGID     = pCodeToGID;
-		pNewEntry->pCodeToUnicode = pCodeToUnicode;
-		pNewEntry->unLenGID       = unLenGID;
-		pNewEntry->unLenUnicode   = unLenUnicode;
-
-		Add(oRef, pNewEntry);
-
-		RELEASEOBJECT(pCS);
-
-		return pNewEntry;
-	}
-	void CPdfFontList::Remove(Ref oRef)
-	{
-		std::map<Ref, TFontEntry*>::iterator oPos = m_oFontMap.find(oRef);
-		if (m_oFontMap.end() != oPos)
-		{
-			TFontEntry* pEntry = oPos->second;
-			if (NULL != pEntry)
-			{
-				MemUtilsFree(pEntry->pCodeToGID);
-				MemUtilsFree(pEntry->pCodeToUnicode);
-			}
-			delete pEntry;
-			m_oFontMap.erase(oPos);
-		}
-	}
-	void CPdfFontList::Clear()
-	{
-		for (auto const &oIt : m_oFontMap)
-		{
-			TFontEntry* pEntry = oIt.second;
-			if (NULL != pEntry)
-			{
-				MemUtilsFree(pEntry->pCodeToGID);
-				MemUtilsFree(pEntry->pCodeToUnicode);
-			}
-			delete pEntry;
-		}
-		m_oFontMap.clear();
-	}
-	bool CPdfFontList::GetFont(Ref* pRef, TFontEntry* pEntry)
-	{
-		TFontEntry* pFindEntry = Lookup(*pRef);
-		if (NULL == pFindEntry)
-			return false;
-
-		*pEntry = *pFindEntry;
-		return true;
-	}
-	TFontEntry* CPdfFontList::Lookup(Ref& oRef)
-	{
-		std::map<Ref, TFontEntry*>::const_iterator oPos = m_oFontMap.find(oRef);
-		return m_oFontMap.end() == oPos ? NULL : oPos->second;
-	}
-	void CPdfFontList::Add(Ref& oRef, TFontEntry* pFontEntry)
-	{
-		// Before calling this function, need to check if an element with this key exists
-		m_oFontMap.insert(std::pair<Ref, TFontEntry*>(oRef, pFontEntry));
-	}
-	const std::map<Ref, TFontEntry*>& CPdfFontList::GetFonts()
-	{
-		return m_oFontMap;
-	}
 	//--------------------------------------------------------------------------------------
 	// RendererOutputDev
 	//--------------------------------------------------------------------------------------

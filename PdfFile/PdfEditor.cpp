@@ -3718,11 +3718,14 @@ bool CPdfEditor::EditAnnot(int _nPageIndex, int nID)
 		pAnnot = new PdfWriter::CPolygonLineAnnotation(pXref);
 	else if (oType.isName("FreeText"))
 	{
-		std::vector<PdfReader::CAnnotFontInfo> arrFont = PdfReader::GetAnnotFontInfos(pPDFDocument, m_pReader->GetFontManager(), pFontList, &oAnnotRef);
+		std::vector<Ref> arrFont = PdfReader::GetAnnotFontInfos(pPDFDocument, m_pReader->GetFontManager(), pFontList, &oAnnotRef);
 		for (int i = 0; i < arrFont.size(); ++i)
 		{
-			PdfReader::CAnnotFontInfo oFontInfo = arrFont[i];
-			m_mFonts.insert(std::make_pair(oFontInfo.wsFontName, oFontInfo.wsFontPath));
+			Ref oFontInfo = arrFont[i];
+			PdfReader::TFontEntry pEntry;
+			pFontList->GetFont(&oFontInfo, &pEntry);
+
+			m_mFonts.insert(std::make_pair(pEntry.wsFontName, pEntry.wsFilePath));
 		}
 		pAnnot = new PdfWriter::CFreeTextAnnotation(pXref);
 	}

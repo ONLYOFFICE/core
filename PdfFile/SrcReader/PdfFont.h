@@ -43,18 +43,48 @@
 #include "../lib/xpdf/AcroForm.h"
 
 #include "../../DesktopEditor/graphics/pro/Fonts.h"
-
-#include "RendererOutputDev.h"
+#include "../../DesktopEditor/graphics/TemporaryCS.h"
 
 namespace PdfReader
 {
-struct CAnnotFontInfo
+struct TFontEntry
 {
-	std::wstring wsFontName;
-	std::wstring wsFontPath;
+	std::wstring wsFilePath;     // Path to font on disk
+	std::wstring wsFontName;     // Font name as written in PDF (branch for cases when font name is not specified in font itself)
+	int*         pCodeToGID;     // Code to glyph number in font table
+	int*         pCodeToUnicode; // Code to unicode value table
+	unsigned int unLenGID;
+	unsigned int unLenUnicode;
+	bool         bAvailable;     // Is font available. Made for multithreading
+	bool         bFontSubstitution = false;
+	bool         bIsIdentity = false;
+	double       dStretch = 1.0;
+
 	std::wstring wsActualFontName;
 	bool bBold   = false;
 	bool bItalic = false;
+
+};
+
+class CPdfFontList
+{
+public:
+	CPdfFontList();
+	~CPdfFontList();
+	bool Find(Ref oRef, TFontEntry* pEntry);
+	bool Find2(Ref oRef, TFontEntry** ppEntry);
+	void Remove(Ref oRef);
+	TFontEntry* Add(Ref oRef, const std::wstring& wsFileName, int* pCodeToGID, int* pCodeToUnicode, unsigned int unLenGID, unsigned int unLenUnicode);
+	void Clear();
+	bool GetFont(Ref* pRef, TFontEntry* pEntry);
+	const std::map<Ref, TFontEntry*>& GetFonts();
+private:
+	TFontEntry* Lookup(Ref& oRef);
+	void Add(Ref& oRef, TFontEntry* pFontEntry);
+
+private:
+	std::map<Ref, TFontEntry*>          m_oFontMap;
+	NSCriticalSection::CRITICAL_SECTION m_oCS; // Critical section
 };
 struct CType3FontMetrics
 {
@@ -105,9 +135,9 @@ std::string GetRCFromDS(const std::string& sDS, Object* pContents, const std::ve
 bool IsNeedCMap(PDFDoc* pDoc);
 bool IsBaseFont(const std::wstring& wsName);
 std::map<std::wstring, std::wstring> GetAllFonts(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList* pFontList);
-std::wstring GetFontData(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList, Object* oFontRef, std::string& sFontName, std::string& sActualFontName, bool& bBold, bool& bItalic);
+void GetFontData(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList, Object* oFontRef);
 bool GetFontFromAP(PDFDoc* pdfDoc, AcroFormField* pField, Object* oFontRef, std::string& sFontKey);
-std::vector<CAnnotFontInfo> GetAnnotFontInfos(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList* pFontList, Object* oAnnotRef);
+std::vector<Ref> GetAnnotFontInfos(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList* pFontList, Object* oAnnotRef);
 std::map<std::wstring, std::wstring> GetFreeTextFont(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList* pFontList, Object* oAnnotRef, std::vector<CFontData*>& arrRC);
 bool FindFonts(Object* oStream, int nDepth, Object* oResFonts);
 int CollectFontWidths(Dict* pFontDict, std::map<unsigned int, unsigned int>& mGIDToWidth);

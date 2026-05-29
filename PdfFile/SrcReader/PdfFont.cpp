@@ -35,6 +35,7 @@
 
 #include "PdfFont.h"
 #include "Adaptors.h"
+#include "MemoryUtils.h"
 
 #include <string_view>
 
@@ -54,6 +55,7 @@
 #include "../../DesktopEditor/common/Path.h"
 #include "../../DesktopEditor/xml/include/xmlutils.h"
 #include "../../DesktopEditor/fontengine/ApplicationFonts.h"
+#include "../../DesktopEditor/graphics/BaseThread.h"
 
 #ifndef BUILDING_WASM_MODULE
 #define FONTS_USE_AFM_SETTINGS
@@ -529,15 +531,18 @@ USHORT StretchToWidthClass(double fStretch)
 	if (fStretch <= 1.50)  return 8; // Extra-expanded
 	return 9;                        // Ultra-expanded
 }
-const PdfReader::CAnnotFontInfo* FindMatchInAnnotFonts(const std::vector<PdfReader::CAnnotFontInfo>& annotFonts, const std::wstring& wsRCName, bool bBold, bool bItalic)
+Ref FindMatchInAnnotFonts(PdfReader::CPdfFontList *pFontList, const std::vector<Ref>& annotFonts, const std::wstring& wsRCName, bool bBold, bool bItalic)
 {
 	std::wstring wsReqNorm = Normalize(wsRCName);
 
-	const PdfReader::CAnnotFontInfo* pBestMatch = nullptr;
+	Ref pBestMatch = { -1, -1 };
 	int nBestPenalty = INT_MAX;
 
-	for (const auto& fi : annotFonts)
+	for (Ref ri : annotFonts)
 	{
+		PdfReader::TFontEntry fi;
+		pFontList->GetFont(&ri, &fi);
+
 		int nNamePenalty = GetAnnotFontNamePenalty(Normalize(fi.wsFontName), wsReqNorm);
 		if (!fi.wsActualFontName.empty())
 		{
@@ -557,7 +562,7 @@ const PdfReader::CAnnotFontInfo* FindMatchInAnnotFonts(const std::vector<PdfRead
 		if (nTotalPenalty < nBestPenalty)
 		{
 			nBestPenalty = nTotalPenalty;
-			pBestMatch   = &fi;
+			pBestMatch   = ri;
 		}
 
 		if (nTotalPenalty == 0)
@@ -889,25 +894,25 @@ std::map<std::wstring, std::wstring> GetAllFonts(PDFDoc* pdfDoc, NSFonts::IFontM
 				continue;
 			}
 
-			std::string sFontName;
-			std::string sActualFontName;
-			std::wstring wsFileName;
-			bool bBold = false, bItalic = false;
-			wsFileName = GetFontData(pdfDoc, pFontManager, pFontList, &oFontRef, sFontName, sActualFontName, bBold, bItalic);
+			GetFontData(pdfDoc, pFontManager, pFontList, &oFontRef);
 
-			if (!sActualFontName.empty())
+			TFontEntry pEntry;
+			Ref nFontRef = oFontRef.getRef();
+			pFontList->GetFont(&nFontRef, &pEntry);
+
+			if (!pEntry.wsActualFontName.empty())
 			{
 				oFontRef.free();
 				continue;
 			}
 
-			if (!sFontName.empty())
+			if (!pEntry.wsFontName.empty())
 			{
-				std::wstring wsFontName = UTF8_TO_U(sFontName);
+				std::wstring wsFontName = pEntry.wsFontName;
 				if (mFonts.find(wsFontName) == mFonts.end())
 				{
 					arrUniqueFontsRef.push_back(oFontRef.getRefNum());
-					mFonts[wsFontName] = wsFileName;
+					mFonts[wsFontName] = pEntry.wsFilePath;
 				}
 			}
 			oFontRef.free();
@@ -917,13 +922,17 @@ std::map<std::wstring, std::wstring> GetAllFonts(PDFDoc* pdfDoc, NSFonts::IFontM
 				std::string sFontKey;
 				if (GetFontFromAP(pdfDoc, pField, &oFontRef, sFontKey) && std::find(arrUniqueFontsRef.begin(), arrUniqueFontsRef.end(), oFontRef.getRefNum()) == arrUniqueFontsRef.end())
 				{
-					wsFileName = GetFontData(pdfDoc, pFontManager, pFontList, &oFontRef, sFontName, sActualFontName, bBold, bItalic);
+					GetFontData(pdfDoc, pFontManager, pFontList, &oFontRef);
 
-					std::wstring wsFontName = UTF8_TO_U(sFontName);
-					if (sActualFontName.empty() && mFonts.find(wsFontName) == mFonts.end())
+					TFontEntry pEntry2;
+					Ref nFontRef = oFontRef.getRef();
+					pFontList->GetFont(&nFontRef, &pEntry2);
+
+					std::wstring wsFontName = pEntry2.wsFontName;
+					if (pEntry2.wsActualFontName.empty() && mFonts.find(wsFontName) == mFonts.end())
 					{
 						arrUniqueFontsRef.push_back(oFontRef.getRefNum());
-						mFonts[wsFontName] = wsFileName;
+						mFonts[wsFontName] = pEntry2.wsFilePath;
 					}
 				}
 			}
@@ -1018,22 +1027,22 @@ std::map<std::wstring, std::wstring> GetAllFonts(PDFDoc* pdfDoc, NSFonts::IFontM
 
 	return mFonts;
 }
-std::wstring GetFontData(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList, Object* oFontRef, std::string& sFontName, std::string& sActualFontName, bool& bBold, bool& bItalic)
+void GetFontData(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList, Object* oFontRef)
 {
-	bBold = false, bItalic = false;
+	bool bBold = false, bItalic = false;
 	XRef* xref = pdfDoc->getXRef();
 
 	Object oFont;
 	if (!xref->fetch(oFontRef->getRefNum(), oFontRef->getRefGen(), &oFont)->isDict())
 	{
 		oFont.free();
-		return L"";
+		return;
 	}
 
 	GfxFont* gfxFont = GfxFont::makeFont(xref, "F", oFontRef->getRef(), oFont.getDict());
 	oFont.free();
 	if (!gfxFont)
-		return L"";
+		return;
 
 	Ref oEmbRef;
 	std::wstring wsFontBaseName = NSStrings::GetStringFromUTF32(gfxFont->getName());
@@ -1044,7 +1053,6 @@ std::wstring GetFontData(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CP
 		std::wstring wsFontName;
 		GetFont(xref, pFontManager, pFontList, gfxFont, wsFileName, wsFontName, false);
 
-		sFontName = U_TO_UTF8(wsFontName);
 		CheckFontStylePDF(wsFontName, bBold, bItalic);
 		if (!bBold)
 			bBold = gfxFont->isBold();
@@ -1061,15 +1069,14 @@ std::wstring GetFontData(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CP
 			EraseSubsetTag(wsFontBaseName);
 
 			wsFileName = pFontInfo->m_wsFontPath;
-			sFontName  = U_TO_UTF8(wsFontBaseName);
-			sActualFontName = U_TO_UTF8(pFontInfo->m_wsFontName);
+			//sFontName  = U_TO_UTF8(wsFontBaseName);
+			//sActualFontName = U_TO_UTF8(pFontInfo->m_wsFontName);
 			bBold = pFontInfo->m_bBold;
 			bItalic = pFontInfo->m_bItalic;
 		}
 	}
 
 	RELEASEOBJECT(gfxFont);
-	return wsFileName;
 }
 bool GetFontFromAP(PDFDoc* pdfDoc, AcroFormField* pField, Object* oFontRef, std::string& sFontKey)
 {
@@ -1160,9 +1167,9 @@ bool FindFonts(Object* oStream, int nDepth, Object* oResFonts)
 	}
 	return false;
 }
-std::vector<CAnnotFontInfo> GetAnnotFontInfos(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList* pFontList, Object* oAnnotRef)
+std::vector<Ref> GetAnnotFontInfos(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList* pFontList, Object* oAnnotRef)
 {
-	std::vector<CAnnotFontInfo> result;
+	std::vector<Ref> result;
 
 	XRef* pXref = pdfDoc->getXRef();
 	CObjectGuard oAnnot;
@@ -1185,18 +1192,16 @@ std::vector<CAnnotFontInfo> GetAnnotFontInfos(PDFDoc* pdfDoc, NSFonts::IFontMana
 		if (!oFonts->dictGetValNF(i, oFontRef.get())->isRef())
 			continue;
 
-		CAnnotFontInfo info;
-		std::string sFontName, sActualFontName;
-		info.wsFontPath = GetFontData(pdfDoc, pFontManager, pFontList, oFontRef.get(), sFontName, sActualFontName, info.bBold, info.bItalic);
+		GetFontData(pdfDoc, pFontManager, pFontList, oFontRef.get());
 
-		if (info.wsFontPath.empty() || IsBaseFont(info.wsFontPath))
+		TFontEntry pEntry;
+		Ref nFontRef = oFontRef->getRef();
+		pFontList->GetFont(&nFontRef, &pEntry);
+
+		if (pEntry.wsFilePath.empty() || IsBaseFont(pEntry.wsFilePath))
 			continue;
 
-		info.wsFontName = UTF8_TO_U(sFontName);
-		if (!sActualFontName.empty())
-			info.wsActualFontName = UTF8_TO_U(sActualFontName);
-
-		result.push_back(info);
+		result.push_back(oFontRef->getRef());
 	}
 
 	return result;
@@ -1206,7 +1211,7 @@ std::map<std::wstring, std::wstring> GetFreeTextFont(PDFDoc* pdfDoc, NSFonts::IF
 {
 	std::map<std::wstring, std::wstring> mRes;
 
-	std::vector<CAnnotFontInfo> annotFonts = GetAnnotFontInfos(pdfDoc, pFontManager, pFontList, oAnnotRef);
+	std::vector<Ref> annotFonts = GetAnnotFontInfos(pdfDoc, pFontManager, pFontList, oAnnotRef);
 
 	NSFonts::IFontsMemoryStorage* pMemoryStorage = NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage();
 	CFontList* pAppFontList = (CFontList*)pFontManager->GetApplication()->GetList();
@@ -1263,16 +1268,18 @@ std::map<std::wstring, std::wstring> GetFreeTextFont(PDFDoc* pdfDoc, NSFonts::IF
 		}
 		else
 		{
-			const CAnnotFontInfo* pMatch = FindMatchInAnnotFonts(annotFonts, wsFontName, bBold, bItalic);
+			Ref nMatch = FindMatchInAnnotFonts(pFontList, annotFonts, wsFontName, bBold, bItalic);
+			TFontEntry pMatch;
+			pFontList->GetFont(&nMatch, &pMatch);
 
 			std::wstring wsResolvedName;
 			std::wstring wsResolvedPath;
 			bool bFoundInAnnot = false;
 
-			if (pMatch)
+			if (nMatch.num != -1)
 			{
-				wsResolvedPath = pMatch->wsFontPath;
-				wsResolvedName = pMatch->wsActualFontName.empty() ? pMatch->wsFontName : pMatch->wsActualFontName;
+				wsResolvedPath = pMatch.wsFilePath;
+				wsResolvedName = pMatch.wsActualFontName.empty() ? pMatch.wsFontName : pMatch.wsActualFontName;
 				EraseSubsetTag(wsResolvedName);
 				bFoundInAnnot = true;
 			}
@@ -2371,5 +2378,128 @@ CType3FontMetrics* BuildType3FontMetrics(XRef* pXref, GfxFont* pFont)
 	}
 
 	return pMetrics;
+}
+//--------------------------------------------------------------------------------------
+// CFontList
+//--------------------------------------------------------------------------------------
+CPdfFontList::CPdfFontList()
+{
+	m_oCS.InitializeCriticalSection();
+	m_oFontMap.clear();
+}
+CPdfFontList::~CPdfFontList()
+{
+	m_oCS.DeleteCriticalSection();
+	Clear();
+}
+bool CPdfFontList::Find(Ref oRef, TFontEntry* pEntry)
+{
+	CTemporaryCS* pCS = new CTemporaryCS(&m_oCS);
+
+	bool bResult = (NULL != (pEntry = Lookup(oRef)));
+
+	if (bResult)
+	{
+		// Font was found, but cannot be used yet because it is being loaded in a parallel thread
+		while (!pEntry->bAvailable)
+			NSThreads::Sleep(10);
+	}
+
+	RELEASEOBJECT(pCS);
+
+	return bResult;
+}
+bool CPdfFontList::Find2(Ref oRef, TFontEntry** ppEntry)
+{
+	CTemporaryCS* pCS = new CTemporaryCS(&m_oCS);
+
+	bool bResult = (NULL != ((*ppEntry) = Lookup(oRef)));
+
+	if (bResult)
+	{
+		// Font was found, but cannot be used yet because it is being loaded in a parallel thread
+		while (!(*ppEntry)->bAvailable)
+			NSThreads::Sleep(10);
+	}
+
+	if (!bResult)
+	{
+		(*ppEntry) = Add(oRef, std::wstring(), NULL, NULL, 0, 0);
+		(*ppEntry)->bAvailable = false;
+	}
+
+	RELEASEOBJECT(pCS);
+
+	return bResult;
+}
+TFontEntry* CPdfFontList::Add(Ref oRef, const std::wstring& wsFileName, int* pCodeToGID, int* pCodeToUnicode, unsigned int unLenGID, unsigned int unLenUnicode)
+{
+	// This function is only called from Find2, so no need to check if this font already exists
+	CTemporaryCS* pCS = new CTemporaryCS(&m_oCS);
+
+	TFontEntry* pNewEntry = new TFontEntry;
+	pNewEntry->wsFilePath     = wsFileName;
+	pNewEntry->pCodeToGID     = pCodeToGID;
+	pNewEntry->pCodeToUnicode = pCodeToUnicode;
+	pNewEntry->unLenGID       = unLenGID;
+	pNewEntry->unLenUnicode   = unLenUnicode;
+
+	Add(oRef, pNewEntry);
+
+	RELEASEOBJECT(pCS);
+
+	return pNewEntry;
+}
+void CPdfFontList::Remove(Ref oRef)
+{
+	std::map<Ref, TFontEntry*>::iterator oPos = m_oFontMap.find(oRef);
+	if (m_oFontMap.end() != oPos)
+	{
+		TFontEntry* pEntry = oPos->second;
+		if (NULL != pEntry)
+		{
+			MemUtilsFree(pEntry->pCodeToGID);
+			MemUtilsFree(pEntry->pCodeToUnicode);
+		}
+		delete pEntry;
+		m_oFontMap.erase(oPos);
+	}
+}
+void CPdfFontList::Clear()
+{
+	for (auto const &oIt : m_oFontMap)
+	{
+		TFontEntry* pEntry = oIt.second;
+		if (NULL != pEntry)
+		{
+			MemUtilsFree(pEntry->pCodeToGID);
+			MemUtilsFree(pEntry->pCodeToUnicode);
+		}
+		delete pEntry;
+	}
+	m_oFontMap.clear();
+}
+bool CPdfFontList::GetFont(Ref* pRef, TFontEntry* pEntry)
+{
+	TFontEntry* pFindEntry = Lookup(*pRef);
+	if (NULL == pFindEntry)
+		return false;
+
+	*pEntry = *pFindEntry;
+	return true;
+}
+TFontEntry* CPdfFontList::Lookup(Ref& oRef)
+{
+	std::map<Ref, TFontEntry*>::const_iterator oPos = m_oFontMap.find(oRef);
+	return m_oFontMap.end() == oPos ? NULL : oPos->second;
+}
+void CPdfFontList::Add(Ref& oRef, TFontEntry* pFontEntry)
+{
+	// Before calling this function, need to check if an element with this key exists
+	m_oFontMap.insert(std::pair<Ref, TFontEntry*>(oRef, pFontEntry));
+}
+const std::map<Ref, TFontEntry*>& CPdfFontList::GetFonts()
+{
+	return m_oFontMap;
 }
 }

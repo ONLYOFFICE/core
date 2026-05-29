@@ -4404,11 +4404,11 @@ void CConditionalFormatting::toXLS(XLS::BaseObjectPtr fmtsPtr)
 		ptr->mainCF.sqref.strValue = m_oSqRef.get();
 		formatingfirstCell = ptr->mainCF.sqref.getLocationFirstCell();
 	}
-	ptr->mainCF.ccf = m_arrItems.size();
 	for(auto i : m_arrItems)
 	{
 		UnionPtr->m_arCF12.push_back(i->toXLS(formatingfirstCell));
 	}
+	ptr->mainCF.ccf = UnionPtr->m_arCF12.size();
 
 	fmtsArray->m_arCONDFMT.push_back(XLS::BaseObjectPtr(UnionPtr));
 }

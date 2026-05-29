@@ -39,6 +39,8 @@
 #include "../../OfficeUtils/src/OfficeUtils.h"
 #include "../../DesktopEditor/common/Directory.h"
 #include <chrono>
+#include <codecvt>
+#include <locale>
 
 namespace PPTX
 {
@@ -246,15 +248,16 @@ XLS::BaseObjectPtr Theme::toXLS(const OOX::CPath& oFilePath)
 	auto combinePath = [&](const std::wstring& sDir, const std::wstring& sName) {
 	return sDir + FILE_SEPARATOR_STR + sName;
 	};
-	// 1. xml theme generation
-	NSBinPptxRW::CXmlWriter oXmlWriter;
-	oXmlWriter.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
-	themeElements.fontScheme.majorFont.Fonts.clear();
-	themeElements.fontScheme.minorFont.Fonts.clear();
-	toXmlWriter(&oXmlWriter);
-
-	auto themeData = oXmlWriter.GetXmlString();
-	std::string themeXml(themeData.begin(), themeData.end());
+	std::string themeXml;
+	{
+		// 1. xml theme generation
+		NSBinPptxRW::CXmlWriter oXmlWriter;
+		oXmlWriter.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
+		toXmlWriter(&oXmlWriter);
+		auto themeData = oXmlWriter.GetXmlString();
+		std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+		themeXml =  converter.to_bytes(themeData);
+	 }
 
 	// 2. getting temp path
 	std::wstring tempBasePath = oFilePath.GetDirectory(true);

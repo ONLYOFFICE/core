@@ -83,6 +83,8 @@ COOXMLWriter::COOXMLWriter(THTMLParameters* pHTMLParameters, NSCSS::CCssCalculat
 
 	m_arStates.push(TState(nullptr));
 	m_arStates.top().m_pCurrentDocument = &m_oDocXml;
+
+	m_oCustom.m_unIds = 2;
 }
 
 void COOXMLWriter::SetDstDirectory(const std::wstring& wsPath)
@@ -374,13 +376,13 @@ void COOXMLWriter::End(const std::wstring& wsDst)
 	}
 
 	//custom.xml
-	if (0 != m_oCustom.GetCurSize())
+	if (2 != m_oCustom.m_unIds)
 	{
 		NSFile::CFileBinary oCustomXml;
 		if (oCustomXml.CreateFileW(wsDst + L"/docProps/custom.xml"))
 		{
 			oCustomXml.WriteStringUTF8(L"<Properties xmlns=\"http://schemas.openxmlformats.org/officeDocument/2006/custom-properties\" xmlns:vt=\"http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes\">");
-			oCustomXml.WriteStringUTF8(m_oCustom.GetData());
+			oCustomXml.WriteStringUTF8(m_oCustom.m_oXml.GetData());
 			oCustomXml.WriteStringUTF8(L"</Properties>");
 			oCustomXml.CloseFile();
 		}
@@ -392,7 +394,7 @@ void COOXMLWriter::End(const std::wstring& wsDst)
 	{
 		oMainRelsWriter.WriteStringUTF8(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\"><Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument\" Target=\"word/document.xml\"/><Relationship Id=\"rId2\" Type=\"http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties\" Target=\"docProps/core.xml\"/><Relationship Id=\"rId3\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties\" Target=\"docProps/app.xml\"/>");
 
-		if (0 != m_oCustom.GetCurSize())
+		if (2 != m_oCustom.m_unIds)
 			oMainRelsWriter.WriteStringUTF8(L"<Relationship Id=\"rId4\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/custom-properties\" Target=\"docProps/custom.xml\"/>");
 
 		oMainRelsWriter.WriteStringUTF8(L"</Relationships>");
@@ -1014,9 +1016,9 @@ void COOXMLWriter::WriteEmptyParagraph(bool bVahish, bool bInP)
 
 void COOXMLWriter::WriteMetadata(const std::wstring& wsName, const std::wstring& wsValue)
 {
-	m_oCustom.WriteString(L"<property fmtid=\"{D5CDD505-2E9C-101B-9397-08002B2CF9AE}\" name=\"" + wsName + L"\">"
-	                            "<vt:lpwstr>" + wsValue + L"</vt:lpwstr>"
-	                        "</property>");
+	m_oCustom.m_oXml.WriteString(L"<property fmtid=\"{D5CDD505-2E9C-101B-9397-08002B2CF9AE}\" pid=\"" + std::to_wstring(m_oCustom.m_unIds++) +L"\" name=\"" + wsName + L"\">"
+	                                  "<vt:lpwstr>" + wsValue + L"</vt:lpwstr>"
+	                              "</property>");
 }
 
 void COOXMLWriter::WriteSpace()

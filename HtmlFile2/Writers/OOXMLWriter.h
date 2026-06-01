@@ -81,7 +81,12 @@ class COOXMLWriter : public IWriter
 	XmlString m_oNoteXml;     // footnotes.xml
 	XmlString m_oNumberXml;   // numbering.xml
 	XmlString m_oWebSettings; // webSettings.xml
-	XmlString m_oCustom;      // custom.xml
+
+	struct TCustomProperties
+	{
+		XmlString m_oXml;     // custom.xml
+		UINT m_unIds;
+	} m_oCustom;
 
 	NSCSS::CDocumentStyle m_oXmlStyle;      // OOXML style
 	NSCSS::NSProperties::CPage m_oPageData; // Page styles

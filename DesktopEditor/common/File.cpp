@@ -663,15 +663,6 @@ namespace NSFile
 		while (pCur < pEnd)
 		{
 			unsigned int code = (unsigned int)*pCur++;
-			if (code >= 0xD800 && code <= 0xDBFF && pCur < pEnd)
-			{
-				unsigned int next = (unsigned int)*pCur;
-				if (next >= 0xDC00 && next <= 0xDFFF)
-				{
-					code = 0x10000 + (((code & 0x3FF) << 10) | (next & 0x3FF));
-					pCur++;
-				}
-			}
 
 			if (code < 0x80)
 			{

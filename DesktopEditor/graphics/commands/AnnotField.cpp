@@ -135,7 +135,7 @@ CAnnotFieldInfo::CActionFieldPr* ReadAction(NSOnlineOfficeBinToPdf::CBufferReade
 	return pRes;
 }
 
-CAnnotFieldInfo::CAnnotFieldInfo() : IAdvancedCommand(AdvancedCommandType::Annotaion)
+CAnnotFieldInfo::CAnnotFieldInfo() : IAdvancedCommand(AdvancedCommandType::Annotation)
 {
 	m_nType = EAnnotType::Unknown;
 
@@ -1485,5 +1485,13 @@ bool CRedact::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRe
 		m_arrRedact.push_back(pRedact);
 	}
 
+	return true;
+}
+
+CRedactAnnot::CRedactAnnot() : IAdvancedCommand(AdvancedCommandType::RedactAnnot) {}
+int CRedactAnnot::GetID() { return m_nID; }
+bool CRedactAnnot::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector)
+{
+	m_nID = pReader->ReadInt();
 	return true;
 }

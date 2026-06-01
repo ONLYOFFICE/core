@@ -410,7 +410,7 @@ void table_table_cell::pptx_convert(oox::pptx_conversion_context & Context)
 
 					props->attlist_.common_padding_attlist_.fo_padding_ = length(3600 / 12700., length::pt);
 
-					Context.root()->odf_context().styleContainer().add_style(L"", L"", &(def_style->content_), false, true, L"", L"", L"", L"", L"default");
+					Context.root()->odf_context().styleContainer().add_style(L"", L"", &(def_style->content_), false, true, L"", L"", L"", L"", L"", L"default");
 
 					style_inst = Context.root()->odf_context().styleContainer().style_default_by_type(odf_types::style_family::TableCell);
 				}

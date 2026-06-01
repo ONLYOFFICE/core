@@ -84,18 +84,18 @@ namespace NSDocxRenderer
 		oWriter.WriteString(L"/>"); // end of w:spacing
 
 		oWriter.WriteString(L"<w:ind");
-		if (m_dLeftBorder > 0)
-		{
+		//if (m_dLeftBorder > 0)
+		//{
 			oWriter.WriteString(L" w:left=\"");
 			oWriter.AddInt(static_cast<int>(m_dLeftBorder * c_dMMToDx));
 			oWriter.WriteString(L"\"");
-		}
-		if (m_dRightBorder > 0)
-		{
+		//}
+		//if (m_dRightBorder > 0)
+		//{
 			oWriter.WriteString(L" w:right=\"");
 			oWriter.AddInt(static_cast<int>(m_dRightBorder * c_dMMToDx)); // here m_dRight is the distance from the right edge
 			oWriter.WriteString(L"\"");
-		}
+		//}
 		if (m_bIsNeedFirstLineIndent)
 		{
 			if (m_dFirstLine > 0)

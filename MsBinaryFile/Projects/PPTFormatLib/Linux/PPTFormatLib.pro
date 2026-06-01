@@ -306,12 +306,10 @@ HEADERS += \
 	../../../PptFile/Structures/WideColorStruct.h \
 	../../../PptFile/Structures/_includer.h
 
-core_release {
+build_monolith_objects {
 SOURCES += \
 	ppt_format_logic.cpp
-}
-
-core_debug {
+} else {
 SOURCES += \
 	../../../PptFile/Enums/RecordType.cpp \
 	../../../PptFile/Reader/ReadStructures.cpp \

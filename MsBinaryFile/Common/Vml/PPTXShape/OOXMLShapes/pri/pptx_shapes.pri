@@ -33,10 +33,9 @@
 
 SHAPESX_DIR = $$PWD/..
 
-!build_single_objects {
+build_monolith_objects {
 SOURCES += $$PWD/pptx_shapes.cpp
-}
-else {
+} else {
 SOURCES += \
 	$$SHAPESX_DIR/CAccentBorderCallout1.cpp \
 	$$SHAPESX_DIR/CAccentBorderCallout2.cpp \

@@ -761,4 +761,17 @@ private:
 	std::vector<SRedact*> m_arrRedact;
 };
 
+class GRAPHICS_DECL CRedactAnnot : public IAdvancedCommand
+{
+public:
+	CRedactAnnot();
+
+	int GetID();
+
+	bool Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector);
+
+private:
+	int m_nID;
+};
+
 #endif // _BUILD_ANNOTFIELD_H_

@@ -152,7 +152,7 @@ public:
 		Link        = 1,
 		DocInfo     = 2,
 		FormField   = 3, // Backward compatibility for docxf
-		Annotaion   = 4,
+		Annotation  = 4,
 		DeleteAnnot = 5,
 		WidgetsInfo = 6,
 		ShapeStart  = 7,
@@ -161,6 +161,7 @@ public:
 		PageRotate  = 10,
 		Headings    = 11,
 		Redact      = 12,
+		RedactAnnot = 13,
 
 		Undefined   = 255
 	};

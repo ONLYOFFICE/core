@@ -92,7 +92,9 @@ public:
 	void	set_number_format(int id)	{num_fmt_id_ = id;}
 	int		get_number_format()			{return num_fmt_id_;}
 
-    void	set_parent_style_name(const std::wstring &name) ;
+	void	set_primary_format(bool val);
+	void	set_link_style_name(const std::wstring& name);
+	void	set_parent_style_name(const std::wstring &name) ;
     void	set_data_style_name(const std::wstring &name);
     void	set_list_style_name(const std::wstring &name);
 

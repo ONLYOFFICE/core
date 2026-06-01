@@ -2926,6 +2926,22 @@ namespace PdfWriter
 		pArray->Add(tx);
 		pArray->Add(ty);
 	}
+	void CAnnotAppearanceObject::GetMatrix(double* pCTM)
+	{
+		CObjectBase* pObj = Get("Matrix");
+		CArrayObject* pArray = dynamic_cast<CArrayObject*>(pObj);
+		if (!pArray)
+			return;
+
+		for (int i = 0; i < 6; ++i)
+		{
+			pObj = pArray->Get(i);
+			CRealObject* pNum = dynamic_cast<CRealObject*>(pObj);
+			if (!pNum)
+				return;
+			pCTM[i] = pNum->Get();
+		}
+	}
 	void CAnnotAppearanceObject::DrawTextCommentN(const std::string& sColor)
 	{
 		CExtGrState* pExtGrState = m_pAnnot->GetDocument()->GetExtGState(0.6, 0.6);

@@ -33,10 +33,9 @@
 
 LIMITS_DIR = $$PWD/..
 
-!build_single_objects {
+build_monolith_objects {
 SOURCES += $$PWD/pptx_limits.cpp
-}
-else {
+} else {
 SOURCES += \
 	$$LIMITS_DIR/AlbumLayout.cpp \
 	$$LIMITS_DIR/AnimationDgmBuild.cpp \

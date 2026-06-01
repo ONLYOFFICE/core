@@ -937,6 +937,15 @@ void Binary_rPrWriter::Write_rPr(OOX::Logic::CRunProperty* rPr)
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
 		m_oBcw.m_oStream.WriteLONG(rPr->m_oKern.get().m_oVal.get().ToHps());
 	}
+	if (rPr->m_oEastAsianLayout.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerProp_rPrType::EastAsianLayout);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+		int nCurPos = m_oBcw.WriteItemWithLengthStart();
+
+		m_oBcw.WriteEastAsianLayout(rPr->m_oEastAsianLayout.get());
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
 }
 void Binary_rPrWriter::Write_rPrChange(const OOX::Logic::CRPrChange& rPrChange)
 {
@@ -947,6 +956,43 @@ void Binary_rPrWriter::Write_rPrChange(const OOX::Logic::CRPrChange& rPrChange)
 		nCurPos = m_oBcw.WriteItemStart(c_oSerProp_RevisionType::rPrChange);
 		Write_rPr(rPrChange.m_pRunPr.GetPointer());
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+}
+void BinaryCommonWriter::WriteEastAsianLayout(const ComplexTypes::Word::CEastAsianLayout& EastAsianLayout)
+{
+	int nCurPos = 0;
+	if (false != EastAsianLayout.m_oID.IsInit())
+	{
+		m_oStream.WriteBYTE(c_oSerProp_EastAsianLayoute::ID);
+		m_oStream.WriteBYTE(c_oSerPropLenType::Long);
+		m_oStream.WriteBOOL(EastAsianLayout.m_oID->GetValue());
+	}
+	if (false != EastAsianLayout.m_oCombine.IsInit())
+	{
+		bool val = SimpleTypes::onoffTrue == EastAsianLayout.m_oCombine->ToBool();
+		m_oStream.WriteBYTE(c_oSerProp_EastAsianLayoute::Combine);
+		m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oStream.WriteBOOL(val);
+	}
+	if (false != EastAsianLayout.m_oCombineBrackets.IsInit())
+	{
+		m_oStream.WriteBYTE(c_oSerProp_EastAsianLayoute::CombineBrackets);
+		m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oStream.WriteBYTE(EastAsianLayout.m_oCombineBrackets->GetValue());
+	}
+	if (false != EastAsianLayout.m_oVert.IsInit())
+	{
+		bool val = SimpleTypes::onoffTrue == EastAsianLayout.m_oVert->ToBool();
+		m_oStream.WriteBYTE(c_oSerProp_EastAsianLayoute::Vert);
+		m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oStream.WriteBOOL(val);
+	}
+	if (false != EastAsianLayout.m_oVertCompress.IsInit())
+	{
+		bool val = SimpleTypes::onoffTrue == EastAsianLayout.m_oVertCompress->ToBool();
+		m_oStream.WriteBYTE(c_oSerProp_EastAsianLayoute::VertCompress);
+		m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oStream.WriteBOOL(val);
 	}
 }
 
@@ -9109,6 +9155,12 @@ void BinarySettingsTableWriter::WriteSettingsContent(OOX::CSettings& oSettings, 
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSer_SettingsType::DisplayVerticalDrawingGridEvery);
 		m_oBcw.m_oStream.WriteLONG(*oSettings.m_oDisplayVerticalDrawingGridEvery->m_oVal);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if (oSettings.m_oCharacterSpacingControl.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_SettingsType::CharacterSpacingControl);
+		m_oBcw.m_oStream.WriteBYTE(oSettings.m_oCharacterSpacingControl->m_oVal.GetValue());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
 };

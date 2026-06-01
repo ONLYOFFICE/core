@@ -565,11 +565,11 @@ TEST_F(CPdfFileTest, EditPdfFromBase64)
 	pParams->m_sMediaDirectory = NSFile::GetProcessDirectory();
 	pdfFile->AddToPdfFromBinary(pBuffer + 4, nBufferLen - 4, pParams);
 
+	pdfFile->Close();
+
 	RELEASEOBJECT(pParams);
 	RELEASEARRAYOBJECTS(pBuffer);
 	RELEASEARRAYOBJECTS(pFileContent);
-
-	pdfFile->Close();
 }
 
 TEST_F(CPdfFileTest, EditPdfFromBin)

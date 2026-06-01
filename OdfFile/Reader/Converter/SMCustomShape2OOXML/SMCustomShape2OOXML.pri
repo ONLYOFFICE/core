@@ -41,10 +41,8 @@ ADD_DEPENDENCY(UnicodeConverter, kernel)
 
 HEADERS += \
 	$$PWD/smcustomshapepars.h \
-        $$PWD/customshape.h
+	$$PWD/customshape.h
 
 SOURCES += \
 	$$PWD/smcustomshapepars.cpp \
 	$$PWD/customshape.cpp
-
-

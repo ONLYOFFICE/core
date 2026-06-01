@@ -45,7 +45,7 @@ namespace PdfWriter
 	class CMetadata : public CDictObject
 	{
 	public:
-		CMetadata(CXref* pXref, CInfoDict* pInfo);
+		CMetadata(CXref* pXref, CInfoDict* pInfo, const std::string& sAltTitle);
 		EDictType    GetDictType() const
 		{
 			return dict_type_METADATA;

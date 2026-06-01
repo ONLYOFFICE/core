@@ -44,6 +44,8 @@
 #define USING_DELETE_DUPLICATING_CONTS 0 // 0 - all duplicate lines become shapes, 1 - duplicate lines are deleted
 // #define USE_DEFAULT_FONT_TO_RECALC
 
+const double c_dCOMPARE_EPSILON = 0.1;
+
 const double c_dDpiX = 72.0;
 const double c_dDpiY = 72.0;
 
@@ -68,9 +70,10 @@ const double c_dERROR_OF_PARAGRAPH_BORDERS_MM   = 1.0;
 const double c_dCENTER_POSITION_ERROR_MM        = 1.5;
 const double c_dTHE_STRING_X_PRECISION_MM       = 0.5;
 const double c_dERROR_FOR_TEXT_WITH_GRAPHICS_MM = 0.1;
-const double c_dGRAPHICS_ERROR_MM               = 0.5;
+const double c_dGRAPHICS_ERROR_MM               = 1.0;
 const double c_dMAX_TABLE_LINE_WIDTH_MM         = 2.2;
 const double c_dMAX_TABLE_CELL_DIFF_MM          = 7.0;
+const double c_dMIN_TABLE_DIFF_MM               = 0.3;
 const double c_dGRAPHICS_ERROR_IN_LINES_MM      = 0.3;
 const double c_dMAX_LINE_HEIGHT_MM              = 2.5;
 const double c_dMAX_LINE_WITH_TEXT_ERROR_MM     = 2.5;
@@ -85,6 +88,8 @@ const double c_dAVERAGE_SPACE_WIDTH_COEF        = 0.9;
 const double c_dSPACE_WIDTH_COEF                = 0.39;
 const double c_dMIN_ROTATION                    = 0.01;
 const double c_dMAX_FIRST_LINE_INDENT           = 20.0;
+const double c_dMIN_RIGHT_MARGIN                = 0.4;
+constexpr double c_dSTANDART_TABLE_SPACING_MM   = 108.0 / c_dMMToDx;
 
 const UINT   c_iWhiteColor = 0xFFFFFF;
 const UINT   c_iBlackColor = 0x000000;

@@ -105,6 +105,7 @@ public:
 	bool EditPdf(const std::wstring& wsDstFile = L"");
 	void EditClose();
 	void SetEditType(int nType);
+	void RedactInfo(int nFlag, const std::vector<IAdvancedCommand*>& arrForms);
 	// Page manipulations are possible in edit mode
 	bool EditPage  (int nPageIndex);
 	bool DeletePage(int nPageIndex);

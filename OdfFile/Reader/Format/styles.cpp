@@ -618,18 +618,20 @@ void style::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
 	_CP_OPT(std::wstring) sTest;
 
-    CP_APPLY_ATTR(L"style:family"				, content_.style_family_, style_family());
+    CP_APPLY_ATTR(L"style:family", content_.style_family_, style_family());
    
-	CP_APPLY_ATTR(L"style:name"					, style_name_, std::wstring(L""));
-    CP_APPLY_ATTR(L"style:display-name"			, style_display_name_);
-    CP_APPLY_ATTR(L"style:parent-style-name"	, style_parent_style_name_);
-    CP_APPLY_ATTR(L"style:next-style-name"		, style_next_style_name_);
-    CP_APPLY_ATTR(L"style:list-style-name"		, style_list_style_name_);
-    CP_APPLY_ATTR(L"style:master-page-name"		, style_master_page_name_);
-    CP_APPLY_ATTR(L"style:auto-update"			, style_auto_update_, false);
-    CP_APPLY_ATTR(L"style:data-style-name"		, style_data_style_name_);
-    CP_APPLY_ATTR(L"style:class"				, style_class_);
+	CP_APPLY_ATTR(L"style:name", style_name_, std::wstring(L""));
+	CP_APPLY_ATTR(L"style:display-name", style_display_name_);
+	CP_APPLY_ATTR(L"style:parent-style-name", style_parent_style_name_);
+	CP_APPLY_ATTR(L"style:next-style-name", style_next_style_name_);
+	CP_APPLY_ATTR(L"style:list-style-name", style_list_style_name_);
+	CP_APPLY_ATTR(L"style:master-page-name", style_master_page_name_);
+	CP_APPLY_ATTR(L"style:auto-update", style_auto_update_, false);
+	CP_APPLY_ATTR(L"style:data-style-name", style_data_style_name_);
+	CP_APPLY_ATTR(L"style:class", style_class_);
 	CP_APPLY_ATTR(L"style:percentage-data-style-name", style_percentage_data_style_name_);
+	CP_APPLY_ATTR(L"loext:linked-style-name", loext_linked_style_name_);
+	CP_APPLY_ATTR(L"loext:primary-format", loext_primary_format_);
    
 	CP_APPLY_ATTR(L"style:list-level", sTest);
 	if (sTest)

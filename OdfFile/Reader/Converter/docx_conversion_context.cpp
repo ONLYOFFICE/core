@@ -1453,10 +1453,10 @@ void docx_conversion_context::process_styles()
 						default_style = id;
 					}
 				}
-				else if (!arStyles[i]->is_default()) // default-style
-				{
-					_Wostream << L" w:customStyle=\"1\"";
-				}
+				//else if (!arStyles[i]->is_default()) // default-style
+				//{
+				//	_Wostream << L" w:customStyle=\"1\"";
+				//}
 				_Wostream << L">";
                 
 				const std::wstring displayName = StyleDisplayName(arStyles[i]->name(), arStyles[i]->display_name(), arStyles[i]->type(), bDisplayed);
@@ -1478,18 +1478,20 @@ void docx_conversion_context::process_styles()
 				{
 					_Wostream << L"<w:basedOn w:val=\"" << default_style << "\"/>";
 				}
-     //           else if (false == bDefault && false == arStyles[i]->is_default() && styles_map_.check(L"", arStyles[i]->type()))
-     //           {
-					//bDisplayed = false;
-     //               const std::wstring basedOnId = styles_map_.get(L"", arStyles[i]->type());
-     //               _Wostream << L"<w:basedOn w:val=\"" << basedOnId << "\"/>";
-     //           }
-				if (bDisplayed)
+				if (arStyles[i]->primary_format())
+				{
+					if (*arStyles[i]->primary_format())
+						_Wostream << L"<w:qFormat/>";
+					else
+						_Wostream << L"<w:semiHidden/>";
+
+				}
+				else if (bDisplayed)
 				{
 					_Wostream << L"<w:qFormat/>";
 				}
 
-				if (odf_reader::style_instance * next = arStyles[i]->next())
+				if (odf_reader::style_instance* next = arStyles[i]->next())
 				{
 				    const std::wstring nextId = styles_map_.get(next->name(), next->type());
 				    _Wostream << L"<w:next w:val=\"" << nextId << "\"/>";
@@ -1501,11 +1503,12 @@ void docx_conversion_context::process_styles()
 						_Wostream << L"<w:next w:val=\"" << curr_name_of_normal_style << "\"/>";
 					}
 				}
-                //else if (arStyles[i]->is_default())
-                //{
-                //    // self
-                //    _Wostream << L"<w:next w:val=\"" << id << "\"/>";
-                //}
+				if (odf_reader::style_instance* link = arStyles[i]->link())
+				{
+					const std::wstring linkId = styles_map_.get(link->name(), link->type());
+					_Wostream << L"<w:link w:val=\"" << linkId << "\"/>";
+				}
+
 
                 if (odf_reader::style_content * content = arStyles[i]->content())
                 {

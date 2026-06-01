@@ -153,6 +153,7 @@ namespace PdfWriter
 		void      SetFillRGB(double dR, double dG, double dB);
 		void      SetFillCMYK(double dC, double dM, double dY, double dK);
 		void      Concat(double dM11, double dM12, double dM21, double dM22, double dX, double dY);
+		void      Transform(double dM11, double dM12, double dM21, double dM22, double dX, double dY);
 		void      StartTransform(double dM11, double dM12, double dM21, double dM22, double dX, double dY);
 		void      SetTransform(double dM11, double dM12, double dM21, double dM22, double dX, double dY);
 		void      SetExtGrState(CExtGrState* pExtGrState);

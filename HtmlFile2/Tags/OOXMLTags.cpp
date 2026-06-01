@@ -733,51 +733,64 @@ bool CHorizontalRuleOOXMLTag::Open(const std::vector<NSCSS::CNode>& arSelectors)
 
 	const NSCSS::NSProperties::CPage *pPageData{m_pWriter->GetPageData()};
 
-	const unsigned int unPageWidth{static_cast<unsigned int>((pPageData->GetWidth().ToDouble(NSCSS::Inch) - pPageData->GetMargin().GetLeft().ToDouble(NSCSS::Inch) - pPageData->GetMargin().GetRight().ToDouble(NSCSS::Inch)) * 914400.)};
+	const unsigned int unPageWidth{static_cast<unsigned int>((pPageData->GetWidth().ToDouble(NSCSS::Point) - pPageData->GetMargin().GetLeft().ToDouble(NSCSS::Point) - pPageData->GetMargin().GetRight().ToDouble(NSCSS::Point)))};
 
 	std::wstring wsWidth;
 
 	// width is measured in px or %
 	if (!oWidth.Empty())
-		wsWidth = std::to_wstring(static_cast<int>((NSCSS::UnitMeasure::Percent != oWidth.GetUnitMeasure()) ? (NSCSS::CUnitMeasureConverter::ConvertPx(oWidth.ToDouble(), NSCSS::Inch, 96) * 914400.) : oWidth.ToDouble(NSCSS::Inch, unPageWidth)));
+		wsWidth = std::to_wstring(NSCSS::CUnitMeasureConverter::ConvertPx(oWidth.ToDouble(), NSCSS::Point, unPageWidth));
 	else
 		wsWidth = std::to_wstring(unPageWidth);
 
-	std::wstring wsHeight{L"14288"};
+	std::wstring wsHeight{L"1.5"};
 
 	// size is measured only in px
 	if (!oSize.Empty())
-		wsHeight = std::to_wstring(static_cast<int>(NSCSS::CUnitMeasureConverter::ConvertPx(oSize.ToDouble(), NSCSS::Inch, 96) * 914400.));
+		wsHeight = std::to_wstring(NSCSS::CUnitMeasureConverter::ConvertPx(oSize.ToDouble(), NSCSS::Point, 96));
 
 	oXmlString.WriteString(L"<w:rPr><w:noProof/></w:rPr>");
-	oXmlString.WriteString(L"<mc:AlternateContent><mc:Choice Requires=\"wps\"><w:drawing><wp:inline distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\">");
-	oXmlString.WriteString(L"<wp:extent cx=\"" + wsWidth + L"\" cy=\"0\"/>");
-	oXmlString.WriteString(L"<wp:effectExtent l=\"0\" t=\"0\" r=\"0\" b=\"0\"/>");
-	oXmlString.WriteString(L"<wp:docPr id=\"" + std::to_wstring(m_unShapeId) + L"\" name=\"Line " + std::to_wstring(m_unShapeId) + L"\"/>"
-	                                  "<wp:cNvGraphicFramePr/>"
-	                                      "<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">"
-	                                            "<a:graphicData uri=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\">"
-	                                                "<wps:wsp>"
-	                                                    "<wps:cNvSpPr/>"
-	                                                    "<wps:spPr>");
-	oXmlString.WriteString(L"<a:xfrm>"
-	                                  "<a:off x=\"0\" y=\"0\"/>"
-	                                  "<a:ext cx=\"" + wsWidth + L"\" cy=\"0\"/>"
-	                              "</a:xfrm>"
-	                              "<a:custGeom><a:pathLst><a:path>"
-	                                  "<a:moveTo><a:pt x=\"0\" y=\"0\"/></a:moveTo>"
-	                                  "<a:lnTo><a:pt x=\"" + wsWidth + L"\" y=\"0\"/></a:lnTo>"
-	                              "</a:path></a:pathLst></a:custGeom>"
-	                              "<a:ln w=\"" + wsHeight + L"\"><a:solidFill><a:srgbClr val=\"" + ((!oColor.Empty()) ? oColor.ToHEX() : L"808080") + L"\"/></a:solidFill></a:ln>");
+	oXmlString.WriteString(L"<w:pict>");
+	oXmlString.WriteString(L"<v:shape id=\"shape " + std::to_wstring(m_unShapeId++) + L"\" style=\"width:" + wsWidth + L"pt;"
+	                        "height:" + wsHeight + L"pt;"
+	                        "mso-wrap-distance-left:0.00pt;mso-wrap-distance-top:0.00pt;mso-wrap-distance-right:0.00pt;mso-wrap-distance-bottom:0.00pt;visibility:visible;\" "
+	                        "o:hralign=\"" + wsAlign + L"\" o:hrnoshade=\"" + ((bShade) ? L"f" : L"t") + L"\" ");
 
-	if (bShade)
-		oXmlString.WriteString(L"<a:scene3d><a:camera prst=\"orthographicFront\"/><a:lightRig rig=\"threePt\" dir=\"t\"/></a:scene3d><a:sp3d><a:bevelT prst=\"angle\"/></a:sp3d>");
+	if (oColor.Empty())
+		oXmlString.WriteString(L"filled=\"f\" stroked=\"f\" o:hr=\"t\" o:hrstd=\"t\" ");
+	else
+		oXmlString.WriteString(L"filled=\"f\" strokecolor=\"#" + oColor.ToHEX() + L"\" strokeweight=\"" + wsHeight + L"pt\" coordsize=\"100,100\" path=\"m0,0l100,0e\" ");
 
-	oXmlString.WriteString(L"</wps:spPr><wps:bodyPr/></wps:wsp></a:graphicData></a:graphic></wp:inline></w:drawing></mc:Choice></mc:AlternateContent>");
+	oXmlString.WriteString(L"/></w:pict>");
+
+	//// Old version
+	// oXmlString.WriteString(L"<w:rPr><w:noProof/></w:rPr>");
+	// oXmlString.WriteString(L"<mc:AlternateContent><mc:Choice Requires=\"wps\"><w:drawing><wp:inline distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\">");
+	// oXmlString.WriteString(L"<wp:extent cx=\"" + wsWidth + L"\" cy=\"0\"/>");
+	// oXmlString.WriteString(L"<wp:effectExtent l=\"0\" t=\"0\" r=\"0\" b=\"0\"/>");
+	// oXmlString.WriteString(L"<wp:docPr id=\"" + std::to_wstring(m_unShapeId) + L"\" name=\"Line " + std::to_wstring(m_unShapeId) + L"\"/>"
+	//                                   "<wp:cNvGraphicFramePr/>"
+	//                                       "<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">"
+	//                                             "<a:graphicData uri=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\">"
+	//                                                 "<wps:wsp>"
+	//                                                     "<wps:cNvSpPr/>"
+	//                                                     "<wps:spPr>");
+	// oXmlString.WriteString(L"<a:xfrm>"
+	//                                   "<a:off x=\"0\" y=\"0\"/>"
+	//                                   "<a:ext cx=\"" + wsWidth + L"\" cy=\"0\"/>"
+	//                               "</a:xfrm>"
+	//                               "<a:custGeom><a:pathLst><a:path>"
+	//                                   "<a:moveTo><a:pt x=\"0\" y=\"0\"/></a:moveTo>"
+	//                                   "<a:lnTo><a:pt x=\"" + wsWidth + L"\" y=\"0\"/></a:lnTo>"
+	//                               "</a:path></a:pathLst></a:custGeom>"
+	//                               "<a:ln w=\"" + wsHeight + L"\"><a:solidFill><a:srgbClr val=\"" + ((!oColor.Empty()) ? oColor.ToHEX() : L"808080") + L"\"/></a:solidFill></a:ln>");
+
+	// if (bShade)
+	// 	oXmlString.WriteString(L"<a:scene3d><a:camera prst=\"orthographicFront\"/><a:lightRig rig=\"threePt\" dir=\"t\"/></a:scene3d><a:sp3d><a:bevelT prst=\"angle\"/></a:sp3d>");
+
+	// oXmlString.WriteString(L"</wps:spPr><wps:bodyPr/></wps:wsp></a:graphicData></a:graphic></wp:inline></w:drawing></mc:Choice></mc:AlternateContent>");
 
 	m_pWriter->CloseP();
-
-	++m_unShapeId;
 
 	return true;
 }

@@ -109,6 +109,7 @@ private:
 	void ReadDocument(XmlUtils::CXmlLiteReader& oReader);
 	void ReadHead(XmlUtils::CXmlLiteReader& oReader);
 	void ReadBody(XmlUtils::CXmlLiteReader& oReader);
+	void ReadMeta(XmlUtils::CXmlLiteReader& oReader);
 
 	bool ReadStream(XmlUtils::CXmlLiteReader& oReader, std::vector<NSCSS::CNode>& arSelectors, bool bInsertEmptyP = false);
 	bool ReadInside(XmlUtils::CXmlLiteReader& oReader, std::vector<NSCSS::CNode>& arSelectors);

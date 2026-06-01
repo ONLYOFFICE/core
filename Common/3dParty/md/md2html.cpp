@@ -203,7 +203,7 @@ bool ConvertMdFileToHtml(const std::wstring& wsPathToMdFile, const std::wstring&
 		if (oMeta.first.empty())
 			continue;
 
-		oFile.WriteStringUTF8(L"<meta " + UTF8_TO_U(oMeta.first) + L"=\"" + UTF8_TO_U(oMeta.second) + L"\"/>");
+		oFile.WriteStringUTF8(L"<meta name=\"" + UTF8_TO_U(oMeta.first) + L"\" content=\"" + UTF8_TO_U(oMeta.second) + L"\"/>");
 	}
 
 	oFile.WriteStringUTF8(L"<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"/>");

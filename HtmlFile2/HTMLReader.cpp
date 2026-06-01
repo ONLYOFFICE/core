@@ -296,7 +296,6 @@ inline HtmlTag GetHtmlTag(const std::wstring& wsStrTag);
 inline bool UnreadableNode(const std::wstring& wsNodeName);
 inline bool TagIsUnprocessed(const std::wstring& wsTagName);
 inline void GetSubClass(XmlUtils::CXmlLiteReader& oReader, std::vector<NSCSS::CNode>& arSelectors, NSCSS::CCssCalculator& oCSSCalculator);
-inline bool IsMissingMetadata(const std::wstring& wsName);
 
 CHTMLReader::CHTMLReader()
 	: m_bIsTempDirOwner(true), m_pWriter(nullptr), m_pTableElement(nullptr)
@@ -653,27 +652,14 @@ void CHTMLReader::ReadHead(XmlUtils::CXmlLiteReader& oReader)
 
 	const int nDeath = oReader.GetDepth();
 
-	while (oReader.ReadNextSiblingNode(nDeath))
+	while (oReader.ReadNextSiblingNode2(nDeath))
 	{
 		const std::wstring wsName = oReader.GetName();
 		// Base address
 		if (L"base" == wsName)
 			m_wsBaseDirectory = GetArgumentValue(oReader, L"href");
 		else if (L"meta" == wsName)
-		{
-			if (oReader.MoveToFirstAttribute())
-			{
-				do
-				{
-					if (IsMissingMetadata(oReader.GetName()))
-						break;
-
-					m_pWriter->WriteMetadata(oReader.GetName(), oReader.GetText2());
-				}while(oReader.MoveToNextAttribute());
-
-				oReader.MoveToElement();
-			}
-		}
+			ReadMeta(oReader);
 	}
 }
 
@@ -696,6 +682,33 @@ void CHTMLReader::ReadBody(XmlUtils::CXmlLiteReader& oReader)
 	oReader.MoveToElement();
 
 	ReadStream(oReader, arSelectors);
+}
+
+void CHTMLReader::ReadMeta(XmlUtils::CXmlLiteReader& oReader)
+{
+	if (!oReader.MoveToFirstAttribute())
+		return;
+
+	std::wstring wsName, wsContent;
+
+	do
+	{
+		if (L"name" == oReader.GetName())
+			wsName = oReader.GetText();
+		else if (L"content" == oReader.GetName())
+			wsContent = oReader.GetText();
+
+		if (!wsName.empty() && !wsContent.empty())
+		{
+			m_pWriter->WriteMetadata(wsName, wsContent);
+
+			wsName.clear();
+			wsContent.clear();
+		}
+	}while(oReader.MoveToNextAttribute());
+
+	oReader.MoveToElement();
+
 }
 
 bool CHTMLReader::ReadStream(XmlUtils::CXmlLiteReader& oReader, std::vector<NSCSS::CNode>& arSelectors, bool bInsertEmptyP)
@@ -848,14 +861,7 @@ bool CHTMLReader::ReadInside(XmlUtils::CXmlLiteReader& oReader, std::vector<NSCS
 		}
 		case HTML_TAG(META):
 		{
-			for (const std::pair<std::wstring, std::wstring>& oMetadata : arSelectors.back().m_mAttributes)
-			{
-				if (IsMissingMetadata(oMetadata.first))
-					break;
-
-				m_pWriter->WriteMetadata(oMetadata.first, oMetadata.second);
-			}
-
+			ReadMeta(oReader);
 			bResult = true;
 			break;
 		}
@@ -1153,10 +1159,5 @@ inline void GetSubClass(XmlUtils::CXmlLiteReader& oReader, std::vector<NSCSS::CN
 	arSelectors.push_back(oNode);
 
 	oCSSCalculator.CalculateCompiledStyle(arSelectors);
-}
-
-bool IsMissingMetadata(const std::wstring& wsName)
-{
-	return NSStringFinder::Equals(L"http-equiv", wsName) || NSStringFinder::Equals(L"content", wsName);
 }
 }

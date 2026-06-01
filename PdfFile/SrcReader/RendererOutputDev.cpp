@@ -400,7 +400,7 @@ namespace PdfReader
 
 		std::wstring wsFileName = L"";
 		std::wstring wsFontName = L"";
-		GetFont(m_pXref, m_pFontManager, m_pFontList, pFont, wsFileName, wsFontName, false);
+		GetFont(m_pXref, m_pFontManager, m_pFontList, pFont, wsFileName, wsFontName);
 
 		if (!wsFileName.empty())
 		{

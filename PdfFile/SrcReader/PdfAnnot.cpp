@@ -2808,7 +2808,7 @@ CAnnotMarkup::~CAnnotMarkup()
 }
 void CAnnotMarkup::SetFont(PDFDoc* pdfDoc, Object* oAnnotRef, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList)
 {
-	GetFreeTextFont(pdfDoc, pFontManager, pFontList, oAnnotRef, m_arrRC);
+	GetFreeTextFontsRC(pdfDoc, pFontManager, pFontList, oAnnotRef, m_arrRC);
 }
 
 //------------------------------------------------------------------------
@@ -3897,7 +3897,7 @@ void CAnnotMarkup::ToWASM(NSWasm::CData& oRes)
 				oRes.AddDouble(m_arrRC[i]->dVAlign);
 			if (m_arrRC[i]->unFontFlags & (1 << 6))
 				oRes.WriteString(m_arrRC[i]->sActualFont);
-			oRes.AddDouble(m_arrRC[i]->dFontSise);
+			oRes.AddDouble(m_arrRC[i]->dFontSize);
 			oRes.WriteDouble(m_arrRC[i]->dColor[0]);
 			oRes.WriteDouble(m_arrRC[i]->dColor[1]);
 			oRes.WriteDouble(m_arrRC[i]->dColor[2]);

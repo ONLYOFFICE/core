@@ -115,18 +115,29 @@ struct CType3FontMetrics
 };
 struct CFontData
 {
+	enum FontFlags : unsigned int
+	{
+		eFlagBold      = 1 << 0,
+		eFlagItalic    = 1 << 1,
+		eFlagStrike    = 1 << 3,
+		eFlagUnderline = 1 << 4,
+		eFlagVAlign    = 1 << 5,
+		eFlagAFont     = 1 << 6,
+		eFlagRTL       = 1 << 7,
+	};
+
 	bool bFind;
 	BYTE nAlign;
 	unsigned int unFontFlags; // 0 Bold, 1 Italic, 3 strikethrough, 4 underline, 5 vertical-align, 6 actual font, 7 RTL
-	double dFontSise;
+	double dFontSize;
 	double dVAlign;
 	double dColor[3];
 	std::string sFontFamily;
 	std::string sActualFont;
 	std::string sText;
 
-	CFontData() : bFind(false), nAlign(0), unFontFlags(4), dFontSise(10), dVAlign(0), dColor{0, 0, 0} {}
-	CFontData(const CFontData& oFont) : bFind(oFont.bFind), nAlign(oFont.nAlign), unFontFlags(oFont.unFontFlags), dFontSise(oFont.dFontSise), dVAlign(oFont.dVAlign),
+	CFontData() : bFind(false), nAlign(0), unFontFlags(4), dFontSize(10), dVAlign(0), dColor{0, 0, 0} {}
+	CFontData(const CFontData& oFont) : bFind(oFont.bFind), nAlign(oFont.nAlign), unFontFlags(oFont.unFontFlags), dFontSize(oFont.dFontSize), dVAlign(oFont.dVAlign),
 		dColor{oFont.dColor[0], oFont.dColor[1], oFont.dColor[2]}, sFontFamily(oFont.sFontFamily), sActualFont(oFont.sActualFont), sText(oFont.sText) {}
 };
 
@@ -137,13 +148,13 @@ bool IsBaseFont(const std::wstring& wsName);
 std::map<std::wstring, std::wstring> GetAllFonts(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList* pFontList);
 void GetFontData(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList, Object* oFontRef);
 bool GetFontFromAP(PDFDoc* pdfDoc, AcroFormField* pField, Object* oFontRef, std::string& sFontKey);
-std::vector<Ref> GetAnnotFontInfos(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList* pFontList, Object* oAnnotRef);
-std::map<std::wstring, std::wstring> GetFreeTextFont(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList* pFontList, Object* oAnnotRef, std::vector<CFontData*>& arrRC);
+std::vector<Ref> GetFreeTextFonts(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList* pFontList, Object* oAnnotRef);
+std::map<std::wstring, std::wstring> GetFreeTextFontsRC(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList* pFontList, Object* oAnnotRef, std::vector<CFontData*>& arrRC);
 bool FindFonts(Object* oStream, int nDepth, Object* oResFonts);
 int CollectFontWidths(Dict* pFontDict, std::map<unsigned int, unsigned int>& mGIDToWidth);
 
 NSFonts::CFontInfo* GetFontByParams(XRef* pXref, NSFonts::IFontManager* pFontManager, GfxFont* pFont, std::wstring& wsFontBaseName, double& dStretch);
-void GetFont(XRef* pXref, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList, GfxFont* pFont, std::wstring& wsFileName, std::wstring& wsFontName, bool bNotFullName = true);
+void GetFont(XRef* pXref, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList, GfxFont* pFont, std::wstring& wsFileName, std::wstring& wsFontName);
 
 CType3FontMetrics* BuildType3FontMetrics(XRef* pXref, GfxFont* pFont);
 }

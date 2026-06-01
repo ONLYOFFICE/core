@@ -3718,7 +3718,7 @@ bool CPdfEditor::EditAnnot(int _nPageIndex, int nID)
 		pAnnot = new PdfWriter::CPolygonLineAnnotation(pXref);
 	else if (oType.isName("FreeText"))
 	{
-		std::vector<Ref> arrFont = PdfReader::GetAnnotFontInfos(pPDFDocument, m_pReader->GetFontManager(), pFontList, &oAnnotRef);
+		std::vector<Ref> arrFont = PdfReader::GetFreeTextFonts(pPDFDocument, m_pReader->GetFontManager(), pFontList, &oAnnotRef);
 		for (int i = 0; i < arrFont.size(); ++i)
 		{
 			Ref oFontInfo = arrFont[i];
@@ -4695,7 +4695,7 @@ void CPdfEditor::ScanAndProcessFonts(PDFDoc* pPDFDocument, XRef* xref, Dict* pRe
 				if (gfxFont->getEmbeddedFontID(&oEmbRef) || PdfReader::IsBaseFont(wsFontBaseName) || ((pFontLoc = gfxFont->locateFont(xref, false)) && NSStrings::GetStringFromUTF32(pFontLoc->path).length()))
 				{
 					std::wstring wsFileName, wsFontName;
-					PdfReader::GetFont(xref, pFontManager, pFontList, gfxFont, wsFileName, wsFontName, false);
+					PdfReader::GetFont(xref, pFontManager, pFontList, gfxFont, wsFileName, wsFontName);
 
 					// Collect information about embedded font
 					if (!PdfReader::IsBaseFont(wsFontBaseName))

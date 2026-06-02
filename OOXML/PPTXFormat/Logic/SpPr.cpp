@@ -43,6 +43,9 @@
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Frame.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/ShapePropsStream.h"
 
+#include <codecvt>
+#include <locale>
+
 namespace PPTX
 {
 	namespace Logic
@@ -202,11 +205,10 @@ namespace PPTX
 			spStream->wObjContext = ObjContext;
 			auto xmlProps = toXML();
 			spStream->xml_.reserve(xmlProps.length());
-
-			std::transform(xmlProps.begin(), xmlProps.end(), std::back_inserter(spStream->xml_), [](wchar_t c)
 			{
-				return static_cast<char>(c);
-			});
+				std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+				spStream->xml_ =  converter.to_bytes(xmlProps);
+			}
 
 			return  XLS::BaseObjectPtr(SpUnion);
 		}

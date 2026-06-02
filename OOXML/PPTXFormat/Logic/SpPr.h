@@ -71,7 +71,7 @@ namespace PPTX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 			virtual std::wstring toXML() const;
-			XLS::BaseObjectPtr toXLS(const unsigned short ObjContext) const;
+			XLS::BaseObjectPtr toXLS(const unsigned short ObjContext);
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;

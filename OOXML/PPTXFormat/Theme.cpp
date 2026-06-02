@@ -249,13 +249,13 @@ XLS::BaseObjectPtr Theme::toXLS(const OOX::CPath& oFilePath)
 	return sDir + FILE_SEPARATOR_STR + sName;
 	};
 	std::string themeXml;
+    std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
 	{
 		// 1. xml theme generation
 		NSBinPptxRW::CXmlWriter oXmlWriter;
 		oXmlWriter.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
 		toXmlWriter(&oXmlWriter);
 		auto themeData = oXmlWriter.GetXmlString();
-		std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
 		themeXml =  converter.to_bytes(themeData);
 	 }
 
@@ -278,7 +278,8 @@ XLS::BaseObjectPtr Theme::toXLS(const OOX::CPath& oFilePath)
 	#ifdef _WIN32
 			std::ofstream f(path, std::ios::binary);
 	#else
-			std::string narrowPath(path.begin(), path.end());
+            std::wstring_convert<std::codecvt_utf8<wchar_t>> Lambdaconverter;
+            std::string narrowPath = Lambdaconverter.to_bytes(path);
 			std::ofstream f(narrowPath, std::ios::binary);
 	#endif
 			if (f.is_open()) {
@@ -312,7 +313,12 @@ XLS::BaseObjectPtr Theme::toXLS(const OOX::CPath& oFilePath)
 	OfficeUtils.CompressFileOrDirectory(tempDir, zipPath, true, Z_DEFLATED, 6, true);
 
 	// 5. reading zip file
-	std::ifstream zip(zipPath, std::ios::binary | std::ios::ate);
+#ifdef _WIN32
+        std::ifstream zip(zipPath, std::ios::binary | std::ios::ate);
+#else
+        std::string unixzipPath = converter.to_bytes(tempDir) + ".zip";
+        std::ifstream zip(unixzipPath, std::ios::binary | std::ios::ate);
+#endif
 	std::streamsize size = zip.tellg();
 	zip.seekg(0, std::ios::beg);
 

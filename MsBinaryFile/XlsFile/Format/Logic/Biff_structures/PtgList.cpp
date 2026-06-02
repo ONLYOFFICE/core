@@ -167,7 +167,7 @@ Ptg* PtgList::toArea()
 	auto tableRefIndex = XLS::GlobalWorkbookInfo::mapTableRefsStatic.find(listIndex);
 	if(tableRefIndex != XLS::GlobalWorkbookInfo::mapTableRefsStatic.end())
 	{
-		tableRef.fromString(tableRefIndex->second);
+		tableRef.fromString(std::get<0>(tableRefIndex->second));
 		tableRef.columnFirst += colFirst;
 		tableRef.columnLast = tableRef.columnFirst;
 		if(colLast > colFirst)
@@ -176,13 +176,13 @@ Ptg* PtgList::toArea()
 			tableRef.rowLast = tableRef.rowFirst;
 		else if(rowType == 0x0) //data
 		{
-			tableRef.rowFirst++;
-			tableRef.rowLast--;
+			tableRef.rowFirst+= std::get<1>(tableRefIndex->second);
+			tableRef.rowLast-= std::get<2>(tableRefIndex->second);
 		}
 		else if(rowType == 0x6) //dataheaders
-			tableRef.rowLast--;
+			tableRef.rowLast-= std::get<2>(tableRefIndex->second);
 		else if(rowType == 0x0C) // datatotals
-			tableRef.rowFirst++;
+			tableRef.rowFirst+= std::get<1>(tableRefIndex->second);
 		else if(rowType == 0x8) //totals
 			tableRef.rowFirst = tableRef.rowLast;
 	}

@@ -232,39 +232,7 @@ bool OOX::Spreadsheet::CXlsx::WriteXLS(const CPath& oFilePath)
 	if(!(themesPtr->type() == OOX::FileTypes::Unknown))
 	{	auto counter = 0;
 		auto theme = static_cast<PPTX::Theme*>(themesPtr.GetPointer());
-		for(auto themeColor : theme->themeElements.clrScheme.Scheme)
-		{
-			if(themeColor.first == L"lt1")
-				counter = 0;
-			else if(themeColor.first == L"dk1")
-				counter = 1;
-			else if(themeColor.first == L"lt2")
-				counter = 2;
-			else if(themeColor.first == L"dk2")
-				counter = 3;
-			else if(themeColor.first == L"accent1")
-				counter = 4;
-			else if(themeColor.first == L"accent2")
-				counter = 5;
-			else if(themeColor.first == L"accent3")
-				counter = 6;
-			else if(themeColor.first == L"accent4")
-				counter = 7;
-			else if(themeColor.first == L"accent5")
-				counter = 8;
-			else if(themeColor.first == L"accent6")
-				counter = 9;
-			else if(themeColor.first == L"hlink")
-				counter = 10;
-			else if(themeColor.first == L"folHlink")
-				counter = 11;
-			else continue;
-			auto tempcolor = themeColor.second;
-			std::wstringstream sStream;
-			sStream << std::hex  << std::setw(6) << std::setfill(L'0')<< tempcolor.Color->GetARGB(0);
-			writer.globalInfoPtr->RegisterPaletteColor(counter, sStream.str());
-		}
-		CastedGlobalsStram->m_THEME = theme->toXLS();
+		CastedGlobalsStram->m_THEME = theme->toXLS(oFilePath);
 	}
 
 	for(auto i : m_arWorksheets)

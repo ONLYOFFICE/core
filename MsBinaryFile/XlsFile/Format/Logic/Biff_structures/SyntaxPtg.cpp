@@ -627,7 +627,7 @@ const bool SyntaxPtg::extract_PtgList(std::wstring::const_iterator& first, std::
                 ptgList.columns = 0;
                 ptgList.colFirst = 0;
 				ptgList.colLast = indexColumn;
-				ptgList.rowType = 0x0C;
+				ptgList.rowType = 0x0;
                 first = results_1[0].second;
 				return true;
 			}

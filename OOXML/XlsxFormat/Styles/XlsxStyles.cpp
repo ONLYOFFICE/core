@@ -361,17 +361,7 @@ namespace OOX
 				m_oColors = OOX::Spreadsheet::CColors();
 				m_oColors->m_oIndexedColors.Init();
 				m_oColors->m_oMruColors.Init();
-				{
-					for(auto i : globalInfo->colors_palette)
-					{
-						nullable<CColor> tempColor;
-						tempColor.Init();
-						tempColor->m_oRgb.Init();
-						tempColor->m_oRgb->FromString(i.second);
-						SetColor(m_oColors.get(), tempColor);
-					}
 
-				}
 				if (m_oFonts.IsInit())
 				{
 					for(auto i : m_oFonts->m_arrItems)
@@ -426,15 +416,6 @@ namespace OOX
 					if(i->m_oColor.IsInit() && i->m_oColor->m_oRgb.IsInit())
 					{
 						i->m_oColor->m_oIndexed = GetClrIndex(m_oColors.get(), i->m_oColor->m_oRgb.get());
-					}
-					//finding registred theme clr
-					else if(i->m_oColor.IsInit() && i->m_oColor->m_oThemeColor.IsInit()
-					&& globalInfo->colors_palette.find(i->m_oColor->m_oThemeColor->GetValue()) != globalInfo->colors_palette.end())
-					{
-						auto rgb = globalInfo->colors_palette.find(i->m_oColor->m_oThemeColor->GetValue())->second;
-						SimpleTypes::Spreadsheet::CHexColor hexClr;
-						hexClr.FromString(rgb);
-						i->m_oColor->m_oIndexed = GetClrIndex(m_oColors.get(), hexClr);
 					}
 				}
 				FormatPtr->m_arFonts = m_oFonts->toXLS();
@@ -502,14 +483,6 @@ namespace OOX
 			{
 				if(color.IsInit() && !color->m_oIndexed.IsInit() && color->m_oRgb.IsInit())
 					color->m_oIndexed = GetClrIndex(colors.get(), color->m_oRgb.get());
-				else if(color.IsInit() && color->m_oThemeColor.IsInit()
-				&& globInfo->colors_palette.find(color->m_oThemeColor->GetValue()) != globInfo->colors_palette.end())
-				{
-					auto rgb = globInfo->colors_palette.find(color->m_oThemeColor->GetValue())->second;
-					SimpleTypes::Spreadsheet::CHexColor hexClr;
-					hexClr.FromString(rgb);
-					color->m_oIndexed = GetClrIndex(colors.get(), hexClr);
-				}
 				return 0;
 			};
 			//preparing clr indexes
@@ -675,14 +648,6 @@ namespace OOX
 				if(border.IsInit() && border->m_oColor.IsInit() &&
 				!border->m_oColor->m_oIndexed.IsInit() &&  border->m_oColor->m_oRgb.IsInit())
 					border->m_oColor->m_oIndexed = GetClrIndex(colors.get(), border->m_oColor->m_oRgb.get());
-				else if(border.IsInit() && border->m_oColor.IsInit() && border->m_oColor->m_oThemeColor.IsInit()
-				&& globInfo->colors_palette.find(border->m_oColor->m_oThemeColor->GetValue()) != globInfo->colors_palette.end())
-				{
-					auto rgb = globInfo->colors_palette.find(border->m_oColor->m_oThemeColor->GetValue())->second;
-					SimpleTypes::Spreadsheet::CHexColor hexClr;
-					hexClr.FromString(rgb);
-					border->m_oColor->m_oIndexed = GetClrIndex(colors.get(), hexClr);
-				}
 				return 0;
 			};
 			for(auto i : m_oBorders->m_arrItems)

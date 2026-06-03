@@ -864,7 +864,7 @@ public:
     void set_page_break_before(int val);
     int get_page_break_before();
 
-	void set_page_break		(bool val);
+	void set_page_break	(bool val);
     bool get_page_break		();
 
 	void set_temp_style_name( const std::wstring& val );

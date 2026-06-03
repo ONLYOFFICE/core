@@ -133,6 +133,46 @@ text_tracked_context::_state & text_tracked_context::get_tracked_change(std::wst
 	else 
 		return 	current_state_; //empty
 }
+void comments_context::end_comment(const std::wstring& name)
+{
+	std::map<std::wstring, comments_context::_comment_desc>::iterator pFind = comments_map_.find(name);
+	if ((pFind != comments_map_.end()) && (pFind->second.bEnd == false))
+	{
+		ref_end_.push_back(pFind->second.id);
+		pFind->second.bEnd = true;
+	}
+	else
+	{
+		//error
+	}
+}
+void comments_context::start_comment(const std::wstring& content, const std::wstring& author, const std::wstring& date, _CP_OPT(std::wstring) name)
+{
+	int id = comments_map_.size() + 1;
+
+	bool bNew = false;
+
+	std::map<std::wstring, comments_context::_comment_desc>::iterator pFind = comments_map_.end();
+
+	if ((name) && (false == name->empty()))
+	{
+		pFind = comments_map_.find(*name);
+	}
+
+	if (pFind != comments_map_.end())
+	{
+		id = pFind->second.id;
+		//error ?
+	}
+	else
+	{
+		_comment_desc new_comment(content, id, author, date);
+
+		comments_map_.insert(std::make_pair(*name, new_comment));
+	
+		ref_start_.push_back(id);
+	}
+}
 
 //----------------------------------------------------------------------------------------------------------------
 docx_conversion_context::docx_conversion_context(odf_reader::odf_document * _odf_document) : 
@@ -310,11 +350,11 @@ void docx_conversion_context::finish_paragraph()
 				{
 					output_stream()<< L"<w:commentRangeEnd w:id=\"" << get_comments_context().ref_end_[i] << L"\"/>";
 				}
-				
-				for (size_t i = 0; i < get_comments_context().ref_end_.size(); i++)
-				{
-					output_stream()<< L"<w:commentReference w:id=\"" << get_comments_context().ref_end_[i] << L"\"/>";			
-				}
+				//
+				//for (size_t i = 0; i < get_comments_context().ref_end_.size(); i++)
+				//{
+				//	output_stream()<< L"<w:commentReference w:id=\"" << get_comments_context().ref_end_[i] << L"\"/>";			
+				//}
 			
 				get_comments_context().ref_end_.clear();	
 		}	

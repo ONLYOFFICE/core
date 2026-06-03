@@ -59,6 +59,7 @@ public:
 	static const ElementType	type = typeAreaFormat;
 
 	int serialize(std::wostream & _stream);
+	void setChecksum(std::vector<BYTE> &ChecksumData);
 
 	LongRGB rgbFore;
 	LongRGB rgbBack;

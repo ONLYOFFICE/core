@@ -55,6 +55,7 @@ public:
 
 	static const ElementType	type = typeLineFormat;
 	int serialize(std::wostream & _stream);
+	void setChecksum(std::vector<BYTE> &ChecksumData);
 //-----------------------------
 	LongRGB rgb;
 	_UINT16 lns = 5;

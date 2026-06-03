@@ -50,6 +50,7 @@
 #include"../Biff_records/End.h"
 #include"../Biff_records/StartObject.h"
 #include"../Biff_records/EndObject.h"
+#include"../Biff_records/ShapePropsStream.h"
 
 namespace XLS
 {
@@ -240,18 +241,65 @@ const bool SS::loadContent(BinProcessor& proc)
 	return true;
 }
 
+
+unsigned int CalculateShapePropsChecksum(const std::vector<BYTE>& data) {
+	static uint32_t crcCache[256];
+	static bool isCacheInitialized = false;
+
+	if (!isCacheInitialized) {
+		for (int i = 0; i < 256; ++i) {
+			uint32_t crc = static_cast<uint32_t>(i) << 24;
+			for (int j = 0; j < 8; ++j) {
+				if (crc & 0x80000000) {
+					crc = (crc << 1) ^ 0x04C11DB7;
+				} else {
+					crc <<= 1;
+				}
+			}
+			crcCache[i] = crc;
+		}
+		isCacheInitialized = true;
+	}
+	uint32_t crcValue = 0x00000000;
+
+	for (BYTE byte : data) {
+		// SET Index to CrcValue -> SHIFT Index right 24 bits
+		uint8_t index = static_cast<uint8_t>(crcValue >> 24);
+
+		// Bitwise exclusive-OR Index with Byte
+		index ^= byte;
+
+		// SHIFT CrcValue left 8 bits
+		crcValue <<= 8;
+
+		// Bitwise exclusive-OR CrcValue with Cache[Index]
+		crcValue ^= crcCache[index];
+	}
+
+	return crcValue;
+}
+
 const bool SS::saveContent(BinProcessor& proc)
 {
 	if(m_DataFormat == nullptr)
 		return false;
+	std::vector<BYTE> ShapePropsStreamChecksumData;
 	proc.mandatory(*m_DataFormat);
 	proc.mandatory<Begin>();
 	if(m_Chart3DBarShape != nullptr)
 		proc.mandatory(*m_Chart3DBarShape);
 	if(m_LineFormat != nullptr)
+	{
 		proc.mandatory(*m_LineFormat);
+		auto castedLine = static_cast<LineFormat*>(m_LineFormat.get());
+		castedLine->setChecksum(ShapePropsStreamChecksumData);
+	}
 	if(m_AreaFormat != nullptr)
+	{
 		proc.mandatory(*m_AreaFormat);
+		auto castedArea = static_cast<AreaFormat*>(m_AreaFormat.get());
+		castedArea->setChecksum(ShapePropsStreamChecksumData);
+	}
 	if(m_PieFormat != nullptr)
 		proc.mandatory(*m_PieFormat);
 	if(m_SerFmt != nullptr)
@@ -262,9 +310,15 @@ const bool SS::saveContent(BinProcessor& proc)
 		proc.mandatory(*m_MarkerFormat);
 	if(m_AttachedLabel != nullptr)
 		proc.mandatory(*m_AttachedLabel);
+
 	for(auto i : m_arSHAPEPROPS)
 		if(i != nullptr)
+		{
+			auto castedProp = static_cast<SHAPEPROPS*>(i.get());
+			auto propHeader = static_cast<ShapePropsStream*>(castedProp->m_ShapePropsStream.get());
+			propHeader->dwChecksum = CalculateShapePropsChecksum(ShapePropsStreamChecksumData);
 			proc.mandatory(*i);
+		}
 	proc.mandatory<End>();
 	return true;
 }

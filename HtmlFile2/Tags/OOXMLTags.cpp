@@ -754,12 +754,12 @@ bool CHorizontalRuleOOXMLTag::Open(const std::vector<NSCSS::CNode>& arSelectors)
 	oXmlString.WriteString(L"<v:shape id=\"shape " + std::to_wstring(m_unShapeId++) + L"\" style=\"width:" + wsWidth + L"pt;"
 	                        "height:" + wsHeight + L"pt;"
 	                        "mso-wrap-distance-left:0.00pt;mso-wrap-distance-top:0.00pt;mso-wrap-distance-right:0.00pt;mso-wrap-distance-bottom:0.00pt;visibility:visible;\" "
-	                        "o:hralign=\"" + wsAlign + L"\" o:hrnoshade=\"" + ((bShade) ? L"f" : L"t") + L"\" ");
+	                        "o:hralign=\"" + wsAlign + L"\" o:hrnoshade=\"" + ((bShade) ? L"f" : L"t") + L"\" filled=\"f\" ");
 
 	if (oColor.Empty())
-		oXmlString.WriteString(L"filled=\"f\" stroked=\"f\" o:hr=\"t\" o:hrstd=\"t\" ");
+		oXmlString.WriteString(L"stroked=\"f\" o:hr=\"t\" o:hrstd=\"t\" ");
 	else
-		oXmlString.WriteString(L"filled=\"f\" strokecolor=\"#" + oColor.ToHEX() + L"\" strokeweight=\"" + wsHeight + L"pt\" coordsize=\"100,100\" path=\"m0,0l100,0e\" ");
+		oXmlString.WriteString(L"stroked=\"t\" o:hr=\"t\" o:hrstd=\"t\" strokecolor=\"#" + oColor.ToHEX() + L"\" strokeweight=\"" + wsHeight + L"pt\" coordsize=\"100,100\" path=\"m0,0l100,0e\" ");
 
 	oXmlString.WriteString(L"/></w:pict>");
 

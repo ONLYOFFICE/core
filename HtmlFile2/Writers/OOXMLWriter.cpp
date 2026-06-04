@@ -844,8 +844,8 @@ bool COOXMLWriter::WriteText(std::wstring wsText, const std::vector<NSCSS::CNode
 	if (wsText.empty())
 		return false;
 
-	bool bBidirectional{false}, bPreformatted{false}, bQuotation{false},
-	     bAddSpaces{true}, bDeleted{false};
+	bool bBidirectional{false}, bPreformattedTag{false}, bPreformatedStyle{false}, bQuotation{false},
+	     bAddSpaces{true}, bDeleted{false}, bCode{false};
 
 	for (const NSCSS::CNode& oNode : arSelectors)
 	{
@@ -854,18 +854,23 @@ bool COOXMLWriter::WriteText(std::wstring wsText, const std::vector<NSCSS::CNode
 		else if (L"bdi" == oNode.m_wsName)
 			bBidirectional = false;
 		else if (L"pre" == oNode.m_wsName || L"nobr" == oNode.m_wsName || L"xmp" == oNode.m_wsName)
-			bPreformatted = true;
+		{
+			bPreformattedTag  = true;
+			bPreformatedStyle = true;
+		}
 		else if (L"q" == oNode.m_wsName)
 			bQuotation = true;
 		else if (L"span" == oNode.m_wsName)
 			bAddSpaces = false;
 		else if (L"del" == oNode.m_wsName)
 			bDeleted = true;
+		else if (L"code" == oNode.m_wsName)
+			bCode = true;
 	}
 
 	const NSCSS::CCompiledStyle* pCompiledStyle{arSelectors.back().m_pCompiledStyle};
 
-	if (!bPreformatted && nullptr != arSelectors.back().m_pCompiledStyle)
+	if (!bPreformatedStyle && nullptr != arSelectors.back().m_pCompiledStyle)
 	{
 		// TODO:: behavior should be slightly different (implement)
 		switch(pCompiledStyle->m_oDisplay.GetWhiteSpace().ToInt())
@@ -873,13 +878,13 @@ bool COOXMLWriter::WriteText(std::wstring wsText, const std::vector<NSCSS::CNode
 			case NSCSS::NSProperties::EWhiteSpace::Pre:
 			case NSCSS::NSProperties::EWhiteSpace::Pre_Wrap:
 			case NSCSS::NSProperties::EWhiteSpace::Pre_Line:
-				bPreformatted = true;
+				bPreformatedStyle = true;
 			default:
 				break;
 		}
 	}
 
-	if (!bPreformatted && wsText.end() == std::find_if_not(wsText.begin(), wsText.end(), [](wchar_t wchChar){ return iswspace(wchChar) && 0xa0 != wchChar;}))
+	if (!bPreformatedStyle && wsText.end() == std::find_if_not(wsText.begin(), wsText.end(), [](wchar_t wchChar){ return iswspace(wchChar) && 0xa0 != wchChar;}))
 		return false;
 
 	std::wstring wsHeaderId;
@@ -890,8 +895,6 @@ bool COOXMLWriter::WriteText(std::wstring wsText, const std::vector<NSCSS::CNode
 	if(bBidirectional)
 		std::reverse(wsText.begin(), wsText.end());
 
-	const bool bInT = m_arStates.top().m_bInT;
-
 	OpenP();
 
 	WritePPr(arSelectors);
@@ -901,35 +904,45 @@ bool COOXMLWriter::WriteText(std::wstring wsText, const std::vector<NSCSS::CNode
 	if (!wsHeaderId.empty())
 		WriteEmptyBookmark(wsHeaderId);
 
+	XmlString *pCurrentDocument{GetCurrentDocument()};
+
 	if (bDeleted)
-		GetCurrentDocument()->WriteString(L"<w:del w:author=\"Unknown\">");
+		pCurrentDocument->WriteString(L"<w:del w:author=\"Unknown\">");
 
 	NSStringUtils::CStringBuilder oRPr;
 	std::wstring sRStyle;
 
+	if (bCode)
+		pCurrentDocument->WriteString(L"<w:sdt>"
+		                                   "<w:sdtPr>"
+		                                       "<w:placeholder><w:docPart w:val=\"DefaultPlaceholder_TEXT\"/></w:placeholder>"
+		                                       "<w:tag w:val=\"oo-" + std::wstring(((bPreformattedTag) ? L"block-code" : L"inline-code")) + L"\"/>"
+		                                   "</w:sdtPr>"
+		                                "<w:sdtContent>");
+
 	if (OpenR())
 	{
 		sRStyle = WriteRPr(oRPr, arSelectors);
-		WriteToStringBuilder(oRPr, *m_arStates.top().m_pCurrentDocument);
+		WriteToStringBuilder(oRPr, *pCurrentDocument);
 	}
 
 	if (bQuotation)
-		m_arStates.top().m_pCurrentDocument->WriteString(L"<w:t xml:space=\"preserve\">&quot;</w:t>");
+		pCurrentDocument->WriteString(L"<w:t xml:space=\"preserve\">&quot;</w:t>");
 
-	if (!bPreformatted && bAddSpaces && m_arStates.top().m_bInP && !m_arStates.top().m_bInR && !iswspace(wsText.front()) && !iswpunct(wsText.front()) && !m_arStates.top().m_bWasSpace)
+	if (!bPreformatedStyle && bAddSpaces && m_arStates.top().m_bInP && !m_arStates.top().m_bInR && !iswspace(wsText.front()) && !iswpunct(wsText.front()) && !m_arStates.top().m_bWasSpace)
 	{
 		if (pCompiledStyle->m_oDisplay.GetVAlign().Empty() || L"normal" == pCompiledStyle->m_oDisplay.GetVAlign().ToWString())
 			WriteSpace();
 	}
 
-	if(bPreformatted)
+	if(bPreformatedStyle)
 	{
 		size_t unBegin = 0, unEnd = wsText.find_first_of(L"\n\r\t");
 
 		while (std::wstring::npos != unBegin)
 		{
 			if (OpenR())
-				WriteToStringBuilder(oRPr, *m_arStates.top().m_pCurrentDocument);
+				WriteToStringBuilder(oRPr, *pCurrentDocument);
 
 			if (!bDeleted)
 				OpenT();
@@ -938,20 +951,20 @@ bool COOXMLWriter::WriteText(std::wstring wsText, const std::vector<NSCSS::CNode
 
 			if (unEnd == std::wstring::npos)
 			{
-				m_arStates.top().m_pCurrentDocument->WriteEncodeXmlString(wsText.c_str() + unBegin, wsText.length() - unBegin);
+				pCurrentDocument->WriteEncodeXmlString(wsText.c_str() + unBegin, wsText.length() - unBegin);
 				break;
 			}
 
 			if (unBegin != unEnd)
 			{
-				m_arStates.top().m_pCurrentDocument->WriteEncodeXmlString(wsText.c_str() + unBegin, unEnd - unBegin);
+				pCurrentDocument->WriteEncodeXmlString(wsText.c_str() + unBegin, unEnd - unBegin);
 				CloseT();
 			}
 
 			if (L'\n' == wsText[unEnd])
-				m_arStates.top().m_pCurrentDocument->WriteString(L"<w:br/>");
+				pCurrentDocument->WriteString(L"<w:br/>");
 			else if (L'\t' == wsText[unEnd])
-				m_arStates.top().m_pCurrentDocument->WriteString(L"<w:tab/>");
+				pCurrentDocument->WriteString(L"<w:tab/>");
 
 			unBegin = unEnd + 1;
 			unEnd = wsText.find_first_of(L"\n\r\t", unBegin);
@@ -963,7 +976,7 @@ bool COOXMLWriter::WriteText(std::wstring wsText, const std::vector<NSCSS::CNode
 
 		if (!wsText.empty() && L'\t' == wsText[0])
 		{
-			m_arStates.top().m_pCurrentDocument->WriteString(L"<w:tab/>");
+			pCurrentDocument->WriteString(L"<w:tab/>");
 			wsText.erase(0, 1);
 		}
 
@@ -973,27 +986,30 @@ bool COOXMLWriter::WriteText(std::wstring wsText, const std::vector<NSCSS::CNode
 		if (!bDeleted)
 			OpenT();
 		else
-			GetCurrentDocument()->WriteString(L"<w:delText>");
+			pCurrentDocument->WriteString(L"<w:delText>");
 
 		if (!wsText.empty())
 		{
 			m_arStates.top().m_bWasSpace = std::iswspace(wsText.back());
-			m_arStates.top().m_pCurrentDocument->WriteEncodeXmlString(wsText);
+			pCurrentDocument->WriteEncodeXmlString(wsText);
 		}
 	}
 
 	if (bQuotation)
-		m_arStates.top().m_pCurrentDocument->WriteString(L"<w:t xml:space=\"preserve\">&quot;</w:t>");
+		pCurrentDocument->WriteString(L"<w:t xml:space=\"preserve\">&quot;</w:t>");
 
 	if (!bDeleted)
 		CloseT();
 	else
-		GetCurrentDocument()->WriteString(L"</w:delText>");
+		pCurrentDocument->WriteString(L"</w:delText>");
 
 	CloseR();
 
+	if (bCode)
+		pCurrentDocument->WriteString(L"</w:sdtContent></w:sdt>");
+
 	if (bDeleted)
-		GetCurrentDocument()->WriteString(L"</w:del>");
+		pCurrentDocument->WriteString(L"</w:del>");
 
 	return true;
 }

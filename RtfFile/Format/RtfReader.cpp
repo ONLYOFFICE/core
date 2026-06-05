@@ -183,6 +183,22 @@ bool RtfAbstractReader::RtfAbstractReader::Parse(RtfDocument& oDocument, RtfRead
 	oReader.m_oLex.m_oFileWriter = m_oFileWriter;
 
 	int res = 0;
+	unsigned short nLastHigh = 0;
+
+	// only for 4 bytes wchar_t, returns true if high surrogate
+	auto handle_u32wchar_surrogate = [&nLastHigh] (std::wstring& res) -> bool {
+		if (res[0] >= 0xD800 && res[0] <= 0xDBFF) // high
+		{
+			nLastHigh = res[0];
+			return true;
+		}
+		if (nLastHigh && res[0] >= 0xDC00 && res[0] <= 0xDFFF) // low
+			res[0] = 0x10000 + ((wchar_t)(nLastHigh - 0xD800) << 10) + (res[0] - 0xDC00);
+
+		nLastHigh = 0;
+		return false;
+	};
+
 	m_oTok = oReader.m_oLex.NextCurToken();
 	
 	if (m_oTok.Type == m_oTok.None)
@@ -194,13 +210,14 @@ bool RtfAbstractReader::RtfAbstractReader::Parse(RtfDocument& oDocument, RtfRead
 		{
 		case RtfToken::GroupStart:
 		{
+			nLastHigh = 0;
 			ExecuteTextInternal2(oDocument, oReader, m_oTok.Key, m_nSkipChars);
 			PushState(oReader);
 		}break;
 		case RtfToken::GroupEnd:
 		{
+			nLastHigh = 0;
 			ExecuteTextInternal2(oDocument, oReader, m_oTok.Key, m_nSkipChars);
-
 			PopState(oDocument, oReader);
 		}break;
 		case RtfToken::Keyword:
@@ -208,7 +225,11 @@ bool RtfAbstractReader::RtfAbstractReader::Parse(RtfDocument& oDocument, RtfRead
 			ExecuteTextInternal2(oDocument, oReader, m_oTok.Key, m_nSkipChars);
 			if (m_oTok.Key == "u")
 			{
-				ExecuteText(oDocument, oReader, ExecuteTextInternal(oDocument, oReader, m_oTok.Key, m_oTok.HasParameter, m_oTok.Parameter, m_nSkipChars));
+				std::wstring sRes = ExecuteTextInternal(oDocument, oReader, m_oTok.Key, m_oTok.HasParameter, m_oTok.Parameter, m_nSkipChars);
+				if (sizeof(wchar_t) == 4)
+					if (!sRes.empty() && handle_u32wchar_surrogate(sRes))
+						break;
+				ExecuteText(oDocument, oReader, std::move(sRes));
 				break;
 			}
 			else

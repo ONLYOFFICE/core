@@ -68,19 +68,19 @@ SOURCES += \
 	../../../Binary/Document/DocWrapper/FontProcessor.cpp \
 	../../../Binary/Document/DocWrapper/XlsxSerializer.cpp \
 	../../../Binary/Document/DocWrapper/ChartSerializer.cpp \
-        ../../../Binary/Document/DocWrapper/VsdxSerializer.cpp \
-        ../../../Binary/Document/BinWriter/BinaryWriterD.cpp \
+	../../../Binary/Document/DocWrapper/VsdxSerializer.cpp \
+	../../../Binary/Document/BinWriter/BinaryWriterD.cpp \
 	../../../Binary/Sheets/Common/Common.cpp \
 	../../../Binary/Sheets/Reader/ChartFromToBinary.cpp \
 	../../../Binary/Sheets/Reader/CommonWriter.cpp \
 	../../../Binary/Sheets/Reader/CSVReader.cpp \
-        ../../../Binary/Sheets/Reader/BinaryWriterS.cpp \
-        ../../../Binary/Sheets/Writer/BinaryReaderS.cpp \
+	../../../Binary/Sheets/Reader/BinaryWriterS.cpp \
+	../../../Binary/Sheets/Writer/BinaryReaderS.cpp \
 	../../../Binary/Sheets/Writer/CSVWriter.cpp \
-        ../../../Binary/Draw/BinaryWriterV.cpp \
-        ../../../Binary/Draw/BinaryReaderV.cpp \
-        ../../../Binary/Document/BinReader/ReaderClasses.cpp \
-        ../../../Binary/Document/BinReader/BinaryReaderD.cpp \
+	../../../Binary/Draw/BinaryWriterV.cpp \
+	../../../Binary/Draw/BinaryReaderV.cpp \
+	../../../Binary/Document/BinReader/ReaderClasses.cpp \
+	../../../Binary/Document/BinReader/BinaryReaderD.cpp \
 	../../../Binary/Document/BinReader/CustomXmlWriter.cpp \
 	../../../Binary/Document/BinReader/FileWriter.cpp \
 	../../../Binary/Document/BinReader/ChartWriter.cpp \
@@ -94,26 +94,26 @@ SOURCES += \
 	../../../Binary/Document/BinReader/NumberingWriter.cpp \
 	../../../Binary/Document/BinReader/SettingWriter.cpp \
 	../../../Binary/Document/BinReader/StylesWriter.cpp \
-        ../../../Binary/Document/BinReader/webSettingsWriter.cpp \
-        ../../../Binary/Sheets/Reader/XMLReader/XMLReader.cpp \
-        ../../../Binary/Sheets/Reader/XMLReader/XML2TableConverter.cpp \
-        ../../../Binary/Sheets/Reader/XMLReader/XLSXTableController.cpp \
-        ../../../Binary/Sheets/Reader/XMLReader/columnNameController.cpp \
-        ../../../Binary/Sheets/Reader/XMLReader/XMLConverter2.cpp \
-        ../../../Binary/Sheets/Reader/XMLReader/XMLMap.cpp \
-        ../../../Binary/Sheets/Reader/XMLReader/XMLReader2.cpp \
-        ../../../Binary/Sheets/Reader/CellFormatController/CellFormatController.cpp \
-		../../../Binary/Sheets/Reader/CellFormatController/DigitReader.cpp\
-        ../../../Binary/Sheets/Reader/CellFormatController/DateReader.cpp\
-		../../../Binary/Sheets/Reader/CellFormatController/LocalInfo.cpp\
-        ../../../Binary/Sheets/Reader/CellFormatController/CurrencyReader.cpp
+	../../../Binary/Document/BinReader/webSettingsWriter.cpp \
+	../../../Binary/Sheets/Reader/XMLReader/XMLReader.cpp \
+	../../../Binary/Sheets/Reader/XMLReader/XML2TableConverter.cpp \
+	../../../Binary/Sheets/Reader/XMLReader/XLSXTableController.cpp \
+	../../../Binary/Sheets/Reader/XMLReader/columnNameController.cpp \
+	../../../Binary/Sheets/Reader/XMLReader/XMLConverter2.cpp \
+	../../../Binary/Sheets/Reader/XMLReader/XMLMap.cpp \
+	../../../Binary/Sheets/Reader/XMLReader/XMLReader2.cpp \
+	../../../Binary/Sheets/Reader/CellFormatController/CellFormatController.cpp \
+	../../../Binary/Sheets/Reader/CellFormatController/DigitReader.cpp\
+	../../../Binary/Sheets/Reader/CellFormatController/DateReader.cpp\
+	../../../Binary/Sheets/Reader/CellFormatController/LocalInfo.cpp\
+	../../../Binary/Sheets/Reader/CellFormatController/CurrencyReader.cpp
 
 HEADERS += \
 	../../../Binary/Document/DocWrapper/DocxSerializer.h \
 	../../../Binary/Document/DocWrapper/FontProcessor.h \
 	../../../Binary/Document/DocWrapper/XlsxSerializer.h \
-        ../../../Binary/Document/DocWrapper/VsdxSerializer.h \
-        ../../../Binary/Document/BinReader/ChartWriter.h \
+	../../../Binary/Document/DocWrapper/VsdxSerializer.h \
+	../../../Binary/Document/BinReader/ChartWriter.h \
 	../../../Binary/Document/BinReader/CommentsWriter.h \
 	../../../Binary/Document/BinReader/DocumentRelsWriter.h \
 	../../../Binary/Document/BinReader/DocumentWriter.h \
@@ -123,39 +123,39 @@ HEADERS += \
 	../../../Binary/Document/BinReader/MediaWriter.h \
 	../../../Binary/Document/BinReader/NumberingWriter.h \
 	../../../Binary/Document/BinReader/ReaderClasses.h \
-        ../../../Binary/Document/BinReader/BinaryReaderD.h \
+	../../../Binary/Document/BinReader/BinaryReaderD.h \
 	../../../Binary/Document/BinReader/SettingWriter.h \
 	../../../Binary/Document/BinReader/StylesWriter.h \
 	../../../Binary/Document/BinWriter/BinEquationWriter.h \
 	../../../Binary/Document/BinWriter/BinReaderWriterDefines.h \
-        ../../../Binary/Document/BinWriter/BinaryWriterD.h \
+	../../../Binary/Document/BinWriter/BinaryWriterD.h \
 	../../../Binary/Sheets/Common/BinReaderWriterDefines.h \
 	../../../Binary/Sheets/Common/Common.h \
-        ../../../Binary/Sheets/Reader/BinaryWriterS.h \
+	../../../Binary/Sheets/Reader/BinaryWriterS.h \
 	../../../Binary/Sheets/Reader/ChartFromToBinary.h \
 	../../../Binary/Sheets/Reader/CommonWriter.h \
 	../../../Binary/Sheets/Reader/CSVReader.h \
 	../../../Binary/Sheets/Writer/BinaryCommonReader.h \
-        ../../../Binary/Sheets/Writer/BinaryReaderS.h \
+	../../../Binary/Sheets/Writer/BinaryReaderS.h \
 	../../../Binary/Sheets/Writer/CSVWriter.h \
-        ../../../Binary/Draw/BinaryReaderV.h \
-        ../../../Binary/Draw/BinaryWriterV.h \
-        ../../../Binary/Draw/BinReaderWriterDefines.h \
-        ../../../Binary/Document/BinReader/webSettingsWriter.h \
+	../../../Binary/Draw/BinaryReaderV.h \
+	../../../Binary/Draw/BinaryWriterV.h \
+	../../../Binary/Draw/BinReaderWriterDefines.h \
+	../../../Binary/Document/BinReader/webSettingsWriter.h \
 	../../../../Common/FileDownloader/FileDownloader.h \
 	../../../Binary/Document/BinReader/DefaultThemeWriter.h \
 	../../../Binary/Document/DocWrapper/ChartWriter.h \
 	../../../../OfficeCryptReader/source/ECMACryptFile.h \
 	../../../../OfficeCryptReader/source/CryptTransform.h \
-        ../../../Binary/Document/BinReader/CustomXmlWriter.h\
-        ../../../Binary/Sheets/Reader/XMLReader/XMLReader.h \
-        ../../../Binary/Sheets/Reader/XMLReader/XML2TableConverter.h \
-        ../../../Binary/Sheets/Reader/XMLReader/XLSXTableController.h \
-        ../../../Binary/Sheets/Reader/XMLReader/columnNameController.h \
-        ../../../Binary/Sheets/Reader/XMLReader/XMLConverter2.h \
-        ../../../Binary/Sheets/Reader/XMLReader/XMLMap.h \
-        ../../../Binary/Sheets/Reader/CellFormatController/CellFormatController.h \
-		../../../Binary/Sheets/Reader/CellFormatController/LocalInfo.h\
-        ../../../Binary/Sheets/Reader/CellFormatController/DateReader.h\
-        ../../../Binary/Sheets/Reader/CellFormatController/DigitReader.h\
-        ../../../Binary/Sheets/Reader/CellFormatController/CurrencyReader.h
+	../../../Binary/Document/BinReader/CustomXmlWriter.h\
+	../../../Binary/Sheets/Reader/XMLReader/XMLReader.h \
+	../../../Binary/Sheets/Reader/XMLReader/XML2TableConverter.h \
+	../../../Binary/Sheets/Reader/XMLReader/XLSXTableController.h \
+	../../../Binary/Sheets/Reader/XMLReader/columnNameController.h \
+	../../../Binary/Sheets/Reader/XMLReader/XMLConverter2.h \
+	../../../Binary/Sheets/Reader/XMLReader/XMLMap.h \
+	../../../Binary/Sheets/Reader/CellFormatController/CellFormatController.h \
+	../../../Binary/Sheets/Reader/CellFormatController/LocalInfo.h\
+	../../../Binary/Sheets/Reader/CellFormatController/DateReader.h\
+	../../../Binary/Sheets/Reader/CellFormatController/DigitReader.h\
+	../../../Binary/Sheets/Reader/CellFormatController/CurrencyReader.h

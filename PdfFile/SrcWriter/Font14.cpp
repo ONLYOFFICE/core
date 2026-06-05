@@ -42,7 +42,7 @@ namespace PdfWriter
 		"Helvetica",
 		"Helvetica-Bold",
 		"Helvetica-Oblique",
-		"Helvetice-BoldOblique",
+		"Helvetica-BoldOblique",
 		"Courier",
 		"Courier-Bold",
 		"Courier-Oblique",
@@ -60,6 +60,8 @@ namespace PdfWriter
 		Add("Type", "Font");
 		Add("Subtype", "Type1");
 		Add("BaseFont", c_sStandardFontNames[(int)eType]);
+		if (eType < EStandard14Fonts::standard14fonts_Symbol)
+			Add("Encoding", "WinAnsiEncoding");
 		m_ushCodesCount = 0;
 	}
 	unsigned int CFont14::GetWidth(unsigned short ushCode)

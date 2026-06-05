@@ -69,8 +69,9 @@
 
 namespace PdfWriter
 {
-	const char* c_sPdfHeader = "%PDF-1.7\015%\315\312\322\251\015";
-	const char* c_sPdfAHeader = "%PDF-1.4\015%\315\312\322\251\015";
+	const char* c_sPdfHeader   = "%PDF-1.7";
+	const char* c_sPdfAHeader  = "%PDF-1.4";
+	const char* c_sPdfUAHeader = "%PDF-2.0";
 	//----------------------------------------------------------------------------------------
 	// CDocument
 	//----------------------------------------------------------------------------------------
@@ -98,6 +99,7 @@ namespace PdfWriter
 		m_pTransparencyGroup = NULL;
 		m_pFreeTypeLibrary  = NULL;
 		m_bPDFAConformance	= false;
+		m_bPDFUAConformance = false;
 		m_nRedactInfo       = 0;
 		m_pAcroForm         = NULL;
 		m_pFieldsResources  = NULL;
@@ -239,7 +241,10 @@ namespace PdfWriter
 		if (m_pJbig2)
 			m_pJbig2->FlushStreams();
 
-		SaveToStream((CStream*)pStream);
+		std::wstring wsAltName = NSFile::GetFileName(wsPath);
+		std::string sAltName = U_TO_UTF8(wsAltName);
+
+		SaveToStream((CStream*)pStream, sAltName);
 		delete pStream;
 
 		Sign(wsPath, m_pXref->GetSizeXRef() + 1, true);
@@ -263,16 +268,17 @@ namespace PdfWriter
 		pStream->ClearWithoutAttack();
 		return true;
 	}
-    void CDocument::SaveToStream(CStream* pStream)
+	void CDocument::SaveToStream(CStream* pStream, const std::string& sAltTitle)
 	{
 		if (~m_nRedactInfo & (1 << 0))
-			m_pCatalog->AddMetadata(m_pXref, m_pInfo);
+			m_pCatalog->AddMetadata(m_pXref, m_pInfo, sAltTitle);
 
 		// Write header
 		if (IsPDFA())
 			pStream->WriteStr(c_sPdfAHeader);
 		else
-			pStream->WriteStr(c_sPdfHeader);
+			pStream->WriteStr(c_sPdfUAHeader);
+		pStream->WriteStr("\015%\315\312\322\251\015");
 		
 		if (false == m_wsDocumentID.empty())
 		{
@@ -807,6 +813,11 @@ namespace PdfWriter
 		CAnnotation* pAnnot = new CDestLinkAnnotation(m_pXref, pDest);
 		pAnnot->SetRect(oRect);
 		m_pXref->Add(pAnnot);
+
+		CStructureTreeRoot* pRoot = m_pCatalog->GetStructTreeRoot();
+		if (pRoot)
+			pRoot->AddAnnot(pAnnot, m_pCurPage, StructElemType::Link);
+
 		return pAnnot;
 	}
 	CAnnotation* CDocument::CreateUriLinkAnnot(const TRect& oRect, const char* sUrl)
@@ -814,6 +825,11 @@ namespace PdfWriter
 		CAnnotation* pAnnot = new CUriLinkAnnotation(m_pXref, sUrl);
 		pAnnot->SetRect(oRect);
 		m_pXref->Add(pAnnot);
+
+		CStructureTreeRoot* pRoot = m_pCatalog->GetStructTreeRoot();
+		if (pRoot)
+			pRoot->AddAnnot(pAnnot, m_pCurPage, StructElemType::Link);
+
 		return pAnnot;
 	}
 	CAction* CDocument::CreateAction(BYTE nType)
@@ -834,6 +850,10 @@ namespace PdfWriter
 	{
 		pAnnot->SetXref(m_pXref);
 		m_mAnnotations[nID] = pAnnot;
+
+		CStructureTreeRoot* pRoot = m_pCatalog->GetStructTreeRoot();
+		if (pRoot)
+			pRoot->AddAnnot(pAnnot, m_pCurPage, StructElemType::Annot);
 	}
     CImageDict* CDocument::CreateImage()
 	{
@@ -1289,73 +1309,65 @@ namespace PdfWriter
 
 		return m_pFieldsResources;
 	}
-	CTextField* CDocument::CreateTextField()
+	void CDocument::AddWidget(CFieldBase* pWidget)
 	{
 		if (!CheckAcroForm())
-			return NULL;
+			return;
 
+		CArrayObject* ppFields = (CArrayObject*)m_pAcroForm->Get("Fields");
+		ppFields->Add(pWidget);
+
+		CStructureTreeRoot* pRoot = m_pCatalog->GetStructTreeRoot();
+		if (pRoot)
+			pRoot->AddAnnot(pWidget, m_pCurPage, StructElemType::Form);
+	}
+	CTextField* CDocument::CreateTextField()
+	{
 		CTextField* pField = new CTextField(m_pXref, this);
 		if (!pField)
 			return NULL;
 
-		CArrayObject* ppFields = (CArrayObject*)m_pAcroForm->Get("Fields");
-		ppFields->Add(pField);
+		AddWidget(pField);
 
 		return pField;
 	}
 	CChoiceField* CDocument::CreateChoiceField()
 	{
-		if (!CheckAcroForm())
-			return NULL;
-
 		CChoiceField* pField = new CChoiceField(m_pXref, this);
 		if (!pField)
 			return NULL;
 
-		CArrayObject* ppFields = (CArrayObject*)m_pAcroForm->Get("Fields");
-		ppFields->Add(pField);
+		AddWidget(pField);
 
 		return pField;
 	}
 	CSignatureField* CDocument::CreateSignatureField()
 	{
-		if (!CheckAcroForm())
-			return NULL;
-
 		CSignatureField* pField = new CSignatureField(m_pXref, this);
 		if (!pField)
 			return NULL;
 
-		CArrayObject* ppFields = (CArrayObject*)m_pAcroForm->Get("Fields");
-		ppFields->Add(pField);
+		AddWidget(pField);
 
 		return pField;
 	}
 	CDateTimeField* CDocument::CreateDateTimeField()
 	{
-		if (!CheckAcroForm())
-			return NULL;
-		
 		CDateTimeField* pField = new CDateTimeField(m_pXref, this);
 		if (!pField)
 			return NULL;
 		
-		CArrayObject* ppFields = (CArrayObject*)m_pAcroForm->Get("Fields");
-		ppFields->Add(pField);
+		AddWidget(pField);
 		
 		return pField;
 	}
 	CCheckBoxField* CDocument::CreateCheckBoxField()
 	{
-		if (!CheckAcroForm())
-			return NULL;
-
 		CCheckBoxField* pField = new CCheckBoxField(m_pXref, this);
 		if (!pField)
 			return NULL;
 
-		CArrayObject* ppFields = (CArrayObject*)m_pAcroForm->Get("Fields");
-		ppFields->Add(pField);
+		AddWidget(pField);
 
 		return pField;
 	}
@@ -1395,15 +1407,11 @@ namespace PdfWriter
 	}
 	CPictureField* CDocument::CreatePictureField()
 	{
-		if (!CheckAcroForm())
-			return NULL;
-
 		CPictureField* pField = new CPictureField(m_pXref, this);
 		if (!pField)
 			return NULL;
 
-		CArrayObject* ppFields = (CArrayObject*)m_pAcroForm->Get("Fields");
-		ppFields->Add(pField);
+		AddWidget(pField);
 
 		return pField;
 	}

@@ -471,55 +471,35 @@ private:
 class comments_context : boost::noncopyable
 {
 public:
-	comments_context(){}
-	
+	comments_context() {}
+
 	struct _comment_desc
 	{
-		_comment_desc(const std::wstring & c, int _id, const std::wstring & a, const std::wstring & d) :
-		content(c), id(_id), author(a), date(d)
+		_comment_desc(const std::wstring& c, int _id, const std::wstring& a, const std::wstring& d) :
+			content(c), id(_id), author(a), date(d)
 		{}
-		std::wstring content;
 		int id;
+
+		std::wstring content;
 		std::wstring date;
 		std::wstring author;
 		std::wstring initials;
+
+		bool bEnd = false;
 	};
-	void end_comment(const std::wstring & name)
-	{
-		std::map<std::wstring, int>::iterator pFind = comments_map_.find(name);
-		if (pFind != comments_map_.end())
-		{
-			ref_end_.push_back(pFind->second);		
-		}
-	}
-	void start_comment(const std::wstring & content, const std::wstring & author, const std::wstring & date, _CP_OPT(std::wstring) name)
-	{
-		int id = comments_.size() + 1;
-		_comment_desc new_comment(content, id, author, date);
-		
-		if ((name) && (false == name->empty()))
-		{
-			comments_map_.insert(std::make_pair(*name, id));
-			ref_start_.push_back(id);
-		}
-		else
-		{
-			ref_start_.push_back(id);
-			ref_end_.push_back(id);
-		}
-		comments_.push_back(new_comment);
-	}
-	
-	rels& get_rels(){return internal_rels_;}
+	void end_comment(const std::wstring& name);
+	void start_comment(const std::wstring& content, const std::wstring& author, const std::wstring& date, _CP_OPT(std::wstring) name);
 
-	std::vector<_comment_desc>	comments_;
-	std::vector<int>			ref_start_;
-	std::vector<int>			ref_end_;
-	std::vector<int>			ref_;
+	rels& get_rels() { return internal_rels_; }
+	std::map<std::wstring, _comment_desc>& content() { return comments_map_; }
 
+//active
+	std::vector<int> ref_start_;
+	std::vector<int> ref_end_;
+	std::vector<int> ref_;
 private:
+	std::map<std::wstring, _comment_desc> comments_map_;
 	rels internal_rels_;//this is for hyperlinks or media in comments
-	std::map<std::wstring, int> comments_map_;
 };
 
 class text_tracked_context
@@ -884,7 +864,7 @@ public:
     void set_page_break_before(int val);
     int get_page_break_before();
 
-	void set_page_break		(bool val);
+	void set_page_break	(bool val);
     bool get_page_break		();
 
 	void set_temp_style_name( const std::wstring& val );

@@ -666,8 +666,13 @@ void DictToCDictObject(Object* obj, PdfWriter::CObjectBase* pObj, const std::str
 		else
 		{
 			TextString* s = new TextString(str);
-			std::string sValue = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
-			AddToObject(new PdfWriter::CStringObject(sValue.c_str(), !s->isPDFDocEncoding()))
+			if (s->isPDFDocEncoding())
+				AddToObject(new PdfWriter::CStringObject(str->getCString(), false))
+			else
+			{
+				std::string sValue = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+				AddToObject(new PdfWriter::CStringObject(sValue.c_str(), true))
+			}
 			delete s;
 		}
 		break;
@@ -762,8 +767,13 @@ PdfWriter::CObjectBase* DictToCDictObject2(Object* obj, PdfWriter::CDocument* pD
 		else
 		{
 			TextString* s = new TextString(str);
-			std::string sValue = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
-			pBase = new PdfWriter::CStringObject(sValue.c_str(), !s->isPDFDocEncoding());
+			if (s->isPDFDocEncoding())
+				pBase = new PdfWriter::CStringObject(str->getCString(), false);
+			else
+			{
+				std::string sValue = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+				pBase = new PdfWriter::CStringObject(sValue.c_str(), true);
+			}
 			delete s;
 		}
 		break;

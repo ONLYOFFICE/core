@@ -422,8 +422,17 @@ extern int g_nCurFormatVersion;
 		Glow = 53,
 		Props3d = 54,
 		Scene3d = 55,
-		Kern = 56
+		Kern = 56,
+		EastAsianLayout = 57
 	};}
+	namespace c_oSerProp_EastAsianLayoute {enum c_oSerProp_EastAsianLayoute
+	{
+		Combine = 0,
+		CombineBrackets = 1,
+		ID = 2,
+		Vert = 3,
+		VertCompress = 4
+	}; }
 	namespace c_oSerProp_rowPrType{enum c_oSerProp_rowPrType
 	{
 		CantSplit = 0,
@@ -901,7 +910,8 @@ extern int g_nCurFormatVersion;
 		DrawingGridVerticalOrigin = 27,
 		DrawingGridVerticalSpacing = 28,
 		DisplayHorizontalDrawingGridEvery = 29,
-		DisplayVerticalDrawingGridEvery = 30
+		DisplayVerticalDrawingGridEvery = 30,
+		CharacterSpacingControl = 31
 	};}
 	namespace c_oSer_MathPrType{enum c_oSer_SettingsType
 	{

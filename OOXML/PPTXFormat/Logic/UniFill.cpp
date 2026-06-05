@@ -329,6 +329,14 @@ namespace PPTX
 								ptr->rgbFore.blue = 0x31;
 
 							}
+							else if(scheme->val.get() == L"lt1")
+							{
+								ptr->icvFore = 0x1;
+								ptr->rgbFore.red = 0xFF;
+								ptr->rgbFore.green = 0xFF;
+								ptr->rgbFore.blue = 0xFF;
+
+							}
 						}
 					
 					}

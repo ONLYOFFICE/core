@@ -4128,9 +4128,9 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			{
 				auto dataFormat = new XLS::DataFormat;
 				PtStyle->m_DataFormat = XLS::BaseObjectPtr(dataFormat);
-					dataFormat->iss = order;
+					dataFormat->xi = m_idx.get();
 				if(m_idx.IsInit())
-					dataFormat->yi = m_idx.get();
+					dataFormat->yi = order;
 
 			}
 			if(m_spPr.IsInit())

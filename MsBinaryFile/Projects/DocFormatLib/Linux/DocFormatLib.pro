@@ -58,16 +58,14 @@ SOURCES +=  \
 	../../../DocFile/EncryptionHeader.cpp \
 	../../../DocFile/DrawingPrimitives.cpp \
 	../../../DocFile/Spa.cpp \
-        ../../../DocFile/OleObject.cpp \
-        ../../../Common/Base/FormatUtils.cpp \
-        ../../../Common/Base/XmlTools.cpp
+	../../../DocFile/OleObject.cpp \
+	../../../Common/Base/FormatUtils.cpp \
+	../../../Common/Base/XmlTools.cpp
 
-core_release {
+build_monolith_objects {
 SOURCES += \
 	doc_converter.cpp
-}
-
-core_debug {
+} else {
 SOURCES += \
 	../../../DocFile/AnnotationReferenceDescriptor.cpp \
 	../../../DocFile/CharacterPropertiesMapping.cpp \

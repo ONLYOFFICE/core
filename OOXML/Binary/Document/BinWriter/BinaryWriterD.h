@@ -139,6 +139,7 @@ namespace BinDocxRW
 		void WriteFont(std::wstring sFontName, BYTE bType, DocWrapper::FontProcessor& m_oFontProcessor);
 		void WriteBytesArray(BYTE* pData, long nDataSize);
 		template<typename T> void WriteTrackRevision(const T& elem);
+		void WriteEastAsianLayout(const ComplexTypes::Word::CEastAsianLayout& EastAsianLayout);
 	};
 
 	class BinaryHeaderFooterTableWriter

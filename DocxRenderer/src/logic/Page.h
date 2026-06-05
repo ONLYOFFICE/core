@@ -82,7 +82,7 @@ namespace NSDocxRenderer
 		bool m_bUseDefaultFont		   {false};
 		bool m_bWriteStyleRaw		   {false};
 		bool m_bCollectMetaInfo        {false};
-		bool m_bIsBuildTables		   {false};
+		bool m_bIsBuildTables		   {true};
 		bool m_bIsLuminosityShapesFiled{false};
 		bool m_bFontSubstitution       {false};
 		bool m_bFirstParagraphLineCorrection{false};
@@ -133,15 +133,8 @@ namespace NSDocxRenderer
 		using base_item_ptr_t = std::shared_ptr<CBaseItem>;
 		using ooxml_item_ptr_t = std::shared_ptr<IOoxmlItem>;
 		using paragraph_ptr_t = std::shared_ptr<CParagraph>;
-		using table_ptr_t = std::shared_ptr<CTable>;
-
-		using graphical_cell_ptr_t = std::shared_ptr<CGraphicalCell>;
-		using text_cell_ptr_t = std::shared_ptr<CTextCell>;
-		using cell_ptr_t = std::shared_ptr<CTable::CCell>;
 
 		using text_line_group_ptr_t = std::shared_ptr<CBaseItemGroup<CTextLine>>;
-		using text_cell_group_ptr_t = std::shared_ptr<CBaseItemGroup<CTextCell>>;
-		using cell_group_ptr_t = std::shared_ptr<CBaseItemGroup<CTable::CCell>>;
 
 		// returns std::vector of conts with diac. symbols and remove it from m_arConts
 		std::vector<cont_ptr_t> MoveDiacriticalSymbols();
@@ -154,15 +147,6 @@ namespace NSDocxRenderer
 
 		// returns std::vector of paragraphs builded from m_arTextLines
 		std::vector<paragraph_ptr_t> BuildParagraphs(const std::vector<text_line_group_ptr_t>& arTextLineGroups);
-
-		// return groups of text cells
-		std::vector<text_cell_group_ptr_t> BuildTextCellGroups(const std::vector<text_line_group_ptr_t>& arTextLineGroups);
-
-		// returns std::vector of tables builded from shapes and paragraphes
-		std::vector<table_ptr_t> BuildTables(const std::vector<text_line_group_ptr_t>& arTextLineGroups);
-
-		// return std::vector of graphical cells (from shapes)
-		std::vector<graphical_cell_ptr_t> BuildGraphicalCells();
 
 		// returns std::vector of base items builded from m_arParagraphs
 		std::vector<ooxml_item_ptr_t> BuildOutputObjects();
@@ -257,10 +241,12 @@ namespace NSDocxRenderer
 		CContTextBuilder      m_oContBuilder;
 		CHorVerLinesCollector m_oHorVerLinesCollector;
 
+		ITableBuilder* m_pTableBuilder{nullptr};
+
 		std::vector<shape_ptr_t>      m_arShapes;
 		std::vector<text_line_ptr_t>  m_arTextLines;
 		std::vector<paragraph_ptr_t>  m_arParagraphs;
-		std::vector<table_ptr_t>      m_arTables;
+		std::vector<ooxml_item_ptr_t> m_arTables;
 		std::vector<ooxml_item_ptr_t> m_arOutputObjects;
 
 		std::vector<std::wstring> m_arCompleteObjectsXml;

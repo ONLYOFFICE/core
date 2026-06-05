@@ -814,22 +814,7 @@ namespace XmlUtils
 					codepoint = w1;
 				}
 #else
-				{
-					unsigned int w1 = static_cast<unsigned int>(data[pos]);
-					if (w1 >= 0xD800 && w1 <= 0xDBFF && pos + 1 < data.size())
-					{
-						unsigned int w2 = static_cast<unsigned int>(data[pos + 1]);
-						if (w2 >= 0xDC00 && w2 <= 0xDFFF)
-						{
-							codepoint = 0x10000 + ((w1 - 0xD800) << 10) + (w2 - 0xDC00);
-							consumed = 2;
-						}
-						else
-							codepoint = w1;
-					}
-					else
-						codepoint = w1;
-				}
+				codepoint = static_cast<unsigned int>(data[pos]);
 #endif
 
 				if (IsUnicodeSymbol(codepoint))

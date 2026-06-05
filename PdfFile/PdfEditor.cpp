@@ -63,109 +63,6 @@
 #include "SrcWriter/Image.h"
 #include "SrcWriter/Font14.h"
 
-#define AddToObject(oVal)\
-{\
-	if (pObj->GetType() == PdfWriter::object_type_DICT)\
-	((PdfWriter::CDictObject*)pObj)->Add(sKey, oVal);\
-	else if (pObj->GetType() == PdfWriter::object_type_ARRAY)\
-	((PdfWriter::CArrayObject*)pObj)->Add(oVal);\
-}
-
-void DictToCDictObject(Object* obj, PdfWriter::CObjectBase* pObj, const std::string& sKey, bool bMakeBinary = false)
-{
-	Object oTemp;
-	switch (obj->getType())
-	{
-	case objBool:
-	{
-		bool b = obj->getBool() == gTrue;
-		AddToObject(b)
-		break;
-	}
-	case objInt:
-	{
-		AddToObject(obj->getInt())
-		break;
-	}
-	case objReal:
-	{
-		AddToObject(obj->getReal())
-		break;
-	}
-	case objString:
-	{
-		GString* str = obj->getString();
-		if (str->isBinary() || bMakeBinary)
-		{
-			int nLength = str->getLength();
-			BYTE* arrId = new BYTE[nLength];
-			for (int nIndex = 0; nIndex < nLength; ++nIndex)
-				arrId[nIndex] = str->getChar(nIndex);
-			AddToObject(new PdfWriter::CBinaryObject(arrId, nLength, false));
-		}
-		else
-		{
-			TextString* s = new TextString(str);
-			std::string sValue = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
-			AddToObject(new PdfWriter::CStringObject(sValue.c_str(), !s->isPDFDocEncoding()))
-			delete s;
-		}
-		break;
-	}
-	case objName:
-	{
-		AddToObject(obj->getName())
-		break;
-	}
-	case objNull:
-	{
-		AddToObject(new PdfWriter::CNullObject())
-		break;
-	}
-	case objArray:
-	{
-		PdfWriter::CArrayObject* pArray = new PdfWriter::CArrayObject();
-		AddToObject(pArray)
-		for (int nIndex = 0; nIndex < obj->arrayGetLength(); ++nIndex)
-		{
-			obj->arrayGetNF(nIndex, &oTemp);
-			DictToCDictObject(&oTemp, pArray, "");
-			oTemp.free();
-		}
-		break;
-	}
-	case objDict:
-	{
-		PdfWriter::CDictObject* pDict = new PdfWriter::CDictObject();
-		AddToObject(pDict);
-		for (int nIndex = 0; nIndex < obj->dictGetLength(); ++nIndex)
-		{
-			char* chKey = obj->dictGetKey(nIndex);
-			obj->dictGetValNF(nIndex, &oTemp);
-			DictToCDictObject(&oTemp, pDict, chKey);
-			oTemp.free();
-		}
-		break;
-	}
-	case objRef:
-	{
-		PdfWriter::CObjectBase* pBase = new PdfWriter::CObjectBase();
-		pBase->SetRef(obj->getRefNum(), obj->getRefGen());
-		AddToObject(new PdfWriter::CProxyObject(pBase, true))
-		break;
-	}
-	case objNone:
-	{
-		AddToObject("None")
-		break;
-	}
-	case objStream:
-	case objCmd:
-	case objError:
-	case objEOF:
-		break;
-	}
-}
 bool SplitSkipDict(Object* obj, CObjectsManager* pManager, int nStartRefID)
 {
 	Object oTemp, oTemp2;
@@ -311,6 +208,525 @@ PdfWriter::CExtGrState* CreateExtGState(Object* oState)
 	PdfWriter::CExtGrState* pState = new PdfWriter::CExtGrState(NULL);
 	return pState;
 }
+
+// Флаги режима работы
+enum EDictConvertFlags
+{
+	eDCF_None            = 0,
+	eDCF_ResolveRefs     = 1 << 0,  // разыменовывать objRef через xref
+	eDCF_HandleStreams   = 1 << 1,  // обрабатывать objStream
+	eDCF_HandleResources = 1 << 2,  // специальная обработка Resources
+	eDCF_HandleAnnots    = 1 << 3,  // CreateAnnot / CreateExtGState
+	eDCF_RegisterObjs    = 1 << 4,  // регистрировать в pDoc + pManager
+
+	// Комбинации
+	eDCF_Simple = eDCF_None,
+	eDCF_Full   = eDCF_ResolveRefs | eDCF_HandleStreams | eDCF_HandleResources | eDCF_HandleAnnots | eDCF_RegisterObjs
+};
+
+struct SDictConvertContext
+{
+	PdfWriter::CDocument* pDoc         = NULL;
+	XRef*                 xref         = NULL;
+	CObjectsManager*      pManager     = NULL;
+	int                   nStartRefID  = 0;
+	int                   nAddObjToXRef = 0;   // ненулевой — зарегистрировать текущий объект
+	bool                  bUndecodedStream = true;
+	bool                  bMakeBinary  = false;
+	int                   nFlags       = EDictConvertFlags::eDCF_Simple;
+
+	bool Has(EDictConvertFlags f) const { return (nFlags & f) != 0; }
+};
+
+#define _UC_AddToParent(val)\
+{\
+	if (pParent) {\
+		if (pParent->GetType() == PdfWriter::object_type_DICT)\
+			dynamic_cast<PdfWriter::CDictObject*>(pParent)->Add(sKey, (val));\
+		else if (pParent->GetType() == PdfWriter::object_type_ARRAY)\
+			dynamic_cast<PdfWriter::CArrayObject*>(pParent)->Add((val));\
+	}\
+}
+
+PdfWriter::CObjectBase* DictToCDictObjectUnified(
+	Object* obj,
+	SDictConvertContext ctx, // по значению — каждый уровень меняет nAddObjToXRef
+	PdfWriter::CObjectBase* pParent = NULL, // для режима «добавить в родителя»
+	const std::string& sKey = "")
+{
+	PdfWriter::CObjectBase* pBase = NULL;
+	Object oTemp;
+
+	switch (obj->getType())
+	{
+	// ------------------------------------------------------------------ scalar
+	case objBool:
+	{
+		bool b = obj->getBool() == gTrue;
+		if (pParent) { _UC_AddToParent(b); return NULL; }
+		pBase = new PdfWriter::CBoolObject(b);
+		break;
+	}
+	case objInt:
+	{
+		int n = obj->getInt();
+		if (pParent) { _UC_AddToParent(n); return NULL; }
+		pBase = new PdfWriter::CNumberObject(n);
+		break;
+	}
+	case objReal:
+	{
+		double d = obj->getReal();
+		if (pParent) { _UC_AddToParent(d); return NULL; }
+		pBase = new PdfWriter::CRealObject(d);
+		break;
+	}
+	case objName:
+	{
+		char* c = obj->getName();
+		if (pParent) { _UC_AddToParent(c); return NULL; }
+		pBase = new PdfWriter::CNameObject(c);
+		break;
+	}
+	case objNone:
+	{
+		const char* c = "None";
+		if (pParent) { _UC_AddToParent(c); return NULL; }
+		pBase = new PdfWriter::CNameObject(c);
+		break;
+	}
+	case objNull:
+	{
+		PdfWriter::CNullObject* p = new PdfWriter::CNullObject();
+		if (pParent) { _UC_AddToParent(p); return NULL; }
+		pBase = p;
+		break;
+	}
+	// ------------------------------------------------------------------ string
+	case objString:
+	{
+		GString* str = obj->getString();
+		PdfWriter::CObjectBase* pStr = NULL;
+		if (str->isBinary() || ctx.bMakeBinary)
+		{
+			int nLen = str->getLength();
+			BYTE* arr = new BYTE[nLen];
+			for (int i = 0; i < nLen; ++i)
+				arr[i] = str->getChar(i);
+			pStr = new PdfWriter::CBinaryObject(arr, nLen, false);
+		}
+		else
+		{
+			TextString* s = new TextString(str);
+			std::string sVal = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+			pStr = new PdfWriter::CStringObject(sVal.c_str(), !s->isPDFDocEncoding());
+			delete s;
+		}
+		_UC_AddToParent(pStr);
+		pBase = pStr;
+		break;
+	}
+	// ------------------------------------------------------------------ array
+	case objArray:
+	{
+		PdfWriter::CArrayObject* pArray = new PdfWriter::CArrayObject();
+		if (ctx.Has(EDictConvertFlags::eDCF_RegisterObjs) && ctx.nAddObjToXRef > 0)
+		{
+			ctx.pDoc->AddObject(pArray);
+			ctx.pManager->AddObj(ctx.nAddObjToXRef + ctx.nStartRefID, pArray);
+			ctx.nAddObjToXRef = 0;
+		}
+		_UC_AddToParent(pArray);
+
+		SDictConvertContext childCtx = ctx;
+		childCtx.nAddObjToXRef = 0;
+		for (int i = 0; i < obj->arrayGetLength(); ++i)
+		{
+			obj->arrayGetNF(i, &oTemp);
+			// Дочерние элементы всегда через возврат значения (pParent = pArray)
+			PdfWriter::CObjectBase* pElem =
+				DictToCDictObjectUnified(&oTemp, childCtx, pArray, "");
+			(void)pElem; // уже добавлен через _UC_AddToParent внутри рекурсии
+			oTemp.free();
+		}
+		pBase = pArray;
+		break;
+	}
+	// ------------------------------------------------------------------ dict
+	case objDict:
+	{
+		if (ctx.Has(EDictConvertFlags::eDCF_RegisterObjs) && SplitSkipDict(obj, ctx.pManager, ctx.nStartRefID))
+			return nullptr;
+
+		PdfWriter::CDictObject* pDict = nullptr;
+
+		if (ctx.Has(EDictConvertFlags::eDCF_HandleAnnots))
+		{
+			Object oSubtype;
+			if (obj->dictLookup("Subtype", &oSubtype)->isName())
+			{
+				PdfWriter::CAnnotation* pAnnot = CreateAnnot(obj, &oSubtype, nullptr);
+				if (pAnnot)
+				{
+					ctx.pDoc->AddAnnotation(ctx.nAddObjToXRef + ctx.nStartRefID, pAnnot);
+					pDict = pAnnot;
+				}
+			}
+			oSubtype.free();
+
+			Object oType;
+			if (obj->dictLookup("Type", &oType)->isName("ExtGState"))
+			{
+				PdfWriter::CExtGrState* pState = CreateExtGState(obj);
+				if (pState)
+				{
+					ctx.pDoc->AddExtGState(pState);
+					pDict = pState;
+				}
+			}
+			oType.free();
+		}
+
+		if (!pDict)
+			pDict = new PdfWriter::CDictObject();
+
+		if (ctx.Has(EDictConvertFlags::eDCF_RegisterObjs) && ctx.nAddObjToXRef > 0)
+		{
+			ctx.pDoc->AddObject(pDict);
+			ctx.pManager->AddObj(ctx.nAddObjToXRef + ctx.nStartRefID, pDict);
+			ctx.nAddObjToXRef = 0;
+		}
+		_UC_AddToParent(pDict);
+
+		SDictConvertContext childCtx = ctx;
+		childCtx.nAddObjToXRef = 0;
+
+		for (int i = 0; i < obj->dictGetLength(); ++i)
+		{
+			char* chKey = obj->dictGetKey(i);
+
+			// ---- специальная обработка Resources ----
+			if (ctx.Has(EDictConvertFlags::eDCF_HandleResources) && strcmp("Resources", chKey) == 0)
+			{
+				Ref oResRef = { -1, -1 };
+				if (obj->dictGetValNF(i, &oTemp)->isRef())
+					oResRef = oTemp.getRef();
+				oTemp.free();
+
+				PdfWriter::CObjectBase* pExisting =
+					oResRef.num > 0 ? ctx.pManager->GetObj(oResRef.num + ctx.nStartRefID) : nullptr;
+				if (pExisting)
+				{
+					pDict->Add(chKey, pExisting);
+					ctx.pManager->IncRefCount(oResRef.num + ctx.nStartRefID);
+					continue;
+				}
+
+				if (obj->dictGetVal(i, &oTemp)->isDict())
+				{
+					PdfWriter::CResourcesDict* pResDict =
+						ctx.pDoc->CreateResourcesDict(oResRef.num < 0, false);
+					if (oResRef.num > 0)
+						ctx.pManager->AddObj(oResRef.num + ctx.nStartRefID, pResDict);
+					pDict->Add(chKey, pResDict);
+
+					for (int j = 0; j < oTemp.dictGetLength(); ++j)
+					{
+						Object oRes;
+						char* chKey2 = oTemp.dictGetKey(j);
+						oTemp.dictGetValNF(j, &oRes);
+						PdfWriter::CObjectBase* pResItem =
+							DictToCDictObjectUnified(&oRes, childCtx);
+						pResDict->Add(chKey2, pResItem);
+						oRes.free();
+					}
+					pResDict->Fix();
+					oTemp.free();
+					continue;
+				}
+				else
+				{
+					oTemp.free();
+					obj->dictGetValNF(i, &oTemp);
+				}
+			}
+			else
+				obj->dictGetValNF(i, &oTemp);
+
+			// Обычные ключи: режим «добавить в pDict»
+			if (pParent)
+			{
+				// мы сами уже добавлены в родителя; ключи дочернего dict
+				// добавляем через pDict-как-родитель
+				DictToCDictObjectUnified(&oTemp, childCtx, pDict, chKey);
+			}
+			else
+			{
+				PdfWriter::CObjectBase* pVal =
+					DictToCDictObjectUnified(&oTemp, childCtx, pDict, chKey);
+				(void)pVal;
+			}
+			oTemp.free();
+		}
+		pBase = pDict;
+		break;
+	}
+	// ------------------------------------------------------------------ ref
+	case objRef:
+	{
+		if (!ctx.Has(EDictConvertFlags::eDCF_ResolveRefs))
+		{
+			// Лёгкий режим: прокси-заглушка
+			PdfWriter::CObjectBase* pRefBase = new PdfWriter::CObjectBase();
+			pRefBase->SetRef(obj->getRefNum(), obj->getRefGen());
+			auto* pProxy = new PdfWriter::CProxyObject(pRefBase, true);
+			_UC_AddToParent(pProxy);
+			return pProxy;
+		}
+
+		// Тяжёлый режим: разыменование
+		int nObjNum = obj->getRefNum();
+		PdfWriter::CObjectBase* pCached =
+			ctx.pManager->GetObj(nObjNum + ctx.nStartRefID);
+		if (pCached)
+		{
+			ctx.pManager->IncRefCount(nObjNum + ctx.nStartRefID);
+			_UC_AddToParent(pCached);
+			return pCached;
+		}
+
+		auto it = std::find(
+			ctx.pManager->m_arrRedactFormFieldsID.begin(),
+			ctx.pManager->m_arrRedactFormFieldsID.end(), nObjNum);
+		if (it != ctx.pManager->m_arrRedactFormFieldsID.end())
+			return nullptr;
+
+		SDictConvertContext refCtx = ctx;
+		refCtx.nAddObjToXRef = nObjNum;
+		obj->fetch(ctx.xref, &oTemp);
+		pBase = DictToCDictObjectUnified(&oTemp, refCtx);
+		oTemp.free();
+		_UC_AddToParent(pBase);
+		break;
+	}
+	// ------------------------------------------------------------------ stream
+	case objStream:
+	{
+		if (!ctx.Has(EDictConvertFlags::eDCF_HandleStreams))
+			break;  // лёгкий режим игнорирует потоки
+
+		PdfWriter::CDictObject* pDict = new PdfWriter::CDictObject();
+		if (ctx.nAddObjToXRef > 0)
+		{
+			ctx.pDoc->AddObject(pDict);
+			ctx.pManager->AddObj(ctx.nAddObjToXRef + ctx.nStartRefID, pDict);
+			ctx.nAddObjToXRef = 0;
+		}
+		_UC_AddToParent(pDict);
+
+		SDictConvertContext childCtx = ctx;
+		childCtx.nAddObjToXRef = 0;
+
+		Dict* pODict = obj->streamGetDict();
+		int nLength = 0;
+		for (int i = 0; i < pODict->getLength(); ++i)
+		{
+			char* chKey = pODict->getKey(i);
+			if (strcmp("Length", chKey) == 0)
+			{
+				pODict->getVal(i, &oTemp);
+				nLength = oTemp.getNum();
+				auto* pLenObj = new PdfWriter::CNumberObject(nLength);
+				ctx.pDoc->AddObject(pLenObj);
+				pDict->Add(chKey, pLenObj);
+				oTemp.free();
+				continue;
+			}
+			else if (ctx.Has(EDictConvertFlags::eDCF_HandleResources) && strcmp("Resources", chKey) == 0)
+			{
+				Ref oResRef = { -1, -1 };
+				if (pODict->getValNF(i, &oTemp)->isRef())
+					oResRef = oTemp.getRef();
+				oTemp.free();
+
+				PdfWriter::CObjectBase* pExisting =
+					oResRef.num > 0 ? ctx.pManager->GetObj(oResRef.num + ctx.nStartRefID) : nullptr;
+				if (pExisting)
+				{
+					pDict->Add(chKey, pExisting);
+					ctx.pManager->IncRefCount(oResRef.num + ctx.nStartRefID);
+					continue;
+				}
+
+				if (pODict->getVal(i, &oTemp)->isDict())
+				{
+					PdfWriter::CResourcesDict* pResDict =
+						ctx.pDoc->CreateResourcesDict(oResRef.num < 0, false);
+					if (oResRef.num > 0)
+						ctx.pManager->AddObj(oResRef.num + ctx.nStartRefID, pResDict);
+					pDict->Add(chKey, pResDict);
+
+					for (int j = 0; j < oTemp.dictGetLength(); ++j)
+					{
+						Object oRes;
+						char* chKey2 = oTemp.dictGetKey(j);
+						oTemp.dictGetValNF(j, &oRes);
+						PdfWriter::CObjectBase* pResItem =
+							DictToCDictObjectUnified(&oRes, childCtx);
+						pResDict->Add(chKey2, pResItem);
+						oRes.free();
+					}
+					pResDict->Fix();
+					oTemp.free();
+					continue;
+				}
+				else
+				{
+					oTemp.free();
+					pODict->getValNF(i, &oTemp);
+				}
+			}
+			else
+				pODict->getValNF(i, &oTemp);
+
+			DictToCDictObjectUnified(&oTemp, childCtx, pDict, chKey);
+			oTemp.free();
+		}
+		pBase = pDict;
+
+		PdfWriter::CStream* pStream = new PdfWriter::CMemoryStream(nLength);
+		pDict->SetStream(pStream);
+		Stream* pOStream = ctx.bUndecodedStream
+			? obj->getStream()->getUndecodedStream()
+			: obj->getStream();
+		pOStream->reset();
+		int nChar = pOStream->getChar();
+		while (nChar != EOF)
+		{
+			pStream->WriteChar(nChar);
+			nChar = pOStream->getChar();
+		}
+		break;
+	}
+	case objCmd:
+	case objError:
+	case objEOF:
+		break;
+	}
+
+	if (ctx.Has(EDictConvertFlags::eDCF_RegisterObjs) && ctx.nAddObjToXRef > 0 && pBase)
+	{
+		ctx.pDoc->AddObject(pBase);
+		ctx.pManager->AddObj(ctx.nAddObjToXRef + ctx.nStartRefID, pBase);
+	}
+
+	return pBase;
+}
+
+#define AddToObject(oVal)\
+{\
+	if (pObj->GetType() == PdfWriter::object_type_DICT)\
+	((PdfWriter::CDictObject*)pObj)->Add(sKey, oVal);\
+	else if (pObj->GetType() == PdfWriter::object_type_ARRAY)\
+	((PdfWriter::CArrayObject*)pObj)->Add(oVal);\
+}
+
+void DictToCDictObject(Object* obj, PdfWriter::CObjectBase* pObj, const std::string& sKey, bool bMakeBinary = false)
+{
+	Object oTemp;
+	switch (obj->getType())
+	{
+	case objBool:
+	{
+		bool b = obj->getBool() == gTrue;
+		AddToObject(b)
+		break;
+	}
+	case objInt:
+	{
+		AddToObject(obj->getInt())
+		break;
+	}
+	case objReal:
+	{
+		AddToObject(obj->getReal())
+		break;
+	}
+	case objString:
+	{
+		GString* str = obj->getString();
+		if (str->isBinary() || bMakeBinary)
+		{
+			int nLength = str->getLength();
+			BYTE* arrId = new BYTE[nLength];
+			for (int nIndex = 0; nIndex < nLength; ++nIndex)
+				arrId[nIndex] = str->getChar(nIndex);
+			AddToObject(new PdfWriter::CBinaryObject(arrId, nLength, false));
+		}
+		else
+		{
+			TextString* s = new TextString(str);
+			std::string sValue = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+			AddToObject(new PdfWriter::CStringObject(sValue.c_str(), !s->isPDFDocEncoding()))
+			delete s;
+		}
+		break;
+	}
+	case objName:
+	{
+		AddToObject(obj->getName())
+		break;
+	}
+	case objNull:
+	{
+		AddToObject(new PdfWriter::CNullObject())
+		break;
+	}
+	case objArray:
+	{
+		PdfWriter::CArrayObject* pArray = new PdfWriter::CArrayObject();
+		AddToObject(pArray)
+		for (int nIndex = 0; nIndex < obj->arrayGetLength(); ++nIndex)
+		{
+			obj->arrayGetNF(nIndex, &oTemp);
+			DictToCDictObject(&oTemp, pArray, "");
+			oTemp.free();
+		}
+		break;
+	}
+	case objDict:
+	{
+		PdfWriter::CDictObject* pDict = new PdfWriter::CDictObject();
+		AddToObject(pDict);
+		for (int nIndex = 0; nIndex < obj->dictGetLength(); ++nIndex)
+		{
+			char* chKey = obj->dictGetKey(nIndex);
+			obj->dictGetValNF(nIndex, &oTemp);
+			DictToCDictObject(&oTemp, pDict, chKey);
+			oTemp.free();
+		}
+		break;
+	}
+	case objRef:
+	{
+		PdfWriter::CObjectBase* pBase = new PdfWriter::CObjectBase();
+		pBase->SetRef(obj->getRefNum(), obj->getRefGen());
+		AddToObject(new PdfWriter::CProxyObject(pBase, true))
+		break;
+	}
+	case objNone:
+	{
+		AddToObject("None")
+		break;
+	}
+	case objStream:
+	case objCmd:
+	case objError:
+	case objEOF:
+		break;
+	}
+}
+
 PdfWriter::CObjectBase* DictToCDictObject2(Object* obj, PdfWriter::CDocument* pDoc, XRef* xref, CObjectsManager* pManager, int nStartRefID, int nAddObjToXRef = 0, bool bUndecodedStream = true, bool bMakeBinary = false)
 {
 	PdfWriter::CObjectBase* pBase = NULL;

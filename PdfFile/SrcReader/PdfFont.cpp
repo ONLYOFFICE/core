@@ -86,7 +86,7 @@ constexpr std::string_view arrCMap[] = {"GB-EUC-H", "GB-EUC-V", "GB-H", "GB-V", 
 "KSC-Johab-V", "KSCms-UHC-H", "KSCms-UHC-V", "KSCms-UHC-HW-H", "KSCms-UHC-HW-V", "KSCpc-EUC-H", "KSCpc-EUC-V",
 "UniKS-UCS2-H", "UniKS-UCS2-V", "UniKS-UTF8-H", "UniKS-UTF8-V", "UniKS-UTF16-H", "UniKS-UTF16-V", "UniKS-UTF32-H",
 "UniKS-UTF32-V", "UniAKR-UTF8-H", "UniAKR-UTF16-H", "UniAKR-UTF32-H"};
-bool scanFonts(Dict *pResources, int nDepth, std::vector<int>& arrUniqueResources)
+bool scanCMapFonts(Dict *pResources, int nDepth, std::vector<int>& arrUniqueResources)
 {
 	if (nDepth > 5)
 		return false;
@@ -120,7 +120,7 @@ bool scanFonts(Dict *pResources, int nDepth, std::vector<int>& arrUniqueResource
 			if (oXObj->streamGetDict()->lookupNF("Resources", oRef.get())->isRef() && std::find(arrUniqueResources.begin(), arrUniqueResources.end(), oRef->getRef().num) != arrUniqueResources.end())
 				continue;
 			arrUniqueResources.push_back(oRef->getRef().num);
-			if (scanFonts(oResources->getDict(), nDepth + 1, arrUniqueResources))
+			if (scanCMapFonts(oResources->getDict(), nDepth + 1, arrUniqueResources))
 				return true;
 		}
 		return false;
@@ -141,13 +141,13 @@ bool scanFonts(Dict *pResources, int nDepth, std::vector<int>& arrUniqueResource
 		if (oSMaskGroup->streamGetDict()->lookupNF("Resources", oRef.get())->isRef() && std::find(arrUniqueResources.begin(), arrUniqueResources.end(), oRef->getRef().num) != arrUniqueResources.end())
 			continue;
 		arrUniqueResources.push_back(oRef->getRef().num);
-		if (scanFonts(oResources->getDict(), nDepth + 1, arrUniqueResources))
+		if (scanCMapFonts(oResources->getDict(), nDepth + 1, arrUniqueResources))
 			return true;
 	}
 
 	return false;
 }
-bool scanAPfonts(Object* oAnnot, std::vector<int>& arrUniqueResources)
+bool scanCMapAPFonts(Object* oAnnot, std::vector<int>& arrUniqueResources)
 {
 	CObjectGuard oAP;
 	if (!oAnnot->dictLookup("AP", oAP.get())->isDict())
@@ -161,7 +161,7 @@ bool scanAPfonts(Object* oAnnot, std::vector<int>& arrUniqueResources)
 		if (oAPi->streamGetDict()->lookupNF("Resources", oRef.get())->isRef() && std::find(arrUniqueResources.begin(), arrUniqueResources.end(), oRef->getRef().num) != arrUniqueResources.end())
 			return false;
 		arrUniqueResources.push_back(oRef->getRef().num);
-		return scanFonts(oRes->getDict(), 0, arrUniqueResources);
+		return scanCMapFonts(oRes->getDict(), 0, arrUniqueResources);
 	};
 	return fScanAPView(oAP.get(), "N") || fScanAPView(oAP.get(), "D") || fScanAPView(oAP.get(), "R");
 }
@@ -830,7 +830,7 @@ bool IsNeedCMap(PDFDoc* pDoc)
 	{
 		Page* pPage = pDoc->getCatalog()->getPage(nPage);
 		Dict* pResources = pPage->getResourceDict();
-		if (pResources && scanFonts(pResources, 0, arrUniqueResources))
+		if (pResources && scanCMapFonts(pResources, 0, arrUniqueResources))
 			return true;
 
 		CObjectGuard oAnnots;
@@ -844,15 +844,15 @@ bool IsNeedCMap(PDFDoc* pDoc)
 				continue;
 
 			CObjectGuard oRefDR;
-			if (oAnnot->dictLookupNF("DR", oRefDR.get())->isRef() && std::find(arrUniqueResources.begin(), arrUniqueResources.end(), oRefDR->getRef().num) != arrUniqueResources.end())
-				continue;
-			arrUniqueResources.push_back(oRefDR->getRef().num);
+			if (!oAnnot->dictLookupNF("DR", oRefDR.get())->isRef() || std::find(arrUniqueResources.begin(), arrUniqueResources.end(), oRefDR->getRef().num) == arrUniqueResources.end())
+			{
+				arrUniqueResources.push_back(oRefDR->getRef().num);
+				CObjectGuard oDR;
+				if (oAnnot->dictLookup("DR", oDR.get())->isDict() && scanCMapFonts(oDR->getDict(), 0, arrUniqueResources))
+					return true;
+			}
 
-			CObjectGuard oDR;
-			if (oAnnot->dictLookup("DR", oDR.get())->isDict() && scanFonts(oDR->getDict(), 0, arrUniqueResources))
-				return true;
-
-			if (scanAPfonts(oAnnot.get(), arrUniqueResources))
+			if (scanCMapAPFonts(oAnnot.get(), arrUniqueResources))
 				return true;
 		}
 	}
@@ -863,23 +863,20 @@ bool IsNeedCMap(PDFDoc* pDoc)
 	Object* oAcroForm = pAcroForms->getAcroFormObj();
 
 	CObjectGuard oRefDR;
-	if (oAcroForm->dictLookupNF("DR", oRefDR.get())->isRef() && std::find(arrUniqueResources.begin(), arrUniqueResources.end(), oRefDR->getRef().num) != arrUniqueResources.end())
-		return false;
-	arrUniqueResources.push_back(oRefDR->getRef().num);
-
+	if (!oAcroForm->dictLookupNF("DR", oRefDR.get())->isRef() || std::find(arrUniqueResources.begin(), arrUniqueResources.end(), oRefDR->getRef().num) == arrUniqueResources.end())
 	{
+		arrUniqueResources.push_back(oRefDR->getRef().num);
 		CObjectGuard oDR;
-		if (oAcroForm->dictLookup("DR", oDR.get())->isDict() && scanFonts(oDR->getDict(), 0, arrUniqueResources))
+		if (oAcroForm->dictLookup("DR", oDR.get())->isDict() && scanCMapFonts(oDR->getDict(), 0, arrUniqueResources))
 			return true;
 	}
 
 	for (int i = 0, nNum = pAcroForms->getNumFields(); i < nNum; ++i)
 	{
 		AcroFormField* pField = pAcroForms->getField(i);
-
 		{
 			CObjectGuard oDR;
-			if (pField->getResources(oDR.get())->isDict() && scanFonts(oDR->getDict(), 0, arrUniqueResources))
+			if (pField->getResources(oDR.get())->isDict() && scanCMapFonts(oDR->getDict(), 0, arrUniqueResources))
 				return true;
 		}
 
@@ -890,7 +887,7 @@ bool IsNeedCMap(PDFDoc* pDoc)
 			oWidgetRef->fetch(pDoc->getXRef(), oWidget.get());
 		}
 
-		if (scanAPfonts(oWidget.get(), arrUniqueResources))
+		if (scanCMapAPFonts(oWidget.get(), arrUniqueResources))
 			return true;
 	}
 
@@ -903,6 +900,7 @@ bool IsBaseFont(const std::wstring& wsName)
 		   wsName == L"Helvetica-Oblique" || wsName == L"Symbol" || wsName == L"Times-Bold" || wsName == L"Times-BoldItalic" ||
 		   wsName == L"Times-Italic" || wsName == L"Times-Roman" || wsName == L"ZapfDingbats";
 }
+
 void GetFontData(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList, Object* oFontRef)
 {
 	XRef* xref = pdfDoc->getXRef();

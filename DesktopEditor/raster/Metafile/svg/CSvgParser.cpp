@@ -197,51 +197,66 @@ namespace SVG
 
 		pFile->AddStyles(wsStyles);
 
-		std::wregex oRegex(L"@font-face\\s*(\\{[^}]*\\})");
-		std::wsmatch oMatch;
-		std::wstring::const_iterator oSearchStart(wsStyles.cbegin());
-		
-		while (std::regex_search(oSearchStart, wsStyles.cend(), oMatch, oRegex))
+		const std::wstring wsTag{L"@font-face"};
+		size_t unPos = 0;
+
+		while ((unPos = wsStyles.find(wsTag, unPos)) != std::wstring::npos)
 		{
-			if (oMatch[1].str().empty())
-				continue;
+			size_t unCur{unPos + wsTag.length()};
 
-			std::wstring wsValue{oMatch[1].str()};
+			while (unCur < wsStyles.length() && std::iswspace(wsStyles[unCur]))
+				++unCur;
 
-			std::wstring::const_iterator itStart = std::find_if(wsValue.cbegin(), wsValue.cend(), [](const wchar_t& wChar) { return !std::iswspace(wChar) && L'{' != wChar; });
-			std::wstring::const_reverse_iterator itEnd = std::find_if(wsValue.crbegin(), wsValue.crend(), [](const wchar_t& wChar) { return !std::iswspace(wChar) && L'}' != wChar; });
-
-			if (wsValue.cend() != itStart && wsValue.crend() != itEnd)
-				wsValue = std::wstring(itStart, itEnd.base());
-
-			const std::vector<std::wstring> arWords{NSCSS::NS_STATIC_FUNCTIONS::GetWordsW(wsValue, true, L":;")};
-
-			SvgURL oURL;
-			TFontArguments m_oArguments;
-
-			for (unsigned int unIndex = 0; unIndex < arWords.size(); ++unIndex)
+			if (unCur >= wsStyles.length() || L'{' != wsStyles[unCur])
 			{
-				if (arWords[unIndex].length() > 3 && L"src" == arWords[unIndex].substr(0, 3) && L':' == arWords[unIndex].back() && 
-				    unIndex + 1 < arWords.size() && oURL.SetValue(arWords[++unIndex]))
-				{
-					continue;
-				}
-				else if (arWords[unIndex].length() > 11 && L"font-family" == arWords[unIndex].substr(0, 11) && L':' == arWords[unIndex].back() &&
-				         unIndex + 1 < arWords.size())
-				{
-					const std::vector<std::wstring> arFontFamily{NSCSS::NS_STATIC_FUNCTIONS::GetWordsW(arWords[++unIndex], false, L"\"\',;")};
-
-					if (arFontFamily.empty())
-						continue;
-
-					m_oArguments.m_wsFontFamily = arFontFamily.back();
-				}
+				unPos += wsTag.length();
+				continue;
 			}
 
-			if (!oURL.Empty() && !m_oArguments.m_wsFontFamily.empty())
-				pFile->AddFontFace(m_oArguments, oURL.GetValue());
+			const size_t unClose{wsStyles.find(L'}', unCur + 1)};
 
-			oSearchStart = oMatch.suffix().first;
+			if (std::wstring::npos == unClose)
+				break;
+
+			size_t unInnerStart{unCur + 1};
+			size_t unInnerEnd{unClose};
+
+			while (unInnerStart < unInnerEnd && std::iswspace(wsStyles[unInnerStart]))
+				++unInnerStart;
+
+			while (unInnerEnd > unInnerStart && std::iswspace(wsStyles[unInnerEnd - 1]))
+				--unInnerEnd;
+
+			if (unInnerStart < unInnerEnd)
+			{
+				const std::wstring wsValue{wsStyles.substr(unInnerStart, unInnerEnd - unInnerStart)};
+				const std::vector<std::wstring> arWords{NSCSS::NS_STATIC_FUNCTIONS::GetWordsW(wsValue, true, L":;")};
+
+				SvgURL oURL;
+				TFontArguments m_oArguments;
+
+				for (unsigned int unIndex = 0; unIndex < arWords.size(); ++unIndex)
+				{
+					if (arWords[unIndex].length() > 3 && L"src" == arWords[unIndex].substr(0, 3) && L':' == arWords[unIndex].back() &&
+						unIndex + 1 < arWords.size() && oURL.SetValue(arWords[++unIndex]))
+					{
+						continue;
+					}
+					else if (arWords[unIndex].length() > 11 && L"font-family" == arWords[unIndex].substr(0, 11) && L':' == arWords[unIndex].back() &&
+							 unIndex + 1 < arWords.size())
+					{
+						const std::vector<std::wstring> arFontFamily{NSCSS::NS_STATIC_FUNCTIONS::GetWordsW(arWords[++unIndex], false, L"\"\',;")};
+						if (arFontFamily.empty())
+							continue;
+						m_oArguments.m_wsFontFamily = arFontFamily.back();
+					}
+				}
+
+				if (!oURL.Empty() && !m_oArguments.m_wsFontFamily.empty())
+					pFile->AddFontFace(m_oArguments, oURL.GetValue());
+			}
+
+			unPos = unClose + 1;
 		}
 	}
 	template <class ObjectType>

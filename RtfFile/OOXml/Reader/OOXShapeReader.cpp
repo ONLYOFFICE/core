@@ -1179,42 +1179,25 @@ bool OOXShapeReader::ParseShape( ReaderParameter oParam, RtfShapePtr& pOutput)
 	}
 	
 	std::wstring strXml;
-	if (ooxShape->spPr.Geometry.getType() == OOX::et_a_custGeom)
+	if (ooxShape->spPr.Geometry.getType() == OOX::et_a_custGeom || ooxShape->spPr.Geometry.getType() == OOX::et_a_prstGeom)
 	{
-		PPTX::Logic::CustGeom& geometry = ooxShape->spPr.Geometry.as<PPTX::Logic::CustGeom>();
 		pOutput->m_nShapeType = SimpleTypes::Vml::sptNotPrimitive;
-		strXml = geometry.toXML();
+		if (ooxShape->spPr.Geometry.getType() == OOX::et_a_custGeom)
+			strXml = ooxShape->spPr.Geometry.as<PPTX::Logic::CustGeom>().toXML();
+		else if (ooxShape->spPr.Geometry.getType() == OOX::et_a_prstGeom)
+			strXml = ooxShape->spPr.Geometry.as<PPTX::Logic::PrstGeom>().prst.get();
 	}
-	if (ooxShape->spPr.Geometry.getType() == OOX::et_a_prstGeom)
+	if (!strXml.empty())
 	{
-		PPTX::Logic::PrstGeom& geometry = ooxShape->spPr.Geometry.as<PPTX::Logic::PrstGeom>();
-		
-		SimpleTypes::CShapeType prst_type(geometry.prst.get());
-		SimpleTypes::EShapeType type = prst_type.GetValue();
-
-		pOutput->m_nShapeType = OOX::PrstGeom2VmlShapeType(type);
-		if (pOutput->m_nShapeType == SimpleTypes::Vml::sptNotPrimitive)
-			strXml = geometry.prst.get();
-	}
-	if (pOutput->m_nShapeType == SimpleTypes::Vml::sptNotPrimitive && !strXml.empty())
-	{
-		XmlUtils::CXmlNode xmlNode;
-		xmlNode.FromXmlString(strXml);
-		PPTX::Logic::Geometry geom;
-		geom = xmlNode;
-
 		std::wstring strVmlPath, strVmlRect;
-
 		LONG lW = 0, lH = 0;
-
-		//if ((ooxShape->spPr.xfrm->IsInit()) && (ooxShape->spPr.xfrm->m_oExt.IsInit()))
-		//{
-		//	lW = ooxShape->spPr.xfrm->m_oExt->m_oCx.GetValue();
-		//	lH = ooxShape->spPr.xfrm->m_oExt->m_oCy.GetValue();
-		//}
-
+		if (ooxShape->spPr.xfrm.IsInit() && ooxShape->spPr.xfrm->extX.IsInit() && ooxShape->spPr.xfrm->extY.IsInit())
+		{
+			lW = ooxShape->spPr.xfrm->extX.get();
+			lH = ooxShape->spPr.xfrm->extY.get();
+		}
 		COOXToVMLGeometry *renderer = new COOXToVMLGeometry();
-		geom.ConvertToCustomVML(renderer, strVmlPath, strVmlRect, lW, lH);
+		ooxShape->spPr.Geometry.ConvertToCustomVML(renderer, strVmlPath, strVmlRect, lW, lH);
 		delete renderer;
 
 		if (!strVmlPath.empty())

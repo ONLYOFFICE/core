@@ -1179,6 +1179,8 @@ bool OOXShapeReader::ParseShape( ReaderParameter oParam, RtfShapePtr& pOutput)
 	}
 	
 	std::wstring strXml;
+	std::wstring strGeoTextRect;
+	LONG nGeoExtX = 0, nGeoExtY = 0;
 	if (ooxShape->spPr.Geometry.getType() == OOX::et_a_custGeom || ooxShape->spPr.Geometry.getType() == OOX::et_a_prstGeom)
 	{
 		pOutput->m_nShapeType = SimpleTypes::Vml::sptNotPrimitive;
@@ -1190,14 +1192,13 @@ bool OOXShapeReader::ParseShape( ReaderParameter oParam, RtfShapePtr& pOutput)
 	if (!strXml.empty())
 	{
 		std::wstring strVmlPath, strVmlRect;
-		LONG lW = 0, lH = 0;
 		if (ooxShape->spPr.xfrm.IsInit() && ooxShape->spPr.xfrm->extX.IsInit() && ooxShape->spPr.xfrm->extY.IsInit())
 		{
-			lW = ooxShape->spPr.xfrm->extX.get();
-			lH = ooxShape->spPr.xfrm->extY.get();
+			nGeoExtX = ooxShape->spPr.xfrm->extX.get();
+			nGeoExtY = ooxShape->spPr.xfrm->extY.get();
 		}
 		COOXToVMLGeometry *renderer = new COOXToVMLGeometry();
-		ooxShape->spPr.Geometry.ConvertToCustomVML(renderer, strVmlPath, strVmlRect, lW, lH);
+		ooxShape->spPr.Geometry.ConvertToCustomVML(renderer, strVmlPath, strGeoTextRect, nGeoExtX, nGeoExtY);
 		delete renderer;
 
 		if (!strVmlPath.empty())
@@ -1288,6 +1289,32 @@ bool OOXShapeReader::ParseShape( ReaderParameter oParam, RtfShapePtr& pOutput)
 	}
 	
 	Parse(oParam, pOutput, text_properties);
+
+	if (!strGeoTextRect.empty() && nGeoExtX > 0 && nGeoExtY > 0)
+	{
+		std::vector< std::wstring > rect;
+		boost::algorithm::split(rect, strGeoTextRect, boost::algorithm::is_any_of(L","), boost::algorithm::token_compress_on);
+		if (rect.size() == 4)
+		{
+			int nL = XmlUtils::GetInteger(rect[0]);
+			int nT = XmlUtils::GetInteger(rect[1]);
+			int nR = XmlUtils::GetInteger(rect[2]);
+			int nB = XmlUtils::GetInteger(rect[3]);
+
+			if (nL > 0 || nT > 0 || nR < 100000 || nB < 100000)
+			{
+				int nInsL = (int)((double)nL / 100000. * nGeoExtX);
+				int nInsT = (int)((double)nT / 100000. * nGeoExtY);
+				int nInsR = (int)((double)(100000 - nR) / 100000. * nGeoExtX);
+				int nInsB = (int)((double)(100000 - nB) / 100000. * nGeoExtY);
+
+				pOutput->m_nTexpLeft   = (PROP_DEF == pOutput->m_nTexpLeft   ? 0 : pOutput->m_nTexpLeft) + nInsL;
+				pOutput->m_nTexpTop    = (PROP_DEF == pOutput->m_nTexpTop    ? 0 : pOutput->m_nTexpTop) + nInsT;
+				pOutput->m_nTexpRight  = (PROP_DEF == pOutput->m_nTexpRight  ? 0 : pOutput->m_nTexpRight) + nInsR;
+				pOutput->m_nTexpBottom = (PROP_DEF == pOutput->m_nTexpBottom ? 0 : pOutput->m_nTexpBottom) + nInsB;
+			}
+		}
+	}
 
 	if (ooxShape->txBody.IsInit())
 	{

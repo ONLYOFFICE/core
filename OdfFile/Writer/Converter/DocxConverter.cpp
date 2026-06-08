@@ -359,7 +359,6 @@ std::wstring DocxConverter::dump_text(OOX::WritingElement *oox_unknown)
 			{
 				result += dump_text(para->m_arrItems[i]);
 			}
-			result += L"\\n";
 		}break;
 		default:
 		{
@@ -674,11 +673,9 @@ void DocxConverter::convert(OOX::Logic::CSdt *oox_sdt)
 		std::wstring value;
 		for (size_t i = 0; i < oox_sdt->m_oSdtContent->m_arrItems.size(); i++)
 		{
-			value += dump_text(oox_sdt->m_oSdtContent->m_arrItems[i]);
-		}
-		if ((false == value.empty()) && (value.back() == L'\n'))
-		{
-			value.erase(value.back());
+			std::wstring part = dump_text(oox_sdt->m_oSdtContent->m_arrItems[i]);
+			if (!value.empty() && !part.empty()) value += L"\\n";
+			value += part;
 		}
 		odt_context->controls_context()->set_value(value);
 
@@ -4992,6 +4989,16 @@ void DocxConverter::convert(OOX::Logic::CTr	*oox_table_row)
 			case OOX::et_w_trPr:	
 			{
 				//skip
+			}break;
+			case OOX::et_w_sdt:
+			{
+				OOX::Logic::CTableCellProperties* prop = NULL;
+				bool styled = convert(prop, odt_context->table_context()->current_column() + 1);
+				odt_context->start_table_cell(odt_context->table_context()->current_column(), false, styled);
+					//odt_context->start_paragraph();
+						convert(oox_table_row->m_arrItems[i]);
+					//odt_context->end_paragraph();
+				odt_context->end_table_cell();
 			}break;
 			default:
 				convert(oox_table_row->m_arrItems[i]);

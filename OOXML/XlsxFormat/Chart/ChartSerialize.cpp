@@ -80,6 +80,7 @@
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/BRAI.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/SeriesText.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/AttachedLabel.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/PieFormat.h"
 
 
 namespace OOX
@@ -6922,12 +6923,20 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 		{
 			auto baseFormat = CBaseSer::GetXLSFormat(chartIndex);
 			auto castedFormat = static_cast<XLS::SERIESFORMAT*>(baseFormat.get());
+
 			for(auto i : m_dPt)
 			{
 				_UINT16 oreder = 0;
 				if(m_order.IsInit())
 						oreder = m_order.get();
 				castedFormat->m_arPtSS.push_back(i->toXLS(oreder));
+				if(m_explosion.IsInit())
+				{
+					auto serStyle = static_cast<XLS::SS*>(castedFormat->m_arPtSS.back().get());
+					auto expl = new XLS::PieFormat;
+					expl->pcExplode = m_explosion.get();
+					serStyle->m_PieFormat = XLS::BaseObjectPtr(expl);
+				}
 			}
 			return baseFormat;
 		}

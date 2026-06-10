@@ -7446,6 +7446,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			}
 			if(m_barDir.IsInit() && m_barDir->m_eValue == 0)
 				chartType->fTranspose = true;
+			if(m_grouping.IsInit() && m_grouping->GetValue() == st_bargroupingSTACKED)
+				chartType->fStacked = true;
 
 			if(m_gapWidth.IsInit())
 			{

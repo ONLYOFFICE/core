@@ -3732,6 +3732,11 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			{
 				auto ai1 = new XLS::BRAI;
 				seriesFormat->m_arAI.push_back(XLS::BaseObjectPtr(ai1));
+				if(m_tx != nullptr && m_tx->m_strRef != nullptr)
+				{
+					ai1->rt = 2;
+					ai1->formula.parseStringFormula(m_tx->m_strRef->m_f.get(), L"");
+				}
 			}
 			auto series = new XLS::Series;
 			series->sdtX = 1;

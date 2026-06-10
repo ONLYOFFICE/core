@@ -75,18 +75,20 @@ bool CPPTDocumentInfo::ReadFromStream(CRecordCurrentUserAtom *pCurrentUser, POLE
     {
         StreamUtils::StreamSeek(offsetToEdit, pStream);
 
-        oHeader.ReadFromStream(pStream);
+        bool bResult = oHeader.ReadFromStream(pStream);
+        if (!bResult) break;
+
         oUserAtom.ReadFromStream(oHeader, pStream);
 
         CPPTUserInfo* pInfo = new CPPTUserInfo();
 
-        pInfo->m_pDocumentInfo      = this;
+        pInfo->m_pDocumentInfo = this;
 
         pInfo->m_bEncrypt = m_oCurrentUser.m_bIsEncrypt;
         pInfo->m_strPassword = m_strPassword;
         pInfo->m_bMacroEnabled = m_bMacroEnabled;
 
-        bool bResult = pInfo->ReadFromStream(&oUserAtom, pStream);
+        bResult = pInfo->ReadFromStream(&oUserAtom, pStream);
 
         offsetToEdit = pInfo->m_oUser.m_nOffsetLastEdit;
         m_oCurrentUser.m_bIsEncrypt = pInfo->m_bEncrypt;
@@ -108,7 +110,7 @@ bool CPPTDocumentInfo::ReadFromStream(CRecordCurrentUserAtom *pCurrentUser, POLE
 
         pInfo = NULL;
     }
-    return true;
+    return (false == m_arUsers.empty());
 }
 std::wstring CPPTDocumentInfo::GetBinFromStg(const std::wstring& name, _UINT32 nRef)
 {

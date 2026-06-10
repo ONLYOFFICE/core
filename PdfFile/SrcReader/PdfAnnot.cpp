@@ -3336,6 +3336,9 @@ void CAnnotAP::Clear()
 void CAnnotAP::Init(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList*  pFontList, int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex)
 {
 	Page* pPage = pdfDoc->getCatalog()->getPage(nPageIndex);
+	if (!pPage)
+		return;
+
 	PDFRectangle* pCropBox = pPage->getCropBox();
 	m_dCropX = pCropBox->x1;
 	m_dCropY = pCropBox->y1;
@@ -3355,12 +3358,16 @@ void CAnnotAP::Init(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFon
 	m_nWidth  += 2;
 	m_nHeight += 2;
 
+	if (m_nWidth <= 0 || m_nHeight <= 0)
+		return;
+
 	// Drawing on transparent canvas with specified background color
-	BYTE* pBgraData = new BYTE[m_nWidth * m_nHeight * 4];
+	const size_t nPixels = static_cast<size_t>(m_nWidth) * static_cast<size_t>(m_nHeight);
+	const size_t nBufSize = 4 * nPixels;
+	BYTE* pBgraData = new BYTE[nBufSize];
 	unsigned int nColor = (unsigned int)nBackgroundColor;
-	unsigned int nSize = (unsigned int)(m_nWidth * m_nHeight);
 	unsigned int* pTemp = (unsigned int*)pBgraData;
-	for (unsigned int i = 0; i < nSize; ++i)
+	for (unsigned int i = 0; i < nPixels; ++i)
 		*pTemp++ = nColor;
 
 	m_pFrame = new CBgraFrame();
@@ -3615,7 +3622,10 @@ void CAnnotAP::Draw(PDFDoc* pdfDoc, Object* oAP, int nRasterH, int nBackgroundCo
 }
 void CAnnotAP::WriteAppearance(unsigned int nColor, CAnnotAPView* pView)
 {
-	BYTE* pSubMatrix = new BYTE[m_nWidth * m_nHeight * 4];
+	const size_t nBufSize = 4 * static_cast<size_t>(m_nWidth) * static_cast<size_t>(m_nHeight);
+	BYTE* pSubMatrix = new(std::nothrow) BYTE[nBufSize];
+	if (!pSubMatrix)
+		return;
 	int p = 0;
 	unsigned int* pTemp = (unsigned int*)m_pFrame->get_Data();
 	unsigned int* pSubTemp = (unsigned int*)pSubMatrix;

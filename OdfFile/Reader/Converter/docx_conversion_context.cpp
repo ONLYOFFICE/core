@@ -2354,25 +2354,30 @@ int docx_conversion_context::process_paragraph_attr(odf_reader::text::paragraph_
 }
 
 
-void docx_conversion_context::process_page_break_after(const odf_reader::style_instance * styleInst)
+void docx_conversion_context::process_page_break_after(const odf_reader::style_instance * styleInstance)
 {
-    if (styleInst)
-    {
-        const odf_reader::style_instance * inst = styleInst;
-        while (inst)
-        {
-            if (inst->content() && inst->content()->get_style_paragraph_properties())
-            {
-                _CP_OPT(odf_types::fo_break) fo_break_val = inst->content()->get_style_paragraph_properties()->content_.fo_break_after_;
-				if (fo_break_val)
-                {
-					set_page_break_after(fo_break_val->get_type());
-					break;
-                }
-            }
-            inst = inst->parent();
-        }
-    }
+	if (!styleInstance) return;
+
+	std::map<std::wstring, int> usedStyles;
+	while (styleInstance)
+	{
+		std::wstring style_name = styleInstance->name();
+		if (usedStyles.find(style_name) != usedStyles.end())
+			break;
+
+		usedStyles.insert(std::make_pair(style_name, 0));
+
+		if (styleInstance->content() && styleInstance->content()->get_style_paragraph_properties())
+		{
+			_CP_OPT(odf_types::fo_break) fo_break_val = styleInstance->content()->get_style_paragraph_properties()->content_.fo_break_after_;
+			if (fo_break_val)
+			{
+				set_page_break_after(fo_break_val->get_type());
+				break;
+			}
+		}
+		styleInstance = styleInstance->parent();
+	}
 }
 void docx_conversion_context::serialize_list_properties(std::wostream & strm)
 {

@@ -45,6 +45,7 @@
 #include "style_text_properties.h"
 
 #include <iostream>
+#include <map>
 
 namespace cpdoccore {
 
@@ -443,12 +444,18 @@ void odf_style_context::calc_text_properties(std::wstring style_name, odf_types:
 {
     std::vector<text_format_properties*> textProps;
 	
+	std::map<std::wstring, int> usedStyles;
 	while (!style_name.empty())
     {
+		if (usedStyles.find(style_name) != usedStyles.end())
+			break;
+
 		style *style_ = NULL;
 		if (!find_odf_style(style_name, family, style_) || !style_)break;
 
-       if (text_format_properties * textProp = style_->content_.add_get_style_text_properties())
+		usedStyles.insert(std::make_pair(style_name, 0));
+		
+		if (text_format_properties * textProp = style_->content_.add_get_style_text_properties())
 			textProps.push_back(textProp);
         		
 	   style_name = style_->style_parent_style_name_ ? *style_->style_parent_style_name_ : L"";
@@ -460,11 +467,18 @@ void odf_style_context::calc_text_properties(std::wstring style_name, odf_types:
 void odf_style_context::calc_paragraph_properties(std::wstring style_name, style_family::type family, paragraph_format_properties * result)
 {
     std::vector<paragraph_format_properties*> parProps;
+
+	std::map<std::wstring, int> usedStyles;
 	
 	while (!style_name.empty())
     {
+		if (usedStyles.find(style_name) != usedStyles.end())
+			break;
+
 		style *style_ = NULL;
-		if (!find_odf_style(style_name, family, style_) || !style_)break;
+		if (!find_odf_style(style_name, family, style_) || !style_) break;
+
+		usedStyles.insert(std::make_pair(style_name, 0));
 
        if (paragraph_format_properties* parProp = style_->content_.add_get_style_paragraph_properties())
 			parProps.push_back(parProp);

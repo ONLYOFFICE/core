@@ -980,7 +980,7 @@ namespace OOX
 
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			XLS::BaseObjectPtr toXLS();
+			XLS::BaseObjectPtr toXLS(unsigned int axId);
 			EElementType getType();
 		};
 		class CT_DateAx : public CBaseAx
@@ -1017,7 +1017,7 @@ namespace OOX
 
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			XLS::BaseObjectPtr toXLS();
+			XLS::BaseObjectPtr toXLS(unsigned int axId);
 
 			EElementType getType();
 		};
@@ -1064,7 +1064,7 @@ namespace OOX
 
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			XLS::BaseObjectPtr toXLS();
+			XLS::BaseObjectPtr toXLS(unsigned int axId);
 			EElementType getType();
 		};
 		class CT_SerTx

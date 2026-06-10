@@ -1281,19 +1281,19 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 									case ItemsChoiceType6::itemschoicetype6CATAX:
 									{
 										auto ivAx = static_cast<CT_CatAx*>(m_chart->m_plotArea->m_Items1.at(axPose));
-										axes->m_arAxes.push_back(ivAx->toXLS());
+										axes->m_arAxes.push_back(ivAx->toXLS(axPose));
 										break;
 									}
 									case ItemsChoiceType6::itemschoicetype6VALAX:
 									{
 										auto dvAx = static_cast<CT_ValAx*>(m_chart->m_plotArea->m_Items1.at(axPose));
-										axes->m_arAxes.push_back(dvAx->toXLS());
+										axes->m_arAxes.push_back(dvAx->toXLS(axPose));
 										break;
 									}
 									case ItemsChoiceType6::itemschoicetype6SERAX:
 									{
 										auto serAx = static_cast<CT_SerAx*>(m_chart->m_plotArea->m_Items1.at(axPose));
-										axes->m_arAxes.push_back(serAx->toXLS());
+										axes->m_arAxes.push_back(serAx->toXLS(axPose));
 										break;
 									}
 									default:
@@ -2453,11 +2453,11 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
 		}
-		XLS::BaseObjectPtr CT_SerAx::toXLS()
+		XLS::BaseObjectPtr CT_SerAx::toXLS(unsigned int axId)
 		{
 			auto SerAxis = new XLS::SERIESAXIS;
 			auto axis = new XLS::Axis;
-			axis->wType = 2;
+			axis->wType = axId;
 			SerAxis->m_Axis = XLS::BaseObjectPtr(axis);
 			auto axs = new XLS::AXS;
 			SerAxis->m_AXS = XLS::BaseObjectPtr(axs);
@@ -3243,11 +3243,11 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
 		}
-		XLS::BaseObjectPtr CT_CatAx::toXLS()
+		XLS::BaseObjectPtr CT_CatAx::toXLS(unsigned int axId)
 		{
 			auto ivAxis = new XLS::IVAXIS;
 			auto axis = new XLS::Axis;
-			axis->wType = 0;
+			axis->wType = axId;
 			ivAxis->m_Axis = XLS::BaseObjectPtr(axis);
 			auto axs = new XLS::AXS;
 			ivAxis->m_AXS = XLS::BaseObjectPtr(axs);
@@ -3572,16 +3572,13 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
 		}
-		XLS::BaseObjectPtr CT_ValAx::toXLS()
+		XLS::BaseObjectPtr CT_ValAx::toXLS(unsigned int axId)
 		{
 			auto dvAxis = new XLS::DVAXIS;
 			auto axis = new XLS::Axis;
 			auto axs = new XLS::AXS;
 			dvAxis->m_AXS = XLS::BaseObjectPtr(axs);
-			if(m_axPos.IsInit() && m_axPos->GetValue() == OOX::Spreadsheet::ST_AxPos::st_axposB)
-				axis->wType = 0;
-			else
-				axis->wType = 1;
+			axis->wType = axId;
 			dvAxis->m_Axis = XLS::BaseObjectPtr(axis);
 			auto valSerRange = new XLS::ValueRange;
 			valSerRange->fAutoMin = true;

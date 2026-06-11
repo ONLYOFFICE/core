@@ -3778,6 +3778,11 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 					seriesFormat->m_arAI.push_back(XLS::BaseObjectPtr(ai2));
 					auto ai3 = new XLS::BRAI;
 					ai3->id = 2;
+					if(m_cat != nullptr && m_cat->m_strRef != nullptr)
+					{
+						ai3->rt = 2;
+						ai3->formula.parseStringFormula(m_cat->m_strRef->m_f.get(), L"");
+					}
 					auto ai4 = new XLS::BRAI;
 					ai4->id = 3;
 					seriesFormat->m_arAI.push_back(XLS::BaseObjectPtr(ai3));

@@ -1592,10 +1592,12 @@ void GetFont(XRef* pXref, NSFonts::IFontManager* pFontManager, CPdfFontList* pFo
 			wsTempFileName = UTF8_TO_U(NSSystemPath::NormalizePath(U_TO_UTF8(wsTempFileName)));
 #endif
 
-			Object oReferenceObject, oStreamObject;
-			oReferenceObject.initRef(oEmbRef.num, oEmbRef.gen);
-			oReferenceObject.fetch(pXref, &oStreamObject);
-			oReferenceObject.free();
+			Object oStreamObject;
+			{
+				CObjectGuard oReferenceObject;
+				oReferenceObject->initRef(oEmbRef.num, oEmbRef.gen);
+				oReferenceObject->fetch(pXref, &oStreamObject);
+			}
 			if (!oStreamObject.isStream())
 			{
 				// Embedded font is incorrectly written
@@ -1641,80 +1643,80 @@ void GetFont(XRef* pXref, NSFonts::IFontManager* pFontManager, CPdfFontList* pFo
 				if (pFile)
 				{
 					Ref* pRef = pFont->getID();
-					Object oRefObject, oFontObject;
-					oRefObject.initRef(pRef->num, pRef->gen);
-					oRefObject.fetch(pXref, &oFontObject);
-					oRefObject.free();
+					CObjectGuard oFontObject;
+					{
+						CObjectGuard oRefObject;
+						oRefObject->initRef(pRef->num, pRef->gen);
+						oRefObject->fetch(pXref, oFontObject.get());
+					}
 
-					if (oFontObject.isDict())
+					if (oFontObject->isDict())
 					{
 						std::string sFontName, sFontFamily;
 						int nFontWeight = 0, nItalicAngle = 0, nAscent = 0, nDescent = 0;
 						int nCapHeight = 0, nXHeight = 0, nStemV = 0, nStemH = 0, nMissingWidth = 0;
 						int arrBBox[4] = { 0, 0, 0, 0 };
 
-						Object oFontDescriptor;
-						if (oFontObject.dictLookup("FontDescriptor", &oFontDescriptor)->isDict())
+						CObjectGuard oFontDescriptor;
+						if (oFontObject->dictLookup("FontDescriptor", oFontDescriptor.get())->isDict())
 						{
 							Object oDictItem;
-							oFontDescriptor.dictLookup("FontName", &oDictItem);
+							oFontDescriptor->dictLookup("FontName", &oDictItem);
 							if (oDictItem.isName()) sFontName = oDictItem.getName();
 							oDictItem.free();
 
-							oFontDescriptor.dictLookup("FontFamily", &oDictItem);
+							oFontDescriptor->dictLookup("FontFamily", &oDictItem);
 							if (oDictItem.isName()) sFontFamily = oDictItem.getName();
 							oDictItem.free();
 
-							oFontDescriptor.dictLookup("FontWeight", &oDictItem);
+							oFontDescriptor->dictLookup("FontWeight", &oDictItem);
 							if (oDictItem.isInt()) nFontWeight = oDictItem.getInt();
 							oDictItem.free();
 
-							if (oFontDescriptor.dictLookup("FontBBox", &oDictItem)->isArray() && oDictItem.arrayGetLength() == 4)
+							if (oFontDescriptor->dictLookup("FontBBox", &oDictItem)->isArray() && oDictItem.arrayGetLength() == 4)
 							{
 								for (int nIndex = 0; nIndex < 4; nIndex++)
 								{
-									Object oArrayItem;
-									if (oDictItem.arrayGet(nIndex, &oArrayItem)->isInt())
-										arrBBox[nIndex] = oArrayItem.getInt();
-									oArrayItem.free();
+									CObjectGuard oArrayItem;
+									if (oDictItem.arrayGet(nIndex, oArrayItem.get())->isInt())
+										arrBBox[nIndex] = oArrayItem->getInt();
 								}
 							}
 							oDictItem.free();
 
-							oFontDescriptor.dictLookup("ItalicAngle", &oDictItem);
+							oFontDescriptor->dictLookup("ItalicAngle", &oDictItem);
 							if (oDictItem.isInt()) nItalicAngle = oDictItem.getInt();
 							oDictItem.free();
 
-							oFontDescriptor.dictLookup("Ascent", &oDictItem);
+							oFontDescriptor->dictLookup("Ascent", &oDictItem);
 							if (oDictItem.isInt()) nAscent = oDictItem.getInt();
 							oDictItem.free();
 
-							oFontDescriptor.dictLookup("CapHeight", &oDictItem);
+							oFontDescriptor->dictLookup("CapHeight", &oDictItem);
 							if (oDictItem.isInt()) nCapHeight = oDictItem.getInt();
 							oDictItem.free();
 
-							oFontDescriptor.dictLookup("XHeight", &oDictItem);
+							oFontDescriptor->dictLookup("XHeight", &oDictItem);
 							if (oDictItem.isInt()) nXHeight = oDictItem.getInt();
 							oDictItem.free();
 
-							oFontDescriptor.dictLookup("StemV", &oDictItem);
+							oFontDescriptor->dictLookup("StemV", &oDictItem);
 							if (oDictItem.isInt()) nStemV = oDictItem.getInt();
 							oDictItem.free();
 
-							oFontDescriptor.dictLookup("StemH", &oDictItem);
+							oFontDescriptor->dictLookup("StemH", &oDictItem);
 							if (oDictItem.isInt()) nStemH = oDictItem.getInt();
 							oDictItem.free();
 
-							oFontDescriptor.dictLookup("Descent", &oDictItem);
+							oFontDescriptor->dictLookup("Descent", &oDictItem);
 							if (oDictItem.isInt()) nDescent = oDictItem.getInt();
 							oDictItem.free();
 
-							oFontDescriptor.dictLookup("MissingWidth", &oDictItem);
+							oFontDescriptor->dictLookup("MissingWidth", &oDictItem);
 							if (oDictItem.isInt()) nMissingWidth = oDictItem.getInt();
 							oDictItem.free();
 
 						}
-						oFontDescriptor.free();
 
 						fprintf(pFile, "StartFontMetrics 3.0\n");
 						if (!sFontName.empty()) fprintf(pFile, "FontName %s\n", sFontName.c_str());
@@ -1733,21 +1735,20 @@ void GetFont(XRef* pXref, NSFonts::IFontManager* pFontManager, CPdfFontList* pFo
 						fprintf(pFile, "StdHV %d\n", nStemV);
 
 						int nFirstChar = 0;
-						Object oDictItem;
-						if (oFontObject.dictLookup("FirstChar", &oDictItem)->isInt()) nFirstChar = oDictItem.getInt();
-						oDictItem.free();
+						CObjectGuard oDictItem;
+						if (oFontObject->dictLookup("FirstChar", oDictItem.get())->isInt()) nFirstChar = oDictItem->getInt();
+						oDictItem->free();
 
 						Gfx8BitFont* pT1Font = (Gfx8BitFont*)pFont;
-						if (oFontObject.dictLookup("Widths", &oDictItem)->isArray())
+						if (oFontObject->dictLookup("Widths", oDictItem.get())->isArray())
 						{
-							int nWidthsCount = oDictItem.arrayGetLength();
+							int nWidthsCount = oDictItem->arrayGetLength();
 							fprintf(pFile, "StartCharMetrics %d\n", nWidthsCount);
 							for (int nIndex = 0; nIndex < nWidthsCount; nIndex++)
 							{
 								int nWidth = nMissingWidth;
-								Object oArrayItem;
-								if (oDictItem.arrayGet(nIndex, &oArrayItem)->isInt()) nWidth = oArrayItem.getInt();
-								oArrayItem.free();
+								CObjectGuard oArrayItem;
+								if (oDictItem->arrayGet(nIndex, oArrayItem.get())->isInt()) nWidth = oArrayItem->getInt();
 
 								char** ppEncoding = pT1Font->getEncoding();
 
@@ -1758,9 +1759,7 @@ void GetFont(XRef* pXref, NSFonts::IFontManager* pFontManager, CPdfFontList* pFo
 							}
 							fprintf(pFile, "EndCharMetrics\n");
 						}
-						oDictItem.free();
 					}
-					oFontObject.free();
 				}
 				fclose(pFile);
 			}

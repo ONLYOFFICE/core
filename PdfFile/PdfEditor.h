@@ -117,7 +117,7 @@ public:
 
 private:
 	bool IncrementalUpdates();
-	void NewFrom();
+	void SyncAcroFormFromReader();
 	void GetPageTree(XRef* xref, Object* pPagesRefObj, PdfWriter::CPageTree* pPageParent = NULL);
 	bool SplitPages(const int* arrPageIndex, unsigned int unLength, PDFDoc* _pDoc, int nStartRefID);
 	bool ChangeFullNameParent(int nParent, const std::string& sPrefixForm, std::vector<int>& arrRename);

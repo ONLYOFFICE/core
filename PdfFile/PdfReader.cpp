@@ -250,7 +250,6 @@ void CPdfReader::SetParams(COfficeDrawingPageParams* pParams)
 	globalParams->setDrawFormFields(bDraw);
 	globalParams->setDrawAnnotations(bDraw);
 }
-
 // ============================================================
 // CPdfReader::FindContext
 // ============================================================
@@ -398,7 +397,6 @@ int CPdfReader::GetNumPages()
 	}
 	return nNumPages;
 }
-
 // ============================================================
 // CPdfReader::ValidMetaData
 // ============================================================
@@ -507,7 +505,6 @@ bool CPdfReader::ValidMetaData()
 
 	return bRes;
 }
-
 // ============================================================
 // CPdfReader::MergePages
 // ============================================================
@@ -859,7 +856,6 @@ PDFDoc* CPdfReader::GetPDFDocument(int PDFIndex)
 		return m_vPDFContext[PDFIndex]->m_pDocument;
 	return NULL;
 }
-
 // ============================================================
 // CPdfReader::GetInfo
 // ============================================================

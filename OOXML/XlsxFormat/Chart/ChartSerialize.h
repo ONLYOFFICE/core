@@ -1368,11 +1368,11 @@ namespace OOX
 
 			nullableUintVal									m_idx;
 			nullableUintVal									m_order;
-			CT_SerTx*										m_tx;
+			CT_SerTx*										m_tx = nullptr;
 			nullable<PPTX::Logic::SpPr>						m_spPr;
-			CT_NumDataSource*								m_val;
-			CT_DLbls*										m_dLbls;
-			CT_AxDataSource*								m_cat;
+			CT_NumDataSource*								m_val = nullptr;
+			CT_DLbls*										m_dLbls = nullptr;
+			CT_AxDataSource*								m_cat = nullptr;
 			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
 
 			bool fromXML(const std::wstring nodeName, XmlUtils::CXmlLiteReader& oReader);

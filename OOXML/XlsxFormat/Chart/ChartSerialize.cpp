@@ -7917,33 +7917,49 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 						oreder = m_order.get();
 				castedFormat->m_arPtSS.push_back(i->toXLS(oreder));
 			}
-			if(m_xVal != nullptr && m_xVal->m_numRef != nullptr)
+			if(m_xVal != nullptr &&( m_xVal->m_numRef != nullptr ||m_xVal->m_strRef != nullptr))
 			{
-				if(m_xVal->m_numRef->m_numCache != nullptr)
-					series->cValx = m_xVal->m_numRef->m_numCache->m_pt.size();
-				if(m_yVal->m_numRef->m_numCache != nullptr)
-					series->cValy = m_yVal->m_numRef->m_numCache->m_pt.size();
+				_UINT16 cacheSize = 0;
+				std::wstring fmla;
+				if(m_xVal->m_numRef!= nullptr && m_xVal->m_numRef->m_numCache != nullptr)
 				{
-					auto ai2 = new XLS::BRAI;
-					ai2->id = 2;
+					cacheSize = m_xVal->m_numRef->m_numCache->m_pt.size();
 					if(m_xVal->m_numRef->m_f.IsInit())
-					{
-						ai2->rt = 2;
-						ai2->formula.parseStringFormula(m_xVal->m_numRef->m_f.get(), L"");
-					}
-					castedFormat->m_arAI.push_back(XLS::BaseObjectPtr(ai2));
-					auto ai3 = new XLS::BRAI;
-					ai3->id = 1;
-					if(m_yVal->m_numRef->m_f.IsInit())
-					{
-						ai3->rt = 2;
-						ai3->formula.parseStringFormula(m_yVal->m_numRef->m_f.get(), L"");
-					}
-					auto ai4 = new XLS::BRAI;
-					ai4->id = 3;
-					castedFormat->m_arAI.push_back(XLS::BaseObjectPtr(ai3));
-					castedFormat->m_arAI.push_back(XLS::BaseObjectPtr(ai4));
+						fmla = m_xVal->m_numRef->m_f.get();
 				}
+				else if(m_xVal->m_strRef != nullptr && m_xVal->m_strRef->m_strCache != nullptr)
+				{
+					cacheSize = m_xVal->m_strRef->m_strCache->m_pt.size();
+					if(m_xVal->m_strRef->m_f.IsInit())
+						fmla = m_xVal->m_strRef->m_f.get();
+				}
+				series->cValx = cacheSize;
+				auto ai2 = new XLS::BRAI;
+				ai2->id = 2;
+				if(!fmla.empty())
+				{
+					ai2->rt = 2;
+					ai2->formula.parseStringFormula(fmla, L"");
+				}
+				castedFormat->m_arAI.push_back(XLS::BaseObjectPtr(ai2));
+			}
+			if(m_yVal != nullptr && m_yVal->m_numRef != nullptr )
+			{
+
+				std::wstring fmla;
+				if(m_yVal->m_numRef!= nullptr )
+					series->cValx = m_yVal->m_numRef->m_numCache->m_pt.size();
+				auto ai3 = new XLS::BRAI;
+				ai3->id = 1;
+				if(m_yVal->m_numRef->m_f.IsInit())
+				{
+					ai3->rt = 2;
+					ai3->formula.parseStringFormula(m_yVal->m_numRef->m_f.get(), L"");
+				}
+				auto ai4 = new XLS::BRAI;
+				ai4->id = 3;
+				castedFormat->m_arAI.push_back(XLS::BaseObjectPtr(ai3));
+				castedFormat->m_arAI.push_back(XLS::BaseObjectPtr(ai4));
 			}
 			return baseFormat;
 		}

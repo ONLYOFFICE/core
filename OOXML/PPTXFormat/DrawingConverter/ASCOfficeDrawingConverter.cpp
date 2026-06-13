@@ -2076,8 +2076,8 @@ void CDrawingConverter::ConvertShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::CX
 		{
 			LoadCoordPos(oNodeShape, oShapeElem.m_pShape); //for path calculate
 		}
-		pPPTShape->LoadFromXMLShapeType(oNodeShape);
 	}
+	pPPTShape->LoadFromXMLShapeType(oNodeShape);
 
 	if (pPPTShape != NULL)
 	{	

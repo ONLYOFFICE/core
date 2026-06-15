@@ -1393,9 +1393,9 @@ namespace OOX
             std::vector<CT_DPt*>		m_dPt;
             std::vector<CT_Trendline*>	m_trendline;
             std::vector<CT_ErrBars*>	m_errBars;
-			CT_AxDataSource*			m_xVal;
-			CT_NumDataSource*			m_yVal;
-			CT_NumDataSource*			m_bubbleSize;
+			CT_AxDataSource*			m_xVal = nullptr;
+			CT_NumDataSource*			m_yVal = nullptr;
+			CT_NumDataSource*			m_bubbleSize = nullptr;
 			nullableBoolVal				m_bubble3D;
 
 			CT_BubbleSer();
@@ -1405,6 +1405,7 @@ namespace OOX
 			{}
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			XLS::BaseObjectPtr GetXLSFormat(const _UINT32 chartIndex)const override;
 			EElementType getType();
 		};
 
@@ -1425,6 +1426,7 @@ namespace OOX
 			~CT_BubbleChart();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			XLS::BaseObjectPtr toXLS(const unsigned short chartIndex, XLS::BaseObjectPtr ChartFormatsPtr);
 			EElementType getType();
 		};
 		class CT_BandFmt

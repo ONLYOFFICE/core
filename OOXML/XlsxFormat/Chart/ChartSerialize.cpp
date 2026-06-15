@@ -1268,6 +1268,11 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 						auto ScatterChart = static_cast<CT_RadarChart*>(m_chart->m_plotArea->m_Items.at(chartIndex));
 						AxisParentUnion->m_arCRT.push_back(ScatterChart->toXLS(chartIndex, ptr->m_CHARTFORMATS));
 					}
+					else if(*m_chart->m_plotArea->m_ItemsElementName0.at(chartIndex) == OOX::Spreadsheet::itemschoicetype5BUBBLECHART)
+					{
+						auto BubbleChart = static_cast<CT_BubbleChart*>(m_chart->m_plotArea->m_Items.at(chartIndex));
+						AxisParentUnion->m_arCRT.push_back(BubbleChart->toXLS(chartIndex, ptr->m_CHARTFORMATS));
+					}
 
 					if(ChartFormatsPtr->m_arAXISPARENT.size() < 2)
 					{
@@ -3984,6 +3989,76 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
 		}
+		XLS::BaseObjectPtr CT_BubbleSer::GetXLSFormat(const _UINT32 chartIndex)const
+		{
+			auto baseFormat = CBaseSer::GetXLSFormat(chartIndex);
+			auto castedFormat = static_cast<XLS::SERIESFORMAT*>(baseFormat.get());
+			auto series = static_cast<XLS::Series*>(castedFormat->m_Series.get());
+			for(auto i : m_dPt)
+			{
+				_UINT16 oreder = 0;
+				if(m_order.IsInit())
+						oreder = m_order.get();
+				castedFormat->m_arPtSS.push_back(i->toXLS(oreder));
+			}
+			if(m_xVal != nullptr &&( m_xVal->m_numRef != nullptr ||m_xVal->m_strRef != nullptr))
+			{
+				_UINT16 cacheSize = 0;
+				std::wstring fmla;
+				if(m_xVal->m_numRef!= nullptr && m_xVal->m_numRef->m_numCache != nullptr)
+				{
+					cacheSize = m_xVal->m_numRef->m_numCache->m_pt.size();
+					if(m_xVal->m_numRef->m_f.IsInit())
+						fmla = m_xVal->m_numRef->m_f.get();
+				}
+				else if(m_xVal->m_strRef != nullptr && m_xVal->m_strRef->m_strCache != nullptr)
+				{
+					cacheSize = m_xVal->m_strRef->m_strCache->m_pt.size();
+					if(m_xVal->m_strRef->m_f.IsInit())
+						fmla = m_xVal->m_strRef->m_f.get();
+				}
+				series->cValx = cacheSize;
+				auto ai2 = new XLS::BRAI;
+				ai2->id = 2;
+				if(!fmla.empty())
+				{
+					ai2->rt = 2;
+					ai2->formula.parseStringFormula(fmla, L"");
+				}
+				castedFormat->m_arAI.push_back(XLS::BaseObjectPtr(ai2));
+			}
+			if(m_yVal != nullptr && m_yVal->m_numRef != nullptr )
+			{
+
+				std::wstring fmla;
+				if(m_yVal->m_numRef!= nullptr )
+					series->cValx = m_yVal->m_numRef->m_numCache->m_pt.size();
+				auto ai3 = new XLS::BRAI;
+				ai3->id = 1;
+				if(m_yVal->m_numRef->m_f.IsInit())
+				{
+					ai3->rt = 2;
+					ai3->formula.parseStringFormula(m_yVal->m_numRef->m_f.get(), L"");
+				}
+				castedFormat->m_arAI.push_back(XLS::BaseObjectPtr(ai3));
+			}
+			if(m_bubbleSize != nullptr)
+			{
+				auto ai4 = new XLS::BRAI;
+				ai4->id = 3;
+				if(m_bubbleSize->m_numRef!= nullptr && m_bubbleSize->m_numRef->m_f.IsInit())
+				{
+					ai4->rt = 2;
+					ai4->formula.parseStringFormula(m_bubbleSize->m_numRef->m_f.get(), L"");
+				}
+				else
+				{
+					ai4->rt = 0;
+				}
+				castedFormat->m_arAI.push_back(XLS::BaseObjectPtr(ai4));
+			}
+			return baseFormat;
+		}
 		EElementType CT_BubbleSer::getType() { return et_ct_bubbleser; }
 		CT_SerTx::CT_SerTx()
 		{
@@ -6244,6 +6319,30 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
+		}
+		XLS::BaseObjectPtr CT_BubbleChart::toXLS(const unsigned short chartIndex, XLS::BaseObjectPtr ChartFormats)
+		{
+			auto ChartFormatsPtr =  static_cast<XLS::CHARTFORMATS*>(ChartFormats.get());
+			for(auto ser : m_ser)
+			{
+				if(ser != nullptr)
+				{
+					ChartFormatsPtr->m_arSERIESFORMAT.push_back(ser->GetXLSFormat(chartIndex));
+				}
+			}
+			auto ptr = new XLS::CRT;
+			auto chartFormat = new XLS::ChartFormat;
+			chartFormat->icrt = chartIndex;
+			ptr->m_ChartFormat = XLS::BaseObjectPtr(chartFormat);
+			auto chartType = new XLS::Scatter;
+			chartType->fBubbles = true;
+			if(m_showNegBubbles.IsInit())
+				chartType->fShowNegBubbles = m_showNegBubbles.get();
+			if(m_bubbleScale.IsInit())
+				chartType->pcBubbleSizeRatio = std::stoi(m_bubbleScale.get());
+			ptr->m_ChartType = XLS::BaseObjectPtr(chartType);
+
+			return XLS::BaseObjectPtr(ptr);
 		}
 		EElementType CT_BubbleChart::getType() { return et_ct_bubblechart; }
 		

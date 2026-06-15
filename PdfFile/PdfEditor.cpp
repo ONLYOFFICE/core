@@ -995,9 +995,10 @@ void ProcessFontDict(const FontScanContext& ctx, Dict* pResources)
 		if (!gfxFont)
 			continue;
 
+		Ref oEmbRef;
 		const std::wstring wsFontBaseName = NSStrings::GetStringFromUTF32(gfxFont->getName());
 		GfxFontLoc* pFontLoc = NULL;
-		const bool bLocatable = gfxFont->getEmbeddedFontID(NULL) || PdfReader::IsBaseFont(wsFontBaseName) || ((pFontLoc = gfxFont->locateFont(xref, false)) && NSStrings::GetStringFromUTF32(pFontLoc->path).length());
+		const bool bLocatable = gfxFont->getEmbeddedFontID(&oEmbRef) || PdfReader::IsBaseFont(wsFontBaseName) || ((pFontLoc = gfxFont->locateFont(xref, false)) && NSStrings::GetStringFromUTF32(pFontLoc->path).length());
 
 		if (bLocatable)
 		{

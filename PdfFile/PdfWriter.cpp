@@ -1750,7 +1750,11 @@ void GetRCSpanStyle(CAnnotFieldInfo::CMarkupAnnotPr::CFontData* pFontData, NSStr
 	oRC += L";font-style:";
 	oRC += (pFontData->nFontFlag >> 1) & 1 ? L"italic" : L"normal";
 	oRC += L";font-family:";
-	oRC += pFontData->sActualFont.empty() ? pFontData->sFontFamily : pFontData->sActualFont;
+	std::wstring wsFontName = pFontData->sActualFont.empty() ? pFontData->sFontFamily : pFontData->sActualFont;
+	std::wstring sBaseName;
+	if (PdfReader::ParseFontNameHash(wsFontName, &sBaseName))
+		wsFontName = sBaseName;
+	oRC += wsFontName;
 
 	if (pFontData->dVAlign != 0)
 	{

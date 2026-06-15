@@ -958,6 +958,184 @@ bool MakeDocWritable(PDFDoc* pPDFDocument, const wchar_t* wsPassword, GBool bWri
 	RELEASEOBJECT(user_pswd);
 	return bOk == gTrue;
 }
+
+struct FontScanContext
+{
+	PDFDoc*                  pPDFDocument;
+	NSFonts::IFontManager*   pFontManager;
+	PdfWriter::CDocument*    pDoc;
+	CPdfWriter*              pWriter;
+	CObjectsManager*         pObjManager;
+	PdfReader::CPdfFontList* pFontList;
+	int                      nStartRefID;
+};
+void ScanAndProcessFonts(const FontScanContext& ctx, Dict* pResources, int nDepth, std::vector<int>& arrUniqueResources);
+// ── font processing ─────────────────────────────────────────────────────────
+void ProcessFontDict(const FontScanContext& ctx, Dict* pResources)
+{
+	XRef* xref = ctx.pPDFDocument->getXRef();
+
+	CObjectGuard oFonts;
+	if (!pResources->lookup("Font", oFonts.get())->isDict())
+		return;
+
+	for (int i = 0, nLength = oFonts->dictGetLength(); i < nLength; ++i)
+	{
+		const char* sFontKey = oFonts->dictGetKey(i);
+
+		CObjectGuard oFontRef;
+		if (!oFonts->dictGetValNF(i, oFontRef.get())->isRef())
+			continue;
+
+		CObjectGuard oFont;
+		if (!xref->fetch(oFontRef->getRefNum(), oFontRef->getRefGen(), oFont.get())->isDict())
+			continue;
+
+		GfxFont* gfxFont = GfxFont::makeFont(xref, "F", oFontRef->getRef(), oFont->getDict());
+		if (!gfxFont)
+			continue;
+
+		const std::wstring wsFontBaseName = NSStrings::GetStringFromUTF32(gfxFont->getName());
+		GfxFontLoc* pFontLoc = NULL;
+		const bool bLocatable = gfxFont->getEmbeddedFontID(NULL) || PdfReader::IsBaseFont(wsFontBaseName) || ((pFontLoc = gfxFont->locateFont(xref, false)) && NSStrings::GetStringFromUTF32(pFontLoc->path).length());
+
+		if (bLocatable)
+		{
+			std::wstring wsFileName, wsFontName;
+			PdfReader::GetFont(xref, ctx.pFontManager, ctx.pFontList, gfxFont, wsFileName, wsFontName);
+
+			if (!PdfReader::IsBaseFont(wsFontBaseName))
+			{
+				PdfReader::TFontEntry pFontEntry;
+				Ref nFontRef = oFontRef->getRef();
+				if (ctx.pFontList->GetFont(&nFontRef, &pFontEntry))
+				{
+					PdfWriter::CFontEmbedded* pFont = ctx.pDoc->FindFontEmbedded(wsFileName, 0);
+					if (pFont)
+					{
+						pFont->UpdateKey(sFontKey);
+					}
+					else
+					{
+						std::map<unsigned int, unsigned int> mCodeToWidth, mCodeToUnicode, mCodeToGID;
+						const int nDW = PdfReader::CollectFontWidths(oFont->getDict(), mCodeToWidth);
+
+						for (int j = 0; j < (int)pFontEntry.unLenUnicode; ++j)
+							if (pFontEntry.pCodeToUnicode[j])
+								mCodeToUnicode[j] = pFontEntry.pCodeToUnicode[j];
+
+						for (int j = 0; j < (int)pFontEntry.unLenGID; ++j)
+							if (pFontEntry.pCodeToGID[j])
+								mCodeToGID[j] = pFontEntry.pCodeToGID[j];
+
+						ctx.pWriter->AddFont(L"Embedded: " + wsFontName, false, false, wsFileName, 0);
+
+						PdfWriter::CObjectBase* pObj = ctx.pObjManager->GetObj(nFontRef.num + ctx.nStartRefID);
+						if (!pObj)
+						{
+							pObj = new PdfWriter::CObjectBase();
+							pObj->SetRef(nFontRef.num, nFontRef.gen);
+						}
+
+						pFont = ctx.pDoc->CreateFontEmbedded( wsFileName, 0, sFontKey, static_cast<PdfWriter::EFontType>(gfxFont->getType()), pObj, mCodeToWidth, mCodeToUnicode, mCodeToGID);
+						pFont->SetDW(nDW);
+					}
+				}
+			}
+		}
+
+		RELEASEOBJECT(pFontLoc);
+		RELEASEOBJECT(gfxFont);
+	}
+}
+// ── resource dict recursion helpers ─────────────────────────────────────────
+bool TryVisitResources(Dict* pStreamDict, std::vector<int>& arrUniqueResources)
+{
+	CObjectGuard oRef;
+	if (pStreamDict->lookupNF("Resources", oRef.get())->isRef())
+	{
+		const int nNum = oRef->getRef().num;
+		if (std::find(arrUniqueResources.begin(), arrUniqueResources.end(), nNum) != arrUniqueResources.end())
+			return false;
+		arrUniqueResources.push_back(nNum);
+	}
+	return true;
+}
+void ScanXObjectOrPattern(const FontScanContext& ctx, Dict* pResources, const char* sName, int nDepth, std::vector<int>& arrUniqueResources)
+{
+	CObjectGuard oObject;
+	if (!pResources->lookup(sName, oObject.get())->isDict())
+		return;
+
+	const int nLength = oObject->dictGetLength();
+	for (int i = 0; i < nLength; ++i)
+	{
+		CObjectGuard oXObj, oResources;
+		if (!oObject->dictGetVal(i, oXObj.get())->isStream())
+			continue;
+
+		Dict* pStreamDict = oXObj->streamGetDict();
+		if (!pStreamDict->lookup("Resources", oResources.get())->isDict())
+			continue;
+
+		if (!TryVisitResources(pStreamDict, arrUniqueResources))
+			continue;
+
+		ScanAndProcessFonts(ctx, oResources->getDict(), nDepth + 1, arrUniqueResources);
+	}
+}
+void ScanExtGState(const FontScanContext& ctx, Dict* pResources, int nDepth, std::vector<int>& arrUniqueResources)
+{
+	CObjectGuard oExtGState;
+	if (!pResources->lookup("ExtGState", oExtGState.get())->isDict())
+		return;
+
+	for (int i = 0, nLength = oExtGState->dictGetLength(); i < nLength; ++i)
+	{
+		CObjectGuard oGS, oSMask, oSMaskGroup, oResources;
+		if (!oExtGState->dictGetVal(i, oGS.get())->isDict()    ||
+			!oGS->dictLookup("SMask",  oSMask.get())->isDict() ||
+			!oSMask->dictLookup("G", oSMaskGroup.get())->isStream())
+			continue;
+
+		Dict* pStreamDict = oSMaskGroup->streamGetDict();
+		if (!pStreamDict->lookup("Resources", oResources.get())->isDict())
+			continue;
+
+		if (!TryVisitResources(pStreamDict, arrUniqueResources))
+			continue;
+
+		ScanAndProcessFonts(ctx, oResources->getDict(), nDepth + 1, arrUniqueResources);
+	}
+}
+void ScanAndProcessFonts(const FontScanContext& ctx, Dict* pResources, int nDepth, std::vector<int>& arrUniqueResources)
+{
+	if (nDepth > 5 || !pResources)
+		return;
+
+	ProcessFontDict(ctx, pResources);
+	ScanXObjectOrPattern(ctx, pResources, "XObject", nDepth, arrUniqueResources);
+	ScanXObjectOrPattern(ctx, pResources, "Pattern", nDepth, arrUniqueResources);
+	ScanExtGState(ctx, pResources, nDepth, arrUniqueResources);
+}
+void ScanFonts(PDFDoc* pPDFDocument, Dict* pResources, CPdfWriter* pWriter, CObjectsManager* pObjManager, CPdfReader* pReader)
+{
+	if (!pResources)
+		return;
+
+	FontScanContext ctx;
+	ctx.pPDFDocument = pPDFDocument;
+	ctx.pFontManager = pReader->GetFontManager();
+	ctx.pDoc         = pWriter->GetDocument();
+	ctx.pWriter      = pWriter;
+	ctx.pObjManager  = pObjManager;
+	ctx.pFontList    = pReader->GetFontList(pPDFDocument);
+	ctx.nStartRefID  = pReader->GetStartRefID(pPDFDocument);
+
+	std::vector<int> arrUniqueResources;
+	ScanAndProcessFonts(ctx, pResources, 0, arrUniqueResources);
+	pReader->SetFonts(ctx.pFontList);
+}
 }
 
 HRESULT _ChangePassword(const std::wstring& wsPath, const std::wstring& wsPassword, CPdfReader* _pReader, CPdfWriter* _pWriter)
@@ -1156,7 +1334,9 @@ HRESULT _ChangePassword(const std::wstring& wsPath, const std::wstring& wsPasswo
 
 	return bRes ? S_OK : S_FALSE;
 }
-
+// ============================================================
+// CObjectsManager
+// ============================================================
 void CObjectsManager::AddObj(int nID, PdfWriter::CObjectBase* pObj)
 {
 	if (m_mUniqueRef.find(nID) == m_mUniqueRef.end())
@@ -1264,7 +1444,9 @@ void CObjectsManager::DeleteObjTree(Object* obj, XRef* xref, int nStartRefID)
 	}
 }
 void CObjectsManager::SetDoc(PdfWriter::CDocument* pDoc) { m_pDoc = pDoc; }
-
+// ============================================================
+// CPdfEditor
+// ============================================================
 CPdfEditor::CPdfEditor(const std::wstring& _wsSrcFile, const wchar_t* _wsPassword, const std::wstring& _wsDstFile, CPdfReader* _pReader, CPdfWriter* _pWriter, Mode nMode)
 {
 	m_wsSrcFile  = _wsSrcFile;
@@ -1647,13 +1829,13 @@ bool CPdfEditor::IncrementalUpdates()
 		CObjectGuard oDR;
 		Object* oAcroForm = form->getAcroFormObj();
 		if (oAcroForm->dictLookup("DR", oDR.get())->isDict())
-			ScanFonts(pPDFDocument, oDR->getDict());
+			ScanFonts(pPDFDocument, oDR->getDict(), m_pWriter, &m_mObjManager, m_pReader);
 	}
 
 	return bRes;
 }
 // ============================================================
-// CPdfEditor::NewFrom
+// CPdfEditor::SyncAcroFormFromReader
 // ============================================================
 namespace
 {
@@ -1664,19 +1846,18 @@ void MergeRefArray(
 	Object&               oAcroForm,
 	int                   nIndex,
 	const char*           chKey,
-	PdfWriter::CDictObject* pAcroForm,
 	PdfWriter::CDocument* pDoc,
 	CObjectsManager&      mObjManager,
 	int                   nStartRefID,
 	bool                  bIsFields)
 {
+	PdfWriter::CDictObject* pAcroForm = pDoc->GetAcroForm();
 	CObjectGuard oRef;
 	Ref oArrayRef = { -1, -1 };
 	if (oAcroForm.dictGetValNF(nIndex, oRef.get())->isRef())
 		oArrayRef = oRef->getRef();
 
 	PdfWriter::CArrayObject* pArray = dynamic_cast<PdfWriter::CArrayObject*>(pAcroForm->Get(chKey));
-
 	if (!pArray)
 	{
 		// Reuse already-converted object if available
@@ -1729,7 +1910,9 @@ void MergeDRDict(
 	PDFDoc*               pPDFDocument,
 	CObjectsManager&      mObjManager,
 	int                   nStartRefID,
-	const SDictConvertContext& ctx)
+	const SDictConvertContext& ctx,
+	CPdfWriter*           pWriter,
+	CPdfReader*           pReader)
 {
 	PdfWriter::CResourcesDict* pDR = pDoc->GetFieldsResources();
 	if (!pDR)
@@ -1749,18 +1932,15 @@ void MergeDRDict(
 		if (!oTemp->dictGetVal(j, oTemp2.get())->isDict())
 			continue;
 
-		PdfWriter::CDictObject* pDict =
-			dynamic_cast<PdfWriter::CDictObject*>(pDR->Get(chKey2));
+		PdfWriter::CDictObject* pDict = dynamic_cast<PdfWriter::CDictObject*>(pDR->Get(chKey2));
 
 		if (!pDict)
 		{
 			// Sub-dict not present — add whole entry
 			CObjectGuard oTempRef;
-			oTemp->dictGetValNF(j, oTempRef.get());
-			if (oTempRef->isRef())
+			if (oTemp->dictGetValNF(j, oTempRef.get())->isRef())
 			{
-				PdfWriter::CObjectBase* pObj =
-					mObjManager.GetObj(oTempRef->getRefNum() + nStartRefID);
+				PdfWriter::CObjectBase* pObj = mObjManager.GetObj(oTempRef->getRefNum() + nStartRefID);
 				if (pObj)
 				{
 					pDR->Add(chKey2, pObj);
@@ -1783,11 +1963,9 @@ void MergeDRDict(
 					continue;
 
 				CObjectGuard oTempRef;
-				oTemp2->dictGetValNF(k, oTempRef.get());
-				if (oTempRef->isRef())
+				if (oTemp2->dictGetValNF(k, oTempRef.get())->isRef())
 				{
-					PdfWriter::CObjectBase* pObj =
-						mObjManager.GetObj(oTempRef->getRefNum() + nStartRefID);
+					PdfWriter::CObjectBase* pObj = mObjManager.GetObj(oTempRef->getRefNum() + nStartRefID);
 					if (pObj)
 					{
 						pDict->Add(chKey3, pObj);
@@ -1804,7 +1982,7 @@ void MergeDRDict(
 	}
 
 	pDR->Fix();
-	ScanFonts(pPDFDocument, oTemp->getDict());
+	ScanFonts(pPDFDocument, oTemp->getDict(), pWriter, &mObjManager, pReader);
 }
 }
 // Copies/merges AcroForm from reader into writer document.
@@ -1824,8 +2002,7 @@ void CPdfEditor::SyncAcroFormFromReader()
 		return;
 
 	CObjectGuard oAcroFormNF;
-	if (!oCatalog->dictLookupNF("AcroForm", oAcroFormNF.get())->isRef() &&
-		!oAcroFormNF->isDict())
+	if (!oCatalog->dictLookupNF("AcroForm", oAcroFormNF.get())->isRef() && !oAcroFormNF->isDict())
 		return;
 
 	// Resolve indirect ref if needed
@@ -1855,29 +2032,22 @@ void CPdfEditor::SyncAcroFormFromReader()
 	for (int i = 0; i < oAcroForm->dictGetLength(); ++i)
 	{
 		char* chKey = oAcroForm->dictGetKey(i);
-
 		if (strcmp("Fields", chKey) == 0)
 		{
-			MergeRefArray(*oAcroForm, i, chKey, pAcroForm, pDoc,
-						  m_mObjManager, nStartRefID, true);
+			MergeRefArray(*oAcroForm, i, chKey, pDoc, m_mObjManager, nStartRefID, true);
 			continue;
 		}
-
 		if (strcmp("CO", chKey) == 0)
 		{
-			MergeRefArray(*oAcroForm, i, chKey, pAcroForm, pDoc,
-						  m_mObjManager, nStartRefID, false);
+			MergeRefArray(*oAcroForm, i, chKey, pDoc, m_mObjManager, nStartRefID, false);
 			continue;
 		}
-
 		if (strcmp("DR", chKey) == 0)
 		{
-			MergeDRDict(*oAcroForm, i, pDoc, pPDFDocument,
-						m_mObjManager, nStartRefID, ctx);
+			MergeDRDict(*oAcroForm, i, pDoc, pPDFDocument, m_mObjManager, nStartRefID, ctx, m_pWriter, m_pReader);
 			// Fall through to default only if DR was not a dict (handled inside)
 			continue;
 		}
-
 		if (strcmp("SigFlags",        chKey) == 0 ||
 			strcmp("XFA",             chKey) == 0 ||
 			strcmp("DA",              chKey) == 0 ||
@@ -1889,264 +2059,6 @@ void CPdfEditor::SyncAcroFormFromReader()
 		oAcroForm->dictGetValNF(i, oTemp.get());
 		pAcroForm->Add(chKey, DictToCDictObjectUnified(oTemp.get(), ctx));
 	}
-}
-void CPdfEditor::NewFrom()
-{
-	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
-	Object oCatalog;
-	PDFDoc* pPDFDocument = NULL;
-	PdfReader::CPdfFontList* pFontList = NULL;
-	int nStartRefID = 0;
-	m_pReader->GetPageIndex(0, &pPDFDocument, &pFontList, &nStartRefID);
-	XRef* xref = pPDFDocument->getXRef();
-	if (!xref->getCatalog(&oCatalog)->isDict())
-	{
-		oCatalog.free();
-		return;
-	}
-
-	Object oAcroForm;
-	if (oCatalog.dictLookupNF("AcroForm", &oAcroForm)->isRef() || oAcroForm.isDict())
-	{
-		PdfWriter::CDictObject* pAcroForm = pDoc->GetAcroForm();
-		if (!pAcroForm)
-		{
-			pAcroForm = new PdfWriter::CDictObject();
-			if (oAcroForm.isRef())
-				pDoc->AddObject(pAcroForm);
-			pDoc->SetAcroForm(pAcroForm);
-		}
-		else
-			pAcroForm->Remove("NeedAppearances");
-
-		if (oAcroForm.isRef())
-		{
-			oAcroForm.free();
-			if (!oCatalog.dictLookup("AcroForm", &oAcroForm)->isDict())
-			{
-				oAcroForm.free(); oCatalog.free();
-				return;
-			}
-		}
-
-		SDictConvertContext ctx(pDoc, xref, &m_mObjManager, nStartRefID);
-		for (int nIndex = 0; nIndex < oAcroForm.dictGetLength(); ++nIndex)
-		{
-			Object oTemp;
-			char* chKey = oAcroForm.dictGetKey(nIndex);
-			if (strcmp("Fields", chKey) == 0)
-			{
-				Ref oFieldsRef = { -1, -1 };
-				if (oAcroForm.dictGetValNF(nIndex, &oTemp)->isRef())
-					oFieldsRef = oTemp.getRef();
-				oTemp.free();
-
-				PdfWriter::CArrayObject* pFields = dynamic_cast<PdfWriter::CArrayObject*>(pAcroForm->Get("Fields"));
-				if (!pFields)
-				{
-					PdfWriter::CObjectBase* pObj = oFieldsRef.num > 0 ? m_mObjManager.GetObj(oFieldsRef.num + nStartRefID) : NULL;
-					if (pObj)
-					{
-						pAcroForm->Add(chKey, pObj);
-						m_mObjManager.IncRefCount(oFieldsRef.num + nStartRefID);
-						continue;
-					}
-				}
-
-				if (oAcroForm.dictGetVal(nIndex, &oTemp)->isArray())
-				{
-					if (!pFields)
-					{
-						pFields = new PdfWriter::CArrayObject();
-						if (oFieldsRef.num > 0)
-						{
-							pDoc->AddObject(pFields);
-							m_mObjManager.AddObj(oFieldsRef.num + nStartRefID, pFields);
-						}
-						pAcroForm->Add(chKey, pFields);
-					}
-
-					for (int nIndex = 0; nIndex < oTemp.arrayGetLength(); ++nIndex)
-					{
-						Object oRes;
-						PdfWriter::CObjectBase* pObj = NULL;
-						if (oTemp.arrayGetNF(nIndex, &oRes)->isRef())
-							pObj = m_mObjManager.GetObj(oRes.getRefNum() + nStartRefID);
-						if (pObj)
-						{
-							pFields->Add(pObj);
-							m_mObjManager.IncRefCount(oRes.getRefNum() + nStartRefID);
-							AddWidgetParent(pDoc, &m_mObjManager, pObj);
-							oRes.free();
-							continue;
-						}
-						oRes.free();
-					}
-					oTemp.free();
-					continue;
-				}
-				else if (!pFields)
-				{
-					oTemp.free();
-					oAcroForm.dictGetValNF(nIndex, &oTemp);
-				}
-				else
-				{
-					oTemp.free();
-					continue;
-				}
-			}
-			else if (strcmp("SigFlags", chKey) == 0 || strcmp("XFA", chKey) == 0 || strcmp("DA", chKey) == 0 || strcmp("NeedAppearances", chKey) == 0)
-			{ // Cannot guarantee their execution
-				oTemp.free();
-				continue;
-			}
-			else if (strcmp("CO", chKey) == 0)
-			{
-				Ref oCORef = { -1, -1 };
-				if (oAcroForm.dictGetValNF(nIndex, &oTemp)->isRef())
-					oCORef = oTemp.getRef();
-				oTemp.free();
-
-				PdfWriter::CArrayObject* pCO = dynamic_cast<PdfWriter::CArrayObject*>(pAcroForm->Get("CO"));
-				if (!pCO)
-				{
-					PdfWriter::CObjectBase* pObj = oCORef.num > 0 ? m_mObjManager.GetObj(oCORef.num + nStartRefID) : NULL;
-					if (pObj)
-					{
-						pAcroForm->Add(chKey, pObj);
-						m_mObjManager.IncRefCount(oCORef.num + nStartRefID);
-						continue;
-					}
-				}
-
-				if (oAcroForm.dictGetVal(nIndex, &oTemp)->isArray())
-				{
-					if (!pCO)
-					{
-						pCO = new PdfWriter::CArrayObject();
-						if (oCORef.num > 0)
-						{
-							pDoc->AddObject(pCO);
-							m_mObjManager.AddObj(oCORef.num + nStartRefID, pCO);
-						}
-						pAcroForm->Add(chKey, pCO);
-					}
-
-					for (int nIndex = 0; nIndex < oTemp.arrayGetLength(); ++nIndex)
-					{
-						Object oRes;
-						PdfWriter::CObjectBase* pObj = NULL;
-						if (oTemp.arrayGetNF(nIndex, &oRes)->isRef())
-							pObj = m_mObjManager.GetObj(oRes.getRefNum() + nStartRefID);
-						if (pObj)
-						{
-							pCO->Add(pObj);
-							m_mObjManager.IncRefCount(oRes.getRefNum() + nStartRefID);
-						}
-						oRes.free();
-					}
-					oTemp.free();
-					continue;
-				}
-				else
-				{
-					oTemp.free();
-					continue;
-				}
-			}
-			else if (strcmp("DR", chKey) == 0)
-			{ // Add only unique keys
-				PdfWriter::CResourcesDict* pDR = pDoc->GetFieldsResources();
-				if (!pDR)
-				{
-					oTemp.free();
-					continue;
-				}
-
-				if (oAcroForm.dictGetVal(nIndex, &oTemp)->isDict())
-				{
-					Object oTemp2;
-					for (int nIndex2 = 0; nIndex2 < oTemp.dictGetLength(); ++nIndex2)
-					{
-						char* chKey2 = oTemp.dictGetKey(nIndex2);
-						if (strcmp("ProcSet", chKey2) == 0 || !oTemp.dictGetVal(nIndex2, &oTemp2)->isDict())
-						{
-							oTemp2.free();
-							continue;
-						}
-						PdfWriter::CDictObject* pDict = dynamic_cast<PdfWriter::CDictObject*>(pDR->Get(chKey2));
-						if (!pDict)
-						{
-							Object oTempRef;
-							if (oTemp.dictGetValNF(nIndex2, &oTempRef)->isRef())
-							{
-								PdfWriter::CObjectBase* pObj = m_mObjManager.GetObj(oTempRef.getRefNum() + nStartRefID);
-								if (pObj)
-								{
-									pDR->Add(chKey2, pObj);
-									m_mObjManager.IncRefCount(oTempRef.getRefNum() + nStartRefID);
-									oTemp2.free(); oTempRef.free();
-									continue;
-								}
-							}
-							PdfWriter::CObjectBase* pBase = DictToCDictObjectUnified(&oTemp2, ctx);
-							if (oTempRef.isRef())
-								pDoc->AddObject(pBase);
-							pDR->Add(chKey2, pBase);
-							oTemp2.free(); oTempRef.free();
-							continue;
-						}
-						else
-						{
-							for (int nIndex3 = 0; nIndex3 < oTemp2.dictGetLength(); ++nIndex3)
-							{
-								char* chKey3 = oTemp2.dictGetKey(nIndex3);
-								if (pDict->Get(chKey3))
-									continue;
-								Object oTempRef;
-								if (oTemp2.dictGetValNF(nIndex3, &oTempRef)->isRef())
-								{
-									PdfWriter::CObjectBase* pObj = m_mObjManager.GetObj(oTempRef.getRefNum() + nStartRefID);
-									if (pObj)
-									{
-										pDict->Add(chKey3, pObj);
-										m_mObjManager.IncRefCount(oTempRef.getRefNum() + nStartRefID);
-										oTemp2.free(); oTempRef.free();
-										continue;
-									}
-								}
-								PdfWriter::CObjectBase* pBase = DictToCDictObjectUnified(&oTemp2, ctx);
-								if (oTempRef.isRef())
-									pDoc->AddObject(pBase);
-								pDict->Add(chKey3, pBase);
-								oTemp2.free(); oTempRef.free();
-								continue;
-							}
-						}
-					}
-					oTemp2.free();
-					pDR->Fix();
-
-					Dict* pResources = oTemp.getDict();
-					ScanFonts(pPDFDocument, pResources);
-					oTemp.free();
-					continue;
-				}
-				else
-				{
-					oTemp.free();
-					oAcroForm.dictGetValNF(nIndex, &oTemp);
-				}
-			}
-			else
-				oAcroForm.dictGetValNF(nIndex, &oTemp);
-			PdfWriter::CObjectBase* pBase = DictToCDictObjectUnified(&oTemp, ctx);
-			pAcroForm->Add(chKey, pBase);
-			oTemp.free();
-		}
-	}
-	oAcroForm.free(); oCatalog.free();
 }
 // ============================================================
 // CPdfEditor::Close
@@ -3417,7 +3329,7 @@ bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength, PDFD
 					oTemp2.free();
 
 					Dict* pResources = oTemp.getDict();
-					ScanFonts(pPDFDocument, pResources);
+					ScanFonts(pPDFDocument, pResources, m_pWriter, &m_mObjManager, m_pReader);
 					oTemp.free();
 					continue;
 				}
@@ -4750,7 +4662,7 @@ void CPdfEditor::ClearPage()
 	// Mode::WriteAppend && Mode::WriteNew
 	// Reading and processing fonts from page
 	Dict* pResources = pOPage->getResourceDict();
-	ScanFonts(pPDFDocument, pResources);
+	ScanFonts(pPDFDocument, pResources, m_pWriter, &m_mObjManager, m_pReader);
 	oAnnots.free();
 }
 void CPdfEditor::AddShapeXML(const std::string& sXML)
@@ -4998,177 +4910,4 @@ std::vector<double> CPdfEditor::WriteRedact(const std::vector<std::wstring>& arr
 		m_arrRedact[i].bDraw = true;
 	}
 	return arrRes;
-}
-void CPdfEditor::ScanFonts(PDFDoc* pPDFDocument, Dict* pResources)
-{
-	if (!pResources)
-		return;
-
-	int nStartRefID = m_pReader->GetStartRefID(pPDFDocument);
-	PdfReader::CPdfFontList* pFontList = m_pReader->GetFontList(pPDFDocument);
-
-	std::vector<int> arrUniqueResources;
-	ScanAndProcessFonts(pPDFDocument, pResources, 0, arrUniqueResources, pFontList, nStartRefID);
-	m_pReader->SetFonts(pFontList);
-}
-void CPdfEditor::ScanAndProcessFonts(PDFDoc* pPDFDocument, Dict* pResources, int nDepth, std::vector<int>& arrUniqueResources, PdfReader::CPdfFontList* pFontList, int nStartRefID)
-{
-	if (nDepth > 5 || !pResources)
-		return;
-
-	NSFonts::IFontManager* pFontManager = m_pReader->GetFontManager();
-	XRef* xref = pPDFDocument->getXRef();
-
-	// Process Font
-	Object oFonts;
-	if (pResources->lookup("Font", &oFonts)->isDict())
-	{
-		for (int i = 0, nLength = oFonts.dictGetLength(); i < nLength; ++i)
-		{
-			Object oFontRef, oFont;
-			const char* sFontKey = oFonts.dictGetKey(i);
-
-			if (!oFonts.dictGetValNF(i, &oFontRef)->isRef())
-			{
-				oFontRef.free();
-				continue;
-			}
-
-			if (!xref->fetch(oFontRef.getRefNum(), oFontRef.getRefGen(), &oFont)->isDict())
-			{
-				oFont.free(); oFontRef.free();
-				continue;
-			}
-
-			GfxFont* gfxFont = GfxFont::makeFont(xref, "F", oFontRef.getRef(), oFont.getDict());
-			if (gfxFont)
-			{
-				Ref oEmbRef;
-				std::wstring wsFontBaseName = NSStrings::GetStringFromUTF32(gfxFont->getName());
-				GfxFontLoc* pFontLoc = NULL;
-				if (gfxFont->getEmbeddedFontID(&oEmbRef) || PdfReader::IsBaseFont(wsFontBaseName) || ((pFontLoc = gfxFont->locateFont(xref, false)) && NSStrings::GetStringFromUTF32(pFontLoc->path).length()))
-				{
-					std::wstring wsFileName, wsFontName;
-					PdfReader::GetFont(xref, pFontManager, pFontList, gfxFont, wsFileName, wsFontName);
-
-					// Collect information about embedded font
-					if (!PdfReader::IsBaseFont(wsFontBaseName))
-					{
-						PdfReader::TFontEntry pFontEntry;
-						Ref nFontRef = oFontRef.getRef();
-						if (pFontList->GetFont(&nFontRef, &pFontEntry))
-						{
-							PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
-							PdfWriter::CFontEmbedded* pFont = pDoc->FindFontEmbedded(wsFileName, 0);
-							if (pFont)
-							{
-								pFont->UpdateKey(sFontKey);
-							}
-							else
-							{
-								std::map<unsigned int, unsigned int> mCodeToWidth, mCodeToUnicode, mCodeToGID;
-								int nDW = PdfReader::CollectFontWidths(oFont.getDict(), mCodeToWidth);
-								for (int nIndex = 0; nIndex < pFontEntry.unLenUnicode; ++nIndex)
-								{
-									if (pFontEntry.pCodeToUnicode[nIndex])
-										mCodeToUnicode[nIndex] = pFontEntry.pCodeToUnicode[nIndex];
-								}
-								for (int nIndex = 0; nIndex < pFontEntry.unLenGID; ++nIndex)
-								{
-									if (pFontEntry.pCodeToGID[nIndex])
-										mCodeToGID[nIndex] = pFontEntry.pCodeToGID[nIndex];
-								}
-								m_pWriter->AddFont(L"Embedded: " + wsFontName, false, false, wsFileName, 0);
-								PdfWriter::CObjectBase* pObj =  m_mObjManager.GetObj(nFontRef.num + nStartRefID);
-								if (!pObj)
-								{
-									pObj = new PdfWriter::CObjectBase();
-									pObj->SetRef(nFontRef.num, nFontRef.gen);
-								}
-								pFont = pDoc->CreateFontEmbedded(wsFileName, 0, sFontKey, static_cast<PdfWriter::EFontType>(gfxFont->getType()), pObj, mCodeToWidth, mCodeToUnicode, mCodeToGID);
-								pFont->SetDW(nDW);
-							}
-						}
-					}
-				}
-
-				RELEASEOBJECT(pFontLoc);
-				RELEASEOBJECT(gfxFont);
-			}
-
-			oFont.free(); oFontRef.free();
-		}
-	}
-	oFonts.free();
-
-	// Process XObject
-	auto fScanFonts = [this, pPDFDocument, nDepth, &arrUniqueResources, pFontList, nStartRefID](Dict* pResources, const char* sName)
-	{
-		Object oObject;
-		if (!pResources->lookup(sName, &oObject)->isDict())
-		{
-			oObject.free();
-			return;
-		}
-		for (int i = 0, nLength = oObject.dictGetLength(); i < nLength; ++i)
-		{
-			Object oXObj, oResources;
-			if (!oObject.dictGetVal(i, &oXObj)->isStream() || !oXObj.streamGetDict()->lookup("Resources", &oResources)->isDict())
-			{
-				oXObj.free(); oResources.free();
-				continue;
-			}
-			Object oRef;
-			if (oXObj.streamGetDict()->lookupNF("Resources", &oRef)->isRef() &&
-				std::find(arrUniqueResources.begin(), arrUniqueResources.end(), oRef.getRef().num) != arrUniqueResources.end())
-			{
-				oXObj.free(); oResources.free(); oRef.free();
-				continue;
-			}
-			arrUniqueResources.push_back(oRef.getRef().num);
-			oXObj.free(); oRef.free();
-
-			ScanAndProcessFonts(pPDFDocument, oResources.getDict(), nDepth + 1, arrUniqueResources, pFontList, nStartRefID);
-			oResources.free();
-		}
-		oObject.free();
-	};
-
-	fScanFonts(pResources, "XObject");
-	fScanFonts(pResources, "Pattern");
-
-	// Process ExtGState
-	Object oExtGState;
-	if (!pResources->lookup("ExtGState", &oExtGState)->isDict())
-	{
-		oExtGState.free();
-		return;
-	}
-	for (int i = 0, nLength = oExtGState.dictGetLength(); i < nLength; ++i)
-	{
-		Object oGS, oSMask, oSMaskGroup, oResources;
-		if (!oExtGState.dictGetVal(i, &oGS)->isDict() ||
-			!oGS.dictLookup("SMask", &oSMask)->isDict() ||
-			!oSMask.dictLookup("G", &oSMaskGroup)->isStream() ||
-			!oSMaskGroup.streamGetDict()->lookup("Resources", &oResources)->isDict())
-		{
-			oGS.free(); oSMask.free(); oSMaskGroup.free(); oResources.free();
-			continue;
-		}
-		oGS.free(); oSMask.free();
-
-		Object oRef;
-		if (oSMaskGroup.streamGetDict()->lookupNF("Resources", &oRef)->isRef() &&
-			std::find(arrUniqueResources.begin(), arrUniqueResources.end(), oRef.getRef().num) != arrUniqueResources.end())
-		{
-			oSMaskGroup.free(); oResources.free(); oRef.free();
-			continue;
-		}
-		arrUniqueResources.push_back(oRef.getRef().num);
-		oSMaskGroup.free(); oRef.free();
-
-		ScanAndProcessFonts(pPDFDocument, oResources.getDict(), nDepth + 1, arrUniqueResources, pFontList, nStartRefID);
-		oResources.free();
-	}
-	oExtGState.free();
 }

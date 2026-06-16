@@ -190,6 +190,10 @@ void RtfShape::SetDefault()
 	DEFAULT_PROPERTY( m_nGeoRight)
 	DEFAULT_PROPERTY( m_nGeoBottom)
 	DEFAULT_PROPERTY( m_nShapePath)
+	DEFAULT_PROPERTY( m_nInscribeLeft)
+	DEFAULT_PROPERTY( m_nInscribeTop)
+	DEFAULT_PROPERTY( m_nInscribeRight)
+	DEFAULT_PROPERTY( m_nInscribeBottom)
 //Picture Effects
 	DEFAULT_PROPERTY( m_nCropFromTop )
 	DEFAULT_PROPERTY( m_nCropFromBottom )
@@ -653,6 +657,23 @@ std::wstring RtfShape::RenderToRtfShapeProperty(RenderParameter oRenderParameter
             sResult += L";" + std::to_wstring( m_aPSegmentInfo[i] );
         sResult += L"}}";
     }
+	if ( PROP_DEF != m_nInscribeLeft && PROP_DEF != m_nInscribeTop && PROP_DEF != m_nInscribeRight && PROP_DEF != m_nInscribeBottom )
+	{
+		std::wstring sHex = L"010001001000";
+		int rect[4] = { m_nInscribeLeft, m_nInscribeTop, m_nInscribeRight, m_nInscribeBottom };
+		const wchar_t hexd[] = L"0123456789abcdef";
+		for (int n = 0; n < 4; n++)
+		{
+			unsigned int u = (unsigned int)rect[n];
+			for (int byte = 0; byte < 4; byte++)
+			{
+				unsigned int b = (u >> (byte * 8)) & 0xFF;
+				sHex += hexd[(b >> 4) & 0xF];
+				sHex += hexd[b & 0xF];
+			}
+		}
+		sResult += L"{\\sp{\\sn pInscribe}{\\sv 16;1;" + sHex + L"}}";
+	}
 //Connectors
     RENDER_RTF_SHAPE_PROP(L"cxk",			sResult,		m_nConnectionType );
     RENDER_RTF_SHAPE_PROP(L"cxstyle",		sResult,		m_nConnectorStyle );
@@ -974,7 +995,7 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 
 	if (!m_bIsGroup)
 	{
-		if (PROP_DEF != m_nShapeType && 0 != m_nShapeType)
+		if (PROP_DEF != m_nShapeType && 0 != m_nShapeType && m_aPVerticles.empty() && m_aPSegmentInfo.empty())
 		{
 			sShapeStart += L" type=\"#_x0000_t" + std::to_wstring(m_nShapeType) + L"\"";
 			sShapeStart += L" o:spt=\"" + std::to_wstring(m_nShapeType) + L"\"";
@@ -1349,7 +1370,7 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 		//Custom
 		if (!m_aPVerticles.empty() || !m_aPSegmentInfo.empty())
 		{
-			CBaseShapePtr base_shape = CPPTShape::CreateByType((PPTShapes::ShapeType)m_nShapeType);
+			CBaseShapePtr base_shape = CPPTShape::CreateByType((PPTShapes::ShapeType)SimpleTypes::Vml::sptNotPrimitive);
 			CPPTShape *custom_shape = dynamic_cast<CPPTShape*>(base_shape.get());
 			if (custom_shape)
 			{

@@ -3742,24 +3742,58 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			}
 			auto series = new XLS::Series;
 			series->sdtX = 1;
-			auto SeriesStyle = new XLS::SS;
-			seriesFormat->m_arPtSS.push_back(XLS::BaseObjectPtr(SeriesStyle));
-			{
-				auto dataFormat = new XLS::DataFormat;
-				SeriesStyle->m_DataFormat = XLS::BaseObjectPtr(dataFormat);
-				if(m_order.IsInit())
-					dataFormat->iss = m_order.get();
-				if(m_idx.IsInit())
-					dataFormat->yi = m_idx.get();
 
-			}
+
 			if(m_spPr.IsInit())
 			{
+				auto SeriesStyle = new XLS::SS;
+				seriesFormat->m_arPtSS.push_back(XLS::BaseObjectPtr(SeriesStyle));
 				if(m_spPr->ln.IsInit())
 					SeriesStyle->m_LineFormat = m_spPr->ln->toXLS();
 				if(m_spPr->Fill.is_init())
 					SeriesStyle->m_AreaFormat = m_spPr->Fill.toXLS();
 				SeriesStyle->m_arSHAPEPROPS.push_back(m_spPr->toXLS(0));
+				{
+					auto dataFormat = new XLS::DataFormat;
+					SeriesStyle->m_DataFormat = XLS::BaseObjectPtr(dataFormat);
+					if(m_order.IsInit())
+						dataFormat->iss = m_order.get();
+					if(m_idx.IsInit())
+						dataFormat->yi = m_idx.get();
+				}
+				if(m_dLbls!= nullptr)
+				{
+					auto label = new XLS::AttachedLabel;
+					SeriesStyle->m_AttachedLabel = XLS::BaseObjectPtr(label);
+					for(auto i = 0; i < m_dLbls->m_ItemsElementName0.size(); i++)
+					{
+						if(*m_dLbls->m_ItemsElementName0.at(i) == ItemsChoiceType3::itemschoicetype3SHOWVAL)
+						{
+							auto lblVal = static_cast<bool*>(m_dLbls->m_Items.at(i));
+							label->fShowValue = lblVal;
+						}
+						if(*m_dLbls->m_ItemsElementName0.at(i) == ItemsChoiceType3::itemschoicetype3SHOWPERCENT)
+						{
+							auto lblVal = static_cast<bool*>(m_dLbls->m_Items.at(i));
+							label->fShowPercent = lblVal;
+						}
+						if(*m_dLbls->m_ItemsElementName0.at(i) == ItemsChoiceType3::itemschoicetype3SHOWSERNAME)
+						{
+							auto lblVal = static_cast<bool*>(m_dLbls->m_Items.at(i));
+							label->fShowSeriesName = lblVal;
+						}
+						if(*m_dLbls->m_ItemsElementName0.at(i) == ItemsChoiceType3::itemschoicetype3SHOWCATNAME)
+						{
+							auto lblVal = static_cast<bool*>(m_dLbls->m_Items.at(i));
+							label->fShowLabel= lblVal;
+						}
+						if(*m_dLbls->m_ItemsElementName0.at(i) == ItemsChoiceType3::itemschoicetype3SHOWBUBBLESIZE)
+						{
+							auto lblVal = static_cast<bool*>(m_dLbls->m_Items.at(i));
+							label->fShowBubbleSizes = lblVal;
+						}
+					}
+				}
 			}
 			seriesFormat->m_Series = XLS::BaseObjectPtr(series);
 			auto ser2Crt = new XLS::SerToCrt;
@@ -3788,43 +3822,15 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 						ai3->rt = 2;
 						ai3->formula.parseStringFormula(m_cat->m_strRef->m_f.get(), L"");
 					}
+					else if(m_cat != nullptr && m_cat->m_numRef != nullptr)
+					{
+						ai3->rt = 2;
+						ai3->formula.parseStringFormula(m_cat->m_numRef->m_f.get(), L"");
+					}
 					auto ai4 = new XLS::BRAI;
 					ai4->id = 3;
 					seriesFormat->m_arAI.push_back(XLS::BaseObjectPtr(ai3));
 					seriesFormat->m_arAI.push_back(XLS::BaseObjectPtr(ai4));
-				}
-			}
-			if(m_dLbls!= nullptr)
-			{
-				auto label = new XLS::AttachedLabel;
-				SeriesStyle->m_AttachedLabel = XLS::BaseObjectPtr(label);
-				for(auto i = 0; i < m_dLbls->m_ItemsElementName0.size(); i++)
-				{
-					if(*m_dLbls->m_ItemsElementName0.at(i) == ItemsChoiceType3::itemschoicetype3SHOWVAL)
-					{
-						auto lblVal = static_cast<bool*>(m_dLbls->m_Items.at(i));
-						label->fShowValue = lblVal;
-					}
-					if(*m_dLbls->m_ItemsElementName0.at(i) == ItemsChoiceType3::itemschoicetype3SHOWPERCENT)
-					{
-						auto lblVal = static_cast<bool*>(m_dLbls->m_Items.at(i));
-						label->fShowPercent = lblVal;
-					}
-					if(*m_dLbls->m_ItemsElementName0.at(i) == ItemsChoiceType3::itemschoicetype3SHOWSERNAME)
-					{
-						auto lblVal = static_cast<bool*>(m_dLbls->m_Items.at(i));
-						label->fShowSeriesName = lblVal;
-					}
-					if(*m_dLbls->m_ItemsElementName0.at(i) == ItemsChoiceType3::itemschoicetype3SHOWCATNAME)
-					{
-						auto lblVal = static_cast<bool*>(m_dLbls->m_Items.at(i));
-						label->fShowLabel= lblVal;
-					}
-					if(*m_dLbls->m_ItemsElementName0.at(i) == ItemsChoiceType3::itemschoicetype3SHOWBUBBLESIZE)
-					{
-						auto lblVal = static_cast<bool*>(m_dLbls->m_Items.at(i));
-						label->fShowBubbleSizes = lblVal;
-					}
 				}
 			}
 			return XLS::BaseObjectPtr(seriesFormat);

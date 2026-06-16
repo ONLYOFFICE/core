@@ -1253,7 +1253,7 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 						auto SurfaceChart = static_cast<CT_SurfaceChart*>(m_chart->m_plotArea->m_Items.at(chartIndex));
 						AxisParentUnion->m_arCRT.push_back(SurfaceChart->toXLS(chartIndex, ptr->m_CHARTFORMATS));
 					}
-					else if(*m_chart->m_plotArea->m_ItemsElementName0.at(chartIndex) == OOX::Spreadsheet::itemschoicetype5SURFACECHART)
+					else if(*m_chart->m_plotArea->m_ItemsElementName0.at(chartIndex) == OOX::Spreadsheet::itemschoicetype5SURFACE3DCHART)
 					{
 						auto SurfaceChart = static_cast<CT_Surface3DChart*>(m_chart->m_plotArea->m_Items.at(chartIndex));
 						AxisParentUnion->m_arCRT.push_back(SurfaceChart->toXLS(chartIndex, ptr->m_CHARTFORMATS));

@@ -140,9 +140,9 @@ std::vector<std::wstring> CDocxRenderer::ScanPage(IOfficeDrawingFile* pFile, siz
 
 	DrawPage(pFile, nPage);
 
-	auto xml_shapes = m_pInternal->m_oDocument.m_oCurrentPage.GetXmlShapes();
+	auto xml_content = m_pInternal->m_oDocument.m_oCurrentPage.GetXmlContent();
 	m_pInternal->m_oDocument.Clear();
-	return xml_shapes;
+	return xml_content;
 }
 
 std::vector<std::wstring> CDocxRenderer::ScanPagePptx(IOfficeDrawingFile* pFile, size_t nPage)
@@ -160,9 +160,9 @@ std::vector<std::wstring> CDocxRenderer::ScanPagePptx(IOfficeDrawingFile* pFile,
 	DrawPage(pFile, nPage);
 	m_pInternal->m_eShapeSerializeType = ShapeSerializeType::sstBinary;
 
-	auto xml_shapes = m_pInternal->m_oDocument.m_oCurrentPage.GetXmlShapesPptx();
+	auto xml_content = m_pInternal->m_oDocument.m_oCurrentPage.GetXmlContentPptx();
 	m_pInternal->m_oDocument.Clear();
-	return xml_shapes;
+	return xml_content;
 }
 NSWasm::CData CDocxRenderer::ScanPageBin(IOfficeDrawingFile* pFile, size_t nPage)
 {
@@ -179,9 +179,9 @@ NSWasm::CData CDocxRenderer::ScanPageBin(IOfficeDrawingFile* pFile, size_t nPage
 
 	DrawPage(pFile, nPage);
 
-	auto bin_shapes = m_pInternal->m_oDocument.m_oCurrentPage.GetShapesBin();
+	auto bin_content = m_pInternal->m_oDocument.m_oCurrentPage.GetContentBin();
 	m_pInternal->m_oDocument.Clear();
-	return bin_shapes;
+	return bin_content;
 }
 
 void CDocxRenderer::SetExternalImageStorage(NSDocxRenderer::IImageStorage* pStorage)

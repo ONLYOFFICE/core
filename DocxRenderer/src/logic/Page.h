@@ -119,9 +119,9 @@ namespace NSDocxRenderer
 		void Analyze();
 		void Record(NSStringUtils::CStringBuilder& oWriter, bool bIsLastPage);
 
-		std::vector<std::wstring> GetXmlShapes();
-		std::vector<std::wstring> GetXmlShapesPptx();
-		NSWasm::CData GetShapesBin();
+		std::vector<std::wstring> GetXmlContent();
+		std::vector<std::wstring> GetXmlContentPptx();
+		NSWasm::CData GetContentBin();
 
 		void AddCompleteXml(const std::wstring& oXml);
 		void AddCompleteBinBase64(const std::string& oBase64);

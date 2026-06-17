@@ -1933,7 +1933,6 @@ void CPdfEditor::Close()
 				if (!pAP)
 				{
 					pDoc->RemoveObj(pAnnot);
-					RELEASEOBJECT(pAnnot);
 					continue;
 				}
 

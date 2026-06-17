@@ -85,7 +85,6 @@ private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
-
 	office_element_ptr semantics_;
 };
 
@@ -104,13 +103,13 @@ public:
 	virtual void oox_convert(oox::math_context & Context);
 	virtual void oox_convert(oox::math_context & Context, int iTypeConversion);
 
+    office_element_ptr_array content_;
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
-    office_element_ptr_array	content_;
-	office_element_ptr			annotation_;
-	office_element_ptr			signature_;
+	office_element_ptr annotation_;
+	office_element_ptr signature_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(math_semantics);

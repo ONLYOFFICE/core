@@ -5112,7 +5112,6 @@ bool DocxConverter::convert(OOX::Logic::CTableProperty *oox_table_pr, odf_writer
 			{
 				//dynamic expansion - auto-fit by content.
 				odt_context->table_context()->set_optimal_column_width(true);
-				table_properties->content_.style_use_optimal_column_width_ = true;
 			}
 		}
 	}

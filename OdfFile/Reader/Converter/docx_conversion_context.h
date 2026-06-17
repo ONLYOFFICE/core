@@ -752,9 +752,9 @@ public:
 	void add_user_field			(const std::wstring & name, const std::wstring & value);	
 	std::wstring get_user_field	(const std::wstring & name);
 
-	void add_element_to_run		(std::wstring parenStyleId = _T(""));
+	bool add_element_to_run		(std::wstring parenStyleId = L"");
     void finish_run				();
-	void add_new_run			(std::wstring parentStyleId = _T(""));    
+	void add_new_run			(std::wstring parentStyleId = L"");
   
     void start_paragraph		(bool is_header = false);
     void finish_paragraph		();

@@ -212,14 +212,15 @@ void text::docx_convert(oox::docx_conversion_context & Context)
 		Context.get_delete_text_state()) 
 			return; //MS doesn't have notes revision tracking
 
-	bool add_del_run = false;
+	bool add_run = false;
+	bool add_del = false;
 	if (Context.get_drawing_state_content() && Context.get_delete_text_state())
 	{	//0503IG-AddingFormattingText.odt - deleted text in deleted object
 
 		oox::text_tracked_context::_state  &state = Context.get_text_tracked_context().get_tracked_change(L"");
 		if (state.type == 2)
 		{
-			add_del_run = true;
+			add_del = true;
 			Context.output_stream() << L"<w:del>";
 		}
 	}  
@@ -230,7 +231,7 @@ void text::docx_convert(oox::docx_conversion_context & Context)
 		{
 		}
 	}	
-	Context.add_element_to_run();
+	add_run = Context.add_element_to_run();
   
 	std::wstring textNode = L"w:t";
 
@@ -244,9 +245,12 @@ void text::docx_convert(oox::docx_conversion_context & Context)
 	Context.output_stream() << XmlUtils::EncodeXmlString( text_, true );//0xf4 0x80 0x80 0x81-??? - Gangs_Aff-Neg.odt
     Context.output_stream() << L"</" << textNode << L">";
 
-	if (add_del_run)
+	if (add_run)
 	{
 		Context.finish_run();
+	}
+	if (add_del)
+	{
 		Context.output_stream() << L"</w:del>";
 	}
 

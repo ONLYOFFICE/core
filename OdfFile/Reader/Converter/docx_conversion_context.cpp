@@ -272,8 +272,9 @@ std::wstring styles_map::name(const std::wstring & Name, odf_types::style_family
 {
     return Name + L":" + boost::lexical_cast<std::wstring>(odf_types::style_family(Type));
 }
-void docx_conversion_context::add_element_to_run(std::wstring parenStyleId)
+bool docx_conversion_context::add_element_to_run(std::wstring parenStyleId)
 {
+	bool new_run = false;
 	if (false == current_process_comment_ && (false == get_comments_context().ref_end_.empty() || false == get_comments_context().ref_start_.empty()))
 	{
 		if (state_.in_run_)
@@ -301,7 +302,7 @@ void docx_conversion_context::add_element_to_run(std::wstring parenStyleId)
 	}
 	if (false == state_.in_run_)
     {
-        state_.in_run_ = true;
+		state_.in_run_ = new_run = true;
 		output_stream() << L"<w:r>";
 
 		start_changes(true);
@@ -320,8 +321,8 @@ void docx_conversion_context::add_element_to_run(std::wstring parenStyleId)
 	        
 			get_styles_context().docx_serialize_text_style( output_stream(), parenStyleId, text_tracked_context_.dumpRPr_);
 		}
-
 	}
+	return new_run;
 }
 
 void docx_conversion_context::start_paragraph(bool is_header)
@@ -2599,7 +2600,7 @@ void docx_conversion_context::add_note_reference ()
 {
     if (current_process_note_ == footNote || current_process_note_ ==  endNote)
     {
-        add_element_to_run(_T(""));
+        add_element_to_run(L"");
         output_stream() << ((current_process_note_ == footNote) ? L"<w:footnoteRef />" : L"<w:endnoteRef />");
         finish_run();
         current_process_note_ = (NoteType) (current_process_note_ + 1); //add ref set

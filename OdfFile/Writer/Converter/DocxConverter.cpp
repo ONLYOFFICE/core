@@ -5156,7 +5156,7 @@ bool DocxConverter::convert(OOX::Logic::CTableProperty *oox_table_pr, odf_writer
             if (length_)
                 table_properties->content_.common_vertical_margin_attlist_.fo_margin_top_= odf_types::length(length_->get_value_unit(odf_types::length::cm),odf_types::length::cm);
 
-            convert(dynamic_cast<SimpleTypes::CUniversalMeasure *>(oox_table_pr->m_oTblpPr->m_oBottomFromText.GetPointer()),	length_);
+            convert(dynamic_cast<SimpleTypes::CUniversalMeasure *>(oox_table_pr->m_oTblpPr->m_oBottomFromText.GetPointer()), length_);
             if (length_)
                 table_properties->content_.common_vertical_margin_attlist_.fo_margin_bottom_= odf_types::length(length_->get_value_unit(odf_types::length::cm),odf_types::length::cm);
 

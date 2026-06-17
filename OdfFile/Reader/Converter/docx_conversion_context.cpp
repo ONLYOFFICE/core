@@ -1515,10 +1515,10 @@ void docx_conversion_context::process_styles()
                     const std::wstring basedOnId = styles_map_.get(baseOn->name(), baseOn->type());
                     _Wostream << L"<w:basedOn w:val=\"" << basedOnId << "\"/>";
                 }
-				else if (!bDefault && !default_style.empty())
-				{
-					_Wostream << L"<w:basedOn w:val=\"" << default_style << "\"/>";
-				}
+				//else if (!bDefault && !default_style.empty())
+				//{
+				//	_Wostream << L"<w:basedOn w:val=\"" << default_style << "\"/>";
+				//}
 				if (arStyles[i]->primary_format())
 				{
 					if (*arStyles[i]->primary_format())
@@ -1553,6 +1553,7 @@ void docx_conversion_context::process_styles()
 
                 if (odf_reader::style_content * content = arStyles[i]->content())
                 {
+					set_rtl(false);
 					get_tabs_context().clear();
 					calc_tab_stops(arStyles[i].get(), get_tabs_context());					
 					get_styles_context().start_process_style(arStyles[i].get());

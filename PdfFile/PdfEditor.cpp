@@ -63,6 +63,8 @@
 #include "SrcWriter/Image.h"
 #include "SrcWriter/Font14.h"
 
+#include <vector>
+
 #define AddToObject(oVal)\
 {\
 	if (pObj->GetType() == PdfWriter::object_type_DICT)\
@@ -888,71 +890,6 @@ HRESULT _ChangePassword(const std::wstring& wsPath, const std::wstring& wsPasswo
 
 	return bRes ? S_OK : S_FALSE;
 }
-void GetCTM(XRef* pXref, Object* oPage, double* dCTM)
-{
-	if (!oPage || !oPage->isDict())
-		return;
-
-	Object oContents;
-	if (!oPage->dictLookup("Contents", &oContents) || (!oContents.isArray() && !oContents.isStream()))
-	{
-		oContents.free();
-		return;
-	}
-
-	Parser* parser = new Parser(pXref, new Lexer(pXref, &oContents), gFalse);
-
-	int nNumArgs = 0;
-	Object oObj;
-	Object pArgs[maxArgs];
-
-	parser->getObj(&oObj);
-	while (!oObj.isEOF())
-	{
-		if (oObj.isCmd())
-		{
-			if (oObj.isCmd("q"))
-			{
-				Object obj;
-				parser->getObj(&obj);
-				while (!obj.isEOF() && !obj.isCmd("Q"))
-				{
-					obj.free();
-					parser->getObj(&obj);
-				}
-				obj.free();
-			}
-			else if (oObj.isCmd("cm") && nNumArgs > 5)
-			{
-				double a1 = dCTM[0];
-				double b1 = dCTM[1];
-				double c1 = dCTM[2];
-				double d1 = dCTM[3];
-
-				dCTM[0] = pArgs[0].getNum() * a1 + pArgs[1].getNum() * c1;
-				dCTM[1] = pArgs[0].getNum() * b1 + pArgs[1].getNum() * d1;
-				dCTM[2] = pArgs[2].getNum() * a1 + pArgs[3].getNum() * c1;
-				dCTM[3] = pArgs[2].getNum() * b1 + pArgs[3].getNum() * d1;
-				dCTM[4] = pArgs[4].getNum() * a1 + pArgs[5].getNum() * c1 + dCTM[4];
-				dCTM[5] = pArgs[4].getNum() * b1 + pArgs[5].getNum() * d1 + dCTM[5];
-			}
-			oObj.free();
-			for (int i = 0; i < nNumArgs; ++i)
-				pArgs[i].free();
-			nNumArgs = 0;
-		}
-		else if (nNumArgs < maxArgs)
-			pArgs[nNumArgs++] = oObj;
-
-		parser->getObj(&oObj);
-	}
-	oObj.free();
-	for (int i = 0; i < nNumArgs; ++i)
-		pArgs[i].free();
-	RELEASEOBJECT(parser);
-
-	oContents.free();
-}
 void GetInvertCTM(double* dCTM, double* dInvCTM)
 {
 	double det = dCTM[0] * dCTM[3] - dCTM[1] * dCTM[2];
@@ -1113,6 +1050,133 @@ void DrawAnnot(Object* oAnnot, PdfWriter::CPage* pPage, PdfWriter::CDocument* pD
 	}
 
 	oAPN.free();
+}
+
+namespace
+{
+struct CTMSnapshot
+{
+	double m[6];
+};
+void CopyCTM(const double* src, double* dst)
+{
+	for (int i = 0; i < 6; ++i)
+		dst[i] = src[i];
+}
+void SkipInlineImage(Parser* parser)
+{
+	Object obj;
+	parser->getObj(&obj);
+	while (!obj.isEOF() && !obj.isCmd("ID"))
+	{
+		obj.free();
+		parser->getObj(&obj);
+	}
+	obj.free();
+
+	Stream* str = parser->getStream();
+
+	int c1 = str->getChar();
+	int c2 = str->getChar();
+	while (true)
+	{
+		if (c1 == EOF)
+			break;
+
+		if (c1 == 'E' && c2 == 'I')
+		{
+			int c3 = str->lookChar();
+			if (c3 == EOF || isspace(c3) || c3 == 0)
+			{
+				str->getChar();
+				break;
+			}
+		}
+
+		c1 = c2;
+		c2 = str->getChar();
+	}
+}
+void GetCTM(XRef* pXref, Object* oPage, double* dCTM)
+{
+	if (!oPage || !oPage->isDict())
+		return;
+
+	Object oContents;
+	if (!oPage->dictLookup("Contents", &oContents) || (!oContents.isArray() && !oContents.isStream()))
+	{
+		oContents.free();
+		return;
+	}
+
+	dCTM[0] = 1; dCTM[1] = 0;
+	dCTM[2] = 0; dCTM[3] = 1;
+	dCTM[4] = 0; dCTM[5] = 0;
+
+	Parser* parser = new Parser(pXref, new Lexer(pXref, &oContents), gFalse);
+
+	int nNumArgs = 0;
+	Object oObj;
+	Object pArgs[maxArgs];
+
+	std::vector<CTMSnapshot> ctmStack;
+
+	parser->getObj(&oObj);
+	while (!oObj.isEOF())
+	{
+		if (oObj.isCmd())
+		{
+			if (oObj.isCmd("q"))
+			{
+				CTMSnapshot snap;
+				CopyCTM(dCTM, snap.m);
+				ctmStack.push_back(snap);
+			}
+			else if (oObj.isCmd("Q"))
+			{
+				if (!ctmStack.empty())
+				{
+					CopyCTM(ctmStack.back().m, dCTM);
+					ctmStack.pop_back();
+				}
+			}
+			else if (oObj.isCmd("cm") && nNumArgs > 5)
+			{
+				double a1 = dCTM[0];
+				double b1 = dCTM[1];
+				double c1 = dCTM[2];
+				double d1 = dCTM[3];
+
+				dCTM[0] = pArgs[0].getNum() * a1 + pArgs[1].getNum() * c1;
+				dCTM[1] = pArgs[0].getNum() * b1 + pArgs[1].getNum() * d1;
+				dCTM[2] = pArgs[2].getNum() * a1 + pArgs[3].getNum() * c1;
+				dCTM[3] = pArgs[2].getNum() * b1 + pArgs[3].getNum() * d1;
+				dCTM[4] = pArgs[4].getNum() * a1 + pArgs[5].getNum() * c1 + dCTM[4];
+				dCTM[5] = pArgs[4].getNum() * b1 + pArgs[5].getNum() * d1 + dCTM[5];
+			}
+			else if (oObj.isCmd("BI"))
+				SkipInlineImage(parser);
+
+			oObj.free();
+			for (int i = 0; i < nNumArgs; ++i)
+				pArgs[i].free();
+			nNumArgs = 0;
+		}
+		else if (nNumArgs < maxArgs)
+			pArgs[nNumArgs++] = oObj;
+		else
+			oObj.free();
+
+		parser->getObj(&oObj);
+	}
+	oObj.free();
+	for (int i = 0; i < nNumArgs; ++i)
+		pArgs[i].free();
+
+	RELEASEOBJECT(parser);
+
+	oContents.free();
+}
 }
 
 void CObjectsManager::AddObj(int nID, PdfWriter::CObjectBase* pObj)
@@ -1869,7 +1933,6 @@ void CPdfEditor::Close()
 				if (!pAP)
 				{
 					pDoc->RemoveObj(pAnnot);
-					RELEASEOBJECT(pAnnot);
 					continue;
 				}
 

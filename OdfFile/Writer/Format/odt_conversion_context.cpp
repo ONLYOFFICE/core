@@ -318,6 +318,7 @@ void odt_conversion_context::end_drawing_context()
 		if (elm)
 		{
 			text_context()->start_element(elm);
+				add_to_root();
 			text_context()->end_element();
 		}
 
@@ -1857,7 +1858,7 @@ void odt_conversion_context::end_table_row()
 void odt_conversion_context::add_default_cell()
 {
 	office_element_ptr elm;
-	create_element(L"table", L"covered-table-cell",elm,this);
+	create_element(L"table", L"covered-table-cell", elm, this);
 
 	table_context()->start_cell(elm, false);
 	text_context()->start_element(elm);

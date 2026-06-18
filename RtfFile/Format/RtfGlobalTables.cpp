@@ -224,12 +224,19 @@ bool RtfStyleTable::GetStyle( std::wstring sName, RtfStylePtr& oStyle )
 }
 RtfStylePtr RtfStyleTable::GetStyleResulting( RtfStylePtr oInputStyle )
 {
+	std::set<int> usedStyles;
+	return GetStyleResulting( oInputStyle, usedStyles );
+}
+RtfStylePtr RtfStyleTable::GetStyleResulting( RtfStylePtr oInputStyle, std::set<int>& usedStyles )
+{
 	RtfStylePtr				oResultStyle;
 	RtfStyle::_StyleType	eStyleType	= RtfStyle::st_none;
 
 	int nStyleId = oInputStyle->m_nID;
 	int nLinked = PROP_DEF;
 	int nBaseOn = oInputStyle->m_nBasedOn;
+
+	usedStyles.insert( nStyleId );
 
 	if( RtfStyle::stCharacter == oInputStyle->m_eType )
 	{
@@ -258,11 +265,11 @@ RtfStylePtr RtfStyleTable::GetStyleResulting( RtfStylePtr oInputStyle )
 	//	oLinkedStyle = GetStyleResulting( oTemStyle );
 	//}
 	RtfStylePtr oBaseStyle;
-	if( PROP_DEF != nBaseOn && nStyleId != nBaseOn)
+	if( PROP_DEF != nBaseOn && nStyleId != nBaseOn && usedStyles.find( nBaseOn ) == usedStyles.end())
 	{
 		RtfStylePtr oTemStyle;
 		if( true == GetStyle( nBaseOn, oTemStyle) )
-			oBaseStyle = GetStyleResulting( oTemStyle );
+			oBaseStyle = GetStyleResulting( oTemStyle, usedStyles );
 	}
 
 	//Experimentally established - Base is older than Link

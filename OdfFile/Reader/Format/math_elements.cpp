@@ -63,6 +63,18 @@ void office_math::add_child_element( xml::sax * Reader, const std::wstring & Ns,
     {
         CP_CREATE_ELEMENT(semantics_);
     }
+    else
+    {//easy math ml 
+        if (!semantics_)
+        {
+            semantics_ = office_element_creator::get()->create(math_semantics::ns, math_semantics::name, getContext(), false);
+        }
+        math_semantics* math_semantics_ = dynamic_cast<math_semantics*>(semantics_.get());
+        if (math_semantics_)
+        {
+            CP_CREATE_ELEMENT(math_semantics_->content_);
+        }
+    }
 }
 
 
@@ -71,7 +83,7 @@ void office_math::oox_convert(oox::math_context & Context, int iTypeConversion)
 	if (semantics_)
 	{
 		office_math_element* math_element = dynamic_cast<office_math_element*>(semantics_.get());
-		math_element->oox_convert(Context,iTypeConversion);
+		math_element->oox_convert(Context, iTypeConversion);
 	}
 }
 

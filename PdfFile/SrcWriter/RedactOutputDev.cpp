@@ -117,9 +117,12 @@ bool CheckFullRedact(const std::vector<double>& arrQuadPoints, const std::vector
 }
 BYTE* DecodeImageToRGBA(Stream* pStream, int nWidth, int nHeight, GfxImageColorMap* pColorMap, GfxState* pGState)
 {
-	BYTE* pBufferPtr = new(std::nothrow) BYTE[4 * nWidth * nHeight];
+	if (nWidth <= 0 || nHeight <= 0 || !pColorMap || !pGState)
+		return NULL;
+	const size_t nBufSize = 4 * static_cast<size_t>(nWidth) * static_cast<size_t>(nHeight);
+	BYTE* pBufferPtr = new(std::nothrow) BYTE[nBufSize];
 	if (!pBufferPtr)
-		return nullptr;
+		return NULL;
 
 	int nComponentsCount = pColorMap->getNumPixelComps();
 	ImageStream* pImageStream = new ImageStream(pStream, nWidth, nComponentsCount, pColorMap->getBits());
@@ -137,10 +140,11 @@ BYTE* DecodeImageToRGBA(Stream* pStream, int nWidth, int nHeight, GfxImageColorM
 	for (int nY = 0; nY < nHeight; ++nY)
 	{
 		BYTE* pLine = pImageStream->getLine();
-		BYTE* pLineDst = pBufferPtr + 4 * nWidth * nY;
+		BYTE* pLineDst = pBufferPtr + 4 * static_cast<size_t>(nWidth) * static_cast<size_t>(nY);
 
-		if (!pLine) {
-			memset(pLineDst, 0, 4 * nWidth);
+		if (!pLine)
+		{
+			memset(pLineDst, 0, 4 * static_cast<size_t>(nWidth));
 			continue;
 		}
 
@@ -178,6 +182,9 @@ BYTE* DecodeImageToRGBA(Stream* pStream, int nWidth, int nHeight, GfxImageColorM
 			pLine += nComps;
 			pLineDst += 4;
 		}
+
+		if (nCheckWidth < nWidth)
+			memset(pLineDst, 0, 4 * (nWidth - nCheckWidth));
 	}
 
 	pImageStream->close();
@@ -186,9 +193,12 @@ BYTE* DecodeImageToRGBA(Stream* pStream, int nWidth, int nHeight, GfxImageColorM
 }
 BYTE* DecodeImageToGray(Stream* pStream, int nWidth, int nHeight, GfxImageColorMap* pColorMap, GfxState* pGState)
 {
-	BYTE* pBufferPtr = new(std::nothrow) BYTE[nWidth * nHeight];
+	if (nWidth <= 0 || nHeight <= 0 || !pColorMap || !pGState)
+		return NULL;
+	const size_t nBufSize = static_cast<size_t>(nWidth) * static_cast<size_t>(nHeight);
+	BYTE* pBufferPtr = new(std::nothrow) BYTE[nBufSize];
 	if (!pBufferPtr)
-		return nullptr;
+		return NULL;
 
 	int nComponentsCount = pColorMap->getNumPixelComps();
 	ImageStream* pImageStream = new ImageStream(pStream, nWidth, nComponentsCount, pColorMap->getBits());
@@ -206,9 +216,10 @@ BYTE* DecodeImageToGray(Stream* pStream, int nWidth, int nHeight, GfxImageColorM
 	for (int nY = 0; nY < nHeight; ++nY)
 	{
 		BYTE* pLine = pImageStream->getLine();
-		BYTE* pLineDst = pBufferPtr + nWidth * nY;
+		BYTE* pLineDst = pBufferPtr + static_cast<size_t>(nWidth) * static_cast<size_t>(nY);
 
-		if (!pLine) {
+		if (!pLine)
+		{
 			memset(pLineDst, 0, nWidth);
 			continue;
 		}
@@ -233,6 +244,9 @@ BYTE* DecodeImageToGray(Stream* pStream, int nWidth, int nHeight, GfxImageColorM
 
 			pLine += nComps;
 		}
+
+		if (nCheckWidth < nWidth)
+			memset(pLineDst + nCheckWidth, 0, nWidth - nCheckWidth);
 	}
 
 	pImageStream->close();
@@ -241,29 +255,39 @@ BYTE* DecodeImageToGray(Stream* pStream, int nWidth, int nHeight, GfxImageColorM
 }
 BYTE* DecodeImageMaskToBits(Stream* pStream, int nWidth, int nHeight, GBool bInvert)
 {
-	BYTE* pBits = new BYTE[nWidth * nHeight];
+	if (nWidth <= 0 || nHeight <= 0)
+		return NULL;
+	const size_t nBufSize = static_cast<size_t>(nWidth) * static_cast<size_t>(nHeight);
+	BYTE* pBits = new(std::nothrow) BYTE[nBufSize];
 	if (!pBits)
-		return nullptr;
+		return NULL;
 
 	ImageStream* pImageStream = new ImageStream(pStream, nWidth, 1, 1);
 	pImageStream->reset();
 
+	int nCheckWidth = std::min(nWidth, pImageStream->getVals());
+
 	for (int y = 0; y < nHeight; ++y)
 	{
 		BYTE* pLine = pImageStream->getLine();
+		BYTE* pDst  = pBits + static_cast<size_t>(y) * static_cast<size_t>(nWidth);
+
 		if (!pLine)
 		{
-			memset(pBits + y * nWidth, bInvert ? 1 : 0, nWidth);
+			memset(pDst, bInvert ? 1 : 0, nWidth);
 			continue;
 		}
 
-		for (int x = 0; x < nWidth; ++x)
+		for (int x = 0; x < nCheckWidth; ++x)
 		{
 			BYTE pixel = pLine[x];
 			if (bInvert)
 				pixel = pixel ? 0 : 1;
-			pBits[y * nWidth + x] = pixel;
+			pDst[x] = pixel;
 		}
+
+		if (nCheckWidth < nWidth)
+			memset(pDst + nCheckWidth, bInvert ? 1 : 0, nWidth - nCheckWidth);
 	}
 
 	pImageStream->close();
@@ -344,7 +368,7 @@ void SaveGrayToSMask(CDocument* pDocument, CDictObject* pDictObj, BYTE* pMaskGra
 	pSMask->Remove("DecodeParms");
 	pDictObj->Remove("Decode");
 
-	int nBufferSize = nWidth * nHeight;
+	unsigned int nBufferSize = nWidth * nHeight;
 	CStream* pStreamForm = pSMask->GetStream();
 	if (!pStreamForm)
 	{
@@ -1260,7 +1284,8 @@ void RedactOutputDev::drawSoftMaskedImage(GfxState *pGState, Gfx *gfx, Object *p
 		if (nWidth != nMaskWidth || nHeight != nMaskHeight)
 		{
 			// Simple scaling (nearest neighbor)
-			BYTE* pDstMask = new BYTE[nWidth * nHeight];
+			const size_t nBufSize = static_cast<size_t>(nWidth) * static_cast<size_t>(nHeight);
+			BYTE* pDstMask = new(std::nothrow) BYTE[nBufSize];
 			if (!pDstMask)
 			{
 				delete[] pMaskBufferPtr;

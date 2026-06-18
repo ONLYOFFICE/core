@@ -198,6 +198,8 @@ public:
     _CP_OPT(unsigned int) style_page_number_;
     _CP_OPT(unsigned int) style_first_page_number_;
 
+    _CP_OPT(bool) page_number_auto_;
+    _CP_OPT(bool) first_page_number_continue_;
 };
 
 // common-background-color-attlist

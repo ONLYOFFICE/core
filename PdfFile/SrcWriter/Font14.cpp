@@ -132,14 +132,31 @@ namespace PdfWriter
 	}
 	unsigned int CFontEmbedded::EncodeUnicode(const unsigned int& unGID, const unsigned int& unUnicode)
 	{
+		if (m_eFontType == fontCIDType0   ||
+			m_eFontType == fontCIDType0C  ||
+			m_eFontType == fontCIDType0COT||
+			m_eFontType == fontCIDType2   ||
+			m_eFontType == fontCIDType2OT)
+		{
+			for (auto& pair : m_mCodeToUnicode)
+				if (pair.second == unUnicode)
+					return pair.first;
+
+			unsigned int ushCode = EncodeGID(unGID);
+			if (ushCode)
+				m_mCodeToUnicode.insert(std::pair<unsigned int, unsigned short>(ushCode, unUnicode));
+			return ushCode;
+		}
+
+		unsigned int ushCode = EncodeGID(unGID);
+		if (ushCode)
+			return ushCode;
+
 		for (auto& pair : m_mCodeToUnicode)
 			if (pair.second == unUnicode)
 				return pair.first;
 
-		unsigned int ushCode = EncodeGID(unGID);
-		if (ushCode)
-			m_mCodeToUnicode.insert(std::pair<unsigned int, unsigned short>(ushCode, unUnicode));
-		return ushCode;
+		return 0;
 	}
 	unsigned int CFontEmbedded::EncodeGID(const unsigned int& unGID)
 	{

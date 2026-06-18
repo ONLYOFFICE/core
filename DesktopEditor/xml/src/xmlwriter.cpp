@@ -65,6 +65,10 @@ namespace XmlUtils
 		}
 	}
 
+	void CXmlWriter::WriteEncodeXmlString(const std::string& sString)
+	{
+		if (impl_) impl_->m_str.WriteEncodeXmlString(sString);
+	}
 	bool CXmlWriter::SaveToFile(const std::wstring& strFilePath/*, bool bEncodingToUTF8 = false*/)
 	{
 		if (impl_)
@@ -142,6 +146,14 @@ namespace XmlUtils
 	void CXmlWriter::WriteAttribute(const std::wstring& strAttributeName, const std::wstring& strAttributeValue)
 	{
 		if (impl_) impl_->m_str += L" " + strAttributeName + L"=\"" + strAttributeValue + L"\"";
+	}
+	void CXmlWriter::WriteAttribute(const std::wstring& strAttributeName, const std::string& strAttributeValue)
+	{
+		if (!impl_) return;
+
+		impl_->m_str += L" " + strAttributeName + L"=\"";
+		impl_->m_str.WriteEncodeXmlString(strAttributeValue);
+		impl_->m_str += L"\"";
 	}
 	void CXmlWriter::WriteAttribute(const std::wstring& strAttributeName, int nValue, const std::wstring& strTextBeforeValue, const std::wstring& strTextAfterValue)
 	{

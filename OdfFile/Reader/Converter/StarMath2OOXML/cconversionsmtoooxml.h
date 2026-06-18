@@ -45,8 +45,8 @@ namespace XmlUtils
 {
 class CXmlWriter;
 }
-namespace StarMath {
-//delete XmlWrite
+namespace StarMath
+{
     class CElement;
     class CAttribute;
 
@@ -56,26 +56,26 @@ namespace StarMath {
 		CConversionSMtoOOXML();
 		~CConversionSMtoOOXML();
 		void StartConversion(const std::vector<CElement*> arPars, const unsigned int& iAlignment = 1);
-        static void StandartProperties(XmlUtils::CXmlWriter* pXmlWrite, CAttribute* pAttribute,const TypeConversion& enTypeConversion, const TextDirection& enTypeLang = TextDirection::LeftToRight);
-		static void PropertiesMFPR(const std::wstring& wsType,XmlUtils::CXmlWriter* pXmlWrite,CAttribute* pAttribute,const TypeConversion &enTypeConversion);
-		static void PropertiesNaryPr(const TypeElement& enTypeOp,bool bEmptySub,bool bEmptySup,XmlUtils::CXmlWriter* pXmlWrite,CAttribute* pAttribute,const TypeConversion &enTypeConversion,const bool& bEQN = false);
-		static void PropertiesFuncPr(XmlUtils::CXmlWriter* pXmlWrite,CAttribute* pAttribute,const TypeConversion &enTypeConversion);
-		static void WriteNodeConversion(const std::wstring& wsNameBlock,CElement* pValueBlock,XmlUtils::CXmlWriter* pXmlWrite);
-		static void PropertiesDPr(XmlUtils::CXmlWriter* pXmlWrite,const std::wstring& wsOpenBracket,const std::wstring& wsCloseBracket,CAttribute* pAttribute,const TypeConversion &enTypeConversion,const TypeElement& enTypeBracket);
-		static void PropertiesMPr(XmlUtils::CXmlWriter* pXmlWrite,const TypeElement& enTypeMatrix,CAttribute* pAttribute,const TypeConversion &enTypeConversion,const unsigned int& iDimension);
-		static void NodeGrade(XmlUtils::CXmlWriter* pXmlWrite,CElement* pValueGrade,CAttribute* pAttribute);
-		static void WriteCtrlPrNode(XmlUtils::CXmlWriter* pXmlWrite,CAttribute* pAttribute,const TypeConversion &enTypeConversion);
-		static void WriteChrNode(const std::wstring& wsTypeOp,XmlUtils::CXmlWriter* pXmlWrite);
-		static void WriteLimLocNode(const std::wstring& wsTypeLimLock,XmlUtils::CXmlWriter* pXmlWrite);
-		static void WriteRPrFName(const TypeElement& enTypeOp,XmlUtils::CXmlWriter* pXmlWrite,CAttribute* pAttribute,const std::wstring& wsNameOp,const TypeConversion &enTypeConversion);
-		static void WriteStyNode(XmlUtils::CXmlWriter* pXmlWrite,const std::wstring& wsAttributeNode);
-		static void WritePreserveBlock(XmlUtils::CXmlWriter* pXmlWrite, CAttribute *pAttribute,const TypeConversion &enTypeConversion);
-		static void WriteLimUpOrLowNode(XmlUtils::CXmlWriter* pXmlWrite,const std::wstring& wsNameNode,CElement* pValue,const TypeElement& enType,CAttribute* pAttribute,const TypeConversion& enTypeConvers, const std::wstring& wsName = L"oper",CElement* pIndex = nullptr);
-		static void ElementConversion(XmlUtils::CXmlWriter* pXmlWrite,CElement* pElement);
+        static void StandartProperties(XmlUtils::CXmlWriter* pXmlWriter, CAttribute* pAttribute,const TypeConversion& enTypeConversion, const TextDirection& enTypeLang = TextDirection::LeftToRight);
+		static void PropertiesMFPR(const std::wstring& wsType,XmlUtils::CXmlWriter* pXmlWriter,CAttribute* pAttribute,const TypeConversion &enTypeConversion);
+		static void PropertiesNaryPr(const TypeElement& enTypeOp,bool bEmptySub,bool bEmptySup,XmlUtils::CXmlWriter* pXmlWriter,CAttribute* pAttribute,const TypeConversion &enTypeConversion,const bool& bEQN = false);
+		static void PropertiesFuncPr(XmlUtils::CXmlWriter* pXmlWriter,CAttribute* pAttribute,const TypeConversion &enTypeConversion);
+		static void WriteNodeConversion(const std::wstring& wsNameBlock,CElement* pValueBlock,XmlUtils::CXmlWriter* pXmlWriter);
+		static void PropertiesDPr(XmlUtils::CXmlWriter* pXmlWriter,const std::wstring& wsOpenBracket,const std::wstring& wsCloseBracket,CAttribute* pAttribute,const TypeConversion &enTypeConversion,const TypeElement& enTypeBracket);
+		static void PropertiesMPr(XmlUtils::CXmlWriter* pXmlWriter,const TypeElement& enTypeMatrix,CAttribute* pAttribute,const TypeConversion &enTypeConversion,const unsigned int& iDimension);
+		static void NodeGrade(XmlUtils::CXmlWriter* pXmlWriter,CElement* pValueGrade,CAttribute* pAttribute);
+		static void WriteCtrlPrNode(XmlUtils::CXmlWriter* pXmlWriter,CAttribute* pAttribute,const TypeConversion &enTypeConversion);
+		static void WriteChrNode(const std::wstring& wsTypeOp,XmlUtils::CXmlWriter* pXmlWriter);
+		static void WriteLimLocNode(const std::wstring& wsTypeLimLock,XmlUtils::CXmlWriter* pXmlWriter);
+		static void WriteRPrFName(const TypeElement& enTypeOp,XmlUtils::CXmlWriter* pXmlWriter,CAttribute* pAttribute,const std::wstring& wsNameOp,const TypeConversion &enTypeConversion);
+		static void WriteStyNode(XmlUtils::CXmlWriter* pXmlWriter,const std::wstring& wsAttributeNode);
+		static void WritePreserveBlock(XmlUtils::CXmlWriter* pXmlWriter, CAttribute *pAttribute,const TypeConversion &enTypeConversion);
+		static void WriteLimUpOrLowNode(XmlUtils::CXmlWriter* pXmlWriter,const std::wstring& wsNameNode,CElement* pValue,const TypeElement& enType,CAttribute* pAttribute,const TypeConversion& enTypeConvers, const std::wstring& wsName = L"oper",CElement* pIndex = nullptr);
+		static void ElementConversion(XmlUtils::CXmlWriter* pXmlWriter,CElement* pElement);
 		void EndConversion();
 		std::wstring GetOOXML();
 	private:
-		static void BracketTypeNotation(const std::wstring& wsOpenBracket,const std::wstring& wsCloseBracket, XmlUtils::CXmlWriter* pXmlWrite);
-		XmlUtils::CXmlWriter* m_pXmlWrite;
+		static void BracketTypeNotation(const std::wstring& wsOpenBracket,const std::wstring& wsCloseBracket, XmlUtils::CXmlWriter* pXmlWriter);
+		XmlUtils::CXmlWriter* m_pXmlWriter = NULL;
 	};
 }

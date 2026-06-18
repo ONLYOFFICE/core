@@ -829,7 +829,7 @@ void DocxConverter::convert(OOX::Logic::CParagraph *oox_paragraph)
 	}
 	if (oox_paragraph->m_oParagraphProperty || odt_context->is_empty_section() || current_section_properties)
 	{
-		bStyled			= true;
+		bStyled = true;
 		
 		odf_writer::paragraph_format_properties	*paragraph_properties	= NULL;
 		odf_writer::text_format_properties		*text_properties		= NULL;
@@ -872,10 +872,6 @@ void DocxConverter::convert(OOX::Logic::CParagraph *oox_paragraph)
 				list_style_name = odt_context->styles_context()->lists_styles().get_style_name(list_style_id); 
 				odt_context->styles_context()->last_state()->set_list_style_name(list_style_name);
 			}
-			
-			if(oox_paragraph->m_oParagraphProperty)
-
-				convert(oox_paragraph->m_oParagraphProperty->m_oRPr.GetPointer(), text_properties);
 		}
 		if (odt_context->in_drop_cap())
 		{
@@ -886,6 +882,8 @@ void DocxConverter::convert(OOX::Logic::CParagraph *oox_paragraph)
 		
 		if (text_properties && oox_paragraph->m_oParagraphProperty)
 		{
+			convert(oox_paragraph->m_oParagraphProperty->m_oRPr.GetPointer(), text_properties);
+
 			if (odt_context->in_drop_cap())
 			{
 				//actually correct paragraph properties go in the paragraph following the drop cap
@@ -1552,8 +1550,9 @@ void DocxConverter::convert(OOX::Logic::CParagraphProperty	*oox_paragraph_pr,
 	//{
 	//	convert(oox_paragraph_pr->m_oRPr.GetPointer(), text_properties, true);
 	//}	
-	
-	if (text_properties && text_properties->fo_font_size_)
+	convert(oox_paragraph_pr->m_oFramePr.GetPointer(), paragraph_properties); //drop cap or frame
+
+	if (odt_context->in_drop_cap() == false && text_properties && text_properties->fo_font_size_)
 	{
 		double font_size_pt = text_properties->fo_font_size_->get_length().get_value_unit(odf_types::length::pt);
 		if (font_size_pt > 2)
@@ -1740,8 +1739,6 @@ void DocxConverter::convert(OOX::Logic::CParagraphProperty	*oox_paragraph_pr,
 		//odt_context->text_context()->set_KeepNextParagraph(true);
 		paragraph_properties->fo_keep_with_next_ = odf_types::keep_together::type::Always;
 	}
-
-	convert(oox_paragraph_pr->m_oFramePr.GetPointer(), paragraph_properties);		//drop cap or frame
 
 	if (current_section_properties) 
 	{
@@ -2950,7 +2947,7 @@ void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_pr, odf_writer::te
 			}
 		}
 	}
-	if (oox_run_pr->m_oSz.IsInit() && oox_run_pr->m_oSz->m_oVal.IsInit() && !odt_context->in_drop_cap())
+	if (oox_run_pr->m_oSz.IsInit() && oox_run_pr->m_oSz->m_oVal.IsInit() && odt_context->in_drop_cap() == false)
 	{
 		double font_size_pt = oox_run_pr->m_oSz->m_oVal->ToPoints();
 		
@@ -2958,7 +2955,7 @@ void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_pr, odf_writer::te
 		
 		OoxConverter::convert(font_size_pt, text_properties->fo_font_size_);		
 	}
-	if (oox_run_pr->m_oSzCs.IsInit() && oox_run_pr->m_oSzCs->m_oVal.IsInit() && !odt_context->in_drop_cap())
+	if (oox_run_pr->m_oSzCs.IsInit() && oox_run_pr->m_oSzCs->m_oVal.IsInit() && odt_context->in_drop_cap() == false)
 	{
 		double font_size_pt = oox_run_pr->m_oSzCs->m_oVal->ToPoints();
 		

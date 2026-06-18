@@ -2081,7 +2081,8 @@ int docx_conversion_context::process_paragraph_style(_CP_OPT(std::wstring) style
 			root()->odf_context().styleContainer().style_by_name(style_name, odf_types::style_family::Paragraph, process_headers_footers_))
     {
 		double font_size = odf_reader::text_format_properties::process_font_size_impl(odf_types::font_size(odf_types::percent(100.0)), styleInst);
-		if (font_size > 0) current_fontSize.push_back(font_size);
+		if (font_size > 0) 
+			current_fontSize.push_back(font_size);
 		
 		process_page_break_after(styleInst);
 
@@ -2181,7 +2182,9 @@ int docx_conversion_context::process_paragraph_attr(odf_reader::text::paragraph_
             )
 		{
 			double font_size = odf_reader::text_format_properties::process_font_size_impl(odf_types::font_size(odf_types::percent(100.0)), styleInst);
-			if (font_size > 0) current_fontSize.push_back(font_size);
+			
+			if (font_size > 0) 
+				current_fontSize.push_back(font_size);
 			
 			_CP_OPT(int) outline_level = calc_outline_level(Attr->outline_level_, styleInst);
 			
@@ -2416,7 +2419,15 @@ void docx_conversion_context::add_delayed_element(odf_reader::office_element * E
 {
    delayed_elements_.push_back(Elm);    
 }
-
+double docx_conversion_context::get_current_fontSize()
+{ 
+	return current_fontSize.empty() ? 0 : current_fontSize.back(); 
+}
+void docx_conversion_context::pop_current_fontSize() 
+{ 
+	if (!current_fontSize.empty()) 
+		current_fontSize.pop_back(); 
+}
 void docx_conversion_context::docx_convert_delayed()
 {
 	if (delayed_elements_.empty()) return;

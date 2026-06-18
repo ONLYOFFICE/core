@@ -149,6 +149,7 @@ DEFINES += BUIDLER_OPEN_BASE64_ENABLED
 CONFIG += drawingfile_support
 drawingfile_support {
 	DEFINES += WASM_SERIALIZER_USE_ALLOCATOR
+	DEFINES += DOCBUILDER_PDF_EDITOR
 	ADD_DEPENDENCY(PdfFile, XpsFile, DjVuFile, OFDFile, DocxRenderer)
 
 	HEADERS += \

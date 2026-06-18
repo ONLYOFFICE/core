@@ -929,14 +929,14 @@ public:
     StreamsManPtr	get_stream_man() const				{ return streams_man_; }
     void			set_stream_man(StreamsManPtr Sm)	{ streams_man_ = Sm; }
 
-    void set_rtl(bool val)			{ is_rtl_ = val; }
-    bool get_rtl() const			{return is_rtl_;}
+    void set_rtl(bool val) { is_rtl_ = val; }
+    bool get_rtl() const {return is_rtl_;}
    
-	double get_current_fontSize()	{return current_fontSize.empty() ? 0 : current_fontSize.back();}
-	void pop_current_fontSize()		{if (!current_fontSize.empty()) current_fontSize.pop_back();}
+	double get_current_fontSize();
+	void pop_current_fontSize();
 	
 	void set_outline_level(int val)	{current_outline_level_ = val;}
-	int get_outline_level()			{return current_outline_level_;}
+	int get_outline_level() {return current_outline_level_;}
 
 	void set_process_note		(NoteType Val) { current_process_note_ = Val; }
 	NoteType get_process_note	() const		{ return current_process_note_; }

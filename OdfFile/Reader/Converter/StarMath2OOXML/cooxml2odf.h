@@ -192,7 +192,7 @@ namespace StarMath
 		void SetBaseAttribute(std::wstring wsBaseColor = L"", unsigned int uiBaseSize = 0);
 		std::wstring GetHashAnnotation();
 	private:
-		XmlUtils::CXmlWriter* m_pXmlWrite;
+		XmlUtils::CXmlWriter* m_pXmlWriter;
 		std::wstring m_wsAnnotationStarMath,m_wsSemantic;
 		std::stack<StValuePr*> m_stAttribute;
 		std::wstring m_wsBaseColor,m_wsHashAnnotation;

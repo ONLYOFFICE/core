@@ -53,12 +53,13 @@ public:
 
 	
 	void readFields(CFRecord& record);
+	void writeFields(CFRecord& record);
 
 	static const ElementType	type = typePieFormat;
 
 	int serialize(std::wostream & _stream);
 
-	_INT16 pcExplode;
+	_INT16 pcExplode = 0;
 
 };
 

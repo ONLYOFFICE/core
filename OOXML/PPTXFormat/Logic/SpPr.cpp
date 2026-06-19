@@ -196,14 +196,25 @@ namespace PPTX
 
 			return XmlUtils::CreateNode(m_namespace + L":spPr", oAttr, oValue);
 		}
-		XLS::BaseObjectPtr SpPr::toXLS(const unsigned short ObjContext) const
+		XLS::BaseObjectPtr SpPr::toXLS(const unsigned short ObjContext)
 		{
 			auto SpUnion = new XLS::SHAPEPROPS;
 			auto spStream = new XLS::ShapePropsStream;
 			SpUnion->m_ShapePropsStream = XLS::BaseObjectPtr(spStream);
 
 			spStream->wObjContext = ObjContext;
-			auto xmlProps = toXML();
+			m_namespace = L"a";
+			std::wstring xmlProps = L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>";
+			{
+				XmlUtils::CAttribute oAttr;
+				oAttr.Write(L"xmlns:a", std::wstring(L"http://schemas.openxmlformats.org/drawingml/2006/main"));
+
+				XmlUtils::CNodeValue oValue;
+				oValue.WriteNullable(xfrm);
+				oValue.Write(Fill);
+				oValue.WriteNullable(ln);
+				xmlProps += XmlUtils::CreateNode(m_namespace + L":spPr", oAttr, oValue);
+			}
 			spStream->xml_.reserve(xmlProps.length());
 			{
 				std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;

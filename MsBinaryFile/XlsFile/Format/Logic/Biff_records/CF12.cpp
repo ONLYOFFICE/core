@@ -607,12 +607,19 @@ int CF12::serialize(std::wostream & stream)
 			
 			if (!s1.empty() || !s2.empty())
 			{
-				CP_XML_NODE(L"formula")
+				if (!s1.empty())
 				{
-					if (!s1.empty()) 
+					CP_XML_NODE(L"formula")
+					{
 						CP_XML_STREAM() << XmlUtils::EncodeXmlString(s1);
-					else if(!s2.empty()) 
+					}
+				}
+				if (!s2.empty())
+				{
+					CP_XML_NODE(L"formula")
+					{
 						CP_XML_STREAM() << XmlUtils::EncodeXmlString(s2);
+					}
 				}
 			}
 		}

@@ -336,6 +336,8 @@ namespace OOX
 						auto chartRid = graphicFrame->chartRec->id_data.get();
 						auto castedChart = Get<OOX::File>(chartRid);
 						auto ChartFile = static_cast<OOX::Spreadsheet::CChartFile*>(castedChart.GetPointer());
+						if(!(ChartFile->type() == OOX::FileTypes::Chart))
+							continue;
 						if(ChartFile->m_oChartSpace.m_chart == nullptr)
 							continue;
 						auto xlsChart = ChartFile->m_oChartSpace.toXLS();

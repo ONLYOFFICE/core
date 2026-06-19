@@ -72,6 +72,8 @@
 #undef CreateFile
 #endif
 
+class IOfficeDrawingFile;
+
 namespace NSDoctRenderer
 {
 	static int GetFormatByTexExtention(const std::wstring& sExt)
@@ -431,6 +433,12 @@ public:
 
 	CJSContextData m_oContextData;
 
+	// PDF Editor
+	std::wstring m_sX2tPath;
+	std::wstring m_sPdfFile;
+	IOfficeDrawingFile* m_pPdfFile;
+	NSFonts::IApplicationFonts* m_pPdfFonts;
+
 public:
 
 	CV8RealTimeWorker(NSDoctRenderer::CDocBuilder* pBuilder, const NSDoctRenderer::DoctRendererEditorType& type, NSDoctRenderer::CDoctRendererConfig* config);
@@ -449,6 +457,12 @@ public:
 	bool SaveFileWithChanges(int type, const std::wstring& _path, const std::wstring& sJsonParams = L"", const bool& isEnterContext = true);
 	bool InitVariables();
 
+#ifdef DOCBUILDER_PDF_EDITOR
+	// PDF editing
+	bool OpenDrawingFile(const std::wstring& sFontsDirectory);
+	bool SaveEditedPdf(int type, const std::wstring& sDstFile, const std::wstring& sMediaDir, const std::wstring& sJsonParams = L"", const bool& isEnterContext = true);
+#endif
+
 	bool NewSimpleJSInstance();
 	bool IsSimpleJSInstance();
 };
@@ -464,6 +478,9 @@ namespace NSDoctRenderer
 		std::wstring m_sTmpFolder;
 		std::wstring m_sFileDir;
 		int m_nFileType;
+
+		// original pdf path when editing a pdf (m_nFileType == 3)
+		std::wstring m_sEditPdfFile;
 
 		std::wstring m_sCommandsBeforeContextCreated;
 
@@ -575,6 +592,7 @@ namespace NSDoctRenderer
 			}
 
 			m_nFileType = -1;
+			m_sEditPdfFile = L"";
 
 			NSDirectory::CreateDirectory(m_sFileDir);
 		}
@@ -942,6 +960,26 @@ namespace NSDoctRenderer
 			if (oChecker.nFileType & AVS_OFFICESTUDIO_FILE_DRAW)
 				m_nFileType = 7;
 
+#ifdef DOCBUILDER_PDF_EDITOR
+			if (AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF  == oChecker.nFileType ||
+				AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDFA == oChecker.nFileType)
+			{
+				m_nFileType = 3;
+				m_sEditPdfFile = sFileCopy;
+
+				NSDirectory::CreateDirectory(m_sFileDir + L"/media");
+
+				if (m_pWorker && m_pWorker->IsSimpleJSInstance() && !m_bIsOpenedFromSimpleJS)
+				{
+					RELEASEOBJECT(m_pWorker);
+					CheckWorker();
+				}
+
+				LOGGER_SPEED_LAP("open_convert");
+				return 0;
+			}
+#endif
+
 			int nReturnCode = ConvertToInternalFormat(m_sFileDir, sFileCopy, params);
 
 			LOGGER_SPEED_LAP("open_convert");
@@ -974,6 +1012,7 @@ namespace NSDoctRenderer
 
 			m_sFileDir = L"";
 			m_nFileType = -1;
+			m_sEditPdfFile = L"";
 
 			if (m_pWorker)
 				m_sGlobalVariable = m_pWorker->GetGlobalVariable();
@@ -1001,6 +1040,30 @@ namespace NSDoctRenderer
 			return _path;
 		}
 
+		// extracts the inner json (...{...}...) from the x2t-style xml params passed to SaveFile
+		static std::wstring ExtractJsonParams(const std::wstring& sConvertionParams)
+		{
+			std::wstring sJsonParams = sConvertionParams;
+			if (!sJsonParams.empty())
+			{
+				std::wstring::size_type pos1 = sJsonParams.find(L">");
+				std::wstring::size_type pos2 = sJsonParams.find(L"</");
+				if (std::wstring::npos != pos1 && std::wstring::npos != pos2)
+				{
+					sJsonParams = sJsonParams.substr(pos1 + 1, pos2 - pos1 - 1);
+					NSStringUtils::string_replace(sJsonParams, L"&quot;", L"\"");
+
+					if (0 != sJsonParams.find(L"{"))
+						sJsonParams = L"";
+				}
+				else
+				{
+					sJsonParams = L"";
+				}
+			}
+			return sJsonParams;
+		}
+
 		int SaveFile(const int& type, const std::wstring& path, const wchar_t* params = NULL, const bool& isEnterContext = true)
 		{
 			Init();
@@ -1026,28 +1089,33 @@ namespace NSDoctRenderer
 				NSStringUtils::string_replace(sConvertionParams, L"\'", L"&quot;");
 			}
 
+#ifdef DOCBUILDER_PDF_EDITOR
+			if (3 == m_nFileType &&
+				(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == type ||
+				 AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDFA == type))
+			{
+				if (!CheckWorker())
+					return 1;
+
+				std::wstring sJsonParams = ExtractJsonParams(sConvertionParams);
+				std::wstring _path = GetSaveFilePath(path);
+
+				bool bOk = m_pWorker->SaveEditedPdf(type, _path, m_sFileDir, sJsonParams, isEnterContext);
+
+				LOGGER_SPEED_LAP("save_convert");
+				if (bOk)
+					return 0;
+
+				CV8RealTimeWorker::_LOGGING_ERROR_(L"error: ", L"save pdf error");
+				return 1;
+			}
+#endif
+
 			std::wstring sFileBin = L"/Editor.bin";
 
 			if (!m_oParams.m_bSaveWithDoctrendererMode && m_pWorker)
 			{
-				std::wstring sJsonParams = sConvertionParams;
-				if (!sJsonParams.empty())
-				{
-					std::wstring::size_type pos1 = sJsonParams.find(L">");
-					std::wstring::size_type pos2 = sJsonParams.find(L"</");
-					if (std::wstring::npos != pos1 && std::wstring::npos != pos2)
-					{
-						sJsonParams = sJsonParams.substr(pos1 + 1, pos2 - pos1 - 1);
-						NSStringUtils::string_replace(sJsonParams, L"&quot;", L"\"");
-
-						if (0 != sJsonParams.find(L"{"))
-							sJsonParams = L"";
-					}
-					else
-					{
-						sJsonParams = L"";
-					}
-				}
+				std::wstring sJsonParams = ExtractJsonParams(sConvertionParams);
 
 				this->m_pWorker->SaveFileWithChanges(type, m_sFileDir + L"/Editor2.bin", sJsonParams, isEnterContext);
 				sFileBin = L"/Editor2.bin";
@@ -1255,6 +1323,7 @@ namespace NSDoctRenderer
 				m_pWorker->m_sJSCodeStart = U_TO_UTF8(m_sCommandsBeforeContextCreated);
 
 				m_pWorker->m_nFileType = m_nFileType;
+				m_pWorker->m_sPdfFile = m_sEditPdfFile;
 
 				if (-1 != m_nFileType)
 					m_sCommandsBeforeContextCreated = L"";
@@ -1341,6 +1410,8 @@ namespace NSDoctRenderer
 				return NSDoctRenderer::DoctRendererEditorType::SLIDE;
 			case 2:
 				return NSDoctRenderer::DoctRendererEditorType::CELL;
+			case 3:
+				return NSDoctRenderer::DoctRendererEditorType::PDF;
 			case 7:
 				return NSDoctRenderer::DoctRendererEditorType::VISIO;
 			default:

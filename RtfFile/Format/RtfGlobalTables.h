@@ -33,8 +33,10 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 #pragma once
+
 #include "RtfProperty.h"
 #include "RtfShape.h"
+#include <set>
 
 class RtfFontTable : public IDocumentElement, public ItemSingleContainer<RtfFont>
 {
@@ -71,9 +73,12 @@ public:
 	bool GetStyle( int nId, RtfStylePtr& oStyle);
 	bool GetStyle( std::wstring sName, RtfStylePtr& oStyle );
 	RtfStylePtr GetStyleResulting( RtfStylePtr oInputStyle );
-
+	
 	std::wstring RenderToRtf(RenderParameter oRenderParameter);
 	std::wstring RenderToOOX(RenderParameter oRenderParameter);
+
+private:
+	RtfStylePtr GetStyleResulting( RtfStylePtr oInputStyle, std::set<int>& usedStyles );
 };
 
 //class RtfLatentStyleTable : public IDocumentElement, public ItemContainer<RtfStyleException>

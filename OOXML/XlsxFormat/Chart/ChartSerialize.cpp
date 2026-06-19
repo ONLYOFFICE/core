@@ -1325,8 +1325,13 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 				auto objLink = new XLS::ObjectLink;
 				objLink->wLinkObj = 1;
 				auto seriesText = new XLS::SeriesText;
-				if(m_chart->m_title != nullptr && m_chart->m_title->m_tx != nullptr)
+				if(m_chart->m_title != nullptr && m_chart->m_title->m_tx != nullptr && m_chart->m_title->m_tx->m_oRich.IsInit())
 					seriesText->stText = m_chart->m_title->m_tx->m_oRich->GetText();
+				else if(m_chart->m_title != nullptr && m_chart->m_title->m_tx != nullptr
+				&& m_chart->m_title->m_tx->m_strRef != nullptr && m_chart->m_title->m_tx->m_strRef->m_f.IsInit())
+				{
+					seriesText->stText = m_chart->m_title->m_tx->m_strRef->m_f.get();
+				}
 				else
 				{
 					textRecord->fAutoText = true;

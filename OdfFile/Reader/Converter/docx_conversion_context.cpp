@@ -272,8 +272,9 @@ std::wstring styles_map::name(const std::wstring & Name, odf_types::style_family
 {
     return Name + L":" + boost::lexical_cast<std::wstring>(odf_types::style_family(Type));
 }
-void docx_conversion_context::add_element_to_run(std::wstring parenStyleId)
+bool docx_conversion_context::add_element_to_run(std::wstring parenStyleId)
 {
+	bool new_run = false;
 	if (false == current_process_comment_ && (false == get_comments_context().ref_end_.empty() || false == get_comments_context().ref_start_.empty()))
 	{
 		if (state_.in_run_)
@@ -301,7 +302,7 @@ void docx_conversion_context::add_element_to_run(std::wstring parenStyleId)
 	}
 	if (false == state_.in_run_)
     {
-        state_.in_run_ = true;
+		state_.in_run_ = new_run = true;
 		output_stream() << L"<w:r>";
 
 		start_changes(true);
@@ -320,8 +321,8 @@ void docx_conversion_context::add_element_to_run(std::wstring parenStyleId)
 	        
 			get_styles_context().docx_serialize_text_style( output_stream(), parenStyleId, text_tracked_context_.dumpRPr_);
 		}
-
 	}
+	return new_run;
 }
 
 void docx_conversion_context::start_paragraph(bool is_header)
@@ -1514,10 +1515,10 @@ void docx_conversion_context::process_styles()
                     const std::wstring basedOnId = styles_map_.get(baseOn->name(), baseOn->type());
                     _Wostream << L"<w:basedOn w:val=\"" << basedOnId << "\"/>";
                 }
-				else if (!bDefault && !default_style.empty())
-				{
-					_Wostream << L"<w:basedOn w:val=\"" << default_style << "\"/>";
-				}
+				//else if (!bDefault && !default_style.empty())
+				//{
+				//	_Wostream << L"<w:basedOn w:val=\"" << default_style << "\"/>";
+				//}
 				if (arStyles[i]->primary_format())
 				{
 					if (*arStyles[i]->primary_format())
@@ -1552,6 +1553,7 @@ void docx_conversion_context::process_styles()
 
                 if (odf_reader::style_content * content = arStyles[i]->content())
                 {
+					set_rtl(false);
 					get_tabs_context().clear();
 					calc_tab_stops(arStyles[i].get(), get_tabs_context());					
 					get_styles_context().start_process_style(arStyles[i].get());
@@ -2079,7 +2081,8 @@ int docx_conversion_context::process_paragraph_style(_CP_OPT(std::wstring) style
 			root()->odf_context().styleContainer().style_by_name(style_name, odf_types::style_family::Paragraph, process_headers_footers_))
     {
 		double font_size = odf_reader::text_format_properties::process_font_size_impl(odf_types::font_size(odf_types::percent(100.0)), styleInst);
-		if (font_size > 0) current_fontSize.push_back(font_size);
+		if (font_size > 0) 
+			current_fontSize.push_back(font_size);
 		
 		process_page_break_after(styleInst);
 
@@ -2179,7 +2182,9 @@ int docx_conversion_context::process_paragraph_attr(odf_reader::text::paragraph_
             )
 		{
 			double font_size = odf_reader::text_format_properties::process_font_size_impl(odf_types::font_size(odf_types::percent(100.0)), styleInst);
-			if (font_size > 0) current_fontSize.push_back(font_size);
+			
+			if (font_size > 0) 
+				current_fontSize.push_back(font_size);
 			
 			_CP_OPT(int) outline_level = calc_outline_level(Attr->outline_level_, styleInst);
 			
@@ -2354,25 +2359,30 @@ int docx_conversion_context::process_paragraph_attr(odf_reader::text::paragraph_
 }
 
 
-void docx_conversion_context::process_page_break_after(const odf_reader::style_instance * styleInst)
+void docx_conversion_context::process_page_break_after(const odf_reader::style_instance * styleInstance)
 {
-    if (styleInst)
-    {
-        const odf_reader::style_instance * inst = styleInst;
-        while (inst)
-        {
-            if (inst->content() && inst->content()->get_style_paragraph_properties())
-            {
-                _CP_OPT(odf_types::fo_break) fo_break_val = inst->content()->get_style_paragraph_properties()->content_.fo_break_after_;
-				if (fo_break_val)
-                {
-					set_page_break_after(fo_break_val->get_type());
-					break;
-                }
-            }
-            inst = inst->parent();
-        }
-    }
+	if (!styleInstance) return;
+
+	std::map<std::wstring, int> usedStyles;
+	while (styleInstance)
+	{
+		std::wstring style_name = styleInstance->name();
+		if (usedStyles.find(style_name) != usedStyles.end())
+			break;
+
+		usedStyles.insert(std::make_pair(style_name, 0));
+
+		if (styleInstance->content() && styleInstance->content()->get_style_paragraph_properties())
+		{
+			_CP_OPT(odf_types::fo_break) fo_break_val = styleInstance->content()->get_style_paragraph_properties()->content_.fo_break_after_;
+			if (fo_break_val)
+			{
+				set_page_break_after(fo_break_val->get_type());
+				break;
+			}
+		}
+		styleInstance = styleInstance->parent();
+	}
 }
 void docx_conversion_context::serialize_list_properties(std::wostream & strm)
 {
@@ -2409,7 +2419,15 @@ void docx_conversion_context::add_delayed_element(odf_reader::office_element * E
 {
    delayed_elements_.push_back(Elm);    
 }
-
+double docx_conversion_context::get_current_fontSize()
+{ 
+	return current_fontSize.empty() ? 0 : current_fontSize.back(); 
+}
+void docx_conversion_context::pop_current_fontSize() 
+{ 
+	if (!current_fontSize.empty()) 
+		current_fontSize.pop_back(); 
+}
 void docx_conversion_context::docx_convert_delayed()
 {
 	if (delayed_elements_.empty()) return;
@@ -2594,7 +2612,7 @@ void docx_conversion_context::add_note_reference ()
 {
     if (current_process_note_ == footNote || current_process_note_ ==  endNote)
     {
-        add_element_to_run(_T(""));
+        add_element_to_run(L"");
         output_stream() << ((current_process_note_ == footNote) ? L"<w:footnoteRef />" : L"<w:endnoteRef />");
         finish_run();
         current_process_note_ = (NoteType) (current_process_note_ + 1); //add ref set

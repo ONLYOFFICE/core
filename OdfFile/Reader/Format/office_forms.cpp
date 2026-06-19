@@ -912,7 +912,8 @@ void form_combobox::docx_convert_sdt(oox::docx_conversion_context & Context, dra
 				Context.output_stream() << L"<w:alias w:val=\"" + XmlUtils::EncodeXmlString(*name_) + L"\"/>";
 			}
 			Context.output_stream() << L"<w:id w:val=\"" + std::to_wstring(Context.get_drawing_context().get_current_shape_id()) + L"\"/>";
-			
+			Context.output_stream() << L"<w15:appearance w15:val=\"boundingBox\"/>";
+
 			Context.output_stream() << L"<w:dropDownList>";
 
 			for (size_t i = 0; i < items_.size(); i++)
@@ -930,18 +931,17 @@ void form_combobox::docx_convert_sdt(oox::docx_conversion_context & Context, dra
 		Context.output_stream() << L"</w:sdtPr>";
 		Context.output_stream() << L"<w:sdtContent>";
 		{
-			Context.add_new_run(L"");
-				Context.output_stream() << L"<w:t xml:space=\"preserve\">";
-				if (current_value_)
-				{
-					Context.output_stream() << XmlUtils::EncodeXmlString(*current_value_ );
-				}
-				else
-				{
-					Context.output_stream() << L"Select item";
-				}
-				Context.output_stream() << L"</w:t>";
-			Context.finish_run();
+			bool inPara = Context.get_paragraph_state();
+			if (!inPara) Context.output_stream() << L"<w:p>";
+			Context.output_stream() << L"<w:r>";
+			Context.output_stream() << L"<w:t xml:space=\"preserve\">";
+			if (current_value_)
+				Context.output_stream() << XmlUtils::EncodeXmlString(*current_value_);
+			else
+				Context.output_stream() << L"Select item";
+			Context.output_stream() << L"</w:t>";
+			Context.output_stream() << L"</w:r>";
+			if (!inPara) Context.output_stream() << L"</w:p>";
 		}
 		Context.output_stream() << L"</w:sdtContent>";
 	Context.output_stream() << L"</w:sdt>";

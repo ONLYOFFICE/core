@@ -1826,7 +1826,11 @@ BYTE* CPdfReader::GetButtonIcon(int nBackgroundColor, int _nPageIndex, bool bBas
 			}
 
 			// else
-			BYTE* pBgraData = new BYTE[nWidth * nHeight * 4];
+			const size_t nBufSize = 4 * static_cast<size_t>(nWidth) * static_cast<size_t>(nHeight);
+			BYTE* pBgraData = new(std::nothrow) BYTE[nBufSize];
+			if (!pBgraData)
+				continue;
+
 			unsigned int nColor = (unsigned int)nBackgroundColor;
 			unsigned int nSize  = (unsigned int)(nWidth * nHeight);
 			unsigned int* pTemp = (unsigned int*)pBgraData;

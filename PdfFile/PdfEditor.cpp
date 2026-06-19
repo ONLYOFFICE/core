@@ -63,6 +63,8 @@
 #include "SrcWriter/Image.h"
 #include "SrcWriter/Font14.h"
 
+#include <vector>
+
 #define _UC_AddToParent(val)\
 {\
 	if (pParent->GetType() == PdfWriter::object_type_DICT)\
@@ -684,7 +686,50 @@ PdfWriter::CDictObject* GetWidgetParent(PDFDoc* pdfDoc, PdfWriter::CDocument* pD
 	oParent.free();
 	return pParent;
 }
+// ── ctm ─────────────────────────────────────────────────────────────────────
+struct CTMSnapshot
+{
+	double m[6];
+};
+void CopyCTM(const double* src, double* dst)
+{
+	for (int i = 0; i < 6; ++i)
+		dst[i] = src[i];
+}
+void SkipInlineImage(Parser* parser)
+{
+	Object obj;
+	parser->getObj(&obj);
+	while (!obj.isEOF() && !obj.isCmd("ID"))
+	{
+		obj.free();
+		parser->getObj(&obj);
+	}
+	obj.free();
 
+	Stream* str = parser->getStream();
+
+	int c1 = str->getChar();
+	int c2 = str->getChar();
+	while (true)
+	{
+		if (c1 == EOF)
+			break;
+
+		if (c1 == 'E' && c2 == 'I')
+		{
+			int c3 = str->lookChar();
+			if (c3 == EOF || isspace(c3) || c3 == 0)
+			{
+				str->getChar();
+				break;
+			}
+		}
+
+		c1 = c2;
+		c2 = str->getChar();
+	}
+}
 void GetCTM(XRef* pXref, Object* oPage, double* dCTM)
 {
 	if (!oPage || !oPage->isDict())
@@ -697,11 +742,17 @@ void GetCTM(XRef* pXref, Object* oPage, double* dCTM)
 		return;
 	}
 
+	dCTM[0] = 1; dCTM[1] = 0;
+	dCTM[2] = 0; dCTM[3] = 1;
+	dCTM[4] = 0; dCTM[5] = 0;
+
 	Parser* parser = new Parser(pXref, new Lexer(pXref, &oContents), gFalse);
 
 	int nNumArgs = 0;
 	Object oObj;
 	Object pArgs[maxArgs];
+
+	std::vector<CTMSnapshot> ctmStack;
 
 	parser->getObj(&oObj);
 	while (!oObj.isEOF())
@@ -710,14 +761,17 @@ void GetCTM(XRef* pXref, Object* oPage, double* dCTM)
 		{
 			if (oObj.isCmd("q"))
 			{
-				Object obj;
-				parser->getObj(&obj);
-				while (!obj.isEOF() && !obj.isCmd("Q"))
+				CTMSnapshot snap;
+				CopyCTM(dCTM, snap.m);
+				ctmStack.push_back(snap);
+			}
+			else if (oObj.isCmd("Q"))
+			{
+				if (!ctmStack.empty())
 				{
-					obj.free();
-					parser->getObj(&obj);
+					CopyCTM(ctmStack.back().m, dCTM);
+					ctmStack.pop_back();
 				}
-				obj.free();
 			}
 			else if (oObj.isCmd("cm") && nNumArgs > 5)
 			{
@@ -733,6 +787,9 @@ void GetCTM(XRef* pXref, Object* oPage, double* dCTM)
 				dCTM[4] = pArgs[4].getNum() * a1 + pArgs[5].getNum() * c1 + dCTM[4];
 				dCTM[5] = pArgs[4].getNum() * b1 + pArgs[5].getNum() * d1 + dCTM[5];
 			}
+			else if (oObj.isCmd("BI"))
+				SkipInlineImage(parser);
+
 			oObj.free();
 			for (int i = 0; i < nNumArgs; ++i)
 				pArgs[i].free();
@@ -740,12 +797,15 @@ void GetCTM(XRef* pXref, Object* oPage, double* dCTM)
 		}
 		else if (nNumArgs < maxArgs)
 			pArgs[nNumArgs++] = oObj;
+		else
+			oObj.free();
 
 		parser->getObj(&oObj);
 	}
 	oObj.free();
 	for (int i = 0; i < nNumArgs; ++i)
 		pArgs[i].free();
+
 	RELEASEOBJECT(parser);
 
 	oContents.free();
@@ -764,6 +824,7 @@ void GetInvertCTM(double* dCTM, double* dInvCTM)
 		dInvCTM[5] = (dCTM[1] * dCTM[4] - dCTM[0] * dCTM[5]) * invDet;
 	}
 }
+
 void DrawAnnot(Object* oAnnot, PdfWriter::CPage* pPage, PdfWriter::CDocument* pDoc, XRef* xref, CObjectsManager* pManager, int nStartRefID)
 {
 	Object oAP, oAPN, oObj;
@@ -2076,6 +2137,7 @@ void CloseWriteNew_FlushAnnotations(CPdfReader* pReader, CObjectsManager* mObjMa
 
 		if (nType == IAdvancedCommand::AdvancedCommandType::Annotation)
 		{
+			// Annotation - annotation that has changed or been created and needs to be drawn in Contents of page
 			CAnnotFieldInfo* command = dynamic_cast<CAnnotFieldInfo*>(pCmd);
 			CAnnotFieldInfo& oInfo   = *command;
 			if (!oInfo.IsWidget())
@@ -2095,7 +2157,6 @@ void CloseWriteNew_FlushAnnotations(CPdfReader* pReader, CObjectsManager* mObjMa
 			if (!pAP)
 			{
 				pDoc->RemoveObj(pAnnot);
-				RELEASEOBJECT(pAnnot);
 				continue;
 			}
 
@@ -2121,6 +2182,7 @@ void CloseWriteNew_FlushAnnotations(CPdfReader* pReader, CObjectsManager* mObjMa
 		}
 		else if (nType == IAdvancedCommand::AdvancedCommandType::RedactAnnot)
 		{
+			// RedactAnnot - annotation that needs to be drawn in Contents of page without changes
 			CRedactAnnot* command = dynamic_cast<CRedactAnnot*>(pCmd);
 
 			PDFDoc* pPDFDocument = NULL;
@@ -4534,7 +4596,7 @@ bool CPdfEditor::EditWidgets(IAdvancedCommand* pCommand)
 	}
 	return true;
 }
-int CPdfEditor::GetPagesCount()
+int  CPdfEditor::GetPagesCount()
 {
 	return m_pWriter->GetDocument()->GetPagesCount();
 }
@@ -4559,7 +4621,7 @@ void CPdfEditor::GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, 
 	*pdDpiX = 72.0;
 	*pdDpiY = 72.0;
 }
-int CPdfEditor::GetRotate(int nPageIndex)
+int  CPdfEditor::GetRotate(int nPageIndex)
 {
 	PdfWriter::CPage* pPage = m_pWriter->GetDocument()->GetPage(nPageIndex);
 	if (!pPage)

@@ -182,14 +182,14 @@ namespace NSCSS
 		return arElements;
 	}
 
-	std::vector<CElement *> CElement::GetPrevElements(const std::vector<std::wstring>::const_iterator& oNodesBegin, const std::vector<std::wstring>::const_iterator& oNodesEnd) const
+	std::vector<CElement*> CElement::GetPrevElements(const std::vector<std::wstring>::const_reverse_iterator& oNodesBegin, const std::vector<std::wstring>::const_reverse_iterator& oNodesEnd) const
 	{
 		if (oNodesBegin >= oNodesEnd || m_arPrevElements.empty())
 			return std::vector<CElement*>();
 
 		std::vector<CElement*> arElements;
 
-		for (std::vector<std::wstring>::const_iterator iWord = oNodesBegin; iWord != oNodesEnd; ++iWord)
+		for (std::vector<std::wstring>::const_reverse_iterator iWord = oNodesBegin; iWord < oNodesEnd; ++iWord)
 		{
 			if ((*iWord)[0] == L'.' && ((*iWord).find(L" ") != std::wstring::npos))
 			{

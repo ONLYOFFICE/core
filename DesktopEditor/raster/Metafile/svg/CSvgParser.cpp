@@ -37,6 +37,7 @@
 
 #include <algorithm>
 #include <cctype>
+#include <cwctype>
 
 #include "CSvgFile.h"
 
@@ -59,7 +60,7 @@
 #include "SvgObjects/CMask.h"
 #include "SvgObjects/CUse.h"
 
-#include "../../../../Common/3dParty/html/css/src/StaticFunctions.h"
+#include "../../../../UnicodeConverter/UnicodeConverter.h"
 
 namespace SVG
 {
@@ -228,7 +229,6 @@ namespace SVG
 				}
 				else
 				{
-					// Закрываем кавычку, если встретили соответствующую пару
 					if ((nQuoteType == 1 && c == '"') || (nQuoteType == 2 && c == '\''))
 						nQuoteType = 0;
 				}

@@ -51,6 +51,7 @@ private:
 	int m_lStride;
 
 	BYTE* m_pData;
+    int m_lDataSize;
 
 	BYTE* m_pPalette;
 	int m_lPaletteColors;
@@ -81,6 +82,9 @@ public:
 	BYTE* get_Data();
 	void put_Data(BYTE* pData);
 
+    int get_DataSize();
+    void put_DataSize(int size);
+
 	void put_Palette(BYTE* pDataColors, const int& colors);
 
 	bool IsGrayScale();
@@ -90,9 +94,12 @@ public:
 
 	void SetJpegQuality(const double& value);
 
-	bool OpenFile(const std::wstring& strFileName, unsigned int nFileType = 0, const bool& bIsOrientationRemove = false);
+    bool GetSpecializedGIFInfo(const std::wstring& strFileName, unsigned int nFileType = 0); 
+
+	bool OpenFile(const std::wstring& strFileName, unsigned int nFileType = 0, const bool& bIsOrientationRemove = false); //0 - detect
 
 	bool SaveFile(const std::wstring& strFileName, unsigned int nFileType);
+    bool SaveGetInsideFromFile(const std::wstring& strFileName);
 	bool Decode(BYTE*  pBuffer, int  nSize, unsigned int nFileType = 0);
 	bool Encode(BYTE*& pBuffer, int& nSize, unsigned int nFileType);
 	static void FreeEncodedMemory(void* pMemory);

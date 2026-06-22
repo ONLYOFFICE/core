@@ -291,8 +291,11 @@ void draw_path::reset_svg_path()
 		double scale_y{0.0}, scale_x{0.0};
 		if(svg_view_box.size() == 4)
 		{
-			scale_y = draw_path_attlist_.svg_height_->get_value()/(svg_view_box[3]/1000.);
-			scale_x = draw_path_attlist_.svg_width_->get_value()/(svg_view_box[2]/1000.);
+			if (draw_path_attlist_.svg_height_)
+				scale_y = draw_path_attlist_.svg_height_->get_value()/(svg_view_box[3]/1000.);
+
+			if (draw_path_attlist_.svg_width_)
+				scale_x = draw_path_attlist_.svg_width_->get_value()/(svg_view_box[2]/1000.);
 		}
 
 

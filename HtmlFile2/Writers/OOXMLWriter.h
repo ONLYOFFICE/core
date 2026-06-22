@@ -82,6 +82,12 @@ class COOXMLWriter : public IWriter
 	XmlString m_oNumberXml;   // numbering.xml
 	XmlString m_oWebSettings; // webSettings.xml
 
+	struct TCustomProperties
+	{
+		XmlString m_oXml;     // custom.xml
+		UINT m_unIds;
+	} m_oCustom;
+
 	NSCSS::CDocumentStyle m_oXmlStyle;      // OOXML style
 	NSCSS::NSProperties::CPage m_oPageData; // Page styles
 
@@ -188,6 +194,7 @@ public:
 
 	bool WriteText(std::wstring wsText, const std::vector<NSCSS::CNode>& arSelectors) override;
 	void WriteEmptyParagraph(bool bVahish = false, bool bInP = false) override;
+	void WriteMetadata(const std::wstring& wsName, const std::wstring& wsValue) override;
 	void WriteSpace();
 
 	void WriteEmptyBookmark(const std::wstring& wsId);

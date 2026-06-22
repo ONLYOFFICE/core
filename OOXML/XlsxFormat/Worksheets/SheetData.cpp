@@ -2859,6 +2859,8 @@ namespace OOX
 				CellReference.row = m_oRow.get() -1;
 				CellReference.column = m_oCol.get();
 			}
+			if(CellReference.row >  65535 || CellReference.column > 255)
+				return;
 			bool isReal = false;
 			double realCache = 0;
 			if(!m_oType.IsInit())
@@ -5186,6 +5188,8 @@ namespace OOX
 		};
 		auto processRow = [&](CRow *row, XLS::CELL_GROUP *groupPtr, std::vector<CellRangeRef> &shared_formulas_locations_ref)
 		{
+			if(row->m_oR.IsInit() && row->m_oR->GetValue() > 65535)
+				return;
 			groupPtr->m_arRows.push_back(row->toXLS());
 			for(auto cell : row->m_arrItems)
 			{

@@ -903,7 +903,10 @@ std::wstring RtfShape::GetShapeNodeName()
 {
 	if (m_bBackground)	return L"v:background";
 	if (m_bIsOle)		return L"v:rect";
-	
+
+	if (!m_aPVerticles.empty() || !m_aPSegmentInfo.empty())
+		return L"v:shape";
+
 	switch(m_nShapeType)
 	{
 		case ODRAW::sptRectangle:			return L"v:rect";

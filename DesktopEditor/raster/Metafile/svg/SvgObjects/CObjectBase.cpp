@@ -274,7 +274,7 @@ namespace SVG
 		if (NULL == m_pParent)
 			return {m_oXmlNode};
 
-		std::vector<NSCSS::CNode> arObjects = m_pParent->GetFullPath();
+		std::vector<NSCSS::CNode> arObjects{m_pParent->GetFullPath()};
 		arObjects.push_back(m_oXmlNode);
 		return arObjects;
 	}

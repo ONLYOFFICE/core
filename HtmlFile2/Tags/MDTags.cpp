@@ -1102,7 +1102,6 @@ bool CMarkdownTable::ConvertMatrix(XmlUtils::CXmlLiteReader& oReader, std::vecto
 
 					++unColumnIndex;
 				}
-				arSelectors.pop_back();
 			}
 			else
 			{

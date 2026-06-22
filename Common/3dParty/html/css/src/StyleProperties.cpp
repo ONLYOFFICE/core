@@ -2810,23 +2810,78 @@ namespace NSCSS
 		m_wsValue.clear();
 	}
 
-	bool CURL::SetValue(const std::wstring &wsValue)
+	bool CURL::SetValue(const std::wstring& wsValue)
 	{
 		if (wsValue.empty())
 			return false;
 
-		std::wregex oRegex(L"url\\s*\\(\\s*(?:'|\"|)([#]?[^'\"()]+)(?:'|\"|)\\s*\\)");
-		std::wsmatch oMatch;
+		const wchar_t* pStart{wsValue.c_str()};
+		const wchar_t* pEnd  {pStart + wsValue.size()};
 
-		if (!std::regex_search(wsValue.cbegin(), wsValue.cend(), oMatch, oRegex) || oMatch[1].str().empty())
+		const wchar_t* pFound{nullptr};
+
+		for (const wchar_t* pCur = pStart; pCur + 3 <= pEnd; ++pCur)
+		{
+			if (L'u' == pCur[0] && L'r' == pCur[1] && L'l' == pCur[2])
+			{
+				pFound = pCur + 3;
+				break;
+			}
+		}
+
+		if (!pFound)
 			return false;
 
-		m_wsValue = oMatch[1].str();
+		const wchar_t* pCur{pFound};
+
+		while (pCur < pEnd && std::iswspace(*pCur))
+			++pCur;
+
+		if (pCur >= pEnd || L'(' != *pCur)
+			return false;
+
+		++pCur;
+
+		while (pCur < pEnd && std::iswspace(*pCur))
+			++pCur;
+
+		wchar_t chQuote{0};
+
+		if (pCur < pEnd && (L'\'' == *pCur || L'"' == *pCur))
+		{
+			chQuote = *pCur;
+			++pCur;
+		}
+
+		const wchar_t* pValueBegin{pCur};
+
+		while (pCur < pEnd &&
+			   L'\'' != *pCur && L'"' != *pCur &&
+			   L'('  != *pCur && L')' != *pCur)
+			++pCur;
+
+		const wchar_t* pValueEnd{pCur};
+
+		if (pValueBegin == pValueEnd)
+			return false;
+
+		if (0 != chQuote && pCur < pEnd && *pCur == chQuote)
+			++pCur;
+		else if (pCur < pEnd && (L'\'' == *pCur || L'"' == *pCur))
+			++pCur;
+
+		while (pCur < pEnd && std::iswspace(*pCur))
+			++pCur;
+
+		if (pCur >= pEnd || L')' != *pCur)
+			return false;
+
+		m_wsValue.assign(pValueBegin, pValueEnd);
 		NS_STATIC_FUNCTIONS::RemoveSpaces(m_wsValue);
 
 		return true;
 	}
-	
+
 	std::wstring CURL::GetValue() const
 	{
 		return m_wsValue;

@@ -551,17 +551,19 @@ enable_cpp_17 {
 }
 
 core_linux {
-core_static_link_libstd {
-	!core_linux_clang {
-		QMAKE_LFLAGS += -static-libstdc++ -static-libgcc
-	} else {
-		# TODO: add libc++abi?
+	core_release {
+		core_static_link_libstd {
+			!core_linux_clang {
+				QMAKE_LFLAGS += -static-libstdc++ -static-libgcc
+			} else {
+				# TODO: add libc++abi?
+			}
+			message(core_static_link_libstd)
+		}
 	}
-	message(core_static_link_libstd)
-}
-plugin {
-	TARGET_EXT = .so
-}
+	plugin {
+		TARGET_EXT = .so
+	}
 }
 
 core_windows {

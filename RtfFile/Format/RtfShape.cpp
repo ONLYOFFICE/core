@@ -1691,7 +1691,7 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 			std::wstring sColors;
 			for (size_t i = 0; i < m_aFillShadeColors.size(); i++)
 			{
-				sColors += std::to_wstring(m_aFillShadeColors[i].second) + L" #" + XmlUtils::ToString(m_aFillShadeColors[i].first, L"%06X") + L";";
+				sColors += std::to_wstring(m_aFillShadeColors[i].second) + L" #" + RtfColor(m_aFillShadeColors[i].first).ToHexColor(true) + L";";
 			}
 			sShapeNodes += L" colors=\"" + sColors.substr(0, sColors.length() - 1) + L"\"";
 		}

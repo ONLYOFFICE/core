@@ -1089,31 +1089,46 @@ namespace NSDoctRenderer
 				NSStringUtils::string_replace(sConvertionParams, L"\'", L"&quot;");
 			}
 
+			std::wstring sFileFromOverride = L"";
+
 #ifdef DOCBUILDER_PDF_EDITOR
-			if (3 == m_nFileType &&
-				(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == type ||
-				 AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDFA == type))
+			if (3 == m_nFileType)
 			{
 				if (!CheckWorker())
 					return 1;
 
 				std::wstring sJsonParams = ExtractJsonParams(sConvertionParams);
-				std::wstring _path = GetSaveFilePath(path);
 
-				bool bOk = m_pWorker->SaveEditedPdf(type, _path, m_sFileDir, sJsonParams, isEnterContext);
+				if (AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == type ||
+					AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDFA == type)
+				{
+					std::wstring _path = GetSaveFilePath(path);
 
-				LOGGER_SPEED_LAP("save_convert");
-				if (bOk)
-					return 0;
+					bool bOk = m_pWorker->SaveEditedPdf(type, _path, m_sFileDir, sJsonParams, isEnterContext);
 
-				CV8RealTimeWorker::_LOGGING_ERROR_(L"error: ", L"save pdf error");
-				return 1;
+					LOGGER_SPEED_LAP("save_convert");
+					if (bOk)
+						return 0;
+
+					CV8RealTimeWorker::_LOGGING_ERROR_(L"error: ", L"save pdf error");
+					return 1;
+				}
+
+				std::wstring sTmpPdf = m_sFileDir + L"/save_tmp.pdf";
+				bool bOk = m_pWorker->SaveEditedPdf(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF, sTmpPdf, m_sFileDir, sJsonParams, isEnterContext);
+				if (!bOk)
+				{
+					CV8RealTimeWorker::_LOGGING_ERROR_(L"error: ", L"save pdf error");
+					return 1;
+				}
+
+				sFileFromOverride = sTmpPdf;
 			}
 #endif
 
 			std::wstring sFileBin = L"/Editor.bin";
 
-			if (!m_oParams.m_bSaveWithDoctrendererMode && m_pWorker)
+			if (sFileFromOverride.empty() && !m_oParams.m_bSaveWithDoctrendererMode && m_pWorker)
 			{
 				std::wstring sJsonParams = ExtractJsonParams(sConvertionParams);
 
@@ -1126,17 +1141,23 @@ namespace NSDoctRenderer
 			std::wstring _path = GetSaveFilePath(path);
 
 			oBuilder.WriteString(L"<?xml version=\"1.0\" encoding=\"utf-8\"?><TaskQueueDataConvert><m_sFileFrom>");
-			oBuilder.WriteEncodeXmlString(m_sFileDir);
-			oBuilder.WriteString(sFileBin + L"</m_sFileFrom><m_sFileTo>");
+			if (!sFileFromOverride.empty())
+				oBuilder.WriteEncodeXmlString(sFileFromOverride);
+			else
+			{
+				oBuilder.WriteEncodeXmlString(m_sFileDir);
+				oBuilder.WriteString(sFileBin);
+			}
+			oBuilder.WriteString(L"</m_sFileFrom><m_sFileTo>");
 			oBuilder.WriteEncodeXmlString(_path);
 			oBuilder.WriteString(L"</m_sFileTo><m_nFormatTo>");
 			oBuilder.WriteString(std::to_wstring(type));
 			oBuilder.WriteString(L"</m_nFormatTo><m_sThemeDir>");
 			oBuilder.WriteEncodeXmlString(L"./sdkjs/slide/themes");
-			if (!m_oParams.m_bSaveWithDoctrendererMode)
-				oBuilder.WriteString(L"</m_sThemeDir><m_bDontSaveAdditional>true</m_bDontSaveAdditional>");
-			else
+			if (sFileFromOverride.empty() && m_oParams.m_bSaveWithDoctrendererMode)
 				oBuilder.WriteString(L"</m_sThemeDir><m_bFromChanges>true</m_bFromChanges><m_bDontSaveAdditional>true</m_bDontSaveAdditional>");
+			else
+				oBuilder.WriteString(L"</m_sThemeDir><m_bDontSaveAdditional>true</m_bDontSaveAdditional>");
 			oBuilder.WriteString(L"<m_nCsvTxtEncoding>46</m_nCsvTxtEncoding><m_nCsvDelimiter>4</m_nCsvDelimiter>");
 
 			oBuilder.WriteString(L"<m_sFontDir>");
@@ -1301,6 +1322,8 @@ namespace NSDoctRenderer
 
 			NSDirectory::DeleteDirectory(sDstTmpDir);
 			NSFile::CFileBinary::Remove(sTempFileForParams);
+			if (!sFileFromOverride.empty())
+				NSFile::CFileBinary::Remove(sFileFromOverride);
 
 			LOGGER_SPEED_LAP("save_convert");
 

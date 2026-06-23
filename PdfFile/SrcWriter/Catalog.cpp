@@ -120,6 +120,7 @@ namespace PdfWriter
 	}
 	CCatalog::CCatalog()
 	{
+		m_pStructTreeRoot = NULL;
 	}
 	CPageTree*   CCatalog::GetRoot() const
 	{

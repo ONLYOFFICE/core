@@ -554,11 +554,6 @@ void odf_table_context::set_column_width(double width)
 		{
 			column_properties->attlist_.style_column_width_ = length(length(width,length::pt).get_value_unit(length::cm),length::cm);
 			//column_properties->attlist_.style_rel_column_width_ = length(length(width,length::pt).get_value_unit(length::cm),length::cm);
-
-			if (impl_->optimal_column_width)
-			{
-				column_properties->attlist_.style_use_optimal_column_width_ = true;
-			}
 		}
 
 		impl_->current_table().table_width += width;
@@ -573,6 +568,10 @@ void odf_table_context::set_column_width(double width)
 			{
 				column_properties->attlist_.style_column_width_ = length(length(impl_->default_column_width.get(), length::pt).get_value_unit(length::cm), length::cm);
 				//properties->attlist_.style_rel_column_width_ = length(length(impl_->current_table().table_width,length::pt).get_value_unit(length::cm),length::cm);
+			}
+			if (impl_->optimal_column_width)
+			{
+				column_properties->attlist_.style_use_optimal_column_width_ = true;
 			}
 		}
 		impl_->current_table().table_width += impl_->default_column_width.get_value_or(0);

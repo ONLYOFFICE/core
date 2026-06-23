@@ -173,7 +173,7 @@ void oox_chart_series::parse_properties()
 		
 		data_labels_->set_position(*intVal); 
 	}
-	if( content_.class_ == odf_types::chart_class::type::line )
+	if (data_labels_ && content_.class_ == odf_types::chart_class::type::line )
 	{
 		data_labels_->setLineChart(true);
 	}

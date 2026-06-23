@@ -609,6 +609,16 @@ namespace NSDoctRenderer
 	 * Close() : closes the file (removes the temporary folder contents).
 	 * GetImageMap() : returns a dictionary object with the imageId -> imagePath key-value pairs (for inserting into the document).
 	 *
+	 * 7) Editing an existing PDF.
+	 * When a pdf file is opened (OpenFile), it is edited with the same Api as a text document
+	 * (the pdf editor uses the word sdkjs scripts). The original pdf is opened directly and kept,
+	 * so that on SaveFile("pdf", ...) the changes are applied onto the original pdf content
+	 * (EditPdf + apply changes), preserving everything that was already in the file:
+	 * builder.OpenFile("input.pdf", "");
+	 * var oDocument = Api.GetDocument();
+	 * // ... edit via Api / run macros ...
+	 * builder.SaveFile("pdf", "output.pdf");
+	 * builder.CloseFile();
 	 */
 
 	// To make the code shorter, use the following type definitions:

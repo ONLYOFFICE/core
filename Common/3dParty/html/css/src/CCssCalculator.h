@@ -4,11 +4,12 @@
 #include "CssCalculator_global.h"
 #include "StyleProperties.h"
 #include "CNode.h"
-#include <vector>
 
 namespace NSCSS
 {
 	class CCssCalculator_Private;
+	class CCompiledStyle;
+
 	class CSSCALCULATOR_EXPORT CCssCalculator
 	{
 	protected:

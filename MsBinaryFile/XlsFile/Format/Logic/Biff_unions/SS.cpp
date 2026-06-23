@@ -50,6 +50,7 @@
 #include"../Biff_records/End.h"
 #include"../Biff_records/StartObject.h"
 #include"../Biff_records/EndObject.h"
+#include"../Biff_records/ShapePropsStream.h"
 
 namespace XLS
 {
@@ -248,10 +249,43 @@ const bool SS::saveContent(BinProcessor& proc)
 	proc.mandatory<Begin>();
 	if(m_Chart3DBarShape != nullptr)
 		proc.mandatory(*m_Chart3DBarShape);
+	/*
 	if(m_LineFormat != nullptr)
+	{
 		proc.mandatory(*m_LineFormat);
+		auto castedLine = static_cast<LineFormat*>(m_LineFormat.get());
+		castedLine->setChecksum(ShapePropsStreamChecksumData);
+	}
 	if(m_AreaFormat != nullptr)
+	{
 		proc.mandatory(*m_AreaFormat);
+		auto castedArea = static_cast<AreaFormat*>(m_AreaFormat.get());
+		castedArea->setChecksum(ShapePropsStreamChecksumData);
+	}*/
+	{
+		LineFormat line;
+		line.rgb.red = 0xFFFF;
+		line.rgb.green = 0xFFFF;
+		line.rgb.blue = 0xFFFF;
+		line.lns = 0;
+		line.we = 0;
+		line.icv = 9;
+		proc.mandatory(line);
+		AreaFormat area;
+		area.rgbFore.red = 0xFF;
+		area.rgbFore.green = 0x00;
+		area.rgbFore.blue = 0x00;
+		area.rgbBack.red = 0xFF;
+		area.rgbBack.green = 0xFF;
+		area.rgbBack.blue = 0xFF;
+		area.fls = 1;
+		area.fAuto = false;
+		area.icvFore = 10;
+		area.icvBack = 9;
+		proc.mandatory(area);
+	}
+
+
 	if(m_PieFormat != nullptr)
 		proc.mandatory(*m_PieFormat);
 	if(m_SerFmt != nullptr)
@@ -264,7 +298,12 @@ const bool SS::saveContent(BinProcessor& proc)
 		proc.mandatory(*m_AttachedLabel);
 	for(auto i : m_arSHAPEPROPS)
 		if(i != nullptr)
+		{
+			auto castedProp = static_cast<SHAPEPROPS*>(i.get());
+			auto propHeader = static_cast<ShapePropsStream*>(castedProp->m_ShapePropsStream.get());
+			propHeader->dwChecksum = 0x1E563DFF;
 			proc.mandatory(*i);
+		}
 	proc.mandatory<End>();
 	return true;
 }

@@ -34,6 +34,7 @@
  */
 
 #include <iostream>
+#include <map>
 
 #include "../../Common/logging.h"
 #include <xml/simple_xml_writer.h>
@@ -168,38 +169,53 @@ int text_format_properties::process_font_size(const _CP_OPT(font_size) & FontSiz
     return 0;
 }
 
-double text_format_properties::process_font_size_impl(const _CP_OPT(font_size) & FontSize, const style_instance * currnetStyle, bool Complex, double Mul)
+double text_format_properties::process_font_size_impl(const _CP_OPT(font_size)& FontSize, const style_instance* currentStyle, bool Complex, double Mul)
 {
-    font_size usedFontSize = (!FontSize) ? font_size(percent(100)) : *FontSize;
+	font_size usedFontSize = (!FontSize) ? font_size(percent(100)) : *FontSize;
 
-    if (usedFontSize.get_type() == font_size::Length)
-    {
+	if (usedFontSize.get_type() == font_size::Length)
+	{
 		const double w_val = 2.0 * Mul * usedFontSize.get_length().get_value_unit(length::pt);
-        return w_val;
-    } 
-    else if (usedFontSize.get_type() == font_size::Percent)
-    {
-        if (currnetStyle)
-        {
-            const style_instance * parentStyle = currnetStyle->parent();
-            if (!parentStyle)
-            {
-                if (currnetStyle->container())
-                    parentStyle = currnetStyle->container()->style_default_by_type(style_family::Paragraph);
-            }
-            else
-            {
-                if (const style_text_properties * textProp = parentStyle->content()->get_style_text_properties())
-                {
-                    return process_font_size_impl(textProp->content_.fo_font_size_, parentStyle, Complex, Mul * usedFontSize.get_percent().get_value() / 100.0);
-                }
-            }
-        }
-    }
-    else
-    {
-        //_CP_LOG << L"[docx_convert] convert font_size error (" << FontSize << ")\n";
-    }
+		return w_val;
+	}
+	else if (usedFontSize.get_type() == font_size::Percent)
+	{
+		std::map<std::wstring, int> usedStyles;
+
+		Mul *= usedFontSize.get_percent().get_value() / 100.0;
+
+		while (currentStyle)
+		{
+			std::wstring style_name = currentStyle->name();
+			if (usedStyles.find(style_name) != usedStyles.end())
+				break;
+			usedStyles.insert(std::make_pair(style_name, 0));
+
+			const style_instance* parentStyle = currentStyle->parent();
+			if (!parentStyle)
+			{
+				if (currentStyle->container())
+					parentStyle = currentStyle->container()->style_default_by_type(style_family::Paragraph);
+				if (!parentStyle)
+					break;
+			}
+
+			const style_content* content = parentStyle->content();
+			const style_text_properties* textProp = content ? content->get_style_text_properties() : NULL;
+			if (textProp && textProp->content_.fo_font_size_)
+			{
+				const font_size& parentFontSize = *textProp->content_.fo_font_size_;
+				if (parentFontSize.get_type() == font_size::Length)
+				{
+					const double w_val = 2.0 * Mul * parentFontSize.get_length().get_value_unit(length::pt);
+					return w_val;
+				}
+				else if (parentFontSize.get_type() == font_size::Percent)
+					Mul *= parentFontSize.get_percent().get_value() / 100.0;
+			}
+			currentStyle = parentStyle;
+		}
+	}
 
     return -1.0;
 }

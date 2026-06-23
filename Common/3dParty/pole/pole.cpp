@@ -2129,7 +2129,9 @@ uint64 StreamIO::read( uint64 pos, unsigned char* data, uint64 maxlen )
   uint64 totalbytes = 0;
   
   DirEntry *entry = io->dirtree->entry(entryIdx);
-  if (pos + maxlen > entry->size)
+  if (pos > entry->size)
+      maxlen = 0;
+  else if (pos + maxlen > entry->size)
       maxlen = entry->size - pos;
   if ( entry->size < io->header->threshold )
   {

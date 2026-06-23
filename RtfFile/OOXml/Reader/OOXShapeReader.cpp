@@ -1205,7 +1205,13 @@ bool OOXShapeReader::ParseShape( ReaderParameter oParam, RtfShapePtr& pOutput)
 		delete renderer;
 
 		if (!strVmlPath.empty())
+		{
 			ParseVmlPath(pOutput, strVmlPath);
+			// preset types conflict(?) for some reason with a custom path in MS Word (diamond as example)
+			// and dont wanna show the text.
+			// 100 is a type without built-in geometry: Word draws our path and keeps the text.
+			pOutput->m_nShapeType = SimpleTypes::Vml::sptNotchedCircularArrow;
+		}
 
 		LONG nCoordW = 100000, nCoordH = 100000;
 		if (lW > 0 && lH > 0)
@@ -1221,10 +1227,23 @@ bool OOXShapeReader::ParseShape( ReaderParameter oParam, RtfShapePtr& pOutput)
 		pOutput->m_nGeoRight	= nCoordW;
 		pOutput->m_nGeoBottom	= nCoordH;
 
-		pOutput->m_nInscribeLeft	= 0;
-		pOutput->m_nInscribeTop		= 0;
-		pOutput->m_nInscribeRight	= nCoordW;
-		pOutput->m_nInscribeBottom	= nCoordH;
+		LONG nRectL = 0, nRectT = 0, nRectR = 100000, nRectB = 100000;
+		if (!strVmlRect.empty())
+		{
+			std::vector< std::wstring > rect;
+			boost::algorithm::split(rect, strVmlRect, boost::algorithm::is_any_of(L","), boost::algorithm::token_compress_on);
+			if (rect.size() == 4)
+			{
+				nRectL = XmlUtils::GetInteger(rect[0]);
+				nRectT = XmlUtils::GetInteger(rect[1]);
+				nRectR = XmlUtils::GetInteger(rect[2]);
+				nRectB = XmlUtils::GetInteger(rect[3]);
+			}
+		}
+		pOutput->m_nInscribeLeft	= (int)((double)nRectL / 100000. * nCoordW);
+		pOutput->m_nInscribeTop		= (int)((double)nRectT / 100000. * nCoordH);
+		pOutput->m_nInscribeRight	= (int)((double)nRectR / 100000. * nCoordW);
+		pOutput->m_nInscribeBottom	= (int)((double)nRectB / 100000. * nCoordH);
 		pOutput->m_nShapePath = 4;
 	}
 
@@ -1360,7 +1379,7 @@ void OOXShapeReader::Parse(ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::L
 		case 2:
 		case 3:
 		default:
-			pOutput->m_nAnchorText = 4; break;
+			pOutput->m_nAnchorText = 1; break;
 		}
 	}
 

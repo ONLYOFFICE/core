@@ -1525,6 +1525,10 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 		}
 	}
 
+	if ( PROP_DEF != m_nInscribeLeft && PROP_DEF != m_nInscribeTop && PROP_DEF != m_nInscribeRight && PROP_DEF != m_nInscribeBottom )
+		sShapeNodes += L"<v:path textboxrect=\"" + std::to_wstring(m_nInscribeLeft) + L"," + std::to_wstring(m_nInscribeTop)
+					+ L"," + std::to_wstring(m_nInscribeRight) + L"," + std::to_wstring(m_nInscribeBottom) + L"\"/>";
+
 	if ( 0 != m_aTextItems && !m_bIsOle && !m_bIsGroup)
 	{
 		RenderParameter oNewParam = oRenderParameter;

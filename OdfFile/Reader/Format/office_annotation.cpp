@@ -149,7 +149,10 @@ void office_annotation::docx_convert(oox::docx_conversion_context & Context)
 	Context.dump_hyperlinks(Context.get_comments_context().get_rels(), oox::comment_place);
 	Context.get_mediaitems()->dump_rels(Context.get_comments_context().get_rels(), oox::comment_place);
 	
-	Context.get_comments_context().start_comment(content, author, date, office_name_);//content, date, author	
+	if (true == Context.get_comments_context().start_comment(content, author, date, office_name_))
+	{//return bSingle
+		Context.get_comments_context().end_comment(*office_name_);
+	}
 }
 
 void office_annotation::xlsx_convert(oox::xlsx_conversion_context & Context)

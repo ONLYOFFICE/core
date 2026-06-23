@@ -487,8 +487,8 @@ public:
 
 		bool bEnd = false;
 	};
-	void end_comment(const std::wstring& name);
-	void start_comment(const std::wstring& content, const std::wstring& author, const std::wstring& date, _CP_OPT(std::wstring) name);
+	void end_comment(const std::wstring& name = L"");
+	bool start_comment(const std::wstring& content, const std::wstring& author, const std::wstring& date, _CP_OPT(std::wstring) & name);
 
 	rels& get_rels() { return internal_rels_; }
 	std::map<std::wstring, _comment_desc>& content() { return comments_map_; }

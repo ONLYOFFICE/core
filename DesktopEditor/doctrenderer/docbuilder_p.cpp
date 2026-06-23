@@ -251,7 +251,7 @@ bool CV8RealTimeWorker::InitVariables()
 
 		NSStringUtils::string_replaceA(sArg, "\\", "\\\\");
 		NSStringUtils::string_replaceA(sArg, "\"", "\\\"");
-		std::string sArgument = "var Argument = JSON.parse(\"" + sArg + "\");";
+		std::string sArgument = "window.isNativeBuilder = true;var Argument = JSON.parse(\"" + sArg + "\");";
 
 		m_context->runScript(sArgument, try_catch);
 		if (try_catch->Check())

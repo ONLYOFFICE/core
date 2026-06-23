@@ -3037,7 +3037,11 @@ namespace OOX
 				else if(cellType == SimpleTypes::Spreadsheet::celltypeStr)
 				{
 					if(m_oValue.IsInit() && !m_oValue.get().m_sText.empty())
+					{
 						FmlaCell->val.data.Byte1 = 0x00;
+						fmlaUnion->m_stringValCache.Init();
+						fmlaUnion->m_stringValCache = m_oValue->m_sText;
+					}
 					else
 						FmlaCell->val.data.Byte1 = 0x03;
 				}
@@ -3074,10 +3078,11 @@ namespace OOX
 					}
 					FmlaCell->val.data.Byte3 = cellval;
 				}
+				if(cellType != SimpleTypes::Spreadsheet::celltypeNumber)
+					FmlaCell->val.data.fExprO = 0xFFFF;
 				if(m_oFormula.IsInit())
 					m_oFormula->toXls(castedPtr->cellContent);
 			}
-
 		}
         void CCell::toBin(XLS::StreamCacheWriterPtr& writer)
         {

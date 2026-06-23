@@ -244,6 +244,10 @@ namespace OOX
 						tempSheet->name_ = i->m_oName.get();
 					else
 						tempSheet->name_ = std::wstring(L"sheet" + std::to_wstring(SheetNum));
+					if(i->m_oState.IsInit() && i->m_oState->GetValue() == SimpleTypes::Spreadsheet::EVisibleType::visibleHidden)
+						tempSheet->hsState = L"hidden";
+					else if(i->m_oState.IsInit() && i->m_oState->GetValue() == SimpleTypes::Spreadsheet::EVisibleType::visibleVeryHidden)
+						tempSheet->hsState = L"veryHidden";
 					streamPtr->m_arBUNDLESHEET.push_back(XLS::BaseObjectPtr(tempSheetUnion));
 					//if(SheetTypes.size() > SheetNum-1)
 						//tempSheet->dt = SheetTypes.at(SheetNum-1);

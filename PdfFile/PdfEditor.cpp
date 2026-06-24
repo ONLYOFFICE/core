@@ -1020,7 +1020,7 @@ bool MakeDocWritable(PDFDoc* pPDFDocument, const wchar_t* wsPassword, GBool bWri
 	return bOk == gTrue;
 }
 
-struct FontScanContext
+struct SFontScanContext
 {
 	PDFDoc*                  pPDFDocument;
 	NSFonts::IFontManager*   pFontManager;
@@ -1030,162 +1030,85 @@ struct FontScanContext
 	PdfReader::CPdfFontList* pFontList;
 	int                      nStartRefID;
 };
-void ScanAndProcessFonts(const FontScanContext& ctx, Dict* pResources, int nDepth, std::vector<int>& arrUniqueResources);
-// ── font processing ─────────────────────────────────────────────────────────
-void ProcessFontDict(const FontScanContext& ctx, Dict* pResources)
+bool VisitAndEmbedFont(const SFontScanContext& ctx, const PdfReader::SFontVisitContext& oFontCtx)
 {
 	XRef* xref = ctx.pPDFDocument->getXRef();
 
-	CObjectGuard oFonts;
-	if (!pResources->lookup("Font", oFonts.get())->isDict())
-		return;
+	if (!oFontCtx.pFontRefNF->isRef())
+		return false;
 
-	for (int i = 0, nLength = oFonts->dictGetLength(); i < nLength; ++i)
+	Ref oFontRef = oFontCtx.pFontRefNF->getRef();
+
+	GfxFont* gfxFont = GfxFont::makeFont(xref, "F", oFontRef, oFontCtx.pFontDict);
+	if (!gfxFont)
+		return false;
+
+	Ref oEmbRef;
+	const std::wstring wsFontBaseName = NSStrings::GetStringFromUTF32(gfxFont->getName());
+	GfxFontLoc* pFontLoc = NULL;
+	const bool bLocatable = gfxFont->getEmbeddedFontID(&oEmbRef) ||
+		PdfReader::IsBaseFont(wsFontBaseName) ||
+		((pFontLoc = gfxFont->locateFont(xref, false)) && NSStrings::GetStringFromUTF32(pFontLoc->path).length());
+
+	if (bLocatable)
 	{
-		const char* sFontKey = oFonts->dictGetKey(i);
+		std::wstring wsFileName, wsFontName;
+		PdfReader::GetFont(xref, ctx.pFontManager, ctx.pFontList, gfxFont, wsFileName, wsFontName);
 
-		CObjectGuard oFontRef;
-		if (!oFonts->dictGetValNF(i, oFontRef.get())->isRef())
-			continue;
-
-		CObjectGuard oFont;
-		if (!xref->fetch(oFontRef->getRefNum(), oFontRef->getRefGen(), oFont.get())->isDict())
-			continue;
-
-		GfxFont* gfxFont = GfxFont::makeFont(xref, "F", oFontRef->getRef(), oFont->getDict());
-		if (!gfxFont)
-			continue;
-
-		Ref oEmbRef;
-		const std::wstring wsFontBaseName = NSStrings::GetStringFromUTF32(gfxFont->getName());
-		GfxFontLoc* pFontLoc = NULL;
-		const bool bLocatable = gfxFont->getEmbeddedFontID(&oEmbRef) || PdfReader::IsBaseFont(wsFontBaseName) || ((pFontLoc = gfxFont->locateFont(xref, false)) && NSStrings::GetStringFromUTF32(pFontLoc->path).length());
-
-		if (bLocatable)
+		if (!PdfReader::IsBaseFont(wsFontBaseName))
 		{
-			std::wstring wsFileName, wsFontName;
-			PdfReader::GetFont(xref, ctx.pFontManager, ctx.pFontList, gfxFont, wsFileName, wsFontName);
-
-			if (!PdfReader::IsBaseFont(wsFontBaseName))
+			PdfReader::TFontEntry pFontEntry;
+			if (ctx.pFontList->GetFont(&oFontRef, &pFontEntry))
 			{
-				PdfReader::TFontEntry pFontEntry;
-				Ref nFontRef = oFontRef->getRef();
-				if (ctx.pFontList->GetFont(&nFontRef, &pFontEntry))
+				PdfWriter::CFontEmbedded* pFont = ctx.pDoc->FindFontEmbedded(wsFileName, 0);
+				if (pFont)
 				{
-					PdfWriter::CFontEmbedded* pFont = ctx.pDoc->FindFontEmbedded(wsFileName, 0);
-					if (pFont)
+					pFont->UpdateKey(oFontCtx.sFontKey);
+				}
+				else
+				{
+					CObjectGuard oFontResolved;
+					xref->fetch(oFontRef.num, oFontRef.gen, oFontResolved.get());
+
+					std::map<unsigned int, unsigned int> mCodeToWidth, mCodeToUnicode, mCodeToGID;
+					const int nDW = PdfReader::CollectFontWidths(oFontCtx.pFontDict, mCodeToWidth);
+
+					for (int j = 0; j < (int)pFontEntry.unLenUnicode; ++j)
+						if (pFontEntry.pCodeToUnicode[j])
+							mCodeToUnicode[j] = pFontEntry.pCodeToUnicode[j];
+
+					for (int j = 0; j < (int)pFontEntry.unLenGID; ++j)
+						if (pFontEntry.pCodeToGID[j])
+							mCodeToGID[j] = pFontEntry.pCodeToGID[j];
+
+					ctx.pWriter->AddFont(L"Embedded: " + wsFontName, false, false, wsFileName, 0);
+
+					PdfWriter::CObjectBase* pObj = ctx.pObjManager->GetObj(oFontRef.num + ctx.nStartRefID);
+					if (!pObj)
 					{
-						pFont->UpdateKey(sFontKey);
+						pObj = new PdfWriter::CObjectBase();
+						pObj->SetRef(oFontRef.num, oFontRef.gen);
 					}
-					else
-					{
-						std::map<unsigned int, unsigned int> mCodeToWidth, mCodeToUnicode, mCodeToGID;
-						const int nDW = PdfReader::CollectFontWidths(oFont->getDict(), mCodeToWidth);
 
-						for (int j = 0; j < (int)pFontEntry.unLenUnicode; ++j)
-							if (pFontEntry.pCodeToUnicode[j])
-								mCodeToUnicode[j] = pFontEntry.pCodeToUnicode[j];
-
-						for (int j = 0; j < (int)pFontEntry.unLenGID; ++j)
-							if (pFontEntry.pCodeToGID[j])
-								mCodeToGID[j] = pFontEntry.pCodeToGID[j];
-
-						ctx.pWriter->AddFont(L"Embedded: " + wsFontName, false, false, wsFileName, 0);
-
-						PdfWriter::CObjectBase* pObj = ctx.pObjManager->GetObj(nFontRef.num + ctx.nStartRefID);
-						if (!pObj)
-						{
-							pObj = new PdfWriter::CObjectBase();
-							pObj->SetRef(nFontRef.num, nFontRef.gen);
-						}
-
-						pFont = ctx.pDoc->CreateFontEmbedded( wsFileName, 0, sFontKey, static_cast<PdfWriter::EFontType>(gfxFont->getType()), pObj, mCodeToWidth, mCodeToUnicode, mCodeToGID);
-						pFont->SetDW(nDW);
-					}
+					pFont = ctx.pDoc->CreateFontEmbedded(wsFileName, 0, oFontCtx.sFontKey,
+						static_cast<PdfWriter::EFontType>(gfxFont->getType()), pObj,
+						mCodeToWidth, mCodeToUnicode, mCodeToGID);
+					pFont->SetDW(nDW);
 				}
 			}
 		}
-
-		RELEASEOBJECT(pFontLoc);
-		RELEASEOBJECT(gfxFont);
 	}
-}
-// ── resource dict recursion helpers ─────────────────────────────────────────
-bool TryVisitResources(Dict* pStreamDict, std::vector<int>& arrUniqueResources)
-{
-	CObjectGuard oRef;
-	if (pStreamDict->lookupNF("Resources", oRef.get())->isRef())
-	{
-		const int nNum = oRef->getRef().num;
-		if (std::find(arrUniqueResources.begin(), arrUniqueResources.end(), nNum) != arrUniqueResources.end())
-			return false;
-		arrUniqueResources.push_back(nNum);
-	}
-	return true;
-}
-void ScanXObjectOrPattern(const FontScanContext& ctx, Dict* pResources, const char* sName, int nDepth, std::vector<int>& arrUniqueResources)
-{
-	CObjectGuard oObject;
-	if (!pResources->lookup(sName, oObject.get())->isDict())
-		return;
 
-	const int nLength = oObject->dictGetLength();
-	for (int i = 0; i < nLength; ++i)
-	{
-		CObjectGuard oXObj, oResources;
-		if (!oObject->dictGetVal(i, oXObj.get())->isStream())
-			continue;
-
-		Dict* pStreamDict = oXObj->streamGetDict();
-		if (!pStreamDict->lookup("Resources", oResources.get())->isDict())
-			continue;
-
-		if (!TryVisitResources(pStreamDict, arrUniqueResources))
-			continue;
-
-		ScanAndProcessFonts(ctx, oResources->getDict(), nDepth + 1, arrUniqueResources);
-	}
-}
-void ScanExtGState(const FontScanContext& ctx, Dict* pResources, int nDepth, std::vector<int>& arrUniqueResources)
-{
-	CObjectGuard oExtGState;
-	if (!pResources->lookup("ExtGState", oExtGState.get())->isDict())
-		return;
-
-	for (int i = 0, nLength = oExtGState->dictGetLength(); i < nLength; ++i)
-	{
-		CObjectGuard oGS, oSMask, oSMaskGroup, oResources;
-		if (!oExtGState->dictGetVal(i, oGS.get())->isDict()    ||
-			!oGS->dictLookup("SMask",  oSMask.get())->isDict() ||
-			!oSMask->dictLookup("G", oSMaskGroup.get())->isStream())
-			continue;
-
-		Dict* pStreamDict = oSMaskGroup->streamGetDict();
-		if (!pStreamDict->lookup("Resources", oResources.get())->isDict())
-			continue;
-
-		if (!TryVisitResources(pStreamDict, arrUniqueResources))
-			continue;
-
-		ScanAndProcessFonts(ctx, oResources->getDict(), nDepth + 1, arrUniqueResources);
-	}
-}
-void ScanAndProcessFonts(const FontScanContext& ctx, Dict* pResources, int nDepth, std::vector<int>& arrUniqueResources)
-{
-	if (nDepth > 5 || !pResources)
-		return;
-
-	ProcessFontDict(ctx, pResources);
-	ScanXObjectOrPattern(ctx, pResources, "XObject", nDepth, arrUniqueResources);
-	ScanXObjectOrPattern(ctx, pResources, "Pattern", nDepth, arrUniqueResources);
-	ScanExtGState(ctx, pResources, nDepth, arrUniqueResources);
+	RELEASEOBJECT(pFontLoc);
+	RELEASEOBJECT(gfxFont);
+	return false;
 }
 void ScanFonts(PDFDoc* pPDFDocument, Dict* pResources, CPdfWriter* pWriter, CObjectsManager* pObjManager, CPdfReader* pReader)
 {
 	if (!pResources)
 		return;
 
-	FontScanContext ctx;
+	SFontScanContext ctx;
 	ctx.pPDFDocument = pPDFDocument;
 	ctx.pFontManager = pReader->GetFontManager();
 	ctx.pDoc         = pWriter->GetDocument();
@@ -1194,8 +1117,14 @@ void ScanFonts(PDFDoc* pPDFDocument, Dict* pResources, CPdfWriter* pWriter, CObj
 	ctx.pFontList    = pReader->GetFontList(pPDFDocument);
 	ctx.nStartRefID  = pReader->GetStartRefID(pPDFDocument);
 
+	auto fnVisit = [&ctx](const PdfReader::SFontVisitContext& oFontCtx) -> bool
+	{
+		return VisitAndEmbedFont(ctx, oFontCtx);
+	};
+
 	std::vector<int> arrUniqueResources;
-	ScanAndProcessFonts(ctx, pResources, 0, arrUniqueResources);
+	PdfReader::ScanResourceFonts(pResources, 0, arrUniqueResources, fnVisit);
+
 	pReader->SetFonts(ctx.pFontList);
 }
 }

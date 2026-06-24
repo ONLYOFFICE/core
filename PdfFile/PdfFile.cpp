@@ -542,11 +542,11 @@ BYTE* CPdfFile::GetAnnotStandardFonts()
 		return NULL;
 	return m_pInternal->pReader->GetFonts(true);
 }
-BYTE* CPdfFile::GetAllFonts()
+BYTE* CPdfFile::GetAllFonts(int* arrPageIndex, int nLength)
 {
 	if (!m_pInternal->pReader)
 		return NULL;
-	return m_pInternal->pReader->GetAllFonts();
+	return m_pInternal->pReader->GetAllFonts(arrPageIndex, nLength);
 }
 BYTE* CPdfFile::GetGIDByUnicode(const std::wstring& wsFontName)
 {

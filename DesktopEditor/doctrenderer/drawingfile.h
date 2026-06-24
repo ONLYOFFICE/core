@@ -489,28 +489,7 @@ public:
 	}
 	BYTE* SetScanPageFonts(int* arrPageIndex, int nLength)
 	{
-		if (NULL == m_pImageStorage)
-			m_pImageStorage = NSDocxRenderer::CreateWasmImageStorage();
-
-		if (!arrPageIndex || nLength == 0)
-		{
-			nLength = GetPagesCount();
-			arrPageIndex = NULL;
-		}
-
-		for (int i = 0; i < nLength; ++i)
-		{
-			CDocxRenderer oRenderer(m_pApplicationFonts);
-			oRenderer.SetExternalImageStorage(m_pImageStorage);
-			oRenderer.SetTextAssociationType(NSDocxRenderer::TextAssociationType::tatParagraphToShape);
-
-			oRenderer.ScanPageBin(m_pFile, arrPageIndex ? arrPageIndex[i] : i);
-
-			if (m_nType == 0)
-				((CPdfFile*)m_pFile)->SetPageFonts(arrPageIndex ? arrPageIndex[i] : i);
-		}
-
-		return m_nType == 0 ? ((CPdfFile*)m_pFile)->GetAllFonts() : NULL;
+		return m_nType == 0 ? ((CPdfFile*)m_pFile)->GetAllFonts(arrPageIndex, nLength) : NULL;
 	}
 	BYTE* ScanPage(int nPageIndex, int mode)
 	{

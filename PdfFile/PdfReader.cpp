@@ -400,6 +400,8 @@ int CPdfReader::GetNumPages()
 // ============================================================
 // CPdfReader::ValidMetaData
 // ============================================================
+namespace
+{
 bool ValidateXRefTable(BaseStream* str, GFileOffset nOffset, GString* pID2)
 {
 	Object oDict, oTID, oID, obj1;
@@ -453,6 +455,7 @@ bool ValidateXRefStream(BaseStream* str, GFileOffset nOffset, GString* pID2)
 	delete parser;
 
 	return bRes;
+}
 }
 bool CPdfReader::ValidMetaData()
 {
@@ -859,6 +862,8 @@ PDFDoc* CPdfReader::GetPDFDocument(int PDFIndex)
 // ============================================================
 // CPdfReader::GetInfo
 // ============================================================
+namespace
+{
 std::wstring GetMetaString(Object& oInfo, const char* sName, const wchar_t* wsName)
 {
 	std::wstring sRes;
@@ -990,6 +995,7 @@ bool IsTagged(XRef* xref)
 	catDict.free();
 
 	return bTagged;
+}
 }
 std::wstring CPdfReader::GetInfo()
 {
@@ -1429,8 +1435,97 @@ BYTE* CPdfReader::GetFonts(bool bStandart)
 	oRes.ClearWithoutAttack();
 	return pRes;
 }
-BYTE* CPdfReader::GetAllFonts()
+namespace PdfReader
 {
+void RegisterFont(XRef* pXref, NSFonts::IFontManager* pFontManager, CPdfFontList* pFontList, const char* sTag, Object* pFontRefNF, Dict* pFontDict)
+{
+	Ref oFontRef = pFontRefNF->isRef() ? pFontRefNF->getRef() : Ref{ 0, 0 };
+
+	GfxFont* pGfxFont = GfxFont::makeFont(pXref, sTag, oFontRef, pFontDict);
+	if (!pGfxFont)
+		return;
+
+	std::wstring wsFileName, wsFontName;
+	GetFont(pXref, pFontManager, pFontList, pGfxFont, wsFileName, wsFontName);
+
+	RELEASEOBJECT(pGfxFont);
+}
+void GetPageFonts(PDFDoc* pDoc, int nPage, NSFonts::IFontManager* pFontManager, CPdfFontList* pFontList)
+{
+	Page* pPage = pDoc->getCatalog()->getPage(nPage);
+	if (!pPage)
+		return;
+
+	XRef* pXref = pDoc->getXRef();
+	std::vector<int> arrUniqueResources;
+
+	auto fnVisit = [&](const SFontVisitContext& oCtx) -> bool
+	{
+		RegisterFont(pXref, pFontManager, pFontList, oCtx.sFontKey, oCtx.pFontRefNF, oCtx.pFontDict);
+		return false;
+	};
+
+	Dict* pResources = pPage->getResourceDict();
+	if (pResources)
+		ScanResourceFonts(pResources, 0, arrUniqueResources, fnVisit);
+
+	CObjectGuard oAnnots;
+	if (!pPage->getAnnots(oAnnots.get())->isArray())
+		return;
+
+	for (int i = 0, nNum = oAnnots->arrayGetLength(); i < nNum; ++i)
+	{
+		CObjectGuard oAnnot;
+		if (!oAnnots->arrayGet(i, oAnnot.get())->isDict())
+			continue;
+
+		CObjectGuard oRefDR;
+		if (oAnnot->dictLookupNF("DR", oRefDR.get())->isRef())
+		{
+			const int nRefNum = oRefDR->getRef().num;
+			if (std::find(arrUniqueResources.begin(), arrUniqueResources.end(), nRefNum) == arrUniqueResources.end())
+			{
+				arrUniqueResources.push_back(nRefNum);
+
+				CObjectGuard oDR;
+				if (oAnnot->dictLookup("DR", oDR.get())->isDict())
+					ScanResourceFonts(oDR->getDict(), 0, arrUniqueResources, fnVisit);
+			}
+		}
+
+		ScanAPFonts(oAnnot.get(), arrUniqueResources, fnVisit);
+	}
+}
+void GetAllPagesFonts(PDFDoc* pDoc, NSFonts::IFontManager* pFontManager, CPdfFontList* pFontList)
+{
+	for (int nPage = 1, nLastPage = pDoc->getNumPages(); nPage <= nLastPage; ++nPage)
+		GetPageFonts(pDoc, nPage, pFontManager, pFontList);
+}
+}
+BYTE* CPdfReader::GetAllFonts(int* arrPageIndex, int nLength)
+{
+	if (!arrPageIndex || nLength == 0)
+	{
+		for (CPdfReaderContext* pPDFContext : m_vPDFContext)
+		{
+			GetAllPagesFonts(pPDFContext->m_pDocument, m_pFontManager, pPDFContext->m_pFontList);
+			SetFonts(pPDFContext->m_pFontList);
+		}
+	}
+	else
+	{
+		for (int i = 0; i < nLength; ++i)
+		{
+			PDFDoc* pPDFDocument = NULL;
+			PdfReader::CPdfFontList* pFontList = NULL;
+			int nStartRefID = 0;
+			int nPageIndex = GetPageIndex(arrPageIndex[i], &pPDFDocument, &pFontList, &nStartRefID);
+
+			GetPageFonts(pPDFDocument, nPageIndex, m_pFontManager, pFontList);
+			SetFonts(pFontList);
+		}
+	}
+
 	NSWasm::CData oRes;
 	oRes.SkipLen();
 

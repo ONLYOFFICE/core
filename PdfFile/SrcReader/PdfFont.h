@@ -38,6 +38,7 @@
 #include <vector>
 #include <string>
 #include <map>
+#include <functional>
 
 #include "../lib/xpdf/PDFDoc.h"
 #include "../lib/xpdf/AcroForm.h"
@@ -140,6 +141,12 @@ struct CFontData
 	CFontData(const CFontData& oFont) : bFind(oFont.bFind), nAlign(oFont.nAlign), unFontFlags(oFont.unFontFlags), dFontSize(oFont.dFontSize), dVAlign(oFont.dVAlign),
 		dColor{oFont.dColor[0], oFont.dColor[1], oFont.dColor[2]}, sFontFamily(oFont.sFontFamily), sActualFont(oFont.sActualFont), sText(oFont.sText) {}
 };
+struct SFontVisitContext
+{
+	Dict*       pFontDict;
+	Object*     pFontRefNF;
+	const char* sFontKey;
+};
 
 std::vector<CFontData*> ReadRC(const std::string& sRC);
 std::string GetRCFromDS(const std::string& sDS, Object* pContents, const std::vector<double>& arrCFromDA);
@@ -157,6 +164,10 @@ NSFonts::CFontInfo* GetFontByParams(XRef* pXref, NSFonts::IFontManager* pFontMan
 void GetFont(XRef* pXref, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList, GfxFont* pFont, std::wstring& wsFileName, std::wstring& wsFontName);
 
 CType3FontMetrics* BuildType3FontMetrics(XRef* pXref, GfxFont* pFont);
+
+using FFontVisitor = std::function<bool(const SFontVisitContext&)>;
+bool ScanResourceFonts(Dict* pResources, int nDepth, std::vector<int>& arrUniqueResources, const FFontVisitor& fnVisit);
+bool ScanAPFonts(Object* pAnnotOrWidget, std::vector<int>& arrUniqueResources, const FFontVisitor& fnVisit);
 }
 
 #endif // _PDF_READER_FONT_H

@@ -156,7 +156,7 @@ public:
 	BYTE* GetWidgets();
 	BYTE* GetAnnotEmbeddedFonts();
 	BYTE* GetAnnotStandardFonts();
-	BYTE* GetAllFonts();
+	BYTE* GetAllFonts(int* arrPageIndex, int nLength);
 	BYTE* GetAnnots    (int nPageIndex = -1);
 	BYTE* SplitPages   (const int* arrPageIndex, unsigned int unLength, BYTE* pChanges = NULL, DWORD nLength = 0);
 	BYTE* VerifySign   (const std::wstring& sFile, ICertificate* pCertificate, int nWidget = -1);

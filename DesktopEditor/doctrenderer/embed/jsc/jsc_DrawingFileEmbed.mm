@@ -26,7 +26,7 @@
 -(JSValue*) GetGIDByUnicode : (JSValue*)sId;
 -(JSValue*) IsNeedCMap;
 -(JSValue*) ScanPage : (JSValue*)nPageIndex : (JSValue*)mode;
--(JSValue*) SetScanPageFonts : (JSValue*)nPageIndex;
+-(JSValue*) SetScanPageFonts : (JSValue*)arrPageIndexes;
 -(JSValue*) GetImageBase64 : (JSValue*)rId;
 -(JSValue*) FreeWasmData : (JSValue*)typedArray;
 -(JSValue*) SplitPages : (JSValue*)arrPageIndexes : (JSValue*)data;

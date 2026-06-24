@@ -179,18 +179,18 @@ namespace NSDocxRenderer
 			oWriter.WriteString(L"\"");
 		}
 
-		if (m_dLeftBorder > 0)
-		{
+		//if (m_dLeftBorder > 0)
+		//{
 			oWriter.WriteString(L" marL=\" ");
 			oWriter.AddInt(static_cast<int>(m_dLeftBorder * c_dMMToEMU));
 			oWriter.WriteString(L"\"");
-		}
-		if (m_dRightBorder > 0)
-		{
+		//}
+		//if (m_dRightBorder > 0)
+		//{
 			oWriter.WriteString(L" marR=\"");
 			oWriter.AddInt(static_cast<int>(m_dRightBorder * c_dMMToEMU));
 			oWriter.WriteString(L"\"");
-		}
+		//}
 
 		oWriter.WriteString(L">");
 
@@ -244,18 +244,18 @@ namespace NSDocxRenderer
 			}
 
 			// marL
-			if (m_dLeftBorder > 0)
-			{
+			//if (m_dLeftBorder > 0)
+			//{
 				oWriter.WriteBYTE(8);
 				oWriter.AddSInt(static_cast<int>(m_dLeftBorder * c_dMMToEMU));
-			}
+			//}
 
 			// marR
-			if (m_dRightBorder > 0)
-			{
+			//if (m_dRightBorder > 0)
+			//{
 				oWriter.WriteBYTE(9);
 				oWriter.AddSInt(static_cast<int>(m_dRightBorder * c_dMMToEMU));
-			}
+			//}
 
 			// indent
 			if (m_bIsNeedFirstLineIndent)

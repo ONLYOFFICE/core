@@ -146,18 +146,21 @@ void comments_context::end_comment(const std::wstring& name)
 		//error
 	}
 }
-void comments_context::start_comment(const std::wstring& content, const std::wstring& author, const std::wstring& date, _CP_OPT(std::wstring) name)
+bool comments_context::start_comment(const std::wstring& content, const std::wstring& author, const std::wstring& date, _CP_OPT(std::wstring) & name)
 {
 	int id = comments_map_.size() + 1;
 
-	bool bNew = false;
+	bool bSingle = false;
 
 	std::map<std::wstring, comments_context::_comment_desc>::iterator pFind = comments_map_.end();
 
-	if ((name) && (false == name->empty()))
+	if (!name || ((name) && (name->empty())))
 	{
-		pFind = comments_map_.find(*name);
+		name = L"Comment_" + comments_map_.size();
+		bSingle = true;
 	}
+
+	pFind = comments_map_.find(*name);
 
 	if (pFind != comments_map_.end())
 	{
@@ -172,6 +175,7 @@ void comments_context::start_comment(const std::wstring& content, const std::wst
 	
 		ref_start_.push_back(id);
 	}
+	return bSingle;
 }
 
 //----------------------------------------------------------------------------------------------------------------

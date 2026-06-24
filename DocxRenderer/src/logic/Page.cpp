@@ -457,41 +457,55 @@ namespace NSDocxRenderer
 		WriteSectionToFile(bIsLastPage, oWriter);
 	}
 
-	std::vector<std::wstring> CPage::GetXmlShapes()
+	std::vector<std::wstring> CPage::GetXmlContent()
 	{
-		std::vector<std::wstring> xml_shapes;
+		std::vector<std::wstring> xml_content;
 		for (const auto& shape : m_arShapes)
 		{
 			if (!shape) continue;
 			auto writer = new NSStringUtils::CStringBuilder();
 			shape->ToXml(*writer);
-			xml_shapes.push_back(writer->GetData());
+			xml_content.push_back(writer->GetData());
+			delete writer;
+		}
+		for (const auto& table : m_arTables)
+		{
+			auto writer = new NSStringUtils::CStringBuilder();
+			table->ToXml(*writer);
+			xml_content.push_back(writer->GetData());
 			delete writer;
 		}
 		if (!m_arCompleteObjectsXml.empty())
-			xml_shapes.insert(xml_shapes.end(), m_arCompleteObjectsXml.begin(), m_arCompleteObjectsXml.end());
+			xml_content.insert(xml_content.end(), m_arCompleteObjectsXml.begin(), m_arCompleteObjectsXml.end());
 
-		return xml_shapes;
+		return xml_content;
 	}
-	std::vector<std::wstring> CPage::GetXmlShapesPptx()
+	std::vector<std::wstring> CPage::GetXmlContentPptx()
 	{
 		ReorderShapesForPptx();
 
-		std::vector<std::wstring> xml_shapes;
+		std::vector<std::wstring> xml_content;
 		for (const auto& shape : m_arShapes)
 		{
 			if (!shape) continue;
 			auto writer = new NSStringUtils::CStringBuilder();
 			shape->ToXmlPptx(*writer);
-			xml_shapes.push_back(writer->GetData());
+			xml_content.push_back(writer->GetData());
+			delete writer;
+		}
+		for (const auto& table : m_arTables)
+		{
+			auto writer = new NSStringUtils::CStringBuilder();
+			table->ToXmlPptx(*writer);
+			xml_content.push_back(writer->GetData());
 			delete writer;
 		}
 		if (!m_arCompleteObjectsXml.empty())
-			xml_shapes.insert(xml_shapes.end(), m_arCompleteObjectsXml.begin(), m_arCompleteObjectsXml.end());
+			xml_content.insert(xml_content.end(), m_arCompleteObjectsXml.begin(), m_arCompleteObjectsXml.end());
 
-		return xml_shapes;
+		return xml_content;
 	}
-	NSWasm::CData CPage::GetShapesBin()
+	NSWasm::CData CPage::GetContentBin()
 	{
 		ReorderShapesForPptx();
 
@@ -506,6 +520,9 @@ namespace NSDocxRenderer
 			shape->ToBin(writer);
 			++countShapes;
 		}
+
+		for (const auto& table : m_arTables)
+			table->ToBin(writer);
 
 		if (!m_arCompleteObjectsBinBase64.empty())
 		{
@@ -524,7 +541,7 @@ namespace NSDocxRenderer
 			}
 		}
 
-		writer.AddInt(countShapes, 4);
+		writer.AddInt(countShapes + m_arTables.size(), 4);
 		writer.WriteLen();
 
 		return writer;

@@ -57,17 +57,18 @@ namespace HTML
 void InitTagsForMD(std::map<int, std::shared_ptr<ITag>>& mTags, CMDWriter* pWriter)
 {
 	#define HTML_TAG(tag) GUMBO_TAG_##tag
+	#define ADD_TAG(tag_name, tag_class_name) mTags[HTML_TAG(tag_name)] = std::make_shared<C ##tag_class_name##MDTag> (pWriter)
 
-	mTags[HTML_TAG(A)]          = std::make_shared<CAnchorMDTag>        (pWriter);
-	mTags[HTML_TAG(BR)]         = std::make_shared<CBreakMDTag>         (pWriter);
-	mTags[HTML_TAG(PRE)]        = std::make_shared<CPreformattedMDTag>  (pWriter);
-	mTags[HTML_TAG(H1)]         = std::make_shared<CHeaderMDTag>        (pWriter);
-	mTags[HTML_TAG(IMG)]        = std::make_shared<CImageMDTag>         (pWriter);
-	mTags[HTML_TAG(HR)]         = std::make_shared<CHorizontalRuleMDTag>(pWriter);
-	mTags[HTML_TAG(BLOCKQUOTE)] = std::make_shared<CBlockquoteMDTag>    (pWriter);
-	mTags[HTML_TAG(OL)]         = std::make_shared<CListMDTag>          (pWriter);
-	mTags[HTML_TAG(LI)]         = std::make_shared<CListElementMDTag>   (pWriter);
-	mTags[HTML_TAG(CODE)]       = std::make_shared<CCodeMDTag>          (pWriter);
+	ADD_TAG(A, Anchor);
+	ADD_TAG(BR, Break);
+	ADD_TAG(PRE, Preformatted);
+	ADD_TAG(H1, Header);
+	ADD_TAG(IMG, Image);
+	ADD_TAG(HR, HorizontalRule);
+	ADD_TAG(BLOCKQUOTE, Blockquote);
+	ADD_TAG(OL, List);
+	ADD_TAG(LI, ListElement);
+	ADD_TAG(CODE, Code);
 }
 
 bool CAnchorMDTag::Open(const std::vector<NSCSS::CNode>& arSelectors)
@@ -1101,7 +1102,6 @@ bool CMarkdownTable::ConvertMatrix(XmlUtils::CXmlLiteReader& oReader, std::vecto
 
 					++unColumnIndex;
 				}
-				arSelectors.pop_back();
 			}
 			else
 			{

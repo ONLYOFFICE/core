@@ -1429,6 +1429,21 @@ BYTE* CPdfReader::GetFonts(bool bStandart)
 	oRes.ClearWithoutAttack();
 	return pRes;
 }
+BYTE* CPdfReader::GetAllFonts()
+{
+	NSWasm::CData oRes;
+	oRes.SkipLen();
+
+	oRes.AddInt(m_mFonts.size());
+
+	for (std::map<std::wstring, std::wstring>::const_iterator it = m_mFonts.begin(); it != m_mFonts.end(); ++it)
+		oRes.WriteString(it->first);
+
+	oRes.WriteLen();
+	BYTE* bRes = oRes.GetBuffer();
+	oRes.ClearWithoutAttack();
+	return bRes;
+}
 BYTE* CPdfReader::VerifySign(const std::wstring& sFile, ICertificate* pCertificate, int nWidget)
 {
 	if (m_vPDFContext.empty())

@@ -37,7 +37,8 @@
 #define CSTYLE_H
 
 #include <string>
-#include "../../../../../Common/3dParty/html/css/src/CCssCalculator_Private.h"
+
+namespace NSCSS { class CCssCalculator_Private; }
 
 namespace SVG
 {

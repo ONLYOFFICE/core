@@ -123,5 +123,36 @@ int LineFormat::serialize(std::wostream & _stream)
 	}
 	return 0;
 }
+void LineFormat::setChecksum(std::vector<BYTE> &ChecksumData)
+{
+	{
+		BYTE icvCheck = icv;
+		ChecksumData.push_back(icvCheck);
+	}
+	{
+		BYTE lnsCheck = lns;
+		ChecksumData.push_back(lnsCheck);
+	}
+	{
+		BYTE weCheck = we;
+		ChecksumData.push_back(weCheck);
+	}
+	{
+		BYTE autoCheck = 0;
+		SETBIT(autoCheck,0,fAuto);
+		ChecksumData.push_back(autoCheck);
+	}
+	{
+		BYTE red = rgb.red;
+		ChecksumData.push_back(red);
+		BYTE green = rgb.green;
+		ChecksumData.push_back(green);
+		BYTE Blue = rgb.blue;
+		ChecksumData.push_back(Blue);
+		BYTE reserved = 0;
+		ChecksumData.push_back(reserved);
+	}
+}
+
 } // namespace XLS
 

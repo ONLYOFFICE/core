@@ -344,7 +344,14 @@ namespace OOX
 					if(m_oExt->m_oCy.IsInit())
 						dyB = m_oExt->m_oCy->GetValue();
 				}
-
+				{
+					auto cellsB = dyB/15;
+					rwB+= cellsB;
+					dyB -= cellsB*15;
+					auto cellsR = dxR/50;
+					colR += cellsR;
+					dxR-= cellsR*50;
+				}
 			}
 			dxR*= 21;
 			dxL*= 21;

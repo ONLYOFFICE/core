@@ -1770,6 +1770,12 @@ std::wstring RtfCharProperty::RenderToOOX(RenderParameter oRenderParameter)
 			sResult +=  oCurColor.RenderToOOX(oNewParam);
 		}
 	}
+	else if( PROP_DEF == m_nCharStyle && PROP_DEF != oRenderParameter.nParaStyleForeColor )
+	{
+		// run has no explicit color (e.g. after \plain) - in RTF it is auto, but the paragraph
+		// style defines a color that OOXML would otherwise inherit, so pin it to auto.
+		sResult += L"<w:color w:val=\"auto\"/>";
+	}
 
     std::wstring sUnderColor;
 	if(  PROP_DEF != m_nUnderlineColor  )

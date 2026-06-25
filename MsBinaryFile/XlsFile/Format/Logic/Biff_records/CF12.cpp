@@ -275,7 +275,7 @@ void CF12::writeFields(CFRecord& record)
 							{
 								fgColor.extType = ExtProp::ForeColor;
 								fgColor.extPropData.color.xclrType = 2;
-								fgColor.extPropData.color.xclrValue = dxfObj.m_oFill->m_oPatternFill->m_oFgColor->m_oRgb->ToInt();
+								fgColor.extPropData.color.xclrValue = dxfObj.m_oFill->m_oPatternFill->m_oFgColor->m_oRgb->ToRGBInt();
 							}
 							if(dxfObj.m_oFill->m_oPatternFill->m_oFgColor->m_oTint.IsInit())
 								fgColor.extPropData.color.nTintShade = dxfObj.m_oFill->m_oPatternFill->m_oFgColor->m_oTint->GetValue() * 32767;
@@ -301,7 +301,7 @@ void CF12::writeFields(CFRecord& record)
 							{
 								bgColor.extType = ExtProp::BackColor;
 								bgColor.extPropData.color.xclrType = 2;
-								bgColor.extPropData.color.xclrValue = dxfObj.m_oFill->m_oPatternFill->m_oBgColor->m_oRgb->ToInt();
+								bgColor.extPropData.color.xclrValue = dxfObj.m_oFill->m_oPatternFill->m_oBgColor->m_oRgb->ToRGBInt();
 							}
 							if(dxfObj.m_oFill->m_oPatternFill->m_oBgColor->m_oTint.IsInit())
 								bgColor.extPropData.color.nTintShade = dxfObj.m_oFill->m_oPatternFill->m_oBgColor->m_oTint->GetValue() * 32767;
@@ -352,7 +352,7 @@ void CF12::writeFields(CFRecord& record)
 							else if(dxfObj.m_oFont->m_oColor->m_oRgb.IsInit())
 							{
 								fntColor.extPropData.color.xclrType = 2;
-								fntColor.extPropData.color.xclrValue = dxfObj.m_oFont->m_oColor->m_oRgb->ToInt();
+								fntColor.extPropData.color.xclrValue = dxfObj.m_oFont->m_oColor->m_oRgb->ToRGBInt();
 							}
 							else if(dxfObj.m_oFont->m_oColor->m_oIndexed.IsInit())
 							{
@@ -577,6 +577,16 @@ int CF12::serialize(std::wostream & stream)
 				case 4:	CP_XML_ATTR(L"type", L"dataBar");		break;
 				case 6:	CP_XML_ATTR(L"type", L"iconSet");		break;
 			}
+			if(ct == 5)
+			{
+					CP_XML_ATTR(L"type", L"top10");
+
+					CP_XML_ATTR(L"rank", rgbTemplateParms.data.filter.iParam);
+					if(rgbTemplateParms.data.filter.fPercent)
+						CP_XML_ATTR(L"percent", L"1");
+					if(!rgbTemplateParms.data.filter.fTop)
+						CP_XML_ATTR(L"bottom", L"1");
+			}
 			if (ct == 1)
 			{
 				switch(cp)
@@ -592,6 +602,7 @@ int CF12::serialize(std::wostream & stream)
 				}
 			}
 			CP_XML_ATTR(L"priority", ipriority_);
+			if(fStopIfTrue)
 			CP_XML_ATTR(L"stopIfTrue", fStopIfTrue);
 
 			if (dxfId_ >= 0)

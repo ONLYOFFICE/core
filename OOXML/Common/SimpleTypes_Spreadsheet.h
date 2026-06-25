@@ -222,6 +222,7 @@ namespace SimpleTypes
 			unsigned char Get_B() const;
 			unsigned char Get_A() const;
 			int ToInt() const;
+			int ToRGBInt() const;
 			void FromInt(int nColor);
 
 		private:

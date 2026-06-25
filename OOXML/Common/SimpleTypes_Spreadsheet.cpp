@@ -472,6 +472,14 @@ namespace SimpleTypes
 			nRes += m_unA << 24;
 			return nRes;
 		}
+		int CHexColor::ToRGBInt() const
+		{
+			int nRes = m_unR;
+			nRes += m_unG << 8;
+			nRes += m_unB << 16;
+			nRes += m_unA << 24;
+			return nRes;
+		}
 		void CHexColor::FromInt(int nColor)
 		{
 			m_unB = static_cast<unsigned char>(nColor & 0xFF);

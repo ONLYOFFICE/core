@@ -110,7 +110,7 @@ int DXFPat::serialize(std::wostream & stream)
 			{
 				pFindGradient = parent->xfext->mapRgExt.find(ExtProp::GradientColor);
 				pFindBack = parent->xfext->mapRgExt.find(ExtProp::BackColor);
-				pFindFore = parent->xfext->mapRgExt.find(ExtProp::GradientColor);
+				pFindFore = parent->xfext->mapRgExt.find(ExtProp::ForeColor);
 			}
 			if (parent->xfext && pFindGradient != parent->xfext->mapRgExt.end())
 			{

@@ -135,7 +135,7 @@ int DXFFntD::serialize(std::wostream & stream, bool extOnly)
 				}
 			}
 			if ((parent && parent->xfext) && (pFind == parent->xfext->mapRgExt.end()))
-				pFind = parent->xfext->mapRgExt.find(ExtProp::ForeColor);
+				pFind = parent->xfext->mapRgExt.find(ExtProp::TextColor);
 
 			if ((parent && parent->xfext) && pFind != parent->xfext->mapRgExt.end())
 			{

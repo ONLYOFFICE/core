@@ -82,7 +82,7 @@ public:
 
 	JSSmart<CJSValue> IsNeedCMap();
 	JSSmart<CJSValue> ScanPage(JSSmart<CJSValue> nPageIndex, JSSmart<CJSValue> mode);
-	JSSmart<CJSValue> SetScanPageFonts(JSSmart<CJSValue> nPageIndex);
+	JSSmart<CJSValue> SetScanPageFonts(JSSmart<CJSValue> arrPageIndexes);
 
 	JSSmart<CJSValue> GetImageBase64(JSSmart<CJSValue> rId);
 

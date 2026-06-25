@@ -46,6 +46,7 @@
 #include "../../DesktopEditor/graphics/pro/js/wasm/src/serialize.h"
 
 #include "RendererOutputDev.h"
+#include "PdfFont.h"
 
 namespace PdfReader
 {
@@ -387,25 +388,7 @@ private:
 class CAnnotMarkup : public CAnnot
 {
 public:
-	struct CFontData final
-	{
-		bool bFind;
-		BYTE nAlign;
-		unsigned int unFontFlags; // 0 Bold, 1 Italic, 3 strikethrough, 4 underline, 5 vertical-align, 6 actual font, 7 RTL
-		double dFontSise;
-		double dVAlign;
-		double dColor[3];
-		std::string sFontFamily;
-		std::string sActualFont;
-		std::string sText;
-
-		CFontData() : bFind(false), nAlign(0), unFontFlags(4), dFontSise(10), dVAlign(0), dColor{0, 0, 0} {}
-		CFontData(const CFontData& oFont) : bFind(oFont.bFind), nAlign(oFont.nAlign), unFontFlags(oFont.unFontFlags), dFontSise(oFont.dFontSise), dVAlign(oFont.dVAlign),
-			dColor{oFont.dColor[0], oFont.dColor[1], oFont.dColor[2]}, sFontFamily(oFont.sFontFamily), sActualFont(oFont.sActualFont), sText(oFont.sText) {}
-	};
-
 	void SetFont(PDFDoc* pdfDoc, Object* oAnnotRef, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList);
-	static std::vector<CAnnotMarkup::CFontData*> ReadRC(const std::string& sRC);
 
 protected:
 	CAnnotMarkup(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex, int nStartRefID);

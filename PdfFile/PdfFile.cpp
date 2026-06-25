@@ -542,6 +542,12 @@ BYTE* CPdfFile::GetAnnotStandardFonts()
 		return NULL;
 	return m_pInternal->pReader->GetFonts(true);
 }
+BYTE* CPdfFile::GetAllFonts(int* arrPageIndex, int nLength)
+{
+	if (!m_pInternal->pReader)
+		return NULL;
+	return m_pInternal->pReader->GetAllFonts(arrPageIndex, nLength);
+}
 BYTE* CPdfFile::GetGIDByUnicode(const std::wstring& wsFontName)
 {
 	if (!m_pInternal->pReader)
@@ -1112,26 +1118,23 @@ HRESULT CPdfFile::put_FontName(const std::wstring& wsName)
 		}
 		else if (wsFontPath.empty())
 		{
-			size_t lastSpace = wsName.find_last_of(L' ');
-			if (lastSpace != std::wstring::npos)
+			std::wstring sHash;
+			if (PdfReader::ParseFontNameHash(wsName, NULL, &sHash))
 			{
-				std::wstring sTargetHash = wsName.substr(lastSpace + 1);
 				const std::map<std::wstring, std::wstring>& mFonts = m_pInternal->pReader->GetFonts();
-				 std::map<std::wstring, std::wstring>::const_iterator it = std::find_if(mFonts.begin(), mFonts.end(), [&sTargetHash](const std::pair<const std::wstring, std::wstring>& pair)
+				auto it = std::find_if(mFonts.begin(), mFonts.end(), [&sHash](const std::pair<const std::wstring, std::wstring>& pair)
 				{
-					const std::wstring& key = pair.first;
-					size_t pos = key.rfind(L' ');
-					if (pos != std::wstring::npos)
-					{
-						std::wstring sKeyHash = key.substr(pos + 1);
-						return sKeyHash == sTargetHash;
-					}
-					return false;
+					std::wstring sKeyHash;
+					return PdfReader::ParseFontNameHash(pair.first, NULL, &sKeyHash) && sKeyHash == sHash;
 				});
+
 				if (it != mFonts.end())
 					wsFont = L"Embedded: " + it->first;
 				else
+				{
+					size_t lastSpace = wsName.find_last_of(L' ');
 					wsFont = wsName.substr(10, lastSpace - 10);
+				}
 			}
 			else
 				wsFont = sSub;
@@ -1469,26 +1472,9 @@ HRESULT CPdfFile::AdvancedCommand(IAdvancedCommand* command)
 				CAnnotFieldInfo::CWidgetAnnotPr* pPr = pCommand->GetWidgetAnnotPr();
 				std::wstring wsFontName = pPr->GetFontName();
 
-				size_t lastSpace = wsFontName.find_last_of(L' ');
-				if (lastSpace != std::wstring::npos && lastSpace + 1 == wsFontName.size() - 32)
-				{
-					std::wstring sHash = wsFontName.substr(lastSpace + 1);
-					bool bValidHash = true;
-					for (wchar_t c : sHash)
-					{
-						if (!((c >= L'A' && c <= L'F') || (c >= L'0' && c <= L'9')))
-						{
-							bValidHash = false;
-							break;
-						}
-					}
-
-					if (bValidHash)
-					{
-						std::wstring sName = wsFontName.substr(0, lastSpace);
-						wsFontName = sName;
-					}
-				}
+				std::wstring sBaseName;
+				if (PdfReader::ParseFontNameHash(wsFontName, &sBaseName))
+					wsFontName = sBaseName;
 
 				pPr->SetFontName(wsFontName);
 			}

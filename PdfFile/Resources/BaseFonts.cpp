@@ -95,3 +95,24 @@ bool PdfReader::GetBaseCidToUnicode(const char* sName, const unsigned int*& pDat
 {
 	return GetCidToUnicodeMemoryMap(sName, pData, nSize);
 }
+
+bool PdfReader::ParseFontNameHash(const std::wstring& wsFontName, std::wstring* outBaseName, std::wstring* outHash)
+{
+	size_t lastSpace = wsFontName.find_last_of(L' ');
+	if (lastSpace == std::wstring::npos)
+		return false;
+
+	std::wstring sHash = wsFontName.substr(lastSpace + 1);
+	if (sHash.size() != 32)
+		return false;
+
+	for (wchar_t c : sHash)
+	{
+		if (!((c >= L'A' && c <= L'F') || (c >= L'0' && c <= L'9')))
+			return false;
+	}
+
+	if (outBaseName) *outBaseName = wsFontName.substr(0, lastSpace);
+	if (outHash)     *outHash     = std::move(sHash);
+	return true;
+}

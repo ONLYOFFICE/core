@@ -1810,6 +1810,20 @@ public:
 				m_oLightReader.MoveToElement();
 				oXml.WriteString(L"<image l:href=\"#img" + sId + L".png\"/>");
 			}
+			else if (sName == L"hr")
+			{
+				bool bIsNoShade = false;
+				while (m_oLightReader.MoveToNextAttribute())
+				{
+					if (m_oLightReader.GetName() == L"noshade" && m_oLightReader.GetText() == L"noshade")
+					{
+						bIsNoShade = true;
+						break;
+					}
+				}
+				m_oLightReader.MoveToElement();
+				WriteText(oXml, bIsNoShade ? L"-----" : L"=====", arPProperties);
+			}
 			else
 				readStream(oXml, arPProperties);
 		} while (m_oLightReader.ReadNextSiblingNode2(nDepth));

@@ -273,10 +273,25 @@ bool OOXDocumentWriter::SaveBySection()
 			{
                 if (m_oDocument.GetCount() == 2)
                 {
-                    section.props->m_bFinalize = false;
+                    _section lastSection;
+                    bool bLastEmpty = true;
+                    if (m_oDocument.GetItem(lastSection, 1))
+                    {
+                        for (int k = 0; k < lastSection.props->GetCount(); k++)
+                        {
+                            RtfParagraph* pLastPara = dynamic_cast<RtfParagraph*>(lastSection.props->operator[](k).get());
+                            if (NULL == pLastPara || pLastPara->GetCount() > 0)
+                            {
+                                bLastEmpty = false;
+                                break;
+                            }
+                        }
+                    }
+                    if (bLastEmpty)
+                        section.props->m_bFinalize = false;
                 }
                 sXmlSectProp = section.props->RenderToOOX(oNewParam);
-			}	
+			}
 		}
 		RtfParagraph *para = dynamic_cast<RtfParagraph *>(m_oDocument[0].props->operator[](i).get());
 		bParaCurrEmpty = (para) ? (para->GetCount() < 1) : true;
@@ -391,8 +406,8 @@ bool OOXDocumentWriter::SaveByItem()
 				else
 				{
 					size_t Find = sXml.rfind( L"<w:p>" );
-					if( std::wstring::npos != nFind )
-						sXml.insert( nFind + 5, L"<w:pPr>" + sectPr + L"</w:pPr>" );
+					if( std::wstring::npos != Find )
+						sXml.insert( Find + 5, L"<w:pPr>" + sectPr + L"</w:pPr>" );
 				}
 			}
 			else

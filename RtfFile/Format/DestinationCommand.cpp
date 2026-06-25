@@ -1254,7 +1254,7 @@ bool RtfCharPropsCommand::ExecuteCommand(RtfDocument& oDocument, RtfReader& oRea
 	}
 	else if ( "v" == sCommand )
 	{
-		charProps->m_bHidden = 1;
+		charProps->m_bHidden = ( true == hasParameter && 0 == parameter ) ? 0 : 1;
 	}
 	else if ( "deleted" == sCommand )
 	{

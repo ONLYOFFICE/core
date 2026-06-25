@@ -1181,51 +1181,70 @@ bool OOXShapeReader::ParseShape( ReaderParameter oParam, RtfShapePtr& pOutput)
 	std::wstring strXml;
 	if (ooxShape->spPr.Geometry.getType() == OOX::et_a_custGeom)
 	{
-		PPTX::Logic::CustGeom& geometry = ooxShape->spPr.Geometry.as<PPTX::Logic::CustGeom>();
 		pOutput->m_nShapeType = SimpleTypes::Vml::sptNotPrimitive;
-		strXml = geometry.toXML();
+		strXml = ooxShape->spPr.Geometry.as<PPTX::Logic::CustGeom>().toXML();
 	}
-	if (ooxShape->spPr.Geometry.getType() == OOX::et_a_prstGeom)
+	else if (ooxShape->spPr.Geometry.getType() == OOX::et_a_prstGeom)
 	{
 		PPTX::Logic::PrstGeom& geometry = ooxShape->spPr.Geometry.as<PPTX::Logic::PrstGeom>();
-		
 		SimpleTypes::CShapeType prst_type(geometry.prst.get());
-		SimpleTypes::EShapeType type = prst_type.GetValue();
-
-		pOutput->m_nShapeType = OOX::PrstGeom2VmlShapeType(type);
-		if (pOutput->m_nShapeType == SimpleTypes::Vml::sptNotPrimitive)
-			strXml = geometry.prst.get();
+		pOutput->m_nShapeType = OOX::PrstGeom2VmlShapeType(prst_type.GetValue());
+		strXml = geometry.prst.get();
 	}
-	if (pOutput->m_nShapeType == SimpleTypes::Vml::sptNotPrimitive && !strXml.empty())
+	if (!strXml.empty())
 	{
-		XmlUtils::CXmlNode xmlNode;
-		xmlNode.FromXmlString(strXml);
-		PPTX::Logic::Geometry geom;
-		geom = xmlNode;
-
 		std::wstring strVmlPath, strVmlRect;
-
 		LONG lW = 0, lH = 0;
-
-		//if ((ooxShape->spPr.xfrm->IsInit()) && (ooxShape->spPr.xfrm->m_oExt.IsInit()))
-		//{
-		//	lW = ooxShape->spPr.xfrm->m_oExt->m_oCx.GetValue();
-		//	lH = ooxShape->spPr.xfrm->m_oExt->m_oCy.GetValue();
-		//}
-
+		if (ooxShape->spPr.xfrm.IsInit() && ooxShape->spPr.xfrm->extX.IsInit() && ooxShape->spPr.xfrm->extY.IsInit())
+		{
+			lW = ooxShape->spPr.xfrm->extX.get();
+			lH = ooxShape->spPr.xfrm->extY.get();
+		}
 		COOXToVMLGeometry *renderer = new COOXToVMLGeometry();
-		geom.ConvertToCustomVML(renderer, strVmlPath, strVmlRect, lW, lH);
+		ooxShape->spPr.Geometry.ConvertToCustomVML(renderer, strVmlPath, strVmlRect, lW, lH);
 		delete renderer;
 
 		if (!strVmlPath.empty())
+		{
 			ParseVmlPath(pOutput, strVmlPath);
+			// preset types conflict(?) for some reason with a custom path in MS Word (diamond as example)
+			// and dont wanna show the text.
+			// 100 is a type without built-in geometry: Word draws our path and keeps the text.
+			pOutput->m_nShapeType = SimpleTypes::Vml::sptNotchedCircularArrow;
+		}
 
-		pOutput->m_nShapePath = 4; //complex
-		
-		pOutput->m_nGeoLeft		= 0;
-		pOutput->m_nGeoTop		= 0;
-		pOutput->m_nGeoRight	= 100000;
-		pOutput->m_nGeoBottom	= 100000;
+		LONG nCoordW = 100000, nCoordH = 100000;
+		if (lW > 0 && lH > 0)
+		{
+			nCoordW = lW;
+			nCoordH = lH;
+			for (size_t i = 0; i < pOutput->m_aPVerticles.size(); ++i)
+			{
+				pOutput->m_aPVerticles[i].first  = (int)((double)pOutput->m_aPVerticles[i].first  / 100000. * nCoordW);
+				pOutput->m_aPVerticles[i].second = (int)((double)pOutput->m_aPVerticles[i].second / 100000. * nCoordH);
+			}
+		}
+		pOutput->m_nGeoRight	= nCoordW;
+		pOutput->m_nGeoBottom	= nCoordH;
+
+		LONG nRectL = 0, nRectT = 0, nRectR = 100000, nRectB = 100000;
+		if (!strVmlRect.empty())
+		{
+			std::vector< std::wstring > rect;
+			boost::algorithm::split(rect, strVmlRect, boost::algorithm::is_any_of(L","), boost::algorithm::token_compress_on);
+			if (rect.size() == 4)
+			{
+				nRectL = XmlUtils::GetInteger(rect[0]);
+				nRectT = XmlUtils::GetInteger(rect[1]);
+				nRectR = XmlUtils::GetInteger(rect[2]);
+				nRectB = XmlUtils::GetInteger(rect[3]);
+			}
+		}
+		pOutput->m_nInscribeLeft	= (int)((double)nRectL / 100000. * nCoordW);
+		pOutput->m_nInscribeTop		= (int)((double)nRectT / 100000. * nCoordH);
+		pOutput->m_nInscribeRight	= (int)((double)nRectR / 100000. * nCoordW);
+		pOutput->m_nInscribeBottom	= (int)((double)nRectB / 100000. * nCoordH);
+		pOutput->m_nShapePath = 4;
 	}
 
 	Parse(oParam, pOutput, ooxShape->spPr.xfrm.GetPointer());
@@ -1360,7 +1379,7 @@ void OOXShapeReader::Parse(ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::L
 		case 2:
 		case 3:
 		default:
-			pOutput->m_nAnchorText = 4; break;
+			pOutput->m_nAnchorText = 1; break;
 		}
 	}
 

@@ -286,6 +286,7 @@ namespace OOX
 		{
 			if(m_oAnchorType == SimpleTypes::Spreadsheet::ECellAnchorType::cellanchorAbsolute)
 			{
+				//default ms offsets
 				if(m_oPos.IsInit() && m_oPos->m_oX.IsInit())
 					colL = m_oPos->m_oX->GetValue()/30;
 				if(m_oPos.IsInit() && m_oExt->m_oCx.IsInit())
@@ -345,18 +346,22 @@ namespace OOX
 						dyB = m_oExt->m_oCy->GetValue();
 				}
 				{
-					auto cellsB = dyB/15;
+					auto defaultCellHeigh = 15;
+					auto defaultCellWidth = 50;
+					auto cellsB = dyB/defaultCellHeigh;
 					rwB+= cellsB;
-					dyB -= cellsB*15;
-					auto cellsR = dxR/50;
+					dyB -= cellsB*defaultCellHeigh;
+					auto cellsR = dxR/defaultCellWidth;
 					colR += cellsR;
-					dxR-= cellsR*50;
+					dxR-= cellsR*defaultCellWidth;
 				}
 			}
-			dxR*= 21;
-			dxL*= 21;
-			dyT*= 17;
-			dyB*= 17;
+			auto defaultOffsetX = 21;
+			auto defaultOffsetY = 17;
+			dxR*= defaultOffsetX;
+			dxL*= defaultOffsetX;
+			dyT*= defaultOffsetY;
+			dyB*= defaultOffsetY;
 		}
 		void CCellAnchor::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{

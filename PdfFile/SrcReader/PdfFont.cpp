@@ -37,8 +37,6 @@
 #include "Adaptors.h"
 #include "MemoryUtils.h"
 
-#include <string_view>
-
 #include "../lib/xpdf/TextString.h"
 #include "../lib/xpdf/GfxFont.h"
 #include "../lib/xpdf/Lexer.h"
@@ -67,7 +65,7 @@
 
 namespace
 {
-constexpr std::string_view arrCMap[] = {"GB-EUC-H", "GB-EUC-V", "GB-H", "GB-V", "GBpc-EUC-H", "GBpc-EUC-V", "GBK-EUC-H",
+const std::vector<std::string> arrCMap = {"GB-EUC-H", "GB-EUC-V", "GB-H", "GB-V", "GBpc-EUC-H", "GBpc-EUC-V", "GBK-EUC-H",
 "GBK-EUC-V", "GBKp-EUC-H", "GBKp-EUC-V", "GBK2K-H", "GBK2K-V", "GBT-H", "GBT-V", "GBTpc-EUC-H", "GBTpc-EUC-V",
 "UniGB-UCS2-H", "UniGB-UCS2-V", "UniGB-UTF8-H", "UniGB-UTF8-V", "UniGB-UTF16-H", "UniGB-UTF16-V", "UniGB-UTF32-H",
 "UniGB-UTF32-V", "B5pc-H", "B5pc-V", "B5-H", "B5-V", "HKscs-B5-H", "HKscs-B5-V", "HKdla-B5-H", "HKdla-B5-V",
@@ -750,7 +748,7 @@ bool IsCMapEncodedFont(Dict* pFontDict)
 	if (!pFontDict->lookup("Encoding", oEncoding.get())->isName())
 		return false;
 
-	return std::find(std::begin(arrCMap), std::end(arrCMap), std::string_view(oEncoding->getName())) != std::end(arrCMap);
+	return std::find(arrCMap.begin(), arrCMap.end(), oEncoding->getName()) != arrCMap.end();
 }
 bool IsNeedCMap(PDFDoc* pDoc)
 {

@@ -194,9 +194,7 @@ bool ConvertMdFileToHtml(const std::wstring& wsPathToMdFile, const std::wstring&
 	if (!oFile.CreateFile(wsPathToHtmlFile))
 		return false;
 
-	oFile.WriteStringUTF8(L"<html><body>");
-
-	oFile.WriteStringUTF8(L"<head>");
+	oFile.WriteStringUTF8(L"<html><head>");
 
 	for (const std::pair<std::string, std::string>& oMeta : ExtractMetadata(sMdData))
 	{
@@ -208,7 +206,7 @@ bool ConvertMdFileToHtml(const std::wstring& wsPathToMdFile, const std::wstring&
 
 	oFile.WriteStringUTF8(L"<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"/>");
 	WriteBaseHtmlStyles(oFile);
-	oFile.WriteStringUTF8(L"</head>");
+	oFile.WriteStringUTF8(L"</head><body>");
 
 	bool bResult = true;
 

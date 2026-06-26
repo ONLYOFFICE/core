@@ -3131,6 +3131,18 @@ namespace OOX
 				if(m_oValue.IsInit())
 					m_oType->SetValue(processCellType(m_oValue.get().m_sText, isReal, realCache));
             }
+			else if(m_oType->GetValue() == SimpleTypes::Spreadsheet::celltypeNumber)
+			{
+				wchar_t *tail;
+				try
+				{
+					realCache =  std::wcstod(m_oValue.get().m_sText.c_str(), &tail);
+				}
+				catch(const std::exception& e)
+				{
+					realCache = 0;
+				}
+			}
             auto cellType = m_oType->GetValue();
             //main cell record
             CFRecordPtr CellRecord;

@@ -57,6 +57,7 @@ struct TFontEntry
 	unsigned int unLenGID;
 	unsigned int unLenUnicode;
 	bool         bAvailable;     // Is font available. Made for multithreading
+	bool         bLoad = true;
 	bool         bFontSubstitution = false;
 	bool         bIsIdentity = false;
 	double       dStretch = 1.0;
@@ -161,7 +162,7 @@ bool FindFonts(Object* oStream, int nDepth, Object* oResFonts);
 int CollectFontWidths(Dict* pFontDict, std::map<unsigned int, unsigned int>& mGIDToWidth);
 
 NSFonts::CFontInfo* GetFontByParams(XRef* pXref, NSFonts::IFontManager* pFontManager, GfxFont* pFont, std::wstring& wsFontBaseName, double& dStretch);
-void GetFont(XRef* pXref, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList, GfxFont* pFont, std::wstring& wsFileName, std::wstring& wsFontName);
+void GetFont(XRef* pXref, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList, GfxFont* pFont, std::wstring& wsFileName, std::wstring& wsFontName, bool bLoad = true);
 
 CType3FontMetrics* BuildType3FontMetrics(XRef* pXref, GfxFont* pFont);
 

@@ -325,7 +325,12 @@ public:
 	{
 		if (!m_pFile)
 			return NULL;
-		return m_pFile->ConvertToPixels(nPageIndex, nRasterW, nRasterH, true, m_pFontManager, nBackgroundColor, (nBackgroundColor == 0xFFFFFF) ? false : true);
+		BYTE* pRes = m_pFile->ConvertToPixels(nPageIndex, nRasterW, nRasterH, true, m_pFontManager, nBackgroundColor, (nBackgroundColor == 0xFFFFFF) ? false : true);
+
+		if (m_nType == 0)
+			((CPdfFile*)m_pFile)->SetPageFonts(nPageIndex);
+
+		return pRes;
 	}
 	BYTE* SplitPages(int* arrPageIndex, int nLength, BYTE* data, LONG size)
 	{
@@ -385,6 +390,9 @@ public:
 
 		m_pTextRenderer->Init(m_pFile, 8);
 		m_pFile->DrawPageOnRenderer(m_pTextRenderer, nPageIndex, NULL);
+
+		if (m_nType == 0)
+			((CPdfFile*)m_pFile)->SetPageFonts(nPageIndex);
 
 		return m_pTextRenderer->GetBuffer();
 	}

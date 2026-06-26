@@ -866,8 +866,11 @@ void GetFontData(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontLi
 	if (!gfxFont)
 		return;
 
+	Ref oEmbRef;
 	std::wstring wsFileName, wsFontName;
-	GetFont(xref, pFontManager, pFontList, gfxFont, wsFileName, wsFontName);
+	std::wstring wsFontBaseName = NSStrings::GetStringFromUTF32(gfxFont->getName());
+
+	GetFont(xref, pFontManager, pFontList, gfxFont, wsFileName, wsFontName, gfxFont->getEmbeddedFontID(&oEmbRef) || IsBaseFont(wsFontBaseName));
 
 	RELEASEOBJECT(gfxFont);
 }
@@ -1474,7 +1477,7 @@ NSFonts::CFontInfo* GetFontByParams(XRef* pXref, NSFonts::IFontManager* pFontMan
 	pFontInfo = pFontManager->GetFontInfoByParams(oFontSelect);
 	return pFontInfo;
 }
-void GetFont(XRef* pXref, NSFonts::IFontManager* pFontManager, CPdfFontList* pFontList, GfxFont* pFont, std::wstring& wsFileName, std::wstring& wsFontName)
+void GetFont(XRef* pXref, NSFonts::IFontManager* pFontManager, CPdfFontList* pFontList, GfxFont* pFont, std::wstring& wsFileName, std::wstring& wsFontName, bool bLoad)
 {
 	wsFileName = L"";
 	wsFontName = L"";
@@ -1815,7 +1818,7 @@ void GetFont(XRef* pXref, NSFonts::IFontManager* pFontManager, CPdfFontList* pFo
 				if (NSWasm::IsJSEnv())
 					wsFileName = pFontInfo->m_wsFontName;
 
-				if (!wsFileName.empty())
+				if (bLoad && !wsFileName.empty())
 				{
 					wsFileName = NSWasm::LoadFont(wsFileName, pFontInfo->m_bBold, pFontInfo->m_bItalic);
 					if (wsFileName.empty())
@@ -1823,7 +1826,11 @@ void GetFont(XRef* pXref, NSFonts::IFontManager* pFontManager, CPdfFontList* pFo
 						pFontList->Remove(*pFont->getID());
 						return;
 					}
+					else
+						pEntry->bLoad = true;
 				}
+				else
+					pEntry->bLoad = false;
 				oMemoryFontStream.fromStream(wsFileName);
 #endif
 
@@ -2479,6 +2486,9 @@ bool CPdfFontList::Find2(Ref oRef, TFontEntry** ppEntry)
 	CTemporaryCS* pCS = new CTemporaryCS(&m_oCS);
 
 	bool bResult = (NULL != ((*ppEntry) = Lookup(oRef)));
+
+	if (bResult && !(*ppEntry)->bLoad)
+		return false;
 
 	if (bResult)
 	{

@@ -190,7 +190,8 @@ void CPdfReader::SetCMapMemory(BYTE* pData, DWORD nSizeData)
 		return;
 	CPdfReaderContext* pPDFContext = m_vPDFContext.back();
 	std::map<std::wstring, std::wstring> mFonts = PdfReader::GetAllFonts(pPDFContext->m_pDocument, m_pFontManager, pPDFContext->m_pFontList);
-	m_mFonts.insert(mFonts.begin(), mFonts.end());
+	for (const auto& pair : mFonts)
+		m_mFonts[pair.first] = pair.second;
 }
 void CPdfReader::SetCMapFolder(const std::wstring& sFolder)
 {
@@ -547,7 +548,8 @@ bool CPdfReader::FinalizeMerge(CPdfReaderContext* pContext)
 
 	IsNeedCMap();
 	std::map<std::wstring, std::wstring> mFonts = PdfReader::GetAllFonts(pDoc, m_pFontManager, pContext->m_pFontList);
-	m_mFonts.insert(mFonts.begin(), mFonts.end());
+	for (const auto& pair : mFonts)
+		m_mFonts[pair.first] = pair.second;
 
 	return true;
 }
@@ -1399,7 +1401,7 @@ void CPdfReader::SetFonts(PdfReader::CPdfFontList* pFontList)
 		PdfReader::TFontEntry* pEntry = it->second;
 		if (!pEntry)
 			continue;
-		m_mFonts.insert(std::make_pair(pEntry->wsFontName, pEntry->wsFilePath));
+		m_mFonts[pEntry->wsFontName] = pEntry->wsFilePath;
 	}
 }
 BYTE* CPdfReader::GetFonts(bool bStandart)
@@ -1446,7 +1448,7 @@ void RegisterFont(XRef* pXref, NSFonts::IFontManager* pFontManager, CPdfFontList
 		return;
 
 	std::wstring wsFileName, wsFontName;
-	GetFont(pXref, pFontManager, pFontList, pGfxFont, wsFileName, wsFontName);
+	GetFont(pXref, pFontManager, pFontList, pGfxFont, wsFileName, wsFontName, false);
 
 	RELEASEOBJECT(pGfxFont);
 }

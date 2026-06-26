@@ -60,6 +60,8 @@
 #include "SvgObjects/CMask.h"
 #include "SvgObjects/CUse.h"
 
+#include "html2svg.h"
+
 #include "../../../../UnicodeConverter/UnicodeConverter.h"
 
 namespace SVG
@@ -443,6 +445,33 @@ namespace SVG
 		else if ("font" == sElementName)
 		{
 			pObject = CObject::Create<CFont>(oReader, pFile, pFile);
+		}
+		else if ("foreignObject" == sElementName)
+		{
+			double dWidth{300};
+
+			START_READ_ATTRIBUTES(oReader)
+				if ("width" == ATTRIBUTE_NAME)
+					dWidth = oReader.GetDouble();
+			END_READ_ATTRIBUTES(oReader)
+
+			CSvgReader oNewReader;
+
+			const std::wstring wsSVG{ConvertForeignObjectToSvg(oReader.GetInnerXML(), dWidth)};
+
+			std::wcout << wsSVG << std::endl;
+			std::wcout << std::endl;
+
+			if (oNewReader.ReadFromString(wsSVG))
+			{
+				pObject = CObject::Create<CGraphicsContainer>(oNewReader, pFile, pParent);
+
+				if (!ReadChildrens(oNewReader, (CGraphicsContainer*)pObject, pFile, (CGraphicsContainer*)pObject))
+				{
+					RELEASEINTERFACE(pObject);
+					return false;
+				}
+			}
 		}
 
 		if (NULL == pObject)

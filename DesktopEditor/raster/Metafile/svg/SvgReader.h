@@ -70,6 +70,8 @@ public:
 	std::string GetAttributeA(const std::string& sName);
 	std::wstring GetAttribute(const std::string& sName);
 
+	std::wstring GetInnerXML();
+
 	bool MoveToStart();
 
 	bool MoveToFirstAttribute();

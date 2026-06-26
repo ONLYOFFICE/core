@@ -92,10 +92,7 @@ namespace SVG
 	void CObject::SetAttribute(const std::string& sName, CSvgReader& oReader)
 	{
 		if ("class" == sName)
-		{
 			m_oXmlNode.m_wsClass = oReader.GetText();
-			std::transform(m_oXmlNode.m_wsClass.begin(), m_oXmlNode.m_wsClass.end(), m_oXmlNode.m_wsClass.begin(), std::towlower);
-		}
 		else if ("id" == sName)
 			m_oXmlNode.m_wsId = oReader.GetText();
 		else if ("style" == sName)

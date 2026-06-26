@@ -870,7 +870,7 @@ void GetFontData(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontLi
 	std::wstring wsFileName, wsFontName;
 	std::wstring wsFontBaseName = NSStrings::GetStringFromUTF32(gfxFont->getName());
 
-	GetFont(xref, pFontManager, pFontList, gfxFont, wsFileName, wsFontName, gfxFont->getEmbeddedFontID(&oEmbRef) || IsBaseFont(wsFontBaseName));
+	GetFont(xref, pFontManager, pFontList, gfxFont, wsFileName, wsFontName, false);
 
 	RELEASEOBJECT(gfxFont);
 }

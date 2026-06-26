@@ -99,7 +99,7 @@ namespace SVG
 		else if ("id" == sName)
 			m_oXmlNode.m_wsId = oReader.GetText();
 		else if ("style" == sName)
-			m_oXmlNode.m_wsStyle = oReader.GetText();
+			m_oXmlNode.m_wsStyle += oReader.GetText();
 		else
 			m_oXmlNode.m_mAttributes.insert({oReader.GetNameW(), oReader.GetText()});
 	}
@@ -247,7 +247,7 @@ namespace SVG
 
 	CRenderedObject::CRenderedObject(const CRenderedObject& oRenderedObject)
 		: CObject(oRenderedObject), m_oStyles(oRenderedObject.m_oStyles),
-	      m_pParent(oRenderedObject.m_pParent)
+		  m_pParent(oRenderedObject.m_pParent)
 	{}
 
 	ObjectType CRenderedObject::GetType() const

@@ -238,6 +238,14 @@ bool OOX::Spreadsheet::CXlsx::WriteXLS(const CPath& oFilePath)
 	for(auto i : m_arWorksheets)
 		workbookStream->m_arWorksheetSubstream.push_back(i->toXLS(workbookStream->m_GlobalsSubstream));
 	CastedGlobalsStram->m_arSUPBOOK.push_back(m_pWorkbook->WriteXtiRefsXLS());
+	{
+		auto functionsVector = m_pWorkbook->m_oDefinedNames->AddFutureFunctions(CastedGlobalsStram->m_arLBL.size(), true);
+		if(!functionsVector.empty())
+		{
+			std::copy(functionsVector.begin(), functionsVector.end(), std::back_inserter(CastedGlobalsStram->m_arLBL));
+		}
+	}
+
 	if(m_pSharedStrings != nullptr)
 		m_pSharedStrings->toXLS(workbookStream->m_GlobalsSubstream);
 

@@ -109,11 +109,12 @@ namespace OOX
 			void fromBin(std::vector<XLS::BaseObjectPtr>& obj);
 			std::vector<XLS::BaseObjectPtr> toBin();
 			void toXLS(XLS::BaseObjectPtr substream);
-			std::vector<XLS::BaseObjectPtr> AddFutureFunctions(const _UINT32 namesStart);
+			std::vector<XLS::BaseObjectPtr> AddFutureFunctions(const _UINT32 namesStart, bool xls = false);
 			virtual EElementType getType () const;
 
 		private:
 			XLS::BaseObjectPtr createFutureFunction(const std::wstring& funcName);
+			XLS::BaseObjectPtr createCustomFunctionXLS(const std::wstring& funcName);
 			XLS::BaseObjectPtr createCustomFunction(const std::wstring& custom);
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};

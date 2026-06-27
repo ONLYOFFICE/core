@@ -1008,6 +1008,8 @@ bool CMarkdownTable::ConvertMatrix(XmlUtils::CXmlLiteReader& oReader, std::vecto
 
 				MoveToNextTableCell(oReader, arSelectors, arDepths, m_oExternalData.GetSubClass);
 
+				const size_t unDepthSize{arDepths.size()};
+
 				if (ETableElement::FlatTable == pTableCell->GetType())
 				{
 					TCurentTablePosition oPosition(unRowIndex, unColumnIndex, unRowIndex, unColumnIndex);
@@ -1017,8 +1019,6 @@ bool CMarkdownTable::ConvertMatrix(XmlUtils::CXmlLiteReader& oReader, std::vecto
 
 					NSStringUtils::CStringBuilder oTempData(100);
 					bool bSetedDataOutput{false};
-
-					const size_t unDepthSize{arDepths.size()};
 
 					arDepths.push(oReader.GetDepth());
 
@@ -1075,12 +1075,6 @@ bool CMarkdownTable::ConvertMatrix(XmlUtils::CXmlLiteReader& oReader, std::vecto
 						}
 					}
 
-					while (arDepths.size() > unDepthSize)
-					{
-						arDepths.pop();
-						arSelectors.pop_back();
-					}
-
 					m_oExternalData.ClearStopTags();
 
 					if (bSetedDataOutput)
@@ -1102,6 +1096,11 @@ bool CMarkdownTable::ConvertMatrix(XmlUtils::CXmlLiteReader& oReader, std::vecto
 
 					++unColumnIndex;
 				}
+
+				while (arDepths.size() > unDepthSize)
+					arDepths.pop();
+
+				arSelectors.resize(unDepthSize);
 			}
 			else
 			{

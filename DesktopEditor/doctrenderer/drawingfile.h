@@ -382,6 +382,37 @@ public:
 			return ((CPdfFile*)m_pFile)->UndoRedact();
 		return false;
 	}
+	BYTE* EditPdf(BYTE* pChanges, int nChangesSize, BYTE* pMedia, int nMediaSize)
+	{
+		if (m_nType != 0)
+			return NULL;
+
+		CPdfFile* pdfFile = (CPdfFile*)m_pFile;
+		if (!pdfFile->EditPdf())
+			return NULL;
+
+		pdfFile->SetEditType(1);
+
+		CConvertFromBinParams* pParams = new CConvertFromBinParams();
+		pParams->m_sMediaDirectory = NSFile::GetProcessDirectory(); // TODO
+		pdfFile->AddToPdfFromBinary(pChanges + 4, nChangesSize - 4, pParams);
+
+		BYTE* pRes = NULL;
+		int nLen = 0;
+		pdfFile->SaveToMemory(&pRes, &nLen);
+
+		pdfFile->EditClose();
+
+		NSWasm::CData oRes;
+		oRes.SkipLen();
+
+		oRes.Write(pRes, nLen);
+
+		oRes.WriteLen();
+		BYTE* bRes = oRes.GetBuffer();
+		oRes.ClearWithoutAttack();
+		return bRes;
+	}
 
 	BYTE* GetGlyphs(int nPageIndex)
 	{

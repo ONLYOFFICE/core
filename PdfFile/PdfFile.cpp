@@ -137,7 +137,7 @@ void CPdfFile::RotatePage(int nRotate)
 }
 bool CPdfFile::EditPdf(const std::wstring& wsDstFile)
 {
-	if (wsDstFile.empty() || !m_pInternal->pReader)
+	if (!m_pInternal->pReader)
 		return false;
 
 	m_pInternal->pReader->CleanUp();
@@ -153,6 +153,7 @@ void CPdfFile::EditClose()
 {
 	if (m_pInternal->pEditor)
 		m_pInternal->pEditor->Close();
+	RELEASEOBJECT(m_pInternal->pWriter);
 	RELEASEOBJECT(m_pInternal->pEditor);
 }
 void CPdfFile::SetEditType(int nType)
@@ -644,6 +645,12 @@ int CPdfFile::SaveToFile(const std::wstring& wsPath)
 	if (!m_pInternal->pWriter)
 		return 1;
 	return m_pInternal->pWriter->SaveToFile(wsPath);
+}
+int CPdfFile::SaveToMemory(BYTE** pData, int* pLength)
+{
+	if (!m_pInternal->pWriter)
+		return 1;
+	return m_pInternal->pWriter->SaveToMemory(pData, pLength);
 }
 void CPdfFile::SetPassword(const std::wstring& wsPassword)
 {

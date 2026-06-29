@@ -1747,10 +1747,9 @@ void COOXMLTable::ConvertMatrix(XmlUtils::CXmlLiteReader& oReader, COOXMLWriter&
 				}
 
 				while (arDepths.size() > unDepthSize)
-				{
 					arDepths.pop();
-					arSelectors.pop_back();
-				}
+
+				arSelectors.resize(unDepthSize);
 
 				m_oExternalData.ClearStopTags();
 			}

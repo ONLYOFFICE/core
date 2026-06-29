@@ -172,20 +172,6 @@ namespace SVG
 
 				if('\0' != pValue[0])
 				{
-					bool bFoundedSymbol = false;
-					const char* pCheckValue = pValue;
-					while ('\0' != *pCheckValue)
-					{
-						if (std::isprint(static_cast<unsigned char>(*pCheckValue++)))
-						{
-							bFoundedSymbol = true;
-							break;
-						}
-					}
-
-					if (!bFoundedSymbol)
-						continue;
-
 					if (m_wsText.empty())
 					{
 						NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)pValue, (LONG)strlen(pValue), m_wsText);

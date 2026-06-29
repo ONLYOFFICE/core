@@ -75,6 +75,47 @@ namespace NSImages
 		GRAPHICS_DECL IImageFilesCache* Create(NSFonts::IApplicationFonts* pFonts);
 	}
 
+	class GRAPHICS_DECL IImageStream : public NSBase::CBaseRefCounter
+	{
+	public:
+		IImageStream();
+		virtual ~IImageStream();
+
+	public:
+		virtual int CreateFromFile(const std::wstring& strFileName, unsigned char* pDataUse = NULL) = 0;
+		virtual int CreateFromMemory(BYTE* pData, LONG lSize, bool bClear) = 0;
+		virtual void GetMemory(BYTE*& pData, LONG& lSize) = 0;
+	};
+
+	class GRAPHICS_DECL IImagesMemoryStorage : public NSBase::CBaseRefCounter
+	{
+	public:
+		IImagesMemoryStorage();
+		virtual ~IImagesMemoryStorage();
+
+		virtual bool Add(const std::wstring& id, BYTE* data, LONG size, bool bClear = false) = 0;
+		virtual bool Remove(const std::wstring& id) = 0;
+		virtual IImageStream* Get(const std::wstring& id) = 0;
+
+		virtual std::wstring GenerateId() = 0;
+		virtual void Clear() = 0;
+	};
+
+	namespace NSStream
+	{
+		GRAPHICS_DECL IImageStream* Create();
+	}
+
+	namespace NSApplicationImageStream
+	{
+		// create default
+		GRAPHICS_DECL IImagesMemoryStorage* CreateDefaultGlobalImagesMemoryStorage();
+
+		// without AddRef!!!
+		GRAPHICS_DECL IImagesMemoryStorage* GetGlobalImagesMemoryStorage();
+		GRAPHICS_DECL void SetGlobalImagesMemoryStorage(IImagesMemoryStorage* pStorage);
+	} // namespace NSApplicationImageStream
+
 	class CPixJbig2_private;
 	class GRAPHICS_DECL CPixJbig2
 	{

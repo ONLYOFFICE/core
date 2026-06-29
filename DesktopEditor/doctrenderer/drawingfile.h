@@ -382,10 +382,12 @@ public:
 			return ((CPdfFile*)m_pFile)->UndoRedact();
 		return false;
 	}
-	BYTE* EditPdf(BYTE* pChanges, int nChangesSize, BYTE* pMedia, int nMediaSize)
+	BYTE* EditPdf(BYTE* pChanges, int nChangesSize)
 	{
 		if (m_nType != 0)
 			return NULL;
+
+		return ((CPdfFile*)m_pFile)->SplitPages(NULL, 0, pChanges, nChangesSize);
 
 		CPdfFile* pdfFile = (CPdfFile*)m_pFile;
 		if (!pdfFile->EditPdf())

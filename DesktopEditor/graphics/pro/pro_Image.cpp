@@ -34,6 +34,9 @@
  */
 
 #include "../ImageFilesCache.h"
+#include "../../common/StringExt.h"
+
+NSImages::IImagesMemoryStorage* g_global_images_memory_storage = NULL;
 
 namespace NSImages
 {
@@ -54,6 +57,107 @@ namespace NSImages
 			return new CImageFilesCache(pFonts);
         }
     }
+
+	IImageStream::IImageStream() : NSBase::CBaseRefCounter() {}
+	IImageStream::~IImageStream() {}
+	namespace NSStream
+	{
+		IImageStream* Create()
+		{
+			return new CImageStream();
+		}
+	}
+
+	IImagesMemoryStorage::IImagesMemoryStorage()  {}
+	IImagesMemoryStorage::~IImagesMemoryStorage() {}
+
+	namespace NSApplicationImageStream
+	{
+	// default global memory storage
+	class CDefaultGlobalImagesMemoryStorage : public IImagesMemoryStorage
+	{
+	private:
+		std::map<std::wstring, IImageStream*> m_mapStreams;
+		int m_nInternalCounter;
+
+	public:
+		CDefaultGlobalImagesMemoryStorage()
+		{
+			m_nInternalCounter = 1;
+		}
+		virtual ~CDefaultGlobalImagesMemoryStorage()
+		{
+			Clear();
+		}
+
+		virtual bool Add(const std::wstring& id, BYTE* data, LONG size, bool bClear = false)
+		{
+			std::wstring sFile = id;
+			NSStringExt::Replace(sFile, L"\\", L"/");
+			std::map<std::wstring, IImageStream*>::iterator it = m_mapStreams.find(sFile);
+			if (it != m_mapStreams.end())
+				return false;
+
+			IImageStream* pStream = NSImages::NSStream::Create();
+			pStream->CreateFromMemory(data, size, bClear);
+			m_mapStreams.insert(std::pair<std::wstring, IImageStream*>(sFile, pStream));
+			return true;
+		}
+		virtual bool Remove(const std::wstring& id)
+		{
+			std::wstring sFile = id;
+			NSStringExt::Replace(sFile, L"\\", L"/");
+			std::map<std::wstring, IImageStream*>::iterator it = m_mapStreams.find(sFile);
+			if (it == m_mapStreams.end())
+				return false;
+
+			RELEASEINTERFACE(it->second);
+			m_mapStreams.erase(it);
+			return true;
+		}
+		virtual void Clear()
+		{
+			for (std::map<std::wstring, IImageStream*>::iterator it = m_mapStreams.begin(); it != m_mapStreams.end(); it++)
+				RELEASEINTERFACE(it->second);
+			m_mapStreams.clear();
+		}
+
+		virtual IImageStream* Get(const std::wstring& id)
+		{
+			std::wstring sFile = id;
+			NSStringExt::Replace(sFile, L"\\", L"/");
+			std::map<std::wstring, IImageStream*>::iterator it = m_mapStreams.find(sFile);
+			return it != m_mapStreams.end() ? it->second : NULL;
+		}
+
+		virtual std::wstring GenerateId()
+		{
+			std::wstring sKey;
+			do
+			{
+				sKey = L"storage_internal_" + std::to_wstring(m_nInternalCounter++);
+			} while (m_mapStreams.find(sKey) != m_mapStreams.end());
+			return sKey;
+		}
+	};
+
+	GRAPHICS_DECL IImagesMemoryStorage* CreateDefaultGlobalImagesMemoryStorage()
+	{
+		return new CDefaultGlobalImagesMemoryStorage();
+	}
+
+	GRAPHICS_DECL IImagesMemoryStorage* GetGlobalImagesMemoryStorage()
+	{
+		return g_global_images_memory_storage;
+	}
+	GRAPHICS_DECL void SetGlobalImagesMemoryStorage(IImagesMemoryStorage* pStorage)
+	{
+		if (g_global_images_memory_storage != pStorage)
+			RELEASEINTERFACE(g_global_images_memory_storage);
+
+		g_global_images_memory_storage = pStorage;
+	}
+	}
 }
 
 #include "../../raster/JBig2/source/Encoder/jbig2enc.h"

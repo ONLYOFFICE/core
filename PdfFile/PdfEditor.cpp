@@ -3398,16 +3398,24 @@ bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength)
 	std::map<int, std::vector<int>> mFileToPages;
 	PDFDoc* pPDFDocument = m_pReader->GetPDFDocument(nPDFIndex);
 	nPages = pPDFDocument->getNumPages();
+
+	if (!arrPageIndex || unLength == 0)
+	{
+		unLength = m_pReader->GetNumPages();
+		arrPageIndex = NULL;
+	}
+
 	for (unsigned int i = 0; i < unLength; ++i)
 	{
-		if (arrPageIndex[i] < nTotalPages + nPages)
-			mFileToPages[nPDFIndex].push_back(arrPageIndex[i] - nTotalPages);
+		int nPageIndex = arrPageIndex ? arrPageIndex[i] : i;
+		if (nPageIndex < nTotalPages + nPages)
+			mFileToPages[nPDFIndex].push_back(nPageIndex - nTotalPages);
 		else
 		{
 			pPDFDocument = m_pReader->GetPDFDocument(++nPDFIndex);
 			if (!pPDFDocument)
 			{
-				m_mObjManager.m_arrSplitAddPages.push_back(arrPageIndex[i]);
+				m_mObjManager.m_arrSplitAddPages.push_back(nPageIndex);
 				--nPDFIndex;
 				continue;
 			}

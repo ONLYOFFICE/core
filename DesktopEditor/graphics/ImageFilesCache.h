@@ -223,21 +223,6 @@ public:
 	}
 };
 
-class CImageStream : public NSImages::IImageStream
-{
-public:
-	BYTE* m_pData;
-	LONG  m_lSize;
-	bool  m_bIsAttach;
-
-public:
-	CImageStream();
-	virtual ~CImageStream();
-
-public:
-	virtual int CreateFromFile(const std::wstring& strFileName, BYTE* pDataUse = NULL);
-	virtual int CreateFromMemory(BYTE* pData, LONG lSize, bool bClear);
-	virtual void GetMemory(BYTE*& pData, LONG& lSize);
-};
+typedef NSMemoryStorage::CDefaultMemoryStream CImageStream;
 
 #endif // _BUILD_IMAGEFILESCACHE_H_

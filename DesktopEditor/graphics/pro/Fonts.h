@@ -41,6 +41,7 @@
 #include <map>
 #include <vector>
 #include "../../common/Types.h"
+#include "MemoryStorage.h"
 
 #define NSFONTS_EMBEDDING_RIGHTS_ANY               0x00
 #define NSFONTS_EMBEDDING_RIGHTS_PRINT_AND_PREVIEW 0x01
@@ -62,24 +63,6 @@ struct TBBoxAdvance
 	float fAdvanceX;
 	float fAdvanceY;
 };
-
-namespace NSBase
-{
-	class GRAPHICS_DECL CBaseRefCounter
-	{
-	protected:
-		volatile int m_lRef;
-
-	public:
-		CBaseRefCounter();
-		virtual ~CBaseRefCounter();
-
-		virtual int AddRef();
-		virtual int Release();
-	};
-
-	void GRAPHICS_DECL Release(CBaseRefCounter* base);
-} // namespace NSBase
 
 namespace NSFonts
 {
@@ -547,31 +530,8 @@ namespace NSFonts
 
 namespace NSFonts
 {
-	class GRAPHICS_DECL IFontStream : public NSBase::CBaseRefCounter
-	{
-	public:
-		IFontStream();
-		virtual ~IFontStream();
-
-	public:
-		virtual int CreateFromFile(const std::wstring& strFileName, unsigned char* pDataUse = NULL) = 0;
-		virtual int CreateFromMemory(BYTE* pData, LONG lSize, bool bClear) = 0;
-		virtual void GetMemory(BYTE*& pData, LONG& lSize) = 0;
-	};
-
-	class GRAPHICS_DECL IFontsMemoryStorage : public NSBase::CBaseRefCounter
-	{
-	public:
-		IFontsMemoryStorage();
-		virtual ~IFontsMemoryStorage();
-
-		virtual bool Add(const std::wstring& id, BYTE* data, LONG size, bool bClear = false) = 0;
-		virtual bool Remove(const std::wstring& id) = 0;
-		virtual IFontStream* Get(const std::wstring& id) = 0;
-
-		virtual std::wstring GenerateId() = 0;
-		virtual void Clear() = 0;
-	};
+	typedef NSMemoryStorage::IMemoryStream IFontStream;
+	typedef NSMemoryStorage::IMemoryStorage<IFontStream> IFontsMemoryStorage;
 
 	class GRAPHICS_DECL IApplicationFontStreams : public NSBase::CBaseRefCounter
 	{

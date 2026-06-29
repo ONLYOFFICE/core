@@ -850,10 +850,6 @@ namespace PdfWriter
 	{
 		pAnnot->SetXref(m_pXref);
 		m_mAnnotations[nID] = pAnnot;
-
-		CStructureTreeRoot* pRoot = m_pCatalog->GetStructTreeRoot();
-		if (pRoot)
-			pRoot->AddAnnot(pAnnot, m_pCurPage, StructElemType::Annot);
 	}
     CImageDict* CDocument::CreateImage()
 	{
@@ -1446,6 +1442,18 @@ namespace PdfWriter
 	void CDocument::AddObject(CObjectBase* pObj)
 	{
 		m_pXref->Add(pObj);
+
+		if (pObj->GetType() == object_type_DICT)
+		{
+			CDictObject* pDict = dynamic_cast<CDictObject*>(pObj);
+			if (pDict->GetDictType() == dict_type_ANNOTATION)
+			{
+				CAnnotation* pAnnot = dynamic_cast<CAnnotation*>(pDict);
+				CStructureTreeRoot* pRoot = m_pCatalog->GetStructTreeRoot();
+				if (pRoot)
+					pRoot->AddAnnot(pAnnot, m_pCurPage, StructElemType::Annot);
+			}
+		}
 	}
 	void CDocument::RemoveObj(CObjectBase* pObj)
 	{

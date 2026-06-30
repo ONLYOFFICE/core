@@ -10104,6 +10104,10 @@ int Binary_DocumentTableReader::ReadSdtFormPr(BYTE type, long length, void* poRe
 	{
 		pFormPr->m_oRequired = m_oBufferedStream.GetBool();
 	}
+	else if (c_oSerSdt::FormPrSpellCheck== type)
+	{
+		pFormPr->m_oSpellCheck = m_oBufferedStream.GetBool();
+	}
 	else if (c_oSerSdt::FormPrBorder == type)
 	{
 		pFormPr->m_oBorder.Init();

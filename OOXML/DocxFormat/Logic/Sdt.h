@@ -264,6 +264,7 @@ namespace OOX
 			nullable_string m_oLabel;
 			nullable_string m_oHelpText;
 			nullable_bool m_oRequired;
+			nullable_bool m_oSpellCheck;
 
 			nullable<ComplexTypes::Word::CBorder> m_oBorder;
 			nullable<ComplexTypes::Word::CShading> m_oShd;

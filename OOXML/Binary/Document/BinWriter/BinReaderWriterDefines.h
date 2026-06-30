@@ -1317,8 +1317,11 @@ extern int g_nCurFormatVersion;
 		PictureFormPrShiftX = 64,
 		PictureFormPrShiftY = 65,
 		PictureFormPrSignature = 66,
+
+		FormPrSpellCheck = 69,
 		FormPrBorder = 70,
 		FormPrShd = 71,
+
 		TextFormPrCombWRule = 72,
 		TextFormPrFormatType    = 80,
 		TextFormPrFormatVal     = 81,

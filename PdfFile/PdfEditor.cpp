@@ -2310,7 +2310,7 @@ void CloseWriteAppend_FinalizeSource(CPdfReader* pReader, const wchar_t* wsPassw
 }
 void CPdfEditor::Close()
 {
-	if (m_wsDstFile.empty())
+	if (m_wsDstFile.empty() && m_nMode != Mode::WriteNew)
 		return;
 
 	if (m_nMode == Mode::Unknown)
@@ -3381,7 +3381,7 @@ bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength, PDFD
 bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength)
 {
 	if (m_nMode != Mode::Split)
-		return false;
+		return true;
 	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
 	if (!pDoc)
 		return false;

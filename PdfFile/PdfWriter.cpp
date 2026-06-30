@@ -222,7 +222,7 @@ void CPdfWriter::SetDocumentID(const std::wstring& wsDocumentID)
 int CPdfWriter::SaveToFile(const std::wstring& wsPath)
 {
 	// TODO: Refactor to use error code
-	if (!IsValid())
+	if (!IsValid() || wsPath.empty())
 		return 1;
 
 	if (!m_pFont && !m_pFont14 && !m_pFontEmbedded && !m_pDocument->IsPDFA() && m_bNeedAddHelvetica)

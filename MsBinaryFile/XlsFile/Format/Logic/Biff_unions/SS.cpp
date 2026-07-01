@@ -52,6 +52,8 @@
 #include"../Biff_records/EndObject.h"
 #include"../Biff_records/ShapePropsStream.h"
 
+#include"../../OOXML/PPTXFormat/Logic/SpPr.h"
+
 namespace XLS
 {
 
@@ -410,6 +412,14 @@ int SS::serialize(std::wostream & _stream, int series_type, int indPt)
 	DataFormat		*series_data_format = dynamic_cast<DataFormat*>		(m_DataFormat.get());
 	SerFmt			*series_format		= dynamic_cast<SerFmt*>			(m_SerFmt.get());
 	MarkerFormat	*marker_format		= dynamic_cast<MarkerFormat*>	(m_MarkerFormat.get());
+	SHAPEPROPS		*SpProps			= nullptr;
+	ShapePropsStream *spStream			= nullptr;
+	if(!m_arSHAPEPROPS.empty())
+	{
+
+		SpProps =dynamic_cast<SHAPEPROPS*>	(m_arSHAPEPROPS.back().get());
+		spStream = static_cast<ShapePropsStream*>(SpProps->m_ShapePropsStream.get());
+	}
 
 	int ind = series_data_format->iss;
 
@@ -423,6 +433,26 @@ int SS::serialize(std::wostream & _stream, int series_type, int indPt)
 	if ((line) && (line->fAuto == false)) bLine = true;
 
 	bool bMarkerEx = false;
+	if(spStream)
+	{
+		XmlUtils::CXmlLiteReader reader;
+		auto spPos = spStream->xml_.find("<a:spPr");
+		if (spPos != std::string::npos)
+		spStream->xml_ = spStream->xml_.erase(0,spPos);
+		std::wstring buf(spStream->xml_.begin(), spStream->xml_.end());
+		reader.FromString(buf);
+		reader.ReadNextNode();
+		PPTX::Logic::SpPr props;
+		props.fromXML(reader);
+		NSBinPptxRW::CXmlWriter writer;
+		writer.m_lDocType = XMLWRITER_DOC_TYPE_CHART;
+		props.toXmlWriter(&writer);
+
+		_stream.write(writer.GetXmlString().c_str(), writer.GetXmlString().size());
+		bLine = false;
+		bArea = false;
+		indPt = 0;
+	}
 
 	CP_XML_WRITER(_stream)    
 	{

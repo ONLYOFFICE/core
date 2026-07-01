@@ -119,7 +119,7 @@ namespace PdfWriter
         }
 
 
-		CImageFileStream* pStream = new CImageFileStream();
+		CStream* pStream = CreateImageStream();
 		if (!pStream)
 			return;
 
@@ -161,7 +161,7 @@ namespace PdfWriter
 	}
 	void CImageDict::LoadJpx(const wchar_t* wsFilePath, unsigned int unWidth, unsigned int unHeight)
 	{
-		CImageFileStream* pStream = new CImageFileStream();
+		CStream* pStream = CreateImageStream();
 		if (!pStream)
 			return;
 
@@ -193,7 +193,7 @@ namespace PdfWriter
 	}
 	void CImageDict::LoadJb2(const wchar_t* wsFilePath, unsigned int unWidth, unsigned int unHeight)
 	{
-		CImageFileStream* pStream = new CImageFileStream();
+		CStream* pStream = CreateImageStream();
 		if (!pStream)
 			return;
 
@@ -209,7 +209,7 @@ namespace PdfWriter
 	}
 	void CImageDict::LoadCCITT4(const wchar_t* wsTempFile, unsigned int unWidth, unsigned int unHeight)
 	{
-		CImageFileStream* pStream = new CImageFileStream();
+		CStream* pStream = CreateImageStream();
 		if (!pStream)
 			return;
 

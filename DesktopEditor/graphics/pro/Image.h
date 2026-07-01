@@ -151,6 +151,7 @@ namespace MetaFile
 		virtual void GetBounds(double* pdX, double* pdY, double* pdW, double* pdH) = 0;
 		virtual int GetType() = 0;
 		virtual void ConvertToRaster(const wchar_t* wsOutFilePath, unsigned int unFileType, int nWidth, int nHeight = -1) = 0;
+		virtual void ConvertToRaster(BYTE*& pBuffer, int& nSize, unsigned int unFileType, int nWidth, int nHeight = -1) = 0;
 		virtual NSFonts::IFontManager* get_FontManager() = 0;
 
 		virtual std::wstring ConvertToSvg(unsigned int unWidth = 0, unsigned int unHeight = 0) = 0;

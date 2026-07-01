@@ -4179,16 +4179,24 @@ bool CPdfEditor::EditAnnot(int _nPageIndex, int nID)
 				DictToCDictObjectUnified(&oTemp, ctx, pAPN, chKey);
 				oTemp.free();
 			}
+
 			int nLength = 0;
 			if (pODict->lookup("Length", &oTemp)->isInt())
 				nLength = oTemp.getInt();
 			PdfWriter::CStream* pStream = new PdfWriter::CMemoryStream(nLength);
 			pAPN->SetStream(pStream);
 			pAPN->Add("Length", nLength);
-			Stream* pOStream = oAPN.getStream();
+			if (pAPN->Get("Filter"))
+				pAPN->SetFilter(STREAM_FILTER_ALREADY_DECODE);
+
+			Stream* pOStream = oAPN.getStream()->getUndecodedStream();
 			pOStream->reset();
-			for (int nI = 0; nI < nLength; ++nI)
-				pStream->WriteChar(pOStream->getChar());
+			int nChar = pOStream->getChar();
+			while (nChar != EOF)
+			{
+				pStream->WriteChar(nChar);
+				nChar = pOStream->getChar();
+			}
 		}
 		oAP.free(); oAPN.free();
 	}

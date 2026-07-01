@@ -239,7 +239,7 @@ int CPdfWriter::SaveToFile(const std::wstring& wsPath)
 
 	return 0;
 }
-int CPdfWriter::SaveToMemory(BYTE** pData, int* pLength)
+int CPdfWriter::SaveToMemory(BYTE** pData, int* pLength, bool bForWasm)
 {
 	// TODO: Refactor to use error code
 	if (!IsValid())
@@ -247,7 +247,7 @@ int CPdfWriter::SaveToMemory(BYTE** pData, int* pLength)
 
 	m_oCommandManager.Flush();
 
-	if (!m_pDocument->SaveToMemory(pData, pLength))
+	if (!m_pDocument->SaveToMemory(pData, pLength, bForWasm))
 		return 1;
 
 	return 0;
@@ -920,8 +920,14 @@ HRESULT CPdfWriter::DrawPath(NSFonts::IApplicationFonts* pAppFonts, const std::w
 		if (c_BrushTypeTexture == m_oBrush.GetType())
 		{
 			sTextureOldPath = m_oBrush.GetTexturePath();
+#ifdef BUILDING_WASM_MODULE
+			std::wstring wsMedia = L"media/";
+			std::wstring::size_type posMedia = sTextureOldPath.find(wsMedia);
+			if (posMedia != std::wstring::npos)
+				sTextureTmpPath = sTextureOldPath.erase(0, posMedia + wsMedia.length());
+#else
 			sTextureTmpPath = GetDownloadFile(sTextureOldPath, wsTempDirectory);
-
+#endif
 			if (!sTextureTmpPath.empty())
 				m_oBrush.SetTexturePath(sTextureTmpPath);
 		}
@@ -3967,9 +3973,30 @@ void CPdfWriter::UpdateBrush(NSFonts::IApplicationFonts* pAppFonts, const std::w
 	LONG lBrushType = m_oBrush.GetType();
 	if (c_BrushTypeTexture == lBrushType)
 	{
+		bool bFromMemory = false;
+		BYTE* pData = NULL;
+		LONG  lLength = 0;
+
 		std::wstring wsTexturePath = m_oBrush.GetTexturePath();
 		BYTE nAlpha = m_oBrush.GetTextureAlpha();
-		CImageFileFormatChecker oImageFormat(wsTexturePath);
+#ifdef BUILDING_WASM_MODULE
+		NSImages::IImagesMemoryStorage* pMemoryStorage = NSImages::NSApplicationImageStream::GetGlobalImagesMemoryStorage();
+		if (pMemoryStorage)
+		{
+			NSImages::IImageStream* pStream = pMemoryStorage->Get(wsTexturePath);
+			if (pStream)
+			{
+				bFromMemory = true;
+				pStream->GetMemory(pData, lLength);
+			}
+		}
+
+#endif
+		CImageFileFormatChecker oImageFormat;
+		if (bFromMemory)
+			oImageFormat.isImageFile(pData, lLength);
+		else
+			oImageFormat.isImageFile(wsTexturePath);
 
 		PdfWriter::CImageDict* pImage = NULL;
 		int nImageW = 0;
@@ -3986,7 +4013,10 @@ void CPdfWriter::UpdateBrush(NSFonts::IApplicationFonts* pAppFonts, const std::w
 		{
 			pImage = m_pDocument->CreateImage();
 			CBgraFrame oFrame;
-			oFrame.OpenFile(wsTexturePath);
+			if (bFromMemory)
+				oFrame.Decode(pData, lLength, oImageFormat.eFileType);
+			else
+				oFrame.OpenFile(wsTexturePath);
 			nImageH = oFrame.get_Height();
 			nImageW = oFrame.get_Width();
 
@@ -4007,7 +4037,10 @@ void CPdfWriter::UpdateBrush(NSFonts::IApplicationFonts* pAppFonts, const std::w
 		{
 			// TODO: Implement proper metafile rendering
 			MetaFile::IMetaFile* pMeta = MetaFile::Create(pAppFonts);
-			pMeta->LoadFromFile(wsTexturePath.c_str());
+			if (bFromMemory)
+				pMeta->LoadFromBuffer(pData, lLength);
+			else
+				pMeta->LoadFromFile(wsTexturePath.c_str());
 
 			double dL, dR, dT, dB;
 			m_oPath.GetBounds(dL, dT, dR, dB);
@@ -4032,6 +4065,8 @@ void CPdfWriter::UpdateBrush(NSFonts::IApplicationFonts* pAppFonts, const std::w
 			if (dW < dMin) dW = dMin;
 			if (dH < dMin) dH = dMin;
 
+			// TODO ConvertToRaster to Memory
+
 			std::wstring wsTempFile = GetTempFile(wsTempDirectory);
 			pMeta->ConvertToRaster(wsTempFile.c_str(), _CXIMAGE_FORMAT_PNG, (int)dW, (int)dH);
 
@@ -4045,7 +4080,11 @@ void CPdfWriter::UpdateBrush(NSFonts::IApplicationFonts* pAppFonts, const std::w
 		}
 		else
 		{
-			Aggplus::CImage oImage(wsTexturePath);
+			Aggplus::CImage oImage;
+			if (bFromMemory)
+				oImage.Decode(pData, lLength);
+			else
+				oImage.Create(wsTexturePath);
 			nImageW = abs((int)oImage.GetWidth());
 			nImageH = abs((int)oImage.GetHeight());
 			pImage = LoadImage(&oImage, 255);

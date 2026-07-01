@@ -600,12 +600,8 @@ BYTE* CPdfFile::SplitPages(const int* arrPageIndex, unsigned int unLength, BYTE*
 		else
 			m_pInternal->pEditor->AfterSplitPages();
 
-		if (m_pInternal->pWriter->SaveToMemory(&pRes, &nLen) != 0)
-		{
+		if (m_pInternal->pWriter->SaveToMemory(&pRes, &nLen, true) != 0)
 			RELEASEMEM(pRes);
-		}
-		else
-			pRes = m_pInternal->pReader->StreamToCData(pRes, nLen);
 	}
 
 	RELEASEOBJECT(m_pInternal->pWriter);

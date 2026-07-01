@@ -805,7 +805,7 @@ namespace PdfWriter
 	}
 	void         CMemoryStream::Write(const BYTE* pBuffer, unsigned int unSize)
 	{
-		unsigned int unRemainBytes = m_nBufferSize - Tell();
+		unsigned int unRemainBytes = m_nBufferSize - RealTell();
 		if (unRemainBytes < unSize)
 		{
             unsigned int unShrinkSize = std::max(unSize, (unsigned int)STREAM_BUF_SIZ);
@@ -817,7 +817,7 @@ namespace PdfWriter
 	}
 	void         CMemoryStream::Read(BYTE* pBuffer, unsigned int* punSize)
 	{
-		unsigned int unRemainBytes = m_unSize - Tell();
+		unsigned int unRemainBytes = m_unSize - RealTell();
         unsigned int unReadedBytes = (punSize ? std::min(*punSize, unRemainBytes) : unRemainBytes);
 		MemCpy(pBuffer, m_pCur, unReadedBytes);
 		m_pCur += unReadedBytes;
@@ -830,12 +830,12 @@ namespace PdfWriter
 		{
 		case SeekCur: m_pCur += nPos; break;
 		case SeekEnd: m_pCur = m_pBuffer + m_unSize - nPos; break;
-		case SeekSet: m_pCur = m_pBuffer + nPos; break;
+		case SeekSet: m_pCur = m_pBuffer + nPos + (int)GetHeaderOffset(); break;
 		}
 	}
 	int          CMemoryStream::Tell()
 	{
-		return (int)(m_pCur - m_pBuffer);
+		return RealTell() - (int)GetHeaderOffset();
 	}
 	void         CMemoryStream::Close()
 	{
@@ -849,15 +849,16 @@ namespace PdfWriter
 		m_pBuffer     = NULL;
 		m_pCur        = NULL;
 		m_unSize      = 0;
+		m_bForWasm    = false;
 	}
 	unsigned int CMemoryStream::Size()
 	{
-		return m_unSize;
+		return m_unSize - GetHeaderOffset();
 	}
 	void CMemoryStream::Clear()
 	{
-		m_pCur   = m_pBuffer;
-		m_unSize = 0;
+		m_pCur   = m_pBuffer + GetHeaderOffset();
+		m_unSize = GetHeaderOffset();
 	}
 	BYTE* CMemoryStream::GetBuffer()
 	{
@@ -873,12 +874,13 @@ namespace PdfWriter
 		m_pBuffer     = NULL;
 		m_pCur        = NULL;
 		m_unSize      = 0;
+		m_bForWasm    = false;
 	}
 	void         CMemoryStream::Shrink(unsigned int unSize)
 	{
 		if (m_pBuffer)
 		{
-			long lPos = Tell();
+			long lPos = RealTell();
 
 			//BYTE* pNewBuffer = new BYTE[m_nBufferSize + unSize];
 			//MemCpy(pNewBuffer, m_pBuffer, m_unSize);
@@ -901,6 +903,27 @@ namespace PdfWriter
 			m_pCur = m_pBuffer;
 			m_nBufferSize = unSize;
 		}
+	}
+	void CMemoryStream::SetForWasm(bool bForWasm)
+	{
+		m_bForWasm = bForWasm;
+	}
+	unsigned int CMemoryStream::GetHeaderOffset() const
+	{
+		return m_bForWasm ? (unsigned int)sizeof(unsigned int) : 0;
+	}
+	int CMemoryStream::RealTell() const
+	{
+		return (int)(m_pCur - m_pBuffer);
+	}
+	void CMemoryStream::SkipLen()
+	{
+		unsigned int n = 0;
+		Write((BYTE*)&n, sizeof(unsigned int));
+	}
+	void CMemoryStream::WriteLen()
+	{
+		memcpy(m_pBuffer, &m_unSize, sizeof(unsigned int));
 	}
 	//----------------------------------------------------------------------------------------
 	// CFileStream

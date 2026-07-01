@@ -173,12 +173,19 @@ namespace PdfWriter
 		BYTE* GetCurBuffer();
 		void ClearWithoutAttack();
 
+		void SetForWasm(bool bForWasm);
+		unsigned int GetHeaderOffset() const;
+		int RealTell() const;
+		void SkipLen();
+		void WriteLen();
+
 	private:
 
 		void Shrink(unsigned int unSize);
 
 	private:
 		bool         m_bFree;
+		bool         m_bForWasm = false;
 
 		BYTE*        m_pBuffer;
 		int          m_nBufferSize;

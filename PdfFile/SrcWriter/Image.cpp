@@ -47,34 +47,72 @@ namespace NSImageReSaver
         pBuffer = NULL;
         nBufferSize = 0;
 
-        CImageFileFormatChecker oChecker(wsFileName);
+		bool bFromMemory = false;
+		BYTE* pData = NULL;
+		LONG  lLength = 0;
+#ifdef BUILDING_WASM_MODULE
+		NSImages::IImagesMemoryStorage* pMemoryStorage = NSImages::NSApplicationImageStream::GetGlobalImagesMemoryStorage();
+		if (pMemoryStorage)
+		{
+			NSImages::IImageStream* pStream = pMemoryStorage->Get(wsFileName);
+			if (pStream)
+			{
+				bFromMemory = true;
+				pStream->GetMemory(pData, lLength);
+			}
+		}
+#endif
+
+		CImageFileFormatChecker oChecker;
+		if (bFromMemory)
+			oChecker.isImageFile(pData, lLength);
+		else
+			oChecker.isImageFile(wsFileName);
+
         if (oChecker.eFileType != _CXIMAGE_FORMAT_JPG)
             return;
 
-        NSFile::CFileBinary oFile;
-        if (!oFile.OpenFile(wsFileName))
-            return;
+		std::string sFind;
+		if (bFromMemory)
+		{
+			int nSize = lLength;
+			if (nSize > 10000)
+				nSize = 10000;
 
-        int nSize = oFile.GetFileSize();
-        if (nSize > 10000)
-            nSize = 10000;
+			sFind = std::string((char*)pData, nSize);
+		}
+		else
+		{
+			NSFile::CFileBinary oFile;
+			if (!oFile.OpenFile(wsFileName))
+				return;
 
-        BYTE* data = new BYTE[nSize];
-        DWORD dwRead = 0;
-        if (!oFile.ReadFile(data, nSize, dwRead))
-        {
-            RELEASEARRAYOBJECTS(data);
-            return;
-        }
+			int nSize = oFile.GetFileSize();
+			if (nSize > 10000)
+				nSize = 10000;
 
-        std::string sFind((char*)data, nSize);
-        oFile.CloseFile();
-        RELEASEARRAYOBJECTS(data);
+			BYTE* data = new BYTE[nSize];
+			DWORD dwRead = 0;
+			if (!oFile.ReadFile(data, nSize, dwRead))
+			{
+				RELEASEARRAYOBJECTS(data);
+				return;
+			}
+
+			sFind = std::string((char*)data, nSize);
+			oFile.CloseFile();
+			RELEASEARRAYOBJECTS(data);
+		}
 
         if (std::string::npos != sFind.find("Adobe") || std::string::npos != sFind.find("Photoshop") || std::string::npos != sFind.find("photoshop"))
         {
             CBgraFrame oFrame;
-            if (!oFrame.OpenFile(wsFileName))
+			bool bres = true;
+			if (bFromMemory)
+				bres = oFrame.Decode(pData, lLength, oChecker.eFileType);
+			else
+				bres = oFrame.OpenFile(wsFileName);
+			if (!bres)
                 return;
 
             oFrame.SetJpegQuality(85.0);

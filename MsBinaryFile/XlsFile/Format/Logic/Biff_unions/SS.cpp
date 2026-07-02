@@ -52,7 +52,7 @@
 #include"../Biff_records/EndObject.h"
 #include"../Biff_records/ShapePropsStream.h"
 
-#include"../../OOXML/PPTXFormat/Logic/SpPr.h"
+#include"../../../../../OOXML/PPTXFormat/Logic/SpPr.h"
 
 namespace XLS
 {

@@ -1519,10 +1519,10 @@ void docx_conversion_context::process_styles()
                     const std::wstring basedOnId = styles_map_.get(baseOn->name(), baseOn->type());
                     _Wostream << L"<w:basedOn w:val=\"" << basedOnId << "\"/>";
                 }
-				//else if (!bDefault && !default_style.empty())
-				//{
-				//	_Wostream << L"<w:basedOn w:val=\"" << default_style << "\"/>";
-				//}
+				else if (!bDefault && !default_style.empty())
+				{
+					_Wostream << L"<w:basedOn w:val=\"" << default_style << "\"/>";
+				}
 				if (arStyles[i]->primary_format())
 				{
 					if (*arStyles[i]->primary_format())

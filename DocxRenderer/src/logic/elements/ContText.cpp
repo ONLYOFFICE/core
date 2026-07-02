@@ -87,6 +87,7 @@ namespace NSDocxRenderer
 		m_bIsOutlinePresent = rCont.m_bIsOutlinePresent;
 		m_bIsEmbossPresent = rCont.m_bIsEmbossPresent;
 		m_bIsEngravePresent = rCont.m_bIsEngravePresent;
+		m_bIsRtl = rCont.m_bIsRtl;
 
 		m_oText = rCont.m_oText;
 
@@ -107,9 +108,11 @@ namespace NSDocxRenderer
 		m_oSelectedFont = rCont.m_oSelectedFont;
 		m_bPossibleHorSplit = rCont.m_bPossibleHorSplit;
 		m_bWriteStyleRaw = rCont.m_bWriteStyleRaw;
+		m_bCollectMetaInfo = rCont.m_bCollectMetaInfo;
+		m_bIsAddBrEnd = rCont.m_bIsAddBrEnd;
 
 		m_nOriginFontFaceIndex = rCont.m_nOriginFontFaceIndex;
-		m_wsOriginFontName = rCont.m_nOriginFontFaceIndex;
+		m_wsOriginFontName = rCont.m_wsOriginFontName;
 
 		m_arSymWidths.clear();
 		m_arSymWidths.resize(rCont.m_arSymWidths.size());

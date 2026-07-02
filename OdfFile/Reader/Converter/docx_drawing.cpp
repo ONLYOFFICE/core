@@ -629,26 +629,34 @@ void docx_serialize_wps(std::wostream & strm, _docx_drawing & val, oox::docx_con
 
 						bool init = val.posOffsetH == 0 || val.posOffsetH;
 
-						if( init )
+						if (val.styleHorizontalPos)
 						{
-							CP_XML_NODE(L"wp:posOffset")
+							switch (val.styleHorizontalPos->get_type())
 							{
-								CP_XML_STREAM() << val.posOffsetH;
+							case odf_types::horizontal_pos::Left:
+							case odf_types::horizontal_pos::FromLeft:
+							{
+								CP_XML_NODE(L"wp:align") { CP_XML_STREAM() << L"left"; }
+							}break;
+
+							case odf_types::horizontal_pos::Right:
+							{
+								CP_XML_NODE(L"wp:align") { CP_XML_STREAM() << L"right"; }
+							}break;
+							case odf_types::horizontal_pos::Center:
+							case odf_types::horizontal_pos::Inside:
+							case odf_types::horizontal_pos::Outside:
+							default:
+							{
+								CP_XML_NODE(L"wp:align") { CP_XML_STREAM() << L"center"; }
+							}break;
 							}
-						}
-
-						else if (val.styleHorizontalPos &&
-							val.styleHorizontalPos->get_type() != odf_types::horizontal_pos::FromLeft &&
-							val.styleHorizontalPos->get_type() != odf_types::horizontal_pos::Outside)
-						{
-							CP_XML_NODE(L"wp:align") {CP_XML_STREAM() << (*val.styleHorizontalPos);}
-
 						}
 						else
 						{
 							CP_XML_NODE(L"wp:posOffset")
 							{
-								CP_XML_STREAM() << 0;
+								CP_XML_STREAM() << (init ? val.posOffsetH : 0);
 							}
 						}			     
 					}
@@ -662,15 +670,7 @@ void docx_serialize_wps(std::wostream & strm, _docx_drawing & val, oox::docx_con
 
 						bool init = val.posOffsetV == 0 || val.posOffsetV;
 
-						if( init )
-						{
-							CP_XML_NODE(L"wp:posOffset")
-							{
-								CP_XML_STREAM() << val.posOffsetV;
-							}
-						}
-
-						else if (val.styleVerticalPos &&
+						if (val.styleVerticalPos &&
 							val.styleVerticalPos->get_type() != odf_types::vertical_pos::FromTop &&
 							val.styleVerticalPos->get_type() != odf_types::vertical_pos::Below)
 						{
@@ -683,7 +683,7 @@ void docx_serialize_wps(std::wostream & strm, _docx_drawing & val, oox::docx_con
 						{
 							CP_XML_NODE(L"wp:posOffset")
 							{
-								CP_XML_STREAM() << 0;
+								CP_XML_STREAM() << (init ? val.posOffsetV : 0);
 							}
 						}
 					}
@@ -852,12 +852,28 @@ void docx_serialize_wps(std::wostream & strm, _docx_drawing & val)
 
 						CP_XML_ATTR(L"relativeFrom", relativeFrom);
 
-						if (val.styleHorizontalPos &&
-						    val.styleHorizontalPos->get_type() != odf_types::horizontal_pos::FromLeft &&
-						    val.styleHorizontalPos->get_type() != odf_types::horizontal_pos::Outside)
+						if (val.styleHorizontalPos)
 						{
-							CP_XML_NODE(L"wp:align") {CP_XML_STREAM() << (*val.styleHorizontalPos);}
+							switch (val.styleHorizontalPos->get_type())
+							{
+							case odf_types::horizontal_pos::Left:
+							case odf_types::horizontal_pos::FromLeft:
+							{
+								CP_XML_NODE(L"wp:align") { CP_XML_STREAM() << L"left"; }
+							}break;
 
+							case odf_types::horizontal_pos::Right:
+							{
+								CP_XML_NODE(L"wp:align") { CP_XML_STREAM() << L"right"; }
+							}break;
+							case odf_types::horizontal_pos::Center:
+							case odf_types::horizontal_pos::Inside:
+							case odf_types::horizontal_pos::Outside:
+							default:
+							{
+								CP_XML_NODE(L"wp:align") { CP_XML_STREAM() << L"center"; }
+							}break;
+							}
 						}
 						else
 						{

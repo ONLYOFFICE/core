@@ -186,12 +186,13 @@ bool CPdfFile::AddPage(int nPageIndex)
 		return false;
 	return m_pInternal->pEditor->AddPage(nPageIndex);
 }
-bool CPdfFile::MergePages(const std::wstring& wsPath, int nMaxID, const std::wstring& wsPrefixForm)
+bool CPdfFile::MergePagesEdit(BYTE* data, DWORD length, int nMaxID, const std::wstring& wsPrefixForm)
 {
 	if (!m_pInternal->pEditor)
 		return false;
-	if (m_pInternal->pReader->MergePages(wsPath, L"", nMaxID, U_TO_UTF8(wsPrefixForm)))
-		return m_pInternal->pEditor->MergePages(wsPath);
+	std::string sPrefixForm = U_TO_UTF8(wsPrefixForm);
+	if (m_pInternal->pReader->MergePages(data, length, L"", nMaxID, sPrefixForm))
+		return m_pInternal->pEditor->MergePages(sPrefixForm);
 	return false;
 }
 bool CPdfFile::PrintPages(const std::vector<bool>& arrPages, int nFlag)

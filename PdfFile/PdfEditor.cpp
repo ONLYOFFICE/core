@@ -3572,7 +3572,7 @@ bool CPdfEditor::ChangeFullNameParent(int nParent, const std::string& sPrefix, s
 
 	return true;
 }
-bool CPdfEditor::MergePages(const std::wstring& wsPath)
+bool CPdfEditor::MergePages(const std::string& sOutlineTitle)
 {
 	if (m_nMode == Mode::Unknown && !IncrementalUpdates())
 		return false;
@@ -3607,9 +3607,7 @@ bool CPdfEditor::MergePages(const std::wstring& wsPath)
 		}
 	}
 
-	std::wstring wsFileName = NSFile::GetFileName(wsPath);
-	std::string sFileName = U_TO_UTF8(wsFileName);
-	PdfWriter::COutline* pOutline = pDoc->CreateOutline(NULL, sFileName.c_str());
+	PdfWriter::COutline* pOutline = pDoc->CreateOutline(NULL, sOutlineTitle.c_str());
 	for (int i = 0, num = pListAdd->getLength(); i < num; i++)
 	{
 		OutlineItem* pOutlineItem = (OutlineItem*)pListAdd->get(i);

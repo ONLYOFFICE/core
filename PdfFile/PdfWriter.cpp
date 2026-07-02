@@ -983,6 +983,7 @@ HRESULT CPdfWriter::DrawPath(NSFonts::IApplicationFonts* pAppFonts, const std::w
 		if (c_BrushTypeTexture == m_oBrush.GetType())
 		{
 			sTextureOldPath = m_oBrush.GetTexturePath();
+			// TODO
 #ifdef BUILDING_WASM_MODULE
 			std::wstring wsMedia = L"media/";
 			std::wstring::size_type posMedia = sTextureOldPath.find(wsMedia);
@@ -3860,6 +3861,18 @@ bool CPdfWriter::GetFontPath(const std::wstring &wsFontName, const bool &bBold, 
 	{
 		if (m_bSplit)
 			return false;
+
+#ifdef BUILDING_WASM_MODULE
+		NSFonts::IFontsMemoryStorage* pMemoryStorage = NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage();
+		if (pMemoryStorage && pMemoryStorage->Get(wsFontName))
+		{
+			wsFontPath = wsFontName;
+			lFaceIndex = 0;
+			m_vFonts.push_back(TFontInfo(wsFontName, bBold, bItalic, wsFontPath, lFaceIndex));
+			return true;
+		}
+		return false;
+#endif
 
 		NSFonts::CFontSelectFormat oFontSelect;
 		oFontSelect.wsName  = new std::wstring(wsFontName);

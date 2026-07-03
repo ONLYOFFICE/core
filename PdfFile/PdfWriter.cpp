@@ -132,8 +132,9 @@ Aggplus::CImage* ConvertMetafile(NSFonts::IApplicationFonts* pAppFonts, const st
 	bool bFromMemory = false;
 	BYTE* pData = NULL;
 	LONG  lLength = 0;
+	NSImages::IImagesMemoryStorage* pMemoryStorage = NULL;
 #ifdef BUILDING_WASM_MODULE
-	NSImages::IImagesMemoryStorage* pMemoryStorage = NSImages::NSApplicationImageStream::GetGlobalImagesMemoryStorage();
+	pMemoryStorage = NSImages::NSApplicationImageStream::GetGlobalImagesMemoryStorage();
 	if (pMemoryStorage)
 	{
 		NSImages::IImageStream* pStream = pMemoryStorage->Get(wsPath);
@@ -4052,11 +4053,12 @@ void CPdfWriter::UpdateBrush(NSFonts::IApplicationFonts* pAppFonts, const std::w
 		bool bFromMemory = false;
 		BYTE* pData = NULL;
 		LONG  lLength = 0;
+		NSImages::IImagesMemoryStorage* pMemoryStorage = NULL;
 
 		std::wstring wsTexturePath = m_oBrush.GetTexturePath();
 		BYTE nAlpha = m_oBrush.GetTextureAlpha();
 #ifdef BUILDING_WASM_MODULE
-		NSImages::IImagesMemoryStorage* pMemoryStorage = NSImages::NSApplicationImageStream::GetGlobalImagesMemoryStorage();
+		pMemoryStorage = NSImages::NSApplicationImageStream::GetGlobalImagesMemoryStorage();
 		if (pMemoryStorage)
 		{
 			NSImages::IImageStream* pStream = pMemoryStorage->Get(wsTexturePath);

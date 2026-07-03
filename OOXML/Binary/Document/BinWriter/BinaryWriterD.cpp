@@ -9867,11 +9867,12 @@ void BinaryFileWriter::WriteMainTableStart(bool bSigTable)
 	//Write mtLen
 	m_oBcw.m_oStream.WriteBYTE(0);
 
+	//zero the reserved main-table region so unused directory slots are deterministic
+	memset(m_oBcw.m_oStream.GetBuffer() + m_oBcw.m_oStream.GetPosition(), 0, nTableCount * nmtItemSize);
+
 	if (bSigTable)
 	{
 		//BinarySigTableWriter
-		memset(m_oBcw.m_oStream.GetBuffer() + m_oBcw.m_oStream.GetPosition(), 0, 5 + nTableCount * nmtItemSize);
-		
 		int nCurPos = WriteTableStart(c_oSerTableTypes::Signature);		
 		
 		BinarySigTableWriter oBinarySigTableWriter(m_oParamsWriter);

@@ -225,6 +225,9 @@ void BinaryFileWriter::WriteMainTableStart(NSBinPptxRW::CBinaryFileWriter &oBuff
 	m_nMainTableStart = m_oBcw->m_oStream.GetPosition();
 	//calculate from which position we can write tables
 	m_nLastFilePos = m_nMainTableStart + GetMainTableSize();
+	//zero the reserved main-table region so unused directory slots are deterministic
+	m_oBcw->m_oStream.WriteReserved(GetMainTableSize());
+	m_oBcw->m_oStream.SetPosition(m_nMainTableStart);
 	//Write mtLen
 	m_oBcw->m_oStream.WriteBYTE(0);
 }

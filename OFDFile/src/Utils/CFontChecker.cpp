@@ -4,8 +4,9 @@
 
 #include "../../../OfficeUtils/src/ZipFolder.h"
 
-#ifdef BUILDING_WASM_MODULE
 #include "../../../DesktopEditor/graphics/pro/Fonts.h"
+
+#ifdef BUILDING_WASM_MODULE
 #include "../../../PdfFile/SrcReader/FontsWasm.h"
 #define FONTS_USE_ONLY_MEMORY_STREAMS
 #endif
@@ -18,7 +19,6 @@ CFontChecker::CFontChecker(NSFonts::IApplicationFonts* pApplicationFonts, IFolde
 	if (nullptr == pApplicationFonts)
 		return;
 
-	#ifdef BUILDING_WASM_MODULE
 	m_pFontManager = pApplicationFonts->GenerateFontManager();
 
 	if (nullptr == m_pFontManager)
@@ -32,7 +32,6 @@ CFontChecker::CFontChecker(NSFonts::IApplicationFonts* pApplicationFonts, IFolde
 		m_pFontManager->SetOwnerCache(pMeasurerCache);
 		pMeasurerCache->SetCacheSize(16);
 	}
-	#endif
 }
 
 void CFontChecker::Clear()
@@ -131,10 +130,6 @@ bool CFontChecker::UpdateFont(CFont* pFont)
 
 NSFonts::IApplicationFonts* CFontChecker::GetFonts() const
 {
-	#ifdef FONTS_USE_ONLY_MEMORY_STREAMS
 	return (nullptr != m_pFontManager) ? m_pFontManager->GetApplication() : nullptr;
-	#else
-	return nullptr;
-	#endif
 }
 }

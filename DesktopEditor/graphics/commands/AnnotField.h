@@ -724,15 +724,17 @@ public:
 	CWidgetsInfo();
 	virtual ~CWidgetsInfo();
 
+	const std::wstring& GetRoles();
 	const std::vector< std::pair<int, int> >& GetCO();
 	const std::vector<std::wstring>& GetButtonImg();
 	const std::vector<CParent*>& GetParents();
 
 	void ChangeCO(int i, int nNum, int nGen);
 
-	bool Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector);
+	bool Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector, int nLen);
 
 private:
+	std::wstring m_wsRoles;
 	std::vector< std::pair<int, int> > m_arrCO;
 	std::vector<std::wstring> m_arrButtonImg;
 	std::vector<CParent*> m_arrParents;

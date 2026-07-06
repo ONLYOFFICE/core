@@ -3255,6 +3255,15 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 			pKids->Add(pP);
 	}
 
+	std::wstring wsRoles = pFieldInfo->GetRoles();
+	if (!wsRoles.empty())
+	{
+		BYTE* pData = NULL;
+		LONG nMetaLength = 0;
+		NSFile::CUtf8Converter::GetUtf8StringFromUnicode(wsRoles.c_str(), wsRoles.length(), pData, nMetaLength);
+		m_pDocument->AddMetaData(L"ONLYOFFICE_FORMS_ROLES", pData, nMetaLength);
+	}
+
 	return S_OK;
 }
 PdfWriter::CDocument* CPdfWriter::GetDocument() { return m_pDocument; }

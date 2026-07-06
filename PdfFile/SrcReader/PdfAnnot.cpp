@@ -2337,12 +2337,66 @@ void CAnnotRedact::SetFont(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, 
 //------------------------------------------------------------------------
 // Annots
 //------------------------------------------------------------------------
+namespace
+{
+BYTE* ReadStreamRange(Object* pStreamObj, int nStart, int nSize)
+{
+	BYTE* arrResult = NULL;
 
+	if (!pStreamObj || !pStreamObj->isStream() || nStart < 0 || nSize <= 0)
+		return arrResult;
+
+	Stream* pStream = pStreamObj->getStream();
+	if (!pStream)
+		return arrResult;
+
+	pStream->reset();
+
+	for (int i = 0; i < nStart; ++i)
+	{
+		if (pStream->getChar() == EOF)
+		{
+			pStream->close();
+			return arrResult;
+		}
+	}
+
+	arrResult = new BYTE[nSize];
+	memset(arrResult, 0, nSize);
+
+	for (int i = 0; i < nSize; ++i)
+	{
+		int c = pStream->getChar();
+		if (c == EOF)
+			break;
+		arrResult[i] = ((BYTE)c);
+	}
+
+	pStream->close();
+	return arrResult;
+}
+} // namespace
 CAnnots::CAnnots(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList, int nStartPage, int nStartRefID)
 {
+	m_pRoles = NULL;
+	m_nRoles = 0;
+
 	Object oObj1, oObj2;
 	XRef* xref = pdfDoc->getXRef();
 	AcroForm* pAcroForms = pdfDoc->getCatalog()->getForm();
+
+	CObjectGuard oMeta, oRolesSize;
+	if (xref->fetch(1, 0, oMeta.get())->isStream() && oMeta->streamGetDict()->lookup("ONLYOFFICE_FORMS_ROLES", oRolesSize.get())->isArray())
+	{
+		int nStart = 0;
+		CObjectGuard oStart, oSize;
+		if (oRolesSize->arrayGet(0, oStart.get())->isInt())
+			nStart = oStart->getInt();
+		if (oRolesSize->arrayGet(1, oSize.get())->isInt())
+			m_nRoles = oSize->getInt();
+
+		m_pRoles = ReadStreamRange(oMeta.get(), nStart, m_nRoles);
+	}
 
 	// Calculation order - CO
 	Object* oAcroForm = pAcroForms->getAcroFormObj();
@@ -2444,6 +2498,8 @@ CAnnots::CAnnots(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontLi
 }
 CAnnots::~CAnnots()
 {
+	RELEASEARRAYOBJECTS(m_pRoles);
+
 	for (int i = 0; i < m_arrParents.size(); ++i)
 		RELEASEOBJECT(m_arrParents[i]);
 
@@ -3535,6 +3591,9 @@ void CAnnotAP::ToWASM(NSWasm::CData& oRes)
 }
 void CAnnots::ToWASM(NSWasm::CData& oRes)
 {
+	// Roles
+	oRes.WriteString(m_pRoles, m_nRoles);
+
 	// Calculation order - CO
 	oRes.AddInt(m_arrCO.size());
 	for (int i = 0; i < m_arrCO.size(); ++i)

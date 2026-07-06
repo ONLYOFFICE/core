@@ -90,7 +90,8 @@ void PtgRef3d::loadFields(CFRecord& record)
     {
         record >> ixti >> rgce_loc;
 
-        rgce_loc_rel = rgce_loc;
+		rgce_loc_rel = rgce_loc;
+		rgce_loc_rel += cell_base_ref;
     }
     else
     {
@@ -146,7 +147,7 @@ void PtgRef3d::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool fu
     std::wstring cell_ref;
     if (global_info->Version < 0x0800)
     {
-       cell_ref = rgce_loc.toString();
+	   cell_ref = rgce_loc_rel.toString();
     }
     else
     {

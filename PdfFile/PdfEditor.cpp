@@ -2056,6 +2056,27 @@ void CPdfEditor::SyncAcroFormFromReader()
 // ============================================================
 namespace
 {
+PdfWriter::CAnnotAppearanceObject* GetAnnotAppearanceObject(PdfWriter::CAnnotation* pAnnot)
+{
+	PdfWriter::CDictObject* pAP = dynamic_cast<PdfWriter::CDictObject*>(pAnnot->Get("AP"));
+	if (!pAP)
+		return NULL;
+
+	PdfWriter::CDictObject* pAP_N = dynamic_cast<PdfWriter::CDictObject*>(pAP->Get("N"));
+	if (!pAP_N)
+		return NULL;
+
+	PdfWriter::CAnnotAppearanceObject* pAPN = dynamic_cast<PdfWriter::CAnnotAppearanceObject*>(pAP_N);
+	if (pAPN)
+		return pAPN;
+
+	const char* sName = "Off";
+	PdfWriter::CNameObject* pAPNName = dynamic_cast<PdfWriter::CNameObject*>(pAnnot->Get("AS"));
+	if (pAPNName)
+		sName = pAPNName->Get();
+
+	return dynamic_cast<PdfWriter::CAnnotAppearanceObject*>(pAP_N->Get(sName));
+}
 // ─── WriteNew helpers ────────────────────────────────────────────────────────
 void CloseWriteNew_FlushAnnotations(CPdfReader* pReader, CObjectsManager* mObjManager, PdfWriter::CDocument* pDoc)
 {
@@ -2082,14 +2103,13 @@ void CloseWriteNew_FlushAnnotations(CPdfReader* pReader, CObjectsManager* mObjMa
 			if (!pAnnot)
 				continue;
 
-			PdfWriter::CAnnotAppearance* pAP = dynamic_cast<PdfWriter::CAnnotAppearance*>(pAnnot->Get("AP"));
-			if (!pAP)
+			PdfWriter::CAnnotAppearanceObject* pAPN = GetAnnotAppearanceObject(pAnnot);
+			if (!pAPN)
 			{
 				pDoc->RemoveObj(pAnnot);
 				continue;
 			}
 
-			PdfWriter::CAnnotAppearanceObject* pAPN = pAP->GetNormal();
 			double m[6] = { 1, 0, 0, 1, 0, 0 };
 			pAPN->GetMatrix(m);
 			m[4] += pAnnot->GetRect().fLeft;
@@ -2331,8 +2351,6 @@ void CPdfEditor::Close()
 	{
 		PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
 
-		CloseWriteNew_FlushAnnotations(m_pReader, &m_mObjManager, pDoc);
-
 		PdfWriter::CPageTree* pPageTree = pDoc->GetPageTree();
 		const int nPages = pPageTree->GetCount();
 		for (int i = 0; i < nPages; ++i)
@@ -2341,6 +2359,8 @@ void CPdfEditor::Close()
 			if (pObj && pObj->GetType() != PdfWriter::object_type_DICT)
 				EditPage(i, false, true);
 		}
+
+		CloseWriteNew_FlushAnnotations(m_pReader, &m_mObjManager, pDoc);
 
 		SyncAcroFormFromReader();
 
@@ -4479,9 +4499,15 @@ bool CPdfEditor::EditWidgets(IAdvancedCommand* pCommand)
 			if (!oInfo.IsWidget())
 				continue;
 
-			PdfWriter::CPage* pPage = pDoc->GetEditPage(oInfo.GetPage());
+			int nPage = oInfo.GetPage();
+			PdfWriter::CPage* pPage = pDoc->GetEditPage(nPage);
 			if (!pPage)
-				pPage = pDoc->GetPage(oInfo.GetPage());
+			{
+				EditPage(nPage, false);
+				pPage = pDoc->GetEditPage(nPage);
+			}
+			if (!pPage)
+				pPage = pDoc->GetPage(nPage);
 			if (!pPage)
 				continue;
 

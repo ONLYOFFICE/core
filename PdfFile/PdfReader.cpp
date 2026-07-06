@@ -727,7 +727,7 @@ void CPdfReader::SetPainter(IOfficeDrawingFilePainter* pPainter)
 {
 	m_pPainter = pPainter;
 }
-void CPdfReader::DrawPageOnRenderer(IRenderer* pRenderer, int _nPageIndex, bool* pbBreak)
+void CPdfReader::DrawPageOnRenderer(IRenderer* pRenderer, int _nPageIndex, bool* pbBreak, bool bDrawOnlyText)
 {
 	PDFDoc* pDoc = NULL;
 	PdfReader::CPdfFontList* pFontList = NULL;
@@ -744,6 +744,7 @@ void CPdfReader::DrawPageOnRenderer(IRenderer* pRenderer, int _nPageIndex, bool*
 	PdfReader::RendererOutputDev oRendererOut(pRenderer, m_pFontManager, pFontList);
 	oRendererOut.NewPDF(pDoc->getXRef());
 	oRendererOut.SetBreak(pbBreak);
+	oRendererOut.SetDrawOnlyText(bDrawOnlyText);
 	int nRotate = 0;
 #ifdef BUILDING_WASM_MODULE
 	nRotate = -pDoc->getPageRotate(nPageIndex);
@@ -1504,27 +1505,30 @@ void GetAllPagesFonts(PDFDoc* pDoc, NSFonts::IFontManager* pFontManager, CPdfFon
 		GetPageFonts(pDoc, nPage, pFontManager, pFontList);
 }
 }
-BYTE* CPdfReader::GetAllFonts(int* arrPageIndex, int nLength)
+BYTE* CPdfReader::GetAllFonts(int* arrPageIndex, int nLength, bool bCheck)
 {
-	if (!arrPageIndex || nLength == 0)
+	if (bCheck)
 	{
-		for (CPdfReaderContext* pPDFContext : m_vPDFContext)
+		if (!arrPageIndex || nLength == 0)
 		{
-			GetAllPagesFonts(pPDFContext->m_pDocument, m_pFontManager, pPDFContext->m_pFontList);
-			SetFonts(pPDFContext->m_pFontList);
+			for (CPdfReaderContext* pPDFContext : m_vPDFContext)
+			{
+				GetAllPagesFonts(pPDFContext->m_pDocument, m_pFontManager, pPDFContext->m_pFontList);
+				SetFonts(pPDFContext->m_pFontList);
+			}
 		}
-	}
-	else
-	{
-		for (int i = 0; i < nLength; ++i)
+		else
 		{
-			PDFDoc* pPDFDocument = NULL;
-			PdfReader::CPdfFontList* pFontList = NULL;
-			int nStartRefID = 0;
-			int nPageIndex = GetPageIndex(arrPageIndex[i], &pPDFDocument, &pFontList, &nStartRefID);
+			for (int i = 0; i < nLength; ++i)
+			{
+				PDFDoc* pPDFDocument = NULL;
+				PdfReader::CPdfFontList* pFontList = NULL;
+				int nStartRefID = 0;
+				int nPageIndex = GetPageIndex(arrPageIndex[i], &pPDFDocument, &pFontList, &nStartRefID);
 
-			GetPageFonts(pPDFDocument, nPageIndex, m_pFontManager, pFontList);
-			SetFonts(pFontList);
+				GetPageFonts(pPDFDocument, nPageIndex, m_pFontManager, pFontList);
+				SetFonts(pFontList);
+			}
 		}
 	}
 

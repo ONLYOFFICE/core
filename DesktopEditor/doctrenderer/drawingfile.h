@@ -511,7 +511,34 @@ public:
 	}
 	BYTE* SetScanPageFonts(int* arrPageIndex, int nLength)
 	{
-		return m_nType == 0 ? ((CPdfFile*)m_pFile)->GetAllFonts(arrPageIndex, nLength) : NULL;
+		if (m_nType != 0)
+			return NULL;
+		CPdfFile* pFile = ((CPdfFile*)m_pFile);
+
+		if (!arrPageIndex || nLength == 0)
+		{
+			nLength = GetPagesCount();
+			arrPageIndex = NULL;
+		}
+		pFile->SetDrawOnlyText(true);
+
+		for (int i = 0; i < nLength; ++i)
+		{
+			int nPageIndex = arrPageIndex ? arrPageIndex[i] : i;
+			std::cout << nPageIndex << std::endl;
+
+			CDocxRenderer oRenderer(m_pApplicationFonts);
+			oRenderer.SetExternalImageStorage(m_pImageStorage);
+			oRenderer.SetTextAssociationType(NSDocxRenderer::TextAssociationType::tatParagraphToShape);
+
+			oRenderer.ScanPageBin(m_pFile, nPageIndex);
+
+			pFile->SetPageFonts(nPageIndex);
+		}
+
+		pFile->SetDrawOnlyText(false);
+
+		return pFile->GetAllFonts(arrPageIndex, nLength, false);
 	}
 	BYTE* ScanPage(int nPageIndex, int mode)
 	{

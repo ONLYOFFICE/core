@@ -47,6 +47,7 @@
 class CPdfFile_Private
 {
 public:
+	bool bDrawOnlyText = false;
 	std::wstring wsSrcFile;
 	wchar_t* wsPassword;
 	std::wstring wsTempFolder;
@@ -259,6 +260,10 @@ void CPdfFile::SetCMapFile(const std::wstring& sFile)
 {
 	if (m_pInternal->pReader)
 		m_pInternal->pReader->SetCMapFile(sFile);
+}
+void CPdfFile::SetDrawOnlyText(bool bDraw)
+{
+	m_pInternal->bDrawOnlyText = bDraw;
 }
 void CPdfFile::ToXml(const std::wstring& sFile, bool bSaveStreams)
 {
@@ -489,7 +494,7 @@ void CPdfFile::DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pB
 		return;
 	pRenderer->CommandLong(c_nPenWidth0As1px, 1);
 	m_pInternal->pReader->SetParams(pParams);
-	m_pInternal->pReader->DrawPageOnRenderer(pRenderer, nPageIndex, pBreak);
+	m_pInternal->pReader->DrawPageOnRenderer(pRenderer, nPageIndex, pBreak, m_pInternal->bDrawOnlyText);
 }
 void CPdfFile::SetPainter(IOfficeDrawingFilePainter* pPainter)
 {
@@ -543,11 +548,11 @@ BYTE* CPdfFile::GetAnnotStandardFonts()
 		return NULL;
 	return m_pInternal->pReader->GetFonts(true);
 }
-BYTE* CPdfFile::GetAllFonts(int* arrPageIndex, int nLength)
+BYTE* CPdfFile::GetAllFonts(int* arrPageIndex, int nLength, bool bCheck)
 {
 	if (!m_pInternal->pReader)
 		return NULL;
-	return m_pInternal->pReader->GetAllFonts(arrPageIndex, nLength);
+	return m_pInternal->pReader->GetAllFonts(arrPageIndex, nLength, bCheck);
 }
 BYTE* CPdfFile::GetGIDByUnicode(const std::wstring& wsFontName)
 {

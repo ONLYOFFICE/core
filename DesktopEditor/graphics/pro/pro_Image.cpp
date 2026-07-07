@@ -35,6 +35,8 @@
 
 #include "../ImageFilesCache.h"
 
+NSImages::IImagesMemoryStorage* g_global_images_memory_storage = NULL;
+
 namespace NSImages
 {
     namespace NSCacheImage
@@ -54,6 +56,40 @@ namespace NSImages
 			return new CImageFilesCache(pFonts);
         }
     }
+
+	namespace NSStream
+	{
+		IImageStream* Create()
+		{
+			return new CImageStream();
+		}
+	}
+
+	namespace NSApplicationImageStream
+	{
+		class CDefaultGlobalImagesMemoryStorage : public NSMemoryStorage::CDefaultMemoryStorage<IImageStream>
+		{
+		protected:
+			virtual IImageStream* CreateStream() override { return NSImages::NSStream::Create(); }
+		};
+
+	GRAPHICS_DECL IImagesMemoryStorage* CreateDefaultGlobalImagesMemoryStorage()
+	{
+		return new CDefaultGlobalImagesMemoryStorage();
+	}
+
+	GRAPHICS_DECL IImagesMemoryStorage* GetGlobalImagesMemoryStorage()
+	{
+		return g_global_images_memory_storage;
+	}
+	GRAPHICS_DECL void SetGlobalImagesMemoryStorage(IImagesMemoryStorage* pStorage)
+	{
+		if (g_global_images_memory_storage != pStorage)
+			RELEASEINTERFACE(g_global_images_memory_storage);
+
+		g_global_images_memory_storage = pStorage;
+	}
+	}
 }
 
 #include "../../raster/JBig2/source/Encoder/jbig2enc.h"

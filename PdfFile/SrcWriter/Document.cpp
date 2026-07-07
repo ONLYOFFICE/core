@@ -251,16 +251,23 @@ namespace PdfWriter
 
 		return true;
 	}
-	bool CDocument::SaveToMemory(BYTE** pData, int* pLength)
+	bool CDocument::SaveToMemory(BYTE** pData, int* pLength, bool bForWasm)
 	{
 		CMemoryStream* pStream = new CMemoryStream();
+		pStream->SetForWasm(true);
 		if (!pStream)
 			return false;
+
+		if (bForWasm)
+			pStream->SkipLen();
 
 		if (m_pJbig2)
 			m_pJbig2->FlushStreams();
 
 		SaveToStream(pStream);
+
+		if (bForWasm)
+			pStream->WriteLen();
 
 		*pData = pStream->GetBuffer();
 		*pLength = pStream->Size();

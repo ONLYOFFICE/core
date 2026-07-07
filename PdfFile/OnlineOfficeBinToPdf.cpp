@@ -227,21 +227,13 @@ namespace NSOnlineOfficeBinToPdf
 			}
 			case AddCommandType::MergePages:
 			{
-				std::wstring wsPath = NSFile::CFileBinary::CreateTempFileWithUniqueName(pPdf->GetTempDirectory(), L"PDF");
 				int nLength = oReader.ReadInt();
-				BYTE* pFile = oReader.GetCurrentBuffer();
+				BYTE* pFile = (BYTE*)malloc(nLength);
+				memcpy(pFile, oReader.GetCurrentBuffer(), nLength);
 				oReader.Skip(nLength);
-				if (!wsPath.empty())
-				{
-					NSFile::CFileBinary oFile;
-					if (oFile.CreateFileW(wsPath))
-						oFile.WriteFile(pFile, nLength);
-					oFile.CloseFile();
-				}
-
 				int nMaxID = oReader.ReadInt();
 				std::wstring wsPrefix = oReader.ReadString();
-				pPdf->MergePages(wsPath, nMaxID, wsPrefix);
+				pPdf->MergePagesEdit(pFile, nLength, nMaxID, wsPrefix);
 				break;
 			}
 			case AddCommandType::WidgetInfo:

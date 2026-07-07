@@ -2330,7 +2330,7 @@ void CloseWriteAppend_FinalizeSource(CPdfReader* pReader, const wchar_t* wsPassw
 }
 void CPdfEditor::Close()
 {
-	if (m_wsDstFile.empty())
+	if (m_wsDstFile.empty() && m_nMode != Mode::WriteNew)
 		return;
 
 	if (m_nMode == Mode::Unknown)
@@ -3401,7 +3401,7 @@ bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength, PDFD
 bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength)
 {
 	if (m_nMode != Mode::Split)
-		return false;
+		return true;
 	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
 	if (!pDoc)
 		return false;
@@ -3418,16 +3418,24 @@ bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength)
 	std::map<int, std::vector<int>> mFileToPages;
 	PDFDoc* pPDFDocument = m_pReader->GetPDFDocument(nPDFIndex);
 	nPages = pPDFDocument->getNumPages();
+
+	if (!arrPageIndex || unLength == 0)
+	{
+		unLength = m_pReader->GetNumPages();
+		arrPageIndex = NULL;
+	}
+
 	for (unsigned int i = 0; i < unLength; ++i)
 	{
-		if (arrPageIndex[i] < nTotalPages + nPages)
-			mFileToPages[nPDFIndex].push_back(arrPageIndex[i] - nTotalPages);
+		int nPageIndex = arrPageIndex ? arrPageIndex[i] : i;
+		if (nPageIndex < nTotalPages + nPages)
+			mFileToPages[nPDFIndex].push_back(nPageIndex - nTotalPages);
 		else
 		{
 			pPDFDocument = m_pReader->GetPDFDocument(++nPDFIndex);
 			if (!pPDFDocument)
 			{
-				m_mObjManager.m_arrSplitAddPages.push_back(arrPageIndex[i]);
+				m_mObjManager.m_arrSplitAddPages.push_back(nPageIndex);
 				--nPDFIndex;
 				continue;
 			}
@@ -3584,7 +3592,7 @@ bool CPdfEditor::ChangeFullNameParent(int nParent, const std::string& sPrefix, s
 
 	return true;
 }
-bool CPdfEditor::MergePages(const std::wstring& wsPath)
+bool CPdfEditor::MergePages(const std::string& sOutlineTitle)
 {
 	if (m_nMode == Mode::Unknown && !IncrementalUpdates())
 		return false;
@@ -3619,9 +3627,7 @@ bool CPdfEditor::MergePages(const std::wstring& wsPath)
 		}
 	}
 
-	std::wstring wsFileName = NSFile::GetFileName(wsPath);
-	std::string sFileName = U_TO_UTF8(wsFileName);
-	PdfWriter::COutline* pOutline = pDoc->CreateOutline(NULL, sFileName.c_str());
+	PdfWriter::COutline* pOutline = pDoc->CreateOutline(NULL, sOutlineTitle.c_str());
 	for (int i = 0, num = pListAdd->getLength(); i < num; i++)
 	{
 		OutlineItem* pOutlineItem = (OutlineItem*)pListAdd->get(i);

@@ -111,7 +111,7 @@ public:
 
 	bool SplitPages(const int* arrPageIndex, unsigned int unLength);
 	void AfterSplitPages();
-	bool MergePages(const std::wstring& wsPath);
+	bool MergePages(const std::string& sOutlineTitle);
 
 	bool PrintPages(const std::vector<bool>& arrPages, int nFlag);
 

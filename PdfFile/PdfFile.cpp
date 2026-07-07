@@ -186,12 +186,13 @@ bool CPdfFile::AddPage(int nPageIndex)
 		return false;
 	return m_pInternal->pEditor->AddPage(nPageIndex);
 }
-bool CPdfFile::MergePages(const std::wstring& wsPath, int nMaxID, const std::wstring& wsPrefixForm)
+bool CPdfFile::MergePagesEdit(BYTE* data, DWORD length, int nMaxID, const std::wstring& wsPrefixForm)
 {
 	if (!m_pInternal->pEditor)
 		return false;
-	if (m_pInternal->pReader->MergePages(wsPath, L"", nMaxID, U_TO_UTF8(wsPrefixForm)))
-		return m_pInternal->pEditor->MergePages(wsPath);
+	std::string sPrefixForm = U_TO_UTF8(wsPrefixForm);
+	if (m_pInternal->pReader->MergePages(data, length, L"", nMaxID, sPrefixForm))
+		return m_pInternal->pEditor->MergePages(sPrefixForm);
 	return false;
 }
 bool CPdfFile::PrintPages(const std::vector<bool>& arrPages, int nFlag)
@@ -572,15 +573,15 @@ BYTE* CPdfFile::GetAnnots(int nPageIndex)
 		return NULL;
 	return m_pInternal->pReader->GetAnnots(nPageIndex);
 }
-BYTE* CPdfFile::SplitPages(const int* arrPageIndex, unsigned int unLength, BYTE* pChanges, DWORD nLength)
+BYTE* CPdfFile::SplitPages(const int* arrPageIndex, unsigned int unLength, BYTE* pChanges, DWORD nLength, bool bEdit)
 {
 	if (!m_pInternal->pReader)
 		return NULL;
 	RELEASEOBJECT(m_pInternal->pWriter);
-	m_pInternal->pWriter = new CPdfWriter(m_pInternal->pAppFonts, false, this);
+	m_pInternal->pWriter = new CPdfWriter(m_pInternal->pAppFonts, false, this, !bEdit);
 
 	RELEASEOBJECT(m_pInternal->pEditor);
-	m_pInternal->pEditor = new CPdfEditor(m_pInternal->wsSrcFile, m_pInternal->wsPassword, L"", m_pInternal->pReader, m_pInternal->pWriter, CPdfEditor::Mode::Split);
+	m_pInternal->pEditor = new CPdfEditor(m_pInternal->wsSrcFile, m_pInternal->wsPassword, L"", m_pInternal->pReader, m_pInternal->pWriter, bEdit ? CPdfEditor::Mode::WriteNew : CPdfEditor::Mode::Split);
 
 	BYTE* pRes = NULL;
 	int nLen = 0;
@@ -588,19 +589,20 @@ BYTE* CPdfFile::SplitPages(const int* arrPageIndex, unsigned int unLength, BYTE*
 	{
 		if (pChanges && nLength > 3)
 		{
-			m_pInternal->pWriter->SetSplit(true);
+			if (!bEdit)
+				m_pInternal->pWriter->SetSplit(true);
 			CConvertFromBinParams* pParams = new CConvertFromBinParams();
 			AddToPdfFromBinary(pChanges + 4, nLength - 4, pParams);
-			m_pInternal->pWriter->SetSplit(false);
+			if (!bEdit)
+				m_pInternal->pWriter->SetSplit(false);
 		}
-		m_pInternal->pEditor->AfterSplitPages();
-
-		if (m_pInternal->pWriter->SaveToMemory(&pRes, &nLen) != 0)
-		{
-			RELEASEMEM(pRes);
-		}
+		if (bEdit)
+			m_pInternal->pEditor->Close();
 		else
-			pRes = m_pInternal->pReader->StreamToCData(pRes, nLen);
+			m_pInternal->pEditor->AfterSplitPages();
+
+		if (m_pInternal->pWriter->SaveToMemory(&pRes, &nLen, true) != 0)
+			RELEASEMEM(pRes);
 	}
 
 	RELEASEOBJECT(m_pInternal->pWriter);
@@ -644,6 +646,12 @@ int CPdfFile::SaveToFile(const std::wstring& wsPath)
 	if (!m_pInternal->pWriter)
 		return 1;
 	return m_pInternal->pWriter->SaveToFile(wsPath);
+}
+int CPdfFile::SaveToMemory(BYTE** pData, int* pLength)
+{
+	if (!m_pInternal->pWriter)
+		return 1;
+	return m_pInternal->pWriter->SaveToMemory(pData, pLength);
 }
 void CPdfFile::SetPassword(const std::wstring& wsPassword)
 {

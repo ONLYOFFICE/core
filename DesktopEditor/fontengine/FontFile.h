@@ -158,7 +158,7 @@ public:
 	void Clear(bool bIsFree = false);
 };
 
-class CFontStream;
+typedef NSMemoryStorage::CDefaultMemoryStream CFontStream;
 class CFontManager;
 class CFontFile : public NSFonts::IFontFile
 {

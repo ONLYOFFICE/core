@@ -155,6 +155,7 @@ HEADERS += \
 	./../GraphicsRenderer.h \
 	\
 	./Graphics.h \
+	./MemoryStorage.h \
 	./Image.h
 
 SOURCES += \

@@ -297,6 +297,14 @@ JSSmart<CJSValue> CDrawingFileEmbed::UndoRedact()
 		return CJSContext::createBool(m_pFile->UndoRedact());
 	return CJSContext::createBool(false);
 }
+JSSmart<CJSValue> CDrawingFileEmbed::EditPdf(JSSmart<CJSValue> data)
+{
+	CJSDataBuffer changes;
+	if (data->isTypedArray())
+		changes = data->toTypedArray()->getData();
+	JSSmart<CJSValue> res = WasmMemoryToJS(m_pFile->EditPdf(changes.Data, (LONG)changes.Len));
+	return res;
+}
 
 JSSmart<CJSValue> CDrawingFileEmbed::CheckOwnerPassword(JSSmart<CJSValue> sPassword)
 {

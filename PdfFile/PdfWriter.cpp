@@ -66,18 +66,6 @@
 #include "../Common/Network/FileTransporter/include/FileTransporter.h"
 #endif
 
-#if defined(GetTempPath)
-#undef GetTempPath
-#endif
-
-#if defined(CreateFile)
-#undef CreateFile
-#endif
-
-#if defined(CreateDirectory)
-#undef CreateDirectory
-#endif
-
 #define MM_2_PT(X) ((X) * 72.0 / 25.4)
 #define PT_2_MM(X) ((X) * 25.4 / 72.0)
 
@@ -102,6 +90,21 @@
 static const long c_BrushTypeLinearGradient = 8001;
 static const long c_BrushTypeRadialGradient = 8002;
 
+namespace
+{
+Aggplus::CImage* CreateImageFromSource(bool bFromMemory, BYTE* pData, LONG lLength, const std::wstring& wsPath)
+{
+	Aggplus::CImage* pImage = new Aggplus::CImage();
+	if (!pImage)
+		return NULL;
+
+	if (bFromMemory)
+		pImage->Decode(pData, lLength);
+	else
+		pImage->Create(wsPath);
+
+	return pImage;
+}
 Aggplus::CImage* ConvertMetafile(NSFonts::IApplicationFonts* pAppFonts, const std::wstring& wsPath, const std::wstring& wsTempDirectory, double dWidth = -1, double dHeight = -1)
 {
 	if (wsPath.find(L"data:") == 0)
@@ -126,36 +129,82 @@ Aggplus::CImage* ConvertMetafile(NSFonts::IApplicationFonts* pAppFonts, const st
 		return pImage;
 	}
 
-	CImageFileFormatChecker oImageFormat(wsPath);
-	if (_CXIMAGE_FORMAT_WMF == oImageFormat.eFileType ||
-		_CXIMAGE_FORMAT_EMF == oImageFormat.eFileType ||
-		_CXIMAGE_FORMAT_SVM == oImageFormat.eFileType ||
-		_CXIMAGE_FORMAT_SVG == oImageFormat.eFileType)
+	bool bFromMemory = false;
+	BYTE* pData = NULL;
+	LONG  lLength = 0;
+	NSImages::IImagesMemoryStorage* pMemoryStorage = NULL;
+#ifdef BUILDING_WASM_MODULE
+	pMemoryStorage = NSImages::NSApplicationImageStream::GetGlobalImagesMemoryStorage();
+	if (pMemoryStorage)
 	{
-		MetaFile::IMetaFile* pMeta = MetaFile::Create(pAppFonts);
+		NSImages::IImageStream* pStream = pMemoryStorage->Get(wsPath);
+		if (pStream)
+		{
+			bFromMemory = true;
+			pStream->GetMemory(pData, lLength);
+		}
+	}
+#endif
 
-		if (NULL == pMeta || !pMeta->LoadFromFile(wsPath.c_str()))
-			return new Aggplus::CImage(wsPath);
+	CImageFileFormatChecker oImageFormat;
+	if (bFromMemory)
+		oImageFormat.isImageFile(pData, lLength);
+	else
+		oImageFormat.isImageFile(wsPath);
 
-		bool bUseMax = false;
-		if (dWidth > 5000 || dHeight > 5000)
-			bUseMax = true;
-		else if (dWidth <= 0 && dHeight <= 0)
-			bUseMax = true;
+	if (_CXIMAGE_FORMAT_WMF != oImageFormat.eFileType &&
+		_CXIMAGE_FORMAT_EMF != oImageFormat.eFileType &&
+		_CXIMAGE_FORMAT_SVM != oImageFormat.eFileType &&
+		_CXIMAGE_FORMAT_SVG != oImageFormat.eFileType)
+		return CreateImageFromSource(bFromMemory, pData, lLength, wsPath);
 
-		if (!bUseMax)
-			pMeta->ConvertToRaster(wsTempDirectory.c_str(), _CXIMAGE_FORMAT_PNG, MM_2_PT(dWidth), MM_2_PT(dHeight));
-		else
-			MetaFile::ConvertToRasterMaxSize(pMeta, wsTempDirectory.c_str(), _CXIMAGE_FORMAT_PNG, 2000);
+	MetaFile::IMetaFile* pMeta = MetaFile::Create(pAppFonts);
 
+	if (NULL == pMeta || !(bFromMemory ? pMeta->LoadFromBuffer(pData, lLength) : pMeta->LoadFromFile(wsPath.c_str())))
+	{
 		RELEASEOBJECT(pMeta);
-
-		return new Aggplus::CImage(wsTempDirectory);
+		return CreateImageFromSource(bFromMemory, pData, lLength, wsPath);
 	}
 
-	return new Aggplus::CImage(wsPath);
-}
+	bool bUseMax = false;
+	if (dWidth > 5000 || dHeight > 5000)
+		bUseMax = true;
+	else if (dWidth <= 0 && dHeight <= 0)
+		bUseMax = true;
 
+	if (!bUseMax)
+	{
+		if (bFromMemory)
+		{
+			BYTE* pImg = NULL;
+			int nImg = 0;
+			pMeta->ConvertToRaster(pImg, nImg, _CXIMAGE_FORMAT_PNG, MM_2_PT(dWidth), MM_2_PT(dHeight));
+			pMemoryStorage->Add(wsTempDirectory, pImg, nImg);
+			pData = pImg;
+			lLength = nImg;
+		}
+		else
+			pMeta->ConvertToRaster(wsTempDirectory.c_str(), _CXIMAGE_FORMAT_PNG, MM_2_PT(dWidth), MM_2_PT(dHeight));
+	}
+	else
+	{
+		if (bFromMemory)
+		{
+			BYTE* pImg = NULL;
+			int nImg = 0;
+			MetaFile::ConvertToRasterMaxSize(pMeta, pImg, nImg, _CXIMAGE_FORMAT_PNG, 2000);
+			pMemoryStorage->Add(wsTempDirectory, pImg, nImg);
+			pData = pImg;
+			lLength = nImg;
+		}
+		else
+			MetaFile::ConvertToRasterMaxSize(pMeta, wsTempDirectory.c_str(), _CXIMAGE_FORMAT_PNG, 2000);
+	}
+
+	RELEASEOBJECT(pMeta);
+	return CreateImageFromSource(bFromMemory, pData, lLength, wsTempDirectory);
+}
+}
 //----------------------------------------------------------------------------------------
 //
 // CPdfRenderer
@@ -222,7 +271,7 @@ void CPdfWriter::SetDocumentID(const std::wstring& wsDocumentID)
 int CPdfWriter::SaveToFile(const std::wstring& wsPath)
 {
 	// TODO: Refactor to use error code
-	if (!IsValid())
+	if (!IsValid() || wsPath.empty())
 		return 1;
 
 	if (!m_pFont && !m_pFont14 && !m_pFontEmbedded && !m_pDocument->IsPDFA() && m_bNeedAddHelvetica)
@@ -239,15 +288,22 @@ int CPdfWriter::SaveToFile(const std::wstring& wsPath)
 
 	return 0;
 }
-int CPdfWriter::SaveToMemory(BYTE** pData, int* pLength)
+int CPdfWriter::SaveToMemory(BYTE** pData, int* pLength, bool bForWasm)
 {
 	// TODO: Refactor to use error code
 	if (!IsValid())
 		return 1;
 
+	if (!m_pFont && !m_pFont14 && !m_pFontEmbedded && !m_pDocument->IsPDFA() && m_bNeedAddHelvetica)
+	{
+		m_bNeedUpdateTextFont = false;
+		m_pFont14 = m_pDocument->CreateFont14(L"Helvetica", 0, PdfWriter::EStandard14Fonts::standard14fonts_Helvetica);
+		CommandDrawTextCHAR(32, 0, 0, 0, 0);
+	}
+
 	m_oCommandManager.Flush();
 
-	if (!m_pDocument->SaveToMemory(pData, pLength))
+	if (!m_pDocument->SaveToMemory(pData, pLength, bForWasm))
 		return 1;
 
 	return 0;
@@ -272,7 +328,15 @@ void CPdfWriter::SetDocumentInfo(const std::wstring& wsTitle, const std::wstring
 }
 std::wstring CPdfWriter::GetTempFile(const std::wstring& wsDirectory)
 {
+#ifdef BUILDING_WASM_MODULE
+	NSImages::IImagesMemoryStorage* pMemoryStorage = NSImages::NSApplicationImageStream::GetGlobalImagesMemoryStorage();
+	if (pMemoryStorage)
+		return pMemoryStorage->GenerateId();
+	return L"";
+#else
 	return NSFile::CFileBinary::CreateTempFileWithUniqueName(wsDirectory, L"PDF");
+#endif
+
 }
 void CPdfWriter::SetTempDirectory(const std::wstring& wsTempDirectory)
 {
@@ -920,8 +984,15 @@ HRESULT CPdfWriter::DrawPath(NSFonts::IApplicationFonts* pAppFonts, const std::w
 		if (c_BrushTypeTexture == m_oBrush.GetType())
 		{
 			sTextureOldPath = m_oBrush.GetTexturePath();
+			// TODO
+#ifdef BUILDING_WASM_MODULE
+			std::wstring wsMedia = L"media/";
+			std::wstring::size_type posMedia = sTextureOldPath.find(wsMedia);
+			if (posMedia != std::wstring::npos)
+				sTextureTmpPath = sTextureOldPath.erase(0, posMedia + wsMedia.length());
+#else
 			sTextureTmpPath = GetDownloadFile(sTextureOldPath, wsTempDirectory);
-
+#endif
 			if (!sTextureTmpPath.empty())
 				m_oBrush.SetTexturePath(sTextureTmpPath);
 		}
@@ -3792,6 +3863,18 @@ bool CPdfWriter::GetFontPath(const std::wstring &wsFontName, const bool &bBold, 
 		if (m_bSplit)
 			return false;
 
+#ifdef BUILDING_WASM_MODULE
+		NSFonts::IFontsMemoryStorage* pMemoryStorage = NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage();
+		if (pMemoryStorage && pMemoryStorage->Get(wsFontName))
+		{
+			wsFontPath = wsFontName;
+			lFaceIndex = 0;
+			m_vFonts.push_back(TFontInfo(wsFontName, bBold, bItalic, wsFontPath, lFaceIndex));
+			return true;
+		}
+		return false;
+#endif
+
 		NSFonts::CFontSelectFormat oFontSelect;
 		oFontSelect.wsName  = new std::wstring(wsFontName);
 		oFontSelect.bItalic = new INT(bItalic ? 1 : 0);
@@ -3967,9 +4050,30 @@ void CPdfWriter::UpdateBrush(NSFonts::IApplicationFonts* pAppFonts, const std::w
 	LONG lBrushType = m_oBrush.GetType();
 	if (c_BrushTypeTexture == lBrushType)
 	{
+		bool bFromMemory = false;
+		BYTE* pData = NULL;
+		LONG  lLength = 0;
+		NSImages::IImagesMemoryStorage* pMemoryStorage = NULL;
+
 		std::wstring wsTexturePath = m_oBrush.GetTexturePath();
 		BYTE nAlpha = m_oBrush.GetTextureAlpha();
-		CImageFileFormatChecker oImageFormat(wsTexturePath);
+#ifdef BUILDING_WASM_MODULE
+		pMemoryStorage = NSImages::NSApplicationImageStream::GetGlobalImagesMemoryStorage();
+		if (pMemoryStorage)
+		{
+			NSImages::IImageStream* pStream = pMemoryStorage->Get(wsTexturePath);
+			if (pStream)
+			{
+				bFromMemory = true;
+				pStream->GetMemory(pData, lLength);
+			}
+		}
+#endif
+		CImageFileFormatChecker oImageFormat;
+		if (bFromMemory)
+			oImageFormat.isImageFile(pData, lLength);
+		else
+			oImageFormat.isImageFile(wsTexturePath);
 
 		PdfWriter::CImageDict* pImage = NULL;
 		int nImageW = 0;
@@ -3986,7 +4090,10 @@ void CPdfWriter::UpdateBrush(NSFonts::IApplicationFonts* pAppFonts, const std::w
 		{
 			pImage = m_pDocument->CreateImage();
 			CBgraFrame oFrame;
-			oFrame.OpenFile(wsTexturePath);
+			if (bFromMemory)
+				oFrame.Decode(pData, lLength, oImageFormat.eFileType);
+			else
+				oFrame.OpenFile(wsTexturePath);
 			nImageH = oFrame.get_Height();
 			nImageW = oFrame.get_Width();
 
@@ -4007,7 +4114,10 @@ void CPdfWriter::UpdateBrush(NSFonts::IApplicationFonts* pAppFonts, const std::w
 		{
 			// TODO: Implement proper metafile rendering
 			MetaFile::IMetaFile* pMeta = MetaFile::Create(pAppFonts);
-			pMeta->LoadFromFile(wsTexturePath.c_str());
+			if (bFromMemory)
+				pMeta->LoadFromBuffer(pData, lLength);
+			else
+				pMeta->LoadFromFile(wsTexturePath.c_str());
 
 			double dL, dR, dT, dB;
 			m_oPath.GetBounds(dL, dT, dR, dB);
@@ -4033,11 +4143,25 @@ void CPdfWriter::UpdateBrush(NSFonts::IApplicationFonts* pAppFonts, const std::w
 			if (dH < dMin) dH = dMin;
 
 			std::wstring wsTempFile = GetTempFile(wsTempDirectory);
-			pMeta->ConvertToRaster(wsTempFile.c_str(), _CXIMAGE_FORMAT_PNG, (int)dW, (int)dH);
+			if (bFromMemory)
+			{
+				BYTE* pImg = NULL;
+				int nImg = 0;
+				pMeta->ConvertToRaster(pImg, nImg, _CXIMAGE_FORMAT_PNG, (int)dW, (int)dH);
+				pMemoryStorage->Add(wsTempFile, pImg, nImg);
+				pData = pImg;
+				lLength = nImg;
+			}
+			else
+				pMeta->ConvertToRaster(wsTempFile.c_str(), _CXIMAGE_FORMAT_PNG, (int)dW, (int)dH);
 
 			RELEASEOBJECT(pMeta);
 
-			Aggplus::CImage oImage(wsTempFile);
+			Aggplus::CImage oImage;
+			if (bFromMemory)
+				oImage.Decode(pData, lLength);
+			else
+				oImage.Create(wsTempFile);
 			nImageW = abs((int)oImage.GetWidth());
 			nImageH = abs((int)oImage.GetHeight());
 			pImage = LoadImage(&oImage, 255);
@@ -4045,7 +4169,11 @@ void CPdfWriter::UpdateBrush(NSFonts::IApplicationFonts* pAppFonts, const std::w
 		}
 		else
 		{
-			Aggplus::CImage oImage(wsTexturePath);
+			Aggplus::CImage oImage;
+			if (bFromMemory)
+				oImage.Decode(pData, lLength);
+			else
+				oImage.Create(wsTexturePath);
 			nImageW = abs((int)oImage.GetWidth());
 			nImageH = abs((int)oImage.GetHeight());
 			pImage = LoadImage(&oImage, 255);

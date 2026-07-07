@@ -282,7 +282,7 @@ std::wstring IMetafileToRenderter::GetImagePath(const std::wstring& sPath)
 				}
 
 				std::wstring wsSvgExt(L".svg");
-				if (0 == sImagePath.compare(sImagePath.length() - wsSvgExt.length(), std::wstring::npos, wsSvgExt))
+				if (sImagePath.length() >= wsSvgExt.length() && 0 == sImagePath.compare(sImagePath.length() - wsSvgExt.length(), std::wstring::npos, wsSvgExt))
 				{
 					std::wstring wsTestPath = sImagePath.substr(0, sImagePath.length() - wsSvgExt.length());
 					if (NSFile::CFileBinary::Exists(wsTestPath + L".emf"))

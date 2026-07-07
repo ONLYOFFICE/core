@@ -37,6 +37,7 @@
 
 #include "./common.h"
 #include <stddef.h>
+#include <set>
 
 #include "../../PdfFile/PdfFile.h"
 #include "../../XpsFile/XpsFile.h"
@@ -522,7 +523,7 @@ public:
 		}
 		pFile->SetDrawOnlyText(true);
 
-		std::vector<std::wstring> arrFonts;
+		std::set<std::wstring> arrFonts;
 
 		CDocxRenderer oRenderer(m_pApplicationFonts);
 		oRenderer.SetExternalImageStorage(m_pImageStorage);
@@ -534,7 +535,7 @@ public:
 			std::cout << nPageIndex << std::endl;
 
 			std::vector<std::wstring> arrFont = oRenderer.GetFontsFromPage(m_pFile, nPageIndex);
-			arrFonts.insert(arrFonts.end(), arrFont.begin(), arrFont.end());
+			arrFonts.insert(arrFont.begin(), arrFont.end());
 
 			pFile->SetPageFonts(nPageIndex);
 		}
@@ -542,8 +543,8 @@ public:
 		pFile->SetDrawOnlyText(false);
 
 		std::cout << "Fonts:" << std::endl;
-		for (int i = 0; i < arrFonts.size(); ++i)
-			std::wcout << arrFonts[i] << std::endl;
+		for (const auto& font : arrFonts)
+			std::wcout << font << std::endl;
 		std::cout << std::endl;
 
 		return pFile->GetAllFonts(arrPageIndex, nLength, false);

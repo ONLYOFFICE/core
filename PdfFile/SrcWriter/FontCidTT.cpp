@@ -109,6 +109,7 @@ namespace PdfWriter
 		m_nGlyphsCount  = 0;
 		m_nSymbolicCmap = -1;
 		m_ushCodesCount = 0;
+		m_bFromMemory   = false;
 	}
 	CFontCidTrueType::~CFontCidTrueType()
 	{
@@ -118,7 +119,7 @@ namespace PdfWriter
 		if (m_pFace)
 			FT_Done_Face(m_pFace);
 
-		if (m_pFaceMemory)
+		if (!m_bFromMemory && m_pFaceMemory)
 			delete[] m_pFaceMemory;
 	}
 	void CFontCidTrueType::CreateCIDFont(CDictObject* pFont)
@@ -434,7 +435,8 @@ namespace PdfWriter
 			m_pFace = NULL;
 		}
 
-		RELEASEARRAYOBJECTS(m_pFaceMemory);
+		if (!m_bFromMemory)
+			RELEASEARRAYOBJECTS(m_pFaceMemory);
 	}
 	bool CFontCidTrueType::OpenFontFace()
 	{
@@ -453,7 +455,22 @@ namespace PdfWriter
 
 		DWORD dwFileSize;
 		m_pFaceMemory = NULL;
+#ifdef BUILDING_WASM_MODULE
+		NSFonts::IFontsMemoryStorage* pMemoryStorage = NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage();
+		if (pMemoryStorage)
+		{
+			NSFonts::IFontStream* pStream = pMemoryStorage->Get(m_wsFontPath);
+			if (pStream)
+			{
+				m_bFromMemory = true;
+				LONG lLength = 0;
+				pStream->GetMemory(m_pFaceMemory, lLength);
+				dwFileSize = lLength;
+			}
+		}
+#else
 		NSFile::CFileBinary::ReadAllBytes(m_wsFontPath, &m_pFaceMemory, dwFileSize);
+#endif
 		if (!m_pFaceMemory)
 			return false;
 
@@ -461,7 +478,10 @@ namespace PdfWriter
 
 		if (!m_pFace)
 		{
-			RELEASEARRAYOBJECTS(m_pFaceMemory);
+			if (m_bFromMemory)
+				m_pFaceMemory = NULL;
+			else
+				RELEASEARRAYOBJECTS(m_pFaceMemory);
 			return false;
 		}
 

@@ -54,7 +54,27 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	CFontTrueType::CFontTrueType(CXref* pXref, CDocument* pDocument, const std::wstring& wsFontPath, unsigned int unIndex) : CFontDict(pXref, pDocument), m_bCanEmbed(false)
 	{
-		CFontFileTrueType* pFontTT = CFontFileTrueType::LoadFromFile(wsFontPath, unIndex);
+		bool bFromMemory = false;
+		BYTE* pData = NULL;
+		LONG  lLength = 0;
+
+#ifdef BUILDING_WASM_MODULE
+		NSFonts::IFontsMemoryStorage* pMemoryStorage = NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage();
+		if (pMemoryStorage)
+		{
+			NSFonts::IFontStream* pStream = pMemoryStorage->Get(wsFontPath);
+			if (pStream)
+			{
+				bFromMemory = true;
+				pStream->GetMemory(pData, lLength);
+			}
+		}
+#endif
+		CFontFileTrueType* pFontTT = NULL;
+		if (bFromMemory)
+			CFontFileTrueType::LoadFromBuffer((char*)pData, lLength, unIndex);
+		else
+			CFontFileTrueType::LoadFromFile(wsFontPath, unIndex);
 		m_pFontFile = pFontTT;
 
 		m_wsFontPath  = wsFontPath;
@@ -125,9 +145,26 @@ namespace PdfWriter
 		if (!pLibrary)
 			return;
 
+		bool bFromMemory = false;
 		DWORD dwFileSize;
 		FT_Byte* pFaceMemory = NULL;
+
+#ifdef BUILDING_WASM_MODULE
+		NSFonts::IFontsMemoryStorage* pMemoryStorage = NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage();
+		if (pMemoryStorage)
+		{
+			NSFonts::IFontStream* pStream = pMemoryStorage->Get(m_wsFontPath);
+			if (pStream)
+			{
+				bFromMemory = true;
+				LONG lLength = 0;
+				pStream->GetMemory(pFaceMemory, lLength);
+				dwFileSize = lLength;
+			}
+		}
+#else
 		NSFile::CFileBinary::ReadAllBytes(m_wsFontPath, &pFaceMemory, dwFileSize);
+#endif
 		if (!pFaceMemory)
 			return;
 
@@ -136,7 +173,8 @@ namespace PdfWriter
 
 		if (!pFace)
 		{
-			RELEASEARRAYOBJECTS(pFaceMemory);
+			if (!bFromMemory)
+				RELEASEARRAYOBJECTS(pFaceMemory);
 			return;
 		}
 
@@ -209,6 +247,7 @@ namespace PdfWriter
 		m_bCanEmbed = NSFonts::CFontInfo::CanEmbedForEdit(fsType);
 
 		FT_Done_Face(pFace);
-		RELEASEARRAYOBJECTS(pFaceMemory);
+		if (!bFromMemory)
+			RELEASEARRAYOBJECTS(pFaceMemory);
 	}
 }

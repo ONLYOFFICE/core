@@ -62,6 +62,29 @@ namespace MetaFile
 
 		pMetafile->ConvertToRaster(wsOutFilePath, unFileType, (int)dW, (int)dH);
 	}
+	static void ConvertToRasterMaxSize(MetaFile::IMetaFile* pMetafile, BYTE*& pBuffer, int& nSize, unsigned int unFileType, int nOneMaxSize)
+	{
+		double dX, dY, dW, dH;
+		pMetafile->GetBounds(&dX, &dY, &dW, &dH);
+
+		if (dW < 0) dW = -dW;
+		if (dH < 0) dH = -dH;
+
+		double dOneMaxSize = (double)nOneMaxSize;
+
+		if (dW > dH)
+		{
+			dH *= (dOneMaxSize / dW);
+			dW = dOneMaxSize;
+		}
+		else
+		{
+			dW *= (dOneMaxSize / dH);
+			dH = dOneMaxSize;
+		}
+
+		pMetafile->ConvertToRaster(pBuffer, nSize, unFileType, (int)dW, (int)dH);
+	}
 }
 
 #endif //_METAFILE_COMMON_H

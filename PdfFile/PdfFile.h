@@ -111,7 +111,7 @@ public:
 	bool DeletePage(int nPageIndex);
 	bool AddPage   (int nPageIndex);
 	bool MovePage  (int nPageIndex, int nPos);
-	bool MergePages(const std::wstring& wsPath, int nMaxID = 0, const std::wstring& wsPrefixForm = L"");
+	bool MergePagesEdit(BYTE* data, DWORD length, int nMaxID = 0, const std::wstring& wsPrefixForm = L"");
 	bool PrintPages(const std::vector<bool>& arrPages, int nFlag);
 	HRESULT ChangePassword(const std::wstring& wsPath, const std::wstring& wsPassword = L"");
 
@@ -122,6 +122,7 @@ public:
 	void SetCMapMemory(BYTE* pData, DWORD nSizeData);
 	void SetCMapFolder(const std::wstring& sFolder);
 	void SetCMapFile(const std::wstring& sFile);
+	void SetDrawOnlyText(bool bDraw);
 	void ToXml(const std::wstring& sFile, bool bSaveStreams = false);
 
 	static bool GetMetaData(const std::wstring& sFile, const std::wstring& sMetaName, BYTE** pMetaData, DWORD& nMetaLength);
@@ -156,9 +157,9 @@ public:
 	BYTE* GetWidgets();
 	BYTE* GetAnnotEmbeddedFonts();
 	BYTE* GetAnnotStandardFonts();
-	BYTE* GetAllFonts(int* arrPageIndex, int nLength);
+	BYTE* GetAllFonts(int* arrPageIndex, int nLength, bool bCheck = true);
 	BYTE* GetAnnots    (int nPageIndex = -1);
-	BYTE* SplitPages   (const int* arrPageIndex, unsigned int unLength, BYTE* pChanges = NULL, DWORD nLength = 0);
+	BYTE* SplitPages   (const int* arrPageIndex, unsigned int unLength, BYTE* pChanges = NULL, DWORD nLength = 0, bool bEdit = false);
 	BYTE* VerifySign   (const std::wstring& sFile, ICertificate* pCertificate, int nWidget = -1);
 	BYTE* GetAPWidget  (int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nWidget  = -1, const char* sView  = NULL, const char* sBView = NULL);
 	BYTE* GetAPAnnots  (int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nAnnot   = -1, const char* sView  = NULL);
@@ -171,6 +172,7 @@ public:
 
 	void CreatePdf    (bool isPDFA = false);
 	int  SaveToFile   (const std::wstring& wsPath);
+	int  SaveToMemory (BYTE** pData, int* pLength);
 	void RotatePage   (int nRotate);
 	void SetPassword  (const std::wstring& wsPassword);
 	void SetDocumentID(const std::wstring& wsDocumentID);

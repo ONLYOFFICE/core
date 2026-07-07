@@ -121,10 +121,17 @@ public:
 	{
 		NSFonts::NSApplicationFontStream::SetGlobalMemoryStorage(NSFonts::NSApplicationFontStream::CreateDefaultGlobalMemoryStorage());
 	}
-
 	static NSFonts::IFontsMemoryStorage* GetFontsStorage()
 	{
 		return NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage();
+	}
+	static void InitImagesGlobalStorage()
+	{
+		NSImages::NSApplicationImageStream::SetGlobalImagesMemoryStorage(NSImages::NSApplicationImageStream::CreateDefaultGlobalImagesMemoryStorage());
+	}
+	static NSImages::IImagesMemoryStorage* GetImagesStorage()
+	{
+		return NSImages::NSApplicationImageStream::GetGlobalImagesMemoryStorage();
 	}
 
 public:
@@ -382,6 +389,13 @@ public:
 			return ((CPdfFile*)m_pFile)->UndoRedact();
 		return false;
 	}
+	BYTE* EditPdf(BYTE* pChanges, int nChangesSize)
+	{
+		if (m_nType != 0)
+			return NULL;
+
+		return ((CPdfFile*)m_pFile)->SplitPages(NULL, 0, pChanges, nChangesSize, true);
+	}
 
 	BYTE* GetGlyphs(int nPageIndex)
 	{
@@ -497,7 +511,34 @@ public:
 	}
 	BYTE* SetScanPageFonts(int* arrPageIndex, int nLength)
 	{
-		return m_nType == 0 ? ((CPdfFile*)m_pFile)->GetAllFonts(arrPageIndex, nLength) : NULL;
+		if (m_nType != 0)
+			return NULL;
+		CPdfFile* pFile = ((CPdfFile*)m_pFile);
+
+		if (!arrPageIndex || nLength == 0)
+		{
+			nLength = GetPagesCount();
+			arrPageIndex = NULL;
+		}
+		pFile->SetDrawOnlyText(true);
+
+		for (int i = 0; i < nLength; ++i)
+		{
+			int nPageIndex = arrPageIndex ? arrPageIndex[i] : i;
+			std::cout << nPageIndex << std::endl;
+
+			CDocxRenderer oRenderer(m_pApplicationFonts);
+			oRenderer.SetExternalImageStorage(m_pImageStorage);
+			oRenderer.SetTextAssociationType(NSDocxRenderer::TextAssociationType::tatParagraphToShape);
+
+			oRenderer.ScanPageBin(m_pFile, nPageIndex);
+
+			pFile->SetPageFonts(nPageIndex);
+		}
+
+		pFile->SetDrawOnlyText(false);
+
+		return pFile->GetAllFonts(arrPageIndex, nLength, false);
 	}
 	BYTE* ScanPage(int nPageIndex, int mode)
 	{
@@ -578,6 +619,27 @@ public:
 		{
 			std::string sPathA(path);
 			NSFonts::IFontStream* pStream = pStorage->Get(UTF8_TO_U(sPathA));
+			if (pStream)
+				return 1;
+		}
+		return 0;
+	}
+	void SetImageBinary(char* path, BYTE* data, int size)
+	{
+		NSImages::IImagesMemoryStorage* pStorage = NSImages::NSApplicationImageStream::GetGlobalImagesMemoryStorage();
+		if (pStorage)
+		{
+			std::string sPathA(path);
+			pStorage->Add(UTF8_TO_U(sPathA), data, size, true);
+		}
+	}
+	int IsImageBinaryExist(char* path)
+	{
+		NSImages::IImagesMemoryStorage* pStorage = NSImages::NSApplicationImageStream::GetGlobalImagesMemoryStorage();
+		if (pStorage)
+		{
+			std::string sPathA(path);
+			NSImages::IImageStream* pStream = pStorage->Get(UTF8_TO_U(sPathA));
 			if (pStream)
 				return 1;
 		}

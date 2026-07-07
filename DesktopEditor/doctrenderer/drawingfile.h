@@ -522,21 +522,29 @@ public:
 		}
 		pFile->SetDrawOnlyText(true);
 
+		std::vector<std::wstring> arrFonts;
+
+		CDocxRenderer oRenderer(m_pApplicationFonts);
+		oRenderer.SetExternalImageStorage(m_pImageStorage);
+		oRenderer.SetTextAssociationType(NSDocxRenderer::TextAssociationType::tatParagraphToShape);
+
 		for (int i = 0; i < nLength; ++i)
 		{
 			int nPageIndex = arrPageIndex ? arrPageIndex[i] : i;
 			std::cout << nPageIndex << std::endl;
 
-			CDocxRenderer oRenderer(m_pApplicationFonts);
-			oRenderer.SetExternalImageStorage(m_pImageStorage);
-			oRenderer.SetTextAssociationType(NSDocxRenderer::TextAssociationType::tatParagraphToShape);
-
-			oRenderer.ScanPageBin(m_pFile, nPageIndex);
+			std::vector<std::wstring> arrFont = oRenderer.GetFontsFromPage(m_pFile, nPageIndex);
+			arrFonts.insert(arrFonts.end(), arrFont.begin(), arrFont.end());
 
 			pFile->SetPageFonts(nPageIndex);
 		}
 
 		pFile->SetDrawOnlyText(false);
+
+		std::cout << "Fonts:" << std::endl;
+		for (int i = 0; i < arrFonts.size(); ++i)
+			std::wcout << arrFonts[i] << std::endl;
+		std::cout << std::endl;
 
 		return pFile->GetAllFonts(arrPageIndex, nLength, false);
 	}

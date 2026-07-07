@@ -1127,6 +1127,106 @@ void ScanFonts(PDFDoc* pPDFDocument, Dict* pResources, CPdfWriter* pWriter, CObj
 
 	pReader->SetFonts(ctx.pFontList);
 }
+
+void CreateOutlines(PDFDoc* pdfDoc, PdfWriter::CDocument* pDoc, OutlineItem* pOutlineItem, PdfWriter::COutline* pParent)
+{
+	std::string sTitle = NSStringExt::CConverter::GetUtf8FromUTF32(pOutlineItem->getTitle(), pOutlineItem->getTitleLength());
+	PdfWriter::COutline* pOutline = pDoc->CreateOutline(pParent, sTitle.c_str());
+
+	PdfWriter::CDestination* pDest = NULL;
+	LinkAction* pLinkAction = pOutlineItem->getAction();
+	if (pLinkAction && pLinkAction->getKind() == actionGoTo)
+	{
+		GString* str = ((LinkGoTo*)pLinkAction)->getNamedDest();
+		LinkDest* pLinkDest = str ? pdfDoc->findDest(str) : ((LinkGoTo*)pLinkAction)->getDest();
+		if (pLinkDest)
+		{
+			int pg;
+			if (pLinkDest->isPageRef())
+			{
+				Ref pageRef = pLinkDest->getPageRef();
+				pg = pdfDoc->findPage(pageRef.num, pageRef.gen);
+			}
+			else
+				pg = pLinkDest->getPageNum();
+			if (pg == 0)
+				pg = 1;
+
+			Ref* pPageRef = pdfDoc->getCatalog()->getPageRef(pg);
+			PdfWriter::CObjectBase* pPageD = pDoc->GetEditPage(--pg);
+			if (!pPageD && pPageRef->num > 0)
+			{
+				PdfWriter::CObjectBase* pBase = new PdfWriter::CObjectBase();
+				pBase->SetRef(pPageRef->num, pPageRef->gen);
+				pPageD = new PdfWriter::CProxyObject(pBase, true);
+			}
+			pDest = pDoc->CreateDestination(pPageD, true);
+
+			switch (pLinkDest->getKind())
+			{
+			case destXYZ:
+			{
+				pDest->SetXYZ(pLinkDest->getLeft(), pLinkDest->getTop(), pLinkDest->getZoom());
+				break;
+			}
+			case destFit:
+			{
+				pDest->SetFit();
+				break;
+			}
+			case destFitH:
+			{
+				pDest->SetFitH(pLinkDest->getTop());
+				break;
+			}
+			case destFitV:
+			{
+				pDest->SetFitV(pLinkDest->getLeft());
+				break;
+			}
+			case destFitR:
+			{
+				pDest->SetFitR(pLinkDest->getLeft(), pLinkDest->getBottom(), pLinkDest->getRight(), pLinkDest->getTop());
+				break;
+			}
+			case destFitB:
+			{
+				pDest->SetFitB();
+				break;
+			}
+			case destFitBH:
+			{
+				pDest->SetFitBH(pLinkDest->getTop());
+				break;
+			}
+			case destFitBV:
+			{
+				pDest->SetFitBV(pLinkDest->getLeft());
+				break;
+			}
+			}
+		}
+		if (str)
+			RELEASEOBJECT(pLinkDest);
+	}
+	if (pDest)
+		pOutline->SetDestination(pDest);
+
+	pOutlineItem->open();
+	GList* pList = pOutlineItem->getKids();
+	if (!pList)
+	{
+		pOutlineItem->close();
+		return;
+	}
+	for (int i = 0, num = pList->getLength(); i < num; i++)
+	{
+		OutlineItem* pOutlineItemKid = (OutlineItem*)pList->get(i);
+		if (pOutlineItemKid)
+			CreateOutlines(pdfDoc, pDoc, pOutlineItemKid, pOutline);
+	}
+	pOutlineItem->close();
+}
 }
 
 HRESULT _ChangePassword(const std::wstring& wsPath, const std::wstring& wsPassword, CPdfReader* _pReader, CPdfWriter* _pWriter)
@@ -2364,9 +2464,43 @@ void CPdfEditor::Close()
 
 		SyncAcroFormFromReader();
 
-		PDFDoc* pPDFDocument = m_pReader->GetPDFDocument(0);
+		PDFDoc* pPDFDocument = NULL;
+		PdfReader::CPdfFontList* pFontList = NULL;
+		int nStartRefID = 0;
+		m_pReader->GetPageIndex(0, &pPDFDocument, &pFontList, &nStartRefID);
 		CloseWriteNew_ApplyEncryption(m_wsPassword, &m_mObjManager, pPDFDocument, pDoc);
 
+		if (~m_nRedactInfo & (1 << 1))
+		{
+			XRef* xref = pPDFDocument->getXRef();
+			CObjectGuard catDict;
+			xref->getCatalog(catDict.get());
+			CObjectGuard pNames, oEF, oNames;
+			if (catDict->dictLookup("Names", pNames.get())->isDict() && pNames->dictLookup("EmbeddedFiles", oEF.get())->isDict())
+			{
+				SDictConvertContext ctx(pDoc, xref, &m_mObjManager, nStartRefID);
+				PdfWriter::CCatalog* pCatalog = pDoc->GetCatalog();
+				PdfWriter::CDictObject* pNames = pCatalog->GetNames();
+				pNames->Add("EmbeddedFiles", DictToCDictObjectUnified(oEF.get(), ctx));
+			}
+		}
+		if (~m_nRedactInfo & (1 << 2))
+		{
+			PDFDoc* pDocumentFirst = m_pReader->GetPDFDocument(0);
+			Outline* pOutlineOld = pDocumentFirst->getOutline();
+			GList* pListOld = NULL;
+			if (pOutlineOld)
+				pListOld = pOutlineOld->getItems();
+			if (!pDoc->GetOutlines() && pListOld)
+			{
+				for (int i = 0, num = pListOld->getLength(); i < num; i++)
+				{
+					OutlineItem* pOutlineItem = (OutlineItem*)pListOld->get(i);
+					if (pOutlineItem)
+						CreateOutlines(pDocumentFirst, pDoc, pOutlineItem, NULL);
+				}
+			}
+		}
 		if (~m_nRedactInfo & (1 << 3))
 			CloseWriteNew_ApplyNameTree(pPDFDocument, pDoc);
 
@@ -3462,105 +3596,6 @@ void CPdfEditor::AfterSplitPages()
 	if (!pPageTree)
 		return;
 	pPageTree->ClearFakePages();
-}
-void CreateOutlines(PDFDoc* pdfDoc, PdfWriter::CDocument* pDoc, OutlineItem* pOutlineItem, PdfWriter::COutline* pParent)
-{
-	std::string sTitle = NSStringExt::CConverter::GetUtf8FromUTF32(pOutlineItem->getTitle(), pOutlineItem->getTitleLength());
-	PdfWriter::COutline* pOutline = pDoc->CreateOutline(pParent, sTitle.c_str());
-
-	PdfWriter::CDestination* pDest = NULL;
-	LinkAction* pLinkAction = pOutlineItem->getAction();
-	if (pLinkAction && pLinkAction->getKind() == actionGoTo)
-	{
-		GString* str = ((LinkGoTo*)pLinkAction)->getNamedDest();
-		LinkDest* pLinkDest = str ? pdfDoc->findDest(str) : ((LinkGoTo*)pLinkAction)->getDest();
-		if (pLinkDest)
-		{
-			int pg;
-			if (pLinkDest->isPageRef())
-			{
-				Ref pageRef = pLinkDest->getPageRef();
-				pg = pdfDoc->findPage(pageRef.num, pageRef.gen);
-			}
-			else
-				pg = pLinkDest->getPageNum();
-			if (pg == 0)
-				pg = 1;
-
-			Ref* pPageRef = pdfDoc->getCatalog()->getPageRef(pg);
-			PdfWriter::CObjectBase* pPageD = pDoc->GetEditPage(--pg);
-			if (!pPageD && pPageRef->num > 0)
-			{
-				PdfWriter::CObjectBase* pBase = new PdfWriter::CObjectBase();
-				pBase->SetRef(pPageRef->num, pPageRef->gen);
-				pPageD = new PdfWriter::CProxyObject(pBase, true);
-			}
-			pDest = pDoc->CreateDestination(pPageD, true);
-
-			switch (pLinkDest->getKind())
-			{
-			case destXYZ:
-			{
-				pDest->SetXYZ(pLinkDest->getLeft(), pLinkDest->getTop(), pLinkDest->getZoom());
-				break;
-			}
-			case destFit:
-			{
-				pDest->SetFit();
-				break;
-			}
-			case destFitH:
-			{
-				pDest->SetFitH(pLinkDest->getTop());
-				break;
-			}
-			case destFitV:
-			{
-				pDest->SetFitV(pLinkDest->getLeft());
-				break;
-			}
-			case destFitR:
-			{
-				pDest->SetFitR(pLinkDest->getLeft(), pLinkDest->getBottom(), pLinkDest->getRight(), pLinkDest->getTop());
-				break;
-			}
-			case destFitB:
-			{
-				pDest->SetFitB();
-				break;
-			}
-			case destFitBH:
-			{
-				pDest->SetFitBH(pLinkDest->getTop());
-				break;
-			}
-			case destFitBV:
-			{
-				pDest->SetFitBV(pLinkDest->getLeft());
-				break;
-			}
-			}
-		}
-		if (str)
-			RELEASEOBJECT(pLinkDest);
-	}
-	if (pDest)
-		pOutline->SetDestination(pDest);
-
-	pOutlineItem->open();
-	GList* pList = pOutlineItem->getKids();
-	if (!pList)
-	{
-		pOutlineItem->close();
-		return;
-	}
-	for (int i = 0, num = pList->getLength(); i < num; i++)
-	{
-		OutlineItem* pOutlineItemKid = (OutlineItem*)pList->get(i);
-		if (pOutlineItemKid)
-			CreateOutlines(pdfDoc, pDoc, pOutlineItemKid, pOutline);
-	}
-	pOutlineItem->close();
 }
 bool CPdfEditor::ChangeFullNameParent(int nParent, const std::string& sPrefix, std::vector<int>& arrRename)
 {

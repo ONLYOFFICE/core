@@ -77,6 +77,7 @@ namespace PdfWriter
 	{
 		m_pStructTreeRoot = NULL;
 
+		m_pXref = pXref;
 		pXref->Add(this);
 
 		Add("Type", "Catalog");
@@ -121,6 +122,7 @@ namespace PdfWriter
 	CCatalog::CCatalog()
 	{
 		m_pStructTreeRoot = NULL;
+		m_pXref = NULL;
 	}
 	CPageTree*   CCatalog::GetRoot() const
 	{
@@ -209,6 +211,18 @@ namespace PdfWriter
 	CStructureTreeRoot* CCatalog::GetStructTreeRoot()
 	{
 		return m_pStructTreeRoot;
+	}
+	CDictObject* CCatalog::GetNames()
+	{
+		CObjectBase* pObj = Get("Names");
+		if (!pObj || pObj->GetType() != object_type_DICT)
+		{
+			pObj = new CDictObject();
+			if (m_pXref)
+				m_pXref->Add(pObj);
+			Add("Names", pObj);
+		}
+		return dynamic_cast<CDictObject*>(pObj);
 	}
 	//----------------------------------------------------------------------------------------
 	// CStructureTreeRoot

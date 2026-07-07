@@ -222,6 +222,7 @@ namespace PdfWriter
 		const std::map<int, CDictObject*>& GetParents() { return m_mParents; }
 		CPageTree*        GetPageTree() { return m_pPageTree; }
 		CEncryptDict*     GetEncrypt() { return m_pEncryptDict; }
+		CCatalog*         GetCatalog() { return m_pCatalog; }
 		void              AddShapeXML(const std::string& sXML);
 		void              EndShapeXML();
 		void              ClearPage();

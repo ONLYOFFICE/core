@@ -1849,6 +1849,19 @@ namespace PdfWriter
 
 		return true;
 	}
+	void CDocument::AddRoles(BYTE* pMetaData, DWORD nMetaLength)
+	{
+		if (!CheckAcroForm())
+			return;
+
+		CDictObject* pRoles = new CDictObject(m_pXref);
+		pRoles->SetFilter(STREAM_FILTER_FLATE_DECODE);
+
+		m_pAcroForm->Add("ONLYOFFICE_FORMS_ROLES", pRoles);
+
+		CStream* pStream = pRoles->GetStream();
+		pStream->Write(pMetaData, nMetaLength);
+	}
 	CPage* CDocument::AddPage(int nPageIndex, CPage* _pNewPage)
 	{
 		if (!m_pPageTree)

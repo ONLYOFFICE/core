@@ -2337,15 +2337,53 @@ void CAnnotRedact::SetFont(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, 
 //------------------------------------------------------------------------
 // Annots
 //------------------------------------------------------------------------
+namespace
+{
+BYTE* ReadWholeStream(Object* pStreamObj, int& nOutSize)
+{
+	nOutSize = 0;
 
+	if (!pStreamObj || !pStreamObj->isStream())
+		return NULL;
+
+	Stream* pStream = pStreamObj->getStream();
+	if (!pStream)
+		return NULL;
+
+	pStream->reset();
+
+	std::vector<BYTE> arrBuffer;
+	int c;
+	while ((c = pStream->getChar()) != EOF)
+		arrBuffer.push_back((BYTE)c);
+
+	pStream->close();
+
+	nOutSize = (int)arrBuffer.size();
+	if (nOutSize == 0)
+		return NULL;
+
+	BYTE* pResult = new BYTE[nOutSize];
+	memcpy(pResult, arrBuffer.data(), nOutSize);
+
+	return pResult;
+}
+} // namespace
 CAnnots::CAnnots(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList, int nStartPage, int nStartRefID)
 {
+	m_pRoles = NULL;
+	m_nRoles = 0;
+
 	Object oObj1, oObj2;
 	XRef* xref = pdfDoc->getXRef();
 	AcroForm* pAcroForms = pdfDoc->getCatalog()->getForm();
+	Object* oAcroForm = pAcroForms->getAcroFormObj();
+
+	CObjectGuard oMeta;
+	if (oAcroForm->dictLookup("ONLYOFFICE_FORMS_ROLES", oMeta.get())->isStream())
+		m_pRoles = ReadWholeStream(oMeta.get(), m_nRoles);
 
 	// Calculation order - CO
-	Object* oAcroForm = pAcroForms->getAcroFormObj();
 	if (oAcroForm->dictLookup("CO", &oObj1)->isArray())
 	{
 		for (int j = 0; j < oObj1.arrayGetLength(); ++j)
@@ -2444,6 +2482,8 @@ CAnnots::CAnnots(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontLi
 }
 CAnnots::~CAnnots()
 {
+	RELEASEARRAYOBJECTS(m_pRoles);
+
 	for (int i = 0; i < m_arrParents.size(); ++i)
 		RELEASEOBJECT(m_arrParents[i]);
 
@@ -3535,6 +3575,9 @@ void CAnnotAP::ToWASM(NSWasm::CData& oRes)
 }
 void CAnnots::ToWASM(NSWasm::CData& oRes)
 {
+	// Roles
+	oRes.WriteString(m_pRoles, m_nRoles);
+
 	// Calculation order - CO
 	oRes.AddInt(m_arrCO.size());
 	for (int i = 0; i < m_arrCO.size(); ++i)

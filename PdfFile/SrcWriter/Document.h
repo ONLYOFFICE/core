@@ -216,11 +216,13 @@ namespace PdfWriter
 		CPage*            GetCurPage() { return m_pCurPage; }
 		void              SetCurPage(CPage* pPage) { m_pCurPage = pPage; }
 		bool              EditCO(const std::vector< std::pair<int, int> >& arrCO);
+		void              AddRoles(BYTE* pMetaData, DWORD nMetaLength);
 		std::string       SetParentKids(int nParentID);
 		const std::map<int, CAnnotation*>& GetAnnots() { return m_mAnnotations; }
 		const std::map<int, CDictObject*>& GetParents() { return m_mParents; }
 		CPageTree*        GetPageTree() { return m_pPageTree; }
 		CEncryptDict*     GetEncrypt() { return m_pEncryptDict; }
+		CCatalog*         GetCatalog() { return m_pCatalog; }
 		void              AddShapeXML(const std::string& sXML);
 		void              EndShapeXML();
 		void              ClearPage();

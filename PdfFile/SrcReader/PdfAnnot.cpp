@@ -2339,41 +2339,34 @@ void CAnnotRedact::SetFont(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, 
 //------------------------------------------------------------------------
 namespace
 {
-BYTE* ReadStreamRange(Object* pStreamObj, int nStart, int nSize)
+BYTE* ReadWholeStream(Object* pStreamObj, int& nOutSize)
 {
-	BYTE* arrResult = NULL;
+	nOutSize = 0;
 
-	if (!pStreamObj || !pStreamObj->isStream() || nStart < 0 || nSize <= 0)
-		return arrResult;
+	if (!pStreamObj || !pStreamObj->isStream())
+		return NULL;
 
 	Stream* pStream = pStreamObj->getStream();
 	if (!pStream)
-		return arrResult;
+		return NULL;
 
 	pStream->reset();
 
-	for (int i = 0; i < nStart; ++i)
-	{
-		if (pStream->getChar() == EOF)
-		{
-			pStream->close();
-			return arrResult;
-		}
-	}
-
-	arrResult = new BYTE[nSize];
-	memset(arrResult, 0, nSize);
-
-	for (int i = 0; i < nSize; ++i)
-	{
-		int c = pStream->getChar();
-		if (c == EOF)
-			break;
-		arrResult[i] = ((BYTE)c);
-	}
+	std::vector<BYTE> arrBuffer;
+	int c;
+	while ((c = pStream->getChar()) != EOF)
+		arrBuffer.push_back((BYTE)c);
 
 	pStream->close();
-	return arrResult;
+
+	nOutSize = (int)arrBuffer.size();
+	if (nOutSize == 0)
+		return NULL;
+
+	BYTE* pResult = new BYTE[nOutSize];
+	memcpy(pResult, arrBuffer.data(), nOutSize);
+
+	return pResult;
 }
 } // namespace
 CAnnots::CAnnots(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList, int nStartPage, int nStartRefID)
@@ -2384,22 +2377,13 @@ CAnnots::CAnnots(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontLi
 	Object oObj1, oObj2;
 	XRef* xref = pdfDoc->getXRef();
 	AcroForm* pAcroForms = pdfDoc->getCatalog()->getForm();
+	Object* oAcroForm = pAcroForms->getAcroFormObj();
 
-	CObjectGuard oMeta, oRolesSize;
-	if (xref->fetch(1, 0, oMeta.get())->isStream() && oMeta->streamGetDict()->lookup("ONLYOFFICE_FORMS_ROLES", oRolesSize.get())->isArray())
-	{
-		int nStart = 0;
-		CObjectGuard oStart, oSize;
-		if (oRolesSize->arrayGet(0, oStart.get())->isInt())
-			nStart = oStart->getInt();
-		if (oRolesSize->arrayGet(1, oSize.get())->isInt())
-			m_nRoles = oSize->getInt();
-
-		m_pRoles = ReadStreamRange(oMeta.get(), nStart, m_nRoles);
-	}
+	CObjectGuard oMeta;
+	if (oAcroForm->dictLookup("ONLYOFFICE_FORMS_ROLES", oMeta.get())->isStream())
+		m_pRoles = ReadWholeStream(oMeta.get(), m_nRoles);
 
 	// Calculation order - CO
-	Object* oAcroForm = pAcroForms->getAcroFormObj();
 	if (oAcroForm->dictLookup("CO", &oObj1)->isArray())
 	{
 		for (int j = 0; j < oObj1.arrayGetLength(); ++j)

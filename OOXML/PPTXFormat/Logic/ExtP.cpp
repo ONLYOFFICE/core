@@ -173,6 +173,16 @@ namespace PPTX
 							pWriter->WriteAttribute(L"xmlns:p14", std::wstring(L"http://schemas.microsoft.com/office/powerpoint/2010/main"));
 						pWriter->WriteAttribute(L"r:embed", link_media->get());
 						pWriter->EndAttributes();
+
+						if (st.IsInit() || end.IsInit())
+						{
+							pWriter->StartNode(namespace_link + L":trim");
+								pWriter->StartAttributes();
+									pWriter->WriteAttribute(L"st", st);
+									pWriter->WriteAttribute(L"end", end);
+								pWriter->EndAttributes();
+							pWriter->EndNode(namespace_link + L":trim");
+						}
 					pWriter->EndNode(namespace_link + L":media");
 				pWriter->EndNode(namespace_ext + L":ext");
 			}

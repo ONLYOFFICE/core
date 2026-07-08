@@ -66,6 +66,8 @@ namespace OOX
 
 		std::vector<BYTE> m_Data;
 
+		nullable_double start;
+		nullable_double end;
 	protected:
 		CPath	m_filename;
 		bool	m_bExist;

@@ -1466,7 +1466,13 @@ namespace PdfWriter
 	{
 		std::map<int, CAnnotation*>::iterator it1 = std::find_if(m_mAnnotations.begin(), m_mAnnotations.end(), [pObj](const std::pair<int, CAnnotation*>& t){ return t.second == pObj; });
 		if (it1 != m_mAnnotations.end())
+		{
+			CAnnotation* pAnnot = dynamic_cast<CAnnotation*>(pObj);
+			CStructureTreeRoot* pRoot = m_pCatalog->GetStructTreeRoot();
+			if (pRoot && pAnnot)
+				pRoot->RemoveAnnot(pAnnot);
 			m_mAnnotations.erase(it1);
+		}
 		std::map<int, CPage*>::iterator it2 = std::find_if(m_mEditPages.begin(), m_mEditPages.end(), [pObj](const std::pair<int, CPage*>& t){ return t.second == pObj; });
 		if (it2 != m_mEditPages.end())
 			m_mEditPages.erase(it2);
@@ -2230,6 +2236,10 @@ namespace PdfWriter
 			m_vSignatures[0]->nPrevAddr = nPrevAddr;
 			m_vSignatures[0]->bNeedStreamXRef = bNeedStreamXRef;
 		}
+	}
+	CStructureTreeRoot* CDocument::GetStructureTreeRoot()
+	{
+		return m_pCatalog->GetStructTreeRoot();
 	}
 	void CDocument::AddShapeXML(const std::string& sXML)
 	{

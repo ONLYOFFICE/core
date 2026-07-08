@@ -525,6 +525,7 @@ namespace PdfWriter
 		m_pPatterns         = NULL;
 		m_unPatternsCount   = 0;
 		m_eType             = fontUnknownType;
+		m_nDestAnchorMCID   = -1;
 	}
     void CPage::SetWidth(double dValue)
 	{
@@ -1017,6 +1018,18 @@ namespace PdfWriter
 		m_pStream->WriteStr("EMC\012");
 
 		m_pStream->WriteStr("Q\012");
+	}
+	int CPage::GetOrCreateDestAnchorMCID()
+	{
+		if (m_nDestAnchorMCID >= 0)
+			return m_nDestAnchorMCID;
+
+		m_nDestAnchorMCID = 0;
+		m_pStream->WriteStr("/Anchor <</MCID ");
+		m_pStream->WriteStr(std::to_string(m_nDestAnchorMCID).c_str());
+		m_pStream->WriteStr(">> BDC\012EMC\012");
+
+		return m_nDestAnchorMCID;
 	}
     void CPage::SetStrokeColor(unsigned char unR, unsigned char unG, unsigned char unB)
 	{

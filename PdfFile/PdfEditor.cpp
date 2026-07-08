@@ -1154,13 +1154,19 @@ void CreateOutlines(PDFDoc* pdfDoc, PdfWriter::CDocument* pDoc, OutlineItem* pOu
 
 			Ref* pPageRef = pdfDoc->getCatalog()->getPageRef(pg);
 			PdfWriter::CObjectBase* pPageD = pDoc->GetEditPage(--pg);
-			if (!pPageD && pPageRef->num > 0)
+			PdfWriter::CStructureTreeRoot* pSTR = pDoc->GetStructureTreeRoot();
+			if (pPageD && pPageD->GetType() == PdfWriter::object_type_DICT && pSTR)
+			{
+				PdfWriter::CDictObject* pStructAnchor = pSTR->CreateDestAnchor((PdfWriter::CDictObject*)pPageD, ((PdfWriter::CPage*)pPageD)->GetOrCreateDestAnchorMCID());
+				pDest = pDoc->CreateDestination(pStructAnchor, true);
+			}
+			else if (!pPageD && pPageRef->num > 0)
 			{
 				PdfWriter::CObjectBase* pBase = new PdfWriter::CObjectBase();
 				pBase->SetRef(pPageRef->num, pPageRef->gen);
 				pPageD = new PdfWriter::CProxyObject(pBase, true);
-			}
-			pDest = pDoc->CreateDestination(pPageD, true);
+				pDest = pDoc->CreateDestination(pPageD, true);
+			}	
 
 			switch (pLinkDest->getKind())
 			{

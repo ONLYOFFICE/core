@@ -144,6 +144,7 @@ namespace PdfWriter
 		void      SetFlat(double dFlatness);
 		void      GrSave();
 		void      GrRestore();
+		int       GetOrCreateDestAnchorMCID();
 		void      SetStrokeColor(unsigned char unR, unsigned char unG, unsigned char unB);
 		void      SetStrokeG(double dG);
 		void      SetStrokeRGB(double dR, double dG, double dB);
@@ -235,6 +236,7 @@ namespace PdfWriter
 		CDictObject* m_pPatterns;
 		unsigned int m_unPatternsCount;
 		EFontType    m_eType;
+		int          m_nDestAnchorMCID;
 	};
 	class CFakePage : public CObjectBase
 	{

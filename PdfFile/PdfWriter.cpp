@@ -986,10 +986,12 @@ HRESULT CPdfWriter::DrawPath(NSFonts::IApplicationFonts* pAppFonts, const std::w
 			sTextureOldPath = m_oBrush.GetTexturePath();
 			// TODO
 #ifdef BUILDING_WASM_MODULE
+			/*
 			std::wstring wsMedia = L"media/";
 			std::wstring::size_type posMedia = sTextureOldPath.find(wsMedia);
 			if (posMedia != std::wstring::npos)
 				sTextureTmpPath = sTextureOldPath.erase(0, posMedia + wsMedia.length());
+			*/
 #else
 			sTextureTmpPath = GetDownloadFile(sTextureOldPath, wsTempDirectory);
 #endif
@@ -2521,6 +2523,11 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 				PdfWriter::CAction* pA = GetAction(pAction);
 				pWidgetAnnot->AddAction(pA);
 			}
+			if (arrActions.empty())
+			{
+				pWidgetAnnot->Remove("A");
+				pWidgetAnnot->Remove("AA");
+			}
 		}
 
 		bool isBold   = (nStyle & 1 ? true : false);
@@ -2808,11 +2815,15 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 			PdfWriter::CAction* pA = GetAction(pPr->GetA(), true);
 			pLinkAnnot->SetA(pA);
 		}
+		else
+			pLinkAnnot->Remove("A");
 		if (nFlags & (1 << 1))
 		{
 			PdfWriter::CAction* pA = GetAction(pPr->GetPA(), true);
 			pLinkAnnot->SetPA(pA);
 		}
+		else
+			pLinkAnnot->Remove("PA");
 		if (nFlags & (1 << 2))
 			pLinkAnnot->SetH(pPr->GetH());
 		if (nFlags & (1 << 3))
@@ -2858,6 +2869,11 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 				PdfWriter::CAction* pA = GetAction(pAction);
 				pScreenAnnot->AddAction(pA);
 			}
+		}
+		else
+		{
+			pScreenAnnot->Remove("A");
+			pScreenAnnot->Remove("AA");
 		}
 	}
 
@@ -3215,6 +3231,11 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 					pAA->Add(pA->m_sType.c_str(), pA);
 				}
 			}
+		}
+		else
+		{
+			pParentObj->Remove("A");
+			pParentObj->Remove("AA");
 		}
 		if (nFlags & (1 << 9))
 			pParentObj->Add("MaxLen", pParent->nMaxLen);

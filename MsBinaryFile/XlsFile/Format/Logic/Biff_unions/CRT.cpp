@@ -218,6 +218,11 @@ const bool CRT::loadContent(BinProcessor& proc)
 	{
 		m_Chart3d = elements_.back();
 		elements_.pop_back();
+		if(m_ChartType != nullptr && m_ChartType->get_type() == typeBar)
+		{
+			auto castedBar = static_cast<XLS::Bar*>(m_ChartType.get());
+			castedBar->m_chart3D = m_Chart3d;
+		}
 	}
 	if (proc.optional<LD>())
 	{

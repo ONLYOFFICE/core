@@ -578,9 +578,7 @@ int SS::serialize2(std::wostream & _stream, int series_type)
 			}
 		}
 		
-		if (m_isAutoLine == false && (	series_type == CHART_TYPE_Line	|| 
-										series_type == CHART_TYPE_Radar/* || 
-										series_type == CHART_TYPE_Scatter*/))
+		if (m_LineFormat && (series_type == CHART_TYPE_Line || series_type == CHART_TYPE_Radar))
 		{
 			if (series_format)
 			{

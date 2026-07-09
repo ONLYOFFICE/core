@@ -519,6 +519,7 @@ namespace PdfWriter
 		m_eGrMode   = grmode_PAGE;
 		m_pGrState  = new CGrState(NULL);
 
+		m_pContents         = NULL;
 		m_pFont             = NULL;
 		m_pShadings         = NULL;
 		m_unShadingsCount   = 0;
@@ -1718,10 +1719,16 @@ namespace PdfWriter
 		m_pStream->WriteEscapeName(sName.c_str());
 		m_pStream->WriteStr(" BMC\012");
 	}
-	void CPage::BeginMarkedContentDict(const std::string& sName, CDictObject* pBDC)
+	void CPage::BeginMarkedContentDict(const std::string& sName, CObjectBase* pBDC)
 	{
 		// Operator   : BDC
-		// Description: Begin marked content with dict
+		// Description: Begin marked content with args
+
+		if (!pBDC)
+		{
+			BeginMarkedContent(sName);
+			return;
+		}
 
 		m_pStream->WriteEscapeName(sName.c_str());
 		m_pStream->WriteChar(' ');

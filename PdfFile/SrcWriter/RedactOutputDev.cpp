@@ -1044,6 +1044,30 @@ void RedactOutputDev::drawChar(GfxState *pGState, double dX, double dY, double d
 	m_pRenderer->put_FontSize(dOldSize);
 }
 //----- additional
+GBool RedactOutputDev::beginMarkedContent(GfxState *state, Object args[], int numArgs)
+{
+	if (!args[0].isName())
+		return gFalse;
+	if (numArgs >= 2)
+	{
+		CObjectBase* pObj = NULL;
+		if (args[1].isName())
+			pObj = new CNameObject(args[1].getName());
+		else if (args[1].isDict())
+		{
+			SDictConvertContext ctx(m_pDoc, m_pXref, m_mObjManager, m_nStartRefID);
+			pObj = DictToCDictObjectUnified(&args[1], ctx);
+		}
+		m_pPage->BeginMarkedContentDict(args[0].getName(), pObj);
+	}
+	else
+		m_pPage->BeginMarkedContent(args[0].getName());
+	return gTrue;
+}
+void RedactOutputDev::endMarkedContent(GfxState *state)
+{
+	m_pPage->EndMarkedContent();
+}
 GBool RedactOutputDev::useNameOp()
 {
 	return gTrue;

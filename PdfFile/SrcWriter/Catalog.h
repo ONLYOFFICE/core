@@ -58,6 +58,9 @@ namespace PdfWriter
 		CStructureTreeRoot(CXref* pXref);
 
 		void AddAnnot(CDictObject* pAnnot, CDictObject* pPage, StructElemType eType);
+		void RemoveAnnot(CDictObject* pAnnot);
+		void RemoveStructElemCascade(CDictObject* pElem);
+		CDictObject* CreateDestAnchor(CDictObject* pPageDict, int nMCID);
 
 	private:
 		CXref* m_pXref;

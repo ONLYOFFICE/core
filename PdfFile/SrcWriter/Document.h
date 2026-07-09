@@ -99,6 +99,7 @@ namespace PdfWriter
 	class CXObject;
 	class CObjectBase;
 	class CStringObject;
+	class CStructureTreeRoot;
 	//----------------------------------------------------------------------------------------
 	// CDocument
 	//----------------------------------------------------------------------------------------
@@ -223,6 +224,7 @@ namespace PdfWriter
 		CPageTree*        GetPageTree() { return m_pPageTree; }
 		CEncryptDict*     GetEncrypt() { return m_pEncryptDict; }
 		CCatalog*         GetCatalog() { return m_pCatalog; }
+		CStructureTreeRoot* GetStructureTreeRoot();
 		void              AddShapeXML(const std::string& sXML);
 		void              EndShapeXML();
 		void              ClearPage();

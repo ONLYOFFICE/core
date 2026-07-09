@@ -271,16 +271,6 @@ namespace PdfWriter
 		int nKey = m_nParentTreeKey++;
 
 		pAnnot->Add("StructParent", nKey);
-		if (pAnnot->GetDictType() != EDictType::dict_type_ANNOTATION || ((CAnnotation*)pAnnot)->GetAnnotationType() == EAnnotType::AnnotWidget)
-		{
-			if (!pAnnot->Get("TU"))
-				pAnnot->Add("TU", new CStringObject(""));
-		}
-		else
-		{
-			if (!pAnnot->Get("Contents"))
-				pAnnot->Add("Contents", new CStringObject(""));
-		}
 
 		CDictObject* pObjR = new CDictObject();
 		pObjR->Add("Type", "OBJR");

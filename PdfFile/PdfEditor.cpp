@@ -2402,6 +2402,230 @@ void CloseWriteAppend_FinalizeSource(CPdfReader* pReader, const wchar_t* wsPassw
 		oFile.CloseFile();
 	}
 }
+// ─── Remove hidden layers ────────────────────────────────────────────────────
+bool ContainsRef(const std::vector<Ref>& refs, const Ref& ref)
+{
+	for (size_t i = 0; i < refs.size(); ++i)
+		if (refs[i].num == ref.num && refs[i].gen == ref.gen)
+			return true;
+	return false;
+}
+void CollectRefs(Object* pArr, std::vector<Ref>& out)
+{
+	if (!pArr->isArray())
+		return;
+	for (int i = 0; i < pArr->arrayGetLength(); ++i)
+	{
+		CObjectGuard oElem;
+		if (pArr->arrayGetNF(i, oElem.get())->isRef())
+			out.push_back(oElem.get()->getRef());
+	}
+}
+void CollectHiddenOCGRefs(Object* pOCProperties, std::vector<Ref>& hiddenRefs)
+{
+	CObjectGuard oD;
+	if (!pOCProperties->dictLookup("D", oD.get())->isDict())
+		return;
+
+	std::vector<Ref> allRefs, onRefs, offRefs;
+
+	CObjectGuard oOCGs;
+	if (pOCProperties->dictLookup("OCGs", oOCGs.get())->isArray())
+		CollectRefs(oOCGs.get(), allRefs);
+
+	CObjectGuard oOn;
+	if (oD.get()->dictLookupNF("ON", oOn.get())->isArray())
+		CollectRefs(oOn.get(), onRefs);
+
+	CObjectGuard oOff;
+	if (oD.get()->dictLookupNF("OFF", oOff.get())->isArray())
+		CollectRefs(oOff.get(), offRefs);
+
+	for (size_t i = 0; i < offRefs.size(); ++i)
+		if (!ContainsRef(hiddenRefs, offRefs[i]))
+			hiddenRefs.push_back(offRefs[i]);
+
+	CObjectGuard oBaseState;
+	if (oD.get()->dictLookup("BaseState", oBaseState.get())->isName() && !strcmp(oBaseState.get()->getName(), "OFF"))
+	{
+		for (size_t i = 0; i < allRefs.size(); ++i)
+			if (!ContainsRef(onRefs, allRefs[i]) && !ContainsRef(hiddenRefs, allRefs[i]))
+				hiddenRefs.push_back(allRefs[i]);
+	}
+}
+void FilterRefArray(Object* pSrc, const std::vector<Ref>& hiddenRefs, XRef* xref, Object* pDst)
+{
+	pDst->initArray(xref);
+	if (!pSrc->isArray())
+		return;
+	for (int i = 0; i < pSrc->arrayGetLength(); ++i)
+	{
+		CObjectGuard oElem;
+		if (pSrc->arrayGetNF(i, oElem.get())->isRef() && ContainsRef(hiddenRefs, oElem.get()->getRef()))
+			continue;
+		Object oCopy;
+		oElem.get()->copy(&oCopy);
+		pDst->arrayAdd(&oCopy);
+	}
+}
+void FilterOrderArray(Object* pSrc, const std::vector<Ref>& hiddenRefs, XRef* xref, Object* pDst)
+{
+	pDst->initArray(xref);
+	if (!pSrc->isArray())
+		return;
+	for (int i = 0; i < pSrc->arrayGetLength(); ++i)
+	{
+		CObjectGuard oElem;
+		pSrc->arrayGetNF(i, oElem.get());
+
+		if (oElem.get()->isRef())
+		{
+			if (ContainsRef(hiddenRefs, oElem.get()->getRef()))
+				continue;
+			Object oCopy;
+			oElem.get()->copy(&oCopy);
+			pDst->arrayAdd(&oCopy);
+		}
+		else if (oElem.get()->isArray())
+		{
+			Object oNested;
+			FilterOrderArray(oElem.get(), hiddenRefs, xref, &oNested);
+			if (oNested.arrayGetLength() > 0)
+				pDst->arrayAdd(&oNested);
+			else
+				oNested.free();
+		}
+		else
+		{
+			Object oCopy;
+			oElem.get()->copy(&oCopy);
+			pDst->arrayAdd(&oCopy);
+		}
+	}
+}
+void FilterRBGroups(Object* pSrc, const std::vector<Ref>& hiddenRefs, XRef* xref, Object* pDst)
+{
+	pDst->initArray(xref);
+	if (!pSrc->isArray())
+		return;
+	for (int i = 0; i < pSrc->arrayGetLength(); ++i)
+	{
+		CObjectGuard oGroup;
+		if (!pSrc->arrayGet(i, oGroup.get())->isArray())
+			continue;
+
+		Object oFiltered;
+		FilterRefArray(oGroup.get(), hiddenRefs, xref, &oFiltered);
+
+		if (oFiltered.arrayGetLength() > 1)
+			pDst->arrayAdd(&oFiltered);
+		else
+			oFiltered.free();
+	}
+}
+void FilterOCConfig(Object* pSrcConfig, const std::vector<Ref>& hiddenRefs, XRef* xref, Object* pDstConfig)
+{
+	pDstConfig->initDict(xref);
+	if (!pSrcConfig->isDict())
+		return;
+
+	for (int i = 0; i < pSrcConfig->dictGetLength(); ++i)
+	{
+		char* key = pSrcConfig->dictGetKey(i);
+
+		CObjectGuard oSrcVal;
+		pSrcConfig->dictGetValNF(i, oSrcVal.get());
+
+		if (!strcmp(key, "ON") || !strcmp(key, "OFF") || !strcmp(key, "Locked"))
+		{
+			Object oDstArr;
+			FilterRefArray(oSrcVal.get(), hiddenRefs, xref, &oDstArr);
+			pDstConfig->dictAdd(copyString(key), &oDstArr);
+		}
+		else if (!strcmp(key, "Order"))
+		{
+			Object oDstArr;
+			FilterOrderArray(oSrcVal.get(), hiddenRefs, xref, &oDstArr);
+			pDstConfig->dictAdd(copyString(key), &oDstArr);
+		}
+		else if (!strcmp(key, "RBGroups"))
+		{
+			Object oDstArr;
+			FilterRBGroups(oSrcVal.get(), hiddenRefs, xref, &oDstArr);
+			pDstConfig->dictAdd(copyString(key), &oDstArr);
+		}
+		else
+		{
+			// BaseState, Name, Creator, Intent, AS
+			Object oCopy;
+			oSrcVal.get()->copy(&oCopy);
+			pDstConfig->dictAdd(copyString(key), &oCopy);
+		}
+	}
+}
+void RemoveHiddenOCGs(Object* pOCProperties, XRef* xref)
+{
+	if (!pOCProperties->isDict())
+		return;
+
+	std::vector<Ref> hiddenRefs;
+	CollectHiddenOCGRefs(pOCProperties, hiddenRefs);
+	if (hiddenRefs.empty())
+		return;
+
+	Object oNewOCProps;
+	oNewOCProps.initDict(xref);
+
+	for (int i = 0; i < pOCProperties->dictGetLength(); ++i)
+	{
+		char* key = pOCProperties->dictGetKey(i);
+
+		CObjectGuard oSrcVal;
+		pOCProperties->dictGetValNF(i, oSrcVal.get());
+
+		if (!strcmp(key, "OCGs"))
+		{
+			Object oDstArr;
+			FilterRefArray(oSrcVal.get(), hiddenRefs, xref, &oDstArr);
+			oNewOCProps.dictAdd(copyString(key), &oDstArr);
+		}
+		else if (!strcmp(key, "D"))
+		{
+			Object oDstD;
+			FilterOCConfig(oSrcVal.get(), hiddenRefs, xref, &oDstD);
+			oNewOCProps.dictAdd(copyString(key), &oDstD);
+		}
+		else if (!strcmp(key, "Configs"))
+		{
+			Object oDstConfigs;
+			oDstConfigs.initArray(xref);
+
+			if (oSrcVal.get()->isArray())
+			{
+				for (int j = 0; j < oSrcVal.get()->arrayGetLength(); ++j)
+				{
+					CObjectGuard oCfg;
+					oSrcVal.get()->arrayGet(j, oCfg.get());
+
+					Object oDstCfg;
+					FilterOCConfig(oCfg.get(), hiddenRefs, xref, &oDstCfg);
+					oDstConfigs.arrayAdd(&oDstCfg);
+				}
+			}
+			oNewOCProps.dictAdd(copyString(key), &oDstConfigs);
+		}
+		else
+		{
+			Object oCopy;
+			oSrcVal.get()->copy(&oCopy);
+			oNewOCProps.dictAdd(copyString(key), &oCopy);
+		}
+	}
+
+	pOCProperties->free();
+	oNewOCProps.copy(pOCProperties);
+	oNewOCProps.free();
+}
 }
 void CPdfEditor::Close()
 {
@@ -2445,16 +2669,17 @@ void CPdfEditor::Close()
 		m_pReader->GetPageIndex(0, &pPDFDocument, &pFontList, &nStartRefID);
 		CloseWriteNew_ApplyEncryption(m_wsPassword, &m_mObjManager, pPDFDocument, pDoc);
 
+		XRef* xref = pPDFDocument->getXRef();
+		CObjectGuard catDict;
+		xref->getCatalog(catDict.get());
+		SDictConvertContext ctx(pDoc, xref, &m_mObjManager, nStartRefID);
+		PdfWriter::CCatalog* pCatalog = pDoc->GetCatalog();
+
 		if (~m_nRedactInfo & (1 << 1))
 		{
-			XRef* xref = pPDFDocument->getXRef();
-			CObjectGuard catDict;
-			xref->getCatalog(catDict.get());
 			CObjectGuard pNames, oEF, oNames;
 			if (catDict->dictLookup("Names", pNames.get())->isDict() && pNames->dictLookup("EmbeddedFiles", oEF.get())->isDict())
 			{
-				SDictConvertContext ctx(pDoc, xref, &m_mObjManager, nStartRefID);
-				PdfWriter::CCatalog* pCatalog = pDoc->GetCatalog();
 				PdfWriter::CDictObject* pNames = pCatalog->GetNames();
 				pNames->Add("EmbeddedFiles", DictToCDictObjectUnified(oEF.get(), ctx));
 			}
@@ -2478,6 +2703,14 @@ void CPdfEditor::Close()
 		}
 		if (~m_nRedactInfo & (1 << 3))
 			CloseWriteNew_ApplyNameTree(pPDFDocument, pDoc);
+		// Layers, Optional content
+		CObjectGuard oOC;
+		if (catDict->dictLookup("OCProperties", oOC.get())->isDict())
+		{
+			if (m_nRedactInfo & (1 << 7))
+				RemoveHiddenOCGs(oOC.get(), xref);
+			pCatalog->Add("OCProperties", DictToCDictObjectUnified(oOC.get(), ctx));
+		}
 
 		m_pWriter->EditClose();
 		m_pWriter->SaveToFile(m_wsDstFile);

@@ -768,10 +768,15 @@ void CreateOutlines(PDFDoc* pdfDoc, PdfWriter::CDocument* pDoc, OutlineItem* pOu
 			Ref* pPageRef = pdfDoc->getCatalog()->getPageRef(pg);
 			PdfWriter::CObjectBase* pPageD = pDoc->GetEditPage(--pg);
 			PdfWriter::CStructureTreeRoot* pSTR = pDoc->GetStructureTreeRoot();
-			if (pPageD && pPageD->GetType() == PdfWriter::object_type_DICT && pSTR)
+			if (pPageD && pPageD->GetType() == PdfWriter::object_type_DICT)
 			{
-				PdfWriter::CDictObject* pStructAnchor = pSTR->CreateDestAnchor((PdfWriter::CDictObject*)pPageD, ((PdfWriter::CPage*)pPageD)->GetOrCreateDestAnchorMCID());
-				pDest = pDoc->CreateDestination(pStructAnchor, true);
+				if (pSTR)
+				{
+					PdfWriter::CDictObject* pStructAnchor = pSTR->CreateDestAnchor((PdfWriter::CDictObject*)pPageD, ((PdfWriter::CPage*)pPageD)->GetOrCreateDestAnchorMCID());
+					pDest = pDoc->CreateDestination(pStructAnchor, true);
+				}
+				else
+					pDest = pDoc->CreateDestination(pPageD, true);
 			}
 			else if (!pPageD && pPageRef->num > 0)
 			{
@@ -2742,22 +2747,11 @@ bool CPdfEditor::EditPage(int _nPageIndex, bool bSet, bool bActualPos)
 			}
 			else if (strcmp("Contents", chKey) == 0)
 			{
-				if (m_nRedactInfo & (1 << 7))
-				{
-					int nEP = m_nEditPage;
-					m_nEditPage = _nPageIndex;
-					Redact(NULL);
-					m_nEditPage = nEP;
-				}
-				else
-				{
-					pageObj.dictGetValNF(nIndex, &oTemp);
-					ctx.bUndecodedStream = false;
-					PdfWriter::CObjectBase* pBase = DictToCDictObjectUnified(&oTemp, ctx);
-					ctx.bUndecodedStream = true;
-					pPage->Add(chKey, pBase);
-				}
-
+				pageObj.dictGetValNF(nIndex, &oTemp);
+				ctx.bUndecodedStream = false;
+				PdfWriter::CObjectBase* pBase = DictToCDictObjectUnified(&oTemp, ctx);
+				ctx.bUndecodedStream = true;
+				pPage->Add(chKey, pBase);
 				continue;
 			}
 			else
@@ -2799,6 +2793,14 @@ bool CPdfEditor::EditPage(int _nPageIndex, bool bSet, bool bActualPos)
 		}
 		pPage->Fix();
 		pDoc->FixEditPage(pPage);
+
+		if (m_nRedactInfo & (1 << 7))
+		{
+			int nEP = m_nEditPage;
+			m_nEditPage = _nPageIndex;
+			Redact(NULL);
+			m_nEditPage = nEP;
+		}
 
 		if (bSet)
 		{

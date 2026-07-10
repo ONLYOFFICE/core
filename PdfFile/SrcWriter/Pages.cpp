@@ -533,7 +533,7 @@ namespace PdfWriter
         dValue = std::min(std::max(dValue, 1.0), 14400.0);
 		SetMediaBoxValue(2, dValue);
 	}
-	double        CPage::GetWidth()
+	double CPage::GetWidth()
 	{
         TBox oBox = GetMediaBox();
         return oBox.fRight - oBox.fLeft;
@@ -543,7 +543,7 @@ namespace PdfWriter
         dValue = std::min(std::max(dValue, 1.0), 14400.0);
 		SetMediaBoxValue(3, dValue);
 	}
-	double        CPage::GetHeight()
+	double CPage::GetHeight()
 	{
         TBox oBox = GetMediaBox();
         return oBox.fTop - oBox.fBottom;
@@ -571,7 +571,7 @@ namespace PdfWriter
 
 		return oBox;
 	}
-	TBox          CPage::GetMediaBox()
+	TBox CPage::GetMediaBox()
 	{
 		return GetBox("MediaBox");
 	}
@@ -1001,7 +1001,8 @@ namespace PdfWriter
 		m_pStream->WriteStr("q\012");
 		m_pGrState = pState;
 
-		m_pStream->WriteStr("/Artifact <</Type /Layout>> BDC\012");
+		if (m_pDocument->IsPDFUA())
+			m_pStream->WriteStr("/Artifact <</Type /Layout>> BDC\012");
 	}
     void CPage::GrRestore()
 	{
@@ -1016,7 +1017,8 @@ namespace PdfWriter
 		delete m_pGrState;
 		m_pGrState = pPrev;
 
-		m_pStream->WriteStr("EMC\012");
+		if (m_pDocument->IsPDFUA())
+			m_pStream->WriteStr("EMC\012");
 
 		m_pStream->WriteStr("Q\012");
 	}

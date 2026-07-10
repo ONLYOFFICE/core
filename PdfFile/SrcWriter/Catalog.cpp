@@ -75,25 +75,30 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	CCatalog::CCatalog(CXref* pXref)
 	{
-		m_pStructTreeRoot = NULL;
-
 		m_pXref = pXref;
 		pXref->Add(this);
 
 		Add("Type", "Catalog");
 		Add("Pages", new CPageTree(pXref));
 
-		CDictObject* pMarkInfo = new CDictObject();
-		pMarkInfo->Add("Marked", true);
-		Add("MarkInfo", pMarkInfo);
+		if (m_pXref->IsPDFUA() || pXref->IsPDFA())
+		{
+			CDictObject* pMarkInfo = new CDictObject();
+			pMarkInfo->Add("Marked", true);
+			Add("MarkInfo", pMarkInfo);
 
-		m_pStructTreeRoot = new CStructureTreeRoot(pXref);
-		Add("StructTreeRoot", m_pStructTreeRoot);
+			Add("Lang", new CStringObject("en-US"));
+			CDictObject* pVP = new CDictObject();
+			pVP->Add("DisplayDocTitle", true);
+			Add("ViewerPreferences", pVP);
+		}
 
-		Add("Lang", new CStringObject("en-US"));
-		CDictObject* pVP = new CDictObject();
-		pVP->Add("DisplayDocTitle", true);
-		Add("ViewerPreferences", pVP);
+		m_pStructTreeRoot = NULL;
+		if (m_pXref->IsPDFUA())
+		{
+			m_pStructTreeRoot = new CStructureTreeRoot(pXref);
+			Add("StructTreeRoot", m_pStructTreeRoot);
+		}
 
 		if (pXref->IsPDFA())
 		{

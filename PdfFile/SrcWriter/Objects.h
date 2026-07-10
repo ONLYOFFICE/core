@@ -558,7 +558,8 @@ namespace PdfWriter
 		{
 			return m_pTrailer;
 		}
-		bool         IsPDFA() const;
+		bool         IsPDFA()  const;
+		bool         IsPDFUA() const;
 
 	private:
 

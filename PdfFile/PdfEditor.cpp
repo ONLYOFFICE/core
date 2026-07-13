@@ -3027,7 +3027,7 @@ bool CPdfEditor::EditPage(int _nPageIndex, bool bSet, bool bActualPos)
 		pPage->Fix();
 		pDoc->FixEditPage(pPage);
 
-		if (m_nRedactInfo & (1 << 7))
+		if ((m_nRedactInfo & (1 << 7)) || m_nRedactInfo & (1 << 8))
 		{
 			int nEP = m_nEditPage;
 			m_nEditPage = _nPageIndex;
@@ -5084,7 +5084,7 @@ void CPdfEditor::Redact(IAdvancedCommand* _pCommand)
 
 	if (bEditPage)
 	{
-		PdfWriter::RedactOutputDev oRedactOut(m_pWriter, &m_mObjManager, nStartRefID);
+		PdfWriter::RedactOutputDev oRedactOut(m_pWriter, &m_mObjManager, nStartRefID, m_nRedactInfo);
 		oRedactOut.NewPDF(pPDFDocument->getXRef());
 		oRedactOut.SetRedact(arrAllQuads);
 

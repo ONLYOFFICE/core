@@ -50,7 +50,7 @@ namespace PdfWriter
 	class RedactOutputDev : public OutputDev
 	{
 	public:
-		RedactOutputDev(CPdfWriter* pRenderer, CObjectsManager* pObjMng, int nStartRefID);
+		RedactOutputDev(CPdfWriter* pRenderer, CObjectsManager* pObjMng, int nStartRefID, int nRedactInfo);
 		virtual ~RedactOutputDev();
 
 		void SetRedact(const std::vector<double>& arrQuadPoints);
@@ -202,7 +202,7 @@ namespace PdfWriter
 		void UpdateTransform();
 		void AddClip(GfxState* pGState, GfxRedactState* pState, int nIndex);
 		void DoStateOp();
-		void DrawXObject(const char* name);
+		void DrawXObject(const char* name, const double* pCropMatrix = NULL);
 		CObjectBase* CreateImage(Gfx *gfx, int nWidth, int nHeight, unsigned int nFilter, int nBPC, const char* sCS);
 		CResourcesDict* GetResources(Gfx *gfx, CDictObject* pNewForm = NULL);
 
@@ -214,6 +214,7 @@ namespace PdfWriter
 		CPdfWriter* m_pRenderer;
 		CObjectsManager* m_mObjManager;
 		int m_nStartRefID;
+		int m_nRedactInfo;
 		CDocument*  m_pDoc;
 		CPage*      m_pPage;
 		double      m_arrMatrix[6];

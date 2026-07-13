@@ -120,9 +120,13 @@ namespace PdfWriter
 		if (!m_pTrailer)
 			return false;
 
-		m_pMetaData = new CStreamData(m_pXref);
-		if (!m_pMetaData)
-			return false;
+		m_pMetaData = NULL;
+		if (~m_nRedactInfo & (1 << 8))
+		{
+			m_pMetaData = new CStreamData(m_pXref);
+			if (!m_pMetaData)
+				return false;
+		}
 
 		m_pCatalog = new CCatalog(m_pXref);
 		if (!m_pCatalog)

@@ -120,9 +120,13 @@ namespace PdfWriter
 		if (!m_pTrailer)
 			return false;
 
-		m_pMetaData = new CStreamData(m_pXref);
-		if (!m_pMetaData)
-			return false;
+		m_pMetaData = NULL;
+		if (~m_nRedactInfo & (1 << 8))
+		{
+			m_pMetaData = new CStreamData(m_pXref);
+			if (!m_pMetaData)
+				return false;
+		}
 
 		m_pCatalog = new CCatalog(m_pXref);
 		if (!m_pCatalog)
@@ -281,10 +285,12 @@ namespace PdfWriter
 			m_pCatalog->AddMetadata(m_pXref, m_pInfo, sAltTitle);
 
 		// Write header
+		if (IsPDFUA())
+			pStream->WriteStr(c_sPdfUAHeader);
 		if (IsPDFA())
 			pStream->WriteStr(c_sPdfAHeader);
 		else
-			pStream->WriteStr(c_sPdfUAHeader);
+			pStream->WriteStr(c_sPdfHeader);
 		pStream->WriteStr("\015%\315\312\322\251\015");
 		
 		if (false == m_wsDocumentID.empty())
@@ -521,6 +527,10 @@ namespace PdfWriter
 	{
 		m_bPDFAConformance = isPDFA;		
 	}
+	void CDocument::SetPDFUAConformanceMode(bool isPDFUA)
+	{
+		m_bPDFUAConformance = isPDFUA;
+	}
 	void CDocument::SetRedactInfo(int nFlag)
 	{
 		m_nRedactInfo = nFlag;
@@ -528,6 +538,10 @@ namespace PdfWriter
 	bool CDocument::IsPDFA() const
 	{
 		return m_bPDFAConformance;
+	}
+	bool CDocument::IsPDFUA() const
+	{
+		return m_bPDFUAConformance;
 	}
     void CDocument::AddPageLabel(EPageNumStyle eStyle, unsigned int unFirstPage, const char* sPrefix)
 	{

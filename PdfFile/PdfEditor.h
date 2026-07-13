@@ -72,6 +72,43 @@ private:
 	std::map<int, CObjectInfo> m_mUniqueRef; // map of unique objects
 };
 
+enum EDictConvertFlags
+{
+	eDCF_None            = 0,
+	eDCF_ResolveRefs     = 1 << 0, // dereference objRef via xref
+	eDCF_HandleStreams   = 1 << 1, // process objStream
+	eDCF_HandleResources = 1 << 2, // special handling for Resources
+	eDCF_HandleAnnots    = 1 << 3, // CreateAnnot / CreateExtGState
+	eDCF_RegisterObjs    = 1 << 4, // register in pDoc + pManager
+
+	// Combinations
+	eDCF_Simple = eDCF_None,
+	eDCF_Full   = eDCF_ResolveRefs | eDCF_HandleStreams | eDCF_HandleResources | eDCF_HandleAnnots | eDCF_RegisterObjs
+};
+struct SDictConvertContext
+{
+	PdfWriter::CDocument* pDoc         = NULL;
+	XRef*                 xref         = NULL;
+	CObjectsManager*      pManager     = NULL;
+	int                   nStartRefID  = 0;
+	int                   nAddObjToXRef = 0;
+	bool                  bUndecodedStream = true;
+	bool                  bMakeBinary  = false;
+	int                   nFlags       = EDictConvertFlags::eDCF_Simple;
+
+	SDictConvertContext() {}
+	SDictConvertContext(PdfWriter::CDocument* _pDoc, XRef* _xref, CObjectsManager* _pManager, int _nStartRefID)
+	{
+		pDoc        = _pDoc;
+		xref        = _xref;
+		pManager    = _pManager;
+		nStartRefID = _nStartRefID;
+		nFlags      = EDictConvertFlags::eDCF_Full;
+	}
+	bool Has(EDictConvertFlags f) const { return (nFlags & f) != 0; }
+};
+PdfWriter::CObjectBase* DictToCDictObjectUnified(Object* obj, SDictConvertContext ctx, PdfWriter::CObjectBase* pParent = NULL, const std::string& sKey = "");
+
 class CPdfEditor
 {
 public:

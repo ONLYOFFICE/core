@@ -187,7 +187,7 @@ public:
   virtual void endActualText(GfxState *state) {}
 
   //----- additional
-  virtual GBool beginMarkedContent(GfxState *state, GString *s) { return gFalse; }
+  virtual GBool beginMarkedContent(GfxState *state, Object args[], int numArgs) { return gFalse; }
   virtual GBool beginMCOShapes(GfxState *state, GString *s, Object *ref) { return gFalse; }
   virtual void endMarkedContent(GfxState *state) {}
   virtual GBool useNameOp() { return gFalse; }

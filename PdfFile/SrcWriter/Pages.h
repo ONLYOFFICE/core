@@ -165,7 +165,7 @@ namespace PdfWriter
 		void      SetStrokeAlpha(unsigned char unAlpha);
 		void      SetFillAlpha(unsigned char unAlpha);
 		void      BeginMarkedContent(const std::string& sName);
-		void      BeginMarkedContentDict(const std::string& sName, CDictObject* pBDC);
+		void      BeginMarkedContentDict(const std::string& sName, CObjectBase* pBDC);
 		void      EndMarkedContent();
 		void      SetRenderingIntent(ERenderingIntent eRenderingIntent);
 

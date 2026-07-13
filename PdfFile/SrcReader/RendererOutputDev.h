@@ -188,7 +188,7 @@ namespace PdfReader
 		GBool beginType3Char(GfxState *state, double x, double y, double dx, double dy, CharCode code, Unicode *u, int uLen) override;
 		void endType3Char(GfxState *pGState) override;
 		//----- Additional functions
-		virtual GBool beginMarkedContent(GfxState *state, GString *s) override;
+		virtual GBool beginMarkedContent(GfxState *state, Object args[], int numArgs) override;
 		virtual GBool beginMCOShapes(GfxState *state, GString *s, Object *ref) override;
 		virtual void endMarkedContent(GfxState *state) override;
 		//----- Image output

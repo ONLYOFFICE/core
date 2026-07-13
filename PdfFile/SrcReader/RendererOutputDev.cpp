@@ -1574,7 +1574,7 @@ namespace PdfReader
 	{
 		return;
 	}
-	GBool RendererOutputDev::beginMarkedContent(GfxState* state, GString* s)
+	GBool RendererOutputDev::beginMarkedContent(GfxState* state, Object args[], int numArgs)
 	{
 		return gFalse;
 	}

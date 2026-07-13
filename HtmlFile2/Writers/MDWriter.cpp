@@ -350,6 +350,8 @@ void CMDWriter::WriteBreakLine(bool bNeedChecked)
 	{
 		if (m_oMDParametrs.m_bUseAlternativeHTMLTags)
 			WriteString(L"</br>");
+		else
+			WriteString(L" ");
 
 		m_arStates.top().m_bNeedBreakLine = false;
 		return;

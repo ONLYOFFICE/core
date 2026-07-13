@@ -324,7 +324,7 @@ void CTextObject::Draw(IRenderer* pRenderer, const CCommonData& oCommonData, EPa
 		}
 		else
 		{
-			pRenderer->put_BrushColor1(0);
+			pRenderer->put_BrushColor1(BLACK_COLOR_INT);
 
 			if (EPageType::TemplatePage == ePageType)
 				for (const CDrawParam* pDrawParam : arDrawParams)

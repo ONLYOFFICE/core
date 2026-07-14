@@ -125,6 +125,10 @@ void oox_chart::oox_serialize_common(std::wostream & _Wostream)
 			}
 			series_[i]->oox_serialize(_Wostream);
 		}
+		if (false == data_labels_.get_general_dLbls_status())
+		{
+			data_labels_.oox_serialize(_Wostream);
+		}
 		for (size_t i = 0; i < axisId_.size(); i++)
 		{
 			CP_XML_NODE(L"c:axId")
@@ -132,10 +136,6 @@ void oox_chart::oox_serialize_common(std::wostream & _Wostream)
 				CP_XML_ATTR(L"val", axisId_[i]);
 			}
 		}	
-		if( false == data_labels_.get_general_dLbls_status() )
-		{
-			data_labels_.oox_serialize(_Wostream);
-		}
 	}
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -1000,11 +1000,7 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context& Context)
 		}		
 		
 		size_t	xfId_last_set = 0;
-		if (is_style_visible)
-		{
-			xfId_last_set = Context.get_style_manager().xfId(textFormatProperties, &parFormatProperties, &cellFormatProperties,
-				&cellFormat, num_format, num_format_type, false, is_style_visible);
-		}
+
 //-------------------------------------------------------------------------------------------------------------------------------
 		std::wstring data_style = CalcCellDataStyle(Context, columnStyleName, rowStyleName, cellStyleName);
 
@@ -1038,6 +1034,12 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context& Context)
 			}
 		}
 		
+		if (is_style_visible)
+		{
+			xfId_last_set = Context.get_style_manager().xfId(textFormatProperties, &parFormatProperties, &cellFormatProperties,
+				&cellFormat, num_format, num_format_type, false, is_style_visible);
+		}
+
 		if (count_paragraph > 1)
 		{
 			is_style_visible = true;

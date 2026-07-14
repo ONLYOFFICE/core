@@ -633,23 +633,26 @@ void docx_serialize_wps(std::wostream & strm, _docx_drawing & val, oox::docx_con
 						{
 							switch (val.styleHorizontalPos->get_type())
 							{
-							case odf_types::horizontal_pos::Left:
-							case odf_types::horizontal_pos::FromLeft:
-							{
-								CP_XML_NODE(L"wp:align") { CP_XML_STREAM() << L"left"; }
-							}break;
+								case odf_types::horizontal_pos::Left:
+								{
+									CP_XML_NODE(L"wp:align") { CP_XML_STREAM() << L"left"; }
+								}break;
 
-							case odf_types::horizontal_pos::Right:
-							{
-								CP_XML_NODE(L"wp:align") { CP_XML_STREAM() << L"right"; }
-							}break;
-							case odf_types::horizontal_pos::Center:
-							case odf_types::horizontal_pos::Inside:
-							case odf_types::horizontal_pos::Outside:
-							default:
-							{
-								CP_XML_NODE(L"wp:align") { CP_XML_STREAM() << L"center"; }
-							}break;
+								case odf_types::horizontal_pos::Right:
+								{
+									CP_XML_NODE(L"wp:align") { CP_XML_STREAM() << L"right"; }
+								}break;
+								case odf_types::horizontal_pos::FromLeft:
+								{
+									CP_XML_NODE(L"wp:posOffset"){CP_XML_STREAM() << (init ? val.posOffsetH : 0);}	
+								}break;
+								case odf_types::horizontal_pos::Center:
+								case odf_types::horizontal_pos::Inside:
+								case odf_types::horizontal_pos::Outside:
+								default:
+								{
+									CP_XML_NODE(L"wp:align") { CP_XML_STREAM() << L"center"; }
+								}break;
 							}
 						}
 						else
@@ -857,11 +860,13 @@ void docx_serialize_wps(std::wostream & strm, _docx_drawing & val)
 							switch (val.styleHorizontalPos->get_type())
 							{
 							case odf_types::horizontal_pos::Left:
-							case odf_types::horizontal_pos::FromLeft:
 							{
 								CP_XML_NODE(L"wp:align") { CP_XML_STREAM() << L"left"; }
 							}break;
-
+							case odf_types::horizontal_pos::FromLeft:
+							{
+								CP_XML_NODE(L"wp:posOffset") { CP_XML_STREAM() << val.posOffsetH; }
+							}break;
 							case odf_types::horizontal_pos::Right:
 							{
 								CP_XML_NODE(L"wp:align") { CP_XML_STREAM() << L"right"; }

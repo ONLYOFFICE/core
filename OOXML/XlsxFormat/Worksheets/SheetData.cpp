@@ -983,7 +983,7 @@ namespace OOX
 		}
 		void CFormula::toXML(NSStringUtils::CStringBuilder& writer) const
 		{
-			writer.WriteString(_T("<f"));
+			writer.WriteString(L"<f");
 			WritingStringNullableAttrString(L"t", m_oT, m_oT->ToString());
 			WritingStringNullableAttrBool(L"aca", m_oAca);
 			WritingStringNullableAttrString(L"ref", m_oRef, m_oRef.get());
@@ -998,13 +998,13 @@ namespace OOX
 			WritingStringNullableAttrBool(L"bx", m_oBx);
 			if(!m_sText.empty())
 			{
-				writer.WriteString(_T(">"));
+				writer.WriteString(L">");
 				writer.WriteEncodeXmlStringHHHH(m_sText);
-				writer.WriteString(_T("</f>"));
+				writer.WriteString(L"</f>");
 			}
 			else
 			{
-				writer.WriteString(_T("/>"));
+				writer.WriteString(L"/>");
 			}
 		}
 		void CFormula::fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream)
@@ -1636,7 +1636,7 @@ namespace OOX
 		}
 		std::wstring CCell::toXML() const
 		{
-			return _T("");
+			return L"";
 		}
         bool CCell::parseRef(std::wstring sRef, int& nRow, int& nCol)
 		{
@@ -1691,7 +1691,7 @@ namespace OOX
 
 			int nBaseRow = (pXlsxFlat)? 0 : 1; // xml/xlsb->xlsx
 
-			writer.WriteString(_T("<c"));
+			writer.WriteString(L"<c");
 			if (m_oRow.IsInit() && m_oCol.IsInit())
 			{
 				int nCol = *m_oCol;
@@ -1720,21 +1720,31 @@ namespace OOX
 			WritingStringNullableAttrBool(L"ph", m_oShowPhonetic);
 			if(m_oFormula.IsInit() || m_oRichText.IsInit() || m_oValue.IsInit())
 			{
-				writer.WriteString(_T(">"));
+				writer.WriteString(L">");
 				if(m_oFormula.IsInit())
 					m_oFormula->toXML(writer);
-				if(m_oRichText.IsInit())
+				if(m_oRichText.IsInit() || (m_oType.IsInit() && SimpleTypes::Spreadsheet::celltypeInlineStr == m_oType->GetValue()))
 				{
-					writer.WriteString(_T("<is>"));
-					m_oRichText->toXML2(writer);
-					writer.WriteString(_T("</is>"));
+					writer.WriteString(L"<is>");
+					if (m_oRichText.IsInit())
+					{
+						m_oRichText->toXML2(writer);
+					}
+					else if (m_oValue.IsInit())
+					{
+						m_oValue->toXML2(writer, L"t");
+					}
+					writer.WriteString(L"</is>");
 				}
-				if(m_oValue.IsInit())
-					m_oValue->toXML2(writer, _T("v"));
-				writer.WriteString(_T("</c>"));
+				else
+				{
+					if (m_oValue.IsInit())
+						m_oValue->toXML2(writer, L"v");
+				}
+				writer.WriteString(L"</c>");
 			}
 			else
-				writer.WriteString(_T("/>"));
+				writer.WriteString(L"/>");
 		}
 		void CCell::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
@@ -2128,9 +2138,9 @@ namespace OOX
 						oOnOff.FromString(sVal.c_str());
 						m_oValue.Init();
 						if (oOnOff.ToBool())
-							m_oValue->m_sText = _T("1");
+							m_oValue->m_sText = L"1";
 						else
-							m_oValue->m_sText = _T("0");
+							m_oValue->m_sText = L"0";
 					}
 				}
 			}
@@ -4112,7 +4122,7 @@ namespace OOX
 		}
 		std::wstring CRow::toXML() const
 		{
-			return _T("");
+			return L"";
 		}
 		void CRow::toXML(NSStringUtils::CStringBuilder& writer) const
 		{
@@ -4148,7 +4158,7 @@ namespace OOX
 		}
 		void CRow::toXMLStart(NSStringUtils::CStringBuilder& writer) const
 		{
-			writer.WriteString(_T("<row"));
+			writer.WriteString(L"<row");
 				WritingStringNullableAttrInt(L"r", m_oR, m_oR->GetValue());
 				WritingStringNullableAttrInt(L"s", m_oS, m_oS->GetValue());
 				WritingStringNullableAttrBool(L"customFormat", m_oCustomFormat);
@@ -4160,11 +4170,11 @@ namespace OOX
 				WritingStringNullableAttrBool(L"thickTop", m_oThickTop);
 				WritingStringNullableAttrBool(L"thickBot", m_oThickBot);
 				WritingStringNullableAttrBool(L"ph", m_oPh);
-			writer.WriteString(_T(">"));
+			writer.WriteString(L">");
 		}
 		void CRow::toXMLEnd(NSStringUtils::CStringBuilder& writer) const
 		{
-			writer.WriteString(_T("</row>"));
+			writer.WriteString(L"</row>");
 		}
 		void CRow::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
@@ -4797,7 +4807,7 @@ namespace OOX
 		}
 		std::wstring CSheetData::toXML() const
 		{
-			return _T("");
+			return L"";
 		}
 		void CSheetData::toXML(NSStringUtils::CStringBuilder& writer) const
 		{
@@ -4835,11 +4845,11 @@ namespace OOX
 		}
 		void CSheetData::toXMLStart(NSStringUtils::CStringBuilder& writer) const
 		{
-			writer.WriteString(_T("<sheetData>"));
+			writer.WriteString(L"<sheetData>");
 		}
 		void CSheetData::toXMLEnd(NSStringUtils::CStringBuilder& writer) const
 		{
-			writer.WriteString(_T("</sheetData>"));
+			writer.WriteString(L"</sheetData>");
 		}
         void CSheetData::AddRowToCache(CRow &row)
         {

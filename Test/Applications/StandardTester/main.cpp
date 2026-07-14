@@ -149,6 +149,7 @@ public:
 
 	std::wstring m_sInputFolder;
 	std::wstring m_sOutputFolder;
+	std::wstring m_sMasterFolder;
 
 	std::wstring m_sConvertParams;
 
@@ -659,9 +660,11 @@ public:
 		std::wstring input_file = m_file;
 		NSStringUtils::string_replace(input_file, L"\\", L"/");
 
-		std::wstring output_dir = isStandart ? (m_input_dir + L"/../out/master") : (m_output_dir + L"/");
-		if (isStandart && m_pInternal->m_bDouble)
-			output_dir += L"/DOUBLE";
+		std::wstring master_dir = m_pInternal->m_sMasterFolder.empty()
+				? (m_input_dir + L"/../out/master")
+				: m_pInternal->m_sMasterFolder;
+
+		std::wstring output_dir = isStandart ? master_dir : (m_output_dir + L"/");
 		if (!sFolderAddon.empty())
 			output_dir += (sFolderAddon + L"/");
 
@@ -953,6 +956,7 @@ std::wstring CorrectDir(const std::wstring& sDir)
  *
  * --input="input-standard-files-dir"
  * --output="output-dir"
+ * --master-dir="" // directory with standards to compare against (default: input/../out/master)
  * --standard // generate standarts
  * --report-append // append to the report instead of overwriting it
  * --use-system-fonts="0/1/false/true"
@@ -975,6 +979,7 @@ int main(int argc, char** argv)
 	std::wstring strDoubleConfig = L"config_double.xml";
 	std::wstring strInputFolder = L"";
 	std::wstring strOutputFolder = L"";
+	std::wstring strMasterFolder = L"";
 	bool bIsUseSystemFonts = true;
 	int nCores = 1;
 	std::wstring strAdditionalParams;
@@ -1011,6 +1016,10 @@ int main(int argc, char** argv)
 			else if (sKey == L"--output")
 			{
 				strOutputFolder = CorrectDir(sValue);
+			}
+			else if (sKey == L"--master-dir")
+			{
+				strMasterFolder = CorrectDir(sValue);
 			}
 			else if (sKey == L"--standard")
 			{
@@ -1120,6 +1129,7 @@ int main(int argc, char** argv)
 
 	oWorker.OpenDir(strInputFolder);
 	oWorker.m_sOutputFolder = strOutputFolder;
+	oWorker.m_sMasterFolder = strMasterFolder;
 	oWorker.m_bIsStandard = bIsStandard;
 	oWorker.m_sConvertParams = strAdditionalParams;
 

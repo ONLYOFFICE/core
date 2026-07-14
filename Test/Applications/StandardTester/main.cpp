@@ -87,31 +87,6 @@ std::wstring ToLower(const std::wstring& s)
 	return sResult;
 }
 
-std::vector<std::wstring> ParseExtsList(const std::wstring& sExts)
-{
-	std::vector<std::wstring> arResult;
-	std::wstring sCur;
-	for (wchar_t c : sExts)
-	{
-		if (c == L',' || c == L' ' || c == L';' || c == L'\t' || c == L'\r' || c == L'\n')
-		{
-			if (!sCur.empty())
-			{
-				arResult.push_back(sCur);
-				sCur.clear();
-			}
-		}
-		else
-		{
-			c = std::tolower(c);
-			sCur += c;
-		}
-	}
-	if (!sCur.empty())
-		arResult.push_back(sCur);
-	return arResult;
-}
-
 int RunConvert(const std::wstring& sFileFrom, const std::wstring& sFileTo, int nFormatTo,
 			   const std::wstring& sConverterDir, const std::wstring& sFontsDir,
 			   const std::wstring& sTempParamsFile, const std::wstring& sExtraParams = L"")
@@ -182,8 +157,7 @@ public:
 	bool m_bDiffOnly{false};
 
 	bool m_bDouble{false};
-	std::vector<std::wstring> m_doubleInputExts;
-	std::wstring m_doubleTroughExt;
+	std::vector<std::wstring> m_doubleFiles;
 
 	NSCriticalSection::CRITICAL_SECTION m_oCS;
 	NSCriticalSection::CRITICAL_SECTION m_oCS_OfficeUtils;
@@ -257,7 +231,8 @@ public:
 
 			if (m_bDouble)
 			{
-				if (std::find(m_doubleInputExts.begin(), m_doubleInputExts.end(), ToLower(sExt)) != m_doubleInputExts.end())
+				std::wstring sFileName = NSFile::GetFileName(*iter);
+				if (std::find(m_doubleFiles.begin(), m_doubleFiles.end(), sFileName) != m_doubleFiles.end())
 					m_files.push_back(*iter);
 				continue;
 			}
@@ -283,18 +258,8 @@ public:
 			for (size_t i = 0; i < arNodes.size(); ++i)
 			{
 				XmlUtils::CXmlNode& oNode = arNodes[i];
-				std::wstring sName = oNode.GetName();
-
-				if (sName == L"input" && !oNode.GetText().empty())
-				{
-					m_doubleInputExts = ParseExtsList(oNode.GetText());
-				}
-				else if (sName == L"trough" && !oNode.GetText().empty())
-				{
-					std::vector<std::wstring> arTrough = ParseExtsList(oNode.GetText());
-					if (!arTrough.empty())
-						m_doubleTroughExt = arTrough[0];
-				}
+				if (oNode.GetName() == L"file" && !oNode.GetText().empty())
+					m_doubleFiles.push_back(oNode.GetText());
 			}
 		}
 		else
@@ -716,8 +681,28 @@ public:
 		if (NSDirectory::Exists(sProcess + L"/converter"))
 			sConverterDir += L"/converter";
 
+		int nTroughFormat = 0;
+		std::wstring sTroughExt;
+		if (m_format & AVS_OFFICESTUDIO_FILE_DOCUMENT)
+		{
+			nTroughFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX;
+			sTroughExt = L"docx";
+		}
+		else if (m_format & AVS_OFFICESTUDIO_FILE_PRESENTATION)
+		{
+			nTroughFormat = AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX;
+			sTroughExt = L"pptx";
+		}
+		else if (m_format & AVS_OFFICESTUDIO_FILE_SPREADSHEET)
+		{
+			nTroughFormat = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX;
+			sTroughExt = L"xlsx";
+		}
+		else
+			return -1;
+
 		std::wstring sOrigExt = ToLower(NSFile::GetFileExtention(m_file));
-		std::wstring sTroughExt = m_pInternal->m_doubleTroughExt;
+		int nBackFormat = m_format;
 
 		std::wstring sBaseDir = m_folder_dst;
 		NSStringUtils::string_replace(sBaseDir, L"\\", L"/");
@@ -728,12 +713,6 @@ public:
 
 		std::wstring sTroughFile = sBaseDir + L"/" + sNameNoExt + L"_through." + sTroughExt;
 		std::wstring sBackFile   = sBaseDir + L"/" + sNameNoExt + L"_double." + sOrigExt;
-
-		int nTroughFormat = COfficeFileFormatChecker::GetFormatByExtension(L"." + sTroughExt);
-		int nBackFormat   = COfficeFileFormatChecker::GetFormatByExtension(L"." + sOrigExt);
-
-		if (0 == nTroughFormat || 0 == nBackFormat)
-			return -1;
 
 		std::wstring sFileFrom = m_file;
 		NSStringUtils::string_replace(sFileFrom, L"\\", L"/");
@@ -791,17 +770,12 @@ public:
 		std::wstring sRenderFile = m_file;
 		if (m_pInternal->m_bDouble)
 		{
-			std::wstring sExt = ToLower(NSFile::GetFileExtention(m_file));
-			if (std::find(m_pInternal->m_doubleInputExts.begin(), m_pInternal->m_doubleInputExts.end(), sExt)
-					!= m_pInternal->m_doubleInputExts.end())
+			int nDoubleCode = DoDoubleConversion(sRenderFile);
+			if (0 != nDoubleCode)
 			{
-				int nDoubleCode = DoDoubleConversion(sRenderFile);
-				if (0 != nDoubleCode)
-				{
-					m_bRunThread = FALSE;
-					m_pInternal->OnConvertFile(this, nDoubleCode, 0, 0);
-					return 0;
-				}
+				m_bRunThread = FALSE;
+				m_pInternal->OnConvertFile(this, nDoubleCode, 0, 0);
+				return 0;
 			}
 		}
 

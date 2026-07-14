@@ -64,13 +64,18 @@ namespace DocFileFormat
 		//read the 512 bytes (FKP)
 		unsigned char* bytes = NULL;
 		bytes = new unsigned char[512];
+		memset(bytes, 512, 0);
 
 		WordStream->seek(offset);
 		WordStream->read(bytes, 512);
 
 		//get the count
 		crun = bytes[511];
-
+		if (crun < 1)
+		{
+			RELEASEARRAYOBJECTS(bytes);
+			return;
+		}
 		//create and fill the array with the adresses
 		rgfcSize = crun + 1;
 		rgfc = new int[rgfcSize];
@@ -101,7 +106,7 @@ namespace DocFileFormat
 			bx.wordOffset = bytes[j];
 			j++;
 
-			if (fComplex || nWordVersion == 0)
+			if (/*fComplex ||*/ nWordVersion == 0)
 			{
 				memcpy(phe, (bytes + j), 12);
 
@@ -182,7 +187,7 @@ namespace DocFileFormat
 
 		//there are n offsets and n-1 fkp's in the bin table
 
-		if (fib->m_nWordVersion > 0 && fib->m_FibBase.fComplex == false)
+		if (fib->m_nWordVersion > 0/* && fib->m_FibBase.fComplex == false*/)
 		{
 			int	n = (((int)fib->m_FibWord97.lcbPlcfBtePapx - 8) / 6) + 1;
 
@@ -228,7 +233,6 @@ namespace DocFileFormat
 				//so starts at:
 				int offset = fkpnr * 512;
 
-				//parse the FKP and add it to the list
 				PAPXlist->push_back(new FormattedDiskPagePAPX(wordStream, offset, dataStream, fib->m_nWordVersion, fib->m_FibBase.fComplex));
 			}
 

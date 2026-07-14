@@ -2168,9 +2168,10 @@ void CloseWriteNew_FlushAnnotations(CPdfReader* pReader, CObjectsManager* mObjMa
 			if (!oInfo.IsWidget())
 				continue;
 
-			PdfWriter::CPage* pPage = pDoc->GetEditPage(oInfo.GetPage());
+			int nPage = oInfo.GetPage(); // actual page number
+			PdfWriter::CPage* pPage = pDoc->GetPage(nPage);
 			if (!pPage)
-				pPage = pDoc->GetPage(oInfo.GetPage());
+				pPage = pDoc->GetEditPage(nPage);
 			if (!pPage)
 				continue;
 
@@ -4756,15 +4757,15 @@ bool CPdfEditor::EditWidgets(IAdvancedCommand* pCommand)
 			if (!oInfo.IsWidget())
 				continue;
 
-			int nPage = oInfo.GetPage();
-			PdfWriter::CPage* pPage = pDoc->GetEditPage(nPage);
+			int nPage = oInfo.GetPage(); // actual page number
+			PdfWriter::CPage* pPage = pDoc->GetPage(nPage);
 			if (!pPage)
 			{
-				EditPage(nPage, false);
-				pPage = pDoc->GetEditPage(nPage);
+				EditPage(nPage, false, true);
+				pPage = pDoc->GetPage(nPage);
 			}
 			if (!pPage)
-				pPage = pDoc->GetPage(nPage);
+				pPage = pDoc->GetEditPage(nPage);
 			if (!pPage)
 				continue;
 

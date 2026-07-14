@@ -660,6 +660,8 @@ public:
 		NSStringUtils::string_replace(input_file, L"\\", L"/");
 
 		std::wstring output_dir = isStandart ? (m_input_dir + L"/../out/master") : (m_output_dir + L"/");
+		if (isStandart && m_pInternal->m_bDouble)
+			output_dir += L"/DOUBLE";
 		if (!sFolderAddon.empty())
 			output_dir += (sFolderAddon + L"/");
 

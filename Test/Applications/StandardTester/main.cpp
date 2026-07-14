@@ -332,9 +332,9 @@ public:
 		return sFile;
 	}
 
-	void WriteReport(const std::wstring& sLogFile, int nTime)
+	void WriteReport(const std::wstring& sLogFile, int nTime, bool bAppend = false)
 	{
-		if (NSFile::CFileBinary::Exists(sLogFile))
+		if (!bAppend && NSFile::CFileBinary::Exists(sLogFile))
 			NSFile::CFileBinary::Remove(sLogFile);
 
 		std::wstring sLogContent;
@@ -398,6 +398,13 @@ public:
 		sLogContent += L"TIME: ";
 		sLogContent += std::to_wstring(nTime);
 		sLogContent += L"\n";
+
+		if (bAppend)
+		{
+			std::wstring sExisting;
+			if (NSFile::CFileBinary::Exists(sLogFile) && NSFile::CFileBinary::ReadAllTextUtf8(sLogFile, sExisting) && !sExisting.empty())
+				sLogContent = sExisting + L"\n\n==================================================\n\n" + sLogContent;
+		}
 
 		NSFile::CFileBinary::SaveToFile(sLogFile, sLogContent, true);
 	}
@@ -945,6 +952,7 @@ std::wstring CorrectDir(const std::wstring& sDir)
  * --input="input-standard-files-dir"
  * --output="output-dir"
  * --standard // generate standarts
+ * --report-append // append to the report instead of overwriting it
  * --use-system-fonts="0/1/false/true"
  * --font-dirs="C:\\Windows\\Fonts;/usr/share/fonts;"
  * --cores=4
@@ -961,6 +969,7 @@ int main(int argc, char** argv)
 	bool bIsStandard = false;
 	bool bDiffOnly = false;
 	bool bDouble = false;
+	bool bReportAppend = false;
 	std::wstring strDoubleConfig = L"config_double.xml";
 	std::wstring strInputFolder = L"";
 	std::wstring strOutputFolder = L"";
@@ -1014,6 +1023,10 @@ int main(int argc, char** argv)
 				bDouble = true;
 				if (!sValue.empty())
 					strDoubleConfig = CorrectDir(sValue);
+			}
+			else if (sKey == L"--report-append")
+			{
+				bReportAppend = true;
 			}
 			else if (sKey == L"--use-system-fonts")
 			{
@@ -1120,7 +1133,7 @@ int main(int argc, char** argv)
 	DWORD dwTimeDelta = (dwTime2 - dwTime1) / 1000;
 	std::cout << std::endl << "time: " << dwTimeDelta << std::endl;
 
-	oWorker.WriteReport(NSFile::GetProcessDirectory() + L"/../report.txt", (int)(dwTime2 - dwTime1));
+	oWorker.WriteReport(NSFile::GetProcessDirectory() + L"/../report.txt", (int)(dwTime2 - dwTime1), bReportAppend);
 
 #ifdef _WIN32
 	SetConsoleOutputCP(currConsoleCP);

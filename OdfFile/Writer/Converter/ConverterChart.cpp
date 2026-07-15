@@ -115,6 +115,46 @@ void OoxConverter::convert_chart_text(PPTX::Logic::BodyPr *oox_bodyPr)
 	}
 }
 
+template<typename T>
+static void append_chart_series(const std::vector<T*> & from, std::vector<OOX::Spreadsheet::CBaseSer*> & to, bool only_first = false)
+{
+	for (size_t i = 0; i < from.size(); i++)
+	{
+		if (from[i] && from[i]->m_tx && from[i]->m_tx->m_strRef)
+			to.push_back(from[i]);
+
+		if (only_first) break;
+	}
+}
+static void get_chart_named_series(OOX::Spreadsheet::CT_PlotArea *ct_plotArea, std::vector<OOX::Spreadsheet::CBaseSer*> & series)
+{
+	if (ct_plotArea == NULL) return;
+
+	for (size_t i = 0; i < ct_plotArea->m_Items.size(); i++)
+	{
+		if (!ct_plotArea->m_ItemsElementName0[i]) continue;
+		switch (*ct_plotArea->m_ItemsElementName0[i])
+		{
+		case OOX::Spreadsheet::itemschoicetype5AREA3DCHART:		append_chart_series(((OOX::Spreadsheet::CT_Area3DChart*)ct_plotArea->m_Items[i])->m_ser, series); break;
+		case OOX::Spreadsheet::itemschoicetype5AREACHART:		append_chart_series(((OOX::Spreadsheet::CT_AreaChart*)ct_plotArea->m_Items[i])->m_ser, series); break;
+		case OOX::Spreadsheet::itemschoicetype5BAR3DCHART:		append_chart_series(((OOX::Spreadsheet::CT_Bar3DChart*)ct_plotArea->m_Items[i])->m_ser, series); break;
+		case OOX::Spreadsheet::itemschoicetype5BARCHART:		append_chart_series(((OOX::Spreadsheet::CT_BarChart*)ct_plotArea->m_Items[i])->m_ser, series); break;
+		case OOX::Spreadsheet::itemschoicetype5BUBBLECHART:		append_chart_series(((OOX::Spreadsheet::CT_BubbleChart*)ct_plotArea->m_Items[i])->m_ser, series); break;
+		case OOX::Spreadsheet::itemschoicetype5DOUGHNUTCHART:	append_chart_series(((OOX::Spreadsheet::CT_DoughnutChart*)ct_plotArea->m_Items[i])->m_ser, series); break;
+		case OOX::Spreadsheet::itemschoicetype5LINE3DCHART:		append_chart_series(((OOX::Spreadsheet::CT_Line3DChart*)ct_plotArea->m_Items[i])->m_ser, series); break;
+		case OOX::Spreadsheet::itemschoicetype5LINECHART:		append_chart_series(((OOX::Spreadsheet::CT_LineChart*)ct_plotArea->m_Items[i])->m_ser, series); break;
+		case OOX::Spreadsheet::itemschoicetype5OFPIECHART:		append_chart_series(((OOX::Spreadsheet::CT_OfPieChart*)ct_plotArea->m_Items[i])->m_ser, series, true); break;
+		case OOX::Spreadsheet::itemschoicetype5PIE3DCHART:		append_chart_series(((OOX::Spreadsheet::CT_Pie3DChart*)ct_plotArea->m_Items[i])->m_ser, series, true); break;
+		case OOX::Spreadsheet::itemschoicetype5PIECHART:		append_chart_series(((OOX::Spreadsheet::CT_PieChart*)ct_plotArea->m_Items[i])->m_ser, series, true); break;
+		case OOX::Spreadsheet::itemschoicetype5RADARCHART:		append_chart_series(((OOX::Spreadsheet::CT_RadarChart*)ct_plotArea->m_Items[i])->m_ser, series); break;
+		case OOX::Spreadsheet::itemschoicetype5SCATTERCHART:	append_chart_series(((OOX::Spreadsheet::CT_ScatterChart*)ct_plotArea->m_Items[i])->m_ser, series); break;
+		case OOX::Spreadsheet::itemschoicetype5STOCKCHART:		append_chart_series(((OOX::Spreadsheet::CT_StockChart*)ct_plotArea->m_Items[i])->m_ser, series); break;
+		case OOX::Spreadsheet::itemschoicetype5SURFACE3DCHART:	append_chart_series(((OOX::Spreadsheet::CT_Surface3DChart*)ct_plotArea->m_Items[i])->m_ser, series); break;
+		case OOX::Spreadsheet::itemschoicetype5SURFACECHART:	append_chart_series(((OOX::Spreadsheet::CT_SurfaceChart*)ct_plotArea->m_Items[i])->m_ser, series); break;
+		}
+	}
+}
+
 void OoxConverter::convert(OOX::Spreadsheet::CT_ChartSpace  *oox_chart)
 {
 	if (!oox_chart)return;
@@ -122,7 +162,20 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_ChartSpace  *oox_chart)
 	convert(oox_chart->m_spPr.GetPointer());	
 	convert_chart_text(oox_chart->m_txPr.GetPointer(), true);
 
-	convert(oox_chart->m_chart->m_title);
+	bool bAutoTitle = !(oox_chart->m_chart->m_autoTitleDeleted.IsInit() ? *oox_chart->m_chart->m_autoTitleDeleted : false);
+	bool bTitleHasText = oox_chart->m_chart->m_title && oox_chart->m_chart->m_title->m_tx;
+
+	OOX::Spreadsheet::CT_SerTx *reserve_title_tx = NULL;
+	if (bAutoTitle && !bTitleHasText)
+	{
+		std::vector<OOX::Spreadsheet::CBaseSer*> series;
+		get_chart_named_series(oox_chart->m_chart->m_plotArea, series);
+
+		if (series.size() == 1)
+			reserve_title_tx = series[0]->m_tx;
+	}
+
+	convert(oox_chart->m_chart->m_title, reserve_title_tx);
 	convert(oox_chart->m_chart->m_legend);
 
 	odf_context()->chart_context()->start_plot_area();
@@ -220,16 +273,28 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_Layout* ct_layout)
 	if (ct_layout->m_manualLayout->m_h.IsInit())	odf_context()->chart_context()->set_layout_h(*ct_layout->m_manualLayout->m_h, m_hMode);
 }
 
-void OoxConverter::convert(OOX::Spreadsheet::CT_Title* ct_title)
+void OoxConverter::convert(OOX::Spreadsheet::CT_Title* ct_title, OOX::Spreadsheet::CT_SerTx* reserve_tx)
 {
-	if (ct_title == NULL)return;
+	if (ct_title == NULL && reserve_tx == NULL) return;
 
 	odf_context()->chart_context()->start_title();
-		convert(ct_title->m_spPr.GetPointer());
-		convert(ct_title->m_layout);
-		convert_chart_text(ct_title->m_txPr.GetPointer(), true);
+		if (ct_title)
+		{
+			convert(ct_title->m_spPr.GetPointer());
+			convert(ct_title->m_layout);
+			convert_chart_text(ct_title->m_txPr.GetPointer(), true);
+		}
 	///////////////////////////////
-		convert(ct_title->m_tx);
+		if (ct_title && ct_title->m_tx)
+			convert(ct_title->m_tx);
+		else if (reserve_tx && reserve_tx->m_strRef)
+		{
+			if ((reserve_tx->m_strRef->m_strCache) && (false == reserve_tx->m_strRef->m_strCache->m_pt.empty())
+					&& (reserve_tx->m_strRef->m_strCache->m_pt[0]) && (reserve_tx->m_strRef->m_strCache->m_pt[0]->m_v.IsInit()))
+			{
+				odf_context()->chart_context()->add_text(*reserve_tx->m_strRef->m_strCache->m_pt[0]->m_v);
+			}
+		}
 	odf_context()->chart_context()->end_element();
 }
 void OoxConverter::convert(OOX::Spreadsheet::CT_Legend* ct_legend)

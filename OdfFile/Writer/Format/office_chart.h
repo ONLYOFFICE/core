@@ -84,10 +84,10 @@ public:
     void serialize(CP_ATTR_NODE);
 
     odf_types::common_draw_size_attlist	common_draw_size_attlist_;
-    common_chart_attlist		common_attlist_;
-	odf_types::chart_class		chart_class_;
-    _CP_OPT(std::wstring)		chart_column_mapping_;
-    _CP_OPT(std::wstring)		chart_row_mapping_;
+    common_chart_attlist common_attlist_;
+	odf_types::chart_class chart_class_;
+    _CP_OPT(std::wstring) chart_column_mapping_;
+    _CP_OPT(std::wstring) chart_row_mapping_;
 };
 
 ///  chart:chart
@@ -97,16 +97,15 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type = typeChartChart;
-    
+    static const ElementType type = typeChartChart;    
 
 	virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name);
 	virtual void add_child_element( const office_element_ptr & child_element);
 
 	virtual void serialize(std::wostream & _Wostream);
 
-    chart_chart_attlist				chart_chart_attlist_;
-	office_element_ptr_array		content_;
+    chart_chart_attlist chart_chart_attlist_;
+	office_element_ptr_array content_;
 };
 CP_REGISTER_OFFICE_ELEMENT2(chart_chart);
 
@@ -116,9 +115,9 @@ class chart_title_attlist
 public:
     void serialize(CP_ATTR_NODE);
 
-    _CP_OPT(std::wstring)			table_cell_range_;
+    _CP_OPT(std::wstring) table_cell_range_;
     odf_types::common_draw_position_attlist	common_draw_position_attlist_;
-    common_chart_attlist			common_attlist_;
+    common_chart_attlist common_attlist_;
 };
 
 ///  chart:title

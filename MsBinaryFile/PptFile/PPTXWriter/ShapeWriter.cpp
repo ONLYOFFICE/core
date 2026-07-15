@@ -621,9 +621,11 @@ void PPT::CShapeWriter::WriteImageInfo()
         bool bExternal = false;
         std::wstring strRid = m_pRels->WriteVideo(pVideoElement->m_strVideoFileName, bExternal);
 
-        m_oWriter.WriteString(L"<a:videoFile r:link=\"" + strRid + L"\"/>");
-
-        sMediaFile = bExternal ? L"" : pVideoElement->m_strVideoFileName;
+        if (!strRid.empty())
+        {
+            m_oWriter.WriteString(L"<a:videoFile r:link=\"" + strRid + L"\"/>");
+            sMediaFile = bExternal ? L"" : pVideoElement->m_strVideoFileName;
+        }
     }
 
     if ((pAudioElement) && (!pAudioElement->m_strAudioFileName.empty()))
@@ -631,13 +633,16 @@ void PPT::CShapeWriter::WriteImageInfo()
         bool bExternal = false;
         std::wstring strRid = m_pRels->WriteAudio(pAudioElement->m_strAudioFileName, bExternal);
 
+        if (!strRid.empty())
+        {
 //        if ((int)pAudioElement->m_strAudioFileName.find(L".WAV") == -1 &&
 //                (int)pAudioElement->m_strAudioFileName.find(L".wav") == -1)
 //            m_oWriter.WriteString(L"<a:wavAudioFile r:embed=\"" + strRid + L"\"/>");
 //        else
             m_oWriter.WriteString(L"<a:audioFile r:link=\"" + strRid + L"\"/>"); // todo for anim connection
 
-        sMediaFile = bExternal ? L"" : pAudioElement->m_strAudioFileName;
+            sMediaFile = bExternal ? L"" : pAudioElement->m_strAudioFileName;
+        }
     }
     if (sMediaFile.empty() == false)
     {
@@ -1658,12 +1663,16 @@ void PPT::CShapeWriter::WriteHyperlink(const std::vector<CInteractiveInfo>& acti
 
         if (actions[i].m_strAudioFileName.size() && m_pRels)
         {
-            hlink.snd = new PPTX::Logic::WavAudioFile;
             bool bExternal = false;
-            hlink.snd->embed = m_pRels->WriteAudio(actions[i].m_strAudioFileName, bExternal);
-            hlink.snd->m_name = L"snd";
-            hlink.snd->name = actions[i].m_strAudioName;
-            hlink.id = std::wstring(L"");
+            std::wstring audioRid = m_pRels->WriteAudio(actions[i].m_strAudioFileName, bExternal);
+            if (!audioRid.empty())
+            {
+                hlink.snd = new PPTX::Logic::WavAudioFile;
+                hlink.snd->embed = audioRid;
+                hlink.snd->m_name = L"snd";
+                hlink.snd->name = actions[i].m_strAudioName;
+                hlink.id = std::wstring(L"");
+            }
         }
 
         if (actions[i].m_eActivation == CInteractiveInfo::over)

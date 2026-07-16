@@ -3028,7 +3028,7 @@ bool CPdfEditor::EditPage(int _nPageIndex, bool bSet, bool bActualPos)
 		pPage->Fix();
 		pDoc->FixEditPage(pPage);
 
-		if ((m_nRedactInfo & (1 << 7)) || m_nRedactInfo & (1 << 8))
+		if ((m_nRedactInfo & (1 << 6)) || (m_nRedactInfo & (1 << 7)) || m_nRedactInfo & (1 << 8))
 		{
 			int nEP = m_nEditPage;
 			m_nEditPage = _nPageIndex;

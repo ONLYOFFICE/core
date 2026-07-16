@@ -1566,8 +1566,10 @@ namespace OOX
 		et_x_xmlCellPr,
 		et_x_xmlPr,
 
+		et_x_RichValueRels,
 		et_x_RichValueData,
 		et_x_RichValue,
+		et_x_RichRel,
 		et_x_RichValueFallback,
 		et_x_RichValueStructures,
 		et_x_RichValueStructure,

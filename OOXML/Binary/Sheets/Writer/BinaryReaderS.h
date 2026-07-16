@@ -297,6 +297,7 @@ namespace BinXlsxRW
 		int ReadRichValueTypeKeyFlags(BYTE type, long length, void* poResult);
 		int ReadRichValueReservedKey(BYTE type, long length, void* poResult);
 		int ReadRichValueReservedKeyFlags(BYTE type, long length, void* poResult);
+		int ReadRichValueRel(BYTE type, long length, void* poResult);
 
 //--------------------------------------------------------------------------------------------------		
 		OOX::Spreadsheet::CXlsb* m_pXlsb = NULL;

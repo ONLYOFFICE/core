@@ -116,6 +116,7 @@ namespace OOX
 		class CRichValueType;
 		class CRichValueTypeReservedKey;
 		class CRichValueTypeKeyFlags;
+		class CRichValueRels;
 	}
 }
 
@@ -280,6 +281,7 @@ namespace BinXlsxRW
 		void WriteMdxMemeberProp(OOX::Spreadsheet::CMdxMemeberProp* pMdxMemeberProp);
 		void WriteMetadataStringIndex(OOX::Spreadsheet::CMetadataStringIndex* pStringIndex);
 
+		void WriteRichValueRels(OOX::Spreadsheet::CRichValueRels* pData);
 		void WriteRichValueData(OOX::Spreadsheet::CRichValueData* pData);
 		void WriteRichValue(OOX::Spreadsheet::CRichValue* pData);
 		void WriteRichValueFallback(OOX::Spreadsheet::CRichValueFallback* pData);

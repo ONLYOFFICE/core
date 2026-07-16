@@ -184,9 +184,13 @@ namespace OOX
 												L"application/vnd.ms-excel.rdrichvaluetypes+xml",
 												L"http://schemas.microsoft.com/office/2017/06/relationships/rdRichValueTypes");
 
-			const FileType XmlMaps				(L"", L"xmlMaps.xml",
+			const FileType XmlMaps			(L"", L"xmlMaps.xml",
 												L"application/xml",
 												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/xmlMaps");
+
+			const FileType RichValueRel	(L"richData", L"richValueRel.xml",
+												L"application/vnd.ms-excel.richvaluerel+xml",
+												L"http://schemas.microsoft.com/office/2022/10/relationships/richValueRel");
 
 			const FileType SpreadsheetFlat	(L"", L"", L"", L"");
 

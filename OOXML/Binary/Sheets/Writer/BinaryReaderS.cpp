@@ -2498,6 +2498,24 @@ int BinaryWorkbookTableReader::ReadWorkbookTableContent(BYTE type, long length, 
 		smart_ptr<OOX::File> oFile = oRichValueTypesFile.smart_dynamic_cast<OOX::File>();
 		m_oWorkbook.Add(oFile);
 	}
+	else if (c_oSerWorkbookTypes::RichValueRels == type)
+	{
+		smart_ptr<OOX::Spreadsheet::CRichValueRelFile> oRichValueRelFile(new OOX::Spreadsheet::CRichValueRelFile(NULL));
+		if (m_oWorkbook.OOX::File::m_pMainDocument)
+			oRichValueRelFile->OOX::File::m_pMainDocument = m_oWorkbook.OOX::File::m_pMainDocument;
+
+		OOX::IFileContainer*  pContainerOld =  m_oBufferedStream.GetRelsPtr();
+		m_oBufferedStream.SetRelsPtr(oRichValueRelFile.GetPointer());
+		
+		oRichValueRelFile->m_oRichValueRels.Init();
+		READ1_DEF(length, res, this->ReadRichValueRel, oRichValueRelFile->m_oRichValueRels.GetPointer());
+
+		m_oBufferedStream.SetRelsPtr(pContainerOld);
+
+		smart_ptr<OOX::File> oFile = oRichValueRelFile.smart_dynamic_cast<OOX::File>();
+		m_oWorkbook.Add(oFile);
+	}
+
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;
@@ -8978,6 +8996,41 @@ int BinaryWorkbookTableReader::ReadRichValueReservedKeyFlags(BYTE type, long len
 	else if (c_oSer_RichValueTypesInfo::FlagValue == type)
 	{
 		pFlag->m_oValue = m_oBufferedStream.GetBool();
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
+int BinaryWorkbookTableReader::ReadRichValueRel(BYTE type, long length, void* poResult)
+{
+	int res = c_oSerConstants::ReadOk;
+	OOX::Spreadsheet::CRichValueRels* pRichValueRels = static_cast<OOX::Spreadsheet::CRichValueRels*>(poResult);
+
+	if (c_oSer_RichValueRel::RichValueRel == type)
+	{
+		OOX::Spreadsheet::CRichRel* pRichRel = new(OOX::Spreadsheet::CRichRel);
+		pRichValueRels->m_arrItems.push_back(pRichRel);
+
+		std::wstring image_filename = m_oBufferedStream.GetString2(length);
+
+		if (pRichRel && false == image_filename.empty())
+		{
+			std::wstring srcMedia = m_oBufferedStream.m_strFolder + FILE_SEPARATOR_STR + L"media" + FILE_SEPARATOR_STR;
+			int idImage = m_oBufferedStream.m_nCountImage++;
+			std::wstring image_filename_dst = L"image" + std::to_wstring(idImage) + OOX::CPath(image_filename).GetExtention();
+
+			NSFile::CFileBinary::Copy(srcMedia + image_filename, m_oBufferedStream.m_pRels->m_pManager->GetDstMedia() + FILE_SEPARATOR_STR + image_filename_dst);
+
+			OOX::Image* pImage = new OOX::Image(NULL, false);
+			pImage->set_filename(m_oBufferedStream.m_pRels->m_pManager->GetDstMedia() + FILE_SEPARATOR_STR + image_filename_dst, false);
+
+			smart_ptr<OOX::File> oFile(pImage);
+			if (m_oBufferedStream.GetRelsPtr())
+			{
+				pRichRel->m_oRid.Init();
+				pRichRel->m_oRid = m_oBufferedStream.GetRelsPtr()->Add(oFile).get();
+			}
+		}
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;

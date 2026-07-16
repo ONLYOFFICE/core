@@ -244,7 +244,8 @@ namespace BinXlsxRW
 		XmlMap = 30,
 		RdRichValue = 31,
 		RdRichValueStructure = 32,
-		RdRichValueTypes = 33
+		RdRichValueTypes = 33,
+		RichValueRels = 34
 	};}
 	namespace c_oSerWorkbookProtection {enum c_oSerWorkbookProtection{
 		AlgorithmName = 0,
@@ -264,7 +265,9 @@ namespace BinXlsxRW
 		FallbackValue = 4,
 		FallbackType = 5
 	};}
-
+	namespace c_oSer_RichValueRel {enum c_oSer_RichValueRel {
+		RichValueRel = 0
+	};}
 	namespace c_oSer_RichStructures {enum c_oSer_RichStructures {
 		Structure = 0,
 		Type = 1,

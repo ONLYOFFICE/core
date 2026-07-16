@@ -79,6 +79,9 @@
 #include "../../../XlsxFormat/Workbook/CustomsXml.h"
 #include "../../../XlsxFormat/RichData/RdRichData.h"
 
+#include "../../../../DesktopEditor/raster/ImageFileFormatChecker.h"
+#include "../../../../DesktopEditor/graphics/pro/Image.h"
+#include "../../../../DesktopEditor/raster/BgraFrame.h"
 #include "../../../../DesktopEditor/common/Directory.h"
 #include "../../../../Common/OfficeFileFormatChecker.h"
 #include "../../../../OfficeUtils/src/OfficeUtils.h"
@@ -2364,6 +2367,21 @@ void BinaryWorkbookTableWriter::WriteWorkbook(OOX::Spreadsheet::CWorkbook& workb
 		WriteRichValueTypes(pRichValueTypes->m_oRvTypesInfo.GetPointer());
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}
+	pFile = workbook.Find(OOX::Spreadsheet::FileTypes::RichValueRel);
+	OOX::Spreadsheet::CRichValueRelFile* pRichRels = dynamic_cast<OOX::Spreadsheet::CRichValueRelFile*>(pFile.GetPointer());
+	if ((pRichRels) && (pRichRels->m_oRichValueRels.IsInit()))
+	{
+		OOX::IFileContainer* pContainer = dynamic_cast<OOX::IFileContainer*>(pFile.GetPointer());
+		OOX::IFileContainer* oldRels = m_oBcw.m_oStream.GetRelsPtr();
+		m_oBcw.m_oStream.SetRelsPtr(pContainer);
+
+		nCurPos = m_oBcw.WriteItemStart(c_oSerWorkbookTypes::RichValueRels);
+		WriteRichValueRels(pRichRels->m_oRichValueRels.GetPointer());
+		
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+		m_oBcw.m_oStream.SetRelsPtr(oldRels);
+	}
+
 }
 void BinaryWorkbookTableWriter::WriteRichValueData(OOX::Spreadsheet::CRichValueData* pData)
 {
@@ -2375,6 +2393,98 @@ void BinaryWorkbookTableWriter::WriteRichValueData(OOX::Spreadsheet::CRichValueD
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSer_RichValue::RichValue);
 		WriteRichValue(pData->m_arrItems[i]);
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+}
+void BinaryWorkbookTableWriter::WriteRichValueRels(OOX::Spreadsheet::CRichValueRels* pRels)
+{
+	if (!pRels) return;
+
+	int nCurPos = 0;
+
+	for (size_t i = 0; i < pRels->m_arrItems.size(); ++i)
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_RichValueRel::RichValueRel);
+		{
+			if (pRels->m_arrItems[i]->m_oRid.IsInit())
+			{
+				std::wstring sId = pRels->m_arrItems[i]->m_oRid->ToString();
+
+				OOX::CPath out = m_oBcw.m_oStream.m_pCommon->m_pMediaManager->m_strDstMedia;
+
+				smart_ptr<OOX::File> pFile = m_oBcw.m_oStream.GetRelsPtr()->Find(sId);
+				OOX::Media* pMedia = dynamic_cast<OOX::Media*>(pFile.GetPointer());
+				
+				OOX::CPath image_path;
+				if (pMedia)
+				{
+					image_path = pMedia->filename();
+				}
+
+				std::wstring image_name_new;
+				if (false == image_path.GetPath().empty())
+				{
+					//todooo check correct path inside container
+					image_name_new = image_path.GetFilename();
+					std::wstring image_ext_new = image_path.GetExtention();
+
+					std::map<std::wstring, NSShapeImageGen::CMediaInfo>::iterator pFind = m_oBcw.m_oStream.m_pCommon->m_pMediaManager->m_mapMediaFiles.find(image_path.GetFilename());
+					if (pFind == m_oBcw.m_oStream.m_pCommon->m_pMediaManager->m_mapMediaFiles.end())
+					{
+						NSShapeImageGen::CMediaInfo oInfo;
+						oInfo.m_lID = ++m_oBcw.m_oStream.m_pCommon->m_pMediaManager->m_lNextIDImage;
+						oInfo.m_sExt = image_path.GetExtention();
+						image_name_new = oInfo.m_sName = L"image" + std::to_wstring(oInfo.m_lID);
+
+						m_oBcw.m_oStream.m_pCommon->m_pMediaManager->m_mapMediaFiles.insert(std::make_pair(image_path.GetFilename(), oInfo));
+					}
+					else
+					{
+						image_name_new = pFind->second.m_sName;
+					}
+
+					NSFile::CFileBinary::Copy(image_path.GetPath(), out.GetPath() + FILE_SEPARATOR_STR + image_name_new + image_ext_new);
+
+					m_oBcw.m_oStream.WriteString(image_name_new + image_ext_new);
+
+					CImageFileFormatChecker checker;
+					if (checker.isImageFile(image_path.GetPath()))
+					{
+						if (checker.eFileType == _CXIMAGE_FORMAT_WMF || checker.eFileType == _CXIMAGE_FORMAT_EMF)
+						{
+							MetaFile::IMetaFile* pMetafile = MetaFile::Create(m_oBcw.m_oStream.m_pCommon->m_pMediaManager->m_pFontManager->GetApplication());
+
+							if (pMetafile->LoadFromFile(image_path.GetPath().c_str()))
+							{
+								std::wstring sInternalSvg = pMetafile->ConvertToSvg(0,  0);
+
+								if (!sInternalSvg.empty())
+								{
+									NSFile::CFileBinary::SaveToFile(out.GetPath() + FILE_SEPARATOR_STR + image_name_new + L".svg", sInternalSvg);
+								}
+								else
+								{// couldn't convert to svg - trying png
+
+									std::wstring strSaveItem = out.GetPath() + FILE_SEPARATOR_STR + image_name_new + L".png";
+									pMetafile->ConvertToRaster(strSaveItem.c_str(), 4 /*CXIMAGE_FORMAT_PNG*/, 0, 0);
+								}
+							}
+							RELEASEOBJECT(pMetafile);
+						}
+						else if (checker.eFileType != _CXIMAGE_FORMAT_JPG && checker.eFileType != _CXIMAGE_FORMAT_SVG && checker.eFileType != _CXIMAGE_FORMAT_PNG)
+						{
+							std::wstring strSaveItem = out.GetPath() + FILE_SEPARATOR_STR + image_name_new + L".png";
+
+							CBgraFrame oFrame;
+							if (true == oFrame.OpenFile(image_path.GetPath().c_str()))
+							{
+								oFrame.SaveFile(strSaveItem, 4); // png
+							}
+						}
+					}
+				}
+			}
+		}
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}
 }

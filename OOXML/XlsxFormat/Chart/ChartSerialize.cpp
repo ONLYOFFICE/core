@@ -1235,6 +1235,11 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 						auto PieChart = static_cast<CT_Pie3DChart*>(m_chart->m_plotArea->m_Items.at(chartIndex));
 						AxisParentUnion->m_arCRT.push_back(PieChart->toXLS(chartIndex, ptr->m_CHARTFORMATS, rotX, rotY));
 					}
+					else if(*m_chart->m_plotArea->m_ItemsElementName0.at(chartIndex) == OOX::Spreadsheet::itemschoicetype5DOUGHNUTCHART)
+					{
+						auto DoughnutChart = static_cast<CT_DoughnutChart*>(m_chart->m_plotArea->m_Items.at(chartIndex));
+						AxisParentUnion->m_arCRT.push_back(DoughnutChart->toXLS(chartIndex, ptr->m_CHARTFORMATS));
+					}
 					else if(*m_chart->m_plotArea->m_ItemsElementName0.at(chartIndex) == OOX::Spreadsheet::itemschoicetype5LINECHART)
 					{
 						auto LineChart = static_cast<CT_LineChart*>(m_chart->m_plotArea->m_Items.at(chartIndex));
@@ -7699,6 +7704,39 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
+		}
+		XLS::BaseObjectPtr CT_DoughnutChart::toXLS(const unsigned short chartIndex, XLS::BaseObjectPtr ChartFormats)
+		{
+			auto ChartFormatsPtr =  static_cast<XLS::CHARTFORMATS*>(ChartFormats.get());
+			for(auto ser : m_ser)
+			{
+				if(ser != nullptr)
+				{
+					ChartFormatsPtr->m_arSERIESFORMAT.push_back(ser->GetXLSFormat(chartIndex));
+				}
+			}
+			auto ptr = new XLS::CRT;
+			auto chartFormat = new XLS::ChartFormat;
+			chartFormat->icrt = chartIndex;
+			ptr->m_ChartFormat = XLS::BaseObjectPtr(chartFormat);
+			auto chartType = new XLS::Pie;
+			unsigned short DoughnutSize = 50;
+			if(m_holeSize.IsInit())
+			{
+				try
+				{
+					DoughnutSize = std::stod(m_holeSize.get());
+				}  catch (std::exception)
+				{
+					//wrong number
+				}
+			}
+			chartType->pcDonut = DoughnutSize;
+			if(m_firstSliceAng.IsInit())
+				chartType->anStart = m_firstSliceAng.get();
+			ptr->m_ChartType = XLS::BaseObjectPtr(chartType);
+
+			return XLS::BaseObjectPtr(ptr);
 		}
 		EElementType CT_DoughnutChart::getType() { return et_ct_doughnutchart; }
 

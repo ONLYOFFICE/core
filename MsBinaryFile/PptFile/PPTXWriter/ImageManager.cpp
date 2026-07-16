@@ -487,12 +487,26 @@ std::wstring CRelsGenerator::WriteSlideRef(const std::wstring &strLocation)
 
 std::wstring CRelsGenerator::WriteAudio(const std::wstring &strAudioPath, bool &bExternal)
 {
+    // Empty path must not emit Target="" relationships — OpenFileToPPTY SIGSEGVs on them
+    // (e.g. PPT transition sound flag with no resolved media; see file_example_PPT_1MB.ppt).
+    if (strAudioPath.empty())
+    {
+        bExternal = false;
+        return L"";
+    }
+
     std::wstring strAudio = m_pManager->GenerateAudio(strAudioPath);
 
     if (strAudio.empty())
     {
+        std::wstring corrected = CorrectXmlString3(strAudioPath);
+        if (corrected.empty())
+        {
+            bExternal = false;
+            return L"";
+        }
         bExternal = true;
-        return WriteHyperlinkAudio(CorrectXmlString3(strAudioPath), true);
+        return WriteHyperlinkAudio(corrected, true);
     }
     else
     {
@@ -502,12 +516,24 @@ std::wstring CRelsGenerator::WriteAudio(const std::wstring &strAudioPath, bool &
 
 std::wstring CRelsGenerator::WriteVideo(const std::wstring &strVideoPath, bool &bExternal)
 {
+    if (strVideoPath.empty())
+    {
+        bExternal = false;
+        return L"";
+    }
+
     std::wstring strVideo = m_pManager->GenerateVideo(strVideoPath);
 
     if (strVideo.empty())
     {
+        std::wstring corrected = CorrectXmlString3(strVideoPath);
+        if (corrected.empty())
+        {
+            bExternal = false;
+            return L"";
+        }
         bExternal = true;
-        return WriteHyperlinkVideo(CorrectXmlString3(strVideoPath), true);
+        return WriteHyperlinkVideo(corrected, true);
     }
     else
     {

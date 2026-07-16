@@ -253,8 +253,13 @@ void Transition::ConvertAudioEffect()
 {
     if (HasAudio() == false) return;
 
+    // Resolve media first; skip sound if WriteAudio refused (empty/unresolvable path).
+    std::wstring rId = GetAudioRId();
+    if (rId.empty())
+        return;
+
     InitSound();
-    WriteAudioRId();
+    newTransition.sndAc->stSnd->embed = rId;
     WriteSoundName();
 }
 
@@ -277,7 +282,11 @@ void Transition::InitSound()
 
 bool Transition::HasAudio() const
 {
-    return oldTransition.m_bAudioPresent == true && pRels != nullptr;
+    // m_bAudioPresent alone is not enough: some PPTs set the flag with an empty path,
+    // which used to emit Target="" audio relationships and crash editor open.
+    return oldTransition.m_bAudioPresent == true
+        && pRels != nullptr
+        && !oldTransition.m_oAudio.m_strAudioFileName.empty();
 }
 
 void Transition::WriteSoundName()

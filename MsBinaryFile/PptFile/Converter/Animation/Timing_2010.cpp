@@ -949,9 +949,12 @@ void Timing_2010::FillAudio(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::Aud
         if (pInfo1)
         {
             bool bExternal(false);
-            oAudio.cMediaNode.tgtEl.embed =
-                    new OOX::RId(m_pRels->WriteAudio(pInfo1->m_strFilePath, bExternal));
-            oAudio.cMediaNode.tgtEl.name = XmlUtils::EncodeXmlString(pInfo1->m_name);
+            std::wstring audioRid = m_pRels->WriteAudio(pInfo1->m_strFilePath, bExternal);
+            if (!audioRid.empty())
+            {
+                oAudio.cMediaNode.tgtEl.embed = new OOX::RId(audioRid);
+                oAudio.cMediaNode.tgtEl.name = XmlUtils::EncodeXmlString(pInfo1->m_name);
+            }
         } else if (pCVEC->m_oVisualShapeAtom.m_RefType == TL_ET_ShapeType)
         {
             oAudio.cMediaNode.tgtEl.spTgt = new PPTX::Logic::SpTgt;
@@ -972,9 +975,12 @@ void Timing_2010::FillAudio(CRecordClientVisualElementContainer *pCVEC, PPTX::Lo
         if (pInfo1 && m_pRels)
         {
             bool bExternal(false);
-            oAudio.cMediaNode.tgtEl.embed =
-                    new OOX::RId(m_pRels->WriteAudio(pInfo1->m_strFilePath, bExternal));
-            oAudio.cMediaNode.tgtEl.name = XmlUtils::EncodeXmlString(pInfo1->m_name);
+            std::wstring audioRid = m_pRels->WriteAudio(pInfo1->m_strFilePath, bExternal);
+            if (!audioRid.empty())
+            {
+                oAudio.cMediaNode.tgtEl.embed = new OOX::RId(audioRid);
+                oAudio.cMediaNode.tgtEl.name = XmlUtils::EncodeXmlString(pInfo1->m_name);
+            }
         }
     }
 }

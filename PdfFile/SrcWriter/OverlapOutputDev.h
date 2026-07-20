@@ -191,19 +191,19 @@ public:
 	// virtual void setStrokeColorN(Object* args, int numArgs) override;
 	// virtual void setShading(GfxState *state, const char* name) override;
 	//----- image drawing
-	virtual void drawImageMask(GfxState *pGState, Gfx *gfx, Object *pRef, Stream *pStream, int nWidth, int nHeight, GBool bInvert, GBool bInlineImage, GBool interpolate) override;
+	// virtual void drawImageMask(GfxState *pGState, Gfx *gfx, Object *pRef, Stream *pStream, int nWidth, int nHeight, GBool bInvert, GBool bInlineImage, GBool interpolate) override;
 	// setSoftMaskFromImageMask -> drawImageMask
-	virtual void drawImage(GfxState *pGState, Gfx *gfx, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap, int *pMaskColors, GBool bInlineImg, GBool interpolate) override;
-	virtual void drawMaskedImage(GfxState *pGState, Gfx *gfx, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap,
-								 Object* pMaskRef, Stream *pMaskStream, int nMaskWidth, int nMaskHeight, GBool bMaskInvert, GBool interpolate) override;
-	virtual void drawSoftMaskedImage(GfxState *pGState, Gfx *gfx, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap,
-									 Object *maskRef, Stream *pMaskStream, int nMaskWidth, int nMaskHeight, GfxImageColorMap *pMaskColorMap, double *pMatte, GBool interpolate) override;
+	// virtual void drawImage(GfxState *pGState, Gfx *gfx, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap, int *pMaskColors, GBool bInlineImg, GBool interpolate) override;
+	// virtual void drawMaskedImage(GfxState *pGState, Gfx *gfx, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap,
+	// 							 Object* pMaskRef, Stream *pMaskStream, int nMaskWidth, int nMaskHeight, GBool bMaskInvert, GBool interpolate) override;
+	// virtual void drawSoftMaskedImage(GfxState *pGState, Gfx *gfx, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap,
+	// 								 Object *maskRef, Stream *pMaskStream, int nMaskWidth, int nMaskHeight, GfxImageColorMap *pMaskColorMap, double *pMatte, GBool interpolate) override;
 	//----- Type 3 font operators
 	// virtual void type3D0(GfxState *pGState, double wx, double wy) override;
 	// virtual void type3D1(GfxState *pGState, double wx, double wy, double llx, double lly, double urx, double ury) override;
 	//----- form XObjects
 	virtual void drawForm(GfxState *pGState, Gfx *gfx, Ref id, const char *name = NULL) override;
-	virtual void drawImage(GfxState *pGState, Gfx *gfx, Ref id, const char* name = NULL) override;
+	// virtual void drawImage(GfxState *pGState, Gfx *gfx, Ref id, const char* name = NULL) override;
 	//----- transparency groups and soft masks
 	// beginTransparencyGroup -> drawForm
 	// endTransparencyGroup   -> drawForm
@@ -211,7 +211,9 @@ public:
 	// setSoftMask            -> drawForm
 	// clearSoftMask          -> drawForm
 
-	const std::vector<int>& GetHiddenText() const { return m_arrHiddenText; }
+	const std::vector<int>& GetFormTextCounts()     const { return m_arrFormTextCounts; }
+	const std::vector<int>& GetFormGraphicsCounts() const { return m_arrFormGraphicsCounts; }
+	const std::vector<int>& GetHiddenText()         const { return m_arrHiddenText; }
 	std::vector<SOverlapGraphicsResult> GetHiddenGraphics();
 
 private:
@@ -221,10 +223,6 @@ private:
 
 		SOverlapState() : m_pClip(NULL) {}
 		~SOverlapState() { RELEASEOBJECT(m_pClip); }
-
-	private:
-		SOverlapState(const SOverlapState&);
-		SOverlapState& operator=(const SOverlapState&);
 	};
 	void ComputeOverlaps();
 
@@ -234,10 +232,13 @@ private:
 	int  m_nTextCounter;
 	int  m_nGraphicsCounter;
 	int  m_nFormDepth;
+	int  m_nFormCounter;
 
 	std::deque<SOverlapPaintedItem*> m_arrPainted;
 	std::deque<SOverlapState> m_sStates;
 
+	std::vector<int> m_arrFormTextCounts;
+	std::vector<int> m_arrFormGraphicsCounts;
 	std::vector<int> m_arrHiddenText;
 	std::vector<SOverlapGraphicsResult> m_arrHiddenGraphics;
 };

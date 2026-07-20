@@ -54,6 +54,15 @@ namespace PdfWriter
 		virtual ~RedactOutputDev();
 
 		void SetRedact(const std::vector<double>& arrQuadPoints);
+		void SetOverlapInfo(const std::vector<int>& arrHiddenTextIndices,
+							const std::vector<int>* pFormTextCounts,
+							const std::vector<int>* pFormGraphicsCounts,
+							int nStartTextCounter = 0,
+							int nStartFormCounter = 0,
+							int nStartGraphicsCounter = 0);
+		int  GetTextCounter()    const { return m_nTextCounter; }
+		int  GetFormCounter()    const { return m_nFormCounter; }
+		int GetGraphicsCounter() const { return m_nGraphicsCounter; }
 		void NewPDF(XRef* pXref);
 
 		//----- get info about output device
@@ -219,6 +228,13 @@ namespace PdfWriter
 		CPage*      m_pPage;
 		double      m_arrMatrix[6];
 		std::string m_sImageName;
+
+		std::vector<int> m_arrHiddenTextIndices;
+		const std::vector<int>* m_pFormTextCounts;
+		const std::vector<int>* m_pFormGraphicsCounts;
+		int m_nTextCounter;
+		int m_nFormCounter;
+		int m_nGraphicsCounter;
 
 		bool m_bUpdateAll;
 		std::deque<GfxRedactState> m_sStates;

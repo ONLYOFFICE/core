@@ -60,6 +60,7 @@
 #include "SrcWriter/Outline.h"
 #include "SrcWriter/GState.h"
 #include "SrcWriter/RedactOutputDev.h"
+#include "SrcWriter/OverlapOutputDev.h"
 #include "SrcWriter/Image.h"
 #include "SrcWriter/Font14.h"
 
@@ -3028,6 +3029,14 @@ bool CPdfEditor::EditPage(int _nPageIndex, bool bSet, bool bActualPos)
 		pPage->Fix();
 		pDoc->FixEditPage(pPage);
 
+		if (m_nRedactInfo & (1 << 6))
+		{
+			int nEP = m_nEditPage;
+			m_nEditPage = _nPageIndex;
+			Overlap(true);
+			m_nEditPage = nEP;
+		}
+
 		if ((m_nRedactInfo & (1 << 6)) || (m_nRedactInfo & (1 << 7)) || m_nRedactInfo & (1 << 8))
 		{
 			int nEP = m_nEditPage;
@@ -5030,6 +5039,54 @@ bool CPdfEditor::IsBase14(const std::wstring& wsFontName, bool& bBold, bool& bIt
 	if (wsFontName == L"ZapfDingbats")
 		return true;
 	return false;
+}
+void CPdfEditor::Overlap(bool bTextOnly)
+{
+	PDFDoc* pPDFDocument = NULL;
+	PdfReader::CPdfFontList* pFontList = NULL;
+	int nStartRefID = 0;
+	PDFRectangle* cropBox = NULL;
+	int nPageIndex = -1;
+	Page* pPage = NULL;
+	bool bEditPage = IsEditPage();
+	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
+	if (bEditPage)
+	{
+		nPageIndex = m_pReader->GetPageIndex(m_nEditPage, &pPDFDocument, &pFontList, &nStartRefID);
+		if (nPageIndex < 0 || !pPDFDocument)
+			return;
+		pPage = pPDFDocument->getCatalog()->getPage(nPageIndex);
+		cropBox = pPage->getCropBox();
+	}
+	else
+	{
+		cropBox = new PDFRectangle();
+		PdfWriter::CPage* pWPage = pDoc->GetCurPage();
+		PdfWriter::TBox oBox = pWPage->GetBox("CropBox");
+		if (oBox.IsEmpty())
+			oBox = pWPage->GetBox("MediaBox");
+		cropBox = new PDFRectangle(oBox.fLeft, oBox.fBottom, oBox.fRight, oBox.fTop);
+	}
+
+	if (bEditPage)
+	{
+		PdfWriter::OverlapOutputDev oOverlapOut(bTextOnly);
+		oOverlapOut.NewPDF(pPDFDocument->getXRef());
+
+		Object oContents;
+		pPage->getContents(&oContents);
+		PDFRectangle* box = pPage->getMediaBox();
+		Gfx* gfx = new Gfx(pPDFDocument, &oOverlapOut, m_nEditPage, pPage->getResourceDict(), 72.0, 72.0, box, NULL, 0);
+		gfx->saveState();
+		gfx->display(&oContents);
+		gfx->endOfPage();
+		oContents.free();
+		RELEASEOBJECT(gfx);
+	}
+	else
+	{
+		RELEASEOBJECT(cropBox);
+	}
 }
 void CPdfEditor::Redact(IAdvancedCommand* _pCommand)
 {

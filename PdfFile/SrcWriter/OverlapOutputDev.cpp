@@ -149,6 +149,7 @@ OverlapOutputDev::OverlapOutputDev(bool bTextOnly)
 	: m_bTextOnly(bTextOnly)
 	, m_nTextCounter(0)
 	, m_nFormDepth(0)
+	, m_nFormCounter(0)
 {
 }
 OverlapOutputDev::~OverlapOutputDev()
@@ -171,7 +172,10 @@ void OverlapOutputDev::startPage(int nPageIndex, GfxState* pGState)
 
 	m_nTextCounter = 0;
 	m_nFormDepth   = 0;
+	m_nFormCounter = 0;
 	m_arrHiddenText.clear();
+	m_arrFormTextCounts.clear();
+	m_arrFormGraphicsCounts.clear();
 }
 void OverlapOutputDev::endPage()
 {
@@ -283,9 +287,23 @@ void OverlapOutputDev::drawForm(GfxState* pGState, Gfx* gfx, Ref id, const char*
 	oRef->initRef(id.num, id.gen);
 	m_pXref->fetch(id.num, id.gen, oForm.get());
 
+	int nFormIndex = m_nFormCounter++;
+	int nStartText = m_nTextCounter;
+	int nStartGraphics = m_nGraphicsCounter;
+
 	++m_nFormDepth;
 	gfx->doForm(oRef.get(), oForm.get());
 	--m_nFormDepth;
+
+	int nDelta = m_nTextCounter - nStartText;
+	if ((size_t)nFormIndex >= m_arrFormTextCounts.size())
+		m_arrFormTextCounts.resize(nFormIndex + 1, 0);
+	m_arrFormTextCounts[nFormIndex] = nDelta;
+
+	int nGraphicsDelta = m_nGraphicsCounter - nStartGraphics;
+	if ((size_t)nFormIndex >= m_arrFormGraphicsCounts.size())
+		m_arrFormGraphicsCounts.resize(nFormIndex + 1, 0);
+	m_arrFormGraphicsCounts[nFormIndex] = nGraphicsDelta;
 }
 //----- overlay graphics -----
 void OverlapOutputDev::ComputeOverlaps()

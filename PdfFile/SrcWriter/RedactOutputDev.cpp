@@ -598,6 +598,9 @@ RedactOutputDev::RedactOutputDev(CPdfWriter* pRenderer, CObjectsManager* pObjMng
 	m_pDoc = m_pRenderer->GetDocument();
 	m_pPage = NULL;
 
+	m_nTextCounter = 0;
+	m_nGraphicsCounter = 0;
+
 	m_bUpdateAll = false;
 }
 RedactOutputDev::~RedactOutputDev()
@@ -618,6 +621,20 @@ void RedactOutputDev::SetRedact(const std::vector<double>& arrQuadPoints)
 		m_oPathRedact.LineTo(m_arrQuadPoints[i + 6], m_arrQuadPoints[i + 7]);
 		m_oPathRedact.CloseFigure();
 	}
+}
+void RedactOutputDev::SetOverlapInfo(const std::vector<int>& arrHiddenTextIndices,
+									 const std::vector<int>* pFormTextCounts,
+									 const std::vector<int>* pFormGraphicsCounts,
+									 int nStartTextCounter,
+									 int nStartFormCounter,
+									 int nStartGraphicsCounter)
+{
+	m_arrHiddenTextIndices = arrHiddenTextIndices;
+	m_pFormTextCounts      = pFormTextCounts;
+	m_pFormGraphicsCounts  = pFormGraphicsCounts;
+	m_nTextCounter         = nStartTextCounter;
+	m_nFormCounter         = nStartFormCounter;
+	m_nGraphicsCounter     = nStartGraphicsCounter;
 }
 void RedactOutputDev::NewPDF(XRef* pXref)
 {
@@ -905,11 +922,13 @@ void RedactOutputDev::stroke(GfxState *pGState)
 }
 void RedactOutputDev::fill(GfxState *pGState)
 {
+	++m_nGraphicsCounter;
 	DoPathRedact(pGState, pGState->getPath(), pGState->getCTM());
 	DrawPath(c_nWindingFillMode);
 }
 void RedactOutputDev::eoFill(GfxState *pGState)
 {
+	++m_nGraphicsCounter;
 	DoPathRedact(pGState, pGState->getPath(), pGState->getCTM(), false, true);
 	DrawPath(c_nEvenOddFillMode);
 }
@@ -985,6 +1004,8 @@ void RedactOutputDev::beginStringOp(GfxState *pGState)
 void RedactOutputDev::drawChar(GfxState *pGState, double dX, double dY, double dDx, double dDy, double dOriginX, double dOriginY,
 							   CharCode nCode, int nBytesCount, Unicode *pUnicode, int nUnicodeLen)
 {
+	int nCurrentTextIndex = m_nTextCounter++;
+
 	double* pCTM = pGState->getCTM();
 	double* pTm = pGState->getTextMat();
 	double pNewTm[6], arrMatrix[6];
@@ -1048,6 +1069,13 @@ void RedactOutputDev::drawChar(GfxState *pGState, double dX, double dY, double d
 	pGState->transform(dX + dDx, dY + dDy, &endX, &endY);
 	double dCenterX = (startX + endX) / 2;
 	double dCenterY = (startY + endY) / 2;
+
+	if (std::find(m_arrHiddenTextIndices.begin(), m_arrHiddenTextIndices.end(), nCurrentTextIndex) != m_arrHiddenTextIndices.end())
+	{
+		m_pRenderer->put_FontSize(dOldSize);
+		return;
+	}
+
 	for (int i = 0; i < m_arrQuadPoints.size(); i += 8)
 	{
 		double x1 = m_arrQuadPoints[i + 0];
@@ -1450,6 +1478,8 @@ void RedactOutputDev::type3D1(GfxState *pGState, double wx, double wy, double ll
 //----- form XObjects
 void RedactOutputDev::drawForm(GfxState *pGState, Gfx *gfx, Ref id, const char* name)
 {
+	int nFormIndex = m_nFormCounter++;
+
 	m_pRenderer->m_oCommandManager.Flush();
 	DoStateOp();
 
@@ -1525,11 +1555,21 @@ void RedactOutputDev::drawForm(GfxState *pGState, Gfx *gfx, Ref id, const char* 
 	};
 	if (CheckFullRedact(m_arrQuadPoints, formPolygon))
 	{
+		if (m_pFormTextCounts && (size_t)nFormIndex < m_pFormTextCounts->size())
+			m_nTextCounter += (*m_pFormTextCounts)[nFormIndex];
+		if (m_pFormGraphicsCounts && (size_t)nFormIndex < m_pFormGraphicsCounts->size())
+			m_nGraphicsCounter += (*m_pFormGraphicsCounts)[nFormIndex];
+
 		oForm.free();
 		return;
 	}
 	if (!CheckPartialRedact(m_arrQuadPoints, formPolygon))
 	{
+		if (m_pFormTextCounts && (size_t)nFormIndex < m_pFormTextCounts->size())
+			m_nTextCounter += (*m_pFormTextCounts)[nFormIndex];
+		if (m_pFormGraphicsCounts && (size_t)nFormIndex < m_pFormGraphicsCounts->size())
+			m_nGraphicsCounter += (*m_pFormGraphicsCounts)[nFormIndex];
+
 		oForm.free();
 		DrawXObject(name);
 		return;
@@ -1569,6 +1609,8 @@ void RedactOutputDev::drawForm(GfxState *pGState, Gfx *gfx, Ref id, const char* 
 	pFormOutputDev->NewPDF(m_pXref);
 	pFormOutputDev->m_pPage = pFakePage;
 	pFormOutputDev->m_pResources = pNewResources;
+	pFormOutputDev->SetOverlapInfo(m_arrHiddenTextIndices, m_pFormTextCounts, m_pFormGraphicsCounts,
+								   m_nTextCounter, m_nFormCounter, m_nGraphicsCounter);
 	std::vector<double> arrFormQuadPoints;
 	double dInvMatrix[6] = { 1, 0, 0, 1, 0, 0 };
 	InvertMatrix(m_arrMatrix, dInvMatrix);
@@ -1594,6 +1636,10 @@ void RedactOutputDev::drawForm(GfxState *pGState, Gfx *gfx, Ref id, const char* 
 	_gfx->display(&oFormRef);
 	_gfx->endOfPage();
 	oFormRef.free();
+
+	m_nTextCounter     = pFormOutputDev->GetTextCounter();
+	m_nFormCounter     = pFormOutputDev->GetFormCounter();
+	m_nGraphicsCounter = pFormOutputDev->GetGraphicsCounter();
 
 	RELEASEOBJECT(_gfx);
 	RELEASEOBJECT(pFormOutputDev);

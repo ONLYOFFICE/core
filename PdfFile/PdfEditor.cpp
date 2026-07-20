@@ -3029,19 +3029,15 @@ bool CPdfEditor::EditPage(int _nPageIndex, bool bSet, bool bActualPos)
 		pPage->Fix();
 		pDoc->FixEditPage(pPage);
 
-		if (m_nRedactInfo & (1 << 6))
+		bool bHiddenText              = (m_nRedactInfo & (1 << 6)) != 0;
+		bool bHiddenLayers            = (m_nRedactInfo & (1 << 7)) != 0;
+		bool bDeletedOrCroppedContent = (m_nRedactInfo & (1 << 8)) != 0;
+		bool bOverlappingObjects      = (m_nRedactInfo & (1 << 10)) != 0;
+		if (bHiddenText || bHiddenLayers || bDeletedOrCroppedContent || bOverlappingObjects)
 		{
 			int nEP = m_nEditPage;
 			m_nEditPage = _nPageIndex;
-			Overlap(true);
-			m_nEditPage = nEP;
-		}
-
-		if ((m_nRedactInfo & (1 << 6)) || (m_nRedactInfo & (1 << 7)) || m_nRedactInfo & (1 << 8))
-		{
-			int nEP = m_nEditPage;
-			m_nEditPage = _nPageIndex;
-			Redact(NULL);
+			Redact(NULL, bHiddenText || bOverlappingObjects, bHiddenText);
 			m_nEditPage = nEP;
 		}
 
@@ -5040,55 +5036,7 @@ bool CPdfEditor::IsBase14(const std::wstring& wsFontName, bool& bBold, bool& bIt
 		return true;
 	return false;
 }
-void CPdfEditor::Overlap(bool bTextOnly)
-{
-	PDFDoc* pPDFDocument = NULL;
-	PdfReader::CPdfFontList* pFontList = NULL;
-	int nStartRefID = 0;
-	PDFRectangle* cropBox = NULL;
-	int nPageIndex = -1;
-	Page* pPage = NULL;
-	bool bEditPage = IsEditPage();
-	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
-	if (bEditPage)
-	{
-		nPageIndex = m_pReader->GetPageIndex(m_nEditPage, &pPDFDocument, &pFontList, &nStartRefID);
-		if (nPageIndex < 0 || !pPDFDocument)
-			return;
-		pPage = pPDFDocument->getCatalog()->getPage(nPageIndex);
-		cropBox = pPage->getCropBox();
-	}
-	else
-	{
-		cropBox = new PDFRectangle();
-		PdfWriter::CPage* pWPage = pDoc->GetCurPage();
-		PdfWriter::TBox oBox = pWPage->GetBox("CropBox");
-		if (oBox.IsEmpty())
-			oBox = pWPage->GetBox("MediaBox");
-		cropBox = new PDFRectangle(oBox.fLeft, oBox.fBottom, oBox.fRight, oBox.fTop);
-	}
-
-	if (bEditPage)
-	{
-		PdfWriter::OverlapOutputDev oOverlapOut(bTextOnly);
-		oOverlapOut.NewPDF(pPDFDocument->getXRef());
-
-		Object oContents;
-		pPage->getContents(&oContents);
-		PDFRectangle* box = pPage->getMediaBox();
-		Gfx* gfx = new Gfx(pPDFDocument, &oOverlapOut, m_nEditPage, pPage->getResourceDict(), 72.0, 72.0, box, NULL, 0);
-		gfx->saveState();
-		gfx->display(&oContents);
-		gfx->endOfPage();
-		oContents.free();
-		RELEASEOBJECT(gfx);
-	}
-	else
-	{
-		RELEASEOBJECT(cropBox);
-	}
-}
-void CPdfEditor::Redact(IAdvancedCommand* _pCommand)
+void CPdfEditor::Redact(IAdvancedCommand* _pCommand, bool bOverlap, bool bTextOnly)
 {
 	PDFDoc* pPDFDocument = NULL;
 	PdfReader::CPdfFontList* pFontList = NULL;
@@ -5142,9 +5090,34 @@ void CPdfEditor::Redact(IAdvancedCommand* _pCommand)
 
 	if (bEditPage)
 	{
+		std::set<int> arrOverlapHiddenTextIndices;
+		std::vector<int> arrOverlapFormTextCounts, arrOverlapFormGraphicsCounts;
+		std::vector<PdfWriter::SOverlapGraphicsResult> arrOverlapGraphicsResults;
+		if (bOverlap)
+		{
+			PdfWriter::OverlapOutputDev oOverlapOut(bTextOnly);
+			oOverlapOut.NewPDF(pPDFDocument->getXRef());
+
+			Object oContents;
+			pPage->getContents(&oContents);
+			PDFRectangle* box = pPage->getMediaBox();
+			Gfx* gfx = new Gfx(pPDFDocument, &oOverlapOut, m_nEditPage, pPage->getResourceDict(), 72.0, 72.0, box, NULL, 0);
+			gfx->saveState();
+			gfx->display(&oContents);
+			gfx->endOfPage();
+			oContents.free();
+			RELEASEOBJECT(gfx);
+
+			arrOverlapHiddenTextIndices  = oOverlapOut.GetHiddenText();
+			arrOverlapFormTextCounts     = oOverlapOut.GetFormTextCounts();
+			arrOverlapFormGraphicsCounts = oOverlapOut.GetFormGraphicsCounts();
+			arrOverlapGraphicsResults    = oOverlapOut.GetHiddenGraphics();
+		}
+
 		PdfWriter::RedactOutputDev oRedactOut(m_pWriter, &m_mObjManager, nStartRefID, m_nRedactInfo);
 		oRedactOut.NewPDF(pPDFDocument->getXRef());
 		oRedactOut.SetRedact(arrAllQuads);
+		oRedactOut.SetOverlapInfo(arrOverlapHiddenTextIndices, &arrOverlapFormTextCounts, &arrOverlapFormGraphicsCounts);
 
 		Object oContents;
 		pPage->getContents(&oContents);

@@ -95,14 +95,22 @@ void BuildDeviceSpacePath(GfxPath* pPath, const double* pCTM, bool bEoFill, Aggp
 		oPath.CloseFigure();
 	}
 }
-
+bool IsOpaqueGraphicsItem(const SOverlapPaintedItem& oItem)
+{
+	const double c_dOpaqueEps = 1e-6;
+	if (oItem.m_dFillAlpha < 1.0 - c_dOpaqueEps)
+		return false;
+	if (oItem.m_bHasSoftMask)
+		return false;
+	if (!oItem.m_sBlendMode.empty() && oItem.m_sBlendMode != "Normal" && oItem.m_sBlendMode != "Compatible")
+		return false;
+	return true;
+}
 }
 //----- SOverlapPaintedItem -----
 SOverlapPaintedItem::SOverlapPaintedItem()
 	: m_eKind(EOverlapPaintKind::Text)
 	, m_nTextIndex(-1)
-	, m_dCenterX(0)
-	, m_dCenterY(0)
 	, m_pDevicePath(NULL)
 	, m_bEoFill(false)
 	, m_dFillAlpha(1)
@@ -211,6 +219,8 @@ void OverlapOutputDev::fill(GfxState* pGState)
 	pItem->m_bHasSoftMask = gFalse; // pGState->getSoftMask() ? gTrue : gFalse; TODO
 	pItem->m_sBlendMode   = ""; // TODO
 
+	MarkHiddenTextUnderGraphics(pItem);
+
 	m_arrPainted.push_back(pItem);
 }
 void OverlapOutputDev::eoFill(GfxState* pGState)
@@ -230,6 +240,8 @@ void OverlapOutputDev::eoFill(GfxState* pGState)
 	pItem->m_dFillAlpha   = pGState->getFillOpacity();
 	pItem->m_bHasSoftMask = gFalse; // pGState->getSoftMask() ? gTrue : gFalse; TODO
 	pItem->m_sBlendMode   = ""; // TODO
+
+	MarkHiddenTextUnderGraphics(pItem);
 
 	m_arrPainted.push_back(pItem);
 }
@@ -261,9 +273,14 @@ void OverlapOutputDev::drawChar(GfxState* pGState, double dX, double dY, double 
 {
 	int nCurrentIndex = m_nTextCounter++;
 
-	double startX, startY, endX, endY;
-	pGState->transform(dX, dY, &startX, &startY);
-	pGState->transform(dX + dDx, dY + dDy, &endX, &endY);
+	GfxFont* pFont = pGState->getFont();
+	double dAscent  = pFont ? pFont->getAscent()  : 0.718;
+	double dDescent = pFont ? pFont->getDescent() : -0.207;
+	double dFontSize = pGState->getFontSize();
+	double dTop    = dY + dAscent  * dFontSize;
+	double dBottom = dY + dDescent * dFontSize;
+	double dLeft   = dX;
+	double dRight  = dX + dDx;
 
 	SOverlapPaintedItem* pItem = new(std::nothrow) SOverlapPaintedItem();
 	if (!pItem)
@@ -271,8 +288,12 @@ void OverlapOutputDev::drawChar(GfxState* pGState, double dX, double dY, double 
 
 	pItem->m_eKind      = EOverlapPaintKind::Text;
 	pItem->m_nTextIndex = nCurrentIndex;
-	pItem->m_dCenterX   = (startX + endX) / 2;
-	pItem->m_dCenterY   = (startY + endY) / 2;
+
+	double arrUserX[5] = { dLeft,  dRight, dLeft,   dRight,  (dLeft + dRight) / 2 };
+	double arrUserY[5] = { dTop,   dTop,   dBottom, dBottom, (dTop + dBottom) / 2 };
+
+	for (int i = 0; i < 5; ++i)
+		pGState->transform(arrUserX[i], arrUserY[i], &pItem->m_arrTextPoints[i][0], &pItem->m_arrTextPoints[i][1]);
 
 	m_arrPainted.push_back(pItem);
 }
@@ -306,9 +327,31 @@ void OverlapOutputDev::drawForm(GfxState* pGState, Gfx* gfx, Ref id, const char*
 	m_arrFormGraphicsCounts[nFormIndex] = nGraphicsDelta;
 }
 //----- overlay graphics -----
+void OverlapOutputDev::MarkHiddenTextUnderGraphics(const SOverlapPaintedItem* pGraphicsItem)
+{
+	if (!pGraphicsItem->m_pDevicePath || !IsOpaqueGraphicsItem(*pGraphicsItem))
+		return;
+
+	for (size_t i = 0; i < m_arrPainted.size(); ++i)
+	{
+		SOverlapPaintedItem* pItem = m_arrPainted[i];
+		if (pItem->m_eKind != EOverlapPaintKind::Text)
+			continue;
+		if (m_arrHiddenText.find(pItem->m_nTextIndex) != m_arrHiddenText.end())
+			continue;
+
+		for (int p = 0; p < 5; ++p)
+		{
+			if (pGraphicsItem->m_pDevicePath->IsPointInPath(pItem->m_arrTextPoints[p][0], pItem->m_arrTextPoints[p][1]))
+			{
+				m_arrHiddenText.insert(pItem->m_nTextIndex);
+				break;
+			}
+		}
+	}
+}
 void OverlapOutputDev::ComputeOverlaps()
 {
-	m_arrHiddenText.clear();
 	m_arrHiddenGraphics.clear();
 
 	for (size_t i = 0; i < m_arrPainted.size(); ++i)

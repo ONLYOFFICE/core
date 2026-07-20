@@ -622,7 +622,7 @@ void RedactOutputDev::SetRedact(const std::vector<double>& arrQuadPoints)
 		m_oPathRedact.CloseFigure();
 	}
 }
-void RedactOutputDev::SetOverlapInfo(const std::vector<int>& arrHiddenTextIndices,
+void RedactOutputDev::SetOverlapInfo(const std::set<int>& arrHiddenTextIndices,
 									 const std::vector<int>* pFormTextCounts,
 									 const std::vector<int>* pFormGraphicsCounts,
 									 int nStartTextCounter,

@@ -44,6 +44,7 @@
 #include "../lib/xpdf/OutputDev.h"
 
 #include <stack>
+#include <set>
 
 namespace PdfWriter
 {
@@ -54,7 +55,7 @@ namespace PdfWriter
 		virtual ~RedactOutputDev();
 
 		void SetRedact(const std::vector<double>& arrQuadPoints);
-		void SetOverlapInfo(const std::vector<int>& arrHiddenTextIndices,
+		void SetOverlapInfo(const std::set<int>& arrHiddenTextIndices,
 							const std::vector<int>* pFormTextCounts,
 							const std::vector<int>* pFormGraphicsCounts,
 							int nStartTextCounter = 0,
@@ -229,7 +230,7 @@ namespace PdfWriter
 		double      m_arrMatrix[6];
 		std::string m_sImageName;
 
-		std::vector<int> m_arrHiddenTextIndices;
+		std::set<int> m_arrHiddenTextIndices;
 		const std::vector<int>* m_pFormTextCounts;
 		const std::vector<int>* m_pFormGraphicsCounts;
 		int m_nTextCounter;

@@ -43,6 +43,7 @@
 
 #include <deque>
 #include <vector>
+#include <set>
 
 namespace PdfWriter
 {
@@ -64,8 +65,7 @@ struct SOverlapPaintedItem
 
 	// --- Text (OverlapPaintKind_Text) ---
 	int m_nTextIndex;
-	double m_dCenterX;
-	double m_dCenterY;
+	double m_arrTextPoints[5][2];
 
 	// --- Graphics (OverlapPaintKind_Graphics) ---
 	int m_nGraphicsIndex;
@@ -213,7 +213,7 @@ public:
 
 	const std::vector<int>& GetFormTextCounts()     const { return m_arrFormTextCounts; }
 	const std::vector<int>& GetFormGraphicsCounts() const { return m_arrFormGraphicsCounts; }
-	const std::vector<int>& GetHiddenText()         const { return m_arrHiddenText; }
+	const std::set<int>& GetHiddenText()            const { return m_arrHiddenText; }
 	std::vector<SOverlapGraphicsResult> GetHiddenGraphics();
 
 private:
@@ -225,6 +225,7 @@ private:
 		~SOverlapState() { RELEASEOBJECT(m_pClip); }
 	};
 	void ComputeOverlaps();
+	void MarkHiddenTextUnderGraphics(const SOverlapPaintedItem* pGraphicsItem);
 
 	XRef* m_pXref;
 
@@ -239,7 +240,7 @@ private:
 
 	std::vector<int> m_arrFormTextCounts;
 	std::vector<int> m_arrFormGraphicsCounts;
-	std::vector<int> m_arrHiddenText;
+	std::set<int> m_arrHiddenText;
 	std::vector<SOverlapGraphicsResult> m_arrHiddenGraphics;
 };
 }

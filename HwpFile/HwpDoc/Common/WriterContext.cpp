@@ -141,7 +141,7 @@ bool CWriterContext::Detect()
 	}
 }
 
-bool CWriterContext::Open(const HWP_STRING& sPathToFile, EHanType eHanType)
+bool CWriterContext::Open(const HWP_STRING& sPathToFile, EHanType eHanType, const HWP_STRING& sPassword)
 {
 	Clear();
 
@@ -152,16 +152,30 @@ bool CWriterContext::Open(const HWP_STRING& sPathToFile, EHanType eHanType)
 	if (nullptr == variable_name)\
 		return false;\
 	return variable_name->Open()
-	
+
 	switch (m_eType)
 	{
 		case EHanType::HWP:
 		{
-			OPEN(m_pHWPFile, CHWPFile);
+			m_pHWPFile = new CHWPFile(sPathToFile);
+
+			if (nullptr == m_pHWPFile)
+				return false;
+
+			m_pHWPFile->SetPassword(sPassword);
+
+			return m_pHWPFile->Open();
 		}
 		case EHanType::HWPX:
 		{
-			OPEN(m_pHWPXFile, CHWPXFile);
+			m_pHWPXFile = new CHWPXFile(sPathToFile);
+
+			if (nullptr == m_pHWPXFile)
+				return false;
+
+			m_pHWPXFile->SetPassword(sPassword);
+
+			return m_pHWPXFile->Open();
 		}
 		case EHanType::HWPML:
 		{
@@ -172,6 +186,26 @@ bool CWriterContext::Open(const HWP_STRING& sPathToFile, EHanType eHanType)
 	}
 
 	return false;
+}
+
+bool CWriterContext::Encrypted()
+{
+	switch (m_eType)
+	{
+		case EHanType::HWP:  return (nullptr != m_pHWPFile)  && m_pHWPFile->Encrypted();
+		case EHanType::HWPX: return (nullptr != m_pHWPXFile) && m_pHWPXFile->Encrypted();
+		default:             return false;
+	}
+}
+
+EHwpxCryptResult CWriterContext::GetCryptResult()
+{
+	switch (m_eType)
+	{
+		case EHanType::HWP:  return (nullptr != m_pHWPFile)  ? m_pHWPFile->GetCryptResult()  : EHwpxCryptResult::NOT_ENCRYPTED;
+		case EHanType::HWPX: return (nullptr != m_pHWPXFile) ? m_pHWPXFile->GetCryptResult() : EHwpxCryptResult::NOT_ENCRYPTED;
+		default:             return EHwpxCryptResult::NOT_ENCRYPTED;
+	}
 }
 
 void CWriterContext::Close()

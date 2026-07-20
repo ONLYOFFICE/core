@@ -5,7 +5,8 @@
 namespace HWP
 {
 CHWPXFile::CHWPXFile(const HWP_STRING& sFileName)
-	: m_sFileName(sFileName), m_pZipFolder(nullptr), m_oDocInfo(this)
+	: m_sFileName(sFileName), m_pZipFolder(nullptr), m_oDocInfo(this),
+	  m_eCryptResult(EHwpxCryptResult::OK)
 {}
 
 CHWPXFile::~CHWPXFile()
@@ -29,7 +30,37 @@ bool CHWPXFile::Detect()
 
 	m_pZipFolder = new CZipFolderMemory(pBuffer, dwBufferSize);
 
+	ReadManifest();
+
 	return GetFileHeader();
+}
+
+void CHWPXFile::SetPassword(const HWP_STRING& sPassword)
+{
+	m_oCrypt.SetPassword(sPassword);
+}
+
+bool CHWPXFile::Encrypted() const
+{
+	return m_oCrypt.Encrypted();
+}
+
+EHwpxCryptResult CHWPXFile::GetCryptResult() const
+{
+	return m_eCryptResult;
+}
+
+void CHWPXFile::ReadManifest()
+{
+	CXMLReader oReader;
+
+	if (nullptr == m_pZipFolder || nullptr == oReader.GetReader())
+		return;
+
+	if (!m_pZipFolder->getReaderFromFile(L"META-INF/manifest.xml", *oReader.GetReader()) || !oReader.ReadNextNode())
+		return;
+
+	m_oCrypt.ParseManifest(oReader);
 }
 
 bool CHWPXFile::Open()
@@ -129,13 +160,22 @@ bool CHWPXFile::GetChildStream(const HWP_STRING& sFileName, CHWPStream& oBuffer)
 	if (nullptr == pFileBuffer)
 		return false;
 
-	pFileBuffer->UnsetDestroy();
+	if (!m_oCrypt.Encrypted(sFileName))
+	{
+		pFileBuffer->UnsetDestroy();
 
-	oBuffer.SetStream((HWP_BYTE*)pFileBuffer->Buffer, pFileBuffer->Size);
+		oBuffer.SetStream((HWP_BYTE*)pFileBuffer->Buffer, pFileBuffer->Size);
+
+		delete pFileBuffer;
+
+		return true;
+	}
+
+	m_eCryptResult = m_oCrypt.Decrypt(sFileName, (const HWP_BYTE*)pFileBuffer->Buffer, pFileBuffer->Size, oBuffer);
 
 	delete pFileBuffer;
 
-	return true;
+	return EHwpxCryptResult::OK == m_eCryptResult;
 }
 
 bool CHWPXFile::ReadDocInfo()
@@ -181,9 +221,22 @@ bool CHWPXFile::GetDocument(const HWP_STRING& sEntryName, CXMLReader& oReader)
 	if (nullptr == m_pZipFolder || nullptr == oReader.GetReader())
 		return false;
 
-	if (m_pZipFolder->getReaderFromFile(sEntryName, *oReader.GetReader()))
-		return oReader.ReadNextNode();
+	if (!m_oCrypt.Encrypted(sEntryName))
+	{
+		if (m_pZipFolder->getReaderFromFile(sEntryName, *oReader.GetReader()))
+			return oReader.ReadNextNode();
 
-	return false;
+		return false;
+	}
+
+	CHWPStream oStream;
+
+	if (!GetChildStream(sEntryName, oStream))
+		return false;
+
+	if (!oReader.GetReader()->FromStringA(std::string(oStream.GetCurPtr(), oStream.GetSize())))
+		return false;
+
+	return oReader.ReadNextNode();
 }
 }

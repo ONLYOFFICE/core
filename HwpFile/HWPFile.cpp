@@ -20,20 +20,30 @@ void CHWPFile::SetTempDirectory(const std::wstring& wsTempDirectory)
 	m_wsTempDirectory = wsTempDirectory;
 }
 
-bool CHWPFile::OpenHWP(const std::wstring& wsFilePath)
+bool CHWPFile::OpenHWP(const std::wstring& wsFilePath, const std::wstring& wsPassword)
 {
 	if (nullptr == m_pInternal)
 		return false;
 
-	return m_pInternal->Open(wsFilePath, HWP::EHanType::HWP);
+	return m_pInternal->Open(wsFilePath, HWP::EHanType::HWP, wsPassword);
 }
 
-bool CHWPFile::OpenHWPX(const std::wstring& wsFilePath)
+bool CHWPFile::OpenHWPX(const std::wstring& wsFilePath, const std::wstring& wsPassword)
 {
 	if (nullptr == m_pInternal)
 		return false;
 
-	return m_pInternal->Open(wsFilePath, HWP::EHanType::HWPX);
+	return m_pInternal->Open(wsFilePath, HWP::EHanType::HWPX, wsPassword);
+}
+
+bool CHWPFile::IsEncrypted() const
+{
+	return (nullptr != m_pInternal) ? m_pInternal->Encrypted() : false;
+}
+
+bool CHWPFile::IsWrongPassword() const
+{
+	return (nullptr != m_pInternal) ? HWP::EHwpxCryptResult::WRONG_PASSWORD == m_pInternal->GetCryptResult() : false;
 }
 
 bool CHWPFile::OpenHWPML(const std::wstring &wsFilePath)

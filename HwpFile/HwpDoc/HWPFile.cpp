@@ -1,12 +1,15 @@
 #include "HWPFile.h"
 #include "HWPDocInfo.h"
 
+#include <cstring>
+
 #include "../OfficeUtils/src/OfficeUtils.h"
 #include "../DesktopEditor/common/Directory.h"
 
 // For decrypt
 #include "../../Common/3dParty/cryptopp/modes.h"
 #include "../../Common/3dParty/cryptopp/aes.h"
+#include "../../Common/3dParty/cryptopp/des.h"
 #include "../../Common/3dParty/cryptopp/filters.h"
 // ----------
 
@@ -15,8 +18,26 @@
 namespace HWP
 {
 CHWPFile::CHWPFile(const HWP_STRING& sFileName)
-	: m_sFileName(sFileName), m_oOleFile(sFileName), m_oDocInfo(this)
-{}
+	: m_sFileName(sFileName), m_oOleFile(sFileName), m_oDocInfo(this),
+	  m_eCryptResult(EHwpxCryptResult::NOT_ENCRYPTED), m_bPasswordDecrypt(false)
+{
+	memset(m_aDesKey, 0, sizeof(m_aDesKey));
+}
+
+void CHWPFile::SetPassword(const HWP_STRING& sPassword)
+{
+	m_sPassword = sPassword;
+}
+
+bool CHWPFile::Encrypted() const
+{
+	return m_oFileHeader.PasswordEncrypted();
+}
+
+EHwpxCryptResult CHWPFile::GetCryptResult() const
+{
+	return m_eCryptResult;
+}
 
 CHWPFile::~CHWPFile()
 {
@@ -63,18 +84,42 @@ bool CHWPFile::Open()
 	//TODO:: Add separate StringToInt method
 	m_nVersion = std::stoi(m_oFileHeader.GetVersion());
 
-	//TODO:: Verify this behavior
 	if (m_oFileHeader.PasswordEncrypted())
-		return false;
+	{
+		if (m_sPassword.empty())
+		{
+			m_eCryptResult = EHwpxCryptResult::WRONG_PASSWORD;
+			return false;
+		}
+
+		if (!DerivePasswordKey(m_sPassword, m_aDesKey))
+		{
+			m_eCryptResult = EHwpxCryptResult::UNSUPPORTED;
+			return false;
+		}
+
+		m_bPasswordDecrypt = true;
+	}
 
 	if (!GetDocInfo(m_nVersion))
+	{
+		if (m_bPasswordDecrypt)
+			m_eCryptResult = EHwpxCryptResult::WRONG_PASSWORD;
 		return false;
+	}
 
 	if (!m_oFileHeader.Distributable() && !GetBodyText(m_nVersion))
+	{
+		if (m_bPasswordDecrypt)
+			m_eCryptResult = EHwpxCryptResult::WRONG_PASSWORD;
 		return false;
+	}
 
 	if (m_oFileHeader.Distributable() && !GetViewText(m_nVersion))
 		return false;
+
+	if (m_bPasswordDecrypt)
+		m_eCryptResult = EHwpxCryptResult::OK;
 
 	return true;
 }
@@ -100,19 +145,13 @@ const CHWPDocInfo* CHWPFile::GetDocInfo() const
 
 bool CHWPFile::GetDocInfo(int nVersion)
 {
-	CHWPStream oBuffer;
-	if (m_oFileHeader.Compressed())
-	{
-		CHWPStream oTempBuffer;
+	CHWPStream oRaw;
+	if (!GetComponent(L"DocInfo", oRaw))
+		return false;
 
-		if (!GetComponent(L"DocInfo", oTempBuffer) || !Unzip(oTempBuffer, oBuffer))
-			return false;
-	}
-	else
-	{
-		if (GetComponent(L"DocInfo", oBuffer))
-			return false;
-	}
+	CHWPStream oBuffer;
+	if (!DecodeStream(oRaw, oBuffer))
+		return false;
 
 	return m_oDocInfo.Parse(oBuffer, m_nVersion);
 }
@@ -201,10 +240,30 @@ bool CHWPFile::GetChildStream(const HWP_STRING& sEntryName, ECompressed eCompres
 		if (!m_oOleFile.Read(*pTargetEntry, oTempBuffer))
 			return false;
 
+		if (m_bPasswordDecrypt)
+		{
+			CHWPStream oDecrypted;
+			if (!DecryptPassword(oTempBuffer, oDecrypted))
+				return false;
+
+			return Unzip(oDecrypted, oBuffer);
+		}
+
 		return Unzip(oTempBuffer, oBuffer);
 	}
 	else
+	{
+		if (m_bPasswordDecrypt)
+		{
+			CHWPStream oTempBuffer;
+			if (!m_oOleFile.Read(*pTargetEntry, oTempBuffer))
+				return false;
+
+			return DecryptPassword(oTempBuffer, oBuffer);
+		}
+
 		return m_oOleFile.Read(*pTargetEntry, oBuffer);
+	}
 
 	return false;
 }
@@ -368,21 +427,127 @@ bool CHWPFile::Decrypt(CHWPStream& oInput, CHWPStream& oBuffer)
 	return true;
 }
 
+static inline HWP_BYTE Rol8(unsigned char chValue)
+{
+	return (HWP_BYTE)(((chValue << 1) | (chValue >> 7)) & 0xFF);
+}
+
+bool CHWPFile::DerivePasswordKey(const HWP_STRING& sPassword, HWP_BYTE* pKey)
+{
+	if (sPassword.empty())
+		return false;
+
+	unsigned char arAcc[7] = {0};
+	unsigned int  unIndex  = 0;
+
+	#define HWP_FOLD_BYTE(chByte)\
+	{\
+		arAcc[unIndex % 7] = (unsigned char)Rol8((unsigned char)((chByte) ^ arAcc[unIndex % 7]));\
+		++unIndex;\
+	}
+
+	for (const HWP_STRING::value_type& chCode : sPassword)
+	{
+		const unsigned int unCode = (unsigned int)chCode;
+
+		if (unCode < 0x10000)
+		{
+			HWP_FOLD_BYTE(unCode & 0xFF)
+			HWP_FOLD_BYTE((unCode >> 8) & 0xFF)
+		}
+		else
+		{
+			const unsigned int   unValue = unCode - 0x10000;
+			const unsigned short shHigh  = (unsigned short)(0xD800 + (unValue >> 10));
+			const unsigned short shLow   = (unsigned short)(0xDC00 + (unValue & 0x3FF));
+
+			HWP_FOLD_BYTE(shHigh & 0xFF)
+			HWP_FOLD_BYTE((shHigh >> 8) & 0xFF)
+			HWP_FOLD_BYTE(shLow & 0xFF)
+			HWP_FOLD_BYTE((shLow >> 8) & 0xFF)
+		}
+	}
+
+	unsigned int unBit = 0;
+	for (unsigned int unByte = 0; unByte < 8; ++unByte)
+	{
+		unsigned char chValue = 0;
+		for (unsigned int unShift = 0; unShift < 7; ++unShift, ++unBit)
+			chValue = (unsigned char)((chValue << 1) | ((arAcc[unBit >> 3] >> (7 - (unBit & 7))) & 1));
+
+		pKey[unByte] = (HWP_BYTE)((chValue << 1) & 0xFE);
+	}
+
+	return true;
+}
+
+bool CHWPFile::DecryptPassword(CHWPStream& oInput, CHWPStream& oBuffer)
+{
+	const unsigned long ulSize = (oInput.SizeToEnd() / 8) * 8;
+
+	if (0 == ulSize)
+		return false;
+
+	oBuffer.Expand(ulSize);
+
+	try
+	{
+		using namespace CryptoPP;
+
+		ECB_Mode<DES>::Decryption oDecryptor;
+		oDecryptor.SetKey((byte*)m_aDesKey, sizeof(m_aDesKey));
+
+		ArraySource((byte*)oInput.GetCurPtr(), ulSize, true,
+		            new StreamTransformationFilter(oDecryptor,
+		                new ArraySink((byte*)oBuffer.GetCurPtr(), oBuffer.GetSize()),
+		                StreamTransformationFilter::NO_PADDING));
+	}
+	catch (...)
+	{
+		return false;
+	}
+
+	oBuffer.MoveToStart();
+
+	return true;
+}
+
+bool CHWPFile::DecodeStream(CHWPStream& oRaw, CHWPStream& oOut)
+{
+	CHWPStream  oDecrypted;
+	CHWPStream* pSource = &oRaw;
+
+	if (m_bPasswordDecrypt)
+	{
+		if (!DecryptPassword(oRaw, oDecrypted))
+			return false;
+
+		pSource = &oDecrypted;
+	}
+
+	if (m_oFileHeader.Compressed())
+		return Unzip(*pSource, oOut);
+
+	const unsigned long ulSize = pSource->SizeToEnd();
+	oOut.Expand(ulSize);
+	oOut.Copy(*pSource, ulSize);
+	oOut.MoveToStart();
+
+	return true;
+}
+
 bool CHWPFile::GetBodyText(int nVersion)
 {
 	VECTOR<CDirectoryEntry*> arSections{m_oOleFile.GetChildEntries(L"BodyText")};
 
 	for (const CDirectoryEntry* pSection : arSections)
 	{
-		CHWPStream oBuffer;
+		CHWPStream oRaw;
+		if (!m_oOleFile.Read(*pSection, oRaw))
+			return false;
 
-		if (m_oFileHeader.Compressed())
-		{
-			CHWPStream oTempBuffer;
-			if (!m_oOleFile.Read(*pSection, oTempBuffer) || !Unzip(oTempBuffer, oBuffer))
-				return false;
-		}
-		else if (!m_oOleFile.Read(*pSection, oBuffer))
+		CHWPStream oBuffer;
+		if (!DecodeStream(oRaw, oBuffer))
 			return false;
 
 		CHWPSection *pHwpSection = new CHWPSection();

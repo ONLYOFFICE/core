@@ -22,10 +22,13 @@ public:
 
 	void SetTempDirectory(const std::wstring& wsTempDirectory);
 
-	bool OpenHWP(const std::wstring& wsFilePath);
-	bool OpenHWPX(const std::wstring& wsFilePath);
+	bool OpenHWP(const std::wstring& wsFilePath, const std::wstring& wsPassword = std::wstring());
+	bool OpenHWPX(const std::wstring& wsFilePath, const std::wstring& wsPassword = std::wstring());
 	bool OpenHWPML(const std::wstring& wsFilePath);
 	void Close();
+
+	bool IsEncrypted() const;
+	bool IsWrongPassword() const;
 	bool ConvertToOOXML(const std::wstring& wsFilePath);
 	bool ConvertToOOXML_Dir(const std::wstring& wsDirectoryPath);
 

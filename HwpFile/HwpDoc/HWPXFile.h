@@ -3,6 +3,7 @@
 
 #include "HWPSection.h"
 #include "HwpFileHeader.h"
+#include "HWPXCrypt.h"
 
 #include "../../OfficeUtils/src/ZipFolder.h"
 
@@ -15,6 +16,8 @@ class CHWPXFile
 	CHwpFileHeader m_oFileHeader;
 	CHWPDocInfo m_oDocInfo;
 	VECTOR<CHWPSection*> m_arSections;
+	CHwpxCrypt m_oCrypt;
+	EHwpxCryptResult m_eCryptResult;
 public:
 	CHWPXFile(const HWP_STRING& sFileName);
 	~CHWPXFile();
@@ -23,12 +26,17 @@ public:
 	const CHWPDocInfo* GetDocInfo() const;
 	bool GetChildStream(const HWP_STRING& sFileName, CHWPStream& oBuffer);
 
+	void SetPassword(const HWP_STRING& sPassword);
+	bool Encrypted() const;
+	EHwpxCryptResult GetCryptResult() const;
+
 	bool Detect();
 	bool Open();
 	void Close();
 private:
 	VECTOR<HWP_STRING> GetPathsToSections() const;
 	bool GetFileHeader();
+	void ReadManifest();
 	bool ReadDocInfo();
 	bool ReadSection(const HWP_STRING& sName);
 	bool GetDocument(const HWP_STRING& sEntryName, CXMLReader& oReader);

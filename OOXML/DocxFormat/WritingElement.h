@@ -1582,6 +1582,15 @@ namespace OOX
 		et_x_RichValueTypeReservedKey,
 		et_x_RichValueTypeReservedKeyFlag,
 
+		et_x_FeaturePropertyBags,
+		et_x_FeaturePropertyBag,
+		et_x_ArrayFeatureProperty,
+		et_x_BagFeatureProperty,
+		et_x_IntFeatureProperty,
+		et_x_BoolFeatureProperty,
+		et_x_StringFeatureProperty,
+		et_x_DoubleFeatureProperty,
+
 		et_dr_Masters,
 		et_dr_Pages,
 		et_dr_DocumentSettings,

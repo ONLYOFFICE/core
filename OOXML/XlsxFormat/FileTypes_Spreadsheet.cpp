@@ -188,9 +188,14 @@ namespace OOX
 												L"application/xml",
 												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/xmlMaps");
 
-			const FileType RichValueRel	(L"richData", L"richValueRel.xml",
+			const FileType RichValueRel		(L"richData", L"richValueRel.xml",
 												L"application/vnd.ms-excel.richvaluerel+xml",
 												L"http://schemas.microsoft.com/office/2022/10/relationships/richValueRel");
+
+
+			const FileType FeaturePropertyBag(L"featurePropertyBag", L"featurePropertyBag.xml",
+												L"application/vnd.ms-excel.featurepropertybag+xml",
+												L"http://schemas.microsoft.com/office/2022/11/relationships/FeaturePropertyBag");
 
 			const FileType SpreadsheetFlat	(L"", L"", L"", L"");
 

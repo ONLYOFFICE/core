@@ -51,6 +51,10 @@ namespace SimpleTypes
 
 namespace OOX
 {
+	namespace Drawing
+	{
+		class COfficeArtExtensionList;
+	}
 	namespace Spreadsheet
 	{
 		class CAligment : public WritingElement
@@ -122,8 +126,6 @@ namespace OOX
 			nullable<SimpleTypes::COnOff> m_oLocked;
 		};
 
-		//not implemented:
-		//<extLst>
 		class CXfs : public WritingElement
 		{
 		public:
@@ -166,7 +168,7 @@ namespace OOX
 
 			nullable<CAligment>								m_oAligment;
 			nullable<CProtection>							m_oProtection;
-
+			nullable<OOX::Drawing::COfficeArtExtensionList> m_oExtLst;
 		};
 
 		class CCellXfs  : public WritingElementWithChilds<CXfs>

@@ -117,6 +117,14 @@ namespace OOX
 		class CRichValueTypeReservedKey;
 		class CRichValueTypeKeyFlags;
 		class CRichValueRels;
+		class CFeaturePropertyBags;
+		class CFeaturePropertyBag;
+		class CArrayFeatureProperty;
+		class CIntFeatureProperty;
+		class CStringFeatureProperty;
+		class CBoolFeatureProperty;
+		class CDoubleFeatureProperty;
+		class CBagFeatureProperty;
 	}
 }
 
@@ -291,6 +299,15 @@ namespace BinXlsxRW
 		void WriteRichValueType(OOX::Spreadsheet::CRichValueType* pTypeInfo);
 		void WriteRichValueTypeKeyFlags(OOX::Spreadsheet::CRichValueTypeKeyFlags* pKeyFlags);
 		void WriteRichValueTypeReservedKey(OOX::Spreadsheet::CRichValueTypeReservedKey* pReservedKey);
+		
+		void WriteFeaturePropertyBags(OOX::Spreadsheet::CFeaturePropertyBags* pFeaturePropertyBags);
+		void WriteFeaturePropertyBag(OOX::Spreadsheet::CFeaturePropertyBag* pFeaturePropertyBag);
+		void WriteFeaturePropertyArray(OOX::Spreadsheet::CArrayFeatureProperty* pArrayFeatureProperty);
+		void WriteFeaturePropertyBagId(OOX::Spreadsheet::CBagFeatureProperty* pBagFeatureProperty);
+		void WriteFeaturePropertyInt(OOX::Spreadsheet::CIntFeatureProperty* pIntFeatureProperty);
+		void WriteFeaturePropertyBool(OOX::Spreadsheet::CBoolFeatureProperty* pBoolFeatureProperty);
+		void WriteFeaturePropertyString(OOX::Spreadsheet::CStringFeatureProperty* pStringFeatureProperty);
+		void WriteFeaturePropertyDouble(OOX::Spreadsheet::CDoubleFeatureProperty* pDoubleFeatureProperty);
 	};
 	class BinaryPersonTableWriter
 	{

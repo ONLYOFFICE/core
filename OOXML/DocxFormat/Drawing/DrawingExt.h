@@ -186,6 +186,8 @@ namespace OOX
 			nullable<OOX::Spreadsheet::CUserProtectedRanges> m_oUserProtectedRanges;
 
 			nullable_bool m_oExternalLinksAutoRefresh;
+
+			nullable_uint m_oXfComplement;
 		};
 
 		//--------------------------------------------------------------------------------

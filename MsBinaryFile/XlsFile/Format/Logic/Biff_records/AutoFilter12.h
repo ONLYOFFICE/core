@@ -71,6 +71,7 @@ public:
 	BiffStructurePtr		rgb;
 	
 	BiffStructurePtrVector arAF12Criteries;
+	BiffStructurePtrVector arAF12DateInfo;
 };
 
 } // namespace XLS

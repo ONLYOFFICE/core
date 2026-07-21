@@ -1144,6 +1144,7 @@ HEADERS +=  \
 	$$LOGIC_DIR/Biff_records/YMult.h \
 	$$LOGIC_DIR/Biff_records/IMDATA.h \
 	$$LOGIC_DIR/Biff_records/FrtWrapper.h \
+    $$PWD/../Biff_structures/AF12DateInfo.h \
         \
         $$LOGIC_DIR/Biff_structures/BIFF12/CellRangeRef.h \
         $$LOGIC_DIR/Biff_structures/BIFF12/CellRef.h \
@@ -1611,3 +1612,6 @@ HEADERS +=  \
 	$$LOGIC_DIR/WorksheetSubstream.h \
 	$$LOGIC_DIR/CommonSubstream.h \
 	$$LOGIC_DIR/XlsElementsType.h
+
+SOURCES += \
+    $$PWD/../Biff_structures/AF12DateInfo.cpp

@@ -22,7 +22,9 @@ class CHWPFile
 	HWP_STRING       m_sPassword;
 	EHwpxCryptResult m_eCryptResult;
 	bool             m_bPasswordDecrypt;
+	bool             m_bAesEncrypt;
 	HWP_BYTE         m_aDesKey[8];
+	HWP_BYTE         m_aAesKey[16];
 public:
 	CHWPFile(const HWP_STRING& sFileName);
 	~CHWPFile();
@@ -51,7 +53,10 @@ private:
 	bool Decrypt(CHWPStream& oInput, CHWPStream& oBuffer);
 
 	static bool DerivePasswordKey(const HWP_STRING& sPassword, HWP_BYTE* pKey);
+	static bool DeriveAesKey(const HWP_STRING& sPassword, HWP_BYTE* pKey);
 	bool DecryptPassword(CHWPStream& oInput, CHWPStream& oBuffer);
+	bool DecryptPasswordDes(CHWPStream& oInput, CHWPStream& oBuffer);
+	bool DecryptPasswordAes(CHWPStream& oInput, CHWPStream& oBuffer);
 	bool DecodeStream(CHWPStream& oRaw, CHWPStream& oOut);
 
 	bool GetBodyText(int nVersion);

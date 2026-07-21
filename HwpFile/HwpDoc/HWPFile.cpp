@@ -10,6 +10,7 @@
 #include "../../Common/3dParty/cryptopp/modes.h"
 #include "../../Common/3dParty/cryptopp/aes.h"
 #include "../../Common/3dParty/cryptopp/des.h"
+#include "../../Common/3dParty/cryptopp/sha.h"
 #include "../../Common/3dParty/cryptopp/filters.h"
 // ----------
 
@@ -19,9 +20,11 @@ namespace HWP
 {
 CHWPFile::CHWPFile(const HWP_STRING& sFileName)
 	: m_sFileName(sFileName), m_oOleFile(sFileName), m_oDocInfo(this),
-	  m_eCryptResult(EHwpxCryptResult::NOT_ENCRYPTED), m_bPasswordDecrypt(false)
+	  m_eCryptResult(EHwpxCryptResult::NOT_ENCRYPTED), m_bPasswordDecrypt(false),
+	  m_bAesEncrypt(false)
 {
 	memset(m_aDesKey, 0, sizeof(m_aDesKey));
+	memset(m_aAesKey, 0, sizeof(m_aAesKey));
 }
 
 void CHWPFile::SetPassword(const HWP_STRING& sPassword)
@@ -92,10 +95,23 @@ bool CHWPFile::Open()
 			return false;
 		}
 
-		if (!DerivePasswordKey(m_sPassword, m_aDesKey))
+		if (m_oFileHeader.GetEncryptVersion() >= 4)
 		{
-			m_eCryptResult = EHwpxCryptResult::UNSUPPORTED;
-			return false;
+			if (!DeriveAesKey(m_sPassword, m_aAesKey))
+			{
+				m_eCryptResult = EHwpxCryptResult::UNSUPPORTED;
+				return false;
+			}
+
+			m_bAesEncrypt = true;
+		}
+		else
+		{
+			if (!DerivePasswordKey(m_sPassword, m_aDesKey))
+			{
+				m_eCryptResult = EHwpxCryptResult::UNSUPPORTED;
+				return false;
+			}
 		}
 
 		m_bPasswordDecrypt = true;
@@ -481,7 +497,63 @@ bool CHWPFile::DerivePasswordKey(const HWP_STRING& sPassword, HWP_BYTE* pKey)
 	return true;
 }
 
+bool CHWPFile::DeriveAesKey(const HWP_STRING& sPassword, HWP_BYTE* pKey)
+{
+	if (sPassword.empty())
+		return false;
+
+	unsigned char arBuffer[160] = {0};
+	unsigned int  unCount = 0;
+	unsigned char chPrev  = 0xEC;
+
+	for (const HWP_STRING::value_type& chCode : sPassword)
+	{
+		if (unCount * 2 + 1 >= sizeof(arBuffer))
+			break;
+
+		const unsigned char chByte = (unsigned char)((unsigned int)chCode & 0xFF);
+
+		arBuffer[unCount * 2]     = Rol8(chPrev);
+		arBuffer[unCount * 2 + 1] = chByte;
+
+		chPrev = chByte;
+		++unCount;
+	}
+
+	unsigned char arFiltered[sizeof(arBuffer)];
+	unsigned int  unFilteredSize = 0;
+	for (unsigned int unIndex = 0; unIndex < sizeof(arBuffer); ++unIndex)
+	{
+		if (0 != arBuffer[unIndex])
+			arFiltered[unFilteredSize++] = arBuffer[unIndex];
+	}
+
+	if (0 == unFilteredSize)
+		return false;
+
+	try
+	{
+		CryptoPP::byte arDigest[CryptoPP::SHA1::DIGESTSIZE];
+		CryptoPP::SHA1().CalculateDigest(arDigest, (const CryptoPP::byte*)arFiltered, unFilteredSize);
+		memcpy(pKey, arDigest, 16);
+	}
+	catch (...)
+	{
+		return false;
+	}
+
+	return true;
+}
+
 bool CHWPFile::DecryptPassword(CHWPStream& oInput, CHWPStream& oBuffer)
+{
+	if (m_bAesEncrypt)
+		return DecryptPasswordAes(oInput, oBuffer);
+
+	return DecryptPasswordDes(oInput, oBuffer);
+}
+
+bool CHWPFile::DecryptPasswordDes(CHWPStream& oInput, CHWPStream& oBuffer)
 {
 	const unsigned long ulSize = (oInput.SizeToEnd() / 8) * 8;
 
@@ -501,6 +573,64 @@ bool CHWPFile::DecryptPassword(CHWPStream& oInput, CHWPStream& oBuffer)
 		            new StreamTransformationFilter(oDecryptor,
 		                new ArraySink((byte*)oBuffer.GetCurPtr(), oBuffer.GetSize()),
 		                StreamTransformationFilter::NO_PADDING));
+	}
+	catch (...)
+	{
+		return false;
+	}
+
+	oBuffer.MoveToStart();
+
+	return true;
+}
+
+bool CHWPFile::DecryptPasswordAes(CHWPStream& oInput, CHWPStream& oBuffer)
+{
+	const unsigned long ulSize = oInput.SizeToEnd();
+
+	if (0 == ulSize)
+		return false;
+
+	oBuffer.Expand(ulSize);
+
+	const unsigned char* pInput  = (const unsigned char*)oInput.GetCurPtr();
+	unsigned char*       pOutput = (unsigned char*)oBuffer.GetCurPtr();
+
+	try
+	{
+		CryptoPP::AES::Encryption oAes((const CryptoPP::byte*)m_aAesKey, 16);
+
+		unsigned char arReg[16] = {0};
+		unsigned char arEnc[16];
+
+		for (unsigned long ulOffset = 0; ulOffset < ulSize; ulOffset += 16)
+		{
+			unsigned char arBlock[16] = {0};
+			const unsigned long ulBlock = (ulSize - ulOffset < 16) ? (ulSize - ulOffset) : 16;
+			memcpy(arBlock, pInput + ulOffset, ulBlock);
+
+			for (unsigned int unBit = 0; unBit < 128; ++unBit)
+			{
+				oAes.ProcessBlock(arReg, arEnc);
+
+				const unsigned int unByteIdx = unBit >> 3;
+				const unsigned int unBitPos  = unBit & 7;
+
+				const unsigned char chFeedback = (unsigned char)((arBlock[unByteIdx] >> (7 - unBitPos)) & 1);
+
+				unsigned char chCarry = chFeedback;
+				for (int nByte = 15; nByte >= 0; --nByte)
+				{
+					const unsigned char chNext = (unsigned char)((arReg[nByte] >> 7) & 1);
+					arReg[nByte] = (unsigned char)(((arReg[nByte] << 1) & 0xFF) | chCarry);
+					chCarry = chNext;
+				}
+
+				arBlock[unByteIdx] ^= (unsigned char)((arEnc[0] & 0x80) >> unBitPos);
+			}
+
+			memcpy(pOutput + ulOffset, arBlock, ulBlock);
+		}
 	}
 	catch (...)
 	{

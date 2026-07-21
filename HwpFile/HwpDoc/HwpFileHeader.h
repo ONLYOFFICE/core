@@ -45,6 +45,7 @@ public:
 	bool VersionEmpty() const;
 
 	HWP_STRING GetVersion() const;
+	int GetEncryptVersion() const;
 
 	bool Parse(CHWPStream& oBuffer);
 	bool Parse(CXMLReader& oReader);

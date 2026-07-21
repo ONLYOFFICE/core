@@ -1308,7 +1308,12 @@ namespace OOX
 					FmlaUnion->m_SharedFormula = XLS::BaseObjectPtr(shrFmla);
 					shrFmla->ref_.fromString(m_oRef.get());
 					shrFmla->formula = m_sText;
-					FmlaUnion->shared_formulas_locations_ref_.push_back(shrFmla->ref_);
+					CellRangeRef shrFmlaLoc;
+					shrFmlaLoc.columnFirst = cellBaseRef.column;
+					shrFmlaLoc.columnLast = cellBaseRef.column;
+					shrFmlaLoc.rowFirst = cellBaseRef.row;
+					shrFmlaLoc.rowLast = cellBaseRef.row;
+					FmlaUnion->shared_formulas_locations_ref_.push_back(shrFmlaLoc);
 					parseFmlaValueType(shrFmla->formula);
 				}
 				if(m_oSi.IsInit() && FmlaUnion->shared_formulas_locations_ref_.size() > m_oSi->GetValue())

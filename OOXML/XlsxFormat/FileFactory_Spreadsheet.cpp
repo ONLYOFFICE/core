@@ -45,6 +45,7 @@
 
 #include "SharedStrings/SharedStrings.h"
 #include "Styles/Styles.h"
+#include "Styles/FeaturePropertyBag.h"
 #include "Workbook/Workbook.h"
 #include "Worksheets/Worksheet.h"
 #include "CalcChain/CalcChain.h"
@@ -199,6 +200,10 @@ namespace OOX
 				return smart_ptr<OOX::File>(new CRdRichValueFile(pMain, oRootPath, oFileName));
 			else if (oRelation.Type() == FileTypes::RdRichValueTypes)
 				return smart_ptr<OOX::File>(new CRdRichValueTypesFile(pMain, oRootPath, oFileName));
+			else if (oRelation.Type() == FileTypes::RichValueRel)
+				return smart_ptr<OOX::File>(new CRichValueRelFile(pMain, oRootPath, oFileName));
+			else if (oRelation.Type() == FileTypes::FeaturePropertyBag)
+				return smart_ptr<OOX::File>(new CFeaturePropertyBagFile(pMain, oRootPath, oFileName));
 
 			return smart_ptr<OOX::File>( new UnknowTypeFile(pMain) );
 		}
@@ -341,8 +346,12 @@ namespace OOX
 				return smart_ptr<OOX::File>(new CRdRichValueFile(pMain, oRootPath, oFileName));
 			else if (pRelation->Type() == FileTypes::RdRichValueTypes)
 				return smart_ptr<OOX::File>(new CRdRichValueTypesFile(pMain, oRootPath, oFileName));
+			else if (pRelation->Type() == FileTypes::RichValueRel)
+				return smart_ptr<OOX::File>(new CRichValueRelFile(pMain, oRootPath, oFileName));
 			else if (pRelation->Type() == FileTypes::XmlMaps)
-			return smart_ptr<OOX::File>(new CXmlMapsFile(pMain, oRootPath, oFileName));
+				return smart_ptr<OOX::File>(new CXmlMapsFile(pMain, oRootPath, oFileName));
+			else if (pRelation->Type() == FileTypes::FeaturePropertyBag)
+				return smart_ptr<OOX::File>(new CFeaturePropertyBagFile(pMain, oRootPath, oFileName));
 
 			return smart_ptr<OOX::File>( new UnknowTypeFile(pMain) );
 		}

@@ -57,6 +57,7 @@ private:
 	bool DecryptPassword(CHWPStream& oInput, CHWPStream& oBuffer);
 	bool DecryptPasswordDes(CHWPStream& oInput, CHWPStream& oBuffer);
 	bool DecryptPasswordAes(CHWPStream& oInput, CHWPStream& oBuffer);
+	bool VerifyPassword();
 	bool DecodeStream(CHWPStream& oRaw, CHWPStream& oOut);
 
 	bool GetBodyText(int nVersion);

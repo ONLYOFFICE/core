@@ -1,5 +1,6 @@
 #include "HWPFile.h"
 #include "HWPDocInfo.h"
+#include "HWPElements/HWPTag.h"
 
 #include <cstring>
 
@@ -115,6 +116,12 @@ bool CHWPFile::Open()
 		}
 
 		m_bPasswordDecrypt = true;
+
+		if (!VerifyPassword())
+		{
+			m_eCryptResult = EHwpxCryptResult::WRONG_PASSWORD;
+			return false;
+		}
 	}
 
 	if (!GetDocInfo(m_nVersion))
@@ -170,6 +177,30 @@ bool CHWPFile::GetDocInfo(int nVersion)
 		return false;
 
 	return m_oDocInfo.Parse(oBuffer, m_nVersion);
+}
+
+bool CHWPFile::VerifyPassword()
+{
+	CHWPStream oRaw;
+	if (!GetComponent(L"DocInfo", oRaw))
+		return false;
+
+	CHWPStream oBuffer;
+	if (!DecodeStream(oRaw, oBuffer))
+		return false;
+
+	if (oBuffer.SizeToEnd() < 4)
+		return false;
+
+	const unsigned int unHeader =  (unsigned int)(unsigned char)oBuffer[0]
+	                            | ((unsigned int)(unsigned char)oBuffer[1] << 8)
+	                            | ((unsigned int)(unsigned char)oBuffer[2] << 16)
+	                            | ((unsigned int)(unsigned char)oBuffer[3] << 24);
+
+	const unsigned int unTagId = unHeader & 0x3FF;
+	const unsigned int unLevel = (unHeader >> 10) & 0x3FF;
+
+	return (HWPTAG_DOCUMENT_PROPERTIES == (int)unTagId) && (0 == unLevel);
 }
 
 bool CHWPFile::GetComponent(const HWP_STRING& sEntryName, CHWPStream& oBuffer)

@@ -162,7 +162,7 @@ namespace PdfWriter
 		// beginMCOShapes
 		virtual void endMarkedContent(GfxState *state) override;
 		virtual GBool useNameOp() override;
-		virtual void setExtGState(const char* name) override;
+		virtual void setExtGState(GfxState *pGState, Object* pExtGState, const char* name) override;
 		virtual void setFillColorSpace(const char* name) override;
 		virtual void setFillColor(Object* args, int numArgs) override;
 		virtual void setFillColorN(Object* args, int numArgs) override;

@@ -102,7 +102,7 @@ bool IsOpaqueGraphicsItem(const SOverlapPaintedItem& oItem)
 		return false;
 	if (oItem.m_bHasSoftMask)
 		return false;
-	if (!oItem.m_sBlendMode.empty() && oItem.m_sBlendMode != "Normal" && oItem.m_sBlendMode != "Compatible")
+	if (oItem.m_nBlendMode != gfxBlendNormal)
 		return false;
 	return true;
 }
@@ -115,6 +115,7 @@ SOverlapPaintedItem::SOverlapPaintedItem()
 	, m_bEoFill(false)
 	, m_dFillAlpha(1)
 	, m_bHasSoftMask(gFalse)
+	, m_nBlendMode(gfxBlendNormal)
 {
 }
 SOverlapPaintedItem::~SOverlapPaintedItem()
@@ -217,7 +218,7 @@ void OverlapOutputDev::fill(GfxState* pGState)
 
 	pItem->m_dFillAlpha   = pGState->getFillOpacity();
 	pItem->m_bHasSoftMask = gFalse; // pGState->getSoftMask() ? gTrue : gFalse; TODO
-	pItem->m_sBlendMode   = ""; // TODO
+	pItem->m_nBlendMode   = pGState->getBlendMode();
 
 	MarkHiddenTextUnderGraphics(pItem);
 
@@ -239,7 +240,7 @@ void OverlapOutputDev::eoFill(GfxState* pGState)
 
 	pItem->m_dFillAlpha   = pGState->getFillOpacity();
 	pItem->m_bHasSoftMask = gFalse; // pGState->getSoftMask() ? gTrue : gFalse; TODO
-	pItem->m_sBlendMode   = ""; // TODO
+	pItem->m_nBlendMode   = pGState->getBlendMode();
 
 	MarkHiddenTextUnderGraphics(pItem);
 
@@ -296,6 +297,67 @@ void OverlapOutputDev::drawChar(GfxState* pGState, double dX, double dY, double 
 		pGState->transform(arrUserX[i], arrUserY[i], &pItem->m_arrTextPoints[i][0], &pItem->m_arrTextPoints[i][1]);
 
 	m_arrPainted.push_back(pItem);
+
+	const double c_dOpaqueEps = 1e-6;
+	double* pCTM = pGState->getCTM();
+	double* pTm  = pGState->getTextMat();
+	double det   = pCTM[0] * pCTM[3] - pCTM[1] * pCTM[2];
+	double detT  = pTm[0]  * pTm[3]  - pTm[1]  * pTm[2];
+	int nRender = pGState->getRender();
+	// PDF render mode: 0=fill,1=stroke,2=fill+stroke,3=invisible,4=fill+clip,5=stroke+clip,6=fill+stroke+clip,7=clip only
+	bool bUsesFill   = (nRender == 0 || nRender == 2 || nRender == 4 || nRender == 6);
+	bool bUsesStroke = (nRender == 1 || nRender == 2 || nRender == 5 || nRender == 6);
+
+	bool bInvisibleRender = (nRender == 3 || nRender == 7);
+	bool bZeroFill   = bUsesFill   && fabs(pGState->getFillOpacity())   <= c_dOpaqueEps;
+	bool bZeroStroke = bUsesStroke && fabs(pGState->getStrokeOpacity()) <= c_dOpaqueEps;
+	bool bZeroPaint  = (bUsesFill && bUsesStroke) ? (bZeroFill && bZeroStroke) : (bZeroFill || bZeroStroke);
+
+	if (bInvisibleRender || bZeroPaint || fabs(dFontSize) <= c_dOpaqueEps || fabs(pGState->getHorizScaling()) <= c_dOpaqueEps || fabs(det) <= c_dOpaqueEps || fabs(detT) <= c_dOpaqueEps)
+	{
+		m_arrHiddenText.insert(pItem->m_nTextIndex);
+		return;
+	}
+
+	double dClipXMin, dClipYMin, dClipXMax, dClipYMax;
+	pGState->getClipBBox(&dClipXMin, &dClipYMin, &dClipXMax, &dClipYMax);
+
+	double dGlyphXMin = pItem->m_arrTextPoints[0][0], dGlyphXMax = dGlyphXMin;
+	double dGlyphYMin = pItem->m_arrTextPoints[0][1], dGlyphYMax = dGlyphYMin;
+	for (int p = 1; p < 4; ++p)
+	{
+		dGlyphXMin = std::min(dGlyphXMin, pItem->m_arrTextPoints[p][0]);
+		dGlyphXMax = std::max(dGlyphXMax, pItem->m_arrTextPoints[p][0]);
+		dGlyphYMin = std::min(dGlyphYMin, pItem->m_arrTextPoints[p][1]);
+		dGlyphYMax = std::max(dGlyphYMax, pItem->m_arrTextPoints[p][1]);
+	}
+	if (dGlyphXMax < dClipXMin || dGlyphXMin > dClipXMax || dGlyphYMax < dClipYMin || dGlyphYMin > dClipYMax)
+		m_arrHiddenText.insert(pItem->m_nTextIndex);
+}
+//----- additional -----
+void OverlapOutputDev::setExtGState(GfxState *pGState, Object* pExtGState, const char* name)
+{
+	Object obj2;
+	double dOpac = 1;
+	if (!pExtGState->dictLookup("BM", &obj2)->isNull())
+	{
+		GfxBlendMode mode;
+		if (pGState->parseBlendMode(&obj2, &mode))
+			pGState->setBlendMode(mode);
+	}
+	obj2.free();
+	if (pExtGState->dictLookup("ca", &obj2)->isNum())
+	{
+		dOpac = obj2.getNum();
+		pGState->setFillOpacity(dOpac < 0 ? 0 : dOpac > 1 ? 1 : dOpac);
+	}
+	obj2.free();
+	if (pExtGState->dictLookup("CA", &obj2)->isNum())
+	{
+		dOpac = obj2.getNum();
+		pGState->setStrokeOpacity(dOpac < 0 ? 0 : dOpac > 1 ? 1 : dOpac);
+	}
+	obj2.free();
 }
 //----- form XObjects -----
 void OverlapOutputDev::drawForm(GfxState* pGState, Gfx* gfx, Ref id, const char* name)

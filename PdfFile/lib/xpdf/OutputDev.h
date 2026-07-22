@@ -191,7 +191,7 @@ public:
   virtual GBool beginMCOShapes(GfxState *state, GString *s, Object *ref) { return gFalse; }
   virtual void endMarkedContent(GfxState *state) {}
   virtual GBool useNameOp() { return gFalse; }
-  virtual void setExtGState(const char* name) {}
+  virtual void setExtGState(GfxState *state, Object* pExtGState, const char* name) {}
   virtual void setFillColorSpace(const char* name) {}
   virtual void setFillColor(Object* args, int numArgs) {}
   virtual void setFillColorN(Object* args, int numArgs) {}

@@ -1142,7 +1142,7 @@ GBool RedactOutputDev::useNameOp()
 {
 	return gTrue;
 }
-void RedactOutputDev::setExtGState(const char* name)
+void RedactOutputDev::setExtGState(GfxState *pGState, Object* pExtGState, const char* name)
 {
 	if (m_sStates.empty())
 		return;

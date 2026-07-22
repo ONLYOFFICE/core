@@ -81,6 +81,8 @@
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/SeriesText.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/AttachedLabel.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/PieFormat.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/MarkerFormat.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/AreaFormat.h"
 
 
 namespace OOX
@@ -4332,6 +4334,58 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
 		}
+		XLS::BaseObjectPtr CT_Marker::toXLS() const
+		{
+			auto ptr = new XLS::MarkerFormat;
+			if(m_symbol.IsInit())
+			{
+				int  symbolType = m_symbol->GetValue();
+				switch (symbolType)
+				{
+					case st_markerstyleCIRCLE:
+						ptr->imk = 8;
+						break;
+					case st_markerstyleDIAMOND:
+						ptr->imk = 2;
+						break;
+					case st_markerstyleTRIANGLE:
+						ptr->imk = 3;
+						break;
+					case st_markerstyleSQUARE:
+						ptr->imk = 1;
+						break;
+					case st_markerstyleX:
+						ptr->imk = 4;
+						break;
+					case st_markerstyleSTAR:
+						ptr->imk = 5;
+						break;
+					case st_markerstylePLUS:
+						ptr->imk = 9;
+					case st_markerstyleDASH:
+						ptr->imk = 7;
+					case st_markerstyleDOT:
+						ptr->imk = 7;
+						break;
+					default:
+						ptr->imk = 1;
+						break;
+				}
+			}
+			if(m_spPr.IsInit())
+			{
+				auto mkFill = m_spPr->Fill.toXLS();
+				auto CastedFill = static_cast<XLS::AreaFormat*>(mkFill.get());
+				ptr->icvBack = CastedFill->icvBack;
+				ptr->icvFore = CastedFill->icvFore;
+				ptr->rgbBack = CastedFill->rgbBack;
+				ptr->rgbFore = CastedFill->rgbFore;
+
+			}
+			if(m_size.IsInit())
+				ptr->miSize = m_size.get() * 20;
+			return XLS::BaseObjectPtr(ptr);
+		}
 		EElementType CT_Marker::getType() { return et_ct_marker; }
 
 		ST_MarkerStyle CMarkerStyle::FromString(const std::wstring &sValue)
@@ -8123,12 +8177,22 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			auto baseFormat = CBaseSer::GetXLSFormat(chartIndex);
 			auto castedFormat = static_cast<XLS::SERIESFORMAT*>(baseFormat.get());
 			auto series = static_cast<XLS::Series*>(castedFormat->m_Series.get());
+			if(!castedFormat->m_arPtSS.empty() && m_marker != nullptr)
+			{
+				auto formatStyle = static_cast<XLS::SS*>(castedFormat->m_arPtSS.back().get());
+				formatStyle->m_MarkerFormat = m_marker->toXLS();
+			}
 			for(auto i : m_dPt)
 			{
 				_UINT16 order = 0;
 				if(m_order.IsInit())
 						order = m_order.get();
 				castedFormat->m_arPtSS.push_back(i->toXLS(order));
+				if(!castedFormat->m_arPtSS.empty() && i->m_marker != nullptr)
+				{
+					auto formatStyle = static_cast<XLS::SS*>(castedFormat->m_arPtSS.back().get());
+					formatStyle->m_MarkerFormat = i->m_marker->toXLS();
+				}
 			}
 			if(m_xVal != nullptr &&( m_xVal->m_numRef != nullptr ||m_xVal->m_strRef != nullptr))
 			{

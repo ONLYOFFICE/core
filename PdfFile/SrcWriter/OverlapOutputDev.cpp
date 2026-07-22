@@ -46,6 +46,22 @@ void TransformPoint(const double* pMatrix, double dUserX, double dUserY, double*
 	*pdDeviceX = dUserX * pMatrix[0] + dUserY * pMatrix[2] + pMatrix[4];
 	*pdDeviceY = dUserX * pMatrix[1] + dUserY * pMatrix[3] + pMatrix[5];
 }
+void BuildImageDevicePath(const double* pCTM, Aggplus::CGraphicsPath& oPath)
+{
+	oPath.Reset();
+
+	double dX, dY;
+	oPath.StartFigure();
+	TransformPoint(pCTM, 0, 0, &dX, &dY);
+	oPath.MoveTo(dX, dY);
+	TransformPoint(pCTM, 0, 1, &dX, &dY);
+	oPath.LineTo(dX, dY);
+	TransformPoint(pCTM, 1, 1, &dX, &dY);
+	oPath.LineTo(dX, dY);
+	TransformPoint(pCTM, 1, 0, &dX, &dY);
+	oPath.LineTo(dX, dY);
+	oPath.CloseFigure();
+}
 void BuildDeviceSpacePath(GfxPath* pPath, const double* pCTM, bool bEoFill, Aggplus::CGraphicsPath& oPath)
 {
 	oPath.Reset();
@@ -157,6 +173,7 @@ SOverlapGraphicsResult::~SOverlapGraphicsResult()
 OverlapOutputDev::OverlapOutputDev(bool bTextOnly)
 	: m_bTextOnly(bTextOnly)
 	, m_nTextCounter(0)
+	, m_nGraphicsCounter(0)
 	, m_nFormDepth(0)
 	, m_nFormCounter(0)
 {
@@ -179,9 +196,10 @@ void OverlapOutputDev::startPage(int nPageIndex, GfxState* pGState)
 	m_arrPainted.clear();
 	m_sStates.clear();
 
-	m_nTextCounter = 0;
-	m_nFormDepth   = 0;
-	m_nFormCounter = 0;
+	m_nTextCounter     = 0;
+	m_nGraphicsCounter = 0;
+	m_nFormDepth       = 0;
+	m_nFormCounter     = 0;
 	m_arrHiddenText.clear();
 	m_arrFormTextCounts.clear();
 	m_arrFormGraphicsCounts.clear();
@@ -240,6 +258,30 @@ void OverlapOutputDev::eoFill(GfxState* pGState)
 
 	pItem->m_dFillAlpha   = pGState->getFillOpacity();
 	pItem->m_bHasSoftMask = gFalse; // pGState->getSoftMask() ? gTrue : gFalse; TODO
+	pItem->m_nBlendMode   = pGState->getBlendMode();
+
+	MarkHiddenTextUnderGraphics(pItem);
+
+	m_arrPainted.push_back(pItem);
+}
+//----- image drawing -----
+void OverlapOutputDev::drawImage(GfxState* pGState, Gfx* gfx, Object* pRef, Stream* pStream, int nWidth, int nHeight,
+								  GfxImageColorMap* pColorMap, int* pMaskColors, GBool bInlineImg, GBool interpolate)
+{
+	SOverlapPaintedItem* pItem = new(std::nothrow) SOverlapPaintedItem();
+	if (!pItem)
+		return;
+
+	pItem->m_eKind          = EOverlapPaintKind::Graphics;
+	pItem->m_nGraphicsIndex = m_nGraphicsCounter++;
+	pItem->m_bEoFill        = false;
+
+	pItem->m_pDevicePath = new(std::nothrow) Aggplus::CGraphicsPath();
+	if (pItem->m_pDevicePath)
+		BuildImageDevicePath(pGState->getCTM(), *pItem->m_pDevicePath);
+
+	pItem->m_dFillAlpha   = pGState->getFillOpacity();
+	pItem->m_bHasSoftMask = pMaskColors ? gTrue : gFalse; // color-key masked image is not fully opaque
 	pItem->m_nBlendMode   = pGState->getBlendMode();
 
 	MarkHiddenTextUnderGraphics(pItem);

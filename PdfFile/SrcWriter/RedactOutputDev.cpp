@@ -571,6 +571,50 @@ bool ComputeVisibleImageRect(GfxState* pGState, const double* pCTM, double& dU0,
 		return false;
 	return true;
 }
+bool ComputeImageCropRect(GfxState* pGState, const double* pCTM, int nWidth, int nHeight, int nRedactInfo,
+						   int& nCropLeft, int& nCropTop, int& nCropWidth, int& nCropHeight, double* arrCropMatrix)
+{
+	nCropLeft = 0; nCropTop = 0; nCropWidth = nWidth; nCropHeight = nHeight;
+	arrCropMatrix[0] = 1; arrCropMatrix[1] = 0; arrCropMatrix[2] = 0;
+	arrCropMatrix[3] = 1; arrCropMatrix[4] = 0; arrCropMatrix[5] = 0;
+
+	if (!(nRedactInfo & (1 << 8)))
+		return false;
+
+	double dU0, dV0, dU1, dV1;
+	if (!ComputeVisibleImageRect(pGState, pCTM, dU0, dV0, dU1, dV1))
+		return false;
+
+	int nLeft   = (int)floor(dU0 * nWidth);
+	int nRight  = (int)ceil (dU1 * nWidth);
+	int nTop    = (int)floor((1.0 - dV1) * nHeight);
+	int nBottom = (int)ceil ((1.0 - dV0) * nHeight);
+
+	nLeft   = std::max(0, std::min(nWidth,  nLeft));
+	nRight  = std::max(0, std::min(nWidth,  nRight));
+	nTop    = std::max(0, std::min(nHeight, nTop));
+	nBottom = std::max(0, std::min(nHeight, nBottom));
+
+	if (nRight <= nLeft || nBottom <= nTop || (nLeft <= 0 && nTop <= 0 && nRight >= nWidth && nBottom >= nHeight))
+		return false;
+
+	nCropLeft   = nLeft;
+	nCropTop    = nTop;
+	nCropWidth  = nRight - nLeft;
+	nCropHeight = nBottom - nTop;
+
+	double dNewU0 = (double)nCropLeft / nWidth;
+	double dNewU1 = (double)(nCropLeft + nCropWidth) / nWidth;
+	double dNewV0 = 1.0 - (double)(nCropTop + nCropHeight) / nHeight;
+	double dNewV1 = 1.0 - (double)nCropTop / nHeight;
+
+	arrCropMatrix[0] = dNewU1 - dNewU0;
+	arrCropMatrix[3] = dNewV1 - dNewV0;
+	arrCropMatrix[4] = dNewU0;
+	arrCropMatrix[5] = dNewV0;
+
+	return true;
+}
 BYTE* CropRGBA(BYTE* pSrc, int nSrcWidth, int nSrcHeight, int nLeft, int nTop, int nCropWidth, int nCropHeight)
 {
 	BYTE* pDst = new BYTE[(size_t)4 * nCropWidth * nCropHeight];
@@ -581,6 +625,17 @@ BYTE* CropRGBA(BYTE* pSrc, int nSrcWidth, int nSrcHeight, int nLeft, int nTop, i
 		const BYTE* pSrcRow = pSrc + (size_t)(nTop + nRow) * nSrcStride + (size_t)nLeft * 4;
 		BYTE* pDstRow = pDst + (size_t)nRow * nDstStride;
 		memcpy(pDstRow, pSrcRow, nDstStride);
+	}
+	return pDst;
+}
+BYTE* CropGray(BYTE* pSrc, int nSrcWidth, int nSrcHeight, int nLeft, int nTop, int nCropWidth, int nCropHeight)
+{
+	BYTE* pDst = new BYTE[(size_t)nCropWidth * nCropHeight];
+	for (int nRow = 0; nRow < nCropHeight; ++nRow)
+	{
+		const BYTE* pSrcRow = pSrc + (size_t)(nTop + nRow) * nSrcWidth + (size_t)nLeft;
+		BYTE* pDstRow = pDst + (size_t)nRow * nCropWidth;
+		memcpy(pDstRow, pSrcRow, nCropWidth);
 	}
 	return pDst;
 }
@@ -1263,15 +1318,21 @@ void RedactOutputDev::drawImageMask(GfxState *pGState, Gfx *gfx, Object *pRef, S
 		return;
 
 	bool bHasRedact = CheckPartialRedact(m_arrQuadPoints, imagePolygon);
-	if (!pRef || bInlineImage || bHasRedact)
-		pObj = CreateImage(gfx, nWidth, nHeight, STREAM_FILTER_FLATE_DECODE, 1, NULL);
+
+	int nCropLeft, nCropTop, nCropWidth, nCropHeight;
+	double arrCropMatrix[6];
+	bool bNeedsCrop = ComputeImageCropRect(pGState, m_arrMatrix, nWidth, nHeight, m_nRedactInfo,
+											nCropLeft, nCropTop, nCropWidth, nCropHeight, arrCropMatrix);
+
+	if (!pRef || bInlineImage || bHasRedact || bNeedsCrop)
+		pObj = CreateImage(gfx, bNeedsCrop ? nCropWidth : nWidth, bNeedsCrop ? nCropHeight : nHeight, STREAM_FILTER_FLATE_DECODE, 1, NULL);
 	else
 		pObj = m_mObjManager->GetObj(pRef->getRefNum() + m_nStartRefID);
 
 	if (!pObj || pObj->GetType() != object_type_DICT)
 		return;
 
-	if (!bHasRedact && pRef && !bInlineImage)
+	if (!bHasRedact && !bNeedsCrop && pRef && !bInlineImage)
 	{
 		DrawXObject(m_sImageName.c_str());
 		return;
@@ -1284,13 +1345,25 @@ void RedactOutputDev::drawImageMask(GfxState *pGState, Gfx *gfx, Object *pRef, S
 	if (bHasRedact)
 		ApplyRedactToGray(m_arrQuadPoints, pBufferPtr, nWidth, nHeight, imagePolygon);
 
-	SaveImageMaskToStream(pDocument, (CDictObject*)pObj, pBufferPtr, nWidth, nHeight);
-	delete[] pBufferPtr;
+	BYTE* pFinalBuffer = pBufferPtr;
+	int nFinalWidth = nWidth, nFinalHeight = nHeight;
+	if (bNeedsCrop)
+	{
+		pFinalBuffer = CropGray(pBufferPtr, nWidth, nHeight, nCropLeft, nCropTop, nCropWidth, nCropHeight);
+		delete[] pBufferPtr;
+		nFinalWidth  = nCropWidth;
+		nFinalHeight = nCropHeight;
+	}
 
-	DrawXObject(m_sImageName.c_str());
+	SaveImageMaskToStream(pDocument, (CDictObject*)pObj, pFinalBuffer, nFinalWidth, nFinalHeight);
+	delete[] pFinalBuffer;
+
+	DrawXObject(m_sImageName.c_str(), bNeedsCrop ? arrCropMatrix : NULL);
 }
 void RedactOutputDev::drawImage(GfxState *pGState, Gfx *gfx, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap, int *pMaskColors, GBool bInlineImg, GBool interpolate)
 {
+	++m_nGraphicsCounter;
+
 	m_pRenderer->m_oCommandManager.Flush();
 	DoStateOp();
 
@@ -1305,45 +1378,10 @@ void RedactOutputDev::drawImage(GfxState *pGState, Gfx *gfx, Object *pRef, Strea
 
 	bool bHasRedact = CheckPartialRedact(m_arrQuadPoints, imagePolygon);
 
-	bool bNeedsCrop = false;
-	int nCropLeft = 0, nCropTop = 0, nCropWidth = nWidth, nCropHeight = nHeight;
-	double arrCropMatrix[6] = { 1, 0, 0, 1, 0, 0 };
-
-	if (m_nRedactInfo & (1 << 8))
-	{
-		double dU0, dV0, dU1, dV1;
-		if (ComputeVisibleImageRect(pGState, m_arrMatrix, dU0, dV0, dU1, dV1))
-		{
-			int nLeft   = (int)floor(dU0 * nWidth);
-			int nRight  = (int)ceil (dU1 * nWidth);
-			int nTop    = (int)floor((1.0 - dV1) * nHeight);
-			int nBottom = (int)ceil ((1.0 - dV0) * nHeight);
-
-			nLeft   = std::max(0, std::min(nWidth,  nLeft));
-			nRight  = std::max(0, std::min(nWidth,  nRight));
-			nTop    = std::max(0, std::min(nHeight, nTop));
-			nBottom = std::max(0, std::min(nHeight, nBottom));
-
-			if (nRight > nLeft && nBottom > nTop && (nLeft > 0 || nTop > 0 || nRight < nWidth || nBottom < nHeight))
-			{
-				bNeedsCrop  = true;
-				nCropLeft   = nLeft;
-				nCropTop    = nTop;
-				nCropWidth  = nRight - nLeft;
-				nCropHeight = nBottom - nTop;
-
-				double dNewU0 = (double)nCropLeft / nWidth;
-				double dNewU1 = (double)(nCropLeft + nCropWidth) / nWidth;
-				double dNewV0 = 1.0 - (double)(nCropTop + nCropHeight) / nHeight;
-				double dNewV1 = 1.0 - (double)nCropTop / nHeight;
-
-				arrCropMatrix[0] = dNewU1 - dNewU0;
-				arrCropMatrix[3] = dNewV1 - dNewV0;
-				arrCropMatrix[4] = dNewU0;
-				arrCropMatrix[5] = dNewV0;
-			}
-		}
-	}
+	int nCropLeft, nCropTop, nCropWidth, nCropHeight;
+	double arrCropMatrix[6];
+	bool bNeedsCrop = ComputeImageCropRect(pGState, m_arrMatrix, nWidth, nHeight, m_nRedactInfo,
+											nCropLeft, nCropTop, nCropWidth, nCropHeight, arrCropMatrix);
 
 	if (!pRef || bInlineImg || bHasRedact || bNeedsCrop)
 		pObj = CreateImage(gfx, bNeedsCrop ? nCropWidth : nWidth, bNeedsCrop ? nCropHeight : nHeight, STREAM_FILTER_DCT_DECODE, 8, "DeviceRGB");
@@ -1401,15 +1439,21 @@ void RedactOutputDev::drawSoftMaskedImage(GfxState *pGState, Gfx *gfx, Object *p
 		return;
 
 	bool bHasRedact = CheckPartialRedact(m_arrQuadPoints, imagePolygon);
-	if (!pRef || bHasRedact)
-		pObj = CreateImage(gfx, nWidth, nHeight, STREAM_FILTER_DCT_DECODE, 8, "DeviceRGB");
+
+	int nCropLeft, nCropTop, nCropWidth, nCropHeight;
+	double arrCropMatrix[6];
+	bool bNeedsCrop = ComputeImageCropRect(pGState, m_arrMatrix, nWidth, nHeight, m_nRedactInfo,
+											nCropLeft, nCropTop, nCropWidth, nCropHeight, arrCropMatrix);
+
+	if (!pRef || bHasRedact || bNeedsCrop)
+		pObj = CreateImage(gfx, bNeedsCrop ? nCropWidth : nWidth, bNeedsCrop ? nCropHeight : nHeight, STREAM_FILTER_DCT_DECODE, 8, "DeviceRGB");
 	else
 		pObj = m_mObjManager->GetObj(pRef->getRefNum() + m_nStartRefID);
 
 	if (!pObj || pObj->GetType() != object_type_DICT)
 		return;
 
-	if (!bHasRedact)
+	if (!bHasRedact && !bNeedsCrop)
 	{
 		DrawXObject(m_sImageName.c_str());
 		return;
@@ -1421,7 +1465,18 @@ void RedactOutputDev::drawSoftMaskedImage(GfxState *pGState, Gfx *gfx, Object *p
 
 	ApplyRedactToRGBA(m_arrQuadPoints, pBufferPtr, nWidth, nHeight, imagePolygon);
 	CDictObject* pDictObj = (CDictObject*)pObj;
-	SaveRGBAToStream(pDocument, pDictObj, pBufferPtr, nWidth, nHeight);
+
+	BYTE* pFinalBuffer = pBufferPtr;
+	int nFinalWidth = nWidth, nFinalHeight = nHeight;
+	if (bNeedsCrop)
+	{
+		pFinalBuffer = CropRGBA(pBufferPtr, nWidth, nHeight, nCropLeft, nCropTop, nCropWidth, nCropHeight);
+		delete[] pBufferPtr;
+		nFinalWidth  = nCropWidth;
+		nFinalHeight = nCropHeight;
+	}
+
+	SaveRGBAToStream(pDocument, pDictObj, pFinalBuffer, nFinalWidth, nFinalHeight);
 
 	BYTE* pMaskBufferPtr = DecodeImageToGray(pMaskStream, nMaskWidth, nMaskHeight, pMaskColorMap, pGState);
 	if (pMaskBufferPtr)
@@ -1460,11 +1515,19 @@ void RedactOutputDev::drawSoftMaskedImage(GfxState *pGState, Gfx *gfx, Object *p
 		}
 
 		ApplyRedactToGray(m_arrQuadPoints, pMaskBufferPtr, nWidth, nHeight, imagePolygon);
-		SaveGrayToSMask(pDocument, pDictObj, pMaskBufferPtr, nWidth, nHeight);
-		delete[] pMaskBufferPtr;
+
+		BYTE* pFinalMaskBuffer = pMaskBufferPtr;
+		if (bNeedsCrop)
+		{
+			pFinalMaskBuffer = CropGray(pMaskBufferPtr, nWidth, nHeight, nCropLeft, nCropTop, nCropWidth, nCropHeight);
+			delete[] pMaskBufferPtr;
+		}
+
+		SaveGrayToSMask(pDocument, pDictObj, pFinalMaskBuffer, nFinalWidth, nFinalHeight);
+		delete[] pFinalMaskBuffer;
 	}
 
-	DrawXObject(m_sImageName.c_str());
+	DrawXObject(m_sImageName.c_str(), bNeedsCrop ? arrCropMatrix : NULL);
 }
 //----- Type 3 font operators
 void RedactOutputDev::type3D0(GfxState *pGState, double wx, double wy)

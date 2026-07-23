@@ -1024,7 +1024,7 @@ void Gfx::opSetExtGState(Object args[], int numArgs) {
 
   if (out->useNameOp())
   {
-	out->setExtGState(args[0].getName());
+	out->setExtGState(state, &obj1, args[0].getName());
 	obj1.free();
 	return;
   }
@@ -4098,6 +4098,15 @@ void Gfx::opXObject(Object args[], int numArgs) {
   Object opiDict;
 #endif
 
+  double *ctm;
+  double det;
+
+  ctm = state->getCTM();
+  det = ctm[0] * ctm[3] - ctm[1] * ctm[2];
+  if (fabs(det) <= 1e-10) {
+	return;
+  }
+
   if (!ocState && !out->needCharCount()) {
     return;
   }
@@ -5178,6 +5187,8 @@ void Gfx::opBeginMarkedContent(Object args[], int numArgs) {
       res->lookupPropertiesNF(args[1].getName(), &obj)) {
     if (doc->getOptionalContent()->evalOCObject(&obj, &ocStateNew)) {
       ocState &= ocStateNew;
+	  if (out->useNameOp() && ocState)
+		out->beginMarkedContent(state, args, numArgs);
     }
     obj.free();
     mcKind = gfxMCOptionalContent;
@@ -5225,6 +5236,8 @@ void Gfx::opEndMarkedContent(Object args[], int numArgs) {
     mcKind = mc->kind;
     delete mc;
     if (mcKind == gfxMCOptionalContent) {
+	  if (out->useNameOp() && ocState)
+		out->endMarkedContent(state);
       if (markedContentStack->getLength() > 0) {
 	mc = (GfxMarkedContent *)
 	         markedContentStack->get(markedContentStack->getLength() - 1);

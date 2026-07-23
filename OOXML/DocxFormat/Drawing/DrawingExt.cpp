@@ -1,33 +1,36 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * Copyright (C) Ascensio System SIA, 2009-2026
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
- * version 3 as published by the Free Software Foundation. In accordance with
- * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
- * that Ascensio System SIA expressly excludes the warranty of non-infringement
- * of any third-party rights.
+ * version 3 as published by the Free Software Foundation, together with the
+ * additional terms provided in the LICENSE file.
  *
  * This program is distributed WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
- * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. For
+ * details, see the GNU AGPL at: https://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
- * street, Riga, Latvia, EU, LV-1050.
+ * You can contact Ascensio System SIA by email at info@onlyoffice.com
+ * or by postal mail at 20A-6 Ernesta Birznieka-Upisha Street, Riga,
+ * LV-1050, Latvia, European Union.
  *
- * The  interactive user interfaces in modified source and object code versions
- * of the Program must display Appropriate Legal Notices, as required under
+ * The interactive user interfaces in modified versions of the Program
+ * are required to display Appropriate Legal Notices in accordance with
  * Section 5 of the GNU AGPL version 3.
  *
- * Pursuant to Section 7(b) of the License you must retain the original Product
- * logo when distributing the program. Pursuant to Section 7(e) we decline to
- * grant you any rights under trademark law for use of our trademarks.
+ * No trademark rights are granted under this License.
  *
- * All the Product's GUI elements, including illustrations and icon sets, as
- * well as technical writing content are licensed under the terms of the
- * Creative Commons Attribution-ShareAlike 4.0 International. See the License
- * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ * All non-code elements of the Product, including illustrations,
+ * icon sets, and technical writing content, are licensed under the
+ * Creative Commons Attribution-ShareAlike 4.0 International License:
+ * https://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
+ * This license applies only to such non-code elements and does not
+ * modify or replace the licensing terms applicable to the Program's
+ * source code, which remains licensed under the GNU Affero General
+ * Public License v3.
+ *
+ * SPDX-License-Identifier: AGPL-3.0-only
  */
 #include "../DocxFlat.h"
 #include "../Document.h"
@@ -194,18 +197,18 @@ namespace OOX
 			ReadAttributes( oReader );
 
 			if ((m_sUri.IsInit()) && *m_sUri == L"{CE6537A1-D6FC-4f65-9D91-7224C49458BB}")
-			{// http://schemas.microsoft.com/office/drawing/2012/chart)
+			{// http://schemas.microsoft.com/office/drawing/2012/chart
 				m_oChartDataLabel.Init();
 				m_oChartDataLabel->fromXML(oReader);
 				return;
 			}
 			if ((m_sUri.IsInit()) && *m_sUri == L"{02D57815-91ED-43cb-92C2-25804820EDAC}")
-			{// http://schemas.microsoft.com/office/drawing/2012/chart)
+			{// http://schemas.microsoft.com/office/drawing/2012/chart
 				m_oChartFiltering.Init();
 				m_oChartFiltering->fromXML(oReader);
 				return;
 			}
-            if ((m_sUri.IsInit()) && (	*m_sUri == L"{C3750BE0-5CA9-4D1C-82C7-79D762991C26}" ||
+			if ((m_sUri.IsInit()) && (	*m_sUri == L"{C3750BE0-5CA9-4D1C-82C7-79D762991C26}" ||
 										*m_sUri == L"{63B3BB69-23CF-44E3-9099-C40C66FF867C}" ||
 										*m_sUri == L"{05C60535-1F16-4fd2-B633-F4F36F0B64E0}" ||
 										*m_sUri == L"{504A1905-F514-4f6f-8877-14C23A59335A}" ||
@@ -233,6 +236,7 @@ namespace OOX
 										*m_sUri == L"{3e2802c4-a4d2-4d8b-9148-e3be6c30e623}" ||			
 										*m_sUri == L"{bdbb8cdc-fa1e-496e-a857-3c3f30c029c3}" ||
                                         *m_sUri == L"{876F7934-8845-4945-9796-88D515C7AA90}" ||
+										*m_sUri == L"{C7286773-470A-42A8-94C5-96B5CB345126}" ||
 										*m_sUri == L"http://schemas.microsoft.com/office/drawing/2008/diagram"))
 			{
 				int nCurDepth = oReader.GetDepth();
@@ -352,6 +356,13 @@ namespace OOX
 							WritingElement_ReadAttributes_Read_if (oReader, L"fileKey", m_oFileKey)
 							WritingElement_ReadAttributes_Read_else_if (oReader, L"instanceId", m_oInstanceId)
 						WritingElement_ReadAttributes_End_No_NS(oReader)
+					}
+					else if (sName == L"xfComplement")
+					{
+						m_sAdditionalNamespace = L"xmlns:xfpb=\"http://schemas.microsoft.com/office/spreadsheetml/2022/featurepropertybag\"";
+						WritingElement_ReadAttributes_Start_No_NS(oReader)
+							WritingElement_ReadAttributes_ReadSingle(oReader, L"i", m_oXfComplement)
+						WritingElement_ReadAttributes_End_No_NS(oReader)						
 					}
 					else if (sName == L"userProtectedRanges")
 					{
@@ -631,6 +642,15 @@ namespace OOX
                 m_oWorkbookPivotCaches->toXML(writer);
                 sResult += writer.GetData().c_str();
             }
+			if (m_oXfComplement.IsInit())
+			{
+				NSStringUtils::CStringBuilder writer;
+				writer.StartNode(L"xfpb:xfComplement");
+				writer.StartAttributes();
+				writer.WriteAttribute(L"i", *m_oXfComplement);
+				writer.EndAttributesAndNode();
+				sResult += writer.GetData().c_str();
+			}
 			sResult += L"</" + sNamespace + L"ext>";
 
 			return sResult;

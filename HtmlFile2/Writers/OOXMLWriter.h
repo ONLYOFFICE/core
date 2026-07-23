@@ -1,3 +1,38 @@
+/*
+ * Copyright (C) Ascensio System SIA, 2009-2026
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation, together with the
+ * additional terms provided in the LICENSE file.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. For
+ * details, see the GNU AGPL at: https://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA by email at info@onlyoffice.com
+ * or by postal mail at 20A-6 Ernesta Birznieka-Upisha Street, Riga,
+ * LV-1050, Latvia, European Union.
+ *
+ * The interactive user interfaces in modified versions of the Program
+ * are required to display Appropriate Legal Notices in accordance with
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * No trademark rights are granted under this License.
+ *
+ * All non-code elements of the Product, including illustrations,
+ * icon sets, and technical writing content, are licensed under the
+ * Creative Commons Attribution-ShareAlike 4.0 International License:
+ * https://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ * This license applies only to such non-code elements and does not
+ * modify or replace the licensing terms applicable to the Program's
+ * source code, which remains licensed under the GNU Affero General
+ * Public License v3.
+ *
+ * SPDX-License-Identifier: AGPL-3.0-only
+ */
+
 #ifndef OOXMLWRITER_H
 #define OOXMLWRITER_H
 
@@ -7,8 +42,6 @@
 #include "IWriter.h"
 
 #include <stack>
-
-namespace NSFonts { class IApplicationFonts; }
 
 namespace HTML
 {
@@ -23,7 +56,7 @@ struct TImageData
 	std::wstring m_wsAlign;
 
 	TImageData()
-	    : m_unWidth(0), m_unHeight(0), m_nHSpace(0), m_nVSpace(0), m_wsAlign(L"left")
+		: m_unWidth(0), m_unHeight(0), m_nHSpace(0), m_nVSpace(0), m_wsAlign(L"left")
 	{}
 
 	bool ZeroSize() const
@@ -40,10 +73,6 @@ struct TImageData
 class COOXMLWriter : public IWriter
 {
 	const std::wstring *m_pDstPath;  // Destination directory
-	const std::wstring *m_pTempDir;  // Temp folder
-	const std::wstring *m_pSrcPath;  // Source directory
-	const std::wstring *m_pBasePath; // Full base address
-	const std::wstring *m_pCorePath; // Path to root file (used for working with Epub)
 
 	XmlString m_oStylesXml;   // styles.xml
 	XmlString m_oDocXmlRels;  // document.xml.rels
@@ -52,6 +81,12 @@ class COOXMLWriter : public IWriter
 	XmlString m_oNoteXml;     // footnotes.xml
 	XmlString m_oNumberXml;   // numbering.xml
 	XmlString m_oWebSettings; // webSettings.xml
+
+	struct TCustomProperties
+	{
+		XmlString m_oXml;     // custom.xml
+		UINT m_unIds;
+	} m_oCustom;
 
 	NSCSS::CDocumentStyle m_oXmlStyle;      // OOXML style
 	NSCSS::NSProperties::CPage m_oPageData; // Page styles
@@ -113,16 +148,10 @@ class COOXMLWriter : public IWriter
 	std::map<std::wstring, UINT>         m_mBookmarks; // Bookmarks
 	using anchors_map = std::map<std::wstring, std::wstring>;
 	anchors_map                          m_mAnchors; // Map of anchors with individual ids
-
-	NSFonts::IApplicationFonts*          m_pFonts;     // Needed for font handling optimization
 public:
 	COOXMLWriter(THTMLParameters* pHTMLParameters = nullptr, NSCSS::CCssCalculator* pCSSCalculator = nullptr);
 
-	void SetSrcDirectory (const std::wstring& wsPath);
 	void SetDstDirectory (const std::wstring& wsPath);
-	void SetTempDirectory(const std::wstring& wsPath);
-	void SetBaseDirectory(const std::wstring& wsPath);
-	void SetCoreDirectory(const std::wstring& wsPath);
 
 	void Begin(const std::wstring& wsDst) override;
 	void End(const std::wstring& wsDst) override;
@@ -150,7 +179,7 @@ public:
 
 	void SetCurrentDocument(XmlString* pNewDocument);
 
-	void Break(const std::vector<NSCSS::CNode>& arSelectors);
+	void Break(const NSCSS::CNode& oTagNode);
 
 	void SetHyperlinkData(const std::wstring& wsRef, const std::wstring& wsTooltip, bool bIsCross, const std::wstring& wsFootnote, bool bIsFootnote);
 	void ClearHyperlinkData();
@@ -165,6 +194,7 @@ public:
 
 	bool WriteText(std::wstring wsText, const std::vector<NSCSS::CNode>& arSelectors) override;
 	void WriteEmptyParagraph(bool bVahish = false, bool bInP = false) override;
+	void WriteMetadata(const std::wstring& wsName, const std::wstring& wsValue) override;
 	void WriteSpace();
 
 	void WriteEmptyBookmark(const std::wstring& wsId);
@@ -200,16 +230,9 @@ public:
 	XmlString& GetWebSettingsXml();
 	XmlString* GetCurrentDocument() const override;
 
-	bool SupportNestedTables() const override;
-
 	const NSCSS::NSProperties::CPage* GetPageData() const;
-	NSFonts::IApplicationFonts* GetFonts();
 
 	std::wstring GetMediaDir() const;
-	std::wstring GetTempDir()  const;
-	std::wstring GetSrcPath()  const;
-	std::wstring GetBasePath() const;
-	std::wstring GetCorePath() const;
 };
 }
 

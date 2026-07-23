@@ -1,33 +1,36 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * Copyright (C) Ascensio System SIA, 2009-2026
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
- * version 3 as published by the Free Software Foundation. In accordance with
- * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
- * that Ascensio System SIA expressly excludes the warranty of non-infringement
- * of any third-party rights.
+ * version 3 as published by the Free Software Foundation, together with the
+ * additional terms provided in the LICENSE file.
  *
  * This program is distributed WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
- * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. For
+ * details, see the GNU AGPL at: https://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
- * street, Riga, Latvia, EU, LV-1050.
+ * You can contact Ascensio System SIA by email at info@onlyoffice.com
+ * or by postal mail at 20A-6 Ernesta Birznieka-Upisha Street, Riga,
+ * LV-1050, Latvia, European Union.
  *
- * The  interactive user interfaces in modified source and object code versions
- * of the Program must display Appropriate Legal Notices, as required under
+ * The interactive user interfaces in modified versions of the Program
+ * are required to display Appropriate Legal Notices in accordance with
  * Section 5 of the GNU AGPL version 3.
  *
- * Pursuant to Section 7(b) of the License you must retain the original Product
- * logo when distributing the program. Pursuant to Section 7(e) we decline to
- * grant you any rights under trademark law for use of our trademarks.
+ * No trademark rights are granted under this License.
  *
- * All the Product's GUI elements, including illustrations and icon sets, as
- * well as technical writing content are licensed under the terms of the
- * Creative Commons Attribution-ShareAlike 4.0 International. See the License
- * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ * All non-code elements of the Product, including illustrations,
+ * icon sets, and technical writing content, are licensed under the
+ * Creative Commons Attribution-ShareAlike 4.0 International License:
+ * https://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
+ * This license applies only to such non-code elements and does not
+ * modify or replace the licensing terms applicable to the Program's
+ * source code, which remains licensed under the GNU Affero General
+ * Public License v3.
+ *
+ * SPDX-License-Identifier: AGPL-3.0-only
  */
 #include "../DesktopEditor/common/File.h"
 #include "../DesktopEditor/common/Directory.h"
@@ -63,18 +66,6 @@
 #include "../Common/Network/FileTransporter/include/FileTransporter.h"
 #endif
 
-#if defined(GetTempPath)
-#undef GetTempPath
-#endif
-
-#if defined(CreateFile)
-#undef CreateFile
-#endif
-
-#if defined(CreateDirectory)
-#undef CreateDirectory
-#endif
-
 #define MM_2_PT(X) ((X) * 72.0 / 25.4)
 #define PT_2_MM(X) ((X) * 25.4 / 72.0)
 
@@ -99,6 +90,21 @@
 static const long c_BrushTypeLinearGradient = 8001;
 static const long c_BrushTypeRadialGradient = 8002;
 
+namespace
+{
+Aggplus::CImage* CreateImageFromSource(bool bFromMemory, BYTE* pData, LONG lLength, const std::wstring& wsPath)
+{
+	Aggplus::CImage* pImage = new Aggplus::CImage();
+	if (!pImage)
+		return NULL;
+
+	if (bFromMemory)
+		pImage->Decode(pData, lLength);
+	else
+		pImage->Create(wsPath);
+
+	return pImage;
+}
 Aggplus::CImage* ConvertMetafile(NSFonts::IApplicationFonts* pAppFonts, const std::wstring& wsPath, const std::wstring& wsTempDirectory, double dWidth = -1, double dHeight = -1)
 {
 	if (wsPath.find(L"data:") == 0)
@@ -123,42 +129,88 @@ Aggplus::CImage* ConvertMetafile(NSFonts::IApplicationFonts* pAppFonts, const st
 		return pImage;
 	}
 
-	CImageFileFormatChecker oImageFormat(wsPath);
-	if (_CXIMAGE_FORMAT_WMF == oImageFormat.eFileType ||
-		_CXIMAGE_FORMAT_EMF == oImageFormat.eFileType ||
-		_CXIMAGE_FORMAT_SVM == oImageFormat.eFileType ||
-		_CXIMAGE_FORMAT_SVG == oImageFormat.eFileType)
+	bool bFromMemory = false;
+	BYTE* pData = NULL;
+	LONG  lLength = 0;
+	NSImages::IImagesMemoryStorage* pMemoryStorage = NULL;
+#ifdef BUILDING_WASM_MODULE
+	pMemoryStorage = NSImages::NSApplicationImageStream::GetGlobalImagesMemoryStorage();
+	if (pMemoryStorage)
 	{
-		MetaFile::IMetaFile* pMeta = MetaFile::Create(pAppFonts);
+		NSImages::IImageStream* pStream = pMemoryStorage->Get(wsPath);
+		if (pStream)
+		{
+			bFromMemory = true;
+			pStream->GetMemory(pData, lLength);
+		}
+	}
+#endif
 
-		if (NULL == pMeta || !pMeta->LoadFromFile(wsPath.c_str()))
-			return new Aggplus::CImage(wsPath);
+	CImageFileFormatChecker oImageFormat;
+	if (bFromMemory)
+		oImageFormat.isImageFile(pData, lLength);
+	else
+		oImageFormat.isImageFile(wsPath);
 
-		bool bUseMax = false;
-		if (dWidth > 5000 || dHeight > 5000)
-			bUseMax = true;
-		else if (dWidth <= 0 && dHeight <= 0)
-			bUseMax = true;
+	if (_CXIMAGE_FORMAT_WMF != oImageFormat.eFileType &&
+		_CXIMAGE_FORMAT_EMF != oImageFormat.eFileType &&
+		_CXIMAGE_FORMAT_SVM != oImageFormat.eFileType &&
+		_CXIMAGE_FORMAT_SVG != oImageFormat.eFileType)
+		return CreateImageFromSource(bFromMemory, pData, lLength, wsPath);
 
-		if (!bUseMax)
-			pMeta->ConvertToRaster(wsTempDirectory.c_str(), _CXIMAGE_FORMAT_PNG, MM_2_PT(dWidth), MM_2_PT(dHeight));
-		else
-			MetaFile::ConvertToRasterMaxSize(pMeta, wsTempDirectory.c_str(), _CXIMAGE_FORMAT_PNG, 2000);
+	MetaFile::IMetaFile* pMeta = MetaFile::Create(pAppFonts);
 
+	if (NULL == pMeta || !(bFromMemory ? pMeta->LoadFromBuffer(pData, lLength) : pMeta->LoadFromFile(wsPath.c_str())))
+	{
 		RELEASEOBJECT(pMeta);
-
-		return new Aggplus::CImage(wsTempDirectory);
+		return CreateImageFromSource(bFromMemory, pData, lLength, wsPath);
 	}
 
-	return new Aggplus::CImage(wsPath);
-}
+	bool bUseMax = false;
+	if (dWidth > 5000 || dHeight > 5000)
+		bUseMax = true;
+	else if (dWidth <= 0 && dHeight <= 0)
+		bUseMax = true;
 
+	if (!bUseMax)
+	{
+		if (bFromMemory)
+		{
+			BYTE* pImg = NULL;
+			int nImg = 0;
+			pMeta->ConvertToRaster(pImg, nImg, _CXIMAGE_FORMAT_PNG, MM_2_PT(dWidth), MM_2_PT(dHeight));
+			pMemoryStorage->Add(wsTempDirectory, pImg, nImg);
+			pData = pImg;
+			lLength = nImg;
+		}
+		else
+			pMeta->ConvertToRaster(wsTempDirectory.c_str(), _CXIMAGE_FORMAT_PNG, MM_2_PT(dWidth), MM_2_PT(dHeight));
+	}
+	else
+	{
+		if (bFromMemory)
+		{
+			BYTE* pImg = NULL;
+			int nImg = 0;
+			MetaFile::ConvertToRasterMaxSize(pMeta, pImg, nImg, _CXIMAGE_FORMAT_PNG, 2000);
+			pMemoryStorage->Add(wsTempDirectory, pImg, nImg);
+			pData = pImg;
+			lLength = nImg;
+		}
+		else
+			MetaFile::ConvertToRasterMaxSize(pMeta, wsTempDirectory.c_str(), _CXIMAGE_FORMAT_PNG, 2000);
+	}
+
+	RELEASEOBJECT(pMeta);
+	return CreateImageFromSource(bFromMemory, pData, lLength, wsTempDirectory);
+}
+}
 //----------------------------------------------------------------------------------------
 //
 // CPdfRenderer
 //
 //----------------------------------------------------------------------------------------
-CPdfWriter::CPdfWriter(NSFonts::IApplicationFonts* pAppFonts, bool isPDFA, IRenderer* pRenderer, bool bCreate, const std::wstring& wsTempDirectory) : m_oCommandManager(this)
+CPdfWriter::CPdfWriter(NSFonts::IApplicationFonts* pAppFonts, bool isPDFA, bool isPDFUA, IRenderer* pRenderer, bool bCreate, const std::wstring& wsTempDirectory) : m_oCommandManager(this)
 {
 	// Create font manager with its own cache
 	m_pFontManager = pAppFonts->GenerateFontManager();
@@ -170,11 +222,14 @@ CPdfWriter::CPdfWriter(NSFonts::IApplicationFonts* pAppFonts, bool isPDFA, IRend
 	m_wsTempDirectory = wsTempDirectory;
 	m_pShading = NULL;
 	m_pShadingExtGrState = NULL;
+	m_pCorrector = NULL;
 
 	m_pDocument = new PdfWriter::CDocument();
 
 	if (isPDFA)
 		m_pDocument->SetPDFAConformanceMode(true);
+	if (isPDFUA)
+		m_pDocument->SetPDFUAConformanceMode(true);
 
 	if (!m_pDocument || (bCreate && !m_pDocument->CreateNew()))
 	{
@@ -219,7 +274,7 @@ void CPdfWriter::SetDocumentID(const std::wstring& wsDocumentID)
 int CPdfWriter::SaveToFile(const std::wstring& wsPath)
 {
 	// TODO: Refactor to use error code
-	if (!IsValid())
+	if (!IsValid() || wsPath.empty())
 		return 1;
 
 	if (!m_pFont && !m_pFont14 && !m_pFontEmbedded && !m_pDocument->IsPDFA() && m_bNeedAddHelvetica)
@@ -236,15 +291,22 @@ int CPdfWriter::SaveToFile(const std::wstring& wsPath)
 
 	return 0;
 }
-int CPdfWriter::SaveToMemory(BYTE** pData, int* pLength)
+int CPdfWriter::SaveToMemory(BYTE** pData, int* pLength, bool bForWasm)
 {
 	// TODO: Refactor to use error code
 	if (!IsValid())
 		return 1;
 
+	if (!m_pFont && !m_pFont14 && !m_pFontEmbedded && !m_pDocument->IsPDFA() && m_bNeedAddHelvetica)
+	{
+		m_bNeedUpdateTextFont = false;
+		m_pFont14 = m_pDocument->CreateFont14(L"Helvetica", 0, PdfWriter::EStandard14Fonts::standard14fonts_Helvetica);
+		CommandDrawTextCHAR(32, 0, 0, 0, 0);
+	}
+
 	m_oCommandManager.Flush();
 
-	if (!m_pDocument->SaveToMemory(pData, pLength))
+	if (!m_pDocument->SaveToMemory(pData, pLength, bForWasm))
 		return 1;
 
 	return 0;
@@ -269,11 +331,23 @@ void CPdfWriter::SetDocumentInfo(const std::wstring& wsTitle, const std::wstring
 }
 std::wstring CPdfWriter::GetTempFile(const std::wstring& wsDirectory)
 {
+#ifdef BUILDING_WASM_MODULE
+	NSImages::IImagesMemoryStorage* pMemoryStorage = NSImages::NSApplicationImageStream::GetGlobalImagesMemoryStorage();
+	if (pMemoryStorage)
+		return pMemoryStorage->GenerateId();
+	return L"";
+#else
 	return NSFile::CFileBinary::CreateTempFileWithUniqueName(wsDirectory, L"PDF");
+#endif
+
 }
 void CPdfWriter::SetTempDirectory(const std::wstring& wsTempDirectory)
 {
 	m_wsTempDirectory = wsTempDirectory;
+}
+void CPdfWriter::SetCorrector(IMetafileToRenderter* pCorrector)
+{
+	m_pCorrector = pCorrector;
 }
 //----------------------------------------------------------------------------------------
 // Functions for working with page
@@ -917,8 +991,17 @@ HRESULT CPdfWriter::DrawPath(NSFonts::IApplicationFonts* pAppFonts, const std::w
 		if (c_BrushTypeTexture == m_oBrush.GetType())
 		{
 			sTextureOldPath = m_oBrush.GetTexturePath();
+			// TODO
+#ifdef BUILDING_WASM_MODULE
+			/*
+			std::wstring wsMedia = L"media/";
+			std::wstring::size_type posMedia = sTextureOldPath.find(wsMedia);
+			if (posMedia != std::wstring::npos)
+				sTextureTmpPath = sTextureOldPath.erase(0, posMedia + wsMedia.length());
+			*/
+#else
 			sTextureTmpPath = GetDownloadFile(sTextureOldPath, wsTempDirectory);
-
+#endif
 			if (!sTextureTmpPath.empty())
 				m_oBrush.SetTexturePath(sTextureTmpPath);
 		}
@@ -1747,7 +1830,11 @@ void GetRCSpanStyle(CAnnotFieldInfo::CMarkupAnnotPr::CFontData* pFontData, NSStr
 	oRC += L";font-style:";
 	oRC += (pFontData->nFontFlag >> 1) & 1 ? L"italic" : L"normal";
 	oRC += L";font-family:";
-	oRC += pFontData->sActualFont.empty() ? pFontData->sFontFamily : pFontData->sActualFont;
+	std::wstring wsFontName = pFontData->sActualFont.empty() ? pFontData->sFontFamily : pFontData->sActualFont;
+	std::wstring sBaseName;
+	if (PdfReader::ParseFontNameHash(wsFontName, &sBaseName))
+		wsFontName = sBaseName;
+	oRC += wsFontName;
 
 	if (pFontData->dVAlign != 0)
 	{
@@ -1874,7 +1961,7 @@ PdfWriter::CAction* CPdfWriter::GetAction(CAnnotFieldInfo::CActionFieldPr* pActi
 
 	return pA;
 }
-HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotFieldInfo* pFieldInfo)
+HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotFieldInfo* pFieldInfo, bool bRedact)
 {
 	if (!m_pDocument || 0 == m_pDocument->GetPagesCount() || !pFieldInfo)
 		return S_OK;
@@ -1882,9 +1969,10 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 	CAnnotFieldInfo& oInfo = *pFieldInfo;
 	PdfWriter::CAnnotation* pAnnot = NULL;
 
-	PdfWriter::CPage* pOrigPage = m_pDocument->GetEditPage(oInfo.GetPage());
+	int nPage = oInfo.GetPage();
+	PdfWriter::CPage* pOrigPage = bRedact ? m_pDocument->GetPage(nPage) : m_pDocument->GetEditPage(nPage);
 	if (!pOrigPage)
-		pOrigPage = m_pDocument->GetPage(oInfo.GetPage());
+		pOrigPage = bRedact ? m_pDocument->GetEditPage(nPage) : m_pDocument->GetPage(nPage);
 	PdfWriter::CPage* pPage = m_pPage;
 
 	int nID = oInfo.GetID();
@@ -2435,11 +2523,19 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 		else
 			pWidgetAnnot->Remove("MEOptions");
 
-		const std::vector<CAnnotFieldInfo::CActionFieldPr*> arrActions = pPr->GetActions();
-		for (CAnnotFieldInfo::CActionFieldPr* pAction : arrActions)
+		if (!bRedact)
 		{
-			PdfWriter::CAction* pA = GetAction(pAction);
-			pWidgetAnnot->AddAction(pA);
+			const std::vector<CAnnotFieldInfo::CActionFieldPr*> arrActions = pPr->GetActions();
+			for (CAnnotFieldInfo::CActionFieldPr* pAction : arrActions)
+			{
+				PdfWriter::CAction* pA = GetAction(pAction);
+				pWidgetAnnot->AddAction(pA);
+			}
+			if (arrActions.empty())
+			{
+				pWidgetAnnot->Remove("A");
+				pWidgetAnnot->Remove("AA");
+			}
 		}
 
 		bool isBold   = (nStyle & 1 ? true : false);
@@ -2528,38 +2624,12 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 
 				pButtonWidget->SetStyle(pPrB->GetStyle());
 
-				//if (!pButtonWidget->Get("DA"))
-				{
-					PdfWriter::CFontDict* pFont = pFontTT;
-					dFontSize = oInfo.GetWidgetAnnotPr()->GetFontSize();
-					if (!wsFontName.empty())
-					{
-						put_FontName(wsFontName);
-						put_FontStyle(nStyle);
-						put_FontSize(dFontSize);
-
-						if (m_bNeedUpdateTextFont)
-							UpdateFont();
-						if (m_pFont)
-							pFont = m_pDocument->CreateTrueTypeFont(m_pFont);
-					}
-					else
-					{
-						put_FontName(L"Embedded: ZapfDingbats");
-						put_FontStyle(0);
-						put_FontSize(dFontSize);
-
-						if (m_bNeedUpdateTextFont)
-							UpdateFont();
-						if (m_pFont14)
-							pFont = m_pFont14;
-					}
-					pButtonWidget->SetDA(pFont, oInfo.GetWidgetAnnotPr()->GetFontSize(), dFontSize, oInfo.GetWidgetAnnotPr()->GetTC());
-				}
+				PdfWriter::CDictObject* pOwner = pButtonWidget->GetObjOwnValue("DA");
+				if (pOwner)
+					pOwner->Remove("DA");
 
 				// APPEARANCE
-				//if (!pButtonWidget->Get("AP"))
-					pButtonWidget->SetAP(nR);
+				pButtonWidget->SetAP(nR);
 
 				if (nFlags & (1 << 9))
 				{
@@ -2577,6 +2647,12 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 		{
 			CAnnotFieldInfo::CWidgetAnnotPr::CTextWidgetPr* pPr = oInfo.GetWidgetAnnotPr()->GetTextWidgetPr();
 			PdfWriter::CTextWidget* pTextWidget = (PdfWriter::CTextWidget*)pAnnot;
+
+			if (bRedact)
+			{
+				if (!pTextWidget->HaveBorder() && pTextWidget->HaveBC())
+					pTextWidget->SetBorder(0, 1, {});
+			}
 
 			std::wstring wsValue;
 			bool bValue = false;
@@ -2607,6 +2683,9 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 				BYTE* pRender = pPr->GetRender(nLen);
 				DrawWidgetAP(pAnnot, pRender, nLen, nR);
 
+				if (bRedact)
+					return S_OK;
+
 				PdfWriter::CFontDict* pFont = NULL;
 				if (m_pFont14)
 					pFont = m_pFont14;
@@ -2614,7 +2693,7 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 					pFont = m_pFontEmbedded;
 				else if (m_pFont)
 					pFont = m_pDocument->CreateTrueTypeFont(m_pFont);
-				else
+				else if (!pWidgetAnnot->GetObjOwnValue("DA"))
 				{
 					dFontSize = oInfo.GetWidgetAnnotPr()->GetFontSize();
 					put_FontName(wsFontName);
@@ -2729,6 +2808,9 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 			CAnnotFieldInfo::CWidgetAnnotPr::CSignatureWidgetPr* pPr = oInfo.GetWidgetAnnotPr()->GetSignatureWidgetPr();
 			PdfWriter::CSignatureWidget* pSignatureWidget = (PdfWriter::CSignatureWidget*)pAnnot;
 		}
+
+		if (m_bSplit)
+			pWidgetAnnot->RemoveAP();
 	}
 	else if (oInfo.IsLink())
 	{
@@ -2741,11 +2823,15 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 			PdfWriter::CAction* pA = GetAction(pPr->GetA(), true);
 			pLinkAnnot->SetA(pA);
 		}
+		else
+			pLinkAnnot->Remove("A");
 		if (nFlags & (1 << 1))
 		{
 			PdfWriter::CAction* pA = GetAction(pPr->GetPA(), true);
 			pLinkAnnot->SetPA(pA);
 		}
+		else
+			pLinkAnnot->Remove("PA");
 		if (nFlags & (1 << 2))
 			pLinkAnnot->SetH(pPr->GetH());
 		if (nFlags & (1 << 3))
@@ -2791,6 +2877,11 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 				PdfWriter::CAction* pA = GetAction(pAction);
 				pScreenAnnot->AddAction(pA);
 			}
+		}
+		else
+		{
+			pScreenAnnot->Remove("A");
+			pScreenAnnot->Remove("AA");
 		}
 	}
 
@@ -3149,6 +3240,11 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 				}
 			}
 		}
+		else
+		{
+			pParentObj->Remove("A");
+			pParentObj->Remove("AA");
+		}
 		if (nFlags & (1 << 9))
 			pParentObj->Add("MaxLen", pParent->nMaxLen);
 		if (nFlags & (1 << 10))
@@ -3257,6 +3353,15 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 		}
 		if (!bReplase)
 			pKids->Add(pP);
+	}
+
+	std::wstring wsRoles = pFieldInfo->GetRoles();
+	if (!wsRoles.empty())
+	{
+		BYTE* pData = NULL;
+		LONG nMetaLength = 0;
+		NSFile::CUtf8Converter::GetUtf8StringFromUnicode(wsRoles.c_str(), wsRoles.length(), pData, nMetaLength);
+		m_pDocument->AddRoles(pData, nMetaLength);
 	}
 
 	return S_OK;
@@ -3562,10 +3667,13 @@ bool CPdfWriter::DrawText(unsigned char* pCodes, const unsigned int& unLen, cons
 
 	CRendererTextCommand* pText = m_oCommandManager.AddText(pCodes, unLen, MM_2_PT(dX), MM_2_PT(m_dPageHeight - dY));
 	PdfWriter::CFontDict* pFont = m_pFont;
-	if (m_pFont14)
-		pFont = m_pFont14;
-	if (m_pFontEmbedded)
-		pFont = m_pFontEmbedded;
+	if (!pFont)
+	{
+		if (m_pFont14)
+			pFont = m_pFont14;
+		if (m_pFontEmbedded)
+			pFont = m_pFontEmbedded;
+	}
 	pText->SetFont(pFont);
 	pText->SetSize(m_oFont.GetSize());
 	pText->SetColor(m_oBrush.GetColor1());
@@ -3716,6 +3824,7 @@ bool CPdfWriter::GetEmbeddedFont(const std::wstring& wsFontName)
 bool CPdfWriter::UpdateFont()
 {
 	m_bNeedUpdateTextFont = false;
+	m_pFont = NULL;
 	m_pFont14 = NULL;
 	m_pFontEmbedded = NULL;
 
@@ -3742,7 +3851,6 @@ bool CPdfWriter::UpdateFont()
 		}
 	}
 
-	m_pFont = NULL;
 	m_oFont.SetNeedDoBold(false);
 	m_oFont.SetNeedDoItalic(false);
 
@@ -3792,6 +3900,18 @@ bool CPdfWriter::GetFontPath(const std::wstring &wsFontName, const bool &bBold, 
 	{
 		if (m_bSplit)
 			return false;
+
+#ifdef BUILDING_WASM_MODULE
+		NSFonts::IFontsMemoryStorage* pMemoryStorage = NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage();
+		if (pMemoryStorage && pMemoryStorage->Get(wsFontName))
+		{
+			wsFontPath = wsFontName;
+			lFaceIndex = 0;
+			m_vFonts.push_back(TFontInfo(wsFontName, bBold, bItalic, wsFontPath, lFaceIndex));
+			return true;
+		}
+		return false;
+#endif
 
 		NSFonts::CFontSelectFormat oFontSelect;
 		oFontSelect.wsName  = new std::wstring(wsFontName);
@@ -3968,9 +4088,30 @@ void CPdfWriter::UpdateBrush(NSFonts::IApplicationFonts* pAppFonts, const std::w
 	LONG lBrushType = m_oBrush.GetType();
 	if (c_BrushTypeTexture == lBrushType)
 	{
+		bool bFromMemory = false;
+		BYTE* pData = NULL;
+		LONG  lLength = 0;
+		NSImages::IImagesMemoryStorage* pMemoryStorage = NULL;
+
 		std::wstring wsTexturePath = m_oBrush.GetTexturePath();
 		BYTE nAlpha = m_oBrush.GetTextureAlpha();
-		CImageFileFormatChecker oImageFormat(wsTexturePath);
+#ifdef BUILDING_WASM_MODULE
+		pMemoryStorage = NSImages::NSApplicationImageStream::GetGlobalImagesMemoryStorage();
+		if (pMemoryStorage)
+		{
+			NSImages::IImageStream* pStream = pMemoryStorage->Get(wsTexturePath);
+			if (pStream)
+			{
+				bFromMemory = true;
+				pStream->GetMemory(pData, lLength);
+			}
+		}
+#endif
+		CImageFileFormatChecker oImageFormat;
+		if (bFromMemory)
+			oImageFormat.isImageFile(pData, lLength);
+		else
+			oImageFormat.isImageFile(wsTexturePath);
 
 		PdfWriter::CImageDict* pImage = NULL;
 		int nImageW = 0;
@@ -3987,7 +4128,10 @@ void CPdfWriter::UpdateBrush(NSFonts::IApplicationFonts* pAppFonts, const std::w
 		{
 			pImage = m_pDocument->CreateImage();
 			CBgraFrame oFrame;
-			oFrame.OpenFile(wsTexturePath);
+			if (bFromMemory)
+				oFrame.Decode(pData, lLength, oImageFormat.eFileType);
+			else
+				oFrame.OpenFile(wsTexturePath);
 			nImageH = oFrame.get_Height();
 			nImageW = oFrame.get_Width();
 
@@ -4008,7 +4152,10 @@ void CPdfWriter::UpdateBrush(NSFonts::IApplicationFonts* pAppFonts, const std::w
 		{
 			// TODO: Implement proper metafile rendering
 			MetaFile::IMetaFile* pMeta = MetaFile::Create(pAppFonts);
-			pMeta->LoadFromFile(wsTexturePath.c_str());
+			if (bFromMemory)
+				pMeta->LoadFromBuffer(pData, lLength);
+			else
+				pMeta->LoadFromFile(wsTexturePath.c_str());
 
 			double dL, dR, dT, dB;
 			m_oPath.GetBounds(dL, dT, dR, dB);
@@ -4034,11 +4181,25 @@ void CPdfWriter::UpdateBrush(NSFonts::IApplicationFonts* pAppFonts, const std::w
 			if (dH < dMin) dH = dMin;
 
 			std::wstring wsTempFile = GetTempFile(wsTempDirectory);
-			pMeta->ConvertToRaster(wsTempFile.c_str(), _CXIMAGE_FORMAT_PNG, (int)dW, (int)dH);
+			if (bFromMemory)
+			{
+				BYTE* pImg = NULL;
+				int nImg = 0;
+				pMeta->ConvertToRaster(pImg, nImg, _CXIMAGE_FORMAT_PNG, (int)dW, (int)dH);
+				pMemoryStorage->Add(wsTempFile, pImg, nImg);
+				pData = pImg;
+				lLength = nImg;
+			}
+			else
+				pMeta->ConvertToRaster(wsTempFile.c_str(), _CXIMAGE_FORMAT_PNG, (int)dW, (int)dH);
 
 			RELEASEOBJECT(pMeta);
 
-			Aggplus::CImage oImage(wsTempFile);
+			Aggplus::CImage oImage;
+			if (bFromMemory)
+				oImage.Decode(pData, lLength);
+			else
+				oImage.Create(wsTempFile);
 			nImageW = abs((int)oImage.GetWidth());
 			nImageH = abs((int)oImage.GetHeight());
 			pImage = LoadImage(&oImage, 255);
@@ -4046,7 +4207,11 @@ void CPdfWriter::UpdateBrush(NSFonts::IApplicationFonts* pAppFonts, const std::w
 		}
 		else
 		{
-			Aggplus::CImage oImage(wsTexturePath);
+			Aggplus::CImage oImage;
+			if (bFromMemory)
+				oImage.Decode(pData, lLength);
+			else
+				oImage.Create(wsTexturePath);
 			nImageW = abs((int)oImage.GetWidth());
 			nImageH = abs((int)oImage.GetHeight());
 			pImage = LoadImage(&oImage, 255);
@@ -4320,13 +4485,36 @@ unsigned char* CPdfWriter::EncodeGID(const unsigned int& unGID, const unsigned i
 	{
 		unsigned short ushCode = m_pFontEmbedded->EncodeUnicode(unGID, *pUnicodes);
 
-		// For CFontEmbedded widths are already loaded, we don't add anything
+		if (ushCode != 0)
+		{
+			unsigned char* pCodes = new unsigned char[2];
+			pCodes[0] = (ushCode >> 8) & 0xFF;
+			pCodes[1] = ushCode & 0xFF;
+			return pCodes;
+		}
 
-		unsigned char* pCodes = new unsigned char[2];
-		pCodes[0] = (ushCode >> 8) & 0xFF;
-		pCodes[1] = ushCode & 0xFF;
+		// The symbol is not supported by the embedded font - we try it through CidTrueType
+		std::wstring wsFontPath = m_pFontEmbedded->GetFontPath();
+		LONG lFaceIndex         = m_pFontEmbedded->GetFontIndex();
 
-		return pCodes;
+		m_pFont = GetFont(wsFontPath, lFaceIndex);
+		if (m_pFont)
+		{
+			unsigned short ushCidCode = m_pFont->EncodeGID(unGID, pUnicodes, unUnicodesCount);
+			if (ushCidCode != 0)
+			{
+				m_bNeedUpdateTextFont = true;
+
+				unsigned char* pCodes = new unsigned char[2];
+				pCodes[0] = (ushCidCode >> 8) & 0xFF;
+				pCodes[1] = ushCidCode & 0xFF;
+				return pCodes;
+			}
+		}
+
+		// CidTrueType also failed
+		m_bNeedUpdateTextFont = true;
+		return NULL;
 	}
 
 	if (!m_pFont)
@@ -4402,9 +4590,7 @@ PdfWriter::CAnnotAppearanceObject* CPdfWriter::DrawAP(PdfWriter::CAnnotation* pA
 	pFakePage->SetStream(pAP->GetStream());
 	pFakePage->Add("Resources", pAP->Get("Resources"));
 
-	IMetafileToRenderter* pCorrector = new IMetafileToRenderter(m_pRenderer);
-	NSOnlineOfficeBinToPdf::ConvertBufferToRenderer(pRender, nLenRender, pCorrector);
-	RELEASEOBJECT(pCorrector);
+	NSOnlineOfficeBinToPdf::ConvertBufferToRenderer(pRender, nLenRender, m_pCorrector);
 
 	pAnnot->APFromFakePage(pAP);
 
@@ -4446,9 +4632,7 @@ void CPdfWriter::DrawWidgetAP(PdfWriter::CAnnotation* pA, BYTE* pRender, LONG nL
 	pFakePage->SetStrokeColor(0, 0, 0);
 	pFakePage->SetFillColor(0, 0, 0);
 
-	IMetafileToRenderter* pCorrector = new IMetafileToRenderter(m_pRenderer);
-	NSOnlineOfficeBinToPdf::ConvertBufferToRenderer(pRender, nLenRender, pCorrector);
-	RELEASEOBJECT(pCorrector);
+	NSOnlineOfficeBinToPdf::ConvertBufferToRenderer(pRender, nLenRender, m_pCorrector);
 
 	m_oCommandManager.Flush();
 	pAP->EndDraw();

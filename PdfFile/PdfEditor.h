@@ -1,33 +1,36 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * Copyright (C) Ascensio System SIA, 2009-2026
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
- * version 3 as published by the Free Software Foundation. In accordance with
- * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
- * that Ascensio System SIA expressly excludes the warranty of non-infringement
- * of any third-party rights.
+ * version 3 as published by the Free Software Foundation, together with the
+ * additional terms provided in the LICENSE file.
  *
  * This program is distributed WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
- * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. For
+ * details, see the GNU AGPL at: https://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
- * street, Riga, Latvia, EU, LV-1050.
+ * You can contact Ascensio System SIA by email at info@onlyoffice.com
+ * or by postal mail at 20A-6 Ernesta Birznieka-Upisha Street, Riga,
+ * LV-1050, Latvia, European Union.
  *
- * The  interactive user interfaces in modified source and object code versions
- * of the Program must display Appropriate Legal Notices, as required under
+ * The interactive user interfaces in modified versions of the Program
+ * are required to display Appropriate Legal Notices in accordance with
  * Section 5 of the GNU AGPL version 3.
  *
- * Pursuant to Section 7(b) of the License you must retain the original Product
- * logo when distributing the program. Pursuant to Section 7(e) we decline to
- * grant you any rights under trademark law for use of our trademarks.
+ * No trademark rights are granted under this License.
  *
- * All the Product's GUI elements, including illustrations and icon sets, as
- * well as technical writing content are licensed under the terms of the
- * Creative Commons Attribution-ShareAlike 4.0 International. See the License
- * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ * All non-code elements of the Product, including illustrations,
+ * icon sets, and technical writing content, are licensed under the
+ * Creative Commons Attribution-ShareAlike 4.0 International License:
+ * https://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
+ * This license applies only to such non-code elements and does not
+ * modify or replace the licensing terms applicable to the Program's
+ * source code, which remains licensed under the GNU Affero General
+ * Public License v3.
+ *
+ * SPDX-License-Identifier: AGPL-3.0-only
  */
 #ifndef _PDF_EDITOR_H
 #define _PDF_EDITOR_H
@@ -61,11 +64,50 @@ public:
 	void SetDoc(PdfWriter::CDocument* pDoc);
 
 	std::vector<int> m_arrSplitAddPages;
+	std::vector<int> m_arrRedactFormFieldsID;
+	std::vector<IAdvancedCommand*> m_arrRedactFormFields;
 
 private:
 	PdfWriter::CDocument* m_pDoc;
 	std::map<int, CObjectInfo> m_mUniqueRef; // map of unique objects
 };
+
+enum EDictConvertFlags
+{
+	eDCF_None            = 0,
+	eDCF_ResolveRefs     = 1 << 0, // dereference objRef via xref
+	eDCF_HandleStreams   = 1 << 1, // process objStream
+	eDCF_HandleResources = 1 << 2, // special handling for Resources
+	eDCF_HandleAnnots    = 1 << 3, // CreateAnnot / CreateExtGState
+	eDCF_RegisterObjs    = 1 << 4, // register in pDoc + pManager
+
+	// Combinations
+	eDCF_Simple = eDCF_None,
+	eDCF_Full   = eDCF_ResolveRefs | eDCF_HandleStreams | eDCF_HandleResources | eDCF_HandleAnnots | eDCF_RegisterObjs
+};
+struct SDictConvertContext
+{
+	PdfWriter::CDocument* pDoc         = NULL;
+	XRef*                 xref         = NULL;
+	CObjectsManager*      pManager     = NULL;
+	int                   nStartRefID  = 0;
+	int                   nAddObjToXRef = 0;
+	bool                  bUndecodedStream = true;
+	bool                  bMakeBinary  = false;
+	int                   nFlags       = EDictConvertFlags::eDCF_Simple;
+
+	SDictConvertContext() {}
+	SDictConvertContext(PdfWriter::CDocument* _pDoc, XRef* _xref, CObjectsManager* _pManager, int _nStartRefID)
+	{
+		pDoc        = _pDoc;
+		xref        = _xref;
+		pManager    = _pManager;
+		nStartRefID = _nStartRefID;
+		nFlags      = EDictConvertFlags::eDCF_Full;
+	}
+	bool Has(EDictConvertFlags f) const { return (nFlags & f) != 0; }
+};
+PdfWriter::CObjectBase* DictToCDictObjectUnified(Object* obj, SDictConvertContext ctx, PdfWriter::CObjectBase* pParent = NULL, const std::string& sKey = "");
 
 class CPdfEditor
 {
@@ -82,6 +124,7 @@ public:
 	CPdfEditor(const std::wstring& _wsSrcFile, const wchar_t* _wsPassword, const std::wstring& _wsDstFile, CPdfReader* _pReader, CPdfWriter* _pWriter, Mode nMode = Mode::Unknown);
 
 	void SetMode(Mode nMode);
+	void RedactInfo(int nFlag, const std::vector<IAdvancedCommand*>& arrForms);
 
 	int  GetError();
 	void Close();
@@ -100,22 +143,21 @@ public:
 	void AddShapeXML(const std::string& sXML);
 	void EndMarkedContent();
 	bool IsBase14(const std::wstring& wsFontName, bool& bBold, bool& bItalic, std::wstring& wsFontPath);
-	void Redact(IAdvancedCommand* pCommand);
+	void Redact(IAdvancedCommand* pCommand, bool bOverlap = false, bool bTextOnly = false);
 	std::vector<double> WriteRedact(const std::vector<std::wstring>& arrID);
 
 	bool SplitPages(const int* arrPageIndex, unsigned int unLength);
 	void AfterSplitPages();
-	bool MergePages(const std::wstring& wsPath);
+	bool MergePages(const std::string& sOutlineTitle);
 
 	bool PrintPages(const std::vector<bool>& arrPages, int nFlag);
 
 private:
 	bool IncrementalUpdates();
-	void NewFrom();
+	void SyncAcroFormFromReader();
 	void GetPageTree(XRef* xref, Object* pPagesRefObj, PdfWriter::CPageTree* pPageParent = NULL);
 	bool SplitPages(const int* arrPageIndex, unsigned int unLength, PDFDoc* _pDoc, int nStartRefID);
 	bool ChangeFullNameParent(int nParent, const std::string& sPrefixForm, std::vector<int>& arrRename);
-	void ScanAndProcessFonts(PDFDoc* pPDFDocument, XRef* xref, Dict* pResources, int nDepth, std::vector<int>& arrUniqueResources, PdfReader::CPdfFontList* pFontList, int nStartRefID);
 
 	struct CRedactData
 	{
@@ -140,6 +182,7 @@ private:
 	// 0 - Append. pReader and pWriter work with the same file
 	// 1 - Split. pReader and pWriter work with different files
 	Mode m_nMode;
+	int m_nRedactInfo;
 	int m_nEditPage;
 	int m_nOriginIndex;
 };

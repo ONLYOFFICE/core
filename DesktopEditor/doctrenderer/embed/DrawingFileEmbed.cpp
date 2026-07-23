@@ -1,3 +1,38 @@
+/*
+ * Copyright (C) Ascensio System SIA, 2009-2026
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation, together with the
+ * additional terms provided in the LICENSE file.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. For
+ * details, see the GNU AGPL at: https://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA by email at info@onlyoffice.com
+ * or by postal mail at 20A-6 Ernesta Birznieka-Upisha Street, Riga,
+ * LV-1050, Latvia, European Union.
+ *
+ * The interactive user interfaces in modified versions of the Program
+ * are required to display Appropriate Legal Notices in accordance with
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * No trademark rights are granted under this License.
+ *
+ * All non-code elements of the Product, including illustrations,
+ * icon sets, and technical writing content, are licensed under the
+ * Creative Commons Attribution-ShareAlike 4.0 International License:
+ * https://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ * This license applies only to such non-code elements and does not
+ * modify or replace the licensing terms applicable to the Program's
+ * source code, which remains licensed under the GNU Affero General
+ * Public License v3.
+ *
+ * SPDX-License-Identifier: AGPL-3.0-only
+ */
+
 #include "DrawingFileEmbed.h"
 #include "../drawingfile.h"
 #include "../../raster/BgraFrame.h"
@@ -149,10 +184,21 @@ JSSmart<CJSValue> CDrawingFileEmbed::ScanPage(JSSmart<CJSValue> nPageIndex, JSSm
 {
 	return WasmMemoryToJS(m_pFile->ScanPage(nPageIndex->toInt32(), mode->toInt32()));
 }
-JSSmart<CJSValue> CDrawingFileEmbed::SetScanPageFonts(JSSmart<CJSValue> nPageIndex)
+JSSmart<CJSValue> CDrawingFileEmbed::SetScanPageFonts(JSSmart<CJSValue> arrPageIndexes)
 {
-	m_pFile->SetScanPageFonts(nPageIndex->toInt32());
-	return CJSContext::createUndefined();
+	JSSmart<CJSArray> arrPages = arrPageIndexes->toArray();
+	int nCountPages = arrPages->getCount();
+	int* pPages = NULL;
+	if (0 < nCountPages)
+		pPages = new int[nCountPages];
+
+	for (int i = 0; i < nCountPages; i++)
+		pPages[i] = arrPages->get(i)->toInt32();
+
+	JSSmart<CJSValue> res = WasmMemoryToJS(m_pFile->SetScanPageFonts(pPages, nCountPages));
+	if (pPages)
+		delete [] pPages;
+	return res;
 }
 
 JSSmart<CJSValue> CDrawingFileEmbed::GetImageBase64(JSSmart<CJSValue> rId)
@@ -250,6 +296,14 @@ JSSmart<CJSValue> CDrawingFileEmbed::UndoRedact()
 	if (m_pFile)
 		return CJSContext::createBool(m_pFile->UndoRedact());
 	return CJSContext::createBool(false);
+}
+JSSmart<CJSValue> CDrawingFileEmbed::EditPdf(JSSmart<CJSValue> data)
+{
+	CJSDataBuffer changes;
+	if (data->isTypedArray())
+		changes = data->toTypedArray()->getData();
+	JSSmart<CJSValue> res = WasmMemoryToJS(m_pFile->EditPdf(changes.Data, (LONG)changes.Len));
+	return res;
 }
 
 JSSmart<CJSValue> CDrawingFileEmbed::CheckOwnerPassword(JSSmart<CJSValue> sPassword)

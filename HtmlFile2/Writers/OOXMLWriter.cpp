@@ -1,3 +1,38 @@
+/*
+ * Copyright (C) Ascensio System SIA, 2009-2026
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation, together with the
+ * additional terms provided in the LICENSE file.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. For
+ * details, see the GNU AGPL at: https://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA by email at info@onlyoffice.com
+ * or by postal mail at 20A-6 Ernesta Birznieka-Upisha Street, Riga,
+ * LV-1050, Latvia, European Union.
+ *
+ * The interactive user interfaces in modified versions of the Program
+ * are required to display Appropriate Legal Notices in accordance with
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * No trademark rights are granted under this License.
+ *
+ * All non-code elements of the Product, including illustrations,
+ * icon sets, and technical writing content, are licensed under the
+ * Creative Commons Attribution-ShareAlike 4.0 International License:
+ * https://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ * This license applies only to such non-code elements and does not
+ * modify or replace the licensing terms applicable to the Program's
+ * source code, which remains licensed under the GNU Affero General
+ * Public License v3.
+ *
+ * SPDX-License-Identifier: AGPL-3.0-only
+ */
+
 #include "OOXMLWriter.h"
 
 #include <cwctype>
@@ -5,8 +40,6 @@
 #include "../../DesktopEditor/common/File.h"
 #include "../../DesktopEditor/common/Directory.h"
 #include "../../DesktopEditor/common/SystemUtils.h"
-
-#include "../../DesktopEditor/graphics/pro/Fonts.h"
 
 #include "../src/Languages.h"
 
@@ -19,11 +52,8 @@ namespace HTML
 
 #define MAX_STRING_BLOCK_SIZE (size_t)10485760
 
-#define MAXCOLUMNSINTABLE 63
-#define MAXROWSINTABLE    32767
-
-#define DEFAULT_PAGE_WIDTH  12240 // Value in Twips
-#define DEFAULT_PAGE_HEIGHT 15840 // Value in Twips
+#define DEFAULT_PAGE_WIDTH  12240 // Value in twips
+#define DEFAULT_PAGE_HEIGHT 15840 // Value in twips
 
 #define DEFAULT_LANGUAGE std::wstring(L"en-US")
 #define DEFAULT_FONT_FAMILY std::wstring(L"Times New Roman")
@@ -41,10 +71,9 @@ inline UINT GetFontSizeByLevel(UINT unLevel);
 inline void ReplaceSpaces(std::wstring& wsValue);
 
 COOXMLWriter::COOXMLWriter(THTMLParameters* pHTMLParameters, NSCSS::CCssCalculator* pCSSCalculator)
-	: m_pDstPath(nullptr), m_pTempDir(nullptr), m_pSrcPath(nullptr),
-	  m_pBasePath(nullptr), m_pCorePath(nullptr), m_pStylesCalculator(pCSSCalculator),
+	: m_pDstPath(nullptr), m_pStylesCalculator(pCSSCalculator),
 	  m_pHTMLParameters(pHTMLParameters), m_nFootnoteId(1), m_nHyperlinkId(1), m_nListId(1),
-	  m_nElementId(1), m_bBanUpdatePageData(false), m_bWasDivs(false), m_pFonts(nullptr)
+	  m_nElementId(1), m_bBanUpdatePageData(false), m_bWasDivs(false)
 {
 	m_oPageData.SetWidth (DEFAULT_PAGE_WIDTH,  NSCSS::UnitMeasure::Twips, 0, true);
 	m_oPageData.SetHeight(DEFAULT_PAGE_HEIGHT, NSCSS::UnitMeasure::Twips, 0, true);
@@ -54,31 +83,13 @@ COOXMLWriter::COOXMLWriter(THTMLParameters* pHTMLParameters, NSCSS::CCssCalculat
 
 	m_arStates.push(TState(nullptr));
 	m_arStates.top().m_pCurrentDocument = &m_oDocXml;
-}
 
-void COOXMLWriter::SetSrcDirectory(const std::wstring& wsPath)
-{
-	m_pSrcPath = &wsPath;
+	m_oCustom.m_unIds = 2;
 }
 
 void COOXMLWriter::SetDstDirectory(const std::wstring& wsPath)
 {
 	m_pDstPath = &wsPath;
-}
-
-void COOXMLWriter::SetTempDirectory(const std::wstring& wsPath)
-{
-	m_pTempDir = &wsPath;
-}
-
-void COOXMLWriter::SetBaseDirectory(const std::wstring& wsPath)
-{
-	m_pBasePath = &wsPath;
-}
-
-void COOXMLWriter::SetCoreDirectory(const std::wstring& wsPath)
-{
-	m_pCorePath = &wsPath;
 }
 
 void COOXMLWriter::Begin(const std::wstring& wsDst)
@@ -119,17 +130,8 @@ void COOXMLWriter::Begin(const std::wstring& wsDst)
 		oAppWriter.CloseFile();
 	}
 
-	// .rels
-	std::wstring sRels = L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\"><Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument\" Target=\"word/document.xml\"/><Relationship Id=\"rId2\" Type=\"http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties\" Target=\"docProps/core.xml\"/><Relationship Id=\"rId3\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties\" Target=\"docProps/app.xml\"/></Relationships>";
-	NSFile::CFileBinary oRelsWriter;
-	if (oRelsWriter.CreateFileW(wsDst + L"/_rels/.rels"))
-	{
-		oRelsWriter.WriteStringUTF8(sRels);
-		oRelsWriter.CloseFile();
-	}
-
 	// [Content_Types].xml
-	std::wstring sContent = L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\"><Default Extension=\"bmp\" ContentType=\"image/bmp\"/><Default Extension=\"svg\" ContentType=\"image/svg+xml\"/><Default Extension=\"jfif\" ContentType=\"image/jpeg\"/><Default Extension=\"wmf\" ContentType=\"image/x-wmf\"/><Default Extension=\"gif\" ContentType=\"image/gif\"/><Default Extension=\"jpe\" ContentType=\"image/jpeg\"/><Default Extension=\"png\" ContentType=\"image/png\"/><Default Extension=\"jpg\" ContentType=\"image/jpeg\"/><Default Extension=\"jpeg\" ContentType=\"image/jpeg\"/><Default Extension=\"xml\" ContentType=\"application/xml\"/><Default Extension=\"rels\" ContentType=\"application/vnd.openxmlformats-package.relationships+xml\"/><Default Extension=\"bin\" ContentType=\"application/vnd.openxmlformats-officedocument.oleObject\"/><Override PartName=\"/docProps/core.xml\" ContentType=\"application/vnd.openxmlformats-package.core-properties+xml\"/><Override PartName=\"/word/theme/theme1.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.theme+xml\"/><Override PartName=\"/word/fontTable.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.fontTable+xml\"/><Override PartName=\"/word/webSettings.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.webSettings+xml\"/><Override PartName=\"/word/styles.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml\"/><Override PartName=\"/word/document.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml\"/><Override PartName=\"/word/footnotes.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.footnotes+xml\"/><Override PartName=\"/word/settings.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml\"/><Override PartName=\"/docProps/app.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.extended-properties+xml\"/><Override PartName=\"/word/numbering.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.numbering+xml\"/></Types>";
+	std::wstring sContent = L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\"><Default Extension=\"bmp\" ContentType=\"image/bmp\"/><Default Extension=\"svg\" ContentType=\"image/svg+xml\"/><Default Extension=\"jfif\" ContentType=\"image/jpeg\"/><Default Extension=\"wmf\" ContentType=\"image/x-wmf\"/><Default Extension=\"gif\" ContentType=\"image/gif\"/><Default Extension=\"jpe\" ContentType=\"image/jpeg\"/><Default Extension=\"png\" ContentType=\"image/png\"/><Default Extension=\"jpg\" ContentType=\"image/jpeg\"/><Default Extension=\"jpeg\" ContentType=\"image/jpeg\"/><Default Extension=\"xml\" ContentType=\"application/xml\"/><Default Extension=\"rels\" ContentType=\"application/vnd.openxmlformats-package.relationships+xml\"/><Default Extension=\"bin\" ContentType=\"application/vnd.openxmlformats-officedocument.oleObject\"/><Override PartName=\"/docProps/custom.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.custom-properties+xml\"/><Override PartName=\"/docProps/core.xml\" ContentType=\"application/vnd.openxmlformats-package.core-properties+xml\"/><Override PartName=\"/word/theme/theme1.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.theme+xml\"/><Override PartName=\"/word/fontTable.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.fontTable+xml\"/><Override PartName=\"/word/webSettings.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.webSettings+xml\"/><Override PartName=\"/word/styles.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml\"/><Override PartName=\"/word/document.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml\"/><Override PartName=\"/word/footnotes.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.footnotes+xml\"/><Override PartName=\"/word/settings.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml\"/><Override PartName=\"/docProps/app.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.extended-properties+xml\"/><Override PartName=\"/word/numbering.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.numbering+xml\"/></Types>";
 	NSFile::CFileBinary oContentWriter;
 	if (oContentWriter.CreateFileW(wsDst + L"/[Content_Types].xml"))
 	{
@@ -372,6 +374,32 @@ void COOXMLWriter::End(const std::wstring& wsDst)
 		oWebSettingsWriter.WriteStringUTF8(m_oWebSettings.GetData());
 		oWebSettingsWriter.CloseFile();
 	}
+
+	//custom.xml
+	if (2 != m_oCustom.m_unIds)
+	{
+		NSFile::CFileBinary oCustomXml;
+		if (oCustomXml.CreateFileW(wsDst + L"/docProps/custom.xml"))
+		{
+			oCustomXml.WriteStringUTF8(L"<Properties xmlns=\"http://schemas.openxmlformats.org/officeDocument/2006/custom-properties\" xmlns:vt=\"http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes\">");
+			oCustomXml.WriteStringUTF8(m_oCustom.m_oXml.GetData());
+			oCustomXml.WriteStringUTF8(L"</Properties>");
+			oCustomXml.CloseFile();
+		}
+	}
+
+	// .rels
+	NSFile::CFileBinary oMainRelsWriter;
+	if (oMainRelsWriter.CreateFileW(wsDst + L"/_rels/.rels"))
+	{
+		oMainRelsWriter.WriteStringUTF8(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\"><Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument\" Target=\"word/document.xml\"/><Relationship Id=\"rId2\" Type=\"http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties\" Target=\"docProps/core.xml\"/><Relationship Id=\"rId3\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties\" Target=\"docProps/app.xml\"/>");
+
+		if (2 != m_oCustom.m_unIds)
+			oMainRelsWriter.WriteStringUTF8(L"<Relationship Id=\"rId4\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/custom-properties\" Target=\"docProps/custom.xml\"/>");
+
+		oMainRelsWriter.WriteStringUTF8(L"</Relationships>");
+		oMainRelsWriter.CloseFile();
+	}
 }
 
 bool COOXMLWriter::OpenP()
@@ -557,12 +585,12 @@ void COOXMLWriter::SetCurrentDocument(XmlString* pNewDocument)
 	m_arStates.top().m_bRemoveCurrentDocument = false;
 }
 
-void COOXMLWriter::Break(const std::vector<NSCSS::CNode>& arSelectors)
+void COOXMLWriter::Break(const NSCSS::CNode& oTagNode)
 {
 	if (m_arStates.top().m_bInP)
 	{
 		OpenR();
-		if(arSelectors.back().m_pCompiledStyle->m_oText.GetAlign() == L"both")
+		if(oTagNode.m_pCompiledStyle->m_oText.GetAlign() == L"both")
 			m_arStates.top().m_pCurrentDocument->WriteString(L"<w:tab/>");
 		m_arStates.top().m_pCurrentDocument->WriteString(L"<w:br/>");
 		CloseR();
@@ -816,8 +844,8 @@ bool COOXMLWriter::WriteText(std::wstring wsText, const std::vector<NSCSS::CNode
 	if (wsText.empty())
 		return false;
 
-	bool bBidirectional{false}, bPreformatted{false}, bQuotation{false},
-	     bAddSpaces{true}, bMergedText{false}, bDeleted{false};
+	bool bBidirectional{false}, bPreformattedTag{false}, bPreformatedStyle{false}, bQuotation{false},
+	     bAddSpaces{true}, bDeleted{false}, bCode{false};
 
 	for (const NSCSS::CNode& oNode : arSelectors)
 	{
@@ -826,18 +854,23 @@ bool COOXMLWriter::WriteText(std::wstring wsText, const std::vector<NSCSS::CNode
 		else if (L"bdi" == oNode.m_wsName)
 			bBidirectional = false;
 		else if (L"pre" == oNode.m_wsName || L"nobr" == oNode.m_wsName || L"xmp" == oNode.m_wsName)
-			bPreformatted = true;
+		{
+			bPreformattedTag  = true;
+			bPreformatedStyle = true;
+		}
 		else if (L"q" == oNode.m_wsName)
 			bQuotation = true;
 		else if (L"span" == oNode.m_wsName)
 			bAddSpaces = false;
 		else if (L"del" == oNode.m_wsName)
 			bDeleted = true;
+		else if (L"code" == oNode.m_wsName)
+			bCode = true;
 	}
 
 	const NSCSS::CCompiledStyle* pCompiledStyle{arSelectors.back().m_pCompiledStyle};
 
-	if (!bPreformatted && nullptr != arSelectors.back().m_pCompiledStyle)
+	if (!bPreformatedStyle && nullptr != arSelectors.back().m_pCompiledStyle)
 	{
 		// TODO:: behavior should be slightly different (implement)
 		switch(pCompiledStyle->m_oDisplay.GetWhiteSpace().ToInt())
@@ -845,13 +878,13 @@ bool COOXMLWriter::WriteText(std::wstring wsText, const std::vector<NSCSS::CNode
 			case NSCSS::NSProperties::EWhiteSpace::Pre:
 			case NSCSS::NSProperties::EWhiteSpace::Pre_Wrap:
 			case NSCSS::NSProperties::EWhiteSpace::Pre_Line:
-				bPreformatted = true;
+				bPreformatedStyle = true;
 			default:
 				break;
 		}
 	}
 
-	if (!bPreformatted && wsText.end() == std::find_if_not(wsText.begin(), wsText.end(), [](wchar_t wchChar){ return iswspace(wchChar) && 0xa0 != wchChar;}))
+	if (!bPreformatedStyle && wsText.end() == std::find_if_not(wsText.begin(), wsText.end(), [](wchar_t wchChar){ return iswspace(wchChar) && 0xa0 != wchChar;}))
 		return false;
 
 	std::wstring wsHeaderId;
@@ -862,8 +895,6 @@ bool COOXMLWriter::WriteText(std::wstring wsText, const std::vector<NSCSS::CNode
 	if(bBidirectional)
 		std::reverse(wsText.begin(), wsText.end());
 
-	const bool bInT = m_arStates.top().m_bInT;
-
 	OpenP();
 
 	WritePPr(arSelectors);
@@ -873,35 +904,45 @@ bool COOXMLWriter::WriteText(std::wstring wsText, const std::vector<NSCSS::CNode
 	if (!wsHeaderId.empty())
 		WriteEmptyBookmark(wsHeaderId);
 
+	XmlString *pCurrentDocument{GetCurrentDocument()};
+
 	if (bDeleted)
-		GetCurrentDocument()->WriteString(L"<w:del w:author=\"Unknown\">");
+		pCurrentDocument->WriteString(L"<w:del w:author=\"Unknown\">");
 
 	NSStringUtils::CStringBuilder oRPr;
 	std::wstring sRStyle;
 
+	if (bCode)
+		pCurrentDocument->WriteString(L"<w:sdt>"
+		                                   "<w:sdtPr>"
+		                                       "<w:placeholder><w:docPart w:val=\"DefaultPlaceholder_TEXT\"/></w:placeholder>"
+		                                       "<w:tag w:val=\"oo-" + std::wstring(((bPreformattedTag) ? L"block-code" : L"inline-code")) + L"\"/>"
+		                                   "</w:sdtPr>"
+		                                "<w:sdtContent>");
+
 	if (OpenR())
 	{
 		sRStyle = WriteRPr(oRPr, arSelectors);
-		WriteToStringBuilder(oRPr, *m_arStates.top().m_pCurrentDocument);
+		WriteToStringBuilder(oRPr, *pCurrentDocument);
 	}
 
 	if (bQuotation)
-		m_arStates.top().m_pCurrentDocument->WriteString(L"<w:t xml:space=\"preserve\">&quot;</w:t>");
+		pCurrentDocument->WriteString(L"<w:t xml:space=\"preserve\">&quot;</w:t>");
 
-	if (!bPreformatted && bAddSpaces && m_arStates.top().m_bInP && !m_arStates.top().m_bInR && !iswspace(wsText.front()) && !iswpunct(wsText.front()) && !m_arStates.top().m_bWasSpace)
+	if (!bPreformatedStyle && bAddSpaces && m_arStates.top().m_bInP && !m_arStates.top().m_bInR && !iswspace(wsText.front()) && !iswpunct(wsText.front()) && !m_arStates.top().m_bWasSpace)
 	{
 		if (pCompiledStyle->m_oDisplay.GetVAlign().Empty() || L"normal" == pCompiledStyle->m_oDisplay.GetVAlign().ToWString())
 			WriteSpace();
 	}
 
-	if(bPreformatted)
+	if(bPreformatedStyle)
 	{
 		size_t unBegin = 0, unEnd = wsText.find_first_of(L"\n\r\t");
 
 		while (std::wstring::npos != unBegin)
 		{
 			if (OpenR())
-				WriteToStringBuilder(oRPr, *m_arStates.top().m_pCurrentDocument);
+				WriteToStringBuilder(oRPr, *pCurrentDocument);
 
 			if (!bDeleted)
 				OpenT();
@@ -910,20 +951,20 @@ bool COOXMLWriter::WriteText(std::wstring wsText, const std::vector<NSCSS::CNode
 
 			if (unEnd == std::wstring::npos)
 			{
-				m_arStates.top().m_pCurrentDocument->WriteEncodeXmlString(wsText.c_str() + unBegin, wsText.length() - unBegin);
+				pCurrentDocument->WriteEncodeXmlString(wsText.c_str() + unBegin, wsText.length() - unBegin);
 				break;
 			}
 
 			if (unBegin != unEnd)
 			{
-				m_arStates.top().m_pCurrentDocument->WriteEncodeXmlString(wsText.c_str() + unBegin, unEnd - unBegin);
+				pCurrentDocument->WriteEncodeXmlString(wsText.c_str() + unBegin, unEnd - unBegin);
 				CloseT();
 			}
 
 			if (L'\n' == wsText[unEnd])
-				m_arStates.top().m_pCurrentDocument->WriteString(L"<w:br/>");
+				pCurrentDocument->WriteString(L"<w:br/>");
 			else if (L'\t' == wsText[unEnd])
-				m_arStates.top().m_pCurrentDocument->WriteString(L"<w:tab/>");
+				pCurrentDocument->WriteString(L"<w:tab/>");
 
 			unBegin = unEnd + 1;
 			unEnd = wsText.find_first_of(L"\n\r\t", unBegin);
@@ -935,7 +976,7 @@ bool COOXMLWriter::WriteText(std::wstring wsText, const std::vector<NSCSS::CNode
 
 		if (!wsText.empty() && L'\t' == wsText[0])
 		{
-			m_arStates.top().m_pCurrentDocument->WriteString(L"<w:tab/>");
+			pCurrentDocument->WriteString(L"<w:tab/>");
 			wsText.erase(0, 1);
 		}
 
@@ -945,31 +986,30 @@ bool COOXMLWriter::WriteText(std::wstring wsText, const std::vector<NSCSS::CNode
 		if (!bDeleted)
 			OpenT();
 		else
-			GetCurrentDocument()->WriteString(L"<w:delText>");
-
-		if (bMergedText && !m_arStates.top().m_bWasSpace && bInT && !bPreformatted)
-			m_arStates.top().m_pCurrentDocument->WriteEncodeXmlString(L" ");
+			pCurrentDocument->WriteString(L"<w:delText>");
 
 		if (!wsText.empty())
 		{
 			m_arStates.top().m_bWasSpace = std::iswspace(wsText.back());
-			m_arStates.top().m_pCurrentDocument->WriteEncodeXmlString(wsText);
+			pCurrentDocument->WriteEncodeXmlString(wsText);
 		}
 	}
 
 	if (bQuotation)
-		m_arStates.top().m_pCurrentDocument->WriteString(L"<w:t xml:space=\"preserve\">&quot;</w:t>");
+		pCurrentDocument->WriteString(L"<w:t xml:space=\"preserve\">&quot;</w:t>");
 
 	if (!bDeleted)
 		CloseT();
 	else
-		GetCurrentDocument()->WriteString(L"</w:delText>");
+		pCurrentDocument->WriteString(L"</w:delText>");
 
-	if (!bMergedText)
-		CloseR();
+	CloseR();
+
+	if (bCode)
+		pCurrentDocument->WriteString(L"</w:sdtContent></w:sdt>");
 
 	if (bDeleted)
-		GetCurrentDocument()->WriteString(L"</w:del>");
+		pCurrentDocument->WriteString(L"</w:del>");
 
 	return true;
 }
@@ -988,6 +1028,13 @@ void COOXMLWriter::WriteEmptyParagraph(bool bVahish, bool bInP)
 
 	if (!bInP)
 		m_arStates.top().m_pCurrentDocument->WriteString(L"</w:pPr></w:p>");
+}
+
+void COOXMLWriter::WriteMetadata(const std::wstring& wsName, const std::wstring& wsValue)
+{
+	m_oCustom.m_oXml.WriteString(L"<property fmtid=\"{D5CDD505-2E9C-101B-9397-08002B2CF9AE}\" pid=\"" + std::to_wstring(m_oCustom.m_unIds++) +L"\" name=\"" + wsName + L"\">"
+	                                  "<vt:lpwstr>" + wsValue + L"</vt:lpwstr>"
+	                              "</property>");
 }
 
 void COOXMLWriter::WriteSpace()
@@ -1261,52 +1308,14 @@ XmlString* COOXMLWriter::GetCurrentDocument() const
 	return m_arStates.top().m_pCurrentDocument;
 }
 
-bool COOXMLWriter::SupportNestedTables() const
-{
-	return true;
-}
-
 const NSCSS::NSProperties::CPage* COOXMLWriter::GetPageData() const
 {
 	return &m_oPageData;
 }
 
-NSFonts::IApplicationFonts* COOXMLWriter::GetFonts()
-{
-	if (nullptr == m_pFonts)
-	{
-		m_pFonts = NSFonts::NSApplication::Create();
-
-		if (NULL != m_pFonts)
-			m_pFonts->Initialize();
-	}
-
-	return m_pFonts;
-}
-
 std::wstring COOXMLWriter::GetMediaDir() const
 {
 	return ((nullptr != m_pDstPath) ? *m_pDstPath : std::wstring()) + L"/word/media/";
-}
-
-std::wstring COOXMLWriter::GetTempDir() const
-{
-	return (nullptr != m_pTempDir) ? *m_pTempDir : std::wstring();
-}
-
-std::wstring COOXMLWriter::GetSrcPath() const
-{
-	return (nullptr != m_pSrcPath) ? *m_pSrcPath : std::wstring();
-}
-
-std::wstring COOXMLWriter::GetBasePath() const
-{
-	return (nullptr != m_pBasePath) ? *m_pBasePath : std::wstring();
-}
-
-std::wstring COOXMLWriter::GetCorePath() const
-{
-	return (nullptr != m_pCorePath) ? *m_pCorePath : std::wstring();
 }
 
 inline bool ElementInTable(const std::vector<NSCSS::CNode>& arSelectors)

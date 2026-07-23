@@ -1,33 +1,36 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * Copyright (C) Ascensio System SIA, 2009-2026
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
- * version 3 as published by the Free Software Foundation. In accordance with
- * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
- * that Ascensio System SIA expressly excludes the warranty of non-infringement
- * of any third-party rights.
+ * version 3 as published by the Free Software Foundation, together with the
+ * additional terms provided in the LICENSE file.
  *
  * This program is distributed WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
- * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. For
+ * details, see the GNU AGPL at: https://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
- * street, Riga, Latvia, EU, LV-1050.
+ * You can contact Ascensio System SIA by email at info@onlyoffice.com
+ * or by postal mail at 20A-6 Ernesta Birznieka-Upisha Street, Riga,
+ * LV-1050, Latvia, European Union.
  *
- * The  interactive user interfaces in modified source and object code versions
- * of the Program must display Appropriate Legal Notices, as required under
+ * The interactive user interfaces in modified versions of the Program
+ * are required to display Appropriate Legal Notices in accordance with
  * Section 5 of the GNU AGPL version 3.
  *
- * Pursuant to Section 7(b) of the License you must retain the original Product
- * logo when distributing the program. Pursuant to Section 7(e) we decline to
- * grant you any rights under trademark law for use of our trademarks.
+ * No trademark rights are granted under this License.
  *
- * All the Product's GUI elements, including illustrations and icon sets, as
- * well as technical writing content are licensed under the terms of the
- * Creative Commons Attribution-ShareAlike 4.0 International. See the License
- * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ * All non-code elements of the Product, including illustrations,
+ * icon sets, and technical writing content, are licensed under the
+ * Creative Commons Attribution-ShareAlike 4.0 International License:
+ * https://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
+ * This license applies only to such non-code elements and does not
+ * modify or replace the licensing terms applicable to the Program's
+ * source code, which remains licensed under the GNU Affero General
+ * Public License v3.
+ *
+ * SPDX-License-Identifier: AGPL-3.0-only
  */
 #ifndef DOC_BUILDER_PRIVATE
 #define DOC_BUILDER_PRIVATE
@@ -68,6 +71,8 @@
 #ifdef CreateFile
 #undef CreateFile
 #endif
+
+class IOfficeDrawingFile;
 
 namespace NSDoctRenderer
 {
@@ -428,6 +433,12 @@ public:
 
 	CJSContextData m_oContextData;
 
+	// PDF Editor
+	std::wstring m_sX2tPath;
+	std::wstring m_sPdfFile;
+	IOfficeDrawingFile* m_pPdfFile;
+	NSFonts::IApplicationFonts* m_pPdfFonts;
+
 public:
 
 	CV8RealTimeWorker(NSDoctRenderer::CDocBuilder* pBuilder, const NSDoctRenderer::DoctRendererEditorType& type, NSDoctRenderer::CDoctRendererConfig* config);
@@ -446,6 +457,12 @@ public:
 	bool SaveFileWithChanges(int type, const std::wstring& _path, const std::wstring& sJsonParams = L"", const bool& isEnterContext = true);
 	bool InitVariables();
 
+#ifdef DOCBUILDER_PDF_EDITOR
+	// PDF editing
+	bool OpenDrawingFile(const std::wstring& sFontsDirectory);
+	bool SaveEditedPdf(int type, const std::wstring& sDstFile, const std::wstring& sMediaDir, const std::wstring& sJsonParams = L"", const bool& isEnterContext = true);
+#endif
+
 	bool NewSimpleJSInstance();
 	bool IsSimpleJSInstance();
 };
@@ -461,6 +478,9 @@ namespace NSDoctRenderer
 		std::wstring m_sTmpFolder;
 		std::wstring m_sFileDir;
 		int m_nFileType;
+
+		// original pdf path when editing a pdf (m_nFileType == 3)
+		std::wstring m_sEditPdfFile;
 
 		std::wstring m_sCommandsBeforeContextCreated;
 
@@ -572,6 +592,7 @@ namespace NSDoctRenderer
 			}
 
 			m_nFileType = -1;
+			m_sEditPdfFile = L"";
 
 			NSDirectory::CreateDirectory(m_sFileDir);
 		}
@@ -939,6 +960,26 @@ namespace NSDoctRenderer
 			if (oChecker.nFileType & AVS_OFFICESTUDIO_FILE_DRAW)
 				m_nFileType = 7;
 
+#ifdef DOCBUILDER_PDF_EDITOR
+			if (AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF  == oChecker.nFileType ||
+				AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDFA == oChecker.nFileType)
+			{
+				m_nFileType = 3;
+				m_sEditPdfFile = sFileCopy;
+
+				NSDirectory::CreateDirectory(m_sFileDir + L"/media");
+
+				if (m_pWorker && m_pWorker->IsSimpleJSInstance() && !m_bIsOpenedFromSimpleJS)
+				{
+					RELEASEOBJECT(m_pWorker);
+					CheckWorker();
+				}
+
+				LOGGER_SPEED_LAP("open_convert");
+				return 0;
+			}
+#endif
+
 			int nReturnCode = ConvertToInternalFormat(m_sFileDir, sFileCopy, params);
 
 			LOGGER_SPEED_LAP("open_convert");
@@ -971,6 +1012,7 @@ namespace NSDoctRenderer
 
 			m_sFileDir = L"";
 			m_nFileType = -1;
+			m_sEditPdfFile = L"";
 
 			if (m_pWorker)
 				m_sGlobalVariable = m_pWorker->GetGlobalVariable();
@@ -998,6 +1040,30 @@ namespace NSDoctRenderer
 			return _path;
 		}
 
+		// extracts the inner json (...{...}...) from the x2t-style xml params passed to SaveFile
+		static std::wstring ExtractJsonParams(const std::wstring& sConvertionParams)
+		{
+			std::wstring sJsonParams = sConvertionParams;
+			if (!sJsonParams.empty())
+			{
+				std::wstring::size_type pos1 = sJsonParams.find(L">");
+				std::wstring::size_type pos2 = sJsonParams.find(L"</");
+				if (std::wstring::npos != pos1 && std::wstring::npos != pos2)
+				{
+					sJsonParams = sJsonParams.substr(pos1 + 1, pos2 - pos1 - 1);
+					NSStringUtils::string_replace(sJsonParams, L"&quot;", L"\"");
+
+					if (0 != sJsonParams.find(L"{"))
+						sJsonParams = L"";
+				}
+				else
+				{
+					sJsonParams = L"";
+				}
+			}
+			return sJsonParams;
+		}
+
 		int SaveFile(const int& type, const std::wstring& path, const wchar_t* params = NULL, const bool& isEnterContext = true)
 		{
 			Init();
@@ -1023,28 +1089,48 @@ namespace NSDoctRenderer
 				NSStringUtils::string_replace(sConvertionParams, L"\'", L"&quot;");
 			}
 
+			std::wstring sFileFromOverride = L"";
+
+#ifdef DOCBUILDER_PDF_EDITOR
+			if (3 == m_nFileType)
+			{
+				if (!CheckWorker())
+					return 1;
+
+				std::wstring sJsonParams = ExtractJsonParams(sConvertionParams);
+
+				if (AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == type ||
+					AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDFA == type)
+				{
+					std::wstring _path = GetSaveFilePath(path);
+
+					bool bOk = m_pWorker->SaveEditedPdf(type, _path, m_sFileDir, sJsonParams, isEnterContext);
+
+					LOGGER_SPEED_LAP("save_convert");
+					if (bOk)
+						return 0;
+
+					CV8RealTimeWorker::_LOGGING_ERROR_(L"error: ", L"save pdf error");
+					return 1;
+				}
+
+				std::wstring sTmpPdf = m_sFileDir + L"/save_tmp.pdf";
+				bool bOk = m_pWorker->SaveEditedPdf(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF, sTmpPdf, m_sFileDir, sJsonParams, isEnterContext);
+				if (!bOk)
+				{
+					CV8RealTimeWorker::_LOGGING_ERROR_(L"error: ", L"save pdf error");
+					return 1;
+				}
+
+				sFileFromOverride = sTmpPdf;
+			}
+#endif
+
 			std::wstring sFileBin = L"/Editor.bin";
 
-			if (!m_oParams.m_bSaveWithDoctrendererMode && m_pWorker)
+			if (sFileFromOverride.empty() && !m_oParams.m_bSaveWithDoctrendererMode && m_pWorker)
 			{
-				std::wstring sJsonParams = sConvertionParams;
-				if (!sJsonParams.empty())
-				{
-					std::wstring::size_type pos1 = sJsonParams.find(L">");
-					std::wstring::size_type pos2 = sJsonParams.find(L"</");
-					if (std::wstring::npos != pos1 && std::wstring::npos != pos2)
-					{
-						sJsonParams = sJsonParams.substr(pos1 + 1, pos2 - pos1 - 1);
-						NSStringUtils::string_replace(sJsonParams, L"&quot;", L"\"");
-
-						if (0 != sJsonParams.find(L"{"))
-							sJsonParams = L"";
-					}
-					else
-					{
-						sJsonParams = L"";
-					}
-				}
+				std::wstring sJsonParams = ExtractJsonParams(sConvertionParams);
 
 				this->m_pWorker->SaveFileWithChanges(type, m_sFileDir + L"/Editor2.bin", sJsonParams, isEnterContext);
 				sFileBin = L"/Editor2.bin";
@@ -1055,17 +1141,23 @@ namespace NSDoctRenderer
 			std::wstring _path = GetSaveFilePath(path);
 
 			oBuilder.WriteString(L"<?xml version=\"1.0\" encoding=\"utf-8\"?><TaskQueueDataConvert><m_sFileFrom>");
-			oBuilder.WriteEncodeXmlString(m_sFileDir);
-			oBuilder.WriteString(sFileBin + L"</m_sFileFrom><m_sFileTo>");
+			if (!sFileFromOverride.empty())
+				oBuilder.WriteEncodeXmlString(sFileFromOverride);
+			else
+			{
+				oBuilder.WriteEncodeXmlString(m_sFileDir);
+				oBuilder.WriteString(sFileBin);
+			}
+			oBuilder.WriteString(L"</m_sFileFrom><m_sFileTo>");
 			oBuilder.WriteEncodeXmlString(_path);
 			oBuilder.WriteString(L"</m_sFileTo><m_nFormatTo>");
 			oBuilder.WriteString(std::to_wstring(type));
 			oBuilder.WriteString(L"</m_nFormatTo><m_sThemeDir>");
 			oBuilder.WriteEncodeXmlString(L"./sdkjs/slide/themes");
-			if (!m_oParams.m_bSaveWithDoctrendererMode)
-				oBuilder.WriteString(L"</m_sThemeDir><m_bDontSaveAdditional>true</m_bDontSaveAdditional>");
-			else
+			if (sFileFromOverride.empty() && m_oParams.m_bSaveWithDoctrendererMode)
 				oBuilder.WriteString(L"</m_sThemeDir><m_bFromChanges>true</m_bFromChanges><m_bDontSaveAdditional>true</m_bDontSaveAdditional>");
+			else
+				oBuilder.WriteString(L"</m_sThemeDir><m_bDontSaveAdditional>true</m_bDontSaveAdditional>");
 			oBuilder.WriteString(L"<m_nCsvTxtEncoding>46</m_nCsvTxtEncoding><m_nCsvDelimiter>4</m_nCsvDelimiter>");
 
 			oBuilder.WriteString(L"<m_sFontDir>");
@@ -1230,6 +1322,8 @@ namespace NSDoctRenderer
 
 			NSDirectory::DeleteDirectory(sDstTmpDir);
 			NSFile::CFileBinary::Remove(sTempFileForParams);
+			if (!sFileFromOverride.empty())
+				NSFile::CFileBinary::Remove(sFileFromOverride);
 
 			LOGGER_SPEED_LAP("save_convert");
 
@@ -1252,6 +1346,7 @@ namespace NSDoctRenderer
 				m_pWorker->m_sJSCodeStart = U_TO_UTF8(m_sCommandsBeforeContextCreated);
 
 				m_pWorker->m_nFileType = m_nFileType;
+				m_pWorker->m_sPdfFile = m_sEditPdfFile;
 
 				if (-1 != m_nFileType)
 					m_sCommandsBeforeContextCreated = L"";
@@ -1338,6 +1433,8 @@ namespace NSDoctRenderer
 				return NSDoctRenderer::DoctRendererEditorType::SLIDE;
 			case 2:
 				return NSDoctRenderer::DoctRendererEditorType::CELL;
+			case 3:
+				return NSDoctRenderer::DoctRendererEditorType::PDF;
 			case 7:
 				return NSDoctRenderer::DoctRendererEditorType::VISIO;
 			default:

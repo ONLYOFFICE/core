@@ -118,6 +118,11 @@ namespace NSCSS
 
 			return *this;
 		}
+
+		bool LessSignificantThen(const CValueBase& oValue) const
+		{
+			return oValue.m_unLevel >= m_unLevel && (!m_bImportant || oValue.m_bImportant) && !oValue.Empty();
+		}
 	};
 
 	template<typename T>

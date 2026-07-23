@@ -489,6 +489,7 @@
     <ClInclude Include="..\..\..\PptFile\Structures\_includer.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\..\Common\MediaFileFormatChecker.cpp" />
     <ClCompile Include="..\..\..\PptFile\Converter\Animation\AnimationParser.cpp" />
     <ClCompile Include="..\..\..\PptFile\Converter\Animation\Animation_1995.cpp" />
     <ClCompile Include="..\..\..\PptFile\Converter\Animation\hashcode10.cpp" />

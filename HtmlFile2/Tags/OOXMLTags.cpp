@@ -1,3 +1,38 @@
+/*
+ * Copyright (C) Ascensio System SIA, 2009-2026
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation, together with the
+ * additional terms provided in the LICENSE file.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. For
+ * details, see the GNU AGPL at: https://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA by email at info@onlyoffice.com
+ * or by postal mail at 20A-6 Ernesta Birznieka-Upisha Street, Riga,
+ * LV-1050, Latvia, European Union.
+ *
+ * The interactive user interfaces in modified versions of the Program
+ * are required to display Appropriate Legal Notices in accordance with
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * No trademark rights are granted under this License.
+ *
+ * All non-code elements of the Product, including illustrations,
+ * icon sets, and technical writing content, are licensed under the
+ * Creative Commons Attribution-ShareAlike 4.0 International License:
+ * https://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ * This license applies only to such non-code elements and does not
+ * modify or replace the licensing terms applicable to the Program's
+ * source code, which remains licensed under the GNU Affero General
+ * Public License v3.
+ *
+ * SPDX-License-Identifier: AGPL-3.0-only
+ */
+
 #include "OOXMLTags.h"
 
 #include "../src/StringFinder.h"
@@ -9,37 +44,57 @@
 #include "../../DesktopEditor/graphics/pro/Graphics.h"
 #include "../../DesktopEditor/common/Base64.h"
 #include "../../DesktopEditor/common/File.h"
-#include "../../DesktopEditor/common/ProcessEnv.h"
 #include "../../DesktopEditor/common/Path.h"
 
-#include <boost/tuple/tuple.hpp>
+#include "../../Common/3dParty/html/gumbo-parser/src/gumbo.h"
 
 namespace HTML
 {
 #define DEFAULT_PAGE_WIDTH  12240 // Value in Twips
 #define DEFAULT_PAGE_HEIGHT 15840 // Value in Twips
 
+#define MAX_COLUMNS_IN_TABLE 63
+#define MAX_ROWS_IN_TABLE    32767
+
 inline bool ElementInTable(const std::vector<NSCSS::CNode>& arSelectors);
 
 inline bool NotValidExtension(const std::wstring& sExtention);
 inline bool IsSVG(const std::wstring& wsExtention);
-bool ReadSVG(const std::wstring& wsSvg, NSFonts::IApplicationFonts* pFonts, const std::wstring& wsTempDir, const std::wstring& wsImagePath);
+inline bool IsMetafile(const std::wstring& wsExtention);
+bool ReadMetafileData(const std::wstring& wsFilePath, NSFonts::IApplicationFonts* pFonts, const std::wstring& wsTempDir, const std::wstring& wsImagePath);
+bool ReadSVGData(const std::wstring& wsSvg, NSFonts::IApplicationFonts* pFonts, const std::wstring& wsTempDir, const std::wstring& wsImagePath);
 bool ReadBase64(const std::wstring& wsSrc, const std::wstring& wsImagePath, NSFonts::IApplicationFonts* pFonts, const std::wstring& wsTempDir, std::wstring& wsExtention);
 bool GetStatusUsingExternalLocalFiles();
-bool CanUseThisPath(const std::wstring& wsPath, const std::wstring& wsSrcPath, const std::wstring& wsCorePath, bool bIsAllowExternalLocalFiles);
+bool CanUseThisPath(const std::wstring& wsPath, const std::wstring& wsSrcPath, const std::wstring& wsCorePath, NSFonts::IApplicationFonts* pFonts, const std::wstring& wsTempDir, bool bIsAllowExternalLocalFiles);
 
 bool CopyImage(std::wstring wsImageSrc, const std::wstring& wsSrc, const std::wstring& wsDst, bool bIsAllowExternalLocalFiles);
 bool UpdateImageData(const std::wstring& wsImagePath, TImageData& oImageData);
 
 const static double HTML_FONTS[7] = {7.5, 10, 12, 13.5, 18, 24, 36};
 
-CAnchor<COOXMLWriter>::CAnchor(COOXMLWriter* pWriter)
-	: CTag(pWriter)
-{}
-
-bool CAnchor<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData)
+void InitTagsForOOXML(std::map<int, std::shared_ptr<ITag> >& mTags, COOXMLWriter* pWriter)
 {
-	if (!ValidWriter())
+	#define HTML_TAG(tag) GUMBO_TAG_##tag
+	#define ADD_TAG(tag_name, tag_class_name) mTags[HTML_TAG(tag_name)] = std::make_shared<C ##tag_class_name##OOXMLTag> (pWriter)
+
+	ADD_TAG(A,          Anchor);
+	ADD_TAG(ABBR,       Abbr);
+	ADD_TAG(BR,         Break);
+	ADD_TAG(FONT,       Font);
+	ADD_TAG(INPUT,      Input);
+	ADD_TAG(BASEFONT,   BaseFont);
+	ADD_TAG(OL,         List);
+	ADD_TAG(LI,         ListElement);
+	ADD_TAG(HTML,       HTML);
+	ADD_TAG(DIV,        Division);
+	ADD_TAG(IMG,        Image);
+	ADD_TAG(BLOCKQUOTE, Blockquote);
+	ADD_TAG(HR,         HorizontalRule);
+}
+
+bool CAnchorOOXMLTag::Open(const std::vector<NSCSS::CNode>& arSelectors)
+{
+	if(!Valid())
 		return false;
 
 	std::wstring wsRef, wsAlt, wsName;
@@ -83,21 +138,17 @@ bool CAnchor<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, c
 	return true;
 }
 
-void CAnchor<COOXMLWriter>::Close(const std::vector<NSCSS::CNode>& arSelectors)
+void CAnchorOOXMLTag::Close(const std::vector<NSCSS::CNode>& arSelectors)
 {
-	if (!ValidWriter())
+	if (!Valid())
 		return;
 
 	m_pWriter->ClearHyperlinkData();
 }
 
-CAbbr<COOXMLWriter>::CAbbr(COOXMLWriter* pWriter)
-	: CTag(pWriter)
-{}
-
-bool CAbbr<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData)
+bool CAbbrOOXMLTag::Open(const std::vector<NSCSS::CNode>& arSelectors)
 {
-	if (!ValidWriter())
+	if(!Valid())
 		return false;
 
 	std::wstring wsTitle;
@@ -117,38 +168,34 @@ bool CAbbr<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, con
 	return true;
 }
 
-void CAbbr<COOXMLWriter>::Close(const std::vector<NSCSS::CNode>& arSelectors)
+void CAbbrOOXMLTag::Close(const std::vector<NSCSS::CNode>& arSelectors)
 {
-	if (!ValidWriter())
+	if (!Valid())
 		return;
 
 	m_pWriter->GetCurrentDocument()->WriteString(L"<w:r><w:fldChar w:fldCharType=\"end\"/></w:r>");
 }
 
-CBreak<COOXMLWriter>::CBreak(COOXMLWriter* pWriter)
-	: CTag(pWriter)
-{}
-
-bool CBreak<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData)
+bool CBreakOOXMLTag::Open(const std::vector<NSCSS::CNode>& arSelectors)
 {
-	if (!ValidWriter())
+	if (!Valid())
 		return false;
 
-	m_pWriter->Break(arSelectors);
+	m_pWriter->Break(arSelectors.back());
 
 	return true;
 }
 
-void CBreak<COOXMLWriter>::Close(const std::vector<NSCSS::CNode>& arSelectors)
+void CBreakOOXMLTag::Close(const std::vector<NSCSS::CNode>& arSelectors)
 {}
 
-CDivision<COOXMLWriter>::CDivision(COOXMLWriter* pWriter)
-	: CTag(pWriter)
+CDivisionOOXMLTag::CDivisionOOXMLTag(COOXMLWriter* pWriter)
+	: IHTMLTag(pWriter)
 {}
 
-bool CDivision<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData)
+bool CDivisionOOXMLTag::Open(const std::vector<NSCSS::CNode>& arSelectors)
 {
-	if (!ValidWriter())
+	if (!Valid())
 		return false;
 
 	m_pWriter->UpdatePageStyle(arSelectors);
@@ -182,9 +229,9 @@ bool CDivision<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors,
 	return true;
 }
 
-void CDivision<COOXMLWriter>::Close(const std::vector<NSCSS::CNode>& arSelectors)
+void CDivisionOOXMLTag::Close(const std::vector<NSCSS::CNode>& arSelectors)
 {
-	if (!ValidWriter() || m_arFootnoteIDs.empty())
+	if (!Valid() || m_arFootnoteIDs.empty())
 		return;
 
 	if (m_arFootnoteIDs.top() >= 2)
@@ -197,23 +244,21 @@ void CDivision<COOXMLWriter>::Close(const std::vector<NSCSS::CNode>& arSelectors
 	m_arFootnoteIDs.pop();
 }
 
-CImage<COOXMLWriter>::CImage(COOXMLWriter* pWriter)
-	: CTag(pWriter)
+
+CImageOOXMLTag::CImageOOXMLTag(COOXMLWriter* pWriter)
+	: IHTMLTag(pWriter)
 {}
 
-bool CImage<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData)
+bool CImageOOXMLTag::Open(const std::vector<NSCSS::CNode>& arSelectors)
 {
-	if (!ValidWriter())
+	if (!Valid())
 		return false;
 
 	if (L"svg" == arSelectors.back().m_wsName)
 	{
-		if (oExtraData.empty() || typeid(const std::wstring&) != oExtraData.type())
-			return false;
+		const std::wstring wsImagePath{m_pWriter->GetMediaDir() + L'i' + std::to_wstring(m_arImages.size()) + L".png"};
 
-		const std::wstring wsImagePath{m_pWriter->GetMediaDir() + L'i' + std::to_wstring(m_arrImages.size()) + L".png"};
-
-		if (!ReadSVG(boost::any_cast<const std::wstring&>(oExtraData), m_pWriter->GetFonts(), m_pWriter->GetTempDir(), wsImagePath))
+		if (!ReadSVGData(arSelectors.back().GetAttributeValue(L"svg-text"), m_pWriter->GetFonts(), m_pWriter->GetTempDir(), wsImagePath))
 			return false;
 
 		TImageData oNewImageData;
@@ -221,7 +266,7 @@ bool CImage<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, co
 			return false;
 
 		m_pWriter->WritePPr(arSelectors);
-		m_pWriter->WriteImage(oNewImageData, std::to_wstring(m_arrImages.size()));
+		m_pWriter->WriteImage(oNewImageData, std::to_wstring(m_arImages.size()));
 		return true;
 	}
 
@@ -278,7 +323,7 @@ bool CImage<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, co
 
 	bool bRes = false;
 	std::wstring wsExtention;
-	const std::wstring wsImagePath{m_pWriter->GetMediaDir() + L'i' + std::to_wstring(m_arrImages.size())};
+	const std::wstring wsImagePath{m_pWriter->GetMediaDir() + L'i' + std::to_wstring(m_arImages.size())};
 
 	// Assume Base64-encoded image
 	if (wsSrc.length() > 4 && wsSrc.substr(0, 4) == L"data" && wsSrc.find(L"/", 4) != std::wstring::npos)
@@ -340,7 +385,7 @@ bool CImage<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, co
 			std::wstring wsFileData;
 
 			if (!NSFile::CFileBinary::ReadAllTextUtf8(wsDst, wsFileData) ||
-			    !ReadSVG(wsFileData, m_pWriter->GetFonts(), m_pWriter->GetTempDir(), wsImagePath))
+			    !ReadSVGData(wsFileData, m_pWriter->GetFonts(), m_pWriter->GetTempDir(), wsImagePath))
 				bRes = false;
 
 			NSFile::CFileBinary::Remove(wsDst);
@@ -364,15 +409,35 @@ bool CImage<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, co
 		}
 
 		// Check for duplicate
-		const std::vector<std::wstring>::const_iterator nFind = std::find(m_arrImages.cbegin(), m_arrImages.cend(), wsSrc);
-		if (nFind != m_arrImages.end())
+		const std::vector<std::wstring>::const_iterator nFind = std::find(m_arImages.cbegin(), m_arImages.cend(), wsSrc);
+		if (nFind != m_arImages.end())
 		{
 			bRes = true;
-			nImageId = nFind - m_arrImages.cbegin();
+			nImageId = nFind - m_arImages.cbegin();
 		}
 	}
 
 	// Assume image by local path
+	if (IsSVG(wsExtention) || IsMetafile(wsExtention))
+	{
+		const std::wstring wsDst = wsImagePath + L".png";
+
+		if (!m_pWriter->GetBasePath().empty())
+		{
+			if (!bRes)
+				bRes = ReadMetafileData(NSSystemPath::Combine(m_pWriter->GetBasePath(), wsSrc), m_pWriter->GetFonts(), m_pWriter->GetTempDir(), wsDst);
+			if (!bRes)
+				bRes = ReadMetafileData(NSSystemPath::Combine(m_pWriter->GetSrcPath(), NSSystemPath::Combine(m_pWriter->GetBasePath(), wsSrc)), m_pWriter->GetFonts(), m_pWriter->GetTempDir(), wsDst);
+		}
+		if (!bRes)
+			bRes = ReadMetafileData(NSSystemPath::Combine(m_pWriter->GetSrcPath(), wsSrc), m_pWriter->GetFonts(), m_pWriter->GetTempDir(), wsDst);
+		if (!bRes)
+			bRes = ReadMetafileData(wsSrc, m_pWriter->GetFonts(), m_pWriter->GetTempDir(), wsDst);
+
+		if (bRes)
+			wsExtention = L"png";
+	}
+
 	if (!bRes)
 	{
 		const std::wstring wsDst = wsImagePath + L'.' + wsExtention;
@@ -387,8 +452,6 @@ bool CImage<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, co
 		if (!bRes)
 			bRes = CopyImage(NSSystemPath::Combine(m_pWriter->GetSrcPath(), wsSrc), m_pWriter->GetSrcPath(), wsDst, bIsAllowExternalLocalFiles);
 		if (!bRes)
-			bRes = CopyImage(m_pWriter->GetSrcPath() + L"/" + NSFile::GetFileName(wsSrc), m_pWriter->GetSrcPath(), wsDst, bIsAllowExternalLocalFiles);
-		if (!bRes)
 			bRes = CopyImage(wsSrc, m_pWriter->GetSrcPath(), wsDst, bIsAllowExternalLocalFiles);
 	}
 
@@ -398,13 +461,13 @@ bool CImage<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, co
 	{
 		m_pWriter->WritePPr(arSelectors);
 
-		const std::wstring wsImageID{std::to_wstring(m_arrImages.size())};
-		m_arrImages.push_back(wsSrc);
+		const std::wstring wsImageID{std::to_wstring(m_arImages.size())};
+		m_arImages.push_back(wsSrc);
 
 		if (nImageId < 0)
 		{
 			m_pWriter->WriteImageRels(wsImageID, wsImageID + L'.' + wsExtention);
-			m_arrImages.push_back(wsSrc);
+			m_arImages.push_back(wsSrc);
 		}
 
 		if (!oImageData.ZeroSize())
@@ -423,16 +486,12 @@ bool CImage<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, co
 	return true;
 }
 
-void CImage<COOXMLWriter>::Close(const std::vector<NSCSS::CNode>& arSelectors)
+void CImageOOXMLTag::Close(const std::vector<NSCSS::CNode>& arSelectors)
 {}
 
-CFont<COOXMLWriter>::CFont(COOXMLWriter* pWriter)
-	: CTag(pWriter)
-{}
-
-bool CFont<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData)
+bool CFontOOXMLTag::Open(const std::vector<NSCSS::CNode>& arSelectors)
 {
-	if (!ValidWriter())
+	if (!Valid())
 		return false;
 
 	std::wstring wsValue;
@@ -465,16 +524,12 @@ bool CFont<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, con
 	return true;
 }
 
-void CFont<COOXMLWriter>::Close(const std::vector<NSCSS::CNode>& arSelectors)
+void CFontOOXMLTag::Close(const std::vector<NSCSS::CNode>& arSelectors)
 {}
 
-CInput<COOXMLWriter>::CInput(COOXMLWriter* pWriter)
-	: CTag(pWriter)
-{}
-
-bool CInput<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData)
+bool CInputOOXMLTag::Open(const std::vector<NSCSS::CNode>& arSelectors)
 {
-	if (!ValidWriter())
+	if (!Valid())
 		return false;
 
 	std::wstring wsValue{arSelectors.back().GetAttributeValue(L"value")};
@@ -501,16 +556,12 @@ bool CInput<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, co
 	return true;
 }
 
-void CInput<COOXMLWriter>::Close(const std::vector<NSCSS::CNode>& arSelectors)
+void CInputOOXMLTag::Close(const std::vector<NSCSS::CNode>& arSelectors)
 {}
 
-CBaseFont<COOXMLWriter>::CBaseFont(COOXMLWriter* pWriter)
-	: CTag(pWriter)
-{}
-
-bool CBaseFont<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData)
+bool CBaseFontOOXMLTag::Open(const std::vector<NSCSS::CNode>& arSelectors)
 {
-	if (!ValidWriter())
+	if (!Valid())
 		return false;
 
 	std::wstring wsFontStyles, wsValue;
@@ -546,20 +597,19 @@ bool CBaseFont<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors,
 	return true;
 }
 
-void CBaseFont<COOXMLWriter>::Close(const std::vector<NSCSS::CNode>& arSelectors)
+void CBaseFontOOXMLTag::Close(const std::vector<NSCSS::CNode>& arSelectors)
 {}
 
-CBlockquote<COOXMLWriter>::CBlockquote(COOXMLWriter* pWriter)
-	: CTag(pWriter)
+CBlockquoteOOXMLTag::CBlockquoteOOXMLTag(COOXMLWriter* pWriter)
+	: IHTMLTag(pWriter)
 {}
 
-bool CBlockquote<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData)
+bool CBlockquoteOOXMLTag::Open(const std::vector<NSCSS::CNode>& arSelectors)
 {
-	if (!ValidWriter())
+	if (!Valid())
 		return false;
 
 	//TODO:: when Blockquote inside Blockquote, need to add <w:divsChild> to the first one
-
 	const std::wstring wsKeyWord{arSelectors.back().m_wsName};
 
 	std::map<std::wstring, UINT>::const_iterator itFound = m_mDivs.find(wsKeyWord);
@@ -624,21 +674,21 @@ bool CBlockquote<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelector
 	return true;
 }
 
-void CBlockquote<COOXMLWriter>::Close(const std::vector<NSCSS::CNode>& arSelectors)
+void CBlockquoteOOXMLTag::Close(const std::vector<NSCSS::CNode>& arSelectors)
 {
-	if (!ValidWriter())
+	if (!Valid())
 		return;
 
 	m_pWriter->RollBackDivId();
 }
 
-CHorizontalRule<COOXMLWriter>::CHorizontalRule(COOXMLWriter* pWriter)
-	: CTag(pWriter), m_unShapeId(1)
+CHorizontalRuleOOXMLTag::CHorizontalRuleOOXMLTag(COOXMLWriter* pWriter)
+	: IHTMLTag(pWriter), m_unShapeId(1)
 {}
 
-bool CHorizontalRule<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData)
+bool CHorizontalRuleOOXMLTag::Open(const std::vector<NSCSS::CNode>& arSelectors)
 {
-	if (!ValidWriter())
+	if (!Valid())
 		return false;
 
 	for (const NSCSS::CNode& item : arSelectors)
@@ -675,73 +725,82 @@ bool CHorizontalRule<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSele
 	if (arSelectors.back().GetAttributeValue(L"width", wsValue))
 		oWidth.SetValue(wsValue);
 
-	XmlString& oCurrentDocument{*m_pWriter->GetCurrentDocument()};
+	XmlString& oXmlString{*m_pWriter->GetCurrentDocument()};
 
 	m_pWriter->OpenP();
-	oCurrentDocument.WriteString(L"<w:pPr><w:jc w:val=\"" + wsAlign + L"\"/></w:pPr>");
+	oXmlString.WriteString(L"<w:pPr><w:jc w:val=\"" + wsAlign + L"\"/></w:pPr>");
 	m_pWriter->OpenR();
 
 	const NSCSS::NSProperties::CPage *pPageData{m_pWriter->GetPageData()};
 
-	const unsigned int unPageWidth{static_cast<unsigned int>((pPageData->GetWidth().ToDouble(NSCSS::Inch) - pPageData->GetMargin().GetLeft().ToDouble(NSCSS::Inch) - pPageData->GetMargin().GetRight().ToDouble(NSCSS::Inch)) * 914400.)};
+	const unsigned int unPageWidth{static_cast<unsigned int>((pPageData->GetWidth().ToDouble(NSCSS::Point) - pPageData->GetMargin().GetLeft().ToDouble(NSCSS::Point) - pPageData->GetMargin().GetRight().ToDouble(NSCSS::Point)))};
 
 	std::wstring wsWidth;
 
 	// width is measured in px or %
 	if (!oWidth.Empty())
-		wsWidth = std::to_wstring(static_cast<int>((NSCSS::UnitMeasure::Percent != oWidth.GetUnitMeasure()) ? (NSCSS::CUnitMeasureConverter::ConvertPx(oWidth.ToDouble(), NSCSS::Inch, 96) * 914400.) : oWidth.ToDouble(NSCSS::Inch, unPageWidth)));
+		wsWidth = std::to_wstring(NSCSS::CUnitMeasureConverter::ConvertPx(oWidth.ToDouble(), NSCSS::Point, unPageWidth));
 	else
 		wsWidth = std::to_wstring(unPageWidth);
 
-	std::wstring wsHeight{L"14288"};
+	std::wstring wsHeight{L"1.5"};
 
 	// size is measured only in px
 	if (!oSize.Empty())
-		wsHeight = std::to_wstring(static_cast<int>(NSCSS::CUnitMeasureConverter::ConvertPx(oSize.ToDouble(), NSCSS::Inch, 96) * 914400.));
+		wsHeight = std::to_wstring(NSCSS::CUnitMeasureConverter::ConvertPx(oSize.ToDouble(), NSCSS::Point, 96));
 
-	oCurrentDocument.WriteString(L"<w:rPr><w:noProof/></w:rPr>");
-	oCurrentDocument.WriteString(L"<mc:AlternateContent><mc:Choice Requires=\"wps\"><w:drawing><wp:inline distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\">");
-	oCurrentDocument.WriteString(L"<wp:extent cx=\"" + wsWidth + L"\" cy=\"0\"/>");
-	oCurrentDocument.WriteString(L"<wp:effectExtent l=\"0\" t=\"0\" r=\"0\" b=\"0\"/>");
-	oCurrentDocument.WriteString(L"<wp:docPr id=\"" + std::to_wstring(m_unShapeId) + L"\" name=\"Line " + std::to_wstring(m_unShapeId) + L"\"/>"
-	                                  "<wp:cNvGraphicFramePr/>"
-	                                      "<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">"
-	                                            "<a:graphicData uri=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\">"
-	                                                "<wps:wsp>"
-	                                                    "<wps:cNvSpPr/>"
-	                                                    "<wps:spPr>");
-	oCurrentDocument.WriteString(L"<a:xfrm>"
-	                                  "<a:off x=\"0\" y=\"0\"/>"
-	                                  "<a:ext cx=\"" + wsWidth + L"\" cy=\"0\"/>"
-	                              "</a:xfrm>"
-	                              "<a:custGeom><a:pathLst><a:path>"
-	                                  "<a:moveTo><a:pt x=\"0\" y=\"0\"/></a:moveTo>"
-	                                  "<a:lnTo><a:pt x=\"" + wsWidth + L"\" y=\"0\"/></a:lnTo>"
-	                              "</a:path></a:pathLst></a:custGeom>"
-	                              "<a:ln w=\"" + wsHeight + L"\"><a:solidFill><a:srgbClr val=\"" + ((!oColor.Empty()) ? oColor.ToHEX() : L"808080") + L"\"/></a:solidFill></a:ln>");
+	oXmlString.WriteString(L"<w:rPr><w:noProof/></w:rPr>");
+	oXmlString.WriteString(L"<w:pict>");
+	oXmlString.WriteString(L"<v:shape id=\"shape " + std::to_wstring(m_unShapeId++) + L"\" style=\"width:" + wsWidth + L"pt;"
+	                        "height:" + wsHeight + L"pt;"
+	                        "mso-wrap-distance-left:0.00pt;mso-wrap-distance-top:0.00pt;mso-wrap-distance-right:0.00pt;mso-wrap-distance-bottom:0.00pt;visibility:visible;\" "
+	                        "o:hralign=\"" + wsAlign + L"\" o:hrnoshade=\"" + ((bShade) ? L"f" : L"t") + L"\" filled=\"f\" ");
 
-	if (bShade)
-		oCurrentDocument.WriteString(L"<a:scene3d><a:camera prst=\"orthographicFront\"/><a:lightRig rig=\"threePt\" dir=\"t\"/></a:scene3d><a:sp3d><a:bevelT prst=\"angle\"/></a:sp3d>");
+	if (oColor.Empty())
+		oXmlString.WriteString(L"stroked=\"f\" o:hr=\"t\" o:hrstd=\"t\" ");
+	else
+		oXmlString.WriteString(L"stroked=\"t\" o:hr=\"t\" o:hrstd=\"t\" strokecolor=\"#" + oColor.ToHEX() + L"\" strokeweight=\"" + wsHeight + L"pt\" coordsize=\"100,100\" path=\"m0,0l100,0e\" ");
 
-	oCurrentDocument.WriteString(L"</wps:spPr><wps:bodyPr/></wps:wsp></a:graphicData></a:graphic></wp:inline></w:drawing></mc:Choice></mc:AlternateContent>");
+	oXmlString.WriteString(L"/></w:pict>");
+
+	//// Old version
+	// oXmlString.WriteString(L"<w:rPr><w:noProof/></w:rPr>");
+	// oXmlString.WriteString(L"<mc:AlternateContent><mc:Choice Requires=\"wps\"><w:drawing><wp:inline distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\">");
+	// oXmlString.WriteString(L"<wp:extent cx=\"" + wsWidth + L"\" cy=\"0\"/>");
+	// oXmlString.WriteString(L"<wp:effectExtent l=\"0\" t=\"0\" r=\"0\" b=\"0\"/>");
+	// oXmlString.WriteString(L"<wp:docPr id=\"" + std::to_wstring(m_unShapeId) + L"\" name=\"Line " + std::to_wstring(m_unShapeId) + L"\"/>"
+	//                                   "<wp:cNvGraphicFramePr/>"
+	//                                       "<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">"
+	//                                             "<a:graphicData uri=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\">"
+	//                                                 "<wps:wsp>"
+	//                                                     "<wps:cNvSpPr/>"
+	//                                                     "<wps:spPr>");
+	// oXmlString.WriteString(L"<a:xfrm>"
+	//                                   "<a:off x=\"0\" y=\"0\"/>"
+	//                                   "<a:ext cx=\"" + wsWidth + L"\" cy=\"0\"/>"
+	//                               "</a:xfrm>"
+	//                               "<a:custGeom><a:pathLst><a:path>"
+	//                                   "<a:moveTo><a:pt x=\"0\" y=\"0\"/></a:moveTo>"
+	//                                   "<a:lnTo><a:pt x=\"" + wsWidth + L"\" y=\"0\"/></a:lnTo>"
+	//                               "</a:path></a:pathLst></a:custGeom>"
+	//                               "<a:ln w=\"" + wsHeight + L"\"><a:solidFill><a:srgbClr val=\"" + ((!oColor.Empty()) ? oColor.ToHEX() : L"808080") + L"\"/></a:solidFill></a:ln>");
+
+	// if (bShade)
+	// 	oXmlString.WriteString(L"<a:scene3d><a:camera prst=\"orthographicFront\"/><a:lightRig rig=\"threePt\" dir=\"t\"/></a:scene3d><a:sp3d><a:bevelT prst=\"angle\"/></a:sp3d>");
+
+	// oXmlString.WriteString(L"</wps:spPr><wps:bodyPr/></wps:wsp></a:graphicData></a:graphic></wp:inline></w:drawing></mc:Choice></mc:AlternateContent>");
 
 	m_pWriter->CloseP();
-
-	++m_unShapeId;
 
 	return true;
 }
 
-void CHorizontalRule<COOXMLWriter>::Close(const std::vector<NSCSS::CNode>& arSelectors)
+void CHorizontalRuleOOXMLTag::Close(const std::vector<NSCSS::CNode>& arSelectors)
 {}
 
-CList<COOXMLWriter>::CList(COOXMLWriter* pWriter)
-	: CTag(pWriter)
-{}
-
-bool CList<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData)
+bool CListOOXMLTag::Open(const std::vector<NSCSS::CNode>& arSelectors)
 {
-	if (!ValidWriter())
+	if (!Valid())
 		return false;
 
 	m_pWriter->CloseP();
@@ -782,26 +841,22 @@ bool CList<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, con
 	return true;
 }
 
-void CList<COOXMLWriter>::Close(const std::vector<NSCSS::CNode>& arSelectors)
+void CListOOXMLTag::Close(const std::vector<NSCSS::CNode>& arSelectors)
 {
-	if (!ValidWriter())
+	if (!Valid())
 		return;
 
 	m_pWriter->CloseP();
 }
 
-CListElement<COOXMLWriter>::CListElement(COOXMLWriter* pWriter)
-	: CTag(pWriter)
-{}
-
-bool CListElement<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData)
+bool CListElementOOXMLTag::Open(const std::vector<NSCSS::CNode>& arSelectors)
 {
-	return ValidWriter();
+	return Valid();
 }
 
-void CListElement<COOXMLWriter>::Close(const std::vector<NSCSS::CNode>& arSelectors)
+void CListElementOOXMLTag::Close(const std::vector<NSCSS::CNode>& arSelectors)
 {
-	if (!ValidWriter())
+	if (!Valid())
 		return;
 
 	m_pWriter->CloseP();
@@ -825,20 +880,18 @@ inline bool IsSVG(const std::wstring& wsExtention)
 	return L"svg" == wsExtention || L"svg+xml" == wsExtention;
 }
 
-bool ReadSVG(const std::wstring& wsSvg, NSFonts::IApplicationFonts* pFonts, const std::wstring& wsTempDir, const std::wstring& wsImagePath)
+inline bool IsMetafile(const std::wstring& wsExtention)
 {
-	MetaFile::IMetaFile* pSvgReader = MetaFile::Create(pFonts);
-	if (!pSvgReader->LoadFromString(wsSvg))
-	{
-		RELEASEINTERFACE(pSvgReader);
-		return false;
-	}
+	return L"emf" == wsExtention || L"wmf" == wsExtention;
+}
 
+bool ReadMetafileBase(MetaFile::IMetaFile* pReader, NSFonts::IApplicationFonts* pFonts, const std::wstring& wsTempDir, const std::wstring& wsImagePath)
+{
 	NSGraphics::IGraphicsRenderer* pGrRenderer = NSGraphics::Create();
-	pGrRenderer->SetFontManager(pSvgReader->get_FontManager());
+	pGrRenderer->SetFontManager(pReader->get_FontManager());
 
 	double dX, dY, dW, dH;
-	pSvgReader->GetBounds(&dX, &dY, &dW, &dH);
+	pReader->GetBounds(&dX, &dY, &dW, &dH);
 
 	if (dW < 0) dW = -dW;
 	if (dH < 0) dH = -dH;
@@ -897,10 +950,10 @@ bool ReadSVG(const std::wstring& wsSvg, NSFonts::IApplicationFonts* pFonts, cons
 	pGrRenderer->put_Width(dWidth);
 	pGrRenderer->put_Height(dHeight);
 
-	pSvgReader->SetTempDirectory(wsTempDir);
-	pSvgReader->DrawOnRenderer(pGrRenderer, 0, 0, dWidth, dHeight);
+	pReader->SetTempDirectory(wsTempDir);
+	pReader->DrawOnRenderer(pGrRenderer, 0, 0, dWidth, dHeight);
 
-	oFrame.SaveFile(wsImagePath + L".png", 4);
+	oFrame.SaveFile(wsImagePath, 4);
 	oFrame.put_Data(NULL);
 
 	RELEASEINTERFACE(pGrRenderer);
@@ -908,9 +961,39 @@ bool ReadSVG(const std::wstring& wsSvg, NSFonts::IApplicationFonts* pFonts, cons
 	if (pBgraData)
 		free(pBgraData);
 
+	return true;
+}
+
+bool ReadMetafileData(const std::wstring& wsFilePath, NSFonts::IApplicationFonts* pFonts, const std::wstring& wsTempDir, const std::wstring& wsImagePath)
+{
+	MetaFile::IMetaFile* pMetafileReader = MetaFile::Create(pFonts);
+	if (!pMetafileReader->LoadFromFile(wsFilePath.c_str()))
+	{
+		RELEASEINTERFACE(pMetafileReader);
+		return false;
+	}
+
+	const bool bResult{ReadMetafileBase(pMetafileReader, pFonts, wsTempDir, wsImagePath)};
+
+	RELEASEINTERFACE(pMetafileReader);
+
+	return bResult;
+}
+
+bool ReadSVGData(const std::wstring& wsSvg, NSFonts::IApplicationFonts* pFonts, const std::wstring& wsTempDir, const std::wstring& wsImagePath)
+{
+	MetaFile::IMetaFile* pSvgReader = MetaFile::Create(pFonts);
+	if (!pSvgReader->LoadFromString(wsSvg))
+	{
+		RELEASEINTERFACE(pSvgReader);
+		return false;
+	}
+
+	const bool bResult{ReadMetafileBase(pSvgReader, pFonts, wsTempDir, wsImagePath)};
+
 	RELEASEINTERFACE(pSvgReader);
 
-	return true;
+	return bResult;
 }
 
 bool ReadBase64(const std::wstring& wsSrc, const std::wstring& wsImagePath, NSFonts::IApplicationFonts* pFonts, const std::wstring& wsTempDir, std::wstring& wsExtention)
@@ -948,7 +1031,7 @@ bool ReadBase64(const std::wstring& wsSrc, const std::wstring& wsImagePath, NSFo
 		if (IsSVG(wsExtention))
 		{
 			std::wstring wsSvg(pImageData, pImageData + nDecodeLen);
-			bRes = ReadSVG(wsSvg, pFonts, wsTempDir, wsImagePath);
+			bRes = ReadSVGData(wsSvg, pFonts, wsTempDir, wsImagePath + L".png");
 			wsExtention = L"png";
 		}
 		else
@@ -967,33 +1050,11 @@ bool ReadBase64(const std::wstring& wsSrc, const std::wstring& wsImagePath, NSFo
 	return bRes;
 }
 
-bool GetStatusUsingExternalLocalFiles()
-{
-	if (NSProcessEnv::IsPresent(NSProcessEnv::Converter::gc_allowPrivateIP))
-		return NSProcessEnv::GetBoolValue(NSProcessEnv::Converter::gc_allowPrivateIP);
-
-	return true;
-}
-
-bool CanUseThisPath(const std::wstring& wsPath, const std::wstring& wsSrcPath, const std::wstring& wsCorePath, bool bIsAllowExternalLocalFiles)
-{
-	if (bIsAllowExternalLocalFiles)
-		return true;
-
-	if (!wsCorePath.empty())
-	{
-		const std::wstring wsFullPath = NSSystemPath::ShortenPath(NSSystemPath::Combine(wsSrcPath, wsPath));
-		return boost::starts_with(wsFullPath, wsCorePath);
-	}
-
-	if (wsPath.length() >= 3 && L"../" == wsPath.substr(0, 3))
-		return false;
-
-	return true;
-}
-
 bool CopyImage(std::wstring wsImageSrc, const std::wstring& wsSrc, const std::wstring& wsDst, bool bIsAllowExternalLocalFiles)
 {
+	if (wsImageSrc.empty() || !NSFile::CFileBinary::Exists(wsImageSrc))
+		return false;
+
 	bool bRes = false;
 	bool bAllow = true;
 
@@ -1057,29 +1118,7 @@ bool UpdateImageData(const std::wstring& wsImagePath, TImageData& oImageData)
 	return true;
 }
 
-CCaption<COOXMLWriter>::CCaption(COOXMLWriter* pWriter)
-	: CTag(pWriter)
-{}
-
-bool CCaption<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData)
-{
-	if (!ValidWriter())
-		return false;
-
-	m_pWriter->WritePPr(arSelectors);
-
-	return true;
-}
-
-void CCaption<COOXMLWriter>::Close(const std::vector<NSCSS::CNode>& arSelectors)
-{
-	if (!ValidWriter())
-		return;
-
-	m_pWriter->CloseP();
-}
-
-std::wstring CreateBorders(const NSCSS::NSProperties::CBorder& oBorder, const NSCSS::NSProperties::CIndent* pPadding = NULL, bool bAddIntermediateLines = false, TTableStyles::ETableRules enTableRule = TTableStyles::ETableRules::None)
+std::wstring CreateBorders(const NSCSS::NSProperties::CBorder& oBorder, const NSCSS::NSProperties::CIndent* pPadding = NULL, bool bAddIntermediateLines = false, ETableRules enTableRule = ETableRules::None)
 {
 	std::wstring wsTable;
 
@@ -1108,7 +1147,7 @@ std::wstring CreateBorders(const NSCSS::NSProperties::CBorder& oBorder, const NS
 	if (!bAddIntermediateLines)
 		return wsTable;
 
-	if (TTableStyles::ETableRules::Rows == enTableRule || TTableStyles::ETableRules::All == enTableRule)
+	if (ETableRules::Rows == enTableRule || ETableRules::All == enTableRule)
 	{
 		NSCSS::NSProperties::CBorderSide oNewSide(oBorder.GetBottomBorder());
 		oNewSide.SetWidth(L"1pt", 0, true);
@@ -1116,7 +1155,7 @@ std::wstring CreateBorders(const NSCSS::NSProperties::CBorder& oBorder, const NS
 		wsTable += L"<w:insideH " + NSCSS::CDocumentStyle::CalculateBorderStyle(oNewSide) + L"/>";
 	}
 
-	if (TTableStyles::ETableRules::Cols == enTableRule || TTableStyles::ETableRules::All == enTableRule)
+	if (ETableRules::Cols == enTableRule || ETableRules::All == enTableRule)
 	{
 		NSCSS::NSProperties::CBorderSide oNewSide(oBorder.GetRightBorder());
 		oNewSide.SetWidth(L"1pt", 0, true);
@@ -1145,165 +1184,6 @@ std::wstring CreateDefaultBorder(std::wstring wsSideName)
 	return L"<w:" + wsSideName + L" w:val=\"single\" w:sz=\"1\" w:space=\"0\" w:color=\"auto\"/>";
 }
 
-CTable<COOXMLWriter>::CTable(COOXMLWriter* pWriter)
-	: CTag(pWriter)
-{}
-
-bool CTable<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData)
-{
-	if (!ValidWriter() || oExtraData.empty() || typeid(CStorageTable*) != oExtraData.type())
-		return false;
-
-	CStorageTable* pStorageTable{boost::any_cast<CStorageTable*>(oExtraData)};
-
-	if (pStorageTable->Empty())
-		return false;
-
-	XmlString& oCurrentDocument{*m_pWriter->GetCurrentDocument()};
-
-	oCurrentDocument.WriteNodeBegin(L"w:tbl");
-	oCurrentDocument.WriteNodeBegin(L"w:tblPr");
-
-	const TTableStyles& oTableStyles{pStorageTable->GetTableStyles()};
-
-	if (!oTableStyles.m_oWidth.Empty() && !oTableStyles.m_oWidth.Zero())
-	{
-		if (NSCSS::UnitMeasure::Percent == oTableStyles.m_oWidth.GetUnitMeasure())
-			oCurrentDocument += L"<w:tblW w:w=\"" + std::to_wstring(oTableStyles.m_oWidth.ToInt(NSCSS::UnitMeasure::Percent, 5000)) + L"\" w:type=\"pct\"/>";
-		else
-			oCurrentDocument += L"<w:tblW w:w=\"" + std::to_wstring(oTableStyles.m_oWidth.ToInt(NSCSS::UnitMeasure::Twips)) + L"\" w:type=\"dxa\"/>";
-	}
-	else
-		oCurrentDocument += L"<w:tblW w:w=\"0\" w:type=\"auto\"/>";
-
-	if (!oTableStyles.m_oMargin.GetLeft().Empty() && !oTableStyles.m_oMargin.GetLeft().Zero())
-	{
-		if (NSCSS::UnitMeasure::Percent == oTableStyles.m_oMargin.GetLeft().GetUnitMeasure())
-			oCurrentDocument += L"<w:tblInd w:w=\"" + std::to_wstring(oTableStyles.m_oMargin.GetLeft().ToInt(NSCSS::UnitMeasure::Percent, 5000)) + L"\" w:type=\"pct\"/>";
-		else
-			oCurrentDocument += L"<w:tblInd w:w=\"" + std::to_wstring(oTableStyles.m_oMargin.GetLeft().ToInt(NSCSS::UnitMeasure::Twips)) + L"\" w:type=\"dxa\"/>";
-	}
-
-	if (!oTableStyles.m_wsAlign.empty())
-		oCurrentDocument += L"<w:jc w:val=\"" + oTableStyles.m_wsAlign + L"\"/>";
-
-	if (0 < oTableStyles.m_nCellSpacing && oTableStyles.m_oBorder.GetCollapse() != NSCSS::NSProperties::BorderCollapse::Collapse)
-		oCurrentDocument += L"<w:tblCellSpacing w:w=\"" + std::to_wstring(oTableStyles.m_nCellSpacing) + L"\" w:type=\"dxa\"/>";
-
-	if (!oTableStyles.m_oBorder.Empty() && !oTableStyles.m_oBorder.Zero())
-		oCurrentDocument += L"<w:tblBorders>" + CreateBorders(oTableStyles.m_oBorder, NULL, true, (TTableStyles::ETableRules::Groups == oTableStyles.m_enRules && !pStorageTable->GetColgroups().empty()) ? TTableStyles::ETableRules::Cols : oTableStyles.m_enRules) + L"</w:tblBorders>";
-
-	if (!oTableStyles.m_oPadding.Empty() && !oTableStyles.m_oPadding.Zero())
-	{
-		const int nTopPadding    = std::max(0, oTableStyles.m_oPadding.GetTop()   .ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_HEIGHT));
-		const int nLeftPadding   = std::max(0, oTableStyles.m_oPadding.GetLeft()  .ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_WIDTH ));
-		const int nBottomPadding = std::max(0, oTableStyles.m_oPadding.GetBottom().ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_HEIGHT));
-		const int nRightPadding  = std::max(0, oTableStyles.m_oPadding.GetRight() .ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_WIDTH ));
-
-		oCurrentDocument.WriteNodeBegin(L"w:tblCellMar");
-
-		if (0 != nTopPadding)
-			oCurrentDocument += L"<w:top w:w=\""    + std::to_wstring(nTopPadding)    + L"\" w:type=\"dxa\"/>";
-
-		if (0 != nLeftPadding)
-			oCurrentDocument += L"<w:left w:w=\""   + std::to_wstring(nLeftPadding)   + L"\" w:type=\"dxa\"/>";
-
-		if (0 != nBottomPadding)
-			oCurrentDocument += L"<w:bottom w:w=\"" + std::to_wstring(nBottomPadding) + L"\" w:type=\"dxa\"/>";
-
-		if (0 != nRightPadding)
-			oCurrentDocument += L"<w:right w:w=\""  + std::to_wstring(nRightPadding)  + L"\" w:type=\"dxa\"/>";
-
-		oCurrentDocument.WriteNodeEnd(L"w:tblCellMar");
-	}
-	else
-		oCurrentDocument += L"<w:tblCellMar><w:top w:w=\"15\" w:type=\"dxa\"/><w:left w:w=\"15\" w:type=\"dxa\"/><w:bottom w:w=\"15\" w:type=\"dxa\"/><w:right w:w=\"15\" w:type=\"dxa\"/></w:tblCellMar>";
-
-	oCurrentDocument += L"<w:tblLook w:val=\"04A0\" w:noVBand=\"1\" w:noHBand=\"0\" w:lastColumn=\"0\" w:firstColumn=\"1\" w:lastRow=\"0\" w:firstRow=\"1\"/>";
-	oCurrentDocument.WriteNodeEnd(L"w:tblPr");
-
-	if (pStorageTable->HaveCaption())
-	{
-		oCurrentDocument.WriteNodeBegin(L"w:tr");
-		oCurrentDocument.WriteNodeBegin(L"w:tc");
-		oCurrentDocument.WriteNodeBegin(L"w:tcPr");
-		oCurrentDocument += L"<w:tcW w:w=\"0\" w:type=\"auto\"/>";
-		oCurrentDocument += L"<w:gridSpan w:val=\"" + std::to_wstring(pStorageTable->GetMaxColumns()) + L"\"/>";
-		oCurrentDocument += L"<w:tcBorders><w:top w:val=\"nil\"/><w:left w:val=\"nil\"/><w:bottom w:val=\"nil\"/><w:right w:val=\"nil\"/></w:tcBorders>";
-		oCurrentDocument += L"<w:vAlign w:val=\"center\"/>";
-		oCurrentDocument += L"<w:hideMark/>";
-		oCurrentDocument.WriteNodeEnd(L"w:tcPr");
-		WriteToStringBuilder(*(pStorageTable->GetCaptionData()), oCurrentDocument);
-		oCurrentDocument.WriteNodeEnd(L"w:tc");
-		oCurrentDocument.WriteNodeEnd(L"w:tr");
-	}
-
-	return true;
-}
-
-void CTable<COOXMLWriter>::Close(const std::vector<NSCSS::CNode>& arSelectors)
-{
-	if (!ValidWriter())
-		return;
-
-	m_pWriter->GetCurrentDocument()->WriteNodeEnd(L"w:tbl");
-	m_pWriter->WriteEmptyParagraph(true);
-}
-
-CTableRow<COOXMLWriter>::CTableRow(COOXMLWriter* pWriter)
-	: CTag(pWriter)
-{}
-
-bool CTableRow<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData)
-{
-	using DataForRow = boost::tuple<const TTableRowStyle*, const CStorageTable&, ERowParseMode, ERowPosition>;
-
-	if (!ValidWriter() || oExtraData.empty() || typeid(DataForRow) != oExtraData.type())
-		return false;
-
-	const DataForRow& oDataForRow(boost::any_cast<DataForRow>(oExtraData));
-	const TTableRowStyle* pTableRowStyles{boost::get<0>(oDataForRow)};
-
-	if (nullptr == pTableRowStyles)
-		return false;
-
-	XmlString& oCurrentDocument{*m_pWriter->GetCurrentDocument()};
-
-	oCurrentDocument.WriteNodeBegin(L"w:tr");
-
-	const TTableStyles& oTableStyles{boost::get<1>(oDataForRow).GetTableStyles()};
-
-	if (!pTableRowStyles->Empty() || 0 < oTableStyles.m_nCellSpacing)
-	{
-		oCurrentDocument.WriteNodeBegin(L"w:trPr");
-
-		if (pTableRowStyles->m_bIsHeader)
-			oCurrentDocument += L"<w:tblHeader/>";
-
-		if (0 < pTableRowStyles->m_unMaxHeight)
-			oCurrentDocument += L"<w:trHeight w:val=\"" + std::to_wstring(pTableRowStyles->m_unMaxHeight) + L"\"/>";
-
-		if (0 < oTableStyles.m_nCellSpacing)
-			oCurrentDocument += L"<w:tblCellSpacing w:w=\"" + std::to_wstring(oTableStyles.m_nCellSpacing) + L"\" w:type=\"dxa\"/>";
-
-		oCurrentDocument.WriteNodeEnd(L"w:trPr");
-	}
-
-	return true;
-}
-
-void HTML::CTableRow<COOXMLWriter>::Close(const std::vector<NSCSS::CNode>& arSelectors)
-{
-	if (!ValidWriter())
-		return;
-
-	m_pWriter->GetCurrentDocument()->WriteNodeEnd(L"w:tr");
-}
-
-CTableCell<COOXMLWriter>::CTableCell(COOXMLWriter* pInterpretator)
-	: CTag(pInterpretator)
-{}
-
 std::wstring CalculateSidesToClean(UINT unColumnNumber, const std::vector<CTableColgroup*>& arColgroups, UINT unMaxColumns)
 {
 	if (arColgroups.empty())
@@ -1330,163 +1210,732 @@ std::wstring CalculateSidesToClean(UINT unColumnNumber, const std::vector<CTable
 	return std::wstring();
 }
 
-bool CTableCell<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData)
+bool CHTMLOOXMLTag::Open(const std::vector<NSCSS::CNode>& arSelectors)
 {
-	using DataForCell = boost::tuple<const CStorageTableCell&, const CStorageTable&, UINT, ERowParseMode, ERowPosition>;
-
-	if (!ValidWriter() || oExtraData.empty() || typeid(DataForCell) != oExtraData.type())
+	if (!Valid())
 		return false;
 
-	const DataForCell& oDataForCell{boost::any_cast<const DataForCell>(oExtraData)};
-	const CStorageTableCell& oStorageTableCell{boost::get<0>(oDataForCell)};
+	if (arSelectors.back().m_mAttributes.empty())
+		return true;
 
-	XmlString& oCurrentDocument{*m_pWriter->GetCurrentDocument()};
-
-	oCurrentDocument.WriteNodeBegin(L"w:tc");
-	oCurrentDocument.WriteNodeBegin(L"w:tcPr");
-
-	const ERowParseMode eParseMode{boost::get<3>(oDataForCell)};
-
-	if (ERowParseMode::Header == eParseMode)
-		oCurrentDocument += L"<w:tblHeader/>";
-
-	TTableCellStyle oCellStyle(*oStorageTableCell.GetStyles());
-
-	const CStorageTable& oStorageTable{boost::get<1>(oDataForCell)};
-	const UINT unColumnNumber{boost::get<2>(oDataForCell)};
-	const TTableCellStyle* pColStyle{oStorageTable.GetColStyle(unColumnNumber)};
-
-	if (NULL != pColStyle)
-		oCellStyle += pColStyle;
-
-	if (!oCellStyle.m_oWidth.Empty())
+	std::wstring wsBackground;
+	if (arSelectors.back().GetAttributeValue(L"bgcolor", wsBackground))
 	{
-		if (NSCSS::UnitMeasure::Percent == oCellStyle.m_oWidth.GetUnitMeasure())
-			oCurrentDocument += L"<w:tcW w:w=\"" + std::to_wstring(oCellStyle.m_oWidth.ToInt(NSCSS::UnitMeasure::Percent, 5000)) + L"\" w:type=\"pct\"/>";
+		NSCSS::NSProperties::CColor oColor;
+		oColor.SetValue(wsBackground);
+
+		if (!oColor.Empty() && !oColor.None())
+		{
+			const std::wstring wsHEXColor{oColor.ToHEX()};
+
+			if (!wsHEXColor.empty())
+				m_pWriter->GetCurrentDocument()->WriteString(L"<w:background w:color=\"" + wsHEXColor + L"\"/>");
+		}
+	}
+
+	return true;
+}
+
+void CHTMLOOXMLTag::Close(const std::vector<NSCSS::CNode>& arSelectors)
+{}
+
+COOXMLTable::COOXMLTable(TExternalTableData& oExternalData)
+	: CTableElement(oExternalData)
+{}
+
+COOXMLTable::~COOXMLTable()
+{}
+
+bool COOXMLTable::PreParse(XmlUtils::CXmlLiteReader& oReader)
+{
+	return ParseTable(oReader, this);
+}
+
+bool COOXMLTable::HaveColgroups() const
+{
+	return !m_arColgroups.empty();
+}
+
+size_t COOXMLTable::GetColumnsCount() const
+{
+	return m_oBody.GetColumnSize();
+}
+
+void COOXMLTable::OpenTable(XmlString& oXmlString, const NSCSS::CNode& oTableNode, TTableStyles& oTableStyles, const COOXMLTable& oTable)
+{
+	oXmlString.WriteNodeBegin(L"w:tbl");
+	oXmlString.WriteNodeBegin(L"w:tblPr");
+
+	const NSCSS::CCompiledStyle *pStyle{oTableNode.m_pCompiledStyle};
+
+	if (nullptr != pStyle)
+	{
+		const NSCSS::NSProperties::CDigit& oWidth{pStyle->m_oDisplay.GetWidth()};
+
+		if (!oWidth.Empty() && !oWidth.Zero())
+		{
+			if (NSCSS::UnitMeasure::Percent == oWidth.GetUnitMeasure())
+				oXmlString += L"<w:tblW w:w=\"" + std::to_wstring(oWidth.ToInt(NSCSS::UnitMeasure::Percent, 5000)) + L"\" w:type=\"pct\"/>";
+			else
+				oXmlString += L"<w:tblW w:w=\"" + std::to_wstring(oWidth.ToInt(NSCSS::UnitMeasure::Twips)) + L"\" w:type=\"dxa\"/>";
+		}
+		else
+			oXmlString += L"<w:tblW w:w=\"0\" w:type=\"auto\"/>";
+
+		const NSCSS::NSProperties::CIndent& oMargin{pStyle->m_oMargin};
+
+		if (!oMargin.GetLeft().Empty() && !oMargin.GetLeft().Zero())
+		{
+			if (NSCSS::UnitMeasure::Percent == oMargin.GetLeft().GetUnitMeasure())
+				oXmlString += L"<w:tblInd w:w=\"" + std::to_wstring(oMargin.GetLeft().ToInt(NSCSS::UnitMeasure::Percent, 5000)) + L"\" w:type=\"pct\"/>";
+			else
+				oXmlString += L"<w:tblInd w:w=\"" + std::to_wstring(oMargin.GetLeft().ToInt(NSCSS::UnitMeasure::Twips)) + L"\" w:type=\"dxa\"/>";
+		}
+
+		if (!pStyle->m_oDisplay.GetHAlign().Empty())
+			oXmlString += L"<w:jc w:val=\"" + pStyle->m_oDisplay.GetHAlign().ToWString() + L"\"/>";
+
+		std::wstring wsValue;
+
+		if (pStyle->m_oBorder.GetCollapse() == NSCSS::NSProperties::BorderCollapse::Collapse)
+			oTableStyles.m_unCellSpacing = 0;
+		else if (oTableNode.GetAttributeValue(L"cellspacing", wsValue))
+			oTableStyles.m_unCellSpacing = NSStringFinder::ToInt(wsValue);
+		else if (pStyle->m_oBorder.GetCollapse() == NSCSS::NSProperties::BorderCollapse::Separate)
+			oTableStyles.m_unCellSpacing = 15;
+
+		if (0 < oTableStyles.m_unCellSpacing && pStyle->m_oBorder.GetCollapse() != NSCSS::NSProperties::BorderCollapse::Collapse)
+			oXmlString += L"<w:tblCellSpacing w:w=\"" + std::to_wstring(oTableStyles.m_unCellSpacing) + L"\" w:type=\"dxa\"/>";
+
+		if (oTableNode.GetAttributeValue(L"border", wsValue))
+		{
+			const int nWidth = NSStringFinder::ToInt(wsValue);
+
+			if (0 < nWidth)
+			{
+				oTableStyles.m_enRules = ETableRules::All;
+
+				if (oTableStyles.m_oBorder.Empty())
+				{
+					oTableStyles.m_oBorder.SetStyle(L"outset",  0, true);
+					oTableStyles.m_oBorder.SetWidth(nWidth,     NSCSS::UnitMeasure::Point, 0, true);
+					oTableStyles.m_oBorder.SetColor(L"auto",    0, true);
+				}
+			}
+			else if (pStyle->m_oBorder.Empty())
+			{
+				oTableStyles.m_oBorder.SetNone(0, true);
+				oTableStyles.m_enRules = ETableRules::All;
+			}
+		}
+		else
+			oTableStyles.m_oBorder = pStyle->m_oBorder;
+
+		if (oTableNode.GetAttributeValue(L"rules", wsValue))
+		{
+			if (NSStringFinder::Equals(wsValue, L"all"))
+				oTableStyles.m_enRules = ETableRules::All;
+			else if (NSStringFinder::Equals(wsValue, L"groups"))
+				oTableStyles.m_enRules = ETableRules::Groups;
+			else if (NSStringFinder::Equals(wsValue, L"cols"))
+				oTableStyles.m_enRules = ETableRules::Cols;
+			else if (NSStringFinder::Equals(wsValue, L"none"))
+				oTableStyles.m_enRules = ETableRules::None;
+			else if (NSStringFinder::Equals(wsValue, L"rows"))
+				oTableStyles.m_enRules = ETableRules::Rows;
+		}
+
+		std::wstring wsFrame;
+		oTableNode.GetAttributeValue(L"frame", wsFrame);
+
+		if (!wsFrame.empty() && oTableStyles.m_oBorder.Empty())
+		{
+			#define SetDefaultBorderSide(side) \
+				oTableStyles.m_oBorder.SetStyle##side(L"solid", 0, true); \
+				oTableStyles.m_oBorder.SetWidth##side(1,        NSCSS::UnitMeasure::Point, 0, true); \
+				oTableStyles.m_oBorder.SetColor##side(L"black", 0, true)
+
+			if (NSStringFinder::Equals(L"border", wsFrame))
+			{
+				SetDefaultBorderSide();
+			}
+			else if (NSStringFinder::Equals(L"above", wsFrame))
+			{
+				SetDefaultBorderSide(TopSide);
+			}
+			else if (NSStringFinder::Equals(L"below", wsFrame))
+			{
+				SetDefaultBorderSide(BottomSide);
+			}
+			else if (NSStringFinder::Equals(L"hsides", wsFrame))
+			{
+				SetDefaultBorderSide(TopSide);
+				SetDefaultBorderSide(BottomSide);
+			}
+			else if (NSStringFinder::Equals(L"vsides", wsFrame))
+			{
+				SetDefaultBorderSide(LeftSide);
+				SetDefaultBorderSide(RightSide);
+			}
+			else if (NSStringFinder::Equals(L"rhs", wsFrame))
+			{
+				SetDefaultBorderSide(RightSide);
+			}
+			else if (NSStringFinder::Equals(L"lhs", wsFrame))
+			{
+				SetDefaultBorderSide(LeftSide);
+			}
+		}
+
+		if (!oTableStyles.m_oBorder.Empty() && !oTableStyles.m_oBorder.Zero())
+			oXmlString += L"<w:tblBorders>" + CreateBorders(oTableStyles.m_oBorder, NULL, true, (ETableRules::Groups == oTableStyles.m_enRules && !HaveColgroups()) ? ETableRules::Cols : oTableStyles.m_enRules) + L"</w:tblBorders>";
+
+		oTableStyles.m_oPadding = pStyle->m_oPadding;
+
+		if (oTableNode.GetAttributeValue(L"cellpadding", wsValue))
+			oTableStyles.m_oPadding.SetValues(wsValue + L"px", 0, true);
+
+		if (!oTableStyles.m_oPadding.Empty() && !oTableStyles.m_oPadding.Zero())
+		{
+			const int nTopPadding    = std::max(0, oTableStyles.m_oPadding.GetTop()   .ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_HEIGHT));
+			const int nLeftPadding   = std::max(0, oTableStyles.m_oPadding.GetLeft()  .ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_WIDTH ));
+			const int nBottomPadding = std::max(0, oTableStyles.m_oPadding.GetBottom().ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_HEIGHT));
+			const int nRightPadding  = std::max(0, oTableStyles.m_oPadding.GetRight() .ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_WIDTH ));
+
+			oXmlString.WriteNodeBegin(L"w:tblCellMar");
+
+			if (0 != nTopPadding)
+				oXmlString += L"<w:top w:w=\""    + std::to_wstring(nTopPadding)    + L"\" w:type=\"dxa\"/>";
+
+			if (0 != nLeftPadding)
+				oXmlString += L"<w:left w:w=\""   + std::to_wstring(nLeftPadding)   + L"\" w:type=\"dxa\"/>";
+
+			if (0 != nBottomPadding)
+				oXmlString += L"<w:bottom w:w=\"" + std::to_wstring(nBottomPadding) + L"\" w:type=\"dxa\"/>";
+
+			if (0 != nRightPadding)
+				oXmlString += L"<w:right w:w=\""  + std::to_wstring(nRightPadding)  + L"\" w:type=\"dxa\"/>";
+
+			oXmlString.WriteNodeEnd(L"w:tblCellMar");
+		}
+		else
+			oXmlString += L"<w:tblCellMar><w:top w:w=\"15\" w:type=\"dxa\"/><w:left w:w=\"15\" w:type=\"dxa\"/><w:bottom w:w=\"15\" w:type=\"dxa\"/><w:right w:w=\"15\" w:type=\"dxa\"/></w:tblCellMar>";
+
+	}
+
+	oXmlString += L"<w:tblLook w:val=\"04A0\" w:noVBand=\"1\" w:noHBand=\"0\" w:lastColumn=\"0\" w:firstColumn=\"1\" w:lastRow=\"0\" w:firstRow=\"1\"/>";
+	oXmlString.WriteNodeEnd(L"w:tblPr");
+
+	if (oTable.HaveCaption())
+	{
+		oXmlString.WriteNodeBegin(L"w:tr");
+		oXmlString.WriteNodeBegin(L"w:tc");
+		oXmlString.WriteNodeBegin(L"w:tcPr");
+		oXmlString += L"<w:tcW w:w=\"0\" w:type=\"auto\"/>";
+		oXmlString += L"<w:gridSpan w:val=\"" + std::to_wstring(oTable.GetColumnsCount()) + L"\"/>";
+		oXmlString += L"<w:tcBorders><w:top w:val=\"nil\"/><w:left w:val=\"nil\"/><w:bottom w:val=\"nil\"/><w:right w:val=\"nil\"/></w:tcBorders>";
+		oXmlString += L"<w:vAlign w:val=\"center\"/>";
+		oXmlString += L"<w:hideMark/>";
+		oXmlString.WriteNodeEnd(L"w:tcPr");
+		WriteToStringBuilder(*oTable.m_pCaption, oXmlString);
+		oXmlString.WriteNodeEnd(L"w:tc");
+		oXmlString.WriteNodeEnd(L"w:tr");
+	}
+}
+
+void COOXMLTable::CloseTable(XmlString& oXmlString)
+{
+	oXmlString.WriteNodeEnd(L"w:tbl");
+}
+
+void COOXMLTable::OpenRow(XmlString& oXmlString, bool bIsHeader, size_t unMaxHeight, size_t unCellSpacing)
+{
+	oXmlString.WriteNodeBegin(L"w:tr");
+	oXmlString.WriteNodeBegin(L"w:trPr");
+
+	if (bIsHeader)
+		oXmlString += L"<w:tblHeader/>";
+
+	if (0 < unMaxHeight)
+		oXmlString += L"<w:trHeight w:val=\"" + std::to_wstring(unMaxHeight) + L"\"/>";
+
+	if (0 < unCellSpacing)
+		oXmlString += L"<w:tblCellSpacing w:w=\"" + std::to_wstring(unCellSpacing) + L"\" w:type=\"dxa\"/>";
+
+	oXmlString.WriteNodeEnd(L"w:trPr");
+}
+
+void COOXMLTable::CloseRow(XmlString& oXmlString)
+{
+	oXmlString.WriteNodeEnd(L"w:tr");
+}
+
+void COOXMLTable::OpenCell(XmlString& oXmlString)
+{
+	oXmlString.WriteNodeBegin(L"w:tc");
+}
+
+void COOXMLTable::OpenCell(XmlString& oXmlString, const NSCSS::CNode& oCellNode, ITableElementCell* pCell, size_t unColumnIndex, ERowParseMode eRowParseMode, ERowPosition eRowPosition, size_t& unHeight, const TTableStyles& oTableStyles, std::unordered_map<size_t, NSCSS::CNode>& mFillingColumn)
+{
+	OpenCell(oXmlString);
+
+	if (nullptr == pCell)
+		return;
+
+	oXmlString.WriteNodeBegin(L"w:tcPr");
+
+	if (ERowParseMode::Header == eRowParseMode)
+		oXmlString += L"<w:tblHeader/>";
+
+	const NSCSS::CCompiledStyle *pColStyle{(nullptr != oTableStyles.m_pTable) ? oTableStyles.m_pTable->GetColStyle(unColumnIndex) : nullptr};
+
+	const NSCSS::NSProperties::CDigit* pWidth{&oCellNode.m_pCompiledStyle->m_oDisplay.GetWidth()};
+
+	if (nullptr != pColStyle && pWidth->LessSignificantThen(pColStyle->m_oDisplay.GetWidth()))
+		pWidth = &pColStyle->m_oDisplay.GetWidth();
+
+	if (!pWidth->Empty())
+	{
+		if (NSCSS::UnitMeasure::Percent == pWidth->GetUnitMeasure())
+			oXmlString += L"<w:tcW w:w=\"" + std::to_wstring(pWidth->ToInt(NSCSS::UnitMeasure::Percent, 5000)) + L"\" w:type=\"pct\"/>";
 		else
 		{
-			if (!oCellStyle.m_oWidth.Zero())
+			if (!pWidth->Zero())
 			{
 				int nWidth;
-				if (NSCSS::UnitMeasure::None != oCellStyle.m_oWidth.GetUnitMeasure())
-					nWidth = oCellStyle.m_oWidth.ToInt(NSCSS::UnitMeasure::Twips);
+				if (NSCSS::UnitMeasure::None != pWidth->GetUnitMeasure())
+					nWidth = pWidth->ToInt(NSCSS::UnitMeasure::Twips);
 				else
-					nWidth = static_cast<int>(NSCSS::CUnitMeasureConverter::ConvertPx(oCellStyle.m_oWidth.ToDouble(), NSCSS::UnitMeasure::Twips, 96) + 0.5);
+					nWidth = static_cast<int>(NSCSS::CUnitMeasureConverter::ConvertPx(pWidth->ToDouble(), NSCSS::UnitMeasure::Twips, 96) + 0.5);
 
-				oCurrentDocument += L"<w:tcW w:w=\"" + std::to_wstring(nWidth) + L"\" w:type=\"dxa\"/>";
+				oXmlString += L"<w:tcW w:w=\"" + std::to_wstring(nWidth) + L"\" w:type=\"dxa\"/>";
 			}
 			else
-				oCurrentDocument += L"<w:tcW w:w=\"6\" w:type=\"dxa\"/>";
+				oXmlString += L"<w:tcW w:w=\"6\" w:type=\"dxa\"/>";
 		}
 	}
 	else
-		oCurrentDocument += L"<w:tcW w:w=\"0\" w:type=\"auto\"/>";
+		oXmlString += L"<w:tcW w:w=\"0\" w:type=\"auto\"/>";
 
-	if (1 != oStorageTableCell.GetColspan())
-		oCurrentDocument += L"<w:gridSpan w:val=\"" + std::to_wstring(oStorageTableCell.GetColspan()) + L"\"/>";
+	if (1 != pCell->GetColspan())
+		oXmlString += L"<w:gridSpan w:val=\"" + std::to_wstring(pCell->GetColspan()) + L"\"/>";
 
-	if (oStorageTableCell.Merged())
-		oCurrentDocument += L"<w:vMerge w:val=\"continue\"/>";
-	else if (1 < oStorageTableCell.GetRowspan())
-		oCurrentDocument += L"<w:vMerge w:val=\"restart\"/>";
+	const NSCSS::NSProperties::CBorder* pBorder{&oCellNode.m_pCompiledStyle->m_oBorder};
 
-	const TTableStyles oTableStyles{oStorageTable.GetTableStyles()};
+	if (nullptr != pColStyle && !pColStyle->m_oBorder.Empty() && !pColStyle->m_oBorder.Zero())
+		pBorder = &pColStyle->m_oBorder;
 
-	if (!oCellStyle.m_oBorder.Empty() && !oCellStyle.m_oBorder.Zero() /*&& oCellStyle.m_oBorder != oTableStyles.m_oBorder*/)
-		oCurrentDocument += L"<w:tcBorders>" + CreateBorders(oCellStyle.m_oBorder, &oCellStyle.m_oPadding) + L"</w:tcBorders>";
-	else if (TTableStyles::ETableRules::Groups == oTableStyles.m_enRules)
+	if (!pBorder->Empty() && !pBorder->Zero() && *pBorder != oTableStyles.m_oBorder)
+		oXmlString += L"<w:tcBorders>" + CreateBorders(*pBorder, &oCellNode.m_pCompiledStyle->m_oPadding) + L"</w:tcBorders>";
+	else if (ETableRules::Groups == oTableStyles.m_enRules)
 	{
 		std::wstring wsBorders;
 
-		if (oStorageTable.HaveColgroups())
-			wsBorders += CalculateSidesToClean(unColumnNumber, oStorageTable.GetColgroups(), oStorageTable.GetMaxColumns());
+		if (nullptr != oTableStyles.m_pTable && oTableStyles.m_pTable->HaveColgroups())
+			wsBorders += CalculateSidesToClean(unColumnIndex, oTableStyles.m_pTable->m_arColgroups, oTableStyles.m_pTable->GetColumnsCount());
 
-		const ERowPosition eRowPosition{boost::get<4>(oDataForCell)};
-
-		if (ERowParseMode::Header == eParseMode && ERowPosition::Last == eRowPosition)
+		if (ERowParseMode::Header == eRowParseMode && ERowPosition::Last == eRowPosition)
 			wsBorders += CreateDefaultBorder(L"bottom");
-		else if (ERowParseMode::Foother == eParseMode && ERowPosition::First == eRowPosition)
+		else if (ERowParseMode::Foother == eRowParseMode && ERowPosition::First == eRowPosition)
 			wsBorders += CreateDefaultBorder(L"top");
 
 		if (!wsBorders.empty())
-			oCurrentDocument += L"<w:tcBorders>" + wsBorders + L"</w:tcBorders>";
+			oXmlString += L"<w:tcBorders>" + wsBorders + L"</w:tcBorders>";
 	}
 
-	if (!oCellStyle.m_oBackground.Empty())
+	std::wstring wsValue;
+
+	if (ETableElement::FillingCell == pCell->GetType())
+		oXmlString += L"<w:vMerge w:val=\"continue\"/>";
+	else if (oCellNode.GetAttributeValue(L"rowspan", wsValue))
 	{
-		const std::wstring wsShdFill{(NSCSS::NSProperties::ColorNone == oCellStyle.m_oBackground.GetType()) ? L"auto" : oCellStyle.m_oBackground.ToWString()};
-		oCurrentDocument += L"<w:shd w:val=\"clear\" w:color=\"auto\" w:fill=\"" + wsShdFill + L"\"/>";
-	}
+		const int nRowspan{NSStringFinder::ToInt(wsValue, 1)};
 
-	if (!oCellStyle.m_wsVAlign.empty())
-		oCurrentDocument += L"<w:vAlign w:val=\"" + oCellStyle.m_wsVAlign + L"\"/>";
-	else
-		oCurrentDocument += L"<w:vAlign w:val=\"center\"/>";
-
-	if (!oCellStyle.m_oPadding.Empty() && oTableStyles.m_oPadding != oCellStyle.m_oPadding)
-	{
-		const int nTopPadding    = std::max(oTableStyles.m_oPadding.GetTop()   .ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_HEIGHT),
-		                                    oCellStyle  .m_oPadding.GetTop()   .ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_HEIGHT));
-		const int nLeftPadding   = std::max(oTableStyles.m_oPadding.GetLeft()  .ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_WIDTH),
-		                                    oCellStyle  .m_oPadding.GetLeft()  .ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_WIDTH));
-		const int nBottomPadding = std::max(oTableStyles.m_oPadding.GetBottom().ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_HEIGHT),
-		                                    oCellStyle  .m_oPadding.GetBottom().ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_HEIGHT));
-		const int nRightPadding  = std::max(oTableStyles.m_oPadding.GetRight() .ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_WIDTH),
-		                                    oCellStyle  .m_oPadding.GetRight() .ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_WIDTH));
-
-		oCurrentDocument += L"<w:tcMar>"
-		                         "<w:top w:w=\""    + std::to_wstring(nTopPadding)    + L"\" w:type=\"dxa\"/>"
-		                         "<w:left w:w=\""   + std::to_wstring(nLeftPadding)   + L"\" w:type=\"dxa\"/>"
-		                         "<w:bottom w:w=\"" + std::to_wstring(nBottomPadding) + L"\" w:type=\"dxa\"/>"
-		                         "<w:right w:w=\""  + std::to_wstring(nRightPadding)  + L"\" w:type=\"dxa\"/>"
-		                     "</w:tcMar>";
-	}
-
-	oCurrentDocument += L"<w:hideMark/>";
-	oCurrentDocument.WriteNodeEnd(L"w:tcPr");
-
-	return true;
-}
-
-void HTML::CTableCell<COOXMLWriter>::Close(const std::vector<NSCSS::CNode>& arSelectors)
-{
-	if (!ValidWriter())
-		return;
-
-	m_pWriter->GetCurrentDocument()->WriteNodeEnd(L"w:tc");
-}
-
-CHTML<COOXMLWriter>::CHTML(COOXMLWriter* pInterpretator)
-	: CTag(pInterpretator)
-{}
-
-bool CHTML<COOXMLWriter>::Open(const std::vector<NSCSS::CNode>& arSelectors, const boost::any& oExtraData)
-{
-	if (!ValidWriter())
-		return false;
-
-	if (!arSelectors.back().m_mAttributes.empty())
-	{
-		std::wstring wsBackground;
-		if (arSelectors.back().GetAttributeValue(L"bgcolor", wsBackground))
+		if (1 < nRowspan)
 		{
-			NSCSS::NSProperties::CColor oColor;
-			oColor.SetValue(wsBackground);
-
-			if (!oColor.Empty() && !oColor.None())
-			{
-				const std::wstring wsHEXColor{oColor.ToHEX()};
-
-				if (!wsHEXColor.empty())
-					m_pWriter->GetCurrentDocument()->WriteString(L"<w:background w:color=\"" + wsHEXColor + L"\"/>");
-			}
+			oXmlString += L"<w:vMerge w:val=\"restart\"/>";
+			mFillingColumn[unColumnIndex] = oCellNode;
+			mFillingColumn[unColumnIndex].m_pCompiledStyle = new NSCSS::CCompiledStyle(*oCellNode.m_pCompiledStyle);
 		}
 	}
 
+	const NSCSS::NSProperties::CColor* pBackground{&oCellNode.m_pCompiledStyle->m_oBackground.GetColor()};
+
+	if (nullptr != pColStyle && pBackground->LessSignificantThen(pColStyle->m_oBackground.GetColor()))
+		pBackground = &pColStyle->m_oBackground.GetColor();
+
+	if (!pBackground->Empty())
+	{
+		const std::wstring wsShdFill{(NSCSS::NSProperties::ColorNone == pBackground->GetType()) ? L"auto" : pBackground->ToWString()};
+		oXmlString += L"<w:shd w:val=\"clear\" w:color=\"auto\" w:fill=\"" + wsShdFill + L"\"/>";
+	}
+
+	if (!oCellNode.m_pCompiledStyle->m_oText.GetAlign().Empty())
+		oXmlString += L"<w:vAlign w:val=\"" + oCellNode.m_pCompiledStyle->m_oText.GetAlign().ToWString() + L"\"/>";
+	else
+		oXmlString += L"<w:vAlign w:val=\"center\"/>";
+
+	NSCSS::NSProperties::CIndent oPadding{oCellNode.m_pCompiledStyle->m_oPadding};
+
+	if (nullptr != pColStyle && !pColStyle->Empty())
+		oPadding += pColStyle->m_oPadding;
+
+	if (!oPadding.Empty() && oTableStyles.m_oPadding != oPadding)
+	{
+		const int nTopPadding    = std::max(oTableStyles.m_oPadding.GetTop()   .ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_HEIGHT),
+		                                    oPadding.GetTop()   .ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_HEIGHT));
+		const int nLeftPadding   = std::max(oTableStyles.m_oPadding.GetLeft()  .ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_WIDTH),
+		                                    oPadding.GetLeft()  .ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_WIDTH));
+		const int nBottomPadding = std::max(oTableStyles.m_oPadding.GetBottom().ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_HEIGHT),
+		                                    oPadding.GetBottom().ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_HEIGHT));
+		const int nRightPadding  = std::max(oTableStyles.m_oPadding.GetRight() .ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_WIDTH),
+		                                    oPadding.GetRight() .ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_WIDTH));
+
+		oXmlString += L"<w:tcMar>"
+		                   "<w:top w:w=\""    + std::to_wstring(nTopPadding)    + L"\" w:type=\"dxa\"/>"
+		                   "<w:left w:w=\""   + std::to_wstring(nLeftPadding)   + L"\" w:type=\"dxa\"/>"
+		                   "<w:bottom w:w=\"" + std::to_wstring(nBottomPadding) + L"\" w:type=\"dxa\"/>"
+		                   "<w:right w:w=\""  + std::to_wstring(nRightPadding)  + L"\" w:type=\"dxa\"/>"
+		               "</w:tcMar>";
+	}
+
+	oXmlString += L"<w:hideMark/>";
+	oXmlString.WriteNodeEnd(L"w:tcPr");
+}
+
+void COOXMLTable::CloseCell(XmlString& oXmlString)
+{
+	oXmlString.WriteNodeEnd(L"w:tc");
+}
+
+void COOXMLTable::ConvertTable(XmlUtils::CXmlLiteReader& oReader, COOXMLWriter& oWriter, const COOXMLTable& oTable, const NSCSS::CNode& oTableNode)
+{
+	std::vector<NSCSS::CNode> arTableSelectors{oTableNode};
+
+	XmlString& oCurrentDocument{*oWriter.GetCurrentDocument()};
+	TTableStyles oTableStyles;
+
+	oTableStyles.m_pTable = &oTable;
+
+	OpenTable(oCurrentDocument, oTableNode, oTableStyles, oTable);
+
+	std::stack<int> arDepths({oReader.GetDepth()});
+
+	bool bConvertedHeader{false}, bConvertedBody{false}, bConvertedFoother{false};
+
+	#define CONVERT_MATRIX(matrix_variable)\
+	{\
+	if (!bConverted##matrix_variable)\
+	{\
+		ConvertMatrix(oReader, oWriter, arTableSelectors, arDepths, oTable.m_o##matrix_variable.GetMatrixCells(), oTableStyles, ERowParseMode::matrix_variable);\
+		bConverted##matrix_variable = true;\
+	}\
+	}
+
+	while(oReader.ReadNextSiblingNode2(arDepths.top()))
+	{
+		const std::wstring sName = oReader.GetName();
+		m_oExternalData.GetSubClass(oReader, arTableSelectors);
+
+		if(sName == L"thead")
+			CONVERT_MATRIX(Header)
+		else if(sName == L"tbody")
+			CONVERT_MATRIX(Body)
+		else if(sName == L"tfoot")
+			CONVERT_MATRIX(Foother)
+		else
+			arTableSelectors.pop_back();
+	}
+
+	CloseTable(oCurrentDocument);
+	oWriter.WriteEmptyParagraph(true);
+}
+
+void COOXMLTable::ConvertMatrix(XmlUtils::CXmlLiteReader& oReader, COOXMLWriter& oWriter, std::vector<NSCSS::CNode>& arSelectors, std::stack<int>& arDepths, const Table& oMatrix, TTableStyles& oTableStyles, ERowParseMode eRowParseMode)
+{
+	if (oMatrix.empty())
+		return;
+
+	arDepths.push(oReader.GetDepth());
+
+	ITableElementCell* pTableCell{nullptr};
+	size_t unCellHeight{0}, unMaxCellHeight{0};
+	std::unordered_map<size_t, NSCSS::CNode> mFillingColumn;
+
+	for (size_t unRowIndex = 0; unRowIndex < oMatrix.size(); ++unRowIndex)
+	{
+		XmlString oCellsData;
+		oWriter.SetDataOutput(&oCellsData);
+		bool bEmptyRow{true};
+
+		for (size_t unColumnIndex = 0; unColumnIndex < oMatrix[unRowIndex].size(); ++unColumnIndex)
+		{
+			pTableCell = oMatrix[unRowIndex][unColumnIndex];
+
+			if (nullptr == pTableCell)
+			{
+				if (unColumnIndex < MAX_COLUMNS_IN_TABLE)
+					OpenCell(oCellsData);
+
+				oWriter.WriteEmptyParagraph();
+
+				if (unColumnIndex < MAX_COLUMNS_IN_TABLE - 1)
+					CloseCell(oCellsData);
+
+				continue;
+			}
+
+			if (ETableElement::FillingCell == pTableCell->GetType())
+			{
+				if (unColumnIndex < MAX_COLUMNS_IN_TABLE)
+				{
+					OpenCell(oCellsData, mFillingColumn.at(unColumnIndex), (CTableElementCell*)pTableCell, unColumnIndex, eRowParseMode,
+					         ((0 == unRowIndex) ? ERowPosition::First : ((oMatrix.size() - 1 == unRowIndex) ? ERowPosition::Last : ERowPosition::Middle)),
+					         unCellHeight, oTableStyles, mFillingColumn);
+				}
+
+				oWriter.WriteEmptyParagraph();
+
+				if (unColumnIndex < MAX_COLUMNS_IN_TABLE - 1)
+					CloseCell(oCellsData);
+
+				continue;
+			}
+
+			MoveToNextTableCell(oReader, arSelectors, arDepths, m_oExternalData.GetSubClass);
+
+			bEmptyRow = false;
+
+			if (ETableElement::TableContainer == pTableCell->GetType())
+			{
+				if (unColumnIndex < MAX_COLUMNS_IN_TABLE)
+					OpenCell(oCellsData, arSelectors.back(), (CTableElementCell*)pTableCell, unColumnIndex, eRowParseMode,
+					         ((0 == unRowIndex) ? ERowPosition::First : ((oMatrix.size() - 1 == unRowIndex) ? ERowPosition::Last : ERowPosition::Middle)),
+					         unCellHeight, oTableStyles, mFillingColumn);
+
+				std::vector<CTableElement*> arTables{((CTableContainer*)pTableCell)->GetTables()};
+				std::vector<CTableElement*>::const_iterator itTable = arTables.cbegin();
+
+				const size_t unDepthSize{arDepths.size()};
+
+				arDepths.push(oReader.GetDepth());
+
+				m_oExternalData.AddStopTag(L"table");
+
+				#define READ_TABLE()\
+					m_oExternalData.GetSubClass(oReader, arSelectors);\
+					oWriter.CloseP();\
+					ConvertTable(oReader, oWriter, *(COOXMLTable*)*itTable++, arSelectors.back());\
+					oWriter.WriteEmptyParagraph(true);\
+					arSelectors.pop_back()
+
+				while (oReader.ReadNextSiblingNode2(arDepths.top()))
+				{
+					if (L"table" == oReader.GetName())
+					{
+						READ_TABLE();
+					}
+					else
+					{
+						m_oExternalData.ReadInside(oReader, arSelectors);
+
+						if (L"table" == oReader.GetName())
+						{
+							READ_TABLE();
+						}
+					}
+				}
+
+				while (arDepths.size() > unDepthSize)
+					arDepths.pop();
+
+				arSelectors.resize(unDepthSize);
+
+				m_oExternalData.ClearStopTags();
+			}
+			else
+			{
+				if (unColumnIndex < MAX_COLUMNS_IN_TABLE)
+					OpenCell(oCellsData, arSelectors.back(), (CTableElementCell*)pTableCell, unColumnIndex, eRowParseMode,
+					         ((0 == unRowIndex) ? ERowPosition::First : ((oMatrix.size() - 1 == unRowIndex) ? ERowPosition::Last : ERowPosition::Middle)),
+					         unCellHeight, oTableStyles, mFillingColumn);
+
+				unMaxCellHeight = (std::max)(unMaxCellHeight, unCellHeight);
+
+				const size_t unSelectorsSize{arSelectors.size()};
+
+				m_oExternalData.ReadStream(oReader, arSelectors);
+
+				arSelectors.resize(unSelectorsSize);
+
+				arSelectors.pop_back();
+			}
+
+			oWriter.CloseP();
+
+			if (unColumnIndex < MAX_COLUMNS_IN_TABLE - 1)
+				CloseCell(oCellsData);
+		}
+
+		if (oMatrix[unRowIndex].size() >= MAX_COLUMNS_IN_TABLE)
+			CloseCell(oCellsData);
+
+		oWriter.RevertDataOutput();
+
+		OpenRow(*oWriter.GetCurrentDocument(), ERowParseMode::Header == eRowParseMode, unMaxCellHeight, 0);
+		WriteToStringBuilder(oCellsData, *oWriter.GetCurrentDocument());
+		CloseRow(*oWriter.GetCurrentDocument());
+
+		if (!bEmptyRow)
+		{
+			arSelectors.pop_back();
+			arDepths.pop();
+		}
+	}
+
+	arSelectors.pop_back();
+	arDepths.pop();
+}
+
+inline void CalculateMaxRowSize(const Table& oMatrix, size_t& unMaxRowSize)
+{
+	for (const Row& oRow : oMatrix)
+	{
+		size_t unCurrentSize{0};
+		for (ITableElementCell* pCell : oRow)
+		{
+			if (nullptr == pCell || ETableElement::TableContainer == pCell->GetType())
+				unCurrentSize += 1;
+			else
+				unCurrentSize += ((CTableElementCell*)pCell)->GetColspan();
+		}
+		unMaxRowSize = (std::max)(unMaxRowSize, unCurrentSize);
+	}
+}
+
+inline void NormalizeMatrix(Table& oMatrix, const size_t& unMaxMatrixColumns, const size_t& unMaxColumns)
+{
+	for (Row& oRow : oMatrix)
+	{
+		for (ITableElementCell* pCell : oRow)
+		{
+			if (nullptr == pCell)
+				continue;
+
+			if (ETableElement::TableContainer == pCell->GetType())
+			{
+				for (CTableElement* pTable : ((CTableContainer*)pCell)->GetTables())
+					if (nullptr != pTable)
+						pTable->Normalize();
+			}
+		}
+
+		if (unMaxMatrixColumns != unMaxColumns)
+			oRow.resize(oRow.size() + (unMaxColumns - unMaxMatrixColumns));
+	}
+}
+
+void COOXMLTable::Normalize()
+{
+	size_t unMaxColumns{0}, unHeaderRowSize{0}, unBodyRowSize{0}, unFootherRowSize{0};
+
+	CalculateMaxRowSize(m_oHeader.GetMatrixCells(),  unHeaderRowSize);
+	CalculateMaxRowSize(m_oBody.GetMatrixCells(),    unBodyRowSize);
+	CalculateMaxRowSize(m_oFoother.GetMatrixCells(), unFootherRowSize);
+
+	unMaxColumns = (std::max)((std::max)(unHeaderRowSize, unBodyRowSize), unFootherRowSize);
+
+	NormalizeMatrix(m_oHeader.GetMatrixCells(),  unHeaderRowSize, unMaxColumns);
+	NormalizeMatrix(m_oBody.GetMatrixCells(),    unBodyRowSize, unMaxColumns);
+	NormalizeMatrix(m_oFoother.GetMatrixCells(), unFootherRowSize, unMaxColumns);
+}
+
+bool COOXMLTable::Convert(XmlUtils::CXmlLiteReader& oReader, const NSCSS::CNode& oTableNode)
+{
+	if (Empty())
+		return false;
+
+	COOXMLWriter* pWriter{dynamic_cast<COOXMLWriter*>(m_oExternalData.m_pWriter)};
+
+	if (nullptr == pWriter)
+		return false;
+
+	ConvertTable(oReader, *pWriter, *this, oTableNode);
+
 	return true;
 }
 
-void CHTML<COOXMLWriter>::Close(const std::vector<NSCSS::CNode>& arSelectors)
-{}
+bool COOXMLTable::ParseCaption(XmlUtils::CXmlLiteReader& oReader, XmlString*& pCaption)
+{
+	if (nullptr == m_oExternalData.m_pWriter)
+		return false;
 
+	if (nullptr == pCaption)
+		pCaption = new XmlString(200);
+
+	std::vector<NSCSS::CNode> arSelectors;
+	m_oExternalData.GetSubClass(oReader, arSelectors);
+
+	arSelectors.back().m_pCompiledStyle->m_oText.SetAlign(L"center", 0, true);
+
+	COOXMLWriter& oWriter{*(COOXMLWriter*)m_oExternalData.m_pWriter};
+
+	oWriter.SetDataOutput(m_pCaption);
+	oWriter.WritePPr(arSelectors);
+	m_oExternalData.ReadStream(oReader, arSelectors);
+	oWriter.CloseP();
+	oWriter.RevertDataOutput();
+
+	return true;
+}
+
+bool COOXMLTable::ParseColgroup(XmlUtils::CXmlLiteReader& oReader, std::vector<CTableColgroup*>& arColgroups)
+{
+	std::vector<NSCSS::CNode> arNodes;
+
+	m_oExternalData.GetSubClass(oReader, arNodes);
+
+	CTableColgroup *pColgroup = new CTableColgroup(arNodes.back());
+
+	if (NULL == pColgroup)
+		return false;
+
+	const int nDeath = oReader.GetDepth();
+	if (!oReader.IsEmptyNode() && oReader.ReadNextSiblingNode2(nDeath))
+	{
+		do
+		{
+			if (L"col" != oReader.GetName())
+				continue;
+
+			m_oExternalData.GetSubClass(oReader, arNodes);
+
+			CTableCol *pCol = new CTableCol(arNodes.back());
+
+			if (NULL == pCol)
+				continue;
+
+			arNodes.pop_back();
+			pColgroup->AddCol(pCol);
+		} while(oReader.ReadNextSiblingNode2(nDeath));
+	}
+
+	// if(pColgroup->Empty())
+	// {
+	// 	std::map<std::wstring, std::wstring>::const_iterator itFound = arNodes.begin()->m_mAttributes.find(L"span");
+
+	// 	CTableCol *pCol = new CTableCol((arNodes.begin()->m_mAttributes.cend() != itFound) ? NSStringFinder::ToInt(itFound->second, 1) : 1);
+
+	// 	if (NULL == pCol)
+	// 		return;
+
+	// 	CalculateCellStyles(pCol->GetStyle(), arNodes);
+
+	// 	pColgroup->AddCol(pCol);
+	// }
+
+	arColgroups.push_back(pColgroup);
+
+	return true;
+}
 }

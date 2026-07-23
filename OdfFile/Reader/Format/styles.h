@@ -1,33 +1,36 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * Copyright (C) Ascensio System SIA, 2009-2026
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
- * version 3 as published by the Free Software Foundation. In accordance with
- * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
- * that Ascensio System SIA expressly excludes the warranty of non-infringement
- * of any third-party rights.
+ * version 3 as published by the Free Software Foundation, together with the
+ * additional terms provided in the LICENSE file.
  *
  * This program is distributed WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
- * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. For
+ * details, see the GNU AGPL at: https://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
- * street, Riga, Latvia, EU, LV-1050.
+ * You can contact Ascensio System SIA by email at info@onlyoffice.com
+ * or by postal mail at 20A-6 Ernesta Birznieka-Upisha Street, Riga,
+ * LV-1050, Latvia, European Union.
  *
- * The  interactive user interfaces in modified source and object code versions
- * of the Program must display Appropriate Legal Notices, as required under
+ * The interactive user interfaces in modified versions of the Program
+ * are required to display Appropriate Legal Notices in accordance with
  * Section 5 of the GNU AGPL version 3.
  *
- * Pursuant to Section 7(b) of the License you must retain the original Product
- * logo when distributing the program. Pursuant to Section 7(e) we decline to
- * grant you any rights under trademark law for use of our trademarks.
+ * No trademark rights are granted under this License.
  *
- * All the Product's GUI elements, including illustrations and icon sets, as
- * well as technical writing content are licensed under the terms of the
- * Creative Commons Attribution-ShareAlike 4.0 International. See the License
- * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ * All non-code elements of the Product, including illustrations,
+ * icon sets, and technical writing content, are licensed under the
+ * Creative Commons Attribution-ShareAlike 4.0 International License:
+ * https://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
+ * This license applies only to such non-code elements and does not
+ * modify or replace the licensing terms applicable to the Program's
+ * source code, which remains licensed under the GNU Affero General
+ * Public License v3.
+ *
+ * SPDX-License-Identifier: AGPL-3.0-only
  */
 #pragma once
 
@@ -98,7 +101,7 @@ public:
     style_table_properties*			get_style_table_properties()const;
     style_section_properties*		get_style_section_properties()const;
     style_table_row_properties*		get_style_table_row_properties()const;
-    style_table_column_properties* get_style_table_column_properties() const;
+    style_table_column_properties*  get_style_table_column_properties() const;
     style_chart_properties*			get_style_chart_properties()const;
 	style_drawing_page_properties*	get_style_drawing_page_properties() const;
     style_table_cell_properties*	get_style_table_cell_properties(bool always = false);
@@ -107,6 +110,8 @@ public:
 	odf_types::style_family style_family_;
 
     bool bDefault = false;
+
+    office_element_ptr_array style_map_;
 private:
     office_element_ptr		style_text_properties_;
     office_element_ptr		style_paragraph_properties_;
@@ -350,19 +355,19 @@ public:
     
 	_CP_OPT(std::wstring) style_display_name_;
 
-	_CP_OPT(std::wstring) style_parent_style_name_;
-	_CP_OPT(std::wstring) style_next_style_name_;
-	_CP_OPT(std::wstring) style_list_style_name_;
-	_CP_OPT(int) style_list_level_;
-	_CP_OPT(std::wstring) style_master_page_name_;
-	_CP_OPT(std::wstring) style_data_style_name_;
-	_CP_OPT(std::wstring) style_percentage_data_style_name_;
-	_CP_OPT(std::wstring) style_class_;
-	_CP_OPT(int) style_default_outline_level_;
+    _CP_OPT(std::wstring) style_parent_style_name_;
+    _CP_OPT(std::wstring) style_next_style_name_;
+    _CP_OPT(std::wstring) style_list_style_name_;
+    _CP_OPT(int) style_list_level_;
+    _CP_OPT(std::wstring) style_master_page_name_;
+    _CP_OPT(std::wstring) style_data_style_name_;
+    _CP_OPT(std::wstring) style_percentage_data_style_name_;
+    _CP_OPT(std::wstring) style_class_;
+    _CP_OPT(int) style_default_outline_level_;
+    _CP_OPT(std::wstring) loext_linked_style_name_;
+    _CP_OPT(bool) loext_primary_format_;
 
-    style_content content_;
-	
-	office_element_ptr_array style_map_;
+    style_content content_;	
 };
 CP_REGISTER_OFFICE_ELEMENT2(style);
 

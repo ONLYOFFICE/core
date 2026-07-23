@@ -1,3 +1,38 @@
+/*
+ * Copyright (C) Ascensio System SIA, 2009-2026
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation, together with the
+ * additional terms provided in the LICENSE file.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. For
+ * details, see the GNU AGPL at: https://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA by email at info@onlyoffice.com
+ * or by postal mail at 20A-6 Ernesta Birznieka-Upisha Street, Riga,
+ * LV-1050, Latvia, European Union.
+ *
+ * The interactive user interfaces in modified versions of the Program
+ * are required to display Appropriate Legal Notices in accordance with
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * No trademark rights are granted under this License.
+ *
+ * All non-code elements of the Product, including illustrations,
+ * icon sets, and technical writing content, are licensed under the
+ * Creative Commons Attribution-ShareAlike 4.0 International License:
+ * https://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ * This license applies only to such non-code elements and does not
+ * modify or replace the licensing terms applicable to the Program's
+ * source code, which remains licensed under the GNU Affero General
+ * Public License v3.
+ *
+ * SPDX-License-Identifier: AGPL-3.0-only
+ */
+
 #include "Paragraph.h"
 
 #include "../../resources/utils.h"
@@ -49,18 +84,18 @@ namespace NSDocxRenderer
 		oWriter.WriteString(L"/>"); // end of w:spacing
 
 		oWriter.WriteString(L"<w:ind");
-		if (m_dLeftBorder > 0)
-		{
+		//if (m_dLeftBorder > 0)
+		//{
 			oWriter.WriteString(L" w:left=\"");
 			oWriter.AddInt(static_cast<int>(m_dLeftBorder * c_dMMToDx));
 			oWriter.WriteString(L"\"");
-		}
-		if (m_dRightBorder > 0)
-		{
+		//}
+		//if (m_dRightBorder > 0)
+		//{
 			oWriter.WriteString(L" w:right=\"");
 			oWriter.AddInt(static_cast<int>(m_dRightBorder * c_dMMToDx)); // here m_dRight is the distance from the right edge
 			oWriter.WriteString(L"\"");
-		}
+		//}
 		if (m_bIsNeedFirstLineIndent)
 		{
 			if (m_dFirstLine > 0)
@@ -144,18 +179,18 @@ namespace NSDocxRenderer
 			oWriter.WriteString(L"\"");
 		}
 
-		if (m_dLeftBorder > 0)
-		{
+		//if (m_dLeftBorder > 0)
+		//{
 			oWriter.WriteString(L" marL=\" ");
 			oWriter.AddInt(static_cast<int>(m_dLeftBorder * c_dMMToEMU));
 			oWriter.WriteString(L"\"");
-		}
-		if (m_dRightBorder > 0)
-		{
+		//}
+		//if (m_dRightBorder > 0)
+		//{
 			oWriter.WriteString(L" marR=\"");
 			oWriter.AddInt(static_cast<int>(m_dRightBorder * c_dMMToEMU));
 			oWriter.WriteString(L"\"");
-		}
+		//}
 
 		oWriter.WriteString(L">");
 
@@ -209,18 +244,18 @@ namespace NSDocxRenderer
 			}
 
 			// marL
-			if (m_dLeftBorder > 0)
-			{
+			//if (m_dLeftBorder > 0)
+			//{
 				oWriter.WriteBYTE(8);
 				oWriter.AddSInt(static_cast<int>(m_dLeftBorder * c_dMMToEMU));
-			}
+			//}
 
 			// marR
-			if (m_dRightBorder > 0)
-			{
+			//if (m_dRightBorder > 0)
+			//{
 				oWriter.WriteBYTE(9);
 				oWriter.AddSInt(static_cast<int>(m_dRightBorder * c_dMMToEMU));
-			}
+			//}
 
 			// indent
 			if (m_bIsNeedFirstLineIndent)

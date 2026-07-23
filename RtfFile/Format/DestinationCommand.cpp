@@ -1,33 +1,36 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * Copyright (C) Ascensio System SIA, 2009-2026
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
- * version 3 as published by the Free Software Foundation. In accordance with
- * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
- * that Ascensio System SIA expressly excludes the warranty of non-infringement
- * of any third-party rights.
+ * version 3 as published by the Free Software Foundation, together with the
+ * additional terms provided in the LICENSE file.
  *
  * This program is distributed WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
- * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. For
+ * details, see the GNU AGPL at: https://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
- * street, Riga, Latvia, EU, LV-1050.
+ * You can contact Ascensio System SIA by email at info@onlyoffice.com
+ * or by postal mail at 20A-6 Ernesta Birznieka-Upisha Street, Riga,
+ * LV-1050, Latvia, European Union.
  *
- * The  interactive user interfaces in modified source and object code versions
- * of the Program must display Appropriate Legal Notices, as required under
+ * The interactive user interfaces in modified versions of the Program
+ * are required to display Appropriate Legal Notices in accordance with
  * Section 5 of the GNU AGPL version 3.
  *
- * Pursuant to Section 7(b) of the License you must retain the original Product
- * logo when distributing the program. Pursuant to Section 7(e) we decline to
- * grant you any rights under trademark law for use of our trademarks.
+ * No trademark rights are granted under this License.
  *
- * All the Product's GUI elements, including illustrations and icon sets, as
- * well as technical writing content are licensed under the terms of the
- * Creative Commons Attribution-ShareAlike 4.0 International. See the License
- * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ * All non-code elements of the Product, including illustrations,
+ * icon sets, and technical writing content, are licensed under the
+ * Creative Commons Attribution-ShareAlike 4.0 International License:
+ * https://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
+ * This license applies only to such non-code elements and does not
+ * modify or replace the licensing terms applicable to the Program's
+ * source code, which remains licensed under the GNU Affero General
+ * Public License v3.
+ *
+ * SPDX-License-Identifier: AGPL-3.0-only
  */
 
 #include "DestinationCommand.h"
@@ -1251,7 +1254,7 @@ bool RtfCharPropsCommand::ExecuteCommand(RtfDocument& oDocument, RtfReader& oRea
 	}
 	else if ( "v" == sCommand )
 	{
-		charProps->m_bHidden = 1;
+		charProps->m_bHidden = ( true == hasParameter && 0 == parameter ) ? 0 : 1;
 	}
 	else if ( "deleted" == sCommand )
 	{
@@ -2992,6 +2995,31 @@ void RtfShapeReader::ShapePropertyReader::ShapePropertyValueReader::PopState( Rt
 			m_oShape.m_aPSegmentInfo.push_back( val );
 		}
 	}
+	else if ( L"pInscribe" == m_sPropName )
+	{
+		std::vector< std::wstring > splitted;
+		boost::algorithm::split(splitted, sValue, boost::algorithm::is_any_of(L";"), boost::algorithm::token_compress_on);
+		if (splitted.size() >= 3)
+		{
+			std::wstring sHex = splitted[2];
+			if (sHex.length() >= 12 + 32)
+			{
+				std::wstring sBody = sHex.substr(12);
+				int rect[4] = {0,0,0,0};
+				for (int n = 0; n < 4; n++)
+				{
+					unsigned int u = 0;
+					for (int byte = 0; byte < 4; byte++)
+						u |= ((unsigned int)wcstol(sBody.substr(n * 8 + byte * 2, 2).c_str(), NULL, 16)) << (byte * 8);
+					rect[n] = (int)u;
+				}
+				m_oShape.m_nInscribeLeft	= rect[0];
+				m_oShape.m_nInscribeTop		= rect[1];
+				m_oShape.m_nInscribeRight	= rect[2];
+				m_oShape.m_nInscribeBottom	= rect[3];
+			}
+		}
+	}
 	else if (L"geoBottom" == m_sPropName) m_oShape.m_nGeoBottom = (PROP_DEF != m_oShape.m_nRelTop) ? nValue - m_oShape.m_nRelTop : nValue;
 	else if (L"geoLeft" == m_sPropName) m_oShape.m_nGeoLeft = (PROP_DEF != m_oShape.m_nRelLeft) ? nValue - m_oShape.m_nRelLeft : nValue;
 	else if (L"geoRight" == m_sPropName) m_oShape.m_nGeoRight = (PROP_DEF != m_oShape.m_nRelLeft) ? nValue - m_oShape.m_nRelLeft : nValue;
@@ -3031,8 +3059,8 @@ void RtfShapeReader::ShapePropertyReader::ShapePropertyValueReader::PopState( Rt
 	//WordArt Effects
 	else if ( L"cropFromTop"	== m_sPropName ) m_oShape.m_nCropFromTop	= nValue;
 	else if ( L"cropFromBottom"	== m_sPropName ) m_oShape.m_nCropFromBottom = nValue;
-	else if ( L"cropFromLeft"	== m_sPropName ) m_oShape.m_nCropFromRight	= nValue;
-	else if ( L"cropFromRight"	== m_sPropName ) m_oShape.m_nCropFromTop	= nValue;
+	else if ( L"cropFromLeft"	== m_sPropName ) m_oShape.m_nCropFromLeft	= nValue;
+	else if ( L"cropFromRight"	== m_sPropName ) m_oShape.m_nCropFromRight = nValue;
 	//Grouped Shapes
 	else if ( L"groupBottom"	== m_sPropName ) m_oShape.m_nGroupBottom	= nValue;
 	else if ( L"groupLeft"		== m_sPropName ) m_oShape.m_nGroupLeft		= nValue;
@@ -3112,7 +3140,7 @@ void RtfShapeReader::ShapePropertyReader::ShapePropertyValueReader::PopState( Rt
     else if (L"dxHeightHR"          == m_sPropName) m_oShape.m_oPicture->m_nHeight = nValue;
     else if (L"dxWidthHR"           == m_sPropName) m_oShape.m_oPicture->m_nWidth = nValue;
     else if (L"pctHR"               == m_sPropName) m_oShape.m_nHrPct = nValue;
-    else if (L"fNoShadeHR"          == m_sPropName) m_oShape.m_bHrNoShade = (nValue == 1);
+    else if (L"fNoshadeHR"          == m_sPropName) m_oShape.m_bHrNoShade = (nValue == 1);
 	
 	else if ( L"cxstyle"				== m_sPropName ) m_oShape.m_nConnectorStyle			= nValue;
 	else if ( L"cxk"					== m_sPropName ) m_oShape.m_nConnectionType			= nValue;

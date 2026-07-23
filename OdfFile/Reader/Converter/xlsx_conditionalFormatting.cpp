@@ -1,39 +1,43 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * Copyright (C) Ascensio System SIA, 2009-2026
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
- * version 3 as published by the Free Software Foundation. In accordance with
- * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
- * that Ascensio System SIA expressly excludes the warranty of non-infringement
- * of any third-party rights.
+ * version 3 as published by the Free Software Foundation, together with the
+ * additional terms provided in the LICENSE file.
  *
  * This program is distributed WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
- * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. For
+ * details, see the GNU AGPL at: https://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
- * street, Riga, Latvia, EU, LV-1050.
+ * You can contact Ascensio System SIA by email at info@onlyoffice.com
+ * or by postal mail at 20A-6 Ernesta Birznieka-Upisha Street, Riga,
+ * LV-1050, Latvia, European Union.
  *
- * The  interactive user interfaces in modified source and object code versions
- * of the Program must display Appropriate Legal Notices, as required under
+ * The interactive user interfaces in modified versions of the Program
+ * are required to display Appropriate Legal Notices in accordance with
  * Section 5 of the GNU AGPL version 3.
  *
- * Pursuant to Section 7(b) of the License you must retain the original Product
- * logo when distributing the program. Pursuant to Section 7(e) we decline to
- * grant you any rights under trademark law for use of our trademarks.
+ * No trademark rights are granted under this License.
  *
- * All the Product's GUI elements, including illustrations and icon sets, as
- * well as technical writing content are licensed under the terms of the
- * Creative Commons Attribution-ShareAlike 4.0 International. See the License
- * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ * All non-code elements of the Product, including illustrations,
+ * icon sets, and technical writing content, are licensed under the
+ * Creative Commons Attribution-ShareAlike 4.0 International License:
+ * https://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
+ * This license applies only to such non-code elements and does not
+ * modify or replace the licensing terms applicable to the Program's
+ * source code, which remains licensed under the GNU Affero General
+ * Public License v3.
+ *
+ * SPDX-License-Identifier: AGPL-3.0-only
  */
 
 #include "xlsx_conditionalFormatting.h"
 #include "xlsx_utils.h"
 
 #include <vector>
+#include <map>
 #include <boost/lexical_cast.hpp>
 #include "../../Common/xml/simple_xml_writer.h"
 #include "../../../OOXML/Base/Unit.h"
@@ -166,7 +170,6 @@ public:
     {
 		if (conditionalFormattings_.empty()) return;
 
-		int priority = 1;
 		CP_XML_WRITER(_Wostream)
 		{
 			for (size_t i = 0; i < conditionalFormattings_.size(); i++)
@@ -176,6 +179,7 @@ public:
 				if (c.bUsed) continue;
 				if (c.rules.size() < 1) continue;
 
+				int priority = 1;
 				CP_XML_NODE(L"conditionalFormatting")
 				{
 					CP_XML_ATTR(L"sqref", c.ref);
@@ -513,6 +517,7 @@ public:
 	}
 
     std::vector<conditionalFormatting> conditionalFormattings_;
+	std::map<std::wstring, size_t> map_conditionalFormattings_;
 };
 
 xlsx_conditionalFormatting_context::xlsx_conditionalFormatting_context() :
@@ -530,14 +535,32 @@ void xlsx_conditionalFormatting_context::serializeEx(std::wostream& _Wostream)
 {
 	return impl_->serializeEx(_Wostream);
 }
-void xlsx_conditionalFormatting_context::start(std::wstring ref)
+void xlsx_conditionalFormatting_context::start(const std::wstring& ref)
 {
-	formulasconvert::odf2oox_converter converter;
-	impl_->conditionalFormattings_.push_back(conditionalFormatting());
+	impl_->conditionalFormattings_.emplace_back();
 	
+	formulasconvert::odf2oox_converter converter;
 	impl_->conditionalFormattings_.back().ref = converter.convert_named_ref(ref, false, L" ");
 }
+bool xlsx_conditionalFormatting_context::start_by(const std::wstring &val, const std::wstring& ref)
+{
+	formulasconvert::odf2oox_converter converter;
 
+	auto pFind = impl_->map_conditionalFormattings_.find(val);
+	if (pFind != impl_->map_conditionalFormattings_.end())
+	{
+		impl_->conditionalFormattings_[pFind->second].ref += L" " + converter.convert_named_ref(ref, false, L" ");
+		return false;
+	}
+	else
+	{
+		impl_->map_conditionalFormattings_.insert(std::make_pair(val, impl_->conditionalFormattings_.size()));
+		impl_->conditionalFormattings_.emplace_back();
+
+		impl_->conditionalFormattings_.back().ref = converter.convert_named_ref(ref, false, L" ");
+		return true;
+	}
+}
 void xlsx_conditionalFormatting_context::add_rule(int type)
 {
 	if (false == impl_->conditionalFormattings_.back().rules.empty())
@@ -590,37 +613,43 @@ void xlsx_conditionalFormatting_context::set_formula(std::wstring f)
 	else if ( 0 <= (pos = f.find(L"formula-is(")))
 	{
 		impl_->conditionalFormattings_.back().rules.back().formula_type = L"expression";
-		val = f.substr(11, f.size() - 12);
+		val = f.substr(pos + 11, f.size() - pos - 12);
 
-		if (0 == (pos = val.find(L"\"")))	//Raport_7A.ods or remove enclosing quotes from formula?
+		if (0 == val.find(L"\""))	//Raport_7A.ods or remove enclosing quotes from formula?
 		{
 			impl_->conditionalFormattings_.back().rules.back().text = val;
 			val.clear();
 		}
-		
+
 		impl_->conditionalFormattings_.back().rules.back().formula = converter.convert(val);
 	}
 	else if (0 <= (pos = f.find(L"is-between(")))
 	{
-		val = f.substr(11, f.size() - 12);
+		val = f.substr(pos + 11, f.size() - pos - 12);
 		impl_->conditionalFormattings_.back().rules.back().formula_type = L"expression";
 		impl_->conditionalFormattings_.back().rules.back().formula = converter.convert_named_expr(val);
 	}
 	else if (0 <= (pos = f.find(L"is-time(")))
 	{
-		val = f.substr(8, f.size() - 9);
+		val = f.substr(pos + 8, f.size() - pos - 9);
 		impl_->conditionalFormattings_.back().rules.back().formula_type = L"expression";
 		impl_->conditionalFormattings_.back().rules.back().formula = converter.convert_named_expr(val);
+	}
+	else if (0 <= (pos = f.find(L"is-no-error")))
+	{
+		impl_->conditionalFormattings_.back().rules.back().formula_type = L"notContainsErrors";
 	}
 	else if (0 <= (pos = f.find(L"is-error")))
 	{
 		impl_->conditionalFormattings_.back().rules.back().formula_type = L"containsErrors";
 		impl_->conditionalFormattings_.back().rules.back().formula = L"0";
 	}
-	else if (0 <= (pos = f.find(L"is-no-error")))
+	else if (0 <= (pos = f.find(L"is-true-formula(")))
 	{
-		impl_->conditionalFormattings_.back().rules.back().formula_type = L"notContainsErrors";
-	}	
+		val = f.substr(pos + 16, f.size() - pos - 17);
+		impl_->conditionalFormattings_.back().rules.back().formula_type = L"expression";
+		impl_->conditionalFormattings_.back().rules.back().formula = converter.convert_named_expr(val);
+	}
 	else if (0 <= (pos = f.find(L"duplicate")))
 	{
 		impl_->conditionalFormattings_.back().rules.back().formula_type = L"duplicateValues";
@@ -760,32 +789,32 @@ void xlsx_conditionalFormatting_context::set_formula(std::wstring f)
 		else if (0 <= (pos = f.find(L"!=")))
 		{
 			impl_->conditionalFormattings_.back().rules.back().operator_ = L"notEqual";
-			val = converter.convert_named_expr( f.substr(2) );
+			val = converter.convert_named_expr( f.substr(pos + 2) );
 		}
 		else if (0 <= (pos = f.find(L"<=")))
 		{
 			impl_->conditionalFormattings_.back().rules.back().operator_ = L"lessThanOrEqual";
-			val = converter.convert_named_expr( f.substr(2) );
-		}	
+			val = converter.convert_named_expr( f.substr(pos + 2) );
+		}
 		else if (0 <= (pos = f.find(L">=")))
 		{
 			impl_->conditionalFormattings_.back().rules.back().operator_ = L"greaterThanOrEqual";
-			val = converter.convert_named_expr( f.substr(2) );
+			val = converter.convert_named_expr( f.substr(pos + 2) );
 		}
 		else if (0 <= (pos = f.find(L"=")))
 		{
 			impl_->conditionalFormattings_.back().rules.back().operator_ = L"equal";
-			val = converter.convert_named_expr( f.substr(1) );
+			val = converter.convert_named_expr( f.substr(pos + 1) );
 		}
 		else if (0 <= (pos = f.find(L"<")))
 		{
 			impl_->conditionalFormattings_.back().rules.back().operator_ = L"lessThan";
-			val = converter.convert_named_expr( f.substr(1) );
+			val = converter.convert_named_expr( f.substr(pos + 1) );
 		}
 		else if (0 <= (pos = f.find(L">")))
 		{
 			impl_->conditionalFormattings_.back().rules.back().operator_ = L"greaterThan";
-			val = converter.convert_named_expr( f.substr(1) );
+			val = converter.convert_named_expr( f.substr(pos + 1) );
 		}
 		else
 		{

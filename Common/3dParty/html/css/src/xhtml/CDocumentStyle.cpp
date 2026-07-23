@@ -1,6 +1,5 @@
 #include "CDocumentStyle.h"
 
-#include <iostream>
 #include <unordered_set>
 #include <wchar.h>
 #include <math.h>

@@ -30,7 +30,7 @@ if False:
   build_func()
 else:
   if not base.is_file("./build.7z"):
-    base.download("http://d2ettrnqo7v976.cloudfront.net/v8/android/build.7z", "./build.7z")
+    base.download("https://github.com/ONLYOFFICE-data/build_tools_data/raw/refs/heads/master/android/v8.7z", "./build.7z")
     base.extract("./build.7z", "./")
     base.copy_dir("./build/v8", "./v8")
     base.delete_dir("./build/v8")

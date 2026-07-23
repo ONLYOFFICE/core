@@ -1,33 +1,36 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * Copyright (C) Ascensio System SIA, 2009-2026
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
- * version 3 as published by the Free Software Foundation. In accordance with
- * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
- * that Ascensio System SIA expressly excludes the warranty of non-infringement
- * of any third-party rights.
+ * version 3 as published by the Free Software Foundation, together with the
+ * additional terms provided in the LICENSE file.
  *
  * This program is distributed WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
- * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. For
+ * details, see the GNU AGPL at: https://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
- * street, Riga, Latvia, EU, LV-1050.
+ * You can contact Ascensio System SIA by email at info@onlyoffice.com
+ * or by postal mail at 20A-6 Ernesta Birznieka-Upisha Street, Riga,
+ * LV-1050, Latvia, European Union.
  *
- * The  interactive user interfaces in modified source and object code versions
- * of the Program must display Appropriate Legal Notices, as required under
+ * The interactive user interfaces in modified versions of the Program
+ * are required to display Appropriate Legal Notices in accordance with
  * Section 5 of the GNU AGPL version 3.
  *
- * Pursuant to Section 7(b) of the License you must retain the original Product
- * logo when distributing the program. Pursuant to Section 7(e) we decline to
- * grant you any rights under trademark law for use of our trademarks.
+ * No trademark rights are granted under this License.
  *
- * All the Product's GUI elements, including illustrations and icon sets, as
- * well as technical writing content are licensed under the terms of the
- * Creative Commons Attribution-ShareAlike 4.0 International. See the License
- * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ * All non-code elements of the Product, including illustrations,
+ * icon sets, and technical writing content, are licensed under the
+ * Creative Commons Attribution-ShareAlike 4.0 International License:
+ * https://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
+ * This license applies only to such non-code elements and does not
+ * modify or replace the licensing terms applicable to the Program's
+ * source code, which remains licensed under the GNU Affero General
+ * Public License v3.
+ *
+ * SPDX-License-Identifier: AGPL-3.0-only
  */
 #include "FontCidTT.h"
 #include "Document.h"
@@ -106,6 +109,7 @@ namespace PdfWriter
 		m_nGlyphsCount  = 0;
 		m_nSymbolicCmap = -1;
 		m_ushCodesCount = 0;
+		m_bFromMemory   = false;
 	}
 	CFontCidTrueType::~CFontCidTrueType()
 	{
@@ -115,7 +119,7 @@ namespace PdfWriter
 		if (m_pFace)
 			FT_Done_Face(m_pFace);
 
-		if (m_pFaceMemory)
+		if (!m_bFromMemory && m_pFaceMemory)
 			delete[] m_pFaceMemory;
 	}
 	void CFontCidTrueType::CreateCIDFont(CDictObject* pFont)
@@ -393,8 +397,6 @@ namespace PdfWriter
 		pS->WriteStr(" beginbfchar\n");
 		for (unsigned short ushCode = 0; ushCode < m_ushCodesCount; ushCode++)
 		{
-			if (!m_mGlyphs[m_vCodeToGid[ushCode]])
-				continue;
 			pS->WriteChar('<');
 			pS->WriteHex(ushCode, 4);
 			pS->WriteStr("> <");
@@ -433,7 +435,8 @@ namespace PdfWriter
 			m_pFace = NULL;
 		}
 
-		RELEASEARRAYOBJECTS(m_pFaceMemory);
+		if (!m_bFromMemory)
+			RELEASEARRAYOBJECTS(m_pFaceMemory);
 	}
 	bool CFontCidTrueType::OpenFontFace()
 	{
@@ -452,7 +455,22 @@ namespace PdfWriter
 
 		DWORD dwFileSize;
 		m_pFaceMemory = NULL;
+#ifdef BUILDING_WASM_MODULE
+		NSFonts::IFontsMemoryStorage* pMemoryStorage = NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage();
+		if (pMemoryStorage)
+		{
+			NSFonts::IFontStream* pStream = pMemoryStorage->Get(m_wsFontPath);
+			if (pStream)
+			{
+				m_bFromMemory = true;
+				LONG lLength = 0;
+				pStream->GetMemory(m_pFaceMemory, lLength);
+				dwFileSize = lLength;
+			}
+		}
+#else
 		NSFile::CFileBinary::ReadAllBytes(m_wsFontPath, &m_pFaceMemory, dwFileSize);
+#endif
 		if (!m_pFaceMemory)
 			return false;
 
@@ -460,7 +478,10 @@ namespace PdfWriter
 
 		if (!m_pFace)
 		{
-			RELEASEARRAYOBJECTS(m_pFaceMemory);
+			if (m_bFromMemory)
+				m_pFaceMemory = NULL;
+			else
+				RELEASEARRAYOBJECTS(m_pFaceMemory);
 			return false;
 		}
 
@@ -552,7 +573,7 @@ namespace PdfWriter
 				m_vGlypWidths.push_back((unsigned int)(m_pFace->glyph->metrics.width) * 1000 / m_pFace->units_per_EM);
 			}
 
-			for (int nSubIndex = 0; nSubIndex < m_pFace->glyph->num_subglyphs; nSubIndex++)
+			for (unsigned int nSubIndex = 0; nSubIndex < m_pFace->glyph->num_subglyphs; nSubIndex++)
 			{
 				FT_Int       nSubGID;
 				FT_UInt      unFlags;
@@ -563,7 +584,8 @@ namespace PdfWriter
 
 				m_mGlyphs.insert(std::pair<unsigned short, bool>(nSubGID, false));
 
-				EncodeGID(nSubGID, NULL, 0);
+				unsigned int unSubUnicode = GetUnicodeByGID(nSubGID);
+				EncodeGID(nSubGID, &unSubUnicode, 1);
 				FT_Load_Glyph(m_pFace, unGID, FT_LOAD_NO_SCALE | FT_LOAD_NO_RECURSE);
 			}
 		}
@@ -576,5 +598,17 @@ namespace PdfWriter
 		}
 
 		return ushCode;
+	}
+	int CFontCidTrueType::GetUnicodeByGID(int gid)
+	{
+		FT_UInt gindex = 0;
+		FT_ULong charcode = FT_Get_First_Char(m_pFace, &gindex);
+		while (gindex != 0)
+		{
+			if (gindex == gid)
+				return charcode;
+			charcode = FT_Get_Next_Char(m_pFace, charcode, &gindex);
+		}
+		return 0;
 	}
 }

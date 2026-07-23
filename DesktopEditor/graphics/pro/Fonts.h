@@ -1,33 +1,36 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * Copyright (C) Ascensio System SIA, 2009-2026
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
- * version 3 as published by the Free Software Foundation. In accordance with
- * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
- * that Ascensio System SIA expressly excludes the warranty of non-infringement
- * of any third-party rights.
+ * version 3 as published by the Free Software Foundation, together with the
+ * additional terms provided in the LICENSE file.
  *
  * This program is distributed WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
- * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. For
+ * details, see the GNU AGPL at: https://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
- * street, Riga, Latvia, EU, LV-1050.
+ * You can contact Ascensio System SIA by email at info@onlyoffice.com
+ * or by postal mail at 20A-6 Ernesta Birznieka-Upisha Street, Riga,
+ * LV-1050, Latvia, European Union.
  *
- * The  interactive user interfaces in modified source and object code versions
- * of the Program must display Appropriate Legal Notices, as required under
+ * The interactive user interfaces in modified versions of the Program
+ * are required to display Appropriate Legal Notices in accordance with
  * Section 5 of the GNU AGPL version 3.
  *
- * Pursuant to Section 7(b) of the License you must retain the original Product
- * logo when distributing the program. Pursuant to Section 7(e) we decline to
- * grant you any rights under trademark law for use of our trademarks.
+ * No trademark rights are granted under this License.
  *
- * All the Product's GUI elements, including illustrations and icon sets, as
- * well as technical writing content are licensed under the terms of the
- * Creative Commons Attribution-ShareAlike 4.0 International. See the License
- * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ * All non-code elements of the Product, including illustrations,
+ * icon sets, and technical writing content, are licensed under the
+ * Creative Commons Attribution-ShareAlike 4.0 International License:
+ * https://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
+ * This license applies only to such non-code elements and does not
+ * modify or replace the licensing terms applicable to the Program's
+ * source code, which remains licensed under the GNU Affero General
+ * Public License v3.
+ *
+ * SPDX-License-Identifier: AGPL-3.0-only
  */
 #ifndef _GRAPHICS_EXPORTS_FONT_H_
 #define _GRAPHICS_EXPORTS_FONT_H_
@@ -38,6 +41,7 @@
 #include <map>
 #include <vector>
 #include "../../common/Types.h"
+#include "MemoryStorage.h"
 
 #define NSFONTS_EMBEDDING_RIGHTS_ANY               0x00
 #define NSFONTS_EMBEDDING_RIGHTS_PRINT_AND_PREVIEW 0x01
@@ -59,24 +63,6 @@ struct TBBoxAdvance
 	float fAdvanceX;
 	float fAdvanceY;
 };
-
-namespace NSBase
-{
-	class GRAPHICS_DECL CBaseRefCounter
-	{
-	protected:
-		volatile int m_lRef;
-
-	public:
-		CBaseRefCounter();
-		virtual ~CBaseRefCounter();
-
-		virtual int AddRef();
-		virtual int Release();
-	};
-
-	void GRAPHICS_DECL Release(CBaseRefCounter* base);
-} // namespace NSBase
 
 namespace NSFonts
 {
@@ -544,31 +530,8 @@ namespace NSFonts
 
 namespace NSFonts
 {
-	class GRAPHICS_DECL IFontStream : public NSBase::CBaseRefCounter
-	{
-	public:
-		IFontStream();
-		virtual ~IFontStream();
-
-	public:
-		virtual int CreateFromFile(const std::wstring& strFileName, unsigned char* pDataUse = NULL) = 0;
-		virtual int CreateFromMemory(BYTE* pData, LONG lSize, bool bClear) = 0;
-		virtual void GetMemory(BYTE*& pData, LONG& lSize) = 0;
-	};
-
-	class GRAPHICS_DECL IFontsMemoryStorage : public NSBase::CBaseRefCounter
-	{
-	public:
-		IFontsMemoryStorage();
-		virtual ~IFontsMemoryStorage();
-
-		virtual bool Add(const std::wstring& id, BYTE* data, LONG size, bool bClear = false) = 0;
-		virtual bool Remove(const std::wstring& id) = 0;
-		virtual IFontStream* Get(const std::wstring& id) = 0;
-
-		virtual std::wstring GenerateId() = 0;
-		virtual void Clear() = 0;
-	};
+	typedef NSMemoryStorage::IMemoryStream IFontStream;
+	typedef NSMemoryStorage::IMemoryStorage<IFontStream> IFontsMemoryStorage;
 
 	class GRAPHICS_DECL IApplicationFontStreams : public NSBase::CBaseRefCounter
 	{

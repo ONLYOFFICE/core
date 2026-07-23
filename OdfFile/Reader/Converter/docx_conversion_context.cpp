@@ -1,33 +1,36 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * Copyright (C) Ascensio System SIA, 2009-2026
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
- * version 3 as published by the Free Software Foundation. In accordance with
- * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
- * that Ascensio System SIA expressly excludes the warranty of non-infringement
- * of any third-party rights.
+ * version 3 as published by the Free Software Foundation, together with the
+ * additional terms provided in the LICENSE file.
  *
  * This program is distributed WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
- * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. For
+ * details, see the GNU AGPL at: https://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
- * street, Riga, Latvia, EU, LV-1050.
+ * You can contact Ascensio System SIA by email at info@onlyoffice.com
+ * or by postal mail at 20A-6 Ernesta Birznieka-Upisha Street, Riga,
+ * LV-1050, Latvia, European Union.
  *
- * The  interactive user interfaces in modified source and object code versions
- * of the Program must display Appropriate Legal Notices, as required under
+ * The interactive user interfaces in modified versions of the Program
+ * are required to display Appropriate Legal Notices in accordance with
  * Section 5 of the GNU AGPL version 3.
  *
- * Pursuant to Section 7(b) of the License you must retain the original Product
- * logo when distributing the program. Pursuant to Section 7(e) we decline to
- * grant you any rights under trademark law for use of our trademarks.
+ * No trademark rights are granted under this License.
  *
- * All the Product's GUI elements, including illustrations and icon sets, as
- * well as technical writing content are licensed under the terms of the
- * Creative Commons Attribution-ShareAlike 4.0 International. See the License
- * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ * All non-code elements of the Product, including illustrations,
+ * icon sets, and technical writing content, are licensed under the
+ * Creative Commons Attribution-ShareAlike 4.0 International License:
+ * https://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
+ * This license applies only to such non-code elements and does not
+ * modify or replace the licensing terms applicable to the Program's
+ * source code, which remains licensed under the GNU Affero General
+ * Public License v3.
+ *
+ * SPDX-License-Identifier: AGPL-3.0-only
  */
 
 #include <iostream>
@@ -130,6 +133,50 @@ text_tracked_context::_state & text_tracked_context::get_tracked_change(std::wst
 	else 
 		return 	current_state_; //empty
 }
+void comments_context::end_comment(const std::wstring& name)
+{
+	std::map<std::wstring, comments_context::_comment_desc>::iterator pFind = comments_map_.find(name);
+	if ((pFind != comments_map_.end()) && (pFind->second.bEnd == false))
+	{
+		ref_end_.push_back(pFind->second.id);
+		pFind->second.bEnd = true;
+	}
+	else
+	{
+		//error
+	}
+}
+bool comments_context::start_comment(const std::wstring& content, const std::wstring& author, const std::wstring& date, _CP_OPT(std::wstring) & name)
+{
+	int id = comments_map_.size() + 1;
+
+	bool bSingle = false;
+
+	std::map<std::wstring, comments_context::_comment_desc>::iterator pFind = comments_map_.end();
+
+	if (!name || ((name) && (name->empty())))
+	{
+		name = L"Comment_" + comments_map_.size();
+		bSingle = true;
+	}
+
+	pFind = comments_map_.find(*name);
+
+	if (pFind != comments_map_.end())
+	{
+		id = pFind->second.id;
+		//error ?
+	}
+	else
+	{
+		_comment_desc new_comment(content, id, author, date);
+
+		comments_map_.insert(std::make_pair(*name, new_comment));
+	
+		ref_start_.push_back(id);
+	}
+	return bSingle;
+}
 
 //----------------------------------------------------------------------------------------------------------------
 docx_conversion_context::docx_conversion_context(odf_reader::odf_document * _odf_document) : 
@@ -229,8 +276,9 @@ std::wstring styles_map::name(const std::wstring & Name, odf_types::style_family
 {
     return Name + L":" + boost::lexical_cast<std::wstring>(odf_types::style_family(Type));
 }
-void docx_conversion_context::add_element_to_run(std::wstring parenStyleId)
+bool docx_conversion_context::add_element_to_run(std::wstring parenStyleId)
 {
+	bool new_run = false;
 	if (false == current_process_comment_ && (false == get_comments_context().ref_end_.empty() || false == get_comments_context().ref_start_.empty()))
 	{
 		if (state_.in_run_)
@@ -258,7 +306,7 @@ void docx_conversion_context::add_element_to_run(std::wstring parenStyleId)
 	}
 	if (false == state_.in_run_)
     {
-        state_.in_run_ = true;
+		state_.in_run_ = new_run = true;
 		output_stream() << L"<w:r>";
 
 		start_changes(true);
@@ -277,8 +325,8 @@ void docx_conversion_context::add_element_to_run(std::wstring parenStyleId)
 	        
 			get_styles_context().docx_serialize_text_style( output_stream(), parenStyleId, text_tracked_context_.dumpRPr_);
 		}
-
 	}
+	return new_run;
 }
 
 void docx_conversion_context::start_paragraph(bool is_header)
@@ -307,11 +355,11 @@ void docx_conversion_context::finish_paragraph()
 				{
 					output_stream()<< L"<w:commentRangeEnd w:id=\"" << get_comments_context().ref_end_[i] << L"\"/>";
 				}
-				
-				for (size_t i = 0; i < get_comments_context().ref_end_.size(); i++)
-				{
-					output_stream()<< L"<w:commentReference w:id=\"" << get_comments_context().ref_end_[i] << L"\"/>";			
-				}
+				//
+				//for (size_t i = 0; i < get_comments_context().ref_end_.size(); i++)
+				//{
+				//	output_stream()<< L"<w:commentReference w:id=\"" << get_comments_context().ref_end_[i] << L"\"/>";			
+				//}
 			
 				get_comments_context().ref_end_.clear();	
 		}	
@@ -1450,10 +1498,10 @@ void docx_conversion_context::process_styles()
 						default_style = id;
 					}
 				}
-				else if (!arStyles[i]->is_default()) // default-style
-				{
-					_Wostream << L" w:customStyle=\"1\"";
-				}
+				//else if (!arStyles[i]->is_default()) // default-style
+				//{
+				//	_Wostream << L" w:customStyle=\"1\"";
+				//}
 				_Wostream << L">";
                 
 				const std::wstring displayName = StyleDisplayName(arStyles[i]->name(), arStyles[i]->display_name(), arStyles[i]->type(), bDisplayed);
@@ -1475,18 +1523,20 @@ void docx_conversion_context::process_styles()
 				{
 					_Wostream << L"<w:basedOn w:val=\"" << default_style << "\"/>";
 				}
-     //           else if (false == bDefault && false == arStyles[i]->is_default() && styles_map_.check(L"", arStyles[i]->type()))
-     //           {
-					//bDisplayed = false;
-     //               const std::wstring basedOnId = styles_map_.get(L"", arStyles[i]->type());
-     //               _Wostream << L"<w:basedOn w:val=\"" << basedOnId << "\"/>";
-     //           }
-				if (bDisplayed)
+				if (arStyles[i]->primary_format())
+				{
+					if (*arStyles[i]->primary_format())
+						_Wostream << L"<w:qFormat/>";
+					else
+						_Wostream << L"<w:semiHidden/>";
+
+				}
+				else if (bDisplayed)
 				{
 					_Wostream << L"<w:qFormat/>";
 				}
 
-				if (odf_reader::style_instance * next = arStyles[i]->next())
+				if (odf_reader::style_instance* next = arStyles[i]->next())
 				{
 				    const std::wstring nextId = styles_map_.get(next->name(), next->type());
 				    _Wostream << L"<w:next w:val=\"" << nextId << "\"/>";
@@ -1498,14 +1548,16 @@ void docx_conversion_context::process_styles()
 						_Wostream << L"<w:next w:val=\"" << curr_name_of_normal_style << "\"/>";
 					}
 				}
-                //else if (arStyles[i]->is_default())
-                //{
-                //    // self
-                //    _Wostream << L"<w:next w:val=\"" << id << "\"/>";
-                //}
+				if (odf_reader::style_instance* link = arStyles[i]->link())
+				{
+					const std::wstring linkId = styles_map_.get(link->name(), link->type());
+					_Wostream << L"<w:link w:val=\"" << linkId << "\"/>";
+				}
+
 
                 if (odf_reader::style_content * content = arStyles[i]->content())
                 {
+					set_rtl(false);
 					get_tabs_context().clear();
 					calc_tab_stops(arStyles[i].get(), get_tabs_context());					
 					get_styles_context().start_process_style(arStyles[i].get());
@@ -2033,7 +2085,8 @@ int docx_conversion_context::process_paragraph_style(_CP_OPT(std::wstring) style
 			root()->odf_context().styleContainer().style_by_name(style_name, odf_types::style_family::Paragraph, process_headers_footers_))
     {
 		double font_size = odf_reader::text_format_properties::process_font_size_impl(odf_types::font_size(odf_types::percent(100.0)), styleInst);
-		if (font_size > 0) current_fontSize.push_back(font_size);
+		if (font_size > 0) 
+			current_fontSize.push_back(font_size);
 		
 		process_page_break_after(styleInst);
 
@@ -2133,7 +2186,9 @@ int docx_conversion_context::process_paragraph_attr(odf_reader::text::paragraph_
             )
 		{
 			double font_size = odf_reader::text_format_properties::process_font_size_impl(odf_types::font_size(odf_types::percent(100.0)), styleInst);
-			if (font_size > 0) current_fontSize.push_back(font_size);
+			
+			if (font_size > 0) 
+				current_fontSize.push_back(font_size);
 			
 			_CP_OPT(int) outline_level = calc_outline_level(Attr->outline_level_, styleInst);
 			
@@ -2308,25 +2363,30 @@ int docx_conversion_context::process_paragraph_attr(odf_reader::text::paragraph_
 }
 
 
-void docx_conversion_context::process_page_break_after(const odf_reader::style_instance * styleInst)
+void docx_conversion_context::process_page_break_after(const odf_reader::style_instance * styleInstance)
 {
-    if (styleInst)
-    {
-        const odf_reader::style_instance * inst = styleInst;
-        while (inst)
-        {
-            if (inst->content() && inst->content()->get_style_paragraph_properties())
-            {
-                _CP_OPT(odf_types::fo_break) fo_break_val = inst->content()->get_style_paragraph_properties()->content_.fo_break_after_;
-				if (fo_break_val)
-                {
-					set_page_break_after(fo_break_val->get_type());
-					break;
-                }
-            }
-            inst = inst->parent();
-        }
-    }
+	if (!styleInstance) return;
+
+	std::map<std::wstring, int> usedStyles;
+	while (styleInstance)
+	{
+		std::wstring style_name = styleInstance->name();
+		if (usedStyles.find(style_name) != usedStyles.end())
+			break;
+
+		usedStyles.insert(std::make_pair(style_name, 0));
+
+		if (styleInstance->content() && styleInstance->content()->get_style_paragraph_properties())
+		{
+			_CP_OPT(odf_types::fo_break) fo_break_val = styleInstance->content()->get_style_paragraph_properties()->content_.fo_break_after_;
+			if (fo_break_val)
+			{
+				set_page_break_after(fo_break_val->get_type());
+				break;
+			}
+		}
+		styleInstance = styleInstance->parent();
+	}
 }
 void docx_conversion_context::serialize_list_properties(std::wostream & strm)
 {
@@ -2363,7 +2423,15 @@ void docx_conversion_context::add_delayed_element(odf_reader::office_element * E
 {
    delayed_elements_.push_back(Elm);    
 }
-
+double docx_conversion_context::get_current_fontSize()
+{ 
+	return current_fontSize.empty() ? 0 : current_fontSize.back(); 
+}
+void docx_conversion_context::pop_current_fontSize() 
+{ 
+	if (!current_fontSize.empty()) 
+		current_fontSize.pop_back(); 
+}
 void docx_conversion_context::docx_convert_delayed()
 {
 	if (delayed_elements_.empty()) return;
@@ -2548,7 +2616,7 @@ void docx_conversion_context::add_note_reference ()
 {
     if (current_process_note_ == footNote || current_process_note_ ==  endNote)
     {
-        add_element_to_run(_T(""));
+        add_element_to_run(L"");
         output_stream() << ((current_process_note_ == footNote) ? L"<w:footnoteRef />" : L"<w:endnoteRef />");
         finish_run();
         current_process_note_ = (NoteType) (current_process_note_ + 1); //add ref set

@@ -1,33 +1,36 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * Copyright (C) Ascensio System SIA, 2009-2026
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
- * version 3 as published by the Free Software Foundation. In accordance with
- * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
- * that Ascensio System SIA expressly excludes the warranty of non-infringement
- * of any third-party rights.
+ * version 3 as published by the Free Software Foundation, together with the
+ * additional terms provided in the LICENSE file.
  *
  * This program is distributed WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
- * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. For
+ * details, see the GNU AGPL at: https://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
- * street, Riga, Latvia, EU, LV-1050.
+ * You can contact Ascensio System SIA by email at info@onlyoffice.com
+ * or by postal mail at 20A-6 Ernesta Birznieka-Upisha Street, Riga,
+ * LV-1050, Latvia, European Union.
  *
- * The  interactive user interfaces in modified source and object code versions
- * of the Program must display Appropriate Legal Notices, as required under
+ * The interactive user interfaces in modified versions of the Program
+ * are required to display Appropriate Legal Notices in accordance with
  * Section 5 of the GNU AGPL version 3.
  *
- * Pursuant to Section 7(b) of the License you must retain the original Product
- * logo when distributing the program. Pursuant to Section 7(e) we decline to
- * grant you any rights under trademark law for use of our trademarks.
+ * No trademark rights are granted under this License.
  *
- * All the Product's GUI elements, including illustrations and icon sets, as
- * well as technical writing content are licensed under the terms of the
- * Creative Commons Attribution-ShareAlike 4.0 International. See the License
- * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ * All non-code elements of the Product, including illustrations,
+ * icon sets, and technical writing content, are licensed under the
+ * Creative Commons Attribution-ShareAlike 4.0 International License:
+ * https://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
+ * This license applies only to such non-code elements and does not
+ * modify or replace the licensing terms applicable to the Program's
+ * source code, which remains licensed under the GNU Affero General
+ * Public License v3.
+ *
+ * SPDX-License-Identifier: AGPL-3.0-only
  */
 
 #include "PdfAnnot.h"
@@ -46,7 +49,6 @@
 
 #include "../../DesktopEditor/common/Types.h"
 #include "../../DesktopEditor/common/StringExt.h"
-#include "../../DesktopEditor/xml/include/xmlutils.h"
 #include "../../DesktopEditor/fontengine/ApplicationFonts.h"
 #include "../../DesktopEditor/graphics/pro/Fonts.h"
 
@@ -1090,9 +1092,14 @@ void CAnnotWidget::SetFont(PDFDoc* pdfDoc, AcroFormField* pField, NSFonts::IFont
 	else
 		oFontRef.initRef(fontID.num, fontID.gen);
 
-	bool bBold = false, bItalic = false;
-	GetFontData(pdfDoc, pFontManager, pFontList, &oFontRef, m_sFontName, m_sActualFontName, bBold, bItalic);
-	oFontRef.free();
+	GetFontData(pdfDoc, pFontManager, pFontList, &oFontRef);
+
+	TFontEntry pEntry;
+	Ref nFontRef = oFontRef.getRef();
+	pFontList->GetFont(&nFontRef, &pEntry);
+
+	m_sFontName = U_TO_UTF8(pEntry.wsFontName);
+	m_sActualFontName = U_TO_UTF8(pEntry.wsActualFontName);
 
 	// 2 - Actual font
 	if (!m_sActualFontName.empty())
@@ -1102,10 +1109,12 @@ void CAnnotWidget::SetFont(PDFDoc* pdfDoc, AcroFormField* pField, NSFonts::IFont
 	if (!m_sFontKey.empty())
 		m_unFlags |= (1 << 4);
 
-	if (bBold)
+	if (pEntry.bBold)
 		m_unFontStyle |= (1 << 0);
-	if (bItalic)
+	if (pEntry.bItalic)
 		m_unFontStyle |= (1 << 1);
+
+	oFontRef.free();
 }
 void CAnnotWidget::SetButtonFont(PDFDoc* pdfDoc, AcroFormField* pField, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList)
 {
@@ -1117,8 +1126,16 @@ void CAnnotWidget::SetButtonFont(PDFDoc* pdfDoc, AcroFormField* pField, NSFonts:
 		return;
 	}
 
-	bool bBold = false, bItalic = false;
-	GetFontData(pdfDoc, pFontManager, pFontList, &oFontRef, m_sButtonFontName, m_sButtonFontName, bBold, bItalic);
+	GetFontData(pdfDoc, pFontManager, pFontList, &oFontRef);
+
+	TFontEntry pEntry;
+	Ref nFontRef = oFontRef.getRef();
+	pFontList->GetFont(&nFontRef, &pEntry);
+
+	m_sButtonFontName = U_TO_UTF8(pEntry.wsFontName);
+	if (!pEntry.wsActualFontName.empty())
+		m_sButtonFontName = U_TO_UTF8(pEntry.wsActualFontName);
+
 	if (!m_sButtonFontName.empty())
 		m_unFlags |= (1 << 19);
 
@@ -1854,7 +1871,7 @@ CAnnotFreeText::CAnnotFreeText(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex
 
 	if (oAnnot.dictLookup("RC", &oObj2)->isNull() && oAnnot.dictLookup("Contents", &oObj)->isString() && oObj.getString()->getLength())
 	{
-		m_arrRC = CAnnotMarkup::ReadRC(GetRCFromDS(m_sDS, &oObj, m_arrCFromDA));
+		m_arrRC = ReadRC(GetRCFromDS(m_sDS, &oObj, m_arrCFromDA));
 		if (m_arrRC.empty())
 			m_unFlags &= ~(1 << 3);
 		else
@@ -2296,16 +2313,22 @@ void CAnnotRedact::SetFont(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, 
 			continue;
 		}
 
-		std::string sFontName, sActualFontName;
-		bool bBold = false, bItalic = false;
-		std::wstring sFontPath = GetFontData(pdfDoc, pFontManager, pFontList, &oFontRef, m_sFontName, m_sActualFontName, bBold, bItalic);
-		oFontRef.free();
+		GetFontData(pdfDoc, pFontManager, pFontList, &oFontRef);
+
+		TFontEntry pEntry;
+		Ref nFontRef = oFontRef.getRef();
+		pFontList->GetFont(&nFontRef, &pEntry);
+
+		m_sFontName = U_TO_UTF8(pEntry.wsFontName);
+		m_sActualFontName = U_TO_UTF8(pEntry.wsActualFontName);
 
 		m_unFontStyle = 0;
-		if (bBold)
+		if (pEntry.bBold)
 			m_unFontStyle |= (1 << 0);
-		if (bItalic)
+		if (pEntry.bItalic)
 			m_unFontStyle |= (1 << 1);
+
+		oFontRef.free();
 	}
 
 	oFonts.free(); oAnnot.free();
@@ -2314,15 +2337,53 @@ void CAnnotRedact::SetFont(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, 
 //------------------------------------------------------------------------
 // Annots
 //------------------------------------------------------------------------
+namespace
+{
+BYTE* ReadWholeStream(Object* pStreamObj, int& nOutSize)
+{
+	nOutSize = 0;
 
+	if (!pStreamObj || !pStreamObj->isStream())
+		return NULL;
+
+	Stream* pStream = pStreamObj->getStream();
+	if (!pStream)
+		return NULL;
+
+	pStream->reset();
+
+	std::vector<BYTE> arrBuffer;
+	int c;
+	while ((c = pStream->getChar()) != EOF)
+		arrBuffer.push_back((BYTE)c);
+
+	pStream->close();
+
+	nOutSize = (int)arrBuffer.size();
+	if (nOutSize == 0)
+		return NULL;
+
+	BYTE* pResult = new BYTE[nOutSize];
+	memcpy(pResult, arrBuffer.data(), nOutSize);
+
+	return pResult;
+}
+} // namespace
 CAnnots::CAnnots(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList, int nStartPage, int nStartRefID)
 {
+	m_pRoles = NULL;
+	m_nRoles = 0;
+
 	Object oObj1, oObj2;
 	XRef* xref = pdfDoc->getXRef();
 	AcroForm* pAcroForms = pdfDoc->getCatalog()->getForm();
+	Object* oAcroForm = pAcroForms->getAcroFormObj();
+
+	CObjectGuard oMeta;
+	if (oAcroForm->dictLookup("ONLYOFFICE_FORMS_ROLES", oMeta.get())->isStream())
+		m_pRoles = ReadWholeStream(oMeta.get(), m_nRoles);
 
 	// Calculation order - CO
-	Object* oAcroForm = pAcroForms->getAcroFormObj();
 	if (oAcroForm->dictLookup("CO", &oObj1)->isArray())
 	{
 		for (int j = 0; j < oObj1.arrayGetLength(); ++j)
@@ -2421,6 +2482,8 @@ CAnnots::CAnnots(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontLi
 }
 CAnnots::~CAnnots()
 {
+	RELEASEARRAYOBJECTS(m_pRoles);
+
 	for (int i = 0; i < m_arrParents.size(); ++i)
 		RELEASEOBJECT(m_arrParents[i]);
 
@@ -2746,7 +2809,7 @@ CAnnotMarkup::CAnnotMarkup(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex, in
 	// std::cout << sRC << std::endl;
 	// if (oAnnot.dictLookup("RC", &oObj)->isStream())
 	// TODO streamGetBlock
-	m_arrRC = CAnnotMarkup::ReadRC(sRC);
+	m_arrRC = ReadRC(sRC);
 	if (m_arrRC.empty())
 		m_unFlags &= ~(1 << 3);
 	else
@@ -2783,169 +2846,9 @@ CAnnotMarkup::~CAnnotMarkup()
 	for (int i = 0; i < m_arrRC.size(); ++i)
 		RELEASEOBJECT(m_arrRC[i]);
 }
-void ReadFontData(const std::string& sData, CAnnotMarkup::CFontData* pFont)
-{
-	size_t nSemicolon = 0;
-	size_t nColon = sData.find(':');
-	while (nColon != std::string::npos && nColon > nSemicolon)
-	{
-		std::string sProperty = sData.substr(nSemicolon, nColon - nSemicolon);
-		nSemicolon = sData.find(';', nSemicolon);
-		nColon++;
-		std::string sValue = sData.substr(nColon, nSemicolon - nColon);
-		nColon = sData.find(':', nSemicolon);
-		nSemicolon++;
-
-		if (sProperty == "font-size")
-			pFont->dFontSise = std::stod(sValue);
-		else if (sProperty == "text-align")
-		{
-			// 0 start / left
-			if (sValue == "center" || sValue == "middle")
-				pFont->nAlign = 1;
-			else if (sValue == "right" || sValue == "end")
-				pFont->nAlign = 2;
-			else if (sValue == "justify")
-				pFont->nAlign = 3;
-		}
-		else if (sProperty == "color")
-		{
-			if (sValue[0] == '#')
-			{
-				sValue = sValue.substr(1);
-				BYTE nColor1 = 0, nColor2 = 0, nColor3 = 0;
-				if (sValue.length() == 6)
-					sscanf(sValue.c_str(), "%2hhx%2hhx%2hhx", &nColor1, &nColor2, &nColor3);
-				else if (sValue.length() == 3)
-				{
-					sscanf(sValue.c_str(), "%1hhx%1hhx%1hhx", &nColor1, &nColor2, &nColor3);
-					nColor1 *= 17;
-					nColor2 *= 17;
-					nColor3 *= 17;
-				}
-
-				pFont->dColor[0] = (double)nColor1 / 255.0;
-				pFont->dColor[1] = (double)nColor2 / 255.0;
-				pFont->dColor[2] = (double)nColor3 / 255.0;
-			}
-		}
-		else if (sProperty == "font-weight")
-		{
-			// 0 normal / 300 / 400 / 500
-			if (sValue == "normal" || sValue == "300" || sValue == "400" || sValue == "500")
-				pFont->unFontFlags &= ~(1 << 0);
-			else if (sValue == "bold" || sValue == "bolder" || sValue == "600" || sValue == "700" || sValue == "800" || sValue == "900")
-				pFont->unFontFlags |= (1 << 0);
-		}
-		else if (sProperty == "font-style")
-		{
-			// 0 normal
-			if (sValue == "normal")
-				pFont->unFontFlags &= ~(1 << 1);
-			else if (sValue == "italic" || sValue.find("oblique") != std::string::npos)
-				pFont->unFontFlags |= (1 << 1);
-		}
-		else if (sProperty == "font-family")
-			pFont->sFontFamily = sValue[0] == '\'' ? sValue.substr(1, sValue.length() - 2) : sValue;
-		else if (sProperty == "text-decoration")
-		{
-			if (sValue.find("line-through") != std::string::npos)
-				pFont->unFontFlags |= (1 << 3);
-			if (sValue.find("word") != std::string::npos || sValue.find("underline") != std::string::npos)
-				pFont->unFontFlags |= (1 << 4);
-			if (sValue.find("none") != std::string::npos)
-			{
-				pFont->unFontFlags &= ~(1 << 3);
-				pFont->unFontFlags &= ~(1 << 4);
-			}
-		}
-		else if (sProperty == "vertical-align")
-		{
-			pFont->unFontFlags |= (1 << 5);
-			pFont->dVAlign = std::stod(sValue);
-			if (pFont->dVAlign == 0 && sValue[0] == '-')
-				pFont->dVAlign = -0.01;
-		}
-		// font-stretch
-	}
-}
-std::vector<CAnnotMarkup::CFontData*> CAnnotMarkup::ReadRC(const std::string& sRC)
-{
-	std::vector<CAnnotMarkup::CFontData*> arrRC;
-
-	XmlUtils::CXmlLiteReader oLightReader;
-	if (sRC.empty() || !oLightReader.FromStringA(sRC) || !oLightReader.ReadNextNode() || oLightReader.GetNameA() != "body")
-		return arrRC;
-
-	CAnnotMarkup::CFontData oFontBase;
-	while (oLightReader.MoveToNextAttribute())
-	{
-		if (oLightReader.GetNameA() == "style")
-		{
-			ReadFontData(oLightReader.GetTextA(), &oFontBase);
-			break;
-		}
-	}
-	oLightReader.MoveToElement();
-
-	int nDepthP = oLightReader.GetDepth();
-	while (oLightReader.ReadNextSiblingNode2(nDepthP))
-	{
-		if (oLightReader.GetNameA() != "p")
-			continue;
-
-		bool bRTL = false;
-		while (oLightReader.MoveToNextAttribute())
-		{
-			if (oLightReader.GetNameA() == "dir" && oLightReader.GetTextA() == "rtl")
-			{
-				bRTL = true;
-				break;
-			}
-		}
-		oLightReader.MoveToElement();
-
-		int nDepthSpan = oLightReader.GetDepth();
-		if (oLightReader.IsEmptyNode() || !oLightReader.ReadNextSiblingNode2(nDepthSpan))
-			continue;
-
-		do
-		{
-			std::string sName = oLightReader.GetNameA();
-			if (sName == "span")
-			{
-				CAnnotMarkup::CFontData* pFont = new CAnnotMarkup::CFontData(oFontBase);
-				while (oLightReader.MoveToNextAttribute())
-				{
-					if (oLightReader.GetNameA() == "style")
-					{
-						ReadFontData(oLightReader.GetTextA(), pFont);
-						break;
-					}
-				}
-				oLightReader.MoveToElement();
-
-				if (bRTL)
-					pFont->unFontFlags |= (1 << 7);
-				pFont->sText = oLightReader.GetText2A();
-				arrRC.push_back(pFont);
-			}
-			else if (sName == "#text")
-			{
-				CAnnotMarkup::CFontData* pFont = new CAnnotMarkup::CFontData(oFontBase);
-				if (bRTL)
-					pFont->unFontFlags |= (1 << 7);
-				pFont->sText = oLightReader.GetTextA();
-				arrRC.push_back(pFont);
-			}
-		} while (oLightReader.ReadNextSiblingNode2(nDepthSpan));
-	}
-
-	return arrRC;
-}
 void CAnnotMarkup::SetFont(PDFDoc* pdfDoc, Object* oAnnotRef, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList)
 {
-	GetFreeTextFont(pdfDoc, pFontManager, pFontList, oAnnotRef, m_arrRC);
+	GetFreeTextFontsRC(pdfDoc, pFontManager, pFontList, oAnnotRef, m_arrRC);
 }
 
 //------------------------------------------------------------------------
@@ -3333,6 +3236,9 @@ void CAnnotAP::Clear()
 void CAnnotAP::Init(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList*  pFontList, int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex)
 {
 	Page* pPage = pdfDoc->getCatalog()->getPage(nPageIndex);
+	if (!pPage)
+		return;
+
 	PDFRectangle* pCropBox = pPage->getCropBox();
 	m_dCropX = pCropBox->x1;
 	m_dCropY = pCropBox->y1;
@@ -3352,12 +3258,16 @@ void CAnnotAP::Init(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFon
 	m_nWidth  += 2;
 	m_nHeight += 2;
 
+	if (m_nWidth <= 0 || m_nHeight <= 0)
+		return;
+
 	// Drawing on transparent canvas with specified background color
-	BYTE* pBgraData = new BYTE[m_nWidth * m_nHeight * 4];
+	const size_t nPixels = static_cast<size_t>(m_nWidth) * static_cast<size_t>(m_nHeight);
+	const size_t nBufSize = 4 * nPixels;
+	BYTE* pBgraData = new BYTE[nBufSize];
 	unsigned int nColor = (unsigned int)nBackgroundColor;
-	unsigned int nSize = (unsigned int)(m_nWidth * m_nHeight);
 	unsigned int* pTemp = (unsigned int*)pBgraData;
-	for (unsigned int i = 0; i < nSize; ++i)
+	for (unsigned int i = 0; i < nPixels; ++i)
 		*pTemp++ = nColor;
 
 	m_pFrame = new CBgraFrame();
@@ -3612,7 +3522,10 @@ void CAnnotAP::Draw(PDFDoc* pdfDoc, Object* oAP, int nRasterH, int nBackgroundCo
 }
 void CAnnotAP::WriteAppearance(unsigned int nColor, CAnnotAPView* pView)
 {
-	BYTE* pSubMatrix = new BYTE[m_nWidth * m_nHeight * 4];
+	const size_t nBufSize = 4 * static_cast<size_t>(m_nWidth) * static_cast<size_t>(m_nHeight);
+	BYTE* pSubMatrix = new(std::nothrow) BYTE[nBufSize];
+	if (!pSubMatrix)
+		return;
 	int p = 0;
 	unsigned int* pTemp = (unsigned int*)m_pFrame->get_Data();
 	unsigned int* pSubTemp = (unsigned int*)pSubMatrix;
@@ -3662,6 +3575,9 @@ void CAnnotAP::ToWASM(NSWasm::CData& oRes)
 }
 void CAnnots::ToWASM(NSWasm::CData& oRes)
 {
+	// Roles
+	oRes.WriteString(m_pRoles, m_nRoles);
+
 	// Calculation order - CO
 	oRes.AddInt(m_arrCO.size());
 	for (int i = 0; i < m_arrCO.size(); ++i)
@@ -4034,7 +3950,7 @@ void CAnnotMarkup::ToWASM(NSWasm::CData& oRes)
 				oRes.AddDouble(m_arrRC[i]->dVAlign);
 			if (m_arrRC[i]->unFontFlags & (1 << 6))
 				oRes.WriteString(m_arrRC[i]->sActualFont);
-			oRes.AddDouble(m_arrRC[i]->dFontSise);
+			oRes.AddDouble(m_arrRC[i]->dFontSize);
 			oRes.WriteDouble(m_arrRC[i]->dColor[0]);
 			oRes.WriteDouble(m_arrRC[i]->dColor[1]);
 			oRes.WriteDouble(m_arrRC[i]->dColor[2]);

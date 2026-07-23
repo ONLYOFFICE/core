@@ -1,33 +1,36 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * Copyright (C) Ascensio System SIA, 2009-2026
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
- * version 3 as published by the Free Software Foundation. In accordance with
- * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
- * that Ascensio System SIA expressly excludes the warranty of non-infringement
- * of any third-party rights.
+ * version 3 as published by the Free Software Foundation, together with the
+ * additional terms provided in the LICENSE file.
  *
  * This program is distributed WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
- * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. For
+ * details, see the GNU AGPL at: https://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
- * street, Riga, Latvia, EU, LV-1050.
+ * You can contact Ascensio System SIA by email at info@onlyoffice.com
+ * or by postal mail at 20A-6 Ernesta Birznieka-Upisha Street, Riga,
+ * LV-1050, Latvia, European Union.
  *
- * The  interactive user interfaces in modified source and object code versions
- * of the Program must display Appropriate Legal Notices, as required under
+ * The interactive user interfaces in modified versions of the Program
+ * are required to display Appropriate Legal Notices in accordance with
  * Section 5 of the GNU AGPL version 3.
  *
- * Pursuant to Section 7(b) of the License you must retain the original Product
- * logo when distributing the program. Pursuant to Section 7(e) we decline to
- * grant you any rights under trademark law for use of our trademarks.
+ * No trademark rights are granted under this License.
  *
- * All the Product's GUI elements, including illustrations and icon sets, as
- * well as technical writing content are licensed under the terms of the
- * Creative Commons Attribution-ShareAlike 4.0 International. See the License
- * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ * All non-code elements of the Product, including illustrations,
+ * icon sets, and technical writing content, are licensed under the
+ * Creative Commons Attribution-ShareAlike 4.0 International License:
+ * https://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
+ * This license applies only to such non-code elements and does not
+ * modify or replace the licensing terms applicable to the Program's
+ * source code, which remains licensed under the GNU Affero General
+ * Public License v3.
+ *
+ * SPDX-License-Identifier: AGPL-3.0-only
  */
 
 #include "SS.h"
@@ -47,6 +50,9 @@
 #include"../Biff_records/End.h"
 #include"../Biff_records/StartObject.h"
 #include"../Biff_records/EndObject.h"
+#include"../Biff_records/ShapePropsStream.h"
+
+#include"../../../../../OOXML/PPTXFormat/Logic/SpPr.h"
 
 namespace XLS
 {
@@ -245,10 +251,43 @@ const bool SS::saveContent(BinProcessor& proc)
 	proc.mandatory<Begin>();
 	if(m_Chart3DBarShape != nullptr)
 		proc.mandatory(*m_Chart3DBarShape);
+	/*
 	if(m_LineFormat != nullptr)
+	{
 		proc.mandatory(*m_LineFormat);
+		auto castedLine = static_cast<LineFormat*>(m_LineFormat.get());
+		castedLine->setChecksum(ShapePropsStreamChecksumData);
+	}
 	if(m_AreaFormat != nullptr)
+	{
 		proc.mandatory(*m_AreaFormat);
+		auto castedArea = static_cast<AreaFormat*>(m_AreaFormat.get());
+		castedArea->setChecksum(ShapePropsStreamChecksumData);
+	}*/
+	{
+		LineFormat line;
+		line.rgb.red = 0xFFFF;
+		line.rgb.green = 0xFFFF;
+		line.rgb.blue = 0xFFFF;
+		line.lns = 0;
+		line.we = 0;
+		line.icv = 9;
+		proc.mandatory(line);
+		AreaFormat area;
+		area.rgbFore.red = 0xFF;
+		area.rgbFore.green = 0x00;
+		area.rgbFore.blue = 0x00;
+		area.rgbBack.red = 0xFF;
+		area.rgbBack.green = 0xFF;
+		area.rgbBack.blue = 0xFF;
+		area.fls = 1;
+		area.fAuto = false;
+		area.icvFore = 10;
+		area.icvBack = 9;
+		proc.mandatory(area);
+	}
+
+
 	if(m_PieFormat != nullptr)
 		proc.mandatory(*m_PieFormat);
 	if(m_SerFmt != nullptr)
@@ -261,7 +300,12 @@ const bool SS::saveContent(BinProcessor& proc)
 		proc.mandatory(*m_AttachedLabel);
 	for(auto i : m_arSHAPEPROPS)
 		if(i != nullptr)
+		{
+			auto castedProp = static_cast<SHAPEPROPS*>(i.get());
+			auto propHeader = static_cast<ShapePropsStream*>(castedProp->m_ShapePropsStream.get());
+			propHeader->dwChecksum = 0x1E563DFF;
 			proc.mandatory(*i);
+		}
 	proc.mandatory<End>();
 	return true;
 }
@@ -368,6 +412,14 @@ int SS::serialize(std::wostream & _stream, int series_type, int indPt)
 	DataFormat		*series_data_format = dynamic_cast<DataFormat*>		(m_DataFormat.get());
 	SerFmt			*series_format		= dynamic_cast<SerFmt*>			(m_SerFmt.get());
 	MarkerFormat	*marker_format		= dynamic_cast<MarkerFormat*>	(m_MarkerFormat.get());
+	SHAPEPROPS		*SpProps			= nullptr;
+	ShapePropsStream *spStream			= nullptr;
+	if(!m_arSHAPEPROPS.empty())
+	{
+
+		SpProps =dynamic_cast<SHAPEPROPS*>	(m_arSHAPEPROPS.back().get());
+		spStream = static_cast<ShapePropsStream*>(SpProps->m_ShapePropsStream.get());
+	}
 
 	int ind = series_data_format->iss;
 
@@ -381,6 +433,26 @@ int SS::serialize(std::wostream & _stream, int series_type, int indPt)
 	if ((line) && (line->fAuto == false)) bLine = true;
 
 	bool bMarkerEx = false;
+	if(spStream)
+	{
+		XmlUtils::CXmlLiteReader reader;
+		auto spPos = spStream->xml_.find("<a:spPr");
+		if (spPos != std::string::npos)
+		spStream->xml_ = spStream->xml_.erase(0,spPos);
+		std::wstring buf(spStream->xml_.begin(), spStream->xml_.end());
+		reader.FromString(buf);
+		reader.ReadNextNode();
+		PPTX::Logic::SpPr props;
+		props.fromXML(reader);
+		NSBinPptxRW::CXmlWriter writer;
+		writer.m_lDocType = XMLWRITER_DOC_TYPE_CHART;
+		props.toXmlWriter(&writer);
+
+		_stream.write(writer.GetXmlString().c_str(), writer.GetXmlString().size());
+		bLine = false;
+		bArea = false;
+		indPt = 0;
+	}
 
 	CP_XML_WRITER(_stream)    
 	{

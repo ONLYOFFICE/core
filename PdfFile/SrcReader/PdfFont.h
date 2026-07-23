@@ -1,33 +1,36 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * Copyright (C) Ascensio System SIA, 2009-2026
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
- * version 3 as published by the Free Software Foundation. In accordance with
- * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
- * that Ascensio System SIA expressly excludes the warranty of non-infringement
- * of any third-party rights.
+ * version 3 as published by the Free Software Foundation, together with the
+ * additional terms provided in the LICENSE file.
  *
  * This program is distributed WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
- * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. For
+ * details, see the GNU AGPL at: https://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
- * street, Riga, Latvia, EU, LV-1050.
+ * You can contact Ascensio System SIA by email at info@onlyoffice.com
+ * or by postal mail at 20A-6 Ernesta Birznieka-Upisha Street, Riga,
+ * LV-1050, Latvia, European Union.
  *
- * The  interactive user interfaces in modified source and object code versions
- * of the Program must display Appropriate Legal Notices, as required under
+ * The interactive user interfaces in modified versions of the Program
+ * are required to display Appropriate Legal Notices in accordance with
  * Section 5 of the GNU AGPL version 3.
  *
- * Pursuant to Section 7(b) of the License you must retain the original Product
- * logo when distributing the program. Pursuant to Section 7(e) we decline to
- * grant you any rights under trademark law for use of our trademarks.
+ * No trademark rights are granted under this License.
  *
- * All the Product's GUI elements, including illustrations and icon sets, as
- * well as technical writing content are licensed under the terms of the
- * Creative Commons Attribution-ShareAlike 4.0 International. See the License
- * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ * All non-code elements of the Product, including illustrations,
+ * icon sets, and technical writing content, are licensed under the
+ * Creative Commons Attribution-ShareAlike 4.0 International License:
+ * https://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
+ * This license applies only to such non-code elements and does not
+ * modify or replace the licensing terms applicable to the Program's
+ * source code, which remains licensed under the GNU Affero General
+ * Public License v3.
+ *
+ * SPDX-License-Identifier: AGPL-3.0-only
  */
 #ifndef _PDF_READER_FONT_H
 #define _PDF_READER_FONT_H
@@ -35,24 +38,55 @@
 #include <vector>
 #include <string>
 #include <map>
+#include <functional>
 
 #include "../lib/xpdf/PDFDoc.h"
 #include "../lib/xpdf/AcroForm.h"
 
 #include "../../DesktopEditor/graphics/pro/Fonts.h"
-
-#include "RendererOutputDev.h"
-#include "PdfAnnot.h"
+#include "../../DesktopEditor/graphics/TemporaryCS.h"
 
 namespace PdfReader
 {
-struct CAnnotFontInfo
+struct TFontEntry
 {
-	std::wstring wsFontName;
-	std::wstring wsFontPath;
+	std::wstring wsFilePath;     // Path to font on disk
+	std::wstring wsFontName;     // Font name as written in PDF (branch for cases when font name is not specified in font itself)
+	int*         pCodeToGID;     // Code to glyph number in font table
+	int*         pCodeToUnicode; // Code to unicode value table
+	unsigned int unLenGID;
+	unsigned int unLenUnicode;
+	bool         bAvailable;     // Is font available. Made for multithreading
+	bool         bLoad = true;
+	bool         bFontSubstitution = false;
+	bool         bIsIdentity = false;
+	double       dStretch = 1.0;
+
 	std::wstring wsActualFontName;
 	bool bBold   = false;
 	bool bItalic = false;
+
+};
+
+class CPdfFontList
+{
+public:
+	CPdfFontList();
+	~CPdfFontList();
+	bool Find(Ref oRef, TFontEntry* pEntry);
+	bool Find2(Ref oRef, TFontEntry** ppEntry);
+	void Remove(Ref oRef);
+	TFontEntry* Add(Ref oRef, const std::wstring& wsFileName, int* pCodeToGID, int* pCodeToUnicode, unsigned int unLenGID, unsigned int unLenUnicode);
+	void Clear();
+	bool GetFont(Ref* pRef, TFontEntry* pEntry);
+	const std::map<Ref, TFontEntry*>& GetFonts();
+private:
+	TFontEntry* Lookup(Ref& oRef);
+	void Add(Ref& oRef, TFontEntry* pFontEntry);
+
+private:
+	std::map<Ref, TFontEntry*>          m_oFontMap;
+	NSCriticalSection::CRITICAL_SECTION m_oCS; // Critical section
 };
 struct CType3FontMetrics
 {
@@ -81,21 +115,60 @@ struct CType3FontMetrics
 		return dUnitsPerEm * 0.5;
 	}
 };
+struct CFontData
+{
+	enum FontFlags : unsigned int
+	{
+		eFlagBold      = 1 << 0,
+		eFlagItalic    = 1 << 1,
+		eFlagStrike    = 1 << 3,
+		eFlagUnderline = 1 << 4,
+		eFlagVAlign    = 1 << 5,
+		eFlagAFont     = 1 << 6,
+		eFlagRTL       = 1 << 7,
+	};
 
+	bool bFind;
+	BYTE nAlign;
+	unsigned int unFontFlags; // 0 Bold, 1 Italic, 3 strikethrough, 4 underline, 5 vertical-align, 6 actual font, 7 RTL
+	double dFontSize;
+	double dVAlign;
+	double dColor[3];
+	std::string sFontFamily;
+	std::string sActualFont;
+	std::string sText;
+
+	CFontData() : bFind(false), nAlign(0), unFontFlags(4), dFontSize(10), dVAlign(0), dColor{0, 0, 0} {}
+	CFontData(const CFontData& oFont) : bFind(oFont.bFind), nAlign(oFont.nAlign), unFontFlags(oFont.unFontFlags), dFontSize(oFont.dFontSize), dVAlign(oFont.dVAlign),
+		dColor{oFont.dColor[0], oFont.dColor[1], oFont.dColor[2]}, sFontFamily(oFont.sFontFamily), sActualFont(oFont.sActualFont), sText(oFont.sText) {}
+};
+struct SFontVisitContext
+{
+	Dict*       pFontDict;
+	Object*     pFontRefNF;
+	const char* sFontKey;
+};
+
+std::vector<CFontData*> ReadRC(const std::string& sRC);
 std::string GetRCFromDS(const std::string& sDS, Object* pContents, const std::vector<double>& arrCFromDA);
 bool IsNeedCMap(PDFDoc* pDoc);
 bool IsBaseFont(const std::wstring& wsName);
-std::map<std::wstring, std::wstring> GetAllFonts(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList* pFontList, bool bIsNeedCMap);
-std::wstring GetFontData(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList, Object* oFontRef, std::string& sFontName, std::string& sActualFontName, bool& bBold, bool& bItalic, bool bIsNeedCMap = false);
+std::map<std::wstring, std::wstring> GetAllFonts(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList* pFontList);
+void GetFontData(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList, Object* oFontRef);
 bool GetFontFromAP(PDFDoc* pdfDoc, AcroFormField* pField, Object* oFontRef, std::string& sFontKey);
-std::vector<CAnnotFontInfo> GetAnnotFontInfos(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList* pFontList, Object* oAnnotRef);
-std::map<std::wstring, std::wstring> GetFreeTextFont(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList* pFontList, Object* oAnnotRef, std::vector<CAnnotMarkup::CFontData*>& arrRC);
+std::vector<Ref> GetFreeTextFonts(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList* pFontList, Object* oAnnotRef);
+std::map<std::wstring, std::wstring> GetFreeTextFontsRC(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList* pFontList, Object* oAnnotRef, std::vector<CFontData*>& arrRC);
 bool FindFonts(Object* oStream, int nDepth, Object* oResFonts);
-int CollectFontWidths(GfxFont* gfxFont, Dict* pFontDict, std::map<unsigned int, unsigned int>& mGIDToWidth);
-double CheckFontStylePDF(std::wstring& sName, bool& bBold, bool& bItalic);
-bool EraseSubsetTag(std::wstring& sFontName);
+int CollectFontWidths(Dict* pFontDict, std::map<unsigned int, unsigned int>& mGIDToWidth);
+
+NSFonts::CFontInfo* GetFontByParams(XRef* pXref, NSFonts::IFontManager* pFontManager, GfxFont* pFont, std::wstring& wsFontBaseName, double& dStretch);
+void GetFont(XRef* pXref, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList, GfxFont* pFont, std::wstring& wsFileName, std::wstring& wsFontName, bool bLoad = true);
 
 CType3FontMetrics* BuildType3FontMetrics(XRef* pXref, GfxFont* pFont);
+
+using FFontVisitor = std::function<bool(const SFontVisitContext&)>;
+bool ScanResourceFonts(Dict* pResources, int nDepth, std::vector<int>& arrUniqueResources, const FFontVisitor& fnVisit);
+bool ScanAPFonts(Object* pAnnotOrWidget, std::vector<int>& arrUniqueResources, const FFontVisitor& fnVisit);
 }
 
 #endif // _PDF_READER_FONT_H

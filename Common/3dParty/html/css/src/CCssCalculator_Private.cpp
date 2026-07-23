@@ -525,12 +525,12 @@ namespace NSCSS
 		m_mDefaultStyleData[L"ul"] = new CElement(L"ul", {{L"margin-top", L"100tw"},
 		                                                  {L"margin-bottom", L"100tw"}});
 		m_mDefaultStyleData[L"textarea"] = new CElement(L"textarea", {{L"border", L"1px solid black"}});
+		m_mDefaultStyleData[L"th"] = new CElement(L"b", {{L"font-weight", L"bold"}});
 	}
 
 	CCssCalculator_Private::CCssCalculator_Private()
 		: m_nDpi(96), m_nCountNodes(0), m_sEncoding(L"UTF-8")
-	{
-	}
+	{}
 
 	CCssCalculator_Private::~CCssCalculator_Private()
 	{}
@@ -661,8 +661,10 @@ namespace NSCSS
 
 		for (std::vector<CNode>::const_reverse_iterator oNode = arSelectors.rbegin() + ((0 != unEnd) ? (arSelectors.size() - unEnd) : 0); oNode != arSelectors.rend() - unStart; ++oNode)
 		{
-			if (!oNode->m_wsName.empty())
-				arNodes.push_back(oNode->m_wsName);
+
+			if (!oNode->m_wsId.empty())
+				arNodes.push_back(L'#' + oNode->m_wsId);
+
 
 			if (!oNode->m_wsClass.empty())
 			{
@@ -678,8 +680,9 @@ namespace NSCSS
 					arNodes.push_back(L'.' + oNode->m_wsClass);
 			}
 
-			if (!oNode->m_wsId.empty())
-				arNodes.push_back(L'#' + oNode->m_wsId);
+			if (!oNode->m_wsName.empty())
+				arNodes.push_back(oNode->m_wsName);
+
 		}
 
 		return arNodes;
@@ -690,7 +693,7 @@ namespace NSCSS
 		if (arNextNodes.empty())
 			return;
 
-		const std::vector<CElement*> arTempPrev = pElement->GetPrevElements(arNextNodes.cbegin(), arNextNodes.cend());
+		const std::vector<CElement*> arTempPrev = pElement->GetPrevElements(arNextNodes.crbegin(), arNextNodes.crend());
 		const std::vector<CElement*> arTempKins = pElement->GetNextOfKin(wsName, arClasses);
 
 		if (!arTempPrev.empty())
@@ -740,9 +743,9 @@ namespace NSCSS
 		std::wstring wsName, wsClasses, wsId;
 		std::vector<std::wstring> arClasses;
 
-		if (!arNodes.empty() && arNodes.back()[0] == L'#')
+		if (!arNodes.empty())
 		{
-			wsId = arNodes.back();
+			wsName = arNodes.back();
 			arNodes.pop_back();
 		}
 
@@ -753,9 +756,10 @@ namespace NSCSS
 			arNodes.pop_back();
 		}
 
-		if (!arNodes.empty())
+
+		if (!arNodes.empty() && arNodes.back()[0] == L'#')
 		{
-			wsName = arNodes.back();
+			wsId = arNodes.back();
 			arNodes.pop_back();
 		}
 

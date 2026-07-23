@@ -1,3 +1,38 @@
+/*
+ * Copyright (C) Ascensio System SIA, 2009-2026
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation, together with the
+ * additional terms provided in the LICENSE file.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. For
+ * details, see the GNU AGPL at: https://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA by email at info@onlyoffice.com
+ * or by postal mail at 20A-6 Ernesta Birznieka-Upisha Street, Riga,
+ * LV-1050, Latvia, European Union.
+ *
+ * The interactive user interfaces in modified versions of the Program
+ * are required to display Appropriate Legal Notices in accordance with
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * No trademark rights are granted under this License.
+ *
+ * All non-code elements of the Product, including illustrations,
+ * icon sets, and technical writing content, are licensed under the
+ * Creative Commons Attribution-ShareAlike 4.0 International License:
+ * https://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ * This license applies only to such non-code elements and does not
+ * modify or replace the licensing terms applicable to the Program's
+ * source code, which remains licensed under the GNU Affero General
+ * Public License v3.
+ *
+ * SPDX-License-Identifier: AGPL-3.0-only
+ */
+
 #include "MDWriter.h"
 
 #include <cwctype>
@@ -7,6 +42,8 @@
 
 namespace HTML
 {
+#define MD_BREAK_LINE L"  \n"
+
 CMDWriter::CMDWriter(const TMarkdownParameters& oMDParametrs)
 	: m_oMDParametrs(oMDParametrs)
 {
@@ -15,9 +52,7 @@ CMDWriter::CMDWriter(const TMarkdownParameters& oMDParametrs)
 }
 
 void CMDWriter::Begin(const std::wstring& wsDst)
-{
-
-}
+{}
 
 void CMDWriter::End(const std::wstring& wsDst)
 {
@@ -26,6 +61,14 @@ void CMDWriter::End(const std::wstring& wsDst)
 	if (!oDocument.CreateFileW(wsDst))
 		return;
 
+	if (0 != m_oMetadata.GetCurSize())
+	{
+		oDocument.WriteStringUTF8(L"---");
+		oDocument.WriteStringUTF8(MD_BREAK_LINE);
+		oDocument.WriteStringUTF8(m_oMetadata.GetData());
+		oDocument.WriteStringUTF8(L"---");
+		oDocument.WriteStringUTF8(MD_BREAK_LINE);
+	}
 	oDocument.WriteStringUTF8(m_oDocument.GetData());
 	oDocument.CloseFile();
 }
@@ -46,6 +89,77 @@ inline void ReplaceSpaces(std::wstring& wsValue)
 
 		itBegin = std::find_if(itBegin + 1, wsValue.cend(), [](wchar_t wchValue){ return std::iswspace(wchValue) && 0xa0 != wchValue; });
 	}
+}
+
+void ReplaceSpecialCharsInEdges(std::wstring& wsText)
+{
+	// Hexadecimal codes of the characters being replaced
+	const wchar_t SP  {0x20};    // space
+	const wchar_t NBSP{0xA0};    // non-breaking space
+	const wchar_t ENSP{0x2002};  // en space
+	const wchar_t EMSP{0x2003};  // em space
+
+	// Corresponding HTML sequences
+	const std::wstring NBSP_REP{L"&nbsp;"};
+	const std::wstring ENSP_REP{L"&ensp;"};
+	const std::wstring EMSP_REP{L"&emsp;"};
+
+	auto is_special = [&](wchar_t c) -> bool {
+		return c == SP || c == NBSP || c == ENSP || c == EMSP;
+	};
+
+	size_t unFirstNormal{0};
+	while (unFirstNormal < wsText.size() && is_special(wsText[unFirstNormal]))
+		++unFirstNormal;
+
+	if (unFirstNormal == wsText.size())
+	{
+		std::wstring wsResult;
+		wsResult.reserve(wsText.size() * 6);  // each character will be replaced by 6
+		for (wchar_t c : wsText)
+		{
+			if (c == SP || c == NBSP) wsResult.append(NBSP_REP);
+			else if (c == ENSP)       wsResult.append(ENSP_REP);
+			else if (c == EMSP)       wsResult.append(EMSP_REP);
+			else                      wsResult.push_back(c);
+		}
+		wsText = std::move(wsResult);
+		return;
+	}
+
+	size_t unLastNormal{wsText.size() - 1};
+	while (unLastNormal > unFirstNormal && is_special(wsText[unLastNormal]))
+		--unLastNormal;
+
+	const size_t unLeftCount {unFirstNormal};
+	const size_t unRightCount{wsText.size() - 1 - unLastNormal};
+
+	const size_t unNormalLen{unLastNormal - unFirstNormal + 1};
+	const size_t unNewLen   {unNormalLen + unLeftCount * 6 + unRightCount * 6};
+
+	std::wstring wsResult;
+	wsResult.reserve(unNewLen);
+
+	for (size_t i = 0; i < unLeftCount; ++i)
+	{
+		wchar_t c = wsText[i];
+		if (c == SP || c == NBSP) wsResult.append(NBSP_REP);
+		else if (c == ENSP)       wsResult.append(ENSP_REP);
+		else if (c == EMSP)       wsResult.append(EMSP_REP);
+	}
+
+	for (size_t i = unFirstNormal; i <= unLastNormal; ++i)
+		wsResult.push_back(wsText[i]);
+
+	for (size_t i = unLastNormal + 1; i < wsText.size(); ++i)
+	{
+		wchar_t c = wsText[i];
+		if (c == SP || c == NBSP) wsResult.append(NBSP_REP);
+		else if (c == ENSP)       wsResult.append(ENSP_REP);
+		else if (c == EMSP)       wsResult.append(EMSP_REP);
+	}
+
+	wsText = std::move(wsResult);
 }
 
 bool CMDWriter::WriteText(std::wstring wsText, const std::vector<NSCSS::CNode>& arSelectors)
@@ -90,44 +204,51 @@ bool CMDWriter::WriteText(std::wstring wsText, const std::vector<NSCSS::CNode>& 
 			WriteString(L"> ", true);
 	}
 
+	const bool bOnlySpaces{wsText.end() == std::find_if_not(wsText.begin(), wsText.end(), [](wchar_t wchChar){ return iswspace(wchChar);})};
+
 	if (!bPreformatted && !InCode())
-		ReplaceSpaces(wsText);
-
-	bool bNeedBold{false}, bNeedItalic{false}, bNeedStrike{false};
-
-	if (nullptr != pCompiledStyle)
 	{
-		if (!IsBold() && pCompiledStyle->m_oFont.Bold())
+		ReplaceSpaces(wsText);
+		ReplaceSpecialCharsInEdges(wsText);
+	}
+
+	bool bNeedBold  {false},
+		 bNeedItalic{false},
+		 bNeedStrike{false};
+
+	if (nullptr != pCompiledStyle && !bOnlySpaces)
+	{
+		if (pCompiledStyle->m_oFont.Bold())
 			bNeedBold = true;
 
-		if (!IsItalic() && pCompiledStyle->m_oFont.Italic())
+		if (pCompiledStyle->m_oFont.Italic())
 			bNeedItalic = true;
 
-		if (!IsStrike() && pCompiledStyle->m_oText.LineThrough())
+		if (pCompiledStyle->m_oText.LineThrough())
 			bNeedStrike = true;
 	}
 
 	if (bNeedBold)
-		WriteString(L"**");
+		WriteOpenSpecialString(L"**");
 
 	if (bNeedItalic)
-		WriteString(L"*");
+		WriteOpenSpecialString(L"*");
 
 	if (bNeedStrike)
-		WriteString(L"~~");
+		WriteOpenSpecialString(L"~~");
 
 	ApplyAlternativeTags(pCompiledStyle);
 	WriteString(wsText);
 	ApplyAlternativeTags(pCompiledStyle, true);
 
 	if (bNeedBold)
-		WriteString(L"**");
+		WriteCloseSpecialString(L"**");
 
 	if (bNeedItalic)
-		WriteString(L"*");
+		WriteCloseSpecialString(L"*");
 
 	if (bNeedStrike)
-		WriteString(L"~~");
+		WriteCloseSpecialString(L"~~");
 
 	if (L'\n' == wsText.back())
 		m_arStates.top().m_bNeedBreakLine = false;
@@ -137,6 +258,14 @@ bool CMDWriter::WriteText(std::wstring wsText, const std::vector<NSCSS::CNode>& 
 
 void CMDWriter::WriteEmptyParagraph(bool bVahish, bool bInP)
 {}
+
+void CMDWriter::WriteMetadata(const std::wstring& wsName, const std::wstring& wsValue)
+{
+	if (wsName.empty() || wsValue.empty())
+		return;
+
+	m_oMetadata.WriteString(wsName + L": " + wsValue + MD_BREAK_LINE);
+}
 
 void CMDWriter::PageBreak()
 {}
@@ -177,22 +306,32 @@ void CMDWriter::WriteString(const std::wstring& wsString, bool bSpecialString)
 		m_arStates.top().m_bEmptyLine = wsString.empty();
 
 	if (!bSpecialString)
+	{
+		if (!m_arStates.top().m_oSpecialString.m_wsLastSpecialString.empty() &&
+		    m_arStates.top().m_oSpecialString.m_bClosed)
+			m_arStates.top().m_oSpecialString.m_wsLastSpecialString.clear();
+
 		m_arStates.top().m_bNeedBreakLine = true;
+	}
 }
 
 void CMDWriter::WriteOpenSpecialString(const std::wstring& wsString)
 {
-	if (m_arStates.top().m_wsLastSpecialString == wsString)
+	if (!m_arStates.top().m_oSpecialString.m_wsLastSpecialString.empty() &&
+	    (m_arStates.top().m_oSpecialString.m_wsLastSpecialString == wsString ||
+	     (L'*' == m_arStates.top().m_oSpecialString.m_wsLastSpecialString.front() && L'*' == wsString.front())))
 		GetCurrentDocument()->WriteString(L" ");
 
-	m_arStates.top().m_wsLastSpecialString.clear();
+	m_arStates.top().m_oSpecialString.m_wsLastSpecialString.clear();
+	m_arStates.top().m_oSpecialString.m_bClosed = false;
 
 	WriteString(wsString, true);
 }
 
 void CMDWriter::WriteCloseSpecialString(const std::wstring& wsString)
 {
-	m_arStates.top().m_wsLastSpecialString = wsString;
+	m_arStates.top().m_oSpecialString.m_wsLastSpecialString = wsString;
+		m_arStates.top().m_oSpecialString.m_bClosed = true;
 
 	WriteString(wsString, true);
 }
@@ -200,11 +339,6 @@ void CMDWriter::WriteCloseSpecialString(const std::wstring& wsString)
 XmlString* CMDWriter::GetCurrentDocument() const
 {
 	return m_arStates.top().m_pCurrentDocument;
-}
-
-bool CMDWriter::SupportNestedTables() const
-{
-	return false;
 }
 
 void CMDWriter::WriteBreakLine(bool bNeedChecked)
@@ -216,6 +350,8 @@ void CMDWriter::WriteBreakLine(bool bNeedChecked)
 	{
 		if (m_oMDParametrs.m_bUseAlternativeHTMLTags)
 			WriteString(L"</br>");
+		else
+			WriteString(L" ");
 
 		m_arStates.top().m_bNeedBreakLine = false;
 		return;
@@ -227,56 +363,10 @@ void CMDWriter::WriteBreakLine(bool bNeedChecked)
 			WriteString(L"> ", true);
 	}
 
-	GetCurrentDocument()->WriteString(L"  \n");
+	GetCurrentDocument()->WriteString(MD_BREAK_LINE);
 
 	m_arStates.top().m_bEmptyLine = true;
 	m_arStates.top().m_bNeedBreakLine = false;
-	m_arStates.top().m_wsLastSpecialString.clear();
-}
-
-void CMDWriter::EnteredBold()
-{
-	m_arStates.top().m_bBold = true;
-}
-
-void CMDWriter::OutBold()
-{
-	m_arStates.top().m_bBold = false;
-}
-
-bool CMDWriter::IsBold()
-{
-	return m_arStates.top().m_bBold;
-}
-
-void CMDWriter::EnteredItalic()
-{
-	m_arStates.top().m_bItalic = true;
-}
-
-void CMDWriter::OutItalic()
-{
-	m_arStates.top().m_bItalic = false;
-}
-
-bool CMDWriter::IsItalic()
-{
-	return m_arStates.top().m_bItalic;
-}
-
-void CMDWriter::EnteredStrike()
-{
-	m_arStates.top().m_bStrike = true;
-}
-
-void CMDWriter::OutStrike()
-{
-	m_arStates.top().m_bStrike = false;
-}
-
-bool CMDWriter::IsStrike()
-{
-	return m_arStates.top().m_bStrike;
 }
 
 void CMDWriter::EnteredBlockquote()

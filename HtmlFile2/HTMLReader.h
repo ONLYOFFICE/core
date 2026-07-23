@@ -1,7 +1,40 @@
+/*
+ * Copyright (C) Ascensio System SIA, 2009-2026
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation, together with the
+ * additional terms provided in the LICENSE file.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. For
+ * details, see the GNU AGPL at: https://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA by email at info@onlyoffice.com
+ * or by postal mail at 20A-6 Ernesta Birznieka-Upisha Street, Riga,
+ * LV-1050, Latvia, European Union.
+ *
+ * The interactive user interfaces in modified versions of the Program
+ * are required to display Appropriate Legal Notices in accordance with
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * No trademark rights are granted under this License.
+ *
+ * All non-code elements of the Product, including illustrations,
+ * icon sets, and technical writing content, are licensed under the
+ * Creative Commons Attribution-ShareAlike 4.0 International License:
+ * https://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ * This license applies only to such non-code elements and does not
+ * modify or replace the licensing terms applicable to the Program's
+ * source code, which remains licensed under the GNU Affero General
+ * Public License v3.
+ *
+ * SPDX-License-Identifier: AGPL-3.0-only
+ */
+
 #ifndef HTMLREADER_H
 #define HTMLREADER_H
-
-#include <unordered_map>
 
 #include "../Common/3dParty/html/css/src/CCssCalculator.h"
 #include "../DesktopEditor/xml/include/xmlutils.h"
@@ -13,11 +46,12 @@
 #include "Tags/HTMLTags.h"
 #include "Table.h"
 
+#include <set>
+
 namespace HTML
 {
 class CHTMLReader
 {
-	XmlUtils::CXmlLiteReader m_oLightReader;   // SAX Reader
 	NSCSS::CCssCalculator    m_oCSSCalculator; // CSS calculator
 
 	bool m_bIsTempDirOwner;
@@ -29,7 +63,11 @@ class CHTMLReader
 
 	IWriter *m_pWriter;
 
-	std::unordered_map<UINT, std::shared_ptr<ITag>> m_mTags;
+	CTableElement* m_pTableElement; // Table Converter
+
+	std::set<std::wstring> m_arStopTags;
+
+	std::map<int, std::shared_ptr<ITag>> m_mTags;
 public:
 	CHTMLReader();
 	~CHTMLReader();
@@ -52,10 +90,10 @@ public:
 	NSCSS::CCssCalculator* GetCSSCalculator();
 private:
 	void Clear();
-	void InitOOXMLTags(THTMLParameters* pParametrs = nullptr);
-	void InitMDTags(TMarkdownParameters* pParametrs = nullptr);
+	bool InitOOXMLTags(THTMLParameters* pParametrs = nullptr);
+	bool InitMDTags(TMarkdownParameters* pParametrs = nullptr);
 
-	bool IsHTML();
+	bool IsHTML(XmlUtils::CXmlLiteReader& oReader);
 
 	typedef std::function<bool(const std::wstring&, XmlUtils::CXmlLiteReader&)> Convert_Func;
 
@@ -64,29 +102,29 @@ private:
 
 	bool Convert(const std::wstring& wsPath, Convert_Func Convertation);
 
-	void ReadStyle();
-	void ReadStyle2();
-	void ReadStyleFromNetwork();
+	void ReadStyle(XmlUtils::CXmlLiteReader& oReader);
+	void ReadStyle2(XmlUtils::CXmlLiteReader& oReader);
+	void ReadStyleFromNetwork(XmlUtils::CXmlLiteReader& oReader);
 
-	void ReadDocument();
-	void ReadHead();
-	void ReadBody();
+	void ReadDocument(XmlUtils::CXmlLiteReader& oReader);
+	void ReadHead(XmlUtils::CXmlLiteReader& oReader);
+	void ReadBody(XmlUtils::CXmlLiteReader& oReader);
+	void ReadMeta(XmlUtils::CXmlLiteReader& oReader);
 
-	bool ReadStream(std::vector<NSCSS::CNode>& arSelectors, bool bInsertEmptyP = false);
-	bool ReadInside(std::vector<NSCSS::CNode>& arSelectors);
+	bool ReadStream(XmlUtils::CXmlLiteReader& oReader, std::vector<NSCSS::CNode>& arSelectors, bool bInsertEmptyP = false);
+	bool ReadInside(XmlUtils::CXmlLiteReader& oReader, std::vector<NSCSS::CNode>& arSelectors);
 
-	bool ReadText(std::vector<NSCSS::CNode>& arSelectors);
+	bool ReadText(XmlUtils::CXmlLiteReader& oReader, std::vector<NSCSS::CNode>& arSelectors);
 
-	bool ReadSVG(const std::vector<NSCSS::CNode>& arSelectors);
-	bool ReadEmptyTag(UINT unTag, const std::vector<NSCSS::CNode>& arSelectors);
-	bool ReadDefaultTag(UINT unTag, std::vector<NSCSS::CNode>& arSelectors);
+	bool ReadTable(XmlUtils::CXmlLiteReader& oReader, std::vector<NSCSS::CNode>& arSelectors);
 
-	bool ReadTable(std::vector<NSCSS::CNode>& arSelectors);
-	void ReadTableCaption(CStorageTable& oTable, std::vector<NSCSS::CNode>& arSelectors);
-	void ReadTableRows(CStorageTable& oTable, std::vector<NSCSS::CNode>& arSelectors, ERowParseMode eMode);
-	void ReadTableColspan(CStorageTable& oTable);
+	bool ReadEmptyTag(XmlUtils::CXmlLiteReader& oReader, std::vector<NSCSS::CNode>& arSelectors, std::shared_ptr<ITag> pTag);
+	bool ReadTag(XmlUtils::CXmlLiteReader& oReader, std::vector<NSCSS::CNode>& arSelectors, std::shared_ptr<ITag> pTag);
 
-	void GetSubClass(std::vector<NSCSS::CNode>& arSelectors);
+	std::shared_ptr<ITag> GetTag(int nTag);
+
+	void AddStopTag(const std::wstring& wsTag);
+	void ClearStopTags();
 };
 }
 

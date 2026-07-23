@@ -1,33 +1,36 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * Copyright (C) Ascensio System SIA, 2009-2026
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
- * version 3 as published by the Free Software Foundation. In accordance with
- * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
- * that Ascensio System SIA expressly excludes the warranty of non-infringement
- * of any third-party rights.
+ * version 3 as published by the Free Software Foundation, together with the
+ * additional terms provided in the LICENSE file.
  *
  * This program is distributed WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
- * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. For
+ * details, see the GNU AGPL at: https://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
- * street, Riga, Latvia, EU, LV-1050.
+ * You can contact Ascensio System SIA by email at info@onlyoffice.com
+ * or by postal mail at 20A-6 Ernesta Birznieka-Upisha Street, Riga,
+ * LV-1050, Latvia, European Union.
  *
- * The  interactive user interfaces in modified source and object code versions
- * of the Program must display Appropriate Legal Notices, as required under
+ * The interactive user interfaces in modified versions of the Program
+ * are required to display Appropriate Legal Notices in accordance with
  * Section 5 of the GNU AGPL version 3.
  *
- * Pursuant to Section 7(b) of the License you must retain the original Product
- * logo when distributing the program. Pursuant to Section 7(e) we decline to
- * grant you any rights under trademark law for use of our trademarks.
+ * No trademark rights are granted under this License.
  *
- * All the Product's GUI elements, including illustrations and icon sets, as
- * well as technical writing content are licensed under the terms of the
- * Creative Commons Attribution-ShareAlike 4.0 International. See the License
- * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ * All non-code elements of the Product, including illustrations,
+ * icon sets, and technical writing content, are licensed under the
+ * Creative Commons Attribution-ShareAlike 4.0 International License:
+ * https://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
+ * This license applies only to such non-code elements and does not
+ * modify or replace the licensing terms applicable to the Program's
+ * source code, which remains licensed under the GNU Affero General
+ * Public License v3.
+ *
+ * SPDX-License-Identifier: AGPL-3.0-only
  */
 #include "RdRichData.h"
 
@@ -46,6 +49,71 @@ namespace OOX
 {
 namespace Spreadsheet
 {
+	CRichValueRelFile::CRichValueRelFile(OOX::Document* pMain) : OOX::IFileContainer(pMain), OOX::FileGlobalEnumerated(pMain)
+	{
+	}
+	CRichValueRelFile::CRichValueRelFile(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::IFileContainer(pMain), OOX::FileGlobalEnumerated(pMain)
+	{
+		read(oRootPath, oPath);
+	}
+	CRichValueRelFile::~CRichValueRelFile()
+	{
+	}
+	void CRichValueRelFile::read(const CPath& oPath)
+	{
+		//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)
+		CPath oRootPath;
+		read(oRootPath, oPath);
+	}
+	const OOX::FileType CRichValueRelFile::type() const
+	{
+		return OOX::Spreadsheet::FileTypes::RichValueRel;
+	}
+	const CPath CRichValueRelFile::DefaultDirectory() const
+	{
+		return type().DefaultDirectory();
+	}
+	const CPath CRichValueRelFile::DefaultFileName() const
+	{
+		return type().DefaultFileName();
+	}
+	const CPath& CRichValueRelFile::GetReadPath()
+	{
+		return m_oReadPath;
+	}
+	void CRichValueRelFile::read(const CPath& oRootPath, const CPath& oPath)
+	{
+		m_oReadPath = oPath;
+		
+		IFileContainer::Read(oRootPath, oPath);
+
+		XmlUtils::CXmlLiteReader oReader;
+
+		if (!oReader.FromFile(oPath.GetPath()))
+			return;
+
+		if (!oReader.ReadNextNode())
+			return;
+
+		m_oRichValueRels = oReader;
+	}
+	void CRichValueRelFile::write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
+	{
+		if (false == m_oRichValueRels.IsInit()) return;
+
+		NSStringUtils::CStringBuilder sXml;
+
+		sXml.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
+
+		m_oRichValueRels->toXML(sXml);
+
+		std::wstring sPath = oPath.GetPath();
+		NSFile::CFileBinary::SaveToFile(sPath, sXml.GetData());
+
+		oContent.Registration(type().OverrideType(), oDirectory, oPath.GetFilename());
+		IFileContainer::Write(oPath, oDirectory, oContent);
+	}
+//---------------------------------------------------------------------------------------------------------------------------
 	CRdRichValueFile::CRdRichValueFile(OOX::Document* pMain) : OOX::File(pMain)
 	{
 	}
@@ -388,7 +456,6 @@ std::to_wstring(m_arrItems.size()) + L"\">");
 			WritingElement_ReadAttributes_ReadSingle(oReader, L"s", m_oS)
 		WritingElement_ReadAttributes_End(oReader)
 	}
-//-------------------------------------------------------------------------------------
 //-----------------------------------------------------------------------------------
 	CRichValueStructures::CRichValueStructures() {}
 	CRichValueStructures::~CRichValueStructures() {}
@@ -885,7 +952,92 @@ xmlns:x=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" \
 
 		writer.WriteString(L"</global>");
 	}
+//-----------------------------------------------------------------------------------
+	CRichValueRels::CRichValueRels() {}
+	CRichValueRels::~CRichValueRels() {}
+	void CRichValueRels::fromXML(XmlUtils::CXmlNode& node)
+	{
+	}
+	std::wstring CRichValueRels::toXML() const
+	{
+		return L"";
+	}
+	EElementType CRichValueRels::getType() const
+	{
+		return et_x_RichValueRels;
+	}
+	void CRichValueRels::fromXML(XmlUtils::CXmlLiteReader& oReader)
+	{
+		if (oReader.IsEmptyNode())
+			return;
 
+		int nCurDepth = oReader.GetDepth();
+		while (oReader.ReadNextSiblingNode(nCurDepth))
+		{
+			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+			if (L"rel" == sName)
+			{
+				CRichRel* pRichRel = new CRichRel();
+				if (pRichRel)
+				{
+					pRichRel->fromXML(oReader);
+					m_arrItems.push_back(pRichRel);
+				}
+			}
+		}
+	}
+	void CRichValueRels::toXML(NSStringUtils::CStringBuilder& writer) const
+	{
+		if (m_arrItems.empty()) return;
+
+		writer.WriteString(L"<richValueRels \
+xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" \
+xmlns=\"http://schemas.microsoft.com/office/spreadsheetml/2022/richvaluerel\" count=\"" +
+			std::to_wstring(m_arrItems.size()) + L"\">");
+
+		for (size_t i = 0; i < m_arrItems.size(); ++i)
+		{
+			if (m_arrItems[i])
+			{
+				m_arrItems[i]->toXML(writer);
+			}
+		}
+		writer.WriteString(L"</richValueRels>");
+	}
+//-------------------------------------------------------------------------------------
+	CRichRel::CRichRel() {}
+	CRichRel::~CRichRel() {}
+	void CRichRel::fromXML(XmlUtils::CXmlNode& node)
+	{
+	}
+	std::wstring CRichRel::toXML() const
+	{
+		return L"";
+	}
+	EElementType CRichRel::getType() const
+	{
+		return et_x_RichRel;
+	}
+	void CRichRel::toXML(NSStringUtils::CStringBuilder& writer) const
+	{
+		writer.WriteString(L"<rel");
+		WritingStringNullableAttrString(L"r:id", m_oRid, m_oRid->ToString());
+		writer.WriteString(L"/>");
+	}
+	void CRichRel::fromXML(XmlUtils::CXmlLiteReader& oReader)
+	{
+		ReadAttributes(oReader);
+
+		if (!oReader.IsEmptyNode())
+			oReader.ReadTillEnd();
+	}
+	void CRichRel::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+	{
+		WritingElement_ReadAttributes_Start(oReader)
+			WritingElement_ReadAttributes_ReadSingle(oReader, L"r:id", m_oRid)
+		WritingElement_ReadAttributes_End(oReader)
+	}
 }
 }
 

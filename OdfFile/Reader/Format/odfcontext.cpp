@@ -1,33 +1,36 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * Copyright (C) Ascensio System SIA, 2009-2026
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
- * version 3 as published by the Free Software Foundation. In accordance with
- * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
- * that Ascensio System SIA expressly excludes the warranty of non-infringement
- * of any third-party rights.
+ * version 3 as published by the Free Software Foundation, together with the
+ * additional terms provided in the LICENSE file.
  *
  * This program is distributed WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
- * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. For
+ * details, see the GNU AGPL at: https://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
- * street, Riga, Latvia, EU, LV-1050.
+ * You can contact Ascensio System SIA by email at info@onlyoffice.com
+ * or by postal mail at 20A-6 Ernesta Birznieka-Upisha Street, Riga,
+ * LV-1050, Latvia, European Union.
  *
- * The  interactive user interfaces in modified source and object code versions
- * of the Program must display Appropriate Legal Notices, as required under
+ * The interactive user interfaces in modified versions of the Program
+ * are required to display Appropriate Legal Notices in accordance with
  * Section 5 of the GNU AGPL version 3.
  *
- * Pursuant to Section 7(b) of the License you must retain the original Product
- * logo when distributing the program. Pursuant to Section 7(e) we decline to
- * grant you any rights under trademark law for use of our trademarks.
+ * No trademark rights are granted under this License.
  *
- * All the Product's GUI elements, including illustrations and icon sets, as
- * well as technical writing content are licensed under the terms of the
- * Creative Commons Attribution-ShareAlike 4.0 International. See the License
- * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ * All non-code elements of the Product, including illustrations,
+ * icon sets, and technical writing content, are licensed under the
+ * Creative Commons Attribution-ShareAlike 4.0 International License:
+ * https://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
+ * This license applies only to such non-code elements and does not
+ * modify or replace the licensing terms applicable to the Program's
+ * source code, which remains licensed under the GNU Affero General
+ * Public License v3.
+ *
+ * SPDX-License-Identifier: AGPL-3.0-only
  */
 
 #include "odfcontext.h"
@@ -64,12 +67,14 @@ namespace cpdoccore {
 			bool IsDefault,
 			const std::wstring& ParentStyleName,
 			const std::wstring& NextStyleName,
+			const std::wstring& LinkStyleName,
 			const std::wstring& DataStyleName,
 			const std::wstring& PercentageDataStyleName,
 			const std::wstring& StyleClass,
-			_CP_OPT(std::wstring)	ListStyleName,
-			_CP_OPT(int)			ListLevel,
-			_CP_OPT(int)			OutlineLevel
+			_CP_OPT(bool) PrimaryFormat,
+			_CP_OPT(std::wstring) ListStyleName,
+			_CP_OPT(int) ListLevel,
+			_CP_OPT(int) OutlineLevel
 		) :
 			container_(Container),
 			name_(Name),
@@ -79,13 +84,16 @@ namespace cpdoccore {
 			is_automatic_(IsAutomatic),
 			is_default_(IsDefault),
 			next_name_(NextStyleName),
+			link_name_(LinkStyleName),
 			style_class_(StyleClass),
 			next_(Container->style_by_name(NextStyleName, style_type_, false)),
+			link_(Container->style_by_name(LinkStyleName, style_type_, false)),
 			data_style_name_(DataStyleName),
 			percentage_data_style_name_(PercentageDataStyleName),
 			list_style_name_(ListStyleName),
 			list_level_(ListLevel),
-			outline_level_(OutlineLevel)
+			outline_level_(OutlineLevel),
+			primary_format_(PrimaryFormat)
 		{
 			parent_name_ = ParentStyleName;
 			if (parent_name_ == L"Textformatvorlage")//http://ask.libreoffice.org/en/question/35136/textformatvorlage-style/
@@ -110,12 +118,14 @@ namespace cpdoccore {
 			bool IsDefault,
 			const std::wstring& ParentStyleName_,
 			const std::wstring& NextStyleName,
+			const std::wstring& LinkStyleName,
 			const std::wstring& DataStyleName,
 			const std::wstring& PercentageDataStyleName,
 			const std::wstring& StyleClass,
-			_CP_OPT(std::wstring)	ListStyleName,
-			_CP_OPT(int)			ListLevel,
-			_CP_OPT(int)			OutlineLevel)
+			_CP_OPT(bool) PrimaryFormat,
+			_CP_OPT(std::wstring) ListStyleName,
+			_CP_OPT(int) ListLevel,
+			_CP_OPT(int) OutlineLevel)
 		{
 			std::wstring ParentStyleName = ParentStyleName_;
 
@@ -123,10 +133,10 @@ namespace cpdoccore {
 
 			if (Name == ParentStyleName)
 			{
-				ParentStyleName = L"";//otherwise an infinite loop is possible in code.
+				ParentStyleName.clear();//otherwise an infinite loop is possible in code.
 			}
 			style_instance_ptr newStyle = style_instance_ptr(new style_instance(this, Name, DisplayName, Type, Content, IsAutomatic, IsDefault,
-				ParentStyleName, NextStyleName, DataStyleName, PercentageDataStyleName, StyleClass, ListStyleName, ListLevel, OutlineLevel));
+				ParentStyleName, NextStyleName, LinkStyleName, DataStyleName, PercentageDataStyleName, StyleClass, PrimaryFormat, ListStyleName, ListLevel, OutlineLevel));
 
 			instances_.push_back(newStyle);
 			int pos = static_cast<int>(instances_.size() - 1);
@@ -196,12 +206,23 @@ namespace cpdoccore {
 
 			return next_;
 		}
+		style_instance* style_instance::link() const
+		{
+			if (link_)
+				return link_;
+			else if (container_ && link_name_.empty() == false)
+				link_ = container_->style_by_name(link_name_, type(), false);
 
+			return link_;
+		}
 		const std::wstring& style_instance::next_name() const
 		{
 			return next_name_;
 		}
-
+		const std::wstring& style_instance::link_name() const
+		{
+			return link_name_;
+		}
 		bool style_instance::is_automatic() const
 		{
 			return is_automatic_;
@@ -235,7 +256,10 @@ namespace cpdoccore {
 		{
 			return outline_level_;
 		}
-
+		_CP_OPT(bool) style_instance::primary_format() const
+		{
+			return primary_format_;
+		}
 		style_instance* styles_container::style_by_name(const std::wstring& Name, style_family::type Type, bool object_in_styles) const
 		{
 			std::wstring n = L"";

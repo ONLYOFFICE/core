@@ -1,33 +1,36 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * Copyright (C) Ascensio System SIA, 2009-2026
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
- * version 3 as published by the Free Software Foundation. In accordance with
- * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
- * that Ascensio System SIA expressly excludes the warranty of non-infringement
- * of any third-party rights.
+ * version 3 as published by the Free Software Foundation, together with the
+ * additional terms provided in the LICENSE file.
  *
  * This program is distributed WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
- * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. For
+ * details, see the GNU AGPL at: https://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
- * street, Riga, Latvia, EU, LV-1050.
+ * You can contact Ascensio System SIA by email at info@onlyoffice.com
+ * or by postal mail at 20A-6 Ernesta Birznieka-Upisha Street, Riga,
+ * LV-1050, Latvia, European Union.
  *
- * The  interactive user interfaces in modified source and object code versions
- * of the Program must display Appropriate Legal Notices, as required under
+ * The interactive user interfaces in modified versions of the Program
+ * are required to display Appropriate Legal Notices in accordance with
  * Section 5 of the GNU AGPL version 3.
  *
- * Pursuant to Section 7(b) of the License you must retain the original Product
- * logo when distributing the program. Pursuant to Section 7(e) we decline to
- * grant you any rights under trademark law for use of our trademarks.
+ * No trademark rights are granted under this License.
  *
- * All the Product's GUI elements, including illustrations and icon sets, as
- * well as technical writing content are licensed under the terms of the
- * Creative Commons Attribution-ShareAlike 4.0 International. See the License
- * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ * All non-code elements of the Product, including illustrations,
+ * icon sets, and technical writing content, are licensed under the
+ * Creative Commons Attribution-ShareAlike 4.0 International License:
+ * https://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
+ * This license applies only to such non-code elements and does not
+ * modify or replace the licensing terms applicable to the Program's
+ * source code, which remains licensed under the GNU Affero General
+ * Public License v3.
+ *
+ * SPDX-License-Identifier: AGPL-3.0-only
  */
 #ifndef _PDF_READER_RENDERER_OUTPUTDEV_H
 #define _PDF_READER_RENDERER_OUTPUTDEV_H
@@ -35,7 +38,6 @@
 #include "../../DesktopEditor/graphics/IRenderer.h"
 #include "../../DesktopEditor/graphics/pro/Fonts.h"
 #include "../../DesktopEditor/graphics/AlphaMask.h"
-#include "../../DesktopEditor/graphics/TemporaryCS.h"
 #include "../../DesktopEditor/graphics/structures.h"
 #include "../lib/xpdf/Gfx.h"
 #include "../lib/xpdf/OutputDev.h"
@@ -46,43 +48,7 @@
 namespace PdfReader
 {
 	struct CType3FontMetrics;
-	//-------------------------------------------------------------------------------------------------------------------------------
-	struct TFontEntry
-	{
-		std::wstring wsFilePath;     // Path to font on disk
-		std::wstring wsFontName;     // Font name as written in PDF (branch for cases when font name is not specified in font itself)
-		int*         pCodeToGID;     // Code to glyph number in font table
-		int*         pCodeToUnicode; // Code to unicode value table
-		unsigned int unLenGID;
-		unsigned int unLenUnicode;
-		bool         bAvailable;     // Is font available. Made for multithreading
-		bool         bFontSubstitution = false;
-		bool         bIsIdentity = false;
-		double       dStretch = 1.0;
-		
-	};
-
-	class CPdfFontList
-	{
-	public:
-		CPdfFontList();
-		~CPdfFontList();
-		bool Find(Ref oRef, TFontEntry* pEntry);
-		bool Find2(Ref oRef, TFontEntry** ppEntry);
-		void Remove(Ref oRef);
-		TFontEntry* Add(Ref oRef, const std::wstring& wsFileName, int* pCodeToGID, int* pCodeToUnicode, unsigned int unLenGID, unsigned int unLenUnicode);
-		void Clear();
-		bool GetFont(Ref* pRef, TFontEntry* pEntry);
-		const std::map<Ref, TFontEntry*>& GetFonts();
-	private:
-		TFontEntry* Lookup(Ref& oRef);
-		void Add(Ref& oRef, TFontEntry* pFontEntry);
-
-	private:
-		std::map<Ref, TFontEntry*>          m_oFontMap;
-		NSCriticalSection::CRITICAL_SECTION m_oCS; // Critical section
-	};
-
+	class CPdfFontList;
 	//-------------------------------------------------------------------------------------------------------------------------------
 	template <typename T>
 	inline static double PDFCoordsToMM(T tX)
@@ -222,7 +188,7 @@ namespace PdfReader
 		GBool beginType3Char(GfxState *state, double x, double y, double dx, double dy, CharCode code, Unicode *u, int uLen) override;
 		void endType3Char(GfxState *pGState) override;
 		//----- Additional functions
-		virtual GBool beginMarkedContent(GfxState *state, GString *s) override;
+		virtual GBool beginMarkedContent(GfxState *state, Object args[], int numArgs) override;
 		virtual GBool beginMCOShapes(GfxState *state, GString *s, Object *ref) override;
 		virtual void endMarkedContent(GfxState *state) override;
 		//----- Image output
@@ -246,8 +212,6 @@ namespace PdfReader
 		{
 			m_pbBreak = pbBreak;
 		}
-		static NSFonts::CFontInfo* GetFontByParams(XRef* pXref, NSFonts::IFontManager* pFontManager, GfxFont* pFont, std::wstring& wsFontBaseName, double& dStretch);
-		static void GetFont(XRef* pXref, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList, GfxFont* pFont, std::wstring& wsFileName, std::wstring& wsFontName, bool bNotFullName = true);
 
 	private:
 		struct GfxOutputState

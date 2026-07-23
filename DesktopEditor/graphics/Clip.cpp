@@ -1,33 +1,36 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * Copyright (C) Ascensio System SIA, 2009-2026
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
- * version 3 as published by the Free Software Foundation. In accordance with
- * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
- * that Ascensio System SIA expressly excludes the warranty of non-infringement
- * of any third-party rights.
+ * version 3 as published by the Free Software Foundation, together with the
+ * additional terms provided in the LICENSE file.
  *
  * This program is distributed WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
- * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. For
+ * details, see the GNU AGPL at: https://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
- * street, Riga, Latvia, EU, LV-1050.
+ * You can contact Ascensio System SIA by email at info@onlyoffice.com
+ * or by postal mail at 20A-6 Ernesta Birznieka-Upisha Street, Riga,
+ * LV-1050, Latvia, European Union.
  *
- * The  interactive user interfaces in modified source and object code versions
- * of the Program must display Appropriate Legal Notices, as required under
+ * The interactive user interfaces in modified versions of the Program
+ * are required to display Appropriate Legal Notices in accordance with
  * Section 5 of the GNU AGPL version 3.
  *
- * Pursuant to Section 7(b) of the License you must retain the original Product
- * logo when distributing the program. Pursuant to Section 7(e) we decline to
- * grant you any rights under trademark law for use of our trademarks.
+ * No trademark rights are granted under this License.
  *
- * All the Product's GUI elements, including illustrations and icon sets, as
- * well as technical writing content are licensed under the terms of the
- * Creative Commons Attribution-ShareAlike 4.0 International. See the License
- * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ * All non-code elements of the Product, including illustrations,
+ * icon sets, and technical writing content, are licensed under the
+ * Creative Commons Attribution-ShareAlike 4.0 International License:
+ * https://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
+ * This license applies only to such non-code elements and does not
+ * modify or replace the licensing terms applicable to the Program's
+ * source code, which remains licensed under the GNU Affero General
+ * Public License v3.
+ *
+ * SPDX-License-Identifier: AGPL-3.0-only
  */
 #include "Clip.h"
 
@@ -186,6 +189,7 @@ namespace Aggplus
 	{
 		m_bIsClip = false;
 		m_bIsClip2 = false;
+		m_bIsEmpty = false;
 	}
 	CClipMulti::~CClipMulti()
 	{
@@ -208,6 +212,7 @@ namespace Aggplus
 		m_rasterizer.clip_box(0, 0, width, height);
 		m_bIsClip = false;
 		m_bIsClip2 = false;
+		m_bIsEmpty = false;
 	}
 
 	void CClipMulti::GenerateClip(CGraphicsPath* pPath, CMatrix* pMatrix)
@@ -244,15 +249,21 @@ namespace Aggplus
 		if (!m_bIsClip)
 			return GenerateClip2(bEvenOdd);
 
+		pRasterizer->filling_rule(bEvenOdd ? agg::fill_even_odd : agg::fill_non_zero);
+		scanline_type sl1;
+		scanline_type sl2;
+		scanline_type sl;
+
+		if (!pRasterizer->rewind_scanlines())
+		{
+			if (op == agg::sbool_and)
+				SetEmpty();
+			return;
+		}
+
 		if (!m_bIsClip2)
 		{
 			// need to blend with rasterizer
-			pRasterizer->filling_rule(bEvenOdd ? agg::fill_even_odd : agg::fill_non_zero);
-
-			scanline_type sl1; 
-			scanline_type sl2;
-			scanline_type sl;
-
 			agg::sbool_combine_shapes_aa(op, m_rasterizer, *pRasterizer, sl1, sl2, sl, m_storage1);
 
 			m_lCurStorage = 1;
@@ -260,15 +271,8 @@ namespace Aggplus
 		else
 		{
 			// need to blend with storage
-
-			pRasterizer->filling_rule(op ? agg::fill_even_odd : agg::fill_non_zero);
-
-			scanline_type sl1; 
-			scanline_type sl2;
-			scanline_type sl; 
-
-			agg::sbool_combine_shapes_aa(op, *pRasterizer, (m_lCurStorage == 1) ? m_storage1 : m_storage2, sl1, sl2, sl,
-														(m_lCurStorage == 1) ? m_storage2 : m_storage1);
+			agg::sbool_combine_shapes_aa(op, (m_lCurStorage == 1) ? m_storage1 : m_storage2, *pRasterizer, sl1, sl2, sl,
+											 (m_lCurStorage == 1) ? m_storage2 : m_storage1);
 
 			if (1 == m_lCurStorage)
 			{
@@ -292,6 +296,10 @@ namespace Aggplus
 	{
 		return m_bIsClip2;
 	}
+	bool CClipMulti::IsEmpty()
+	{
+		return m_bIsEmpty;
+	}
 
 	void CClipMulti::Reset()
 	{
@@ -302,5 +310,13 @@ namespace Aggplus
 
 		m_bIsClip = false;
 		m_bIsClip2 = false;
+		m_bIsEmpty = false;
+	}
+	void CClipMulti::SetEmpty()
+	{
+		m_bIsEmpty = true;
+		m_bIsClip2 = true;
+		m_lCurStorage = 1;
+		//m_storage1.prepare();
 	}
 }

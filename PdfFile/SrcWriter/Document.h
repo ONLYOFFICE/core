@@ -1,33 +1,36 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * Copyright (C) Ascensio System SIA, 2009-2026
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
- * version 3 as published by the Free Software Foundation. In accordance with
- * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
- * that Ascensio System SIA expressly excludes the warranty of non-infringement
- * of any third-party rights.
+ * version 3 as published by the Free Software Foundation, together with the
+ * additional terms provided in the LICENSE file.
  *
  * This program is distributed WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
- * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. For
+ * details, see the GNU AGPL at: https://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
- * street, Riga, Latvia, EU, LV-1050.
+ * You can contact Ascensio System SIA by email at info@onlyoffice.com
+ * or by postal mail at 20A-6 Ernesta Birznieka-Upisha Street, Riga,
+ * LV-1050, Latvia, European Union.
  *
- * The  interactive user interfaces in modified source and object code versions
- * of the Program must display Appropriate Legal Notices, as required under
+ * The interactive user interfaces in modified versions of the Program
+ * are required to display Appropriate Legal Notices in accordance with
  * Section 5 of the GNU AGPL version 3.
  *
- * Pursuant to Section 7(b) of the License you must retain the original Product
- * logo when distributing the program. Pursuant to Section 7(e) we decline to
- * grant you any rights under trademark law for use of our trademarks.
+ * No trademark rights are granted under this License.
  *
- * All the Product's GUI elements, including illustrations and icon sets, as
- * well as technical writing content are licensed under the terms of the
- * Creative Commons Attribution-ShareAlike 4.0 International. See the License
- * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ * All non-code elements of the Product, including illustrations,
+ * icon sets, and technical writing content, are licensed under the
+ * Creative Commons Attribution-ShareAlike 4.0 International License:
+ * https://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
+ * This license applies only to such non-code elements and does not
+ * modify or replace the licensing terms applicable to the Program's
+ * source code, which remains licensed under the GNU Affero General
+ * Public License v3.
+ *
+ * SPDX-License-Identifier: AGPL-3.0-only
  */
 #ifndef _PDF_WRITER_SRC_DOCUMENT_H
 #define _PDF_WRITER_SRC_DOCUMENT_H
@@ -96,6 +99,7 @@ namespace PdfWriter
 	class CXObject;
 	class CObjectBase;
 	class CStringObject;
+	class CStructureTreeRoot;
 	//----------------------------------------------------------------------------------------
 	// CDocument
 	//----------------------------------------------------------------------------------------
@@ -109,7 +113,7 @@ namespace PdfWriter
 		bool              CreateNew();
 		void              Close();
 		bool              SaveToFile(const std::wstring& wsPath);
-		bool              SaveToMemory(BYTE** pData, int* pLength);
+		bool              SaveToMemory(BYTE** pData, int* pLength, bool bForWasm);
 		bool              SaveNewWithPassword(CXref* pXref, CXref* _pXref, const std::wstring& wsPath, const std::wstring& wsOwnerPassword, const std::wstring& wsUserPassword, CDictObject* pTrailer);
 			              
         void              SetPasswords(const std::wstring & wsOwnerPassword, const std::wstring & wsUserPassword);
@@ -122,8 +126,11 @@ namespace PdfWriter
         void              SetSubject (const std::string& sSubject);
         void              SetKeywords(const std::string& sKeywords);
 
+		void              SetRedactInfo(int nFlag);
 		void              SetPDFAConformanceMode(bool isPDFA);
-		bool              IsPDFA() const;
+		void              SetPDFUAConformanceMode(bool isPDFUA);
+		bool              IsPDFA()  const;
+		bool              IsPDFUA() const;
 
 		CPage*            AddPage();
 		CPage*            GetPage    (const unsigned int& unPage);
@@ -144,6 +151,7 @@ namespace PdfWriter
 		CExtGrState*      GetFillAlpha(double dAlpha);
 		CJbig2Global*     GetJbig2Global();
 
+		CAnnotation*      CreateWidget(BYTE nType);
 		CAnnotation*      CreateAnnot(BYTE nType);
 		CAnnotation*      CreateLinkAnnot(const TRect& oRect, CDestination* pDest);
 		CAnnotation*      CreateUriLinkAnnot(const TRect& oRect, const char* sUrl);
@@ -177,6 +185,7 @@ namespace PdfWriter
 		CPictureField*    CreatePictureField();
 		CSignatureField*  CreateSignatureField();
 		CDateTimeField*   CreateDateTimeField();
+		void              AddWidget(CFieldBase* pWidget);
 		bool              CheckFieldName(CFieldBase* pField, const std::string& sName);
 
 		bool              HasImage(const std::wstring& wsImagePath, BYTE nAlpha);
@@ -210,11 +219,14 @@ namespace PdfWriter
 		CPage*            GetCurPage() { return m_pCurPage; }
 		void              SetCurPage(CPage* pPage) { m_pCurPage = pPage; }
 		bool              EditCO(const std::vector< std::pair<int, int> >& arrCO);
+		void              AddRoles(BYTE* pMetaData, DWORD nMetaLength);
 		std::string       SetParentKids(int nParentID);
 		const std::map<int, CAnnotation*>& GetAnnots() { return m_mAnnotations; }
 		const std::map<int, CDictObject*>& GetParents() { return m_mParents; }
 		CPageTree*        GetPageTree() { return m_pPageTree; }
 		CEncryptDict*     GetEncrypt() { return m_pEncryptDict; }
+		CCatalog*         GetCatalog() { return m_pCatalog; }
+		CStructureTreeRoot* GetStructureTreeRoot();
 		void              AddShapeXML(const std::string& sXML);
 		void              EndShapeXML();
 		void              ClearPage();
@@ -233,7 +245,7 @@ namespace PdfWriter
 		void              AddFreeTypeFont(CFontCidTrueType* pFont);
         FT_Library        GetFreeTypeLibrary();
 		CExtGrState*      FindExtGrState(double dAlphaStroke = -1, double dAlphaFill = -1, EBlendMode eMode = blendmode_Unknown, int nStrokeAdjustment = -1);
-		void              SaveToStream(CStream* pStream);
+		void              SaveToStream(CStream* pStream, const std::string& sAltTitle = "");
 		void              PrepareEncryption();
 		CDictObject*      CreatePageLabel(EPageNumStyle eStyle, unsigned int unFirstPage, const char* sPrefix);
 		CShading*         CreateShading(CPage* pPage, double *pPattern, bool bAxial, unsigned char* pColors, unsigned char* pAlphas, double* pPoints, int nCount, CExtGrState*& pExtGrState);
@@ -344,6 +356,8 @@ namespace PdfWriter
 		std::vector<CFontCidTrueType*>     m_vFreeTypeFonts;
 		FT_Library                         m_pFreeTypeLibrary;
 		bool                               m_bPDFAConformance;
+		bool                               m_bPDFUAConformance;
+		int                                m_nRedactInfo;
 		std::wstring                       m_wsDocumentID;
 		CDictObject*                       m_pAcroForm;
 		CResourcesDict*                    m_pFieldsResources;

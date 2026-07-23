@@ -1,33 +1,36 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * Copyright (C) Ascensio System SIA, 2009-2026
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
- * version 3 as published by the Free Software Foundation. In accordance with
- * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
- * that Ascensio System SIA expressly excludes the warranty of non-infringement
- * of any third-party rights.
+ * version 3 as published by the Free Software Foundation, together with the
+ * additional terms provided in the LICENSE file.
  *
  * This program is distributed WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
- * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. For
+ * details, see the GNU AGPL at: https://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
- * street, Riga, Latvia, EU, LV-1050.
+ * You can contact Ascensio System SIA by email at info@onlyoffice.com
+ * or by postal mail at 20A-6 Ernesta Birznieka-Upisha Street, Riga,
+ * LV-1050, Latvia, European Union.
  *
- * The  interactive user interfaces in modified source and object code versions
- * of the Program must display Appropriate Legal Notices, as required under
+ * The interactive user interfaces in modified versions of the Program
+ * are required to display Appropriate Legal Notices in accordance with
  * Section 5 of the GNU AGPL version 3.
  *
- * Pursuant to Section 7(b) of the License you must retain the original Product
- * logo when distributing the program. Pursuant to Section 7(e) we decline to
- * grant you any rights under trademark law for use of our trademarks.
+ * No trademark rights are granted under this License.
  *
- * All the Product's GUI elements, including illustrations and icon sets, as
- * well as technical writing content are licensed under the terms of the
- * Creative Commons Attribution-ShareAlike 4.0 International. See the License
- * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ * All non-code elements of the Product, including illustrations,
+ * icon sets, and technical writing content, are licensed under the
+ * Creative Commons Attribution-ShareAlike 4.0 International License:
+ * https://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
+ * This license applies only to such non-code elements and does not
+ * modify or replace the licensing terms applicable to the Program's
+ * source code, which remains licensed under the GNU Affero General
+ * Public License v3.
+ *
+ * SPDX-License-Identifier: AGPL-3.0-only
  */
 #include "OOXReader.h"
 #include "OOXPictureReader.h"
@@ -1178,51 +1181,70 @@ bool OOXShapeReader::ParseShape( ReaderParameter oParam, RtfShapePtr& pOutput)
 	std::wstring strXml;
 	if (ooxShape->spPr.Geometry.getType() == OOX::et_a_custGeom)
 	{
-		PPTX::Logic::CustGeom& geometry = ooxShape->spPr.Geometry.as<PPTX::Logic::CustGeom>();
 		pOutput->m_nShapeType = SimpleTypes::Vml::sptNotPrimitive;
-		strXml = geometry.toXML();
+		strXml = ooxShape->spPr.Geometry.as<PPTX::Logic::CustGeom>().toXML();
 	}
-	if (ooxShape->spPr.Geometry.getType() == OOX::et_a_prstGeom)
+	else if (ooxShape->spPr.Geometry.getType() == OOX::et_a_prstGeom)
 	{
 		PPTX::Logic::PrstGeom& geometry = ooxShape->spPr.Geometry.as<PPTX::Logic::PrstGeom>();
-		
 		SimpleTypes::CShapeType prst_type(geometry.prst.get());
-		SimpleTypes::EShapeType type = prst_type.GetValue();
-
-		pOutput->m_nShapeType = OOX::PrstGeom2VmlShapeType(type);
-		if (pOutput->m_nShapeType == SimpleTypes::Vml::sptNotPrimitive)
-			strXml = geometry.prst.get();
+		pOutput->m_nShapeType = OOX::PrstGeom2VmlShapeType(prst_type.GetValue());
+		strXml = geometry.prst.get();
 	}
-	if (pOutput->m_nShapeType == SimpleTypes::Vml::sptNotPrimitive && !strXml.empty())
+	if (!strXml.empty())
 	{
-		XmlUtils::CXmlNode xmlNode;
-		xmlNode.FromXmlString(strXml);
-		PPTX::Logic::Geometry geom;
-		geom = xmlNode;
-
 		std::wstring strVmlPath, strVmlRect;
-
 		LONG lW = 0, lH = 0;
-
-		//if ((ooxShape->spPr.xfrm->IsInit()) && (ooxShape->spPr.xfrm->m_oExt.IsInit()))
-		//{
-		//	lW = ooxShape->spPr.xfrm->m_oExt->m_oCx.GetValue();
-		//	lH = ooxShape->spPr.xfrm->m_oExt->m_oCy.GetValue();
-		//}
-
+		if (ooxShape->spPr.xfrm.IsInit() && ooxShape->spPr.xfrm->extX.IsInit() && ooxShape->spPr.xfrm->extY.IsInit())
+		{
+			lW = ooxShape->spPr.xfrm->extX.get();
+			lH = ooxShape->spPr.xfrm->extY.get();
+		}
 		COOXToVMLGeometry *renderer = new COOXToVMLGeometry();
-		geom.ConvertToCustomVML(renderer, strVmlPath, strVmlRect, lW, lH);
+		ooxShape->spPr.Geometry.ConvertToCustomVML(renderer, strVmlPath, strVmlRect, lW, lH);
 		delete renderer;
 
 		if (!strVmlPath.empty())
+		{
 			ParseVmlPath(pOutput, strVmlPath);
+			// preset types conflict(?) for some reason with a custom path in MS Word (diamond as example)
+			// and dont wanna show the text.
+			// 100 is a type without built-in geometry: Word draws our path and keeps the text.
+			pOutput->m_nShapeType = SimpleTypes::Vml::sptNotchedCircularArrow;
+		}
 
-		pOutput->m_nShapePath = 4; //complex
-		
-		pOutput->m_nGeoLeft		= 0;
-		pOutput->m_nGeoTop		= 0;
-		pOutput->m_nGeoRight	= 100000;
-		pOutput->m_nGeoBottom	= 100000;
+		LONG nCoordW = 100000, nCoordH = 100000;
+		if (lW > 0 && lH > 0)
+		{
+			nCoordW = lW;
+			nCoordH = lH;
+			for (size_t i = 0; i < pOutput->m_aPVerticles.size(); ++i)
+			{
+				pOutput->m_aPVerticles[i].first  = (int)((double)pOutput->m_aPVerticles[i].first  / 100000. * nCoordW);
+				pOutput->m_aPVerticles[i].second = (int)((double)pOutput->m_aPVerticles[i].second / 100000. * nCoordH);
+			}
+		}
+		pOutput->m_nGeoRight	= nCoordW;
+		pOutput->m_nGeoBottom	= nCoordH;
+
+		LONG nRectL = 0, nRectT = 0, nRectR = 100000, nRectB = 100000;
+		if (!strVmlRect.empty())
+		{
+			std::vector< std::wstring > rect;
+			boost::algorithm::split(rect, strVmlRect, boost::algorithm::is_any_of(L","), boost::algorithm::token_compress_on);
+			if (rect.size() == 4)
+			{
+				nRectL = XmlUtils::GetInteger(rect[0]);
+				nRectT = XmlUtils::GetInteger(rect[1]);
+				nRectR = XmlUtils::GetInteger(rect[2]);
+				nRectB = XmlUtils::GetInteger(rect[3]);
+			}
+		}
+		pOutput->m_nInscribeLeft	= (int)((double)nRectL / 100000. * nCoordW);
+		pOutput->m_nInscribeTop		= (int)((double)nRectT / 100000. * nCoordH);
+		pOutput->m_nInscribeRight	= (int)((double)nRectR / 100000. * nCoordW);
+		pOutput->m_nInscribeBottom	= (int)((double)nRectB / 100000. * nCoordH);
+		pOutput->m_nShapePath = 4;
 	}
 
 	Parse(oParam, pOutput, ooxShape->spPr.xfrm.GetPointer());
@@ -1357,7 +1379,7 @@ void OOXShapeReader::Parse(ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::L
 		case 2:
 		case 3:
 		default:
-			pOutput->m_nAnchorText = 4; break;
+			pOutput->m_nAnchorText = 1; break;
 		}
 	}
 
@@ -1832,6 +1854,8 @@ bool OOXShapeReader::ParseVml(ReaderParameter oParam, RtfShapePtr& pOutput, bool
         pOutput->m_bHr = m_vmlElement->m_oHr.get();
     if (m_vmlElement->m_oHrStd.IsInit())
         pOutput->m_bHrStd = m_vmlElement->m_oHrStd.get();
+    if (m_vmlElement->m_oHrNoShade.IsInit())
+        pOutput->m_bHrNoShade = m_vmlElement->m_oHrNoShade.get();
     if (m_vmlElement->m_oHrAlign.IsInit())
     {
         SimpleTypes::EHrAlign eVal = m_vmlElement->m_oHrAlign->GetValue();

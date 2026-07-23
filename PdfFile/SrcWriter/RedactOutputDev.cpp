@@ -1,33 +1,36 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * Copyright (C) Ascensio System SIA, 2009-2026
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
- * version 3 as published by the Free Software Foundation. In accordance with
- * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
- * that Ascensio System SIA expressly excludes the warranty of non-infringement
- * of any third-party rights.
+ * version 3 as published by the Free Software Foundation, together with the
+ * additional terms provided in the LICENSE file.
  *
  * This program is distributed WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
- * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. For
+ * details, see the GNU AGPL at: https://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
- * street, Riga, Latvia, EU, LV-1050.
+ * You can contact Ascensio System SIA by email at info@onlyoffice.com
+ * or by postal mail at 20A-6 Ernesta Birznieka-Upisha Street, Riga,
+ * LV-1050, Latvia, European Union.
  *
- * The  interactive user interfaces in modified source and object code versions
- * of the Program must display Appropriate Legal Notices, as required under
+ * The interactive user interfaces in modified versions of the Program
+ * are required to display Appropriate Legal Notices in accordance with
  * Section 5 of the GNU AGPL version 3.
  *
- * Pursuant to Section 7(b) of the License you must retain the original Product
- * logo when distributing the program. Pursuant to Section 7(e) we decline to
- * grant you any rights under trademark law for use of our trademarks.
+ * No trademark rights are granted under this License.
  *
- * All the Product's GUI elements, including illustrations and icon sets, as
- * well as technical writing content are licensed under the terms of the
- * Creative Commons Attribution-ShareAlike 4.0 International. See the License
- * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ * All non-code elements of the Product, including illustrations,
+ * icon sets, and technical writing content, are licensed under the
+ * Creative Commons Attribution-ShareAlike 4.0 International License:
+ * https://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
+ * This license applies only to such non-code elements and does not
+ * modify or replace the licensing terms applicable to the Program's
+ * source code, which remains licensed under the GNU Affero General
+ * Public License v3.
+ *
+ * SPDX-License-Identifier: AGPL-3.0-only
  */
 
 #include "RedactOutputDev.h"
@@ -114,9 +117,12 @@ bool CheckFullRedact(const std::vector<double>& arrQuadPoints, const std::vector
 }
 BYTE* DecodeImageToRGBA(Stream* pStream, int nWidth, int nHeight, GfxImageColorMap* pColorMap, GfxState* pGState)
 {
-	BYTE* pBufferPtr = new(std::nothrow) BYTE[4 * nWidth * nHeight];
+	if (nWidth <= 0 || nHeight <= 0 || !pColorMap || !pGState)
+		return NULL;
+	const size_t nBufSize = 4 * static_cast<size_t>(nWidth) * static_cast<size_t>(nHeight);
+	BYTE* pBufferPtr = new(std::nothrow) BYTE[nBufSize];
 	if (!pBufferPtr)
-		return nullptr;
+		return NULL;
 
 	int nComponentsCount = pColorMap->getNumPixelComps();
 	ImageStream* pImageStream = new ImageStream(pStream, nWidth, nComponentsCount, pColorMap->getBits());
@@ -134,10 +140,11 @@ BYTE* DecodeImageToRGBA(Stream* pStream, int nWidth, int nHeight, GfxImageColorM
 	for (int nY = 0; nY < nHeight; ++nY)
 	{
 		BYTE* pLine = pImageStream->getLine();
-		BYTE* pLineDst = pBufferPtr + 4 * nWidth * nY;
+		BYTE* pLineDst = pBufferPtr + 4 * static_cast<size_t>(nWidth) * static_cast<size_t>(nY);
 
-		if (!pLine) {
-			memset(pLineDst, 0, 4 * nWidth);
+		if (!pLine)
+		{
+			memset(pLineDst, 0, 4 * static_cast<size_t>(nWidth));
 			continue;
 		}
 
@@ -175,6 +182,9 @@ BYTE* DecodeImageToRGBA(Stream* pStream, int nWidth, int nHeight, GfxImageColorM
 			pLine += nComps;
 			pLineDst += 4;
 		}
+
+		if (nCheckWidth < nWidth)
+			memset(pLineDst, 0, 4 * (nWidth - nCheckWidth));
 	}
 
 	pImageStream->close();
@@ -183,9 +193,12 @@ BYTE* DecodeImageToRGBA(Stream* pStream, int nWidth, int nHeight, GfxImageColorM
 }
 BYTE* DecodeImageToGray(Stream* pStream, int nWidth, int nHeight, GfxImageColorMap* pColorMap, GfxState* pGState)
 {
-	BYTE* pBufferPtr = new(std::nothrow) BYTE[nWidth * nHeight];
+	if (nWidth <= 0 || nHeight <= 0 || !pColorMap || !pGState)
+		return NULL;
+	const size_t nBufSize = static_cast<size_t>(nWidth) * static_cast<size_t>(nHeight);
+	BYTE* pBufferPtr = new(std::nothrow) BYTE[nBufSize];
 	if (!pBufferPtr)
-		return nullptr;
+		return NULL;
 
 	int nComponentsCount = pColorMap->getNumPixelComps();
 	ImageStream* pImageStream = new ImageStream(pStream, nWidth, nComponentsCount, pColorMap->getBits());
@@ -203,9 +216,10 @@ BYTE* DecodeImageToGray(Stream* pStream, int nWidth, int nHeight, GfxImageColorM
 	for (int nY = 0; nY < nHeight; ++nY)
 	{
 		BYTE* pLine = pImageStream->getLine();
-		BYTE* pLineDst = pBufferPtr + nWidth * nY;
+		BYTE* pLineDst = pBufferPtr + static_cast<size_t>(nWidth) * static_cast<size_t>(nY);
 
-		if (!pLine) {
+		if (!pLine)
+		{
 			memset(pLineDst, 0, nWidth);
 			continue;
 		}
@@ -230,6 +244,9 @@ BYTE* DecodeImageToGray(Stream* pStream, int nWidth, int nHeight, GfxImageColorM
 
 			pLine += nComps;
 		}
+
+		if (nCheckWidth < nWidth)
+			memset(pLineDst + nCheckWidth, 0, nWidth - nCheckWidth);
 	}
 
 	pImageStream->close();
@@ -238,29 +255,39 @@ BYTE* DecodeImageToGray(Stream* pStream, int nWidth, int nHeight, GfxImageColorM
 }
 BYTE* DecodeImageMaskToBits(Stream* pStream, int nWidth, int nHeight, GBool bInvert)
 {
-	BYTE* pBits = new BYTE[nWidth * nHeight];
+	if (nWidth <= 0 || nHeight <= 0)
+		return NULL;
+	const size_t nBufSize = static_cast<size_t>(nWidth) * static_cast<size_t>(nHeight);
+	BYTE* pBits = new(std::nothrow) BYTE[nBufSize];
 	if (!pBits)
-		return nullptr;
+		return NULL;
 
 	ImageStream* pImageStream = new ImageStream(pStream, nWidth, 1, 1);
 	pImageStream->reset();
 
+	int nCheckWidth = std::min(nWidth, pImageStream->getVals());
+
 	for (int y = 0; y < nHeight; ++y)
 	{
 		BYTE* pLine = pImageStream->getLine();
+		BYTE* pDst  = pBits + static_cast<size_t>(y) * static_cast<size_t>(nWidth);
+
 		if (!pLine)
 		{
-			memset(pBits + y * nWidth, bInvert ? 1 : 0, nWidth);
+			memset(pDst, bInvert ? 1 : 0, nWidth);
 			continue;
 		}
 
-		for (int x = 0; x < nWidth; ++x)
+		for (int x = 0; x < nCheckWidth; ++x)
 		{
 			BYTE pixel = pLine[x];
 			if (bInvert)
 				pixel = pixel ? 0 : 1;
-			pBits[y * nWidth + x] = pixel;
+			pDst[x] = pixel;
 		}
+
+		if (nCheckWidth < nWidth)
+			memset(pDst + nCheckWidth, bInvert ? 1 : 0, nWidth - nCheckWidth);
 	}
 
 	pImageStream->close();
@@ -341,7 +368,7 @@ void SaveGrayToSMask(CDocument* pDocument, CDictObject* pDictObj, BYTE* pMaskGra
 	pSMask->Remove("DecodeParms");
 	pDictObj->Remove("Decode");
 
-	int nBufferSize = nWidth * nHeight;
+	unsigned int nBufferSize = nWidth * nHeight;
 	CStream* pStreamForm = pSMask->GetStream();
 	if (!pStreamForm)
 	{
@@ -516,9 +543,105 @@ void ApplyRedactToGray(const std::vector<double>& arrQuadPoints, BYTE* pImage, i
 					pImage[(nHeight - 1 - y) * nWidth + x] = 1;
 	}
 }
+bool ComputeVisibleImageRect(GfxState* pGState, const double* pCTM, double& dU0, double& dV0, double& dU1, double& dV1)
+{
+	double dClipX0, dClipY0, dClipX1, dClipY1;
+	pGState->getClipBBox(&dClipX0, &dClipY0, &dClipX1, &dClipY1);
+
+	double arrInv[6];
+	InvertMatrix(pCTM, arrInv);
+
+	double arrX[4], arrY[4];
+	Transform(arrInv, dClipX0, dClipY0, &arrX[0], &arrY[0]);
+	Transform(arrInv, dClipX1, dClipY0, &arrX[1], &arrY[1]);
+	Transform(arrInv, dClipX1, dClipY1, &arrX[2], &arrY[2]);
+	Transform(arrInv, dClipX0, dClipY1, &arrX[3], &arrY[3]);
+
+	dU0 = std::min(std::min(arrX[0], arrX[1]), std::min(arrX[2], arrX[3]));
+	dU1 = std::max(std::max(arrX[0], arrX[1]), std::max(arrX[2], arrX[3]));
+	dV0 = std::min(std::min(arrY[0], arrY[1]), std::min(arrY[2], arrY[3]));
+	dV1 = std::max(std::max(arrY[0], arrY[1]), std::max(arrY[2], arrY[3]));
+
+	dU0 = std::max(0.0, std::min(1.0, dU0));
+	dU1 = std::max(0.0, std::min(1.0, dU1));
+	dV0 = std::max(0.0, std::min(1.0, dV0));
+	dV1 = std::max(0.0, std::min(1.0, dV1));
+
+	if (dU1 <= dU0 || dV1 <= dV0)
+		return false;
+	return true;
+}
+bool ComputeImageCropRect(GfxState* pGState, const double* pCTM, int nWidth, int nHeight, int nRedactInfo,
+						   int& nCropLeft, int& nCropTop, int& nCropWidth, int& nCropHeight, double* arrCropMatrix)
+{
+	nCropLeft = 0; nCropTop = 0; nCropWidth = nWidth; nCropHeight = nHeight;
+	arrCropMatrix[0] = 1; arrCropMatrix[1] = 0; arrCropMatrix[2] = 0;
+	arrCropMatrix[3] = 1; arrCropMatrix[4] = 0; arrCropMatrix[5] = 0;
+
+	if (!(nRedactInfo & (1 << 8)))
+		return false;
+
+	double dU0, dV0, dU1, dV1;
+	if (!ComputeVisibleImageRect(pGState, pCTM, dU0, dV0, dU1, dV1))
+		return false;
+
+	int nLeft   = (int)floor(dU0 * nWidth);
+	int nRight  = (int)ceil (dU1 * nWidth);
+	int nTop    = (int)floor((1.0 - dV1) * nHeight);
+	int nBottom = (int)ceil ((1.0 - dV0) * nHeight);
+
+	nLeft   = std::max(0, std::min(nWidth,  nLeft));
+	nRight  = std::max(0, std::min(nWidth,  nRight));
+	nTop    = std::max(0, std::min(nHeight, nTop));
+	nBottom = std::max(0, std::min(nHeight, nBottom));
+
+	if (nRight <= nLeft || nBottom <= nTop || (nLeft <= 0 && nTop <= 0 && nRight >= nWidth && nBottom >= nHeight))
+		return false;
+
+	nCropLeft   = nLeft;
+	nCropTop    = nTop;
+	nCropWidth  = nRight - nLeft;
+	nCropHeight = nBottom - nTop;
+
+	double dNewU0 = (double)nCropLeft / nWidth;
+	double dNewU1 = (double)(nCropLeft + nCropWidth) / nWidth;
+	double dNewV0 = 1.0 - (double)(nCropTop + nCropHeight) / nHeight;
+	double dNewV1 = 1.0 - (double)nCropTop / nHeight;
+
+	arrCropMatrix[0] = dNewU1 - dNewU0;
+	arrCropMatrix[3] = dNewV1 - dNewV0;
+	arrCropMatrix[4] = dNewU0;
+	arrCropMatrix[5] = dNewV0;
+
+	return true;
+}
+BYTE* CropRGBA(BYTE* pSrc, int nSrcWidth, int nSrcHeight, int nLeft, int nTop, int nCropWidth, int nCropHeight)
+{
+	BYTE* pDst = new BYTE[(size_t)4 * nCropWidth * nCropHeight];
+	int nSrcStride = 4 * nSrcWidth;
+	int nDstStride = 4 * nCropWidth;
+	for (int nRow = 0; nRow < nCropHeight; ++nRow)
+	{
+		const BYTE* pSrcRow = pSrc + (size_t)(nTop + nRow) * nSrcStride + (size_t)nLeft * 4;
+		BYTE* pDstRow = pDst + (size_t)nRow * nDstStride;
+		memcpy(pDstRow, pSrcRow, nDstStride);
+	}
+	return pDst;
+}
+BYTE* CropGray(BYTE* pSrc, int nSrcWidth, int nSrcHeight, int nLeft, int nTop, int nCropWidth, int nCropHeight)
+{
+	BYTE* pDst = new BYTE[(size_t)nCropWidth * nCropHeight];
+	for (int nRow = 0; nRow < nCropHeight; ++nRow)
+	{
+		const BYTE* pSrcRow = pSrc + (size_t)(nTop + nRow) * nSrcWidth + (size_t)nLeft;
+		BYTE* pDstRow = pDst + (size_t)nRow * nCropWidth;
+		memcpy(pDstRow, pSrcRow, nCropWidth);
+	}
+	return pDst;
+}
 
 //----- constructor/destructor
-RedactOutputDev::RedactOutputDev(CPdfWriter* pRenderer, CObjectsManager* pObjMng, int nStartRefID)
+RedactOutputDev::RedactOutputDev(CPdfWriter* pRenderer, CObjectsManager* pObjMng, int nStartRefID, int nRedactInfo)
 {
 	m_pXref = NULL;
 	m_pResources = NULL;
@@ -526,8 +649,12 @@ RedactOutputDev::RedactOutputDev(CPdfWriter* pRenderer, CObjectsManager* pObjMng
 	m_pRenderer = pRenderer;
 	m_mObjManager = pObjMng;
 	m_nStartRefID = nStartRefID;
+	m_nRedactInfo = nRedactInfo;
 	m_pDoc = m_pRenderer->GetDocument();
 	m_pPage = NULL;
+
+	m_nTextCounter = 0;
+	m_nGraphicsCounter = 0;
 
 	m_bUpdateAll = false;
 }
@@ -549,6 +676,20 @@ void RedactOutputDev::SetRedact(const std::vector<double>& arrQuadPoints)
 		m_oPathRedact.LineTo(m_arrQuadPoints[i + 6], m_arrQuadPoints[i + 7]);
 		m_oPathRedact.CloseFigure();
 	}
+}
+void RedactOutputDev::SetOverlapInfo(const std::set<int>& arrHiddenTextIndices,
+									 const std::vector<int>* pFormTextCounts,
+									 const std::vector<int>* pFormGraphicsCounts,
+									 int nStartTextCounter,
+									 int nStartFormCounter,
+									 int nStartGraphicsCounter)
+{
+	m_arrHiddenTextIndices = arrHiddenTextIndices;
+	m_pFormTextCounts      = pFormTextCounts;
+	m_pFormGraphicsCounts  = pFormGraphicsCounts;
+	m_nTextCounter         = nStartTextCounter;
+	m_nFormCounter         = nStartFormCounter;
+	m_nGraphicsCounter     = nStartGraphicsCounter;
 }
 void RedactOutputDev::NewPDF(XRef* pXref)
 {
@@ -836,11 +977,13 @@ void RedactOutputDev::stroke(GfxState *pGState)
 }
 void RedactOutputDev::fill(GfxState *pGState)
 {
+	++m_nGraphicsCounter;
 	DoPathRedact(pGState, pGState->getPath(), pGState->getCTM());
 	DrawPath(c_nWindingFillMode);
 }
 void RedactOutputDev::eoFill(GfxState *pGState)
 {
+	++m_nGraphicsCounter;
 	DoPathRedact(pGState, pGState->getPath(), pGState->getCTM(), false, true);
 	DrawPath(c_nEvenOddFillMode);
 }
@@ -916,6 +1059,8 @@ void RedactOutputDev::beginStringOp(GfxState *pGState)
 void RedactOutputDev::drawChar(GfxState *pGState, double dX, double dY, double dDx, double dDy, double dOriginX, double dOriginY,
 							   CharCode nCode, int nBytesCount, Unicode *pUnicode, int nUnicodeLen)
 {
+	int nCurrentTextIndex = m_nTextCounter++;
+
 	double* pCTM = pGState->getCTM();
 	double* pTm = pGState->getTextMat();
 	double pNewTm[6], arrMatrix[6];
@@ -979,6 +1124,13 @@ void RedactOutputDev::drawChar(GfxState *pGState, double dX, double dY, double d
 	pGState->transform(dX + dDx, dY + dDy, &endX, &endY);
 	double dCenterX = (startX + endX) / 2;
 	double dCenterY = (startY + endY) / 2;
+
+	if (std::find(m_arrHiddenTextIndices.begin(), m_arrHiddenTextIndices.end(), nCurrentTextIndex) != m_arrHiddenTextIndices.end())
+	{
+		m_pRenderer->put_FontSize(dOldSize);
+		return;
+	}
+
 	for (int i = 0; i < m_arrQuadPoints.size(); i += 8)
 	{
 		double x1 = m_arrQuadPoints[i + 0];
@@ -1017,11 +1169,35 @@ void RedactOutputDev::drawChar(GfxState *pGState, double dX, double dY, double d
 	m_pRenderer->put_FontSize(dOldSize);
 }
 //----- additional
+GBool RedactOutputDev::beginMarkedContent(GfxState *state, Object args[], int numArgs)
+{
+	if (!args[0].isName())
+		return gFalse;
+	if (numArgs >= 2)
+	{
+		CObjectBase* pObj = NULL;
+		if (args[1].isName())
+			pObj = new CNameObject(args[1].getName());
+		else if (args[1].isDict())
+		{
+			SDictConvertContext ctx(m_pDoc, m_pXref, m_mObjManager, m_nStartRefID);
+			pObj = DictToCDictObjectUnified(&args[1], ctx);
+		}
+		m_pPage->BeginMarkedContentDict(args[0].getName(), pObj);
+	}
+	else
+		m_pPage->BeginMarkedContent(args[0].getName());
+	return gTrue;
+}
+void RedactOutputDev::endMarkedContent(GfxState *state)
+{
+	m_pPage->EndMarkedContent();
+}
 GBool RedactOutputDev::useNameOp()
 {
 	return gTrue;
 }
-void RedactOutputDev::setExtGState(const char* name)
+void RedactOutputDev::setExtGState(GfxState *pGState, Object* pExtGState, const char* name)
 {
 	if (m_sStates.empty())
 		return;
@@ -1142,15 +1318,21 @@ void RedactOutputDev::drawImageMask(GfxState *pGState, Gfx *gfx, Object *pRef, S
 		return;
 
 	bool bHasRedact = CheckPartialRedact(m_arrQuadPoints, imagePolygon);
-	if (!pRef || bInlineImage || bHasRedact)
-		pObj = CreateImage(gfx, nWidth, nHeight, STREAM_FILTER_FLATE_DECODE, 1, NULL);
+
+	int nCropLeft, nCropTop, nCropWidth, nCropHeight;
+	double arrCropMatrix[6];
+	bool bNeedsCrop = ComputeImageCropRect(pGState, m_arrMatrix, nWidth, nHeight, m_nRedactInfo,
+											nCropLeft, nCropTop, nCropWidth, nCropHeight, arrCropMatrix);
+
+	if (!pRef || bInlineImage || bHasRedact || bNeedsCrop)
+		pObj = CreateImage(gfx, bNeedsCrop ? nCropWidth : nWidth, bNeedsCrop ? nCropHeight : nHeight, STREAM_FILTER_FLATE_DECODE, 1, NULL);
 	else
 		pObj = m_mObjManager->GetObj(pRef->getRefNum() + m_nStartRefID);
 
 	if (!pObj || pObj->GetType() != object_type_DICT)
 		return;
 
-	if (!bHasRedact && pRef && !bInlineImage)
+	if (!bHasRedact && !bNeedsCrop && pRef && !bInlineImage)
 	{
 		DrawXObject(m_sImageName.c_str());
 		return;
@@ -1163,13 +1345,25 @@ void RedactOutputDev::drawImageMask(GfxState *pGState, Gfx *gfx, Object *pRef, S
 	if (bHasRedact)
 		ApplyRedactToGray(m_arrQuadPoints, pBufferPtr, nWidth, nHeight, imagePolygon);
 
-	SaveImageMaskToStream(pDocument, (CDictObject*)pObj, pBufferPtr, nWidth, nHeight);
-	delete[] pBufferPtr;
+	BYTE* pFinalBuffer = pBufferPtr;
+	int nFinalWidth = nWidth, nFinalHeight = nHeight;
+	if (bNeedsCrop)
+	{
+		pFinalBuffer = CropGray(pBufferPtr, nWidth, nHeight, nCropLeft, nCropTop, nCropWidth, nCropHeight);
+		delete[] pBufferPtr;
+		nFinalWidth  = nCropWidth;
+		nFinalHeight = nCropHeight;
+	}
 
-	DrawXObject(m_sImageName.c_str());
+	SaveImageMaskToStream(pDocument, (CDictObject*)pObj, pFinalBuffer, nFinalWidth, nFinalHeight);
+	delete[] pFinalBuffer;
+
+	DrawXObject(m_sImageName.c_str(), bNeedsCrop ? arrCropMatrix : NULL);
 }
 void RedactOutputDev::drawImage(GfxState *pGState, Gfx *gfx, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap, int *pMaskColors, GBool bInlineImg, GBool interpolate)
 {
+	++m_nGraphicsCounter;
+
 	m_pRenderer->m_oCommandManager.Flush();
 	DoStateOp();
 
@@ -1183,15 +1377,21 @@ void RedactOutputDev::drawImage(GfxState *pGState, Gfx *gfx, Object *pRef, Strea
 		return;
 
 	bool bHasRedact = CheckPartialRedact(m_arrQuadPoints, imagePolygon);
-	if (!pRef || bInlineImg || bHasRedact)
-		pObj = CreateImage(gfx, nWidth, nHeight, STREAM_FILTER_DCT_DECODE, 8, "DeviceRGB");
+
+	int nCropLeft, nCropTop, nCropWidth, nCropHeight;
+	double arrCropMatrix[6];
+	bool bNeedsCrop = ComputeImageCropRect(pGState, m_arrMatrix, nWidth, nHeight, m_nRedactInfo,
+											nCropLeft, nCropTop, nCropWidth, nCropHeight, arrCropMatrix);
+
+	if (!pRef || bInlineImg || bHasRedact || bNeedsCrop)
+		pObj = CreateImage(gfx, bNeedsCrop ? nCropWidth : nWidth, bNeedsCrop ? nCropHeight : nHeight, STREAM_FILTER_DCT_DECODE, 8, "DeviceRGB");
 	else
 		pObj = m_mObjManager->GetObj(pRef->getRefNum() + m_nStartRefID);
 
 	if (!pObj || pObj->GetType() != object_type_DICT)
 		return;
 
-	if (!bHasRedact && pRef && !bInlineImg)
+	if (!bHasRedact && !bNeedsCrop && pRef && !bInlineImg)
 	{
 		DrawXObject(m_sImageName.c_str());
 		return;
@@ -1204,9 +1404,19 @@ void RedactOutputDev::drawImage(GfxState *pGState, Gfx *gfx, Object *pRef, Strea
 	if (bHasRedact)
 		ApplyRedactToRGBA(m_arrQuadPoints, pBufferPtr, nWidth, nHeight, imagePolygon);
 
-	SaveRGBAToStream(pDocument, (CDictObject*)pObj, pBufferPtr, nWidth, nHeight);
+	BYTE* pFinalBuffer = pBufferPtr;
+	int nFinalWidth = nWidth, nFinalHeight = nHeight;
+	if (bNeedsCrop)
+	{
+		pFinalBuffer = CropRGBA(pBufferPtr, nWidth, nHeight, nCropLeft, nCropTop, nCropWidth, nCropHeight);
+		delete[] pBufferPtr;
+		nFinalWidth  = nCropWidth;
+		nFinalHeight = nCropHeight;
+	}
 
-	DrawXObject(m_sImageName.c_str());
+	SaveRGBAToStream(pDocument, (CDictObject*)pObj, pFinalBuffer, nFinalWidth, nFinalHeight);
+
+	DrawXObject(m_sImageName.c_str(), bNeedsCrop ? arrCropMatrix : NULL);
 }
 void RedactOutputDev::drawMaskedImage(GfxState *pGState, Gfx *gfx, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap,
 							 Object* pMaskRef, Stream *pMaskStream, int nMaskWidth, int nMaskHeight, GBool bMaskInvert, GBool interpolate)
@@ -1229,15 +1439,21 @@ void RedactOutputDev::drawSoftMaskedImage(GfxState *pGState, Gfx *gfx, Object *p
 		return;
 
 	bool bHasRedact = CheckPartialRedact(m_arrQuadPoints, imagePolygon);
-	if (!pRef || bHasRedact)
-		pObj = CreateImage(gfx, nWidth, nHeight, STREAM_FILTER_DCT_DECODE, 8, "DeviceRGB");
+
+	int nCropLeft, nCropTop, nCropWidth, nCropHeight;
+	double arrCropMatrix[6];
+	bool bNeedsCrop = ComputeImageCropRect(pGState, m_arrMatrix, nWidth, nHeight, m_nRedactInfo,
+											nCropLeft, nCropTop, nCropWidth, nCropHeight, arrCropMatrix);
+
+	if (!pRef || bHasRedact || bNeedsCrop)
+		pObj = CreateImage(gfx, bNeedsCrop ? nCropWidth : nWidth, bNeedsCrop ? nCropHeight : nHeight, STREAM_FILTER_DCT_DECODE, 8, "DeviceRGB");
 	else
 		pObj = m_mObjManager->GetObj(pRef->getRefNum() + m_nStartRefID);
 
 	if (!pObj || pObj->GetType() != object_type_DICT)
 		return;
 
-	if (!bHasRedact)
+	if (!bHasRedact && !bNeedsCrop)
 	{
 		DrawXObject(m_sImageName.c_str());
 		return;
@@ -1249,7 +1465,18 @@ void RedactOutputDev::drawSoftMaskedImage(GfxState *pGState, Gfx *gfx, Object *p
 
 	ApplyRedactToRGBA(m_arrQuadPoints, pBufferPtr, nWidth, nHeight, imagePolygon);
 	CDictObject* pDictObj = (CDictObject*)pObj;
-	SaveRGBAToStream(pDocument, pDictObj, pBufferPtr, nWidth, nHeight);
+
+	BYTE* pFinalBuffer = pBufferPtr;
+	int nFinalWidth = nWidth, nFinalHeight = nHeight;
+	if (bNeedsCrop)
+	{
+		pFinalBuffer = CropRGBA(pBufferPtr, nWidth, nHeight, nCropLeft, nCropTop, nCropWidth, nCropHeight);
+		delete[] pBufferPtr;
+		nFinalWidth  = nCropWidth;
+		nFinalHeight = nCropHeight;
+	}
+
+	SaveRGBAToStream(pDocument, pDictObj, pFinalBuffer, nFinalWidth, nFinalHeight);
 
 	BYTE* pMaskBufferPtr = DecodeImageToGray(pMaskStream, nMaskWidth, nMaskHeight, pMaskColorMap, pGState);
 	if (pMaskBufferPtr)
@@ -1257,7 +1484,8 @@ void RedactOutputDev::drawSoftMaskedImage(GfxState *pGState, Gfx *gfx, Object *p
 		if (nWidth != nMaskWidth || nHeight != nMaskHeight)
 		{
 			// Simple scaling (nearest neighbor)
-			BYTE* pDstMask = new BYTE[nWidth * nHeight];
+			const size_t nBufSize = static_cast<size_t>(nWidth) * static_cast<size_t>(nHeight);
+			BYTE* pDstMask = new(std::nothrow) BYTE[nBufSize];
 			if (!pDstMask)
 			{
 				delete[] pMaskBufferPtr;
@@ -1287,11 +1515,19 @@ void RedactOutputDev::drawSoftMaskedImage(GfxState *pGState, Gfx *gfx, Object *p
 		}
 
 		ApplyRedactToGray(m_arrQuadPoints, pMaskBufferPtr, nWidth, nHeight, imagePolygon);
-		SaveGrayToSMask(pDocument, pDictObj, pMaskBufferPtr, nWidth, nHeight);
-		delete[] pMaskBufferPtr;
+
+		BYTE* pFinalMaskBuffer = pMaskBufferPtr;
+		if (bNeedsCrop)
+		{
+			pFinalMaskBuffer = CropGray(pMaskBufferPtr, nWidth, nHeight, nCropLeft, nCropTop, nCropWidth, nCropHeight);
+			delete[] pMaskBufferPtr;
+		}
+
+		SaveGrayToSMask(pDocument, pDictObj, pFinalMaskBuffer, nFinalWidth, nFinalHeight);
+		delete[] pFinalMaskBuffer;
 	}
 
-	DrawXObject(m_sImageName.c_str());
+	DrawXObject(m_sImageName.c_str(), bNeedsCrop ? arrCropMatrix : NULL);
 }
 //----- Type 3 font operators
 void RedactOutputDev::type3D0(GfxState *pGState, double wx, double wy)
@@ -1305,6 +1541,8 @@ void RedactOutputDev::type3D1(GfxState *pGState, double wx, double wy, double ll
 //----- form XObjects
 void RedactOutputDev::drawForm(GfxState *pGState, Gfx *gfx, Ref id, const char* name)
 {
+	int nFormIndex = m_nFormCounter++;
+
 	m_pRenderer->m_oCommandManager.Flush();
 	DoStateOp();
 
@@ -1380,11 +1618,21 @@ void RedactOutputDev::drawForm(GfxState *pGState, Gfx *gfx, Ref id, const char* 
 	};
 	if (CheckFullRedact(m_arrQuadPoints, formPolygon))
 	{
+		if (m_pFormTextCounts && (size_t)nFormIndex < m_pFormTextCounts->size())
+			m_nTextCounter += (*m_pFormTextCounts)[nFormIndex];
+		if (m_pFormGraphicsCounts && (size_t)nFormIndex < m_pFormGraphicsCounts->size())
+			m_nGraphicsCounter += (*m_pFormGraphicsCounts)[nFormIndex];
+
 		oForm.free();
 		return;
 	}
 	if (!CheckPartialRedact(m_arrQuadPoints, formPolygon))
 	{
+		if (m_pFormTextCounts && (size_t)nFormIndex < m_pFormTextCounts->size())
+			m_nTextCounter += (*m_pFormTextCounts)[nFormIndex];
+		if (m_pFormGraphicsCounts && (size_t)nFormIndex < m_pFormGraphicsCounts->size())
+			m_nGraphicsCounter += (*m_pFormGraphicsCounts)[nFormIndex];
+
 		oForm.free();
 		DrawXObject(name);
 		return;
@@ -1420,10 +1668,12 @@ void RedactOutputDev::drawForm(GfxState *pGState, Gfx *gfx, Ref id, const char* 
 	pDocument->SetCurPage(pFakePage);
 	pFakePage->SetStream(pNewForm->GetStream());
 
-	RedactOutputDev* pFormOutputDev = new RedactOutputDev(m_pRenderer, m_mObjManager, m_nStartRefID);
+	RedactOutputDev* pFormOutputDev = new RedactOutputDev(m_pRenderer, m_mObjManager, m_nStartRefID, m_nRedactInfo);
 	pFormOutputDev->NewPDF(m_pXref);
 	pFormOutputDev->m_pPage = pFakePage;
 	pFormOutputDev->m_pResources = pNewResources;
+	pFormOutputDev->SetOverlapInfo(m_arrHiddenTextIndices, m_pFormTextCounts, m_pFormGraphicsCounts,
+								   m_nTextCounter, m_nFormCounter, m_nGraphicsCounter);
 	std::vector<double> arrFormQuadPoints;
 	double dInvMatrix[6] = { 1, 0, 0, 1, 0, 0 };
 	InvertMatrix(m_arrMatrix, dInvMatrix);
@@ -1449,6 +1699,10 @@ void RedactOutputDev::drawForm(GfxState *pGState, Gfx *gfx, Ref id, const char* 
 	_gfx->display(&oFormRef);
 	_gfx->endOfPage();
 	oFormRef.free();
+
+	m_nTextCounter     = pFormOutputDev->GetTextCounter();
+	m_nFormCounter     = pFormOutputDev->GetFormCounter();
+	m_nGraphicsCounter = pFormOutputDev->GetGraphicsCounter();
 
 	RELEASEOBJECT(_gfx);
 	RELEASEOBJECT(pFormOutputDev);
@@ -1882,9 +2136,20 @@ void RedactOutputDev::DoStateOp()
 	}
 	m_sStates.back().m_arrOp.clear();
 }
-void RedactOutputDev::DrawXObject(const char* name)
+void RedactOutputDev::DrawXObject(const char* name, const double* pCropMatrix)
 {
 	m_pPage->GrSave();
+	if (pCropMatrix)
+	{
+		double dM[6], dX, dY;
+		dM[0] = pCropMatrix[0] * m_arrMatrix[0] + pCropMatrix[1] * m_arrMatrix[2];
+		dM[1] = pCropMatrix[0] * m_arrMatrix[1] + pCropMatrix[1] * m_arrMatrix[3];
+		dM[2] = pCropMatrix[2] * m_arrMatrix[0] + pCropMatrix[3] * m_arrMatrix[2];
+		dM[3] = pCropMatrix[2] * m_arrMatrix[1] + pCropMatrix[3] * m_arrMatrix[3];
+		dM[4] = pCropMatrix[4] * m_arrMatrix[0] + pCropMatrix[5] * m_arrMatrix[2] + m_arrMatrix[4];
+		dM[5] = pCropMatrix[4] * m_arrMatrix[1] + pCropMatrix[5] * m_arrMatrix[3] + m_arrMatrix[5];
+		DoTransform(dM, &dX, &dY, true);
+	}
 	UpdateTransform();
 	m_pPage->ExecuteXObject(name);
 	m_pPage->GrRestore();

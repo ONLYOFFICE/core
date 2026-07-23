@@ -26,7 +26,7 @@
 -(JSValue*) GetGIDByUnicode : (JSValue*)sId;
 -(JSValue*) IsNeedCMap;
 -(JSValue*) ScanPage : (JSValue*)nPageIndex : (JSValue*)mode;
--(JSValue*) SetScanPageFonts : (JSValue*)nPageIndex;
+-(JSValue*) SetScanPageFonts : (JSValue*)arrPageIndexes;
 -(JSValue*) GetImageBase64 : (JSValue*)rId;
 -(JSValue*) FreeWasmData : (JSValue*)typedArray;
 -(JSValue*) SplitPages : (JSValue*)arrPageIndexes : (JSValue*)data;
@@ -34,6 +34,7 @@
 -(JSValue*) UnmergePages;
 -(JSValue*) RedactPage : (JSValue*)nPageIndex : (JSValue*)arrRedactBox : (JSValue*)dataFiller;
 -(JSValue*) UndoRedact;
+-(JSValue*) EditPdf : (JSValue*)data;
 -(JSValue*) CheckOwnerPassword : (JSValue*)sPassword;
 -(JSValue*) CheckPerm : (JSValue*)nPerm;
 @end
@@ -77,6 +78,7 @@ FUNCTION_WRAPPER_JS_3(MergePages, MergePages)
 FUNCTION_WRAPPER_JS_0(UnmergePages, UnmergePages)
 FUNCTION_WRAPPER_JS_3(RedactPage, RedactPage)
 FUNCTION_WRAPPER_JS_0(UndoRedact, UndoRedact)
+FUNCTION_WRAPPER_JS_1(EditPdf, EditPdf)
 FUNCTION_WRAPPER_JS_1(CheckOwnerPassword, CheckOwnerPassword)
 FUNCTION_WRAPPER_JS_1(CheckPerm, CheckPerm)
 @end

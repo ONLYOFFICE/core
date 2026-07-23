@@ -1,37 +1,39 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * Copyright (C) Ascensio System SIA, 2009-2026
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
- * version 3 as published by the Free Software Foundation. In accordance with
- * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
- * that Ascensio System SIA expressly excludes the warranty of non-infringement
- * of any third-party rights.
+ * version 3 as published by the Free Software Foundation, together with the
+ * additional terms provided in the LICENSE file.
  *
  * This program is distributed WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
- * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. For
+ * details, see the GNU AGPL at: https://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
- * street, Riga, Latvia, EU, LV-1050.
+ * You can contact Ascensio System SIA by email at info@onlyoffice.com
+ * or by postal mail at 20A-6 Ernesta Birznieka-Upisha Street, Riga,
+ * LV-1050, Latvia, European Union.
  *
- * The  interactive user interfaces in modified source and object code versions
- * of the Program must display Appropriate Legal Notices, as required under
+ * The interactive user interfaces in modified versions of the Program
+ * are required to display Appropriate Legal Notices in accordance with
  * Section 5 of the GNU AGPL version 3.
  *
- * Pursuant to Section 7(b) of the License you must retain the original Product
- * logo when distributing the program. Pursuant to Section 7(e) we decline to
- * grant you any rights under trademark law for use of our trademarks.
+ * No trademark rights are granted under this License.
  *
- * All the Product's GUI elements, including illustrations and icon sets, as
- * well as technical writing content are licensed under the terms of the
- * Creative Commons Attribution-ShareAlike 4.0 International. See the License
- * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ * All non-code elements of the Product, including illustrations,
+ * icon sets, and technical writing content, are licensed under the
+ * Creative Commons Attribution-ShareAlike 4.0 International License:
+ * https://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
+ * This license applies only to such non-code elements and does not
+ * modify or replace the licensing terms applicable to the Program's
+ * source code, which remains licensed under the GNU Affero General
+ * Public License v3.
+ *
+ * SPDX-License-Identifier: AGPL-3.0-only
  */
 #include "Unit.h"
 #include <cwchar>
-
 
 double Cm_To_Mm     (const double &dValue)
 {
@@ -753,43 +755,6 @@ namespace XmlUtils
 		return sstream.str();
 	}
 
-	int Rand()
-	{
-		//rand returns integral value range between 0 and RAND_MAX.(RAND_MAX at least 32767.)
-		static bool init = false;   /* ensure different random header each time */
-		if (!init)
-		{
-			init = true;
-			srand((unsigned int) time(NULL));
-		}
-		return std::rand();
-	}
-	int GenerateInt()
-	{
-		//todo c++11 <random>
-		return ((Rand() & 0x7FFF) | ((Rand() & 0x7FFF) << 15) | ((Rand() & 0x3) << 30));
-	}
-
-	std::wstring GenerateGuid()
-	{
-		std::wstring result;
-		//#if defined (_WIN32) || defined(_WIN64)
-		//		GUID guid;
-		//		CoCreateGuid(&guid);
-		//
-		//		OLECHAR* guidString;
-		//		StringFromCLSID(guid, &guidString);
-		//
-		//		result = std::wstring(guidString);
-		//
-		//		CoTaskMemFree(guidString);
-		//#else
-		std::wstringstream sstream;
-		sstream << boost::wformat(L"%04X%04X-%04X-%04X-%04X-%04X%04X%04X") % (Rand() & 0xff) % (Rand() & 0xff) % (Rand() & 0xff) % ((Rand() & 0x0fff) | 0x4000) % ((Rand() % 0x3fff) + 0x8000) %  (Rand() & 0xff) % (Rand() & 0xff) % (Rand() & 0xff);
-		result = sstream.str();
-		//#endif
-		return result;
-	}
 	std::wstring DoubleToString( double value, wchar_t* format )
 	{
 		if ( format == NULL ) return L"";
@@ -799,169 +764,87 @@ namespace XmlUtils
 		return sstream.str();
 	}
 
-	bool IsUnicodeSymbol( unsigned int symbol )
+	bool IsUnicodeSymbol(unsigned int symbol)
 	{
-		bool result = false;
-
-		if ( ( 0x0009 == symbol ) || ( 0x000A == symbol ) || ( 0x000D == symbol ) ||
-			 ( ( 0x0020 <= symbol ) && ( 0xD7FF >= symbol ) ) || ( ( 0xE000 <= symbol ) && ( symbol <= 0xFFFD ) ) ||
-			 ( ( 0x10000 <= symbol ) && symbol ) )
-		{
-			result = true;
-		}
-
-		return result;
+		return (symbol == 0x0009) || (symbol == 0x000A) || (symbol == 0x000D)
+			|| (symbol >= 0x0020   && symbol <= 0xD7FF)
+			|| (symbol >= 0xE000   && symbol <= 0xFFFD)
+			|| (symbol >= 0x10000  && symbol <= 0x10FFFF);
 	}
 
-	std::string EncodeXmlString(const std::string& data, bool bDeleteNoUnicode)
+	std::wstring EncodeXmlString(const std::wstring& data, bool bDeleteNoUnicode)
 	{
-		std::string buffer;
+		std::wstring buffer;
 		buffer.reserve(data.size());
 
-		if(bDeleteNoUnicode)
+		if (bDeleteNoUnicode)
 		{
-			for(size_t pos = 0; pos < data.size(); ++pos)
+			for (size_t pos = 0; pos < data.size(); ++pos)
 			{
-				switch(data[pos])
+				switch (data[pos])
 				{
-				case '&':  buffer.append("&amp;");      break;
-				case '\"': buffer.append("&quot;");     break;
-				case '\'': buffer.append("&apos;");     break;
-				case '<':  buffer.append("&lt;");       break;
-				case '>':  buffer.append("&gt;");       break;
-				default:
+				case L'&':  buffer.append(L"&amp;");  continue;
+				case L'\"': buffer.append(L"&quot;"); continue;
+				case L'\'': buffer.append(L"&apos;"); continue;
+				case L'<':  buffer.append(L"&lt;");   continue;
+				case L'>':  buffer.append(L"&gt;");   continue;
+				default: break;
+				}
+
+				unsigned int codepoint = 0;
+				size_t consumed = 1;
+
+#if defined(_WIN32) || defined(_WIN64)
+				uint16_t w1 = static_cast<uint16_t>(data[pos]);
+				if (w1 >= 0xD800 && w1 <= 0xDBFF && pos + 1 < data.size())
 				{
-					if ( false == IsUnicodeSymbol( data[pos] ) )
+					uint16_t w2 = static_cast<uint16_t>(data[pos + 1]);
+					if (w2 >= 0xDC00 && w2 <= 0xDFFF)
 					{
-						wchar_t symbol1 = data[pos];
-						if(0xD800 <= symbol1 && symbol1 <= 0xDFFF && pos + 1 < data.size())
-						{
-							pos++;
-							wchar_t symbol2 = data[pos];
-							if (symbol1 < 0xDC00 && symbol2 >= 0xDC00 && symbol2 <= 0xDFFF)
-							{
-								buffer.append(&data[pos-1], 2);
-							}
-							else
-							{
-								buffer.append(" ");
-							}
-						}
-						else
-						{
-							buffer.append(" ");
-						}
+						codepoint = 0x10000 + ((w1 - 0xD800) << 10) + (w2 - 0xDC00);
+						consumed = 2;
 					}
 					else
-						buffer.append(&data[pos], 1);
-				}break;
+					{
+						codepoint = w1;
+					}
 				}
+				else
+				{
+					codepoint = w1;
+				}
+#else
+				codepoint = static_cast<unsigned int>(data[pos]);
+#endif
+
+				if (IsUnicodeSymbol(codepoint))
+					buffer.append(&data[pos], consumed);
+				else
+					buffer.append(L" ");
+
+				if (consumed == 2)
+					++pos;
 			}
 		}
 		else
 		{
-			for(size_t pos = 0; pos < data.size(); ++pos)
+			for (size_t pos = 0; pos < data.size(); ++pos)
 			{
-				switch(data[pos])
+				switch (data[pos])
 				{
-				case '&':  buffer.append("&amp;");      break;
-				case '\"': buffer.append("&quot;");     break;
-				case '\'': buffer.append("&apos;");     break;
-				case '<':  buffer.append("&lt;");       break;
-				case '>':  buffer.append("&gt;");       break;
-				case '\0':
-					return buffer;
-				default:   buffer.append(&data[pos], 1);	break;
+				case L'&':  buffer.append(L"&amp;");  break;
+				case L'\"': buffer.append(L"&quot;"); break;
+				case L'\'': buffer.append(L"&apos;"); break;
+				case L'<':  buffer.append(L"&lt;");   break;
+				case L'>':  buffer.append(L"&gt;");   break;
+				case L'\0': return buffer;
+				default:    buffer.append(&data[pos], 1); break;
 				}
 			}
 		}
 
 		return buffer;
-    }
-    std::wstring EncodeXmlString(const std::wstring& data, bool bDeleteNoUnicode)
-    {
-        std::wstring buffer;
-        buffer.reserve(data.size());
-
-        if(bDeleteNoUnicode)
-        {
-            for (size_t pos = 0; pos < data.size(); ++pos)
-            {
-                switch (data[pos])
-                {
-                case L'&':  buffer.append(L"&amp;");  continue;
-                case L'\"': buffer.append(L"&quot;"); continue;
-                case L'\'': buffer.append(L"&apos;"); continue;
-                case L'<':  buffer.append(L"&lt;");   continue;
-                case L'>':  buffer.append(L"&gt;");   continue;
-                case L'\0':
-                default:
-                {
-                    if (!IsUnicodeSymbol(static_cast<unsigned int>( data[pos])))
-                    {
-#ifdef _WIN32
-                        wchar_t symbol1 = data[pos];
-#else
-                        uint16_t symbol1 = static_cast<uint16_t>(data[pos]);
-#endif
-
-                        if(0xD800 <= symbol1 && symbol1 <= 0xDFFF && pos + 1 < data.size())
-                        {
-#ifdef _WIN32
-                            wchar_t symbol2 = data[pos+1];
-#else
-                            uint16_t symbol2 = static_cast<uint16_t>(data[pos+1]);
-#endif
-                            if (symbol1 < 0xDC00 && symbol2 >= 0xDC00 && symbol2 <= 0xDFFF)
-                            {
-#ifdef _WIN32
-                                buffer.append(&data[pos], 2);
-#else
-                                uint32_t codepoint = 0x10000 + ((symbol1 - 0xD800) << 10) + (symbol2 - 0xDC00);
-                                buffer += static_cast<wchar_t>(codepoint);
-#endif
-                                pos++;
-                            }
-                            else
-                            {
-                                buffer.append(L" ");
-                            }
-                        }
-                        else
-                        {
-                            buffer.append(L" ");
-                        }
-                    }
-                    else
-                    {
-                        buffer.append(&data[pos], 1);
-                    }
-                }break;
-                }
-            }
-        }
-        else
-        {
-            for(size_t pos = 0; pos < data.size(); ++pos)
-            {
-                switch(data[pos])
-                {
-                case '&':  buffer.append(L"&amp;");      break;
-                case '\"': buffer.append(L"&quot;");     break;
-                case '\'': buffer.append(L"&apos;");     break;
-                case '<':  buffer.append(L"&lt;");       break;
-                case '>':  buffer.append(L"&gt;");       break;
-                case '\0':
-                    return buffer;
-                default:
-                    buffer.append(&data[pos], 1);	break;
-                }
-            }
-        }
-
-
-        return buffer;
-    }
+	}
 
 	std::wstring DeleteNonUnicode(const std::wstring& data)
 	{
@@ -1068,5 +951,33 @@ namespace XmlUtils
 		}
 
 		return buffer;
+	}
+}
+
+#include "./Rand.h"
+namespace XmlUtils
+{
+	int GenerateInt()
+	{
+		return static_cast<int>(RandUInt());
+	}
+
+	std::wstring GenerateGuid()
+	{
+		std::wstring result;
+
+		std::wstringstream sstream;
+		sstream << boost::wformat(L"%04X%04X-%04X-%04X-%04X-%04X%04X%04X")
+					   % (RandUInt() & 0xffff)
+					   % (RandUInt() & 0xffff)
+					   % (RandUInt() & 0xffff)
+					   % ((RandUInt() & 0x0fff) | 0x4000)
+					   % ((RandUInt() & 0x3fff) | 0x8000)
+					   % (RandUInt() & 0xffff)
+					   % (RandUInt() & 0xffff)
+					   % (RandUInt() & 0xffff);
+		result = sstream.str();
+
+		return result;
 	}
 }

@@ -378,6 +378,7 @@
     <ClInclude Include="..\..\..\XlsxFormat\Styles\CellStyles.h" />
     <ClInclude Include="..\..\..\XlsxFormat\Styles\Colors.h" />
     <ClInclude Include="..\..\..\XlsxFormat\Styles\dxf.h" />
+    <ClInclude Include="..\..\..\XlsxFormat\Styles\FeaturePropertyBag.h" />
     <ClInclude Include="..\..\..\XlsxFormat\Styles\Fills.h" />
     <ClInclude Include="..\..\..\XlsxFormat\Styles\Fonts.h" />
     <ClInclude Include="..\..\..\XlsxFormat\Styles\NumFmts.h" />

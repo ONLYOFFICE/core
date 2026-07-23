@@ -1,7 +1,43 @@
+/*
+ * Copyright (C) Ascensio System SIA, 2009-2026
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation, together with the
+ * additional terms provided in the LICENSE file.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. For
+ * details, see the GNU AGPL at: https://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA by email at info@onlyoffice.com
+ * or by postal mail at 20A-6 Ernesta Birznieka-Upisha Street, Riga,
+ * LV-1050, Latvia, European Union.
+ *
+ * The interactive user interfaces in modified versions of the Program
+ * are required to display Appropriate Legal Notices in accordance with
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * No trademark rights are granted under this License.
+ *
+ * All non-code elements of the Product, including illustrations,
+ * icon sets, and technical writing content, are licensed under the
+ * Creative Commons Attribution-ShareAlike 4.0 International License:
+ * https://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ * This license applies only to such non-code elements and does not
+ * modify or replace the licensing terms applicable to the Program's
+ * source code, which remains licensed under the GNU Affero General
+ * Public License v3.
+ *
+ * SPDX-License-Identifier: AGPL-3.0-only
+ */
+
 #include "Annotation.h"
 #include "Utils/Utils.h"
 
 #include "../../DesktopEditor/common/File.h"
+#include "../../OfficeUtils/src/ZipFolder.h"
 
 namespace OFD
 {
@@ -23,7 +59,7 @@ CParameter::CParameter(CXmlReader& oLiteReader)
 	m_wsValue = oLiteReader.GetText2();
 }
 
-CAnnot::CAnnot(CXmlReader& oLiteReader)
+CAnnot::CAnnot(CXmlReader& oLiteReader, IFolder* pFolder)
 	: m_bVisible(true), m_bPrint(true), m_bNoZoom(false), m_bNoRotate(false), m_bReadOnly(true)
 {
 	if (oLiteReader.MoveToFirstAttribute())
@@ -98,7 +134,7 @@ CAnnot::CAnnot(CXmlReader& oLiteReader)
 			}
 		}
 		else if ("ofd:Appearance" == sNodeName)
-			m_arAppearances.push_back(new CAppearance(oLiteReader));
+			m_arAppearances.push_back(new CAppearance(oLiteReader, pFolder));
 	}
 }
 
@@ -120,7 +156,7 @@ void CAnnot::Draw(IRenderer* pRenderer, const CCommonData& oCommonData, EPageTyp
 CPageAnnot::CPageAnnot()
 {}
 
-CPageAnnot* CPageAnnot::Read(const std::wstring& wsFilePath, const std::wstring& wsRootPath)
+CPageAnnot* CPageAnnot::Read(const std::wstring& wsFilePath, const std::wstring& wsRootPath, IFolder* pFolder)
 {
 	if (wsFilePath.empty() || !CanUseThisPath(wsFilePath, wsRootPath))
 		return nullptr;
@@ -128,7 +164,8 @@ CPageAnnot* CPageAnnot::Read(const std::wstring& wsFilePath, const std::wstring&
 	const std::wstring wsNormalizedPath = CombinePaths(wsRootPath, wsFilePath);
 
 	CXmlReader oLiteReader;
-	if (!oLiteReader.FromFile(wsNormalizedPath) || !oLiteReader.ReadNextNode() || "ofd:PageAnnot" != oLiteReader.GetNameA())
+
+	if (!pFolder->getReaderFromFile(wsNormalizedPath, oLiteReader) || !oLiteReader.ReadNextNode() || "ofd:PageAnnot" != oLiteReader.GetNameA())
 		return nullptr;
 
 	CPageAnnot *pPageAnnot = new CPageAnnot();
@@ -140,7 +177,7 @@ CPageAnnot* CPageAnnot::Read(const std::wstring& wsFilePath, const std::wstring&
 		if ("ofd:Annot" != oLiteReader.GetNameA())
 			continue;
 
-		pPageAnnot->m_arAnnots.push_back(new CAnnot(oLiteReader));
+		pPageAnnot->m_arAnnots.push_back(new CAnnot(oLiteReader, pFolder));
 	}
 
 	return pPageAnnot;
@@ -162,7 +199,7 @@ CAnnotation::~CAnnotation()
 		delete m_pPageAnnot;
 }
 
-bool CAnnotation::Read(const std::wstring& wsFilePath, const std::wstring& wsRootPath)
+bool CAnnotation::Read(const std::wstring& wsFilePath, const std::wstring& wsRootPath, IFolder* pFolder)
 {
 	if (wsFilePath.empty() || !CanUseThisPath(wsFilePath, wsRootPath))
 		return false;
@@ -173,7 +210,8 @@ bool CAnnotation::Read(const std::wstring& wsFilePath, const std::wstring& wsRoo
 		wsNormalizedPath = CombinePaths(wsNormalizedPath, L"Annotations.xml");
 
 	CXmlReader oLiteReader;
-	if (!oLiteReader.FromFile(wsNormalizedPath) || !oLiteReader.ReadNextNode() || L"ofd:Annotations" != oLiteReader.GetName())
+
+	if (!pFolder->getReaderFromFile(wsNormalizedPath, oLiteReader) || !oLiteReader.ReadNextNode() || L"ofd:Annotations" != oLiteReader.GetName())
 		return false;
 
 	const int nDepth = oLiteReader.GetDepth();
@@ -190,7 +228,7 @@ bool CAnnotation::Read(const std::wstring& wsFilePath, const std::wstring& wsRoo
 				continue;
 
 			if (nullptr == m_pPageAnnot)
-				m_pPageAnnot = CPageAnnot::Read(oLiteReader.GetText2(), NSSystemPath::GetDirectoryName(wsNormalizedPath));
+				m_pPageAnnot = CPageAnnot::Read(oLiteReader.GetText2(), NSSystemPath::GetDirectoryName(wsNormalizedPath), pFolder);
 		}
 	}
 

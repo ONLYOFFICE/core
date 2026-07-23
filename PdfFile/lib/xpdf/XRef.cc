@@ -372,7 +372,7 @@ XRef::XRef(BaseStream *strA, GBool repair) {
     rootGen = obj.getRefGen();
 
 	fetch(rootNum, rootGen, &root);
-	if (!root.isDict() || !root.dictLookup("Type", &rootType)->isName("Catalog"))
+	if (!root.isDict() || root.dictLookupNF("Pages", &rootType)->isNull())
 	{
 		root.free(); rootType.free();
 		errCode = errDamaged;

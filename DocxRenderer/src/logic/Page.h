@@ -1,4 +1,39 @@
-﻿#pragma once
+﻿/*
+ * Copyright (C) Ascensio System SIA, 2009-2026
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation, together with the
+ * additional terms provided in the LICENSE file.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. For
+ * details, see the GNU AGPL at: https://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA by email at info@onlyoffice.com
+ * or by postal mail at 20A-6 Ernesta Birznieka-Upisha Street, Riga,
+ * LV-1050, Latvia, European Union.
+ *
+ * The interactive user interfaces in modified versions of the Program
+ * are required to display Appropriate Legal Notices in accordance with
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * No trademark rights are granted under this License.
+ *
+ * All non-code elements of the Product, including illustrations,
+ * icon sets, and technical writing content, are licensed under the
+ * Creative Commons Attribution-ShareAlike 4.0 International License:
+ * https://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ * This license applies only to such non-code elements and does not
+ * modify or replace the licensing terms applicable to the Program's
+ * source code, which remains licensed under the GNU Affero General
+ * Public License v3.
+ *
+ * SPDX-License-Identifier: AGPL-3.0-only
+ */
+
+#pragma once
 
 #include "elements/Paragraph.h"
 #include "elements/Table.h"
@@ -47,7 +82,7 @@ namespace NSDocxRenderer
 		bool m_bUseDefaultFont		   {false};
 		bool m_bWriteStyleRaw		   {false};
 		bool m_bCollectMetaInfo        {false};
-		bool m_bIsBuildTables		   {false};
+		bool m_bIsBuildTables		   {true};
 		bool m_bIsLuminosityShapesFiled{false};
 		bool m_bFontSubstitution       {false};
 		bool m_bFirstParagraphLineCorrection{false};
@@ -84,9 +119,9 @@ namespace NSDocxRenderer
 		void Analyze();
 		void Record(NSStringUtils::CStringBuilder& oWriter, bool bIsLastPage);
 
-		std::vector<std::wstring> GetXmlShapes();
-		std::vector<std::wstring> GetXmlShapesPptx();
-		NSWasm::CData GetShapesBin();
+		std::vector<std::wstring> GetXmlContent();
+		std::vector<std::wstring> GetXmlContentPptx();
+		NSWasm::CData GetContentBin();
 
 		void AddCompleteXml(const std::wstring& oXml);
 		void AddCompleteBinBase64(const std::string& oBase64);
@@ -98,15 +133,8 @@ namespace NSDocxRenderer
 		using base_item_ptr_t = std::shared_ptr<CBaseItem>;
 		using ooxml_item_ptr_t = std::shared_ptr<IOoxmlItem>;
 		using paragraph_ptr_t = std::shared_ptr<CParagraph>;
-		using table_ptr_t = std::shared_ptr<CTable>;
-
-		using graphical_cell_ptr_t = std::shared_ptr<CGraphicalCell>;
-		using text_cell_ptr_t = std::shared_ptr<CTextCell>;
-		using cell_ptr_t = std::shared_ptr<CTable::CCell>;
 
 		using text_line_group_ptr_t = std::shared_ptr<CBaseItemGroup<CTextLine>>;
-		using text_cell_group_ptr_t = std::shared_ptr<CBaseItemGroup<CTextCell>>;
-		using cell_group_ptr_t = std::shared_ptr<CBaseItemGroup<CTable::CCell>>;
 
 		// returns std::vector of conts with diac. symbols and remove it from m_arConts
 		std::vector<cont_ptr_t> MoveDiacriticalSymbols();
@@ -119,15 +147,6 @@ namespace NSDocxRenderer
 
 		// returns std::vector of paragraphs builded from m_arTextLines
 		std::vector<paragraph_ptr_t> BuildParagraphs(const std::vector<text_line_group_ptr_t>& arTextLineGroups);
-
-		// return groups of text cells
-		std::vector<text_cell_group_ptr_t> BuildTextCellGroups(const std::vector<text_line_group_ptr_t>& arTextLineGroups);
-
-		// returns std::vector of tables builded from shapes and paragraphes
-		std::vector<table_ptr_t> BuildTables(const std::vector<text_line_group_ptr_t>& arTextLineGroups);
-
-		// return std::vector of graphical cells (from shapes)
-		std::vector<graphical_cell_ptr_t> BuildGraphicalCells();
 
 		// returns std::vector of base items builded from m_arParagraphs
 		std::vector<ooxml_item_ptr_t> BuildOutputObjects();
@@ -222,10 +241,12 @@ namespace NSDocxRenderer
 		CContTextBuilder      m_oContBuilder;
 		CHorVerLinesCollector m_oHorVerLinesCollector;
 
+		ITableBuilder* m_pTableBuilder{nullptr};
+
 		std::vector<shape_ptr_t>      m_arShapes;
 		std::vector<text_line_ptr_t>  m_arTextLines;
 		std::vector<paragraph_ptr_t>  m_arParagraphs;
-		std::vector<table_ptr_t>      m_arTables;
+		std::vector<ooxml_item_ptr_t> m_arTables;
 		std::vector<ooxml_item_ptr_t> m_arOutputObjects;
 
 		std::vector<std::wstring> m_arCompleteObjectsXml;

@@ -1,33 +1,36 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * Copyright (C) Ascensio System SIA, 2009-2026
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
- * version 3 as published by the Free Software Foundation. In accordance with
- * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
- * that Ascensio System SIA expressly excludes the warranty of non-infringement
- * of any third-party rights.
+ * version 3 as published by the Free Software Foundation, together with the
+ * additional terms provided in the LICENSE file.
  *
  * This program is distributed WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
- * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. For
+ * details, see the GNU AGPL at: https://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
- * street, Riga, Latvia, EU, LV-1050.
+ * You can contact Ascensio System SIA by email at info@onlyoffice.com
+ * or by postal mail at 20A-6 Ernesta Birznieka-Upisha Street, Riga,
+ * LV-1050, Latvia, European Union.
  *
- * The  interactive user interfaces in modified source and object code versions
- * of the Program must display Appropriate Legal Notices, as required under
+ * The interactive user interfaces in modified versions of the Program
+ * are required to display Appropriate Legal Notices in accordance with
  * Section 5 of the GNU AGPL version 3.
  *
- * Pursuant to Section 7(b) of the License you must retain the original Product
- * logo when distributing the program. Pursuant to Section 7(e) we decline to
- * grant you any rights under trademark law for use of our trademarks.
+ * No trademark rights are granted under this License.
  *
- * All the Product's GUI elements, including illustrations and icon sets, as
- * well as technical writing content are licensed under the terms of the
- * Creative Commons Attribution-ShareAlike 4.0 International. See the License
- * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ * All non-code elements of the Product, including illustrations,
+ * icon sets, and technical writing content, are licensed under the
+ * Creative Commons Attribution-ShareAlike 4.0 International License:
+ * https://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
+ * This license applies only to such non-code elements and does not
+ * modify or replace the licensing terms applicable to the Program's
+ * source code, which remains licensed under the GNU Affero General
+ * Public License v3.
+ *
+ * SPDX-License-Identifier: AGPL-3.0-only
  */
 #include "Objects.h"
 #include "Pages.h"
@@ -497,6 +500,7 @@ namespace PdfWriter
 		Add("MediaBox", CArrayObject::CreateBox(0, 0, DEF_PAGE_WIDTH, DEF_PAGE_HEIGHT));
 		Add("Type", "Page");
 		Add("Contents", m_pContents);
+		Add("Tabs", "S");
 		AddResource();
 	}
 	CPage::~CPage()
@@ -515,19 +519,21 @@ namespace PdfWriter
 		m_eGrMode   = grmode_PAGE;
 		m_pGrState  = new CGrState(NULL);
 
+		m_pContents         = NULL;
 		m_pFont             = NULL;
 		m_pShadings         = NULL;
 		m_unShadingsCount   = 0;
 		m_pPatterns         = NULL;
 		m_unPatternsCount   = 0;
 		m_eType             = fontUnknownType;
+		m_nDestAnchorMCID   = -1;
 	}
     void CPage::SetWidth(double dValue)
 	{
         dValue = std::min(std::max(dValue, 1.0), 14400.0);
 		SetMediaBoxValue(2, dValue);
 	}
-	double        CPage::GetWidth()
+	double CPage::GetWidth()
 	{
         TBox oBox = GetMediaBox();
         return oBox.fRight - oBox.fLeft;
@@ -537,7 +543,7 @@ namespace PdfWriter
         dValue = std::min(std::max(dValue, 1.0), 14400.0);
 		SetMediaBoxValue(3, dValue);
 	}
-	double        CPage::GetHeight()
+	double CPage::GetHeight()
 	{
         TBox oBox = GetMediaBox();
         return oBox.fTop - oBox.fBottom;
@@ -565,7 +571,7 @@ namespace PdfWriter
 
 		return oBox;
 	}
-	TBox          CPage::GetMediaBox()
+	TBox CPage::GetMediaBox()
 	{
 		return GetBox("MediaBox");
 	}
@@ -994,6 +1000,9 @@ namespace PdfWriter
 
 		m_pStream->WriteStr("q\012");
 		m_pGrState = pState;
+
+		if (m_pDocument->IsPDFUA())
+			m_pStream->WriteStr("/Artifact <</Type /Layout>> BDC\012");
 	}
     void CPage::GrRestore()
 	{
@@ -1008,7 +1017,22 @@ namespace PdfWriter
 		delete m_pGrState;
 		m_pGrState = pPrev;
 
+		if (m_pDocument->IsPDFUA())
+			m_pStream->WriteStr("EMC\012");
+
 		m_pStream->WriteStr("Q\012");
+	}
+	int CPage::GetOrCreateDestAnchorMCID()
+	{
+		if (m_nDestAnchorMCID >= 0)
+			return m_nDestAnchorMCID;
+
+		m_nDestAnchorMCID = 0;
+		m_pStream->WriteStr("/Anchor <</MCID ");
+		m_pStream->WriteStr(std::to_string(m_nDestAnchorMCID).c_str());
+		m_pStream->WriteStr(">> BDC\012EMC\012");
+
+		return m_nDestAnchorMCID;
 	}
     void CPage::SetStrokeColor(unsigned char unR, unsigned char unG, unsigned char unB)
 	{
@@ -1115,6 +1139,20 @@ namespace PdfWriter
 		// Operator   : cm
 		// Description: Modify the transformation matrix (CTM - Current Transformation Matrix)
 
+		Transform(dM11, dM12, dM21, dM22, dX, dY);
+	
+		CMatrix oCTM = m_pGrState->m_oMatrix;
+	
+		// Multiply matrices oCTM(new) = oCTM(transformation(given by parameters)) x oCTM(old)
+		m_pGrState->m_oMatrix.m11 = dM11 * oCTM.m11 + dM12 * oCTM.m21;
+		m_pGrState->m_oMatrix.m12 = dM11 * oCTM.m12 + dM12 * oCTM.m22;
+		m_pGrState->m_oMatrix.m21 = dM21 * oCTM.m11 + dM22 * oCTM.m21;
+		m_pGrState->m_oMatrix.m22 = dM21 * oCTM.m12 + dM22 * oCTM.m22;
+		m_pGrState->m_oMatrix.x   =   dX * oCTM.m11 + dY * oCTM.m21 + oCTM.x;
+		m_pGrState->m_oMatrix.y   =   dX * oCTM.m12 + dY * oCTM.m22 + oCTM.y;
+	}
+	void CPage::Transform(double dM11, double dM12, double dM21, double dM22, double dX, double dY)
+	{
 		m_pStream->WriteReal(dM11);
 		m_pStream->WriteChar(' ');
 		m_pStream->WriteReal(dM12);
@@ -1127,16 +1165,6 @@ namespace PdfWriter
 		m_pStream->WriteChar(' ');
 		m_pStream->WriteReal(dY);
 		m_pStream->WriteStr(" cm\012");
-	
-		CMatrix oCTM = m_pGrState->m_oMatrix;
-	
-		// Multiply matrices oCTM(new) = oCTM(transformation(given by parameters)) x oCTM(old)
-		m_pGrState->m_oMatrix.m11 = dM11 * oCTM.m11 + dM12 * oCTM.m21;
-		m_pGrState->m_oMatrix.m12 = dM11 * oCTM.m12 + dM12 * oCTM.m22;
-		m_pGrState->m_oMatrix.m21 = dM21 * oCTM.m11 + dM22 * oCTM.m21;
-		m_pGrState->m_oMatrix.m22 = dM21 * oCTM.m12 + dM22 * oCTM.m22;
-		m_pGrState->m_oMatrix.x   =   dX * oCTM.m11 + dY * oCTM.m21 + oCTM.x;
-		m_pGrState->m_oMatrix.y   =   dX * oCTM.m12 + dY * oCTM.m22 + oCTM.y;
 	}
 	void CPage::StartTransform(double dM11, double dM12, double dM21, double dM22, double dX, double dY)
 	{
@@ -1693,10 +1721,16 @@ namespace PdfWriter
 		m_pStream->WriteEscapeName(sName.c_str());
 		m_pStream->WriteStr(" BMC\012");
 	}
-	void CPage::BeginMarkedContentDict(const std::string& sName, CDictObject* pBDC)
+	void CPage::BeginMarkedContentDict(const std::string& sName, CObjectBase* pBDC)
 	{
 		// Operator   : BDC
-		// Description: Begin marked content with dict
+		// Description: Begin marked content with args
+
+		if (!pBDC)
+		{
+			BeginMarkedContent(sName);
+			return;
+		}
 
 		m_pStream->WriteEscapeName(sName.c_str());
 		m_pStream->WriteChar(' ');

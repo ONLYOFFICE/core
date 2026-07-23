@@ -1,33 +1,36 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * Copyright (C) Ascensio System SIA, 2009-2026
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
- * version 3 as published by the Free Software Foundation. In accordance with
- * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
- * that Ascensio System SIA expressly excludes the warranty of non-infringement
- * of any third-party rights.
+ * version 3 as published by the Free Software Foundation, together with the
+ * additional terms provided in the LICENSE file.
  *
  * This program is distributed WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
- * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. For
+ * details, see the GNU AGPL at: https://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
- * street, Riga, Latvia, EU, LV-1050.
+ * You can contact Ascensio System SIA by email at info@onlyoffice.com
+ * or by postal mail at 20A-6 Ernesta Birznieka-Upisha Street, Riga,
+ * LV-1050, Latvia, European Union.
  *
- * The  interactive user interfaces in modified source and object code versions
- * of the Program must display Appropriate Legal Notices, as required under
+ * The interactive user interfaces in modified versions of the Program
+ * are required to display Appropriate Legal Notices in accordance with
  * Section 5 of the GNU AGPL version 3.
  *
- * Pursuant to Section 7(b) of the License you must retain the original Product
- * logo when distributing the program. Pursuant to Section 7(e) we decline to
- * grant you any rights under trademark law for use of our trademarks.
+ * No trademark rights are granted under this License.
  *
- * All the Product's GUI elements, including illustrations and icon sets, as
- * well as technical writing content are licensed under the terms of the
- * Creative Commons Attribution-ShareAlike 4.0 International. See the License
- * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ * All non-code elements of the Product, including illustrations,
+ * icon sets, and technical writing content, are licensed under the
+ * Creative Commons Attribution-ShareAlike 4.0 International License:
+ * https://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
+ * This license applies only to such non-code elements and does not
+ * modify or replace the licensing terms applicable to the Program's
+ * source code, which remains licensed under the GNU Affero General
+ * Public License v3.
+ *
+ * SPDX-License-Identifier: AGPL-3.0-only
  */
 #include "Xlsx.h"
 
@@ -229,43 +232,20 @@ bool OOX::Spreadsheet::CXlsx::WriteXLS(const CPath& oFilePath)
 	if(!(themesPtr->type() == OOX::FileTypes::Unknown))
 	{	auto counter = 0;
 		auto theme = static_cast<PPTX::Theme*>(themesPtr.GetPointer());
-		for(auto themeColor : theme->themeElements.clrScheme.Scheme)
-		{
-			if(themeColor.first == L"lt1")
-				counter = 0;
-			else if(themeColor.first == L"dk1")
-				counter = 1;
-			else if(themeColor.first == L"lt2")
-				counter = 2;
-			else if(themeColor.first == L"dk2")
-				counter = 3;
-			else if(themeColor.first == L"accent1")
-				counter = 4;
-			else if(themeColor.first == L"accent2")
-				counter = 5;
-			else if(themeColor.first == L"accent3")
-				counter = 6;
-			else if(themeColor.first == L"accent4")
-				counter = 7;
-			else if(themeColor.first == L"accent5")
-				counter = 8;
-			else if(themeColor.first == L"accent6")
-				counter = 9;
-			else if(themeColor.first == L"hlink")
-				counter = 10;
-			else if(themeColor.first == L"folHlink")
-				counter = 11;
-			else continue;
-			auto tempcolor = themeColor.second;
-			std::wstringstream sStream;
-			sStream << std::hex  << std::setw(6) << std::setfill(L'0')<< tempcolor.Color->GetARGB(0);
-			writer.globalInfoPtr->RegisterPaletteColor(counter, sStream.str());
-		}
+		CastedGlobalsStram->m_THEME = theme->toXLS(oFilePath);
 	}
 
 	for(auto i : m_arWorksheets)
 		workbookStream->m_arWorksheetSubstream.push_back(i->toXLS(workbookStream->m_GlobalsSubstream));
 	CastedGlobalsStram->m_arSUPBOOK.push_back(m_pWorkbook->WriteXtiRefsXLS());
+	{
+		auto functionsVector = m_pWorkbook->m_oDefinedNames->AddFutureFunctions(CastedGlobalsStram->m_arLBL.size(), true);
+		if(!functionsVector.empty())
+		{
+			std::copy(functionsVector.begin(), functionsVector.end(), std::back_inserter(CastedGlobalsStram->m_arLBL));
+		}
+	}
+
 	if(m_pSharedStrings != nullptr)
 		m_pSharedStrings->toXLS(workbookStream->m_GlobalsSubstream);
 

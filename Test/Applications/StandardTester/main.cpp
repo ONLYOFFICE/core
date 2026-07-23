@@ -1,3 +1,38 @@
+/*
+ * Copyright (C) Ascensio System SIA, 2009-2026
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation, together with the
+ * additional terms provided in the LICENSE file.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. For
+ * details, see the GNU AGPL at: https://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA by email at info@onlyoffice.com
+ * or by postal mail at 20A-6 Ernesta Birznieka-Upisha Street, Riga,
+ * LV-1050, Latvia, European Union.
+ *
+ * The interactive user interfaces in modified versions of the Program
+ * are required to display Appropriate Legal Notices in accordance with
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * No trademark rights are granted under this License.
+ *
+ * All non-code elements of the Product, including illustrations,
+ * icon sets, and technical writing content, are licensed under the
+ * Creative Commons Attribution-ShareAlike 4.0 International License:
+ * https://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ * This license applies only to such non-code elements and does not
+ * modify or replace the licensing terms applicable to the Program's
+ * source code, which remains licensed under the GNU Affero General
+ * Public License v3.
+ *
+ * SPDX-License-Identifier: AGPL-3.0-only
+ */
+
 #include <iostream>
 
 #include "../../../X2tConverter/src/run.h"
@@ -13,9 +48,13 @@
 #include "../../../DesktopEditor/raster/BgraFrame.h"
 #include "../../../DesktopEditor/fontengine/ApplicationFontsWorker.h"
 
+#include "../../../DesktopEditor/xml/include/xmlutils.h"
+
 #include "../../../OfficeUtils/src/OfficeUtils.h"
 
 #include <map>
+#include <algorithm>
+#include <cctype>
 
 enum CheckResultCode
 {
@@ -38,6 +77,45 @@ int GetPagesCount(const std::wstring& dir)
 			++nCount;
 	}
 	return nCount;
+}
+
+std::wstring ToLower(const std::wstring& s)
+{
+	std::wstring sResult = s;
+	for (auto& c : sResult)
+		c = std::tolower(c);
+	return sResult;
+}
+
+int RunConvert(const std::wstring& sFileFrom, const std::wstring& sFileTo, int nFormatTo,
+			   const std::wstring& sConverterDir, const std::wstring& sFontsDir,
+			   const std::wstring& sTempParamsFile, const std::wstring& sExtraParams = L"")
+{
+	NSStringUtils::CStringBuilder oBuilder;
+	oBuilder.WriteString(L"<?xml version=\"1.0\" encoding=\"utf-8\"?><TaskQueueDataConvert><m_sFileFrom>");
+	oBuilder.WriteEncodeXmlString(sFileFrom);
+	oBuilder.WriteString(L"</m_sFileFrom><m_sFileTo>");
+	oBuilder.WriteEncodeXmlString(sFileTo);
+	oBuilder.WriteString(L"</m_sFileTo><m_nFormatTo>");
+	oBuilder.WriteString(std::to_wstring(nFormatTo));
+	oBuilder.WriteString(L"</m_nFormatTo><m_sThemeDir>./</m_sThemeDir><m_bDontSaveAdditional>true</m_bDontSaveAdditional><m_sAllFontsPath>");
+	oBuilder.WriteEncodeXmlString(sFontsDir + L"/AllFonts.js");
+	oBuilder.WriteString(L"</m_sAllFontsPath><m_nCsvTxtEncoding>46</m_nCsvTxtEncoding><m_nCsvDelimiter>4</m_nCsvDelimiter><m_sFontDir>");
+	oBuilder.WriteEncodeXmlString(sFontsDir);
+	oBuilder.WriteString(L"</m_sFontDir>");
+	if (!sExtraParams.empty())
+		oBuilder.WriteString(sExtraParams);
+	oBuilder.WriteString(L"</TaskQueueDataConvert>");
+
+	std::wstring sXmlConvert = oBuilder.GetData();
+	NSFile::CFileBinary::SaveToFile(sTempParamsFile, sXmlConvert, true);
+
+	int nReturnCode = NSX2T::Convert(sConverterDir, sTempParamsFile);
+
+	if (0 == nReturnCode && g_save_x2t_xml != true)
+		NSFile::CFileBinary::Remove(sTempParamsFile);
+
+	return nReturnCode;
 }
 
 class CConverter;
@@ -71,12 +149,16 @@ public:
 
 	std::wstring m_sInputFolder;
 	std::wstring m_sOutputFolder;
+	std::wstring m_sMasterFolder;
 
 	std::wstring m_sConvertParams;
 
 	bool m_bIsStandard;
 	bool m_bIsDiffAllInOne;
 	bool m_bDiffOnly{false};
+
+	bool m_bDouble{false};
+	std::vector<std::wstring> m_doubleFiles;
 
 	NSCriticalSection::CRITICAL_SECTION m_oCS;
 	NSCriticalSection::CRITICAL_SECTION m_oCS_OfficeUtils;
@@ -148,6 +230,14 @@ public:
 		{
 			std::wstring sExt = NSFile::GetFileExtention(*iter);
 
+			if (m_bDouble)
+			{
+				std::wstring sFileName = NSFile::GetFileName(*iter);
+				if (std::find(m_doubleFiles.begin(), m_doubleFiles.end(), sFileName) != m_doubleFiles.end())
+					m_files.push_back(*iter);
+				continue;
+			}
+
 			if (sExt == L"docx" || sExt == L"doc" || sExt == L"odt" || sExt == L"rtf" || sExt == L"docxf" || sExt == L"oform" ||
 				sExt == L"pptx" || sExt == L"ppt" || sExt == L"odp" ||
 				sExt == L"xlsx" || sExt == L"xls" || sExt == L"ods" ||
@@ -158,6 +248,27 @@ public:
 			}
 		}
 		m_nCount = (int)m_files.size();
+	}
+
+	bool LoadDoubleConfig(const std::wstring& sConfigPath)
+	{
+		XmlUtils::CXmlNode oRoot;
+		std::vector<XmlUtils::CXmlNode> arNodes;
+		if (oRoot.FromXmlFile(sConfigPath) && oRoot.GetChilds(arNodes))
+		{
+			for (size_t i = 0; i < arNodes.size(); ++i)
+			{
+				XmlUtils::CXmlNode& oNode = arNodes[i];
+				if (oNode.GetName() == L"file" && !oNode.GetText().empty())
+					m_doubleFiles.push_back(oNode.GetText());
+			}
+		}
+		else
+		{
+			std::cerr << "Double conversion config file is not open!" << std::endl;
+			return false;
+		}
+		return true;
 	}
 
 	bool IsWork()
@@ -222,9 +333,9 @@ public:
 		return sFile;
 	}
 
-	void WriteReport(const std::wstring& sLogFile, int nTime)
+	void WriteReport(const std::wstring& sLogFile, int nTime, bool bAppend = false)
 	{
-		if (NSFile::CFileBinary::Exists(sLogFile))
+		if (!bAppend && NSFile::CFileBinary::Exists(sLogFile))
 			NSFile::CFileBinary::Remove(sLogFile);
 
 		std::wstring sLogContent;
@@ -288,6 +399,13 @@ public:
 		sLogContent += L"TIME: ";
 		sLogContent += std::to_wstring(nTime);
 		sLogContent += L"\n";
+
+		if (bAppend)
+		{
+			std::wstring sExisting;
+			if (NSFile::CFileBinary::Exists(sLogFile) && NSFile::CFileBinary::ReadAllTextUtf8(sLogFile, sExisting) && !sExisting.empty())
+				sLogContent = sExisting + L"\n\n==================================================\n\n" + sLogContent;
+		}
 
 		NSFile::CFileBinary::SaveToFile(sLogFile, sLogContent, true);
 	}
@@ -542,7 +660,11 @@ public:
 		std::wstring input_file = m_file;
 		NSStringUtils::string_replace(input_file, L"\\", L"/");
 
-		std::wstring output_dir = isStandart ? (m_input_dir + L"/../out/master") : (m_output_dir + L"/");
+		std::wstring master_dir = m_pInternal->m_sMasterFolder.empty()
+				? (m_input_dir + L"/../out/master")
+				: m_pInternal->m_sMasterFolder;
+
+		std::wstring output_dir = isStandart ? master_dir : (m_output_dir + L"/");
 		if (!sFolderAddon.empty())
 			output_dir += (sFolderAddon + L"/");
 
@@ -558,6 +680,69 @@ public:
 #endif
 
 		return output_file;
+	}
+
+	int DoDoubleConversion(std::wstring& sRenderFile)
+	{
+		std::wstring sProcess = NSFile::GetProcessDirectory();
+
+		std::wstring sFontsDir = sProcess + L"/fonts";
+		NSStringUtils::string_replace(sFontsDir, L"\\", L"/");
+
+		std::wstring sConverterDir = sProcess;
+		if (NSDirectory::Exists(sProcess + L"/converter"))
+			sConverterDir += L"/converter";
+
+		int nTroughFormat = 0;
+		std::wstring sTroughExt;
+		if (m_format & AVS_OFFICESTUDIO_FILE_DOCUMENT)
+		{
+			nTroughFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX;
+			sTroughExt = L"docx";
+		}
+		else if (m_format & AVS_OFFICESTUDIO_FILE_PRESENTATION)
+		{
+			nTroughFormat = AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX;
+			sTroughExt = L"pptx";
+		}
+		else if (m_format & AVS_OFFICESTUDIO_FILE_SPREADSHEET)
+		{
+			nTroughFormat = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX;
+			sTroughExt = L"xlsx";
+		}
+		else
+			return -1;
+
+		std::wstring sOrigExt = ToLower(NSFile::GetFileExtention(m_file));
+		int nBackFormat = m_format;
+
+		std::wstring sBaseDir = m_folder_dst;
+		NSStringUtils::string_replace(sBaseDir, L"\\", L"/");
+
+		std::wstring sName = NSFile::GetFileName(m_file);
+		std::wstring sNameExt = NSFile::GetFileExtention(sName);
+		std::wstring sNameNoExt = sName.substr(0, sName.length() - sNameExt.length() - 1);
+
+		std::wstring sTroughFile = sBaseDir + L"/" + sNameNoExt + L"_through." + sTroughExt;
+		std::wstring sBackFile   = sBaseDir + L"/" + sNameNoExt + L"_double." + sOrigExt;
+
+		std::wstring sFileFrom = m_file;
+		NSStringUtils::string_replace(sFileFrom, L"\\", L"/");
+
+		int nCode = RunConvert(sFileFrom, sTroughFile, nTroughFormat, sConverterDir, sFontsDir, sBaseDir + L"/double_params_1.xml");
+		if (0 != nCode)
+			return nCode;
+		if (!NSFile::CFileBinary::Exists(sTroughFile))
+			return -1;
+
+		nCode = RunConvert(sTroughFile, sBackFile, nBackFormat, sConverterDir, sFontsDir, sBaseDir + L"/double_params_2.xml");
+		if (0 != nCode)
+			return nCode;
+		if (!NSFile::CFileBinary::Exists(sBackFile))
+			return -1;
+
+		sRenderFile = sBackFile;
+		return 0;
 	}
 
 	virtual DWORD ThreadProc()
@@ -594,6 +779,18 @@ public:
 			return 0;
 		}
 
+		std::wstring sRenderFile = m_file;
+		if (m_pInternal->m_bDouble)
+		{
+			int nDoubleCode = DoDoubleConversion(sRenderFile);
+			if (0 != nDoubleCode)
+			{
+				m_bRunThread = FALSE;
+				m_pInternal->OnConvertFile(this, nDoubleCode, 0, 0);
+				return 0;
+			}
+		}
+
 #if 0
 		std::map<int, bool>::iterator find = m_pInternal->m_formats.find(m_format);
 		if ((find == m_pInternal->m_formats.end()) || (find->second == false))
@@ -610,50 +807,30 @@ public:
 
 		NSStringUtils::string_replace(sProcess, L"\\", L"/");
 		NSStringUtils::string_replace(m_file, L"\\", L"/");
+		NSStringUtils::string_replace(sRenderFile, L"\\", L"/");
 
 		std::wstring sDirectoryDst = m_folder_dst;
 		NSStringUtils::string_replace(sDirectoryDst, L"\\", L"/");
 
 #ifdef WIN32
 		NSStringUtils::string_replace(m_file, L"//", L"\\\\");
+		NSStringUtils::string_replace(sRenderFile, L"//", L"\\\\");
 #endif
 
 		NSDirectory::CreateDirectory(sDirectoryDst);
 
-		NSStringUtils::CStringBuilder oBuilder;
-		oBuilder.WriteString(L"<?xml version=\"1.0\" encoding=\"utf-8\"?><TaskQueueDataConvert><m_sFileFrom>");
-
-		oBuilder.WriteEncodeXmlString(m_file);
-		oBuilder.WriteString(L"</m_sFileFrom><m_sFileTo>");
-
-		oBuilder.WriteEncodeXmlString(sDirectoryDst);
-		oBuilder.WriteString(L"</m_sFileTo><m_nFormatTo>");
-		oBuilder.WriteString(std::to_wstring(AVS_OFFICESTUDIO_FILE_IMAGE));
-		oBuilder.WriteString(L"</m_nFormatTo><m_sThemeDir>./</m_sThemeDir><m_bDontSaveAdditional>true</m_bDontSaveAdditional><m_sAllFontsPath>");
-		oBuilder.WriteString(sProcess + L"/fonts");
-		oBuilder.WriteString(L"/AllFonts.js</m_sAllFontsPath><m_nCsvTxtEncoding>46</m_nCsvTxtEncoding><m_nCsvDelimiter>4</m_nCsvDelimiter>");
-
-		oBuilder.WriteString(L"<m_sFontDir>");
-		oBuilder.WriteEncodeXmlString(sProcess + L"/fonts");
-		oBuilder.WriteString(L"</m_sFontDir>");
-
-		oBuilder.WriteString(L"<m_oThumbnail><format>4</format><aspect>2</aspect><first>false</first><zip>false</zip><width>1000</width><height>1000</height></m_oThumbnail>");
-		oBuilder.WriteString(L"<m_sJsonParams>{&quot;spreadsheetLayout&quot;:{&quot;gridLines&quot;:true,&quot;headings&quot;:true,&quot;fitToHeight&quot;:1,&quot;fitToWidth&quot;:1,&quot;orientation&quot;:&quot;landscape&quot;}}</m_sJsonParams>");
-
-		if (!m_pInternal->m_sConvertParams.empty())
-			oBuilder.WriteString(m_pInternal->m_sConvertParams);
-
-		oBuilder.WriteString(L"</TaskQueueDataConvert>");
-
-		std::wstring sXmlConvert = oBuilder.GetData();
-
-		std::wstring sTempFileForParams = sDirectoryDst + L"/params.xml";
-		NSFile::CFileBinary::SaveToFile(sTempFileForParams, sXmlConvert, true);
-
+		std::wstring sFontsDir = sProcess + L"/fonts";
+		std::wstring sConverterDir = sProcess;
 		if (NSDirectory::Exists(sProcess + L"/converter"))
-			sProcess += L"/converter";
+			sConverterDir += L"/converter";
 
-		int nReturnCode = NSX2T::Convert(sProcess, sTempFileForParams);
+		std::wstring sExtraParams = L"<m_oThumbnail><format>4</format><aspect>2</aspect><first>false</first><zip>false</zip><width>1000</width><height>1000</height></m_oThumbnail>";
+		sExtraParams += L"<m_sJsonParams>{&quot;spreadsheetLayout&quot;:{&quot;gridLines&quot;:true,&quot;headings&quot;:true,&quot;fitToHeight&quot;:1,&quot;fitToWidth&quot;:1,&quot;orientation&quot;:&quot;landscape&quot;}}</m_sJsonParams>";
+		if (!m_pInternal->m_sConvertParams.empty())
+			sExtraParams += m_pInternal->m_sConvertParams;
+
+		int nReturnCode = RunConvert(sRenderFile, sDirectoryDst, AVS_OFFICESTUDIO_FILE_IMAGE,
+									 sConverterDir, sFontsDir, sDirectoryDst + L"/params.xml", sExtraParams);
 
 		if (0 != nReturnCode)
 		{
@@ -661,9 +838,6 @@ public:
 			m_pInternal->OnConvertFile(this, nReturnCode, 0, 0);
 			return 0;
 		}
-
-		if (g_save_x2t_xml != true)
-			NSFile::CFileBinary::Remove(sTempFileForParams);
 
 		DWORD dwTime2 = NSTimers::GetTickCount();
 
@@ -782,7 +956,9 @@ std::wstring CorrectDir(const std::wstring& sDir)
  *
  * --input="input-standard-files-dir"
  * --output="output-dir"
+ * --master-dir="" // directory with standards to compare against (default: input/../out/master)
  * --standard // generate standarts
+ * --report-append // append to the report instead of overwriting it
  * --use-system-fonts="0/1/false/true"
  * --font-dirs="C:\\Windows\\Fonts;/usr/share/fonts;"
  * --cores=4
@@ -798,8 +974,12 @@ int main(int argc, char** argv)
 	std::vector<std::wstring> arFontsDirs;
 	bool bIsStandard = false;
 	bool bDiffOnly = false;
+	bool bDouble = false;
+	bool bReportAppend = false;
+	std::wstring strDoubleConfig = L"config_double.xml";
 	std::wstring strInputFolder = L"";
 	std::wstring strOutputFolder = L"";
+	std::wstring strMasterFolder = L"";
 	bool bIsUseSystemFonts = true;
 	int nCores = 1;
 	std::wstring strAdditionalParams;
@@ -837,6 +1017,10 @@ int main(int argc, char** argv)
 			{
 				strOutputFolder = CorrectDir(sValue);
 			}
+			else if (sKey == L"--master-dir")
+			{
+				strMasterFolder = CorrectDir(sValue);
+			}
 			else if (sKey == L"--standard")
 			{
 				bIsStandard = true;
@@ -844,6 +1028,16 @@ int main(int argc, char** argv)
 			else if (sKey == L"--diff-only")
 			{
 				bDiffOnly = true;
+			}
+			else if (sKey == L"--double")
+			{
+				bDouble = true;
+				if (!sValue.empty())
+					strDoubleConfig = CorrectDir(sValue);
+			}
+			else if (sKey == L"--report-append")
+			{
+				bReportAppend = true;
 			}
 			else if (sKey == L"--use-system-fonts")
 			{
@@ -919,8 +1113,23 @@ int main(int argc, char** argv)
 
 	CInternalWorker oWorker;
 	oWorker.m_bDiffOnly = bDiffOnly;
+
+	oWorker.m_bDouble = bDouble;
+	if (bDouble)
+	{
+		if (!NSFile::CFileBinary::Exists(strDoubleConfig))
+		{
+			std::wstring strDoubleConfigNearExe = NSFile::GetProcessDirectory() + L"/" + strDoubleConfig;
+			if (NSFile::CFileBinary::Exists(strDoubleConfigNearExe))
+				strDoubleConfig = strDoubleConfigNearExe;
+		}
+		if (!oWorker.LoadDoubleConfig(strDoubleConfig))
+			return 1;
+	}
+
 	oWorker.OpenDir(strInputFolder);
 	oWorker.m_sOutputFolder = strOutputFolder;
+	oWorker.m_sMasterFolder = strMasterFolder;
 	oWorker.m_bIsStandard = bIsStandard;
 	oWorker.m_sConvertParams = strAdditionalParams;
 
@@ -936,7 +1145,7 @@ int main(int argc, char** argv)
 	DWORD dwTimeDelta = (dwTime2 - dwTime1) / 1000;
 	std::cout << std::endl << "time: " << dwTimeDelta << std::endl;
 
-	oWorker.WriteReport(NSFile::GetProcessDirectory() + L"/../report.txt", (int)(dwTime2 - dwTime1));
+	oWorker.WriteReport(NSFile::GetProcessDirectory() + L"/../report.txt", (int)(dwTime2 - dwTime1), bReportAppend);
 
 #ifdef _WIN32
 	SetConsoleOutputCP(currConsoleCP);

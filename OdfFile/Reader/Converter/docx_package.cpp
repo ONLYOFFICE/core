@@ -1,33 +1,36 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * Copyright (C) Ascensio System SIA, 2009-2026
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
- * version 3 as published by the Free Software Foundation. In accordance with
- * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
- * that Ascensio System SIA expressly excludes the warranty of non-infringement
- * of any third-party rights.
+ * version 3 as published by the Free Software Foundation, together with the
+ * additional terms provided in the LICENSE file.
  *
  * This program is distributed WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
- * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. For
+ * details, see the GNU AGPL at: https://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
- * street, Riga, Latvia, EU, LV-1050.
+ * You can contact Ascensio System SIA by email at info@onlyoffice.com
+ * or by postal mail at 20A-6 Ernesta Birznieka-Upisha Street, Riga,
+ * LV-1050, Latvia, European Union.
  *
- * The  interactive user interfaces in modified source and object code versions
- * of the Program must display Appropriate Legal Notices, as required under
+ * The interactive user interfaces in modified versions of the Program
+ * are required to display Appropriate Legal Notices in accordance with
  * Section 5 of the GNU AGPL version 3.
  *
- * Pursuant to Section 7(b) of the License you must retain the original Product
- * logo when distributing the program. Pursuant to Section 7(e) we decline to
- * grant you any rights under trademark law for use of our trademarks.
+ * No trademark rights are granted under this License.
  *
- * All the Product's GUI elements, including illustrations and icon sets, as
- * well as technical writing content are licensed under the terms of the
- * Creative Commons Attribution-ShareAlike 4.0 International. See the License
- * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ * All non-code elements of the Product, including illustrations,
+ * icon sets, and technical writing content, are licensed under the
+ * Creative Commons Attribution-ShareAlike 4.0 International License:
+ * https://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
+ * This license applies only to such non-code elements and does not
+ * modify or replace the licensing terms applicable to the Program's
+ * source code, which remains licensed under the GNU Affero General
+ * Public License v3.
+ *
+ * SPDX-License-Identifier: AGPL-3.0-only
  */
 
 #include <boost/foreach.hpp>
@@ -218,7 +221,7 @@ void word_files::set_notes(notes_context & notesContext)
 }
 void word_files::set_comments(comments_context & commentsContext)
 {
-	if (commentsContext.comments_.size()<1)return;
+	if (commentsContext.content().empty()) return;
 
     comments_elements * elm = new comments_elements(commentsContext); 
     elm->set_main_document( get_main_document() );
@@ -446,47 +449,47 @@ comments_elements::comments_elements(comments_context & commentsContext) : comme
 
 void comments_elements::write(const std::wstring & RootPath)
 {
-    if (comments_context_.comments_.size())
+    if (comments_context_.content().empty()) return;
+
+    std::wstringstream content;
+
+    content << L"<w:comments xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" " <<
+        L"xmlns:w10=\"urn:schemas-microsoft-com:office:word\" " <<
+        L"xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" " <<
+        L"xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" " <<
+        L"xmlns:o=\"urn:schemas-microsoft-com:office:office\" " <<
+        L">";
+
+    for (auto const& elm : comments_context_.content())
     {
-        std::wstringstream content; 
-        
-        content << L"<w:comments xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" " <<
-                                L"xmlns:w10=\"urn:schemas-microsoft-com:office:word\" " <<
-                                L"xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" " <<
-                                L"xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" " <<
-                                L"xmlns:o=\"urn:schemas-microsoft-com:office:office\" " <<
-                                L">";
-
-        BOOST_FOREACH(const comments_context::_comment_desc & elm, comments_context_.comments_)
-        {
-            content << L"<w:comment w:id=\"" << elm.id << "\" ";
-			if (elm.author.length()>0)
-				content << L"w:author=\""<< XmlUtils::EncodeXmlString(elm.author) << "\" ";
-			if (elm.date.length()>0)
-				content << L"w:date=\""<< elm.date << "\" ";
-			content<< L">";
-				content << elm.content;
-            content << L"</w:comment>";
-        }
-        content << L"</w:comments>";
-
-        simple_element(L"comments.xml", content.str()).write(RootPath);
-        
-        if (get_main_document())
-            get_main_document()->get_content_types_file().content()->add_override(L"/word/comments.xml", L"application/vnd.openxmlformats-officedocument.wordprocessingml.comments+xml");
+        content << L"<w:comment w:id=\"" << elm.second.id << "\" ";
+        if (elm.second.author.length() > 0)
+            content << L"w:author=\"" << XmlUtils::EncodeXmlString(elm.second.author) << "\" ";
+        if (elm.second.date.length() > 0)
+            content << L"w:date=\"" << elm.second.date << "\" ";
+        content << L">";
+        content << elm.second.content;
+        content << L"</w:comment>";
     }
-	if (!comments_context_.get_rels().empty())
-	{
-		rels_files relFiles;
-		rels_file_ptr rels_elem = rels_file::create(L"comments.xml.rels");
-		relFiles.add_rel_file(rels_elem);
-		
-		BOOST_FOREACH(relationship const & r, comments_context_.get_rels().relationships())
-		{
-			relFiles.add(r);
-		} 
-		relFiles.write(RootPath);
-	}
+    content << L"</w:comments>";
+
+    simple_element(L"comments.xml", content.str()).write(RootPath);
+
+    if (get_main_document())
+        get_main_document()->get_content_types_file().content()->add_override(L"/word/comments.xml", L"application/vnd.openxmlformats-officedocument.wordprocessingml.comments+xml");
+
+    if (!comments_context_.get_rels().empty())
+    {
+        rels_files relFiles;
+        rels_file_ptr rels_elem = rels_file::create(L"comments.xml.rels");
+        relFiles.add_rel_file(rels_elem);
+
+        for(auto const & r : comments_context_.get_rels().relationships())
+        {
+            relFiles.add(r);
+        }
+        relFiles.write(RootPath);
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////

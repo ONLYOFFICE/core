@@ -1,33 +1,36 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * Copyright (C) Ascensio System SIA, 2009-2026
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
- * version 3 as published by the Free Software Foundation. In accordance with
- * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
- * that Ascensio System SIA expressly excludes the warranty of non-infringement
- * of any third-party rights.
+ * version 3 as published by the Free Software Foundation, together with the
+ * additional terms provided in the LICENSE file.
  *
  * This program is distributed WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
- * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. For
+ * details, see the GNU AGPL at: https://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
- * street, Riga, Latvia, EU, LV-1050.
+ * You can contact Ascensio System SIA by email at info@onlyoffice.com
+ * or by postal mail at 20A-6 Ernesta Birznieka-Upisha Street, Riga,
+ * LV-1050, Latvia, European Union.
  *
- * The  interactive user interfaces in modified source and object code versions
- * of the Program must display Appropriate Legal Notices, as required under
+ * The interactive user interfaces in modified versions of the Program
+ * are required to display Appropriate Legal Notices in accordance with
  * Section 5 of the GNU AGPL version 3.
  *
- * Pursuant to Section 7(b) of the License you must retain the original Product
- * logo when distributing the program. Pursuant to Section 7(e) we decline to
- * grant you any rights under trademark law for use of our trademarks.
+ * No trademark rights are granted under this License.
  *
- * All the Product's GUI elements, including illustrations and icon sets, as
- * well as technical writing content are licensed under the terms of the
- * Creative Commons Attribution-ShareAlike 4.0 International. See the License
- * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ * All non-code elements of the Product, including illustrations,
+ * icon sets, and technical writing content, are licensed under the
+ * Creative Commons Attribution-ShareAlike 4.0 International License:
+ * https://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
+ * This license applies only to such non-code elements and does not
+ * modify or replace the licensing terms applicable to the Program's
+ * source code, which remains licensed under the GNU Affero General
+ * Public License v3.
+ *
+ * SPDX-License-Identifier: AGPL-3.0-only
  */
 #pragma once
 
@@ -67,9 +70,11 @@ public:
         bool							IsDefault,
         const std::wstring				& ParentStyleName,
         const std::wstring				& NextStyleName,
+        const std::wstring              & LinkStyleName,
         const std::wstring				& DataStyleName,
         const std::wstring				& PercentageDataStyleName,
 		const std::wstring				& StyleClass,
+        _CP_OPT(bool)                   PrimaryFormat,
         _CP_OPT(std::wstring)			ListStyleName,
 		_CP_OPT(int)					ListLevel,
 		_CP_OPT(int)					OutlineLevel
@@ -82,8 +87,10 @@ public:
     style_instance					* parent()		const;
     const std::wstring				& parent_name()	const;
     style_instance					* next()		const;
+    style_instance                  * link()		const;
     const std::wstring				& next_name()	const;
-	const styles_container			* container()	const { return container_; }
+    const std::wstring              & link_name()	const;
+    const styles_container			* container()	const { return container_; }
     const std::wstring				& data_style_name() const;
 	const std::wstring				& percentage_data_style_name() const;
 	const std::wstring				& style_class() const;
@@ -94,6 +101,7 @@ public:
 
 	_CP_OPT(int)					list_level()	const;
 	_CP_OPT(int)					outline_level()	const;
+    _CP_OPT(bool)                   primary_format() const;
 private:
     styles_container				* container_;
 
@@ -109,13 +117,16 @@ private:
     std::wstring					style_class_;
     std::wstring					parent_name_;
     std::wstring					next_name_;
+    std::wstring					link_name_;
     mutable style_instance			* parent_;
     mutable style_instance			* next_;   
+    mutable style_instance          * link_;
     std::wstring					data_style_name_;
 	std::wstring					percentage_data_style_name_;
     _CP_OPT(std::wstring)			list_style_name_;
 	_CP_OPT(int)					list_level_;
 	_CP_OPT(int)					outline_level_;
+    _CP_OPT(bool)                   primary_format_;
 };
 
 class presentation_layouts_instance
@@ -168,10 +179,12 @@ public:
 					bool							IsDefault,
 					const std::wstring				& ParentStyleName,
 					const std::wstring				& NextStyleName,
-					const std::wstring				& DataStyleName,
+                    const std::wstring              & LinkStyleName,
+                    const std::wstring				& DataStyleName,
 					const std::wstring				& PercentageDataStyleName,
 					const std::wstring				& StyleClass,
-					_CP_OPT(std::wstring)			ListStyleName = boost::none,
+                    _CP_OPT(bool)			        PrimaryFormat = boost::none,
+                    _CP_OPT(std::wstring)			ListStyleName = boost::none,
 					_CP_OPT(int)					ListLevel = boost::none,
 					_CP_OPT(int)					OutlineLevel = boost::none);
 

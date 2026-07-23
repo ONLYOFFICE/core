@@ -1,33 +1,36 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * Copyright (C) Ascensio System SIA, 2009-2026
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
- * version 3 as published by the Free Software Foundation. In accordance with
- * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
- * that Ascensio System SIA expressly excludes the warranty of non-infringement
- * of any third-party rights.
+ * version 3 as published by the Free Software Foundation, together with the
+ * additional terms provided in the LICENSE file.
  *
  * This program is distributed WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
- * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. For
+ * details, see the GNU AGPL at: https://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
- * street, Riga, Latvia, EU, LV-1050.
+ * You can contact Ascensio System SIA by email at info@onlyoffice.com
+ * or by postal mail at 20A-6 Ernesta Birznieka-Upisha Street, Riga,
+ * LV-1050, Latvia, European Union.
  *
- * The  interactive user interfaces in modified source and object code versions
- * of the Program must display Appropriate Legal Notices, as required under
+ * The interactive user interfaces in modified versions of the Program
+ * are required to display Appropriate Legal Notices in accordance with
  * Section 5 of the GNU AGPL version 3.
  *
- * Pursuant to Section 7(b) of the License you must retain the original Product
- * logo when distributing the program. Pursuant to Section 7(e) we decline to
- * grant you any rights under trademark law for use of our trademarks.
+ * No trademark rights are granted under this License.
  *
- * All the Product's GUI elements, including illustrations and icon sets, as
- * well as technical writing content are licensed under the terms of the
- * Creative Commons Attribution-ShareAlike 4.0 International. See the License
- * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ * All non-code elements of the Product, including illustrations,
+ * icon sets, and technical writing content, are licensed under the
+ * Creative Commons Attribution-ShareAlike 4.0 International License:
+ * https://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
+ * This license applies only to such non-code elements and does not
+ * modify or replace the licensing terms applicable to the Program's
+ * source code, which remains licensed under the GNU Affero General
+ * Public License v3.
+ *
+ * SPDX-License-Identifier: AGPL-3.0-only
  */
 
 #include "RendererOutputDev.h"
@@ -37,25 +40,18 @@
 #include "../lib/xpdf/ErrorCodes.h"
 #include "../lib/xpdf/GfxState.h"
 #include "../lib/xpdf/GfxFont.h"
-#include "../lib/fofi/FoFiTrueType.h"
-#include "../lib/fofi/FoFiType1C.h"
-#include "../lib/fofi/FoFiIdentifier.h"
 #include "../lib/xpdf/Page.h"
 #include "../lib/xpdf/Dict.h"
 #include "../lib/xpdf/Stream.h"
 #include "../lib/xpdf/PDFDoc.h"
-#include "../lib/xpdf/CharCodeToUnicode.h"
 #include "../lib/xpdf/TextString.h"
-#include "../lib/xpdf/Decrypt.h"
 
 #include "../../DesktopEditor/graphics/pro/Graphics.h"
 #include "../../DesktopEditor/graphics/Image.h"
 #include "../../DesktopEditor/graphics/pro/Fonts.h"
 #include "../../DesktopEditor/common/File.h"
-#include "../../DesktopEditor/common/Path.h"
 #include "../../DesktopEditor/common/Array.h"
 #include "../../DesktopEditor/common/StringExt.h"
-#include "../../DesktopEditor/graphics/BaseThread.h"
 #include "../../DesktopEditor/graphics/commands/DocInfo.h"
 #include "../../DesktopEditor/graphics/AlphaMask.h"
 #include "../Resources/BaseFonts.h"
@@ -64,9 +60,7 @@
 #ifndef BUILDING_WASM_MODULE
 #define FONTS_USE_AFM_SETTINGS
 #else
-#include "../../DesktopEditor/graphics/pro/js/wasm/src/serialize.h"
 #include "FontsWasm.h"
-#define FONTS_USE_ONLY_MEMORY_STREAMS
 #endif
 
 #if defined(_MSC_VER)
@@ -77,36 +71,6 @@
 
 namespace PdfReader
 {
-	double CheckFontNamePDF(std::wstring& sName, NSFonts::CFontSelectFormat* format)
-	{
-		bool bBold   = false;
-		bool bItalic = false;
-
-		double dStretch = CheckFontStylePDF(sName, bBold, bItalic);
-
-		if (format)
-		{
-			if (bBold)
-				format->bBold = new INT(1);
-			if (bItalic)
-				format->bItalic = new INT(1);
-		}
-
-		return dStretch;
-	}
-	USHORT StretchToWidthClass(double fStretch)
-	{
-		if (fStretch <= 0.50)  return 1; // Ultra-condensed
-		if (fStretch <= 0.625) return 2; // Extra-condensed
-		if (fStretch <= 0.75)  return 3; // Condensed
-		if (fStretch <= 0.875) return 4; // Semi-condensed
-		if (fStretch <= 1.0)   return 5; // Normal
-		if (fStretch <= 1.125) return 6; // Semi-expanded
-		if (fStretch <= 1.25)  return 7; // Expanded
-		if (fStretch <= 1.50)  return 8; // Extra-expanded
-		return 9;                        // Ultra-expanded
-	}
-
 	void Transform(double* pMatrix, double dUserX, double dUserY, double* pdDeviceX, double* pdDeviceY)
 	{
 		*pdDeviceX = dUserX * pMatrix[0] + dUserY * pMatrix[2] + pMatrix[4];
@@ -116,214 +80,6 @@ namespace PdfReader
 	{
 		return (p[2]*77 + p[1]*150 + p[0]*29) >> 8;
 	}
-	std::wstring ComputeFontHash(XRef* pXref, GfxFont* pFont)
-	{
-		MD5State oMD5;
-		md5Start(&oMD5);
-
-		Ref* pRef = pFont->getID();
-		Object oRefObj, oFontObj;
-		oRefObj.initRef(pRef->num, pRef->gen);
-		oRefObj.fetch(pXref, &oFontObj);
-		oRefObj.free();
-
-		if (oFontObj.isDict())
-		{
-			const char* aFontObjNames[] = { "Name", "Subtype", "BaseFont", "Encoding" };
-			for (const char* sKey : aFontObjNames)
-			{
-				Object oItem;
-				oFontObj.dictLookup(sKey, &oItem);
-				if (oItem.isName())
-					md5Append(&oMD5, (BYTE*)oItem.getName(), strlen(oItem.getName()));
-				oItem.free();
-			}
-
-			Object oDescObj, oDescendantFonts;
-			oFontObj.dictLookup("FontDescriptor", &oDescObj);
-			if (!oDescObj.isDict())
-			{
-				oDescObj.free();
-				if (oFontObj.dictLookup("DescendantFonts", &oDescendantFonts)->isArray())
-				{
-					Object oDescendant;
-					if (oDescendantFonts.arrayGet(0, &oDescendant)->isDict())
-						oDescendant.dictLookup("FontDescriptor", &oDescObj);
-					oDescendant.free();
-				}
-				oDescendantFonts.free();
-			}
-
-			if (oDescObj.isDict())
-			{
-				Object oItem;
-
-				oDescObj.dictLookup("FontName", &oItem);
-				if (oItem.isName())
-					md5Append(&oMD5, (BYTE*)oItem.getName(), strlen(oItem.getName()));
-				oItem.free();
-
-				const char* aMetricNames[] = {
-					"Flags", "ItalicAngle", "Ascent", "Descent",
-					"CapHeight", "XHeight", "StemV", "StemH"
-				};
-				for (const char* sName : aMetricNames)
-				{
-					oDescObj.dictLookup(sName, &oItem);
-					if (oItem.isInt())
-					{
-						int nVal = oItem.getInt();
-						md5Append(&oMD5, (BYTE*)&nVal, sizeof(int));
-					}
-					oItem.free();
-				}
-
-				oDescObj.dictLookup("FontBBox", &oItem);
-				if (oItem.isArray() && oItem.arrayGetLength() == 4)
-				{
-					for (int i = 0; i < 4; i++)
-					{
-						Object oCoord;
-						if (oItem.arrayGet(i, &oCoord)->isInt())
-						{
-							int nVal = oCoord.getInt();
-							md5Append(&oMD5, (BYTE*)&nVal, sizeof(int));
-						}
-						oCoord.free();
-					}
-				}
-				oItem.free();
-			}
-			oDescObj.free();
-		}
-		oFontObj.free();
-
-		Ref oEmbRef;
-		if (pFont->getEmbeddedFontID(&oEmbRef))
-		{
-			Object oRefObj, oStreamObj;
-			oRefObj.initRef(oEmbRef.num, oEmbRef.gen);
-			oRefObj.fetch(pXref, &oStreamObj);
-			oRefObj.free();
-
-			if (oStreamObj.isStream())
-			{
-				oStreamObj.streamReset();
-				const int nMaxBytes = 512;
-				BYTE aBuf[nMaxBytes];
-				int nRead = 0;
-				int nChar;
-				while (nRead < nMaxBytes && (nChar = oStreamObj.streamGetChar()) != EOF)
-					aBuf[nRead++] = (BYTE)nChar;
-
-				oStreamObj.streamClose();
-				md5Append(&oMD5, aBuf, nRead);
-			}
-			oStreamObj.free();
-		}
-
-		md5Finish(&oMD5);
-
-		static const char aHexChars[] = "0123456789ABCDEF";
-		std::string sHex;
-		sHex.reserve(32);
-		for (int i = 0; i < 16; i++)
-		{
-			sHex += aHexChars[(oMD5.digest[i] >> 4) & 0x0F];
-			sHex += aHexChars[oMD5.digest[i] & 0x0F];
-		}
-
-		return UTF8_TO_U(sHex);
-	}
-}
-
-class CMemoryFontStream
-{
-public:
-	BYTE* m_pData;
-	int m_nSize;
-	int m_nPos;
-	bool m_bIsAttach;
-
-	CMemoryFontStream()
-	{
-		m_pData = NULL;
-		m_nSize = 0;
-		m_nPos = 0;
-		m_bIsAttach = false;
-	}
-	~CMemoryFontStream()
-	{
-		if (NULL != m_pData && !m_bIsAttach)
-			RELEASEARRAYOBJECTS(m_pData);
-	}
-
-	void fromStream(std::wstring& sStreamName)
-	{
-		NSFonts::IFontStream* pStream = NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Get(sStreamName);
-		if (pStream)
-		{
-			LONG lSize = 0;
-			pStream->GetMemory(m_pData, lSize);
-			m_nSize = (int)lSize;
-			m_nPos = 0;
-			m_bIsAttach = true;
-		}
-	}
-
-	void fromBuffer(BYTE* pData, int nSize)
-	{
-		if (pData)
-		{
-			m_pData = pData;
-			m_nSize = nSize;
-			m_nPos = 0;
-			m_bIsAttach = true;
-		}
-	}
-
-	void load(Object& oStreamObject)
-	{
-		int nCurrentSize = 0xFFFF;
-		int nCurrentPos = 0;
-		BYTE* pStream = new BYTE[nCurrentSize];
-
-		int nChar;
-		while ((nChar = oStreamObject.streamGetChar()) != EOF)
-		{
-			if (nCurrentPos >= nCurrentSize)
-			{
-				int nNewSize = 2 * nCurrentSize;
-				BYTE* pNewBuffer = new BYTE[nNewSize];
-				memcpy(pNewBuffer, pStream, nCurrentSize);
-				RELEASEARRAYOBJECTS(pStream);
-				pStream = pNewBuffer;
-				nCurrentSize = nNewSize;
-			}
-			pStream[nCurrentPos++] = nChar;
-		}
-
-		m_pData = pStream;
-		m_nSize = nCurrentPos;
-		m_nPos = 0;
-	}
-
-	int getChar()
-	{
-		if (m_nPos >= m_nSize)
-			return EOF;
-		return m_pData[m_nPos++];
-	}
-
-	void toStart()
-	{
-		m_nPos = 0;
-	}
-};
-
-static int readFromMemoryStream(void* data)
-{
-	return ((CMemoryFontStream*)data)->getChar();
 }
 
 // TODO: 1. Implement gradient fills properly (Axial and Radial)
@@ -333,129 +89,6 @@ static int readFromMemoryStream(void* data)
 
 namespace PdfReader
 {
-	//--------------------------------------------------------------------------------------
-	// CFontList
-	//--------------------------------------------------------------------------------------
-	CPdfFontList::CPdfFontList()
-	{
-		m_oCS.InitializeCriticalSection();
-		m_oFontMap.clear();
-	}
-	CPdfFontList::~CPdfFontList()
-	{
-		m_oCS.DeleteCriticalSection();
-		Clear();
-	}
-	bool CPdfFontList::Find(Ref oRef, TFontEntry* pEntry)
-	{
-		CTemporaryCS* pCS = new CTemporaryCS(&m_oCS);
-
-		bool bResult = (NULL != (pEntry = Lookup(oRef)));
-
-		if (bResult)
-		{
-			// Font was found, but cannot be used yet because it is being loaded in a parallel thread
-			while (!pEntry->bAvailable)
-				NSThreads::Sleep(10);
-		}
-
-		RELEASEOBJECT(pCS);
-
-		return bResult;
-	}
-	bool CPdfFontList::Find2(Ref oRef, TFontEntry** ppEntry)
-	{
-		CTemporaryCS* pCS = new CTemporaryCS(&m_oCS);
-
-		bool bResult = (NULL != ((*ppEntry) = Lookup(oRef)));
-
-		if (bResult)
-		{
-			// Font was found, but cannot be used yet because it is being loaded in a parallel thread
-			while (!(*ppEntry)->bAvailable)
-				NSThreads::Sleep(10);
-		}
-
-		if (!bResult)
-		{
-			(*ppEntry) = Add(oRef, std::wstring(), NULL, NULL, 0, 0);
-			(*ppEntry)->bAvailable = false;
-		}
-
-		RELEASEOBJECT(pCS);
-
-		return bResult;
-	}
-	TFontEntry* CPdfFontList::Add(Ref oRef, const std::wstring& wsFileName, int* pCodeToGID, int* pCodeToUnicode, unsigned int unLenGID, unsigned int unLenUnicode)
-	{
-		// This function is only called from Find2, so no need to check if this font already exists
-		CTemporaryCS* pCS = new CTemporaryCS(&m_oCS);
-
-		TFontEntry* pNewEntry = new TFontEntry;
-		pNewEntry->wsFilePath     = wsFileName;
-		pNewEntry->pCodeToGID     = pCodeToGID;
-		pNewEntry->pCodeToUnicode = pCodeToUnicode;
-		pNewEntry->unLenGID       = unLenGID;
-		pNewEntry->unLenUnicode   = unLenUnicode;
-
-		Add(oRef, pNewEntry);
-
-		RELEASEOBJECT(pCS);
-
-		return pNewEntry;
-	}
-	void CPdfFontList::Remove(Ref oRef)
-	{
-		std::map<Ref, TFontEntry*>::iterator oPos = m_oFontMap.find(oRef);
-		if (m_oFontMap.end() != oPos)
-		{
-			TFontEntry* pEntry = oPos->second;
-			if (NULL != pEntry)
-			{
-				MemUtilsFree(pEntry->pCodeToGID);
-				MemUtilsFree(pEntry->pCodeToUnicode);
-			}
-			delete pEntry;
-			m_oFontMap.erase(oPos);
-		}
-	}
-	void CPdfFontList::Clear()
-	{
-		for (auto const &oIt : m_oFontMap)
-		{
-			TFontEntry* pEntry = oIt.second;
-			if (NULL != pEntry)
-			{
-				MemUtilsFree(pEntry->pCodeToGID);
-				MemUtilsFree(pEntry->pCodeToUnicode);
-			}
-			delete pEntry;
-		}
-		m_oFontMap.clear();
-	}
-	bool CPdfFontList::GetFont(Ref* pRef, TFontEntry* pEntry)
-	{
-		TFontEntry* pFindEntry = Lookup(*pRef);
-		if (NULL == pFindEntry)
-			return false;
-
-		*pEntry = *pFindEntry;
-		return true;
-	}
-	TFontEntry* CPdfFontList::Lookup(Ref& oRef)
-	{
-		std::map<Ref, TFontEntry*>::const_iterator oPos = m_oFontMap.find(oRef);
-		return m_oFontMap.end() == oPos ? NULL : oPos->second;
-	}
-	void CPdfFontList::Add(Ref& oRef, TFontEntry* pFontEntry)
-	{
-		// Before calling this function, need to check if an element with this key exists
-		m_oFontMap.insert(std::pair<Ref, TFontEntry*>(oRef, pFontEntry));
-	}
-	const std::map<Ref, TFontEntry*>& CPdfFontList::GetFonts()
-	{
-		return m_oFontMap;
-	}
 	//--------------------------------------------------------------------------------------
 	// RendererOutputDev
 	//--------------------------------------------------------------------------------------
@@ -752,874 +385,7 @@ namespace PdfReader
 	{
 
 	}
-	NSFonts::CFontInfo* RendererOutputDev::GetFontByParams(XRef* pXref, NSFonts::IFontManager* pFontManager, GfxFont* pFont, std::wstring& wsFontBaseName, double& dStretch)
-	{
-		NSFonts::CFontInfo* pFontInfo = NULL;
-		if (!pFontManager)
-			return pFontInfo;
 
-		Ref* pRef = pFont->getID();
-		Object oRefObject, oFontObject;
-		oRefObject.initRef(pRef->num, pRef->gen);
-		oRefObject.fetch(pXref, &oFontObject);
-		oRefObject.free();
-
-		NSFonts::CFontSelectFormat oFontSelect;
-		dStretch = CheckFontNamePDF(wsFontBaseName, &oFontSelect);
-		if (std::abs(dStretch - 1.0f) > 1e-5f)
-			oFontSelect.usWidth = new USHORT(StretchToWidthClass(dStretch));
-		if (oFontObject.isDict())
-		{
-			Dict* pFontDict = oFontObject.getDict();
-			Object oFontDescriptor, oDescendantFonts;
-			pFontDict->lookup("FontDescriptor", &oFontDescriptor);
-			if (!oFontDescriptor.isDict() && pFontDict->lookup("DescendantFonts", &oDescendantFonts)->isArray())
-			{
-				oFontDescriptor.free(); oFontObject.free();
-				if (oDescendantFonts.arrayGet(0, &oFontObject)->isDict())
-					oFontObject.dictLookup("FontDescriptor", &oFontDescriptor);
-			}
-			if (oFontDescriptor.isDict())
-			{
-				Object oDictItem;
-				oFontDescriptor.dictLookup("FontName", &oDictItem);
-				if (oDictItem.isName())
-					oFontSelect.wsName = AStringToPWString(oDictItem.getName());
-				else
-					oFontSelect.wsName = new std::wstring(wsFontBaseName);
-				oDictItem.free();
-
-				oFontDescriptor.dictLookup("FontFamily", &oDictItem);
-				if (oDictItem.isString())
-				{
-					TextString* s = new TextString(oDictItem.getString());
-					oFontSelect.wsAltName = new std::wstring(NSStringExt::CConverter::GetUnicodeFromUTF32(s->getUnicode(), s->getLength()));
-					delete s;
-				}
-				oDictItem.free();
-
-				oFontDescriptor.dictLookup("FontStretch", &oDictItem);
-				oDictItem.free();
-
-				oFontDescriptor.dictLookup("FontWeight", &oDictItem);
-				oDictItem.free();
-
-				oFontDescriptor.dictLookup("FontBBox", &oDictItem);
-				oDictItem.free();
-
-				oFontDescriptor.dictLookup("Flags", &oDictItem);
-				if (oDictItem.isInt() && 0 != oDictItem.getInt())
-				{
-					int nFlags = oDictItem.getInt();
-					if (nFlags & 1) // monospaced
-						oFontSelect.bFixedWidth = new INT(1);
-				}
-				oDictItem.free();
-
-				oFontDescriptor.dictLookup("ItalicAngle", &oDictItem);
-				if (oDictItem.isInt() && 0 != oDictItem.getInt())
-				{
-					if (oFontSelect.bItalic) RELEASEOBJECT(oFontSelect.bItalic);
-					oFontSelect.bItalic = new INT(1);
-				}
-				oDictItem.free();
-
-				oFontDescriptor.dictLookup("Ascent", &oDictItem);
-				if (oDictItem.isInt()) oFontSelect.shAscent = new SHORT(oDictItem.getInt());
-				oDictItem.free();
-
-				oFontDescriptor.dictLookup("Leading", &oDictItem);
-				if (oDictItem.isInt()) oFontSelect.shLineGap = new SHORT(oDictItem.getInt());
-				oDictItem.free();
-
-				oFontDescriptor.dictLookup("CapHeight", &oDictItem);
-				if (oDictItem.isInt()) oFontSelect.shCapHeight = new SHORT(oDictItem.getInt());
-				oDictItem.free();
-
-				oFontDescriptor.dictLookup("XHeight", &oDictItem);
-				if (oDictItem.isInt()) oFontSelect.shXHeight = new SHORT(oDictItem.getInt());
-				oDictItem.free();
-
-				oFontDescriptor.dictLookup("StemV", &oDictItem);
-				if (oDictItem.isNum() && !oFontSelect.usWidth)
-				{
-					double dStemV = oDictItem.getNum();
-					if (dStemV > 50.5)
-						oFontSelect.usWeight = new USHORT(sqrt(oDictItem.getNum() - 50.5) * 65);
-				}
-				oDictItem.free();
-
-				oFontDescriptor.dictLookup("StemH", &oDictItem);
-				oDictItem.free();
-
-				oFontDescriptor.dictLookup("Descent", &oDictItem);
-				if (oDictItem.isInt()) oFontSelect.shDescent = new SHORT(oDictItem.getInt());
-				oDictItem.free();
-
-				oFontDescriptor.dictLookup("AvgWidth", &oDictItem);
-				if (oDictItem.isInt()) oFontSelect.shAvgCharWidth = new SHORT(oDictItem.getInt());
-				oDictItem.free();
-
-				oFontDescriptor.dictLookup("MaxWidth", &oDictItem);
-				oDictItem.free();
-
-				oFontDescriptor.dictLookup("MissingWidth", &oDictItem);
-				oDictItem.free();
-			}
-			else
-				oFontSelect.wsName = new std::wstring(wsFontBaseName);
-			oFontDescriptor.free(); oDescendantFonts.free();
-		}
-		else
-			oFontSelect.wsName = new std::wstring(wsFontBaseName);
-		oFontObject.free();
-
-		pFontInfo = pFontManager->GetFontInfoByParams(oFontSelect);
-		return pFontInfo;
-	}
-	void RendererOutputDev::GetFont(XRef* pXref, NSFonts::IFontManager* pFontManager, CPdfFontList* pFontList, GfxFont* pFont, std::wstring& wsFileName, std::wstring& wsFontName, bool bNotFullName)
-	{
-		wsFileName = L"";
-		wsFontName = L"";
-		TFontEntry* pEntry = NULL;
-		// MEMERR string dealocation pEntry
-		if (!pFontList->Find2((*pFont->getID()), &pEntry))
-		{
-			GfxFontType eFontType = pFont->getType();
-			if (fontType3 == eFontType) // FontType3 is handled by a separate command
-			{
-				pEntry->bAvailable = true;
-				return;
-			}
-
-			std::wstring wsTempFileName = L"";
-			Ref oEmbRef;
-			bool bFontSubstitution = false, bFontBase14 = false;
-			std::wstring wsFontBaseName = NSStrings::GetStringFromUTF32(pFont->getName());
-			if (wsFontBaseName.empty())
-				wsFontBaseName = L"Helvetica";
-			const BYTE* pData14 = NULL;
-			unsigned int nSize14 = 0;
-			double dStretch = 1.0;
-#ifdef FONTS_USE_ONLY_MEMORY_STREAMS
-			CMemoryFontStream oMemoryFontStream;
-#endif
-			// 1. If font is embedded, dump it to a temp file.
-			// 2. If font is outside pdf but pdf has a reference to it, use that reference.
-			// 3. Otherwise, select a font.
-
-			if (pFont->getEmbeddedFontID(&oEmbRef))
-			{
-				std::wstring wsExt;
-				switch (pFont->getType())
-				{
-				case fontType1:       wsExt = L".pfb_t1";    break;
-				case fontType1C:      wsExt = L".pfb_t1c";   break;
-				case fontType1COT:    wsExt = L".pfb_t1cot"; break;
-				case fontTrueType:    wsExt = L".ttf";       break;
-				case fontTrueTypeOT:  wsExt = L".otf";       break;
-				case fontCIDType0:    wsExt = L".cid_0";     break;
-				case fontCIDType0C:   wsExt = L".cid_0c";    break;
-				case fontCIDType0COT: wsExt = L".cid_0cot";  break;
-				case fontCIDType2:    wsExt = L".cid_2";     break;
-				case fontCIDType2OT:  wsExt = L".cid_2ot";   break;
-				}
-
-#ifdef FONTS_USE_ONLY_MEMORY_STREAMS
-				if (NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage())
-				{
-					wsTempFileName = NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->GenerateId();
-				}
-#else
-				FILE* pTempFile = NULL;
-				if (!NSFile::CFileBinary::OpenTempFile(&wsTempFileName, &pTempFile, L"wb", (wchar_t*)wsExt.c_str(),
-													   (wchar_t*)((GlobalParamsAdaptor*)globalParams)->GetTempFolder().c_str(), NULL))
-				{
-					if (L"" != wsTempFileName)
-						NSFile::CFileBinary::Remove(wsTempFileName);
-
-					pEntry->bAvailable = true;
-					return;
-				}
-				wsTempFileName = UTF8_TO_U(NSSystemPath::NormalizePath(U_TO_UTF8(wsTempFileName)));
-#endif
-
-				Object oReferenceObject, oStreamObject;
-				oReferenceObject.initRef(oEmbRef.num, oEmbRef.gen);
-				oReferenceObject.fetch(pXref, &oStreamObject);
-				oReferenceObject.free();
-				if (!oStreamObject.isStream())
-				{
-					// Embedded font is incorrectly written
-					oStreamObject.free();
-
-#ifndef FONTS_USE_ONLY_MEMORY_STREAMS
-					fclose(pTempFile);
-
-					if (L"" != wsTempFileName)
-						NSFile::CFileBinary::Remove(wsTempFileName);
-#endif
-
-					pEntry->bAvailable = true;
-					return;
-				}
-				oStreamObject.streamReset();
-
-#ifdef FONTS_USE_ONLY_MEMORY_STREAMS
-				oMemoryFontStream.load(oStreamObject);
-				NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Add(wsTempFileName, oMemoryFontStream.m_pData, (LONG)oMemoryFontStream.m_nSize, true);
-#else
-				int nChar;
-				while ((nChar = oStreamObject.streamGetChar()) != EOF)
-				{
-					fputc(nChar, pTempFile);
-				}
-				fclose(pTempFile);
-#endif
-
-				oStreamObject.streamClose();
-				oStreamObject.free();
-				wsFileName = wsTempFileName;
-
-#ifdef FONTS_USE_AFM_SETTINGS
-				// For Type1 fonts, need to write Afm file with metrics
-				if (fontType1 == pFont->getType() || fontType1C == pFont->getType() || fontType1COT == pFont->getType())
-				{
-					std::wstring wsSplitFileName, wsSplitFileExt;
-					SpitPathExt(wsFileName, &wsSplitFileName, &wsSplitFileExt);
-					std::wstring wsAfmPath = wsSplitFileName + L".afm";
-
-					FILE* pFile = NSFile::CFileBinary::OpenFileNative(wsAfmPath, L"wb");
-					if (pFile)
-					{
-						Ref* pRef = pFont->getID();
-						Object oRefObject, oFontObject;
-						oRefObject.initRef(pRef->num, pRef->gen);
-						oRefObject.fetch(pXref, &oFontObject);
-						oRefObject.free();
-
-						if (oFontObject.isDict())
-						{
-							std::string sFontName, sFontFamily;
-							int nFontWeight = 0, nItalicAngle = 0, nAscent = 0, nDescent = 0;
-							int nCapHeight = 0, nXHeight = 0, nStemV = 0, nStemH = 0, nMissingWidth = 0;
-							int arrBBox[4] = { 0, 0, 0, 0 };
-
-							Object oFontDescriptor;
-							if (oFontObject.dictLookup("FontDescriptor", &oFontDescriptor)->isDict())
-							{
-								Object oDictItem;
-								oFontDescriptor.dictLookup("FontName", &oDictItem);
-								if (oDictItem.isName()) sFontName = oDictItem.getName();
-								oDictItem.free();
-
-								oFontDescriptor.dictLookup("FontFamily", &oDictItem);
-								if (oDictItem.isName()) sFontFamily = oDictItem.getName();
-								oDictItem.free();
-
-								oFontDescriptor.dictLookup("FontWeight", &oDictItem);
-								if (oDictItem.isInt()) nFontWeight = oDictItem.getInt();
-								oDictItem.free();
-
-								if (oFontDescriptor.dictLookup("FontBBox", &oDictItem)->isArray() && oDictItem.arrayGetLength() == 4)
-								{
-									for (int nIndex = 0; nIndex < 4; nIndex++)
-									{
-										Object oArrayItem;
-										if (oDictItem.arrayGet(nIndex, &oArrayItem)->isInt())
-											arrBBox[nIndex] = oArrayItem.getInt();
-										oArrayItem.free();
-									}
-								}
-								oDictItem.free();
-
-								oFontDescriptor.dictLookup("ItalicAngle", &oDictItem);
-								if (oDictItem.isInt()) nItalicAngle = oDictItem.getInt();
-								oDictItem.free();
-
-								oFontDescriptor.dictLookup("Ascent", &oDictItem);
-								if (oDictItem.isInt()) nAscent = oDictItem.getInt();
-								oDictItem.free();
-
-								oFontDescriptor.dictLookup("CapHeight", &oDictItem);
-								if (oDictItem.isInt()) nCapHeight = oDictItem.getInt();
-								oDictItem.free();
-
-								oFontDescriptor.dictLookup("XHeight", &oDictItem);
-								if (oDictItem.isInt()) nXHeight = oDictItem.getInt();
-								oDictItem.free();
-
-								oFontDescriptor.dictLookup("StemV", &oDictItem);
-								if (oDictItem.isInt()) nStemV = oDictItem.getInt();
-								oDictItem.free();
-
-								oFontDescriptor.dictLookup("StemH", &oDictItem);
-								if (oDictItem.isInt()) nStemH = oDictItem.getInt();
-								oDictItem.free();
-
-								oFontDescriptor.dictLookup("Descent", &oDictItem);
-								if (oDictItem.isInt()) nDescent = oDictItem.getInt();
-								oDictItem.free();
-
-								oFontDescriptor.dictLookup("MissingWidth", &oDictItem);
-								if (oDictItem.isInt()) nMissingWidth = oDictItem.getInt();
-								oDictItem.free();
-
-							}
-							oFontDescriptor.free();
-
-							fprintf(pFile, "StartFontMetrics 3.0\n");
-							if (!sFontName.empty()) fprintf(pFile, "FontName %s\n", sFontName.c_str());
-							if (!sFontFamily.empty()) fprintf(pFile, "FamilyName %s\n", sFontFamily.c_str());
-							if (nFontWeight >= 550) fprintf(pFile, "Weight Bold\n");
-
-							fprintf(pFile, "ItalicAngle %d\n", nItalicAngle);
-
-							fprintf(pFile, "FontBBox %d %d %d %d\n", arrBBox[0], arrBBox[1], arrBBox[2], arrBBox[3]);
-
-							fprintf(pFile, "CapHeight %d\n", nCapHeight);
-							fprintf(pFile, "XHeight %d\n", nXHeight);
-							fprintf(pFile, "Ascender %d\n", nAscent);
-							fprintf(pFile, "Descender %d\n", nDescent);
-							fprintf(pFile, "StdHW %d\n", nStemH);
-							fprintf(pFile, "StdHV %d\n", nStemV);
-
-							int nFirstChar = 0;
-							Object oDictItem;
-							if (oFontObject.dictLookup("FirstChar", &oDictItem)->isInt()) nFirstChar = oDictItem.getInt();
-							oDictItem.free();
-
-							Gfx8BitFont* pT1Font = (Gfx8BitFont*)pFont;
-							if (oFontObject.dictLookup("Widths", &oDictItem)->isArray())
-							{
-								int nWidthsCount = oDictItem.arrayGetLength();
-								fprintf(pFile, "StartCharMetrics %d\n", nWidthsCount);
-								for (int nIndex = 0; nIndex < nWidthsCount; nIndex++)
-								{
-									int nWidth = nMissingWidth;
-									Object oArrayItem;
-									if (oDictItem.arrayGet(nIndex, &oArrayItem)->isInt()) nWidth = oArrayItem.getInt();
-									oArrayItem.free();
-
-									char** ppEncoding = pT1Font->getEncoding();
-
-									if (ppEncoding && ppEncoding[nIndex])
-										fprintf(pFile, "C %d ; WX %d ; N %s ;\n", nIndex + nFirstChar, nWidth, ppEncoding[nIndex]);
-									else
-										fprintf(pFile, "C %d ; WX %d ;\n", nIndex + nFirstChar, nWidth);
-								}
-								fprintf(pFile, "EndCharMetrics\n");
-							}
-							oDictItem.free();
-						}
-						oFontObject.free();
-					}
-					fclose(pFile);
-				}
-#endif
-
-				// Load the font file itself to determine its exact type
-				if (!pFontManager->LoadFontFromFile(wsFileName, 0, 10, 72, 72))
-				{
-					pEntry->bAvailable = true;
-					return;
-				}
-
-				std::wstring wsFontType = pFontManager->GetFontType();
-				if (L"TrueType" == wsFontType)
-				{
-					if (eFontType != fontType1COT   && eFontType != fontTrueType
-							&& eFontType != fontTrueTypeOT && eFontType != fontCIDType0COT
-							&& eFontType != fontCIDType2   && eFontType != fontCIDType2OT)
-					{
-						if (eFontType == fontType1 || eFontType == fontType1C)
-							eFontType = fontType1COT;
-						else if (eFontType == fontCIDType0 || eFontType == fontCIDType0C)
-							eFontType = fontCIDType0COT;
-					}
-				}
-				else if (L"Type 1" == wsFontType)
-				{
-					if (eFontType != fontType1 && eFontType != fontType1C)
-					{
-						eFontType = fontType1;
-					}
-				}
-				else if (L"CID Type 1" == wsFontType)
-				{
-					if (eFontType != fontCIDType0   && eFontType != fontCIDType0C
-							&& eFontType != fontCIDType2OT && eFontType != fontCIDType0COT)
-					{
-						eFontType = fontCIDType0;
-					}
-				}
-				else if (L"CFF" == wsFontType)
-				{
-					if (eFontType != fontType1C      && eFontType != fontType1COT
-							&& eFontType != fontTrueTypeOT  && eFontType != fontCIDType0C
-							&& eFontType != fontCIDType0COT && eFontType != fontCIDType2OT
-							&& eFontType != fontCIDType2)
-					{
-						if (eFontType == fontType1 || eFontType == fontTrueType)
-							eFontType = fontType1C;
-						else if (eFontType == fontCIDType0)
-							eFontType = fontCIDType0C;
-					}
-				}
-			}
-#ifndef FONTS_USE_ONLY_MEMORY_STREAMS
-			else if (PdfReader::GetBaseFont(wsFontBaseName, pData14, nSize14))
-			{
-				FILE* pFile = NULL;
-				if (!NSFile::CFileBinary::OpenTempFile(&wsTempFileName, &pFile, L"wb", L".base",
-													   (wchar_t*)((GlobalParamsAdaptor*)globalParams)->GetTempFolder().c_str(), NULL))
-				{
-					if (!wsTempFileName.empty())
-						NSFile::CFileBinary::Remove(wsTempFileName);
-
-					pEntry->bAvailable = true;
-					return;
-				}
-				fclose(pFile);
-				NSFile::CFileBinary oFile;
-				oFile.CreateFileW(wsTempFileName);
-				oFile.WriteFile((BYTE*)pData14, nSize14);
-				oFile.CloseFile();
-				wsFileName = wsTempFileName;
-				bFontBase14 = true;
-
-				eFontType = fontTrueType;
-			}
-#else
-			else if ([&oMemoryFontStream, wsFontBaseName]()
-			{
-				const BYTE* pData14 = NULL;
-				unsigned int nSize14 = 0;
-				if (PdfReader::GetBaseFont(wsFontBaseName, pData14, nSize14))
-				{
-					oMemoryFontStream.fromBuffer((BYTE*)pData14, nSize14);
-					return true;
-				}
-				return false;
-			}())
-			{
-				wsFileName = wsFontBaseName;
-				bFontBase14 = true;
-				NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Add(wsFileName, oMemoryFontStream.m_pData, (LONG)oMemoryFontStream.m_nSize, true);
-			}
-#endif
-			else if (!pFont->locateFont(pXref, false) ||
-					 (wsFileName = NSStrings::GetStringFromUTF32(pFont->locateFont(pXref, false)->path)).length() == 0)
-			{
-				NSFonts::CFontInfo* pFontInfo = GetFontByParams(pXref, pFontManager, pFont, wsFontBaseName, dStretch);
-
-				if (pFontInfo && L"" != pFontInfo->m_wsFontPath)
-				{
-					wsFileName = pFontInfo->m_wsFontPath;
-					eFontType  = pFont->isCIDFont() ? fontCIDType2 : fontTrueType;
-
-#ifdef FONTS_USE_ONLY_MEMORY_STREAMS
-					if (NSWasm::IsJSEnv())
-						wsFileName = pFontInfo->m_wsFontName;
-
-					if (!wsFileName.empty())
-					{
-						wsFileName = NSWasm::LoadFont(wsFileName, pFontInfo->m_bBold, pFontInfo->m_bItalic);
-						if (wsFileName.empty())
-						{
-							pFontList->Remove(*pFont->getID());
-							return;
-						}
-					}
-					oMemoryFontStream.fromStream(wsFileName);
-#endif
-
-					bFontSubstitution = true;
-				}
-				else // As a last resort, simply don't write anything with this font
-				{
-					pEntry->bAvailable = true;
-					return;
-				}
-			}
-			// Here we load encodings
-			int* pCodeToGID = NULL, *pCodeToUnicode = NULL;
-			int nLen = 0;
-			FoFiTrueType* pTTFontFile  = NULL;
-			FoFiType1C*   pT1CFontFile = NULL;
-#ifdef FONTS_USE_ONLY_MEMORY_STREAMS
-			FoFiIdentifierType fofiType = FoFiIdentifier::identifyStream(&readFromMemoryStream, &oMemoryFontStream);
-			oMemoryFontStream.toStart();
-#else
-			FoFiIdentifierType fofiType = FoFiIdentifier::identifyFile((char*)U_TO_UTF8(wsFileName).c_str());
-#endif
-
-			switch (eFontType)
-			{
-			case fontType1:
-			case fontType1C:
-			case fontType1COT:
-			{
-				Gfx8BitFont* pFont8bit = NULL;
-				if (fofiType == fofiIdTrueType)
-				{
-#ifdef FONTS_USE_ONLY_MEMORY_STREAMS
-					pTTFontFile = FoFiTrueType::make((char*)oMemoryFontStream.m_pData, oMemoryFontStream.m_nSize, 0);
-#else
-					pTTFontFile = FoFiTrueType::load((char*)U_TO_UTF8(wsFileName).c_str(), 0);
-#endif
-
-					if (pTTFontFile)
-					{
-						pCodeToGID = ((Gfx8BitFont*)pFont)->getCodeToGIDMap(pTTFontFile);
-						nLen = 256;
-
-						delete pTTFontFile;
-						pTTFontFile = NULL;
-					}
-					else
-					{
-						pCodeToGID = NULL;
-						nLen = 0;
-					}
-				}
-				else if (L"" != wsFileName && (pFont8bit = dynamic_cast<Gfx8BitFont*>(pFont)))
-				{
-					char** ppEncoding = pFont8bit->getEncoding();
-					if (!ppEncoding)
-						break;
-
-					if (!pFontManager)
-						break;
-
-					pFontManager->LoadFontFromFile(wsFileName, 0, 1, 72, 72);
-					pCodeToGID = (int*)MemUtilsMallocArray(256, sizeof(int));
-					if (!pCodeToGID)
-						break;
-
-					nLen = 256;
-					for (int nIndex = 0; nIndex < 256; ++nIndex)
-					{
-						pCodeToGID[nIndex] = 0;
-						char* sName = NULL;
-						if ((sName = ppEncoding[nIndex]))
-						{
-							unsigned short ushGID = pFontManager->GetNameIndex(AStringToWString(sName));
-							pCodeToGID[nIndex] = ushGID;
-						}
-					}
-				}
-				break;
-			}
-			case fontTrueType:
-			case fontTrueTypeOT:
-			{
-				if (fofiType == fofiIdType1PFB)
-				{
-					Gfx8BitFont* pFont8bit = dynamic_cast<Gfx8BitFont*>(pFont);
-					if (L"" != wsFileName && pFont8bit && pFont8bit->getHasEncoding())
-					{
-						char** ppEncoding = pFont8bit->getEncoding();
-						if (!ppEncoding)
-							break;
-
-						if (!pFontManager)
-							break;
-
-						pFontManager->LoadFontFromFile(wsFileName, 0, 1, 72, 72);
-						pCodeToGID = (int*)MemUtilsMallocArray(256, sizeof(int));
-						if (!pCodeToGID)
-							break;
-
-						nLen = 256;
-						for (int nIndex = 0; nIndex < 256; ++nIndex)
-						{
-							pCodeToGID[nIndex] = 0;
-							char* sName = NULL;
-							if ((sName = ppEncoding[nIndex]))
-							{
-								unsigned short ushGID = pFontManager->GetNameIndex(AStringToWString(sName));
-								pCodeToGID[nIndex] = ushGID;
-							}
-						}
-					}
-					break;
-				}
-
-#ifdef FONTS_USE_ONLY_MEMORY_STREAMS
-				pTTFontFile = FoFiTrueType::make((char*)oMemoryFontStream.m_pData, oMemoryFontStream.m_nSize, 0);
-#else
-				pTTFontFile = FoFiTrueType::load((char*)U_TO_UTF8(wsFileName).c_str(), 0);
-#endif
-				if (pTTFontFile)
-				{
-					pCodeToGID = ((Gfx8BitFont*)pFont)->getCodeToGIDMap(pTTFontFile);
-					nLen = 256;
-
-					delete pTTFontFile;
-					pTTFontFile = NULL;
-				}
-				else
-				{
-					pCodeToGID = NULL;
-					nLen       = 0;
-
-					if (pFontManager->LoadFontFromFile(wsFileName, 0, 10, 72, 72))
-					{
-						INT* pCodes = NULL;
-						nLen = 256;
-						pCodeToGID = (int*)MemUtilsMallocArray(nLen, sizeof(int));
-						for (int nCode = 0; nCode < nLen; ++nCode)
-						{
-							pCodeToGID[nCode] = pFontManager->GetGIDByUnicode(nCode);
-						}
-					}
-				}
-				break;
-			}
-			case fontCIDType0:
-			case fontCIDType0C:
-			{
-				GfxCIDFont* pFontCID = dynamic_cast<GfxCIDFont*>(pFont);
-				if (!bFontSubstitution && pFontCID && pFontCID->getCIDToGID())
-				{
-					nLen = pFontCID->getCIDToGIDLen();
-					if (!nLen)
-						break;
-					pCodeToGID = (int*)MemUtilsMallocArray(nLen, sizeof(int));
-					if (!pCodeToGID)
-					{
-						nLen = 0;
-						break;
-					}
-					memcpy(pCodeToGID, ((GfxCIDFont*)pFont)->getCIDToGID(), nLen * sizeof(int));
-					break;
-				}
-				/*
-#ifdef FONTS_USE_ONLY_MEMORY_STREAMS
-				pT1CFontFile = FoFiType1C::make((char*)oMemoryFontStream.m_pData, oMemoryFontStream.m_nSize);
-#else
-				pT1CFontFile = FoFiType1C::load((char*)U_TO_UTF8(wsFileName).c_str());
-#endif
-				if (pT1CFontFile)
-				{
-					pCodeToGID = pT1CFontFile->getCIDToGIDMap(&nLen);
-
-					delete pT1CFontFile;
-					pT1CFontFile = NULL;
-				}
-				else
-				{
-					pCodeToGID = NULL;
-					nLen = 0;
-				}
-				*/
-				pCodeToGID = NULL;
-				nLen = 0;
-				break;
-			}
-			case fontCIDType0COT:
-			{
-				GfxCIDFont* pFontCID = dynamic_cast<GfxCIDFont*>(pFont);
-				if (!bFontSubstitution && pFontCID && pFontCID->getCIDToGID())
-				{
-					nLen = pFontCID->getCIDToGIDLen();
-					if (!nLen)
-						break;
-					pCodeToGID = (int*)MemUtilsMallocArray(nLen, sizeof(int));
-					if (!pCodeToGID)
-					{
-						nLen = 0;
-						break;
-					}
-					memcpy(pCodeToGID, ((GfxCIDFont*)pFont)->getCIDToGID(), nLen * sizeof(int));
-					break;
-				}
-#ifdef FONTS_USE_ONLY_MEMORY_STREAMS
-				pTTFontFile = FoFiTrueType::make((char*)oMemoryFontStream.m_pData, oMemoryFontStream.m_nSize, 0);
-#else
-				pTTFontFile = FoFiTrueType::load((char*)U_TO_UTF8(wsFileName).c_str(), 0);
-#endif
-
-				if (pTTFontFile)
-				{
-					if (pTTFontFile->isOpenTypeCFF())
-					{
-						pCodeToGID = pTTFontFile->getCIDToGIDMap(&nLen);
-					}
-					else
-					{
-						pCodeToGID = NULL;
-						nLen = 0;
-					}
-					delete pTTFontFile;
-					pTTFontFile = NULL;
-				}
-				else
-				{
-					pCodeToGID = NULL;
-					nLen = 0;
-				}
-				break;
-			}
-			case fontCIDType2:
-			case fontCIDType2OT:
-			{
-				// Create CID-to-GID map
-				// If font was not embedded and was substituted and has ToUnicode map, read GIDs from file based on unicode values.
-				// For embedded fonts use CIDtoGID map
-				pCodeToGID = NULL;
-				nLen = 0;
-				if (L"" != wsFileName && bFontSubstitution)
-				{
-					CharCodeToUnicode* pCodeToUnicode = NULL;
-					if ((pCodeToUnicode = ((GfxCIDFont*)pFont)->getToUnicode()))
-					{
-#ifdef FONTS_USE_ONLY_MEMORY_STREAMS
-						pTTFontFile = FoFiTrueType::make((char*)oMemoryFontStream.m_pData, oMemoryFontStream.m_nSize, 0);
-#else
-						pTTFontFile = FoFiTrueType::load((char*)U_TO_UTF8(wsFileName).c_str(), 0);
-#endif
-						if (pTTFontFile)
-						{
-							// Looking for Unicode Cmap
-							std::vector<int> arrCMapIndex;
-							for (int nCMapIndex = 0; nCMapIndex < pTTFontFile->getNumCmaps(); ++nCMapIndex)
-							{
-								if ((pTTFontFile->getCmapPlatform(nCMapIndex) == 3 && pTTFontFile->getCmapEncoding(nCMapIndex) == 1) || pTTFontFile->getCmapPlatform(nCMapIndex) == 0)
-								{
-									arrCMapIndex.push_back(nCMapIndex);
-								}
-							}
-							if (arrCMapIndex.size() > 0)
-							{
-								// CID -> Unicode -> GID
-								nLen = pCodeToUnicode->getLength();
-								pCodeToGID = (int*)MemUtilsMallocArray(nLen, sizeof(int));
-								for (int nCode = 0; nCode < nLen; ++nCode)
-								{
-									Unicode arrUnicodeBuffer[8];
-									if (pCodeToUnicode->mapToUnicode(nCode, arrUnicodeBuffer, 8) > 0)
-									{
-										pCodeToGID[nCode] = pTTFontFile->mapCodeToGID(arrCMapIndex[0], arrUnicodeBuffer[0]);
-										for (size_t nIndex = 1; nIndex < arrCMapIndex.size(); nIndex++)
-										{
-											if (0 == pCodeToGID[nCode])
-												pCodeToGID[nCode] = pTTFontFile->mapCodeToGID(arrCMapIndex[nIndex], arrUnicodeBuffer[0]);
-											else
-												break;
-										}
-									}
-									else
-									{
-										pCodeToGID[nCode] = 0;
-									}
-								}
-							}
-							delete pTTFontFile;
-							pTTFontFile = NULL;
-						}
-						pCodeToUnicode->decRefCnt();
-					}
-				}
-				else if (((GfxCIDFont*)pFont)->getCIDToGID())
-				{
-					nLen = ((GfxCIDFont*)pFont)->getCIDToGIDLen();
-					pCodeToGID = (int*)MemUtilsMallocArray(nLen, sizeof(int));
-					if (!pCodeToGID)
-						break;
-
-					memcpy(pCodeToGID, ((GfxCIDFont*)pFont)->getCIDToGID(), nLen * sizeof(int));
-				}
-
-				break;
-			}
-			default:
-			{
-				// This should not happen
-#ifndef FONTS_USE_ONLY_MEMORY_STREAMS
-				if (L"" != wsTempFileName)
-					NSFile::CFileBinary::Remove(wsTempFileName);
-#endif
-				break;
-			}
-			}
-			// Build Code -> Unicode table
-			int nToUnicodeLen = 0;
-			if (pFont->isCIDFont())
-			{
-				GfxCIDFont* pCIDFont = (GfxCIDFont*)pFont;
-				CharCodeToUnicode* pToUnicode = pCIDFont->getToUnicode();
-				if (NULL != pToUnicode)
-				{
-					nToUnicodeLen = pToUnicode->getLength();
-					pCodeToUnicode = (int*)MemUtilsMallocArray(nToUnicodeLen, sizeof(int));
-
-					if (pCodeToUnicode)
-					{
-						for (int nIndex = 0; nIndex < nToUnicodeLen; ++nIndex)
-						{
-							Unicode aUnicode[2];
-							if (pToUnicode->mapToUnicode(nIndex, aUnicode, 2))
-								pCodeToUnicode[nIndex] = aUnicode[0];
-							else
-								pCodeToUnicode[nIndex] = 0;
-						}
-					}
-
-					pToUnicode->decRefCnt();
-				}
-			}
-			else
-			{
-				// memory troubles here
-
-				CharCodeToUnicode* pToUnicode = ((Gfx8BitFont*)pFont)->getToUnicode();
-				if (NULL != pToUnicode)
-				{
-					nToUnicodeLen = pToUnicode->getLength();
-					pCodeToUnicode = (int*)MemUtilsMallocArray(nToUnicodeLen, sizeof(int));//literally here
-
-					if (pCodeToUnicode)
-					{
-						for (int nIndex = 0; nIndex < nToUnicodeLen; ++nIndex)
-						{
-							Unicode nUnicode = 0;
-							if (pToUnicode->mapToUnicode(nIndex, &nUnicode, 1))
-								pCodeToUnicode[nIndex] = (unsigned short)nUnicode;
-							else
-								pCodeToUnicode[nIndex] = nIndex;
-						}
-					}
-					pToUnicode->decRefCnt();
-				}
-			}
-
-			// Trim index from FontName if present
-			if (wsFontName.empty())
-				wsFontName = wsFontBaseName;
-			if (bNotFullName)
-				EraseSubsetTag(wsFontName);
-			else if (!bFontBase14 && !bFontSubstitution)
-				wsFontName += (L" " + ComputeFontHash(pXref, pFont));
-
-			pEntry->wsFilePath     = wsFileName;
-			pEntry->wsFontName     = wsFontName;
-			pEntry->pCodeToGID     = pCodeToGID;
-			pEntry->pCodeToUnicode = pCodeToUnicode;
-			pEntry->unLenGID       = (unsigned int)nLen;
-			pEntry->unLenUnicode   = (unsigned int)nToUnicodeLen;
-			pEntry->bAvailable     = true;
-			pEntry->dStretch       = dStretch;
-			pEntry->bFontSubstitution = bFontSubstitution;
-			pEntry->bIsIdentity = pFont->isCIDFont() == gTrue ? ((GfxCIDFont*)pFont)->usesIdentityEncoding() || ((GfxCIDFont*)pFont)->usesIdentityCIDToGID() || ((GfxCIDFont*)pFont)->ctuUsesCharCodeToUnicode() || pFont->getType() == fontCIDType0C : false;
-		}
-		else if (NULL != pEntry)
-		{
-			wsFileName = pEntry->wsFilePath;
-			wsFontName = pEntry->wsFontName;
-		}
-	}
 	void RendererOutputDev::updateFont(GfxState* pGState)
 	{
 		// Check for font list presence
@@ -1634,7 +400,7 @@ namespace PdfReader
 
 		std::wstring wsFileName = L"";
 		std::wstring wsFontName = L"";
-		GetFont(m_pXref, m_pFontManager, m_pFontList, pFont, wsFileName, wsFontName, false);
+		GetFont(m_pXref, m_pFontManager, m_pFontList, pFont, wsFileName, wsFontName);
 
 		if (!wsFileName.empty())
 		{
@@ -1699,8 +465,7 @@ namespace PdfReader
 
 		m_pRenderer->EndCommand(c_nPathType);
 	}
-	void RendererOutputDev::tilingPatternFill(GfxState* pGState, Gfx* gfx, Object* pStream, int nPaintType, int nTilingType, Dict* pResourcesDict, double* pMatrix, double* pBBox,
-											  int nX0, int nY0, int nX1, int nY1, double dXStep, double dYStep)
+	void RendererOutputDev::tilingPatternFill(GfxState* pGState, Gfx* gfx, Object* pStream, int nPaintType, int nTilingType, Dict* pResourcesDict, double* pMatrix, double* pBBox, int nX0, int nY0, int nX1, int nY1, double dXStep, double dYStep)
 	{
 		if (m_bDrawOnlyText)
 			return;
@@ -1728,8 +493,14 @@ namespace PdfReader
 		int nWidth  = round(dWidth);
 		int nHeight = round(dHeight);
 
-		BYTE* pBgraData = new BYTE[nWidth * nHeight * 4];
-		memset(pBgraData, 0, nWidth * nHeight * 4);
+		if (nWidth <= 0 || nHeight <= 0)
+			return;
+
+		const size_t nBufSize = 4 * static_cast<size_t>(nWidth) * static_cast<size_t>(nHeight);
+		BYTE* pBgraData = new(std::nothrow) BYTE[nBufSize];
+		if (!pBgraData)
+			return;
+		memset(pBgraData, 0, nBufSize);
 
 		CBgraFrame* pFrame = new CBgraFrame();
 		pFrame->put_Data(pBgraData);
@@ -1771,7 +542,7 @@ namespace PdfReader
 			BYTE g = colToByte(oRGB.g);
 			BYTE b = colToByte(oRGB.b);
 
-			for (int i = 0; i < nWidth * nHeight; ++i)
+			for (size_t i = 0, nSize = static_cast<size_t>(nWidth) * static_cast<size_t>(nHeight); i < nSize; ++i)
 			{
 				BYTE alpha = pBgraData[i * 4 + 3];
 				if (alpha > 0)
@@ -2568,14 +1339,11 @@ namespace PdfReader
 			if (pFont->getType() == fontCIDType0COT && isCIDFont && oEntry.bIsIdentity && oEntry.pCodeToUnicode && nCode < oEntry.unLenUnicode && !oEntry.pCodeToUnicode[nCode])
 				unGid = nCode;
 		}
-		else
+		else if ((isCIDFont && oEntry.bIsIdentity && !oEntry.bFontSubstitution) || (!isCIDFont && wsUnicodeText.empty()))
 		{
-			if ((isCIDFont && oEntry.bIsIdentity) || (!isCIDFont && wsUnicodeText.empty()))
-			{
-				unsigned int nCurCode = (0 == nCode ? 65534 : nCode);
-				unGid       = nCurCode;
-				unGidsCount = 1;
-			}
+			unsigned int nCurCode = (0 == nCode ? 65534 : nCode);
+			unGid       = nCurCode;
+			unGidsCount = 1;
 		}
 
 		if (nRenderMode == 0 || nRenderMode == 4 || nRenderMode == 6 || m_bDrawOnlyText)
@@ -2806,7 +1574,7 @@ namespace PdfReader
 	{
 		return;
 	}
-	GBool RendererOutputDev::beginMarkedContent(GfxState* state, GString* s)
+	GBool RendererOutputDev::beginMarkedContent(GfxState* state, Object args[], int numArgs)
 	{
 		return gFalse;
 	}
@@ -2870,10 +1638,7 @@ namespace PdfReader
 		if (m_bDrawOnlyText || pGState->getFillColorSpace()->isNonMarking())
 			return;
 
-		int nBufferSize = 4 * nWidth * nHeight;
-		if (nBufferSize < 1)
-			return;
-
+		const size_t nBufferSize = 4 * static_cast<size_t>(nWidth) * static_cast<size_t>(nHeight);
 		BYTE* pBufferPtr = new(std::nothrow) BYTE[nBufferSize];
 		if (!pBufferPtr)
 			return;
@@ -2884,6 +1649,8 @@ namespace PdfReader
 		// Write data to pBufferPtr
 		ImageStream* pImageStream = new ImageStream(pStream, nWidth, 1, 1);
 		pImageStream->reset();
+
+		int nCheckWidth = std::min(nWidth, pImageStream->getVals());
 
 		GfxColorSpace* pColorSpace = pGState->getFillColorSpace();
 		GfxRGB oRGB;
@@ -2898,10 +1665,26 @@ namespace PdfReader
 		for (int nY = nHeight - 1; nY >= 0; --nY)
 		{
 			BYTE* pMask = pImageStream->getLine();
-			int nIndex = 4 * nY * nWidth;
-			for (int nX = 0; nX < nWidth; ++nX)
+			size_t nRowStart = 4 * static_cast<size_t>(nY) * static_cast<size_t>(nWidth);
+
+			if (!pMask)
+			{
+				for (int nX = 0; nX < nWidth; ++nX)
+				{
+					size_t nIndex = nRowStart + static_cast<size_t>(nX) * 4;
+					pBufferPtr[nIndex + 0] = 255;
+					pBufferPtr[nIndex + 1] = 255;
+					pBufferPtr[nIndex + 2] = 255;
+					pBufferPtr[nIndex + 3] = 0;
+				}
+				continue;
+			}
+
+			int nX = 0;
+			for (; nX < nCheckWidth; ++nX)
 			{
 				BYTE unPixel = *pMask++ ^ nInvert;
+				size_t nIndex = nRowStart + static_cast<size_t>(nX) * 4;
 				if (unPixel)
 				{
 					pBufferPtr[nIndex + 0] = 255;
@@ -2918,6 +1701,15 @@ namespace PdfReader
 				}
 				nIndex += 4;
 			}
+
+			for (; nX < nWidth; ++nX)
+			{
+				size_t nIndex = nRowStart + static_cast<size_t>(nX) * 4;
+				pBufferPtr[nIndex + 0] = 255;
+				pBufferPtr[nIndex + 1] = 255;
+				pBufferPtr[nIndex + 2] = 255;
+				pBufferPtr[nIndex + 3] = 0;
+			}
 		}
 
 		delete pImageStream;
@@ -2930,11 +1722,11 @@ namespace PdfReader
 		// arrMattrix = |0 -1  0| * |pCTM[2] pCTM[3] 0|
 		//              |0  1  1|   |pCTM[4] pCTM[5] 1|
 
-		arrMatrix[0] = pCTM[0];
+		arrMatrix[0] =  pCTM[0];
 		arrMatrix[1] = -pCTM[1];
 		arrMatrix[2] = -pCTM[2];
-		arrMatrix[3] = pCTM[3];
-		arrMatrix[4] = pCTM[2] + pCTM[4];
+		arrMatrix[3] =  pCTM[3];
+		arrMatrix[4] =  pCTM[2] + pCTM[4];
 		arrMatrix[5] = -(pCTM[3] + pCTM[5]) + pGState->getPageHeight();
 
 		double dShiftX = 0, dShiftY = 0;
@@ -2946,10 +1738,10 @@ namespace PdfReader
 		if (m_bDrawOnlyText || pGState->getFillColorSpace()->isNonMarking())
 			return;
 
-		int nBufferSize = 4 * nWidth * nHeight;
-		if (nBufferSize < 1)
+		if (nWidth <= 0 || nHeight <= 0)
 			return;
 
+		const size_t nBufferSize = 4 * static_cast<size_t>(nWidth) * static_cast<size_t>(nHeight);
 		BYTE* pBufferPtr = new(std::nothrow) BYTE[nBufferSize];
 		if (!pBufferPtr)
 			return;
@@ -2963,6 +1755,8 @@ namespace PdfReader
 		// Write data to pBufferPtr
 		ImageStream* pImageStream = new ImageStream(pStream, nWidth, 1, 1);
 		pImageStream->reset();
+
+		int nCheckWidth = std::min(nWidth, pImageStream->getVals());
 
 		GfxColorSpace* pColorSpace = pGState->getFillColorSpace();
 		GfxRGB oRGB;
@@ -2979,16 +1773,32 @@ namespace PdfReader
 		BYTE r = colToByte(oRGB.r);
 		BYTE g = colToByte(oRGB.g);
 		BYTE b = colToByte(oRGB.b);
-		BYTE unAlpha = std::min(255, std::max(0, int(pGState->getFillOpacity() * 255)));
+		BYTE unAlpha = (BYTE)std::min(255, std::max(0, int(pGState->getFillOpacity() * 255)));
 		int nInvert = bInvert ? 1 : 0;
 
 		for (int nY = nHeight - 1; nY >= 0; --nY)
 		{
 			BYTE* pMask = pImageStream->getLine();
-			int nIndex = 4 * nY * nWidth;
-			for (int nX = 0; nX < nWidth; ++nX)
+			size_t nRowStart = 4 * static_cast<size_t>(nY) * static_cast<size_t>(nWidth);
+
+			if (!pMask)
+			{
+				for (int nX = 0; nX < nWidth; ++nX)
+				{
+					size_t nIndex = nRowStart + static_cast<size_t>(nX) * 4;
+					pBufferPtr[nIndex + 0] = 255;
+					pBufferPtr[nIndex + 1] = 255;
+					pBufferPtr[nIndex + 2] = 255;
+					pBufferPtr[nIndex + 3] = 0;
+				}
+				continue;
+			}
+
+			int nX = 0;
+			for (; nX < nCheckWidth; ++nX)
 			{
 				BYTE unPixel = *pMask++ ^ nInvert;
+				size_t nIndex = nRowStart + static_cast<size_t>(nX) * 4;
 				if (unPixel)
 				{
 					pBufferPtr[nIndex + 0] = 255;
@@ -3005,6 +1815,15 @@ namespace PdfReader
 				}
 				nIndex += 4;
 			}
+
+			for (; nX < nWidth; ++nX)
+			{
+				size_t nIndex = nRowStart + static_cast<size_t>(nX) * 4;
+				pBufferPtr[nIndex + 0] = 255;
+				pBufferPtr[nIndex + 1] = 255;
+				pBufferPtr[nIndex + 2] = 255;
+				pBufferPtr[nIndex + 3] = 0;
+			}
 		}
 
 		delete pImageStream;
@@ -3017,11 +1836,11 @@ namespace PdfReader
 		// arrMattrix = |0 -1  0| * |pCTM[2] pCTM[3] 0|
 		//              |0  1  1|   |pCTM[4] pCTM[5] 1|
 
-		arrMatrix[0] = pCTM[0];
+		arrMatrix[0] =  pCTM[0];
 		arrMatrix[1] = -pCTM[1];
 		arrMatrix[2] = -pCTM[2];
-		arrMatrix[3] = pCTM[3];
-		arrMatrix[4] = pCTM[2] + pCTM[4];
+		arrMatrix[3] =  pCTM[3];
+		arrMatrix[4] =  pCTM[2] + pCTM[4];
 		arrMatrix[5] = -(pCTM[3] + pCTM[5]) + pGState->getPageHeight();
 
 		double dShiftX = 0, dShiftY = 0;
@@ -3046,16 +1865,16 @@ namespace PdfReader
 	}
 	BYTE* BufferFromImageStream(GfxState* pGState, Stream* pStream, int nWidth, int nHeight, GfxImageColorMap* pColorMap, int* pMaskColors)
 	{
-		int nBufferSize = 4 * nWidth * nHeight;
-		if (nBufferSize < 1)
+		if (nWidth <= 0 || nHeight <= 0 || !pColorMap || !pGState)
 			return NULL;
 
+		const size_t nBufferSize = 4 * static_cast<size_t>(nWidth) * static_cast<size_t>(nHeight);
 		BYTE* pBufferPtr = new(std::nothrow) BYTE[nBufferSize];
 		if (!pBufferPtr)
 			return NULL;
 
 		int nComponentsCount = pColorMap->getNumPixelComps();
-		BYTE unAlpha = std::min(255, std::max(0, int(pGState->getFillOpacity() * 255)));
+		BYTE unAlpha = (BYTE)std::min(255, std::max(0, int(pGState->getFillOpacity() * 255)));
 
 		// Write data to pBufferPtr
 		ImageStream* pImageStream = new ImageStream(pStream, nWidth, nComponentsCount, pColorMap->getBits());
@@ -3074,7 +1893,7 @@ namespace PdfReader
 		for (int nY = nHeight - 1; nY >= 0; --nY)
 		{
 			BYTE* pLine = pImageStream->getLine();
-			BYTE* pLineDst = pBufferPtr + 4 * nWidth * nY;
+			BYTE* pLineDst = pBufferPtr + 4 * static_cast<size_t>(nWidth) * static_cast<size_t>(nY);
 
 			if (!pLine)
 			{
@@ -3188,11 +2007,11 @@ namespace PdfReader
 		//             |1  0  0|   |pCTM[0] pCTM[1] 0|
 		// arrMatrix = |0 -1  0| * |pCTM[2] pCTM[3] 0|
 		//             |0  1  1|   |pCTM[4] pCTM[5] 1|
-		arrMatrix[0] = pCTM[0];
+		arrMatrix[0] =  pCTM[0];
 		arrMatrix[1] = -pCTM[1];
 		arrMatrix[2] = -pCTM[2];
-		arrMatrix[3] = pCTM[3];
-		arrMatrix[4] = pCTM[2] + pCTM[4];
+		arrMatrix[3] =  pCTM[3];
+		arrMatrix[4] =  pCTM[2] + pCTM[4];
 		arrMatrix[5] = -(pCTM[3] + pCTM[5]) + pGState->getPageHeight();
 
 		double dShiftX = 0, dShiftY = 0;
@@ -3205,7 +2024,10 @@ namespace PdfReader
 			return;
 
 		if (nMaskWidth <= 0 || nMaskHeight <= 0)
+		{
 			drawImage(pGState, gfx, pRef, pStream, nWidth, nHeight, pColorMap, NULL, false, interpolate);
+			return;
+		}
 
 		if (nMaskWidth > nWidth || nMaskHeight > nHeight)
 		{
@@ -3222,18 +2044,14 @@ namespace PdfReader
 			maskDecode.arrayAdd(&decodeHigh);
 			maskColorMap = new GfxImageColorMap(1, &maskDecode, new GfxDeviceGrayColorSpace());
 			maskDecode.free();
-			drawSoftMaskedImage(pGState, gfx, pRef, pStream, nWidth, nHeight,
-								pColorMap, pStreamRef, pMaskStream, nMaskWidth, nMaskHeight, maskColorMap, NULL, interpolate);
+			drawSoftMaskedImage(pGState, gfx, pRef, pStream, nWidth, nHeight, pColorMap, pStreamRef, pMaskStream, nMaskWidth, nMaskHeight, maskColorMap, NULL, interpolate);
 			delete maskColorMap;
 			return;
 		}
 
 		double dPageHeight = pGState->getPageHeight();
 
-		int nBufferSize = 4 * nWidth * nHeight;
-		if (nBufferSize < 1)
-			return;
-
+		const size_t nBufferSize = 4 * static_cast<size_t>(nWidth) * static_cast<size_t>(nHeight);
 		BYTE* pBufferPtr = new(std::nothrow) BYTE[nBufferSize];
 		if (!pBufferPtr)
 			return;
@@ -3250,7 +2068,8 @@ namespace PdfReader
 		BYTE unAlpha = std::min(255, std::max(0, int(pGState->getFillOpacity() * 255)));
 		if (nWidth != nMaskWidth || nHeight != nMaskHeight)
 		{
-			BYTE* pMaskBuffer = new(std::nothrow) BYTE[nMaskWidth * nMaskHeight];
+			const size_t nMaskBufSize = static_cast<size_t>(nMaskWidth) * static_cast<size_t>(nMaskHeight);
+			BYTE* pMaskBuffer = new(std::nothrow) BYTE[nMaskBufSize];
 			if (!pMaskBuffer)
 			{
 				delete pMask;
@@ -3261,7 +2080,7 @@ namespace PdfReader
 			BYTE unMask = 0;
 			for (int nY = nMaskHeight - 1; nY >= 0; nY--)
 			{
-				int nIndex = nY * nMaskWidth;
+				size_t nIndex = static_cast<size_t>(nY) * static_cast<size_t>(nMaskWidth);
 				for (int nX = 0; nX < nMaskWidth; nX++)
 				{
 					pMask->getPixel(&unMask);
@@ -3269,32 +2088,27 @@ namespace PdfReader
 				}
 			}
 
-			double dScaleWidth  = (double)nWidth / (double)nMaskWidth;
+			double dScaleWidth  = (double)nWidth  / (double)nMaskWidth;
 			double dScaleHeight = (double)nHeight / (double)nMaskHeight;
 
-			BYTE unPixel[4] ={ 0, 0, 0, 0 };
+			BYTE unPixel[4] = { 0, 0, 0, 0 };
 			for (int nY = nHeight - 1; nY >= 0; nY--)
 			{
-				int nIndex = 4 * nY * nWidth;
+				size_t nIndex = 4 * static_cast<size_t>(nY) * static_cast<size_t>(nWidth);
 				for (int nX = 0; nX < nWidth; nX++)
 				{
 					pImageStream->getPixel(unPixel);
 
 					int nNearestY = (std::min)((int)(nY / dScaleHeight), nMaskHeight - 1);
-					int nNearestX = (std::min)((int)(nX / dScaleWidth), nMaskWidth - 1);
-					unMask = pMaskBuffer[nNearestY * nMaskWidth + nNearestX];
+					int nNearestX = (std::min)((int)(nX / dScaleWidth),  nMaskWidth  - 1);
+					unMask = pMaskBuffer[static_cast<size_t>(nNearestY) * nMaskWidth + nNearestX];
 
 					GfxRGB oRGB;
 					pColorMap->getRGB(unPixel, &oRGB, GfxRenderingIntent::gfxRenderingIntentAbsoluteColorimetric);
 					pBufferPtr[nIndex + 0] = colToByte(oRGB.b);
 					pBufferPtr[nIndex + 1] = colToByte(oRGB.g);
 					pBufferPtr[nIndex + 2] = colToByte(oRGB.r);
-
-					if (unMask && !bMaskInvert)
-						pBufferPtr[nIndex + 3] = 0;
-					else
-						pBufferPtr[nIndex + 3] = unAlpha;
-
+					pBufferPtr[nIndex + 3] = (unMask && !bMaskInvert) ? 0 : unAlpha;
 					nIndex += 4;
 				}
 			}
@@ -3307,7 +2121,7 @@ namespace PdfReader
 			BYTE unMask = 0;
 			for (int nY = nHeight - 1; nY >= 0; --nY)
 			{
-				int nIndex = 4 * nY * nWidth;
+				int nIndex = 4 * static_cast<size_t>(nY) * static_cast<size_t>(nWidth);
 				for (int nX = 0; nX < nWidth; ++nX)
 				{
 					pImageStream->getPixel(unPixel);
@@ -3317,8 +2131,7 @@ namespace PdfReader
 					pBufferPtr[nIndex + 0] = colToByte(oRGB.b);
 					pBufferPtr[nIndex + 1] = colToByte(oRGB.g);
 					pBufferPtr[nIndex + 2] = colToByte(oRGB.r);
-					pBufferPtr[nIndex + 3] = unMask && !bMaskInvert ? 0 : unAlpha;
-
+					pBufferPtr[nIndex + 3] = (unMask && !bMaskInvert) ? 0 : unAlpha;
 					nIndex += 4;
 				}
 			}
@@ -3333,11 +2146,11 @@ namespace PdfReader
 		//             |1  0  0|   |pCTM[0] pCTM[1] 0|
 		// arrMatrix = |0 -1  0| * |pCTM[2] pCTM[3] 0|
 		//             |0  1  1|   |pCTM[4] pCTM[5] 1|
-		arrMatrix[0] = pCTM[0];
+		arrMatrix[0] =  pCTM[0];
 		arrMatrix[1] = -pCTM[1];
 		arrMatrix[2] = -pCTM[2];
-		arrMatrix[3] = pCTM[3];
-		arrMatrix[4] = pCTM[2] + pCTM[4];
+		arrMatrix[3] =  pCTM[3];
+		arrMatrix[4] =  pCTM[2] + pCTM[4];
 		arrMatrix[5] = -(pCTM[3] + pCTM[5]) + dPageHeight;
 
 		double dShiftX = 0, dShiftY = 0;
@@ -3349,9 +2162,10 @@ namespace PdfReader
 		if (m_bDrawOnlyText)
 			return;
 
-		int nBufferSize = 4 * nWidth * nHeight;
-		if (nBufferSize < 1)
+		if (nWidth <= 0 || nHeight <= 0)
 			return;
+
+		const size_t nBufferSize = 4 * static_cast<size_t>(nWidth) * static_cast<size_t>(nHeight);
 
 		Aggplus::CImage oImage;
 		int nComponentsCount = pColorMap->getNumPixelComps();
@@ -3376,13 +2190,14 @@ namespace PdfReader
 			if (0 != nWidth && 0 != nMaskHeight && 0 != nHeight && 0 != nMaskWidth)
 			{
 				ImageStream* pSMaskStream = new ImageStream(pMaskStream, nMaskWidth, pMaskColorMap->getNumPixelComps(), pMaskColorMap->getBits());
-				BYTE* pAlpha = new(std::nothrow) BYTE[nMaskWidth * nMaskHeight];
+				const size_t nBufMaskSize = static_cast<size_t>(nMaskWidth) * static_cast<size_t>(nMaskHeight);
+				BYTE* pAlpha = new(std::nothrow) BYTE[nBufMaskSize];
 				if (pSMaskStream && pAlpha)
 				{
 					pSMaskStream->reset();
 
 					BYTE unAlpha = 0;
-					for (int i = 0, nCount = nMaskWidth * nMaskHeight; i < nCount; ++i)
+					for (size_t i = 0; i < nBufMaskSize; ++i)
 					{
 						pSMaskStream->getPixel(&unAlpha);
 						GfxGray oGray;
@@ -3400,7 +2215,8 @@ namespace PdfReader
 					if (nWidth != nMaxW || nHeight != nMaxH)
 					{
 						BYTE* pImageBuffer = pBufferPtr;
-						pBufferPtr = new(std::nothrow) BYTE[4 * nMaxW * nMaxH];
+						const size_t nBufSize = 4 * static_cast<size_t>(nMaxW) * static_cast<size_t>(nMaxH);
+						pBufferPtr = new(std::nothrow) BYTE[nBufSize];
 						if (!pBufferPtr)
 						{
 							delete[] pImageBuffer;
@@ -3410,16 +2226,16 @@ namespace PdfReader
 
 						oImage.Create(pBufferPtr, nMaxW, nMaxH, -4 * nMaxW);
 
-						double dImageScaleWidth  = (double)nWidth / (double)nMaxW;
+						double dImageScaleWidth  = (double)nWidth  / (double)nMaxW;
 						double dImageScaleHeight = (double)nHeight / (double)nMaxH;
 
 						for (int nY = nMaxH - 1; nY >= 0; nY--)
 						{
-							int nIndex = 4 * nY * nMaxW;
+							size_t nIndex = 4 * static_cast<size_t>(nY) * static_cast<size_t>(nMaxW);
 							for (int nX = 0; nX < nMaxW; nX++)
 							{
-								int nNearestAlphaMatch =  (((int)((nMaxH - 1 - nY) * dAlphaScaleHeight) * nMaskWidth) + ((int)(nX * dAlphaScaleWidth)));
-								int nNearestImageMatch =  4 * (((int)(nY * dImageScaleHeight) * nWidth) + ((int)(nX * dImageScaleWidth)));
+								int nNearestAlphaMatch = (((int)((nMaxH - 1 - nY) * dAlphaScaleHeight) * nMaskWidth) + ((int)(nX * dAlphaScaleWidth)));
+								int nNearestImageMatch = 4 * (((int)(nY * dImageScaleHeight) * nWidth) + ((int)(nX * dImageScaleWidth)));
 
 								pBufferPtr[nIndex + 0] = pImageBuffer[nNearestImageMatch + 0];
 								pBufferPtr[nIndex + 1] = pImageBuffer[nNearestImageMatch + 1];
@@ -3435,7 +2251,7 @@ namespace PdfReader
 					{
 						for (int nY = nHeight - 1; nY >= 0; nY--)
 						{
-							int nIndex = 4 * nY * nWidth;
+							size_t nIndex = 4 * static_cast<size_t>(nY) * static_cast<size_t>(nWidth);
 							for (int nX = 0; nX < nWidth; nX++)
 							{
 								int nNearestAlphaMatch =  (((int)((nHeight - 1 - nY) * dAlphaScaleHeight) * nMaskWidth) + ((int)(nX * dAlphaScaleWidth)));
@@ -3464,10 +2280,8 @@ namespace PdfReader
 
 			if (!bResize && dAlphaKoef < 1.0)
 			{
-				for (int i = 3, nCount = nWidth * nHeight * 4; i < nCount; i += 4)
-				{
+				for (size_t i = 3, nCount = static_cast<size_t>(nWidth) * static_cast<size_t>(nHeight) * 4; i < nCount; i += 4)
 					pBufferPtr[i] = (BYTE)(255.0 * dAlphaKoef);
-				}
 			}
 		}
 		else
@@ -3483,11 +2297,10 @@ namespace PdfReader
 			int nMaskComps = pSMaskStream->getComps();
 			int nMaskCheckWidth = std::min(nMaskWidth, pSMaskStream->getVals() / nMaskComps);
 
-			BYTE unAlpha = 0;
 			for (int nY = nMaskHeight - 1; nY >= 0; --nY)
 			{
 				BYTE* pMaskLine = pSMaskStream->getLine();
-				int nIndex = 4 * nY * nMaskWidth;
+				size_t nIndex = 4 * static_cast<size_t>(nY) * static_cast<size_t>(nMaskWidth);
 				if (!pMaskLine)
 				{
 					// Fill with transparency if line was not read
@@ -3505,9 +2318,7 @@ namespace PdfReader
 
 					// Optimized cases for different color spaces
 					if (1 == nMaskColorMapType)
-					{
 						unAlpha = colToByte(clip01(pMaskColorMapLookup[0][pMaskLine[0]]));
-					}
 					else if (2 == nMaskColorMapType || 3 == nMaskColorMapType)
 					{
 						unAlpha = colToByte(clip01(0.3 * pMaskColorMapLookup[0][pMaskLine[0]] +
@@ -3523,6 +2334,12 @@ namespace PdfReader
 
 					pBufferPtr[nIndex + 3] = (BYTE)(unAlpha * dAlphaKoef);
 					pMaskLine += nMaskComps;
+					nIndex += 4;
+				}
+
+				for (int nX = nMaskCheckWidth; nX < nMaskWidth; ++nX)
+				{
+					pBufferPtr[nIndex + 3] = 0;
 					nIndex += 4;
 				}
 			}
@@ -3542,15 +2359,15 @@ namespace PdfReader
 			BYTE unMatteG = colToByte(oMatteRGB.g);
 			BYTE unMatteB = colToByte(oMatteRGB.b);
 
-			for (int nIndex = 0; nIndex < nBufferSize; nIndex += 4)
+			for (size_t nIndex = 0; nIndex < nBufferSize; nIndex += 4)
 			{
 				BYTE unA = pBufferPtr[nIndex + 3];
 				if (unA)
 				{
 					double dK = 255.0 / unA;
-					pBufferPtr[nIndex + 0] = std::max(0, std::min(255, int((pBufferPtr[nIndex + 0] - unMatteB) * dK + unMatteB)));
-					pBufferPtr[nIndex + 1] = std::max(0, std::min(255, int((pBufferPtr[nIndex + 1] - unMatteG) * dK + unMatteG)));
-					pBufferPtr[nIndex + 2] = std::max(0, std::min(255, int((pBufferPtr[nIndex + 2] - unMatteR) * dK + unMatteR)));
+					pBufferPtr[nIndex + 0] = (BYTE)std::max(0, std::min(255, int((pBufferPtr[nIndex + 0] - unMatteB) * dK + unMatteB)));
+					pBufferPtr[nIndex + 1] = (BYTE)std::max(0, std::min(255, int((pBufferPtr[nIndex + 1] - unMatteG) * dK + unMatteG)));
+					pBufferPtr[nIndex + 2] = (BYTE)std::max(0, std::min(255, int((pBufferPtr[nIndex + 2] - unMatteR) * dK + unMatteR)));
 				}
 				else
 				{
@@ -3567,11 +2384,11 @@ namespace PdfReader
 		//              |1  0  0|   |pCTM[0] pCTM[1] 0|
 		// arrMattrix = |0 -1  0| * |pCTM[2] pCTM[3] 0|
 		//              |0  1  1|   |pCTM[4] pCTM[5] 1|
-		arrMatrix[0] = pCTM[0];
+		arrMatrix[0] =  pCTM[0];
 		arrMatrix[1] = -pCTM[1];
 		arrMatrix[2] = -pCTM[2];
-		arrMatrix[3] = pCTM[3];
-		arrMatrix[4] = pCTM[2] + pCTM[4];
+		arrMatrix[3] =  pCTM[3];
+		arrMatrix[4] =  pCTM[2] + pCTM[4];
 		arrMatrix[5] = -(pCTM[3] + pCTM[5]) + pGState->getPageHeight();
 
 		double dShiftX = 0, dShiftY = 0;

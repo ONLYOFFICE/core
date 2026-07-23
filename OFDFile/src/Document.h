@@ -1,11 +1,48 @@
+/*
+ * Copyright (C) Ascensio System SIA, 2009-2026
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation, together with the
+ * additional terms provided in the LICENSE file.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. For
+ * details, see the GNU AGPL at: https://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA by email at info@onlyoffice.com
+ * or by postal mail at 20A-6 Ernesta Birznieka-Upisha Street, Riga,
+ * LV-1050, Latvia, European Union.
+ *
+ * The interactive user interfaces in modified versions of the Program
+ * are required to display Appropriate Legal Notices in accordance with
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * No trademark rights are granted under this License.
+ *
+ * All non-code elements of the Product, including illustrations,
+ * icon sets, and technical writing content, are licensed under the
+ * Creative Commons Attribution-ShareAlike 4.0 International License:
+ * https://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ * This license applies only to such non-code elements and does not
+ * modify or replace the licensing terms applicable to the Program's
+ * source code, which remains licensed under the GNU Affero General
+ * Public License v3.
+ *
+ * SPDX-License-Identifier: AGPL-3.0-only
+ */
+
 #ifndef DOCUMENT_H
 #define DOCUMENT_H
 
+#include "Utils/CFontChecker.h"
 #include "Page.h"
 #include "Annotation.h"
+#include "OutlineElem.h"
+#include "Bookmark.h"
 
-#include "../../DesktopEditor/graphics/IRenderer.h"
-#include "../../OfficeUtils/src/ZipFolder.h"
+namespace NSWasm { class CData; }
 
 namespace OFD
 {
@@ -29,7 +66,9 @@ class CDocument
 	CPermission m_oPermission;
 	CAnnotation m_oAnnotation;
 
-	std::map<unsigned int, CPage*> m_mPages;
+	std::map<unsigned int, const CPage*> m_mPages;
+	std::vector<const COutlineElem*>     m_arOutlines;
+	std::vector<const CBookmark*>        m_arBookmarks;
 public:
 	CDocument();
 	~CDocument();
@@ -42,6 +81,16 @@ public:
 
 	unsigned int GetPageCount() const;
 	bool GetPageSize(int nPageIndex, double& dWidth, double &dHeight) const;
+
+	void UpdateFonts(CFontChecker* pFontChecker);
+
+	#ifdef BUILDING_WASM_MODULE
+	void GetStructure(UINT& unMaxNumberPage, NSWasm::CData& oRes) const;
+	void GetLinks(UINT unPageIndex, NSWasm::CData& oRes) const;
+	#endif
+private:
+	void AddOutlineElem(const COutlineElem* pOutlineElem);
+	void AddBookmark(const CBookmark* pBookmark);
 };
 }
 

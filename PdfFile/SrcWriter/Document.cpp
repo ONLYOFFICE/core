@@ -1,33 +1,36 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * Copyright (C) Ascensio System SIA, 2009-2026
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
- * version 3 as published by the Free Software Foundation. In accordance with
- * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
- * that Ascensio System SIA expressly excludes the warranty of non-infringement
- * of any third-party rights.
+ * version 3 as published by the Free Software Foundation, together with the
+ * additional terms provided in the LICENSE file.
  *
  * This program is distributed WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
- * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. For
+ * details, see the GNU AGPL at: https://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
- * street, Riga, Latvia, EU, LV-1050.
+ * You can contact Ascensio System SIA by email at info@onlyoffice.com
+ * or by postal mail at 20A-6 Ernesta Birznieka-Upisha Street, Riga,
+ * LV-1050, Latvia, European Union.
  *
- * The  interactive user interfaces in modified source and object code versions
- * of the Program must display Appropriate Legal Notices, as required under
+ * The interactive user interfaces in modified versions of the Program
+ * are required to display Appropriate Legal Notices in accordance with
  * Section 5 of the GNU AGPL version 3.
  *
- * Pursuant to Section 7(b) of the License you must retain the original Product
- * logo when distributing the program. Pursuant to Section 7(e) we decline to
- * grant you any rights under trademark law for use of our trademarks.
+ * No trademark rights are granted under this License.
  *
- * All the Product's GUI elements, including illustrations and icon sets, as
- * well as technical writing content are licensed under the terms of the
- * Creative Commons Attribution-ShareAlike 4.0 International. See the License
- * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ * All non-code elements of the Product, including illustrations,
+ * icon sets, and technical writing content, are licensed under the
+ * Creative Commons Attribution-ShareAlike 4.0 International License:
+ * https://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
+ * This license applies only to such non-code elements and does not
+ * modify or replace the licensing terms applicable to the Program's
+ * source code, which remains licensed under the GNU Affero General
+ * Public License v3.
+ *
+ * SPDX-License-Identifier: AGPL-3.0-only
  */
 #include "Document.h"
 #include "Info.h"
@@ -66,8 +69,9 @@
 
 namespace PdfWriter
 {
-	const char* c_sPdfHeader = "%PDF-1.7\015%\315\312\322\251\015";
-	const char* c_sPdfAHeader = "%PDF-1.4\015%\315\312\322\251\015";
+	const char* c_sPdfHeader   = "%PDF-1.7";
+	const char* c_sPdfAHeader  = "%PDF-1.4";
+	const char* c_sPdfUAHeader = "%PDF-2.0";
 	//----------------------------------------------------------------------------------------
 	// CDocument
 	//----------------------------------------------------------------------------------------
@@ -95,6 +99,8 @@ namespace PdfWriter
 		m_pTransparencyGroup = NULL;
 		m_pFreeTypeLibrary  = NULL;
 		m_bPDFAConformance	= false;
+		m_bPDFUAConformance = false;
+		m_nRedactInfo       = 0;
 		m_pAcroForm         = NULL;
 		m_pFieldsResources  = NULL;
 	}
@@ -114,40 +120,48 @@ namespace PdfWriter
 		if (!m_pTrailer)
 			return false;
 
-		m_pMetaData = new CStreamData(m_pXref);
-		if (!m_pMetaData)
-			return false;
+		m_pMetaData = NULL;
+		if (~m_nRedactInfo & (1 << 8))
+		{
+			m_pMetaData = new CStreamData(m_pXref);
+			if (!m_pMetaData)
+				return false;
+		}
 
 		m_pCatalog = new CCatalog(m_pXref);
 		if (!m_pCatalog)
 			return false;
 
-		m_pCatalog->SetPageMode(pagemode_UseNone);
-		m_pCatalog->SetPageLayout(pagelayout_OneColumn);
+		if (!m_nRedactInfo)
+		{
+			m_pCatalog->SetPageMode(pagemode_UseNone);
+			m_pCatalog->SetPageLayout(pagelayout_OneColumn);
+		}
 
 		m_pPageTree = m_pCatalog->GetRoot();
 		if (!m_pPageTree)
 			return false;
 
-		m_pInfo = new CInfoDict(m_pXref);
-		if (!m_pInfo)
-			return false;
+		if (~m_nRedactInfo & (1 << 0))
+			m_pInfo = new CInfoDict(m_pXref);
+		if (m_pInfo)
+		{
+			m_pInfo->SetTime(InfoCreationDate);
+			m_pInfo->SetTime(InfoModaDate);
 
-		m_pInfo->SetTime(InfoCreationDate);
-		m_pInfo->SetTime(InfoModaDate);
+			std::wstring sCreator = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvApplicationName);
+			if (sCreator.empty())
+				sCreator = NSSystemUtils::gc_EnvApplicationNameDefault;
+			std::string sCreatorA = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sCreator);
 
-		std::wstring sCreator = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvApplicationName);
-		if (sCreator.empty())
-			sCreator = NSSystemUtils::gc_EnvApplicationNameDefault;
-		std::string sCreatorA = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sCreator);
+	#if defined(INTVER)
+			std::string sVersion = VALUE2STR(INTVER);
+			sCreatorA += ("/" + sVersion);
+	#endif
 
-#if defined(INTVER)
-		std::string sVersion = VALUE2STR(INTVER);
-		sCreatorA += ("/" + sVersion);
-#endif
-
-		m_pInfo->SetInfo(InfoProducer, sCreatorA.c_str());
-		m_pInfo->SetInfo(InfoCreator, sCreatorA.c_str());
+			m_pInfo->SetInfo(InfoProducer, sCreatorA.c_str());
+			m_pInfo->SetInfo(InfoCreator, sCreatorA.c_str());
+		}
 
 		if (IsPDFA())
 		{
@@ -219,6 +233,8 @@ namespace PdfWriter
 			FT_Done_FreeType(m_pFreeTypeLibrary);
 			m_pFreeTypeLibrary = NULL;
 		}
+
+		SetCompressionMode(COMP_ALL);
 	}
 	bool CDocument::SaveToFile(const std::wstring& wsPath)
 	{
@@ -229,23 +245,33 @@ namespace PdfWriter
 		if (m_pJbig2)
 			m_pJbig2->FlushStreams();
 
-		SaveToStream((CStream*)pStream);
+		std::wstring wsAltName = NSFile::GetFileName(wsPath);
+		std::string sAltName = U_TO_UTF8(wsAltName);
+
+		SaveToStream((CStream*)pStream, sAltName);
 		delete pStream;
 
 		Sign(wsPath, m_pXref->GetSizeXRef() + 1, true);
 
 		return true;
 	}
-	bool CDocument::SaveToMemory(BYTE** pData, int* pLength)
+	bool CDocument::SaveToMemory(BYTE** pData, int* pLength, bool bForWasm)
 	{
 		CMemoryStream* pStream = new CMemoryStream();
+		pStream->SetForWasm(true);
 		if (!pStream)
 			return false;
+
+		if (bForWasm)
+			pStream->SkipLen();
 
 		if (m_pJbig2)
 			m_pJbig2->FlushStreams();
 
 		SaveToStream(pStream);
+
+		if (bForWasm)
+			pStream->WriteLen();
 
 		*pData = pStream->GetBuffer();
 		*pLength = pStream->Size();
@@ -253,15 +279,19 @@ namespace PdfWriter
 		pStream->ClearWithoutAttack();
 		return true;
 	}
-    void CDocument::SaveToStream(CStream* pStream)
+	void CDocument::SaveToStream(CStream* pStream, const std::string& sAltTitle)
 	{
-		m_pCatalog->AddMetadata(m_pXref, m_pInfo);
+		if (~m_nRedactInfo & (1 << 0))
+			m_pCatalog->AddMetadata(m_pXref, m_pInfo, sAltTitle);
 
 		// Write header
+		if (IsPDFUA())
+			pStream->WriteStr(c_sPdfUAHeader);
 		if (IsPDFA())
 			pStream->WriteStr(c_sPdfAHeader);
 		else
 			pStream->WriteStr(c_sPdfHeader);
+		pStream->WriteStr("\015%\315\312\322\251\015");
 		
 		if (false == m_wsDocumentID.empty())
 		{
@@ -271,7 +301,8 @@ namespace PdfWriter
 
 		// Add required elements to Trailer
 		m_pTrailer->Add("Root", m_pCatalog);
-		m_pTrailer->Add("Info", m_pInfo);
+		if (~m_nRedactInfo & (1 << 0))
+			m_pTrailer->Add("Info", m_pInfo);
 
 		// Encrypt document if necessary
 		CEncrypt* pEncrypt = NULL;
@@ -496,9 +527,21 @@ namespace PdfWriter
 	{
 		m_bPDFAConformance = isPDFA;		
 	}
+	void CDocument::SetPDFUAConformanceMode(bool isPDFUA)
+	{
+		m_bPDFUAConformance = isPDFUA;
+	}
+	void CDocument::SetRedactInfo(int nFlag)
+	{
+		m_nRedactInfo = nFlag;
+	}
 	bool CDocument::IsPDFA() const
 	{
 		return m_bPDFAConformance;
+	}
+	bool CDocument::IsPDFUA() const
+	{
+		return m_bPDFUAConformance;
 	}
     void CDocument::AddPageLabel(EPageNumStyle eStyle, unsigned int unFirstPage, const char* sPrefix)
 	{
@@ -686,6 +729,56 @@ namespace PdfWriter
 		m_vFillAlpha.push_back(pExtGrState);
 		return pExtGrState;
 	}
+	CAnnotation* CDocument::CreateWidget(BYTE m_nType)
+	{
+		CAnnotation* pAnnot = NULL;
+		if (m_nType < 26)
+			return pAnnot;
+
+		switch (m_nType)
+		{
+		case 26:
+		{
+			pAnnot = new CWidgetAnnotation(m_pXref, EAnnotType::AnnotWidget);
+			break;
+		}
+		case 27:
+		{
+			pAnnot = new CPushButtonWidget(m_pXref);
+			pAnnot->Add("FT", "Btn");
+			break;
+		}
+		case 28:
+		case 29:
+		{
+			pAnnot = new CCheckBoxWidget(m_pXref);
+			pAnnot->Add("FT", "Btn");
+			break;
+		}
+		case 30:
+		{
+			pAnnot = new CTextWidget(m_pXref);
+			pAnnot->Add("FT", "Tx");
+			break;
+		}
+		case 31:
+		case 32:
+		{
+			pAnnot = new CChoiceWidget(m_pXref);
+			pAnnot->Add("FT", "Ch");
+			break;
+		}
+		case 33:
+		{
+			pAnnot = new CSignatureWidget(m_pXref);
+			pAnnot->Add("FT", "Sig");
+			break;
+		}
+		default: break;
+		}
+
+		return pAnnot;
+	}
 	CAnnotation* CDocument::CreateAnnot(BYTE m_nType)
 	{
 		CAnnotation* pAnnot = NULL;
@@ -725,47 +818,7 @@ namespace PdfWriter
 			if (!CheckAcroForm())
 				return NULL;
 
-			switch (m_nType)
-			{
-			case 26:
-			{
-				pAnnot = new CWidgetAnnotation(m_pXref, EAnnotType::AnnotWidget);
-				break;
-			}
-			case 27:
-			{
-				pAnnot = new CPushButtonWidget(m_pXref);
-				pAnnot->Add("FT", "Btn");
-				break;
-			}
-			case 28:
-			case 29:
-			{
-				pAnnot = new CCheckBoxWidget(m_pXref);
-				pAnnot->Add("FT", "Btn");
-				break;
-			}
-			case 30:
-			{
-				pAnnot = new CTextWidget(m_pXref);
-				pAnnot->Add("FT", "Tx");
-				break;
-			}
-			case 31:
-			case 32:
-			{
-				pAnnot = new CChoiceWidget(m_pXref);
-				pAnnot->Add("FT", "Ch");
-				break;
-			}
-			case 33:
-			{
-				pAnnot = new CSignatureWidget(m_pXref);
-				pAnnot->Add("FT", "Sig");
-				break;
-			}
-			default: break;
-			}
+			pAnnot = CreateWidget(m_nType);
 
 			if (pAnnot)
 			{
@@ -781,6 +834,11 @@ namespace PdfWriter
 		CAnnotation* pAnnot = new CDestLinkAnnotation(m_pXref, pDest);
 		pAnnot->SetRect(oRect);
 		m_pXref->Add(pAnnot);
+
+		CStructureTreeRoot* pRoot = m_pCatalog->GetStructTreeRoot();
+		if (pRoot)
+			pRoot->AddAnnot(pAnnot, m_pCurPage, StructElemType::Link);
+
 		return pAnnot;
 	}
 	CAnnotation* CDocument::CreateUriLinkAnnot(const TRect& oRect, const char* sUrl)
@@ -788,6 +846,11 @@ namespace PdfWriter
 		CAnnotation* pAnnot = new CUriLinkAnnotation(m_pXref, sUrl);
 		pAnnot->SetRect(oRect);
 		m_pXref->Add(pAnnot);
+
+		CStructureTreeRoot* pRoot = m_pCatalog->GetStructTreeRoot();
+		if (pRoot)
+			pRoot->AddAnnot(pAnnot, m_pCurPage, StructElemType::Link);
+
 		return pAnnot;
 	}
 	CAction* CDocument::CreateAction(BYTE nType)
@@ -913,6 +976,8 @@ namespace PdfWriter
 		}
 		pFont = new CFontEmbedded(NULL, this);
 		pFont->LoadFont(sFontKey, nType, pObj, mCodeToWidth, mCodeToUnicode, mCodeToGID);
+		pFont->SetFontPath(wsFontPath);
+		pFont->SetFontIndex(unIndex);
 		m_vFontsEmbedded.push_back(TFontInfo(wsFontPath, unIndex, pFont));
 		return pFont;
 	}
@@ -1261,73 +1326,65 @@ namespace PdfWriter
 
 		return m_pFieldsResources;
 	}
-	CTextField* CDocument::CreateTextField()
+	void CDocument::AddWidget(CFieldBase* pWidget)
 	{
 		if (!CheckAcroForm())
-			return NULL;
+			return;
 
+		CArrayObject* ppFields = (CArrayObject*)m_pAcroForm->Get("Fields");
+		ppFields->Add(pWidget);
+
+		CStructureTreeRoot* pRoot = m_pCatalog->GetStructTreeRoot();
+		if (pRoot)
+			pRoot->AddAnnot(pWidget, m_pCurPage, StructElemType::Form);
+	}
+	CTextField* CDocument::CreateTextField()
+	{
 		CTextField* pField = new CTextField(m_pXref, this);
 		if (!pField)
 			return NULL;
 
-		CArrayObject* ppFields = (CArrayObject*)m_pAcroForm->Get("Fields");
-		ppFields->Add(pField);
+		AddWidget(pField);
 
 		return pField;
 	}
 	CChoiceField* CDocument::CreateChoiceField()
 	{
-		if (!CheckAcroForm())
-			return NULL;
-
 		CChoiceField* pField = new CChoiceField(m_pXref, this);
 		if (!pField)
 			return NULL;
 
-		CArrayObject* ppFields = (CArrayObject*)m_pAcroForm->Get("Fields");
-		ppFields->Add(pField);
+		AddWidget(pField);
 
 		return pField;
 	}
 	CSignatureField* CDocument::CreateSignatureField()
 	{
-		if (!CheckAcroForm())
-			return NULL;
-
 		CSignatureField* pField = new CSignatureField(m_pXref, this);
 		if (!pField)
 			return NULL;
 
-		CArrayObject* ppFields = (CArrayObject*)m_pAcroForm->Get("Fields");
-		ppFields->Add(pField);
+		AddWidget(pField);
 
 		return pField;
 	}
 	CDateTimeField* CDocument::CreateDateTimeField()
 	{
-		if (!CheckAcroForm())
-			return NULL;
-		
 		CDateTimeField* pField = new CDateTimeField(m_pXref, this);
 		if (!pField)
 			return NULL;
 		
-		CArrayObject* ppFields = (CArrayObject*)m_pAcroForm->Get("Fields");
-		ppFields->Add(pField);
+		AddWidget(pField);
 		
 		return pField;
 	}
 	CCheckBoxField* CDocument::CreateCheckBoxField()
 	{
-		if (!CheckAcroForm())
-			return NULL;
-
 		CCheckBoxField* pField = new CCheckBoxField(m_pXref, this);
 		if (!pField)
 			return NULL;
 
-		CArrayObject* ppFields = (CArrayObject*)m_pAcroForm->Get("Fields");
-		ppFields->Add(pField);
+		AddWidget(pField);
 
 		return pField;
 	}
@@ -1367,15 +1424,11 @@ namespace PdfWriter
 	}
 	CPictureField* CDocument::CreatePictureField()
 	{
-		if (!CheckAcroForm())
-			return NULL;
-
 		CPictureField* pField = new CPictureField(m_pXref, this);
 		if (!pField)
 			return NULL;
 
-		CArrayObject* ppFields = (CArrayObject*)m_pAcroForm->Get("Fields");
-		ppFields->Add(pField);
+		AddWidget(pField);
 
 		return pField;
 	}
@@ -1410,12 +1463,30 @@ namespace PdfWriter
 	void CDocument::AddObject(CObjectBase* pObj)
 	{
 		m_pXref->Add(pObj);
+
+		if (pObj->GetType() == object_type_DICT)
+		{
+			CDictObject* pDict = dynamic_cast<CDictObject*>(pObj);
+			if (pDict->GetDictType() == dict_type_ANNOTATION)
+			{
+				CAnnotation* pAnnot = dynamic_cast<CAnnotation*>(pDict);
+				CStructureTreeRoot* pRoot = m_pCatalog->GetStructTreeRoot();
+				if (pRoot)
+					pRoot->AddAnnot(pAnnot, m_pCurPage, StructElemType::Annot);
+			}
+		}
 	}
 	void CDocument::RemoveObj(CObjectBase* pObj)
 	{
 		std::map<int, CAnnotation*>::iterator it1 = std::find_if(m_mAnnotations.begin(), m_mAnnotations.end(), [pObj](const std::pair<int, CAnnotation*>& t){ return t.second == pObj; });
 		if (it1 != m_mAnnotations.end())
+		{
+			CAnnotation* pAnnot = dynamic_cast<CAnnotation*>(pObj);
+			CStructureTreeRoot* pRoot = m_pCatalog->GetStructTreeRoot();
+			if (pRoot && pAnnot)
+				pRoot->RemoveAnnot(pAnnot);
 			m_mAnnotations.erase(it1);
+		}
 		std::map<int, CPage*>::iterator it2 = std::find_if(m_mEditPages.begin(), m_mEditPages.end(), [pObj](const std::pair<int, CPage*>& t){ return t.second == pObj; });
 		if (it2 != m_mEditPages.end())
 			m_mEditPages.erase(it2);
@@ -1798,6 +1869,19 @@ namespace PdfWriter
 
 		return true;
 	}
+	void CDocument::AddRoles(BYTE* pMetaData, DWORD nMetaLength)
+	{
+		if (!CheckAcroForm())
+			return;
+
+		CDictObject* pRoles = new CDictObject(m_pXref);
+		pRoles->SetFilter(STREAM_FILTER_FLATE_DECODE);
+
+		m_pAcroForm->Add("ONLYOFFICE_FORMS_ROLES", pRoles);
+
+		CStream* pStream = pRoles->GetStream();
+		pStream->Write(pMetaData, nMetaLength);
+	}
 	CPage* CDocument::AddPage(int nPageIndex, CPage* _pNewPage)
 	{
 		if (!m_pPageTree)
@@ -2166,6 +2250,10 @@ namespace PdfWriter
 			m_vSignatures[0]->nPrevAddr = nPrevAddr;
 			m_vSignatures[0]->bNeedStreamXRef = bNeedStreamXRef;
 		}
+	}
+	CStructureTreeRoot* CDocument::GetStructureTreeRoot()
+	{
+		return m_pCatalog->GetStructTreeRoot();
 	}
 	void CDocument::AddShapeXML(const std::string& sXML)
 	{

@@ -1,367 +1,355 @@
+/*
+ * Copyright (C) Ascensio System SIA, 2009-2026
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation, together with the
+ * additional terms provided in the LICENSE file.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. For
+ * details, see the GNU AGPL at: https://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA by email at info@onlyoffice.com
+ * or by postal mail at 20A-6 Ernesta Birznieka-Upisha Street, Riga,
+ * LV-1050, Latvia, European Union.
+ *
+ * The interactive user interfaces in modified versions of the Program
+ * are required to display Appropriate Legal Notices in accordance with
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * No trademark rights are granted under this License.
+ *
+ * All non-code elements of the Product, including illustrations,
+ * icon sets, and technical writing content, are licensed under the
+ * Creative Commons Attribution-ShareAlike 4.0 International License:
+ * https://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ * This license applies only to such non-code elements and does not
+ * modify or replace the licensing terms applicable to the Program's
+ * source code, which remains licensed under the GNU Affero General
+ * Public License v3.
+ *
+ * SPDX-License-Identifier: AGPL-3.0-only
+ */
+
 #include "Table.h"
 
 #include "Common.h"
-#include "src/StringFinder.h"
+#include "src/CCompiledStyle.h"
 
 namespace HTML
 {
-#define MAX_STRING_BLOCK_SIZE (size_t)10485760
-
-#define RELEASE_VECTOR_PTR(vector_object, object_type) \
-	for (object_type* pElement : vector_object) \
-		RELEASEOBJECT(pElement)
-
-#define FIRST_ELEMENT 0x00000001
-#define LAST_ELEMENT  0x00000002
-#define MID_ELEMENT   0x00000004
-
-#define PARSE_MODE_HEADER  0x00000100
-#define PARSE_MODE_BODY    0x00000200
-#define PARSE_MODE_FOOTHER 0x00000400
-
-#define COL_POSITION_MASK 0x0000000F
-#define ROW_POSITION_MASK 0x000000F0
-#define PARSE_MODE_MASK   0x00000F00
-
-#define DEFAULT_PAGE_WIDTH  12240 // Value in Twips
-#define DEFAULT_PAGE_HEIGHT 15840 // Value in Twips
-
-TTableRowStyle::TTableRowStyle()
-	: m_unMaxIndex(0), m_unMaxHeight(0), m_bIsHeader(false)
+ITableElementCell::ITableElementCell(size_t unColspan)
+	: m_unColspan(unColspan)
 {}
 
-bool TTableRowStyle::Empty() const
+void ITableElementCell::SetColspan(size_t unColspan)
 {
-	return 0 == m_unMaxHeight && false == m_bIsHeader;
+	if (0 < unColspan)
+		m_unColspan = unColspan;
 }
 
-TTableCellStyle::TTableCellStyle()
-{}
-
-bool TTableCellStyle::Empty()
-{
-	return m_oWidth.Empty() && m_oHeight.Empty() && m_oBorder.Empty() && m_oPadding.Empty() && m_wsVAlign.empty() && m_wsVAlign.empty();
-}
-
-void TTableCellStyle::Copy(const TTableCellStyle* pTableCellStyle)
-{
-	if (NULL == pTableCellStyle)
-		return;
-
-	m_oWidth      = pTableCellStyle->m_oWidth;
-	m_oHeight     = pTableCellStyle->m_oHeight;
-	m_oBorder     = pTableCellStyle->m_oBorder;
-	m_oPadding    = pTableCellStyle->m_oPadding;
-	m_oBackground = pTableCellStyle->m_oBackground;
-
-	m_wsHAlign    = pTableCellStyle->m_wsHAlign;
-	m_wsVAlign    = pTableCellStyle->m_wsVAlign;
-}
-
-TTableCellStyle& TTableCellStyle::operator+=(const TTableCellStyle* pCellStyle)
-{
-	if (NULL == pCellStyle)
-		return *this;
-
-	m_oWidth += pCellStyle->m_oWidth;
-	m_oHeight += pCellStyle->m_oHeight;
-	m_oBorder += pCellStyle->m_oBorder;
-	m_oPadding += pCellStyle->m_oPadding;
-	m_oBackground += pCellStyle->m_oBackground;
-
-	if (m_wsHAlign.empty())
-		m_wsHAlign = pCellStyle->m_wsHAlign;
-
-	if (m_wsVAlign.empty())
-		m_wsVAlign = pCellStyle->m_wsVAlign;
-
-	return *this;
-}
-
-CStorageTableCell::CStorageTableCell()
-	: m_unColspan(1), m_unRowSpan(1), m_bIsMerged(false), m_bIsEmpty(false), m_oData(30)
-{}
-
-CStorageTableCell::CStorageTableCell(UINT unColspan, UINT unRowspan, bool bIsMerged, bool bIsEmpty)
-	: m_unColspan(unColspan), m_unRowSpan(unRowspan), m_bIsMerged(bIsMerged),
-	  m_bIsEmpty(bIsEmpty)
-{}
-
-CStorageTableCell::CStorageTableCell(CStorageTableCell& oCell)
-	: m_unColspan(oCell.m_unColspan), m_unRowSpan(oCell.m_unRowSpan), m_bIsMerged(oCell.m_bIsMerged),
-	  m_bIsEmpty(oCell.m_bIsEmpty), m_oStyles(oCell.m_oStyles)
-{
-	WriteToStringBuilder(oCell.m_oData, m_oData);
-}
-
-bool CStorageTableCell::Empty() const
-{
-	return m_bIsEmpty;
-}
-
-bool CStorageTableCell::Merged() const
-{
-	return m_bIsMerged;
-}
-
-CStorageTableCell* CStorageTableCell::Copy()
-{
-	return new CStorageTableCell(*this);
-}
-
-CStorageTableCell* CStorageTableCell::CreateEmpty(UINT unColspan, bool m_bIsMerged, const TTableCellStyle* pStyle)
-{
-	CStorageTableCell *pCell = new CStorageTableCell(unColspan, 1, m_bIsMerged, true);
-
-	pCell->m_oStyles.Copy(pStyle);
-
-	return pCell;
-}
-
-CStorageTableCell* CStorageTableCell::CreateEmpty(const TTableCellStyle* pStyle)
-{
-	CStorageTableCell *pCell = new CStorageTableCell(1, 1, false, true);
-
-	pCell->m_oStyles.Copy(pStyle);
-
-	return pCell;
-}
-
-void CStorageTableCell::SetColspan(UINT unColspan, UINT unCurrentIndex)
-{
-	if (MAXCOLUMNSINTABLE - 1 != unCurrentIndex)
-		m_unColspan = std::min(MAXCOLUMNSINTABLE - 1 - unCurrentIndex, unColspan);
-	else
-		m_unColspan = 1;
-}
-
-UINT CStorageTableCell::GetColspan() const
+size_t ITableElementCell::GetColspan() const
 {
 	return m_unColspan;
 }
 
-void CStorageTableCell::SetRowspan(UINT unRowspan)
-{
-	m_unRowSpan = unRowspan;
-}
-
-UINT CStorageTableCell::GetRowspan() const
-{
-	return m_unRowSpan;
-}
-
-NSStringUtils::CStringBuilder* CStorageTableCell::GetData()
-{
-	return &m_oData;
-}
-
-const TTableCellStyle* CStorageTableCell::GetStyles() const
-{
-	return &m_oStyles;
-}
-
-TTableCellStyle* CStorageTableCell::GetStyles()
-{
-	return &m_oStyles;
-}
-
-void CStorageTableCell::SetWidth(const NSCSS::NSProperties::CDigit& oWidth)
-{
-	m_oStyles.m_oWidth = oWidth;
-}
-
-void CStorageTableCell::SetHeight(const NSCSS::NSProperties::CDigit& oHeight)
-{
-	m_oStyles.m_oHeight = oHeight;
-}
-
-UINT CStorageTableCell::GetWidth() const
-{
-	return m_oStyles.m_oWidth.ToInt(NSCSS::Twips, DEFAULT_PAGE_WIDTH);
-}
-
-UINT CStorageTableCell::GetHeight() const
-{
-	return m_oStyles.m_oHeight.ToInt(NSCSS::Twips, DEFAULT_PAGE_HEIGHT);
-}
-
-void CStorageTableCell::SetBorder(const NSCSS::NSProperties::CBorder& oBorder)
-{
-	m_oStyles.m_oBorder = oBorder;
-}
-
-void CStorageTableCell::ClearTopBorder()
-{
-	m_oStyles.m_oBorder.SetTopSide(L"none", 0, true);
-}
-
-void CStorageTableCell::ClearLeftBorder()
-{
-	m_oStyles.m_oBorder.SetLeftSide(L"none", 0, true);
-}
-
-void CStorageTableCell::ClearBottomBorder()
-{
-	m_oStyles.m_oBorder.SetBottomSide(L"none", 0, true);
-}
-
-void CStorageTableCell::ClearRightBorder()
-{
-	m_oStyles.m_oBorder.SetRightSide(L"none", 0, true);
-}
-
-void CStorageTableCell::SetPadding(const NSCSS::NSProperties::CIndent& oPadding)
-{
-	m_oStyles.m_oPadding = oPadding;
-}
-
-void CStorageTableCell::SetHAlign(const std::wstring& wsAlign)
-{
-	m_oStyles.m_wsHAlign = wsAlign;
-}
-
-void CStorageTableCell::SetVAlign(const std::wstring& wsAlign)
-{
-	m_oStyles.m_wsVAlign = wsAlign;
-}
-
-void CStorageTableCell::SetBackground(const NSCSS::NSProperties::CColor& oColor)
-{
-	m_oStyles.m_oBackground = oColor;
-}
-
-CStorageTableRow::CStorageTableRow()
+CTableElementCell::CTableElementCell(bool bIsFilling, size_t unColspan)
+	: ITableElementCell(unColspan), m_eType{(bIsFilling) ? ETableElement::FillingCell : ETableElement::Cell}
 {}
 
-CStorageTableRow::~CStorageTableRow()
+CTableElementCell::~CTableElementCell()
+{}
+
+ETableElement CTableElementCell::GetType() const
 {
-	for (CStorageTableCell* pCell : m_arCells)
-		RELEASEOBJECT(pCell);
+	return m_eType;
 }
 
-void CStorageTableRow::AddCell(CStorageTableCell* pCell)
+void CTableElementCell::IsFlatTable()
 {
-	InsertCell(pCell, -1);
+	m_eType = ETableElement::FlatTable;
 }
 
-void CStorageTableRow::InsertCell(CStorageTableCell* pCell, int nPosition)
+CTableElementCell* CTableElementCell::CreateCell(const size_t& unColspan)
 {
-	if (NULL == pCell)
-		return;
+	return new CTableElementCell(false, unColspan);
+}
 
-	if (nPosition < 0)
+CTableElementCell* CTableElementCell::CreateFillingCell(const size_t& unColspan)
+{
+	return new CTableElementCell(true, unColspan);
+}
+
+CTableMatrix::CTableMatrix()
+{}
+
+CTableMatrix::~CTableMatrix()
+{
+	for (Row& oRow : m_arCells)
 	{
-		std::vector<CStorageTableCell*>::iterator itFoundEmpty = std::find_if(m_arCells.begin(), m_arCells.end(), [](CStorageTableCell* pCell) { return pCell->Empty() && !pCell->Merged(); });
-
-		if (m_arCells.end() != itFoundEmpty)
+		for (ITableElementCell* pCell : oRow)
 		{
-			--m_oStyles.m_unMaxIndex;
-			delete *itFoundEmpty;
-			*itFoundEmpty = pCell;
-
-			if (1 != pCell->GetColspan())
-			{
-				++itFoundEmpty;
-				UINT unColspan = pCell->GetColspan() - 1;
-
-				while (m_arCells.end() != itFoundEmpty && (*itFoundEmpty)->Empty() && unColspan > 0)
-				{
-					--m_oStyles.m_unMaxIndex;
-					--unColspan;
-					delete (*itFoundEmpty);
-					itFoundEmpty = m_arCells.erase(itFoundEmpty);
-				}
-
-				if (unColspan != 0)
-					pCell->SetColspan(pCell->GetColspan() - unColspan, MAXCOLUMNSINTABLE);
-			}
-		}
-		else
-			m_arCells.push_back(pCell);
-	}
-	else if (nPosition >= m_arCells.size())
-	{
-		const UINT unMissingCount = nPosition - m_arCells.size();
-
-		for (UINT unIndex = 0; unIndex < unMissingCount; ++unIndex)
-			m_arCells.push_back(CStorageTableCell::CreateEmpty());
-
-		m_oStyles.m_unMaxIndex += unMissingCount;
-
-		m_arCells.push_back(pCell);
-	}
-	else if (m_arCells[nPosition]->Empty())
-	{
-		delete m_arCells[nPosition];
-		--m_oStyles.m_unMaxIndex;
-		m_arCells[nPosition] = pCell;
-
-		if (1 != pCell->GetColspan())
-		{
-			++nPosition;
-			UINT unDeleteCount =  pCell->GetColspan() - 1;
-			while (nPosition < m_arCells.size() && m_arCells[nPosition]->Empty() && !m_arCells[nPosition]->Merged() && unDeleteCount > 0)
-			{
-				delete m_arCells[nPosition];
-				--m_oStyles.m_unMaxIndex;
-				m_arCells.erase(m_arCells.begin() + nPosition);
-				--unDeleteCount;
-			}
-
-			if (0 != unDeleteCount)
-				pCell->SetColspan(pCell->GetColspan() - unDeleteCount, MAXCOLUMNSINTABLE);
+			if (nullptr != pCell)
+				delete pCell;
 		}
 	}
-	else
-		m_arCells.insert(m_arCells.begin() + nPosition, pCell);
-
-	m_oStyles.m_unMaxIndex += pCell->GetColspan();
-
-	if (1 == pCell->GetColspan() && 1 == pCell->GetRowspan())
-		m_oStyles.m_unMaxHeight = std::max(m_oStyles.m_unMaxHeight, pCell->GetHeight());
 }
 
-UINT CStorageTableRow::GetIndex() const
-{
-	return m_oStyles.m_unMaxIndex;
-}
-
-UINT CStorageTableRow::GetCount() const
-{
-	return m_arCells.size();
-}
-
-CStorageTableCell* CStorageTableRow::operator[](UINT unIndex)
-{
-	if (unIndex >= m_arCells.size())
-		return NULL;
-
-	return m_arCells[unIndex];
-}
-
-bool CStorageTableRow::Empty() const
+bool CTableMatrix::Empty() const
 {
 	return m_arCells.empty();
 }
 
-const TTableRowStyle& CStorageTableRow::GetStyles() const
+void CTableMatrix::Clear()
 {
-	return m_oStyles;
+	m_arCells.clear();
 }
 
-const std::vector<CStorageTableCell*>& CStorageTableRow::GetCells() const
+bool CTableMatrix::SetCell(size_t unRowIndex, size_t unColumnIndex, ITableElementCell* pCell, bool bAutoClean)
+{
+	if (nullptr == pCell)
+		return false;
+
+	if (m_arCells.size() <= unRowIndex)
+	{
+		if (!m_arCells.empty())
+		{
+			const size_t unMaxColumn{m_arCells.back().size()};
+			const size_t unOldSize{m_arCells.size()};
+			m_arCells.resize(unRowIndex + 1);
+
+			for (size_t unIndex = unOldSize; unIndex < m_arCells.size(); ++unIndex)
+				m_arCells[unIndex].resize(unMaxColumn);
+		}
+		else
+			m_arCells.resize(unRowIndex + 1);
+	}
+
+	if (m_arCells[unRowIndex].size() <= unColumnIndex)
+	{
+		m_arCells[unRowIndex].resize(unColumnIndex + 1);
+		m_arCells[unRowIndex][unColumnIndex] = pCell;
+		return true;
+	}
+
+	if (nullptr != m_arCells[unRowIndex][unColumnIndex])
+	{
+		pCell->SetColspan(m_arCells[unRowIndex][unColumnIndex]->GetColspan());
+
+		if (bAutoClean)
+			delete m_arCells[unRowIndex][unColumnIndex];
+	}
+
+	m_arCells[unRowIndex][unColumnIndex] = pCell;
+
+	return true;
+}
+
+void CTableMatrix::NormalizeNumberColumns(size_t unNumberColumns)
+{
+	if (m_arCells.empty())
+		return;
+
+	for (Row& oRow : m_arCells)
+		if (unNumberColumns > oRow.size())
+			oRow.resize(unNumberColumns);
+}
+
+bool CTableMatrix::IsFillingCell(size_t unRowIndex, size_t unColumnIndex) const
+{
+	if (unRowIndex >= m_arCells.size())
+		return false;
+
+	if (unColumnIndex >= m_arCells[unRowIndex].size())
+		return false;
+
+	return (nullptr != m_arCells[unRowIndex][unColumnIndex]) ? ETableElement::FillingCell == m_arCells[unRowIndex][unColumnIndex]->GetType() : false;
+}
+
+bool CTableMatrix::IsNotNullCell(size_t unRowIndex, size_t unColumnIndex) const
+{
+	if (unRowIndex >= m_arCells.size())
+		return false;
+
+	if (unColumnIndex >= m_arCells[unRowIndex].size())
+		return false;
+
+	return nullptr != m_arCells[unRowIndex][unColumnIndex];
+}
+
+size_t CTableMatrix::GetRowSize() const
+{
+	return m_arCells.size();
+}
+
+size_t CTableMatrix::GetColumnSize() const
+{
+	return (m_arCells.empty()) ? 0 : m_arCells.front().size();
+}
+
+Table& CTableMatrix::GetMatrixCells()
 {
 	return m_arCells;
 }
 
-CTableCol::CTableCol(UINT unSpan)
-	: m_unSpan(unSpan)
+const Table& CTableMatrix::GetMatrixCells() const
+{
+	return m_arCells;
+}
+
+const ITableElementCell* CTableMatrix::GetCell(size_t unRowIndex, size_t unColumnIndex) const
+{
+	if (unRowIndex >= m_arCells.size())
+		return nullptr;
+
+	if (unColumnIndex >= m_arCells[unRowIndex].size())
+		return nullptr;
+
+	return m_arCells[unRowIndex][unColumnIndex];
+}
+
+ITableElementCell* CTableMatrix::GetCell(size_t unRowIndex, size_t unColumnIndex)
+{
+	if (unRowIndex >= m_arCells.size())
+		return nullptr;
+
+	if (unColumnIndex >= m_arCells[unRowIndex].size())
+		return nullptr;
+
+	return m_arCells[unRowIndex][unColumnIndex];
+}
+
+CTableElement::CTableElement(TExternalTableData &oExternalData)
+	: m_pCaption(nullptr), m_oExternalData(oExternalData)
 {}
 
-CTableCol::CTableCol(const NSCSS::CNode& oTableColNode)
-	: m_unSpan(1)
+CTableElement::~CTableElement()
 {
-	m_unSpan = NSStringFinder::ToInt(oTableColNode.GetAttributeValue(L"span"));
+	Clear();
+}
+
+void CTableElement::Clear()
+{
+	if (nullptr != m_pCaption)
+	{
+		delete m_pCaption;
+		m_pCaption = nullptr;
+	}
+
+	for (CTableColgroup* pColgroup : m_arColgroups)
+		if (nullptr != pColgroup)
+			delete pColgroup;
+
+	m_arColgroups.clear();
+	m_oHeader.Clear();
+	m_oBody.Clear();
+	m_oFoother.Clear();
+}
+
+bool CTableElement::Empty() const
+{
+	return m_oHeader.Empty() && m_oBody.Empty() && m_oFoother.Empty();
+}
+
+bool CTableElement::HaveCaption() const
+{
+	return nullptr != m_pCaption && 0 != m_pCaption->GetCurSize();
+}
+
+const NSCSS::CCompiledStyle* CTableElement::GetColStyle(size_t unColIndex) const
+{
+	if (m_arColgroups.empty())
+		return nullptr;
+
+	const NSCSS::CCompiledStyle* pColStyle{nullptr};
+	size_t unSkipSpans{0};
+
+	for (const CTableColgroup* pColgroup : m_arColgroups)
+	{
+		pColStyle = pColgroup->GetColStyle(unColIndex - unSkipSpans);
+
+		if (nullptr != pColStyle)
+			return pColStyle;
+
+		unSkipSpans += pColgroup->GetTotalSpans();
+	}
+
+	return nullptr;
+}
+
+bool MoveToNextTableCell(XmlUtils::CXmlLiteReader& oReader, std::vector<NSCSS::CNode>& arSelectors, std::stack<int>& arDepths, TExternalTableData::FuncGetSubClass& GetSubClass)
+{
+	while (!arDepths.empty() && !oReader.ReadNextSiblingNode2(arDepths.top()))
+	{
+		arDepths.pop();
+		arSelectors.pop_back();
+	}
+
+	if (arDepths.empty())
+		return false;
+
+	do
+	{
+		const std::wstring wsName = oReader.GetName();
+
+		if (L"#text" == wsName || L"colgroup" == wsName || L"caption" == wsName)
+			return MoveToNextTableCell(oReader, arSelectors, arDepths, GetSubClass);
+
+		GetSubClass(oReader, arSelectors);
+
+		if (L"td" == wsName || L"th" == wsName)
+			return true;
+		else if (L"table" == wsName)
+			return false;
+
+		arDepths.push(oReader.GetDepth());
+
+		return MoveToNextTableCell(oReader, arSelectors, arDepths, GetSubClass);
+	}while(oReader.ReadNextSiblingNode2(arDepths.top()));
+
+	return false;
+}
+
+CTableContainer::CTableContainer()
+	: ITableElementCell(1)
+{}
+
+CTableContainer::~CTableContainer()
+{
+	for (const CTableElement* pTable : m_arTables)
+		if (nullptr != pTable)
+			delete pTable;
+}
+
+ETableElement CTableContainer::GetType() const
+{
+	return ETableElement::TableContainer;
+}
+
+void CTableContainer::AddTable(CTableElement* pTable)
+{
+	if (nullptr != pTable)
+		m_arTables.push_back(pTable);
+}
+
+const std::vector<CTableElement*>& CTableContainer::GetTables() const
+{
+	return m_arTables;
+}
+
+CTableCol::CTableCol(NSCSS::CNode& oTableColNode)
+	: m_pStyle(oTableColNode.m_pCompiledStyle)
+{
+	oTableColNode.m_pCompiledStyle = nullptr;
+	m_unSpan = NSStringFinder::ToInt(oTableColNode.GetAttributeValue(L"span"), 1);
+}
+
+CTableCol::~CTableCol()
+{
+	if (nullptr != m_pStyle)
+		delete m_pStyle;
 }
 
 UINT CTableCol::GetSpan() const
@@ -369,25 +357,22 @@ UINT CTableCol::GetSpan() const
 	return m_unSpan;
 }
 
-TTableCellStyle* CTableCol::GetStyle()
+const NSCSS::CCompiledStyle* CTableCol::GetStyle() const
 {
-	return &m_oStyle;
+	return m_pStyle;
 }
 
-const TTableCellStyle* CTableCol::GetStyle() const
-{
-	return &m_oStyle;
-}
-
-CTableColgroup::CTableColgroup(NSCSS::CNode& oTableColgroupNode)
-	: m_unWidth(0)
+CTableColgroup::CTableColgroup(const NSCSS::CNode& oTableColgroupNode)
+	: m_unTotalSpans(0)
 {
 	m_unWidth = NSStringFinder::ToInt(oTableColgroupNode.GetAttributeValue(L"width"), 0);
 }
 
 CTableColgroup::~CTableColgroup()
 {
-	RELEASE_VECTOR_PTR(m_arCols, CTableCol)
+	for (CTableCol* pCol : m_arCols)
+		if (nullptr != pCol)
+			delete pCol;
 }
 
 bool CTableColgroup::Empty() const
@@ -397,8 +382,16 @@ bool CTableColgroup::Empty() const
 
 void CTableColgroup::AddCol(CTableCol* pCol)
 {
-	if (NULL != pCol)
-		m_arCols.push_back(pCol);
+	if (nullptr == pCol)
+		return;
+
+	m_arCols.push_back(pCol);
+	m_unTotalSpans += pCol->GetSpan();
+}
+
+UINT CTableColgroup::GetTotalSpans() const
+{
+	return m_unTotalSpans;
 }
 
 const std::vector<CTableCol*>& CTableColgroup::GetCols() const
@@ -406,310 +399,20 @@ const std::vector<CTableCol*>& CTableColgroup::GetCols() const
 	return m_arCols;
 }
 
-TTableStyles::TTableStyles()
-	: m_nCellSpacing(-1), m_enRules(None)
-{}
-
-bool TTableStyles::Empty() const
+const NSCSS::CCompiledStyle* CTableColgroup::GetColStyle(size_t unIndex) const
 {
-	return m_oPadding.Empty() && m_oMargin.Empty() && m_oBorder.Empty() && m_oWidth.Empty() && -1 == m_nCellSpacing && m_wsAlign.empty();
-}
+	if (m_arCols.empty())
+		return nullptr;
 
-CStorageTable::CStorageTable()
-	: m_unMaxColumns(0)
-{}
-
-CStorageTable::~CStorageTable()
-{
-	for (std::vector<CStorageTableRow*>& arHeaders : m_arHeaders)
-		RELEASE_VECTOR_PTR(arHeaders, CStorageTableRow)
-
-	RELEASE_VECTOR_PTR(m_arFoother, CStorageTableRow)
-	RELEASE_VECTOR_PTR(m_arRows, CStorageTableRow)
-	RELEASE_VECTOR_PTR(m_arColgroups, CTableColgroup)
-}
-
-CStorageTableRow* CStorageTable::operator[](UINT unIndex)
-{
-	if (unIndex < m_arRows.size())
-		return m_arRows[unIndex];
-
-	return NULL;
-}
-
-bool CStorageTable::Empty() const
-{
-	return m_arHeaders.empty() && m_arRows.empty() && m_arFoother.empty();
-}
-
-bool CStorageTable::HaveCaption()
-{
-	return 0 != m_oCaption.GetCurSize();
-}
-
-bool CStorageTable::HaveColgroups() const
-{
-	return !m_arColgroups.empty();
-}
-
-bool CStorageTable::HaveHeader() const
-{
-	return !m_arHeaders.empty();
-}
-
-UINT CStorageTable::GetRowCount() const
-{
-	return m_arRows.size();
-}
-
-const TTableStyles& CStorageTable::GetTableStyles() const
-{
-	return m_oStyles;
-}
-
-const TTableCellStyle* CStorageTable::GetColStyle(UINT unColumnNumber) const
-{
-	if (m_arColgroups.empty())
-		return NULL;
-
-	UINT unCurrentNumber = 0;
-
-	for (const CTableColgroup* pColgroup : m_arColgroups)
+	size_t unCurrentIndex{0};
+	for (const CTableCol* pCol : m_arCols)
 	{
-		for (const CTableCol* pCol : pColgroup->GetCols())
-		{
-			unCurrentNumber += pCol->GetSpan();
+		if (unCurrentIndex <= unIndex && (unCurrentIndex + pCol->GetSpan()) > unIndex)
+			return pCol->GetStyle();
 
-			if (unCurrentNumber >= unColumnNumber)
-				return pCol->GetStyle();
-		}
+		unCurrentIndex += pCol->GetSpan();
 	}
 
-	return NULL;
+	return nullptr;
 }
-
-void CStorageTable::AddRows(std::vector<CStorageTableRow*>& arRows, ERowParseMode eParseMode)
-{
-	if (arRows.empty())
-		return;
-
-	if (ERowParseMode::Foother == eParseMode && !m_arFoother.empty())
-		eParseMode = ERowParseMode::Header;
-
-	if (ERowParseMode::Header == eParseMode)
-		m_arHeaders.push_back({});
-
-	for (CStorageTableRow* pRow : arRows)
-		AddRow(pRow, eParseMode);
-}
-
-void CStorageTable::AddRow(CStorageTableRow* pRow, ERowParseMode eParseMode)
-{
-	if (NULL == pRow)
-		return;
-
-	for (UINT unIndex = 0; unIndex < pRow->GetCount(); ++unIndex)
-	{
-		if (unIndex >= m_arMinColspan.size())
-			m_arMinColspan.push_back((*pRow)[unIndex]->GetColspan());
-		else if ((*pRow)[unIndex]->GetColspan() < m_arMinColspan[unIndex])
-			m_arMinColspan[unIndex] = (*pRow)[unIndex]->GetColspan();
-	}
-
-	switch (eParseMode)
-	{
-		default:
-		case ERowParseMode::Body:
-		{
-			m_arRows.push_back(pRow);
-			break;
-		}
-		case ERowParseMode::Header:
-		{
-			if (m_arHeaders.empty())
-				m_arHeaders.push_back({});
-
-			m_arHeaders.back().push_back(pRow);
-			break;
-		}
-		case ERowParseMode::Foother:
-		{
-			m_arFoother.push_back(pRow);
-			break;
-		}
-	}
-}
-
-NSStringUtils::CStringBuilder* CStorageTable::GetCaptionData()
-{
-	return &m_oCaption;
-}
-
-void CStorageTable::SetPadding(const NSCSS::NSProperties::CIndent& oPadding)
-{
-	m_oStyles.m_oPadding = oPadding;
-}
-
-const NSCSS::NSProperties::CIndent& CStorageTable::GetPadding() const
-{
-	return m_oStyles.m_oPadding;
-}
-
-void CStorageTable::SetMargin(const NSCSS::NSProperties::CIndent& oMargin)
-{
-	m_oStyles.m_oMargin = oMargin;
-}
-
-void CStorageTable::SetBorder(const NSCSS::NSProperties::CBorder& oBorder)
-{
-	m_oStyles.m_oBorder = oBorder;
-}
-
-void CStorageTable::SetWidth(const NSCSS::NSProperties::CDigit& oWidth)
-{
-	m_oStyles.m_oWidth = oWidth;
-}
-
-void CStorageTable::SetCellSpacing(int nCellSpacing)
-{
-	m_oStyles.m_nCellSpacing = nCellSpacing;
-}
-
-void CStorageTable::SetAlign(const std::wstring& wsValue)
-{
-	m_oStyles.m_wsAlign = wsValue;
-}
-
-void CStorageTable::SetRules(const std::wstring& wsValue)
-{
-	if (wsValue.empty())
-		return;
-
-	if (NSStringFinder::Equals(wsValue, L"all"))
-		m_oStyles.m_enRules = TTableStyles::ETableRules::All;
-	else if (NSStringFinder::Equals(wsValue, L"groups"))
-		m_oStyles.m_enRules = TTableStyles::ETableRules::Groups;
-	else if (NSStringFinder::Equals(wsValue, L"cols"))
-		m_oStyles.m_enRules = TTableStyles::ETableRules::Cols;
-	else if (NSStringFinder::Equals(wsValue, L"none"))
-		m_oStyles.m_enRules = TTableStyles::ETableRules::None;
-	else if (NSStringFinder::Equals(wsValue, L"rows"))
-		m_oStyles.m_enRules = TTableStyles::ETableRules::Rows;
-}
-
-void CStorageTable::AddColgroup(CTableColgroup* pElement)
-{
-	if (NULL != pElement)
-		m_arColgroups.push_back(pElement);
-}
-
-void CStorageTable::RecalculateMaxColumns()
-{
-	for (const std::vector<CStorageTableRow*>& arHeaders : m_arHeaders)
-		for (const CStorageTableRow* pHeader : arHeaders)
-			m_unMaxColumns = std::max(m_unMaxColumns, pHeader->GetIndex());
-
-	for (const CStorageTableRow* pRow : m_arRows)
-		m_unMaxColumns = std::max(m_unMaxColumns, pRow->GetIndex());
-
-	for (const CStorageTableRow* pFoother : m_arFoother)
-		m_unMaxColumns = std::max(m_unMaxColumns, pFoother->GetIndex());
-}
-
-void CStorageTable::Shorten()
-{
-	UINT unIndex      = 0;
-	CStorageTableCell* pCell = NULL;
-
-	UINT unMaxIndex = 0; //Maximum index excluding rows that have only 1 cell
-
-	for (const CStorageTableRow* pRow : m_arRows)
-	{
-		if (1 < pRow->GetCount())
-			unMaxIndex = std::max(unMaxIndex, pRow->GetIndex());
-	}
-
-	while (unIndex < m_arMinColspan.size())
-	{
-		for (CStorageTableRow* pRow : m_arRows)
-		{
-			if (0 != unMaxIndex && 1 == pRow->GetCount() && pRow->GetIndex() > unMaxIndex)
-			{
-				pCell = (*pRow)[unIndex];
-
-				if (NULL == pCell)
-					continue;
-
-				pCell->SetColspan(unMaxIndex, MAXCOLUMNSINTABLE);
-				continue;
-			}
-
-			if (1 == m_arMinColspan[unIndex])
-				break;
-
-			pCell = (*pRow)[unIndex];
-
-			if (NULL == pCell)
-				continue;
-
-			if (1 < pCell->GetColspan() && pCell->GetColspan() > m_arMinColspan[unIndex])
-			{
-				pCell->SetColspan(m_arMinColspan[unIndex], MAXCOLUMNSINTABLE);
-				continue;
-			}
-
-			if ((*pRow)[unIndex]->GetColspan() == m_arMinColspan[unIndex] + 1)
-				(*pRow)[unIndex]->SetColspan(2, MAXCOLUMNSINTABLE);
-			else if ((*pRow)[unIndex]->GetColspan() > m_arMinColspan[unIndex])
-				(*pRow)[unIndex]->SetColspan((*pRow)[unIndex]->GetColspan() - m_arMinColspan[unIndex], MAXCOLUMNSINTABLE);
-		}
-
-		++unIndex;
-	}
-}
-
-void CStorageTable::CompleteTable()
-{
-	UINT unMaxIndex = 0;
-
-	for (CStorageTableRow* pRow : m_arRows)
-		unMaxIndex = std::max(unMaxIndex, pRow->GetIndex());
-
-	for (CStorageTableRow* pRow : m_arRows)
-	{
-		if (NULL == pRow || 0 == pRow->GetCount())
-			continue;
-
-		for (UINT unIndex = pRow->GetIndex(); unIndex < unMaxIndex; ++unIndex)
-			pRow->InsertCell(CStorageTableCell::CreateEmpty(), unIndex);
-	}
-
-	RecalculateMaxColumns();
-}
-
-const std::vector<std::vector<CStorageTableRow*>>& CStorageTable::GetHeaders() const
-{
-	return m_arHeaders;
-}
-
-const std::vector<CStorageTableRow*>& CStorageTable::GetFoothers() const
-{
-	return m_arFoother;
-}
-
-const std::vector<CStorageTableRow*>& CStorageTable::GetRows() const
-{
-	return m_arRows;
-}
-
-const std::vector<CTableColgroup*> CStorageTable::GetColgroups() const
-{
-	return m_arColgroups;
-}
-
-UINT CStorageTable::GetMaxColumns() const
-{
-	return m_unMaxColumns;
-}
-
 }

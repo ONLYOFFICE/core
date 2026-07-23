@@ -2521,6 +2521,9 @@
     <ClCompile Include="..\..\..\XlsFile\Converter\xlsx_textcontext.cpp">
       <Filter>Binary</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\AF12DateInfo.cpp">
+      <Filter>Logic\Biff_structures</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\XlsFile\Format\Logging\Log.h">
@@ -5060,6 +5063,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\XlsFile\Converter\xlsx_textcontext.h">
       <Filter>Binary</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\AF12DateInfo.h">
+      <Filter>Logic\Biff_structures</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

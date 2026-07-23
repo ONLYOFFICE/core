@@ -1,33 +1,36 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * Copyright (C) Ascensio System SIA, 2009-2026
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
- * version 3 as published by the Free Software Foundation. In accordance with
- * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
- * that Ascensio System SIA expressly excludes the warranty of non-infringement
- * of any third-party rights.
+ * version 3 as published by the Free Software Foundation, together with the
+ * additional terms provided in the LICENSE file.
  *
  * This program is distributed WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
- * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. For
+ * details, see the GNU AGPL at: https://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
- * street, Riga, Latvia, EU, LV-1050.
+ * You can contact Ascensio System SIA by email at info@onlyoffice.com
+ * or by postal mail at 20A-6 Ernesta Birznieka-Upisha Street, Riga,
+ * LV-1050, Latvia, European Union.
  *
- * The  interactive user interfaces in modified source and object code versions
- * of the Program must display Appropriate Legal Notices, as required under
+ * The interactive user interfaces in modified versions of the Program
+ * are required to display Appropriate Legal Notices in accordance with
  * Section 5 of the GNU AGPL version 3.
  *
- * Pursuant to Section 7(b) of the License you must retain the original Product
- * logo when distributing the program. Pursuant to Section 7(e) we decline to
- * grant you any rights under trademark law for use of our trademarks.
+ * No trademark rights are granted under this License.
  *
- * All the Product's GUI elements, including illustrations and icon sets, as
- * well as technical writing content are licensed under the terms of the
- * Creative Commons Attribution-ShareAlike 4.0 International. See the License
- * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ * All non-code elements of the Product, including illustrations,
+ * icon sets, and technical writing content, are licensed under the
+ * Creative Commons Attribution-ShareAlike 4.0 International License:
+ * https://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
+ * This license applies only to such non-code elements and does not
+ * modify or replace the licensing terms applicable to the Program's
+ * source code, which remains licensed under the GNU Affero General
+ * Public License v3.
+ *
+ * SPDX-License-Identifier: AGPL-3.0-only
  */
 
 #include "CF12.h"
@@ -125,7 +128,7 @@ void CF12::readFields(CFRecord& record)
 	
 	dxfId_ = global_info->RegistrDxfn(strm.str());
 }
-void ProcessBorderProp( OOX::Spreadsheet::CBorderProp* prop, unsigned char& DgPtr, unsigned char& icvPtr)
+void ProcessBorderProp( OOX::Spreadsheet::CBorderProp* prop, unsigned char& DgPtr, ExtProp &BdrColor)
 {
 	if(prop->m_oStyle.IsInit())
 	{
@@ -201,8 +204,24 @@ void ProcessBorderProp( OOX::Spreadsheet::CBorderProp* prop, unsigned char& DgPt
 				break;
 		}
 	}
-	if(prop->m_oColor.IsInit() && prop->m_oColor->m_oIndexed.IsInit())
-		icvPtr = prop->m_oColor->m_oIndexed->GetValue();
+	if(prop->m_oColor.IsInit())
+	{
+		if(prop->m_oColor->m_oIndexed.IsInit())
+		{
+			BdrColor.extPropData.color.xclrType = 1;
+			BdrColor.extPropData.color.xclrValue = prop->m_oColor->m_oIndexed->GetValue();
+		}
+		else if(prop->m_oColor->m_oThemeColor.IsInit())
+		{
+			BdrColor.extPropData.color.xclrType = 3;
+			BdrColor.extPropData.color.xclrValue = prop->m_oColor->m_oThemeColor->GetValue();
+		}
+		else if(prop->m_oColor->m_oRgb.IsInit())
+		{
+			BdrColor.extPropData.color.xclrType = 2;
+			BdrColor.extPropData.color.xclrValue = prop->m_oColor->m_oRgb->ToInt();
+		}
+	}
 }
 
 void CF12::writeFields(CFRecord& record)
@@ -221,6 +240,11 @@ void CF12::writeFields(CFRecord& record)
 		{
 			OOX::Spreadsheet::CDxf dxfObj;
 			XmlUtils::CXmlLiteReader oReader;
+			if(dxf.dxfn->xfext == nullptr)
+			{
+				auto Ext = new XFExtNoFRT;
+				dxf.dxfn->xfext = XFExtNoFRTPtr(Ext);
+			}
 			if(oReader.FromString(global_info->arrUserDxfs.at(dxfId_)))
 			{
 				if(oReader.ReadNextNode())
@@ -240,11 +264,6 @@ void CF12::writeFields(CFRecord& record)
 						{
 							dxf.dxfn->icvFNinch= false;
 							ExtProp fgColor;
-							if(dxf.dxfn->xfext == nullptr)
-							{
-								auto Ext = new XFExtNoFRT;
-								dxf.dxfn->xfext = XFExtNoFRTPtr(Ext);
-							}
 							if(dxfObj.m_oFill->m_oPatternFill->m_oFgColor->m_oThemeColor.IsInit())
 							{
 								fgColor.extType = ExtProp::ForeColor;
@@ -256,9 +275,10 @@ void CF12::writeFields(CFRecord& record)
 							{
 								fgColor.extType = ExtProp::ForeColor;
 								fgColor.extPropData.color.xclrType = 2;
-								fgColor.extPropData.color.xclrValue = dxfObj.m_oFill->m_oPatternFill->m_oFgColor->m_oRgb->ToInt();
+								fgColor.extPropData.color.xclrValue = dxfObj.m_oFill->m_oPatternFill->m_oFgColor->m_oRgb->ToRGBInt();
 							}
-
+							if(dxfObj.m_oFill->m_oPatternFill->m_oFgColor->m_oTint.IsInit())
+								fgColor.extPropData.color.nTintShade = dxfObj.m_oFill->m_oPatternFill->m_oFgColor->m_oTint->GetValue() * 32767;
 							dxf.dxfn->xfext->mapRgExt.emplace(ExtProp::ForeColor, fgColor);
 						}
 						if(dxfObj.m_oFill->m_oPatternFill->m_oBgColor.IsInit() && dxfObj.m_oFill->m_oPatternFill->m_oBgColor->m_oIndexed.IsInit())
@@ -270,11 +290,6 @@ void CF12::writeFields(CFRecord& record)
 						{
 							ExtProp bgColor;
 							dxf.dxfn->icvBNinch = false;
-							if(dxf.dxfn->xfext == nullptr)
-							{
-								auto Ext = new XFExtNoFRT;
-								dxf.dxfn->xfext = XFExtNoFRTPtr(Ext);
-							}
 							if(dxfObj.m_oFill->m_oPatternFill->m_oBgColor->m_oThemeColor.IsInit())
 							{
 								bgColor.extType = ExtProp::BackColor;
@@ -286,9 +301,10 @@ void CF12::writeFields(CFRecord& record)
 							{
 								bgColor.extType = ExtProp::BackColor;
 								bgColor.extPropData.color.xclrType = 2;
-								bgColor.extPropData.color.xclrValue = dxfObj.m_oFill->m_oPatternFill->m_oBgColor->m_oRgb->ToInt();
+								bgColor.extPropData.color.xclrValue = dxfObj.m_oFill->m_oPatternFill->m_oBgColor->m_oRgb->ToRGBInt();
 							}
-
+							if(dxfObj.m_oFill->m_oPatternFill->m_oBgColor->m_oTint.IsInit())
+								bgColor.extPropData.color.nTintShade = dxfObj.m_oFill->m_oPatternFill->m_oBgColor->m_oTint->GetValue() * 32767;
 							dxf.dxfn->xfext->mapRgExt.emplace(ExtProp::BackColor, bgColor);
 						}
 					}
@@ -323,8 +339,30 @@ void CF12::writeFields(CFRecord& record)
 							else if(dxfObj.m_oFont->m_oUnderline->m_oUnderline->GetValue() == SimpleTypes::Spreadsheet::EUnderline::underlineDoubleAccounting)
 								dxf.dxfn->dxffntd.stxp.uls = 0x22;
 						}
-						if(dxfObj.m_oFont->m_oColor.IsInit() && dxfObj.m_oFont->m_oColor->m_oIndexed.IsInit())
-							dxf.dxfn->dxffntd.icvFore = dxfObj.m_oFont->m_oColor->m_oIndexed->GetValue();
+						if(dxfObj.m_oFont->m_oColor.IsInit())
+						{
+							ExtProp fntColor;
+							fntColor.extType = ExtProp::TextColor;
+							if(dxfObj.m_oFont->m_oColor->m_oThemeColor.IsInit())
+							{
+								fntColor.extPropData.color.xclrType = 3;
+								fntColor.extPropData.color.xclrValue = dxfObj.m_oFont->m_oColor->m_oThemeColor->GetValue();
+
+							}
+							else if(dxfObj.m_oFont->m_oColor->m_oRgb.IsInit())
+							{
+								fntColor.extPropData.color.xclrType = 2;
+								fntColor.extPropData.color.xclrValue = dxfObj.m_oFont->m_oColor->m_oRgb->ToRGBInt();
+							}
+							else if(dxfObj.m_oFont->m_oColor->m_oIndexed.IsInit())
+							{
+								fntColor.extPropData.color.xclrType = 1;
+								fntColor.extPropData.color.xclrValue = dxfObj.m_oFont->m_oColor->m_oIndexed->GetValue();
+							}
+							if(dxfObj.m_oFont->m_oColor->m_oTint.IsInit())
+								fntColor.extPropData.color.nTintShade = dxfObj.m_oFont->m_oColor->m_oTint->GetValue() * 32767;
+							dxf.dxfn->xfext->mapRgExt.emplace(ExtProp::TextColor, fntColor);
+						}
 					}
 					if(dxfObj.m_oBorder.IsInit())
 					{
@@ -332,22 +370,34 @@ void CF12::writeFields(CFRecord& record)
 						if(dxfObj.m_oBorder->m_oBottom.IsInit())
 						{
 							dxf.dxfn->glBottomNinch = false;
-							ProcessBorderProp(dxfObj.m_oBorder->m_oBottom.GetPointer(), dxf.dxfn->dxfbdr.dgBottom, dxf.dxfn->dxfbdr.icvBottom);
+							ExtProp BdrColor;
+							BdrColor.extType = ExtProp::BottomBorderColor;
+							ProcessBorderProp(dxfObj.m_oBorder->m_oBottom.GetPointer(), dxf.dxfn->dxfbdr.dgBottom, BdrColor);
+							dxf.dxfn->xfext->mapRgExt.emplace(ExtProp::BottomBorderColor, BdrColor);
 						}
 						if(dxfObj.m_oBorder->m_oTop.IsInit())
 						{
 							dxf.dxfn->glTopNinch = false;
-							ProcessBorderProp(dxfObj.m_oBorder->m_oTop.GetPointer(), dxf.dxfn->dxfbdr.dgTop, dxf.dxfn->dxfbdr.icvTop);
+							ExtProp BdrColor;
+							BdrColor.extType = ExtProp::TopBorderColor;
+							ProcessBorderProp(dxfObj.m_oBorder->m_oTop.GetPointer(), dxf.dxfn->dxfbdr.dgTop, BdrColor);
+							dxf.dxfn->xfext->mapRgExt.emplace(ExtProp::TopBorderColor, BdrColor);
 						}
 						if(dxfObj.m_oBorder->m_oStart.IsInit())
 						{
 							dxf.dxfn->glLeftNinch  = false;
-							ProcessBorderProp(dxfObj.m_oBorder->m_oStart.GetPointer(), dxf.dxfn->dxfbdr.dgLeft, dxf.dxfn->dxfbdr.icvLeft);
+							ExtProp BdrColor;
+							BdrColor.extType = ExtProp::LeftBorderColor;
+							ProcessBorderProp(dxfObj.m_oBorder->m_oStart.GetPointer(), dxf.dxfn->dxfbdr.dgLeft, BdrColor);
+							dxf.dxfn->xfext->mapRgExt.emplace(ExtProp::LeftBorderColor, BdrColor);
 						}
 						if(dxfObj.m_oBorder->m_oEnd.IsInit())
 						{
 							dxf.dxfn->glRightNinch  = false;
-							ProcessBorderProp(dxfObj.m_oBorder->m_oEnd.GetPointer(), dxf.dxfn->dxfbdr.dgRight, dxf.dxfn->dxfbdr.icvRight);
+							ExtProp BdrColor;
+							BdrColor.extType = ExtProp::RightBorderColor;
+							ProcessBorderProp(dxfObj.m_oBorder->m_oEnd.GetPointer(), dxf.dxfn->dxfbdr.dgRight, BdrColor);
+							dxf.dxfn->xfext->mapRgExt.emplace(ExtProp::RightBorderColor, BdrColor);
 						}
 						if(dxfObj.m_oBorder->m_oDiagonal.IsInit())
 						{
@@ -357,8 +407,12 @@ void CF12::writeFields(CFRecord& record)
 								dxf.dxfn->dxfbdr.bitDiagDown = true;
 							if(dxfObj.m_oBorder->m_oDiagonalUp.IsInit() && dxfObj.m_oBorder->m_oDiagonalUp->GetValue())
 								dxf.dxfn->dxfbdr.bitDiagUp = true;
-							ProcessBorderProp(dxfObj.m_oBorder->m_oDiagonal.GetPointer(), dxf.dxfn->dxfbdr.dgDiag, dxf.dxfn->dxfbdr.icvDiag);
+							ExtProp BdrColor;
+							BdrColor.extType = ExtProp::DiagonalBorderColor;
+							ProcessBorderProp(dxfObj.m_oBorder->m_oDiagonal.GetPointer(), dxf.dxfn->dxfbdr.dgDiag, BdrColor);
+							dxf.dxfn->xfext->mapRgExt.emplace(ExtProp::DiagonalBorderColor, BdrColor);
 						}
+
 					}
 					if(dxfObj.m_oNumFmt.IsInit())
 					{
@@ -523,6 +577,16 @@ int CF12::serialize(std::wostream & stream)
 				case 4:	CP_XML_ATTR(L"type", L"dataBar");		break;
 				case 6:	CP_XML_ATTR(L"type", L"iconSet");		break;
 			}
+			if(ct == 5)
+			{
+					CP_XML_ATTR(L"type", L"top10");
+
+					CP_XML_ATTR(L"rank", rgbTemplateParms.data.filter.iParam);
+					if(rgbTemplateParms.data.filter.fPercent)
+						CP_XML_ATTR(L"percent", L"1");
+					if(!rgbTemplateParms.data.filter.fTop)
+						CP_XML_ATTR(L"bottom", L"1");
+			}
 			if (ct == 1)
 			{
 				switch(cp)
@@ -538,6 +602,7 @@ int CF12::serialize(std::wostream & stream)
 				}
 			}
 			CP_XML_ATTR(L"priority", ipriority_);
+			if(fStopIfTrue)
 			CP_XML_ATTR(L"stopIfTrue", fStopIfTrue);
 
 			if (dxfId_ >= 0)
@@ -553,12 +618,19 @@ int CF12::serialize(std::wostream & stream)
 			
 			if (!s1.empty() || !s2.empty())
 			{
-				CP_XML_NODE(L"formula")
+				if (!s1.empty())
 				{
-					if (!s1.empty()) 
+					CP_XML_NODE(L"formula")
+					{
 						CP_XML_STREAM() << XmlUtils::EncodeXmlString(s1);
-					else if(!s2.empty()) 
+					}
+				}
+				if (!s2.empty())
+				{
+					CP_XML_NODE(L"formula")
+					{
 						CP_XML_STREAM() << XmlUtils::EncodeXmlString(s2);
+					}
 				}
 			}
 		}

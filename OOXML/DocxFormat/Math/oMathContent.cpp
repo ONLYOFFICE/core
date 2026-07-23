@@ -1,33 +1,36 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * Copyright (C) Ascensio System SIA, 2009-2026
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
- * version 3 as published by the Free Software Foundation. In accordance with
- * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
- * that Ascensio System SIA expressly excludes the warranty of non-infringement
- * of any third-party rights.
+ * version 3 as published by the Free Software Foundation, together with the
+ * additional terms provided in the LICENSE file.
  *
  * This program is distributed WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
- * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. For
+ * details, see the GNU AGPL at: https://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
- * street, Riga, Latvia, EU, LV-1050.
+ * You can contact Ascensio System SIA by email at info@onlyoffice.com
+ * or by postal mail at 20A-6 Ernesta Birznieka-Upisha Street, Riga,
+ * LV-1050, Latvia, European Union.
  *
- * The  interactive user interfaces in modified source and object code versions
- * of the Program must display Appropriate Legal Notices, as required under
+ * The interactive user interfaces in modified versions of the Program
+ * are required to display Appropriate Legal Notices in accordance with
  * Section 5 of the GNU AGPL version 3.
  *
- * Pursuant to Section 7(b) of the License you must retain the original Product
- * logo when distributing the program. Pursuant to Section 7(e) we decline to
- * grant you any rights under trademark law for use of our trademarks.
+ * No trademark rights are granted under this License.
  *
- * All the Product's GUI elements, including illustrations and icon sets, as
- * well as technical writing content are licensed under the terms of the
- * Creative Commons Attribution-ShareAlike 4.0 International. See the License
- * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ * All non-code elements of the Product, including illustrations,
+ * icon sets, and technical writing content, are licensed under the
+ * Creative Commons Attribution-ShareAlike 4.0 International License:
+ * https://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
+ * This license applies only to such non-code elements and does not
+ * modify or replace the licensing terms applicable to the Program's
+ * source code, which remains licensed under the GNU Affero General
+ * Public License v3.
+ *
+ * SPDX-License-Identifier: AGPL-3.0-only
  */
 #include "oMathContent.h"
 namespace OOX
@@ -2725,11 +2728,11 @@ namespace OOX
 		{
 			std::wstring sResult = _T("<m:radPr>");
 
-			if ( m_oCtrlPr.IsInit() )
-				sResult += m_oCtrlPr->toXML();
-
 			if ( m_oDegHide.IsInit() )
 				sResult += m_oDegHide->toXML();
+
+			if (m_oCtrlPr.IsInit())
+				sResult += m_oCtrlPr->toXML();
 
 			sResult += _T("</m:radPr>");
 			return sResult;
@@ -3663,9 +3666,6 @@ namespace OOX
 			if (m_oChr.IsInit())
 				sResult += m_oChr->toXML();
 
-			if (m_oCtrlPr.IsInit())
-				sResult += m_oCtrlPr->toXML();
-
 			if (m_oGrow.IsInit())
 				sResult += m_oGrow->toXML();
 
@@ -3677,6 +3677,9 @@ namespace OOX
 
 			if (m_oSupHide.IsInit())
 				sResult += m_oSupHide->toXML();
+
+			if (m_oCtrlPr.IsInit())
+				sResult += m_oCtrlPr->toXML();
 
 			sResult += L"</m:naryPr>";
 
@@ -4110,14 +4113,14 @@ namespace OOX
 		{
 			std::wstring sResult = L"<m:f>";
 
-			if ( m_oDen.IsInit() )
-				sResult += m_oDen->toXML();
-
-			if ( m_oFPr.IsInit() )
+			if (m_oFPr.IsInit())
 				sResult += m_oFPr->toXML();
 
 			if ( m_oNum.IsInit() )
 				sResult += m_oNum->toXML();
+
+			if (m_oDen.IsInit())
+				sResult += m_oDen->toXML();
 
 			sResult += L"</m:f>";
 
@@ -4128,14 +4131,14 @@ namespace OOX
 		{
 			std::wstring sResult = L"<m:func>";
 
-			if ( m_oElement.IsInit() )
-				sResult += m_oElement->toXML();
-
-			if ( m_oFName.IsInit() )
-				sResult += m_oFName->toXML();
-
 			if ( m_oFuncPr.IsInit() )
 				sResult += m_oFuncPr->toXML();
+
+			if ( m_oFName.IsInit() )
+				sResult += m_oFName->toXML();			
+			
+			if ( m_oElement.IsInit() )
+				sResult += m_oElement->toXML();
 
 			sResult += L"</m:func>";
 
@@ -4161,14 +4164,14 @@ namespace OOX
 		{
 			std::wstring sResult = L"<m:limLow>";
 
+			if (m_oLimLowPr.IsInit())
+				sResult += m_oLimLowPr->toXML();
+
 			if ( m_oElement.IsInit() )
 				sResult += m_oElement->toXML();
 
 			if ( m_oLim.IsInit() )
 				sResult += m_oLim->toXML();
-
-			if ( m_oLimLowPr.IsInit() )
-				sResult += m_oLimLowPr->toXML();
 
 			sResult += L"</m:limLow>";
 
@@ -4256,10 +4259,7 @@ namespace OOX
 		{
 			std::wstring sResult = L"<m:nary>";
 
-			if ( m_oElement.IsInit() )
-				sResult += m_oElement->toXML();
-
-			if ( m_oNaryPr.IsInit() )
+			if (m_oNaryPr.IsInit())
 				sResult += m_oNaryPr->toXML();
 
 			if ( m_oSub.IsInit() )
@@ -4267,6 +4267,9 @@ namespace OOX
 
 			if ( m_oSup.IsInit() )
 				sResult += m_oSup->toXML();
+
+			if (m_oElement.IsInit())
+				sResult += m_oElement->toXML();
 
 			sResult += L"</m:nary>";
 
@@ -4308,14 +4311,14 @@ namespace OOX
 		if ( m_oDel.IsInit() )
 			sResult += m_oDel->toXML();
 
+		if (m_oRPr.IsInit())
+			sResult += m_oRPr->toXML();
+
 		if ( m_oMRPr.IsInit() )
 			sResult += m_oMRPr->toXML();
 
 		if ( m_oARPr.IsInit() )
 			sResult += m_oARPr->toXML();
-
-		if ( m_oRPr.IsInit() )
-			sResult += m_oRPr->toXML();
 
 		for (size_t i = 0; i < m_arrItems.size(); ++i)
 		{

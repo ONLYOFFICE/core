@@ -1,33 +1,36 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * Copyright (C) Ascensio System SIA, 2009-2026
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
- * version 3 as published by the Free Software Foundation. In accordance with
- * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
- * that Ascensio System SIA expressly excludes the warranty of non-infringement
- * of any third-party rights.
+ * version 3 as published by the Free Software Foundation, together with the
+ * additional terms provided in the LICENSE file.
  *
  * This program is distributed WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
- * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. For
+ * details, see the GNU AGPL at: https://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
- * street, Riga, Latvia, EU, LV-1050.
+ * You can contact Ascensio System SIA by email at info@onlyoffice.com
+ * or by postal mail at 20A-6 Ernesta Birznieka-Upisha Street, Riga,
+ * LV-1050, Latvia, European Union.
  *
- * The  interactive user interfaces in modified source and object code versions
- * of the Program must display Appropriate Legal Notices, as required under
+ * The interactive user interfaces in modified versions of the Program
+ * are required to display Appropriate Legal Notices in accordance with
  * Section 5 of the GNU AGPL version 3.
  *
- * Pursuant to Section 7(b) of the License you must retain the original Product
- * logo when distributing the program. Pursuant to Section 7(e) we decline to
- * grant you any rights under trademark law for use of our trademarks.
+ * No trademark rights are granted under this License.
  *
- * All the Product's GUI elements, including illustrations and icon sets, as
- * well as technical writing content are licensed under the terms of the
- * Creative Commons Attribution-ShareAlike 4.0 International. See the License
- * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ * All non-code elements of the Product, including illustrations,
+ * icon sets, and technical writing content, are licensed under the
+ * Creative Commons Attribution-ShareAlike 4.0 International License:
+ * https://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
+ * This license applies only to such non-code elements and does not
+ * modify or replace the licensing terms applicable to the Program's
+ * source code, which remains licensed under the GNU Affero General
+ * Public License v3.
+ *
+ * SPDX-License-Identifier: AGPL-3.0-only
  */
 #ifndef DRAWINGFILE_H
 #define DRAWINGFILE_H
@@ -41,6 +44,8 @@
 #include "../graphics/pro/js/wasm/src/serialize.h"
 #include "../graphics/pro/js/wasm/src/HTMLRendererText.h"
 #include "../../DocxRenderer/DocxRenderer.h"
+#include "../../OFDFile/OFDFile.h"
+#include "../../OfficeUtils/src/OfficeUtils.h"
 
 #define CHECKER_FILE_BUFFER_LEN 4096
 
@@ -103,6 +108,9 @@ public:
 		case odftXPS:
 			m_nType = 2;
 			break;
+		case odftOFD:
+			m_nType = 3;
+			break;
 		default:
 			break;
 		}
@@ -113,10 +121,17 @@ public:
 	{
 		NSFonts::NSApplicationFontStream::SetGlobalMemoryStorage(NSFonts::NSApplicationFontStream::CreateDefaultGlobalMemoryStorage());
 	}
-
 	static NSFonts::IFontsMemoryStorage* GetFontsStorage()
 	{
 		return NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage();
+	}
+	static void InitImagesGlobalStorage()
+	{
+		NSImages::NSApplicationImageStream::SetGlobalImagesMemoryStorage(NSImages::NSApplicationImageStream::CreateDefaultGlobalImagesMemoryStorage());
+	}
+	static NSImages::IImagesMemoryStorage* GetImagesStorage()
+	{
+		return NSImages::NSApplicationImageStream::GetGlobalImagesMemoryStorage();
 	}
 
 public:
@@ -164,6 +179,16 @@ public:
 			}
 			else
 				m_nType = 2;
+		}
+		case 3:
+		{
+			m_pFile = new COFDFile(m_pApplicationFonts);
+			if (!m_pFile->LoadFromFile(sFile, L"", sPassword, sPassword))
+			{
+				RELEASEOBJECT(m_pFile);
+			}
+			else
+				m_nType = 3;
 		}
 		default:
 			break;
@@ -214,6 +239,16 @@ public:
 				}
 				else
 					m_nType = 2;
+			}
+			case 3:
+			{
+				m_pFile = new COFDFile(m_pApplicationFonts);
+				if (!m_pFile->LoadFromMemory(data, size, L"", sPassword, sPassword))
+				{
+					RELEASEOBJECT(m_pFile);
+				}
+				else
+					m_nType = 3;
 			}
 			default:
 				break;
@@ -288,11 +323,21 @@ public:
 		return bRes;
 	}
 
+	void SetPainter(IOfficeDrawingFilePainter* pPainter)
+	{
+		if (m_pFile)
+			m_pFile->SetPainter(pPainter);
+	}
 	BYTE* GetPixmap(int nPageIndex, int nRasterW, int nRasterH, int nBackgroundColor)
 	{
 		if (!m_pFile)
 			return NULL;
-		return m_pFile->ConvertToPixels(nPageIndex, nRasterW, nRasterH, true, m_pFontManager, nBackgroundColor, (nBackgroundColor == 0xFFFFFF) ? false : true);
+		BYTE* pRes = m_pFile->ConvertToPixels(nPageIndex, nRasterW, nRasterH, true, m_pFontManager, nBackgroundColor, (nBackgroundColor == 0xFFFFFF) ? false : true);
+
+		if (m_nType == 0)
+			((CPdfFile*)m_pFile)->SetPageFonts(nPageIndex);
+
+		return pRes;
 	}
 	BYTE* SplitPages(int* arrPageIndex, int nLength, BYTE* data, LONG size)
 	{
@@ -344,6 +389,13 @@ public:
 			return ((CPdfFile*)m_pFile)->UndoRedact();
 		return false;
 	}
+	BYTE* EditPdf(BYTE* pChanges, int nChangesSize)
+	{
+		if (m_nType != 0)
+			return NULL;
+
+		return ((CPdfFile*)m_pFile)->SplitPages(NULL, 0, pChanges, nChangesSize, true);
+	}
 
 	BYTE* GetGlyphs(int nPageIndex)
 	{
@@ -352,6 +404,9 @@ public:
 
 		m_pTextRenderer->Init(m_pFile, 8);
 		m_pFile->DrawPageOnRenderer(m_pTextRenderer, nPageIndex, NULL);
+
+		if (m_nType == 0)
+			((CPdfFile*)m_pFile)->SetPageFonts(nPageIndex);
 
 		return m_pTextRenderer->GetBuffer();
 	}
@@ -454,19 +509,9 @@ public:
 		if (m_nType == 0)
 			((CPdfFile*)m_pFile)->SetCMapMemory(data, size);
 	}
-	void SetScanPageFonts(int nPageIndex)
+	BYTE* SetScanPageFonts(int* arrPageIndex, int nLength)
 	{
-		if (NULL == m_pImageStorage)
-			m_pImageStorage = NSDocxRenderer::CreateWasmImageStorage();
-
-		CDocxRenderer oRenderer(m_pApplicationFonts);
-		oRenderer.SetExternalImageStorage(m_pImageStorage);
-		oRenderer.SetTextAssociationType(NSDocxRenderer::TextAssociationType::tatParagraphToShape);
-
-		oRenderer.ScanPageBin(m_pFile, nPageIndex);
-
-		if (m_nType == 0)
-			((CPdfFile*)m_pFile)->SetPageFonts(nPageIndex);
+		return m_nType == 0 ? ((CPdfFile*)m_pFile)->GetAllFonts(arrPageIndex, nLength) : NULL;
 	}
 	BYTE* ScanPage(int nPageIndex, int mode)
 	{
@@ -547,6 +592,27 @@ public:
 		{
 			std::string sPathA(path);
 			NSFonts::IFontStream* pStream = pStorage->Get(UTF8_TO_U(sPathA));
+			if (pStream)
+				return 1;
+		}
+		return 0;
+	}
+	void SetImageBinary(char* path, BYTE* data, int size)
+	{
+		NSImages::IImagesMemoryStorage* pStorage = NSImages::NSApplicationImageStream::GetGlobalImagesMemoryStorage();
+		if (pStorage)
+		{
+			std::string sPathA(path);
+			pStorage->Add(UTF8_TO_U(sPathA), data, size, true);
+		}
+	}
+	int IsImageBinaryExist(char* path)
+	{
+		NSImages::IImagesMemoryStorage* pStorage = NSImages::NSApplicationImageStream::GetGlobalImagesMemoryStorage();
+		if (pStorage)
+		{
+			std::string sPathA(path);
+			NSImages::IImageStream* pStream = pStorage->Get(UTF8_TO_U(sPathA));
 			if (pStream)
 				return 1;
 		}
@@ -634,7 +700,7 @@ private:
 		double dPageDpiX, dPageDpiY;
 		double dWidth, dHeight;
 		m_pFile->GetPageInfo(nPageIndex, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
-		if (m_nType == 2)
+		if (m_nType == 2 || m_nType == 3)
 		{
 			dWidth    = dWidth    / 25.4 * 96.0;
 			dHeight   = dHeight   / 25.4 * 96.0;
@@ -672,6 +738,7 @@ private:
 		// 0 - PDF
 		// 1 - DJVU
 		// 2 - XPS
+		// 3 - OFD
 		LONG nSize = size < CHECKER_FILE_BUFFER_LEN ? size : CHECKER_FILE_BUFFER_LEN;
 		char* pData = (char*)data;
 		for (int i = 0; i < nSize - 5; ++i)
@@ -683,6 +750,25 @@ private:
 		if ( (8 <= size) && (0x41 == data[0] && 0x54 == data[1] && 0x26 == data[2] && 0x54 == data[3] &&
 							0x46 == data[4] && 0x4f == data[5] && 0x52 == data[6] && 0x4d == data[7]))
 			return 1;
+		COfficeUtils OfficeUtils(NULL);
+		if (OfficeUtils.IsArchive(data, size) == S_FALSE)
+			return -1;
+
+		ULONG nBufferSize = 0;
+		BYTE *pBuffer = NULL;
+
+		int nFileType = -1;
+		HRESULT hresult = OfficeUtils.LoadFileFromArchive(data, size, L"OFD.xml", &pBuffer, nBufferSize);
+		if (hresult == S_OK && pBuffer != NULL)
+		{
+			if (19 <= nBufferSize && NULL != strstr((char *)pBuffer, "ofd:OFD"))
+				nFileType = 3;
+
+			delete[] pBuffer;
+			pBuffer = NULL;
+
+			return nFileType;
+		}
 		return 2;
 	}
 };

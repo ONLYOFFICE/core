@@ -3,6 +3,9 @@
 #include "md4c/src/md4c-html.h"
 #include "../../../DesktopEditor/common/File.h"
 
+#include <map>
+#include <sstream>
+
 namespace Md
 {
 #define MD_PARSER_FLAGS MD_DIALECT_GITHUB | MD_FLAG_NOINDENTEDCODEBLOCKS | MD_HTML_FLAG_SKIP_UTF8_BOM | MD_FLAG_HARD_SOFT_BREAKS | MD_HTML_FLAG_XHTML | MD_FLAG_LATEXMATHSPANS
@@ -67,6 +70,118 @@ void WriteBaseHtmlStyles(NSFile::CFileBinary& oFile)
 	oFile.WriteStringUTF8(L"</style>");
 }
 
+static std::string Trim(const std::string& sValue)
+{
+	const size_t unStart{sValue.find_first_not_of(" \t")};
+
+	if (std::string::npos == unStart)
+		return std::string();
+
+	return sValue.substr(unStart, sValue.find_last_not_of(" \t") - unStart + 1);
+}
+
+static bool IsFrontMatterDelimiter(const std::string& line)
+{
+	return "---" == Trim(line);
+}
+
+std::map<std::string, std::string> ExtractMetadata(std::string& sMdData)
+{
+	const size_t unFirstLineEnd{sMdData.find('\n')};
+
+	std::string sFirstLine;
+
+	if (std::string::npos == unFirstLineEnd)
+		sFirstLine = sMdData;
+	else
+	{
+		size_t unLen{unFirstLineEnd};
+
+		if (unLen > 0 && sMdData[unLen - 1] == '\r')
+			--unLen;
+
+		sFirstLine = sMdData.substr(0, unLen);
+	}
+
+	if (!IsFrontMatterDelimiter(sFirstLine))
+		return {};
+
+	size_t unMetaStart{(std::string::npos == unFirstLineEnd) ? sMdData.size() : unFirstLineEnd + 1};
+    size_t unSearchPos{unMetaStart};
+	size_t unCloseDelimStart{std::string::npos};
+	size_t unCloseDelimLineEnd{std::string::npos};
+
+	while (unSearchPos < sMdData.size())
+	{
+		size_t unLineEnd{sMdData.find('\n', unSearchPos)};
+		std::string sLine;
+
+		if (unLineEnd == std::string::npos)
+		{
+			sLine = sMdData.substr(unSearchPos);
+
+			if (IsFrontMatterDelimiter(sLine))
+			{
+				unCloseDelimStart = unSearchPos;
+				unCloseDelimLineEnd = sMdData.size();
+			}
+
+			break;
+		}
+		else
+		{
+			size_t unLen{unLineEnd - unSearchPos};
+
+			if (unLen > 0 && sMdData[unLineEnd - 1] == '\r')
+				--unLen;
+
+			sLine = sMdData.substr(unSearchPos, unLen);
+
+			if (IsFrontMatterDelimiter(sLine))
+			{
+				unCloseDelimStart = unSearchPos;
+				unCloseDelimLineEnd = unLineEnd + 1;
+				break;
+			}
+
+			unSearchPos = unLineEnd + 1;
+		}
+	}
+
+	if (unCloseDelimStart == std::string::npos)
+		return {};
+
+	const size_t unMetaLength = unCloseDelimStart - unMetaStart;
+	const std::string sMetaBlock{sMdData.substr(unMetaStart, unMetaLength)};
+
+	std::istringstream oStream(sMetaBlock);
+	std::string sMetaLine;
+
+	std::map<std::string, std::string> mMetadata;
+
+	while (std::getline(oStream, sMetaLine, '\n'))
+	{
+		if (!sMetaLine.empty() && sMetaLine.back() == '\r')
+			sMetaLine.pop_back();
+
+		const std::string sTrimmed{Trim(sMetaLine)};
+
+		if (sTrimmed.empty())
+			continue;
+
+		const size_t unColon{sTrimmed.find(':')};
+
+		if (std::string::npos == unColon)
+			continue;
+
+		mMetadata[Trim(sTrimmed.substr(0, unColon))] = Trim(sTrimmed.substr(unColon + 1));
+	}
+
+	sMdData.erase(0, unCloseDelimLineEnd);
+
+	return mMetadata;
+}
+
 bool ConvertMdFileToHtml(const std::wstring& wsPathToMdFile, const std::wstring& wsPathToHtmlFile)
 {
 	std::string sMdData;
@@ -79,13 +194,19 @@ bool ConvertMdFileToHtml(const std::wstring& wsPathToMdFile, const std::wstring&
 	if (!oFile.CreateFile(wsPathToHtmlFile))
 		return false;
 
-	oFile.WriteStringUTF8(L"<html><body>");
+	oFile.WriteStringUTF8(L"<html><head>");
 
-	oFile.WriteStringUTF8(L"<head>");
-	//oFile.WriteStringUTF8(L"<meta charset=\"UTF-8\">");
-	oFile.WriteStringUTF8(L"<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">");
+	for (const std::pair<std::string, std::string>& oMeta : ExtractMetadata(sMdData))
+	{
+		if (oMeta.first.empty())
+			continue;
+
+		oFile.WriteStringUTF8(L"<meta name=\"" + UTF8_TO_U(oMeta.first) + L"\" content=\"" + UTF8_TO_U(oMeta.second) + L"\"/>");
+	}
+
+	oFile.WriteStringUTF8(L"<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"/>");
 	WriteBaseHtmlStyles(oFile);
-	oFile.WriteStringUTF8(L"</head>");
+	oFile.WriteStringUTF8(L"</head><body>");
 
 	bool bResult = true;
 

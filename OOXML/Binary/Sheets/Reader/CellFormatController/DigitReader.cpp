@@ -1,33 +1,36 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * Copyright (C) Ascensio System SIA, 2009-2026
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
- * version 3 as published by the Free Software Foundation. In accordance with
- * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
- * that Ascensio System SIA expressly excludes the warranty of non-infringement
- * of any third-party rights.
+ * version 3 as published by the Free Software Foundation, together with the
+ * additional terms provided in the LICENSE file.
  *
  * This program is distributed WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
- * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. For
+ * details, see the GNU AGPL at: https://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
- * street, Riga, Latvia, EU, LV-1050.
+ * You can contact Ascensio System SIA by email at info@onlyoffice.com
+ * or by postal mail at 20A-6 Ernesta Birznieka-Upisha Street, Riga,
+ * LV-1050, Latvia, European Union.
  *
- * The  interactive user interfaces in modified source and object code versions
- * of the Program must display Appropriate Legal Notices, as required under
+ * The interactive user interfaces in modified versions of the Program
+ * are required to display Appropriate Legal Notices in accordance with
  * Section 5 of the GNU AGPL version 3.
  *
- * Pursuant to Section 7(b) of the License you must retain the original Product
- * logo when distributing the program. Pursuant to Section 7(e) we decline to
- * grant you any rights under trademark law for use of our trademarks.
+ * No trademark rights are granted under this License.
  *
- * All the Product's GUI elements, including illustrations and icon sets, as
- * well as technical writing content are licensed under the terms of the
- * Creative Commons Attribution-ShareAlike 4.0 International. See the License
- * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ * All non-code elements of the Product, including illustrations,
+ * icon sets, and technical writing content, are licensed under the
+ * Creative Commons Attribution-ShareAlike 4.0 International License:
+ * https://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
+ * This license applies only to such non-code elements and does not
+ * modify or replace the licensing terms applicable to the Program's
+ * source code, which remains licensed under the GNU Affero General
+ * Public License v3.
+ *
+ * SPDX-License-Identifier: AGPL-3.0-only
  */
 
 #include "DigitReader.h"
@@ -36,10 +39,17 @@
 #include <cmath>
 #include <regex>
 #include <sstream>
+#include <iomanip>
 
 const std::wstring DefaultPercentFormat = L"0.0%";
 const auto NonDigitcellLimit = 1000;
-
+std::wstring Double2wstr(double dValue)
+{
+	std::wostringstream oss;
+	oss << std::setprecision(std::numeric_limits<double>::digits10 + 1);
+	oss << dValue;
+	return oss.str();
+}
 bool DigitReader::ReadDigit(const std::wstring &value, std::wstring &digit, std::wstring &format)
 {
     size_t length = value.length();
@@ -84,7 +94,8 @@ bool DigitReader::ReadDigit(const std::wstring &value, std::wstring &digit, std:
 				CurrencyReader currency{};
 				if (postfix[0] == L'%')
 				{
-					digit =  std::to_wstring(dValue / 100.);
+					double PercentValue = dValue / 100.;
+					digit = Double2wstr(PercentValue);
 					format = DefaultPercentFormat;
                     return true;
 				}
@@ -123,16 +134,23 @@ bool DigitReader::ReadDigit(const std::wstring &value, std::wstring &digit, std:
 			}
 			else
 			{
-				digit = std::to_wstring(dValue);
+				digit = Double2wstr(dValue);
 				format = data_format;
 			}
 		}
 		else
-        {   if(value.find(L'.') == std::wstring::npos)
-                digit = std::to_wstring((_INT64)dValue);
-            else
-                digit = std::to_wstring(dValue);
-            format = data_format;
+		{
+
+			if(value.find(L'.') == std::wstring::npos)
+			{
+				std::wostringstream oss;
+				oss << (_INT64)dValue;
+				oss << std::setprecision(std::numeric_limits<double>::digits10 + 1);
+				digit = oss.str();
+			}
+			else
+				digit = Double2wstr(dValue);
+			format = data_format;
         }
         return true;
     }

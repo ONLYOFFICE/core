@@ -1,33 +1,36 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * Copyright (C) Ascensio System SIA, 2009-2026
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
- * version 3 as published by the Free Software Foundation. In accordance with
- * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
- * that Ascensio System SIA expressly excludes the warranty of non-infringement
- * of any third-party rights.
+ * version 3 as published by the Free Software Foundation, together with the
+ * additional terms provided in the LICENSE file.
  *
  * This program is distributed WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
- * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. For
+ * details, see the GNU AGPL at: https://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
- * street, Riga, Latvia, EU, LV-1050.
+ * You can contact Ascensio System SIA by email at info@onlyoffice.com
+ * or by postal mail at 20A-6 Ernesta Birznieka-Upisha Street, Riga,
+ * LV-1050, Latvia, European Union.
  *
- * The  interactive user interfaces in modified source and object code versions
- * of the Program must display Appropriate Legal Notices, as required under
+ * The interactive user interfaces in modified versions of the Program
+ * are required to display Appropriate Legal Notices in accordance with
  * Section 5 of the GNU AGPL version 3.
  *
- * Pursuant to Section 7(b) of the License you must retain the original Product
- * logo when distributing the program. Pursuant to Section 7(e) we decline to
- * grant you any rights under trademark law for use of our trademarks.
+ * No trademark rights are granted under this License.
  *
- * All the Product's GUI elements, including illustrations and icon sets, as
- * well as technical writing content are licensed under the terms of the
- * Creative Commons Attribution-ShareAlike 4.0 International. See the License
- * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ * All non-code elements of the Product, including illustrations,
+ * icon sets, and technical writing content, are licensed under the
+ * Creative Commons Attribution-ShareAlike 4.0 International License:
+ * https://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
+ * This license applies only to such non-code elements and does not
+ * modify or replace the licensing terms applicable to the Program's
+ * source code, which remains licensed under the GNU Affero General
+ * Public License v3.
+ *
+ * SPDX-License-Identifier: AGPL-3.0-only
  */
 
 #include "BinaryReaderD.h"
@@ -322,6 +325,53 @@ template<typename T> int Binary_CommonReader2::ReadTrackRevision2(long length, T
 {
 	int res = c_oSerConstants::ReadOk;
 	READ1_DEF(length, res, this->ReadTrackRevisionInner2, poResult);
+	return res;
+}
+int Binary_CommonReader2::ReadEastAsianLayout(BYTE type, long length, void* poResult)
+{
+	if (length < 0)
+		return 0;
+
+	int res = c_oSerConstants::ReadOk;
+	ComplexTypes::Word::CEastAsianLayout* pEastAsianLayout = static_cast<ComplexTypes::Word::CEastAsianLayout*>(poResult);
+
+	if (!pEastAsianLayout)
+	{
+		m_oBufferedStream.Skip(length);
+		return 0;
+	}
+	switch (type)
+	{
+	case c_oSerProp_EastAsianLayoute::ID:
+	{
+		pEastAsianLayout->m_oID.Init();
+		pEastAsianLayout->m_oID->SetValue(m_oBufferedStream.GetLong());
+	}break;
+	case c_oSerProp_EastAsianLayoute::Combine:
+	{
+		pEastAsianLayout->m_oCombine.Init();
+		pEastAsianLayout->m_oCombine->FromBool(m_oBufferedStream.GetBool());
+	}break;
+	case c_oSerProp_EastAsianLayoute::CombineBrackets:
+	{
+		pEastAsianLayout->m_oCombineBrackets.Init();
+		pEastAsianLayout->m_oCombineBrackets->SetValueFromByte(m_oBufferedStream.GetUChar());
+	}break;
+	case c_oSerProp_EastAsianLayoute::Vert:
+	{
+		pEastAsianLayout->m_oVert.Init();
+		pEastAsianLayout->m_oVert->FromBool(m_oBufferedStream.GetBool());
+	}break;
+	case c_oSerProp_EastAsianLayoute::VertCompress:
+	{
+		pEastAsianLayout->m_oVertCompress.Init();
+		pEastAsianLayout->m_oVertCompress->FromBool(m_oBufferedStream.GetBool());
+	}break;
+	default:
+	{
+		res = c_oSerConstants::ReadUnknown;
+	}break;
+	}
 	return res;
 }
 int Binary_CommonReader2::ReadShdComplexType(BYTE type, long length, void* poResult)
@@ -884,7 +934,11 @@ int Binary_rPrReader::ReadContent(BYTE type, long length, void* poResult)
 			pRPr->m_oKern.Init(); pRPr->m_oKern->m_oVal.Init();
 			pRPr->m_oKern->m_oVal->FromHps(m_oBufferedStream.GetLong());
 		}break;
-		
+		case c_oSerProp_rPrType::EastAsianLayout:
+		{
+			pRPr->m_oEastAsianLayout.Init();
+			READ2_DEF(length, res, oBinary_CommonReader2.ReadEastAsianLayout, pRPr->m_oEastAsianLayout.GetPointer());
+		}break;
 		default:
 		res = c_oSerConstants::ReadUnknown;
 		break;
@@ -4124,6 +4178,11 @@ int Binary_SettingsTableReader::ReadSettings(BYTE type, long length, void* poRes
 	{
 		pSettings->m_oDisplayVerticalDrawingGridEvery.Init();
 		pSettings->m_oDisplayVerticalDrawingGridEvery->m_oVal = m_oBufferedStream.GetLong();
+	}
+	else if (c_oSer_SettingsType::CharacterSpacingControl == type)
+	{
+		pSettings->m_oCharacterSpacingControl.Init();
+		pSettings->m_oCharacterSpacingControl->m_oVal.SetValueFromByte(m_oBufferedStream.GetUChar());
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -10044,6 +10103,10 @@ int Binary_DocumentTableReader::ReadSdtFormPr(BYTE type, long length, void* poRe
 	else if (c_oSerSdt::FormPrRequired == type)
 	{
 		pFormPr->m_oRequired = m_oBufferedStream.GetBool();
+	}
+	else if (c_oSerSdt::FormPrSpellCheck== type)
+	{
+		pFormPr->m_oSpellCheck = m_oBufferedStream.GetBool();
 	}
 	else if (c_oSerSdt::FormPrBorder == type)
 	{

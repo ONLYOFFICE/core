@@ -288,6 +288,7 @@
     <ClCompile Include="..\..\Reader\Converter\StarMath2OOXML\conversionmathformula.cpp" />
     <ClCompile Include="..\..\Reader\Converter\StarMath2OOXML\cooxml2odf.cpp" />
     <ClCompile Include="..\..\Reader\Converter\StarMath2OOXML\cstarmathpars.cpp" />
+    <ClCompile Include="..\..\Reader\Converter\StarMath2OOXML\shakey.cpp" />
     <ClCompile Include="..\..\Reader\Converter\xlsxconversioncontext.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
@@ -690,6 +691,7 @@
     <ClInclude Include="..\..\Reader\Converter\StarMath2OOXML\cooxml2odf.h" />
     <ClInclude Include="..\..\Reader\Converter\StarMath2OOXML\cstarmathpars.h" />
     <ClInclude Include="..\..\Reader\Converter\StarMath2OOXML\fontType.h" />
+    <ClInclude Include="..\..\Reader\Converter\StarMath2OOXML\shakey.h" />
     <ClInclude Include="..\..\Reader\Converter\StarMath2OOXML\TextDirection.h" />
     <ClInclude Include="..\..\Reader\Converter\StarMath2OOXML\TFormulaSize.h" />
     <ClInclude Include="..\..\Reader\Converter\StarMath2OOXML\typeConversion.h" />

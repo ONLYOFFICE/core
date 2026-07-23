@@ -43,6 +43,7 @@
 #endif
 
 #include "../DesktopEditor/graphics/IRenderer.h"
+#include "../DesktopEditor/graphics/MetafileToRenderer.h"
 #include "../DesktopEditor/graphics/pro/Image.h"
 #include "../DesktopEditor/graphics/pro/officedrawingfile.h"
 #include "../DesktopEditor/xmlsec/src/include/Certificate.h"
@@ -133,9 +134,7 @@ public:
 
 	virtual std::wstring GetTempDirectory();
 	virtual void SetTempDirectory(const std::wstring& wsPath);
-	void SetThemesDirectory(const std::wstring& wsPath);
-	void SetMediaDirectory(const std::wstring& wsPath);
-	void SetInternalMediaDirectory(const std::wstring& wsPath);
+	void SetCorrector(IMetafileToRenderter* pCorrector);
 
 	virtual int GetPagesCount();
 	virtual void GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY);

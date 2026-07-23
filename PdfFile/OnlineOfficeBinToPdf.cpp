@@ -173,11 +173,8 @@ namespace NSOnlineOfficeBinToPdf
 
 			if (pParams->m_bIsUsePicker)
 				oCorrector.InitPicker(pPdf->GetFonts());
-
-			pPdf->SetMediaDirectory(pParams->m_sMediaDirectory);
-			pPdf->SetInternalMediaDirectory(pParams->m_sInternalMediaDirectory);
-			pPdf->SetThemesDirectory(pParams->m_sThemesDirectory);
 		}
+		pPdf->SetCorrector(&oCorrector);
 
 		NSOnlineOfficeBinToPdf::CBufferReader oReader(pBuffer, (int)nBufferLen);
 

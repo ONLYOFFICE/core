@@ -222,6 +222,7 @@ CPdfWriter::CPdfWriter(NSFonts::IApplicationFonts* pAppFonts, bool isPDFA, bool 
 	m_wsTempDirectory = wsTempDirectory;
 	m_pShading = NULL;
 	m_pShadingExtGrState = NULL;
+	m_pCorrector = NULL;
 
 	m_pDocument = new PdfWriter::CDocument();
 
@@ -344,17 +345,9 @@ void CPdfWriter::SetTempDirectory(const std::wstring& wsTempDirectory)
 {
 	m_wsTempDirectory = wsTempDirectory;
 }
-void CPdfWriter::SetThemesDirectory(const std::wstring& wsPath)
+void CPdfWriter::SetCorrector(IMetafileToRenderter* pCorrector)
 {
-	m_wsThemesDir = wsPath;
-}
-void CPdfWriter::SetMediaDirectory(const std::wstring& wsPath)
-{
-	m_wsMediaDir = wsPath;
-}
-void CPdfWriter::SetInternalMediaDirectory(const std::wstring& wsPath)
-{
-	m_wsInternalMediaDir = wsPath;
+	m_pCorrector = pCorrector;
 }
 //----------------------------------------------------------------------------------------
 // Functions for working with page
@@ -4597,13 +4590,7 @@ PdfWriter::CAnnotAppearanceObject* CPdfWriter::DrawAP(PdfWriter::CAnnotation* pA
 	pFakePage->SetStream(pAP->GetStream());
 	pFakePage->Add("Resources", pAP->Get("Resources"));
 
-	IMetafileToRenderter* pCorrector = new IMetafileToRenderter(m_pRenderer);
-	pCorrector->SetTempDirectory(m_wsTempDirectory);
-	pCorrector->SetMediaDirectory(m_wsMediaDir);
-	pCorrector->SetInternalMediaDirectory(m_wsInternalMediaDir);
-	pCorrector->SetThemesDirectory(m_wsThemesDir);
-	NSOnlineOfficeBinToPdf::ConvertBufferToRenderer(pRender, nLenRender, pCorrector);
-	RELEASEOBJECT(pCorrector);
+	NSOnlineOfficeBinToPdf::ConvertBufferToRenderer(pRender, nLenRender, m_pCorrector);
 
 	pAnnot->APFromFakePage(pAP);
 
@@ -4645,13 +4632,7 @@ void CPdfWriter::DrawWidgetAP(PdfWriter::CAnnotation* pA, BYTE* pRender, LONG nL
 	pFakePage->SetStrokeColor(0, 0, 0);
 	pFakePage->SetFillColor(0, 0, 0);
 
-	IMetafileToRenderter* pCorrector = new IMetafileToRenderter(m_pRenderer);
-	pCorrector->SetTempDirectory(m_wsTempDirectory);
-	pCorrector->SetMediaDirectory(m_wsMediaDir);
-	pCorrector->SetInternalMediaDirectory(m_wsInternalMediaDir);
-	pCorrector->SetThemesDirectory(m_wsThemesDir);
-	NSOnlineOfficeBinToPdf::ConvertBufferToRenderer(pRender, nLenRender, pCorrector);
-	RELEASEOBJECT(pCorrector);
+	NSOnlineOfficeBinToPdf::ConvertBufferToRenderer(pRender, nLenRender, m_pCorrector);
 
 	m_oCommandManager.Flush();
 	pAP->EndDraw();

@@ -359,6 +359,7 @@ HEADERS += \
 	../../../XlsxFormat/Styles/Styles.h \
 	../../../XlsxFormat/Styles/TableStyles.h \
 	../../../XlsxFormat/Styles/Xfs.h \
+	../../../XlsxFormat/Styles/FeaturePropertyBag.h \
 	../../../XlsxFormat/Table/Autofilter.h \
 	../../../XlsxFormat/Table/Table.h \
 	../../../XlsxFormat/Table/Autofilter.h \

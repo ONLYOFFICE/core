@@ -1040,16 +1040,17 @@ int ChartSheetSubstream::serialize_plot_area (std::wostream & _stream)
 								if (crt->m_iChartType == CHART_TYPE_Scatter ||
 									crt->m_iChartType == CHART_TYPE_Bubble)
 								{
-									serialize_ser(L"c:xVal", CP_XML_STREAM(), series_id, series->m_arAI[2], ser->sdtX, ser->cValx);
+									if (series->m_arAI.size() > 2)
+										serialize_ser(L"c:xVal", CP_XML_STREAM(), series_id, series->m_arAI[2], ser->sdtX, ser->cValx);
 									serialize_ser(L"c:yVal", CP_XML_STREAM(), series_id, series->m_arAI[1], ser->sdtY, ser->cValy);
 
-									if (crt->m_iChartType == CHART_TYPE_Bubble && series->m_arAI.size() > 2)
+									if (crt->m_iChartType == CHART_TYPE_Bubble && series->m_arAI.size() > 3)
 										serialize_ser(L"c:bubbleSize", CP_XML_STREAM(), series_id, series->m_arAI[3], ser->sdtBSize, ser->cValBSize);
 								}
 								else
 								{
-
-									serialize_ser(L"c:cat", CP_XML_STREAM(), series_id, series->m_arAI[2], ser->sdtX, ser->cValx);
+									if (series->m_arAI.size() > 2)
+										serialize_ser(L"c:cat", CP_XML_STREAM(), series_id, series->m_arAI[2], ser->sdtX, ser->cValx);
 									serialize_ser(L"c:val", CP_XML_STREAM(), series_id, series->m_arAI[1], ser->sdtY, ser->cValy);
 								}
 							}

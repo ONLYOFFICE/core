@@ -48,6 +48,8 @@
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/XFS.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/XF.h"
 
+#include "../../DocxFormat/Drawing/DrawingExt.h"
+
 namespace OOX
 {
 	namespace Spreadsheet
@@ -361,12 +363,13 @@ namespace OOX
 			WritingStringNullableAttrBool(L"applyProtection", m_oApplyProtection);
 			WritingStringNullableAttrBool(L"quotePrefix", m_oQuotePrefix);
 			WritingStringNullableAttrBool(L"pivotButton", m_oPivotButton);
-			if (m_oAligment.IsInit() || m_oProtection.IsInit())
+			if (m_oAligment.IsInit() || m_oProtection.IsInit() || m_oExtLst.IsInit())
 			{
 				writer.WriteString(_T(">"));
 
-				if (m_oAligment.IsInit())m_oAligment->toXML(writer);
-				if (m_oProtection.IsInit())m_oProtection->toXML(writer);
+				if (m_oAligment.IsInit()) m_oAligment->toXML(writer);
+				if (m_oProtection.IsInit()) m_oProtection->toXML(writer);
+				if (m_oExtLst.IsInit()) writer.WriteString(m_oExtLst->toXMLWithNS(L""));
 
 				writer.WriteString(_T("</xf>"));
 			}
@@ -388,6 +391,8 @@ namespace OOX
 					m_oAligment = oReader;
 				else if( _T("protection") == sName )
 					m_oProtection = oReader;
+				else if (L"extLst" == sName)
+					m_oExtLst = oReader;
 			}
 		}
 		EElementType CXfs::getType () const

@@ -149,8 +149,10 @@ const bool FORMULA::loadContent(BinProcessor& proc)
 				sourseRef.column = exp->col;
 				sourseRef.row = exp->row;
 				if(shared_formulas_locations_ref_[i].inRange(sourseRef))
+				{
 					m_sharedIndex = i;
-				break;
+					break;
+				}
 			}
 			else if (shared_formulas_locations_ref_[i].inRange(location))
 			{

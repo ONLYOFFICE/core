@@ -60,6 +60,7 @@
 #include "SrcWriter/Outline.h"
 #include "SrcWriter/GState.h"
 #include "SrcWriter/RedactOutputDev.h"
+#include "SrcWriter/OverlapOutputDev.h"
 #include "SrcWriter/Image.h"
 #include "SrcWriter/Font14.h"
 
@@ -3028,11 +3029,15 @@ bool CPdfEditor::EditPage(int _nPageIndex, bool bSet, bool bActualPos)
 		pPage->Fix();
 		pDoc->FixEditPage(pPage);
 
-		if ((m_nRedactInfo & (1 << 7)) || m_nRedactInfo & (1 << 8))
+		bool bHiddenText              = (m_nRedactInfo & (1 << 6)) != 0;
+		bool bHiddenLayers            = (m_nRedactInfo & (1 << 7)) != 0;
+		bool bDeletedOrCroppedContent = (m_nRedactInfo & (1 << 8)) != 0;
+		bool bOverlappingObjects      = (m_nRedactInfo & (1 << 10)) != 0;
+		if (bHiddenText || bHiddenLayers || bDeletedOrCroppedContent || bOverlappingObjects)
 		{
 			int nEP = m_nEditPage;
 			m_nEditPage = _nPageIndex;
-			Redact(NULL);
+			Redact(NULL, bHiddenText || bOverlappingObjects, bHiddenText);
 			m_nEditPage = nEP;
 		}
 
@@ -5031,7 +5036,7 @@ bool CPdfEditor::IsBase14(const std::wstring& wsFontName, bool& bBold, bool& bIt
 		return true;
 	return false;
 }
-void CPdfEditor::Redact(IAdvancedCommand* _pCommand)
+void CPdfEditor::Redact(IAdvancedCommand* _pCommand, bool bOverlap, bool bTextOnly)
 {
 	PDFDoc* pPDFDocument = NULL;
 	PdfReader::CPdfFontList* pFontList = NULL;
@@ -5085,9 +5090,34 @@ void CPdfEditor::Redact(IAdvancedCommand* _pCommand)
 
 	if (bEditPage)
 	{
+		std::set<int> arrOverlapHiddenTextIndices;
+		std::vector<int> arrOverlapFormTextCounts, arrOverlapFormGraphicsCounts;
+		std::vector<PdfWriter::SOverlapGraphicsResult> arrOverlapGraphicsResults;
+		if (bOverlap)
+		{
+			PdfWriter::OverlapOutputDev oOverlapOut(bTextOnly);
+			oOverlapOut.NewPDF(pPDFDocument->getXRef());
+
+			Object oContents;
+			pPage->getContents(&oContents);
+			PDFRectangle* box = pPage->getMediaBox();
+			Gfx* gfx = new Gfx(pPDFDocument, &oOverlapOut, m_nEditPage, pPage->getResourceDict(), 72.0, 72.0, box, NULL, 0);
+			gfx->saveState();
+			gfx->display(&oContents);
+			gfx->endOfPage();
+			oContents.free();
+			RELEASEOBJECT(gfx);
+
+			arrOverlapHiddenTextIndices  = oOverlapOut.GetHiddenText();
+			arrOverlapFormTextCounts     = oOverlapOut.GetFormTextCounts();
+			arrOverlapFormGraphicsCounts = oOverlapOut.GetFormGraphicsCounts();
+			arrOverlapGraphicsResults    = oOverlapOut.GetHiddenGraphics();
+		}
+
 		PdfWriter::RedactOutputDev oRedactOut(m_pWriter, &m_mObjManager, nStartRefID, m_nRedactInfo);
 		oRedactOut.NewPDF(pPDFDocument->getXRef());
 		oRedactOut.SetRedact(arrAllQuads);
+		oRedactOut.SetOverlapInfo(arrOverlapHiddenTextIndices, &arrOverlapFormTextCounts, &arrOverlapFormGraphicsCounts);
 
 		Object oContents;
 		pPage->getContents(&oContents);

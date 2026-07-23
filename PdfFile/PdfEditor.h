@@ -143,7 +143,7 @@ public:
 	void AddShapeXML(const std::string& sXML);
 	void EndMarkedContent();
 	bool IsBase14(const std::wstring& wsFontName, bool& bBold, bool& bItalic, std::wstring& wsFontPath);
-	void Redact(IAdvancedCommand* pCommand);
+	void Redact(IAdvancedCommand* pCommand, bool bOverlap = false, bool bTextOnly = false);
 	std::vector<double> WriteRedact(const std::vector<std::wstring>& arrID);
 
 	bool SplitPages(const int* arrPageIndex, unsigned int unLength);

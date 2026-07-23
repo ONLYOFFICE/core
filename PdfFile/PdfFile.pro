@@ -198,7 +198,8 @@ HEADERS += \
     SrcWriter/Metadata.h \
     SrcWriter/ICCProfile.h \
 	SrcWriter/States.h \
-	SrcWriter/RedactOutputDev.h
+	SrcWriter/RedactOutputDev.h \
+	SrcWriter/OverlapOutputDev.h
 
 SOURCES += \
     SrcWriter/AcroForm.cpp \
@@ -228,7 +229,8 @@ SOURCES += \
     SrcWriter/Utils.cpp \
     SrcWriter/Metadata.cpp \
 	SrcWriter/States.cpp \
-	SrcWriter/RedactOutputDev.cpp
+	SrcWriter/RedactOutputDev.cpp \
+	SrcWriter/OverlapOutputDev.cpp
 
 # PdfFile
 

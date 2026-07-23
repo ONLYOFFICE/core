@@ -223,7 +223,7 @@ private:
 		Aggplus::CGraphicsPath* m_pSavedClip;
 
 		SOverlapState() : m_pClip(NULL), m_pSavedClip(NULL) {}
-		~SOverlapState() { RELEASEOBJECT(m_pClip); RELEASEOBJECT(m_pSavedClip); }
+		~SOverlapState() { RELEASEOBJECT(m_pClip); }
 	};
 	void ComputeOverlaps();
 	void MarkHiddenTextUnderGraphics(const SOverlapPaintedItem* pGraphicsItem);

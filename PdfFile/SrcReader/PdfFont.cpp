@@ -2213,7 +2213,8 @@ void GetFont(XRef* pXref, NSFonts::IFontManager* pFontManager, CPdfFontList* pFo
 		pEntry->bIsIdentity = pFont->isCIDFont() == gTrue ? ((GfxCIDFont*)pFont)->usesIdentityEncoding() || ((GfxCIDFont*)pFont)->usesIdentityCIDToGID() || ((GfxCIDFont*)pFont)->ctuUsesCharCodeToUnicode() || pFont->getType() == fontCIDType0C : false;
 
 		bool bBold = false, bItalic = false;
-		CheckFontStylePDF(wsFontName, bBold, bItalic);
+		std::wstring sFontName = wsFontName;
+		CheckFontStylePDF(sFontName, bBold, bItalic);
 		if (!bBold)
 			bBold = pFont->isBold();
 		if (!bItalic)

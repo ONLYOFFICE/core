@@ -220,14 +220,17 @@ private:
 	struct SOverlapState
 	{
 		GfxClip* m_pClip;
+		Aggplus::CGraphicsPath* m_pSavedClip;
 
-		SOverlapState() : m_pClip(NULL) {}
-		~SOverlapState() { RELEASEOBJECT(m_pClip); }
+		SOverlapState() : m_pClip(NULL), m_pSavedClip(NULL) {}
+		~SOverlapState() { RELEASEOBJECT(m_pClip); RELEASEOBJECT(m_pSavedClip); }
 	};
 	void ComputeOverlaps();
 	void MarkHiddenTextUnderGraphics(const SOverlapPaintedItem* pGraphicsItem);
 
 	XRef* m_pXref;
+	Aggplus::CGraphicsPath* m_pCurrentClip;
+	std::deque<Aggplus::CGraphicsPath*> m_arrClipPool;
 
 	bool m_bTextOnly;
 	int  m_nTextCounter;

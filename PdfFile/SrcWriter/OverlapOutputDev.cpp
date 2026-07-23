@@ -122,6 +122,19 @@ bool IsOpaqueGraphicsItem(const SOverlapPaintedItem& oItem)
 		return false;
 	return true;
 }
+Aggplus::CGraphicsPath* IntersectWithClip(Aggplus::CGraphicsPath* pRawPath, Aggplus::CGraphicsPath* pCurrentClip)
+{
+	if (!pCurrentClip)
+		return pRawPath;
+
+	Aggplus::CGraphicsPath* pResult = new(std::nothrow) Aggplus::CGraphicsPath();
+	if (!pResult)
+		return pRawPath;
+
+	*pResult = Aggplus::CalcBooleanOperation(*pRawPath, *pCurrentClip, Aggplus::BooleanOpType::Intersection);
+	delete pRawPath;
+	return pResult;
+}
 }
 //----- SOverlapPaintedItem -----
 SOverlapPaintedItem::SOverlapPaintedItem()
@@ -171,7 +184,9 @@ SOverlapGraphicsResult::~SOverlapGraphicsResult()
 //----- OverlapOutputDev -----
 //----- constructor/destructor -----
 OverlapOutputDev::OverlapOutputDev(bool bTextOnly)
-	: m_bTextOnly(bTextOnly)
+	: m_pXref(NULL)
+	, m_pCurrentClip(NULL)
+	, m_bTextOnly(bTextOnly)
 	, m_nTextCounter(0)
 	, m_nGraphicsCounter(0)
 	, m_nFormDepth(0)
@@ -183,6 +198,9 @@ OverlapOutputDev::~OverlapOutputDev()
 	for (size_t i = 0; i < m_arrPainted.size(); ++i)
 		delete m_arrPainted[i];
 	m_arrPainted.clear();
+	for (size_t i = 0; i < m_arrClipPool.size(); ++i)
+		delete m_arrClipPool[i];
+	m_arrClipPool.clear();
 }
 void OverlapOutputDev::NewPDF(XRef* pXref)
 {
@@ -195,6 +213,11 @@ void OverlapOutputDev::startPage(int nPageIndex, GfxState* pGState)
 		delete m_arrPainted[i];
 	m_arrPainted.clear();
 	m_sStates.clear();
+
+	for (size_t i = 0; i < m_arrClipPool.size(); ++i)
+		delete m_arrClipPool[i];
+	m_arrClipPool.clear();
+	m_pCurrentClip = NULL;
 
 	m_nTextCounter     = 0;
 	m_nGraphicsCounter = 0;
@@ -211,12 +234,15 @@ void OverlapOutputDev::endPage()
 //----- save/restore graphics state -----
 void OverlapOutputDev::saveState(GfxState* pGState)
 {
-	m_sStates.push_back(SOverlapState());
+	SOverlapState oState;
+	oState.m_pSavedClip = m_pCurrentClip;
+	m_sStates.push_back(oState);
 }
 void OverlapOutputDev::restoreState(GfxState* pGState)
 {
 	if (m_sStates.empty())
 		return; // Unbalanced q/Q
+	m_pCurrentClip = m_sStates.back().m_pSavedClip;
 	m_sStates.pop_back();
 }
 //----- path painting -----
@@ -230,9 +256,12 @@ void OverlapOutputDev::fill(GfxState* pGState)
 	pItem->m_nGraphicsIndex = m_nGraphicsCounter++;
 	pItem->m_bEoFill        = false;
 
-	pItem->m_pDevicePath = new(std::nothrow) Aggplus::CGraphicsPath();
-	if (pItem->m_pDevicePath)
-		BuildDeviceSpacePath(pGState->getPath(), pGState->getCTM(), false, *pItem->m_pDevicePath);
+	Aggplus::CGraphicsPath* pRawPath = new(std::nothrow) Aggplus::CGraphicsPath();
+	if (pRawPath)
+	{
+		BuildDeviceSpacePath(pGState->getPath(), pGState->getCTM(), false, *pRawPath);
+		pItem->m_pDevicePath = IntersectWithClip(pRawPath, m_pCurrentClip);
+	}
 
 	pItem->m_dFillAlpha   = pGState->getFillOpacity();
 	pItem->m_bHasSoftMask = gFalse; // pGState->getSoftMask() ? gTrue : gFalse; TODO
@@ -252,9 +281,12 @@ void OverlapOutputDev::eoFill(GfxState* pGState)
 	pItem->m_nGraphicsIndex = m_nGraphicsCounter++;
 	pItem->m_bEoFill        = true;
 
-	pItem->m_pDevicePath = new(std::nothrow) Aggplus::CGraphicsPath();
-	if (pItem->m_pDevicePath)
-		BuildDeviceSpacePath(pGState->getPath(), pGState->getCTM(), true, *pItem->m_pDevicePath);
+	Aggplus::CGraphicsPath* pRawPath = new(std::nothrow) Aggplus::CGraphicsPath();
+	if (pRawPath)
+	{
+		BuildDeviceSpacePath(pGState->getPath(), pGState->getCTM(), true, *pRawPath);
+		pItem->m_pDevicePath = IntersectWithClip(pRawPath, m_pCurrentClip);
+	}
 
 	pItem->m_dFillAlpha   = pGState->getFillOpacity();
 	pItem->m_bHasSoftMask = gFalse; // pGState->getSoftMask() ? gTrue : gFalse; TODO
@@ -265,8 +297,7 @@ void OverlapOutputDev::eoFill(GfxState* pGState)
 	m_arrPainted.push_back(pItem);
 }
 //----- image drawing -----
-void OverlapOutputDev::drawImage(GfxState* pGState, Gfx* gfx, Object* pRef, Stream* pStream, int nWidth, int nHeight,
-								  GfxImageColorMap* pColorMap, int* pMaskColors, GBool bInlineImg, GBool interpolate)
+void OverlapOutputDev::drawImage(GfxState* pGState, Gfx* gfx, Object* pRef, Stream* pStream, int nWidth, int nHeight, GfxImageColorMap* pColorMap, int* pMaskColors, GBool bInlineImg, GBool interpolate)
 {
 	SOverlapPaintedItem* pItem = new(std::nothrow) SOverlapPaintedItem();
 	if (!pItem)
@@ -276,9 +307,12 @@ void OverlapOutputDev::drawImage(GfxState* pGState, Gfx* gfx, Object* pRef, Stre
 	pItem->m_nGraphicsIndex = m_nGraphicsCounter++;
 	pItem->m_bEoFill        = false;
 
-	pItem->m_pDevicePath = new(std::nothrow) Aggplus::CGraphicsPath();
-	if (pItem->m_pDevicePath)
-		BuildImageDevicePath(pGState->getCTM(), *pItem->m_pDevicePath);
+	Aggplus::CGraphicsPath* pRawPath = new(std::nothrow) Aggplus::CGraphicsPath();
+	if (pRawPath)
+	{
+		BuildImageDevicePath(pGState->getCTM(), *pRawPath);
+		pItem->m_pDevicePath = IntersectWithClip(pRawPath, m_pCurrentClip);
+	}
 
 	pItem->m_dFillAlpha   = pGState->getFillOpacity();
 	pItem->m_bHasSoftMask = pMaskColors ? gTrue : gFalse; // color-key masked image is not fully opaque
@@ -298,6 +332,26 @@ void OverlapOutputDev::clip(GfxState* pGState)
 		m_sStates.back().m_pClip = new GfxClip();
 	int nClipFlag = c_nClipRegionIntersect | c_nClipRegionTypeWinding;
 	m_sStates.back().m_pClip->AddPath(pGState->getPath(), pGState->getCTM(), nClipFlag);
+
+	Aggplus::CGraphicsPath* pShape = new(std::nothrow) Aggplus::CGraphicsPath();
+	if (!pShape)
+		return;
+	BuildDeviceSpacePath(pGState->getPath(), pGState->getCTM(), false, *pShape);
+
+	Aggplus::CGraphicsPath* pNewClip = pShape;
+	if (m_pCurrentClip)
+	{
+		Aggplus::CGraphicsPath* pIntersected = new(std::nothrow) Aggplus::CGraphicsPath();
+		if (pIntersected)
+		{
+			*pIntersected = Aggplus::CalcBooleanOperation(*m_pCurrentClip, *pShape, Aggplus::BooleanOpType::Intersection);
+			delete pShape;
+			pNewClip = pIntersected;
+		}
+	}
+
+	m_arrClipPool.push_back(pNewClip);
+	m_pCurrentClip = pNewClip;
 }
 void OverlapOutputDev::eoClip(GfxState* pGState)
 {
@@ -308,6 +362,26 @@ void OverlapOutputDev::eoClip(GfxState* pGState)
 		m_sStates.back().m_pClip = new GfxClip();
 	int nClipFlag = c_nClipRegionIntersect | c_nClipRegionTypeEvenOdd;
 	m_sStates.back().m_pClip->AddPath(pGState->getPath(), pGState->getCTM(), nClipFlag);
+
+	Aggplus::CGraphicsPath* pShape = new(std::nothrow) Aggplus::CGraphicsPath();
+	if (!pShape)
+		return;
+	BuildDeviceSpacePath(pGState->getPath(), pGState->getCTM(), true, *pShape);
+
+	Aggplus::CGraphicsPath* pNewClip = pShape;
+	if (m_pCurrentClip)
+	{
+		Aggplus::CGraphicsPath* pIntersected = new(std::nothrow) Aggplus::CGraphicsPath();
+		if (pIntersected)
+		{
+			*pIntersected = Aggplus::CalcBooleanOperation(*m_pCurrentClip, *pShape, Aggplus::BooleanOpType::Intersection);
+			delete pShape;
+			pNewClip = pIntersected;
+		}
+	}
+
+	m_arrClipPool.push_back(pNewClip);
+	m_pCurrentClip = pNewClip;
 }
 //----- text drawing -----
 void OverlapOutputDev::drawChar(GfxState* pGState, double dX, double dY, double dDx, double dDy,

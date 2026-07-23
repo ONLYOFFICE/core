@@ -79,6 +79,9 @@ public:
 	void         SetDocumentInfo(const std::wstring& wsTitle, const std::wstring& wsCreator, const std::wstring& wsSubject, const std::wstring& wsKeywords);
 	std::wstring GetTempFile(const std::wstring& wsDirectory);
 	void SetTempDirectory(const std::wstring& wsTempDirectory);
+	void SetThemesDirectory(const std::wstring& wsPath);
+	void SetMediaDirectory(const std::wstring& wsPath);
+	void SetInternalMediaDirectory(const std::wstring& wsPath);
 	//----------------------------------------------------------------------------------------
 	// Functions for working with page
 	//----------------------------------------------------------------------------------------
@@ -290,6 +293,9 @@ private:
 	PdfWriter::CExtGrState*      m_pShadingExtGrState;
 
 	std::wstring                 m_wsTempDirectory;
+	std::wstring                 m_wsThemesDir;
+	std::wstring                 m_wsMediaDir;
+	std::wstring                 m_wsInternalMediaDir;
 	CCommandManager              m_oCommandManager;
 	CPenState                    m_oPen;
 	CBrushState                  m_oBrush;

@@ -133,6 +133,9 @@ public:
 
 	virtual std::wstring GetTempDirectory();
 	virtual void SetTempDirectory(const std::wstring& wsPath);
+	void SetThemesDirectory(const std::wstring& wsPath);
+	void SetMediaDirectory(const std::wstring& wsPath);
+	void SetInternalMediaDirectory(const std::wstring& wsPath);
 
 	virtual int GetPagesCount();
 	virtual void GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY);

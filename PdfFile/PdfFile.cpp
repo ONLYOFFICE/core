@@ -394,6 +394,21 @@ void CPdfFile::SetTempDirectory(const std::wstring& wsPath)
 	if (m_pInternal->pWriter)
 		m_pInternal->pWriter->SetTempDirectory(wsPath);
 }
+void CPdfFile::SetThemesDirectory(const std::wstring& wsPath)
+{
+	if (m_pInternal->pWriter)
+		m_pInternal->pWriter->SetThemesDirectory(wsPath);
+}
+void CPdfFile::SetMediaDirectory(const std::wstring& wsPath)
+{
+	if (m_pInternal->pWriter)
+		m_pInternal->pWriter->SetMediaDirectory(wsPath);
+}
+void CPdfFile::SetInternalMediaDirectory(const std::wstring& wsPath)
+{
+	if (m_pInternal->pWriter)
+		m_pInternal->pWriter->SetInternalMediaDirectory(wsPath);
+}
 int CPdfFile::GetPagesCount()
 {
 	if (!m_pInternal->pReader)

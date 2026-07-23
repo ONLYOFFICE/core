@@ -344,6 +344,18 @@ void CPdfWriter::SetTempDirectory(const std::wstring& wsTempDirectory)
 {
 	m_wsTempDirectory = wsTempDirectory;
 }
+void CPdfWriter::SetThemesDirectory(const std::wstring& wsPath)
+{
+	m_wsThemesDir = wsPath;
+}
+void CPdfWriter::SetMediaDirectory(const std::wstring& wsPath)
+{
+	m_wsMediaDir = wsPath;
+}
+void CPdfWriter::SetInternalMediaDirectory(const std::wstring& wsPath)
+{
+	m_wsInternalMediaDir = wsPath;
+}
 //----------------------------------------------------------------------------------------
 // Functions for working with page
 //----------------------------------------------------------------------------------------
@@ -4586,6 +4598,10 @@ PdfWriter::CAnnotAppearanceObject* CPdfWriter::DrawAP(PdfWriter::CAnnotation* pA
 	pFakePage->Add("Resources", pAP->Get("Resources"));
 
 	IMetafileToRenderter* pCorrector = new IMetafileToRenderter(m_pRenderer);
+	pCorrector->SetTempDirectory(m_wsTempDirectory);
+	pCorrector->SetMediaDirectory(m_wsMediaDir);
+	pCorrector->SetInternalMediaDirectory(m_wsInternalMediaDir);
+	pCorrector->SetThemesDirectory(m_wsThemesDir);
 	NSOnlineOfficeBinToPdf::ConvertBufferToRenderer(pRender, nLenRender, pCorrector);
 	RELEASEOBJECT(pCorrector);
 
@@ -4630,6 +4646,10 @@ void CPdfWriter::DrawWidgetAP(PdfWriter::CAnnotation* pA, BYTE* pRender, LONG nL
 	pFakePage->SetFillColor(0, 0, 0);
 
 	IMetafileToRenderter* pCorrector = new IMetafileToRenderter(m_pRenderer);
+	pCorrector->SetTempDirectory(m_wsTempDirectory);
+	pCorrector->SetMediaDirectory(m_wsMediaDir);
+	pCorrector->SetInternalMediaDirectory(m_wsInternalMediaDir);
+	pCorrector->SetThemesDirectory(m_wsThemesDir);
 	NSOnlineOfficeBinToPdf::ConvertBufferToRenderer(pRender, nLenRender, pCorrector);
 	RELEASEOBJECT(pCorrector);
 

@@ -1050,6 +1050,10 @@ void OoxConverter::convert(PPTX::Logic::SpPr *oox_spPr, PPTX::Logic::ShapeStyle*
 
 			if (oox_spPr->Fill.is_init() && oox_spPr->Fill.getType() != OOX::et_a_noFill)
 				convert(&oox_spPr->Fill);
+
+			double default_hrule_margin = current_font_size.empty() ? 11 : current_font_size.back();
+			odf_context()->drawing_context()->set_margin_top(default_hrule_margin);
+			odf_context()->drawing_context()->set_margin_bottom(default_hrule_margin);
 		}
 	}
 	odf_context()->drawing_context()->end_line_properties();

@@ -83,6 +83,7 @@
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/PieFormat.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/MarkerFormat.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/AreaFormat.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/SerFmt.h"
 
 
 namespace OOX
@@ -8879,6 +8880,18 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 		{
 			auto baseFormat = CBaseSer::GetXLSFormat(chartIndex);
 			auto castedFormat = static_cast<XLS::SERIESFORMAT*>(baseFormat.get());
+			if(!castedFormat->m_arPtSS.empty())
+			{
+				auto castedStyle = static_cast<XLS::SS*>(castedFormat->m_arPtSS.back().get());
+
+				auto serFormat = new XLS::SerFmt;
+				if(m_smooth.IsInit() && !m_smooth.get())
+					serFormat->fSmoothedLine = false;
+				else
+					serFormat->fSmoothedLine = true;
+				castedStyle->m_SerFmt = XLS::BaseObjectPtr(serFormat);
+
+			}
 			for(auto i : m_dPt)
 			{
 				_UINT16 order = 0;

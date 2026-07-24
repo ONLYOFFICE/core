@@ -325,56 +325,56 @@ namespace BinXlsxRW{
 			}
 		}
 	}
-	void ChartWriter::parseChart(const OOX::Spreadsheet::CT_Chart* pChart)
+	bool ChartWriter::parseChart(const OOX::Spreadsheet::CT_Chart* pChart)
 	{
-		if(NULL != pChart)
+		if (NULL == pChart) return false;
+
+		PARSE_TITLE(pChart->m_title, false, NULL);
+		OOX::Spreadsheet::CT_PlotArea* pPlotArea = pChart->m_plotArea;
+		if (NULL != pPlotArea)
 		{
-			PARSE_TITLE(pChart->m_title, false, NULL);
-			OOX::Spreadsheet::CT_PlotArea* pPlotArea = pChart->m_plotArea;
-			if(NULL != pPlotArea)
+			for (size_t i = 0; i < pPlotArea->m_ItemsElementName1.size(); ++i)
 			{
-				for(size_t i = 0; i < pPlotArea->m_ItemsElementName1.size(); ++i)
+				OOX::Spreadsheet::ItemsChoiceType6 eType = *pPlotArea->m_ItemsElementName1[i];
+				void* pItem = pPlotArea->m_Items1[i];
+				switch (eType)
 				{
-					OOX::Spreadsheet::ItemsChoiceType6 eType = *pPlotArea->m_ItemsElementName1[i];
-					void* pItem = pPlotArea->m_Items1[i];
-					switch(eType)
-					{
-					case OOX::Spreadsheet::itemschoicetype6CATAX:
-					{
-						OOX::Spreadsheet::CT_CatAx* pCatax = static_cast<OOX::Spreadsheet::CT_CatAx*>(pItem);
-						PARSE_TITLE(pCatax->m_title, false, NULL);
-						break;
-					}
-					case OOX::Spreadsheet::itemschoicetype6DATEAX:
-					{
-						OOX::Spreadsheet::CT_DateAx* pDateax = static_cast<OOX::Spreadsheet::CT_DateAx*>(pItem);
-						PARSE_TITLE(pDateax->m_title, false, NULL);
-						break;
-					}
-					case OOX::Spreadsheet::itemschoicetype6SERAX:
-					{
-						OOX::Spreadsheet::CT_SerAx* pSerax = static_cast<OOX::Spreadsheet::CT_SerAx*>(pItem);
-						PARSE_TITLE(pSerax->m_title, false, NULL);
-						break;
-					}
-					case OOX::Spreadsheet::itemschoicetype6VALAX:
-					{
-						OOX::Spreadsheet::CT_ValAx* pValax = static_cast<OOX::Spreadsheet::CT_ValAx*>(pItem);
-						PARSE_TITLE(pValax->m_title, false, NULL);
-						if(NULL != pValax->m_dispUnits)
-						{
-							PARSE_TITLE(pValax->m_dispUnits->m_dispUnitsLbl, false, NULL);
-						}
-						break;
-					}
-					}
+				case OOX::Spreadsheet::itemschoicetype6CATAX:
+				{
+					OOX::Spreadsheet::CT_CatAx* pCatax = static_cast<OOX::Spreadsheet::CT_CatAx*>(pItem);
+					PARSE_TITLE(pCatax->m_title, false, NULL);
+					break;
 				}
-				for(size_t i = 0; i < pPlotArea->m_ItemsElementName0.size(); ++i)
+				case OOX::Spreadsheet::itemschoicetype6DATEAX:
 				{
-					OOX::Spreadsheet::ItemsChoiceType5 eType = *pPlotArea->m_ItemsElementName0[i];
-					void* pItem = pPlotArea->m_Items[i];
-					switch(eType)
+					OOX::Spreadsheet::CT_DateAx* pDateax = static_cast<OOX::Spreadsheet::CT_DateAx*>(pItem);
+					PARSE_TITLE(pDateax->m_title, false, NULL);
+					break;
+				}
+				case OOX::Spreadsheet::itemschoicetype6SERAX:
+				{
+					OOX::Spreadsheet::CT_SerAx* pSerax = static_cast<OOX::Spreadsheet::CT_SerAx*>(pItem);
+					PARSE_TITLE(pSerax->m_title, false, NULL);
+					break;
+				}
+				case OOX::Spreadsheet::itemschoicetype6VALAX:
+				{
+					OOX::Spreadsheet::CT_ValAx* pValax = static_cast<OOX::Spreadsheet::CT_ValAx*>(pItem);
+					PARSE_TITLE(pValax->m_title, false, NULL);
+					if (NULL != pValax->m_dispUnits)
 					{
+						PARSE_TITLE(pValax->m_dispUnits->m_dispUnitsLbl, false, NULL);
+					}
+					break;
+				}
+				}
+			}
+			for (size_t i = 0; i < pPlotArea->m_ItemsElementName0.size(); ++i)
+			{
+				OOX::Spreadsheet::ItemsChoiceType5 eType = *pPlotArea->m_ItemsElementName0[i];
+				void* pItem = pPlotArea->m_Items[i];
+				switch (eType)
+				{
 					case OOX::Spreadsheet::itemschoicetype5AREA3DCHART:
 					{
 						OOX::Spreadsheet::CT_Area3DChart* pChart = static_cast<OOX::Spreadsheet::CT_Area3DChart*>(pItem);
@@ -480,40 +480,38 @@ namespace BinXlsxRW{
 						PARSE_CT_CHART(pChart, OOX::Spreadsheet::CT_SurfaceSer);
 						break;
 					}
-					}
 				}
 			}
 		}
 		//check if we can create table
-		if(m_mapSheets.size() > 0 && m_nRow1 > 0 && m_nRow2 > 0 && m_nCol1 > 0 && m_nCol2 > 0 && m_nRow1 < m_nRow2)
+		if (m_mapSheets.empty() || m_nRow1 < 0 || m_nRow2 < 0 || m_nCol1 < 0 || m_nCol2 < 0 || m_nRow1 >= m_nRow2) return false;
+ 
+		std::map<int, std::map<int, OOX::Spreadsheet::CCell*>*>* rows = m_mapSheets.begin()->second;
+		std::map<int, std::map<int, OOX::Spreadsheet::CCell*>*>::iterator  itRows = rows->find(m_nRow1);
+
+		if (itRows == rows->end()) return false;
+
+		std::map<int, OOX::Spreadsheet::CCell*>* cells = itRows->second;
+		std::vector<int> aIndexesCell;
+
+		for (std::map<int, OOX::Spreadsheet::CCell*>::const_iterator it = cells->begin(); it != cells->end(); ++it)
 		{
-            std::map<int, std::map<int, OOX::Spreadsheet::CCell*>*>*            rows = m_mapSheets.begin()->second;
-            std::map<int, std::map<int, OOX::Spreadsheet::CCell*>*>::iterator   itRows = rows->find(m_nRow1);
+			aIndexesCell.push_back(it->first);
+		}
 
-            if(itRows != rows->end())
+		std::sort(aIndexesCell.begin(), aIndexesCell.end());
+
+		if (m_nCol2 - m_nCol1 + 1 == aIndexesCell.size() && m_nCol1 == aIndexesCell[0] && m_nCol2 == aIndexesCell[aIndexesCell.size() - 1])
+		{
+			for (size_t j = 0; j < aIndexesCell.size(); ++j)
 			{
-                std::map<int, OOX::Spreadsheet::CCell*>* cells = itRows->second;
-				std::vector<int> aIndexesCell;
-
-                for(std::map<int, OOX::Spreadsheet::CCell*>::const_iterator it = cells->begin(); it != cells->end(); ++it)
-				{
-					aIndexesCell.push_back(it->first);
-				}
-
-                std::sort(aIndexesCell.begin(), aIndexesCell.end());
-
-                if(m_nCol2 - m_nCol1 + 1 == aIndexesCell.size() && m_nCol1 == aIndexesCell[0] && m_nCol2 == aIndexesCell[aIndexesCell.size() - 1])
-				{
-					for(size_t j = 0; j < aIndexesCell.size(); ++j)
-					{
-						int nIndexCell = aIndexesCell[j];
-						OOX::Spreadsheet::CCell* pCell = cells->at(nIndexCell);
-						//there should be no cells without m_oValue
-						m_aTableNames.push_back(pCell->m_oValue->m_sText);
-					}
-				}
+				int nIndexCell = aIndexesCell[j];
+				OOX::Spreadsheet::CCell* pCell = cells->at(nIndexCell);
+				//there should be no cells without m_oValue
+				m_aTableNames.push_back(pCell->m_oValue->m_sText);
 			}
 		}
+		return true;
 	}
 	OOX::Spreadsheet::CWorksheet* ChartWriter::toXlsxGetSheet(std::vector<OOX::Spreadsheet::CWorksheet*>& arWorksheets, std::map<std::wstring, OOX::Spreadsheet::CWorksheet*>& mapWorksheets, const std::wstring& sName)
 	{

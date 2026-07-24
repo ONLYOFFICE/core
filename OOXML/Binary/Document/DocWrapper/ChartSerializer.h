@@ -76,7 +76,7 @@ namespace BinXlsxRW {
         ChartWriter();
 		~ChartWriter();
 		void toXlsx(OOX::Spreadsheet::CXlsx& oXlsx);
-		void parseChart(const OOX::Spreadsheet::CT_Chart* pChart);
+		bool parseChart(const OOX::Spreadsheet::CT_Chart* pChart);
 
     private:
 		OOX::Spreadsheet::CWorksheet* toXlsxGetSheet(std::vector<OOX::Spreadsheet::CWorksheet*>& arWorksheets, std::map<std::wstring, OOX::Spreadsheet::CWorksheet*>& mapWorksheets, const std::wstring& sName);

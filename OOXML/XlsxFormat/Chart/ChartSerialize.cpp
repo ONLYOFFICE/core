@@ -1804,6 +1804,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 		}
 		void CT_ExternalData::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const
 		{
+			if (false == m_id.IsInit()) return;
+
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if (m_id.IsInit())

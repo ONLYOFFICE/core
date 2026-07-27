@@ -142,6 +142,8 @@ SOverlapPaintedItem::SOverlapPaintedItem()
 	, m_nTextIndex(-1)
 	, m_pDevicePath(NULL)
 	, m_bEoFill(false)
+	, m_bGraphicsHidden(false)
+	, m_bGraphicsClipped(false)
 	, m_dFillAlpha(1)
 	, m_bHasSoftMask(gFalse)
 	, m_nBlendMode(gfxBlendNormal)
@@ -268,6 +270,7 @@ void OverlapOutputDev::fill(GfxState* pGState)
 	pItem->m_nBlendMode   = pGState->getBlendMode();
 
 	MarkHiddenTextUnderGraphics(pItem);
+	ClipEarlierGraphicsUnderNewOpaqueItem(pItem);
 
 	m_arrPainted.push_back(pItem);
 }
@@ -293,6 +296,7 @@ void OverlapOutputDev::eoFill(GfxState* pGState)
 	pItem->m_nBlendMode   = pGState->getBlendMode();
 
 	MarkHiddenTextUnderGraphics(pItem);
+	ClipEarlierGraphicsUnderNewOpaqueItem(pItem);
 
 	m_arrPainted.push_back(pItem);
 }
@@ -319,6 +323,7 @@ void OverlapOutputDev::drawImage(GfxState* pGState, Gfx* gfx, Object* pRef, Stre
 	pItem->m_nBlendMode   = pGState->getBlendMode();
 
 	MarkHiddenTextUnderGraphics(pItem);
+	ClipEarlierGraphicsUnderNewOpaqueItem(pItem);
 
 	m_arrPainted.push_back(pItem);
 }
@@ -534,18 +539,69 @@ void OverlapOutputDev::ComputeOverlaps()
 
 	for (size_t i = 0; i < m_arrPainted.size(); ++i)
 	{
-		if (m_arrPainted[i]->m_eKind != EOverlapPaintKind::Graphics)
+		SOverlapPaintedItem* pItem = m_arrPainted[i];
+		if (pItem->m_eKind != EOverlapPaintKind::Graphics)
 			continue;
 
 		SOverlapGraphicsResult oResult;
-		oResult.m_nGraphicsIndex = m_arrPainted[i]->m_nGraphicsIndex;
-		oResult.m_eDecision      = EOverlapGraphicsDecision::Unmodified;
-		oResult.m_pReplacementPath = NULL;
+		oResult.m_nGraphicsIndex = pItem->m_nGraphicsIndex;
+
+		if (pItem->m_bGraphicsHidden)
+		{
+			oResult.m_eDecision = EOverlapGraphicsDecision::Hidden;
+		}
+		else if (pItem->m_bGraphicsClipped && pItem->m_pDevicePath)
+		{
+			oResult.m_eDecision = EOverlapGraphicsDecision::Clipped;
+			oResult.m_pReplacementPath = pItem->m_pDevicePath;
+			pItem->m_pDevicePath = NULL;
+		}
+		else
+		{
+			oResult.m_eDecision = EOverlapGraphicsDecision::Unmodified;
+		}
+
 		m_arrHiddenGraphics.push_back(std::move(oResult));
 	}
 }
 std::vector<SOverlapGraphicsResult> OverlapOutputDev::GetHiddenGraphics()
 {
 	return std::move(m_arrHiddenGraphics);
+}
+void OverlapOutputDev::ClipEarlierGraphicsUnderNewOpaqueItem(const SOverlapPaintedItem* pNewItem)
+{
+	if (!pNewItem->m_pDevicePath || !IsOpaqueGraphicsItem(*pNewItem))
+		return;
+
+	const double c_dAreaEps = 1e-6;
+
+	for (size_t i = 0; i < m_arrPainted.size(); ++i)
+	{
+		SOverlapPaintedItem* pEarlier = m_arrPainted[i];
+		if (pEarlier->m_eKind != EOverlapPaintKind::Graphics)
+			continue;
+		if (pEarlier->m_bGraphicsHidden || !pEarlier->m_pDevicePath)
+			continue;
+		double dOldArea = fabs(pEarlier->m_pDevicePath->GetArea());
+		if (dOldArea <= c_dAreaEps)
+		{
+			pEarlier->m_bGraphicsHidden = true;
+			continue;
+		}
+
+		Aggplus::CGraphicsPath oResult = Aggplus::CalcBooleanOperation(
+			*pEarlier->m_pDevicePath, *pNewItem->m_pDevicePath, Aggplus::BooleanOpType::Subtraction);
+		double dNewArea = fabs(oResult.GetArea());
+
+		if (dNewArea <= c_dAreaEps)
+		{
+			pEarlier->m_bGraphicsHidden = true;
+		}
+		else if (fabs(dNewArea - dOldArea) > c_dAreaEps)
+		{
+			*pEarlier->m_pDevicePath = oResult;
+			pEarlier->m_bGraphicsClipped = true;
+		}
+	}
 }
 }

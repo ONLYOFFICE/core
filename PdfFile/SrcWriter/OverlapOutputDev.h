@@ -71,6 +71,8 @@ struct SOverlapPaintedItem
 	int m_nGraphicsIndex;
 	Aggplus::CGraphicsPath* m_pDevicePath;
 	bool m_bEoFill;
+	bool m_bGraphicsHidden;
+	bool m_bGraphicsClipped;
 
 	double m_dFillAlpha;
 	GBool  m_bHasSoftMask;
@@ -78,10 +80,6 @@ struct SOverlapPaintedItem
 
 	SOverlapPaintedItem();
 	~SOverlapPaintedItem();
-
-private:
-	SOverlapPaintedItem(const SOverlapPaintedItem&);
-	SOverlapPaintedItem& operator=(const SOverlapPaintedItem&);
 };
 struct SOverlapGraphicsResult
 {
@@ -227,6 +225,7 @@ private:
 	};
 	void ComputeOverlaps();
 	void MarkHiddenTextUnderGraphics(const SOverlapPaintedItem* pGraphicsItem);
+	void ClipEarlierGraphicsUnderNewOpaqueItem(const SOverlapPaintedItem* pNewItem);
 
 	XRef* m_pXref;
 	Aggplus::CGraphicsPath* m_pCurrentClip;

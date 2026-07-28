@@ -655,6 +655,7 @@ RedactOutputDev::RedactOutputDev(CPdfWriter* pRenderer, CObjectsManager* pObjMng
 
 	m_nTextCounter = 0;
 	m_nGraphicsCounter = 0;
+	m_pGraphicsResultsMap = NULL;
 
 	m_bUpdateAll = false;
 }
@@ -680,6 +681,7 @@ void RedactOutputDev::SetRedact(const std::vector<double>& arrQuadPoints)
 void RedactOutputDev::SetOverlapInfo(const std::set<int>& arrHiddenTextIndices,
 									 const std::vector<int>* pFormTextCounts,
 									 const std::vector<int>* pFormGraphicsCounts,
+									 std::vector<SOverlapGraphicsResult>&& arrGraphicsResults,
 									 int nStartTextCounter,
 									 int nStartFormCounter,
 									 int nStartGraphicsCounter)
@@ -690,6 +692,13 @@ void RedactOutputDev::SetOverlapInfo(const std::set<int>& arrHiddenTextIndices,
 	m_nTextCounter         = nStartTextCounter;
 	m_nFormCounter         = nStartFormCounter;
 	m_nGraphicsCounter     = nStartGraphicsCounter;
+
+	m_arrGraphicsResultsStorage = std::move(arrGraphicsResults);
+	m_mapGraphicsResultsStorage.clear();
+	for (size_t i = 0; i < m_arrGraphicsResultsStorage.size(); ++i)
+		m_mapGraphicsResultsStorage[m_arrGraphicsResultsStorage[i].m_nGraphicsIndex] = &m_arrGraphicsResultsStorage[i];
+
+	m_pGraphicsResultsMap = &m_mapGraphicsResultsStorage;
 }
 void RedactOutputDev::NewPDF(XRef* pXref)
 {
@@ -977,13 +986,17 @@ void RedactOutputDev::stroke(GfxState *pGState)
 }
 void RedactOutputDev::fill(GfxState *pGState)
 {
-	++m_nGraphicsCounter;
+	const SOverlapGraphicsResult* pOverlapResult = FindGraphicsResult(++m_nGraphicsCounter);
+	(void)pOverlapResult;
+
 	DoPathRedact(pGState, pGState->getPath(), pGState->getCTM());
 	DrawPath(c_nWindingFillMode);
 }
 void RedactOutputDev::eoFill(GfxState *pGState)
 {
-	++m_nGraphicsCounter;
+	const SOverlapGraphicsResult* pOverlapResult = FindGraphicsResult(++m_nGraphicsCounter);
+	(void)pOverlapResult;
+
 	DoPathRedact(pGState, pGState->getPath(), pGState->getCTM(), false, true);
 	DrawPath(c_nEvenOddFillMode);
 }
@@ -1362,7 +1375,8 @@ void RedactOutputDev::drawImageMask(GfxState *pGState, Gfx *gfx, Object *pRef, S
 }
 void RedactOutputDev::drawImage(GfxState *pGState, Gfx *gfx, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap, int *pMaskColors, GBool bInlineImg, GBool interpolate)
 {
-	++m_nGraphicsCounter;
+	const SOverlapGraphicsResult* pOverlapResult = FindGraphicsResult(++m_nGraphicsCounter);
+	(void)pOverlapResult;
 
 	m_pRenderer->m_oCommandManager.Flush();
 	DoStateOp();
@@ -1672,8 +1686,8 @@ void RedactOutputDev::drawForm(GfxState *pGState, Gfx *gfx, Ref id, const char* 
 	pFormOutputDev->NewPDF(m_pXref);
 	pFormOutputDev->m_pPage = pFakePage;
 	pFormOutputDev->m_pResources = pNewResources;
-	pFormOutputDev->SetOverlapInfo(m_arrHiddenTextIndices, m_pFormTextCounts, m_pFormGraphicsCounts,
-								   m_nTextCounter, m_nFormCounter, m_nGraphicsCounter);
+	PropagateOverlapInfoToForm(pFormOutputDev);
+
 	std::vector<double> arrFormQuadPoints;
 	double dInvMatrix[6] = { 1, 0, 0, 1, 0, 0 };
 	InvertMatrix(m_arrMatrix, dInvMatrix);
@@ -2216,5 +2230,23 @@ CResourcesDict* RedactOutputDev::GetResources(Gfx *gfx, CDictObject* pNewForm)
 		}
 	}
 	return pResources;
+}
+const SOverlapGraphicsResult* RedactOutputDev::FindGraphicsResult(int nGraphicsIndex) const
+{
+	if (!m_pGraphicsResultsMap)
+		return NULL;
+	std::map<int, SOverlapGraphicsResult*>::const_iterator it = m_pGraphicsResultsMap->find(nGraphicsIndex);
+	return (it != m_pGraphicsResultsMap->end()) ? it->second : NULL;
+}
+
+void RedactOutputDev::PropagateOverlapInfoToForm(RedactOutputDev* pChild) const
+{
+	pChild->m_arrHiddenTextIndices = m_arrHiddenTextIndices;
+	pChild->m_pFormTextCounts      = m_pFormTextCounts;
+	pChild->m_pFormGraphicsCounts  = m_pFormGraphicsCounts;
+	pChild->m_pGraphicsResultsMap  = m_pGraphicsResultsMap;
+	pChild->m_nTextCounter         = m_nTextCounter;
+	pChild->m_nFormCounter         = m_nFormCounter;
+	pChild->m_nGraphicsCounter     = m_nGraphicsCounter;
 }
 }

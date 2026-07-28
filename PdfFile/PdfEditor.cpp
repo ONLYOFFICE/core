@@ -5117,7 +5117,7 @@ void CPdfEditor::Redact(IAdvancedCommand* _pCommand, bool bOverlap, bool bTextOn
 		PdfWriter::RedactOutputDev oRedactOut(m_pWriter, &m_mObjManager, nStartRefID, m_nRedactInfo);
 		oRedactOut.NewPDF(pPDFDocument->getXRef());
 		oRedactOut.SetRedact(arrAllQuads);
-		oRedactOut.SetOverlapInfo(arrOverlapHiddenTextIndices, &arrOverlapFormTextCounts, &arrOverlapFormGraphicsCounts);
+		oRedactOut.SetOverlapInfo(arrOverlapHiddenTextIndices, &arrOverlapFormTextCounts, &arrOverlapFormGraphicsCounts, std::move(arrOverlapGraphicsResults));
 
 		Object oContents;
 		pPage->getContents(&oContents);

@@ -135,6 +135,12 @@ Aggplus::CGraphicsPath* IntersectWithClip(Aggplus::CGraphicsPath* pRawPath, Aggp
 	delete pRawPath;
 	return pResult;
 }
+double SafeGetArea(const Aggplus::CGraphicsPath* pPath)
+{
+	if (!pPath || pPath->GetPointCount() == 0)
+		return 0.0;
+	return pPath->GetArea();
+}
 }
 //----- SOverlapPaintedItem -----
 SOverlapPaintedItem::SOverlapPaintedItem()
@@ -231,7 +237,8 @@ void OverlapOutputDev::startPage(int nPageIndex, GfxState* pGState)
 }
 void OverlapOutputDev::endPage()
 {
-	ComputeOverlaps();
+	if (!m_bTextOnly)
+		ComputeOverlaps();
 }
 //----- save/restore graphics state -----
 void OverlapOutputDev::saveState(GfxState* pGState)
@@ -270,7 +277,8 @@ void OverlapOutputDev::fill(GfxState* pGState)
 	pItem->m_nBlendMode   = pGState->getBlendMode();
 
 	MarkHiddenTextUnderGraphics(pItem);
-	ClipEarlierGraphicsUnderNewOpaqueItem(pItem);
+	if (!m_bTextOnly)
+		ClipEarlierGraphicsUnderNewOpaqueItem(pItem);
 
 	m_arrPainted.push_back(pItem);
 }
@@ -296,7 +304,8 @@ void OverlapOutputDev::eoFill(GfxState* pGState)
 	pItem->m_nBlendMode   = pGState->getBlendMode();
 
 	MarkHiddenTextUnderGraphics(pItem);
-	ClipEarlierGraphicsUnderNewOpaqueItem(pItem);
+	if (!m_bTextOnly)
+		ClipEarlierGraphicsUnderNewOpaqueItem(pItem);
 
 	m_arrPainted.push_back(pItem);
 }
@@ -323,7 +332,8 @@ void OverlapOutputDev::drawImage(GfxState* pGState, Gfx* gfx, Object* pRef, Stre
 	pItem->m_nBlendMode   = pGState->getBlendMode();
 
 	MarkHiddenTextUnderGraphics(pItem);
-	ClipEarlierGraphicsUnderNewOpaqueItem(pItem);
+	if (!m_bTextOnly)
+		ClipEarlierGraphicsUnderNewOpaqueItem(pItem);
 
 	m_arrPainted.push_back(pItem);
 }
@@ -582,16 +592,15 @@ void OverlapOutputDev::ClipEarlierGraphicsUnderNewOpaqueItem(const SOverlapPaint
 			continue;
 		if (pEarlier->m_bGraphicsHidden || !pEarlier->m_pDevicePath)
 			continue;
-		double dOldArea = fabs(pEarlier->m_pDevicePath->GetArea());
+		double dOldArea = fabs(SafeGetArea(pEarlier->m_pDevicePath));
 		if (dOldArea <= c_dAreaEps)
 		{
 			pEarlier->m_bGraphicsHidden = true;
 			continue;
 		}
 
-		Aggplus::CGraphicsPath oResult = Aggplus::CalcBooleanOperation(
-			*pEarlier->m_pDevicePath, *pNewItem->m_pDevicePath, Aggplus::BooleanOpType::Subtraction);
-		double dNewArea = fabs(oResult.GetArea());
+		Aggplus::CGraphicsPath oResult = Aggplus::CalcBooleanOperation(*pEarlier->m_pDevicePath, *pNewItem->m_pDevicePath, Aggplus::BooleanOpType::Subtraction);
+		double dNewArea = fabs(SafeGetArea(&oResult));
 
 		if (dNewArea <= c_dAreaEps)
 		{

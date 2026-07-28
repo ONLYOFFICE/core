@@ -1259,7 +1259,7 @@ namespace MetaFile
 
 		m_oStream >> arPoints[0];
 
-		for (unsigned int ulIndex = 1; ulIndex < ulCount; ulIndex += 3)
+		for (unsigned int ulIndex = 1; ulIndex + 2 < ulCount; ulIndex += 3)
 		{
 			m_oStream >> arPoints[ulIndex];
 			m_oStream >> arPoints[ulIndex + 1];

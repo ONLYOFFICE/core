@@ -64,7 +64,7 @@ namespace DocFileFormat
 		//read the 512 bytes (FKP)
 		unsigned char* bytes = NULL;
 		bytes = new unsigned char[512];
-		memset(bytes, 512, 0);
+		memset(bytes, 0, 512);
 
 		WordStream->seek(offset);
 		WordStream->read(bytes, 512);
@@ -102,13 +102,16 @@ namespace DocFileFormat
 
 		for (unsigned char i = 0; i < crun; i++)
 		{
+			if (j > 511)
+				break;
 			BX bx;
 			bx.wordOffset = bytes[j];
 			j++;
 
 			if (/*fComplex ||*/ nWordVersion == 0)
 			{
-				memcpy(phe, (bytes + j), 12);
+				if (j + 12 <= 512)	memcpy(phe, (bytes + j), 12);
+				else				memset(phe, 0, 12);
 
 				//fill the rgbx array
 				bx.phe = ParagraphHeight(phe, 12, false);
@@ -117,14 +120,18 @@ namespace DocFileFormat
 			}
 			else if (nWordVersion == 2)
 			{
-				memcpy(phe, (bytes + bx.wordOffset * 2 + j + 1), 6);
+				int phePos = bx.wordOffset * 2 + j + 1;
+
+				if (phePos + 6 <= 512)	memcpy(phe, (bytes + phePos), 6);
+				else					memset(phe, 0, 6);
 
 				//fill the rgbx array
 				bx.phe = ParagraphHeight(phe, 6, false);
 			}
 			else
 			{
-				memcpy(phe, (bytes + j), 6);
+				if (j + 6 <= 512)	memcpy(phe, (bytes + j), 6);
+				else				memset(phe, 0, 6);
 
 				//fill the rgbx array
 				bx.phe = ParagraphHeight(phe, 6, false);
@@ -146,14 +153,21 @@ namespace DocFileFormat
 				if (cw != 0)
 				{
 					int sz = cw * 2;
-					//read the bytes for papx
-					unsigned char* papx = new unsigned char[sz];
-					memcpy(papx, (bytes + (bx.wordOffset * 2) + padbyte + 1), sz);
 
-					//parse PAPX and fill grppapx
-					grppapx[i] = new ParagraphPropertyExceptions(papx, sz, dataStream, nWordVersion);
+					int szMax = 512 - (bx.wordOffset * 2 + padbyte + 1);
+					if (sz > szMax) sz = szMax;
 
-					RELEASEARRAYOBJECTS(papx);
+					if (sz > 0)
+					{
+						//read the bytes for papx
+						unsigned char* papx = new unsigned char[sz];
+						memcpy(papx, (bytes + (bx.wordOffset * 2) + padbyte + 1), sz);
+
+						//parse PAPX and fill grppapx
+						grppapx[i] = new ParagraphPropertyExceptions(papx, sz, dataStream, nWordVersion);
+
+						RELEASEARRAYOBJECTS(papx);
+					}
 				}
 
 			}

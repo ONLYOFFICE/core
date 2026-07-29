@@ -102,6 +102,10 @@ std::wstring CStyleConverter::CreateStyle(short shParaShapeId, short shParaStyle
 
 	const std::wstring wsStyleName = GenerateUniqueID(wsParaStyleName);
 
+	const CHWPRecordCharShape *pCharShapeRecord = dynamic_cast<const CHWPRecordCharShape*>(oContext.GetCharShape(pParaStyle->GetCharShapeId()));
+
+	const int nStyleCharHeight = (nullptr != pCharShapeRecord) ? pCharShapeRecord->GetHeight() : 0;
+
 	m_oStylesXml.WriteString(L"<w:style w:type=\"paragraph\" w:customStyle=\"1\" w:styleId=\"");
 	m_oStylesXml.WriteEncodeXmlString(wsStyleName);
 	m_oStylesXml.WriteString(L"\">");
@@ -110,10 +114,8 @@ std::wstring CStyleConverter::CreateStyle(short shParaShapeId, short shParaStyle
 	m_oStylesXml.WriteString(L"\"/>");
 	m_oStylesXml.WriteString(L"<w:qFormat/>");
 	m_oStylesXml.WriteString(L"<w:pPr>");
-	WriteParagraphProperties(GenerateParagraphStyle(*pParaShapeRecord), m_oStylesXml);
+	WriteParagraphProperties(GenerateParagraphStyle(*pParaShapeRecord, nStyleCharHeight), m_oStylesXml);
 	m_oStylesXml.WriteString(L"</w:pPr>");
-
-	const CHWPRecordCharShape *pCharShapeRecord = dynamic_cast<const CHWPRecordCharShape*>(oContext.GetCharShape(pParaStyle->GetCharShapeId()));
 
 	if (nullptr != pCharShapeRecord)
 	{
@@ -132,7 +134,7 @@ std::wstring CStyleConverter::CreateStyle(short shParaShapeId, short shParaStyle
 	return wsStyleName;
 }
 
-bool CStyleConverter::WriteDifferenceParagraphStyles(short shFirtsParaShapeId, short shSecondParaShapeId, CWriterContext& oContext, NSStringUtils::CStringBuilder& oBuilder)
+bool CStyleConverter::WriteDifferenceParagraphStyles(short shFirtsParaShapeId, int nFirstCharHeight, short shSecondParaShapeId, int nSecondCharHeight, CWriterContext& oContext, NSStringUtils::CStringBuilder& oBuilder)
 {
 	const CHWPRecordParaShape* pFirstParaShape = dynamic_cast<const CHWPRecordParaShape*>(oContext.GetParaShape(shFirtsParaShapeId));
 
@@ -144,8 +146,8 @@ bool CStyleConverter::WriteDifferenceParagraphStyles(short shFirtsParaShapeId, s
 	if (nullptr == pSecondParaShape)
 		return false;
 
-	CParagraphsStyle oFirstParagraphStyle {GenerateParagraphStyle(*pFirstParaShape )};
-	CParagraphsStyle oSecondParagraphStyle{GenerateParagraphStyle(*pSecondParaShape)};
+	CParagraphsStyle oFirstParagraphStyle {GenerateParagraphStyle(*pFirstParaShape,  nFirstCharHeight )};
+	CParagraphsStyle oSecondParagraphStyle{GenerateParagraphStyle(*pSecondParaShape, nSecondCharHeight)};
 
 	oSecondParagraphStyle -= oFirstParagraphStyle;
 
@@ -199,7 +201,7 @@ std::wstring CStyleConverter::GenerateUniqueID(const std::wstring& wsName)
 	return wsName + std::to_wstring(++m_mUsedStyleNames[wsName]);
 }
 
-CParagraphsStyle CStyleConverter::GenerateParagraphStyle(const CHWPRecordParaShape& oParaShape)
+CParagraphsStyle CStyleConverter::GenerateParagraphStyle(const CHWPRecordParaShape& oParaShape, int nCharHeight)
 {
 	CParagraphsStyle oParagraphsStyle;
 
@@ -233,8 +235,19 @@ CParagraphsStyle CStyleConverter::GenerateParagraphStyle(const CHWPRecordParaSha
 	{
 		case 0x0:
 		{
-			oParagraphsStyle.SetSpacingLineRule(ELineRule::Auto);
-			oParagraphsStyle.SetSpacing(static_cast<int>(2.4 * (double)oParaShape.GetLineSpacing())); // 240 / 100
+			const int nExactLine = (0 < nCharHeight) ? nCharHeight * oParaShape.GetLineSpacing() / 500 : 0;
+
+			if (0 < nExactLine)
+			{
+				oParagraphsStyle.SetSpacingLineRule(ELineRule::Exact);
+				oParagraphsStyle.SetSpacing(nExactLine);
+			}
+			else
+			{
+				oParagraphsStyle.SetSpacingLineRule(ELineRule::Auto);
+				oParagraphsStyle.SetSpacing(static_cast<int>(2.4 * (double)oParaShape.GetLineSpacing())); // 240 / 100
+			}
+
 			break;
 		}
 		case 0x01:
@@ -401,21 +414,26 @@ void CStyleConverter::WriteParagraphProperties(const CParagraphsStyle& oParagrap
 
 	if (oParagraphsStyle.SpacingLineRuleIsSet() || oParagraphsStyle.SpacingIsSet() || oParagraphsStyle.SpacingBeforeIsSet() || oParagraphsStyle.SpacingAfterIsSet())
 	{
-		oBuilder.WriteString(L"<w:spacing w:lineRule=\"");
+		oBuilder.WriteString(L"<w:spacing");
 
-		if (oParagraphsStyle.SpacingLineRuleIsSet())
+		if (oParagraphsStyle.SpacingLineRuleIsSet() || oParagraphsStyle.SpacingIsSet())
 		{
-			switch (oParagraphsStyle.GetSpacingLineRule())
-			{
-				case ELineRule::Auto: oBuilder.WriteString(L"auto"); break;
-				case ELineRule::Exact:  oBuilder.WriteString(L"exact"); break;
-				case ELineRule::AtLeast: oBuilder.WriteString(L"atLeast"); break;
-			}
-		}
-		else
-			oBuilder.WriteString(L"auto");
+			oBuilder.WriteString(L" w:lineRule=\"");
 
-		oBuilder.WriteString(L"\" w:line=\"" + std::to_wstring((oParagraphsStyle.SpacingIsSet()) ? oParagraphsStyle.GetSpacing() : DEFAULT_SPACING) + L"\"");
+			if (oParagraphsStyle.SpacingLineRuleIsSet())
+			{
+				switch (oParagraphsStyle.GetSpacingLineRule())
+				{
+					case ELineRule::Auto: oBuilder.WriteString(L"auto"); break;
+					case ELineRule::Exact:  oBuilder.WriteString(L"exact"); break;
+					case ELineRule::AtLeast: oBuilder.WriteString(L"atLeast"); break;
+				}
+			}
+			else
+				oBuilder.WriteString(L"auto");
+
+			oBuilder.WriteString(L"\" w:line=\"" + std::to_wstring((oParagraphsStyle.SpacingIsSet()) ? oParagraphsStyle.GetSpacing() : DEFAULT_SPACING) + L"\"");
+		}
 
 		if (oParagraphsStyle.SpacingBeforeIsSet())
 			oBuilder.WriteString(L" w:before=\"" + std::to_wstring(oParagraphsStyle.GetSpacingBefore()) + L"\"");
@@ -834,10 +852,19 @@ EHighlightColors NormalizeHighlightColor(const TColor& oCurrentColor)
 
 TLineSpacing& TLineSpacing::operator-=(const TLineSpacing& oLineSpacing)
 {
+	const CProperty<ELineRule> oLineRule{m_eLineRule};
+	const CProperty<int> oLine{m_nLine};
+
 	m_eLineRule -= oLineSpacing.m_eLineRule;
 	m_nLine     -= oLineSpacing.m_nLine;
 	m_nAfter    -= oLineSpacing.m_nAfter;
 	m_nBefore   -= oLineSpacing.m_nBefore;
+
+	if (m_eLineRule.IsSet() != m_nLine.IsSet())
+	{
+		m_eLineRule = oLineRule;
+		m_nLine     = oLine;
+	}
 
 	return *this;
 }

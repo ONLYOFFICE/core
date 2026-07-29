@@ -362,7 +362,7 @@ void CConverter2OOXML::WriteCharacter(const CCtrlCharacter* pCharacter, short sh
 		}
 		case ECtrlCharType::TABULATION:
 		{
-			OpenParagraph(shParaShapeID, shParaStyleID, oBuilder, oState);
+			OpenParagraph(shParaShapeID, shParaStyleID, oBuilder, oState, pCharacter->GetCharShapeId());
 			oBuilder.WriteString(L"<w:r><w:tab/></w:r>");
 			break;
 		}
@@ -556,7 +556,7 @@ void CConverter2OOXML::WriteEmptyParagraph(short shParaShapeID, short shParaStyl
 	oBuilder.WriteString(L"<w:p>");
 	oBuilder.WriteString(L"<w:pPr>");
 
-	WriteParaShapeProperties(shParaShapeID, shParaStyleID, oBuilder, oState);
+	WriteParaShapeProperties(shParaShapeID, shParaStyleID, oBuilder, oState, shCharShapeID);
 	WriteRunnerStyle(shCharShapeID, oBuilder, oState);
 
 	oBuilder.WriteString(L"</w:pPr>");
@@ -670,16 +670,26 @@ void CConverter2OOXML::WriteParagraph(const CHWPPargraph* pParagraph, NSStringUt
 	CloseParagraph(oBuilder, oState);
 }
 
-void CConverter2OOXML::WriteParagraphProperties(short shParaShapeID, short shParaStyleID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)
+void CConverter2OOXML::WriteParagraphProperties(short shParaShapeID, short shParaStyleID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState, short shCharShapeID)
 {
 	oBuilder.WriteString(L"<w:pPr>");
 
-	WriteParaShapeProperties(shParaShapeID, shParaStyleID, oBuilder, oState);
+	WriteParaShapeProperties(shParaShapeID, shParaStyleID, oBuilder, oState, shCharShapeID);
 
 	oBuilder.WriteString(L"</w:pPr>");
 }
 
-void CConverter2OOXML::WriteParaShapeProperties(short shParaShapeID, short shParaStyleID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)
+int CConverter2OOXML::GetCharHeight(short shCharShapeID)
+{
+	if (nullptr == m_pContext || 0 > shCharShapeID)
+		return 0;
+
+	const CHWPRecordCharShape* pCharShape = m_pContext->GetCharShape(shCharShapeID);
+
+	return (nullptr != pCharShape) ? pCharShape->GetHeight() : 0;
+}
+
+void CConverter2OOXML::WriteParaShapeProperties(short shParaShapeID, short shParaStyleID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState, short shCharShapeID)
 {
 	if (nullptr == m_pContext)
 		return;
@@ -696,8 +706,11 @@ void CConverter2OOXML::WriteParaShapeProperties(short shParaShapeID, short shPar
 	if (oState.m_bInTable)
 		oBuilder.WriteString(L"<w:wordWrap w:val=\"1\"/>");
 
-	if (m_oStyleConverter.GetLastParaShapeId() != shParaShapeID)
-		m_oStyleConverter.WriteDifferenceParagraphStyles(m_oStyleConverter.GetLastParaShapeId(), shParaShapeID, *m_pContext, oBuilder);
+	const int nStyleCharHeight = GetCharHeight((short)m_oStyleConverter.GetLastCharShapeId());
+	const int nParaCharHeight  = (0 <= shCharShapeID) ? GetCharHeight(shCharShapeID) : nStyleCharHeight;
+
+	if (m_oStyleConverter.GetLastParaShapeId() != shParaShapeID || nStyleCharHeight != nParaCharHeight)
+		m_oStyleConverter.WriteDifferenceParagraphStyles(m_oStyleConverter.GetLastParaShapeId(), nStyleCharHeight, shParaShapeID, nParaCharHeight, *m_pContext, oBuilder);
 
 	const CHWPRecordParaShape* pParaShape= dynamic_cast<const CHWPRecordParaShape*>(m_pContext->GetParaShape(shParaShapeID));
 
@@ -1873,14 +1886,14 @@ void CConverter2OOXML::WriteShapeWrapMode(const CCtrlCommon* pCtrlShape, NSStrin
 	}
 }
 
-void CConverter2OOXML::OpenParagraph(short shParaShapeID, short shParaStyleID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)
+void CConverter2OOXML::OpenParagraph(short shParaShapeID, short shParaStyleID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState, short shCharShapeID)
 {
 	if (oState.m_bOpenedP)
 		return;
 
 	oBuilder.WriteString(L"<w:p>");
 	oState.m_bOpenedP = true;
-	WriteParagraphProperties(shParaShapeID, shParaStyleID, oBuilder, oState);
+	WriteParagraphProperties(shParaShapeID, shParaStyleID, oBuilder, oState, shCharShapeID);
 }
 
 void CConverter2OOXML::CloseParagraph(NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)
@@ -2005,7 +2018,7 @@ void CConverter2OOXML::WriteText(const HWP_STRING& wsText, short shParaShapeID, 
 	if (!oState.m_bOpenedP && wsText.empty())
 		return;
 
-	OpenParagraph(shParaShapeID, shParaStyleID, oBuilder, oState);
+	OpenParagraph(shParaShapeID, shParaStyleID, oBuilder, oState, shCharShapeID);
 
 	if (wsText.empty())
 	{
@@ -2249,19 +2262,19 @@ void CConverter2OOXML::WriteAutoNumber(const CCtrlAutoNumber* pAutoNumber, short
 	{
 		case ENumType::PAGE:
 		{
-			OpenParagraph(shParaShapeID, shParaStyleID, oBuilder, oState);
+			OpenParagraph(shParaShapeID, shParaStyleID, oBuilder, oState, shCharShapeID);
 			oBuilder.WriteString(L"<w:fldSimple w:instr=\"PAGE \\* ARABIC\"><w:r><w:t>1</w:t></w:r></w:fldSimple>");
 			return;
 		}
 		case ENumType::TOTAL_PAGE:
 		{
-			OpenParagraph(shParaShapeID, shParaStyleID, oBuilder, oState);
+			OpenParagraph(shParaShapeID, shParaStyleID, oBuilder, oState, shCharShapeID);
 			oBuilder.WriteString(L"<w:fldSimple w:instr=\"NUMPAGES \\* ARABIC\"><w:r><w:t>1</w:t></w:r></w:fldSimple>");
 			return;
 		}
 		case ENumType::FOOTNOTE:
 		{
-			OpenParagraph(shParaShapeID, shParaStyleID, oBuilder, oState);
+			OpenParagraph(shParaShapeID, shParaStyleID, oBuilder, oState, shCharShapeID);
 			oBuilder.WriteString(L"<w:r>");
 
 			CRunnerStyle oRunnerStyle;
@@ -2273,7 +2286,7 @@ void CConverter2OOXML::WriteAutoNumber(const CCtrlAutoNumber* pAutoNumber, short
 		}
 		case ENumType::ENDNOTE:
 		{
-			OpenParagraph(shParaShapeID, shParaStyleID, oBuilder, oState);
+			OpenParagraph(shParaShapeID, shParaStyleID, oBuilder, oState, shCharShapeID);
 			oBuilder.WriteString(L"<w:r>");
 
 			CRunnerStyle oRunnerStyle;

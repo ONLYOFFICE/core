@@ -259,7 +259,7 @@ class CStyleConverter
 
 	std::wstring GenerateUniqueID(const std::wstring& wsName);
 
-	static CParagraphsStyle GenerateParagraphStyle(const CHWPRecordParaShape& oParaShape);
+	static CParagraphsStyle GenerateParagraphStyle(const CHWPRecordParaShape& oParaShape, int nCharHeight);
 	static CRunnerStyle GenerateRunnerStyle(const CHWPRecordCharShape& oCharShape);
 
 	static void WriteParagraphsStyle(const CParagraphsStyle& oParagraphsStyle, const std::wstring& wsName, const std::wstring& wsLink, NSStringUtils::CStringBuilder& oBuilder);
@@ -273,7 +273,7 @@ public:
 	static void WriteParagraphProperties(const CParagraphsStyle& oParagraphsStyle, NSStringUtils::CStringBuilder& oBuilder);
 	static void WriteRunnerProperties(const CRunnerStyle& oRunnerStyle, NSStringUtils::CStringBuilder& oBuilder);
 
-	static bool WriteDifferenceParagraphStyles(short shFirtsParaShapeId, short shSecondParaShapeId, CWriterContext& oContext, NSStringUtils::CStringBuilder& oBuilder);
+	static bool WriteDifferenceParagraphStyles(short shFirtsParaShapeId, int nFirstCharHeight, short shSecondParaShapeId, int nSecondCharHeight, CWriterContext& oContext, NSStringUtils::CStringBuilder& oBuilder);
 	static bool WriteDifferenceRunnerStyles(short shFirtsCharShapeId, short shSecondCharShapeId, CWriterContext& oContext, NSStringUtils::CStringBuilder& oBuilder);
 
 	unsigned short GetLastParaShapeId() const;

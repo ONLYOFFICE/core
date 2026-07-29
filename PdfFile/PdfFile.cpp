@@ -394,6 +394,11 @@ void CPdfFile::SetTempDirectory(const std::wstring& wsPath)
 	if (m_pInternal->pWriter)
 		m_pInternal->pWriter->SetTempDirectory(wsPath);
 }
+void CPdfFile::SetCorrector(IMetafileToRenderter* pCorrector)
+{
+	if (m_pInternal->pWriter)
+		m_pInternal->pWriter->SetCorrector(pCorrector);
+}
 int CPdfFile::GetPagesCount()
 {
 	if (!m_pInternal->pReader)

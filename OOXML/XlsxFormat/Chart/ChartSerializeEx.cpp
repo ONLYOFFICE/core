@@ -467,6 +467,8 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\""
 	}
 	void CExternalData::toXML(NSStringUtils::CStringBuilder& writer) const
 	{
+		if (false == m_id.IsInit()) return;
+
 		writer.WriteString(L"<cx:externalData");
 			WritingStringNullableAttrString(L"r:id", m_id, *m_id);
 			WritingStringNullableAttrBool2(L"cx:autoUpdate", m_autoUpdate);

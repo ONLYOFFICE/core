@@ -44,6 +44,7 @@
 #include "../lib/xpdf/OutputDev.h"
 
 #include <stack>
+#include <set>
 
 namespace PdfWriter
 {
@@ -54,6 +55,15 @@ namespace PdfWriter
 		virtual ~RedactOutputDev();
 
 		void SetRedact(const std::vector<double>& arrQuadPoints);
+		void SetOverlapInfo(const std::set<int>& arrHiddenTextIndices,
+							const std::vector<int>* pFormTextCounts,
+							const std::vector<int>* pFormGraphicsCounts,
+							int nStartTextCounter = 0,
+							int nStartFormCounter = 0,
+							int nStartGraphicsCounter = 0);
+		int  GetTextCounter()    const { return m_nTextCounter; }
+		int  GetFormCounter()    const { return m_nFormCounter; }
+		int GetGraphicsCounter() const { return m_nGraphicsCounter; }
 		void NewPDF(XRef* pXref);
 
 		//----- get info about output device
@@ -152,7 +162,7 @@ namespace PdfWriter
 		// beginMCOShapes
 		virtual void endMarkedContent(GfxState *state) override;
 		virtual GBool useNameOp() override;
-		virtual void setExtGState(const char* name) override;
+		virtual void setExtGState(GfxState *pGState, Object* pExtGState, const char* name) override;
 		virtual void setFillColorSpace(const char* name) override;
 		virtual void setFillColor(Object* args, int numArgs) override;
 		virtual void setFillColorN(Object* args, int numArgs) override;
@@ -219,6 +229,13 @@ namespace PdfWriter
 		CPage*      m_pPage;
 		double      m_arrMatrix[6];
 		std::string m_sImageName;
+
+		std::set<int> m_arrHiddenTextIndices;
+		const std::vector<int>* m_pFormTextCounts;
+		const std::vector<int>* m_pFormGraphicsCounts;
+		int m_nTextCounter;
+		int m_nFormCounter;
+		int m_nGraphicsCounter;
 
 		bool m_bUpdateAll;
 		std::deque<GfxRedactState> m_sStates;

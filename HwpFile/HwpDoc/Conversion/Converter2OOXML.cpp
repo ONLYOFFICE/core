@@ -585,6 +585,8 @@ void CConverter2OOXML::WriteParagraph(const CHWPPargraph* pParagraph, NSStringUt
 
 	++oState.m_unParaIndex;
 
+	VECTOR<const CCtrlTable*> arAnchoredTables;
+
 	for (const CCtrl* pCtrl : pParagraph->GetCtrls())
 	{
 		switch (pCtrl->GetCtrlType())
@@ -606,7 +608,13 @@ void CConverter2OOXML::WriteParagraph(const CHWPPargraph* pParagraph, NSStringUt
 			}
 			case ECtrlObjectType::Table:
 			{
-				WriteTable((const CCtrlTable*)pCtrl, pParagraph->GetShapeID(), pParagraph->GetStyleID(), oBuilder, oState);
+				const CCtrlTable* pTable = (const CCtrlTable*)pCtrl;
+
+				if (pTable->GetTreatAsChar())
+					WriteTable(pTable, pParagraph->GetShapeID(), pParagraph->GetStyleID(), oBuilder, oState);
+				else
+					arAnchoredTables.push_back(pTable);
+
 				break;
 			}
 			case ECtrlObjectType::Note:
@@ -655,6 +663,9 @@ void CConverter2OOXML::WriteParagraph(const CHWPPargraph* pParagraph, NSStringUt
 				break;
 		}
 	}
+
+	for (const CCtrlTable* pTable : arAnchoredTables)
+		WriteTable(pTable, pParagraph->GetShapeID(), pParagraph->GetStyleID(), oBuilder, oState);
 
 	CloseParagraph(oBuilder, oState);
 }

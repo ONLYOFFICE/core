@@ -816,6 +816,8 @@ void CConverter2OOXML::WriteTable(const CCtrlTable* pTable, short shParaShapeID,
 
 	CloseParagraph(oBuilder, oState);
 
+	WriteBreak(oBuilder, oState);
+
 	++m_ushTableCount;
 
 	oBuilder.WriteString(L"<w:tbl>");
@@ -1671,6 +1673,30 @@ void CConverter2OOXML::WriteRunnerStyle(short shCharShapeID, NSStringUtils::CStr
 		case TConversionState::EBreakType::None:
 			break;
 	}
+
+	oState.m_eBreakType = TConversionState::EBreakType::None;
+}
+
+void CConverter2OOXML::WriteBreak(NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)
+{
+	if (TConversionState::EBreakType::None == oState.m_eBreakType)
+		return;
+
+	oBuilder.WriteString(L"<w:p><w:r>");
+
+	switch(oState.m_eBreakType)
+	{
+		case TConversionState::EBreakType::Page:
+			oBuilder.WriteString(L"<w:br w:type=\"page\"/>"); break;
+		case TConversionState::EBreakType::Column:
+			oBuilder.WriteString(L"<w:br w:type=\"column\"/>"); break;
+		case TConversionState::EBreakType::TextWrapping:
+			oBuilder.WriteString(L"<w:br/>"); break;
+		case TConversionState::EBreakType::None:
+			break;
+	}
+
+	oBuilder.WriteString(L"</w:r></w:p>");
 
 	oState.m_eBreakType = TConversionState::EBreakType::None;
 }

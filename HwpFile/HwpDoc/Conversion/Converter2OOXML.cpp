@@ -693,90 +693,117 @@ void CConverter2OOXML::WriteParaShapeProperties(short shParaShapeID, short shPar
 	if (nullptr == pParaShape)
 		return;
 
-	switch (pParaShape->GetHeadingType())
+	const EHeadingType eHeadingType = pParaShape->GetHeadingType();
+
+	int nHeadingLevel = (int)pParaShape->GetHeadingLevel();
+
+	if (0 > nHeadingLevel)
+		nHeadingLevel = 0;
+
+	int nNumId = 0;
+
+	switch (eHeadingType)
 	{
 		case EHeadingType::NUMBER:
-		case EHeadingType::BULLET:
 		{
-			const int nNumId = m_oNumberingConverter.CreateNumbering(dynamic_cast<const CHWPRecordNumbering*>(m_pContext->GetNumbering(pParaShape->GetHeadingIdRef())), pParaShape->GetHeadingType(), *this);
-
-			if (0 == nNumId)
-				break;
-
-			oBuilder.WriteString(L"<w:numPr>");
-
-			oBuilder.WriteString(L"<w:ilvl w:val=\"" + std::to_wstring((int)pParaShape->GetHeadingLevel()) + L"\"/>");
-			oBuilder.WriteString(L"<w:numId w:val=\"" + std::to_wstring(nNumId) + L"\"/>");
-
-			oBuilder.WriteString(L"</w:numPr>");
-
+			nNumId = m_oNumberingConverter.CreateNumbering(m_pContext->GetNumbering(pParaShape->GetHeadingIdRef()), EHeadingType::NUMBER, *this);
+			nHeadingLevel = (std::min)(nHeadingLevel, 6);
 			break;
 		}
 		case EHeadingType::OUTLINE:
+		{
+			short shIdRef = pParaShape->GetHeadingIdRef();
+
+			if (0 == shIdRef && nullptr != oState.m_pSectionDef)
+				shIdRef = (short)oState.m_pSectionDef->GetOutlineNumberingID();
+
+			nNumId = m_oNumberingConverter.CreateOutline(m_pContext->GetNumbering(shIdRef), *this);
+			nHeadingLevel = (std::min)(nHeadingLevel, 6);
+			break;
+		}
+		case EHeadingType::BULLET:
+		{
+			nNumId = m_oNumberingConverter.CreateBullet(m_pContext->GetBullet(pParaShape->GetHeadingIdRef()), *this);
+			nHeadingLevel = (std::min)(nHeadingLevel, 8);
+			break;
+		}
 		case EHeadingType::NONE:
 			break;
 	}
 
-	if (oState.m_bInTable)
-		return;
-
-	const CHwpRecordTabDef* pTabDef = m_pContext->GetTabDef(pParaShape->GetTabDef());
-
-	if (nullptr != pTabDef && 0 != pTabDef->GetCount())
+	if (0 != nNumId)
 	{
-		oBuilder.WriteString(L"<w:tabs>");
+		oBuilder.WriteString(L"<w:numPr>");
 
-		const TTab *pTab = nullptr;
-		for (unsigned int unIndex = 0; unIndex < pTabDef->GetCount(); ++unIndex)
+		oBuilder.WriteString(L"<w:ilvl w:val=\"" + std::to_wstring(nHeadingLevel) + L"\"/>");
+		oBuilder.WriteString(L"<w:numId w:val=\"" + std::to_wstring(nNumId) + L"\"/>");
+
+		oBuilder.WriteString(L"</w:numPr>");
+	}
+
+	if (!oState.m_bInTable)
+	{
+		const CHwpRecordTabDef* pTabDef = m_pContext->GetTabDef(pParaShape->GetTabDef());
+
+		if (nullptr != pTabDef && 0 != pTabDef->GetCount())
 		{
-			pTab = pTabDef->GetTab(unIndex);
+			oBuilder.WriteString(L"<w:tabs>");
 
-			if (nullptr == pTab)
-				continue;
-
-			oBuilder.WriteString(L"<w:tab w:val=\"");
-
-			switch (pTab->m_eType)
+			const TTab *pTab = nullptr;
+			for (unsigned int unIndex = 0; unIndex < pTabDef->GetCount(); ++unIndex)
 			{
-				case TTab::EType::LEFT: oBuilder.WriteString(L"start"); break;
-				case TTab::EType::RIGHT: oBuilder.WriteString(L"end"); break;
-				case TTab::EType::CENTER: oBuilder.WriteString(L"center"); break;
-				case TTab::EType::DECIMAL: oBuilder.WriteString(L"decimal"); break;
+				pTab = pTabDef->GetTab(unIndex);
+
+				if (nullptr == pTab)
+					continue;
+
+				oBuilder.WriteString(L"<w:tab w:val=\"");
+
+				switch (pTab->m_eType)
+				{
+					case TTab::EType::LEFT: oBuilder.WriteString(L"start"); break;
+					case TTab::EType::RIGHT: oBuilder.WriteString(L"end"); break;
+					case TTab::EType::CENTER: oBuilder.WriteString(L"center"); break;
+					case TTab::EType::DECIMAL: oBuilder.WriteString(L"decimal"); break;
+				}
+
+				oBuilder.WriteString(L"\" w:leader=\"");
+
+				switch (pTab->m_eLeader)
+				{
+					case ELineStyle2::NONE: oBuilder.WriteString(L"none"); break;
+					case ELineStyle2::SOLID:
+					case ELineStyle2::DOUBLE_SLIM:
+					case ELineStyle2::SLIM_THICK:
+					case ELineStyle2::THICK_SLIM:
+					case ELineStyle2::SLIM_THICK_SLIM:
+						oBuilder.WriteString(L"heavy"); break;
+					case ELineStyle2::DASH:
+					case ELineStyle2::LONG_DASH:
+					case ELineStyle2::DASH_DOT:
+					case ELineStyle2::DASH_DOT_DOT:
+						oBuilder.WriteString(L"hyphen"); break;
+					case ELineStyle2::DOT:
+					case ELineStyle2::CIRCLE:
+						oBuilder.WriteString(L"dot"); break;
+				}
+
+				oBuilder.WriteString(L"\" w:pos=\"" + std::to_wstring(pTab->m_nPos / 10) + L"\"/>");
 			}
 
-			oBuilder.WriteString(L"\" w:leader=\"");
-
-			switch (pTab->m_eLeader)
-			{
-				case ELineStyle2::NONE: oBuilder.WriteString(L"none"); break;
-				case ELineStyle2::SOLID:
-				case ELineStyle2::DOUBLE_SLIM:
-				case ELineStyle2::SLIM_THICK:
-				case ELineStyle2::THICK_SLIM:
-				case ELineStyle2::SLIM_THICK_SLIM:
-					oBuilder.WriteString(L"heavy"); break;
-				case ELineStyle2::DASH:
-				case ELineStyle2::LONG_DASH:
-				case ELineStyle2::DASH_DOT:
-				case ELineStyle2::DASH_DOT_DOT:
-					oBuilder.WriteString(L"hyphen"); break;
-				case ELineStyle2::DOT:
-				case ELineStyle2::CIRCLE:
-					oBuilder.WriteString(L"dot"); break;
-			}
-
-			oBuilder.WriteString(L"\" w:pos=\"" + std::to_wstring(pTab->m_nPos / 10) + L"\"/>");
+			oBuilder.WriteString(L"</w:tabs>");
 		}
 
-		oBuilder.WriteString(L"</w:tabs>");
+		const CHWPRecordBorderFill* pBorderFill{m_pContext->GetBorderFill(pParaShape->GetBorderFillIdRef())};
+
+		if (nullptr != pBorderFill && nullptr != pBorderFill->GetFill() && !pBorderFill->GetFill()->NoneFill())
+		{
+			oBuilder.WriteString(L"<w:shd w:val=\"clear\" w:color=\"auto\" w:fill=\"" + Transform::IntColorToHEX(pBorderFill->GetFill()->GetFaceColor()) + L"\"/>");
+		}
 	}
 
-	const CHWPRecordBorderFill* pBorderFill{m_pContext->GetBorderFill(pParaShape->GetBorderFillIdRef())};
-
-	if (nullptr != pBorderFill && nullptr != pBorderFill->GetFill())
-	{
-		oBuilder.WriteString(L"<w:shd w:val=\"clear\" w:color=\"auto\" w:fill=\"" + Transform::IntColorToHEX(pBorderFill->GetFill()->GetFaceColor()) + L"\"/>");
-	}
+	if (EHeadingType::OUTLINE == eHeadingType)
+		oBuilder.WriteString(L"<w:outlineLvl w:val=\"" + std::to_wstring(nHeadingLevel) + L"\"/>");
 }
 
 void CConverter2OOXML::WriteTable(const CCtrlTable* pTable, short shParaShapeID, short shParaStyleID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)

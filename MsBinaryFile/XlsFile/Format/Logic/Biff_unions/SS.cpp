@@ -251,18 +251,45 @@ const bool SS::saveContent(BinProcessor& proc)
 	proc.mandatory<Begin>();
 	if(m_Chart3DBarShape != nullptr)
 		proc.mandatory(*m_Chart3DBarShape);
-	/*
-	if(m_LineFormat != nullptr)
+	std::vector<BYTE> CheckSumData;
+	_UINT32 checkSum = 0;
+	auto calcChecksum = [](const std::vector<uint8_t>& data, _UINT32 &checksum)
+	{
+		for (BYTE byte : data) {
+			checksum ^= (static_cast<_UINT32>(byte) << 24);
+
+			for (int i = 0; i < 8; ++i) {
+				if (checksum & 0x80000000U) {
+					checksum = (checksum << 1) ^ 0x000000AFU;
+				} else {
+					checksum <<= 1;
+				}
+			}
+		}
+	};
+	/*if(m_LineFormat != nullptr)
 	{
 		proc.mandatory(*m_LineFormat);
 		auto castedLine = static_cast<LineFormat*>(m_LineFormat.get());
-		castedLine->setChecksum(ShapePropsStreamChecksumData);
+		castedLine->setChecksum(CheckSumData);
+	}
+	else if(!m_arSHAPEPROPS.empty())
+	{
+		LineFormat lnFmt;
+		lnFmt.setChecksum(CheckSumData);
+		proc.mandatory(lnFmt);
 	}
 	if(m_AreaFormat != nullptr)
 	{
 		proc.mandatory(*m_AreaFormat);
 		auto castedArea = static_cast<AreaFormat*>(m_AreaFormat.get());
-		castedArea->setChecksum(ShapePropsStreamChecksumData);
+		if(!castedArea->fAuto)
+			castedArea->setChecksum(CheckSumData);
+	}
+	else if(!m_arSHAPEPROPS.empty())
+	{
+		AreaFormat areaFmt;
+		proc.mandatory(areaFmt);
 	}*/
 	{
 		LineFormat line;
@@ -272,6 +299,9 @@ const bool SS::saveContent(BinProcessor& proc)
 		line.lns = 0;
 		line.we = 0;
 		line.icv = 9;
+		line.fAuto = false;
+		line.fAutoCo = false;
+		line.setChecksum(CheckSumData);
 		proc.mandatory(line);
 		AreaFormat area;
 		area.rgbFore.red = 0xFF;
@@ -284,10 +314,10 @@ const bool SS::saveContent(BinProcessor& proc)
 		area.fAuto = false;
 		area.icvFore = 10;
 		area.icvBack = 9;
+		area.setChecksum(CheckSumData);
 		proc.mandatory(area);
 	}
-
-
+	calcChecksum(CheckSumData, checkSum);
 	if(m_PieFormat != nullptr)
 		proc.mandatory(*m_PieFormat);
 	if(m_SerFmt != nullptr)
@@ -303,7 +333,7 @@ const bool SS::saveContent(BinProcessor& proc)
 		{
 			auto castedProp = static_cast<SHAPEPROPS*>(i.get());
 			auto propHeader = static_cast<ShapePropsStream*>(castedProp->m_ShapePropsStream.get());
-			propHeader->dwChecksum = 0x1E563DFF;
+			propHeader->dwChecksum = checkSum;
 			proc.mandatory(*i);
 		}
 	proc.mandatory<End>();

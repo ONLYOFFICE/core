@@ -323,6 +323,7 @@ namespace PPTX
 		XLS::BaseObjectPtr Ln::toXLS()
 		{
 			auto ptr = new XLS::LineFormat;
+			ptr->fAuto = false;
 			if(w.IsInit())
 			{
 				switch(w.get())
@@ -340,6 +341,7 @@ namespace PPTX
 					ptr->lns = 5;
 				else if(prstDash.IsInit() && prstDash->val.IsInit())
 				{
+					ptr->fAutoCo = false;
 					if(Fill.m_type == UniFill::Type::solidFill)
 					{
 						auto solid = dynamic_cast<PPTX::Logic::SolidFill*>(Fill.Fill.GetPointer());
@@ -387,6 +389,10 @@ namespace PPTX
 				else
 					ptr->lns = 0;
 			}
+			if(ptr->icv == 77)
+				ptr->fAutoCo = true;
+			else
+				ptr->fAutoCo = false;
 			return XLS::BaseObjectPtr(ptr);
 		}
 		void Ln::Merge(nullable<Ln>& line)const

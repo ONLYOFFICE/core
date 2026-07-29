@@ -303,42 +303,22 @@ namespace PPTX
 						{
 							auto scheme = static_cast<PPTX::Logic::SchemeClr*>( solid->Color.Color.GetPointer());
 							ptr->fAuto = false;
-							if(scheme->val.get() == L"tx1")
-							{
-								ptr->icvFore = 12;
-							}
-							else if(scheme->val.get() == L"bg1")
+							if(scheme->val.get() == L"bg1" || scheme->val.get() == L"bg2")
 							{
 								ptr->icvFore = 0x4E;
 								ptr->rgbFore.blue = 0xff;
 								ptr->rgbFore.red = 0xff;
 								ptr->rgbFore.green = 0xff;
 							}
-							else if(scheme->val.get() == L"accent1")
+							else
 							{
-								ptr->icvFore = 0x30;
-								ptr->rgbFore.blue = 0xC4;
-								ptr->rgbFore.red = 0x44;
-								ptr->rgbFore.green = 0x72;
-							}
-							else if(scheme->val.get() == L"accent2")
-							{
-								ptr->icvFore = 0x35;
-								ptr->rgbFore.red = 0xed;
-								ptr->rgbFore.green = 0x7d;
-								ptr->rgbFore.blue = 0x31;
-
-							}
-							else if(scheme->val.get() == L"lt1")
-							{
-								ptr->icvFore = 0x1;
-								ptr->rgbFore.red = 0xFF;
-								ptr->rgbFore.green = 0xFF;
-								ptr->rgbFore.blue = 0xFF;
+								ptr->icvFore = 0x4E;
+								ptr->rgbFore.blue = 0xff;
+								ptr->rgbFore.red = 0xff;
+								ptr->rgbFore.green = 0xff;
 
 							}
 						}
-					
 					}
 					else if(m_type == UniFill::Type::pattFill)
 					{

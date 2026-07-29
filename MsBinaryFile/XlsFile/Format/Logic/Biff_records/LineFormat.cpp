@@ -134,7 +134,7 @@ void LineFormat::setChecksum(std::vector<BYTE> &ChecksumData)
 		ChecksumData.push_back(lnsCheck);
 	}
 	{
-		BYTE weCheck = we;
+		BYTE weCheck = we+1;
 		ChecksumData.push_back(weCheck);
 	}
 	{

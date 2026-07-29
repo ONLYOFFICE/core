@@ -306,7 +306,7 @@ namespace OOX
 		}
 		void MapColors(const OOX::Spreadsheet::CColors &colors)
 		{
-			for(auto i = 8; i <= 56; i++)
+			for(auto i = 8; i <= 63; i++)
 			{
 				if(colors.m_oIndexedColors->mapIndexedColors.find(i) == colors.m_oIndexedColors->mapIndexedColors.end())
 				{
@@ -362,51 +362,6 @@ namespace OOX
 				m_oColors = OOX::Spreadsheet::CColors();
 				m_oColors->m_oIndexedColors.Init();
 				m_oColors->m_oMruColors.Init();
-
-				if (m_oFonts.IsInit())
-				{
-					for(auto i : m_oFonts->m_arrItems)
-					{
-						SetColor(m_oColors.get(), i->m_oColor);
-					}
-				}
-				if(m_oFills.IsInit())
-				{
-					for(auto i : m_oFills->m_arrItems)
-					{
-						if(i->m_oPatternFill.IsInit())
-						{
-							auto pattern = &i->m_oPatternFill;
-							SetColor(m_oColors.get(), (*pattern)->m_oBgColor);
-							SetColor(m_oColors.get(), (*pattern)->m_oFgColor);
-						}
-					}
-				}
-				for(auto i : m_oBorders->m_arrItems)
-				{
-					if(i->m_oTop.IsInit())
-					{
-						SetColor(m_oColors.get(), i->m_oTop->m_oColor);
-					}
-					if(i->m_oBottom.IsInit())
-					{
-						SetColor(m_oColors.get(), i->m_oBottom->m_oColor);
-					}
-					if(i->m_oStart.IsInit())
-					{
-						SetColor(m_oColors.get(), i->m_oStart->m_oColor);
-					}
-					if(i->m_oEnd.IsInit())
-					{
-						SetColor(m_oColors.get(), i->m_oEnd->m_oColor);
-					}
-					if(i->m_oDiagonal.IsInit())
-					{
-						SetColor(m_oColors.get(), i->m_oDiagonal->m_oColor);
-					}
-
-				}
-
 				MapColors(m_oColors.get());
 			}
 			FormatPtr->m_Palette = m_oColors->toXLS();

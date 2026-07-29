@@ -987,17 +987,27 @@ void RedactOutputDev::stroke(GfxState *pGState)
 void RedactOutputDev::fill(GfxState *pGState)
 {
 	const SOverlapGraphicsResult* pOverlapResult = FindGraphicsResult(++m_nGraphicsCounter);
-	(void)pOverlapResult;
+	if (pOverlapResult && pOverlapResult->m_eDecision == EOverlapGraphicsDecision::Hidden)
+		return;
 
-	DoPathRedact(pGState, pGState->getPath(), pGState->getCTM());
+	if (pOverlapResult && pOverlapResult->m_eDecision == EOverlapGraphicsDecision::Clipped && pOverlapResult->m_pReplacementPath)
+		DrawDeviceSpacePathRedacted(pGState, *pOverlapResult->m_pReplacementPath, pGState->getCTM());
+	else
+		DoPathRedact(pGState, pGState->getPath(), pGState->getCTM());
+
 	DrawPath(c_nWindingFillMode);
 }
 void RedactOutputDev::eoFill(GfxState *pGState)
 {
 	const SOverlapGraphicsResult* pOverlapResult = FindGraphicsResult(++m_nGraphicsCounter);
-	(void)pOverlapResult;
+	if (pOverlapResult && pOverlapResult->m_eDecision == EOverlapGraphicsDecision::Hidden)
+		return;
 
-	DoPathRedact(pGState, pGState->getPath(), pGState->getCTM(), false, true);
+	if (pOverlapResult && pOverlapResult->m_eDecision == EOverlapGraphicsDecision::Clipped && pOverlapResult->m_pReplacementPath)
+		DrawDeviceSpacePathRedacted(pGState, *pOverlapResult->m_pReplacementPath, pGState->getCTM());
+	else
+		DoPathRedact(pGState, pGState->getPath(), pGState->getCTM(), false, true);
+
 	DrawPath(c_nEvenOddFillMode);
 }
 void RedactOutputDev::tilingPatternFill(GfxState *pGState, Gfx *gfx, Object *pStream, int nPaintType, int nTilingType, Dict *pResourcesDict,
@@ -1376,7 +1386,8 @@ void RedactOutputDev::drawImageMask(GfxState *pGState, Gfx *gfx, Object *pRef, S
 void RedactOutputDev::drawImage(GfxState *pGState, Gfx *gfx, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap, int *pMaskColors, GBool bInlineImg, GBool interpolate)
 {
 	const SOverlapGraphicsResult* pOverlapResult = FindGraphicsResult(++m_nGraphicsCounter);
-	(void)pOverlapResult;
+	if (pOverlapResult && pOverlapResult->m_eDecision == EOverlapGraphicsDecision::Hidden)
+		return;
 
 	m_pRenderer->m_oCommandManager.Flush();
 	DoStateOp();
@@ -2021,13 +2032,8 @@ void RedactOutputDev::DoPathRedact(GfxState* pGState, GfxPath* pPath, double* pC
 void RedactOutputDev::DoPath(GfxState* pGState, GfxPath* pPath, double* pCTM)
 {
 	double arrMatrix[6];
-	arrMatrix[0] = pCTM[0];
-	arrMatrix[1] = pCTM[1];
-	arrMatrix[2] = pCTM[2];
-	arrMatrix[3] = pCTM[3];
-	arrMatrix[4] = pCTM[4];
-	arrMatrix[5] = pCTM[5];
-
+	for (int i = 0; i < 6; ++i)
+		arrMatrix[i] = pCTM[i];
 	double dShiftX = 0, dShiftY = 0;
 	DoTransform(arrMatrix, &dShiftX, &dShiftY, true);
 
@@ -2066,6 +2072,19 @@ void RedactOutputDev::DoPath(GfxState* pGState, GfxPath* pPath, double* pCTM)
 		if (pSubpath->isClosed())
 			m_pRenderer->m_oPath.Close();
 	}
+}
+void RedactOutputDev::DrawDeviceSpacePathRedacted(GfxState* pGState, Aggplus::CGraphicsPath& oPath, double* pCTM)
+{
+	double arrMatrix[6];
+	for (int i = 0; i < 6; ++i)
+		arrMatrix[i] = pCTM[i];
+	double dShiftX = 0, dShiftY = 0;
+	DoTransform(arrMatrix, &dShiftX, &dShiftY, true);
+
+	Aggplus::CGraphicsPath oPathResult = Aggplus::CalcBooleanOperation(oPath, m_oPathRedact, Aggplus::BooleanOpType::Subtraction);
+
+	double dXEnd = -1, dYEnd = -1;
+	DrawPathRedact(&oPathResult, false, dXEnd, dYEnd);
 }
 void RedactOutputDev::DoTransform(double* pMatrix, double* pdShiftX, double* pdShiftY, bool bActual)
 {

@@ -3033,11 +3033,15 @@ bool CPdfEditor::EditPage(int _nPageIndex, bool bSet, bool bActualPos)
 		bool bHiddenLayers            = (m_nRedactInfo & (1 << 7)) != 0;
 		bool bDeletedOrCroppedContent = (m_nRedactInfo & (1 << 8)) != 0;
 		bool bOverlappingObjects      = (m_nRedactInfo & (1 << 10)) != 0;
-		if (bHiddenText || bHiddenLayers || bDeletedOrCroppedContent || bOverlappingObjects)
+		if (bOverlappingObjects)
+		{
+
+		}
+		else if (bHiddenText || bHiddenLayers || bDeletedOrCroppedContent)
 		{
 			int nEP = m_nEditPage;
 			m_nEditPage = _nPageIndex;
-			Redact(NULL, bHiddenText || bOverlappingObjects, bHiddenText);
+			Redact(NULL);
 			m_nEditPage = nEP;
 		}
 
@@ -5036,7 +5040,7 @@ bool CPdfEditor::IsBase14(const std::wstring& wsFontName, bool& bBold, bool& bIt
 		return true;
 	return false;
 }
-void CPdfEditor::Redact(IAdvancedCommand* _pCommand, bool bOverlap, bool bTextOnly)
+void CPdfEditor::Redact(IAdvancedCommand* _pCommand)
 {
 	PDFDoc* pPDFDocument = NULL;
 	PdfReader::CPdfFontList* pFontList = NULL;
@@ -5093,7 +5097,8 @@ void CPdfEditor::Redact(IAdvancedCommand* _pCommand, bool bOverlap, bool bTextOn
 		std::set<int> arrOverlapHiddenTextIndices;
 		std::vector<int> arrOverlapFormTextCounts, arrOverlapFormGraphicsCounts;
 		std::vector<PdfWriter::SOverlapGraphicsResult> arrOverlapGraphicsResults;
-		if (bOverlap)
+		bool bTextOnly = (m_nRedactInfo & (1 << 6)) != 0;
+		if (bTextOnly)
 		{
 			PdfWriter::OverlapOutputDev oOverlapOut(bTextOnly);
 			oOverlapOut.NewPDF(pPDFDocument->getXRef());

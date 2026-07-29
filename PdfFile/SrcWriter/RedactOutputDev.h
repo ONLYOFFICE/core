@@ -210,6 +210,7 @@ namespace PdfWriter
 		void DoPathRedact(GfxState* pGState, GfxPath* pPath, double* pCTM, bool bStroke = false, bool bEoFill = false);
 		void DrawPathRedact(Aggplus::CGraphicsPath* oPath, bool bStroke, double& dXEnd, double& dYEnd, const std::vector<CSegment>& arrForStroke = {});
 		void DoPath(GfxState* pGState, GfxPath* pPath, double* pCTM);
+		void DrawDeviceSpacePathRedacted(GfxState* pGState, Aggplus::CGraphicsPath& oPath, double* pCTM);
 		void DoTransform(double* pMatrix, double* pdShiftX, double* pdShiftY, bool bActual = false);
 		void DrawPath(const LONG& lType);
 		void UpdateTransform();

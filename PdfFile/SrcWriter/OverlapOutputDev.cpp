@@ -146,6 +146,7 @@ double SafeGetArea(const Aggplus::CGraphicsPath* pPath)
 SOverlapPaintedItem::SOverlapPaintedItem()
 	: m_eKind(EOverlapPaintKind::Text)
 	, m_nTextIndex(-1)
+	, m_nGraphicsIndex(-1)
 	, m_pDevicePath(NULL)
 	, m_bEoFill(false)
 	, m_bGraphicsHidden(false)
@@ -399,9 +400,7 @@ void OverlapOutputDev::eoClip(GfxState* pGState)
 	m_pCurrentClip = pNewClip;
 }
 //----- text drawing -----
-void OverlapOutputDev::drawChar(GfxState* pGState, double dX, double dY, double dDx, double dDy,
-								 double dOriginX, double dOriginY, CharCode nCode, int nBytesCount,
-								 Unicode* pUnicode, int nUnicodeLen)
+void OverlapOutputDev::drawChar(GfxState* pGState, double dX, double dY, double dDx, double dDy, double dOriginX, double dOriginY, CharCode nCode, int nBytesCount, Unicode* pUnicode, int nUnicodeLen)
 {
 	int nCurrentIndex = m_nTextCounter++;
 

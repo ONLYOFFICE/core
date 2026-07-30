@@ -307,6 +307,8 @@ namespace OOX
 					auto anchorElem = anchor->m_oElement->GetElem();
 					auto picElem =  static_cast<PPTX::Logic::Pic*>(anchorElem.GetPointer());
 					auto picRid =  picElem->blipFill.blip->embed->get();
+					if(picRid.empty())
+						continue;
 					auto castedPic = Get<OOX::Media>(picRid);
 					if(!castedPic->IsExist())
 						continue;

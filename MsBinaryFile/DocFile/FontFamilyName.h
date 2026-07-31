@@ -70,7 +70,7 @@ namespace DocFileFormat
 	  unsigned int panoseSize;	// Panose size     
       FontSignature fs;			// Font sinature
 	  
-	  long searchTerminationZero( VirtualStreamReader *reader );
+	  long searchTerminationZero( VirtualStreamReader *reader, long length );
     public:
 	  FontFamilyName();
 	  virtual ~FontFamilyName();

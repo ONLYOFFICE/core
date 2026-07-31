@@ -36,6 +36,7 @@
 
 #include "../DesktopEditor/common/Path.h"
 #include "../DesktopEditor/graphics/commands/AnnotField.h"
+#include "../DesktopEditor/graphics/pro/Graphics.h"
 
 #include "SrcReader/Adaptors.h"
 #include "SrcReader/PdfAnnot.h"
@@ -3033,11 +3034,74 @@ bool CPdfEditor::EditPage(int _nPageIndex, bool bSet, bool bActualPos)
 		bool bHiddenLayers            = (m_nRedactInfo & (1 << 7)) != 0;
 		bool bDeletedOrCroppedContent = (m_nRedactInfo & (1 << 8)) != 0;
 		bool bOverlappingObjects      = (m_nRedactInfo & (1 << 10)) != 0;
-		if (bHiddenText || bHiddenLayers || bDeletedOrCroppedContent || bOverlappingObjects)
+		if (bOverlappingObjects)
+		{
+			Page* pOPage = pCatalog->getPage(nPageIndex);
+			PDFRectangle* box = pOPage->getMediaBox();
+			double dPageW = box->x2 - box->x1;
+			double dPageH = box->y2 - box->y1;
+			if (dPageW > 0 && dPageH > 0)
+			{
+				double dDpi = 144.0;
+				double dMaxSidePx = 5000.0;
+				double dMaxSide = (dPageW > dPageH ? dPageW : dPageH) * dDpi / 72.0;
+				if (dMaxSide > dMaxSidePx)
+					dDpi *= dMaxSidePx / dMaxSide;
+
+				int nRasterW = (int)(dPageW * dDpi / 72.0 + 0.5);
+				int nRasterH = (int)(dPageH * dDpi / 72.0 + 0.5);
+				if (nRasterW > 0 && nRasterH > 0)
+				{
+					BYTE* pBgraData = new(std::nothrow) BYTE[(size_t)nRasterW * nRasterH * 4];
+					if (pBgraData)
+					{
+						memset(pBgraData, 0xFF, (size_t)nRasterW * nRasterH * 4);
+
+						CBgraFrame oFrame;
+						oFrame.put_Data(pBgraData);
+						oFrame.put_Width(nRasterW);
+						oFrame.put_Height(nRasterH);
+						oFrame.put_Stride(4 * nRasterW);
+
+						NSGraphics::IGraphicsRenderer* pRenderer = NSGraphics::Create();
+						pRenderer->SetFontManager(m_pReader->GetFontManager());
+						pRenderer->CreateFromBgraFrame(&oFrame);
+						pRenderer->SetSwapRGB(true);
+						pRenderer->put_Width (dPageW * 25.4 / 72.0);
+						pRenderer->put_Height(dPageH * 25.4 / 72.0);
+
+						PdfReader::RendererOutputDev oRendererOut(pRenderer, m_pReader->GetFontManager(), pFontList);
+						oRendererOut.NewPDF(pPDFDocument->getXRef());
+
+						Object oContents;
+						pOPage->getContents(&oContents);
+						Gfx* gfx = new Gfx(pPDFDocument, &oRendererOut, _nPageIndex, pOPage->getResourceDict(), 72.0, 72.0, box, NULL, 0);
+						gfx->saveState();
+						gfx->display(&oContents);
+						gfx->endOfPage();
+						oContents.free();
+						delete gfx;
+
+						delete pRenderer;
+
+						// Replace the page content entirely with the rendered raster image
+						PdfWriter::CImageDict* pImageDict = pDoc->CreateImage();
+						pImageDict->LoadRaw(pBgraData, (unsigned int)nRasterW, (unsigned int)nRasterH);
+
+						PdfWriter::CPage* pPrevCurPage = pDoc->GetCurPage();
+						pDoc->SetCurPage(pPage);
+						pDoc->ClearPageFull();
+						pPage->DrawImage(pImageDict, box->x1, box->y1, dPageW, dPageH);
+						pDoc->SetCurPage(pPrevCurPage);
+					}
+				}
+			}
+		}
+		else if (bHiddenText || bHiddenLayers || bDeletedOrCroppedContent)
 		{
 			int nEP = m_nEditPage;
 			m_nEditPage = _nPageIndex;
-			Redact(NULL, bHiddenText || bOverlappingObjects, bHiddenText);
+			Redact(NULL);
 			m_nEditPage = nEP;
 		}
 
@@ -5036,7 +5100,7 @@ bool CPdfEditor::IsBase14(const std::wstring& wsFontName, bool& bBold, bool& bIt
 		return true;
 	return false;
 }
-void CPdfEditor::Redact(IAdvancedCommand* _pCommand, bool bOverlap, bool bTextOnly)
+void CPdfEditor::Redact(IAdvancedCommand* _pCommand)
 {
 	PDFDoc* pPDFDocument = NULL;
 	PdfReader::CPdfFontList* pFontList = NULL;
@@ -5093,7 +5157,8 @@ void CPdfEditor::Redact(IAdvancedCommand* _pCommand, bool bOverlap, bool bTextOn
 		std::set<int> arrOverlapHiddenTextIndices;
 		std::vector<int> arrOverlapFormTextCounts, arrOverlapFormGraphicsCounts;
 		std::vector<PdfWriter::SOverlapGraphicsResult> arrOverlapGraphicsResults;
-		if (bOverlap)
+		bool bTextOnly = (m_nRedactInfo & (1 << 6)) != 0;
+		if (bTextOnly)
 		{
 			PdfWriter::OverlapOutputDev oOverlapOut(bTextOnly);
 			oOverlapOut.NewPDF(pPDFDocument->getXRef());
@@ -5117,7 +5182,7 @@ void CPdfEditor::Redact(IAdvancedCommand* _pCommand, bool bOverlap, bool bTextOn
 		PdfWriter::RedactOutputDev oRedactOut(m_pWriter, &m_mObjManager, nStartRefID, m_nRedactInfo);
 		oRedactOut.NewPDF(pPDFDocument->getXRef());
 		oRedactOut.SetRedact(arrAllQuads);
-		oRedactOut.SetOverlapInfo(arrOverlapHiddenTextIndices, &arrOverlapFormTextCounts, &arrOverlapFormGraphicsCounts);
+		oRedactOut.SetOverlapInfo(arrOverlapHiddenTextIndices, &arrOverlapFormTextCounts, &arrOverlapFormGraphicsCounts, std::move(arrOverlapGraphicsResults));
 
 		Object oContents;
 		pPage->getContents(&oContents);

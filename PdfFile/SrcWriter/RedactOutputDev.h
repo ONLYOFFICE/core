@@ -37,6 +37,7 @@
 
 #include "../PdfWriter.h"
 #include "../PdfEditor.h"
+#include "OverlapOutputDev.h"
 
 #include "../SrcReader/GfxClip.h"
 
@@ -45,6 +46,7 @@
 
 #include <stack>
 #include <set>
+#include <map>
 
 namespace PdfWriter
 {
@@ -58,6 +60,7 @@ namespace PdfWriter
 		void SetOverlapInfo(const std::set<int>& arrHiddenTextIndices,
 							const std::vector<int>* pFormTextCounts,
 							const std::vector<int>* pFormGraphicsCounts,
+							std::vector<SOverlapGraphicsResult>&& arrGraphicsResults,
 							int nStartTextCounter = 0,
 							int nStartFormCounter = 0,
 							int nStartGraphicsCounter = 0);
@@ -207,6 +210,7 @@ namespace PdfWriter
 		void DoPathRedact(GfxState* pGState, GfxPath* pPath, double* pCTM, bool bStroke = false, bool bEoFill = false);
 		void DrawPathRedact(Aggplus::CGraphicsPath* oPath, bool bStroke, double& dXEnd, double& dYEnd, const std::vector<CSegment>& arrForStroke = {});
 		void DoPath(GfxState* pGState, GfxPath* pPath, double* pCTM);
+		void DrawDeviceSpacePathRedacted(GfxState* pGState, Aggplus::CGraphicsPath& oPath, double* pCTM);
 		void DoTransform(double* pMatrix, double* pdShiftX, double* pdShiftY, bool bActual = false);
 		void DrawPath(const LONG& lType);
 		void UpdateTransform();
@@ -215,6 +219,8 @@ namespace PdfWriter
 		void DrawXObject(const char* name, const double* pCropMatrix = NULL);
 		CObjectBase* CreateImage(Gfx *gfx, int nWidth, int nHeight, unsigned int nFilter, int nBPC, const char* sCS);
 		CResourcesDict* GetResources(Gfx *gfx, CDictObject* pNewForm = NULL);
+		const SOverlapGraphicsResult* FindGraphicsResult(int nGraphicsIndex) const;
+		void PropagateOverlapInfoToForm(RedactOutputDev* pChild) const;
 
 		XRef* m_pXref;
 		std::vector<double> m_arrQuadPoints;
@@ -236,6 +242,10 @@ namespace PdfWriter
 		int m_nTextCounter;
 		int m_nFormCounter;
 		int m_nGraphicsCounter;
+
+		std::vector<SOverlapGraphicsResult> m_arrGraphicsResultsStorage;
+		std::map<int, SOverlapGraphicsResult*> m_mapGraphicsResultsStorage;
+		const std::map<int, SOverlapGraphicsResult*>* m_pGraphicsResultsMap;
 
 		bool m_bUpdateAll;
 		std::deque<GfxRedactState> m_sStates;

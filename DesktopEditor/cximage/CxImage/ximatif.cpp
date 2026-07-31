@@ -17,7 +17,7 @@
 
 #if CXIMAGE_SUPPORT_TIF
 
-#define FIX_16BPP_DARKIMG // + VK: if uncomment, dark 16bpp images are fixed
+#define FIX_16BPP_DARKIMG // if uncomment, dark 16bpp images are fixed
 
 #include "../tiff/tiffio.h"
 
@@ -114,7 +114,7 @@ bool CxImageTIF::Decode(CxFile * hFile)
 		TIFFSetField(m_tif, TIFFTAG_ROWSPERSTRIP, rowsperstrip);
 	}
 
-	isRGB = /*(bitspersample >= 8) && (VK: it is possible so for RGB to have < 8 bpp!)*/
+	isRGB = /*(bitspersample >= 8) && ( it is possible so for RGB to have < 8 bpp!)*/
 		(photometric == PHOTOMETRIC_RGB) ||
 		(photometric == PHOTOMETRIC_YCBCR) ||
 		(photometric == PHOTOMETRIC_SEPARATED) ||
@@ -143,7 +143,7 @@ bool CxImageTIF::Decode(CxFile * hFile)
 			head.biClrUsed=256;
 		}
 
-		if ((bitspersample > 8) && (photometric==PHOTOMETRIC_PALETTE))	// + VK + (BIG palette! => convert to RGB)
+		if ((bitspersample > 8) && (photometric==PHOTOMETRIC_PALETTE))	// (BIG palette! => convert to RGB)
 		{	head.biBitCount=24;
 			head.biClrUsed =0;
 		}
@@ -202,18 +202,18 @@ bool CxImageTIF::Decode(CxFile * hFile)
 		}
 		_TIFFfree(raster);
 	} else {
-		int32_t BIG_palette = (bitspersample > 8) &&	// + VK
+		int32_t BIG_palette = (bitspersample > 8) &&
 						  (photometric==PHOTOMETRIC_PALETTE);		
-		if (BIG_palette && (bitspersample > 24))	// + VK
-			cx_throw("Too big palette to handle");		// + VK
+		if (BIG_palette && (bitspersample > 24))
+			cx_throw("Too big palette to handle");	
 
 		RGBQUAD *pal;
 		pal=(RGBQUAD*)calloc(BIG_palette ? 1<<bitspersample : 256,sizeof(RGBQUAD)); 
-			// ! VK: it coasts nothing but more correct to use 256 as temp palette storage
-			// ! VK: but for case of BIG palette it just copied
+			// ! it coasts nothing but more correct to use 256 as temp palette storage
+			// ! but for case of BIG palette it just copied
 		if (pal==NULL) cx_throw("Unable to allocate TIFF palette");
 
-		int32_t bpp = bitspersample <= 8 ? bitspersample : 8; // + VK (to use instead of bitspersample for case of > 8)
+		int32_t bpp = bitspersample <= 8 ? bitspersample : 8; // (to use instead of bitspersample for case of > 8)
 
 		// set up the colormap based on photometric	
 		switch(photometric) {
@@ -287,7 +287,7 @@ bool CxImageTIF::Decode(CxFile * hFile)
 		if (bitsize<(int32_t)(info.dwEffWidth*rowsperstrip))
 			bitsize = info.dwEffWidth*rowsperstrip;
 
-		if ((bitspersample > 8) && (bitspersample != 16))	// + VK (for bitspersample == 9..15,17..32..64
+		if ((bitspersample > 8) && (bitspersample != 16))	// (for bitspersample == 9..15,17..32..64
 			bitsize *= (bitspersample + 7)/8; 
 
 		int32_t tiled_image = TIFFIsTiled(m_tif);
@@ -296,17 +296,39 @@ bool CxImageTIF::Decode(CxFile * hFile)
 		if (tiled_image){
 			TIFFGetField(m_tif, TIFFTAG_TILEWIDTH, &tw);
 			TIFFGetField(m_tif, TIFFTAG_TILELENGTH, &tl);
-			rowsperstrip = tl;
-			bitsize = TIFFTileSize(m_tif) * (int32_t)(1+width/tw);
-			tilebuf = (uint8_t*)malloc(TIFFTileSize(m_tif));
-		}
-		
-        int32_t bitsize_correct = bitspersample==16? bitsize*2 : bitsize;
-        bits = (uint8_t*)malloc(bitsize_correct); // * VK
-		uint8_t * bits16 = NULL;										  // + VK
-		int32_t line16    = 0;											  // + VK
+			if (tw==0 || tl==0){
+				if (pal) free(pal);
+				cx_throw("Corrupted tiled TIFF file!");
+			}
+			rowsperstrip = tl > height ? height : tl;
 
-		if (!tiled_image && bitspersample==16) {					  // + VK +
+			int64_t rowbytes = (int64_t)TIFFScanlineSize(m_tif);
+			if (rowbytes < line) rowbytes = line;
+			int64_t tiledsize = rowbytes * (int64_t)rowsperstrip;
+			if (tiledsize <= 0 || tiledsize > 0x7FFFFFFF){
+				if (pal) free(pal);
+				cx_throw("CxImageTIF can't allocate memory");
+			}
+			bitsize = (int32_t)tiledsize;
+			tilebuf = (uint8_t*)malloc(TIFFTileSize(m_tif));
+			if (tilebuf==NULL){
+				if (pal) free(pal);
+				cx_throw("CxImageTIF can't allocate memory");
+			}
+		}
+
+        int64_t bitsize_needed = bitspersample==16? (int64_t)bitsize*2 : (int64_t)bitsize;
+        if (bitsize<=0 || bitsize_needed>0x7FFFFFFF){
+			if (pal)	 free(pal);
+			if (tilebuf) free(tilebuf);
+			cx_throw("CxImageTIF can't allocate memory");
+		}
+        int32_t bitsize_correct = (int32_t)bitsize_needed;
+        bits = (uint8_t*)malloc(bitsize_correct);
+        uint8_t * bits16 = NULL;
+        int32_t line16    = 0;
+
+        if (!tiled_image && bitspersample==16) {
 			line16 = line;
 			line   = CalculateLine(width, 8 * samplesperpixel);
 			bits16 = bits;
@@ -315,13 +337,13 @@ bool CxImageTIF::Decode(CxFile * hFile)
 		}
 
 		if (bits==NULL){
-			if (bits16) free(bits16);								  // + VK
-			if (pal)	free(pal);									  // + VK
-			if (tilebuf)free(tilebuf);								  // + VK	
+			if (bits16) free(bits16);								  
+			if (pal)	free(pal);									  
+			if (tilebuf)free(tilebuf);								  
 			cx_throw("CxImageTIF can't allocate memory");
 		}
 
-#ifdef FIX_16BPP_DARKIMG // + VK: for each line, store shift count bits used to fix it
+#ifdef FIX_16BPP_DARKIMG //  for each line, store shift count bits used to fix it
 		uint8_t* row_shifts = NULL;
 		if (bits16) row_shifts = (uint8_t*)malloc(height); 
 #endif
@@ -342,14 +364,14 @@ bool CxImageTIF::Decode(CxFile * hFile)
 				uint8* bufp = (uint8*) bits;
 
 				uint32 colb = 0;
-				for (uint32 col = 0; col < width; col += tw) {
+				for (uint32 col = 0; col < width && colb < imagew; col += tw) {
 					if (TIFFReadTile(m_tif, tilebuf, col, ys, 0, 0) < 0){
 						free(tilebuf);
 						free(bits);
 						cx_throw("Corrupted tiled TIFF file!");
 					}
 
-					if (colb + tw > imagew) {
+					if (colb + tilew > imagew) {
 						uint32 owidth = imagew - colb;
 						uint32 oskew = tilew - owidth;
 						TileToStrip(bufp + colb, tilebuf, nrow, owidth, oskew + iskew, oskew );
@@ -361,7 +383,7 @@ bool CxImageTIF::Decode(CxFile * hFile)
 
 			} else {
 				if (TIFFReadEncodedStrip(m_tif, TIFFComputeStrip(m_tif, ys, 0), 
-					(bits16? bits16 : bits), nrow * (bits16 ? line16 : line)) == -1) { // * VK
+					(bits16? bits16 : bits), nrow * (bits16 ? line16 : line)) == -1) { 
 
 #ifdef NOT_IGNORE_CORRUPTED
 					free(bits);
@@ -375,9 +397,9 @@ bool CxImageTIF::Decode(CxFile * hFile)
 
 			for (y = 0; y < nrow; y++) {
 				int32_t offset=(nrow-y-1)*line;
-				if ((bitspersample==16) && !BIG_palette) {	// * VK
-					int32_t offset16 = (nrow-y-1)*line16;		// + VK
-					if (bits16)	{							// + VK +
+				if ((bitspersample==16) && !BIG_palette) {
+					int32_t offset16 = (nrow-y-1)*line16;
+					if (bits16)	{							
 #ifdef FIX_16BPP_DARKIMG
 						int32_t the_shift;
 						uint8_t hi_byte, hi_max=0;

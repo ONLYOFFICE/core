@@ -445,6 +445,34 @@ static void build_doctype(GumboNode* node, NSStringUtils::CStringBuilderA& oBuil
 	}
 }
 
+static bool is_xml_name_char(unsigned char chValue, bool bIsFirst)
+{
+	if (chValue >= 0x80)
+		return true;
+
+	if (('a' <= chValue && 'z' >= chValue) || ('A' <= chValue && 'Z' >= chValue) || '_' == chValue || ':' == chValue)
+		return true;
+
+	if (bIsFirst)
+		return false;
+
+	return ('0' <= chValue && '9' >= chValue) || '-' == chValue || '.' == chValue;
+}
+
+static void remove_invalid_name_symbols(std::string& sName)
+{
+	std::string sResult;
+	sResult.reserve(sName.length());
+
+	for (const char chValue : sName)
+	{
+		if (is_xml_name_char((unsigned char)chValue, sResult.empty()))
+			sResult += chValue;
+	}
+
+	sName = sResult;
+}
+
 static void build_attributes(const GumboVector* attribs, NSStringUtils::CStringBuilderA& atts)
 {
 	std::vector<std::string> arrRepeat;
@@ -457,47 +485,29 @@ static void build_attributes(const GumboVector* attribs, NSStringUtils::CStringB
 		remove_control_symbols(sVal);
 		remove_control_symbols(sName);
 
-		atts.WriteString(" ");
+		const size_t unOriginalLength = sName.length();
 
-		bool bCheck = false;
-		size_t nBad = sName.find_first_of("+,.=?#%<>&;\"\'()[]{}");
-		while(nBad != std::string::npos)
-		{
-			sName.erase(nBad, 1);
-			nBad = sName.find_first_of("+,.=?#%<>&;\"\'()[]{}", nBad);
-			if(sName.empty())
-				break;
-			bCheck = true;
-		}
-		if(sName.empty())
+		remove_invalid_name_symbols(sName);
+
+		if (sName.empty())
 			continue;
-		while(sName.front() >= '0' && sName.front() <= '9')
-		{
-			sName.erase(0, 1);
-			if(sName.empty())
-				break;
-			bCheck = true;
-		}
-		if(bCheck)
+
+		if (unOriginalLength != sName.length())
 		{
 			GumboAttribute* check = gumbo_get_attribute(attribs, sName.c_str());
 			if(check || std::find(arrRepeat.begin(), arrRepeat.end(), sName) != arrRepeat.end())
 				continue;
-			else
-				arrRepeat.push_back(sName);
+
+			arrRepeat.push_back(sName);
 		}
 
-		if(sName.empty())
-			continue;
+		atts.WriteString(" ");
 		atts.WriteString(sName);
 
-		// determine original quote character used if it exists
-		std::string qs ="\"";
-		atts.WriteString("=");
-		atts.WriteString(qs);
+		atts.WriteString("=\"");
 		substitute_xml_entities_into_attributes(sVal);
 		atts.WriteString(sVal);
-		atts.WriteString(qs);
+		atts.WriteString("\"");
 	}
 }
 

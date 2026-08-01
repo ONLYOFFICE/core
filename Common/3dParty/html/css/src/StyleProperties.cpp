@@ -1451,32 +1451,187 @@ namespace NSCSS
 		return m_oColor.SetValue(wsValue, unLevel, bHardMode);
 	}
 
+	bool CBackground::SetImage(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
+	{
+		if (L"none" == wsValue || L"initial" == wsValue || L"inherit" == wsValue)
+		{
+			m_oImage.Clear();
+			return true;
+		}
+
+		return m_oImage.SetValue(wsValue);
+	}
+
+	bool CBackground::SetRepeat(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
+	{
+		return m_oRepeat.SetValue(wsValue, {L"repeat", L"repeat-x", L"repeat-y", L"no-repeat", L"space", L"round"}, unLevel, bHardMode);
+	}
+
+	bool CBackground::SetPosition(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
+	{
+		const std::vector<std::wstring> arValues{NS_STATIC_FUNCTIONS::GetWordsW(wsValue, false, L" ")};
+
+		if (arValues.empty())
+			return false;
+
+		CDigit oX, oY;
+		bool bSetX{false}, bSetY{false};
+
+		for (const std::wstring& wsComponent : arValues)
+		{
+			if (L"left" == wsComponent)
+			{
+				oX.SetValue(0., UnitMeasure::Percent, unLevel, true);
+				bSetX = true;
+			}
+			else if (L"right" == wsComponent)
+			{
+				oX.SetValue(100., UnitMeasure::Percent, unLevel, true);
+				bSetX = true;
+			}
+			else if (L"top" == wsComponent)
+			{
+				oY.SetValue(0., UnitMeasure::Percent, unLevel, true);
+				bSetY = true;
+			}
+			else if (L"bottom" == wsComponent)
+			{
+				oY.SetValue(100., UnitMeasure::Percent, unLevel, true);
+				bSetY = true;
+			}
+			else if (L"center" == wsComponent)
+			{
+				if (!bSetX)
+				{
+					oX.SetValue(50., UnitMeasure::Percent, unLevel, true);
+					bSetX = true;
+				}
+				else
+				{
+					oY.SetValue(50., UnitMeasure::Percent, unLevel, true);
+					bSetY = true;
+				}
+			}
+			else
+			{
+				CDigit oDigit;
+
+				if (!oDigit.SetValue(wsComponent, unLevel, true))
+					continue;
+
+				if (!bSetX)
+				{
+					oX.SetValue(oDigit);
+					bSetX = true;
+				}
+				else if (!bSetY)
+				{
+					oY.SetValue(oDigit);
+					bSetY = true;
+				}
+			}
+		}
+
+		if (!bSetX)
+			return false;
+
+		if (!bSetY)
+			oY.SetValue(0., UnitMeasure::Pixel, unLevel, true);
+
+		m_oPositionX.SetValue(oX);
+		m_oPositionY.SetValue(oY);
+
+		return true;
+	}
+
 	bool CBackground::SetBackground(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
 		const std::vector<std::wstring> &arValues = NS_STATIC_FUNCTIONS::GetWordsW(wsValue, false, L" ");
 
-		for (const std::wstring& wsValue : arValues)
+		bool bResult{false};
+		std::wstring wsPosition;
+
+		for (const std::wstring& wsComponent : arValues)
 		{
-			if (SetColor(wsValue, unLevel, bHardMode))
-				return true;
+			if (std::wstring::npos != wsComponent.find(L"url"))
+			{
+				if (SetImage(wsComponent, unLevel, bHardMode))
+					bResult = true;
+
+				continue;
+			}
+
+			if (SetRepeat(wsComponent, unLevel, bHardMode))
+			{
+				bResult = true;
+				continue;
+			}
+
+			if (SetColor(wsComponent, unLevel, bHardMode))
+			{
+				bResult = true;
+				continue;
+			}
+
+			if (!wsPosition.empty())
+				wsPosition += L' ';
+
+			wsPosition += wsComponent;
 		}
 
-		return false;
+		if (!wsPosition.empty() && SetPosition(wsPosition, unLevel, bHardMode))
+			bResult = true;
+
+		return bResult;
 	}
 
 	const CColor& CBackground::GetColor() const
 	{
 		return m_oColor;
 	}
-	
+
+	const CURL& CBackground::GetImage() const
+	{
+		return m_oImage;
+	}
+
+	const CDigit& CBackground::GetPositionX() const
+	{
+		return m_oPositionX;
+	}
+
+	const CDigit& CBackground::GetPositionY() const
+	{
+		return m_oPositionY;
+	}
+
+	const CString& CBackground::GetRepeat() const
+	{
+		return m_oRepeat;
+	}
+
+	bool CBackground::HaveImage() const
+	{
+		return !m_oImage.Empty();
+	}
+
+	bool CBackground::NoRepeat() const
+	{
+		return m_oRepeat == L"no-repeat";
+	}
+
 	void CBackground::Clear()
 	{
 		m_oColor.Clear();
+		m_oImage.Clear();
+		m_oPositionX.Clear();
+		m_oPositionY.Clear();
+		m_oRepeat.Clear();
 	}
 
 	bool CBackground::Empty() const
 	{
-		return m_oColor.Empty();
+		return m_oColor.Empty() && m_oImage.Empty();
 	}
 
 	bool CBackground::IsNone() const
@@ -1486,7 +1641,11 @@ namespace NSCSS
 
 	CBackground &CBackground::operator=(const CBackground &oBackground)
 	{
-		m_oColor    = oBackground.m_oColor;
+		m_oColor     = oBackground.m_oColor;
+		m_oImage     = oBackground.m_oImage;
+		m_oPositionX = oBackground.m_oPositionX;
+		m_oPositionY = oBackground.m_oPositionY;
+		m_oRepeat    = oBackground.m_oRepeat;
 
 		return *this;
 	}
@@ -1495,12 +1654,24 @@ namespace NSCSS
 	{
 		m_oColor += oBackground.m_oColor;
 
+		if (m_oImage.Empty())
+		{
+			m_oImage     = oBackground.m_oImage;
+			m_oPositionX = oBackground.m_oPositionX;
+			m_oPositionY = oBackground.m_oPositionY;
+			m_oRepeat    = oBackground.m_oRepeat;
+		}
+
 		return *this;
 	}
 
 	bool CBackground::operator==(const CBackground &oBackground) const
 	{
-		return m_oColor    == oBackground.m_oColor;
+		return m_oColor     == oBackground.m_oColor &&
+		       m_oImage     == oBackground.m_oImage &&
+		       m_oPositionX == oBackground.m_oPositionX &&
+		       m_oPositionY == oBackground.m_oPositionY &&
+		       m_oRepeat    == oBackground.m_oRepeat;
 	}
 
 	// TRANSFORM

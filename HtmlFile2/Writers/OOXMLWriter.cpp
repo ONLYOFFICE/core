@@ -73,7 +73,8 @@ inline void ReplaceSpaces(std::wstring& wsValue);
 COOXMLWriter::COOXMLWriter(THTMLParameters* pHTMLParameters, NSCSS::CCssCalculator* pCSSCalculator)
 	: m_pDstPath(nullptr), m_pStylesCalculator(pCSSCalculator),
 	  m_pHTMLParameters(pHTMLParameters), m_nFootnoteId(1), m_nHyperlinkId(1), m_nListId(1),
-	  m_nElementId(1), m_bBanUpdatePageData(false), m_bWasDivs(false)
+	  m_nElementId(1), m_nBackgroundImageId(BACKGROUND_IMAGE_ID_BASE),
+	  m_bBanUpdatePageData(false), m_bWasDivs(false)
 {
 	m_oPageData.SetWidth (DEFAULT_PAGE_WIDTH,  NSCSS::UnitMeasure::Twips, 0, true);
 	m_oPageData.SetHeight(DEFAULT_PAGE_HEIGHT, NSCSS::UnitMeasure::Twips, 0, true);
@@ -906,6 +907,14 @@ bool COOXMLWriter::WriteText(std::wstring wsText, const std::vector<NSCSS::CNode
 
 	XmlString *pCurrentDocument{GetCurrentDocument()};
 
+	if (!bPreformatedStyle && bAddSpaces && m_arStates.top().m_bInP && !m_arStates.top().m_bInR && !iswspace(wsText.front()) && !iswpunct(wsText.front()) && !m_arStates.top().m_bWasSpace)
+	{
+		const std::wstring wsVAlign{pCompiledStyle->m_oDisplay.GetVAlign().ToWString()};
+
+		if (L"sub" != wsVAlign && L"super" != wsVAlign)
+			WriteSpace();
+	}
+
 	if (bDeleted)
 		pCurrentDocument->WriteString(L"<w:del w:author=\"Unknown\">");
 
@@ -928,12 +937,6 @@ bool COOXMLWriter::WriteText(std::wstring wsText, const std::vector<NSCSS::CNode
 
 	if (bQuotation)
 		pCurrentDocument->WriteString(L"<w:t xml:space=\"preserve\">&quot;</w:t>");
-
-	if (!bPreformatedStyle && bAddSpaces && m_arStates.top().m_bInP && !m_arStates.top().m_bInR && !iswspace(wsText.front()) && !iswpunct(wsText.front()) && !m_arStates.top().m_bWasSpace)
-	{
-		if (pCompiledStyle->m_oDisplay.GetVAlign().Empty() || L"normal" == pCompiledStyle->m_oDisplay.GetVAlign().ToWString())
-			WriteSpace();
-	}
 
 	if(bPreformatedStyle)
 	{
@@ -1039,9 +1042,7 @@ void COOXMLWriter::WriteMetadata(const std::wstring& wsName, const std::wstring&
 
 void COOXMLWriter::WriteSpace()
 {
-	OpenR();
-	m_arStates.top().m_pCurrentDocument->WriteString(L"<w:rPr><w:rFonts w:eastAsia=\"Times New Roman\"/></w:rPr><w:t xml:space=\"preserve\"> </w:t>");
-	CloseR();
+	m_arStates.top().m_pCurrentDocument->WriteString(L"<w:r><w:rPr><w:rFonts w:eastAsia=\"Times New Roman\"/></w:rPr><w:t xml:space=\"preserve\"> </w:t></w:r>");
 	m_arStates.top().m_bWasSpace = true;
 }
 
@@ -1196,6 +1197,11 @@ void COOXMLWriter::WriteEmptyImage(int nWidth, int nHeight, const std::wstring& 
 	m_arStates.top().m_pCurrentDocument->WriteString(L"</pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing>");
 
 	CloseR();
+}
+
+int COOXMLWriter::GetNextBackgroundImageId()
+{
+	return m_nBackgroundImageId++;
 }
 
 void COOXMLWriter::WriteImageRels(const std::wstring& wsImageId, const std::wstring& wsImageName)

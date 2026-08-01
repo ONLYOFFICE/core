@@ -887,9 +887,9 @@ void ReadNestedCells(XmlUtils::CXmlLiteReader& oReader, std::vector<NSCSS::CNode
 	}
 }
 
-bool CMarkdownTable::Convert(XmlUtils::CXmlLiteReader& oReader, const NSCSS::CNode& oTableNode)
+bool CMarkdownTable::Convert(XmlUtils::CXmlLiteReader& oReader, std::vector<NSCSS::CNode>& arTableSelectors)
 {
-	if (Empty())
+	if (Empty() || arTableSelectors.empty())
 		return false;
 
 	CMDWriter *pWriter{dynamic_cast<CMDWriter*>(m_oExternalData.m_pWriter)};
@@ -897,7 +897,7 @@ bool CMarkdownTable::Convert(XmlUtils::CXmlLiteReader& oReader, const NSCSS::CNo
 	if (nullptr == pWriter)
 		return false;
 
-	std::vector<NSCSS::CNode> arTableSelectors{oTableNode};
+	const size_t unBaseSelectors{arTableSelectors.size()};
 
 	pWriter->WriteBreakLine(false);
 
@@ -951,6 +951,8 @@ bool CMarkdownTable::Convert(XmlUtils::CXmlLiteReader& oReader, const NSCSS::CNo
 	ConvertMatrix(oReader, arTableSelectors, m_oBody.GetMatrixCells(), pWriter);
 	//Convert foother
 	ConvertMatrix(oReader, arTableSelectors, m_oFoother.GetMatrixCells(), pWriter);
+
+	arTableSelectors.resize(unBaseSelectors);
 
 	//Close table
 	pWriter->OutTable();

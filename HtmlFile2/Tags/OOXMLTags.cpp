@@ -65,10 +65,12 @@ bool ReadMetafileData(const std::wstring& wsFilePath, NSFonts::IApplicationFonts
 bool ReadSVGData(const std::wstring& wsSvg, NSFonts::IApplicationFonts* pFonts, const std::wstring& wsTempDir, const std::wstring& wsImagePath);
 bool ReadBase64(const std::wstring& wsSrc, const std::wstring& wsImagePath, NSFonts::IApplicationFonts* pFonts, const std::wstring& wsTempDir, std::wstring& wsExtention);
 bool GetStatusUsingExternalLocalFiles();
-bool CanUseThisPath(const std::wstring& wsPath, const std::wstring& wsSrcPath, const std::wstring& wsCorePath, NSFonts::IApplicationFonts* pFonts, const std::wstring& wsTempDir, bool bIsAllowExternalLocalFiles);
 
 bool CopyImage(std::wstring wsImageSrc, const std::wstring& wsSrc, const std::wstring& wsDst, bool bIsAllowExternalLocalFiles);
 bool UpdateImageData(const std::wstring& wsImagePath, TImageData& oImageData);
+
+bool CropImageRegion(const std::wstring& wsSrcPath, const std::wstring& wsDstPath, int nOffsetX, int nOffsetY, int nWidth, int nHeight);
+bool WriteBackgroundImage(COOXMLWriter* pWriter, const std::vector<NSCSS::CNode>& arSelectors);
 
 const static double HTML_FONTS[7] = {7.5, 10, 12, 13.5, 18, 24, 36};
 
@@ -134,6 +136,8 @@ bool CAnchorOOXMLTag::Open(const std::vector<NSCSS::CNode>& arSelectors)
 
 		m_pWriter->SetHyperlinkData(wsRef, wsTooltip, false, wsFootnote, bFootnote);
 	}
+
+	WriteBackgroundImage(m_pWriter, arSelectors);
 
 	return true;
 }
@@ -225,6 +229,8 @@ bool CDivisionOOXMLTag::Open(const std::vector<NSCSS::CNode>& arSelectors)
 	}
 
 	m_arFootnoteIDs.push(unMsoFootnote);
+
+	WriteBackgroundImage(m_pWriter, arSelectors);
 
 	return true;
 }
@@ -461,8 +467,7 @@ bool CImageOOXMLTag::Open(const std::vector<NSCSS::CNode>& arSelectors)
 	{
 		m_pWriter->WritePPr(arSelectors);
 
-		const std::wstring wsImageID{std::to_wstring(m_arImages.size())};
-		m_arImages.push_back(wsSrc);
+		const std::wstring wsImageID{std::to_wstring((nImageId < 0) ? m_arImages.size() : (size_t)nImageId)};
 
 		if (nImageId < 0)
 		{
@@ -477,7 +482,7 @@ bool CImageOOXMLTag::Open(const std::vector<NSCSS::CNode>& arSelectors)
 		}
 
 		TImageData oNewImageData{oImageData};
-		if (!UpdateImageData(wsImagePath + L'.' + wsExtention, oNewImageData))
+		if (!UpdateImageData(m_pWriter->GetMediaDir() + L'i' + wsImageID + L'.' + wsExtention, oNewImageData))
 			return false;
 
 		m_pWriter->WriteImage(oNewImageData, wsImageID);
@@ -1070,6 +1075,173 @@ bool CopyImage(std::wstring wsImageSrc, const std::wstring& wsSrc, const std::ws
 	return bRes;
 }
 
+bool WriteBackgroundImage(COOXMLWriter* pWriter, const std::vector<NSCSS::CNode>& arSelectors)
+{
+	if (nullptr == pWriter || arSelectors.empty())
+		return false;
+
+	const NSCSS::CCompiledStyle* pStyle{arSelectors.back().m_pCompiledStyle};
+
+	if (nullptr == pStyle || !pStyle->m_oBackground.HaveImage())
+		return false;
+
+	const NSCSS::NSProperties::CDigit& oWidth {pStyle->m_oDisplay.GetWidth()};
+	const NSCSS::NSProperties::CDigit& oHeight{pStyle->m_oDisplay.GetHeight()};
+
+	if (oWidth.Empty() || oHeight.Empty())
+		return false;
+
+	const int nBoxWidth {(int)oWidth .ToDouble(NSCSS::Pixel)};
+	const int nBoxHeight{(int)oHeight.ToDouble(NSCSS::Pixel)};
+
+	if (nBoxWidth <= 0 || nBoxHeight <= 0)
+		return false;
+
+	std::wstring wsSrc{pStyle->m_oBackground.GetImage().GetValue()};
+
+	if (wsSrc.empty())
+		return false;
+
+	std::wstring wsExtention{NSFile::GetFileExtention(wsSrc)};
+	std::transform(wsExtention.begin(), wsExtention.end(), wsExtention.begin(), tolower);
+
+	std::wstring::const_iterator itFound{std::find_if(wsExtention.cbegin(), wsExtention.cend(), [](wchar_t wChar){ return !iswalpha(wChar) && L'+' != wChar; })};
+
+	if (wsExtention.cend() != itFound)
+		wsExtention.erase(itFound, wsExtention.cend());
+
+	if (NotValidExtension(wsExtention) || IsSVG(wsExtention) || IsMetafile(wsExtention))
+		return false;
+
+	const int nImageId{pWriter->GetNextBackgroundImageId()};
+	const std::wstring wsImageID{std::to_wstring(nImageId)};
+
+	const std::wstring wsDownloaded{pWriter->GetMediaDir() + L"bg" + wsImageID + L'.' + ((wsExtention.empty()) ? L"png" : wsExtention)};
+
+	bool bRes{false};
+
+	const std::wstring wsBasePath{pWriter->GetBasePath()};
+
+	if ((!wsBasePath.empty() && wsBasePath.length() > 4 && L"http" == wsBasePath.substr(0, 4)) ||
+	    (wsSrc.length() > 4 && L"http" == wsSrc.substr(0, 4)))
+	{
+		NSNetwork::NSFileTransport::CFileDownloader oDownloadImg(wsBasePath + wsSrc, false);
+		oDownloadImg.SetFilePath(wsDownloaded);
+		bRes = oDownloadImg.DownloadSync();
+	}
+	else
+	{
+		wsSrc = NSSystemPath::ShortenPath(wsSrc);
+
+		const bool bIsAllowExternalLocalFiles{GetStatusUsingExternalLocalFiles()};
+
+		if (!CanUseThisPath(wsSrc, pWriter->GetSrcPath(), pWriter->GetCorePath(), bIsAllowExternalLocalFiles))
+			return false;
+
+		if (!wsBasePath.empty())
+			bRes = CopyImage(NSSystemPath::Combine(wsBasePath, wsSrc), pWriter->GetSrcPath(), wsDownloaded, bIsAllowExternalLocalFiles);
+
+		if (!bRes)
+			bRes = CopyImage(NSSystemPath::Combine(pWriter->GetSrcPath(), wsSrc), pWriter->GetSrcPath(), wsDownloaded, bIsAllowExternalLocalFiles);
+
+		if (!bRes)
+			bRes = CopyImage(wsSrc, pWriter->GetSrcPath(), wsDownloaded, bIsAllowExternalLocalFiles);
+	}
+
+	if (!bRes)
+		return false;
+
+	const int nOffsetX{-(int)pStyle->m_oBackground.GetPositionX().ToDouble(NSCSS::Pixel)};
+	const int nOffsetY{-(int)pStyle->m_oBackground.GetPositionY().ToDouble(NSCSS::Pixel)};
+
+	const std::wstring wsCropped{pWriter->GetMediaDir() + L'i' + wsImageID + L".png"};
+
+	if (!CropImageRegion(wsDownloaded, wsCropped, nOffsetX, nOffsetY, nBoxWidth, nBoxHeight))
+	{
+		NSFile::CFileBinary::Remove(wsDownloaded);
+		return false;
+	}
+
+	NSFile::CFileBinary::Remove(wsDownloaded);
+
+	TImageData oImageData;
+	oImageData.m_unWidth  = (UINT)(NSCSS::CUnitMeasureConverter::ConvertPx(nBoxWidth,  NSCSS::Inch, 96) * 914400);
+	oImageData.m_unHeight = (UINT)(NSCSS::CUnitMeasureConverter::ConvertPx(nBoxHeight, NSCSS::Inch, 96) * 914400);
+
+	if (oImageData.ZeroSize())
+		return false;
+
+	pWriter->WritePPr(arSelectors);
+	pWriter->WriteImageRels(wsImageID, wsImageID + L".png");
+	pWriter->WriteImage(oImageData, wsImageID);
+
+	return true;
+}
+
+bool CropImageRegion(const std::wstring& wsSrcPath, const std::wstring& wsDstPath, int nOffsetX, int nOffsetY, int nWidth, int nHeight)
+{
+	if (nWidth <= 0 || nHeight <= 0)
+		return false;
+
+	CBgraFrame oSrcFrame;
+
+	if (!oSrcFrame.OpenFile(wsSrcPath))
+		return false;
+
+	const int nSrcWidth {oSrcFrame.get_Width()};
+	const int nSrcHeight{oSrcFrame.get_Height()};
+	const int nSrcStride{oSrcFrame.get_Stride()};
+
+	BYTE* pSrcData{oSrcFrame.get_Data()};
+
+	if (nullptr == pSrcData || nSrcWidth <= 0 || nSrcHeight <= 0 || 0 == nSrcStride)
+		return false;
+
+	const int nAbsSrcStride{(nSrcStride < 0) ? -nSrcStride : nSrcStride};
+	const int nDstStride{nWidth * 4};
+
+	BYTE* pDstData{(BYTE*)malloc((size_t)nDstStride * nHeight)};
+
+	if (nullptr == pDstData)
+		return false;
+
+	memset(pDstData, 0, (size_t)nDstStride * nHeight);
+
+	for (int nRow = 0; nRow < nHeight; ++nRow)
+	{
+		const int nSrcRow{nOffsetY + nRow};
+
+		if (nSrcRow < 0 || nSrcRow >= nSrcHeight)
+			continue;
+
+		const BYTE* pSrcRow{pSrcData + (size_t)((nSrcStride < 0) ? (nSrcHeight - 1 - nSrcRow) : nSrcRow) * nAbsSrcStride};
+		BYTE* pDstRow{pDstData + (size_t)nRow * nDstStride};
+
+		for (int nColumn = 0; nColumn < nWidth; ++nColumn)
+		{
+			const int nSrcColumn{nOffsetX + nColumn};
+
+			if (nSrcColumn < 0 || nSrcColumn >= nSrcWidth)
+				continue;
+
+			memcpy(pDstRow + (size_t)nColumn * 4, pSrcRow + (size_t)nSrcColumn * 4, 4);
+		}
+	}
+
+	CBgraFrame oDstFrame;
+	oDstFrame.put_Data(pDstData);
+	oDstFrame.put_Width(nWidth);
+	oDstFrame.put_Height(nHeight);
+	oDstFrame.put_Stride(nDstStride);
+
+	const bool bResult{oDstFrame.SaveFile(wsDstPath, 4)};
+
+	oDstFrame.put_Data(NULL);
+	free(pDstData);
+
+	return bResult;
+}
+
 bool UpdateImageData(const std::wstring& wsImagePath, TImageData& oImageData)
 {
 	CBgraFrame oBgraFrame;
@@ -1608,16 +1780,16 @@ void COOXMLTable::CloseCell(XmlString& oXmlString)
 	oXmlString.WriteNodeEnd(L"w:tc");
 }
 
-void COOXMLTable::ConvertTable(XmlUtils::CXmlLiteReader& oReader, COOXMLWriter& oWriter, const COOXMLTable& oTable, const NSCSS::CNode& oTableNode)
+void COOXMLTable::ConvertTable(XmlUtils::CXmlLiteReader& oReader, COOXMLWriter& oWriter, const COOXMLTable& oTable, std::vector<NSCSS::CNode>& arTableSelectors)
 {
-	std::vector<NSCSS::CNode> arTableSelectors{oTableNode};
+	const size_t unBaseSelectors{arTableSelectors.size()};
 
 	XmlString& oCurrentDocument{*oWriter.GetCurrentDocument()};
 	TTableStyles oTableStyles;
 
 	oTableStyles.m_pTable = &oTable;
 
-	OpenTable(oCurrentDocument, oTableNode, oTableStyles, oTable);
+	OpenTable(oCurrentDocument, arTableSelectors.back(), oTableStyles, oTable);
 
 	std::stack<int> arDepths({oReader.GetDepth()});
 
@@ -1648,6 +1820,8 @@ void COOXMLTable::ConvertTable(XmlUtils::CXmlLiteReader& oReader, COOXMLWriter& 
 		else
 			arTableSelectors.pop_back();
 	}
+
+	arTableSelectors.resize(unBaseSelectors);
 
 	CloseTable(oCurrentDocument);
 	oWriter.WriteEmptyParagraph(true);
@@ -1731,13 +1905,15 @@ void COOXMLTable::ConvertMatrix(XmlUtils::CXmlLiteReader& oReader, COOXMLWriter&
 
 			const size_t unCellSelectors{arSelectors.size()};
 
+			if (unColumnIndex < MAX_COLUMNS_IN_TABLE)
+				OpenCell(oCellsData, arSelectors.back(), (CTableElementCell*)pTableCell, unColumnIndex, eRowParseMode,
+				         ((0 == unRowIndex) ? ERowPosition::First : ((oMatrix.size() - 1 == unRowIndex) ? ERowPosition::Last : ERowPosition::Middle)),
+				         unCellHeight, oTableStyles, mFillingColumn);
+
+			const size_t unCellContentStart{oCellsData.GetCurSize()};
+
 			if (ETableElement::TableContainer == pTableCell->GetType())
 			{
-				if (unColumnIndex < MAX_COLUMNS_IN_TABLE)
-					OpenCell(oCellsData, arSelectors.back(), (CTableElementCell*)pTableCell, unColumnIndex, eRowParseMode,
-					         ((0 == unRowIndex) ? ERowPosition::First : ((oMatrix.size() - 1 == unRowIndex) ? ERowPosition::Last : ERowPosition::Middle)),
-					         unCellHeight, oTableStyles, mFillingColumn);
-
 				std::vector<CTableElement*> arTables{((CTableContainer*)pTableCell)->GetTables()};
 				std::vector<CTableElement*>::const_iterator itTable = arTables.cbegin();
 
@@ -1752,7 +1928,7 @@ void COOXMLTable::ConvertMatrix(XmlUtils::CXmlLiteReader& oReader, COOXMLWriter&
 					{\
 						m_oExternalData.GetSubClass(oReader, arSelectors);\
 						oWriter.CloseP();\
-						ConvertTable(oReader, oWriter, *(COOXMLTable*)*itTable++, arSelectors.back());\
+						ConvertTable(oReader, oWriter, *(COOXMLTable*)*itTable++, arSelectors);\
 						oWriter.WriteEmptyParagraph(true);\
 						arSelectors.pop_back();\
 					}
@@ -1781,11 +1957,6 @@ void COOXMLTable::ConvertMatrix(XmlUtils::CXmlLiteReader& oReader, COOXMLWriter&
 			}
 			else
 			{
-				if (unColumnIndex < MAX_COLUMNS_IN_TABLE)
-					OpenCell(oCellsData, arSelectors.back(), (CTableElementCell*)pTableCell, unColumnIndex, eRowParseMode,
-					         ((0 == unRowIndex) ? ERowPosition::First : ((oMatrix.size() - 1 == unRowIndex) ? ERowPosition::Last : ERowPosition::Middle)),
-					         unCellHeight, oTableStyles, mFillingColumn);
-
 				unMaxCellHeight = (std::max)(unMaxCellHeight, unCellHeight);
 
 				m_oExternalData.ReadStream(oReader, arSelectors);
@@ -1794,6 +1965,9 @@ void COOXMLTable::ConvertMatrix(XmlUtils::CXmlLiteReader& oReader, COOXMLWriter&
 			arSelectors.resize(unCellSelectors - 1);
 
 			oWriter.CloseP();
+
+			if (unCellContentStart == oCellsData.GetCurSize())
+				oWriter.WriteEmptyParagraph();
 
 			if (unColumnIndex < MAX_COLUMNS_IN_TABLE - 1)
 				CloseCell(oCellsData);
@@ -1871,9 +2045,9 @@ void COOXMLTable::Normalize()
 	NormalizeMatrix(m_oFoother.GetMatrixCells(), unFootherRowSize, unMaxColumns);
 }
 
-bool COOXMLTable::Convert(XmlUtils::CXmlLiteReader& oReader, const NSCSS::CNode& oTableNode)
+bool COOXMLTable::Convert(XmlUtils::CXmlLiteReader& oReader, std::vector<NSCSS::CNode>& arSelectors)
 {
-	if (Empty())
+	if (Empty() || arSelectors.empty())
 		return false;
 
 	COOXMLWriter* pWriter{dynamic_cast<COOXMLWriter*>(m_oExternalData.m_pWriter)};
@@ -1881,7 +2055,7 @@ bool COOXMLTable::Convert(XmlUtils::CXmlLiteReader& oReader, const NSCSS::CNode&
 	if (nullptr == pWriter)
 		return false;
 
-	ConvertTable(oReader, *pWriter, *this, oTableNode);
+	ConvertTable(oReader, *pWriter, *this, arSelectors);
 
 	return true;
 }

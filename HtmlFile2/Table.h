@@ -211,7 +211,7 @@ public:
 
 	virtual bool PreParse(XmlUtils::CXmlLiteReader& oReader) = 0;
 	virtual void Normalize() = 0;
-	virtual bool Convert(XmlUtils::CXmlLiteReader& oReader, const NSCSS::CNode& oTableNode) = 0;
+	virtual bool Convert(XmlUtils::CXmlLiteReader& oReader, std::vector<NSCSS::CNode>& arSelectors) = 0;
 protected:
 	CTableMatrix m_oHeader;
 	CTableMatrix m_oBody;

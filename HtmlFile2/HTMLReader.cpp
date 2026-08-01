@@ -735,6 +735,9 @@ bool CHTMLReader::ReadStream(XmlUtils::CXmlLiteReader& oReader, std::vector<NSCS
 
 		if (ReadInside(oReader, arSelectors))
 			bResult = true;
+
+		if (!m_arStopTags.empty() && m_arStopTags.end() != m_arStopTags.find(oReader.GetName()))
+			return bResult;
 	} while(oReader.ReadNextSiblingNode2(nDeath));
 
 	if (!bResult && bInsertEmptyP)
@@ -1026,7 +1029,7 @@ bool CHTMLReader::ReadTable(XmlUtils::CXmlLiteReader& oReader, std::vector<NSCSS
 		return false;
 
 	m_pTableElement->Normalize();
-	m_pTableElement->Convert(oTableReader, arSelectors.back());
+	m_pTableElement->Convert(oTableReader, arSelectors);
 
 	m_pTableElement->Clear();
 	return true;

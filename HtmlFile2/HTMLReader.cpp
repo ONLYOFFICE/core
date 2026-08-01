@@ -417,7 +417,7 @@ bool CHTMLReader::InitOOXMLTags(THTMLParameters* pParametrs)
 	                                  { return ReadInside(oReader, arSelectors); };
 
 	oExternalData.AddStopTag    = [this](const std::wstring& wsTag){ AddStopTag(wsTag); };
-	oExternalData.ClearStopTags = [this]{ ClearStopTags(); };
+	oExternalData.RemoveStopTag = [this](const std::wstring& wsTag){ RemoveStopTag(wsTag); };
 
 	oExternalData.m_pWriter = pWriter;
 
@@ -460,7 +460,7 @@ bool CHTMLReader::InitMDTags(TMarkdownParameters* pParametrs)
 	                                  { return ReadInside(oReader, arSelectors); };
 
 	oExternalData.AddStopTag    = [this](const std::wstring& wsTag){ AddStopTag(wsTag); };
-	oExternalData.ClearStopTags = [this]{ ClearStopTags(); };
+	oExternalData.RemoveStopTag = [this](const std::wstring& wsTag){ RemoveStopTag(wsTag); };
 
 	oExternalData.m_pWriter = pWriter;
 
@@ -1068,6 +1068,11 @@ std::shared_ptr<ITag> CHTMLReader::GetTag(int nTag)
 void CHTMLReader::AddStopTag(const std::wstring& wsTag)
 {
 	m_arStopTags.insert(wsTag);
+}
+
+void CHTMLReader::RemoveStopTag(const std::wstring& wsTag)
+{
+	m_arStopTags.erase(m_arStopTags.find(wsTag));
 }
 
 void CHTMLReader::ClearStopTags()

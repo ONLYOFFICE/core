@@ -899,6 +899,8 @@ bool CMarkdownTable::Convert(XmlUtils::CXmlLiteReader& oReader, std::vector<NSCS
 
 	const size_t unBaseSelectors{arTableSelectors.size()};
 
+	m_oExternalData.AddStopTag(L"table");
+
 	pWriter->WriteBreakLine(false);
 
 	if (HaveCaption())
@@ -953,6 +955,8 @@ bool CMarkdownTable::Convert(XmlUtils::CXmlLiteReader& oReader, std::vector<NSCS
 	ConvertMatrix(oReader, arTableSelectors, m_oFoother.GetMatrixCells(), pWriter);
 
 	arTableSelectors.resize(unBaseSelectors);
+
+	m_oExternalData.RemoveStopTag(L"table");
 
 	//Close table
 	pWriter->OutTable();
@@ -1055,14 +1059,33 @@ bool CMarkdownTable::ConvertMatrix(XmlUtils::CXmlLiteReader& oReader, std::vecto
 					NSStringUtils::CStringBuilder oTempData(100);
 					bool bSetedDataOutput{false};
 
-					arDepths.push(oReader.GetDepth());
+					arDepths.push(nDepth);
 
-					m_oExternalData.AddStopTag(L"table");
+					const size_t unContainerDepths{arDepths.size()};
 
 					NSStringUtils::CStringBuilder oIntermediateData(100);
 
-					while(oReader.ReadNextSiblingNode2(nDepth))
+					while (true)
 					{
+						bool bMoved{false};
+
+						while (true)
+						{
+							if (oReader.ReadNextSiblingNode2(arDepths.top()))
+							{
+								bMoved = true;
+								break;
+							}
+
+							if (arDepths.size() == unContainerDepths)
+								break;
+
+							arDepths.pop();
+						}
+
+						if (!bMoved)
+							break;
+
 						if (L"table" == oReader.GetName())
 						{
 							if (bSetedDataOutput)
@@ -1097,6 +1120,12 @@ bool CMarkdownTable::ConvertMatrix(XmlUtils::CXmlLiteReader& oReader, std::vecto
 								arNestedCells.rbegin()->second->Write(oIntermediateData);
 								oIntermediateData.Clear();
 							}
+
+							while (arDepths.size() > unContainerDepths)
+								arDepths.pop();
+
+							for (int nCurrentDepth = nDepth + 1; nCurrentDepth < oReader.GetDepth(); ++nCurrentDepth)
+								arDepths.push(nCurrentDepth);
 						}
 						else
 						{
@@ -1109,8 +1138,6 @@ bool CMarkdownTable::ConvertMatrix(XmlUtils::CXmlLiteReader& oReader, std::vecto
 							m_oExternalData.ReadInside(oReader, arSelectors);
 						}
 					}
-
-					m_oExternalData.ClearStopTags();
 
 					if (bSetedDataOutput)
 					{

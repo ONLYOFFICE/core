@@ -65,7 +65,7 @@ class CHTMLReader
 
 	CTableElement* m_pTableElement; // Table Converter
 
-	std::set<std::wstring> m_arStopTags;
+	std::multiset<std::wstring> m_arStopTags;
 
 	std::map<int, std::shared_ptr<ITag>> m_mTags;
 public:
@@ -124,6 +124,7 @@ private:
 	std::shared_ptr<ITag> GetTag(int nTag);
 
 	void AddStopTag(const std::wstring& wsTag);
+	void RemoveStopTag(const std::wstring& wsTag);
 	void ClearStopTags();
 };
 }

@@ -120,13 +120,13 @@ struct TExternalTableData
 	typedef std::function<void(XmlUtils::CXmlLiteReader& oReader, std::vector<NSCSS::CNode>& arSelectors)> FuncGetSubClass;
 	typedef std::function<bool(XmlUtils::CXmlLiteReader& oReader, std::vector<NSCSS::CNode>& arSelectors)> FuncReadInside;
 	typedef std::function<void(const std::wstring& wsTag)>                                                 FuncAddStopTag;
-	typedef std::function<void()>                                                                          FuncClearStopTags;
+	typedef std::function<void(const std::wstring& wsTag)>                                                 FuncRemoveStopTag;
 
 	FuncReadStream    ReadStream;
 	FuncGetSubClass   GetSubClass;
 	FuncReadInside    ReadInside;
 	FuncAddStopTag    AddStopTag;
-	FuncClearStopTags ClearStopTags;
+	FuncRemoveStopTag RemoveStopTag;
 
 	IWriter* m_pWriter{nullptr};
 };

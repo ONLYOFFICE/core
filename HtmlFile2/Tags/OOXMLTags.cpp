@@ -1793,6 +1793,8 @@ void COOXMLTable::ConvertTable(XmlUtils::CXmlLiteReader& oReader, COOXMLWriter& 
 
 	std::stack<int> arDepths({oReader.GetDepth()});
 
+	m_oExternalData.AddStopTag(L"table");
+
 	bool bConvertedHeader{false}, bConvertedBody{false}, bConvertedFoother{false};
 
 	#define CONVERT_MATRIX(matrix_variable)\
@@ -1822,6 +1824,8 @@ void COOXMLTable::ConvertTable(XmlUtils::CXmlLiteReader& oReader, COOXMLWriter& 
 	}
 
 	arTableSelectors.resize(unBaseSelectors);
+
+	m_oExternalData.RemoveStopTag(L"table");
 
 	CloseTable(oCurrentDocument);
 	oWriter.WriteEmptyParagraph(true);
@@ -1919,41 +1923,57 @@ void COOXMLTable::ConvertMatrix(XmlUtils::CXmlLiteReader& oReader, COOXMLWriter&
 
 				const size_t unDepthSize{arDepths.size()};
 
-				arDepths.push(oReader.GetDepth());
+				const int nCellDepth{oReader.GetDepth()};
 
-				m_oExternalData.AddStopTag(L"table");
+				arDepths.push(nCellDepth);
 
-				#define READ_TABLE()\
-					if (arTables.cend() != itTable)\
-					{\
-						m_oExternalData.GetSubClass(oReader, arSelectors);\
-						oWriter.CloseP();\
-						ConvertTable(oReader, oWriter, *(COOXMLTable*)*itTable++, arSelectors);\
-						oWriter.WriteEmptyParagraph(true);\
-						arSelectors.pop_back();\
-					}
+				const size_t unContainerDepths{arDepths.size()};
 
-				while (oReader.ReadNextSiblingNode2(arDepths.top()))
+				while (true)
 				{
-					if (L"table" == oReader.GetName())
+					bool bMoved{false};
+
+					while (true)
 					{
-						READ_TABLE();
+						if (oReader.ReadNextSiblingNode2(arDepths.top()))
+						{
+							bMoved = true;
+							break;
+						}
+
+						if (arDepths.size() == unContainerDepths)
+							break;
+
+						arDepths.pop();
 					}
-					else
-					{
+
+					if (!bMoved)
+						break;
+
+					if (L"table" != oReader.GetName())
 						m_oExternalData.ReadInside(oReader, arSelectors);
 
-						if (L"table" == oReader.GetName())
-						{
-							READ_TABLE();
-						}
+					if (L"table" != oReader.GetName())
+						continue;
+
+					if (arTables.cend() != itTable)
+					{
+						m_oExternalData.GetSubClass(oReader, arSelectors);
+						oWriter.CloseP();
+						ConvertTable(oReader, oWriter, *(COOXMLTable*)*itTable++, arSelectors);
+						oWriter.WriteEmptyParagraph(true);
+						arSelectors.pop_back();
 					}
+
+					while (arDepths.size() > unContainerDepths)
+						arDepths.pop();
+
+					for (int nDepth = nCellDepth + 1; nDepth < oReader.GetDepth(); ++nDepth)
+						arDepths.push(nDepth);
 				}
 
 				while (arDepths.size() > unDepthSize)
 					arDepths.pop();
-
-				m_oExternalData.ClearStopTags();
 			}
 			else
 			{

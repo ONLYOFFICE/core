@@ -329,13 +329,32 @@ const bool SS::saveContent(BinProcessor& proc)
 	if(m_AttachedLabel != nullptr)
 		proc.mandatory(*m_AttachedLabel);
 	for(auto i : m_arSHAPEPROPS)
-		if(i != nullptr)
-		{
-			auto castedProp = static_cast<SHAPEPROPS*>(i.get());
-			auto propHeader = static_cast<ShapePropsStream*>(castedProp->m_ShapePropsStream.get());
+	{
+		auto castedProp = static_cast<SHAPEPROPS*>(i.get());
+		auto propHeader = static_cast<ShapePropsStream*>(castedProp->m_ShapePropsStream.get());
+		if(propHeader->wObjContext == 0)
 			propHeader->dwChecksum = checkSum;
-			proc.mandatory(*i);
+		else if(propHeader->wObjContext == 1 && m_MarkerFormat != nullptr)
+		{
+			auto castedMarker = static_cast<MarkerFormat*>(m_MarkerFormat.get());
+			AreaFormat area;
+			area.rgbFore.red = castedMarker->rgbFore.red;
+			area.rgbFore.green = castedMarker->rgbFore.green;
+			area.rgbFore.blue = castedMarker->rgbFore.blue;
+			area.rgbBack.red = castedMarker->rgbBack.red;
+			area.rgbBack.green = castedMarker->rgbBack.green;
+			area.rgbBack.blue = castedMarker->rgbBack.blue;
+			area.fls = 1;
+			area.fAuto = false;
+			CheckSumData = std::vector<BYTE>();
+			_UINT32 MarkerCheckSum = 0;
+			area.setChecksum(CheckSumData);
+			calcChecksum(CheckSumData, MarkerCheckSum);
+			propHeader->dwChecksum = MarkerCheckSum;
 		}
+		proc.mandatory(*i);
+	}
+
 	proc.mandatory<End>();
 	return true;
 }

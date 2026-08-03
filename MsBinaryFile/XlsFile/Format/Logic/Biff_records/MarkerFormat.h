@@ -64,8 +64,8 @@ public:
 	bool fNotShowInt = false;
 	bool fNotShowBrd = false;
 	
-	IcvChart icvFore = 0;
-	IcvChart icvBack = 0;
+	IcvChart icvFore = 0x004D;
+	IcvChart icvBack = 0x004D;
 	_UINT32	miSize = 40;
 	
 	GlobalWorkbookInfoPtr global_info;

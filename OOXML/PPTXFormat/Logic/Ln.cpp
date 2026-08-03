@@ -332,7 +332,7 @@ namespace PPTX
 					case 12700:		ptr->we = 0;	break; //single
 					case 25400:		ptr->we = 1;	break; //double
 					case 38100:		ptr->we = 2;	break; //triple
-					default: ptr->we = 0;	break; //single
+					default: ptr->we = 0xFFFF;	break; //Hairline
 				}
 			}
 			if(Fill.is_init())

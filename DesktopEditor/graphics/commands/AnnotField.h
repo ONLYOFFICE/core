@@ -776,4 +776,20 @@ private:
 	int m_nID;
 };
 
+class GRAPHICS_DECL CRedactMeta : public IAdvancedCommand
+{
+public:
+	CRedactMeta();
+	~CRedactMeta();
+
+	const std::vector<int>& GetWidgetID();
+	const std::vector<std::wstring>& GetRedactID();
+
+	bool Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector);
+
+private:
+	std::vector<int> m_arrWidgetID;
+	std::vector<std::wstring> m_arrRedactID;
+};
+
 #endif // _BUILD_ANNOTFIELD_H_

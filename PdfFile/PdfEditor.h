@@ -145,6 +145,7 @@ public:
 	bool IsBase14(const std::wstring& wsFontName, bool& bBold, bool& bItalic, std::wstring& wsFontPath);
 	void Redact(IAdvancedCommand* pCommand);
 	std::vector<double> WriteRedact(const std::vector<std::wstring>& arrID);
+	void RedactMeta(IAdvancedCommand* pCommand);
 
 	bool SplitPages(const int* arrPageIndex, unsigned int unLength);
 	void AfterSplitPages();

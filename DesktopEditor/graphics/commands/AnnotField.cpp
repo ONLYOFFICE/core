@@ -1502,3 +1502,20 @@ bool CRedactAnnot::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafil
 	m_nID = pReader->ReadInt();
 	return true;
 }
+
+CRedactMeta::CRedactMeta() : IAdvancedCommand(AdvancedCommandType::RedactMeta) {}
+const std::vector<int>& CRedactMeta::GetWidgetID() { return m_arrWidgetID; }
+const std::vector<std::wstring>& CRedactMeta::GetRedactID() { return m_arrRedactID; }
+bool CRedactMeta::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector)
+{
+	int n = pReader->ReadInt();
+	m_arrWidgetID.reserve(n);
+	for (int i = 0; i < n; ++i)
+		m_arrWidgetID.push_back(pReader->ReadInt());
+
+	n = pReader->ReadInt();
+	m_arrRedactID.reserve(n);
+	for (int i = 0; i < n; ++i)
+		m_arrRedactID.push_back(pReader->ReadString());
+	return true;
+}

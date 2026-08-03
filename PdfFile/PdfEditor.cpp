@@ -2155,8 +2155,12 @@ PdfWriter::CAnnotAppearanceObject* GetAnnotAppearanceObject(PdfWriter::CAnnotati
 	return dynamic_cast<PdfWriter::CAnnotAppearanceObject*>(pAP_N->Get(sName));
 }
 // ─── WriteNew helpers ────────────────────────────────────────────────────────
-void CloseWriteNew_FlushAnnotations(CPdfReader* pReader, CObjectsManager* mObjManager, PdfWriter::CDocument* pDoc)
+void CloseWriteNew_FlushAnnotations(CPdfReader* pReader, CObjectsManager* mObjManager, PdfWriter::CDocument* pDoc, IAdvancedCommand* pCommand = NULL)
 {
+	std::vector<int> arrWidget;
+	if (pCommand)
+		arrWidget = ((CRedactMeta*)pCommand)->GetWidgetID();
+
 	for (size_t i = 0; i < mObjManager->m_arrRedactFormFields.size(); ++i)
 	{
 		IAdvancedCommand* pCmd = mObjManager->m_arrRedactFormFields[i];
@@ -2170,12 +2174,24 @@ void CloseWriteNew_FlushAnnotations(CPdfReader* pReader, CObjectsManager* mObjMa
 			if (!oInfo.IsWidget())
 				continue;
 
-			int nPage = oInfo.GetPage(); // actual page number
-			PdfWriter::CPage* pPage = pDoc->GetPage(nPage);
-			if (!pPage)
-				pPage = pDoc->GetEditPage(nPage);
-			if (!pPage)
-				continue;
+			PdfWriter::CPage* pPage = NULL;
+			if (pCommand)
+			{
+				int nID = oInfo.GetID();
+				std::vector<int>::iterator it = std::find(arrWidget.begin(), arrWidget.end(), nID);
+				if (it == arrWidget.end())
+					continue;
+				pPage = pDoc->GetCurPage();
+			}
+			else
+			{
+				int nPage = oInfo.GetPage(); // actual page number
+				pPage = pDoc->GetPage(nPage);
+				if (!pPage)
+					pPage = pDoc->GetEditPage(nPage);
+				if (!pPage)
+					continue;
+			}
 
 			PdfWriter::CAnnotation* pAnnot = pDoc->GetAnnot(oInfo.GetID());
 			if (!pAnnot)
@@ -2230,10 +2246,19 @@ void CloseWriteNew_FlushAnnotations(CPdfReader* pReader, CObjectsManager* mObjMa
 			if (!oAnnot->dictLookupNF("P", oP.get())->isRef())
 				continue;
 
-			PdfWriter::CPage* pPage = dynamic_cast<PdfWriter::CPage*>(mObjManager->GetObj(oP->getRefNum() + nStartRefID));
+			PdfWriter::CPage* pPage = NULL;
+			if (pCommand)
+			{
+				std::vector<int>::iterator it = std::find(arrWidget.begin(), arrWidget.end(), nRefID);
+				if (it == arrWidget.end())
+					continue;
+				pPage = pDoc->GetCurPage();
+			}
+			else
+				pPage = dynamic_cast<PdfWriter::CPage*>(mObjManager->GetObj(oP->getRefNum() + nStartRefID));
+
 			if (!pPage)
 				continue;
-
 			DrawAnnot(oAnnot.get(), pPage, pDoc, xref, mObjManager, nStartRefID);
 		}
 	}
@@ -5292,4 +5317,31 @@ std::vector<double> CPdfEditor::WriteRedact(const std::vector<std::wstring>& arr
 		m_arrRedact[i].bDraw = true;
 	}
 	return arrRes;
+}
+void CPdfEditor::RedactMeta(IAdvancedCommand* pCommand)
+{
+	CRedactMeta* pRedactMeta = (CRedactMeta*)pCommand;
+	std::vector<int> arrWidget = pRedactMeta->GetWidgetID();
+
+	for (int i = 0; i < m_mObjManager.m_arrRedactFormFields.size(); ++i)
+	{
+		IAdvancedCommand::AdvancedCommandType nType = m_mObjManager.m_arrRedactFormFields[i]->GetCommandType();
+		if (nType == IAdvancedCommand::AdvancedCommandType::Annotation)
+		{
+			// Annotation - annotation that has changed or been created and needs to be drawn in Contents of page
+			CAnnotFieldInfo* command = dynamic_cast<CAnnotFieldInfo*>(m_mObjManager.m_arrRedactFormFields[i]);
+			CAnnotFieldInfo& oInfo = *command;
+			if (!oInfo.IsWidget())
+				continue;
+
+			int nID = oInfo.GetID();
+			std::vector<int>::iterator it = std::find(arrWidget.begin(), arrWidget.end(), nID);
+			if (it == arrWidget.end())
+				continue;
+
+			m_pWriter->AddAnnotField(NULL, command, true);
+		}
+	}
+
+	CloseWriteNew_FlushAnnotations(m_pReader, &m_mObjManager, m_pWriter->GetDocument(), pCommand);
 }

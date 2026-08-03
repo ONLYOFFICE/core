@@ -101,7 +101,7 @@ const bool SHAREDSTRINGS::saveContent(BinProcessor& proc)
 					const char* rawData = tempRecord->getCurStaticData<char>() - totalSize;
 
 					// 1. Header parsing
-					UINT16 cch = *reinterpret_cast<const UINT16*>(rawData);
+					_UINT16 cch = *reinterpret_cast<const _UINT16*>(rawData);
 					BYTE grbit = *reinterpret_cast<const BYTE*>(rawData + 2);
 
 					bool fHighByte = (grbit & 0x01) != 0;

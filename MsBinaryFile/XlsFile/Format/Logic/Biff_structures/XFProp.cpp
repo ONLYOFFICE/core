@@ -703,7 +703,9 @@ void XFProp::deserialize_attr(XmlUtils::CXmlLiteReader& oReader)
 			xfPropDataBlob.reset(new BIFF_WORD(XmlUtils::GetInteger(oReader.GetText())));
 			break;
 		case 0x001A:
-            //xfPropDataBlob.reset(new BIFF_WORD(1));
+			//xfPropDataBlob.reset(new BIFF_WORD(1));
+			deserialize_default_val(oReader, L"BIFF_WORD", 0x01, xfPropDataBlob);
+			break;
 		case 0x001B:
 			deserialize_val_prop(oReader, L"BIFF_WORD", xfPropDataBlob);			
 			break;

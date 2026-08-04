@@ -325,9 +325,6 @@ namespace PPTX
 			nullable<TxBody> txBody;
 			nullable<CommentReplyList> replyLst;
 
-			//nullable<TextCharRangeMonikerList > txMkLst;
-			//nullable<SlideMonikerList> sldMkLst;
-			//nullable<DrawingElementMonikerList> deMkLst;
 			smart_ptr<AnyMonikerList> anyMkLst;
 
 			bool bModern = false;

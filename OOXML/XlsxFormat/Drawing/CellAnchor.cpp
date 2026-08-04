@@ -130,8 +130,7 @@ namespace OOX
 		}
 		void CCellAnchor::toXML(NSStringUtils::CStringBuilder& writer) const
 		{
-			if(isValid() == false)	return;
-			if(m_bShapeOle)			return;
+			if (isValid() == false)	return;
 
 			std::wstring sEnd;
 			if(m_oFrom.IsInit() && m_oTo.IsInit())
@@ -166,7 +165,7 @@ namespace OOX
 				if(m_oExt.IsInit())
 					m_oExt->toXML(writer);
 			}
-			if(m_oElement.IsInit())
+			if (m_oElement.IsInit())
 			{
 				std::wstring sRequires = m_oElement->GetRequires();
 				if(L"a14" == sRequires)

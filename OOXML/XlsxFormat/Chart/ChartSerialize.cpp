@@ -6445,6 +6445,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			}
 			auto ptr = new XLS::CRT;
 			auto chartFormat = new XLS::ChartFormat;
+			if(m_varyColors.IsInit())
+				chartFormat->fVaried = m_varyColors.get();
 			chartFormat->icrt = chartIndex;
 			ptr->m_ChartFormat = XLS::BaseObjectPtr(chartFormat);
 			auto chartType = new XLS::Scatter;
@@ -7313,6 +7315,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			}
 			auto ptr = new XLS::CRT;
 			auto chartFormat = new XLS::ChartFormat;
+			if(m_varyColors.IsInit())
+				chartFormat->fVaried = m_varyColors.get();
 			chartFormat->icrt = chartIndex;
 			ptr->m_ChartFormat = XLS::BaseObjectPtr(chartFormat);
 			auto chartType = new XLS::Bar;
@@ -7678,6 +7682,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			}
 			auto ptr = new XLS::CRT;
 			auto chartFormat = new XLS::ChartFormat;
+			if(m_varyColors.IsInit())
+				chartFormat->fVaried = m_varyColors.get();
 			chartFormat->icrt = chartIndex;
 			ptr->m_ChartFormat = XLS::BaseObjectPtr(chartFormat);
 			auto chartType = new XLS::Bar;
@@ -7807,6 +7813,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			}
 			auto ptr = new XLS::CRT;
 			auto chartFormat = new XLS::ChartFormat;
+			if(m_varyColors.IsInit())
+				chartFormat->fVaried = m_varyColors.get();
 			chartFormat->icrt = chartIndex;
 			ptr->m_ChartFormat = XLS::BaseObjectPtr(chartFormat);
 			auto chartType = new XLS::Pie;
@@ -7913,6 +7921,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			}
 			auto ptr = new XLS::CRT;
 			auto chartFormat = new XLS::ChartFormat;
+			if(m_varyColors.IsInit())
+				chartFormat->fVaried = m_varyColors.get();
 			chartFormat->icrt = chartIndex;
 			ptr->m_ChartFormat = XLS::BaseObjectPtr(chartFormat);
 			auto chartType = new XLS::Pie;
@@ -8020,6 +8030,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			}
 			auto ptr = new XLS::CRT;
 			auto chartFormat = new XLS::ChartFormat;
+			if(m_varyColors.IsInit())
+				chartFormat->fVaried = m_varyColors.get();
 			chartFormat->icrt = chartIndex;
 			ptr->m_ChartFormat = XLS::BaseObjectPtr(chartFormat);
 			auto chartType = new XLS::Pie;
@@ -8369,6 +8381,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			}
 			auto ptr = new XLS::CRT;
 			auto chartFormat = new XLS::ChartFormat;
+			if(m_varyColors.IsInit())
+				chartFormat->fVaried = m_varyColors.get();
 			chartFormat->icrt = chartIndex;
 			ptr->m_ChartFormat = XLS::BaseObjectPtr(chartFormat);
 			auto chartType = new XLS::Scatter;
@@ -8614,6 +8628,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			}
 			auto ptr = new XLS::CRT;
 			auto chartFormat = new XLS::ChartFormat;
+			if(m_varyColors.IsInit())
+				chartFormat->fVaried = m_varyColors.get();
 			chartFormat->icrt = chartIndex;
 			ptr->m_ChartFormat = XLS::BaseObjectPtr(chartFormat);
 			XLS::BaseObjectPtr chartType;
@@ -9153,6 +9169,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			}
 			auto ptr = new XLS::CRT;
 			auto chartFormat = new XLS::ChartFormat;
+			if(m_varyColors.IsInit())
+				chartFormat->fVaried = m_varyColors.get();
 			chartFormat->icrt = chartIndex;
 			ptr->m_ChartFormat = XLS::BaseObjectPtr(chartFormat);
 			auto chartType = new XLS::Line;
@@ -9331,6 +9349,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			}
 			auto ptr = new XLS::CRT;
 			auto chartFormat = new XLS::ChartFormat;
+			if(m_varyColors.IsInit())
+				chartFormat->fVaried = m_varyColors.get();
 			chartFormat->icrt = chartIndex;
 			ptr->m_ChartFormat = XLS::BaseObjectPtr(chartFormat);
 			auto chartType = new XLS::Line;
@@ -9457,6 +9477,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			}
 			auto ptr = new XLS::CRT;
 			auto chartFormat = new XLS::ChartFormat;
+			if(m_varyColors.IsInit())
+				chartFormat->fVaried = m_varyColors.get();
 			chartFormat->icrt = chartIndex;
 			ptr->m_ChartFormat = XLS::BaseObjectPtr(chartFormat);
 			auto chartType = new XLS::Area;
@@ -9754,6 +9776,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			}
 			auto ptr = new XLS::CRT;
 			auto chartFormat = new XLS::ChartFormat;
+			if(m_varyColors.IsInit())
+				chartFormat->fVaried = m_varyColors.get();
 			chartFormat->icrt = chartIndex;
 			ptr->m_ChartFormat = XLS::BaseObjectPtr(chartFormat);
 			auto chartType = new XLS::Area;

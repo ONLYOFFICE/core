@@ -7323,6 +7323,15 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			ptr->m_ChartType = XLS::BaseObjectPtr(chartType);
 			if(m_barDir.IsInit() && m_barDir->m_eValue == 0)
 				chartType->fTranspose = true;
+			if(m_grouping.IsInit() && m_grouping->GetValue() == ST_BarGrouping::st_bargroupingSTACKED)
+				chartType->fStacked = true;
+			else if(m_grouping.IsInit() && m_grouping->GetValue() == ST_BarGrouping::st_bargroupingPERCENTSTACKED)
+			{
+				chartType->fStacked = true;
+				chartType->f100 = true;
+			}
+
+
 
 			if(m_gapWidth.IsInit())
 			{
@@ -7701,8 +7710,13 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			}
 			if(m_barDir.IsInit() && m_barDir->m_eValue == 0)
 				chartType->fTranspose = true;
-			if(m_grouping.IsInit() && m_grouping->GetValue() == st_bargroupingSTACKED)
+			if(m_grouping.IsInit() && m_grouping->GetValue() == ST_BarGrouping::st_bargroupingSTACKED)
 				chartType->fStacked = true;
+			else if(m_grouping.IsInit() && m_grouping->GetValue() == ST_BarGrouping::st_bargroupingPERCENTSTACKED)
+			{
+				chartType->fStacked = true;
+				chartType->f100 = true;
+			}
 
 			if(m_gapWidth.IsInit())
 			{

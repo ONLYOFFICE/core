@@ -53,6 +53,7 @@ public:
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
+	void wtireFields(CFRecord& record);
 
 	static const ElementType	type = typeTextPropsStream;
 

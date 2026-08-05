@@ -68,5 +68,13 @@ void TextPropsStream::readFields(CFRecord& record)
 	}
 }
 
+void TextPropsStream::wtireFields(CFRecord& record)
+{
+	record << frtHeader << dwChecksum;
+	_UINT32 cb = xml_.size();
+	record << cb;
+	record.appendRawDataToStatic(reinterpret_cast<const unsigned char*>(xml_.data()), xml_.size());
+}
+
 } // namespace XLS
 

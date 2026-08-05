@@ -780,7 +780,6 @@ class GRAPHICS_DECL CRedactMeta : public IAdvancedCommand
 {
 public:
 	CRedactMeta();
-	~CRedactMeta();
 
 	const std::vector<int>& GetWidgetID();
 	const std::vector<std::wstring>& GetRedactID();

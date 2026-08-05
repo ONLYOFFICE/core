@@ -33,8 +33,6 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 #pragma once
-#ifndef PPTXOOX_NAMESPACES_INCLUDE_H_
-#define PPTXOOX_NAMESPACES_INCLUDE_H_
 
 #include "../Base/Base.h"
 
@@ -92,9 +90,8 @@ namespace PPTX
 		const Namespace xsd;
 		const Namespace xsi;
 		const Namespace p14;
+		const Namespace p15;
 	};
 
 	static Namespaces g_Namespaces;
 } // namespace PPTX
-
-#endif // PPTXOOX_NAMESPACES_INCLUDE_H_

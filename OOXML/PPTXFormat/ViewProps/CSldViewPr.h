@@ -56,12 +56,12 @@ namespace PPTX
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
-			nsViewProps::CViewPr	CViewPr;
-			std::vector<Guide>		GuideLst;
+			nsViewProps::CViewPr CViewPr;
+			std::vector<Guide> GuideLst;
 
-			nullable_bool			attrShowGuides;
-			nullable_bool			attrSnapToGrid;
-			nullable_bool			attrSnapToObjects;
+			nullable_bool showGuides;
+			nullable_bool snapToGrid;
+			nullable_bool snapToObjects;
 
 		protected:
 			virtual void FillParentPointersForChilds();

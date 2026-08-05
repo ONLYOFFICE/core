@@ -74,10 +74,11 @@ namespace PPTX
 		wp	(L"wp",		L"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"),
 		x	(L"x",		L"urn:schemas-microsoft-com:office:excel"),
 		xdr	(L"xdr",	L"http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing"),
-		xmlns(L"xmlns",  L"http://schemas.openxmlformats.org/officeDocument/2006/extended-properties"),
+		xmlns(L"xmlns", L"http://schemas.openxmlformats.org/officeDocument/2006/extended-properties"),
 		xsd	(L"xsd",	L"http://www.w3.org/2001/XMLSchema"),
 		xsi	(L"xsi",	L"http://www.w3.org/2001/XMLSchema-instance"),
-		p14	(L"p14",	L"http://schemas.microsoft.com/office/powerpoint/2010/main")
+		p14	(L"p14",	L"http://schemas.microsoft.com/office/powerpoint/2010/main"),
+		p15 (L"p15",	L"http://schemas.microsoft.com/office/powerpoint/2012/main")
 	{
 	}
 } // namespace PPTX

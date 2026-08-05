@@ -72,6 +72,8 @@ namespace PPTX
 			nullable_string			spid;
 
 			nullable<nsPresentation::SectionLst> sectionLst;
+			nullable<nsPresentation::ExtendedGuideList> sldGuideLst;
+			nullable<nsPresentation::ExtendedGuideList> notesGuideLst;			
 //image
 			nullable<OOX::RId>		link_svg;
 

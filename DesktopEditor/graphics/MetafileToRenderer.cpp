@@ -1062,12 +1062,13 @@ namespace NSOnlineOfficeBinToPdf
 			case ctPageRotate:
 			case ctHeadings:
 			case ctRedact:
+			case ctRedactMeta:
 			{
 				IAdvancedCommand::AdvancedCommandType eAdvancedCommandType = IAdvancedCommand::AdvancedCommandType::Undefined;
 				switch (eCommand)
 				{
 				case ctFormField:        eAdvancedCommandType = IAdvancedCommand::AdvancedCommandType::FormField;   break;
-				case ctAnnotField:       eAdvancedCommandType = IAdvancedCommand::AdvancedCommandType::Annotation;   break;
+				case ctAnnotField:       eAdvancedCommandType = IAdvancedCommand::AdvancedCommandType::Annotation;  break;
 				case ctAnnotFieldDelete: eAdvancedCommandType = IAdvancedCommand::AdvancedCommandType::DeleteAnnot; break;
 				case ctWidgetsInfo:      eAdvancedCommandType = IAdvancedCommand::AdvancedCommandType::WidgetsInfo; break;
 				case ctShapeStart:       eAdvancedCommandType = IAdvancedCommand::AdvancedCommandType::ShapeStart;  break;
@@ -1076,6 +1077,7 @@ namespace NSOnlineOfficeBinToPdf
 				case ctPageRotate:       eAdvancedCommandType = IAdvancedCommand::AdvancedCommandType::PageRotate;  break;
 				case ctHeadings:         eAdvancedCommandType = IAdvancedCommand::AdvancedCommandType::Headings;    break;
 				case ctRedact:           eAdvancedCommandType = IAdvancedCommand::AdvancedCommandType::Redact;      break;
+				case ctRedactMeta:       eAdvancedCommandType = IAdvancedCommand::AdvancedCommandType::RedactMeta;  break;
 				default:
 					break;
 				}

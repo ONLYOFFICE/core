@@ -36,6 +36,7 @@
 #include "Page.h"
 
 #include <memory>
+#include <set>
 // #include <assert.h>
 
 #include "../../../DesktopEditor/graphics/pro/Graphics.h"
@@ -545,6 +546,17 @@ namespace NSDocxRenderer
 		writer.WriteLen();
 
 		return writer;
+	}
+	std::vector<std::wstring> CPage::GetAllFonts()
+	{
+		const auto& conts = m_oContBuilder.GetConts();
+
+		std::set<std::wstring> set;
+		std::for_each(conts.begin(), conts.end(), [&] (const cont_ptr_t& c) {
+			set.insert(c->m_wsOriginFontName);
+		});
+
+		return std::vector<std::wstring>(set.begin(), set.end());
 	}
 	void CPage::AddCompleteXml(const std::wstring& oXml)
 	{

@@ -141,7 +141,7 @@ namespace PdfReader
 			m_bDrawOnlyText = S_OK == m_pRenderer->CommandLong(c_nCommandLongTypeOnlyText, 0);
 		else if (c_nHtmlRendrererText == m_lRendererType)
 			m_bDrawOnlyText = true;
-		else
+		else if (!m_bDrawOnlyText)
 			m_bDrawOnlyText = false;
 	}
 	void RendererOutputDev::endPage()
@@ -400,7 +400,7 @@ namespace PdfReader
 
 		std::wstring wsFileName = L"";
 		std::wstring wsFontName = L"";
-		GetFont(m_pXref, m_pFontManager, m_pFontList, pFont, wsFileName, wsFontName);
+		GetFont(m_pXref, m_pFontManager, m_pFontList, pFont, wsFileName, wsFontName, !(m_bDrawOnlyText && m_lRendererType == c_nDocxWriter));
 
 		if (!wsFileName.empty())
 		{

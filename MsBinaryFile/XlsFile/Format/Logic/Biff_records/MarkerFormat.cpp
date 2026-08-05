@@ -97,7 +97,7 @@ int MarkerFormat::serialize(std::wostream & _stream)
 {
 	return serialize(_stream, -1, BaseObjectPtr());
 }
-int MarkerFormat::serialize(std::wostream & _stream, int index, BaseObjectPtr _GELFRAME)
+int MarkerFormat::serialize(std::wostream & _stream, int index, BaseObjectPtr _GELFRAME, std::wstring spPr)
 {
 	std::wstring strSymbol;
 	std::wstringstream strm_fill;
@@ -139,32 +139,39 @@ int MarkerFormat::serialize(std::wostream & _stream, int index, BaseObjectPtr _G
 				{
 					CP_XML_ATTR(L"val",  (false == fAuto) ? miSize / 20 : 5);	
 				}
-				CP_XML_NODE(L"c:spPr")
+				if(!spPr.empty())
 				{
-					if (_GELFRAME)
+					CP_XML_STREAM() << spPr;
+				}
+				else
+				{
+					CP_XML_NODE(L"c:spPr")
 					{
-						CP_XML_STREAM() << strm_fill.str();
-					}
-					else
-					{
-						CP_XML_NODE(L"a:solidFill")
+						if (_GELFRAME)
 						{
-							CP_XML_NODE(L"a:srgbClr")
+							CP_XML_STREAM() << strm_fill.str();
+						}
+						else
+						{
+							CP_XML_NODE(L"a:solidFill")
 							{
-								CP_XML_ATTR(L"val", (false == fAuto || index < 0 || index > default_marker_color->size()) ? rgbBack.strRGB : default_marker_color[index]);
+								CP_XML_NODE(L"a:srgbClr")
+								{
+									CP_XML_ATTR(L"val", (false == fAuto || index < 0 || index > default_marker_color->size()) ? rgbBack.strRGB : default_marker_color[index]);
+								}
 							}
 						}
-					}
-					CP_XML_NODE(L"a:ln")
-					{
-						CP_XML_NODE(L"a:solidFill")
+						CP_XML_NODE(L"a:ln")
 						{
-							CP_XML_NODE(L"a:srgbClr")
+							CP_XML_NODE(L"a:solidFill")
 							{
-								CP_XML_ATTR(L"val", (false == fAuto || index < 0 || index > default_marker_color->size()) ? rgbFore.strRGB : default_marker_color[index]);
+								CP_XML_NODE(L"a:srgbClr")
+								{
+									CP_XML_ATTR(L"val", (false == fAuto || index < 0 || index > default_marker_color->size()) ? rgbFore.strRGB : default_marker_color[index]);
+								}
 							}
+							CP_XML_NODE(L"a:prstDash") { CP_XML_ATTR(L"val", L"solid"); }
 						}
-						CP_XML_NODE(L"a:prstDash") { CP_XML_ATTR(L"val", L"solid"); }
 					}
 				}
 			}

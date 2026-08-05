@@ -461,13 +461,20 @@ int SS::serialize(std::wostream & _stream, int series_type, int indPt)
 	DataFormat		*series_data_format = dynamic_cast<DataFormat*>		(m_DataFormat.get());
 	SerFmt			*series_format		= dynamic_cast<SerFmt*>			(m_SerFmt.get());
 	MarkerFormat	*marker_format		= dynamic_cast<MarkerFormat*>	(m_MarkerFormat.get());
-	SHAPEPROPS		*SpProps			= nullptr;
 	ShapePropsStream *spStream			= nullptr;
+	ShapePropsStream *mkPropStream		= nullptr;
 	if(!m_arSHAPEPROPS.empty())
 	{
+		for(auto spProp : m_arSHAPEPROPS)
+		{
 
-		SpProps =dynamic_cast<SHAPEPROPS*>	(m_arSHAPEPROPS.back().get());
-		spStream = static_cast<ShapePropsStream*>(SpProps->m_ShapePropsStream.get());
+			auto SpProps =dynamic_cast<SHAPEPROPS*>	(spProp.get());
+			auto tempStream = static_cast<ShapePropsStream*>(SpProps->m_ShapePropsStream.get());
+			if (tempStream->wObjContext == 0)
+				spStream = tempStream;
+			else if(tempStream->wObjContext == 1)
+				mkPropStream  = tempStream;
+		}
 	}
 
 	int ind = series_data_format->iss;
@@ -588,7 +595,17 @@ int SS::serialize(std::wostream & _stream, int series_type, int indPt)
 								series_type != CHART_TYPE_Bar		&&	
 								series_type != CHART_TYPE_BopPop )
 		{
-			marker_format->serialize(_stream, ind, bMarkerEx ? m_GELFRAME : BaseObjectPtr());
+			std::wstring MkSpPr;
+			if(mkPropStream != nullptr)
+			{
+				XmlUtils::CXmlLiteReader reader;
+				auto spPos = mkPropStream->xml_.find("<a:spPr");
+				if (spPos != std::string::npos)
+				mkPropStream->xml_ = mkPropStream->xml_.erase(0,spPos);
+				MkSpPr = std::wstring(mkPropStream->xml_.begin(), mkPropStream->xml_.end());
+
+			}
+			marker_format->serialize(_stream, ind, bMarkerEx ? m_GELFRAME : BaseObjectPtr(), MkSpPr);
 		}
 		else if (/*series_type == CHART_TYPE_Line ||*/ series_type == CHART_TYPE_Scatter)
 		{

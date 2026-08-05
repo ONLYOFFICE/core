@@ -68,8 +68,9 @@ void TextPropsStream::readFields(CFRecord& record)
 	}
 }
 
-void TextPropsStream::wtireFields(CFRecord& record)
+void TextPropsStream::writeFields(CFRecord& record)
 {
+	frtHeader.rt = 0x08A5;
 	record << frtHeader << dwChecksum;
 	_UINT32 cb = xml_.size();
 	record << cb;

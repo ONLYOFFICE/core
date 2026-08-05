@@ -1336,6 +1336,10 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 				textRecord->wBkgMode = 1;
 				textRecord->at = 2;
 				textRecord->vat = 1;
+				if(m_chart->m_title != nullptr && m_chart->m_title->m_spPr.IsInit())
+				{
+					labelUnion->m_TEXTPROPS = m_chart->m_title->m_spPr->toXLSText();
+				}
 				auto textPos = new XLS::Pos;
 				textPos->mdBotRt = 2;
 				textPos->mdTopLt = 2;

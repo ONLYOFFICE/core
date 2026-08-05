@@ -1574,7 +1574,7 @@ namespace PdfReader
 	{
 		return;
 	}
-	GBool RendererOutputDev::beginMarkedContent(GfxState* state, GString* s)
+	GBool RendererOutputDev::beginMarkedContent(GfxState* state, Object args[], int numArgs)
 	{
 		return gFalse;
 	}
@@ -2108,7 +2108,7 @@ namespace PdfReader
 					pBufferPtr[nIndex + 0] = colToByte(oRGB.b);
 					pBufferPtr[nIndex + 1] = colToByte(oRGB.g);
 					pBufferPtr[nIndex + 2] = colToByte(oRGB.r);
-					pBufferPtr[nIndex + 3] = (unMask && !bMaskInvert) ? 0 : unAlpha;
+					pBufferPtr[nIndex + 3] = ((unMask != 0 && !bMaskInvert) || (unMask == 0 && bMaskInvert)) ? 0 : unAlpha;
 					nIndex += 4;
 				}
 			}
@@ -2131,7 +2131,7 @@ namespace PdfReader
 					pBufferPtr[nIndex + 0] = colToByte(oRGB.b);
 					pBufferPtr[nIndex + 1] = colToByte(oRGB.g);
 					pBufferPtr[nIndex + 2] = colToByte(oRGB.r);
-					pBufferPtr[nIndex + 3] = (unMask && !bMaskInvert) ? 0 : unAlpha;
+					pBufferPtr[nIndex + 3] = ((unMask != 0 && !bMaskInvert) || (unMask == 0 && bMaskInvert)) ? 0 : unAlpha;
 					nIndex += 4;
 				}
 			}

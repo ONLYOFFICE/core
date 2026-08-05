@@ -64,6 +64,25 @@ namespace PPTX
 
 		if (hf.is_init())
 			hf->SetParentFilePointer(this);
+
+		XmlUtils::CXmlNode oNodeExtLst = oNode.ReadNode(L"p:extLst");
+		if (oNodeExtLst.IsValid())
+		{
+			std::vector<XmlUtils::CXmlNode> oExtLstNodes;
+			if (oNodeExtLst.GetNodes(L"*", oExtLstNodes))
+			{
+				for (auto n : oExtLstNodes)
+				{
+					PPTX::Logic::Ext ext;
+					ext.fromXML(n);
+					if (ext.sldGuideLst.IsInit())
+					{
+						sldGuideLst = ext.sldGuideLst;
+						sldGuideLst->SetParentFilePointer(this);
+					}
+				}
+			}
+		}
 	}
 	void HandoutMaster::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 	{
@@ -72,6 +91,8 @@ namespace PPTX
 		pWriter->WriteRecord1(0, cSld);
 		pWriter->WriteRecord1(1, clrMap);
 		pWriter->WriteRecord2(2, hf);
+
+		pWriter->WriteRecord2(15, sldGuideLst);
 
 		pWriter->EndRecord();
 	}
@@ -83,12 +104,26 @@ namespace PPTX
 		pWriter->WriteAttribute(L"xmlns:a", PPTX::g_Namespaces.a.m_strLink);
 		pWriter->WriteAttribute(L"xmlns:r", PPTX::g_Namespaces.r.m_strLink);
 		pWriter->WriteAttribute(L"xmlns:p", PPTX::g_Namespaces.p.m_strLink);
+		if (sldGuideLst.IsInit())
+		{
+			pWriter->WriteAttribute(L"xmlns:p15", PPTX::g_Namespaces.p15.m_strLink);
+		}
 		pWriter->EndAttributes();
 
 		cSld.toXmlWriter(pWriter);
 
 		clrMap.toXmlWriter(pWriter);
 		pWriter->Write(hf);
+
+		std::vector<Logic::Ext> extLst;
+		if (sldGuideLst.IsInit())
+		{
+			Logic::Ext exp;
+			exp.uri = L"{56416CCD-93CA-4268-BC5B-53C4BB910035}";
+			exp.sldGuideLst = sldGuideLst;
+			extLst.push_back(exp);
+		}
+		pWriter->WriteArray(L"p:extLst", extLst);
 
 		pWriter->EndNode(L"p:handoutMaster");
 	}
@@ -103,27 +138,28 @@ namespace PPTX
 
 			switch (_rec)
 			{
-			case 0:
-			{
-				cSld.fromPPTY(pReader);
-				break;
-			}
-			case 1:
-			{
-				clrMap.fromPPTY(pReader);
-				break;
-			}
-			case 2:
-			{
-				hf = new Logic::HF();
-				hf->fromPPTY(pReader);
-				break;
-			}
-			default:
-			{
-				pReader->SkipRecord();
-				break;
-			}
+				case 0:
+				{
+					cSld.fromPPTY(pReader);				
+				}break;
+				case 1:
+				{
+					clrMap.fromPPTY(pReader);				
+				}break;
+				case 2:
+				{
+					hf = new Logic::HF();
+					hf->fromPPTY(pReader);				
+				}break;
+				case 15:
+				{
+					sldGuideLst = new nsPresentation::ExtendedGuideList();
+					sldGuideLst->fromPPTY(pReader);
+				}break;
+				default:
+				{
+					pReader->SkipRecord();					
+				}break;
 			}
 		}
 

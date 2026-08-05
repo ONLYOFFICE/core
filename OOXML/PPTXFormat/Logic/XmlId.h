@@ -33,8 +33,6 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 #pragma once
-#ifndef PPTX_PPTSLIDES_XMLID_INCLUDE_H_
-#define PPTX_PPTSLIDES_XMLID_INCLUDE_H_
 
 #include "./../WrapperWritingElement.h"
 #include "../../DocxFormat/RId.h"
@@ -66,5 +64,3 @@ namespace PPTX
 		};
 	} // namespace Logic
 } // namespace PPTX
-
-#endif // PPTX_PPTSLIDES_XMLID_INCLUDE_H_

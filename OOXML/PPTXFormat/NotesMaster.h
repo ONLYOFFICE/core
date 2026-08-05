@@ -33,8 +33,6 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 #pragma once
-#ifndef PPTX_SLIDES_NOTESMASTER_INCLUDE_H_
-#define PPTX_SLIDES_NOTESMASTER_INCLUDE_H_
 
 #include "WrapperFile.h"
 #include "FileContainer.h"
@@ -42,6 +40,7 @@
 
 #include "Logic/ClrMap.h"
 #include "Logic/CSld.h"
+#include "Presentation/PresentationChildElements.h"
 
 namespace PPTX
 {
@@ -77,14 +76,14 @@ namespace PPTX
 
 		virtual void GetLevelUp(WrapperWritingElement* pElem);
 
-        smart_ptr<Theme>				theme_;
-		smart_ptr<TableStyles>			tableStyles_;
+        smart_ptr<Theme> theme_;
+		smart_ptr<TableStyles> tableStyles_;
 
-		Logic::CSld						cSld;
-		Logic::ClrMap					clrMap;
-		nullable<Logic::HF>				hf;
-		nullable<Logic::TextListStyle>	notesStyle;
+		Logic::CSld cSld;
+		Logic::ClrMap clrMap;
+		nullable<Logic::HF> hf;
+		nullable<Logic::TextListStyle> notesStyle;
+
+		nullable<nsPresentation::ExtendedGuideList> sldGuideLst;
 	};
 } // namespace PPTX
-
-#endif // PPTX_SLIDES_NOTESMASTER_INCLUDE_H_

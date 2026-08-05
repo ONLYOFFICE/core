@@ -1854,6 +1854,8 @@ bool OOXShapeReader::ParseVml(ReaderParameter oParam, RtfShapePtr& pOutput, bool
         pOutput->m_bHr = m_vmlElement->m_oHr.get();
     if (m_vmlElement->m_oHrStd.IsInit())
         pOutput->m_bHrStd = m_vmlElement->m_oHrStd.get();
+    if (m_vmlElement->m_oHrNoShade.IsInit())
+        pOutput->m_bHrNoShade = m_vmlElement->m_oHrNoShade.get();
     if (m_vmlElement->m_oHrAlign.IsInit())
     {
         SimpleTypes::EHrAlign eVal = m_vmlElement->m_oHrAlign->GetValue();

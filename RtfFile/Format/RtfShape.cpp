@@ -35,6 +35,7 @@
 #include "RtfShape.h"
 #include "../OOXml/Writer/OOXWriter.h"
 #include "RtfOle.h"
+#include "DumpHrWmf.h"
 
 #include "../../UnicodeConverter/UnicodeConverter.h"
 
@@ -360,19 +361,41 @@ std::wstring RtfShape::RenderToRtf(RenderParameter oRenderParameter)
 		}
         else if (m_bHr)
         {
+            int nHrWidth  = (PROP_DEF != m_nRelRight)  ? m_nRelRight  : m_nRight;
+            int nHrHeight = (PROP_DEF != m_nRelBottom) ? m_nRelBottom : m_nBottom;
+
             sResult+=L"{\\pict";
             sResult+=L"{\\*\\picprop";
             RENDER_RTF_INT( m_nID, sResult, L"shplid" );
-            if (m_nBottom != PROP_DEF)
+            if (nHrHeight != PROP_DEF)
             {
-                sResult += L"{\\sp{\\sn dxHeightHR}{\\sv " + std::to_wstring(m_nBottom) + L"}}";
+                sResult += L"{\\sp{\\sn dxHeightHR}{\\sv " + std::to_wstring(nHrHeight) + L"}}";
             }
-            if (m_nRight != PROP_DEF)
+            if (nHrWidth != PROP_DEF)
             {
-                sResult += L"{\\sp{\\sn dxWidthHR}{\\sv " + std::to_wstring(m_nRight) + L"}}";
+                sResult += L"{\\sp{\\sn dxWidthHR}{\\sv " + std::to_wstring(nHrWidth) + L"}}";
             }
             sResult +=  RenderToRtfShapeProperty( oRenderParameter );
             sResult += L"}";
+
+            int nHrColor = (PROP_DEF != m_nFillColor) ? m_nFillColor : 0x00A0A0A0;
+            unsigned char nR = (unsigned char)( nHrColor        & 0xFF);
+            unsigned char nG = (unsigned char)((nHrColor >> 8)  & 0xFF);
+            unsigned char nB = (unsigned char)((nHrColor >> 16) & 0xFF);
+
+            int nGoalW = (PROP_DEF != nHrWidth)  ? nHrWidth  : 1440;
+            int nGoalH = (PROP_DEF != nHrHeight) ? nHrHeight : 20;
+            int nPicW = (int)((long long)nGoalW * 2540 / 1440);
+            int nPicH = (int)((long long)nGoalH * 2540 / 1440);
+
+            sResult += L"\\picscalex100\\picscaley100\\piccropl0\\piccropr0\\piccropt0\\piccropb0";
+            sResult += L"\\picw"     + std::to_wstring(nPicW);
+            sResult += L"\\pich"     + std::to_wstring(nPicH);
+            sResult += L"\\picwgoal" + std::to_wstring(nGoalW);
+            sResult += L"\\pichgoal" + std::to_wstring(nGoalH);
+            sResult += L"\\wmetafile8\n";
+            sResult += WMF::GenerateHrWmfHex(nR, nG, nB);
+
             sResult += L"}";
         }
 		else
@@ -694,7 +717,7 @@ std::wstring RtfShape::RenderToRtfShapeProperty(RenderParameter oRenderParameter
     RENDER_RTF_SHAPE_PROP(L"relRotation",	sResult,   	m_nRelRotation );
     RENDER_RTF_SHAPE_PROP(L"dhgt",			sResult,	m_nRelZOrder );
 //Fill
-	if ( 0 == m_bFilled)
+	if ( 0 == m_bFilled && !(m_bHr && PROP_DEF != m_nFillColor))
 		sResult += L"{\\sp{\\sn fFilled}{\\sv 0}}";
 	RENDER_RTF_SHAPE_PROP(L"fillType",		sResult,	m_nFillType );
     RENDER_RTF_SHAPE_PROP(L"fillColor",		sResult,	m_nFillColor );
@@ -746,6 +769,8 @@ std::wstring RtfShape::RenderToRtfShapeProperty(RenderParameter oRenderParameter
         sResult += L"{\\sp{\\sn fHorizRule}{\\sv 1}}";
     if (m_bHrStd)
         sResult += L"{\\sp{\\sn fStandardHR}{\\sv 1}}";
+    if (m_bHrNoShade)
+        sResult += L"{\\sp{\\sn fNoshadeHR}{\\sv 1}}";
 
 //pWrapPolygonVertices	Points of the text wrap polygon.
 	if ( !m_aWrapPoints.empty())

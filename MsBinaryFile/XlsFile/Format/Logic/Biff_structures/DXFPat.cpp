@@ -72,21 +72,21 @@ std::wstring GetPatternType(unsigned char fls)
 	std::wstring res;
 	switch (fls)
 	{
-	case 2: res =  L"pct50";					break; //50% gray
-	case 3: res =  L"pct75";					break; //75% gray
-	case 4: res =  L"pct25";					break; //25% gray
-	case 5: res =  L"horzStripe";				break; //Horizontal stripe
-	case 6: res =  L"vertStripe";				break; //Vertical stripe
-	case 7: res =  L"reverseDiagStripe";		break; //Reverse diagonal stripe
-	case 8: res =  L"diagStripe";				break; //Diagonal stripe
-	case 9: res =  L"diagCross";				break; //Diagonal crosshatch
-	case 10: res =  L"trellis";					break; //Thick Diagonal crosshatch
-	case 11: res =  L"thinHorzStripe";			break; //Thin horizontal stripe
-	case 12: res =  L"thinVertStripe";			break; //Thin vertical stripe
-	case 13: res =  L"thinReverseDiagStripe";	break; //Thin reverse diagonal stripe
-	case 14: res =  L"thinDiagStripe";			break; //Thin diagonal stripe
-	case 15: res =  L"thinHorzCross";			break; //Thin horizontal crosshatch
-	case 16: res =  L"thinDiagCross";			break; //Thin diagonal crosshatch
+	case 2: res =  L"mediumGray";					break; //50% gray
+	case 3: res =  L"darkGray";					break; //75% gray
+	case 4: res =  L"lightGray";					break; //25% gray
+	case 5: res =  L"darkHorizontal";				break; //Horizontal stripe
+	case 6: res =  L"darkVertical";				break; //Vertical stripe
+	case 7: res =  L"darkDown";		break; //Reverse diagonal stripe
+	case 8: res =  L"darkUp";				break; //Diagonal stripe
+	case 9: res =  L"darkGrid";				break; //Diagonal crosshatch
+	case 10: res =  L"darkTrellis";					break; //Thick Diagonal crosshatch
+	case 11: res =  L"lightHorizontal";			break; //Thin horizontal stripe
+	case 12: res =  L"lightVertical";			break; //Thin vertical stripe
+	case 13: res =  L"lightDown";	break; //Thin reverse diagonal stripe
+	case 14: res =  L"lightUp";			break; //Thin diagonal stripe
+	case 15: res =  L"lightGrid";			break; //Thin horizontal crosshatch
+	case 16: res =  L"lightTrellis";			break; //Thin diagonal crosshatch
 	case 17: res =  L"gray125";					break; //12.5% gray
 	case 18: res =  L"gray0625";				break; //6.25% gray
 	default:

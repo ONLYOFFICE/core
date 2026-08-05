@@ -174,6 +174,7 @@ namespace NSOnlineOfficeBinToPdf
 			if (pParams->m_bIsUsePicker)
 				oCorrector.InitPicker(pPdf->GetFonts());
 		}
+		pPdf->SetCorrector(&oCorrector);
 
 		NSOnlineOfficeBinToPdf::CBufferReader oReader(pBuffer, (int)nBufferLen);
 

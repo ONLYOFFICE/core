@@ -88,7 +88,7 @@ public:
 
 	bool getLineChart() const;
 
-   
+	std::map<int, odf_reader::text_format_properties_ptr> dLbls_;
 private:
 
 	std::wstring formatCode_;
@@ -107,9 +107,7 @@ private:
 
 	bool IsLineChart = false;
 
-	odf_reader::text_format_properties_ptr					textPr_;
-	std::map<int, odf_reader::text_format_properties_ptr>	dLbls_;
-
+	odf_reader::text_format_properties_ptr textPr_;
 
 //delete (Delete) §21.2.2.40
 //dLblPos (Data Label Position) §21.2.2.48

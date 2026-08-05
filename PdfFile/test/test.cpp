@@ -485,7 +485,22 @@ TEST_F(CPdfFileTest, MergePdf)
 	ASSERT_TRUE(pdfFile->EditPdf(wsDstFile));
 
 	std::wstring wsSplitFile = NSFile::GetProcessDirectory() + L"/test_split.pdf";
-	pdfFile->MergePages(wsSplitFile, 0, L"");
+	NSFile::CFileBinary oFile;
+	ASSERT_TRUE(oFile.OpenFile(wsSplitFile));
+
+	DWORD dwFileSize = oFile.GetFileSize();
+	BYTE* pFileContent = new BYTE[dwFileSize];
+	if (!pFileContent)
+	{
+		oFile.CloseFile();
+		FAIL();
+	}
+
+	DWORD dwReaded;
+	EXPECT_TRUE(oFile.ReadFile(pFileContent, dwFileSize, dwReaded));
+	oFile.CloseFile();
+
+	pdfFile->MergePagesEdit(pFileContent, dwReaded, 0, L"");
 
 	pdfFile->Close();
 }

@@ -313,6 +313,45 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
 //------------------------------------------------------------------------------------------------------------------------
+		class CRichRel : public WritingElement
+		{
+		public:
+			WritingElement_AdditionMethods(CRichRel)
+			CRichRel();
+			virtual ~CRichRel();
+
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
+
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+
+			virtual EElementType getType() const;
+		private:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+		public:
+			nullable<OOX::RId> m_oRid;
+		};
+//------------------------------------------------------------------------------------------------------------------------
+		class CRichValueRels : public WritingElementWithChilds<CRichRel>
+		{
+		public:
+			WritingElement_AdditionMethods(CRichValueRels)
+			CRichValueRels();
+			virtual ~CRichValueRels();
+
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
+
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+
+			virtual EElementType getType() const;
+
+			nullable_uint m_oCount;
+			nullable<OOX::Drawing::COfficeArtExtensionList> m_oExtLst;
+		};
+//------------------------------------------------------------------------------------------------------------------------
 		class CRdRichValueFile : public OOX::File
 		{
 		public:
@@ -382,5 +421,29 @@ namespace OOX
 		private:
 			CPath m_oReadPath;
 		};
+//------------------------------------------------------------------------------------------------------------------------
+		class CRichValueRelFile : public OOX::IFileContainer, public OOX::FileGlobalEnumerated
+		{
+		public:
+			CRichValueRelFile(OOX::Document* pMain);
+			CRichValueRelFile(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath);
+			virtual ~CRichValueRelFile();
+
+			virtual void read(const CPath& oPath);
+			virtual void read(const CPath& oRootPath, const CPath& oPath);
+
+			virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const;
+			virtual const OOX::FileType type() const;
+
+			virtual const CPath DefaultDirectory() const;
+			virtual const CPath DefaultFileName() const;
+
+			const CPath& GetReadPath();
+
+			nullable<CRichValueRels> m_oRichValueRels;
+		private:
+			CPath m_oReadPath;
+		};
+
 	} //Spreadsheet
 } // namespace OOX

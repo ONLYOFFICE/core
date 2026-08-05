@@ -598,7 +598,7 @@ public:
 //.chart............................................................................................................................
 		void convert(OOX::Spreadsheet::CT_ChartSpace			*oox_chart);
 		void convert(OOX::Spreadsheet::CT_View3D				*oox_view3D);
-		void convert(OOX::Spreadsheet::CT_Title					*ct_title);
+		void convert(OOX::Spreadsheet::CT_Title					*ct_title, OOX::Spreadsheet::CT_SerTx *reserve_tx = NULL);
 		void convert(OOX::Spreadsheet::CT_Legend				*ct_legend);
 		void convert(OOX::Spreadsheet::CT_LegendEntry			*ct_legend);
 		void convert(OOX::Spreadsheet::CT_PlotArea				*ct_plotArea);

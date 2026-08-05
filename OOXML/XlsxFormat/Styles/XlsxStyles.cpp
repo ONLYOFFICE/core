@@ -35,6 +35,7 @@
 #pragma once
 
 #include "Styles.h"
+#include "FeaturePropertyBag.h"
 
 #include "../../XlsbFormat/Xlsb.h"
 #include "../XlsxFlat.h"
@@ -305,7 +306,7 @@ namespace OOX
 		}
 		void MapColors(const OOX::Spreadsheet::CColors &colors)
 		{
-			for(auto i = 8; i <= 56; i++)
+			for(auto i = 8; i <= 63; i++)
 			{
 				if(colors.m_oIndexedColors->mapIndexedColors.find(i) == colors.m_oIndexedColors->mapIndexedColors.end())
 				{
@@ -361,51 +362,6 @@ namespace OOX
 				m_oColors = OOX::Spreadsheet::CColors();
 				m_oColors->m_oIndexedColors.Init();
 				m_oColors->m_oMruColors.Init();
-
-				if (m_oFonts.IsInit())
-				{
-					for(auto i : m_oFonts->m_arrItems)
-					{
-						SetColor(m_oColors.get(), i->m_oColor);
-					}
-				}
-				if(m_oFills.IsInit())
-				{
-					for(auto i : m_oFills->m_arrItems)
-					{
-						if(i->m_oPatternFill.IsInit())
-						{
-							auto pattern = &i->m_oPatternFill;
-							SetColor(m_oColors.get(), (*pattern)->m_oBgColor);
-							SetColor(m_oColors.get(), (*pattern)->m_oFgColor);
-						}
-					}
-				}
-				for(auto i : m_oBorders->m_arrItems)
-				{
-					if(i->m_oTop.IsInit())
-					{
-						SetColor(m_oColors.get(), i->m_oTop->m_oColor);
-					}
-					if(i->m_oBottom.IsInit())
-					{
-						SetColor(m_oColors.get(), i->m_oBottom->m_oColor);
-					}
-					if(i->m_oStart.IsInit())
-					{
-						SetColor(m_oColors.get(), i->m_oStart->m_oColor);
-					}
-					if(i->m_oEnd.IsInit())
-					{
-						SetColor(m_oColors.get(), i->m_oEnd->m_oColor);
-					}
-					if(i->m_oDiagonal.IsInit())
-					{
-						SetColor(m_oColors.get(), i->m_oDiagonal->m_oColor);
-					}
-
-				}
-
 				MapColors(m_oColors.get());
 			}
 			FormatPtr->m_Palette = m_oColors->toXLS();
@@ -1436,7 +1392,414 @@ xmlns:x16r2=\"http://schemas.microsoft.com/office/spreadsheetml/2015/02/main\">"
 		{
 			return m_oReadPath;
 		}
+//---------------------------------------------------------------------------------------------------------------------------
+		CFeaturePropertyBagFile::CFeaturePropertyBagFile(OOX::Document* pMain) : OOX::File(pMain)
+		{
+		}
+		CFeaturePropertyBagFile::CFeaturePropertyBagFile(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::File(pMain)
+		{
+			read(oRootPath, oPath);
+		}
+		CFeaturePropertyBagFile::~CFeaturePropertyBagFile()
+		{
+		}
+		void CFeaturePropertyBagFile::read(const CPath& oPath)
+		{
+			//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)
+			CPath oRootPath;
+			read(oRootPath, oPath);
+		}
+		const OOX::FileType CFeaturePropertyBagFile::type() const
+		{
+			return OOX::Spreadsheet::FileTypes::FeaturePropertyBag;
+		}
+		const CPath CFeaturePropertyBagFile::DefaultDirectory() const
+		{
+			return type().DefaultDirectory();
+		}
+		const CPath CFeaturePropertyBagFile::DefaultFileName() const
+		{
+			return type().DefaultFileName();
+		}
+		const CPath& CFeaturePropertyBagFile::GetReadPath()
+		{
+			return m_oReadPath;
+		}
+		void CFeaturePropertyBagFile::read(const CPath& oRootPath, const CPath& oPath)
+		{
+			m_oReadPath = oPath;
 
+			XmlUtils::CXmlLiteReader oReader;
+
+			if (!oReader.FromFile(oPath.GetPath()))
+				return;
+
+			if (!oReader.ReadNextNode())
+				return;
+
+			m_oPropertyBags = oReader;
+		}
+		void CFeaturePropertyBagFile::write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
+		{
+			if (false == m_oPropertyBags.IsInit()) return;
+
+			NSStringUtils::CStringBuilder sXml;
+
+			sXml.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
+
+			m_oPropertyBags->toXML(sXml);
+
+			std::wstring sPath = oPath.GetPath();
+			NSFile::CFileBinary::SaveToFile(sPath, sXml.GetData());
+
+			oContent.Registration(type().OverrideType(), oDirectory, oPath.GetFilename());
+		}
+//-----------------------------------------------------------------------------------
+		CFeaturePropertyBags::CFeaturePropertyBags(OOX::Document* pMain) {}
+		CFeaturePropertyBags::~CFeaturePropertyBags() {}
+		EElementType CFeaturePropertyBags::getType() const
+		{
+			return et_x_FeaturePropertyBags;
+		}
+		void CFeaturePropertyBags::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			if (oReader.IsEmptyNode())
+				return;
+
+			int nCurDepth = oReader.GetDepth();
+			while (oReader.ReadNextSiblingNode(nCurDepth))
+			{
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+				if (L"bag" == sName)
+				{
+					CFeaturePropertyBag* pBag = new CFeaturePropertyBag();
+					if (pBag)
+					{
+						pBag->fromXML(oReader);
+						m_arrItems.push_back(pBag);
+					}
+				}
+			}
+		}
+		void CFeaturePropertyBags::toXML(NSStringUtils::CStringBuilder& writer) const
+		{
+			if (m_arrItems.empty()) return;
+
+			writer.WriteString(L"<FeaturePropertyBags xmlns=\"http://schemas.microsoft.com/office/spreadsheetml/2022/featurepropertybag\" count=\"" +
+				std::to_wstring(m_arrItems.size()) + L"\">");
+
+			for (size_t i = 0; i < m_arrItems.size(); ++i)
+			{
+				if (m_arrItems[i])
+				{
+					m_arrItems[i]->toXML(writer);
+				}
+			}
+			writer.WriteString(L"</FeaturePropertyBags>");
+		}
+//-----------------------------------------------------------------------------------
+		EElementType CFeaturePropertyBag::getType() const
+		{
+			return et_x_FeaturePropertyBag;
+		}
+		void CFeaturePropertyBag::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			WritingElement_ReadAttributes_Start_No_NS(oReader)
+				WritingElement_ReadAttributes_Read_if(oReader, L"type", m_oType)
+				WritingElement_ReadAttributes_Read_else_if(oReader, L"extRef", m_oExtRef)
+				WritingElement_ReadAttributes_Read_else_if(oReader, L"bagExtId", m_oBagExtId)
+				WritingElement_ReadAttributes_Read_else_if(oReader, L"att", m_oAtt)
+			WritingElement_ReadAttributes_End_No_NS(oReader)
+		}
+		void CFeaturePropertyBag::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes(oReader);
+			if (oReader.IsEmptyNode())
+				return;
+
+			int nParentDepth = oReader.GetDepth();
+			while (oReader.ReadNextSiblingNode(nParentDepth))
+			{
+				std::wstring sName = oReader.GetName();
+
+				WritingElement* pItem = NULL;
+				if (L"a" == sName)
+				{
+					pItem = new CArrayFeatureProperty();
+				}
+				else if (L"bagId" == sName)
+				{
+					pItem = new CBagFeatureProperty();
+				}
+				else if (L"i" == sName)
+				{
+					pItem = new CIntFeatureProperty();
+				}
+				else if (L"s" == sName)
+				{
+					pItem = new CStringFeatureProperty();
+				}
+				else if (L"b" == sName)
+				{
+					pItem = new CBoolFeatureProperty();
+				}
+				else if (L"d" == sName)
+				{
+					pItem = new CDoubleFeatureProperty();
+				}
+				if (pItem)
+				{
+					pItem->fromXML(oReader);
+					m_arrItems.push_back(pItem);
+				}
+			}
+		}
+		void CFeaturePropertyBag::toXML(NSStringUtils::CStringBuilder& writer) const
+		{
+			writer.StartNode(L"bag");
+			writer.StartAttributes();
+			if (m_oType.IsInit()) writer.WriteAttribute(L"type", *m_oType);
+			if (m_oExtRef.IsInit()) writer.WriteAttribute(L"extRef", *m_oExtRef);
+			if (m_oBagExtId.IsInit()) writer.WriteAttribute(L"bagExtId", *m_oBagExtId);
+			if (m_oAtt.IsInit()) writer.WriteAttribute(L"att", *m_oAtt);
+			writer.EndAttributes();
+
+			for (size_t i = 0; i < m_arrItems.size(); ++i)
+			{
+				if (m_arrItems[i])
+				{
+					m_arrItems[i]->toXML(writer);
+				}
+			}
+			writer.WriteNodeEnd(L"bag");
+		}
+//-----------------------------------------------------------------------------------
+		EElementType CArrayFeatureProperty::getType() const
+		{
+			return et_x_ArrayFeatureProperty;
+		}
+		void CArrayFeatureProperty::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			WritingElement_ReadAttributes_Start_No_NS(oReader)
+				WritingElement_ReadAttributes_Read_if(oReader, L"k", m_oK)
+			WritingElement_ReadAttributes_End_No_NS(oReader)
+		}
+		void CArrayFeatureProperty::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes(oReader);
+			if (oReader.IsEmptyNode())
+				return;
+
+			int nParentDepth = oReader.GetDepth();
+			while (oReader.ReadNextSiblingNode(nParentDepth))
+			{
+				std::wstring sName = oReader.GetName();
+
+				WritingElement* pItem = NULL;
+				if (L"bagId" == sName)
+				{
+					pItem = new CBagFeatureProperty();
+				}
+				else if (L"i" == sName)
+				{
+					pItem = new CIntFeatureProperty();
+				}
+				else if (L"s" == sName)
+				{
+					pItem = new CStringFeatureProperty();
+				}
+				else if (L"b" == sName)
+				{
+					pItem = new CBoolFeatureProperty();
+				}
+				else if (L"d" == sName)
+				{
+					pItem = new CDoubleFeatureProperty();
+				}
+				if (pItem)
+				{
+					pItem->fromXML(oReader);
+					m_arrItems.push_back(pItem);
+				}
+			}
+		}
+		void CArrayFeatureProperty::toXML(NSStringUtils::CStringBuilder& writer) const
+		{
+			writer.StartNode(L"a");
+			writer.StartAttributes();
+			if (m_oK.IsInit()) writer.WriteAttribute(L"k", *m_oK);
+			writer.EndAttributes();
+
+			for (size_t i = 0; i < m_arrItems.size(); ++i)
+			{
+				if (m_arrItems[i])
+				{
+					m_arrItems[i]->toXML(writer);
+				}
+			}
+			writer.WriteNodeEnd(L"a");
+		}
+//-----------------------------------------------------------------------------------
+		EElementType CBagFeatureProperty::getType() const
+		{
+			return et_x_BagFeatureProperty;
+		}
+		void CBagFeatureProperty::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			WritingElement_ReadAttributes_Start_No_NS(oReader)
+				WritingElement_ReadAttributes_Read_if(oReader, L"k", m_oK)
+			WritingElement_ReadAttributes_End_No_NS(oReader)
+		}
+		void CBagFeatureProperty::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes(oReader);
+			if (oReader.IsEmptyNode())
+				return;
+
+			m_oContent = oReader.GetText2();
+		}
+		void CBagFeatureProperty::toXML(NSStringUtils::CStringBuilder& writer) const
+		{
+			writer.StartNode(L"bagId");
+			writer.StartAttributes();
+			if (m_oK.IsInit()) writer.WriteAttribute(L"k", *m_oK);
+			writer.EndAttributes();
+
+			if (m_oContent.IsInit())
+			{
+				writer.AddUInt(*m_oContent);
+			}
+			writer.WriteNodeEnd(L"bagId");
+		}
+//-----------------------------------------------------------------------------------
+		EElementType CIntFeatureProperty::getType() const
+		{
+			return et_x_IntFeatureProperty;
+		}
+		void CIntFeatureProperty::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			WritingElement_ReadAttributes_Start_No_NS(oReader)
+				WritingElement_ReadAttributes_Read_if(oReader, L"k", m_oK)
+			WritingElement_ReadAttributes_End_No_NS(oReader)
+		}
+		void CIntFeatureProperty::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes(oReader);
+			if (oReader.IsEmptyNode())
+				return;
+
+			m_oContent = oReader.GetText2();
+		}
+		void CIntFeatureProperty::toXML(NSStringUtils::CStringBuilder& writer) const
+		{
+			writer.StartNode(L"i");
+			writer.StartAttributes();
+			if (m_oK.IsInit()) writer.WriteAttribute(L"k", *m_oK);
+			writer.EndAttributes();
+
+			if (m_oContent.IsInit())
+			{
+				writer.AddUInt(*m_oContent);
+			}
+			writer.WriteNodeEnd(L"i");
+		}
+//-----------------------------------------------------------------------------------
+		EElementType CStringFeatureProperty::getType() const
+		{
+			return et_x_StringFeatureProperty;
+		}
+		void CStringFeatureProperty::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			WritingElement_ReadAttributes_Start_No_NS(oReader)
+				WritingElement_ReadAttributes_Read_if(oReader, L"k", m_oK)
+			WritingElement_ReadAttributes_End_No_NS(oReader)
+		}
+		void CStringFeatureProperty::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes(oReader);
+			if (oReader.IsEmptyNode())
+				return;
+
+			m_oContent = oReader.GetText2();
+		}
+		void CStringFeatureProperty::toXML(NSStringUtils::CStringBuilder& writer) const
+		{
+			writer.StartNode(L"s");
+			writer.StartAttributes();
+			if (m_oK.IsInit()) writer.WriteAttribute(L"k", *m_oK);
+			writer.EndAttributes();
+
+			if (m_oContent.IsInit())
+			{
+				writer.WriteEncodeXmlString(*m_oContent);
+			}
+			writer.WriteNodeEnd(L"s");
+		}
+//-----------------------------------------------------------------------------------
+		EElementType CBoolFeatureProperty::getType() const
+		{
+			return et_x_BoolFeatureProperty;
+		}
+		void CBoolFeatureProperty::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			WritingElement_ReadAttributes_Start_No_NS(oReader)
+				WritingElement_ReadAttributes_Read_if(oReader, L"k", m_oK)
+			WritingElement_ReadAttributes_End_No_NS(oReader)
+		}
+		void CBoolFeatureProperty::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes(oReader);
+			if (oReader.IsEmptyNode())
+				return;
+
+			m_oContent = oReader.GetText2();
+		}
+		void CBoolFeatureProperty::toXML(NSStringUtils::CStringBuilder& writer) const
+		{
+			writer.StartNode(L"b");
+			writer.StartAttributes();
+			if (m_oK.IsInit()) writer.WriteAttribute(L"k", *m_oK);
+			writer.EndAttributes();
+
+			if (m_oContent.IsInit())
+			{
+				writer.AddUInt(*m_oContent);
+			}
+			writer.WriteNodeEnd(L"b");
+		}
+//-----------------------------------------------------------------------------------
+		EElementType CDoubleFeatureProperty::getType() const
+		{
+			return et_x_DoubleFeatureProperty;
+		}
+		void CDoubleFeatureProperty::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			WritingElement_ReadAttributes_Start_No_NS(oReader)
+				WritingElement_ReadAttributes_Read_if(oReader, L"k", m_oK)
+			WritingElement_ReadAttributes_End_No_NS(oReader)
+		}
+		void CDoubleFeatureProperty::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes(oReader);
+			if (oReader.IsEmptyNode())
+				return;
+
+			m_oContent = oReader.GetText2();
+		}
+		void CDoubleFeatureProperty::toXML(NSStringUtils::CStringBuilder& writer) const
+		{
+			writer.StartNode(L"d");
+			writer.StartAttributes();
+			if (m_oK.IsInit()) writer.WriteAttribute(L"k", *m_oK);
+			writer.EndAttributes();
+
+			if (m_oContent.IsInit())
+			{
+				writer.AddDouble(*m_oContent, 5);
+			}
+			writer.WriteNodeEnd(L"d");
+		}
 	} //Spreadsheet
 } // namespace OOX
 

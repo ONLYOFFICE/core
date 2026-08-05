@@ -128,6 +128,8 @@ int COLUMNS::serialize(std::wostream & stream)
 					}
 
 					CP_XML_ATTR(L"min", column_info->colFirst + 1);/// from 0 
+					if(column_info->colLast >= 255)
+						column_info->colLast =16384;
 					CP_XML_ATTR(L"max", column_info->colLast + 1);
 
 					if (column_info->ixfe > global_info_->cellStyleXfs_count && column_info->ixfe != 0xffff)

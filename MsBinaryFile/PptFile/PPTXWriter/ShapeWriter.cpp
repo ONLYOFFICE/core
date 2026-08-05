@@ -631,10 +631,9 @@ void PPT::CShapeWriter::WriteImageInfo()
         bool bExternal = false;
         std::wstring strRid = m_pRels->WriteAudio(pAudioElement->m_strAudioFileName, bExternal);
 
-//        if ((int)pAudioElement->m_strAudioFileName.find(L".WAV") == -1 &&
-//                (int)pAudioElement->m_strAudioFileName.find(L".wav") == -1)
-//            m_oWriter.WriteString(L"<a:wavAudioFile r:embed=\"" + strRid + L"\"/>");
-//        else
+        if (pAudioElement->m_strAudioFileName.find(L".wav") != std::wstring::npos)
+            m_oWriter.WriteString(L"<a:wavAudioFile r:embed=\"" + strRid + L"\"/>");
+        else
             m_oWriter.WriteString(L"<a:audioFile r:link=\"" + strRid + L"\"/>"); // todo for anim connection
 
         sMediaFile = bExternal ? L"" : pAudioElement->m_strAudioFileName;

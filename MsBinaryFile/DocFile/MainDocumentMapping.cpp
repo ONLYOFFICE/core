@@ -111,9 +111,16 @@ namespace DocFileFormat
 
 // Convert the document
 		_lastValidPapx = NULL;
-		if (m_document->AllPapxFkps->empty() == false)
+		if (m_document->AllPapxFkps && m_document->AllPapxFkps->empty() == false)
 		{
-			_lastValidPapx = (*(m_document->AllPapxFkps->begin()))->grppapx[0];
+			for (auto papx : *m_document->AllPapxFkps)
+			{
+				if ((papx) && (papx->grppapx))
+				{
+					_lastValidPapx = *papx->grppapx;
+					break;
+				}
+			}
 		}
 
 		int cp = 0;
@@ -157,8 +164,8 @@ namespace DocFileFormat
 			else
 			{
 				//There are no paragraphs, only text
-				int fc						=	m_document->FindFileCharPos(cp);
-				int fcEnd					=	m_document->FindFileCharPos(countTextRel);
+				int fc =	m_document->FindFileCharPos(cp);
+				int fcEnd =	m_document->FindFileCharPos(countTextRel);
 
 				//if (fc < 0 || fcEnd < 0) break;
 				//

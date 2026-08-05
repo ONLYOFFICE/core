@@ -73,6 +73,7 @@ namespace OOX
 			m_mTable.insert(std::make_pair(L"flv", L"video/x-flv"));
 			m_mTable.insert(std::make_pair(L"wmv", L"video/x-wmv"));
 			m_mTable.insert(std::make_pair(L"webm", L"video/webm"));
+			m_mTable.insert(std::make_pair(L"ts", L"video/unknown"));
 			m_mTable.insert(std::make_pair(L"xls", L"application/vnd.ms-excel"));
 			m_mTable.insert(std::make_pair(L"xlsm", L"application/vnd.ms-excel.sheet.macroEnabled.12"));
 			m_mTable.insert(std::make_pair(L"xlsb", L"application/vnd.ms-excel.sheet.binary.macroEnabled.12"));

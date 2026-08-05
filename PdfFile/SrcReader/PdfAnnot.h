@@ -705,6 +705,8 @@ private:
 
 	void getParents(PDFDoc* pdfDoc, Object* oFieldRef, int nStartRefID);
 
+	BYTE* m_pRoles;
+	int m_nRoles;
 	std::vector<int> m_arrCO; // Calculation order - CO
 	std::vector<CAnnotParent*> m_arrParents; // Parent Fields
 	std::vector<CAnnotWidget*> m_arrAnnots;

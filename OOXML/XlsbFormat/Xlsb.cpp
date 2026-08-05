@@ -240,7 +240,7 @@ void OOX::Spreadsheet::CXlsb::PrepareHlinks()
 		{
 			for(auto hlink : i->m_oHyperlinks->m_arrItems)
 			{
-				if(!hlink->m_oLink.IsInit() && hlink->m_oRid.IsInit())
+				if(!hlink->m_oLink.IsInit() && hlink->m_oRid.IsInit() && !hlink->m_oRid->GetValue().empty())
 				{
 					auto rel = static_cast<OOX::External*>(i->Find(hlink->m_oRid->GetValue()).GetPointer());
 					if(rel != nullptr)

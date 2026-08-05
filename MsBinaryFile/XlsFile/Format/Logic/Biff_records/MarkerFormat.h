@@ -66,7 +66,7 @@ public:
 	
 	IcvChart icvFore = 0;
 	IcvChart icvBack = 0;
-	_UINT32	miSize = 0;
+	_UINT32	miSize = 40;
 	
 	GlobalWorkbookInfoPtr global_info;
 };

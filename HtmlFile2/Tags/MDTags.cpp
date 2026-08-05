@@ -559,6 +559,16 @@ bool CHorizontalRuleMDTag::Open(const std::vector<NSCSS::CNode>& arSelectors)
 	if (!Valid())
 		return false;
 
+	if (m_pWriter->InTable())
+	{
+		if (m_pWriter->GetParametrs().m_bUseAlternativeHTMLTags)
+		{
+			m_pWriter->WriteString(L"<hr/>");
+			return true;
+		}
+		return false;
+	}
+
 	m_pWriter->WriteBreakLine(false);
 	m_pWriter->WriteString(L"---");
 	m_pWriter->WriteBreakLine(false);

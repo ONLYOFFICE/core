@@ -107,6 +107,9 @@ namespace PPTX
 		nullable<nsPresentation::SectionLst>		sectionLst;
 		//smartTags (Smart Tags)
 
+		nullable<nsPresentation::ExtendedGuideList> sldGuideLst;
+		nullable<nsPresentation::ExtendedGuideList> notesGuideLst;
+
 		nullable_bool							attrAutoCompressPictures;
 		nullable_int							attrBookmarkIdSeed;
 		nullable_bool							attrCompatMode;

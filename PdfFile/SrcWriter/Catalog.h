@@ -58,6 +58,9 @@ namespace PdfWriter
 		CStructureTreeRoot(CXref* pXref);
 
 		void AddAnnot(CDictObject* pAnnot, CDictObject* pPage, StructElemType eType);
+		void RemoveAnnot(CDictObject* pAnnot);
+		void RemoveStructElemCascade(CDictObject* pElem);
+		CDictObject* CreateDestAnchor(CDictObject* pPageDict, int nMCID);
 
 	private:
 		CXref* m_pXref;
@@ -82,6 +85,7 @@ namespace PdfWriter
 		void         AddPageLabel(unsigned int unIndex, CDictObject* pPageLabel);
 		CMetadata*   AddMetadata(CXref* pXref, CInfoDict* pInfo, const std::string& sAltTitle);
 		CStructureTreeRoot* GetStructTreeRoot();
+		CDictObject* GetNames();
 		EDictType    GetDictType()
 		{
 			return dict_type_CATALOG;
@@ -89,6 +93,7 @@ namespace PdfWriter
 
 	private:
 		CStructureTreeRoot* m_pStructTreeRoot;
+		CXref* m_pXref;
 	};
 }
 

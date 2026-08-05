@@ -67,6 +67,7 @@
 #include "../../../XlsxFormat/Styles/dxf.h"
 #include "../../../XlsxFormat/Styles/CellStyles.h"
 #include "../../../XlsxFormat/Styles/TableStyles.h"
+#include "../../../XlsxFormat/Styles/FeaturePropertyBag.h"
 #include "../../../XlsxFormat/CalcChain/CalcChain.h"
 #include "../../../XlsxFormat/ExternalLinks/ExternalLinks.h"
 #include "../../../XlsxFormat/ExternalLinks/ExternalLinkPath.h"
@@ -1982,6 +1983,14 @@ int BinaryStyleTableReader::ReadXfs(BYTE type, long length, void* poResult)
 		pXfs->m_oXfId.Init();
 		pXfs->m_oXfId->SetValue(m_oBufferedStream.GetLong());
 	}
+	else if (c_oSerXfsTypes::Complement == type)
+	{
+		pXfs->m_oExtLst.Init();
+		pXfs->m_oExtLst->m_arrExt.push_back(new OOX::Drawing::COfficeArtExtension());
+		pXfs->m_oExtLst->m_arrExt.back()->m_sUri = L"{C7286773-470A-42A8-94C5-96B5CB345126}";
+		pXfs->m_oExtLst->m_arrExt.back()->m_sAdditionalNamespace = L"xmlns:xfpb=\"http://schemas.microsoft.com/office/spreadsheetml/2022/featurepropertybag\"";
+		pXfs->m_oExtLst->m_arrExt.back()->m_oXfComplement = m_oBufferedStream.GetULong();
+	}
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;
@@ -2498,6 +2507,34 @@ int BinaryWorkbookTableReader::ReadWorkbookTableContent(BYTE type, long length, 
 		smart_ptr<OOX::File> oFile = oRichValueTypesFile.smart_dynamic_cast<OOX::File>();
 		m_oWorkbook.Add(oFile);
 	}
+	else if (c_oSerWorkbookTypes::RichValueRels == type)
+	{
+		smart_ptr<OOX::Spreadsheet::CRichValueRelFile> oRichValueRelFile(new OOX::Spreadsheet::CRichValueRelFile(NULL));
+		if (m_oWorkbook.OOX::File::m_pMainDocument)
+			oRichValueRelFile->OOX::File::m_pMainDocument = m_oWorkbook.OOX::File::m_pMainDocument;
+
+		OOX::IFileContainer*  pContainerOld =  m_oBufferedStream.GetRelsPtr();
+		m_oBufferedStream.SetRelsPtr(oRichValueRelFile.GetPointer());
+		
+		oRichValueRelFile->m_oRichValueRels.Init();
+		READ1_DEF(length, res, this->ReadRichValueRel, oRichValueRelFile->m_oRichValueRels.GetPointer());
+
+		m_oBufferedStream.SetRelsPtr(pContainerOld);
+
+		smart_ptr<OOX::File> oFile = oRichValueRelFile.smart_dynamic_cast<OOX::File>();
+		m_oWorkbook.Add(oFile);
+	}
+	else if (c_oSerWorkbookTypes::FeaturePropertyBags == type)
+	{
+		smart_ptr<OOX::Spreadsheet::CFeaturePropertyBagFile> oFeaturePropertyBagFile(new OOX::Spreadsheet::CFeaturePropertyBagFile(NULL));
+		if (m_oWorkbook.OOX::File::m_pMainDocument)
+			oFeaturePropertyBagFile->OOX::File::m_pMainDocument = m_oWorkbook.OOX::File::m_pMainDocument;
+		oFeaturePropertyBagFile->m_oPropertyBags.Init();
+		READ1_DEF(length, res, this->ReadFeaturePropertyBags, oFeaturePropertyBagFile->m_oPropertyBags.GetPointer());
+
+		smart_ptr<OOX::File> oFile = oFeaturePropertyBagFile.smart_dynamic_cast<OOX::File>();
+		m_oWorkbook.Add(oFile);
+	}
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;
@@ -2512,6 +2549,210 @@ int BinaryWorkbookTableReader::ReadConnections(BYTE type, long length, void* poR
 		OOX::Spreadsheet::CConnection* pConnection = new OOX::Spreadsheet::CConnection();
 		READ1_DEF(length, res, this->ReadConnection, pConnection);
 		pConnections->m_arrItems.push_back(pConnection);
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
+int BinaryWorkbookTableReader::ReadFeaturePropertyBags(BYTE type, long length, void* poResult)
+{
+	int res = c_oSerConstants::ReadOk;
+	OOX::Spreadsheet::CFeaturePropertyBags* pFeaturePropertyBags = static_cast<OOX::Spreadsheet::CFeaturePropertyBags*>(poResult);
+
+	if (c_oSer_FeaturePropertyBags::Bag == type)
+	{
+		OOX::Spreadsheet::CFeaturePropertyBag* pFeaturePropertyBag = new OOX::Spreadsheet::CFeaturePropertyBag();
+		READ1_DEF(length, res, this->ReadFeaturePropertyBag, pFeaturePropertyBag);
+		pFeaturePropertyBags->m_arrItems.push_back(pFeaturePropertyBag);
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
+int BinaryWorkbookTableReader::ReadFeaturePropertyBag(BYTE type, long length, void* poResult)
+{
+	int res = c_oSerConstants::ReadOk;
+	OOX::Spreadsheet::CFeaturePropertyBag* pFeaturePropertyBag = static_cast<OOX::Spreadsheet::CFeaturePropertyBag*>(poResult);
+
+	if (c_oSer_FeaturePropertyBags::Att == type)
+	{
+		pFeaturePropertyBag->m_oAtt = m_oBufferedStream.GetString4(length);
+	}
+	else if (c_oSer_FeaturePropertyBags::ExtRef == type)
+	{
+		pFeaturePropertyBag->m_oExtRef = m_oBufferedStream.GetString4(length);
+	}
+	else if (c_oSer_FeaturePropertyBags::Type == type)
+	{
+		pFeaturePropertyBag->m_oType = m_oBufferedStream.GetString4(length);
+	}
+	else if (c_oSer_FeaturePropertyBags::BagExtId== type)
+	{
+		pFeaturePropertyBag->m_oBagExtId = m_oBufferedStream.GetULong();
+	}
+	else if (c_oSer_FeaturePropertyBags::Array == type)
+	{
+		OOX::Spreadsheet::CArrayFeatureProperty* pArray = new OOX::Spreadsheet::CArrayFeatureProperty();
+		READ1_DEF(length, res, this->ReadFeaturePropertyArray, pArray);
+		pFeaturePropertyBag->m_arrItems.push_back(pArray);
+	}
+	else if (c_oSer_FeaturePropertyBags::Int == type)
+	{
+		OOX::Spreadsheet::CIntFeatureProperty* pInt = new OOX::Spreadsheet::CIntFeatureProperty();
+		READ1_DEF(length, res, this->ReadFeaturePropertyInt, pInt);
+		pFeaturePropertyBag->m_arrItems.push_back(pInt);
+	}
+	else if (c_oSer_FeaturePropertyBags::BagId == type)
+	{
+		OOX::Spreadsheet::CBagFeatureProperty* pBagId = new OOX::Spreadsheet::CBagFeatureProperty();
+		READ1_DEF(length, res, this->ReadFeaturePropertyBagId, pBagId);
+		pFeaturePropertyBag->m_arrItems.push_back(pBagId);
+	}
+	else if (c_oSer_FeaturePropertyBags::Int == type)
+	{
+		OOX::Spreadsheet::CBoolFeatureProperty* pBool = new OOX::Spreadsheet::CBoolFeatureProperty();
+		READ1_DEF(length, res, this->ReadFeaturePropertyBool, pBool);
+		pFeaturePropertyBag->m_arrItems.push_back(pBool);
+	}
+	else if (c_oSer_FeaturePropertyBags::String == type)
+	{
+		OOX::Spreadsheet::CStringFeatureProperty* pString = new OOX::Spreadsheet::CStringFeatureProperty();
+		READ1_DEF(length, res, this->ReadFeaturePropertyString, pString);
+		pFeaturePropertyBag->m_arrItems.push_back(pString);
+	}
+	else if (c_oSer_FeaturePropertyBags::Double == type)
+	{
+		OOX::Spreadsheet::CDoubleFeatureProperty* pDouble = new OOX::Spreadsheet::CDoubleFeatureProperty();
+		READ1_DEF(length, res, this->ReadFeaturePropertyDouble, pDouble);
+		pFeaturePropertyBag->m_arrItems.push_back(pDouble);
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
+int BinaryWorkbookTableReader::ReadFeaturePropertyDouble(BYTE type, long length, void* poResult)
+{
+	int res = c_oSerConstants::ReadOk;
+	OOX::Spreadsheet::CDoubleFeatureProperty* pDouble = static_cast<OOX::Spreadsheet::CDoubleFeatureProperty*>(poResult);
+
+	if (c_oSer_FeaturePropertyBags::Key == type)
+	{
+		pDouble->m_oK= m_oBufferedStream.GetString4(length);
+	}
+	else if (c_oSer_FeaturePropertyBags::Value == type)
+	{
+		pDouble->m_oContent = m_oBufferedStream.GetDoubleReal();
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
+int BinaryWorkbookTableReader::ReadFeaturePropertyString(BYTE type, long length, void* poResult)
+{
+	int res = c_oSerConstants::ReadOk;
+	OOX::Spreadsheet::CStringFeatureProperty* pString = static_cast<OOX::Spreadsheet::CStringFeatureProperty*>(poResult);
+
+	if (c_oSer_FeaturePropertyBags::Key == type)
+	{
+		pString->m_oK = m_oBufferedStream.GetString4(length);
+	}
+	else if (c_oSer_FeaturePropertyBags::Value == type)
+	{
+		pString->m_oContent = m_oBufferedStream.GetString4(length);
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
+int BinaryWorkbookTableReader::ReadFeaturePropertyInt(BYTE type, long length, void* poResult)
+{
+	int res = c_oSerConstants::ReadOk;
+	OOX::Spreadsheet::CIntFeatureProperty* pInt = static_cast<OOX::Spreadsheet::CIntFeatureProperty*>(poResult);
+
+	if (c_oSer_FeaturePropertyBags::Key == type)
+	{
+		pInt->m_oK = m_oBufferedStream.GetString4(length);
+	}
+	else if (c_oSer_FeaturePropertyBags::Value == type)
+	{
+		pInt->m_oContent = m_oBufferedStream.GetLong();
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
+int BinaryWorkbookTableReader::ReadFeaturePropertyBagId(BYTE type, long length, void* poResult)
+{
+	int res = c_oSerConstants::ReadOk;
+	OOX::Spreadsheet::CBagFeatureProperty* pBag = static_cast<OOX::Spreadsheet::CBagFeatureProperty*>(poResult);
+
+	if (c_oSer_FeaturePropertyBags::Key == type)
+	{
+		pBag->m_oK = m_oBufferedStream.GetString4(length);
+	}
+	else if (c_oSer_FeaturePropertyBags::Value == type)
+	{
+		pBag->m_oContent = m_oBufferedStream.GetULong();
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
+int BinaryWorkbookTableReader::ReadFeaturePropertyBool(BYTE type, long length, void* poResult)
+{
+	int res = c_oSerConstants::ReadOk;
+	OOX::Spreadsheet::CBoolFeatureProperty* pBool = static_cast<OOX::Spreadsheet::CBoolFeatureProperty*>(poResult);
+
+	if (c_oSer_FeaturePropertyBags::Key == type)
+	{
+		pBool->m_oK = m_oBufferedStream.GetString4(length);
+	}
+	else if (c_oSer_FeaturePropertyBags::Value == type)
+	{
+		pBool->m_oContent = m_oBufferedStream.GetBool();
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
+int BinaryWorkbookTableReader::ReadFeaturePropertyArray(BYTE type, long length, void* poResult)
+{
+	int res = c_oSerConstants::ReadOk;
+	OOX::Spreadsheet::CArrayFeatureProperty* pArray = static_cast<OOX::Spreadsheet::CArrayFeatureProperty*>(poResult);
+
+	if (c_oSer_FeaturePropertyBags::Key == type)
+	{
+		pArray->m_oK = m_oBufferedStream.GetString4(length);
+	}
+	else if (c_oSer_FeaturePropertyBags::Int == type)
+	{
+		OOX::Spreadsheet::CIntFeatureProperty* pInt = new OOX::Spreadsheet::CIntFeatureProperty();
+		READ1_DEF(length, res, this->ReadFeaturePropertyInt, pInt);
+		pArray->m_arrItems.push_back(pInt);
+	}
+	else if (c_oSer_FeaturePropertyBags::BagId == type)
+	{
+		OOX::Spreadsheet::CBagFeatureProperty* pBagId = new OOX::Spreadsheet::CBagFeatureProperty();
+		READ1_DEF(length, res, this->ReadFeaturePropertyBagId, pBagId);
+		pArray->m_arrItems.push_back(pBagId);
+	}
+	else if (c_oSer_FeaturePropertyBags::Int == type)
+	{
+		OOX::Spreadsheet::CBoolFeatureProperty* pBool = new OOX::Spreadsheet::CBoolFeatureProperty();
+		READ1_DEF(length, res, this->ReadFeaturePropertyBool, pBool);
+		pArray->m_arrItems.push_back(pBool);
+	}
+	else if (c_oSer_FeaturePropertyBags::String == type)
+	{
+		OOX::Spreadsheet::CStringFeatureProperty* pString = new OOX::Spreadsheet::CStringFeatureProperty();
+		READ1_DEF(length, res, this->ReadFeaturePropertyString, pString);
+		pArray->m_arrItems.push_back(pString);
+	}
+	else if (c_oSer_FeaturePropertyBags::Double == type)
+	{
+		OOX::Spreadsheet::CDoubleFeatureProperty* pDouble = new OOX::Spreadsheet::CDoubleFeatureProperty();
+		READ1_DEF(length, res, this->ReadFeaturePropertyDouble, pDouble);
+		pArray->m_arrItems.push_back(pDouble);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -6469,6 +6710,9 @@ int BinaryWorksheetsTableReader::ReadDrawings(BYTE type, long length, void* poRe
 						pOleObject->m_oObjectPr->m_oAnchor->m_oTo	= pCellAnchor->m_oTo;
 
 						m_pCurOleObjects->m_mapOleObjects[pOleObject->m_oShapeId->GetValue()] = pOleObject;
+		//------------------------------ 
+						oPic.nvPicPr.cNvPr.hidden = true;
+						oPic.nvPicPr.cNvPr.id = pOleObject->m_oShapeId->GetValue();
 					}
 					else
 					{
@@ -8978,6 +9222,41 @@ int BinaryWorkbookTableReader::ReadRichValueReservedKeyFlags(BYTE type, long len
 	else if (c_oSer_RichValueTypesInfo::FlagValue == type)
 	{
 		pFlag->m_oValue = m_oBufferedStream.GetBool();
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
+int BinaryWorkbookTableReader::ReadRichValueRel(BYTE type, long length, void* poResult)
+{
+	int res = c_oSerConstants::ReadOk;
+	OOX::Spreadsheet::CRichValueRels* pRichValueRels = static_cast<OOX::Spreadsheet::CRichValueRels*>(poResult);
+
+	if (c_oSer_RichValueRel::RichValueRel == type)
+	{
+		OOX::Spreadsheet::CRichRel* pRichRel = new(OOX::Spreadsheet::CRichRel);
+		pRichValueRels->m_arrItems.push_back(pRichRel);
+
+		std::wstring image_filename = m_oBufferedStream.GetString2(length);
+
+		if (pRichRel && false == image_filename.empty())
+		{
+			std::wstring srcMedia = m_oBufferedStream.m_strFolder + FILE_SEPARATOR_STR + L"media" + FILE_SEPARATOR_STR;
+			int idImage = m_oBufferedStream.m_nCountImage++;
+			std::wstring image_filename_dst = L"image" + std::to_wstring(idImage) + OOX::CPath(image_filename).GetExtention();
+
+			NSFile::CFileBinary::Copy(srcMedia + image_filename, m_oBufferedStream.m_pRels->m_pManager->GetDstMedia() + FILE_SEPARATOR_STR + image_filename_dst);
+
+			OOX::Image* pImage = new OOX::Image(NULL, false);
+			pImage->set_filename(m_oBufferedStream.m_pRels->m_pManager->GetDstMedia() + FILE_SEPARATOR_STR + image_filename_dst, false);
+
+			smart_ptr<OOX::File> oFile(pImage);
+			if (m_oBufferedStream.GetRelsPtr())
+			{
+				pRichRel->m_oRid.Init();
+				pRichRel->m_oRid = m_oBufferedStream.GetRelsPtr()->Add(oFile).get();
+			}
+		}
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;

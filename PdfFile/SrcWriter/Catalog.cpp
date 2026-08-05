@@ -75,24 +75,30 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	CCatalog::CCatalog(CXref* pXref)
 	{
-		m_pStructTreeRoot = NULL;
-
+		m_pXref = pXref;
 		pXref->Add(this);
 
 		Add("Type", "Catalog");
 		Add("Pages", new CPageTree(pXref));
 
-		CDictObject* pMarkInfo = new CDictObject();
-		pMarkInfo->Add("Marked", true);
-		Add("MarkInfo", pMarkInfo);
+		if (m_pXref->IsPDFUA() || pXref->IsPDFA())
+		{
+			CDictObject* pMarkInfo = new CDictObject();
+			pMarkInfo->Add("Marked", true);
+			Add("MarkInfo", pMarkInfo);
 
-		m_pStructTreeRoot = new CStructureTreeRoot(pXref);
-		Add("StructTreeRoot", m_pStructTreeRoot);
+			Add("Lang", new CStringObject("en-US"));
+			CDictObject* pVP = new CDictObject();
+			pVP->Add("DisplayDocTitle", true);
+			Add("ViewerPreferences", pVP);
+		}
 
-		Add("Lang", new CStringObject("en-US"));
-		CDictObject* pVP = new CDictObject();
-		pVP->Add("DisplayDocTitle", true);
-		Add("ViewerPreferences", pVP);
+		m_pStructTreeRoot = NULL;
+		if (m_pXref->IsPDFUA())
+		{
+			m_pStructTreeRoot = new CStructureTreeRoot(pXref);
+			Add("StructTreeRoot", m_pStructTreeRoot);
+		}
 
 		if (pXref->IsPDFA())
 		{
@@ -121,6 +127,7 @@ namespace PdfWriter
 	CCatalog::CCatalog()
 	{
 		m_pStructTreeRoot = NULL;
+		m_pXref = NULL;
 	}
 	CPageTree*   CCatalog::GetRoot() const
 	{
@@ -210,6 +217,18 @@ namespace PdfWriter
 	{
 		return m_pStructTreeRoot;
 	}
+	CDictObject* CCatalog::GetNames()
+	{
+		CObjectBase* pObj = Get("Names");
+		if (!pObj || pObj->GetType() != object_type_DICT)
+		{
+			pObj = new CDictObject();
+			if (m_pXref)
+				m_pXref->Add(pObj);
+			Add("Names", pObj);
+		}
+		return dynamic_cast<CDictObject*>(pObj);
+	}
 	//----------------------------------------------------------------------------------------
 	// CStructureTreeRoot
 	//----------------------------------------------------------------------------------------
@@ -257,16 +276,6 @@ namespace PdfWriter
 		int nKey = m_nParentTreeKey++;
 
 		pAnnot->Add("StructParent", nKey);
-		if (pAnnot->GetDictType() != EDictType::dict_type_ANNOTATION || ((CAnnotation*)pAnnot)->GetAnnotationType() == EAnnotType::AnnotWidget)
-		{
-			if (!pAnnot->Get("TU"))
-				pAnnot->Add("TU", new CStringObject(""));
-		}
-		else
-		{
-			if (!pAnnot->Get("Contents"))
-				pAnnot->Add("Contents", new CStringObject(""));
-		}
 
 		CDictObject* pObjR = new CDictObject();
 		pObjR->Add("Type", "OBJR");
@@ -291,5 +300,115 @@ namespace PdfWriter
 		pNums->Add(pLinkElem);
 
 		Add("ParentTreeNextKey", m_nParentTreeKey);
+	}
+	void CStructureTreeRoot::RemoveAnnot(CDictObject* pAnnot)
+	{
+		if (!pAnnot || !m_pDocumentElem || !m_pDocumentK || !m_pParentTree)
+			return;
+
+		CObjectBase* pStructParentObj = pAnnot->Get("StructParent");
+		if (!pStructParentObj)
+			return;
+		int nKey = ((CNumberObject*)pStructParentObj)->Get();
+
+		CArrayObject* pNums = (CArrayObject*)m_pParentTree->Get("Nums");
+		if (!pNums)
+			return;
+
+		CDictObject* pLinkElem = NULL;
+		int nNumsIndex = -1;
+		for (int i = 0; i < pNums->GetCount(); i += 2)
+		{
+			CObjectBase* pKeyObj = pNums->Get(i);
+			if (!pKeyObj || pKeyObj->GetType() != object_type_NUMBER)
+				continue;
+
+			if (((CNumberObject*)pKeyObj)->Get() == nKey)
+			{
+				CObjectBase* pValObj = pNums->Get(i + 1);
+				if (pValObj && pValObj->GetType() == object_type_DICT)
+					pLinkElem = (CDictObject*)pValObj;
+				nNumsIndex = i;
+				break;
+			}
+		}
+
+		if (nNumsIndex >= 0)
+		{
+			pNums->Remove(nNumsIndex + 1);
+			pNums->Remove(nNumsIndex);
+		}
+
+		if (pLinkElem)
+		{
+			CArrayObject* pK = (CArrayObject*)pLinkElem->Get("K");
+			if (pK)
+			{
+				for (int i = pK->GetCount() - 1; i >= 0; i--)
+				{
+					CObjectBase* pItem = pK->Get(i);
+					if (pItem && pItem->GetType() == object_type_DICT)
+					{
+						CDictObject* pObjR = (CDictObject*)pItem;
+						if (pObjR->Get("Obj") == pAnnot)
+							pK->Remove(i);
+					}
+				}
+			}
+
+			if (!pK || pK->GetCount() == 0)
+				RemoveStructElemCascade(pLinkElem);
+		}
+
+		pAnnot->Remove("StructParent");
+	}
+	void CStructureTreeRoot::RemoveStructElemCascade(CDictObject* pElem)
+	{
+		if (!pElem || pElem == m_pDocumentElem)
+			return;
+
+		CObjectBase* pParentObj = pElem->Get("P");
+		if (!pParentObj || pParentObj->GetType() != object_type_DICT)
+		{
+			m_pXref->Remove(pElem);
+			return;
+		}
+
+		CDictObject* pParent = (CDictObject*)pParentObj;
+		CArrayObject* pParentK = (CArrayObject*)pParent->Get("K");
+		if (pParentK)
+		{
+			for (int i = pParentK->GetCount() - 1; i >= 0; i--)
+			{
+				if (pParentK->Get(i) == pElem)
+				{
+					pParentK->Remove(i);
+					break;
+				}
+			}
+		}
+
+		m_pXref->Remove(pElem);
+
+		if (pParentK && pParentK->GetCount() == 0 && pParent != m_pDocumentElem)
+			RemoveStructElemCascade(pParent);
+	}
+	CDictObject* CStructureTreeRoot::CreateDestAnchor(CDictObject* pPageDict, int nMCID)
+	{
+		if (!m_pDocumentElem || !m_pDocumentK)
+			return NULL;
+
+		CDictObject* pAnchorElem = new CDictObject();
+		m_pXref->Add(pAnchorElem);
+		pAnchorElem->Add("Type", "StructElem");
+		pAnchorElem->Add("S", "Art");
+		pAnchorElem->Add("NS", m_pNamespace);
+		pAnchorElem->Add("P", m_pDocumentElem);
+		pAnchorElem->Add("Pg", pPageDict);
+		pAnchorElem->Add("K", nMCID);
+
+		m_pDocumentK->Add(pAnchorElem);
+
+		return pAnchorElem;
 	}
 }

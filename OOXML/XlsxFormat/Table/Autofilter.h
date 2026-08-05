@@ -288,7 +288,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void fromBin(XLS::BaseObjectPtr& obj);
 			XLS::BaseObjectPtr toBin();
-
+			XLS::BiffStructurePtr toXLS();
 			virtual EElementType getType () const;
 
 		private:

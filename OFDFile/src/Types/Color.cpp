@@ -61,7 +61,7 @@ CColor::CColor(CXmlReader& oXmlReader)
 				m_oValues[unIndex] = static_cast<BYTE>(arValues[unIndex]);
 		}
 		else if ("Alpha" == sAttributeName)
-			m_chAlpha = oXmlReader.GetUInteger(true);
+			m_chAlpha = (std::max)((BYTE)0, (BYTE)(std::min)((unsigned int)255, oXmlReader.GetUInteger(true)));
 		else if ("Index" == sAttributeName)
 			m_nIndex = oXmlReader.GetInteger(true);
 	} while (oXmlReader.MoveToNextAttribute());
@@ -72,7 +72,7 @@ CColor::CColor(CXmlReader& oXmlReader)
 int CColor::ToInt(const CRes* pPublicRes) const
 {
 	if (nullptr == pPublicRes)
-		return 0;
+		return BLACK_COLOR_INT;
 
 	const CColorSpace* pColorSpace = pPublicRes->GetColorSpace(m_unColodSpaceID);
 
@@ -84,9 +84,9 @@ int CColor::ToInt(const CRes* pPublicRes) const
 	switch(eColoSpaceType)
 	{
 		case CColorSpace::EType::GRAY:
-			return (m_oValues[0] << 16) | (m_oValues[0] << 8) | (m_oValues[0] << 0);
+			return (255 << 24) | (m_oValues[0] << 16) | (m_oValues[0] << 8) | (m_oValues[0] << 0);
 		case CColorSpace::EType::RGB:
-			return (m_oValues[2] << 16) | (m_oValues[1] << 8) | (m_oValues[0] << 0);
+			return (255 << 24) | (m_oValues[2] << 16) | (m_oValues[1] << 8) | (m_oValues[0] << 0);
 		case CColorSpace::EType::CMYK:
 		{
 			const float cF = m_oValues[0] / 255.0f;
@@ -102,11 +102,11 @@ int CColor::ToInt(const CRes* pPublicRes) const
 			const unsigned char gByte = static_cast<unsigned char>(g * 255);
 			const unsigned char bByte = static_cast<unsigned char>(b * 255);
 
-			return (rByte << 0) | (gByte << 8) | (bByte << 16);
+			return (rByte << 0) | (gByte << 8) | (bByte << 16) | (255 << 24);
 		}
 	}
 
-	return 0;
+	return BLACK_COLOR_INT;
 }
 
 BYTE CColor::GetAlpha() const

@@ -40,19 +40,20 @@ namespace PPT
 {
 class CRecordSoundDataBlob : public CUnknownRecord
 {
-	BYTE* m_pData;
-	LONG  m_lSize;
-
-public:
-	
+public:	
     CRecordSoundDataBlob();
-
     ~CRecordSoundDataBlob();
 
     virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream) override;
 
     void ReleaseData();
-
     void SaveToFile(std::wstring strFile);
+
+    BYTE* GetData() { return m_pData; }
+    LONG GetDataSize() { return m_lSize; }
+private:
+    BYTE* m_pData = NULL;
+    LONG  m_lSize = 0;
+
 };
 }

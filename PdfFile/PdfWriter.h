@@ -70,7 +70,7 @@ namespace Aggplus
 class CPdfWriter
 {
 public:
-	CPdfWriter(NSFonts::IApplicationFonts* pAppFonts, bool isPDFA = false, IRenderer* pRenderer = NULL, bool bCreate = true, const std::wstring& wsTempDirectory = L"");
+	CPdfWriter(NSFonts::IApplicationFonts* pAppFonts, bool isPDFA = false, bool isPDFUA = false, IRenderer* pRenderer = NULL, bool bCreate = true, const std::wstring& wsTempDirectory = L"");
 	~CPdfWriter();
 	int          SaveToFile(const std::wstring& wsPath);
 	int          SaveToMemory(BYTE** pData, int* pLength, bool bForWasm = false);
@@ -79,6 +79,7 @@ public:
 	void         SetDocumentInfo(const std::wstring& wsTitle, const std::wstring& wsCreator, const std::wstring& wsSubject, const std::wstring& wsKeywords);
 	std::wstring GetTempFile(const std::wstring& wsDirectory);
 	void SetTempDirectory(const std::wstring& wsTempDirectory);
+	void SetCorrector(IMetafileToRenderter* pCorrector);
 	//----------------------------------------------------------------------------------------
 	// Functions for working with page
 	//----------------------------------------------------------------------------------------
@@ -290,6 +291,7 @@ private:
 	PdfWriter::CExtGrState*      m_pShadingExtGrState;
 
 	std::wstring                 m_wsTempDirectory;
+	IMetafileToRenderter*        m_pCorrector;
 	CCommandManager              m_oCommandManager;
 	CPenState                    m_oPen;
 	CBrushState                  m_oBrush;

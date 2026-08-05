@@ -210,7 +210,7 @@ Aggplus::CImage* ConvertMetafile(NSFonts::IApplicationFonts* pAppFonts, const st
 // CPdfRenderer
 //
 //----------------------------------------------------------------------------------------
-CPdfWriter::CPdfWriter(NSFonts::IApplicationFonts* pAppFonts, bool isPDFA, IRenderer* pRenderer, bool bCreate, const std::wstring& wsTempDirectory) : m_oCommandManager(this)
+CPdfWriter::CPdfWriter(NSFonts::IApplicationFonts* pAppFonts, bool isPDFA, bool isPDFUA, IRenderer* pRenderer, bool bCreate, const std::wstring& wsTempDirectory) : m_oCommandManager(this)
 {
 	// Create font manager with its own cache
 	m_pFontManager = pAppFonts->GenerateFontManager();
@@ -222,11 +222,14 @@ CPdfWriter::CPdfWriter(NSFonts::IApplicationFonts* pAppFonts, bool isPDFA, IRend
 	m_wsTempDirectory = wsTempDirectory;
 	m_pShading = NULL;
 	m_pShadingExtGrState = NULL;
+	m_pCorrector = NULL;
 
 	m_pDocument = new PdfWriter::CDocument();
 
 	if (isPDFA)
 		m_pDocument->SetPDFAConformanceMode(true);
+	if (isPDFUA)
+		m_pDocument->SetPDFUAConformanceMode(true);
 
 	if (!m_pDocument || (bCreate && !m_pDocument->CreateNew()))
 	{
@@ -341,6 +344,10 @@ std::wstring CPdfWriter::GetTempFile(const std::wstring& wsDirectory)
 void CPdfWriter::SetTempDirectory(const std::wstring& wsTempDirectory)
 {
 	m_wsTempDirectory = wsTempDirectory;
+}
+void CPdfWriter::SetCorrector(IMetafileToRenderter* pCorrector)
+{
+	m_pCorrector = pCorrector;
 }
 //----------------------------------------------------------------------------------------
 // Functions for working with page
@@ -986,10 +993,12 @@ HRESULT CPdfWriter::DrawPath(NSFonts::IApplicationFonts* pAppFonts, const std::w
 			sTextureOldPath = m_oBrush.GetTexturePath();
 			// TODO
 #ifdef BUILDING_WASM_MODULE
+			/*
 			std::wstring wsMedia = L"media/";
 			std::wstring::size_type posMedia = sTextureOldPath.find(wsMedia);
 			if (posMedia != std::wstring::npos)
 				sTextureTmpPath = sTextureOldPath.erase(0, posMedia + wsMedia.length());
+			*/
 #else
 			sTextureTmpPath = GetDownloadFile(sTextureOldPath, wsTempDirectory);
 #endif
@@ -1960,9 +1969,10 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 	CAnnotFieldInfo& oInfo = *pFieldInfo;
 	PdfWriter::CAnnotation* pAnnot = NULL;
 
-	PdfWriter::CPage* pOrigPage = m_pDocument->GetEditPage(oInfo.GetPage());
+	int nPage = oInfo.GetPage();
+	PdfWriter::CPage* pOrigPage = bRedact ? m_pDocument->GetPage(nPage) : m_pDocument->GetEditPage(nPage);
 	if (!pOrigPage)
-		pOrigPage = m_pDocument->GetPage(oInfo.GetPage());
+		pOrigPage = bRedact ? m_pDocument->GetEditPage(nPage) : m_pDocument->GetPage(nPage);
 	PdfWriter::CPage* pPage = m_pPage;
 
 	int nID = oInfo.GetID();
@@ -2521,6 +2531,11 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 				PdfWriter::CAction* pA = GetAction(pAction);
 				pWidgetAnnot->AddAction(pA);
 			}
+			if (arrActions.empty())
+			{
+				pWidgetAnnot->Remove("A");
+				pWidgetAnnot->Remove("AA");
+			}
 		}
 
 		bool isBold   = (nStyle & 1 ? true : false);
@@ -2808,11 +2823,15 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 			PdfWriter::CAction* pA = GetAction(pPr->GetA(), true);
 			pLinkAnnot->SetA(pA);
 		}
+		else
+			pLinkAnnot->Remove("A");
 		if (nFlags & (1 << 1))
 		{
 			PdfWriter::CAction* pA = GetAction(pPr->GetPA(), true);
 			pLinkAnnot->SetPA(pA);
 		}
+		else
+			pLinkAnnot->Remove("PA");
 		if (nFlags & (1 << 2))
 			pLinkAnnot->SetH(pPr->GetH());
 		if (nFlags & (1 << 3))
@@ -2858,6 +2877,11 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 				PdfWriter::CAction* pA = GetAction(pAction);
 				pScreenAnnot->AddAction(pA);
 			}
+		}
+		else
+		{
+			pScreenAnnot->Remove("A");
+			pScreenAnnot->Remove("AA");
 		}
 	}
 
@@ -3216,6 +3240,11 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 				}
 			}
 		}
+		else
+		{
+			pParentObj->Remove("A");
+			pParentObj->Remove("AA");
+		}
 		if (nFlags & (1 << 9))
 			pParentObj->Add("MaxLen", pParent->nMaxLen);
 		if (nFlags & (1 << 10))
@@ -3324,6 +3353,15 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 		}
 		if (!bReplase)
 			pKids->Add(pP);
+	}
+
+	std::wstring wsRoles = pFieldInfo->GetRoles();
+	if (!wsRoles.empty())
+	{
+		BYTE* pData = NULL;
+		LONG nMetaLength = 0;
+		NSFile::CUtf8Converter::GetUtf8StringFromUnicode(wsRoles.c_str(), wsRoles.length(), pData, nMetaLength);
+		m_pDocument->AddRoles(pData, nMetaLength);
 	}
 
 	return S_OK;
@@ -4552,9 +4590,7 @@ PdfWriter::CAnnotAppearanceObject* CPdfWriter::DrawAP(PdfWriter::CAnnotation* pA
 	pFakePage->SetStream(pAP->GetStream());
 	pFakePage->Add("Resources", pAP->Get("Resources"));
 
-	IMetafileToRenderter* pCorrector = new IMetafileToRenderter(m_pRenderer);
-	NSOnlineOfficeBinToPdf::ConvertBufferToRenderer(pRender, nLenRender, pCorrector);
-	RELEASEOBJECT(pCorrector);
+	NSOnlineOfficeBinToPdf::ConvertBufferToRenderer(pRender, nLenRender, m_pCorrector);
 
 	pAnnot->APFromFakePage(pAP);
 
@@ -4596,9 +4632,7 @@ void CPdfWriter::DrawWidgetAP(PdfWriter::CAnnotation* pA, BYTE* pRender, LONG nL
 	pFakePage->SetStrokeColor(0, 0, 0);
 	pFakePage->SetFillColor(0, 0, 0);
 
-	IMetafileToRenderter* pCorrector = new IMetafileToRenderter(m_pRenderer);
-	NSOnlineOfficeBinToPdf::ConvertBufferToRenderer(pRender, nLenRender, pCorrector);
-	RELEASEOBJECT(pCorrector);
+	NSOnlineOfficeBinToPdf::ConvertBufferToRenderer(pRender, nLenRender, m_pCorrector);
 
 	m_oCommandManager.Flush();
 	pAP->EndDraw();

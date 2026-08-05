@@ -1043,6 +1043,18 @@ void OoxConverter::convert(PPTX::Logic::SpPr *oox_spPr, PPTX::Logic::ShapeStyle*
 	odf_context()->drawing_context()->start_line_properties();
 	{
 		convert(oox_spPr->ln.GetPointer(), 0, oox_sp_style);
+		
+		if (oox_spPr->Geometry.hr.IsInit())
+		{
+			odf_context()->drawing_context()->set_horizontal_rule();
+
+			if (oox_spPr->Fill.is_init() && oox_spPr->Fill.getType() != OOX::et_a_noFill)
+				convert(&oox_spPr->Fill);
+
+			double default_hrule_margin = current_font_size.empty() ? 11 : current_font_size.back();
+			odf_context()->drawing_context()->set_margin_top(default_hrule_margin);
+			odf_context()->drawing_context()->set_margin_bottom(default_hrule_margin);
+		}
 	}
 	odf_context()->drawing_context()->end_line_properties();
 //-----------------------------------------------------------------------------------------------------------------------------
@@ -1054,10 +1066,7 @@ void OoxConverter::convert(PPTX::Logic::SpPr *oox_spPr, PPTX::Logic::ShapeStyle*
 	convert(oox_spPr->scene3d.GetPointer());
 	convert(oox_spPr->sp3d.GetPointer());
 
-	if (oox_spPr->Geometry.hr.IsInit())
-	{
-		odf_context()->drawing_context()->set_horizontal_rule();
-	}
+
 //-----------------------------------------------------------------------------------------------------------------------------
 }
 

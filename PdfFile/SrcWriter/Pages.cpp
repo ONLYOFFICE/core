@@ -519,19 +519,21 @@ namespace PdfWriter
 		m_eGrMode   = grmode_PAGE;
 		m_pGrState  = new CGrState(NULL);
 
+		m_pContents         = NULL;
 		m_pFont             = NULL;
 		m_pShadings         = NULL;
 		m_unShadingsCount   = 0;
 		m_pPatterns         = NULL;
 		m_unPatternsCount   = 0;
 		m_eType             = fontUnknownType;
+		m_nDestAnchorMCID   = -1;
 	}
     void CPage::SetWidth(double dValue)
 	{
         dValue = std::min(std::max(dValue, 1.0), 14400.0);
 		SetMediaBoxValue(2, dValue);
 	}
-	double        CPage::GetWidth()
+	double CPage::GetWidth()
 	{
         TBox oBox = GetMediaBox();
         return oBox.fRight - oBox.fLeft;
@@ -541,7 +543,7 @@ namespace PdfWriter
         dValue = std::min(std::max(dValue, 1.0), 14400.0);
 		SetMediaBoxValue(3, dValue);
 	}
-	double        CPage::GetHeight()
+	double CPage::GetHeight()
 	{
         TBox oBox = GetMediaBox();
         return oBox.fTop - oBox.fBottom;
@@ -569,7 +571,7 @@ namespace PdfWriter
 
 		return oBox;
 	}
-	TBox          CPage::GetMediaBox()
+	TBox CPage::GetMediaBox()
 	{
 		return GetBox("MediaBox");
 	}
@@ -999,7 +1001,8 @@ namespace PdfWriter
 		m_pStream->WriteStr("q\012");
 		m_pGrState = pState;
 
-		m_pStream->WriteStr("/Artifact <</Type /Layout>> BDC\012");
+		if (m_pDocument->IsPDFUA())
+			m_pStream->WriteStr("/Artifact <</Type /Layout>> BDC\012");
 	}
     void CPage::GrRestore()
 	{
@@ -1014,9 +1017,22 @@ namespace PdfWriter
 		delete m_pGrState;
 		m_pGrState = pPrev;
 
-		m_pStream->WriteStr("EMC\012");
+		if (m_pDocument->IsPDFUA())
+			m_pStream->WriteStr("EMC\012");
 
 		m_pStream->WriteStr("Q\012");
+	}
+	int CPage::GetOrCreateDestAnchorMCID()
+	{
+		if (m_nDestAnchorMCID >= 0)
+			return m_nDestAnchorMCID;
+
+		m_nDestAnchorMCID = 0;
+		m_pStream->WriteStr("/Anchor <</MCID ");
+		m_pStream->WriteStr(std::to_string(m_nDestAnchorMCID).c_str());
+		m_pStream->WriteStr(">> BDC\012EMC\012");
+
+		return m_nDestAnchorMCID;
 	}
     void CPage::SetStrokeColor(unsigned char unR, unsigned char unG, unsigned char unB)
 	{
@@ -1705,10 +1721,16 @@ namespace PdfWriter
 		m_pStream->WriteEscapeName(sName.c_str());
 		m_pStream->WriteStr(" BMC\012");
 	}
-	void CPage::BeginMarkedContentDict(const std::string& sName, CDictObject* pBDC)
+	void CPage::BeginMarkedContentDict(const std::string& sName, CObjectBase* pBDC)
 	{
 		// Operator   : BDC
-		// Description: Begin marked content with dict
+		// Description: Begin marked content with args
+
+		if (!pBDC)
+		{
+			BeginMarkedContent(sName);
+			return;
+		}
 
 		m_pStream->WriteEscapeName(sName.c_str());
 		m_pStream->WriteChar(' ');

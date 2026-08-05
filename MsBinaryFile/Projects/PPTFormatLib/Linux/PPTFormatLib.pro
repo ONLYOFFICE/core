@@ -54,6 +54,7 @@ DEFINES +=  UNICODE \
         #DISABLE_FILE_DOWNLOADER
 
 HEADERS += \
+	../../../../Common/MediaFileFormatChecker.h \
 	../../../PptFile/Main/PPTFormatLib.h \
 	../../../PptFile/Converter/Animation/AnimationParser.h \
 	../../../PptFile/Converter/Animation/Animation_1995.h \
@@ -152,7 +153,7 @@ HEADERS += \
 	../../../PptFile/Records/BlipEntityAtom.h \
 	../../../PptFile/Records/BookmarkEntityAtom.h \
 	../../../PptFile/Records/BookmarkSeedAtom.h \
-    ../../../PptFile/Records/CryptSession10Container.h \
+	../../../PptFile/Records/CryptSession10Container.h \
 	../../../PptFile/Records/DocInfoListContainer.h \
 	../../../PptFile/Records/DocProgTagsContainer.h \
 	../../../PptFile/Records/MouseInteractiveInfoContainer.h \
@@ -160,7 +161,7 @@ HEADERS += \
 	../../../PptFile/Records/OfficeArtClientTextbox.h \
 	../../../PptFile/Records/PlaceHolderAtom.h \
 	../../../PptFile/Records/RoundTrip.h \
-    ../../../PptFile/Records/RoundTripNotesMasterTextStyles12Atom.h \
+	../../../PptFile/Records/RoundTripNotesMasterTextStyles12Atom.h \
 	../../../PptFile/Records/ShapeProgBinaryTagSubContainerOrAtom.h \
 	../../../PptFile/Records/CFMasks.h \
 	../../../PptFile/Records/ColorSchemeAtom.h \
@@ -311,6 +312,7 @@ SOURCES += \
 	ppt_format_logic.cpp
 } else {
 SOURCES += \
+	../../../../Common/MediaFileFormatChecker.cpp \
 	../../../PptFile/Enums/RecordType.cpp \
 	../../../PptFile/Reader/ReadStructures.cpp \
 	../../../PptFile/Reader/RoundTripExtractor.cpp \

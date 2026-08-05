@@ -604,7 +604,7 @@ void oox_chart_series::oox_serialize_common(std::wostream & _Wostream)
 			}
 		}
 		
-		if (data_labels_)
+		if (data_labels_ && data_labels_->dLbls_.empty() == false)
 		{
 			data_labels_->oox_serialize(_Wostream);
 		}

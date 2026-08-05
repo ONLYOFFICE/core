@@ -1434,6 +1434,7 @@ HRESULT CPdfFile::IsSupportAdvancedCommand(const IAdvancedCommand::AdvancedComma
 	case IAdvancedCommand::AdvancedCommandType::PageRotate:
 	case IAdvancedCommand::AdvancedCommandType::Headings:
 	case IAdvancedCommand::AdvancedCommandType::Redact:
+	case IAdvancedCommand::AdvancedCommandType::RedactMeta:
 		return S_OK;
 	default:
 		break;
@@ -1552,6 +1553,16 @@ HRESULT CPdfFile::AdvancedCommand(IAdvancedCommand* command)
 	{
 		if (m_pInternal->pEditor)
 			m_pInternal->pEditor->Redact((CRedact*)command);
+		return S_OK;
+	}
+	case IAdvancedCommand::AdvancedCommandType::RedactMeta:
+	{
+		if (m_pInternal->pEditor && m_pInternal->pEditor->IsEditPage())
+		{
+			CRedactMeta* pCommand = (CRedactMeta*)command;
+			std::vector<double> arrRedact = m_pInternal->pEditor->WriteRedact(pCommand->GetRedactID());
+			m_pInternal->pWriter->AddRedact(arrRedact);
+		}
 		return S_OK;
 	}
 	default:

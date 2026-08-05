@@ -532,7 +532,6 @@ public:
 		for (int i = 0; i < nLength; ++i)
 		{
 			int nPageIndex = arrPageIndex ? arrPageIndex[i] : i;
-			std::cout << nPageIndex << std::endl;
 
 			std::vector<std::wstring> arrFont = oRenderer.GetFontsFromPage(m_pFile, nPageIndex);
 			arrFonts.insert(arrFont.begin(), arrFont.end());
@@ -542,12 +541,19 @@ public:
 
 		pFile->SetDrawOnlyText(false);
 
-		std::cout << "Fonts:" << std::endl;
-		for (const auto& font : arrFonts)
-			std::wcout << font << std::endl;
-		std::cout << std::endl;
+		NSWasm::CData oRes;
+		oRes.SkipLen();
+		oRes.AddInt(arrFonts.size());
 
-		return pFile->GetAllFonts(arrPageIndex, nLength, false);
+		for (const auto& font : arrFonts)
+			oRes.WriteString(font);
+
+		oRes.WriteLen();
+		BYTE* res = oRes.GetBuffer();
+		oRes.ClearWithoutAttack();
+
+		return res;
+		// return pFile->GetAllFonts(arrPageIndex, nLength, true);
 	}
 	BYTE* ScanPage(int nPageIndex, int mode)
 	{

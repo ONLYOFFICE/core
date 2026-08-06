@@ -6713,6 +6713,7 @@ int BinaryWorksheetsTableReader::ReadDrawings(BYTE type, long length, void* poRe
 		//------------------------------ 
 						oPic.nvPicPr.cNvPr.hidden = true;
 						oPic.nvPicPr.cNvPr.id = pOleObject->m_oShapeId->GetValue();
+						oPic.nvPicPr.cNvPr.vmlSpid = L"_x0000_s" + pOleObject->m_oShapeId->ToString();
 					}
 					else
 					{

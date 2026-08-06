@@ -63,6 +63,13 @@ void RichTextStream::readFields(CFRecord& record)
 		record.skipNunBytes(cb);
 	}
 }
+void RichTextStream::writeFields(CFRecord& record)
+{
+	frtHeader = FrtHeader(rt_RichTextStream);
+	cb = rgb.size();
+	record << frtHeader << dwCheckSum << cb;
+	record.appendRawDataToStatic(reinterpret_cast<const unsigned char*>(rgb.data()), rgb.size());
+}
 
 } // namespace XLS
 

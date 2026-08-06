@@ -1441,10 +1441,12 @@ bool style_page_layout_properties::docx_background_serialize(std::wostream & str
 		CP_XML_NODE(L"w:background")
 		{
 			std::wstring color = L"ffffff";
-			
+
 			if (attlist_.common_background_color_attlist_.fo_background_color_)
 				color = attlist_.common_background_color_attlist_.fo_background_color_->get_color().get_hex_value();
-			
+			else if (fill.solid)
+				color = fill.solid->color;
+
 			CP_XML_ATTR(L"w:color", color);
 
 			oox::vml_serialize_background(CP_XML_STREAM(), fill, color, id);

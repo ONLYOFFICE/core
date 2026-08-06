@@ -59,6 +59,8 @@ public:
 
     const office_element_ptr_array& get_content();
 
+	const _CP_OPT(std::wstring) & get_first_element_style_name() const { return first_element_style_name; }
+
 private:
     virtual void add_attributes		( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element	( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);

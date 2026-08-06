@@ -109,7 +109,8 @@ class CHWPRecordParaShape : public CHWPRecord
 	bool m_bAutoSpaceEAsianNum;
 
 	int m_nLineSpacingType;
-	void RecursiveParaShape(CXMLReader& oReader);
+	void RecursiveParaShape(CXMLReader& oReader, bool bDoubledMargins = false);
+	static int ReadMarginValue(CXMLReader& oReader, bool bDoubled);
 public:
 	CHWPRecordParaShape(CHWPDocInfo& oDocInfo, int nTagNum, int nLevel, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 	CHWPRecordParaShape(CHWPDocInfo& oDocInfo, CXMLReader& oReader, EHanType eType);

@@ -268,10 +268,10 @@ CParagraphsStyle CStyleConverter::GenerateParagraphStyle(const CHWPRecordParaSha
 	}
 
 	if (0 != oParaShape.GetMarginPrev())
-		oParagraphsStyle.SetSpacingBefore(static_cast<int>((double)oParaShape.GetMarginPrev() / 10.));
+		oParagraphsStyle.SetSpacingBefore(Transform::HWPUINT2Twips(oParaShape.GetMarginPrev()));
 
 	if (0 != oParaShape.GetMarginNext())
-		oParagraphsStyle.SetSpacingAfter(static_cast<int>((double)oParaShape.GetMarginNext() / 10.));
+		oParagraphsStyle.SetSpacingAfter(Transform::HWPUINT2Twips(oParaShape.GetMarginNext()));
 
 	return oParagraphsStyle;
 }
@@ -368,24 +368,24 @@ void CStyleConverter::WriteParagraphProperties(const CParagraphsStyle& oParagrap
 		{
 			if (oParagraphsStyle.GetFirstLine() > 0)
 			{
-				oBuilder.WriteString(L" w:firstLine=\"" + std::to_wstring(static_cast<int>(std::round(oParagraphsStyle.GetFirstLine() / 10.))) + L"\"");
+				oBuilder.WriteString(L" w:firstLine=\"" + std::to_wstring(Transform::HWPUINT2Twips(oParagraphsStyle.GetFirstLine())) + L"\"");
 
 				if (0 != nLeftInd)
-					oBuilder.WriteString(L" w:left=\"" + std::to_wstring(static_cast<int>(std::round(nLeftInd / 10.))) + L"\"");
+					oBuilder.WriteString(L" w:left=\"" + std::to_wstring(Transform::HWPUINT2Twips(nLeftInd)) + L"\"");
 			}
 			else
 			{
-				const int nHanging{static_cast<int>(std::round(-oParagraphsStyle.GetFirstLine() / 10.))};
+				const int nHanging{Transform::HWPUINT2Twips(-oParagraphsStyle.GetFirstLine())};
 
 				oBuilder.WriteString(L" w:hanging=\"" + std::to_wstring(nHanging) + L"\"");
-				oBuilder.WriteString(L" w:left=\"" + std::to_wstring(static_cast<int>(std::round(nLeftInd / 10.)) + nHanging) + L"\"");
+				oBuilder.WriteString(L" w:left=\"" + std::to_wstring(Transform::HWPUINT2Twips(nLeftInd) + nHanging) + L"\"");
 			}
 		}
 		else if (0 != nLeftInd)
-			oBuilder.WriteString(L" w:left=\"" + std::to_wstring(static_cast<int>(std::round(oParagraphsStyle.GetLeftInd() / 10.))) + L"\"");
+			oBuilder.WriteString(L" w:left=\"" + std::to_wstring(Transform::HWPUINT2Twips(oParagraphsStyle.GetLeftInd())) + L"\"");
 
 		if (oParagraphsStyle.RightIndIsSet() && 0 != oParagraphsStyle.GetRightInd())
-			oBuilder.WriteString(L" w:right=\"" + std::to_wstring(static_cast<int>(std::round(oParagraphsStyle.GetRightInd() / 10.))) + L"\"");
+			oBuilder.WriteString(L" w:right=\"" + std::to_wstring(Transform::HWPUINT2Twips(oParagraphsStyle.GetRightInd())) + L"\"");
 
 		oBuilder.WriteString(L"/>");
 	}

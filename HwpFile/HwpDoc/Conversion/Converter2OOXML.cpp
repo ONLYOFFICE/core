@@ -812,7 +812,7 @@ void CConverter2OOXML::WriteParaShapeProperties(short shParaShapeID, short shPar
 						oBuilder.WriteString(L"dot"); break;
 				}
 
-				oBuilder.WriteString(L"\" w:pos=\"" + std::to_wstring(pTab->m_nPos / 10) + L"\"/>");
+				oBuilder.WriteString(L"\" w:pos=\"" + std::to_wstring(Transform::HWPUINT2Twips(pTab->m_nPos)) + L"\"/>");
 			}
 
 			oBuilder.WriteString(L"</w:tabs>");
@@ -1749,10 +1749,10 @@ void CConverter2OOXML::OpenDrawingNode(const CCtrlObjElement* pCtrlShape, NSStri
 
 	if (pCtrlShape->GetTreatAsChar())
 	{
-		oBuilder.WriteString(L"<wp:inline distT=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlShape->GetTopOutMargin() / 10)) +
-		                             L"\" distB=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlShape->GetBottomOutMargin() / 10)) +
-		                             L"\" distL=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlShape->GetLeftOutMargin() / 10)) +
-		                             L"\" distR=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlShape->GetRightOutMargin() / 10)) +
+		oBuilder.WriteString(L"<wp:inline distT=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlShape->GetTopOutMargin())) +
+		                             L"\" distB=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlShape->GetBottomOutMargin())) +
+		                             L"\" distL=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlShape->GetLeftOutMargin())) +
+		                             L"\" distR=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlShape->GetRightOutMargin())) +
 		                     L"\">");
 
 		WriteShapeExtent(pCtrlShape, oBuilder);
@@ -1761,10 +1761,10 @@ void CConverter2OOXML::OpenDrawingNode(const CCtrlObjElement* pCtrlShape, NSStri
 	{
 		oBuilder.WriteString(L"<wp:anchor behindDoc=\"" + std::wstring((ETextWrap::BEHIND_TEXT == pCtrlShape->GetTextWrap() ? L"1" : L"0")) +
 		                     L"\" relativeHeight=\"" + std::to_wstring(pCtrlShape->GetZOrder()) +
-		                     L"\" distT=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlShape->GetTopOutMargin() / 10)) +
-		                     L"\" distB=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlShape->GetBottomOutMargin() / 10)) +
-		                     L"\" distL=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlShape->GetLeftOutMargin() / 10)) +
-		                     L"\" distR=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlShape->GetRightOutMargin() / 10)) +
+		                     L"\" distT=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlShape->GetTopOutMargin())) +
+		                     L"\" distB=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlShape->GetBottomOutMargin())) +
+		                     L"\" distL=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlShape->GetLeftOutMargin())) +
+		                     L"\" distR=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlShape->GetRightOutMargin())) +
 		                     L"\" simplePos=\"0\" locked=\"0\" layoutInCell=\"1\" allowOverlap=\"1\">");
 
 		WriteShapePosition(pCtrlShape, oBuilder);

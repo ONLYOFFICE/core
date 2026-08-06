@@ -339,7 +339,14 @@ CHWPRecordParaShape::CHWPRecordParaShape(CHWPDocInfo& oDocInfo, CXMLReader& oRea
 	END_WHILE
 }
 
-void CHWPRecordParaShape::RecursiveParaShape(CXMLReader& oReader)
+int CHWPRecordParaShape::ReadMarginValue(CXMLReader& oReader, bool bDoubled)
+{
+	const int nValue = oReader.GetAttributeInt("value");
+
+	return bDoubled ? nValue / 2 : nValue;
+}
+
+void CHWPRecordParaShape::RecursiveParaShape(CXMLReader& oReader, bool bDoubledMargins)
 {
 	WHILE_READ_NEXT_NODE_WITH_NAME(oReader)
 	{
@@ -462,19 +469,20 @@ void CHWPRecordParaShape::RecursiveParaShape(CXMLReader& oReader)
 			END_READ_ATTRIBUTES(oReader)
 		}
 		else if ("hc:intent" == sNodeName)
-			m_nIndent = oReader.GetAttributeInt("value");
+			m_nIndent = ReadMarginValue(oReader, bDoubledMargins);
 		else if ("hc:left" == sNodeName)
-			m_nMarginLeft = oReader.GetAttributeInt("value");
+			m_nMarginLeft = ReadMarginValue(oReader, bDoubledMargins);
 		else if ("hc:right" == sNodeName)
-			m_nMarginRight = oReader.GetAttributeInt("value");
+			m_nMarginRight = ReadMarginValue(oReader, bDoubledMargins);
 		else if ("hc:prev" == sNodeName)
-			m_nMarginPrev = oReader.GetAttributeInt("value");
+			m_nMarginPrev = ReadMarginValue(oReader, bDoubledMargins);
 		else if ("hc:next" == sNodeName)
-			m_nMarginNext = oReader.GetAttributeInt("value");
-		else if ("hh:margin"  == sNodeName ||
-		         "hp:switch"  == sNodeName ||
-		         "hp:default" == sNodeName)
-			RecursiveParaShape(oReader);
+			m_nMarginNext = ReadMarginValue(oReader, bDoubledMargins);
+		else if ("hh:margin" == sNodeName ||
+		         "hp:switch" == sNodeName)
+			RecursiveParaShape(oReader, bDoubledMargins);
+		else if ("hp:default" == sNodeName)
+			RecursiveParaShape(oReader, true);
 	}
 	END_WHILE
 }

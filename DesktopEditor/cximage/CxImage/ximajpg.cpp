@@ -41,6 +41,48 @@ ima_jpeg_error_exit (j_common_ptr cinfo)
 	longjmp(myerr->setjmp_buffer, 1);
 }
 ////////////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////////
+static void ima_jpeg_cmyk_to_rgb(uint8_t c, uint8_t m, uint8_t y, uint8_t k, uint8_t& r, uint8_t& g, uint8_t& b)
+{
+	static const double coef[16][3] = {
+		/* C0 M0 Y0 K0 */ {  0.9767726302,  0.9852146205,  0.9868463915 },
+		/* C0 M0 Y0 K1 */ {  2.9909896204,  4.3981488532,  3.9189131931 },
+		/* C0 M0 Y1 K0 */ {  1.2214094515,  0.6384394118, -0.0486258257 },
+		/* C0 M0 Y1 K1 */ { -3.4988722923, -4.6872421289, -4.0261099347 },
+		/* C0 M1 Y0 K0 */ { -1.2808271603, -3.0555388836, -2.4152301193 },
+		/* C0 M1 Y0 K1 */ {  4.2072149069,  5.7530257065,  5.4008535925 },
+		/* C0 M1 Y1 K0 */ { -1.1398025984, -0.5302351002, -1.1055628302 },
+		/* C0 M1 Y1 K1 */ {  2.7668036105,  0.3589591071,  0.5106835447 },
+		/* C1 M0 Y0 K0 */ { -0.0211166755,  0.7445485113,  1.0425211544 },
+		/* C1 M0 Y0 K1 */ {  3.2209973815,  0.0425439473,  0.6840241216 },
+		/* C1 M0 Y1 K0 */ { -0.1350188476,  0.5647330587,  0.2098526501 },
+		/* C1 M0 Y1 K1 */ { -4.4801050185,  0.6865723658, -0.4593818717 },
+		/* C1 M1 Y0 K0 */ { -1.1890162915,  0.0643902000,  0.0070289741 },
+		/* C1 M1 Y0 K1 */ { -1.6533196958, -2.0209780307, -1.6133361377 },
+		/* C1 M1 Y1 K0 */ {  2.4545554973,  0.0720313850,  0.8151369175 },
+		/* C1 M1 Y1 K1 */ {  1.2194519198,  2.0582067375,  1.6380862951 },
+	};
+
+	double dc = c / 255.0, dm = m / 255.0, dy = y / 255.0, dk = k / 255.0;
+	double c1 = 1.0 - dc, m1 = 1.0 - dm, y1 = 1.0 - dy, k1 = 1.0 - dk;
+	double rr = 0.0, gg = 0.0, bb = 0.0;
+
+	for (int idx = 0; idx < 16; idx++){
+		double x = ((idx&8) ? dc : c1) * ((idx&4) ? dm : m1) * ((idx&2) ? dy : y1) * ((idx&1) ? dk : k1);
+		rr += coef[idx][0] * x;
+		gg += coef[idx][1] * x;
+		bb += coef[idx][2] * x;
+	}
+
+	if (rr < 0.0) rr = 0.0; else if (rr > 1.0) rr = 1.0;
+	if (gg < 0.0) gg = 0.0; else if (gg > 1.0) gg = 1.0;
+	if (bb < 0.0) bb = 0.0; else if (bb > 1.0) bb = 1.0;
+	r = (uint8_t)(rr * 255.0 + 0.5);
+	g = (uint8_t)(gg * 255.0 + 0.5);
+	b = (uint8_t)(bb * 255.0 + 0.5);
+}
+////////////////////////////////////////////////////////////////////////////////
 CxImageJPG::CxImageJPG(): CxImage(CXIMAGE_FORMAT_JPG)
 {
 #if CXIMAGEJPG_SUPPORT_EXIF
@@ -269,12 +311,25 @@ bool CxImageJPG::Decode(CxFile * hFile)
 		
 		(void) jpeg_read_scanlines(&cinfo, buffer, 1);
 		// info.nProgress = (int32_t)(100*cinfo.output_scanline/cinfo.output_height);
-		//<DP> Step 6a: CMYK->RGB */ 
+		//<DP> Step 6a: CMYK->RGB */
 		if ((cinfo.num_components==4)&&(cinfo.quantize_colors==FALSE)){
 			uint8_t k,*dst,*src;
 			dst=iter.GetRow();
 			src=buffer[0];
+			bool bAdobeInverted = cinfo.saw_Adobe_marker==TRUE; // <CSC> Photoshop CMYK/YCCK samples are complemented
 			for(int32_t x3=0,x4=0; x3<(int32_t)info.dwEffWidth && x4<row_stride; x3+=3, x4+=4){
+				if (bAdobeInverted){
+					uint8_t c=(uint8_t)(255-src[x4+0]);
+					uint8_t m=(uint8_t)(255-src[x4+1]);
+					uint8_t y=(uint8_t)(255-src[x4+2]);
+					uint8_t k=(uint8_t)(255-src[x4+3]);
+					uint8_t r,g,b;
+					ima_jpeg_cmyk_to_rgb(c,m,y,k,r,g,b);
+					dst[x3]  =b;
+					dst[x3+1]=g;
+					dst[x3+2]=r;
+					continue;
+				}
 				k=src[x4+3];
 				dst[x3]  =(uint8_t)((k * src[x4+2])/255);
 				dst[x3+1]=(uint8_t)((k * src[x4+1])/255);

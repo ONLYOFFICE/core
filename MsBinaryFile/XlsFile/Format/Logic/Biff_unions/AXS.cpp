@@ -47,6 +47,7 @@
 #include "../Biff_records/Font.h"
 #include "../Biff_records/StartObject.h"
 #include "../Biff_records/EndObject.h"
+#include "../Biff_records/ShapePropsStream.h"
 namespace XLS
 {
 
@@ -175,6 +176,51 @@ const bool AXS::saveContent(BinProcessor& proc)
 		proc.mandatory(*m_AreaFormat);
 	if(m_GELFRAME != nullptr)
 		proc.optional(*m_GELFRAME);
+	{
+		auto calcChecksum = [](const std::vector<uint8_t>& data, _UINT32 &checksum)
+		{
+			for (BYTE byte : data) {
+				checksum ^= (static_cast<_UINT32>(byte) << 24);
+
+				for (int i = 0; i < 8; ++i) {
+					if (checksum & 0x80000000U) {
+						checksum = (checksum << 1) ^ 0x000000AFU;
+					} else {
+						checksum <<= 1;
+					}
+				}
+			}
+		};
+
+		for(auto prop:ShapeProps)
+		{
+			auto castedProp = static_cast<SHAPEPROPS*>(prop.get());
+			auto propHeader = static_cast<ShapePropsStream*>(castedProp->m_ShapePropsStream.get());
+			LineFormat* castedLine = nullptr;
+			for(auto lnFmt : m_AxisLine_Format)
+			{
+				if(lnFmt.axisLine != nullptr)
+				{
+					auto castedlnType = static_cast<AxisLine*>(lnFmt.axisLine.get());
+					if(castedlnType->id == propHeader->wObjContext && lnFmt.lineFormat != nullptr)
+					{
+						castedLine = static_cast<LineFormat*>(lnFmt.lineFormat.get());
+						break;
+					}
+				}
+			}
+			if(castedLine == nullptr)
+				continue;
+			{
+				auto CheckSumData = std::vector<BYTE>();
+				_UINT32 AxsCheckSum = 0;
+				castedLine->setChecksum(CheckSumData);
+				calcChecksum(CheckSumData, AxsCheckSum);
+				propHeader->dwChecksum = AxsCheckSum;
+			}
+			proc.mandatory(*prop);
+		}
+	}
 	return true;
 }
 

@@ -337,9 +337,7 @@ namespace PPTX
 			}
 			if(Fill.is_init())
 			{
-				if(Fill.m_type == UniFill::Type::noFill)
-					ptr->lns = 5;
-				else if(prstDash.IsInit() && prstDash->val.IsInit())
+				if(prstDash.IsInit() && prstDash->val.IsInit())
 				{
 					ptr->fAutoCo = false;
 					if(Fill.m_type == UniFill::Type::solidFill)

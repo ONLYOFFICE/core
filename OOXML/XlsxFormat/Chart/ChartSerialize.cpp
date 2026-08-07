@@ -1333,6 +1333,10 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			{
 				auto labelUnion = new XLS::ATTACHEDLABEL;
 				auto textRecord = new XLS::Text;
+				if(m_chart->m_title != nullptr && m_chart->m_title->m_spPr.IsInit())
+				{
+					labelUnion->m_FRAME = m_chart->m_title->m_spPr->toXLSFrame();
+				}
 				textRecord->wBkgMode = 1;
 				textRecord->at = 2;
 				textRecord->vat = 1;
@@ -2511,8 +2515,7 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 					lnFmt.lineFormat = m_spPr->ln->toXLS();
 					auto lnFmtptr = static_cast<XLS::LineFormat*>(lnFmt.lineFormat.get());
 					lnFmtptr->fAxisOn = true;
-					if(m_spPr->Fill.m_type == PPTX::Logic::UniFill::noFill)
-						lnFmtptr->lns = 5;
+					axs->ShapeProps.push_back(m_spPr->toXLS(0));
 				}
 				axs->m_AxisLine_Format.push_back(lnFmt);
 			}
@@ -2524,7 +2527,10 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 				lnFmt.axisLine = XLS::BaseObjectPtr(axisline);
 
 				if(m_majorGridlines->m_spPr.IsInit() && m_majorGridlines->m_spPr->ln.IsInit())
+				{
 					lnFmt.lineFormat = m_majorGridlines->m_spPr->ln->toXLS();
+					axs->ShapeProps.push_back(m_majorGridlines->m_spPr->toXLS(1));
+				}
 				else
 				{
 					m_majorGridlines->m_spPr.Init();
@@ -2541,7 +2547,10 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 				lnFmt.axisLine = XLS::BaseObjectPtr(axisline);
 
 				if(m_minorGridlines->m_spPr.IsInit() && m_minorGridlines->m_spPr->ln.IsInit())
+				{
 					lnFmt.lineFormat = m_minorGridlines->m_spPr->ln->toXLS();
+					axs->ShapeProps.push_back(m_minorGridlines->m_spPr->toXLS(2));
+				}
 				else
 				{
 					m_minorGridlines->m_spPr.Init();
@@ -3312,8 +3321,7 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 					lnFmt.lineFormat = m_spPr->ln->toXLS();
 					auto lnFmtptr = static_cast<XLS::LineFormat*>(lnFmt.lineFormat.get());
 					lnFmtptr->fAxisOn = true;
-					if(m_spPr->Fill.m_type == PPTX::Logic::UniFill::noFill)
-						lnFmtptr->lns = 5;
+					axs->ShapeProps.push_back(m_spPr->toXLS(0));
 				}
 				axs->m_AxisLine_Format.push_back(lnFmt);
 			}
@@ -3325,7 +3333,10 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 				lnFmt.axisLine = XLS::BaseObjectPtr(axisline);
 
 				if(m_majorGridlines->m_spPr.IsInit() && m_majorGridlines->m_spPr->ln.IsInit())
+				{
 					lnFmt.lineFormat = m_majorGridlines->m_spPr->ln->toXLS();
+					axs->ShapeProps.push_back(m_majorGridlines->m_spPr->toXLS(1));
+				}
 				else
 				{
 					m_majorGridlines->m_spPr.Init();
@@ -3342,7 +3353,10 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 				lnFmt.axisLine = XLS::BaseObjectPtr(axisline);
 
 				if(m_minorGridlines->m_spPr.IsInit() && m_minorGridlines->m_spPr->ln.IsInit())
+				{
 					lnFmt.lineFormat = m_minorGridlines->m_spPr->ln->toXLS();
+					axs->ShapeProps.push_back(m_minorGridlines->m_spPr->toXLS(2));
+				}
 				else
 				{
 					m_minorGridlines->m_spPr.Init();
@@ -3629,8 +3643,7 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 					lnFmt.lineFormat = m_spPr->ln->toXLS();
 					auto lnFmtptr = static_cast<XLS::LineFormat*>(lnFmt.lineFormat.get());
 					lnFmtptr->fAxisOn = true;
-					if(m_spPr->Fill.m_type == PPTX::Logic::UniFill::noFill)
-						lnFmtptr->lns = 5;
+					axs->ShapeProps.push_back(m_spPr->toXLS(0));
 				}
 				axs->m_AxisLine_Format.push_back(lnFmt);
 			}
@@ -3642,7 +3655,10 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 				lnFmt.axisLine = XLS::BaseObjectPtr(axisline);
 
 				if(m_majorGridlines->m_spPr.IsInit() && m_majorGridlines->m_spPr->ln.IsInit())
+				{
 					lnFmt.lineFormat = m_majorGridlines->m_spPr->ln->toXLS();
+					axs->ShapeProps.push_back(m_majorGridlines->m_spPr->toXLS(1));
+				}
 				else
 				{
 					m_majorGridlines->m_spPr.Init();
@@ -3659,7 +3675,10 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 				lnFmt.axisLine = XLS::BaseObjectPtr(axisline);
 
 				if(m_minorGridlines->m_spPr.IsInit() && m_minorGridlines->m_spPr->ln.IsInit())
+				{
 					lnFmt.lineFormat = m_minorGridlines->m_spPr->ln->toXLS();
+					axs->ShapeProps.push_back(m_minorGridlines->m_spPr->toXLS(2));
+				}
 				else
 				{
 					m_minorGridlines->m_spPr.Init();

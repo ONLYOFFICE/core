@@ -95,7 +95,8 @@ SOURCES += \
     SrcReader/Adaptors.cpp \
     SrcReader/PdfAnnot.cpp \
 	SrcReader/PdfFont.cpp \
-    SrcReader/GfxClip.cpp
+	SrcReader/GfxClip.cpp \
+	../DesktopEditor/cximage/CxImage/APP14cmyktorgb.cpp
 
 HEADERS += \
 	SrcReader/RendererOutputDev.h \

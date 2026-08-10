@@ -33,14 +33,13 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 #pragma once
-#ifndef PPTX_SLIDES_SLIDELAYOUT_INCLUDE_H_
-#define PPTX_SLIDES_SLIDELAYOUT_INCLUDE_H_
 
 #include "WrapperFile.h"
 #include "FileContainer.h"
 
 #include "Logic/CSld.h"
 #include "Limit/SlideLayoutType.h"
+#include "Presentation/PresentationChildElements.h"
 
 namespace OOX
 {
@@ -95,7 +94,8 @@ namespace PPTX
 		nullable<Logic::Timing>			timing;
 		nullable<Logic::HF>				hf;
 
-		// Attributes
+		nullable<nsPresentation::ExtendedGuideList> sldGuideLst;
+
 		nullable_string							matchingName;
 		nullable_bool							preserve;
 		nullable_bool							showMasterPhAnim;
@@ -114,4 +114,3 @@ namespace PPTX
 	};
 } // namespace PPTX
 
-#endif // PPTX_SLIDES_SLIDELAYOUT_INCLUDE_H_

@@ -6,6 +6,7 @@
  */
  
 #include "ximajpg.h"
+#include "APP14cmyktorgb.h"
 
 #if CXIMAGE_SUPPORT_JPG
 
@@ -269,12 +270,25 @@ bool CxImageJPG::Decode(CxFile * hFile)
 		
 		(void) jpeg_read_scanlines(&cinfo, buffer, 1);
 		// info.nProgress = (int32_t)(100*cinfo.output_scanline/cinfo.output_height);
-		//<DP> Step 6a: CMYK->RGB */ 
+		//<DP> Step 6a: CMYK->RGB */
 		if ((cinfo.num_components==4)&&(cinfo.quantize_colors==FALSE)){
 			uint8_t k,*dst,*src;
 			dst=iter.GetRow();
 			src=buffer[0];
+			bool bAdobeInverted = cinfo.saw_Adobe_marker==TRUE; // <CSC> Photoshop CMYK/YCCK samples are complemented
 			for(int32_t x3=0,x4=0; x3<(int32_t)info.dwEffWidth && x4<row_stride; x3+=3, x4+=4){
+				if (bAdobeInverted){
+					uint8_t c=(uint8_t)(255-src[x4+0]);
+					uint8_t m=(uint8_t)(255-src[x4+1]);
+					uint8_t y=(uint8_t)(255-src[x4+2]);
+					uint8_t k=(uint8_t)(255-src[x4+3]);
+					uint8_t r,g,b;
+					ima_jpeg_cmyk_to_rgb(c,m,y,k,r,g,b);
+					dst[x3]  =b;
+					dst[x3+1]=g;
+					dst[x3+2]=r;
+					continue;
+				}
 				k=src[x4+3];
 				dst[x3]  =(uint8_t)((k * src[x4+2])/255);
 				dst[x3+1]=(uint8_t)((k * src[x4+1])/255);

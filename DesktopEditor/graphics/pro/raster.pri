@@ -264,7 +264,8 @@ SOURCES += \
 	$$LIB_GRAPHICS_PRI_PATH/cximage/CxImage/ximawbmp.cpp \
 	$$LIB_GRAPHICS_PRI_PATH/cximage/CxImage/ximawmf.cpp \
 	$$LIB_GRAPHICS_PRI_PATH/cximage/CxImage/ximawnd.cpp \
-	$$LIB_GRAPHICS_PRI_PATH/cximage/CxImage/xmemfile.cpp
+	$$LIB_GRAPHICS_PRI_PATH/cximage/CxImage/xmemfile.cpp \
+	$$LIB_GRAPHICS_PRI_PATH/cximage/CxImage/APP14cmyktorgb.cpp
 
 !disable_cximage_all {
 SOURCES += \

@@ -431,29 +431,32 @@ namespace NS_DWC_Common
 
 	BYTE getOpacityFromString(const std::wstring opacityStr)
 	{
-		BYTE alpha = 0xff;
-		
+		double opacity = 1.;
+
 		if (opacityStr.find(L"f") != std::wstring::npos)
 		{
-			alpha = (BYTE)(XmlUtils::GetDouble(opacityStr) / 65536 * 256);
+			opacity = XmlUtils::GetDouble(opacityStr) / 65535.;
 		}
 		else
 		{
 			if (opacityStr.find(L"%") != std::wstring::npos)
 			{
-				alpha = (BYTE)(XmlUtils::GetDouble(opacityStr.substr(0, opacityStr.length() - 1)) / 100. * 256);
+				opacity = XmlUtils::GetDouble(opacityStr.substr(0, opacityStr.length() - 1)) / 100.;
 			}
 			else if (0 == opacityStr.find(L"."))
 			{
 				std::wstring str = L"0" + opacityStr;
-				alpha = (BYTE)(XmlUtils::GetDouble(str) * 256);
+				opacity = XmlUtils::GetDouble(str);
 			}
 			else
 			{
-				alpha = (BYTE)(XmlUtils::GetDouble(opacityStr) * 256);
+				opacity = XmlUtils::GetDouble(opacityStr);
 			}
 		}
-		return alpha;
+		if (opacity < 0.) opacity = 0.;
+		if (opacity > 1.) opacity = 1.;
+
+		return (BYTE)(opacity * 255 + 0.5);
 	}
 
 	long getRealFromString(const std::wstring& str)
@@ -463,7 +466,7 @@ namespace NS_DWC_Common
 		if (str.find(L"f") != -1)
 			val = XmlUtils::GetInteger(str);
 		else
-			val = (long)(XmlUtils::GetDouble(str) * 65536);
+			val = (long)(XmlUtils::GetDouble(str) * 65535);
 
 		return val;
 	}
@@ -2825,7 +2828,7 @@ void CDrawingConverter::ConvertWordArtShape(PPTX::Logic::SpTreeElem* elem, XmlUt
 					bOpacity = true;
 					lAlpha = NS_DWC_Common::getOpacityFromString(*sOpacity);
 					oMod.name = L"alpha";
-					oMod.val = (int)((1 - lAlpha / 255.0) * 100000.0);
+					oMod.val = (int)(lAlpha * 100000.0 / 255.0);
 
 					if (arColors.at(0)->is_init())
 						arColors.at(0)->Color->Modifiers.push_back(oMod);
@@ -2874,8 +2877,8 @@ void CDrawingConverter::ConvertWordArtShape(PPTX::Logic::SpTreeElem* elem, XmlUt
 				{
 					bOpacity2 = true;
 					lAlpha = NS_DWC_Common::getOpacityFromString(*sOpacity2);
-					oMod.name = L"alpha";
-					oMod2.val = (int)((1 - lAlpha / 255.) * 100000.);
+					oMod2.name = L"alpha";
+					oMod2.val = (int)(lAlpha * 100000.0 / 255.0);
 
 					if (arColors.at(1)->is_init())
 						arColors.at(1)->Color->Modifiers.push_back(oMod2);

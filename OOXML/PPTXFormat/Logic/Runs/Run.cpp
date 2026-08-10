@@ -100,6 +100,19 @@ namespace PPTX
 
 			FillParentPointersForChilds();
 		}
+		static void WriteText(NSBinPptxRW::CXmlWriter* pWriter, const std::wstring& text)
+		{
+			std::wstring s = text;
+
+			XmlUtils::replace_all(s, L"&", L"&amp;");
+			XmlUtils::replace_all(s, L"'", L"&apos;");
+			XmlUtils::replace_all(s, L"<", L"&lt;");
+			XmlUtils::replace_all(s, L">", L"&gt;");
+			XmlUtils::replace_all(s, L"\"", L"&quot;");
+			XmlUtils::replace_all(s, L"\r", L"&#13;");
+
+			pWriter->WriteString(s);
+		}
 		void Run::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 		{
 			pWriter->StartNode(_T("a:r"));
@@ -112,7 +125,7 @@ namespace PPTX
 			if (text.is_init())
 			{
 				pWriter->WriteString(_T("<a:t>"));
-				pWriter->WriteStringXML(*text);
+				WriteText(pWriter, *text);
 				pWriter->WriteString(_T("</a:t>"));
 			}
 

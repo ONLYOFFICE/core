@@ -764,6 +764,19 @@ namespace PPTX
 		{
 			return L"";
 		}
+		static void WriteCommentText(NSBinPptxRW::CXmlWriter* pWriter, const std::wstring& text)
+		{
+			std::wstring s = text;
+
+			XmlUtils::replace_all(s, L"&",	L"&amp;");
+			XmlUtils::replace_all(s, L"'",	L"&apos;");
+			XmlUtils::replace_all(s, L"<",	L"&lt;");
+			XmlUtils::replace_all(s, L">",	L"&gt;");
+			XmlUtils::replace_all(s, L"\"",	L"&quot;");
+			XmlUtils::replace_all(s, L"\r",	L"&#13;");
+
+			pWriter->WriteString(s);
+		}
 		void Comment::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 		{
 			std::wstring extAdditional = additional_data.IsInit() ? (L"<p:ext uri=\"{19B8F6BF-5375-455C-9EA6-DF929625EA0E}\">\
@@ -817,7 +830,7 @@ namespace PPTX
 				else if (text.is_init())
 				{
 					pWriter->WriteString(L"<p188:txBody><a:bodyPr/><a:lstStyle/><a:p><a:r><a:rPr/><a:t>");
-					pWriter->WriteStringXML(*text);
+					WriteCommentText(pWriter, *text);
 					pWriter->WriteString(L"</a:t></a:r></a:p></p188:txBody>");
 				}
 				if (additional_data.is_init())
@@ -864,14 +877,14 @@ namespace PPTX
 				if (text.is_init())
 				{
 					pWriter->WriteString(L"<p:text>");
-					pWriter->WriteStringXML(*text);
+					WriteCommentText(pWriter, *text);
 					pWriter->WriteString(L"</p:text>");
 				}
 				else if (txBody.IsInit())
 				{
 					std::wstring textFrom = txBody->GetText();
 					pWriter->WriteString(L"<p:text>");
-					pWriter->WriteStringXML(textFrom);
+					WriteCommentText(pWriter, textFrom);
 					pWriter->WriteString(L"</p:text>");
 				}
 				bool bIsExtLst = false;

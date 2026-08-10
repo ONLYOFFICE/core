@@ -121,7 +121,7 @@ const bool SHAREDSTRINGS::saveContent(BinProcessor& proc)
 					// 2.first Chunk
 					// text size calculation
 					size_t availForRgbInFirstChunk = (MaxRecordSize > headerSize) ? (MaxRecordSize - headerSize) : 0;
-					size_t rgbInFirstChunk = std::min(totalRgbBytes, availForRgbInFirstChunk);
+					size_t rgbInFirstChunk = (std::min)(totalRgbBytes, availForRgbInFirstChunk);
 
 					// chars alignment UTF-16
 					if (fHighByte && (rgbInFirstChunk % 2 != 0)) {
@@ -144,7 +144,7 @@ const bool SHAREDSTRINGS::saveContent(BinProcessor& proc)
 						size_t remainingRgb = rgbEnd - currentOffset;
 						size_t maxPayload = MaxRecordSize - 1; // 1 byte for fHighByte!
 
-						size_t rgbToTake = std::min(remainingRgb, maxPayload);
+						size_t rgbToTake = (std::min)(remainingRgb, maxPayload);
 
 						// chars alignment UTF-16
 						if (fHighByte && (rgbToTake % 2 != 0)) {
@@ -167,7 +167,7 @@ const bool SHAREDSTRINGS::saveContent(BinProcessor& proc)
 					// without fHighByte!
 					while (currentOffset < totalSize)
 					{
-						size_t tailToTake = std::min(totalSize - currentOffset, (size_t)MaxRecordSize);
+						size_t tailToTake = (std::min)(totalSize - currentOffset, (size_t)MaxRecordSize);
 
 						Continue tailChunk;
 						tailChunk.m_iDataSize = tailToTake;

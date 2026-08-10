@@ -570,5 +570,217 @@ namespace PPTX
 			}
 			pReader->Seek(_end_rec);
 		}
+//----------------------------------------------------------------------------------------------------------------------------------------------------
+		void ExtendedGuideList::fromXML(XmlUtils::CXmlNode& node)
+		{
+			m_name = L"p15:" + XmlUtils::GetNameNoNS(node.GetName());
+
+			std::vector<XmlUtils::CXmlNode> oNodes;
+			node.GetNodes(L"*", oNodes);
+			size_t nCount = oNodes.size();
+			for (size_t i = 0; i < nCount; ++i)
+			{
+				XmlUtils::CXmlNode& oNode = oNodes[i];
+				std::wstring strName = XmlUtils::GetNameNoNS(oNode.GetName());
+
+				if (strName == L"guide")
+				{
+					m_arGuide.emplace_back();
+					m_arGuide.back().fromXML(oNode);
+				}
+			}
+
+			FillParentPointersForChilds();
+		}
+		std::wstring ExtendedGuideList::toXML() const
+		{
+			return L"";
+		}
+		void ExtendedGuideList::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+		{
+			toXmlWriter(pWriter, m_name.empty() ? L"p15:sldGuideLst" : m_name);
+		}
+		void ExtendedGuideList::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter, const std::wstring& strName) const
+		{
+			pWriter->StartNode(strName);
+			pWriter->EndAttributes();
+
+			for (size_t i = 0; i < m_arGuide.size(); ++i)
+			{				
+				m_arGuide[i].toXmlWriter(pWriter, (unsigned int)(i + 1)); //  from 1
+			}
+
+			pWriter->EndNode(strName);
+		}
+		void ExtendedGuideList::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+		{
+			pWriter->WriteRecordArray(0, 1, m_arGuide);
+		}
+		void ExtendedGuideList::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+		{
+			LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
+
+			while (pReader->GetPos() < _end_rec)
+			{
+				BYTE _at = pReader->GetUChar();
+				switch (_at)
+				{
+				case 0:
+				{
+					pReader->Skip(4); // len
+					ULONG lCount = pReader->GetULong();
+
+					for (ULONG i = 0; i < lCount; ++i)
+					{
+						pReader->Skip(1);
+
+						m_arGuide.emplace_back();
+						m_arGuide.back().fromPPTY(pReader);
+					}
+
+				}break;
+				default:
+				{
+					pReader->SkipRecord();
+					break;
+				}
+				}
+			}
+
+			pReader->Seek(_end_rec);
+		}
+		void ExtendedGuideList::FillParentPointersForChilds()
+		{
+			for (size_t i = 0; i < m_arGuide.size(); ++i)
+				m_arGuide[i].SetParentPointer(this);
+		}
+		void ExtendedGuide::fromXML(XmlUtils::CXmlNode& node)
+		{
+			XmlMacroReadAttributeBase(node, L"name", name);
+			XmlMacroReadAttributeBase(node, L"id", id);
+			XmlMacroReadAttributeBase(node, L"orient", orient);
+			XmlMacroReadAttributeBase(node, L"pos", pos);
+			XmlMacroReadAttributeBase(node, L"userDrawn", userDrawn);
+
+			std::vector<XmlUtils::CXmlNode> oNodes;
+			node.GetNodes(L"*", oNodes);
+
+			for (size_t i = 0; i < oNodes.size(); ++i)
+			{
+				XmlUtils::CXmlNode& oNode = oNodes[i];
+				std::wstring strName = XmlUtils::GetNameNoNS(oNode.GetName());
+
+				if (strName == L"extLst")
+				{
+				}
+				else if (strName == L"clr")
+				{
+					clr.GetColorFrom(oNode);
+				}
+			}
+		}
+		std::wstring ExtendedGuide::toXML() const
+		{
+			return L"";
+		}
+		void ExtendedGuide::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+		{
+			toXmlWriter(pWriter, 1);
+		}
+		void ExtendedGuide::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter, unsigned int nDefaultId) const
+		{
+			pWriter->StartNode(L"p15:guide");
+
+			pWriter->StartAttributes();
+			pWriter->WriteAttribute2(L"id", id.get_value_or(nDefaultId));
+			pWriter->WriteAttribute2(L"name", name);
+			pWriter->WriteAttribute(L"orient", orient);
+			pWriter->WriteAttribute(L"pos", pos.get_value_or(0));
+			pWriter->WriteAttribute(L"userDrawn", userDrawn);
+			pWriter->EndAttributes();
+
+			pWriter->StartNode(L"p15:clr");
+			pWriter->EndAttributes();
+			if (clr.is_init())
+				clr.toXmlWriter(pWriter);
+			else
+				pWriter->WriteString(L"<a:srgbClr val=\"A4A3A4\"/>"); // default
+			pWriter->EndNode(L"p15:clr");
+
+			pWriter->EndNode(L"p15:guide");
+		}
+		void ExtendedGuide::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+		{
+			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+			pWriter->WriteUInt2(0, id);
+			pWriter->WriteString2(1, name);
+			pWriter->WriteLimit2(2, orient);
+			pWriter->WriteInt2(3, pos);
+			pWriter->WriteBool2(4, userDrawn);
+			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+
+			if (clr.is_init())
+				pWriter->WriteRecord1(0, clr);
+		}
+		void ExtendedGuide::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+		{
+			LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
+
+			pReader->Skip(1); // start attributes
+
+			while (true)
+			{
+				BYTE _at = pReader->GetUChar_TypeNode();
+				if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+					break;
+
+				switch (_at)
+				{
+					case 0:
+						id = pReader->GetULong();
+						break;
+					case 1:
+						name = pReader->GetString2();
+						break;
+					case 2:
+						orient = pReader->GetUChar();
+						break;
+					case 3:
+						pos = pReader->GetLong();
+						break;
+					case 4:
+						userDrawn = pReader->GetBool();
+						break;
+					default:
+					{
+						pReader->Seek(_end_rec);
+						return;
+					}
+				}
+			}
+
+			while (pReader->GetPos() < _end_rec)
+			{
+				BYTE _at = pReader->GetUChar();
+				switch (_at)
+				{
+					case 0:
+					{
+						clr.fromPPTY(pReader);
+					}break;
+					default:
+					{
+						pReader->SkipRecord();
+						break;
+					}
+				}
+			}
+
+			pReader->Seek(_end_rec);
+		}
+		void ExtendedGuide::FillParentPointersForChilds()
+		{
+		}
+//----------------------------------------------------------------------------------------------------------------------------------------------------
 	} // namespace 
 } // namespace PPTX

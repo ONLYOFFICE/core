@@ -6636,7 +6636,7 @@ void BinaryWorksheetTableWriter::WriteFormula(OOX::Spreadsheet::CFormula& oFormu
 
 void BinaryWorksheetTableWriter::WriteOleObjects(const OOX::Spreadsheet::CWorksheet& oWorksheet, OOX::Spreadsheet::CDrawing* pDrawing, OOX::CVmlDrawing *pVmlDrawing)
 {
-	if(false == oWorksheet.m_oOleObjects.IsInit()) return;
+	if (false == oWorksheet.m_oOleObjects.IsInit()) return;
 
 	for (boost::unordered_map<unsigned int, OOX::Spreadsheet::COleObject*>::const_iterator it = oWorksheet.m_oOleObjects->m_mapOleObjects.begin(); it != oWorksheet.m_oOleObjects->m_mapOleObjects.end(); ++it)
 	{
@@ -7309,8 +7309,7 @@ void BinaryWorksheetTableWriter::WriteDrawings(const OOX::Spreadsheet::CWorkshee
 							OOX::Spreadsheet::CCellAnchor *pCellAnchor = new OOX::Spreadsheet::CCellAnchor(eAnchorType);
 							if (pClientData->toCellAnchor(pCellAnchor))
 							{
-								pCellAnchor->m_sVmlSpId.Init();
-								pCellAnchor->m_sVmlSpId->append(it->first);
+								pCellAnchor->m_sVmlSpId = it->first;
 
 								int nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::Drawing);
 								WriteDrawing(oWorksheet, pDrawing, pCellAnchor, pVmlDrawing, NULL);
@@ -7397,7 +7396,7 @@ void BinaryWorksheetTableWriter::WriteDrawing(const OOX::Spreadsheet::CWorksheet
 	}
 	if (pCellAnchor->m_sVmlSpId.IsInit() && pVmlDrawing)
 	{
-		std::map<std::wstring, OOX::CVmlDrawing::_vml_shape>::iterator pFind = pVmlDrawing->m_mapShapes.find(pCellAnchor->m_sVmlSpId.get2());
+		std::map<std::wstring, OOX::CVmlDrawing::_vml_shape>::iterator pFind = pVmlDrawing->m_mapShapes.find(*pCellAnchor->m_sVmlSpId);
 		
 		if (pFind != pVmlDrawing->m_mapShapes.end() && !pFind->second.bUsed)
 		{

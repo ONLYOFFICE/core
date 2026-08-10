@@ -902,6 +902,7 @@
     <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\Pptx2PptShapeConverter.cpp" />
     <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\PptxFormula.cpp" />
     <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\PptxShape.cpp" />
+    <ClCompile Include="..\..\..\..\Common\MediaFileFormatChecker.cpp" />
     <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\toVmlConvert.cpp" />
     <ClCompile Include="..\..\..\Binary\Presentation\BinaryFileReaderWriter.cpp" />
     <ClCompile Include="..\..\..\Binary\Presentation\CalculatorCRC32.cpp" />

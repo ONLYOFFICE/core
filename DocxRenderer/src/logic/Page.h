@@ -123,6 +123,8 @@ namespace NSDocxRenderer
 		std::vector<std::wstring> GetXmlContentPptx();
 		NSWasm::CData GetContentBin();
 
+		std::vector<std::wstring> GetAllFonts();
+
 		void AddCompleteXml(const std::wstring& oXml);
 		void AddCompleteBinBase64(const std::string& oBase64);
 

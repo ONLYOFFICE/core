@@ -6710,6 +6710,10 @@ int BinaryWorksheetsTableReader::ReadDrawings(BYTE type, long length, void* poRe
 						pOleObject->m_oObjectPr->m_oAnchor->m_oTo	= pCellAnchor->m_oTo;
 
 						m_pCurOleObjects->m_mapOleObjects[pOleObject->m_oShapeId->GetValue()] = pOleObject;
+		//------------------------------ 
+						oPic.nvPicPr.cNvPr.hidden = true;
+						oPic.nvPicPr.cNvPr.id = pOleObject->m_oShapeId->GetValue();
+						oPic.nvPicPr.cNvPr.vmlSpid = L"_x0000_s" + pOleObject->m_oShapeId->ToString();
 					}
 					else
 					{

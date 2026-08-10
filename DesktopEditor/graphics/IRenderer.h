@@ -162,6 +162,7 @@ public:
 		Headings    = 11,
 		Redact      = 12,
 		RedactAnnot = 13,
+		RedactMeta  = 14,
 
 		Undefined   = 255
 	};

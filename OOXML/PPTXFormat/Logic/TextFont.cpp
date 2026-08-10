@@ -170,7 +170,12 @@ namespace PPTX
 			pWriter->WriteString1(3, typeface);
 			*/
 
-			std::wstring sPick = pWriter->m_pCommon->m_pNativePicker->GetTypefacePick(*this);
+			// An empty typeface means this slot names no face. Asking the picker would turn
+			// it into "Arial", which cannot be told apart afterwards from a slot that
+			// really names Arial.
+			std::wstring sPick = typeface.empty()
+				? typeface
+				: pWriter->m_pCommon->m_pNativePicker->GetTypefacePick(*this);
 			pWriter->WriteString1(3, sPick);
 
 			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);

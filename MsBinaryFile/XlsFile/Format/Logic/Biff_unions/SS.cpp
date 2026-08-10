@@ -304,16 +304,8 @@ const bool SS::saveContent(BinProcessor& proc)
 		line.setChecksum(CheckSumData);
 		proc.mandatory(line);
 		AreaFormat area;
-		area.rgbFore.red = 0xFF;
-		area.rgbFore.green = 0x00;
-		area.rgbFore.blue = 0x00;
-		area.rgbBack.red = 0xFF;
-		area.rgbBack.green = 0xFF;
-		area.rgbBack.blue = 0xFF;
 		area.fls = 1;
 		area.fAuto = false;
-		area.icvFore = 10;
-		area.icvBack = 9;
 		area.setChecksum(CheckSumData);
 		proc.mandatory(area);
 	}

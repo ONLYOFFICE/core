@@ -84,6 +84,10 @@ int AttachedLabel::serialize(std::wostream & _stream)
 {
 	CP_XML_WRITER(_stream)    
 	{
+		CP_XML_NODE(L"c:showLegendKey")
+		{
+			CP_XML_ATTR (L"val" , false);
+		}
 		CP_XML_NODE(L"c:showVal")
 		{
 			CP_XML_ATTR (L"val" , fShowValue); 

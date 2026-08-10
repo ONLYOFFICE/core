@@ -148,6 +148,12 @@ const bool AXS::loadContent(BinProcessor& proc)
 	}
 	
 	count = proc.repeated<SHAPEPROPS>(0, 4);
+	while(count > 0)
+	{
+		ShapeProps.insert(ShapeProps.begin(), elements_.back());
+		elements_.pop_back();
+		count--;
+	}
 
 	if(proc.optional<TextPropsStream>())
 	{
@@ -231,6 +237,7 @@ int AXS::serialize(std::wostream & _stream)
 
 	CP_XML_WRITER(_stream)    
 	{
+		ShapePropsStream* LineFmtStream = nullptr;
 		for (size_t i = 0 ; i < m_AxisLine_Format.size(); i++)
 		{
 			std::wstring grid;
@@ -243,14 +250,43 @@ int AXS::serialize(std::wostream & _stream)
 				if (axis_line->id == (_UINT16)2) grid = L"c:minorGridlines";
 				if (axis_line->id == (_UINT16)3) {}//wall || floor todooo
 			}
+			ShapePropsStream* propStream = nullptr;
+			for(auto spProp : ShapeProps)
+			{
+				if(spProp == nullptr)
+					continue;
+				auto castedProps = static_cast<SHAPEPROPS*>(spProp.get());
+				if(castedProps->m_ShapePropsStream == nullptr)
+					continue;
+				auto castedStream = static_cast<ShapePropsStream*>(castedProps->m_ShapePropsStream.get());
+				if(castedStream->wObjContext == axis_line->id)
+					propStream = castedStream;
+				if(castedStream->wObjContext == (_UINT16)0)
+					LineFmtStream = castedStream;
+			}
 			
 			if (!grid.empty() && m_AxisLine_Format[i].lineFormat)
 			{
-				CP_XML_NODE(grid)
+				if(propStream)
 				{
-					CP_XML_NODE(L"c:spPr")
-					{			
-						m_AxisLine_Format[i].lineFormat->serialize(CP_XML_STREAM());
+					XmlUtils::CXmlLiteReader reader;
+					auto spPos = propStream->xml_.find("<a:spPr");
+					if (spPos != std::string::npos)
+					propStream->xml_ = propStream->xml_.erase(0,spPos);
+					std::wstring buf(propStream->xml_.begin(), propStream->xml_.end());
+					CP_XML_NODE(grid)
+					{
+						CP_XML_STREAM() << buf;
+					}
+				}
+				else
+				{
+					CP_XML_NODE(grid)
+					{
+						CP_XML_NODE(L"c:spPr")
+						{
+							m_AxisLine_Format[i].lineFormat->serialize(CP_XML_STREAM());
+						}
 					}
 				}
 			}
@@ -262,10 +298,21 @@ int AXS::serialize(std::wostream & _stream)
 			tick->serialize(_stream);
 		}
 		if (axis_line_format)
-		{
-			CP_XML_NODE(L"c:spPr")
+		{	if(LineFmtStream)
 			{
-				axis_line_format->serialize(CP_XML_STREAM());
+				XmlUtils::CXmlLiteReader reader;
+				auto spPos = LineFmtStream->xml_.find("<a:spPr");
+				if (spPos != std::string::npos)
+				LineFmtStream->xml_ = LineFmtStream->xml_.erase(0,spPos);
+				std::wstring buf(LineFmtStream->xml_.begin(), LineFmtStream->xml_.end());
+				_stream << buf;
+			}
+			else
+			{
+				CP_XML_NODE(L"c:spPr")
+				{
+					axis_line_format->serialize(CP_XML_STREAM());
+				}
 			}
 		}
 		if ((m_FontX) || ((tick) && (!tick->fAutoRot)))

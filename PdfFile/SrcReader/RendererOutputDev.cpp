@@ -143,9 +143,13 @@ namespace PdfReader
 			m_bDrawOnlyText = true;
 		else if (!m_bDrawOnlyText)
 			m_bDrawOnlyText = false;
+
+		m_pRenderer->BeginCommand(c_nLayerType);
 	}
 	void RendererOutputDev::endPage()
 	{
+		m_pRenderer->EndCommand(c_nLayerType);
+
 		m_pRenderer->EndCommand(c_nPageType);
 	}
 	void RendererOutputDev::saveState(GfxState* pGState)

@@ -3806,11 +3806,9 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 					if(m_idx.IsInit())
 						dataFormat->yi = m_idx.get();
 				}
-				{
-					auto MkFmt = new XLS::MarkerFormat;
-					SeriesStyle->m_MarkerFormat = XLS::BaseObjectPtr(MkFmt);
+				// default "no marker"
+				SeriesStyle->m_MarkerFormat = XLS::BaseObjectPtr(new XLS::MarkerFormat);
 
-				}
 				if(m_dLbls!= nullptr)
 				{
 					auto label = new XLS::AttachedLabel;
@@ -4300,11 +4298,9 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 				if(m_spPr->Fill.is_init())
 					PtStyle->m_AreaFormat = m_spPr->Fill.toXLS();
 				PtStyle->m_arSHAPEPROPS.push_back(m_spPr->toXLS(0));
-				{
-					auto MkFmt = new XLS::MarkerFormat;
-					PtStyle->m_MarkerFormat = XLS::BaseObjectPtr(MkFmt);
 
-				}
+				// default "no marker"
+				PtStyle->m_MarkerFormat = XLS::BaseObjectPtr(new XLS::MarkerFormat);
 			}
 			return XLS::BaseObjectPtr(PtStyle);
 		}
@@ -8956,17 +8952,14 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 				auto castedStyle = static_cast<XLS::SS*>(castedFormat->m_arPtSS.back().get());
 
 				auto serFormat = new XLS::SerFmt;
-				if(m_smooth.IsInit() && !m_smooth.get())
-					serFormat->fSmoothedLine = false;
-				else
-					serFormat->fSmoothedLine = true;
+				serFormat->fSmoothedLine = m_smooth.IsInit() && m_smooth.get();
 				castedStyle->m_SerFmt = XLS::BaseObjectPtr(serFormat);
-				if(m_marker != nullptr && m_marker->m_spPr.IsInit())
+				if(m_marker != nullptr)
 				{
 					castedStyle->m_MarkerFormat = m_marker->toXLS();
-					castedStyle->m_arSHAPEPROPS.push_back(m_marker->m_spPr->toXLS(1));
+					if(m_marker->m_spPr.IsInit())
+						castedStyle->m_arSHAPEPROPS.push_back(m_marker->m_spPr->toXLS(1));
 				}
-
 			}
 			for(auto i : m_dPt)
 			{
@@ -8974,11 +8967,12 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 				if(m_order.IsInit())
 						order = m_order.get();
 				castedFormat->m_arPtSS.push_back(i->toXLS(order));
-				if(m_marker != nullptr && m_marker->m_spPr.IsInit())
+				if(i->m_marker != nullptr)
 				{
 					auto formatStyle = static_cast<XLS::SS*>(castedFormat->m_arPtSS.back().get());
 					formatStyle->m_MarkerFormat = i->m_marker->toXLS();
-					formatStyle->m_arSHAPEPROPS.push_back(i->m_marker->m_spPr->toXLS(1));
+					if(i->m_marker->m_spPr.IsInit())
+						formatStyle->m_arSHAPEPROPS.push_back(i->m_marker->m_spPr->toXLS(1));
 				}
 			}
 			return XLS::BaseObjectPtr(baseFormat);

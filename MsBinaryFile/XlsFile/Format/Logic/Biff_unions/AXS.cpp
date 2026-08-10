@@ -51,6 +51,18 @@
 namespace XLS
 {
 
+static ShapePropsStream* find_shape_props_stream(const std::vector<BaseObjectPtr> & shape_props, _UINT16 obj_context)
+{
+	for (size_t i = 0; i < shape_props.size(); i++)
+	{
+		SHAPEPROPS *props = dynamic_cast<SHAPEPROPS*>(shape_props[i].get());
+		if (!props) continue;
+
+		ShapePropsStream *stream = dynamic_cast<ShapePropsStream*>(props->m_ShapePropsStream.get());
+		if ((stream) && (stream->wObjContext == obj_context)) return stream;
+	}
+	return NULL;
+}
 
 AXS::AXS()
 {
@@ -235,13 +247,13 @@ int AXS::serialize(std::wostream & _stream)
 	BaseObjectPtr axis_line_format;
 	Tick * tick = dynamic_cast<Tick*>(m_Tick.get());
 
-	CP_XML_WRITER(_stream)    
+	CP_XML_WRITER(_stream)
 	{
-		ShapePropsStream* LineFmtStream = nullptr;
 		for (size_t i = 0 ; i < m_AxisLine_Format.size(); i++)
 		{
 			std::wstring grid;
-			
+			std::wstring spPr;
+
 			AxisLine *axis_line = dynamic_cast<AxisLine*>(m_AxisLine_Format[i].axisLine.get());
 			if (axis_line)
 			{
@@ -249,39 +261,20 @@ int AXS::serialize(std::wostream & _stream)
 				if (axis_line->id == (_UINT16)1) grid = L"c:majorGridlines";
 				if (axis_line->id == (_UINT16)2) grid = L"c:minorGridlines";
 				if (axis_line->id == (_UINT16)3) {}//wall || floor todooo
+
+				ShapePropsStream *propStream = find_shape_props_stream(ShapeProps, axis_line->id);
+				if (propStream)	spPr = propStream->getChartSpPr();
 			}
-			ShapePropsStream* propStream = nullptr;
-			for(auto spProp : ShapeProps)
-			{
-				if(spProp == nullptr)
-					continue;
-				auto castedProps = static_cast<SHAPEPROPS*>(spProp.get());
-				if(castedProps->m_ShapePropsStream == nullptr)
-					continue;
-				auto castedStream = static_cast<ShapePropsStream*>(castedProps->m_ShapePropsStream.get());
-				if(castedStream->wObjContext == axis_line->id)
-					propStream = castedStream;
-				if(castedStream->wObjContext == (_UINT16)0)
-					LineFmtStream = castedStream;
-			}
-			
+
 			if (!grid.empty() && m_AxisLine_Format[i].lineFormat)
 			{
-				if(propStream)
+				CP_XML_NODE(grid)
 				{
-					XmlUtils::CXmlLiteReader reader;
-					auto spPos = propStream->xml_.find("<a:spPr");
-					if (spPos != std::string::npos)
-					propStream->xml_ = propStream->xml_.erase(0,spPos);
-					std::wstring buf(propStream->xml_.begin(), propStream->xml_.end());
-					CP_XML_NODE(grid)
+					if (false == spPr.empty())
 					{
-						CP_XML_STREAM() << buf;
+						CP_XML_STREAM() << spPr;
 					}
-				}
-				else
-				{
-					CP_XML_NODE(grid)
+					else
 					{
 						CP_XML_NODE(L"c:spPr")
 						{
@@ -290,7 +283,7 @@ int AXS::serialize(std::wostream & _stream)
 					}
 				}
 			}
-				
+
 		}
 
 		if (tick)
@@ -298,14 +291,15 @@ int AXS::serialize(std::wostream & _stream)
 			tick->serialize(_stream);
 		}
 		if (axis_line_format)
-		{	if(LineFmtStream)
+		{
+			std::wstring spPr;
+
+			ShapePropsStream *lineFmtStream = find_shape_props_stream(ShapeProps, (_UINT16)0);
+			if (lineFmtStream)	spPr = lineFmtStream->getChartSpPr();
+
+			if (false == spPr.empty())
 			{
-				XmlUtils::CXmlLiteReader reader;
-				auto spPos = LineFmtStream->xml_.find("<a:spPr");
-				if (spPos != std::string::npos)
-				LineFmtStream->xml_ = LineFmtStream->xml_.erase(0,spPos);
-				std::wstring buf(LineFmtStream->xml_.begin(), LineFmtStream->xml_.end());
-				_stream << buf;
+				_stream << spPr;
 			}
 			else
 			{

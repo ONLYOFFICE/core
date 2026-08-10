@@ -75,28 +75,27 @@ const bool TEXTPROPS::saveContent(BinProcessor& proc)
 	if(textPropsStream == nullptr)
 		return false;
 	proc.mandatory(*textPropsStream);
-	auto castedPtr = static_cast<TextPropsStream*>(textPropsStream.get());
-	const auto limit = 8200;
-	if(castedPtr->xml_.size() > limit)
-	{
-		auto xmlPos = limit;
-		while(xmlPos < castedPtr->xml_.size())
-		{
-			ContinueFrt12 continueRecord;
-			continueRecord.frtHeader.rt = rt_ContinueFrt12;
-			auto continueLength = 0;
-			if((castedPtr->xml_.size() - xmlPos) > limit)
-				continueLength = limit;
-			else
-				continueLength = castedPtr->xml_.size() - xmlPos;
-			continueRecord.rgb = std::vector<char>(
-				castedPtr->xml_.begin() + xmlPos,
-				castedPtr->xml_.begin() + xmlPos + continueLength);
-			proc.mandatory(continueRecord);
-			xmlPos += continueLength;
 
-		}
+	auto castedPtr = static_cast<TextPropsStream*>(textPropsStream.get());
+	const size_t limit = TextPropsStream::max_data_size;
+
+	size_t xmlPos = limit;
+	while(xmlPos < castedPtr->xml_.size())
+	{
+		ContinueFrt12 continueRecord;
+		continueRecord.frtHeader.rt = rt_ContinueFrt12;
+
+		size_t continueLength = castedPtr->xml_.size() - xmlPos;
+		if(continueLength > limit)
+			continueLength = limit;
+
+		continueRecord.rgb = std::vector<char>(
+			castedPtr->xml_.begin() + xmlPos,
+			castedPtr->xml_.begin() + xmlPos + continueLength);
+		proc.mandatory(continueRecord);
+		xmlPos += continueLength;
 	}
+	return true;
 }
 
 } // namespace XLS

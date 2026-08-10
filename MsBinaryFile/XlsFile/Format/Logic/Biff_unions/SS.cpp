@@ -322,8 +322,13 @@ const bool SS::saveContent(BinProcessor& proc)
 		proc.mandatory(*m_AttachedLabel);
 	for(auto i : m_arSHAPEPROPS)
 	{
-		auto castedProp = static_cast<SHAPEPROPS*>(i.get());
-		auto propHeader = static_cast<ShapePropsStream*>(castedProp->m_ShapePropsStream.get());
+		auto castedProp = dynamic_cast<SHAPEPROPS*>(i.get());
+		if(castedProp == nullptr)
+			continue;
+		auto propHeader = dynamic_cast<ShapePropsStream*>(castedProp->m_ShapePropsStream.get());
+		if(propHeader == nullptr)
+			continue;
+
 		if(propHeader->wObjContext == 0)
 			propHeader->dwChecksum = checkSum;
 		else if(propHeader->wObjContext == 1 && m_MarkerFormat != nullptr)
@@ -459,9 +464,13 @@ int SS::serialize(std::wostream & _stream, int series_type, int indPt)
 	{
 		for(auto spProp : m_arSHAPEPROPS)
 		{
+			auto SpProps = dynamic_cast<SHAPEPROPS*>(spProp.get());
+			if(SpProps == nullptr)
+				continue;
+			auto tempStream = dynamic_cast<ShapePropsStream*>(SpProps->m_ShapePropsStream.get());
+			if(tempStream == nullptr)
+				continue;
 
-			auto SpProps =dynamic_cast<SHAPEPROPS*>	(spProp.get());
-			auto tempStream = static_cast<ShapePropsStream*>(SpProps->m_ShapePropsStream.get());
 			if (tempStream->wObjContext == 0)
 				spStream = tempStream;
 			else if(tempStream->wObjContext == 1)
@@ -483,23 +492,14 @@ int SS::serialize(std::wostream & _stream, int series_type, int indPt)
 	bool bMarkerEx = false;
 	if(spStream)
 	{
-		XmlUtils::CXmlLiteReader reader;
-		auto spPos = spStream->xml_.find("<a:spPr");
-		if (spPos != std::string::npos)
-		spStream->xml_ = spStream->xml_.erase(0,spPos);
-		std::wstring buf(spStream->xml_.begin(), spStream->xml_.end());
-		reader.FromString(buf);
-		reader.ReadNextNode();
-		PPTX::Logic::SpPr props;
-		props.fromXML(reader);
-		NSBinPptxRW::CXmlWriter writer;
-		writer.m_lDocType = XMLWRITER_DOC_TYPE_CHART;
-		props.toXmlWriter(&writer);
-
-		_stream.write(writer.GetXmlString().c_str(), writer.GetXmlString().size());
-		bLine = false;
-		bArea = false;
-		indPt = 0;
+		std::wstring spPr = spStream->getChartSpPr();
+		if (false == spPr.empty())
+		{
+			_stream.write(spPr.c_str(), spPr.size());
+			bLine = false;
+			bArea = false;
+			indPt = 0;
+		}
 	}
 
 	CP_XML_WRITER(_stream)    
@@ -589,14 +589,8 @@ int SS::serialize(std::wostream & _stream, int series_type, int indPt)
 		{
 			std::wstring MkSpPr;
 			if(mkPropStream != nullptr)
-			{
-				XmlUtils::CXmlLiteReader reader;
-				auto spPos = mkPropStream->xml_.find("<a:spPr");
-				if (spPos != std::string::npos)
-				mkPropStream->xml_ = mkPropStream->xml_.erase(0,spPos);
-				MkSpPr = std::wstring(mkPropStream->xml_.begin(), mkPropStream->xml_.end());
+				MkSpPr = mkPropStream->getChartSpPr();
 
-			}
 			marker_format->serialize(_stream, ind, bMarkerEx ? m_GELFRAME : BaseObjectPtr(), MkSpPr);
 		}
 		else if (/*series_type == CHART_TYPE_Line ||*/ series_type == CHART_TYPE_Scatter)

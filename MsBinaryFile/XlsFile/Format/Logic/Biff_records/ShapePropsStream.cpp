@@ -35,6 +35,9 @@
 
 #include "ShapePropsStream.h"
 
+#include "../../../../../OOXML/PPTXFormat/Logic/SpPr.h"
+#include "../../../../../DesktopEditor/common/File.h"
+
 namespace XLS
 {
 
@@ -85,6 +88,31 @@ void ShapePropsStream::writeFields(CFRecord& record)
 		limit = cb;
 	for(auto i = 0; i < limit; i++)
 		record << xml_[i];
+}
+
+std::wstring ShapePropsStream::getChartSpPr() const
+{
+	std::string::size_type spPos = xml_.find("<a:spPr");
+	if (spPos == std::string::npos)
+		return L"";
+
+	std::wstring buf = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8(
+		(BYTE*)(xml_.c_str() + spPos), (LONG)(xml_.size() - spPos));
+
+	XmlUtils::CXmlLiteReader reader;
+
+	if (!reader.FromString(buf))		return L"";
+	if (!reader.ReadNextNode())			return L"";
+	if (reader.GetName() != L"a:spPr")	return L"";	// truncated or unexpected content
+
+	PPTX::Logic::SpPr props;
+	props.fromXML(reader);
+
+	NSBinPptxRW::CXmlWriter writer;
+	writer.m_lDocType = XMLWRITER_DOC_TYPE_CHART;
+	props.toXmlWriter(&writer);
+
+	return writer.GetXmlString();
 }
 
 } // namespace XLS

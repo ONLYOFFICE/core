@@ -40,10 +40,8 @@
 
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/FRAME.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/SHAPEPROPS.h"
-#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/TEXTPROPS.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Frame.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/ShapePropsStream.h"
-#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/TextPropsStream.h"
 
 #include <codecvt>
 #include <locale>
@@ -205,32 +203,6 @@ namespace PPTX
 			SpUnion->m_ShapePropsStream = XLS::BaseObjectPtr(spStream);
 
 			spStream->wObjContext = ObjContext;
-			m_namespace = L"a";
-			std::wstring xmlProps = L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>";
-			{
-				XmlUtils::CAttribute oAttr;
-				oAttr.Write(L"xmlns:a", std::wstring(L"http://schemas.openxmlformats.org/drawingml/2006/main"));
-
-				XmlUtils::CNodeValue oValue;
-				oValue.WriteNullable(xfrm);
-				oValue.Write(Fill);
-				oValue.WriteNullable(ln);
-				xmlProps += XmlUtils::CreateNode(m_namespace + L":spPr", oAttr, oValue);
-			}
-			spStream->xml_.reserve(xmlProps.length());
-			{
-				std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
-				spStream->xml_ =  converter.to_bytes(xmlProps);
-			}
-
-			return  XLS::BaseObjectPtr(SpUnion);
-		}
-		XLS::BaseObjectPtr SpPr::toXLSText()
-		{
-			auto SpUnion = new XLS::TEXTPROPS;
-			auto spStream = new XLS::TextPropsStream;
-			SpUnion->textPropsStream = XLS::BaseObjectPtr(spStream);
-
 			m_namespace = L"a";
 			std::wstring xmlProps = L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>";
 			{

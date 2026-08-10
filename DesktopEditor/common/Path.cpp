@@ -34,7 +34,8 @@
  */
 #include "Path.h"
 #include "File.h"
-#include <stack>
+#include <vector>
+#include <cwctype>
 
 #if defined(_WIN32) || defined (_WIN64)
 #include <tchar.h>
@@ -196,65 +197,166 @@ namespace NSSystemPath
 		return NormalizePathTemplate<wchar_t>(strFileName, canHead);
 	}
 
-	std::wstring ShortenPath(const std::wstring &strPath, const bool& bRemoveExternalPath)
+	static bool IsPathSeparator(const wchar_t& wchSymbol)
 	{
-		std::stack<std::wstring> arStack;
+		return L'/' == wchSymbol || L'\\' == wchSymbol;
+	}
+
+	static bool IsDriveLetter(const wchar_t& wchSymbol)
+	{
+		return (L'a' <= wchSymbol && wchSymbol <= L'z') || (L'A' <= wchSymbol && wchSymbol <= L'Z');
+	}
+
+	static size_t GetRootLength(const std::wstring& wsPath)
+	{
+		const size_t nLength = wsPath.length();
+
+		if (0 == nLength)
+			return 0;
+
+		if (nLength > 1 && L':' == wsPath[1] && IsDriveLetter(wsPath[0]))
+			return (nLength > 2 && IsPathSeparator(wsPath[2])) ? 3 : 2;
+
+		if (IsPathSeparator(wsPath[0]))
+			return (nLength > 1 && IsPathSeparator(wsPath[1])) ? 2 : 1;
+
+		return 0;
+	}
+
+	struct TNormalizedPath
+	{
+		std::wstring              m_wsRoot;
+		std::vector<std::wstring> m_arParts;
+		size_t                    m_nLeadingUp;
+		bool                      m_bAbsolute;
+
+		TNormalizedPath() : m_nLeadingUp(0), m_bAbsolute(false) {}
+	};
+
+	static TNormalizedPath SplitNormalized(const std::wstring& wsPath)
+	{
+		TNormalizedPath oResult;
+
+		const size_t nRootLength = GetRootLength(wsPath);
+
+		for (size_t i = 0; i < nRootLength; ++i)
+			oResult.m_wsRoot += IsPathSeparator(wsPath[i]) ? L'/' : wsPath[i];
+
+		oResult.m_bAbsolute = !oResult.m_wsRoot.empty() &&
+		                      IsPathSeparator(oResult.m_wsRoot[oResult.m_wsRoot.length() - 1]);
+
 		std::wstring wsToken;
 
-		for (size_t i = 0; i < strPath.size(); ++i) 
+		for (size_t i = nRootLength; i <= wsPath.length(); ++i)
 		{
-			if (L'/' == strPath[i] || L'\\' == strPath[i])
+			if (i < wsPath.length() && !IsPathSeparator(wsPath[i]))
 			{
-				if (L".." == wsToken)
-				{
-					if (!arStack.empty() && L".." != arStack.top())
-						arStack.pop();
-					else
-						arStack.push(wsToken);
-				}
-				else if (L"." != wsToken && !wsToken.empty())
-					arStack.push(wsToken);
-	
-				wsToken.clear();
+				wsToken += wsPath[i];
+				continue;
 			}
-			else
-				wsToken += strPath[i];
+
+			if (L".." == wsToken)
+			{
+				if (!oResult.m_arParts.empty())
+					oResult.m_arParts.pop_back();
+				else if (!oResult.m_bAbsolute)
+					++oResult.m_nLeadingUp;
+			}
+			else if (L"." != wsToken && !wsToken.empty())
+				oResult.m_arParts.push_back(wsToken);
+
+			wsToken.clear();
 		}
 
-		if (L".." == wsToken)
-		{
-			if (!arStack.empty() && L".." == arStack.top())
-				arStack.pop();
-			else
-				arStack.push(wsToken);
-		}
-		else if (L"." != wsToken && !wsToken.empty())
-			arStack.push(wsToken);
+		return oResult;
+	}
 
-		wsToken.clear();
+	static bool EqualComponent(const std::wstring& wsFirst, const std::wstring& wsSecond)
+	{
+		#if defined(_WIN32) || defined(_WIN64)
+		if (wsFirst.length() != wsSecond.length())
+			return false;
 
-		if (arStack.empty())
-			return std::wstring();
+		for (size_t i = 0; i < wsFirst.length(); ++i)
+			if (towlower(wsFirst[i]) != towlower(wsSecond[i]))
+				return false;
 
-		std::wstring wsNewPath;
-
-		while (!arStack.empty()) 
-		{
-			if (bRemoveExternalPath && L".." == arStack.top())
-				break;
-
-			wsNewPath = arStack.top() + L'/' + wsNewPath;
-			arStack.pop();
-		}
-
-		wsNewPath.pop_back();
-
-		#if !defined(_WIN32) && !defined(_WIN64)
-		if (L'/' == strPath[0] || L'\\' == strPath[0])
-			return L'/' + wsNewPath;
+		return true;
+		#else
+		return wsFirst == wsSecond;
 		#endif
+	}
+
+	std::wstring ShortenPath(const std::wstring &wsPath, const bool& bRemoveExternalPath)
+	{
+		const TNormalizedPath oPath{SplitNormalized(wsPath)};
+
+		std::wstring wsNewPath = oPath.m_wsRoot;
+		size_t nWritten = 0;
+
+		if (!bRemoveExternalPath)
+		{
+			for (size_t i = 0; i < oPath.m_nLeadingUp; ++i)
+			{
+				if (0 != nWritten++)
+					wsNewPath += L'/';
+
+				wsNewPath += L"..";
+			}
+		}
+
+		for (size_t i = 0; i < oPath.m_arParts.size(); ++i)
+		{
+			if (0 != nWritten++)
+				wsNewPath += L'/';
+
+			wsNewPath += oPath.m_arParts[i];
+		}
 
 		return wsNewPath;
+	}
+
+	bool IsPathInDirectory(const std::wstring& wsDirectory, const std::wstring& wsPath)
+	{
+		if (wsDirectory.empty())
+			return false;
+
+		const TNormalizedPath oDirectory{SplitNormalized(wsDirectory)};
+		const TNormalizedPath oPath     {SplitNormalized(wsPath)};
+
+		if (oDirectory.m_bAbsolute != oPath.m_bAbsolute)
+			return false;
+
+		if (!EqualComponent(oDirectory.m_wsRoot, oPath.m_wsRoot))
+			return false;
+
+		if (0 != oDirectory.m_nLeadingUp || 0 != oPath.m_nLeadingUp)
+			return false;
+
+		if (oPath.m_arParts.size() < oDirectory.m_arParts.size())
+			return false;
+
+		for (size_t i = 0; i < oDirectory.m_arParts.size(); ++i)
+			if (!EqualComponent(oDirectory.m_arParts[i], oPath.m_arParts[i]))
+				return false;
+
+		return true;
+	}
+
+	std::wstring ResolveInDirectory(const std::wstring& wsBoundaryDirectory, const std::wstring& wsBaseDirectory, const std::wstring& wsRelativePath)
+	{
+		if (wsBoundaryDirectory.empty() || wsRelativePath.empty())
+			return std::wstring();
+
+		if (0 != GetRootLength(wsRelativePath))
+			return std::wstring();
+
+		const std::wstring wsFullPath{ShortenPath(Combine(wsBaseDirectory, wsRelativePath))};
+
+		if (!IsPathInDirectory(wsBoundaryDirectory, wsFullPath))
+			return std::wstring();
+
+		return wsFullPath;
 	}
 	
 }

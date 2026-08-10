@@ -348,10 +348,16 @@ namespace NSSystemPath
 		if (wsBoundaryDirectory.empty() || wsRelativePath.empty())
 			return std::wstring();
 
-		if (0 != GetRootLength(wsRelativePath))
+		size_t nStart = 0;
+		while (nStart < wsRelativePath.length() && IsPathSeparator(wsRelativePath[nStart]))
+			++nStart;
+
+		const std::wstring wsDocumentPath = wsRelativePath.substr(nStart);
+
+		if (wsDocumentPath.empty() || 0 != GetRootLength(wsDocumentPath))
 			return std::wstring();
 
-		const std::wstring wsFullPath{ShortenPath(Combine(wsBaseDirectory, wsRelativePath))};
+		const std::wstring wsFullPath{ShortenPath(Combine(wsBaseDirectory, wsDocumentPath))};
 
 		if (!IsPathInDirectory(wsBoundaryDirectory, wsFullPath))
 			return std::wstring();

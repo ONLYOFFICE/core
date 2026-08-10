@@ -111,16 +111,9 @@ inline bool CanUseThisPath(const std::wstring& wsPath, const std::wstring& wsSrc
 	if (bIsAllowExternalLocalFiles)
 		return true;
 
-	if (!wsCorePath.empty())
-	{
-		const std::wstring wsFullPath = NSSystemPath::ShortenPath(NSSystemPath::Combine(wsSrcPath, wsPath));
-		return boost::starts_with(wsFullPath, wsCorePath);
-	}
+	const std::wstring& wsBoundaryPath = wsCorePath.empty() ? wsSrcPath : wsCorePath;
 
-	if (wsPath.length() >= 3 && L"../" == wsPath.substr(0, 3))
-		return false;
-
-	return true;
+	return !NSSystemPath::ResolveInDirectory(wsBoundaryPath, wsSrcPath, wsPath).empty();
 }
 
 }

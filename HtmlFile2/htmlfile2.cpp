@@ -1590,10 +1590,12 @@ bool CanUseThisPath(const std::wstring& wsPath, const std::wstring& wsSrcPath, c
 	if (!wsCorePath.empty())
 	{
 		const std::wstring wsFullPath = NSSystemPath::ShortenPath(NSSystemPath::Combine(wsSrcPath, wsPath));
-		return boost::starts_with(wsFullPath, wsCorePath);
+		return NSSystemPath::IsPathInDirectory(wsCorePath, wsFullPath);
 	}
 
-	if (wsPath.length() >= 3 && L"../" == wsPath.substr(0, 3))
+	const std::wstring wsShortenPath = NSSystemPath::ShortenPath(wsPath);
+
+	if (wsShortenPath.length() >= 3 && L"../" == wsShortenPath.substr(0, 3))
 		return false;
 
 	return true;
@@ -4441,15 +4443,11 @@ private:
 		bool bRes = false;
 		bool bAllow = true;
 
-		std::wstring wsSrc = wscSrc;
 		if (!bIsAllowExternalLocalFiles)
-		{
-			wsSrc = NSSystemPath::NormalizePath(wsSrc);
-			std::wstring wsStartSrc = NSSystemPath::NormalizePath(m_sSrc);
-			bAllow = wsSrc.substr(0, wsStartSrc.length()) == wsStartSrc;
-		}
+			bAllow = NSSystemPath::IsPathInDirectory(m_sSrc, wscSrc);
+
 		if (bAllow)
-			bRes = NSFile::CFileBinary::Copy(wsSrc, wsDst);
+			bRes = NSFile::CFileBinary::Copy(wscSrc, wsDst);
 
 		return bRes;
 	}

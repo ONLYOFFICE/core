@@ -1064,11 +1064,7 @@ bool CopyImage(std::wstring wsImageSrc, const std::wstring& wsSrc, const std::ws
 	bool bAllow = true;
 
 	if (!bIsAllowExternalLocalFiles)
-	{
-		wsImageSrc = NSSystemPath::NormalizePath(wsImageSrc);
-		const std::wstring wsStartSrc = NSSystemPath::NormalizePath(wsSrc);
-		bAllow = wsImageSrc.substr(0, wsStartSrc.length()) == wsStartSrc;
-	}
+		bAllow = NSSystemPath::IsPathInDirectory(wsSrc, wsImageSrc);
 	if (bAllow)
 		bRes = NSFile::CFileBinary::Copy(wsSrc, wsDst);
 

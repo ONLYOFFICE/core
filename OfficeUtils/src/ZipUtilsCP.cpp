@@ -278,6 +278,14 @@ namespace ZLibZipUtils
 		std::wstring output             = std::wstring(unzip_dir) + FILE_SEPARATOR_STR + filenameW;
 		std::wstring output_withoutpath = std::wstring(unzip_dir) + FILE_SEPARATOR_STR + filenameW_withoutpath;
 
+		if (NULL != unzip_dir)
+		{
+			const std::wstring& wsWriteFilePath = (0 == (*popt_extract_without_path)) ? output : output_withoutpath;
+
+			if (!NSSystemPath::IsPathInDirectory(unzip_dir, wsWriteFilePath))
+				return UNZ_INTERNALERROR;
+		}
+
 		if (filenameW_withoutpath.empty())
 		{
 			if ((*popt_extract_without_path)==0)
@@ -296,16 +304,6 @@ namespace ZLibZipUtils
 				write_filename = output_withoutpath.c_str();
 
 			err = unzOpenCurrentFilePassword(uf, password);
-
-			//-------------------------------------------------------------------------------------------------
-
-			if (unzip_dir)
-			{
-				const std::wstring wsFilePath{NSSystemPath::ShortenPath(filenameW)};
-
-				if (wsFilePath.size() > 3 && L'.' == wsFilePath[0] && L'.' == wsFilePath[1] && L'/' == wsFilePath[2])
-					return UNZ_INTERNALERROR;
-			}
 
 			//-------------------------------------------------------------------------------------------------
 			NSFile::CFileBinary oFile;

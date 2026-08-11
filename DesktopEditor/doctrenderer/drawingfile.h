@@ -390,12 +390,27 @@ public:
 			return ((CPdfFile*)m_pFile)->UndoRedact();
 		return false;
 	}
-	BYTE* EditPdf(BYTE* pChanges, int nChangesSize)
+	BYTE* BuildPdf(BYTE* pCommands, int nCommandsLen, const wchar_t* sPassword)
 	{
 		if (m_nType != 0)
 			return NULL;
 
-		return ((CPdfFile*)m_pFile)->SplitPages(NULL, 0, pChanges, nChangesSize, true);
+		// EDIT
+		if (m_pFile->GetPagesCount())
+		{
+			return ((CPdfFile*)m_pFile)->EditPdfToMemory(pCommands, nCommandsLen, sPassword);
+		}
+		// NEW
+		CPdfFile* pdfFile = new CPdfFile(m_pApplicationFonts);
+		pdfFile->CreatePdf();
+		if (sPassword)
+			pdfFile->SetPassword(sPassword);
+		pdfFile->CommandsToPdfFromBinary(pCommands, nCommandsLen);
+
+		BYTE* pData = NULL;
+		int nLength = 0;
+		pdfFile->SaveToMemory(&pData, &nLength, true);
+		return pData;
 	}
 
 	BYTE* GetGlyphs(int nPageIndex)

@@ -93,7 +93,7 @@ public:
 	JSSmart<CJSValue> UnmergePages();
 	JSSmart<CJSValue> RedactPage(JSSmart<CJSValue> nPageIndex, JSSmart<CJSValue> arrRedactBox, JSSmart<CJSValue> dataFiller);
 	JSSmart<CJSValue> UndoRedact();
-	JSSmart<CJSValue> EditPdf(JSSmart<CJSValue> data);
+	JSSmart<CJSValue> BuildPdf(JSSmart<CJSValue> data, JSSmart<CJSValue> sPassword);
 
 	JSSmart<CJSValue> CheckOwnerPassword(JSSmart<CJSValue> sPassword);
 	JSSmart<CJSValue> CheckPerm(JSSmart<CJSValue> nPerm);

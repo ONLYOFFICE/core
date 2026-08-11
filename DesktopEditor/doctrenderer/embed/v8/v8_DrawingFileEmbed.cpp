@@ -37,7 +37,7 @@ namespace NSDrawingFileEmbed
 	FUNCTION_WRAPPER_V8_0(_UnmergePages, UnmergePages)
 	FUNCTION_WRAPPER_V8_3(_RedactPage, RedactPage)
 	FUNCTION_WRAPPER_V8_0(_UndoRedact, UndoRedact)
-	FUNCTION_WRAPPER_V8_1(_EditPdf, EditPdf)
+	FUNCTION_WRAPPER_V8_2(_BuildPdf, BuildPdf)
 	FUNCTION_WRAPPER_V8_1(_CheckOwnerPassword, CheckOwnerPassword)
 	FUNCTION_WRAPPER_V8_1(_CheckPerm, CheckPerm)
 
@@ -76,7 +76,7 @@ namespace NSDrawingFileEmbed
 		NSV8Objects::Template_Set(result, "UnmergePages",	_UnmergePages);
 		NSV8Objects::Template_Set(result, "RedactPage",	_RedactPage);
 		NSV8Objects::Template_Set(result, "UndoRedact",	_UndoRedact);
-		NSV8Objects::Template_Set(result, "EditPdf",	_EditPdf);
+		NSV8Objects::Template_Set(result, "BuildPdf",	_BuildPdf);
 		NSV8Objects::Template_Set(result, "CheckOwnerPassword",	_CheckOwnerPassword);
 		NSV8Objects::Template_Set(result, "CheckPerm",	_CheckPerm);
 

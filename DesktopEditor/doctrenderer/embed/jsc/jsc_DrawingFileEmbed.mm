@@ -34,7 +34,7 @@
 -(JSValue*) UnmergePages;
 -(JSValue*) RedactPage : (JSValue*)nPageIndex : (JSValue*)arrRedactBox : (JSValue*)dataFiller;
 -(JSValue*) UndoRedact;
--(JSValue*) EditPdf : (JSValue*)data;
+-(JSValue*) BuildPdf : (JSValue*)data : (JSValue*)sPassword;
 -(JSValue*) CheckOwnerPassword : (JSValue*)sPassword;
 -(JSValue*) CheckPerm : (JSValue*)nPerm;
 @end
@@ -78,7 +78,7 @@ FUNCTION_WRAPPER_JS_3(MergePages, MergePages)
 FUNCTION_WRAPPER_JS_0(UnmergePages, UnmergePages)
 FUNCTION_WRAPPER_JS_3(RedactPage, RedactPage)
 FUNCTION_WRAPPER_JS_0(UndoRedact, UndoRedact)
-FUNCTION_WRAPPER_JS_1(EditPdf, EditPdf)
+FUNCTION_WRAPPER_JS_2(BuildPdf, BuildPdf)
 FUNCTION_WRAPPER_JS_1(CheckOwnerPassword, CheckOwnerPassword)
 FUNCTION_WRAPPER_JS_1(CheckPerm, CheckPerm)
 @end

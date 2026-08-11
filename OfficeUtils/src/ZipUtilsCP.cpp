@@ -324,6 +324,14 @@ namespace ZLibZipUtils
 		std::wstring output             = std::wstring(unzip_dir) + FILE_SEPARATOR_STR + filenameW;
 		std::wstring output_withoutpath = std::wstring(unzip_dir) + FILE_SEPARATOR_STR + filenameW_withoutpath;
 
+		if (NULL != unzip_dir)
+		{
+			const std::wstring& wsWriteFilePath = (0 == (*popt_extract_without_path)) ? output : output_withoutpath;
+
+			if (!NSSystemPath::IsPathInDirectory(unzip_dir, wsWriteFilePath))
+				return UNZ_INTERNALERROR;
+		}
+
 		if (filenameW_withoutpath.empty())
 		{
 			if ((*popt_extract_without_path)==0)

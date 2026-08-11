@@ -781,12 +781,16 @@ void ReadNestedCells(XmlUtils::CXmlLiteReader& oReader, std::vector<NSCSS::CNode
 
 		if (L"td" == wsName || L"th" == wsName)
 		{
-			const ITableElementCell* pCell{oCells[oPosition.m_unRowIndex][oPosition.m_unColumnIndex]};
+			const ITableElementCell* pCell{nullptr};
+
+			if (oPosition.m_unRowIndex < oCells.size() && oPosition.m_unColumnIndex < oCells[oPosition.m_unRowIndex].size())
+				pCell = oCells[oPosition.m_unRowIndex][oPosition.m_unColumnIndex];
 
 			if ((oPosition.m_unRowIndex != oPosition.m_unStartRowIndex || oPosition.m_unColumnIndex != oPosition.m_unStartColumnIndex) &&
 			    (nullptr != pCell && ETableElement::FlatTable == pCell->GetType()))
 			{
 				ReadNestedCells(oReader, arSelectors, oPosition, arNestedCells, oCells, pWriter, oExternalTableData, oIntermediateData);
+				arSelectors.pop_back();
 				continue;
 			}
 
@@ -802,7 +806,9 @@ void ReadNestedCells(XmlUtils::CXmlLiteReader& oReader, std::vector<NSCSS::CNode
 				pWriter->RevertDataOutput();
 			}
 
-			while (nullptr != oCells[oPosition.m_unRowIndex][oPosition.m_unColumnIndex])
+			while (oPosition.m_unRowIndex < oCells.size() &&
+			       oPosition.m_unColumnIndex < oCells[oPosition.m_unRowIndex].size() &&
+			       nullptr != oCells[oPosition.m_unRowIndex][oPosition.m_unColumnIndex])
 			{
 				if (ETableElement::FillingCell == oCells[oPosition.m_unRowIndex][oPosition.m_unColumnIndex]->GetType())
 					oPosition.m_unColumnIndex +=  oCells[oPosition.m_unRowIndex][oPosition.m_unColumnIndex]->GetColspan();
@@ -836,7 +842,10 @@ void ReadNestedCells(XmlUtils::CXmlLiteReader& oReader, std::vector<NSCSS::CNode
 		else if (L"table" == wsName)
 			ReadNestedTable(oReader, arSelectors, oPosition, arNestedCells, oCells, pWriter, oExternalTableData, oIntermediateData);
 		else if (L"caption" == wsName)
+		{
+			arSelectors.pop_back();
 			continue;
+		}
 		else if (L"tbody" == wsName || L"thead" == wsName || L"tfoot" == wsName)
 			ReadNestedCells(oReader, arSelectors, oPosition, arNestedCells, oCells, pWriter, oExternalTableData, oIntermediateData);
 		else
@@ -851,7 +860,10 @@ void ReadNestedCells(XmlUtils::CXmlLiteReader& oReader, std::vector<NSCSS::CNode
 				oIntermediateData.WriteString(L" ");
 
 			if (L"table" != oReader.GetName())
+			{
+				arSelectors.pop_back();
 				continue;
+			}
 
 			ReadNestedTable(oReader, arSelectors, oPosition, arNestedCells, oCells, pWriter, oExternalTableData, oIntermediateData);
 
@@ -863,7 +875,7 @@ void ReadNestedCells(XmlUtils::CXmlLiteReader& oReader, std::vector<NSCSS::CNode
 
 			pWriter->RevertDataOutput();
 
-			if (0 != oIntermediateData.GetCurSize())
+			if (0 != oIntermediateData.GetCurSize() && !arNestedCells.empty() && nullptr != arNestedCells.rbegin()->second)
 			{
 				arNestedCells.rbegin()->second->WriteString(L" ");
 				arNestedCells.rbegin()->second->Write(oIntermediateData);
@@ -875,9 +887,9 @@ void ReadNestedCells(XmlUtils::CXmlLiteReader& oReader, std::vector<NSCSS::CNode
 	}
 }
 
-bool CMarkdownTable::Convert(XmlUtils::CXmlLiteReader& oReader, const NSCSS::CNode& oTableNode)
+bool CMarkdownTable::Convert(XmlUtils::CXmlLiteReader& oReader, std::vector<NSCSS::CNode>& arTableSelectors)
 {
-	if (Empty())
+	if (Empty() || arTableSelectors.empty())
 		return false;
 
 	CMDWriter *pWriter{dynamic_cast<CMDWriter*>(m_oExternalData.m_pWriter)};
@@ -885,7 +897,9 @@ bool CMarkdownTable::Convert(XmlUtils::CXmlLiteReader& oReader, const NSCSS::CNo
 	if (nullptr == pWriter)
 		return false;
 
-	std::vector<NSCSS::CNode> arTableSelectors{oTableNode};
+	const size_t unBaseSelectors{arTableSelectors.size()};
+
+	m_oExternalData.AddStopTag(L"table");
 
 	pWriter->WriteBreakLine(false);
 
@@ -940,6 +954,10 @@ bool CMarkdownTable::Convert(XmlUtils::CXmlLiteReader& oReader, const NSCSS::CNo
 	//Convert foother
 	ConvertMatrix(oReader, arTableSelectors, m_oFoother.GetMatrixCells(), pWriter);
 
+	arTableSelectors.resize(unBaseSelectors);
+
+	m_oExternalData.RemoveStopTag(L"table");
+
 	//Close table
 	pWriter->OutTable();
 	pWriter->WriteBreakLine(false);
@@ -982,6 +1000,9 @@ bool CMarkdownTable::ConvertMatrix(XmlUtils::CXmlLiteReader& oReader, std::vecto
 
 	std::stack<int> arDepths({0});
 
+	const size_t unMinDepths{arDepths.size()};
+	const size_t unBaseSelectors{arSelectors.size()};
+
 	NestedCells arNestedCells;
 	ITableElementCell* pTableCell{nullptr};
 
@@ -1016,9 +1037,17 @@ bool CMarkdownTable::ConvertMatrix(XmlUtils::CXmlLiteReader& oReader, std::vecto
 					}
 				}
 
-				MoveToNextTableCell(oReader, arSelectors, arDepths, m_oExternalData.GetSubClass);
+				if (!MoveToNextTableCell(oReader, arSelectors, arDepths, m_oExternalData.GetSubClass, unMinDepths))
+				{
+					if (oMatrix[unRowIndex].size() - 1 != unColumnIndex)
+						WriteCellSeparator(*pWriter);
+
+					++unColumnIndex;
+					continue;
+				}
 
 				const size_t unDepthSize{arDepths.size()};
+				const size_t unCellSelectors{arSelectors.size()};
 
 				if (ETableElement::FlatTable == pTableCell->GetType())
 				{
@@ -1030,14 +1059,33 @@ bool CMarkdownTable::ConvertMatrix(XmlUtils::CXmlLiteReader& oReader, std::vecto
 					NSStringUtils::CStringBuilder oTempData(100);
 					bool bSetedDataOutput{false};
 
-					arDepths.push(oReader.GetDepth());
+					arDepths.push(nDepth);
 
-					m_oExternalData.AddStopTag(L"table");
+					const size_t unContainerDepths{arDepths.size()};
 
 					NSStringUtils::CStringBuilder oIntermediateData(100);
 
-					while(oReader.ReadNextSiblingNode2(nDepth))
+					while (true)
 					{
+						bool bMoved{false};
+
+						while (true)
+						{
+							if (oReader.ReadNextSiblingNode2(arDepths.top()))
+							{
+								bMoved = true;
+								break;
+							}
+
+							if (arDepths.size() == unContainerDepths)
+								break;
+
+							arDepths.pop();
+						}
+
+						if (!bMoved)
+							break;
+
 						if (L"table" == oReader.GetName())
 						{
 							if (bSetedDataOutput)
@@ -1072,6 +1120,12 @@ bool CMarkdownTable::ConvertMatrix(XmlUtils::CXmlLiteReader& oReader, std::vecto
 								arNestedCells.rbegin()->second->Write(oIntermediateData);
 								oIntermediateData.Clear();
 							}
+
+							while (arDepths.size() > unContainerDepths)
+								arDepths.pop();
+
+							for (int nCurrentDepth = nDepth + 1; nCurrentDepth < oReader.GetDepth(); ++nCurrentDepth)
+								arDepths.push(nCurrentDepth);
 						}
 						else
 						{
@@ -1084,8 +1138,6 @@ bool CMarkdownTable::ConvertMatrix(XmlUtils::CXmlLiteReader& oReader, std::vecto
 							m_oExternalData.ReadInside(oReader, arSelectors);
 						}
 					}
-
-					m_oExternalData.ClearStopTags();
 
 					if (bSetedDataOutput)
 					{
@@ -1110,7 +1162,7 @@ bool CMarkdownTable::ConvertMatrix(XmlUtils::CXmlLiteReader& oReader, std::vecto
 				while (arDepths.size() > unDepthSize)
 					arDepths.pop();
 
-				arSelectors.resize(unDepthSize);
+				arSelectors.resize(unCellSelectors - 1);
 			}
 			else
 			{
@@ -1138,6 +1190,8 @@ bool CMarkdownTable::ConvertMatrix(XmlUtils::CXmlLiteReader& oReader, std::vecto
 			WriteRowEnd(*pWriter);
 		}
 	}
+
+	arSelectors.resize(unBaseSelectors);
 
 	return true;
 }

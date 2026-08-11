@@ -60,6 +60,16 @@ void replace_all(std::wstring& s, const std::wstring& s1, const std::wstring& s2
     }
 }
 
+static bool GetStatusUsingExternalLocalFiles()
+{
+    return false;
+
+    if (NSProcessEnv::IsPresent(NSProcessEnv::Converter::gc_allowPrivateIP))
+        return NSProcessEnv::GetBoolValue(NSProcessEnv::Converter::gc_allowPrivateIP);
+
+    return true;
+}
+
 std::wstring GenerateUUID()
 {
     std::mt19937 oRand(time(0));
@@ -119,12 +129,15 @@ HRESULT CEpubFile::Convert(const std::wstring& sInputFile, const std::wstring& s
         sContent = sFileContent.substr(nContent, sFileContent.find_first_of(L"\"'", nContent) - nContent);
     }
 
-    std::wstring sContentPath;
+    const bool bIsAllowExternalLocalFiles{GetStatusUsingExternalLocalFiles()};
+    const std::wstring sTempDir{NSSystemPath::ShortenPath(m_sTempDir)};
 
-    if (std::wstring::npos != sContent.find(L'/') || std::wstring::npos != sContent.find(L'\\'))
-        sContentPath = NSFile::GetDirectoryName(sContent);
+    sContent = NSSystemPath::ShortenPath(NSSystemPath::Combine(sTempDir, sContent.empty() ? L"content.opf" : sContent));
 
-    sContent = m_sTempDir + (sContent.empty() ? L"/content.opf" : L'/' + sContent);
+    if (!bIsAllowExternalLocalFiles && !NSSystemPath::IsPathInDirectory(sTempDir, sContent))
+        return S_FALSE;
+
+    const std::wstring sContentDir = NSFile::GetDirectoryName(sContent);
 
     XmlUtils::CXmlLiteReader oXmlLiteReader;
     if (!oXmlLiteReader.FromFile(sContent))
@@ -191,21 +204,25 @@ HRESULT CEpubFile::Convert(const std::wstring& sInputFile, const std::wstring& s
     std::wstring sDocxFileTempDir = m_sTempDir + L"/tmp";
     NSDirectory::CreateDirectory(sDocxFileTempDir);
     oFile.SetTempDirectory(sDocxFileTempDir);
-    oFile.SetCoreDirectory(NSFile::GetDirectoryName(sContent));
+    oFile.SetCoreDirectory(sContentDir);
 
     std::vector<std::wstring> arFiles;
 
     for (const CBookContentItem& oContent : m_arContents)
     {
-        std::wstring sFile = NSSystemPath::ShortenPath(m_mapRefs[oContent.m_sID].GetRef());
-        replace_all(sFile, L"%20", L" ");
+        std::wstring sRef = m_mapRefs[oContent.m_sID].GetRef();
+        replace_all(sRef, L"%20", L" ");
 
-        if (sFile.length() > 3 && L'.' == sFile[0] && L'.' == sFile[1] && L'/' == sFile[2] &&
-            NSProcessEnv::IsPresent(NSProcessEnv::Converter::gc_allowPrivateIP) &&
-            !NSProcessEnv::GetBoolValue(NSProcessEnv::Converter::gc_allowPrivateIP))
+        if (sRef.empty())
             continue;
 
-        arFiles.push_back(m_sTempDir + ((!sContentPath.empty()) ? (L"/" + sContentPath) : L"" ) + L"/" + sFile);
+        const std::wstring sFile = bIsAllowExternalLocalFiles ? NSSystemPath::ShortenPath(NSSystemPath::Combine(sContentDir, sRef))
+                                                              : NSSystemPath::ResolveInDirectory(sTempDir, sContentDir, sRef);
+
+        if (sFile.empty())
+            continue;
+
+        arFiles.push_back(sFile);
     }
 
 #ifdef _DEBUG

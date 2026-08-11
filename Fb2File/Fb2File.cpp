@@ -1794,21 +1794,27 @@ public:
 				readLi(oXml, false, arPProperties);
 			else if (sName == L"img")
 			{
-				std::wstring sId, sBinary;
+				std::wstring sId;
 				while (m_oLightReader.MoveToNextAttribute())
 				{
 					if (m_oLightReader.GetName() == L"src")
 					{
-						sBinary = m_oLightReader.GetText();
-						sBinary.erase(0, sBinary.find(L',') + 1);
+						const std::wstring sSrc = m_oLightReader.GetText();
+						const size_t nDataStart = sSrc.find(L',');
+
+						if (0 != sSrc.find(L"data:") || std::wstring::npos == nDataStart)
+							continue;
+
 						std::vector<std::wstring> vImage;
-						vImage.push_back(sBinary);
+						vImage.push_back(sSrc.substr(nDataStart + 1));
 						sId = std::to_wstring(m_mImages.size() + 1);
 						m_mImages.insert(std::make_pair(sId, vImage));
 					}
 				}
 				m_oLightReader.MoveToElement();
-				oXml.WriteString(L"<image l:href=\"#img" + sId + L".png\"/>");
+
+				if (!sId.empty())
+					oXml.WriteString(L"<image l:href=\"#img" + sId + L".png\"/>");
 			}
 			else if (sName == L"hr")
 			{

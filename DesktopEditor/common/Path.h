@@ -47,6 +47,8 @@ namespace NSSystemPath
 	KERNEL_DECL std::string NormalizePath(const std::string& strFileName, const bool& canHead = false);
 	KERNEL_DECL std::wstring NormalizePath(const std::wstring& strFileName, const bool& canHead = false);
 	KERNEL_DECL std::wstring ShortenPath(const std::wstring& strPath, const bool& bRemoveExternalPath = false);
+	KERNEL_DECL bool IsPathInDirectory(const std::wstring& wsDirectory, const std::wstring& wsPath);
+	KERNEL_DECL std::wstring ResolveInDirectory(const std::wstring& wsBoundaryDirectory, const std::wstring& wsBaseDirectory, const std::wstring& wsRelativePath);
 }
 
 #endif //_BUILD_PATH_CROSSPLATFORM_H_

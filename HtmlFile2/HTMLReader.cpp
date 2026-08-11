@@ -417,7 +417,7 @@ bool CHTMLReader::InitOOXMLTags(THTMLParameters* pParametrs)
 	                                  { return ReadInside(oReader, arSelectors); };
 
 	oExternalData.AddStopTag    = [this](const std::wstring& wsTag){ AddStopTag(wsTag); };
-	oExternalData.ClearStopTags = [this]{ ClearStopTags(); };
+	oExternalData.RemoveStopTag = [this](const std::wstring& wsTag){ RemoveStopTag(wsTag); };
 
 	oExternalData.m_pWriter = pWriter;
 
@@ -460,7 +460,7 @@ bool CHTMLReader::InitMDTags(TMarkdownParameters* pParametrs)
 	                                  { return ReadInside(oReader, arSelectors); };
 
 	oExternalData.AddStopTag    = [this](const std::wstring& wsTag){ AddStopTag(wsTag); };
-	oExternalData.ClearStopTags = [this]{ ClearStopTags(); };
+	oExternalData.RemoveStopTag = [this](const std::wstring& wsTag){ RemoveStopTag(wsTag); };
 
 	oExternalData.m_pWriter = pWriter;
 
@@ -735,6 +735,9 @@ bool CHTMLReader::ReadStream(XmlUtils::CXmlLiteReader& oReader, std::vector<NSCS
 
 		if (ReadInside(oReader, arSelectors))
 			bResult = true;
+
+		if (!m_arStopTags.empty() && m_arStopTags.end() != m_arStopTags.find(oReader.GetName()))
+			return bResult;
 	} while(oReader.ReadNextSiblingNode2(nDeath));
 
 	if (!bResult && bInsertEmptyP)
@@ -1026,7 +1029,7 @@ bool CHTMLReader::ReadTable(XmlUtils::CXmlLiteReader& oReader, std::vector<NSCSS
 		return false;
 
 	m_pTableElement->Normalize();
-	m_pTableElement->Convert(oTableReader, arSelectors.back());
+	m_pTableElement->Convert(oTableReader, arSelectors);
 
 	m_pTableElement->Clear();
 	return true;
@@ -1065,6 +1068,11 @@ std::shared_ptr<ITag> CHTMLReader::GetTag(int nTag)
 void CHTMLReader::AddStopTag(const std::wstring& wsTag)
 {
 	m_arStopTags.insert(wsTag);
+}
+
+void CHTMLReader::RemoveStopTag(const std::wstring& wsTag)
+{
+	m_arStopTags.erase(m_arStopTags.find(wsTag));
 }
 
 void CHTMLReader::ClearStopTags()

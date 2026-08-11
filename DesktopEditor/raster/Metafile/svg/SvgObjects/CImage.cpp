@@ -111,16 +111,16 @@ namespace SVG
 		#ifndef METAFILE_DISABLE_FILESYSTEM
 		else
 		{
-			std::wstring wsFilePath = NSSystemPath::ShortenPath(m_wsHref);
-	
 			bool bIsAllowExternalLocalFiles = true;
 			if (NSProcessEnv::IsPresent(NSProcessEnv::Converter::gc_allowPrivateIP))
 				bIsAllowExternalLocalFiles = NSProcessEnv::GetBoolValue(NSProcessEnv::Converter::gc_allowPrivateIP);
 
-			if (!bIsAllowExternalLocalFiles && wsFilePath.length() >= 3 && L"../" == wsFilePath.substr(0, 3))
+			const std::wstring wsWorkingDirectory = pFile->GetWorkingDirectory();
+			const std::wstring wsFilePath = bIsAllowExternalLocalFiles ? NSSystemPath::ShortenPath(NSSystemPath::Combine(wsWorkingDirectory, m_wsHref))
+				                                                       : NSSystemPath::ResolveInDirectory(wsWorkingDirectory, wsWorkingDirectory, m_wsHref);
+
+			if (wsFilePath.empty())
 				return false;
-	
-			wsFilePath = pFile->GetWorkingDirectory() + L'/' + wsFilePath;
 	
 			if (!NSFile::CFileBinary::Exists(wsFilePath) || !NSFile::CFileBinary::ReadAllBytes(wsFilePath, &pBuffer, ulSize))
 				return false;

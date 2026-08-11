@@ -45,6 +45,8 @@
 
 namespace HTML
 {
+#define BACKGROUND_IMAGE_ID_BASE 100000
+
 struct TImageData
 {
 	UINT m_unWidth;
@@ -138,6 +140,7 @@ class COOXMLWriter : public IWriter
 	int m_nHyperlinkId; // Hyperlink ID
 	int m_nListId;      // List ID
 	int m_nElementId;   // ID for other elements
+	int m_nBackgroundImageId; // ID for images produced from background-image
 
 	bool m_bBanUpdatePageData; // Prohibit page data update?
 
@@ -206,6 +209,8 @@ public:
 	void WriteAlternativeImage(const std::wstring& wsAlt, const std::wstring& wsSrc, const TImageData& oImageData);
 	void WriteEmptyImage(int nWidth, int nHeight, const std::wstring& wsName = L"", const std::wstring& wsDescr = L"");
 	void WriteImageRels(const std::wstring& wsImageId, const std::wstring& wsImageName);
+
+	int GetNextBackgroundImageId();
 
 	std::wstring GetStyle(const NSCSS::CCompiledStyle& oStyle, bool bParagraphStyle);
 

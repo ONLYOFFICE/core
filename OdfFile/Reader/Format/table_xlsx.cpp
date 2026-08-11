@@ -991,24 +991,17 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context& Context)
 		paragraph_format_properties parFormatProperties = calc_paragraph_properties_content(instances);
 		style_table_cell_properties_attlist cellFormatProperties = calc_table_cell_properties(instances);
 
-		bool is_style_visible = (!cellStyleName.empty() || defaultColumnCellStyle || !num_format.empty()) ? true : false;
-
-		if (bExternalTable)
-		{
-			is_style_visible = false;
-			xlsx_value_type = oox::XlsxCellType::str;
-		}		
-		
-		size_t	xfId_last_set = 0;
-
 //-------------------------------------------------------------------------------------------------------------------------------
+		std::wstring			cell_num_format		= num_format;
+		office_value_type::type cell_num_format_type= num_format_type;
+
 		std::wstring data_style = CalcCellDataStyle(Context, columnStyleName, rowStyleName, cellStyleName);
 
 		if (false == data_style.empty())
 		{
-			num_format = Context.get_num_format_context().find_complex_format(data_style, num_format_type);
+			cell_num_format = Context.get_num_format_context().find_complex_format(data_style, cell_num_format_type);
 
-			if (num_format.empty())
+			if (cell_num_format.empty())
 			{
 				office_element_ptr elm = odfContext.numberStyles().find_by_style_name(data_style);
 				number_style_base* num_style = dynamic_cast<number_style_base*>(elm.get());
@@ -1019,33 +1012,41 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context& Context)
 					num_style->oox_convert(Context.get_num_format_context());
 					Context.get_num_format_context().end_complex_format();
 
-					num_format = Context.get_num_format_context().get_last_format();
-					num_format_type = Context.get_num_format_context().type();
+					cell_num_format = Context.get_num_format_context().get_last_format();
+					cell_num_format_type = Context.get_num_format_context().type();
 				}
 			}
 			if (attr.office_value_type_)
 			{
-				if (attr.office_value_type_.get() != num_format_type && num_format_type != office_value_type::Custom)
-				{// reset from cell 
-					num_format_type = attr.office_value_type_->get_type();
-					num_format.clear();
+				if (attr.office_value_type_.get() != cell_num_format_type && cell_num_format_type != office_value_type::Custom)
+				{// reset from cell
+					cell_num_format_type = attr.office_value_type_->get_type();
+					cell_num_format.clear();
 				}
 
 			}
 		}
-		
-		if (is_style_visible)
-		{
-			xfId_last_set = Context.get_style_manager().xfId(textFormatProperties, &parFormatProperties, &cellFormatProperties,
-				&cellFormat, num_format, num_format_type, false, is_style_visible);
-		}
+//----------------------------------------------------------------------------------------------------------------------------------
+		bool is_style_visible = (!cellStyleName.empty() || defaultColumnCellStyle || !cell_num_format.empty()) ? true : false;
 
 		if (count_paragraph > 1)
 		{
 			is_style_visible = true;
 			cellFormatProperties.fo_wrap_option_ = odf_types::wrap_option::Wrap;
 		}
-//---------------------------------------------------------------------------------------------------------			
+		if (bExternalTable)
+		{
+			is_style_visible = false;
+			xlsx_value_type = oox::XlsxCellType::str;
+		}
+
+		size_t	xfId_last_set = 0;
+		if (is_style_visible)
+		{
+			xfId_last_set = Context.get_style_manager().xfId(textFormatProperties, &parFormatProperties, &cellFormatProperties,
+				&cellFormat, cell_num_format, cell_num_format_type, false, is_style_visible);
+		}
+//---------------------------------------------------------------------------------------------------------
 		Context.start_table_cell(attlist_extra_.table_number_columns_spanned_ - 1,
 			attlist_extra_.table_number_rows_spanned_ - 1);
 

@@ -597,6 +597,8 @@ BYTE* CPdfFile::SplitPages(const int* arrPageIndex, unsigned int unLength, BYTE*
 	int nLen = 0;
 	if (m_pInternal->pEditor->SplitPages(arrPageIndex, unLength))
 	{
+		if (bEdit)
+			m_pInternal->pReader->BeforeSplitPages();
 		if (pChanges && nLength > 3)
 		{
 			if (!bEdit)
@@ -607,7 +609,10 @@ BYTE* CPdfFile::SplitPages(const int* arrPageIndex, unsigned int unLength, BYTE*
 				m_pInternal->pWriter->SetSplit(false);
 		}
 		if (bEdit)
+		{
 			m_pInternal->pEditor->Close();
+			m_pInternal->pReader->AfterSplitPages();
+		}
 		else
 			m_pInternal->pEditor->AfterSplitPages();
 

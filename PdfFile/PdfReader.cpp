@@ -2361,3 +2361,32 @@ BYTE* CPdfReader::GetAPAnnots(int nRasterW, int nRasterH, int nBackgroundColor, 
 	oRes.ClearWithoutAttack();
 	return pRes;
 }
+void CPdfReader::BeforeSplitPages()
+{
+	m_vSavedPDFContext.clear();
+
+	if (m_vPDFContext.size() > 1)
+	{
+		m_vSavedPDFContext.assign(m_vPDFContext.begin() + 1, m_vPDFContext.end());
+		m_vPDFContext.erase(m_vPDFContext.begin() + 1, m_vPDFContext.end());
+	}
+}
+void CPdfReader::AfterSplitPages()
+{
+	if (m_vPDFContext.size() > 1)
+	{
+		for (size_t nIndex = 1; nIndex < m_vPDFContext.size(); ++nIndex)
+		{
+			CPdfReaderContext* pContext = m_vPDFContext[nIndex];
+			delete pContext;
+		}
+		m_vPDFContext.erase(m_vPDFContext.begin() + 1, m_vPDFContext.end());
+	}
+
+	if (!m_vSavedPDFContext.empty())
+	{
+		m_vPDFContext.insert(m_vPDFContext.end(), m_vSavedPDFContext.begin(), m_vSavedPDFContext.end());
+		m_vSavedPDFContext.clear();
+	}
+}
+

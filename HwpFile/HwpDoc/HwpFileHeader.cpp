@@ -3,6 +3,7 @@
 namespace HWP
 {
 CHwpFileHeader::CHwpFileHeader()
+	: m_nEncryptVersion(0), m_nCountryKOGLLicensed(0)
 {}
 
 bool CHwpFileHeader::Parse(CHWPStream& oBuffer)
@@ -53,6 +54,7 @@ bool CHwpFileHeader::Parse(CHWPStream& oBuffer)
 	oBuffer.Skip(4);
 
 	//encryptVersion
+	m_nEncryptVersion = (int)oBuffer[0] | ((int)oBuffer[1] << 8) | ((int)oBuffer[2] << 16) | ((int)oBuffer[3] << 24);
 	oBuffer.Skip(4);
 
 	m_nCountryKOGLLicensed = (int)oBuffer[0];
@@ -113,5 +115,10 @@ bool CHwpFileHeader::VersionEmpty() const
 HWP_STRING CHwpFileHeader::GetVersion() const
 {
 	return m_sVersion;
+}
+
+int CHwpFileHeader::GetEncryptVersion() const
+{
+	return m_nEncryptVersion;
 }
 }

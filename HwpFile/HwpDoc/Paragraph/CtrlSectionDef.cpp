@@ -38,11 +38,11 @@
 namespace HWP
 {
 CCtrlSectionDef::CCtrlSectionDef(const HWP_STRING& sCtrlID)
-	: CCtrl(sCtrlID), m_pPage(nullptr)
+	: CCtrl(sCtrlID), m_nOutlineNumberingID(0), m_pPage(nullptr)
 {}
 
 CCtrlSectionDef::CCtrlSectionDef(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
-	: CCtrl(sCtrlID), m_pPage(nullptr)
+	: CCtrl(sCtrlID), m_nOutlineNumberingID(0), m_pPage(nullptr)
 {
 	int nAttr;
 	oBuffer.ReadInt(nAttr);
@@ -76,7 +76,7 @@ CCtrlSectionDef::CCtrlSectionDef(const HWP_STRING& sCtrlID, int nSize, CHWPStrea
 }
 
 CCtrlSectionDef::CCtrlSectionDef(const HWP_STRING& sCtrlID, CXMLReader& oReader, EHanType eType)
-	: CCtrl(sCtrlID), m_pPage(nullptr)
+	: CCtrl(sCtrlID), m_nOutlineNumberingID(0), m_pPage(nullptr)
 {
 	std::string sType;
 
@@ -287,5 +287,10 @@ VECTOR<const CCtrlHeadFoot*> CCtrlSectionDef::GetHeaderFooters() const
 		arHeaderFooters[unIndex] = dynamic_cast<const CCtrlHeadFoot*>(m_arHeaderFooter[unIndex]);
 
 	return arHeaderFooters;
+}
+
+int CCtrlSectionDef::GetOutlineNumberingID() const
+{
+	return m_nOutlineNumberingID;
 }
 }

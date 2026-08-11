@@ -75,6 +75,7 @@ public:
 
 	bool LoadFromFile  (NSFonts::IApplicationFonts* pAppFonts, const std::wstring& file, const wchar_t* owner_password = NULL, const wchar_t* user_password = NULL);
 	bool LoadFromMemory(NSFonts::IApplicationFonts* pAppFonts, BYTE* data, DWORD length, const wchar_t* owner_password = NULL, const wchar_t* user_password = NULL);
+	bool GetMemory(BYTE** ppData, DWORD* pLength);
 
 	void Close();
 	void CleanUp();

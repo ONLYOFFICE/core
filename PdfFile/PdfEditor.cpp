@@ -2695,7 +2695,8 @@ void CPdfEditor::Close()
 		PdfReader::CPdfFontList* pFontList = NULL;
 		int nStartRefID = 0;
 		m_pReader->GetPageIndex(0, &pPDFDocument, &pFontList, &nStartRefID);
-		CloseWriteNew_ApplyEncryption(m_wsPassword, &m_mObjManager, pPDFDocument, pDoc);
+		if (!pDoc->GetEncrypt())
+			CloseWriteNew_ApplyEncryption(m_wsPassword, &m_mObjManager, pPDFDocument, pDoc);
 
 		XRef* xref = pPDFDocument->getXRef();
 		CObjectGuard catDict;

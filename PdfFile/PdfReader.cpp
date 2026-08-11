@@ -237,6 +237,29 @@ bool CPdfReader::LoadFromMemory(NSFonts::IApplicationFonts* pAppFonts, BYTE* dat
 
 	return MergePages(data, length, wsOwnerPassword);
 }
+bool CPdfReader::GetMemory(BYTE** ppData, DWORD* pLength)
+{
+	if (m_vPDFContext.empty())
+		return false;
+
+	PDFDoc* pDoc = m_vPDFContext[0]->m_pDocument;
+	if (!pDoc)
+		return false;
+
+	BaseStream* pStream = pDoc->getBaseStream();
+	if (!pStream)
+		return false;
+
+	Guint nLength = 0;
+	char* pBuffer = pStream->getRawBuffer(&nLength);
+	if (!pBuffer || nLength == 0)
+		return false;
+
+	*ppData = (BYTE*)pBuffer;
+	*pLength = (DWORD)nLength;
+
+	return true;
+}
 void CPdfReader::Close()
 {
 	Clear();

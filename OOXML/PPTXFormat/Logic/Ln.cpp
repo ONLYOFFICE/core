@@ -326,14 +326,13 @@ namespace PPTX
 			ptr->fAuto = false;
 			if(w.IsInit())
 			{
-				switch(w.get())
-				{
-					case 3175:		ptr->we = 0xFFFF;	break; //Hairline
-					case 12700:		ptr->we = 0;	break; //single
-					case 25400:		ptr->we = 1;	break; //double
-					case 38100:		ptr->we = 2;	break; //triple
-					default: ptr->we = 0;	break; //single
-				}
+
+					if(w.get() <= 3175)		ptr->we = 0xFFFF; //Hairline
+					else if (w.get() <= 12700)		ptr->we = 0; //single
+					else if (w.get() <=  25400)	ptr->we = 1; //double
+					else ptr->we = 2;//triple
+
+
 			}
 			if(Fill.is_init())
 			{

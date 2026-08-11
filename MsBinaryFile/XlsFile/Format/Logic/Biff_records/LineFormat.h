@@ -59,7 +59,7 @@ public:
 //-----------------------------
 	LongRGB rgb;
 	_UINT16 lns = 0;
-	_UINT16 we = 0;
+	_UINT16 we = 0xFFFF;
 	bool	fAuto = true;
 	bool	fAxisOn = false;
 	bool	fAutoCo = true;

@@ -304,16 +304,8 @@ const bool SS::saveContent(BinProcessor& proc)
 		line.setChecksum(CheckSumData);
 		proc.mandatory(line);
 		AreaFormat area;
-		area.rgbFore.red = 0xFF;
-		area.rgbFore.green = 0x00;
-		area.rgbFore.blue = 0x00;
-		area.rgbBack.red = 0xFF;
-		area.rgbBack.green = 0xFF;
-		area.rgbBack.blue = 0xFF;
 		area.fls = 1;
 		area.fAuto = false;
-		area.icvFore = 10;
-		area.icvBack = 9;
 		area.setChecksum(CheckSumData);
 		proc.mandatory(area);
 	}
@@ -329,13 +321,37 @@ const bool SS::saveContent(BinProcessor& proc)
 	if(m_AttachedLabel != nullptr)
 		proc.mandatory(*m_AttachedLabel);
 	for(auto i : m_arSHAPEPROPS)
-		if(i != nullptr)
-		{
-			auto castedProp = static_cast<SHAPEPROPS*>(i.get());
-			auto propHeader = static_cast<ShapePropsStream*>(castedProp->m_ShapePropsStream.get());
+	{
+		auto castedProp = dynamic_cast<SHAPEPROPS*>(i.get());
+		if(castedProp == nullptr)
+			continue;
+		auto propHeader = dynamic_cast<ShapePropsStream*>(castedProp->m_ShapePropsStream.get());
+		if(propHeader == nullptr)
+			continue;
+
+		if(propHeader->wObjContext == 0)
 			propHeader->dwChecksum = checkSum;
-			proc.mandatory(*i);
+		else if(propHeader->wObjContext == 1 && m_MarkerFormat != nullptr)
+		{
+			auto castedMarker = static_cast<MarkerFormat*>(m_MarkerFormat.get());
+			AreaFormat area;
+			area.rgbFore.red = castedMarker->rgbFore.red;
+			area.rgbFore.green = castedMarker->rgbFore.green;
+			area.rgbFore.blue = castedMarker->rgbFore.blue;
+			area.rgbBack.red = castedMarker->rgbBack.red;
+			area.rgbBack.green = castedMarker->rgbBack.green;
+			area.rgbBack.blue = castedMarker->rgbBack.blue;
+			area.fls = 1;
+			area.fAuto = false;
+			CheckSumData = std::vector<BYTE>();
+			_UINT32 MarkerCheckSum = 0;
+			area.setChecksum(CheckSumData);
+			calcChecksum(CheckSumData, MarkerCheckSum);
+			propHeader->dwChecksum = MarkerCheckSum;
 		}
+		proc.mandatory(*i);
+	}
+
 	proc.mandatory<End>();
 	return true;
 }
@@ -442,13 +458,24 @@ int SS::serialize(std::wostream & _stream, int series_type, int indPt)
 	DataFormat		*series_data_format = dynamic_cast<DataFormat*>		(m_DataFormat.get());
 	SerFmt			*series_format		= dynamic_cast<SerFmt*>			(m_SerFmt.get());
 	MarkerFormat	*marker_format		= dynamic_cast<MarkerFormat*>	(m_MarkerFormat.get());
-	SHAPEPROPS		*SpProps			= nullptr;
 	ShapePropsStream *spStream			= nullptr;
+	ShapePropsStream *mkPropStream		= nullptr;
 	if(!m_arSHAPEPROPS.empty())
 	{
+		for(auto spProp : m_arSHAPEPROPS)
+		{
+			auto SpProps = dynamic_cast<SHAPEPROPS*>(spProp.get());
+			if(SpProps == nullptr)
+				continue;
+			auto tempStream = dynamic_cast<ShapePropsStream*>(SpProps->m_ShapePropsStream.get());
+			if(tempStream == nullptr)
+				continue;
 
-		SpProps =dynamic_cast<SHAPEPROPS*>	(m_arSHAPEPROPS.back().get());
-		spStream = static_cast<ShapePropsStream*>(SpProps->m_ShapePropsStream.get());
+			if (tempStream->wObjContext == 0)
+				spStream = tempStream;
+			else if(tempStream->wObjContext == 1)
+				mkPropStream  = tempStream;
+		}
 	}
 
 	int ind = series_data_format->iss;
@@ -465,23 +492,14 @@ int SS::serialize(std::wostream & _stream, int series_type, int indPt)
 	bool bMarkerEx = false;
 	if(spStream)
 	{
-		XmlUtils::CXmlLiteReader reader;
-		auto spPos = spStream->xml_.find("<a:spPr");
-		if (spPos != std::string::npos)
-		spStream->xml_ = spStream->xml_.erase(0,spPos);
-		std::wstring buf(spStream->xml_.begin(), spStream->xml_.end());
-		reader.FromString(buf);
-		reader.ReadNextNode();
-		PPTX::Logic::SpPr props;
-		props.fromXML(reader);
-		NSBinPptxRW::CXmlWriter writer;
-		writer.m_lDocType = XMLWRITER_DOC_TYPE_CHART;
-		props.toXmlWriter(&writer);
-
-		_stream.write(writer.GetXmlString().c_str(), writer.GetXmlString().size());
-		bLine = false;
-		bArea = false;
-		indPt = 0;
+		std::wstring spPr = spStream->getChartSpPr();
+		if (false == spPr.empty())
+		{
+			_stream.write(spPr.c_str(), spPr.size());
+			bLine = false;
+			bArea = false;
+			indPt = 0;
+		}
 	}
 
 	CP_XML_WRITER(_stream)    
@@ -569,7 +587,11 @@ int SS::serialize(std::wostream & _stream, int series_type, int indPt)
 								series_type != CHART_TYPE_Bar		&&	
 								series_type != CHART_TYPE_BopPop )
 		{
-			marker_format->serialize(_stream, ind, bMarkerEx ? m_GELFRAME : BaseObjectPtr());
+			std::wstring MkSpPr;
+			if(mkPropStream != nullptr)
+				MkSpPr = mkPropStream->getChartSpPr();
+
+			marker_format->serialize(_stream, ind, bMarkerEx ? m_GELFRAME : BaseObjectPtr(), MkSpPr);
 		}
 		else if (/*series_type == CHART_TYPE_Line ||*/ series_type == CHART_TYPE_Scatter)
 		{

@@ -75,6 +75,7 @@ namespace NSOnlineOfficeBinToPdf
 		case ctPageRotate:       return Read_Command<CPageRotate>      (this, pCorrector);
 		case ctHeadings:         return Read_Command<CHeadings>        (this, pCorrector);
 		case ctRedact:           return Read_Command<CRedact>          (this, pCorrector);
+		case ctRedactMeta:       return Read_Command<CRedactMeta>      (this, pCorrector);
 		default: break;
 		}
 

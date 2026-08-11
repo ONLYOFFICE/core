@@ -83,6 +83,7 @@
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/PieFormat.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/MarkerFormat.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/AreaFormat.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/SerFmt.h"
 
 
 namespace OOX
@@ -1332,9 +1333,17 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			{
 				auto labelUnion = new XLS::ATTACHEDLABEL;
 				auto textRecord = new XLS::Text;
+				if(m_chart->m_title != nullptr && m_chart->m_title->m_spPr.IsInit())
+				{
+					labelUnion->m_FRAME = m_chart->m_title->m_spPr->toXLSFrame();
+				}
 				textRecord->wBkgMode = 1;
 				textRecord->at = 2;
 				textRecord->vat = 1;
+				if(m_chart->m_title != nullptr && m_chart->m_title->m_txPr.IsInit())
+				{
+					labelUnion->m_TEXTPROPS = m_chart->m_title->m_txPr->toXLSText();
+				}
 				auto textPos = new XLS::Pos;
 				textPos->mdBotRt = 2;
 				textPos->mdTopLt = 2;
@@ -2506,8 +2515,7 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 					lnFmt.lineFormat = m_spPr->ln->toXLS();
 					auto lnFmtptr = static_cast<XLS::LineFormat*>(lnFmt.lineFormat.get());
 					lnFmtptr->fAxisOn = true;
-					if(m_spPr->Fill.m_type == PPTX::Logic::UniFill::noFill)
-						lnFmtptr->lns = 5;
+					axs->ShapeProps.push_back(m_spPr->toXLS(0));
 				}
 				axs->m_AxisLine_Format.push_back(lnFmt);
 			}
@@ -2519,7 +2527,10 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 				lnFmt.axisLine = XLS::BaseObjectPtr(axisline);
 
 				if(m_majorGridlines->m_spPr.IsInit() && m_majorGridlines->m_spPr->ln.IsInit())
+				{
 					lnFmt.lineFormat = m_majorGridlines->m_spPr->ln->toXLS();
+					axs->ShapeProps.push_back(m_majorGridlines->m_spPr->toXLS(1));
+				}
 				else
 				{
 					m_majorGridlines->m_spPr.Init();
@@ -2536,7 +2547,10 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 				lnFmt.axisLine = XLS::BaseObjectPtr(axisline);
 
 				if(m_minorGridlines->m_spPr.IsInit() && m_minorGridlines->m_spPr->ln.IsInit())
+				{
 					lnFmt.lineFormat = m_minorGridlines->m_spPr->ln->toXLS();
+					axs->ShapeProps.push_back(m_minorGridlines->m_spPr->toXLS(2));
+				}
 				else
 				{
 					m_minorGridlines->m_spPr.Init();
@@ -3307,8 +3321,7 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 					lnFmt.lineFormat = m_spPr->ln->toXLS();
 					auto lnFmtptr = static_cast<XLS::LineFormat*>(lnFmt.lineFormat.get());
 					lnFmtptr->fAxisOn = true;
-					if(m_spPr->Fill.m_type == PPTX::Logic::UniFill::noFill)
-						lnFmtptr->lns = 5;
+					axs->ShapeProps.push_back(m_spPr->toXLS(0));
 				}
 				axs->m_AxisLine_Format.push_back(lnFmt);
 			}
@@ -3320,7 +3333,10 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 				lnFmt.axisLine = XLS::BaseObjectPtr(axisline);
 
 				if(m_majorGridlines->m_spPr.IsInit() && m_majorGridlines->m_spPr->ln.IsInit())
+				{
 					lnFmt.lineFormat = m_majorGridlines->m_spPr->ln->toXLS();
+					axs->ShapeProps.push_back(m_majorGridlines->m_spPr->toXLS(1));
+				}
 				else
 				{
 					m_majorGridlines->m_spPr.Init();
@@ -3337,7 +3353,10 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 				lnFmt.axisLine = XLS::BaseObjectPtr(axisline);
 
 				if(m_minorGridlines->m_spPr.IsInit() && m_minorGridlines->m_spPr->ln.IsInit())
+				{
 					lnFmt.lineFormat = m_minorGridlines->m_spPr->ln->toXLS();
+					axs->ShapeProps.push_back(m_minorGridlines->m_spPr->toXLS(2));
+				}
 				else
 				{
 					m_minorGridlines->m_spPr.Init();
@@ -3624,8 +3643,7 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 					lnFmt.lineFormat = m_spPr->ln->toXLS();
 					auto lnFmtptr = static_cast<XLS::LineFormat*>(lnFmt.lineFormat.get());
 					lnFmtptr->fAxisOn = true;
-					if(m_spPr->Fill.m_type == PPTX::Logic::UniFill::noFill)
-						lnFmtptr->lns = 5;
+					axs->ShapeProps.push_back(m_spPr->toXLS(0));
 				}
 				axs->m_AxisLine_Format.push_back(lnFmt);
 			}
@@ -3637,7 +3655,10 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 				lnFmt.axisLine = XLS::BaseObjectPtr(axisline);
 
 				if(m_majorGridlines->m_spPr.IsInit() && m_majorGridlines->m_spPr->ln.IsInit())
+				{
 					lnFmt.lineFormat = m_majorGridlines->m_spPr->ln->toXLS();
+					axs->ShapeProps.push_back(m_majorGridlines->m_spPr->toXLS(1));
+				}
 				else
 				{
 					m_majorGridlines->m_spPr.Init();
@@ -3654,7 +3675,10 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 				lnFmt.axisLine = XLS::BaseObjectPtr(axisline);
 
 				if(m_minorGridlines->m_spPr.IsInit() && m_minorGridlines->m_spPr->ln.IsInit())
+				{
 					lnFmt.lineFormat = m_minorGridlines->m_spPr->ln->toXLS();
+					axs->ShapeProps.push_back(m_minorGridlines->m_spPr->toXLS(2));
+				}
 				else
 				{
 					m_minorGridlines->m_spPr.Init();
@@ -3782,6 +3806,9 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 					if(m_idx.IsInit())
 						dataFormat->yi = m_idx.get();
 				}
+				// default "no marker"
+				SeriesStyle->m_MarkerFormat = XLS::BaseObjectPtr(new XLS::MarkerFormat);
+
 				if(m_dLbls!= nullptr)
 				{
 					auto label = new XLS::AttachedLabel;
@@ -4271,6 +4298,9 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 				if(m_spPr->Fill.is_init())
 					PtStyle->m_AreaFormat = m_spPr->Fill.toXLS();
 				PtStyle->m_arSHAPEPROPS.push_back(m_spPr->toXLS(0));
+
+				// default "no marker"
+				PtStyle->m_MarkerFormat = XLS::BaseObjectPtr(new XLS::MarkerFormat);
 			}
 			return XLS::BaseObjectPtr(PtStyle);
 		}
@@ -4364,17 +4394,19 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 						break;
 					case st_markerstylePLUS:
 						ptr->imk = 9;
+						break;
 					case st_markerstyleDASH:
 						ptr->imk = 7;
+						break;
 					case st_markerstyleDOT:
-						ptr->imk = 7;
+						ptr->imk = 6;
 						break;
 					default:
 						ptr->imk = 1;
 						break;
 				}
 			}
-			if(m_spPr.IsInit())
+			/*if(m_spPr.IsInit())
 			{
 				auto mkFill = m_spPr->Fill.toXLS();
 				auto CastedFill = static_cast<XLS::AreaFormat*>(mkFill.get());
@@ -4383,7 +4415,7 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 				ptr->rgbBack = CastedFill->rgbBack;
 				ptr->rgbFore = CastedFill->rgbFore;
 
-			}
+			}*/
 			if(m_size.IsInit())
 				ptr->miSize = m_size.get() * 20;
 			return XLS::BaseObjectPtr(ptr);
@@ -6432,6 +6464,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			}
 			auto ptr = new XLS::CRT;
 			auto chartFormat = new XLS::ChartFormat;
+			if(m_varyColors.IsInit())
+				chartFormat->fVaried = m_varyColors.get();
 			chartFormat->icrt = chartIndex;
 			ptr->m_ChartFormat = XLS::BaseObjectPtr(chartFormat);
 			auto chartType = new XLS::Scatter;
@@ -7300,12 +7334,23 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			}
 			auto ptr = new XLS::CRT;
 			auto chartFormat = new XLS::ChartFormat;
+			if(m_varyColors.IsInit())
+				chartFormat->fVaried = m_varyColors.get();
 			chartFormat->icrt = chartIndex;
 			ptr->m_ChartFormat = XLS::BaseObjectPtr(chartFormat);
 			auto chartType = new XLS::Bar;
 			ptr->m_ChartType = XLS::BaseObjectPtr(chartType);
 			if(m_barDir.IsInit() && m_barDir->m_eValue == 0)
 				chartType->fTranspose = true;
+			if(m_grouping.IsInit() && m_grouping->GetValue() == ST_BarGrouping::st_bargroupingSTACKED)
+				chartType->fStacked = true;
+			else if(m_grouping.IsInit() && m_grouping->GetValue() == ST_BarGrouping::st_bargroupingPERCENTSTACKED)
+			{
+				chartType->fStacked = true;
+				chartType->f100 = true;
+			}
+
+
 
 			if(m_gapWidth.IsInit())
 			{
@@ -7665,6 +7710,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			}
 			auto ptr = new XLS::CRT;
 			auto chartFormat = new XLS::ChartFormat;
+			if(m_varyColors.IsInit())
+				chartFormat->fVaried = m_varyColors.get();
 			chartFormat->icrt = chartIndex;
 			ptr->m_ChartFormat = XLS::BaseObjectPtr(chartFormat);
 			auto chartType = new XLS::Bar;
@@ -7682,8 +7729,13 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			}
 			if(m_barDir.IsInit() && m_barDir->m_eValue == 0)
 				chartType->fTranspose = true;
-			if(m_grouping.IsInit() && m_grouping->GetValue() == st_bargroupingSTACKED)
+			if(m_grouping.IsInit() && m_grouping->GetValue() == ST_BarGrouping::st_bargroupingSTACKED)
 				chartType->fStacked = true;
+			else if(m_grouping.IsInit() && m_grouping->GetValue() == ST_BarGrouping::st_bargroupingPERCENTSTACKED)
+			{
+				chartType->fStacked = true;
+				chartType->f100 = true;
+			}
 
 			if(m_gapWidth.IsInit())
 			{
@@ -7794,6 +7846,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			}
 			auto ptr = new XLS::CRT;
 			auto chartFormat = new XLS::ChartFormat;
+			if(m_varyColors.IsInit())
+				chartFormat->fVaried = m_varyColors.get();
 			chartFormat->icrt = chartIndex;
 			ptr->m_ChartFormat = XLS::BaseObjectPtr(chartFormat);
 			auto chartType = new XLS::Pie;
@@ -7900,6 +7954,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			}
 			auto ptr = new XLS::CRT;
 			auto chartFormat = new XLS::ChartFormat;
+			if(m_varyColors.IsInit())
+				chartFormat->fVaried = m_varyColors.get();
 			chartFormat->icrt = chartIndex;
 			ptr->m_ChartFormat = XLS::BaseObjectPtr(chartFormat);
 			auto chartType = new XLS::Pie;
@@ -8007,6 +8063,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			}
 			auto ptr = new XLS::CRT;
 			auto chartFormat = new XLS::ChartFormat;
+			if(m_varyColors.IsInit())
+				chartFormat->fVaried = m_varyColors.get();
 			chartFormat->icrt = chartIndex;
 			ptr->m_ChartFormat = XLS::BaseObjectPtr(chartFormat);
 			auto chartType = new XLS::Pie;
@@ -8183,6 +8241,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			{
 				auto formatStyle = static_cast<XLS::SS*>(castedFormat->m_arPtSS.back().get());
 				formatStyle->m_MarkerFormat = m_marker->toXLS();
+				if(m_marker->m_spPr.IsInit())
+					formatStyle->m_arSHAPEPROPS.push_back(m_marker->m_spPr->toXLS(1));
 			}
 			for(auto i : m_dPt)
 			{
@@ -8194,6 +8254,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 				{
 					auto formatStyle = static_cast<XLS::SS*>(castedFormat->m_arPtSS.back().get());
 					formatStyle->m_MarkerFormat = i->m_marker->toXLS();
+					if(i->m_marker->m_spPr.IsInit())
+						formatStyle->m_arSHAPEPROPS.push_back(i->m_marker->m_spPr->toXLS(1));
 				}
 			}
 			if(m_xVal != nullptr &&( m_xVal->m_numRef != nullptr ||m_xVal->m_strRef != nullptr))
@@ -8352,6 +8414,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			}
 			auto ptr = new XLS::CRT;
 			auto chartFormat = new XLS::ChartFormat;
+			if(m_varyColors.IsInit())
+				chartFormat->fVaried = m_varyColors.get();
 			chartFormat->icrt = chartIndex;
 			ptr->m_ChartFormat = XLS::BaseObjectPtr(chartFormat);
 			auto chartType = new XLS::Scatter;
@@ -8597,6 +8661,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			}
 			auto ptr = new XLS::CRT;
 			auto chartFormat = new XLS::ChartFormat;
+			if(m_varyColors.IsInit())
+				chartFormat->fVaried = m_varyColors.get();
 			chartFormat->icrt = chartIndex;
 			ptr->m_ChartFormat = XLS::BaseObjectPtr(chartFormat);
 			XLS::BaseObjectPtr chartType;
@@ -8881,12 +8947,33 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 		{
 			auto baseFormat = CBaseSer::GetXLSFormat(chartIndex);
 			auto castedFormat = static_cast<XLS::SERIESFORMAT*>(baseFormat.get());
+			if(!castedFormat->m_arPtSS.empty())
+			{
+				auto castedStyle = static_cast<XLS::SS*>(castedFormat->m_arPtSS.back().get());
+
+				auto serFormat = new XLS::SerFmt;
+				serFormat->fSmoothedLine = m_smooth.IsInit() && m_smooth.get();
+				castedStyle->m_SerFmt = XLS::BaseObjectPtr(serFormat);
+				if(m_marker != nullptr)
+				{
+					castedStyle->m_MarkerFormat = m_marker->toXLS();
+					if(m_marker->m_spPr.IsInit())
+						castedStyle->m_arSHAPEPROPS.push_back(m_marker->m_spPr->toXLS(1));
+				}
+			}
 			for(auto i : m_dPt)
 			{
 				_UINT16 order = 0;
 				if(m_order.IsInit())
 						order = m_order.get();
 				castedFormat->m_arPtSS.push_back(i->toXLS(order));
+				if(i->m_marker != nullptr)
+				{
+					auto formatStyle = static_cast<XLS::SS*>(castedFormat->m_arPtSS.back().get());
+					formatStyle->m_MarkerFormat = i->m_marker->toXLS();
+					if(i->m_marker->m_spPr.IsInit())
+						formatStyle->m_arSHAPEPROPS.push_back(i->m_marker->m_spPr->toXLS(1));
+				}
 			}
 			return XLS::BaseObjectPtr(baseFormat);
 		}
@@ -9113,6 +9200,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			}
 			auto ptr = new XLS::CRT;
 			auto chartFormat = new XLS::ChartFormat;
+			if(m_varyColors.IsInit())
+				chartFormat->fVaried = m_varyColors.get();
 			chartFormat->icrt = chartIndex;
 			ptr->m_ChartFormat = XLS::BaseObjectPtr(chartFormat);
 			auto chartType = new XLS::Line;
@@ -9291,6 +9380,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			}
 			auto ptr = new XLS::CRT;
 			auto chartFormat = new XLS::ChartFormat;
+			if(m_varyColors.IsInit())
+				chartFormat->fVaried = m_varyColors.get();
 			chartFormat->icrt = chartIndex;
 			ptr->m_ChartFormat = XLS::BaseObjectPtr(chartFormat);
 			auto chartType = new XLS::Line;
@@ -9417,6 +9508,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			}
 			auto ptr = new XLS::CRT;
 			auto chartFormat = new XLS::ChartFormat;
+			if(m_varyColors.IsInit())
+				chartFormat->fVaried = m_varyColors.get();
 			chartFormat->icrt = chartIndex;
 			ptr->m_ChartFormat = XLS::BaseObjectPtr(chartFormat);
 			auto chartType = new XLS::Area;
@@ -9714,6 +9807,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			}
 			auto ptr = new XLS::CRT;
 			auto chartFormat = new XLS::ChartFormat;
+			if(m_varyColors.IsInit())
+				chartFormat->fVaried = m_varyColors.get();
 			chartFormat->icrt = chartIndex;
 			ptr->m_ChartFormat = XLS::BaseObjectPtr(chartFormat);
 			auto chartType = new XLS::Area;

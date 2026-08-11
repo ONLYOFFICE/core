@@ -43,7 +43,7 @@ COfficeUtils::COfficeUtils(OnProgressCallback* fCallback)
 	m_fCallback = fCallback;
 }
 
-HRESULT COfficeUtils::ExtractToDirectory(const std::wstring& _zipFile, const std::wstring& _unzipDir,  wchar_t* password, SHORT extract_without_path)
+HRESULT COfficeUtils::ExtractToDirectory(const std::wstring& _zipFile, const std::wstring& _unzipDir,  wchar_t* password, SHORT extract_without_path, bool checkEscapePath)
 {
 #if defined(_WIN32) || defined(_WIN32_WCE) || defined(_WIN64)
 	std::wstring zipFile = CorrectPathW(_zipFile);
@@ -53,7 +53,7 @@ HRESULT COfficeUtils::ExtractToDirectory(const std::wstring& _zipFile, const std
 	std::wstring unzipDir = _unzipDir;
 #endif
 
-	if( ZLibZipUtils::UnzipToDir( zipFile.c_str(), unzipDir.c_str(), m_fCallback, password, ( extract_without_path > 0 ) ? (true) : (false) ) == 0 )
+	if( ZLibZipUtils::UnzipToDir( zipFile.c_str(), unzipDir.c_str(), m_fCallback, password, ( extract_without_path > 0 ) ? (true) : (false), false, checkEscapePath ) == 0 )
 	{
 		return S_OK;
 	}
@@ -63,7 +63,7 @@ HRESULT COfficeUtils::ExtractToDirectory(const std::wstring& _zipFile, const std
 	}
 }
 
-HRESULT COfficeUtils::ExtractToDirectory(BYTE* data, size_t len, const std::wstring& _unzipDir, wchar_t* password, short extract_without_path)
+HRESULT COfficeUtils::ExtractToDirectory(BYTE* data, size_t len, const std::wstring& _unzipDir, wchar_t* password, short extract_without_path, bool checkEscapePath)
 {
 #if defined(_WIN32) || defined(_WIN32_WCE) || defined(_WIN64)
 	std::wstring unzipDir = CorrectPathW(_unzipDir);
@@ -71,7 +71,7 @@ HRESULT COfficeUtils::ExtractToDirectory(BYTE* data, size_t len, const std::wstr
 	std::wstring unzipDir = _unzipDir;
 #endif
 
-	if( ZLibZipUtils::UnzipToDir( data, len, unzipDir.c_str(), m_fCallback, password, ( extract_without_path > 0 ) ? (true) : (false) ) == 0 )
+	if( ZLibZipUtils::UnzipToDir( data, len, unzipDir.c_str(), m_fCallback, password, ( extract_without_path > 0 ) ? (true) : (false), false, checkEscapePath ) == 0 )
 	{
 		return S_OK;
 	}

@@ -655,6 +655,7 @@ RedactOutputDev::RedactOutputDev(CPdfWriter* pRenderer, CObjectsManager* pObjMng
 
 	m_nTextCounter = 0;
 	m_nGraphicsCounter = 0;
+	m_pGraphicsResultsMap = NULL;
 
 	m_bUpdateAll = false;
 }
@@ -680,6 +681,7 @@ void RedactOutputDev::SetRedact(const std::vector<double>& arrQuadPoints)
 void RedactOutputDev::SetOverlapInfo(const std::set<int>& arrHiddenTextIndices,
 									 const std::vector<int>* pFormTextCounts,
 									 const std::vector<int>* pFormGraphicsCounts,
+									 std::vector<SOverlapGraphicsResult>&& arrGraphicsResults,
 									 int nStartTextCounter,
 									 int nStartFormCounter,
 									 int nStartGraphicsCounter)
@@ -690,6 +692,13 @@ void RedactOutputDev::SetOverlapInfo(const std::set<int>& arrHiddenTextIndices,
 	m_nTextCounter         = nStartTextCounter;
 	m_nFormCounter         = nStartFormCounter;
 	m_nGraphicsCounter     = nStartGraphicsCounter;
+
+	m_arrGraphicsResultsStorage = std::move(arrGraphicsResults);
+	m_mapGraphicsResultsStorage.clear();
+	for (size_t i = 0; i < m_arrGraphicsResultsStorage.size(); ++i)
+		m_mapGraphicsResultsStorage[m_arrGraphicsResultsStorage[i].m_nGraphicsIndex] = &m_arrGraphicsResultsStorage[i];
+
+	m_pGraphicsResultsMap = &m_mapGraphicsResultsStorage;
 }
 void RedactOutputDev::NewPDF(XRef* pXref)
 {
@@ -977,14 +986,28 @@ void RedactOutputDev::stroke(GfxState *pGState)
 }
 void RedactOutputDev::fill(GfxState *pGState)
 {
-	++m_nGraphicsCounter;
-	DoPathRedact(pGState, pGState->getPath(), pGState->getCTM());
+	const SOverlapGraphicsResult* pOverlapResult = FindGraphicsResult(++m_nGraphicsCounter);
+	if (pOverlapResult && pOverlapResult->m_eDecision == EOverlapGraphicsDecision::Hidden)
+		return;
+
+	if (pOverlapResult && pOverlapResult->m_eDecision == EOverlapGraphicsDecision::Clipped && pOverlapResult->m_pReplacementPath)
+		DrawDeviceSpacePathRedacted(pGState, *pOverlapResult->m_pReplacementPath, pGState->getCTM());
+	else
+		DoPathRedact(pGState, pGState->getPath(), pGState->getCTM());
+
 	DrawPath(c_nWindingFillMode);
 }
 void RedactOutputDev::eoFill(GfxState *pGState)
 {
-	++m_nGraphicsCounter;
-	DoPathRedact(pGState, pGState->getPath(), pGState->getCTM(), false, true);
+	const SOverlapGraphicsResult* pOverlapResult = FindGraphicsResult(++m_nGraphicsCounter);
+	if (pOverlapResult && pOverlapResult->m_eDecision == EOverlapGraphicsDecision::Hidden)
+		return;
+
+	if (pOverlapResult && pOverlapResult->m_eDecision == EOverlapGraphicsDecision::Clipped && pOverlapResult->m_pReplacementPath)
+		DrawDeviceSpacePathRedacted(pGState, *pOverlapResult->m_pReplacementPath, pGState->getCTM());
+	else
+		DoPathRedact(pGState, pGState->getPath(), pGState->getCTM(), false, true);
+
 	DrawPath(c_nEvenOddFillMode);
 }
 void RedactOutputDev::tilingPatternFill(GfxState *pGState, Gfx *gfx, Object *pStream, int nPaintType, int nTilingType, Dict *pResourcesDict,
@@ -1362,7 +1385,9 @@ void RedactOutputDev::drawImageMask(GfxState *pGState, Gfx *gfx, Object *pRef, S
 }
 void RedactOutputDev::drawImage(GfxState *pGState, Gfx *gfx, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap, int *pMaskColors, GBool bInlineImg, GBool interpolate)
 {
-	++m_nGraphicsCounter;
+	const SOverlapGraphicsResult* pOverlapResult = FindGraphicsResult(++m_nGraphicsCounter);
+	if (pOverlapResult && pOverlapResult->m_eDecision == EOverlapGraphicsDecision::Hidden)
+		return;
 
 	m_pRenderer->m_oCommandManager.Flush();
 	DoStateOp();
@@ -1672,8 +1697,8 @@ void RedactOutputDev::drawForm(GfxState *pGState, Gfx *gfx, Ref id, const char* 
 	pFormOutputDev->NewPDF(m_pXref);
 	pFormOutputDev->m_pPage = pFakePage;
 	pFormOutputDev->m_pResources = pNewResources;
-	pFormOutputDev->SetOverlapInfo(m_arrHiddenTextIndices, m_pFormTextCounts, m_pFormGraphicsCounts,
-								   m_nTextCounter, m_nFormCounter, m_nGraphicsCounter);
+	PropagateOverlapInfoToForm(pFormOutputDev);
+
 	std::vector<double> arrFormQuadPoints;
 	double dInvMatrix[6] = { 1, 0, 0, 1, 0, 0 };
 	InvertMatrix(m_arrMatrix, dInvMatrix);
@@ -2007,13 +2032,8 @@ void RedactOutputDev::DoPathRedact(GfxState* pGState, GfxPath* pPath, double* pC
 void RedactOutputDev::DoPath(GfxState* pGState, GfxPath* pPath, double* pCTM)
 {
 	double arrMatrix[6];
-	arrMatrix[0] = pCTM[0];
-	arrMatrix[1] = pCTM[1];
-	arrMatrix[2] = pCTM[2];
-	arrMatrix[3] = pCTM[3];
-	arrMatrix[4] = pCTM[4];
-	arrMatrix[5] = pCTM[5];
-
+	for (int i = 0; i < 6; ++i)
+		arrMatrix[i] = pCTM[i];
 	double dShiftX = 0, dShiftY = 0;
 	DoTransform(arrMatrix, &dShiftX, &dShiftY, true);
 
@@ -2052,6 +2072,19 @@ void RedactOutputDev::DoPath(GfxState* pGState, GfxPath* pPath, double* pCTM)
 		if (pSubpath->isClosed())
 			m_pRenderer->m_oPath.Close();
 	}
+}
+void RedactOutputDev::DrawDeviceSpacePathRedacted(GfxState* pGState, Aggplus::CGraphicsPath& oPath, double* pCTM)
+{
+	double arrMatrix[6];
+	for (int i = 0; i < 6; ++i)
+		arrMatrix[i] = pCTM[i];
+	double dShiftX = 0, dShiftY = 0;
+	DoTransform(arrMatrix, &dShiftX, &dShiftY, true);
+
+	Aggplus::CGraphicsPath oPathResult = Aggplus::CalcBooleanOperation(oPath, m_oPathRedact, Aggplus::BooleanOpType::Subtraction);
+
+	double dXEnd = -1, dYEnd = -1;
+	DrawPathRedact(&oPathResult, false, dXEnd, dYEnd);
 }
 void RedactOutputDev::DoTransform(double* pMatrix, double* pdShiftX, double* pdShiftY, bool bActual)
 {
@@ -2216,5 +2249,23 @@ CResourcesDict* RedactOutputDev::GetResources(Gfx *gfx, CDictObject* pNewForm)
 		}
 	}
 	return pResources;
+}
+const SOverlapGraphicsResult* RedactOutputDev::FindGraphicsResult(int nGraphicsIndex) const
+{
+	if (!m_pGraphicsResultsMap)
+		return NULL;
+	std::map<int, SOverlapGraphicsResult*>::const_iterator it = m_pGraphicsResultsMap->find(nGraphicsIndex);
+	return (it != m_pGraphicsResultsMap->end()) ? it->second : NULL;
+}
+
+void RedactOutputDev::PropagateOverlapInfoToForm(RedactOutputDev* pChild) const
+{
+	pChild->m_arrHiddenTextIndices = m_arrHiddenTextIndices;
+	pChild->m_pFormTextCounts      = m_pFormTextCounts;
+	pChild->m_pFormGraphicsCounts  = m_pFormGraphicsCounts;
+	pChild->m_pGraphicsResultsMap  = m_pGraphicsResultsMap;
+	pChild->m_nTextCounter         = m_nTextCounter;
+	pChild->m_nFormCounter         = m_nFormCounter;
+	pChild->m_nGraphicsCounter     = m_nGraphicsCounter;
 }
 }

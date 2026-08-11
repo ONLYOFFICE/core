@@ -47,6 +47,7 @@
 class CPdfFile_Private
 {
 public:
+	bool bDrawOnlyText = false;
 	std::wstring wsSrcFile;
 	wchar_t* wsPassword;
 	std::wstring wsTempFolder;
@@ -259,6 +260,10 @@ void CPdfFile::SetCMapFile(const std::wstring& sFile)
 {
 	if (m_pInternal->pReader)
 		m_pInternal->pReader->SetCMapFile(sFile);
+}
+void CPdfFile::SetDrawOnlyText(bool bDraw)
+{
+	m_pInternal->bDrawOnlyText = bDraw;
 }
 void CPdfFile::ToXml(const std::wstring& sFile, bool bSaveStreams)
 {
@@ -494,7 +499,7 @@ void CPdfFile::DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pB
 		return;
 	pRenderer->CommandLong(c_nPenWidth0As1px, 1);
 	m_pInternal->pReader->SetParams(pParams);
-	m_pInternal->pReader->DrawPageOnRenderer(pRenderer, nPageIndex, pBreak);
+	m_pInternal->pReader->DrawPageOnRenderer(pRenderer, nPageIndex, pBreak, m_pInternal->bDrawOnlyText);
 }
 void CPdfFile::SetPainter(IOfficeDrawingFilePainter* pPainter)
 {
@@ -548,11 +553,11 @@ BYTE* CPdfFile::GetAnnotStandardFonts()
 		return NULL;
 	return m_pInternal->pReader->GetFonts(true);
 }
-BYTE* CPdfFile::GetAllFonts(int* arrPageIndex, int nLength)
+BYTE* CPdfFile::GetAllFonts(int* arrPageIndex, int nLength, bool bCheck)
 {
 	if (!m_pInternal->pReader)
 		return NULL;
-	return m_pInternal->pReader->GetAllFonts(arrPageIndex, nLength);
+	return m_pInternal->pReader->GetAllFonts(arrPageIndex, nLength, bCheck);
 }
 BYTE* CPdfFile::GetGIDByUnicode(const std::wstring& wsFontName)
 {
@@ -1429,6 +1434,7 @@ HRESULT CPdfFile::IsSupportAdvancedCommand(const IAdvancedCommand::AdvancedComma
 	case IAdvancedCommand::AdvancedCommandType::PageRotate:
 	case IAdvancedCommand::AdvancedCommandType::Headings:
 	case IAdvancedCommand::AdvancedCommandType::Redact:
+	case IAdvancedCommand::AdvancedCommandType::RedactMeta:
 		return S_OK;
 	default:
 		break;
@@ -1547,6 +1553,16 @@ HRESULT CPdfFile::AdvancedCommand(IAdvancedCommand* command)
 	{
 		if (m_pInternal->pEditor)
 			m_pInternal->pEditor->Redact((CRedact*)command);
+		return S_OK;
+	}
+	case IAdvancedCommand::AdvancedCommandType::RedactMeta:
+	{
+		if (m_pInternal->pEditor && m_pInternal->pEditor->IsEditPage())
+		{
+			CRedactMeta* pCommand = (CRedactMeta*)command;
+			std::vector<double> arrRedact = m_pInternal->pEditor->WriteRedact(pCommand->GetRedactID());
+			m_pInternal->pWriter->AddRedact(arrRedact);
+		}
 		return S_OK;
 	}
 	default:

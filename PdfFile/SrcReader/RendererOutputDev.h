@@ -212,6 +212,10 @@ namespace PdfReader
 		{
 			m_pbBreak = pbBreak;
 		}
+		void SetDrawOnlyText(bool bDraw)
+		{
+			m_bDrawOnlyText = bDraw;
+		}
 
 	private:
 		struct GfxOutputState

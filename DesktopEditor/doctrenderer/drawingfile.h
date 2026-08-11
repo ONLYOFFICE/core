@@ -37,6 +37,7 @@
 
 #include "./common.h"
 #include <stddef.h>
+#include <set>
 
 #include "../../PdfFile/PdfFile.h"
 #include "../../XpsFile/XpsFile.h"
@@ -511,7 +512,48 @@ public:
 	}
 	BYTE* SetScanPageFonts(int* arrPageIndex, int nLength)
 	{
-		return m_nType == 0 ? ((CPdfFile*)m_pFile)->GetAllFonts(arrPageIndex, nLength) : NULL;
+		if (m_nType != 0)
+			return NULL;
+		CPdfFile* pFile = ((CPdfFile*)m_pFile);
+
+		if (!arrPageIndex || nLength == 0)
+		{
+			nLength = GetPagesCount();
+			arrPageIndex = NULL;
+		}
+		pFile->SetDrawOnlyText(true);
+
+		std::set<std::wstring> arrFonts;
+
+		CDocxRenderer oRenderer(m_pApplicationFonts);
+		oRenderer.SetExternalImageStorage(m_pImageStorage);
+		oRenderer.SetTextAssociationType(NSDocxRenderer::TextAssociationType::tatParagraphToShape);
+
+		for (int i = 0; i < nLength; ++i)
+		{
+			int nPageIndex = arrPageIndex ? arrPageIndex[i] : i;
+
+			std::vector<std::wstring> arrFont = oRenderer.GetFontsFromPage(m_pFile, nPageIndex);
+			arrFonts.insert(arrFont.begin(), arrFont.end());
+
+			pFile->SetPageFonts(nPageIndex);
+		}
+
+		pFile->SetDrawOnlyText(false);
+
+		NSWasm::CData oRes;
+		oRes.SkipLen();
+		oRes.AddInt(arrFonts.size());
+
+		for (const auto& font : arrFonts)
+			oRes.WriteString(font);
+
+		oRes.WriteLen();
+		BYTE* res = oRes.GetBuffer();
+		oRes.ClearWithoutAttack();
+
+		return res;
+		// return pFile->GetAllFonts(arrPageIndex, nLength, true);
 	}
 	BYTE* ScanPage(int nPageIndex, int mode)
 	{

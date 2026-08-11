@@ -40,6 +40,7 @@
 
 #include "Logic/ClrMap.h"
 #include "Logic/CSld.h"
+#include "Presentation/PresentationChildElements.h"
 
 namespace PPTX
 {
@@ -73,6 +74,8 @@ namespace PPTX
 		Logic::ClrMap clrMap;
 		nullable<Logic::HF> hf;
 		
+		nullable<nsPresentation::ExtendedGuideList> sldGuideLst;
+
 		smart_ptr<Theme> theme_;
 	};
 } // namespace PPTX

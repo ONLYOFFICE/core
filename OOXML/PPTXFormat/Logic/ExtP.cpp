@@ -136,6 +136,14 @@ namespace PPTX
 					{
 						creationId = oNode.GetAttribute(L"id");
 					}
+					else if (L"sldGuideLst" == strName)
+					{
+						sldGuideLst = oNode;
+					}
+					else if (L"notesGuideLst" == strName)
+					{
+						notesGuideLst = oNode;
+					}
 				}
 			}
 		}
@@ -227,6 +235,26 @@ namespace PPTX
 				pWriter->EndAttributes();
 				pWriter->EndNode(L"a16:creationId");
 
+				pWriter->EndNode(namespace_ext + L":ext");
+			}
+			if (sldGuideLst.IsInit())
+			{
+				pWriter->StartNode(namespace_ext + L":ext");
+				pWriter->StartAttributes();
+				pWriter->WriteAttribute(L"uri", uri);
+				pWriter->EndAttributes();
+
+				sldGuideLst->toXmlWriter(pWriter, L"p15:sldGuideLst");
+				pWriter->EndNode(namespace_ext + L":ext");
+			}
+			if (notesGuideLst.IsInit())
+			{
+				pWriter->StartNode(namespace_ext + L":ext");
+				pWriter->StartAttributes();
+				pWriter->WriteAttribute(L"uri", uri);
+				pWriter->EndAttributes();
+
+				notesGuideLst->toXmlWriter(pWriter, L"p15:notesGuideLst");
 				pWriter->EndNode(namespace_ext + L":ext");
 			}
 		}

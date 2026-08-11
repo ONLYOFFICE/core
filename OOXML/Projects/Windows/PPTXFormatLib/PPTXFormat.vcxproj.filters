@@ -2937,6 +2937,9 @@
     <ClCompile Include="..\..\..\Binary\Presentation\BinaryFileReaderWriter.cpp">
       <Filter>Binary</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\Common\MediaFileFormatChecker.cpp">
+      <Filter>Binary</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\Binary\Presentation\CalculatorCRC32.cpp">
       <Filter>Binary</Filter>
     </ClCompile>

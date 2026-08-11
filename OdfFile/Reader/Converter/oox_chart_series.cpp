@@ -161,17 +161,20 @@ void oox_chart_series::parse_properties()
 		if (!data_labels_)	data_labels_ = oox_data_labels();
 		data_labels_->set_formatCode(formatCode, bLinkData.get_value_or(false));
 	}
-	auto val = intVal;
-	odf_reader::GetProperty(content_.properties_, L"label-position", intVal);
-	if( val.has_value() && !intVal.has_value() )
+	_CP_OPT(int) labelPosition;
+	odf_reader::GetProperty(content_.properties_, L"label-position", labelPosition);
+
+	if (labelPosition && labelPosEnabled_)
 	{
-		intVal = val;
-	}
-	if (intVal && labelPosEnabled_)
-	{
-		if (!data_labels_)	data_labels_ = oox_data_labels();
-		
-		data_labels_->set_position(*intVal); 
+		bool bSkip = (odf_types::chart_label_position::avoid_overlap == *labelPosition) &&
+					 (odf_types::chart_class::type::circle != content_.class_) &&
+					 (odf_types::chart_class::type::ring != content_.class_);
+		if (false == bSkip)
+		{
+			if (!data_labels_)	data_labels_ = oox_data_labels();
+
+			data_labels_->set_position(*labelPosition);
+		}
 	}
 	if (data_labels_ && content_.class_ == odf_types::chart_class::type::line )
 	{
@@ -516,10 +519,8 @@ void oox_chart_series::oox_serialize_common(std::wostream & _Wostream)
 				shape.oox_serialize(CP_XML_STREAM());
 			}
 		}
-		if (!content_.text_properties_)
+		if (data_labels_ && content_.text_properties_)
 		{
-			if (!data_labels_) data_labels_ = oox_data_labels();
-
 			data_labels_->set_common_dLbl(content_.text_properties_);
 		}
 
@@ -550,10 +551,8 @@ void oox_chart_series::oox_serialize_common(std::wostream & _Wostream)
 						shape.set(empty, content_.points_[i].fill_);
 						shape.oox_serialize(CP_XML_STREAM());
 					}
-					if (!content_.points_[i].text_properties_)
+					if (data_labels_ && content_.points_[i].text_properties_)
 					{
-						if (!data_labels_) data_labels_ = oox_data_labels();
-
 						data_labels_->add_dLbl(indPoint - 1, content_.points_[i].text_properties_);
 					}
 					_CP_OPT(int) intVal;
@@ -604,7 +603,7 @@ void oox_chart_series::oox_serialize_common(std::wostream & _Wostream)
 			}
 		}
 		
-		if (data_labels_ && data_labels_->dLbls_.empty() == false)
+		if (data_labels_)
 		{
 			data_labels_->oox_serialize(_Wostream);
 		}

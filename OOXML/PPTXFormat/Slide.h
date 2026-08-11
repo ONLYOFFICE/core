@@ -86,9 +86,9 @@ namespace PPTX
 		virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 		virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
-		nullable_bool		show;
-		nullable_bool		showMasterPhAnim;
-		nullable_bool		showMasterSp;
+		nullable_bool show;
+		nullable_bool showMasterPhAnim;
+		nullable_bool showMasterSp;
 
 		nullable<Logic::ClrMapOvr>	clrMapOvr;
 		nullable<Logic::CSld>		cSld;
@@ -102,7 +102,7 @@ namespace PPTX
 		smart_ptr<OOX::CVmlDrawing>	Vml;
 		smart_ptr<TableStyles>		tableStyles_;
 
-		smart_ptr<PPTX::Comments>	comments;
+		smart_ptr<PPTX::Comments> comments;
 		nullable_string ridModernComment;
 
 //--------------------------------------------------------------------------------------

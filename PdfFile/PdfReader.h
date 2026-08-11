@@ -103,7 +103,7 @@ public:
 	bool CheckOwnerPassword(const wchar_t* sPassword);
 	bool CheckPerm(int nPerm);
 	void GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY);
-	void DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak);
+	void DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak, bool bDrawOnlyText = false);
 	void SetPainter(IOfficeDrawingFilePainter* pPainter);
 	std::wstring GetInfo();
 	BYTE* GetGIDByUnicode(const std::wstring& wsFontName);
@@ -126,7 +126,7 @@ public:
 	BYTE* GetLinks(int nPageIndex);
 	BYTE* GetWidgets();
 	BYTE* GetFonts(bool bStandart);
-	BYTE* GetAllFonts(int* arrPageIndex, int nLength);
+	BYTE* GetAllFonts(int* arrPageIndex, int nLength, bool bCheck = true);
 	BYTE* GetAnnots(int nPageIndex = -1);
 	BYTE* VerifySign(const std::wstring& sFile, ICertificate* pCertificate, int nWidget = -1);
 	BYTE* GetAPWidget  (int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nWidget  = -1, const char* sView  = NULL, const char* sBView = NULL);

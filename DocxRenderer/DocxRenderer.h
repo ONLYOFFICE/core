@@ -184,6 +184,8 @@ public:
 	std::vector<std::wstring> ScanPagePptx(IOfficeDrawingFile* pFile, size_t nPage);
 	NSWasm::CData ScanPageBin(IOfficeDrawingFile* pFile, size_t nPage);
 
+	std::vector<std::wstring> GetFontsFromPage(IOfficeDrawingFile* pFile, size_t nPage);
+
 	void SetExternalImageStorage(NSDocxRenderer::IImageStorage* pStorage);
 private:
 	CDocxRenderer_Private* m_pInternal;

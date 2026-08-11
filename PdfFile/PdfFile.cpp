@@ -600,7 +600,7 @@ BYTE* CPdfFile::EditPdfToMemory(BYTE* pChanges, DWORD nLength, const wchar_t* sP
 	m_pInternal->pWriter = new CPdfWriter(m_pInternal->pAppFonts, false, false, this, false);
 
 	RELEASEOBJECT(m_pInternal->pEditor);
-	m_pInternal->pEditor = new CPdfEditor(m_pInternal->wsSrcFile, sPassword, L"", m_pInternal->pReader, m_pInternal->pWriter, CPdfEditor::Mode::WriteNew);
+	m_pInternal->pEditor = new CPdfEditor(m_pInternal->wsSrcFile, m_pInternal->wsPassword, L"", m_pInternal->pReader, m_pInternal->pWriter, CPdfEditor::Mode::WriteNew);
 
 	BYTE* pRes = NULL;
 	int nLen = 0;
@@ -611,6 +611,8 @@ BYTE* CPdfFile::EditPdfToMemory(BYTE* pChanges, DWORD nLength, const wchar_t* sP
 			CConvertFromBinParams* pParams = new CConvertFromBinParams();
 			AddToPdfFromBinary(pChanges + 4, nLength - 4, pParams);
 		}
+		if (sPassword)
+			m_pInternal->pWriter->SetPassword(sPassword);
 		m_pInternal->pEditor->Close();
 
 		if (m_pInternal->pWriter->SaveToMemory(&pRes, &nLen, true) != 0)

@@ -396,10 +396,9 @@ public:
 			return NULL;
 
 		// EDIT
-		if (m_pFile->GetPagesCount())
-		{
+		if (m_pFile && m_pFile->GetPagesCount())
 			return ((CPdfFile*)m_pFile)->EditPdfToMemory(pCommands, nCommandsLen, sPassword);
-		}
+
 		// NEW
 		CPdfFile* pdfFile = new CPdfFile(m_pApplicationFonts);
 		pdfFile->CreatePdf();

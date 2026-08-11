@@ -92,7 +92,30 @@ static double convert_symbol_size(double val, double metrix, bool add_padding)
 
 // Class for constructing charts
 using namespace chart;
-	
+
+static void read_rect(chart::rect & dst, const odf_types::common_draw_position_attlist & pos,
+					  const odf_types::common_draw_size_attlist & size)
+{
+	if (pos.svg_x_)			dst.x		= pos.svg_x_->get_value_unit(length::pt);
+	if (pos.svg_y_)			dst.y		= pos.svg_y_->get_value_unit(length::pt);
+	if (size.svg_width_)	dst.width	= size.svg_width_->get_value_unit(length::pt);
+	if (size.svg_height_)	dst.height	= size.svg_height_->get_value_unit(length::pt);
+}
+
+static chart::rect calc_relative_rect(const chart::rect & val, double width_pt, double height_pt)
+{
+	chart::rect result;
+
+	if (width_pt <= 0 || height_pt <= 0) return result;
+
+	if (val.x)		result.x		= *val.x / width_pt;
+	if (val.y)		result.y		= *val.y / height_pt;
+	if (val.width)	result.width	= *val.width / width_pt;
+	if (val.height)	result.height	= *val.height / height_pt;
+
+	return result;
+}
+
 void object_odf_context::set_pivot_source(std::wstring const & val)
 {
 	bPivotChart_ = true;
@@ -442,18 +465,19 @@ void object_odf_context::oox_convert(oox::oox_chart_context & chart_context)
 	chart_context.set_wall		(wall_);
 	chart_context.set_floor		(floor_);
 
-	_CP_OPT(double) rel_x, rel_y, rel_width, rel_height;
+	chart::rect legend_rect		= calc_relative_rect(legend_,	 width_pt_, height_pt_);
+	chart::rect plot_area_rect	= calc_relative_rect(plot_area_, width_pt_, height_pt_);
 
-	if( width_pt_ > 0 && height_pt_ > 0 )
+	if (!plot_area_rect.width || !plot_area_rect.height)
 	{
-		if( legend_.x ) rel_x = *legend_.x / width_pt_;
-		if( legend_.y ) rel_y = *legend_.y / height_pt_;
-		if( legend_.width ) rel_width = *legend_.width / width_pt_;
-		if( legend_.height ) rel_height = *legend_.height / height_pt_;
+		legend_rect		= chart::rect();
+		plot_area_rect	= chart::rect();
 	}
 
-	chart_context.set_legend	( legend_, rel_x, rel_y, rel_width, rel_height );
+	chart_context.set_legend	( legend_, legend_rect.x, legend_rect.y, legend_rect.width, legend_rect.height );
 	chart_context.set_data_table(data_table_);
+
+	chart_context.set_plot_area_layout(plot_area_rect.x, plot_area_rect.y, plot_area_rect.width, plot_area_rect.height);
 
 	chart_context.set_plot_area_properties (plot_area_.properties_, plot_area_.fill_);
 	chart_context.set_chart_graphic_properties (graphic_properties_, chart_fill_);
@@ -1002,18 +1026,8 @@ void process_build_object::visit(chart_legend& val)
 		//if ( pos == L"center")		object_odf_context_.legend_.align = L"l"; 
 		//if ( pos == L"end")			object_odf_context_.legend_.align = L"t"; 
 	}
-	if (val.attlist_.common_draw_position_attlist_.svg_x_)
-		    object_odf_context_.legend_.x = val.attlist_.common_draw_position_attlist_.svg_x_->get_value_unit(odf_types::length::pt);
+	read_rect(object_odf_context_.legend_, val.attlist_.common_draw_position_attlist_, val.attlist_.common_draw_size_attlist_);
 
-	if (val.attlist_.common_draw_position_attlist_.svg_y_)
-		object_odf_context_.legend_.y = val.attlist_.common_draw_position_attlist_.svg_y_->get_value_unit(odf_types::length::pt);
-
-	if (val.attlist_.common_draw_size_attlist_.svg_width_)
-		object_odf_context_.legend_.width = val.attlist_.common_draw_size_attlist_.svg_width_->get_value_unit(odf_types::length::pt);
-
-	if (val.attlist_.common_draw_size_attlist_.svg_height_)
-		object_odf_context_.legend_.height = val.attlist_.common_draw_size_attlist_.svg_height_->get_value_unit(odf_types::length::pt);
-	
 	ApplyChartProperties	(val.attlist_.common_attlist_.chart_style_name_.get_value_or(L""),	object_odf_context_.legend_.properties_);
 	ApplyGraphicProperties	(val.attlist_.common_attlist_.chart_style_name_.get_value_or(L""),	object_odf_context_.legend_.graphic_properties_, object_odf_context_.legend_.fill_);
 	ApplyTextProperties		(val.attlist_.common_attlist_.chart_style_name_.get_value_or(L""),	object_odf_context_.legend_.text_properties_);
@@ -1024,6 +1038,8 @@ void process_build_object::visit(chart_plot_area& val)
 	ACCEPT_ALL_CONTENT(val.content_);
 
 	object_odf_context_.plot_area_.cell_range_address_ = val.attlist_.table_cell_range_address_.get_value_or(L"");
+
+	read_rect(object_odf_context_.plot_area_, val.attlist_.common_draw_position_attlist_, val.attlist_.common_draw_size_attlist_);
 
 	odf_types::common_dr3d_attlist attr_3d = val.attlist_.common_dr3d_attlist_;
 	

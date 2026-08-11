@@ -51,9 +51,15 @@ public:
  
     void oox_serialize(std::wostream & _Wostream);
 
-	odf_reader::chart::legend content_;  
+	void set_layout(const _CP_OPT(double) & rel_x, const _CP_OPT(double) & rel_y,
+	                const _CP_OPT(double) & rel_w, const _CP_OPT(double) & rel_h)
+	{
+		layout_.set_rect(rel_x, rel_y, rel_w, rel_h);
+	}
+
+	odf_reader::chart::legend content_;
 private:
-	
+
 	cpdoccore::oox::oox_layout layout_;	//layout (Layout) §21.2.2.88
 
 	//extLst (Chart Extensibility) §21.2.2.64

@@ -78,6 +78,7 @@ void chart_format_properties::add_attributes( const xml::attributes_wc_ptr & Att
     CP_APPLY_ATTR(L"chart:percentage",			bVal);		if (bVal) push_back(_property(L"percentage",			bVal.get()));
     CP_APPLY_ATTR(L"chart:connect-bars",		bVal);		if (bVal) push_back(_property(L"connect-bars",			bVal.get()));
     CP_APPLY_ATTR(L"chart:deep",				bVal);		if (bVal) push_back(_property(L"deep",					bVal.get()));
+    CP_APPLY_ATTR(L"chart:right-angled-axes",	bVal);		if (bVal) push_back(_property(L"right-angled-axes",		bVal.get()));
     CP_APPLY_ATTR(L"chart:tick-marks-major-inner",bVal);	if (bVal) push_back(_property(L"tick-marks-major-inner",bVal.get()));
     CP_APPLY_ATTR(L"chart:tick-marks-major-outer",bVal);	if (bVal) push_back(_property(L"tick-marks-major-outer",bVal.get()));
     CP_APPLY_ATTR(L"chart:tick-marks-minor-inner",bVal);	if (bVal) push_back(_property(L"tick-marks-minor-inner",bVal.get()));

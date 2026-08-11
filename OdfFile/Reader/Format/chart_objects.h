@@ -81,18 +81,20 @@ namespace chart {
 
 		simple equation_properties_;
 	};
-	struct legend : public simple
-    {
-		std::wstring position;
-		std::wstring align;
-
+	struct rect
+	{
 		// значения в pt
 		_CP_OPT(double) x;
 		_CP_OPT(double) y;
 		_CP_OPT(double) width;
 		_CP_OPT(double) height;
 	};
-	struct plot_area : public simple
+	struct legend : public simple, public rect
+    {
+		std::wstring position;
+		std::wstring align;
+	};
+	struct plot_area : public simple, public rect
     {
 		std::wstring cell_range_address_;
 		chart_format_properties_ptr	properties_;

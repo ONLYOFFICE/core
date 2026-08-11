@@ -114,15 +114,18 @@ public:
 		reset_fill(l.fill_);
 		//floor_.content_= l;
 	}
-	void set_legend(odf_reader::chart::legend & l, _CP_OPT(double) rel_x,
-	                _CP_OPT(double) rel_y,_CP_OPT(double) rel_w,_CP_OPT(double) rel_h)
+	void set_legend(odf_reader::chart::legend & l, const _CP_OPT(double) & rel_x,
+	                const _CP_OPT(double) & rel_y, const _CP_OPT(double) & rel_w, const _CP_OPT(double) & rel_h)
 	{
 		reset_fill(l.fill_);
-		legend_.content_        = l;
-		legend_.content_.height = rel_h;
-		legend_.content_.width  = rel_w;
-		legend_.content_.x      = rel_x;
-		legend_.content_.y      = rel_y;
+		legend_.content_ = l;
+
+		legend_.set_layout(rel_x, rel_y, rel_w, rel_h);
+	}
+	void set_plot_area_layout(const _CP_OPT(double) & rel_x, const _CP_OPT(double) & rel_y,
+	                          const _CP_OPT(double) & rel_w, const _CP_OPT(double) & rel_h)
+	{
+		plot_area_.set_layout(rel_x, rel_y, rel_w, rel_h);
 	}
 
 	void set_chart_graphic_properties(odf_reader::graphic_format_properties_ptr & prop, _oox_fill &fill)

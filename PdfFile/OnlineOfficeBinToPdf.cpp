@@ -59,7 +59,7 @@ namespace NSOnlineOfficeBinToPdf
 		}
 	};
 
-	static bool ConvertBufferToPdf(CPdfFile* pPdf, BYTE* pBuffer, LONG lBufferLen, CConvertFromBinParams* pParams)
+	bool ConvertBufferToPdf(CPdfFile* pPdf, BYTE* pBuffer, LONG lBufferLen, CConvertFromBinParams* pParams)
 	{
 		CMetafileToRenderterPDF oCorrector(pPdf);
 		oCorrector.SetTempDirectory(pPdf->GetTempDirectory());

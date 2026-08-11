@@ -587,6 +587,19 @@ BYTE* CPdfFile::SplitPages(const int* arrPageIndex, unsigned int unLength, BYTE*
 {
 	if (!m_pInternal->pReader)
 		return NULL;
+
+	CPdfReader* pSaveReader = NULL;
+	if (bEdit)
+	{
+		pSaveReader = m_pInternal->pReader;
+		m_pInternal->pReader = new CPdfReader(m_pInternal->pAppFonts);
+
+		BYTE* pMemory = NULL;
+		DWORD nLength = 0;
+		pSaveReader->GetMemory(&pMemory, &nLength);
+		m_pInternal->pReader->LoadFromMemory(m_pInternal->pAppFonts, pMemory, nLength, m_pInternal->wsPassword, m_pInternal->wsPassword);
+	}
+
 	RELEASEOBJECT(m_pInternal->pWriter);
 	m_pInternal->pWriter = new CPdfWriter(m_pInternal->pAppFonts, false, false, this, !bEdit);
 
@@ -597,8 +610,6 @@ BYTE* CPdfFile::SplitPages(const int* arrPageIndex, unsigned int unLength, BYTE*
 	int nLen = 0;
 	if (m_pInternal->pEditor->SplitPages(arrPageIndex, unLength))
 	{
-		if (bEdit)
-			m_pInternal->pReader->BeforeSplitPages();
 		if (pChanges && nLength > 3)
 		{
 			if (!bEdit)
@@ -609,15 +620,18 @@ BYTE* CPdfFile::SplitPages(const int* arrPageIndex, unsigned int unLength, BYTE*
 				m_pInternal->pWriter->SetSplit(false);
 		}
 		if (bEdit)
-		{
 			m_pInternal->pEditor->Close();
-			m_pInternal->pReader->AfterSplitPages();
-		}
 		else
 			m_pInternal->pEditor->AfterSplitPages();
 
 		if (m_pInternal->pWriter->SaveToMemory(&pRes, &nLen, true) != 0)
 			RELEASEMEM(pRes);
+	}
+
+	if (bEdit)
+	{
+		RELEASEOBJECT(m_pInternal->pReader);
+		m_pInternal->pReader = pSaveReader;
 	}
 
 	RELEASEOBJECT(m_pInternal->pWriter);

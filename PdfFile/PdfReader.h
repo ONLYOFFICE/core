@@ -75,6 +75,7 @@ public:
 
 	bool LoadFromFile  (NSFonts::IApplicationFonts* pAppFonts, const std::wstring& file, const wchar_t* owner_password = NULL, const wchar_t* user_password = NULL);
 	bool LoadFromMemory(NSFonts::IApplicationFonts* pAppFonts, BYTE* data, DWORD length, const wchar_t* owner_password = NULL, const wchar_t* user_password = NULL);
+	bool GetMemory(BYTE** ppData, DWORD* pLength);
 
 	void Close();
 	void CleanUp();
@@ -134,8 +135,6 @@ public:
 	BYTE* GetButtonIcon(int nBackgroundColor, int nPageIndex, bool bBase64 = false, int nBWidget = -1, const char* sIView = NULL);
 	BYTE* StreamToCData(BYTE* pSteam, int nLength);
 	const std::map<std::wstring, std::wstring>& GetFonts() { return m_mFonts; }
-	void BeforeSplitPages();
-	void AfterSplitPages();
 
 private:
 	void Clear();
@@ -151,7 +150,6 @@ private:
 	int                    m_eError;
 	IOfficeDrawingFilePainter*      m_pPainter;
 	std::vector<CPdfReaderContext*> m_vPDFContext;
-	std::vector<CPdfReaderContext*> m_vSavedPDFContext;
 	std::vector<CPdfRedact*>        m_vRedact;
 	std::map<std::wstring, std::wstring> m_mFonts;
 };

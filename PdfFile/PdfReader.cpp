@@ -237,6 +237,29 @@ bool CPdfReader::LoadFromMemory(NSFonts::IApplicationFonts* pAppFonts, BYTE* dat
 
 	return MergePages(data, length, wsOwnerPassword);
 }
+bool CPdfReader::GetMemory(BYTE** ppData, DWORD* pLength)
+{
+	if (m_vPDFContext.empty())
+		return false;
+
+	PDFDoc* pDoc = m_vPDFContext[0]->m_pDocument;
+	if (!pDoc)
+		return false;
+
+	BaseStream* pStream = pDoc->getBaseStream();
+	if (!pStream)
+		return false;
+
+	Guint nLength = 0;
+	char* pBuffer = pStream->getRawBuffer(&nLength);
+	if (!pBuffer || nLength == 0)
+		return false;
+
+	*ppData = (BYTE*)pBuffer;
+	*pLength = (DWORD)nLength;
+
+	return true;
+}
 void CPdfReader::Close()
 {
 	Clear();
@@ -2361,32 +2384,3 @@ BYTE* CPdfReader::GetAPAnnots(int nRasterW, int nRasterH, int nBackgroundColor, 
 	oRes.ClearWithoutAttack();
 	return pRes;
 }
-void CPdfReader::BeforeSplitPages()
-{
-	m_vSavedPDFContext.clear();
-
-	if (m_vPDFContext.size() > 1)
-	{
-		m_vSavedPDFContext.assign(m_vPDFContext.begin() + 1, m_vPDFContext.end());
-		m_vPDFContext.erase(m_vPDFContext.begin() + 1, m_vPDFContext.end());
-	}
-}
-void CPdfReader::AfterSplitPages()
-{
-	if (m_vPDFContext.size() > 1)
-	{
-		for (size_t nIndex = 1; nIndex < m_vPDFContext.size(); ++nIndex)
-		{
-			CPdfReaderContext* pContext = m_vPDFContext[nIndex];
-			delete pContext;
-		}
-		m_vPDFContext.erase(m_vPDFContext.begin() + 1, m_vPDFContext.end());
-	}
-
-	if (!m_vSavedPDFContext.empty())
-	{
-		m_vPDFContext.insert(m_vPDFContext.end(), m_vSavedPDFContext.begin(), m_vSavedPDFContext.end());
-		m_vSavedPDFContext.clear();
-	}
-}
-

@@ -76,6 +76,7 @@ namespace NSOnlineOfficeBinToPdf
 		case ctHeadings:         return Read_Command<CHeadings>        (this, pCorrector);
 		case ctRedact:           return Read_Command<CRedact>          (this, pCorrector);
 		case ctRedactMeta:       return Read_Command<CRedactMeta>      (this, pCorrector);
+		case ctMacros:           return Read_Command<CMacros>          (this, pCorrector);
 		default: break;
 		}
 

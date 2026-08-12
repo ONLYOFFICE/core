@@ -433,6 +433,12 @@ public:
 	{
 		return m_pFile->GetStructure();
 	}
+	BYTE* GetMacros()
+	{
+		if (m_nType == 0)
+			return ((CPdfFile*)m_pFile)->GetMacros();
+		return NULL;
+	}
 	BYTE* GetInteractiveFormsInfo()
 	{
 		if (m_nType == 0)

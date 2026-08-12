@@ -125,6 +125,7 @@ public:
 	void SetFonts(PdfReader::CPdfFontList* pFontList);
 	BYTE* GetStructure();
 	BYTE* GetLinks(int nPageIndex);
+	BYTE* GetMacros();
 	BYTE* GetWidgets();
 	BYTE* GetFonts(bool bStandart);
 	BYTE* GetAllFonts(int* arrPageIndex, int nLength, bool bCheck = true);

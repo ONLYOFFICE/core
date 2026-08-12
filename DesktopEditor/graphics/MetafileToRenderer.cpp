@@ -1063,6 +1063,7 @@ namespace NSOnlineOfficeBinToPdf
 			case ctHeadings:
 			case ctRedact:
 			case ctRedactMeta:
+			case ctMacros:
 			{
 				IAdvancedCommand::AdvancedCommandType eAdvancedCommandType = IAdvancedCommand::AdvancedCommandType::Undefined;
 				switch (eCommand)
@@ -1078,6 +1079,7 @@ namespace NSOnlineOfficeBinToPdf
 				case ctHeadings:         eAdvancedCommandType = IAdvancedCommand::AdvancedCommandType::Headings;    break;
 				case ctRedact:           eAdvancedCommandType = IAdvancedCommand::AdvancedCommandType::Redact;      break;
 				case ctRedactMeta:       eAdvancedCommandType = IAdvancedCommand::AdvancedCommandType::RedactMeta;  break;
+				case ctMacros:           eAdvancedCommandType = IAdvancedCommand::AdvancedCommandType::Macros;      break;
 				default:
 					break;
 				}

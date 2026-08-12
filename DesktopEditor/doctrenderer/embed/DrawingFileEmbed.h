@@ -67,6 +67,7 @@ public:
 
 	JSSmart<CJSValue> GetLinks(JSSmart<CJSValue> nPageIndex);
 	JSSmart<CJSValue> GetStructure();
+	JSSmart<CJSValue> GetMacros();
 	JSSmart<CJSValue> GetInteractiveFormsInfo();
 	JSSmart<CJSValue> GetInteractiveFormsFonts(JSSmart<CJSValue> nTypeFonts);
 

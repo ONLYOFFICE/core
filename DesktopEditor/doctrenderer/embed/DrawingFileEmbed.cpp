@@ -133,6 +133,10 @@ JSSmart<CJSValue> CDrawingFileEmbed::GetStructure()
 {
 	return WasmMemoryToJS(m_pFile->GetStructure());
 }
+JSSmart<CJSValue> CDrawingFileEmbed::GetMacros()
+{
+	return WasmMemoryToJS(m_pFile->GetMacros());
+}
 JSSmart<CJSValue> CDrawingFileEmbed::GetInteractiveFormsInfo()
 {
 	return WasmMemoryToJS(m_pFile->GetInteractiveFormsInfo());

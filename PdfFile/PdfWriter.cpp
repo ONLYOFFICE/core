@@ -3361,7 +3361,8 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 		BYTE* pData = NULL;
 		LONG nMetaLength = 0;
 		NSFile::CUtf8Converter::GetUtf8StringFromUnicode(wsRoles.c_str(), wsRoles.length(), pData, nMetaLength);
-		m_pDocument->AddRoles(pData, nMetaLength);
+		m_pDocument->AddOOField("OO_FORMS_ROLES", pData, nMetaLength);
+		RELEASEARRAYOBJECTS(pData);
 	}
 
 	return S_OK;

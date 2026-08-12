@@ -17,6 +17,7 @@ namespace NSDrawingFileEmbed
 	FUNCTION_WRAPPER_V8_1(_DestroyPixmap, DestroyPixmap)
 	FUNCTION_WRAPPER_V8_1(_GetLinks, GetLinks)
 	FUNCTION_WRAPPER_V8_0(_GetStructure, GetStructure)
+	FUNCTION_WRAPPER_V8_0(_GetMacros, GetMacros)
 	FUNCTION_WRAPPER_V8_0(_GetInteractiveFormsInfo, GetInteractiveFormsInfo)
 	FUNCTION_WRAPPER_V8_1(_GetInteractiveFormsFonts, GetInteractiveFormsFonts)
 	FUNCTION_WRAPPER_V8_7(_GetInteractiveFormsAP, GetInteractiveFormsAP)
@@ -56,6 +57,7 @@ namespace NSDrawingFileEmbed
 		NSV8Objects::Template_Set(result, "DestroyPixmap",	_DestroyPixmap);
 		NSV8Objects::Template_Set(result, "GetLinks",	_GetLinks);
 		NSV8Objects::Template_Set(result, "GetStructure",	_GetStructure);
+		NSV8Objects::Template_Set(result, "GetMacros",	_GetMacros);
 		NSV8Objects::Template_Set(result, "GetInteractiveFormsInfo",	_GetInteractiveFormsInfo);
 		NSV8Objects::Template_Set(result, "GetInteractiveFormsFonts",	_GetInteractiveFormsFonts);
 		NSV8Objects::Template_Set(result, "GetInteractiveFormsAP",	_GetInteractiveFormsAP);

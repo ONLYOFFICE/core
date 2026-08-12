@@ -156,6 +156,7 @@ public:
 	int GetRotate(int nPageIndex);
 	int GetMaxRefID();
 	void SetPageFonts(int nPageIndex);
+	BYTE* GetMacros();
 	BYTE* GetWidgets();
 	BYTE* GetAnnotEmbeddedFonts();
 	BYTE* GetAnnotStandardFonts();

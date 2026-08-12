@@ -525,6 +525,12 @@ BYTE* CPdfFile::GetLinks(int nPageIndex)
 		return NULL;
 	return m_pInternal->pReader->GetLinks(nPageIndex);
 }
+BYTE* CPdfFile::GetMacros()
+{
+	if (!m_pInternal->pReader)
+		return NULL;
+	return m_pInternal->pReader->GetMacros();
+}
 BYTE* CPdfFile::GetWidgets()
 {
 	if (!m_pInternal->pReader)
@@ -1480,6 +1486,7 @@ HRESULT CPdfFile::IsSupportAdvancedCommand(const IAdvancedCommand::AdvancedComma
 	case IAdvancedCommand::AdvancedCommandType::Headings:
 	case IAdvancedCommand::AdvancedCommandType::Redact:
 	case IAdvancedCommand::AdvancedCommandType::RedactMeta:
+	case IAdvancedCommand::AdvancedCommandType::Macros:
 		return S_OK;
 	default:
 		break;
@@ -1607,6 +1614,22 @@ HRESULT CPdfFile::AdvancedCommand(IAdvancedCommand* command)
 			CRedactMeta* pCommand = (CRedactMeta*)command;
 			std::vector<double> arrRedact = m_pInternal->pEditor->WriteRedact(pCommand->GetRedactID());
 			m_pInternal->pWriter->AddRedact(arrRedact);
+		}
+		return S_OK;
+	}
+	case IAdvancedCommand::AdvancedCommandType::Macros:
+	{
+		PdfWriter::CDocument* pDoc = m_pInternal->pWriter->GetDocument();
+		if (pDoc)
+		{
+			CMacros* pCommand = (CMacros*)command;
+			std::wstring wsMacros = pCommand->GetMacros();
+
+			BYTE* pData = NULL;
+			LONG nMetaLength = 0;
+			NSFile::CUtf8Converter::GetUtf8StringFromUnicode(wsMacros.c_str(), wsMacros.length(), pData, nMetaLength);
+			pDoc->AddOOField("OO_MACROS", pData, nMetaLength);
+			RELEASEARRAYOBJECTS(pData);
 		}
 		return S_OK;
 	}

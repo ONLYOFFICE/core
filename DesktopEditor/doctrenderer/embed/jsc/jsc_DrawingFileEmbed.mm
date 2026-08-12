@@ -14,6 +14,7 @@
 -(JSValue*) DestroyPixmap : (JSValue*)typedArray;
 -(JSValue*) GetLinks : (JSValue*)nPageIndex;
 -(JSValue*) GetStructure;
+-(JSValue*) GetMacros;
 -(JSValue*) GetInteractiveFormsInfo;
 -(JSValue*) GetInteractiveFormsFonts : (JSValue*)nTypeFonts;
 -(JSValue*) GetInteractiveFormsAP : (JSValue*)nRasterW : (JSValue*)nRasterH : (JSValue*)nBackgroundColor : (JSValue*)nPageIndex : (JSValue*)nWidget : (JSValue*)nView : (JSValue*)nButtonView;
@@ -58,6 +59,7 @@ FUNCTION_WRAPPER_JS_4(GetPixmap, GetPixmap)
 FUNCTION_WRAPPER_JS_1(DestroyPixmap, DestroyPixmap)
 FUNCTION_WRAPPER_JS_1(GetLinks, GetLinks)
 FUNCTION_WRAPPER_JS_0(GetStructure, GetStructure)
+FUNCTION_WRAPPER_JS_0(GetMacros, GetMacros)
 FUNCTION_WRAPPER_JS_0(GetInteractiveFormsInfo, GetInteractiveFormsInfo)
 FUNCTION_WRAPPER_JS_1(GetInteractiveFormsFonts, GetInteractiveFormsFonts)
 FUNCTION_WRAPPER_JS_7(GetInteractiveFormsAP, GetInteractiveFormsAP)

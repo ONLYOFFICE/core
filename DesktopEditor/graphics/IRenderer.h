@@ -163,6 +163,7 @@ public:
 		Redact      = 12,
 		RedactAnnot = 13,
 		RedactMeta  = 14,
+		Macros      = 15,
 
 		Undefined   = 255
 	};

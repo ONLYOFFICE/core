@@ -201,4 +201,17 @@ private:
 	std::vector<CHeading*> m_arrHeading;
 };
 
+class GRAPHICS_DECL CMacros : public IAdvancedCommand
+{
+public:
+	CMacros();
+
+	std::wstring GetMacros();
+
+	bool Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector);
+
+private:
+	std::wstring m_wsMacros;
+};
+
 #endif // _BUILD_DOCINFO_H_

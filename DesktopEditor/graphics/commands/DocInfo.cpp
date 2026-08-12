@@ -221,3 +221,11 @@ bool CHeadings::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileTo
 	}
 	return true;
 }
+
+CMacros::CMacros() : IAdvancedCommand(AdvancedCommandType::Macros) {}
+std::wstring CMacros::GetMacros() { return m_wsMacros; }
+bool CMacros::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector)
+{
+	m_wsMacros = pReader->ReadString();
+	return true;
+}

@@ -1372,6 +1372,50 @@ BYTE* CPdfReader::GetLinks(int _nPageIndex)
 
 	return oLinks.Serialize();
 }
+BYTE* CPdfReader::GetMacros()
+{
+	if (m_vPDFContext.empty())
+		return NULL;
+
+	PDFDoc* pDoc = m_vPDFContext.front()->m_pDocument;
+	if (!pDoc || !pDoc->getCatalog() || !pDoc->getCatalog()->getForm())
+		return NULL;
+
+	AcroForm* pAcroForms = pDoc->getCatalog()->getForm();
+	Object* oAcroForm = pAcroForms->getAcroFormObj();
+
+
+
+	CObjectGuard oOO;
+	if (!oAcroForm->dictLookup("OO", oOO.get())->isDict())
+		return NULL;
+
+	CObjectGuard oMacros;
+	if (!oOO->dictLookup("OO_MACROS", oMacros.get())->isStream())
+		return NULL;
+
+	Stream* pStream = oMacros->getStream();
+	pStream->reset();
+
+	std::vector<BYTE> arrBuffer;
+	int c;
+	while ((c = pStream->getChar()) != EOF)
+		arrBuffer.push_back((BYTE)c);
+
+	pStream->close();
+
+	if (arrBuffer.empty())
+		return NULL;
+
+	NSWasm::CData oRes;
+	oRes.SkipLen();
+	oRes.WriteString(arrBuffer.data(), (unsigned int)arrBuffer.size());
+
+	oRes.WriteLen();
+	BYTE* pRes = oRes.GetBuffer();
+	oRes.ClearWithoutAttack();
+	return pRes;
+}
 BYTE* CPdfReader::GetWidgets()
 {
 	NSWasm::CData oRes;

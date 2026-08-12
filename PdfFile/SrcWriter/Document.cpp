@@ -1869,17 +1869,24 @@ namespace PdfWriter
 
 		return true;
 	}
-	void CDocument::AddRoles(BYTE* pMetaData, DWORD nMetaLength)
+	void CDocument::AddOOField(const std::string& sName, BYTE* pMetaData, DWORD nMetaLength)
 	{
 		if (!CheckAcroForm())
 			return;
 
-		CDictObject* pRoles = new CDictObject(m_pXref);
-		pRoles->SetFilter(STREAM_FILTER_FLATE_DECODE);
+		CDictObject* pOO = dynamic_cast<CDictObject*>(m_pAcroForm->Get("OO"));
+		if (!pOO)
+		{
+			pOO = new CDictObject();
+			m_pAcroForm->Add("OO", pOO);
+		}
 
-		m_pAcroForm->Add("ONLYOFFICE_FORMS_ROLES", pRoles);
+		CDictObject* pField = new CDictObject(m_pXref);
+		pField->SetFilter(STREAM_FILTER_FLATE_DECODE);
 
-		CStream* pStream = pRoles->GetStream();
+		pOO->Add(sName, pField);
+
+		CStream* pStream = pField->GetStream();
 		pStream->Write(pMetaData, nMetaLength);
 	}
 	CPage* CDocument::AddPage(int nPageIndex, CPage* _pNewPage)

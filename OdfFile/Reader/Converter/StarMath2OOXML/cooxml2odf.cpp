@@ -1584,6 +1584,35 @@ namespace StarMath
 			return true;
 		return false;
 	}
+	bool IsBlankText(const std::wstring& wsText)
+	{
+		for (wchar_t wcSymbol : wsText)
+		{
+			//u2800 - braille blank (placeholder old version)
+			if (wcSymbol != L' ' && wcSymbol != L'\t' && wcSymbol != L'\u00A0' && wcSymbol != L'\u2800')
+				return false;
+		}
+		return true;
+	}
+	template<typename T>
+	bool IsBlankNode(T pNode)
+	{
+		if (IsEmptyNode(pNode))
+			return true;
+		for (size_t i = 0; i < pNode->m_arrItems.size(); ++i)
+		{
+			OOX::Logic::CMRun* pRun = dynamic_cast<OOX::Logic::CMRun*>(pNode->m_arrItems[i]);
+			if (pRun == nullptr)
+				return false;
+			for (size_t j = 0; j < pRun->m_arrItems.size(); ++j)
+			{
+				OOX::Logic::CMText* pText = dynamic_cast<OOX::Logic::CMText*>(pRun->m_arrItems[j]);
+				if (pText == nullptr || !IsBlankText(pText->m_sText))
+					return false;
+			}
+		}
+		return true;
+	}
 	void COOXml2Odf::ConversionSPre(OOX::Logic::CSPre* pSPre)
 	{
 		if (pSPre == nullptr)
@@ -1599,18 +1628,8 @@ namespace StarMath
 		m_stSize.Zeroing();
 		m_pXmlWriter->WriteNodeBegin(L"mprescripts", true);
 		m_pXmlWriter->WriteNodeEnd(L"w", true, true);
-		if (IsEmptyNode(pSPre->m_oSup.GetPointer()))
-		{
-			m_pXmlWriter->WriteNodeBegin(L"none", true);
-			m_pXmlWriter->WriteNodeEnd(L"w", true, true);
-		}
-		else
-		{
-			m_wsAnnotationStarMath += L"lsup { ";
-			ConversionSup(pSPre->m_oSup.GetPointer());
-			m_wsAnnotationStarMath += L"} ";
-		}
-		if (IsEmptyNode(pSPre->m_oSub.GetPointer()))
+
+		if (IsBlankNode(pSPre->m_oSub.GetPointer()))
 		{
 			m_pXmlWriter->WriteNodeBegin(L"none", true);
 			m_pXmlWriter->WriteNodeEnd(L"w", true, true);
@@ -1619,6 +1638,18 @@ namespace StarMath
 		{
 			m_wsAnnotationStarMath += L"lsub { ";
 			ConversionSub(pSPre->m_oSub.GetPointer());
+			m_wsAnnotationStarMath += L"} ";
+		}
+
+		if (IsBlankNode(pSPre->m_oSup.GetPointer()))
+		{
+			m_pXmlWriter->WriteNodeBegin(L"none", true);
+			m_pXmlWriter->WriteNodeEnd(L"w", true, true);
+		}
+		else
+		{
+			m_wsAnnotationStarMath += L"lsup { ";
+			ConversionSup(pSPre->m_oSup.GetPointer());
 			m_wsAnnotationStarMath += L"} ";
 		}
 		stFrac.m_iHeight += m_stSize.m_iHeight;

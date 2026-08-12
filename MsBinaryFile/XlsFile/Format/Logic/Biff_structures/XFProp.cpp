@@ -420,7 +420,24 @@ static void serialize_val_attr(CP_ATTR_NODE, const std::wstring & name, BiffStru
 	if (byte_)	CP_XML_ATTR(name.c_str(), *byte_->value());
 
 	LPWideString* str_ = dynamic_cast<LPWideString*>(val.get());
-	if (str_)	CP_XML_ATTR(name.c_str(), XmlUtils::EncodeXmlString(str_->value()));
+	if (str_)
+	{
+		std::wstring encoded = XmlUtils::EncodeXmlString(str_->value());
+		std::wstring clean;
+		for (auto i = 0; i < encoded.size(); ++i)
+		{
+			if (encoded[i] == L'&')
+			{
+				if (encoded.compare(i, 6, L"&quot;") == 0) { clean += L'"';  i += 5; continue; }
+				if (encoded.compare(i, 6, L"&apos;") == 0) { clean += L'\''; i += 5; continue; }
+				if (encoded.compare(i, 4, L"&lt;")   == 0) { clean += L'<';  i += 3; continue; }
+				if (encoded.compare(i, 4, L"&gt;")   == 0) { clean += L'>';  i += 3; continue; }
+				if (encoded.compare(i, 5, L"&amp;")  == 0) { clean += L'&';  i += 4; continue; }
+			}
+			clean += encoded[i];
+		}
+		CP_XML_ATTR(name.c_str(), clean);
+	}
 }
 static void serialize_border_prop(std::wostream & stream, const std::wstring & name, BiffStructurePtr & val)
 {

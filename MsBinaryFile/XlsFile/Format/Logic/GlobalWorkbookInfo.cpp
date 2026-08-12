@@ -400,7 +400,7 @@ _UINT16 GlobalWorkbookInfo::RegisterNumFormat(_UINT16 ifmt, const std::wstring &
 }
 const int GlobalWorkbookInfo::RegistrDxfn(const std::wstring & dxfn)
 {
-	if (dxfn.empty() == true) return -1;
+	if (dxfn.empty() || dxfn == L"<dxf/>") return -1;
 
 	std::map<std::wstring, int>::iterator pFind = mapUserDxfs.find(dxfn);
 

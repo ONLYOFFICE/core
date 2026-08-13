@@ -216,6 +216,10 @@ namespace PdfReader
 		{
 			m_bDrawOnlyText = bDraw;
 		}
+		void SetUseLayer(bool bUse)
+		{
+			m_bUseLayer = bUse;
+		}
 
 	private:
 		struct GfxOutputState
@@ -267,6 +271,7 @@ namespace PdfReader
 		bool                          m_bTiling;
 
         bool                          m_bDrawOnlyText; // Special option for html-renderer
+		bool                          m_bUseLayer; // Draw page on a black transparent layer
 
 	};
 }

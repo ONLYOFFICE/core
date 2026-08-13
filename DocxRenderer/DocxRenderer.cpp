@@ -97,6 +97,7 @@ int CDocxRenderer::Convert(IOfficeDrawingFile* pFile, const std::wstring& sDst, 
 	m_pInternal->m_bIsSupportShapeCommands = false;
 	m_pInternal->m_oDocument.m_bIsRecord = true;
 	m_pInternal->m_oDocument.m_oCurrentPage.m_bFirstParagraphLineCorrection = true;
+	m_pInternal->m_oDocument.m_oCurrentPage.m_bIsBuildInlineTables = true;
 
 	if (bIsOutCompress)
 		m_pInternal->m_oDocument.m_strTempDirectory = NSDirectory::CreateDirectoryWithUniqueName(m_pInternal->m_sTempDirectory);

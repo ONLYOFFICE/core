@@ -121,8 +121,15 @@ void oox_axis_content::oox_serialize_content(std::wostream & _Wostream)
 	_CP_OPT(double)			doubleVal;
 	
 	oox_title title;
-	title.set_content(content_.title_);//todo need to set layout properly
-  
+	title.set_content(content_.title_);
+	title.set_layout(title_layout_.x, title_layout_.y, title_layout_.w, title_layout_.h);
+
+	_CP_OPT(int) rotateLabels;
+	if (content_.properties_)
+	{
+		rotateLabels = odf_reader::oox_convert_rotation_angle(content_.properties_->common_rotation_angle_attlist_.style_rotation_angle_);
+	}
+
 	CP_XML_WRITER(_Wostream)
     {
 		CP_XML_NODE(L"c:axId")
@@ -265,7 +272,7 @@ void oox_axis_content::oox_serialize_content(std::wostream & _Wostream)
 		shape.set(content_.graphic_properties_, content_.fill_) ;
 		shape.oox_serialize(_Wostream);
 
-		oox_serialize_default_text(_Wostream, content_.text_properties_);
+		oox_serialize_default_text(_Wostream, content_.text_properties_, rotateLabels);
 		
 		for (size_t i = 0; i < cross_id_.size(); i++)
 		{

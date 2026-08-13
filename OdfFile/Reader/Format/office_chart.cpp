@@ -96,7 +96,8 @@ void chart_chart::add_child_element( xml::sax * Reader, const std::wstring & Ns,
 void chart_title_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
     common_draw_position_attlist_.add_attributes(Attributes);
-    
+    common_draw_size_attlist_.add_attributes(Attributes);
+
 	CP_APPLY_ATTR(L"table:cell-range", table_cell_range_);
     common_attlist_.add_attributes(Attributes);
 }
@@ -263,6 +264,9 @@ void chart_axis_attlist::add_attributes( const xml::attributes_wc_ptr & Attribut
     CP_APPLY_ATTR(L"chart:name", chart_name_);
     CP_APPLY_ATTR(L"chartooo:axis-type", axis_type_);
     common_attlist_.add_attributes(Attributes);
+
+    common_draw_position_attlist_.add_attributes(Attributes);
+    common_draw_size_attlist_.add_attributes(Attributes);
 }
 
 // chart:axis

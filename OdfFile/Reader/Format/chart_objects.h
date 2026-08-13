@@ -63,14 +63,6 @@ namespace chart {
 
 		oox::_oox_fill fill_;
 	};
-	struct title : public simple
-	{
-		std::wstring content_;
-		
-		double pos_x = 0;
-		double pos_y = 0;		
-	}; 
-
 	struct treadline
 	{
 		bool bEquation = false;
@@ -89,6 +81,10 @@ namespace chart {
 		_CP_OPT(double) width;
 		_CP_OPT(double) height;
 	};
+	struct title : public simple, public rect
+	{
+		std::wstring content_;
+	}; 
 	struct legend : public simple, public rect
     {
 		std::wstring position;
@@ -101,7 +97,7 @@ namespace chart {
 		//series_in_column_or_row
 		//uses_first_as_label
 	};
-	struct axis: public simple
+	struct axis: public simple, public rect
     {
         struct grid
         {

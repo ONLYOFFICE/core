@@ -46,13 +46,7 @@ namespace oox {
 
 void oox_title::oox_content_serialize(std::wostream & _Wostream, odf_reader::chart::title & content)
 {
-	if (content_.content_.empty()) return;
-
-	_CP_OPT(int) rotateVal;
-	if (content.properties_)
-	{
-		rotateVal = content.properties_->common_rotation_angle_attlist_.style_rotation_angle_;
-	}
+	if (content.content_.empty()) return;
 
 	CP_XML_WRITER(_Wostream)
     {
@@ -87,7 +81,7 @@ void oox_title::oox_serialize(std::wostream & _Wostream)
 	_CP_OPT(int) rotateVal;
 	if (content_.properties_)
 	{
-		rotateVal = content_.properties_->common_rotation_angle_attlist_.style_rotation_angle_;
+		rotateVal = odf_reader::oox_convert_rotation_angle(content_.properties_->common_rotation_angle_attlist_.style_rotation_angle_);
 	}
 
 	CP_XML_WRITER(_Wostream)
@@ -104,7 +98,8 @@ void oox_title::oox_serialize(std::wostream & _Wostream)
 						{
 							if (rotateVal)
 							{
-								CP_XML_ATTR(L"rot", -(int)(*rotateVal * 60000));
+								CP_XML_ATTR(L"rot", *rotateVal);
+								CP_XML_ATTR(L"vert", L"horz");
 							}
 						}
 						CP_XML_NODE(L"a:lstStyle"){}
@@ -122,8 +117,8 @@ void oox_title::oox_serialize(std::wostream & _Wostream)
 					{
 						if (rotateVal)
 						{
-							double d = 360 - (*rotateVal) * 180. / 3.14159265358979323846;
-							CP_XML_ATTR(L"rot", (int)(d * 60000));
+							CP_XML_ATTR(L"rot", *rotateVal);
+							CP_XML_ATTR(L"vert", L"horz");
 						}
 					}
 					CP_XML_NODE(L"a:lstStyle"){}

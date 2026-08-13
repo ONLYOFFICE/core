@@ -64,7 +64,8 @@ public:
 	void oox_serialize_view3D(std::wostream & _Wostream);
 
 	void add_chart	(int type);
-	void add_axis	(odf_reader::chart::axis & content);
+	void add_axis	(odf_reader::chart::axis & content, const _CP_OPT(double)& rel_x,
+		const _CP_OPT(double)& rel_y, const _CP_OPT(double)& rel_w, const _CP_OPT(double)& rel_h);
 
 	void set_no_local_table (bool val); //whithout embedded tables
 	//void set_content_series	(odf_reader::chart::series & content);

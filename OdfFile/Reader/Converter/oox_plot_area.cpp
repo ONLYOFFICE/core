@@ -128,11 +128,13 @@ namespace cpdoccore {
 			charts_.push_back(chart);
 		}
 
-		void oox_plot_area::add_axis(odf_reader::chart::axis& content)
+		void oox_plot_area::add_axis(odf_reader::chart::axis& content, const _CP_OPT(double)& rel_x,
+			const _CP_OPT(double)& rel_y, const _CP_OPT(double)& rel_w, const _CP_OPT(double)& rel_h)
 		{
 			unsigned int id = content.type_ != 0 ? axis_id_++ : 0;
 			oox_axis_content_ptr ax = oox_axis_content::create(id);
 			ax->content_ = content;
+			ax->set_title_layout(rel_x, rel_y, rel_w, rel_h);
 
 			if (content.dimension_ == L"x") axis_.insert(axis_.begin(), ax);
 			else axis_.push_back(ax);

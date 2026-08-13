@@ -56,6 +56,20 @@ void style_chart_properties::add_attributes(const xml::attributes_wc_ptr & Attri
 {
 	content_.add_attributes(Attributes);
 }
+_CP_OPT(int) oox_convert_rotation_angle(const _CP_OPT(unsigned int) & angle)
+{
+	_CP_OPT(int) result;
+
+	if (!angle) return result;
+
+	int degree = (int)(*angle % 360);
+
+	if (degree > 180) degree -= 360;
+
+	result = -degree * 60000;
+
+	return result;
+}
 void chart_format_properties::apply_from(const chart_format_properties & Other)
 {
 	common_rotation_angle_attlist_.apply_from(Other.common_rotation_angle_attlist_);

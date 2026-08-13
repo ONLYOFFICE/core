@@ -605,6 +605,24 @@ void CConverter2OOXML::WriteParagraph(const CHWPPargraph* pParagraph, NSStringUt
 
 	VECTOR<const CCtrlTable*> arAnchoredTables;
 
+	bool bHiddenContent = false;
+	short shParagraphCharShapeID = -1;
+
+	for (const CCtrl* pCtrl : pParagraph->GetCtrls())
+	{
+		if (ECtrlObjectType::ParaText == pCtrl->GetCtrlType())
+		{
+			shParagraphCharShapeID = (short)((const CParaText*)pCtrl)->GetCharShapeID();
+			break;
+		}
+
+		if (ECtrlObjectType::Character == pCtrl->GetCtrlType())
+		{
+			shParagraphCharShapeID = (short)((const CCtrlCharacter*)pCtrl)->GetCharShapeId();
+			break;
+		}
+	}
+
 	for (const CCtrl* pCtrl : pParagraph->GetCtrls())
 	{
 		switch (pCtrl->GetCtrlType())
@@ -629,9 +647,11 @@ void CConverter2OOXML::WriteParagraph(const CHWPPargraph* pParagraph, NSStringUt
 				const CCtrlTable* pTable = (const CCtrlTable*)pCtrl;
 
 				if (pTable->GetTreatAsChar())
-					WriteTable(pTable, pParagraph->GetShapeID(), pParagraph->GetStyleID(), oBuilder, oState);
+					WriteTable(pTable, pParagraph->GetShapeID(), pParagraph->GetStyleID(), oBuilder, oState, bHiddenContent ? shParagraphCharShapeID : (short)-1);
 				else
 					arAnchoredTables.push_back(pTable);
+
+				bHiddenContent = false;
 
 				break;
 			}
@@ -643,11 +663,13 @@ void CConverter2OOXML::WriteParagraph(const CHWPPargraph* pParagraph, NSStringUt
 			case ECtrlObjectType::SectionDef:
 			{
 				oState.m_pSectionDef = (const CCtrlSectionDef*)pCtrl;
+				bHiddenContent = true;
 				break;
 			}
 			case ECtrlObjectType::ColumnDef:
 			{
 				oState.m_pColumnDef  = (const CCtrlColumnDef*)(pCtrl);
+				bHiddenContent = true;
 				break;
 			}
 			case ECtrlObjectType::AutoNumber:
@@ -665,16 +687,20 @@ void CConverter2OOXML::WriteParagraph(const CHWPPargraph* pParagraph, NSStringUt
 				if (EHanType::HWPX  == m_pContext->GetType() ||
 				    EHanType::HWPML == m_pContext->GetType())
 					oState.m_arCtrlsHeadFoot.push_back((const CCtrlHeadFoot*)pCtrl);
+
+				bHiddenContent = true;
 				break;
 			}
 			case ECtrlObjectType::PageNumPos:
 			{
 				oState.m_pPageNum = dynamic_cast<const CCtrlPageNumPos*>(pCtrl);
+				bHiddenContent = true;
 				break;
 			}
 			case ECtrlObjectType::NewNumber:
 			{
 				oState.m_pNewNumber = dynamic_cast<const CCtrlNewNumber*>(pCtrl);
+				bHiddenContent = true;
 				break;
 			}
 			default:
@@ -848,7 +874,7 @@ void CConverter2OOXML::WriteParaShapeProperties(short shParaShapeID, short shPar
 		oBuilder.WriteString(L"<w:outlineLvl w:val=\"" + std::to_wstring(nHeadingLevel) + L"\"/>");
 }
 
-void CConverter2OOXML::WriteTable(const CCtrlTable* pTable, short shParaShapeID, short shParaStyleID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)
+void CConverter2OOXML::WriteTable(const CCtrlTable* pTable, short shParaShapeID, short shParaStyleID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState, short shHiddenLineCharShapeID)
 {
 	if (nullptr == pTable || pTable->Empty())
 		return;
@@ -856,9 +882,14 @@ void CConverter2OOXML::WriteTable(const CCtrlTable* pTable, short shParaShapeID,
 	if (TConversionState::TLastNode::ELastNodeType::Table == oState.m_oLastNode.m_eType)
 		oBuilder.WriteString(L"<w:p><w:r><w:rPr><w:vanish/></w:rPr></w:r></w:p>");
 
+	const bool bHostParagraphWritten = oState.m_bOpenedP;
+
 	CloseParagraph(oBuilder, oState);
 
 	WriteBreak(oBuilder, oState);
+
+	if (!bHostParagraphWritten && !oState.m_bInTable)
+		WriteTableSpacing(shParaShapeID, shHiddenLineCharShapeID, oBuilder);
 
 	++m_ushTableCount;
 
@@ -955,6 +986,43 @@ void CConverter2OOXML::WriteTable(const CCtrlTable* pTable, short shParaShapeID,
 	}
 	else
 		oState.m_oLastNode.m_eType = TConversionState::TLastNode::ELastNodeType::Table;
+}
+
+int CConverter2OOXML::GetLineHeight(const CHWPRecordParaShape& oParaShape, short shCharShapeID)
+{
+	const int nCharHeight = GetCharHeight(shCharShapeID);
+
+	switch (oParaShape.GetLineSpacingType())
+	{
+		case 0x00: return (0 < nCharHeight) ? nCharHeight * oParaShape.GetLineSpacing() / 500 : 0;
+		case 0x01:
+		case 0x02:
+		case 0x03: return oParaShape.GetLineSpacing() / 10;
+		default: break;
+	}
+
+	return 0;
+}
+
+void CConverter2OOXML::WriteTableSpacing(short shParaShapeID, short shHiddenLineCharShapeID, NSStringUtils::CStringBuilder& oBuilder)
+{
+	if (nullptr == m_pContext)
+		return;
+
+	const CHWPRecordParaShape* pParaShape = dynamic_cast<const CHWPRecordParaShape*>(m_pContext->GetParaShape(shParaShapeID));
+
+	if (nullptr == pParaShape)
+		return;
+
+	int nSpacing = Transform::HWPUINT2Twips(pParaShape->GetMarginPrev());
+
+	if (0 <= shHiddenLineCharShapeID)
+		nSpacing += GetLineHeight(*pParaShape, shHiddenLineCharShapeID);
+
+	if (0 >= nSpacing)
+		return;
+
+	oBuilder.WriteString(L"<w:p><w:pPr><w:spacing w:before=\"0\" w:after=\"0\" w:line=\"" + std::to_wstring(nSpacing) + L"\" w:lineRule=\"exact\"/><w:rPr><w:sz w:val=\"2\"/><w:szCs w:val=\"2\"/></w:rPr></w:pPr></w:p>");
 }
 
 void CConverter2OOXML::WriteTableProperties(const CCtrlTable* pTable, short shParaShapeID, short shParaStyleID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)

@@ -146,6 +146,7 @@ public:
 	void Redact(IAdvancedCommand* pCommand);
 	std::vector<double> WriteRedact(const std::vector<std::wstring>& arrID);
 	void RedactMeta(IAdvancedCommand* pCommand);
+	void CheckMode();
 
 	bool SplitPages(const int* arrPageIndex, unsigned int unLength);
 	void AfterSplitPages();

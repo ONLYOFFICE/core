@@ -281,10 +281,10 @@ void CConverter2OOXML::Close()
 		oContentTypeWriter.WriteStringUTF8(L"<Default Extension=\"rels\" ContentType=\"application/vnd.openxmlformats-package.relationships+xml\"/>");
 
 		for (const TContentType& oContentType : m_arDefaultContentType)
-			oContentTypeWriter.WriteStringUTF8(L"<Default Extension=\"" + oContentType.m_wsName + L"\" ContentType=\"" + oContentType.m_wsType + L"\"/>");
+			oContentTypeWriter.WriteStringUTF8(L"<Default Extension=\"" + EncodeXmlString(oContentType.m_wsName) + L"\" ContentType=\"" + EncodeXmlString(oContentType.m_wsType) + L"\"/>");
 
 		for (const TContentType& oContentType : m_arContentTypes)
-			oContentTypeWriter.WriteStringUTF8(L"<Override PartName=\"/word/" + oContentType.m_wsName + L"\" ContentType=\"" + oContentType.m_wsType + L"\"/>");
+			oContentTypeWriter.WriteStringUTF8(L"<Override PartName=\"/word/" + EncodeXmlString(oContentType.m_wsName) + L"\" ContentType=\"" + EncodeXmlString(oContentType.m_wsType) + L"\"/>");
 
 		oContentTypeWriter.WriteStringUTF8(L"<Override PartName=\"/docProps/core.xml\" ContentType=\"application/vnd.openxmlformats-package.core-properties+xml\"/>");
 		oContentTypeWriter.WriteStringUTF8(L"<Override PartName=\"/docProps/app.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.extended-properties+xml\"/>");
@@ -300,7 +300,7 @@ void CConverter2OOXML::Close()
 
 		for (const TRelationship& oRelationship : m_arRelationships)
 		{
-			oRelsWriter.WriteStringUTF8(L"<Relationship Id=\"" + oRelationship.m_wsID + L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/" + oRelationship.m_wsType + L"\" Target=\"" + oRelationship.m_wsTarget + L'\"');
+			oRelsWriter.WriteStringUTF8(L"<Relationship Id=\"" + EncodeXmlString(oRelationship.m_wsID) + L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/" + EncodeXmlString(oRelationship.m_wsType) + L"\" Target=\"" + EncodeXmlString(oRelationship.m_wsTarget) + L'\"');
 
 			if (L"hyperlink" == oRelationship.m_wsType)
 				oRelsWriter.WriteStringUTF8(L" TargetMode=\"External\"/>");
@@ -2374,15 +2374,7 @@ HWP_STRING CConverter2OOXML::AddRelationship(const HWP_STRING& wsType, const HWP
 	if (pRelationships->cend() != itFound)
 		return itFound->m_wsID;
 
-	if (L"hyperlink" == wsType)
-	{
-		NSStringUtils::CStringBuilder oBuilder;
-		oBuilder.WriteEncodeXmlString(wsTarget);
-
-		pRelationships->push_back({L"rId" + std::to_wstring(pRelationships->size() + 1), wsType, oBuilder.GetData()});
-	}
-	else
-		pRelationships->push_back({L"rId" + std::to_wstring(pRelationships->size() + 1), wsType, wsTarget});
+	pRelationships->push_back({L"rId" + std::to_wstring(pRelationships->size() + 1), wsType, wsTarget});
 
 	return pRelationships->back().m_wsID;
 }

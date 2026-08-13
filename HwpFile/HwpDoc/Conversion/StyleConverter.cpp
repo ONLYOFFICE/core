@@ -481,10 +481,13 @@ void CStyleConverter::WriteRunnerProperties(const CRunnerStyle& oRunnerStyle, NS
 		oBuilder.WriteString(L"<w:rFonts");
 
 		if (!wsAScii.empty())
-			oBuilder.WriteString(L" w:ascii=\"" + wsAScii +  L"\" w:hAnsi=\"" + wsAScii + L"\" w:cs=\"" + wsAScii + L'"');
+		{
+			const std::wstring wsEncodedAScii{EncodeXmlString(wsAScii)};
+			oBuilder.WriteString(L" w:ascii=\"" + wsEncodedAScii +  L"\" w:hAnsi=\"" + wsEncodedAScii + L"\" w:cs=\"" + wsEncodedAScii + L'"');
+		}
 
 		if (!wsEastAsia.empty())
-			oBuilder.WriteString(L" w:eastAsia=\"" + wsEastAsia + L'"');
+			oBuilder.WriteString(L" w:eastAsia=\"" + EncodeXmlString(wsEastAsia) + L'"');
 
 		oBuilder.WriteString(L"/>");
 	}

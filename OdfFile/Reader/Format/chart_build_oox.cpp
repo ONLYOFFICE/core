@@ -468,7 +468,10 @@ void object_odf_context::oox_convert(oox::oox_chart_context & chart_context)
 	chart_context.set_title		(title_, sub_title_, title_rect.x, title_rect.y, title_rect.width, title_rect.height);
 
 	chart::rect legend_rect		= calc_relative_rect(legend_,	 width_pt_, height_pt_);
-	chart::rect plot_area_rect	= calc_relative_rect(plot_area_, width_pt_, height_pt_);
+
+	const bool bInnerPlotArea	= (coordinate_region_.width && coordinate_region_.height);
+	chart::rect plot_area_rect	= bInnerPlotArea ?	calc_relative_rect(coordinate_region_, width_pt_, height_pt_) :
+													calc_relative_rect(plot_area_, width_pt_, height_pt_);
 
 	if (!plot_area_rect.width || !plot_area_rect.height)
 	{
@@ -479,7 +482,7 @@ void object_odf_context::oox_convert(oox::oox_chart_context & chart_context)
 	chart_context.set_legend ( legend_, legend_rect.x, legend_rect.y, legend_rect.width, legend_rect.height );
 	chart_context.set_data_table(data_table_);
 
-	chart_context.set_plot_area_layout(plot_area_rect.x, plot_area_rect.y, plot_area_rect.width, plot_area_rect.height);
+	chart_context.set_plot_area_layout(plot_area_rect.x, plot_area_rect.y, plot_area_rect.width, plot_area_rect.height, bInnerPlotArea);
 
 	chart_context.set_plot_area_properties (plot_area_.properties_, plot_area_.fill_);
 	chart_context.set_chart_graphic_properties (graphic_properties_, chart_fill_);
@@ -1043,6 +1046,11 @@ void process_build_object::visit(chart_plot_area& val)
 	if (attr_3d.distance_)		object_odf_context_.plot_area_.properties_->push_back(_property(L"distance", attr_3d.distance_->get_value_unit(length::pt)) );
 	if (attr_3d.focal_length_)	object_odf_context_.plot_area_.properties_->push_back(_property(L"focal", attr_3d.focal_length_->get_value_unit(length::pt)) );
 	if (attr_3d.projection_)	object_odf_context_.plot_area_.properties_->push_back(_property(L"perspective", *attr_3d.projection_ == L"perspective"));
+}
+
+void process_build_object::visit(chart_coordinate_region& val)
+{
+	read_rect(object_odf_context_.coordinate_region_, val.common_draw_position_attlist_, val.common_draw_size_attlist_);
 }
 
 void process_build_object::visit(chart_axis& val)

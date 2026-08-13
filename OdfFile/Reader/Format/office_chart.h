@@ -273,6 +273,27 @@ public:
 
 CP_REGISTER_OFFICE_ELEMENT2(chart_plot_area);
 
+//  chart:coordinate-region
+class chart_coordinate_region : public office_element_impl<chart_coordinate_region>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeChartCoordinateRegion;
+    CPDOCCORE_DEFINE_VISITABLE();
+
+private:
+    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name) {}
+
+public:
+    odf_types::common_draw_position_attlist	common_draw_position_attlist_;
+    odf_types::common_draw_size_attlist		common_draw_size_attlist_;
+};
+
+CP_REGISTER_OFFICE_ELEMENT2(chart_coordinate_region);
+
 class chart_wall_attlist
 {
 public:

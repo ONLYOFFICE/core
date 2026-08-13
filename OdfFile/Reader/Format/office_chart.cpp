@@ -218,6 +218,17 @@ void chart_plot_area::add_child_element( xml::sax * Reader, const std::wstring &
 	CP_CREATE_ELEMENT(content_);
  }
 
+// chart:coordinate-region
+//////////////////////////////////////////////////////////////////////////////////////////////////
+const wchar_t * chart_coordinate_region::ns = L"chart";
+const wchar_t * chart_coordinate_region::name = L"coordinate-region";
+
+void chart_coordinate_region::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+    common_draw_position_attlist_.add_attributes(Attributes);
+    common_draw_size_attlist_.add_attributes(Attributes);
+}
+
 /////////////
 
 void chart_wall_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )

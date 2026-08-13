@@ -72,11 +72,11 @@ public:
 	void set_data_table(odf_reader::chart::simple & content);
 
 	void set_layout(const _CP_OPT(double) & rel_x, const _CP_OPT(double) & rel_y,
-	                const _CP_OPT(double) & rel_w, const _CP_OPT(double) & rel_h)
+	                const _CP_OPT(double) & rel_w, const _CP_OPT(double) & rel_h, bool inner)
 	{
 		layout_.set_rect(rel_x, rel_y, rel_w, rel_h);
 
-		if (false == layout_.empty())
+		if (inner && false == layout_.empty())
 			layout_.target = std::wstring(L"inner");
 	}
 private:

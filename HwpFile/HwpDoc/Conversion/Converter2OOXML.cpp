@@ -39,6 +39,8 @@
 
 #include "../../../DesktopEditor/common/File.h"
 #include "../../../DesktopEditor/common/Directory.h"
+#include "../../../DesktopEditor/common/Path.h"
+#include "../../../DesktopEditor/common/ProcessEnv.h"
 #include "../../../DesktopEditor/common/SystemUtils.h"
 #include "../../../OfficeUtils/src/OfficeUtils.h"
 
@@ -99,6 +101,22 @@ EShapeObjectType GetShapeObjectType(const std::wstring& wsID)
 		return EShapeObjectType::Rectangle;
 
 	return EShapeObjectType::Unknown;
+}
+
+static bool GetStatusUsingExternalLocalFiles()
+{
+	if (NSProcessEnv::IsPresent(NSProcessEnv::Converter::gc_allowPrivateIP))
+		return NSProcessEnv::GetBoolValue(NSProcessEnv::Converter::gc_allowPrivateIP);
+
+	return true;
+}
+
+static HWP_STRING GetMediaFilePath(const HWP_STRING& sMediaDirectory, const HWP_STRING& sFileName)
+{
+	if (GetStatusUsingExternalLocalFiles())
+		return NSSystemPath::ShortenPath(NSSystemPath::Combine(sMediaDirectory, sFileName));
+
+	return NSSystemPath::ResolveInDirectory(sMediaDirectory, sMediaDirectory, sFileName);
 }
 
 CConverter2OOXML::CConverter2OOXML()
@@ -1618,7 +1636,14 @@ bool CConverter2OOXML::SaveSVGFile(const HWP_STRING& sSVG, HWP_STRING& sFileName
 	sFileName = sFileName.substr(0, sFileName.find(L'.'));
 	sFileName += L".png";
 
-	const std::wstring wsImagePath{m_sTempDirectory + L"/word/media/" + sFileName};
+	const std::wstring wsImagePath{GetMediaFilePath(m_sTempDirectory + L"/word/media", sFileName)};
+
+	if (wsImagePath.empty())
+	{
+		RELEASEINTERFACE(pSvgReader);
+		RELEASEINTERFACE(pFonts);
+		return false;
+	}
 
 	pSvgReader->ConvertToRaster(wsImagePath.c_str(), 4, dW, dH);
 
@@ -1644,8 +1669,15 @@ HWP_STRING CConverter2OOXML::SavePicture(const HWP_STRING& sBinItemId, TConversi
 
 	if (IsRasterFormat(NSFile::GetFileExtention(sFileName)))
 	{
+		const HWP_STRING sImagePath{GetMediaFilePath(m_sTempDirectory + L"/word/media", sFileName)};
+
+		if (sImagePath.empty())
+			return HWP_STRING();
+
 		NSFile::CFileBinary oFile;
-		oFile.CreateFileW(m_sTempDirectory + L"/word/media/" + sFileName);
+		if (!oFile.CreateFileW(sImagePath))
+			return HWP_STRING();
+
 		if (!oFile.WriteFile((unsigned char*)oBuffer.GetCurPtr(), oBuffer.GetSize()))
 		{
 			oFile.CloseFile();

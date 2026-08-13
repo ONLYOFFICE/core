@@ -291,7 +291,7 @@ namespace DocFileFormat
 				FIB->m_CodePageSaved = DocProperties->cpgText;
 			}
 		}
-		if (nWordVersion == 0 && !bErrorFile)
+		if ((nWordVersion == 0 && !bErrorFile) || (nWordVersion > 0 && FIB->m_FibBase.fExtChar))
 		{
 			nDocumentCodePage = ENCODING_UTF16;
 			bDocumentCodePage = true;

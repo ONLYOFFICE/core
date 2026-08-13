@@ -148,7 +148,7 @@ namespace DocFileFormat
 
 	std::vector<std::pair<int, int>> DocumentMapping::get_subsequence( int cpStart, int cpEnd, int fcStars, int fcEnd )
 	{
-		std::vector<std::pair<int, int>> outptu;
+		std::vector<std::pair<int, int>> output;
 
 		int currentFc      = fcStars;
 		int currentCp      = cpStart;
@@ -158,27 +158,28 @@ namespace DocFileFormat
 
 		while ( cpEnd > currentCp)
 		{
+			int lastCp = currentCp;
+
 			currentCp ++;
 			currentFc = m_document->FindFileCharPos(currentCp);
-			if (currentFc < oldElem)
+
+
+			if (currentFc != oldElem + m_document->GetCharSize(lastCp))
 			{
 				currentStart = currentFc;
-				outptu.emplace_back(currentStartcp, currentCp - 1);
+
+				output.emplace_back(currentStartcp, currentCp);
 				currentStartcp = currentCp;
 			}
-			/*else if (currentFc > oldElem)
-			{
-			}
-			else
-			{
-				// -1 //write something to log
-			}*/
 
 			oldElem = currentFc;
 		}
-		outptu.emplace_back(currentStartcp, currentCp);
+		if ((currentCp > currentStartcp) || output.empty())
+		{
+			output.emplace_back(currentStartcp, currentCp);
+		}
 
-		return outptu;
+		return output;
 	}
 
 	// Writes a Paragraph that starts at the given cp and 
@@ -271,8 +272,8 @@ namespace DocFileFormat
 	int DocumentMapping::writeParagraph( int initialCp, int cpEnd, bool sectionEnd, bool lastBad, int paragraphState )
 	{
 		int		cp							=	initialCp;
-		int		fc							=	m_document->FindFileCharPos(cp); 
-		int		fcEnd						=	m_document->FindFileCharPos(cpEnd);
+		int		fc							=	m_document->FindFileCharPos(cp);
+		int		fcEnd						=	(cpEnd > initialCp) ? m_document->FindFileCharPosEnd(cpEnd) : m_document->FindFileCharPos(cpEnd);
         bool    PBookmark                   = false;
 
 		ParagraphPropertyExceptions* papx	=	findValidPapx(fc);

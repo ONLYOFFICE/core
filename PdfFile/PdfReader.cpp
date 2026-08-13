@@ -768,6 +768,7 @@ void CPdfReader::DrawPageOnRenderer(IRenderer* pRenderer, int _nPageIndex, bool*
 	oRendererOut.NewPDF(pDoc->getXRef());
 	oRendererOut.SetBreak(pbBreak);
 	oRendererOut.SetDrawOnlyText(bDrawOnlyText);
+	oRendererOut.SetUseLayer(true);
 	int nRotate = 0;
 #ifdef BUILDING_WASM_MODULE
 	nRotate = -pDoc->getPageRotate(nPageIndex);

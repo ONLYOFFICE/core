@@ -426,6 +426,7 @@ namespace NSDocxRenderer
 
 		if (m_bIsBuildTables)
 		{
+			m_pTableBuilder->m_bIsBuildInlineTables = m_bIsBuildInlineTables;
 			m_pTableBuilder->SetShapes(std::move(m_arShapes));
 			m_pTableBuilder->BuildGraphicallCells();
 			m_arShapes = std::move(m_pTableBuilder->ReturnShapes());

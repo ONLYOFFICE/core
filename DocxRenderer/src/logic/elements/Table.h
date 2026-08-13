@@ -50,6 +50,8 @@ public:
 	using paragraph_ptr_t	= std::shared_ptr<CParagraph>;
 	using ooxml_item_ptr_t	= std::shared_ptr<IOoxmlItem>;
 
+	bool m_bIsBuildInlineTables;
+
 	ITableBuilder() = default;
 	~ITableBuilder() = default;
 

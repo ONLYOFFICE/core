@@ -1619,6 +1619,8 @@ HRESULT CPdfFile::AdvancedCommand(IAdvancedCommand* command)
 	}
 	case IAdvancedCommand::AdvancedCommandType::Macros:
 	{
+		if (m_pInternal->pEditor)
+			m_pInternal->pEditor->CheckMode();
 		PdfWriter::CDocument* pDoc = m_pInternal->pWriter->GetDocument();
 		if (pDoc)
 		{

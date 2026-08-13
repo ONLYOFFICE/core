@@ -4830,6 +4830,11 @@ bool CPdfEditor::DeleteAnnot(int nID, Object* oAnnots)
 
 	return bRes;
 }
+void CPdfEditor::CheckMode()
+{
+	if (m_nMode == Mode::Unknown)
+		IncrementalUpdates();
+}
 bool CPdfEditor::EditWidgets(IAdvancedCommand* pCommand)
 {
 	if (m_nMode == Mode::Unknown && !IncrementalUpdates())

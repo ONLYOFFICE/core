@@ -101,6 +101,11 @@ namespace DocFileFormat
         XMLTools::XMLElement endnotePr	(L"w:endnotePr");
         XMLTools::XMLElement pgNumType	(L"w:pgNumType");
 
+		const SinglePropertyModifier* pSprmBiDi			= NULL;
+		const SinglePropertyModifier* pSprmTitlePg		= NULL;
+		const SinglePropertyModifier* pSprmRtlGutter	= NULL;
+		std::wstring wsVAlign;
+
 		HeaderAndFooterTable* pTable = _ctx->_doc->headerAndFooterTable;
         bool bHasEndnoteNumFmt = false;
 
@@ -123,7 +128,7 @@ namespace DocFileFormat
 						int pgbPageDepth	= FormatUtils::GetIntFromBits(val, 3 , 2);
 						int pgbOffsetFrom	= FormatUtils::GetIntFromBits(val, 5 , 3);
 
-						if (pgbOffsetFrom == 0x1) //else default from text
+						if (pgbOffsetFrom == 0x0)
 							appendValueAttribute( &pgBorders, L"w:offsetFrom", L"page" );
 						
 						if (pgbApplyTo == 0x0)
@@ -411,18 +416,18 @@ namespace DocFileFormat
 
 			case sprmSFBiDi:
 			{
-                appendFlagElement (m_pXmlNode, *iter, L"bidi", iter->argumentsSize > 0 ? iter->Arguments[0] : true );
+				pSprmBiDi = &(*iter);
 			}break;
 
 			case sprmOldSFTitlePage:
 			case sprmSFTitlePage:
 			{
-                appendFlagElement (m_pXmlNode, *iter, L"titlePg", iter->argumentsSize > 0 ? iter->Arguments[0] : true );
+				pSprmTitlePg = &(*iter);
 			}break;
 
 			case sprmSFRTLGutter:
 			{
-                appendFlagElement (m_pXmlNode, *iter, L"rtlGutter", iter->argumentsSize > 0 ? iter->Arguments[0] : true );
+				pSprmRtlGutter = &(*iter);
 			}break;
 				
 			case sprmOldSBkc:
@@ -434,7 +439,7 @@ namespace DocFileFormat
 
 			case sprmOldSVjc:
 			case sprmSVjc:
-                appendValueElement (m_pXmlNode, L"vAlign", FormatUtils::MapValueToWideString( iter->Arguments[0], &TextVerticalAlignment[0][0], 4, 7 ), true );
+				wsVAlign = FormatUtils::MapValueToWideString( iter->Arguments[0], &TextVerticalAlignment[0][0], 4, 7 );
 				break;
 
 			case sprmOldSNfcPgn:
@@ -444,12 +449,12 @@ namespace DocFileFormat
 
 			case sprmOldSPgnStart:
 			case sprmSPgnStart:
-				wsSprmSPgnStart				=	FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) );
+				wsSprmSPgnStart =	FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) );
 				break;
 
 			case sprmOldSFPgnRestart:
 			case sprmSFPgnRestart:
-				bWasSprmSFPgnRestart		=	true;
+				bWasSprmSFPgnRestart =	true;
 				break;
 
 //	<w:lnNumType>	-	Line Numbering Settings
@@ -477,8 +482,8 @@ namespace DocFileFormat
 			case sprmOldSNLnnMod :
 			case sprmSNLnnMod :
 				{
-					short countBy			=	FormatUtils::BytesToUInt16 (iter->Arguments, 0, iter->argumentsSize);
-                    countBy					=	(std::min)((std::max)((int)countBy,0),100);						//	The value MUST be in the interval [0, 100].
+					short countBy =	FormatUtils::BytesToUInt16 (iter->Arguments, 0, iter->argumentsSize);
+                    countBy =	(std::min)((std::max)((int)countBy,0),100);						//	The value MUST be in the interval [0, 100].
 
                     appendValueAttribute (&lnNumType, L"w:countBy", countBy);
 				}
@@ -536,37 +541,49 @@ namespace DocFileFormat
 			}
 		}
 
-        appendValueElement (m_pXmlNode, L"type", _type, true );
-
 		if (footnotePr.GetChildCount())
 			m_pXmlNode->AppendChild (footnotePr);
 
 		if (endnotePr.GetChildCount())
 			m_pXmlNode->AppendChild (endnotePr);
 
+		appendValueElement (m_pXmlNode, L"type", _type, true );
+
 		if (pgSz.GetAttributeCount())
 			m_pXmlNode->AppendChild (pgSz);
-
-		if (pgBorders.GetChildCount())
-			m_pXmlNode->AppendChild (pgBorders);
 
 		if (pgMar.GetAttributeCount())
 			m_pXmlNode->AppendChild (pgMar);
 
+		if (paperSrc.GetAttributeCount())
+			m_pXmlNode->AppendChild (paperSrc);
+
+		if (pgBorders.GetChildCount())
+			m_pXmlNode->AppendChild (pgBorders);
+
 		if (lnNumType.GetAttributeCount())
 			m_pXmlNode->AppendChild (lnNumType);
 
-		if (paperSrc.GetAttributeCount())
-			m_pXmlNode->AppendChild (paperSrc);
+		if (pgNumType.GetAttributeCount())
+			m_pXmlNode->AppendChild (pgNumType);
 
 		if (cols.GetAttributeCount() || cols.GetChildCount())
 			m_pXmlNode->AppendChild (cols);
 
+		if (false == wsVAlign.empty())
+			appendValueElement (m_pXmlNode, L"vAlign", wsVAlign, true );
+
+		if (pSprmTitlePg)
+			appendFlagElement (m_pXmlNode, *pSprmTitlePg, L"titlePg", true );
+
+		if (pSprmBiDi)
+			appendFlagElement (m_pXmlNode, *pSprmBiDi, L"bidi", true );
+
+		if (pSprmRtlGutter)
+			appendFlagElement (m_pXmlNode, *pSprmRtlGutter, L"rtlGutter", true );
+
 		if (docGrid.GetAttributeCount())
 			m_pXmlNode->AppendChild (docGrid);
-
-		if (pgNumType.GetAttributeCount())
-			m_pXmlNode->AppendChild (pgNumType);
 
 		if (m_pXmlWriter)
 			m_pXmlWriter->WriteString (m_pXmlNode->GetXMLString() );

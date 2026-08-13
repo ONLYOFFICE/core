@@ -806,6 +806,35 @@ void ReadNestedCells(XmlUtils::CXmlLiteReader& oReader, std::vector<NSCSS::CNode
 				pWriter->RevertDataOutput();
 			}
 
+			if (L"table" == oReader.GetName())
+			{
+				if (nullptr != pCellData)
+				{
+					oIntermediateData.WriteBefore(*pCellData);
+					delete pCellData;
+				}
+
+				const int nCellContentDepth{oReader.GetDepth() - 1};
+
+				ReadNestedTable(oReader, arSelectors, oPosition, arNestedCells, oCells, pWriter, oExternalTableData, oIntermediateData);
+
+				while (oReader.ReadNextSiblingNode2(nCellContentDepth))
+				{
+					if (L"table" == oReader.GetName())
+					{
+						ReadNestedTable(oReader, arSelectors, oPosition, arNestedCells, oCells, pWriter, oExternalTableData, oIntermediateData);
+						continue;
+					}
+
+					pWriter->SetDataOutput(&oIntermediateData);
+					oExternalTableData.ReadInside(oReader, arSelectors);
+					pWriter->RevertDataOutput();
+				}
+
+				arSelectors.pop_back();
+				continue;
+			}
+
 			while (oPosition.m_unRowIndex < oCells.size() &&
 			       oPosition.m_unColumnIndex < oCells[oPosition.m_unRowIndex].size() &&
 			       nullptr != oCells[oPosition.m_unRowIndex][oPosition.m_unColumnIndex])
@@ -1303,9 +1332,16 @@ Table CMarkdownTable::Flatten(Table&& srcTable)
 				Table& oChild{dynamic_cast<CMarkdownTable*>(pTable)->m_oBody.GetMatrixCells()};
 				Table oFlatChild{Flatten(std::move(oChild))};
 
-				for (size_t unChildRowIndex = 0; unChildRowIndex < oSubInfo.m_unRows; ++unChildRowIndex)
-					for (size_t unChildColumnIndex = 0; unChildColumnIndex < oSubInfo.m_unColumns; ++unChildColumnIndex)
-						oResult[unBaseRow + unCurrentRowOffset + unChildRowIndex][unBaseColumn + unChildColumnIndex] = oFlatChild[unChildRowIndex][unChildColumnIndex];
+				const size_t unChildRows{(std::min)(oSubInfo.m_unRows, oFlatChild.size())};
+
+				for (size_t unChildRowIndex = 0; unChildRowIndex < unChildRows; ++unChildRowIndex)
+				{
+					const Row& arChildRow{oFlatChild[unChildRowIndex]};
+					const size_t unChildColumns{(std::min)(oSubInfo.m_unColumns, arChildRow.size())};
+
+					for (size_t unChildColumnIndex = 0; unChildColumnIndex < unChildColumns; ++unChildColumnIndex)
+						oResult[unBaseRow + unCurrentRowOffset + unChildRowIndex][unBaseColumn + unChildColumnIndex] = arChildRow[unChildColumnIndex];
+				}
 
 				CTableElementCell* pFlatCell{dynamic_cast<CTableElementCell*>(oResult[unBaseRow + unCurrentRowOffset][unBaseColumn])};
 
@@ -1354,27 +1390,43 @@ TElementInfo CMarkdownTable::ComputeInfo(const CTableElement* pTable)
 	if (nullptr == pMarkdownTable)
 		return {1, 1};
 
-	const CTableMatrix *pTableMaxtix{&pMarkdownTable->m_oBody};
+	const Table& arCells{pMarkdownTable->m_oBody.GetMatrixCells()};
 
-	const size_t unRows{pTableMaxtix->GetRowSize()};
-	const size_t unColumns{pTableMaxtix->GetColumnSize()};
+	const size_t unRows{arCells.size()};
+
+	size_t unColumns{0}, unRowColumns{0};
+
+	for (const Row& arRow : arCells)
+	{
+		for (const ITableElementCell* pCell : arRow)
+			unRowColumns += (nullptr != pCell) ? pCell->GetColspan() : 1;
+
+		unColumns = (std::max)(unColumns, unRowColumns);
+
+		unRowColumns = 0;
+	}
+
+	if (0 == unRows || 0 == unColumns)
+		return {1, 1};
 
 	std::vector<size_t> arRowHeights(unRows, 1);
 	std::vector<size_t> arColumnWidths(unColumns, 1);
 
-	const Table& arCells{pTableMaxtix->GetMatrixCells()};
-
 	for (size_t unRowIndex = 0; unRowIndex < unRows; ++unRowIndex)
 	{
-		for (size_t unColumnIndex = 0; unColumnIndex < unColumns; ++unColumnIndex)
-		{
-			TElementInfo oInfo{1, arCells[unRowIndex][unColumnIndex]->GetColspan()};
+		size_t unColumnIndex{0};
 
-			if (IsTableContainer(arCells[unRowIndex][unColumnIndex]))
-				oInfo = ComputeInfo(arCells[unRowIndex][unColumnIndex]);
+		for (const ITableElementCell* pCell : arCells[unRowIndex])
+		{
+			if (unColumnIndex >= unColumns)
+				break;
+
+			const TElementInfo oInfo{IsTableContainer(pCell) ? ComputeInfo(pCell) : TElementInfo{1, 1}};
 
 			arRowHeights[unRowIndex] = (std::max)(arRowHeights[unRowIndex], oInfo.m_unRows);
 			arColumnWidths[unColumnIndex] = (std::max)(arColumnWidths[unColumnIndex], oInfo.m_unColumns);
+
+			unColumnIndex += (nullptr != pCell) ? pCell->GetColspan() : 1;
 		}
 	}
 

@@ -997,7 +997,27 @@ namespace PdfWriter
 		if (pFont)
 			return pFont;
 
-		CFontFileTrueType* pFontTT = CFontFileTrueType::LoadFromFile(wsFontPath, unIndex);
+		bool bFromMemory = false;
+		BYTE* pData = NULL;
+		LONG  lLength = 0;
+
+#ifdef BUILDING_WASM_MODULE
+		NSFonts::IFontsMemoryStorage* pMemoryStorage = NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage();
+		if (pMemoryStorage)
+		{
+			NSFonts::IFontStream* pStream = pMemoryStorage->Get(wsFontPath);
+			if (pStream)
+			{
+				bFromMemory = true;
+				pStream->GetMemory(pData, lLength);
+			}
+		}
+#endif
+		CFontFileTrueType* pFontTT = NULL;
+		if (bFromMemory)
+			pFontTT = CFontFileTrueType::LoadFromBuffer((char*)pData, lLength, unIndex);
+		else
+			pFontTT = CFontFileTrueType::LoadFromFile(wsFontPath, unIndex);
 		if (!pFontTT)
 			return NULL;
 

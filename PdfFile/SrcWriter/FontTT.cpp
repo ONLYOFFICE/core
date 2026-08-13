@@ -72,9 +72,9 @@ namespace PdfWriter
 #endif
 		CFontFileTrueType* pFontTT = NULL;
 		if (bFromMemory)
-			CFontFileTrueType::LoadFromBuffer((char*)pData, lLength, unIndex);
+			pFontTT = CFontFileTrueType::LoadFromBuffer((char*)pData, lLength, unIndex);
 		else
-			CFontFileTrueType::LoadFromFile(wsFontPath, unIndex);
+			pFontTT = CFontFileTrueType::LoadFromFile(wsFontPath, unIndex);
 		m_pFontFile = pFontTT;
 
 		m_wsFontPath  = wsFontPath;

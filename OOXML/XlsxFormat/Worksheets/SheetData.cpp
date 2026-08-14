@@ -2998,7 +2998,7 @@ namespace OOX
 					}
 					case SimpleTypes::Spreadsheet::celltypeSharedString:
 					{
-						if(m_oValue.IsInit())
+						if(m_oValue.IsInit() && !m_oValue->m_sText.empty())
 						{
 							auto CellSst = new XLS::LabelSst;
 							CellSst->cell.rw = CellReference.row;
@@ -5252,7 +5252,7 @@ namespace OOX
 		{
 			processRow(row, cellGroup, shared_formulas_locations_ref);
 		}
-
+		ClearSharedFmlaRefs();
 		return tablePtr;
 	}
     void CSheetData::toBin(XLS::StreamCacheWriterPtr& writer)

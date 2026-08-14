@@ -54,9 +54,12 @@ public:
 	void writeFields(CFRecord& record);
 	static const ElementType type = typeRichTextStream;
 
+	// the amount of rgb that fits into the record itself, the rest goes to ContinueFrt12
+	static const size_t	max_data_size = 8200;
+
 	FrtHeader	frtHeader;
-	_UINT32		dwCheckSum;
-	_UINT32		cb;
+	_UINT32		dwCheckSum = 0;
+	_UINT32		cb = 0;
 	std::string	rgb;
 };
 

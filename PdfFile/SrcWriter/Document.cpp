@@ -108,7 +108,7 @@ namespace PdfWriter
 	{
 		Close();
 	}
-	bool CDocument::CreateNew()
+	bool CDocument::CreateNew(bool bMetadata)
 	{
 		Close();
 
@@ -121,7 +121,7 @@ namespace PdfWriter
 			return false;
 
 		m_pMetaData = NULL;
-		if (~m_nRedactInfo & (1 << 8))
+		if (bMetadata && (~m_nRedactInfo & (1 << 8)))
 		{
 			m_pMetaData = new CStreamData(m_pXref);
 			if (!m_pMetaData)
@@ -997,7 +997,27 @@ namespace PdfWriter
 		if (pFont)
 			return pFont;
 
-		CFontFileTrueType* pFontTT = CFontFileTrueType::LoadFromFile(wsFontPath, unIndex);
+		bool bFromMemory = false;
+		BYTE* pData = NULL;
+		LONG  lLength = 0;
+
+#ifdef BUILDING_WASM_MODULE
+		NSFonts::IFontsMemoryStorage* pMemoryStorage = NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage();
+		if (pMemoryStorage)
+		{
+			NSFonts::IFontStream* pStream = pMemoryStorage->Get(wsFontPath);
+			if (pStream)
+			{
+				bFromMemory = true;
+				pStream->GetMemory(pData, lLength);
+			}
+		}
+#endif
+		CFontFileTrueType* pFontTT = NULL;
+		if (bFromMemory)
+			pFontTT = CFontFileTrueType::LoadFromBuffer((char*)pData, lLength, unIndex);
+		else
+			pFontTT = CFontFileTrueType::LoadFromFile(wsFontPath, unIndex);
 		if (!pFontTT)
 			return NULL;
 
@@ -1476,8 +1496,15 @@ namespace PdfWriter
 			}
 		}
 	}
-	void CDocument::RemoveObj(CObjectBase* pObj)
+	void CDocument::RemoveObj(CObjectBase* pObj, bool bCascade, std::vector<CObjectBase*>* pRemoved)
 	{
+		if (!pObj)
+			return;
+
+		std::vector<CObjectBase*> arrChildren;
+		if (bCascade)
+			pObj->GetChildRefs(arrChildren);
+
 		std::map<int, CAnnotation*>::iterator it1 = std::find_if(m_mAnnotations.begin(), m_mAnnotations.end(), [pObj](const std::pair<int, CAnnotation*>& t){ return t.second == pObj; });
 		if (it1 != m_mAnnotations.end())
 		{
@@ -1492,7 +1519,21 @@ namespace PdfWriter
 			m_mEditPages.erase(it2);
 		if (m_pCurPage == pObj)
 			m_pCurPage = NULL;
+
 		m_pXref->Remove(pObj);
+		if (pRemoved)
+			pRemoved->push_back(pObj);
+
+		if (!bCascade)
+			return;
+
+		for (size_t i = 0; i < arrChildren.size(); ++i)
+		{
+			CObjectBase* pChild = arrChildren[i];
+			TXrefEntry* pChildEntry = pChild->GetXrefEntry();
+			if (pChildEntry && pChildEntry->pRefObj.empty())
+				RemoveObj(pChild, true, pRemoved);
+		}
 	}
 	bool CDocument::CheckFieldName(CFieldBase* pField, const std::string& sName)
 	{
@@ -1869,17 +1910,28 @@ namespace PdfWriter
 
 		return true;
 	}
-	void CDocument::AddRoles(BYTE* pMetaData, DWORD nMetaLength)
+	void CDocument::AddOOField(const std::string& sName, BYTE* pMetaData, DWORD nMetaLength, CDictObject* pDict)
 	{
-		if (!CheckAcroForm())
-			return;
+		if (!pDict)
+		{
+			if (!CheckAcroForm())
+				return;
+			pDict = m_pAcroForm;
+		}
 
-		CDictObject* pRoles = new CDictObject(m_pXref);
-		pRoles->SetFilter(STREAM_FILTER_FLATE_DECODE);
+		CDictObject* pOO = dynamic_cast<CDictObject*>(pDict->Get("OO"));
+		if (!pOO)
+		{
+			pOO = new CDictObject();
+			pDict->Add("OO", pOO);
+		}
 
-		m_pAcroForm->Add("ONLYOFFICE_FORMS_ROLES", pRoles);
+		CDictObject* pField = new CDictObject(m_pXref);
+		pField->SetFilter(STREAM_FILTER_FLATE_DECODE);
 
-		CStream* pStream = pRoles->GetStream();
+		pOO->Add(sName, pField);
+
+		CStream* pStream = pField->GetStream();
 		pStream->Write(pMetaData, nMetaLength);
 	}
 	CPage* CDocument::AddPage(int nPageIndex, CPage* _pNewPage)

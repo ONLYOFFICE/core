@@ -133,6 +133,10 @@ JSSmart<CJSValue> CDrawingFileEmbed::GetStructure()
 {
 	return WasmMemoryToJS(m_pFile->GetStructure());
 }
+JSSmart<CJSValue> CDrawingFileEmbed::GetMacros()
+{
+	return WasmMemoryToJS(m_pFile->GetMacros());
+}
 JSSmart<CJSValue> CDrawingFileEmbed::GetInteractiveFormsInfo()
 {
 	return WasmMemoryToJS(m_pFile->GetInteractiveFormsInfo());
@@ -297,12 +301,13 @@ JSSmart<CJSValue> CDrawingFileEmbed::UndoRedact()
 		return CJSContext::createBool(m_pFile->UndoRedact());
 	return CJSContext::createBool(false);
 }
-JSSmart<CJSValue> CDrawingFileEmbed::EditPdf(JSSmart<CJSValue> data)
+JSSmart<CJSValue> CDrawingFileEmbed::BuildPdf(JSSmart<CJSValue> data, JSSmart<CJSValue> sPassword)
 {
 	CJSDataBuffer changes;
 	if (data->isTypedArray())
 		changes = data->toTypedArray()->getData();
-	JSSmart<CJSValue> res = WasmMemoryToJS(m_pFile->EditPdf(changes.Data, (LONG)changes.Len));
+	std::wstring wsPassword = sPassword->isString() ? sPassword->toStringW() : L"";
+	JSSmart<CJSValue> res = WasmMemoryToJS(m_pFile->BuildPdf(changes.Data, (LONG)changes.Len, sPassword->isString() ? wsPassword.c_str() : NULL));
 	return res;
 }
 

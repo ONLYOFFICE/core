@@ -55,6 +55,7 @@ namespace XLS
 		L"800000", 	L"800000", 	L"808000", 	L"800080", 	L"808000", 	L"C0C0C0", 	L"808080", 	L"9999FF", 	L"993366", 	L"FFFFCC", 
 		L"CCFFFF", 	L"660066", 	L"FF8080", 	L"0066CC", 	L"CCCCFF"
 	};
+	const int default_marker_color_count = sizeof(default_marker_color) / sizeof(default_marker_color[0]);
 
 MarkerFormat::MarkerFormat()
 {
@@ -97,7 +98,7 @@ int MarkerFormat::serialize(std::wostream & _stream)
 {
 	return serialize(_stream, -1, BaseObjectPtr());
 }
-int MarkerFormat::serialize(std::wostream & _stream, int index, BaseObjectPtr _GELFRAME, std::wstring spPr)
+int MarkerFormat::serialize(std::wostream & _stream, int index, BaseObjectPtr _GELFRAME, const std::wstring & spPr)
 {
 	std::wstring strSymbol;
 	std::wstringstream strm_fill;
@@ -157,7 +158,7 @@ int MarkerFormat::serialize(std::wostream & _stream, int index, BaseObjectPtr _G
 							{
 								CP_XML_NODE(L"a:srgbClr")
 								{
-									CP_XML_ATTR(L"val", (false == fAuto || index < 0 || index > default_marker_color->size()) ? rgbBack.strRGB : default_marker_color[index]);
+									CP_XML_ATTR(L"val", (false == fAuto || index < 0 || index >= default_marker_color_count) ? rgbBack.strRGB : default_marker_color[index]);
 								}
 							}
 						}
@@ -167,7 +168,7 @@ int MarkerFormat::serialize(std::wostream & _stream, int index, BaseObjectPtr _G
 							{
 								CP_XML_NODE(L"a:srgbClr")
 								{
-									CP_XML_ATTR(L"val", (false == fAuto || index < 0 || index > default_marker_color->size()) ? rgbFore.strRGB : default_marker_color[index]);
+									CP_XML_ATTR(L"val", (false == fAuto || index < 0 || index >= default_marker_color_count) ? rgbFore.strRGB : default_marker_color[index]);
 								}
 							}
 							CP_XML_NODE(L"a:prstDash") { CP_XML_ATTR(L"val", L"solid"); }

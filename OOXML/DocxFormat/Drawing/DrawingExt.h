@@ -41,6 +41,13 @@ namespace SimpleTypes
 {
 	class CGuid;
 }
+namespace PPTX
+{
+	namespace Logic
+	{
+		class CNvPr;
+	}
+}
 namespace OOX
 {
 	class RId;
@@ -71,7 +78,6 @@ namespace OOX
 		class CRichValueBlock;
         class CWorkbookPivotCaches;
 	}
-
 	namespace Drawing
 	{
 		class CCompatExt : public WritingElement
@@ -171,8 +177,10 @@ namespace OOX
 
 			std::vector<OOX::Spreadsheet::CConditionalFormatting*>	m_arrConditionalFormatting;
 
-			nullable < OOX::Spreadsheet::CDynamicArrayProperties>	m_oDynamicArrayProperties;
-			nullable < OOX::Spreadsheet::CRichValueBlock>			m_oRichValueBlock;
+			nullable<OOX::Spreadsheet::CDynamicArrayProperties>	m_oDynamicArrayProperties;
+			nullable<OOX::Spreadsheet::CRichValueBlock>			m_oRichValueBlock;
+
+			nullable<PPTX::Logic::CNvPr> m_oCNvPr;
 
 			nullable<OOX::CPresenceInfo> m_oPresenceInfo;
 

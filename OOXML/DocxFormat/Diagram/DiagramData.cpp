@@ -46,6 +46,7 @@
 #include "../../VsdxFormat/Vsdx.h"
 
 #include "../../PPTXFormat/Logic/SpTree.h"
+#include "../../PPTXFormat/Logic/CNvPr.h"
 #include "../../Binary/Presentation/BinaryFileReaderWriter.h"
 
 namespace OOX
@@ -831,11 +832,21 @@ namespace OOX
 			std::wstring sName = oReader.GetName();
 
 			if (L"dgm:spPr" == sName)
+			{
 				m_oSpPr = oReader;
+			}
 			else if (L"dgm:t" == sName)
+			{
 				m_oTxBody = oReader;
+			}
 			else if (L"dgm:prSet" == sName)
+			{
 				m_oPrSet = oReader;
+			}
+			else if (L"dgm:extLst" == sName)
+			{
+				m_oExtLst = oReader;
+			}
 		}
 	}
 
@@ -884,6 +895,15 @@ namespace OOX
 					m_oPrSet.Init();
 					m_oPrSet->fromPPTY(pReader);
 				}break;
+				case 3:
+				{
+					if (false == m_oExtLst.IsInit()) m_oExtLst.Init();
+					m_oExtLst->m_arrExt.push_back(new OOX::Drawing::COfficeArtExtension());
+					m_oExtLst->m_arrExt.back()->m_sUri = L"{E40237B7-FDA0-4F09-8148-C483321AD2D9}";
+					m_oExtLst->m_arrExt.back()->m_oCNvPr.Init();
+					m_oExtLst->m_arrExt.back()->m_oCNvPr->fromPPTY(pReader);
+					m_oExtLst->m_arrExt.back()->m_oCNvPr->m_namespace = L"dgm14";
+				}break;
 				default:
 				{
 					pReader->SkipRecord();
@@ -914,6 +934,14 @@ namespace OOX
 		pWriter->WriteRecord2(1, m_oTxBody);
 		pWriter->WriteRecord2(2, m_oPrSet);
 
+		if (m_oExtLst.IsInit())
+		{
+			for (auto ext : m_oExtLst->m_arrExt)
+			{
+				pWriter->WriteRecord2(3, ext->m_oCNvPr);
+			}
+		}
+
 	}
 
 	void Diagram::CPt::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
@@ -941,6 +969,9 @@ namespace OOX
 		
 		if (m_oTxBody.IsInit())
 			m_oTxBody->toXmlWriter(pWriter);		
+
+		if (m_oExtLst.IsInit()) 
+			m_oExtLst->toXmlWriter(pWriter);
 
 		pWriter->WriteNodeEnd(L"dgm:pt");
 	}

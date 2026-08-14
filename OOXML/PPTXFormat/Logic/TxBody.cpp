@@ -38,6 +38,9 @@
 #include "../Theme.h"
 #include "../../Common/SimpleTypes_Word.h"
 
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/TEXTPROPS.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/TextPropsStream.h"
+
 #include "boost/format.hpp"
 
 namespace PPTX
@@ -160,6 +163,29 @@ namespace PPTX
 			oValue.WriteArray(Paragrs);
 
 			return XmlUtils::CreateNode(m_name, oValue);
+		}
+		XLS::BaseObjectPtr TxBody::toXLSText() const
+		{
+			auto textProps	= new XLS::TEXTPROPS;
+			auto stream		= new XLS::TextPropsStream;
+			textProps->textPropsStream = XLS::BaseObjectPtr(stream);
+
+			std::wstring xmlProps = L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>";
+			{
+				XmlUtils::CAttribute oAttr;
+				oAttr.Write(L"xmlns:c", std::wstring(L"http://schemas.openxmlformats.org/drawingml/2006/chart"));
+				oAttr.Write(L"xmlns:a", std::wstring(L"http://schemas.openxmlformats.org/drawingml/2006/main"));
+
+				XmlUtils::CNodeValue oValue;
+				oValue.WriteNullable(bodyPr);
+				oValue.WriteNullable(lstStyle);
+				oValue.WriteArray(Paragrs);
+
+				xmlProps += XmlUtils::CreateNode(L"c:txPr", oAttr, oValue);
+			}
+			stream->xml_ = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(xmlProps);
+
+			return XLS::BaseObjectPtr(textProps);
 		}
 		std::wstring TxBody::toVML()
 		{

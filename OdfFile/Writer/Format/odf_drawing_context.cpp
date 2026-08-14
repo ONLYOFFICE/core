@@ -1118,11 +1118,11 @@ void odf_drawing_context::end_shape()
 		if(!line->draw_line_attlist_.svg_y1_)
 			line->draw_line_attlist_.svg_y1_ = odf_types::length(0,odf_types::length::unit::cm);
 
-		if(line->draw_line_attlist_.svg_x1_ && impl_->current_drawing_state_.svg_width_ && !line->draw_line_attlist_.svg_x2_)
-			line->draw_line_attlist_.svg_x2_ = impl_->current_drawing_state_.svg_width_.get();
+		if (!line->draw_line_attlist_.svg_x2_)
+			line->draw_line_attlist_.svg_x2_ = line->draw_line_attlist_.svg_x1_.get() + ((impl_->current_drawing_state_.svg_width_) ? impl_->current_drawing_state_.svg_width_.get() : 0);
 
-		if(line->draw_line_attlist_.svg_y1_ && impl_->current_drawing_state_.svg_height_ && !line->draw_line_attlist_.svg_y2_)
-			line->draw_line_attlist_.svg_y2_ = impl_->current_drawing_state_.svg_height_.get();
+		if (!line->draw_line_attlist_.svg_y2_)
+			line->draw_line_attlist_.svg_y2_ = line->draw_line_attlist_.svg_y1_.get() + ((impl_->current_drawing_state_.svg_height_) ? impl_->current_drawing_state_.svg_height_.get() : 0);
 
 		double new_center_x(line->draw_line_attlist_.svg_x2_->get_value()/2),new_center_y(line->draw_line_attlist_.svg_y2_->get_value()/2);
 
@@ -1143,10 +1143,10 @@ void odf_drawing_context::end_shape()
 			impl_->current_drawing_state_.rotateAngle_ = boost::none;
 		}
 
-		line->draw_line_attlist_.svg_x1_ = line->draw_line_attlist_.svg_x1_.get() + impl_->current_drawing_state_.svg_x_.get();
-		line->draw_line_attlist_.svg_x2_ = line->draw_line_attlist_.svg_x2_.get() + impl_->current_drawing_state_.svg_x_.get();
-		line->draw_line_attlist_.svg_y1_ = line->draw_line_attlist_.svg_y1_.get() + impl_->current_drawing_state_.svg_y_.get();
-		line->draw_line_attlist_.svg_y2_ = line->draw_line_attlist_.svg_y2_.get() + impl_->current_drawing_state_.svg_y_.get();
+		line->draw_line_attlist_.svg_x1_ = line->draw_line_attlist_.svg_x1_.get() + ((impl_->current_drawing_state_.svg_x_) ? impl_->current_drawing_state_.svg_x_.get() : 0);
+		line->draw_line_attlist_.svg_x2_ = line->draw_line_attlist_.svg_x2_.get() + ((impl_->current_drawing_state_.svg_x_) ? impl_->current_drawing_state_.svg_x_.get() : 0);
+		line->draw_line_attlist_.svg_y1_ = line->draw_line_attlist_.svg_y1_.get() + ((impl_->current_drawing_state_.svg_y_) ? impl_->current_drawing_state_.svg_y_.get() : 0);
+		line->draw_line_attlist_.svg_y2_ = line->draw_line_attlist_.svg_y2_.get() + ((impl_->current_drawing_state_.svg_y_) ? impl_->current_drawing_state_.svg_y_.get() : 0);
 
 		impl_->current_drawing_state_.svg_height_ = boost::none;
 		impl_->current_drawing_state_.svg_width_ = boost::none;

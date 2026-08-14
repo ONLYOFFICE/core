@@ -77,6 +77,7 @@
 #include "../../XlsbFormat/Biff12_unions/DYNAMICARRAYMETADATA.h"
 #include "../../XlsbFormat/Biff12_unions/RICHDATAMETADATA.h"
 #include "../../XlsbFormat/Biff12_records/FRTBegin.h"
+#include "../../PPTXFormat/Logic/CNvPr.h"
 
 namespace OOX
 {
@@ -179,6 +180,7 @@ namespace OOX
 			m_oChartFiltering.reset();
 			m_oTimelineRefs.reset();
 			m_oTimelineCacheRefs.reset();
+			m_oCNvPr.reset();
 
 			for (size_t nIndex = 0; nIndex < m_arrConditionalFormatting.size(); ++nIndex)
 			{
@@ -237,6 +239,7 @@ namespace OOX
 										*m_sUri == L"{bdbb8cdc-fa1e-496e-a857-3c3f30c029c3}" ||
                                         *m_sUri == L"{876F7934-8845-4945-9796-88D515C7AA90}" ||
 										*m_sUri == L"{C7286773-470A-42A8-94C5-96B5CB345126}" ||
+										*m_sUri == L"{E40237B7-FDA0-4F09-8148-C483321AD2D9}" ||
 										*m_sUri == L"http://schemas.microsoft.com/office/drawing/2008/diagram"))
 			{
 				int nCurDepth = oReader.GetDepth();
@@ -402,6 +405,10 @@ namespace OOX
                         m_oWorkbookPivotCaches = oReader;
                         m_oWorkbookPivotCaches->pivotCaches14 = true;
                     }
+					else if (sName == L"cNvPr")
+					{
+						m_oCNvPr = oReader;
+					}
 				}
 			}
 			else
@@ -650,6 +657,12 @@ namespace OOX
 				writer.WriteAttribute(L"i", *m_oXfComplement);
 				writer.EndAttributesAndNode();
 				sResult += writer.GetData().c_str();
+			}
+			if (m_oCNvPr.IsInit())
+			{
+				NSBinPptxRW::CXmlWriter oWriter;
+				m_oCNvPr->toXmlWriter(&oWriter);
+				sResult += oWriter.GetXmlString();
 			}
 			sResult += L"</" + sNamespace + L"ext>";
 

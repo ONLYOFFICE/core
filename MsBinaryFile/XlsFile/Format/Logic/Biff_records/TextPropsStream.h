@@ -57,8 +57,11 @@ public:
 
 	static const ElementType	type = typeTextPropsStream;
 
+	// the amount of xml_ that fits into the record itself, the rest goes to ContinueFrt12
+	static const size_t			max_data_size = 8200;
+
 	FrtHeader		frtHeader;
-	_UINT32			dwChecksum;
+	_UINT32			dwChecksum = 0;
 
 	std::string		xml_;
 };

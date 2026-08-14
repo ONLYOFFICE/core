@@ -237,6 +237,29 @@ bool CPdfReader::LoadFromMemory(NSFonts::IApplicationFonts* pAppFonts, BYTE* dat
 
 	return MergePages(data, length, wsOwnerPassword);
 }
+bool CPdfReader::GetMemory(BYTE** ppData, DWORD* pLength)
+{
+	if (m_vPDFContext.empty())
+		return false;
+
+	PDFDoc* pDoc = m_vPDFContext[0]->m_pDocument;
+	if (!pDoc)
+		return false;
+
+	BaseStream* pStream = pDoc->getBaseStream();
+	if (!pStream)
+		return false;
+
+	Guint nLength = 0;
+	char* pBuffer = pStream->getRawBuffer(&nLength);
+	if (!pBuffer || nLength == 0)
+		return false;
+
+	*ppData = (BYTE*)pBuffer;
+	*pLength = (DWORD)nLength;
+
+	return true;
+}
 void CPdfReader::Close()
 {
 	Clear();
@@ -745,6 +768,7 @@ void CPdfReader::DrawPageOnRenderer(IRenderer* pRenderer, int _nPageIndex, bool*
 	oRendererOut.NewPDF(pDoc->getXRef());
 	oRendererOut.SetBreak(pbBreak);
 	oRendererOut.SetDrawOnlyText(bDrawOnlyText);
+	oRendererOut.SetUseLayer(true);
 	int nRotate = 0;
 #ifdef BUILDING_WASM_MODULE
 	nRotate = -pDoc->getPageRotate(nPageIndex);
@@ -1349,6 +1373,50 @@ BYTE* CPdfReader::GetLinks(int _nPageIndex)
 
 	return oLinks.Serialize();
 }
+BYTE* CPdfReader::GetMacros()
+{
+	if (m_vPDFContext.empty())
+		return NULL;
+
+	PDFDoc* pDoc = m_vPDFContext.front()->m_pDocument;
+	if (!pDoc || !pDoc->getCatalog() || !pDoc->getCatalog()->getForm())
+		return NULL;
+
+	AcroForm* pAcroForms = pDoc->getCatalog()->getForm();
+	Object* oAcroForm = pAcroForms->getAcroFormObj();
+
+
+
+	CObjectGuard oOO;
+	if (!oAcroForm->dictLookup("OO", oOO.get())->isDict())
+		return NULL;
+
+	CObjectGuard oMacros;
+	if (!oOO->dictLookup("OO_MACROS", oMacros.get())->isStream())
+		return NULL;
+
+	Stream* pStream = oMacros->getStream();
+	pStream->reset();
+
+	std::vector<BYTE> arrBuffer;
+	int c;
+	while ((c = pStream->getChar()) != EOF)
+		arrBuffer.push_back((BYTE)c);
+
+	pStream->close();
+
+	if (arrBuffer.empty())
+		return NULL;
+
+	NSWasm::CData oRes;
+	oRes.SkipLen();
+	oRes.WriteString(arrBuffer.data(), (unsigned int)arrBuffer.size());
+
+	oRes.WriteLen();
+	BYTE* pRes = oRes.GetBuffer();
+	oRes.ClearWithoutAttack();
+	return pRes;
+}
 BYTE* CPdfReader::GetWidgets()
 {
 	NSWasm::CData oRes;
@@ -1696,6 +1764,63 @@ BYTE* CPdfReader::GetButtonIcon(int nBackgroundColor, int _nPageIndex, bool bBas
 			continue;
 		}
 		oRef.free();
+
+		CObjectGuard oOO;
+		if (pField->fieldLookup("OO", oOO.get())->isDict())
+		{
+			bool bFirst = true;
+			int nMKPos  = -1;
+			unsigned int nMKLength = 0;
+			int nUnique = 0;
+			std::vector<const char*> arrMKName { "I", "RI", "IX" };
+			for (unsigned int j = 0; j < arrMKName.size(); ++j)
+			{
+				if (sIconView && strcmp(sIconView, arrMKName[j]) != 0)
+					continue;
+				std::string sMKName(arrMKName[j]);
+
+				CObjectGuard oStr;
+				if (oOO->dictLookup(sMKName.c_str(), oStr.get())->isStream())
+				{
+					if (bFirst)
+					{
+						Object oFieldRef;
+						pField->getFieldRef(&oFieldRef);
+						// Annotation number for matching with AP
+						oRes.AddInt(oFieldRef.getRefNum() + nStartRefID);
+						oFieldRef.free();
+
+						// Number of icons 1-3
+						nMKPos = oRes.GetSize();
+						oRes.AddInt(nMKLength);
+						bFirst = false;
+					}
+
+					Stream* pStream = oStr->getStream();
+					pStream->reset();
+
+					std::vector<BYTE> arrBuffer;
+					int c;
+					while ((c = pStream->getChar()) != EOF)
+						arrBuffer.push_back((BYTE)c);
+
+					pStream->close();
+
+					oRes.WriteString(sMKName);
+					oRes.AddInt(nUnique++); // IDRef
+					oRes.WriteBYTE(1); // unique
+					oRes.AddInt(0); // w
+					oRes.AddInt(0); // h
+
+					oRes.WriteString(arrBuffer.data(), (unsigned int)arrBuffer.size());
+					nMKLength++;
+				}
+			}
+
+			if (nMKPos > 0)
+				oRes.AddInt(nMKLength, nMKPos);
+			continue;
+		}
 
 		Object oMK;
 		if (!pField->fieldLookup("MK", &oMK)->isDict())

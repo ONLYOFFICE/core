@@ -451,12 +451,14 @@ static constexpr const char* NODE_NAMES[MAX_TYPES][MAX_NODES] =
 	}
 };
 
+#define GET_ENUM_INDEX(enum_variable) static_cast<int>(enum_variable)
+
 inline const char* GetNodeName(ENode eNode, EHanType eType)
 {
 	switch (eType)
 	{
-		case EHanType::HWPX:  return NODE_NAMES[0][static_cast<int>(eNode)];
-		case EHanType::HWPML: return NODE_NAMES[1][static_cast<int>(eNode)];
+		case EHanType::HWPX:  return NODE_NAMES[0][GET_ENUM_INDEX(eNode)];
+		case EHanType::HWPML: return NODE_NAMES[1][GET_ENUM_INDEX(eNode)];
 		default: return "";
 	}
 }
@@ -465,8 +467,8 @@ inline bool Equals(ENode eNode, EHanType eType, const std::string& sNodeName)
 {
 	switch (eType)
 	{
-		case EHanType::HWPX:  return NODE_NAMES[0][static_cast<int>(eNode)] == sNodeName;
-		case EHanType::HWPML: return NODE_NAMES[1][static_cast<int>(eNode)] == sNodeName;
+		case EHanType::HWPX:  return NODE_NAMES[0][GET_ENUM_INDEX(eNode)] == sNodeName;
+		case EHanType::HWPML: return NODE_NAMES[1][GET_ENUM_INDEX(eNode)] == sNodeName;
 		default: return false;
 	}
 }
@@ -1101,8 +1103,8 @@ inline const char* GetAttributeName(EAttribute eNode, EHanType eType)
 {
 	switch (eType)
 	{
-		case EHanType::HWPX:  return ATTRUBUTE_NAMES[0][static_cast<int>(eNode)];
-		case EHanType::HWPML: return ATTRUBUTE_NAMES[1][static_cast<int>(eNode)];
+		case EHanType::HWPX:  return ATTRUBUTE_NAMES[0][GET_ENUM_INDEX(eNode)];
+		case EHanType::HWPML: return ATTRUBUTE_NAMES[1][GET_ENUM_INDEX(eNode)];
 		default: return "";
 	}
 }
@@ -1111,8 +1113,8 @@ inline bool Equals(EAttribute eAttribute, EHanType eType, const std::string& sAt
 {
 	switch (eType)
 	{
-		case EHanType::HWPX:  return ATTRUBUTE_NAMES[0][static_cast<int>(eAttribute)] == sAttributeName;
-		case EHanType::HWPML: return ATTRUBUTE_NAMES[1][static_cast<int>(eAttribute)] == sAttributeName;
+		case EHanType::HWPX:  return ATTRUBUTE_NAMES[0][GET_ENUM_INDEX(eAttribute)] == sAttributeName;
+		case EHanType::HWPML: return ATTRUBUTE_NAMES[1][GET_ENUM_INDEX(eAttribute)] == sAttributeName;
 		default: return false;
 	}
 }
@@ -1489,8 +1491,8 @@ inline const char* GetValueName(EValue eValue, EHanType eType)
 {
 	switch (eType)
 	{
-		case EHanType::HWPX:  return VALUE_NAMES[0][static_cast<int>(eValue)];
-		case EHanType::HWPML: return VALUE_NAMES[1][static_cast<int>(eValue)];
+		case EHanType::HWPX:  return VALUE_NAMES[0][GET_ENUM_INDEX(eValue)];
+		case EHanType::HWPML: return VALUE_NAMES[1][GET_ENUM_INDEX(eValue)];
 		default: return "";
 	}
 }

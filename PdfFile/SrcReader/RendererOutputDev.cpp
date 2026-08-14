@@ -120,6 +120,7 @@ namespace PdfReader
 		m_pSoftMask = NULL;
 
 		m_bDrawOnlyText = false;
+		m_bUseLayer = false;
 	}
 	RendererOutputDev::~RendererOutputDev()
 	{
@@ -143,9 +144,15 @@ namespace PdfReader
 			m_bDrawOnlyText = true;
 		else if (!m_bDrawOnlyText)
 			m_bDrawOnlyText = false;
+
+		if (m_bUseLayer)
+			m_pRenderer->BeginCommand(c_nLayerType);
 	}
 	void RendererOutputDev::endPage()
 	{
+		if (m_bUseLayer)
+			m_pRenderer->EndCommand(c_nLayerType);
+
 		m_pRenderer->EndCommand(c_nPageType);
 	}
 	void RendererOutputDev::saveState(GfxState* pGState)

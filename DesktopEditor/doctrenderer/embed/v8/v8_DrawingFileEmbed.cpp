@@ -17,6 +17,7 @@ namespace NSDrawingFileEmbed
 	FUNCTION_WRAPPER_V8_1(_DestroyPixmap, DestroyPixmap)
 	FUNCTION_WRAPPER_V8_1(_GetLinks, GetLinks)
 	FUNCTION_WRAPPER_V8_0(_GetStructure, GetStructure)
+	FUNCTION_WRAPPER_V8_0(_GetMacros, GetMacros)
 	FUNCTION_WRAPPER_V8_0(_GetInteractiveFormsInfo, GetInteractiveFormsInfo)
 	FUNCTION_WRAPPER_V8_1(_GetInteractiveFormsFonts, GetInteractiveFormsFonts)
 	FUNCTION_WRAPPER_V8_7(_GetInteractiveFormsAP, GetInteractiveFormsAP)
@@ -37,7 +38,7 @@ namespace NSDrawingFileEmbed
 	FUNCTION_WRAPPER_V8_0(_UnmergePages, UnmergePages)
 	FUNCTION_WRAPPER_V8_3(_RedactPage, RedactPage)
 	FUNCTION_WRAPPER_V8_0(_UndoRedact, UndoRedact)
-	FUNCTION_WRAPPER_V8_1(_EditPdf, EditPdf)
+	FUNCTION_WRAPPER_V8_2(_BuildPdf, BuildPdf)
 	FUNCTION_WRAPPER_V8_1(_CheckOwnerPassword, CheckOwnerPassword)
 	FUNCTION_WRAPPER_V8_1(_CheckPerm, CheckPerm)
 
@@ -56,6 +57,7 @@ namespace NSDrawingFileEmbed
 		NSV8Objects::Template_Set(result, "DestroyPixmap",	_DestroyPixmap);
 		NSV8Objects::Template_Set(result, "GetLinks",	_GetLinks);
 		NSV8Objects::Template_Set(result, "GetStructure",	_GetStructure);
+		NSV8Objects::Template_Set(result, "GetMacros",	_GetMacros);
 		NSV8Objects::Template_Set(result, "GetInteractiveFormsInfo",	_GetInteractiveFormsInfo);
 		NSV8Objects::Template_Set(result, "GetInteractiveFormsFonts",	_GetInteractiveFormsFonts);
 		NSV8Objects::Template_Set(result, "GetInteractiveFormsAP",	_GetInteractiveFormsAP);
@@ -76,7 +78,7 @@ namespace NSDrawingFileEmbed
 		NSV8Objects::Template_Set(result, "UnmergePages",	_UnmergePages);
 		NSV8Objects::Template_Set(result, "RedactPage",	_RedactPage);
 		NSV8Objects::Template_Set(result, "UndoRedact",	_UndoRedact);
-		NSV8Objects::Template_Set(result, "EditPdf",	_EditPdf);
+		NSV8Objects::Template_Set(result, "BuildPdf",	_BuildPdf);
 		NSV8Objects::Template_Set(result, "CheckOwnerPassword",	_CheckOwnerPassword);
 		NSV8Objects::Template_Set(result, "CheckPerm",	_CheckPerm);
 

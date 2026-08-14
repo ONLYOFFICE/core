@@ -75,6 +75,7 @@ public:
 
 	bool LoadFromFile  (NSFonts::IApplicationFonts* pAppFonts, const std::wstring& file, const wchar_t* owner_password = NULL, const wchar_t* user_password = NULL);
 	bool LoadFromMemory(NSFonts::IApplicationFonts* pAppFonts, BYTE* data, DWORD length, const wchar_t* owner_password = NULL, const wchar_t* user_password = NULL);
+	bool GetMemory(BYTE** ppData, DWORD* pLength);
 
 	void Close();
 	void CleanUp();
@@ -124,6 +125,7 @@ public:
 	void SetFonts(PdfReader::CPdfFontList* pFontList);
 	BYTE* GetStructure();
 	BYTE* GetLinks(int nPageIndex);
+	BYTE* GetMacros();
 	BYTE* GetWidgets();
 	BYTE* GetFonts(bool bStandart);
 	BYTE* GetAllFonts(int* arrPageIndex, int nLength, bool bCheck = true);

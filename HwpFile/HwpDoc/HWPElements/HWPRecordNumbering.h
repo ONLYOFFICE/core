@@ -44,6 +44,29 @@
 namespace HWP
 {
 
+enum class ENumberFormat
+{
+	DIGIT,
+	CIRCLED_DIGIT,
+	ROMAN_CAPITAL,
+	ROMAN_SMALL,
+	LATIN_CAPITAL,
+	LATIN_SMALL,
+	CIRCLED_LATIN_CAPITAL,
+	CIRCLED_LATIN_SMALL,
+	HANGUL_SYLLABLE,
+	CIRCLED_HANGUL_SYLLABLE,
+	HANGUL_JAMO,
+	CIRCLED_HANGUL_JAMO,
+	HANGUL_PHONETIC,
+	IDEOGRAPH,
+	CIRCLED_IDEOGRAPH,
+	DECAGON_CIRCLE,
+	DECAGON_CIRCLE_HANJA,
+	SYMBOL,
+	USER_CHAR
+};
+
 struct TParaHeadInfo
 {
 	HWP_BYTE m_chAlign;
@@ -59,6 +82,7 @@ struct TParaHeadInfo
 struct TNumbering : public TParaHeadInfo
 {
 	HWP_STRING m_sNumFormat;
+	ENumberFormat m_eNumFormat;
 };
 
 class CHWPRecordNumbering : public CHWPRecord
@@ -75,6 +99,7 @@ public:
 
 	short GetStart() const;
 	HWP_STRING GetNumFormat(unsigned short ushIndex) const;
+	ENumberFormat GetNumFormatType(unsigned short ushIndex) const;
 	HWP_BYTE GetAlign(unsigned short ushIndex) const;
 	int GetStartNumber(unsigned short ushIndex) const;
 	int GetCharShape(unsigned short ushIndex) const;

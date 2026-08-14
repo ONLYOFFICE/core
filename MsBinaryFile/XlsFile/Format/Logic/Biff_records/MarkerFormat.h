@@ -53,7 +53,7 @@ public:
 	void readFields(CFRecord& record);
 	void writeFields(CFRecord& record);
 
-	int serialize(std::wostream & _stream, int index, BaseObjectPtr _GELFRAME, std::wstring spPr = L"");
+	int serialize(std::wostream & _stream, int index, BaseObjectPtr _GELFRAME, const std::wstring & spPr = L"");
 	int serialize(std::wostream & _stream);
 //-----------------------------
 	LongRGB rgbFore;

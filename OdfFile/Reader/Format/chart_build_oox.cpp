@@ -92,7 +92,30 @@ static double convert_symbol_size(double val, double metrix, bool add_padding)
 
 // Class for constructing charts
 using namespace chart;
-	
+
+static void read_rect(chart::rect & dst, const odf_types::common_draw_position_attlist & pos,
+					  const odf_types::common_draw_size_attlist & size)
+{
+	if (pos.svg_x_)			dst.x		= pos.svg_x_->get_value_unit(length::pt);
+	if (pos.svg_y_)			dst.y		= pos.svg_y_->get_value_unit(length::pt);
+	if (size.svg_width_)	dst.width	= size.svg_width_->get_value_unit(length::pt);
+	if (size.svg_height_)	dst.height	= size.svg_height_->get_value_unit(length::pt);
+}
+
+static chart::rect calc_relative_rect(const chart::rect & val, double width_pt, double height_pt)
+{
+	chart::rect result;
+
+	if (width_pt <= 0 || height_pt <= 0) return result;
+
+	if (val.x)		result.x		= *val.x / width_pt;
+	if (val.y)		result.y		= *val.y / height_pt;
+	if (val.width)	result.width	= *val.width / width_pt;
+	if (val.height)	result.height	= *val.height / height_pt;
+
+	return result;
+}
+
 void object_odf_context::set_pivot_source(std::wstring const & val)
 {
 	bPivotChart_ = true;
@@ -438,22 +461,28 @@ void object_odf_context::oox_convert(oox::oox_chart_context & chart_context)
 {
 	chart_context.set_pivot_chart	(pivot_source_);
 
-	chart_context.set_title		(title_, sub_title_);
 	chart_context.set_wall		(wall_);
 	chart_context.set_floor		(floor_);
 
-	_CP_OPT(double) rel_x, rel_y, rel_width, rel_height;
+	chart::rect title_rect = calc_relative_rect(title_, width_pt_, height_pt_);
+	chart_context.set_title		(title_, sub_title_, title_rect.x, title_rect.y, title_rect.width, title_rect.height);
 
-	if( width_pt_ > 0 && height_pt_ > 0 )
+	chart::rect legend_rect		= calc_relative_rect(legend_,	 width_pt_, height_pt_);
+
+	const bool bInnerPlotArea	= (coordinate_region_.width && coordinate_region_.height);
+	chart::rect plot_area_rect	= bInnerPlotArea ?	calc_relative_rect(coordinate_region_, width_pt_, height_pt_) :
+													calc_relative_rect(plot_area_, width_pt_, height_pt_);
+
+	if (!plot_area_rect.width || !plot_area_rect.height)
 	{
-		if( legend_.x ) rel_x = *legend_.x / width_pt_;
-		if( legend_.y ) rel_y = *legend_.y / height_pt_;
-		if( legend_.width ) rel_width = *legend_.width / width_pt_;
-		if( legend_.height ) rel_height = *legend_.height / height_pt_;
+		legend_rect		= chart::rect();
+		plot_area_rect	= chart::rect();
 	}
 
-	chart_context.set_legend	( legend_, rel_x, rel_y, rel_width, rel_height );
+	chart_context.set_legend ( legend_, legend_rect.x, legend_rect.y, legend_rect.width, legend_rect.height );
 	chart_context.set_data_table(data_table_);
+
+	chart_context.set_plot_area_layout(plot_area_rect.x, plot_area_rect.y, plot_area_rect.width, plot_area_rect.height, bInnerPlotArea);
 
 	chart_context.set_plot_area_properties (plot_area_.properties_, plot_area_.fill_);
 	chart_context.set_chart_graphic_properties (graphic_properties_, chart_fill_);
@@ -463,7 +492,7 @@ void object_odf_context::oox_convert(oox::oox_chart_context & chart_context)
 
 	chart_class::type last_set_class = chart_class::none;
 
-	int series_id =0;
+	int series_id = 0;
 
 	if (series_.empty())
 	{
@@ -631,6 +660,10 @@ void object_odf_context::oox_convert(oox::oox_chart_context & chart_context)
 		if	(a.dimension_ == L"y" && y_enabled)continue;
 		if	(a.dimension_ == L"z" && z_enabled)continue;
 
+		const chart::rect & axis_title_rect = (a.title_.x || a.title_.y) ?	static_cast<const chart::rect &>(a.title_) :
+																			static_cast<const chart::rect &>(a);
+		chart::rect _rect = calc_relative_rect(axis_title_rect, width_pt_, height_pt_);
+
 		if	(a.dimension_ == L"x")
 		{			
 			if (last_set_class == chart_class::scatter ||
@@ -664,7 +697,7 @@ void object_odf_context::oox_convert(oox::oox_chart_context & chart_context)
 			z_enabled = true;
 		}
 
-		chart_context.add_axis(a);
+		chart_context.add_axis(a, _rect.x, _rect.y, _rect.width, _rect.height);
 	}
 
 	if (bIs3D.get_value_or(false))
@@ -918,6 +951,30 @@ void process_build_object::visit(chart_chart& val)
 }
 
 void process_build_object::visit(chart_title& val)
+{	
+	const bool bAxisTitle = object_odf_context_.in_axis_ && !object_odf_context_.axises_.empty();
+
+	title &t = bAxisTitle ? object_odf_context_.axises_.back().title_ : object_odf_context_.title_;
+
+	t.bEnabled = true;
+	
+	ApplyTextProperties(val.attlist_.common_attlist_.chart_style_name_.get_value_or(L""), t.text_properties_);
+	ApplyGraphicProperties(val.attlist_.common_attlist_.chart_style_name_.get_value_or(L""), t.graphic_properties_, t.fill_);
+	ApplyChartProperties(val.attlist_.common_attlist_.chart_style_name_.get_value_or(L""), t.properties_);
+
+//-----------------------------------------------------------------------------------------------------------------------------------------
+
+	read_rect(t, val.attlist_.common_draw_position_attlist_, val.attlist_.common_draw_size_attlist_);
+
+	if (val.text_p_)
+	{
+		std::wstringstream v;
+		val.text_p_->text_to_stream(v, false);
+		t.content_ = v.str();
+	}
+}
+
+void process_build_object::visit(chart_subtitle & val)
 {
 	title t;
 
@@ -927,45 +984,14 @@ void process_build_object::visit(chart_title& val)
 		val.text_p_->text_to_stream(v, false);
 		t.content_ = v.str();
 	}
-	ApplyTextProperties(val.attlist_.common_attlist_.chart_style_name_.get_value_or(L""), t.text_properties_);
-	ApplyGraphicProperties(val.attlist_.common_attlist_.chart_style_name_.get_value_or(L""), t.graphic_properties_, t.fill_);
-	ApplyChartProperties(val.attlist_.common_attlist_.chart_style_name_.get_value_or(L""), t.properties_);
-
-///////////////////////////////////////////////////////////////////////////////////////
-	if (val.attlist_.common_draw_position_attlist_.svg_x_)
-    {
-        t.pos_x = val.attlist_.common_draw_position_attlist_.svg_x_->get_value_unit(length::pt);
-	}
-	if (val.attlist_.common_draw_position_attlist_.svg_y_)
-	{
-		t.pos_y = val.attlist_.common_draw_position_attlist_.svg_y_->get_value_unit(length::pt);
-	}
-	t.bEnabled = true;
-	
-	if (object_odf_context_.in_axis_)
-		object_odf_context_.axises_.back().title_ = t; 
-	else			
-		object_odf_context_.title_ = t;	
-
-}
-
-void process_build_object::visit(chart_subtitle & val)
-{
-	title t;
-	std::wstringstream v;
-	val.text_p_->text_to_stream(v, false);
-	t.content_ = v.str();
 
 	ApplyTextProperties(val.attlist_.common_attlist_.chart_style_name_.get_value_or(L""), t.text_properties_);
 	ApplyGraphicProperties(val.attlist_.common_attlist_.chart_style_name_.get_value_or(L""), t.graphic_properties_, t.fill_);
 
-	if (val.attlist_.common_draw_position_attlist_.svg_x_)
-    {
-        t.pos_x = val.attlist_.common_draw_position_attlist_.svg_x_->get_value_unit(length::pt);
-		t.pos_y = val.attlist_.common_draw_position_attlist_.svg_y_->get_value_unit(length::pt);
-	}
 	t.bEnabled = true;
 	object_odf_context_.sub_title_ = t;
+	
+	read_rect(object_odf_context_.sub_title_, val.attlist_.common_draw_position_attlist_, val.attlist_.common_draw_size_attlist_);
 }
 
 void process_build_object::visit(chart_footer& val)
@@ -994,26 +1020,9 @@ void process_build_object::visit(chart_legend& val)
 		if ( pos == L"bottom-start")	object_odf_context_.legend_.position = L"bl"; 
 		if ( pos == L"bottom-end")	object_odf_context_.legend_.position = L"br"; 
 	}
-	if (val.attlist_.chart_legend_align_)
-	{
-		std::wstring align = val.attlist_.chart_legend_align_.get();
-		
-		//if ( pos == L"start")		object_odf_context_.legend_.align = L"b"; 
-		//if ( pos == L"center")		object_odf_context_.legend_.align = L"l"; 
-		//if ( pos == L"end")			object_odf_context_.legend_.align = L"t"; 
-	}
-	if (val.attlist_.common_draw_position_attlist_.svg_x_)
-		    object_odf_context_.legend_.x = val.attlist_.common_draw_position_attlist_.svg_x_->get_value_unit(odf_types::length::pt);
 
-	if (val.attlist_.common_draw_position_attlist_.svg_y_)
-		object_odf_context_.legend_.y = val.attlist_.common_draw_position_attlist_.svg_y_->get_value_unit(odf_types::length::pt);
+	read_rect(object_odf_context_.legend_, val.attlist_.common_draw_position_attlist_, val.attlist_.common_draw_size_attlist_);
 
-	if (val.attlist_.common_draw_size_attlist_.svg_width_)
-		object_odf_context_.legend_.width = val.attlist_.common_draw_size_attlist_.svg_width_->get_value_unit(odf_types::length::pt);
-
-	if (val.attlist_.common_draw_size_attlist_.svg_height_)
-		object_odf_context_.legend_.height = val.attlist_.common_draw_size_attlist_.svg_height_->get_value_unit(odf_types::length::pt);
-	
 	ApplyChartProperties	(val.attlist_.common_attlist_.chart_style_name_.get_value_or(L""),	object_odf_context_.legend_.properties_);
 	ApplyGraphicProperties	(val.attlist_.common_attlist_.chart_style_name_.get_value_or(L""),	object_odf_context_.legend_.graphic_properties_, object_odf_context_.legend_.fill_);
 	ApplyTextProperties		(val.attlist_.common_attlist_.chart_style_name_.get_value_or(L""),	object_odf_context_.legend_.text_properties_);
@@ -1025,6 +1034,8 @@ void process_build_object::visit(chart_plot_area& val)
 
 	object_odf_context_.plot_area_.cell_range_address_ = val.attlist_.table_cell_range_address_.get_value_or(L"");
 
+	read_rect(object_odf_context_.plot_area_, val.attlist_.common_draw_position_attlist_, val.attlist_.common_draw_size_attlist_);
+
 	odf_types::common_dr3d_attlist attr_3d = val.attlist_.common_dr3d_attlist_;
 	
 	ApplyChartProperties	(val.attlist_.common_attlist_.chart_style_name_.get_value_or(L""), object_odf_context_.plot_area_.properties_);
@@ -1035,6 +1046,11 @@ void process_build_object::visit(chart_plot_area& val)
 	if (attr_3d.distance_)		object_odf_context_.plot_area_.properties_->push_back(_property(L"distance", attr_3d.distance_->get_value_unit(length::pt)) );
 	if (attr_3d.focal_length_)	object_odf_context_.plot_area_.properties_->push_back(_property(L"focal", attr_3d.focal_length_->get_value_unit(length::pt)) );
 	if (attr_3d.projection_)	object_odf_context_.plot_area_.properties_->push_back(_property(L"perspective", *attr_3d.projection_ == L"perspective"));
+}
+
+void process_build_object::visit(chart_coordinate_region& val)
+{
+	read_rect(object_odf_context_.coordinate_region_, val.common_draw_position_attlist_, val.common_draw_size_attlist_);
 }
 
 void process_build_object::visit(chart_axis& val)
@@ -1060,7 +1076,11 @@ void process_build_object::visit(chart_axis& val)
 	ApplyGraphicProperties	(style_name, object_odf_context_.axises_.back().graphic_properties_, object_odf_context_.axises_.back().fill_);
 	ApplyTextProperties		(style_name, object_odf_context_.axises_.back().text_properties_);
 
-    object_odf_context_.end_axis();        
+//-----------------------------------------------------------------------------------------------------------------------------------------
+
+	read_rect(object_odf_context_.axises_.back(), val.attlist_.common_draw_position_attlist_, val.attlist_.common_draw_size_attlist_);
+	
+	object_odf_context_.end_axis();
 }
 
 void process_build_object::visit(chart_series& val)

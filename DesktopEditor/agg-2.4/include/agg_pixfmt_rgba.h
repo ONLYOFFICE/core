@@ -1600,16 +1600,44 @@ namespace agg
             base_mask  = color_type::base_mask 
         };
 
-        static AGG_INLINE void blend_pix(unsigned op, value_type* p, 
+        static AGG_INLINE void blend_pix(unsigned op, value_type* p,
                                          unsigned cr, unsigned cg, unsigned cb,
                                          unsigned ca,
                                          unsigned cover)
         {
+            // p stores straight (non-premultiplied) color, but the comp_op_rgba_*
+            // formulas are defined in terms of premultiplied Dca/Da. Premultiply
+            // the destination before blending and un-premultiply the result,
+            // otherwise a partially transparent destination (antialiased edges,
+            // transparency-group layers) blends incorrectly.
+            unsigned da = p[Order::A];
+
+            value_type pre[4];
+            pre[Order::R] = (value_type)((p[Order::R] * da + base_mask) >> base_shift);
+            pre[Order::G] = (value_type)((p[Order::G] * da + base_mask) >> base_shift);
+            pre[Order::B] = (value_type)((p[Order::B] * da + base_mask) >> base_shift);
+            pre[Order::A] = (value_type)da;
+
             comp_op_table_rgba<ColorT, Order>::g_comp_op_func[op]
-                (p, (cr * ca + base_mask) >> base_shift, 
-                    (cg * ca + base_mask) >> base_shift,
-                    (cb * ca + base_mask) >> base_shift,
-                     ca, cover);
+                (pre, (cr * ca + base_mask) >> base_shift,
+                      (cg * ca + base_mask) >> base_shift,
+                      (cb * ca + base_mask) >> base_shift,
+                       ca, cover);
+
+            unsigned da2 = pre[Order::A];
+            p[Order::A] = (value_type)da2;
+            if (da2)
+            {
+                p[Order::R] = (value_type)((pre[Order::R] * base_mask + da2 / 2) / da2);
+                p[Order::G] = (value_type)((pre[Order::G] * base_mask + da2 / 2) / da2);
+                p[Order::B] = (value_type)((pre[Order::B] * base_mask + da2 / 2) / da2);
+            }
+            else
+            {
+                p[Order::R] = 0;
+                p[Order::G] = 0;
+                p[Order::B] = 0;
+            }
         }
     };
 

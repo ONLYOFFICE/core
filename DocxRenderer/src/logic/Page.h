@@ -83,6 +83,7 @@ namespace NSDocxRenderer
 		bool m_bWriteStyleRaw		   {false};
 		bool m_bCollectMetaInfo        {false};
 		bool m_bIsBuildTables		   {true};
+		bool m_bIsBuildInlineTables	   {false};
 		bool m_bIsLuminosityShapesFiled{false};
 		bool m_bFontSubstitution       {false};
 		bool m_bFirstParagraphLineCorrection{false};

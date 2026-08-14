@@ -390,12 +390,23 @@ public:
 			return ((CPdfFile*)m_pFile)->UndoRedact();
 		return false;
 	}
-	BYTE* EditPdf(BYTE* pChanges, int nChangesSize)
+	BYTE* BuildPdf(BYTE* pCommands, int nCommandsLen, const wchar_t* sPassword)
 	{
-		if (m_nType != 0)
-			return NULL;
+		// EDIT
+		if (m_pFile && m_pFile->GetPagesCount())
+			return ((CPdfFile*)m_pFile)->EditPdfToMemory(pCommands, nCommandsLen, sPassword);
 
-		return ((CPdfFile*)m_pFile)->SplitPages(NULL, 0, pChanges, nChangesSize, true);
+		// NEW
+		CPdfFile* pdfFile = new CPdfFile(m_pApplicationFonts);
+		pdfFile->CreatePdf();
+		if (sPassword)
+			pdfFile->SetPassword(sPassword);
+		pdfFile->CommandsToPdfFromBinary(pCommands, nCommandsLen);
+
+		BYTE* pData = NULL;
+		int nLength = 0;
+		pdfFile->SaveToMemory(&pData, &nLength, true);
+		return pData;
 	}
 
 	BYTE* GetGlyphs(int nPageIndex)
@@ -418,6 +429,12 @@ public:
 	BYTE* GetStructure()
 	{
 		return m_pFile->GetStructure();
+	}
+	BYTE* GetMacros()
+	{
+		if (m_nType == 0)
+			return ((CPdfFile*)m_pFile)->GetMacros();
+		return NULL;
 	}
 	BYTE* GetInteractiveFormsInfo()
 	{

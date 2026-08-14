@@ -70,11 +70,15 @@ void TextPropsStream::readFields(CFRecord& record)
 
 void TextPropsStream::writeFields(CFRecord& record)
 {
-	frtHeader.rt = 0x08A5;
+	frtHeader = FrtHeader(rt_TextPropsStream);
 	record << frtHeader << dwChecksum;
+
 	_UINT32 cb = xml_.size();
 	record << cb;
-	record.appendRawDataToStatic(reinterpret_cast<const unsigned char*>(xml_.data()), xml_.size());
+
+	// cb is the total length
+	size_t data_size = (xml_.size() > max_data_size) ? max_data_size : xml_.size();
+	record.appendRawDataToStatic(reinterpret_cast<const unsigned char*>(xml_.data()), data_size);
 }
 
 } // namespace XLS

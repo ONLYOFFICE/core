@@ -39,6 +39,9 @@ namespace DocFileFormat
 {
 	PieceTable::PieceTable (FileInformationBlock *fib, POLE::Stream *tableStream, POLE::Stream* wordStream)
 	{
+		m_bExtCharWord95 = (fib->m_nWordVersion > 0) && fib->m_FibBase.fExtChar;
+		m_iterCharSize = Pieces.end();
+
 		if (fib->m_FibWord97.lcbClx < 1/* || !fib->m_FibBase.fComplex*/) return;
 
 		int streamSize = wordStream->size();
@@ -53,6 +56,8 @@ namespace DocFileFormat
 		}
 
 		Pieces = std::list<PieceDescriptor>();
+		m_iterCharSize = Pieces.end();
+
 		FileCharacterPositions	= new std::map<int, int>();
 		CharacterPositions		= new std::map<int, int>();
 
@@ -200,7 +205,7 @@ namespace DocFileFormat
 			stream->seek(pcd.fc);
 			stream->read(bytes, cb);
 
-			FormatUtils::GetSTLCollectionFromBytes(piecePairs, bytes, cb, pcd.code_page);
+			GetCharsFromBytes(piecePairs, bytes, cb, pcd.code_page);
 
 			RELEASEARRAYOBJECTS(bytes);
 		}
@@ -246,7 +251,7 @@ namespace DocFileFormat
 				wordStream->read( bytes, cb);
 
 				//get the chars
-				FormatUtils::GetSTLCollectionFromBytes( encodingChars, bytes, cb, pcd.code_page );
+				GetCharsFromBytes(encodingChars, bytes, cb, pcd.code_page);
 
 				RELEASEARRAYOBJECTS( bytes );
 			}
@@ -265,7 +270,7 @@ namespace DocFileFormat
 				wordStream->read( bytes, cb);
 
 				//get the chars
-				FormatUtils::GetSTLCollectionFromBytes( encodingChars, bytes, cb, pcd.code_page );
+				GetCharsFromBytes(encodingChars, bytes, cb, pcd.code_page);
 
 				RELEASEARRAYOBJECTS( bytes );
 			}
@@ -284,7 +289,7 @@ namespace DocFileFormat
 				wordStream->read( bytes, cb);
 
 				//get the chars
-				FormatUtils::GetSTLCollectionFromBytes(encodingChars, bytes, cb, pcd.code_page);
+				GetCharsFromBytes(encodingChars, bytes, cb, pcd.code_page);
 
 				RELEASEARRAYOBJECTS(bytes);
 
@@ -307,7 +312,7 @@ namespace DocFileFormat
 				wordStream->read( bytes, cb );
 
 				//get the chars
-				FormatUtils::GetSTLCollectionFromBytes( encodingChars, bytes, cb, pcd.code_page );
+				GetCharsFromBytes(encodingChars, bytes, cb, pcd.code_page);
 
 				RELEASEARRAYOBJECTS( bytes );
 
@@ -405,14 +410,7 @@ namespace DocFileFormat
 				//read from pcd.fc to fcEnd
 
 				int cb = fcEnd - (int)pcd.fc;
-				if (cb == 0) //ralph_scovile.doc
-				{
-					if (pcd.cpEnd - pcd.cpStart < 2) // com2010_0624pl01.doc
-						cb = pcdFcEnd - (int)pcd.fc; 
-					if (cb <= 0)
-						break;
-				}
-				else if (cb < 0)
+				if (cb <= 0)
 					break;
 
 				if (!ReadSymbolsBuffer((int)pcd.fc, cb, pcd.code_page, word, encodingChars))
@@ -496,10 +494,49 @@ namespace DocFileFormat
 		word->read(bytes, size);
 
 
-        FormatUtils::GetSTLCollectionFromBytes(encodingChars, bytes, size, coding);
+		GetCharsFromBytes(encodingChars, bytes, size, coding);
 
         RELEASEARRAYOBJECTS(bytes);
 
 		return true;
+	}
+	int PieceTable::GetCharSize(int cp)
+	{
+		if ((m_iterCharSize != Pieces.end()) && (cp >= m_iterCharSize->cpStart) && (cp < m_iterCharSize->cpEnd))
+		{
+			return (m_iterCharSize->code_page == ENCODING_UTF16) ? 2 : 1;
+		}
+
+		for (std::list<PieceDescriptor>::iterator iter = Pieces.begin(); iter != Pieces.end(); ++iter)
+		{
+			if ((cp >= iter->cpStart) && (cp < iter->cpEnd))
+			{
+				m_iterCharSize = iter;
+				return (iter->code_page == ENCODING_UTF16) ? 2 : 1;
+			}
+		}
+		return 1;
+	}
+	void PieceTable::GetCharsFromBytes(std::vector<wchar_t>* encodingChars, unsigned char* bytes, int size, int coding)
+	{
+		if (!m_bExtCharWord95 || coding != ENCODING_UTF16)
+		{
+			FormatUtils::GetSTLCollectionFromBytes(encodingChars, bytes, size, coding);
+			return;
+		}
+		//Word 95 symbol = (charset << 8 | code) - not Unicode !!
+		for (int i = 0; i < size; i += 2)
+		{
+			unsigned short symbol = FormatUtils::BytesToUInt16(bytes, i, size);
+
+			if ((symbol & 0xFF00) && (symbol & 0xFF00) < 0x8100)
+			{
+				encodingChars->push_back(FormatUtils::MapByteToWChar((unsigned char)(symbol & 0x00FF)));
+			}
+			else
+			{
+				encodingChars->push_back((wchar_t)symbol);
+			}
+		}
 	}
 }

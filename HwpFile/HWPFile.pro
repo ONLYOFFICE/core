@@ -85,6 +85,7 @@ SOURCES += \
     HwpDoc/HWPMLFile.cpp \
     HwpDoc/HWPSection.cpp \
     HwpDoc/HWPStream.cpp \
+    HwpDoc/HWPXCrypt.cpp \
     HwpDoc/HWPXFile.cpp \
     HwpDoc/HwpFileHeader.cpp \
     HwpDoc/OLEdoc/CompoundFile.cpp \
@@ -170,6 +171,7 @@ HEADERS += \
     HwpDoc/HWPMLFile.h \
     HwpDoc/HWPSection.h \
     HwpDoc/HWPStream.h \
+    HwpDoc/HWPXCrypt.h \
     HwpDoc/HWPXFile.h \
     HwpDoc/HanType.h \
     HwpDoc/HwpFileHeader.h \

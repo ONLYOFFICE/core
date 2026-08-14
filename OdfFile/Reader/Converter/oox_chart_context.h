@@ -67,18 +67,21 @@ public:
 	{
 		pivot_source_ = source;
 	}
-	void set_title(odf_reader::chart::title & t, odf_reader::chart::title & sub)
+	void set_title(odf_reader::chart::title & t, odf_reader::chart::title & sub, const _CP_OPT(double)& rel_x,
+		const _CP_OPT(double)& rel_y, const _CP_OPT(double)& rel_w, const _CP_OPT(double)& rel_h)
 	{
 		title_.set_content(t);
 		title_.set_sub_content(sub);
+		title_.set_layout(rel_x, rel_y, rel_w, rel_h);
 	}
 	void set_data_table(odf_reader::chart::simple & v)
 	{
 		plot_area_.set_data_table(v);
 	}
-	void add_axis(odf_reader::chart::axis & content)
+	void add_axis(odf_reader::chart::axis & content, const _CP_OPT(double)& rel_x = boost::none,
+		const _CP_OPT(double)& rel_y = boost::none, const _CP_OPT(double)& rel_w = boost::none, const _CP_OPT(double)& rel_h = boost::none)
 	{
-		plot_area_.add_axis(content);
+		plot_area_.add_axis(content, rel_x, rel_y, rel_w, rel_h);
 	}
 	void set_3D_chart(bool val)
 	{
@@ -114,15 +117,18 @@ public:
 		reset_fill(l.fill_);
 		//floor_.content_= l;
 	}
-	void set_legend(odf_reader::chart::legend & l, _CP_OPT(double) rel_x,
-	                _CP_OPT(double) rel_y,_CP_OPT(double) rel_w,_CP_OPT(double) rel_h)
+	void set_legend(odf_reader::chart::legend & l, const _CP_OPT(double) & rel_x,
+	                const _CP_OPT(double) & rel_y, const _CP_OPT(double) & rel_w, const _CP_OPT(double) & rel_h)
 	{
 		reset_fill(l.fill_);
-		legend_.content_        = l;
-		legend_.content_.height = rel_h;
-		legend_.content_.width  = rel_w;
-		legend_.content_.x      = rel_x;
-		legend_.content_.y      = rel_y;
+		legend_.content_ = l;
+
+		legend_.set_layout(rel_x, rel_y, rel_w, rel_h);
+	}
+	void set_plot_area_layout(const _CP_OPT(double) & rel_x, const _CP_OPT(double) & rel_y,
+	                          const _CP_OPT(double) & rel_w, const _CP_OPT(double) & rel_h, bool inner)
+	{
+		plot_area_.set_layout(rel_x, rel_y, rel_w, rel_h, inner);
 	}
 
 	void set_chart_graphic_properties(odf_reader::graphic_format_properties_ptr & prop, _oox_fill &fill)

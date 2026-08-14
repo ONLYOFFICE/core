@@ -3260,7 +3260,7 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 	for (int i = 0; i < arrBI.size(); ++i)
 	{
 		std::wstring wsPath = arrBI[i];
-		if (wsPath.empty())
+		if (wsPath.empty() || (m_bSplit && wsPath.find(L"data:") != 0))
 		{
 			arrForm.push_back(NULL);
 			continue;
@@ -3288,9 +3288,39 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 
 		PdfWriter::CPushButtonWidget* pPBWidget = (PdfWriter::CPushButtonWidget*)pAnnot;
 		if (pPBWidget->m_nI >= 0)
+		{
 			DrawButtonWidget(pAppFonts, pPBWidget, 0, arrForm[pPBWidget->m_nI]);
+
+			if (m_bSplit)
+			{
+				std::wstring wsPath = arrBI[pPBWidget->m_nI];
+				if (!wsPath.empty() && wsPath.find(L"data:") != 0)
+				{
+					BYTE* pData = NULL;
+					LONG nMetaLength = 0;
+					NSFile::CUtf8Converter::GetUtf8StringFromUnicode(wsPath.c_str(), wsPath.length(), pData, nMetaLength);
+					m_pDocument->AddOOField("I", pData, nMetaLength, pPBWidget);
+					RELEASEARRAYOBJECTS(pData);
+				}
+			}
+		}
 		if (pPBWidget->m_nRI >= 0)
+		{
 			DrawButtonWidget(pAppFonts, pPBWidget, 1, arrForm[pPBWidget->m_nRI]);
+
+			if (m_bSplit)
+			{
+				std::wstring wsPath = arrBI[pPBWidget->m_nRI];
+				if (!wsPath.empty() && wsPath.find(L"data:") != 0)
+				{
+					BYTE* pData = NULL;
+					LONG nMetaLength = 0;
+					NSFile::CUtf8Converter::GetUtf8StringFromUnicode(wsPath.c_str(), wsPath.length(), pData, nMetaLength);
+					m_pDocument->AddOOField("RI", pData, nMetaLength, pPBWidget);
+					RELEASEARRAYOBJECTS(pData);
+				}
+			}
+		}
 		else if (pPBWidget->m_nI >= 0)
 		{
 			PdfWriter::CDictObject* pObj = dynamic_cast<PdfWriter::CDictObject*>(pPBWidget->Get("AP"));
@@ -3302,7 +3332,22 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 			}
 		}
 		if (pPBWidget->m_nIX >= 0)
+		{
 			DrawButtonWidget(pAppFonts, pPBWidget, 2, arrForm[pPBWidget->m_nIX]);
+
+			if (m_bSplit)
+			{
+				std::wstring wsPath = arrBI[pPBWidget->m_nIX];
+				if (!wsPath.empty() && wsPath.find(L"data:") != 0)
+				{
+					BYTE* pData = NULL;
+					LONG nMetaLength = 0;
+					NSFile::CUtf8Converter::GetUtf8StringFromUnicode(wsPath.c_str(), wsPath.length(), pData, nMetaLength);
+					m_pDocument->AddOOField("IX", pData, nMetaLength, pPBWidget);
+					RELEASEARRAYOBJECTS(pData);
+				}
+			}
+		}
 		else if (pPBWidget->m_nI >= 0)
 		{
 			PdfWriter::CDictObject* pObj = dynamic_cast<PdfWriter::CDictObject*>(pPBWidget->Get("AP"));
@@ -3361,7 +3406,8 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 		BYTE* pData = NULL;
 		LONG nMetaLength = 0;
 		NSFile::CUtf8Converter::GetUtf8StringFromUnicode(wsRoles.c_str(), wsRoles.length(), pData, nMetaLength);
-		m_pDocument->AddRoles(pData, nMetaLength);
+		m_pDocument->AddOOField("OO_FORMS_ROLES", pData, nMetaLength);
+		RELEASEARRAYOBJECTS(pData);
 	}
 
 	return S_OK;

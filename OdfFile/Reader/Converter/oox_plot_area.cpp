@@ -35,6 +35,7 @@
 
 #include "oox_plot_area.h"
 
+#include <cmath>
 #include <random>
 
 #include <xml/simple_xml_writer.h>
@@ -50,6 +51,28 @@
 
 namespace cpdoccore {
 	namespace oox {
+		namespace
+		{
+			const double DEG2RAD = 3.14159265358979323846 / 180.;
+
+			int round_angle(double val, int min, int max)
+			{
+				int result = (int)floor(val + 0.5);
+
+				if (result < min) result = min;
+				if (result > max) result = max;
+
+				return result;
+			}
+			double normalize_angle(double val)
+			{
+				val = fmod(val, 360.);
+
+				if (val < 0) val += 360.;
+
+				return val;
+			}
+		}
 		oox_plot_area::oox_plot_area() : no_used_local_tables_(false)
 		{
 			std::random_device rd;
@@ -105,11 +128,13 @@ namespace cpdoccore {
 			charts_.push_back(chart);
 		}
 
-		void oox_plot_area::add_axis(odf_reader::chart::axis& content)
+		void oox_plot_area::add_axis(odf_reader::chart::axis& content, const _CP_OPT(double)& rel_x,
+			const _CP_OPT(double)& rel_y, const _CP_OPT(double)& rel_w, const _CP_OPT(double)& rel_h)
 		{
 			unsigned int id = content.type_ != 0 ? axis_id_++ : 0;
 			oox_axis_content_ptr ax = oox_axis_content::create(id);
 			ax->content_ = content;
+			ax->set_title_layout(rel_x, rel_y, rel_w, rel_h);
 
 			if (content.dimension_ == L"x") axis_.insert(axis_.begin(), ax);
 			else axis_.push_back(ax);
@@ -149,11 +174,12 @@ namespace cpdoccore {
 		void oox_plot_area::oox_serialize_view3D(std::wostream& _Wostream)
 		{
 			_CP_OPT(std::wstring)	strVal;
-			_CP_OPT(double)			doubleVal;
 			_CP_OPT(bool)			perspective;
+			_CP_OPT(bool)			right_angled_axes;
 
 			odf_reader::GetProperty(properties_, L"transform", strVal);
 			odf_reader::GetProperty(properties_, L"perspective", perspective);
+			odf_reader::GetProperty(properties_, L"right-angled-axes", right_angled_axes);
 
 			if (!strVal) return;
 
@@ -172,84 +198,66 @@ namespace cpdoccore {
 
 			if (values.size() < 12) return;
 
-			double left_x = XmlUtils::GetDouble(values[0]);
-			double up_x = XmlUtils::GetDouble(values[1]);
-			double forward_x = XmlUtils::GetDouble(values[2]);
-			double left_y = XmlUtils::GetDouble(values[3]);
-			double up_y = XmlUtils::GetDouble(values[4]);
-			double forward_y = XmlUtils::GetDouble(values[5]);
-			double left_z = XmlUtils::GetDouble(values[6]);
-			double up_z = XmlUtils::GetDouble(values[7]);
-			double forward_z = XmlUtils::GetDouble(values[8]);
+			//dr3d:transform="matrix(a b c d e f g h i j k l)" is column major - the first
+			//triple is the first column of the matrix (the image of the X axis), the last
+			//triple is the translation
+			double m[3][3];
 
-			const double DEG2RAD = 3.1415926 / 180;
-			double sx, sy, sz, cx, cy, cz, theta_x, theta_y, theta_z = 0;
+			for (int col = 0; col < 3; col++)
+			{
+				for (int row = 0; row < 3; row++)
+				{
+					m[row][col] = XmlUtils::GetDouble(values[col * 3 + row]);
+				}
+			}
 
-			sy = forward_x;
+			//R = Rx(theta_x) * Ry(theta_y) * Rz(theta_z). atan2 keeps the quadrant and
+			//needs no division by cos(theta_y), which is zero at the gimbal lock
+			double sin_y = m[0][2];
 
-			theta_y = (sy == 0 ? 0 : asin(sy));
-			cy = cos(theta_y);
+			if (sin_y >  1.) sin_y =  1.;	//rounding in the source matrix
+			if (sin_y < -1.) sin_y = -1.;
 
-			theta_y /= DEG2RAD;
-
-			sx = -forward_y / cy;
-			cx = forward_z / cy;
-
-			theta_x = (sx == 0 ? 0 : asin(sx));
-			double theta_x_test = (sx == 0 ? 0 : acos(cx));
-
-			theta_x /= DEG2RAD;
-
-			sz = -up_x / cy;
-			cz = left_x / cy;
-
-			theta_z = (sz == 0 ? 0 : asin(sz));
-			double theta_z_test = (sz == 0 ? 0 : acos(cz));
-
-			theta_z /= DEG2RAD;
+			//theta_z, the roll of the scene in the screen plane, would be
+			//atan2(-m[0][1], m[0][0]) - it has no counterpart in c:view3D and is dropped
+			double theta_x = atan2(-m[1][2], m[2][2]) / DEG2RAD;
+			double theta_y = asin(sin_y) / DEG2RAD;
 
 			if (this->current_chart_->type_ == CHART_TYPE_RADAR ||
 				this->current_chart_->type_ == CHART_TYPE_PIE ||
 				this->current_chart_->type_ == CHART_TYPE_DOUGHNUT)
 			{
-				theta_x += 90;
+				theta_x = 90 - theta_x;
 			}
 			else theta_x = (std::abs)(theta_x);
+
+			bool bRightAngledAxes = right_angled_axes ? *right_angled_axes
+													  : !(perspective && *perspective);
 			CP_XML_WRITER(_Wostream)
 			{
 				CP_XML_NODE(L"c:view3D")
 				{
 					CP_XML_NODE(L"c:rotX")
 					{
-						CP_XML_ATTR(L"val", (int)(theta_x + 0.5));
+						CP_XML_ATTR(L"val", round_angle(theta_x, -90, 90));
 					}
 					CP_XML_NODE(L"c:rotY")
 					{
-						CP_XML_ATTR(L"val", (int)(theta_y + 0.5));
+						CP_XML_ATTR(L"val", round_angle(normalize_angle(theta_y), 0, 360));
 					}
 					CP_XML_NODE(L"c:depthPercent")
 					{
 						CP_XML_ATTR(L"val", 100);
 					}
-					if (theta_z > 0 || (perspective && *perspective))
+					CP_XML_NODE(L"c:rAngAx")
 					{
-						CP_XML_NODE(L"c:rAngAx")
-						{
-							CP_XML_ATTR(L"val", 0);
-						}
-						if (theta_z > 0)
-						{
-							CP_XML_NODE(L"c:perspective")
-							{
-								CP_XML_ATTR(L"val", (int)(theta_z * 2 + 0.5));
-							}
-						}
+						CP_XML_ATTR(L"val", bRightAngledAxes ? 1 : 0);
 					}
-					else
+					if (false == bRightAngledAxes)
 					{
-						CP_XML_NODE(L"c:rAngAx")
+						CP_XML_NODE(L"c:perspective")
 						{
-							CP_XML_ATTR(L"val", 1);
+							CP_XML_ATTR(L"val", 30);	//default
 						}
 					}
 				}
@@ -266,7 +274,8 @@ namespace cpdoccore {
 			{
 				CP_XML_NODE(L"c:plotArea")
 				{
-					//CP_XML_NODE(L"c:layout"){}
+					layout_.oox_serialize(CP_XML_STREAM());
+
 					bool axisPresent = true;
 
 					for (size_t i = 0; i < charts_.size(); i++)

@@ -2379,9 +2379,13 @@ CAnnots::CAnnots(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontLi
 	AcroForm* pAcroForms = pdfDoc->getCatalog()->getForm();
 	Object* oAcroForm = pAcroForms->getAcroFormObj();
 
-	CObjectGuard oMeta;
-	if (oAcroForm->dictLookup("ONLYOFFICE_FORMS_ROLES", oMeta.get())->isStream())
-		m_pRoles = ReadWholeStream(oMeta.get(), m_nRoles);
+	CObjectGuard oOO;
+	if (oAcroForm->dictLookup("OO", oOO.get())->isDict())
+	{
+		CObjectGuard oMeta;
+		if (oOO->dictLookup("OO_FORMS_ROLES", oMeta.get())->isStream())
+			m_pRoles = ReadWholeStream(oMeta.get(), m_nRoles);
+	}
 
 	// Calculation order - CO
 	if (oAcroForm->dictLookup("CO", &oObj1)->isArray())

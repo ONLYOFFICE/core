@@ -525,6 +525,12 @@ BYTE* CPdfFile::GetLinks(int nPageIndex)
 		return NULL;
 	return m_pInternal->pReader->GetLinks(nPageIndex);
 }
+BYTE* CPdfFile::GetMacros()
+{
+	if (!m_pInternal->pReader)
+		return NULL;
+	return m_pInternal->pReader->GetMacros();
+}
 BYTE* CPdfFile::GetWidgets()
 {
 	if (!m_pInternal->pReader)
@@ -583,15 +589,59 @@ BYTE* CPdfFile::GetAnnots(int nPageIndex)
 		return NULL;
 	return m_pInternal->pReader->GetAnnots(nPageIndex);
 }
-BYTE* CPdfFile::SplitPages(const int* arrPageIndex, unsigned int unLength, BYTE* pChanges, DWORD nLength, bool bEdit)
+BYTE* CPdfFile::EditPdfToMemory(BYTE* pChanges, DWORD nLength, const wchar_t* sPassword)
 {
 	if (!m_pInternal->pReader)
 		return NULL;
+
+	CPdfReader* pSaveReader = m_pInternal->pReader;
+	m_pInternal->pReader = new CPdfReader(m_pInternal->pAppFonts);
+
+	BYTE* pMemory = NULL;
+	DWORD nLength1 = 0;
+	pSaveReader->GetMemory(&pMemory, &nLength1);
+	m_pInternal->pReader->LoadFromMemory(m_pInternal->pAppFonts, pMemory, nLength1, m_pInternal->wsPassword, m_pInternal->wsPassword);
+
 	RELEASEOBJECT(m_pInternal->pWriter);
-	m_pInternal->pWriter = new CPdfWriter(m_pInternal->pAppFonts, false, false, this, !bEdit);
+	m_pInternal->pWriter = new CPdfWriter(m_pInternal->pAppFonts, false, false, this, false);
 
 	RELEASEOBJECT(m_pInternal->pEditor);
-	m_pInternal->pEditor = new CPdfEditor(m_pInternal->wsSrcFile, m_pInternal->wsPassword, L"", m_pInternal->pReader, m_pInternal->pWriter, bEdit ? CPdfEditor::Mode::WriteNew : CPdfEditor::Mode::Split);
+	m_pInternal->pEditor = new CPdfEditor(m_pInternal->wsSrcFile, m_pInternal->wsPassword, L"", m_pInternal->pReader, m_pInternal->pWriter, CPdfEditor::Mode::WriteNew);
+
+	BYTE* pRes = NULL;
+	int nLen = 0;
+	if (m_pInternal->pEditor->SplitPages(NULL, 0))
+	{
+		if (pChanges && nLength > 3)
+		{
+			CConvertFromBinParams* pParams = new CConvertFromBinParams();
+			AddToPdfFromBinary(pChanges + 4, nLength - 4, pParams);
+		}
+		if (sPassword)
+			m_pInternal->pWriter->SetPassword(sPassword);
+		m_pInternal->pEditor->Close();
+
+		if (m_pInternal->pWriter->SaveToMemory(&pRes, &nLen, true) != 0)
+			RELEASEMEM(pRes);
+	}
+
+	RELEASEOBJECT(m_pInternal->pReader);
+	m_pInternal->pReader = pSaveReader;
+
+	RELEASEOBJECT(m_pInternal->pWriter);
+	RELEASEOBJECT(m_pInternal->pEditor);
+	return pRes;
+}
+BYTE* CPdfFile::SplitPages(const int* arrPageIndex, unsigned int unLength, BYTE* pChanges, DWORD nLength)
+{
+	if (!m_pInternal->pReader)
+		return NULL;
+
+	RELEASEOBJECT(m_pInternal->pWriter);
+	m_pInternal->pWriter = new CPdfWriter(m_pInternal->pAppFonts, false, false, this, true);
+
+	RELEASEOBJECT(m_pInternal->pEditor);
+	m_pInternal->pEditor = new CPdfEditor(m_pInternal->wsSrcFile, m_pInternal->wsPassword, L"", m_pInternal->pReader, m_pInternal->pWriter, CPdfEditor::Mode::Split);
 
 	BYTE* pRes = NULL;
 	int nLen = 0;
@@ -599,17 +649,12 @@ BYTE* CPdfFile::SplitPages(const int* arrPageIndex, unsigned int unLength, BYTE*
 	{
 		if (pChanges && nLength > 3)
 		{
-			if (!bEdit)
-				m_pInternal->pWriter->SetSplit(true);
+			m_pInternal->pWriter->SetSplit(true);
 			CConvertFromBinParams* pParams = new CConvertFromBinParams();
 			AddToPdfFromBinary(pChanges + 4, nLength - 4, pParams);
-			if (!bEdit)
-				m_pInternal->pWriter->SetSplit(false);
+			m_pInternal->pWriter->SetSplit(false);
 		}
-		if (bEdit)
-			m_pInternal->pEditor->Close();
-		else
-			m_pInternal->pEditor->AfterSplitPages();
+		m_pInternal->pEditor->AfterSplitPages();
 
 		if (m_pInternal->pWriter->SaveToMemory(&pRes, &nLen, true) != 0)
 			RELEASEMEM(pRes);
@@ -657,11 +702,11 @@ int CPdfFile::SaveToFile(const std::wstring& wsPath)
 		return 1;
 	return m_pInternal->pWriter->SaveToFile(wsPath);
 }
-int CPdfFile::SaveToMemory(BYTE** pData, int* pLength)
+int CPdfFile::SaveToMemory(BYTE** pData, int* pLength, bool bForWasm)
 {
 	if (!m_pInternal->pWriter)
 		return 1;
-	return m_pInternal->pWriter->SaveToMemory(pData, pLength);
+	return m_pInternal->pWriter->SaveToMemory(pData, pLength, bForWasm);
 }
 void CPdfFile::SetPassword(const std::wstring& wsPassword)
 {
@@ -687,6 +732,12 @@ HRESULT CPdfFile::OnlineWordToPdf(const std::wstring& wsSrcFile, const std::wstr
 HRESULT CPdfFile::OnlineWordToPdfFromBinary(const std::wstring& wsSrcFile, const std::wstring& wsDstFile, CConvertFromBinParams* pParams)
 {
 	if (!m_pInternal->pWriter || !NSOnlineOfficeBinToPdf::ConvertBinToPdf(this, wsSrcFile, wsDstFile, true, pParams))
+		return S_FALSE;
+	return S_OK;
+}
+HRESULT CPdfFile::CommandsToPdfFromBinary(BYTE* pBuffer, unsigned int nLen, CConvertFromBinParams* pParams)
+{
+	if (!m_pInternal->pWriter || !NSOnlineOfficeBinToPdf::ConvertBufferToPdf(this, pBuffer, nLen, pParams))
 		return S_FALSE;
 	return S_OK;
 }
@@ -1435,6 +1486,7 @@ HRESULT CPdfFile::IsSupportAdvancedCommand(const IAdvancedCommand::AdvancedComma
 	case IAdvancedCommand::AdvancedCommandType::Headings:
 	case IAdvancedCommand::AdvancedCommandType::Redact:
 	case IAdvancedCommand::AdvancedCommandType::RedactMeta:
+	case IAdvancedCommand::AdvancedCommandType::Macros:
 		return S_OK;
 	default:
 		break;
@@ -1562,6 +1614,24 @@ HRESULT CPdfFile::AdvancedCommand(IAdvancedCommand* command)
 			CRedactMeta* pCommand = (CRedactMeta*)command;
 			std::vector<double> arrRedact = m_pInternal->pEditor->WriteRedact(pCommand->GetRedactID());
 			m_pInternal->pWriter->AddRedact(arrRedact);
+		}
+		return S_OK;
+	}
+	case IAdvancedCommand::AdvancedCommandType::Macros:
+	{
+		if (m_pInternal->pEditor)
+			m_pInternal->pEditor->CheckMode();
+		PdfWriter::CDocument* pDoc = m_pInternal->pWriter->GetDocument();
+		if (pDoc)
+		{
+			CMacros* pCommand = (CMacros*)command;
+			std::wstring wsMacros = pCommand->GetMacros();
+
+			BYTE* pData = NULL;
+			LONG nMetaLength = 0;
+			NSFile::CUtf8Converter::GetUtf8StringFromUnicode(wsMacros.c_str(), wsMacros.length(), pData, nMetaLength);
+			pDoc->AddOOField("OO_MACROS", pData, nMetaLength);
+			RELEASEARRAYOBJECTS(pData);
 		}
 		return S_OK;
 	}

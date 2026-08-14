@@ -40,6 +40,13 @@
 
 namespace HWP
 {
+#define HWP_NUMBERING_LEVELS   7
+#define OOXML_NUMBERING_LEVELS 9
+
+#define DEFAULT_BULLET_CHAR 0xF0B7
+
+#define IS_SYMBOL_FONT_CHAR(ch) (0xF000 <= (unsigned int)(ch) && 0xF0FF >= (unsigned int)(ch))
+
 CNumberingConverter::CNumberingConverter()
 {}
 
@@ -52,128 +59,209 @@ std::wstring HeadingTypeToWSTR(EHeadingType eHeadingType)
 {
 	switch(eHeadingType)
 	{
-		case EHeadingType::NONE: return std::wstring();
-		case EHeadingType::OUTLINE: return std::wstring();
+		case EHeadingType::OUTLINE:
 		case EHeadingType::NUMBER: return std::wstring(L"decimal");
 		case EHeadingType::BULLET: return std::wstring(L"bullet");
+		case EHeadingType::NONE:
+		default: return std::wstring();
+	}
+}
+
+std::wstring NumberFormatToWSTR(ENumberFormat eNumberFormat)
+{
+	switch (eNumberFormat)
+	{
+		case ENumberFormat::CIRCLED_DIGIT:           return std::wstring(L"decimalEnclosedCircle");
+		case ENumberFormat::ROMAN_CAPITAL:           return std::wstring(L"upperRoman");
+		case ENumberFormat::ROMAN_SMALL:             return std::wstring(L"lowerRoman");
+		case ENumberFormat::LATIN_CAPITAL:
+		case ENumberFormat::CIRCLED_LATIN_CAPITAL:   return std::wstring(L"upperLetter");
+		case ENumberFormat::LATIN_SMALL:
+		case ENumberFormat::CIRCLED_LATIN_SMALL:     return std::wstring(L"lowerLetter");
+		case ENumberFormat::HANGUL_SYLLABLE:
+		case ENumberFormat::CIRCLED_HANGUL_SYLLABLE: return std::wstring(L"ganada");
+		case ENumberFormat::HANGUL_JAMO:
+		case ENumberFormat::CIRCLED_HANGUL_JAMO:     return std::wstring(L"chosung");
+		case ENumberFormat::HANGUL_PHONETIC:         return std::wstring(L"koreanCounting");
+		case ENumberFormat::IDEOGRAPH:               return std::wstring(L"ideographDigital");
+		case ENumberFormat::CIRCLED_IDEOGRAPH:
+		case ENumberFormat::DECAGON_CIRCLE_HANJA:    return std::wstring(L"ideographEnclosedCircle");
+		case ENumberFormat::DECAGON_CIRCLE:          return std::wstring(L"decimalEnclosedCircle");
+		case ENumberFormat::SYMBOL:
+		case ENumberFormat::USER_CHAR:
+		case ENumberFormat::DIGIT:
+		default:                                     return std::wstring(L"decimal");
+	}
+}
+
+int CNumberingConverter::FindUsed(EHeadingType eHeadingType, const CHWPRecord* pRecord) const
+{
+	std::vector<std::pair<EHeadingType, const CHWPRecord*>>::const_iterator itFound = std::find_if(m_arUsedNumbering.cbegin(), m_arUsedNumbering.cend(),
+	                                                                                               [pRecord, eHeadingType](const std::pair<EHeadingType, const CHWPRecord*>& oValue)
+	                                                                                               { return eHeadingType == oValue.first && pRecord == oValue.second;});
+
+	if (m_arUsedNumbering.cend() == itFound)
+		return 0;
+
+	return (int)(itFound - m_arUsedNumbering.cbegin()) + 1;
+}
+
+int CNumberingConverter::AddUsed(EHeadingType eHeadingType, const CHWPRecord* pRecord)
+{
+	m_arUsedNumbering.push_back(std::make_pair(eHeadingType, pRecord));
+
+	return (int)m_arUsedNumbering.size();
+}
+
+void CNumberingConverter::WriteAbstractNumHeader(int nAbstractNumId, const std::wstring& wsMultiLevelType)
+{
+	m_oNumberXml.WriteString(L"<w:abstractNum w:abstractNumId=\"" + std::to_wstring(nAbstractNumId) + L"\">");
+	m_oNumberXml.WriteString(L"<w:multiLevelType w:val=\"" + wsMultiLevelType + L"\"/>");
+}
+
+void CNumberingConverter::WriteLvlJc(HWP_BYTE chAlign)
+{
+	m_oNumberXml.WriteString(L"<w:lvlJc w:val=\"");
+	switch(chAlign)
+	{
+		default:
+		case 0x0: m_oNumberXml.WriteString(L"start"); break;
+		case 0x1: m_oNumberXml.WriteString(L"center"); break;
+		case 0x2: m_oNumberXml.WriteString(L"right"); break;
+	}
+	m_oNumberXml.WriteString(L"\"/>");
+}
+
+void CNumberingConverter::WriteLvlCharProperties(int nCharShape, CConverter2OOXML& oConverter)
+{
+	if (nCharShape < 0 || nCharShape > 0xFFFF)
+		nCharShape = 0;
+
+	TConversionState oState;
+	oConverter.WriteRunnerStyle((short)nCharShape, m_oNumberXml, oState);
+}
+
+void CNumberingConverter::WriteNumberingLevels(const CHWPRecordNumbering* pNumbering, CConverter2OOXML& oConverter)
+{
+	for (short shIndex = 0; shIndex < HWP_NUMBERING_LEVELS; ++shIndex)
+	{
+		m_oNumberXml.WriteString(L"<w:lvl w:ilvl=\"" + std::to_wstring(shIndex) + L"\">");
+
+		int nStart = pNumbering->GetStartNumber(shIndex);
+
+		if (nStart < 1)
+			nStart = (0 < pNumbering->GetStart()) ? (int)pNumbering->GetStart() : 1;
+
+		m_oNumberXml.WriteString(L"<w:start w:val=\"" + std::to_wstring(nStart) + L"\"/>");
+
+		m_oNumberXml.WriteString(L"<w:numFmt w:val=\"" + NumberFormatToWSTR(pNumbering->GetNumFormatType(shIndex)) + L"\"/>");
+		m_oNumberXml.WriteString(L"<w:suff w:val=\"space\"/>");
+
+		std::wstring wsLvlText{pNumbering->GetNumFormat(shIndex)};
+
+		if (wsLvlText.empty())
+		{
+			for (short shLvl = 0; shLvl <= shIndex; ++shLvl)
+				wsLvlText += L'%' + std::to_wstring(shLvl + 1) + L'.';
+		}
+		else
+		{
+			for (size_t unPos = wsLvlText.find(L'^'); std::wstring::npos != unPos; unPos = wsLvlText.find(L'^', unPos + 1))
+			{
+				if (unPos + 1 < wsLvlText.length() && L'1' <= wsLvlText[unPos + 1] && L'9' >= wsLvlText[unPos + 1])
+					wsLvlText[unPos] = L'%';
+			}
+		}
+
+		m_oNumberXml.WriteString(L"<w:lvlText w:val=\"");
+		m_oNumberXml.WriteEncodeXmlString(wsLvlText);
+		m_oNumberXml.WriteString(L"\"/>");
+
+		WriteLvlJc(pNumbering->GetAlign(shIndex));
+		WriteLvlCharProperties(pNumbering->GetCharShape(shIndex), oConverter);
+
+		m_oNumberXml.WriteString(L"</w:lvl>");
+	}
+}
+
+void CNumberingConverter::WriteBulletLevels(const CHWPRecordBullet* pBullet, CConverter2OOXML& oConverter)
+{
+	const std::wstring wsNumFormat{HeadingTypeToWSTR(EHeadingType::BULLET)};
+
+	const bool bOwnChar = (0 != pBullet->GetBulletChar() && !pBullet->UseImage());
+	const HWP_CHAR chBullet = bOwnChar ? pBullet->GetBulletChar() : (HWP_CHAR)DEFAULT_BULLET_CHAR;
+
+	for (short shIndex = 0; shIndex < OOXML_NUMBERING_LEVELS; ++shIndex)
+	{
+		m_oNumberXml.WriteString(L"<w:lvl w:ilvl=\"" + std::to_wstring(shIndex) + L"\">");
+
+		m_oNumberXml.WriteString(L"<w:start w:val=\"1\"/>");
+		m_oNumberXml.WriteString(L"<w:numFmt w:val=\"" + wsNumFormat + L"\"/>");
+		m_oNumberXml.WriteString(L"<w:suff w:val=\"space\"/>");
+
+		m_oNumberXml.WriteString(L"<w:lvlText w:val=\"");
+		m_oNumberXml.AddCharSafe((wchar_t)chBullet);
+		m_oNumberXml.WriteString(L"\"/>");
+
+		WriteLvlJc(pBullet->GetAlign());
+
+		if (IS_SYMBOL_FONT_CHAR(chBullet))
+		{
+			const std::wstring wsFont{(DEFAULT_BULLET_CHAR == chBullet) ? L"Symbol" : L"Wingdings"};
+
+			m_oNumberXml.WriteString(L"<w:rPr><w:rFonts w:ascii=\"" + wsFont + L"\" w:hAnsi=\"" + wsFont + L"\" w:hint=\"default\"/></w:rPr>");
+		}
+		else
+			WriteLvlCharProperties(pBullet->GetCharShape(), oConverter);
+
+		m_oNumberXml.WriteString(L"</w:lvl>");
 	}
 }
 
 int CNumberingConverter::CreateNumbering(const CHWPRecordNumbering* pNumbering, EHeadingType eHeadingType, CConverter2OOXML& oConverter)
 {
-	if (nullptr == pNumbering || eHeadingType == EHeadingType::NONE || EHeadingType::OUTLINE == eHeadingType)
+	if (nullptr == pNumbering ||
+	    (EHeadingType::NUMBER != eHeadingType && EHeadingType::OUTLINE != eHeadingType))
 		return 0;
 
-	std::vector<std::pair<EHeadingType, const CHWPRecordNumbering*>>::const_iterator itFound = std::find_if(m_arUsedNumbering.cbegin(), m_arUsedNumbering.cend(),
-	                                                                                                        [pNumbering, eHeadingType](const std::pair<EHeadingType, const CHWPRecordNumbering*>& oValue)
-	                                                                                                        { return eHeadingType == oValue.first && pNumbering == oValue.second;});
+	const int nUsedNumbering = FindUsed(eHeadingType, pNumbering);
 
-	if (m_arUsedNumbering.cend() != itFound)
-		return itFound - m_arUsedNumbering.cbegin() + 1;
+	if (0 != nUsedNumbering)
+		return nUsedNumbering;
 
-	m_arUsedNumbering.push_back(std::make_pair(eHeadingType, pNumbering));
+	const int nNumId = AddUsed(eHeadingType, pNumbering);
 
-	m_oNumberXml.WriteString(L"<w:abstractNum w:abstractNumId=\"" + std::to_wstring(m_arUsedNumbering.size()) + L"\">");
-
-	const std::wstring wsNumFormat{HeadingTypeToWSTR(eHeadingType)};
-
-	std::wstring wsLvlText;
-
-	if (EHeadingType::NUMBER == eHeadingType)
-	{
-		for (short shIndex = 0; shIndex < 7; ++shIndex)
-		{
-			m_oNumberXml.WriteString(L"<w:lvl w:ilvl=\"" + std::to_wstring(shIndex) + L"\">");
-
-			m_oNumberXml.WriteString(L"<w:start w:val=\"" + std::to_wstring(pNumbering->GetStartNumber(shIndex)) + L"\"/>");
-			m_oNumberXml.WriteString(L"<w:numFmt w:val=\"" + wsNumFormat + L"\"/>");
-			m_oNumberXml.WriteString(L"<w:suff w:val=\"space\"/>");
-
-			wsLvlText = pNumbering->GetNumFormat(shIndex);
-
-			if (wsLvlText.empty())
-			{
-				for (short shLvl = 0; shLvl <= shIndex; ++shLvl)
-					wsLvlText += L'%' + std::to_wstring(shLvl + 1) + L'.';
-			}
-			else
-				std::replace(wsLvlText.begin(), wsLvlText.end(), L'^', L'%');
-
-			m_oNumberXml.WriteString(L"<w:lvlText w:val=\"" + wsLvlText + L"\"/>");
-
-			m_oNumberXml.WriteString(L"<w:lvlJc w:val=\"");
-			switch(pNumbering->GetAlign(shIndex))
-			{
-				default:
-				case 0x0: m_oNumberXml.WriteString(L"start"); break;
-				case 0x1: m_oNumberXml.WriteString(L"center"); break;
-				case 0x2: m_oNumberXml.WriteString(L"right"); break;
-			}
-			m_oNumberXml.WriteString(L"\"/>");
-
-			int nCharShape = pNumbering->GetCharShape(shIndex);
-
-			if (INT_MAX == nCharShape)
-				nCharShape = 0;
-
-			TConversionState oState;
-			oConverter.WriteRunnerStyle(nCharShape, m_oNumberXml, oState);
-
-			m_oNumberXml.WriteString(L"</w:lvl>");
-		}
-	}
-	else if (EHeadingType::BULLET == eHeadingType)
-	{
-		for (short shIndex = 0; shIndex < 9; ++shIndex)
-		{
-			m_oNumberXml.WriteString(L"<w:lvl w:ilvl=\"" + std::to_wstring(shIndex) + L"\">");
-
-			m_oNumberXml.WriteString(L"<w:start w:val=\"1\"/>");
-			m_oNumberXml.WriteString(L"<w:numFmt w:val=\"" + wsNumFormat + L"\"/>");
-
-			m_oNumberXml.WriteString(L"<w:lvlJc w:val=\"");
-			switch(pNumbering->GetAlign(shIndex))
-			{
-				default:
-				case 0x0: m_oNumberXml.WriteString(L"start"); break;
-				case 0x1: m_oNumberXml.WriteString(L"center"); break;
-				case 0x2: m_oNumberXml.WriteString(L"right"); break;
-			}
-			m_oNumberXml.WriteString(L"\"/>");
-
-			switch (shIndex % 3)
-			{
-				case 0:
-				{
-					m_oNumberXml.WriteString(L"<w:lvlText w:val=\"");
-					m_oNumberXml.AddCharSafe(0xF0B7);
-					m_oNumberXml.WriteString(L"\"/>");
-					m_oNumberXml.WriteString(L"<w:rPr><w:rFonts w:ascii=\"Symbol\" w:hAnsi=\"Symbol\" w:hint=\"default\"/></w:rPr>");
-					break;
-				}
-				case 1:
-				{
-					m_oNumberXml.WriteString(L"<w:lvlText w:val=\"o\"/>");
-					m_oNumberXml.WriteString(L"<w:rPr><w:rFonts w:ascii=\"Courier New\" w:hAnsi=\"Courier New\" w:cs=\"Courier New\" w:hint=\"default\"/></w:rPr>");
-					break;
-				}
-				case 2:
-				{
-					m_oNumberXml.WriteString(L"<w:lvlText w:val=\"");
-					m_oNumberXml.AddCharSafe(0xF0A7);
-					m_oNumberXml.WriteString(L"\"/>");
-					m_oNumberXml.WriteString(L"<w:rPr><w:rFonts w:ascii=\"Wingdings\" w:hAnsi=\"Wingdings\" w:hint=\"default\"/></w:rPr>");
-					break;
-				}
-			}
-
-			m_oNumberXml.WriteString(L"</w:lvl>");
-		}
-	}
+	WriteAbstractNumHeader(nNumId, L"multilevel");
+	WriteNumberingLevels(pNumbering, oConverter);
 
 	m_oNumberXml.WriteString(L"</w:abstractNum>");
 
-	return m_arUsedNumbering.size();
+	return nNumId;
+}
+
+int CNumberingConverter::CreateOutline(const CHWPRecordNumbering* pNumbering, CConverter2OOXML& oConverter)
+{
+	return CreateNumbering(pNumbering, EHeadingType::OUTLINE, oConverter);
+}
+
+int CNumberingConverter::CreateBullet(const CHWPRecordBullet* pBullet, CConverter2OOXML& oConverter)
+{
+	if (nullptr == pBullet)
+		return 0;
+
+	const int nUsedNumbering = FindUsed(EHeadingType::BULLET, pBullet);
+
+	if (0 != nUsedNumbering)
+		return nUsedNumbering;
+
+	const int nNumId = AddUsed(EHeadingType::BULLET, pBullet);
+
+	WriteAbstractNumHeader(nNumId, L"hybridMultilevel");
+	WriteBulletLevels(pBullet, oConverter);
+
+	m_oNumberXml.WriteString(L"</w:abstractNum>");
+
+	return nNumId;
 }
 
 bool CNumberingConverter::SaveToFile(const std::wstring& wsDirectory)

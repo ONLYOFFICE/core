@@ -1264,7 +1264,8 @@ int ChartSheetSubstream::serialize_dLbls (std::wostream & _stream, int id, CRT *
 		if (att_label)
 		{
 			att_label->is_area = is_area;
-			series_ss->m_AttachedLabel->serialize(_stream); 
+			if (text)	att_label->fShowKey = text->fShowKey;
+			series_ss->m_AttachedLabel->serialize(_stream);
 			add_labels = true;
 		}
 		else 

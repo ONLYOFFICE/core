@@ -155,7 +155,7 @@ std::wstring CFootnoteConverter::CreateHeadOrFoot(const CCtrlHeadFoot* pCtrlHead
 
 		for (const TRelationship& oRelationship : arRelationships)
 		{
-			oRelsWriter.WriteStringUTF8(L"<Relationship Id=\"" + oRelationship.m_wsID + L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/" + oRelationship.m_wsType + L"\" Target=\"" + oRelationship.m_wsTarget + L'\"');
+			oRelsWriter.WriteStringUTF8(L"<Relationship Id=\"" + EncodeXmlString(oRelationship.m_wsID) + L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/" + EncodeXmlString(oRelationship.m_wsType) + L"\" Target=\"" + EncodeXmlString(oRelationship.m_wsTarget) + L'\"');
 
 			if (L"hyperlink" == oRelationship.m_wsType)
 				oRelsWriter.WriteStringUTF8(L" TargetMode=\"External\"/>");

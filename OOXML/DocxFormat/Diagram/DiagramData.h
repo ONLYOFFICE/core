@@ -367,10 +367,11 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-			nullable<PPTX::Logic::SpPr>		m_oSpPr;
-			nullable<PPTX::Logic::TxBody>	m_oTxBody;
+			nullable<PPTX::Logic::SpPr> m_oSpPr;
+			nullable<PPTX::Logic::TxBody> m_oTxBody;
 			nullable<Diagram::CPropertySet> m_oPrSet;
-			
+			nullable<OOX::Drawing::COfficeArtExtensionList>	m_oExtLst;
+
 			nullable<SimpleTypes::CGuid> m_sModelId;
 			nullable<SimpleTypes::CPtTypes> m_oType;
 			nullable<SimpleTypes::CGuid> m_sCxnId;

@@ -200,8 +200,12 @@ namespace PPTX
 			}
 
 			pWriter->StartAttributes();
-				pWriter->WriteAttribute (L"id",      _id);
-				pWriter->WriteAttribute (L"name",    XmlUtils::EncodeXmlString(name));
+				if (strNS == L"dgm14")
+				{
+					pWriter->WriteAttribute(L"xmlns:dgm14", L"http://schemas.microsoft.com/office/drawing/2010/diagram");
+				}
+				pWriter->WriteAttribute (L"id", _id);
+				pWriter->WriteAttribute (L"name", XmlUtils::EncodeXmlString(name));
 				if (descr.IsInit())
 				{
 					std::wstring d = XmlUtils::EncodeXmlString(descr.get());

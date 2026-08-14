@@ -1162,6 +1162,7 @@ PdfWriter::CObjectBase* DictToCDictObjectUnified(Object* obj, SDictConvertContex
 
 		PdfWriter::CDictObject* pDict = NULL;
 
+		bool bAnnot = false;
 		if (ctx.Has(EDictConvertFlags::eDCF_HandleAnnots))
 		{
 			Object oSubtype;
@@ -1172,6 +1173,7 @@ PdfWriter::CObjectBase* DictToCDictObjectUnified(Object* obj, SDictConvertContex
 				{
 					ctx.pDoc->AddAnnotation(ctx.nAddObjToXRef + ctx.nStartRefID, pAnnot);
 					pDict = pAnnot;
+					bAnnot = true;
 				}
 			}
 			oSubtype.free();
@@ -1206,6 +1208,11 @@ PdfWriter::CObjectBase* DictToCDictObjectUnified(Object* obj, SDictConvertContex
 		for (int i = 0; i < obj->dictGetLength(); ++i)
 		{
 			char* chKey = obj->dictGetKey(i);
+			if (ctx.bIgnoreOO && bAnnot && strcmp("OO", chKey) == 0)
+			{
+				oTemp.free();
+				continue;
+			}
 
 			if (ctx.Has(EDictConvertFlags::eDCF_HandleResources) && strcmp("Resources", chKey) == 0)
 			{
@@ -1553,7 +1560,7 @@ void CPdfEditor::SetMode(Mode nMode)
 	if (m_nMode == Mode::WriteNew)
 	{
 		PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
-		pDoc->CreateNew();
+		pDoc->CreateNew(false);
 		PdfWriter::CPageTree* pPageTree = pDoc->GetPageTree();
 		m_mObjManager.SetDoc(pDoc);
 		pPageTree->CreateFakePages(m_pReader->GetNumPages());
@@ -2740,6 +2747,15 @@ void CPdfEditor::Close()
 				RemoveHiddenOCGs(oOC.get(), xref);
 			pCatalog->Add("OCProperties", DictToCDictObjectUnified(oOC.get(), ctx));
 		}
+		if (~m_nRedactInfo & (1 << 9))
+		{
+			CObjectGuard pNames, oEF, oNames;
+			if (catDict->dictLookup("Names", pNames.get())->isDict() && pNames->dictLookup("EmbeddedFiles", oEF.get())->isDict())
+			{
+				PdfWriter::CDictObject* pNames = pCatalog->GetNames();
+				pNames->Add("JavaScript", DictToCDictObjectUnified(oEF.get(), ctx));
+			}
+		}
 
 		m_pWriter->EditClose();
 		m_pWriter->SaveToFile(m_wsDstFile);
@@ -3391,7 +3407,7 @@ bool CPdfEditor::EditPage(int _nPageIndex, bool bSet, bool bActualPos)
 	RELEASEOBJECT(pXref);
 	return false;
 }
-bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength, PDFDoc* _pDoc, int nStartRefID)
+bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength, PDFDoc* _pDoc, int nStartRefID, bool bIgnoreOO)
 {
 	if (m_nMode == Mode::Unknown)
 		return false;
@@ -3405,6 +3421,7 @@ bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength, PDFD
 		unLength = pPDFDocument->getNumPages();
 
 	SDictConvertContext ctx(pDoc, xref, &m_mObjManager, nStartRefID);
+	ctx.bIgnoreOO = bIgnoreOO;
 	// Pages must be created in advance to reference them
 	Catalog* pCatalog = pPDFDocument->getCatalog();
 	for (unsigned int i = 0; i < unLength; ++i)
@@ -3894,7 +3911,7 @@ bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength)
 	for (const std::pair<const int, std::vector<int>>& it : mFileToPages)
 	{
 		pPDFDocument = m_pReader->GetPDFDocument(it.first);
-		if (!SplitPages(it.second.data(), it.second.size(), pPDFDocument, m_pReader->GetStartRefID(pPDFDocument)))
+		if (!SplitPages(it.second.data(), it.second.size(), pPDFDocument, m_pReader->GetStartRefID(pPDFDocument), false))
 			return false;
 	}
 	return true;
@@ -3947,7 +3964,7 @@ bool CPdfEditor::MergePages(const std::string& sOutlineTitle)
 	PDFDoc* pDocument = m_pReader->GetLastPDFDocument();
 	int nStartRefID = m_pReader->GetStartRefID(pDocument);
 	m_mObjManager.SetDoc(m_pWriter->GetDocument());
-	bool bRes = SplitPages(NULL, 0, pDocument, nStartRefID);
+	bool bRes = SplitPages(NULL, 0, pDocument, nStartRefID, true);
 	if (!bRes)
 		return false;
 
@@ -4581,6 +4598,20 @@ bool CPdfEditor::EditAnnot(int _nPageIndex, int nID)
 	RELEASEOBJECT(pXref);
 	return false;
 }
+namespace
+{
+void RemoveObj(CObjectsManager* pManager, PdfWriter::CDocument* pDoc, PdfWriter::CObjectBase* pObj)
+{
+	std::vector<PdfWriter::CObjectBase*> arrRemoved;
+	pDoc->RemoveObj(pObj, true, &arrRemoved);
+
+	for (size_t i = 0; i < arrRemoved.size(); ++i)
+	{
+		int nIDR = pManager->FindObj(arrRemoved[i]);
+		pManager->RemoveObj(nIDR);
+	}
+}
+}
 bool CPdfEditor::DeleteAnnot(int nID, Object* oAnnots)
 {
 	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
@@ -4592,13 +4623,12 @@ bool CPdfEditor::DeleteAnnot(int nID, Object* oAnnots)
 	{
 		if (pObj->GetType() == PdfWriter::object_type_DICT)
 		{
-			PdfWriter::CObjectBase* pPopup = ((PdfWriter::CDictObject*)pObj)->Get("Popup");
-			int nIDPopup = m_mObjManager.FindObj(pPopup);
-			m_mObjManager.RemoveObj(nIDPopup);
-			pDoc->RemoveObj(pPopup);
+			PdfWriter::CObjectBase* pObjR = ((PdfWriter::CDictObject*)pObj)->Get("Popup");
+			if (pObjR)
+				RemoveObj(&m_mObjManager, pDoc, pObjR);
 		}
-		m_mObjManager.RemoveObj(nID);
-		pDoc->RemoveObj(pObj);
+
+		RemoveObj(&m_mObjManager, pDoc, pObj);
 		return true;
 	}
 	if (m_nMode == Mode::Split || m_nMode == Mode::WriteNew)

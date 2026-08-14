@@ -110,7 +110,7 @@ namespace PdfWriter
 		CDocument();
 		~CDocument();
 
-		bool              CreateNew();
+		bool              CreateNew(bool bMetadata = true);
 		void              Close();
 		bool              SaveToFile(const std::wstring& wsPath);
 		bool              SaveToMemory(BYTE** pData, int* pLength, bool bForWasm);
@@ -219,7 +219,7 @@ namespace PdfWriter
 		CPage*            GetCurPage() { return m_pCurPage; }
 		void              SetCurPage(CPage* pPage) { m_pCurPage = pPage; }
 		bool              EditCO(const std::vector< std::pair<int, int> >& arrCO);
-		void              AddOOField(const std::string& sName, BYTE* pMetaData, DWORD nMetaLength);
+		void              AddOOField(const std::string& sName, BYTE* pMetaData, DWORD nMetaLength, CDictObject* pDict = NULL);
 		std::string       SetParentKids(int nParentID);
 		const std::map<int, CAnnotation*>& GetAnnots() { return m_mAnnotations; }
 		const std::map<int, CDictObject*>& GetParents() { return m_mParents; }
@@ -235,7 +235,7 @@ namespace PdfWriter
 		void              SetAcroForm(CDictObject* pObj);
 		CDictObject*      GetAcroForm() { return m_pAcroForm; }
 		CResourcesDict*   CreateResourcesDict(bool bInline, bool bProcSet);
-		void              RemoveObj(CObjectBase* pObj);
+		void              RemoveObj(CObjectBase* pObj, bool bCascade = false, std::vector<CObjectBase*>* pRemoved = NULL);
 		void              SetEncryption(CEncryptDict* pEncrypt, CObjectBase* pID);
 		void              AddNameTree(CStringObject* pName, CDestination* pDest);
 		CObjectBase*      FindObjByID(unsigned int nObjectId);

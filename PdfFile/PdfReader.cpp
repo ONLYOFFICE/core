@@ -1765,6 +1765,63 @@ BYTE* CPdfReader::GetButtonIcon(int nBackgroundColor, int _nPageIndex, bool bBas
 		}
 		oRef.free();
 
+		CObjectGuard oOO;
+		if (pField->fieldLookup("OO", oOO.get())->isDict())
+		{
+			bool bFirst = true;
+			int nMKPos  = -1;
+			unsigned int nMKLength = 0;
+			int nUnique = 0;
+			std::vector<const char*> arrMKName { "I", "RI", "IX" };
+			for (unsigned int j = 0; j < arrMKName.size(); ++j)
+			{
+				if (sIconView && strcmp(sIconView, arrMKName[j]) != 0)
+					continue;
+				std::string sMKName(arrMKName[j]);
+
+				CObjectGuard oStr;
+				if (oOO->dictLookup(sMKName.c_str(), oStr.get())->isStream())
+				{
+					if (bFirst)
+					{
+						Object oFieldRef;
+						pField->getFieldRef(&oFieldRef);
+						// Annotation number for matching with AP
+						oRes.AddInt(oFieldRef.getRefNum() + nStartRefID);
+						oFieldRef.free();
+
+						// Number of icons 1-3
+						nMKPos = oRes.GetSize();
+						oRes.AddInt(nMKLength);
+						bFirst = false;
+					}
+
+					Stream* pStream = oStr->getStream();
+					pStream->reset();
+
+					std::vector<BYTE> arrBuffer;
+					int c;
+					while ((c = pStream->getChar()) != EOF)
+						arrBuffer.push_back((BYTE)c);
+
+					pStream->close();
+
+					oRes.WriteString(sMKName);
+					oRes.AddInt(nUnique++); // IDRef
+					oRes.WriteBYTE(1); // unique
+					oRes.AddInt(0); // w
+					oRes.AddInt(0); // h
+
+					oRes.WriteString(arrBuffer.data(), (unsigned int)arrBuffer.size());
+					nMKLength++;
+				}
+			}
+
+			if (nMKPos > 0)
+				oRes.AddInt(nMKLength, nMKPos);
+			continue;
+		}
+
 		Object oMK;
 		if (!pField->fieldLookup("MK", &oMK)->isDict())
 		{

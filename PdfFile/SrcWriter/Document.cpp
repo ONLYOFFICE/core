@@ -108,7 +108,7 @@ namespace PdfWriter
 	{
 		Close();
 	}
-	bool CDocument::CreateNew()
+	bool CDocument::CreateNew(bool bMetadata)
 	{
 		Close();
 
@@ -121,7 +121,7 @@ namespace PdfWriter
 			return false;
 
 		m_pMetaData = NULL;
-		if (~m_nRedactInfo & (1 << 8))
+		if (bMetadata && (~m_nRedactInfo & (1 << 8)))
 		{
 			m_pMetaData = new CStreamData(m_pXref);
 			if (!m_pMetaData)
@@ -1496,8 +1496,15 @@ namespace PdfWriter
 			}
 		}
 	}
-	void CDocument::RemoveObj(CObjectBase* pObj)
+	void CDocument::RemoveObj(CObjectBase* pObj, bool bCascade, std::vector<CObjectBase*>* pRemoved)
 	{
+		if (!pObj)
+			return;
+
+		std::vector<CObjectBase*> arrChildren;
+		if (bCascade)
+			pObj->GetChildRefs(arrChildren);
+
 		std::map<int, CAnnotation*>::iterator it1 = std::find_if(m_mAnnotations.begin(), m_mAnnotations.end(), [pObj](const std::pair<int, CAnnotation*>& t){ return t.second == pObj; });
 		if (it1 != m_mAnnotations.end())
 		{
@@ -1512,7 +1519,21 @@ namespace PdfWriter
 			m_mEditPages.erase(it2);
 		if (m_pCurPage == pObj)
 			m_pCurPage = NULL;
+
 		m_pXref->Remove(pObj);
+		if (pRemoved)
+			pRemoved->push_back(pObj);
+
+		if (!bCascade)
+			return;
+
+		for (size_t i = 0; i < arrChildren.size(); ++i)
+		{
+			CObjectBase* pChild = arrChildren[i];
+			TXrefEntry* pChildEntry = pChild->GetXrefEntry();
+			if (pChildEntry && pChildEntry->pRefObj.empty())
+				RemoveObj(pChild, true, pRemoved);
+		}
 	}
 	bool CDocument::CheckFieldName(CFieldBase* pField, const std::string& sName)
 	{
@@ -1889,16 +1910,20 @@ namespace PdfWriter
 
 		return true;
 	}
-	void CDocument::AddOOField(const std::string& sName, BYTE* pMetaData, DWORD nMetaLength)
+	void CDocument::AddOOField(const std::string& sName, BYTE* pMetaData, DWORD nMetaLength, CDictObject* pDict)
 	{
-		if (!CheckAcroForm())
-			return;
+		if (!pDict)
+		{
+			if (!CheckAcroForm())
+				return;
+			pDict = m_pAcroForm;
+		}
 
-		CDictObject* pOO = dynamic_cast<CDictObject*>(m_pAcroForm->Get("OO"));
+		CDictObject* pOO = dynamic_cast<CDictObject*>(pDict->Get("OO"));
 		if (!pOO)
 		{
 			pOO = new CDictObject();
-			m_pAcroForm->Add("OO", pOO);
+			pDict->Add("OO", pOO);
 		}
 
 		CDictObject* pField = new CDictObject(m_pXref);

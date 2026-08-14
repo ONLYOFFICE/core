@@ -1162,6 +1162,7 @@ PdfWriter::CObjectBase* DictToCDictObjectUnified(Object* obj, SDictConvertContex
 
 		PdfWriter::CDictObject* pDict = NULL;
 
+		bool bAnnot = false;
 		if (ctx.Has(EDictConvertFlags::eDCF_HandleAnnots))
 		{
 			Object oSubtype;
@@ -1172,6 +1173,7 @@ PdfWriter::CObjectBase* DictToCDictObjectUnified(Object* obj, SDictConvertContex
 				{
 					ctx.pDoc->AddAnnotation(ctx.nAddObjToXRef + ctx.nStartRefID, pAnnot);
 					pDict = pAnnot;
+					bAnnot = true;
 				}
 			}
 			oSubtype.free();
@@ -1206,6 +1208,11 @@ PdfWriter::CObjectBase* DictToCDictObjectUnified(Object* obj, SDictConvertContex
 		for (int i = 0; i < obj->dictGetLength(); ++i)
 		{
 			char* chKey = obj->dictGetKey(i);
+			if (ctx.bIgnoreOO && bAnnot && strcmp("OO", chKey) == 0)
+			{
+				oTemp.free();
+				continue;
+			}
 
 			if (ctx.Has(EDictConvertFlags::eDCF_HandleResources) && strcmp("Resources", chKey) == 0)
 			{
@@ -3400,7 +3407,7 @@ bool CPdfEditor::EditPage(int _nPageIndex, bool bSet, bool bActualPos)
 	RELEASEOBJECT(pXref);
 	return false;
 }
-bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength, PDFDoc* _pDoc, int nStartRefID)
+bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength, PDFDoc* _pDoc, int nStartRefID, bool bIgnoreOO)
 {
 	if (m_nMode == Mode::Unknown)
 		return false;
@@ -3414,6 +3421,7 @@ bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength, PDFD
 		unLength = pPDFDocument->getNumPages();
 
 	SDictConvertContext ctx(pDoc, xref, &m_mObjManager, nStartRefID);
+	ctx.bIgnoreOO = bIgnoreOO;
 	// Pages must be created in advance to reference them
 	Catalog* pCatalog = pPDFDocument->getCatalog();
 	for (unsigned int i = 0; i < unLength; ++i)
@@ -3903,7 +3911,7 @@ bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength)
 	for (const std::pair<const int, std::vector<int>>& it : mFileToPages)
 	{
 		pPDFDocument = m_pReader->GetPDFDocument(it.first);
-		if (!SplitPages(it.second.data(), it.second.size(), pPDFDocument, m_pReader->GetStartRefID(pPDFDocument)))
+		if (!SplitPages(it.second.data(), it.second.size(), pPDFDocument, m_pReader->GetStartRefID(pPDFDocument), false))
 			return false;
 	}
 	return true;
@@ -3956,7 +3964,7 @@ bool CPdfEditor::MergePages(const std::string& sOutlineTitle)
 	PDFDoc* pDocument = m_pReader->GetLastPDFDocument();
 	int nStartRefID = m_pReader->GetStartRefID(pDocument);
 	m_mObjManager.SetDoc(m_pWriter->GetDocument());
-	bool bRes = SplitPages(NULL, 0, pDocument, nStartRefID);
+	bool bRes = SplitPages(NULL, 0, pDocument, nStartRefID, true);
 	if (!bRes)
 		return false;
 

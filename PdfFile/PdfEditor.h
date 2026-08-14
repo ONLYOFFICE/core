@@ -94,6 +94,7 @@ struct SDictConvertContext
 	int                   nAddObjToXRef = 0;
 	bool                  bUndecodedStream = true;
 	bool                  bMakeBinary  = false;
+	bool                  bIgnoreOO    = false;
 	int                   nFlags       = EDictConvertFlags::eDCF_Simple;
 
 	SDictConvertContext() {}
@@ -158,7 +159,7 @@ private:
 	bool IncrementalUpdates();
 	void SyncAcroFormFromReader();
 	void GetPageTree(XRef* xref, Object* pPagesRefObj, PdfWriter::CPageTree* pPageParent = NULL);
-	bool SplitPages(const int* arrPageIndex, unsigned int unLength, PDFDoc* _pDoc, int nStartRefID);
+	bool SplitPages(const int* arrPageIndex, unsigned int unLength, PDFDoc* _pDoc, int nStartRefID, bool bIgnoreOO);
 	bool ChangeFullNameParent(int nParent, const std::string& sPrefixForm, std::vector<int>& arrRename);
 
 	struct CRedactData

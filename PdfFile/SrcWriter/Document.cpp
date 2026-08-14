@@ -1910,16 +1910,20 @@ namespace PdfWriter
 
 		return true;
 	}
-	void CDocument::AddOOField(const std::string& sName, BYTE* pMetaData, DWORD nMetaLength)
+	void CDocument::AddOOField(const std::string& sName, BYTE* pMetaData, DWORD nMetaLength, CDictObject* pDict)
 	{
-		if (!CheckAcroForm())
-			return;
+		if (!pDict)
+		{
+			if (!CheckAcroForm())
+				return;
+			pDict = m_pAcroForm;
+		}
 
-		CDictObject* pOO = dynamic_cast<CDictObject*>(m_pAcroForm->Get("OO"));
+		CDictObject* pOO = dynamic_cast<CDictObject*>(pDict->Get("OO"));
 		if (!pOO)
 		{
 			pOO = new CDictObject();
-			m_pAcroForm->Add("OO", pOO);
+			pDict->Add("OO", pOO);
 		}
 
 		CDictObject* pField = new CDictObject(m_pXref);

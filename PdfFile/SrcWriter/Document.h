@@ -235,7 +235,7 @@ namespace PdfWriter
 		void              SetAcroForm(CDictObject* pObj);
 		CDictObject*      GetAcroForm() { return m_pAcroForm; }
 		CResourcesDict*   CreateResourcesDict(bool bInline, bool bProcSet);
-		void              RemoveObj(CObjectBase* pObj);
+		void              RemoveObj(CObjectBase* pObj, bool bCascade = false, std::vector<CObjectBase*>* pRemoved = NULL);
 		void              SetEncryption(CEncryptDict* pEncrypt, CObjectBase* pID);
 		void              AddNameTree(CStringObject* pName, CDestination* pDest);
 		CObjectBase*      FindObjByID(unsigned int nObjectId);

@@ -4590,6 +4590,20 @@ bool CPdfEditor::EditAnnot(int _nPageIndex, int nID)
 	RELEASEOBJECT(pXref);
 	return false;
 }
+namespace
+{
+void RemoveObj(CObjectsManager* pManager, PdfWriter::CDocument* pDoc, PdfWriter::CObjectBase* pObj)
+{
+	std::vector<PdfWriter::CObjectBase*> arrRemoved;
+	pDoc->RemoveObj(pObj, true, &arrRemoved);
+
+	for (size_t i = 0; i < arrRemoved.size(); ++i)
+	{
+		int nIDR = pManager->FindObj(arrRemoved[i]);
+		pManager->RemoveObj(nIDR);
+	}
+}
+}
 bool CPdfEditor::DeleteAnnot(int nID, Object* oAnnots)
 {
 	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
@@ -4601,13 +4615,12 @@ bool CPdfEditor::DeleteAnnot(int nID, Object* oAnnots)
 	{
 		if (pObj->GetType() == PdfWriter::object_type_DICT)
 		{
-			PdfWriter::CObjectBase* pPopup = ((PdfWriter::CDictObject*)pObj)->Get("Popup");
-			int nIDPopup = m_mObjManager.FindObj(pPopup);
-			m_mObjManager.RemoveObj(nIDPopup);
-			pDoc->RemoveObj(pPopup);
+			PdfWriter::CObjectBase* pObjR = ((PdfWriter::CDictObject*)pObj)->Get("Popup");
+			if (pObjR)
+				RemoveObj(&m_mObjManager, pDoc, pObjR);
 		}
-		m_mObjManager.RemoveObj(nID);
-		pDoc->RemoveObj(pObj);
+
+		RemoveObj(&m_mObjManager, pDoc, pObj);
 		return true;
 	}
 	if (m_nMode == Mode::Split || m_nMode == Mode::WriteNew)

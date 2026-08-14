@@ -1416,8 +1416,12 @@ namespace NSOnlineOfficeBinToPdf
 			case ctWidgetsInfo:
 			case ctShapeStart:
 			case ctShapeEnd:
+			case ctPageClear:
 			case ctPageRotate:
 			case ctHeadings:
+			case ctRedact:
+			case ctRedactMeta:
+			case ctMacros:
 			default:
 			{
 				BYTE* cur = oReader.GetCurrentBuffer();

@@ -1496,8 +1496,15 @@ namespace PdfWriter
 			}
 		}
 	}
-	void CDocument::RemoveObj(CObjectBase* pObj)
+	void CDocument::RemoveObj(CObjectBase* pObj, bool bCascade, std::vector<CObjectBase*>* pRemoved)
 	{
+		if (!pObj)
+			return;
+
+		std::vector<CObjectBase*> arrChildren;
+		if (bCascade)
+			pObj->GetChildRefs(arrChildren);
+
 		std::map<int, CAnnotation*>::iterator it1 = std::find_if(m_mAnnotations.begin(), m_mAnnotations.end(), [pObj](const std::pair<int, CAnnotation*>& t){ return t.second == pObj; });
 		if (it1 != m_mAnnotations.end())
 		{
@@ -1512,7 +1519,21 @@ namespace PdfWriter
 			m_mEditPages.erase(it2);
 		if (m_pCurPage == pObj)
 			m_pCurPage = NULL;
+
 		m_pXref->Remove(pObj);
+		if (pRemoved)
+			pRemoved->push_back(pObj);
+
+		if (!bCascade)
+			return;
+
+		for (size_t i = 0; i < arrChildren.size(); ++i)
+		{
+			CObjectBase* pChild = arrChildren[i];
+			TXrefEntry* pChildEntry = pChild->GetXrefEntry();
+			if (pChildEntry && pChildEntry->pRefObj.empty())
+				RemoveObj(pChild, true, pRemoved);
+		}
 	}
 	bool CDocument::CheckFieldName(CFieldBase* pField, const std::string& sName)
 	{

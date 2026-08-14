@@ -1553,7 +1553,7 @@ void CPdfEditor::SetMode(Mode nMode)
 	if (m_nMode == Mode::WriteNew)
 	{
 		PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
-		pDoc->CreateNew();
+		pDoc->CreateNew(false);
 		PdfWriter::CPageTree* pPageTree = pDoc->GetPageTree();
 		m_mObjManager.SetDoc(pDoc);
 		pPageTree->CreateFakePages(m_pReader->GetNumPages());
@@ -2739,6 +2739,15 @@ void CPdfEditor::Close()
 			if (m_nRedactInfo & (1 << 7))
 				RemoveHiddenOCGs(oOC.get(), xref);
 			pCatalog->Add("OCProperties", DictToCDictObjectUnified(oOC.get(), ctx));
+		}
+		if (~m_nRedactInfo & (1 << 9))
+		{
+			CObjectGuard pNames, oEF, oNames;
+			if (catDict->dictLookup("Names", pNames.get())->isDict() && pNames->dictLookup("EmbeddedFiles", oEF.get())->isDict())
+			{
+				PdfWriter::CDictObject* pNames = pCatalog->GetNames();
+				pNames->Add("JavaScript", DictToCDictObjectUnified(oEF.get(), ctx));
+			}
 		}
 
 		m_pWriter->EditClose();

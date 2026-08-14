@@ -108,7 +108,7 @@ namespace PdfWriter
 	{
 		Close();
 	}
-	bool CDocument::CreateNew()
+	bool CDocument::CreateNew(bool bMetadata)
 	{
 		Close();
 
@@ -121,7 +121,7 @@ namespace PdfWriter
 			return false;
 
 		m_pMetaData = NULL;
-		if (~m_nRedactInfo & (1 << 8))
+		if (bMetadata && (~m_nRedactInfo & (1 << 8)))
 		{
 			m_pMetaData = new CStreamData(m_pXref);
 			if (!m_pMetaData)

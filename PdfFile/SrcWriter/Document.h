@@ -110,7 +110,7 @@ namespace PdfWriter
 		CDocument();
 		~CDocument();
 
-		bool              CreateNew();
+		bool              CreateNew(bool bMetadata = true);
 		void              Close();
 		bool              SaveToFile(const std::wstring& wsPath);
 		bool              SaveToMemory(BYTE** pData, int* pLength, bool bForWasm);

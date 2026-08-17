@@ -68,6 +68,7 @@ public:
 		size_t col;
 		size_t row;
 		std::wstring val;
+		std::wstring id;
 	};
 
 	object_odf_context(std::wstring ref) 
@@ -116,7 +117,12 @@ public:
     void add_point(unsigned int rep);
 	
     void calc_cache_series(std::wstring adress, std::vector<std::wstring> & cash);
-	
+
+	bool find_cache_anchor(std::wstring const & adress, size_t & col, size_t & row);
+
+	static void split_cache_levels(size_t levels, std::vector<std::wstring> const & cash,
+									std::vector<std::vector<std::wstring> > & out);
+
 	void xlsx_convert	(oox::xlsx_conversion_context & Context);
 	void docx_convert	(oox::docx_conversion_context & Context);
 	void pptx_convert	(oox::pptx_conversion_context & Context);

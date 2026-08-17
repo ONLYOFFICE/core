@@ -210,6 +210,22 @@ void oox_chart_series::setValues(int ind, std::vector<std::wstring> & values)
 		}
 	}
 }
+void oox_chart_series::setLevels(const std::vector<std::vector<std::wstring> > & levels)
+{
+	if (levels.size() < 2) return;
+
+	values_[0].present = true;
+	values_[0].strRef_.present = true;
+	values_[0].strRef_.multi_lvl_cache = levels;
+
+	for (size_t i = 0; i < values_[0].strRef_.multi_lvl_cache.size(); i++)
+	{
+		for (size_t j = 0; j < values_[0].strRef_.multi_lvl_cache[i].size(); j++)
+		{
+			boost::algorithm::trim(values_[0].strRef_.multi_lvl_cache[i][j]);
+		}
+	}
+}
 void oox_chart_series::oox_serialize_marker(std::wostream & _Wostream)
 {
 	CP_XML_WRITER(_Wostream)
@@ -407,6 +423,54 @@ void oox_chart_series::oox_serialize_common(std::wostream & _Wostream)
 									CP_XML_NODE(L"c:v")
 									{
 										CP_XML_CONTENT(val);
+									}
+								}
+							}
+						}
+					}
+					else if (values_[i].strRef_.present && values_[i].strRef_.multi_lvl_cache.size() > 1 &&
+							 false == values_[i].strRef_.formula.empty())
+					{//grouped
+						CP_XML_NODE(L"c:multiLvlStrRef")
+						{
+							CP_XML_NODE(L"c:f")
+							{
+								CP_XML_CONTENT(values_[i].strRef_.formula);
+							}
+							size_t ptCount = 0;
+							for (size_t l = 0; l < values_[i].strRef_.multi_lvl_cache.size(); l++)
+							{
+								if (values_[i].strRef_.multi_lvl_cache[l].size() > ptCount)
+									ptCount = values_[i].strRef_.multi_lvl_cache[l].size();
+							}
+							if (ptCount > 0)
+							{
+								CP_XML_NODE(L"c:multiLvlStrCache")
+								{
+									CP_XML_NODE(L"c:ptCount")
+									{
+										CP_XML_ATTR(L"val", ptCount);
+									}
+									for (size_t l = 0; l < values_[i].strRef_.multi_lvl_cache.size(); l++)
+									{
+										std::vector<std::wstring> & lvl = values_[i].strRef_.multi_lvl_cache[l];
+
+										CP_XML_NODE(L"c:lvl")
+										{
+											for (size_t j = 0; j < lvl.size(); j++)
+											{
+												if (lvl[j].empty()) continue;	//merged
+
+												CP_XML_NODE(L"c:pt")
+												{
+													CP_XML_ATTR(L"idx", j);
+													CP_XML_NODE(L"c:v")
+													{
+														CP_XML_CONTENT(lvl[j]);
+													}
+												}
+											}
+										}
 									}
 								}
 							}

@@ -81,6 +81,7 @@ public:
 	void set_cache_only		(bool val);
 	void set_formula_series	(int ind, const std::wstring& val, const std::wstring& formatCode, bool link_to_source);
 	void set_values_series	(int ind, std::vector<std::wstring> & val);
+	void set_levels_series	(const std::vector<std::vector<std::wstring> > & levels);
 	void set_label_series	(const std::wstring& formula, std::vector<std::wstring> & val);
 	void set_name			(const std::wstring& val);
 	void set_content_series	(odf_reader::chart::series & content);

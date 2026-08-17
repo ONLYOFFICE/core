@@ -76,6 +76,7 @@ public:
 	
 	void setFormula	(int ind, const std::wstring & value, const std::wstring & formatCode, bool link_to_source);
 	void setValues	(int ind, std::vector<std::wstring> & values);
+	void setLevels	(const std::vector<std::vector<std::wstring> > & levels);
 	void setLabels	(const std::wstring &formula, std::vector<std::wstring> & values);
 	void parse_properties();
 	

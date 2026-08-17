@@ -46,6 +46,7 @@
 #include "style_text_properties.h"
 
 #include "draw_common.h"
+#include "text_elements.h"
 
 #include "number_style.h"
 #include "calcs_styles.h"
@@ -385,6 +386,78 @@ void object_odf_context::pptx_convert(oox::pptx_conversion_context & Context)
 		//embedded
 	}
 }
+static bool parse_cell_range(std::wstring const & adress, std::wstring & table,
+							 size_t & col_1, size_t & row_1, size_t & col_2, size_t & row_2)
+{
+	if (adress.empty()) return false;
+
+	formulasconvert::odf2oox_converter converter;
+
+	std::wstring ref_1, ref_2;
+
+	if (!converter.find_first_last_ref(adress, table, ref_1, ref_2)) return false;
+
+	if (!oox::getCellAddressInv(ref_1, col_1, row_1)) return false;
+	if (!oox::getCellAddressInv(ref_2, col_2, row_2)) return false;
+
+	if (col_2 < col_1) std::swap(col_1, col_2);
+	if (row_2 < row_1) std::swap(row_1, row_2);
+
+	return true;
+}
+static bool is_vertical_range(size_t col_1, size_t row_1, size_t col_2, size_t row_2)
+{
+	return (row_2 - row_1) >= (col_2 - col_1);
+}
+
+bool object_odf_context::find_cache_anchor(std::wstring const & adress, size_t & col, size_t & row)
+{
+	std::wstring table, anchor_table;
+	size_t col_1 = 0, row_1 = 0, col_2 = 0, row_2 = 0;
+	size_t anchor_col_1 = 0, anchor_row_1 = 0, anchor_col_2 = 0, anchor_row_2 = 0;
+
+	if (!parse_cell_range(adress, table, col_1, row_1, col_2, row_2)) return false;
+
+	for (size_t i = 0; i < cash_values.size(); i++)
+	{
+		if (cash_values[i].id.empty()) continue;
+
+		if (!parse_cell_range(cash_values[i].id, anchor_table, anchor_col_1, anchor_row_1, anchor_col_2, anchor_row_2))
+			continue;
+
+		if (anchor_table != table) continue;
+		if (anchor_col_1 != col_1 || anchor_row_1 != row_1) continue;
+		if (anchor_col_2 != col_2 || anchor_row_2 != row_2) continue;
+
+		col = cash_values[i].col;
+		row = cash_values[i].row;
+		return true;
+	}
+	return false;
+}
+
+void object_odf_context::split_cache_levels(size_t levels, std::vector<std::wstring> const & cash,
+											std::vector<std::vector<std::wstring> > & out)
+{
+	out.clear();
+
+	if (levels < 1) return;
+
+	const size_t points = cash.size() / levels;
+
+	for (size_t i = 0; i < levels; i++)
+	{
+		const size_t start = (levels - 1 - i) * points;
+
+		out.push_back(std::vector<std::wstring>());
+
+		for (size_t j = 0; j < points && start + j < cash.size(); j++)
+		{
+			out.back().push_back(cash[start + j]);
+		}
+	}
+}
+
 void object_odf_context::calc_cache_series(std::wstring adress, std::vector<std::wstring> & cash)
 {
 	if (adress.empty()) return;
@@ -427,18 +500,41 @@ void object_odf_context::calc_cache_series(std::wstring adress, std::vector<std:
 	}
 	else
 	{
-		formulasconvert::odf2oox_converter converter;
-
-		std::wstring ref_1, ref_2, table;
+		std::wstring table;
 		size_t col_1 = 0, row_1 = 0, col_2 = 0, row_2 = 0;
-	   
-		if (!converter.find_first_last_ref(adress, table, ref_1, ref_2))return;
-		//if ((res = table.find(L"local-table"))<0)return;
 
-		bool res1 = oox::getCellAddressInv(ref_1, col_1, row_1);
-		bool res2 = oox::getCellAddressInv(ref_2, col_2, row_2);
+		if (!parse_cell_range(adress, table, col_1, row_1, col_2, row_2)) return;
 
- 		for (size_t i = 0; res1 && res2 && i < cash_values.size(); i++)
+		size_t anchor_col = 0, anchor_row = 0;
+
+		if (find_cache_anchor(adress, anchor_col, anchor_row))
+		{
+			const size_t count		= (col_2 - col_1 + 1) * (row_2 - row_1 + 1);
+			const bool bVertical	= is_vertical_range(col_1, row_1, col_2, row_2);
+
+			std::map<size_t, std::wstring> run;
+
+			for (size_t i = 0; i < cash_values.size(); i++)
+			{
+				const size_t fixed	= bVertical ? cash_values[i].col : cash_values[i].row;
+				const size_t moving	= bVertical ? cash_values[i].row : cash_values[i].col;
+				const size_t start	= bVertical ? anchor_row : anchor_col;
+
+				if (fixed != (bVertical ? anchor_col : anchor_row))	continue;
+				if (moving < start || moving >= start + count)		continue;
+
+				run[moving] = cash_values[i].val;
+			}
+
+			for (size_t i = 0; i < count; i++)
+			{
+				std::map<size_t, std::wstring>::iterator pFind = run.find((bVertical ? anchor_row : anchor_col) + i);
+				cash.push_back(pFind == run.end() ? L"" : pFind->second);
+			}
+			return;
+		}
+
+ 		for (size_t i = 0; i < cash_values.size(); i++)
 		{
 			if (cash_values[i].col >= col_1 && cash_values[i].col <= col_2 &&
 				cash_values[i].row >= row_1 && cash_values[i].row <= row_2)
@@ -556,9 +652,28 @@ void object_odf_context::oox_convert(oox::oox_chart_context & chart_context)
 			}
 		}		
 		
+		std::vector<std::vector<std::wstring> > cat_levels;
+
 		if (false == categories_.empty())
 		{//cannot clear local references. may be used in subsequent series
 			calc_cache_series (categories_[0],	cat_cash);
+
+			std::wstring cat_table;
+			size_t cat_col_1 = 0, cat_row_1 = 0, cat_col_2 = 0, cat_row_2 = 0;
+
+			if (parse_cell_range(categories_[0], cat_table, cat_col_1, cat_row_1, cat_col_2, cat_row_2) &&
+				cat_col_2 > cat_col_1 && cat_row_2 > cat_row_1)
+			{
+				const bool bVertical	= is_vertical_range(cat_col_1, cat_row_1, cat_col_2, cat_row_2);
+				const size_t levels		= bVertical ? cat_col_2 - cat_col_1 + 1 : cat_row_2 - cat_row_1 + 1;
+				const size_t points		= bVertical ? cat_row_2 - cat_row_1 + 1 : cat_col_2 - cat_col_1 + 1;
+
+				if (cat_cash.size() != levels * points)
+				{
+					cat_cash.clear();
+				}
+				split_cache_levels(levels, cat_cash, cat_levels);
+			}
 		}
 
 		std::wstring			formatCode	= L"General";
@@ -637,6 +752,7 @@ void object_odf_context::oox_convert(oox::oox_chart_context & chart_context)
 				current->set_formula_series(0, categories_[0], L"General", true);
 			}
 			current->set_values_series(0, cat_cash);
+			current->set_levels_series(cat_levels);
 		}
 		current->set_name(series_[i].name_);
 		
@@ -660,9 +776,18 @@ void object_odf_context::oox_convert(oox::oox_chart_context & chart_context)
 		if	(a.dimension_ == L"y" && y_enabled)continue;
 		if	(a.dimension_ == L"z" && z_enabled)continue;
 
-		const chart::rect & axis_title_rect = (a.title_.x || a.title_.y) ?	static_cast<const chart::rect &>(a.title_) :
-																			static_cast<const chart::rect &>(a);
-		chart::rect _rect = calc_relative_rect(axis_title_rect, width_pt_, height_pt_);
+		chart::rect _rect = calc_relative_rect(a.title_, width_pt_, height_pt_);
+
+		if (a.title_.properties_)
+		{
+			_CP_OPT(int) titleAngle = odf_reader::oox_convert_rotation_angle(
+										a.title_.properties_->common_rotation_angle_attlist_.style_rotation_angle_);
+
+			if ((titleAngle) && (0 != *titleAngle % (180 * 60000)) && (0 == *titleAngle % (90 * 60000)))
+			{
+				_rect.y.reset();
+			}
+		}
 
 		if	(a.dimension_ == L"x")
 		{			
@@ -964,7 +1089,13 @@ void process_build_object::visit(chart_title& val)
 
 //-----------------------------------------------------------------------------------------------------------------------------------------
 
-	read_rect(t, val.attlist_.common_draw_position_attlist_, val.attlist_.common_draw_size_attlist_);
+	_CP_OPT(bool) bAutoPosition;
+	odf_reader::GetProperty(t.properties_, L"auto-position", bAutoPosition);
+
+	if (false == (bAxisTitle && bAutoPosition.get_value_or(false)))
+	{
+		read_rect(t, val.attlist_.common_draw_position_attlist_, val.attlist_.common_draw_size_attlist_);
+	}
 
 	if (val.text_p_)
 	{
@@ -1310,8 +1441,8 @@ void process_build_object::visit(table_table_cell& val)
 
     unsigned int repeated = val.attlist_.table_number_columns_repeated_;
   
-	std::wstring cell_val, cell_cash, cell_desc;
-	
+	std::wstring cell_val, cell_cash, cell_desc, cell_id;
+
 	for (size_t i = 0 ; i < val.content_.elements_.size(); i++)
 	{
 		std::wstringstream  wstream_temp;	
@@ -1320,12 +1451,18 @@ void process_build_object::visit(table_table_cell& val)
 		if (val.content_.elements_[i]->get_type() == typeTextP)
 		{
 			cell_cash += wstream_temp.str();
+
+			text::p *p = dynamic_cast<text::p*>(val.content_.elements_[i].get());
+			if ((p) && (p->paragraph_.attrs_.xml_id_) && (cell_id.empty()))
+			{
+				cell_id = *p->paragraph_.attrs_.xml_id_;
+			}
 		}
 		else if (val.content_.elements_[i]->get_type() == typeDrawG)
 		{
 			cell_desc += wstream_temp.str();
 		}
-	}   
+	}
 
 	if (attlist.common_value_and_type_attlist_.office_value_) 				cell_val = *attlist.common_value_and_type_attlist_.office_value_;
 	else if (attlist.common_value_and_type_attlist_.office_currency_)		cell_val = *attlist.common_value_and_type_attlist_.office_currency_;
@@ -1337,7 +1474,10 @@ void process_build_object::visit(table_table_cell& val)
 	if (cell_cash.empty())
 		cell_cash = cell_val;
 
-    object_odf_context::_cell cell_= {(size_t)object_odf_context_.current_table_column_, (size_t)object_odf_context_.current_table_row_, cell_cash};
+	if (cell_id.empty())
+		cell_id = cell_desc;
+
+    object_odf_context::_cell cell_= {(size_t)object_odf_context_.current_table_column_, (size_t)object_odf_context_.current_table_row_, cell_cash, cell_id};
 
 	object_odf_context_.cash_values.push_back(cell_);
 	

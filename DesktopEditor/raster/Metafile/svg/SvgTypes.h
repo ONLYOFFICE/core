@@ -153,16 +153,22 @@ namespace SVG
 		if (oBounds.m_dLeft > oBounds.m_dRight || oBounds.m_dTop > oBounds.m_dBottom)
 			return;
 
-		double arX[4]{oBounds.m_dLeft, oBounds.m_dRight, oBounds.m_dRight, oBounds.m_dLeft  };
-		double arY[4]{oBounds.m_dTop,  oBounds.m_dTop,   oBounds.m_dBottom, oBounds.m_dBottom};
+		double arX[4] = {oBounds.m_dLeft, oBounds.m_dRight, oBounds.m_dRight,  oBounds.m_dLeft  };
+		double arY[4] = {oBounds.m_dTop,  oBounds.m_dTop,   oBounds.m_dBottom, oBounds.m_dBottom};
 
 		for (unsigned int unIndex = 0; unIndex < 4; ++unIndex)
 			oMatrix.TransformPoint(arX[unIndex], arY[unIndex]);
 
-		oBounds.m_dLeft   = *std::min_element(arX, arX + 4);
-		oBounds.m_dRight  = *std::max_element(arX, arX + 4);
-		oBounds.m_dTop    = *std::min_element(arY, arY + 4);
-		oBounds.m_dBottom = *std::max_element(arY, arY + 4);
+		oBounds.m_dLeft = oBounds.m_dRight  = arX[0];
+		oBounds.m_dTop  = oBounds.m_dBottom = arY[0];
+
+		for (unsigned int unIndex = 1; unIndex < 4; ++unIndex)
+		{
+			oBounds.m_dLeft   = std::min(oBounds.m_dLeft,   arX[unIndex]);
+			oBounds.m_dRight  = std::max(oBounds.m_dRight,  arX[unIndex]);
+			oBounds.m_dTop    = std::min(oBounds.m_dTop,    arY[unIndex]);
+			oBounds.m_dBottom = std::max(oBounds.m_dBottom, arY[unIndex]);
+		}
 	}
 }
 

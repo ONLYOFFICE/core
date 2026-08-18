@@ -34,6 +34,8 @@
  */
 #pragma once
 
+#include <set>
+
 #include "StructuredStorageReader.h"
 #include "FileInformationBlock.h"
 #include "PieceTable.h"
@@ -215,6 +217,9 @@ namespace DocFileFormat
 
 		std::map<int, int> mapAnnotBookmarks; //id, index
 		std::map<int, int> mapProtBookmarks;
+
+		std::set<size_t> openedBookmarks;
+		std::set<size_t> closedBookmarks;
 
 		FileInformationBlock* FIB;
 		StyleSheet* Styles;					// The style sheet of the document

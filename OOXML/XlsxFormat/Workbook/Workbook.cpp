@@ -482,7 +482,7 @@ namespace OOX
 				globalsSubstream->m_PROTECTION = m_oWorkbookProtection->toXLS();
 			if(m_oPivotCaches.IsInit())
 			{
-				for(auto i : m_oPivotCaches->m_arrItems)
+				for(const auto& i : m_oPivotCaches->m_arrItems)
 				{
 					if(!i->m_oCacheId.IsInit() || !i->m_oRid.IsInit() ||  !this->IsExist(i->m_oRid->GetValue()))
 						continue;
@@ -510,9 +510,44 @@ namespace OOX
 						}
 						else if(source->m_oWorksheetSource->m_oName.IsInit())
 						{
-							auto conName = new XLS::DConName;
-							dref->m_DCon = XLS::BaseObjectPtr(conName);
-							conName->stName = source->m_oWorksheetSource->m_oName.get();
+							bool isTable = false;
+							for(const auto& tname : XLS::GlobalWorkbookInfo::mapTableNames_static)
+							{
+								if(tname.second == source->m_oWorksheetSource->m_oName.get())
+								{
+									auto trefFind = XLS::GlobalWorkbookInfo::mapTableRefsStatic.find(tname.first);
+									if(trefFind != XLS::GlobalWorkbookInfo::mapTableRefsStatic.end())
+									{
+										auto conRef = new XLS::DConRef;
+										auto refPtr =  XLS::BaseObjectPtr(conRef);
+										conRef->ref = std::get<0>(trefFind->second);
+										_INT32 ixti = -1;
+										for(const auto& XtiTable:XLS::GlobalWorkbookInfo::mapXtiTables_static)
+										{
+											for(auto tablIndex:XtiTable.second)
+											{
+												if(tablIndex == tname.first)
+													ixti = XtiTable.first;
+											}
+										}
+										if(ixti == -1)
+											continue;
+										if(XLS::GlobalWorkbookInfo::arXti_External_static.size() > ixti)
+										{
+											conRef->sheet_name = XLS::GlobalWorkbookInfo::arXti_External_static.at(ixti).link;
+											dref->m_DCon = refPtr;
+											isTable = true;
+											break;
+										}
+									}
+								}
+							}
+							if(!isTable)
+							{
+								auto conName = new XLS::DConName;
+								dref->m_DCon = XLS::BaseObjectPtr(conName);
+								conName->stName = source->m_oWorksheetSource->m_oName.get();
+							}
 						}
 						globalsSubstream->m_arPIVOTCACHEDEFINITION.push_back(pivotCacheBin);
 					}

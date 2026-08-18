@@ -112,8 +112,7 @@ namespace SVG
 		{
 			*pTransform += m_oTransformation.m_oTransform.GetMatrix();
 
-			pTransform->GetFinalValue().TransformPoint(oBounds.m_dLeft,  oBounds.m_dTop   );
-			pTransform->GetFinalValue().TransformPoint(oBounds.m_dRight, oBounds.m_dBottom);
+			TransformBounds(oBounds, pTransform->GetFinalValue());
 
 			*pTransform -= m_oTransformation.m_oTransform.GetMatrix();
 		}

@@ -38,6 +38,7 @@
 
 #include <cstring>
 #include <cmath>
+#include <algorithm>
 
 #include "../../../Common/3dParty/html/css/src/StyleProperties.h"
 #include "SvgUtils.h"
@@ -146,6 +147,20 @@ namespace SVG
 		double m_dRight;
 		double m_dBottom;
 	};
+
+	inline void TransformBounds(TBounds& oBounds, const Aggplus::CMatrix& oMatrix)
+	{
+		double arX[4]{oBounds.m_dLeft, oBounds.m_dRight, oBounds.m_dRight, oBounds.m_dLeft  };
+		double arY[4]{oBounds.m_dTop,  oBounds.m_dTop,   oBounds.m_dBottom, oBounds.m_dBottom};
+
+		for (unsigned int unIndex = 0; unIndex < 4; ++unIndex)
+			oMatrix.TransformPoint(arX[unIndex], arY[unIndex]);
+
+		oBounds.m_dLeft   = *std::min_element(arX, arX + 4);
+		oBounds.m_dRight  = *std::max_element(arX, arX + 4);
+		oBounds.m_dTop    = *std::min_element(arY, arY + 4);
+		oBounds.m_dBottom = *std::max_element(arY, arY + 4);
+	}
 }
 
 #endif // SVGTYPES_H

@@ -170,6 +170,9 @@ bool CSvgFile::Draw(IRenderer *pRenderer, double dX, double dY, double dWidth, d
 	if (!CalculateFinalSize(false, dFileX, dFileY, dFileWidth, dFileHeight))
 		return false;
 
+	if (SVG::Equals(0, dFileWidth) || SVG::Equals(0, dFileHeight))
+		return false;
+
 	double oldTransform[6];
 
 	pRenderer->GetTransform(&oldTransform[0], &oldTransform[1], &oldTransform[2], &oldTransform[3], &oldTransform[4], &oldTransform[5]);

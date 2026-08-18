@@ -150,6 +150,9 @@ namespace SVG
 
 	inline void TransformBounds(TBounds& oBounds, const Aggplus::CMatrix& oMatrix)
 	{
+		if (oBounds.m_dLeft > oBounds.m_dRight || oBounds.m_dTop > oBounds.m_dBottom)
+			return;
+
 		double arX[4]{oBounds.m_dLeft, oBounds.m_dRight, oBounds.m_dRight, oBounds.m_dLeft  };
 		double arY[4]{oBounds.m_dTop,  oBounds.m_dTop,   oBounds.m_dBottom, oBounds.m_dBottom};
 

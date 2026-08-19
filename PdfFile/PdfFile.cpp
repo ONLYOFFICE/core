@@ -1613,7 +1613,10 @@ HRESULT CPdfFile::AdvancedCommand(IAdvancedCommand* command)
 		{
 			CRedactMeta* pCommand = (CRedactMeta*)command;
 			std::vector<double> arrRedact = m_pInternal->pEditor->WriteRedact(pCommand->GetRedactID());
-			m_pInternal->pWriter->AddRedact(arrRedact);
+
+			double dH = m_pInternal->pWriter->GetPage()->GetCropHeight();
+			for (int j = 1; j < arrRedact.size(); j += 2)
+				arrRedact[j] = dH - arrRedact[j];
 			m_pInternal->pEditor->RedactMeta(pCommand, arrRedact);
 		}
 		return S_OK;

@@ -548,6 +548,11 @@ namespace PdfWriter
         TBox oBox = GetMediaBox();
         return oBox.fTop - oBox.fBottom;
 	}
+	double CPage::GetCropHeight()
+	{
+		TBox oBox = GetBox(Get("CropBox") ? "CropBox" : "MediaBox");
+		return oBox.fTop - oBox.fBottom;
+	}
 	TBox CPage::GetBox(const std::string& sBox)
 	{
 		TBox oBox = TRect( 0, 0, 0, 0 );

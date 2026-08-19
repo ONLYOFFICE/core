@@ -41,8 +41,12 @@ CONFIG   -= app_bundle
 
 TEMPLATE = app
 
-#LIBS += -L../../../../../SDK/lib/win_64/DEBUG -llibxml
-LIB_XML_PRI_PATH = ../../../../../DesktopEditor/xml
-include(../../../../../DesktopEditor/xml/build/qt/libxml2.pri)
+CORE_ROOT_DIR = $$PWD/../../../../..
+PWD_ROOT_DIR = $$PWD
+include($$CORE_ROOT_DIR/Common/base.pri)
+
+ADD_DEPENDENCY(kernel, UnicodeConverter)
 
 SOURCES += main.cpp
+
+DESTDIR = $$PWD_ROOT_DIR/build/$$CORE_BUILDS_PLATFORM_PREFIX/$$CORE_BUILDS_CONFIGURATION_PREFIX

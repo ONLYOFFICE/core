@@ -440,7 +440,62 @@ void GetInvertCTM(double* dCTM, double* dInvCTM)
 	}
 }
 
-void DrawAnnot(Object* oAnnot, PdfWriter::CPage* pPage, PdfWriter::CDocument* pDoc, XRef* xref, CObjectsManager* pManager, int nStartRefID)
+double GetPolygonSignedArea(const std::vector<PdfWriter::CPoint>& arrPolygon)
+{
+	double dArea = 0;
+	size_t nCount = arrPolygon.size();
+	for (size_t i = 0; i < nCount; ++i)
+	{
+		const PdfWriter::CPoint& oCur  = arrPolygon[i];
+		const PdfWriter::CPoint& oNext = arrPolygon[(i + 1) % nCount];
+		dArea += oCur.x * oNext.y - oNext.x * oCur.y;
+	}
+	return dArea;
+}
+void WriteClipPolygon(PdfWriter::CPage* pPage, const std::vector<PdfWriter::CPoint>& arrPolygon, bool bReverse)
+{
+	int nCount = (int)arrPolygon.size();
+	if (nCount == 0)
+		return;
+
+	int nStart = bReverse ? nCount - 1 : 0;
+	int nStep  = bReverse ? -1 : 1;
+
+	pPage->MoveTo(arrPolygon[nStart].x, arrPolygon[nStart].y);
+	for (int i = 1; i < nCount; ++i)
+	{
+		int nIndex = (nStart + nStep * i + nCount) % nCount;
+		pPage->LineTo(arrPolygon[nIndex].x, arrPolygon[nIndex].y);
+	}
+	pPage->ClosePath();
+}
+// Restricts drawing to arrRectPolygon, then punches out the parts that overlap arrRedact
+void ClipAnnotRedact(PdfWriter::CPage* pPage, const std::vector<PdfWriter::CPoint>& arrRectPolygon, const std::vector<double>& arrRedact)
+{
+	WriteClipPolygon(pPage, arrRectPolygon, false);
+	pPage->Clip();
+	pPage->EndPath();
+
+	double dRectArea = GetPolygonSignedArea(arrRectPolygon);
+
+	WriteClipPolygon(pPage, arrRectPolygon, false);
+	for (size_t i = 0; i + 8 <= arrRedact.size(); i += 8)
+	{
+		std::vector<PdfWriter::CPoint> arrQuad =
+		{
+			PdfWriter::CPoint(arrRedact[i + 0], arrRedact[i + 1]),
+			PdfWriter::CPoint(arrRedact[i + 2], arrRedact[i + 3]),
+			PdfWriter::CPoint(arrRedact[i + 4], arrRedact[i + 5]),
+			PdfWriter::CPoint(arrRedact[i + 6], arrRedact[i + 7])
+		};
+		// keep the hole's winding opposite to the outer rect's, regardless of the source's own orientation
+		bool bSameOrientation = (GetPolygonSignedArea(arrQuad) * dRectArea) > 0;
+		WriteClipPolygon(pPage, arrQuad, bSameOrientation);
+	}
+	pPage->Clip();
+	pPage->EndPath();
+}
+void DrawAnnot(Object* oAnnot, PdfWriter::CPage* pPage, PdfWriter::CDocument* pDoc, XRef* xref, CObjectsManager* pManager, int nStartRefID, const std::vector<double>& arrRedact = {})
 {
 	Object oAP, oAPN, oObj;
 	if (!oAnnot->dictLookup("AP", &oAP)->isDict() || !oAP.dictLookup("N", &oAPN)->isStream())
@@ -456,11 +511,6 @@ void DrawAnnot(Object* oAnnot, PdfWriter::CPage* pPage, PdfWriter::CDocument* pD
 		oAPN = oTemp;
 	}
 	oAP.free();
-
-	PdfWriter::CXObject* pForm = pDoc->CreateForm();
-	pPage->GrSave();
-	pPage->ExecuteXObject(pForm);
-	pPage->GrRestore();
 
 	Object oTemp;
 	double m[6] = { 1, 0, 0, 1, 0, 0 }, bbox[4] = { 0, 0, 0, 0 }, rect[4] = { 0, 0, 0, 0 };
@@ -479,6 +529,30 @@ void DrawAnnot(Object* oAnnot, PdfWriter::CPage* pPage, PdfWriter::CDocument* pD
 			std::swap(rect[1], rect[3]);
 	}
 	oTemp.free();
+
+	std::vector<PdfWriter::CPoint> arrRectPolygon =
+	{
+		PdfWriter::CPoint(rect[0], rect[1]), PdfWriter::CPoint(rect[0], rect[3]),
+		PdfWriter::CPoint(rect[2], rect[3]), PdfWriter::CPoint(rect[2], rect[1])
+	};
+
+	bool bClipRedact = false;
+	if (!arrRedact.empty())
+	{
+		if (PdfWriter::CheckFullRedact(arrRedact, arrRectPolygon))
+		{
+			oAPN.free();
+			return;
+		}
+		bClipRedact = PdfWriter::CheckPartialRedact(arrRedact, arrRectPolygon);
+	}
+
+	PdfWriter::CXObject* pForm = pDoc->CreateForm();
+	pPage->GrSave();
+	if (bClipRedact)
+		ClipAnnotRedact(pPage, arrRectPolygon, arrRedact);
+	pPage->ExecuteXObject(pForm);
+	pPage->GrRestore();
 
 	SDictConvertContext ctx(pDoc, xref, pManager, nStartRefID);
 	Dict* pODict = oAPN.streamGetDict();
@@ -2162,12 +2236,13 @@ PdfWriter::CAnnotAppearanceObject* GetAnnotAppearanceObject(PdfWriter::CAnnotati
 	return dynamic_cast<PdfWriter::CAnnotAppearanceObject*>(pAP_N->Get(sName));
 }
 // ─── WriteNew helpers ────────────────────────────────────────────────────────
-void CloseWriteNew_FlushAnnotations(CPdfReader* pReader, CObjectsManager* mObjManager, PdfWriter::CDocument* pDoc, IAdvancedCommand* pCommand = NULL)
+void CloseWriteNew_FlushAnnotations(CPdfReader* pReader, CObjectsManager* mObjManager, PdfWriter::CDocument* pDoc, IAdvancedCommand* pCommand = NULL, const std::vector<double>& arrRedact = {})
 {
 	std::vector<int> arrWidget;
 	if (pCommand)
 		arrWidget = ((CRedactMeta*)pCommand)->GetWidgetID();
 
+	std::vector<IAdvancedCommand*> arrProcessed;
 	for (size_t i = 0; i < mObjManager->m_arrRedactFormFields.size(); ++i)
 	{
 		IAdvancedCommand* pCmd = mObjManager->m_arrRedactFormFields[i];
@@ -2189,6 +2264,7 @@ void CloseWriteNew_FlushAnnotations(CPdfReader* pReader, CObjectsManager* mObjMa
 				if (it == arrWidget.end())
 					continue;
 				pPage = pDoc->GetCurPage();
+				arrProcessed.push_back(pCmd);
 			}
 			else
 			{
@@ -2211,6 +2287,20 @@ void CloseWriteNew_FlushAnnotations(CPdfReader* pReader, CObjectsManager* mObjMa
 				continue;
 			}
 
+			std::vector<double> arrAnnotRedact = pCommand ? arrRedact : std::vector<double>();
+			PdfWriter::TRect& oAnnotRect = pAnnot->GetRect();
+			std::vector<PdfWriter::CPoint> arrRectPolygon =
+			{
+				PdfWriter::CPoint(oAnnotRect.fLeft, oAnnotRect.fBottom), PdfWriter::CPoint(oAnnotRect.fLeft, oAnnotRect.fTop),
+				PdfWriter::CPoint(oAnnotRect.fRight, oAnnotRect.fTop), PdfWriter::CPoint(oAnnotRect.fRight, oAnnotRect.fBottom)
+			};
+
+			if (!arrAnnotRedact.empty() && PdfWriter::CheckFullRedact(arrAnnotRedact, arrRectPolygon))
+			{
+				pDoc->RemoveObj(pAnnot);
+				continue;
+			}
+
 			double m[6] = { 1, 0, 0, 1, 0, 0 };
 			pAPN->GetMatrix(m);
 			m[4] += pAnnot->GetRect().fLeft;
@@ -2225,6 +2315,8 @@ void CloseWriteNew_FlushAnnotations(CPdfReader* pReader, CObjectsManager* mObjMa
 			}
 
 			pPage->GrSave();
+			if (!arrAnnotRedact.empty() && PdfWriter::CheckPartialRedact(arrAnnotRedact, arrRectPolygon))
+				ClipAnnotRedact(pPage, arrRectPolygon, arrAnnotRedact);
 			pPage->ExecuteXObject(pResources->GetXObjectName(pAPN));
 			pPage->GrRestore();
 
@@ -2260,14 +2352,24 @@ void CloseWriteNew_FlushAnnotations(CPdfReader* pReader, CObjectsManager* mObjMa
 				if (it == arrWidget.end())
 					continue;
 				pPage = pDoc->GetCurPage();
+				arrProcessed.push_back(pCmd);
 			}
 			else
 				pPage = dynamic_cast<PdfWriter::CPage*>(mObjManager->GetObj(oP->getRefNum() + nStartRefID));
 
 			if (!pPage)
 				continue;
-			DrawAnnot(oAnnot.get(), pPage, pDoc, xref, mObjManager, nStartRefID);
+			DrawAnnot(oAnnot.get(), pPage, pDoc, xref, mObjManager, nStartRefID, pCommand ? arrRedact : std::vector<double>());
 		}
+	}
+
+	if (!arrProcessed.empty())
+	{
+		std::vector<IAdvancedCommand*>& arrFields = mObjManager->m_arrRedactFormFields;
+		arrFields.erase(std::remove_if(arrFields.begin(), arrFields.end(), [&arrProcessed](IAdvancedCommand* pCmd)
+		{
+			return std::find(arrProcessed.begin(), arrProcessed.end(), pCmd) != arrProcessed.end();
+		}), arrFields.end());
 	}
 }
 void CloseWriteNew_ApplyEncryption(const wchar_t* wsPassword, CObjectsManager* mObjManager, PDFDoc* pPDFDocument, PdfWriter::CDocument* pDoc)
@@ -5354,7 +5456,7 @@ std::vector<double> CPdfEditor::WriteRedact(const std::vector<std::wstring>& arr
 	}
 	return arrRes;
 }
-void CPdfEditor::RedactMeta(IAdvancedCommand* pCommand)
+void CPdfEditor::RedactMeta(IAdvancedCommand* pCommand, const std::vector<double>& arrRedact)
 {
 	CRedactMeta* pRedactMeta = (CRedactMeta*)pCommand;
 	std::vector<int> arrWidget = pRedactMeta->GetWidgetID();
@@ -5379,5 +5481,5 @@ void CPdfEditor::RedactMeta(IAdvancedCommand* pCommand)
 		}
 	}
 
-	CloseWriteNew_FlushAnnotations(m_pReader, &m_mObjManager, m_pWriter->GetDocument(), pCommand);
+	CloseWriteNew_FlushAnnotations(m_pReader, &m_mObjManager, m_pWriter->GetDocument(), pCommand, arrRedact);
 }

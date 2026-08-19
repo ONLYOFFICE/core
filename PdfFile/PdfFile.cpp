@@ -1614,6 +1614,7 @@ HRESULT CPdfFile::AdvancedCommand(IAdvancedCommand* command)
 			CRedactMeta* pCommand = (CRedactMeta*)command;
 			std::vector<double> arrRedact = m_pInternal->pEditor->WriteRedact(pCommand->GetRedactID());
 			m_pInternal->pWriter->AddRedact(arrRedact);
+			m_pInternal->pEditor->RedactMeta(pCommand, arrRedact);
 		}
 		return S_OK;
 	}

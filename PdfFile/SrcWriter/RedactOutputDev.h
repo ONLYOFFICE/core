@@ -50,6 +50,9 @@
 
 namespace PdfWriter
 {
+	bool CheckFullRedact(const std::vector<double>& arrQuadPoints, const std::vector<CPoint>& XObjectPolygon);
+	bool CheckPartialRedact(const std::vector<double>& arrQuadPoints, const std::vector<CPoint>& XObjectPolygon);
+
 	class RedactOutputDev : public OutputDev
 	{
 	public:

@@ -571,6 +571,9 @@ void CConverter2OOXML::WriteEmptyParagraph(short shParaShapeID, short shParaStyl
 	if (oState.m_bOpenedP)
 		return;
 
+	const TConversionState::EBreakType eBreakType = oState.m_eBreakType;
+	oState.m_eBreakType = TConversionState::EBreakType::None;
+
 	oBuilder.WriteString(L"<w:p>");
 	oBuilder.WriteString(L"<w:pPr>");
 
@@ -578,6 +581,16 @@ void CConverter2OOXML::WriteEmptyParagraph(short shParaShapeID, short shParaStyl
 	WriteRunnerStyle(shCharShapeID, oBuilder, oState);
 
 	oBuilder.WriteString(L"</w:pPr>");
+
+	if (TConversionState::EBreakType::None != eBreakType)
+	{
+		oState.m_eBreakType = eBreakType;
+
+		oBuilder.WriteString(L"<w:r>");
+		WriteRunnerStyle(shCharShapeID, oBuilder, oState);
+		oBuilder.WriteString(L"</w:r>");
+	}
+
 	oBuilder.WriteString(L"</w:p>");
 }
 

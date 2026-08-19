@@ -240,6 +240,7 @@ public:
 				}
 				else
 					m_nType = 2;
+				break;
 			}
 			case 3:
 			{

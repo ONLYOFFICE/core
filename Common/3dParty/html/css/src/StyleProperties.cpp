@@ -859,12 +859,95 @@ namespace NSCSS
 		while (wsValue.end() != citBegin)
 		{
 			citEnd = std::find_if(citBegin, wsValue.end(), [](wchar_t wChar){return L')' == wChar;});
+
+			if (wsValue.end() == citEnd)
+				break;
+
 			arValues.push_back(std::wstring(citBegin, citEnd + 1));
-			citBegin = citEnd + 1;
-			citBegin =  std::find_if(citBegin, wsValue.end(), std::iswalpha);
+			citBegin =  std::find_if(citEnd + 1, wsValue.end(), std::iswalpha);
 		}
 
 		return arValues;
+	}
+
+	static const double PI = 3.14159265358979323846;
+
+	static double DegreeToRadian(double dDegree)
+	{
+		return dDegree * PI / 180.;
+	}
+
+	static bool ConvertTransformFunction(const std::wstring& wsName, std::vector<double>& arValues, TransformType& enType)
+	{
+		if (arValues.empty())
+			return false;
+
+		if (L"matrix" == wsName)
+			enType = TransformMatrix;
+		else if (L"translate" == wsName)
+			enType = TransformTranslate;
+		else if (L"translate3d" == wsName)
+		{
+			if (arValues.size() < 2)
+				return false;
+
+			arValues.resize(2);
+			enType = TransformTranslate;
+		}
+		else if (L"translatex" == wsName)
+		{
+			arValues = {arValues[0], 0.};
+			enType   = TransformTranslate;
+		}
+		else if (L"translatey" == wsName)
+		{
+			arValues = {0., arValues[0]};
+			enType   = TransformTranslate;
+		}
+		else if (L"scale" == wsName)
+			enType = TransformScale;
+		else if (L"scale3d" == wsName)
+		{
+			if (arValues.size() < 2)
+				return false;
+
+			arValues.resize(2);
+			enType = TransformScale;
+		}
+		else if (L"scalex" == wsName)
+		{
+			arValues = {arValues[0], 1.};
+			enType   = TransformScale;
+		}
+		else if (L"scaley" == wsName)
+		{
+			arValues = {1., arValues[0]};
+			enType   = TransformScale;
+		}
+		else if (L"rotate" == wsName || L"rotatez" == wsName)
+			enType = TransformRotate;
+		else if (L"skewx" == wsName)
+			enType = TransformSkewX;
+		else if (L"skewy" == wsName)
+			enType = TransformSkewY;
+		else if (L"skew" == wsName)
+		{
+			if (1 == arValues.size())
+				enType = TransformSkewX;
+			else if (2 == arValues.size())
+			{
+				arValues = {1., std::tan(DegreeToRadian(arValues[1])), std::tan(DegreeToRadian(arValues[0])), 1., 0., 0.};
+				enType   = TransformMatrix;
+			}
+			else
+				return false;
+		}
+		else if (L"translatez" == wsName || L"scalez" == wsName)
+			enType = TransformNone;
+		else
+			return false;
+
+		return true;
 	}
 
 	CMatrix::CMatrix()
@@ -892,32 +975,28 @@ namespace NSCSS
 
 		Clear();
 
-		TransformType enType;
-
 		for (const std::wstring& wsTransform : arTransforms)
 		{
-			if (std::wstring::npos != wsTransform.find(L"matrix"))
-				enType = TransformMatrix;
-			else if (std::wstring::npos != wsTransform.find(L"translate"))
-				enType = TransformTranslate;
-			else if (std::wstring::npos != wsTransform.find(L"scale"))
-				enType = TransformScale;
-			else if (std::wstring::npos != wsTransform.find(L"rotate"))
-				enType = TransformRotate;
-			else if (std::wstring::npos != wsTransform.find(L"skewx"))
-				enType = TransformSkewX;
-			else if (std::wstring::npos != wsTransform.find(L"skewy"))
-				enType = TransformSkewY;
-			else
+			const std::wstring::size_type unBracketPos = wsTransform.find(L'(');
+
+			if (std::wstring::npos == unBracketPos)
 			{
 				Clear();
 				return false;
 			}
 
-			std::vector<double> arValues = NS_STATIC_FUNCTIONS::ReadDoubleValues(wsTransform);
+			std::vector<double> arValues = NS_STATIC_FUNCTIONS::ReadDoubleValues(wsTransform.substr(unBracketPos));
 
-			if (arValues.empty())
+			TransformType enType = TransformNone;
+
+			if (!ConvertTransformFunction(wsTransform.substr(0, unBracketPos), arValues, enType))
+			{
+				Clear();
 				return false;
+			}
+
+			if (TransformNone == enType)
+				continue;
 
 			if (!AddValue(arValues, enType))
 			{
@@ -1035,17 +1114,6 @@ namespace NSCSS
 
 		switch (enType)
 		{
-			case TransformMatrix:
-			{
-				wsValue = L"matrix(";
-				wsValue += std::to_wstring(oMatrix.sx())  + L',';
-				wsValue += std::to_wstring(oMatrix.shx()) + L',';
-				wsValue += std::to_wstring(oMatrix.shy()) + L',';
-				wsValue += std::to_wstring(oMatrix.sy())  + L',';
-				wsValue += std::to_wstring(oMatrix.tx())  + L',';
-				wsValue += std::to_wstring(oMatrix.ty())  + L')';
-				break;
-			}
 			case TransformTranslate:
 			{
 				if (0. == oMatrix.tx() && 0. == oMatrix.ty())
@@ -1066,17 +1134,86 @@ namespace NSCSS
 				wsValue += std::to_wstring(oMatrix.sy())  + L')';
 				break;
 			}
-			case TransformRotate:
+			default:
 			{
-				//TODO:: add implementation
-				wsValue = L"rotate(";
+				wsValue = L"matrix(";
+				wsValue += std::to_wstring(oMatrix.sx())  + L',';
+				wsValue += std::to_wstring(oMatrix.shy()) + L',';
+				wsValue += std::to_wstring(oMatrix.shx()) + L',';
+				wsValue += std::to_wstring(oMatrix.sy())  + L',';
+				wsValue += std::to_wstring(oMatrix.tx())  + L',';
+				wsValue += std::to_wstring(oMatrix.ty())  + L')';
 				break;
 			}
-			default:
-				break;
 		}
 
 		return wsValue;
+	}
+
+	static void ApplyTransformElement(Aggplus::CMatrix& oMatrix, const std::vector<double>& arValues, TransformType enType, Aggplus::MatrixOrder order)
+	{
+		switch(enType)
+		{
+			case TransformMatrix:
+			{
+				if (6 != arValues.size())
+					break;
+
+				Aggplus::CMatrix oTempMatrix(arValues[0], arValues[1], arValues[2], arValues[3], arValues[4], arValues[5]);
+
+				oMatrix.Multiply(&oTempMatrix, order);
+				break;
+			}
+			case TransformTranslate:
+			{
+				if (2 != arValues.size())
+					break;
+
+				oMatrix.Translate(arValues[0], arValues[1], order);
+				break;
+			}
+			case TransformScale:
+			{
+				if (2 != arValues.size())
+					break;
+
+				oMatrix.Scale(arValues[0], arValues[1], order);
+				break;
+			}
+			case TransformRotate:
+			{
+				if (3 != arValues.size())
+					break;
+
+				const double dAngle = DegreeToRadian(arValues[0]);
+				const double dCos   = std::cos(dAngle);
+				const double dSin   = std::sin(dAngle);
+
+				Aggplus::CMatrix oTempMatrix(dCos, dSin, -dSin, dCos,
+				                             arValues[1] - arValues[1] * dCos + arValues[2] * dSin,
+				                             arValues[2] - arValues[1] * dSin - arValues[2] * dCos);
+
+				oMatrix.Multiply(&oTempMatrix, order);
+				break;
+			}
+			case TransformSkewX:
+			{
+				if (arValues.empty())
+					break;
+
+				oMatrix.Shear(DegreeToRadian(arValues[0]), 0., order);
+				break;
+			}
+			case TransformSkewY:
+			{
+				if (arValues.empty())
+					break;
+
+				oMatrix.Shear(0., DegreeToRadian(arValues[0]), order);
+				break;
+			}
+			default: break;
+		}
 	}
 
 	Aggplus::CMatrix CMatrix::GetFinalValue(TransformType oWithoutType) const
@@ -1088,42 +1225,7 @@ namespace NSCSS
 			if (oWithoutType == oElement.second)
 				continue;
 
-			switch(oElement.second)
-			{
-				case TransformMatrix:
-				{
-					Aggplus::CMatrix oTempMatrix(oElement.first[0], oElement.first[1], oElement.first[2], oElement.first[3], oElement.first[4], oElement.first[5]);
-
-					oMatrix.Multiply(&oTempMatrix);
-					break;
-				}
-				case TransformTranslate:
-				{
-					oMatrix.Translate(oElement.first[0], oElement.first[1]);
-					break;
-				}
-				case TransformScale:
-				{
-					oMatrix.Scale(oElement.first[0], oElement.first[1]);
-					break;
-				}
-				case TransformRotate:
-				{
-					oMatrix.RotateAt(oElement.first[0], -oElement.first[1], -oElement.first[2]);
-					break;
-				}
-				case TransformSkewX:
-				{
-					oMatrix.Shear(oElement.first[0] * 3.14 / 180.0, 0);
-					break;
-				}
-				case TransformSkewY:
-				{
-					oMatrix.Shear(0, oElement.first[0] * 3.14 / 180.0);
-					break;
-				}
-				default: break;
-			}
+			ApplyTransformElement(oMatrix, oElement.first, oElement.second, Aggplus::MatrixOrderPrepend);
 		}
 
 		return oMatrix;
@@ -1132,45 +1234,7 @@ namespace NSCSS
 	void CMatrix::ApplyTranform(Aggplus::CMatrix &oMatrix, Aggplus::MatrixOrder order) const
 	{
 		for (const std::pair<std::vector<double>, TransformType>& oElement : m_oValue)
-		{
-			switch(oElement.second)
-			{
-				case TransformMatrix:
-				{
-					Aggplus::CMatrix oTempMatrix(oElement.first[0], oElement.first[1], oElement.first[2], oElement.first[3], oElement.first[4], oElement.first[5]);
-
-					oMatrix.Multiply(&oTempMatrix, order);
-					break;
-				}
-				case TransformTranslate:
-				{
-					oMatrix.Translate(oElement.first[0], oElement.first[1], order);
-					break;
-				}
-				case TransformScale:
-				{
-					oMatrix.Scale(oElement.first[0], oElement.first[1], order);
-					break;
-				}
-				case TransformRotate:
-				{
-					oMatrix.RotateAt(oElement.first[0], -oElement.first[1], -oElement.first[2], order);
-					break;
-				}
-				case TransformSkewX:
-				{
-					oMatrix.Shear(oElement.first[0] * 3.14 / 180.0, 0, order);
-					break;
-				}
-				case TransformSkewY:
-				{
-					oMatrix.Shear(0, oElement.first[0] * 3.14 / 180.0, order);
-					break;
-				}
-				default: break;
-			}
-		}
-
+			ApplyTransformElement(oMatrix, oElement.first, oElement.second, order);
 	}
 
 	bool CMatrix::operator==(const CMatrix &oMatrix) const

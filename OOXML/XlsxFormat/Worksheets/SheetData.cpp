@@ -1342,7 +1342,7 @@ namespace OOX
 					auto ArrayFmla = new XLS::Array(cellBaseRef);
 					FmlaUnion->m_ArrayFormula = XLS::BaseObjectPtr(ArrayFmla);
 					ArrayFmla->ref_.fromString(m_oRef.get());
-					ArrayFmla->formula = m_sText;
+					ArrayFmla->formula.parseStringFormula(m_sText, L"XLS");
 					parseFmlaValueType(ArrayFmla->formula);
 
 					auto cellPos = new XLS::PtgExp;

@@ -869,6 +869,8 @@ namespace NExtractTools
 			std::wstring sImagesDirectory = sBinDir + FILE_SEPARATOR_STR + L"media";
 
 			NSDoctRenderer::CDoctrenderer oDoctRenderer(NULL != params.m_sAllFontsPath ? *params.m_sAllFontsPath : L"");
+			convertParams.InitDoctRenderer(&oDoctRenderer);
+
 			int nChangeIndex = -1;
 			while (true)
 			{

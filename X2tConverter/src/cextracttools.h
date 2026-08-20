@@ -493,13 +493,22 @@ namespace NExtractTools
 
 		std::wstring m_sPdfOformMetaName;
 		std::wstring m_sPdfOformMetaData;
+
+		std::wstring m_sOverrideSdkJsPath;
+
+	public:
+		void InitDoctRenderer(NSDoctRenderer::CDoctrenderer* renderer) const
+		{
+			if (!m_sOverrideSdkJsPath.empty())
+				renderer->SetAdditionalParam(NSDoctRenderer::AdditionalParamType::SDKJS_OVERRIDE_PATH, (void*)(&m_sOverrideSdkJsPath));
+		}
 	};
 
 	class InputParams
 	{
 	public:
-        std::wstring* m_sDefaultFontName;
-        int* m_nDefaultFontSize;
+		std::wstring* m_sDefaultFontName;
+		int* m_nDefaultFontSize;
 		std::wstring* m_sKey;
 		std::wstring* m_sFileFrom;
 		std::wstring* m_sFileTo;
@@ -538,6 +547,7 @@ namespace NExtractTools
 		mutable bool m_bOutputConvertCorrupted;
 		mutable bool m_bMacro;
 		std::wstring* m_sCmapDir;
+		std::wstring* m_sOverrideSdkJsPath;
 
 	public:
 		InputParams()
@@ -582,6 +592,7 @@ namespace NExtractTools
 			m_bMacro = false;
 
 			m_sCmapDir = NULL;
+			m_sOverrideSdkJsPath = NULL;
 		}
 		~InputParams()
 		{
@@ -621,6 +632,7 @@ namespace NExtractTools
 			RELEASEOBJECT(m_sConvertToOrigin);
 			RELEASEOBJECT(m_sSigningKeyStorePath);
 			RELEASEOBJECT(m_sCmapDir);
+			RELEASEOBJECT(m_sOverrideSdkJsPath);
 		}
 
 		bool FromXmlFile(const std::wstring& sFilename)
@@ -837,6 +849,11 @@ namespace NExtractTools
 								{
 									RELEASEOBJECT(m_sCmapDir);
 									m_sCmapDir = new std::wstring(sValue);
+								}
+								else if (_T("m_sOverrideSdkJsPath") == sName)
+								{
+									RELEASEOBJECT(m_sOverrideSdkJsPath);
+									m_sOverrideSdkJsPath = new std::wstring(sValue);
 								}
 							}
 							else if (_T("m_nCsvDelimiterChar") == sName)

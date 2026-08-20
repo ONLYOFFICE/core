@@ -356,6 +356,8 @@ namespace NExtractTools
 		std::wstring sPdfBinFile      = combinePath(convertParams.m_sTempDir, L"pdf.bin");
 
 		NSDoctRenderer::CDoctrenderer oDoctRenderer(NULL != params.m_sAllFontsPath ? *params.m_sAllFontsPath : L"");
+		convertParams.InitDoctRenderer(&oDoctRenderer);
+
 		std::wstring sXml = getDoctXml(eFromType, eToType, sFrom, sPdfBinFile, sImagesDirectory, convertParams.m_sThemesDir, -1, L"", params);
 		std::wstring sResult;
 		oDoctRenderer.Execute(sXml, sResult);
@@ -427,6 +429,8 @@ namespace NExtractTools
 		std::wstring sPdfBinFile      = combinePath(convertParams.m_sTempDir, L"pdf.bin");
 
 		NSDoctRenderer::CDoctrenderer oDoctRenderer(NULL != params.m_sAllFontsPath ? *params.m_sAllFontsPath : L"");
+		convertParams.InitDoctRenderer(&oDoctRenderer);
+
 		std::wstring sXml = getDoctXml(eFromType, eToType, sFrom, sPdfBinFile, sImagesDirectory, convertParams.m_sThemesDir, -1, L"", params);
 		std::wstring sResult;
 		oDoctRenderer.Execute(sXml, sResult);
@@ -945,6 +949,7 @@ namespace NExtractTools
 			if (!bIsCompiledChanges)
 			{
 				NSDoctRenderer::CDoctrenderer oDoctRenderer(NULL != params.m_sAllFontsPath ? *params.m_sAllFontsPath : L"");
+				convertParams.InitDoctRenderer(&oDoctRenderer);
 
 				std::wstring sPdfFileCompiledChanges = NSFile::CFileBinary::CreateTempFileWithUniqueName(convertParams.m_sTempDir, L"PDF_");
 				if (NSFile::CFileBinary::Exists(sPdfFileCompiledChanges))
@@ -1135,6 +1140,7 @@ namespace NExtractTools
 				else
 				{
 					NSDoctRenderer::CDoctrenderer oDoctRenderer(NULL != params.m_sAllFontsPath ? *params.m_sAllFontsPath : L"");
+					convertParams.InitDoctRenderer(&oDoctRenderer);
 
 					std::wstring sWatermarkTmp = NSFile::CFileBinary::CreateTempFileWithUniqueName(convertParams.m_sTempDir, L"WWW_");
 					if (NSFile::CFileBinary::Exists(sWatermarkTmp))

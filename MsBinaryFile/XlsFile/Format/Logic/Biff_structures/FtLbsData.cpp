@@ -46,11 +46,12 @@ BiffStructurePtr FtLbsData::clone()
 void FtLbsData::load(CFRecord& record, const unsigned short ot)
 {
 	unsigned short ft, cb;
+	const size_t startPtr = record.getRdPtr();
 	record >> ft >> cb;
-
+	const size_t bytesRead = record.getRdPtr() - startPtr;
 	if ( ft != 0x0013)
 	{
-		record.RollRdPtrBack(4);
+		record.RollRdPtrBack(bytesRead);
 		return;
 	}
 	fExist = true;

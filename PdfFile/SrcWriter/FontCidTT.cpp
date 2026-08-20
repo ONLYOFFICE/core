@@ -253,6 +253,7 @@ namespace PdfWriter
 				pCIDSet->SetFilter(STREAM_FILTER_FLATE_DECODE);
 #endif
 				CStream* pStream = pCIDSet->GetStream();
+				pStream->Clear();
 
 				unsigned int unBytes = (m_ushCodesCount) / 8;
 
@@ -295,6 +296,7 @@ namespace PdfWriter
 				return;
 
 			CStream* pStream = m_pFontFileDict->GetStream();
+			pStream->Clear();
 			m_pFontFile->WriteTTF(pStream, NULL, pCodeToGid, m_ushCodesCount, pGlyphs, unGlyphsCount);
 			m_pFontFileDict->SetFilter(STREAM_FILTER_FLATE_DECODE);
 
@@ -313,6 +315,7 @@ namespace PdfWriter
 				m_pFontFileDict->Add("Length1", pStream->Size());
 
 				pStream = m_pCidToGidMapStream;
+				pStream->Clear();
 				for (unsigned short ushCode = 0; ushCode < m_ushCodesCount; ushCode++)
 				{
 					unsigned short ushGid = pCodeToGid[ushCode];
@@ -387,6 +390,7 @@ namespace PdfWriter
 	void CFontCidTrueType::WriteToUnicode()
 	{
 		CStream* pS = m_pToUnicodeStream;
+		pS->Clear();
 
 		pS->WriteStr(c_sToUnicodeHeader);
 		pS->WriteStr(c_sToUnicodeInfo);

@@ -154,6 +154,7 @@ namespace NSDocxRenderer
 		void RemoveLastSym();
 
 		uint32_t GetLastSym() const;
+		double GetLastRight() const;
 
 		const NSStringUtils::CStringUTF32& GetText() const noexcept;
 		const std::vector<double>& GetSymWidths() const noexcept;

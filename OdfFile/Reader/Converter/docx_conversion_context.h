@@ -998,9 +998,9 @@ public:
 
 	void		add_jsaProject(const std::string &content);
 
-    void set_implicit_end( bool _flag );
+    void set_section_break_after( bool _flag );
 
-    bool get_implicit_end() const;
+    bool get_section_break_after() const;
 
 	void set_inside_frame( bool flag );
 
@@ -1018,7 +1018,7 @@ private:
 
 	std::wstring temp_name;
 
-    bool flag_implicit_end = false;
+    bool flag_section_break_after = false;
 
 	bool inside_frame = false;
 

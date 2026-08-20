@@ -297,8 +297,6 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context, _CP_OPT(std
 	
 	bool in_drawing	= false;
 
-    bool flag_for_emplicit_end = false;
-
  	if (Context.get_drawing_context().get_current_shape() || Context.get_drawing_context().get_current_frame())
 	{
 		in_drawing = true;
@@ -363,20 +361,16 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context, _CP_OPT(std
 		else next_masterPageName = boost::none;
     }
 
-    flag_for_emplicit_end = Context.get_implicit_end();
-
 	if (!Context.process_headers_footers_ && (next_section_ || next_end_section_)) // remove in text::section  - GreekSynopsis.odt
 	{
-		if( !flag_for_emplicit_end )
-        {
-            Context.get_section_context().get_last().is_dump_ = true;
-            is_empty = false;
-        }
+		Context.get_section_context().get_last().is_dump_ = true;
+		is_empty = false;
 	}
     std::wstringstream strm;
     if (Context.process_page_properties(strm))
     {
         Context.get_section_context().dump_ = strm.str();
+		Context.set_section_break_after(next_end_section_);
     }
     process_paragraph_drop_cap_attr(attrs_, Context);
 
@@ -865,10 +859,6 @@ void section::docx_convert(oox::docx_conversion_context & Context)
 					//is_empty = false;
 				}
 			}
-        }
-        if(i == content_.size() - 1)
-        {
-            Context.set_implicit_end(true);
         }
         content_[i]->docx_convert(Context);
     }

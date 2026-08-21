@@ -123,8 +123,8 @@ namespace OOX
 			nullable<PPTX::Logic::SpTreeElem> m_oElement;
 
 		//for convert
-			nullable_string m_sVmlSpId;
-			nullable_int m_nId;
+			nullable_string m_sVmlSpId; //nvSpPr.cNvPr.id
+			nullable_int m_nId;			//nvSpPr.cNvPr.vmlSpid
 		};
 	} //Spreadsheet
 } // namespace OOX

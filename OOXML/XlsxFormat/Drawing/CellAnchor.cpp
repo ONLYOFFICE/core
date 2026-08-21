@@ -254,6 +254,16 @@ namespace OOX
 							//reference to object or shape in vmlDrawing
 							m_sVmlSpId = frame->vmlSpid.get();
 						}
+						smart_ptr<PPTX::Logic::Pic> pic = m_oElement->GetElem().smart_dynamic_cast<PPTX::Logic::Pic>();
+						if (pic.IsInit())
+						{
+							m_nId = pic->nvPicPr.cNvPr.id;
+							if (pic->nvPicPr.cNvPr.vmlSpid.IsInit())
+							{
+								//reference to object or shape in vmlDrawing
+								m_sVmlSpId = pic->nvPicPr.cNvPr.vmlSpid.get();
+							}
+						}
 					}
 				}
 			}

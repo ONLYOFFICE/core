@@ -77,9 +77,9 @@ namespace PPTX
 			nullable<Hyperlink> hlinkClick;
 			nullable<Hyperlink> hlinkHover;
 			
-			//std::vector<Ext>	extLst;
-			nullable_string		vmlSpid;
-			nullable_string		creationId;
+			//std::vector<Ext>	extLst; 
+			nullable_string		vmlSpid; // from extLst
+			nullable_string		creationId;// from extLst
 
 		protected:
 			virtual void FillParentPointersForChilds();

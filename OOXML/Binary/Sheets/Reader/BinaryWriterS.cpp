@@ -6638,7 +6638,7 @@ void BinaryWorksheetTableWriter::WriteOleObjects(const OOX::Spreadsheet::CWorksh
 {
 	if (false == oWorksheet.m_oOleObjects.IsInit()) return;
 
-	for (boost::unordered_map<unsigned int, OOX::Spreadsheet::COleObject*>::const_iterator it = oWorksheet.m_oOleObjects->m_mapOleObjects.begin(); it != oWorksheet.m_oOleObjects->m_mapOleObjects.end(); ++it)
+	for (std::map<unsigned int, OOX::Spreadsheet::COleObject*>::const_iterator it = oWorksheet.m_oOleObjects->m_mapOleObjects.begin(); it != oWorksheet.m_oOleObjects->m_mapOleObjects.end(); ++it)
 	{
 		OOX::Spreadsheet::COleObject*	pOleObject	= it->second;
 		OOX::WritingElement*			pShapeElem	= NULL;
@@ -7255,7 +7255,7 @@ void BinaryWorksheetTableWriter::WriteDrawings(const OOX::Spreadsheet::CWorkshee
 		{
 			if(oWorksheet.m_oOleObjects.IsInit() && pCellAnchor->m_nId.IsInit())
 			{
-                boost::unordered_map<unsigned int, OOX::Spreadsheet::COleObject*>::const_iterator pFind = oWorksheet.m_oOleObjects->m_mapOleObjects.find(pCellAnchor->m_nId.get());
+                std::map<unsigned int, OOX::Spreadsheet::COleObject*>::const_iterator pFind = oWorksheet.m_oOleObjects->m_mapOleObjects.find(pCellAnchor->m_nId.get());
 				if (pFind != oWorksheet.m_oOleObjects->m_mapOleObjects.end())
 				{
 					pCellAnchor->m_bShapeOle = true;

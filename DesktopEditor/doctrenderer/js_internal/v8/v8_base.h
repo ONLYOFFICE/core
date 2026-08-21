@@ -127,6 +127,12 @@ public:
 		m_pAllocator = NULL;
 
 #ifndef V8_OS_XP
+#if defined(DOCBUILDER_V8_JITLESS)
+		v8::V8::SetFlagsFromString("--jitless");
+#elif !defined(DOCBUILDER_V8_ALLOW_WASM)
+		v8::V8::SetFlagsFromString("--no-expose-wasm");
+#endif
+
 		v8::V8::InitializeICUDefaultLocation(sPrA.c_str());
 		v8::V8::InitializeExternalStartupData(sPrA.c_str());
 	#ifdef V8_VERSION_89_PLUS

@@ -51,6 +51,7 @@
 #include "lib/xpdf/Link.h"
 #include "lib/xpdf/Stream.h"
 #include "lib/xpdf/GfxFont.h"
+#include "lib/goo/GString.h"
 
 #include "SrcWriter/Catalog.h"
 #include "SrcWriter/EncryptDictionary.h"
@@ -64,6 +65,7 @@
 #include "SrcWriter/OverlapOutputDev.h"
 #include "SrcWriter/Image.h"
 #include "SrcWriter/Font14.h"
+#include "SrcWriter/FontCidTT.h"
 
 #include <vector>
 
@@ -457,11 +459,6 @@ void DrawAnnot(Object* oAnnot, PdfWriter::CPage* pPage, PdfWriter::CDocument* pD
 	}
 	oAP.free();
 
-	PdfWriter::CXObject* pForm = pDoc->CreateForm();
-	pPage->GrSave();
-	pPage->ExecuteXObject(pForm);
-	pPage->GrRestore();
-
 	Object oTemp;
 	double m[6] = { 1, 0, 0, 1, 0, 0 }, bbox[4] = { 0, 0, 0, 0 }, rect[4] = { 0, 0, 0, 0 };
 	if (oAnnot->dictLookup("Rect", &oTemp)->isArray() && oTemp.arrayGetLength() == 4)
@@ -479,6 +476,11 @@ void DrawAnnot(Object* oAnnot, PdfWriter::CPage* pPage, PdfWriter::CDocument* pD
 			std::swap(rect[1], rect[3]);
 	}
 	oTemp.free();
+
+	PdfWriter::CXObject* pForm = pDoc->CreateForm();
+	pPage->GrSave();
+	pPage->ExecuteXObject(pForm);
+	pPage->GrRestore();
 
 	SDictConvertContext ctx(pDoc, xref, pManager, nStartRefID);
 	Dict* pODict = oAPN.streamGetDict();
@@ -587,6 +589,246 @@ void DrawAnnot(Object* oAnnot, PdfWriter::CPage* pPage, PdfWriter::CDocument* pD
 	}
 
 	oAPN.free();
+}
+void CObjectBaseToObject(PdfWriter::CObjectBase* pObj, Object* pOut)
+{
+	if (pObj && pObj->GetType() == PdfWriter::object_type_PROXY)
+		pObj = ((PdfWriter::CProxyObject*)pObj)->Get();
+
+	if (!pObj)
+	{
+		pOut->initNull();
+		return;
+	}
+
+	switch (pObj->GetType())
+	{
+	case PdfWriter::object_type_BOOLEAN:
+		pOut->initBool(((PdfWriter::CBoolObject*)pObj)->Get() ? gTrue : gFalse);
+		break;
+	case PdfWriter::object_type_NUMBER:
+		pOut->initInt(((PdfWriter::CNumberObject*)pObj)->Get());
+		break;
+	case PdfWriter::object_type_REAL:
+		pOut->initReal(((PdfWriter::CRealObject*)pObj)->Get());
+		break;
+	case PdfWriter::object_type_NAME:
+		pOut->initName(((PdfWriter::CNameObject*)pObj)->Get());
+		break;
+	case PdfWriter::object_type_STRING:
+	{
+		PdfWriter::CStringObject* pStr = (PdfWriter::CStringObject*)pObj;
+		pOut->initString(new GString((const char*)pStr->GetString(), (int)pStr->GetLength(), true));
+		break;
+	}
+	case PdfWriter::object_type_BINARY:
+	{
+		PdfWriter::CBinaryObject* pBin = (PdfWriter::CBinaryObject*)pObj;
+		pOut->initString(new GString((const char*)pBin->GetValue(), (int)pBin->GetLength(), true));
+		break;
+	}
+	case PdfWriter::object_type_ARRAY:
+	{
+		PdfWriter::CArrayObject* pArr = (PdfWriter::CArrayObject*)pObj;
+		pOut->initArray(NULL);
+		for (int i = 0; i < pArr->GetCount(); ++i)
+		{
+			Object oElem;
+			CObjectBaseToObject(pArr->Get(i), &oElem);
+			pOut->arrayAdd(&oElem);
+		}
+		break;
+	}
+	case PdfWriter::object_type_DICT:
+	{
+		PdfWriter::CDictObject* pDict = dynamic_cast<PdfWriter::CDictObject*>(pObj);
+		if (!pDict)
+		{
+			pOut->initNull();
+			break;
+		}
+		pDict->BeforeWrite();
+
+		Object oDict;
+		oDict.initDict((XRef*)NULL);
+		std::map<std::string, PdfWriter::CObjectBase*> mEntries = pDict->GetDict();
+		for (std::map<std::string, PdfWriter::CObjectBase*>::iterator it = mEntries.begin(); it != mEntries.end(); ++it)
+		{
+			Object oVal;
+			CObjectBaseToObject(it->second, &oVal);
+			oDict.dictAdd(copyString(it->first.c_str()), &oVal);
+		}
+
+		PdfWriter::CStream* pWStream = pDict->GetStream();
+		if (!pWStream)
+		{
+			*pOut = oDict;
+			break;
+		}
+
+		// MemStream frees the buffer itself (needFree=true below), so it must come from xpdf's
+		// own allocator (gmalloc/gfree), not new[]/delete[].
+		unsigned int unSize = pWStream->Size();
+		BYTE* pBuf = unSize ? (BYTE*)gmalloc((int)unSize) : NULL;
+		if (pBuf)
+		{
+			pWStream->Seek(0, PdfWriter::SeekSet);
+			unsigned int unRead = unSize;
+			pWStream->Read(pBuf, &unRead);
+		}
+		pOut->initStream(new MemStream((char*)pBuf, 0, unSize, &oDict, gTrue));
+		break;
+	}
+	default:
+		pOut->initNull();
+		break;
+	}
+}
+void DrawFormThroughRedact(Object* pReaderAppearance, const double rect[4], PdfWriter::CXObject* pForm,
+						   PdfWriter::CPage* pPage, CPdfWriter* pWriter, PDFDoc* pPDFDocument, CObjectsManager* pManager,
+						   int nStartRefID, int nRedactInfo, const std::vector<double>& arrRedact)
+{
+	PdfWriter::CDocument* pDoc = pWriter->GetDocument();
+	XRef* xref = pPDFDocument->getXRef();
+	PdfWriter::CResourcesDict* pFormResources = dynamic_cast<PdfWriter::CResourcesDict*>(pForm->Get("Resources"));
+
+	PdfWriter::CPage* pRendererPrevPage = pWriter->GetPage();
+	PdfWriter::CPage* pDocPrevPage      = pDoc->GetCurPage();
+
+	PdfWriter::CPage* pFakePage = new PdfWriter::CPage(pDoc);
+	pFakePage->SetStream(pForm->GetStream());
+
+	PdfWriter::RedactOutputDev oRedactOut(pWriter, pManager, nStartRefID, nRedactInfo);
+	oRedactOut.NewPDF(xref);
+	oRedactOut.SetRedact(arrRedact);
+	oRedactOut.SetOverlapInfo({}, NULL, NULL, {});
+	oRedactOut.StartOnPage(pFakePage, pFormResources);
+	double arrIdentity[6] = { 1, 0, 0, 1, 0, 0 };
+	oRedactOut.setDefaultCTM(arrIdentity);
+
+	PDFRectangle oBox(0, 0, pPage->GetWidth(), pPage->GetHeight());
+	Gfx* gfx = new Gfx(pPDFDocument, &oRedactOut, NULL, &oBox, NULL);
+	gfx->saveState();
+	gfx->drawAnnot(pReaderAppearance, NULL, rect[0], rect[1], rect[2], rect[3]);
+	gfx->endOfPage();
+	RELEASEOBJECT(gfx);
+
+	pWriter->EditPage(pRendererPrevPage);
+	pDoc->SetCurPage(pDocPrevPage);
+	RELEASEOBJECT(pFakePage);
+
+	PdfWriter::CResourcesDict* pPageResources = pPage->GetResourcesItem();
+	if (!pPageResources)
+	{
+		pPage->AddResource();
+		pPageResources = pPage->GetResourcesItem();
+	}
+	pPage->GrSave();
+	pPage->ExecuteXObject(pPageResources->GetXObjectName(pForm));
+	pPage->GrRestore();
+}
+void DrawAnnotRedacted(Object* oAnnot, PdfWriter::CPage* pPage, PdfWriter::CDocument* pDoc, CPdfWriter* pWriter, PDFDoc* pPDFDocument,
+					   XRef* xref, CObjectsManager* pManager, int nStartRefID, int nRedactInfo, const std::vector<double>& arrRedact)
+{
+	Object oAP, oAPN, oObj;
+	if (!oAnnot->dictLookup("AP", &oAP)->isDict() || !oAP.dictLookup("N", &oAPN)->isStream())
+	{
+		oAP.free();
+		Object oTemp;
+		if (!oAPN.isDict() || !oAnnot->dictLookup("AS", &oObj)->isName() || !oAPN.dictLookup(oObj.getName(), &oTemp)->isStream())
+		{
+			oTemp.free(); oAPN.free(); oObj.free();
+			return;
+		}
+		oAPN.free();
+		oAPN = oTemp;
+	}
+	oAP.free();
+
+	Object oTemp;
+	double rect[4] = { 0, 0, 0, 0 };
+	if (oAnnot->dictLookup("Rect", &oTemp)->isArray() && oTemp.arrayGetLength() == 4)
+	{
+		for (int j = 0; j < 4; ++j)
+		{
+			oTemp.arrayGet(j, &oObj);
+			rect[j] = oObj.isNum() ? oObj.getNum() : 0;
+			oObj.free();
+		}
+
+		if (rect[0] > rect[2])
+			std::swap(rect[0], rect[2]);
+		if (rect[1] > rect[3])
+			std::swap(rect[1], rect[3]);
+	}
+	oTemp.free();
+
+	if (rect[0] == rect[2] || rect[1] == rect[3])
+	{
+		oAPN.free();
+		return;
+	}
+
+	std::vector<PdfWriter::CPoint> arrRectPolygon =
+	{
+		PdfWriter::CPoint(rect[0], rect[1]), PdfWriter::CPoint(rect[0], rect[3]),
+		PdfWriter::CPoint(rect[2], rect[3]), PdfWriter::CPoint(rect[2], rect[1])
+	};
+
+	if (!arrRedact.empty() && PdfWriter::CheckFullRedact(arrRedact, arrRectPolygon))
+	{
+		oAPN.free();
+		return;
+	}
+
+	PdfWriter::CXObject* pForm = pDoc->CreateForm();
+	pForm->Add("Type", "XObject");
+	pForm->Add("Subtype", "Form");
+	pForm->Add("FormType", 1);
+	pForm->Add("BBox", PdfWriter::CArrayObject::CreateBox(rect[0], rect[1], rect[2], rect[3]));
+
+	PdfWriter::CResourcesDict* pFormResources = pDoc->CreateResourcesDict(true, false);
+	Object oAPResources;
+	if (oAPN.streamGetDict()->lookup("Resources", &oAPResources)->isDict())
+	{
+		SDictConvertContext resCtx(pDoc, xref, pManager, nStartRefID);
+		for (int j = 0; j < oAPResources.dictGetLength(); ++j)
+		{
+			Object oResItem;
+			char* chKey = oAPResources.dictGetKey(j);
+			oAPResources.dictGetValNF(j, &oResItem);
+			pFormResources->Add(chKey, DictToCDictObjectUnified(&oResItem, resCtx));
+			oResItem.free();
+		}
+		pFormResources->Fix();
+	}
+	oAPResources.free();
+	pForm->Add("Resources", pFormResources);
+
+	DrawFormThroughRedact(&oAPN, rect, pForm, pPage, pWriter, pPDFDocument, pManager, nStartRefID, nRedactInfo, arrRedact);
+
+	oAPN.free();
+}
+void DrawAnnotAppearanceRedacted(PdfWriter::CAnnotAppearanceObject* pAPN, const double rect[4], PdfWriter::CPage* pPage,
+								  PdfWriter::CDocument* pDoc, CPdfWriter* pWriter, PDFDoc* pPDFDocument,
+								  CObjectsManager* pManager, int nRedactInfo, const std::vector<double>& arrRedact)
+{
+	if (rect[0] == rect[2] || rect[1] == rect[3])
+		return;
+
+	PdfWriter::CXObject* pForm = pDoc->CreateForm();
+	pForm->Add("Type", "XObject");
+	pForm->Add("Subtype", "Form");
+	pForm->Add("FormType", 1);
+	pForm->Add("BBox", PdfWriter::CArrayObject::CreateBox(rect[0], rect[1], rect[2], rect[3]));
+	pForm->Add("Resources", pAPN->Get("Resources"));
+
+	Object oReaderAPN;
+	CObjectBaseToObject(pAPN, &oReaderAPN);
+
+	DrawFormThroughRedact(&oReaderAPN, rect, pForm, pPage, pWriter, pPDFDocument, pManager, 0, nRedactInfo, arrRedact);
+
+	oReaderAPN.free();
 }
 
 PdfWriter::CObjectBase* FillEncryptDictFromXRef(XRef* xref, Object* pTrailerDict, PdfWriter::CEncryptDict* pEncryptDict, const SDictConvertContext& ctx)
@@ -2162,12 +2404,13 @@ PdfWriter::CAnnotAppearanceObject* GetAnnotAppearanceObject(PdfWriter::CAnnotati
 	return dynamic_cast<PdfWriter::CAnnotAppearanceObject*>(pAP_N->Get(sName));
 }
 // ─── WriteNew helpers ────────────────────────────────────────────────────────
-void CloseWriteNew_FlushAnnotations(CPdfReader* pReader, CObjectsManager* mObjManager, PdfWriter::CDocument* pDoc, IAdvancedCommand* pCommand = NULL)
+void CloseWriteNew_FlushAnnotations(CPdfReader* pReader, CObjectsManager* mObjManager, PdfWriter::CDocument* pDoc, CPdfWriter* pWriter, int nRedactInfo, IAdvancedCommand* pCommand = NULL, const std::vector<double>& arrRedact = {})
 {
 	std::vector<int> arrWidget;
 	if (pCommand)
 		arrWidget = ((CRedactMeta*)pCommand)->GetWidgetID();
 
+	std::vector<IAdvancedCommand*> arrProcessed;
 	for (size_t i = 0; i < mObjManager->m_arrRedactFormFields.size(); ++i)
 	{
 		IAdvancedCommand* pCmd = mObjManager->m_arrRedactFormFields[i];
@@ -2189,6 +2432,7 @@ void CloseWriteNew_FlushAnnotations(CPdfReader* pReader, CObjectsManager* mObjMa
 				if (it == arrWidget.end())
 					continue;
 				pPage = pDoc->GetCurPage();
+				arrProcessed.push_back(pCmd);
 			}
 			else
 			{
@@ -2211,22 +2455,47 @@ void CloseWriteNew_FlushAnnotations(CPdfReader* pReader, CObjectsManager* mObjMa
 				continue;
 			}
 
-			double m[6] = { 1, 0, 0, 1, 0, 0 };
-			pAPN->GetMatrix(m);
-			m[4] += pAnnot->GetRect().fLeft;
-			m[5] += pAnnot->GetRect().fBottom;
-			pAPN->AddMatrix(m[0], m[1], m[2], m[3], m[4], m[5]);
-
-			PdfWriter::CResourcesDict* pResources = pPage->GetResourcesItem();
-			if (!pResources)
+			std::vector<double> arrAnnotRedact = pCommand ? arrRedact : std::vector<double>();
+			PdfWriter::TRect& oAnnotRect = pAnnot->GetRect();
+			std::vector<PdfWriter::CPoint> arrRectPolygon =
 			{
-				pPage->AddResource();
-				pResources = pPage->GetResourcesItem();
+				PdfWriter::CPoint(oAnnotRect.fLeft, oAnnotRect.fBottom), PdfWriter::CPoint(oAnnotRect.fLeft, oAnnotRect.fTop),
+				PdfWriter::CPoint(oAnnotRect.fRight, oAnnotRect.fTop), PdfWriter::CPoint(oAnnotRect.fRight, oAnnotRect.fBottom)
+			};
+
+			if (!arrAnnotRedact.empty() && PdfWriter::CheckFullRedact(arrAnnotRedact, arrRectPolygon))
+			{
+				pDoc->RemoveObj(pAnnot);
+				continue;
 			}
 
-			pPage->GrSave();
-			pPage->ExecuteXObject(pResources->GetXObjectName(pAPN));
-			pPage->GrRestore();
+			bool bPartialRedact = !arrAnnotRedact.empty() && PdfWriter::CheckPartialRedact(arrAnnotRedact, arrRectPolygon);
+			PDFDoc* pPDFDocument = bPartialRedact ? pReader->GetPDFDocument(0) : NULL;
+
+			if (bPartialRedact && pPDFDocument)
+			{
+				double rect[4] = { oAnnotRect.fLeft, oAnnotRect.fBottom, oAnnotRect.fRight, oAnnotRect.fTop };
+				DrawAnnotAppearanceRedacted(pAPN, rect, pPage, pDoc, pWriter, pPDFDocument, mObjManager, nRedactInfo, arrAnnotRedact);
+			}
+			else
+			{
+				double m[6] = { 1, 0, 0, 1, 0, 0 };
+				pAPN->GetMatrix(m);
+				m[4] += pAnnot->GetRect().fLeft;
+				m[5] += pAnnot->GetRect().fBottom;
+				pAPN->AddMatrix(m[0], m[1], m[2], m[3], m[4], m[5]);
+
+				PdfWriter::CResourcesDict* pResources = pPage->GetResourcesItem();
+				if (!pResources)
+				{
+					pPage->AddResource();
+					pResources = pPage->GetResourcesItem();
+				}
+
+				pPage->GrSave();
+				pPage->ExecuteXObject(pResources->GetXObjectName(pAPN));
+				pPage->GrRestore();
+			}
 
 			pDoc->RemoveObj(pAnnot);
 		}
@@ -2260,14 +2529,24 @@ void CloseWriteNew_FlushAnnotations(CPdfReader* pReader, CObjectsManager* mObjMa
 				if (it == arrWidget.end())
 					continue;
 				pPage = pDoc->GetCurPage();
+				arrProcessed.push_back(pCmd);
 			}
 			else
 				pPage = dynamic_cast<PdfWriter::CPage*>(mObjManager->GetObj(oP->getRefNum() + nStartRefID));
 
 			if (!pPage)
 				continue;
-			DrawAnnot(oAnnot.get(), pPage, pDoc, xref, mObjManager, nStartRefID);
+			DrawAnnotRedacted(oAnnot.get(), pPage, pDoc, pWriter, pPDFDocument, xref, mObjManager, nStartRefID, nRedactInfo, pCommand ? arrRedact : std::vector<double>());
 		}
+	}
+
+	if (!arrProcessed.empty())
+	{
+		std::vector<IAdvancedCommand*>& arrFields = mObjManager->m_arrRedactFormFields;
+		arrFields.erase(std::remove_if(arrFields.begin(), arrFields.end(), [&arrProcessed](IAdvancedCommand* pCmd)
+		{
+			return std::find(arrProcessed.begin(), arrProcessed.end(), pCmd) != arrProcessed.end();
+		}), arrFields.end());
 	}
 }
 void CloseWriteNew_ApplyEncryption(const wchar_t* wsPassword, CObjectsManager* mObjManager, PDFDoc* pPDFDocument, PdfWriter::CDocument* pDoc)
@@ -2694,7 +2973,7 @@ void CPdfEditor::Close()
 				EditPage(i, false, true);
 		}
 
-		CloseWriteNew_FlushAnnotations(m_pReader, &m_mObjManager, pDoc);
+		CloseWriteNew_FlushAnnotations(m_pReader, &m_mObjManager, pDoc, m_pWriter, m_nRedactInfo);
 
 		SyncAcroFormFromReader();
 
@@ -5354,7 +5633,7 @@ std::vector<double> CPdfEditor::WriteRedact(const std::vector<std::wstring>& arr
 	}
 	return arrRes;
 }
-void CPdfEditor::RedactMeta(IAdvancedCommand* pCommand)
+void CPdfEditor::RedactMeta(IAdvancedCommand* pCommand, const std::vector<double>& arrRedact)
 {
 	CRedactMeta* pRedactMeta = (CRedactMeta*)pCommand;
 	std::vector<int> arrWidget = pRedactMeta->GetWidgetID();
@@ -5379,5 +5658,5 @@ void CPdfEditor::RedactMeta(IAdvancedCommand* pCommand)
 		}
 	}
 
-	CloseWriteNew_FlushAnnotations(m_pReader, &m_mObjManager, m_pWriter->GetDocument(), pCommand);
+	CloseWriteNew_FlushAnnotations(m_pReader, &m_mObjManager, m_pWriter->GetDocument(), m_pWriter, m_nRedactInfo, pCommand, arrRedact);
 }

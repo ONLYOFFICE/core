@@ -50,6 +50,9 @@
 
 namespace PdfWriter
 {
+	bool CheckFullRedact(const std::vector<double>& arrQuadPoints, const std::vector<CPoint>& XObjectPolygon);
+	bool CheckPartialRedact(const std::vector<double>& arrQuadPoints, const std::vector<CPoint>& XObjectPolygon);
+
 	class RedactOutputDev : public OutputDev
 	{
 	public:
@@ -68,6 +71,7 @@ namespace PdfWriter
 		int  GetFormCounter()    const { return m_nFormCounter; }
 		int GetGraphicsCounter() const { return m_nGraphicsCounter; }
 		void NewPDF(XRef* pXref);
+		void StartOnPage(CPage* pPage, CResourcesDict* pResources = NULL);
 
 		//----- get info about output device
 		virtual GBool upsideDown() override

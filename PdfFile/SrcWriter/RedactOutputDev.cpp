@@ -704,6 +704,13 @@ void RedactOutputDev::NewPDF(XRef* pXref)
 {
 	m_pXref = pXref;
 }
+void RedactOutputDev::StartOnPage(CPage* pPage, CResourcesDict* pResources)
+{
+	m_pPage = pPage;
+	m_pRenderer->EditPage(pPage);
+	m_pDoc->SetCurPage(pPage);
+	m_pResources = pResources;
+}
 //----- initialization and control
 void RedactOutputDev::setDefaultCTM(double *ctm)
 {

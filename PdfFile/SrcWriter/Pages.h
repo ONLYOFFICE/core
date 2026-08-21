@@ -107,6 +107,7 @@ namespace PdfWriter
 		void      SetWidth(double dWidth);
 		double    GetWidth();
 		double    GetHeight();
+		double    GetCropHeight();
 
 		EDictType GetDictType() const
 		{

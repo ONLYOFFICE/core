@@ -121,24 +121,6 @@ namespace DocFileFormat
 					{
 						fHF = FormatUtils::BytesToUChar( iter->Arguments, 0, iter->argumentsSize );
 					}break;
-					case sprmSPgbProp:
-					{
-						int val = FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize );
-						int pgbApplyTo		= FormatUtils::GetIntFromBits(val, 0 , 3);
-						int pgbPageDepth	= FormatUtils::GetIntFromBits(val, 3 , 2);
-						int pgbOffsetFrom	= FormatUtils::GetIntFromBits(val, 5 , 3);
-
-						if (pgbOffsetFrom == 0x0)
-							appendValueAttribute( &pgBorders, L"w:offsetFrom", L"page" );
-						
-						if (pgbApplyTo == 0x0)
-							appendValueAttribute( &pgBorders, L"w:display", L"allPages" );
-						else if (pgbApplyTo == 0x1)
-							appendValueAttribute( &pgBorders, L"w:display", L"firstPage" );
-						else
-							appendValueAttribute( &pgBorders, L"w:display", L"notFirstPage" );
-
-					}break;
 					default:
 						break;
 				}
@@ -257,6 +239,28 @@ namespace DocFileFormat
                 appendValueAttribute( &paperSrc, L"w:other", FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) ) );
 				break;
 
+//page borders properties
+			case sprmSPgbProp:
+			{
+				int val = FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize );
+				int pgbApplyTo		= FormatUtils::GetIntFromBits(val, 0 , 3);
+				int pgbPageDepth	= FormatUtils::GetIntFromBits(val, 3 , 2);
+				int pgbOffsetFrom	= FormatUtils::GetIntFromBits(val, 5 , 3);
+
+				if (pgbOffsetFrom == 0x1)
+					appendValueAttribute( &pgBorders, L"w:offsetFrom", L"page" );
+
+				if (pgbPageDepth == 0x1)
+					appendValueAttribute( &pgBorders, L"w:zOrder", L"back" );
+
+				if (pgbApplyTo == 0x0)
+					appendValueAttribute( &pgBorders, L"w:display", L"allPages" );
+				else if (pgbApplyTo == 0x1)
+					appendValueAttribute( &pgBorders, L"w:display", L"firstPage" );
+				else
+					appendValueAttribute( &pgBorders, L"w:display", L"notFirstPage" );
+			}
+			break;
 //page borders
 			case sprmSBrcTop80:
 			case sprmSBrcTop:

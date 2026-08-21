@@ -84,6 +84,7 @@ void chart_format_properties::add_attributes( const xml::attributes_wc_ptr & Att
 	_CP_OPT(bool) bVal;// later can remove this separation - replace variant
 
 	CP_APPLY_ATTR(L"chart:scale-text",			bVal);		if (bVal) push_back(_property(L"scale-text",			bVal.get()));
+	CP_APPLY_ATTR(L"chart:auto-position",		bVal);		if (bVal) push_back(_property(L"auto-position",			bVal.get()));
     CP_APPLY_ATTR(L"chart:three-dimensional",	bVal);		if (bVal) push_back(_property(L"three-dimensional",		bVal.get()));
     CP_APPLY_ATTR(L"chart:vertical",			bVal);		if (bVal) push_back(_property(L"vertical",				bVal.get()));
     CP_APPLY_ATTR(L"chart:stacked",				bVal);		if (bVal) push_back(_property(L"stacked",				bVal.get()));

@@ -72,6 +72,13 @@ void oox_chart::set_values_series(int ind, std::vector<std::wstring> & val)
 	oox_series_ptr & current_ptr = series_.back();
 	current_ptr->setValues (ind, val);
 }
+void oox_chart::set_levels_series(const std::vector<std::vector<std::wstring> > & levels)
+{
+	if (levels.size() < 2) return;
+
+	oox_series_ptr & current_ptr = series_.back();
+	current_ptr->setLevels (levels);
+}
 void oox_chart::set_label_series(const std::wstring& formula, std::vector<std::wstring> & cash)
 {
 	if (formula.empty() && cash.empty()) return;

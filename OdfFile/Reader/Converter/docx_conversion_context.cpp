@@ -214,14 +214,14 @@ docx_conversion_context::~docx_conversion_context()
 {
 }
 
-void docx_conversion_context::set_implicit_end( bool _flag ) // fix bug with convert from docx to odt. Bug with break columns
+void docx_conversion_context::set_section_break_after( bool _flag ) 
 {
-    flag_implicit_end = _flag;
+    flag_section_break_after = _flag;
 }
 
-bool docx_conversion_context::get_implicit_end() const // fix bug with convert from docx to odt. Bug with break columns
+bool docx_conversion_context::get_section_break_after() const
 {
-    return flag_implicit_end;
+    return flag_section_break_after;
 }
 
 void docx_conversion_context::set_inside_frame( bool flag )
@@ -1607,13 +1607,14 @@ void docx_conversion_context::process_section(std::wostream & strm, odf_reader::
 					section.margin_right_	= sectPr->common_horizontal_margin_attlist_.fo_margin_right_;		
 				}
 			}
-			if (section.is_dump_)
-			{
-				get_section_context().remove_section();				
-			}
+		}
+		if (section.is_dump_)
+		{
+			section.is_dump_ = false;
+			get_section_context().remove_section();	
 		}
 	}
-	
+
 	std::vector<std::pair<double, double>> width_space;
 	if (columns)
 	{
@@ -1648,37 +1649,43 @@ void docx_conversion_context::process_section(std::wostream & strm, odf_reader::
 					page_width -= attr_page.common_horizontal_margin_attlist_.fo_margin_right_->get_length().get_value_unit(odf_types::length::pt);
 				}
 			}		
-			for (size_t i = 0; page_width > 0, i < columns->style_columns_.size(); i++)
+			double total_rel = 0;
+			for (size_t i = 0; i < columns->style_columns_.size(); i++)
 			{
 				odf_reader::style_column *col = dynamic_cast<odf_reader::style_column*>( columns->style_columns_[i].get());
 				if (!col) continue;
 
-				double percent = col->style_rel_width_ ? col->style_rel_width_->get_value() : 0;
-				if (percent > 0x7FFE)
+				double rel = col->style_rel_width_ ? col->style_rel_width_->get_value() : 0;
+				if (rel > 0x7FFE)
 				{
 					//auto
+					total_rel = 0;
 					break;
 				}
-				else
+				total_rel += rel;
+			}
+			for (size_t i = 0; page_width > 0 && total_rel > 0 && i < columns->style_columns_.size(); i++)
+			{
+				odf_reader::style_column *col = dynamic_cast<odf_reader::style_column*>( columns->style_columns_[i].get());
+				if (!col) continue;
+
+				double rel = col->style_rel_width_ ? col->style_rel_width_->get_value() : 0;
+
+				double space_end = col->fo_end_indent_ ? col->fo_end_indent_->get_value_unit(odf_types::length::pt) : 0;
+				double space_start = col->fo_start_indent_ ? col->fo_start_indent_->get_value_unit(odf_types::length::pt) : 0;
+
+				double width = page_width * rel / total_rel - space_start - space_end;
+
+				double space_next = 0;
+				if (i < columns->style_columns_.size() - 1)
 				{
-					if (percent > 1000.) percent /= 100.;
+					odf_reader::style_column *col_next = dynamic_cast<odf_reader::style_column*>(columns->style_columns_[i + 1].get());
+					if (col_next && col_next->fo_start_indent_)
+						space_next = col_next->fo_start_indent_->get_value_unit(odf_types::length::pt);
 
-					double width = page_width * percent / 100.;
-
-					double space_end = col->fo_end_indent_ ? col->fo_end_indent_->get_value_unit(odf_types::length::pt) : 0;
-					double space_start = col->fo_start_indent_ ? col->fo_start_indent_->get_value_unit(odf_types::length::pt) : 0;
-
-					width -= space_end;
-					width -= space_start;
-
-					if (i < columns->style_columns_.size() - 1)
-					{
-						col = dynamic_cast<odf_reader::style_column*>(columns->style_columns_[i + 1].get());
-						space_start = col->fo_start_indent_ ? col->fo_start_indent_->get_value_unit(odf_types::length::pt) : 0;
-					}
-
-					width_space.push_back(std::make_pair(width, space_start + space_end));
+					space_next += space_end;
 				}
+				width_space.push_back(std::make_pair(width, space_next));
 			}
 		}
 	}
@@ -2252,7 +2259,7 @@ int docx_conversion_context::process_paragraph_attr(odf_reader::text::paragraph_
 						&& !in_drawing)
 					{
 						output_stream() << L"<w:pPr>";
-						if (is_paragraph_header() )
+						if (is_paragraph_header() && !get_section_break_after())
 						{
 							output_stream() << get_section_context().dump_;
 							get_section_context().dump_.clear();
@@ -2295,7 +2302,7 @@ int docx_conversion_context::process_paragraph_attr(odf_reader::text::paragraph_
 					&& (get_process_note() == oox::docx_conversion_context::noNote)
 					&& !in_drawing)
 				{
-					if (is_paragraph_header() )
+					if (is_paragraph_header() && !get_section_break_after())
 					{
 						output_stream() << get_section_context().dump_;
 						get_section_context().dump_.clear();

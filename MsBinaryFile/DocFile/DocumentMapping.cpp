@@ -274,7 +274,6 @@ namespace DocFileFormat
 		int		cp							=	initialCp;
 		int		fc							=	m_document->FindFileCharPos(cp);
 		int		fcEnd						=	(cpEnd > initialCp) ? m_document->FindFileCharPosEnd(cpEnd) : m_document->FindFileCharPos(cpEnd);
-        bool    PBookmark                   = false;
 
 		ParagraphPropertyExceptions* papx	=	findValidPapx(fc);
 
@@ -401,17 +400,13 @@ namespace DocFileFormat
 						{
 							for (std::vector<std::vector<wchar_t> >::iterator iter = runs->begin(); iter != runs->end(); ++iter)
 							{
-                                if (writeBookmarks(cp, PBookmark))
-								{
-									cp = writeRun(&(*iter), chpxs->at(it), cp);
-								}
-                                PBookmark = true;
-                                if (cp == m_document->FIB->m_RgLw97.ccpText - 1)
-                                    writeBookmarks(cp, PBookmark);
+							
+								writeBookmarks(cp);
+
+								cp = writeRun(&(*iter), chpxs->at(it), cp);
 							}
 
 							RELEASEOBJECT(runs);
-                            PBookmark = false;
 						}
 					}
 					else
@@ -447,12 +442,20 @@ namespace DocFileFormat
 			}
 
 			//end paragraph
-			if ( paragraphState & END_PARAGRAPH ) m_pXmlWriter->WriteNodeEnd( L"w:p" );
+			if ( paragraphState & END_PARAGRAPH )
+			{
+				closeBookmarks( initialCp, cp );
+				m_pXmlWriter->WriteNodeEnd( L"w:p" );
+			}
 		}
 		else
 		{
 			//end paragraph
-			if ( paragraphState & END_PARAGRAPH ) m_pXmlWriter->WriteNodeEnd( L"w:p" );
+			if ( paragraphState & END_PARAGRAPH )
+			{
+				closeBookmarks( initialCp, cp );
+				m_pXmlWriter->WriteNodeEnd( L"w:p" );
+			}
 		}
 
 		RELEASEOBJECT(chpxFcs);
@@ -1965,79 +1968,49 @@ namespace DocFileFormat
 		}
 		return true;
 	}
-    bool DocumentMapping::writeBookmarks(int cp, bool para)
+	void DocumentMapping::writeBookmarks(int cp)
 	{
-		bool result =	true;
-        static std::vector<int> openedInThisPara;
-        static std::set<int> allClosedIds;
-        static int nextIdForSequence = 0;
+		for (size_t b = 0; b < m_document->BookmarkStartEndCPs.size(); ++b)
+		{
+			if (m_document->BookmarkStartEndCPs[b].start != cp) continue;
 
-        for (size_t b = 0; b < m_document->BookmarkStartEndCPs.size(); ++b)
-        {
-            if (m_document->BookmarkStartEndCPs[b].start == cp)
-            {
-                int xmlId = b;
+			if (m_document->openedBookmarks.find(b) != m_document->openedBookmarks.end()) continue;
 
-                result = writeBookmarkStart(xmlId);
-                openedInThisPara.push_back(xmlId);
-            }
-        }
+			if (writeBookmarkStart((short)b))
+			{
+				m_document->openedBookmarks.insert(b);
+			}
+		}
 
-        bool hasPositionClosings = false;
-        int positionClosingCount = 0;
+		for (size_t b = 0; b < m_document->BookmarkStartEndCPs.size(); ++b)
+		{
+			if (m_document->BookmarkStartEndCPs[b].end == cp)
+			{
+				writeBookmarkEndOnce(b);
+			}
+		}
+	}
+	void DocumentMapping::closeBookmarks(int cpStart, int cpEnd)
+	{
+		for (size_t b = 0; b < m_document->BookmarkStartEndCPs.size(); ++b)
+		{
+			int cpBookmarkEnd = m_document->BookmarkStartEndCPs[b].end;
 
-        for (size_t b = 0; b < m_document->BookmarkStartEndCPs.size(); ++b)
-        {
-            if (m_document->BookmarkStartEndCPs[b].end == cp)
-            {
-                hasPositionClosings = true;
-                positionClosingCount++;
-            }
-        }
+			if ((cpBookmarkEnd >= cpStart) && (cpBookmarkEnd <= cpEnd))
+			{
+				writeBookmarkEndOnce(b);
+			}
+		}
+	}
 
-        if (hasPositionClosings)
-        {
+	bool DocumentMapping::writeBookmarkEndOnce(size_t index)
+	{
+		if (m_document->openedBookmarks.find(index) == m_document->openedBookmarks.end()) return false;
+		if (m_document->closedBookmarks.find(index) != m_document->closedBookmarks.end()) return false;
 
-            for (int i = 0; i < positionClosingCount; i++)
-            {
-                if (!openedInThisPara.empty())
-                {
-                    int idToClose = openedInThisPara[0];
-                    result = writeBookmarkEnd(idToClose);
-                    allClosedIds.insert(idToClose);
-                    openedInThisPara.erase(openedInThisPara.begin());
-                }
-                else
-                {
-                    while (allClosedIds.find(nextIdForSequence) != allClosedIds.end())
-                    {
-                        nextIdForSequence++;
-                    }
+		m_document->closedBookmarks.insert(index);
 
-                    result = writeBookmarkEnd(nextIdForSequence);
-                    allClosedIds.insert(nextIdForSequence);
-                    nextIdForSequence++;
-                }
-            }
-        }
-        else if (para)
-        {
-            while (allClosedIds.find(nextIdForSequence) != allClosedIds.end())
-            {
-                nextIdForSequence++;
-            }
-
-            result = writeBookmarkEnd(nextIdForSequence);
-            allClosedIds.insert(nextIdForSequence);
-            nextIdForSequence++;
-        }
-
-        if (para)
-        {
-            openedInThisPara.clear();
-        }
-
-		return result;
+		return writeBookmarkEnd((short)index);
 	}
 	bool DocumentMapping::writeAnnotations(int cp)
 	{

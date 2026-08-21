@@ -240,6 +240,7 @@ public:
 				}
 				else
 					m_nType = 2;
+				break;
 			}
 			case 3:
 			{
@@ -392,6 +393,9 @@ public:
 	}
 	BYTE* BuildPdf(BYTE* pCommands, int nCommandsLen, const wchar_t* sPassword)
 	{
+		if (m_pFile && m_nType != 0)
+			return NULL;
+
 		// EDIT
 		if (m_pFile && m_pFile->GetPagesCount())
 			return ((CPdfFile*)m_pFile)->EditPdfToMemory(pCommands, nCommandsLen, sPassword);

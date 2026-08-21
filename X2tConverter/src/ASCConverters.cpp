@@ -187,6 +187,8 @@ namespace NExtractTools
 		if (recordTo > *oMailMergeSend.recordTo)
 			recordTo = *oMailMergeSend.recordTo;
 		NSDoctRenderer::CDoctrenderer oDoctRenderer(NULL != params.m_sAllFontsPath ? *params.m_sAllFontsPath : _T(""));
+		convertParams.InitDoctRenderer(&oDoctRenderer);
+
 		std::wstring sMailMergeXml = getMailMergeXml(sJsonPath, *oMailMergeSend.recordFrom, recordTo, *oMailMergeSend.to);
 		// send output folder sFileFromDir so that files are at the same level as the media folder, important for further conversion to docx, pdf
 		std::wstring sXml = getDoctXml(NSDoctRenderer::DoctRendererFormat::FormatFile::DOCT, eTypeTo, sFrom, sFileFromDir, sImagesDirectory, convertParams.m_sThemesDir, -1, sMailMergeXml, params);
@@ -1748,6 +1750,9 @@ namespace NExtractTools
 			std::cerr << "Couldn't create temp folder" << std::endl;
 			return AVS_FILEUTILS_ERROR_UNKNOWN;
 		}
+
+		if (NULL != oInputParams.m_sOverrideSdkJsPath)
+			oConvertParams.m_sOverrideSdkJsPath = *oInputParams.m_sOverrideSdkJsPath;
 
 		std::wstring sGlobalTempDir = L"";
 		if (NSFile::CFileBinary::IsGlobalTempPathUse())

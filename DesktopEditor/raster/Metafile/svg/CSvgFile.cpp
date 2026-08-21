@@ -170,6 +170,9 @@ bool CSvgFile::Draw(IRenderer *pRenderer, double dX, double dY, double dWidth, d
 	if (!CalculateFinalSize(false, dFileX, dFileY, dFileWidth, dFileHeight))
 		return false;
 
+	if (SVG::Equals(0, dFileWidth) || SVG::Equals(0, dFileHeight))
+		return false;
+
 	double oldTransform[6];
 
 	pRenderer->GetTransform(&oldTransform[0], &oldTransform[1], &oldTransform[2], &oldTransform[3], &oldTransform[4], &oldTransform[5]);
@@ -190,8 +193,8 @@ bool CSvgFile::Draw(IRenderer *pRenderer, double dX, double dY, double dWidth, d
 		dScaleX = dFileWidth  / oViewBox.m_oWidth .ToDouble(NSCSS::Pixel, SVG_FILE_WIDTH );
 		dScaleY = dFileHeight / oViewBox.m_oHeight.ToDouble(NSCSS::Pixel, SVG_FILE_HEIGHT);
 
-		dTranslateX -= oViewBox.m_oX.ToDouble(NSCSS::Pixel) * dScaleX * dM11;
-		dTranslateY -= oViewBox.m_oY.ToDouble(NSCSS::Pixel) * dScaleY * dM22;
+		dTranslateX = -oViewBox.m_oX.ToDouble(NSCSS::Pixel) * dScaleX * dM11;
+		dTranslateY = -oViewBox.m_oY.ToDouble(NSCSS::Pixel) * dScaleY * dM22;
 	}
 
 	pRenderer->SetTransform(dM11 * dScaleX, 0, 0, dM22 * dScaleY, dTranslateX, dTranslateY);

@@ -70,18 +70,18 @@ void oox_axis_content::oox_serialize(std::wostream & _Wostream)
 				{
 					CP_XML_ATTR(L"val", 1);
 				}
-				//CP_XML_NODE(L"c:lblAlgn")
-				//{
-				//	CP_XML_ATTR(L"val", "ctr");
-				//}
-				//CP_XML_NODE(L"c:lblOffset")
-				//{
-				//	CP_XML_ATTR(L"val",100);
-				//}
-				//CP_XML_NODE(L"c:noMultiLvlLbl")
-				//{
-				//	CP_XML_ATTR(L"val", 1);
-				//}
+				CP_XML_NODE(L"c:lblAlgn")
+				{
+					CP_XML_ATTR(L"val", L"ctr");
+				}
+				CP_XML_NODE(L"c:lblOffset")
+				{
+					CP_XML_ATTR(L"val", 100);
+				}
+				CP_XML_NODE(L"c:noMultiLvlLbl")
+				{
+					CP_XML_ATTR(L"val", 0);
+				}
 			}
 			break;
 		case 2:

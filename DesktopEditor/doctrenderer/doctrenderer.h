@@ -61,8 +61,9 @@ namespace NSDoctRenderer
 
 	enum class AdditionalParamType
 	{
-		DRAWINGFILE = 0,
-		INVALID = 255
+		DRAWINGFILE         = 0,
+		SDKJS_OVERRIDE_PATH = 1,
+		INVALID             = 255
 	};
 }
 

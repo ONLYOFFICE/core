@@ -3499,6 +3499,7 @@ GString *AcroFormField::pictureFormatDateTime(GString *value,
 	    s->append(c);
 	  }
 	} else {
+	  ++i;
 	  s->append(c);
 	}
       }

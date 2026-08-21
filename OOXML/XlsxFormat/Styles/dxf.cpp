@@ -111,17 +111,17 @@ namespace OOX
 			{
 				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-				if ( _T("alignment") == sName )
+				if ( L"alignment" == sName )
 					m_oAlignment = oReader;
-				else if ( _T("border") == sName )
+				else if ( L"border" == sName )
 					m_oBorder = oReader;
-				else if ( _T("fill") == sName )
+				else if ( L"fill" == sName )
 					m_oFill = oReader;
-				else if ( _T("font") == sName )
+				else if ( L"font" == sName )
 					m_oFont = oReader;
-				else if ( _T("numFmt") == sName )
+				else if ( L"numFmt" == sName )
 					m_oNumFmt = oReader;
-				else if ( _T("protection") == sName )
+				else if ( L"protection" == sName )
 					m_oProtection = oReader;
 			}
 		}
@@ -147,15 +147,15 @@ namespace OOX
 					{
 						std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-						if ( _T("alignment") == sName )
+						if ( L"alignment" == sName )
 							m_oAlignment = oReader;
-						else if ( _T("border") == sName )
+						else if ( L"border" == sName )
 							m_oBorder = oReader;
-						else if ( _T("fill") == sName )
+						else if ( L"fill" == sName )
 							m_oFill = oReader;
-						else if ( _T("font") == sName )
+						else if ( L"font" == sName )
 							m_oFont = oReader;
-						else if ( _T("numFmt") == sName )
+						else if ( L"numFmt" == sName )
                         {
 							m_oNumFmt = oReader;
                             if(m_oNumFmt->m_oFormatCode.IsInit())
@@ -164,7 +164,7 @@ namespace OOX
 
 
                         }
-						else if ( _T("protection") == sName )
+						else if ( L"protection" == sName )
 							m_oProtection = oReader;
 					}
 				}
@@ -189,17 +189,17 @@ namespace OOX
 					{
 						std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-						if ( _T("alignment") == sName )
+						if ( L"alignment" == sName )
 							m_oAlignment = oReader;
-						else if ( _T("border") == sName )
+						else if ( L"border" == sName )
 							m_oBorder = oReader;
-						else if ( _T("fill") == sName )
+						else if ( L"fill" == sName )
 							m_oFill = oReader;
-						else if ( _T("font") == sName )
+						else if ( L"font" == sName )
 							m_oFont = oReader;
-						else if ( _T("numFmt") == sName )
+						else if ( L"numFmt" == sName )
 							m_oNumFmt = oReader;
-						else if ( _T("protection") == sName )
+						else if ( L"protection" == sName )
 							m_oProtection = oReader;
 					}
 				}
@@ -258,13 +258,13 @@ namespace OOX
 		}
 		std::wstring CDxfs::toXML() const
 		{
-			return _T("");
+			return L"";
 		}
 		void CDxfs::toXML(NSStringUtils::CStringBuilder& writer) const
 		{
-			writer.WriteString(_T("<dxfs"));
+			writer.WriteString(L"<dxfs");
 			WritingStringNullableAttrInt(L"count", m_oCount, m_oCount->GetValue());
-			writer.WriteString(_T(">"));
+			writer.WriteString(L">");
 
 			for ( size_t i = 0; i < m_arrItems.size(); ++i)
 			{
@@ -274,14 +274,14 @@ namespace OOX
 				}
 			}
 
-			writer.WriteString(_T("</dxfs>"));
+			writer.WriteString(L"</dxfs>");
 		}
 		void CDxfs::toXML2(NSStringUtils::CStringBuilder& writer, const std::wstring& sName) const
 		{
-			writer.WriteString(_T("<"));
+			writer.WriteString(L"<");
 			writer.WriteString(sName);
 			WritingStringNullableAttrInt(L"count", m_oCount, m_oCount->GetValue());
-			writer.WriteString(_T(">"));
+			writer.WriteString(L">");
 
 			for ( size_t i = 0; i < m_arrItems.size(); ++i)
 			{
@@ -307,11 +307,23 @@ namespace OOX
 			{
 				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-				if ( _T("dxf") == sName )
+				if ( L"dxf" == sName)
 				{
 					CDxf* pDxf = new CDxf();
 					*pDxf = oReader;
 					m_arrItems.push_back( pDxf );
+				}
+				else if (L"AlternateContent" == sName)
+				{
+					int nSubDepth = oReader.GetDepth();
+					while (oReader.ReadNextSiblingNode(nSubDepth))
+					{
+						std::wstring sSubName = XmlUtils::GetNameNoNS(oReader.GetName());
+						if (L"Choice" == sSubName)
+						{
+							fromXML(oReader);
+						}
+					}
 				}
 			}
 		}
@@ -372,7 +384,7 @@ namespace OOX
 		{
 			
 			WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("count"), m_oCount )
+				WritingElement_ReadAttributes_Read_if     ( oReader, L"count", m_oCount )
 			WritingElement_ReadAttributes_End( oReader )
 		}
 		void CDxfs::ReadAttributes(std::vector<XLS::BaseObjectPtr>& obj)

@@ -316,7 +316,28 @@ namespace NSDocxRenderer
 
 	void CTextLine::RecalcWithNewItem(const CContText* pCont)
 	{
-		CBaseItem::RecalcWithNewItem(pCont);
+		m_dBot = std::max(m_dBot, pCont->m_dBot);
+
+		if (m_dTop > pCont->m_dTop || m_dTop == 0.0)
+			m_dTop = pCont->m_dTop;
+
+		if (pCont->m_dRight > 0 && m_dRight == 0.0)
+			m_dRight = pCont->m_dRight;
+		else if (pCont->m_dLeft > m_dRight && pCont->m_dRight > m_dRight)
+			m_dRight = pCont->m_dRight;
+		else if (pCont->m_dRight > m_dRight)
+			m_dRight += pCont->m_dWidth;
+
+		if (pCont->m_dLeft > 0 && m_dLeft == 0.0)
+			m_dLeft = pCont->m_dLeft;
+		else if (pCont->m_dLeft < m_dLeft && pCont->m_dRight < m_dLeft)
+			m_dLeft = pCont->m_dLeft;
+		else if (pCont->m_dLeft < m_dLeft)
+			m_dLeft -= pCont->m_dWidth;
+
+		m_dWidth = m_dRight - m_dLeft;
+		m_dHeight = m_dBot - m_dTop;
+
 		if (!pCont->IsOnlySpaces())
 		{
 			if (m_dTopWithMaxAscent == 0.0) m_dTopWithMaxAscent = pCont->m_dTopWithAscent;

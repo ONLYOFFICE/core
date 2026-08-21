@@ -774,13 +774,13 @@ namespace NSDocxRenderer
 			if (i == 0 && is_space_twice)
 			{
 				m_arSymWidths.back() = m_arSymWidths.back() + arSymWidths[i];
-				m_dWidth += arSymWidths[i];
+				m_dRight += arSymWidths[i];
 				continue;
 			}
 			m_arSymWidths.push_back(w);
 			m_oText += oText.at(i);
 			m_arOriginLefts.push_back(arOriginLefts[i]);
-			m_dRight = arOriginLefts[i] + w;
+			m_dRight += w;
 
 			if (!arGids.empty() && m_bCollectMetaInfo)
 				m_arGids.push_back(arGids[i]);

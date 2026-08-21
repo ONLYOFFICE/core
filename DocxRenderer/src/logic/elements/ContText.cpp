@@ -916,14 +916,6 @@ namespace NSDocxRenderer
 		return m_oText.at(m_oText.length() - 1);
 	}
 
-	double CContText::GetLastRight() const
-	{
-		double sum = 0.0;
-		for (const auto& w : m_arSymWidths)
-			sum += w;
-		return m_dLeft + sum;
-	}
-
 	const NSStringUtils::CStringUTF32& CContText::GetText() const noexcept
 	{
 		return m_oText;

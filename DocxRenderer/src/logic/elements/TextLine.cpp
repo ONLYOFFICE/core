@@ -188,7 +188,7 @@ namespace NSDocxRenderer
 				}
 				else
 				{
-					pFirst->AddSymBack(c_SPACE_SYM, pCurrent->m_dLeft - pFirst->GetLastRight(), pFirst->GetLastRight(), 0);
+					pFirst->AddSymBack(c_SPACE_SYM, pCurrent->m_dLeft - pFirst->m_dRight, pFirst->m_dRight, 0);
 					pFirst->AddTextBack(pCurrent->GetText(), pCurrent->GetSymWidths(), pCurrent->m_arGids, pCurrent->m_arOriginLefts);
 				}
 

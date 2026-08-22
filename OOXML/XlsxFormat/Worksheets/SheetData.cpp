@@ -1342,7 +1342,7 @@ namespace OOX
 					auto ArrayFmla = new XLS::Array(cellBaseRef);
 					FmlaUnion->m_ArrayFormula = XLS::BaseObjectPtr(ArrayFmla);
 					ArrayFmla->ref_.fromString(m_oRef.get());
-					ArrayFmla->formula = m_sText;
+					ArrayFmla->formula.parseStringFormula(m_sText, L"XLS");
 					parseFmlaValueType(ArrayFmla->formula);
 
 					auto cellPos = new XLS::PtgExp;
@@ -2998,7 +2998,7 @@ namespace OOX
 					}
 					case SimpleTypes::Spreadsheet::celltypeSharedString:
 					{
-						if(m_oValue.IsInit())
+						if(m_oValue.IsInit() && !m_oValue->m_sText.empty())
 						{
 							auto CellSst = new XLS::LabelSst;
 							CellSst->cell.rw = CellReference.row;
@@ -5252,7 +5252,7 @@ namespace OOX
 		{
 			processRow(row, cellGroup, shared_formulas_locations_ref);
 		}
-
+		ClearSharedFmlaRefs();
 		return tablePtr;
 	}
     void CSheetData::toBin(XLS::StreamCacheWriterPtr& writer)

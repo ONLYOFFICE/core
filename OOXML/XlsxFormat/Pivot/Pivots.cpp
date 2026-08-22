@@ -3051,7 +3051,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			ptr->cSub++;
 			ptr->fVariancep = true;
 		}
-		if(ptr->cSub == 0)
+		if(ptr->cSub == 0 && !m_oDefaultSubtotal.IsInit())
 		{
 			ptr->cSub++;
 			ptr->fDefault = true;

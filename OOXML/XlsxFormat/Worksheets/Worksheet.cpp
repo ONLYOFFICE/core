@@ -68,6 +68,8 @@
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/CondFmt12.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/MsoDrawing.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/MsoDrawingGroup.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Feature11.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/List12.h"
 
 #include "../../../OdfFile/Common/logging.h"
 
@@ -486,6 +488,9 @@ namespace OOX
 						if(tempTable->m_oTable->m_oTableStyleInfo.IsInit())
 						{
 							featData.m_arList12.push_back(tempTable->m_oTable->m_oTableStyleInfo->toXLS());
+							auto castedTable = static_cast<XLS::Feature11*>(featData.m_Feature.get());
+							auto castedList = static_cast<XLS::List12*>(featData.m_arList12.back().get());
+							castedList->idList = castedTable->rgbFeat.idList;
 						}
 
 						feat11->m_arFEAT.push_back(featData);

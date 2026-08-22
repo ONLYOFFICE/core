@@ -3618,11 +3618,11 @@ XLS::BaseObjectPtr CConditionalFormattingRule::toXLS(const  XLS::CellRef &cellRe
 	if(m_oPriority.IsInit())
 		ptr->ipriority = m_oPriority->GetValue();
 	if(m_arrFormula.size() > 0)
-		ptr->rgce1.parseStringFormula(m_arrFormula[0].get().m_sText, L"");
+		ptr->rgce1.parseStringFormula(m_arrFormula[0].get().m_sText, L"CFParsedFormulaNoCCE");
 	else if(ptr->ct == 2)
-		ptr->rgce1.parseStringFormula(L"TRUE", L"");
+		ptr->rgce1.parseStringFormula(L"TRUE", L"CFParsedFormulaNoCCE");
 	if(m_arrFormula.size() > 1)
-		ptr->rgce2.parseStringFormula(m_arrFormula[1].get().m_sText, L"");
+		ptr->rgce2.parseStringFormula(m_arrFormula[1].get().m_sText, L"CFParsedFormulaNoCCE");
 	return XLS::BaseObjectPtr(ptr);
 }
 

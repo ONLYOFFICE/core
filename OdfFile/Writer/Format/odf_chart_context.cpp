@@ -554,11 +554,8 @@ void odf_chart_context::set_chart_3D(bool val)
 	if (!impl_->current_level_.back().chart_properties) return;
 	impl_->current_level_.back().chart_properties->three_dimensional_ = val;
 
-	impl_->current_level_.back().chart_properties->treat_empty_cells_ = boost::none;
 	//impl_->current_level_.back().chart_properties->series_source_ = chart_series_source(chart_series_source::rows);
 
-	//impl_->current_level_.back().chart_properties->
-	//chart:treat-empty-cells="leave-gap" 
 	//chart:series-source="rows"
 		  //impl_->current_level_.back().chart_properties->deep_ = true;
 	//if (!plot_area)return;
@@ -568,8 +565,8 @@ void odf_chart_context::set_chart_3D(bool val)
 
 	if (val && plot_area)
 	{
-		plot_area->chart_plot_area_attlist_.common_dr3d_attlist_.vpn_ = odf_types::vector3D(0, 0, 0);
-		plot_area->chart_plot_area_attlist_.common_dr3d_attlist_.vup_ = odf_types::vector3D(0, 0, 0); 
+		plot_area->chart_plot_area_attlist_.common_dr3d_attlist_.vpn_ = odf_types::vector3D(0, 0, 1);
+		plot_area->chart_plot_area_attlist_.common_dr3d_attlist_.vup_ = odf_types::vector3D(0, 1, 0); 
 		plot_area->chart_plot_area_attlist_.common_dr3d_attlist_.projection_ = L"parallel";
 		plot_area->chart_plot_area_attlist_.common_dr3d_attlist_.distance_ = odf_types::length(4.2, odf_types::length::cm);
 		plot_area->chart_plot_area_attlist_.common_dr3d_attlist_.focal_length_ = odf_types::length(8, odf_types::length::cm);
@@ -581,61 +578,50 @@ void odf_chart_context::set_chart_3D(bool val)
 		//plot_area->chart_plot_area_attlist_.common_dr3d_attlist_.vpn_ = odf_types::vector3D(0.416199821709347,0.173649045905254,0.892537795986984);
 		//plot_area->chart_plot_area_attlist_.common_dr3d_attlist_.vup_ = odf_types::vector3D(-0.0733876362771618,0.984807599917971,-0.157379306090273); 
 
-		plot_area->chart_plot_area_attlist_.common_dr3d_attlist_.vrp_ = odf_types::vector3D(17634.6218373783, 10271.4823817647, 24594.8639082739); 
+		plot_area->chart_plot_area_attlist_.common_dr3d_attlist_.vrp_ = odf_types::vector3D(0, 0, 31959.1963012123); 
 	}
+}
+void odf_chart_context::set_treat_empty_cells(const std::wstring & val)
+{
+	if (!impl_->current_level_.back().chart_properties) return;
+	impl_->current_level_.back().chart_properties->treat_empty_cells_ = val;
 }
 void odf_chart_context::set_view3D(int rotX, int rotY, int depthPercent, int perspective, int hPercent, bool angAx)
 {
 	odf_types::chart_class::type chart_class = impl_->get_current_chart_class();
 
-	if (chart_class == chart_class::circle ||
-		chart_class == chart_class::radar ||
-		chart_class == chart_class::filled_radar ||
-		chart_class == chart_class::ring)
+	set_chart_3D(true);
+
+	if (chart_class == chart_class::circle)
 	{
-		rotX += 90;
+		rotX -= 90;
+		rotY = 0;
 	}
-	if (rotX < 0) rotX += 360;
-	if (rotY < 0) rotY += 360;
 
-	int rotZ = 0;
-  
-	const double DEG2RAD = 3.1415926 / 180;
-    double sx, sy, sz, cx, cy, cz, theta;
+	const double DEG2RAD = 3.14159265358979323846 / 180.;
 
-    // rotation angle about X-axis (pitch)
-    theta = -rotX * DEG2RAD;
-    sx = sin(theta);
-    cx = cos(theta);
+	double sx = sin(rotX * DEG2RAD),  cx = cos(rotX * DEG2RAD);
+	double sy = sin(-rotY * DEG2RAD), cy = cos(-rotY * DEG2RAD);
 
-    // rotation angle about Y-axis (yaw)
-    theta = rotY * DEG2RAD;
-    sy = sin(theta);
-    cy = cos(theta);
-
-    // rotation angle about Z-axis (roll)
-    theta = rotZ * DEG2RAD;
-    sz = sin(theta);
-    cz = cos(theta);
-
-    // determine left axis
-	double left_x = cy*cz;
-    double left_y = sx*sy*cz + cx*sz;
-    double left_z = -cx*sy*cz + sx*sz;
-
-    // determine up axis
-    double up_x = -cy*sz;
-    double up_y = -sx*sy*sz + cx*cz;
-    double up_z = cx*sy*sz + sx*cz;
-
-    // determine forward axis
-    double forward_x = sy;
-    double forward_y = -sx*cy;
-    double forward_z = cx*cy;
+	double m[3][3] =
+	{
+		{  cy,		0.,		sy		},
+		{  sx * sy,	cx,		-sx * cy },
+		{ -cx * sy,	sx,		cx * cy	}
+	};
 
 	std::wstringstream sTransform;
 
-	sTransform << L"matrix(" << left_x << L" " << up_x << L" " << forward_x << L" " << left_y << L" " << up_y << L" " << forward_y << L" " << left_z << L" " << up_z << L" " << forward_z << L" 0cm 0cm 0cm)";
+	sTransform << L"matrix(";
+
+	for (int col = 0; col < 3; col++)
+	{
+		for (int row = 0; row < 3; row++)
+		{
+			sTransform << m[row][col] << L" ";
+		}
+	}
+	sTransform << L"0cm 0cm 0cm)";
 
 	chart_plot_area *plot_area = dynamic_cast<chart_plot_area*>(impl_->plot_area_.get());
 	if (plot_area)
@@ -1114,7 +1100,7 @@ void odf_chart_context::start_plot_area()
 	}
 	start_element(impl_->plot_area_, style_elm, style_name);
 	
-	impl_->current_level_.back().chart_properties->treat_empty_cells_ = true;
+	impl_->current_level_.back().chart_properties->treat_empty_cells_ = L"leave-gap";	//default
 }
 void odf_chart_context::end_plot_area()
 {

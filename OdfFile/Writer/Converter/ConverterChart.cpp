@@ -190,6 +190,19 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_ChartSpace  *oox_chart)
 		convert(oox_chart->m_chart->m_view3D);
 
 		//convert(oox_chart->m_chart->m_sizeWall, 3, chart3D);		
+
+		if (oox_chart->m_chart->m_dispBlanksAs.IsInit())
+		{
+			std::wstring treat_empty_cells = L"leave-gap";
+			switch (oox_chart->m_chart->m_dispBlanksAs->GetValue())
+			{
+			case OOX::Spreadsheet::st_dispblanksasZERO:	treat_empty_cells = L"use-zero";	break;
+			case OOX::Spreadsheet::st_dispblanksasSPAN:	treat_empty_cells = L"ignore";		break;
+			case OOX::Spreadsheet::st_dispblanksasGAP:
+			default:									treat_empty_cells = L"leave-gap";	break;
+			}
+			odf_context()->chart_context()->set_treat_empty_cells(treat_empty_cells);
+		}
 	}
 	odf_context()->chart_context()->end_plot_area();
 	

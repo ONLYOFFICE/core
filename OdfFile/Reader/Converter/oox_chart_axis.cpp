@@ -185,11 +185,9 @@ void oox_axis_content::oox_serialize_content(std::wostream & _Wostream)
 		}
 		CP_XML_NODE(L"c:axPos")
         {
-			if (content_.dimension_ == L"x")
-				CP_XML_ATTR(L"val", L"b");//  "b" | "l" |  "r" |  "t"// == bottom left right top
-				
-			if (content_.dimension_ == L"y")
-				CP_XML_ATTR(L"val", L"l");//  "b" | "l" |  "r" |  "t"// == bottom left right top
+			//  "b" | "l" |  "r" |  "t"// == bottom left right top
+			if (content_.dimension_ == L"y")	CP_XML_ATTR(L"val", L"l");
+			else								CP_XML_ATTR(L"val", L"b");
 		}
 		//oox_serialize_ln(_Wostream, content_.graphic_properties_);
 		_CP_OPT(std::wstring) strNumFormat, strPercentFormat, strAxisType;

@@ -72,6 +72,40 @@ namespace cpdoccore {
 
 				return val;
 			}
+			double length_vector(const double v[3])
+			{
+				return sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
+			}
+			bool normalize_vector(double v[3])
+			{
+				double len = length_vector(v);
+
+				if (len < 1e-10) return false;
+
+				v[0] /= len; v[1] /= len; v[2] /= len;
+
+				return true;
+			}
+			void cross_vector(const double a[3], const double b[3], double res[3])
+			{
+				res[0] = a[1] * b[2] - a[2] * b[1];
+				res[1] = a[2] * b[0] - a[0] * b[2];
+				res[2] = a[0] * b[1] - a[1] * b[0];
+			}
+			bool get_vector(odf_reader::chart_format_properties_ptr & properties, const std::wstring & name, double res[3])
+			{
+				_CP_OPT(double) x, y, z;
+
+				odf_reader::GetProperty(properties, name + L"-x", x);
+				odf_reader::GetProperty(properties, name + L"-y", y);
+				odf_reader::GetProperty(properties, name + L"-z", z);
+
+				if (!x || !y || !z) return false;
+
+				res[0] = *x; res[1] = *y; res[2] = *z;
+
+				return normalize_vector(res);
+			}
 		}
 		oox_plot_area::oox_plot_area() : no_used_local_tables_(false)
 		{
@@ -157,17 +191,33 @@ namespace cpdoccore {
 				}
 			}
 
+			std::vector<size_t> present; // id for crossAx
+
 			for (size_t i = 0; i < axis_.size(); i++)
 			{
-				int curr_id = axis_[i]->get_Id();
+				if (axis_[i]->get_Id() > 0) present.push_back(i);
+			}
 
-				if (curr_id < 1) continue;
+			if (present.size() > 1)
+			{
+				int primary_id	= axis_[present[0]]->get_Id();
+				int value_id	= 0;
 
-				for (size_t j = 0; j < axis_.size(); j++)
+				for (size_t i = 1; i < present.size(); i++)
 				{
-					if (axis_[j]->get_Id() == curr_id)continue;
+					if (2 == axis_[present[i]]->content_.type_)
+					{
+						value_id = axis_[present[i]]->get_Id();
+						break;
+					}
+				}
+				if (0 == value_id) value_id = axis_[present[1]]->get_Id();
 
-					axis_[j]->add_CrossedId(curr_id);
+				for (size_t i = 0; i < present.size(); i++)
+				{
+					int curr_id = axis_[present[i]]->get_Id();
+
+					axis_[present[i]]->add_CrossedId(curr_id == value_id ? primary_id : value_id);
 				}
 			}
 		}
@@ -183,18 +233,23 @@ namespace cpdoccore {
 
 			if (!strVal) return;
 
-			size_t pos_matrix = strVal->find(L"matrix(");
+			size_t pos_matrix = strVal->find(L"matrix");
 
 			if (pos_matrix == std::wstring::npos) return;
 
-			size_t pos_matrix_end = strVal->find(L")", pos_matrix);
-			if (pos_matrix_end == std::wstring::npos || pos_matrix_end == pos_matrix + 7) return;
+			size_t pos_bracket = strVal->find(L"(", pos_matrix + 6);
+			if (pos_bracket == std::wstring::npos) return;
 
-			std::wstring tmp = strVal->substr(pos_matrix + 7, pos_matrix_end - 7 - pos_matrix);
+			size_t pos_bracket_end = strVal->find(L")", pos_bracket);
+			if (pos_bracket_end == std::wstring::npos) return;
+
+			std::wstring tmp = strVal->substr(pos_bracket + 1, pos_bracket_end - pos_bracket - 1);
+
+			boost::algorithm::trim(tmp);
 
 			std::vector<std::wstring> values;
 
-			boost::algorithm::split(values, tmp, boost::algorithm::is_any_of(L" "), boost::algorithm::token_compress_on);
+			boost::algorithm::split(values, tmp, boost::algorithm::is_any_of(L" \t,"), boost::algorithm::token_compress_on);
 
 			if (values.size() < 12) return;
 
@@ -211,25 +266,63 @@ namespace cpdoccore {
 				}
 			}
 
+			//camera
+			double vpn[3] = { 0., 0., 1. };
+			double vup[3] = { 0., 1., 0. };
+
+			get_vector(properties_, L"vpn", vpn);
+			get_vector(properties_, L"vup", vup);
+
+			double view[3][3] = { { 1., 0., 0. }, { 0., 1., 0. }, { 0., 0., 1. } };
+			double right[3];
+
+			cross_vector(vup, vpn, right);
+
+			if (normalize_vector(right))
+			{
+				view[0][0] = right[0]; view[0][1] = right[1]; view[0][2] = right[2];
+
+				cross_vector(vpn, right, view[1]);
+
+				view[2][0] = vpn[0]; view[2][1] = vpn[1]; view[2][2] = vpn[2];
+			}
+
+			double r[3][3];
+
+			for (int row = 0; row < 3; row++)
+			{
+				for (int col = 0; col < 3; col++)
+				{
+					r[row][col] = view[row][0] * m[0][col] + view[row][1] * m[1][col] + view[row][2] * m[2][col];
+				}
+			}
+
 			//R = Rx(theta_x) * Ry(theta_y) * Rz(theta_z). atan2 keeps the quadrant and
 			//needs no division by cos(theta_y), which is zero at the gimbal lock
-			double sin_y = m[0][2];
+			double sin_y = r[0][2];
 
 			if (sin_y >  1.) sin_y =  1.;	//rounding in the source matrix
 			if (sin_y < -1.) sin_y = -1.;
 
-			//theta_z, the roll of the scene in the screen plane, would be
-			//atan2(-m[0][1], m[0][0]) - it has no counterpart in c:view3D and is dropped
-			double theta_x = atan2(-m[1][2], m[2][2]) / DEG2RAD;
+			double theta_x = atan2(-r[1][2], r[2][2]) / DEG2RAD;
 			double theta_y = asin(sin_y) / DEG2RAD;
+			//theta_z is the roll of the scene in the screen plane
+			double theta_z = atan2(-r[0][1], r[0][0]) / DEG2RAD;
 
-			if (this->current_chart_->type_ == CHART_TYPE_RADAR ||
-				this->current_chart_->type_ == CHART_TYPE_PIE ||
-				this->current_chart_->type_ == CHART_TYPE_DOUGHNUT)
+			if ((std::abs)(theta_z) > 90.)
 			{
-				theta_x = 90 - theta_x;
+				theta_x = theta_x > 0 ? theta_x - 180. : theta_x + 180.;
+				theta_y = 180. - theta_y;
 			}
-			else theta_x = (std::abs)(theta_x);
+
+			//other round
+			theta_y = -theta_y;
+
+			if (this->current_chart_->type_ == CHART_TYPE_PIE)
+			{
+				theta_x += 90;
+				theta_y = 0;
+			}
 
 			bool bRightAngledAxes = right_angled_axes ? *right_angled_axes
 													  : !(perspective && *perspective);

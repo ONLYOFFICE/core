@@ -67,14 +67,18 @@ public:
 		grouping_		= L"standard";
 		is3D_			= false;
 		type_			= 0;
-		dispBlanksAs_	= L"zero";
-		varyColors_		= true;
+		dispBlanksAs_	= L"gap";
+		varyColors_		= false;
 	}
 	~oox_chart(){}
  
 	virtual void oox_serialize(std::wostream & _Wostream) = 0;
 	
 	void oox_serialize_common(std::wostream & _Wostream);
+	void oox_serialize_grouping(std::wostream & _Wostream);
+	void oox_serialize_varyColors(std::wostream & _Wostream);
+	void oox_serialize_series(std::wostream & _Wostream);
+	void oox_serialize_axIds(std::wostream & _Wostream);
 
 	virtual void add_series(int id){}
 	
@@ -114,6 +118,7 @@ public:
 
 	virtual void set_properties(odf_reader::chart_format_properties_ptr & prop);
 	virtual void set_graphic_properties(odf_reader::graphic_format_properties_ptr & g) {}
+	virtual void set_axis_properties(odf_reader::chart_format_properties_ptr & prop) {}
 
 	//extLst (Chart Extensibility) §21.2.2.64
 };
@@ -136,6 +141,7 @@ class oox_bar_chart: public oox_chart
 	virtual void set_properties(odf_reader::chart_format_properties_ptr & prop);
 
 	virtual void set_graphic_properties(odf_reader::graphic_format_properties_ptr & g);
+	virtual void set_axis_properties(odf_reader::chart_format_properties_ptr & prop);
 
 	static _CP_PTR(oox_chart) create();
 
@@ -242,6 +248,7 @@ class oox_doughnut_chart: public oox_chart
 	{
 		type_		= CHART_TYPE_DOUGHNUT;
 		grouping_	= L"";
+		varyColors_	= true;
 	}
 	~oox_doughnut_chart(){}
  	
@@ -267,6 +274,7 @@ class oox_pie_chart: public oox_chart
 	{
 		type_		= CHART_TYPE_PIE;
 		grouping_	= L"";
+		varyColors_	= true;
 	}
 	~oox_pie_chart(){}
  	

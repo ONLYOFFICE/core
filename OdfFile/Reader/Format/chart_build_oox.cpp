@@ -610,11 +610,6 @@ void object_odf_context::oox_convert(oox::oox_chart_context & chart_context)
 		current->set_stock_loss_marker(stock_loss_marker_);
 		current->set_stock_range_line(stock_range_line_);
 
-		if (1 == series_.size())
-		{
-			current->varyColors_ = false;
-		}
-
 		current->set_properties(plot_area_.properties_);
 		current->set_graphic_properties(graphic_properties_);
 	
@@ -765,8 +760,9 @@ void object_odf_context::oox_convert(oox::oox_chart_context & chart_context)
 	bool y_enabled	= false;
 	bool z_enabled	= false;
 	
-	_CP_OPT(bool) bIs3D;
+	_CP_OPT(bool) bIs3D, bDeep;
 	odf_reader::GetProperty(plot_area_.properties_, L"three-dimensional", bIs3D);
+	odf_reader::GetProperty(plot_area_.properties_, L"deep", bDeep);
 
 	for (size_t i = 0; i < axises_.size(); i++)
 	{
@@ -777,6 +773,11 @@ void object_odf_context::oox_convert(oox::oox_chart_context & chart_context)
 		if	(a.dimension_ == L"z" && z_enabled)continue;
 
 		chart::rect _rect = calc_relative_rect(a.title_, width_pt_, height_pt_);
+
+		{
+			oox::oox_chart_ptr current = chart_context.get_current_chart();
+			if (current) current->set_axis_properties(a.properties_);
+		}
 
 		if (a.title_.properties_)
 		{
@@ -817,8 +818,10 @@ void object_odf_context::oox_convert(oox::oox_chart_context & chart_context)
 		else if (a.dimension_ == L"z")
 		{
 			bIs3D = true;
-			continue;
-			a.type_ = 2;
+
+			if (false == bDeep.get_value_or(false)) continue;
+
+			a.type_ = 3;	// series scale
 			z_enabled = true;
 		}
 
@@ -1174,6 +1177,18 @@ void process_build_object::visit(chart_plot_area& val)
 	ApplyTextProperties		(val.attlist_.common_attlist_.chart_style_name_.get_value_or(L""), object_odf_context_.plot_area_.text_properties_);
 	
 	if (attr_3d.transform_)		object_odf_context_.plot_area_.properties_->push_back(_property(L"transform", attr_3d.transform_.get()) );
+	if (attr_3d.vpn_)
+	{
+		object_odf_context_.plot_area_.properties_->push_back(_property(L"vpn-x", attr_3d.vpn_->get_x()) );
+		object_odf_context_.plot_area_.properties_->push_back(_property(L"vpn-y", attr_3d.vpn_->get_y()) );
+		object_odf_context_.plot_area_.properties_->push_back(_property(L"vpn-z", attr_3d.vpn_->get_z()) );
+	}
+	if (attr_3d.vup_)
+	{
+		object_odf_context_.plot_area_.properties_->push_back(_property(L"vup-x", attr_3d.vup_->get_x()) );
+		object_odf_context_.plot_area_.properties_->push_back(_property(L"vup-y", attr_3d.vup_->get_y()) );
+		object_odf_context_.plot_area_.properties_->push_back(_property(L"vup-z", attr_3d.vup_->get_z()) );
+	}
 	if (attr_3d.distance_)		object_odf_context_.plot_area_.properties_->push_back(_property(L"distance", attr_3d.distance_->get_value_unit(length::pt)) );
 	if (attr_3d.focal_length_)	object_odf_context_.plot_area_.properties_->push_back(_property(L"focal", attr_3d.focal_length_->get_value_unit(length::pt)) );
 	if (attr_3d.projection_)	object_odf_context_.plot_area_.properties_->push_back(_property(L"perspective", *attr_3d.projection_ == L"perspective"));

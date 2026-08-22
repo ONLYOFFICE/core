@@ -262,7 +262,7 @@ void oox_chart_series::oox_serialize_marker(std::wostream & _Wostream)
 		}
 	}
 }
-void oox_chart_series::oox_serialize_common(std::wostream & _Wostream)
+void oox_chart_series::oox_serialize_first(std::wostream & _Wostream)
 {
 	parse_properties();
 
@@ -327,9 +327,155 @@ void oox_chart_series::oox_serialize_common(std::wostream & _Wostream)
 		}
 		shape.set(content_.graphic_properties_, content_.fill_);
 		shape.oox_serialize(_Wostream);
+	}
+}
+void oox_chart_series::oox_serialize_last(std::wostream & _Wostream)
+{
+	oox_chart_shape shape;
+	
+	CP_XML_WRITER(_Wostream)
+    {
+		if (data_labels_ && content_.text_properties_)
+		{
+			data_labels_->set_common_dLbl(content_.text_properties_);
+		}
 
+		bool bEmpty_dPt = true;
+		for (size_t i = 0 ; i < content_.points_.size(); i++)
+		{
+			if (content_.points_[i].bEnabled)
+			{
+				bEmpty_dPt = false;
+				break;
+			}
+		}
+
+		int indPoint = 0;
+		for (size_t i = 0 ; !bEmpty_dPt && i < content_.points_.size(); i++)
+		{
+			for (size_t j = 0 ; j < content_.points_[i].repeated_; j++)
+			{
+				CP_XML_NODE(L"c:dPt")
+				{
+					CP_XML_NODE(L"c:idx")
+					{
+						CP_XML_ATTR(L"val", indPoint++);
+					}
+					if (content_.points_[i].graphic_properties_ && content_.points_[i].fill_.type >= 0)
+					{
+						odf_reader::graphic_format_properties_ptr empty;
+						shape.set(empty, content_.points_[i].fill_);
+						shape.oox_serialize(CP_XML_STREAM());
+					}
+					if (data_labels_ && content_.points_[i].text_properties_)
+					{
+						data_labels_->add_dLbl(indPoint - 1, content_.points_[i].text_properties_);
+					}
+					_CP_OPT(int) intVal;
+					odf_reader::GetProperty(content_.points_[i].properties_, L"symbol-type", intVal);   //    noneSymbol,    autoSymbol,     namedSymbol
+
+					if (intVal)
+					{
+						int symbol = intVal.get();
+						if (symbol == 2)
+						{
+							odf_reader::GetProperty(content_.points_[i].properties_, L"symbol-name", intVal);   //    squares, stars...
+
+							if (intVal)	symbol = intVal.get();
+							else		symbol = 0;//turn off
+						}
+						CP_XML_NODE(L"c:marker")
+						{
+							CP_XML_NODE(L"c:symbol")
+							{
+								switch (symbol)
+								{
+								case 11:	CP_XML_ATTR(L"val", L"star"); break;
+								case 10:	CP_XML_ATTR(L"val", L"circle"); break;
+								case 15:	CP_XML_ATTR(L"val", L"dash"); break;
+								case 3:		CP_XML_ATTR(L"val", L"diamond"); break;
+								case 14:	CP_XML_ATTR(L"val", L"dot"); break;
+								case 8:		CP_XML_ATTR(L"val", L"picture"); break;
+								case 13:	CP_XML_ATTR(L"val", L"plus"); break;
+								case 2:		CP_XML_ATTR(L"val", L"square"); break;
+								case 9:		CP_XML_ATTR(L"val", L"triangle"); break;
+								case 12:	CP_XML_ATTR(L"val", L"x"); break;
+								case 0:	//none
+								case 1:	//auto
+								default:
+									CP_XML_ATTR(L"val", L"none");
+								}
+							}
+							if (symbol > 0)
+							{
+								oox_chart_shape shape;
+
+								shape.set(content_.points_[i].graphic_properties_, content_.points_[i].fill_);
+								shape.oox_serialize(CP_XML_STREAM());
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		if (data_labels_)
+		{
+			data_labels_->oox_serialize(_Wostream);
+		}
+		if (content_.regression_curve_.properties_)
+		{
+			std::wstring typeTrendline= L"log"; //"exp" | "linear" | "log" | "movingAvg" | "poly" | "power"
+            
+			_oox_fill oox_fill;
+            shape.set(content_.regression_curve_.graphic_properties_, oox_fill);
+			
+			_CP_OPT(int) iType;
+			odf_reader::GetProperty(content_.regression_curve_.properties_, L"regression-type", iType);   //     none, linear, logarithmic, exponential, power
+			
+			if (iType)
+			{
+				switch(iType.get())
+				{
+					case 1: typeTrendline= L"linear";break;
+					case 3: typeTrendline= L"exp";break;
+					case 4: typeTrendline= L"power";break;
+				}
+			}
+
+			CP_XML_NODE(L"c:trendline")
+			{
+				CP_XML_NODE(L"c:trendlineType")
+				{
+					CP_XML_ATTR(L"val", typeTrendline);
+				}
+				CP_XML_NODE(L"c:dispEq")
+				{
+					CP_XML_ATTR(L"val",content_.regression_curve_.bEquation);
+				}
+
+				CP_XML_NODE(L"c:dispRSqr")
+				{
+					CP_XML_ATTR(L"val",content_.regression_curve_.bREquation);
+				}
+				if (content_.regression_curve_.equation_properties_.graphic_properties_)
+				{
+					CP_XML_NODE(L"c:trendlineLbl")
+					{
+						shape.set(content_.regression_curve_.equation_properties_.graphic_properties_, content_.regression_curve_.equation_properties_.fill_);
+						shape.oox_serialize(CP_XML_STREAM());
+					}
+				}		
+
+                _oox_fill oox_fill;
+                shape.set( content_.regression_curve_.graphic_properties_, oox_fill);
+				shape.oox_serialize(CP_XML_STREAM());
+			}
+		}
 		for (int i = 0; i < 5; i++)
 		{
+			if (0 == i && values_[2].present) continue;
+
 			if (values_[i].present)
 			{
 				if (bCacheOnly_)
@@ -534,145 +680,12 @@ void oox_chart_series::oox_serialize_common(std::wostream & _Wostream)
 				}
 			}
 		}		
-		if (content_.regression_curve_.properties_)
-		{
-			std::wstring typeTrendline= L"log"; //"exp" | "linear" | "log" | "movingAvg" | "poly" | "power"
-            
-			_oox_fill oox_fill;
-            shape.set(content_.regression_curve_.graphic_properties_, oox_fill);
-			
-			_CP_OPT(int) iType;
-			odf_reader::GetProperty(content_.regression_curve_.properties_, L"regression-type", iType);   //     none, linear, logarithmic, exponential, power
-			
-			if (iType)
-			{
-				switch(iType.get())
-				{
-					case 1: typeTrendline= L"linear";break;
-					case 3: typeTrendline= L"exp";break;
-					case 4: typeTrendline= L"power";break;
-				}
-			}
-
-			CP_XML_NODE(L"c:trendline")
-			{
-				CP_XML_NODE(L"c:trendlineType")
-				{
-					CP_XML_ATTR(L"val", typeTrendline);
-				}
-				CP_XML_NODE(L"c:dispEq")
-				{
-					CP_XML_ATTR(L"val",content_.regression_curve_.bEquation);
-				}
-
-				CP_XML_NODE(L"c:dispRSqr")
-				{
-					CP_XML_ATTR(L"val",content_.regression_curve_.bREquation);
-				}
-				if (content_.regression_curve_.equation_properties_.graphic_properties_)
-				{
-					CP_XML_NODE(L"c:trendlineLbl")
-					{
-						shape.set(content_.regression_curve_.equation_properties_.graphic_properties_, content_.regression_curve_.equation_properties_.fill_);
-						shape.oox_serialize(CP_XML_STREAM());
-					}
-				}		
-
-                _oox_fill oox_fill;
-                shape.set( content_.regression_curve_.graphic_properties_, oox_fill);
-				shape.oox_serialize(CP_XML_STREAM());
-			}
-		}
-		if (data_labels_ && content_.text_properties_)
-		{
-			data_labels_->set_common_dLbl(content_.text_properties_);
-		}
-
-		bool bEmpty_dPt = true;
-		for (size_t i = 0 ; i < content_.points_.size(); i++)
-		{
-			if (content_.points_[i].bEnabled)
-			{
-				bEmpty_dPt = false;
-				break;
-			}
-		}
-
-		int indPoint = 0;
-		for (size_t i = 0 ; !bEmpty_dPt && i < content_.points_.size(); i++)
-		{
-			for (size_t j = 0 ; j < content_.points_[i].repeated_; j++)
-			{
-				CP_XML_NODE(L"c:dPt")
-				{
-					CP_XML_NODE(L"c:idx")
-					{
-						CP_XML_ATTR(L"val", indPoint++);
-					}
-					if (content_.points_[i].graphic_properties_ && content_.points_[i].fill_.type >= 0)
-					{
-						odf_reader::graphic_format_properties_ptr empty;
-						shape.set(empty, content_.points_[i].fill_);
-						shape.oox_serialize(CP_XML_STREAM());
-					}
-					if (data_labels_ && content_.points_[i].text_properties_)
-					{
-						data_labels_->add_dLbl(indPoint - 1, content_.points_[i].text_properties_);
-					}
-					_CP_OPT(int) intVal;
-					odf_reader::GetProperty(content_.points_[i].properties_, L"symbol-type", intVal);   //    noneSymbol,    autoSymbol,     namedSymbol
-
-					if (intVal)
-					{
-						int symbol = intVal.get();
-						if (symbol == 2)
-						{
-							odf_reader::GetProperty(content_.points_[i].properties_, L"symbol-name", intVal);   //    squares, stars...
-
-							if (intVal)	symbol = intVal.get();
-							else		symbol = 0;//turn off
-						}
-						CP_XML_NODE(L"c:marker")
-						{
-							CP_XML_NODE(L"c:symbol")
-							{
-								switch (symbol)
-								{
-								case 11:	CP_XML_ATTR(L"val", L"star"); break;
-								case 10:	CP_XML_ATTR(L"val", L"circle"); break;
-								case 15:	CP_XML_ATTR(L"val", L"dash"); break;
-								case 3:		CP_XML_ATTR(L"val", L"diamond"); break;
-								case 14:	CP_XML_ATTR(L"val", L"dot"); break;
-								case 8:		CP_XML_ATTR(L"val", L"picture"); break;
-								case 13:	CP_XML_ATTR(L"val", L"plus"); break;
-								case 2:		CP_XML_ATTR(L"val", L"square"); break;
-								case 9:		CP_XML_ATTR(L"val", L"triangle"); break;
-								case 12:	CP_XML_ATTR(L"val", L"x"); break;
-								case 0:	//none
-								case 1:	//auto
-								default:
-									CP_XML_ATTR(L"val", L"none");
-								}
-							}
-							if (symbol > 0)
-							{
-								oox_chart_shape shape;
-
-								shape.set(content_.points_[i].graphic_properties_, content_.points_[i].fill_);
-								shape.oox_serialize(CP_XML_STREAM());
-							}
-						}
-					}
-				}
-			}
-		}
-		
-		if (data_labels_)
-		{
-			data_labels_->oox_serialize(_Wostream);
-		}
-
 	}
+}
+void oox_chart_series::oox_serialize_common(std::wostream & _Wostream)
+{
+	oox_serialize_first(_Wostream);
+	oox_serialize_last(_Wostream);
 }
 	//backward (Backward) §21.2.2.12
 	//dispEq (Display Equation) §21.2.2.43
@@ -698,7 +711,8 @@ void oox_bar_series::oox_serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE(L"c:ser")
 		{
-			oox_serialize_common(CP_XML_STREAM());
+			oox_serialize_first(CP_XML_STREAM());
+			oox_serialize_last(CP_XML_STREAM());
 			
 			if (is3D_)
 			{
@@ -736,9 +750,11 @@ void oox_line_series::oox_serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE(L"c:ser")
 		{
-			oox_serialize_common(CP_XML_STREAM());
+			oox_serialize_first(CP_XML_STREAM());
 
 			oox_serialize_marker(CP_XML_STREAM());
+
+			oox_serialize_last(CP_XML_STREAM());
 		}
 	}
 }
@@ -756,7 +772,7 @@ void oox_pie_series::oox_serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE(L"c:ser")
 		{
-			oox_serialize_common(CP_XML_STREAM());
+			oox_serialize_first(CP_XML_STREAM());
 
 			_CP_OPT(int) iVal;
 			odf_reader::GetProperty(content_.properties_, L"pie-offset", iVal); 
@@ -768,7 +784,7 @@ void oox_pie_series::oox_serialize(std::wostream & _Wostream)
 					CP_XML_ATTR(L"val", *iVal);			
 				}
 			}
-			
+			oox_serialize_last(CP_XML_STREAM());
 		}
 	}
 }
@@ -784,9 +800,11 @@ void oox_scatter_series::oox_serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE(L"c:ser")
 		{
-			oox_serialize_common(CP_XML_STREAM());
+			oox_serialize_first(CP_XML_STREAM());
 			
 			oox_serialize_marker(CP_XML_STREAM());
+
+			oox_serialize_last(CP_XML_STREAM());
 		}
 	}
 }
@@ -861,9 +879,11 @@ void oox_radar_series::oox_serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE(L"c:ser")
 		{
-			oox_serialize_common(CP_XML_STREAM());
+			oox_serialize_first(CP_XML_STREAM());
 
 			oox_serialize_marker(CP_XML_STREAM());
+
+			oox_serialize_last(CP_XML_STREAM());
 		}
 	}
 }

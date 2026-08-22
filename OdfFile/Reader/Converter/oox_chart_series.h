@@ -54,6 +54,8 @@ public:
 	~oox_chart_series(){}
  
     void oox_serialize_common(std::wostream & _Wostream);
+    void oox_serialize_first(std::wostream & _Wostream);
+    void oox_serialize_last(std::wostream & _Wostream);
 	void oox_serialize_marker(std::wostream & _Wostream);
 	
 	virtual void oox_serialize(std::wostream & _Wostream) = 0;

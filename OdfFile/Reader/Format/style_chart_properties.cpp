@@ -125,6 +125,9 @@ void chart_format_properties::add_attributes( const xml::attributes_wc_ptr & Att
 		}
 	}
 
+	CP_APPLY_ATTR(L"chart:treat-empty-cells", strVal);
+	if (strVal) push_back(_property(L"treat-empty-cells", strVal.get()));
+
 	CP_APPLY_ATTR(L"chart:symbol-type",		strVal);	
 	if (strVal) push_back(_property(L"symbol-type",chart_symbol_type(chart_symbol_type::parse(strVal.get())).get_type()));
 

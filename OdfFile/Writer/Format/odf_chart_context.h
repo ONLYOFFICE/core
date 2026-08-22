@@ -67,6 +67,7 @@ public:
 	void start_chart (office_element_ptr & root);
 		void set_chart_type			(odf_types::chart_class::type type);
 		void set_chart_3D			(bool Val);
+		void set_treat_empty_cells	(const std::wstring & val);	//leave-gap | use-zero | ignore
 		void set_chart_size			(_CP_OPT(double) width_pt, _CP_OPT(double) height_pt);		
 		void set_chart_colored		(bool val);
 		void set_chart_grouping		(int type);

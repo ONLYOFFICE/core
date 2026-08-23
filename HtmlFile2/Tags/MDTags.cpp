@@ -393,9 +393,12 @@ bool ConvertFromBase64(const std::wstring& wsBase64, UINT unWidth, UINT unHeight
 	return bResult;
 }
 
-bool ConvertFileToBase64(const std::wstring& wsFilePath, UINT unWidth, UINT unHeight, bool bIsAllowExternalLocalFiles, NSFonts::IApplicationFonts* pFonts, const std::wstring& wsTempDir, std::wstring& wsBase64)
+bool ConvertFileToBase64(const std::wstring& wsFilePath, const std::wstring& wsRootPath, UINT unWidth, UINT unHeight, bool bIsAllowExternalLocalFiles, NSFonts::IApplicationFonts* pFonts, const std::wstring& wsTempDir, std::wstring& wsBase64)
 {
 	if (wsFilePath.empty() || !NSFile::CFileBinary::Exists(wsFilePath))
+		return false;
+
+	if (!bIsAllowExternalLocalFiles && !NSSystemPath::IsPathInDirectory(wsRootPath, wsFilePath))
 		return false;
 
 	const std::wstring wsExtention{NSFile::GetFileExtention(wsFilePath)};
@@ -482,7 +485,7 @@ bool CImageMDTag::Open(const std::vector<NSCSS::CNode>& arSelectors)
 	{
 		wsSrc = NSSystemPath::ShortenPath(wsSrc);
 
-		if (!CanUseThisPath(wsSrc, m_pWriter->GetSrcPath(), m_pWriter->GetCorePath(), GetStatusUsingExternalLocalFiles()))
+		if (!CanUseThisPath(wsSrc, m_pWriter->GetRootPath(), m_pWriter->GetSrcPath(), GetStatusUsingExternalLocalFiles()))
 		{
 			wsSrc.clear();
 			bResult = true;
@@ -526,17 +529,19 @@ bool CImageMDTag::Open(const std::vector<NSCSS::CNode>& arSelectors)
 	{
 		const bool bIsAllowExternalLocalFiles{GetStatusUsingExternalLocalFiles()};
 
+		const std::wstring wsRootPath{m_pWriter->GetRootPath()};
+
 		if (!m_pWriter->GetBasePath().empty())
 		{
 			if (!bResult)
-				bResult = ConvertFileToBase64(NSSystemPath::Combine(m_pWriter->GetBasePath(), wsSrc), oWidth.ToInt(NSCSS::UnitMeasure::Pixel), oHeight.ToInt(NSCSS::UnitMeasure::Pixel), bIsAllowExternalLocalFiles, m_pWriter->GetFonts(), m_pWriter->GetTempDir(), wsResultBase64);
+				bResult = ConvertFileToBase64(NSSystemPath::ShortenPath(NSSystemPath::Combine(m_pWriter->GetBasePath(), wsSrc)), wsRootPath, oWidth.ToInt(NSCSS::UnitMeasure::Pixel), oHeight.ToInt(NSCSS::UnitMeasure::Pixel), bIsAllowExternalLocalFiles, m_pWriter->GetFonts(), m_pWriter->GetTempDir(), wsResultBase64);
 			if (!bResult)
-				bResult = ConvertFileToBase64(NSSystemPath::Combine(m_pWriter->GetSrcPath(), NSSystemPath::Combine(m_pWriter->GetBasePath(), wsSrc)), oWidth.ToInt(NSCSS::UnitMeasure::Pixel), oHeight.ToInt(NSCSS::UnitMeasure::Pixel), bIsAllowExternalLocalFiles, m_pWriter->GetFonts(), m_pWriter->GetTempDir(), wsResultBase64);
+				bResult = ConvertFileToBase64(NSSystemPath::ShortenPath(NSSystemPath::Combine(m_pWriter->GetSrcPath(), NSSystemPath::Combine(m_pWriter->GetBasePath(), wsSrc))), wsRootPath, oWidth.ToInt(NSCSS::UnitMeasure::Pixel), oHeight.ToInt(NSCSS::UnitMeasure::Pixel), bIsAllowExternalLocalFiles, m_pWriter->GetFonts(), m_pWriter->GetTempDir(), wsResultBase64);
 		}
 		if (!bResult)
-			bResult = ConvertFileToBase64(NSSystemPath::Combine(m_pWriter->GetSrcPath(), wsSrc), oWidth.ToInt(NSCSS::UnitMeasure::Pixel), oHeight.ToInt(NSCSS::UnitMeasure::Pixel), bIsAllowExternalLocalFiles, m_pWriter->GetFonts(), m_pWriter->GetTempDir(), wsResultBase64);
+			bResult = ConvertFileToBase64(NSSystemPath::ShortenPath(NSSystemPath::Combine(m_pWriter->GetSrcPath(), wsSrc)), wsRootPath, oWidth.ToInt(NSCSS::UnitMeasure::Pixel), oHeight.ToInt(NSCSS::UnitMeasure::Pixel), bIsAllowExternalLocalFiles, m_pWriter->GetFonts(), m_pWriter->GetTempDir(), wsResultBase64);
 		if (!bResult)
-			bResult = ConvertFileToBase64(wsSrc, oWidth.ToInt(NSCSS::UnitMeasure::Pixel), oHeight.ToInt(NSCSS::UnitMeasure::Pixel), bIsAllowExternalLocalFiles, m_pWriter->GetFonts(), m_pWriter->GetTempDir(), wsResultBase64);
+			bResult = ConvertFileToBase64(wsSrc, wsRootPath, oWidth.ToInt(NSCSS::UnitMeasure::Pixel), oHeight.ToInt(NSCSS::UnitMeasure::Pixel), bIsAllowExternalLocalFiles, m_pWriter->GetFonts(), m_pWriter->GetTempDir(), wsResultBase64);
 	}
 
 	arSelectors.back().GetAttributeValue(L"title", wsTitle);

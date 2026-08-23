@@ -324,6 +324,11 @@ void CHTMLReader::SetCoreDirectory(const std::wstring& wsPath)
 	m_wsCoreDirectory = wsPath;
 }
 
+std::wstring CHTMLReader::GetRootDirectory() const
+{
+	return m_wsCoreDirectory.empty() ? m_wsSrcDirectory : m_wsCoreDirectory;
+}
+
 HRESULT CHTMLReader::ConvertHTML2OOXML(const std::wstring& wsPath, const std::wstring& wsDirectory, THTMLParameters* pParameters)
 {
 	return InitAndConvert2OOXML({wsPath}, wsDirectory, HTML2XHTML, pParameters);
@@ -374,7 +379,6 @@ void CHTMLReader::Clear()
 	m_wsSrcDirectory .clear();
 	m_wsDstDirectory .clear();
 	m_wsBaseDirectory.clear();
-	m_wsCoreDirectory.clear();
 
 	if (nullptr != m_pTableElement)
 		delete m_pTableElement;
@@ -625,8 +629,14 @@ void CHTMLReader::ReadStyleFromNetwork(XmlUtils::CXmlLiteReader& oReader)
 	}
 	else
 	{
-		m_oCSSCalculator.AddStylesFromFile(m_wsSrcDirectory + L'/' + sFName);
-		m_oCSSCalculator.AddStylesFromFile(m_wsSrcDirectory + L'/' + sRef);
+		const std::wstring wsRootDirectory{GetRootDirectory()};
+		const bool bIsAllowExternalLocalFiles{GetStatusUsingExternalLocalFiles()};
+
+		if (CanUseThisPath(sFName, wsRootDirectory, m_wsSrcDirectory, bIsAllowExternalLocalFiles))
+			m_oCSSCalculator.AddStylesFromFile(m_wsSrcDirectory + L'/' + sFName);
+
+		if (CanUseThisPath(sRef, wsRootDirectory, m_wsSrcDirectory, bIsAllowExternalLocalFiles))
+			m_oCSSCalculator.AddStylesFromFile(m_wsSrcDirectory + L'/' + sRef);
 	}
 }
 

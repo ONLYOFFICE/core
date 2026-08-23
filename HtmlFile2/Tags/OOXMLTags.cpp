@@ -61,12 +61,12 @@ inline bool ElementInTable(const std::vector<NSCSS::CNode>& arSelectors);
 inline bool NotValidExtension(const std::wstring& sExtention);
 inline bool IsSVG(const std::wstring& wsExtention);
 inline bool IsMetafile(const std::wstring& wsExtention);
-bool ReadMetafileData(const std::wstring& wsFilePath, NSFonts::IApplicationFonts* pFonts, const std::wstring& wsTempDir, const std::wstring& wsImagePath);
+bool ReadMetafileData(const std::wstring& wsFilePath, const std::wstring& wsRootPath, bool bIsAllowExternalLocalFiles, NSFonts::IApplicationFonts* pFonts, const std::wstring& wsTempDir, const std::wstring& wsImagePath);
 bool ReadSVGData(const std::wstring& wsSvg, NSFonts::IApplicationFonts* pFonts, const std::wstring& wsTempDir, const std::wstring& wsImagePath);
 bool ReadBase64(const std::wstring& wsSrc, const std::wstring& wsImagePath, NSFonts::IApplicationFonts* pFonts, const std::wstring& wsTempDir, std::wstring& wsExtention);
 bool GetStatusUsingExternalLocalFiles();
 
-bool CopyImage(std::wstring wsImageSrc, const std::wstring& wsSrc, const std::wstring& wsDst, bool bIsAllowExternalLocalFiles);
+bool CopyImage(std::wstring wsImageSrc, const std::wstring& wsRootPath, const std::wstring& wsDst, bool bIsAllowExternalLocalFiles);
 bool UpdateImageData(const std::wstring& wsImagePath, TImageData& oImageData);
 
 bool CropImageRegion(const std::wstring& wsSrcPath, const std::wstring& wsDstPath, int nOffsetX, int nOffsetY, int nWidth, int nHeight);
@@ -341,7 +341,7 @@ bool CImageOOXMLTag::Open(const std::vector<NSCSS::CNode>& arSelectors)
 	{
 		wsSrc = NSSystemPath::ShortenPath(wsSrc);
 
-		if (!CanUseThisPath(wsSrc, m_pWriter->GetSrcPath(), m_pWriter->GetCorePath(), bIsAllowExternalLocalFiles))
+		if (!CanUseThisPath(wsSrc, m_pWriter->GetRootPath(), m_pWriter->GetSrcPath(), bIsAllowExternalLocalFiles))
 		{
 			m_pWriter->WriteAlternativeImage(wsAlt, wsSrc, oImageData);
 			return true;
@@ -428,17 +428,19 @@ bool CImageOOXMLTag::Open(const std::vector<NSCSS::CNode>& arSelectors)
 	{
 		const std::wstring wsDst = wsImagePath + L".png";
 
+		const std::wstring wsRootPath{m_pWriter->GetRootPath()};
+
 		if (!m_pWriter->GetBasePath().empty())
 		{
 			if (!bRes)
-				bRes = ReadMetafileData(NSSystemPath::Combine(m_pWriter->GetBasePath(), wsSrc), m_pWriter->GetFonts(), m_pWriter->GetTempDir(), wsDst);
+				bRes = ReadMetafileData(NSSystemPath::ShortenPath(NSSystemPath::Combine(m_pWriter->GetBasePath(), wsSrc)), wsRootPath, bIsAllowExternalLocalFiles, m_pWriter->GetFonts(), m_pWriter->GetTempDir(), wsDst);
 			if (!bRes)
-				bRes = ReadMetafileData(NSSystemPath::Combine(m_pWriter->GetSrcPath(), NSSystemPath::Combine(m_pWriter->GetBasePath(), wsSrc)), m_pWriter->GetFonts(), m_pWriter->GetTempDir(), wsDst);
+				bRes = ReadMetafileData(NSSystemPath::ShortenPath(NSSystemPath::Combine(m_pWriter->GetSrcPath(), NSSystemPath::Combine(m_pWriter->GetBasePath(), wsSrc))), wsRootPath, bIsAllowExternalLocalFiles, m_pWriter->GetFonts(), m_pWriter->GetTempDir(), wsDst);
 		}
 		if (!bRes)
-			bRes = ReadMetafileData(NSSystemPath::Combine(m_pWriter->GetSrcPath(), wsSrc), m_pWriter->GetFonts(), m_pWriter->GetTempDir(), wsDst);
+			bRes = ReadMetafileData(NSSystemPath::ShortenPath(NSSystemPath::Combine(m_pWriter->GetSrcPath(), wsSrc)), wsRootPath, bIsAllowExternalLocalFiles, m_pWriter->GetFonts(), m_pWriter->GetTempDir(), wsDst);
 		if (!bRes)
-			bRes = ReadMetafileData(wsSrc, m_pWriter->GetFonts(), m_pWriter->GetTempDir(), wsDst);
+			bRes = ReadMetafileData(wsSrc, wsRootPath, bIsAllowExternalLocalFiles, m_pWriter->GetFonts(), m_pWriter->GetTempDir(), wsDst);
 
 		if (bRes)
 			wsExtention = L"png";
@@ -448,17 +450,19 @@ bool CImageOOXMLTag::Open(const std::vector<NSCSS::CNode>& arSelectors)
 	{
 		const std::wstring wsDst = wsImagePath + L'.' + wsExtention;
 
+		const std::wstring wsRootPath{m_pWriter->GetRootPath()};
+
 		if (!m_pWriter->GetBasePath().empty())
 		{
 			if (!bRes)
-				bRes = CopyImage(NSSystemPath::Combine(m_pWriter->GetBasePath(), wsSrc), m_pWriter->GetSrcPath(), wsDst, bIsAllowExternalLocalFiles);
+				bRes = CopyImage(NSSystemPath::ShortenPath(NSSystemPath::Combine(m_pWriter->GetBasePath(), wsSrc)), wsRootPath, wsDst, bIsAllowExternalLocalFiles);
 			if (!bRes)
-				bRes = CopyImage(NSSystemPath::Combine(m_pWriter->GetSrcPath(), NSSystemPath::Combine(m_pWriter->GetBasePath(), wsSrc)), m_pWriter->GetSrcPath(), wsDst, bIsAllowExternalLocalFiles);
+				bRes = CopyImage(NSSystemPath::ShortenPath(NSSystemPath::Combine(m_pWriter->GetSrcPath(), NSSystemPath::Combine(m_pWriter->GetBasePath(), wsSrc))), wsRootPath, wsDst, bIsAllowExternalLocalFiles);
 		}
 		if (!bRes)
-			bRes = CopyImage(NSSystemPath::Combine(m_pWriter->GetSrcPath(), wsSrc), m_pWriter->GetSrcPath(), wsDst, bIsAllowExternalLocalFiles);
+			bRes = CopyImage(NSSystemPath::ShortenPath(NSSystemPath::Combine(m_pWriter->GetSrcPath(), wsSrc)), wsRootPath, wsDst, bIsAllowExternalLocalFiles);
 		if (!bRes)
-			bRes = CopyImage(wsSrc, m_pWriter->GetSrcPath(), wsDst, bIsAllowExternalLocalFiles);
+			bRes = CopyImage(wsSrc, wsRootPath, wsDst, bIsAllowExternalLocalFiles);
 	}
 
 	if (!bRes)
@@ -969,8 +973,14 @@ bool ReadMetafileBase(MetaFile::IMetaFile* pReader, NSFonts::IApplicationFonts* 
 	return true;
 }
 
-bool ReadMetafileData(const std::wstring& wsFilePath, NSFonts::IApplicationFonts* pFonts, const std::wstring& wsTempDir, const std::wstring& wsImagePath)
+bool ReadMetafileData(const std::wstring& wsFilePath, const std::wstring& wsRootPath, bool bIsAllowExternalLocalFiles, NSFonts::IApplicationFonts* pFonts, const std::wstring& wsTempDir, const std::wstring& wsImagePath)
 {
+	if (wsFilePath.empty())
+		return false;
+
+	if (!bIsAllowExternalLocalFiles && !NSSystemPath::IsPathInDirectory(wsRootPath, wsFilePath))
+		return false;
+
 	MetaFile::IMetaFile* pMetafileReader = MetaFile::Create(pFonts);
 	if (!pMetafileReader->LoadFromFile(wsFilePath.c_str()))
 	{
@@ -1055,7 +1065,7 @@ bool ReadBase64(const std::wstring& wsSrc, const std::wstring& wsImagePath, NSFo
 	return bRes;
 }
 
-bool CopyImage(std::wstring wsImageSrc, const std::wstring& wsSrc, const std::wstring& wsDst, bool bIsAllowExternalLocalFiles)
+bool CopyImage(std::wstring wsImageSrc, const std::wstring& wsRootPath, const std::wstring& wsDst, bool bIsAllowExternalLocalFiles)
 {
 	if (wsImageSrc.empty() || !NSFile::CFileBinary::Exists(wsImageSrc))
 		return false;
@@ -1064,9 +1074,9 @@ bool CopyImage(std::wstring wsImageSrc, const std::wstring& wsSrc, const std::ws
 	bool bAllow = true;
 
 	if (!bIsAllowExternalLocalFiles)
-		bAllow = NSSystemPath::IsPathInDirectory(wsSrc, wsImageSrc);
+		bAllow = NSSystemPath::IsPathInDirectory(wsRootPath, wsImageSrc);
 	if (bAllow)
-		bRes = NSFile::CFileBinary::Copy(wsSrc, wsDst);
+		bRes = NSFile::CFileBinary::Copy(wsImageSrc, wsDst);
 
 	return bRes;
 }
@@ -1131,17 +1141,19 @@ bool WriteBackgroundImage(COOXMLWriter* pWriter, const std::vector<NSCSS::CNode>
 
 		const bool bIsAllowExternalLocalFiles{GetStatusUsingExternalLocalFiles()};
 
-		if (!CanUseThisPath(wsSrc, pWriter->GetSrcPath(), pWriter->GetCorePath(), bIsAllowExternalLocalFiles))
+		if (!CanUseThisPath(wsSrc, pWriter->GetRootPath(), pWriter->GetSrcPath(), bIsAllowExternalLocalFiles))
 			return false;
 
+		const std::wstring wsRootPath{pWriter->GetRootPath()};
+
 		if (!wsBasePath.empty())
-			bRes = CopyImage(NSSystemPath::Combine(wsBasePath, wsSrc), pWriter->GetSrcPath(), wsDownloaded, bIsAllowExternalLocalFiles);
+			bRes = CopyImage(NSSystemPath::ShortenPath(NSSystemPath::Combine(wsBasePath, wsSrc)), wsRootPath, wsDownloaded, bIsAllowExternalLocalFiles);
 
 		if (!bRes)
-			bRes = CopyImage(NSSystemPath::Combine(pWriter->GetSrcPath(), wsSrc), pWriter->GetSrcPath(), wsDownloaded, bIsAllowExternalLocalFiles);
+			bRes = CopyImage(NSSystemPath::ShortenPath(NSSystemPath::Combine(pWriter->GetSrcPath(), wsSrc)), wsRootPath, wsDownloaded, bIsAllowExternalLocalFiles);
 
 		if (!bRes)
-			bRes = CopyImage(wsSrc, pWriter->GetSrcPath(), wsDownloaded, bIsAllowExternalLocalFiles);
+			bRes = CopyImage(wsSrc, wsRootPath, wsDownloaded, bIsAllowExternalLocalFiles);
 	}
 
 	if (!bRes)

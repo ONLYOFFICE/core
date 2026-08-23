@@ -75,6 +75,8 @@ public:
 	void SetTempDirectory(const std::wstring& wsPath);
 	void SetCoreDirectory(const std::wstring& wsPath);
 
+	std::wstring GetRootDirectory() const;
+
 	HRESULT ConvertHTML2OOXML   (const std::wstring& wsPath, const std::wstring& wsDirectory, THTMLParameters*     pParameters = nullptr);
 	HRESULT ConvertHTML2Markdown(const std::wstring& wsPath, const std::wstring& wsFinalFile, TMarkdownParameters* pParameters = nullptr);
 

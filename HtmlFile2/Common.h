@@ -106,14 +106,12 @@ inline bool GetStatusUsingExternalLocalFiles()
 	return true;
 }
 
-inline bool CanUseThisPath(const std::wstring& wsPath, const std::wstring& wsSrcPath, const std::wstring& wsCorePath, bool bIsAllowExternalLocalFiles)
+inline bool CanUseThisPath(const std::wstring& wsPath, const std::wstring& wsRootPath, const std::wstring& wsSrcPath, bool bIsAllowExternalLocalFiles)
 {
 	if (bIsAllowExternalLocalFiles)
 		return true;
 
-	const std::wstring& wsBoundaryPath = wsCorePath.empty() ? wsSrcPath : wsCorePath;
-
-	return !NSSystemPath::ResolveInDirectory(wsBoundaryPath, wsSrcPath, wsPath).empty();
+	return !NSSystemPath::ResolveInDirectory(wsRootPath, wsSrcPath, wsPath).empty();
 }
 
 }

@@ -753,7 +753,12 @@ void object_odf_context::oox_convert(oox::oox_chart_context & chart_context)
 			current->set_levels_series(cat_levels);
 		}
 		current->set_name(series_[i].name_);
-		
+
+		chart_context.reset_fill(series_[i].fill_);
+		for (auto p : series_[i].points_)
+		{
+			chart_context.reset_fill(p.fill_);
+		}
 		current->set_content_series(series_[i]);
 	}
 

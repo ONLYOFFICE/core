@@ -56,6 +56,12 @@ void oox_chart_context::reset_fill(oox::_oox_fill &f)
 		std::wstring ref;
 		f.bitmap->rId = mediaitems_->add_or_find(f.bitmap->xlink_href_, typeImage, isInternal, ref, oox::chart_place); 
 
+		if (f.bitmap->rId.empty()) return;
+
+		for (auto r : rels_)
+		{
+			if (r.rid == f.bitmap->rId) return;
+		}
 		rels_.push_back(_rel(isInternal, f.bitmap->rId, ref, typeImage));
 	}
 }

@@ -180,6 +180,13 @@ void oox_chart_series::parse_properties()
 	{
 		data_labels_->setLineChart(true);
 	}
+	if (data_labels_ && content_.properties_)
+	{
+		_CP_OPT(int) rotateLabels = odf_reader::oox_convert_rotation_angle(
+				content_.properties_->common_rotation_angle_attlist_.style_rotation_angle_);
+
+		if (rotateLabels) data_labels_->set_rotate(*rotateLabels);
+	}
 }
 
 void oox_chart_series::setValues(int ind, std::vector<std::wstring> & values)

@@ -76,6 +76,7 @@ public:
 	}
 
 	void set_position		(int Val){position_	= Val;}
+	void set_rotate			(int Val){rotate_	= Val;}
 
 	void add_dLbl			(int ind, odf_reader::text_format_properties_ptr text_properties);
 	void set_common_dLbl	( odf_reader::text_format_properties_ptr text_properties);
@@ -104,19 +105,11 @@ private:
 	bool set_genereal_dLbls = false;
 
 	int position_;
+	_CP_OPT(int) rotate_;
 
 	bool IsLineChart = false;
 
 	odf_reader::text_format_properties_ptr textPr_;
-
-//delete (Delete) §21.2.2.40
-//dLblPos (Data Label Position) §21.2.2.48
-//extLst (Chart Extensibility) §21.2.2.64
-//leaderLines (Leader Lines) §21.2.2.92
-//numFmt (Number Format) §21.2.2.121
-//separator (Separator) §21.2.2.166
-//spPr (Shape Properties) §21.2.2.197
-//txPr (Text Properties) §21.2.2.216
 };
 
 }

@@ -439,12 +439,9 @@ namespace cpdoccore {
 									{
 										CP_XML_NODE(L"a:pPr")
 										{
-											CP_XML_NODE(L"a:defRPr")
-											{
-												//odf_reader::fonts_container & fonts = context.fontContainer();
-												odf_reader::fonts_container fonts;
-												data_table_content_.text_properties_->oox_serialize(CP_XML_STREAM(), true, fonts);
-											}
+											//odf_reader::fonts_container & fonts = context.fontContainer();
+											odf_reader::fonts_container fonts;
+											data_table_content_.text_properties_->oox_serialize(CP_XML_STREAM(), true, fonts, true);
 										}
 									}
 								}

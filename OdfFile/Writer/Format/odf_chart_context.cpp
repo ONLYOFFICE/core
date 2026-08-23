@@ -195,6 +195,7 @@ public:
 	std::vector<odf_cash_state>			cash_;
 	bool								local_table_enabled_;
 	bool								local_table_reset_ref_;
+	bool								local_table_created_ = false;	//create embedded workbook
 
 	std::vector<odf_chart_level_state>	current_level_;	// constantly changing list of inheritance levels
 	std::vector<odf_chart_state>		chart_list_;		// all elements.. for convenience separated by "tops"
@@ -329,6 +330,7 @@ void odf_chart_context::Impl::clear_current()
 
 	current_series_count_	= 0;
 	local_table_reset_ref_	= false;
+	local_table_created_	= false;
 	
 	if (odf_context_->type == SpreadsheetDocument)
 	{
@@ -1835,14 +1837,16 @@ void odf_chart_context::set_cash(std::wstring format_code, std::vector<std::wstr
 			for (int i = 0 ; i < count_cash_values; i++)
 				data_str.push_back(L"non");
 		}
+		count_cash_values = (int)data_str.size();
+
 		std::wstring ref1, ref2;
 
 		ref1 = std::wstring(L"local-table.") + utils::getColAddress(start_col) + boost::lexical_cast<std::wstring>(start_row);
 		//
 		if (by_row)
-			ref2 = std::wstring(L"local-table.") + utils::getColAddress(start_col) + std::to_wstring(start_row + count_cash_values);
+			ref2 = std::wstring(L"local-table.") + utils::getColAddress(start_col) + std::to_wstring(start_row + count_cash_values - 1);
 		else
-			ref2 = std::wstring(L"local-table.") + utils::getColAddress(start_col + count_cash_values) + std::to_wstring(start_row);
+			ref2 = std::wstring(L"local-table.") + utils::getColAddress(start_col + count_cash_values - 1) + std::to_wstring(start_row);
 	
 		ref = ref1 + L":" + ref2;
 	}
@@ -1894,6 +1898,7 @@ void odf_chart_context::set_local_table(office_element_ptr & table_elm)
 
 	impl_->local_table_enabled_ = false;
 	impl_->local_table_reset_ref_ = false;
+	impl_->local_table_created_ = true;
 }
 void odf_chart_context::set_local_table (bool Val, bool use_cash_only)
 {
@@ -1969,7 +1974,17 @@ int odf_chart_context::Impl::create_local_table_rows(int curr_row, ods_table_sta
 
 void odf_chart_context::Impl::create_local_table()
 {
-	if (local_table_enabled_ == false) return;
+	if (local_table_enabled_ == false)
+	{
+		if (local_table_created_) return;
+
+		for (size_t i = 0; i < cash_.size(); )
+		{
+			if (0 == cash_[i].ref.find(L"local-table."))	i++;
+			else										cash_.erase(cash_.begin() + i);
+		}
+		if (cash_.empty()) return;
+	}
 
 	std::vector<_cell_cash> cells_cash;
 	std::vector<_cell_cash> cells_cash_label;

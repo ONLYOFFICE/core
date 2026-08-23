@@ -534,6 +534,9 @@ void object_odf_context::calc_cache_series(std::wstring adress, std::vector<std:
 			return;
 		}
 
+		if (false == table.empty() && false == table_name_.empty() && table != table_name_)
+			return;
+
  		for (size_t i = 0; i < cash_values.size(); i++)
 		{
 			if (cash_values[i].col >= col_1 && cash_values[i].col <= col_2 &&
@@ -797,6 +800,9 @@ void object_odf_context::oox_convert(oox::oox_chart_context & chart_context)
 
 			if (class_ == chart_class::stock && a.type_ == 3 )		
 				a.type_ = 4; //date scale
+
+			if (a.type_ == 3)
+				a.type_ = 1; // category - series scale only z
 
 			if (bIs3D.get_value_or(false))
 			{

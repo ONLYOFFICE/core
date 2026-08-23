@@ -84,11 +84,13 @@ void oox_title::oox_serialize(std::wostream & _Wostream)
 		rotateVal = odf_reader::oox_convert_rotation_angle(content_.properties_->common_rotation_angle_attlist_.style_rotation_angle_);
 	}
 
+	const bool bTitleText = (false == content_.content_.empty() || false == sub_.content_.empty());
+
 	CP_XML_WRITER(_Wostream)
     {
 		CP_XML_NODE(L"c:title")
         {
-			if (false == content_.content_.empty() || false == sub_.content_.empty())
+			if (bTitleText)
 			{
 				CP_XML_NODE(L"c:tx")
 				{
@@ -109,7 +111,17 @@ void oox_title::oox_serialize(std::wostream & _Wostream)
 					}
 				}
 			}
-			else if (content_.text_properties_)
+            layout_.oox_serialize(CP_XML_STREAM());
+			CP_XML_NODE(L"c:overlay")
+			{
+				CP_XML_ATTR(L"val", 0);
+			}
+			
+			oox_chart_shape shape;
+			shape.set(content_.graphic_properties_, content_.fill_);
+			shape.oox_serialize(CP_XML_STREAM());
+
+			if (false == bTitleText && content_.text_properties_)
 			{
 				CP_XML_NODE(L"c:txPr")
 				{
@@ -127,25 +139,13 @@ void oox_title::oox_serialize(std::wostream & _Wostream)
 					{
 						CP_XML_NODE(L"a:pPr")
 						{
-							CP_XML_NODE(L"a:defRPr")
-							{
-								//odf_reader::fonts_container & fonts = context.fontContainer();
-								odf_reader::fonts_container fonts;
-								content_.text_properties_->oox_serialize(CP_XML_STREAM(), true, fonts);
-							}
+							//odf_reader::fonts_container & fonts = context.fontContainer();
+							odf_reader::fonts_container fonts;
+							content_.text_properties_->oox_serialize(CP_XML_STREAM(), true, fonts, true);
 						}
 					}			
 				}
 			}
-            layout_.oox_serialize(CP_XML_STREAM());
-			CP_XML_NODE(L"c:overlay")
-			{
-				CP_XML_ATTR(L"val", 0);
-			}
-			
-			oox_chart_shape shape;
-			shape.set(content_.graphic_properties_, content_.fill_);
-			shape.oox_serialize(CP_XML_STREAM());
 		}
     }
 

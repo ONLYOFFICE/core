@@ -802,19 +802,34 @@ namespace NExtractTools
 			oBuilder.AddInt(*params.m_nLcid);
 			oBuilder.WriteString(L"</Lcid>");
 		}
-		std::wstring sJsonParams;
+		std::wstring sJsonParams, wsPrintOptions;
 		bool bOnlyOnePage = NULL != params.m_oThumbnail && (NULL == params.m_oThumbnail->first || true == *params.m_oThumbnail->first);
+		int nSavePage = (NULL != params.m_oThumbnail && NULL != params.m_oThumbnail->page) ? *params.m_oThumbnail->page : - 1;
+		if (bOnlyOnePage || nSavePage != -1)
+		{
+			wsPrintOptions = L"\"printOptions\":{";
+
+			if (bOnlyOnePage)
+				wsPrintOptions += L"\"onlyFirstPage\":true";
+			if (nSavePage != -1)
+			{
+				wsPrintOptions += (bOnlyOnePage ? L";" : L"");
+				wsPrintOptions += L"\"savePage\":";
+				wsPrintOptions += std::to_wstring(nSavePage);
+			}
+			wsPrintOptions += L"}";
+		}
 		if (NULL != params.m_sJsonParams)
 		{
 			sJsonParams = *params.m_sJsonParams;
-			if (bOnlyOnePage)
-			{
-				sJsonParams.insert(1, L"\"printOptions\":{\"onlyFirstPage\":true},");
-			}
+			wsPrintOptions += L",";
+			sJsonParams.insert(1, wsPrintOptions);
 		}
-		else if (bOnlyOnePage)
+		else if (bOnlyOnePage || nSavePage != -1)
 		{
-			sJsonParams = L"{\"printOptions\":{\"onlyFirstPage\":true}}";
+			sJsonParams = L"{";
+			sJsonParams += wsPrintOptions;
+			sJsonParams += L"}";
 		}
 		if (!sJsonParams.empty())
 		{

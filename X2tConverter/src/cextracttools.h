@@ -356,20 +356,22 @@ namespace NExtractTools
 	class InputParamsThumbnail
 	{
 	public:
-		int* format;
-		int* aspect;
+		int*  format;
+		int*  aspect;
 		bool* first;
 		bool* zip;
-		int* width;
-		int* height;
+		int*  width;
+		int*  height;
+		int*  page;
 		InputParamsThumbnail()
 		{
 			format = NULL;
 			aspect = NULL;
-			first = NULL;
-			zip = NULL;
-			width = NULL;
+			first  = NULL;
+			zip    = NULL;
+			width  = NULL;
 			height = NULL;
+			page   = NULL;
 		}
 		~InputParamsThumbnail()
 		{
@@ -379,6 +381,7 @@ namespace NExtractTools
 			RELEASEOBJECT(zip);
 			RELEASEOBJECT(width);
 			RELEASEOBJECT(height);
+			RELEASEOBJECT(page);
 		}
 
 		bool FromXmlNode(XmlUtils::CXmlNode& oNode)
@@ -407,6 +410,8 @@ namespace NExtractTools
 								width = new int(XmlUtils::GetInteger(sValue));
 							else if (_T("height") == sName)
 								height = new int(XmlUtils::GetInteger(sValue));
+							else if (_T("page") == sName)
+								page = new int(XmlUtils::GetInteger(sValue));
 						}
 					}
 				}

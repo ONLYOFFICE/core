@@ -272,9 +272,13 @@ namespace NExtractTools
 			{
 				imageWriter.SetRasterH(*oThumbnail->height);
 			}
+			if (NULL != oThumbnail->page)
+			{
+				imageWriter.SetSavePage(*oThumbnail->page);
+			}
 		}
 		std::wstring sThumbnailDir;
-		if (imageWriter.GetIsOnlyFirst())
+		if (imageWriter.GetIsOnlyFirst() || imageWriter.GetSavePage() != -1)
 		{
 			imageWriter.SetFileName(sTo);
 		}
@@ -745,6 +749,7 @@ namespace NExtractTools
 			bool bIsZip = true;
 			int nRasterW = 100;
 			int nRasterH = 100;
+			int nSavePage = -1;
 			if (NULL != params.m_oThumbnail)
 			{
 				InputParamsThumbnail *oThumbnail = params.m_oThumbnail;
@@ -772,10 +777,14 @@ namespace NExtractTools
 				{
 					nRasterH = *oThumbnail->height;
 				}
+				if (NULL != oThumbnail->page)
+				{
+					nSavePage = *oThumbnail->page;
+				}
 			}
 			std::wstring sThumbnailDir;
 			std::wstring sFileToExt;
-			if (!bIsOnlyFirst)
+			if (!bIsOnlyFirst && nSavePage == -1)
 			{
 				if (bIsZip)
 				{
@@ -795,9 +804,15 @@ namespace NExtractTools
 			nSaveType = nSaveType & 0x0F;
 
 			int nPagesCount = pReader->GetPagesCount();
+			int i = 0;
 			if (bIsOnlyFirst)
 				nPagesCount = 1;
-			for (int i = 0; i < nPagesCount; ++i)
+			if (nSavePage != -1 && nSavePage < nPagesCount)
+			{
+				i = nSavePage;
+				nPagesCount = nSavePage + 1;
+			}
+			for (; i < nPagesCount; ++i)
 			{
 				int nRasterWCur = nRasterW;
 				int nRasterHCur = nRasterH;
@@ -833,7 +848,7 @@ namespace NExtractTools
 					nRasterHCur = -1;
 				}
 				std::wstring sFileTo;
-				if (bIsOnlyFirst)
+				if (bIsOnlyFirst || nSavePage != -1)
 				{
 					sFileTo = sTo;
 				}
@@ -844,7 +859,7 @@ namespace NExtractTools
 				pReader->ConvertToRaster(i, sFileTo, nRasterFormat, nRasterWCur, nRasterHCur);
 			}
 			// zip
-			if (!bIsOnlyFirst && bIsZip)
+			if (!bIsOnlyFirst && bIsZip && nSavePage == -1)
 			{
 				COfficeUtils oCOfficeUtils(NULL);
 				nRes = S_OK == oCOfficeUtils.CompressFileOrDirectory(sThumbnailDir, sTo) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;

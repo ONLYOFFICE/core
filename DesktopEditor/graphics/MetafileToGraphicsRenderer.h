@@ -75,6 +75,9 @@ namespace NSOnlineOfficeBinToPdf
         bool GetIsOnlyFirst();
         void SetIsOnlyFirst(const bool& value);
 
+		int GetSavePage();
+		void SetSavePage(const int& value);
+
         void SetOutputDpi(const double& dDpiX, const double& dDpiY);
     };
 }

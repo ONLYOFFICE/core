@@ -356,29 +356,29 @@ namespace NExtractTools
 	class InputParamsThumbnail
 	{
 	public:
-		int* format;
-		int* aspect;
-		bool* first;
+		int*  format;
+		int*  aspect;
 		bool* zip;
-		int* width;
-		int* height;
+		int*  width;
+		int*  height;
+		int*  page;
 		InputParamsThumbnail()
 		{
 			format = NULL;
 			aspect = NULL;
-			first = NULL;
-			zip = NULL;
-			width = NULL;
+			zip    = NULL;
+			width  = NULL;
 			height = NULL;
+			page   = NULL;
 		}
 		~InputParamsThumbnail()
 		{
 			RELEASEOBJECT(format);
 			RELEASEOBJECT(aspect);
-			RELEASEOBJECT(first);
 			RELEASEOBJECT(zip);
 			RELEASEOBJECT(width);
 			RELEASEOBJECT(height);
+			RELEASEOBJECT(page);
 		}
 
 		bool FromXmlNode(XmlUtils::CXmlNode& oNode)
@@ -399,14 +399,16 @@ namespace NExtractTools
 								format = new int(XmlUtils::GetInteger(sValue));
 							else if (_T("aspect") == sName)
 								aspect = new int(XmlUtils::GetInteger(sValue));
-							else if (_T("first") == sName)
-								first = new bool(XmlUtils::GetBoolean2(sValue));
+							else if (_T("first") == sName) // deprecated
+								page = (XmlUtils::GetBoolean2(sValue) ? new int(0) : NULL);
 							else if (_T("zip") == sName)
 								zip = new bool(XmlUtils::GetBoolean2(sValue));
 							else if (_T("width") == sName)
 								width = new int(XmlUtils::GetInteger(sValue));
 							else if (_T("height") == sName)
 								height = new int(XmlUtils::GetInteger(sValue));
+							else if (_T("page") == sName)
+								page = new int(XmlUtils::GetInteger(sValue));
 						}
 					}
 				}

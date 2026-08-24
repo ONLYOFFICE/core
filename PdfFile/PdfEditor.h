@@ -49,6 +49,14 @@ struct CObjectInfo
 	CObjectInfo(PdfWriter::CObjectBase* _pObj, int _nRefCount) : pObj(_pObj), nRefCount(_nRefCount) {}
 };
 
+struct SPendingWidgetStamp
+{
+	PdfWriter::CAnnotation* pAnnot;
+	PdfWriter::CXObject*    pPlaceholder;
+	PdfWriter::CPage*       pPage;
+	std::vector<double>     arrAnnotRedact;
+};
+
 class CObjectsManager
 {
 public:
@@ -66,6 +74,7 @@ public:
 	std::vector<int> m_arrSplitAddPages;
 	std::vector<int> m_arrRedactFormFieldsID;
 	std::vector<IAdvancedCommand*> m_arrRedactFormFields;
+	std::vector<SPendingWidgetStamp> m_arrPendingWidgetStamps;
 
 private:
 	PdfWriter::CDocument* m_pDoc;
@@ -148,6 +157,7 @@ public:
 	std::vector<double> WriteRedact(const std::vector<std::wstring>& arrID);
 	void RedactMeta(IAdvancedCommand* pCommand, const std::vector<double>& arrRedact);
 	void CheckMode();
+	void FinalizeWidgetRedactStamps();
 
 	bool SplitPages(const int* arrPageIndex, unsigned int unLength);
 	void AfterSplitPages();

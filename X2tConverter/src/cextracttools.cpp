@@ -813,7 +813,7 @@ namespace NExtractTools
 				wsPrintOptions += L"\"onlyFirstPage\":true";
 			if (nSavePage != -1)
 			{
-				wsPrintOptions += (bOnlyOnePage ? L";" : L"");
+				wsPrintOptions += (bOnlyOnePage ? L"," : L"");
 				wsPrintOptions += L"\"savePage\":";
 				wsPrintOptions += std::to_wstring(nSavePage);
 			}

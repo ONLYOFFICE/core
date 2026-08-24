@@ -58,7 +58,6 @@ namespace NSOnlineOfficeBinToPdf
 		//
 		// saveFlags & 1: change w/h by orientation
 		int m_nSaveType;
-		bool m_bIsOnlyFirst;
 		std::wstring m_sFileName;
 		int m_nRasterW;
 		int m_nRasterH;
@@ -74,7 +73,6 @@ namespace NSOnlineOfficeBinToPdf
 
 			m_nRasterFormat = 4;
 			m_nSaveType = 2;
-			m_bIsOnlyFirst = true;
 			m_sFileName = L"";
 			m_nSavePage = -1;
 
@@ -103,7 +101,7 @@ namespace NSOnlineOfficeBinToPdf
 	{
 		std::wstring sMain = m_internal->m_sFileName;
 		std::wstring sExt = L"";
-		if (!m_internal->m_bIsOnlyFirst && m_internal->m_nSavePage == -1)
+		if (m_internal->m_nSavePage == -1)
 		{
 			std::wstring::size_type pos = m_internal->m_sFileName.find_last_of('.');
 			if (std::wstring::npos == pos)
@@ -121,8 +119,6 @@ namespace NSOnlineOfficeBinToPdf
 		if (0 == nPagesCount)
 			return false;
 
-		if (m_internal->m_bIsOnlyFirst)
-			nPagesCount = 1;
 		if (m_internal->m_nSavePage != -1)
 		{
 			if (m_internal->m_nSavePage >= nPagesCount)
@@ -260,7 +256,7 @@ namespace NSOnlineOfficeBinToPdf
 				RELEASEARRAYOBJECTS(pDataRaster);
 			}
 
-			if (m_internal->m_bIsOnlyFirst || m_internal->m_nSavePage != -1)
+			if (m_internal->m_nSavePage != -1)
 				oFrame.SaveFile(sMain + sExt, m_internal->m_nRasterFormat);
 			else
 				oFrame.SaveFile(sMain + std::to_wstring(nPageIndex + 1) + sExt, m_internal->m_nRasterFormat);
@@ -320,15 +316,6 @@ namespace NSOnlineOfficeBinToPdf
 	void CMetafileToRenderterRaster::SetRasterH(const int& value)
 	{
 		m_internal->m_nRasterH = value;
-	}
-
-	bool CMetafileToRenderterRaster::GetIsOnlyFirst()
-	{
-		return m_internal->m_bIsOnlyFirst;
-	}
-	void CMetafileToRenderterRaster::SetIsOnlyFirst(const bool& value)
-	{
-		m_internal->m_bIsOnlyFirst = value;
 	}
 
 	int CMetafileToRenderterRaster::GetSavePage()

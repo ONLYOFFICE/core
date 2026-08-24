@@ -260,10 +260,6 @@ namespace NExtractTools
 			{
 				imageWriter.SetSaveType(*oThumbnail->aspect);
 			}
-			if (NULL != oThumbnail->first)
-			{
-				imageWriter.SetIsOnlyFirst(*oThumbnail->first);
-			}
 			if (NULL != oThumbnail->width)
 			{
 				imageWriter.SetRasterW(*oThumbnail->width);
@@ -278,7 +274,7 @@ namespace NExtractTools
 			}
 		}
 		std::wstring sThumbnailDir;
-		if (imageWriter.GetIsOnlyFirst() || imageWriter.GetSavePage() != -1)
+		if (imageWriter.GetSavePage() != -1)
 		{
 			imageWriter.SetFileName(sTo);
 		}
@@ -745,7 +741,6 @@ namespace NExtractTools
 			// default as in CMetafileToRenderterRaster
 			int nRasterFormat = 4;
 			int nSaveType = 2;
-			bool bIsOnlyFirst = true;
 			bool bIsZip = true;
 			int nRasterW = 100;
 			int nRasterH = 100;
@@ -760,10 +755,6 @@ namespace NExtractTools
 				if (NULL != oThumbnail->aspect)
 				{
 					nSaveType = *oThumbnail->aspect;
-				}
-				if (NULL != oThumbnail->first)
-				{
-					bIsOnlyFirst = *oThumbnail->first;
 				}
 				if (NULL != oThumbnail->zip)
 				{
@@ -784,7 +775,7 @@ namespace NExtractTools
 			}
 			std::wstring sThumbnailDir;
 			std::wstring sFileToExt;
-			if (!bIsOnlyFirst && nSavePage == -1)
+			if (nSavePage == -1)
 			{
 				if (bIsZip)
 				{
@@ -805,8 +796,6 @@ namespace NExtractTools
 
 			int nPagesCount = pReader->GetPagesCount();
 			int i = 0;
-			if (bIsOnlyFirst)
-				nPagesCount = 1;
 			if (nSavePage != -1 && nSavePage < nPagesCount)
 			{
 				i = nSavePage;
@@ -848,7 +837,7 @@ namespace NExtractTools
 					nRasterHCur = -1;
 				}
 				std::wstring sFileTo;
-				if (bIsOnlyFirst || nSavePage != -1)
+				if (nSavePage != -1)
 				{
 					sFileTo = sTo;
 				}
@@ -859,7 +848,7 @@ namespace NExtractTools
 				pReader->ConvertToRaster(i, sFileTo, nRasterFormat, nRasterWCur, nRasterHCur);
 			}
 			// zip
-			if (!bIsOnlyFirst && bIsZip && nSavePage == -1)
+			if (bIsZip && nSavePage == -1)
 			{
 				COfficeUtils oCOfficeUtils(NULL);
 				nRes = S_OK == oCOfficeUtils.CompressFileOrDirectory(sThumbnailDir, sTo) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;

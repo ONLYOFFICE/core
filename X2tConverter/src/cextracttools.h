@@ -358,7 +358,6 @@ namespace NExtractTools
 	public:
 		int*  format;
 		int*  aspect;
-		bool* first;
 		bool* zip;
 		int*  width;
 		int*  height;
@@ -367,7 +366,6 @@ namespace NExtractTools
 		{
 			format = NULL;
 			aspect = NULL;
-			first  = NULL;
 			zip    = NULL;
 			width  = NULL;
 			height = NULL;
@@ -377,7 +375,6 @@ namespace NExtractTools
 		{
 			RELEASEOBJECT(format);
 			RELEASEOBJECT(aspect);
-			RELEASEOBJECT(first);
 			RELEASEOBJECT(zip);
 			RELEASEOBJECT(width);
 			RELEASEOBJECT(height);
@@ -403,7 +400,7 @@ namespace NExtractTools
 							else if (_T("aspect") == sName)
 								aspect = new int(XmlUtils::GetInteger(sValue));
 							else if (_T("first") == sName)
-								first = new bool(XmlUtils::GetBoolean2(sValue));
+								page = (XmlUtils::GetBoolean2(sValue) ? new int(0) : NULL);
 							else if (_T("zip") == sName)
 								zip = new bool(XmlUtils::GetBoolean2(sValue));
 							else if (_T("width") == sName)

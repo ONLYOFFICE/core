@@ -126,7 +126,8 @@ namespace NSDocxRenderer
 			double dDifference = pCurrent->m_dLeft - pFirst->m_dRight;
 
 			bool bIsEqual = pFirst->IsEqual(pCurrent.get());
-			bool bIsSpaceDelta = dDifference > space_width;
+			bool bIsSpaceDelta = dDifference > space_width ||
+								 (avg_space_width == 0.0 && std::fabs(dDifference - space_width) < c_dSPACING_ERROR_MM);
 			bool bIsWideSpaceDelta = dDifference > space_width * 3;
 
 			if (bIsWideSpaceDelta || (pCurrent->m_bPossibleHorSplit && bIsSpaceDelta))

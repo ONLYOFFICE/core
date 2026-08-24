@@ -1563,7 +1563,11 @@ HRESULT CPdfFile::AdvancedCommand(IAdvancedCommand* command)
 	{
 		CWidgetsInfo* pCommand = (CWidgetsInfo*)command;
 		if (m_pInternal->pEditor && m_pInternal->pEditor->EditWidgets(pCommand))
-			return m_pInternal->pWriter->EditWidgetParents(m_pInternal->pAppFonts, pCommand, m_pInternal->wsTempFolder);
+		{
+			HRESULT hr = m_pInternal->pWriter->EditWidgetParents(m_pInternal->pAppFonts, pCommand, m_pInternal->wsTempFolder);
+			m_pInternal->pEditor->FinalizeWidgetRedactStamps();
+			return hr;
+		}
 		return S_OK;
 	}
 	case IAdvancedCommand::AdvancedCommandType::ShapeStart:

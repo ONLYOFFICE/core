@@ -399,7 +399,7 @@ namespace NExtractTools
 								format = new int(XmlUtils::GetInteger(sValue));
 							else if (_T("aspect") == sName)
 								aspect = new int(XmlUtils::GetInteger(sValue));
-							else if (_T("first") == sName)
+							else if (_T("first") == sName) // deprecated
 								page = (XmlUtils::GetBoolean2(sValue) ? new int(0) : NULL);
 							else if (_T("zip") == sName)
 								zip = new bool(XmlUtils::GetBoolean2(sValue));

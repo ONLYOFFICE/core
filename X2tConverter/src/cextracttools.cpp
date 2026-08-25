@@ -810,13 +810,13 @@ namespace NExtractTools
 			wsPrintOptions += std::to_wstring(nSavePage);
 			wsPrintOptions += L"}";
 		}
-		if (NULL != params.m_sJsonParams)
+		if (!wsPrintOptions.empty() && NULL != params.m_sJsonParams)
 		{
 			sJsonParams = *params.m_sJsonParams;
 			wsPrintOptions += L",";
 			sJsonParams.insert(1, wsPrintOptions);
 		}
-		else if (nSavePage != -1)
+		else if (!wsPrintOptions.empty())
 		{
 			sJsonParams = L"{";
 			sJsonParams += wsPrintOptions;

@@ -49,6 +49,8 @@ CFont::CFont(CXmlReader& oXmlReader, const std::wstring& wsRootPath, IFolder* pF
 	  m_bSerif(false), m_bFixedWidth(false)
 	#ifdef BUILDING_WASM_MODULE
 	 , m_pFontManager(nullptr)
+	#else
+	, m_bSupportExternalFont(false)
 	#endif
 {
 	if (0 != oXmlReader.GetAttributesCount() && oXmlReader.MoveToFirstAttribute())

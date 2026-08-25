@@ -119,12 +119,12 @@ HRESULT DrawGlyphWithFontUpdate(IRenderer* pRenderer, NSFonts::IFontManager* pFo
 	if (nullptr != pFontManager && !sFontPath.empty())
 	{
 		long lStyle;
-		double dDpiX, dDpiY, dOldSize;
+		double dDpiX, dDpiY;
 		pRenderer->get_FontStyle(&lStyle);
 		pRenderer->get_DpiX(&dDpiX);
 		pRenderer->get_DpiY(&dDpiY);
 		pFontManager->SetStringGID(FALSE);
-		pFontManager->LoadFontFromFile(sFontPath, 0, dOldSize, dDpiX, dDpiY);
+		pFontManager->LoadFontFromFile(sFontPath, 0, dSize, dDpiX, dDpiY);
 
 		NSFonts::IFontFile* pFontFile{pFontManager->GetFile()};
 
@@ -155,6 +155,10 @@ HRESULT DrawGlyphWithFontUpdate(IRenderer* pRenderer, NSFonts::IFontManager* pFo
 					}
 
 					std::wstring wsFileName{NSWasm::LoadFont(sName, bBold, bItalic)};
+
+					if (wsFileName.empty())
+						return S_FALSE;
+
 					pRenderer->put_FontPath(wsFileName);
 					pFontManager->LoadFontFromFile(wsFileName, 0, dSize, dDpiX, dDpiY);
 					bReplace = true;
@@ -325,6 +329,7 @@ void CTextObject::Draw(IRenderer* pRenderer, const CCommonData& oCommonData, EPa
 		else
 		{
 			pRenderer->put_BrushColor1(BLACK_COLOR_INT);
+			pRenderer->put_BrushAlpha1(255);
 
 			if (EPageType::TemplatePage == ePageType)
 				for (const CDrawParam* pDrawParam : arDrawParams)

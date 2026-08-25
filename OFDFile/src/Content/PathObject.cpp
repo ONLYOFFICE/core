@@ -223,6 +223,7 @@ void CPathObject::Draw(IRenderer* pRenderer, const CCommonData& oCommonData, EPa
 		else
 		{
 			pRenderer->put_BrushColor1(0);
+			pRenderer->put_BrushAlpha1(255);
 
 			if (EPageType::TemplatePage == ePageType)
 				for (const CDrawParam* pDrawParam : arDrawParams)
@@ -243,6 +244,7 @@ void CPathObject::Draw(IRenderer* pRenderer, const CCommonData& oCommonData, EPa
 		else
 		{
 			pRenderer->put_PenColor(0);
+			pRenderer->put_PenAlpha(255);
 
 			if (EPageType::TemplatePage == ePageType)
 				for (const CDrawParam* pDrawParam : arDrawParams)

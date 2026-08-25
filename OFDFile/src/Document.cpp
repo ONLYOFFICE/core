@@ -59,7 +59,9 @@ bool CPermission::Read(CXmlReader& oLiteReader)
 	const int nDepth = oLiteReader.GetDepth();
 	std::wstring wsNodeName;
 
-	while (oLiteReader.ReadNextSiblingNode(nDepth))
+	const bool bHasChildNodes{!oLiteReader.IsEmptyElement()};
+
+	while (bHasChildNodes && oLiteReader.ReadNextSiblingNode(nDepth))
 	{
 		wsNodeName = oLiteReader.GetName();
 

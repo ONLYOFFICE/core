@@ -70,7 +70,9 @@ CPage* CPage::Read(const std::wstring& wsFilePath, const std::wstring& wsRootPat
 
 	CPage *pPage = new CPage();
 
-	while (oLiteReader.ReadNextSiblingNode(nDepth))
+	const bool bHasChildNodes{!oLiteReader.IsEmptyElement()};
+
+	while (bHasChildNodes && oLiteReader.ReadNextSiblingNode(nDepth))
 	{
 		wsNodeName = oLiteReader.GetName();
 

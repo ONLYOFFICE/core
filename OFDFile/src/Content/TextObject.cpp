@@ -182,27 +182,24 @@ void CTextCode::Draw(IRenderer* pRenderer, unsigned int& unIndex, const std::vec
 		return;
 
 	double dX = m_dX, dY = m_dY, dDeltaX = 0, dDeltaY = 0;
-	bool bDrawed = false;
 
 	for (unsigned int unGlyphIndex = 0; unGlyphIndex < m_wsText.length(); ++unGlyphIndex)
 	{
-		if (!arCGTransforms.empty())
+		bool bDrawed = false;
+
+		for (const TCGTransform& oCGTransform : arCGTransforms)
 		{
-			for (const TCGTransform& oCGTransform : arCGTransforms)
+			if (oCGTransform.Draw(pRenderer, m_wsText[unGlyphIndex], unIndex, dX, dY, pFontManager))
 			{
-				if (oCGTransform.Draw(pRenderer, m_wsText[unGlyphIndex], unIndex, dX, dY, pFontManager))
-				{
-					bDrawed = true;
-					break;
-				}
+				bDrawed = true;
+				break;
 			}
 		}
 
 		if (!bDrawed)
-		{
 			DrawGlyphWithFontUpdate(pRenderer, pFontManager, m_wsText[unGlyphIndex], [pRenderer, chChar = m_wsText[unGlyphIndex], dX, dY](){ return pRenderer->CommandDrawTextCHAR(chChar, dX, dY, 0, 0); });
-			++unIndex;
-		}
+
+		++unIndex;
 
 		if (unGlyphIndex < m_arDeltaX.size())
 			dDeltaX = m_arDeltaX[unGlyphIndex];
@@ -401,16 +398,23 @@ TCGTransform TCGTransform::Read(CXmlReader& oReader)
 	return oCGTransform;
 }
 
-bool TCGTransform::Draw(IRenderer* pRenderer, const LONG& lUnicode, unsigned int& unIndex, double dX, double dY, NSFonts::IFontManager* pFontManager) const
+bool TCGTransform::Draw(IRenderer* pRenderer, const LONG& lUnicode, unsigned int unIndex, double dX, double dY, NSFonts::IFontManager* pFontManager) const
 {
-	if (m_unCodePosition + m_arGlyphs.size() > unIndex || 0 == m_unCodeCount || m_arGlyphs.empty())
+	if (nullptr == pRenderer || 0 == m_unCodeCount || m_arGlyphs.empty())
 		return false;
 
-	for (unsigned int unGlyphCount = 0; unGlyphCount < m_arGlyphs.size(); ++unGlyphCount)
-		DrawGlyphWithFontUpdate(pRenderer, pFontManager, m_arGlyphs[unGlyphCount], [pRenderer, lUnicode, chChar = m_arGlyphs[unGlyphCount], dX, dY](){ return pRenderer->CommandDrawTextExCHAR(lUnicode, chChar, dX, dY, 0, 0); });
+	if (unIndex < m_unCodePosition || unIndex >= m_unCodePosition + m_unCodeCount)
+		return false;
 
-	unIndex += m_unCodeCount;
+	if (m_arGlyphs.size() != m_unCodeCount)
+		return false;
 
-	return true;
+	std::wstring wsFontPath;
+	pRenderer->get_FontPath(&wsFontPath);
+
+	if (wsFontPath.empty())
+		return false;
+
+	return S_OK == pRenderer->CommandDrawTextExCHAR(lUnicode, (LONG)m_arGlyphs[unIndex - m_unCodePosition], dX, dY, 0, 0);
 }
 }

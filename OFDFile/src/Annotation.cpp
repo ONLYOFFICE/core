@@ -117,7 +117,9 @@ CAnnot::CAnnot(CXmlReader& oLiteReader, IFolder* pFolder)
 	const int nDepth = oLiteReader.GetDepth();
 	std::string sNodeName;
 
-	while (oLiteReader.ReadNextSiblingNode(nDepth))
+	const bool bHasChildNodes{!oLiteReader.IsEmptyElement()};
+
+	while (bHasChildNodes && oLiteReader.ReadNextSiblingNode(nDepth))
 	{
 		sNodeName = oLiteReader.GetNameA();
 
@@ -172,7 +174,9 @@ CPageAnnot* CPageAnnot::Read(const std::wstring& wsFilePath, const std::wstring&
 
 	const int nDepth = oLiteReader.GetDepth();
 
-	while (oLiteReader.ReadNextSiblingNode(nDepth))
+	const bool bHasChildNodes{!oLiteReader.IsEmptyElement()};
+
+	while (bHasChildNodes && oLiteReader.ReadNextSiblingNode(nDepth))
 	{
 		if ("ofd:Annot" != oLiteReader.GetNameA())
 			continue;

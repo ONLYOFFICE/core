@@ -37,7 +37,9 @@ CAction::CAction(CXmlReader& oReader)
 	const int nDepth{oReader.GetDepth()};
 	std::string sName;
 
-	while (oReader.ReadNextSiblingNode(nDepth))
+	const bool bHasChildNodes{!oReader.IsEmptyElement()};
+
+	while (bHasChildNodes && oReader.ReadNextSiblingNode(nDepth))
 	{
 		sName = oReader.GetNameA();
 
@@ -104,7 +106,9 @@ CGoto::CGoto(CXmlReader& oReader)
 {
 	const int nDepth{oReader.GetDepth()};
 
-	while (oReader.ReadNextSiblingNode(nDepth))
+	const bool bHasChildNodes{!oReader.IsEmptyElement()};
+
+	while (bHasChildNodes && oReader.ReadNextSiblingNode(nDepth))
 	{
 		if("ofd:Dest" == oReader.GetNameA())
 		{

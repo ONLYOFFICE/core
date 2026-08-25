@@ -25,7 +25,9 @@ COutlineElem::COutlineElem(CXmlReader& oReader)
 
 	const int nDepth{oReader.GetDepth()};
 
-	while (oReader.ReadNextSiblingNode(nDepth))
+	const bool bHasChildNodes{!oReader.IsEmptyElement()};
+
+	while (bHasChildNodes && oReader.ReadNextSiblingNode(nDepth))
 	{
 		if ("ofd:Actions" == oReader.GetNameA())
 		{

@@ -115,12 +115,11 @@ int main(int argc, char *argv[])
 		std::wstring sOutputPath = NSFile::GetProcessDirectory() + L"/out" + getExtentionByRasterFormat(imageWriter.GetRasterFormat());
 
 		imageWriter.SetSaveType(0);
-		imageWriter.SetIsOnlyFirst(false);
 		imageWriter.SetRasterW(1000);
 		imageWriter.SetRasterH(1000);
 
 		std::wstring sThumbnailDir;
-		if (imageWriter.GetIsOnlyFirst())
+		if (imageWriter.GetSavePage() == 0)
 		{
 			imageWriter.SetFileName(sOutputPath);
 		}

@@ -371,7 +371,6 @@ TEST_F(CPdfFileTest, Base64ConvertToRaster)
 	NSBase64::Base64Decode((const char*)pFileContent, dwFileSize, pBuffer, &nBufferLen);
 
 	NSOnlineOfficeBinToPdf::CMetafileToRenderterRaster imageWriter(NULL);
-	imageWriter.SetIsOnlyFirst(false);
 	imageWriter.SetMediaDirectory(NSFile::GetProcessDirectory());
 	imageWriter.SetApplication(pApplicationFonts);
 	imageWriter.SetRasterFormat(4);
@@ -401,7 +400,7 @@ TEST_F(CPdfFileTest, BinConvertToRaster)
 	oFile.CloseFile();
 
 	NSOnlineOfficeBinToPdf::CMetafileToRenderterRaster imageWriter(NULL);
-	imageWriter.SetIsOnlyFirst(true);
+	imageWriter.SetSavePage(0);
 	imageWriter.SetMediaDirectory(NSFile::GetProcessDirectory());
 	imageWriter.SetApplication(pApplicationFonts);
 	imageWriter.SetRasterFormat(4);

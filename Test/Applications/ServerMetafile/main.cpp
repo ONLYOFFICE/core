@@ -119,7 +119,7 @@ int main(int argc, char *argv[])
 		imageWriter.SetRasterH(1000);
 
 		std::wstring sThumbnailDir;
-		if (imageWriter.GetSavePage() == 0)
+		if (imageWriter.GetSavePage() != -1)
 		{
 			imageWriter.SetFileName(sOutputPath);
 		}

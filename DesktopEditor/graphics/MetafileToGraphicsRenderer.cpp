@@ -115,17 +115,10 @@ namespace NSOnlineOfficeBinToPdf
 		oInfo.CheckBuffer(pBuffer, lBufferLen);
 
 		int nPagesCount = oInfo.PagesCount;
-		int nPageIndex = 0;
 		if (0 == nPagesCount)
 			return false;
-
-		if (m_internal->m_nSavePage != -1)
-		{
-			if (m_internal->m_nSavePage >= nPagesCount)
-				return false;
-			nPageIndex = m_internal->m_nSavePage;
-			nPagesCount = m_internal->m_nSavePage + 1;
-		}
+		if (m_internal->m_nSavePage != -1 && nPagesCount != 1)
+			return false;
 
 		NSFonts::IFontManager* pFontManager = m_internal->appFonts->GenerateFontManager();
 		NSFonts::IFontsCache* pFontsCache = NSFonts::NSFontCache::Create();
@@ -134,7 +127,7 @@ namespace NSOnlineOfficeBinToPdf
 
 		CImageFilesCache* pImagesCache = new CImageFilesCache(m_internal->appFonts);
 
-		for (; nPageIndex < nPagesCount; ++nPageIndex)
+		for (int nPageIndex = 0; nPageIndex < nPagesCount; ++nPageIndex)
 		{
 			CBgraFrame oFrame;
 			int nRasterW = m_internal->m_nRasterW;

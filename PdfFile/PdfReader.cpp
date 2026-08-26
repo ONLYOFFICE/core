@@ -1746,6 +1746,7 @@ BYTE* CPdfReader::GetButtonIcon(int nBackgroundColor, int _nPageIndex, bool bBas
 		return NULL;
 
 	AcroForm* pAcroForms = pDoc->getCatalog()->getForm();
+	XRef* xref = pDoc->getXRef();
 	if (!pAcroForms)
 		return NULL;
 
@@ -1764,9 +1765,13 @@ BYTE* CPdfReader::GetButtonIcon(int nBackgroundColor, int _nPageIndex, bool bBas
 			continue;
 		}
 		oRef.free();
+		pField->getFieldRef(&oRef);
+		CObjectGuard oField;
+		oRef.fetch(xref, oField.get());
+		oRef.free();
 
 		CObjectGuard oOO;
-		if (pField->fieldLookup("OO", oOO.get())->isDict())
+		if (oField->isDict() && oField->dictLookup("OO", oOO.get())->isDict())
 		{
 			bool bFirst = true;
 			int nMKPos  = -1;

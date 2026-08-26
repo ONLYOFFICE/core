@@ -790,10 +790,10 @@ namespace PPTX
 			NSBinPptxRW::CXmlWriter oStylesWriter;
 			if (pWriter->m_strStyleMain.empty())
 			{
-				pWriter->m_dX = dL  / (in_group ? 100. : 12700.);
-				pWriter->m_dY = dT  / (in_group ? 100. : 12700.);
-				pWriter->m_dWidth = dW  / (in_group ? 100. : 12700.);
-				pWriter->m_dHeight = dH / (in_group ? 100. : 12700.);
+				pWriter->m_dX = dL  / (in_group ? (double)pWriter->m_nGroupCoordDivider : 12700.);
+				pWriter->m_dY = dT  / (in_group ? (double)pWriter->m_nGroupCoordDivider : 12700.);
+				pWriter->m_dWidth = dW  / (in_group ? (double)pWriter->m_nGroupCoordDivider : 12700.);
+				pWriter->m_dHeight = dH / (in_group ? (double)pWriter->m_nGroupCoordDivider : 12700.);
 
 				oStylesWriter.WriteAttributeCSS(L"position", L"absolute");
 
@@ -862,8 +862,18 @@ namespace PPTX
 			}
 			if (vmlPrst == SimpleTypes::Vml::sptLine)
 			{
-				pWriter->WriteAttribute(L"from", XmlUtils::ToString(pWriter->m_dX, L"%.1lf") + L"pt," + XmlUtils::ToString(pWriter->m_dY, L"%.1lf") + L"pt");
-				pWriter->WriteAttribute(L"to", XmlUtils::ToString(pWriter->m_dX + pWriter->m_dWidth, L"%.1lf") + L"pt," + XmlUtils::ToString(pWriter->m_dY + pWriter->m_dHeight, L"%.1lf") + L"pt");
+				if (in_group)
+				{
+					const int nDivider = pWriter->m_nGroupCoordDivider;
+
+					pWriter->WriteAttribute(L"from", std::to_wstring((int)(dL / nDivider)) + L"," + std::to_wstring((int)(dT / nDivider)));
+					pWriter->WriteAttribute(L"to", std::to_wstring((int)((dL + dW) / nDivider)) + L"," + std::to_wstring((int)((dT + dH) / nDivider)));
+				}
+				else
+				{
+					pWriter->WriteAttribute(L"from", XmlUtils::ToString(dL / 12700., L"%.1lf") + L"pt," + XmlUtils::ToString(dT / 12700., L"%.1lf") + L"pt");
+					pWriter->WriteAttribute(L"to", XmlUtils::ToString((dL + dW) / 12700., L"%.1lf") + L"pt," + XmlUtils::ToString((dT + dH) / 12700., L"%.1lf") + L"pt");
+				}
 			}
 			if (false == pWriter->m_strAttributesMain.empty())
 			{

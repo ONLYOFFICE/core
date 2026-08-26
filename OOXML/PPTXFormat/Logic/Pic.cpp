@@ -1473,10 +1473,11 @@ namespace PPTX
 				oStylesWriter.WriteAttributeCSS (L"position", L"absolute");
 				if (in_group)
 				{
-					oStylesWriter.WriteAttributeCSS_int(L"left",	dL / 100);
-					oStylesWriter.WriteAttributeCSS_int(L"top",		dT / 100);
-					oStylesWriter.WriteAttributeCSS_int(L"width",	dW / 100);
-					oStylesWriter.WriteAttributeCSS_int(L"height",	dH / 100);
+					const int nDivider = pWriter->m_nGroupCoordDivider;
+					oStylesWriter.WriteAttributeCSS_int(L"left",	dL / nDivider);
+					oStylesWriter.WriteAttributeCSS_int(L"top",		dT / nDivider);
+					oStylesWriter.WriteAttributeCSS_int(L"width",	dW / nDivider);
+					oStylesWriter.WriteAttributeCSS_int(L"height",	dH / nDivider);
 				}
 				else
 				{

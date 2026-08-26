@@ -4991,6 +4991,22 @@ void CDrawingConverter::CheckPenShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils::
 			else											pSpPr->ln->prstDash->val = L"solid";
 		}
 
+		nullable_string sStrokeLineStyle;
+		XmlMacroReadAttributeBase(oNodeStroke, L"linestyle", sStrokeLineStyle);
+		if (sStrokeLineStyle.is_init())
+		{
+			pPPTShape->m_bIsStroked = true;
+
+			if (!pSpPr->ln.is_init())
+				pSpPr->ln = new PPTX::Logic::Ln();
+
+			if		(*sStrokeLineStyle == L"thinThin")			pSpPr->ln->cmpd = std::wstring(L"dbl");
+			else if (*sStrokeLineStyle == L"thickThin")			pSpPr->ln->cmpd = std::wstring(L"thickThin");
+			else if (*sStrokeLineStyle == L"thinThick")			pSpPr->ln->cmpd = std::wstring(L"thinThick");
+			else if (*sStrokeLineStyle == L"thickBetweenThin")	pSpPr->ln->cmpd = std::wstring(L"tri");
+			else											pSpPr->ln->cmpd = std::wstring(L"sng");
+		}
+
 		nullable_string sEndArraw;
         XmlMacroReadAttributeBase(oNodeStroke, L"endarrow", sEndArraw);
 		if (sEndArraw.is_init())

@@ -87,6 +87,9 @@ namespace NSDocxRenderer
 		bool m_bIsBehindDoc {true};
 		bool m_bIsUseInTable{false};
 
+		bool m_bImgFlipH{false};
+		bool m_bImgFlipV{false};
+
 		std::shared_ptr<CImageInfo> m_pImageInfo{nullptr};
 		double m_dImageTop{};
 		double m_dImageBot{};

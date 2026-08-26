@@ -1721,6 +1721,10 @@ namespace NSDoctRenderer
 		{
 			NSProcessEnv::Load(std::wstring(value));
 		}
+		else if (sParam == "--sdkjs-dir")
+		{
+			m_pInternal->m_strSdkPath = std::wstring(value);
+		}
 	}
 	void CDocBuilder::SetPropertyW(const wchar_t* param, const wchar_t* value)
 	{

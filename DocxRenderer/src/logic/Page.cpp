@@ -2210,30 +2210,37 @@ namespace NSDocxRenderer
 			oWriter.WriteString(L"<w:pgMar w:top=\"0\" w:right=\"0\" w:bottom=\"0\" w:left=\"0\" w:header=\"0\" w:footer=\"0\" w:gutter=\"0\"/></w:sectPr>");
 	}
 
-	void CPage::DrawImage(shape_ptr_t pShape, std::shared_ptr<CImageInfo> oImgInfo, CVectorGraphics& imageVector)
+	void CPage::DrawImage(shape_ptr_t pShape, std::shared_ptr<CImageInfo> oImgInfo, CVectorGraphics& imageVector, bool isCheckRotate)
 	{
 		pShape->m_pImageInfo = oImgInfo;
 		pShape->m_eType = CShape::eShapeType::stVectorTexture;
+
+		if (isCheckRotate)
+		{
+			Point lt, rt, rb;
+			rb.x = rt.x = pShape->m_dRight;
+			rb.y = pShape->m_dBot;
+			m_oTransform.TransformPoint(lt.x, lt.y);
+			m_oTransform.TransformPoint(rt.x, rt.y);
+			m_oTransform.TransformPoint(rb.x, rb.y);
+
+			Aggplus::CMatrix m;
+			m.Rotate(pShape->m_dRotation);
+
+			m.TransformPoint(lt.x, lt.y);
+			m.TransformPoint(rt.x, rt.y);
+			m.TransformPoint(rb.x, rb.y);
+
+			pShape->m_bImgFlipH = lt.x > rt.x;
+			pShape->m_bImgFlipV = rt.y > rb.y;
+		}
+
 		imageVector.RotateAt(-pShape->m_dRotation, pShape->m_oVector.GetCenter());
 
 		pShape->m_dImageBot = imageVector.GetBottom();
 		pShape->m_dImageTop = imageVector.GetTop();
 		pShape->m_dImageLeft = imageVector.GetLeft();
 		pShape->m_dImageRight = imageVector.GetRight();
-
-		// for reflection along the x-axis
-		if (fabs(fabs(pShape->m_dRotation) - 180.0) < 0.01 && m_oTransform.sx() > 0.0)
-		{
-			std::swap(pShape->m_dImageBot, pShape->m_dImageTop);
-			pShape->m_dRotation = 0.0;
-		}
-
-		// for reflection along the y-axis
-		if (fabs(fabs(pShape->m_dRotation) - 180.0) < 0.01 && m_oTransform.sy() > 0.0)
-		{
-			std::swap(pShape->m_dImageLeft, pShape->m_dImageRight);
-			pShape->m_dRotation = 0.0;
-		}
 	}
 
 	void CPage::DrawGradient(shape_ptr_t pShape)
@@ -2293,7 +2300,7 @@ namespace NSDocxRenderer
 		auto info = m_oManagers.pImageManager->WriteImage(&img, pShape->m_dTop, pShape->m_dBot, pShape->m_dWidth, pShape->m_dHeight);
 		pShape->m_dRotation = 0;
 
-		DrawImage(pShape, info, pShape->m_oVector);
+		DrawImage(pShape, info, pShape->m_oVector, false);
 
 		RELEASEINTERFACE(g_renderer)
 	}

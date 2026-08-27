@@ -117,6 +117,12 @@ public:
 	{
 		return (nullptr != m_pCorePath) ? *m_pCorePath : std::wstring();
 	}
+	std::wstring GetRootPath() const
+	{
+		const std::wstring wsCorePath{GetCorePath()};
+
+		return wsCorePath.empty() ? GetSrcPath() : wsCorePath;
+	}
 
 	NSFonts::IApplicationFonts* GetFonts()
 	{

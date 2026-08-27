@@ -23,7 +23,9 @@ CArea::CArea(CXmlReader& oReader)
 	const int nDepth{oReader.GetDepth()};
 	std::string sName;
 
-	while (oReader.ReadNextSiblingNode2(nDepth))
+	const bool bHasChildNodes{!oReader.IsEmptyElement()};
+
+	while (bHasChildNodes && oReader.ReadNextSiblingNode2(nDepth))
 	{
 		sName = oReader.GetNameA();
 
@@ -58,7 +60,9 @@ CRegion::CRegion(CXmlReader& oReader)
 {
 	const int nDepth{oReader.GetDepth()};
 
-	while (oReader.ReadNextSiblingNode2(nDepth))
+	const bool bHasChildNodes{!oReader.IsEmptyElement()};
+
+	while (bHasChildNodes && oReader.ReadNextSiblingNode2(nDepth))
 	{
 		if ("Area" != oReader.GetNameA())
 			continue;

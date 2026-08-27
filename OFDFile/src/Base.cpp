@@ -77,7 +77,9 @@ bool CDocInfo::Read(CXmlReader& oLiteReader)
 
 	std::string sNodeName;
 
-	while (oLiteReader.ReadNextSiblingNode(nDepth))
+	const bool bHasChildNodes{!oLiteReader.IsEmptyElement()};
+
+	while (bHasChildNodes && oLiteReader.ReadNextSiblingNode(nDepth))
 	{
 		sNodeName = oLiteReader.GetNameA();
 

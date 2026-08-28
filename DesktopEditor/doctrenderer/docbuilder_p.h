@@ -604,38 +604,11 @@ namespace NSDoctRenderer
 			CheckFileDir();
 
 			std::wstring sEmptyPath = m_sX2tPath + L"/empty/";
-
-#if 0
-			if (type & AVS_OFFICESTUDIO_FILE_DOCUMENT)
+			if (!NSFile::CFileBinary::Exists(sEmptyPath + L"new.docx") &&
+				NSDirectory::Exists(sEmptyPath + L"en-US"))
 			{
-				sEmptyPath = sEmptyPath + L"docx.bin";
-				m_nFileType = 0;
+				sEmptyPath += L"/en-US/";
 			}
-			else if (type & AVS_OFFICESTUDIO_FILE_PRESENTATION)
-			{
-				sEmptyPath = sEmptyPath + L"pptx.bin";
-				m_nFileType = 1;
-			}
-			else if (type & AVS_OFFICESTUDIO_FILE_SPREADSHEET)
-			{
-				sEmptyPath = sEmptyPath + L"xlsx.bin";
-				m_nFileType = 2;
-			}
-			else if (type & AVS_OFFICESTUDIO_FILE_DRAW)
-			{
-				sEmptyPath = sEmptyPath + L"vsdx.bin";
-				m_nFileType = 7;
-			}
-			else
-				return false;
-
-			bool bRet = NSFile::CFileBinary::Copy(sEmptyPath, m_sFileDir + L"/Editor.bin");
-			if (bRet)
-			{
-				NSDirectory::CreateDirectory(m_sFileDir + L"/media");
-				NSDirectory::CreateDirectory(m_sFileDir + L"/changes");
-			}
-#endif
 
 			if (type & AVS_OFFICESTUDIO_FILE_DOCUMENT)
 			{

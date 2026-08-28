@@ -53,7 +53,7 @@ struct TCGTransform
 
 	static TCGTransform Read(CXmlReader& oReader);
 
-	bool Draw(IRenderer* pRenderer, const LONG& lUnicode, unsigned int& unIndex, double dX, double dY, NSFonts::IFontManager* pFontManager) const;
+	bool Draw(IRenderer* pRenderer, const LONG& lUnicode, unsigned int unIndex, double dX, double dY, NSFonts::IFontManager* pFontManager) const;
 };
 
 class CTextCode

@@ -19,7 +19,9 @@ CBookmark::CBookmark(CXmlReader& oReader)
 
 	const int nDepth{oReader.GetDepth()};
 
-	while (oReader.ReadNextSiblingNode2(nDepth))
+	const bool bHasChildNodes{!oReader.IsEmptyElement()};
+
+	while (bHasChildNodes && oReader.ReadNextSiblingNode2(nDepth))
 	{
 		if ("ofd:Dest" == oReader.GetNameA())
 		{

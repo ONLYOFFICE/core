@@ -46,7 +46,8 @@
 namespace SVG
 {
 	CImage::CImage(CSvgReader& oReader, CRenderedObject* pParent)
-		: CRenderedObject(oReader, pParent)
+		: CRenderedObject(oReader, pParent), m_bPreserveRatio(true),
+		  m_bSlice(false), m_dLeadingSpaceRatioX(0.5), m_dLeadingSpaceRatioY(0.5)
 	{}
 
 	void CImage::SetAttribute(const std::string& sName, CSvgReader& oReader)
@@ -61,6 +62,19 @@ namespace SVG
 			m_oRect.m_oHeight.SetValue(oReader.GetText());
 		else if ("href" == sName || "xlink:href" == sName)
 			m_wsHref = oReader.GetText(); // TODO:: In the future, it may be worth implementing a separate CHref class for all link types
+		else if ("preserveAspectRatio" == sName)
+		{
+			const std::wstring wsValue{oReader.GetText()};
+
+			m_bPreserveRatio = (std::wstring::npos == wsValue.find(L"none"));
+			m_bSlice         = (std::wstring::npos != wsValue.find(L"slice"));
+
+			if (m_bPreserveRatio)
+			{
+				m_dLeadingSpaceRatioX = (std::wstring::npos != wsValue.find(L"xMin")) ? 0. : ((std::wstring::npos != wsValue.find(L"xMax")) ? 1. : 0.5);
+				m_dLeadingSpaceRatioY = (std::wstring::npos != wsValue.find(L"YMin")) ? 0. : ((std::wstring::npos != wsValue.find(L"YMax")) ? 1. : 0.5);
+			}
+		}
 		else
 			CRenderedObject::SetAttribute(sName, oReader);
 	}
@@ -133,24 +147,39 @@ namespace SVG
 		CBgraFrame oBgraFrame;
 		oBgraFrame.Decode(pBuffer, ulSize);
 
-		double dImageW = oBgraFrame.get_Width();
-		double dImageH = oBgraFrame.get_Height();
+		const int nImageW = oBgraFrame.get_Width();
+		const int nImageH = oBgraFrame.get_Height();
+
+		int nSrcX = 0, nSrcY = 0, nSrcW = nImageW, nSrcH = nImageH;
+
+		if (m_bPreserveRatio && 0 < nImageW && 0 < nImageH && 0. < dWidth && 0. < dHeight)
+		{
+			const double dImageW = nImageW;
+			const double dImageH = nImageH;
+
+			if (m_bSlice)
+			{
+				const double dScale = (std::max)(dWidth / dImageW, dHeight / dImageH);
+
+				nSrcW = (std::max)(1, (std::min)(nImageW, (int)(dWidth  / dScale + 0.5)));
+				nSrcH = (std::max)(1, (std::min)(nImageH, (int)(dHeight / dScale + 0.5)));
+				nSrcX = (int)((nImageW - nSrcW) * m_dLeadingSpaceRatioX + 0.5);
+				nSrcY = (int)((nImageH - nSrcH) * m_dLeadingSpaceRatioY + 0.5);
+			}
+			else
+			{
+				const double dScale = (std::min)(dWidth / dImageW, dHeight / dImageH);
+
+				dX += (dWidth  - dImageW * dScale) * m_dLeadingSpaceRatioX;
+				dY += (dHeight - dImageH * dScale) * m_dLeadingSpaceRatioY;
+
+				dWidth  = dImageW * dScale;
+				dHeight = dImageH * dScale;
+			}
+		}
 
 		Aggplus::CImage oImage;
-		oImage.Create(oBgraFrame.get_Data(), dImageW, dImageH, -4 * dImageW, true);
-
-		if (dImageW / dWidth > dImageH / dHeight)
-		{
-			double dValue = dImageW / dWidth;
-			dY += (dHeight - (dImageH / dValue)) / 2.;
-			dHeight = dImageH / dValue;
-		}
-		else if (dImageW / dWidth < dImageH / dHeight)
-		{
-			double dValue = dImageH / dHeight;
-			dX += (dWidth - (dImageW / dValue)) / 2.;
-			dWidth = dImageW / dValue;
-		}
+		oImage.Create(oBgraFrame.get_Data() + 4 * (nSrcY * nImageW + nSrcX), nSrcW, nSrcH, -4 * nImageW, true);
 
 		if (CommandeModeClip != oMode)
 			pRenderer->DrawImage(&oImage, dX, dY, dWidth, dHeight);

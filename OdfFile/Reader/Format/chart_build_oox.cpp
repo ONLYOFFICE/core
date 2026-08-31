@@ -714,18 +714,18 @@ void object_odf_context::oox_convert(oox::oox_chart_context & chart_context)
 			}
 			else
 			{	//x
-				if (false == domain_cash.empty() || false == cash_values.empty())
+				if (false == domain_cell_range_adress_.empty() || false == domain_cash.empty())
 				{
 					if (!bPivotChart_)
 						current->set_formula_series(2, domain_cell_range_adress_, formatCode, bLinkData.get_value_or(strAxisType ? false : true));
-					current->set_values_series (2, domain_cash);		
+					current->set_values_series (2, domain_cash);
 				}
 				//y
-				if (false == cell_cash.empty() || false == cash_values.empty())
+				if (false == series_[i].cell_range_address_.empty() || false == cell_cash.empty())
 				{
 					if (!bPivotChart_)
 						current->set_formula_series(3, series_[i].cell_range_address_, formatCode, bLinkData.get_value_or(strAxisType ? false : true));
-					current->set_values_series (3, cell_cash);		
+					current->set_values_series (3, cell_cash);
 				}
 			}
 		}

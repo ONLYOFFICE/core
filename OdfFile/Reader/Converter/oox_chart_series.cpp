@@ -53,6 +53,34 @@
 namespace cpdoccore {
 namespace oox {
 
+static _CP_OPT(int) get_marker_size_pt(odf_reader::chart_format_properties_ptr & prop)
+{
+	_CP_OPT(int) result;
+
+	if (!prop) return result;
+
+	_CP_OPT(double)	dValue;
+	_CP_OPT(int)	iUnit;
+
+	odf_reader::GetProperty(prop, L"symbol-width-value",	dValue);
+	odf_reader::GetProperty(prop, L"symbol-width-unit",		iUnit);
+
+	if (!dValue)
+	{
+		odf_reader::GetProperty(prop, L"symbol-height-value",	dValue);
+		odf_reader::GetProperty(prop, L"symbol-height-unit",	iUnit);
+	}
+	if (!dValue || !iUnit) return result;
+
+	const double pt = odf_types::length(*dValue, (odf_types::length::unit)*iUnit).get_value_unit(odf_types::length::pt);
+	const int size = (int)(pt + 0.5);
+
+	if (size < 2 || size > 72) return result;
+
+	result = size;
+	return result;
+}
+
 oox_chart_series::oox_chart_series()
 {
 	values_[0].type	= L"c:cat";//labels
@@ -256,13 +284,21 @@ void oox_chart_series::oox_serialize_marker(std::wostream & _Wostream)
 				case 0:	//none
 				case 1:	//auto
 				default:
-					CP_XML_ATTR(L"val", L"none");			
+					CP_XML_ATTR(L"val", L"none");
 				}
 			}
 			if (iSymbolMarkerType_ > 0)
 			{
+				_CP_OPT(int) size = get_marker_size_pt(content_.properties_);
+				if (size)
+				{
+					CP_XML_NODE(L"c:size")
+					{
+						CP_XML_ATTR(L"val", *size);
+					}
+				}
 				oox_chart_shape shape;
-				
+
 				shape.set(content_.graphic_properties_, content_.fill_);
 				shape.oox_serialize(_Wostream);
 			}
@@ -368,12 +404,6 @@ void oox_chart_series::oox_serialize_last(std::wostream & _Wostream)
 					{
 						CP_XML_ATTR(L"val", indPoint++);
 					}
-					if (content_.points_[i].graphic_properties_ && content_.points_[i].fill_.type >= 0)
-					{
-						odf_reader::graphic_format_properties_ptr empty;
-						shape.set(empty, content_.points_[i].fill_);
-						shape.oox_serialize(CP_XML_STREAM());
-					}
 					if (data_labels_ && content_.points_[i].text_properties_)
 					{
 						data_labels_->add_dLbl(indPoint - 1, content_.points_[i].text_properties_);
@@ -415,6 +445,15 @@ void oox_chart_series::oox_serialize_last(std::wostream & _Wostream)
 							}
 							if (symbol > 0)
 							{
+								_CP_OPT(int) size = get_marker_size_pt(content_.points_[i].properties_);
+								if (!size) size = get_marker_size_pt(content_.properties_);
+								if (size)
+								{
+									CP_XML_NODE(L"c:size")
+									{
+										CP_XML_ATTR(L"val", *size);
+									}
+								}
 								oox_chart_shape shape;
 
 								shape.set(content_.points_[i].graphic_properties_, content_.points_[i].fill_);
@@ -422,10 +461,15 @@ void oox_chart_series::oox_serialize_last(std::wostream & _Wostream)
 							}
 						}
 					}
+					if (content_.points_[i].graphic_properties_ && content_.points_[i].fill_.type >= 0)
+					{
+						shape.set(content_.graphic_properties_, content_.points_[i].fill_);
+						shape.oox_serialize(CP_XML_STREAM());
+					}
 				}
 			}
 		}
-		
+
 		if (data_labels_)
 		{
 			data_labels_->oox_serialize(_Wostream);

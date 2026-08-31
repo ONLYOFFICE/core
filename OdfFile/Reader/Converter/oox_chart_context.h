@@ -143,17 +143,22 @@ public:
 		plot_area_.properties_ = prop;
 		plot_area_.fill_ = fill; 
 	}
+	void set_default_font_name(const std::wstring & name)
+	{
+		default_font_name_ = name;
+	}
 	bool no_used_local_tables_;
 
 	void set_cache_only	(bool val);
 private:
 	mediaitems_ptr mediaitems_;
 	std::vector<_rel> rels_;
-	
+
 	oox::oox_title			title_;
 	oox::oox_plot_area		plot_area_;
 	oox::oox_chart_legend	legend_;
 
+	std::wstring default_font_name_;
 	std::wstring pivot_source_;
 	std::wstring externalDataId_;
 	std::wstring userShapesId_;

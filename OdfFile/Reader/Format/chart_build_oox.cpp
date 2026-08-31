@@ -35,6 +35,8 @@
 #include "../../Reader/Converter/xlsx_textcontext.h"
 #include "../../Reader/Converter/xlsx_num_format_context.h"
 
+#include <boost/algorithm/string.hpp>
+
 #include "serialize_elements.h"
 #include "odf_document.h"
 #include <xml/utils.h>
@@ -217,9 +219,45 @@ void object_odf_context::add_point(unsigned int rep)
 }
 
 
+static std::wstring get_document_font_name(odf_reader::odf_document * document)
+{
+	if (!document) return L"";
+
+	odf_reader::odf_read_context & context = document->odf_context();
+
+	const odf_types::style_family::type families[] =	{ odf_types::style_family::Chart,
+														  odf_types::style_family::Paragraph,
+														  odf_types::style_family::TableCell,
+														  odf_types::style_family::Graphic };
+	for (size_t i = 0; i < sizeof(families) / sizeof(families[0]); i++)
+	{
+		odf_reader::style_instance * inst = context.styleContainer().style_default_by_type(families[i]);
+		if (!inst) continue;
+
+		odf_reader::text_format_properties_ptr properties = calc_text_properties_content(inst);
+		if (!properties) continue;
+
+		std::wstring name;
+
+		if (properties->fo_font_family_)
+		{
+			name = *properties->fo_font_family_;
+		}
+		else if (properties->style_font_name_)
+		{
+			font_instance * font = context.fontContainer().font_by_style_name(*properties->style_font_name_);
+			name = font ? font->name() : *properties->style_font_name_;
+		}
+		boost::algorithm::trim_if(name, boost::algorithm::is_any_of("'"));
+
+		if (false == name.empty()) return name;
+	}
+	return L"";
+}
+
 void object_odf_context::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
-	if (object_type_ == 1) 
+	if (object_type_ == 1)
 	{
 		if (pivot_source_.empty() == false)
 		{
@@ -228,9 +266,10 @@ void object_odf_context::xlsx_convert(oox::xlsx_conversion_context & Context)
 		}
 		Context.start_chart(L"");
 		oox::oox_chart_context & chart = Context.current_chart();
-		
+
 		chart.no_used_local_tables_ = true;
-		
+		chart.set_default_font_name(get_document_font_name(Context.root()));
+
 		oox_convert(chart);
 
 		Context.end_chart();
@@ -261,6 +300,8 @@ void object_odf_context::docx_convert(oox::docx_conversion_context & Context)
 	{
 		Context.start_chart(L"");
 		oox::oox_chart_context & chart_context = Context.current_chart();
+
+		chart_context.set_default_font_name(get_document_font_name(Context.root()));
 
 		oox_convert(chart_context);
 
@@ -353,7 +394,9 @@ void object_odf_context::pptx_convert(oox::pptx_conversion_context & Context)
 	{
 		Context.start_chart(L"");
 		oox::oox_chart_context & chart_context = Context.current_chart();
-		
+
+		chart_context.set_default_font_name(get_document_font_name(Context.root()));
+
 		oox_convert(chart_context);
 
 		if (embeddedData.empty())
@@ -979,6 +1022,13 @@ void process_build_object::ApplyTextProperties(std::wstring style, text_format_p
     if(styleInst)
 	{
 		propertiesOut = calc_text_properties_content(styleInst);
+
+		if (propertiesOut && propertiesOut->style_font_name_ && !propertiesOut->fo_font_family_ && document_)
+		{
+			font_instance * font = document_->odf_context().fontContainer().font_by_style_name(*propertiesOut->style_font_name_);
+
+			propertiesOut->fo_font_family_ = font ? font->name() : *propertiesOut->style_font_name_;
+		}
     }
 }
 void process_build_object::ApplyGraphicProperties(std::wstring style, graphic_format_properties_ptr & propertiesOut, oox::_oox_fill & fill)

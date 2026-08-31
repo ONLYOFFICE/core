@@ -189,7 +189,29 @@ void oox_chart_context::serialize(std::wostream & strm)
 
 			shape.set(graphic_properties_, fill_);
 			shape.oox_serialize(CP_XML_STREAM());
-	
+
+			if (false == default_font_name_.empty())
+			{
+				CP_XML_NODE(L"c:txPr")
+				{
+					CP_XML_NODE(L"a:bodyPr");
+					CP_XML_NODE(L"a:lstStyle");
+					CP_XML_NODE(L"a:p")
+					{
+						CP_XML_NODE(L"a:pPr")
+						{
+							CP_XML_NODE(L"a:defRPr")
+							{
+								CP_XML_NODE(L"a:latin")	{ CP_XML_ATTR(L"typeface", default_font_name_); }
+								CP_XML_NODE(L"a:ea")	{ CP_XML_ATTR(L"typeface", default_font_name_); }
+								CP_XML_NODE(L"a:cs")	{ CP_XML_ATTR(L"typeface", default_font_name_); }
+							}
+						}
+						CP_XML_NODE(L"a:endParaRPr");
+					}
+				}
+			}
+
 			if (pivot_source_.empty() == false)
 			{
 				CP_XML_NODE(L"c:extLst")

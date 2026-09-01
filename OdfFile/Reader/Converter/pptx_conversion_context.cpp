@@ -216,11 +216,35 @@ namespace cpdoccore {
 		odf_reader::odf_read_context& odfContext = root()->odf_context();
 		std::vector<const odf_reader::style_instance*> instances;
 
+		instances.push_back(odfContext.styleContainer().style_default_by_type(odf_types::style_family::Paragraph));
 		instances.push_back(odfContext.styleContainer().style_default_by_type(odf_types::style_family::Presentation));
 		instances.push_back(odfContext.styleContainer().style_by_name(L"Default", odf_types::style_family::Presentation, false));
 
 		odf_reader::text_format_properties_ptr textFormatProperties = calc_text_properties_content(instances);
 		odf_reader::paragraph_format_properties parFormatProperties = calc_paragraph_properties_content(instances);
+
+		_CP_OPT(odf_types::writing_mode) writingMode = parFormatProperties.style_writing_mode_;
+
+		if (!writingMode)
+		{
+			std::vector<const odf_reader::style_instance*> graphicInstances;
+
+			graphicInstances.push_back(odfContext.styleContainer().style_default_by_type(odf_types::style_family::Graphic));
+			graphicInstances.push_back(odfContext.styleContainer().style_by_name(L"standard", odf_types::style_family::Graphic, false));
+			graphicInstances.push_back(odfContext.styleContainer().style_default_by_type(odf_types::style_family::Presentation));
+
+			odf_reader::graphic_format_properties_ptr grFormatProperties = calc_graphic_properties_content(graphicInstances);
+
+			if (grFormatProperties)
+			{
+				writingMode = grFormatProperties->common_writing_mode_attlist_.style_writing_mode_;
+			}
+		}
+		if (writingMode)
+		{
+			set_rtl(writingMode->is_rtl());
+		}
+		presentation_.set_rtl(get_rtl());
 
 		process_masters_ = false;
 	}

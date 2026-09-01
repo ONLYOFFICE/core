@@ -238,6 +238,19 @@ void table_table::pptx_convert(oox::pptx_conversion_context & Context)
     std::wostream & _Wostream = Context.get_table_context().tableData();  
 	_Wostream << L"<a:tbl>";
 
+	style_instance * inst = Context.root()->odf_context().styleContainer().style_by_name( tableStyleName, style_family::Table, true);
+
+	bool table_rtl = Context.get_rtl();
+	for (const style_instance * cur = inst; cur; cur = cur->parent())
+		style_table_properties * table_props = cur->content() ? cur->content()->get_style_table_properties() : NULL;
+
+		if ((table_props) && (table_props->content().common_writing_mode_attlist_.style_writing_mode_))
+		{
+			table_rtl = table_props->content().common_writing_mode_attlist_.style_writing_mode_->is_rtl(Context.get_rtl());
+			break;
+		}
+	}
+
  	_Wostream << L"<a:tblPr";
 		if (attlist_.table_use_banding_rows_styles_)
 			_Wostream << L"	bandRow=\"1\"";
@@ -247,10 +260,10 @@ void table_table::pptx_convert(oox::pptx_conversion_context & Context)
 			_Wostream << L"	bandCol=\"1\"";
 		if (attlist_.table_use_first_column_styles_)
 			_Wostream << L"	firstCol=\"1\"";		
+		if (table_rtl)
+			_Wostream << L"	rtl=\"1\"";
 	_Wostream << ">";
 	
-	style_instance * inst = Context.root()->odf_context().styleContainer().style_by_name( tableStyleName, style_family::Table, true);
-
     if ((inst) && (inst->content()))
 	{
 		if (inst->content()->get_graphic_properties())

@@ -324,15 +324,24 @@ void paragraph_format_properties::pptx_convert(oox::pptx_conversion_context & Co
 			_pPr << L"indent=\"" << w_firstLine << "\" ";
 	}
 
+	const bool rtl = style_writing_mode_ ? style_writing_mode_->is_rtl(Context.get_rtl()) : Context.get_rtl();
+
+	if (style_writing_mode_ && rtl != Context.get_rtl())
+	{
+		_pPr << L"rtl=\"" << (rtl ? L"1" : L"0") << "\" ";
+	}
+
 	if (fo_text_align_)
 	{
 		std::wstring jc;
 		switch(fo_text_align_->get_type())
 		{
 		case text_align::Start:
+			jc = rtl ? L"r" : L"l";	break;
 		case text_align::Left:
 			jc = L"l";		break;
 		case text_align::End:
+			jc = rtl ? L"l" : L"r";	break;
 		case text_align::Right:
 			jc = L"r";		break;
 		case text_align::Center:	
@@ -358,20 +367,6 @@ void paragraph_format_properties::pptx_convert(oox::pptx_conversion_context & Co
 		if (!w_val.empty())
 			_pPr << L"fontAlgn=\""  << w_val << "\" ";
 	}
-	//if (style_writing_mode_)
-	//{
-	//	writing_mode::type type = style_writing_mode_->get_type();
-	//	switch(type)
-	//	{
-	//	case writing_mode::RlTb:
-	//	case writing_mode::TbRl:
-	//	case writing_mode::Rl:
-	//		Context.set_rtl(true);
-	//		break;
-	//	default:
-	//		Context.set_rtl(false);
-	//	}
-	//}
 ////////////////////////////////////////////////////////////////////////
  //now nodes to pPr or defPPr
 	CP_XML_WRITER(Context.get_text_context().get_styles_context().paragraph_nodes())

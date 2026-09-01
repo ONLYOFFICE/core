@@ -490,6 +490,7 @@ public:
 		bool encrypt_file (const std::wstring &password, const std::wstring & srcPath, const std::wstring & dstPath, std::wstring &encrypt_info, int &size);
 		
 		std::vector<double> current_font_size;
+		bool current_bidi_set = false;
 
 //.......................................................................................................................
 		virtual OOX::IFileContainer								*current_document() = 0;

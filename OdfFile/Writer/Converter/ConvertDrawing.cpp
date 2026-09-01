@@ -2332,9 +2332,11 @@ void OoxConverter::convert(PPTX::Logic::TextParagraphPr *oox_paragraph_pr	, odf_
 		{
 			paragraph_properties->fo_text_indent_ = odf_types::length_or_percent(odf_types::length(oox_paragraph_pr->indent.get() / 12700., odf_types::length::pt));
 		}
-		if (oox_paragraph_pr->rtl.IsInit() && *oox_paragraph_pr->rtl)
+		if (oox_paragraph_pr->rtl.IsInit())
 		{
-			paragraph_properties->style_writing_mode_= odf_types::writing_mode(odf_types::writing_mode::RlTb);
+			paragraph_properties->style_writing_mode_ = *oox_paragraph_pr->rtl 
+				? odf_types::writing_mode(odf_types::writing_mode::RlTb)
+				: odf_types::writing_mode(odf_types::writing_mode::LrTb);
 		}	
 	}
 	//defTabSz;
@@ -2518,11 +2520,25 @@ void OoxConverter::convert(PPTX::Logic::RunProperties *oox_run_pr, odf_writer::t
             oox_country = oox_language.substr(res + 1);
             oox_language = oox_language.substr(0, res);
 		}
-		
-		text_properties->fo_language_ = oox_language;
-        if (!oox_country.empty())
-			text_properties->fo_country_ = oox_country;
-
+		if (current_bidi_set)
+		{
+			text_properties->style_language_complex_ = oox_language;
+		}
+		else
+		{
+			text_properties->fo_language_ = oox_language;
+		}
+		if (!oox_country.empty())
+		{
+			if (current_bidi_set)
+			{
+				text_properties->style_country_complex_ = oox_country;
+			}
+			else
+			{
+				text_properties->fo_country_ = oox_country;
+			}
+		}
 	}
 	if (oox_run_pr->spc.IsInit())
 	{

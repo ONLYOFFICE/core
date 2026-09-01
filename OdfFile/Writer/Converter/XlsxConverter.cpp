@@ -1861,8 +1861,10 @@ void XlsxConverter::convert(OOX::Spreadsheet::CSheetViews *oox_sheet_views)
 
 		ods_context->start_table_view( view_id );
 		
-		if (sheet_view->m_oRightToLeft.IsInit() && sheet_view->m_oRightToLeft->GetValue()==1)
+		if (sheet_view->m_oRightToLeft.IsInit() && sheet_view->m_oRightToLeft->ToBool())
+		{
 			ods_context->current_table()->set_table_rtl(true);
+		}
 
 		if (sheet_view->m_oShowGridLines.IsInit() && sheet_view->m_oShowGridLines->GetValue()==0)
 		{

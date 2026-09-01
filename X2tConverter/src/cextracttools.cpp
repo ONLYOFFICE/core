@@ -803,7 +803,9 @@ namespace NExtractTools
 			oBuilder.WriteString(L"</Lcid>");
 		}
 		std::wstring sJsonParams, wsPrintOptions;
-		int nSavePage = (NULL != params.m_oThumbnail && NULL != params.m_oThumbnail->page) ? *params.m_oThumbnail->page : - 1;
+		int nSavePage = -1;
+		if (NULL != params.m_oThumbnail || NSDoctRenderer::DoctRendererFormat::FormatFile::IMAGE == eToType)
+			nSavePage = (NULL != params.m_oThumbnail && NULL != params.m_oThumbnail->page) ? *params.m_oThumbnail->page : 0;
 		if (nSavePage != -1)
 		{
 			wsPrintOptions = L"\"printOptions\":{\"savePage\":";

@@ -117,8 +117,6 @@ namespace NSOnlineOfficeBinToPdf
 		int nPagesCount = oInfo.PagesCount;
 		if (0 == nPagesCount)
 			return false;
-		if (m_internal->m_nSavePage != -1 && nPagesCount != 1)
-			return false;
 
 		NSFonts::IFontManager* pFontManager = m_internal->appFonts->GenerateFontManager();
 		NSFonts::IFontsCache* pFontsCache = NSFonts::NSFontCache::Create();

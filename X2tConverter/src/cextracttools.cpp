@@ -804,8 +804,8 @@ namespace NExtractTools
 		}
 		std::wstring sJsonParams, wsPrintOptions;
 		int nSavePage = -1;
-		if (NULL != params.m_oThumbnail || NSDoctRenderer::DoctRendererFormat::FormatFile::IMAGE == eToType)
-			nSavePage = (NULL != params.m_oThumbnail && NULL != params.m_oThumbnail->page) ? *params.m_oThumbnail->page : 0;
+		if (params.m_oThumbnail)
+			nSavePage = params.m_oThumbnail->page ? *params.m_oThumbnail->page : 0;
 		if (nSavePage != -1)
 		{
 			wsPrintOptions = L"\"printOptions\":{\"savePage\":";

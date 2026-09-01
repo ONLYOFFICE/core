@@ -743,7 +743,7 @@ namespace NExtractTools
 			bool bIsZip = true;
 			int nRasterW = 100;
 			int nRasterH = 100;
-			int nSavePage = -1;
+			int nSavePage = 0;
 			if (NULL != params.m_oThumbnail)
 			{
 				InputParamsThumbnail *oThumbnail = params.m_oThumbnail;

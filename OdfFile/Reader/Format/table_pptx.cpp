@@ -242,6 +242,7 @@ void table_table::pptx_convert(oox::pptx_conversion_context & Context)
 
 	bool table_rtl = Context.get_rtl();
 	for (const style_instance * cur = inst; cur; cur = cur->parent())
+	{
 		style_table_properties * table_props = cur->content() ? cur->content()->get_style_table_properties() : NULL;
 
 		if ((table_props) && (table_props->content().common_writing_mode_attlist_.style_writing_mode_))

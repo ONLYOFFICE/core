@@ -84,6 +84,33 @@ int table_table_cell_content::xlsx_convert(oox::xlsx_conversion_context & Contex
     return sharedStrId;
 }
 
+void table_table_row::activate_content_validations(oox::xlsx_conversion_context & Context)
+{
+	int row = Context.current_table_row() + 1;
+	if (row >= oox::max_table_rows) return;
+
+	int rows_repeated = (std::min)((int)attlist_.table_number_rows_repeated_, oox::max_table_rows - row);
+
+	int col = 0;
+	for (size_t i = 0; (i < content_.size()) && (col < oox::max_table_columns); i++)
+	{
+		table_table_cell			*cell		= dynamic_cast<table_table_cell*>		(content_[i].get());
+		table_covered_table_cell	*cover_cell	= dynamic_cast<table_covered_table_cell*>(content_[i].get());
+
+		table_table_cell_attlist	*attlist	= cell ? &cell->attlist_ : (cover_cell ? &cover_cell->attlist_ : NULL);
+		if (!attlist) break;
+
+		if (attlist->table_content_validation_name_)
+		{
+			int col_last = (std::min)(col + (int)attlist->table_number_columns_repeated_, oox::max_table_columns);
+			for (int c = col; c < col_last; c++)
+			{
+				Context.get_dataValidations_context().activate(*attlist->table_content_validation_name_, c, row, rows_repeated);
+			}
+		}
+		col += attlist->table_number_columns_repeated_;
+	}
+}
 void table_table_row::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
 	bool bEndTable = Context.get_table_context().state()->get_end_table();
@@ -95,6 +122,8 @@ void table_table_row::xlsx_convert(oox::xlsx_conversion_context & Context)
 	}
 	if (attlist_.table_number_rows_repeated_ > 0x0f00 && empty_content_cells(false) || bEndTable)//0xf000 - conv_KDZO3J3xLIbZ5fC0HR0__xlsx.ods
 	{
+		activate_content_validations(Context); //check for validations
+
 		Context.get_table_context().state()->set_end_table();
 		Context.get_table_context().state()->add_empty_row(attlist_.table_number_rows_repeated_, bHeader);
 		return;		//conv_hSX8n3lVbhALjt0aafg__xlsx.ods, conv_MA2CauoNfX_7ejKS5eg__xlsx.ods
@@ -1491,7 +1520,9 @@ void table_content_validation::xlsx_convert(oox::xlsx_conversion_context & Conte
 {
 	std::wstring name = table_name_.get_value_or(L"");
 	
-	Context.get_dataValidations_context().add(name, table_base_cell_address_.get_value_or(L""));
+	Context.get_dataValidations_context().add(name, table_base_cell_address_.get_value_or(L""),
+													table_allowempty_cell_ ? table_allowempty_cell_->get() : true,
+													table_display_list_.get_value_or(L"unsorted") == L"none");
 	Context.get_dataValidations_context().add_formula(name, table_condition_.get_value_or(L""));
 	
 	for (size_t i = 0 ; i < content_.size(); i++)

@@ -43,6 +43,9 @@ namespace cpdoccore {
 
 namespace oox {
 
+const int max_table_rows	= 1048576;
+const int max_table_columns	= 16384;
+
 bool IsNumber(const std::wstring &value);
 std::wstring GetNumberFromString(const std::wstring &value);
 

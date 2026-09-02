@@ -400,7 +400,7 @@ namespace NExtractTools
 							else if (_T("aspect") == sName)
 								aspect = new int(XmlUtils::GetInteger(sValue));
 							else if (_T("first") == sName) // deprecated
-								page = (XmlUtils::GetBoolean2(sValue) ? new int(0) : NULL);
+								page = new int(XmlUtils::GetBoolean2(sValue) ? 0 : -1);
 							else if (_T("zip") == sName)
 								zip = new bool(XmlUtils::GetBoolean2(sValue));
 							else if (_T("width") == sName)

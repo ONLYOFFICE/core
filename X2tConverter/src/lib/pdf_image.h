@@ -268,11 +268,10 @@ namespace NExtractTools
 			{
 				imageWriter.SetRasterH(*oThumbnail->height);
 			}
-			if (NULL != oThumbnail->page)
-			{
-				imageWriter.SetSavePage(*oThumbnail->page);
-			}
 		}
+		imageWriter.SetSavePage((NULL != params.m_oThumbnail && NULL != params.m_oThumbnail->page)
+			? *params.m_oThumbnail->page : 0);
+
 		std::wstring sThumbnailDir;
 		if (imageWriter.GetSavePage() != -1)
 		{
@@ -281,7 +280,7 @@ namespace NExtractTools
 		else
 		{
 			std::wstring sFileAddon = L"image" + getExtentionByRasterFormat(imageWriter.GetRasterFormat());
-			if (NULL == params.m_oThumbnail->zip || *(params.m_oThumbnail->zip))
+			if (NULL == params.m_oThumbnail || NULL == params.m_oThumbnail->zip || *(params.m_oThumbnail->zip))
 			{
 				sThumbnailDir = combinePath(convertParams.m_sTempDir, L"thumbnails");
 				NSDirectory::CreateDirectory(sThumbnailDir);
@@ -744,7 +743,7 @@ namespace NExtractTools
 			bool bIsZip = true;
 			int nRasterW = 100;
 			int nRasterH = 100;
-			int nSavePage = -1;
+			int nSavePage = 0;
 			if (NULL != params.m_oThumbnail)
 			{
 				InputParamsThumbnail *oThumbnail = params.m_oThumbnail;

@@ -105,7 +105,7 @@ Aggplus::CImage* CreateImageFromSource(bool bFromMemory, BYTE* pData, LONG lLeng
 
 	return pImage;
 }
-Aggplus::CImage* ConvertMetafile(NSFonts::IApplicationFonts* pAppFonts, const std::wstring& wsPath, const std::wstring& wsTempDirectory, double dWidth = -1, double dHeight = -1)
+Aggplus::CImage* ConvertMetafile(NSFonts::IApplicationFonts* pAppFonts, const std::wstring& wsPath, const std::wstring& wsTempDirectory, double dWidth = -1, double dHeight = -1, bool bUseNativeSize = false)
 {
 	if (wsPath.find(L"data:") == 0)
 	{
@@ -174,17 +174,31 @@ Aggplus::CImage* ConvertMetafile(NSFonts::IApplicationFonts* pAppFonts, const st
 
 	if (!bUseMax)
 	{
+		double dRasterWidth  = MM_2_PT(dWidth);
+		double dRasterHeight = MM_2_PT(dHeight);
+
+		if (bUseNativeSize)
+		{
+			double dNativeX = 0, dNativeY = 0, dNativeW = 0, dNativeH = 0;
+			pMeta->GetBounds(&dNativeX, &dNativeY, &dNativeW, &dNativeH);
+			if (dNativeW > 0 && dNativeH > 0)
+			{
+				dRasterWidth  = dNativeW;
+				dRasterHeight = dNativeH;
+			}
+		}
+
 		if (bFromMemory)
 		{
 			BYTE* pImg = NULL;
 			int nImg = 0;
-			pMeta->ConvertToRaster(pImg, nImg, _CXIMAGE_FORMAT_PNG, MM_2_PT(dWidth), MM_2_PT(dHeight));
+			pMeta->ConvertToRaster(pImg, nImg, _CXIMAGE_FORMAT_PNG, (int)dRasterWidth, (int)dRasterHeight);
 			pMemoryStorage->Add(wsTempDirectory, pImg, nImg);
 			pData = pImg;
 			lLength = nImg;
 		}
 		else
-			pMeta->ConvertToRaster(wsTempDirectory.c_str(), _CXIMAGE_FORMAT_PNG, MM_2_PT(dWidth), MM_2_PT(dHeight));
+			pMeta->ConvertToRaster(wsTempDirectory.c_str(), _CXIMAGE_FORMAT_PNG, (int)dRasterWidth, (int)dRasterHeight);
 	}
 	else
 	{
@@ -1729,7 +1743,7 @@ HRESULT CPdfWriter::AddFormField(NSFonts::IApplicationFonts* pAppFonts, CFormFie
 		PdfWriter::CImageDict* pImage = NULL;
 		if (wsPath.length())
 		{
-			Aggplus::CImage* pCImage = ConvertMetafile(pAppFonts, wsPath, GetTempFile(wsTempDirectory), MM_TO_PT(dW), MM_TO_PT(dH));
+			Aggplus::CImage* pCImage = ConvertMetafile(pAppFonts, wsPath, GetTempFile(wsTempDirectory), MM_TO_PT(dW), MM_TO_PT(dH), true);
 			pImage = LoadImage(pCImage, 255);
 			RELEASEOBJECT(pCImage);
 		}

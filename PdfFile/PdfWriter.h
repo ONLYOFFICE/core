@@ -39,13 +39,13 @@
 #include <vector>
 #include <math.h>
 
-#include "../../DesktopEditor/graphics/IRenderer.h"
-#include "../../DesktopEditor/graphics/pro/Fonts.h"
-#include "../../DesktopEditor/graphics/pro/Image.h"
-#include "../../DesktopEditor/graphics/commands/FormField.h"
-#include "../../DesktopEditor/graphics/commands/DocInfo.h"
-#include "../../DesktopEditor/graphics/commands/AnnotField.h"
-#include "../../DesktopEditor/xmlsec/src/include/Certificate.h"
+#include "../DesktopEditor/graphics/IRenderer.h"
+#include "../DesktopEditor/graphics/pro/Fonts.h"
+#include "../DesktopEditor/graphics/pro/Image.h"
+#include "../DesktopEditor/graphics/commands/FormField.h"
+#include "../DesktopEditor/graphics/commands/DocInfo.h"
+#include "../DesktopEditor/graphics/commands/AnnotField.h"
+#include "../DesktopEditor/xmlsec/src/include/Certificate.h"
 #include "SrcWriter/States.h"
 #include "SrcWriter/Annotation.h"
 

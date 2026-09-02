@@ -369,7 +369,7 @@ void _xlsx_drawing::serialize(std::wostream & strm, const std::wstring & ns, boo
 			{
 				CP_XML_NODE(ns + L":twoCellAnchor")
 				{
-					CP_XML_ATTR(L"editAs", L"oneCell");//"absolute");oneCell
+					CP_XML_ATTR(L"editAs", anchor_absolute ? L"absolute" : L"oneCell");
 
 					from_.serialize(CP_XML_STREAM());
 					to_.serialize(CP_XML_STREAM());

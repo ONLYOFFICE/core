@@ -46,6 +46,25 @@ namespace DocFileFormat
 		rcBounds.bottom = rcBounds.left = rcBounds.right = rcBounds.top = 0;
 
 	}
+	static short CalculateMetafileInch(const RECT& oBounds, const POINT& oSize)
+	{
+		const int nWidth  = oBounds.right  - oBounds.left;
+		const int nHeight = oBounds.bottom - oBounds.top;
+
+		double dInch = 0.;
+
+		//914400 EMU = 1 Inch
+		if (nWidth > 0 && oSize.x > 0)
+			dInch = (double)nWidth * 914400. / (double)oSize.x;
+		else if (nHeight > 0 && oSize.y > 0)
+			dInch = (double)nHeight * 914400. / (double)oSize.y;
+
+		const int nInch = (int)(dInch + 0.5);
+
+		//32767 = INT16_MAX
+		return (nInch > 0 && nInch <= 32767) ? (short)nInch : 1440; //1440 - default inch
+	}
+
 	void CMetaHeader::ToWMFHeader(WmfPlaceableFileHeader* pHeader)
 	{
 		if (NULL == pHeader)
@@ -54,12 +73,12 @@ namespace DocFileFormat
 		pHeader->Key				= 0x9AC6CDD7;
 		pHeader->Hmf				= 0;
 
-		pHeader->BoundingBox.Left	= (short)rcBounds.left;
+		pHeader->BoundingBox.Left	= (short)rcBounds.left;	
 		pHeader->BoundingBox.Top	= (short)rcBounds.top;
 		pHeader->BoundingBox.Right	= (short)rcBounds.right;
 		pHeader->BoundingBox.Bottom = (short)rcBounds.bottom;
 
-		pHeader->Inch				= 1440; // 1:1
+		pHeader->Inch				= CalculateMetafileInch(rcBounds, ptSize);
 		pHeader->Reserved			= 0;
 
 		pHeader->Checksum			= 0;

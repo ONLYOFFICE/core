@@ -2533,7 +2533,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CAligment *aligment, odf_writer::p
 	_CP_OPT(odf_types::length) indent;
 	if (aligment->m_oIndent.IsInit())
 	{
-		indent = odf_types::length(ods_context->convert_symbol_width(*aligment->m_oIndent, true), odf_types::length::pt);
+		indent = odf_types::length(ods_context->convert_symbol_indent(*aligment->m_oIndent), odf_types::length::pt);
 	}
 	if(aligment->m_oHorizontal.IsInit())
 	{

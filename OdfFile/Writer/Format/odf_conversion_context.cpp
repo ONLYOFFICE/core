@@ -155,6 +155,15 @@ double odf_conversion_context::convert_symbol_width(double val, bool add_padding
 	return pixels * 0.75; //* 9525. * 72.0 / (360000.0 * 2.54);
 }
 
+double odf_conversion_context::convert_symbol_indent(double val)
+{
+	//1 indent = 3 space
+	double symbol_width = font_metrix_.approx_symbol_width;
+	if (symbol_width < 1) symbol_width = 7.;
+
+	return val * 1.5 * symbol_width * 0.75; //pixels -> pt
+}
+
 void odf_conversion_context::add_hyperlink(office_element_ptr& elem, const std::wstring& ref)
 {
 	hyperlinks_.push_back(std::make_pair(elem, ref));

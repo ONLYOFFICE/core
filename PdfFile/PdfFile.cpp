@@ -499,7 +499,7 @@ void CPdfFile::DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pB
 		return;
 	pRenderer->CommandLong(c_nPenWidth0As1px, 1);
 	m_pInternal->pReader->SetParams(pParams);
-	m_pInternal->pReader->DrawPageOnRenderer(pRenderer, nPageIndex, pBreak, m_pInternal->bDrawOnlyText);
+	m_pInternal->pReader->DrawPageOnRenderer(pRenderer, nPageIndex, pBreak, m_pInternal->bDrawOnlyText, (pParams ? pParams->m_bPrint : false));
 }
 void CPdfFile::SetPainter(IOfficeDrawingFilePainter* pPainter)
 {

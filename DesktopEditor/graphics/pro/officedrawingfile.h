@@ -50,12 +50,17 @@ enum OfficeDrawingFileType
 struct COfficeDrawingPageParams
 {
 	bool m_bNeedDrawAnnotation;
+	bool m_bPrint;
 
-	COfficeDrawingPageParams() : m_bNeedDrawAnnotation(true){}
+	COfficeDrawingPageParams() : m_bNeedDrawAnnotation(true), m_bPrint(false) {}
 
 	void SetDrawAnnotation(bool bDraw)
 	{
 		m_bNeedDrawAnnotation = bDraw;
+	}
+	void SetPrint(bool bPrint)
+	{
+		m_bPrint = bPrint;
 	}
 };
 

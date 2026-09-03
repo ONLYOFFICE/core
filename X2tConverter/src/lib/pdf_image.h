@@ -1193,6 +1193,11 @@ namespace NExtractTools
 						NSFile::CFileBinary::Remove(sWatermarkTmp);
 				}
 				sFrom = sFromSrc;
+
+				if (0 == nRes && !params.getSigningKeyStorePath().empty())
+				{
+					nRes = pdfSign(sTo, pApplicationFonts, params, convertParams);
+				}
 			}
 			else
 			{

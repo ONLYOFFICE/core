@@ -104,7 +104,7 @@ public:
 	bool CheckOwnerPassword(const wchar_t* sPassword);
 	bool CheckPerm(int nPerm);
 	void GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY);
-	void DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak, bool bDrawOnlyText = false);
+	void DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak, bool bDrawOnlyText = false, bool bPrint = false);
 	void SetPainter(IOfficeDrawingFilePainter* pPainter);
 	std::wstring GetInfo();
 	BYTE* GetGIDByUnicode(const std::wstring& wsFontName);

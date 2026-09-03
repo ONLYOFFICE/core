@@ -750,7 +750,7 @@ void CPdfReader::SetPainter(IOfficeDrawingFilePainter* pPainter)
 {
 	m_pPainter = pPainter;
 }
-void CPdfReader::DrawPageOnRenderer(IRenderer* pRenderer, int _nPageIndex, bool* pbBreak, bool bDrawOnlyText)
+void CPdfReader::DrawPageOnRenderer(IRenderer* pRenderer, int _nPageIndex, bool* pbBreak, bool bDrawOnlyText, bool bPrint)
 {
 	PDFDoc* pDoc = NULL;
 	PdfReader::CPdfFontList* pFontList = NULL;
@@ -773,7 +773,7 @@ void CPdfReader::DrawPageOnRenderer(IRenderer* pRenderer, int _nPageIndex, bool*
 #ifdef BUILDING_WASM_MODULE
 	nRotate = -pDoc->getPageRotate(nPageIndex);
 #endif
-	pDoc->displayPage(&oRendererOut, nPageIndex, 72.0, 72.0, nRotate, gFalse, gTrue, gFalse, m_pPainter ? CheckPainter : NULL, m_pPainter ? m_pPainter : NULL);
+	pDoc->displayPage(&oRendererOut, nPageIndex, 72.0, 72.0, nRotate, gFalse, gTrue, bPrint ? gTrue : gFalse, m_pPainter ? CheckPainter : NULL, m_pPainter ? m_pPainter : NULL);
 
 	((GlobalParamsAdaptor*)globalParams)->ClearRedact();
 

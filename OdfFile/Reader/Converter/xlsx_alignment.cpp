@@ -181,10 +181,10 @@ xlsx_alignment OdfProperties2XlsxAlignment(	xlsx_conversion_context * context,
 	{
 		if (cellProp->common_rotation_angle_attlist_.style_rotation_angle_)
 		{
-			 int angle = cellProp->common_rotation_angle_attlist_.style_rotation_angle_.get(); 
+			 int angle = cellProp->common_rotation_angle_attlist_.style_rotation_angle_.get() % 360;
 
-			if (angle > 90)		angle = angle - 90;
-			if (angle < -90)	angle = 90 + angle;
+			if (angle > 90 && angle < 270)	angle = (angle < 180) ? 90 : 180;
+			else if (angle >= 270)			angle = 450 - angle;
 
 			alignment.textRotation = angle;       //??? what priority
 		}		

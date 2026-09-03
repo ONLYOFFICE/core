@@ -2520,7 +2520,10 @@ void XlsxConverter::convert(OOX::Spreadsheet::CAligment *aligment, odf_writer::p
 	{
 		if (*aligment->m_oTextRotation <= 180 && *aligment->m_oTextRotation >= 0 )
 		{
-			cell_properties->content_.common_rotation_angle_attlist_.style_rotation_angle_ = *aligment->m_oTextRotation;
+			int angle = *aligment->m_oTextRotation;
+			if (angle > 90) angle = 450 - angle;
+
+			cell_properties->content_.common_rotation_angle_attlist_.style_rotation_angle_ = angle;
 			cell_properties->content_.style_rotation_align_= odf_types::rotation_align(odf_types::rotation_align::Bottom);
 		}
 		else if (*aligment->m_oTextRotation == 0xff)//vertical text

@@ -524,7 +524,7 @@ double pixToSize(double pixels, double maxDigitSize)
 { 
 	if (pixels < 8) pixels = 8; //NOTIFICATION_OF_ARRIVAL_OF_FOREIGN_CITIZEN.ods
 
-	return (int(( pixels /*/ 0.75*/ - 5)/ maxDigitSize * 100. + 0.5)) /100. * 0.98; // * 9525. * 72.0 / (360000.0 * 2.54);
+	return (int(( pixels - 5) / maxDigitSize * 100. + 0.5)) / 100.;
 }
 
 }

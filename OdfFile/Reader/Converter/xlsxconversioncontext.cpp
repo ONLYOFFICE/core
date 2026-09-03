@@ -886,6 +886,9 @@ std::pair<double, double> xlsx_conversion_context::getMaxDigitSize()
 		if (font_name.empty()) font_name = L"Arial";
 	
         maxDigitSize_ = utils::GetMaxDigitSizePixels(font_name.c_str(), font_size, 96., 0, mediaitems_->applicationFonts());
+
+		maxDigitSize_.first = (int)maxDigitSize_.first;
+		if (maxDigitSize_.first < 1) maxDigitSize_.first = 1;
     }    
     return maxDigitSize_;
 }

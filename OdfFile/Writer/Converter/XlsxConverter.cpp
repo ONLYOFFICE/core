@@ -2404,7 +2404,9 @@ void XlsxConverter::convert(OOX::Spreadsheet::CFont *font, odf_writer::text_form
 		text_properties->style_text_line_through_type_ = odf_types::line_type(odf_types::line_type::Single);
 
 	ods_context->add_font(font_name);
-	ods_context->calculate_font_metrix(font_name, font_size, font_italic, font_bold);
+
+	if (font->m_oRFont.IsInit() && font->m_oSz.IsInit())
+		ods_context->calculate_font_metrix(font_name, font_size, font_italic, font_bold);
 }
 
 void XlsxConverter::convert(double oox_size,  _CP_OPT(odf_types::length) & odf_size)

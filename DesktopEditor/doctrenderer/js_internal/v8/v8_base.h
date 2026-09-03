@@ -9,6 +9,7 @@
 #include "../js_base.h"
 #include "../js_base_p.h"
 #include "../js_logger.h"
+#include "../../../common/Directory.h"
 #include <iostream>
 #include <stack>
 #include <cstdlib>
@@ -122,6 +123,18 @@ public:
 	CV8Initializer(const std::wstring& sDirectory = L"")
 	{
 		std::wstring sPrW = sDirectory.empty() ? NSFile::GetProcessPath() : sDirectory;
+		// V8 wants the path of the EXECUTABLE here: InitializeICUDefaultLocation and
+		// InitializeExternalStartupData drop the last component and look for icudtl.dat
+		// and the startup snapshot next to it. CDocBuilder::Initialize() takes a
+		// DIRECTORY though (so does the python binding, which passes its own lib dir at
+		// import time), so a caller that honours that contract pointed V8 one level too
+		// high: no ICU data, and every Intl call broken - localeCompare and
+		// toLocaleString answer "Icu error", and Intl.DateTimeFormat fails a V8 CHECK
+		// that takes the process down. Name a file inside the directory so the strip
+		// lands back on the directory itself. The default path is a real executable
+		// path and is left alone.
+		if (NSDirectory::Exists(sPrW))
+			sPrW += L"/x2t";
 		std::string sPrA = U_TO_UTF8(sPrW);
 
 		m_pAllocator = NULL;

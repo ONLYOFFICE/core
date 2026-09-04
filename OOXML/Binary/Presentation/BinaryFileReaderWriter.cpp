@@ -2473,6 +2473,22 @@ namespace NSBinPptxRW
 			m_pRels->StartRels();
 		}
 	}
+	void CBinaryFileReader::RemoveDstContentRels()
+	{
+		--m_nCurrentRelsStack;
+		if (-1 > m_nCurrentRelsStack)
+			m_nCurrentRelsStack = -1;
+
+		int nIndex = (int)m_stackRels.size() - 1;
+
+		if (0 <= nIndex)
+		{
+			NSBinPptxRW::CRelsGenerator* pCur = m_pRels;
+			m_pRels = m_stackRels[nIndex];
+			m_stackRels.erase(m_stackRels.begin() + nIndex);
+			RELEASEOBJECT(pCur);
+		}
+	}
 	void CBinaryFileReader::SaveDstContentRels(const std::wstring& bsRelsPath)
 	{
 		m_pRels->CloseRels();

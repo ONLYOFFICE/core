@@ -245,6 +245,7 @@ namespace NSBinPptxRW
 
 		void SetDstContentRels();
 		void SaveDstContentRels(const std::wstring& sRelsPath);
+		void RemoveDstContentRels();
 		void WriteRels(const std::wstring& sType, const std::wstring& sTarget, const std::wstring& sTargetMode, unsigned int* lId);
 		void Registration(const std::wstring& sType, const std::wstring& oDirectory, const std::wstring& oFilename);
 

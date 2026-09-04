@@ -851,7 +851,8 @@ namespace PPTX
 						oStylesWriter.WriteAttributeCSS(L"v-text-anchor", L"middle");
 				}
 			}
-			oStylesWriter.WriteAttributeCSS(L"visibility", L"visible");
+			if (std::wstring::npos == pWriter->m_strStyleMain.find(L"visibility:"))
+				oStylesWriter.WriteAttributeCSS(L"visibility", L"visible");
 
 			pWriter->WriteAttribute(L"style", pWriter->m_strStyleMain + pWriter->m_strStyleWrap + oStylesWriter.GetXmlString() );
 

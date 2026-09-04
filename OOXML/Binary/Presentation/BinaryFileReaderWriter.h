@@ -608,5 +608,6 @@ namespace NSBinPptxRW
 
 		void SetDstContentRels();
 		void SaveDstContentRels(const std::wstring& bsRelsPath);
+		void RemoveDstContentRels();
 	};
 }

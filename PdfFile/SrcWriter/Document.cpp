@@ -58,6 +58,8 @@
 #include "../../DesktopEditor/agg-2.4/include/agg_span_hatch.h"
 #include "../../DesktopEditor/common/SystemUtils.h"
 
+#include <set>
+
 #ifdef CreateFont
 #undef CreateFont
 #endif
@@ -2415,5 +2417,66 @@ namespace PdfWriter
 		if (!pRes)
 			pRes = m_pXref->GetEntryByObjectId(nObjectId);
 		return pRes? pRes->pObject : NULL;
+	}
+	void CDocument::RemoveUnreachableObjects()
+	{
+		if (!m_pXref || !m_pCatalog)
+			return;
+
+		std::set<CObjectBase*> setVisited;
+		std::vector<CObjectBase*> arrQueue;
+
+		arrQueue.push_back((CObjectBase*)m_pCatalog);
+		if (m_pEncryptDict)
+			arrQueue.push_back((CObjectBase*)m_pEncryptDict);
+		if (m_pInfo)
+			arrQueue.push_back((CObjectBase*)m_pInfo);
+
+		// Mark
+		while (!arrQueue.empty())
+		{
+			CObjectBase* pObject = arrQueue.back();
+			arrQueue.pop_back();
+
+			if (!pObject || setVisited.find(pObject) != setVisited.end())
+				continue;
+			setVisited.insert(pObject);
+
+			std::vector<CObjectBase*> arrChildren;
+			pObject->GetChildRefs(arrChildren);
+
+			for (size_t unIndex = 0; unIndex < arrChildren.size(); ++unIndex)
+			{
+				CObjectBase* pChild = arrChildren[unIndex];
+				if (pChild && setVisited.find(pChild) == setVisited.end())
+					arrQueue.push_back(pChild);
+			}
+		}
+
+		std::vector<std::pair<CXref*, CObjectBase*>> arrToRemove;
+
+		CXref* pXref = m_pXref;
+		while (pXref)
+		{
+			unsigned int unCount = pXref->GetCount();
+			for (unsigned int unIndex = 0; unIndex < unCount; ++unIndex)
+			{
+				TXrefEntry* pEntry = pXref->GetEntry(unIndex);
+				if (!pEntry || 'f' == pEntry->nEntryType || !pEntry->pObject)
+					continue;
+
+				CObjectBase* pObject = pEntry->pObject;
+				if (pObject == (CObjectBase*)m_pEncryptDict || pObject == (CObjectBase*)m_pInfo)
+					continue;
+
+				if (setVisited.find(pObject) == setVisited.end())
+					arrToRemove.push_back(std::make_pair(pXref, pObject));
+			}
+
+			pXref = pXref->GetPrev();
+		}
+
+		for (size_t unIndex = 0; unIndex < arrToRemove.size(); ++unIndex)
+			arrToRemove[unIndex].first->Remove(arrToRemove[unIndex].second);
 	}
 }

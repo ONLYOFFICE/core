@@ -2408,6 +2408,85 @@ PdfWriter::CAnnotAppearanceObject* GetAnnotAppearanceObject(PdfWriter::CAnnotati
 	return dynamic_cast<PdfWriter::CAnnotAppearanceObject*>(pAP_N->Get(sName));
 }
 // ─── WriteNew helpers ────────────────────────────────────────────────────────
+void RasterizePageOverContent(NSFonts::IFontManager* pFontManager, PdfReader::CPdfFontList* pFontList, PDFDoc* pPDFDocument, int nPageIndex, Object* pContents, Dict* pResourcesDict, PDFRectangle* box, PdfWriter::CDocument* pDoc, PdfWriter::CPage* pPage)
+{
+	double dPageW = box->x2 - box->x1;
+	double dPageH = box->y2 - box->y1;
+	if (dPageW <= 0 || dPageH <= 0)
+		return;
+
+	double dDpi = 144.0;
+	double dMaxSidePx = 5000.0;
+	double dMaxSide = (dPageW > dPageH ? dPageW : dPageH) * dDpi / 72.0;
+	if (dMaxSide > dMaxSidePx)
+		dDpi *= dMaxSidePx / dMaxSide;
+
+	int nRasterW = (int)(dPageW * dDpi / 72.0 + 0.5);
+	int nRasterH = (int)(dPageH * dDpi / 72.0 + 0.5);
+	if (nRasterW <= 0 || nRasterH <= 0)
+		return;
+
+	BYTE* pBgraData = new(std::nothrow) BYTE[(size_t)nRasterW * nRasterH * 4];
+	if (!pBgraData)
+		return;
+
+	memset(pBgraData, 0xFF, (size_t)nRasterW * nRasterH * 4);
+
+	CBgraFrame oFrame;
+	oFrame.put_Data(pBgraData);
+	oFrame.put_Width(nRasterW);
+	oFrame.put_Height(nRasterH);
+	oFrame.put_Stride(4 * nRasterW);
+
+	NSGraphics::IGraphicsRenderer* pRenderer = NSGraphics::Create();
+	pRenderer->SetFontManager(pFontManager);
+	pRenderer->CreateFromBgraFrame(&oFrame);
+	pRenderer->SetSwapRGB(true);
+	pRenderer->put_Width (dPageW * 25.4 / 72.0);
+	pRenderer->put_Height(dPageH * 25.4 / 72.0);
+
+	PdfReader::RendererOutputDev oRendererOut(pRenderer, pFontManager, pFontList);
+	oRendererOut.NewPDF(pPDFDocument->getXRef());
+
+	Gfx* gfx = new Gfx(pPDFDocument, &oRendererOut, nPageIndex, pResourcesDict, 72.0, 72.0, box, NULL, 0);
+	gfx->saveState();
+	gfx->display(pContents);
+	gfx->endOfPage();
+	delete gfx;
+
+	delete pRenderer;
+
+	PdfWriter::CImageDict* pImageDict = pDoc->CreateImage();
+	pImageDict->LoadRaw(pBgraData, (unsigned int)nRasterW, (unsigned int)nRasterH);
+
+	PdfWriter::CPage* pPrevCurPage = pDoc->GetCurPage();
+	pDoc->SetCurPage(pPage);
+	pDoc->ClearPageFull();
+	pPage->DrawImage(pImageDict, box->x1, box->y1, dPageW, dPageH);
+	pDoc->SetCurPage(pPrevCurPage);
+}
+void CloseWriteNew_ApplyOverlappingObjects(PdfWriter::CPage* pPage, NSFonts::IFontManager* pFontManager, PdfReader::CPdfFontList* pFontList, PDFDoc* pPDFDocument, int nPageIndex, PdfWriter::CDocument* pDoc)
+{
+	PdfWriter::CObjectBase* pContentsObj = pPage->Get("Contents");
+	if (!pContentsObj)
+		return;
+
+	Object oContents;
+	CObjectBaseToObject(pContentsObj, &oContents);
+
+	PdfWriter::CResourcesDict* pResources = pPage->GetResourcesItem();
+	Object oResources;
+	CObjectBaseToObject(pResources, &oResources);
+	Dict* pResourcesDict = oResources.isDict() ? oResources.getDict() : NULL;
+
+	PdfWriter::TBox oMediaBox = pPage->GetBox("MediaBox");
+	PDFRectangle box(oMediaBox.fLeft, oMediaBox.fBottom, oMediaBox.fRight, oMediaBox.fTop);
+
+	RasterizePageOverContent(pFontManager, pFontList, pPDFDocument, nPageIndex, &oContents, pResourcesDict, &box, pDoc, pPage);
+
+	oContents.free();
+	oResources.free();
+}
 void CloseWriteNew_FlushAnnotations(CPdfReader* pReader, CObjectsManager* mObjManager, PdfWriter::CDocument* pDoc, CPdfWriter* pWriter, int nRedactInfo, IAdvancedCommand* pCommand = NULL, const std::vector<double>& arrRedact = {})
 {
 	std::vector<int> arrWidget;
@@ -3053,23 +3132,36 @@ void CPdfEditor::Close()
 	{
 		PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
 
+		PDFDoc* pPDFDocument = NULL;
+		PdfReader::CPdfFontList* pFontList = NULL;
+		int nStartRefID = 0;
+		m_pReader->GetPageIndex(0, &pPDFDocument, &pFontList, &nStartRefID);
+
 		PdfWriter::CPageTree* pPageTree = pDoc->GetPageTree();
 		const int nPages = pPageTree->GetCount();
 		for (int i = 0; i < nPages; ++i)
 		{
 			PdfWriter::CObjectBase* pObj = pPageTree->GetObj(i);
-			if (pObj && pObj->GetType() != PdfWriter::object_type_DICT)
+			if (!pObj)
+				continue;
+			if (pObj->GetType() != PdfWriter::object_type_DICT)
+			{
 				EditPage(i, false, true);
+			}
+			/*
+			else if (bOverlappingObjects)
+			{
+				PdfWriter::CPage* pEditedPage = dynamic_cast<PdfWriter::CPage*>(pObj);
+				if (pEditedPage)
+					CloseWriteNew_ApplyOverlappingObjects(pEditedPage, m_pReader->GetFontManager(), pFontList, pPDFDocument, i, pDoc);
+			}
+			*/
 		}
 
 		CloseWriteNew_FlushAnnotations(m_pReader, &m_mObjManager, pDoc, m_pWriter, m_nRedactInfo);
 
 		SyncAcroFormFromReader();
 
-		PDFDoc* pPDFDocument = NULL;
-		PdfReader::CPdfFontList* pFontList = NULL;
-		int nStartRefID = 0;
-		m_pReader->GetPageIndex(0, &pPDFDocument, &pFontList, &nStartRefID);
 		if (!pDoc->GetEncrypt())
 			CloseWriteNew_ApplyEncryption(m_wsPassword, &m_mObjManager, pPDFDocument, pDoc);
 
@@ -3115,6 +3207,8 @@ void CPdfEditor::Close()
 				RemoveHiddenOCGs(oOC.get(), xref);
 			pCatalog->Add("OCProperties", DictToCDictObjectUnified(oOC.get(), ctx));
 		}
+		if (m_nRedactInfo & (1 << 8))
+			pDoc->RemoveUnreachableObjects();
 		if (~m_nRedactInfo & (1 << 9))
 		{
 			CObjectGuard pNames, oEF, oNames;
@@ -3448,64 +3542,10 @@ bool CPdfEditor::EditPage(int _nPageIndex, bool bSet, bool bActualPos)
 		{
 			Page* pOPage = pCatalog->getPage(nPageIndex);
 			PDFRectangle* box = pOPage->getMediaBox();
-			double dPageW = box->x2 - box->x1;
-			double dPageH = box->y2 - box->y1;
-			if (dPageW > 0 && dPageH > 0)
-			{
-				double dDpi = 144.0;
-				double dMaxSidePx = 5000.0;
-				double dMaxSide = (dPageW > dPageH ? dPageW : dPageH) * dDpi / 72.0;
-				if (dMaxSide > dMaxSidePx)
-					dDpi *= dMaxSidePx / dMaxSide;
-
-				int nRasterW = (int)(dPageW * dDpi / 72.0 + 0.5);
-				int nRasterH = (int)(dPageH * dDpi / 72.0 + 0.5);
-				if (nRasterW > 0 && nRasterH > 0)
-				{
-					BYTE* pBgraData = new(std::nothrow) BYTE[(size_t)nRasterW * nRasterH * 4];
-					if (pBgraData)
-					{
-						memset(pBgraData, 0xFF, (size_t)nRasterW * nRasterH * 4);
-
-						CBgraFrame oFrame;
-						oFrame.put_Data(pBgraData);
-						oFrame.put_Width(nRasterW);
-						oFrame.put_Height(nRasterH);
-						oFrame.put_Stride(4 * nRasterW);
-
-						NSGraphics::IGraphicsRenderer* pRenderer = NSGraphics::Create();
-						pRenderer->SetFontManager(m_pReader->GetFontManager());
-						pRenderer->CreateFromBgraFrame(&oFrame);
-						pRenderer->SetSwapRGB(true);
-						pRenderer->put_Width (dPageW * 25.4 / 72.0);
-						pRenderer->put_Height(dPageH * 25.4 / 72.0);
-
-						PdfReader::RendererOutputDev oRendererOut(pRenderer, m_pReader->GetFontManager(), pFontList);
-						oRendererOut.NewPDF(pPDFDocument->getXRef());
-
-						Object oContents;
-						pOPage->getContents(&oContents);
-						Gfx* gfx = new Gfx(pPDFDocument, &oRendererOut, _nPageIndex, pOPage->getResourceDict(), 72.0, 72.0, box, NULL, 0);
-						gfx->saveState();
-						gfx->display(&oContents);
-						gfx->endOfPage();
-						oContents.free();
-						delete gfx;
-
-						delete pRenderer;
-
-						// Replace the page content entirely with the rendered raster image
-						PdfWriter::CImageDict* pImageDict = pDoc->CreateImage();
-						pImageDict->LoadRaw(pBgraData, (unsigned int)nRasterW, (unsigned int)nRasterH);
-
-						PdfWriter::CPage* pPrevCurPage = pDoc->GetCurPage();
-						pDoc->SetCurPage(pPage);
-						pDoc->ClearPageFull();
-						pPage->DrawImage(pImageDict, box->x1, box->y1, dPageW, dPageH);
-						pDoc->SetCurPage(pPrevCurPage);
-					}
-				}
-			}
+			Object oContents;
+			pOPage->getContents(&oContents);
+			RasterizePageOverContent(m_pReader->GetFontManager(), pFontList, pPDFDocument, _nPageIndex, &oContents, pOPage->getResourceDict(), box, pDoc, pPage);
+			oContents.free();
 		}
 		else if (bHiddenText || bHiddenLayers || bDeletedOrCroppedContent)
 		{

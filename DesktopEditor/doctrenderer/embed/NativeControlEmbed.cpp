@@ -289,6 +289,7 @@ JSSmart<CJSValue> CNativeControlEmbed::GetImagesPath()
 
 #include "./../../graphics/MetafileToRenderer.h"
 #include "./../../raster/BgraFrame.h"
+#include "./../../raster/Metafile/MetaFileCommon.h"
 JSSmart<CJSValue> CNativeControlEmbed::GetImageOriginalSize(JSSmart<CJSValue> sUrl)
 {
 	IMetafileToRenderter oRenderer(NULL);
@@ -302,5 +303,22 @@ JSSmart<CJSValue> CNativeControlEmbed::GetImageOriginalSize(JSSmart<CJSValue> sU
 		ret->set("H", oFrame.get_Height());
 		return ret->toValue();
 	}
+
+#ifndef GRAPHICS_DISABLE_METAFILE
+	MetaFile::IMetaFile* pMetafile = MetaFile::Create(NULL);
+	int nWidth = 0, nHeight = 0;
+	const bool bHasSize = pMetafile->LoadFromFile(sPath.c_str()) &&
+					      MetaFile::GetRasterMaxSize(pMetafile, 1000, nWidth, nHeight);
+	pMetafile->Release();
+
+	if (bHasSize)
+	{
+		JSSmart<CJSObject> ret = CJSContext::createObject();
+		ret->set("W", nWidth);
+		ret->set("H", nHeight);
+		return ret->toValue();
+	}
+#endif
+
 	return CJSContext::createUndefined();
 }

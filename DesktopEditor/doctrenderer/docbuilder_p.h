@@ -78,47 +78,26 @@ namespace NSDoctRenderer
 {
 	static int GetFormatByTexExtention(const std::wstring& sExt)
 	{
-		int nFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX;
-		if (L"docx" == sExt)
+		std::wstring sLower = sExt;
+		for (size_t i = 0, len = sLower.length(); i < len; ++i)
+		{
+			wchar_t c = sLower[i];
+			if (c >= (wchar_t)'A' && c <= (wchar_t)'Z')
+				sLower[i] = c - (wchar_t)'A' + (wchar_t)'a';
+		}
+
+		if (L"form" == sLower)
+			return AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM_PDF;
+		if (L"image" == sLower)
+			return AVS_OFFICESTUDIO_FILE_IMAGE_PNG;
+		if (L"html" == sLower || L"htm" == sLower)
+			return AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML_IN_CONTAINER;
+		if (L"pdfa" == sLower)
+			return AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDFA;
+
+		int nFormat = COfficeFileFormatChecker::GetFormatByExtension(L"." + sLower);
+		if (AVS_OFFICESTUDIO_FILE_UNKNOWN == nFormat)
 			nFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX;
-		else if (L"doc" == sExt)
-			nFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC;
-		else if (L"odt" == sExt)
-			nFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT;
-		else if (L"rtf" == sExt)
-			nFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_RTF;
-		else if (L"txt" == sExt)
-			nFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_TXT;
-		else if (L"pptx" == sExt)
-			nFormat = AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX;
-		else if (L"odp" == sExt)
-			nFormat = AVS_OFFICESTUDIO_FILE_PRESENTATION_ODP;
-		else if (L"xlsx" == sExt)
-			nFormat = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX;
-		else if (L"xls" == sExt)
-			nFormat = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLS;
-		else if (L"ods" == sExt)
-			nFormat = AVS_OFFICESTUDIO_FILE_SPREADSHEET_ODS;
-		else if (L"csv" == sExt)
-			nFormat = AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV;
-		else if (L"pdf" == sExt)
-			nFormat = AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF;
-		else if (L"image" == sExt)
-			nFormat = AVS_OFFICESTUDIO_FILE_IMAGE_PNG;
-		else if (L"jpg" == sExt)
-			nFormat = AVS_OFFICESTUDIO_FILE_IMAGE_JPG;
-		else if (L"png" == sExt)
-			nFormat = AVS_OFFICESTUDIO_FILE_IMAGE_PNG;
-		else if (L"vsdx" == sExt)
-			nFormat = AVS_OFFICESTUDIO_FILE_DRAW_VSDX;
-		else if (L"docxf" == sExt)
-			nFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCXF;
-		else if (L"oform" == sExt)
-			nFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM;
-		else if (L"html" == sExt)
-			nFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML_IN_CONTAINER;
-		else if (L"form" == sExt)
-			nFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM_PDF;
 		return nFormat;
 	}
 }

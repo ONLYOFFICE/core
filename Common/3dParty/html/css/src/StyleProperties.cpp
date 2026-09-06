@@ -1426,12 +1426,16 @@ namespace NSCSS
 		m_eWhiteSpace.Clear();
 	}
 
+	void CDisplay::InheritSize(const CDisplay &oDisplay)
+	{
+		m_oWidth  = oDisplay.m_oWidth;
+		m_oHeight = oDisplay.m_oHeight;
+	}
+
 	CDisplay &CDisplay::operator+=(const CDisplay &oDisplay)
 	{
 		m_oX          += oDisplay.m_oX;
 		m_oY          += oDisplay.m_oY;
-		m_oWidth       = oDisplay.m_oWidth;
-		m_oHeight      = oDisplay.m_oHeight;
 		m_oHAlign     += oDisplay.m_oHAlign;
 		m_oVAlign     += oDisplay.m_oVAlign;
 		m_oDisplay    += oDisplay.m_oDisplay;
@@ -1717,14 +1721,6 @@ namespace NSCSS
 	CBackground &CBackground::operator+=(const CBackground &oBackground)
 	{
 		m_oColor += oBackground.m_oColor;
-
-		if (m_oImage.Empty())
-		{
-			m_oImage     = oBackground.m_oImage;
-			m_oPositionX = oBackground.m_oPositionX;
-			m_oPositionY = oBackground.m_oPositionY;
-			m_oRepeat    = oBackground.m_oRepeat;
-		}
 
 		return *this;
 	}

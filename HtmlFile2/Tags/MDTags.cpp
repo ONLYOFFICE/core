@@ -41,8 +41,6 @@
 #include "../Table.h"
 #include "../Common/3dParty/html/css/src/CCompiledStyle.h"
 
-#include "../../Common/Network/FileTransporter/include/FileTransporter.h"
-
 #include "../../DesktopEditor/common/Base64.h"
 #include "../../DesktopEditor/common/Path.h"
 #include "../../DesktopEditor/common/Directory.h"
@@ -501,10 +499,7 @@ bool CImageMDTag::Open(const std::vector<NSCSS::CNode>& arSelectors)
 	{
 		const std::wstring wsDst{NSFile::CFileBinary::CreateTempFileWithUniqueName(m_pWriter->GetTempDir(), L"IMG")};
 
-		// The check for gc_allowNetworkRequest is assumed to be in kernel_network
-		NSNetwork::NSFileTransport::CFileDownloader oDownloadImg(m_pWriter->GetBasePath() + wsSrc, false);
-		oDownloadImg.SetFilePath(wsDst);
-		bResult = oDownloadImg.DownloadSync();
+		bResult = m_pWriter->DownloadExternalFile(wsBasePath + wsSrc, wsDst);
 
 		if (!bResult)
 		{

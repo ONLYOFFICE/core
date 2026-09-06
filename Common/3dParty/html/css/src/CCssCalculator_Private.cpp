@@ -595,7 +595,12 @@ namespace NSCSS
 		for (size_t i = unStart; i < arSelectors.size(); ++i)
 		{
 			if (0 != i)
+			{
 				*arSelectors[i].m_pCompiledStyle += *arSelectors[i - 1].m_pCompiledStyle;
+
+				if (L"col" == arSelectors[i].m_wsName && L"colgroup" == arSelectors[i - 1].m_wsName)
+					arSelectors[i].m_pCompiledStyle->m_oDisplay.InheritSize(arSelectors[i - 1].m_pCompiledStyle->m_oDisplay);
+			}
 
 			if (i != arSelectors.size() - 1)
 				arSelectors[i].m_pCompiledStyle->AddParent(arSelectors[i].m_wsName);

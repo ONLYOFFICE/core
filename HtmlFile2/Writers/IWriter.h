@@ -39,7 +39,10 @@
 #include "../../DesktopEditor/graphics/pro/Fonts.h"
 
 #include "../../Common/3dParty/html/css/src/CNode.h"
+#include "../../DesktopEditor/common/File.h"
 #include "../Common.h"
+
+#include <map>
 
 namespace HTML
 {
@@ -52,17 +55,26 @@ protected:
 	const std::wstring *m_pCorePath; // Path to the root file (used for working with Epub)
 
 	NSFonts::IApplicationFonts* m_pFonts; // Necessary for optimizing font handling
+
+	std::map<std::wstring, std::wstring> m_mDownloadedFiles;
+	UINT                                 m_unDownloadedFileId;
 public:
 	IWriter()
 		: m_pTempDir(nullptr), m_pSrcPath(nullptr),
 		  m_pBasePath(nullptr), m_pCorePath(nullptr),
-		  m_pFonts(nullptr)
+		  m_pFonts(nullptr), m_unDownloadedFileId(0)
 	{};
 
 	virtual ~IWriter()
 	{
 		if (nullptr != m_pFonts)
 			delete m_pFonts;
+
+		for (const std::pair<const std::wstring, std::wstring>& oDownloaded : m_mDownloadedFiles)
+			if (!oDownloaded.second.empty())
+				NSFile::CFileBinary::Remove(oDownloaded.second);
+
+		m_mDownloadedFiles.clear();
 	};
 
 	virtual void Begin(const std::wstring& wsDst) = 0;
@@ -136,6 +148,8 @@ public:
 
 		return m_pFonts;
 	}
+
+	bool DownloadExternalFile(const std::wstring& wsUrl, const std::wstring& wsDstPath);
 };
 }
 

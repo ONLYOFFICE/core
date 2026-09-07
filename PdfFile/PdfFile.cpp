@@ -1635,11 +1635,14 @@ HRESULT CPdfFile::AdvancedCommand(IAdvancedCommand* command)
 			CMacros* pCommand = (CMacros*)command;
 			std::wstring wsMacros = pCommand->GetMacros();
 
-			BYTE* pData = NULL;
-			LONG nMetaLength = 0;
-			NSFile::CUtf8Converter::GetUtf8StringFromUnicode(wsMacros.c_str(), wsMacros.length(), pData, nMetaLength);
-			pDoc->AddOOField("OO_MACROS", pData, nMetaLength);
-			RELEASEARRAYOBJECTS(pData);
+			if (!wsMacros.empty())
+			{
+				BYTE* pData = NULL;
+				LONG nMetaLength = 0;
+				NSFile::CUtf8Converter::GetUtf8StringFromUnicode(wsMacros.c_str(), wsMacros.length(), pData, nMetaLength);
+				pDoc->AddOOField("OO_MACROS", pData, nMetaLength);
+				RELEASEARRAYOBJECTS(pData);
+			}
 		}
 		return S_OK;
 	}

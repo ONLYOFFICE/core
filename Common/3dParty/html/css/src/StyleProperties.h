@@ -457,6 +457,8 @@ namespace NSCSS
 		bool Empty() const;
 		void Clear();
 
+		void InheritSize(const CDisplay& oDisplay);
+
 		CDisplay& operator+=(const CDisplay& oDisplay);
 		bool      operator==(const CDisplay& oDisplay) const;
 	private:

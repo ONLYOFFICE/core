@@ -68,7 +68,7 @@ public:
 
 class CImageOOXMLTag : public IHTMLTag<COOXMLWriter>
 {
-	std::vector<std::wstring> m_arImages;
+	std::vector<std::pair<std::wstring, std::wstring>> m_arImages;
 public:
 	CImageOOXMLTag(COOXMLWriter *pWriter);
 

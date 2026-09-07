@@ -610,6 +610,9 @@ namespace NSCSS
 				arSelectors[i].m_pCompiledStyle->m_oDisplay.Clear();
 			}
 
+			if (0 != i && L"col" == arSelectors[i].m_wsName && L"colgroup" == arSelectors[i - 1].m_wsName)
+				arSelectors[i].m_pCompiledStyle->m_oDisplay.InheritSize(arSelectors[i - 1].m_pCompiledStyle->m_oDisplay);
+
 			arSelectors[i].m_pCompiledStyle->AddStyle(arSelectors[i].m_mAttributes, i + 1);
 
 			for (const CElement* oElement : FindElements(arNodes, arPrevNodes))

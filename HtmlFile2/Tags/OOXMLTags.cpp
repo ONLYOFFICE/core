@@ -38,8 +38,6 @@
 #include "../src/StringFinder.h"
 #include "../Table.h"
 
-#include "../../Common/Network/FileTransporter/include/FileTransporter.h"
-
 #include "../../DesktopEditor/raster/BgraFrame.h"
 #include "../../DesktopEditor/graphics/pro/Graphics.h"
 #include "../../DesktopEditor/common/Base64.h"
@@ -262,7 +260,8 @@ bool CImageOOXMLTag::Open(const std::vector<NSCSS::CNode>& arSelectors)
 
 	if (L"svg" == arSelectors.back().m_wsName)
 	{
-		const std::wstring wsImagePath{m_pWriter->GetMediaDir() + L'i' + std::to_wstring(m_arImages.size()) + L".png"};
+		const std::wstring wsImageID{std::to_wstring(m_arImages.size())};
+		const std::wstring wsImagePath{m_pWriter->GetMediaDir() + L'i' + wsImageID + L".png"};
 
 		if (!ReadSVGData(arSelectors.back().GetAttributeValue(L"svg-text"), m_pWriter->GetFonts(), m_pWriter->GetTempDir(), wsImagePath))
 			return false;
@@ -272,7 +271,9 @@ bool CImageOOXMLTag::Open(const std::vector<NSCSS::CNode>& arSelectors)
 			return false;
 
 		m_pWriter->WritePPr(arSelectors);
-		m_pWriter->WriteImage(oNewImageData, std::to_wstring(m_arImages.size()));
+		m_pWriter->WriteImageRels(wsImageID, wsImageID + L".png");
+		m_arImages.push_back(std::make_pair(std::wstring(), L"png"));
+		m_pWriter->WriteImage(oNewImageData, wsImageID);
 		return true;
 	}
 
@@ -362,6 +363,22 @@ bool CImageOOXMLTag::Open(const std::vector<NSCSS::CNode>& arSelectors)
 
 	const std::wstring wsBasePath{m_pWriter->GetBasePath()};
 
+	int nImageId = -1;
+
+	// Check for duplicate
+	if (!bRes)
+	{
+		const std::vector<std::pair<std::wstring, std::wstring>>::const_iterator nFind =
+		        std::find_if(m_arImages.cbegin(), m_arImages.cend(), [&wsSrc](const std::pair<std::wstring, std::wstring>& oImage){ return oImage.first == wsSrc; });
+
+		if (m_arImages.cend() != nFind)
+		{
+			bRes = true;
+			nImageId = nFind - m_arImages.cbegin();
+			wsExtention = nFind->second;
+		}
+	}
+
 	// Assume network image
 	if (!bRes &&
 	    ((!wsBasePath.empty() && wsBasePath.length() > 4 && wsBasePath.substr(0, 4) == L"http") ||
@@ -375,10 +392,7 @@ bool CImageOOXMLTag::Open(const std::vector<NSCSS::CNode>& arSelectors)
 
 		const std::wstring wsDst = wsImagePath + L'.' + ((!wsExtention.empty()) ? wsExtention : L"png");
 
-		// gc_allowNetworkRequest check is assumed in kernel_network
-		NSNetwork::NSFileTransport::CFileDownloader oDownloadImg(m_pWriter->GetBasePath() + wsSrc, false);
-		oDownloadImg.SetFilePath(wsDst);
-		bRes = oDownloadImg.DownloadSync();
+		bRes = m_pWriter->DownloadExternalFile(wsBasePath + wsSrc, wsDst);
 
 		if (!bRes)
 		{
@@ -391,7 +405,7 @@ bool CImageOOXMLTag::Open(const std::vector<NSCSS::CNode>& arSelectors)
 			std::wstring wsFileData;
 
 			if (!NSFile::CFileBinary::ReadAllTextUtf8(wsDst, wsFileData) ||
-			    !ReadSVGData(wsFileData, m_pWriter->GetFonts(), m_pWriter->GetTempDir(), wsImagePath))
+			    !ReadSVGData(wsFileData, m_pWriter->GetFonts(), m_pWriter->GetTempDir(), wsImagePath + L".png"))
 				bRes = false;
 
 			NSFile::CFileBinary::Remove(wsDst);
@@ -404,23 +418,10 @@ bool CImageOOXMLTag::Open(const std::vector<NSCSS::CNode>& arSelectors)
 		}
 	}
 
-	int nImageId = -1;
-
-	if (!bRes)
+	if (!bRes && NotValidExtension(wsExtention))
 	{
-		if (NotValidExtension(wsExtention))
-		{
-			m_pWriter->WriteAlternativeImage(wsAlt, wsSrc, oImageData);
-			return true;
-		}
-
-		// Check for duplicate
-		const std::vector<std::wstring>::const_iterator nFind = std::find(m_arImages.cbegin(), m_arImages.cend(), wsSrc);
-		if (nFind != m_arImages.end())
-		{
-			bRes = true;
-			nImageId = nFind - m_arImages.cbegin();
-		}
+		m_pWriter->WriteAlternativeImage(wsAlt, wsSrc, oImageData);
+		return true;
 	}
 
 	// Assume image by local path
@@ -476,7 +477,7 @@ bool CImageOOXMLTag::Open(const std::vector<NSCSS::CNode>& arSelectors)
 		if (nImageId < 0)
 		{
 			m_pWriter->WriteImageRels(wsImageID, wsImageID + L'.' + wsExtention);
-			m_arImages.push_back(wsSrc);
+			m_arImages.push_back(std::make_pair(wsSrc, wsExtention));
 		}
 
 		if (!oImageData.ZeroSize())
@@ -1033,15 +1034,25 @@ bool ReadBase64(const std::wstring& wsSrc, const std::wstring& wsImagePath, NSFo
 	if (nBase == std::wstring::npos)
 		return bRes;
 
-	int nOffset = nBase + 7;
-	int nSrcLen = (int)(wsSrc.length() - nBase + 1);
+	const size_t unOffset = nBase + 7;
+
+	if (unOffset >= wsSrc.length())
+		return bRes;
+
+	int nSrcLen = (int)(wsSrc.length() - unOffset);
 	int nDecodeLen = NSBase64::Base64DecodeGetRequiredLength(nSrcLen);
 	if (nDecodeLen != 0)
 	{
 		BYTE* pImageData = new BYTE[nDecodeLen];
 
-		if (!pImageData || FALSE == NSBase64::Base64Decode(wsSrc.c_str() + nOffset, nSrcLen, pImageData, &nDecodeLen))
+		if (!pImageData)
 			return bRes;
+
+		if (FALSE == NSBase64::Base64Decode(wsSrc.c_str() + unOffset, nSrcLen, pImageData, &nDecodeLen))
+		{
+			RELEASEARRAYOBJECTS(pImageData);
+			return bRes;
+		}
 
 		if (IsSVG(wsExtention))
 		{
@@ -1131,9 +1142,7 @@ bool WriteBackgroundImage(COOXMLWriter* pWriter, const std::vector<NSCSS::CNode>
 	if ((!wsBasePath.empty() && wsBasePath.length() > 4 && L"http" == wsBasePath.substr(0, 4)) ||
 	    (wsSrc.length() > 4 && L"http" == wsSrc.substr(0, 4)))
 	{
-		NSNetwork::NSFileTransport::CFileDownloader oDownloadImg(wsBasePath + wsSrc, false);
-		oDownloadImg.SetFilePath(wsDownloaded);
-		bRes = oDownloadImg.DownloadSync();
+		bRes = pWriter->DownloadExternalFile(wsBasePath + wsSrc, wsDownloaded);
 	}
 	else
 	{

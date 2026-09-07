@@ -4767,33 +4767,36 @@ int BinaryWorksheetsTableReader::ReadWorksheet(boost::unordered_map<BYTE, std::v
 //-------------------------------------------------------------------------------------------------------------
 	OOX::Drawing::COfficeArtExtension* pOfficeArtExtensionCF = new OOX::Drawing::COfficeArtExtension();
 
-	SEEK_TO_POS_START(c_oSerWorksheetsTypes::ConditionalFormatting);
-		OOX::Spreadsheet::CConditionalFormatting *pConditionalFormatting = new OOX::Spreadsheet::CConditionalFormatting();
-		READ1_DEF(length, res, this->ReadConditionalFormatting, pConditionalFormatting);
+	if (pOfficeArtExtensionCF)
+	{
+		SEEK_TO_POS_START(c_oSerWorksheetsTypes::ConditionalFormatting);
+			OOX::Spreadsheet::CConditionalFormatting *pConditionalFormatting = new OOX::Spreadsheet::CConditionalFormatting();
+			READ1_DEF(length, res, this->ReadConditionalFormatting, pConditionalFormatting);
 
-		if (pConditionalFormatting->IsExtended())
+			if (pConditionalFormatting->IsExtended())
+			{
+				pOfficeArtExtensionCF->m_arrConditionalFormatting.push_back(pConditionalFormatting); 
+			}
+			else
+			{
+				pConditionalFormatting->toXML(oStreamWriter);
+				delete pConditionalFormatting;
+			}
+		SEEK_TO_POS_END2();
+
+		if (pOfficeArtExtensionCF->m_arrConditionalFormatting.empty())
 		{
-			pOfficeArtExtensionCF->m_arrConditionalFormatting.push_back(pConditionalFormatting); 
+			delete pOfficeArtExtensionCF; pOfficeArtExtensionCF = NULL;
 		}
 		else
 		{
-			pConditionalFormatting->toXML(oStreamWriter);
-			delete pConditionalFormatting;
+			pOfficeArtExtensionCF->m_sUri = L"{78C0D931-6437-407d-A8EE-F0AAD7539E65}";
+			pOfficeArtExtensionCF->m_sAdditionalNamespace = L"xmlns:x14=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main\"";
+
+			if (m_pCurWorksheet->m_oExtLst.IsInit() == false)
+				m_pCurWorksheet->m_oExtLst.Init();
+			m_pCurWorksheet->m_oExtLst->m_arrExt.push_back(pOfficeArtExtensionCF);
 		}
-	SEEK_TO_POS_END2();
-
-	if (pOfficeArtExtensionCF->m_arrConditionalFormatting.empty())
-	{
-		delete pOfficeArtExtensionCF;
-	}
-	else
-	{
-		pOfficeArtExtensionCF->m_sUri = L"{78C0D931-6437-407d-A8EE-F0AAD7539E65}";
-		pOfficeArtExtensionCF->m_sAdditionalNamespace = L"xmlns:x14=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main\"";
-
-		if (m_pCurWorksheet->m_oExtLst.IsInit() == false)
-			m_pCurWorksheet->m_oExtLst.Init();
-		m_pCurWorksheet->m_oExtLst->m_arrExt.push_back(pOfficeArtExtensionCF);
 	}
 //-------------------------------------------------------------------------------------------------------------
 	OOX::Spreadsheet::CDataValidations oDataValidations;
@@ -6869,6 +6872,13 @@ int BinaryWorksheetsTableReader::ReadLegacyDrawingHF(BYTE type, long length, voi
 		
 		m_lObjectIdVML = pVmlDrawing->m_lObjectIdVML;
 		
+		if (pVmlDrawing->IsEmpty())
+		{
+			m_pOfficeDrawingConverter->RemoveDstContentRels();
+			RELEASEOBJECT(pVmlDrawing);
+			return res;
+		}
+
 		NSCommon::smart_ptr<OOX::File> pVmlDrawingFile(pVmlDrawing);
 		const OOX::RId oRId = m_pCurWorksheet->Add(pVmlDrawingFile);
 		

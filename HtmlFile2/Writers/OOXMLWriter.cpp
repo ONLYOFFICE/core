@@ -37,8 +37,6 @@
 
 #include <cwctype>
 
-#include "../../Common/Network/FileTransporter/include/FileTransporter.h"
-
 #include "../../DesktopEditor/common/File.h"
 #include "../../DesktopEditor/common/Directory.h"
 #include "../../DesktopEditor/common/SystemUtils.h"
@@ -1324,39 +1322,6 @@ const NSCSS::NSProperties::CPage* COOXMLWriter::GetPageData() const
 std::wstring COOXMLWriter::GetMediaDir() const
 {
 	return ((nullptr != m_pDstPath) ? *m_pDstPath : std::wstring()) + L"/word/media/";
-}
-
-bool IWriter::DownloadExternalFile(const std::wstring& wsUrl, const std::wstring& wsDstPath)
-{
-	if (wsUrl.empty() || wsDstPath.empty())
-		return false;
-
-	const std::map<std::wstring, std::wstring>::const_iterator itFound{m_mDownloadedFiles.find(wsUrl)};
-
-	if (m_mDownloadedFiles.cend() != itFound)
-		return !itFound->second.empty() && NSFile::CFileBinary::Copy(itFound->second, wsDstPath);
-
-	// gc_allowNetworkRequest check is assumed in kernel_network
-	NSNetwork::NSFileTransport::CFileDownloader oDownloader(wsUrl, false);
-	oDownloader.SetFilePath(wsDstPath);
-
-	if (!oDownloader.DownloadSync())
-	{
-		m_mDownloadedFiles.insert(std::make_pair(wsUrl, std::wstring()));
-		return false;
-	}
-
-	const std::wstring wsTempDir{GetTempDir()};
-
-	if (!wsTempDir.empty())
-	{
-		const std::wstring wsCachePath{wsTempDir + L"/htmldwl" + std::to_wstring(m_unDownloadedFileId++)};
-
-		if (NSFile::CFileBinary::Copy(wsDstPath, wsCachePath))
-			m_mDownloadedFiles.insert(std::make_pair(wsUrl, wsCachePath));
-	}
-
-	return true;
 }
 
 inline bool ElementInTable(const std::vector<NSCSS::CNode>& arSelectors)

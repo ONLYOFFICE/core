@@ -112,6 +112,100 @@ namespace SVG
 		return std::string(itEncodingValueBegin, itEncodingValueEnd);
 	}
 
+	size_t FindSvgBegin(const std::string& sContent)
+	{
+		size_t unPosition = 0;
+
+		while (unPosition < sContent.length())
+		{
+			while (unPosition < sContent.length() && std::isspace(static_cast<unsigned char>(sContent[unPosition])))
+				++unPosition;
+
+			if (unPosition >= sContent.length() || '<' != sContent[unPosition])
+				return std::string::npos;
+
+			if (0 == sContent.compare(unPosition, 4, "<!--"))
+			{
+				const size_t unEnd = sContent.find("-->", unPosition + 4);
+
+				if (std::string::npos == unEnd)
+					return std::string::npos;
+
+				unPosition = unEnd + 3;
+			}
+			else if (0 == sContent.compare(unPosition, 2, "<?"))
+			{
+				const size_t unEnd = sContent.find("?>", unPosition + 2);
+
+				if (std::string::npos == unEnd)
+					return std::string::npos;
+
+				unPosition = unEnd + 2;
+			}
+			else if (0 == sContent.compare(unPosition, 2, "<!"))
+			{
+				size_t unEnd = unPosition + 2;
+				unsigned int unSubsetDepth = 0;
+
+				while (unEnd < sContent.length())
+				{
+					const char chElement = sContent[unEnd];
+
+					if ('\'' == chElement || '\"' == chElement)
+					{
+						unEnd = sContent.find(chElement, unEnd + 1);
+
+						if (std::string::npos == unEnd)
+							return std::string::npos;
+
+						++unEnd;
+					}
+					else if (0 == sContent.compare(unEnd, 4, "<!--"))
+					{
+						const size_t unCommentEnd = sContent.find("-->", unEnd + 4);
+
+						if (std::string::npos == unCommentEnd)
+							return std::string::npos;
+
+						unEnd = unCommentEnd + 3;
+					}
+					else if (0 == sContent.compare(unEnd, 2, "<?"))
+					{
+						const size_t unInstructionEnd = sContent.find("?>", unEnd + 2);
+
+						if (std::string::npos == unInstructionEnd)
+							return std::string::npos;
+
+						unEnd = unInstructionEnd + 2;
+					}
+					else if ('[' == chElement)
+					{
+						++unSubsetDepth;
+						++unEnd;
+					}
+					else if (']' == chElement && 0 != unSubsetDepth)
+					{
+						--unSubsetDepth;
+						++unEnd;
+					}
+					else if ('>' == chElement && 0 == unSubsetDepth)
+						break;
+					else
+						++unEnd;
+				}
+
+				if (unEnd >= sContent.length())
+					return std::string::npos;
+
+				unPosition = unEnd + 1;
+			}
+			else
+				return (0 == sContent.compare(unPosition, 4, "<svg")) ? unPosition : std::string::npos;
+		}
+
+		return std::string::npos;
+	}
+
 	bool CSvgParser::LoadFromFile(const std::wstring &wsFile, CGraphicsContainer*& pContainer, CSvgFile* pFile) const
 	{
 		if (wsFile.empty() || NULL == pFile)
@@ -121,7 +215,7 @@ namespace SVG
 		if (!NSFile::CFileBinary::ReadAllTextUtf8A(wsFile, sXml))
 			return false;
 
-		size_t unFoundBegin = sXml.find("<svg");
+		size_t unFoundBegin = FindSvgBegin(sXml);
 
 		NSUnicodeConverter::CUnicodeConverter oConverter;
 		std::wstring wsContent;

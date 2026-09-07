@@ -3414,6 +3414,79 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 			pKids->Add(pP);
 	}
 
+	PdfWriter::CDictObject* pAcroForm = m_pDocument->GetAcroForm();
+	if (pAcroForm)
+	{
+		PdfWriter::CArrayObject* pFields = dynamic_cast<PdfWriter::CArrayObject*>(pAcroForm->Get("Fields"));
+		if (!pFields)
+		{
+			pFields = new PdfWriter::CArrayObject();
+			pAcroForm->Add("Fields", pFields);
+		}
+
+		std::vector<PdfWriter::CDictObject*> arrRoots;
+		std::vector<PdfWriter::CObjectBase*> arrReachable;
+		for (auto it = mParents.begin(); it != mParents.end(); it++)
+		{
+			PdfWriter::CDictObject* pP = it->second;
+			PdfWriter::CObjectBase* pParentOfParent = pP->Get("Parent");
+			if (pParentOfParent && pParentOfParent->GetType() == PdfWriter::object_type_DICT)
+				continue;
+
+			arrRoots.push_back(pP);
+
+			std::vector<PdfWriter::CDictObject*> arrStack(1, pP);
+			while (!arrStack.empty())
+			{
+				PdfWriter::CDictObject* pNode = arrStack.back();
+				arrStack.pop_back();
+
+				PdfWriter::CArrayObject* pNodeKids = dynamic_cast<PdfWriter::CArrayObject*>(pNode->Get("Kids"));
+				if (!pNodeKids)
+					continue;
+
+				for (int i = 0; i < pNodeKids->GetCount(); ++i)
+				{
+					PdfWriter::CObjectBase* pKid = pNodeKids->Get(i);
+					arrReachable.push_back(pKid);
+					if (pKid->GetType() == PdfWriter::object_type_DICT)
+						arrStack.push_back((PdfWriter::CDictObject*)pKid);
+				}
+			}
+		}
+
+		for (int i = pFields->GetCount() - 1; i >= 0; --i)
+		{
+			PdfWriter::CObjectBase* pField = pFields->Get(i);
+			bool bReachable = false;
+			for (PdfWriter::CObjectBase* pReachable : arrReachable)
+			{
+				if (pReachable == pField)
+				{
+					bReachable = true;
+					break;
+				}
+			}
+			if (bReachable)
+				pFields->Remove(i);
+		}
+
+		for (PdfWriter::CDictObject* pP : arrRoots)
+		{
+			bool bFound = false;
+			for (int i = 0; i < pFields->GetCount(); ++i)
+			{
+				if (pFields->Get(i) == pP)
+				{
+					bFound = true;
+					break;
+				}
+			}
+			if (!bFound)
+				pFields->Add(pP);
+		}
+	}
+
 	std::wstring wsRoles = pFieldInfo->GetRoles();
 	if (!wsRoles.empty())
 	{

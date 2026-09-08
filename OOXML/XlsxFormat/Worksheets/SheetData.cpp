@@ -854,7 +854,7 @@ namespace OOX
             oStream.XlsbStartRecord(XLSB::rt_RowHdr, 17);
 			oStream.WriteULONG(m_nR & 0xFFFFF);
 			oStream.WriteULONG(m_nS);
-			oStream.WriteUSHORT(((_UINT16)(m_dHt * 20)) & 0x1FFF);//pt to twips;
+			oStream.WriteUSHORT(((_UINT16)(m_dHt * 20)) & 0xFFFF);//pt to twips;
 
 			BYTE byteExtra1 = 0;
 			if(m_oThickTop.ToBool())
@@ -4167,7 +4167,13 @@ namespace OOX
 				WritingStringNullableAttrInt(L"r", m_oR, m_oR->GetValue());
 				WritingStringNullableAttrInt(L"s", m_oS, m_oS->GetValue());
 				WritingStringNullableAttrBool(L"customFormat", m_oCustomFormat);
-				WritingStringNullableAttrDouble(L"ht", m_oHt, m_oHt->GetValue());
+				double dVal = m_oHt->GetValue(); 
+				if (dVal < 409.6)
+				{
+					WritingStringNullableAttrDouble(L"ht", m_oHt, dVal);
+				}
+				else
+					writer.WriteString(L" ht=\"409.6\""); //todooo ? WritingStringNullableAttrDoubleLimit
 				WritingStringNullableAttrBool(L"hidden", m_oHidden);
 				WritingStringNullableAttrBool(L"customHeight", m_oCustomHeight);
 				WritingStringNullableAttrInt(L"outlineLevel", m_oOutlineLevel, m_oOutlineLevel->GetValue());
@@ -4488,7 +4494,7 @@ namespace OOX
 			m_oR.Init();
 			m_oR->SetValue((oStream.GetULong() & 0xFFFFF) + 1);
 			_UINT32 nS = oStream.GetULong();
-			_UINT16 nHt = oStream.GetUShort() & 0x1FFF;
+			_UINT16 nHt = oStream.GetUShort() & 0xFFFF;
 			BYTE byteExtra1 = oStream.GetUChar();
 			if(0 != (byteExtra1 & 0x1))
 			{

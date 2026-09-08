@@ -812,11 +812,14 @@ namespace NExtractTools
 			wsPrintOptions += std::to_wstring(nSavePage);
 			wsPrintOptions += L"}";
 		}
-		if (!wsPrintOptions.empty() && NULL != params.m_sJsonParams)
+		if (NULL != params.m_sJsonParams)
 		{
 			sJsonParams = *params.m_sJsonParams;
-			wsPrintOptions += L",";
-			sJsonParams.insert(1, wsPrintOptions);
+			if (!wsPrintOptions.empty())
+			{
+				wsPrintOptions += L",";
+				sJsonParams.insert(1, wsPrintOptions);
+			}
 		}
 		else if (!wsPrintOptions.empty())
 		{

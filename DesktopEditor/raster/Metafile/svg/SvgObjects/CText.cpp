@@ -579,12 +579,12 @@ namespace SVG
 		if (!ISZERO(dModuleM22) && (dModuleM22 < MIN_SCALE || dModuleM22 > MAX_SCALE))
 			dScaleY /= dModuleM22;
 
-		dFontHeight *= dScaleY;
+		dFontHeight /= dScaleY;
 
 		if (!Equals(0., dFontHeight) && dFontHeight < MIN_FONT_SIZE)
 		{
-			dScaleX *= MIN_FONT_SIZE / dFontHeight;
-			dScaleY *= MIN_FONT_SIZE / dFontHeight;
+			dScaleX *= dFontHeight / MIN_FONT_SIZE;
+			dScaleY *= dFontHeight / MIN_FONT_SIZE;
 			dFontHeight = MIN_FONT_SIZE;
 		}
 		else if (!Equals(0., dFontHeight) && dFontHeight > MAX_FONT_SIZE)

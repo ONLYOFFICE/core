@@ -230,25 +230,54 @@ namespace NSBinPptxRW
 
 		return oImageManagerInfo;
 	}
+	static std::wstring GetUrlFileExtension(const std::wstring& strUrl)
+	{
+		std::wstring strFileName = strUrl;
+
+		size_t nIndex = strFileName.find_first_of(L"?#");
+		if (std::wstring::npos != nIndex)
+			strFileName = strFileName.substr(0, nIndex);
+
+		nIndex = strFileName.find_last_of(L"/\\");
+		if (std::wstring::npos != nIndex)
+			strFileName = strFileName.substr(nIndex + 1);
+
+		nIndex = strFileName.rfind(wchar_t('.'));
+		if (std::wstring::npos == nIndex)
+			return L"";
+
+		return strFileName.substr(nIndex);
+	}
 	_imageManager2Info CImageManager2::GenerateImage(const std::wstring& strInput, std::vector<NSCommon::smart_ptr<OOX::File>>& additionalFiles, const std::wstring& oleData, std::wstring strBase64Image)
 	{
-		if (IsNeedDownload(strInput))
-			return DownloadImage(strInput, additionalFiles);
+		const bool bDownload = IsNeedDownload(strInput);
 
 		std::map<std::wstring, _imageManager2Info>::const_iterator pPair = m_mapImages.find((strBase64Image.empty()) ? strInput + oleData : strBase64Image + oleData);
 
 		std::wstring strExts = L".jpg";
 		std::wstring strImage = strInput;
 
-		//use GetFileName to avoid defining '.' in the directory as extension
-		std::wstring strFileName = NSFile::GetFileName(strInput);
-		int sizeExt = (int)strFileName.rfind(wchar_t('.'));
-		if (-1 != sizeExt)
+		std::wstring strFileName;
+		int sizeExt = 0;
+
+		if (bDownload)
 		{
-			strExts = strFileName.substr(sizeExt);
-			sizeExt = (int)strFileName.length() - sizeExt;
+			std::wstring strUrlExts = GetUrlFileExtension(strInput);
+			if (false == strUrlExts.empty())
+				strExts = strUrlExts;
 		}
-		else sizeExt = 0;
+		else
+		{
+			//use GetFileName to avoid defining '.' in the directory as extension
+			strFileName = NSFile::GetFileName(strInput);
+			sizeExt = (int)strFileName.rfind(wchar_t('.'));
+			if (-1 != sizeExt)
+			{
+				strExts = strFileName.substr(sizeExt);
+				sizeExt = (int)strFileName.length() - sizeExt;
+			}
+			else sizeExt = 0;
+		}
 		
 		int nDisplayType = IsDisplayedImage(strInput);
 		size_t nFileNameLength = strFileName.length();
@@ -271,7 +300,7 @@ namespace NSBinPptxRW
 			int	typeAdditional = 0;
 			std::wstring strAdditional;
 
-			if (0 != nDisplayType && nFileNameLength > sizeExt)
+			if (false == bDownload && 0 != nDisplayType && nFileNameLength > sizeExt)
 			{
 				OOX::CPath oPath = strInput;
 
@@ -370,11 +399,17 @@ namespace NSBinPptxRW
 			return pPair->second;
 		}
 
+		std::wstring strDownloadedFile;
+		if (bDownload)
+		{
+			strImage = strDownloadedFile = DownloadImageExec(strInput, nDisplayType, strExts);
+		}
+
 		if (false == strExts.empty())
 		{
 			m_pContentTypes->AddDefault(strExts.substr(1));
 		}
-		if (strExts == L".svg")
+		if (strExts == L".svg" && false == strImage.empty())
 		{
 			additionalFiles.emplace_back();
 			additionalFiles.back() = new OOX::SvgBlip(NULL);
@@ -388,6 +423,11 @@ namespace NSBinPptxRW
 			}
 		}
 		_imageManager2Info oImageManagerInfo = GenerateImageExec(strImage, strExts, addit, oleData);
+
+		if (false == strDownloadedFile.empty())
+		{
+			CDirectory::DeleteFile(strDownloadedFile);
+		}
 		
 		//oImageManagerInfo.sFilepathAdditionals <-> additionalFiles 
 
@@ -612,47 +652,9 @@ namespace NSBinPptxRW
 			return true;
 		return false;
 	}
-	//the url may contain a query, a fragment and dots in the host name,
-	//so the extension can be taken from the last path segment only
-	static std::wstring GetUrlFileExtension(const std::wstring& strUrl)
+	std::wstring CImageManager2::DownloadImageExec(const std::wstring& strUrl, int nDisplayType, std::wstring& sExts)
 	{
-		std::wstring strFileName = strUrl;
-
-		size_t nIndex = strFileName.find_first_of(L"?#");
-		if (std::wstring::npos != nIndex)
-			strFileName = strFileName.substr(0, nIndex);
-
-		nIndex = strFileName.find_last_of(L"/\\");
-		if (std::wstring::npos != nIndex)
-			strFileName = strFileName.substr(nIndex + 1);
-
-		nIndex = strFileName.rfind(wchar_t('.'));
-		if (std::wstring::npos == nIndex)
-			return L"";
-
-		return strFileName.substr(nIndex);
-	}
-	_imageManager2Info CImageManager2::DownloadImage(const std::wstring& strUrl, std::vector<NSCommon::smart_ptr<OOX::File>>& additionalFiles)
-	{
-		std::map<std::wstring, _imageManager2Info>::const_iterator pPair = m_mapImages.find (strUrl);
-
-		if (pPair != m_mapImages.end())
-		{
-			if (additionalFiles.empty() && false == pPair->second.additionalFiles.empty())
-				additionalFiles = pPair->second.additionalFiles;
-
-			return pPair->second;
-		}
-
-		std::wstring strExts = GetUrlFileExtension(strUrl);
-		if (strExts.empty())
-			strExts = L".jpg";
-
-		std::wstring tempFilePath = NSFile::CFileBinary::CreateTempFileWithUniqueName(m_strDstMedia + FILE_SEPARATOR_STR, L"DW");
-		if (false == tempFilePath.empty())
-			NSFile::CFileBinary::Remove(tempFilePath);
-
-		int nDisplayType = IsDisplayedImage(strUrl);
+		std::wstring strExts = sExts;
 		std::wstring strDownloadUrl = strUrl;
 
 		if (0 != (nDisplayType & 3) && strUrl.length() > strExts.length() &&
@@ -664,9 +666,13 @@ namespace NSBinPptxRW
 			strDownloadUrl = strInputMetafile + strExts;
 		}
 
+		std::wstring tempFilePath = NSFile::CFileBinary::CreateTempFileWithUniqueName(m_strDstMedia + FILE_SEPARATOR_STR, L"DW");
+		if (false == tempFilePath.empty())
+			NSFile::CFileBinary::Remove(tempFilePath);
+
 		std::wstring strImage = DownloadMediaExec(strDownloadUrl, tempFilePath.empty() ? tempFilePath : tempFilePath + strExts);
 
-		if (!strImage.empty())
+		if (false == strImage.empty())
 		{
 			std::wstring strDataExts;
 
@@ -701,46 +707,8 @@ namespace NSBinPptxRW
 					strImage = strRenamed;
 			}
 		}
-
-		if (!strExts.empty())
-		{
-			m_pContentTypes->AddDefault(strExts.substr(1));
-		}
-
-		std::vector<std::pair<std::wstring, int>> additional;
-		_imageManager2Info oImageManagerInfo;
-
-		if (!strImage.empty())
-		{
-			smart_ptr<OOX::Media> mediaFile;
-
-			if (strExts == L".svg")
-			{
-				smart_ptr<OOX::File> svgFile = new OOX::SvgBlip(NULL);
-				mediaFile = svgFile.smart_dynamic_cast<OOX::Media>();
-
-				if (mediaFile.IsInit())
-				{
-					additionalFiles.push_back(svgFile);
-					additional.push_back(std::make_pair(strImage, 3));
-				}
-			}
-
-			oImageManagerInfo = GenerateImageExec(strImage, strExts, additional, L"");
-			CDirectory::DeleteFile(strImage);
-
-			if (mediaFile.IsInit())
-			{
-				if (!oImageManagerInfo.sFilepathAdditionals.empty())
-					mediaFile->set_filename(oImageManagerInfo.sFilepathAdditionals.back(), false);
-				else
-					additionalFiles.pop_back(); //nothing has been generated - do not leave a media file without a name
-			}
-			oImageManagerInfo.additionalFiles = additionalFiles;
-		}
-
-		m_mapImages[strUrl] = oImageManagerInfo;
-		return oImageManagerInfo;
+		sExts = strExts;
+		return strImage;
 	}
 	std::wstring CImageManager2::DownloadMediaExec(const std::wstring& strFile, const std::wstring& tmpFile)
 	{

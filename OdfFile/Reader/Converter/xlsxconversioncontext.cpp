@@ -119,8 +119,12 @@ void xlsx_conversion_context::start_document()
     odf_reader::odf_read_context & odfContext = root()->odf_context();
     std::vector<const odf_reader::style_instance *> instances;
     
-	instances.push_back(odfContext.styleContainer().style_default_by_type(odf_types::style_family::TableCell));
-	instances.push_back(odfContext.styleContainer().style_by_name(L"Default", odf_types::style_family::TableCell, false));
+	odf_reader::style_instance *inst = odfContext.styleContainer().style_default_by_type(odf_types::style_family::TableCell);
+	if (inst) instances.push_back(inst);
+
+	inst = odfContext.styleContainer().style_by_name(L"Default", odf_types::style_family::TableCell, false);
+	if (!inst) inst = odfContext.styleContainer().style_by_name(L"Normal", odf_types::style_family::TableCell, false);
+	if (inst) instances.push_back(inst);
 
     odf_reader::text_format_properties_ptr		textFormatProperties	= calc_text_properties_content(instances);
     odf_reader::paragraph_format_properties		parFormatProperties		= calc_paragraph_properties_content(instances);

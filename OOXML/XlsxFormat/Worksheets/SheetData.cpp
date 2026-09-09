@@ -4167,13 +4167,16 @@ namespace OOX
 				WritingStringNullableAttrInt(L"r", m_oR, m_oR->GetValue());
 				WritingStringNullableAttrInt(L"s", m_oS, m_oS->GetValue());
 				WritingStringNullableAttrBool(L"customFormat", m_oCustomFormat);
-				double dVal = m_oHt->GetValue(); 
-				if (dVal < 409.6)
+				if (m_oHt.IsInit())
 				{
-					WritingStringNullableAttrDouble(L"ht", m_oHt, dVal);
+					double dVal = m_oHt->GetValue();
+					if (dVal < 409.6)
+					{
+						WritingStringNullableAttrDouble(L"ht", m_oHt, dVal);
+					}
+					else
+						writer.WriteString(L" ht=\"409.6\""); //todooo ? WritingStringNullableAttrDoubleLimit
 				}
-				else
-					writer.WriteString(L" ht=\"409.6\""); //todooo ? WritingStringNullableAttrDoubleLimit
 				WritingStringNullableAttrBool(L"hidden", m_oHidden);
 				WritingStringNullableAttrBool(L"customHeight", m_oCustomHeight);
 				WritingStringNullableAttrInt(L"outlineLevel", m_oOutlineLevel, m_oOutlineLevel->GetValue());

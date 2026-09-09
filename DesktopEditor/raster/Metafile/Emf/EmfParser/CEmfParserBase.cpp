@@ -805,7 +805,7 @@ namespace MetaFile
 		if (InterpretatorType::Svg == oInterpretatorType)
 		{
 			CEmfInterpretatorSvg *pEmfInterpretatorSvg = new CEmfInterpretatorSvg(this, dWidth, dHeight);
-			pEmfInterpretatorSvg->SetShapeRendering(EShapeRendering::OptimizeSpeed);
+			pEmfInterpretatorSvg->SetShapeRendering(EShapeRendering::Auto);
 			m_pInterpretator = pEmfInterpretatorSvg;
 		}
 	}

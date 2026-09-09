@@ -3458,10 +3458,11 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 		for (int i = pFields->GetCount() - 1; i >= 0; --i)
 		{
 			PdfWriter::CObjectBase* pField = pFields->Get(i);
+			int nID = pField->GetObjId();
 			bool bReachable = false;
 			for (PdfWriter::CObjectBase* pReachable : arrReachable)
 			{
-				if (pReachable == pField)
+				if ((nID > 0 && pReachable->GetObjId() == nID) || pReachable == pField)
 				{
 					bReachable = true;
 					break;

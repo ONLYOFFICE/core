@@ -126,6 +126,8 @@ public:
 
 	void write_to(std::wostream & strm);
 
+	void set_rtl(bool val)	{rtl_ = val;}
+
 private:
     std::wstringstream  slidesProperties_;
 	std::wstringstream  slidesNotesProperties_;
@@ -134,6 +136,8 @@ private:
     std::wstringstream  slideMastersData_;
     std::wstringstream  slideNotesMastersData_;
 	std::wstringstream  slideHandoutMasterData_;
+
+	bool rtl_ = false;
 };
 
 //------------------------------------------------------------------------------------

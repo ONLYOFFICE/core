@@ -71,6 +71,7 @@ public:
 
 	BaseObjectPtr	m_AreaFormat;
 	BaseObjectPtr	m_GELFRAME;
+	std::vector<BaseObjectPtr> ShapeProps;
 
 };
 

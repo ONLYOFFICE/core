@@ -363,8 +363,6 @@ xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\">");
 			}
 			else
 				ptr->valType = XLS::typeDvNone;
-			if(ptr->valType == XLS::typeDvList)
-				ptr->fStrLookup = true;
 			if(m_oAllowBlank.IsInit())
 				ptr->fAllowBlank = m_oAllowBlank->GetValue();
 			else

@@ -49,6 +49,7 @@ include($$PWD_CUR/../../Common/base.pri)
 
 DEFINES += DOCTRENDERER_USE_DYNAMIC_LIBRARY_BUILDING
 DEFINES += JSBASE_USE_DYNAMIC_LIBRARY_BUILDING
+#DEFINES += DOCBUILDER_V8_ALLOW_WASM
 ADD_DEPENDENCY(graphics, kernel, UnicodeConverter, kernel_network)
 
 #CONFIG += build_xp
@@ -149,6 +150,7 @@ DEFINES += BUIDLER_OPEN_BASE64_ENABLED
 CONFIG += drawingfile_support
 drawingfile_support {
 	DEFINES += WASM_SERIALIZER_USE_ALLOCATOR
+	DEFINES += DOCBUILDER_PDF_EDITOR
 	ADD_DEPENDENCY(PdfFile, XpsFile, DjVuFile, OFDFile, DocxRenderer)
 
 	HEADERS += \

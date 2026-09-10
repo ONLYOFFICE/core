@@ -43,6 +43,33 @@ namespace PdfWriter
 	class CDestination;
 	class CMetadata;
 	class CInfoDict;
+	class CAnnotation;
+
+	enum class StructElemType
+	{
+		Link,
+		Form,
+		Annot
+	};
+
+	class CStructureTreeRoot : public CDictObject
+	{
+	public:
+		CStructureTreeRoot(CXref* pXref);
+
+		void AddAnnot(CDictObject* pAnnot, CDictObject* pPage, StructElemType eType);
+		void RemoveAnnot(CDictObject* pAnnot);
+		void RemoveStructElemCascade(CDictObject* pElem);
+		CDictObject* CreateDestAnchor(CDictObject* pPageDict, int nMCID);
+
+	private:
+		CXref* m_pXref;
+		int m_nParentTreeKey;
+		CDictObject* m_pNamespace;
+		CDictObject* m_pParentTree;
+		CDictObject* m_pDocumentElem;
+		CArrayObject* m_pDocumentK;
+	};
 
 	class CCatalog : public CDictObject
 	{
@@ -56,17 +83,17 @@ namespace PdfWriter
 		void         SetPageMode(EPageMode eMode);
 		void         SetOpenAction(CDestination* pOpenAction);
 		void         AddPageLabel(unsigned int unIndex, CDictObject* pPageLabel);
-		CMetadata*   AddMetadata(CXref* pXref, CInfoDict* pInfo);
-		EDictType    GetDictType() const
+		CMetadata*   AddMetadata(CXref* pXref, CInfoDict* pInfo, const std::string& sAltTitle);
+		CStructureTreeRoot* GetStructTreeRoot();
+		CDictObject* GetNames();
+		EDictType    GetDictType()
 		{
 			return dict_type_CATALOG;
 		}
-	};
 
-	class CStructureTreeRoot : public CDictObject
-	{
-	public:
-		CStructureTreeRoot(CXref* pXref);
+	private:
+		CStructureTreeRoot* m_pStructTreeRoot;
+		CXref* m_pXref;
 	};
 }
 

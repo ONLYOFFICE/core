@@ -43,6 +43,7 @@
  //#include "../Records/SoundContainer.h"
 #include "../Enums/_includer.h"
 #include "../../../OfficeCryptReader/source/CryptTransform.h"
+#include "../../../Common/MediaFileFormatChecker.h"
 
 using namespace PPT;
 using namespace ODRAW;
@@ -2370,17 +2371,24 @@ void CPPTUserInfo::LoadExternal(CRecordExObjListContainer* pExObjects)
             {
                 PPT::CExFilesInfo oInfo;
 
-                oInfo.m_strFilePath = m_oExMedia.m_strPresentationDirectory + FILE_SEPARATOR_STR + L"audio" + std::to_wstring(m_oExMedia.m_arAudioCollection.size() + 1) + L".audio";
                 oInfo.m_dwID = (_UINT32)XmlUtils::GetInteger(oArrayStrings[2]->m_strText.c_str());
                 oInfo.m_name = oArrayStrings[0]->m_strText;
-                oInfo.m_strFileExt = oArrayStrings[1]->m_strText;
+                oInfo.m_strFileExt = XmlUtils::GetLower(oArrayStrings[1]->m_strText);
+               
+                CMediaFileFormatChecker checker;
+                std::wstring sExtDetect = checker.DetectFormatByData(oArrayData[0]->GetData(), oArrayData[0]->GetDataSize());
+
+                if (false == sExtDetect.empty()) oInfo.m_strFileExt = L"." + sExtDetect;
+                else if (false == oInfo.m_strFileExt.empty() && L'.' != oInfo.m_strFileExt[0]) oInfo.m_strFileExt = L"." + oInfo.m_strFileExt;
+
+                oInfo.m_strFilePath = m_oExMedia.m_strPresentationDirectory + FILE_SEPARATOR_STR + L"audio" + std::to_wstring(m_oExMedia.m_arAudioCollection.size() + 1)
+                    + (oInfo.m_strFileExt.empty() ? L".audio" : oInfo.m_strFileExt);
 
                 m_oExMedia.m_arAudioCollection.push_back(oInfo);
                 oArrayData[0]->SaveToFile(oInfo.m_strFilePath);
             }
         }
     }
-
     if (NULL == pExObjects)
         return;
 

@@ -147,7 +147,8 @@ namespace BinXlsxRW
 		QuotePrefix = 11,
 		XfId = 12,
 		Aligment = 13,
-		Protection = 14
+		Protection = 14,
+		Complement = 15
 	};}
 	namespace c_oSerProtectionTypes {enum c_oSerProtectionTypes
 	{
@@ -244,7 +245,24 @@ namespace BinXlsxRW
 		XmlMap = 30,
 		RdRichValue = 31,
 		RdRichValueStructure = 32,
-		RdRichValueTypes = 33
+		RdRichValueTypes = 33,
+		RichValueRels = 34,
+		FeaturePropertyBags = 35
+	};}
+	namespace c_oSer_FeaturePropertyBags {enum c_oSer_FeaturePropertyBags {
+		Bag = 0,
+		BagId = 1,
+		Int = 2,
+		String = 3,
+		Bool = 4,
+		Double = 5,
+		Array = 6,
+		Key = 7,
+		Value = 8,
+		Att = 9,
+		Type = 10,
+		BagExtId = 11,
+		ExtRef = 12
 	};}
 	namespace c_oSerWorkbookProtection {enum c_oSerWorkbookProtection{
 		AlgorithmName = 0,
@@ -264,7 +282,9 @@ namespace BinXlsxRW
 		FallbackValue = 4,
 		FallbackType = 5
 	};}
-
+	namespace c_oSer_RichValueRel {enum c_oSer_RichValueRel {
+		RichValueRel = 0
+	};}
 	namespace c_oSer_RichStructures {enum c_oSer_RichStructures {
 		Structure = 0,
 		Type = 1,

@@ -126,14 +126,20 @@ xlsx_alignment OdfProperties2XlsxAlignment(	xlsx_conversion_context * context,
 		{
 			alignment.justifyLastLine = true;            
 		}
-		if (parProp->fo_margin_left_)
-		{
-			if (parProp->fo_margin_left_->get_type() == odf_types::length_or_percent::Length)
-			{
-				 double indent_inch		= parProp->fo_margin_left_->get_length().get_value_unit(odf_types::length::inch);
-				 double indent_symbol	= (int(( (indent_inch * 96.) - 5)/ context->getMaxDigitSize().first * 100. + 0.5)) /100.;
+		_CP_OPT(odf_types::length_or_percent) margin_indent = parProp->fo_margin_left_;
 
-				  alignment.indent = (int)(indent_symbol / 1.5);
+		if (alignment.horizontal && *alignment.horizontal == L"right" && parProp->fo_margin_right_)
+			margin_indent = parProp->fo_margin_right_;
+
+		if (margin_indent)
+		{
+			if (margin_indent->get_type() == odf_types::length_or_percent::Length)
+			{
+				 double indent_pixels	= margin_indent->get_length().get_value_unit(odf_types::length::inch) * 96.;
+				 double indent_level	= indent_pixels / (1.5 * context->getMaxDigitSize().first);
+
+				 if (indent_level >= 0.5)
+					 alignment.indent = (int)(indent_level + 0.5);
 			}
 			else //percent
 			{
@@ -181,10 +187,10 @@ xlsx_alignment OdfProperties2XlsxAlignment(	xlsx_conversion_context * context,
 	{
 		if (cellProp->common_rotation_angle_attlist_.style_rotation_angle_)
 		{
-			 int angle = cellProp->common_rotation_angle_attlist_.style_rotation_angle_.get(); 
+			 int angle = cellProp->common_rotation_angle_attlist_.style_rotation_angle_.get() % 360;
 
-			if (angle > 90)		angle = angle - 90;
-			if (angle < -90)	angle = 90 + angle;
+			if (angle > 90 && angle < 270)	angle = (angle < 180) ? 90 : 180;
+			else if (angle >= 270)			angle = 450 - angle;
 
 			alignment.textRotation = angle;       //??? what priority
 		}		

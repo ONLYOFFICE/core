@@ -431,29 +431,32 @@ namespace NS_DWC_Common
 
 	BYTE getOpacityFromString(const std::wstring opacityStr)
 	{
-		BYTE alpha = 0xff;
-		
+		double opacity = 1.;
+
 		if (opacityStr.find(L"f") != std::wstring::npos)
 		{
-			alpha = (BYTE)(XmlUtils::GetDouble(opacityStr) / 65536 * 256);
+			opacity = XmlUtils::GetDouble(opacityStr) / 65535.;
 		}
 		else
 		{
 			if (opacityStr.find(L"%") != std::wstring::npos)
 			{
-				alpha = (BYTE)(XmlUtils::GetDouble(opacityStr.substr(0, opacityStr.length() - 1)) / 100. * 256);
+				opacity = XmlUtils::GetDouble(opacityStr.substr(0, opacityStr.length() - 1)) / 100.;
 			}
 			else if (0 == opacityStr.find(L"."))
 			{
 				std::wstring str = L"0" + opacityStr;
-				alpha = (BYTE)(XmlUtils::GetDouble(str) * 256);
+				opacity = XmlUtils::GetDouble(str);
 			}
 			else
 			{
-				alpha = (BYTE)(XmlUtils::GetDouble(opacityStr) * 256);
+				opacity = XmlUtils::GetDouble(opacityStr);
 			}
 		}
-		return alpha;
+		if (opacity < 0.) opacity = 0.;
+		if (opacity > 1.) opacity = 1.;
+
+		return (BYTE)(opacity * 255 + 0.5);
 	}
 
 	long getRealFromString(const std::wstring& str)
@@ -463,7 +466,7 @@ namespace NS_DWC_Common
 		if (str.find(L"f") != -1)
 			val = XmlUtils::GetInteger(str);
 		else
-			val = (long)(XmlUtils::GetDouble(str) * 65536);
+			val = (long)(XmlUtils::GetDouble(str) * 65535);
 
 		return val;
 	}
@@ -2076,8 +2079,8 @@ void CDrawingConverter::ConvertShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::CX
 		{
 			LoadCoordPos(oNodeShape, oShapeElem.m_pShape); //for path calculate
 		}
-		pPPTShape->LoadFromXMLShapeType(oNodeShape);
 	}
+	pPPTShape->LoadFromXMLShapeType(oNodeShape);
 
 	if (pPPTShape != NULL)
 	{	
@@ -2825,7 +2828,7 @@ void CDrawingConverter::ConvertWordArtShape(PPTX::Logic::SpTreeElem* elem, XmlUt
 					bOpacity = true;
 					lAlpha = NS_DWC_Common::getOpacityFromString(*sOpacity);
 					oMod.name = L"alpha";
-					oMod.val = (int)((1 - lAlpha / 255.0) * 100000.0);
+					oMod.val = (int)(lAlpha * 100000.0 / 255.0);
 
 					if (arColors.at(0)->is_init())
 						arColors.at(0)->Color->Modifiers.push_back(oMod);
@@ -2874,8 +2877,8 @@ void CDrawingConverter::ConvertWordArtShape(PPTX::Logic::SpTreeElem* elem, XmlUt
 				{
 					bOpacity2 = true;
 					lAlpha = NS_DWC_Common::getOpacityFromString(*sOpacity2);
-					oMod.name = L"alpha";
-					oMod2.val = (int)((1 - lAlpha / 255.) * 100000.);
+					oMod2.name = L"alpha";
+					oMod2.val = (int)(lAlpha * 100000.0 / 255.0);
 
 					if (arColors.at(1)->is_init())
 						arColors.at(1)->Color->Modifiers.push_back(oMod2);
@@ -4988,6 +4991,22 @@ void CDrawingConverter::CheckPenShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils::
 			else											pSpPr->ln->prstDash->val = L"solid";
 		}
 
+		nullable_string sStrokeLineStyle;
+		XmlMacroReadAttributeBase(oNodeStroke, L"linestyle", sStrokeLineStyle);
+		if (sStrokeLineStyle.is_init())
+		{
+			pPPTShape->m_bIsStroked = true;
+
+			if (!pSpPr->ln.is_init())
+				pSpPr->ln = new PPTX::Logic::Ln();
+
+			if		(*sStrokeLineStyle == L"thinThin")			pSpPr->ln->cmpd = std::wstring(L"dbl");
+			else if (*sStrokeLineStyle == L"thickThin")			pSpPr->ln->cmpd = std::wstring(L"thickThin");
+			else if (*sStrokeLineStyle == L"thinThick")			pSpPr->ln->cmpd = std::wstring(L"thinThick");
+			else if (*sStrokeLineStyle == L"thickBetweenThin")	pSpPr->ln->cmpd = std::wstring(L"tri");
+			else											pSpPr->ln->cmpd = std::wstring(L"sng");
+		}
+
 		nullable_string sEndArraw;
         XmlMacroReadAttributeBase(oNodeStroke, L"endarrow", sEndArraw);
 		if (sEndArraw.is_init())
@@ -5762,18 +5781,6 @@ void CDrawingConverter::ConvertMainPropsToVML(const std::wstring& bsMainProps, N
 
 	double dKoef = 72.0 / (36000 * 25.4);
 
-	if (margL.is_init())
-		oWriter.WriteAttributeCSS_double1_pt(L"mso-wrap-distance-left", dKoef * (*margL));
-	if (margT.is_init())
-		oWriter.WriteAttributeCSS_double1_pt(L"mso-wrap-distance-top", dKoef * (*margT));
-	if (margR.is_init())
-		oWriter.WriteAttributeCSS_double1_pt(L"mso-wrap-distance-right", dKoef * (*margR));
-	if (margB.is_init())
-		oWriter.WriteAttributeCSS_double1_pt(L"mso-wrap-distance-bottom", dKoef * (*margB));
-
-	outWriter.m_strStyleWrap = oWriter.GetXmlString();
-	oWriter.ClearNoAttack();
-
 	if (L"wp:inline" == oNode.GetName())
 	{
 		XmlUtils::CXmlNode oNodeS;
@@ -5815,8 +5822,28 @@ void CDrawingConverter::ConvertMainPropsToVML(const std::wstring& bsMainProps, N
 			oWriter.WriteAttributeCSS(L"o:allowincell", *layoutInCell ? L"true" : L"false");
 		}
 
+		nullable_bool simplePos; XmlMacroReadAttributeBase(oNode, L"simplePos", simplePos);
+
+		XmlUtils::CXmlNode oNodeSimplePos;
+		bool bSimplePos = (simplePos.is_init()) && (*simplePos) && oNode.GetNode(L"wp:simplePos", oNodeSimplePos);
+
+		if (bSimplePos)
+		{
+			outWriter.m_dX = dKoef * oNodeSimplePos.ReadAttributeInt(L"x");
+			outWriter.m_dY = dKoef * oNodeSimplePos.ReadAttributeInt(L"y");
+
+			oWriter.WriteAttributeCSS(L"mso-position-horizontal-relative", L"page");
+			oWriter.WriteAttributeCSS(L"mso-position-vertical-relative", L"page");
+
+			oWriter.WriteAttributeCSS_double1_pt(L"margin-left", outWriter.m_dX);
+			oWriter.WriteAttributeCSS_double1_pt(L"margin-top", outWriter.m_dY);
+
+			oWriter.WriteAttributeCSS(L"mso-position-horizontal", L"absolute");
+			oWriter.WriteAttributeCSS(L"mso-position-vertical", L"absolute");
+		}
+
 		XmlUtils::CXmlNode oNodeHorP;
-		if (oNode.GetNode(L"wp:positionH", oNodeHorP))
+		if (false == bSimplePos && oNode.GetNode(L"wp:positionH", oNodeHorP))
 		{
 			std::wstring strWriteRelFrom = oNodeHorP.GetAttribute(L"relativeFrom", L"column");
 			if (strWriteRelFrom == L"character")
@@ -5847,16 +5874,26 @@ void CDrawingConverter::ConvertMainPropsToVML(const std::wstring& bsMainProps, N
 			}
 			else
 			{
-				std::wstring sA = oNodeHorP.ReadValueString(L"wp:align");
-				if (L"" != sA)
+				if (oNodeHorP.GetNode(L"wp14:pctPosHOffset", oNodeO))
 				{
-					oWriter.WriteAttributeCSS(L"mso-position-horizontal", sA);
+					int nPos = oNodeHorP.ReadValueInt(L"wp14:pctPosHOffset");
+
+					oWriter.WriteAttributeCSS_int(L"mso-left-percent", nPos / 100);
+					oWriter.WriteAttributeCSS(L"mso-position-horizontal", L"absolute");
+				}
+				else
+				{
+					std::wstring sA = oNodeHorP.ReadValueString(L"wp:align");
+					if (false == sA.empty())
+					{
+						oWriter.WriteAttributeCSS(L"mso-position-horizontal", sA);
+					}
 				}
 			}
 		}
 
 		XmlUtils::CXmlNode oNodeVerP;
-		if (oNode.GetNode(L"wp:positionV", oNodeVerP))
+		if (false == bSimplePos && oNode.GetNode(L"wp:positionV", oNodeVerP))
 		{
 			std::wstring strWriteRelFrom = oNodeVerP.GetAttribute(L"relativeFrom", L"paragraph");
 			if (strWriteRelFrom == L"margin")
@@ -5887,10 +5924,20 @@ void CDrawingConverter::ConvertMainPropsToVML(const std::wstring& bsMainProps, N
 			}
 			else
 			{
-				std::wstring sA = oNodeVerP.ReadValueString(L"wp:align");
-				if (L"" != sA)
+				if (oNodeVerP.GetNode(L"wp14:pctPosVOffset", oNodeO))
 				{
-					oWriter.WriteAttributeCSS(L"mso-position-vertical", sA);
+					int nPos = oNodeVerP.ReadValueInt(L"wp14:pctPosVOffset");
+
+					oWriter.WriteAttributeCSS_int(L"mso-top-percent", nPos / 100);
+					oWriter.WriteAttributeCSS(L"mso-position-vertical", L"absolute");
+				}
+				else
+				{
+					std::wstring sA = oNodeVerP.ReadValueString(L"wp:align");
+					if (false == sA.empty())
+					{
+						oWriter.WriteAttributeCSS(L"mso-position-vertical", sA);
+					}
 				}
 			}
 		}
@@ -5908,45 +5955,31 @@ void CDrawingConverter::ConvertMainPropsToVML(const std::wstring& bsMainProps, N
 			oWriter.WriteAttributeCSS_double1_pt(L"height", outWriter.m_dHeight);
 		}
 
-		XmlUtils::CXmlNode oNodeWrap = oNode.ReadNode(L"<wp:wrapNone/>");
+		XmlUtils::CXmlNode oNodeWrap;
 		XmlUtils::CXmlNode oNodeWrapPoints;
-		if (oNodeWrap.IsValid())
+
+		std::wstring strWrapType;
+		if (oNode.GetNode(L"wp:wrapSquare", oNodeWrap))				strWrapType = L"square";
+		else if (oNode.GetNode(L"wp:wrapTopAndBottom", oNodeWrap))	strWrapType = L"topAndBottom";
+		else if (oNode.GetNode(L"wp:wrapTight", oNodeWrap))			strWrapType = L"tight";
+		else if (oNode.GetNode(L"wp:wrapThrough", oNodeWrap))		strWrapType = L"through";
+
+		if (false == strWrapType.empty())
 		{
-			// ok
-		}
-		else
-		{
-			oNodeWrap = oNode.ReadNode(L"wp:wrapSquare");
-			if (oNodeWrap.IsValid())
-			{
-				outWriter.m_strNodes += L"<w10:wrap type=\"square\"/>";
-			}
-			else
-			{
-				oNodeWrap = oNode.ReadNode(L"wp:wrapTopAndBottom");
-				if (oNodeWrap.IsValid())
-				{
-					outWriter.m_strNodes += L"<w10:wrap type=\"topAndBottom\"/>";
-				}
-				else
-				{
-					oNodeWrap = oNode.ReadNode(L"wp:wrapTight");
-					if (oNodeWrap.IsValid())
-					{
-						outWriter.m_strNodes += L"<w10:wrap type=\"tight\"/>";
-						oNodeWrap.GetNode(L"wp:wrapPolygon", oNodeWrapPoints);
-					}
-					else
-					{
-						oNodeWrap = oNode.ReadNode(L"wp:wrapThrough");
-						if (oNodeWrap.IsValid())
-						{
-							outWriter.m_strNodes += L"<w10:wrap type=\"through\"/>";
-							oNodeWrap.GetNode(L"wp:wrapPolygon", oNodeWrapPoints);
-						}
-					}
-				}
-			}
+			std::wstring strWrapText = oNodeWrap.GetAttribute(L"wrapText");
+
+			outWriter.m_strNodes += L"<w10:wrap type=\"" + strWrapType + L"\"";
+			if (L"left" == strWrapText || L"right" == strWrapText || L"largest" == strWrapText)
+				outWriter.m_strNodes += L" side=\"" + strWrapText + L"\"";
+			outWriter.m_strNodes += L"/>";
+
+			if (L"tight" == strWrapType || L"through" == strWrapType)
+				oNodeWrap.GetNode(L"wp:wrapPolygon", oNodeWrapPoints);
+
+			XmlMacroReadAttributeBase(oNodeWrap, L"distT", margT);
+			XmlMacroReadAttributeBase(oNodeWrap, L"distB", margB);
+			XmlMacroReadAttributeBase(oNodeWrap, L"distL", margL);
+			XmlMacroReadAttributeBase(oNodeWrap, L"distR", margR);
 		}
 
 		if (oNodeWrapPoints.IsValid())
@@ -5996,6 +6029,50 @@ void CDrawingConverter::ConvertMainPropsToVML(const std::wstring& bsMainProps, N
 		
 
 	}
+	XmlUtils::CXmlNode oNodeSizeRel, oNodeSizePct;
+	if (oNode.GetNode(L"wp14:sizeRelH", oNodeSizeRel))
+	{
+		if (oNodeSizeRel.GetNode(L"wp14:pctWidth", oNodeSizePct))
+		{
+			oWriter.WriteAttributeCSS_int(L"mso-width-percent", oNodeSizeRel.ReadValueInt(L"wp14:pctWidth") / 100);
+
+			std::wstring strRelFrom = oNodeSizeRel.GetAttribute(L"relativeFrom", L"page");
+			if (strRelFrom == L"margin")
+				oWriter.WriteAttributeCSS(L"mso-width-relative", L"margin");
+			else if (strRelFrom == L"leftMargin")
+				oWriter.WriteAttributeCSS(L"mso-width-relative", L"left-margin-area");
+			else if (strRelFrom == L"rightMargin")
+				oWriter.WriteAttributeCSS(L"mso-width-relative", L"right-margin-area");
+			else if (strRelFrom == L"insideMargin")
+				oWriter.WriteAttributeCSS(L"mso-width-relative", L"inner-margin-area");
+			else if (strRelFrom == L"outsideMargin")
+				oWriter.WriteAttributeCSS(L"mso-width-relative", L"outer-margin-area");
+			else
+				oWriter.WriteAttributeCSS(L"mso-width-relative", L"page");
+		}
+	}
+	if (oNode.GetNode(L"wp14:sizeRelV", oNodeSizeRel))
+	{
+		if (oNodeSizeRel.GetNode(L"wp14:pctHeight", oNodeSizePct))
+		{
+			oWriter.WriteAttributeCSS_int(L"mso-height-percent", oNodeSizeRel.ReadValueInt(L"wp14:pctHeight") / 100);
+
+			std::wstring strRelFrom = oNodeSizeRel.GetAttribute(L"relativeFrom", L"page");
+			if (strRelFrom == L"margin")
+				oWriter.WriteAttributeCSS(L"mso-height-relative", L"margin");
+			else if (strRelFrom == L"topMargin")
+				oWriter.WriteAttributeCSS(L"mso-height-relative", L"top-margin-area");
+			else if (strRelFrom == L"bottomMargin")
+				oWriter.WriteAttributeCSS(L"mso-height-relative", L"bottom-margin-area");
+			else if (strRelFrom == L"insideMargin")
+				oWriter.WriteAttributeCSS(L"mso-height-relative", L"inner-margin-area");
+			else if (strRelFrom == L"outsideMargin")
+				oWriter.WriteAttributeCSS(L"mso-height-relative", L"outer-margin-area");
+			else
+				oWriter.WriteAttributeCSS(L"mso-height-relative", L"page");
+		}
+	}
+
 	XmlUtils::CXmlNode oNodeDocPr;
 	if (oNode.GetNode(L"wp:docPr", oNodeDocPr))
 	{
@@ -6006,7 +6083,29 @@ void CDrawingConverter::ConvertMainPropsToVML(const std::wstring& bsMainProps, N
 			if (std::wstring::npos != test.find(L"watermark"))
 				outWriter.m_strId = strName;
 		}
+		std::wstring strDescr = oNodeDocPr.GetAttribute(L"descr");
+		if (false == strDescr.empty())
+		{
+			outWriter.m_strAttributesMain += L" alt=\"" + XmlUtils::EncodeXmlString(strDescr) + L"\"";
+		}
+		nullable_bool hidden; XmlMacroReadAttributeBase(oNodeDocPr, L"hidden", hidden);
+		if ((hidden.is_init()) && (*hidden))
+		{
+			oWriter.WriteAttributeCSS(L"visibility", L"hidden");
+		}
 	}
+	NSBinPptxRW::CXmlWriter oWriterWrap;
+
+	if (margL.is_init())
+		oWriterWrap.WriteAttributeCSS_double1_pt(L"mso-wrap-distance-left", dKoef * (*margL));
+	if (margT.is_init())
+		oWriterWrap.WriteAttributeCSS_double1_pt(L"mso-wrap-distance-top", dKoef * (*margT));
+	if (margR.is_init())
+		oWriterWrap.WriteAttributeCSS_double1_pt(L"mso-wrap-distance-right", dKoef * (*margR));
+	if (margB.is_init())
+		oWriterWrap.WriteAttributeCSS_double1_pt(L"mso-wrap-distance-bottom", dKoef * (*margB));
+
+	outWriter.m_strStyleWrap = oWriterWrap.GetXmlString();
 	outWriter.m_strStyleMain = oWriter.GetXmlString();
 }
 
@@ -6022,6 +6121,10 @@ void CDrawingConverter::SetDstContentRels()
 void CDrawingConverter::SaveDstContentRels(const std::wstring& bsRelsPath)
 {
 	m_pBinaryReader->SaveDstContentRels(bsRelsPath);
+}
+void CDrawingConverter::RemoveDstContentRels()
+{
+	m_pBinaryReader->RemoveDstContentRels();
 }
 void CDrawingConverter::WriteRels (const std::wstring& bsType, const std::wstring& bsTarget, const std::wstring& bsTargetMode, unsigned int* lId)
 {

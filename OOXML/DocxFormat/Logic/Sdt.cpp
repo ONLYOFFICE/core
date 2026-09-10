@@ -666,6 +666,7 @@ namespace OOX
 			XmlMacroReadAttributeBase(oNode, L"w:label", m_oLabel);
 			XmlMacroReadAttributeBase(oNode, L"w:helpText", m_oHelpText);
 			XmlMacroReadAttributeBase(oNode, L"w:required", m_oRequired);
+			XmlMacroReadAttributeBase(oNode, L"w:spellCheck", m_oSpellCheck);
 			
 			WritingElement_ReadNode(oNode, oChild, L"w:border", m_oBorder);
 			WritingElement_ReadNode(oNode, oChild, L"w:shd", m_oShd);
@@ -709,6 +710,10 @@ namespace OOX
 			{
 				sResult += L" w:helpText=\"" + XmlUtils::EncodeXmlString(m_oHelpText.get()) + L"\"";
 			}
+			if (m_oSpellCheck.IsInit())
+			{
+				sResult += L" w:spellCheck=\"1\" ";
+			}
 			if (m_oRequired.IsInit())
 			{
 				if (*m_oRequired)
@@ -740,6 +745,7 @@ namespace OOX
 				WritingElement_ReadAttributes_Read_else_if(oReader, L"label", m_oLabel)
 				WritingElement_ReadAttributes_Read_else_if(oReader, L"helpText", m_oHelpText)
 				WritingElement_ReadAttributes_Read_else_if(oReader, L"required", m_oRequired)
+				WritingElement_ReadAttributes_Read_else_if(oReader, L"spellCheck", m_oSpellCheck)
 			WritingElement_ReadAttributes_End_No_NS(oReader)
 		}
 //-----------------------------------------------------------------------------------------------------------------------------

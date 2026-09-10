@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) Ascensio System SIA, 2009-2026
  *
  * This program is a free software product. You can redistribute it and/or
@@ -34,6 +34,13 @@
  */
 
 #include "Theme.h"
+#include "../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/THEME.h"
+#include "../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Theme.h"
+#include "../../OfficeUtils/src/OfficeUtils.h"
+#include "../../DesktopEditor/common/Directory.h"
+#include <chrono>
+#include <codecvt>
+#include <locale>
 
 namespace PPTX
 {
@@ -236,6 +243,103 @@ namespace PPTX
 
 		pWriter->EndNode(_T("a:theme"));
 	}
+XLS::BaseObjectPtr Theme::toXLS(const OOX::CPath& oFilePath)
+{
+	auto combinePath = [&](const std::wstring& sDir, const std::wstring& sName) {
+	return sDir + FILE_SEPARATOR_STR + sName;
+	};
+	std::string themeXml;
+    std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+	{
+		// 1. xml theme generation
+		NSBinPptxRW::CXmlWriter oXmlWriter;
+		oXmlWriter.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
+		toXmlWriter(&oXmlWriter);
+		auto themeData = oXmlWriter.GetXmlString();
+		themeXml =  converter.to_bytes(themeData);
+	 }
+
+	// 2. getting temp path
+	std::wstring tempBasePath = oFilePath.GetDirectory(true);
+	auto now = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
+	std::wstring tempDir = tempBasePath + L"xls_theme_" + std::to_wstring(now);
+
+	std::wstring themeDir = combinePath(combinePath(tempDir, L"theme"), L"theme");
+
+	// directory creation
+	NSDirectory::CreateDirectory(tempDir.c_str());
+	NSDirectory::CreateDirectory(combinePath(tempDir, L"theme").c_str());
+	NSDirectory::CreateDirectory(themeDir.c_str());
+	NSDirectory::CreateDirectory(combinePath(tempDir, L"_rels").c_str());
+	NSDirectory::CreateDirectory(combinePath(themeDir, L"_rels").c_str());
+
+	// 3. file writing
+	auto write_file = [](const std::wstring& path, const std::string& content) {
+	#ifdef _WIN32
+			std::ofstream f(path, std::ios::binary);
+	#else
+            std::wstring_convert<std::codecvt_utf8<wchar_t>> Lambdaconverter;
+            std::string narrowPath = Lambdaconverter.to_bytes(path);
+			std::ofstream f(narrowPath, std::ios::binary);
+	#endif
+			if (f.is_open()) {
+				f.write(content.data(), content.size());
+			}
+		};
+
+	write_file(combinePath(tempDir, L"[Content_Types].xml"),
+		"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\">"
+		"<Default Extension=\"rels\" ContentType=\"application/vnd.openxmlformats-package.relationships+xml\"/>"
+		"<Default Extension=\"xml\" ContentType=\"application/xml\"/>"
+		"<Override PartName=\"/theme/theme/themeManager.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.themeManager+xml\"/>"
+		"<Override PartName=\"/theme/theme/theme1.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.theme+xml\"/></Types>");
+
+	write_file(combinePath(themeDir, L"theme1.xml"), themeXml);
+
+	write_file(combinePath(themeDir, L"themeManager.xml"),
+		"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><a:themeManager xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\"/>");
+
+	write_file(combinePath(combinePath(tempDir, L"_rels"), L".rels"),
+		"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">"
+		"<Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument\" Target=\"theme/theme/themeManager.xml\"/></Relationships>");
+
+	write_file(combinePath(combinePath(themeDir, L"_rels"), L"themeManager.xml.rels"),
+		"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">"
+		"<Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme\" Target=\"theme1.xml\"/></Relationships>");
+
+	// 4. compression
+	std::wstring zipPath = tempDir + L".zip";
+	COfficeUtils OfficeUtils(NULL);
+	OfficeUtils.CompressFileOrDirectory(tempDir, zipPath, true, Z_DEFLATED, 6, true);
+
+	// 5. reading zip file
+#ifdef _WIN32
+        std::ifstream zip(zipPath, std::ios::binary | std::ios::ate);
+#else
+        std::string unixzipPath = converter.to_bytes(tempDir) + ".zip";
+        std::ifstream zip(unixzipPath, std::ios::binary | std::ios::ate);
+#endif
+	std::streamsize size = zip.tellg();
+	zip.seekg(0, std::ios::beg);
+
+	auto buffer = new BYTE[size];
+	zip.read((char*)buffer, size);
+	zip.close();
+
+	// 6. xls objects building
+	auto XlsTheme = new XLS::THEME;
+	auto themeHeader = new XLS::Theme;
+	themeHeader->dwThemeVersion = 0;
+	themeHeader->nThemeDataSize = (size_t)size;
+	themeHeader->pThemeData.reset(buffer);
+	XlsTheme->m_Theme = XLS::BaseObjectPtr(themeHeader);
+
+	// 7. removing temp file
+	NSFile::CFileBinary::Remove(zipPath.c_str());
+	NSDirectory::DeleteDirectory(tempDir);
+
+	return XLS::BaseObjectPtr(XlsTheme);
+}
 	void Theme::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 	{
 		BYTE type = pReader->GetUChar();

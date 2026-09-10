@@ -327,6 +327,53 @@ template<typename T> int Binary_CommonReader2::ReadTrackRevision2(long length, T
 	READ1_DEF(length, res, this->ReadTrackRevisionInner2, poResult);
 	return res;
 }
+int Binary_CommonReader2::ReadEastAsianLayout(BYTE type, long length, void* poResult)
+{
+	if (length < 0)
+		return 0;
+
+	int res = c_oSerConstants::ReadOk;
+	ComplexTypes::Word::CEastAsianLayout* pEastAsianLayout = static_cast<ComplexTypes::Word::CEastAsianLayout*>(poResult);
+
+	if (!pEastAsianLayout)
+	{
+		m_oBufferedStream.Skip(length);
+		return 0;
+	}
+	switch (type)
+	{
+	case c_oSerProp_EastAsianLayoute::ID:
+	{
+		pEastAsianLayout->m_oID.Init();
+		pEastAsianLayout->m_oID->SetValue(m_oBufferedStream.GetLong());
+	}break;
+	case c_oSerProp_EastAsianLayoute::Combine:
+	{
+		pEastAsianLayout->m_oCombine.Init();
+		pEastAsianLayout->m_oCombine->FromBool(m_oBufferedStream.GetBool());
+	}break;
+	case c_oSerProp_EastAsianLayoute::CombineBrackets:
+	{
+		pEastAsianLayout->m_oCombineBrackets.Init();
+		pEastAsianLayout->m_oCombineBrackets->SetValueFromByte(m_oBufferedStream.GetUChar());
+	}break;
+	case c_oSerProp_EastAsianLayoute::Vert:
+	{
+		pEastAsianLayout->m_oVert.Init();
+		pEastAsianLayout->m_oVert->FromBool(m_oBufferedStream.GetBool());
+	}break;
+	case c_oSerProp_EastAsianLayoute::VertCompress:
+	{
+		pEastAsianLayout->m_oVertCompress.Init();
+		pEastAsianLayout->m_oVertCompress->FromBool(m_oBufferedStream.GetBool());
+	}break;
+	default:
+	{
+		res = c_oSerConstants::ReadUnknown;
+	}break;
+	}
+	return res;
+}
 int Binary_CommonReader2::ReadShdComplexType(BYTE type, long length, void* poResult)
 {
 	if (length < 0)
@@ -887,7 +934,11 @@ int Binary_rPrReader::ReadContent(BYTE type, long length, void* poResult)
 			pRPr->m_oKern.Init(); pRPr->m_oKern->m_oVal.Init();
 			pRPr->m_oKern->m_oVal->FromHps(m_oBufferedStream.GetLong());
 		}break;
-		
+		case c_oSerProp_rPrType::EastAsianLayout:
+		{
+			pRPr->m_oEastAsianLayout.Init();
+			READ2_DEF(length, res, oBinary_CommonReader2.ReadEastAsianLayout, pRPr->m_oEastAsianLayout.GetPointer());
+		}break;
 		default:
 		res = c_oSerConstants::ReadUnknown;
 		break;
@@ -4127,6 +4178,11 @@ int Binary_SettingsTableReader::ReadSettings(BYTE type, long length, void* poRes
 	{
 		pSettings->m_oDisplayVerticalDrawingGridEvery.Init();
 		pSettings->m_oDisplayVerticalDrawingGridEvery->m_oVal = m_oBufferedStream.GetLong();
+	}
+	else if (c_oSer_SettingsType::CharacterSpacingControl == type)
+	{
+		pSettings->m_oCharacterSpacingControl.Init();
+		pSettings->m_oCharacterSpacingControl->m_oVal.SetValueFromByte(m_oBufferedStream.GetUChar());
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -10047,6 +10103,10 @@ int Binary_DocumentTableReader::ReadSdtFormPr(BYTE type, long length, void* poRe
 	else if (c_oSerSdt::FormPrRequired == type)
 	{
 		pFormPr->m_oRequired = m_oBufferedStream.GetBool();
+	}
+	else if (c_oSerSdt::FormPrSpellCheck== type)
+	{
+		pFormPr->m_oSpellCheck = m_oBufferedStream.GetBool();
 	}
 	else if (c_oSerSdt::FormPrBorder == type)
 	{

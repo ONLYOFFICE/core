@@ -140,6 +140,9 @@ public:
 	void add_page_name(const std::wstring& page_name);
 	const std::vector<std::wstring>& get_page_names() const;
 
+	void set_rtl(bool val)	{ is_rtl_ = val; }
+	bool get_rtl() const	{ return is_rtl_; }
+
     mediaitems_ptr & get_mediaitems() { return pptx_slide_context_.get_mediaitems(); }
 
     //void start_hyperlink(const std::wstring & styleName);
@@ -155,6 +158,7 @@ public:
 	int last_idx_placeHolder;
 private:
 	int		last_uniq_big_id;
+	bool	is_rtl_ = false; // global
 
     void	create_new_slide(std::wstring const & name);
 	void	create_new_slideLayout(int id);

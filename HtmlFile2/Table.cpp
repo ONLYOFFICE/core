@@ -279,37 +279,37 @@ const NSCSS::CCompiledStyle* CTableElement::GetColStyle(size_t unColIndex) const
 	return nullptr;
 }
 
-bool MoveToNextTableCell(XmlUtils::CXmlLiteReader& oReader, std::vector<NSCSS::CNode>& arSelectors, std::stack<int>& arDepths, TExternalTableData::FuncGetSubClass& GetSubClass)
+bool MoveToNextTableCell(XmlUtils::CXmlLiteReader& oReader, std::vector<NSCSS::CNode>& arSelectors, std::stack<int>& arDepths, TExternalTableData::FuncGetSubClass& GetSubClass, size_t unMinDepths)
 {
-	while (!arDepths.empty() && !oReader.ReadNextSiblingNode2(arDepths.top()))
+	while (true)
 	{
-		arDepths.pop();
-		arSelectors.pop_back();
-	}
+		while (!oReader.ReadNextSiblingNode2(arDepths.top()))
+		{
+			if (arDepths.size() <= unMinDepths)
+				return false;
 
-	if (arDepths.empty())
-		return false;
+			arDepths.pop();
+			arSelectors.pop_back();
+		}
 
-	do
-	{
 		const std::wstring wsName = oReader.GetName();
 
 		if (L"#text" == wsName || L"colgroup" == wsName || L"caption" == wsName)
-			return MoveToNextTableCell(oReader, arSelectors, arDepths, GetSubClass);
+			continue;
 
 		GetSubClass(oReader, arSelectors);
 
 		if (L"td" == wsName || L"th" == wsName)
 			return true;
-		else if (L"table" == wsName)
+
+		if (L"table" == wsName)
+		{
+			arSelectors.pop_back();
 			return false;
+		}
 
 		arDepths.push(oReader.GetDepth());
-
-		return MoveToNextTableCell(oReader, arSelectors, arDepths, GetSubClass);
-	}while(oReader.ReadNextSiblingNode2(arDepths.top()));
-
-	return false;
+	}
 }
 
 CTableContainer::CTableContainer()

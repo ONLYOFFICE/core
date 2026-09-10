@@ -48,11 +48,12 @@ void FtEdoData::load(CFRecord& record)
 	//ft(2 bytes) : Reserved.MUST be 0x0010.
 	//cb(2 bytes) : Reserved.MUST be 0x0008.
 	unsigned short ft, cb;
+	const size_t startPtr = record.getRdPtr();
 	record >> ft >> cb;
-
+	const size_t bytesRead = record.getRdPtr() - startPtr;
 	if ( ft != 0x0010 && cb != 0x0008)
 	{
-		record.RollRdPtrBack(4);
+		record.RollRdPtrBack(bytesRead);
 		return;
 	}
 	fExist = true;

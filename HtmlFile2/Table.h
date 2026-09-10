@@ -120,13 +120,13 @@ struct TExternalTableData
 	typedef std::function<void(XmlUtils::CXmlLiteReader& oReader, std::vector<NSCSS::CNode>& arSelectors)> FuncGetSubClass;
 	typedef std::function<bool(XmlUtils::CXmlLiteReader& oReader, std::vector<NSCSS::CNode>& arSelectors)> FuncReadInside;
 	typedef std::function<void(const std::wstring& wsTag)>                                                 FuncAddStopTag;
-	typedef std::function<void()>                                                                          FuncClearStopTags;
+	typedef std::function<void(const std::wstring& wsTag)>                                                 FuncRemoveStopTag;
 
 	FuncReadStream    ReadStream;
 	FuncGetSubClass   GetSubClass;
 	FuncReadInside    ReadInside;
 	FuncAddStopTag    AddStopTag;
-	FuncClearStopTags ClearStopTags;
+	FuncRemoveStopTag RemoveStopTag;
 
 	IWriter* m_pWriter{nullptr};
 };
@@ -211,7 +211,7 @@ public:
 
 	virtual bool PreParse(XmlUtils::CXmlLiteReader& oReader) = 0;
 	virtual void Normalize() = 0;
-	virtual bool Convert(XmlUtils::CXmlLiteReader& oReader, const NSCSS::CNode& oTableNode) = 0;
+	virtual bool Convert(XmlUtils::CXmlLiteReader& oReader, std::vector<NSCSS::CNode>& arSelectors) = 0;
 protected:
 	CTableMatrix m_oHeader;
 	CTableMatrix m_oBody;
@@ -272,7 +272,7 @@ inline bool CTableElement::ParseTable(XmlUtils::CXmlLiteReader& oReader, T* pTab
 
 		if(L"thead" == wsName)
 			ParseMatrix<T>(oReader, &pTable->m_oHeader, unRowIndex, unColumnIndex);
-		if(L"tbody" == wsName)
+		else if(L"tbody" == wsName)
 			ParseMatrix<T>(oReader, &pTable->m_oBody, unRowIndex, unColumnIndex);
 		else if(L"tfoot" == wsName)
 			ParseMatrix<T>(oReader, &pTable->m_oFoother, unRowIndex, unColumnIndex);
@@ -292,6 +292,9 @@ inline bool CTableElement::ParseMatrix(XmlUtils::CXmlLiteReader& oReader, CTable
 
 	if (L"table" == wsElementName)
 	{
+		if (0 == unRowIndex || 0 == unColumnIndex)
+			return false;
+
 		T* pNewTable{new T(m_oExternalData)};
 
 		if (nullptr == pNewTable)
@@ -331,6 +334,9 @@ inline bool CTableElement::ParseMatrix(XmlUtils::CXmlLiteReader& oReader, CTable
 	}
 	else if (L"td" == wsElementName || L"th" == wsElementName)
 	{
+		if (0 == unRowIndex)
+			return false;
+
 		++unColumnIndex;
 
 		while (pMatrix->IsFillingCell(unRowIndex - 1, unColumnIndex - 1))
@@ -372,7 +378,7 @@ inline bool CTableElement::ParseMatrix(XmlUtils::CXmlLiteReader& oReader, CTable
 	return true;
 }
 
-bool MoveToNextTableCell(XmlUtils::CXmlLiteReader& oReader, std::vector<NSCSS::CNode>& arSelectors, std::stack<int>& arDepths, TExternalTableData::FuncGetSubClass& GetSubClass);
+bool MoveToNextTableCell(XmlUtils::CXmlLiteReader& oReader, std::vector<NSCSS::CNode>& arSelectors, std::stack<int>& arDepths, TExternalTableData::FuncGetSubClass& GetSubClass, size_t unMinDepths);
 }
 
 #endif // TABLE_H

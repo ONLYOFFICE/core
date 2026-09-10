@@ -964,6 +964,8 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 
             if(!ptr->irstData.value().empty())
                 m_oDataCaption              = ptr->irstData.value();
+			else
+				m_oDataCaption = L"Values";
 
            // m_oDataOnRows                   = ptr->fDefaultCompact;
             if(ptr->ipos4Data > 0)
@@ -3051,7 +3053,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			ptr->cSub++;
 			ptr->fVariancep = true;
 		}
-		if(ptr->cSub == 0)
+		if(ptr->cSub == 0 && !m_oDefaultSubtotal.IsInit())
 		{
 			ptr->cSub++;
 			ptr->fDefault = true;

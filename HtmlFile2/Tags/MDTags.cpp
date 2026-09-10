@@ -41,8 +41,6 @@
 #include "../Table.h"
 #include "../Common/3dParty/html/css/src/CCompiledStyle.h"
 
-#include "../../Common/Network/FileTransporter/include/FileTransporter.h"
-
 #include "../../DesktopEditor/common/Base64.h"
 #include "../../DesktopEditor/common/Path.h"
 #include "../../DesktopEditor/common/Directory.h"
@@ -57,17 +55,18 @@ namespace HTML
 void InitTagsForMD(std::map<int, std::shared_ptr<ITag>>& mTags, CMDWriter* pWriter)
 {
 	#define HTML_TAG(tag) GUMBO_TAG_##tag
+	#define ADD_TAG(tag_name, tag_class_name) mTags[HTML_TAG(tag_name)] = std::make_shared<C ##tag_class_name##MDTag> (pWriter)
 
-	mTags[HTML_TAG(A)]          = std::make_shared<CAnchorMDTag>        (pWriter);
-	mTags[HTML_TAG(BR)]         = std::make_shared<CBreakMDTag>         (pWriter);
-	mTags[HTML_TAG(PRE)]        = std::make_shared<CPreformattedMDTag>  (pWriter);
-	mTags[HTML_TAG(H1)]         = std::make_shared<CHeaderMDTag>        (pWriter);
-	mTags[HTML_TAG(IMG)]        = std::make_shared<CImageMDTag>         (pWriter);
-	mTags[HTML_TAG(HR)]         = std::make_shared<CHorizontalRuleMDTag>(pWriter);
-	mTags[HTML_TAG(BLOCKQUOTE)] = std::make_shared<CBlockquoteMDTag>    (pWriter);
-	mTags[HTML_TAG(OL)]         = std::make_shared<CListMDTag>          (pWriter);
-	mTags[HTML_TAG(LI)]         = std::make_shared<CListElementMDTag>   (pWriter);
-	mTags[HTML_TAG(CODE)]       = std::make_shared<CCodeMDTag>          (pWriter);
+	ADD_TAG(A, Anchor);
+	ADD_TAG(BR, Break);
+	ADD_TAG(PRE, Preformatted);
+	ADD_TAG(H1, Header);
+	ADD_TAG(IMG, Image);
+	ADD_TAG(HR, HorizontalRule);
+	ADD_TAG(BLOCKQUOTE, Blockquote);
+	ADD_TAG(OL, List);
+	ADD_TAG(LI, ListElement);
+	ADD_TAG(CODE, Code);
 }
 
 bool CAnchorMDTag::Open(const std::vector<NSCSS::CNode>& arSelectors)
@@ -392,9 +391,12 @@ bool ConvertFromBase64(const std::wstring& wsBase64, UINT unWidth, UINT unHeight
 	return bResult;
 }
 
-bool ConvertFileToBase64(const std::wstring& wsFilePath, UINT unWidth, UINT unHeight, bool bIsAllowExternalLocalFiles, NSFonts::IApplicationFonts* pFonts, const std::wstring& wsTempDir, std::wstring& wsBase64)
+bool ConvertFileToBase64(const std::wstring& wsFilePath, const std::wstring& wsRootPath, UINT unWidth, UINT unHeight, bool bIsAllowExternalLocalFiles, NSFonts::IApplicationFonts* pFonts, const std::wstring& wsTempDir, std::wstring& wsBase64)
 {
 	if (wsFilePath.empty() || !NSFile::CFileBinary::Exists(wsFilePath))
+		return false;
+
+	if (!bIsAllowExternalLocalFiles && !NSSystemPath::IsPathInDirectory(wsRootPath, wsFilePath))
 		return false;
 
 	const std::wstring wsExtention{NSFile::GetFileExtention(wsFilePath)};
@@ -481,7 +483,7 @@ bool CImageMDTag::Open(const std::vector<NSCSS::CNode>& arSelectors)
 	{
 		wsSrc = NSSystemPath::ShortenPath(wsSrc);
 
-		if (!CanUseThisPath(wsSrc, m_pWriter->GetSrcPath(), m_pWriter->GetCorePath(), GetStatusUsingExternalLocalFiles()))
+		if (!CanUseThisPath(wsSrc, m_pWriter->GetRootPath(), m_pWriter->GetSrcPath(), GetStatusUsingExternalLocalFiles()))
 		{
 			wsSrc.clear();
 			bResult = true;
@@ -497,10 +499,7 @@ bool CImageMDTag::Open(const std::vector<NSCSS::CNode>& arSelectors)
 	{
 		const std::wstring wsDst{NSFile::CFileBinary::CreateTempFileWithUniqueName(m_pWriter->GetTempDir(), L"IMG")};
 
-		// The check for gc_allowNetworkRequest is assumed to be in kernel_network
-		NSNetwork::NSFileTransport::CFileDownloader oDownloadImg(m_pWriter->GetBasePath() + wsSrc, false);
-		oDownloadImg.SetFilePath(wsDst);
-		bResult = oDownloadImg.DownloadSync();
+		bResult = m_pWriter->DownloadExternalFile(wsBasePath + wsSrc, wsDst);
 
 		if (!bResult)
 		{
@@ -525,17 +524,19 @@ bool CImageMDTag::Open(const std::vector<NSCSS::CNode>& arSelectors)
 	{
 		const bool bIsAllowExternalLocalFiles{GetStatusUsingExternalLocalFiles()};
 
+		const std::wstring wsRootPath{m_pWriter->GetRootPath()};
+
 		if (!m_pWriter->GetBasePath().empty())
 		{
 			if (!bResult)
-				bResult = ConvertFileToBase64(NSSystemPath::Combine(m_pWriter->GetBasePath(), wsSrc), oWidth.ToInt(NSCSS::UnitMeasure::Pixel), oHeight.ToInt(NSCSS::UnitMeasure::Pixel), bIsAllowExternalLocalFiles, m_pWriter->GetFonts(), m_pWriter->GetTempDir(), wsResultBase64);
+				bResult = ConvertFileToBase64(NSSystemPath::ShortenPath(NSSystemPath::Combine(m_pWriter->GetBasePath(), wsSrc)), wsRootPath, oWidth.ToInt(NSCSS::UnitMeasure::Pixel), oHeight.ToInt(NSCSS::UnitMeasure::Pixel), bIsAllowExternalLocalFiles, m_pWriter->GetFonts(), m_pWriter->GetTempDir(), wsResultBase64);
 			if (!bResult)
-				bResult = ConvertFileToBase64(NSSystemPath::Combine(m_pWriter->GetSrcPath(), NSSystemPath::Combine(m_pWriter->GetBasePath(), wsSrc)), oWidth.ToInt(NSCSS::UnitMeasure::Pixel), oHeight.ToInt(NSCSS::UnitMeasure::Pixel), bIsAllowExternalLocalFiles, m_pWriter->GetFonts(), m_pWriter->GetTempDir(), wsResultBase64);
+				bResult = ConvertFileToBase64(NSSystemPath::ShortenPath(NSSystemPath::Combine(m_pWriter->GetSrcPath(), NSSystemPath::Combine(m_pWriter->GetBasePath(), wsSrc))), wsRootPath, oWidth.ToInt(NSCSS::UnitMeasure::Pixel), oHeight.ToInt(NSCSS::UnitMeasure::Pixel), bIsAllowExternalLocalFiles, m_pWriter->GetFonts(), m_pWriter->GetTempDir(), wsResultBase64);
 		}
 		if (!bResult)
-			bResult = ConvertFileToBase64(NSSystemPath::Combine(m_pWriter->GetSrcPath(), wsSrc), oWidth.ToInt(NSCSS::UnitMeasure::Pixel), oHeight.ToInt(NSCSS::UnitMeasure::Pixel), bIsAllowExternalLocalFiles, m_pWriter->GetFonts(), m_pWriter->GetTempDir(), wsResultBase64);
+			bResult = ConvertFileToBase64(NSSystemPath::ShortenPath(NSSystemPath::Combine(m_pWriter->GetSrcPath(), wsSrc)), wsRootPath, oWidth.ToInt(NSCSS::UnitMeasure::Pixel), oHeight.ToInt(NSCSS::UnitMeasure::Pixel), bIsAllowExternalLocalFiles, m_pWriter->GetFonts(), m_pWriter->GetTempDir(), wsResultBase64);
 		if (!bResult)
-			bResult = ConvertFileToBase64(wsSrc, oWidth.ToInt(NSCSS::UnitMeasure::Pixel), oHeight.ToInt(NSCSS::UnitMeasure::Pixel), bIsAllowExternalLocalFiles, m_pWriter->GetFonts(), m_pWriter->GetTempDir(), wsResultBase64);
+			bResult = ConvertFileToBase64(wsSrc, wsRootPath, oWidth.ToInt(NSCSS::UnitMeasure::Pixel), oHeight.ToInt(NSCSS::UnitMeasure::Pixel), bIsAllowExternalLocalFiles, m_pWriter->GetFonts(), m_pWriter->GetTempDir(), wsResultBase64);
 	}
 
 	arSelectors.back().GetAttributeValue(L"title", wsTitle);
@@ -557,6 +558,16 @@ bool CHorizontalRuleMDTag::Open(const std::vector<NSCSS::CNode>& arSelectors)
 {
 	if (!Valid())
 		return false;
+
+	if (m_pWriter->InTable())
+	{
+		if (m_pWriter->GetParametrs().m_bUseAlternativeHTMLTags)
+		{
+			m_pWriter->WriteString(L"<hr/>");
+			return true;
+		}
+		return false;
+	}
 
 	m_pWriter->WriteBreakLine(false);
 	m_pWriter->WriteString(L"---");
@@ -770,12 +781,16 @@ void ReadNestedCells(XmlUtils::CXmlLiteReader& oReader, std::vector<NSCSS::CNode
 
 		if (L"td" == wsName || L"th" == wsName)
 		{
-			const ITableElementCell* pCell{oCells[oPosition.m_unRowIndex][oPosition.m_unColumnIndex]};
+			const ITableElementCell* pCell{nullptr};
+
+			if (oPosition.m_unRowIndex < oCells.size() && oPosition.m_unColumnIndex < oCells[oPosition.m_unRowIndex].size())
+				pCell = oCells[oPosition.m_unRowIndex][oPosition.m_unColumnIndex];
 
 			if ((oPosition.m_unRowIndex != oPosition.m_unStartRowIndex || oPosition.m_unColumnIndex != oPosition.m_unStartColumnIndex) &&
 			    (nullptr != pCell && ETableElement::FlatTable == pCell->GetType()))
 			{
 				ReadNestedCells(oReader, arSelectors, oPosition, arNestedCells, oCells, pWriter, oExternalTableData, oIntermediateData);
+				arSelectors.pop_back();
 				continue;
 			}
 
@@ -791,7 +806,38 @@ void ReadNestedCells(XmlUtils::CXmlLiteReader& oReader, std::vector<NSCSS::CNode
 				pWriter->RevertDataOutput();
 			}
 
-			while (nullptr != oCells[oPosition.m_unRowIndex][oPosition.m_unColumnIndex])
+			if (L"table" == oReader.GetName())
+			{
+				if (nullptr != pCellData)
+				{
+					oIntermediateData.WriteBefore(*pCellData);
+					delete pCellData;
+				}
+
+				const int nCellContentDepth{oReader.GetDepth() - 1};
+
+				ReadNestedTable(oReader, arSelectors, oPosition, arNestedCells, oCells, pWriter, oExternalTableData, oIntermediateData);
+
+				while (oReader.ReadNextSiblingNode2(nCellContentDepth))
+				{
+					if (L"table" == oReader.GetName())
+					{
+						ReadNestedTable(oReader, arSelectors, oPosition, arNestedCells, oCells, pWriter, oExternalTableData, oIntermediateData);
+						continue;
+					}
+
+					pWriter->SetDataOutput(&oIntermediateData);
+					oExternalTableData.ReadInside(oReader, arSelectors);
+					pWriter->RevertDataOutput();
+				}
+
+				arSelectors.pop_back();
+				continue;
+			}
+
+			while (oPosition.m_unRowIndex < oCells.size() &&
+			       oPosition.m_unColumnIndex < oCells[oPosition.m_unRowIndex].size() &&
+			       nullptr != oCells[oPosition.m_unRowIndex][oPosition.m_unColumnIndex])
 			{
 				if (ETableElement::FillingCell == oCells[oPosition.m_unRowIndex][oPosition.m_unColumnIndex]->GetType())
 					oPosition.m_unColumnIndex +=  oCells[oPosition.m_unRowIndex][oPosition.m_unColumnIndex]->GetColspan();
@@ -825,7 +871,10 @@ void ReadNestedCells(XmlUtils::CXmlLiteReader& oReader, std::vector<NSCSS::CNode
 		else if (L"table" == wsName)
 			ReadNestedTable(oReader, arSelectors, oPosition, arNestedCells, oCells, pWriter, oExternalTableData, oIntermediateData);
 		else if (L"caption" == wsName)
+		{
+			arSelectors.pop_back();
 			continue;
+		}
 		else if (L"tbody" == wsName || L"thead" == wsName || L"tfoot" == wsName)
 			ReadNestedCells(oReader, arSelectors, oPosition, arNestedCells, oCells, pWriter, oExternalTableData, oIntermediateData);
 		else
@@ -840,7 +889,10 @@ void ReadNestedCells(XmlUtils::CXmlLiteReader& oReader, std::vector<NSCSS::CNode
 				oIntermediateData.WriteString(L" ");
 
 			if (L"table" != oReader.GetName())
+			{
+				arSelectors.pop_back();
 				continue;
+			}
 
 			ReadNestedTable(oReader, arSelectors, oPosition, arNestedCells, oCells, pWriter, oExternalTableData, oIntermediateData);
 
@@ -852,7 +904,7 @@ void ReadNestedCells(XmlUtils::CXmlLiteReader& oReader, std::vector<NSCSS::CNode
 
 			pWriter->RevertDataOutput();
 
-			if (0 != oIntermediateData.GetCurSize())
+			if (0 != oIntermediateData.GetCurSize() && !arNestedCells.empty() && nullptr != arNestedCells.rbegin()->second)
 			{
 				arNestedCells.rbegin()->second->WriteString(L" ");
 				arNestedCells.rbegin()->second->Write(oIntermediateData);
@@ -864,9 +916,9 @@ void ReadNestedCells(XmlUtils::CXmlLiteReader& oReader, std::vector<NSCSS::CNode
 	}
 }
 
-bool CMarkdownTable::Convert(XmlUtils::CXmlLiteReader& oReader, const NSCSS::CNode& oTableNode)
+bool CMarkdownTable::Convert(XmlUtils::CXmlLiteReader& oReader, std::vector<NSCSS::CNode>& arTableSelectors)
 {
-	if (Empty())
+	if (Empty() || arTableSelectors.empty())
 		return false;
 
 	CMDWriter *pWriter{dynamic_cast<CMDWriter*>(m_oExternalData.m_pWriter)};
@@ -874,7 +926,9 @@ bool CMarkdownTable::Convert(XmlUtils::CXmlLiteReader& oReader, const NSCSS::CNo
 	if (nullptr == pWriter)
 		return false;
 
-	std::vector<NSCSS::CNode> arTableSelectors{oTableNode};
+	const size_t unBaseSelectors{arTableSelectors.size()};
+
+	m_oExternalData.AddStopTag(L"table");
 
 	pWriter->WriteBreakLine(false);
 
@@ -929,6 +983,10 @@ bool CMarkdownTable::Convert(XmlUtils::CXmlLiteReader& oReader, const NSCSS::CNo
 	//Convert foother
 	ConvertMatrix(oReader, arTableSelectors, m_oFoother.GetMatrixCells(), pWriter);
 
+	arTableSelectors.resize(unBaseSelectors);
+
+	m_oExternalData.RemoveStopTag(L"table");
+
 	//Close table
 	pWriter->OutTable();
 	pWriter->WriteBreakLine(false);
@@ -971,6 +1029,9 @@ bool CMarkdownTable::ConvertMatrix(XmlUtils::CXmlLiteReader& oReader, std::vecto
 
 	std::stack<int> arDepths({0});
 
+	const size_t unMinDepths{arDepths.size()};
+	const size_t unBaseSelectors{arSelectors.size()};
+
 	NestedCells arNestedCells;
 	ITableElementCell* pTableCell{nullptr};
 
@@ -1005,7 +1066,17 @@ bool CMarkdownTable::ConvertMatrix(XmlUtils::CXmlLiteReader& oReader, std::vecto
 					}
 				}
 
-				MoveToNextTableCell(oReader, arSelectors, arDepths, m_oExternalData.GetSubClass);
+				if (!MoveToNextTableCell(oReader, arSelectors, arDepths, m_oExternalData.GetSubClass, unMinDepths))
+				{
+					if (oMatrix[unRowIndex].size() - 1 != unColumnIndex)
+						WriteCellSeparator(*pWriter);
+
+					++unColumnIndex;
+					continue;
+				}
+
+				const size_t unDepthSize{arDepths.size()};
+				const size_t unCellSelectors{arSelectors.size()};
 
 				if (ETableElement::FlatTable == pTableCell->GetType())
 				{
@@ -1017,16 +1088,33 @@ bool CMarkdownTable::ConvertMatrix(XmlUtils::CXmlLiteReader& oReader, std::vecto
 					NSStringUtils::CStringBuilder oTempData(100);
 					bool bSetedDataOutput{false};
 
-					const size_t unDepthSize{arDepths.size()};
+					arDepths.push(nDepth);
 
-					arDepths.push(oReader.GetDepth());
-
-					m_oExternalData.AddStopTag(L"table");
+					const size_t unContainerDepths{arDepths.size()};
 
 					NSStringUtils::CStringBuilder oIntermediateData(100);
 
-					while(oReader.ReadNextSiblingNode2(nDepth))
+					while (true)
 					{
+						bool bMoved{false};
+
+						while (true)
+						{
+							if (oReader.ReadNextSiblingNode2(arDepths.top()))
+							{
+								bMoved = true;
+								break;
+							}
+
+							if (arDepths.size() == unContainerDepths)
+								break;
+
+							arDepths.pop();
+						}
+
+						if (!bMoved)
+							break;
+
 						if (L"table" == oReader.GetName())
 						{
 							if (bSetedDataOutput)
@@ -1061,6 +1149,12 @@ bool CMarkdownTable::ConvertMatrix(XmlUtils::CXmlLiteReader& oReader, std::vecto
 								arNestedCells.rbegin()->second->Write(oIntermediateData);
 								oIntermediateData.Clear();
 							}
+
+							while (arDepths.size() > unContainerDepths)
+								arDepths.pop();
+
+							for (int nCurrentDepth = nDepth + 1; nCurrentDepth < oReader.GetDepth(); ++nCurrentDepth)
+								arDepths.push(nCurrentDepth);
 						}
 						else
 						{
@@ -1073,14 +1167,6 @@ bool CMarkdownTable::ConvertMatrix(XmlUtils::CXmlLiteReader& oReader, std::vecto
 							m_oExternalData.ReadInside(oReader, arSelectors);
 						}
 					}
-
-					while (arDepths.size() > unDepthSize)
-					{
-						arDepths.pop();
-						arSelectors.pop_back();
-					}
-
-					m_oExternalData.ClearStopTags();
 
 					if (bSetedDataOutput)
 					{
@@ -1101,7 +1187,11 @@ bool CMarkdownTable::ConvertMatrix(XmlUtils::CXmlLiteReader& oReader, std::vecto
 
 					++unColumnIndex;
 				}
-				arSelectors.pop_back();
+
+				while (arDepths.size() > unDepthSize)
+					arDepths.pop();
+
+				arSelectors.resize(unCellSelectors - 1);
 			}
 			else
 			{
@@ -1129,6 +1219,8 @@ bool CMarkdownTable::ConvertMatrix(XmlUtils::CXmlLiteReader& oReader, std::vecto
 			WriteRowEnd(*pWriter);
 		}
 	}
+
+	arSelectors.resize(unBaseSelectors);
 
 	return true;
 }
@@ -1240,9 +1332,16 @@ Table CMarkdownTable::Flatten(Table&& srcTable)
 				Table& oChild{dynamic_cast<CMarkdownTable*>(pTable)->m_oBody.GetMatrixCells()};
 				Table oFlatChild{Flatten(std::move(oChild))};
 
-				for (size_t unChildRowIndex = 0; unChildRowIndex < oSubInfo.m_unRows; ++unChildRowIndex)
-					for (size_t unChildColumnIndex = 0; unChildColumnIndex < oSubInfo.m_unColumns; ++unChildColumnIndex)
-						oResult[unBaseRow + unCurrentRowOffset + unChildRowIndex][unBaseColumn + unChildColumnIndex] = oFlatChild[unChildRowIndex][unChildColumnIndex];
+				const size_t unChildRows{(std::min)(oSubInfo.m_unRows, oFlatChild.size())};
+
+				for (size_t unChildRowIndex = 0; unChildRowIndex < unChildRows; ++unChildRowIndex)
+				{
+					const Row& arChildRow{oFlatChild[unChildRowIndex]};
+					const size_t unChildColumns{(std::min)(oSubInfo.m_unColumns, arChildRow.size())};
+
+					for (size_t unChildColumnIndex = 0; unChildColumnIndex < unChildColumns; ++unChildColumnIndex)
+						oResult[unBaseRow + unCurrentRowOffset + unChildRowIndex][unBaseColumn + unChildColumnIndex] = arChildRow[unChildColumnIndex];
+				}
 
 				CTableElementCell* pFlatCell{dynamic_cast<CTableElementCell*>(oResult[unBaseRow + unCurrentRowOffset][unBaseColumn])};
 
@@ -1291,27 +1390,43 @@ TElementInfo CMarkdownTable::ComputeInfo(const CTableElement* pTable)
 	if (nullptr == pMarkdownTable)
 		return {1, 1};
 
-	const CTableMatrix *pTableMaxtix{&pMarkdownTable->m_oBody};
+	const Table& arCells{pMarkdownTable->m_oBody.GetMatrixCells()};
 
-	const size_t unRows{pTableMaxtix->GetRowSize()};
-	const size_t unColumns{pTableMaxtix->GetColumnSize()};
+	const size_t unRows{arCells.size()};
+
+	size_t unColumns{0}, unRowColumns{0};
+
+	for (const Row& arRow : arCells)
+	{
+		for (const ITableElementCell* pCell : arRow)
+			unRowColumns += (nullptr != pCell) ? pCell->GetColspan() : 1;
+
+		unColumns = (std::max)(unColumns, unRowColumns);
+
+		unRowColumns = 0;
+	}
+
+	if (0 == unRows || 0 == unColumns)
+		return {1, 1};
 
 	std::vector<size_t> arRowHeights(unRows, 1);
 	std::vector<size_t> arColumnWidths(unColumns, 1);
 
-	const Table& arCells{pTableMaxtix->GetMatrixCells()};
-
 	for (size_t unRowIndex = 0; unRowIndex < unRows; ++unRowIndex)
 	{
-		for (size_t unColumnIndex = 0; unColumnIndex < unColumns; ++unColumnIndex)
-		{
-			TElementInfo oInfo{1, arCells[unRowIndex][unColumnIndex]->GetColspan()};
+		size_t unColumnIndex{0};
 
-			if (IsTableContainer(arCells[unRowIndex][unColumnIndex]))
-				oInfo = ComputeInfo(arCells[unRowIndex][unColumnIndex]);
+		for (const ITableElementCell* pCell : arCells[unRowIndex])
+		{
+			if (unColumnIndex >= unColumns)
+				break;
+
+			const TElementInfo oInfo{IsTableContainer(pCell) ? ComputeInfo(pCell) : TElementInfo{1, 1}};
 
 			arRowHeights[unRowIndex] = (std::max)(arRowHeights[unRowIndex], oInfo.m_unRows);
 			arColumnWidths[unColumnIndex] = (std::max)(arColumnWidths[unColumnIndex], oInfo.m_unColumns);
+
+			unColumnIndex += (nullptr != pCell) ? pCell->GetColspan() : 1;
 		}
 	}
 

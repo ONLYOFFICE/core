@@ -1861,8 +1861,10 @@ void XlsxConverter::convert(OOX::Spreadsheet::CSheetViews *oox_sheet_views)
 
 		ods_context->start_table_view( view_id );
 		
-		if (sheet_view->m_oRightToLeft.IsInit() && sheet_view->m_oRightToLeft->GetValue()==1)
+		if (sheet_view->m_oRightToLeft.IsInit() && sheet_view->m_oRightToLeft->ToBool())
+		{
 			ods_context->current_table()->set_table_rtl(true);
+		}
 
 		if (sheet_view->m_oShowGridLines.IsInit() && sheet_view->m_oShowGridLines->GetValue()==0)
 		{
@@ -2402,7 +2404,9 @@ void XlsxConverter::convert(OOX::Spreadsheet::CFont *font, odf_writer::text_form
 		text_properties->style_text_line_through_type_ = odf_types::line_type(odf_types::line_type::Single);
 
 	ods_context->add_font(font_name);
-	ods_context->calculate_font_metrix(font_name, font_size, font_italic, font_bold);
+
+	if (font->m_oRFont.IsInit() && font->m_oSz.IsInit())
+		ods_context->calculate_font_metrix(font_name, font_size, font_italic, font_bold);
 }
 
 void XlsxConverter::convert(double oox_size,  _CP_OPT(odf_types::length) & odf_size)
@@ -2516,7 +2520,10 @@ void XlsxConverter::convert(OOX::Spreadsheet::CAligment *aligment, odf_writer::p
 	{
 		if (*aligment->m_oTextRotation <= 180 && *aligment->m_oTextRotation >= 0 )
 		{
-			cell_properties->content_.common_rotation_angle_attlist_.style_rotation_angle_ = *aligment->m_oTextRotation;
+			int angle = *aligment->m_oTextRotation;
+			if (angle > 90) angle = 450 - angle;
+
+			cell_properties->content_.common_rotation_angle_attlist_.style_rotation_angle_ = angle;
 			cell_properties->content_.style_rotation_align_= odf_types::rotation_align(odf_types::rotation_align::Bottom);
 		}
 		else if (*aligment->m_oTextRotation == 0xff)//vertical text
@@ -2526,7 +2533,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CAligment *aligment, odf_writer::p
 	_CP_OPT(odf_types::length) indent;
 	if (aligment->m_oIndent.IsInit())
 	{
-		indent = odf_types::length(ods_context->convert_symbol_width(*aligment->m_oIndent, true), odf_types::length::pt);
+		indent = odf_types::length(ods_context->convert_symbol_indent(*aligment->m_oIndent), odf_types::length::pt);
 	}
 	if(aligment->m_oHorizontal.IsInit())
 	{
@@ -3036,7 +3043,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CDrawing *oox_drawing, OOX::Spread
 
 		if (oox_sheet->m_oOleObjects.IsInit() && oox_anchor->m_nId.IsInit())
 		{
-            boost::unordered_map<unsigned int, OOX::Spreadsheet::COleObject*>::const_iterator pFind = oox_sheet->m_oOleObjects->m_mapOleObjects.find(oox_anchor->m_nId.get());
+            std::map<unsigned int, OOX::Spreadsheet::COleObject*>::const_iterator pFind = oox_sheet->m_oOleObjects->m_mapOleObjects.find(oox_anchor->m_nId.get());
 			if (pFind != oox_sheet->m_oOleObjects->m_mapOleObjects.end())
 			{
 				//??? transfer binding data 
@@ -3064,7 +3071,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::COleObjects *oox_objects, OOX::Spr
 {
 	if (!oox_objects) return;
 
-    for (boost::unordered_map<unsigned int, OOX::Spreadsheet::COleObject*>::const_iterator it = oox_objects->m_mapOleObjects.begin(); it != oox_objects->m_mapOleObjects.end(); ++it)
+    for (std::map<unsigned int, OOX::Spreadsheet::COleObject*>::const_iterator it = oox_objects->m_mapOleObjects.begin(); it != oox_objects->m_mapOleObjects.end(); ++it)
 	{
 		OOX::Spreadsheet::COleObject* object = it->second;
 

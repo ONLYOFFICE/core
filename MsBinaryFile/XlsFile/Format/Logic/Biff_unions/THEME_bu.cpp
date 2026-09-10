@@ -95,7 +95,7 @@ const bool THEME::saveContent(BinProcessor& proc)
 				{
 					fragmentSize = maxSize;
 				}
-				continueRecord.rgb.reserve(fragmentSize);
+				continueRecord.rgb.resize(fragmentSize);
 				memcpy(continueRecord.rgb.data(), (castedPtr->pThemeData.get() + currentPos), fragmentSize);
 				proc.mandatory(continueRecord);
 				if(currentPos + maxSize >= castedPtr->nThemeDataSize)

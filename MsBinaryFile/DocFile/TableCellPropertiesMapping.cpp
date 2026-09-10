@@ -38,6 +38,8 @@
 
 namespace DocFileFormat
 {
+	static const int c_nDefTableShdCells = 22; // sprmTDefTableShd (cells 0-21), sprmTDefTableShd2nd (22-43) and sprmTDefTableShd3rd (44-62)
+
 	TableCellPropertiesMapping::TableCellPropertiesMapping (XMLTools::CStringXmlWriter* pWriter, 
 		const std::vector<short>* grid, int gridIndex, int cellIndex, unsigned int depth) : 
 										PropertiesMapping(pWriter)
@@ -246,17 +248,17 @@ namespace DocFileFormat
 				}break;
 				case sprmOldTDefTableShd:
 				case sprmTDefTableShd:
-				{ //	cell shading for cells 0-20
+				{
 					apppendCellShading(iter->Arguments, iter->argumentsSize, _cellIndex);
 				}break;
 
 				case sprmTDefTableShd2nd:
-				{						//	cell shading for cells 21-42
-					apppendCellShading(iter->Arguments, iter->argumentsSize, (_cellIndex - 21));
+				{
+					apppendCellShading(iter->Arguments, iter->argumentsSize, (_cellIndex - c_nDefTableShdCells));
 				}break;
 				case sprmTDefTableShd3rd:
-				{						//	cell shading for cells 43-62
-					apppendCellShading(iter->Arguments, iter->argumentsSize, (_cellIndex - 43));
+				{
+					apppendCellShading(iter->Arguments, iter->argumentsSize, (_cellIndex - 2 * c_nDefTableShdCells));
 				}break;
 				case sprmTCellWidth:
 				{ //width

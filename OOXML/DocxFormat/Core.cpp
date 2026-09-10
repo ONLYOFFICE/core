@@ -67,158 +67,168 @@ namespace OOX
 		XmlUtils::CXmlNode oProperties;
 		oProperties.FromXmlFile( oPath.GetPath(), true );
 
-		if ( _T("cp:coreProperties") == oProperties.GetName() )
+		if (L"coreProperties" == XmlUtils::GetNameNoNS(oProperties.GetName()))
 		{
-			XmlUtils::CXmlNode oItem;
+			std::vector<XmlUtils::CXmlNode> oNodes;
+			if (oProperties.GetNodes(_T("*"), oNodes))
+			{
+				size_t nCount = oNodes.size();
+				for (size_t i = 0; i < nCount; ++i)
+				{
+					XmlUtils::CXmlNode& oItem = oNodes[i];
 
-			if ( oProperties.GetNode( _T("cp:category"), oItem ) )
-				m_sCategory = oItem.GetText();
+					std::wstring strName = XmlUtils::GetNameNoNS(oItem.GetName());
 
-			if ( oProperties.GetNode( _T("cp:contentStatus"), oItem ) )
-				m_sContentStatus = oItem.GetText();
+					if (L"category" == strName)
+						m_sCategory = oItem.GetText();
 
-			if ( oProperties.GetNode( _T("dcterms:created"), oItem ) )
-				m_sCreated = oItem.GetText();
+					else if (L"contentStatus" == strName)
+						m_sContentStatus = oItem.GetText();
 
-			if ( oProperties.GetNode( _T("dc:creator"), oItem ) )
-				m_sCreator = oItem.GetText();
+					else if (L"created" == strName)
+						m_sCreated = oItem.GetText();
 
-			if ( oProperties.GetNode( _T("dc:description"), oItem ) )
-				m_sDescription = oItem.GetText();
+					else if (L"creator" == strName)
+						m_sCreator = oItem.GetText();
 
-			if ( oProperties.GetNode( _T("dc:identifier"), oItem ) )
-				m_sIdentifier = oItem.GetText();
+					else if (L"description" == strName)
+						m_sDescription = oItem.GetText();
 
-			if ( oProperties.GetNode( _T("cp:keywords"), oItem ) )
-				m_sKeywords = oItem.GetText();
+					else if (L"identifier" == strName)
+						m_sIdentifier = oItem.GetText();
 
-			if ( oProperties.GetNode( _T("dc:language"), oItem ) )
-				m_sLanguage = oItem.GetText();
+					else if (L"keywords" == strName)
+						m_sKeywords = oItem.GetText();
 
-			if ( oProperties.GetNode( _T("cp:lastModifiedBy"), oItem ) )
-				m_sLastModifiedBy = oItem.GetText();
+					else if (L"language" == strName)
+						m_sLanguage = oItem.GetText();
 
-			if ( oProperties.GetNode( _T("cp:lastPrinted"), oItem ) )
-				m_sLastPrinted = oItem.GetText();
+					else if (L"lastModifiedBy" == strName)
+						m_sLastModifiedBy = oItem.GetText();
 
-			if ( oProperties.GetNode( _T("dcterms:modified"), oItem ) )
-				m_sModified = oItem.GetText();
+					else if (L"lastPrinted" == strName)
+						m_sLastPrinted = oItem.GetText();
 
-			if ( oProperties.GetNode( _T("cp:revision"), oItem ) )
-				m_sRevision = oItem.GetText();
+					else if (L"modified" == strName)
+						m_sModified = oItem.GetText();
 
-			if ( oProperties.GetNode( _T("dc:subject"), oItem ) )
-				m_sSubject = oItem.GetText();
+					else if (L"revision" == strName)
+						m_sRevision = oItem.GetText();
 
-			if ( oProperties.GetNode( _T("dc:title"), oItem ) )
-				m_sTitle = oItem.GetText();
+					else if (L"subject" == strName)
+						m_sSubject = oItem.GetText();
 
-			if ( oProperties.GetNode( _T("cp:version"), oItem ) )
-				m_sVersion = oItem.GetText();
+					else if (L"title" == strName)
+						m_sTitle = oItem.GetText();
+
+					else if (L"version" == strName)
+						m_sVersion = oItem.GetText();
+				}
+			}
 		}
 	}
 	void CCore::write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
 	{
 		std::wstring sXml;
-		sXml = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\
+		sXml = L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\
 <cp:coreProperties \
 xmlns:cp=\"http://schemas.openxmlformats.org/package/2006/metadata/core-properties\" \
 xmlns:dc=\"http://purl.org/dc/elements/1.1/\" \
 xmlns:dcterms=\"http://purl.org/dc/terms/\" \
 xmlns:dcmitype=\"http://purl.org/dc/dcmitype/\" \
-xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">");
+xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">";
 
 		if ( m_sTitle.IsInit() )
 		{
-			sXml += _T("<dc:title>");
+			sXml += L"<dc:title>";
 			sXml += XmlUtils::EncodeXmlString(m_sTitle.get());
-			sXml += _T("</dc:title>");
+			sXml += L"</dc:title>";
 		}
 		if ( m_sSubject.IsInit() )
 		{
-			sXml += _T("<dc:subject>");
+			sXml += L"<dc:subject>";
 			sXml += XmlUtils::EncodeXmlString(m_sSubject.get());
-			sXml += _T("</dc:subject>");
+			sXml += L"</dc:subject>";
 		}
 		if ( m_sCreator.IsInit() )
 		{
-			sXml += _T("<dc:creator>");
+			sXml += L"<dc:creator>";
 			sXml += XmlUtils::EncodeXmlString(m_sCreator.get());
-			sXml += _T("</dc:creator>");
+			sXml += L"</dc:creator>";
 		}
 		if ( m_sKeywords.IsInit() )
 		{
-			sXml += _T("<cp:keywords>");
+			sXml += L"<cp:keywords>";
 			sXml += XmlUtils::EncodeXmlString(m_sKeywords.get());
-			sXml += _T("</cp:keywords>");
+			sXml += L"</cp:keywords>";
 		}
 		if ( m_sDescription.IsInit() )
 		{
-			sXml += _T("<dc:description>");
+			sXml += L"<dc:description>";
 			sXml += XmlUtils::EncodeXmlString(m_sDescription.get());
-			sXml += _T("</dc:description>");
+			sXml += L"</dc:description>";
 		}
 		if ( m_sIdentifier.IsInit() )
 		{
-			sXml += _T("<dc:identifier>");
+			sXml += L"<dc:identifier>";
 			sXml += XmlUtils::EncodeXmlString(m_sIdentifier.get());
-			sXml += _T("</dc:identifier>");
+			sXml += L"</dc:identifier>";
 		}
 		if ( m_sLanguage.IsInit() )
 		{
-			sXml += _T("<dc:language>");
+			sXml += L"<dc:language>";
 			sXml += XmlUtils::EncodeXmlString(m_sLanguage.get());
-			sXml += _T("</dc:language>");
+			sXml += L"</dc:language>";
 		}
 		if ( m_sLastModifiedBy.IsInit() )
 		{
-			sXml += _T("<cp:lastModifiedBy>");
+			sXml += L"<cp:lastModifiedBy>";
 			sXml += XmlUtils::EncodeXmlString(m_sLastModifiedBy.get());
-			sXml += _T("</cp:lastModifiedBy>");
+			sXml += L"</cp:lastModifiedBy>";
 		}
 		if ( m_sRevision.IsInit() )
 		{
-			sXml += _T("<cp:revision>");
+			sXml += L"<cp:revision>";
 			sXml += XmlUtils::EncodeXmlString(m_sRevision.get());
-			sXml += _T("</cp:revision>");
+			sXml += L"</cp:revision>";
 		}
 		if ( (m_sLastPrinted.IsInit()) && (!m_sLastPrinted->empty()))
 		{
-			sXml += _T("<cp:lastPrinted>");
+			sXml += L"<cp:lastPrinted>";
 			sXml += XmlUtils::EncodeXmlString(m_sLastPrinted.get());
-			sXml += _T("</cp:lastPrinted>");
+			sXml += L"</cp:lastPrinted>";
 		}
 		if ( (m_sCreated.IsInit()) && (!m_sCreated->empty()))
 		{
-			sXml += _T("<dcterms:created xsi:type=\"dcterms:W3CDTF\">");
+			sXml += L"<dcterms:created xsi:type=\"dcterms:W3CDTF\">";
 			sXml += XmlUtils::EncodeXmlString(m_sCreated.get());
-			sXml += _T("</dcterms:created>");
+			sXml += L"</dcterms:created>";
 		}
 		if ( (m_sModified.IsInit()) && (!m_sModified->empty()))
 		{
-			sXml += _T("<dcterms:modified xsi:type=\"dcterms:W3CDTF\">");
+			sXml += L"<dcterms:modified xsi:type=\"dcterms:W3CDTF\">";
 			sXml += XmlUtils::EncodeXmlString(m_sModified.get());
-			sXml += _T("</dcterms:modified>");
+			sXml += L"</dcterms:modified>";
 		}
 		if ( m_sCategory.IsInit() )
 		{
-			sXml += _T("<cp:category>");
+			sXml += L"<cp:category>";
 			sXml += XmlUtils::EncodeXmlString(m_sCategory.get());
-			sXml += _T("</cp:category>");
+			sXml += L"</cp:category>";
 		}
 		if ( m_sContentStatus.IsInit() )
 		{
-			sXml += _T("<cp:contentStatus>");
+			sXml += L"<cp:contentStatus>";
 			sXml += XmlUtils::EncodeXmlString(m_sContentStatus.get());
-			sXml += _T("</cp:contentStatus>");
+			sXml += L"</cp:contentStatus>";
 		}
 		if ( m_sVersion.IsInit() )
 		{
-			sXml += _T("<cp:version>");
+			sXml += L"<cp:version>";
 			sXml += XmlUtils::EncodeXmlString(m_sVersion.get());
-			sXml += _T("</cp:version>");
+			sXml += L"</cp:version>";
 		}
-		sXml += _T("</cp:coreProperties>");
+		sXml += L"</cp:coreProperties>";
 
 		NSFile::CFileBinary::SaveToFile( oPath.GetPath(), sXml );
 		oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
@@ -376,48 +386,48 @@ xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">");
 	}
 	void CCore::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 	{
-		pWriter->StartNode(_T("cp:coreProperties"));
+		pWriter->StartNode(L"cp:coreProperties");
 
 		pWriter->StartAttributes();
 
-		pWriter->WriteAttribute(_T("xmlns:cp"), PPTX::g_Namespaces.cp.m_strLink);
-		pWriter->WriteAttribute(_T("xmlns:dc"), PPTX::g_Namespaces.dc.m_strLink);
-		pWriter->WriteAttribute(_T("xmlns:dcterms"), PPTX::g_Namespaces.dcterms.m_strLink);
-		pWriter->WriteAttribute(_T("xmlns:dcmitype"), PPTX::g_Namespaces.dcmitype.m_strLink);
-		pWriter->WriteAttribute(_T("xmlns:xsi"), PPTX::g_Namespaces.xsi.m_strLink);
+		pWriter->WriteAttribute(L"xmlns:cp", PPTX::g_Namespaces.cp.m_strLink);
+		pWriter->WriteAttribute(L"xmlns:dc", PPTX::g_Namespaces.dc.m_strLink);
+		pWriter->WriteAttribute(L"xmlns:dcterms", PPTX::g_Namespaces.dcterms.m_strLink);
+		pWriter->WriteAttribute(L"xmlns:dcmitype", PPTX::g_Namespaces.dcmitype.m_strLink);
+		pWriter->WriteAttribute(L"xmlns:xsi", PPTX::g_Namespaces.xsi.m_strLink);
 
 		pWriter->EndAttributes();
 
-		pWriter->WriteNodeValue2(_T("dc:title"), m_sTitle);
-		pWriter->WriteNodeValue2(_T("dc:subject"), m_sSubject);
-		pWriter->WriteNodeValue2(_T("dc:creator"), m_sCreator);
-		pWriter->WriteNodeValue2(_T("cp:keywords"), m_sKeywords);
-		pWriter->WriteNodeValue2(_T("dc:description"), m_sDescription);
-		pWriter->WriteNodeValue2(_T("dc:identifier"), m_sIdentifier);
-		pWriter->WriteNodeValue2(_T("dc:language"), m_sLanguage);
-		pWriter->WriteNodeValue2(_T("cp:lastModifiedBy"), m_sLastModifiedBy);
-		pWriter->WriteNodeValue2(_T("cp:revision"), m_sRevision);
+		pWriter->WriteNodeValue2(L"dc:title", m_sTitle);
+		pWriter->WriteNodeValue2(L"dc:subject", m_sSubject);
+		pWriter->WriteNodeValue2(L"dc:creator", m_sCreator);
+		pWriter->WriteNodeValue2(L"cp:keywords", m_sKeywords);
+		pWriter->WriteNodeValue2(L"dc:description", m_sDescription);
+		pWriter->WriteNodeValue2(L"dc:identifier", m_sIdentifier);
+		pWriter->WriteNodeValue2(L"dc:language", m_sLanguage);
+		pWriter->WriteNodeValue2(L"cp:lastModifiedBy", m_sLastModifiedBy);
+		pWriter->WriteNodeValue2(L"cp:revision", m_sRevision);
 
 		if ((m_sLastPrinted.IsInit()) && (false == m_sLastPrinted->empty()))
 		{
-			pWriter->WriteNodeValue2(_T("cp:lastPrinted"), m_sLastPrinted);
+			pWriter->WriteNodeValue2(L"cp:lastPrinted", m_sLastPrinted);
 		}
 		if ((m_sCreated.IsInit()) && (false == m_sCreated->empty()))
 		{
-			pWriter->WriteNodeBegin(_T("dcterms:created xsi:type=\"dcterms:W3CDTF\""));
+			pWriter->WriteNodeBegin(L"dcterms:created xsi:type=\"dcterms:W3CDTF\"");
 			pWriter->WriteStringXML(*m_sCreated);
-			pWriter->WriteNodeEnd(_T("dcterms:created"));
+			pWriter->WriteNodeEnd(L"dcterms:created");
 		}
 		if ((m_sModified.IsInit()) && (false == m_sModified->empty()))
 		{
-			pWriter->WriteNodeBegin(_T("dcterms:modified xsi:type=\"dcterms:W3CDTF\""));
+			pWriter->WriteNodeBegin(L"dcterms:modified xsi:type=\"dcterms:W3CDTF\"");
 			pWriter->WriteStringXML(*m_sModified);
-			pWriter->WriteNodeEnd(_T("dcterms:modified"));
+			pWriter->WriteNodeEnd(L"dcterms:modified");
 		}
-		pWriter->WriteNodeValue2(_T("cp:category"), m_sCategory);
-		pWriter->WriteNodeValue2(_T("cp:contentStatus"), m_sContentStatus);
-		pWriter->WriteNodeValue2(_T("cp:version"), m_sVersion);
+		pWriter->WriteNodeValue2(L"cp:category", m_sCategory);
+		pWriter->WriteNodeValue2(L"cp:contentStatus", m_sContentStatus);
+		pWriter->WriteNodeValue2(L"cp:version", m_sVersion);
 
-		pWriter->EndNode(_T("cp:coreProperties"));
+		pWriter->EndNode(L"cp:coreProperties");
 	}
 } // namespace OOX

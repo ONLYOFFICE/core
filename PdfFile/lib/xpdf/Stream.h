@@ -171,6 +171,7 @@ public:
   virtual Stream *getUndecodedStream() { return this; }
   virtual Dict *getDict() { return dict.getDict(); }
   virtual GString *getFileName() { return NULL; }
+  virtual char* getRawBuffer(Guint* pLength) { *pLength = 0; return NULL; }
 
   // Get/set position of first byte of stream within the file.
   virtual GFileOffset getStart() = 0;
@@ -364,6 +365,11 @@ public:
   virtual void setPos(GFileOffset pos, int dir = 0);
   virtual GFileOffset getStart() { return start; }
   virtual void moveStart(int delta);
+  virtual char* getRawBuffer(Guint* pLength) override
+  {
+	  *pLength = length;
+	  return buf + start;
+  }
 
   char* getBufPtr() { return bufPtr; }
   char* getBufEnd() { return bufEnd; }

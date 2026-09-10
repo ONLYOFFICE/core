@@ -47,9 +47,22 @@
 #include "../Biff_records/Font.h"
 #include "../Biff_records/StartObject.h"
 #include "../Biff_records/EndObject.h"
+#include "../Biff_records/ShapePropsStream.h"
 namespace XLS
 {
 
+static ShapePropsStream* find_shape_props_stream(const std::vector<BaseObjectPtr> & shape_props, _UINT16 obj_context)
+{
+	for (size_t i = 0; i < shape_props.size(); i++)
+	{
+		SHAPEPROPS *props = dynamic_cast<SHAPEPROPS*>(shape_props[i].get());
+		if (!props) continue;
+
+		ShapePropsStream *stream = dynamic_cast<ShapePropsStream*>(props->m_ShapePropsStream.get());
+		if ((stream) && (stream->wObjContext == obj_context)) return stream;
+	}
+	return NULL;
+}
 
 AXS::AXS()
 {
@@ -147,6 +160,12 @@ const bool AXS::loadContent(BinProcessor& proc)
 	}
 	
 	count = proc.repeated<SHAPEPROPS>(0, 4);
+	while(count > 0)
+	{
+		ShapeProps.insert(ShapeProps.begin(), elements_.back());
+		elements_.pop_back();
+		count--;
+	}
 
 	if(proc.optional<TextPropsStream>())
 	{
@@ -175,6 +194,51 @@ const bool AXS::saveContent(BinProcessor& proc)
 		proc.mandatory(*m_AreaFormat);
 	if(m_GELFRAME != nullptr)
 		proc.optional(*m_GELFRAME);
+	{
+		auto calcChecksum = [](const std::vector<uint8_t>& data, _UINT32 &checksum)
+		{
+			for (BYTE byte : data) {
+				checksum ^= (static_cast<_UINT32>(byte) << 24);
+
+				for (int i = 0; i < 8; ++i) {
+					if (checksum & 0x80000000U) {
+						checksum = (checksum << 1) ^ 0x000000AFU;
+					} else {
+						checksum <<= 1;
+					}
+				}
+			}
+		};
+
+		for(auto prop:ShapeProps)
+		{
+			auto castedProp = static_cast<SHAPEPROPS*>(prop.get());
+			auto propHeader = static_cast<ShapePropsStream*>(castedProp->m_ShapePropsStream.get());
+			LineFormat* castedLine = nullptr;
+			for(auto lnFmt : m_AxisLine_Format)
+			{
+				if(lnFmt.axisLine != nullptr)
+				{
+					auto castedlnType = static_cast<AxisLine*>(lnFmt.axisLine.get());
+					if(castedlnType->id == propHeader->wObjContext && lnFmt.lineFormat != nullptr)
+					{
+						castedLine = static_cast<LineFormat*>(lnFmt.lineFormat.get());
+						break;
+					}
+				}
+			}
+			if(castedLine == nullptr)
+				continue;
+			{
+				auto CheckSumData = std::vector<BYTE>();
+				_UINT32 AxsCheckSum = 0;
+				castedLine->setChecksum(CheckSumData);
+				calcChecksum(CheckSumData, AxsCheckSum);
+				propHeader->dwChecksum = AxsCheckSum;
+			}
+			proc.mandatory(*prop);
+		}
+	}
 	return true;
 }
 
@@ -183,12 +247,13 @@ int AXS::serialize(std::wostream & _stream)
 	BaseObjectPtr axis_line_format;
 	Tick * tick = dynamic_cast<Tick*>(m_Tick.get());
 
-	CP_XML_WRITER(_stream)    
+	CP_XML_WRITER(_stream)
 	{
 		for (size_t i = 0 ; i < m_AxisLine_Format.size(); i++)
 		{
 			std::wstring grid;
-			
+			std::wstring spPr;
+
 			AxisLine *axis_line = dynamic_cast<AxisLine*>(m_AxisLine_Format[i].axisLine.get());
 			if (axis_line)
 			{
@@ -196,19 +261,29 @@ int AXS::serialize(std::wostream & _stream)
 				if (axis_line->id == (_UINT16)1) grid = L"c:majorGridlines";
 				if (axis_line->id == (_UINT16)2) grid = L"c:minorGridlines";
 				if (axis_line->id == (_UINT16)3) {}//wall || floor todooo
+
+				ShapePropsStream *propStream = find_shape_props_stream(ShapeProps, axis_line->id);
+				if (propStream)	spPr = propStream->getChartSpPr();
 			}
-			
+
 			if (!grid.empty() && m_AxisLine_Format[i].lineFormat)
 			{
 				CP_XML_NODE(grid)
 				{
-					CP_XML_NODE(L"c:spPr")
-					{			
-						m_AxisLine_Format[i].lineFormat->serialize(CP_XML_STREAM());
+					if (false == spPr.empty())
+					{
+						CP_XML_STREAM() << spPr;
+					}
+					else
+					{
+						CP_XML_NODE(L"c:spPr")
+						{
+							m_AxisLine_Format[i].lineFormat->serialize(CP_XML_STREAM());
+						}
 					}
 				}
 			}
-				
+
 		}
 
 		if (tick)
@@ -217,9 +292,21 @@ int AXS::serialize(std::wostream & _stream)
 		}
 		if (axis_line_format)
 		{
-			CP_XML_NODE(L"c:spPr")
+			std::wstring spPr;
+
+			ShapePropsStream *lineFmtStream = find_shape_props_stream(ShapeProps, (_UINT16)0);
+			if (lineFmtStream)	spPr = lineFmtStream->getChartSpPr();
+
+			if (false == spPr.empty())
 			{
-				axis_line_format->serialize(CP_XML_STREAM());
+				_stream << spPr;
+			}
+			else
+			{
+				CP_XML_NODE(L"c:spPr")
+				{
+					axis_line_format->serialize(CP_XML_STREAM());
+				}
 			}
 		}
 		if ((m_FontX) || ((tick) && (!tick->fAutoRot)))

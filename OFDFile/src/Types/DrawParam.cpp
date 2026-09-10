@@ -46,7 +46,9 @@ CDrawParam::CDrawParam(CXmlReader& oXmlReader)
 	std::string sName;
 	const int nDepth = oXmlReader.GetDepth();
 
-	while (oXmlReader.ReadNextSiblingNode(nDepth))
+	const bool bHasChildNodes{!oXmlReader.IsEmptyElement()};
+
+	while (bHasChildNodes && oXmlReader.ReadNextSiblingNode(nDepth))
 	{
 		sName = oXmlReader.GetNameA();
 

@@ -356,29 +356,29 @@ namespace NExtractTools
 	class InputParamsThumbnail
 	{
 	public:
-		int* format;
-		int* aspect;
-		bool* first;
+		int*  format;
+		int*  aspect;
 		bool* zip;
-		int* width;
-		int* height;
+		int*  width;
+		int*  height;
+		int*  page;
 		InputParamsThumbnail()
 		{
 			format = NULL;
 			aspect = NULL;
-			first = NULL;
-			zip = NULL;
-			width = NULL;
+			zip    = NULL;
+			width  = NULL;
 			height = NULL;
+			page   = NULL;
 		}
 		~InputParamsThumbnail()
 		{
 			RELEASEOBJECT(format);
 			RELEASEOBJECT(aspect);
-			RELEASEOBJECT(first);
 			RELEASEOBJECT(zip);
 			RELEASEOBJECT(width);
 			RELEASEOBJECT(height);
+			RELEASEOBJECT(page);
 		}
 
 		bool FromXmlNode(XmlUtils::CXmlNode& oNode)
@@ -399,14 +399,16 @@ namespace NExtractTools
 								format = new int(XmlUtils::GetInteger(sValue));
 							else if (_T("aspect") == sName)
 								aspect = new int(XmlUtils::GetInteger(sValue));
-							else if (_T("first") == sName)
-								first = new bool(XmlUtils::GetBoolean2(sValue));
+							else if (_T("first") == sName) // deprecated
+								page = new int(XmlUtils::GetBoolean2(sValue) ? 0 : -1);
 							else if (_T("zip") == sName)
 								zip = new bool(XmlUtils::GetBoolean2(sValue));
 							else if (_T("width") == sName)
 								width = new int(XmlUtils::GetInteger(sValue));
 							else if (_T("height") == sName)
 								height = new int(XmlUtils::GetInteger(sValue));
+							else if (_T("page") == sName)
+								page = new int(XmlUtils::GetInteger(sValue));
 						}
 					}
 				}
@@ -493,13 +495,22 @@ namespace NExtractTools
 
 		std::wstring m_sPdfOformMetaName;
 		std::wstring m_sPdfOformMetaData;
+
+		std::wstring m_sOverrideSdkJsPath;
+
+	public:
+		void InitDoctRenderer(NSDoctRenderer::CDoctrenderer* renderer) const
+		{
+			if (!m_sOverrideSdkJsPath.empty())
+				renderer->SetAdditionalParam(NSDoctRenderer::AdditionalParamType::SDKJS_OVERRIDE_PATH, (void*)(&m_sOverrideSdkJsPath));
+		}
 	};
 
 	class InputParams
 	{
 	public:
-        std::wstring* m_sDefaultFontName;
-        int* m_nDefaultFontSize;
+		std::wstring* m_sDefaultFontName;
+		int* m_nDefaultFontSize;
 		std::wstring* m_sKey;
 		std::wstring* m_sFileFrom;
 		std::wstring* m_sFileTo;
@@ -538,6 +549,7 @@ namespace NExtractTools
 		mutable bool m_bOutputConvertCorrupted;
 		mutable bool m_bMacro;
 		std::wstring* m_sCmapDir;
+		std::wstring* m_sOverrideSdkJsPath;
 
 	public:
 		InputParams()
@@ -582,6 +594,7 @@ namespace NExtractTools
 			m_bMacro = false;
 
 			m_sCmapDir = NULL;
+			m_sOverrideSdkJsPath = NULL;
 		}
 		~InputParams()
 		{
@@ -621,6 +634,7 @@ namespace NExtractTools
 			RELEASEOBJECT(m_sConvertToOrigin);
 			RELEASEOBJECT(m_sSigningKeyStorePath);
 			RELEASEOBJECT(m_sCmapDir);
+			RELEASEOBJECT(m_sOverrideSdkJsPath);
 		}
 
 		bool FromXmlFile(const std::wstring& sFilename)
@@ -837,6 +851,11 @@ namespace NExtractTools
 								{
 									RELEASEOBJECT(m_sCmapDir);
 									m_sCmapDir = new std::wstring(sValue);
+								}
+								else if (_T("m_sOverrideSdkJsPath") == sName)
+								{
+									RELEASEOBJECT(m_sOverrideSdkJsPath);
+									m_sOverrideSdkJsPath = new std::wstring(sValue);
 								}
 							}
 							else if (_T("m_nCsvDelimiterChar") == sName)

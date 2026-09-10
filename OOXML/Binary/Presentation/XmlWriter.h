@@ -80,10 +80,10 @@ namespace NSBinPptxRW
         unsigned int m_lObjectIdVML;
         unsigned int m_lObjectIdOle;
 //------------------------------------------------- for vml
-        std::wstring m_strStyleMain;
+		std::wstring m_strStyleMain;
 		std::wstring m_strStyleWrap;
 		std::wstring m_strAttributesMain;
-        std::wstring m_strNodes;
+		std::wstring m_strNodes;
 		nullable_int64 m_zIndex;
 		std::wstring m_strId;
 
@@ -92,7 +92,9 @@ namespace NSBinPptxRW
 		double m_dWidth = 0;
 		double m_dHeight = 0;
 
-        IRenderer* m_pOOXToVMLRenderer;
+		int m_nGroupCoordDivider = 100;
+
+		IRenderer* m_pOOXToVMLRenderer;
 //--------------------------------------------------
         bool m_bIsTop;
         bool m_bIsUseOffice2007;

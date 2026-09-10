@@ -457,6 +457,8 @@ namespace NSCSS
 		bool Empty() const;
 		void Clear();
 
+		void InheritSize(const CDisplay& oDisplay);
+
 		CDisplay& operator+=(const CDisplay& oDisplay);
 		bool      operator==(const CDisplay& oDisplay) const;
 	private:
@@ -504,8 +506,18 @@ namespace NSCSS
 
 		bool SetColor     (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
 		bool SetBackground(const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
+		bool SetImage     (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
+		bool SetPosition  (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
+		bool SetRepeat    (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
 
-		const CColor& GetColor() const;
+		const CColor&  GetColor()     const;
+		const CURL&    GetImage()     const;
+		const CDigit&  GetPositionX() const;
+		const CDigit&  GetPositionY() const;
+		const CString& GetRepeat()    const;
+
+		bool HaveImage() const;
+		bool NoRepeat()  const;
 
 		void Clear();
 		bool Empty()  const;
@@ -515,7 +527,11 @@ namespace NSCSS
 		CBackground& operator+=(const CBackground& oBackground);
 		bool         operator==(const CBackground& oBackground) const;
 	private:
-		CColor m_oColor;
+		CColor  m_oColor;
+		CURL    m_oImage;
+		CDigit  m_oPositionX;
+		CDigit  m_oPositionY;
+		CString m_oRepeat;
 	};
 
 	class CTransform

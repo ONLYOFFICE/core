@@ -72,6 +72,13 @@ void oox_chart::set_values_series(int ind, std::vector<std::wstring> & val)
 	oox_series_ptr & current_ptr = series_.back();
 	current_ptr->setValues (ind, val);
 }
+void oox_chart::set_levels_series(const std::vector<std::vector<std::wstring> > & levels)
+{
+	if (levels.size() < 2) return;
+
+	oox_series_ptr & current_ptr = series_.back();
+	current_ptr->setLevels (levels);
+}
 void oox_chart::set_label_series(const std::wstring& formula, std::vector<std::wstring> & cash)
 {
 	if (formula.empty() && cash.empty()) return;
@@ -85,11 +92,11 @@ void oox_chart::set_properties(odf_reader::chart_format_properties_ptr & prop)
 
 	_CP_OPT(bool) bStacked;
 	_CP_OPT(bool) bPercent;
-	_CP_OPT(int) iGapWidth;
+	_CP_OPT(std::wstring) strTreatEmptyCells;
 
 	odf_reader::GetProperty(prop, L"stacked", bStacked);
 	odf_reader::GetProperty(prop, L"percentage", bPercent);
-	odf_reader::GetProperty(prop, L"gap-width", iGapWidth);
+	odf_reader::GetProperty(prop, L"treat-empty-cells", strTreatEmptyCells);
 
 	if ( (bStacked) && (bStacked.get()))
 	{
@@ -100,13 +107,15 @@ void oox_chart::set_properties(odf_reader::chart_format_properties_ptr & prop)
 	{
 		grouping_ = L"percentStacked";	
 	}
-	if (iGapWidth)
+	if (strTreatEmptyCells)
 	{
-		dispBlanksAs_ = L"gap";
+		if		(*strTreatEmptyCells == L"use-zero")	dispBlanksAs_ = L"zero";
+		else if (*strTreatEmptyCells == L"ignore")	dispBlanksAs_ = L"span";
+		else										dispBlanksAs_ = L"gap";
 	}
 	//solid-type - 3D
 }
-void oox_chart::oox_serialize_common(std::wostream & _Wostream)
+void oox_chart::oox_serialize_grouping(std::wostream & _Wostream)
 {
     CP_XML_WRITER(_Wostream)
     {
@@ -117,6 +126,22 @@ void oox_chart::oox_serialize_common(std::wostream & _Wostream)
 				CP_XML_ATTR(L"val", grouping_);
 			}
 		}
+	}
+}
+void oox_chart::oox_serialize_varyColors(std::wostream & _Wostream)
+{
+    CP_XML_WRITER(_Wostream)
+    {
+		CP_XML_NODE(L"c:varyColors")
+		{
+			CP_XML_ATTR(L"val", varyColors_ ? L"1" : L"0");
+		}
+	}
+}
+void oox_chart::oox_serialize_series(std::wostream & _Wostream)
+{
+    CP_XML_WRITER(_Wostream)
+    {
 		for (size_t i = 0; i < series_.size(); i++)
 		{
 			if (is3D_ || type_ == CHART_TYPE_AREA || type_ == CHART_TYPE_DOUGHNUT || type_ == CHART_TYPE_RADAR)
@@ -125,6 +150,16 @@ void oox_chart::oox_serialize_common(std::wostream & _Wostream)
 			}
 			series_[i]->oox_serialize(_Wostream);
 		}
+		if (false == data_labels_.get_general_dLbls_status())
+		{
+			data_labels_.oox_serialize(_Wostream);
+		}
+	}
+}
+void oox_chart::oox_serialize_axIds(std::wostream & _Wostream)
+{
+    CP_XML_WRITER(_Wostream)
+    {
 		for (size_t i = 0; i < axisId_.size(); i++)
 		{
 			CP_XML_NODE(L"c:axId")
@@ -132,11 +167,13 @@ void oox_chart::oox_serialize_common(std::wostream & _Wostream)
 				CP_XML_ATTR(L"val", axisId_[i]);
 			}
 		}	
-		if( false == data_labels_.get_general_dLbls_status() )
-		{
-			data_labels_.oox_serialize(_Wostream);
-		}
 	}
+}
+void oox_chart::oox_serialize_common(std::wostream & _Wostream)
+{
+	oox_serialize_grouping	(_Wostream);
+	oox_serialize_series	(_Wostream);
+	oox_serialize_axIds		(_Wostream);
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void oox_bar_chart::add_series(int id)
@@ -154,10 +191,25 @@ void oox_bar_chart::set_properties(odf_reader::chart_format_properties_ptr & pro
 	odf_reader::GetProperty(prop, L"gap-width", iGapWidth);
 	odf_reader::GetProperty(prop, L"overlap", iOverlap);
 	odf_reader::GetProperty(prop, L"solid-type", iSolidType);
+
+	_CP_OPT(bool) bDeep;
+	odf_reader::GetProperty(prop, L"deep", bDeep);
+
+	if ((bDeep) && (bDeep.get()) && grouping_ == L"clustered")
+	{
+		grouping_ = L"standard";
+	}
 }
 
 void oox_bar_chart::set_graphic_properties(odf_reader::graphic_format_properties_ptr & g)
 {
+}
+void oox_bar_chart::set_axis_properties(odf_reader::chart_format_properties_ptr & prop)
+{
+	_CP_OPT(int) iVal;
+
+	odf_reader::GetProperty(prop, L"gap-width", iVal);	if (iVal) iGapWidth = iVal;
+	odf_reader::GetProperty(prop, L"overlap", iVal);	if (iVal) iOverlap = iVal;
 }
 
 void oox_bar_chart::oox_serialize(std::wostream & _Wostream)
@@ -176,33 +228,14 @@ void oox_bar_chart::oox_serialize(std::wostream & _Wostream)
 				else
 					CP_XML_ATTR(L"val", L"col"); 
 			}
-			int res = 0;
-			int Overlap =0;
-			if ((res = grouping_.find(L"tacked"))>=0)
-			{
-				Overlap =100;
-			}
-			if (iOverlap)
-			{
-				Overlap = iOverlap.get();
-			}
-			CP_XML_NODE(L"c:overlap")//-100 to 100
-			{
-				CP_XML_ATTR(L"val", Overlap); 
-			}
-			if (iGapWidth)
-			{
-				CP_XML_NODE(L"c:gapWidth")
-				{
-					CP_XML_ATTR(L"val", iGapWidth.get()); 
-				}
-			}
-			CP_XML_NODE(L"c:varyColors")
-			{
-				CP_XML_ATTR(L"val", varyColors_ ? L"1" : L"0");
-			}
-			oox_serialize_common(CP_XML_STREAM());
+			oox_serialize_grouping	(CP_XML_STREAM());
+			oox_serialize_varyColors(CP_XML_STREAM());
+			oox_serialize_series	(CP_XML_STREAM());
 
+			CP_XML_NODE(L"c:gapWidth")
+			{
+				CP_XML_ATTR(L"val", iGapWidth.get_value_or(100)); 
+			}
 			if (is3D_)
 			{
 				CP_XML_NODE(L"c:shape")
@@ -217,6 +250,23 @@ void oox_bar_chart::oox_serialize(std::wostream & _Wostream)
 					}
 				}
 			}
+			else
+			{
+				int Overlap = 0;
+				if (grouping_.find(L"tacked") != std::wstring::npos)
+				{
+					Overlap = 100;
+				}
+				if (iOverlap)
+				{
+					Overlap = iOverlap.get();
+				}
+				CP_XML_NODE(L"c:overlap")//-100 to 100
+				{
+					CP_XML_ATTR(L"val", Overlap); 
+				}
+			}
+			oox_serialize_axIds(CP_XML_STREAM());
 		}
     }
 }
@@ -246,12 +296,10 @@ void oox_line_chart::oox_serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE(strNode)
         {
-			CP_XML_NODE(L"c:varyColors")
-			{
-				CP_XML_ATTR(L"val", varyColors_ ? L"1" : L"0");
-			}	
-			oox_serialize_common(CP_XML_STREAM());
-		
+			oox_serialize_grouping	(CP_XML_STREAM());
+			oox_serialize_varyColors(CP_XML_STREAM());
+			oox_serialize_series	(CP_XML_STREAM());
+			oox_serialize_axIds		(CP_XML_STREAM());
 		}
     }
 }
@@ -279,12 +327,10 @@ void oox_area_chart::oox_serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE(strNode)
         {
-			CP_XML_NODE(L"c:varyColors")
-			{
-				CP_XML_ATTR(L"val", varyColors_ ? L"1" : L"0");
-			}		
-			oox_serialize_common(CP_XML_STREAM());
-			
+			oox_serialize_grouping	(CP_XML_STREAM());
+			oox_serialize_varyColors(CP_XML_STREAM());
+			oox_serialize_series	(CP_XML_STREAM());
+			oox_serialize_axIds		(CP_XML_STREAM());
 		}
     }
 }
@@ -346,12 +392,10 @@ void oox_doughnut_chart::oox_serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE(L"c:doughnutChart")
         {
-			CP_XML_NODE(L"c:varyColors")
-			{
-				CP_XML_ATTR(L"val", varyColors_ ? L"1" : L"0");
-			}	
-			oox_serialize_common(CP_XML_STREAM());
-				
+			oox_serialize_varyColors(CP_XML_STREAM());
+			//no axes
+			oox_serialize_series	(CP_XML_STREAM());
+
 			CP_XML_NODE(L"c:firstSliceAng")
 			{	
 				CP_XML_ATTR(L"val", 0);
@@ -386,11 +430,9 @@ void oox_pie_chart::oox_serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE(strNode)
         {
-			CP_XML_NODE(L"c:varyColors")
-			{
-				CP_XML_ATTR(L"val", varyColors_ ? L"1" : L"0");
-			}	
-			oox_serialize_common(CP_XML_STREAM());
+			oox_serialize_varyColors(CP_XML_STREAM());
+			//no axes
+			oox_serialize_series	(CP_XML_STREAM());
 		}
     }
 }

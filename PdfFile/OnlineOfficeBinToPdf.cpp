@@ -36,6 +36,7 @@
 
 #include "../../DesktopEditor/common/Directory.h"
 #include "../../DesktopEditor/graphics/MetafileToRenderer.h"
+#include "../../DesktopEditor/graphics/commands/AnnotField.h"
 
 namespace NSOnlineOfficeBinToPdf
 {
@@ -58,7 +59,7 @@ namespace NSOnlineOfficeBinToPdf
 		}
 	};
 
-	static bool ConvertBufferToPdf(CPdfFile* pPdf, BYTE* pBuffer, LONG lBufferLen, CConvertFromBinParams* pParams)
+	bool ConvertBufferToPdf(CPdfFile* pPdf, BYTE* pBuffer, LONG lBufferLen, CConvertFromBinParams* pParams)
 	{
 		CMetafileToRenderterPDF oCorrector(pPdf);
 		oCorrector.SetTempDirectory(pPdf->GetTempDirectory());
@@ -156,6 +157,7 @@ namespace NSOnlineOfficeBinToPdf
 		MovePage   = 4,
 		MergePages = 5,
 		SetType    = 6,
+		RedactInfo = 7,
 		Undefined  = 255
 	};
 
@@ -172,6 +174,7 @@ namespace NSOnlineOfficeBinToPdf
 			if (pParams->m_bIsUsePicker)
 				oCorrector.InitPicker(pPdf->GetFonts());
 		}
+		pPdf->SetCorrector(&oCorrector);
 
 		NSOnlineOfficeBinToPdf::CBufferReader oReader(pBuffer, (int)nBufferLen);
 
@@ -225,21 +228,13 @@ namespace NSOnlineOfficeBinToPdf
 			}
 			case AddCommandType::MergePages:
 			{
-				std::wstring wsPath = NSFile::CFileBinary::CreateTempFileWithUniqueName(pPdf->GetTempDirectory(), L"PDF");
 				int nLength = oReader.ReadInt();
-				BYTE* pFile = oReader.GetCurrentBuffer();
+				BYTE* pFile = (BYTE*)malloc(nLength);
+				memcpy(pFile, oReader.GetCurrentBuffer(), nLength);
 				oReader.Skip(nLength);
-				if (!wsPath.empty())
-				{
-					NSFile::CFileBinary oFile;
-					if (oFile.CreateFileW(wsPath))
-						oFile.WriteFile(pFile, nLength);
-					oFile.CloseFile();
-				}
-
 				int nMaxID = oReader.ReadInt();
 				std::wstring wsPrefix = oReader.ReadString();
-				pPdf->MergePages(wsPath, nMaxID, wsPrefix);
+				pPdf->MergePagesEdit(pFile, nLength, nMaxID, wsPrefix);
 				break;
 			}
 			case AddCommandType::WidgetInfo:
@@ -251,6 +246,51 @@ namespace NSOnlineOfficeBinToPdf
 			case AddCommandType::SetType:
 			{
 				pPdf->SetEditType(1);
+				break;
+			}
+			case AddCommandType::RedactInfo:
+			{
+				int nFlags = nPageNum;
+				std::vector<IAdvancedCommand*> arrForms;
+				if (nFlags & (1 << 5)) // Form Fields
+				{
+					int nN = oReader.ReadInt();
+					for (int i = 0; i < nN; ++i)
+					{
+						bool bNewChange = oReader.ReadBool();
+						if (bNewChange)
+						{
+							NSOnlineOfficeBinToPdf::CommandType eCommand = (NSOnlineOfficeBinToPdf::CommandType)oReader.ReadByte();
+							if (eCommand == NSOnlineOfficeBinToPdf::CommandType::ctAnnotField)
+							{
+								BYTE* cur = oReader.GetCurrentBuffer();
+								int nLen2 = oReader.ReadInt();
+
+								CAnnotFieldInfo* command = new CAnnotFieldInfo();
+								if (command->Read(&oReader, &oCorrector))
+									arrForms.push_back(command);
+								else
+									RELEASEOBJECT(command);
+
+								oReader.SetCurrentBuffer(cur + nLen2);
+							}
+							else
+							{
+								BYTE* cur = oReader.GetCurrentBuffer();
+								oReader.SetCurrentBuffer(cur + oReader.ReadInt());
+							}
+						}
+						else
+						{
+							CRedactAnnot* command = new CRedactAnnot();
+							if (command->Read(&oReader, &oCorrector))
+								arrForms.push_back(command);
+							else
+								RELEASEOBJECT(command);
+						}
+					}
+				}
+				pPdf->RedactInfo(nPageNum, arrForms);
 				break;
 			}
 			default:

@@ -80,7 +80,7 @@ DEFINES += COPYRIGHT_YEAR=$${CURRENT_YEAR}
 #DEFINES += _LOGOUT_ALWAYS
 
 QMAKE_TARGET_COMPANY = $$PUBLISHER_NAME
-QMAKE_TARGET_COPYRIGHT = © $${PUBLISHER_NAME} $${CURRENT_YEAR}. All rights reserved.
+QMAKE_TARGET_COPYRIGHT = "\\251 $${PUBLISHER_NAME} $${CURRENT_YEAR}. All rights reserved."
 
 # CONFIGURATION
 CONFIG(debug, debug|release) {
@@ -551,17 +551,19 @@ enable_cpp_17 {
 }
 
 core_linux {
-core_static_link_libstd {
-	!core_linux_clang {
-		QMAKE_LFLAGS += -static-libstdc++ -static-libgcc
-	} else {
-		# TODO: add libc++abi?
+	core_release {
+		core_static_link_libstd {
+			!core_linux_clang {
+				QMAKE_LFLAGS += -static-libstdc++ -static-libgcc
+			} else {
+				# TODO: add libc++abi?
+			}
+			message(core_static_link_libstd)
+		}
 	}
-	message(core_static_link_libstd)
-}
-plugin {
-	TARGET_EXT = .so
-}
+	plugin {
+		TARGET_EXT = .so
+	}
 }
 
 core_windows {

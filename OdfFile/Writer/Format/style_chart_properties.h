@@ -87,7 +87,6 @@ public:
 	_CP_OPT(odf_types::Bool) mean_value_;	
 	_CP_OPT(odf_types::Bool) error_upper_indicator_;	
 	_CP_OPT(odf_types::Bool) error_lower_indicator_;
-	_CP_OPT(odf_types::Bool) treat_empty_cells_;
 	_CP_OPT(odf_types::Bool) japanese_candle_stick_;
 	
 	_CP_OPT(odf_types::chart_symbol_type) symbol_type_;
@@ -121,6 +120,7 @@ public:
 	_CP_OPT(odf_types::chart_error_category)		error_category_;
 	_CP_OPT(odf_types::Bool)						right_angled_axes_;
 
+	_CP_OPT(std::wstring) treat_empty_cells_;	//leave-gap | use-zero | ignore
 	_CP_OPT(std::wstring) axis_label_position_;
 	_CP_OPT(std::wstring) axis_position_;									
 

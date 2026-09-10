@@ -458,7 +458,7 @@ const bool SyntaxPtg::extract_PtgList(std::wstring::const_iterator& first, std::
 	if (boost::regex_search(first, last, results, reg_table_name))
 	{
 		std::wstring tableName;
-		_UINT32 indexTable;
+		_UINT32 indexTable = 0;
 		tableName = results.str(1);
 
 		if (XMLSTUFF::isTableFmla(tableName, indexTable))
@@ -622,10 +622,12 @@ const bool SyntaxPtg::extract_PtgList(std::wstring::const_iterator& first, std::
 			}
 			else if (boost::regex_search(first, last, results_1, reg_inside_table6))
 			{
+				_UINT16 indexColumn = 0;
+				XMLSTUFF::isColumn(L"", indexTable, indexColumn);
                 ptgList.columns = 0;
                 ptgList.colFirst = 0;
-                ptgList.colLast = 0;
-                ptgList.rowType = 0x00;
+				ptgList.colLast = indexColumn;
+				ptgList.rowType = 0x0;
                 first = results_1[0].second;
 				return true;
 			}

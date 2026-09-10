@@ -86,10 +86,15 @@ int DXFNum::serialize(std::wostream & stream)
 		CP_XML_NODE(L"numFmt")
 		{	
 			if (!parent->ifmtNinch)
+			{
 				CP_XML_ATTR(L"numFmtId", fmt_id.ifmt); 
- 			
+				CP_XML_ATTR(L"formatCode", L"0.00");
+			}
 			if (parent->fIfmtUser)
+			{
  				CP_XML_ATTR(L"formatCode", /*XmlUtils::EncodeXmlString*/(user_defined.fmt.value()));
+				CP_XML_ATTR(L"numFmtId", L"0");
+			}
 		}
 	}
 	return 0;

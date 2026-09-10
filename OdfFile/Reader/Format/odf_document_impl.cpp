@@ -874,9 +874,11 @@ void odf_document::Impl::parse_styles(office_element *element)
 						false,
 						styleInst->style_parent_style_name_.get_value_or(L""),
 						styleInst->style_next_style_name_.get_value_or(L""),
+						styleInst->loext_linked_style_name_.get_value_or(L""),
 						styleInst->style_data_style_name_.get_value_or(L""),
 						styleInst->style_percentage_data_style_name_.get_value_or(L""),
 						styleInst->style_class_.get_value_or(L""),
+						styleInst->loext_primary_format_,
 						styleInst->style_list_style_name_,
 						styleInst->style_list_level_,
 						styleInst->style_default_outline_level_
@@ -963,10 +965,11 @@ void odf_document::Impl::parse_styles(office_element *element)
                     &(styleInst->content_),
                     false,
                     true,
+					L"",
+					L"",
                     L"",
                     L"",
 					L"",
-                    L"",
 					L"default");                                            
             }
 			for (size_t i = 0; i < docStyles->style_presentation_page_layout_.size(); i++)
@@ -1003,9 +1006,11 @@ void odf_document::Impl::parse_styles(office_element *element)
                     false,
                     styleInst->style_parent_style_name_.get_value_or(L""),
                     styleInst->style_next_style_name_.get_value_or(L""),
-                    styleInst->style_data_style_name_.get_value_or(L""),
+					styleInst->loext_linked_style_name_.get_value_or(L""),
+					styleInst->style_data_style_name_.get_value_or(L""),
 					styleInst->style_percentage_data_style_name_.get_value_or(L""),
 					styleInst->style_class_.get_value_or(L""),
+					styleInst->loext_primary_format_,
 					styleInst->style_list_style_name_,
 					styleInst->style_list_level_,
 					styleInst->style_default_outline_level_
@@ -1176,16 +1181,18 @@ void odf_document::Impl::parse_styles(office_element *element)
                 if (styleInst->style_master_page_name_/* && !styleInst->style_master_page_name_->empty()*/)
                     context_->styleContainer().add_master_page_name(styleInst->style_name_, *styleInst->style_master_page_name_);
 
-                context_->styleContainer().add_style(styleInst->style_name_,
+				context_->styleContainer().add_style(styleInst->style_name_,
 					styleInst->style_display_name_.get_value_or(L""),
-                    &(styleInst->content_),
-                    true,
-                    false,
-                    styleInst->style_parent_style_name_.get_value_or(L""),
-                    styleInst->style_next_style_name_.get_value_or(L""),
-                    styleInst->style_data_style_name_.get_value_or(L""),
+					&(styleInst->content_),
+					true,
+					false,
+					styleInst->style_parent_style_name_.get_value_or(L""),
+					styleInst->style_next_style_name_.get_value_or(L""),
+					styleInst->loext_linked_style_name_.get_value_or(L""),
+					styleInst->style_data_style_name_.get_value_or(L""),
 					styleInst->style_percentage_data_style_name_.get_value_or(L""),
 					styleInst->style_class_.get_value_or(L""),
+					styleInst->loext_primary_format_,
 					styleInst->style_list_style_name_,
 					styleInst->style_list_level_,
 					styleInst->style_default_outline_level_

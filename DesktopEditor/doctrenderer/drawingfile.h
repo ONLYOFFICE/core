@@ -37,6 +37,7 @@
 
 #include "./common.h"
 #include <stddef.h>
+#include <set>
 
 #include "../../PdfFile/PdfFile.h"
 #include "../../XpsFile/XpsFile.h"
@@ -121,10 +122,17 @@ public:
 	{
 		NSFonts::NSApplicationFontStream::SetGlobalMemoryStorage(NSFonts::NSApplicationFontStream::CreateDefaultGlobalMemoryStorage());
 	}
-
 	static NSFonts::IFontsMemoryStorage* GetFontsStorage()
 	{
 		return NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage();
+	}
+	static void InitImagesGlobalStorage()
+	{
+		NSImages::NSApplicationImageStream::SetGlobalImagesMemoryStorage(NSImages::NSApplicationImageStream::CreateDefaultGlobalImagesMemoryStorage());
+	}
+	static NSImages::IImagesMemoryStorage* GetImagesStorage()
+	{
+		return NSImages::NSApplicationImageStream::GetGlobalImagesMemoryStorage();
 	}
 
 public:
@@ -232,6 +240,7 @@ public:
 				}
 				else
 					m_nType = 2;
+				break;
 			}
 			case 3:
 			{
@@ -325,7 +334,12 @@ public:
 	{
 		if (!m_pFile)
 			return NULL;
-		return m_pFile->ConvertToPixels(nPageIndex, nRasterW, nRasterH, true, m_pFontManager, nBackgroundColor, (nBackgroundColor == 0xFFFFFF) ? false : true);
+		BYTE* pRes = m_pFile->ConvertToPixels(nPageIndex, nRasterW, nRasterH, true, m_pFontManager, nBackgroundColor, (nBackgroundColor == 0xFFFFFF) ? false : true);
+
+		if (m_nType == 0)
+			((CPdfFile*)m_pFile)->SetPageFonts(nPageIndex);
+
+		return pRes;
 	}
 	BYTE* SplitPages(int* arrPageIndex, int nLength, BYTE* data, LONG size)
 	{
@@ -377,6 +391,27 @@ public:
 			return ((CPdfFile*)m_pFile)->UndoRedact();
 		return false;
 	}
+	BYTE* BuildPdf(BYTE* pCommands, int nCommandsLen, const wchar_t* sPassword)
+	{
+		if (m_pFile && m_nType != 0)
+			return NULL;
+
+		// EDIT
+		if (m_pFile && m_pFile->GetPagesCount())
+			return ((CPdfFile*)m_pFile)->EditPdfToMemory(pCommands, nCommandsLen, sPassword);
+
+		// NEW
+		CPdfFile* pdfFile = new CPdfFile(m_pApplicationFonts);
+		pdfFile->CreatePdf();
+		if (sPassword)
+			pdfFile->SetPassword(sPassword);
+		pdfFile->CommandsToPdfFromBinary(pCommands, nCommandsLen);
+
+		BYTE* pData = NULL;
+		int nLength = 0;
+		pdfFile->SaveToMemory(&pData, &nLength, true);
+		return pData;
+	}
 
 	BYTE* GetGlyphs(int nPageIndex)
 	{
@@ -385,6 +420,9 @@ public:
 
 		m_pTextRenderer->Init(m_pFile, 8);
 		m_pFile->DrawPageOnRenderer(m_pTextRenderer, nPageIndex, NULL);
+
+		if (m_nType == 0)
+			((CPdfFile*)m_pFile)->SetPageFonts(nPageIndex);
 
 		return m_pTextRenderer->GetBuffer();
 	}
@@ -395,6 +433,12 @@ public:
 	BYTE* GetStructure()
 	{
 		return m_pFile->GetStructure();
+	}
+	BYTE* GetMacros()
+	{
+		if (m_nType == 0)
+			return ((CPdfFile*)m_pFile)->GetMacros();
+		return NULL;
 	}
 	BYTE* GetInteractiveFormsInfo()
 	{
@@ -487,19 +531,50 @@ public:
 		if (m_nType == 0)
 			((CPdfFile*)m_pFile)->SetCMapMemory(data, size);
 	}
-	void SetScanPageFonts(int nPageIndex)
+	BYTE* SetScanPageFonts(int* arrPageIndex, int nLength)
 	{
-		if (NULL == m_pImageStorage)
-			m_pImageStorage = NSDocxRenderer::CreateWasmImageStorage();
+		if (m_nType != 0)
+			return NULL;
+		CPdfFile* pFile = ((CPdfFile*)m_pFile);
+
+		if (!arrPageIndex || nLength == 0)
+		{
+			nLength = GetPagesCount();
+			arrPageIndex = NULL;
+		}
+		pFile->SetDrawOnlyText(true);
+
+		std::set<std::wstring> arrFonts;
 
 		CDocxRenderer oRenderer(m_pApplicationFonts);
 		oRenderer.SetExternalImageStorage(m_pImageStorage);
 		oRenderer.SetTextAssociationType(NSDocxRenderer::TextAssociationType::tatParagraphToShape);
 
-		oRenderer.ScanPageBin(m_pFile, nPageIndex);
+		for (int i = 0; i < nLength; ++i)
+		{
+			int nPageIndex = arrPageIndex ? arrPageIndex[i] : i;
 
-		if (m_nType == 0)
-			((CPdfFile*)m_pFile)->SetPageFonts(nPageIndex);
+			std::vector<std::wstring> arrFont = oRenderer.GetFontsFromPage(m_pFile, nPageIndex);
+			arrFonts.insert(arrFont.begin(), arrFont.end());
+
+			pFile->SetPageFonts(nPageIndex);
+		}
+
+		pFile->SetDrawOnlyText(false);
+
+		NSWasm::CData oRes;
+		oRes.SkipLen();
+		oRes.AddInt(arrFonts.size());
+
+		for (const auto& font : arrFonts)
+			oRes.WriteString(font);
+
+		oRes.WriteLen();
+		BYTE* res = oRes.GetBuffer();
+		oRes.ClearWithoutAttack();
+
+		return res;
+		// return pFile->GetAllFonts(arrPageIndex, nLength, true);
 	}
 	BYTE* ScanPage(int nPageIndex, int mode)
 	{
@@ -580,6 +655,27 @@ public:
 		{
 			std::string sPathA(path);
 			NSFonts::IFontStream* pStream = pStorage->Get(UTF8_TO_U(sPathA));
+			if (pStream)
+				return 1;
+		}
+		return 0;
+	}
+	void SetImageBinary(char* path, BYTE* data, int size)
+	{
+		NSImages::IImagesMemoryStorage* pStorage = NSImages::NSApplicationImageStream::GetGlobalImagesMemoryStorage();
+		if (pStorage)
+		{
+			std::string sPathA(path);
+			pStorage->Add(UTF8_TO_U(sPathA), data, size, true);
+		}
+	}
+	int IsImageBinaryExist(char* path)
+	{
+		NSImages::IImagesMemoryStorage* pStorage = NSImages::NSApplicationImageStream::GetGlobalImagesMemoryStorage();
+		if (pStorage)
+		{
+			std::string sPathA(path);
+			NSImages::IImageStream* pStream = pStorage->Get(UTF8_TO_U(sPathA));
 			if (pStream)
 				return 1;
 		}

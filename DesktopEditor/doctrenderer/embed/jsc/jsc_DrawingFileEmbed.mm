@@ -14,6 +14,7 @@
 -(JSValue*) DestroyPixmap : (JSValue*)typedArray;
 -(JSValue*) GetLinks : (JSValue*)nPageIndex;
 -(JSValue*) GetStructure;
+-(JSValue*) GetMacros;
 -(JSValue*) GetInteractiveFormsInfo;
 -(JSValue*) GetInteractiveFormsFonts : (JSValue*)nTypeFonts;
 -(JSValue*) GetInteractiveFormsAP : (JSValue*)nRasterW : (JSValue*)nRasterH : (JSValue*)nBackgroundColor : (JSValue*)nPageIndex : (JSValue*)nWidget : (JSValue*)nView : (JSValue*)nButtonView;
@@ -26,7 +27,7 @@
 -(JSValue*) GetGIDByUnicode : (JSValue*)sId;
 -(JSValue*) IsNeedCMap;
 -(JSValue*) ScanPage : (JSValue*)nPageIndex : (JSValue*)mode;
--(JSValue*) SetScanPageFonts : (JSValue*)nPageIndex;
+-(JSValue*) SetScanPageFonts : (JSValue*)arrPageIndexes;
 -(JSValue*) GetImageBase64 : (JSValue*)rId;
 -(JSValue*) FreeWasmData : (JSValue*)typedArray;
 -(JSValue*) SplitPages : (JSValue*)arrPageIndexes : (JSValue*)data;
@@ -34,6 +35,7 @@
 -(JSValue*) UnmergePages;
 -(JSValue*) RedactPage : (JSValue*)nPageIndex : (JSValue*)arrRedactBox : (JSValue*)dataFiller;
 -(JSValue*) UndoRedact;
+-(JSValue*) BuildPdf : (JSValue*)data : (JSValue*)sPassword;
 -(JSValue*) CheckOwnerPassword : (JSValue*)sPassword;
 -(JSValue*) CheckPerm : (JSValue*)nPerm;
 @end
@@ -57,6 +59,7 @@ FUNCTION_WRAPPER_JS_4(GetPixmap, GetPixmap)
 FUNCTION_WRAPPER_JS_1(DestroyPixmap, DestroyPixmap)
 FUNCTION_WRAPPER_JS_1(GetLinks, GetLinks)
 FUNCTION_WRAPPER_JS_0(GetStructure, GetStructure)
+FUNCTION_WRAPPER_JS_0(GetMacros, GetMacros)
 FUNCTION_WRAPPER_JS_0(GetInteractiveFormsInfo, GetInteractiveFormsInfo)
 FUNCTION_WRAPPER_JS_1(GetInteractiveFormsFonts, GetInteractiveFormsFonts)
 FUNCTION_WRAPPER_JS_7(GetInteractiveFormsAP, GetInteractiveFormsAP)
@@ -77,6 +80,7 @@ FUNCTION_WRAPPER_JS_3(MergePages, MergePages)
 FUNCTION_WRAPPER_JS_0(UnmergePages, UnmergePages)
 FUNCTION_WRAPPER_JS_3(RedactPage, RedactPage)
 FUNCTION_WRAPPER_JS_0(UndoRedact, UndoRedact)
+FUNCTION_WRAPPER_JS_2(BuildPdf, BuildPdf)
 FUNCTION_WRAPPER_JS_1(CheckOwnerPassword, CheckOwnerPassword)
 FUNCTION_WRAPPER_JS_1(CheckPerm, CheckPerm)
 @end

@@ -77,6 +77,7 @@ INCLUDEPATH += \
 SOURCES += \
 	pptx_format.cpp \
 	../../../../OOXML/Binary/Document/BinWriter/BinEquationWriter.cpp \
+	../../../../Common/MediaFileFormatChecker.cpp \
 	\
 	../../../../MsBinaryFile/Common/Vml/BaseShape.cpp \
 	../../../../MsBinaryFile/Common/Vml/GraphicsPath.cpp \

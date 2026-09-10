@@ -551,6 +551,7 @@ enum ElementType
 	typeAddinUdf,
 	typeAF12CellIcon,
 	typeAF12Criteria,
+	typeAF12DateInfo,
 	typeAFDOper,
 	typeAFDOperRk,
 	typeAFDOperBoolErr,

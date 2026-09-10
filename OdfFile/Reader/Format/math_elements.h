@@ -85,7 +85,6 @@ private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
-
 	office_element_ptr semantics_;
 };
 
@@ -104,13 +103,13 @@ public:
 	virtual void oox_convert(oox::math_context & Context);
 	virtual void oox_convert(oox::math_context & Context, int iTypeConversion);
 
+    office_element_ptr_array content_;
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
-    office_element_ptr_array	content_;
-	office_element_ptr			annotation_;
-	office_element_ptr			signature_;
+	office_element_ptr annotation_;
+	office_element_ptr signature_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(math_semantics);
@@ -126,7 +125,7 @@ public:
 
     virtual void oox_convert(oox::math_context& Context) {}
 
-    _CP_OPT(std::wstring) text_;
+    std::wstring text_;
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
@@ -149,7 +148,7 @@ public:
 
     virtual void oox_convert(oox::math_context& Context) {}
 
-    _CP_OPT(std::wstring) text_;
+    std::wstring text_;
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
@@ -173,19 +172,17 @@ public:
 
     virtual void oox_convert(oox::math_context& Context) {}
 
-    _CP_OPT(std::wstring) text_;
+    _CP_OPT(std::string) binData_;
+    
+    std::wstring alg_;
+    std::wstring shakey_;
 
-    std::wstring GetAlg() const;
-	std::wstring GetShaKey() const;
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
-    virtual void add_text(const std::wstring & Text);
+    virtual void add_child_element(xml::sax* Reader, const std::wstring& Ns, const std::wstring& Name) {}
+    virtual void add_text(const std::wstring& Text) {}
 
-    office_element_ptr_array content_;
     _CP_OPT(std::wstring) encoding_;
-    _CP_OPT(std::wstring) alg_;
-    _CP_OPT(std::wstring) shakey_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(math_signature);

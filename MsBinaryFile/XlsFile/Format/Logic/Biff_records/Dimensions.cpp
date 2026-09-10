@@ -92,8 +92,10 @@ void Dimensions::writeFields(CFRecord& record)
         rangeRef.fromString(ref_);
         rwMic = rangeRef.rowFirst;
         colMic = rangeRef.columnFirst;
-        rwMac = rangeRef.rowLast;
-        colMac = rangeRef.columnLast;
+		if(rwMac > rangeRef.rowLast)
+			rwMac = rangeRef.rowLast;
+		if(colMac > rangeRef.columnLast)
+			colMac = rangeRef.columnLast;
     }
     record << rwMic << rwMac;
     record << colMic << colMac;

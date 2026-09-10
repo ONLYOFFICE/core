@@ -65,7 +65,7 @@ class CHTMLReader
 
 	CTableElement* m_pTableElement; // Table Converter
 
-	std::set<std::wstring> m_arStopTags;
+	std::multiset<std::wstring> m_arStopTags;
 
 	std::map<int, std::shared_ptr<ITag>> m_mTags;
 public:
@@ -74,6 +74,8 @@ public:
 
 	void SetTempDirectory(const std::wstring& wsPath);
 	void SetCoreDirectory(const std::wstring& wsPath);
+
+	std::wstring GetRootDirectory() const;
 
 	HRESULT ConvertHTML2OOXML   (const std::wstring& wsPath, const std::wstring& wsDirectory, THTMLParameters*     pParameters = nullptr);
 	HRESULT ConvertHTML2Markdown(const std::wstring& wsPath, const std::wstring& wsFinalFile, TMarkdownParameters* pParameters = nullptr);
@@ -109,6 +111,7 @@ private:
 	void ReadDocument(XmlUtils::CXmlLiteReader& oReader);
 	void ReadHead(XmlUtils::CXmlLiteReader& oReader);
 	void ReadBody(XmlUtils::CXmlLiteReader& oReader);
+	void ReadMeta(XmlUtils::CXmlLiteReader& oReader);
 
 	bool ReadStream(XmlUtils::CXmlLiteReader& oReader, std::vector<NSCSS::CNode>& arSelectors, bool bInsertEmptyP = false);
 	bool ReadInside(XmlUtils::CXmlLiteReader& oReader, std::vector<NSCSS::CNode>& arSelectors);
@@ -123,6 +126,7 @@ private:
 	std::shared_ptr<ITag> GetTag(int nTag);
 
 	void AddStopTag(const std::wstring& wsTag);
+	void RemoveStopTag(const std::wstring& wsTag);
 	void ClearStopTags();
 };
 }

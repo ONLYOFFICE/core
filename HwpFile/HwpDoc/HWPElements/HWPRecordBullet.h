@@ -60,6 +60,17 @@ class CHWPRecordBullet : public CHWPRecord
 public:
 	CHWPRecordBullet(CHWPDocInfo& oDocInfo, int nTagNum, int nLevel, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 	CHWPRecordBullet(CHWPDocInfo& oDocInfo, CXMLReader& oReader, EHanType eType);
+
+	HWP_CHAR GetBulletChar() const;
+	HWP_CHAR GetCheckBulletChar() const;
+
+	bool UseImage() const;
+	const HWP_STRING& GetBinItemRefID() const;
+
+	HWP_BYTE GetAlign() const;
+	int GetCharShape() const;
+	short GetTextOffset() const;
+	bool GetAutoIndent() const;
 };
 }
 

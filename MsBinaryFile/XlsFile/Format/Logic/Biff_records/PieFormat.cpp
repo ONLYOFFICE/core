@@ -57,6 +57,10 @@ void PieFormat::readFields(CFRecord& record)
 {
 	record >> pcExplode;
 }
+void PieFormat::writeFields(CFRecord& record)
+{
+	record << pcExplode;
+}
 
 int PieFormat::serialize(std::wostream & _stream)
 {

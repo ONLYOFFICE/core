@@ -130,8 +130,7 @@ namespace OOX
 		}
 		void CCellAnchor::toXML(NSStringUtils::CStringBuilder& writer) const
 		{
-			if(isValid() == false)	return;
-			if(m_bShapeOle)			return;
+			if (isValid() == false)	return;
 
 			std::wstring sEnd;
 			if(m_oFrom.IsInit() && m_oTo.IsInit())
@@ -166,7 +165,7 @@ namespace OOX
 				if(m_oExt.IsInit())
 					m_oExt->toXML(writer);
 			}
-			if(m_oElement.IsInit())
+			if (m_oElement.IsInit())
 			{
 				std::wstring sRequires = m_oElement->GetRequires();
 				if(L"a14" == sRequires)
@@ -255,6 +254,16 @@ namespace OOX
 							//reference to object or shape in vmlDrawing
 							m_sVmlSpId = frame->vmlSpid.get();
 						}
+						smart_ptr<PPTX::Logic::Pic> pic = m_oElement->GetElem().smart_dynamic_cast<PPTX::Logic::Pic>();
+						if (pic.IsInit())
+						{
+							m_nId = pic->nvPicPr.cNvPr.id;
+							if (pic->nvPicPr.cNvPr.vmlSpid.IsInit())
+							{
+								//reference to object or shape in vmlDrawing
+								m_sVmlSpId = pic->nvPicPr.cNvPr.vmlSpid.get();
+							}
+						}
 					}
 				}
 			}
@@ -286,6 +295,7 @@ namespace OOX
 		{
 			if(m_oAnchorType == SimpleTypes::Spreadsheet::ECellAnchorType::cellanchorAbsolute)
 			{
+				//default ms offsets
 				if(m_oPos.IsInit() && m_oPos->m_oX.IsInit())
 					colL = m_oPos->m_oX->GetValue()/30;
 				if(m_oPos.IsInit() && m_oExt->m_oCx.IsInit())
@@ -314,13 +324,53 @@ namespace OOX
 						colR = m_oTo->m_oCol->GetValue();
 					if(m_oTo->m_oRow.IsInit())
 						rwB = m_oTo->m_oRow->GetValue();
-					if(m_oFrom->m_oRowOff.IsInit())
-						dyB = m_oFrom->m_oRowOff->GetValue();
-					if(m_oFrom->m_oColOff.IsInit())
-						dxR = m_oFrom->m_oColOff->GetValue();
+					if(m_oTo->m_oRowOff.IsInit())
+						dyB = m_oTo->m_oRowOff->GetValue();
+					if(m_oTo->m_oColOff.IsInit())
+						dxR = m_oTo->m_oColOff->GetValue();
 				}
 
 			}
+			else if(m_oAnchorType == SimpleTypes::Spreadsheet::ECellAnchorType::cellanchorOneCell)
+			{
+				if(m_oFrom.IsInit())
+				{
+					if(m_oFrom->m_oCol.IsInit())
+						colL = m_oFrom->m_oCol->GetValue();
+					if(m_oFrom->m_oRow.IsInit())
+						rwT = m_oFrom->m_oRow->GetValue();
+					if(m_oFrom->m_oRowOff.IsInit())
+						dyT = m_oFrom->m_oRowOff->GetValue();
+					if(m_oFrom->m_oColOff.IsInit())
+						dxL = m_oFrom->m_oColOff->GetValue();
+					rwB = rwT;
+					colR = colL;
+				}
+				if(m_oExt.IsInit())
+				{
+					if(m_oExt->m_oCx.IsInit())
+						dxR = m_oExt->m_oCx->GetValue();
+
+					if(m_oExt->m_oCy.IsInit())
+						dyB = m_oExt->m_oCy->GetValue();
+				}
+				{
+					auto defaultCellHeigh = 15;
+					auto defaultCellWidth = 50;
+					auto cellsB = dyB/defaultCellHeigh;
+					rwB+= cellsB;
+					dyB -= cellsB*defaultCellHeigh;
+					auto cellsR = dxR/defaultCellWidth;
+					colR += cellsR;
+					dxR-= cellsR*defaultCellWidth;
+				}
+			}
+			auto defaultOffsetX = 21;
+			auto defaultOffsetY = 17;
+			dxR*= defaultOffsetX;
+			dxL*= defaultOffsetX;
+			dyT*= defaultOffsetY;
+			dyB*= defaultOffsetY;
 		}
 		void CCellAnchor::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{

@@ -46,12 +46,14 @@ BiffStructurePtr FtPioGrbit::clone()
 
 void FtPioGrbit::load(CFRecord& record)
 {
+	size_t startPtr = record.getRdPtr();
 	unsigned short ft, cb;
 	record >> ft >> cb;
 
 	if ( ft != 0x0008 || cb != 2)
 	{
-		record.RollRdPtrBack(4);
+		const auto bytesRead = record.getRdPtr() - startPtr;
+		record.RollRdPtrBack(bytesRead);
 		return;
 	}
 	fExist = true;

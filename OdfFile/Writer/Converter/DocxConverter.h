@@ -171,7 +171,6 @@ namespace Oox2Odf
 		void convert(OOX::Logic::CSdtContent* oox_sdt);
 		std::wstring dump_text(OOX::WritingElement *oox_unknown);
 	private:
-		bool current_bidi_set = false;
 		struct _section
 		{
             OOX::Logic::CSectionProperty *props = NULL;

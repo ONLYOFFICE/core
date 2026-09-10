@@ -164,6 +164,10 @@ public:
 	int m_nGeoRight;
 	int m_nGeoBottom;	
 	int	m_nShapePath;
+	int m_nInscribeLeft;
+	int m_nInscribeTop;
+	int m_nInscribeRight;
+	int m_nInscribeBottom;
 	std::vector< std::pair<int, int> >	m_aPVerticles;
 	std::vector< int>					m_aPSegmentInfo;
 //Connectors

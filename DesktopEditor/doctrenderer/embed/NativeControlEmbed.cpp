@@ -35,6 +35,7 @@
 
 #include "NativeControlEmbed.h"
 #include "../server.h"
+#include "../../common/Path.h"
 
 JSSmart<CJSValue> CNativeControlEmbed::SetFilePath(JSSmart<CJSValue> path)
 {
@@ -65,8 +66,9 @@ JSSmart<CJSValue> CNativeControlEmbed::GetFileBinary(JSSmart<CJSValue> file)
 	if (CServerInstance::getInstance().IsEnable())
 	{
 		std::wstring sFileFolder = NSFile::GetDirectoryName(m_pInternal->GetFilePath());
-		if (0 == sFilePath.find(sFileFolder))
-			return CJSContext::createUint8Array(sFilePath);
+		std::wstring sShortPath = NSSystemPath::ShortenPath(sFilePath);
+		if (NSSystemPath::IsPathInDirectory(sFileFolder, sShortPath))
+			return CJSContext::createUint8Array(sShortPath);
 		return CJSContext::createNull();
 	}
 
@@ -84,6 +86,22 @@ JSSmart<CJSValue> CNativeControlEmbed::GetFontBinary(JSSmart<CJSValue> file)
 	if (bIsFullFilePath)
 	{
 		bIsFullFilePath = NSFile::CFileBinary::Exists(sFile);
+	}
+
+	if (bIsFullFilePath && CServerInstance::getInstance().IsEnable())
+	{
+		bool bIsKnownFont = false;
+		for (std::map<std::wstring, std::wstring>::const_iterator it = m_pInternal->m_map_fonts.begin();
+			 it != m_pInternal->m_map_fonts.end(); ++it)
+		{
+			if (NSSystemPath::IsPathInDirectory(it->second, sFile))
+			{
+				bIsKnownFont = true;
+				break;
+			}
+		}
+		if (!bIsKnownFont)
+			bIsFullFilePath = false;
 	}
 
 	if (!bIsFullFilePath)
@@ -271,6 +289,7 @@ JSSmart<CJSValue> CNativeControlEmbed::GetImagesPath()
 
 #include "./../../graphics/MetafileToRenderer.h"
 #include "./../../raster/BgraFrame.h"
+#include "./../../raster/Metafile/MetaFileCommon.h"
 JSSmart<CJSValue> CNativeControlEmbed::GetImageOriginalSize(JSSmart<CJSValue> sUrl)
 {
 	IMetafileToRenderter oRenderer(NULL);
@@ -284,5 +303,22 @@ JSSmart<CJSValue> CNativeControlEmbed::GetImageOriginalSize(JSSmart<CJSValue> sU
 		ret->set("H", oFrame.get_Height());
 		return ret->toValue();
 	}
+
+#ifndef GRAPHICS_DISABLE_METAFILE
+	MetaFile::IMetaFile* pMetafile = MetaFile::Create(NULL);
+	int nWidth = 0, nHeight = 0;
+	const bool bHasSize = pMetafile->LoadFromFile(sPath.c_str()) &&
+					      MetaFile::GetRasterMaxSize(pMetafile, 1000, nWidth, nHeight);
+	pMetafile->Release();
+
+	if (bHasSize)
+	{
+		JSSmart<CJSObject> ret = CJSContext::createObject();
+		ret->set("W", nWidth);
+		ret->set("H", nHeight);
+		return ret->toValue();
+	}
+#endif
+
 	return CJSContext::createUndefined();
 }

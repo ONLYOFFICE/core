@@ -366,6 +366,25 @@ void oox_serialize_border(std::wostream & strm, std::wstring Node, pptx_border_e
 	}
 }
 
+void collect_borders(const _CP_OPT(odf_types::border_style) & common,
+	const _CP_OPT(odf_types::border_style) & src_left,	const _CP_OPT(odf_types::border_style) & src_top,
+	const _CP_OPT(odf_types::border_style) & src_right,	const _CP_OPT(odf_types::border_style) & src_bottom,
+	_CP_OPT(odf_types::border_style) & left,			_CP_OPT(odf_types::border_style) & top,
+	_CP_OPT(odf_types::border_style) & right,			_CP_OPT(odf_types::border_style) & bottom)
+{
+	if (!left)		left	= src_left		? src_left		: common;
+	if (!top)		top		= src_top		? src_top		: common;
+	if (!right)		right	= src_right		? src_right		: common;
+	if (!bottom)	bottom	= src_bottom	? src_bottom	: common;
+}
+void collect_borders(const odf_types::common_border_attlist & attlist,
+	_CP_OPT(odf_types::border_style) & left,	_CP_OPT(odf_types::border_style) & top,
+	_CP_OPT(odf_types::border_style) & right,	_CP_OPT(odf_types::border_style) & bottom)
+{
+	collect_borders(attlist.fo_border_, attlist.fo_border_left_, attlist.fo_border_top_,
+		attlist.fo_border_right_, attlist.fo_border_bottom_, left, top, right, bottom);
+}
+
 void oox_serialize_tcPr(std::wostream & strm, std::vector<const odf_reader::style_instance *> & instances, oox::pptx_conversion_context & Context)
 {
 	CP_XML_WRITER(strm)
@@ -464,11 +483,22 @@ void oox_serialize_tcPr(std::wostream & strm, std::vector<const odf_reader::styl
 				odf_reader::paragraph_format_properties style_paragraph = odf_reader::calc_paragraph_properties_content(instances);//instances);
 
 				pptx_border_edge left, top, bottom, right;
-				
-				process_border(left,	style_paragraph.fo_border_left_		? style_paragraph.fo_border_left_	: style_paragraph.fo_border_);
-				process_border(top,		style_paragraph.fo_border_top_		? style_paragraph.fo_border_top_	: style_paragraph.fo_border_);
-				process_border(right,	style_paragraph.fo_border_right_	? style_paragraph.fo_border_right_	: style_paragraph.fo_border_);
-				process_border(bottom,	style_paragraph.fo_border_bottom_	? style_paragraph.fo_border_bottom_ : style_paragraph.fo_border_);
+
+				_CP_OPT(odf_types::border_style) border_left, border_top, border_right, border_bottom;
+
+				collect_borders(style_cell_attlist.common_border_attlist_, border_left, border_top, border_right, border_bottom);
+
+				if (graphic_props)
+					collect_borders(graphic_props->common_border_attlist_, border_left, border_top, border_right, border_bottom);
+
+				collect_borders(style_paragraph.fo_border_, style_paragraph.fo_border_left_, style_paragraph.fo_border_top_,
+					style_paragraph.fo_border_right_, style_paragraph.fo_border_bottom_,
+					border_left, border_top, border_right, border_bottom);
+
+				process_border(left,	border_left);
+				process_border(top,		border_top);
+				process_border(right,	border_right);
+				process_border(bottom,	border_bottom);
 
 				oox_serialize_border(CP_XML_STREAM(), L"a:lnL", left);
 				oox_serialize_border(CP_XML_STREAM(), L"a:lnR", right);
@@ -482,6 +512,19 @@ void oox_serialize_tcPr(std::wostream & strm, std::vector<const odf_reader::styl
 				{
 					odf_reader::Compute_GraphicFill(graphic_props->common_draw_fill_attlist_, 
 													graphic_props->style_background_image_, Context.root(), fill);
+				}
+				if (fill.type < 1 && style_cell_attlist.common_background_color_attlist_.fo_background_color_)
+				{
+					const odf_types::background_color & background = *style_cell_attlist.common_background_color_attlist_.fo_background_color_;
+
+					if (background.get_type() == odf_types::background_color::Enabled)
+					{
+						fill.type = 1;
+						fill.solid = oox::oox_solid_fill::create();
+						fill.solid->color = background.get_color().get_hex_value();
+					}
+					else
+						fill.type = 0;
 				}
 				if (fill.bitmap)
 				{

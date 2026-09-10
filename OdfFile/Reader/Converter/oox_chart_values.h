@@ -63,6 +63,7 @@ struct _oox_strRef
 	std::wstring				formula;
 	int							str_cache_count = 0;
 	std::vector<std::wstring>	str_cache;
+	std::vector<std::vector<std::wstring> > multi_lvl_cache;
 
 };
 struct _oox_numRef

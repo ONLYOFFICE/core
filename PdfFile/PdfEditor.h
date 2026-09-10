@@ -49,6 +49,14 @@ struct CObjectInfo
 	CObjectInfo(PdfWriter::CObjectBase* _pObj, int _nRefCount) : pObj(_pObj), nRefCount(_nRefCount) {}
 };
 
+struct SPendingWidgetStamp
+{
+	PdfWriter::CAnnotation* pAnnot;
+	PdfWriter::CXObject*    pPlaceholder;
+	PdfWriter::CPage*       pPage;
+	std::vector<double>     arrAnnotRedact;
+};
+
 class CObjectsManager
 {
 public:
@@ -64,11 +72,52 @@ public:
 	void SetDoc(PdfWriter::CDocument* pDoc);
 
 	std::vector<int> m_arrSplitAddPages;
+	std::vector<int> m_arrRedactFormFieldsID;
+	std::vector<IAdvancedCommand*> m_arrRedactFormFields;
+	std::vector<SPendingWidgetStamp> m_arrPendingWidgetStamps;
 
 private:
 	PdfWriter::CDocument* m_pDoc;
 	std::map<int, CObjectInfo> m_mUniqueRef; // map of unique objects
 };
+
+enum EDictConvertFlags
+{
+	eDCF_None            = 0,
+	eDCF_ResolveRefs     = 1 << 0, // dereference objRef via xref
+	eDCF_HandleStreams   = 1 << 1, // process objStream
+	eDCF_HandleResources = 1 << 2, // special handling for Resources
+	eDCF_HandleAnnots    = 1 << 3, // CreateAnnot / CreateExtGState
+	eDCF_RegisterObjs    = 1 << 4, // register in pDoc + pManager
+
+	// Combinations
+	eDCF_Simple = eDCF_None,
+	eDCF_Full   = eDCF_ResolveRefs | eDCF_HandleStreams | eDCF_HandleResources | eDCF_HandleAnnots | eDCF_RegisterObjs
+};
+struct SDictConvertContext
+{
+	PdfWriter::CDocument* pDoc         = NULL;
+	XRef*                 xref         = NULL;
+	CObjectsManager*      pManager     = NULL;
+	int                   nStartRefID  = 0;
+	int                   nAddObjToXRef = 0;
+	bool                  bUndecodedStream = true;
+	bool                  bMakeBinary  = false;
+	bool                  bIgnoreOO    = false;
+	int                   nFlags       = EDictConvertFlags::eDCF_Simple;
+
+	SDictConvertContext() {}
+	SDictConvertContext(PdfWriter::CDocument* _pDoc, XRef* _xref, CObjectsManager* _pManager, int _nStartRefID)
+	{
+		pDoc        = _pDoc;
+		xref        = _xref;
+		pManager    = _pManager;
+		nStartRefID = _nStartRefID;
+		nFlags      = EDictConvertFlags::eDCF_Full;
+	}
+	bool Has(EDictConvertFlags f) const { return (nFlags & f) != 0; }
+};
+PdfWriter::CObjectBase* DictToCDictObjectUnified(Object* obj, SDictConvertContext ctx, PdfWriter::CObjectBase* pParent = NULL, const std::string& sKey = "");
 
 class CPdfEditor
 {
@@ -85,6 +134,7 @@ public:
 	CPdfEditor(const std::wstring& _wsSrcFile, const wchar_t* _wsPassword, const std::wstring& _wsDstFile, CPdfReader* _pReader, CPdfWriter* _pWriter, Mode nMode = Mode::Unknown);
 
 	void SetMode(Mode nMode);
+	void RedactInfo(int nFlag, const std::vector<IAdvancedCommand*>& arrForms);
 
 	int  GetError();
 	void Close();
@@ -105,21 +155,22 @@ public:
 	bool IsBase14(const std::wstring& wsFontName, bool& bBold, bool& bItalic, std::wstring& wsFontPath);
 	void Redact(IAdvancedCommand* pCommand);
 	std::vector<double> WriteRedact(const std::vector<std::wstring>& arrID);
+	void RedactMeta(IAdvancedCommand* pCommand, const std::vector<double>& arrRedact);
+	void CheckMode();
+	void FinalizeWidgetRedactStamps();
 
 	bool SplitPages(const int* arrPageIndex, unsigned int unLength);
 	void AfterSplitPages();
-	bool MergePages(const std::wstring& wsPath);
+	bool MergePages(const std::string& sOutlineTitle);
 
 	bool PrintPages(const std::vector<bool>& arrPages, int nFlag);
 
 private:
 	bool IncrementalUpdates();
-	void NewFrom();
+	void SyncAcroFormFromReader();
 	void GetPageTree(XRef* xref, Object* pPagesRefObj, PdfWriter::CPageTree* pPageParent = NULL);
-	bool SplitPages(const int* arrPageIndex, unsigned int unLength, PDFDoc* _pDoc, int nStartRefID);
+	bool SplitPages(const int* arrPageIndex, unsigned int unLength, PDFDoc* _pDoc, int nStartRefID, bool bIgnoreOO);
 	bool ChangeFullNameParent(int nParent, const std::string& sPrefixForm, std::vector<int>& arrRename);
-	void ScanAndProcessFonts(PDFDoc* pPDFDocument, XRef* xref, Dict* pResources, int nDepth, std::vector<int>& arrUniqueResources, PdfReader::CPdfFontList* pFontList, int nStartRefID);
-	void ScanFonts(PDFDoc* pPDFDocument, Dict* pResources);
 
 	struct CRedactData
 	{
@@ -144,6 +195,7 @@ private:
 	// 0 - Append. pReader and pWriter work with the same file
 	// 1 - Split. pReader and pWriter work with different files
 	Mode m_nMode;
+	int m_nRedactInfo;
 	int m_nEditPage;
 	int m_nOriginIndex;
 };

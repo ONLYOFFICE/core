@@ -620,6 +620,7 @@ enum ElementType
     typeChartFooter,
     typeChartLegend,
     typeChartPlotArea,
+    typeChartCoordinateRegion,
     typeChartWall,
     typeChartFloor,
     typeChartAxis,

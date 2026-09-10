@@ -398,6 +398,7 @@
     <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\AddinUdf.cpp" />
     <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\AF12CellIcon.cpp" />
     <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\AF12Criteria.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\AF12DateInfo.cpp" />
     <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\AFDOper.cpp" />
     <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\AFDOperBoolErr.cpp" />
     <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\AFDOperRk.cpp" />
@@ -1235,6 +1236,7 @@
     <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\AddinUdf.h" />
     <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\AF12CellIcon.h" />
     <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\AF12Criteria.h" />
+    <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\AF12DateInfo.h" />
     <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\AFDOper.h" />
     <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\AFDOperBoolErr.h" />
     <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\AFDOperRk.h" />

@@ -318,6 +318,7 @@ void odt_conversion_context::end_drawing_context()
 		if (elm)
 		{
 			text_context()->start_element(elm);
+				add_to_root();
 			text_context()->end_element();
 		}
 
@@ -1179,7 +1180,7 @@ void odt_conversion_context::add_section_column(std::vector<std::pair<double, do
 	{
 		if (width_space[i].first >= 0) 
 		
-			width_all += width_space[i].first + width_space[i].second;
+			width_all += width_space[i].first + (i + 1 < width_space.size() ? width_space[i].second : 0);
 	}
 
 	if (width_all < 1)	return;
@@ -1196,13 +1197,16 @@ void odt_conversion_context::add_section_column(std::vector<std::pair<double, do
 		style_column* col = dynamic_cast<style_column*>(col_elm.get());
 		if (!col) continue;
 
-		int val =  (width_space[i].first)* 65535. / width_all ;
+		double start_indent	= last_space / 2;
+		double end_indent	= (i + 1 < width_space.size()) ? width_space[i].second / 2 : 0;
+
+		int val = (width_space[i].first + start_indent + end_indent) * 65535. / width_all;
 		col->style_rel_width_ = odf_types::percent_rel(val);
-		
-		col->fo_start_indent_ = odf_types::length(last_space / 2, odf_types::length::pt);
-		
-		col->fo_end_indent_ = odf_types::length(width_space[i].second / 2, odf_types::length::pt);
-		
+
+		col->fo_start_indent_ = odf_types::length(start_indent, odf_types::length::pt);
+
+		col->fo_end_indent_ = odf_types::length(end_indent, odf_types::length::pt);
+
 		columns->add_child_element(col_elm);
 
 		last_space = width_space[i].second;
@@ -1857,7 +1861,7 @@ void odt_conversion_context::end_table_row()
 void odt_conversion_context::add_default_cell()
 {
 	office_element_ptr elm;
-	create_element(L"table", L"covered-table-cell",elm,this);
+	create_element(L"table", L"covered-table-cell", elm, this);
 
 	table_context()->start_cell(elm, false);
 	text_context()->start_element(elm);

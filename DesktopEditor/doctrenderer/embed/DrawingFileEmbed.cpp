@@ -133,6 +133,10 @@ JSSmart<CJSValue> CDrawingFileEmbed::GetStructure()
 {
 	return WasmMemoryToJS(m_pFile->GetStructure());
 }
+JSSmart<CJSValue> CDrawingFileEmbed::GetMacros()
+{
+	return WasmMemoryToJS(m_pFile->GetMacros());
+}
 JSSmart<CJSValue> CDrawingFileEmbed::GetInteractiveFormsInfo()
 {
 	return WasmMemoryToJS(m_pFile->GetInteractiveFormsInfo());
@@ -184,10 +188,21 @@ JSSmart<CJSValue> CDrawingFileEmbed::ScanPage(JSSmart<CJSValue> nPageIndex, JSSm
 {
 	return WasmMemoryToJS(m_pFile->ScanPage(nPageIndex->toInt32(), mode->toInt32()));
 }
-JSSmart<CJSValue> CDrawingFileEmbed::SetScanPageFonts(JSSmart<CJSValue> nPageIndex)
+JSSmart<CJSValue> CDrawingFileEmbed::SetScanPageFonts(JSSmart<CJSValue> arrPageIndexes)
 {
-	m_pFile->SetScanPageFonts(nPageIndex->toInt32());
-	return CJSContext::createUndefined();
+	JSSmart<CJSArray> arrPages = arrPageIndexes->toArray();
+	int nCountPages = arrPages->getCount();
+	int* pPages = NULL;
+	if (0 < nCountPages)
+		pPages = new int[nCountPages];
+
+	for (int i = 0; i < nCountPages; i++)
+		pPages[i] = arrPages->get(i)->toInt32();
+
+	JSSmart<CJSValue> res = WasmMemoryToJS(m_pFile->SetScanPageFonts(pPages, nCountPages));
+	if (pPages)
+		delete [] pPages;
+	return res;
 }
 
 JSSmart<CJSValue> CDrawingFileEmbed::GetImageBase64(JSSmart<CJSValue> rId)
@@ -285,6 +300,15 @@ JSSmart<CJSValue> CDrawingFileEmbed::UndoRedact()
 	if (m_pFile)
 		return CJSContext::createBool(m_pFile->UndoRedact());
 	return CJSContext::createBool(false);
+}
+JSSmart<CJSValue> CDrawingFileEmbed::BuildPdf(JSSmart<CJSValue> data, JSSmart<CJSValue> sPassword)
+{
+	CJSDataBuffer changes;
+	if (data->isTypedArray())
+		changes = data->toTypedArray()->getData();
+	std::wstring wsPassword = sPassword->isString() ? sPassword->toStringW() : L"";
+	JSSmart<CJSValue> res = WasmMemoryToJS(m_pFile->BuildPdf(changes.Data, (LONG)changes.Len, sPassword->isString() ? wsPassword.c_str() : NULL));
+	return res;
 }
 
 JSSmart<CJSValue> CDrawingFileEmbed::CheckOwnerPassword(JSSmart<CJSValue> sPassword)

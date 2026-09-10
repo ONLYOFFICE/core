@@ -66,6 +66,7 @@ namespace XmlUtils
 		std::wstring GetXmlString();
 		void SetXmlString(const std::wstring& strValue);
 		
+		void WriteEncodeXmlString(const std::string& sString);
 		bool SaveToFile(const std::wstring& strFilePath/*, bool bEncodingToUTF8 = false*/);
 		void WriteString(const std::wstring& strValue);
 		void WriteInteger(int Value);
@@ -77,6 +78,7 @@ namespace XmlUtils
 		void WriteNode(const std::wstring& strNodeName, int nValue, const std::wstring& strTextBeforeValue = L"", const std::wstring& strTextAfterValue = L"");
 		void WriteNode(const std::wstring& strNodeName, double dValue);
 		void WriteAttribute(const std::wstring& strAttributeName, const std::wstring& strAttributeValue);
+		void WriteAttribute(const std::wstring& strAttributeName, const std::string& strAttributeValue);
 		void WriteAttribute(const std::wstring& strAttributeName, int nValue, const std::wstring& strTextBeforeValue = L"", const std::wstring& strTextAfterValue = (L""));
 		void WriteAttribute(const std::wstring& strAttributeName, double dValue);
 	};

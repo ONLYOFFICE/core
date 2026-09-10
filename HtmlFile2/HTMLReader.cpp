@@ -324,6 +324,11 @@ void CHTMLReader::SetCoreDirectory(const std::wstring& wsPath)
 	m_wsCoreDirectory = wsPath;
 }
 
+std::wstring CHTMLReader::GetRootDirectory() const
+{
+	return m_wsCoreDirectory.empty() ? m_wsSrcDirectory : m_wsCoreDirectory;
+}
+
 HRESULT CHTMLReader::ConvertHTML2OOXML(const std::wstring& wsPath, const std::wstring& wsDirectory, THTMLParameters* pParameters)
 {
 	return InitAndConvert2OOXML({wsPath}, wsDirectory, HTML2XHTML, pParameters);
@@ -374,7 +379,6 @@ void CHTMLReader::Clear()
 	m_wsSrcDirectory .clear();
 	m_wsDstDirectory .clear();
 	m_wsBaseDirectory.clear();
-	m_wsCoreDirectory.clear();
 
 	if (nullptr != m_pTableElement)
 		delete m_pTableElement;
@@ -417,7 +421,7 @@ bool CHTMLReader::InitOOXMLTags(THTMLParameters* pParametrs)
 	                                  { return ReadInside(oReader, arSelectors); };
 
 	oExternalData.AddStopTag    = [this](const std::wstring& wsTag){ AddStopTag(wsTag); };
-	oExternalData.ClearStopTags = [this]{ ClearStopTags(); };
+	oExternalData.RemoveStopTag = [this](const std::wstring& wsTag){ RemoveStopTag(wsTag); };
 
 	oExternalData.m_pWriter = pWriter;
 
@@ -460,7 +464,7 @@ bool CHTMLReader::InitMDTags(TMarkdownParameters* pParametrs)
 	                                  { return ReadInside(oReader, arSelectors); };
 
 	oExternalData.AddStopTag    = [this](const std::wstring& wsTag){ AddStopTag(wsTag); };
-	oExternalData.ClearStopTags = [this]{ ClearStopTags(); };
+	oExternalData.RemoveStopTag = [this](const std::wstring& wsTag){ RemoveStopTag(wsTag); };
 
 	oExternalData.m_pWriter = pWriter;
 
@@ -531,16 +535,13 @@ bool CHTMLReader::Convert(const std::wstring& wsPath, Convert_Func Convertation)
 		return false;
 
 	if (m_wsTempDirectory.empty())
-	{
 		m_wsTempDirectory = NSDirectory::CreateDirectoryWithUniqueName(NSDirectory::GetTempPath());
-	}
 
 	m_wsSrcDirectory = NSSystemPath::GetDirectoryName(wsPath);
 
 	oReader.MoveToStart();
 	oReader.ReadNextNode();
 	ReadStyle(oReader);
-
 
 	// Go to the beginning
 	if(!oReader.MoveToStart())
@@ -628,8 +629,14 @@ void CHTMLReader::ReadStyleFromNetwork(XmlUtils::CXmlLiteReader& oReader)
 	}
 	else
 	{
-		m_oCSSCalculator.AddStylesFromFile(m_wsSrcDirectory + L'/' + sFName);
-		m_oCSSCalculator.AddStylesFromFile(m_wsSrcDirectory + L'/' + sRef);
+		const std::wstring wsRootDirectory{GetRootDirectory()};
+		const bool bIsAllowExternalLocalFiles{GetStatusUsingExternalLocalFiles()};
+
+		if (CanUseThisPath(sFName, wsRootDirectory, m_wsSrcDirectory, bIsAllowExternalLocalFiles))
+			m_oCSSCalculator.AddStylesFromFile(m_wsSrcDirectory + L'/' + sFName);
+
+		if (CanUseThisPath(sRef, wsRootDirectory, m_wsSrcDirectory, bIsAllowExternalLocalFiles))
+			m_oCSSCalculator.AddStylesFromFile(m_wsSrcDirectory + L'/' + sRef);
 	}
 }
 
@@ -652,16 +659,18 @@ void CHTMLReader::ReadHead(XmlUtils::CXmlLiteReader& oReader)
 {
 	if(oReader.IsEmptyNode())
 		return;
-	int nDeath = oReader.GetDepth();
-	while (oReader.ReadNextSiblingNode(nDeath))
+
+	const int nDeath = oReader.GetDepth();
+
+	while (oReader.ReadNextSiblingNode2(nDeath))
 	{
 		const std::wstring wsName = oReader.GetName();
 		// Base address
 		if (L"base" == wsName)
 			m_wsBaseDirectory = GetArgumentValue(oReader, L"href");
+		else if (L"meta" == wsName)
+			ReadMeta(oReader);
 	}
-
-	oReader.MoveToElement();
 }
 
 void CHTMLReader::ReadBody(XmlUtils::CXmlLiteReader& oReader)
@@ -683,6 +692,33 @@ void CHTMLReader::ReadBody(XmlUtils::CXmlLiteReader& oReader)
 	oReader.MoveToElement();
 
 	ReadStream(oReader, arSelectors);
+}
+
+void CHTMLReader::ReadMeta(XmlUtils::CXmlLiteReader& oReader)
+{
+	if (!oReader.MoveToFirstAttribute())
+		return;
+
+	std::wstring wsName, wsContent;
+
+	do
+	{
+		if (L"name" == oReader.GetName())
+			wsName = oReader.GetText();
+		else if (L"content" == oReader.GetName())
+			wsContent = oReader.GetText();
+
+		if (!wsName.empty() && !wsContent.empty())
+		{
+			m_pWriter->WriteMetadata(wsName, wsContent);
+
+			wsName.clear();
+			wsContent.clear();
+		}
+	}while(oReader.MoveToNextAttribute());
+
+	oReader.MoveToElement();
+
 }
 
 bool CHTMLReader::ReadStream(XmlUtils::CXmlLiteReader& oReader, std::vector<NSCSS::CNode>& arSelectors, bool bInsertEmptyP)
@@ -709,6 +745,9 @@ bool CHTMLReader::ReadStream(XmlUtils::CXmlLiteReader& oReader, std::vector<NSCS
 
 		if (ReadInside(oReader, arSelectors))
 			bResult = true;
+
+		if (!m_arStopTags.empty() && m_arStopTags.end() != m_arStopTags.find(oReader.GetName()))
+			return bResult;
 	} while(oReader.ReadNextSiblingNode2(nDeath));
 
 	if (!bResult && bInsertEmptyP)
@@ -831,6 +870,12 @@ bool CHTMLReader::ReadInside(XmlUtils::CXmlLiteReader& oReader, std::vector<NSCS
 		case HTML_TAG(VAR):
 		{
 			bResult = ReadStream(oReader, arSelectors);
+			break;
+		}
+		case HTML_TAG(META):
+		{
+			ReadMeta(oReader);
+			bResult = true;
 			break;
 		}
 		case HTML_TAG(CANVAS):
@@ -994,7 +1039,7 @@ bool CHTMLReader::ReadTable(XmlUtils::CXmlLiteReader& oReader, std::vector<NSCSS
 		return false;
 
 	m_pTableElement->Normalize();
-	m_pTableElement->Convert(oTableReader, arSelectors.back());
+	m_pTableElement->Convert(oTableReader, arSelectors);
 
 	m_pTableElement->Clear();
 	return true;
@@ -1033,6 +1078,11 @@ std::shared_ptr<ITag> CHTMLReader::GetTag(int nTag)
 void CHTMLReader::AddStopTag(const std::wstring& wsTag)
 {
 	m_arStopTags.insert(wsTag);
+}
+
+void CHTMLReader::RemoveStopTag(const std::wstring& wsTag)
+{
+	m_arStopTags.erase(m_arStopTags.find(wsTag));
 }
 
 void CHTMLReader::ClearStopTags()
@@ -1088,7 +1138,7 @@ inline HtmlTag GetHtmlTag(const std::wstring& wsStrTag)
 
 inline bool UnreadableNode(const std::wstring& wsNodeName)
 {
-	return L"head" == wsNodeName || L"meta" == wsNodeName || L"style" == wsNodeName;
+	return L"head" == wsNodeName || L"style" == wsNodeName;
 }
 
 inline bool TagIsUnprocessed(const std::wstring& wsTagName)

@@ -236,6 +236,14 @@ std::wstring CSvgReader::GetAttribute(const std::string& sName)
 	return GetAttribute<std::wstring>(sName, L"", &GetTextValue);
 }
 
+std::wstring CSvgReader::GetInnerXML()
+{
+	if (nullptr == m_pReader)
+		return std::wstring();
+
+	return m_pReader->GetInnerXml();
+}
+
 bool CSvgReader::MoveToStart()
 {
 	if (nullptr != m_pReader && m_pReader->MoveToStart())

@@ -141,7 +141,8 @@ const bool MsoDrawing::isEndingRecord(CFRecord& record)
 }
 
 void MsoDrawing::prepareDrawing(const DrawingType Type, const unsigned int DrawingtId, const unsigned int row1, const unsigned int col1,
-		const unsigned int row2, const unsigned int col2, const unsigned int param)
+		const unsigned int row2, const unsigned int col2, const unsigned int rx1, const unsigned int rx2, const unsigned int ry1,
+		const unsigned int ry2, const unsigned int param)
 {
 	if(rgChildRec.first)
 	{
@@ -194,6 +195,13 @@ void MsoDrawing::prepareDrawing(const DrawingType Type, const unsigned int Drawi
 		clientAnchor->colR = col2;
 		clientAnchor->rwT = row1;
 		clientAnchor->rwB = row2;
+
+		{
+			clientAnchor->dxL = rx1;
+			clientAnchor->dxR = rx2;
+			clientAnchor->dyT = ry1;
+			clientAnchor->dyB = ry2;
+		}
 		SpContainer->m_OfficeArtAnchor = ODRAW::OfficeArtRecordPtr(clientAnchor);
 		auto clientData = new ODRAW::OfficeArtClientData;
 		SpContainer->m_oOfficeArtClientData = ODRAW::OfficeArtRecordPtr(clientData);
@@ -253,8 +261,18 @@ void MsoDrawing::prepareDrawing(const DrawingType Type, const unsigned int Drawi
 				PicOp->op = param;
 				commentOptions->fopt.Text_props.push_back(ODRAW::OfficeArtFOPTEPtr(PicOp));
 			}
+			{
+				auto PicOp = new ODRAW::OfficeArtFOPTE;
+				PicOp->opid = 0x01BF;
+				PicOp->fComplex = false;
+				PicOp->fBid = false;
+				PicOp->op = 0x100000;
+				commentOptions->fopt.Text_props.push_back(ODRAW::OfficeArtFOPTEPtr(PicOp));
+			}
+
+			commentOptions->fopt.options_count += 2;
+
 			SpContainer->m_oOfficeArtFOPT = ODRAW::OfficeArtRecordPtr(commentOptions);
-			commentOptions->fopt.options_count += 1;
 		}
 	}
 }

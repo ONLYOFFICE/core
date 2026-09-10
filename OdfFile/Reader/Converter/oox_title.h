@@ -62,6 +62,11 @@ public:
 	{
 		sub_ = t;
 	}
+	void set_layout(const _CP_OPT(double)& rel_x, const _CP_OPT(double)& rel_y,
+		const _CP_OPT(double)& rel_w, const _CP_OPT(double)& rel_h)
+	{
+		layout_.set_rect(rel_x, rel_y, rel_w, rel_h);
+	}
 private:
     void oox_content_serialize(std::wostream & _Wostream, odf_reader::chart::title & content);
 	

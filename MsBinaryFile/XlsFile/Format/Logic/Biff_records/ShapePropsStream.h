@@ -54,8 +54,10 @@ public:
 	
 	void readFields(CFRecord& record);
 	void writeFields(CFRecord& record);
-	
+
 	static const ElementType	type = typeShapePropsStream;
+
+	std::wstring	getChartSpPr() const;
 
 	FrtHeader		frtHeader;
 	

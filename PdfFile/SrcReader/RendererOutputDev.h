@@ -38,7 +38,6 @@
 #include "../../DesktopEditor/graphics/IRenderer.h"
 #include "../../DesktopEditor/graphics/pro/Fonts.h"
 #include "../../DesktopEditor/graphics/AlphaMask.h"
-#include "../../DesktopEditor/graphics/TemporaryCS.h"
 #include "../../DesktopEditor/graphics/structures.h"
 #include "../lib/xpdf/Gfx.h"
 #include "../lib/xpdf/OutputDev.h"
@@ -49,43 +48,7 @@
 namespace PdfReader
 {
 	struct CType3FontMetrics;
-	//-------------------------------------------------------------------------------------------------------------------------------
-	struct TFontEntry
-	{
-		std::wstring wsFilePath;     // Path to font on disk
-		std::wstring wsFontName;     // Font name as written in PDF (branch for cases when font name is not specified in font itself)
-		int*         pCodeToGID;     // Code to glyph number in font table
-		int*         pCodeToUnicode; // Code to unicode value table
-		unsigned int unLenGID;
-		unsigned int unLenUnicode;
-		bool         bAvailable;     // Is font available. Made for multithreading
-		bool         bFontSubstitution = false;
-		bool         bIsIdentity = false;
-		double       dStretch = 1.0;
-		
-	};
-
-	class CPdfFontList
-	{
-	public:
-		CPdfFontList();
-		~CPdfFontList();
-		bool Find(Ref oRef, TFontEntry* pEntry);
-		bool Find2(Ref oRef, TFontEntry** ppEntry);
-		void Remove(Ref oRef);
-		TFontEntry* Add(Ref oRef, const std::wstring& wsFileName, int* pCodeToGID, int* pCodeToUnicode, unsigned int unLenGID, unsigned int unLenUnicode);
-		void Clear();
-		bool GetFont(Ref* pRef, TFontEntry* pEntry);
-		const std::map<Ref, TFontEntry*>& GetFonts();
-	private:
-		TFontEntry* Lookup(Ref& oRef);
-		void Add(Ref& oRef, TFontEntry* pFontEntry);
-
-	private:
-		std::map<Ref, TFontEntry*>          m_oFontMap;
-		NSCriticalSection::CRITICAL_SECTION m_oCS; // Critical section
-	};
-
+	class CPdfFontList;
 	//-------------------------------------------------------------------------------------------------------------------------------
 	template <typename T>
 	inline static double PDFCoordsToMM(T tX)
@@ -225,7 +188,7 @@ namespace PdfReader
 		GBool beginType3Char(GfxState *state, double x, double y, double dx, double dy, CharCode code, Unicode *u, int uLen) override;
 		void endType3Char(GfxState *pGState) override;
 		//----- Additional functions
-		virtual GBool beginMarkedContent(GfxState *state, GString *s) override;
+		virtual GBool beginMarkedContent(GfxState *state, Object args[], int numArgs) override;
 		virtual GBool beginMCOShapes(GfxState *state, GString *s, Object *ref) override;
 		virtual void endMarkedContent(GfxState *state) override;
 		//----- Image output
@@ -249,8 +212,14 @@ namespace PdfReader
 		{
 			m_pbBreak = pbBreak;
 		}
-		static NSFonts::CFontInfo* GetFontByParams(XRef* pXref, NSFonts::IFontManager* pFontManager, GfxFont* pFont, std::wstring& wsFontBaseName, double& dStretch);
-		static void GetFont(XRef* pXref, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList, GfxFont* pFont, std::wstring& wsFileName, std::wstring& wsFontName, bool bNotFullName = true);
+		void SetDrawOnlyText(bool bDraw)
+		{
+			m_bDrawOnlyText = bDraw;
+		}
+		void SetUseLayer(bool bUse)
+		{
+			m_bUseLayer = bUse;
+		}
 
 	private:
 		struct GfxOutputState
@@ -302,6 +271,7 @@ namespace PdfReader
 		bool                          m_bTiling;
 
         bool                          m_bDrawOnlyText; // Special option for html-renderer
+		bool                          m_bUseLayer; // Draw page on a black transparent layer
 
 	};
 }

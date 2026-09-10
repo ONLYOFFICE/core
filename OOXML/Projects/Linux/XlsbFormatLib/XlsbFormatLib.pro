@@ -54,12 +54,10 @@ precompile_header {
     HEADERS += precompiled.h
 }
 
-core_release {
+build_monolith_objects {
 SOURCES += \
 	xlsb_format_logic.cpp
-}
-
-core_debug {
+} else {
 SOURCES += \
 	../../../XlsbFormat/Biff12_unions/COMMENTS_bu.cpp \
 	../../../XlsbFormat/Xlsb.cpp \
@@ -2198,4 +2196,4 @@ HEADERS += \
 	../../../XlsbFormat/Biff12_unions/MDXMBRPROP.h \
 	../../../XlsbFormat/Biff12_unions/MDXKPI.h \
 	../../../XlsbFormat/Biff12_unions/MDXTUPLE.h \
-	../../../XlsbFormat/Biff12_unions/MDXSET.h \
+	../../../XlsbFormat/Biff12_unions/MDXSET.h

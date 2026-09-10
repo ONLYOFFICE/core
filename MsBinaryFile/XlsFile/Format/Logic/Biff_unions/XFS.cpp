@@ -114,27 +114,28 @@ const bool XFS::loadContent(BinProcessor& proc)
 	return true;
 }
 
-void calcChecksum(CFRecord record, _UINT32 &checksum)
-{
-	auto beginData = record.getCurStaticData<BYTE>() - record.getRdPtr();
-	size_t len = record.getRdPtr();
-	for (size_t j = 0; j < len; j++)
-	{
-		checksum ^= ((_UINT32)beginData[j] << 24);
 
-		for (int i = 0; i < 8; i++)
-		{
-			if (checksum & 0x80000000)
-				checksum = ((checksum << 1) ^ 0x000000AFU) & 0xFFFFFFFFU;
-			else
-				checksum = (checksum << 1) & 0xFFFFFFFFU;
-		}
-	}
-}
 
 const bool XFS::saveContent(BinProcessor& proc)
 {
 	auto globInfo = proc.getGlobalWorkbookInfo();
+	auto calcChecksum = [](CFRecord record, _UINT32 &checksum)
+	{
+		auto beginData = record.getCurStaticData<BYTE>() - record.getRdPtr();
+		size_t len = record.getRdPtr();
+		for (size_t j = 0; j < len; j++)
+		{
+			checksum ^= ((_UINT32)beginData[j] << 24);
+
+			for (int i = 0; i < 8; i++)
+			{
+				if (checksum & 0x80000000)
+					checksum = ((checksum << 1) ^ 0x000000AFU) & 0xFFFFFFFFU;
+				else
+					checksum = (checksum << 1) & 0xFFFFFFFFU;
+			}
+		}
+	};
 	_UINT32 crc = 0;
 	for(auto i = 0; i < 15; i++)
 	{

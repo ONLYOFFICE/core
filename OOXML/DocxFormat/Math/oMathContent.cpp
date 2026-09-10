@@ -2728,11 +2728,11 @@ namespace OOX
 		{
 			std::wstring sResult = _T("<m:radPr>");
 
-			if ( m_oCtrlPr.IsInit() )
-				sResult += m_oCtrlPr->toXML();
-
 			if ( m_oDegHide.IsInit() )
 				sResult += m_oDegHide->toXML();
+
+			if (m_oCtrlPr.IsInit())
+				sResult += m_oCtrlPr->toXML();
 
 			sResult += _T("</m:radPr>");
 			return sResult;
@@ -3666,9 +3666,6 @@ namespace OOX
 			if (m_oChr.IsInit())
 				sResult += m_oChr->toXML();
 
-			if (m_oCtrlPr.IsInit())
-				sResult += m_oCtrlPr->toXML();
-
 			if (m_oGrow.IsInit())
 				sResult += m_oGrow->toXML();
 
@@ -3680,6 +3677,9 @@ namespace OOX
 
 			if (m_oSupHide.IsInit())
 				sResult += m_oSupHide->toXML();
+
+			if (m_oCtrlPr.IsInit())
+				sResult += m_oCtrlPr->toXML();
 
 			sResult += L"</m:naryPr>";
 
@@ -4113,14 +4113,14 @@ namespace OOX
 		{
 			std::wstring sResult = L"<m:f>";
 
-			if ( m_oDen.IsInit() )
-				sResult += m_oDen->toXML();
-
-			if ( m_oFPr.IsInit() )
+			if (m_oFPr.IsInit())
 				sResult += m_oFPr->toXML();
 
 			if ( m_oNum.IsInit() )
 				sResult += m_oNum->toXML();
+
+			if (m_oDen.IsInit())
+				sResult += m_oDen->toXML();
 
 			sResult += L"</m:f>";
 
@@ -4131,14 +4131,14 @@ namespace OOX
 		{
 			std::wstring sResult = L"<m:func>";
 
-			if ( m_oElement.IsInit() )
-				sResult += m_oElement->toXML();
-
-			if ( m_oFName.IsInit() )
-				sResult += m_oFName->toXML();
-
 			if ( m_oFuncPr.IsInit() )
 				sResult += m_oFuncPr->toXML();
+
+			if ( m_oFName.IsInit() )
+				sResult += m_oFName->toXML();			
+			
+			if ( m_oElement.IsInit() )
+				sResult += m_oElement->toXML();
 
 			sResult += L"</m:func>";
 
@@ -4164,14 +4164,14 @@ namespace OOX
 		{
 			std::wstring sResult = L"<m:limLow>";
 
+			if (m_oLimLowPr.IsInit())
+				sResult += m_oLimLowPr->toXML();
+
 			if ( m_oElement.IsInit() )
 				sResult += m_oElement->toXML();
 
 			if ( m_oLim.IsInit() )
 				sResult += m_oLim->toXML();
-
-			if ( m_oLimLowPr.IsInit() )
-				sResult += m_oLimLowPr->toXML();
 
 			sResult += L"</m:limLow>";
 
@@ -4259,10 +4259,7 @@ namespace OOX
 		{
 			std::wstring sResult = L"<m:nary>";
 
-			if ( m_oElement.IsInit() )
-				sResult += m_oElement->toXML();
-
-			if ( m_oNaryPr.IsInit() )
+			if (m_oNaryPr.IsInit())
 				sResult += m_oNaryPr->toXML();
 
 			if ( m_oSub.IsInit() )
@@ -4270,6 +4267,9 @@ namespace OOX
 
 			if ( m_oSup.IsInit() )
 				sResult += m_oSup->toXML();
+
+			if (m_oElement.IsInit())
+				sResult += m_oElement->toXML();
 
 			sResult += L"</m:nary>";
 
@@ -4311,14 +4311,14 @@ namespace OOX
 		if ( m_oDel.IsInit() )
 			sResult += m_oDel->toXML();
 
+		if (m_oRPr.IsInit())
+			sResult += m_oRPr->toXML();
+
 		if ( m_oMRPr.IsInit() )
 			sResult += m_oMRPr->toXML();
 
 		if ( m_oARPr.IsInit() )
 			sResult += m_oARPr->toXML();
-
-		if ( m_oRPr.IsInit() )
-			sResult += m_oRPr->toXML();
 
 		for (size_t i = 0; i < m_arrItems.size(); ++i)
 		{

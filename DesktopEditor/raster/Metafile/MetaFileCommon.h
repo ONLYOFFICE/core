@@ -37,17 +37,23 @@
 
 #include "./MetaFile.h"
 
+#include <cfloat>
+#include <cmath>
+
 namespace MetaFile
 {
-	static void ConvertToRasterMaxSize(MetaFile::IMetaFile* pMetafile, const wchar_t* wsOutFilePath, unsigned int unFileType, int nOneMaxSize)
+	static bool GetRasterMaxSize(MetaFile::IMetaFile* pMetafile, int nOneMaxSize, int& nWidth, int& nHeight)
 	{
 		double dX, dY, dW, dH;
 		pMetafile->GetBounds(&dX, &dY, &dW, &dH);
 
+		if (std::abs(dW) <= DBL_EPSILON || std::abs(dH) <= DBL_EPSILON)
+			return false;
+
 		if (dW < 0) dW = -dW;
 		if (dH < 0) dH = -dH;
 
-		double dOneMaxSize = (double)nOneMaxSize;
+		const double dOneMaxSize{(double)nOneMaxSize};
 
 		if (dW > dH)
 		{
@@ -60,7 +66,29 @@ namespace MetaFile
 			dH = dOneMaxSize;
 		}
 
-		pMetafile->ConvertToRaster(wsOutFilePath, unFileType, (int)dW, (int)dH);
+		nWidth  = (int)dW;
+		nHeight = (int)dH;
+
+		if (nWidth  < 1) nWidth  = 1;
+		if (nHeight < 1) nHeight = 1;
+
+		return true;
+	}
+	static void ConvertToRasterMaxSize(MetaFile::IMetaFile* pMetafile, const wchar_t* wsOutFilePath, unsigned int unFileType, int nOneMaxSize)
+	{
+		int nWidth = 0, nHeight = 0;
+		if (!GetRasterMaxSize(pMetafile, nOneMaxSize, nWidth, nHeight))
+			return;
+
+		pMetafile->ConvertToRaster(wsOutFilePath, unFileType, nWidth, nHeight);
+	}
+	static void ConvertToRasterMaxSize(MetaFile::IMetaFile* pMetafile, BYTE*& pBuffer, int& nSize, unsigned int unFileType, int nOneMaxSize)
+	{
+		int nWidth = 0, nHeight = 0;
+		if (!GetRasterMaxSize(pMetafile, nOneMaxSize, nWidth, nHeight))
+			return;
+
+		pMetafile->ConvertToRaster(pBuffer, nSize, unFileType, nWidth, nHeight);
 	}
 }
 

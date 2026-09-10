@@ -49,7 +49,7 @@ void CFVO::load(CFRecord& record)
 {
 	record >> cfvoType;
 	fmla.load(record);
-	if(!fmla.getCCE())
+	if(!fmla.getCCE() && cfvoType != 2 && cfvoType != 3)
 	{
 		record >> numValue;
 	}
@@ -64,7 +64,7 @@ void CFVO::save(CFRecord& record)
     }
 	else
 		record.reserveNunBytes(2);
-	if(cfvoType != 2 && cfvoType != 3)
+	if(cfvoType != 2 && cfvoType != 3 && fmla.rgce.sequence.empty())
     {
         record << numValue;
     }

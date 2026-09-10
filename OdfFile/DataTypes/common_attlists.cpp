@@ -275,27 +275,42 @@ void common_page_number_attlist::add_attributes( const xml::attributes_wc_ptr & 
 	_CP_OPT(std::wstring) str1;
     CP_APPLY_ATTR(L"style:page-number", str1);
 
-	if ((str1) && (*str1 != L"auto"))
+	if (str1)
 	{
-		style_page_number_ = XmlUtils::GetInteger(*str1);
+        if (*str1 == L"auto")
+            page_number_auto_ = true;
+        else
+            style_page_number_ = XmlUtils::GetInteger(*str1);
 	}
 	
 	_CP_OPT(std::wstring) str2;
     CP_APPLY_ATTR(L"style:first-page-number", str2);
-	if ((str2) && (*str2 != L"continue"))
+	if (str2)
 	{
-		style_first_page_number_ = XmlUtils::GetInteger(*str2);
-	}
+        if (*str2 == L"continue")
+            first_page_number_continue_ = true;
+        else
+            style_first_page_number_ = XmlUtils::GetInteger(*str2);
+    }
 }
 void common_page_number_attlist::apply_from(const common_page_number_attlist & Other)
 {
     _CP_APPLY_PROP(style_page_number_, Other.style_page_number_);
     _CP_APPLY_PROP(style_first_page_number_, Other.style_first_page_number_);
+   
+    _CP_APPLY_PROP(page_number_auto_, Other.page_number_auto_);
+    _CP_APPLY_PROP(first_page_number_continue_, Other.first_page_number_continue_);
 }
 void common_page_number_attlist::serialize(CP_ATTR_NODE)
 {
     CP_XML_ATTR_OPT(L"style:page-number", style_page_number_);
     CP_XML_ATTR_OPT(L"style:first-page-number", style_first_page_number_);
+    
+    if (page_number_auto_)
+        CP_XML_ATTR(L"style:page-number", L"auto");
+
+    if (first_page_number_continue_)
+        CP_XML_ATTR(L"style:first-page-number", L"continue");
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////
 

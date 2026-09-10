@@ -340,6 +340,8 @@ namespace PPTX
 				strAttr += s;
 			}
 
+			std::wstring strStrokeAttr;
+
 			if (line.prstDash.IsInit() && line.prstDash->val.IsInit())
 			{
 				std::wstring value;
@@ -359,8 +361,26 @@ namespace PPTX
 					default: value = L"solid"; break;
 				}
 				if (false == value.empty())
-					strNode = L"<v:stroke dashstyle=\"" + value  + L"\"/>";
+					strStrokeAttr += L" dashstyle=\"" + value + L"\"";
 			}
+
+			if (line.cmpd.is_init())
+			{
+				std::wstring value;
+				switch (line.cmpd->GetBYTECode())
+				{
+					case 0: value = L"thinThin"; break;
+					case 2: value = L"thickThin"; break;
+					case 3: value = L"thinThick"; break;
+					case 4: value = L"thickBetweenThin"; break;
+					default: break;	// default VML
+				}
+				if (false == value.empty())
+					strStrokeAttr += L" linestyle=\"" + value + L"\"";
+			}
+
+			if (false == strStrokeAttr.empty())
+				strNode = L"<v:stroke" + strStrokeAttr + L"/>";
 		}
 
 		SpTreeElem::SpTreeElem()

@@ -61,6 +61,9 @@ CImageObject::CImageObject(CXmlReader& oReader, IFolder* pFolder)
 
 	oReader.MoveToElement();
 
+	if (oReader.IsEmptyElement())
+		return;
+
 	const int nDepth{oReader.GetDepth()};
 
 	while(oReader.ReadNextSiblingNode2(nDepth))
@@ -79,13 +82,13 @@ void CImageObject::Draw(IRenderer* pRenderer, const CCommonData& oCommonData, EP
 	if (nullptr == pMultiMedia)
 		return;
 
-	TMatrix oOldTransform;
-	CGraphicUnit::Apply(pRenderer, oOldTransform);
-
 	const std::wstring wsFilePath = pMultiMedia->GetFilePath();
 
 	if (wsFilePath.empty() || !m_pFolder->exists(wsFilePath))
 		return;
+
+	TMatrix oOldTransform;
+	CGraphicUnit::Apply(pRenderer, oOldTransform);
 
 	//TODO::It can be done without type determination. In all cases, just use Aggplus::CImage
 	switch (m_pFolder->getType())

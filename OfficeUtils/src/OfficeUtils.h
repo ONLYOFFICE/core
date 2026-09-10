@@ -53,8 +53,8 @@ private:
 public:
 	COfficeUtils(OnProgressCallback* bCallback = NULL);
 
-	HRESULT ExtractToDirectory		(const std::wstring& zipFile, const std::wstring& unzipDir, wchar_t* password, short extract_without_path);
-	HRESULT ExtractToDirectory		(BYTE* data, size_t len, const std::wstring& unzipDir, wchar_t* password, short extract_without_path);
+	HRESULT ExtractToDirectory		(const std::wstring& zipFile, const std::wstring& unzipDir, wchar_t* password, short extract_without_path, bool checkEscapePath = true);
+	HRESULT ExtractToDirectory		(BYTE* data, size_t len, const std::wstring& unzipDir, wchar_t* password, short extract_without_path, bool checkEscapePath = true);
 
 	HRESULT CompressFileOrDirectory	(const std::wstring& name, const std::wstring& outputFile, bool bSorted = false, int method = Z_DEFLATED, short level = -1, bool bDateTime = true);
 	

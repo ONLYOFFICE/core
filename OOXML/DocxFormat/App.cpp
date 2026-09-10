@@ -65,97 +65,111 @@ namespace OOX
 		XmlUtils::CXmlNode oProperties;
 		oProperties.FromXmlFile( oPath.GetPath(), true );
 
-		if ( _T("Properties") == oProperties.GetName() )
+		if ( L"Properties" == XmlUtils::GetNameNoNS(oProperties.GetName()))
 		{
-			XmlUtils::CXmlNode oItem;
-
-			if ( oProperties.GetNode( _T("Application"), oItem ) )
-				m_sApplication = oItem.GetText();
-
-			if ( oProperties.GetNode( _T("AppVersion"), oItem ) )
-				m_sAppVersion = oItem.GetText();
-
-			if ( oProperties.GetNode( _T("Characters"), oItem ) )
-				m_nCharacters = oItem.GetText();
-
-			if ( oProperties.GetNode( _T("CharactersWithSpaces"), oItem ) )
-				m_nCharactersWithSpaces = oItem.GetText();
-
-			if ( oProperties.GetNode( _T("Company"), oItem ) )
-				m_sCompany = oItem.GetText();
-
-			if ( oProperties.GetNode( _T("DocSecurity"), oItem ) )
-				m_nDocSecurity = oItem.GetText();
-
-			if ( oProperties.GetNode( _T("HiddenSlides"), oItem ) )
-				m_nHiddenSlides = oItem.GetText();
-
-			if ( oProperties.GetNode( _T("HyperlinkBase"), oItem ) )
-				m_sHyperlinkBase = oItem.GetText();
-
-			if ( oProperties.GetNode( _T("HyperlinksChanged"), oItem ) )
-				m_bHyperlinksChanged = oItem.GetText();
-
-			if ( oProperties.GetNode( _T("Lines"), oItem ) )
-				m_nLines = oItem.GetText();
-
-			if ( oProperties.GetNode( _T("LinksUpToDate"), oItem ) )
-				m_bLinksUpToDate = oItem.GetText();
-
-			if ( oProperties.GetNode( _T("Manager"), oItem ) )
-				m_sManager = oItem.GetText();
-
-			if ( oProperties.GetNode( _T("MMClips"), oItem ) )
-				m_nMMClips = oItem.GetText();
-
-			if ( oProperties.GetNode( _T("Notes"), oItem ) )
-				m_nNotes = oItem.GetText();
-
-			if ( oProperties.GetNode( _T("Pages"), oItem ) )
-				m_nPages = oItem.GetText();
-
-			if ( oProperties.GetNode( _T("Paragraphs"), oItem ) )
-				m_nParagraphs = oItem.GetText();
-
-			if ( oProperties.GetNode( _T("ScaleCrop"), oItem ) )
-				m_bScaleCrop = oItem.GetText();
-
-			if ( oProperties.GetNode( _T("SharedDoc"), oItem ) )
-				m_bSharedDoc = oItem.GetText();
-
-			if ( oProperties.GetNode( _T("Slides"), oItem ) )
-				m_nSlides = oItem.GetText();
-
-			if ( oProperties.GetNode( _T("Template"), oItem ) )
-				m_sTemplate = oItem.GetText();
-
-			if ( oProperties.GetNode( _T("TotalTime"), oItem ) )
-				m_nTotalTime = oItem.GetText();
-
-			if ( oProperties.GetNode( _T("Words"), oItem ) )
-				m_nWords = oItem.GetText();
-			
-			XmlUtils::CXmlNode oHP = oProperties.ReadNode(_T("HeadingPairs"));
-			XmlUtils::CXmlNode oNodeVector1;
-			if (oHP.GetNode(_T("vt:vector"), oNodeVector1))
+			std::vector<XmlUtils::CXmlNode> oNodes;
+			if (oProperties.GetNodes(_T("*"), oNodes))
 			{
-				XmlMacroReadAttributeBase(oNodeVector1, _T("size"), m_Headings);
-				XmlMacroLoadArray(oNodeVector1, _T("vt:variant"), HeadingPairs, PPTX::Logic::HeadingVariant);
-			}
+				size_t nCount = oNodes.size();
+				for (size_t i = 0; i < nCount; ++i)
+				{
+					XmlUtils::CXmlNode& oItem = oNodes[i];
 
-			XmlUtils::CXmlNode oTP = oProperties.ReadNode(_T("TitlesOfParts"));
-			XmlUtils::CXmlNode oNodeVector2;
-			if (oTP.GetNode(_T("vt:vector"), oNodeVector2))
-			{
-				XmlMacroReadAttributeBase(oNodeVector2, _T("size"), m_VectorSize);
-				XmlMacroLoadArray(oNodeVector2, _T("vt:variant"), TitlesOfParts, PPTX::Logic::PartTitle);
+					std::wstring strName = XmlUtils::GetNameNoNS(oItem.GetName());
+					
+					if (L"Application" == strName)
+						m_sApplication = oItem.GetText();
+
+					else if (L"AppVersion" == strName)
+						m_sAppVersion = oItem.GetText();
+
+					else if (L"Characters" == strName)
+						m_nCharacters = oItem.GetText();
+
+					else if (L"CharactersWithSpaces" == strName)
+						m_nCharactersWithSpaces = oItem.GetText();
+
+					else if (L"Company" == strName)
+						m_sCompany = oItem.GetText();
+
+					else if (L"DocSecurity" == strName)
+						m_nDocSecurity = oItem.GetText();
+
+					else if (L"HiddenSlides" == strName)
+						m_nHiddenSlides = oItem.GetText();
+
+					else if (L"HyperlinkBase" == strName)
+						m_sHyperlinkBase = oItem.GetText();
+
+					else if (L"HyperlinksChanged" == strName)
+						m_bHyperlinksChanged = oItem.GetText();
+
+					else if (L"Lines" == strName)
+						m_nLines = oItem.GetText();
+
+					else if (L"LinksUpToDate" == strName)
+						m_bLinksUpToDate = oItem.GetText();
+
+					else if (L"Manager" == strName)
+						m_sManager = oItem.GetText();
+
+					else if (L"MMClips" == strName)
+						m_nMMClips = oItem.GetText();
+
+					else if (L"Notes" == strName)
+						m_nNotes = oItem.GetText();
+
+					else if (L"Pages" == strName)
+						m_nPages = oItem.GetText();
+
+					else if (L"Paragraphs" == strName)
+						m_nParagraphs = oItem.GetText();
+
+					else if (L"ScaleCrop" == strName)
+						m_bScaleCrop = oItem.GetText();
+
+					else if (L"SharedDoc" == strName)
+						m_bSharedDoc = oItem.GetText();
+
+					else if (L"Slides" == strName)
+						m_nSlides = oItem.GetText();
+
+					else if (L"Template" == strName)
+						m_sTemplate = oItem.GetText();
+
+					else if (L"TotalTime" == strName)
+						m_nTotalTime = oItem.GetText();
+
+					else if (L"Words" == strName)
+						m_nWords = oItem.GetText();
+
+					else if (L"HeadingPairs" == strName)
+					{
+						XmlUtils::CXmlNode oNodeVector1;
+						if (oItem.GetNode(L"vt:vector", oNodeVector1))
+						{
+							XmlMacroReadAttributeBase(oNodeVector1, L"size", m_Headings);
+							XmlMacroLoadArray(oNodeVector1, L"vt:variant", HeadingPairs, PPTX::Logic::HeadingVariant);
+						}
+					}
+					else if (L"TitlesOfParts" == strName)
+					{
+						XmlUtils::CXmlNode oNodeVector2;
+						if (oItem.GetNode(L"vt:vector", oNodeVector2))
+						{
+							XmlMacroReadAttributeBase(oNodeVector2, L"size", m_VectorSize);
+							XmlMacroLoadArray(oNodeVector2, L"vt:variant", TitlesOfParts, PPTX::Logic::PartTitle);
+						}
+
+					}
+				}
 			}
 		}
 	}
 	void CApp::write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
 	{
 		std::wstring sXml;
-		sXml = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
+		sXml = L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>";
 
 		NSBinPptxRW::CXmlWriter oWriter;
 		toXmlWriter(&oWriter);
@@ -323,68 +337,68 @@ namespace OOX
 	}
 	void CApp::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 	{
-		pWriter->StartNode(_T("Properties"));
+		pWriter->StartNode(L"Properties");
 
 		pWriter->StartAttributes();
 
-		pWriter->WriteAttribute(_T("xmlns"), PPTX::g_Namespaces.xmlns.m_strLink);
-		pWriter->WriteAttribute(_T("xmlns:vt"), PPTX::g_Namespaces.vt.m_strLink);
+		pWriter->WriteAttribute(L"xmlns", PPTX::g_Namespaces.xmlns.m_strLink);
+		pWriter->WriteAttribute(L"xmlns:vt", PPTX::g_Namespaces.vt.m_strLink);
 
 		pWriter->EndAttributes();
 
-		pWriter->WriteNodeValue2(_T("Template"), m_sTemplate);
-		pWriter->WriteNodeValue(_T("TotalTime"), m_nTotalTime);
-		pWriter->WriteNodeValue(_T("Pages"), m_nPages);
-		pWriter->WriteNodeValue(_T("Words"), m_nWords);
-		pWriter->WriteNodeValue(_T("Characters"), m_nCharacters);
-		pWriter->WriteNodeValue(_T("CharactersWithSpaces"), m_nCharactersWithSpaces);
-		pWriter->WriteNodeValue2(_T("Application"), m_sApplication);
-		pWriter->WriteNodeValue(_T("DocSecurity"), m_nDocSecurity);
-		pWriter->WriteNodeValue2(_T("PresentationFormat"), m_sPresentationForm);
-		pWriter->WriteNodeValue(_T("Lines"), m_nLines);
-		pWriter->WriteNodeValue(_T("Paragraphs"), m_nParagraphs);
-		pWriter->WriteNodeValue(_T("Slides"), m_nSlides);
-		pWriter->WriteNodeValue(_T("Notes"), m_nNotes);
-		pWriter->WriteNodeValue(_T("HiddenSlides"), m_nHiddenSlides);
-		pWriter->WriteNodeValue(_T("MMClips"), m_nMMClips);
-		pWriter->WriteNodeValue(_T("ScaleCrop"), m_bScaleCrop);
+		pWriter->WriteNodeValue2(L"Template", m_sTemplate);
+		pWriter->WriteNodeValue(L"TotalTime", m_nTotalTime);
+		pWriter->WriteNodeValue(L"Pages", m_nPages);
+		pWriter->WriteNodeValue(L"Words", m_nWords);
+		pWriter->WriteNodeValue(L"Characters", m_nCharacters);
+		pWriter->WriteNodeValue(L"CharactersWithSpaces", m_nCharactersWithSpaces);
+		pWriter->WriteNodeValue2(L"Application", m_sApplication);
+		pWriter->WriteNodeValue(L"DocSecurity", m_nDocSecurity);
+		pWriter->WriteNodeValue2(L"PresentationFormat", m_sPresentationForm);
+		pWriter->WriteNodeValue(L"Lines", m_nLines);
+		pWriter->WriteNodeValue(L"Paragraphs", m_nParagraphs);
+		pWriter->WriteNodeValue(L"Slides", m_nSlides);
+		pWriter->WriteNodeValue(L"Notes", m_nNotes);
+		pWriter->WriteNodeValue(L"HiddenSlides", m_nHiddenSlides);
+		pWriter->WriteNodeValue(L"MMClips", m_nMMClips);
+		pWriter->WriteNodeValue(L"ScaleCrop", m_bScaleCrop);
 
-		pWriter->StartNode(_T("HeadingPairs"));
+		pWriter->StartNode(L"HeadingPairs");
 		pWriter->EndAttributes();
 
-		pWriter->StartNode(_T("vt:vector"));
+		pWriter->StartNode(L"vt:vector");
 		pWriter->StartAttributes();
-		pWriter->WriteAttribute(_T("size"), (int)HeadingPairs.size());
-		pWriter->WriteAttribute(_T("baseType"), (std::wstring)_T("variant"));
+		pWriter->WriteAttribute(L"size", (int)HeadingPairs.size());
+		pWriter->WriteAttribute(L"baseType", (std::wstring)(L"variant"));
 		pWriter->EndAttributes();
 
 		pWriter->WriteArray2(HeadingPairs);
 
-		pWriter->EndNode(_T("vt:vector"));
-		pWriter->EndNode(_T("HeadingPairs"));
+		pWriter->EndNode(L"vt:vector");
+		pWriter->EndNode(L"HeadingPairs");
 
-		pWriter->StartNode(_T("TitlesOfParts"));
+		pWriter->StartNode(L"TitlesOfParts");
 		pWriter->EndAttributes();
 
-		pWriter->StartNode(_T("vt:vector"));
+		pWriter->StartNode(L"vt:vector");
 		pWriter->StartAttributes();
-		pWriter->WriteAttribute(_T("size"), (int)TitlesOfParts.size());
-		pWriter->WriteAttribute(_T("baseType"), (std::wstring)_T("lpstr"));
+		pWriter->WriteAttribute(L"size", (int)TitlesOfParts.size());
+		pWriter->WriteAttribute(L"baseType", (std::wstring)(L"lpstr"));
 		pWriter->EndAttributes();
 
 		pWriter->WriteArray2(TitlesOfParts);
 
-		pWriter->EndNode(_T("vt:vector"));
-		pWriter->EndNode(_T("TitlesOfParts"));
+		pWriter->EndNode(L"vt:vector");
+		pWriter->EndNode(L"TitlesOfParts");
 
-		pWriter->WriteNodeValue2(_T("Manager"), m_sManager);
-		pWriter->WriteNodeValue2(_T("Company"), m_sCompany);
-		pWriter->WriteNodeValue(_T("LinksUpToDate"), m_bLinksUpToDate);
-		pWriter->WriteNodeValue(_T("SharedDoc"), m_bSharedDoc);
-		pWriter->WriteNodeValue2(_T("HyperlinkBase"), m_sHyperlinkBase);
-		pWriter->WriteNodeValue(_T("HyperlinksChanged"), m_bHyperlinksChanged);
-		pWriter->WriteNodeValue2(_T("AppVersion"), m_sAppVersion);
+		pWriter->WriteNodeValue2(L"Manager", m_sManager);
+		pWriter->WriteNodeValue2(L"Company", m_sCompany);
+		pWriter->WriteNodeValue(L"LinksUpToDate", m_bLinksUpToDate);
+		pWriter->WriteNodeValue(L"SharedDoc", m_bSharedDoc);
+		pWriter->WriteNodeValue2(L"HyperlinkBase", m_sHyperlinkBase);
+		pWriter->WriteNodeValue(L"HyperlinksChanged", m_bHyperlinksChanged);
+		pWriter->WriteNodeValue2(L"AppVersion", m_sAppVersion);
 
-		pWriter->EndNode(_T("Properties"));
+		pWriter->EndNode(L"Properties");
 	}
 } // namespace OOX

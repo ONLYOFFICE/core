@@ -37,6 +37,7 @@
 
 #include "../DesktopEditor/graphics/pro/Fonts.h"
 #include "../DesktopEditor/graphics/pro/officedrawingfile.h"
+#include "../DesktopEditor/graphics/pro/js/wasm/src/serialize.h"
 #include "../DesktopEditor/xmlsec/src/include/Certificate.h"
 #include "SrcReader/RendererOutputDev.h"
 
@@ -74,6 +75,7 @@ public:
 
 	bool LoadFromFile  (NSFonts::IApplicationFonts* pAppFonts, const std::wstring& file, const wchar_t* owner_password = NULL, const wchar_t* user_password = NULL);
 	bool LoadFromMemory(NSFonts::IApplicationFonts* pAppFonts, BYTE* data, DWORD length, const wchar_t* owner_password = NULL, const wchar_t* user_password = NULL);
+	bool GetMemory(BYTE** ppData, DWORD* pLength);
 
 	void Close();
 	void CleanUp();
@@ -92,6 +94,7 @@ public:
 	int GetMaxRefID();
 	int GetNumPages();
 	bool ValidMetaData();
+
 	// Takes ownership of malloc data memory
 	bool MergePages(BYTE* pData, DWORD nLength, const wchar_t* wsPassword = NULL, int nMaxID = 0, const std::string& sPrefixForm = "");
 	bool MergePages(const std::wstring& wsFile, const wchar_t* wsPassword = NULL, int nMaxID = 0, const std::string& sPrefixForm = "");
@@ -101,7 +104,7 @@ public:
 	bool CheckOwnerPassword(const wchar_t* sPassword);
 	bool CheckPerm(int nPerm);
 	void GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY);
-	void DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak);
+	void DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak, bool bDrawOnlyText = false, bool bPrint = false);
 	void SetPainter(IOfficeDrawingFilePainter* pPainter);
 	std::wstring GetInfo();
 	BYTE* GetGIDByUnicode(const std::wstring& wsFontName);
@@ -122,8 +125,10 @@ public:
 	void SetFonts(PdfReader::CPdfFontList* pFontList);
 	BYTE* GetStructure();
 	BYTE* GetLinks(int nPageIndex);
+	BYTE* GetMacros();
 	BYTE* GetWidgets();
 	BYTE* GetFonts(bool bStandart);
+	BYTE* GetAllFonts(int* arrPageIndex, int nLength, bool bCheck = true);
 	BYTE* GetAnnots(int nPageIndex = -1);
 	BYTE* VerifySign(const std::wstring& sFile, ICertificate* pCertificate, int nWidget = -1);
 	BYTE* GetAPWidget  (int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nWidget  = -1, const char* sView  = NULL, const char* sBView = NULL);
@@ -135,13 +140,18 @@ public:
 private:
 	void Clear();
 
+	CPdfReaderContext* CreateContext(const std::string& sPrefixForm, int nMaxID);
+	bool FinalizeMerge(CPdfReaderContext* pContext);
+	CPdfReaderContext* FindContext(PDFDoc* pDoc) const;
+
+private:
 	std::wstring           m_wsTempFolder;
 	NSFonts::IFontManager* m_pFontManager;
 	DWORD                  m_nFileLength;
 	int                    m_eError;
-	IOfficeDrawingFilePainter* m_pPainter;
+	IOfficeDrawingFilePainter*      m_pPainter;
 	std::vector<CPdfReaderContext*> m_vPDFContext;
-	std::vector<CPdfRedact*> m_vRedact;
+	std::vector<CPdfRedact*>        m_vRedact;
 	std::map<std::wstring, std::wstring> m_mFonts;
 };
 

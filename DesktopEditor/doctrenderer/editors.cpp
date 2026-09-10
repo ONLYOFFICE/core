@@ -158,7 +158,7 @@ namespace NSDoctRenderer
 				AppendScript(builder, sFontsPath);
 				AppendScript(builder, config->m_strSdkPath + L"/word/sdk-all.js");
 				AppendScript(builder, config->m_strSdkPath + L"/pdf/src/engine/drawingfile_native.js");
-				AppendScript(builder, config->m_strSdkPath + L"/pdf/src/annotations/stamps.json", "window[\"native_pdf_stamps\"]=", ";");
+				AppendScript(builder, config->m_strSdkPath + L"/pdf/src/annotations/stamps/en-EN.json", "window[\"native_pdf_stamps\"]=", ";");
 				sCachePath = config->m_strSdkPath + L"/pdf/sdk-all";
 				break;
 			}

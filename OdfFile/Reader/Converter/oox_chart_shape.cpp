@@ -68,23 +68,33 @@ void oox_chart_shape::set(odf_reader::graphic_format_properties_ptr & prop, _oox
 	fill_ = fill;
 }
 
-void oox_serialize_default_text(std::wostream & _Wostream, odf_reader::text_format_properties_ptr properties)
+void oox_serialize_default_text(std::wostream & _Wostream, odf_reader::text_format_properties_ptr properties,
+								const _CP_OPT(int) & rotate)
 {
-	if (!properties) return;
+	if (!properties && !rotate) return;
 
 	CP_XML_WRITER(_Wostream)
     {
 		CP_XML_NODE(L"c:txPr")
-		{	
-			CP_XML_NODE(L"a:bodyPr");
+		{
+			CP_XML_NODE(L"a:bodyPr")
+			{
+				if (rotate)
+				{
+					CP_XML_ATTR(L"rot", *rotate);
+					CP_XML_ATTR(L"vert", L"horz");
+				}
+			}
 			CP_XML_NODE(L"a:lstStyle");
 			CP_XML_NODE(L"a:p")
 			{
 				CP_XML_NODE(L"a:pPr")
 				{
-					odf_reader::fonts_container fonts;
-					properties->oox_serialize(CP_XML_STREAM(), true, fonts, true);
-
+					if (properties)
+					{
+						odf_reader::fonts_container fonts;
+						properties->oox_serialize(CP_XML_STREAM(), true, fonts, true);
+					}
 				}
 			}
 		}

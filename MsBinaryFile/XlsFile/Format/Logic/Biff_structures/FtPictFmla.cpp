@@ -96,10 +96,12 @@ void FtPictFmla::load(CFRecord& record, int linkSize)
 void FtPictFmla::load(CFRecord& record, FtPioGrbit& pictFlags)
 {
 	short ft, size;
-	record >> ft; // must be 
+	const size_t startPtr = record.getRdPtr();
+	record >> ft; // must be
 	if (ft != 0x0009)
 	{
-		record.RollRdPtrBack(2);
+		const size_t bytesRead = record.getRdPtr() - startPtr;
+		record.RollRdPtrBack(bytesRead);
 		return;
 	}
 	fExist = true;

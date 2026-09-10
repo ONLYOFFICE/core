@@ -39,8 +39,17 @@
 #include <cwchar>
 #include <string>
 
+#include "../../../DesktopEditor/common/StringBuilder.h"
+
 namespace HWP
 {
+	inline std::wstring EncodeXmlString(const std::wstring& wsString)
+	{
+		NSStringUtils::CStringBuilder oBuilder;
+		oBuilder.WriteEncodeXmlString(wsString);
+		return oBuilder.GetData();
+	}
+
 	struct TBorderLine
 	{
 		int m_nColor;

@@ -136,6 +136,14 @@ namespace PPTX
 					{
 						creationId = oNode.GetAttribute(L"id");
 					}
+					else if (L"sldGuideLst" == strName)
+					{
+						sldGuideLst = oNode;
+					}
+					else if (L"notesGuideLst" == strName)
+					{
+						notesGuideLst = oNode;
+					}
 				}
 			}
 		}
@@ -173,6 +181,16 @@ namespace PPTX
 							pWriter->WriteAttribute(L"xmlns:p14", std::wstring(L"http://schemas.microsoft.com/office/powerpoint/2010/main"));
 						pWriter->WriteAttribute(L"r:embed", link_media->get());
 						pWriter->EndAttributes();
+
+						if (st.IsInit() || end.IsInit())
+						{
+							pWriter->StartNode(namespace_link + L":trim");
+								pWriter->StartAttributes();
+									pWriter->WriteAttribute(L"st", st);
+									pWriter->WriteAttribute(L"end", end);
+								pWriter->EndAttributes();
+							pWriter->EndNode(namespace_link + L":trim");
+						}
 					pWriter->EndNode(namespace_link + L":media");
 				pWriter->EndNode(namespace_ext + L":ext");
 			}
@@ -217,6 +235,26 @@ namespace PPTX
 				pWriter->EndAttributes();
 				pWriter->EndNode(L"a16:creationId");
 
+				pWriter->EndNode(namespace_ext + L":ext");
+			}
+			if (sldGuideLst.IsInit())
+			{
+				pWriter->StartNode(namespace_ext + L":ext");
+				pWriter->StartAttributes();
+				pWriter->WriteAttribute(L"uri", uri);
+				pWriter->EndAttributes();
+
+				sldGuideLst->toXmlWriter(pWriter, L"p15:sldGuideLst");
+				pWriter->EndNode(namespace_ext + L":ext");
+			}
+			if (notesGuideLst.IsInit())
+			{
+				pWriter->StartNode(namespace_ext + L":ext");
+				pWriter->StartAttributes();
+				pWriter->WriteAttribute(L"uri", uri);
+				pWriter->EndAttributes();
+
+				notesGuideLst->toXmlWriter(pWriter, L"p15:notesGuideLst");
 				pWriter->EndNode(namespace_ext + L":ext");
 			}
 		}

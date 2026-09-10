@@ -2026,7 +2026,7 @@ int COfficeFileFormatChecker::GetFormatByExtension(const std::wstring &sExt)
 		return AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_DJVU;
 	if (L".xps" == ext || L".oxps" == ext)
 		return AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_XPS;
-	if (L"ofd" == ext)
+	if (L".ofd" == ext)
 		return AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_OFD;
 
 	if (L".jpg" == ext || L".jpeg" == ext || L".jpe" == ext || L".jfif" == ext)

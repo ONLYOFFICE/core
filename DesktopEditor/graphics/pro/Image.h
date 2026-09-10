@@ -39,6 +39,7 @@
 #include "./../IRenderer.h"
 #include "./../Image.h"
 #include "./Fonts.h"
+#include "./MemoryStorage.h"
 
 namespace NSImages
 {
@@ -74,6 +75,24 @@ namespace NSImages
 	{
 		GRAPHICS_DECL IImageFilesCache* Create(NSFonts::IApplicationFonts* pFonts);
 	}
+
+	typedef NSMemoryStorage::IMemoryStream IImageStream;
+	typedef NSMemoryStorage::IMemoryStorage<IImageStream> IImagesMemoryStorage;
+
+	namespace NSStream
+	{
+		GRAPHICS_DECL IImageStream* Create();
+	}
+
+	namespace NSApplicationImageStream
+	{
+		// create default
+		GRAPHICS_DECL IImagesMemoryStorage* CreateDefaultGlobalImagesMemoryStorage();
+
+		// without AddRef!!!
+		GRAPHICS_DECL IImagesMemoryStorage* GetGlobalImagesMemoryStorage();
+		GRAPHICS_DECL void SetGlobalImagesMemoryStorage(IImagesMemoryStorage* pStorage);
+	} // namespace NSApplicationImageStream
 
 	class CPixJbig2_private;
 	class GRAPHICS_DECL CPixJbig2
@@ -132,6 +151,7 @@ namespace MetaFile
 		virtual void GetBounds(double* pdX, double* pdY, double* pdW, double* pdH) = 0;
 		virtual int GetType() = 0;
 		virtual void ConvertToRaster(const wchar_t* wsOutFilePath, unsigned int unFileType, int nWidth, int nHeight = -1) = 0;
+		virtual void ConvertToRaster(BYTE*& pBuffer, int& nSize, unsigned int unFileType, int nWidth, int nHeight = -1) = 0;
 		virtual NSFonts::IFontManager* get_FontManager() = 0;
 
 		virtual std::wstring ConvertToSvg(unsigned int unWidth = 0, unsigned int unHeight = 0) = 0;

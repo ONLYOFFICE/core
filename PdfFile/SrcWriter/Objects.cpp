@@ -295,7 +295,26 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	// CArrayObject
 	//----------------------------------------------------------------------------------------
-    void CArrayObject::Add(CObjectBase* pObject, bool bPushBack)
+	void CArrayObject::GetChildRefs(std::vector<CObjectBase*>& arrOut) const
+	{
+		for (size_t i = 0; i < m_arrList.size(); ++i)
+		{
+			CObjectBase* pVal = m_arrList[i];
+			if (!pVal)
+				continue;
+
+			CProxyObject* pProxy = dynamic_cast<CProxyObject*>(pVal);
+			if (pProxy)
+			{
+				CObjectBase* pTarget = pProxy->Get();
+				if (pTarget && std::find(arrOut.begin(), arrOut.end(), pTarget) == arrOut.end())
+					arrOut.push_back(pTarget);
+			}
+			else
+				pVal->GetChildRefs(arrOut);
+		}
+	}
+	void CArrayObject::Add(CObjectBase* pObject, bool bPushBack)
 	{
 		if (!pObject)
 			return;
@@ -636,6 +655,25 @@ namespace PdfWriter
 
 		if (m_pStream)
 			delete m_pStream;
+	}
+	void CDictObject::GetChildRefs(std::vector<CObjectBase*>& arrOut) const
+	{
+		for (std::map<std::string, CObjectBase*>::const_iterator it = m_mList.begin(); it != m_mList.end(); ++it)
+		{
+			CObjectBase* pVal = it->second;
+			if (!pVal)
+				continue;
+
+			CProxyObject* pProxy = dynamic_cast<CProxyObject*>(pVal);
+			if (pProxy)
+			{
+				CObjectBase* pTarget = pProxy->Get();
+				if (pTarget && std::find(arrOut.begin(), arrOut.end(), pTarget) == arrOut.end())
+					arrOut.push_back(pTarget);
+			}
+			else
+				pVal->GetChildRefs(arrOut);
+		}
 	}
 	CObjectBase* CDictObject::Get(const std::string& sKey) const
 	{
@@ -1245,5 +1283,9 @@ namespace PdfWriter
 	bool CXref::IsPDFA() const
 	{
 		return m_pDocument->IsPDFA();
+	}
+	bool CXref::IsPDFUA() const
+	{
+		return m_pDocument->IsPDFUA();
 	}
 }

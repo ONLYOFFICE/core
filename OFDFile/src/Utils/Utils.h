@@ -191,13 +191,7 @@ inline bool CanUseThisPath(const std::wstring& wsPath, const std::wstring& wsRoo
 	if (GetStatusUsingExternalLocalFiles())
 		return true;
 
-	const std::wstring wsFullPath = NSSystemPath::ShortenPath(NSSystemPath::Combine(wsRootPath, wsPath));
-
-	if (!wsRootPath.empty())
-		return wsFullPath.size() >= wsRootPath.size() &&
-		       wsFullPath.compare(0, wsRootPath.size(), wsRootPath) == 0;
-
-	return !(wsFullPath.size() >= 3 && wsFullPath.compare(0, 3, L"../") == 0);
+	return !NSSystemPath::ResolveInDirectory(wsRootPath, wsRootPath, wsPath).empty();
 }
 
 inline bool IsZeroValue(const double& dValue)

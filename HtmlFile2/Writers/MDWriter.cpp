@@ -42,6 +42,8 @@
 
 namespace HTML
 {
+#define MD_BREAK_LINE L"  \n"
+
 CMDWriter::CMDWriter(const TMarkdownParameters& oMDParametrs)
 	: m_oMDParametrs(oMDParametrs)
 {
@@ -59,6 +61,14 @@ void CMDWriter::End(const std::wstring& wsDst)
 	if (!oDocument.CreateFileW(wsDst))
 		return;
 
+	if (0 != m_oMetadata.GetCurSize())
+	{
+		oDocument.WriteStringUTF8(L"---");
+		oDocument.WriteStringUTF8(MD_BREAK_LINE);
+		oDocument.WriteStringUTF8(m_oMetadata.GetData());
+		oDocument.WriteStringUTF8(L"---");
+		oDocument.WriteStringUTF8(MD_BREAK_LINE);
+	}
 	oDocument.WriteStringUTF8(m_oDocument.GetData());
 	oDocument.CloseFile();
 }
@@ -249,6 +259,14 @@ bool CMDWriter::WriteText(std::wstring wsText, const std::vector<NSCSS::CNode>& 
 void CMDWriter::WriteEmptyParagraph(bool bVahish, bool bInP)
 {}
 
+void CMDWriter::WriteMetadata(const std::wstring& wsName, const std::wstring& wsValue)
+{
+	if (wsName.empty() || wsValue.empty())
+		return;
+
+	m_oMetadata.WriteString(wsName + L": " + wsValue + MD_BREAK_LINE);
+}
+
 void CMDWriter::PageBreak()
 {}
 
@@ -332,6 +350,8 @@ void CMDWriter::WriteBreakLine(bool bNeedChecked)
 	{
 		if (m_oMDParametrs.m_bUseAlternativeHTMLTags)
 			WriteString(L"</br>");
+		else
+			WriteString(L" ");
 
 		m_arStates.top().m_bNeedBreakLine = false;
 		return;
@@ -343,7 +363,7 @@ void CMDWriter::WriteBreakLine(bool bNeedChecked)
 			WriteString(L"> ", true);
 	}
 
-	GetCurrentDocument()->WriteString(L"  \n");
+	GetCurrentDocument()->WriteString(MD_BREAK_LINE);
 
 	m_arStates.top().m_bEmptyLine = true;
 	m_arStates.top().m_bNeedBreakLine = false;

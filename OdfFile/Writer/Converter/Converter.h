@@ -490,6 +490,7 @@ public:
 		bool encrypt_file (const std::wstring &password, const std::wstring & srcPath, const std::wstring & dstPath, std::wstring &encrypt_info, int &size);
 		
 		std::vector<double> current_font_size;
+		bool current_bidi_set = false;
 
 //.......................................................................................................................
 		virtual OOX::IFileContainer								*current_document() = 0;
@@ -598,7 +599,7 @@ public:
 //.chart............................................................................................................................
 		void convert(OOX::Spreadsheet::CT_ChartSpace			*oox_chart);
 		void convert(OOX::Spreadsheet::CT_View3D				*oox_view3D);
-		void convert(OOX::Spreadsheet::CT_Title					*ct_title);
+		void convert(OOX::Spreadsheet::CT_Title					*ct_title, OOX::Spreadsheet::CT_SerTx *reserve_tx = NULL);
 		void convert(OOX::Spreadsheet::CT_Legend				*ct_legend);
 		void convert(OOX::Spreadsheet::CT_LegendEntry			*ct_legend);
 		void convert(OOX::Spreadsheet::CT_PlotArea				*ct_plotArea);

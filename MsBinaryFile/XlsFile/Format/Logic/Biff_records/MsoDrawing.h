@@ -75,7 +75,8 @@ public:
 	};
 	DrawingType xlsDrawingType;
 	void prepareDrawing(const DrawingType DrawingType, const unsigned int DrawingtId, const unsigned int row1, const unsigned int col1,
-		const unsigned int row2, const unsigned int col2, const unsigned int param = 1);
+		const unsigned int row2, const unsigned int col2, const unsigned int rx1 = 0, const unsigned int rx2  = 0,
+		const unsigned int ry1  = 0,const unsigned int ry2  = 0, const unsigned int param = 1);
 };
 
 

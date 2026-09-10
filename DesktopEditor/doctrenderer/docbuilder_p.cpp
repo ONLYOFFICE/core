@@ -35,6 +35,11 @@
 #include "docbuilder_p.h"
 #include "server.h"
 
+#ifdef DOCBUILDER_PDF_EDITOR
+#include "../../PdfFile/PdfFile.h"
+#include "embed/DrawingFileEmbed.h"
+#endif
+
 std::wstring NSDoctRenderer::CDocBuilder_Private::m_sExternalDirectory = L"";
 
 void CV8RealTimeWorker::_LOGGING_ERROR_(const std::wstring& strType, const std::wstring& strError)
@@ -50,6 +55,9 @@ using namespace NSJSBase;
 CV8RealTimeWorker::CV8RealTimeWorker(NSDoctRenderer::CDocBuilder* pBuilder, const NSDoctRenderer::DoctRendererEditorType& type, NSDoctRenderer::CDoctRendererConfig* config)
 {
 	m_nFileType = -1;
+
+	m_pPdfFile = NULL;
+	m_pPdfFonts = NULL;
 
 	if (NSDoctRenderer::DoctRendererEditorType::INVALID == type)
 		m_context = new CJSContext();
@@ -79,11 +87,18 @@ CV8RealTimeWorker::CV8RealTimeWorker(NSDoctRenderer::CDocBuilder* pBuilder, cons
 	CBuilderEmbed* pBuilderJSNative = static_cast<CBuilderEmbed*>(oBuilderJS->getNative());
 	pBuilderJSNative->SetExternalize(true);
 	pBuilderJSNative->m_pBuilder = pBuilder;
+
+	m_sX2tPath = pBuilder->GetPrivate()->m_sX2tPath;
 }
 CV8RealTimeWorker::~CV8RealTimeWorker()
 {
 	m_oContextData.Clear();
 	m_context->Dispose();
+
+#ifdef DOCBUILDER_PDF_EDITOR
+	RELEASEOBJECT(m_pPdfFile);
+	RELEASEINTERFACE(m_pPdfFonts);
+#endif
 }
 
 bool CV8RealTimeWorker::ExecuteCommand(const std::wstring& command, NSDoctRenderer::CDocBuilderValue* retValue, const bool& isEnterContextSrc)
@@ -236,7 +251,7 @@ bool CV8RealTimeWorker::InitVariables()
 
 		NSStringUtils::string_replaceA(sArg, "\\", "\\\\");
 		NSStringUtils::string_replaceA(sArg, "\"", "\\\"");
-		std::string sArgument = "var Argument = JSON.parse(\"" + sArg + "\");";
+		std::string sArgument = "window.isNativeBuilder = true;var Argument = JSON.parse(\"" + sArg + "\");";
 
 		m_context->runScript(sArgument, try_catch);
 		if (try_catch->Check())
@@ -320,6 +335,8 @@ bool CV8RealTimeWorker::OpenFile(const std::wstring& sBasePath, const std::wstri
 			pNative->m_strEditorType = L"document";
 		else if (1 == m_nFileType)
 			pNative->m_strEditorType = L"presentation";
+		else if (3 == m_nFileType)
+			pNative->m_strEditorType = L"pdf";
 		else if (7 == m_nFileType)
 			pNative->m_strEditorType = L"visio";
 		else
@@ -335,18 +352,40 @@ bool CV8RealTimeWorker::OpenFile(const std::wstring& sBasePath, const std::wstri
 	// OPEN
 	if (!bIsBreak)
 	{
-		CChangesWorker oWorkerLoader;
-		int nVersion = oWorkerLoader.OpenNative(pNative->GetFilePath());
+#ifdef DOCBUILDER_PDF_EDITOR
+		if (NSDoctRenderer::DoctRendererEditorType::PDF == editorType)
+		{
+			if (!OpenDrawingFile(pNative->m_strFontsDirectory))
+				bIsBreak = true;
 
-		JSSmart<CJSValue> args_open[3];
-		args_open[0] = oWorkerLoader.GetDataFull()->toObject()->toValue();
-		args_open[1] = CJSContext::createInt(nVersion);
-		std::wstring sXlsx = NSFile::GetDirectoryName(pNative->GetFilePath()) + L"/Editor.xlsx";
-		args_open[2] = NSFile::CFileBinary::Exists(sXlsx) ? CJSContext::createString(sXlsx) : CJSContext::createUndefined();
+			if (!bIsBreak)
+			{
+				JSSmart<CJSValue> args_open[3];
+				args_open[0] = CJSContext::createUndefined();
+				args_open[1] = CJSContext::createInt(-1);
+				args_open[2] = CJSContext::createUndefined();
 
-		global_js->call_func("NativeOpenFileData", 3, args_open);
-		if (try_catch->Check())
-			bIsBreak = true;
+				global_js->call_func("NativeOpenFileData", 3, args_open);
+				if (try_catch->Check())
+					bIsBreak = true;
+			}
+		}
+		else
+#endif
+		{
+			CChangesWorker oWorkerLoader;
+			int nVersion = oWorkerLoader.OpenNative(pNative->GetFilePath());
+
+			JSSmart<CJSValue> args_open[3];
+			args_open[0] = oWorkerLoader.GetDataFull()->toObject()->toValue();
+			args_open[1] = CJSContext::createInt(nVersion);
+			std::wstring sXlsx = NSFile::GetDirectoryName(pNative->GetFilePath()) + L"/Editor.xlsx";
+			args_open[2] = NSFile::CFileBinary::Exists(sXlsx) ? CJSContext::createString(sXlsx) : CJSContext::createUndefined();
+
+			global_js->call_func("NativeOpenFileData", 3, args_open);
+			if (try_catch->Check())
+				bIsBreak = true;
+		}
 	}
 
 	if (!bIsBreak)
@@ -360,6 +399,91 @@ bool CV8RealTimeWorker::OpenFile(const std::wstring& sBasePath, const std::wstri
 
 	return !bIsBreak;
 }
+
+#ifdef DOCBUILDER_PDF_EDITOR
+bool CV8RealTimeWorker::OpenDrawingFile(const std::wstring& sFontsDirectory)
+{
+	if (m_sPdfFile.empty() || !NSFile::CFileBinary::Exists(m_sPdfFile))
+		return false;
+
+	// fonts for the drawing file - use the same font set as the editor
+	m_pPdfFonts = NSFonts::NSApplication::Create();
+	if (!sFontsDirectory.empty() && NSDirectory::Exists(sFontsDirectory))
+		m_pPdfFonts->InitializeFromFolder(sFontsDirectory);
+	else
+		m_pPdfFonts->Initialize();
+
+	CPdfFile* pPdfFile = new CPdfFile(m_pPdfFonts);
+	pPdfFile->SetTempDirectory(NSDirectory::GetFolderPath(m_sPdfFile));
+	pPdfFile->SetCMapFile(m_sX2tPath + L"/cmap.bin");
+
+	if (!pPdfFile->LoadFromFile(m_sPdfFile))
+	{
+		RELEASEOBJECT(pPdfFile);
+		return false;
+	}
+
+	m_pPdfFile = pPdfFile;
+
+	return EmbedDrawingFile(m_context, m_pPdfFile);
+}
+
+bool CV8RealTimeWorker::SaveEditedPdf(int type, const std::wstring& sDstFile, const std::wstring& sMediaDir, const std::wstring& sJsonParams, const bool& isEnterContext)
+{
+	if (NULL == m_pPdfFile)
+		return false;
+
+	std::wstring sCompiled = sMediaDir + L"/compiled_changes.pdf";
+	if (NSFile::CFileBinary::Exists(sCompiled))
+		NSFile::CFileBinary::Remove(sCompiled);
+
+	bool bError = SaveFileWithChanges(type, sCompiled, sJsonParams, isEnterContext);
+	if (bError)
+		return false;
+
+	CPdfFile* pPdf = (CPdfFile*)m_pPdfFile;
+
+	CConvertFromBinParams oConvertParams;
+	oConvertParams.m_sInternalMediaDirectory = sMediaDir;
+	oConvertParams.m_sMediaDirectory         = sMediaDir;
+
+	bool bResult = false;
+	bool bIsCompiledChanges = false;
+
+	NSFile::CFileBinary oFile;
+	if (oFile.OpenFile(sCompiled))
+	{
+		char signature[4];
+		if (oFile.ReadFile((BYTE*)signature, 4) &&
+			'%' == signature[0] && 'P' == signature[1] && 'D' == signature[2] && 'F' == signature[3])
+		{
+			DWORD dwChangesSize = (DWORD)(oFile.GetFileSize() - 4);
+			BYTE* pChangesData = new BYTE[dwChangesSize];
+
+			if (oFile.ReadFile(pChangesData, dwChangesSize) && pPdf->EditPdf(sDstFile))
+			{
+				bResult = (S_OK == pPdf->AddToPdfFromBinary(pChangesData, (unsigned int)dwChangesSize, &oConvertParams));
+				bIsCompiledChanges = true;
+			}
+
+			RELEASEARRAYOBJECTS(pChangesData);
+		}
+
+		oFile.CloseFile();
+	}
+
+	// no compiled changes (editor returned null) - save the original pdf unchanged
+	if (!bIsCompiledChanges)
+		bResult = pPdf->EditPdf(sDstFile);
+
+	pPdf->Close();
+
+	if (NSFile::CFileBinary::Exists(sCompiled))
+		NSFile::CFileBinary::Remove(sCompiled);
+
+	return bResult;
+}
+#endif
 
 bool CV8RealTimeWorker::NewSimpleJSInstance()
 {
@@ -1596,6 +1720,10 @@ namespace NSDoctRenderer
 		else if (sParam == "--options")
 		{
 			NSProcessEnv::Load(std::wstring(value));
+		}
+		else if (sParam == "--sdkjs-dir")
+		{
+			m_pInternal->m_strSdkPath = std::wstring(value);
 		}
 	}
 	void CDocBuilder::SetPropertyW(const wchar_t* param, const wchar_t* value)

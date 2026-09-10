@@ -135,7 +135,7 @@ CAnnotFieldInfo::CActionFieldPr* ReadAction(NSOnlineOfficeBinToPdf::CBufferReade
 	return pRes;
 }
 
-CAnnotFieldInfo::CAnnotFieldInfo() : IAdvancedCommand(AdvancedCommandType::Annotaion)
+CAnnotFieldInfo::CAnnotFieldInfo() : IAdvancedCommand(AdvancedCommandType::Annotation)
 {
 	m_nType = EAnnotType::Unknown;
 
@@ -1348,6 +1348,7 @@ CWidgetsInfo::~CWidgetsInfo()
 	for (int i = 0; i < m_arrParents.size(); ++i)
 		RELEASEOBJECT(m_arrParents[i]);
 }
+const std::wstring& CWidgetsInfo::GetRoles() { return m_wsRoles; }
 const std::vector< std::pair<int, int> >& CWidgetsInfo::GetCO() { return m_arrCO; }
 const std::vector<std::wstring>& CWidgetsInfo::GetButtonImg() { return m_arrButtonImg; }
 const std::vector<CWidgetsInfo::CParent*>& CWidgetsInfo::GetParents() { return m_arrParents; }
@@ -1357,8 +1358,10 @@ void CWidgetsInfo::ChangeCO(int i, int nNum, int nGen)
 		return;
 	m_arrCO[i] = std::make_pair(nNum, nGen);
 }
-bool CWidgetsInfo::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector)
+bool CWidgetsInfo::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector, int nLen)
 {
+	int nStart = pReader->Tell() - 4;
+
 	int n = pReader->ReadInt();
 	m_arrCO.reserve(n);
 	for (int i = 0; i < n; ++i)
@@ -1442,6 +1445,10 @@ bool CWidgetsInfo::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafil
 		m_arrButtonImg.push_back(sImage);
 	}
 
+	int nEnd = pReader->Tell();
+	if (nEnd - nStart < nLen)
+		m_wsRoles = pReader->ReadString();
+
 	return true;
 }
 
@@ -1485,5 +1492,30 @@ bool CRedact::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRe
 		m_arrRedact.push_back(pRedact);
 	}
 
+	return true;
+}
+
+CRedactAnnot::CRedactAnnot() : IAdvancedCommand(AdvancedCommandType::RedactAnnot) {}
+int CRedactAnnot::GetID() { return m_nID; }
+bool CRedactAnnot::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector)
+{
+	m_nID = pReader->ReadInt();
+	return true;
+}
+
+CRedactMeta::CRedactMeta() : IAdvancedCommand(AdvancedCommandType::RedactMeta) {}
+const std::vector<int>& CRedactMeta::GetWidgetID() { return m_arrWidgetID; }
+const std::vector<std::wstring>& CRedactMeta::GetRedactID() { return m_arrRedactID; }
+bool CRedactMeta::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector)
+{
+	int n = pReader->ReadInt();
+	m_arrWidgetID.reserve(n);
+	for (int i = 0; i < n; ++i)
+		m_arrWidgetID.push_back(pReader->ReadInt());
+
+	n = pReader->ReadInt();
+	m_arrRedactID.reserve(n);
+	for (int i = 0; i < n; ++i)
+		m_arrRedactID.push_back(pReader->ReadString());
 	return true;
 }

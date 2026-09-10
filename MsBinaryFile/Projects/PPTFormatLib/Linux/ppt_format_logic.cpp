@@ -259,3 +259,4 @@
 #include "../../../PptFile/Structures/SmallRectStruct.cpp"
 #include "../../../PptFile/Structures/TmsfTimeStruct.cpp"
 #include "../../../PptFile/Structures/WideColorStruct.cpp"
+#include "../../../../Common/MediaFileFormatChecker.cpp"

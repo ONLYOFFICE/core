@@ -72,6 +72,25 @@ namespace PPTX
 		notesStyle = oNode.ReadNode(L"p:notesStyle");
 		if (notesStyle.is_init())
 			notesStyle->SetParentFilePointer(this);
+			
+		XmlUtils::CXmlNode oNodeExtLst = oNode.ReadNode(L"p:extLst");
+		if (oNodeExtLst.IsValid())
+		{
+			std::vector<XmlUtils::CXmlNode> oExtLstNodes;
+			if (oNodeExtLst.GetNodes(L"*", oExtLstNodes))
+			{
+				for (auto n : oExtLstNodes)
+				{
+					PPTX::Logic::Ext ext;
+					ext.fromXML(n);
+					if (ext.sldGuideLst.IsInit())
+					{
+						sldGuideLst = ext.sldGuideLst;
+						sldGuideLst->SetParentFilePointer(this);
+					}
+				}
+			}
+		}
 	}
 	void NotesMaster::write(const OOX::CPath& filename, const OOX::CPath& directory, OOX::CContentTypes& content)const
 	{
@@ -110,6 +129,8 @@ namespace PPTX
 		pWriter->WriteRecord2(2, hf);
 		pWriter->WriteRecord2(3, notesStyle);
 
+		pWriter->WriteRecord2(15, sldGuideLst);
+
 		pWriter->EndRecord();
 	}
 	void NotesMaster::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
@@ -117,9 +138,13 @@ namespace PPTX
 		pWriter->StartNode(L"p:notesMaster");
 
 		pWriter->StartAttributes();
-		pWriter->WriteAttribute(L"xmlns:a", PPTX::g_Namespaces.a.m_strLink);
-		pWriter->WriteAttribute(L"xmlns:r", PPTX::g_Namespaces.r.m_strLink);
-		pWriter->WriteAttribute(L"xmlns:p", PPTX::g_Namespaces.p.m_strLink);
+			pWriter->WriteAttribute(L"xmlns:a", PPTX::g_Namespaces.a.m_strLink);
+			pWriter->WriteAttribute(L"xmlns:r", PPTX::g_Namespaces.r.m_strLink);
+			pWriter->WriteAttribute(L"xmlns:p", PPTX::g_Namespaces.p.m_strLink);
+			if (sldGuideLst.IsInit())
+			{
+				pWriter->WriteAttribute(L"xmlns:p15", PPTX::g_Namespaces.p15.m_strLink);
+			}
 		pWriter->EndAttributes();
 
 		cSld.toXmlWriter(pWriter);
@@ -127,6 +152,16 @@ namespace PPTX
 		clrMap.toXmlWriter(pWriter);
 		pWriter->Write(hf);
 		pWriter->Write(notesStyle);
+
+		std::vector<Logic::Ext> extLst;
+		if (sldGuideLst.IsInit())
+		{
+			Logic::Ext exp;
+			exp.uri = L"{620B2872-D7B9-4A21-9093-7833F8D536E1}";
+			exp.sldGuideLst = sldGuideLst;
+			extLst.push_back(exp);
+		}
+		pWriter->WriteArray(L"p:extLst", extLst);
 
 		pWriter->EndNode(L"p:notesMaster");
 	}
@@ -143,31 +178,31 @@ namespace PPTX
 			{
 				case 0:
 				{
-					cSld.fromPPTY(pReader);
-					break;
-				}
+					cSld.fromPPTY(pReader);					
+				}break;
 				case 1:
 				{
-					clrMap.fromPPTY(pReader);
-					break;
-				}
+					clrMap.fromPPTY(pReader);					
+				}break;
 				case 2:
 				{
 					hf = new Logic::HF();
-					hf->fromPPTY(pReader);
-					break;
-				}
+					hf->fromPPTY(pReader);					
+				}break;
 				case 3:
 				{
 					notesStyle = new Logic::TextListStyle(L"p:notesStyle");
-					notesStyle->fromPPTY(pReader);
-					break;
-				}
+					notesStyle->fromPPTY(pReader);					
+				}break;
+				case 15:
+				{
+					sldGuideLst = new nsPresentation::ExtendedGuideList();
+					sldGuideLst->fromPPTY(pReader);
+				}break;
 				default:
 				{
-					pReader->SkipRecord();
-					break;
-				}
+					pReader->SkipRecord();					
+				}break;
 			}
 		}
 

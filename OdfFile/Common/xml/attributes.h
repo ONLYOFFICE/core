@@ -47,6 +47,7 @@
 #include <boost/lexical_cast.hpp>
 
 #include "../../../OOXML/Base/Unit.h"
+#include "../../../DesktopEditor/common/File.h"
 
 namespace cpdoccore 
 {
@@ -196,6 +197,23 @@ namespace cpdoccore
 			}
 			else
                 return optional<wchar_t>::Type();
+		}
+	};
+
+    template<>
+    class attributes_get_val_impl<std::string>
+	{
+	public:
+        static optional<std::string>::Type get_val(attributes & attr, const std::wstring & QualifiedName)
+		{
+            attributes::value_type val = attr.get(QualifiedName);
+			if (val)
+			{
+                const std::wstring & tmp = *val;
+                return  optional<std::string>::Type(NSFile::CUtf8Converter::GetUtf8StringFromUnicode2(tmp.c_str(), (LONG)tmp.length()));
+			}
+			else
+                return optional<std::string>::Type();
 		}
 	};
 

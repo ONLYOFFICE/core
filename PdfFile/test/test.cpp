@@ -338,7 +338,7 @@ TEST_F(CPdfFileTest, ConvertToRaster)
 
 	double dPageDpiX, dPageDpiY, dWidth, dHeight;
 	int i = 0;
-	//for (i = 0; i < pdfFile->GetPagesCount(); i++)
+	for (; i < pdfFile->GetPagesCount(); i++)
 	{
 		pdfFile->GetPageInfo(i, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
 		pdfFile->ConvertToRaster(i, NSFile::GetProcessDirectory() + L"/resO/res" + std::to_wstring(i) + L".png", 4, dWidth, dHeight, true, pdfFile->GetFontManager());
@@ -371,7 +371,6 @@ TEST_F(CPdfFileTest, Base64ConvertToRaster)
 	NSBase64::Base64Decode((const char*)pFileContent, dwFileSize, pBuffer, &nBufferLen);
 
 	NSOnlineOfficeBinToPdf::CMetafileToRenderterRaster imageWriter(NULL);
-	imageWriter.SetIsOnlyFirst(false);
 	imageWriter.SetMediaDirectory(NSFile::GetProcessDirectory());
 	imageWriter.SetApplication(pApplicationFonts);
 	imageWriter.SetRasterFormat(4);
@@ -401,7 +400,7 @@ TEST_F(CPdfFileTest, BinConvertToRaster)
 	oFile.CloseFile();
 
 	NSOnlineOfficeBinToPdf::CMetafileToRenderterRaster imageWriter(NULL);
-	imageWriter.SetIsOnlyFirst(true);
+	imageWriter.SetSavePage(0);
 	imageWriter.SetMediaDirectory(NSFile::GetProcessDirectory());
 	imageWriter.SetApplication(pApplicationFonts);
 	imageWriter.SetRasterFormat(4);
@@ -485,7 +484,22 @@ TEST_F(CPdfFileTest, MergePdf)
 	ASSERT_TRUE(pdfFile->EditPdf(wsDstFile));
 
 	std::wstring wsSplitFile = NSFile::GetProcessDirectory() + L"/test_split.pdf";
-	pdfFile->MergePages(wsSplitFile, 0, L"");
+	NSFile::CFileBinary oFile;
+	ASSERT_TRUE(oFile.OpenFile(wsSplitFile));
+
+	DWORD dwFileSize = oFile.GetFileSize();
+	BYTE* pFileContent = new BYTE[dwFileSize];
+	if (!pFileContent)
+	{
+		oFile.CloseFile();
+		FAIL();
+	}
+
+	DWORD dwReaded;
+	EXPECT_TRUE(oFile.ReadFile(pFileContent, dwFileSize, dwReaded));
+	oFile.CloseFile();
+
+	pdfFile->MergePagesEdit(pFileContent, dwReaded, 0, L"");
 
 	pdfFile->Close();
 }
@@ -565,11 +579,11 @@ TEST_F(CPdfFileTest, EditPdfFromBase64)
 	pParams->m_sMediaDirectory = NSFile::GetProcessDirectory();
 	pdfFile->AddToPdfFromBinary(pBuffer + 4, nBufferLen - 4, pParams);
 
+	pdfFile->Close();
+
 	RELEASEOBJECT(pParams);
 	RELEASEARRAYOBJECTS(pBuffer);
 	RELEASEARRAYOBJECTS(pFileContent);
-
-	pdfFile->Close();
 }
 
 TEST_F(CPdfFileTest, EditPdfFromBin)

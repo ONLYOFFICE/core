@@ -97,6 +97,7 @@ int CDocxRenderer::Convert(IOfficeDrawingFile* pFile, const std::wstring& sDst, 
 	m_pInternal->m_bIsSupportShapeCommands = false;
 	m_pInternal->m_oDocument.m_bIsRecord = true;
 	m_pInternal->m_oDocument.m_oCurrentPage.m_bFirstParagraphLineCorrection = true;
+	m_pInternal->m_oDocument.m_oCurrentPage.m_bIsBuildInlineTables = true;
 
 	if (bIsOutCompress)
 		m_pInternal->m_oDocument.m_strTempDirectory = NSDirectory::CreateDirectoryWithUniqueName(m_pInternal->m_sTempDirectory);
@@ -140,9 +141,9 @@ std::vector<std::wstring> CDocxRenderer::ScanPage(IOfficeDrawingFile* pFile, siz
 
 	DrawPage(pFile, nPage);
 
-	auto xml_shapes = m_pInternal->m_oDocument.m_oCurrentPage.GetXmlShapes();
+	auto xml_content = m_pInternal->m_oDocument.m_oCurrentPage.GetXmlContent();
 	m_pInternal->m_oDocument.Clear();
-	return xml_shapes;
+	return xml_content;
 }
 
 std::vector<std::wstring> CDocxRenderer::ScanPagePptx(IOfficeDrawingFile* pFile, size_t nPage)
@@ -160,9 +161,9 @@ std::vector<std::wstring> CDocxRenderer::ScanPagePptx(IOfficeDrawingFile* pFile,
 	DrawPage(pFile, nPage);
 	m_pInternal->m_eShapeSerializeType = ShapeSerializeType::sstBinary;
 
-	auto xml_shapes = m_pInternal->m_oDocument.m_oCurrentPage.GetXmlShapesPptx();
+	auto xml_content = m_pInternal->m_oDocument.m_oCurrentPage.GetXmlContentPptx();
 	m_pInternal->m_oDocument.Clear();
-	return xml_shapes;
+	return xml_content;
 }
 NSWasm::CData CDocxRenderer::ScanPageBin(IOfficeDrawingFile* pFile, size_t nPage)
 {
@@ -179,11 +180,48 @@ NSWasm::CData CDocxRenderer::ScanPageBin(IOfficeDrawingFile* pFile, size_t nPage
 
 	DrawPage(pFile, nPage);
 
-	auto bin_shapes = m_pInternal->m_oDocument.m_oCurrentPage.GetShapesBin();
+	auto bin_content = m_pInternal->m_oDocument.m_oCurrentPage.GetContentBin();
 	m_pInternal->m_oDocument.Clear();
-	return bin_shapes;
+	return bin_content;
 }
 
+std::vector<std::wstring> CDocxRenderer::GetFontsFromPage(IOfficeDrawingFile* pFile, size_t nPage)
+{
+	m_pInternal->m_oDocument.Clear();
+	m_pInternal->m_oDocument.Init(false);
+	m_pInternal->m_oDocument.m_oCurrentPage.m_bUseDefaultFont = true;
+	m_pInternal->m_oDocument.m_oCurrentPage.m_bWriteStyleRaw = true;
+	m_pInternal->m_oDocument.m_oCurrentPage.m_bCollectMetaInfo = true;
+	m_pInternal->m_oDocument.m_oCurrentPage.m_bFirstParagraphLineCorrection = true;
+	m_pInternal->m_oDocument.m_bIsRecord = false;
+	m_pInternal->m_bIsSupportShapeCommands = false;
+	m_pInternal->m_oDocument.m_oFontStyleManager.Clear();
+	m_pInternal->m_oDocument.m_oFontSelector.ClearCache();
+
+	m_pInternal->m_oDocument.m_bIsDisablePageCommand = true;
+
+	NewPage();
+	BeginCommand(c_nPageType);
+
+	m_pInternal->m_oDocument.m_lPageNum = nPage;
+
+	double dPageDpiX, dPageDpiY;
+	double dWidth, dHeight;
+	pFile->GetPageInfo(nPage, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
+
+	dWidth  *= 25.4 / dPageDpiX;
+	dHeight *= 25.4 / dPageDpiY;
+
+	put_Width(dWidth);
+	put_Height(dHeight);
+
+	pFile->DrawPageOnRenderer(this, nPage, nullptr);
+	EndCommand(c_nPageType);
+
+	auto page_fonts = m_pInternal->m_oDocument.m_oCurrentPage.GetAllFonts();
+	m_pInternal->m_oDocument.Clear();
+	return page_fonts;
+}
 void CDocxRenderer::SetExternalImageStorage(NSDocxRenderer::IImageStorage* pStorage)
 {
 	m_pInternal->m_oDocument.m_oImageManager.m_pExternalStorage = pStorage;

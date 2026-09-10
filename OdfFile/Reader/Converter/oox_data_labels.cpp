@@ -94,6 +94,16 @@ void oox_data_labels::oox_serialize(std::wostream & _Wostream)
 			{
 				set_genereal_dLbls = true;
 			}
+			if (false == formatCode_.empty())
+			{
+				CP_XML_NODE(L"c:numFmt")
+				{
+					CP_XML_ATTR(L"formatCode", formatCode_);
+					CP_XML_ATTR(L"sourceLinked", linkData_);
+				}
+			}
+			oox_serialize_default_text(CP_XML_STREAM(), textPr_, rotate_);
+
 			if (position_ >= 0 && position_ < 13)
 			{
 				CP_XML_NODE(L"c:dLblPos")
@@ -120,22 +130,23 @@ void oox_data_labels::oox_serialize(std::wostream & _Wostream)
 					}
 					case 11: CP_XML_ATTR(L"val", L"t");		break;
 					case 12: CP_XML_ATTR(L"val", L"t");		break;
-					case 5: //CP_XML_ATTR(L"val", L"inEnd");	break;
-					case 8: //CP_XML_ATTR(L"val", L"outEnd");	break;
+					case 5://inside
+					{
+						if( getLineChart() )	CP_XML_ATTR(L"val", L"ctr");
+						else					CP_XML_ATTR(L"val", L"inEnd");
+						break;
+					}
+					case 8://outside
+					{
+						if( getLineChart() )	CP_XML_ATTR(L"val", L"t");
+						else					CP_XML_ATTR(L"val", L"outEnd");
+						break;
+					}
 					case 4: CP_XML_ATTR(L"val", L"ctr");	break;
 
 					}
 				}
 			}
-			if (false == formatCode_.empty())
-			{
-				CP_XML_NODE(L"c:numFmt")
-				{
-					CP_XML_ATTR(L"formatCode", formatCode_);
-					CP_XML_ATTR(L"sourceLinked", linkData_);
-				}
-			}
-			oox_serialize_default_text(CP_XML_STREAM(), textPr_);
 	
 			for (std::map<int, odf_reader::text_format_properties_ptr>::iterator it = dLbls_.begin(); it != dLbls_.end(); ++it)
 			{
@@ -145,7 +156,7 @@ void oox_data_labels::oox_serialize(std::wostream & _Wostream)
 					{
 						CP_XML_ATTR(L"val", it->first);
 					}
-					oox_serialize_default_text(CP_XML_STREAM(), it->second);
+					oox_serialize_default_text(CP_XML_STREAM(), it->second, rotate_);
 
 					CP_XML_NODE(L"c:showLegendKey")
 					{

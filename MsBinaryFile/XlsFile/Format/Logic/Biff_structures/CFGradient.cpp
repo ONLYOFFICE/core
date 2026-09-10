@@ -174,7 +174,7 @@ int CFGradient::serialize(std::wostream & stream)
 					}	
 					if (cfvo.cfvoType == 7)
 						CP_XML_ATTR(L"val", cfvo.fmla.getAssembledFormula()); 
-					else
+					else if(cfvo.numValue != 0)
 						CP_XML_ATTR(L"val", cfvo.numValue);
 				}
 			}

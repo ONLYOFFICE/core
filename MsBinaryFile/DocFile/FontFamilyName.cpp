@@ -62,9 +62,12 @@ namespace DocFileFormat
 
 	ByteStructure* FontFamilyName::ConstructObject( VirtualStreamReader* reader, int length )
 	{
+		if (length < 1) return NULL;
+
 		FontFamilyName *newObject = new FontFamilyName();
 
-		long startPos = reader->GetPosition();
+		long startObjectPos = reader->GetPosition();
+		long endObjectPos = reader->GetPosition() + length;
 
 		//FFID
 		int ffid = (int)reader->ReadByte();
@@ -103,18 +106,20 @@ namespace DocFileFormat
 		}
 	//read the next \0 terminated string
 		long strStart	= reader->GetPosition();
-		long strEnd		= searchTerminationZero( reader );	
-
+		long strEnd		= searchTerminationZero( reader, endObjectPos - strStart);
 
 		unsigned char *bytes = reader->ReadBytes( (int)( strEnd - strStart ), true );
 
-		if (reader->nWordVersion > 0)
+		if (bytes)
 		{
-			FormatUtils::GetWStringFromBytes(newObject->xszFtn, bytes, (int)( strEnd - strStart ), ENCODING_WINDOWS_1250 );
-		}
-		else
-		{
-			newObject->xszFtn = NSFile::CUtf8Converter::GetWStringFromUTF16((unsigned short*)(bytes), (strEnd - strStart) / 2);
+			if (reader->nWordVersion > 0)
+			{
+				FormatUtils::GetWStringFromBytes(newObject->xszFtn, bytes, (int)( strEnd - strStart ), ENCODING_WINDOWS_1250 );
+			}
+			else
+			{
+				newObject->xszFtn = NSFile::CUtf8Converter::GetWStringFromUTF16((unsigned short*)(bytes), (strEnd - strStart) / 2);
+			}
 		}
 
 		if (newObject->xszFtn.length() > 0)
@@ -132,23 +137,26 @@ namespace DocFileFormat
 
 		RELEASEARRAYOBJECTS( bytes );
 
-		long readBytes = reader->GetPosition() - startPos;
+		long readBytes = reader->GetPosition() - startObjectPos;
 
 		if( readBytes < length && szAlt > 0)
 		{
 	//read the next \0 terminated string		
 			strStart	= reader->GetPosition();
-			strEnd		= searchTerminationZero( reader );
+			strEnd		= searchTerminationZero( reader, endObjectPos - strStart);
 
 			bytes = reader->ReadBytes( (int)( strEnd - strStart ), true );
 
-			if (reader->nWordVersion > 0)
+			if (bytes)
 			{
-				FormatUtils::GetWStringFromBytes( newObject->xszAlt, bytes, (int)( strEnd - strStart ), ENCODING_WINDOWS_1250);
-			}
-			else
-			{
-				newObject->xszAlt = NSFile::CUtf8Converter::GetWStringFromUTF16((unsigned short*)(bytes), (strEnd - strStart) / 2);
+				if (reader->nWordVersion > 0)
+				{
+					FormatUtils::GetWStringFromBytes( newObject->xszAlt, bytes, (int)( strEnd - strStart ), ENCODING_WINDOWS_1250);
+				}
+				else
+				{
+					newObject->xszAlt = NSFile::CUtf8Converter::GetWStringFromUTF16((unsigned short*)(bytes), (strEnd - strStart) / 2);
+				}
 			}
 			RELEASEARRAYOBJECTS( bytes );
 		 }
@@ -158,29 +166,24 @@ namespace DocFileFormat
 
 	/*========================================================================================================*/
 
-	long FontFamilyName::searchTerminationZero( VirtualStreamReader *reader )
+	long FontFamilyName::searchTerminationZero( VirtualStreamReader *reader, long length)
     {
-	  long strStart = reader->GetPosition();
-      
-	  if (reader->nWordVersion > 0)
-	  {//ansi string only
-		  while ( reader->ReadByte() != 0 )
-		  {
-			;
-		  }
+	  long strStart	= (long)reader->GetPosition();
+	  long pos = strStart;
+
+	  const long charSize = (reader->nWordVersion > 0) ? 1 : 2; //ansi string only for the old versions
+
+	  while (pos + charSize <= strStart + length)
+	  {
+		  bool bTerminated = (charSize == 1) ? (reader->ReadByte() == 0) : (reader->ReadInt16() == 0);
+
+		  pos = (long)reader->GetPosition();
+
+		  if (bTerminated) break;
 	  }
-	  else
-	  {//unicode string
-		  while ( reader->ReadInt16() != 0 )
-		  {
-			;
-		  }
-	  }
-      
-	  long pos = reader->GetPosition();
-	  
+
       reader->Seek( (int)strStart, 0 /*STREAM_SEEK_SET*/ );
-      
+
 	  return pos;
     }
 }

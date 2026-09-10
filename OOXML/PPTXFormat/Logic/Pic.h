@@ -135,10 +135,6 @@ namespace PPTX
 			DWORD GetFill(UniFill& fill)const;
 			DWORD GetLine(Ln& line)const;
 			
-			double GetStTrim () const;
-			double GetEndTrim () const;
-			long GetRefId() const;
-
 			void FillLevelUp();
 			void Merge(Pic& pic, bool bIsSlidePlaceholder = false);
 

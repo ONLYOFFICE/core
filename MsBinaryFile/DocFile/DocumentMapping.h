@@ -121,7 +121,9 @@ namespace DocFileFormat
 		std::vector<int> searchAnnotation(std::vector<wchar_t>* chars, int initialCp);
 		std::vector<int> searchPermission(std::vector<wchar_t>* chars, int initialCp);
 
-        bool writeBookmarks		( int cp, bool para );
+		void writeBookmarks		( int cp );
+		void closeBookmarks		( int cpStart, int cpEnd );
+		bool writeBookmarkEndOnce( size_t index );
 		bool writeBookmarkStart	( short id );
 		bool writeBookmarkEnd	( short id );
 

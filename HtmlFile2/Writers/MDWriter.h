@@ -74,6 +74,8 @@ class CMDWriter : public IWriter
 
 	std::stack<TState> m_arStates;
 	TMarkdownParameters m_oMDParametrs;
+
+	XmlString m_oMetadata;
 public:
 	CMDWriter(const TMarkdownParameters& oMDParametrs);
 
@@ -83,6 +85,8 @@ public:
 	bool WriteText(std::wstring wsText, const std::vector<NSCSS::CNode>& arSelectors) override;
 
 	void WriteEmptyParagraph(bool bVahish = false, bool bInP = false) override;
+
+	void WriteMetadata(const std::wstring& wsName, const std::wstring& wsValue) override;
 
 	void PageBreak() override;
 

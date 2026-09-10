@@ -220,7 +220,10 @@ namespace NSStringExt
         }
 
         if (0 == pCur - pUnicode)
+		{
+			delete[] pUnicode;
             return L"";
+		}
 
         std::wstring sRet(pUnicode, pCur - pUnicode);
 

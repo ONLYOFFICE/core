@@ -72,51 +72,32 @@
 #undef CreateFile
 #endif
 
+class IOfficeDrawingFile;
+
 namespace NSDoctRenderer
 {
 	static int GetFormatByTexExtention(const std::wstring& sExt)
 	{
-		int nFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX;
-		if (L"docx" == sExt)
+		std::wstring sLower = sExt;
+		for (size_t i = 0, len = sLower.length(); i < len; ++i)
+		{
+			wchar_t c = sLower[i];
+			if (c >= (wchar_t)'A' && c <= (wchar_t)'Z')
+				sLower[i] = c - (wchar_t)'A' + (wchar_t)'a';
+		}
+
+		if (L"form" == sLower)
+			return AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM_PDF;
+		if (L"image" == sLower)
+			return AVS_OFFICESTUDIO_FILE_IMAGE_PNG;
+		if (L"html" == sLower || L"htm" == sLower)
+			return AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML_IN_CONTAINER;
+		if (L"pdfa" == sLower)
+			return AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDFA;
+
+		int nFormat = COfficeFileFormatChecker::GetFormatByExtension(L"." + sLower);
+		if (AVS_OFFICESTUDIO_FILE_UNKNOWN == nFormat)
 			nFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX;
-		else if (L"doc" == sExt)
-			nFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC;
-		else if (L"odt" == sExt)
-			nFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT;
-		else if (L"rtf" == sExt)
-			nFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_RTF;
-		else if (L"txt" == sExt)
-			nFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_TXT;
-		else if (L"pptx" == sExt)
-			nFormat = AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX;
-		else if (L"odp" == sExt)
-			nFormat = AVS_OFFICESTUDIO_FILE_PRESENTATION_ODP;
-		else if (L"xlsx" == sExt)
-			nFormat = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX;
-		else if (L"xls" == sExt)
-			nFormat = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLS;
-		else if (L"ods" == sExt)
-			nFormat = AVS_OFFICESTUDIO_FILE_SPREADSHEET_ODS;
-		else if (L"csv" == sExt)
-			nFormat = AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV;
-		else if (L"pdf" == sExt)
-			nFormat = AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF;
-		else if (L"image" == sExt)
-			nFormat = AVS_OFFICESTUDIO_FILE_IMAGE_PNG;
-		else if (L"jpg" == sExt)
-			nFormat = AVS_OFFICESTUDIO_FILE_IMAGE_JPG;
-		else if (L"png" == sExt)
-			nFormat = AVS_OFFICESTUDIO_FILE_IMAGE_PNG;
-		else if (L"vsdx" == sExt)
-			nFormat = AVS_OFFICESTUDIO_FILE_DRAW_VSDX;
-		else if (L"docxf" == sExt)
-			nFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCXF;
-		else if (L"oform" == sExt)
-			nFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM;
-		else if (L"html" == sExt)
-			nFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML_IN_CONTAINER;
-		else if (L"form" == sExt)
-			nFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM_PDF;
 		return nFormat;
 	}
 }
@@ -431,6 +412,12 @@ public:
 
 	CJSContextData m_oContextData;
 
+	// PDF Editor
+	std::wstring m_sX2tPath;
+	std::wstring m_sPdfFile;
+	IOfficeDrawingFile* m_pPdfFile;
+	NSFonts::IApplicationFonts* m_pPdfFonts;
+
 public:
 
 	CV8RealTimeWorker(NSDoctRenderer::CDocBuilder* pBuilder, const NSDoctRenderer::DoctRendererEditorType& type, NSDoctRenderer::CDoctRendererConfig* config);
@@ -449,6 +436,12 @@ public:
 	bool SaveFileWithChanges(int type, const std::wstring& _path, const std::wstring& sJsonParams = L"", const bool& isEnterContext = true);
 	bool InitVariables();
 
+#ifdef DOCBUILDER_PDF_EDITOR
+	// PDF editing
+	bool OpenDrawingFile(const std::wstring& sFontsDirectory);
+	bool SaveEditedPdf(int type, const std::wstring& sDstFile, const std::wstring& sMediaDir, const std::wstring& sJsonParams = L"", const bool& isEnterContext = true);
+#endif
+
 	bool NewSimpleJSInstance();
 	bool IsSimpleJSInstance();
 };
@@ -464,6 +457,9 @@ namespace NSDoctRenderer
 		std::wstring m_sTmpFolder;
 		std::wstring m_sFileDir;
 		int m_nFileType;
+
+		// original pdf path when editing a pdf (m_nFileType == 3)
+		std::wstring m_sEditPdfFile;
 
 		std::wstring m_sCommandsBeforeContextCreated;
 
@@ -575,6 +571,7 @@ namespace NSDoctRenderer
 			}
 
 			m_nFileType = -1;
+			m_sEditPdfFile = L"";
 
 			NSDirectory::CreateDirectory(m_sFileDir);
 		}
@@ -586,38 +583,11 @@ namespace NSDoctRenderer
 			CheckFileDir();
 
 			std::wstring sEmptyPath = m_sX2tPath + L"/empty/";
-
-#if 0
-			if (type & AVS_OFFICESTUDIO_FILE_DOCUMENT)
+			if (!NSFile::CFileBinary::Exists(sEmptyPath + L"new.docx") &&
+				NSDirectory::Exists(sEmptyPath + L"en-US"))
 			{
-				sEmptyPath = sEmptyPath + L"docx.bin";
-				m_nFileType = 0;
+				sEmptyPath += L"/en-US/";
 			}
-			else if (type & AVS_OFFICESTUDIO_FILE_PRESENTATION)
-			{
-				sEmptyPath = sEmptyPath + L"pptx.bin";
-				m_nFileType = 1;
-			}
-			else if (type & AVS_OFFICESTUDIO_FILE_SPREADSHEET)
-			{
-				sEmptyPath = sEmptyPath + L"xlsx.bin";
-				m_nFileType = 2;
-			}
-			else if (type & AVS_OFFICESTUDIO_FILE_DRAW)
-			{
-				sEmptyPath = sEmptyPath + L"vsdx.bin";
-				m_nFileType = 7;
-			}
-			else
-				return false;
-
-			bool bRet = NSFile::CFileBinary::Copy(sEmptyPath, m_sFileDir + L"/Editor.bin");
-			if (bRet)
-			{
-				NSDirectory::CreateDirectory(m_sFileDir + L"/media");
-				NSDirectory::CreateDirectory(m_sFileDir + L"/changes");
-			}
-#endif
 
 			if (type & AVS_OFFICESTUDIO_FILE_DOCUMENT)
 			{
@@ -942,6 +912,26 @@ namespace NSDoctRenderer
 			if (oChecker.nFileType & AVS_OFFICESTUDIO_FILE_DRAW)
 				m_nFileType = 7;
 
+#ifdef DOCBUILDER_PDF_EDITOR
+			if (AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF  == oChecker.nFileType ||
+				AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDFA == oChecker.nFileType)
+			{
+				m_nFileType = 3;
+				m_sEditPdfFile = sFileCopy;
+
+				NSDirectory::CreateDirectory(m_sFileDir + L"/media");
+
+				if (m_pWorker && m_pWorker->IsSimpleJSInstance() && !m_bIsOpenedFromSimpleJS)
+				{
+					RELEASEOBJECT(m_pWorker);
+					CheckWorker();
+				}
+
+				LOGGER_SPEED_LAP("open_convert");
+				return 0;
+			}
+#endif
+
 			int nReturnCode = ConvertToInternalFormat(m_sFileDir, sFileCopy, params);
 
 			LOGGER_SPEED_LAP("open_convert");
@@ -974,6 +964,7 @@ namespace NSDoctRenderer
 
 			m_sFileDir = L"";
 			m_nFileType = -1;
+			m_sEditPdfFile = L"";
 
 			if (m_pWorker)
 				m_sGlobalVariable = m_pWorker->GetGlobalVariable();
@@ -1001,6 +992,30 @@ namespace NSDoctRenderer
 			return _path;
 		}
 
+		// extracts the inner json (...{...}...) from the x2t-style xml params passed to SaveFile
+		static std::wstring ExtractJsonParams(const std::wstring& sConvertionParams)
+		{
+			std::wstring sJsonParams = sConvertionParams;
+			if (!sJsonParams.empty())
+			{
+				std::wstring::size_type pos1 = sJsonParams.find(L">");
+				std::wstring::size_type pos2 = sJsonParams.find(L"</");
+				if (std::wstring::npos != pos1 && std::wstring::npos != pos2)
+				{
+					sJsonParams = sJsonParams.substr(pos1 + 1, pos2 - pos1 - 1);
+					NSStringUtils::string_replace(sJsonParams, L"&quot;", L"\"");
+
+					if (0 != sJsonParams.find(L"{"))
+						sJsonParams = L"";
+				}
+				else
+				{
+					sJsonParams = L"";
+				}
+			}
+			return sJsonParams;
+		}
+
 		int SaveFile(const int& type, const std::wstring& path, const wchar_t* params = NULL, const bool& isEnterContext = true)
 		{
 			Init();
@@ -1026,28 +1041,48 @@ namespace NSDoctRenderer
 				NSStringUtils::string_replace(sConvertionParams, L"\'", L"&quot;");
 			}
 
+			std::wstring sFileFromOverride = L"";
+
+#ifdef DOCBUILDER_PDF_EDITOR
+			if (3 == m_nFileType)
+			{
+				if (!CheckWorker())
+					return 1;
+
+				std::wstring sJsonParams = ExtractJsonParams(sConvertionParams);
+
+				if (AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == type ||
+					AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDFA == type)
+				{
+					std::wstring _path = GetSaveFilePath(path);
+
+					bool bOk = m_pWorker->SaveEditedPdf(type, _path, m_sFileDir, sJsonParams, isEnterContext);
+
+					LOGGER_SPEED_LAP("save_convert");
+					if (bOk)
+						return 0;
+
+					CV8RealTimeWorker::_LOGGING_ERROR_(L"error: ", L"save pdf error");
+					return 1;
+				}
+
+				std::wstring sTmpPdf = m_sFileDir + L"/save_tmp.pdf";
+				bool bOk = m_pWorker->SaveEditedPdf(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF, sTmpPdf, m_sFileDir, sJsonParams, isEnterContext);
+				if (!bOk)
+				{
+					CV8RealTimeWorker::_LOGGING_ERROR_(L"error: ", L"save pdf error");
+					return 1;
+				}
+
+				sFileFromOverride = sTmpPdf;
+			}
+#endif
+
 			std::wstring sFileBin = L"/Editor.bin";
 
-			if (!m_oParams.m_bSaveWithDoctrendererMode && m_pWorker)
+			if (sFileFromOverride.empty() && !m_oParams.m_bSaveWithDoctrendererMode && m_pWorker)
 			{
-				std::wstring sJsonParams = sConvertionParams;
-				if (!sJsonParams.empty())
-				{
-					std::wstring::size_type pos1 = sJsonParams.find(L">");
-					std::wstring::size_type pos2 = sJsonParams.find(L"</");
-					if (std::wstring::npos != pos1 && std::wstring::npos != pos2)
-					{
-						sJsonParams = sJsonParams.substr(pos1 + 1, pos2 - pos1 - 1);
-						NSStringUtils::string_replace(sJsonParams, L"&quot;", L"\"");
-
-						if (0 != sJsonParams.find(L"{"))
-							sJsonParams = L"";
-					}
-					else
-					{
-						sJsonParams = L"";
-					}
-				}
+				std::wstring sJsonParams = ExtractJsonParams(sConvertionParams);
 
 				this->m_pWorker->SaveFileWithChanges(type, m_sFileDir + L"/Editor2.bin", sJsonParams, isEnterContext);
 				sFileBin = L"/Editor2.bin";
@@ -1058,17 +1093,23 @@ namespace NSDoctRenderer
 			std::wstring _path = GetSaveFilePath(path);
 
 			oBuilder.WriteString(L"<?xml version=\"1.0\" encoding=\"utf-8\"?><TaskQueueDataConvert><m_sFileFrom>");
-			oBuilder.WriteEncodeXmlString(m_sFileDir);
-			oBuilder.WriteString(sFileBin + L"</m_sFileFrom><m_sFileTo>");
+			if (!sFileFromOverride.empty())
+				oBuilder.WriteEncodeXmlString(sFileFromOverride);
+			else
+			{
+				oBuilder.WriteEncodeXmlString(m_sFileDir);
+				oBuilder.WriteString(sFileBin);
+			}
+			oBuilder.WriteString(L"</m_sFileFrom><m_sFileTo>");
 			oBuilder.WriteEncodeXmlString(_path);
 			oBuilder.WriteString(L"</m_sFileTo><m_nFormatTo>");
 			oBuilder.WriteString(std::to_wstring(type));
 			oBuilder.WriteString(L"</m_nFormatTo><m_sThemeDir>");
 			oBuilder.WriteEncodeXmlString(L"./sdkjs/slide/themes");
-			if (!m_oParams.m_bSaveWithDoctrendererMode)
-				oBuilder.WriteString(L"</m_sThemeDir><m_bDontSaveAdditional>true</m_bDontSaveAdditional>");
-			else
+			if (sFileFromOverride.empty() && m_oParams.m_bSaveWithDoctrendererMode)
 				oBuilder.WriteString(L"</m_sThemeDir><m_bFromChanges>true</m_bFromChanges><m_bDontSaveAdditional>true</m_bDontSaveAdditional>");
+			else
+				oBuilder.WriteString(L"</m_sThemeDir><m_bDontSaveAdditional>true</m_bDontSaveAdditional>");
 			oBuilder.WriteString(L"<m_nCsvTxtEncoding>46</m_nCsvTxtEncoding><m_nCsvDelimiter>4</m_nCsvDelimiter>");
 
 			oBuilder.WriteString(L"<m_sFontDir>");
@@ -1233,6 +1274,8 @@ namespace NSDoctRenderer
 
 			NSDirectory::DeleteDirectory(sDstTmpDir);
 			NSFile::CFileBinary::Remove(sTempFileForParams);
+			if (!sFileFromOverride.empty())
+				NSFile::CFileBinary::Remove(sFileFromOverride);
 
 			LOGGER_SPEED_LAP("save_convert");
 
@@ -1255,6 +1298,7 @@ namespace NSDoctRenderer
 				m_pWorker->m_sJSCodeStart = U_TO_UTF8(m_sCommandsBeforeContextCreated);
 
 				m_pWorker->m_nFileType = m_nFileType;
+				m_pWorker->m_sPdfFile = m_sEditPdfFile;
 
 				if (-1 != m_nFileType)
 					m_sCommandsBeforeContextCreated = L"";
@@ -1341,6 +1385,8 @@ namespace NSDoctRenderer
 				return NSDoctRenderer::DoctRendererEditorType::SLIDE;
 			case 2:
 				return NSDoctRenderer::DoctRendererEditorType::CELL;
+			case 3:
+				return NSDoctRenderer::DoctRendererEditorType::PDF;
 			case 7:
 				return NSDoctRenderer::DoctRendererEditorType::VISIO;
 			default:

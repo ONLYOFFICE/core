@@ -81,7 +81,7 @@ public:
 
 	bool PreParse(XmlUtils::CXmlLiteReader& oReader) override;
 	void Normalize() override;
-	bool Convert(XmlUtils::CXmlLiteReader& oReader, const NSCSS::CNode& oTableNode) override;
+	bool Convert(XmlUtils::CXmlLiteReader& oReader, std::vector<NSCSS::CNode>& arSelectors) override;
 private:
 	bool ParseCaption(XmlUtils::CXmlLiteReader& oReader, XmlString*& pCaption) override;
 	bool ParseColgroup(XmlUtils::CXmlLiteReader& oReader, std::vector<CTableColgroup*>& arColgroups) override;

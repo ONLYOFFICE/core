@@ -35,6 +35,7 @@
 
 #include "oox_plot_area.h"
 
+#include <cmath>
 #include <random>
 
 #include <xml/simple_xml_writer.h>
@@ -50,6 +51,62 @@
 
 namespace cpdoccore {
 	namespace oox {
+		namespace
+		{
+			const double DEG2RAD = 3.14159265358979323846 / 180.;
+
+			int round_angle(double val, int min, int max)
+			{
+				int result = (int)floor(val + 0.5);
+
+				if (result < min) result = min;
+				if (result > max) result = max;
+
+				return result;
+			}
+			double normalize_angle(double val)
+			{
+				val = fmod(val, 360.);
+
+				if (val < 0) val += 360.;
+
+				return val;
+			}
+			double length_vector(const double v[3])
+			{
+				return sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
+			}
+			bool normalize_vector(double v[3])
+			{
+				double len = length_vector(v);
+
+				if (len < 1e-10) return false;
+
+				v[0] /= len; v[1] /= len; v[2] /= len;
+
+				return true;
+			}
+			void cross_vector(const double a[3], const double b[3], double res[3])
+			{
+				res[0] = a[1] * b[2] - a[2] * b[1];
+				res[1] = a[2] * b[0] - a[0] * b[2];
+				res[2] = a[0] * b[1] - a[1] * b[0];
+			}
+			bool get_vector(odf_reader::chart_format_properties_ptr & properties, const std::wstring & name, double res[3])
+			{
+				_CP_OPT(double) x, y, z;
+
+				odf_reader::GetProperty(properties, name + L"-x", x);
+				odf_reader::GetProperty(properties, name + L"-y", y);
+				odf_reader::GetProperty(properties, name + L"-z", z);
+
+				if (!x || !y || !z) return false;
+
+				res[0] = *x; res[1] = *y; res[2] = *z;
+
+				return normalize_vector(res);
+			}
+		}
 		oox_plot_area::oox_plot_area() : no_used_local_tables_(false)
 		{
 			std::random_device rd;
@@ -105,11 +162,13 @@ namespace cpdoccore {
 			charts_.push_back(chart);
 		}
 
-		void oox_plot_area::add_axis(odf_reader::chart::axis& content)
+		void oox_plot_area::add_axis(odf_reader::chart::axis& content, const _CP_OPT(double)& rel_x,
+			const _CP_OPT(double)& rel_y, const _CP_OPT(double)& rel_w, const _CP_OPT(double)& rel_h)
 		{
 			unsigned int id = content.type_ != 0 ? axis_id_++ : 0;
 			oox_axis_content_ptr ax = oox_axis_content::create(id);
 			ax->content_ = content;
+			ax->set_title_layout(rel_x, rel_y, rel_w, rel_h);
 
 			if (content.dimension_ == L"x") axis_.insert(axis_.begin(), ax);
 			else axis_.push_back(ax);
@@ -132,124 +191,166 @@ namespace cpdoccore {
 				}
 			}
 
+			std::vector<size_t> present; // id for crossAx
+
 			for (size_t i = 0; i < axis_.size(); i++)
 			{
-				int curr_id = axis_[i]->get_Id();
+				if (axis_[i]->get_Id() > 0) present.push_back(i);
+			}
 
-				if (curr_id < 1) continue;
+			if (present.size() > 1)
+			{
+				int primary_id	= axis_[present[0]]->get_Id();
+				int value_id	= 0;
 
-				for (size_t j = 0; j < axis_.size(); j++)
+				for (size_t i = 1; i < present.size(); i++)
 				{
-					if (axis_[j]->get_Id() == curr_id)continue;
+					if (2 == axis_[present[i]]->content_.type_)
+					{
+						value_id = axis_[present[i]]->get_Id();
+						break;
+					}
+				}
+				if (0 == value_id) value_id = axis_[present[1]]->get_Id();
 
-					axis_[j]->add_CrossedId(curr_id);
+				for (size_t i = 0; i < present.size(); i++)
+				{
+					int curr_id = axis_[present[i]]->get_Id();
+
+					axis_[present[i]]->add_CrossedId(curr_id == value_id ? primary_id : value_id);
 				}
 			}
 		}
 		void oox_plot_area::oox_serialize_view3D(std::wostream& _Wostream)
 		{
 			_CP_OPT(std::wstring)	strVal;
-			_CP_OPT(double)			doubleVal;
 			_CP_OPT(bool)			perspective;
+			_CP_OPT(bool)			right_angled_axes;
 
 			odf_reader::GetProperty(properties_, L"transform", strVal);
 			odf_reader::GetProperty(properties_, L"perspective", perspective);
+			odf_reader::GetProperty(properties_, L"right-angled-axes", right_angled_axes);
 
 			if (!strVal) return;
 
-			size_t pos_matrix = strVal->find(L"matrix(");
+			size_t pos_matrix = strVal->find(L"matrix");
 
 			if (pos_matrix == std::wstring::npos) return;
 
-			size_t pos_matrix_end = strVal->find(L")", pos_matrix);
-			if (pos_matrix_end == std::wstring::npos || pos_matrix_end == pos_matrix + 7) return;
+			size_t pos_bracket = strVal->find(L"(", pos_matrix + 6);
+			if (pos_bracket == std::wstring::npos) return;
 
-			std::wstring tmp = strVal->substr(pos_matrix + 7, pos_matrix_end - 7 - pos_matrix);
+			size_t pos_bracket_end = strVal->find(L")", pos_bracket);
+			if (pos_bracket_end == std::wstring::npos) return;
+
+			std::wstring tmp = strVal->substr(pos_bracket + 1, pos_bracket_end - pos_bracket - 1);
+
+			boost::algorithm::trim(tmp);
 
 			std::vector<std::wstring> values;
 
-			boost::algorithm::split(values, tmp, boost::algorithm::is_any_of(L" "), boost::algorithm::token_compress_on);
+			boost::algorithm::split(values, tmp, boost::algorithm::is_any_of(L" \t,"), boost::algorithm::token_compress_on);
 
 			if (values.size() < 12) return;
 
-			double left_x = XmlUtils::GetDouble(values[0]);
-			double up_x = XmlUtils::GetDouble(values[1]);
-			double forward_x = XmlUtils::GetDouble(values[2]);
-			double left_y = XmlUtils::GetDouble(values[3]);
-			double up_y = XmlUtils::GetDouble(values[4]);
-			double forward_y = XmlUtils::GetDouble(values[5]);
-			double left_z = XmlUtils::GetDouble(values[6]);
-			double up_z = XmlUtils::GetDouble(values[7]);
-			double forward_z = XmlUtils::GetDouble(values[8]);
+			//dr3d:transform="matrix(a b c d e f g h i j k l)" is column major - the first
+			//triple is the first column of the matrix (the image of the X axis), the last
+			//triple is the translation
+			double m[3][3];
 
-			const double DEG2RAD = 3.1415926 / 180;
-			double sx, sy, sz, cx, cy, cz, theta_x, theta_y, theta_z = 0;
+			for (int col = 0; col < 3; col++)
+			{
+				for (int row = 0; row < 3; row++)
+				{
+					m[row][col] = XmlUtils::GetDouble(values[col * 3 + row]);
+				}
+			}
 
-			sy = forward_x;
+			//camera
+			double vpn[3] = { 0., 0., 1. };
+			double vup[3] = { 0., 1., 0. };
 
-			theta_y = (sy == 0 ? 0 : asin(sy));
-			cy = cos(theta_y);
+			get_vector(properties_, L"vpn", vpn);
+			get_vector(properties_, L"vup", vup);
 
-			theta_y /= DEG2RAD;
+			double view[3][3] = { { 1., 0., 0. }, { 0., 1., 0. }, { 0., 0., 1. } };
+			double right[3];
 
-			sx = -forward_y / cy;
-			cx = forward_z / cy;
+			cross_vector(vup, vpn, right);
 
-			theta_x = (sx == 0 ? 0 : asin(sx));
-			double theta_x_test = (sx == 0 ? 0 : acos(cx));
+			if (normalize_vector(right))
+			{
+				view[0][0] = right[0]; view[0][1] = right[1]; view[0][2] = right[2];
 
-			theta_x /= DEG2RAD;
+				cross_vector(vpn, right, view[1]);
 
-			sz = -up_x / cy;
-			cz = left_x / cy;
+				view[2][0] = vpn[0]; view[2][1] = vpn[1]; view[2][2] = vpn[2];
+			}
 
-			theta_z = (sz == 0 ? 0 : asin(sz));
-			double theta_z_test = (sz == 0 ? 0 : acos(cz));
+			double r[3][3];
 
-			theta_z /= DEG2RAD;
+			for (int row = 0; row < 3; row++)
+			{
+				for (int col = 0; col < 3; col++)
+				{
+					r[row][col] = view[row][0] * m[0][col] + view[row][1] * m[1][col] + view[row][2] * m[2][col];
+				}
+			}
 
-			if (this->current_chart_->type_ == CHART_TYPE_RADAR ||
-				this->current_chart_->type_ == CHART_TYPE_PIE ||
-				this->current_chart_->type_ == CHART_TYPE_DOUGHNUT)
+			//R = Rx(theta_x) * Ry(theta_y) * Rz(theta_z). atan2 keeps the quadrant and
+			//needs no division by cos(theta_y), which is zero at the gimbal lock
+			double sin_y = r[0][2];
+
+			if (sin_y >  1.) sin_y =  1.;	//rounding in the source matrix
+			if (sin_y < -1.) sin_y = -1.;
+
+			double theta_x = atan2(-r[1][2], r[2][2]) / DEG2RAD;
+			double theta_y = asin(sin_y) / DEG2RAD;
+			//theta_z is the roll of the scene in the screen plane
+			double theta_z = atan2(-r[0][1], r[0][0]) / DEG2RAD;
+
+			if ((std::abs)(theta_z) > 90.)
+			{
+				theta_x = theta_x > 0 ? theta_x - 180. : theta_x + 180.;
+				theta_y = 180. - theta_y;
+			}
+
+			//other round
+			theta_y = -theta_y;
+
+			if (this->current_chart_->type_ == CHART_TYPE_PIE)
 			{
 				theta_x += 90;
+				theta_y = 0;
 			}
-			else theta_x = (std::abs)(theta_x);
+
+			bool bRightAngledAxes = right_angled_axes ? *right_angled_axes
+													  : !(perspective && *perspective);
 			CP_XML_WRITER(_Wostream)
 			{
 				CP_XML_NODE(L"c:view3D")
 				{
 					CP_XML_NODE(L"c:rotX")
 					{
-						CP_XML_ATTR(L"val", (int)(theta_x + 0.5));
+						CP_XML_ATTR(L"val", round_angle(theta_x, -90, 90));
 					}
 					CP_XML_NODE(L"c:rotY")
 					{
-						CP_XML_ATTR(L"val", (int)(theta_y + 0.5));
+						CP_XML_ATTR(L"val", round_angle(normalize_angle(theta_y), 0, 360));
 					}
 					CP_XML_NODE(L"c:depthPercent")
 					{
 						CP_XML_ATTR(L"val", 100);
 					}
-					if (theta_z > 0 || (perspective && *perspective))
+					CP_XML_NODE(L"c:rAngAx")
 					{
-						CP_XML_NODE(L"c:rAngAx")
-						{
-							CP_XML_ATTR(L"val", 0);
-						}
-						if (theta_z > 0)
-						{
-							CP_XML_NODE(L"c:perspective")
-							{
-								CP_XML_ATTR(L"val", (int)(theta_z * 2 + 0.5));
-							}
-						}
+						CP_XML_ATTR(L"val", bRightAngledAxes ? 1 : 0);
 					}
-					else
+					if (false == bRightAngledAxes)
 					{
-						CP_XML_NODE(L"c:rAngAx")
+						CP_XML_NODE(L"c:perspective")
 						{
-							CP_XML_ATTR(L"val", 1);
+							CP_XML_ATTR(L"val", 30);	//default
 						}
 					}
 				}
@@ -266,7 +367,8 @@ namespace cpdoccore {
 			{
 				CP_XML_NODE(L"c:plotArea")
 				{
-					//CP_XML_NODE(L"c:layout"){}
+					layout_.oox_serialize(CP_XML_STREAM());
+
 					bool axisPresent = true;
 
 					for (size_t i = 0; i < charts_.size(); i++)
@@ -337,12 +439,9 @@ namespace cpdoccore {
 									{
 										CP_XML_NODE(L"a:pPr")
 										{
-											CP_XML_NODE(L"a:defRPr")
-											{
-												//odf_reader::fonts_container & fonts = context.fontContainer();
-												odf_reader::fonts_container fonts;
-												data_table_content_.text_properties_->oox_serialize(CP_XML_STREAM(), true, fonts);
-											}
+											//odf_reader::fonts_container & fonts = context.fontContainer();
+											odf_reader::fonts_container fonts;
+											data_table_content_.text_properties_->oox_serialize(CP_XML_STREAM(), true, fonts, true);
 										}
 									}
 								}

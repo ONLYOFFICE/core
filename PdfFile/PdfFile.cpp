@@ -47,6 +47,7 @@
 class CPdfFile_Private
 {
 public:
+	bool bDrawOnlyText = false;
 	std::wstring wsSrcFile;
 	wchar_t* wsPassword;
 	std::wstring wsTempFolder;
@@ -143,7 +144,7 @@ bool CPdfFile::EditPdf(const std::wstring& wsDstFile)
 	m_pInternal->pReader->CleanUp();
 
 	RELEASEOBJECT(m_pInternal->pWriter);
-	m_pInternal->pWriter = new CPdfWriter(m_pInternal->pAppFonts, false, this, true, m_pInternal->wsTempFolder);
+	m_pInternal->pWriter = new CPdfWriter(m_pInternal->pAppFonts, false, false, this, false, m_pInternal->wsTempFolder);
 
 	RELEASEOBJECT(m_pInternal->pEditor);
 	m_pInternal->pEditor = new CPdfEditor(m_pInternal->wsSrcFile, m_pInternal->wsPassword, wsDstFile, m_pInternal->pReader, m_pInternal->pWriter);
@@ -161,6 +162,12 @@ void CPdfFile::SetEditType(int nType)
 		return;
 	if (nType == 1)
 		m_pInternal->pEditor->SetMode(CPdfEditor::Mode::WriteNew);
+}
+void CPdfFile::RedactInfo(int nFlag, const std::vector<IAdvancedCommand*>& arrForms)
+{
+	if (!m_pInternal->pEditor)
+		return;
+	m_pInternal->pEditor->RedactInfo(nFlag, arrForms);
 }
 bool CPdfFile::EditPage(int nPageIndex)
 {
@@ -180,12 +187,13 @@ bool CPdfFile::AddPage(int nPageIndex)
 		return false;
 	return m_pInternal->pEditor->AddPage(nPageIndex);
 }
-bool CPdfFile::MergePages(const std::wstring& wsPath, int nMaxID, const std::wstring& wsPrefixForm)
+bool CPdfFile::MergePagesEdit(BYTE* data, DWORD length, int nMaxID, const std::wstring& wsPrefixForm)
 {
 	if (!m_pInternal->pEditor)
 		return false;
-	if (m_pInternal->pReader->MergePages(wsPath, L"", nMaxID, U_TO_UTF8(wsPrefixForm)))
-		return m_pInternal->pEditor->MergePages(wsPath);
+	std::string sPrefixForm = U_TO_UTF8(wsPrefixForm);
+	if (m_pInternal->pReader->MergePages(data, length, L"", nMaxID, sPrefixForm))
+		return m_pInternal->pEditor->MergePages(sPrefixForm);
 	return false;
 }
 bool CPdfFile::PrintPages(const std::vector<bool>& arrPages, int nFlag)
@@ -196,7 +204,7 @@ bool CPdfFile::PrintPages(const std::vector<bool>& arrPages, int nFlag)
 	m_pInternal->pReader->CleanUp();
 
 	RELEASEOBJECT(m_pInternal->pWriter);
-	m_pInternal->pWriter = new CPdfWriter(m_pInternal->pAppFonts, false, this, true, m_pInternal->wsTempFolder);
+	m_pInternal->pWriter = new CPdfWriter(m_pInternal->pAppFonts, false, false, this, true, m_pInternal->wsTempFolder);
 
 	RELEASEOBJECT(m_pInternal->pEditor);
 	m_pInternal->pEditor = new CPdfEditor(m_pInternal->wsSrcFile, m_pInternal->wsPassword, L"", m_pInternal->pReader, m_pInternal->pWriter);
@@ -220,7 +228,7 @@ bool CPdfFile::MovePage(int nPageIndex, int nPos)
 HRESULT CPdfFile::ChangePassword(const std::wstring& wsPath, const std::wstring& wsPassword)
 {
 	RELEASEOBJECT(m_pInternal->pWriter);
-	m_pInternal->pWriter = new CPdfWriter(m_pInternal->pAppFonts, false, this, false, m_pInternal->wsTempFolder);
+	m_pInternal->pWriter = new CPdfWriter(m_pInternal->pAppFonts, false, false, this, false, m_pInternal->wsTempFolder);
 	return _ChangePassword(wsPath, wsPassword, m_pInternal->pReader, m_pInternal->pWriter);
 }
 
@@ -252,6 +260,10 @@ void CPdfFile::SetCMapFile(const std::wstring& sFile)
 {
 	if (m_pInternal->pReader)
 		m_pInternal->pReader->SetCMapFile(sFile);
+}
+void CPdfFile::SetDrawOnlyText(bool bDraw)
+{
+	m_pInternal->bDrawOnlyText = bDraw;
 }
 void CPdfFile::ToXml(const std::wstring& sFile, bool bSaveStreams)
 {
@@ -387,6 +399,11 @@ void CPdfFile::SetTempDirectory(const std::wstring& wsPath)
 	if (m_pInternal->pWriter)
 		m_pInternal->pWriter->SetTempDirectory(wsPath);
 }
+void CPdfFile::SetCorrector(IMetafileToRenderter* pCorrector)
+{
+	if (m_pInternal->pWriter)
+		m_pInternal->pWriter->SetCorrector(pCorrector);
+}
 int CPdfFile::GetPagesCount()
 {
 	if (!m_pInternal->pReader)
@@ -482,7 +499,7 @@ void CPdfFile::DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pB
 		return;
 	pRenderer->CommandLong(c_nPenWidth0As1px, 1);
 	m_pInternal->pReader->SetParams(pParams);
-	m_pInternal->pReader->DrawPageOnRenderer(pRenderer, nPageIndex, pBreak);
+	m_pInternal->pReader->DrawPageOnRenderer(pRenderer, nPageIndex, pBreak, m_pInternal->bDrawOnlyText, (pParams ? pParams->m_bPrint : false));
 }
 void CPdfFile::SetPainter(IOfficeDrawingFilePainter* pPainter)
 {
@@ -507,6 +524,12 @@ BYTE* CPdfFile::GetLinks(int nPageIndex)
 	if (!m_pInternal->pReader)
 		return NULL;
 	return m_pInternal->pReader->GetLinks(nPageIndex);
+}
+BYTE* CPdfFile::GetMacros()
+{
+	if (!m_pInternal->pReader)
+		return NULL;
+	return m_pInternal->pReader->GetMacros();
 }
 BYTE* CPdfFile::GetWidgets()
 {
@@ -536,6 +559,12 @@ BYTE* CPdfFile::GetAnnotStandardFonts()
 		return NULL;
 	return m_pInternal->pReader->GetFonts(true);
 }
+BYTE* CPdfFile::GetAllFonts(int* arrPageIndex, int nLength, bool bCheck)
+{
+	if (!m_pInternal->pReader)
+		return NULL;
+	return m_pInternal->pReader->GetAllFonts(arrPageIndex, nLength, bCheck);
+}
 BYTE* CPdfFile::GetGIDByUnicode(const std::wstring& wsFontName)
 {
 	if (!m_pInternal->pReader)
@@ -560,12 +589,56 @@ BYTE* CPdfFile::GetAnnots(int nPageIndex)
 		return NULL;
 	return m_pInternal->pReader->GetAnnots(nPageIndex);
 }
+BYTE* CPdfFile::EditPdfToMemory(BYTE* pChanges, DWORD nLength, const wchar_t* sPassword)
+{
+	if (!m_pInternal->pReader)
+		return NULL;
+
+	CPdfReader* pSaveReader = m_pInternal->pReader;
+	m_pInternal->pReader = new CPdfReader(m_pInternal->pAppFonts);
+
+	BYTE* pMemory = NULL;
+	DWORD nLength1 = 0;
+	pSaveReader->GetMemory(&pMemory, &nLength1);
+	m_pInternal->pReader->LoadFromMemory(m_pInternal->pAppFonts, pMemory, nLength1, m_pInternal->wsPassword, m_pInternal->wsPassword);
+
+	RELEASEOBJECT(m_pInternal->pWriter);
+	m_pInternal->pWriter = new CPdfWriter(m_pInternal->pAppFonts, false, false, this, false);
+
+	RELEASEOBJECT(m_pInternal->pEditor);
+	m_pInternal->pEditor = new CPdfEditor(m_pInternal->wsSrcFile, m_pInternal->wsPassword, L"", m_pInternal->pReader, m_pInternal->pWriter, CPdfEditor::Mode::WriteNew);
+
+	BYTE* pRes = NULL;
+	int nLen = 0;
+	if (m_pInternal->pEditor->SplitPages(NULL, 0))
+	{
+		if (pChanges && nLength > 3)
+		{
+			CConvertFromBinParams* pParams = new CConvertFromBinParams();
+			AddToPdfFromBinary(pChanges + 4, nLength - 4, pParams);
+		}
+		if (sPassword)
+			m_pInternal->pWriter->SetPassword(sPassword);
+		m_pInternal->pEditor->Close();
+
+		if (m_pInternal->pWriter->SaveToMemory(&pRes, &nLen, true) != 0)
+			RELEASEMEM(pRes);
+	}
+
+	RELEASEOBJECT(m_pInternal->pReader);
+	m_pInternal->pReader = pSaveReader;
+
+	RELEASEOBJECT(m_pInternal->pWriter);
+	RELEASEOBJECT(m_pInternal->pEditor);
+	return pRes;
+}
 BYTE* CPdfFile::SplitPages(const int* arrPageIndex, unsigned int unLength, BYTE* pChanges, DWORD nLength)
 {
 	if (!m_pInternal->pReader)
 		return NULL;
+
 	RELEASEOBJECT(m_pInternal->pWriter);
-	m_pInternal->pWriter = new CPdfWriter(m_pInternal->pAppFonts, false, this);
+	m_pInternal->pWriter = new CPdfWriter(m_pInternal->pAppFonts, false, false, this, true);
 
 	RELEASEOBJECT(m_pInternal->pEditor);
 	m_pInternal->pEditor = new CPdfEditor(m_pInternal->wsSrcFile, m_pInternal->wsPassword, L"", m_pInternal->pReader, m_pInternal->pWriter, CPdfEditor::Mode::Split);
@@ -583,12 +656,8 @@ BYTE* CPdfFile::SplitPages(const int* arrPageIndex, unsigned int unLength, BYTE*
 		}
 		m_pInternal->pEditor->AfterSplitPages();
 
-		if (m_pInternal->pWriter->SaveToMemory(&pRes, &nLen) != 0)
-		{
+		if (m_pInternal->pWriter->SaveToMemory(&pRes, &nLen, true) != 0)
 			RELEASEMEM(pRes);
-		}
-		else
-			pRes = m_pInternal->pReader->StreamToCData(pRes, nLen);
 	}
 
 	RELEASEOBJECT(m_pInternal->pWriter);
@@ -625,13 +694,19 @@ BYTE* CPdfFile::GetAPAnnots(int nRasterW, int nRasterH, int nBackgroundColor, in
 void CPdfFile::CreatePdf(bool isPDFA)
 {
 	RELEASEOBJECT(m_pInternal->pWriter);
-	m_pInternal->pWriter = new CPdfWriter(m_pInternal->pAppFonts, isPDFA, this, true, m_pInternal->wsTempFolder);
+	m_pInternal->pWriter = new CPdfWriter(m_pInternal->pAppFonts, isPDFA, true, this, true, m_pInternal->wsTempFolder);
 }
 int CPdfFile::SaveToFile(const std::wstring& wsPath)
 {
 	if (!m_pInternal->pWriter)
 		return 1;
 	return m_pInternal->pWriter->SaveToFile(wsPath);
+}
+int CPdfFile::SaveToMemory(BYTE** pData, int* pLength, bool bForWasm)
+{
+	if (!m_pInternal->pWriter)
+		return 1;
+	return m_pInternal->pWriter->SaveToMemory(pData, pLength, bForWasm);
 }
 void CPdfFile::SetPassword(const std::wstring& wsPassword)
 {
@@ -657,6 +732,12 @@ HRESULT CPdfFile::OnlineWordToPdf(const std::wstring& wsSrcFile, const std::wstr
 HRESULT CPdfFile::OnlineWordToPdfFromBinary(const std::wstring& wsSrcFile, const std::wstring& wsDstFile, CConvertFromBinParams* pParams)
 {
 	if (!m_pInternal->pWriter || !NSOnlineOfficeBinToPdf::ConvertBinToPdf(this, wsSrcFile, wsDstFile, true, pParams))
+		return S_FALSE;
+	return S_OK;
+}
+HRESULT CPdfFile::CommandsToPdfFromBinary(BYTE* pBuffer, unsigned int nLen, CConvertFromBinParams* pParams)
+{
+	if (!m_pInternal->pWriter || !NSOnlineOfficeBinToPdf::ConvertBufferToPdf(this, pBuffer, nLen, pParams))
 		return S_FALSE;
 	return S_OK;
 }
@@ -1106,26 +1187,23 @@ HRESULT CPdfFile::put_FontName(const std::wstring& wsName)
 		}
 		else if (wsFontPath.empty())
 		{
-			size_t lastSpace = wsName.find_last_of(L' ');
-			if (lastSpace != std::wstring::npos)
+			std::wstring sHash;
+			if (PdfReader::ParseFontNameHash(wsName, NULL, &sHash))
 			{
-				std::wstring sTargetHash = wsName.substr(lastSpace + 1);
 				const std::map<std::wstring, std::wstring>& mFonts = m_pInternal->pReader->GetFonts();
-				 std::map<std::wstring, std::wstring>::const_iterator it = std::find_if(mFonts.begin(), mFonts.end(), [&sTargetHash](const std::pair<const std::wstring, std::wstring>& pair)
+				auto it = std::find_if(mFonts.begin(), mFonts.end(), [&sHash](const std::pair<const std::wstring, std::wstring>& pair)
 				{
-					const std::wstring& key = pair.first;
-					size_t pos = key.rfind(L' ');
-					if (pos != std::wstring::npos)
-					{
-						std::wstring sKeyHash = key.substr(pos + 1);
-						return sKeyHash == sTargetHash;
-					}
-					return false;
+					std::wstring sKeyHash;
+					return PdfReader::ParseFontNameHash(pair.first, NULL, &sKeyHash) && sKeyHash == sHash;
 				});
+
 				if (it != mFonts.end())
 					wsFont = L"Embedded: " + it->first;
 				else
+				{
+					size_t lastSpace = wsName.find_last_of(L' ');
 					wsFont = wsName.substr(10, lastSpace - 10);
+				}
 			}
 			else
 				wsFont = sSub;
@@ -1398,7 +1476,7 @@ HRESULT CPdfFile::IsSupportAdvancedCommand(const IAdvancedCommand::AdvancedComma
 	case IAdvancedCommand::AdvancedCommandType::Link:
 	case IAdvancedCommand::AdvancedCommandType::DocInfo:
 	case IAdvancedCommand::AdvancedCommandType::FormField:
-	case IAdvancedCommand::AdvancedCommandType::Annotaion:
+	case IAdvancedCommand::AdvancedCommandType::Annotation:
 	case IAdvancedCommand::AdvancedCommandType::DeleteAnnot:
 	case IAdvancedCommand::AdvancedCommandType::WidgetsInfo:
 	case IAdvancedCommand::AdvancedCommandType::ShapeStart:
@@ -1407,6 +1485,8 @@ HRESULT CPdfFile::IsSupportAdvancedCommand(const IAdvancedCommand::AdvancedComma
 	case IAdvancedCommand::AdvancedCommandType::PageRotate:
 	case IAdvancedCommand::AdvancedCommandType::Headings:
 	case IAdvancedCommand::AdvancedCommandType::Redact:
+	case IAdvancedCommand::AdvancedCommandType::RedactMeta:
+	case IAdvancedCommand::AdvancedCommandType::Macros:
 		return S_OK;
 	default:
 		break;
@@ -1446,7 +1526,7 @@ HRESULT CPdfFile::AdvancedCommand(IAdvancedCommand* command)
 	{
 		return m_pInternal->pWriter->AddFormField(m_pInternal->pAppFonts, (CFormFieldInfo*)command, m_pInternal->wsTempFolder);
 	}
-	case IAdvancedCommand::AdvancedCommandType::Annotaion:
+	case IAdvancedCommand::AdvancedCommandType::Annotation:
 	{
 		CAnnotFieldInfo* pCommand = (CAnnotFieldInfo*)command;
 		if (m_pInternal->pEditor && m_pInternal->pEditor->IsEditPage())
@@ -1463,26 +1543,9 @@ HRESULT CPdfFile::AdvancedCommand(IAdvancedCommand* command)
 				CAnnotFieldInfo::CWidgetAnnotPr* pPr = pCommand->GetWidgetAnnotPr();
 				std::wstring wsFontName = pPr->GetFontName();
 
-				size_t lastSpace = wsFontName.find_last_of(L' ');
-				if (lastSpace != std::wstring::npos && lastSpace + 1 == wsFontName.size() - 32)
-				{
-					std::wstring sHash = wsFontName.substr(lastSpace + 1);
-					bool bValidHash = true;
-					for (wchar_t c : sHash)
-					{
-						if (!((c >= L'A' && c <= L'F') || (c >= L'0' && c <= L'9')))
-						{
-							bValidHash = false;
-							break;
-						}
-					}
-
-					if (bValidHash)
-					{
-						std::wstring sName = wsFontName.substr(0, lastSpace);
-						wsFontName = sName;
-					}
-				}
+				std::wstring sBaseName;
+				if (PdfReader::ParseFontNameHash(wsFontName, &sBaseName))
+					wsFontName = sBaseName;
 
 				pPr->SetFontName(wsFontName);
 			}
@@ -1500,7 +1563,11 @@ HRESULT CPdfFile::AdvancedCommand(IAdvancedCommand* command)
 	{
 		CWidgetsInfo* pCommand = (CWidgetsInfo*)command;
 		if (m_pInternal->pEditor && m_pInternal->pEditor->EditWidgets(pCommand))
-			return m_pInternal->pWriter->EditWidgetParents(m_pInternal->pAppFonts, pCommand, m_pInternal->wsTempFolder);
+		{
+			HRESULT hr = m_pInternal->pWriter->EditWidgetParents(m_pInternal->pAppFonts, pCommand, m_pInternal->wsTempFolder);
+			m_pInternal->pEditor->FinalizeWidgetRedactStamps();
+			return hr;
+		}
 		return S_OK;
 	}
 	case IAdvancedCommand::AdvancedCommandType::ShapeStart:
@@ -1542,6 +1609,41 @@ HRESULT CPdfFile::AdvancedCommand(IAdvancedCommand* command)
 	{
 		if (m_pInternal->pEditor)
 			m_pInternal->pEditor->Redact((CRedact*)command);
+		return S_OK;
+	}
+	case IAdvancedCommand::AdvancedCommandType::RedactMeta:
+	{
+		if (m_pInternal->pEditor && m_pInternal->pEditor->IsEditPage())
+		{
+			CRedactMeta* pCommand = (CRedactMeta*)command;
+			std::vector<double> arrRedact = m_pInternal->pEditor->WriteRedact(pCommand->GetRedactID());
+
+			double dH = m_pInternal->pWriter->GetPage()->GetCropHeight();
+			for (int j = 1; j < arrRedact.size(); j += 2)
+				arrRedact[j] = dH - arrRedact[j];
+			m_pInternal->pEditor->RedactMeta(pCommand, arrRedact);
+		}
+		return S_OK;
+	}
+	case IAdvancedCommand::AdvancedCommandType::Macros:
+	{
+		if (m_pInternal->pEditor)
+			m_pInternal->pEditor->CheckMode();
+		PdfWriter::CDocument* pDoc = m_pInternal->pWriter->GetDocument();
+		if (pDoc)
+		{
+			CMacros* pCommand = (CMacros*)command;
+			std::wstring wsMacros = pCommand->GetMacros();
+
+			if (!wsMacros.empty())
+			{
+				BYTE* pData = NULL;
+				LONG nMetaLength = 0;
+				NSFile::CUtf8Converter::GetUtf8StringFromUnicode(wsMacros.c_str(), wsMacros.length(), pData, nMetaLength);
+				pDoc->AddOOField("OO_MACROS", pData, nMetaLength);
+				RELEASEARRAYOBJECTS(pData);
+			}
+		}
 		return S_OK;
 	}
 	default:

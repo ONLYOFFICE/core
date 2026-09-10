@@ -802,19 +802,30 @@ namespace NExtractTools
 			oBuilder.AddInt(*params.m_nLcid);
 			oBuilder.WriteString(L"</Lcid>");
 		}
-		std::wstring sJsonParams;
-		bool bOnlyOnePage = NULL != params.m_oThumbnail && (NULL == params.m_oThumbnail->first || true == *params.m_oThumbnail->first);
+		std::wstring sJsonParams, wsPrintOptions;
+		int nSavePage = -1;
+		if (params.m_oThumbnail || NSDoctRenderer::DoctRendererFormat::FormatFile::IMAGE == eToType)
+			nSavePage = (params.m_oThumbnail && params.m_oThumbnail->page) ? *params.m_oThumbnail->page : 0;
+		if (nSavePage != -1)
+		{
+			wsPrintOptions = L"\"printOptions\":{\"savePage\":";
+			wsPrintOptions += std::to_wstring(nSavePage);
+			wsPrintOptions += L"}";
+		}
 		if (NULL != params.m_sJsonParams)
 		{
 			sJsonParams = *params.m_sJsonParams;
-			if (bOnlyOnePage)
+			if (!wsPrintOptions.empty())
 			{
-				sJsonParams.insert(1, L"\"printOptions\":{\"onlyFirstPage\":true},");
+				wsPrintOptions += L",";
+				sJsonParams.insert(1, wsPrintOptions);
 			}
 		}
-		else if (bOnlyOnePage)
+		else if (!wsPrintOptions.empty())
 		{
-			sJsonParams = L"{\"printOptions\":{\"onlyFirstPage\":true}}";
+			sJsonParams = L"{";
+			sJsonParams += wsPrintOptions;
+			sJsonParams += L"}";
 		}
 		if (!sJsonParams.empty())
 		{
@@ -869,6 +880,8 @@ namespace NExtractTools
 			std::wstring sImagesDirectory = sBinDir + FILE_SEPARATOR_STR + L"media";
 
 			NSDoctRenderer::CDoctrenderer oDoctRenderer(NULL != params.m_sAllFontsPath ? *params.m_sAllFontsPath : L"");
+			convertParams.InitDoctRenderer(&oDoctRenderer);
+
 			int nChangeIndex = -1;
 			while (true)
 			{

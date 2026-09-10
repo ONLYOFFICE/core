@@ -55,12 +55,10 @@ DEFINES += UNICODE _UNICODE \
 
 INCLUDEPATH += ../../../OdfFile/include
 
-core_release {
+build_monolith_objects {
 SOURCES += \
-    rtffile_source.cpp
-}
-
-core_debug {
+	rtffile_source.cpp
+} else {
 SOURCES += \
 	../../Format/RtfBookmark.cpp \
 	../../Format/RtfChar.cpp \

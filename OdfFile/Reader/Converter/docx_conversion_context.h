@@ -471,55 +471,35 @@ private:
 class comments_context : boost::noncopyable
 {
 public:
-	comments_context(){}
-	
+	comments_context() {}
+
 	struct _comment_desc
 	{
-		_comment_desc(const std::wstring & c, int _id, const std::wstring & a, const std::wstring & d) :
-		content(c), id(_id), author(a), date(d)
+		_comment_desc(const std::wstring& c, int _id, const std::wstring& a, const std::wstring& d) :
+			content(c), id(_id), author(a), date(d)
 		{}
-		std::wstring content;
 		int id;
+
+		std::wstring content;
 		std::wstring date;
 		std::wstring author;
 		std::wstring initials;
+
+		bool bEnd = false;
 	};
-	void end_comment(const std::wstring & name)
-	{
-		std::map<std::wstring, int>::iterator pFind = comments_map_.find(name);
-		if (pFind != comments_map_.end())
-		{
-			ref_end_.push_back(pFind->second);		
-		}
-	}
-	void start_comment(const std::wstring & content, const std::wstring & author, const std::wstring & date, _CP_OPT(std::wstring) name)
-	{
-		int id = comments_.size() + 1;
-		_comment_desc new_comment(content, id, author, date);
-		
-		if ((name) && (false == name->empty()))
-		{
-			comments_map_.insert(std::make_pair(*name, id));
-			ref_start_.push_back(id);
-		}
-		else
-		{
-			ref_start_.push_back(id);
-			ref_end_.push_back(id);
-		}
-		comments_.push_back(new_comment);
-	}
-	
-	rels& get_rels(){return internal_rels_;}
+	void end_comment(const std::wstring& name = L"");
+	bool start_comment(const std::wstring& content, const std::wstring& author, const std::wstring& date, _CP_OPT(std::wstring) & name);
 
-	std::vector<_comment_desc>	comments_;
-	std::vector<int>			ref_start_;
-	std::vector<int>			ref_end_;
-	std::vector<int>			ref_;
+	rels& get_rels() { return internal_rels_; }
+	std::map<std::wstring, _comment_desc>& content() { return comments_map_; }
 
+//active
+	std::vector<int> ref_start_;
+	std::vector<int> ref_end_;
+	std::vector<int> ref_;
 private:
+	std::map<std::wstring, _comment_desc> comments_map_;
 	rels internal_rels_;//this is for hyperlinks or media in comments
-	std::map<std::wstring, int> comments_map_;
 };
 
 class text_tracked_context
@@ -772,9 +752,9 @@ public:
 	void add_user_field			(const std::wstring & name, const std::wstring & value);	
 	std::wstring get_user_field	(const std::wstring & name);
 
-	void add_element_to_run		(std::wstring parenStyleId = _T(""));
+	bool add_element_to_run		(std::wstring parenStyleId = L"");
     void finish_run				();
-	void add_new_run			(std::wstring parentStyleId = _T(""));    
+	void add_new_run			(std::wstring parentStyleId = L"");
   
     void start_paragraph		(bool is_header = false);
     void finish_paragraph		();
@@ -884,7 +864,7 @@ public:
     void set_page_break_before(int val);
     int get_page_break_before();
 
-	void set_page_break		(bool val);
+	void set_page_break	(bool val);
     bool get_page_break		();
 
 	void set_temp_style_name( const std::wstring& val );
@@ -949,14 +929,14 @@ public:
     StreamsManPtr	get_stream_man() const				{ return streams_man_; }
     void			set_stream_man(StreamsManPtr Sm)	{ streams_man_ = Sm; }
 
-    void set_rtl(bool val)			{ is_rtl_ = val; }
-    bool get_rtl() const			{return is_rtl_;}
+    void set_rtl(bool val) { is_rtl_ = val; }
+    bool get_rtl() const {return is_rtl_;}
    
-	double get_current_fontSize()	{return current_fontSize.empty() ? 0 : current_fontSize.back();}
-	void pop_current_fontSize()		{if (!current_fontSize.empty()) current_fontSize.pop_back();}
+	double get_current_fontSize();
+	void pop_current_fontSize();
 	
 	void set_outline_level(int val)	{current_outline_level_ = val;}
-	int get_outline_level()			{return current_outline_level_;}
+	int get_outline_level() {return current_outline_level_;}
 
 	void set_process_note		(NoteType Val) { current_process_note_ = Val; }
 	NoteType get_process_note	() const		{ return current_process_note_; }
@@ -1018,9 +998,9 @@ public:
 
 	void		add_jsaProject(const std::string &content);
 
-    void set_implicit_end( bool _flag );
+    void set_section_break_after( bool _flag );
 
-    bool get_implicit_end() const;
+    bool get_section_break_after() const;
 
 	void set_inside_frame( bool flag );
 
@@ -1038,7 +1018,7 @@ private:
 
 	std::wstring temp_name;
 
-    bool flag_implicit_end = false;
+    bool flag_section_break_after = false;
 
 	bool inside_frame = false;
 

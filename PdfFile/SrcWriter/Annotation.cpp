@@ -954,24 +954,24 @@ namespace PdfWriter
 	}
 	void CFreeTextAnnotation::SetDA(CFontDict* pFont, const double& dFontSize, const std::vector<double>& arrC)
 	{
-		if (!pFont)
-			return;
-
-		CResourcesDict* pFieldsResources = m_pDocument->GetFieldsResources();
-		const char* sFontName = pFieldsResources->GetFontName(pFont);
-
 		std::vector<double> _arrC = arrC;
 		if (arrC.empty())
 			_arrC = {0};
 		std::string sDA = GetColor(_arrC, false);
-		if (sFontName)
-		{
-			sDA.append(" /");
-			sDA.append(sFontName);
 
-			sDA.append(" ");
-			sDA.append(std::to_string(dFontSize));
-			sDA.append(" Tf");
+		if (pFont)
+		{
+			CResourcesDict* pFieldsResources = m_pDocument->GetFieldsResources();
+			const char* sFontName = pFieldsResources->GetFontName(pFont);
+			if (sFontName)
+			{
+				sDA.append(" /");
+				sDA.append(sFontName);
+
+				sDA.append(" ");
+				sDA.append(std::to_string(dFontSize));
+				sDA.append(" Tf");
+			}
 		}
 
 		Add("DA", new CStringObject(sDA.c_str()));
@@ -1568,21 +1568,21 @@ namespace PdfWriter
 	}
 	void CWidgetAnnotation::SetDA(CFontDict* pFont, const double& dFontSize, const double& dFontSizeAP, const std::vector<double>& arrTC)
 	{
-		if (!pFont)
-			return;
-
-		CResourcesDict* pFieldsResources = m_pDocument->GetFieldsResources();
-		const char* sFontName = pFieldsResources->GetFontName(pFont);
-
 		std::string sDA = GetColor(arrTC, false);
-		if (sFontName)
-		{
-			sDA.append(" /");
-			sDA.append(sFontName);
 
-			sDA.append(" ");
-			sDA.append(std::to_string(dFontSize));
-			sDA.append(" Tf");
+		if (pFont)
+		{
+			CResourcesDict* pFieldsResources = m_pDocument->GetFieldsResources();
+			const char* sFontName = pFieldsResources->GetFontName(pFont);
+			if (sFontName)
+			{
+				sDA.append(" /");
+				sDA.append(sFontName);
+
+				sDA.append(" ");
+				sDA.append(std::to_string(dFontSize));
+				sDA.append(" Tf");
+			}
 		}
 
 		CDictObject* pOwner = GetObjOwnValue("DA");

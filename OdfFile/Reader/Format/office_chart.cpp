@@ -96,7 +96,8 @@ void chart_chart::add_child_element( xml::sax * Reader, const std::wstring & Ns,
 void chart_title_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
     common_draw_position_attlist_.add_attributes(Attributes);
-    
+    common_draw_size_attlist_.add_attributes(Attributes);
+
 	CP_APPLY_ATTR(L"table:cell-range", table_cell_range_);
     common_attlist_.add_attributes(Attributes);
 }
@@ -217,6 +218,17 @@ void chart_plot_area::add_child_element( xml::sax * Reader, const std::wstring &
 	CP_CREATE_ELEMENT(content_);
  }
 
+// chart:coordinate-region
+//////////////////////////////////////////////////////////////////////////////////////////////////
+const wchar_t * chart_coordinate_region::ns = L"chart";
+const wchar_t * chart_coordinate_region::name = L"coordinate-region";
+
+void chart_coordinate_region::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+    common_draw_position_attlist_.add_attributes(Attributes);
+    common_draw_size_attlist_.add_attributes(Attributes);
+}
+
 /////////////
 
 void chart_wall_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
@@ -263,6 +275,9 @@ void chart_axis_attlist::add_attributes( const xml::attributes_wc_ptr & Attribut
     CP_APPLY_ATTR(L"chart:name", chart_name_);
     CP_APPLY_ATTR(L"chartooo:axis-type", axis_type_);
     common_attlist_.add_attributes(Attributes);
+
+    common_draw_position_attlist_.add_attributes(Attributes);
+    common_draw_size_attlist_.add_attributes(Attributes);
 }
 
 // chart:axis

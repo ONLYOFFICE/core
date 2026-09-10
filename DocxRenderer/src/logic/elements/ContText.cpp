@@ -87,6 +87,7 @@ namespace NSDocxRenderer
 		m_bIsOutlinePresent = rCont.m_bIsOutlinePresent;
 		m_bIsEmbossPresent = rCont.m_bIsEmbossPresent;
 		m_bIsEngravePresent = rCont.m_bIsEngravePresent;
+		m_bIsRtl = rCont.m_bIsRtl;
 
 		m_oText = rCont.m_oText;
 
@@ -107,9 +108,11 @@ namespace NSDocxRenderer
 		m_oSelectedFont = rCont.m_oSelectedFont;
 		m_bPossibleHorSplit = rCont.m_bPossibleHorSplit;
 		m_bWriteStyleRaw = rCont.m_bWriteStyleRaw;
+		m_bCollectMetaInfo = rCont.m_bCollectMetaInfo;
+		m_bIsAddBrEnd = rCont.m_bIsAddBrEnd;
 
 		m_nOriginFontFaceIndex = rCont.m_nOriginFontFaceIndex;
-		m_wsOriginFontName = rCont.m_nOriginFontFaceIndex;
+		m_wsOriginFontName = rCont.m_wsOriginFontName;
 
 		m_arSymWidths.clear();
 		m_arSymWidths.resize(rCont.m_arSymWidths.size());
@@ -771,13 +774,13 @@ namespace NSDocxRenderer
 			if (i == 0 && is_space_twice)
 			{
 				m_arSymWidths.back() = m_arSymWidths.back() + arSymWidths[i];
-				m_dWidth += arSymWidths[i];
+				m_dRight += arSymWidths[i];
 				continue;
 			}
 			m_arSymWidths.push_back(w);
 			m_oText += oText.at(i);
 			m_arOriginLefts.push_back(arOriginLefts[i]);
-			m_dRight = arOriginLefts[i] + w;
+			m_dRight += w;
 
 			if (!arGids.empty() && m_bCollectMetaInfo)
 				m_arGids.push_back(arGids[i]);

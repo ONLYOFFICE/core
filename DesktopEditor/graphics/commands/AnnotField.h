@@ -724,15 +724,17 @@ public:
 	CWidgetsInfo();
 	virtual ~CWidgetsInfo();
 
+	const std::wstring& GetRoles();
 	const std::vector< std::pair<int, int> >& GetCO();
 	const std::vector<std::wstring>& GetButtonImg();
 	const std::vector<CParent*>& GetParents();
 
 	void ChangeCO(int i, int nNum, int nGen);
 
-	bool Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector);
+	bool Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector, int nLen);
 
 private:
+	std::wstring m_wsRoles;
 	std::vector< std::pair<int, int> > m_arrCO;
 	std::vector<std::wstring> m_arrButtonImg;
 	std::vector<CParent*> m_arrParents;
@@ -759,6 +761,34 @@ public:
 
 private:
 	std::vector<SRedact*> m_arrRedact;
+};
+
+class GRAPHICS_DECL CRedactAnnot : public IAdvancedCommand
+{
+public:
+	CRedactAnnot();
+
+	int GetID();
+
+	bool Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector);
+
+private:
+	int m_nID;
+};
+
+class GRAPHICS_DECL CRedactMeta : public IAdvancedCommand
+{
+public:
+	CRedactMeta();
+
+	const std::vector<int>& GetWidgetID();
+	const std::vector<std::wstring>& GetRedactID();
+
+	bool Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector);
+
+private:
+	std::vector<int> m_arrWidgetID;
+	std::vector<std::wstring> m_arrRedactID;
 };
 
 #endif // _BUILD_ANNOTFIELD_H_

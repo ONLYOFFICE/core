@@ -61,8 +61,15 @@ namespace DocFileFormat
 		std::vector<wchar_t>* GetEncodingChars(int fcStart, int fcEnd, POLE::Stream* wordStream);
 		std::vector<wchar_t>* GetChars (int fcStart, int fcEnd, int cp, POLE::Stream* word);
 
+		int GetCharSize(int cp);
+
 	private:
 		bool ReadSymbolsBuffer(int pos, int size, int coding, POLE::Stream* word, std::vector<wchar_t>* encodingChars);
+		void GetCharsFromBytes(std::vector<wchar_t>* encodingChars, unsigned char* bytes, int size, int coding);
+
+		bool m_bExtCharWord95; //Word 95
+		
+		std::list<PieceDescriptor>::iterator m_iterCharSize; //last from GetCharSize
 
 	public:
 

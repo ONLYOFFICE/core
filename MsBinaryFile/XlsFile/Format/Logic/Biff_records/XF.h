@@ -99,7 +99,7 @@ namespace XLS
 
 		FillInfoExt		font_color;
 
-		bool			fHasXFExt = false;
+		bool			fHasXFExt = true;
 		bool			fsxButton = false;
 
 //xlsb

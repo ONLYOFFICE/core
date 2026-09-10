@@ -67,7 +67,22 @@ namespace SVG
 		void InheritStyles(const CTSpan* pTSpan);
 	private:
 		void ApplyStyle(IRenderer* pRenderer, const TSvgStyles* pStyles, const CSvgFile* pFile, int& nTypePath, const CRenderedObject* pContexObject = NULL) const override;
-		void ApplyFont(IRenderer* pRenderer, double& dX, double& dY, Aggplus::CMatrix& oOldMatrix) const;
+		void ApplyFont(IRenderer* pRenderer, double& dX, double& dY, Aggplus::CMatrix& oOldMatrix, double& dScaleX, double& dScaleY, double& dFontSize) const;
+
+		struct TTextRun
+		{
+			std::wstring m_wsText;
+			double       m_dX;
+			double       m_dY;
+		};
+
+		static void SetCoordinates(const std::wstring& wsValue, SvgDigit& oFirst, std::vector<SvgDigit>& arValues);
+		std::vector<TTextRun> GetPositionedRuns(bool bUseParentBounds) const;
+		void DrawPositionedText(IRenderer* pRenderer, const std::vector<TTextRun>& arRuns, double dOffsetX, double dOffsetY, double dScaleX, double dScaleY, double dFontSize) const;
+		void DrawDecoration(IRenderer* pRenderer, const std::wstring& wsText, double dX, double dY, double dFontSize) const;
+		double MeasureText(const std::wstring& wsText) const;
+		void GetFontParams(std::wstring& wsFontFamily, int& nStyle) const;
+		double GetAnchorFactor() const;
 
 		void UpdateFontSize();
 		bool UseExternalFont(const CSvgFile* pFile, double dX, double dY, IRenderer* pRenderer, CommandeMode oMode = CommandeModeDraw, const TSvgStyles* pOtherStyles = NULL, const CRenderedObject* pContexObject = NULL) const;
@@ -78,6 +93,7 @@ namespace SVG
 		void CorrectFontFamily(std::wstring& wsFontFamily) const;
 
 		void CalculatePosition(double& dX, double& dY) const;
+		void CalculatePositions(std::vector<double>& arX, std::vector<double>& arY, bool bUseParentBounds) const;
 
 		void NormalizeFontSize(double& dFontHeight, double& dScaleX, double& dScaleY) const;
 		void SetPosition(const Point& oPosition);
@@ -92,6 +108,9 @@ namespace SVG
 
 		SvgDigit     m_oX;
 		SvgDigit     m_oY;
+
+		std::vector<SvgDigit> m_arX;
+		std::vector<SvgDigit> m_arY;
 
 		std::wstring m_wsText;
 

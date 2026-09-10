@@ -38,6 +38,7 @@
 
 #include "../HWPElements/HWPRecordNumbering.h"
 #include "../HWPElements/HWPRecordParaShape.h"
+#include "../HWPElements/HWPRecordBullet.h"
 
 #include "../../../DesktopEditor/common/StringBuilder.h"
 
@@ -47,13 +48,27 @@ class CConverter2OOXML;
 class CNumberingConverter
 {
 	NSStringUtils::CStringBuilder m_oNumberXml;
-	std::vector<std::pair<EHeadingType, const CHWPRecordNumbering*>> m_arUsedNumbering;
+
+	std::vector<std::pair<EHeadingType, const CHWPRecord*>> m_arUsedNumbering;
+
+	int FindUsed(EHeadingType eHeadingType, const CHWPRecord* pRecord) const;
+	int AddUsed(EHeadingType eHeadingType, const CHWPRecord* pRecord);
+
+	void WriteAbstractNumHeader(int nAbstractNumId, const std::wstring& wsMultiLevelType);
+	void WriteNumberingLevels(const CHWPRecordNumbering* pNumbering, CConverter2OOXML& oConverter);
+	void WriteBulletLevels(const CHWPRecordBullet* pBullet, CConverter2OOXML& oConverter);
+
+	void WriteLvlJc(HWP_BYTE chAlign);
+	void WriteLvlCharProperties(int nCharShape, CConverter2OOXML& oConverter);
 public:
 	CNumberingConverter();
 
 	unsigned int GetCountNumbering() const;
 
 	int CreateNumbering(const CHWPRecordNumbering* pNumbering, EHeadingType eHeadingType, CConverter2OOXML& oConverter);
+	int CreateOutline(const CHWPRecordNumbering* pNumbering, CConverter2OOXML& oConverter);
+	int CreateBullet(const CHWPRecordBullet* pBullet, CConverter2OOXML& oConverter);
+
 	bool SaveToFile(const std::wstring& wsDirectory);
 };
 }

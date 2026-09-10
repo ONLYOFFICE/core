@@ -293,6 +293,8 @@ void OfficeArtBStoreContainerFileBlock::save(XLS::CFRecord& record)
 			FbseHeader.recInstance =  0x2;
 		else if(pict_type == L".wmf")
 			FbseHeader.recInstance =  0x3;
+		else if(pict_type == L".png")
+			FbseHeader.recInstance =  0x6;
 		else
 			FbseHeader.recInstance = 0x5;
 		FbseHeader.recType =  0xF007;
@@ -370,8 +372,16 @@ void OfficeArtBStoreContainerFileBlock::save(XLS::CFRecord& record)
 	{
 		OfficeArtRecordHeader rc_header;
 		rc_header.recVer = 0;
-		rc_header.recInstance = 0x46A;
-		rc_header.recType =  0xF01D;
+		if(pict_type == L".png")
+		{
+			rc_header.recInstance = 0x6E0;
+			rc_header.recType =  0xF01E;
+		}
+		else
+		{
+			rc_header.recInstance = 0x46A;
+			rc_header.recType =  0xF01D;
+		}
 		rc_header.recLen = pict_size + 17;
 		record << rc_header;
 		record.reserveNunBytes(16);

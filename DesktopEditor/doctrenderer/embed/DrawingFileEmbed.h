@@ -67,6 +67,7 @@ public:
 
 	JSSmart<CJSValue> GetLinks(JSSmart<CJSValue> nPageIndex);
 	JSSmart<CJSValue> GetStructure();
+	JSSmart<CJSValue> GetMacros();
 	JSSmart<CJSValue> GetInteractiveFormsInfo();
 	JSSmart<CJSValue> GetInteractiveFormsFonts(JSSmart<CJSValue> nTypeFonts);
 
@@ -82,7 +83,7 @@ public:
 
 	JSSmart<CJSValue> IsNeedCMap();
 	JSSmart<CJSValue> ScanPage(JSSmart<CJSValue> nPageIndex, JSSmart<CJSValue> mode);
-	JSSmart<CJSValue> SetScanPageFonts(JSSmart<CJSValue> nPageIndex);
+	JSSmart<CJSValue> SetScanPageFonts(JSSmart<CJSValue> arrPageIndexes);
 
 	JSSmart<CJSValue> GetImageBase64(JSSmart<CJSValue> rId);
 
@@ -93,6 +94,7 @@ public:
 	JSSmart<CJSValue> UnmergePages();
 	JSSmart<CJSValue> RedactPage(JSSmart<CJSValue> nPageIndex, JSSmart<CJSValue> arrRedactBox, JSSmart<CJSValue> dataFiller);
 	JSSmart<CJSValue> UndoRedact();
+	JSSmart<CJSValue> BuildPdf(JSSmart<CJSValue> data, JSSmart<CJSValue> sPassword);
 
 	JSSmart<CJSValue> CheckOwnerPassword(JSSmart<CJSValue> sPassword);
 	JSSmart<CJSValue> CheckPerm(JSSmart<CJSValue> nPerm);

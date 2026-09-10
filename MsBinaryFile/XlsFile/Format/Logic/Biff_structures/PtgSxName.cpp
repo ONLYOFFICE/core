@@ -137,10 +137,17 @@ void PtgSxName::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool f
 			auto pname = static_cast<XLSB::BeginPName*>(global_info->arPivotSxNames[sxIndex].name.get());
 			if(pname->ifdb >=0 && pname->ifdb < global_info->arPivotCacheSxNames.size())
 			{
-				_Name = global_info->arPivotCacheSxNames[pname->ifdb];
-                {
-                    _Name = L"'" + _Name + L"'";
-                }
+				const std::wstring& srcName = global_info->arPivotCacheSxNames[pname->ifdb];
+				_Name.clear();
+				_Name.reserve(srcName.size() + 4);
+				_Name.push_back(L'\'');
+				for (wchar_t ch : srcName)
+				{
+					if (ch == L'\'')
+						_Name.push_back(L'\'');
+					_Name.push_back(ch);
+				}
+				_Name.push_back(L'\'');
 			}
 		}
 		ptg_stack.push(_Name);

@@ -42,9 +42,9 @@
     #include <libxml2/libxml/xmlreader.h>
     #include <libxml2/libxml/c14n.h>
 #else
-    #include "../libxml2/libxml.h"
-    #include "../libxml2/include/libxml/xmlreader.h"
-    #include "../libxml2/include/libxml/c14n.h"
+    #include "../../../Common/3dParty/libxml/libxml2/libxml.h"
+    #include "../../../Common/3dParty/libxml/libxml2/include/libxml/xmlreader.h"
+    #include "../../../Common/3dParty/libxml/libxml2/include/libxml/c14n.h"
 #endif
 
 #include "../include/xmlutils.h"

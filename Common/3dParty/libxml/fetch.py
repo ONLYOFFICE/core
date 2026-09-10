@@ -11,6 +11,8 @@ if not base.is_dir("libxml2"):
   #fix parserInternals.h
   base.replaceInFileUtf8("libxml2/include/libxml/parserInternals.h", "#define XML_MAX_TEXT_LENGTH 10000000", "#define XML_MAX_TEXT_LENGTH 15000000")
   base.replaceInFileUtf8("libxml2/include/libxml/parserInternals.h", "#define XML_MAX_LOOKUP_LIMIT 10000000", "#define XML_MAX_LOOKUP_LIMIT 15000000")
+
+  base.replaceInFileUtf8("libxml2/globals.c", "static int xmlGetWarningsDefaultValueThrDef = 1;", "static int xmlGetWarningsDefaultValueThrDef = 0;")
   
   #Logging has been removed
   target = "void\nxmlGenericErrorDefaultFunc(void *ctx ATTRIBUTE_UNUSED, const char *msg, ...) {\n    va_list args;\n\n    if (xmlGenericErrorContext == NULL)\n	xmlGenericErrorContext = (void *) stderr;\n\n    va_start(args, msg);\n    vfprintf((FILE *)xmlGenericErrorContext, msg, args);\n    va_end(args);\n}"

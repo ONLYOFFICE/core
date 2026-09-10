@@ -780,7 +780,7 @@ namespace NSDocxRenderer
 			m_arSymWidths.push_back(w);
 			m_oText += oText.at(i);
 			m_arOriginLefts.push_back(arOriginLefts[i]);
-			m_dRight += w;
+			m_dRight = std::max(m_dRight + w, arOriginLefts[i] + w);
 
 			if (!arGids.empty() && m_bCollectMetaInfo)
 				m_arGids.push_back(arGids[i]);

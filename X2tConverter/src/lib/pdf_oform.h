@@ -74,7 +74,11 @@ namespace NExtractTools
 		{
 			COfficeUtils oOfficeUtils(NULL);
 			if (S_OK == oOfficeUtils.ExtractToDirectory(sTempDocx, sTo, NULL, 0))
+			{
+				// keep the embedded package so that a convertToOrigin request can hand it out as is
+				convertParams.m_sTempParamOOXMLFile = sTempDocx;
 				return 0;
+			}
 
 			return AVS_FILEUTILS_ERROR_CONVERT;
 		}

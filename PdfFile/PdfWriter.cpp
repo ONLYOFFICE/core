@@ -2171,7 +2171,8 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 			CAnnotFieldInfo::CTextAnnotPr* pPr = oInfo.GetTextAnnotPr();
 			PdfWriter::CTextAnnotation* pTextAnnot = (PdfWriter::CTextAnnotation*)pAnnot;
 
-			pTextAnnot->SetOpen(pPr->IsOpen());
+			if (!pTextAnnot->Get("IRT") || pPr->IsOpen())
+				pTextAnnot->SetOpen(pPr->IsOpen());
 			if (nFlags & (1 << 16))
 				pTextAnnot->SetName(pPr->GetName());
 			if (nFlags & (1 << 17))

@@ -40,6 +40,7 @@
 #include <set>
 
 #include "../../PdfFile/PdfFile.h"
+#include "../../Common/OfficeFileFormatDefines.h"
 #include "../../XpsFile/XpsFile.h"
 #include "../../DjVuFile/DjVu.h"
 #include "../graphics/pro/js/wasm/src/serialize.h"
@@ -391,7 +392,7 @@ public:
 			return ((CPdfFile*)m_pFile)->UndoRedact();
 		return false;
 	}
-	BYTE* BuildPdf(BYTE* pCommands, int nCommandsLen, const wchar_t* sPassword)
+	BYTE* BuildPdf(BYTE* pCommands, int nCommandsLen, const wchar_t* sPassword, BYTE* pMetaData = NULL, int nMetaLen = 0)
 	{
 		if (m_pFile && m_nType != 0)
 			return NULL;
@@ -405,6 +406,8 @@ public:
 		pdfFile->CreatePdf();
 		if (sPassword)
 			pdfFile->SetPassword(sPassword);
+		if (pMetaData && nMetaLen > 0)
+			pdfFile->AddMetaData(NSFile::CUtf8Converter::GetUnicodeFromCharPtr(g_format_oform_pdf_meta_tag, (LONG)strlen(g_format_oform_pdf_meta_tag)), pMetaData, (DWORD)nMetaLen);
 		pdfFile->CommandsToPdfFromBinary(pCommands, nCommandsLen);
 
 		BYTE* pData = NULL;

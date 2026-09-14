@@ -185,7 +185,24 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_ChartSpace  *oox_chart)
 		bool chart3D = (oox_chart->m_chart->m_view3D) ? true : false;
 		
 		convert(oox_chart->m_chart->m_floor, 1, chart3D);
-		convert(oox_chart->m_chart->m_backWall, 2, chart3D);
+
+		PPTX::Logic::SpPr *plot_area_spPr = oox_chart->m_chart->m_plotArea ?
+					oox_chart->m_chart->m_plotArea->m_spPr.GetPointer() : NULL;
+
+		if (oox_chart->m_chart->m_backWall)
+		{
+			convert(oox_chart->m_chart->m_backWall, 2, chart3D);
+			convert(plot_area_spPr);
+		}
+		else
+		{
+			odf_context()->chart_context()->start_wall();
+			{
+				if (plot_area_spPr)	convert(plot_area_spPr);
+				else				odf_context()->chart_context()->set_no_fill(true);
+			}
+			odf_context()->chart_context()->end_element();
+		}
 		
 		convert(oox_chart->m_chart->m_view3D);
 
@@ -274,6 +291,9 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_Layout* ct_layout)
 	if (ct_layout->m_manualLayout == NULL)return;
 
 	int m_xMode=0, m_yMode=0, m_wMode=0,m_hMode=0;
+
+	odf_context()->chart_context()->set_layout_target_inner(ct_layout->m_manualLayout->m_layoutTarget.IsInit() &&
+		ct_layout->m_manualLayout->m_layoutTarget->GetValue() == OOX::Spreadsheet::st_layouttargetINNER);
 
 	if (ct_layout->m_manualLayout->m_xMode.IsInit()) m_xMode = ct_layout->m_manualLayout->m_xMode->GetValue();
 	if (ct_layout->m_manualLayout->m_yMode.IsInit()) m_yMode = ct_layout->m_manualLayout->m_yMode->GetValue();
@@ -388,8 +408,6 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_PlotArea* ct_plotArea)
 		}
 	}
 	convert(ct_plotArea->m_dTable);
-
-	convert(ct_plotArea->m_spPr.GetPointer());
 }
 void OoxConverter::convert(OOX::Spreadsheet::CT_DTable *dTable)
 {

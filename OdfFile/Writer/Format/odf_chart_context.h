@@ -133,6 +133,8 @@ public:
 			void set_axis_tick_minor(int type);
 			void set_axis_tick_major(int type);
 			void set_axis_visible(bool val);
+		void set_layout_target_inner(bool bInner);
+
 		void start_title();
 		void start_grid(int type);
 		void start_legend();

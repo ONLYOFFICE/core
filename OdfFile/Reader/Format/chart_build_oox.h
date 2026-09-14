@@ -179,6 +179,7 @@ public:
 
 	chart_format_properties_ptr properties_;
 	graphic_format_properties_ptr graphic_properties_;
+	text_format_properties_ptr	text_properties_; //from chart:chart (default font)
 	oox::_oox_fill				chart_fill_;
 
 	std::vector<_cell>			cash_values;
@@ -273,6 +274,8 @@ private:
 	void ApplyGraphicProperties(std::wstring style, graphic_format_properties_ptr & propertiesOut, oox::_oox_fill & fill);
 	void ApplyTextProperties(std::wstring style, text_format_properties_ptr & propertiesOut);
 	void ApplyChartProperties(std::wstring style, chart_format_properties_ptr & propertiesOut);
+
+	void ParseTitleParts(const office_element_ptr & elm, chart::title & t, const std::wstring & span_style);
 
 	bool visit_table(std::wstring const & name);
     void visit_column(unsigned int repeated);

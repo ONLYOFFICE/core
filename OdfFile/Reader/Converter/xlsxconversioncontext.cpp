@@ -46,6 +46,7 @@
 #include "../Format/odf_document.h"
 #include "../Format/odfcontext.h"
 #include "../Format/calcs_styles.h"
+#include "../Format/style_table_properties.h"
 
 namespace cpdoccore { 
 
@@ -840,6 +841,19 @@ int xlsx_conversion_context::get_dxfId_style(const std::wstring &style_name)
 		dxfId = get_style_manager().dxfId(textFormats, graphicFormats, &cellFormats);
 	}
 	return dxfId;
+}
+double xlsx_conversion_context::getDefaultRowHeight()
+{
+	odf_reader::style_instance *rowDefStyle = root()->odf_context().styleContainer().style_default_by_type(odf_types::style_family::TableRow);
+
+	if ((rowDefStyle) && (rowDefStyle->content()))
+	{
+		const odf_reader::style_table_row_properties *prop = rowDefStyle->content()->get_style_table_row_properties();
+
+		if ((prop) && (prop->attlist_.style_row_height_))
+			return prop->attlist_.style_row_height_->get_value_unit(odf_types::length::pt);
+	}
+	return 2 * getMaxDigitSize().second * 72. / 96.;//in point size
 }
 std::pair<double, double> xlsx_conversion_context::getMaxDigitSize()
 {

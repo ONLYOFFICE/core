@@ -148,6 +148,7 @@ public:
 		styles_context_			= NULL;
 		current_series_count_	= 0;
 		local_table_reset_ref_	= false;
+		layout_target_inner_	= false;
 
 		if (odf_context_->type == SpreadsheetDocument)
 		{
@@ -174,6 +175,8 @@ public:
 
 	_CP_OPT(int)							bar_overlap;
 	_CP_OPT(int)							bar_gap_width;
+
+	bool									layout_target_inner_;
 
 	struct _range
 	{
@@ -1191,11 +1194,11 @@ void odf_chart_context::set_textarea_vertical_align(int align)
 void odf_chart_context::set_textarea_rotation(double val)
 {
 	if (!impl_->current_level_.back().chart_properties)return;
-	if (val < 0.001 && val > -0.001) return;
 	if (val < -360 || val > 360) return;
 
 	if (val < 0) val += 360;
-	val = 360 - val;
+	if (val > 0) val = 360 - val;//0 must stay 0 - it is the horizontal orientation,
+								 //ms office rotates the value axis title by default
 
 	impl_->current_level_.back().chart_properties->common_rotation_angle_attlist_.style_rotation_angle_ = (unsigned int)val;
 }
@@ -1425,6 +1428,23 @@ void odf_chart_context::set_legend_position(int val)
 		case 4:	legend->chart_legend_attlist_.chart_legend_position_ = L"top";		break;//st_legendposT
 	}
 }
+//odf splits what ooxml calls the layout of the plot area in two: chart:plot-area
+//holds the area including the axis labels, chart:coordinate-region - the plot only
+//(that is what c:layoutTarget val="inner" means)
+static chart_coordinate_region *get_coordinate_region(chart_plot_area *plot_area, bool bInner, odf_conversion_context *odf_context)
+{
+	if (!plot_area || !bInner) return NULL;
+
+	if (!plot_area->coordinate_region_)
+	{
+		create_element(L"chart", L"coordinate-region", plot_area->coordinate_region_, odf_context);
+	}
+	return dynamic_cast<chart_coordinate_region*>(plot_area->coordinate_region_.get());
+}
+void odf_chart_context::set_layout_target_inner(bool bInner)
+{
+	impl_->layout_target_inner_ = bInner;
+}
 void odf_chart_context::set_layout_x(double val, int mode)//edge, factor
 {
 	if (mode == 0) val = impl_->current_chart_state_.chart_width_pt * (val);
@@ -1435,7 +1455,9 @@ void odf_chart_context::set_layout_x(double val, int mode)//edge, factor
 	if (legend)legend->chart_legend_attlist_.common_draw_position_attlist_.svg_x_ = x_cm;
 
 	chart_plot_area *plot_area = dynamic_cast<chart_plot_area*>(impl_->current_level_.back().elm.get());
-	if (plot_area)plot_area->chart_plot_area_attlist_.common_draw_position_attlist_.svg_x_ = x_cm;
+	if (chart_coordinate_region *region = get_coordinate_region(plot_area, impl_->layout_target_inner_, impl_->odf_context_))
+									region->common_draw_position_attlist_.svg_x_ = x_cm;
+	else if (plot_area)				plot_area->chart_plot_area_attlist_.common_draw_position_attlist_.svg_x_ = x_cm;
 	
 	chart_title *title = dynamic_cast<chart_title*>(impl_->current_level_.back().elm.get());
 	if (title)title->chart_title_attlist_.common_draw_position_attlist_.svg_x_ = x_cm;
@@ -1581,7 +1603,9 @@ void odf_chart_context::set_layout_y(double val,int mode)
 	if (legend)legend->chart_legend_attlist_.common_draw_position_attlist_.svg_y_ = y_cm;
 
 	chart_plot_area *plot_area = dynamic_cast<chart_plot_area *>(impl_->current_level_.back().elm.get());
-	if (plot_area)plot_area->chart_plot_area_attlist_.common_draw_position_attlist_.svg_y_ = y_cm;
+	if (chart_coordinate_region *region = get_coordinate_region(plot_area, impl_->layout_target_inner_, impl_->odf_context_))
+									region->common_draw_position_attlist_.svg_y_ = y_cm;
+	else if (plot_area)				plot_area->chart_plot_area_attlist_.common_draw_position_attlist_.svg_y_ = y_cm;
 	
 	chart_title *title = dynamic_cast<chart_title*>(impl_->current_level_.back().elm.get());
 	if (title)title->chart_title_attlist_.common_draw_position_attlist_.svg_y_ = y_cm;
@@ -1596,7 +1620,9 @@ void odf_chart_context::set_layout_w(double val,int mode)
 	if (legend)legend->chart_legend_attlist_.chartooo_width_ = width_cm;
 
 	chart_plot_area *plot_area = dynamic_cast<chart_plot_area *>(impl_->current_level_.back().elm.get());
-	if (plot_area)plot_area->chart_plot_area_attlist_.common_draw_size_attlist_.svg_width_ = width_cm;
+	if (chart_coordinate_region *region = get_coordinate_region(plot_area, impl_->layout_target_inner_, impl_->odf_context_))
+									region->common_draw_size_attlist_.svg_width_ = width_cm;
+	else if (plot_area)				plot_area->chart_plot_area_attlist_.common_draw_size_attlist_.svg_width_ = width_cm;
 }
 void odf_chart_context::set_layout_h(double val, int mode)
 {
@@ -1608,7 +1634,9 @@ void odf_chart_context::set_layout_h(double val, int mode)
 	if (legend)legend->chart_legend_attlist_.chartooo_height_ = height_cm;
 
 	chart_plot_area *plot_area = dynamic_cast<chart_plot_area *>(impl_->current_level_.back().elm.get());
-	if (plot_area)plot_area->chart_plot_area_attlist_.common_draw_size_attlist_.svg_height_ = height_cm;
+	if (chart_coordinate_region *region = get_coordinate_region(plot_area, impl_->layout_target_inner_, impl_->odf_context_))
+									region->common_draw_size_attlist_.svg_height_ = height_cm;
+	else if (plot_area)				plot_area->chart_plot_area_attlist_.common_draw_size_attlist_.svg_height_ = height_cm;
 }
 
 void odf_chart_context::start_element(office_element_ptr & elm, office_element_ptr & style_elm, const std::wstring & style_name)

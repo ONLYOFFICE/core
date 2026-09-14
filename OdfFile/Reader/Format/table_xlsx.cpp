@@ -201,6 +201,14 @@ void table_table_row::xlsx_convert(oox::xlsx_conversion_context & Context)
 			bBreakAfter = true;
 		}
 	}
+	const double default_row_height = Context.getDefaultRowHeight();
+
+	Context.get_table_metrics().set_default_row_height(default_row_height);
+
+	if (row_height < 0.001)
+	{
+		row_height = default_row_height;
+	}
 	int row_current = Context.current_table_row() + 1;
 
     bool hidden = attlist_.table_visibility_.get_type() == table_visibility::Collapse;

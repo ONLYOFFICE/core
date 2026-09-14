@@ -49,6 +49,7 @@
 
 #include "draw_common.h"
 #include "text_elements.h"
+#include "paragraph_elements.h"
 
 #include "number_style.h"
 #include "calcs_styles.h"
@@ -219,6 +220,25 @@ void object_odf_context::add_point(unsigned int rep)
 }
 
 
+static std::wstring get_font_name(const odf_reader::text_format_properties_ptr & properties, odf_reader::odf_document * document)
+{
+	std::wstring name;
+
+	if (!properties) return name;
+
+	if (properties->fo_font_family_)
+	{
+		name = *properties->fo_font_family_;
+	}
+	else if (properties->style_font_name_ && document)
+	{
+		odf_reader::font_instance * font = document->odf_context().fontContainer().font_by_style_name(*properties->style_font_name_);
+		name = font ? font->name() : *properties->style_font_name_;
+	}
+	boost::algorithm::trim_if(name, boost::algorithm::is_any_of("'"));
+
+	return name;
+}
 static std::wstring get_document_font_name(odf_reader::odf_document * document)
 {
 	if (!document) return L"";
@@ -237,18 +257,7 @@ static std::wstring get_document_font_name(odf_reader::odf_document * document)
 		odf_reader::text_format_properties_ptr properties = calc_text_properties_content(inst);
 		if (!properties) continue;
 
-		std::wstring name;
-
-		if (properties->fo_font_family_)
-		{
-			name = *properties->fo_font_family_;
-		}
-		else if (properties->style_font_name_)
-		{
-			font_instance * font = context.fontContainer().font_by_style_name(*properties->style_font_name_);
-			name = font ? font->name() : *properties->style_font_name_;
-		}
-		boost::algorithm::trim_if(name, boost::algorithm::is_any_of("'"));
+		const std::wstring name = get_font_name(properties, document);
 
 		if (false == name.empty()) return name;
 	}
@@ -268,7 +277,12 @@ void object_odf_context::xlsx_convert(oox::xlsx_conversion_context & Context)
 		oox::oox_chart_context & chart = Context.current_chart();
 
 		chart.no_used_local_tables_ = true;
-		chart.set_default_font_name(get_document_font_name(Context.root()));
+	
+		//the font of the chart:chart - default font chart
+		std::wstring chart_font_name = get_font_name(text_properties_, Context.root());
+		if (chart_font_name.empty()) chart_font_name = get_document_font_name(Context.root());
+
+		chart.set_default_font_name(chart_font_name);
 
 		oox_convert(chart);
 
@@ -301,7 +315,10 @@ void object_odf_context::docx_convert(oox::docx_conversion_context & Context)
 		Context.start_chart(L"");
 		oox::oox_chart_context & chart_context = Context.current_chart();
 
-		chart_context.set_default_font_name(get_document_font_name(Context.root()));
+		std::wstring chart_font_name = get_font_name(text_properties_, Context.root());
+		if (chart_font_name.empty()) chart_font_name = get_document_font_name(Context.root());
+
+		chart_context.set_default_font_name(chart_font_name);
 
 		oox_convert(chart_context);
 
@@ -395,7 +412,11 @@ void object_odf_context::pptx_convert(oox::pptx_conversion_context & Context)
 		Context.start_chart(L"");
 		oox::oox_chart_context & chart_context = Context.current_chart();
 
-		chart_context.set_default_font_name(get_document_font_name(Context.root()));
+
+		std::wstring chart_font_name = get_font_name(text_properties_, Context.root());
+		if (chart_font_name.empty()) chart_font_name = get_document_font_name(Context.root());
+
+		chart_context.set_default_font_name(chart_font_name);
 
 		oox_convert(chart_context);
 
@@ -603,9 +624,6 @@ void object_odf_context::oox_convert(oox::oox_chart_context & chart_context)
 {
 	chart_context.set_pivot_chart	(pivot_source_);
 
-	chart_context.set_wall		(wall_);
-	chart_context.set_floor		(floor_);
-
 	chart::rect title_rect = calc_relative_rect(title_, width_pt_, height_pt_);
 	chart_context.set_title		(title_, sub_title_, title_rect.x, title_rect.y, title_rect.width, title_rect.height);
 
@@ -628,6 +646,9 @@ void object_odf_context::oox_convert(oox::oox_chart_context & chart_context)
 
 	chart_context.set_plot_area_properties (plot_area_.properties_, plot_area_.fill_);
 	chart_context.set_chart_graphic_properties (graphic_properties_, chart_fill_);
+
+	if (wall_.bEnabled)		chart_context.set_wall	(wall_);
+	if (floor_.bEnabled)	chart_context.set_floor	(floor_);
 
 	//chart_context.set_footer(footer_);
 	//chart_context.set_chart_properties(chart_graphic_properties_);
@@ -1129,6 +1150,7 @@ void process_build_object::visit(chart_chart& val)
         object_odf_context_.set_height(val.attlist_.common_draw_size_attlist_.svg_height_->get_value_unit(length::pt));
     }
 	ApplyGraphicProperties(val.attlist_.common_attlist_.chart_style_name_.get_value_or(L""), object_odf_context_.graphic_properties_, object_odf_context_.chart_fill_);
+	ApplyTextProperties(val.attlist_.common_attlist_.chart_style_name_.get_value_or(L""), object_odf_context_.text_properties_);
 
 	object_odf_context_.set_class(val.attlist_.chart_class_.get_type());
 
@@ -1137,6 +1159,56 @@ void process_build_object::visit(chart_chart& val)
 
 	ACCEPT_ALL_CONTENT(val.content_);
 
+}
+
+void process_build_object::ParseTitleParts(const office_element_ptr & elm, chart::title & t, const std::wstring & span_style)
+{
+	if (!elm) return;
+
+	if (odf_reader::text::p *para = dynamic_cast<odf_reader::text::p*>(elm.get()))
+	{
+		for (size_t i = 0; i < para->paragraph_.content_.size(); i++)
+			ParseTitleParts(para->paragraph_.content_[i], t, span_style);
+		return;
+	}
+	if (odf_reader::text::span *sp = dynamic_cast<odf_reader::text::span*>(elm.get()))
+	{
+		const std::wstring style = sp->text_style_name_.empty() ? span_style : sp->text_style_name_;
+
+		for (size_t i = 0; i < sp->content_.size(); i++)
+			ParseTitleParts(sp->content_[i], t, style);
+		return;
+	}
+	if (dynamic_cast<odf_reader::text::line_break*>(elm.get()))
+	{
+		chart::title::part part;
+		part.new_line_ = true;
+		t.parts_.push_back(part);
+		return;
+	}
+
+	std::wstringstream v;
+	elm->text_to_stream(v, false);
+
+	const std::wstring content = v.str();
+	if (content.empty()) return;
+
+	if (false == t.parts_.empty() && false == t.parts_.back().new_line_ &&
+		t.parts_.back().style_name_ == span_style)
+	{
+		t.parts_.back().content_ += content;
+		return;
+	}
+	chart::title::part part;
+	part.content_		= content;
+	part.style_name_	= span_style;
+
+	if (false == span_style.empty())
+	{
+		style_instance *styleInst = styles_.style_by_name(span_style, odf_types::style_family::Text, false);
+		if (styleInst) part.text_properties_ = calc_text_properties_content(styleInst);
+	}
+	t.parts_.push_back(part);
 }
 
 void process_build_object::visit(chart_title& val)
@@ -1166,6 +1238,9 @@ void process_build_object::visit(chart_title& val)
 		std::wstringstream v;
 		val.text_p_->text_to_stream(v, false);
 		t.content_ = v.str();
+
+		t.parts_.clear();
+		ParseTitleParts(val.text_p_, t, L"");
 	}
 }
 
@@ -1178,6 +1253,8 @@ void process_build_object::visit(chart_subtitle & val)
 		std::wstringstream v;
 		val.text_p_->text_to_stream(v, false);
 		t.content_ = v.str();
+
+		ParseTitleParts(val.text_p_, t, L"");
 	}
 
 	ApplyTextProperties(val.attlist_.common_attlist_.chart_style_name_.get_value_or(L""), t.text_properties_);

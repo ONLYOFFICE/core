@@ -83,7 +83,17 @@ namespace chart {
 	};
 	struct title : public simple, public rect
 	{
-		std::wstring content_;
+		struct part
+		{
+			std::wstring				content_;
+			std::wstring				style_name_;
+			text_format_properties_ptr	text_properties_;
+			bool						new_line_ = false;
+		};
+
+		std::wstring		content_;	//plain text
+										//or
+		std::vector<part>	parts_;		//formatted
 	}; 
 	struct legend : public simple, public rect
     {

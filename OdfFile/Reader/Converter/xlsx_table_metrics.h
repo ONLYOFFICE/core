@@ -57,6 +57,8 @@ public:
 
 	void update_pt (int offset_col, int offset_row, double &x_pt, double &y_pt);
 
+    void set_default_row_height (double height_pt);
+
     void add_cols (int count, double widht_pt);
     void add_rows (int count, double height_pt);
 

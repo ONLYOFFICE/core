@@ -47,6 +47,7 @@
 #include "calcs_styles.h"
 #include "search_table_cell.h"
 
+#include "../../Common/odf_date_time_utils.h"
 #include "../../Reader/Converter/xlsx_utils.h"
 #include "../../Reader/Converter/xlsx_cell_format.h"
 #include "../../Formulas/formulasconvert.h"
@@ -822,41 +823,25 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context& Context)
 	{
 		if (attr.office_date_value_)
 		{
-			int y, m, d;
-			_CP_OPT(int) h, min, sec;
-			if (oox::parseDateTime(attr.office_date_value_.get(), y, m, d, h, min, sec))
+			double dDate = 0;
+			if (odf_datetime::parse_date_value(attr.office_date_value_.get(), dDate) && dDate > 0)
 			{
-				boost::int64_t intDate = oox::convertDate(y, m, d);
-				_CP_OPT(double) dTime;
-				if (h && min)
-				{
-					dTime = oox::convertTime(*h, *min, sec.get_value_or(0));
-				}
-				if (intDate > 0)
-				{
-					if (dTime)
-					{
-						number_val = XmlUtils::ToString(*dTime + intDate);
-					}
-					else
-					{
-						number_val = boost::lexical_cast<std::wstring>(intDate);
-					}
-					xlsx_value_type = oox::XlsxCellType::n;
+				number_val = XmlUtils::ToString(dDate);
+				xlsx_value_type = oox::XlsxCellType::n;
 
-					if (num_format_type == office_value_type::Currency)
-					{//data format type from style doesn't match cell data format
-						num_format.clear();
-						num_format_type = office_value_type::Date;
-					}
+				if (num_format_type == office_value_type::Currency)
+				{//data format type from style doesn't match cell data format
+					num_format.clear();
+					num_format_type = office_value_type::Date;
+				}
 
-					if (num_format.empty())
-						num_format = Context.get_num_format_context().get_last_date_format();
-				}
-				else
-				{
-					str_val = attr.office_date_value_.get();
-				}
+				if (num_format.empty())
+					num_format = Context.get_num_format_context().get_last_date_format();
+			}
+			else
+			{
+				str_val = attr.office_date_value_.get();
+				xlsx_value_type = oox::XlsxCellType::str;
 			}
 		}
 	}
@@ -866,29 +851,25 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context& Context)
 		if (attr.office_time_value_)
 		{
 			const std::wstring tv = attr.office_time_value_.get();
-			int h, m;
-			double s;
-			if (oox::parseTime(tv, h, m, s))
+			double dTime = 0;
+			if (odf_datetime::parse_time_value(tv, dTime) && dTime >= 0)
 			{
-				double dTime = oox::convertTime(h, m, s);
-				if (dTime >= 0)
-				{
-					number_val = boost::lexical_cast<std::wstring>(dTime);
-					xlsx_value_type = oox::XlsxCellType::n;
+				number_val = XmlUtils::ToString(dTime);
+				xlsx_value_type = oox::XlsxCellType::n;
 
-					if (num_format_type == office_value_type::Currency)
-					{//data format type from style doesn't match cell data format
-						num_format.clear();
-						num_format_type = office_value_type::Time;
-					}
+				if (num_format_type == office_value_type::Currency)
+				{//data format type from style doesn't match cell data format
+					num_format.clear();
+					num_format_type = office_value_type::Time;
+				}
 
-					if (num_format.empty())
-						num_format = Context.get_num_format_context().get_last_time_format();
-				}
-				else
-				{
-					str_val = tv;
-				}
+				if (num_format.empty())
+					num_format = Context.get_num_format_context().get_last_time_format();
+			}
+			else
+			{
+				str_val = tv;
+				xlsx_value_type = oox::XlsxCellType::str;
 			}
 		}
 	}
@@ -1322,33 +1303,16 @@ void table_covered_table_cell::xlsx_convert(oox::xlsx_conversion_context & Conte
         xlsx_value_type = oox::XlsxCellType::n;              
         if (attr.office_date_value_)
         {
-            int y, m, d;
-			_CP_OPT(int) h, min, s;
-            if (oox::parseDateTime(attr.office_date_value_.get(), y, m, d, h, min, s))
-            {
-				boost::int64_t intDate = oox::convertDate(y, m, d);
-				_CP_OPT(double) dTime;
-
-				if (h && min)
-				{
-					dTime = oox::convertTime(*h, *min,  s.get_value_or(0));
-				}
-				if (intDate > 0)
-				{
-					if (dTime)
-					{
-						number_val = XmlUtils::ToString(*dTime + intDate);
-					}
-					else
-					{
-						number_val = std::to_wstring(intDate);
-					}
-				}
-				else
-				{
-					str_val = attr.office_date_value_.get();
-				}
-            }
+			double dDate = 0;
+			if (odf_datetime::parse_date_value(attr.office_date_value_.get(), dDate) && dDate > 0)
+			{
+				number_val = XmlUtils::ToString(dDate);
+			}
+			else
+			{
+				str_val = attr.office_date_value_.get();
+				xlsx_value_type = oox::XlsxCellType::str;
+			}
         }
     }
     else if ((odf_value_type == office_value_type::Time) ||
@@ -1358,12 +1322,16 @@ void table_covered_table_cell::xlsx_convert(oox::xlsx_conversion_context & Conte
         if (attr.office_time_value_)
         {
             const std::wstring tv = attr.office_time_value_.get();
-            int h,m;
-            double s;
-            if (oox::parseTime(tv, h, m, s))
-            {
-                number_val = boost::lexical_cast<std::wstring>(oox::convertTime(h, m, s));
-            }                
+			double dTime = 0;
+			if (odf_datetime::parse_time_value(tv, dTime) && dTime >= 0)
+			{
+				number_val = XmlUtils::ToString(dTime);
+			}
+			else
+			{
+				str_val = tv;
+				xlsx_value_type = oox::XlsxCellType::str;
+			}
         }
     }
     else if ((odf_value_type == office_value_type::Boolean) ||

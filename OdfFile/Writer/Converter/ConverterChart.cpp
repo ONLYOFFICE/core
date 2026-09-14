@@ -488,6 +488,7 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_DateAx* axis)
 
 	odf_context()->chart_context()->start_axis();
 		odf_context()->chart_context()->set_axis_dimension(1);
+		odf_context()->chart_context()->set_axis_date_scale(true);
 		if (axis->m_axId.IsInit())
 			odf_context()->chart_context()->set_axis_id(*axis->m_axId);
 		

@@ -49,6 +49,7 @@
 #include "odf_conversion_context.h"
 
 #include "ods_table_state.h"//???
+#include "../../Common/odf_date_time_utils.h"
 
 #include "office_chart.h"
 
@@ -59,6 +60,7 @@
 #include "style_paragraph_properties.h"
 #include "style_graphic_properties.h"
 #include "style_chart_properties.h"
+#include "table.h"
 
 namespace cpdoccore 
 {
@@ -83,6 +85,8 @@ namespace odf_writer
 		int					dimension;//1 -x, 2, -y, 3 -z
 		std::wstring		name;
 		office_element_ptr	elm;
+		office_element_ptr	style_elm;
+		bool				date_axis;
 	};
 	struct 	odf_cash_state
 	{
@@ -897,7 +901,7 @@ void odf_chart_context::add_domain(const std::wstring & odf_ref)
 	impl_->current_chart_state_.elements_.push_back(state);
 }
 
-void odf_chart_context::add_categories(const std::wstring & odf_ref, const std::wstring & format_code, office_element_ptr & axis_elm)
+void odf_chart_context::add_categories(const std::wstring & odf_ref, const std::wstring & format_code, office_element_ptr & axis_elm, office_element_ptr & axis_style_elm, bool date_axis)
 {
 	size_t level = impl_->current_level_.size();
 
@@ -907,7 +911,19 @@ void odf_chart_context::add_categories(const std::wstring & odf_ref, const std::
 		std::wstring::npos != format_code.find(L"yy") &&
 		std::wstring::npos != format_code.find(L"d"))
 			bDataScale = true;
-	
+
+	if (bDataScale && axis_style_elm)
+	{
+		style *style_ = dynamic_cast<style*>(axis_style_elm.get());
+		if ((style_) && (!style_->style_data_style_name_))
+		{
+			number_format_state & number_state = impl_->styles_context_->numbers_styles().add_or_find(-1, format_code);
+			if (false == number_state.style_name.empty())
+				style_->style_data_style_name_ = number_state.style_name;
+		}
+	}
+	if (bDataScale && false == date_axis) bDataScale = false;
+
 	if (bDataScale && axis_elm)
 	{
 		office_element_ptr date_elm;
@@ -1010,7 +1026,7 @@ void odf_chart_context::start_axis()
 	}
 	start_element(elm, style_elm, style_name);
 
-	odf_axis_state axis_state = {0, 0, L"", elm};
+	odf_axis_state axis_state = {0, 0, L"", elm, style_elm, false};
 	impl_->axis_.push_back(axis_state);
 /////////////////////defaults
 	impl_->current_level_.back().chart_properties->reverse_direction_ = false;
@@ -1540,6 +1556,11 @@ void odf_chart_context::set_axis_id(unsigned int id)
 {
 	if (impl_->axis_.size()>0)impl_->axis_.back().oox_id = id;
 }
+void odf_chart_context::set_axis_date_scale(bool val)
+{
+	if (impl_->axis_.empty()) return;
+	impl_->axis_.back().date_axis = val;
+}
 void odf_chart_context::set_axis_visible(bool val)
 {
 	if (!impl_->current_level_.back().chart_properties)return;
@@ -1706,7 +1727,8 @@ void odf_chart_context::end_chart()
 			{
 				if (impl_->categories_[cat].type == 1) 
 				{
-					add_categories(impl_->categories_[cat].ref, impl_->categories_[cat].format_code, impl_->axis_[i].elm);
+					add_categories(impl_->categories_[cat].ref, impl_->categories_[cat].format_code, impl_->axis_[i].elm,
+									impl_->axis_[i].style_elm, impl_->axis_[i].date_axis);
 				}
 				else
 				{
@@ -1914,9 +1936,162 @@ void odf_chart_context::set_cash(std::wstring format_code, std::vector<std::wstr
 		}
 	}
 }
+
+static void convert_local_table_dates(office_element_ptr & cell_elm, odf_conversion_context * odf_context)
+{
+	table_table_cell *cell = dynamic_cast<table_table_cell*>(cell_elm.get());
+	if (!cell) return;
+	if (!cell->attlist_.common_value_and_type_attlist_) return;
+
+	common_value_and_type_attlist & value_attlist = *cell->attlist_.common_value_and_type_attlist_;
+	if (!value_attlist.office_value_type_) return;
+
+	office_value_type::type type = value_attlist.office_value_type_->get_type();
+
+	if (type != office_value_type::Date && type != office_value_type::Time && type != office_value_type::DateTime) return;
+
+	double value = 0;
+	bool result = value_attlist.office_date_value_ ? odf_datetime::parse_date_value(*value_attlist.office_date_value_, value) :
+				 (value_attlist.office_time_value_ ? odf_datetime::parse_time_value(*value_attlist.office_time_value_, value) : false);
+	if (!result) return;
+
+	std::wstring str_value = boost::lexical_cast<std::wstring>(value);
+
+	value_attlist.office_value_type_	= office_value_type(office_value_type::Float);
+	value_attlist.office_value_		= str_value;
+	value_attlist.office_date_value_	= boost::none;
+	value_attlist.office_time_value_	= boost::none;
+
+	if (false == cell->content_.empty()) return;
+
+	office_element_ptr paragr_elm;
+	create_element(L"text", L"p", paragr_elm, odf_context);
+
+	text_p *p = dynamic_cast<text_p*>(paragr_elm.get());
+	if (!p) return;
+
+	p->add_text(str_value);
+	cell->add_child_element(paragr_elm);
+}
+
+static void split_chart_local_table(office_element_ptr & table_elm, odf_conversion_context * odf_context)
+{
+	table_table *table = dynamic_cast<table_table*>(table_elm.get());
+	if (!table) return;
+
+	office_element_ptr_array & rows = table->table_rows_and_groups_.content_;
+	if (rows.size() < 2) return;
+
+	table_table_row *first_row = dynamic_cast<table_table_row*>(rows[0].get());
+	if (!first_row) return;
+	if (first_row->attlist_.table_number_rows_repeated_ != 1) return;
+
+	unsigned int count_columns = 0;
+	for (size_t i = 0; i < first_row->content_.size(); i++)
+	{
+		table_table_cell *cell = dynamic_cast<table_table_cell*>(first_row->content_[i].get());
+		if (cell)
+		{
+			count_columns += cell->attlist_.table_number_columns_repeated_;
+			continue;
+		}
+		table_covered_table_cell *covered = dynamic_cast<table_covered_table_cell*>(first_row->content_[i].get());
+		if (covered) count_columns += covered->attlist_.table_number_columns_repeated_;
+	}
+	if (count_columns < 2) return;
+
+	office_element_ptr_array & columns = table->table_columns_and_groups_.content_;
+	{
+		office_element_ptr_array old_columns;
+		for (size_t i = 0; i < columns.size(); i++)
+		{
+			if (columns[i] && columns[i]->get_type() == typeTableTableColumn)
+				old_columns.push_back(columns[i]);
+			else
+				return; //groups, headers ... - already structured
+		}
+		office_element_ptr header_columns_elm, columns_elm;
+		create_element(L"table", L"table-header-columns", header_columns_elm, odf_context);
+		create_element(L"table", L"table-columns", columns_elm, odf_context);
+
+		if (!header_columns_elm || !columns_elm) return;
+
+		unsigned int passed = 0;
+		for (size_t i = 0; i < old_columns.size() && passed < count_columns; i++)
+		{
+			table_table_column *column = dynamic_cast<table_table_column*>(old_columns[i].get());
+			if (!column) continue;
+
+			unsigned int repeated = column->attlist_.table_number_columns_repeated_;
+
+			if (passed == 0)
+			{
+				if (repeated > 1)
+				{
+					office_element_ptr header_column_elm;
+					create_element(L"table", L"table-column", header_column_elm, odf_context);
+
+					table_table_column *header_column = dynamic_cast<table_table_column*>(header_column_elm.get());
+					if (header_column)
+					{
+						header_column->attlist_ = column->attlist_;
+						header_column->attlist_.table_number_columns_repeated_ = 1;
+						header_columns_elm->add_child_element(header_column_elm);
+					}
+					column->attlist_.table_number_columns_repeated_ = repeated - 1;
+					columns_elm->add_child_element(old_columns[i]);
+				}
+				else
+					header_columns_elm->add_child_element(old_columns[i]);
+			}
+			else
+				columns_elm->add_child_element(old_columns[i]);
+
+			passed += repeated;
+		}
+		for (; passed < count_columns; passed++)
+		{
+			office_element_ptr column_elm;
+			create_element(L"table", L"table-column", column_elm, odf_context);
+			if (!column_elm) break;
+
+			if (passed == 0)	header_columns_elm->add_child_element(column_elm);
+			else				columns_elm->add_child_element(column_elm);
+		}
+		columns.clear();
+		columns.push_back(header_columns_elm);
+		columns.push_back(columns_elm);
+	}
+	{
+		office_element_ptr header_rows_elm, rows_elm;
+		create_element(L"table", L"table-header-rows", header_rows_elm, odf_context);
+		create_element(L"table", L"table-rows", rows_elm, odf_context);
+
+		if (!header_rows_elm || !rows_elm) return;
+
+		header_rows_elm->add_child_element(rows[0]);
+		for (size_t i = 1; i < rows.size(); i++)
+		{
+			table_table_row *row = dynamic_cast<table_table_row*>(rows[i].get());
+			if (row)
+			{
+				for (size_t j = 0; j < row->content_.size(); j++)
+				{
+					convert_local_table_dates(row->content_[j], odf_context);
+				}
+			}
+			rows_elm->add_child_element(rows[i]);
+		}
+		rows.clear();
+		rows.push_back(header_rows_elm);
+		rows.push_back(rows_elm);
+	}
+}
 void odf_chart_context::set_local_table(office_element_ptr & table_elm)
 {
 	if (!table_elm) return;
+
+	split_chart_local_table(table_elm, impl_->odf_context_);
 
 	impl_->current_level_[0].elm->add_child_element(table_elm);
 	size_t level = impl_->current_level_.size();

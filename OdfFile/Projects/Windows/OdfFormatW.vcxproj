@@ -122,6 +122,7 @@
     <ClInclude Include="..\..\Writer\Format\number_style.h" />
     <ClInclude Include="..\..\Writer\Format\object_package.h" />
     <ClInclude Include="..\..\Writer\Format\odf_chart_context.h" />
+    <ClInclude Include="..\..\Common\odf_date_time_utils.h" />
     <ClInclude Include="..\..\Writer\Format\odf_comment_context.h" />
     <ClInclude Include="..\..\Writer\Format\odf_controls_context.h" />
     <ClInclude Include="..\..\Writer\Format\odf_conversion_context.h" />

@@ -770,6 +770,7 @@ HEADERS += \
 	../../Writer/Format/number_style.h \
 	../../Writer/Format/object_package.h \
 	../../Writer/Format/odf_chart_context.h \
+	../../Common/odf_date_time_utils.h \
 	../../Writer/Format/odf_comment_context.h \
 	../../Writer/Format/odf_notes_context.h \
 	../../Writer/Format/odf_conversion_context.h \

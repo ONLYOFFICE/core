@@ -74,7 +74,7 @@ namespace SVG
 		if (!StartPath(pRenderer, pFile, oOldTransform, oMode))
 			return false;
 
-		TBounds oBounds = (NULL != m_pParent) ? m_pParent->GetBounds() : TBounds{0., 0., 0., 0.};
+		TBounds oBounds = (NULL != m_pParent && (IsRelativeValue(m_oCx) || IsRelativeValue(m_oCy))) ? m_pParent->GetBounds() : TBounds{0., 0., 0., 0.};
 
 		double dX = m_oCx.ToDouble(NSCSS::Pixel, oBounds.m_dRight  - oBounds.m_dLeft);
 		double dY = m_oCy.ToDouble(NSCSS::Pixel, oBounds.m_dBottom - oBounds.m_dTop);

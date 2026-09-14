@@ -603,7 +603,7 @@ namespace SVG
 
 	void CTSpan::CalculatePosition(double &dX, double &dY) const
 	{
-		TBounds oBounds{(NULL != m_pParent) ? m_pParent->GetBounds() : TBounds{0., 0., 0., 0.}};
+		TBounds oBounds{(NULL != m_pParent && (IsRelativeValue(m_oX) || IsRelativeValue(m_oY))) ? m_pParent->GetBounds() : TBounds{0., 0., 0., 0.}};
 
 		dX = m_oX.ToDouble(NSCSS::Pixel, oBounds.m_dRight - oBounds.m_dLeft);
 		dY = m_oY.ToDouble(NSCSS::Pixel, oBounds.m_dBottom - oBounds.m_dTop);
@@ -613,9 +613,9 @@ namespace SVG
 	{
 		double dParentWidth = 0., dParentHeight = 0.;
 
-		if (bUseParentBounds)
+		if (bUseParentBounds && NULL != m_pParent && (IsRelativeValue(m_oX) || IsRelativeValue(m_oY) || IsRelativeValue(m_arX) || IsRelativeValue(m_arY)))
 		{
-			const TBounds oBounds{(NULL != m_pParent) ? m_pParent->GetBounds() : TBounds{0., 0., 0., 0.}};
+			const TBounds oBounds{m_pParent->GetBounds()};
 
 			dParentWidth  = oBounds.m_dRight  - oBounds.m_dLeft;
 			dParentHeight = oBounds.m_dBottom - oBounds.m_dTop;

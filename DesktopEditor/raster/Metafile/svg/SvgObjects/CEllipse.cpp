@@ -72,7 +72,7 @@ namespace SVG
 		if (!StartPath(pRenderer, pFile, oOldTransform, oMode))
 			return false;
 
-		TBounds oBounds = (NULL != m_pParent) ? m_pParent->GetBounds() : TBounds{0., 0., 0., 0.};
+		TBounds oBounds = (NULL != m_pParent && (IsRelativeValue(m_oCx) || IsRelativeValue(m_oCy) || IsRelativeValue(m_oRx) || IsRelativeValue(m_oRy))) ? m_pParent->GetBounds() : TBounds{0., 0., 0., 0.};
 
 		double dParentWidth  = oBounds.m_dRight  - oBounds.m_dLeft;
 		double dParentHeight = oBounds.m_dBottom - oBounds.m_dTop;

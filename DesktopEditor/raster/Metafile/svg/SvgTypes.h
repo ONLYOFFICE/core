@@ -140,6 +140,28 @@ namespace SVG
 		SvgDigit m_oHeight;
 	};
 
+	inline bool IsRelativeValue(const SvgDigit& oValue)
+	{
+		if (oValue.Empty())
+			return false;
+
+		const NSCSS::UnitMeasure enUnitMeasure{oValue.GetUnitMeasure()};
+
+		return NSCSS::UnitMeasure::Percent == enUnitMeasure ||
+		       NSCSS::UnitMeasure::Em      == enUnitMeasure ||
+		       NSCSS::UnitMeasure::Rem     == enUnitMeasure;
+	}
+
+	inline bool IsRelativeValue(const std::vector<SvgDigit>& arValues)
+	{
+		return std::any_of(arValues.begin(), arValues.end(), [](const SvgDigit& oValue){ return IsRelativeValue(oValue); });
+	}
+
+	inline bool IsRelativeValue(const TRect& oRect)
+	{
+		return IsRelativeValue(oRect.m_oX) || IsRelativeValue(oRect.m_oY) || IsRelativeValue(oRect.m_oWidth) || IsRelativeValue(oRect.m_oHeight);
+	}
+
 	struct TBounds
 	{
 		double m_dLeft;

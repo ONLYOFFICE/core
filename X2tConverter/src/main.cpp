@@ -103,8 +103,15 @@ int wmain_lib(int argc, wchar_t *argv[])
 		sMemoryLimit = NSSystemUtils::gc_EnvMemoryLimitDefault;
 
 #if !defined(_DEBUG) && !defined(__ANDROID__) && !defined(_IOS)
-	long long nMemoryLimit;
-	if (NSStringExt::FromHumanReadableByteCount(sMemoryLimit, nMemoryLimit) && nMemoryLimit > 0)
+	long long nMemoryLimit = 0;
+	if (!NSStringExt::FromHumanReadableByteCount(sMemoryLimit, nMemoryLimit) || nMemoryLimit <= 0)
+	{
+		// an unparsable value must not leave the process without any limit
+		std::cerr << "Invalid memory limit \"" << U_TO_UTF8(sMemoryLimit) << "\", falling back to the default" << std::endl;
+		sMemoryLimit = NSSystemUtils::gc_EnvMemoryLimitDefault;
+		NSStringExt::FromHumanReadableByteCount(sMemoryLimit, nMemoryLimit);
+	}
+	if (nMemoryLimit > 0)
 		limit_memory((size_t)nMemoryLimit);
 #endif
 	std::wstring sArg1, sArg2;

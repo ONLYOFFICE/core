@@ -63,6 +63,7 @@ private:
 	int m_nType = -1;
 
 	bool m_bIsExternalFile;
+	static std::wstring m_sCMapFolder;
 
 public:
 	CDrawingFile(NSFonts::IApplicationFonts* pFonts)
@@ -90,6 +91,11 @@ public:
 		RELEASEOBJECT(m_pFontManager);
 		RELEASEINTERFACE(m_pApplicationFonts);
 		RELEASEOBJECT(m_pImageStorage);
+	}
+
+	static void SetCMapFolder(const std::wstring& dir)
+	{
+		m_sCMapFolder = dir;
 	}
 
 	void SetInternalFile(IOfficeDrawingFile* pFile)
@@ -136,6 +142,7 @@ public:
 		return NSImages::NSApplicationImageStream::GetGlobalImagesMemoryStorage();
 	}
 
+
 public:
 	bool OpenFile(const std::wstring& sFile, const wchar_t* sPassword)
 	{
@@ -158,7 +165,13 @@ public:
 					m_nType = 0;
 			}
 			else
+			{
+				if (!m_sCMapFolder.empty())
+				{
+					((CPdfFile*)m_pFile)->SetCMapFolder(m_sCMapFolder);
+				}
 				m_nType = 0;
+			}
 			break;
 		}
 		case 1:

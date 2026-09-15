@@ -595,6 +595,7 @@ namespace NSDocxRenderer
 			            cont->CalculateSpace() * c_dSPACE_WIDTH_COEF;
 
 			if (curr_line && fabs(curr_line->m_dBot - cont->m_dBot) <= c_dTHE_SAME_STRING_Y_PRECISION_MM &&
+					fabs(curr_line->m_dTop - cont->m_dTop) <= c_dTHE_SAME_STRING_Y_PRECISION_MM &&
 			        fabs(curr_line->m_dRight - cont->m_dLeft) <= 4 * space_width)
 			{
 				curr_line->AddCont(cont);
@@ -605,6 +606,7 @@ namespace NSDocxRenderer
 			for (size_t i = 0; i < text_lines.size(); ++i)
 			{
 				if (fabs(text_lines[i]->m_dBot - cont->m_dBot) <= c_dTHE_SAME_STRING_Y_PRECISION_MM &&
+						fabs(text_lines[i]->m_dTop - cont->m_dTop) <= c_dTHE_SAME_STRING_Y_PRECISION_MM &&
 				        fabs(curr_line->m_dRight - cont->m_dLeft) <= 2 * space_width)
 				{
 					curr_line = text_lines[i];
@@ -1655,6 +1657,44 @@ namespace NSDocxRenderer
 			return g1->m_dTop < g2->m_dTop;
 
 		});
+
+		for (auto it = text_line_groups.begin(); it != text_line_groups.end(); ++it)
+		{
+			auto& tlg = *it;
+			for (size_t i = 0; i < tlg->m_arItems.size(); i++)
+			{
+				const auto& tl = tlg->m_arItems[i];
+				if (tlg->m_dRight - tl->m_dRight > 1.5)
+				{
+					if (i == 0)
+					{
+						auto group_new1 = std::make_shared<CBaseItemGroup<CTextLine>>();
+						group_new1->AddItem(std::move(tl));
+						auto group_new2 = std::make_shared<CBaseItemGroup<CTextLine>>();
+						for (size_t j = 1; j < tlg->m_arItems.size(); j++)
+							group_new2->AddItem(std::move(tlg->m_arItems[j]));
+						it = text_line_groups.erase(it);
+						it = text_line_groups.insert(it, {group_new1, group_new2});
+						break;
+					}
+					else if (i != tlg->m_arItems.size() - 1)
+					{
+						auto group_new1 = std::make_shared<CBaseItemGroup<CTextLine>>();
+						for (size_t j = 0; j < i; j++)
+							group_new1->AddItem(std::move(tlg->m_arItems[j]));
+						auto group_new2 = std::make_shared<CBaseItemGroup<CTextLine>>();
+						group_new2->AddItem(std::move(tl));
+						auto group_new3 = std::make_shared<CBaseItemGroup<CTextLine>>();
+						for (size_t j = i + 1; j < tlg->m_arItems.size(); j++)
+							group_new3->AddItem(std::move(tlg->m_arItems[j]));
+						it = text_line_groups.erase(it);
+						it = text_line_groups.insert(it, {group_new1, group_new2, group_new3});
+						break;
+					}
+				}
+			}
+		}
+
 		return text_line_groups;
 	}
 

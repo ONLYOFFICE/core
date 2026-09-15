@@ -203,8 +203,14 @@ namespace StarMath
 	{
 		if (pMathPara == nullptr)
 			return;
-		bool bNewLine(false);
-		if (pMathPara->m_arrItems.size() > 1)
+        bool bNewLine(false);
+		size_t nLines = 0;
+		for (size_t i = 0; i < pMathPara->m_arrItems.size(); i++)
+		{
+			if (pMathPara->m_arrItems[i]->getType() != OOX::EElementType::et_m_oMathParaPr)
+				nLines++;
+		}
+		if (nLines > 1)
 		{
 			bNewLine = true;
 			m_pXmlWriter->WriteNodeBegin(L"mtable", false);
@@ -1588,8 +1594,8 @@ namespace StarMath
 	{
 		for (wchar_t wcSymbol : wsText)
 		{
-			//u2800 - braille blank (placeholder old version)
-			if (wcSymbol != L' ' && wcSymbol != L'\t' && wcSymbol != L'\u00A0' && wcSymbol != L'\u2800')
+			//u200B - zero width space (placeholder); u00A0, u2800 - placeholders of the old versions
+			if (wcSymbol != L' ' && wcSymbol != L'\t' && wcSymbol != L'\u200B' && wcSymbol != L'\u00A0' && wcSymbol != L'\u2800')
 				return false;
 		}
 		return true;
@@ -1618,13 +1624,13 @@ namespace StarMath
 		if (pSPre == nullptr)
 			return;
 		m_pXmlWriter->WriteNodeBegin(L"mmultiscripts", false);
-		TFormulaSize stStart = m_stSize, stFrac;
+		TFormulaSize stStart = m_stSize, stFrac, stTemp;
 		m_stSize.Zeroing();
 		if (IsEmptyNode(pSPre->m_oElement.GetPointer()))
 			EmptyBlock(m_pXmlWriter, m_wsAnnotationStarMath, m_stSize);
 		else
 			ConversionElement(pSPre->m_oElement.GetPointer());
-		stFrac = m_stSize;
+		stTemp = m_stSize;
 		m_stSize.Zeroing();
 		m_pXmlWriter->WriteNodeBegin(L"mprescripts", true);
 		m_pXmlWriter->WriteNodeEnd(L"w", true, true);
@@ -1640,6 +1646,8 @@ namespace StarMath
 			ConversionSub(pSPre->m_oSub.GetPointer());
 			m_wsAnnotationStarMath += L"} ";
 		}
+		stFrac = m_stSize;
+		m_stSize.Zeroing();
 
 		if (IsBlankNode(pSPre->m_oSup.GetPointer()))
 		{
@@ -1652,8 +1660,8 @@ namespace StarMath
 			ConversionSup(pSPre->m_oSup.GetPointer());
 			m_wsAnnotationStarMath += L"} ";
 		}
-		stFrac.m_iHeight += m_stSize.m_iHeight;
-		stFrac.m_iWidth += m_stSize.m_iWidth;
+		ComparisonSizeByWidth(stFrac, m_stSize);
+		ComparisonSizeByHeight(stFrac, stTemp);
 		ComparisonSizeByHeight(stStart, stFrac);
 		m_stSize = stStart;
 		m_pXmlWriter->WriteNodeEnd(L"mmultiscripts", false, false);
@@ -1789,13 +1797,12 @@ namespace StarMath
 			}
 		}
 	}
-	void COOXml2Odf::MTextRecording(XmlUtils::CXmlWriter* pXmlWrite, std::wstring& wsAnnotation, const std::wstring& wsText, TFormulaSize& stSize)
+	void COOXml2Odf::MTextRecording(XmlUtils::CXmlWriter* pXmlWrite, std::wstring& wsAnnotation, const std::wstring& wsText)
 	{
 		pXmlWrite->WriteNodeBegin(L"mtext", false);
 		pXmlWrite->WriteString(wsText);
 		pXmlWrite->WriteNodeEnd(L"mtext", false, false);
 		wsAnnotation += L"\u0026quot;" + wsText + L"\u0026quot; ";
-		stSize.m_iWidth += wsText.size();
 	}
 	void COOXml2Odf::ComparisonSizeByHeight(TFormulaSize& stLeft, const TFormulaSize& stRight)
 	{
@@ -2189,7 +2196,7 @@ namespace StarMath
 		case StarMath::TypeElement::letter:
 		case StarMath::TypeElement::letter_u32:
 		{
-			COOXml2Odf::MTextRecording(pXmlWrite, wsAnnotation, m_wsElement, stSize);
+			COOXml2Odf::MTextRecording(pXmlWrite, wsAnnotation, m_wsElement);
 			break;
 		}
 		default:
@@ -2437,7 +2444,7 @@ namespace StarMath
 	{
 		stSize.m_iWidth += 1;
 		if (m_pLeftArg == nullptr && m_pRightArg == nullptr)
-			COOXml2Odf::MTextRecording(pXmlWrite, wsAnnotation, m_wsSymbol, stSize);
+			COOXml2Odf::MTextRecording(pXmlWrite, wsAnnotation, m_wsSymbol);
 		else
 		{
 			pXmlWrite->WriteNodeBegin(L"mrow", false);
@@ -2638,7 +2645,10 @@ namespace StarMath
 			stSize.m_iWidth += m_wsAnnotation.size();
 		}
 		else if (!m_wsSymbol.empty())
-			COOXml2Odf::MTextRecording(pXmlWrite, wsAnnotation, m_wsSymbol, stSize);
+		{
+			COOXml2Odf::MTextRecording(pXmlWrite, wsAnnotation, m_wsSymbol);
+			stSize.m_iWidth += m_wsSymbol.size();
+		}
 		COOXml2Odf::StyleClosing(stStyle, pXmlWrite);
 	}
 	void CSpecialChar::SetAttribute(StValuePr* pAttribute)

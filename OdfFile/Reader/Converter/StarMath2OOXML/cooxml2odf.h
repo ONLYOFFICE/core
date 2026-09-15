@@ -173,7 +173,7 @@ namespace StarMath
 		static bool IsDigit(const std::wstring& wsDigit);
 		static bool IsAlpha(const std::wstring& wsAlpha);
 		static void StyleClosing(const StStyleMenClose &stStyle, XmlUtils::CXmlWriter* pXmlWrite);
-		static void MTextRecording(XmlUtils::CXmlWriter* pXmlWrite, std::wstring& wsAnnotation,const std::wstring& wsText,TFormulaSize& stSize);
+		static void MTextRecording(XmlUtils::CXmlWriter* pXmlWrite, std::wstring& wsAnnotation,const std::wstring& wsText);
 		static void ComparisonSizeByHeight(TFormulaSize& stLeft,const TFormulaSize& stRight);
 		static void ComparisonSizeByWidth(TFormulaSize& stLeft,const TFormulaSize& stRight);
 		std::wstring TransformationUTF32(const std::wstring& wsText);

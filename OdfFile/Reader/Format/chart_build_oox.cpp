@@ -661,6 +661,55 @@ void object_odf_context::oox_convert(oox::oox_chart_context & chart_context)
 	{
 		chart_context.add_chart(class_);
 	}
+//----------------------------------------------------------------------------------------
+	//series without ranges - data from plot-area range, split by columns (rows)
+	//first row/column - labels??
+	std::wstring	plot_table;
+	size_t plot_col_1 = 0, plot_row_1 = 0, plot_col_2 = 0, plot_row_2 = 0;
+
+	const bool bPlotRange		= parse_cell_range(plot_area_.cell_range_address_, plot_table, plot_col_1, plot_row_1, plot_col_2, plot_row_2);
+	const bool bFirstRowLabels	= (plot_area_.data_source_has_labels_ == L"both" || plot_area_.data_source_has_labels_ == L"row");
+	const bool bFirstColLabels	= (plot_area_.data_source_has_labels_ == L"both" || plot_area_.data_source_has_labels_ == L"column");
+
+	_CP_OPT(int) nSeriesSource;
+	odf_reader::GetProperty(plot_area_.properties_, L"series-source", nSeriesSource);
+	const bool bSeriesInRows = nSeriesSource && *nSeriesSource == (int)odf_types::chart_series_source::rows;
+
+	const size_t data_col_1 = plot_col_1 + (bFirstColLabels ? 1 : 0);
+	const size_t data_row_1 = plot_row_1 + (bFirstRowLabels ? 1 : 0);
+
+	//offset of plot-area range in local table (local table can contain additional first row/column for labels)
+	bool	bLocalCache = false;
+	size_t	local_col_offset = 0, local_row_offset = 0;
+
+	if (bPlotRange && false == table_name_.empty() && plot_table != table_name_)
+	{
+		size_t local_cols = 0, local_rows = 0;
+		for (size_t i = 0; i < cash_values.size(); i++)
+		{
+			local_cols = (std::max)(local_cols, cash_values[i].col + 1);
+			local_rows = (std::max)(local_rows, cash_values[i].row + 1);
+		}
+		const size_t plot_cols = plot_col_2 - plot_col_1 + 1;
+		const size_t plot_rows = plot_row_2 - plot_row_1 + 1;
+
+		if ((local_cols == plot_cols || local_cols == plot_cols + 1) &&
+			(local_rows == plot_rows || local_rows == plot_rows + 1))
+		{
+			bLocalCache			= true;
+			local_col_offset	= local_cols - plot_cols;
+			local_row_offset	= local_rows - plot_rows;
+		}
+	}
+	auto make_range = [](const std::wstring & table, size_t col_1, size_t row_1, size_t col_2, size_t row_2) -> std::wstring
+	{
+		std::wstring range = table + L"." + oox::getCellAddress(col_1, row_1, true);
+		if (col_1 != col_2 || row_1 != row_2)
+			range += L":." + oox::getCellAddress(col_2, row_2, true);
+		return range;
+	};
+	size_t plot_series_index = 0;
+//----------------------------------------------------------------------------------------
 
  	for (size_t i = 0; i < series_.size(); i++)
 	{
@@ -682,25 +731,67 @@ void object_odf_context::oox_convert(oox::oox_chart_context & chart_context)
 	
 		current->add_series(series_id++);
 		
-		if (series_[i].cell_range_address_.empty() ) 
-			series_[i].cell_range_address_ = plot_area_.cell_range_address_; //SplitByColumn	(ind_ser,range);
-																	//SplitByRow	(ind_ser,range);
+		std::wstring cell_cash_address;
+		std::wstring label_cash_address;
+
+		if (series_[i].cell_range_address_.empty() && bPlotRange && domain_cell_range_adress_.empty() &&
+			series_[i].class_ != chart_class::scatter && series_[i].class_ != chart_class::bubble)
+		{
+			const size_t index = plot_series_index++;
+
+			size_t col_1 = data_col_1, row_1 = data_row_1, col_2 = plot_col_2, row_2 = plot_row_2;
+			size_t label_col = 0, label_row = 0;
+			bool bLabel = false;
+
+			if (bSeriesInRows)
+			{
+				row_1 = row_2 = data_row_1 + index;
+				label_col = plot_col_1;	label_row = row_1;	bLabel = bFirstColLabels;
+			}
+			else
+			{
+				col_1 = col_2 = data_col_1 + index;
+				label_col = col_1;	label_row = plot_row_1;	bLabel = bFirstRowLabels;
+			}
+
+			if (col_1 <= col_2 && row_1 <= row_2 && col_2 <= plot_col_2 && row_2 <= plot_row_2)
+			{
+				series_[i].cell_range_address_ = make_range(plot_table, col_1, row_1, col_2, row_2);
+
+				if (bLocalCache)
+				{
+					cell_cash_address = make_range(table_name_, col_1 - plot_col_1 + local_col_offset, row_1 - plot_row_1 + local_row_offset,
+																col_2 - plot_col_1 + local_col_offset, row_2 - plot_row_1 + local_row_offset);
+				}
+				if (bLabel && series_[i].label_cell_address_.empty())
+				{
+					series_[i].label_cell_address_ = make_range(plot_table, label_col, label_row, label_col, label_row);
+
+					if (bLocalCache)
+					{
+						label_cash_address = make_range(table_name_, label_col - plot_col_1 + local_col_offset, label_row - plot_row_1 + local_row_offset,
+																	label_col - plot_col_1 + local_col_offset, label_row - plot_row_1 + local_row_offset);
+					}
+				}
+			}
+		}
+		if (series_[i].cell_range_address_.empty() )
+			series_[i].cell_range_address_ = plot_area_.cell_range_address_;
+
 		if (series_[i].cell_range_address_.empty())
 			series_[i].cell_range_address_ = domain_cell_range_adress2_;
-		
-		//here the data needs to be split by columns or rows - since plot-area has a common range
-		//first column-row MAY be used for labels
-		//each series takes each subsequent range
-		//such definition is rare = todooo
-		
+
+		if (cell_cash_address.empty())	cell_cash_address	= series_[i].cell_range_address_;
+		if (label_cash_address.empty())	label_cash_address	= series_[i].label_cell_address_;
+
 		std::vector<std::wstring>		domain_cash;
 		std::vector<std::wstring>		cell_cash;
 		std::vector<std::wstring>		cat_cash;
 		std::vector<std::wstring>		label_cash;
 
-		calc_cache_series (domain_cell_range_adress_,			domain_cash);
-		calc_cache_series (series_[i].cell_range_address_,		cell_cash);
-		calc_cache_series (series_[i].label_cell_address_,		label_cash);
+		calc_cache_series (domain_cell_range_adress_,	domain_cash);
+		calc_cache_series (cell_cash_address,			cell_cash);
+		calc_cache_series (label_cash_address,			label_cash);
 		
 		if (chart_context.no_used_local_tables_ && false == table_name_.empty())
 		{//remove references to local cache table
@@ -851,10 +942,24 @@ void object_odf_context::oox_convert(oox::oox_chart_context & chart_context)
 			if (current) current->set_axis_properties(a.properties_);
 		}
 
-		if (a.title_.properties_)
 		{
-			_CP_OPT(int) titleAngle = odf_reader::oox_convert_rotation_angle(
+			_CP_OPT(int) titleAngle;
+			if (a.title_.properties_)
+			{
+				titleAngle = odf_reader::oox_convert_rotation_angle(
 										a.title_.properties_->common_rotation_angle_attlist_.style_rotation_angle_);
+			}
+			if (!titleAngle && a.title_.bEnabled)
+			{//default - title of vertical axis is rotated
+				_CP_OPT(bool) bVertical;
+				odf_reader::GetProperty(plot_area_.properties_, L"vertical", bVertical);
+
+				if ((a.dimension_ == L"y" && false == bVertical.get_value_or(false)) ||
+					(a.dimension_ == L"x" && true == bVertical.get_value_or(false)))
+				{
+					titleAngle = -90 * 60000;
+				}
+			}
 
 			if ((titleAngle) && (0 != *titleAngle % (180 * 60000)) && (0 == *titleAngle % (90 * 60000)))
 			{
@@ -1305,6 +1410,7 @@ void process_build_object::visit(chart_plot_area& val)
 	ACCEPT_ALL_CONTENT(val.content_);
 
 	object_odf_context_.plot_area_.cell_range_address_ = val.attlist_.table_cell_range_address_.get_value_or(L"");
+	object_odf_context_.plot_area_.data_source_has_labels_ = val.attlist_.chart_data_source_has_labels_.get_value_or(L"none");
 
 	read_rect(object_odf_context_.plot_area_, val.attlist_.common_draw_position_attlist_, val.attlist_.common_draw_size_attlist_);
 

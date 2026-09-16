@@ -126,7 +126,6 @@ void oox_title::oox_serialize(std::wostream & _Wostream)
 	{
 		rotateVal = odf_reader::oox_convert_rotation_angle(content_.properties_->common_rotation_angle_attlist_.style_rotation_angle_);
 	}
-	if (!rotateVal) rotateVal = 0;
 
 	const bool bTitleText = (false == content_.content_.empty() || false == sub_.content_.empty());
 

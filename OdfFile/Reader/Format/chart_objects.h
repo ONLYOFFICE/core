@@ -103,9 +103,8 @@ namespace chart {
 	struct plot_area : public simple, public rect
     {
 		std::wstring cell_range_address_;
+		std::wstring data_source_has_labels_; //none, row, column, both
 		chart_format_properties_ptr	properties_;
-		//series_in_column_or_row
-		//uses_first_as_label
 	};
 	struct axis: public simple, public rect
     {

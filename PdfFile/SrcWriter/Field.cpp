@@ -2043,7 +2043,7 @@ namespace PdfWriter
 			m_pStream->WriteStr(" re\012f\012");
 		}
 
-		if ((m_pField && m_pField->HaveBorder()) || (pAnnot && pAnnot->HaveBorder()))
+		if ((m_pField && m_pField->HaveBorder()) || (pAnnot && pAnnot->HaveBorder() && pAnnot->HaveBC()))
 		{
 			double dBorderSize = m_pField ? m_pField->GetBorderSize() : pAnnot->GetBorderWidth();
 
@@ -2267,7 +2267,7 @@ namespace PdfWriter
 		double dBorderSize       = 0;
 		double dBorderSizeStyle  = 0;
 
-		if (pAnnot && pAnnot->HaveBorder())
+		if (pAnnot && pAnnot->HaveBorder() && pAnnot->HaveBC())
 		{
 			dBorderSize      = pAnnot->GetBorderWidth();
 			dBorderSizeStyle = dBorderSize;
@@ -2654,7 +2654,7 @@ namespace PdfWriter
 	void CAnnotAppearanceObject::DrawBorder(const double& dWidth, const double& dHeight)
 	{
 		CWidgetAnnotation* pAnnot  = dynamic_cast<CWidgetAnnotation*>(m_pAnnot);
-		if (!pAnnot || !pAnnot->HaveBorder())
+		if (!pAnnot || !pAnnot->HaveBorder() || !pAnnot->HaveBC())
 			return;
 
 		m_pStream->WriteStr("q\012");
@@ -3203,7 +3203,7 @@ namespace PdfWriter
 
 		double dBorder = 1;
 		EBorderType nBorderType = EBorderType::Inset;
-		if (m_pAnnot->HaveBorder())
+		if (m_pAnnot->HaveBorder() && pAnnot->HaveBC())
 		{
 			dBorder = m_pAnnot->GetBorderWidth();
 			nBorderType = m_pAnnot->GetBorderType();
@@ -3322,7 +3322,7 @@ namespace PdfWriter
 
 		double dBorder = 1;
 		EBorderType nBorderType = EBorderType::Solid;
-		if (m_pAnnot->HaveBorder())
+		if (m_pAnnot->HaveBorder() && pAnnot->HaveBC())
 		{
 			dBorder = m_pAnnot->GetBorderWidth();
 			nBorderType = m_pAnnot->GetBorderType();

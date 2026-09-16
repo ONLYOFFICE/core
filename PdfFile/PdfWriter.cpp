@@ -2543,7 +2543,7 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 			const std::vector<CAnnotFieldInfo::CActionFieldPr*> arrActions = pPr->GetActions();
 			for (CAnnotFieldInfo::CActionFieldPr* pAction : arrActions)
 			{
-				PdfWriter::CAction* pA = GetAction(pAction);
+				PdfWriter::CAction* pA = GetAction(pAction, true);
 				pWidgetAnnot->AddAction(pA);
 			}
 			if (arrActions.empty())
@@ -2889,7 +2889,7 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 			const std::vector<CAnnotFieldInfo::CActionFieldPr*> arrActions = pPr->GetActions();
 			for (CAnnotFieldInfo::CActionFieldPr* pAction : arrActions)
 			{
-				PdfWriter::CAction* pA = GetAction(pAction);
+				PdfWriter::CAction* pA = GetAction(pAction, true);
 				pScreenAnnot->AddAction(pA);
 			}
 		}

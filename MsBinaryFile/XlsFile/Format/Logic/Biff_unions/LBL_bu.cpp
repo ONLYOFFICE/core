@@ -147,6 +147,10 @@ int LBL::serialize(std::wostream & stream)
 	std::wstring name_ = XmlUtils::EncodeXmlString(name);
 
 	if (name_.empty()) name_ = L"_";
+	if (std::iswdigit(name_[0]))
+	{
+		name_ = L"_" + name_;
+	}
 
 	std::wstring name_check = name_ + L"sheet(" + std::to_wstring(lbl->itab) + L")";
 

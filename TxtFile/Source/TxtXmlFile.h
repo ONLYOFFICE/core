@@ -41,12 +41,18 @@ namespace Writers
 {
 	class FileWriter;
 }
+namespace BinDocxRW
+{
+	class IDocumentContentProvider;
+}
 
 class CTxtXmlFile
 {
 public:
     _UINT32 txt_LoadFromFile(const std::wstring & sSrcFileName, const std::wstring & sDstPath, const std::wstring & sXMLOptions);
     _UINT32 txt_SaveToFile	(const std::wstring & sDstFileName, const std::wstring & sSrcPath, const std::wstring & sXMLOptions);
+
+	BinDocxRW::IDocumentContentProvider* txt_CreateContentProvider(const std::wstring & sSrcFileName, const std::wstring & sXMLOptions);
 
 	CTxtXmlFile();
 

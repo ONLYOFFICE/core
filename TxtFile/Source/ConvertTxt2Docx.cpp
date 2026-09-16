@@ -35,6 +35,8 @@
 #include "ConvertTxt2Docx.h"
 #include "TxtFormat/File.h"
 
+#include "../../DesktopEditor/common/File.h"
+
 #include "../../OOXML/DocxFormat/Document.h"
 #include "../../OOXML/DocxFormat/Styles.h"
 #include "../../OOXML/DocxFormat/Footnote.h"
@@ -51,38 +53,42 @@ namespace Txt2Docx
 {
     namespace
     {
-        bool isEmoji(const std::string& utf8Char)
-        {
-            if (utf8Char.empty()) return false;
+		bool isEmojiAt(const std::string& line, size_t pos, size_t len) // utf8 
+		{
+			unsigned char c = line[pos];
+			uint32_t codePoint = 0;
 
-            unsigned char c = utf8Char[0];
-            uint32_t codePoint = 0;
+			if ((c & 0xF8) == 0xF0 && len >= 4)
+			{
+				codePoint = ((line[pos] & 0x07) << 18) |
+							((line[pos + 1] & 0x3F) << 12) |
+							((line[pos + 2] & 0x3F) << 6)  |
+							(line[pos + 3] & 0x3F);
+			}
+			else if ((c & 0xF0) == 0xE0 && len >= 3)
+			{
+				codePoint = ((line[pos] & 0x0F) << 12) |
+							((line[pos + 1] & 0x3F) << 6)  |
+							(line[pos + 2] & 0x3F);
+			}
+			else
+			{
+				return false;
+			}
 
-            if ((c & 0xF8) == 0xF0 && utf8Char.length() >= 4)
-            {
-                codePoint = ((utf8Char[0] & 0x07) << 18) |
-                            ((utf8Char[1] & 0x3F) << 12) |
-                            ((utf8Char[2] & 0x3F) << 6)  |
-                            (utf8Char[3] & 0x3F);
-            }
-            else if ((c & 0xF0) == 0xE0 && utf8Char.length() >= 3)
-            {
-                codePoint = ((utf8Char[0] & 0x0F) << 12) |
-                            ((utf8Char[1] & 0x3F) << 6)  |
-                            (utf8Char[2] & 0x3F);
-            }
-            else
-            {
-                return false;
-            }
+			return (codePoint >= 0x1F300 && codePoint <= 0x1F9FF) ||
+				(codePoint >= 0x2600 && codePoint <= 0x27BF) ||
+				(codePoint >= 0x2B00 && codePoint <= 0x2BFF) ||
+				(codePoint >= 0xFE00 && codePoint <= 0xFE0F) ||
+				(codePoint >= 0x1F900 && codePoint <= 0x1F9FF) ||
+				codePoint == 0x00A9 || codePoint == 0x00AE;
+		}
+		bool isEmoji(const std::string& utf8Char)
+		{
+			if (utf8Char.empty()) return false;
 
-            return (codePoint >= 0x1F300 && codePoint <= 0x1F9FF) ||
-                (codePoint >= 0x2600 && codePoint <= 0x27BF) ||
-                (codePoint >= 0x2B00 && codePoint <= 0x2BFF) ||
-                (codePoint >= 0xFE00 && codePoint <= 0xFE0F) ||
-                (codePoint >= 0x1F900 && codePoint <= 0x1F9FF) ||
-                codePoint == 0x00A9 || codePoint == 0x00AE;
-        }
+			return isEmojiAt(utf8Char, 0, utf8Char.length());
+		}
 
         std::string escapeXml(const std::string& text)
         {
@@ -191,27 +197,21 @@ namespace Txt2Docx
             pPara->m_arrItems.push_back( pR );
         }
     };
-
 	Converter::Converter(int encoding) : converter_( new Converter_Impl(encoding) )
 	{
 	}
-
 	Converter::~Converter()
 	{
 		delete converter_;
 	}
-
 	void Converter::convert()
 	{
 		return converter_->convert();
 	}
-
 	void Converter::read(const std::wstring& path)
 	{
 		return converter_->m_inputFile.read(path);
 	}
-
-
     void Converter::write(NSStringUtils::CStringBuilderA &stringWriter)
     {
         const char* fontName = "Courier New";
@@ -316,15 +316,10 @@ namespace Txt2Docx
             stringWriter.WriteString("</w:p>");
         }
     }
-
-
-
 	Converter_Impl::Converter_Impl(int encoding) : m_outputFile(NULL)
 	{
-		m_inputFile.m_nEncoding = encoding;
-		
+		m_inputFile.m_nEncoding = encoding;		
 	}
-
 	void Converter_Impl::convert()
 	{
 		//smart_ptr<OOX::File> pFile = m_outputFile.Find(OOX::FileTypes::Document);
@@ -389,4 +384,161 @@ namespace Txt2Docx
 			}
 		}
 	}
+namespace
+{
+	const std::wstring c_sFontName		= L"Courier New";
+	const std::wstring c_sEmojiFontName	= L"Segoe UI Emoji";
+
+	const size_t c_nContentPortion = 1000;
+
+	void SetRunFonts(OOX::Logic::CRunProperty& oRPr, const std::wstring& sFontName)
+	{
+		ComplexTypes::Word::CFonts font;
+
+		font.m_sAscii.Init();	*font.m_sAscii	= sFontName;
+		font.m_sHAnsi.Init();	*font.m_sHAnsi	= sFontName;
+		font.m_sCs.Init();		*font.m_sCs		= sFontName;
+
+		oRPr.m_oRFonts = font;
+	}
+	size_t emojiLength(const std::string& line, size_t pos)
+	{
+		unsigned char c = line[pos];
+
+		if ((c & 0xF0) == 0xF0 || (c & 0xE0) == 0xE0)
+		{
+			size_t len = ((c & 0xF0) == 0xF0) ? 4 : 3;
+
+			if (pos + len <= line.length() && isEmojiAt(line, pos, len))
+				return len;
+		}
+		return 0;
+	}
+}
+
+	ContentProvider::ContentProvider(const std::wstring& path, int encoding) : path_(path), file_(new Txt::File()), read_(false), pos_(0),
+		paraPr_(-1), textRPr_(-1), emojiRPr_(-1)
+	{
+		file_->m_nEncoding = encoding;
+	}
+
+	ContentProvider::~ContentProvider()
+	{
+		delete file_;
+	}
+
+	void ContentProvider::writeText(BinDocxRW::IDocumentContentWriter& oWriter, int nRPr, const std::string& line, size_t start, size_t end)
+	{
+		if (start >= end)
+			return;
+
+		buffer_.clear();
+		NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)line.c_str() + start, (LONG)(end - start), buffer_);
+
+		oWriter.WriteRunText(nRPr, buffer_);
+	}
+
+	void ContentProvider::writeParagraph(BinDocxRW::IDocumentContentWriter& oWriter, const std::string& lineRaw)
+	{
+		oWriter.StartParagraph(paraPr_);
+
+		const std::string* pLine = &lineRaw;
+		std::string lineClean;
+
+		if (lineRaw.find('\x08') != std::string::npos)
+		{
+			lineClean = lineRaw;
+			lineClean.erase(std::remove(lineClean.begin(), lineClean.end(), '\x08'), lineClean.end());
+			pLine = &lineClean;
+		}
+		const std::string& line = *pLine;
+
+		size_t i = 0;
+		while (i < line.length())
+		{
+			size_t len = emojiLength(line, i);
+			if (len > 0)
+			{
+				writeText(oWriter, emojiRPr_, line, i, i + len);
+
+				i += len;
+				continue;
+			}
+
+			size_t textStart = i;
+			while (i < line.length())
+			{
+				if (emojiLength(line, i) > 0)
+					break;
+				i++;
+			}
+
+			// text with tabs
+			size_t segStart = textStart;
+			for (size_t j = textStart; j < i; ++j)
+			{
+				if (line[j] == '\x09')
+				{
+					writeText(oWriter, textRPr_, line, segStart, j);
+					oWriter.WriteRunTab(-1);
+
+					segStart = j + 1;
+				}
+			}
+			writeText(oWriter, textRPr_, line, segStart, i);
+		}
+
+		oWriter.EndParagraph();
+	}
+
+	bool ContentProvider::WriteNextContent(BinDocxRW::IDocumentContentWriter& oWriter)
+	{
+		if (!read_)
+		{
+			read_ = true;
+			try
+			{
+				file_->read(path_);
+			}
+			catch(...)
+			{
+				return false;
+			}
+
+			OOX::Logic::CParagraphProperty oPPr;
+
+			ComplexTypes::Word::CSpacing space;
+			space.m_oAfter.Init();		space.m_oAfter->FromString(L"0");
+			space.m_oLine.Init();		space.m_oLine->FromString(L"240");
+			space.m_oLineRule.Init();	space.m_oLineRule->SetValue(SimpleTypes::linespacingruleAuto);
+			oPPr.m_oSpacing = space;
+
+			oPPr.m_oRPr.Init();
+			SetRunFonts(oPPr.m_oRPr.get2(), c_sFontName);
+
+			OOX::Logic::CRunProperty oTextRPr, oEmojiRPr;
+			SetRunFonts(oTextRPr, c_sFontName);
+			SetRunFonts(oEmojiRPr, c_sEmojiFontName);
+
+			paraPr_		= oWriter.AddParagraphProperty(oPPr);
+			textRPr_	= oWriter.AddRunProperty(oTextRPr);
+			emojiRPr_	= oWriter.AddRunProperty(oEmojiRPr);
+		}
+
+		std::vector<std::string>& arLines = file_->m_listContentutf8;
+
+		if (pos_ >= arLines.size())
+			return false;
+
+		size_t nEnd = (std::min)(pos_ + c_nContentPortion, arLines.size());
+
+		for (; pos_ < nEnd; ++pos_)
+		{
+			writeParagraph(oWriter, arLines[pos_]);
+
+			std::string().swap(arLines[pos_]);
+		}
+		return true;
+	}
+
 } // namespace Txt2Docx

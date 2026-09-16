@@ -203,6 +203,14 @@ BinDocxRW::CDocxSerializer::~CDocxSerializer()
 }
 bool BinDocxRW::CDocxSerializer::saveToFile(const std::wstring& sDstFileName, const std::wstring& sSrcPath, const std::wstring& sTempPath)
 {
+	return saveToBinary(sDstFileName, sSrcPath, NULL, sTempPath);
+}
+bool BinDocxRW::CDocxSerializer::saveToFile(const std::wstring& sDstFileName, IDocumentContentProvider& oContentProvider, const std::wstring& sTempPath)
+{
+	return saveToBinary(sDstFileName, L"", &oContentProvider, sTempPath);
+}
+bool BinDocxRW::CDocxSerializer::saveToBinary(const std::wstring& sDstFileName, const std::wstring& sSrcPath, IDocumentContentProvider* pContentProvider, const std::wstring& sTempPath)
+{
 	OOX::CPath pathMain(sDstFileName);
     
 	OOX::CPath pathMedia = pathMain.GetDirectory() + FILE_SEPARATOR_STR + _T("media");
@@ -252,7 +260,10 @@ bool BinDocxRW::CDocxSerializer::saveToFile(const std::wstring& sDstFileName, co
 	{
 		oBufferedStream.WriteStringUtf8(oBinaryFileWriter.WriteFileHeader(0, g_nFormatVersionNoBase64));
 	}
-	oBinaryFileWriter.intoBindoc(sSrcPath);
+	if (pContentProvider)
+		oBinaryFileWriter.intoBindoc(*pContentProvider);
+	else
+		oBinaryFileWriter.intoBindoc(sSrcPath);
 	
 	BYTE* pbBinBuffer = oBufferedStream.GetBuffer();
 	int nBinBufferLen = oBufferedStream.GetPosition();

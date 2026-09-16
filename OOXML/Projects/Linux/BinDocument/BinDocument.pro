@@ -129,6 +129,7 @@ HEADERS += \
 	../../../Binary/Document/BinWriter/BinEquationWriter.h \
 	../../../Binary/Document/BinWriter/BinReaderWriterDefines.h \
 	../../../Binary/Document/BinWriter/BinaryWriterD.h \
+	../../../Binary/Document/BinWriter/IDocumentContentProvider.h \
 	../../../Binary/Sheets/Common/BinReaderWriterDefines.h \
 	../../../Binary/Sheets/Common/Common.h \
 	../../../Binary/Sheets/Reader/BinaryWriterS.h \

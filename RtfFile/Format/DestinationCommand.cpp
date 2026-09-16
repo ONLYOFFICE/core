@@ -3769,7 +3769,7 @@ RtfPictureReader::PLACEABLEMETAHEADER::PLACEABLEMETAHEADER()
 	Top = 0;
 	Right = 0;
 	Bottom = 0;
-	Inch = 0x0902;
+	Inch = 96;
 	Reserved = 0;
 	Checksum = 0;
 }

@@ -42,6 +42,7 @@
 #include "../Biff_structures/PtgArea3d.h"
 
 #include "../../../../../OOXML/Base/Unit.h"
+#include <cwctype>
 
 namespace XLS
 {

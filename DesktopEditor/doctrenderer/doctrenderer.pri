@@ -158,6 +158,7 @@ drawingfile_support {
 		$$PWD_CUR/embed/DrawingFileEmbed.h
 
 	SOURCES += \
+		$$PWD_CUR/drawingfile.cpp \
 		$$PWD_CUR/../graphics/pro/js/wasm/src/HTMLRendererText.cpp \
 		$$PWD_CUR/embed/DrawingFileEmbed.cpp
 

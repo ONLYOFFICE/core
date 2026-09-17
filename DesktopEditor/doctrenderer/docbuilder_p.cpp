@@ -476,7 +476,16 @@ bool CV8RealTimeWorker::SaveEditedPdf(int type, const std::wstring& sDstFile, co
 	if (!bIsCompiledChanges)
 		bResult = pPdf->EditPdf(sDstFile);
 
-	pPdf->Close();
+	// Saving does not end the document: the session keeps it open and the JS side
+	// holds this very CPdfFile through EmbedDrawingFile. EditPdf() cleaned the
+	// document's reader up and handed it to the editor, so finish the write and
+	// put the object back into the readable state it was in before the save -
+	// ScanPage(), which backs ApiPage.RecognizeContent(), walks that reader.
+	// EditClose() rather than Close(): it releases the editor as well, so it no
+	// longer shadows the reader loaded below. Mirrors what EditPdfToMemory()
+	// already does for the in-memory variant.
+	pPdf->EditClose();
+	pPdf->LoadFromFile(m_sPdfFile);
 
 	if (NSFile::CFileBinary::Exists(sCompiled))
 		NSFile::CFileBinary::Remove(sCompiled);

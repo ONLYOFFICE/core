@@ -594,6 +594,9 @@ public:
 	}
 	BYTE* ScanPage(int nPageIndex, int mode)
 	{
+		if (NULL == m_pFile)
+			return NULL;
+
 		if (NULL == m_pImageStorage)
 			m_pImageStorage = NSDocxRenderer::CreateWasmImageStorage();
 

@@ -245,6 +245,7 @@ public:
 
 private:
 	PdfWriter::CAction* GetAction(CAnnotFieldInfo::CActionFieldPr* pAction, bool bDeferred = false);
+	void UpdateWidgetActions(CAnnotFieldInfo::CWidgetAnnotPr* pPr, PdfWriter::CWidgetAnnotation* pWidgetAnnot);
 	bool SkipRedact(const double& dX, const double& dY, const double& dW, const double& dH);
 	bool SkipRedact(const double& dX, const double& dY);
 	PdfWriter::CImageDict* LoadImage(Aggplus::CImage* pImage, BYTE nAlpha);

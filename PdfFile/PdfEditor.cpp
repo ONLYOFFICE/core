@@ -651,8 +651,8 @@ void CObjectBaseToObject(PdfWriter::CObjectBase* pObj, Object* pOut)
 
 		Object oDict;
 		oDict.initDict((XRef*)NULL);
-		std::map<std::string, PdfWriter::CObjectBase*> mEntries = pDict->GetDict();
-		for (std::map<std::string, PdfWriter::CObjectBase*>::iterator it = mEntries.begin(); it != mEntries.end(); ++it)
+		const std::map<std::string, PdfWriter::CObjectBase*>& mEntries = pDict->GetDict();
+		for (std::map<std::string, PdfWriter::CObjectBase*>::const_iterator it = mEntries.begin(); it != mEntries.end(); ++it)
 		{
 			Object oVal;
 			CObjectBaseToObject(it->second, &oVal);

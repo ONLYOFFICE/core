@@ -2318,7 +2318,7 @@ namespace PdfWriter
 			if (pAPN && pAPN->GetType() == object_type_DICT)
 			{
 				CDictObject* pDictAPN = (CDictObject*)pAPN;
-				std::map<std::string, CObjectBase*> mDict = pDictAPN->GetDict();
+				const std::map<std::string, CObjectBase*>& mDict = pDictAPN->GetDict();
 				for (std::pair<std::string, CObjectBase*> it : mDict)
 				{
 					if (it.first != "Off" && it.first != m_sAP_N_Yes)
@@ -2336,7 +2336,7 @@ namespace PdfWriter
 			if (pAPN && pAPN->GetType() == object_type_DICT)
 			{
 				CDictObject* pDictAPN = (CDictObject*)pAPN;
-				std::map<std::string, CObjectBase*> mDict = pDictAPN->GetDict();
+				const std::map<std::string, CObjectBase*>& mDict = pDictAPN->GetDict();
 				for (std::pair<std::string, CObjectBase*> it : mDict)
 				{
 					if (it.first != "Off" && it.first != m_sAP_N_Yes)

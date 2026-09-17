@@ -66,6 +66,8 @@
 #include "../Common/Network/FileTransporter/include/FileTransporter.h"
 #endif
 
+#include <set>
+
 #define MM_2_PT(X) ((X) * 72.0 / 25.4)
 #define PT_2_MM(X) ((X) * 25.4 / 72.0)
 
@@ -1975,6 +1977,78 @@ PdfWriter::CAction* CPdfWriter::GetAction(CAnnotFieldInfo::CActionFieldPr* pActi
 
 	return pA;
 }
+namespace
+{
+static const std::set<std::string> c_setKnownActionSubtypes = { "GoTo", "URI", "Named", "JavaScript", "Hide", "ResetForm" };
+static bool IsKnownActionDict(PdfWriter::CDictObject* pActionDict)
+{
+	if (!pActionDict)
+		return false;
+	PdfWriter::CObjectBase* pS = pActionDict->Get("S");
+	if (!pS || pS->GetType() != PdfWriter::object_type_NAME)
+		return false;
+	return c_setKnownActionSubtypes.count(((PdfWriter::CNameObject*)pS)->Get()) != 0;
+}
+static bool ShouldRemoveOldAction(PdfWriter::CObjectBase* pOld)
+{
+	if (!pOld)
+		return false;
+	if (pOld->GetType() == PdfWriter::object_type_PROXY)
+		return true;
+	if (pOld->GetType() != PdfWriter::object_type_DICT)
+		return false;
+	return IsKnownActionDict((PdfWriter::CDictObject*)pOld);
+}
+}
+void CPdfWriter::UpdateWidgetActions(CAnnotFieldInfo::CWidgetAnnotPr* pPr, PdfWriter::CWidgetAnnotation* pWidgetAnnot)
+{
+	const std::vector<CAnnotFieldInfo::CActionFieldPr*>& arrActions = pPr->GetActions();
+	std::set<std::string> setIncomingTriggers;
+	std::vector<PdfWriter::CAction*> arrNewActions;
+	arrNewActions.reserve(arrActions.size());
+	for (CAnnotFieldInfo::CActionFieldPr* pAction : arrActions)
+	{
+		PdfWriter::CAction* pA = GetAction(pAction, true);
+		if (!pA)
+			continue;
+		arrNewActions.push_back(pA);
+		setIncomingTriggers.insert(pA->m_sType);
+	}
+
+	if (!setIncomingTriggers.count("A"))
+	{
+		PdfWriter::CObjectBase* pOldA = pWidgetAnnot->Get("A");
+		if (ShouldRemoveOldAction(pOldA))
+			pWidgetAnnot->Remove("A");
+	}
+
+	PdfWriter::CObjectBase* pObj = pWidgetAnnot->Get("AA");
+	PdfWriter::CDictObject* pAA = pObj && pObj->GetType() == PdfWriter::object_type_DICT ? (PdfWriter::CDictObject*)pObj : NULL;
+	if (pAA)
+	{
+		std::vector<std::string> arrKeysToRemove;
+		const std::map<std::string, PdfWriter::CObjectBase*>& mAA = pAA->GetDict();
+		for (auto it = mAA.begin(); it != mAA.end(); ++it)
+		{
+			const std::string& sTrigger = it->first;
+			if (setIncomingTriggers.count(sTrigger))
+				continue;
+
+			if (ShouldRemoveOldAction(it->second))
+				arrKeysToRemove.push_back(sTrigger);
+		}
+		for (const std::string& sKey : arrKeysToRemove)
+			pAA->Remove(sKey.c_str());
+
+		if (pAA->GetSize() == 0)
+			pWidgetAnnot->Remove("AA");
+	}
+	else
+		pWidgetAnnot->Remove("AA");
+
+	for (PdfWriter::CAction* pA : arrNewActions)
+		pWidgetAnnot->AddAction(pA);
+}
 HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotFieldInfo* pFieldInfo, bool bRedact)
 {
 	if (!m_pDocument || 0 == m_pDocument->GetPagesCount() || !pFieldInfo)
@@ -2539,19 +2613,7 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 			pWidgetAnnot->Remove("MEOptions");
 
 		if (!bRedact)
-		{
-			const std::vector<CAnnotFieldInfo::CActionFieldPr*> arrActions = pPr->GetActions();
-			for (CAnnotFieldInfo::CActionFieldPr* pAction : arrActions)
-			{
-				PdfWriter::CAction* pA = GetAction(pAction, true);
-				pWidgetAnnot->AddAction(pA);
-			}
-			if (arrActions.empty())
-			{
-				pWidgetAnnot->Remove("A");
-				pWidgetAnnot->Remove("AA");
-			}
-		}
+			UpdateWidgetActions(pPr, pWidgetAnnot);
 
 		bool isBold   = (nStyle & 1 ? true : false);
 		bool isItalic = (nStyle & 2 ? true : false);

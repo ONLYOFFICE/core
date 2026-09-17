@@ -498,7 +498,7 @@ namespace PdfWriter
 
 		virtual void WriteToStream(CStream* pStream, CEncrypt* pEncrypt);
 		unsigned int GetSize() { return m_mList.size(); }
-		std::map<std::string, CObjectBase*> GetDict() { return m_mList; }
+		const std::map<std::string, CObjectBase*>& GetDict() const { return m_mList; }
 		void FromXml(const std::wstring& sXml);
 		void ClearStream();
 

@@ -1735,6 +1735,9 @@ namespace MetaFile
 
 		if (unWidth != 0 && unHeight != 0)
 		{
+			if ((unsigned long long)unWidth * unHeight > unSize / 4)
+				return;
+
 			pBytes = pBuffer;
 			bExternalBuffer = true;
 		}

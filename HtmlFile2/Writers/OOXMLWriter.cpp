@@ -915,6 +915,9 @@ bool COOXMLWriter::WriteText(std::wstring wsText, const std::vector<NSCSS::CNode
 			WriteSpace();
 	}
 
+	if (!m_arStates.top().m_bInR)
+		OpenHyperlink();
+
 	if (bDeleted)
 		pCurrentDocument->WriteString(L"<w:del w:author=\"Unknown\">");
 
@@ -959,10 +962,12 @@ bool COOXMLWriter::WriteText(std::wstring wsText, const std::vector<NSCSS::CNode
 			}
 
 			if (unBegin != unEnd)
-			{
 				pCurrentDocument->WriteEncodeXmlString(wsText.c_str() + unBegin, unEnd - unBegin);
+
+			if (!bDeleted)
 				CloseT();
-			}
+			else
+				pCurrentDocument->WriteString(L"</w:delText>");
 
 			if (L'\n' == wsText[unEnd])
 				pCurrentDocument->WriteString(L"<w:br/>");

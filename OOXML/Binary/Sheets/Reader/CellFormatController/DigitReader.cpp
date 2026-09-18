@@ -52,129 +52,100 @@ std::wstring Double2wstr(double dValue)
 }
 bool DigitReader::ReadDigit(const std::wstring &value, std::wstring &digit, std::wstring &format)
 {
-    size_t length = value.length();
-    wchar_t *pEndPtr;
-	double dValue = wcstod(value.c_str(), &pEndPtr);
+	const wchar_t* pStart = value.c_str();
+	size_t length = value.length();
+	wchar_t *pEndPtr = nullptr;
+	double dValue = wcstod(pStart, &pEndPtr);
 
-
-    if ((std::isnan(dValue) || std::isinf(dValue)))
-    {
-		return false;
-    }
-
-	if ((0 == *pEndPtr) || (pEndPtr != value.c_str() && (value.c_str() + length  - pEndPtr) <= 1))
+	if (std::isnan(dValue) || std::isinf(dValue))
 	{
+		return false;
+	}
+
+	ptrdiff_t unparsedLen = (pStart + length) - pEndPtr;
+
+	if (*pEndPtr != L'\0' && unparsedLen > 1)
+	{
+		return false;
+	}
+
 	std::wstring postfix;
-	auto length = value.length();
-
-		if (0 != *pEndPtr)
+	if (*pEndPtr != L'\0')
+	{
+		size_t sz = unparsedLen;
+		while (sz > 0 && pEndPtr[sz - 1] == L' ')
 		{
-			size_t sz = length - (pEndPtr - value.c_str());
-
-			while (sz > 0)
-			{
-				if (pEndPtr[sz - 1] != L' ')
-					break;
-				sz--;
-			}
-
-			if (sz > 0)
-			{
-				postfix = std::wstring(pEndPtr, sz);
-			}
+			sz--;
 		}
 
-        auto data_format = createFractionFormat(value, postfix);
-		double fractionValue = 0;
-
-		if (0 != *pEndPtr)
+		if (sz > 0)
 		{
-			if (false == postfix.empty())
-			{
-				CurrencyReader currency{};
-				if (postfix[0] == L'%')
-				{
-					double PercentValue = dValue / 100.;
-					digit = Double2wstr(PercentValue);
-					format = DefaultPercentFormat;
-                    return true;
-				}
-				else
-					return false;
-				/*
-				else if(currency.CheckPostfix(postfix))
-				{
-					digit = std::to_wstring(dValue);
-					format = currency.GetCurrencyFormat(data_format,postfix);
-				}
-				else if(checkCommonFractionFormat(dValue, postfix, fractionValue, format))
-				{
-					digit = std::to_wstring(fractionValue);
-				}
-				else
-				{
-					digit = std::to_wstring(dValue);
+			postfix.assign(pEndPtr, sz);
+		}
+	}
 
-						// Remove trailing zeros after decimal point
-					size_t dotPos = digit.find('.');
-					if (dotPos != std::wstring::npos)
-					{
-						size_t lastNonZeroPos = digit.find_last_not_of(L'0');
-                        if(lastNonZeroPos+3 < digit.size())
-                            digit.erase(lastNonZeroPos + 2);
-					}
-                    data_format = createFractionFormat(digit, L"");
-					for (size_t i = 0; i < postfix.size(); ++i)
-					{
-						data_format += std::wstring(L"\\") + postfix[i];
-					}
-					format = data_format;
-				}
-				*/
-			}
-			else
+	auto data_format = createFractionFormat(value, postfix);
+
+	if (*pEndPtr != L'\0')
+	{
+		if (!postfix.empty())
+		{
+			if (postfix[0] == L'%')
 			{
-				digit = Double2wstr(dValue);
-				format = data_format;
+				double PercentValue = dValue / 100.;
+				digit = Double2wstr(PercentValue);
+				format = DefaultPercentFormat;
+				return true;
 			}
+			return false;
 		}
 		else
 		{
-
-			if(value.find(L'.') == std::wstring::npos)
-			{
-				std::wostringstream oss;
-				oss << (_INT64)dValue;
-				oss << std::setprecision(std::numeric_limits<double>::digits10 + 1);
-				digit = oss.str();
-			}
-			else
-				digit = Double2wstr(dValue);
+			digit = Double2wstr(dValue);
 			format = data_format;
-        }
-        return true;
-    }
-    return false;
-}
+		}
+	}
+	else
+	{
+		if (value.find(L'.') == std::wstring::npos)
+		{
+			wchar_t buf[64];
+			swprintf(buf, sizeof(buf) / sizeof(buf[0]), L"%lld", (_INT64)dValue);
+			digit = buf;
+		}
+		else
+		{
+			digit = Double2wstr(dValue);
+		}
+		format = data_format;
+	}
 
+	return true;
+}
 std::wstring DigitReader::createFractionFormat(const std::wstring &value, const std::wstring &postfix)
 {
-    size_t pos = value.find(L".");
-    auto length = value.length();
-    std::wstring data_format = L"";
-        if (pos != std::wstring::npos && pos < (value.size() - postfix.size() - 1))
-		{
-            size_t fraction = length - pos - 1 - postfix.size();
-			for (size_t i = 0; i < fraction && fraction != std::wstring::npos; ++i)
-				data_format += L"0";
-		}
-		if (false == data_format.empty()) data_format = L"." + data_format;
-        if(pos != std::string::npos && pos < (value.size() - postfix.size() - 1))
-		{
-            std::wstring wholePart(pos, '0');
-			data_format = wholePart + data_format;
-		}
-    return data_format;
+	const size_t val_size = value.size();
+	const size_t post_size = postfix.size();
+	const size_t pos = value.find(L'.');
+
+	// fast exit without point
+	if (pos == std::wstring::npos || (pos + post_size + 1 >= val_size))
+	{
+		return std::wstring();
+	}
+
+	const size_t whole_len = pos;
+	const size_t frac_len = val_size - pos - 1 - post_size;
+
+	std::wstring data_format;
+
+	data_format.reserve(whole_len + 1 + frac_len);
+
+	data_format.append(whole_len, L'0');
+	data_format.push_back(L'.');
+	data_format.append(frac_len, L'0');
+
+	return data_format;
 }
 
 bool DigitReader::checkCommonFractionFormat(const double &numerator, const std::wstring &postfix, double &dvalue, std::wstring &format)
@@ -193,45 +164,43 @@ bool DigitReader::checkCommonFractionFormat(const double &numerator, const std::
     }
     format = L"?/?";
 	dvalue = numerator/denominator;
+	return true;
 }
 
 bool DigitReader::ReadScientific(const std::wstring &value, std::wstring &digit, std::wstring &format)
 {
-    if(nonscientificCellsCounter_ > NonDigitcellLimit && !scientificFound_)
-        return false;
-    {
-        std::wregex scientificRegex(L"(^[+-]?(\\d+\\.?\\d*)([eE][+-]?\\d+))$");
-        if(std::regex_search(value, scientificRegex))
-        {
-            try
-            {
-                auto doubleVal = std::stod(value);
+	if (nonscientificCellsCounter_ > NonDigitcellLimit && !scientificFound_)
+		return false;
 
-                std::wstringstream ss;
-                _INT32 MainPartSize = value.find(L"E");
-                if(MainPartSize < 1)
-                    MainPartSize = value.find(L"e");
-                ss.precision(MainPartSize); // Set precision
-                ss.setf(std::ios::scientific);
-                ss << doubleVal;
-                digit = ss.str();
+	static const std::wregex scientificRegex(L"^[+-]?(\\d+\\.?\\d*)([eE][+-]?\\d+)$");
 
-                format = L"0.0";
-                if(MainPartSize > 3)
-                format += std::wstring(MainPartSize - 3, L'0');
-                format +=L"E+00";
-                scientificFound_ = true;
-                return true;
+	if (std::regex_search(value, scientificRegex))
+	{
+		double doubleVal = std::stod(value);
 
-            }
-            catch (std::exception)
-            {
-                nonscientificCellsCounter_++;
-                return false;
-            }
+		size_t MainPartSize = value.find(L'E');
+		if (MainPartSize == std::wstring::npos)
+		{
+			MainPartSize = value.find(L'e');
+		}
 
-        }
-    }
-    nonscientificCellsCounter_++;
+		std::wstringstream ss;
+		ss.precision(MainPartSize);
+		ss.setf(std::ios::scientific);
+		ss << doubleVal;
+		digit = ss.str();
+
+		format = L"0.0";
+		if (MainPartSize > 3)
+		{
+			format.append(MainPartSize - 3, L'0');
+		}
+		format += L"E+00";
+
+		scientificFound_ = true;
+		return true;
+	}
+
+	nonscientificCellsCounter_++;
 	return false;
 }

@@ -380,6 +380,7 @@ namespace OOX
 			void StyleFromMapStyleMerges2003(std::map<int, unsigned int> &mapStyleMerges);
 			void AfterRead();
             void ClearSharedFmlaRefs();
+			nullable<NSStringUtils::CStringBuilder>  m_oDataCache;
 
 		private:
 			void fromXLSBToXmlCell (CCell& pCell, CSVWriter* pCSVWriter, NSFile::CStreamWriter& oStreamWriter);
@@ -387,7 +388,6 @@ namespace OOX
 			void fromXLSBToXmlRowEnd (CRow* pRow, CSVWriter* pCSVWriter, NSFile::CStreamWriter& oStreamWriter, bool bLastRow = false);
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
             bool compressRow(CRow* pRow);
-            nullable<NSStringUtils::CStringBuilder>  m_oDataCache;
 	// spreadsheets 2003
 
 			nullable_string m_sStyleID;

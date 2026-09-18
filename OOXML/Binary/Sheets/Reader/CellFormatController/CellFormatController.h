@@ -76,7 +76,7 @@ private:
     OOX::Spreadsheet::CCell *pCell_;
 
     /// @brief map with data formats
-    std::map<std::wstring, unsigned int> mapDataNumber_;
+	std::unordered_map<std::wstring, unsigned int> mapDataNumber_;
 
     /// @brief pointer to document styles
 	OOX::Spreadsheet::CStyles *m_pStyles;

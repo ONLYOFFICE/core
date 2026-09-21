@@ -486,6 +486,49 @@ namespace NSDirectory
 
 		return false;
 	}
+#if defined(__linux__) || defined(MAC) || defined(_IOS)
+	static bool IsSymbolicLink(const std::wstring& strPath)
+	{
+		std::string sPath = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(strPath);
+		struct stat buff;
+		return (0 == lstat(sPath.c_str(), &buff)) && S_ISLNK(buff.st_mode);
+	}
+
+	// GetFiles and GetDirectories skip symbolic links, so a directory with links could not be removed.
+	// Removes the links themselves and never follows them.
+	static void RemoveSymbolicLinks(const std::wstring& strDirectory)
+	{
+		BYTE* pUtf8 = NULL;
+		LONG lLen = 0;
+		NSFile::CUtf8Converter::GetUtf8StringFromUnicode(strDirectory.c_str(), strDirectory.length(), pUtf8, lLen, false);
+		std::string sDirectory((char*)pUtf8);
+		delete [] pUtf8;
+
+		std::vector<std::string> arLinks;
+		DIR *dp;
+		struct dirent *dirp;
+		if((dp  = opendir(sDirectory.c_str())) != NULL)
+		{
+			while ((dirp = readdir(dp)) != NULL)
+			{
+				std::string sPath = sDirectory + "/" + std::string(dirp->d_name);
+				bool bIsLink = (DT_LNK == dirp->d_type);
+				if (DT_UNKNOWN == dirp->d_type)
+				{
+					// XFS problem
+					struct stat buff;
+					bIsLink = (0 == lstat(sPath.c_str(), &buff)) && S_ISLNK(buff.st_mode);
+				}
+				if (bIsLink)
+					arLinks.push_back(sPath);
+			}
+			closedir(dp);
+		}
+
+		for (size_t i = 0; i < arLinks.size(); ++i)
+			unlink(arLinks[i].c_str());
+	}
+#endif
 	void DeleteDirectory(const std::wstring& strDirectory, bool deleteRoot)
 	{
 		if (strDirectory.empty()) return;
@@ -498,8 +541,16 @@ namespace NSDirectory
 		std::vector<std::wstring> aDirectories = GetDirectories(strDirectory);
 		for(size_t i = 0; i < aDirectories.size(); ++i)
 		{
+#if defined(__linux__) || defined(MAC) || defined(_IOS)
+			// with DT_UNKNOWN (XFS) GetDirectories follows a link to a directory, never delete through it
+			if (IsSymbolicLink(aDirectories[i]))
+				continue;
+#endif
 			DeleteDirectory(aDirectories[i]);
 		}
+#if defined(__linux__) || defined(MAC) || defined(_IOS)
+		RemoveSymbolicLinks(strDirectory);
+#endif
 #if defined(_WIN32) || defined (_WIN64)
 		if (deleteRoot) RemoveDirectoryW(strDirectory.c_str());
 #elif __linux__

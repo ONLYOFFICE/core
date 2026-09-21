@@ -209,8 +209,8 @@ namespace ZLibZipUtils
 #endif
 	}
 	static void change_file_date( const wchar_t *filename, uLong dosdate, tm_unz tmu_date );
-	static int do_extract_currentfile( unzFile uf, const wchar_t* unzip_dir, const int* popt_extract_without_path, int* popt_overwrite, const char* password, bool is_replace_slash = false, bool check_escape_path = true );
-	static int do_extract( unzFile uf, const wchar_t* unzip_dir, int opt_extract_without_path, int opt_overwrite, const char* password, const OnProgressCallback* progress, bool check_escape_path = true );
+	static int do_extract_currentfile( unzFile uf, const wchar_t* unzip_dir, const int* popt_extract_without_path, int* popt_overwrite, const char* password, bool is_replace_slash = false, bool check_escape_path = true, bool keep_unix_attributes = false );
+	static int do_extract( unzFile uf, const wchar_t* unzip_dir, int opt_extract_without_path, int opt_overwrite, const char* password, const OnProgressCallback* progress, bool check_escape_path = true, bool keep_unix_attributes = false );
 
 	static bool is_file_in_archive(unzFile uf, const wchar_t *filename);
 	static bool current_file_is_find(unzFile uf, const wchar_t *filename);
@@ -283,7 +283,83 @@ namespace ZLibZipUtils
 		return true;
 	}
 
-	static int do_extract_currentfile( unzFile uf, const wchar_t* unzip_dir, const int* popt_extract_without_path, int* popt_overwrite, const char* password, bool is_replcace_slash, bool check_escape_path )
+#if !defined(_WIN32) && !defined (_WIN64)
+	// st_mode of an entry made on a unix-like system (host 3 = UNIX, 19 = OS X) is kept
+	// in the high 16 bits of the external attributes; 0 for archives from other systems
+	static unsigned int get_unix_mode(const unz_file_info& file_info)
+	{
+		const uLong host = (file_info.version >> 8) & 0xFF;
+		if (3 != host && 19 != host)
+			return 0;
+		return (unsigned int)((file_info.external_fa >> 16) & 0xFFFF);
+	}
+
+	// a link is created only if its target is relative and has no ".." components: such a link
+	// resolves under its own directory, so neither it nor a chain of such links leaves the output
+	// directory. Checking the normalized path is not enough: in "a/.." the "a" may be a link itself.
+	static bool is_symlink_target_inside(const std::string& target)
+	{
+		if (target.empty() || '/' == target[0] || std::string::npos != target.find('\0'))
+			return false;
+
+		std::string::size_type pos = 0;
+		while (pos <= target.length())
+		{
+			std::string::size_type separator = target.find('/', pos);
+			if (std::string::npos == separator)
+				separator = target.length();
+
+			if (2 == separator - pos && 0 == target.compare(pos, 2, ".."))
+				return false;
+
+			pos = separator + 1;
+		}
+
+		return true;
+	}
+
+	// the data of a link entry is the link target
+	static int do_extract_symlink( unzFile uf, const char* password, const std::wstring& link_path )
+	{
+		int err = unzOpenCurrentFilePassword(uf, password);
+		if (err != UNZ_OK)
+			return err;
+
+		std::string target;
+		char buf[1024];
+		while ((err = unzReadCurrentFile(uf, buf, sizeof(buf))) > 0)
+		{
+			target.append(buf, err);
+			if (target.length() > 4096)
+			{
+				err = UNZ_BADZIPFILE;
+				break;
+			}
+		}
+
+		if (err == UNZ_OK)
+			err = unzCloseCurrentFile(uf);
+		else
+			unzCloseCurrentFile(uf); // don't lose the error
+
+		if (err != UNZ_OK)
+			return err;
+
+		if (!is_symlink_target_inside(target))
+			return UNZ_ESCAPEPATHERROR;
+
+		NSDirectory::CreateDirectories(NSDirectory::GetFolderPath(link_path));
+
+		std::string link_pathA = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(link_path);
+		unlink(link_pathA.c_str()); // replaces a file or a link with the same name
+		if (0 != symlink(target.c_str(), link_pathA.c_str()))
+			return UNZ_ERRNO;
+
+		return UNZ_OK;
+	}
+#endif
+
+	static int do_extract_currentfile( unzFile uf, const wchar_t* unzip_dir, const int* popt_extract_without_path, int* popt_overwrite, const char* password, bool is_replcace_slash, bool check_escape_path, bool keep_unix_attributes )
 	{
 		char filename_inzipA[4096];
 		int err = UNZ_OK;
@@ -349,6 +425,12 @@ namespace ZLibZipUtils
 			else
 				write_filename = output_withoutpath.c_str();
 
+#if !defined(_WIN32) && !defined (_WIN64)
+			const unsigned int unix_mode = keep_unix_attributes ? get_unix_mode(file_info) : 0;
+			if (S_ISLNK(unix_mode) && (*popt_extract_without_path)==0)
+				return do_extract_symlink(uf, password, output);
+#endif
+
 			err = unzOpenCurrentFilePassword(uf, password);
 
 			NSFile::CFileBinary oFile;
@@ -413,6 +495,12 @@ namespace ZLibZipUtils
 					time.tm_year = file_info.tmu_date.tm_year;
 
 					NSFile::CFileBinary::SetTime(write_filename, &time);
+
+#if !defined(_WIN32) && !defined (_WIN64)
+					// setuid/setgid/sticky bits are never restored
+					if (0 != (unix_mode & 0777))
+						chmod(NSFile::CUtf8Converter::GetUtf8StringFromUnicode(write_filename).c_str(), (mode_t)(unix_mode & 0777));
+#endif
 				}
 			}
 
@@ -431,7 +519,7 @@ namespace ZLibZipUtils
 
 	/*========================================================================================================*/
 
-	static int do_extract( unzFile uf, const wchar_t* unzip_dir, int opt_extract_without_path, int opt_overwrite, const char* password, const OnProgressCallback* progress, bool check_escape_path )
+	static int do_extract( unzFile uf, const wchar_t* unzip_dir, int opt_extract_without_path, int opt_overwrite, const char* password, const OnProgressCallback* progress, bool check_escape_path, bool keep_unix_attributes )
 	{
 		uLong i, number_extract = 0;
 		unz_global_info gi;
@@ -453,7 +541,7 @@ namespace ZLibZipUtils
 			// skipped - the rest of the archive is extracted as usual
 			if (do_extract_currentfile(uf, unzip_dir, &opt_extract_without_path,
 									   &opt_overwrite,
-									   password, is_office, check_escape_path) == UNZ_OK)
+									   password, is_office, check_escape_path, keep_unix_attributes) == UNZ_OK)
 			{
 				number_extract++;
 			}
@@ -862,11 +950,11 @@ namespace ZLibZipUtils
 
 	/*========================================================================================================*/
 
-	int UnzipToDir( const WCHAR* zipFile, const WCHAR* unzipDir, const OnProgressCallback* progress, const WCHAR* password, bool opt_extract_without_path, bool clearOutputDirectory, bool checkEscapePath )
+	int UnzipToDir( const WCHAR* zipFile, const WCHAR* unzipDir, const OnProgressCallback* progress, const WCHAR* password, bool opt_extract_without_path, bool clearOutputDirectory, bool checkEscapePath, bool keepUnixAttributes )
 	{
 		CunzFileWrapped ufw;
 		ufw.Open(zipFile);
-		int err = UnzipToDir(ufw.Get(), unzipDir, progress, password, opt_extract_without_path, clearOutputDirectory, checkEscapePath);
+		int err = UnzipToDir(ufw.Get(), unzipDir, progress, password, opt_extract_without_path, clearOutputDirectory, checkEscapePath, keepUnixAttributes);
 
 		// call Close() instead ~...() because of error code
 		if(err == UNZ_OK)
@@ -876,11 +964,11 @@ namespace ZLibZipUtils
 
 	/*========================================================================================================*/
 
-	int UnzipToDir(BYTE* data, size_t len, const WCHAR* unzipDir, const OnProgressCallback* progress, const WCHAR* password, bool opt_extract_without_path, bool clearOutputDirectory, bool checkEscapePath )
+	int UnzipToDir(BYTE* data, size_t len, const WCHAR* unzipDir, const OnProgressCallback* progress, const WCHAR* password, bool opt_extract_without_path, bool clearOutputDirectory, bool checkEscapePath, bool keepUnixAttributes )
 	{
 		CunzFileWrapped ufw;
 		ufw.Open(data, len);
-		int err = UnzipToDir(ufw.Get(), unzipDir, progress, password, opt_extract_without_path, clearOutputDirectory, checkEscapePath);
+		int err = UnzipToDir(ufw.Get(), unzipDir, progress, password, opt_extract_without_path, clearOutputDirectory, checkEscapePath, keepUnixAttributes);
 
 		// call Close() instead ~...() because of error code
 		if(err == UNZ_OK)
@@ -890,7 +978,7 @@ namespace ZLibZipUtils
 
 	/*========================================================================================================*/
 
-	int UnzipToDir(unzFile uf, const WCHAR* unzipDir, const OnProgressCallback* progress, const WCHAR* password, bool opt_extract_without_path, bool clearOutputDirectory, bool checkEscapePath )
+	int UnzipToDir(unzFile uf, const WCHAR* unzipDir, const OnProgressCallback* progress, const WCHAR* password, bool opt_extract_without_path, bool clearOutputDirectory, bool checkEscapePath, bool keepUnixAttributes )
 	{
 		int err = -1;
 
@@ -909,10 +997,10 @@ namespace ZLibZipUtils
 				if(NULL != password)
 				{
 					std::string passwordA = codepage_issue_fixToOEM(password);
-					err = do_extract( uf, unzipDir, opt_extract_without_path, 1, passwordA.c_str(), progress, checkEscapePath );
+					err = do_extract( uf, unzipDir, opt_extract_without_path, 1, passwordA.c_str(), progress, checkEscapePath, keepUnixAttributes );
 				}
 				else
-					err = do_extract( uf, unzipDir, opt_extract_without_path, 1, NULL, progress, checkEscapePath );
+					err = do_extract( uf, unzipDir, opt_extract_without_path, 1, NULL, progress, checkEscapePath, keepUnixAttributes );
 			}
 		}
 		return err;

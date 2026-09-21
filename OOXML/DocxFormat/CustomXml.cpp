@@ -238,14 +238,14 @@ namespace OOX
 			return type().DefaultFileName();
 		}
 
-	CCustomXML::CCustomXML(OOX::Document *pMain, bool bDocument) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
+	CCustomXML::CCustomXML(OOX::Document* pMain, bool bDocument) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
 	{
 		m_bDocument = bDocument;
 	}
-	CCustomXML::CCustomXML(OOX::Document *pMain, const CPath& oRootPath, const CPath& oPath) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
+	CCustomXML::CCustomXML(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
 	{
 		m_bDocument = (NULL != dynamic_cast<OOX::CDocument*>(pMain));
-		read( oRootPath, oPath );
+		read(oRootPath, oPath);
 	}
 	CCustomXML::~CCustomXML()
 	{
@@ -257,7 +257,7 @@ namespace OOX
 	}
 	void CCustomXML::read(const CPath& oRootPath, const CPath& oFilePath)
 	{
-		IFileContainer::Read( oRootPath, oFilePath );
+		IFileContainer::Read(oRootPath, oFilePath);
 
 		NSFile::CFileBinary::ReadAllTextUtf8A(oFilePath.GetPath(), m_sXmlA);
 	}
@@ -281,7 +281,7 @@ namespace OOX
 	{
 		//if (m_bDocument) return type().DefaultDirectory();
 		//else
-			return L"../" + type().DefaultDirectory();
+		return L"../" + type().DefaultDirectory();
 	}
 	const CPath CCustomXML::DefaultFileName() const
 	{
@@ -296,7 +296,7 @@ namespace OOX
 			if (OOX::FileTypes::CustomXmlProps == container[i]->type())
 			{
 				OOX::CCustomXMLProps* pCustomXmlProps = dynamic_cast<OOX::CCustomXMLProps*>(container[i].GetPointer());
-				if(pCustomXmlProps->m_oShemaRefs.IsInit())
+				if (pCustomXmlProps->m_oShemaRefs.IsInit())
 				{
 					for (size_t j = 0; j < pCustomXmlProps->m_oShemaRefs->m_arrItems.size(); ++j)
 					{
@@ -336,51 +336,110 @@ namespace OOX
 		pWriter->EndRecord();
 	}
 	void CCustomXML::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+	{
+		BYTE type = pReader->GetUChar();
+
+		LONG _rec_start = pReader->GetPos();
+		LONG _end_rec = _rec_start + pReader->GetRecordSize() + 4;
+
+		smart_ptr<OOX::CCustomXMLProps> pCustomXmlProps = new OOX::CCustomXMLProps(NULL);
+		smart_ptr<OOX::File> pCustomXmlPropsFile = pCustomXmlProps.smart_dynamic_cast<OOX::File>();
+		Add(pCustomXmlPropsFile);
+
+		while (pReader->GetPos() < _end_rec)
 		{
-			BYTE type = pReader->GetUChar();
-
-			LONG _rec_start = pReader->GetPos();
-			LONG _end_rec = _rec_start + pReader->GetRecordSize() + 4;
-
-			smart_ptr<OOX::CCustomXMLProps> pCustomXmlProps = new OOX::CCustomXMLProps(NULL);
-			smart_ptr<OOX::File> pCustomXmlPropsFile = pCustomXmlProps.smart_dynamic_cast<OOX::File>();
-			Add(pCustomXmlPropsFile);
-
-			while (pReader->GetPos() < _end_rec)
+			BYTE _at = pReader->GetUChar();
+			switch (_at)
 			{
-				BYTE _at = pReader->GetUChar();
-				switch (_at)
+			case 0:
+			{
+				pReader->Skip(4); // len
+				pCustomXmlProps->m_oItemID = pReader->GetString2();
+			}break;
+			case 1:
+			{
+				pCustomXmlProps->m_oShemaRefs.Init();
+				pReader->Skip(4); // len
+				ULONG _c = pReader->GetULong();
+
+				for (ULONG i = 0; i < _c; ++i)
 				{
-					case 0:
-					{
-						pReader->Skip(4); // len
-						pCustomXmlProps->m_oItemID = pReader->GetString2();
-					}break;
-					case 1:
-					{
-						pCustomXmlProps->m_oShemaRefs.Init();
-						pReader->Skip(4); // len
-						ULONG _c = pReader->GetULong();
+					pReader->Skip(1); // type
+					pReader->Skip(4); // len
+					CCustomXMLProps::CShemaRef* pItem = new CCustomXMLProps::CShemaRef();
+					pItem->fromPPTY(pReader);
 
-						for (ULONG i = 0; i < _c; ++i)
-						{
-							pReader->Skip(1); // type
-							pReader->Skip(4); // len
-							CCustomXMLProps::CShemaRef *pItem = new CCustomXMLProps::CShemaRef();
-							pItem->fromPPTY(pReader);
-
-							pCustomXmlProps->m_oShemaRefs->m_arrItems.push_back(pItem);
-						}
-					}break;
-					case 2:
-					{
-						pReader->Skip(4); // len
-						m_sXmlA = pReader->GetString2A();
-					}break;
+					pCustomXmlProps->m_oShemaRefs->m_arrItems.push_back(pItem);
 				}
+			}break;
+			case 2:
+			{
+				pReader->Skip(4); // len
+				m_sXmlA = pReader->GetString2A();
+			}break;
 			}
-
-			pReader->Seek(_end_rec);
 		}
+
+		pReader->Seek(_end_rec);
+	}
+	CInk::CInk(OOX::Document* pMain, bool bDocument) : CCustomXML(pMain, bDocument)
+	{
+	}
+	CInk::CInk(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : CCustomXML(pMain, oRootPath, oPath)
+	{
+	}
+	CInk::~CInk()
+	{
+	}
+	void CInk::write(const CPath& oFilePath, const CPath& oDirectory, CContentTypes& oContent) const
+	{
+		NSFile::CFileBinary oFile;
+		if (true == oFile.CreateFileW(oFilePath.GetPath()))
+		{
+			if (false == m_sXmlA.empty())
+				oFile.WriteFile((BYTE*)m_sXmlA.c_str(), m_sXmlA.length());
+			oFile.CloseFile();
+		}
+		oContent.Registration(type().OverrideType(), oDirectory, oFilePath.GetFilename());
+		IFileContainer::Write(oFilePath, oDirectory, oContent);
+	}
+	const OOX::FileType CInk::type() const
+	{
+		return FileTypes::Ink;
+	}
+	const CPath CInk::DefaultDirectory() const
+	{
+		return L"../" + type().DefaultDirectory();
+	}
+	const CPath CInk::DefaultFileName() const
+	{
+		return type().DefaultFileName();
+	}
+	void CInk::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+	{
+		BYTE type = pReader->GetUChar();
+
+		LONG _rec_start = pReader->GetPos();
+		LONG _end_rec = _rec_start + pReader->GetRecordSize() + 4;
+
+		while (pReader->GetPos() < _end_rec)
+		{
+			BYTE _at = pReader->GetUChar();
+			switch (_at)
+			{
+			case 2:
+			{
+				pReader->Skip(4); // len
+				m_sXmlA = pReader->GetString2A();
+			}break;
+			default:
+			{
+				pReader->SkipRecord();
+			}break;
+			}
+		}
+
+		pReader->Seek(_end_rec);
+	}
 
 } // namespace OOX

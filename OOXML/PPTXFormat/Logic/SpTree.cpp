@@ -478,7 +478,7 @@ namespace PPTX
 							if (nElemLength > 0)
 							{
 								SpTreeElem elm;
-								elm.fromPPTY(pReader);
+								elm.fromPPTY(pReader, pReader->GetPos() + nElemLength); // element + optional alternative
 
 								if (elm.is_init())
 								{
@@ -623,7 +623,7 @@ namespace PPTX
 							if(nElemLength > 0)
 							{
 								SpTreeElem elm;
-								elm.fromPPTY(pReader);
+								elm.fromPPTY(pReader, pReader->GetPos() + nElemLength); // element + optional alternative
 
 								if (elm.is_init())
 								{

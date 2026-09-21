@@ -138,11 +138,6 @@ namespace OOX
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
 				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-
-				if ( L"xfrm" == sName)
-					m_oXfrm = oReader;
-				//else if (L"nvContentPartPr" == sName)
-				//	m_oNvContentPartPr = oReader;
 			}
 		}
 		std::wstring CContentPart::toXML() const

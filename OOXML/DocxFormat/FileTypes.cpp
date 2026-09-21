@@ -159,6 +159,11 @@ namespace OOX
 												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXml",
 												L"customXml/item", true, true);
 
+		const FileType Ink		(L"ink", L"ink.xml",
+												L"application/inkml+xml",
+												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXml",
+												L"ink/ink", true, true);
+
 		const FileType CustomXmlProps	(L"", L"itemProps.xml",
 												L"application/vnd.openxmlformats-officedocument.customXmlProperties+xml",
 												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXmlProps",

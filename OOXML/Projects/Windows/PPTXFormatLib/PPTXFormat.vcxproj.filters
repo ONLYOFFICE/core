@@ -1876,6 +1876,9 @@
     <ClInclude Include="..\..\..\PPTXFormat\Theme\VisioThemeElements.h">
       <Filter>Theme</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\ContentPart.h">
+      <Filter>Logic</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\PPTXFormat\FileContainer.cpp" />
@@ -3693,6 +3696,9 @@
     <ClCompile Include="..\..\..\PPTXFormat\Theme.cpp" />
     <ClCompile Include="..\..\..\PPTXFormat\Theme\VisioThemeElements.cpp">
       <Filter>Theme</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\ContentPart.cpp">
+      <Filter>Logic</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

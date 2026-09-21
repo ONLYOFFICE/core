@@ -427,6 +427,7 @@
     <ClInclude Include="..\..\..\PPTXFormat\Logic\Colors\SchemeClr.h" />
     <ClInclude Include="..\..\..\PPTXFormat\Logic\Colors\SrgbClr.h" />
     <ClInclude Include="..\..\..\PPTXFormat\Logic\Colors\SysClr.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\ContentPart.h" />
     <ClInclude Include="..\..\..\PPTXFormat\Logic\Controls.h" />
     <ClInclude Include="..\..\..\PPTXFormat\Logic\CSld.h" />
     <ClInclude Include="..\..\..\PPTXFormat\Logic\CustGeom.h" />
@@ -1053,6 +1054,7 @@
     <ClCompile Include="..\..\..\PPTXFormat\Logic\Colors\SchemeClr.cpp" />
     <ClCompile Include="..\..\..\PPTXFormat\Logic\Colors\SrgbClr.cpp" />
     <ClCompile Include="..\..\..\PPTXFormat\Logic\Colors\SysClr.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\ContentPart.cpp" />
     <ClCompile Include="..\..\..\PPTXFormat\Logic\Controls.cpp" />
     <ClCompile Include="..\..\..\PPTXFormat\Logic\CSld.cpp" />
     <ClCompile Include="..\..\..\PPTXFormat\Logic\CustGeom.cpp" />

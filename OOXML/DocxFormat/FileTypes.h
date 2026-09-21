@@ -104,6 +104,8 @@ namespace OOX
 
 		extern const FileType CustomXmlProps;
 
+		extern const FileType Ink;
+
 		extern const FileType HyperLink;
 
 		extern const FileType Image;

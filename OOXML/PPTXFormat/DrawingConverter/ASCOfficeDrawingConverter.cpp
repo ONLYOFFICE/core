@@ -5272,7 +5272,7 @@ void CDrawingConverter::SaveObject(LONG lStart, LONG lLength, const std::wstring
 			if (m_pBinaryReader->m_nDocumentType == 0)
 				m_pBinaryReader->m_nDocumentType = XMLWRITER_DOC_TYPE_DOCX;
 
-			oElem.fromPPTY(m_pBinaryReader);
+			oElem.fromPPTY(m_pBinaryReader, m_pBinaryReader->GetPos() + szRec2); // element + optional alternative
 			bool bOle = false;
 			if (oElem.is<PPTX::Logic::Pic>())
 			{
@@ -5515,9 +5515,10 @@ void CDrawingConverter::SaveObjectEx(long lStart, long lLength, const std::wstri
 
 		try
 		{
-			m_pBinaryReader->Skip(5); // type record (must be 1) + 4 byte - len record
+			m_pBinaryReader->Skip(1); // type record (must be 1)
+			LONG szRec2 = m_pBinaryReader->GetLong();
 
-			oElem.fromPPTY(m_pBinaryReader);			
+			oElem.fromPPTY(m_pBinaryReader, m_pBinaryReader->GetPos() + szRec2); // element + optional alternative			
 		}
 		catch(...)
 		{
@@ -5569,9 +5570,10 @@ std::wstring CDrawingConverter::SaveObjectBackground(LONG lStart, LONG lLength)
 	PPTX::Logic::SpTreeElem oElem;
 	try
 	{
-		m_pBinaryReader->Skip(5); // type record (must be 1) + 4 byte - len record
+		m_pBinaryReader->Skip(1); // type record (must be 1)
+		LONG szRec2 = m_pBinaryReader->GetLong();
 
-		oElem.fromPPTY(m_pBinaryReader);
+		oElem.fromPPTY(m_pBinaryReader, m_pBinaryReader->GetPos() + szRec2); // element + optional alternative
 	}
 	catch(...)
 	{

@@ -146,6 +146,7 @@ SOURCES +=  \
 	$$LOGIC_DIR/Pic.cpp \
 	$$LOGIC_DIR/Shape.cpp \
 	$$LOGIC_DIR/SmartArt.cpp \
+	$$LOGIC_DIR/ContentPart.cpp \
 	$$LOGIC_DIR/SpPr.cpp \
 	$$LOGIC_DIR/SpTree.cpp \
 	$$LOGIC_DIR/SpTreeElem.cpp \
@@ -515,6 +516,7 @@ HEADERS += \
 	$$LOGIC_DIR/Shape.h \
 	$$LOGIC_DIR/ShapeStyle.h \
 	$$LOGIC_DIR/SmartArt.h \
+	$$LOGIC_DIR/ContentPart.h \
 	$$LOGIC_DIR/Sp3d.h \
 	$$LOGIC_DIR/SpPr.h \
 	$$LOGIC_DIR/SpTree.h \

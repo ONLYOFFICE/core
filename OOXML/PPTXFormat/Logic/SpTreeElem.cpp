@@ -40,6 +40,7 @@
 #include "CxnSp.h"
 #include "SpTree.h"
 #include "GraphicFrame.h"
+#include "ContentPart.h"
 #include "Effects/AlphaModFix.h"
 #include "Effects/Duotone.h"
 
@@ -407,6 +408,7 @@ namespace PPTX
 		SpTreeElem& SpTreeElem::operator=(const SpTreeElem& oSrc)
 		{
 			m_elem = oSrc.m_elem;
+			m_elem_alternative = oSrc.m_elem_alternative;
 			return *this;
 		}
 		SpTreeElem::SpTreeElem(XmlUtils::CXmlLiteReader& oReader)
@@ -437,9 +439,17 @@ namespace PPTX
 					m_elem.reset(new Logic::Pic(oReader));
 			}
 			else if (name == L"cxnSp")
+			{
 				m_elem.reset(new Logic::CxnSp(oReader));
+			}
 			else if (name == L"lockedCanvas")
+			{
 				m_elem.reset(CreatePtrXmlContent<Logic::LockedCanvas>(oReader));
+			}
+			else if (name == L"contentPart")
+			{
+				m_elem.reset(CreatePtrXmlContent<Logic::ContentPart>(oReader));
+			}
 			else if (name == L"grpSp" || name == L"wgp" || name == L"spTree" || name == L"wpc")
 			{
 				if (m_bAlternative)
@@ -483,7 +493,8 @@ namespace PPTX
 
 						fromXML(oReader);						
 						
-						m_bAlternative = (L"cx1" == m_sRequires || L"cx2" == m_sRequires);
+						m_bAlternative = (L"cx1" == m_sRequires || L"cx2" == m_sRequires ||
+							(m_elem.IsInit() && m_elem->getType() == OOX::et_ContentPart)); // p14, xdr14
 						m_sRequires = L"";
 
 						if (m_elem.is_init() && !m_bAlternative)
@@ -518,9 +529,17 @@ namespace PPTX
 					m_elem.reset(new Logic::Pic(node));
 			}
 			else if (name == L"cxnSp")
+			{
 				m_elem.reset(new Logic::CxnSp(node));
+			}
+			else if (name == L"contentPart")
+			{
+				m_elem.reset(CreatePtrXmlContent<Logic::ContentPart>(node));
+			}
 			else if (name == L"lockedCanvas")
+			{
 				m_elem.reset(CreatePtrXmlContent<Logic::LockedCanvas>(node));
+			}
 			else if (name == L"grpSp" || name == L"wgp" || name == L"spTree" || name == L"wpc")
 			{
 				if (m_bAlternative)
@@ -555,7 +574,7 @@ namespace PPTX
 					//todo better check (a14 can be math, slicer)
 					oNodeChoice.GetAttributeIfExist(L"Requires", m_sRequires);
 
-					if (L"a14" == m_sRequires || L"cx1" == m_sRequires || L"cx2" == m_sRequires)
+					if (L"p14" == m_sRequires || L"xdr14" == m_sRequires || L"a14" == m_sRequires || L"cx1" == m_sRequires || L"cx2" == m_sRequires)
 					{
 						oNodeChoice.GetNodes(L"*", oNodesC);
 
@@ -568,7 +587,8 @@ namespace PPTX
 							isEmpty = (false == m_elem.IsInit());
 						}
 					}
-					m_bAlternative = (L"cx1" == m_sRequires || L"cx2" == m_sRequires);
+					m_bAlternative = (L"cx1" == m_sRequires || L"cx2" == m_sRequires ||
+						(m_elem.IsInit() && m_elem->getType() == OOX::et_ContentPart)); // p14, xdr14
 					if ((isEmpty || m_bAlternative) && node.GetNode(L"mc:Fallback", oNodeFall))
 					{
 						oNodeFall.GetNodes(L"*", oNodesC);
@@ -632,16 +652,16 @@ namespace PPTX
 
 			switch (_type)
 			{
-			case SPTREE_TYPE_SHAPE:
+				case SPTREE_TYPE_SHAPE:
 				{
 					Logic::Shape* p = new Logic::Shape();
 					p->fromPPTY(pReader);
 					m_elem.reset(p);					
 				}break;
-			case SPTREE_TYPE_OLE:
-			case SPTREE_TYPE_PIC:
-			case SPTREE_TYPE_AUDIO:
-			case SPTREE_TYPE_VIDEO:
+				case SPTREE_TYPE_OLE:
+				case SPTREE_TYPE_PIC:
+				case SPTREE_TYPE_AUDIO:
+				case SPTREE_TYPE_VIDEO:
 				{
 					Logic::Pic* p = new Logic::Pic();
 
@@ -661,13 +681,13 @@ namespace PPTX
 					p->fromPPTY(pReader);
 					m_elem.reset(p);					
 				}break;
-			case SPTREE_TYPE_CXNSP:
+				case SPTREE_TYPE_CXNSP:
 				{
 					Logic::CxnSp* p = new Logic::CxnSp();
 					p->fromPPTY(pReader);
 					m_elem.reset(p);					
 				}break;
-			case SPTREE_TYPE_LOCKED_CANVAS:
+				case SPTREE_TYPE_LOCKED_CANVAS:
 				{
 					Logic::LockedCanvas* p = new Logic::LockedCanvas();
 					pReader->Seek(pReader->GetPos() - 5); // type back + len
@@ -680,7 +700,7 @@ namespace PPTX
 					}
 					m_elem.reset(p);					
 				}break;
-			case SPTREE_TYPE_SPTREE:
+				case SPTREE_TYPE_SPTREE:
 				{
 					Logic::SpTree* p = new Logic::SpTree();
 					pReader->Seek(pReader->GetPos() - 5); // type back + len
@@ -693,18 +713,54 @@ namespace PPTX
 					}
 					m_elem.reset(p);					
 				}break;
-			case SPTREE_TYPE_GRFRAME:
+				case SPTREE_TYPE_GRFRAME:
 				{
 					Logic::GraphicFrame* pFrame = new Logic::GraphicFrame();
 					pFrame->fromPPTY(pReader);
 					m_elem.reset(pFrame);
 				}break;
-			case SPTREE_TYPE_NONE:
-			default:
+				case SPTREE_TYPE_CONTENT_PART:
+				{
+					Logic::ContentPart* pContentPart = new Logic::ContentPart();
+					pContentPart->fromPPTY(pReader);
+					m_elem.reset(pContentPart);
+				}break;
+				case SPTREE_TYPE_ALTERNATIVE:
+				{
+					LONG _len = pReader->GetRecordSize();
+					LONG _end = pReader->GetPos() + _len;
+
+					if (_len > 0)
+					{
+						SpTreeElem oAlternative;
+						oAlternative.fromPPTY(pReader);
+						SetAlternative(oAlternative);
+					}
+					pReader->Seek(_end);
+				}break;
+				case SPTREE_TYPE_NONE:
+				default:
 				{
 					pReader->SkipRecord();					
 				}break;
 			}
+		}
+		void SpTreeElem::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader, LONG lEndRec)
+		{
+			while (pReader->GetPos() < lEndRec)
+			{
+				fromPPTY(pReader);
+			}
+			pReader->Seek(lEndRec);
+		}
+		void SpTreeElem::SetAlternative(const SpTreeElem& oAlternative)
+		{
+			if (false == oAlternative.m_elem.IsInit()) return;
+
+			if (m_elem.IsInit())
+				m_elem_alternative = oAlternative.m_elem;
+			else
+				m_elem = oAlternative.m_elem;
 		}
 		void SpTreeElem::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 		{
@@ -756,6 +812,42 @@ namespace PPTX
 		}
 		void SpTreeElem::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 		{
+			if (m_elem.is_init() && m_elem->getType() == OOX::et_ContentPart &&
+				pWriter->m_lDocType != XMLWRITER_DOC_TYPE_DOCX && pWriter->m_lDocType != XMLWRITER_DOC_TYPE_DOCX_GLOSSARY)
+			{
+				if (false == m_elem.as<Logic::ContentPart>().id.IsInit())
+				{
+					if (m_elem_alternative.is_init())
+						m_elem_alternative->toXmlWriter(pWriter);
+					return;
+				}
+				// ink: mc:Choice (p14/xdr14 contentPart) + mc:Fallback (picture)
+				bool bXlsx = (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX);
+				bool bAlternateContent = !bXlsx || m_elem_alternative.is_init(); 
+
+				if (bAlternateContent)
+				{
+					pWriter->WriteString(L"<mc:AlternateContent xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\">");
+					if (bXlsx)
+						pWriter->WriteString(L"<mc:Choice xmlns:xdr14=\"http://schemas.microsoft.com/office/excel/2010/spreadsheetDrawing\" Requires=\"xdr14\">");
+					else
+						pWriter->WriteString(L"<mc:Choice xmlns:p14=\"http://schemas.microsoft.com/office/powerpoint/2010/main\" Requires=\"p14\">");
+				}
+				m_elem->toXmlWriter(pWriter);
+
+				if (bAlternateContent)
+				{
+					pWriter->WriteString(L"</mc:Choice>");
+					if (m_elem_alternative.is_init())
+					{
+						pWriter->WriteString(L"<mc:Fallback>");
+						m_elem_alternative->toXmlWriter(pWriter);
+						pWriter->WriteString(L"</mc:Fallback>");
+					}
+					pWriter->WriteString(L"</mc:AlternateContent>");
+				}
+				return;
+			}
 			if (m_elem.is_init())
 				m_elem->toXmlWriter(pWriter);
 		}

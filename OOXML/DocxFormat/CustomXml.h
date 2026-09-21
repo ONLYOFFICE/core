@@ -140,5 +140,21 @@ namespace OOX
 		bool m_bUsed = false;
 		bool m_bDocument = false;
 	};
+	class CInk : public OOX::CCustomXML
+	{
+	public:
+		CInk(OOX::Document* pMain, bool bDocument = true);
+		CInk(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath);
+		virtual ~CInk();
+
+		virtual void write(const CPath& oFilePath, const CPath& oDirectory, CContentTypes& oContent) const;
+
+		virtual const OOX::FileType type() const;
+
+		virtual const CPath DefaultDirectory() const;
+		virtual const CPath DefaultFileName() const;
+
+		virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+	};
 
 } // namespace OOX

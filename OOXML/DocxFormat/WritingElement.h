@@ -518,6 +518,7 @@ namespace OOX
 		et_pic,				// <...:pic>
 		et_cxnSp,			// <...:cxnSp>
 		et_oleobject,
+		et_ContentPart,
 		
 		et_p_cNvPicPr,        // <p:cNvPicPr>
 		et_p_cNvPr,            // <p:cNvPr>

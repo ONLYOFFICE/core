@@ -149,6 +149,7 @@
 #include "../UniEffect.cpp"
 #include "../UniFill.cpp"
 #include "../Controls.cpp"
+#include "../ContentPart.cpp"
 
 #include "../Runs/MathParaWrapper.cpp"
 #include "../Runs/Br.cpp"

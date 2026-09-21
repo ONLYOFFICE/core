@@ -102,10 +102,7 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		public:
 			std::wstring m_namespace;
-			nullable<PPTX::Logic::Xfrm> m_oXfrm;
-			//nullable<nvContentPartPr> m_oNvContentPartPr;
 			nullable<SimpleTypes::CRelationshipId > m_oId;
-
 		};
 
 		//--------------------------------------------------------------------------------

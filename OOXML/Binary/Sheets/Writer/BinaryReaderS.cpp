@@ -6780,7 +6780,9 @@ int BinaryWorksheetsTableReader::ReadDrawings(BYTE type, long length, void* poRe
 		}
 	}
 	else
+	{
 		res = c_oSerConstants::ReadUnknown;
+	}
 	return res;
 }
 int BinaryWorksheetsTableReader::ReadCellAnchor(BYTE type, long length, void* poResult)
@@ -6846,6 +6848,23 @@ int BinaryWorksheetsTableReader::ReadDrawing(BYTE type, long length, void* poRes
 		m_oBufferedStream.Skip(5); // type record (must be 1) + 4 byte - len record
 
 		pCellAnchor->m_oElement->fromPPTY(&m_oBufferedStream);
+
+		m_oBufferedStream.Seek(_e);
+		if (m_oBufferedStream.GetPos() < nOldPos + length)
+		{
+			BYTE typeRecAlt = m_oBufferedStream.GetUChar();    // SPTREE_TYPE_ALTERNATIVE
+			LONG _eAlt      = m_oBufferedStream.GetPos()   + m_oBufferedStream.GetLong() + 4;
+
+			if (SPTREE_TYPE_ALTERNATIVE == typeRecAlt)
+			{
+				m_oBufferedStream.Skip(5); // type record (must be 1) + 4 byte - len record
+
+				PPTX::Logic::SpTreeElem oAlternative;
+				oAlternative.fromPPTY(&m_oBufferedStream);
+				pCellAnchor->m_oElement->SetAlternative(oAlternative);
+			}
+			m_oBufferedStream.Seek(_eAlt);
+		}
 
 		if (!pCellAnchor->m_oElement->is_init())
 		{

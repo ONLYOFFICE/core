@@ -88,8 +88,11 @@ namespace PPTX
 
 			void InitElem(WrapperWritingElement* pElem);
 
-			virtual void fromPPTY (NSBinPptxRW::CBinaryFileReader* pReader);
+			virtual void fromPPTY (NSBinPptxRW::CBinaryFileReader* pReader);		
+			void fromPPTY (NSBinPptxRW::CBinaryFileReader* pReader, LONG lEndRec);	// element and optional SPTREE_TYPE_ALTERNATIVE
 			virtual void toPPTY (NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+
+			void SetAlternative(const SpTreeElem& oAlternative);
 
 			void toXmlWriterVML (NSBinPptxRW::CXmlWriter* pWriter, smart_ptr<PPTX::Theme>& oTheme, smart_ptr<PPTX::Logic::ClrMap>& oClrMap, OOX::IFileContainer* pContainer) const;
 			virtual void toXmlWriter (NSBinPptxRW::CXmlWriter* pWriter) const;

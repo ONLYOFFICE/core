@@ -613,6 +613,10 @@ namespace NExtractTools
 			{
 				nRes = txt2doct_bin(sFrom, sTo, params, convertParams);
 			}
+			else if (AVS_OFFICESTUDIO_FILE_TEAMLAB_DOCY == nFormatTo)
+			{
+				nRes = txt2doct(sFrom, sTo, params, convertParams);
+			}
 			else if (	AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX == nFormatTo ||
 						AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM == nFormatTo ||
 						AVS_OFFICESTUDIO_FILE_OTHER_OOXML == nFormatTo)

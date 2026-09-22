@@ -551,7 +551,7 @@ _UINT32 CSVReader::Impl::Read(const std::wstring &sFileName, OOX::Spreadsheet::C
 		else
 			pWorksheet->m_oSheetData->m_arrItems.push_back(pRow);
 	}
-	else
+	else if(!readToCache)
 		RELEASEOBJECT(pRow);
 	oXlsx.m_arWorksheets.push_back(pWorksheet.GetPointer());
 

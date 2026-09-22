@@ -120,6 +120,8 @@ CMD cd /vlc && \
     /vlc/change-rpaths.sh && \
 # copy libva libraries
     (for f in $(find /usr/lib/x86_64-linux-gnu/ -name 'libva*.so*'); do cp $f lib; done;) && \
+# copy libidn: libvlccore is linked with libidn.so.11, which recent distributions do not ship
+    cp -L /usr/lib/x86_64-linux-gnu/libidn.so.11 lib && \
 # convert all symlinks to files
     echo "CONVERTING SYMLINKS..." && \
     (for f in $(find . -type l); do cp --remove-destination $(readlink -f $f) $f; done;) && \

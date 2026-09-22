@@ -613,6 +613,10 @@ namespace NExtractTools
 			{
 				nRes = txt2doct_bin(sFrom, sTo, params, convertParams);
 			}
+			else if (AVS_OFFICESTUDIO_FILE_TEAMLAB_DOCY == nFormatTo)
+			{
+				nRes = txt2doct(sFrom, sTo, params, convertParams);
+			}
 			else if (	AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX == nFormatTo ||
 						AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM == nFormatTo ||
 						AVS_OFFICESTUDIO_FILE_OTHER_OOXML == nFormatTo)
@@ -652,10 +656,7 @@ namespace NExtractTools
 				NSDirectory::CreateDirectory(sDoctDir);
 				std::wstring sTFile = combinePath(sDoctDir, L"Editor.bin");
 
-				if (AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX_FLAT == nFormatFrom)
-					nRes = txt2doct_bin(sFrom, sTFile, params, convertParams);
-				else
-					nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
+				nRes = txt2doct_bin(sFrom, sTFile, params, convertParams);
 
 				if (SUCCEEDED_X2T(nRes))
 				{

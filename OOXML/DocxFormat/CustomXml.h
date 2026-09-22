@@ -135,6 +135,9 @@ namespace OOX
 		virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter);
 		virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
+		static smart_ptr<OOX::File> Create(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath);
+		static bool IsDataStorage(const smart_ptr<OOX::File>& pFile);
+
 		std::string m_sXmlA;
 
 		bool m_bUsed = false;

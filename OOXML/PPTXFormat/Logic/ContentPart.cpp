@@ -164,7 +164,7 @@ namespace PPTX
 					case 3:
 					{
 						pReader->Skip(4); // len
-						smart_ptr<OOX::CInk> pInk = new OOX::CInk(NULL);
+						smart_ptr<OOX::CInk> pInk = new OOX::CInk(NULL, pReader->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX);
 						pInk->fromPPTY(pReader);
 
 						if (pReader->m_pRels && pReader->m_pRels->m_pManager && pReader->m_pRels->m_pManager->m_pContentTypes)
@@ -185,7 +185,8 @@ namespace PPTX
 							OOX::CPath oInkRegPath = sMainFolder;
 							pInk->write(sInkPath + FILE_SEPARATOR_STR + sInkFileName, oInkRegPath, *pReader->m_pRels->m_pManager->m_pContentTypes);
 
-							unsigned int nRId = pReader->m_pRels->WriteRels(OOX::FileTypes::Ink.RelationType(), L"../ink/" + sInkFileName, L"");
+							std::wstring sInkRelsPath = (pReader->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX) ? L"ink/" : L"../ink/";
+							unsigned int nRId = pReader->m_pRels->WriteRels(OOX::FileTypes::Ink.RelationType(), sInkRelsPath + sInkFileName, L"");
 							id = OOX::RId(nRId);
 						}
 						else if (OOX::IFileContainer *pRels = pReader->GetRelsPtr())
@@ -230,7 +231,7 @@ namespace PPTX
 				pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX_GLOSSARY)
 			{
 				namespace_child = L"w14";
-				namespace_ = L"w";
+				namespace_ = L"w14"; 
 			}
 			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)
 			{
@@ -600,7 +601,8 @@ namespace PPTX
 			pWriter->StartNode(namespace_ + L":nvContentPartPr");
 			pWriter->EndAttributes();
 
-			cNvPr.toXmlWriter2(namespace_, pWriter);
+			if (namespace_ != L"w14" || false == cNvPr.name.empty())
+				cNvPr.toXmlWriter2(namespace_, pWriter);
 			cNvContentPartPr.toXmlWriter2(namespace_, pWriter);
 
 			if (bWriteNvPr)

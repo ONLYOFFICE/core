@@ -180,7 +180,7 @@ namespace OOX
 			std::vector<smart_ptr<OOX::File>>& container = m_oMain.document->GetContainer();
 			for (size_t i = 0; i < container.size(); ++i)
 			{
-				if (OOX::FileTypes::CustomXml == container[i]->type())
+				if (OOX::CCustomXML::IsDataStorage(container[i]))
 				{
 					OOX::CCustomXML* pCustomXml = dynamic_cast<OOX::CCustomXML*>(container[i].GetPointer());
 					if(OOX::CSettingsCustom::GetSchemaUrl() == pCustomXml->GetSchemaUrl())

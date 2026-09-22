@@ -8340,7 +8340,18 @@ int Binary_DocumentTableReader::ReadRun(BYTE type, long length, void* poResult)
 	}
 	else if ( c_oSerRunType::Content == type )
 	{
+		long nRunContentEndOld = m_nRunContentEnd;
+		m_nRunContentEnd = m_oBufferedStream.GetPos() + length;
+		
 		READ1_DEF(length, res, this->ReadRunContent, NULL);
+		
+		m_nRunContentEnd = nRunContentEndOld;
+
+		if (m_bDrawingAlternative)
+		{// mc:Fallback not read
+			m_bDrawingAlternative = false;
+			GetCurrentStringWriter().WriteString(L"</mc:AlternateContent>");
+		}
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -8440,23 +8451,63 @@ int Binary_DocumentTableReader::ReadRunContent(BYTE type, long length, void* poR
 			}
 		}
 	}
-	else if (c_oSerRunType::pptxDrawing == type)
+	else if (c_oSerRunType::pptxDrawing == type || c_oSerRunType::pptxDrawingAlternative == type)
 	{
+		// pptxDrawing (mc:Choice - ink, chartEx) + pptxDrawingAlternative (mc:Fallback)
+		bool bFallback = (c_oSerRunType::pptxDrawingAlternative == type);
+		bool bChoiceWritten = bFallback && m_bDrawingAlternative;
+		
+		if (bFallback)
+			m_bDrawingAlternative = false;
+
 		CDrawingProperty oCDrawingProperty(m_oFileWriter.getNextDocPr());
 		READ2_DEF(length, res, this->ReadPptxDrawing, &oCDrawingProperty);
 
+		std::wstring sDrawingXml;
 		if (oCDrawingProperty.IsGraphicFrameContent())
 		{
-			GetCurrentStringWriter().WriteString(oCDrawingProperty.Write());
+			sDrawingXml = oCDrawingProperty.Write();
 		}
 		else if (oCDrawingProperty.bDataPos && oCDrawingProperty.bDataLength)
 		{
-            std::wstring sDrawingProperty = oCDrawingProperty.Write();
-           
-			if (false == sDrawingProperty.empty())
+			bool bUseConvertion2007 = m_oFileWriter.m_pDrawingConverter->m_bIsUseConvertion2007;
+			if (bChoiceWritten)
+				m_oFileWriter.m_pDrawingConverter->m_bIsUseConvertion2007 = false; // without nested mc:AlternateContent in mc:Fallback
+
+			sDrawingXml = ReadDrawingXml(oCDrawingProperty);
+
+			m_oFileWriter.m_pDrawingConverter->m_bIsUseConvertion2007 = bUseConvertion2007;
+		}
+
+		if (bChoiceWritten)
+		{
+			if (false == sDrawingXml.empty())
 			{
-				ReadDrawing(oCDrawingProperty);
+				GetCurrentStringWriter().WriteString(L"<mc:Fallback>");
+				GetCurrentStringWriter().WriteString(sDrawingXml);
+				GetCurrentStringWriter().WriteString(L"</mc:Fallback>");
 			}
+			GetCurrentStringWriter().WriteString(L"</mc:AlternateContent>");
+		}
+		else if (false == bFallback && false == sDrawingXml.empty() && IsNextDrawingAlternative())
+		{
+			std::wstring sRequires;
+			if (std::wstring::npos != sDrawingXml.find(L"http://schemas.microsoft.com/office/word/2010/wordprocessingInk"))
+				sRequires = L"xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" Requires=\"wpi\"";
+			else if (std::wstring::npos != sDrawingXml.find(L"http://schemas.microsoft.com/office/drawing/2014/chartex"))
+				sRequires = L"xmlns:cx1=\"http://schemas.microsoft.com/office/drawing/2015/9/8/chartex\" Requires=\"cx1\"";
+			else
+				sRequires = L"xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" Requires=\"wps\"";
+
+			GetCurrentStringWriter().WriteString(L"<mc:AlternateContent><mc:Choice " + sRequires + L">");
+			GetCurrentStringWriter().WriteString(sDrawingXml);
+			GetCurrentStringWriter().WriteString(L"</mc:Choice>");
+			
+			m_bDrawingAlternative = true;
+		}
+		else
+		{// without mc:Choice - fallback only
+			GetCurrentStringWriter().WriteString(sDrawingXml);
 		}
 	}
 	else if (c_oSerRunType::table == type)
@@ -8612,22 +8663,39 @@ int Binary_DocumentTableReader::ReadEndnoteRef(BYTE type, long length, void* poR
 }
 void Binary_DocumentTableReader::ReadDrawing(CDrawingProperty &oCDrawingProperty)
 {
-    std::wstring sDrawingProperty = oCDrawingProperty.Write();
-    if (false == sDrawingProperty.empty())
+	std::wstring sDrawingXml = ReadDrawingXml(oCDrawingProperty);
+	
+	if ( false == sDrawingXml.empty())
+	{
+		GetCurrentStringWriter().WriteString(sDrawingXml);
+	}
+}
+std::wstring Binary_DocumentTableReader::ReadDrawingXml(CDrawingProperty &oCDrawingProperty)
+{
+	std::wstring sDrawingXml;
+	
+	std::wstring sDrawingProperty = oCDrawingProperty.Write();
+	if (false == sDrawingProperty.empty())
 	{
 		long nCurPos = m_oBufferedStream.GetPos();
-        std::wstring sDrawingXml;
 
 		int nDocType = m_oFileWriter.m_bGlossaryMode ? XMLWRITER_DOC_TYPE_DOCX_GLOSSARY : XMLWRITER_DOC_TYPE_DOCX;
 
-        m_oFileWriter.m_pDrawingConverter->SaveObjectEx(oCDrawingProperty.DataPos, oCDrawingProperty.DataLength, sDrawingProperty, nDocType, sDrawingXml);
+		m_oFileWriter.m_pDrawingConverter->SaveObjectEx(oCDrawingProperty.DataPos, oCDrawingProperty.DataLength, sDrawingProperty, nDocType, sDrawingXml);
 		m_oBufferedStream.Seek(nCurPos);
-
-        if ( false == sDrawingXml.empty())
-		{
-            GetCurrentStringWriter().WriteString(sDrawingXml);
-		}
 	}
+	return sDrawingXml;
+}
+bool Binary_DocumentTableReader::IsNextDrawingAlternative()
+{
+	long nCurPos = m_oBufferedStream.GetPos();
+	if (m_nRunContentEnd < 0 || nCurPos + 5 > m_nRunContentEnd)
+		return false;
+
+	BYTE nextType = m_oBufferedStream.GetUChar();
+	m_oBufferedStream.Seek(nCurPos);
+
+	return (c_oSerRunType::pptxDrawingAlternative == nextType);
 }
 int Binary_DocumentTableReader::ReadObject(BYTE type, long length, void* poResult)
 {

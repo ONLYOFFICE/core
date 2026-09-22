@@ -41,6 +41,7 @@
 #include "Table/Table.h"
 #include "SmartArt.h"
 #include "Pic.h"
+#include "ContentPart.h"
 
 #include "../../XlsxFormat/Slicer/SlicerCacheExt.h"
 #include "../../XlsxFormat/Timelines/Timeline.h"
@@ -104,6 +105,7 @@ namespace PPTX
 			nullable_string			macro;
 			nullable_string			vmlSpid;
 			nullable<Pic>			olePic;
+			nullable<ContentPart>			contentPart;
 
             nullable<Table>			table;
 			nullable<SmartArt>		smartArt;
@@ -112,9 +114,7 @@ namespace PPTX
 			nullable<OOX::Spreadsheet::CDrawingSlicer>		slicerExt;
 			nullable<OOX::Spreadsheet::CDrawingTimeslicer>	timeslicer;
 
-			nullable<OOX::Logic::CContentPart>				contentPart;
-
-			SpTreeElem				element;
+			SpTreeElem element;
 
 			std::wstring m_sRequires;//from mc:Choice
 

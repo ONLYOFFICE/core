@@ -480,6 +480,12 @@ namespace PPTX
 				smartArt->toXmlWriter(pWriter);
 				pWriter->WriteString(L"</a:graphicData></a:graphic>");
 			}
+			else if (contentPart.is_init())
+			{
+				pWriter->WriteString(L"<a:graphic><a:graphicData uri=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\">");
+				contentPart->toXmlWriter(pWriter);
+				pWriter->WriteString(L"</a:graphicData></a:graphic>");
+			}
 		}
 		void GraphicFrame::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 		{
@@ -491,6 +497,16 @@ namespace PPTX
 				smartArt->toXmlWriter(pWriter);
 				pWriter->WriteString(L"</a:graphicData></a:graphic>");
 
+			}
+			else if (contentPart.is_init() && (	pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX ||
+												pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX_GLOSSARY) &&
+				pWriter->m_lGroupIndex == 0)
+			{
+				// wp:inline/wp:anchor contain a:graphic
+				pWriter->WriteString(L"<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">\
+<a:graphicData uri=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\">");
+				contentPart->toXmlWriter(pWriter);
+				pWriter->WriteString(L"</a:graphicData></a:graphic>");
 			}
 			else
 			{
@@ -516,7 +532,7 @@ namespace PPTX
 
 		bool GraphicFrame::IsEmpty() const
 		{
-			return !olePic.is_init() && !smartArt.is_init() && !table.is_init() && !chartRec.is_init() && !vmlSpid.is_init() && !slicer.is_init() && !slicerExt.is_init() && !timeslicer.is_init() && !element.is_init();
+			return !contentPart.is_init() && !olePic.is_init() && !smartArt.is_init() && !table.is_init() && !chartRec.is_init() && !vmlSpid.is_init() && !slicer.is_init() && !slicerExt.is_init() && !timeslicer.is_init() && !element.is_init();
 		}
 
 		void GraphicFrame::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
@@ -615,6 +631,10 @@ namespace PPTX
 			{
 				pWriter->WriteRecord2(9, timeslicer);
 			}
+			else if (contentPart.is_init())
+			{
+				pWriter->WriteRecord2(10, contentPart);
+			}
 			else if (element.is_init())
 			{
  				pWriter->WriteRecord1(4, element);
@@ -709,6 +729,12 @@ namespace PPTX
 					{
 						timeslicer = new OOX::Spreadsheet::CDrawingTimeslicer();
 						timeslicer->fromPPTY(pReader);
+					}break;
+					case 10:
+					{
+						pReader->Skip(5); // type + size
+						contentPart = new Logic::ContentPart();
+						contentPart->fromPPTY(pReader);
 					}break;
 					case SPTREE_TYPE_MACRO:
 					{

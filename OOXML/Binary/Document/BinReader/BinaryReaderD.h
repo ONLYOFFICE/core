@@ -300,6 +300,9 @@ private:
 	nullable<SimpleTypes::CLongHexNumber> m_oTextId;
 
 	BYTE                            m_byteLastElemType;
+
+	long							m_nRunContentEnd = -1;			// end of current run content record
+	bool							m_bDrawingAlternative = false;
 public:
     Writers::ContentWriter&         m_oDocumentWriter;
     Writers::MediaWriter&           m_oMediaWriter;
@@ -444,6 +447,8 @@ public:
 	int ReadFootnoteRef(BYTE type, long length, void* poResult);
 	int ReadEndnoteRef(BYTE type, long length, void* poResult);
 	void ReadDrawing(CDrawingProperty &oCDrawingProperty);
+	std::wstring ReadDrawingXml(CDrawingProperty &oCDrawingProperty);
+	bool IsNextDrawingAlternative();
 	int ReadObject(BYTE type, long length, void* poResult);
 	int ReadComment(BYTE type, long length, void* poResult);
 	int ReadDocTable(BYTE type, long length, void* poResult);

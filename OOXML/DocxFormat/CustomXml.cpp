@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) Ascensio System SIA, 2009-2026
  *
  * This program is a free software product. You can redistribute it and/or
@@ -382,6 +382,33 @@ namespace OOX
 
 		pReader->Seek(_end_rec);
 	}
+	smart_ptr<OOX::File> CCustomXML::Create(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath)
+	{
+		bool bInk = false;
+
+		NSFile::CFileBinary oFile;
+		if (oFile.OpenFile(oPath.GetPath()))
+		{
+			BYTE pBuffer[1024] = {};
+			DWORD dwRead = 0;
+			oFile.ReadFile(pBuffer, sizeof(pBuffer), dwRead);
+			oFile.CloseFile();
+
+			std::string sHead((char*)pBuffer, dwRead);
+			bInk = (std::string::npos != sHead.find("http://www.w3.org/2003/InkML"));
+		}
+		if (bInk)
+			return smart_ptr<OOX::File>(new OOX::CInk(pMain, oRootPath, oPath));
+
+		return smart_ptr<OOX::File>(new OOX::CCustomXML(pMain, oRootPath, oPath));
+	}
+	bool CCustomXML::IsDataStorage(const smart_ptr<OOX::File>& pFile)
+	{
+		if (false == pFile.IsInit()) return false;
+		if (false == (OOX::FileTypes::CustomXml == pFile->type())) return false;
+
+		return (NULL == dynamic_cast<OOX::CInk*>(pFile.GetPointer()));
+	}
 	CInk::CInk(OOX::Document* pMain, bool bDocument) : CCustomXML(pMain, bDocument)
 	{
 	}
@@ -409,6 +436,7 @@ namespace OOX
 	}
 	const CPath CInk::DefaultDirectory() const
 	{
+		if (m_bDocument) return type().DefaultDirectory(); 
 		return L"../" + type().DefaultDirectory();
 	}
 	const CPath CInk::DefaultFileName() const

@@ -197,7 +197,7 @@ namespace OOX
 		else if ( oRelation.Type() == FileTypes::JsaProject)
 			return smart_ptr<OOX::File>(new OOX::JsaProject( pMain, oFileName, oRelation.IsExternal()));
 		else if ( oRelation.Type() == FileTypes::CustomXml)
-			return smart_ptr<OOX::File>(new OOX::CCustomXML(pMain, oRootPath, oFileName));
+			return OOX::CCustomXML::Create(pMain, oRootPath, oFileName);
 		else if ( oRelation.Type() == FileTypes::CustomXmlProps)
 			return smart_ptr<OOX::File>(new OOX::CCustomXMLProps(pMain, oFileName));
 
@@ -348,7 +348,7 @@ namespace OOX
 		else if ( pRelation->Type() == FileTypes::JsaProject)
 			return smart_ptr<OOX::File>(new OOX::JsaProject( pMain, oFileName, pRelation->IsExternal()));
 		else if ( pRelation->Type() == FileTypes::CustomXml)
-			return smart_ptr<OOX::File>(new OOX::CCustomXML(pMain, oRootPath, oFileName));
+			return OOX::CCustomXML::Create(pMain, oRootPath, oFileName);
 		else if ( pRelation->Type() == FileTypes::CustomXmlProps)
 			return smart_ptr<OOX::File>(new OOX::CCustomXMLProps(pMain, oFileName));
 		else if ( pRelation->Type() == FileTypes::ImportedExternalContent )

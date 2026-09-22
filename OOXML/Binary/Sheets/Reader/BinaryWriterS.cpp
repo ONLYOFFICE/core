@@ -9343,7 +9343,7 @@ void BinaryCustomsTableWriter::Write(OOX::IFileContainer *pContainer)
 	std::vector<smart_ptr<OOX::File>>& container = pContainer->GetContainer();
 	for (size_t k = 0; k < container.size(); ++k)
 	{
-		if (OOX::FileTypes::CustomXml == container[k]->type())
+		if (OOX::CCustomXML::IsDataStorage(container[k]))
 		{
 			OOX::CCustomXML* pCustomXml = dynamic_cast<OOX::CCustomXML*>(container[k].GetPointer());
 			if (pCustomXml->m_bUsed) continue;

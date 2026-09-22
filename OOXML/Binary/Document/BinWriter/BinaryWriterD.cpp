@@ -6959,15 +6959,15 @@ void BinaryDocumentTableWriter::WriteText(const std::wstring& text, BYTE type)
 			m_oBcw.m_pEmbeddedFontsManager->CheckString(text);
 	}
 }
-bool BinaryDocumentTableWriter::WriteDrawingPptx(OOX::WritingElement* item)
+bool BinaryDocumentTableWriter::WriteDrawingPptx(OOX::WritingElement* item, bool bAlternateContent)
 {
 	if (item == NULL) return false;
 
-	OOX::EElementType		pElementType	= item->getType();
-	std::wstring*			pXml			= NULL;
+	OOX::EElementType pElementType = item->getType();
+	std::wstring* pXml = NULL;
 
 	OOX::Logic::CDrawing*		pGraphicDrawing	= NULL;
-	PPTX::Logic::GraphicFrame*	pGraphic		= NULL;
+	PPTX::Logic::GraphicFrame*	pGraphic = NULL;
 
 	m_oBcw.m_oStream.ClearCurShapeSize();
 
@@ -6980,20 +6980,24 @@ bool BinaryDocumentTableWriter::WriteDrawingPptx(OOX::WritingElement* item)
 
 		if (pAlternateContent)
 		{
+			m_oParamsWriter.bWriteAlternative = false;
+
 			if (false == pAlternateContent->m_arrChoiceItems.empty())
 			{
 				we = pAlternateContent->m_arrChoiceItems[0];
 			}
-			res = WriteDrawingPptx(we);
+			res = WriteDrawingPptx(we, true);
 
+			// the choice (ink, chartEx) sets bWriteAlternative - its mc:Fallback is written as pptxDrawingAlternative right after
 			if (res == false || we == NULL || m_oParamsWriter.bWriteAlternative)
 			{
 				if (false == pAlternateContent->m_arrFallbackItems.empty())
 				{
 					we = pAlternateContent->m_arrFallbackItems[0];
-					res = WriteDrawingPptx(we);
+					res = WriteDrawingPptx(we, true);
 				}
 			}
+			m_oParamsWriter.bWriteAlternative = false;
 		}
 
 	}
@@ -7016,26 +7020,18 @@ bool BinaryDocumentTableWriter::WriteDrawingPptx(OOX::WritingElement* item)
 		OOX::Logic::CPicture* pPicture = static_cast<OOX::Logic::CPicture*>(item);
 		pXml = pPicture->m_sXml.GetPointer();
 	}
-	if (pXml)
+	if (pXml || pGraphicDrawing || pGraphic)
 	{
-		int nCurPos = m_oBcw.WriteItemStart(c_oSerRunType::pptxDrawing);
-		WriteDrawing(pXml, NULL, NULL);
+		int nCurPos = m_oBcw.WriteItemStart(m_oParamsWriter.bWriteAlternative ? c_oSerRunType::pptxDrawingAlternative : c_oSerRunType::pptxDrawing);
+		m_oParamsWriter.bWriteAlternative = false;
+		
+		if (pXml)	WriteDrawing(pXml, NULL, NULL);
+		else		WriteDrawing(NULL, pGraphicDrawing, pGraphic);
+		
 		m_oBcw.WriteItemEnd(nCurPos);
-	}
-	else if (pGraphicDrawing || pGraphic)
-	{
-		if ((pGraphic) && (pGraphic->contentPart.IsInit()))
-		{
-			//todooo parse by insertion types
-			res = false;
-		}
-		else
-		{
-			int nCurPos = m_oBcw.WriteItemStart(m_oParamsWriter.bWriteAlternative ? c_oSerRunType::pptxDrawingAlternative : c_oSerRunType::pptxDrawing);
-			m_oParamsWriter.bWriteAlternative = false;
-			WriteDrawing(NULL, pGraphicDrawing, pGraphic);
-			m_oBcw.WriteItemEnd(nCurPos);
-		}
+
+		if (false == bAlternateContent)
+			m_oParamsWriter.bWriteAlternative = false; // no mc:Fallback outside mc:AlternateContent
 	}
 	else
 	{
@@ -7139,6 +7135,10 @@ void BinaryDocumentTableWriter::WriteDrawing(std::wstring* pXml, OOX::Logic::CDr
 			}
 			else
 			{
+				if (pGraphic->contentPart.IsInit())
+				{
+					m_oParamsWriter.bWriteAlternative = true;
+				}
 				pGraphic->toPPTY(&m_oBcw.m_oStream);
 			}
 			m_oBcw.m_oStream.EndRecord();
@@ -9911,7 +9911,7 @@ void BinaryCustomsTableWriter::Write(OOX::CDocument* pDocument)
 	std::vector<smart_ptr<OOX::File>>& container = pDocument->GetContainer();
 	for (size_t i = 0; i < container.size(); ++i)
 	{
-		if (OOX::FileTypes::CustomXml == container[i]->type())
+		if (OOX::CCustomXML::IsDataStorage(container[i]))
 		{
 			OOX::CCustomXML* pCustomXml = dynamic_cast<OOX::CCustomXML*>(container[i].GetPointer());
 			if (pCustomXml->m_bUsed) continue;

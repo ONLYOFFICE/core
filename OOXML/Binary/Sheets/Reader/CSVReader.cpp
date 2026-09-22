@@ -60,6 +60,7 @@ public:
     _UINT32 Read(const std::wstring &sFileName, OOX::Spreadsheet::CXlsx &oXlsx, _UINT32 nCodePage, const std::wstring& wcDelimiter, _INT32 lcid, bool readToCache);
 private:
 	int AddCell(std::wstring &sText, INT nStartCell, std::stack<INT> &oDeleteChars, nullable<NSStringUtils::CStringBuilder> &sheetData, OOX::Spreadsheet::CCell *pCell, INT nRow, INT nCol, bool bIsWrap);
+	int AddCell(std::wstring &sText, INT nStartCell, std::stack<INT> &oDeleteChars, OOX::Spreadsheet::CRow &oRow, INT nRow, INT nCol, bool bIsWrap);
 
 	std::shared_ptr<CellFormatController>  cellFormatController_ = NULL;
 //---------------------------------------------------------------------------------------------------------
@@ -217,6 +218,33 @@ int CSVReader::Impl::AddCell(std::wstring &sText, INT nStartCell, std::stack<INT
 
 	return result;
 }
+int CSVReader::Impl::AddCell(std::wstring &sText, INT nStartCell, std::stack<INT> &oDeleteChars, OOX::Spreadsheet::CRow &oRow, INT nRow, INT nCol, bool bIsWrap)
+{
+
+	int result = 0;
+	while (!oDeleteChars.empty())
+	{
+		INT nIndex = oDeleteChars.top() - nStartCell;
+		sText.erase(nIndex, 1);
+		oDeleteChars.pop();
+	}
+	size_t length = sText.length();
+
+// Don't write empty
+	if ((0 == length) || (sText[0] == L'\0'))
+		return result;
+
+	OOX::Spreadsheet::CCell *pCell = new OOX::Spreadsheet::CCell();
+
+	pCell->setRowCol(nRow, nCol);
+	pCell->m_oType.Init();
+
+	result = cellFormatController_->ProcessCellType(pCell, sText, bIsWrap);
+
+	oRow.m_arrItems.push_back(pCell);
+
+	return result;
+}
 _UINT32 CSVReader::Impl::Read(const std::wstring &sFileName, OOX::Spreadsheet::CXlsx &oXlsx, _UINT32 nCodePage, const std::wstring& sDelimiter, _INT32 lcid, bool readToCache)
 {
 	NSFile::CFileBinary oFile;
@@ -348,18 +376,24 @@ _UINT32 CSVReader::Impl::Read(const std::wstring &sFileName, OOX::Spreadsheet::C
 	INT nIndexCol = 0;
 
 	OOX::Spreadsheet::CRow *pRow = new OOX::Spreadsheet::CRow();
-	OOX::Spreadsheet::CCell *pCell = new OOX::Spreadsheet::CCell();
-	auto rowContainer = boost::shared_ptr<OOX::Spreadsheet::CRow>(pRow);
-	auto CellContainer = boost::shared_ptr<OOX::Spreadsheet::CCell>(pCell);
-	if(!pWorksheet->m_oSheetData->m_oDataCache.IsInit())
-		pWorksheet->m_oSheetData->m_oDataCache.Init();
-	pWorksheet->m_oSheetData->m_oDataCache->AddSize(nSize*10);
-
-	pRow->m_oR.Init();
-	pRow->m_oR->SetValue(nIndexRow + 1);
+	OOX::Spreadsheet::CCell *pCell;
+	 boost::shared_ptr<OOX::Spreadsheet::CRow> rowContainer;
+	boost::shared_ptr<OOX::Spreadsheet::CCell> CellContainer;
+	if(readToCache)
+	{
+		pCell = new OOX::Spreadsheet::CCell();
+		rowContainer.reset(pRow);
+		CellContainer.reset(pCell);
+		if(!pWorksheet->m_oSheetData->m_oDataCache.IsInit())
+			pWorksheet->m_oSheetData->m_oDataCache.Init();
+		pWorksheet->m_oSheetData->m_oDataCache->AddSize(nSize*10);
+		pRow->m_oR.Init();
+		pRow->m_oR->SetValue(nIndexRow + 1);
+		pRow->toXMLStart(pWorksheet->m_oSheetData->m_oDataCache.get2());
+	}
 
 	const WCHAR *pTemp = sFileDataW.c_str();
-	pRow->toXMLStart(pWorksheet->m_oSheetData->m_oDataCache.get2());
+
 	for (size_t nIndex = 0; nIndex < nSize; ++nIndex)
 	{
 		wcCurrent = pTemp[nIndex];
@@ -369,13 +403,25 @@ _UINT32 CSVReader::Impl::Read(const std::wstring &sFileName, OOX::Spreadsheet::C
 				continue;
 			// New Cell
 			std::wstring sCellText(pTemp + nStartCell, nIndex - nStartCell);
-
-			if (1 == AddCell(sCellText, nStartCell, oDeleteChars, pWorksheet->m_oSheetData->m_oDataCache, pCell, nIndexRow, nIndexCol++, bIsWrap))
-			{
-				bMsLimitCell = true;
-			}
+			if(readToCache)
+				{
+					if (1 == AddCell(sCellText, nStartCell, oDeleteChars, pWorksheet->m_oSheetData->m_oDataCache, pCell, nIndexRow, nIndexCol++, bIsWrap))
+					{
+						bMsLimitCell = true;
+					}
+				}
+			else if (1 == AddCell(sCellText, nStartCell, oDeleteChars, *pRow, nIndexRow, nIndexCol++, bIsWrap))
+				{
+					bMsLimitCell = true;
+				}
 			oDeleteChars = std::stack<INT>();
 			bIsWrap = false;
+
+			if (nIndex + nDelimiterSize == nSize && !readToCache)
+			{
+					pWorksheet->m_oSheetData->m_arrItems.push_back(pRow);
+					pRow = NULL;
+			}
 
 			if (nIndex + nDelimiterSize > 500000)
 			{
@@ -399,10 +445,17 @@ _UINT32 CSVReader::Impl::Read(const std::wstring &sFileName, OOX::Spreadsheet::C
 			if (nStartCell != nIndex)
 			{
 				std::wstring sCellText(pTemp + nStartCell, nIndex - nStartCell);
-				if (1 == AddCell(sCellText, nStartCell, oDeleteChars, pWorksheet->m_oSheetData->m_oDataCache, pCell, nIndexRow, nIndexCol++, bIsWrap))
+				if(readToCache)
 				{
-					bMsLimitCell = true;
+					if (1 == AddCell(sCellText, nStartCell, oDeleteChars, pWorksheet->m_oSheetData->m_oDataCache, pCell, nIndexRow, nIndexCol++, bIsWrap))
+					{
+						bMsLimitCell = true;
+					}
 				}
+				else if (1 == AddCell(sCellText, nStartCell, oDeleteChars, *pRow, nIndexRow, nIndexCol++, bIsWrap))
+					{
+						bMsLimitCell = true;
+					}
 				bIsWrap = false;
 			}
 
@@ -421,16 +474,25 @@ _UINT32 CSVReader::Impl::Read(const std::wstring &sFileName, OOX::Spreadsheet::C
 			}
 			else
 				nStartCell = nIndex + 1;
-			pRow->toXMLEnd(pWorksheet->m_oSheetData->m_oDataCache.get2());
+			if(readToCache)
+				pRow->toXMLEnd(pWorksheet->m_oSheetData->m_oDataCache.get2());
+			else
+			{
+				pWorksheet->m_oSheetData->m_arrItems.push_back(pRow);
+				pRow = NULL;
+			}
 
-			pRow->m_oR.Init();
-			pRow->m_oR->SetValue(++nIndexRow + 1);
 			if (nIndexRow+1 > 1048576)
 			{
 				bMsLimit = true;
 				break; // MS limit
 			}
-			pRow->toXMLStart(pWorksheet->m_oSheetData->m_oDataCache.get2());
+			if(readToCache)
+				pRow->toXMLStart(pWorksheet->m_oSheetData->m_oDataCache.get2());
+			else
+				pRow = new OOX::Spreadsheet::CRow();
+			pRow->m_oR.Init();
+			pRow->m_oR->SetValue(++nIndexRow + 1);
 			nIndexCol = 0;
 		}
 		else if (wcQuote == wcCurrent)
@@ -461,22 +523,36 @@ _UINT32 CSVReader::Impl::Read(const std::wstring &sFileName, OOX::Spreadsheet::C
 		}
 	}
 
-	if (nStartCell != nSize && !bMsLimit)
+	if (!bMsLimit)
 	{
-		while (nSize > 0)
+		if(nStartCell != nSize)
 		{
-			if (pTemp[nSize - 1] != L'\0')
-				break;
-			else nSize--;
+			while (nSize > 0)
+			{
+				if (pTemp[nSize - 1] != L'\0')
+					break;
+				else nSize--;
+			}
+			std::wstring sCellText(pTemp + nStartCell, nSize - nStartCell);
+			if(readToCache)
+			{
+				if (1 == AddCell(sCellText, nStartCell, oDeleteChars, pWorksheet->m_oSheetData->m_oDataCache, pCell, nIndexRow, nIndexCol++, bIsWrap))
+				{
+					bMsLimitCell = true;
+				}
+			}
+			else if (1 == AddCell(sCellText, nStartCell, oDeleteChars, *pRow, nIndexRow, nIndexCol++, bIsWrap))
+			{
+				bMsLimitCell = true;
+			}
 		}
-		std::wstring sCellText(pTemp + nStartCell, nSize - nStartCell);
-		if (1 == AddCell(sCellText, nStartCell, oDeleteChars, pWorksheet->m_oSheetData->m_oDataCache, pCell, nIndexRow, nIndexCol++, bIsWrap))
-		{
-			bMsLimitCell = true;
-		}
-		pRow->toXMLEnd(pWorksheet->m_oSheetData->m_oDataCache.get2());
+		if(readToCache)
+			pRow->toXMLEnd(pWorksheet->m_oSheetData->m_oDataCache.get2());
+		else
+			pWorksheet->m_oSheetData->m_arrItems.push_back(pRow);
 	}
-
+	else
+		RELEASEOBJECT(pRow);
 	oXlsx.m_arWorksheets.push_back(pWorksheet.GetPointer());
 
 	smart_ptr<OOX::File> oWorksheetFile = pWorksheet.smart_dynamic_cast<OOX::File>();

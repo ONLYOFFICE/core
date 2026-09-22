@@ -222,14 +222,12 @@ int CSVReader::Impl::AddCell(std::wstring &sText, INT nStartCell, std::stack<INT
 int CSVReader::Impl::AddCell(std::wstring &sText, INT nStartCell, std::stack<INT> &oDeleteChars, OOX::Spreadsheet::CRow &oRow, INT nRow, INT nCol, bool bIsWrap)
 {
 	int result = 0;
+	if (sText.empty() || sText[0] == L'\0')
+		return result;
 	OOX::Spreadsheet::CCell *pCell = new OOX::Spreadsheet::CCell();
 
-	if (!PrepareCell(sText, nStartCell, oDeleteChars, pCell, nRow, nCol, bIsWrap, cellFormatController_.get(), result))
-	{
-		delete pCell;
-		return result;
-	}
-
+	PrepareCell(sText, nStartCell, oDeleteChars, pCell, nRow, nCol, bIsWrap, cellFormatController_.get(), result);
+	pCell->m_oCacheValue = sText;
 	oRow.m_arrItems.push_back(pCell);
 	return result;
 }
@@ -363,8 +361,8 @@ _UINT32 CSVReader::Impl::Read(const std::wstring &sFileName, OOX::Spreadsheet::C
 	INT nIndexRow = 0;
 	INT nIndexCol = 0;
 
-	OOX::Spreadsheet::CRow *pRow;
-	OOX::Spreadsheet::CCell *pCell;
+	OOX::Spreadsheet::CRow *pRow = nullptr;
+	OOX::Spreadsheet::CCell *pCell = nullptr;
 	 boost::shared_ptr<OOX::Spreadsheet::CRow> rowContainer;
 	boost::shared_ptr<OOX::Spreadsheet::CCell> CellContainer;
 	if(readToCache)

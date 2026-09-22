@@ -190,7 +190,8 @@ namespace PPTX
 						}
 						else if (OOX::IFileContainer *pRels = pReader->GetRelsPtr())
 						{
-							id = pRels->Add(pInk.smart_dynamic_cast<OOX::File>());
+							smart_ptr<OOX::File> pFile = pInk.smart_dynamic_cast<OOX::File>();
+							id = pRels->Add(pFile);
 						}
 					}break;
 					default:

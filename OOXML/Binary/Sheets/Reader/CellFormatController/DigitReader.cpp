@@ -176,8 +176,16 @@ bool DigitReader::ReadScientific(const std::wstring &value, std::wstring &digit,
 
 	if (std::regex_search(value, scientificRegex))
 	{
-		double doubleVal = std::stod(value);
-
+		double doubleVal = 0;
+		try
+		{
+			doubleVal = std::stod(value);
+		}
+		catch (const std::exception&)
+		{
+			nonscientificCellsCounter_++;
+			return false;
+		}
 		size_t MainPartSize = value.find(L'E');
 		if (MainPartSize == std::wstring::npos)
 		{

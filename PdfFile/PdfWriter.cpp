@@ -2704,6 +2704,7 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 				PdfWriter::CDictObject* pOwner = pButtonWidget->GetObjOwnValue("DA");
 				if (pOwner)
 					pOwner->Remove("DA");
+				pButtonWidget->SetTC(oInfo.GetWidgetAnnotPr()->GetTC());
 
 				// APPEARANCE
 				pButtonWidget->SetAP(nR);

@@ -296,22 +296,22 @@ int CellFormatController::ProcessCellType(OOX::Spreadsheet::CCell *pCell, const 
 		else
 		{
 			pCell_->m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeInlineStr);
-			pCell_->m_oValue.Init();
-
+			pCell_->m_oRichText.Init();
+			OOX::Spreadsheet::CText *pText = new OOX::Spreadsheet::CText();
 			
 			if (value.length() > 32767)
 			{
-				pCell_->m_oValue->m_sText = value.substr(0, 32767);
+				pText->m_sText = value.substr(0, 32767);
 				result = 1; // limit
 			}
 			else
 			{
-				pCell_->m_oValue->m_sText = value;
+				pText->m_sText = value;
 			}
-
+			pCell_->m_oRichText->m_arrItems.push_back(pText);
 			if(pCell->m_oRow.IsInit() && pCell->m_oRow.get() <= maxCustomWidthRow)
 			{
-				addCustomColWidth(pCell, pCell_->m_oValue->m_sText.size());
+				addCustomColWidth(pCell, pText->m_sText.size());
 			}
 		}
 	}

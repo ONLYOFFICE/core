@@ -226,7 +226,11 @@ int CSVReader::Impl::AddCell(std::wstring &sText, INT nStartCell, std::stack<INT
 		return result;
 	OOX::Spreadsheet::CCell *pCell = new OOX::Spreadsheet::CCell();
 
-	PrepareCell(sText, nStartCell, oDeleteChars, pCell, nRow, nCol, bIsWrap, cellFormatController_.get(), result);
+	if (!PrepareCell(sText, nStartCell, oDeleteChars, pCell, nRow, nCol, bIsWrap, cellFormatController_.get(), result))
+	{
+		delete pCell;
+		return result;
+	}
 	pCell->m_oCacheValue = sText;
 	oRow.m_arrItems.push_back(pCell);
 	return result;

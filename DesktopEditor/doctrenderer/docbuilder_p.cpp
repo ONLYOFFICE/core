@@ -55,6 +55,7 @@ using namespace NSJSBase;
 CV8RealTimeWorker::CV8RealTimeWorker(NSDoctRenderer::CDocBuilder* pBuilder, const NSDoctRenderer::DoctRendererEditorType& type, NSDoctRenderer::CDoctRendererConfig* config)
 {
 	m_nFileType = -1;
+	m_nOpenError = 0;
 
 	m_pPdfFile = NULL;
 	m_pPdfFonts = NULL;
@@ -287,6 +288,9 @@ bool CV8RealTimeWorker::OpenFile(const std::wstring& sBasePath, const std::wstri
 {
 	LOGGER_SPEED_START();
 
+	// the reader below may recognize the file as encrypted and refine this
+	m_nOpenError = GetBuilderErrorCode(AVS_FILEUTILS_ERROR_CONVERT);
+
 	CJSContextScope scope(m_context);
 	JSSmart<CJSTryCatch> try_catch = m_context->GetExceptions();
 
@@ -397,6 +401,9 @@ bool CV8RealTimeWorker::OpenFile(const std::wstring& sBasePath, const std::wstri
 
 	LOGGER_SPEED_LAP("open");
 
+	if (!bIsBreak)
+		m_nOpenError = 0;
+
 	return !bIsBreak;
 }
 
@@ -417,8 +424,16 @@ bool CV8RealTimeWorker::OpenDrawingFile(const std::wstring& sFontsDirectory)
 	pPdfFile->SetTempDirectory(NSDirectory::GetFolderPath(m_sPdfFile));
 	pPdfFile->SetCMapFile(m_sX2tPath + L"/cmap.bin");
 
-	if (!pPdfFile->LoadFromFile(m_sPdfFile))
+	const wchar_t* wsPassword = m_sPdfPassword.empty() ? NULL : m_sPdfPassword.c_str();
+
+	if (!pPdfFile->LoadFromFile(m_sPdfFile, L"", wsPassword, wsPassword))
 	{
+		// an encrypted pdf is reported with the codes x2t uses for the same case
+		if (PdfFile::errorEncrypted == pPdfFile->GetError())
+			m_nOpenError = m_sPdfPassword.empty()
+					? GetBuilderErrorCode(AVS_FILEUTILS_ERROR_CONVERT_DRM)
+					: GetBuilderErrorCode(AVS_FILEUTILS_ERROR_CONVERT_PASSWORD);
+
 		RELEASEOBJECT(pPdfFile);
 		return false;
 	}
@@ -428,7 +443,35 @@ bool CV8RealTimeWorker::OpenDrawingFile(const std::wstring& sFontsDirectory)
 	return EmbedDrawingFile(m_context, m_pPdfFile);
 }
 
-bool CV8RealTimeWorker::SaveEditedPdf(int type, const std::wstring& sDstFile, const std::wstring& sMediaDir, const std::wstring& sJsonParams, const bool& isEnterContext)
+// writes the pdf again through the encrypting writer - the route x2t takes for a
+// pdf to pdf conversion with <m_sSavePassword>
+static bool EncryptPdf(NSFonts::IApplicationFonts* pFonts, const std::wstring& sFile, const std::wstring& sTempDir, const std::wstring& sPassword)
+{
+	std::wstring sTmpFile = NSFile::CFileBinary::CreateTempFileWithUniqueName(sTempDir, L"PDF_");
+	if (NSFile::CFileBinary::Exists(sTmpFile))
+		NSFile::CFileBinary::Remove(sTmpFile);
+
+	bool bResult = false;
+
+	CPdfFile oPdf(pFonts);
+	oPdf.SetTempDirectory(sTempDir);
+	if (oPdf.LoadFromFile(sFile))
+		bResult = (S_OK == oPdf.ChangePassword(sTmpFile, sPassword));
+	oPdf.Close();
+
+	if (bResult)
+	{
+		NSFile::CFileBinary::Remove(sFile);
+		bResult = NSFile::CFileBinary::Move(sTmpFile, sFile);
+	}
+
+	if (NSFile::CFileBinary::Exists(sTmpFile))
+		NSFile::CFileBinary::Remove(sTmpFile);
+
+	return bResult;
+}
+
+bool CV8RealTimeWorker::SaveEditedPdf(int type, const std::wstring& sDstFile, const std::wstring& sMediaDir, const std::wstring& sJsonParams, const std::wstring& sSavePassword, const bool& isEnterContext)
 {
 	if (NULL == m_pPdfFile)
 		return false;
@@ -485,7 +528,18 @@ bool CV8RealTimeWorker::SaveEditedPdf(int type, const std::wstring& sDstFile, co
 	// longer shadows the reader loaded below. Mirrors what EditPdfToMemory()
 	// already does for the in-memory variant.
 	pPdf->EditClose();
-	pPdf->LoadFromFile(m_sPdfFile);
+
+	if (bResult && !sSavePassword.empty())
+	{
+		bResult = EncryptPdf(m_pPdfFonts, sDstFile, sMediaDir, sSavePassword);
+
+		// an unprotected file must not be left behind when a password was asked for
+		if (!bResult && NSFile::CFileBinary::Exists(sDstFile))
+			NSFile::CFileBinary::Remove(sDstFile);
+	}
+
+	const wchar_t* wsPassword = m_sPdfPassword.empty() ? NULL : m_sPdfPassword.c_str();
+	pPdf->LoadFromFile(m_sPdfFile, L"", wsPassword, wsPassword);
 
 	if (NSFile::CFileBinary::Exists(sCompiled))
 		NSFile::CFileBinary::Remove(sCompiled);
@@ -1342,6 +1396,9 @@ namespace NSDoctRenderer
 	CDocBuilderValue CDocBuilderContext::GetGlobal()
 	{
 		CDocBuilderValue ret;
+		if (!m_internal->m_context.is_init())
+			return ret;
+
 		ret.m_internal->m_context = m_internal->m_context;
 		JSSmart<CJSObject> obj = m_internal->m_context->GetGlobal();
 		ret.m_internal->m_value = obj->toValue();
@@ -1351,6 +1408,12 @@ namespace NSDoctRenderer
 	CDocBuilderContextScope CDocBuilderContext::CreateScope()
 	{
 		CDocBuilderContextScope ret;
+		// the context is empty when the document failed to open - an empty scope
+		// lets the caller see the failure instead of entering a context that is
+		// not there
+		if (!m_internal->m_context.is_init() || NULL == m_internal->m_context_data)
+			return ret;
+
 		ret.m_internal->m_scope_wrap = new CDocBuilderContextScopeWrap();
 		ret.m_internal->m_scope_wrap->m_scope = new CJSContextScope(m_internal->m_context);
 		ret.m_internal->m_context_data = m_internal->m_context_data;
@@ -1361,6 +1424,9 @@ namespace NSDoctRenderer
 
 	bool CDocBuilderContext::IsError()
 	{
+		if (!m_internal->m_context.is_init())
+			return true;
+
 		JSSmart<CJSTryCatch> oTry = m_internal->m_context->GetExceptions();
 		return oTry->Check();
 	}

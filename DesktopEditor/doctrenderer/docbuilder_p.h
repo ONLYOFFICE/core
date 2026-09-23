@@ -44,6 +44,7 @@
 
 #include "../../Common/OfficeFileFormats.h"
 #include "../../Common/OfficeFileFormatChecker.h"
+#include "../../Common/OfficeFileErrorDescription.h"
 
 #include "js_internal/js_base.h"
 #include "embed/NativeBuilderEmbed.h"
@@ -400,6 +401,14 @@ public:
 	}
 };
 
+// x2t reports a failure as the offset of the error constant (getReturnErrorCode,
+// X2tConverter/src/cextracttools.cpp), and the builder passes that number on to
+// the caller - failures the builder detects itself use the same numbering
+static inline int GetBuilderErrorCode(const unsigned long& nError)
+{
+	return (int)(nError - AVS_ERROR_FIRST - AVS_FILEUTILS_ERROR_FIRST);
+}
+
 class CV8RealTimeWorker
 {
 public:
@@ -415,8 +424,12 @@ public:
 	// PDF Editor
 	std::wstring m_sX2tPath;
 	std::wstring m_sPdfFile;
+	std::wstring m_sPdfPassword;
 	IOfficeDrawingFile* m_pPdfFile;
 	NSFonts::IApplicationFonts* m_pPdfFonts;
+
+	// error code of the last OpenFile (0 while the document is loaded)
+	int m_nOpenError;
 
 public:
 
@@ -439,7 +452,7 @@ public:
 #ifdef DOCBUILDER_PDF_EDITOR
 	// PDF editing
 	bool OpenDrawingFile(const std::wstring& sFontsDirectory);
-	bool SaveEditedPdf(int type, const std::wstring& sDstFile, const std::wstring& sMediaDir, const std::wstring& sJsonParams = L"", const bool& isEnterContext = true);
+	bool SaveEditedPdf(int type, const std::wstring& sDstFile, const std::wstring& sMediaDir, const std::wstring& sJsonParams = L"", const std::wstring& sSavePassword = L"", const bool& isEnterContext = true);
 #endif
 
 	bool NewSimpleJSInstance();
@@ -460,6 +473,11 @@ namespace NSDoctRenderer
 
 		// original pdf path when editing a pdf (m_nFileType == 3)
 		std::wstring m_sEditPdfFile;
+		// password the pdf editor needs to decrypt it
+		std::wstring m_sEditPdfPassword;
+
+		// error code of the worker that failed to open the document
+		int m_nWorkerOpenError;
 
 		std::wstring m_sCommandsBeforeContextCreated;
 
@@ -486,7 +504,8 @@ namespace NSDoctRenderer
 	public:
 		CDocBuilder_Private() : CDoctRendererConfig(), m_sTmpFolder(NSFile::CFileBinary::GetTempPath()), m_nFileType(-1),
 			m_pWorker(NULL), m_pAdditionalData(NULL), m_bIsInit(false), m_bIsServerSafeVersion(false),
-			  m_sGlobalVariable(""), m_bIsGlobalVariableUse(false), m_pParent(NULL), m_sCommandsBeforeContextCreated(L""), m_bIsOpenedFromSimpleJS(false)
+			  m_sGlobalVariable(""), m_bIsGlobalVariableUse(false), m_pParent(NULL), m_sCommandsBeforeContextCreated(L""), m_bIsOpenedFromSimpleJS(false),
+			  m_nWorkerOpenError(0)
 		{
 		}
 
@@ -572,6 +591,7 @@ namespace NSDoctRenderer
 
 			m_nFileType = -1;
 			m_sEditPdfFile = L"";
+			m_sEditPdfPassword = L"";
 
 			NSDirectory::CreateDirectory(m_sFileDir);
 		}
@@ -886,6 +906,63 @@ namespace NSDoctRenderer
 			return sExtCopy;
 		}
 
+		// reads one top-level parameter out of the x2t xml the caller passes to
+		// OpenFile/SaveFile - the same xml x2t itself parses
+		static std::wstring GetXmlParamValue(const std::wstring& sParams, const std::wstring& sName)
+		{
+			std::wstring sOpen = L"<" + sName + L">";
+			std::wstring sClose = L"</" + sName + L">";
+
+			std::wstring::size_type posOpen = sParams.find(sOpen);
+			if (std::wstring::npos == posOpen)
+				return L"";
+
+			posOpen += sOpen.length();
+			std::wstring::size_type posClose = sParams.find(sClose, posOpen);
+			if (std::wstring::npos == posClose)
+				return L"";
+
+			std::wstring sValue = sParams.substr(posOpen, posClose - posOpen);
+
+			// xml text: &amp; is decoded last, so an escaped entity (&amp;lt;) stays text
+			NSStringUtils::string_replace(sValue, L"&lt;", L"<");
+			NSStringUtils::string_replace(sValue, L"&gt;", L">");
+			NSStringUtils::string_replace(sValue, L"&quot;", L"\"");
+			NSStringUtils::string_replace(sValue, L"&apos;", L"'");
+			NSStringUtils::string_replace(sValue, L"&amp;", L"&");
+
+			return sValue;
+		}
+
+		// the first four bytes of the internal format name the editor it belongs to
+		static int GetFileTypeFromInternalFormat(const std::wstring& sFile)
+		{
+			BYTE arrSignature[4];
+			DWORD dwSizeRead = 0;
+
+			NSFile::CFileBinary oFile;
+			if (!oFile.OpenFile(sFile))
+				return -1;
+
+			bool bRead = oFile.ReadFile(arrSignature, 4, dwSizeRead);
+			oFile.CloseFile();
+
+			if (!bRead || 4 != dwSizeRead)
+				return -1;
+
+			COfficeFileFormatChecker oChecker;
+			if (oChecker.isBinaryDoctFormatFile(arrSignature, 4))
+				return 0;
+			if (oChecker.isBinaryPpttFormatFile(arrSignature, 4))
+				return 1;
+			if (oChecker.isBinaryXlstFormatFile(arrSignature, 4))
+				return 2;
+			if (oChecker.isBinaryVsdtFormatFile(arrSignature, 4))
+				return 7;
+
+			return -1;
+		}
+
 		int OpenFile(const std::wstring& path, const std::wstring& params)
 		{
 			Init();
@@ -918,13 +995,29 @@ namespace NSDoctRenderer
 			{
 				m_nFileType = 3;
 				m_sEditPdfFile = sFileCopy;
+				m_sEditPdfPassword = GetXmlParamValue(params, L"m_sPassword");
 
 				NSDirectory::CreateDirectory(m_sFileDir + L"/media");
 
 				if (m_pWorker && m_pWorker->IsSimpleJSInstance() && !m_bIsOpenedFromSimpleJS)
-				{
 					RELEASEOBJECT(m_pWorker);
-					CheckWorker();
+
+				// a pdf does not go through x2t: the editor reads it itself, so it is
+				// loaded here and an encrypted or unreadable pdf becomes an open error
+				// instead of a context holding no document
+				if (!CheckWorker())
+				{
+					int nReturnCode = m_nWorkerOpenError;
+
+					NSDirectory::DeleteDirectory(m_sFileDir);
+					m_sFileDir = L"";
+					m_nFileType = -1;
+					m_sEditPdfFile = L"";
+					m_sEditPdfPassword = L"";
+
+					std::wstring sErrorLog = L"open file error (" + std::to_wstring(nReturnCode) + L")";
+					CV8RealTimeWorker::_LOGGING_ERROR_(L"error: ", sErrorLog);
+					return nReturnCode;
 				}
 
 				LOGGER_SPEED_LAP("open_convert");
@@ -938,6 +1031,11 @@ namespace NSDoctRenderer
 
 			if (0 == nReturnCode)
 			{
+				// an encrypted source is OTHER_MS_OFFCRYPTO for the format checker, so
+				// the editor is taken from the internal format x2t has just produced
+				if (-1 == m_nFileType)
+					m_nFileType = GetFileTypeFromInternalFormat(m_sFileDir + L"/Editor.bin");
+
 				if (m_pWorker && m_pWorker->IsSimpleJSInstance() && !m_bIsOpenedFromSimpleJS)
 				{
 					RELEASEOBJECT(m_pWorker);
@@ -965,6 +1063,7 @@ namespace NSDoctRenderer
 			m_sFileDir = L"";
 			m_nFileType = -1;
 			m_sEditPdfFile = L"";
+			m_sEditPdfPassword = L"";
 
 			if (m_pWorker)
 				m_sGlobalVariable = m_pWorker->GetGlobalVariable();
@@ -1003,6 +1102,9 @@ namespace NSDoctRenderer
 				if (std::wstring::npos != pos1 && std::wstring::npos != pos2)
 				{
 					sJsonParams = sJsonParams.substr(pos1 + 1, pos2 - pos1 - 1);
+
+					// json written inside xml: both ' and &quot; stand for the json quote
+					NSStringUtils::string_replace(sJsonParams, L"\'", L"\"");
 					NSStringUtils::string_replace(sJsonParams, L"&quot;", L"\"");
 
 					if (0 != sJsonParams.find(L"{"))
@@ -1036,10 +1138,7 @@ namespace NSDoctRenderer
 
 			std::wstring sConvertionParams = L"";
 			if (NULL != params)
-			{
 				sConvertionParams = std::wstring(params);
-				NSStringUtils::string_replace(sConvertionParams, L"\'", L"&quot;");
-			}
 
 			std::wstring sFileFromOverride = L"";
 
@@ -1055,8 +1154,9 @@ namespace NSDoctRenderer
 					AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDFA == type)
 				{
 					std::wstring _path = GetSaveFilePath(path);
+					std::wstring sSavePassword = GetXmlParamValue(sConvertionParams, L"m_sSavePassword");
 
-					bool bOk = m_pWorker->SaveEditedPdf(type, _path, m_sFileDir, sJsonParams, isEnterContext);
+					bool bOk = m_pWorker->SaveEditedPdf(type, _path, m_sFileDir, sJsonParams, sSavePassword, isEnterContext);
 
 					LOGGER_SPEED_LAP("save_convert");
 					if (bOk)
@@ -1067,7 +1167,7 @@ namespace NSDoctRenderer
 				}
 
 				std::wstring sTmpPdf = m_sFileDir + L"/save_tmp.pdf";
-				bool bOk = m_pWorker->SaveEditedPdf(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF, sTmpPdf, m_sFileDir, sJsonParams, isEnterContext);
+				bool bOk = m_pWorker->SaveEditedPdf(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF, sTmpPdf, m_sFileDir, sJsonParams, L"", isEnterContext);
 				if (!bOk)
 				{
 					CV8RealTimeWorker::_LOGGING_ERROR_(L"error: ", L"save pdf error");
@@ -1299,6 +1399,7 @@ namespace NSDoctRenderer
 
 				m_pWorker->m_nFileType = m_nFileType;
 				m_pWorker->m_sPdfFile = m_sEditPdfFile;
+				m_pWorker->m_sPdfPassword = m_sEditPdfPassword;
 
 				if (-1 != m_nFileType)
 					m_sCommandsBeforeContextCreated = L"";
@@ -1312,7 +1413,14 @@ namespace NSDoctRenderer
 				oParams.IsServerSaveVersion = m_bIsServerSafeVersion;
 				oParams.DocumentDirectory = m_sFileDir;
 
-				return m_pWorker->OpenFile(m_sX2tPath, m_sFileDir, editorType, this, &oParams);
+				if (m_pWorker->OpenFile(m_sX2tPath, m_sFileDir, editorType, this, &oParams))
+					return true;
+
+				// a worker that failed to open the document must not stay around: the
+				// next call would find it and work in a context with no document in it
+				m_nWorkerOpenError = m_pWorker->m_nOpenError;
+				RELEASEOBJECT(m_pWorker);
+				return false;
 			}
 			return true;
 		}
@@ -1343,7 +1451,8 @@ namespace NSDoctRenderer
 				if (!bResult && !bIsOpenedFromSimpleJSOld && m_bIsOpenedFromSimpleJS)
 				{
 					RELEASEOBJECT(m_pWorker);
-					CheckWorker();
+					if (!CheckWorker())
+						return false;
 					return m_pWorker->ExecuteCommand(command, retValue, isEnterContext);
 				}
 				else

@@ -1692,7 +1692,6 @@ namespace OOX
 		void CCell::toXML(NSStringUtils::CStringBuilder& writer) const
 		{
 			CXlsxFlat *pXlsxFlat = dynamic_cast<CXlsxFlat*>(this->m_pMainDocument);
-			CXlsb *pXlsb = dynamic_cast<CXlsb*>(this->m_pMainDocument);
 
 			int nBaseRow = (pXlsxFlat)? 0 : 1; // xml/xlsb->xlsx
 

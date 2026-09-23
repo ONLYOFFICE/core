@@ -132,7 +132,12 @@ CellFormatController::CellFormatController(OOX::Spreadsheet::CStyles *styles, _I
     createFormatStyle(DefaultTimeFormat);
 	createFormatStyle(DefaultPercentFormat);
 }
-
+inline bool HasDigits(const std::wstring& s)
+{
+	return std::any_of(s.begin(), s.end(), [](wchar_t ch) {
+		return ch >= L'0' && ch <= L'9';
+	});
+}
 int CellFormatController::ProcessCellType(OOX::Spreadsheet::CCell *pCell, const std::wstring &value, bool bIsWrap)
 {
 	int result = 0; // ok
@@ -155,86 +160,87 @@ int CellFormatController::ProcessCellType(OOX::Spreadsheet::CCell *pCell, const 
 	}
 	std::wstring digitFormat = {};
 	std::wstring digitValue = {};
-	
-    if(digitReader_.ReadScientific(value, digitValue, digitFormat))
+	bool Digital = HasDigits(value);
+	if(Digital)
 	{
-		if(!pCell_->m_oValue.IsInit())
+		if(digitReader_.ReadScientific(value, digitValue, digitFormat))
 		{
-			pCell_->m_oValue.Init();
-        }//
-		pCell_->m_oValue->m_sText = digitValue;
-		std::map<std::wstring, unsigned int>::iterator pFind = mapDataNumber_.find(digitFormat);
-		if (pFind != mapDataNumber_.end())
-		{
-			pCell_->m_oStyle = pFind->second;
-		}
-		else
-		{
-			if (!m_pStyles->m_oNumFmts.IsInit())
+			if(!pCell_->m_oValue.IsInit())
 			{
-				m_pStyles->m_oNumFmts.Init();
-			}
-			if(!digitFormat.empty())
+				pCell_->m_oValue.Init();
+			}//
+			pCell_->m_oValue->m_sText = digitValue;
+			auto pFind = mapDataNumber_.find(digitFormat);
+			if (pFind != mapDataNumber_.end())
 			{
-				createFormatStyle(digitFormat);
-				pCell_->m_oStyle = mapDataNumber_.at(digitFormat);
+				pCell_->m_oStyle = pFind->second;
 			}
-		}
-		if (bIsWrap)
-		{
-			pCell_->m_oStyle = 1;
-		}
-		if(pCell->m_oRow.IsInit() && pCell->m_oRow.get() <= maxCustomWidthRow)
-		{
-			addCustomColWidth(pCell, digitFormat.size()+1);
-		}
-		return result;
-	}
-    else if(digitReader_.ReadDigit(value, digitValue, digitFormat))
-	{
-		if(!pCell_->m_oValue.IsInit())
-		{
-			pCell_->m_oValue.Init();
-        }
-		pCell_->m_oValue->m_sText = digitValue;
-		std::map<std::wstring, unsigned int>::iterator pFind = mapDataNumber_.find(digitFormat);
-		if (pFind != mapDataNumber_.end())
-		{
-			pCell_->m_oStyle = pFind->second;
-		}
-		else
-		{
-
-			if (!m_pStyles->m_oNumFmts.IsInit())
-			{
-				m_pStyles->m_oNumFmts.Init();
-			}
-			if(!digitFormat.empty())
-			{
-				createFormatStyle(digitFormat);
-				pCell_->m_oStyle = mapDataNumber_.at(digitFormat);
-			}
-		}
-		if (bIsWrap)
-		{
-			pCell_->m_oStyle = 1;
-		}
-		if(pCell->m_oRow.IsInit() && pCell->m_oRow.get() <= maxCustomWidthRow)
-		{
-			if(!digitFormat.empty())
-				addCustomColWidth(pCell, digitFormat.size()+1);
 			else
-				addCustomColWidth(pCell, digitValue.size()+1);
+			{
+				if (!m_pStyles->m_oNumFmts.IsInit())
+				{
+					m_pStyles->m_oNumFmts.Init();
+				}
+				if(!digitFormat.empty())
+				{
+					createFormatStyle(digitFormat);
+					pCell_->m_oStyle = mapDataNumber_.at(digitFormat);
+				}
+			}
+			if (bIsWrap)
+			{
+				pCell_->m_oStyle = 1;
+			}
+			if(pCell->m_oRow.IsInit() && pCell->m_oRow.get() <= maxCustomWidthRow)
+			{
+				addCustomColWidth(pCell, digitFormat.size()+1);
+			}
+			return result;
 		}
-		return result;
-	}
+		else if(digitReader_.ReadDigit(value, digitValue, digitFormat))
+		{
+			if(!pCell_->m_oValue.IsInit())
+			{
+				pCell_->m_oValue.Init();
+			}
+			pCell_->m_oValue->m_sText = digitValue;
+			auto pFind = mapDataNumber_.find(digitFormat);
+			if (pFind != mapDataNumber_.end())
+			{
+				pCell_->m_oStyle = pFind->second;
+			}
+			else
+			{
 
+				if (!m_pStyles->m_oNumFmts.IsInit())
+				{
+					m_pStyles->m_oNumFmts.Init();
+				}
+				if(!digitFormat.empty())
+				{
+					createFormatStyle(digitFormat);
+					pCell_->m_oStyle = mapDataNumber_.at(digitFormat);
+				}
+			}
+			if (bIsWrap)
+			{
+				pCell_->m_oStyle = 1;
+			}
+			if(pCell->m_oRow.IsInit() && pCell->m_oRow.get() <= maxCustomWidthRow)
+			{
+				if(!digitFormat.empty())
+					addCustomColWidth(pCell, digitFormat.size()+1);
+				else
+					addCustomColWidth(pCell, digitValue.size()+1);
+			}
+			return result;
+		}
+	}
     double digitalDate  = 0;
     bool hasDate = false;
     bool hasTime = false;
-   
-    auto validDate = dateReader_.GetDigitalDate(value, digitalDate, hasDate, hasTime);
-	if (validDate)
+
+	if (Digital && dateReader_.GetDigitalDate(value, digitalDate, hasDate, hasTime))
 	{
 		if(!pCell_->m_oValue.IsInit())
 		{
@@ -243,7 +249,7 @@ int CellFormatController::ProcessCellType(OOX::Spreadsheet::CCell *pCell, const 
         if(hasDate && !hasTime)
         {
             pCell_->m_oValue->m_sText = std::to_wstring((_INT32)digitalDate);
-            std::map<std::wstring, unsigned int>::iterator pFind = mapDataNumber_.find(DefaultDateFormat);
+			auto pFind = mapDataNumber_.find(DefaultDateFormat);
             pCell_->m_oStyle = pFind->second;
 			if(pCell->m_oRow.IsInit() && pCell->m_oRow.get() <= maxCustomWidthRow)
 			{
@@ -255,7 +261,7 @@ int CellFormatController::ProcessCellType(OOX::Spreadsheet::CCell *pCell, const 
 			wchar_t buf[32];
 			swprintf(buf, sizeof(buf)/sizeof(buf[0]), L"%.17g", digitalDate);
 			pCell_->m_oValue->m_sText = std::wstring(buf);
-			std::map<std::wstring, unsigned int>::iterator pFind = mapDataNumber_.find(DefaultTimeFormat);
+			auto pFind = mapDataNumber_.find(DefaultTimeFormat);
             pCell_->m_oStyle = pFind->second;
 			if(pCell->m_oRow.IsInit() && pCell->m_oRow.get() <= maxCustomWidthRow)
 			{
@@ -267,7 +273,7 @@ int CellFormatController::ProcessCellType(OOX::Spreadsheet::CCell *pCell, const 
 			wchar_t buf[32];
 			swprintf(buf, sizeof(buf)/sizeof(buf[0]), L"%.17g", digitalDate);
 			pCell_->m_oValue->m_sText = std::wstring(buf);
-            std::map<std::wstring, unsigned int>::iterator pFind = mapDataNumber_.find(DefaultDateTimeFormat);
+			auto pFind = mapDataNumber_.find(DefaultDateTimeFormat);
             pCell_->m_oStyle = pFind->second;
 			if(pCell->m_oRow.IsInit() && pCell->m_oRow.get() <= maxCustomWidthRow)
 			{
@@ -278,7 +284,7 @@ int CellFormatController::ProcessCellType(OOX::Spreadsheet::CCell *pCell, const 
 	else
 	{
 		std::wstring sFormula;
-		if (value[0] == L'='/* && bCalcFormulas*/)
+		if (value[0] == L'=')
 		{
 			sFormula = ConvertFormulaArguments(value.substr(1));
 		}

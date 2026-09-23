@@ -282,6 +282,38 @@ namespace NSBinPptxRW
 		int nDisplayType = IsDisplayedImage(strInput);
 		size_t nFileNameLength = strFileName.length();
 
+		// display preview must fall back to the original metafile for every image, not only those with additional files
+		// TODO: find the metafile by a neighbour file with the same name like the doctrenderer does, not by the display type
+		if (false == bDownload && 0 != (nDisplayType & 3) && nFileNameLength > sizeExt)
+		{
+			OOX::CPath oPath = strInput;
+
+			std::wstring strFolder = oPath.GetDirectory();
+			std::wstring strFileName = oPath.GetFilename();
+
+			strFileName.erase(strFileName.length() - sizeExt, sizeExt);
+
+			if (0 != (nDisplayType & 1))
+			{
+				std::wstring strVector = strFolder + strFileName + L".wmf";
+				if (OOX::CSystemUtility::IsFileExist(strVector))
+				{
+					strImage = strVector;
+					strExts = L".wmf";
+				}
+			}
+			if (0 != (nDisplayType & 2))
+			{
+				std::wstring strVector = strFolder + strFileName + L".emf";
+				if (OOX::CSystemUtility::IsFileExist(strVector))
+				{
+					m_pContentTypes->AddDefault(L"emf");
+					strImage = strVector;
+					strExts = L".emf";
+				}
+			}
+		}
+
 		std::vector<std::pair<std::wstring, int>> addit;		
 		for (auto additionalFile : additionalFiles)
 		{
@@ -309,25 +341,6 @@ namespace NSBinPptxRW
 
 				strFileName.erase(strFileName.length() - sizeExt, sizeExt);
 
-				if (0 != (nDisplayType & 1))
-				{
-					std::wstring strVector = strFolder + strFileName + L".wmf";
-					if (OOX::CSystemUtility::IsFileExist(strVector))
-					{
-						strImage = strVector;
-						strExts = L".wmf";
-					}
-				}
-				if (0 != (nDisplayType & 2))
-				{
-					std::wstring strVector = strFolder + strFileName + L".emf";
-					if (OOX::CSystemUtility::IsFileExist(strVector))
-					{
-						m_pContentTypes->AddDefault(L"emf");
-						strImage = strVector;
-						strExts = L".emf";
-					}
-				}
 				if (0 != (nDisplayType & 4))
 				{
 					smart_ptr<OOX::OleObject> oleFile = additionalFile.smart_dynamic_cast<OOX::OleObject>();

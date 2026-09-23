@@ -517,6 +517,7 @@ namespace PdfWriter
 
 		void SetSubtype(BYTE nSubtype);
 		void SetDA(CFontDict* pFont, const double& dFontSize, const double& dFontSizeAP, const std::vector<double>& arrTC);
+		void SetTC(const std::vector<double>& arrTC);
 		void SetFont(CFontCidTrueType* pFont, double dFontSize, bool bBold, bool bItalic);
 		CDictObject* GetObjOwnValue(const std::string& sV);
 		CObjectBase* GetObjValue(const std::string& sV);

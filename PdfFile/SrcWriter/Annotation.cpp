@@ -1593,6 +1593,10 @@ namespace PdfWriter
 		m_arrTC = arrTC;
 		m_dFontSizeAP = dFontSizeAP;
 	}
+	void CWidgetAnnotation::SetTC(const std::vector<double>& arrTC)
+	{
+		m_arrTC = arrTC;
+	}
 	void CWidgetAnnotation::SetFont(CFontCidTrueType* pFont, double dFontSize, bool bBold, bool bItalic)
 	{
 		m_pFont = pFont;

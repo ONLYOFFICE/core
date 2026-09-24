@@ -145,21 +145,25 @@ std::wstring HyperlinkObject::loadHyperlinkString(XLS::CFRecord& record)
 {
 	std::wstring result;
 
-	_INT32 size = 0;
+	_UINT32 size = 0;
 	record >> size;
 
-	if (size < 1 || record.getRdPtr() + size > record.getDataSize()) return L"";
-
-	_INT32 size_record = record.getDataSize() - record.getRdPtr();
-	if (size > size_record)
-		size = size_record;
+	if (size < 1)
+		return L"";
+	if (record.getRdPtr() >= record.getDataSize()) return L"";
+	 _UINT32 availableBytes = record.getDataSize() - record.getRdPtr();
+	_UINT32 maxChars = availableBytes / 2;
+	if (maxChars == 0) return L"";
+	if (size > maxChars)
+		size = maxChars;
+	_UINT32 byteSize = size * 2;
 
 #if defined(_WIN32) || defined(_WIN64)
 		result = std::wstring(record.getCurData<wchar_t>(), size);
 #else
 		result= convertUtf16ToWString(record.getCurData<UTF16>(), size);
 #endif
-	record.skipNunBytes(size * 2);
+	record.skipNunBytes(byteSize);
 
 	return result;
 }

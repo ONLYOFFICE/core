@@ -444,8 +444,14 @@ bool CV8RealTimeWorker::OpenDrawingFile(const std::wstring& sFontsDirectory)
 }
 
 // writes the pdf again through the encrypting writer - the route x2t takes for a
-// pdf to pdf conversion with <m_sSavePassword>
-static bool EncryptPdf(NSFonts::IApplicationFonts* pFonts, const std::wstring& sFile, const std::wstring& sTempDir, const std::wstring& sPassword)
+// pdf to pdf conversion with <m_sSavePassword>. An EMPTY sPassword is the other
+// half of the same job: the document is written out with no /Encrypt at all, so
+// this is also how the protection comes OFF a pdf.
+// sOpenPassword is the password sFile itself is encrypted with: the editor writes
+// the result as the source file plus an incremental update, so a protected source
+// hands this function a file that is still protected, and the writer reads a
+// document it cannot decrypt as no document at all.
+static bool EncryptPdf(NSFonts::IApplicationFonts* pFonts, const std::wstring& sFile, const std::wstring& sTempDir, const std::wstring& sOpenPassword, const std::wstring& sPassword)
 {
 	std::wstring sTmpFile = NSFile::CFileBinary::CreateTempFileWithUniqueName(sTempDir, L"PDF_");
 	if (NSFile::CFileBinary::Exists(sTmpFile))
@@ -453,9 +459,11 @@ static bool EncryptPdf(NSFonts::IApplicationFonts* pFonts, const std::wstring& s
 
 	bool bResult = false;
 
+	const wchar_t* wsOpenPassword = sOpenPassword.empty() ? NULL : sOpenPassword.c_str();
+
 	CPdfFile oPdf(pFonts);
 	oPdf.SetTempDirectory(sTempDir);
-	if (oPdf.LoadFromFile(sFile))
+	if (oPdf.LoadFromFile(sFile, L"", wsOpenPassword, wsOpenPassword))
 		bResult = (S_OK == oPdf.ChangePassword(sTmpFile, sPassword));
 	oPdf.Close();
 
@@ -471,7 +479,7 @@ static bool EncryptPdf(NSFonts::IApplicationFonts* pFonts, const std::wstring& s
 	return bResult;
 }
 
-bool CV8RealTimeWorker::SaveEditedPdf(int type, const std::wstring& sDstFile, const std::wstring& sMediaDir, const std::wstring& sJsonParams, const std::wstring& sSavePassword, const bool& isEnterContext)
+bool CV8RealTimeWorker::SaveEditedPdf(int type, const std::wstring& sDstFile, const std::wstring& sMediaDir, const std::wstring& sJsonParams, const std::wstring& sSavePassword, const bool& isEnterContext, const bool& bRewritePassword)
 {
 	if (NULL == m_pPdfFile)
 		return false;
@@ -529,11 +537,17 @@ bool CV8RealTimeWorker::SaveEditedPdf(int type, const std::wstring& sDstFile, co
 	// already does for the in-memory variant.
 	pPdf->EditClose();
 
-	if (bResult && !sSavePassword.empty())
+	// The file written above is the source plus an incremental update, so a
+	// protected source leaves it protected with the source's own password. It is
+	// rewritten when the caller said what the copy carries: a new password, or -
+	// with an empty one - no protection at all, which is how the password comes
+	// off a pdf. A caller that said nothing gets the copy as the editor wrote it.
+	if (bResult && (bRewritePassword || !sSavePassword.empty()))
 	{
-		bResult = EncryptPdf(m_pPdfFonts, sDstFile, sMediaDir, sSavePassword);
+		bResult = EncryptPdf(m_pPdfFonts, sDstFile, sMediaDir, m_sPdfPassword, sSavePassword);
 
-		// an unprotected file must not be left behind when a password was asked for
+		// neither an unprotected file where a password was asked for, nor a
+		// protected one where the caller asked for the protection to come off
 		if (!bResult && NSFile::CFileBinary::Exists(sDstFile))
 			NSFile::CFileBinary::Remove(sDstFile);
 	}

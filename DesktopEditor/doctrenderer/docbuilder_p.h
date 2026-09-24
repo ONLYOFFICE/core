@@ -452,7 +452,11 @@ public:
 #ifdef DOCBUILDER_PDF_EDITOR
 	// PDF editing
 	bool OpenDrawingFile(const std::wstring& sFontsDirectory);
-	bool SaveEditedPdf(int type, const std::wstring& sDstFile, const std::wstring& sMediaDir, const std::wstring& sJsonParams = L"", const std::wstring& sSavePassword = L"", const bool& isEnterContext = true);
+	// bRewritePassword: the caller named m_sSavePassword, so the written pdf is
+	// rewritten to carry exactly sSavePassword - an empty one meaning no
+	// protection at all. Without it, a copy of a protected source keeps the
+	// protection the source file put on it.
+	bool SaveEditedPdf(int type, const std::wstring& sDstFile, const std::wstring& sMediaDir, const std::wstring& sJsonParams = L"", const std::wstring& sSavePassword = L"", const bool& isEnterContext = true, const bool& bRewritePassword = false);
 #endif
 
 	bool NewSimpleJSInstance();
@@ -934,6 +938,18 @@ namespace NSDoctRenderer
 			return sValue;
 		}
 
+		// Did the caller NAME this parameter at all? GetXmlParamValue answers the
+		// same empty string for a parameter that is absent and for one the caller
+		// deliberately left empty, and the two mean opposite things: "you decide"
+		// and "none". An empty <m_sSavePassword></m_sSavePassword> is how a caller
+		// asks for a file with no protection on it, and an empty <m_sPassword> is
+		// how it says the source needs none.
+		static bool HasXmlParam(const std::wstring& sParams, const std::wstring& sName)
+		{
+			return std::wstring::npos != sParams.find(L"<" + sName + L">") ||
+			       std::wstring::npos != sParams.find(L"<" + sName + L"/>");
+		}
+
 		// the first four bytes of the internal format name the editor it belongs to
 		static int GetFileTypeFromInternalFormat(const std::wstring& sFile)
 		{
@@ -1156,7 +1172,16 @@ namespace NSDoctRenderer
 					std::wstring _path = GetSaveFilePath(path);
 					std::wstring sSavePassword = GetXmlParamValue(sConvertionParams, L"m_sSavePassword");
 
-					bool bOk = m_pWorker->SaveEditedPdf(type, _path, m_sFileDir, sJsonParams, sSavePassword, isEnterContext);
+					// The editor writes a pdf as the source file with the changes
+					// appended, so a protected source hands its own protection to the
+					// copy. Naming m_sSavePassword is how the caller says what the new
+					// file carries: a password encrypts it with that one, and an EMPTY
+					// m_sSavePassword asks for a file with no protection at all - the
+					// pdf is written out again, decrypted. Saying nothing leaves the
+					// copy as the source left it.
+					bool bRewritePassword = HasXmlParam(sConvertionParams, L"m_sSavePassword");
+
+					bool bOk = m_pWorker->SaveEditedPdf(type, _path, m_sFileDir, sJsonParams, sSavePassword, isEnterContext, bRewritePassword);
 
 					LOGGER_SPEED_LAP("save_convert");
 					if (bOk)
@@ -1175,6 +1200,22 @@ namespace NSDoctRenderer
 				}
 
 				sFileFromOverride = sTmpPdf;
+
+				// The temp pdf is the source file with the changes appended, so a
+				// protected source leaves it protected with that same password. The
+				// converter below re-reads it as an ordinary input file: without the
+				// password it reads no pages at all and still writes its target, so the
+				// conversion reports success and produces an empty document. Tell it
+				// the password the document was opened with, unless the caller named one -
+				// naming an empty m_sPassword is how a caller says "read it without one".
+				if (!m_sEditPdfPassword.empty() && !HasXmlParam(sConvertionParams, L"m_sPassword"))
+				{
+					NSStringUtils::CStringBuilder oPassword;
+					oPassword.WriteString(L"<m_sPassword>");
+					oPassword.WriteEncodeXmlString(m_sEditPdfPassword);
+					oPassword.WriteString(L"</m_sPassword>");
+					sConvertionParams += oPassword.GetData();
+				}
 			}
 #endif
 

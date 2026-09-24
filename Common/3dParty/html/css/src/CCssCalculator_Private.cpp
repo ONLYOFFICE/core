@@ -17,27 +17,6 @@ inline static bool         IsTableElement(const std::wstring& wsNameTag);
 
 namespace NSCSS
 {
-	bool operator<(const std::vector<NSCSS::CNode> &arLeftSelectors, const std::vector<NSCSS::CNode> &arRightSelectors)
-	{
-		if (arLeftSelectors.size() < arRightSelectors.size())
-			return true;
-		else if (arLeftSelectors.size() > arRightSelectors.size())
-			return false;
-
-		for (size_t i = 0; i < arLeftSelectors.size(); ++i)
-		{
-			if (arLeftSelectors[i] == arRightSelectors[i])
-				continue;
-
-			if (arLeftSelectors[i] < arRightSelectors[i])
-				return true;
-			else if (arRightSelectors[i] < arLeftSelectors[i])
-				return false;
-		}
-
-		return false;
-	}
-
 	CStyleStorage::CStyleStorage()
 	{
 		InitDefaultStyles();
@@ -71,6 +50,7 @@ namespace NSCSS
 
 		#ifdef CSS_CALCULATOR_WITH_XHTML
 		ClearPageData();
+		m_arSelectorIds.clear();
 		#endif
 	}
 
@@ -186,6 +166,11 @@ namespace NSCSS
 	void CStyleStorage::ClearPageData()
 	{
 		m_arPageDatas.clear();
+	}
+
+	bool CStyleStorage::IsIdUsedInSelectors(const std::wstring& wsId) const
+	{
+		return m_arSelectorIds.cend() != m_arSelectorIds.find(wsId);
 	}
 	#endif
 
@@ -303,6 +288,11 @@ namespace NSCSS
 					const std::wstring sName = (posPoint != std::wstring::npos) ? oWord->substr(0, posPoint) : (posLattice != std::wstring::npos) ? oWord->substr(0, posLattice) : *oWord;
 					const std::wstring sClass = (posPoint != std::wstring::npos) ? (posLattice == std::wstring::npos) ? oWord->substr(posPoint, oWord->length()) : oWord->substr(posPoint, posLattice - posPoint) : L"";
 					const std::wstring sId = (posLattice != std::wstring::npos) ? oWord->substr(posLattice, oWord->length()) : L"";
+
+					#ifdef CSS_CALCULATOR_WITH_XHTML
+					if (sId.length() > 1)
+						m_arSelectorIds.insert(sId.substr(1));
+					#endif
 
 					CElement* oNameElement = NULL;
 					CElement* oClassElement = NULL;
@@ -536,6 +526,167 @@ namespace NSCSS
 	{}
 
 	#ifdef CSS_CALCULATOR_WITH_XHTML
+	class CStylePropertyProbe : public CCompiledStyle
+	{
+	public:
+		CStylePropertyProbe()
+			: m_bOtherStyle(false)
+		{}
+
+		void AddOtherStyle(const std::pair<std::wstring, std::wstring>&, const unsigned int, const bool&) override
+		{
+			m_bOtherStyle = true;
+		}
+
+		bool m_bOtherStyle;
+	};
+
+	inline void AddKeyPart(std::wstring& wsKey, const std::wstring& wsValue)
+	{
+		size_t unLength = wsValue.length();
+
+		while (unLength >= 0x8000)
+		{
+			wsKey += (wchar_t)(0x8000 | (unLength & 0x7FFF));
+			unLength >>= 15;
+		}
+
+		wsKey += (wchar_t)unLength;
+		wsKey += wsValue;
+	}
+
+	inline bool IsPropertyNameChar(const wchar_t wChar)
+	{
+		return (L'a' <= wChar && wChar <= L'z') || (L'A' <= wChar && wChar <= L'Z') || L'-' == wChar;
+	}
+
+	inline bool IsSpaceChar(const wchar_t wChar)
+	{
+		return L' ' == wChar || L'\t' == wChar || L'\n' == wChar || L'\r' == wChar || L'\f' == wChar;
+	}
+
+	inline bool IsNonPresentationalAttribute(const std::wstring& wsName)
+	{
+		const wchar_t* const arNames[] = {L"abbr", L"accesskey", L"alt", L"cite", L"colspan", L"datetime", L"decoding", L"download", L"epub:type",
+		                                  L"headers", L"href", L"hreflang", L"lang", L"loading", L"longdesc", L"name", L"referrerpolicy", L"rel",
+		                                  L"role", L"rowspan", L"scope", L"sizes", L"src", L"srcset", L"svg-text", L"tabindex", L"target", L"title",
+		                                  L"usemap", L"xml:lang", L"xmlns"};
+
+		for (const wchar_t* pName : arNames)
+		{
+			if (wsName == pName)
+				return true;
+		}
+
+		return 0 == wsName.compare(0, 5, L"data-") || 0 == wsName.compare(0, 5, L"aria-") || 0 == wsName.compare(0, 6, L"xmlns:");
+	}
+
+	bool CCssCalculator_Private::IsStyleProperty(const std::wstring& wsName)
+	{
+		const std::map<std::wstring, bool>::const_iterator itFound = m_mStyleProperties.find(wsName);
+
+		if (m_mStyleProperties.cend() != itFound)
+			return itFound->second;
+
+		CStylePropertyProbe oProbe;
+		oProbe.AddPropSel(wsName, L"0", 0);
+
+		m_mStyleProperties.insert(std::make_pair(wsName, !oProbe.m_bOtherStyle));
+
+		return !oProbe.m_bOtherStyle;
+	}
+
+	const std::wstring& CCssCalculator_Private::GetStyleKey(const std::wstring& wsStyle)
+	{
+		const std::unordered_map<std::wstring, std::wstring>::const_iterator itFound = m_mStyleKeys.find(wsStyle);
+
+		if (m_mStyleKeys.cend() != itFound)
+			return itFound->second;
+
+		std::wstring wsKey;
+		bool bSimple = true;
+		size_t unStart = 0;
+
+		while (bSimple && unStart <= wsStyle.length())
+		{
+			size_t unEnd = wsStyle.find(L';', unStart);
+
+			if (std::wstring::npos == unEnd)
+				unEnd = wsStyle.length();
+
+			size_t unFirst = unStart, unLast = unEnd;
+
+			while (unFirst < unLast && IsSpaceChar(wsStyle[unFirst]))
+				++unFirst;
+
+			while (unLast > unFirst && IsSpaceChar(wsStyle[unLast - 1]))
+				--unLast;
+
+			bool bKeep = true;
+
+			if (unFirst < unLast)
+			{
+				const size_t unColon = wsStyle.find(L':', unFirst);
+
+				if (unColon >= unLast || wsStyle.find(L':', unColon + 1) < unLast)
+					bSimple = false;
+				else
+				{
+					size_t unNameEnd = unColon, unValueStart = unColon + 1;
+
+					while (unNameEnd > unFirst && IsSpaceChar(wsStyle[unNameEnd - 1]))
+						--unNameEnd;
+
+					while (unValueStart < unLast && IsSpaceChar(wsStyle[unValueStart]))
+						++unValueStart;
+
+					if (unNameEnd == unFirst || unValueStart == unLast || !std::all_of(wsStyle.begin() + unFirst, wsStyle.begin() + unNameEnd, IsPropertyNameChar))
+						bSimple = false;
+					else
+						bKeep = IsStyleProperty(wsStyle.substr(unFirst, unNameEnd - unFirst));
+				}
+			}
+
+			if (bKeep)
+			{
+				wsKey.append(wsStyle, unStart, unEnd - unStart);
+				wsKey += L';';
+			}
+
+			unStart = unEnd + 1;
+		}
+
+		return m_mStyleKeys.insert(std::make_pair(wsStyle, (bSimple) ? wsKey : wsStyle)).first->second;
+	}
+
+	std::wstring CCssCalculator_Private::GetUsedStyleKey(const std::vector<CNode>& arSelectors)
+	{
+		const std::wstring wsEmpty;
+		std::wstring wsKey;
+
+		for (const CNode& oNode : arSelectors)
+		{
+			AddKeyPart(wsKey, oNode.m_wsName);
+			AddKeyPart(wsKey, oNode.m_wsClass);
+			AddKeyPart(wsKey, (!oNode.m_wsId.empty() && m_oStyleStorage.IsIdUsedInSelectors(oNode.m_wsId)) ? oNode.m_wsId : wsEmpty);
+			AddKeyPart(wsKey, (oNode.m_wsStyle.empty()) ? wsEmpty : GetStyleKey(oNode.m_wsStyle));
+
+			for (const std::pair<const std::wstring, std::wstring>& oAttribute : oNode.m_mAttributes)
+			{
+				if (IsNonPresentationalAttribute(oAttribute.first) && !IsStyleProperty(oAttribute.first))
+					continue;
+
+				wsKey += L'\x1';
+				AddKeyPart(wsKey, oAttribute.first);
+				AddKeyPart(wsKey, oAttribute.second);
+			}
+
+			wsKey += L'\x2';
+		}
+
+		return wsKey;
+	}
+
 	bool CCssCalculator_Private::CalculateCompiledStyle(std::vector<CNode>& arSelectors)
 	{
 		if (arSelectors.empty())
@@ -561,11 +712,12 @@ namespace NSCSS
 			return true;
 		}
 
-		const std::map<std::vector<CNode>, CCompiledStyle>::const_iterator oItem = m_mUsedStyles.find(arSelectors);
+		const std::wstring wsKey = GetUsedStyleKey(arSelectors);
+		const std::unordered_map<std::wstring, CCompiledStyle>::const_iterator oItem = m_mUsedStyles.find(wsKey);
 
 		if (oItem != m_mUsedStyles.cend() && (arSelectors.back().m_wsId.empty() || !HaveStylesById(arSelectors.back().m_wsId)))
 		{
-			arSelectors.back().SetCompiledStyle(new CCompiledStyle(oItem->second));
+			arSelectors.back().SetCompiledStyle(&oItem->second);
 			return true;
 		}
 
@@ -633,7 +785,7 @@ namespace NSCSS
 		arSelectors.back().m_pCompiledStyle->SetID(CalculateStyleId(arSelectors.back()));
 
 		if (!arSelectors.back().m_pCompiledStyle->Empty())
-			m_mUsedStyles[arSelectors] = *arSelectors.back().m_pCompiledStyle;
+			m_mUsedStyles[wsKey] = *arSelectors.back().m_pCompiledStyle;
 
 		return true;
 	}

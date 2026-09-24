@@ -1,6 +1,5 @@
 #include "CDocumentStyle.h"
 
-#include <unordered_set>
 #include <wchar.h>
 #include <math.h>
 #include <cmath>
@@ -19,45 +18,23 @@ namespace NSCSS
 {
 	CStyleUsed::CStyleUsed(const CCompiledStyle &oStyle, bool bIsPStyle)
 		: m_oStyle(oStyle), m_bIsPStyle(bIsPStyle)
-	{}
+	{
+		for (const std::wstring& wsParent : m_oStyle.GetParentsNamesSet())
+		{
+			if (Names_Standard_Styles.cend() != std::find(Names_Standard_Styles.cbegin(), Names_Standard_Styles.cend(), wsParent))
+				m_arStandardParents.push_back(wsParent);
+		}
+	}
 
 	void CStyleUsed::SetFinalId(const std::wstring& wsFinalId)
 	{
 		m_wsFinalId = wsFinalId;
 	}
 
-	bool CheckArrays(const std::vector<std::wstring>& arInitial, const std::set<std::wstring>& arFirst, const std::set<std::wstring>& arSecond)
-	{
-		std::unordered_set<std::wstring> arInitialSet(arInitial.begin(), arInitial.end());
-
-		std::vector<std::wstring> arCommonElements1;
-		std::vector<std::wstring> arCommonElements2;
-
-		for (const std::wstring& wsValue : arFirst)
-		{
-			if (arInitialSet.count(wsValue) > 0)
-				arCommonElements1.push_back(wsValue);
-		}
-
-		for (const std::wstring& wsValue : arSecond)
-		{
-			if (arInitialSet.count(wsValue) > 0)
-				arCommonElements2.push_back(wsValue);
-		}
-
-		if (arCommonElements1.size() != arCommonElements2.size())
-			return false;
-
-		std::sort(arCommonElements1.begin(), arCommonElements1.end());
-		std::sort(arCommonElements2.begin(), arCommonElements2.end());
-
-		return arCommonElements1 == arCommonElements2;
-	}
-
 	bool CStyleUsed::operator==(const CStyleUsed &oUsedStyle) const
 	{
 		return m_bIsPStyle == oUsedStyle.m_bIsPStyle &&
-		       CheckArrays(Names_Standard_Styles, m_oStyle.GetParentsNamesSet(), oUsedStyle.m_oStyle.GetParentsNamesSet()) &&
+		       m_arStandardParents == oUsedStyle.m_arStandardParents &&
 		       m_oStyle == oUsedStyle.m_oStyle;
 	}
 

@@ -35,7 +35,7 @@ namespace NSCSS
 		std::wstring GetAttributeValue(const std::wstring& wsAttributeName) const;
 
 		#ifdef CSS_CALCULATOR_WITH_XHTML
-		void SetCompiledStyle(CCompiledStyle* pCompiledStyle);
+		void SetCompiledStyle(const CCompiledStyle* pCompiledStyle);
 		#endif
 
 		void Clear();

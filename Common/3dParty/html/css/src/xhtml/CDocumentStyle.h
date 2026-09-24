@@ -13,6 +13,7 @@ namespace NSCSS
 		CCompiledStyle m_oStyle;
 		bool m_bIsPStyle;
 		std::wstring m_wsFinalId;
+		std::vector<std::wstring> m_arStandardParents;
 
 	public:
 		CStyleUsed(const CCompiledStyle& oStyle, bool bIsPStyle);

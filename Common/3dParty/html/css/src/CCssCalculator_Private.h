@@ -4,6 +4,7 @@
 #include <vector>
 #include <map>
 #include <set>
+#include <unordered_map>
 #include "CElement.h"
 #include "StyleProperties.h"
 #include "../../katana-parser/src/katana.h"
@@ -36,6 +37,8 @@ namespace NSCSS
 		void SetPageData(NSProperties::CPage& oPage, const std::map<std::wstring, std::wstring>& mData, unsigned int unLevel, bool bHardMode = false);
 		std::map<std::wstring, std::wstring> GetPageData(const std::wstring& wsPageName);
 		void ClearPageData();
+
+		bool IsIdUsedInSelectors(const std::wstring& wsId) const;
 		#endif
 
 		const CElement* FindElement(const std::wstring& wsSelector) const;
@@ -61,6 +64,7 @@ namespace NSCSS
 		} TPageData;
 
 		std::vector<TPageData> m_arPageDatas;
+		std::set<std::wstring> m_arSelectorIds;
 		#endif
 	private:
 		void AddStyles(const std::string& sStyle, std::map<std::wstring, CElement*>& mStyleData);
@@ -88,12 +92,18 @@ namespace NSCSS
 	class CCssCalculator_Private
 	{
 		unsigned short int m_nDpi;
-		unsigned short int m_nCountNodes;
+		unsigned int m_nCountNodes;
 
 		CStyleStorage m_oStyleStorage;
 
 		#ifdef CSS_CALCULATOR_WITH_XHTML
-		std::map<std::vector<CNode>, CCompiledStyle> m_mUsedStyles;
+		std::unordered_map<std::wstring, CCompiledStyle> m_mUsedStyles;
+		std::map<std::wstring, bool> m_mStyleProperties;
+		std::unordered_map<std::wstring, std::wstring> m_mStyleKeys;
+
+		bool IsStyleProperty(const std::wstring& wsName);
+		const std::wstring& GetStyleKey(const std::wstring& wsStyle);
+		std::wstring GetUsedStyleKey(const std::vector<CNode>& arSelectors);
 
 		void SetPageData(NSProperties::CPage& oPage, const std::map<std::wstring, std::wstring>& mData, unsigned int unLevel, bool bHardMode = false);
 		std::map<std::wstring, std::wstring> GetPageData(const std::wstring &wsPageName);

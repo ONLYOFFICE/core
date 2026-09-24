@@ -1433,6 +1433,12 @@ void process_build_object::visit(chart_plot_area& val)
 		object_odf_context_.plot_area_.properties_->push_back(_property(L"vup-y", attr_3d.vup_->get_y()) );
 		object_odf_context_.plot_area_.properties_->push_back(_property(L"vup-z", attr_3d.vup_->get_z()) );
 	}
+	if (attr_3d.vrp_)
+	{
+		object_odf_context_.plot_area_.properties_->push_back(_property(L"vrp-x", attr_3d.vrp_->get_x()) );
+		object_odf_context_.plot_area_.properties_->push_back(_property(L"vrp-y", attr_3d.vrp_->get_y()) );
+		object_odf_context_.plot_area_.properties_->push_back(_property(L"vrp-z", attr_3d.vrp_->get_z()) );
+	}
 	if (attr_3d.distance_)		object_odf_context_.plot_area_.properties_->push_back(_property(L"distance", attr_3d.distance_->get_value_unit(length::pt)) );
 	if (attr_3d.focal_length_)	object_odf_context_.plot_area_.properties_->push_back(_property(L"focal", attr_3d.focal_length_->get_value_unit(length::pt)) );
 	if (attr_3d.projection_)	object_odf_context_.plot_area_.properties_->push_back(_property(L"perspective", *attr_3d.projection_ == L"perspective"));

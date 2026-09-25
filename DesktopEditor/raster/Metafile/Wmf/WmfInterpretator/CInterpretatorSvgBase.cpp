@@ -1407,8 +1407,22 @@ namespace MetaFile
 			if (wsPath.empty())
 				return std::wstring();
 
+			TRectD oPathBounds{pCustomLineCap->pPath->GetBounds()};
+
+			for (const CPathCommandBase* pCommand : pCustomLineCap->pPath->GetCommands())
+			{
+				if (EPathCommandType::PATH_COMMAND_CURVETO != pCommand->GetType())
+					continue;
+
+				const CPathCommandCurveTo* pCurveTo{(const CPathCommandCurveTo*)pCommand};
+
+				oPathBounds.Left   = (std::min)(oPathBounds.Left,   (std::min)((std::min)(pCurveTo->GetX1(), pCurveTo->GetX2()), pCurveTo->GetXE()));
+				oPathBounds.Top    = (std::min)(oPathBounds.Top,    (std::min)((std::min)(pCurveTo->GetY1(), pCurveTo->GetY2()), pCurveTo->GetYE()));
+				oPathBounds.Right  = (std::max)(oPathBounds.Right,  (std::max)((std::max)(pCurveTo->GetX1(), pCurveTo->GetX2()), pCurveTo->GetXE()));
+				oPathBounds.Bottom = (std::max)(oPathBounds.Bottom, (std::max)((std::max)(pCurveTo->GetY1(), pCurveTo->GetY2()), pCurveTo->GetYE()));
+			}
+
 			const std::wstring wsMarkerId {L"CUSTOM_MARKER_" + std::to_wstring(++m_unNumberDefs)};
-			const TRectD       oPathBounds{pCustomLineCap->pPath->GetBounds()};
 			const double       dWidth     {std::abs(oPathBounds.Right  - oPathBounds.Left)};
 			const double       dHeight    {std::abs(oPathBounds.Bottom - oPathBounds.Top)};
 			const std::wstring wsWidth    {ConvertToWString(dWidth)};

@@ -645,7 +645,7 @@ namespace SVG
 			}
 		}
 
-		if (!m_oMarkers.m_oMid.Empty() && NSCSS::NSProperties::EColorType::ColorUrl == m_oMarkers.m_oMid.GetType())
+		if (!m_oMarkers.m_oMid.Empty() && NSCSS::NSProperties::EColorType::ColorUrl == m_oMarkers.m_oMid.GetType() && m_arElements.size() > 2)
 		{
 			CMarker *pMidMarker = dynamic_cast<CMarker*>(pFile->GetMarkedObject(m_oMarkers.m_oMid.ToWString()));
 

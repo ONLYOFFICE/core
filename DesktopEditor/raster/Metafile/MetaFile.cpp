@@ -620,15 +620,6 @@ namespace MetaFile
 		if (nWidth == 0 || nHeight == 0)
 			return;
 
-		NSGraphics::IGraphicsRenderer* pGrRenderer = NSGraphics::Create();
-
-		NSFonts::IFontManager* pFontManager = m_pAppFonts->GenerateFontManager();
-		NSFonts::IFontsCache* pFontCache = NSFonts::NSFontCache::Create();
-		pFontCache->SetStreams(m_pAppFonts->GetStreams());
-		pFontManager->SetOwnerCache(pFontCache);
-
-		pGrRenderer->SetFontManager(pFontManager);
-
 		if (-1 == nHeight)
 		{
 			double dX, dY, dW, dH;
@@ -642,6 +633,18 @@ namespace MetaFile
 			if (nWidth < 0) nWidth = (int)(dW * 96 / 25.4);
 			nHeight = (int)((double)nWidth * dH / dW);
 		}
+
+		if (nWidth <= 0 || nHeight <= 0)
+			return;
+
+		NSGraphics::IGraphicsRenderer* pGrRenderer = NSGraphics::Create();
+
+		NSFonts::IFontManager* pFontManager = m_pAppFonts->GenerateFontManager();
+		NSFonts::IFontsCache* pFontCache = NSFonts::NSFontCache::Create();
+		pFontCache->SetStreams(m_pAppFonts->GetStreams());
+		pFontManager->SetOwnerCache(pFontCache);
+
+		pGrRenderer->SetFontManager(pFontManager);
 
 		double dWidth  = 25.4 * nWidth / 96;
 		double dHeight = 25.4 * nHeight / 96;

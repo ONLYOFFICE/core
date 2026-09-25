@@ -130,6 +130,20 @@ namespace PdfWriter
 
 		return m_unDW;
 	}
+	unsigned int CFontEmbedded::FindPreferredCode(const std::map<unsigned int, unsigned int>& mCodeToValue, unsigned int unValue) const
+	{
+		unsigned int ushFallback = 0;
+		for (const auto& pair : mCodeToValue)
+		{
+			if (pair.second != unValue)
+				continue;
+			if (m_mCodeToWidth.find(pair.first) != m_mCodeToWidth.end())
+				return pair.first;
+			if (ushFallback == 0)
+				ushFallback = pair.first;
+		}
+		return ushFallback;
+	}
 	unsigned int CFontEmbedded::EncodeUnicode(const unsigned int& unGID, const unsigned int& unUnicode)
 	{
 		if (m_eFontType == fontCIDType0   ||
@@ -138,13 +152,13 @@ namespace PdfWriter
 			m_eFontType == fontCIDType2   ||
 			m_eFontType == fontCIDType2OT)
 		{
-			for (auto& pair : m_mCodeToUnicode)
-				if (pair.second == unUnicode)
-					return pair.first;
-
-			unsigned int ushCode = EncodeGID(unGID);
+			unsigned int ushCode = FindPreferredCode(m_mCodeToUnicode, unUnicode);
 			if (ushCode)
-				m_mCodeToUnicode.insert(std::pair<unsigned int, unsigned short>(ushCode, unUnicode));
+				return ushCode;
+
+			ushCode = EncodeGID(unGID);
+			if (ushCode)
+				m_mCodeToUnicode.insert(std::pair<unsigned int, unsigned int>(ushCode, unUnicode));
 			return ushCode;
 		}
 
@@ -152,18 +166,11 @@ namespace PdfWriter
 		if (ushCode)
 			return ushCode;
 
-		for (auto& pair : m_mCodeToUnicode)
-			if (pair.second == unUnicode)
-				return pair.first;
-
-		return 0;
+		return FindPreferredCode(m_mCodeToUnicode, unUnicode);
 	}
 	unsigned int CFontEmbedded::EncodeGID(const unsigned int& unGID)
 	{
-		for (auto& pair : m_mCodeToGID)
-			if (pair.second == unGID)
-				return pair.first;
-		return 0;
+		return FindPreferredCode(m_mCodeToGID, unGID);
 	}
 	CObjectBase* CFontEmbedded::GetObj()
 	{

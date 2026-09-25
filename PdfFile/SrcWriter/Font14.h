@@ -85,6 +85,8 @@ namespace PdfWriter
 		unsigned int GetFontIndex() { return m_unIndex; }
 
 	private:
+		unsigned int FindPreferredCode(const std::map<unsigned int, unsigned int>& mCodeToValue, unsigned int unValue) const;
+
 		unsigned int m_unDW;
 		std::string m_sFontKey;
 		EFontType m_eFontType;

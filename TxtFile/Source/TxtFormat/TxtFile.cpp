@@ -82,12 +82,12 @@ const std::vector<std::string> TxtFile::readUtf8Lines(int IdxEncoding)
     }
     else if (isUtf16LE)
     {
-        std::wstring unicode_content = conv.toUnicode(file_data.get() + 2, read_size - 2, 1200);//UTF-16LE
+        std::wstring unicode_content = conv.toUnicode(file_data.get() + 2, read_size - 2, "UTF-16LE");
         utf8_content = conv.fromUnicode(unicode_content, "UTF-8");
     }
     else if (isUtf16BE)
     {
-        std::wstring unicode_content = conv.toUnicode(file_data.get() + 2, read_size - 2, 1201);//UTF-16BE
+        std::wstring unicode_content = conv.toUnicode(file_data.get() + 2, read_size - 2, "UTF-16BE");
         utf8_content = conv.fromUnicode(unicode_content, "UTF-8");
     }
     else

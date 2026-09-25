@@ -686,6 +686,50 @@ public:
 		}
 		// -------------------------------------------
 
+		// add standard fonts that are not installed, mapping them to their best installed
+		// substitute, so that they remain available in the font list (e.g. "Times New Roman"
+		// on Linux, where Microsoft fonts are not installed by default)
+		{
+			static const std::wstring arrStandardFonts[] = {
+				L"Symbol", L"Arial", L"Times New Roman", L"Tahoma", L"Cambria",
+				L"Calibri", L"Verdana", L"Georgia", L"Trebuchet MS", L"Courier New",
+				L"SimSun", L"MS Gothic", L"Nirmala UI", L"Batang", L"MS Mincho",
+				L"Wingdings", L"Microsoft JhengHei", L"Microsoft JhengHei UI",
+				L"Microsoft YaHei", L"PMingLiU", L"MingLiU", L"DFKai-SB",
+				L"FangSong", L"KaiTi", L"SimKai", L"SimHei", L"Meiryo",
+				L"Malgun Gothic", L"Nanum Gothic", L"NanumGothic", L"Noto Sans KR",
+				L"TakaoGothic"
+			};
+			for (size_t i = 0; i < (sizeof(arrStandardFonts) / sizeof(arrStandardFonts[0])); ++i)
+			{
+				if (CheckBreak()) return;
+
+				const std::wstring& sFontName = arrStandardFonts[i];
+				if (mapFonts.end() != mapFonts.find(sFontName))
+					continue;
+
+				NSFonts::CFontSelectFormat oSelect;
+				oSelect.wsName = new std::wstring(sFontName);
+
+				NSFonts::CFontInfo* pSubstitute = applicationFonts->GetList()->GetByParams(oSelect, true);
+
+				delete oSelect.wsName;
+
+				if (NULL == pSubstitute)
+					continue;
+
+				std::map<std::wstring, CFontInfoJS>::iterator pSubstitutePair = mapFonts.find(pSubstitute->m_wsFontName);
+				if (mapFonts.end() == pSubstitutePair)
+					continue;
+
+				CFontInfoJS fontInfo = pSubstitutePair->second;
+				fontInfo.m_sName = sFontName;
+				mapFonts.insert(std::pair<std::wstring, CFontInfoJS>(sFontName, fontInfo));
+				arrFonts.push_back(sFontName);
+			}
+		}
+		// -------------------------------------------
+
 		if (CheckBreak()) return;
 
 		// now sort fonts by name ----------

@@ -1040,9 +1040,11 @@ void COOXMLWriter::WriteEmptyParagraph(bool bVahish, bool bInP)
 
 void COOXMLWriter::WriteMetadata(const std::wstring& wsName, const std::wstring& wsValue)
 {
-	m_oCustom.m_oXml.WriteString(L"<property fmtid=\"{D5CDD505-2E9C-101B-9397-08002B2CF9AE}\" pid=\"" + std::to_wstring(m_oCustom.m_unIds++) +L"\" name=\"" + wsName + L"\">"
-	                                  "<vt:lpwstr>" + wsValue + L"</vt:lpwstr>"
-	                              "</property>");
+	m_oCustom.m_oXml.WriteString(L"<property fmtid=\"{D5CDD505-2E9C-101B-9397-08002B2CF9AE}\" pid=\"" + std::to_wstring(m_oCustom.m_unIds++) +L"\" name=\"");
+	m_oCustom.m_oXml.WriteEncodeXmlString(wsName);
+	m_oCustom.m_oXml.WriteString(L"\"><vt:lpwstr>");
+	m_oCustom.m_oXml.WriteEncodeXmlString(wsValue);
+	m_oCustom.m_oXml.WriteString(L"</vt:lpwstr></property>");
 }
 
 void COOXMLWriter::WriteSpace()

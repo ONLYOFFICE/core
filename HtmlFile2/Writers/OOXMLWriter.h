@@ -42,6 +42,7 @@
 #include "IWriter.h"
 
 #include <stack>
+#include <set>
 
 namespace HTML
 {
@@ -88,6 +89,8 @@ class COOXMLWriter : public IWriter
 	{
 		XmlString m_oXml;     // custom.xml
 		UINT m_unIds;
+		std::set<std::wstring> m_arNames;
+		std::set<std::pair<std::wstring, std::wstring>> m_arMetadata;
 	} m_oCustom;
 
 	NSCSS::CDocumentStyle m_oXmlStyle;      // OOXML style

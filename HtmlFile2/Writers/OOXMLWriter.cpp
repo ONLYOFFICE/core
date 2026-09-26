@@ -1040,8 +1040,20 @@ void COOXMLWriter::WriteEmptyParagraph(bool bVahish, bool bInP)
 
 void COOXMLWriter::WriteMetadata(const std::wstring& wsName, const std::wstring& wsValue)
 {
+	std::wstring wsLowerName{wsName};
+	std::transform(wsLowerName.begin(), wsLowerName.end(), wsLowerName.begin(), std::towlower);
+
+	if (!m_oCustom.m_arMetadata.insert(std::make_pair(wsLowerName, wsValue)).second)
+		return;
+
+	std::wstring wsPostfix;
+	UINT unIndex = 1;
+
+	while (!m_oCustom.m_arNames.insert(wsLowerName + wsPostfix).second)
+		wsPostfix = L"-" + std::to_wstring(++unIndex);
+
 	m_oCustom.m_oXml.WriteString(L"<property fmtid=\"{D5CDD505-2E9C-101B-9397-08002B2CF9AE}\" pid=\"" + std::to_wstring(m_oCustom.m_unIds++) +L"\" name=\"");
-	m_oCustom.m_oXml.WriteEncodeXmlString(wsName);
+	m_oCustom.m_oXml.WriteEncodeXmlString(wsName + wsPostfix);
 	m_oCustom.m_oXml.WriteString(L"\"><vt:lpwstr>");
 	m_oCustom.m_oXml.WriteEncodeXmlString(wsValue);
 	m_oCustom.m_oXml.WriteString(L"</vt:lpwstr></property>");

@@ -521,6 +521,25 @@ namespace NSCSS
 		return bResult || !oXmlElement.Empty();
 	}
 
+	void CDocumentStyle::AppendStyle(const CXmlElement& oXmlElement, bool bIsPStyle)
+	{
+		const std::wstring wsStyle{bIsPStyle ? oXmlElement.GetPStyle() : oXmlElement.GetRStyle()};
+
+		if (wsStyle.empty())
+			return;
+
+		CXmlElement oUnnamedElement = oXmlElement;
+		oUnnamedElement.AddBasicProperties(BProperties::B_StyleId, L"_");
+		oUnnamedElement.AddBasicProperties(BProperties::B_Name,    L"_");
+
+		const std::pair<std::map<std::wstring, std::wstring>::iterator, bool> oWritten{m_mWrittenStyles.insert(std::make_pair(bIsPStyle ? oUnnamedElement.GetPStyle() : oUnnamedElement.GetRStyle(), m_sId))};
+
+		if (oWritten.second)
+			m_sStyle += wsStyle;
+		else
+			m_sId = oWritten.first->second;
+	}
+
 	bool CDocumentStyle::WriteRStyle(const NSCSS::CCompiledStyle& oStyle)
 	{
 		Clear();
@@ -543,9 +562,10 @@ namespace NSCSS
 		if (!SetRStyle(oStyle, oXmlElement))
 			return false;
 
+		AppendStyle(oXmlElement, false);
+
 		structStyle.SetFinalId(m_sId);
 		m_arStyleUsed.push_back(structStyle);
-		m_sStyle += oXmlElement.GetRStyle();
 
 		return true;
 	}
@@ -605,9 +625,10 @@ namespace NSCSS
 		if (!SetPStyle(oStyle, oXmlElement))
 			return false;
 
+		AppendStyle(oXmlElement, true);
+
 		structStyle.SetFinalId(m_sId);
 		m_arStyleUsed.push_back(structStyle);
-		m_sStyle += oXmlElement.GetPStyle();
 
 		return true;
 	}

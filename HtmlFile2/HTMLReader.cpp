@@ -539,6 +539,9 @@ bool CHTMLReader::Convert(const std::wstring& wsPath, Convert_Func Convertation)
 
 	m_wsSrcDirectory = NSSystemPath::GetDirectoryName(wsPath);
 
+	m_oCSSCalculator.ClearAllowedStyleFiles();
+	m_oCSSCalculator.ClearEmbeddedStyles();
+
 	oReader.MoveToStart();
 	oReader.ReadNextNode();
 	ReadStyle(oReader);

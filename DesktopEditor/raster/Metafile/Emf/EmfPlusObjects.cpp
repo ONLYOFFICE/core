@@ -38,7 +38,7 @@
 namespace MetaFile
 {
 	CEmfPlusBrush::CEmfPlusBrush()
-		: CEmfPlusObject(), unStyle(BS_SOLID), unHatch(0), unAngle(0)
+		: CEmfPlusObject(), unStyle(BS_SOLID), unHatch(0), bEllipticalBoundary(false), unAngle(0)
 	{}
 
 	CEmfPlusBrush::~CEmfPlusBrush()
@@ -380,6 +380,16 @@ namespace MetaFile
 				break;
 			}
 			case PATH_COMMAND_CURVETO:
+			{
+				CPathCommandCurveTo* pCurveTo = (CPathCommandCurveTo*)pCommand;
+
+				oRect.Left   = std::min(oRect.Left,   std::min(std::min(pCurveTo->GetX1(), pCurveTo->GetX2()), pCurveTo->GetXE()));
+				oRect.Top    = std::min(oRect.Top,    std::min(std::min(pCurveTo->GetY1(), pCurveTo->GetY2()), pCurveTo->GetYE()));
+				oRect.Right  = std::max(oRect.Right,  std::max(std::max(pCurveTo->GetX1(), pCurveTo->GetX2()), pCurveTo->GetXE()));
+				oRect.Bottom = std::max(oRect.Bottom, std::max(std::max(pCurveTo->GetY1(), pCurveTo->GetY2()), pCurveTo->GetYE()));
+
+				break;
+			}
 			case PATH_COMMAND_ARCTO:
 			case PATH_COMMAND_CLOSE:
 			case PATH_COMMAND_UNKNOWN:

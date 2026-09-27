@@ -646,6 +646,8 @@ namespace MetaFile
 
 			m_oStream.Skip((unCountColors - 1) * 4);
 
+			CEmfPlusPath* pBoundary = NULL;
+
 			if (BrushDataPath & unBrushDataFlags)
 			{
 				int nSize;
@@ -653,21 +655,7 @@ namespace MetaFile
 				m_oStream >> nSize;
 
 				if (nSize > 0)
-				{
-					CEmfPlusPath* pPath = ReadPath();
-
-					if (NULL != pPath)
-					{
-						TRectD oRect = pPath->GetBounds();
-
-						pEmfPlusBrush->oRectF.dX      = oRect.Left;
-						pEmfPlusBrush->oRectF.dY      = oRect.Top;
-						pEmfPlusBrush->oRectF.dWidth  = oRect.Right - oRect.Left;
-						pEmfPlusBrush->oRectF.dHeight = oRect.Bottom - oRect.Top;
-
-						delete pPath;
-					}
-				}
+					pBoundary = ReadPath();
 			}
 			else
 			{
@@ -675,13 +663,45 @@ namespace MetaFile
 
 				m_oStream >> nCountPoint;
 
-				std::vector<TEmfPlusPointF> arPoints = ReadPoints<TEmfPlusPointF>(nCountPoint);
+				if (nCountPoint > 0)
+				{
+					const std::vector<TEmfPlusPointF> arPoints{ReadPoints<TEmfPlusPointF>(nCountPoint)};
 
-				//TODO:: implement when encountered
+					pBoundary = new CEmfPlusPath();
+					pBoundary->MoveTo(arPoints[0].X, arPoints[0].Y);
+
+					for (unsigned int unIndex = 1; unIndex < arPoints.size(); ++unIndex)
+						pBoundary->LineTo(arPoints[unIndex].X, arPoints[unIndex].Y);
+
+					pBoundary->Close();
+				}
+			}
+
+			if (NULL != pBoundary)
+			{
+				const TRectD oRect{pBoundary->GetBounds()};
+
+				pEmfPlusBrush->oRectF.dX      = oRect.Left;
+				pEmfPlusBrush->oRectF.dY      = oRect.Top;
+				pEmfPlusBrush->oRectF.dWidth  = oRect.Right - oRect.Left;
+				pEmfPlusBrush->oRectF.dHeight = oRect.Bottom - oRect.Top;
+
+				for (const CPathCommandBase* pCommand : pBoundary->GetCommands())
+				{
+					if (PATH_COMMAND_CURVETO == pCommand->GetType())
+						pEmfPlusBrush->bEllipticalBoundary = true;
+					else if (PATH_COMMAND_LINETO == pCommand->GetType() || PATH_COMMAND_ARCTO == pCommand->GetType())
+					{
+						pEmfPlusBrush->bEllipticalBoundary = false;
+						break;
+					}
+				}
+
+				delete pBoundary;
 			}
 
 			if (BrushDataTransform & unBrushDataFlags)
-				m_oStream.Skip(24);
+				m_oStream >> pEmfPlusBrush->oTransform;
 
 			if (BrushDataPresetColors & unBrushDataFlags)
 			{
@@ -693,14 +713,18 @@ namespace MetaFile
 				{
 					pEmfPlusBrush->arGradientColors.resize(unPositionCount);
 
-					for (unsigned int unIndex = 0; unIndex < unPositionCount; ++unIndex)
-						m_oStream >> pEmfPlusBrush->arGradientColors[unIndex].second;
+					for (unsigned int unIndex = unPositionCount; unIndex > 0; --unIndex)
+					{
+						double dPosition;
+						m_oStream >> dPosition;
+						pEmfPlusBrush->arGradientColors[unIndex - 1].second = 1. - dPosition;
+					}
 
-					for (unsigned int unIndex = 0; unIndex < unPositionCount; ++unIndex)
-						m_oStream >> pEmfPlusBrush->arGradientColors[unIndex].first;
+					for (unsigned int unIndex = unPositionCount; unIndex > 0; --unIndex)
+						m_oStream >> pEmfPlusBrush->arGradientColors[unIndex - 1].first;
 
-					pEmfPlusBrush->oColor     = pEmfPlusBrush->arGradientColors.back() .first;
-					pEmfPlusBrush->oColorBack = pEmfPlusBrush->arGradientColors.front().first;
+					pEmfPlusBrush->oColor     = pEmfPlusBrush->arGradientColors.front().first;
+					pEmfPlusBrush->oColorBack = pEmfPlusBrush->arGradientColors.back() .first;
 				}
 			}
 

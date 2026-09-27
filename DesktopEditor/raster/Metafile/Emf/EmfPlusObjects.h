@@ -232,6 +232,8 @@ namespace MetaFile
 		unsigned int   unHatch;
 		TEmfPlusRectF  oRectF;
 		TEmfPlusPointF oCenterPoint;
+		TEmfPlusXForm  oTransform;
+		bool           bEllipticalBoundary;
 		unsigned int   unAngle;
 		std::wstring   wsDibPatternPath;
 

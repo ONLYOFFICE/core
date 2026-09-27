@@ -1275,13 +1275,13 @@ namespace NSCSS
 	// DISPLAY
 	CDisplay::CDisplay()
 	{
-		static const std::shared_ptr<const std::map<std::wstring, int>> pWhiteSpaceMapping{std::make_shared<const std::map<std::wstring, int>>(std::map<std::wstring, int>{{L"normal",   EWhiteSpace::Normal  },
-		                                                                                                                                                        {L"nowrap",   EWhiteSpace::Nowrap  },
-		                                                                                                                                                        {L"pre",      EWhiteSpace::Pre     },
-		                                                                                                                                                        {L"pre-line", EWhiteSpace::Pre_Line},
-		                                                                                                                                                        {L"pre-wrap", EWhiteSpace::Pre_Wrap}})};
+		static const std::map<std::wstring, int> mWhiteSpaceMapping{{L"normal",   EWhiteSpace::Normal  },
+		                                                            {L"nowrap",   EWhiteSpace::Nowrap  },
+		                                                            {L"pre",      EWhiteSpace::Pre     },
+		                                                            {L"pre-line", EWhiteSpace::Pre_Line},
+		                                                            {L"pre-wrap", EWhiteSpace::Pre_Wrap}};
 
-		m_eWhiteSpace.SetMapping(pWhiteSpaceMapping, EWhiteSpace::Normal);
+		m_eWhiteSpace.SetMapping(mWhiteSpaceMapping, EWhiteSpace::Normal);
 	}
 
 	void CDisplay::Equation(CDisplay &oFirstDisplay, CDisplay &oSecondDisplay)
@@ -1987,9 +1987,9 @@ namespace NSCSS
 	// BORDER
 	CBorder::CBorder()
 	{
-		static const std::shared_ptr<const std::map<std::wstring, int>> pCollapseMapping{std::make_shared<const std::map<std::wstring, int>>(std::map<std::wstring, int>{{L"collapse", BorderCollapse::Collapse}, {L"separate", BorderCollapse::Separate}})};
+		static const std::map<std::wstring, int> mCollapseMapping{{L"collapse", BorderCollapse::Collapse}, {L"separate", BorderCollapse::Separate}};
 
-		m_enCollapse.SetMapping(pCollapseMapping, BorderCollapse::Separate);
+		m_enCollapse.SetMapping(mCollapseMapping, BorderCollapse::Separate);
 	}
 
 	void CBorder::Clear()
@@ -2733,9 +2733,9 @@ namespace NSCSS
 
 	CBaselineShift::CBaselineShift()
 	{
-		static const std::shared_ptr<const std::map<std::wstring, int>> pTypeMapping{std::make_shared<const std::map<std::wstring, int>>(std::map<std::wstring, int>{{L"baseline", EBaselineShift::Baseline}, {L"sub", EBaselineShift::Sub}, {L"super", EBaselineShift::Super}})};
+		static const std::map<std::wstring, int> mTypeMapping{{L"baseline", EBaselineShift::Baseline}, {L"sub", EBaselineShift::Sub}, {L"super", EBaselineShift::Super}};
 
-		m_eType.SetMapping(pTypeMapping, EBaselineShift::Baseline);
+		m_eType.SetMapping(mTypeMapping, EBaselineShift::Baseline);
 	}
 
 	bool CBaselineShift::Empty() const
@@ -3134,7 +3134,7 @@ namespace NSCSS
 	}
 
 	CEnum::CEnum()
-		: m_nDefaultValue(0)
+		: m_nDefaultValue(0), m_pMap(nullptr)
 	{}
 
 	bool CEnum::SetValue(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
@@ -3163,17 +3163,12 @@ namespace NSCSS
 
 	void CEnum::SetMapping(const std::map<std::wstring, int> &mMap, int nDefaulvalue)
 	{
-		SetMapping(std::make_shared<const std::map<std::wstring, int>>(mMap), nDefaulvalue);
-	}
-
-	void CEnum::SetMapping(const std::shared_ptr<const std::map<std::wstring, int>>& pMap, int nDefaulvalue)
-	{
-		m_pMap = pMap;
+		m_pMap = &mMap;
 
 		if (-1 != nDefaulvalue)
 			m_nDefaultValue = nDefaulvalue;
-		else if (nullptr != pMap && !pMap->empty())
-			m_nDefaultValue = pMap->begin()->second;
+		else if (!mMap.empty())
+			m_nDefaultValue = mMap.begin()->second;
 	}
 
 	int CEnum::ToInt() const

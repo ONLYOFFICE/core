@@ -2,7 +2,6 @@
 #define STYLEPROPERTIES_H
 
 #include <map>
-#include <memory>
 #include <string>
 #include <vector>
 
@@ -400,7 +399,7 @@ namespace NSCSS
 
 		bool SetValue(const std::wstring& wsValue, unsigned int unLevel, bool bHardMode) override;
 		void SetMapping(const std::map<std::wstring, int>& mMap, int nDefaulvalue = -1);
-		void SetMapping(const std::shared_ptr<const std::map<std::wstring, int>>& pMap, int nDefaulvalue = -1);
+		void SetMapping(const std::map<std::wstring, int>&&, int = -1) = delete;
 
 		int ToInt() const override;
 
@@ -410,7 +409,7 @@ namespace NSCSS
 		std::wstring ToWString() const override;
 
 		int m_nDefaultValue;
-		std::shared_ptr<const std::map<std::wstring, int>> m_pMap;
+		const std::map<std::wstring, int>* m_pMap;
 	};
 
 	// PROPERTIES

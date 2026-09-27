@@ -488,10 +488,13 @@ namespace SVG
 
 	void CRenderedObject::SetDefaultData()
 	{
-		m_oStyles.m_oStroke.m_oLineCap.SetMapping({std::make_pair(L"butt", Aggplus::LineCapFlat), std::make_pair(L"round", Aggplus::LineCapRound), std::make_pair(L"square", Aggplus::LineCapSquare)});
+		static const std::map<std::wstring, int> mLineCapMapping{{L"butt", Aggplus::LineCapFlat}, {L"round", Aggplus::LineCapRound}, {L"square", Aggplus::LineCapSquare}};
+		static const std::map<std::wstring, int> mLineJoinMapping{{L"arcs", Aggplus::LineJoinMiter}, {L"bevel", Aggplus::LineJoinBevel}, {L"miter", Aggplus::LineJoinMiter}, {L"miter-clip", Aggplus::LineJoinMiterClipped}, {L"round", Aggplus::LineJoinRound}};
+
+		m_oStyles.m_oStroke.m_oLineCap.SetMapping(mLineCapMapping);
 		m_oStyles.m_oStroke.m_oLineCap = Aggplus::LineCapFlat;
 
-		m_oStyles.m_oStroke.m_oLineJoin.SetMapping({std::make_pair(L"arcs", Aggplus::LineJoinMiter), std::make_pair(L"bevel", Aggplus::LineJoinBevel), std::make_pair(L"miter", Aggplus::LineJoinMiter), std::make_pair(L"miter-clip", Aggplus::LineJoinMiterClipped), std::make_pair(L"round", Aggplus::LineJoinRound)});
+		m_oStyles.m_oStroke.m_oLineJoin.SetMapping(mLineJoinMapping);
 		m_oStyles.m_oStroke.m_oLineCap = Aggplus::LineJoinMiter;
 
 		m_oStyles.m_oStroke.m_oMiterlimit = 4.;

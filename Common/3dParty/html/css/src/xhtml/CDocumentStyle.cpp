@@ -17,25 +17,32 @@
 namespace NSCSS
 {
 	CStyleUsed::CStyleUsed(const CCompiledStyle &oStyle, bool bIsPStyle)
-		: m_oStyle(oStyle), m_bIsPStyle(bIsPStyle)
-	{
-		for (const std::wstring& wsParent : m_oStyle.GetParentsNamesSet())
-		{
-			if (Names_Standard_Styles.cend() != std::find(Names_Standard_Styles.cbegin(), Names_Standard_Styles.cend(), wsParent))
-				m_arStandardParents.push_back(wsParent);
-		}
-	}
+		: m_oStyle(oStyle), m_bIsPStyle(bIsPStyle), m_arStandardParents(GetStandardParents(oStyle))
+	{}
 
 	void CStyleUsed::SetFinalId(const std::wstring& wsFinalId)
 	{
 		m_wsFinalId = wsFinalId;
 	}
 
-	bool CStyleUsed::operator==(const CStyleUsed &oUsedStyle) const
+	std::vector<std::wstring> CStyleUsed::GetStandardParents(const CCompiledStyle& oStyle)
 	{
-		return m_bIsPStyle == oUsedStyle.m_bIsPStyle &&
-		       m_arStandardParents == oUsedStyle.m_arStandardParents &&
-		       m_oStyle == oUsedStyle.m_oStyle;
+		std::vector<std::wstring> arStandardParents;
+
+		for (const std::wstring& wsStandardStyle : Names_Standard_Styles)
+		{
+			if (oStyle.HaveThisParent(wsStandardStyle))
+				arStandardParents.push_back(wsStandardStyle);
+		}
+
+		return arStandardParents;
+	}
+
+	bool CStyleUsed::Equals(const CCompiledStyle& oStyle, bool bIsPStyle, const std::vector<std::wstring>& arStandardParents) const
+	{
+		return m_bIsPStyle == bIsPStyle &&
+		       m_arStandardParents == arStandardParents &&
+		       m_oStyle == oStyle;
 	}
 
 	std::wstring CStyleUsed::GetId() const
@@ -521,23 +528,27 @@ namespace NSCSS
 		return bResult || !oXmlElement.Empty();
 	}
 
-	void CDocumentStyle::AppendStyle(const CXmlElement& oXmlElement, bool bIsPStyle)
+	bool CDocumentStyle::AppendStyle(const CXmlElement& oXmlElement, bool bIsPStyle)
 	{
-		const std::wstring wsStyle{bIsPStyle ? oXmlElement.GetPStyle() : oXmlElement.GetRStyle()};
-
-		if (wsStyle.empty())
-			return;
-
 		CXmlElement oUnnamedElement = oXmlElement;
 		oUnnamedElement.AddBasicProperties(BProperties::B_StyleId, L"_");
 		oUnnamedElement.AddBasicProperties(BProperties::B_Name,    L"_");
 
-		const std::pair<std::map<std::wstring, std::wstring>::iterator, bool> oWritten{m_mWrittenStyles.insert(std::make_pair(bIsPStyle ? oUnnamedElement.GetPStyle() : oUnnamedElement.GetRStyle(), m_sId))};
+		const std::wstring wsUnnamedStyle{bIsPStyle ? oUnnamedElement.GetPStyle() : oUnnamedElement.GetRStyle()};
 
-		if (oWritten.second)
-			m_sStyle += wsStyle;
-		else
+		if (wsUnnamedStyle.empty())
+			return true;
+
+		const std::pair<std::map<std::wstring, std::wstring>::iterator, bool> oWritten{m_mWrittenStyles.insert(std::make_pair(wsUnnamedStyle, m_sId))};
+
+		if (!oWritten.second)
+		{
 			m_sId = oWritten.first->second;
+			return false;
+		}
+
+		m_sStyle += bIsPStyle ? oXmlElement.GetPStyle() : oXmlElement.GetRStyle();
+		return true;
 	}
 
 	bool CDocumentStyle::WriteRStyle(const NSCSS::CCompiledStyle& oStyle)
@@ -547,11 +558,12 @@ namespace NSCSS
 		if(oStyle.GetId().empty())
 			return false;
 
-		CStyleUsed structStyle(oStyle, false);
+		const std::vector<std::wstring> arStandardParents{CStyleUsed::GetStandardParents(oStyle)};
 
-		std::vector<CStyleUsed>::iterator oItem = std::find(m_arStyleUsed.begin(), m_arStyleUsed.end(), structStyle);
+		const std::vector<CStyleUsed>::const_iterator oItem{std::find_if(m_arStyleUsed.cbegin(), m_arStyleUsed.cend(),
+		                                                                  [&oStyle, &arStandardParents](const CStyleUsed& oStyleUsed) { return oStyleUsed.Equals(oStyle, false, arStandardParents); })};
 
-		if (oItem != m_arStyleUsed.end())
+		if (oItem != m_arStyleUsed.cend())
 		{
 			m_sId = (*oItem).GetId();
 			return true;
@@ -562,10 +574,11 @@ namespace NSCSS
 		if (!SetRStyle(oStyle, oXmlElement))
 			return false;
 
-		AppendStyle(oXmlElement, false);
+		if (!AppendStyle(oXmlElement, false))
+			return true;
 
-		structStyle.SetFinalId(m_sId);
-		m_arStyleUsed.push_back(structStyle);
+		m_arStyleUsed.emplace_back(oStyle, false);
+		m_arStyleUsed.back().SetFinalId(m_sId);
 
 		return true;
 	}
@@ -611,10 +624,12 @@ namespace NSCSS
 		if(oStyle.GetId().empty())
 			return false;
 
-		CStyleUsed structStyle(oStyle, true);
-		std::vector<CStyleUsed>::iterator oItem = std::find(m_arStyleUsed.begin(), m_arStyleUsed.end(), structStyle);
+		const std::vector<std::wstring> arStandardParents{CStyleUsed::GetStandardParents(oStyle)};
 
-		if (oItem != m_arStyleUsed.end())
+		const std::vector<CStyleUsed>::const_iterator oItem{std::find_if(m_arStyleUsed.cbegin(), m_arStyleUsed.cend(),
+		                                                                  [&oStyle, &arStandardParents](const CStyleUsed& oStyleUsed) { return oStyleUsed.Equals(oStyle, true, arStandardParents); })};
+
+		if (oItem != m_arStyleUsed.cend())
 		{
 			m_sId = (*oItem).GetId();
 			return true;
@@ -625,10 +640,11 @@ namespace NSCSS
 		if (!SetPStyle(oStyle, oXmlElement))
 			return false;
 
-		AppendStyle(oXmlElement, true);
+		if (!AppendStyle(oXmlElement, true))
+			return true;
 
-		structStyle.SetFinalId(m_sId);
-		m_arStyleUsed.push_back(structStyle);
+		m_arStyleUsed.emplace_back(oStyle, true);
+		m_arStyleUsed.back().SetFinalId(m_sId);
 
 		return true;
 	}

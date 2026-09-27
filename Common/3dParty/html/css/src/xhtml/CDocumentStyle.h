@@ -21,7 +21,9 @@ namespace NSCSS
 
 		void SetFinalId(const std::wstring& wsFinalId);
 
-		bool operator==(const CStyleUsed& oUsedStyle) const;
+		static std::vector<std::wstring> GetStandardParents(const CCompiledStyle& oStyle);
+
+		bool Equals(const CCompiledStyle& oStyle, bool bIsPStyle, const std::vector<std::wstring>& arStandardParents) const;
 
 		std::wstring GetId() const;
 	};
@@ -42,7 +44,7 @@ namespace NSCSS
 		std::wstring m_sStyle;
 		std::wstring m_sId;
 
-		void AppendStyle(const CXmlElement& oXmlElement, bool bIsPStyle);
+		bool AppendStyle(const CXmlElement& oXmlElement, bool bIsPStyle);
 
 		bool CombineStandardStyles(const std::vector<std::wstring>& arStandartedStyles, CXmlElement& oElement);
 		bool CreateStandardStyle  (const std::wstring& sNameStyle, CXmlElement& oElement);

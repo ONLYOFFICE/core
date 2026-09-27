@@ -70,7 +70,7 @@ namespace NSCSS
 			return;
 
 		#ifdef CSS_CALCULATOR_WITH_XHTML
-		std::wregex oRegex(L"@page\\s*([^{]*)(\\{[^}]*\\})");
+		static const std::wregex oRegex(L"@page\\s*([^{]*)(\\{[^}]*\\})");
 		std::wsmatch oMatch;
 		std::wstring::const_iterator oSearchStart(wsStyle.cbegin());
 

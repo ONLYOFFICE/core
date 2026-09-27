@@ -63,7 +63,7 @@ namespace HTML
 #define DEFAULT_IMAGE_HEIGHT 304800
 
 inline bool ElementInTable(const std::vector<NSCSS::CNode>& arSelectors);
-inline bool ElementInHeader(const std::vector<NSCSS::CNode> arSelsectors);
+inline bool ElementInHeader(const std::vector<NSCSS::CNode>& arSelsectors);
 inline std::wstring StandardizeHeaderId(const std::wstring& wsHeader);
 inline int CalculateFontChange(const std::vector<NSCSS::CNode>& arSelectors);
 inline UINT GetFontSizeLevel(UINT unFontSize);
@@ -1348,7 +1348,7 @@ inline bool ElementInTable(const std::vector<NSCSS::CNode>& arSelectors)
 	return arSelectors.crend() != std::find_if(arSelectors.crbegin(), arSelectors.crend(), [](const NSCSS::CNode& oNode) { return L"table" == oNode.m_wsName; });
 }
 
-inline bool ElementInHeader(const std::vector<NSCSS::CNode> arSelsectors)
+inline bool ElementInHeader(const std::vector<NSCSS::CNode>& arSelsectors)
 {
 	for (const NSCSS::CNode& oNode : arSelsectors)
 	{

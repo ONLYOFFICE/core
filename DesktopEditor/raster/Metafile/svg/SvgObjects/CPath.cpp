@@ -556,13 +556,13 @@ namespace SVG
 	{
 		Aggplus::CMatrix oOldTransform;
 
-		if (m_arElements.empty() || !StartPath(pRenderer, pFile, oOldTransform, oMode))
+		if (m_arElements.empty() || !StartPath(pRenderer, pFile, oOldTransform, oMode, true))
 			return false;
 
 		for (const IPathElement* oElement : m_arElements)
 			oElement->Draw(pRenderer);
 
-		EndPath(pRenderer, pFile, oOldTransform, oMode, pOtherStyles, pContexObject);
+		EndPath(pRenderer, pFile, oOldTransform, oMode, pOtherStyles, pContexObject, true);
 
 		DrawMarkers(pRenderer, pFile, oMode);
 

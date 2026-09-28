@@ -39,6 +39,7 @@
 
 #include "../../DesktopEditor/common/File.h"
 #include "../../DesktopEditor/common/Directory.h"
+#include "../../DesktopEditor/common/Path.h"
 #include "../../DesktopEditor/common/SystemUtils.h"
 
 #include "../src/Languages.h"
@@ -1121,6 +1122,26 @@ std::wstring COOXMLWriter::AddAnchor(const std::wstring& wsAnchorValue)
 	m_mAnchors[wsAnchorValue] = wsAnchorId;
 
 	return wsAnchorId;
+}
+
+void COOXMLWriter::AddFile(const std::wstring& wsPath)
+{
+	m_arFiles.insert(NSSystemPath::ShortenPath(wsPath));
+}
+
+void COOXMLWriter::WriteFileBookmark(const std::wstring& wsPath)
+{
+	const std::wstring wsFile{NSSystemPath::ShortenPath(wsPath)};
+
+	if (m_arFiles.end() != m_arFiles.find(wsFile))
+		WriteEmptyBookmark(wsFile);
+}
+
+std::wstring COOXMLWriter::FindFile(const std::wstring& wsRef) const
+{
+	const std::wstring wsFile{NSSystemPath::ShortenPath(NSSystemPath::Combine(GetSrcPath(), wsRef))};
+
+	return (m_arFiles.end() != m_arFiles.find(wsFile)) ? wsFile : std::wstring();
 }
 
 void COOXMLWriter::WriteImage(const TImageData& oImageData, const std::wstring& wsId)

@@ -100,8 +100,21 @@ bool CAnchorOOXMLTag::Open(const std::vector<NSCSS::CNode>& arSelectors)
 	std::wstring wsRef, wsAlt, wsName;
 	bool bCross = false;
 
-	if (arSelectors.back().GetAttributeValue(L"href", wsRef) && wsRef.find('#') != std::wstring::npos)
-		bCross = true;
+	if (arSelectors.back().GetAttributeValue(L"href", wsRef))
+	{
+		if (wsRef.find('#') != std::wstring::npos)
+			bCross = true;
+		else
+		{
+			const std::wstring wsFile{m_pWriter->FindFile(wsRef)};
+
+			if (!wsFile.empty())
+			{
+				wsRef = L'#' + wsFile;
+				bCross = true;
+			}
+		}
+	}
 
 	if (arSelectors.back().GetAttributeValue(L"name", wsName))
 		m_pWriter->WriteEmptyBookmark(wsName);

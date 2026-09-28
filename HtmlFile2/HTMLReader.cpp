@@ -487,12 +487,25 @@ HRESULT CHTMLReader::InitAndConvert2OOXML(const std::vector<std::wstring>& arPat
 
 	m_wsDstDirectory = wsDirectory;
 
+	COOXMLWriter *pWriter{dynamic_cast<COOXMLWriter*>(m_pWriter)};
+
+	if (nullptr == pWriter)
+		return S_FALSE;
+
+	if (arPaths.size() > 1)
+	{
+		for (const std::wstring& wsPath : arPaths)
+			pWriter->AddFile(wsPath);
+	}
+
 	HRESULT lResult{S_FALSE};
 
 	m_pWriter->Begin(wsDirectory);
 
 	for (const std::wstring& wsPath : arPaths)
 	{
+		pWriter->WriteFileBookmark(wsPath);
+
 		if (Convert(wsPath, Convertation))
 		{
 			lResult = S_OK;

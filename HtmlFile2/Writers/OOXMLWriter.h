@@ -154,6 +154,7 @@ class COOXMLWriter : public IWriter
 	std::map<std::wstring, UINT>         m_mBookmarks; // Bookmarks
 	using anchors_map = std::map<std::wstring, std::wstring>;
 	anchors_map                          m_mAnchors; // Map of anchors with individual ids
+	std::set<std::wstring>               m_arFiles;
 public:
 	COOXMLWriter(THTMLParameters* pHTMLParameters = nullptr, NSCSS::CCssCalculator* pCSSCalculator = nullptr);
 
@@ -207,6 +208,10 @@ public:
 	std::wstring AddLiteBookmark();
 	std::wstring WriteBookmark(const std::wstring& wsId);
 	std::wstring AddAnchor(const std::wstring& wsAnchorValue);
+
+	void AddFile(const std::wstring& wsPath);
+	void WriteFileBookmark(const std::wstring& wsPath);
+	std::wstring FindFile(const std::wstring& wsRef) const;
 
 	void WriteImage(const TImageData& oImageData, const std::wstring& wsId);
 	void WriteAlternativeImage(const std::wstring& wsAlt, const std::wstring& wsSrc, const TImageData& oImageData);

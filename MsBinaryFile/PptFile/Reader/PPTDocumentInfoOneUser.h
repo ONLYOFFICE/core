@@ -170,6 +170,9 @@ public:
     void LoadAutoNumBullet(CShapeElement* pShape, int slideID);
     void CreateDefaultStyle(CTextStyles& pStyle, CTheme* pTheme);
     void CorrectColorScheme(std::vector<CColor>& oScheme);
+    void CorrectColorSchemeByRoundTrip(CRecordSlide* pRecordSlide, std::vector<CColor>& oScheme, const std::vector<CColor>* pParentScheme = NULL);
+    void LoadFontSchemeByRoundTrip(CRecordSlide* pRecordSlide, CTheme* pTheme);
+    bool GetRoundTripTheme(CRecordSlide* pRecordSlide, std::string& strTheme);
 
     void ConvertLayoutType(SSlideLayoutAtom & layoutRecord, std::wstring & type, std::wstring & name);
 

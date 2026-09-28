@@ -109,7 +109,7 @@ namespace DocFileFormat
 		cellElements.clear();
 	}
 
-	void TableCell::Convert(IMapping* mapping, TablePropertyExceptions* tapx, const std::vector<short>* grid, int& gridIndex, int nCellIndex)
+	void TableCell::Convert(IMapping* mapping, TablePropertyExceptions* tapx, const std::vector<short>* grid, int& gridIndex, int nCellIndex, bool bFirstRow, bool bLastRow, bool bLastCell)
 	{
 		if (NULL != mapping)
 		{
@@ -125,6 +125,7 @@ namespace DocFileFormat
 	//convert the properties
 		XMLTools::CStringXmlWriter writerTcPr;
 		TableCellPropertiesMapping tcpMapping(&writerTcPr, grid, gridIndex, nCellIndex, depth);
+		tcpMapping.SetCellPosition(bFirstRow, bLastRow, bLastCell);
 
 		if ( tapx != NULL )
 		{
@@ -203,7 +204,7 @@ namespace DocFileFormat
 		cells.clear();
 	}
 
-	void TableRow::Convert(IMapping* mapping, const std::vector<short>* grid)
+	void TableRow::Convert(IMapping* mapping, const std::vector<short>* grid, bool bFirstRow, bool bLastRow)
 	{
 		if ( mapping != NULL )
 		{
@@ -246,7 +247,7 @@ namespace DocFileFormat
 			{
 				for ( size_t i = 0; i < cells.size(); ++i)
 				{
-					cells[i].Convert( mapping, &tapx, grid, gridIndex, nCellIndex++);
+					cells[i].Convert( mapping, &tapx, grid, gridIndex, nCellIndex++, bFirstRow, bLastRow, (i + 1 == cells.size()));
 				}
 			}
 
@@ -640,7 +641,7 @@ namespace DocFileFormat
 
 		for ( size_t i = 0; i < rows.size(); ++i)
 		{
-			rows[i].Convert( mapping, &grid );
+			rows[i].Convert( mapping, &grid, (i == 0), (i + 1 == rows.size()) );
 		}
 
 		//close w:tbl

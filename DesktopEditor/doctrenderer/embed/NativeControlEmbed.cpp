@@ -39,6 +39,9 @@
 
 JSSmart<CJSValue> CNativeControlEmbed::SetFilePath(JSSmart<CJSValue> path)
 {
+	if (CServerInstance::getInstance().IsEnable())
+		return NULL;
+
 	m_pInternal->SetFilePath(path->toStringW());
 	return NULL;
 }
@@ -215,7 +218,11 @@ JSSmart<CJSValue> CNativeControlEmbed::SaveChanges(JSSmart<CJSValue> sParam, JSS
 
 JSSmart<CJSValue> CNativeControlEmbed::ZipOpen(JSSmart<CJSValue> name)
 {
-	bool bIsOpen = m_pInternal->m_oZipWorker.Open(name->toStringW());
+	std::wstring sName = name->toStringW();
+	if (CServerInstance::getInstance().IsEnable() && !CServerInstance::getInstance().CheckTmpDirectory(sName))
+		return CJSContext::createNull();
+
+	bool bIsOpen = m_pInternal->m_oZipWorker.Open(sName);
 	if (!bIsOpen)
 		return CJSContext::createNull();
 
@@ -245,14 +252,23 @@ JSSmart<CJSValue> CNativeControlEmbed::ZipOpenBase64(JSSmart<CJSValue> name)
 	return obj->toValue();
 }
 
+static bool IsZipEntryName(const std::wstring& sName)
+{
+	return (std::wstring::npos == sName.find(L".."));
+}
+
 JSSmart<CJSValue> CNativeControlEmbed::ZipFileAsString(JSSmart<CJSValue> name)
 {
 	if (m_pInternal->m_oZipWorker.m_sTmpFolder.empty())
 		return CJSContext::createUndefined();
 
+	std::wstring sName = name->toStringW();
+	if (!IsZipEntryName(sName))
+		return CJSContext::createUndefined();
+
 	BYTE* pData = NULL;
 	DWORD len = 0;
-	m_pInternal->m_oZipWorker.GetFileData(name->toStringW(), pData, len);
+	m_pInternal->m_oZipWorker.GetFileData(sName, pData, len);
 	return  CJSContext::createString((char*)pData, len);
 }
 
@@ -261,7 +277,11 @@ JSSmart<CJSValue> CNativeControlEmbed::ZipFileAsBinary(JSSmart<CJSValue> name)
 	if (m_pInternal->m_oZipWorker.m_sTmpFolder.empty())
 		return CJSContext::createUndefined();
 
-	return CJSContext::createUint8Array(m_pInternal->m_oZipWorker.m_sTmpFolder + L"/" + name->toStringW());
+	std::wstring sName = name->toStringW();
+	if (!IsZipEntryName(sName))
+		return CJSContext::createUndefined();
+
+	return CJSContext::createUint8Array(m_pInternal->m_oZipWorker.m_sTmpFolder + L"/" + sName);
 }
 
 JSSmart<CJSValue> CNativeControlEmbed::ZipClose()
@@ -292,9 +312,14 @@ JSSmart<CJSValue> CNativeControlEmbed::GetImagesPath()
 #include "./../../raster/Metafile/MetaFileCommon.h"
 JSSmart<CJSValue> CNativeControlEmbed::GetImageOriginalSize(JSSmart<CJSValue> sUrl)
 {
+	std::wstring sName = sUrl->toStringW();
+
+	if (false/*TODO*/ && std::wstring::npos != sName.find(L".."))
+		return CJSContext::createUndefined();
+
 	IMetafileToRenderter oRenderer(NULL);
 	oRenderer.SetMediaDirectory(NSDirectory::GetFolderPath(m_pInternal->m_strImagesDirectory));
-	std::wstring sPath = oRenderer.GetImagePath(sUrl->toStringW());
+	std::wstring sPath = oRenderer.GetImagePath(sName);
 	CBgraFrame oFrame;
 	if (oFrame.OpenFile(sPath))
 	{

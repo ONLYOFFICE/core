@@ -92,7 +92,7 @@ namespace cpdoccore {
 				res[1] = a[2] * b[0] - a[0] * b[2];
 				res[2] = a[0] * b[1] - a[1] * b[0];
 			}
-			bool get_vector(odf_reader::chart_format_properties_ptr & properties, const std::wstring & name, double res[3])
+			bool get_vector(odf_reader::chart_format_properties_ptr & properties, const std::wstring & name, double res[3], bool normalize = true)
 			{
 				_CP_OPT(double) x, y, z;
 
@@ -104,7 +104,20 @@ namespace cpdoccore {
 
 				res[0] = *x; res[1] = *y; res[2] = *z;
 
-				return normalize_vector(res);
+				return normalize ? normalize_vector(res) : true;
+			}
+			//perspective [0..100] to camera distance (length dr3d:vrp)[7500..200000]
+			int camera_distance_to_perspective(double distance)
+			{
+				const double min_distance = 7500., max_distance = 200000.;
+
+				if (distance < min_distance) distance = min_distance;
+				if (distance > max_distance) distance = max_distance;
+
+				double a = 100. * max_distance * min_distance / (max_distance - min_distance);
+				double b = -a / max_distance;
+
+				return (int)floor(2. * (a / distance + b) + 0.5);
 			}
 		}
 		oox_plot_area::oox_plot_area() : no_used_local_tables_(false)
@@ -297,17 +310,29 @@ namespace cpdoccore {
 				}
 			}
 
-			//R = Rx(theta_x) * Ry(theta_y) * Rz(theta_z). atan2 keeps the quadrant and
-			//needs no division by cos(theta_y), which is zero at the gimbal lock
-			double sin_y = r[0][2];
+			bool bPie = this->current_chart_->type_ == CHART_TYPE_PIE;
+
+			bool bRightAngledAxes = right_angled_axes.get_value_or(false);
+
+			double sin_y, theta_x, theta_z;
+
+			if (bRightAngledAxes && !bPie)
+			{
+				sin_y	= -r[2][0];
+				theta_x	= atan2(r[2][1], r[2][2]) / DEG2RAD;
+				theta_z	= atan2(r[1][0], r[0][0]) / DEG2RAD;
+			}
+			else
+			{
+				sin_y	= r[0][2];
+				theta_x	= atan2(-r[1][2], r[2][2]) / DEG2RAD;
+				theta_z	= atan2(-r[0][1], r[0][0]) / DEG2RAD;
+			}
 
 			if (sin_y >  1.) sin_y =  1.;	//rounding in the source matrix
 			if (sin_y < -1.) sin_y = -1.;
 
-			double theta_x = atan2(-r[1][2], r[2][2]) / DEG2RAD;
 			double theta_y = asin(sin_y) / DEG2RAD;
-			//theta_z is the roll of the scene in the screen plane
-			double theta_z = atan2(-r[0][1], r[0][0]) / DEG2RAD;
 
 			if ((std::abs)(theta_z) > 90.)
 			{
@@ -318,14 +343,20 @@ namespace cpdoccore {
 			//other round
 			theta_y = -theta_y;
 
-			if (this->current_chart_->type_ == CHART_TYPE_PIE)
+			if (bPie)
 			{
 				theta_x += 90;
 				theta_y = 0;
 			}
 
-			bool bRightAngledAxes = right_angled_axes ? *right_angled_axes
-													  : !(perspective && *perspective);
+			int nPerspective = 0; //parallel projection
+
+			if (!perspective || *perspective)
+			{
+				double vrp[3];
+
+				nPerspective = get_vector(properties_, L"vrp", vrp, false) ? camera_distance_to_perspective(length_vector(vrp)) : 30;
+			}
 			CP_XML_WRITER(_Wostream)
 			{
 				CP_XML_NODE(L"c:view3D")
@@ -350,7 +381,7 @@ namespace cpdoccore {
 					{
 						CP_XML_NODE(L"c:perspective")
 						{
-							CP_XML_ATTR(L"val", 30);	//default
+							CP_XML_ATTR(L"val", nPerspective);
 						}
 					}
 				}

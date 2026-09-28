@@ -612,12 +612,20 @@ void odf_chart_context::set_view3D(int rotX, int rotY, int depthPercent, int per
 	double sx = sin(rotX * DEG2RAD),  cx = cos(rotX * DEG2RAD);
 	double sy = sin(-rotY * DEG2RAD), cy = cos(-rotY * DEG2RAD);
 
-	double m[3][3] =
-	{
-		{  cy,		0.,		sy		},
-		{  sx * sy,	cx,		-sx * cy },
-		{ -cx * sy,	sx,		cx * cy	}
-	};
+	double m[3][3];
+
+	if (angAx)
+	{//R = Ry(-rotY) * Rx(rotX)
+		m[0][0] = cy;		m[0][1] = sy * sx;	m[0][2] = sy * cx;
+		m[1][0] = 0.;		m[1][1] = cx;		m[1][2] = -sx;
+		m[2][0] = -sy;		m[2][1] = cy * sx;	m[2][2] = cy * cx;
+	}
+	else
+	{//R = Rx(rotX) * Ry(-rotY)
+		m[0][0] = cy;		m[0][1] = 0.;		m[0][2] = sy;
+		m[1][0] = sx * sy;	m[1][1] = cx;		m[1][2] = -sx * cy;
+		m[2][0] = -cx * sy;	m[2][1] = sx;		m[2][2] = cx * cy;
+	}
 
 	std::wstringstream sTransform;
 
@@ -637,11 +645,21 @@ void odf_chart_context::set_view3D(int rotX, int rotY, int depthPercent, int per
 	{
 		plot_area->chart_plot_area_attlist_.common_dr3d_attlist_.transform_ = sTransform.str();
 
+		//perspective [0..100] to camera distance [7500..200000] 
+		const double min_distance = 7500., max_distance = 200000.;
+
+		double a = 100. * max_distance * min_distance / (max_distance - min_distance);
+		double b = -a / max_distance;
+
+		double distance = a / ((std::max)(0., (std::min)(perspective / 2., 100.)) - b);
+
+		plot_area->chart_plot_area_attlist_.common_dr3d_attlist_.vrp_ = odf_types::vector3D(0, 0, distance);
+
 		if (impl_->current_level_.back().chart_properties)
 		{
 			impl_->current_level_.back().chart_properties->right_angled_axes_ = angAx;
 
-			if (!angAx)
+			if (!angAx && perspective > 0)
 			{
 				plot_area->chart_plot_area_attlist_.common_dr3d_attlist_.projection_ = L"perspective";
 			}

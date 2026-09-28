@@ -35,6 +35,8 @@
 #include <boost/make_shared.hpp>
 
 #include "PPTDocumentInfo.h"
+#include "RoundTripExtractor.h"
+#include "../../../DesktopEditor/common/Directory.h"
 
 #include "../Records/RecordsIncluder.h"
 
@@ -722,6 +724,7 @@ void CPPTUserInfo::LoadNotes(_UINT32 dwNoteID, CSlide* pNotes)
                 pNotes->m_bUseLayoutColorScheme = false;
                 oArrayColors[i]->ToArray(&pNotes->m_arColorScheme);
                 CorrectColorScheme(pNotes->m_arColorScheme);
+                CorrectColorSchemeByRoundTrip(pRecordSlide, pNotes->m_arColorScheme, pArrayColorScheme);
 
                 // check for match
                 size_t nCountC = pNotes->m_arColorScheme.size();
@@ -985,6 +988,7 @@ void CPPTUserInfo::LoadSlide(_UINT32 dwSlideID, CSlide* pSlide)
                 pSlide->m_bUseLayoutColorScheme = false;
                 oArrayColors[i]->ToArray(&pSlide->m_arColorScheme);
                 CorrectColorScheme(pSlide->m_arColorScheme);
+                CorrectColorSchemeByRoundTrip(pRecordSlide, pSlide->m_arColorScheme, pArrayColorScheme);
 
                 // check for match
                 size_t nCountC = pSlide->m_arColorScheme.size();
@@ -1579,6 +1583,7 @@ void CPPTUserInfo::LoadMainMaster(_UINT32 dwMasterID, bool alwaysLoad)
             {
                 oArrayColors[i]->ToArray(&pTheme->m_arColorScheme);
                 CorrectColorScheme(pTheme->m_arColorScheme);
+                CorrectColorSchemeByRoundTrip(pMaster, pTheme->m_arColorScheme);
             }
         }
 
@@ -1595,6 +1600,7 @@ void CPPTUserInfo::LoadMainMaster(_UINT32 dwMasterID, bool alwaysLoad)
     {
         pTheme->m_arColorScheme = pTheme->m_arExtraColorScheme[0];
     }
+    LoadFontSchemeByRoundTrip(pMaster, pTheme);
 
     // ---------------------------------------------------------------------------------
     std::map<_UINT32, CRecordSlide*>::iterator pPairMaster1 = m_mapMasters.find(dwMasterID);
@@ -1847,6 +1853,7 @@ void CPPTUserInfo::LoadMaster(_typeMaster type, CRecordSlide* pMaster, CSlideInf
             {
                 oArrayColors[i]->ToArray(&pTheme->m_arColorScheme);
                 CorrectColorScheme(pTheme->m_arColorScheme);
+                CorrectColorSchemeByRoundTrip(pMaster, pTheme->m_arColorScheme);
             }
         }
 
@@ -1863,6 +1870,7 @@ void CPPTUserInfo::LoadMaster(_typeMaster type, CRecordSlide* pMaster, CSlideInf
     {
         pTheme->m_arColorScheme = pTheme->m_arExtraColorScheme[0];
     }
+    LoadFontSchemeByRoundTrip(pMaster, pTheme.get());
 
     // ---------------------------------------------------------------------------------
     int indexUser = 0;
@@ -2024,6 +2032,7 @@ void CPPTUserInfo::LoadNoMainMaster(_UINT32 dwMasterID)
                 oArrayColors[i]->ToArray(&pLayout->m_arColorScheme);
                 pLayout->m_bUseThemeColorScheme = false;
                 CorrectColorScheme(pLayout->m_arColorScheme);
+                CorrectColorSchemeByRoundTrip(pCurMaster, pLayout->m_arColorScheme, pArrayColorScheme);
 
                 // check for match
                 size_t nCountC = pLayout->m_arColorScheme.size();
@@ -2740,6 +2749,99 @@ void CPPTUserInfo::CorrectColorScheme(std::vector<CColor>& oScheme)
     //0x07 //Accent 3 color
 
     oScheme = oArrayMem;
+}
+
+bool CPPTUserInfo::GetRoundTripTheme(CRecordSlide* pRecordSlide, std::string& strTheme)
+{
+    strTheme.clear();
+
+    std::vector<RoundTripTheme12Atom*> arrRTTheme;
+    if (pRecordSlide)
+        pRecordSlide->GetRecordsByType(&arrRTTheme, false, true);
+
+    if (arrRTTheme.empty() || !m_pDocumentInfo || !m_pDocumentInfo->m_pCommonInfo)
+        return false;
+
+    RoundTripExtractor extractor(arrRTTheme[0], m_pDocumentInfo->m_pCommonInfo->tempPath);
+    std::wstring strThemePath = extractor.getOneFile(std::wstring(L"theme") + FILE_SEPARATOR_STR + L"theme" + FILE_SEPARATOR_STR + L"theme1.xml");
+
+    BYTE* pData = NULL;
+    DWORD nDataSize = 0;
+    if (!strThemePath.empty() && NSFile::CFileBinary::ReadAllBytes(strThemePath, &pData, nDataSize) && pData)
+    {
+        strTheme = std::string((char*)pData, nDataSize);
+        RELEASEARRAYOBJECTS(pData);
+    }
+    NSDirectory::DeleteDirectory(extractor.extractedFolderPath());
+
+    return !strTheme.empty();
+}
+
+// major/minor fonts from round trip theme
+void CPPTUserInfo::LoadFontSchemeByRoundTrip(CRecordSlide* pRecordSlide, CTheme* pTheme)
+{
+    if (!pTheme) return;
+
+    std::string strTheme;
+    if (!GetRoundTripTheme(pRecordSlide, strTheme)) return;
+
+    size_t nSchemeStart = strTheme.find("<a:fontScheme");
+    size_t nSchemeEnd = strTheme.find("</a:fontScheme>", nSchemeStart);
+
+    if (nSchemeStart == std::string::npos || nSchemeEnd == std::string::npos) return;
+
+    nSchemeEnd += strlen("</a:fontScheme>");
+    pTheme->m_sRoundTripFontScheme = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8(
+                (BYTE*)strTheme.c_str() + nSchemeStart, (LONG)(nSchemeEnd - nSchemeStart));
+}
+
+// accent3 - accent6 from round trip theme
+void CPPTUserInfo::CorrectColorSchemeByRoundTrip(CRecordSlide* pRecordSlide, std::vector<CColor>& oScheme, const std::vector<CColor>* pParentScheme)
+{
+    if (oScheme.size() < 11) return;
+
+    std::string strTheme;
+    if (!GetRoundTripTheme(pRecordSlide, strTheme))
+    {
+        if (pParentScheme && pParentScheme->size() == oScheme.size())
+        {
+            for (size_t i = 7; i <= 10; ++i)
+                oScheme[i] = pParentScheme->at(i);
+        }
+        return;
+    }
+
+    {
+        size_t nSchemeStart = strTheme.find("<a:clrScheme");
+        size_t nSchemeEnd = strTheme.find("</a:clrScheme>", nSchemeStart);
+
+        if (nSchemeStart != std::string::npos && nSchemeEnd != std::string::npos)
+        {
+            for (int nAccent = 3; nAccent <= 6; ++nAccent)
+            {
+                size_t nPos = strTheme.find("<a:accent" + std::to_string(nAccent) + ">", nSchemeStart);
+                if (nPos == std::string::npos || nPos > nSchemeEnd) continue;
+
+                nPos = strTheme.find('<', nPos + 1);
+                if (nPos == std::string::npos) continue;
+
+                std::string strAttr;
+                if (0 == strTheme.compare(nPos, 11, "<a:srgbClr "))		strAttr = "val=\"";
+                else if (0 == strTheme.compare(nPos, 10, "<a:sysClr "))	strAttr = "lastClr=\"";
+                else continue;
+
+                size_t nTagEnd = strTheme.find('>', nPos);
+                size_t nVal = strTheme.find(strAttr, nPos);
+                if (nVal == std::string::npos || nVal > nTagEnd) continue;
+
+                nVal += strAttr.length();
+                std::string strVal = strTheme.substr(nVal, 6);
+                if (strVal.length() != 6 || strVal.find_first_not_of("0123456789abcdefABCDEF") != std::string::npos) continue;
+
+                oScheme[nAccent + 4] = CColor((_UINT32)strtoul(strVal.c_str(), NULL, 16));
+            }
+        }
+    }
 }
 
 void CPPTUserInfo::ConvertLayoutType(SSlideLayoutAtom& layoutRecord, std::wstring& type, std::wstring& name)

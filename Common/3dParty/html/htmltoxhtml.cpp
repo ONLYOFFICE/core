@@ -18,7 +18,7 @@ namespace HTML
 #undef CreateDirectory
 #endif
 
-static std::string nonbreaking_inline  = "|a|abbr|acronym|b|bdo|big|cite|code|dfn|em|font|i|img|kbd|nobr|s|small|span|strike|strong|sub|sup|tt|";
+static std::string nonbreaking_inline  = "|a|abbr|acronym|b|bdi|bdo|big|cite|code|data|del|dfn|em|font|i|img|ins|kbd|label|mark|nobr|q|s|samp|small|span|strike|strong|sub|sup|time|tt|u|var|";
 static std::string empty_tags          = "|area|base|basefont|bgsound|br|command|col|embed|event-source|frame|hr|image|img|input|keygen|link|menuitem|meta|param|source|spacer|track|wbr|";
 static std::string preserve_whitespace = "|pre|textarea|script|style|";
 static std::string special_handling    = "|html|body|";
@@ -593,6 +593,24 @@ static void build_attributes(const GumboVector* attribs, NSStringUtils::CStringB
 
 static void prettyprint(GumboNode* node, NSStringUtils::CStringBuilderA& oBuilder, bool bCheckValidNode = true);
 
+static bool has_inline_neighbour(GumboVector* children, size_t index, bool next)
+{
+	while (next ? index + 1 < children->length : index > 0)
+	{
+		index = next ? index + 1 : index - 1;
+
+		GumboNode* sibling = static_cast<GumboNode*>(children->data[index]);
+
+		if (sibling->type == GUMBO_NODE_COMMENT)
+			continue;
+
+		return sibling->type == GUMBO_NODE_TEXT ||
+		       (sibling->type == GUMBO_NODE_ELEMENT && nonbreaking_inline.find("|" + get_tag_name(sibling) + "|") != std::string::npos);
+	}
+
+	return false;
+}
+
 static void prettyprint_contents(GumboNode* node, NSStringUtils::CStringBuilderA& contents, bool bCheckValidNode)
 {
 	std::string key             = "|" + get_tag_name(node) + "|";
@@ -626,7 +644,8 @@ static void prettyprint_contents(GumboNode* node, NSStringUtils::CStringBuilderA
 			prettyprint(child, contents, bCheckValidNode);
 		else if (child->type == GUMBO_NODE_WHITESPACE)
 		{
-			if (keep_whitespace || is_inline || is_like_inline)
+			if (keep_whitespace || is_inline || is_like_inline ||
+			    (has_inline_neighbour(children, i, false) && has_inline_neighbour(children, i, true)))
 				contents.WriteString(child->v.text.text);
 		}
 		else if (child->type != GUMBO_NODE_COMMENT)

@@ -1278,6 +1278,10 @@ namespace DocFileFormat
 // write imagedata
 		if (m_imagedata.GetAttributeCount())
 		{
+			if (m_isBullete)
+			{
+				appendValueAttribute(&m_imagedata, L"o:title", L"");
+			}
 			m_pXmlWriter->WriteString(m_imagedata.GetXMLString());
 		}		
 		

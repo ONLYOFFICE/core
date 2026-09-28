@@ -521,7 +521,7 @@ namespace DocFileFormat
 		}
 		else if (m_isBullete)
 		{
-			m_pXmlWriter->WriteAttribute(L"o:bullet", L"1");
+			m_pXmlWriter->WriteAttribute(L"o:bullet", L"t");
 		}
 
 		{//borders color		
@@ -541,6 +541,11 @@ namespace DocFileFormat
 		if (CopyPicture(pict))
 		{
 			appendValueAttribute(m_imageData, L"r:id", L"rId" + FormatUtils::IntToWideString(m_nImageId));
+
+			if (m_isBullete)
+			{
+				appendValueAttribute(m_imageData, L"o:title", L"");
+			}
 		}
 		else
 		{

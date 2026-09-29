@@ -43,14 +43,14 @@
 
 namespace OOX
 {
-	class VbaData : public File
+	class VbaData : public File, public OOX::IFileContainer
 	{
 	public:
-		VbaData(OOX::Document *pMain) : File(pMain)
+		VbaData(OOX::Document *pMain) : File(pMain), OOX::IFileContainer(pMain)
 		{
 			m_bDocument = false;
 		}
-		VbaData(OOX::Document *pMain, const CPath& oRootPath, const CPath& filename) : File(pMain)
+		VbaData(OOX::Document *pMain, const CPath& oRootPath, const CPath& filename) : File(pMain), OOX::IFileContainer(pMain)
 		{
 			read(oRootPath, filename);
 		}
@@ -108,6 +108,26 @@ namespace OOX
 		}
 		virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 		virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+	};
+
+	class VbaProjectSignature : public Media
+	{
+	public:
+		VbaProjectSignature(OOX::Document* pMain, bool bAgile = false);
+		VbaProjectSignature(OOX::Document* pMain, const CPath& filename, bool bAgile = false);
+		virtual ~VbaProjectSignature();
+
+		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, CContentTypes& content) const;
+
+		virtual const FileType type() const;
+
+		virtual const CPath DefaultDirectory() const;
+		virtual const CPath DefaultFileName() const;
+
+		virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+		virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+
+		bool m_bAgile = false;
 	};
 } // namespace OOX
 

@@ -194,6 +194,10 @@ namespace OOX
 			return smart_ptr<OOX::File>(new OOX::VbaProject( pMain, oRootPath, oFileName ));
 		else if ( oRelation.Type() == OOX::FileTypes::VbaData)
 			return smart_ptr<OOX::File>(new OOX::VbaData( pMain, oRootPath, oFileName));
+		else if (oRelation.Type() == FileTypes::VbaProjectSignature)
+			return smart_ptr<OOX::File>(new OOX::VbaProjectSignature(pMain, oFileName));
+		else if (oRelation.Type() == FileTypes::VbaProjectSignatureAgile)
+			return smart_ptr<OOX::File>(new OOX::VbaProjectSignature(pMain, oFileName, true));
 		else if ( oRelation.Type() == FileTypes::JsaProject)
 			return smart_ptr<OOX::File>(new OOX::JsaProject( pMain, oFileName, oRelation.IsExternal()));
 		else if ( oRelation.Type() == FileTypes::CustomXml)
@@ -343,6 +347,10 @@ namespace OOX
 			return smart_ptr<OOX::File>(new ActiveX_bin( pMain, oFileName ));
 		else if ( pRelation->Type() == FileTypes::VbaProject)
 			return smart_ptr<OOX::File>(new OOX::VbaProject( pMain, oRootPath, oFileName ));
+		else if (pRelation->Type() == FileTypes::VbaProjectSignature)
+			return smart_ptr<OOX::File>(new OOX::VbaProjectSignature(pMain, oFileName));
+		else if (pRelation->Type() == FileTypes::VbaProjectSignatureAgile)
+			return smart_ptr<OOX::File>(new OOX::VbaProjectSignature(pMain, oFileName, true));
 		else if ( pRelation->Type() == FileTypes::VbaData)
 			return smart_ptr<OOX::File>(new OOX::VbaData( pMain, oRootPath, oFileName));
 		else if ( pRelation->Type() == FileTypes::JsaProject)

@@ -152,6 +152,10 @@ namespace OOX
 
 		extern const FileType VbaData;
 
+		extern const FileType VbaProjectSignature;
+
+		extern const FileType VbaProjectSignatureAgile;
+
 		extern const FileType JsaProject;
 
 		extern const FileType ImportedExternalContent;

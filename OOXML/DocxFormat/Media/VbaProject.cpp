@@ -50,6 +50,7 @@ namespace OOX
 	void VbaData::read(const CPath& oRootPath, const CPath& oPath)
 	{
 		m_oReadPath = oPath;
+		IFileContainer::Read(oRootPath, oPath);
 
 		XmlUtils::CXmlLiteReader oReader;
 
@@ -140,6 +141,24 @@ namespace OOX
 			pWriter->WriteStringW2(oVbaData->m_sXml);
 			pWriter->EndRecord();			
 		}
+
+		oFile = this->Find(OOX::FileTypes::VbaProjectSignature);
+		smart_ptr<OOX::VbaProjectSignature> oVbaProjectSignature = oFile.smart_dynamic_cast<OOX::VbaProjectSignature>();
+		if (oVbaProjectSignature.IsInit())
+		{
+			pWriter->StartRecord(2);
+			oVbaProjectSignature->toPPTY(pWriter);
+			pWriter->EndRecord();
+		}
+		
+		oFile = this->Find(OOX::FileTypes::VbaProjectSignatureAgile);
+		smart_ptr<OOX::VbaProjectSignature> oVbaProjectSignatureAgile = oFile.smart_dynamic_cast<OOX::VbaProjectSignature>();
+		if (oVbaProjectSignatureAgile.IsInit())
+		{
+			pWriter->StartRecord(3);
+			oVbaProjectSignatureAgile->toPPTY(pWriter);
+			pWriter->EndRecord();
+		}
 	}
 	void VbaProject::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 	{
@@ -186,7 +205,7 @@ namespace OOX
 				case 1:
 				{
 					smart_ptr<OOX::VbaData> oVbaData = new OOX::VbaData(File::m_pMainDocument);
-					
+
 					_INT32 _len = pReader->GetRecordSize();
 					oVbaData->m_sXml = pReader->GetString2();
 
@@ -202,12 +221,123 @@ namespace OOX
 							IFileContainer::Write(outputPath, oDirectory, *(pReader->m_pRels->m_pManager->m_pContentTypes));
 						}
 					}
-				}
+				}break;
+				case 2:
+				{
+					smart_ptr<OOX::VbaProjectSignature> oVbaProjectSignature = new OOX::VbaProjectSignature(File::m_pMainDocument);
+					oVbaProjectSignature->fromPPTY(pReader);
+					
+					smart_ptr<OOX::File> oFile = oVbaProjectSignature.smart_dynamic_cast<OOX::File>();
+					this->Add(oFile);
+				}break;
+				case 3:
+				{
+					smart_ptr<OOX::VbaProjectSignature> oVbaProjectSignature = new OOX::VbaProjectSignature(File::m_pMainDocument, true);
+					oVbaProjectSignature->fromPPTY(pReader);
+				
+					smart_ptr<OOX::File> oFile = oVbaProjectSignature.smart_dynamic_cast<OOX::File>();
+					this->Add(oFile);
+				}break;
 				default:
 				{
 					pReader->SkipRecord();
 				}
 			}
+		}
+		pReader->Seek(_end_rec);
+	}
+//----------------------------------------------------------------------------------------------------------------------------
+	VbaProjectSignature::VbaProjectSignature(OOX::Document* pMain, bool bAgile) : Media(pMain)
+	{
+		m_bAgile = bAgile;
+		OOX::CDocx* docx = dynamic_cast<OOX::CDocx*>(pMain);
+		if (docx)
+		{
+		}
+		else
+		{
+			OOX::Spreadsheet::CXlsx* xlsx = dynamic_cast<OOX::Spreadsheet::CXlsx*>(pMain);
+			if (xlsx)
+			{
+			}
+		}
+	}
+	VbaProjectSignature::VbaProjectSignature(OOX::Document* pMain, const CPath& filename, bool bAgile) : Media(pMain)
+	{
+		m_bAgile = bAgile;
+		OOX::CDocx* docx = dynamic_cast<OOX::CDocx*>(pMain);
+		if (docx)
+		{
+		}
+		else
+		{
+			OOX::Spreadsheet::CXlsx* xlsx = dynamic_cast<OOX::Spreadsheet::CXlsx*>(pMain);
+			if (xlsx)
+			{
+			}
+		}
+		read(filename);
+	}
+	VbaProjectSignature::~VbaProjectSignature()
+	{
+	}
+	void VbaProjectSignature::write(const OOX::CPath& filename, const OOX::CPath& directory, CContentTypes& content) const
+	{
+		Media::write(filename, directory, content);
+
+		content.Registration(type().OverrideType(), directory, filename.GetFilename());
+	}
+	const FileType VbaProjectSignature::type() const
+	{
+		if (m_bAgile) return FileTypes::VbaProjectSignatureAgile;
+		else return FileTypes::VbaProjectSignature;
+	}
+	const CPath VbaProjectSignature::DefaultDirectory() const
+	{
+		return type().DefaultDirectory();
+	}
+	const CPath VbaProjectSignature::DefaultFileName() const
+	{
+		return type().DefaultFileName();
+	}
+	void VbaProjectSignature::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+	{
+		if (m_bExist && !m_bExternal)
+		{
+			std::wstring pathMain = m_pMainDocument ? m_pMainDocument->m_sDocumentPath : L"";
+			std::wstring pathJsa = m_filename.GetPath();
+			if (pathMain.empty() || std::wstring::npos != pathJsa.find(pathMain))
+			{
+				BYTE* pData = NULL;
+				DWORD nBytesCount;
+				if (NSFile::CFileBinary::ReadAllBytes(m_filename.GetPath(), &pData, nBytesCount))
+				{
+					pWriter->WriteBYTEArray(pData, nBytesCount);
+				}
+				RELEASEARRAYOBJECTS(pData);
+			}
+		}
+		if (m_bExternal)
+		{
+
+		}
+	}
+	void VbaProjectSignature::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+	{
+		LONG _length = pReader->GetRecordSize();
+		LONG _end_rec = pReader->GetPos() + _length;
+
+		if (_length > 0)
+		{
+			BYTE* pData = pReader->GetPointer(_length);
+			std::wstring filePath = pReader->m_pRels->m_pManager->GetDstFolder() + FILE_SEPARATOR_STR + type().DefaultFileName().GetPath();
+
+			NSFile::CFileBinary oFile;
+			oFile.CreateFileW(filePath);
+			oFile.WriteFile(pData, _length);
+			oFile.CloseFile();
+
+			set_filename(filePath, false);
 		}
 		pReader->Seek(_end_rec);
 	}

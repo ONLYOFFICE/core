@@ -277,6 +277,15 @@ namespace OOX
 												L"application/vnd.ms-word.vbaData+xml",
 												L"http://schemas.microsoft.com/office/2006/relationships/wordVbaData");
 
+		const FileType VbaProjectSignature	(L"", L"vbaProjectSignature.bin",
+												L"application/vnd.ms-office.vbaProjectSignature",
+												L"http://schemas.microsoft.com/office/2006/relationships/vbaProjectSignature");
+
+		const FileType VbaProjectSignatureAgile(L"", L"vbaProjectSignatureAgile.bin",
+												L"application/vnd.ms-office.vbaProjectSignatureAgile",
+												L"http://schemas.microsoft.com/office/2014/relationships/vbaProjectSignatureAgile");
+
+
 		const FileType JsaProject			(L"", L"jsaProject.bin",
 												L"",
 												L"http://schemas.onlyoffice.com/jsaProject");

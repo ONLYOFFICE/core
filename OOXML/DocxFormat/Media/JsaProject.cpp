@@ -112,6 +112,7 @@ namespace OOX
 				{
 					pWriter->WriteBYTEArray(pData, nBytesCount);
 				}
+				RELEASEARRAYOBJECTS(pData);
 			}
 		}
 		if (m_bExternal)

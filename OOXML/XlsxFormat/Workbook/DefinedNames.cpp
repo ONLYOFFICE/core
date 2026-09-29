@@ -198,7 +198,7 @@ namespace OOX
 				return 0;
 			};
 			if(m_oRef.IsInit())
-				name->rgce.parseStringFormula(m_oRef.get(), L"");
+				name->rgce.parseStringFormula(m_oRef.get(), L"NameParsedFormula");
 			parseFmlaValueType(name->rgce);
 
 			return namePtr;

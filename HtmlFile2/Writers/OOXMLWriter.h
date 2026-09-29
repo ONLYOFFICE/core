@@ -99,6 +99,14 @@ class COOXMLWriter : public IWriter
 	NSCSS::CCssCalculator *m_pStylesCalculator;
 	THTMLParameters *m_pHTMLParameters;
 
+	struct TTooltipField
+	{
+		std::wstring m_wsBookmark;
+		std::wstring m_wsTooltip;
+		bool m_bInHyperlink;
+		bool m_bOpen;
+	};
+
 	struct TState
 	{
 		bool m_bInP;         // <w:p> open?
@@ -113,6 +121,8 @@ class COOXMLWriter : public IWriter
 		std::wstring m_wsFootnote;
 		bool m_bIsFootnote;
 		bool m_bISCrossHyperlink;
+
+		std::vector<TTooltipField> m_arTooltipFields;
 
 		XmlString *m_pCurrentDocument; //Current write location
 		bool m_bRemoveCurrentDocument;
@@ -172,6 +182,12 @@ public:
 	void CloseR();
 	void CloseT();
 	void CloseHyperlink();
+	void CloseClearedHyperlink();
+
+	void OpenTooltipField(const std::wstring& wsTooltip);
+	void CloseTooltipField();
+	void BeginTooltipFields(bool bInHyperlink);
+	void EndTooltipFields(bool bInHyperlink);
 
 	void PageBreak() override;
 

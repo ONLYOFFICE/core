@@ -440,10 +440,9 @@ bool COOXMLWriter::OpenT()
 
 void COOXMLWriter::OpenHyperlink()
 {
-	if (m_arStates.top().m_bInHyperlink)
-		return;
+	BeginTooltipFields(false);
 
-	if (!m_arStates.top().m_wsHref.empty())
+	if (!m_arStates.top().m_bInHyperlink && !m_arStates.top().m_wsHref.empty())
 	{
 		if (m_arStates.top().m_bISCrossHyperlink)
 			OpenCrossHyperlink(m_arStates.top().m_wsHref);
@@ -452,6 +451,8 @@ void COOXMLWriter::OpenHyperlink()
 
 		m_arStates.top().m_bInHyperlink = true;
 	}
+
+	BeginTooltipFields(true);
 }
 
 void COOXMLWriter::CloseP()
@@ -463,7 +464,9 @@ void COOXMLWriter::CloseP()
 
 	CloseT();
 	CloseR();
+	EndTooltipFields(true);
 	CloseHyperlink();
+	EndTooltipFields(false);
 
 	m_arStates.top().m_pCurrentDocument->WriteString(L"</w:p>");
 	m_arStates.top().m_bInP = false;
@@ -514,6 +517,63 @@ void COOXMLWriter::CloseHyperlink()
 		OpenR();
 		m_arStates.top().m_pCurrentDocument->WriteString(L"<w:rPr><w:rStyle w:val=\"footnote\"/></w:rPr><w:footnoteRef/>");
 		CloseR();
+	}
+}
+
+void COOXMLWriter::CloseClearedHyperlink()
+{
+	if (!m_arStates.top().m_bInHyperlink || !m_arStates.top().m_wsHref.empty())
+		return;
+
+	CloseT();
+	CloseR();
+	CloseHyperlink();
+}
+
+void COOXMLWriter::OpenTooltipField(const std::wstring& wsTooltip)
+{
+	CloseClearedHyperlink();
+
+	m_arStates.top().m_arTooltipFields.push_back({AddLiteBookmark(), wsTooltip, !m_arStates.top().m_wsHref.empty(), false});
+}
+
+void COOXMLWriter::CloseTooltipField()
+{
+	if (m_arStates.top().m_arTooltipFields.empty())
+		return;
+
+	if (m_arStates.top().m_arTooltipFields.back().m_bOpen)
+	{
+		CloseClearedHyperlink();
+		m_arStates.top().m_pCurrentDocument->WriteString(L"<w:r><w:fldChar w:fldCharType=\"end\"/></w:r>");
+	}
+
+	m_arStates.top().m_arTooltipFields.pop_back();
+}
+
+void COOXMLWriter::BeginTooltipFields(bool bInHyperlink)
+{
+	for (TTooltipField& oField : m_arStates.top().m_arTooltipFields)
+	{
+		if (oField.m_bOpen || oField.m_bInHyperlink != bInHyperlink)
+			continue;
+
+		m_arStates.top().m_pCurrentDocument->WriteString(L"<w:r><w:fldChar w:fldCharType=\"begin\"/></w:r><w:r><w:instrText>HYPERLINK \\l \"" + oField.m_wsBookmark + L"\" \\o \"");
+		m_arStates.top().m_pCurrentDocument->WriteEncodeXmlString(oField.m_wsTooltip);
+		m_arStates.top().m_pCurrentDocument->WriteString(L"\"</w:instrText></w:r><w:r><w:fldChar w:fldCharType=\"separate\"/></w:r>");
+		oField.m_bOpen = true;
+	}
+}
+
+void COOXMLWriter::EndTooltipFields(bool bInHyperlink)
+{
+	for (std::vector<TTooltipField>::reverse_iterator itField{m_arStates.top().m_arTooltipFields.rbegin()}; itField != m_arStates.top().m_arTooltipFields.rend(); ++itField)
+	{
+		if (!itField->m_bOpen || itField->m_bInHyperlink != bInHyperlink)
+			continue;
+
+		m_arStates.top().m_pCurrentDocument->WriteString(L"<w:r><w:fldChar w:fldCharType=\"end\"/></w:r>");
+		itField->m_bOpen = false;
 	}
 }
 

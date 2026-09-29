@@ -534,7 +534,7 @@ namespace DocFileFormat
 
                 if ( ( bookmarkName != NULL ) && ( *bookmarkName == L"_PictureBullets" ) )
 				{
-					for (size_t j = BookmarkStartEndCPs[i].start, k = 0; j < Text->size(); ++j, ++k )
+					for (size_t j = BookmarkStartEndCPs[i].start, k = 0; j < (size_t)BookmarkStartEndCPs[i].end && j < Text->size(); ++j, ++k )
 					{
 						if ( Text->at( j ) == 1 )
 						{

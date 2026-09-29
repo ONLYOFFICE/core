@@ -394,8 +394,8 @@ int SS::serialize_default(std::wostream & _stream, int series_type, int ind )
 				
 				if ((line) && (line->lns == (_UINT16)5)) ind = -1;
 			}
-
-			if (ind >= 0 && default_series_line_color->size() > ind &&  m_isAutoLine)
+			const size_t colorsCount = sizeof(default_series_line_color) / sizeof(default_series_line_color[0]);
+			if (ind >= 0 && colorsCount > ind &&  m_isAutoLine)
 			{
 				CP_XML_NODE(L"a:ln")
 				{
@@ -555,7 +555,7 @@ int SS::serialize(std::wostream & _stream, int series_type, int indPt)
 					}	
 					else if ( series_type != CHART_TYPE_Line || m_is3D == true ) //line & !3dLine
 						ind = 31; //black
-
+					const size_t colorsCount = sizeof(default_series_line_color) / sizeof(default_series_line_color[0]);
 					CP_XML_NODE(L"a:ln")
 					{
 						CP_XML_ATTR(L"w", 12700);//single
@@ -564,8 +564,10 @@ int SS::serialize(std::wostream & _stream, int series_type, int indPt)
 						{
 							CP_XML_NODE(L"a:srgbClr")
 							{
-								if(default_series_line_color->size() > ind)
+								if(colorsCount > ind)
 									CP_XML_ATTR(L"val",  default_series_line_color[ind]);
+								else
+									CP_XML_ATTR(L"val", L"000000");
 							}
 						}
 						CP_XML_NODE(L"a:prstDash")

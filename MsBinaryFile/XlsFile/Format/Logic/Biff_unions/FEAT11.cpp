@@ -353,10 +353,10 @@ int FEAT11::serialize(std::wostream & strm, size_t index)
 						CP_XML_NODE(L"tableColumn")
 						{
 							CP_XML_ATTR(L"id", field->idField);
-							if(field->strFieldName.value().size())
-								CP_XML_ATTR(L"name", field->strFieldName.value());
-							else if(field->strCaption.value().size())
+							if(field->strCaption.value().size())
 								CP_XML_ATTR(L"name", field->strCaption.value());
+							else if(field->strFieldName.value().size())
+								CP_XML_ATTR(L"name", field->strFieldName.value());
 							else
 								CP_XML_ATTR(L"name", "column"+i);
 

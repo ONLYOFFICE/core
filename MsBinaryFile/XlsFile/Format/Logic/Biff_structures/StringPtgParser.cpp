@@ -293,7 +293,7 @@ const bool StringPtgParser::parseToPtgs(const std::wstring& assembled_formula, R
             {
 				rgce.addPtg(found_operand = OperandPtgPtr(new PtgStr(operand_str)));
             }
-            else if(SyntaxPtg::extract_PtgRefErr(it, itEnd)) // Sequence is important (in pair with PtgErr)
+			else if(tag_name != L"NameParsedFormula" && SyntaxPtg::extract_PtgRefErr(it, itEnd)) // Sequence is important (in pair with PtgErr)
             {
                 rgce.addPtg(found_operand = OperandPtgPtr(new PtgRefErr(OperandPtg::ptg_REFERENCE))); // Checked with SIN(val) - OK
             }

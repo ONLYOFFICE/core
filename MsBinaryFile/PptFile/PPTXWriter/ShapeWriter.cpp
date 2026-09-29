@@ -282,6 +282,45 @@ std::wstring PPT::CShapeWriter::ConvertLineEnd(unsigned char cap, unsigned char 
     }
     return sResult;
 }
+static std::vector<std::pair<double, std::wstring>> ConvertGradientFocus(const std::vector<std::pair<double, std::wstring>>& stops, int focus, bool bNegativeAngle)
+{
+    if (focus > 100)	focus = 100;
+    if (focus < -100)	focus = -100;
+
+    std::vector<std::pair<double, std::wstring>> base = stops;
+
+    if (bNegativeAngle && focus != 0 && focus != 100 && focus != -100)
+    {// swap
+        std::reverse(base.begin(), base.end());
+        for (size_t i = 0; i < base.size(); i++)
+            base[i].first = 100 - base[i].first;
+    }
+
+    std::vector<std::pair<double, std::wstring>> result;
+
+    auto add_segment = [&](double from, double to, bool reverse)
+    {
+        if (from >= to) return;
+
+        for (size_t i = 0; i < base.size(); i++)
+        {
+            const std::pair<double, std::wstring>& stop = reverse ? base[base.size() - 1 - i] : base[i];
+
+            double pos = reverse ? (100 - stop.first) : stop.first;
+            pos = from + (to - from) * pos / 100;
+
+            if (false == result.empty() && result.back().first == pos && result.back().second == stop.second)
+                continue;
+            result.push_back(std::make_pair(pos, stop.second));
+        }
+    };
+    double point = focus >= 0 ? focus : 100 + focus;
+
+    add_segment(0, point, focus < 0);
+    add_segment(point, 100, focus >= 0);
+
+    return result;
+}
 std::wstring PPT::CShapeWriter::ConvertBrush(CBrush & brush)
 {
     PPT::CStringWriter brush_writer;
@@ -327,38 +366,39 @@ std::wstring PPT::CShapeWriter::ConvertBrush(CBrush & brush)
                 brush.Type == c_BrushTypeHorizontal		||
                 brush.Type == c_BrushTypeVertical)
     {
-        brush_writer.WriteString(L"<a:gradFill><a:gsLst>");
+        std::vector<std::pair<double, std::wstring>> stops;
         if (brush.ColorsPosition.empty() == false)
         {
             for (size_t i = 0; i < brush.ColorsPosition.size(); i++)
-            {
-                std::wstring str = std::to_wstring( (int)(brush.ColorsPosition[i].second * 1000));
-
-                brush_writer.WriteString(L"<a:gs pos=\"" + str + L"\">");
-                brush_writer.WriteString(ConvertColor(brush.ColorsPosition[i].first, 255));
-                brush_writer.WriteString(L"</a:gs>");
-            }
+                stops.push_back(std::make_pair(brush.ColorsPosition[i].second, ConvertColor(brush.ColorsPosition[i].first, 255)));
         }
         else
         {
-            brush_writer.WriteString(L"<a:gs pos=\"0\">");
-            brush_writer.WriteString(ConvertColor(brush.Color1, brush.Alpha1));
-            brush_writer.WriteString(L"</a:gs>");
+            stops.push_back(std::make_pair(0., ConvertColor(brush.Color1, brush.Alpha1)));
+            stops.push_back(std::make_pair(100., ConvertColor(brush.Color2, brush.Alpha2)));
+        }
+        if (brush.Type == c_BrushTypePathGradient1)
+            stops = ConvertGradientFocus(stops, brush.Focus, brush.LinearAngle < 0);
 
-            brush_writer.WriteString(L"<a:gs pos=\"100000\">");
-            brush_writer.WriteString(ConvertColor(brush.Color2, brush.Alpha2));
+        brush_writer.WriteString(L"<a:gradFill><a:gsLst>");
+        for (size_t i = 0; i < stops.size(); i++)
+        {
+            std::wstring str = std::to_wstring((int)(stops[i].first * 1000 + 0.5));
+
+            brush_writer.WriteString(L"<a:gs pos=\"" + str + L"\">");
+            brush_writer.WriteString(stops[i].second);
             brush_writer.WriteString(L"</a:gs>");
         }
         brush_writer.WriteString(L"</a:gsLst>");
         brush_writer.WriteString(L"<a:lin ang=\"");
-        {
-            double val = 360 - brush.LinearAngle;
-            val += 90;
+        {// fillAngle: 0 - vector from bottom to top; negative - opposite direction
+            double val = 90 - brush.LinearAngle;
+            if (brush.LinearAngle < 0)	val += 180;
 
+            val = fmod(val, 360.);
             if (val < 0)	val += 360;
-            if (val >= 360)	val -= 360;
 
-            std::wstring str = std::to_wstring((int)(val * 60000));
+            std::wstring str = std::to_wstring((int)(val * 60000) % 21600000);
             brush_writer.WriteString(str);
         }
         brush_writer.WriteString(L"\"");
@@ -631,7 +671,7 @@ void PPT::CShapeWriter::WriteImageInfo()
         bool bExternal = false;
         std::wstring strRid = m_pRels->WriteAudio(pAudioElement->m_strAudioFileName, bExternal);
 
-        if (pAudioElement->m_strAudioFileName.find(L".wav") != std::wstring::npos)
+        if (!bExternal && pAudioElement->m_strAudioFileName.find(L".wav") != std::wstring::npos)
             m_oWriter.WriteString(L"<a:wavAudioFile r:embed=\"" + strRid + L"\"/>");
         else
             m_oWriter.WriteString(L"<a:audioFile r:link=\"" + strRid + L"\"/>"); // todo for anim connection

@@ -1321,7 +1321,8 @@ int ChartSheetSubstream::serialize_dLbls (std::wostream & _stream, int id, CRT *
 					}
 				}
 			}
-			CP_XML_NODE(L"c:showLegendKey") {CP_XML_ATTR(L"val", text->fShowKey);}
+			if(!att_label)
+				CP_XML_NODE(L"c:showLegendKey") {CP_XML_ATTR(L"val", text->fShowKey);}
 			need_add_labels = true;
 		}
 

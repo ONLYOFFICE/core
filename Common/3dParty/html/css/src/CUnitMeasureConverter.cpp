@@ -3,10 +3,18 @@
 #include <sstream>
 #include <algorithm>
 #include <vector>
-#include <regex>
+#include <cwctype>
 
 namespace NSCSS
 {
+	static size_t SkipDigits(const std::wstring& wsValue, size_t unPos)
+	{
+		while (unPos < wsValue.length() && iswdigit(wsValue[unPos]))
+			++unPos;
+
+		return unPos;
+	}
+
 	CUnitMeasureConverter::CUnitMeasureConverter()
 	{}
 
@@ -162,37 +170,53 @@ namespace NSCSS
 		if (wsValue.empty() || wsValue.end() == std::find_if(wsValue.begin(), wsValue.end(), [](wchar_t wChar) { return iswdigit(wChar);}))
 			return false;
 
-		std::wregex oRegex(LR"((-?\.\d+|-?\d+(\.\d+)?)\s*(px|pt|cm|mm|in|pc|%|em|rem|tw)?)");
-		std::wsmatch oMatches;
+		const size_t unLength = wsValue.length();
 
-		if(!std::regex_search(wsValue, oMatches, oRegex))
+		size_t unStart = 0, unEnd = 0;
+
+		for (; unStart < unLength; ++unStart)
+		{
+			const size_t unPos = (L'-' == wsValue[unStart]) ? unStart + 1 : unStart;
+
+			if (unPos + 1 < unLength && L'.' == wsValue[unPos] && iswdigit(wsValue[unPos + 1]))
+			{
+				unEnd = SkipDigits(wsValue, unPos + 2);
+				break;
+			}
+
+			if (unPos < unLength && iswdigit(wsValue[unPos]))
+			{
+				unEnd = SkipDigits(wsValue, unPos + 1);
+
+				if (unEnd + 1 < unLength && L'.' == wsValue[unEnd] && iswdigit(wsValue[unEnd + 1]))
+					unEnd = SkipDigits(wsValue, unEnd + 2);
+
+				break;
+			}
+		}
+
+		if (unStart == unLength)
 			return false;
 
-		dValue = stod(oMatches[1]);
+		dValue = std::stod(wsValue.substr(unStart, unEnd - unStart));
 
-		if (L"px" == oMatches[3])
-			enUnitMeasure = Pixel;
-		else if (L"pt" == oMatches[3])
-			enUnitMeasure = Point;
-		else if (L"cm" == oMatches[3])
-			enUnitMeasure = Cantimeter;
-		else if (L"mm" == oMatches[3])
-			enUnitMeasure = Millimeter;
-		else if (L"in" == oMatches[3])
-			enUnitMeasure = Inch;
-		else if (L"pc" == oMatches[3])
-			enUnitMeasure = Peak;
-		else if (L"%" == oMatches[3])
-			enUnitMeasure = Percent;
-		else if (L"em" == oMatches[3])
-			enUnitMeasure = Em;
-		else if (L"rem" == oMatches[3])
-			enUnitMeasure = Rem;
-		else if (L"tw" == oMatches[3])
-			enUnitMeasure = Twips;
-		else
-			enUnitMeasure = None;
-		
+		while (unEnd < unLength && iswspace(wsValue[unEnd]))
+			++unEnd;
+
+		static const std::vector<std::pair<std::wstring, UnitMeasure>> arUnits{{L"px", Pixel}, {L"pt", Point},   {L"cm", Cantimeter}, {L"mm", Millimeter}, {L"in", Inch},
+		                                                                       {L"pc", Peak},  {L"%", Percent}, {L"em", Em},         {L"rem", Rem},        {L"tw", Twips}};
+
+		enUnitMeasure = None;
+
+		for (const std::pair<std::wstring, UnitMeasure>& oUnit : arUnits)
+		{
+			if (0 == wsValue.compare(unEnd, oUnit.first.length(), oUnit.first))
+			{
+				enUnitMeasure = oUnit.second;
+				break;
+			}
+		}
+
 		return true;
 	}
 }

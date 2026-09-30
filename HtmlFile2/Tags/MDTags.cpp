@@ -116,7 +116,11 @@ bool CPreformattedMDTag::Open(const std::vector<NSCSS::CNode>& arSelectors)
 	if (!Valid())
 		return false;
 
-	m_pWriter->WriteOpenSpecialString(L"```");
+	if (m_pWriter->InTable())
+		m_pWriter->WriteBreakLine();
+	else
+		m_pWriter->WriteOpenSpecialString(L"```");
+
 	m_pWriter->EnteredPreformatted();
 
 	return true;
@@ -127,24 +131,31 @@ void CPreformattedMDTag::Close(const std::vector<NSCSS::CNode>& arSelectors)
 	if (!Valid())
 		return;
 
+	if (m_pWriter->InTable())
+	{
+		m_pWriter->OutPreformatted();
+		m_pWriter->WriteBreakLine();
+		return;
+	}
+
 	bool bNeedBreakLine{false};
 
 	for (std::vector<NSCSS::CNode>::const_reverse_iterator itElement{arSelectors.crbegin()}; itElement < arSelectors.crend(); ++itElement)
 	{
-		if (L"pre" == itElement->m_wsName)
+		if (L"pre" == itElement->m_wsName || L"xmp" == itElement->m_wsName)
 		{
 			bNeedBreakLine = true;
 			break;
 		}
 	}
 
-	if (bNeedBreakLine && !m_pWriter->InTable())
+	if (bNeedBreakLine)
 		m_pWriter->WriteBreakLine();
 
 	m_pWriter->WriteCloseSpecialString(L"```");
 	m_pWriter->OutPreformatted();
 
-	if (bNeedBreakLine && !m_pWriter->InTable())
+	if (bNeedBreakLine)
 		m_pWriter->WriteBreakLine(false);
 }
 
@@ -661,15 +672,13 @@ bool CCodeMDTag::Open(const std::vector<NSCSS::CNode>& arSelectors)
 
 	m_pWriter->EnteredCode();
 
-	if (m_pWriter->InPreformatted())
+	if (m_pWriter->InPreformatted() && !m_pWriter->InTable())
 	{
 		if (!arSelectors.back().m_wsClass.empty() && arSelectors.back().m_wsClass.size() >= 9 &&
 		    0 == arSelectors.back().m_wsClass.compare(0, 9, L"language-"))
 			m_pWriter->WriteString(arSelectors.back().m_wsClass.substr(9, arSelectors.back().m_wsClass.size() - 9));
 		m_pWriter->WriteBreakLine(false);
 	}
-	else
-		m_pWriter->WriteOpenSpecialString(L"`");
 
 	return true;
 }
@@ -678,9 +687,6 @@ void CCodeMDTag::Close(const std::vector<NSCSS::CNode>& arSelectors)
 {
 	if (!Valid())
 		return;
-
-	if (!m_pWriter->InPreformatted())
-		m_pWriter->WriteCloseSpecialString(L"`");
 
 	m_pWriter->OutCode();
 }
@@ -940,12 +946,7 @@ bool CMarkdownTable::Convert(XmlUtils::CXmlLiteReader& oReader, std::vector<NSCS
 	pWriter->EnteredTable();
 
 	if (pWriter->InCode())
-	{
-		if (!pWriter->InPreformatted())
-			pWriter->WriteCloseSpecialString(L"`");
-
 		pWriter->OutCode();
-	}
 
 	if (pWriter->InPreformatted())
 	{

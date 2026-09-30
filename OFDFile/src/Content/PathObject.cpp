@@ -209,7 +209,10 @@ void CPathObject::Draw(IRenderer* pRenderer, const CCommonData& oCommonData, EPa
 	}
 
 	const CRes* pPublicRes{oCommonData.GetPublicRes()};
-	std::vector<const CDrawParam*> arDrawParams{pPublicRes->GetDrawParams()};
+	std::vector<const CDrawParam*> arDrawParams;
+
+	if (nullptr != pPublicRes)
+		arDrawParams = pPublicRes->GetDrawParams();
 
 	if (m_bFill)
 	{

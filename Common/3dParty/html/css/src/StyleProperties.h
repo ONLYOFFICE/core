@@ -399,6 +399,7 @@ namespace NSCSS
 
 		bool SetValue(const std::wstring& wsValue, unsigned int unLevel, bool bHardMode) override;
 		void SetMapping(const std::map<std::wstring, int>& mMap, int nDefaulvalue = -1);
+		void SetMapping(const std::map<std::wstring, int>&&, int = -1) = delete;
 
 		int ToInt() const override;
 
@@ -408,7 +409,7 @@ namespace NSCSS
 		std::wstring ToWString() const override;
 
 		int m_nDefaultValue;
-		std::map<std::wstring, int> m_mMap;
+		const std::map<std::wstring, int>* m_pMap;
 	};
 
 	// PROPERTIES

@@ -42,6 +42,7 @@
 #include "IWriter.h"
 
 #include <stack>
+#include <set>
 
 namespace HTML
 {
@@ -88,6 +89,8 @@ class COOXMLWriter : public IWriter
 	{
 		XmlString m_oXml;     // custom.xml
 		UINT m_unIds;
+		std::set<std::wstring> m_arNames;
+		std::set<std::pair<std::wstring, std::wstring>> m_arMetadata;
 	} m_oCustom;
 
 	NSCSS::CDocumentStyle m_oXmlStyle;      // OOXML style
@@ -95,6 +98,14 @@ class COOXMLWriter : public IWriter
 
 	NSCSS::CCssCalculator *m_pStylesCalculator;
 	THTMLParameters *m_pHTMLParameters;
+
+	struct TTooltipField
+	{
+		std::wstring m_wsBookmark;
+		std::wstring m_wsTooltip;
+		bool m_bInHyperlink;
+		bool m_bOpen;
+	};
 
 	struct TState
 	{
@@ -110,6 +121,8 @@ class COOXMLWriter : public IWriter
 		std::wstring m_wsFootnote;
 		bool m_bIsFootnote;
 		bool m_bISCrossHyperlink;
+
+		std::vector<TTooltipField> m_arTooltipFields;
 
 		XmlString *m_pCurrentDocument; //Current write location
 		bool m_bRemoveCurrentDocument;
@@ -151,6 +164,7 @@ class COOXMLWriter : public IWriter
 	std::map<std::wstring, UINT>         m_mBookmarks; // Bookmarks
 	using anchors_map = std::map<std::wstring, std::wstring>;
 	anchors_map                          m_mAnchors; // Map of anchors with individual ids
+	std::set<std::wstring>               m_arFiles;
 public:
 	COOXMLWriter(THTMLParameters* pHTMLParameters = nullptr, NSCSS::CCssCalculator* pCSSCalculator = nullptr);
 
@@ -168,6 +182,12 @@ public:
 	void CloseR();
 	void CloseT();
 	void CloseHyperlink();
+	void CloseClearedHyperlink();
+
+	void OpenTooltipField(const std::wstring& wsTooltip);
+	void CloseTooltipField();
+	void BeginTooltipFields(bool bInHyperlink);
+	void EndTooltipFields(bool bInHyperlink);
 
 	void PageBreak() override;
 
@@ -204,6 +224,10 @@ public:
 	std::wstring AddLiteBookmark();
 	std::wstring WriteBookmark(const std::wstring& wsId);
 	std::wstring AddAnchor(const std::wstring& wsAnchorValue);
+
+	void AddFile(const std::wstring& wsPath);
+	void WriteFileBookmark(const std::wstring& wsPath);
+	std::wstring FindFile(const std::wstring& wsRef) const;
 
 	void WriteImage(const TImageData& oImageData, const std::wstring& wsId);
 	void WriteAlternativeImage(const std::wstring& wsAlt, const std::wstring& wsSrc, const TImageData& oImageData);

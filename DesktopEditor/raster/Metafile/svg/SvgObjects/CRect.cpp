@@ -81,7 +81,7 @@ namespace SVG
 	{
 		Aggplus::CMatrix oOldTransform;
 
-		if (!StartPath(pRenderer, pFile, oOldTransform, oMode))
+		if (!StartPath(pRenderer, pFile, oOldTransform, oMode, true))
 			return false;
 
 		TBounds oBounds = (NULL != m_pParent && IsRelativeValue(m_oRect)) ? m_pParent->GetBounds() : TBounds{0., 0., 0., 0.};
@@ -124,7 +124,7 @@ namespace SVG
 			pRenderer->PathCommandClose();
 		}
 
-		EndPath(pRenderer, pFile, oOldTransform, oMode, pOtherStyles, pContexObject);
+		EndPath(pRenderer, pFile, oOldTransform, oMode, pOtherStyles, pContexObject, true);
 
 		return true;
 	}

@@ -39,13 +39,6 @@
 #include <algorithm>
 #include <numeric>
 #include <cmath>
-#include <stdint.h>
-
-#ifndef MININT32
-#define MAXUINT32   ((uint32_t)~((uint32_t)0))
-#define MAXINT32    ((int32_t)(MAXUINT32 >> 1))
-#define MININT32    ((int32_t)~MAXINT32)
-#endif
 
 namespace MetaFile
 {
@@ -1324,6 +1317,79 @@ namespace MetaFile
 		return wsStyleId;
 	}
 
+	static std::wstring CreateGradientStops(const IBrush* pBrush)
+	{
+		std::vector<long> arColors;
+		std::vector<double> arPositions;
+		pBrush->GetGradientColors(arColors, arPositions);
+
+		std::wstring wsStops;
+
+		for (unsigned int unIndex = 0; unIndex < arColors.size(); ++unIndex)
+		{
+			const unsigned int unColor = static_cast<unsigned int>(arColors[unIndex]);
+			const BYTE uchAlpha = unColor >> 24;
+
+			wsStops += L"<stop offset=\"" + ConvertToWString(arPositions[unIndex], 4) + L"\" stop-color=\"rgb(" + INTCOLOR_TO_RGB(unColor) + L")\"";
+
+			if (255 != uchAlpha)
+				wsStops += L" stop-opacity=\"" + ConvertToWString((double)uchAlpha / 255., 3) + L'"';
+
+			wsStops += L"/>";
+		}
+
+		return wsStops;
+	}
+
+	static std::wstring CreateRadialGradientGeometry(const IBrush* pBrush)
+	{
+		const CEmfPlusBrush* pEmfPlusBrush = dynamic_cast<const CEmfPlusBrush*>(pBrush);
+
+		if (NULL == pEmfPlusBrush)
+			return std::wstring();
+
+		double dLeft, dTop, dWidth, dHeight;
+		pEmfPlusBrush->GetBounds(dLeft, dTop, dWidth, dHeight);
+
+		if (dWidth <= 0. || dHeight <= 0.)
+			return std::wstring();
+
+		double dCenterX, dCenterY;
+		pEmfPlusBrush->GetCenterPoint(dCenterX, dCenterY);
+
+		TXForm oTransform((std::max)(dCenterX - dLeft, dLeft + dWidth - dCenterX), 0., 0., (std::max)(dCenterY - dTop, dTop + dHeight - dCenterY), dCenterX, dCenterY);
+		double dFocusX = 0., dFocusY = 0.;
+
+		if (pEmfPlusBrush->bEllipticalBoundary)
+		{
+			const double dRadiusX = dWidth  / 2.;
+			const double dRadiusY = dHeight / 2.;
+			const double dOffsetX = (dCenterX - dLeft - dRadiusX) / dRadiusX;
+			const double dOffsetY = (dCenterY - dTop  - dRadiusY) / dRadiusY;
+
+			if (dOffsetX * dOffsetX + dOffsetY * dOffsetY < 1.)
+			{
+				oTransform = TXForm(dRadiusX, 0., 0., dRadiusY, dLeft + dRadiusX, dTop + dRadiusY);
+				dFocusX = dOffsetX;
+				dFocusY = dOffsetY;
+			}
+		}
+
+		oTransform.Multiply(pEmfPlusBrush->oTransform, MWT_RIGHTMULTIPLY);
+
+		std::wstring wsGeometry{L" gradientUnits=\"userSpaceOnUse\" cx=\"0\" cy=\"0\" r=\"1\""};
+
+		if (0. != dFocusX || 0. != dFocusY)
+			wsGeometry += L" fx=\"" + ConvertToWString(dFocusX) + L"\" fy=\"" + ConvertToWString(dFocusY) + L'"';
+
+		return wsGeometry + L" gradientTransform=\"matrix(" + ConvertToWString(oTransform.M11) + L',' +
+		                                                     ConvertToWString(oTransform.M12) + L',' +
+		                                                     ConvertToWString(oTransform.M21) + L',' +
+		                                                     ConvertToWString(oTransform.M22) + L',' +
+		                                                     ConvertToWString(oTransform.Dx)  + L',' +
+		                                                     ConvertToWString(oTransform.Dy)  + L")\"";
+	}
+
 	std::wstring CInterpretatorSvgBase::CreateGradient(const IBrush* pBrush)
 	{
 		if (pBrush == NULL)
@@ -1337,17 +1403,7 @@ namespace MetaFile
 		{
 			wsStyleId = L"LINEARGRADIENT_" + ConvertToWString(++m_unNumberDefs, 0);
 
-			m_wsDefs += L"<linearGradient id=\"" + wsStyleId + L"\">";
-
-			std::vector<long> arColors;
-			std::vector<double> arPositions;
-			pBrush->GetGradientColors(arColors, arPositions);
-
-			for (unsigned int unIndex = 0; unIndex < arColors.size(); ++unIndex)
-				m_wsDefs += L"<stop offset=\"" + ConvertToWString(arPositions[unIndex], 2) +
-				            L"\" stop-color=\"" + CalculateColor(arColors[unIndex]) +  L"\"/>";
-
-			m_wsDefs += L"</linearGradient>";
+			m_wsDefs += L"<linearGradient id=\"" + wsStyleId + L"\">" + CreateGradientStops(pBrush) + L"</linearGradient>";
 
 			return wsStyleId;
 		}
@@ -1356,31 +1412,7 @@ namespace MetaFile
 		{
 			wsStyleId = L"RADIALGRADIENT_" + ConvertToWString(++m_unNumberDefs, 0);
 
-			double dX = MININT32, dY = MININT32;
-
-			pBrush->GetCenterPoint(dX, dY);
-
-			std::wstring wsIndlude;
-
-			if (dX != MININT32 || dY != MININT32)
-			{
-				double dLeft, dTop, dWidth, dHeight;
-
-				pBrush->GetBounds(dLeft, dTop, dWidth, dHeight);
-
-				if (0 != dWidth && 0 != dHeight)
-				{
-					dX = ((dX - dLeft) / dWidth);
-					dY = ((dY - dTop)  / dHeight);
-
-					wsIndlude = L" cx=\"" + ConvertToWString(dX) + L"\" cy=\"" + ConvertToWString(dY) + L"\" r=\"1\"";
-				}
-			}
-
-			m_wsDefs += L"<radialGradient id=\"" + wsStyleId + L"\"" + wsIndlude + L">" +
-			            L"<stop offset=\"0%\" stop-color=\""   + CalculateColor(pBrush->GetColor(),  pBrush->GetAlpha() ) + L"\"/>" +
-			            L"<stop offset=\"100%\" stop-color=\"" + CalculateColor(pBrush->GetColor2(), pBrush->GetAlpha2()) + L"\"/>" +
-			            L"</radialGradient>";
+			m_wsDefs += L"<radialGradient id=\"" + wsStyleId + L"\"" + CreateRadialGradientGeometry(pBrush) + L">" + CreateGradientStops(pBrush) + L"</radialGradient>";
 
 			return wsStyleId;
 		}

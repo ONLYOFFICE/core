@@ -302,6 +302,9 @@ void CTextObject::Draw(IRenderer* pRenderer, const CCommonData& oCommonData, EPa
 
 	const CRes* pPublicRes{oCommonData.GetPublicRes()};
 
+	if (nullptr == pPublicRes)
+		return;
+
 	const CFont* pFont{pPublicRes->GetFont(m_unFontID)};
 
 	if (nullptr == pFont)

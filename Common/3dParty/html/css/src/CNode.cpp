@@ -59,7 +59,7 @@ namespace NSCSS
 	}
 
 	#ifdef CSS_CALCULATOR_WITH_XHTML
-	void CNode::SetCompiledStyle(CCompiledStyle* pCompiledStyle)
+	void CNode::SetCompiledStyle(const CCompiledStyle* pCompiledStyle)
 	{
 		if (nullptr != m_pCompiledStyle)
 			delete m_pCompiledStyle;

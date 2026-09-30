@@ -1534,7 +1534,7 @@ std::wstring StandardizeHeaderId(const std::wstring& header)
 	return finalResult;
 }
 
-bool ElementInHeader(const std::vector<NSCSS::CNode> arSelsectors)
+bool ElementInHeader(const std::vector<NSCSS::CNode>& arSelsectors)
 {
 	for (const NSCSS::CNode& oNode : arSelsectors)
 	{

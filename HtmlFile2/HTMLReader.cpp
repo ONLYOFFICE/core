@@ -487,12 +487,25 @@ HRESULT CHTMLReader::InitAndConvert2OOXML(const std::vector<std::wstring>& arPat
 
 	m_wsDstDirectory = wsDirectory;
 
+	COOXMLWriter *pWriter{dynamic_cast<COOXMLWriter*>(m_pWriter)};
+
+	if (nullptr == pWriter)
+		return S_FALSE;
+
+	if (arPaths.size() > 1)
+	{
+		for (const std::wstring& wsPath : arPaths)
+			pWriter->AddFile(wsPath);
+	}
+
 	HRESULT lResult{S_FALSE};
 
 	m_pWriter->Begin(wsDirectory);
 
 	for (const std::wstring& wsPath : arPaths)
 	{
+		pWriter->WriteFileBookmark(wsPath);
+
 		if (Convert(wsPath, Convertation))
 		{
 			lResult = S_OK;
@@ -538,6 +551,9 @@ bool CHTMLReader::Convert(const std::wstring& wsPath, Convert_Func Convertation)
 		m_wsTempDirectory = NSDirectory::CreateDirectoryWithUniqueName(NSDirectory::GetTempPath());
 
 	m_wsSrcDirectory = NSSystemPath::GetDirectoryName(wsPath);
+
+	m_oCSSCalculator.ClearAllowedStyleFiles();
+	m_oCSSCalculator.ClearEmbeddedStyles();
 
 	oReader.MoveToStart();
 	oReader.ReadNextNode();
@@ -1148,7 +1164,8 @@ inline bool TagIsUnprocessed(const std::wstring& wsTagName)
 
 inline void GetSubClass(XmlUtils::CXmlLiteReader& oReader, std::vector<NSCSS::CNode>& arSelectors, NSCSS::CCssCalculator& oCSSCalculator)
 {
-	NSCSS::CNode oNode;
+	arSelectors.emplace_back();
+	NSCSS::CNode& oNode{arSelectors.back()};
 
 	oNode.m_wsName = oReader.GetName();
 	// Style by attribute
@@ -1174,7 +1191,6 @@ inline void GetSubClass(XmlUtils::CXmlLiteReader& oReader, std::vector<NSCSS::CN
 	}
 
 	oReader.MoveToElement();
-	arSelectors.push_back(oNode);
 
 	oCSSCalculator.CalculateCompiledStyle(arSelectors);
 }

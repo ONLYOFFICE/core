@@ -774,11 +774,17 @@ namespace MetaFile
 		    oNewRect.Top  < 0 || oNewRect.Bottom < 0)
 			return NULL;
 
-		if (unHeight < static_cast<unsigned int>(std::abs(oNewRect.Bottom - oNewRect.Top)))
-			oNewRect.Bottom = oNewRect.Top + unHeight;
+		if (oNewRect.Left   > static_cast<int>(unWidth))
+			oNewRect.Left   = static_cast<int>(unWidth);
 
-		if (unWidth < static_cast<unsigned int>(std::abs(oNewRect.Right - oNewRect.Left)))
-			oNewRect.Right = oNewRect.Left + unWidth;
+		if (oNewRect.Right  > static_cast<int>(unWidth))
+			oNewRect.Right  = static_cast<int>(unWidth);
+
+		if (oNewRect.Top    > static_cast<int>(unHeight))
+			oNewRect.Top    = static_cast<int>(unHeight);
+
+		if (oNewRect.Bottom > static_cast<int>(unHeight))
+			oNewRect.Bottom = static_cast<int>(unHeight);
 
 		if (unHeight == (oNewRect.Bottom - oNewRect.Top) &&
 		    unWidth  == (oNewRect.Right  - oNewRect.Left))

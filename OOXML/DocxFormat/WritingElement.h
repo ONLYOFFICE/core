@@ -595,7 +595,35 @@ namespace OOX
 		et_ds_customXmlProps,
 		et_ds_schemaRefs, // <ds:shemeRefs>
 		et_ds_schemaRef, // <ds:shemeRef>
-		
+
+		et_inkml_ink, // <inkml:ink>
+		et_inkml_definitions,
+		et_inkml_context,
+		et_inkml_trace,
+		et_inkml_traceGroup,
+		et_inkml_traceView,
+		et_inkml_traceFormat,
+		et_inkml_channel,
+		et_inkml_intermittentChannels,
+		et_inkml_inkSource,
+		et_inkml_sampleRate,
+		et_inkml_latency,
+		et_inkml_activeArea,
+		et_inkml_srcProperty,
+		et_inkml_channelProperties,
+		et_inkml_channelProperty,
+		et_inkml_brush,
+		et_inkml_brushProperty,
+		et_inkml_timestamp,
+		et_inkml_canvas,
+		et_inkml_canvasTransform,
+		et_inkml_mapping,
+		et_inkml_bind,
+		et_inkml_table,
+		et_inkml_matrix,
+		et_inkml_annotation,
+		et_inkml_annotationXML,
+
 		et_m_acc, //m:acc
 		et_m_accPr, //m:accPr
 		et_m_aln, //m:aln

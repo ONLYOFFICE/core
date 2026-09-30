@@ -129,6 +129,7 @@
     <ClInclude Include="..\..\..\DocxFormat\ContentTypes.h" />
     <ClInclude Include="..\..\..\DocxFormat\Core.h" />
     <ClInclude Include="..\..\..\DocxFormat\CustomXml.h" />
+    <ClInclude Include="..\..\..\DocxFormat\InkML.h" />
     <ClInclude Include="..\..\..\DocxFormat\Document.h" />
     <ClInclude Include="..\..\..\DocxFormat\Docx.h" />
     <ClInclude Include="..\..\..\DocxFormat\DocxFlat.h" />
@@ -826,6 +827,7 @@
     <ClCompile Include="..\..\..\DocxFormat\Bibliography.cpp" />
     <ClCompile Include="..\..\..\DocxFormat\ContentTypes.cpp" />
     <ClCompile Include="..\..\..\DocxFormat\CustomXml.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\InkML.cpp" />
     <ClCompile Include="..\..\..\DocxFormat\File.cpp" />
     <ClCompile Include="..\..\..\DocxFormat\FileType.cpp" />
     <ClCompile Include="..\..\..\DocxFormat\Font.cpp" />

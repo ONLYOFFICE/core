@@ -133,6 +133,7 @@ SOURCES += \
 	../../../DocxFormat/Bibliography.cpp \
 	../../../DocxFormat/ContentTypes.cpp \
 	../../../DocxFormat/CustomXml.cpp \
+	../../../DocxFormat/InkML.cpp \
 	../../../DocxFormat/File.cpp \
 	../../../DocxFormat/FileType.cpp \
 	../../../DocxFormat/Font.cpp \
@@ -300,6 +301,7 @@ HEADERS += \
 	../../../DocxFormat/ContentTypes.h \
 	../../../DocxFormat/Core.h \
 	../../../DocxFormat/CustomXml.h \
+	../../../DocxFormat/InkML.h \
 	../../../DocxFormat/Document.h \
 	../../../DocxFormat/Docx.h \
 	../../../DocxFormat/DocxFlat.h \

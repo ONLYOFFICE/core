@@ -79,6 +79,7 @@
 #include "../../../DocxFormat/Bibliography.cpp"
 #include "../../../DocxFormat/ContentTypes.cpp"
 #include "../../../DocxFormat/CustomXml.cpp"
+#include "../../../DocxFormat/InkML.cpp"
 #include "../../../DocxFormat/File.cpp"
 #include "../../../DocxFormat/FileType.cpp"
 #include "../../../DocxFormat/Font.cpp"

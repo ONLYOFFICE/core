@@ -70,11 +70,9 @@ namespace OOX
 
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-
 		public:
-
-			nullable<SimpleTypes::CDisplacedByCustomXml>	m_oDisplacedByCustomXml;
-			nullable<SimpleTypes::CDecimalNumber>			m_oId;
+			nullable<SimpleTypes::CDisplacedByCustomXml> m_oDisplacedByCustomXml;
+			nullable<SimpleTypes::CDecimalNumber> m_oId;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -93,14 +91,11 @@ namespace OOX
 
 			virtual std::wstring toXML() const;
 			virtual EElementType getType() const;
-
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-
 		public:
-
-			nullable<SimpleTypes::CDisplacedByCustomXml>	m_oDisplacedByCustomXml;
-			nullable<SimpleTypes::CDecimalNumber>			m_oId;
+			nullable<SimpleTypes::CDisplacedByCustomXml> m_oDisplacedByCustomXml;
+			nullable<SimpleTypes::CDecimalNumber> m_oId;
 		};
 	
 	// Revisisons 17.13.5
@@ -121,10 +116,8 @@ namespace OOX
 
 			virtual std::wstring toXML() const;
 			virtual EElementType getType() const;
-
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-
 		public:
 			nullable<SimpleTypes::CDecimalNumber> m_oId;
 		};
@@ -173,10 +166,8 @@ namespace OOX
 
 			virtual std::wstring toXML() const;
 			virtual EElementType getType() const;
-
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-
 		public:
 			nullable<SimpleTypes::CDecimalNumber> m_oId;
 		};

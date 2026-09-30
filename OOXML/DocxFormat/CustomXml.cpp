@@ -35,6 +35,9 @@
 
 #include "CustomXml.h"
 #include "Document.h"
+#include "InkML.h"
+#include "../Binary/Presentation/BinaryFileReaderWriter.h"
+#include "../Binary/Presentation/XmlWriter.h"
 
 namespace OOX
 {
@@ -79,28 +82,28 @@ namespace OOX
 		pWriter->EndRecord();
 	}
 	void CCustomXMLProps::CShemaRef::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				BYTE type = pReader->GetUChar();
+	{
+		BYTE type = pReader->GetUChar();
 
-				LONG _rec_start = pReader->GetPos();
-				LONG _end_rec = _rec_start + pReader->GetRecordSize() + 4;
+		LONG _rec_start = pReader->GetPos();
+		LONG _end_rec = _rec_start + pReader->GetRecordSize() + 4;
 
-				pReader->Skip(1); // start attributes
+		pReader->Skip(1); // start attributes
 
-				while (true)
-				{
-					BYTE _at = pReader->GetUChar_TypeNode();
+		while (true)
+		{
+			BYTE _at = pReader->GetUChar_TypeNode();
 
-					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
-						break;
+			if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+				break;
 
-					if (0 == _at)
-						m_sUri = pReader->GetString2();
-					else
-						break;
-				}
-				pReader->Seek(_end_rec);
-			}
+			if (0 == _at)
+				m_sUri = pReader->GetString2();
+			else
+				break;
+		}
+		pReader->Seek(_end_rec);
+	}
 
 	//----------------------------------------------------------------------
 
@@ -153,7 +156,7 @@ namespace OOX
 				return OOX::et_ds_schemaRefs;
 			}
 
-	//----------------------------------------------------------------------
+//----------------------------------------------------------------------
 
 	CCustomXMLProps::CCustomXMLProps(OOX::Document *pMain) : OOX::FileGlobalEnumerated(pMain)
 	{
@@ -172,7 +175,7 @@ namespace OOX
 	}
 	void CCustomXMLProps::fromXML(XmlUtils::CXmlNode& oNode)
 	{
-		if (L"datastoreItem" == XmlUtils::GetNameNoNS(oNode.GetName()));
+		if (L"datastoreItem" == XmlUtils::GetNameNoNS(oNode.GetName()))
 		{
 			std::wstring id = oNode.ReadAttribute(L"ds:itemID");
 			if (false == id.empty())
@@ -409,26 +412,144 @@ namespace OOX
 
 		return (NULL == dynamic_cast<OOX::CInk*>(pFile.GetPointer()));
 	}
+//-------------------------------------------------------------------------------------------------------------------------------------
 	CInk::CInk(OOX::Document* pMain, bool bDocument) : CCustomXML(pMain, bDocument)
 	{
 	}
-	CInk::CInk(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : CCustomXML(pMain, oRootPath, oPath)
+	CInk::CInk(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : CCustomXML(pMain, (NULL != dynamic_cast<OOX::CDocument*>(pMain)))
 	{
+		read(oRootPath, oPath);
 	}
 	CInk::~CInk()
 	{
 	}
+	void CInk::read(const CPath& oPath)
+	{
+		CPath oRootPath;
+		read(oRootPath, oPath);
+	}
+	void CInk::read(const CPath& oRootPath, const CPath& oFilePath)
+	{
+		IFileContainer::Read(oRootPath, oFilePath);
+
+		XmlUtils::CXmlLiteReader oReader;
+
+		if (oReader.FromFile(oFilePath.GetPath()) && oReader.ReadNextNode())
+		{
+			if (L"ink" == XmlUtils::GetNameNoNS(oReader.GetName()))
+			{
+				fromXML(oReader);
+				return;
+			}
+		}
+		NSFile::CFileBinary::ReadAllTextUtf8A(oFilePath.GetPath(), m_sXmlA); // not InkML - as is
+	}
 	void CInk::write(const CPath& oFilePath, const CPath& oDirectory, CContentTypes& oContent) const
 	{
-		NSFile::CFileBinary oFile;
-		if (true == oFile.CreateFileW(oFilePath.GetPath()))
+		if (false == m_sXmlA.empty())
 		{
-			if (false == m_sXmlA.empty())
+			NSFile::CFileBinary oFile;
+			if (true == oFile.CreateFileW(oFilePath.GetPath()))
+			{
 				oFile.WriteFile((BYTE*)m_sXmlA.c_str(), m_sXmlA.length());
-			oFile.CloseFile();
+				oFile.CloseFile();
+			}
+		}
+		else
+		{
+			NSBinPptxRW::CXmlWriter oXmlWriter;
+			oXmlWriter.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
+
+			toXmlWriter(&oXmlWriter);
+
+			NSFile::CFileBinary::SaveToFile(oFilePath.GetPath(), oXmlWriter.GetXmlString());
 		}
 		oContent.Registration(type().OverrideType(), oDirectory, oFilePath.GetFilename());
 		IFileContainer::Write(oFilePath, oDirectory, oContent);
+	}
+	EElementType CInk::getType() const
+	{
+		return et_inkml_ink;
+	}
+	void CInk::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+	{
+		WritingElement_ReadAttributes_StartChar_No_NS(oReader)
+			WritingElement_ReadAttributes_Read_ifChar(oReader, "documentID", m_sDocumentID)
+		WritingElement_ReadAttributes_EndChar_No_NS(oReader)
+	}
+	void CInk::fromXML(XmlUtils::CXmlLiteReader& oReader)
+	{
+		ReadAttributes(oReader);
+
+		if (oReader.IsEmptyNode())
+			return;
+
+		int nParentDepth = oReader.GetDepth();
+		while (oReader.ReadNextSiblingNode(nParentDepth))
+		{
+			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+			if (L"definitions" == sName)
+			{
+				if (m_oInkDefinitions.IsInit())
+					m_oInkDefinitions->fromXML(oReader); // several definitions - merge
+				else
+					m_oInkDefinitions = oReader;
+				continue;
+			}
+			WritingElement* pItem = CreateInkElement(sName);
+			if (pItem)
+			{
+				pItem->fromXML(oReader);
+				m_arrItems.push_back(pItem);
+			}
+		}
+	}
+	void CInk::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+	{
+		pWriter->StartNode(L"inkml:ink");
+		pWriter->StartAttributes();
+		pWriter->WriteAttribute(L"xmlns:inkml", L"http://www.w3.org/2003/InkML");
+		pWriter->WriteAttribute2(L"documentID", m_sDocumentID);
+		pWriter->EndAttributes();
+
+		if (m_oInkDefinitions.IsInit())
+			m_oInkDefinitions->toXmlWriter(pWriter);
+
+		for (size_t i = 0; i < m_arrItems.size(); ++i)
+			m_arrItems[i]->toXmlWriter(pWriter);
+
+		pWriter->WriteNodeEnd(L"inkml:ink");
+	}
+	void CInk::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter)
+	{
+		pWriter->StartRecord(NSBinPptxRW::NSMainTables::Customs);
+
+		if (false == m_sXmlA.empty())
+		{// not InkML - as is
+			pWriter->StartRecord(2);
+			pWriter->WriteStringA(m_sXmlA);
+			pWriter->EndRecord();
+		}
+		else
+		{
+			pWriter->StartRecord(3);
+
+			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+			pWriter->WriteString2(0, m_sDocumentID);
+			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+
+			pWriter->WriteRecord2(GetInkRecordType(et_inkml_definitions), m_oInkDefinitions);
+
+			for (size_t i = 0; i < m_arrItems.size(); ++i)
+			{
+				BYTE type = GetInkRecordType(m_arrItems[i]->getType());
+				if (type != 0xff)
+					pWriter->WriteRecord2(type, m_arrItems[i]);
+			}
+			pWriter->EndRecord();
+		}
+		pWriter->EndRecord();
 	}
 	const OOX::FileType CInk::type() const
 	{
@@ -459,6 +580,46 @@ namespace OOX
 			{
 				pReader->Skip(4); // len
 				m_sXmlA = pReader->GetString2A();
+			}break;
+			case 3:
+			{
+				LONG _rec_start_ink = pReader->GetPos();
+				LONG _end_rec_ink = _rec_start_ink + pReader->GetRecordSize() + 4;
+
+				pReader->Skip(1); // start attributes
+				while (true)
+				{
+					BYTE _at_ink = pReader->GetUChar_TypeNode();
+					if (_at_ink == NSBinPptxRW::g_nodeAttributeEnd)
+						break;
+
+					if (0 == _at_ink)
+						m_sDocumentID = pReader->GetString2();
+					else
+						break;
+				}
+				while (pReader->GetPos() < _end_rec_ink)
+				{
+					BYTE _rec = pReader->GetUChar();
+
+					if (GetInkRecordType(et_inkml_definitions) == _rec)
+					{
+						m_oInkDefinitions.Init();
+						m_oInkDefinitions->fromPPTY(pReader);
+						continue;
+					}
+					WritingElement* pItem = CreateInkElement(_rec);
+					if (pItem)
+					{
+						pItem->fromPPTY(pReader);
+						m_arrItems.push_back(pItem);
+					}
+					else
+					{
+						pReader->SkipRecord();
+					}
+				}
+				pReader->Seek(_end_rec_ink);
 			}break;
 			default:
 			{

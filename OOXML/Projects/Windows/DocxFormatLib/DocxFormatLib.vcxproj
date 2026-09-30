@@ -256,6 +256,7 @@
     <ClInclude Include="..\..\..\DocxFormat\ContentTypes.h" />
     <ClInclude Include="..\..\..\DocxFormat\Core.h" />
     <ClInclude Include="..\..\..\DocxFormat\CustomXml.h" />
+    <ClInclude Include="..\..\..\DocxFormat\InkML.h" />
     <ClInclude Include="..\..\..\DocxFormat\Diagram\DiagramColors.h" />
     <ClInclude Include="..\..\..\DocxFormat\Diagram\DiagramData.h" />
     <ClInclude Include="..\..\..\DocxFormat\Diagram\DiagramDrawing.h" />
@@ -437,6 +438,7 @@
     <ClCompile Include="..\..\..\DocxFormat\ContentTypes.cpp" />
     <ClCompile Include="..\..\..\DocxFormat\Core.cpp" />
     <ClCompile Include="..\..\..\DocxFormat\CustomXml.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\InkML.cpp" />
     <ClCompile Include="..\..\..\DocxFormat\Diagram\DiagramColors.cpp" />
     <ClCompile Include="..\..\..\DocxFormat\Diagram\DiagramData.cpp" />
     <ClCompile Include="..\..\..\DocxFormat\Diagram\DiagramDrawing.cpp" />

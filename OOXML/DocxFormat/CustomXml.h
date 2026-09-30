@@ -38,6 +38,7 @@
 #include "IFileContainer.h"
 #include "WritingElement.h"
 #include "../Common/SimpleTypes_Shared.h"
+#include "InkML.h"
 
 namespace OOX
 {
@@ -143,13 +144,19 @@ namespace OOX
 		bool m_bUsed = false;
 		bool m_bDocument = false;
 	};
-	class CInk : public OOX::CCustomXML
+	//--------------------------------------------------------------------------------
+	// CInk - InkML (http://www.w3.org/2003/InkML)
+	// (definitions | context | trace | traceGroup | traceView | annotation | annotationXML)*
+	//--------------------------------------------------------------------------------
+	class CInk : public OOX::CCustomXML, public WritingElementWithChilds<>
 	{
 	public:
 		CInk(OOX::Document* pMain, bool bDocument = true);
 		CInk(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath);
 		virtual ~CInk();
 
+		virtual void read(const CPath& oPath);
+		virtual void read(const CPath& oRootPath, const CPath& oFilePath);
 		virtual void write(const CPath& oFilePath, const CPath& oDirectory, CContentTypes& oContent) const;
 
 		virtual const OOX::FileType type() const;
@@ -157,7 +164,22 @@ namespace OOX
 		virtual const CPath DefaultDirectory() const;
 		virtual const CPath DefaultFileName() const;
 
+		virtual void fromXML(XmlUtils::CXmlNode& node) {}
+		virtual std::wstring toXML() const { return L""; }
+
+		virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+		virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+
+		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+
+		virtual EElementType getType() const;
+
+		virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter);
 		virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+
+		nullable_string m_sDocumentID;
+
+		nullable<CInkDefinitions> m_oInkDefinitions;
 	};
 
 } // namespace OOX

@@ -396,6 +396,8 @@ bool ConvertFromBase64(const std::wstring& wsBase64, UINT unWidth, UINT unHeight
 			oFrame.Encode(pBuffer, nEncodeSize, 4);
 
 			bResult = ConvertBufferToBase64(pBuffer, nEncodeSize, wsResultBase64);
+
+			RELEASEARRAYOBJECTS(pBuffer);
 		}
 	}
 

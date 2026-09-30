@@ -1107,30 +1107,17 @@ namespace NSDoctRenderer
 			return _path;
 		}
 
-		// extracts the inner json (...{...}...) from the x2t-style xml params passed to SaveFile
+		// extracts the json of <m_sJsonParams> from the x2t-style xml params passed to SaveFile,
+		// wherever it stands among the other params - as x2t reads it
 		static std::wstring ExtractJsonParams(const std::wstring& sConvertionParams)
 		{
-			std::wstring sJsonParams = sConvertionParams;
-			if (!sJsonParams.empty())
-			{
-				std::wstring::size_type pos1 = sJsonParams.find(L">");
-				std::wstring::size_type pos2 = sJsonParams.find(L"</");
-				if (std::wstring::npos != pos1 && std::wstring::npos != pos2)
-				{
-					sJsonParams = sJsonParams.substr(pos1 + 1, pos2 - pos1 - 1);
+			std::wstring sJsonParams = GetXmlParamValue(sConvertionParams, L"m_sJsonParams");
 
-					// json written inside xml: both ' and &quot; stand for the json quote
-					NSStringUtils::string_replace(sJsonParams, L"\'", L"\"");
-					NSStringUtils::string_replace(sJsonParams, L"&quot;", L"\"");
+			// json written inside xml: ' stands for the json quote as well
+			NSStringUtils::string_replace(sJsonParams, L"\'", L"\"");
 
-					if (0 != sJsonParams.find(L"{"))
-						sJsonParams = L"";
-				}
-				else
-				{
-					sJsonParams = L"";
-				}
-			}
+			if (0 != sJsonParams.find(L"{"))
+				sJsonParams = L"";
 			return sJsonParams;
 		}
 

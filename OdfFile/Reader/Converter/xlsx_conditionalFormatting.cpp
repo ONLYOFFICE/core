@@ -47,6 +47,30 @@
 namespace cpdoccore {
 namespace oox {
 
+	static size_t find_args_separator(const std::wstring& args)
+	{// "1,90", "SUM([.A1];[.A2]),5"
+		int level = 0;
+		bool bQuote = false;
+		for (size_t i = 0; i < args.size(); i++)
+		{
+			wchar_t c = args[i];
+			if (c == L'"') bQuote = !bQuote;
+			else if (bQuote) continue;
+			else if (c == L'(' || c == L'[') level++;
+			else if (c == L')' || c == L']') level--;
+			else if (c == L',' && level == 0) return i;
+		}
+		return std::wstring::npos;
+	}
+	static std::wstring trim_spaces(const std::wstring& val)
+	{
+		size_t pos_start = val.find_first_not_of(L" \t");
+		if (pos_start == std::wstring::npos) return L"";
+
+		size_t pos_end = val.find_last_not_of(L" \t");
+		return val.substr(pos_start, pos_end - pos_start + 1);
+	}
+
 	struct _cfvo
 	{
 		int						type;
@@ -170,6 +194,7 @@ public:
     {
 		if (conditionalFormattings_.empty()) return;
 
+		int priority = 1;
 		CP_XML_WRITER(_Wostream)
 		{
 			for (size_t i = 0; i < conditionalFormattings_.size(); i++)
@@ -179,7 +204,6 @@ public:
 				if (c.bUsed) continue;
 				if (c.rules.size() < 1) continue;
 
-				int priority = 1;
 				CP_XML_NODE(L"conditionalFormatting")
 				{
 					CP_XML_ATTR(L"sqref", c.ref);
@@ -518,6 +542,8 @@ public:
 
     std::vector<conditionalFormatting> conditionalFormattings_;
 	std::map<std::wstring, size_t> map_conditionalFormattings_;
+
+	bool bCalcextFormats = false;
 };
 
 xlsx_conditionalFormatting_context::xlsx_conditionalFormatting_context() :
@@ -534,6 +560,14 @@ void xlsx_conditionalFormatting_context::serialize(std::wostream & _Wostream)
 void xlsx_conditionalFormatting_context::serializeEx(std::wostream& _Wostream)
 {
 	return impl_->serializeEx(_Wostream);
+}
+void xlsx_conditionalFormatting_context::set_calcext_formats(bool val)
+{
+	impl_->bCalcextFormats = val;
+}
+bool xlsx_conditionalFormatting_context::is_calcext_formats()
+{
+	return impl_->bCalcextFormats;
 }
 void xlsx_conditionalFormatting_context::start(const std::wstring& ref)
 {
@@ -622,12 +656,6 @@ void xlsx_conditionalFormatting_context::set_formula(std::wstring f)
 		}
 
 		impl_->conditionalFormattings_.back().rules.back().formula = converter.convert(val);
-	}
-	else if (0 <= (pos = f.find(L"is-between(")))
-	{
-		val = f.substr(pos + 11, f.size() - pos - 12);
-		impl_->conditionalFormattings_.back().rules.back().formula_type = L"expression";
-		impl_->conditionalFormattings_.back().rules.back().formula = converter.convert_named_expr(val);
 	}
 	else if (0 <= (pos = f.find(L"is-time(")))
 	{
@@ -765,26 +793,27 @@ void xlsx_conditionalFormatting_context::set_formula(std::wstring f)
 			val = converter.convert_named_expr( f );
 		}
 		else if (0 <= (pos = f.find(L"between")))
-		{
-			if (0 <= (pos = f.find(L"not-between")))
-			{
+		{//between(a,b), not-between(a,b) - calcext; cell-content-is-between(a,b), cell-content-is-not-between(a,b) - style:map
+			if (std::wstring::npos != f.find(L"not-between"))
 				impl_->conditionalFormattings_.back().rules.back().operator_ = L"notBetween";
-				val = f.substr(12, f.length() - 13);
-			}
 			else
-			{
 				impl_->conditionalFormattings_.back().rules.back().operator_ = L"between";
-				val = f.substr(8, f.length() - 9);
-			}
 
-			XmlUtils::replace_all(val, L"(", L"");
-			XmlUtils::replace_all(val, L")", L"");
-			if (0 <= (pos = val.find(L",")))
+			size_t pos_start = f.find(L"(", pos);
+			size_t pos_end = f.rfind(L")");
+
+			if (pos_start != std::wstring::npos && pos_end != std::wstring::npos && pos_end > pos_start)
+				val = f.substr(pos_start + 1, pos_end - pos_start - 1);
+			else
+				val.clear();
+
+			size_t pos_sep = find_args_separator(val);
+			if (pos_sep != std::wstring::npos)
 			{
-				impl_->conditionalFormattings_.back().rules.back().formula2 = converter.convert_named_expr(val.substr(pos + 1));
-				val = val.substr(0, pos);
+				impl_->conditionalFormattings_.back().rules.back().formula2 = converter.convert_named_expr(trim_spaces(val.substr(pos_sep + 1)));
+				val = val.substr(0, pos_sep);
 			}
-			val = converter.convert_named_expr(val);
+			val = converter.convert_named_expr(trim_spaces(val));
 		}
 		else if (0 <= (pos = f.find(L"!=")))
 		{

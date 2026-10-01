@@ -52,6 +52,9 @@ public:
 
 	bool start_by(const std::wstring& val, const std::wstring& ref); //return bNew
 
+	void set_calcext_formats(bool val); // present calcext:conditional-formats (style:map - duplicate)
+	bool is_calcext_formats();
+
 	void add_rule(int type);
 
 	void set_formula(std::wstring f);

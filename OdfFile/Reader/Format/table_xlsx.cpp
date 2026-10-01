@@ -459,6 +459,8 @@ void table_table::xlsx_convert(oox::xlsx_conversion_context & Context)
 		rows->table_rows_1_.remove_equals_empty();
 		rows->table_rows_2_.remove_equals_empty();
 	}
+	if (conditional_formats_)
+		Context.get_conditionalFormatting_context().set_calcext_formats(true);
 
     table_rows_and_groups_.xlsx_convert(Context);
 
@@ -935,7 +937,8 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context& Context)
 	cellFormat.set_cell_type(xlsx_value_type);
 	cellFormat.set_num_format(oox::odf_string_to_build_in(odf_value_type));
 
-	if (cellStyle && cellStyle->content() && false == cellStyle->content()->style_map_.empty())
+	if (cellStyle && cellStyle->content() && false == cellStyle->content()->style_map_.empty() &&
+		false == Context.get_conditionalFormatting_context().is_calcext_formats())
 	{
 		std::wstring ref = oox::getCellAddress(Context.current_table_column() + 1, Context.current_table_row());
 

@@ -529,6 +529,11 @@ void oox_chart_series::oox_serialize_last(std::wostream & _Wostream)
 
 			if (values_[i].present)
 			{
+				if (values_[i].numRef_.formula.empty() && values_[i].numRef_.num_cache_count == 0 &&
+					values_[i].strRef_.formula.empty() && values_[i].strRef_.str_cache_count == 0)
+				{//empty c:val/c:cat -> bad file
+					continue;
+				}
 				if (bCacheOnly_)
 				{
 					if (values_[i].numRef_.present && values_[i].numRef_.num_cache_count == 0)

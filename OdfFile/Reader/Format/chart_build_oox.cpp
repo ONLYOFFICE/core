@@ -775,8 +775,10 @@ void object_odf_context::oox_convert(oox::oox_chart_context & chart_context)
 				}
 			}
 		}
-		if (series_[i].cell_range_address_.empty() )
+		if (series_[i].cell_range_address_.empty() && bPlotRange && (plot_col_1 == plot_col_2 || plot_row_1 == plot_row_2))
+		{//only one row/column (not multi area)
 			series_[i].cell_range_address_ = plot_area_.cell_range_address_;
+		}
 
 		if (series_[i].cell_range_address_.empty())
 			series_[i].cell_range_address_ = domain_cell_range_adress2_;

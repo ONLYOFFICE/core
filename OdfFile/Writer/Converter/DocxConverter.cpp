@@ -88,6 +88,7 @@
 #include "../../../OOXML/Common/SimpleTypes_Word.h"
 #include "../../../OOXML/Common/SimpleTypes_Shared.h"
 #include "../../../OOXML/PPTXFormat/DrawingConverter/ASCOfficeDrawingConverter.h"
+#include "../../../OOXML/PPTXFormat/Logic/Shape.h"
 
 using namespace cpdoccore;
 
@@ -514,19 +515,137 @@ void DocxConverter::convert(OOX::WritingElement  *oox_unknown)
 	}
 }
 
-void DocxConverter::convert(OOX::Logic::CSdt *oox_sdt)
+static bool is_inline_text_sdt(OOX::Logic::CSdtContent *oox_sdt_content)
+{
+	if (oox_sdt_content == NULL) return false;
+
+	bool bRun = false;
+	for (size_t i = 0; i < oox_sdt_content->m_arrItems.size(); i++)
+	{
+		if (oox_sdt_content->m_arrItems[i] == NULL) continue;
+
+		switch (oox_sdt_content->m_arrItems[i]->getType())
+		{
+			case OOX::et_w_r:
+			{
+				OOX::Logic::CRun* run = dynamic_cast<OOX::Logic::CRun*>(oox_sdt_content->m_arrItems[i]);
+				for (size_t j = 0; (run) && (j < run->m_arrItems.size()); j++)
+				{
+					if (run->m_arrItems[j] == NULL) continue;
+
+					switch (run->m_arrItems[j]->getType())
+					{
+						case OOX::et_w_rPr:
+						case OOX::et_w_t:
+						case OOX::et_w_lastRenderedPageBreak:
+							break;
+						default:
+							return false;
+					}
+				}
+				bRun = true;
+			}break;
+			case OOX::et_w_bookmarkStart:
+			case OOX::et_w_bookmarkEnd:
+			case OOX::et_w_proofErr:
+				break;
+			default:
+				return false;
+		}
+	}
+	return bRun;
+}
+static OOX::Logic::ESdtType get_sdt_type(OOX::Logic::CSdt *oox_sdt)
+{
+	if (oox_sdt == NULL || false == oox_sdt->m_oSdtPr.IsInit()) return OOX::Logic::sdttypeUnknown;
+
+	OOX::Logic::ESdtType sdt_type = oox_sdt->m_oSdtPr->m_eType;
+
+	if (OOX::Logic::sdttypeUnknown == sdt_type && oox_sdt->m_oSdtPr->m_oAlias.IsInit() &&
+		false == oox_sdt->m_oSdtPr->m_oAlias->ToString2().empty() && is_inline_text_sdt(oox_sdt->m_oSdtContent.GetPointer()))
+	{
+		sdt_type = OOX::Logic::sdttypeRichText;
+	}
+	return sdt_type;
+}
+static bool is_sdt_control(OOX::Logic::ESdtType sdt_type)
+{
+	switch (sdt_type)
+	{
+		case OOX::Logic::sdttypeComboBox:
+		case OOX::Logic::sdttypeDropDownList:
+		case OOX::Logic::sdttypeDate:
+		case OOX::Logic::sdttypeCheckBox:
+		case OOX::Logic::sdttypeRichText:
+		case OOX::Logic::sdttypeText:
+			return true;
+		default:
+			return false;
+	}
+}
+static bool is_no_fill(PPTX::Logic::UniFill *fill)
+{
+	return (fill == NULL || fill->m_type == PPTX::Logic::UniFill::notInit || fill->m_type == PPTX::Logic::UniFill::noFill);
+}
+
+static OOX::Logic::CSdt* get_textbox_control(PPTX::Logic::GraphicFrame *oox_graphic)
+{
+	if (oox_graphic == NULL || false == oox_graphic->element.is_init()) return NULL;
+
+	PPTX::Logic::Shape* shape = dynamic_cast<PPTX::Logic::Shape*>(oox_graphic->element.GetElem().GetPointer());
+
+	if (shape == NULL || false == shape->oTextBoxShape.IsInit() || shape->oTextBoxShape->m_arrItems.size() != 1) return NULL;
+	if (shape->style.IsInit() || false == is_no_fill(&shape->spPr.Fill)) return NULL;
+	if (shape->spPr.ln.IsInit() && false == is_no_fill(&shape->spPr.ln->Fill)) return NULL;
+
+	OOX::Logic::CParagraph* paragraph = dynamic_cast<OOX::Logic::CParagraph*>(shape->oTextBoxShape->m_arrItems[0]);
+	if (paragraph == NULL) return NULL;
+
+	OOX::Logic::CSdt* result = NULL;
+	for (size_t i = 0; i < paragraph->m_arrItems.size(); i++)
+	{
+		if (paragraph->m_arrItems[i] == NULL) continue;
+
+		switch (paragraph->m_arrItems[i]->getType())
+		{
+			case OOX::et_w_pPr:
+			case OOX::et_w_rPr:
+				break;
+			case OOX::et_w_r:
+			{
+				OOX::Logic::CRun* run = dynamic_cast<OOX::Logic::CRun*>(paragraph->m_arrItems[i]);
+				for (size_t j = 0; (run) && (j < run->m_arrItems.size()); j++)
+				{
+					if (run->m_arrItems[j] && run->m_arrItems[j]->getType() != OOX::et_w_rPr)
+						return NULL;
+				}
+			}break;
+			case OOX::et_w_sdt:
+			{
+				if (result) return NULL;
+				result = dynamic_cast<OOX::Logic::CSdt*>(paragraph->m_arrItems[i]);
+			}break;
+			default:
+				return NULL;
+		}
+	}
+	return is_sdt_control(get_sdt_type(result)) ? result : NULL;
+}
+void DocxConverter::convert(OOX::Logic::CSdt *oox_sdt, bool in_frame)
 {
 	if (oox_sdt == NULL) return;
 
 	bool bField = false, bForm = false;
-	
-	_CP_OPT(double) x, y, width = 20, height = 20; 
+
+	_CP_OPT(double) x, y, width = 20, height = 20;
 
 	std::wstring parent_style = odf_context()->text_context()->get_current_style_name();
 
 	if (oox_sdt->m_oSdtPr.IsInit())
 	{
-		switch(oox_sdt->m_oSdtPr->m_eType)
+		OOX::Logic::ESdtType sdt_type = get_sdt_type(oox_sdt);
+
+		switch(sdt_type)
 		{
 			case OOX::Logic::sdttypeBibliography:
 			case OOX::Logic::sdttypeDocPartList:
@@ -546,17 +665,19 @@ void DocxConverter::convert(OOX::Logic::CSdt *oox_sdt)
 			case OOX::Logic::sdttypeRichText:
 			case OOX::Logic::sdttypeText:
 			{
-				std::wstring id = odt_context->controls_context()->start_control_sdt(oox_sdt->m_oSdtPr->m_eType);
+				std::wstring id = odt_context->controls_context()->start_control_sdt(sdt_type);
 
 				if (false == id.empty())
-				{				
+				{
 					bForm = true;
-					odt_context->start_drawing_context();
-					odt_context->drawing_context()->set_anchor(odf_types::anchor_type::AsChar);
-					odt_context->drawing_context()->set_drawings_rect(x, y, width, height); //default
-					
-					width = boost::none;
-					
+					if (false == in_frame) // else position & size already set from frame
+					{
+						odt_context->start_drawing_context();
+						odt_context->drawing_context()->set_anchor(odf_types::anchor_type::AsChar);
+						odt_context->drawing_context()->set_drawings_rect(x, y, width, height); //default
+
+						width = boost::none;
+					}
 					odt_context->drawing_context()->start_drawing();
 					odt_context->drawing_context()->start_control(id);
 				}
@@ -567,7 +688,10 @@ void DocxConverter::convert(OOX::Logic::CSdt *oox_sdt)
 		{
 			_CP_OPT(double) zero = 0.;
 			odt_context->drawing_context()->set_parent_text_style(parent_style);
-			odt_context->drawing_context()->set_vertical_rel(0); //baseline
+			if (false == in_frame)
+				odt_context->drawing_context()->set_vertical_rel(0); //baseline
+			else
+				odt_context->drawing_context()->set_no_border(); // as invisible frame
 			odt_context->drawing_context()->set_textarea_vertical_align(1);//middle
 
 			odt_context->drawing_context()->set_textarea_padding(zero, zero, zero, zero);
@@ -603,7 +727,8 @@ void DocxConverter::convert(OOX::Logic::CSdt *oox_sdt)
 					}
 				}
 				width = 10. * size; //todooo sizefont
-				odt_context->drawing_context()->set_size(width, height, true);
+				if (false == in_frame)
+					odt_context->drawing_context()->set_size(width, height, true);
 			}
 			if (oox_sdt->m_oSdtPr->m_oComboBox.IsInit())
 			{
@@ -620,7 +745,8 @@ void DocxConverter::convert(OOX::Logic::CSdt *oox_sdt)
 				}
 				width = 10. * size; //todooo sizefont
 
-				odt_context->drawing_context()->set_size(width, height, true);
+				if (false == in_frame)
+					odt_context->drawing_context()->set_size(width, height, true);
 			}
 			if (oox_sdt->m_oSdtPr->m_oCheckbox.IsInit())
 			{
@@ -708,7 +834,8 @@ void DocxConverter::convert(OOX::Logic::CSdt *oox_sdt)
 		odt_context->drawing_context()->end_control();
 		odt_context->drawing_context()->end_drawing();
 
-		odt_context->end_drawing_context();
+		if (false == in_frame)
+			odt_context->end_drawing_context();
 		odt_context->controls_context()->end_control();
 	}
 }
@@ -3309,19 +3436,35 @@ void DocxConverter::convert(OOX::Logic::CDrawing *oox_drawing)
 	if (oox_drawing->m_oAnchor.IsInit())
 	{
 		convert(oox_drawing->m_oAnchor.GetPointer());
-		
-		odf_context()->drawing_context()->start_drawing();
-			OoxConverter::convert(&oox_drawing->m_oAnchor->m_oGraphic);
-		odf_context()->drawing_context()->end_drawing();
+
+		OOX::Logic::CSdt* oox_control = get_textbox_control(&oox_drawing->m_oAnchor->m_oGraphic);
+		if (oox_control)
+		{
+			convert(oox_control, true);
+		}
+		else
+		{
+			odf_context()->drawing_context()->start_drawing();
+				OoxConverter::convert(&oox_drawing->m_oAnchor->m_oGraphic);
+			odf_context()->drawing_context()->end_drawing();
+		}
 	}
 	else if (oox_drawing->m_oInline.IsInit())
 	{
 		convert(oox_drawing->m_oInline.GetPointer());
-		
-		odf_context()->drawing_context()->start_drawing();
-			OoxConverter::convert(&oox_drawing->m_oInline->m_oGraphic);
-			odt_context->drawing_context()->set_anchor(odf_types::anchor_type::AsChar);
-		odf_context()->drawing_context()->end_drawing();
+
+		OOX::Logic::CSdt* oox_control = get_textbox_control(&oox_drawing->m_oInline->m_oGraphic);
+		if (oox_control)
+		{
+			convert(oox_control, true);
+		}
+		else
+		{
+			odf_context()->drawing_context()->start_drawing();
+				OoxConverter::convert(&oox_drawing->m_oInline->m_oGraphic);
+				odt_context->drawing_context()->set_anchor(odf_types::anchor_type::AsChar);
+			odf_context()->drawing_context()->end_drawing();
+		}
 	}
 	odt_context->end_drawing_context();
 }

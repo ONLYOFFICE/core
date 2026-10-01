@@ -200,7 +200,7 @@ namespace Oox2Odf
 
 		void convert(OOX::Logic::CBackground			*oox_background, int type);
 		void convert(OOX::Logic::CBgPict				*oox_background, int type);
-		void convert(OOX::Logic::CSdt					*oox_sdt);
+		void convert(OOX::Logic::CSdt					*oox_sdt, bool in_frame = false);
 		void convert(OOX::Logic::CSectionProperty		*oox_section_pr, bool bSection, const std::wstring & master_name = L"", bool bAlways = false);
 		void convert(OOX::Logic::CParagraph				*oox_paragraph);
 		void convert(OOX::Logic::CRun					*oox_run);

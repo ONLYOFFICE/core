@@ -1621,6 +1621,12 @@ void odf_drawing_context::set_group_fill()
 	impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_hatch_name_ = impl_->current_group_->graphic_properties->common_draw_fill_attlist_.draw_fill_hatch_name_;
 	impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_gradient_name_ = impl_->current_group_->graphic_properties->common_draw_fill_attlist_.draw_fill_gradient_name_;
 }
+void odf_drawing_context::set_no_border()
+{
+	if (!impl_->current_graphic_properties) return;
+
+	impl_->current_graphic_properties->common_border_attlist_.fo_border_ = odf_types::border_style(L"none");
+}
 void odf_drawing_context::set_no_fill()
 {
 	if (!impl_->current_graphic_properties) return;

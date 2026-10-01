@@ -525,6 +525,7 @@ namespace NExtractTools
 		int* m_nCsvDelimiterTo;
 		int* m_nCsvFormatTo;
 		std::wstring* m_sCsvDelimiterCharTo;
+		bool* m_bCsvAllSheets;
 		int* m_nLcid;
 		bool* m_bPaid;
 		bool* m_bFromChanges;
@@ -570,6 +571,7 @@ namespace NExtractTools
 			m_nCsvTxtEncodingTo = NULL;
 			m_nCsvDelimiterTo = NULL;
 			m_sCsvDelimiterCharTo = NULL;
+			m_bCsvAllSheets = NULL;
 			m_nLcid = NULL;
 			m_bPaid = NULL;
 			m_bFromChanges = NULL;
@@ -614,6 +616,7 @@ namespace NExtractTools
 			RELEASEOBJECT(m_nCsvTxtEncodingTo);
 			RELEASEOBJECT(m_nCsvDelimiterTo);
 			RELEASEOBJECT(m_sCsvDelimiterCharTo);
+			RELEASEOBJECT(m_bCsvAllSheets);
 			RELEASEOBJECT(m_nLcid);
 			RELEASEOBJECT(m_bPaid);
 			RELEASEOBJECT(m_bFromChanges);
@@ -766,6 +769,11 @@ namespace NExtractTools
 									
 									RELEASEOBJECT(m_sCsvDelimiterCharTo);
 									m_sCsvDelimiterCharTo = new std::wstring(sValue);
+								}
+								else if (_T("m_bCsvAllSheets") == sName)
+								{
+									RELEASEOBJECT(m_bCsvAllSheets);
+									m_bCsvAllSheets = new bool(XmlUtils::GetBoolean2(sValue));
 								}
 								else if (_T("m_nLcid") == sName)
 								{
@@ -944,6 +952,10 @@ namespace NExtractTools
 		{
 			return (NULL != m_bIsPDFA) ? (*m_bIsPDFA) : false;
 		}
+		bool getCsvAllSheets() const
+		{
+			return (NULL != m_bCsvAllSheets) ? (*m_bCsvAllSheets) : false;
+		}
 		std::wstring getConvertToOrigin() const
 		{
 			return (NULL != m_sConvertToOrigin) ? (*m_sConvertToOrigin) : L"";
@@ -1119,6 +1131,10 @@ namespace NExtractTools
 			if (m_nCsvFormatTo)
 			{
 				sRes += L"' csvFormat='" + std::to_wstring(*m_nCsvFormatTo);
+			}
+			if (getCsvAllSheets())
+			{
+				sRes += L"' csvAllSheets='1";
 			}
 			if (m_bMacro)
 			{

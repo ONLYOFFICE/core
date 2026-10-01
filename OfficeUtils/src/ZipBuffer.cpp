@@ -53,12 +53,13 @@ zipFile zipOpenHelp(BUFFER_IO* buffer)
 // begin from (ZipUtilsCP.cpp)
 bool current_file_is_find(unzFile uf, const char* filename)
 {
-	char filename_inzip[256];
+	char filename_inzip[4096];
+	filename_inzip[sizeof(filename_inzip) - 1] = 0; // a name that fills the buffer gets no NUL from minizip
 	int err = UNZ_OK;
 
 	unz_file_info file_info;
 
-	err = unzGetCurrentFileInfo(uf, &file_info, filename_inzip, sizeof(filename_inzip), NULL, 0, NULL, 0);
+	err = unzGetCurrentFileInfo(uf, &file_info, filename_inzip, sizeof(filename_inzip) - 1, NULL, 0, NULL, 0);
 	if (err != UNZ_OK)
 		return false;
 
@@ -79,9 +80,10 @@ bool get_file(unzFile unzip_file_handle, BYTE* arr, uInt array_size)
 }
 static const std::string get_filename_from_unzfile(unzFile unzip_file_handle)
 {
-	char filename_inzip[256];
+	char filename_inzip[4096];
+	filename_inzip[sizeof(filename_inzip) - 1] = 0; // a name that fills the buffer gets no NUL from minizip
 
-	if (UNZ_OK == unzGetCurrentFileInfo(unzip_file_handle, NULL, filename_inzip, sizeof(filename_inzip), NULL, 0, NULL, 0))
+	if (UNZ_OK == unzGetCurrentFileInfo(unzip_file_handle, NULL, filename_inzip, sizeof(filename_inzip) - 1, NULL, 0, NULL, 0))
 		return std::string(filename_inzip);
 
 	return "";

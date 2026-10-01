@@ -4715,6 +4715,19 @@ int BinaryWorksheetsTableReader::ReadWorksheet(boost::unordered_map<BYTE, std::v
 		READ1_DEF(length, res, this->ReadWorksheetCols, &oCols);
 	SEEK_TO_POS_END(oCols);
 //-------------------------------------------------------------------------------------------------------------
+	// A csv of all sheets writes every sheet to a file of its own, numbered by the sheet's place in the workbook
+	// and named after the sheet. The name comes with the sheet properties, which are read further down, after
+	// the rows - so it is read here first (and again, the same, with the other properties)
+	const bool bCsvAllSheets = NULL != m_oSaveParams.pCSVWriter && m_oSaveParams.pCSVWriter->IsAllSheets();
+	if (bCsvAllSheets)
+	{
+		SEEK_TO_POS_START(c_oSerWorksheetsTypes::WorksheetProp);
+			READ2_DEF_SPREADSHEET(length, res, this->ReadWorksheetProp, poResult);
+		SEEK_TO_POS_END2();
+	}
+	const int nCsvSheetNumber = (int)m_arWorksheets.size() + 1;
+	const std::wstring sCsvSheetName = m_pCurSheet->m_oName.IsInit() ? m_pCurSheet->m_oName.get() : std::wstring();
+//-------------------------------------------------------------------------------------------------------------
     SEEK_TO_POS_START(c_oSerWorksheetsTypes::SheetData)
 		if (NULL == m_oSaveParams.pCSVWriter)
 		{
@@ -4723,8 +4736,10 @@ int BinaryWorksheetsTableReader::ReadWorksheet(boost::unordered_map<BYTE, std::v
 			READ1_DEF(length, res, this->ReadSheetData, NULL);
 			oSheetData.toXMLEnd(oStreamWriter);
 		}
-		else if (m_arWorksheets.size() == m_oWorkbook.GetActiveSheetIndex())
+		else if (bCsvAllSheets || m_arWorksheets.size() == m_oWorkbook.GetActiveSheetIndex())
 		{
+			if (bCsvAllSheets)
+				m_oSaveParams.pCSVWriter->StartSheet(nCsvSheetNumber, sCsvSheetName);
 			m_oSaveParams.pCSVWriter->WriteSheetStart(m_pCurWorksheet.GetPointer());
 			READ1_DEF(length, res, this->ReadSheetData, NULL);
 			m_oSaveParams.pCSVWriter->WriteSheetEnd(m_pCurWorksheet.GetPointer());
@@ -4734,6 +4749,13 @@ int BinaryWorksheetsTableReader::ReadWorksheet(boost::unordered_map<BYTE, std::v
 		OOX::Spreadsheet::CSheetData oSheetData;
 		oSheetData.toXMLStart(oStreamWriter);
 		oSheetData.toXMLEnd(oStreamWriter);
+		if (bCsvAllSheets)
+		{
+			// A sheet with no cells still gets its (empty) file
+			m_oSaveParams.pCSVWriter->StartSheet(nCsvSheetNumber, sCsvSheetName);
+			m_oSaveParams.pCSVWriter->WriteSheetStart(m_pCurWorksheet.GetPointer());
+			m_oSaveParams.pCSVWriter->WriteSheetEnd(m_pCurWorksheet.GetPointer());
+		}
 	SEEK_TO_POS_ELSE_END()
 //-------------------------------------------------------------------------------------------------------------
 	SEEK_TO_POS_START(c_oSerWorksheetsTypes::Protection);
@@ -9978,8 +10000,9 @@ int BinaryFileReader::ReadFile(const std::wstring& sSrcFileName, std::wstring sD
 			std::wstring sDelimiter;
 			BYTE saveFileType;
 			_INT32 Lcid;
+			bool bCsvAllSheets = false;
 
-			SerializeCommon::ReadFileType(sXMLOptions, fileType, nCodePage, sDelimiter, saveFileType, Lcid); //csv, tsc .. from XmlOptions !
+			SerializeCommon::ReadFileType(sXMLOptions, fileType, nCodePage, sDelimiter, saveFileType, Lcid, &bCsvAllSheets); //csv, tsc .. from XmlOptions !
 			// For CSV, override the path, otherwise a folder with the same name is created (for rels) and file is not created.
 
 			if (BinXlsxRW::c_oFileTypes::CSV == fileType)
@@ -10053,7 +10076,9 @@ int BinaryFileReader::ReadFile(const std::wstring& sSrcFileName, std::wstring sD
 				CSVWriter oCSVWriter;
 				
                 oCSVWriter.Init(oXlsx, nCodePage, sDelimiter, Lcid, false);
-				
+				// All sheets: sDstPathCSV is a directory for sheet1.<name>.csv ... (.tsv when tab-separated)
+				oCSVWriter.SetAllSheets(bCsvAllSheets, L"\t" == sDelimiter ? L"tsv" : L"csv");
+
 				bResultOk = oCSVWriter.Start(sDstPathCSV);
 				if (!bResultOk) return AVS_FILEUTILS_ERROR_CONVERT;
 

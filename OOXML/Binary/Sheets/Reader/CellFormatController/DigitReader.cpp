@@ -62,7 +62,7 @@ bool DigitReader::ReadDigit(const std::wstring &value, std::wstring &digit, std:
 		return false;
 	}
 
-	ptrdiff_t unparsedLen = (pStart + length) - pEndPtr;
+	__int64 unparsedLen = (pStart + length) - pEndPtr;
 
 	if (*pEndPtr != L'\0' && unparsedLen > 1)
 	{

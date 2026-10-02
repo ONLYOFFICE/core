@@ -144,7 +144,8 @@ const bool PIVOTVIEW::saveContent(BinProcessor& proc)
 {
     if(m_PIVOTCORE == nullptr)
         return false;
-    proc.mandatory(*m_PIVOTCORE);
+	if(!proc.mandatory(*m_PIVOTCORE))
+		return false;
 	if(m_PIVOTFRT != nullptr)
 		proc.mandatory(*m_PIVOTFRT);
     return true;

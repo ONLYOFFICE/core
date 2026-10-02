@@ -217,15 +217,15 @@ bool OOX::Spreadsheet::CXlsx::WriteXLS(const CPath& oFilePath)
 		auto cacheNum = 0;
 		for(auto cacheHeader : m_pWorkbook->m_oPivotCaches->m_arrItems)
 		{
-			if(!cacheHeader->m_oCacheId.IsInit() || !cacheHeader->m_oRid.IsInit())
+			if(!cacheHeader->m_oCacheId.IsInit() || !cacheHeader->m_oRid.IsInit() || !m_pWorkbook->IsExist(cacheHeader->m_oRid->GetValue()))
 				continue;
 			auto cacheFilePtr = m_pWorkbook->Find(cacheHeader->m_oRid->GetValue());
 			auto CachePtr = static_cast<CPivotCacheDefinitionFile*>(cacheFilePtr.GetPointer());
+			cacheHeader->m_oCacheId = cacheHeader->m_oCacheId->GetValue() + 1;
 			if(CachePtr->m_oPivotCashDefinition.IsInit() && CachePtr->m_oPivotCashDefinition->m_oCacheSource.IsInit()
 				&& CachePtr->m_oPivotCashDefinition->m_oCacheSource->m_oType.IsInit()
 				&& CachePtr->m_oPivotCashDefinition->m_oCacheSource->m_oType->GetValue() == SimpleTypes::Spreadsheet::ESourceCacheType::typeSourceWorksheet)
 				{
-					cacheHeader->m_oCacheId = cacheHeader->m_oCacheId->GetValue() + 1;
 					writer.globalInfoPtr->mapPivotCacheIndex.emplace(cacheHeader->m_oCacheId->GetValue(), cacheNum);
 					cacheNum++;
 				}

@@ -1890,9 +1890,13 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 		pOrigPage = m_pDocument->GetPage(oInfo.GetPage());
 	PdfWriter::CPage* pPage = m_pPage;
 
+	bool bExistingAnnot = false;
 	int nID = oInfo.GetID();
 	if (nID > 0)
+	{
 		pAnnot = m_pDocument->GetAnnot(nID);
+		bExistingAnnot = (NULL != pAnnot);
+	}
 
 	if (pAnnot && pOrigPage && pPage != pOrigPage)
 	{
@@ -1989,9 +1993,28 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 		}
 		if (!pPopupAnnot && !oInfo.IsFreeText())
 		{
-			pPopupAnnot = pMarkupAnnot->CreatePopup();
-			pPage->AddAnnotation(pPopupAnnot);
-			pPopupAnnot->SetPage(pPage);
+			// The editor does not resend a popup id for an annotation that already
+			// has one. Creating a popup here leaves an empty popup on every save.
+			if (bExistingAnnot)
+			{
+				PdfWriter::CObjectBase* pPopupObj = pMarkupAnnot->Get("Popup");
+				if (pPopupObj && pPopupObj->GetType() == PdfWriter::object_type_DICT)
+				{
+					PdfWriter::CDictObject* pPopupDict = static_cast<PdfWriter::CDictObject*>(pPopupObj);
+					if (pPopupDict->GetDictType() == PdfWriter::dict_type_ANNOTATION)
+					{
+						PdfWriter::CAnnotation* pExistingPopup = static_cast<PdfWriter::CAnnotation*>(pPopupDict);
+						if (pExistingPopup->GetAnnotationType() == PdfWriter::AnnotPopup)
+							pPopupAnnot = pExistingPopup;
+					}
+				}
+			}
+			if (!pPopupAnnot)
+			{
+				pPopupAnnot = pMarkupAnnot->CreatePopup();
+				pPage->AddAnnotation(pPopupAnnot);
+				pPopupAnnot->SetPage(pPage);
+			}
 		}
 		if (nFlags & (1 << 1))
 			pMarkupAnnot->SetT(pPr->GetT());
@@ -2321,6 +2344,14 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 					pFontTT = m_pDocument->CreateTrueTypeFont(m_pFont);
 				pRedactAnnot->SetDA(pFontTT, dFontSize, pPr->GetFontColor());
 			}
+		}
+		// Deleted comment text is omitted from the binary (flag bit 1). The
+		// dictionary copied from the source file would otherwise keep Contents and RC.
+		// Widget fields are not markup, so this does not touch form values.
+		if (bExistingAnnot && !(oInfo.GetFlag() & (1 << 1)))
+		{
+			pAnnot->Remove("Contents");
+			pAnnot->Remove("RC");
 		}
 	}
 	else if (oInfo.IsPopup())

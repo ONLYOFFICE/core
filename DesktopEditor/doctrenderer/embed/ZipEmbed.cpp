@@ -161,6 +161,9 @@ JSSmart<CJSValue> CZipEmbed::getPaths()
 
 JSSmart<CJSValue> CZipEmbed::decodeImage(JSSmart<CJSValue> typedArray, JSSmart<CJSValue> isRgba)
 {
+	if (!typedArray->isTypedArray())
+		return CJSContext::createUndefined();
+
 	JSSmart<CJSTypedArray> oArray = typedArray->toTypedArray();
 	NSJSBase::CJSDataBuffer oBuffer = oArray->getData();
 
@@ -187,6 +190,9 @@ JSSmart<CJSValue> CZipEmbed::decodeImage(JSSmart<CJSValue> typedArray, JSSmart<C
 }
 JSSmart<CJSValue> CZipEmbed::encodeImageData(JSSmart<CJSValue> typedArray, JSSmart<CJSValue> w, JSSmart<CJSValue> h, JSSmart<CJSValue> stride, JSSmart<CJSValue> format, JSSmart<CJSValue> isRgba)
 {
+	if (!typedArray->isTypedArray())
+		return CJSContext::createUndefined();
+
 	JSSmart<CJSTypedArray> oArray = typedArray->toTypedArray();
 	NSJSBase::CJSDataBuffer oBuffer = oArray->getData();
 
@@ -196,9 +202,15 @@ JSSmart<CJSValue> CZipEmbed::encodeImageData(JSSmart<CJSValue> typedArray, JSSma
 	else
 		oFrame.put_IsRGBA(true);
 
+	// Encode reads 4 * w * h bytes whatever the stride: the buffer must hold them
+	int nWidth = w->toInt32();
+	int nHeight = h->toInt32();
+	if (nWidth <= 0 || nHeight <= 0 || (size_t)nWidth > (size_t)oBuffer.Len / 4 / (size_t)nHeight)
+		return CJSContext::createUndefined();
+
 	oFrame.put_Data(oBuffer.Data);
-	oFrame.put_Width(w->toInt32());
-	oFrame.put_Height(h->toInt32());
+	oFrame.put_Width(nWidth);
+	oFrame.put_Height(nHeight);
 
 	if (stride.is_init() && stride->isNumber())
 		oFrame.put_Stride(stride->toInt32());
@@ -223,6 +235,9 @@ JSSmart<CJSValue> CZipEmbed::encodeImageData(JSSmart<CJSValue> typedArray, JSSma
 }
 JSSmart<CJSValue> CZipEmbed::encodeImage(JSSmart<CJSValue> typedArray, JSSmart<CJSValue> format)
 {
+	if (!typedArray->isTypedArray())
+		return CJSContext::createUndefined();
+
 	JSSmart<CJSTypedArray> oArray = typedArray->toTypedArray();
 	NSJSBase::CJSDataBuffer oBuffer = oArray->getData();
 	CImageFileFormatChecker oChecker;
@@ -285,6 +300,9 @@ JSSmart<CJSValue> CZipEmbed::encodeImage(JSSmart<CJSValue> typedArray, JSSmart<C
 }
 JSSmart<CJSValue> CZipEmbed::getImageType(JSSmart<CJSValue> typedArray)
 {
+	if (!typedArray->isTypedArray())
+		return CJSContext::createInt(0);
+
 	JSSmart<CJSTypedArray> oArray = typedArray->toTypedArray();
 	NSJSBase::CJSDataBuffer oBuffer = oArray->getData();
 	CImageFileFormatChecker oChecker;

@@ -42,6 +42,7 @@
 #include "../../DesktopEditor/graphics/IRenderer.h"
 
 #include "Utils/CFontChecker.h"
+#include "Utils/PackageFolder.h"
 #include "Utils/Utils.h"
 
 #ifdef BUILDING_WASM_MODULE
@@ -111,7 +112,7 @@ bool COFDFile_Private::LoadFromFile(const std::wstring& wsFilePath)
 	if (S_OK != oUtils.ExtractToDirectory(wsFilePath, m_wsTempDir, NULL, 0))
 		return false;
 
-	m_pFolder = new CFolderSystem(m_wsTempDir);
+	m_pFolder = new OFD::CPackageFolder(new CFolderSystem(m_wsTempDir));
 
 	return Read();
 }
@@ -123,7 +124,7 @@ bool COFDFile_Private::LoadFromMemory(BYTE* pData, DWORD ulLength)
 	if (nullptr == pData || 0 == ulLength)
 		return false;
 
-	m_pFolder = new CZipFolderMemory(pData, ulLength);
+	m_pFolder = new OFD::CPackageFolder(new CZipFolderMemory(pData, ulLength));
 
 	return Read();
 }

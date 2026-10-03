@@ -94,6 +94,7 @@ HEADERS += \
 	src/Types/Signature.h \
 	src/Types/TemplatePage.h \
 	src/Utils/CFontChecker.h \
+	src/Utils/PackageFolder.h \
 	src/Utils/Types.h \
 	src/Utils/Utils.h \
 	src/Utils/XmlReader.h

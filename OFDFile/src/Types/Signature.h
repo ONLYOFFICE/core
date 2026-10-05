@@ -100,7 +100,7 @@ class CSignature
 	TSignedInfo m_oSignedInfo;
 	std::wstring m_wsSignedValue;
 
-	std::wstring m_wsRootPath;
+	IFolder* m_pFolder;
 public:
 	CSignature();
 

@@ -66,6 +66,7 @@
 #include "../../OfficeUtils/src/OfficeUtils.h"
 
 #include "../common/ProcessEnv.h"
+#include "../xml/include/xmlutils.h"
 
 #include "docbuilder_addon.h"
 
@@ -749,7 +750,7 @@ namespace NSDoctRenderer
 
 			oBuilder.WriteString(L"<m_bIsNoBase64>true</m_bIsNoBase64>");
 			oBuilder.WriteString(L"<m_sThemeDir>./sdkjs/slide/themes</m_sThemeDir><m_bDontSaveAdditional>true</m_bDontSaveAdditional>");
-			oBuilder.WriteString(sParams);
+			oBuilder.WriteString(RemoveUnsafeX2tParams(sParams));
 
 			std::string sOptions = NSProcessEnv::Save();
 			if (!sOptions.empty())
@@ -950,6 +951,39 @@ namespace NSDoctRenderer
 			       std::wstring::npos != sParams.find(L"<" + sName + L"/>");
 		}
 
+		static bool IsUnsafeX2tParam(const std::wstring& sName)
+		{
+			static const wchar_t* c_arUnsafeParams[] = {
+				L"m_sFileFrom",
+				L"m_sFileTo",
+				L"m_sTempDir"
+			};
+
+			for (const wchar_t* sUnsafe : c_arUnsafeParams)
+			{
+				if (sName == sUnsafe)
+					return true;
+			}
+			return false;
+		}
+
+		static std::wstring RemoveUnsafeX2tParams(const std::wstring& sParams)
+		{
+			XmlUtils::CXmlNode oRoot;
+			if (sParams.empty() || !oRoot.FromXmlString(L"<TaskQueueDataConvert>" + sParams + L"</TaskQueueDataConvert>"))
+				return L"";
+
+			std::wstring sResult;
+			std::vector<XmlUtils::CXmlNode> arNodes;
+			oRoot.GetChilds(arNodes);
+			for (XmlUtils::CXmlNode& oNode : arNodes)
+			{
+				if (!IsUnsafeX2tParam(oNode.GetName()))
+					sResult += oNode.GetXml();
+			}
+			return sResult;
+		}
+
 		// the first four bytes of the internal format name the editor it belongs to
 		static int GetFileTypeFromInternalFormat(const std::wstring& sFile)
 		{
@@ -1141,7 +1175,7 @@ namespace NSDoctRenderer
 
 			std::wstring sConvertionParams = L"";
 			if (NULL != params)
-				sConvertionParams = std::wstring(params);
+				sConvertionParams = RemoveUnsafeX2tParams(std::wstring(params));
 
 			std::wstring sFileFromOverride = L"";
 

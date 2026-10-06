@@ -548,25 +548,25 @@ namespace NSCSS
 	}
 
 	CColor::CColor()
-		: m_oOpacity(1.)
+		: m_oOpacity(1.), m_dAlpha(1.)
 	{}
 
 	void CColor::SetEmpty(unsigned int unLevel)
 	{
-		Clear();
+		ClearValue();
 		m_unLevel = unLevel;
 	}
 	
 	void CColor::SetRGB(unsigned char uchR, unsigned char uchG, unsigned char uchB)
 	{
-		Clear();
+		ClearValue();
 
 		m_oValue = CColorValue(TRGB{uchR, uchG, uchB});
 	}
 	
 	void CColor::SetRGB(const TRGB &oRGB)
 	{
-		Clear();
+		ClearValue();
 
 		m_oValue = CColorValue(oRGB);
 	}
@@ -576,7 +576,7 @@ namespace NSCSS
 		if (6 != wsValue.length() && 3 != wsValue.length())
 			return;
 
-		Clear();
+		ClearValue();
 
 		if (6 == wsValue.length())
 			m_oValue = CColorValue(std::wstring(wsValue));
@@ -594,7 +594,7 @@ namespace NSCSS
 		if (!oURL.SetValue(wsValue))
 			return false;
 
-		Clear();
+		ClearValue();
 
 		m_oValue = CColorValue(oURL);
 
@@ -609,6 +609,20 @@ namespace NSCSS
 			return (char)(std::abs(nValue) % 255);
 
 		return (char)nValue;
+	}
+
+	static double OpacityToDouble(const CDigit& oOpacity)
+	{
+		if (oOpacity.Empty())
+			return 1.;
+
+		if (UnitMeasure::Percent == oOpacity.GetUnitMeasure())
+			return oOpacity.ToDouble() / 100.;
+
+		if (UnitMeasure::None == oOpacity.GetUnitMeasure() && oOpacity.ToDouble() <= 1.)
+			return oOpacity.ToDouble();
+
+		return 1.;
 	}
 
 	bool CColor::SetValue(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
@@ -641,19 +655,19 @@ namespace NSCSS
 		}
 		else if (L"none" == wsNewValue || wsNewValue == L"transparent")
 		{
-			Clear();
+			ClearValue();
 			m_oValue = CColorValue();
 			bResult = true;
 		}
 		else if (L"context-stroke" == wsNewValue)
 		{
-			Clear();
+			ClearValue();
 			m_oValue = CColorValueContextStroke();
 			bResult = true;
 		}
 		else if (L"context-fill" == wsNewValue)
 		{
-			Clear();
+			ClearValue();
 			m_oValue = CColorValueContextFill();
 			bResult = true;
 		}
@@ -676,7 +690,12 @@ namespace NSCSS
 			SetRGB(chRed, chGreen, chBlue);
 
 			if (wsNewValue.substr(0, 4) == L"rgba" && 4 == arValues.size())
-				m_oOpacity.SetValue(arValues[3], unLevel, bHardMode);
+			{
+				CDigit oAlpha;
+				oAlpha.SetValue(arValues[3]);
+
+				m_dAlpha = OpacityToDouble(oAlpha);
+			}
 
 			bResult = true;
 		}
@@ -723,6 +742,12 @@ namespace NSCSS
 	void CColor::Clear()
 	{
 		m_oOpacity.Clear();
+		ClearValue();
+	}
+
+	void CColor::ClearValue()
+	{
+		m_dAlpha = 1.;
 		CValueOptional::Clear();
 	}
 
@@ -736,16 +761,7 @@ namespace NSCSS
 
 	double CColor::GetOpacity() const
 	{
-		if (m_oOpacity.Empty())
-			return 1.;
-
-		if (UnitMeasure::Percent == m_oOpacity.GetUnitMeasure())
-			return m_oOpacity.ToDouble() / 100.;
-
-		if (UnitMeasure::None == m_oOpacity.GetUnitMeasure() && m_oOpacity.ToDouble() <= 1.)
-			return m_oOpacity.ToDouble();
-
-		return 1.;
+		return OpacityToDouble(m_oOpacity) * m_dAlpha;
 	}
 
 	int CColor::ToInt() const

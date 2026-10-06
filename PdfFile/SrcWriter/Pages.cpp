@@ -1260,7 +1260,7 @@ namespace PdfWriter
 		for (int i = 0; i < pArray->GetCount(); i++)
 		{
 			CObjectBase* pObj = pArray->Get(i);
-			if (pObj->GetObjId() == nID)
+			if (pObj && pObj->GetObjId() == nID) // NULL - a deleted annotation
 			{
 				CObjectBase* pDelete = pArray->Remove(i);
 				if (pDelete->GetType() == object_type_UNKNOWN)

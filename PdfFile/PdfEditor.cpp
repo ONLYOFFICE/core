@@ -68,6 +68,7 @@
 #include "SrcWriter/FontCidTT.h"
 
 #include <vector>
+#include <climits>
 
 #define _UC_AddToParent(val)\
 {\
@@ -144,7 +145,7 @@ PdfWriter::CAnnotation* CreateAnnot(Object* oAnnot, Object* oType, PdfWriter::CX
 		{
 			Object oParent, oParent2;
 			oAnnot->dictLookup("Parent", &oParent);
-			while (oParent.isDict())
+			for (int nDepth = 0; oParent.isDict() && nDepth < 50; ++nDepth) // a broken file may loop the Parent chain
 			{
 				if (oParent.dictLookup("FT", &oFT)->isName())
 				{
@@ -175,7 +176,7 @@ PdfWriter::CAnnotation* CreateAnnot(Object* oAnnot, Object* oType, PdfWriter::CX
 			{
 				Object oParent, oParent2;
 				oAnnot->dictLookup("Parent", &oParent);
-				while (oParent.isDict())
+				for (int nDepth = 0; oParent.isDict() && nDepth < 50; ++nDepth) // a broken file may loop the Parent chain
 				{
 					if (oParent.dictLookup("Ff", &oFT)->isInt())
 					{
@@ -214,9 +215,11 @@ PdfWriter::CExtGrState* CreateExtGState(Object* oState)
 	return pState;
 }
 
-void AddWidgetParent(PdfWriter::CDocument* pDoc, CObjectsManager* pManager, PdfWriter::CObjectBase* pObj)
+void AddWidgetParent(PdfWriter::CDocument* pDoc, CObjectsManager* pManager, PdfWriter::CObjectBase* pObj, int nDepth = 0)
 {
-	if (pObj->GetType() != PdfWriter::object_type_DICT)
+	// NULL - a deleted kid (a cleared proxy). nDepth: a widget is not registered,
+	// so GetParent does not stop a Parent loop through widgets
+	if (!pObj || pObj->GetType() != PdfWriter::object_type_DICT || nDepth > 50)
 		return;
 	PdfWriter::CDictObject* pDict = dynamic_cast<PdfWriter::CDictObject*>(pObj);
 	if (!pDict)
@@ -235,7 +238,7 @@ void AddWidgetParent(PdfWriter::CDocument* pDoc, CObjectsManager* pManager, PdfW
 
 	PdfWriter::CObjectBase* pObjParent = pDict->Get("Parent");
 	if (pObjParent && pObjParent->GetType() == PdfWriter::object_type_DICT)
-		AddWidgetParent(pDoc, pManager, pObjParent);
+		AddWidgetParent(pDoc, pManager, pObjParent, nDepth + 1);
 
 	if (pDict->GetDictType() != PdfWriter::dict_type_UNKNOWN)
 		return;
@@ -246,7 +249,7 @@ void AddWidgetParent(PdfWriter::CDocument* pDoc, CObjectsManager* pManager, PdfW
 
 	PdfWriter::CArrayObject* pKids = (PdfWriter::CArrayObject*)pObjKids;
 	for (int i = 0; i < pKids->GetCount(); ++i)
-		AddWidgetParent(pDoc, pManager, pKids->Get(i));
+		AddWidgetParent(pDoc, pManager, pKids->Get(i), nDepth + 1);
 }
 PdfWriter::CDictObject* GetWidgetParent(PDFDoc* pdfDoc, PdfWriter::CDocument* pDoc, Object* pParentRef, int nStartRefID)
 {
@@ -1536,7 +1539,12 @@ PdfWriter::CObjectBase* DictToCDictObjectUnified(Object* obj, SDictConvertContex
 			return pCached;
 		}
 
-		std::vector<int>::iterator it = std::find(ctx.pManager->m_arrRedactFormFieldsID.begin(), ctx.pManager->m_arrRedactFormFieldsID.end(), nObjNum);
+		// Deleted (m_setDeletedIDs): a later reference does not convert it from the reader again
+		if (ctx.pManager->m_setDeletedIDs.count(nObjNum + ctx.nStartRefID))
+			return NULL;
+
+		// the editor's IDs, like the manager's, carry nStartRefID
+		std::vector<int>::iterator it = std::find(ctx.pManager->m_arrRedactFormFieldsID.begin(), ctx.pManager->m_arrRedactFormFieldsID.end(), nObjNum + ctx.nStartRefID);
 		if (it != ctx.pManager->m_arrRedactFormFieldsID.end())
 			return NULL;
 
@@ -2160,9 +2168,317 @@ bool CPdfEditor::IncrementalUpdates()
 // ============================================================
 namespace
 {
+// The gen to fetch reader object nNum with (nNum < getNumObjects()): 0 for an object in an
+// object stream, whose xref entry gen is its index in that stream
+int FetchGen(XRef* xref, int nNum)
+{
+	XRefEntry* pEntry = xref->getEntry(nNum);
+	return pEntry->type == xrefEntryCompressed ? 0 : pEntry->gen;
+}
+bool IsButtonField(PdfWriter::CDictObject* pField, PdfWriter::CDictObject* pKid);
+// The bytes of an Opt entry's export value (the first item of [export display]); entries with
+// equal bytes are one value. false - not a string
+bool OptValueBytes(PdfWriter::CObjectBase* pObj, std::string& sBytes)
+{
+	if (pObj && pObj->GetType() == PdfWriter::object_type_ARRAY && ((PdfWriter::CArrayObject*)pObj)->GetCount() > 0)
+		pObj = ((PdfWriter::CArrayObject*)pObj)->Get(0);
+	if (pObj && pObj->GetType() == PdfWriter::object_type_STRING)
+		sBytes.assign((const char*)((PdfWriter::CStringObject*)pObj)->GetString(), ((PdfWriter::CStringObject*)pObj)->GetLength());
+	else if (pObj && pObj->GetType() == PdfWriter::object_type_BINARY)
+		sBytes.assign((const char*)((PdfWriter::CBinaryObject*)pObj)->GetValue(), ((PdfWriter::CBinaryObject*)pObj)->GetLength());
+	else
+		return false;
+	return true;
+}
+// Ff of a field: its own, or inherited
+int FieldFlags(PdfWriter::CDictObject* pField)
+{
+	for (int nDepth = 0; pField && nDepth < 32; ++nDepth)
+	{
+		PdfWriter::CObjectBase* pObj = pField->Get("Ff");
+		if (pObj && pObj->GetType() == PdfWriter::object_type_NUMBER)
+			return ((PdfWriter::CNumberObject*)pObj)->Get();
+		pObj = pField->Get("Parent");
+		pField = (pObj && pObj->GetType() == PdfWriter::object_type_DICT) ? (PdfWriter::CDictObject*)pObj : NULL;
+	}
+	return 0;
+}
+// A kid named after the first index of its export value: a checkbox, or a radio in unison.
+// A kid converted from the reader is typed checkbox (CreateAnnot): Ff of the field tells a radio too
+bool IsUnisonKid(int nFf, PdfWriter::CCheckBoxWidget* pKid)
+{
+	bool bRadio = (nFf & (1 << 15)) || pKid->GetWidgetType() == PdfWriter::WidgetRadiobutton;
+	return !bRadio || (nFf & (1 << 25));
+}
+// The on state of a kid as it is: its name, else the one of its appearance. "" - none
+std::string KidOnState(PdfWriter::CCheckBoxWidget* pKid)
+{
+	return pKid->NeedAP_N_Yes() ? pKid->GetAPOnState() : pKid->GetAP_N_Yes();
+}
+// The Opt index V holds; -1 - V is no index (Off, a state name)
+int OptIndexOfV(const std::string& sV)
+{
+	if (sV.empty() || sV.length() >= 10)
+		return -1;
+	for (char c : sV)
+	{
+		if (!isdigit((unsigned char)c))
+			return -1;
+	}
+	return std::stoi(sV);
+}
+// Names the kids of a checkbox or radio group after their Opt index (IsUnisonKid: the first index of the
+// same export value). arrKids pairs with Opt by index (NULL - not a button widget). A kid is on when its AS
+// is (under any name: the old one, or Yes it was drawn with); none when V is Off. A kid with no AS is on
+// as V reads: an Opt index names pVKid; a state name - the kids with that state when they share one
+// export value, else the kids whose export value it is (the editor drew them Yes, it reads V so).
+// V names the first kid on, AS follows V
+void RenameKids(PdfWriter::CDictObject* pParent, PdfWriter::CArrayObject* pOpt, const std::vector<PdfWriter::CCheckBoxWidget*>& arrKids, PdfWriter::CObjectBase* pVKid)
+{
+	int nFf = FieldFlags(pParent);
+	PdfWriter::CObjectBase* pObj = pParent->Get("V");
+	std::string sOldV = pObj && pObj->GetType() == PdfWriter::object_type_NAME ? ((PdfWriter::CNameObject*)pObj)->Get() : "";
+
+	std::vector<std::wstring> arrNames(arrKids.size());
+	std::vector<std::string> arrValues(arrKids.size());
+	std::map<std::string, std::wstring> mNameAP_N_Yes;
+	for (int i = 0; i < (int)arrKids.size(); ++i)
+	{
+		arrNames[i] = std::to_wstring(i);
+		if (OptValueBytes(pOpt->Get(i), arrValues[i]))
+			arrNames[i] = mNameAP_N_Yes.emplace(arrValues[i], arrNames[i]).first->second;
+		else
+			arrValues[i] = "#" + std::to_string(i); // no export value: a value of its own
+	}
+
+	// the kids with no AS that are on
+	std::set<PdfWriter::CCheckBoxWidget*> setOn;
+	if (!sOldV.empty() && sOldV != "Off")
+	{
+		if (OptIndexOfV(sOldV) >= 0)
+			setOn.insert(dynamic_cast<PdfWriter::CCheckBoxWidget*>(pVKid));
+		else
+		{
+			std::set<std::string> setValues;
+			for (int i = 0; i < (int)arrKids.size(); ++i)
+			{
+				if (arrKids[i] && KidOnState(arrKids[i]) == sOldV)
+				{
+					setOn.insert(arrKids[i]);
+					setValues.insert(arrValues[i]);
+				}
+			}
+			if (setValues.size() != 1)
+			{
+				setOn.clear();
+				for (int i = 0; i < (int)arrKids.size(); ++i)
+				{
+					if (arrKids[i] && arrValues[i] == sOldV)
+						setOn.insert(arrKids[i]);
+				}
+			}
+		}
+	}
+
+	std::string sV = "Off";
+	for (int i = 0; i < (int)arrKids.size(); ++i)
+	{
+		PdfWriter::CCheckBoxWidget* pKid = arrKids[i];
+		if (!pKid)
+			continue;
+		PdfWriter::CObjectBase* pAS = pKid->Get("AS");
+		std::string sAS = pAS && pAS->GetType() == PdfWriter::object_type_NAME ? ((PdfWriter::CNameObject*)pAS)->Get() : "";
+		bool bOn = sOldV != "Off" && (sAS.empty() ? setOn.count(pKid) > 0 : sAS != "Off");
+		pKid->RenameAP_N_Yes(IsUnisonKid(nFf, pKid) ? arrNames[i] : std::to_wstring(i));
+		if (bOn && sV == "Off")
+			sV = pKid->GetAP_N_Yes();
+	}
+	for (PdfWriter::CCheckBoxWidget* pKid : arrKids)
+	{
+		if (pKid)
+			pKid->Add("AS", pKid->GetAP_N_Yes() == sV ? sV.c_str() : "Off");
+	}
+	pParent->Add("V", sV.c_str());
+}
+// RenameKids for the kids in pParent's Kids. pVKids - the Kids V's Opt index counts: as they were before
+// a cut; NULL - Kids
+void RenameButtonKids(PdfWriter::CDictObject* pParent, const std::vector<PdfWriter::CObjectBase*>* pVKids = NULL)
+{
+	PdfWriter::CObjectBase* pObj = pParent->Get("Kids");
+	PdfWriter::CArrayObject* pKids = (pObj && pObj->GetType() == PdfWriter::object_type_ARRAY) ? (PdfWriter::CArrayObject*)pObj : NULL;
+	pObj = pParent->Get("Opt");
+	PdfWriter::CArrayObject* pOpt = (pObj && pObj->GetType() == PdfWriter::object_type_ARRAY) ? (PdfWriter::CArrayObject*)pObj : NULL;
+	if (!pKids || !pOpt || pKids->GetCount() != pOpt->GetCount())
+		return;
+
+	std::vector<PdfWriter::CCheckBoxWidget*> arrKids;
+	for (int i = 0; i < pKids->GetCount(); ++i)
+		arrKids.push_back(dynamic_cast<PdfWriter::CCheckBoxWidget*>(pKids->Get(i)));
+
+	pObj = pParent->Get("V");
+	int nV = OptIndexOfV(pObj && pObj->GetType() == PdfWriter::object_type_NAME ? ((PdfWriter::CNameObject*)pObj)->Get() : "");
+	PdfWriter::CObjectBase* pVKid = NULL;
+	if (nV >= 0 && pVKids)
+		pVKid = nV < (int)pVKids->size() ? (*pVKids)[nV] : NULL;
+	else if (nV >= 0)
+		pVKid = nV < pKids->GetCount() ? pKids->Get(nV) : NULL;
+	RenameKids(pParent, pOpt, arrKids, pVKid);
+}
+// Kids of a converted field and of the fields under it: every converted kid the reader lists, in the
+// reader's order (a field converted before its kids' pages lacks them - SplitSkipDict), then the kids
+// the reader does not list (the editor's new widgets). Opt of a button group is cut to the kids kept
+void AddMissingFieldKids(Object* pNode, int nNodeID, XRef* xref, CObjectsManager& mObjManager, int nStartRefID, int nDepth, std::set<int>& setVisited)
+{
+	// each node once: Kids may list a node again, or its own ancestor
+	CObjectGuard oKids;
+	if (nDepth > 32 || !setVisited.insert(nNodeID).second || !pNode->dictLookup("Kids", oKids.get())->isArray())
+		return;
+
+	PdfWriter::CArrayObject* pKids = NULL;
+	PdfWriter::CObjectBase* pField = mObjManager.GetObj(nNodeID);
+	if (pField && pField->GetType() == PdfWriter::object_type_DICT)
+	{
+		PdfWriter::CObjectBase* pKidsObj = ((PdfWriter::CDictObject*)pField)->Get("Kids");
+		if (pKidsObj && pKidsObj->GetType() == PdfWriter::object_type_ARRAY)
+			pKids = (PdfWriter::CArrayObject*)pKidsObj;
+		else if (!pKidsObj)
+		{
+			pKids = new PdfWriter::CArrayObject();
+			((PdfWriter::CDictObject*)pField)->Add("Kids", pKids);
+		}
+	}
+
+	std::vector<PdfWriter::CObjectBase*> arrKids;
+	for (int i = 0; i < oKids->arrayGetLength(); ++i)
+	{
+		CObjectGuard oKidRef, oKid;
+		if (!oKids->arrayGetNF(i, oKidRef.get())->isRef())
+			continue;
+		int nKidID = oKidRef->getRefNum() + nStartRefID;
+
+		// NULL - deleted, or not in the output
+		PdfWriter::CObjectBase* pKid = mObjManager.GetObj(nKidID);
+		if (pKid && std::find(arrKids.begin(), arrKids.end(), pKid) == arrKids.end())
+			arrKids.push_back(pKid);
+
+		if (oKidRef->fetch(xref, oKid.get())->isDict())
+			AddMissingFieldKids(oKid.get(), nKidID, xref, mObjManager, nStartRefID, nDepth + 1, setVisited);
+	}
+	if (!pKids)
+		return;
+
+	for (int j = 0; j < pKids->GetCount(); ++j)
+	{
+		PdfWriter::CObjectBase* pKid = pKids->Get(j);
+		if (pKid && std::find(arrKids.begin(), arrKids.end(), pKid) == arrKids.end())
+			arrKids.push_back(pKid);
+	}
+	bool bSame = pKids->GetCount() == arrKids.size();
+	for (int j = 0; bSame && j < arrKids.size(); ++j)
+		bSame = pKids->Get(j) == arrKids[j];
+	// rebuilt only when every item is a proxy to a converted kid: Clear deletes a direct item
+	// and the placeholder of a raw reference
+	for (int j = 0; !bSame && j < pKids->GetCount(); ++j)
+	{
+		PdfWriter::CObjectBase* pItem = pKids->Get(j, false);
+		PdfWriter::CObjectBase* pKid = pKids->Get(j);
+		if (pItem && (pItem->GetType() != PdfWriter::object_type_PROXY || (pKid && pKid->GetType() == PdfWriter::object_type_UNKNOWN)))
+			bSame = true;
+	}
+	if (!bSame)
+	{
+		// the proxies are released, the kids stay
+		pKids->Clear();
+		for (PdfWriter::CObjectBase* pKid : arrKids)
+			pKids->Add(pKid);
+	}
+
+	// Opt of a checkbox or radio group pairs with Kids by index: only the entries of the kids in Kids stay
+	PdfWriter::CDictObject* pDict = (PdfWriter::CDictObject*)pField;
+	PdfWriter::CObjectBase* pOptObj = pDict->Get("Opt");
+	CObjectGuard oOpt;
+	if (!pOptObj || pOptObj->GetType() != PdfWriter::object_type_ARRAY || ((PdfWriter::CArrayObject*)pOptObj)->GetCount() == pKids->GetCount() ||
+		!pNode->dictLookup("Opt", oOpt.get())->isArray() || oOpt->arrayGetLength() != oKids->arrayGetLength() || !IsButtonField(pDict, NULL))
+		return;
+	PdfWriter::CArrayObject* pOpt = new PdfWriter::CArrayObject();
+	// the reader's Kids, which V's Opt index counts (NULL - a kid not in the output)
+	std::vector<PdfWriter::CObjectBase*> arrVKids;
+	for (int i = 0; i < oKids->arrayGetLength(); ++i)
+	{
+		CObjectGuard oKidRef, oItem;
+		if (!oKids->arrayGetNF(i, oKidRef.get())->isRef())
+		{
+			arrVKids.push_back(NULL);
+			continue;
+		}
+		PdfWriter::CObjectBase* pKid = mObjManager.GetObj(oKidRef->getRefNum() + nStartRefID);
+		arrVKids.push_back(pKid);
+		bool bIn = false;
+		for (int j = 0; pKid && j < pKids->GetCount() && !bIn; ++j)
+			bIn = pKids->Get(j) == pKid;
+		if (bIn)
+		{
+			oOpt->arrayGet(i, oItem.get());
+			pOpt->Add(DictToCDictObjectUnified(oItem.get(), SDictConvertContext()));
+		}
+	}
+	// the kids the reader does not list have no entry to take
+	if (pOpt->GetCount() != pKids->GetCount())
+	{
+		RELEASEOBJECT(pOpt);
+		return;
+	}
+	pDict->Add("Opt", pOpt);
+	RenameButtonKids(pDict, &arrVKids);
+}
+// AddMissingFieldKids for every field tree of the reader, from the roots of AcroForm Fields
+// (Fields may list widgets: their roots are reached through Parent)
+void SyncFieldKids(Object* oAcroForm, XRef* xref, CObjectsManager& mObjManager, int nStartRefID)
+{
+	CObjectGuard oFields;
+	if (!oAcroForm->dictLookup("Fields", oFields.get())->isArray())
+		return;
+
+	std::set<int> setRoots;
+	for (int i = 0; i < oFields->arrayGetLength(); ++i)
+	{
+		CObjectGuard oRef;
+		if (!oFields->arrayGetNF(i, oRef.get())->isRef())
+			continue;
+		Ref oRoot = oRef->getRef();
+		Object oNode;
+		oRef->fetch(xref, &oNode);
+		for (int nDepth = 0; nDepth < 32 && oNode.isDict(); ++nDepth)
+		{
+			Object oParentRef;
+			if (!oNode.dictLookupNF("Parent", &oParentRef)->isRef())
+			{
+				oParentRef.free();
+				break;
+			}
+			oRoot = oParentRef.getRef();
+			oNode.free();
+			oParentRef.fetch(xref, &oNode);
+			oParentRef.free();
+		}
+		oNode.free();
+		setRoots.insert(oRoot.num);
+	}
+
+	std::set<int> setVisited;
+	for (int nRoot : setRoots)
+	{
+		if (nRoot < 0 || nRoot >= xref->getNumObjects())
+			continue;
+		CObjectGuard oRootRef, oRoot;
+		oRootRef->initRef(nRoot, FetchGen(xref, nRoot));
+		if (oRootRef->fetch(xref, oRoot.get())->isDict())
+			AddMissingFieldKids(oRoot.get(), nRoot + nStartRefID, xref, mObjManager, nStartRefID, 0, setVisited);
+	}
+}
 // Copies an indirect array (Fields or CO) from reader into pAcroForm.
 // If the array already exists in pAcroForm, merges elements; otherwise creates it.
-// For Fields only: calls AddWidgetParent on each element.
+// For Fields only: registers each field tree (AddWidgetParent) and lists its root, once.
 void MergeRefArray(
 	Object&               oAcroForm,
 	int                   nIndex,
@@ -2216,10 +2532,29 @@ void MergeRefArray(
 		if (!pObj)
 			continue;
 
+		if (bIsFields)
+		{
+			AddWidgetParent(pDoc, &mObjManager, pObj);
+			// Fields lists root fields: an entry with a Parent is replaced by its root.
+			// A field's Parent is a field: a widget or a page there is a broken file's
+			for (int nDepth = 0; nDepth < 32 && pObj->GetType() == PdfWriter::object_type_DICT; ++nDepth)
+			{
+				PdfWriter::CObjectBase* pParent = ((PdfWriter::CDictObject*)pObj)->Get("Parent");
+				if (!pParent || pParent->GetType() != PdfWriter::object_type_DICT || ((PdfWriter::CDictObject*)pParent)->GetDictType() != PdfWriter::dict_type_UNKNOWN)
+					break;
+				pObj = pParent;
+			}
+		}
+
+		// listed already: by EditCO, EditWidgetParents, or as the root of an earlier entry
+		bool bHas = false;
+		for (int j = 0; j < pArray->GetCount() && !bHas; ++j)
+			bHas = pArray->Get(j) == pObj;
+		if (bHas)
+			continue;
+
 		pArray->Add(pObj);
 		mObjManager.IncRefCount(oRes->getRefNum() + nStartRefID);
-		if (bIsFields)
-			AddWidgetParent(pDoc, &mObjManager, pObj);
 	}
 }
 // Merges DR dict from reader AcroForm into pDoc's CResourcesDict.
@@ -2347,6 +2682,9 @@ void CPdfEditor::SyncAcroFormFromReader()
 	}
 	else
 		pAcroForm->Remove("NeedAppearances");
+
+	// Kids the page-by-page conversion missed: a kid converted after its field
+	SyncFieldKids(oAcroForm, xref, m_mObjManager, nStartRefID);
 
 	SDictConvertContext ctx(pDoc, xref, &m_mObjManager, nStartRefID);
 
@@ -3109,6 +3447,66 @@ void RemoveHiddenOCGs(Object* pOCProperties, XRef* xref)
 	oNewOCProps.free();
 }
 }
+namespace
+{
+void PruneSplitFields(CObjectsManager* pManager, PdfWriter::CDocument* pDoc);
+void DeleteEmptyAppendFields(CObjectsManager* pManager, PdfWriter::CDocument* pDoc, const std::set<int>& setFields);
+// A checkbox or radio group with Opt whose on states disagree with it - one name for kids of different
+// values (a kid the editor sent without its state name is drawn as Yes), or AS naming a state the kid
+// lacks - is renamed after Opt. A group with a kid not converted or with no state dict is left as it is
+void RenameButtonKidsYes(PdfWriter::CDocument* pDoc)
+{
+	const std::map<int, PdfWriter::CDictObject*>& mParents = pDoc->GetParents();
+	for (std::map<int, PdfWriter::CDictObject*>::const_iterator it = mParents.begin(); it != mParents.end(); ++it)
+	{
+		PdfWriter::CDictObject* pParent = it->second;
+		PdfWriter::CObjectBase* pKidsObj = pParent ? pParent->Get("Kids") : NULL;
+		PdfWriter::CObjectBase* pOptObj = pParent ? pParent->Get("Opt") : NULL;
+		if (!pKidsObj || !pOptObj || pKidsObj->GetType() != PdfWriter::object_type_ARRAY || pOptObj->GetType() != PdfWriter::object_type_ARRAY ||
+			((PdfWriter::CArrayObject*)pKidsObj)->GetCount() != ((PdfWriter::CArrayObject*)pOptObj)->GetCount() || !IsButtonField(pParent, NULL))
+			continue;
+		PdfWriter::CArrayObject* pKids = (PdfWriter::CArrayObject*)pKidsObj;
+		PdfWriter::CArrayObject* pOpt = (PdfWriter::CArrayObject*)pOptObj;
+
+		bool bAll = true, bBroken = false;
+		std::map<std::string, std::string> mStateValue; // on state -> the kid's export value (Opt bytes)
+		for (int i = 0; i < pKids->GetCount() && bAll; ++i)
+		{
+			PdfWriter::CCheckBoxWidget* pKid = dynamic_cast<PdfWriter::CCheckBoxWidget*>(pKids->Get(i));
+			PdfWriter::CObjectBase* pAP = pKid ? pKid->Get("AP") : NULL;
+			PdfWriter::CObjectBase* pAPN = pAP && pAP->GetType() == PdfWriter::object_type_DICT ? ((PdfWriter::CDictObject*)pAP)->Get("N") : NULL;
+			// an appearance stream, not a state dict: not renamed
+			if (!pKid || !pAPN || pAPN->GetType() != PdfWriter::object_type_DICT || ((PdfWriter::CDictObject*)pAPN)->GetStream())
+			{
+				bAll = false;
+				break;
+			}
+			PdfWriter::CDictObject* pDictAPN = (PdfWriter::CDictObject*)pAPN;
+			std::string sOn;
+			for (const std::pair<const std::string, PdfWriter::CObjectBase*>& itState : pDictAPN->GetDict())
+			{
+				if (itState.first != "Off")
+				{
+					sOn = itState.first;
+					break;
+				}
+			}
+			PdfWriter::CObjectBase* pAS = pKid->Get("AS");
+			if (pAS && pAS->GetType() == PdfWriter::object_type_NAME && strcmp(((PdfWriter::CNameObject*)pAS)->Get(), "Off") != 0 && !pDictAPN->Get(((PdfWriter::CNameObject*)pAS)->Get()))
+				bBroken = true;
+			// by value: radios not in unison may share a state for one export value
+			std::string sValue = std::to_string(i);
+			std::string sBytes;
+			if (OptValueBytes(pOpt->Get(i), sBytes))
+				sValue = sBytes;
+			if (!sOn.empty() && mStateValue.emplace(sOn, sValue).first->second != sValue)
+				bBroken = true;
+		}
+		if (bAll && bBroken)
+			RenameButtonKids(pParent);
+	}
+}
+}
 void CPdfEditor::Close()
 {
 	if (m_wsDstFile.empty() && m_nMode != Mode::WriteNew)
@@ -3123,6 +3521,7 @@ void CPdfEditor::Close()
 
 	if (m_nMode == Mode::Split)
 	{
+		PruneSplitFields(&m_mObjManager, m_pWriter->GetDocument());
 		m_pWriter->EditClose();
 		m_pWriter->SaveToFile(m_wsDstFile);
 		return;
@@ -3161,6 +3560,7 @@ void CPdfEditor::Close()
 		CloseWriteNew_FlushAnnotations(m_pReader, &m_mObjManager, pDoc, m_pWriter, m_nRedactInfo);
 
 		SyncAcroFormFromReader();
+		RenameButtonKidsYes(pDoc);
 
 		if (!pDoc->GetEncrypt())
 			CloseWriteNew_ApplyEncryption(m_wsPassword, &m_mObjManager, pPDFDocument, pDoc);
@@ -3227,6 +3627,8 @@ void CPdfEditor::Close()
 	// m_nMode == Mode::WriteAppend
 	PDFDoc*               pPDFDocument = m_pReader->GetPDFDocument(0);
 	PdfWriter::CDocument* pDoc         = m_pWriter->GetDocument();
+	DeleteEmptyAppendFields(&m_mObjManager, pDoc, m_setLostKidFields);
+	RenameButtonKidsYes(pDoc);
 
 	PdfWriter::CXref*       pXref    = NULL;
 	PdfWriter::CDictObject* pTrailer = NULL;
@@ -3815,6 +4217,10 @@ bool CPdfEditor::EditPage(int _nPageIndex, bool bSet, bool bActualPos)
 	RELEASEOBJECT(pXref);
 	return false;
 }
+namespace
+{
+void RemoveOffPageWidgets(CObjectsManager* pManager, PdfWriter::CDocument* pDoc, int nStartRefID, int nEndRefID, const std::vector<PdfWriter::CPage*>& arrPages);
+}
 bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength, PDFDoc* _pDoc, int nStartRefID, bool bIgnoreOO)
 {
 	if (m_nMode == Mode::Unknown)
@@ -3858,6 +4264,7 @@ bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength, PDFD
 		pageObj.free(); pageRefObj.free();
 	}
 
+	std::vector<PdfWriter::CPage*> arrPages;
 	for (unsigned int i = 0; i < unLength; ++i)
 	{
 		Ref* pPageRef = pCatalog->getPageRef((arrPageIndex ? arrPageIndex[i] : i) + 1);
@@ -3866,6 +4273,7 @@ bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength, PDFD
 
 		// Get page object
 		PdfWriter::CPage* pPage = (PdfWriter::CPage*)m_mObjManager.GetObj(pPageRef->num + nStartRefID);
+		arrPages.push_back(pPage);
 		Object pageRefObj, pageObj;
 		pageRefObj.initRef(pPageRef->num, pPageRef->gen);
 		if (!pageRefObj.fetch(xref, &pageObj)->isDict())
@@ -4027,6 +4435,8 @@ bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength, PDFD
 			m_pWriter->SetNeedAddHelvetica(false); // TODO adds font for proper Adobe pdf editing without text. Remove when implementing font map
 		pageObj.free();
 	}
+	// off-page widgets go before SyncFieldKids and the Fields below take them in
+	RemoveOffPageWidgets(&m_mObjManager, pDoc, nStartRefID, nStartRefID + xref->getNumObjects(), arrPages);
 
 	Object oCatalog;
 	if (!xref->getCatalog(&oCatalog)->isDict())
@@ -4058,6 +4468,9 @@ bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength, PDFD
 				return false;
 			}
 		}
+
+		// Kids in the reader's order; Opt of a button group is cut to the kids of the pages taken
+		SyncFieldKids(&oAcroForm, xref, m_mObjManager, nStartRefID);
 
 		for (int nIndex = 0; nIndex < oAcroForm.dictGetLength(); ++nIndex)
 		{
@@ -4124,6 +4537,12 @@ bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength, PDFD
 					oTemp.free();
 					continue;
 				}
+			}
+			else if (strcmp("CO", chKey) == 0)
+			{
+				// only the fields the pages brought in: a field of a page split away would come with its V
+				MergeRefArray(oAcroForm, nIndex, chKey, pDoc, m_mObjManager, nStartRefID, false);
+				continue;
 			}
 			else if (strcmp("SigFlags", chKey) == 0 || strcmp("XFA", chKey) == 0 || (strcmp("DA", chKey) == 0 && pAcroForm->Get("DA")) || strcmp("NeedAppearances", chKey) == 0)
 			{ // Cannot guarantee their execution
@@ -4332,7 +4751,19 @@ void CPdfEditor::AfterSplitPages()
 	PdfWriter::CPageTree* pPageTree = pDoc->GetPageTree();
 	if (!pPageTree)
 		return;
+
+	// The editor's changes are in: a field converted for them (EditWidgets) brings its kids with no P,
+	// those of the pages split away too; then a field with no widget left, and states named Yes
+	std::vector<PdfWriter::CPage*> arrPages;
+	for (unsigned int i = 0; i < pPageTree->GetCount(); ++i)
+		arrPages.push_back(pPageTree->GetPage(i)); // NULL - a page not in the part
+	RemoveOffPageWidgets(&m_mObjManager, pDoc, 0, INT_MAX, arrPages);
+	PruneSplitFields(&m_mObjManager, pDoc);
+	RenameButtonKidsYes(pDoc);
 	pPageTree->ClearFakePages();
+	// what nothing in the part refers to leaves it: the appearance streams of the widgets the editor sent
+	// (AddAnnotField removes them: they show the old values), the objects of what was taken out
+	pDoc->RemoveUnreachableObjects();
 }
 bool CPdfEditor::ChangeFullNameParent(int nParent, const std::string& sPrefix, std::vector<int>& arrRename)
 {
@@ -4345,6 +4776,8 @@ bool CPdfEditor::ChangeFullNameParent(int nParent, const std::string& sPrefix, s
 		return false;
 
 	PdfWriter::CDictObject* pDict = (PdfWriter::CDictObject*)pObjBase;
+	// marked before the recursion: a Parent chain that loops back stops here
+	arrRename.push_back(nParent);
 	pObjBase = pDict->Get("Parent");
 	if (!pObjBase || !ChangeFullNameParent(m_mObjManager.FindObj(pObjBase), sPrefix, arrRename))
 	{
@@ -4360,7 +4793,6 @@ bool CPdfEditor::ChangeFullNameParent(int nParent, const std::string& sPrefix, s
 			pBin->Add((BYTE*)sPrefix.c_str(), sPrefix.length());
 		}
 	}
-	arrRename.push_back(nParent);
 
 	return true;
 }
@@ -4630,6 +5062,46 @@ bool CPdfEditor::PrintPages(const std::vector<bool>& arrPages, int nFlag)
 
 	return true;
 }
+namespace
+{
+bool RemoveParentKid(PdfWriter::CDictObject* pParent, PdfWriter::CDictObject* pKid, int nKidID);
+int RemoveArrayItem(PdfWriter::CArrayObject* pArray, PdfWriter::CObjectBase* pKid, int nKidID);
+bool HasButtonOpt(PdfWriter::CDictObject* pField, PdfWriter::CDictObject* pKid);
+// WriteAppend: the widgets of a deleted page of the original file leave Fields and their field's Kids
+// (setLostKid gets the field, setDeleted the widget). A checkbox or radio group with Opt keeps its kids
+// (HasButtonOpt): the editor's Opt and V index still count them
+void RemovePageWidgets(PDFDoc* pPDFDocument, PdfWriter::CDocument* pDoc, PdfWriter::CObjectBase* pPageObj, std::set<int>& setLostKid, std::set<int>& setDeleted)
+{
+	PdfWriter::CDictObject* pAcroForm = pDoc->GetAcroForm();
+	PdfWriter::CObjectBase* pFieldsObj = pAcroForm ? pAcroForm->Get("Fields") : NULL;
+	if (!pPDFDocument || !pPageObj || !pPageObj->GetObjId() || !pFieldsObj || pFieldsObj->GetType() != PdfWriter::object_type_ARRAY)
+		return;
+	PdfWriter::CArrayObject* pFields = (PdfWriter::CArrayObject*)pFieldsObj;
+	XRef* xref = pPDFDocument->getXRef();
+
+	CObjectGuard oPage, oAnnots;
+	if (!xref->fetch(pPageObj->GetObjId(), pPageObj->GetGenNo(), oPage.get())->isDict() || !oPage->dictLookup("Annots", oAnnots.get())->isArray())
+		return;
+	for (int i = 0; i < oAnnots->arrayGetLength(); ++i)
+	{
+		CObjectGuard oAnnotRef, oNode, oType;
+		if (!oAnnots->arrayGetNF(i, oAnnotRef.get())->isRef() || !oAnnotRef->fetch(xref, oNode.get())->isDict() || !oNode->dictLookup("Subtype", oType.get())->isName("Widget"))
+			continue;
+		int nKid = oAnnotRef->getRefNum();
+		RemoveArrayItem(pFields, NULL, nKid);
+		CObjectGuard oParentRef;
+		PdfWriter::CDictObject* pParent = oNode->dictLookupNF("Parent", oParentRef.get())->isRef() ? GetWidgetParent(pPDFDocument, pDoc, oParentRef.get(), 0) : NULL;
+		if (pParent && HasButtonOpt(pParent, NULL))
+			continue;
+		if (pParent)
+		{
+			RemoveParentKid(pParent, NULL, nKid);
+			setLostKid.insert(oParentRef->getRefNum());
+		}
+		setDeleted.insert(nKid);
+	}
+}
+}
 bool CPdfEditor::DeletePage(int nPageIndex)
 {
 	if (m_nMode == Mode::Unknown && !IncrementalUpdates())
@@ -4641,6 +5113,40 @@ bool CPdfEditor::DeletePage(int nPageIndex)
 	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
 	PdfWriter::CPage* pPage = pDoc->GetPage(nPageIndex);
 	int nObjID = m_mObjManager.FindObj(pPage);
+	if (pPage && nObjID > 0)
+	{
+		// A converted page (a merged file's; WriteNew, Split) takes its widgets out of the field tree:
+		// else their field's Kids keeps them, on no page
+		std::vector<int> arrWidgets;
+		PdfWriter::CObjectBase* pAnnotsObj = pPage->Get("Annots");
+		if (pAnnotsObj && pAnnotsObj->GetType() == PdfWriter::object_type_ARRAY)
+		{
+			PdfWriter::CArrayObject* pAnnots = (PdfWriter::CArrayObject*)pAnnotsObj;
+			for (int i = 0; i < pAnnots->GetCount(); ++i)
+			{
+				PdfWriter::CAnnotation* pAnnot = dynamic_cast<PdfWriter::CAnnotation*>(pAnnots->Get(i));
+				int nAnnotID = (pAnnot && pAnnot->GetAnnotationType() == PdfWriter::AnnotWidget) ? m_mObjManager.FindObj(pAnnot) : -1;
+				if (nAnnotID >= 0)
+					arrWidgets.push_back(nAnnotID);
+			}
+		}
+		for (int nWidgetID : arrWidgets)
+		{
+			// still converted only: DeleteAnnot looks any other ID up on the edited page
+			PdfWriter::CObjectBase* pWidget = m_mObjManager.GetObj(nWidgetID);
+			if (!pWidget || pWidget->GetType() != PdfWriter::object_type_DICT)
+				continue;
+			// a kid of a checkbox or radio group with Opt stays, as in RemovePageWidgets: the editor's Opt
+			// and V index still count it. Split cuts it, EditWidgetParents finds the kid on by export value
+			PdfWriter::CObjectBase* pParent = ((PdfWriter::CDictObject*)pWidget)->Get("Parent");
+			if (m_nMode != Mode::Split && pParent && pParent->GetType() == PdfWriter::object_type_DICT &&
+				HasButtonOpt((PdfWriter::CDictObject*)pParent, (PdfWriter::CDictObject*)pWidget))
+				continue;
+			DeleteAnnot(nWidgetID, NULL);
+		}
+	}
+	else if (m_nMode == Mode::WriteAppend)
+		RemovePageWidgets(m_pReader->GetPDFDocument(0), pDoc, pDoc->GetPageObj(nPageIndex), m_setLostKidFields, m_mObjManager.m_setDeletedIDs);
 	bool bRes = pDoc->DeletePage(nPageIndex);
 	if (bRes && nObjID > 0)
 	{
@@ -4804,7 +5310,7 @@ bool CPdfEditor::EditAnnot(int _nPageIndex, int nID)
 		{
 			Object oParent, oParent2;
 			oAnnot.dictLookup("Parent", &oParent);
-			while (oParent.isDict())
+			for (int nDepth = 0; oParent.isDict() && nDepth < 50; ++nDepth) // a broken file may loop the Parent chain
 			{
 				if (oParent.dictLookup("FT", &oFT)->isName())
 				{
@@ -4832,7 +5338,7 @@ bool CPdfEditor::EditAnnot(int _nPageIndex, int nID)
 				{
 					Object oParent, oParent2;
 					oAnnot.dictLookup("Parent", &oParent);
-					while (oParent.isDict())
+					for (int nDepth = 0; oParent.isDict() && nDepth < 50; ++nDepth) // a broken file may loop the Parent chain
 					{
 						if (oParent.dictLookup("Ff", &oFT)->isInt())
 						{
@@ -4915,7 +5421,7 @@ bool CPdfEditor::EditAnnot(int _nPageIndex, int nID)
 			for (int i = 0; i < pKids->GetCount(); ++i)
 			{
 				PdfWriter::CObjectBase* pKid = pKids->Get(i);
-				if (pKid->GetObjId() == oAnnotRef.getRefNum())
+				if (pKid && pKid->GetObjId() == oAnnotRef.getRefNum())
 				{
 					pKids->Insert(pKid, pAnnot, true);
 					break;
@@ -5019,6 +5525,292 @@ void RemoveObj(CObjectsManager* pManager, PdfWriter::CDocument* pDoc, PdfWriter:
 		pManager->RemoveObj(nIDR);
 	}
 }
+// true for a button field (FT Btn on the field, an ancestor, else the kid): its Opt pairs with Kids
+// by index, a choice field's Opt is its list of items
+bool IsButtonField(PdfWriter::CDictObject* pField, PdfWriter::CDictObject* pKid)
+{
+	for (int nDepth = 0; pField && nDepth < 32; ++nDepth)
+	{
+		PdfWriter::CObjectBase* pFT = pField->Get("FT");
+		if (pFT && pFT->GetType() == PdfWriter::object_type_NAME)
+			return strcmp(((PdfWriter::CNameObject*)pFT)->Get(), "Btn") == 0;
+		PdfWriter::CObjectBase* pParent = pField->Get("Parent");
+		pField = (pParent && pParent->GetType() == PdfWriter::object_type_DICT) ? (PdfWriter::CDictObject*)pParent : NULL;
+	}
+	PdfWriter::CObjectBase* pFT = pKid ? pKid->Get("FT") : NULL;
+	return pFT && pFT->GetType() == PdfWriter::object_type_NAME && strcmp(((PdfWriter::CNameObject*)pFT)->Get(), "Btn") == 0;
+}
+// A checkbox or radio group with Opt (a WriteAppend copy keeps an indirect Opt as a raw reference)
+bool HasButtonOpt(PdfWriter::CDictObject* pField, PdfWriter::CDictObject* pKid)
+{
+	PdfWriter::CObjectBase* pOpt = pField ? pField->Get("Opt") : NULL;
+	return pOpt && (pOpt->GetType() == PdfWriter::object_type_ARRAY || pOpt->GetType() == PdfWriter::object_type_UNKNOWN) && IsButtonField(pField, pKid);
+}
+// The item of pKid (the writer's object), or of object nKidID when pKid is NULL, leaves the array;
+// only its proxy is deleted (CArrayObject::Remove returns the target). Its index, -1 - not there
+int RemoveArrayItem(PdfWriter::CArrayObject* pArray, PdfWriter::CObjectBase* pKid, int nKidID)
+{
+	for (int i = 0; i < pArray->GetCount(); ++i)
+	{
+		PdfWriter::CObjectBase* pItem = pArray->Get(i);
+		if (!pItem || (pKid ? pItem != pKid : (int)pItem->GetObjId() != nKidID))
+			continue;
+		PdfWriter::CObjectBase* pProxy = pArray->Get(i, false);
+		pArray->Remove(i);
+		if (pProxy != pItem)
+			delete pProxy;
+		return i;
+	}
+	return -1;
+}
+// The kid leaves the parent's Kids; in a checkbox or radio group whose Opt pairs with Kids, its Opt entry
+// too (the editor writes Opt without it). pKid - the writer's kid; NULL - the item of object nKidID
+// (WriteAppend: not converted). true - an Opt entry left with it
+bool RemoveParentKid(PdfWriter::CDictObject* pParent, PdfWriter::CDictObject* pKid, int nKidID)
+{
+	PdfWriter::CObjectBase* pKidsObj = pParent->Get("Kids");
+	if (!pKidsObj || pKidsObj->GetType() != PdfWriter::object_type_ARRAY)
+		return false;
+
+	PdfWriter::CArrayObject* pKids = (PdfWriter::CArrayObject*)pKidsObj;
+	PdfWriter::CObjectBase* pOptObj = pParent->Get("Opt");
+	PdfWriter::CArrayObject* pOpt = (pOptObj && pOptObj->GetType() == PdfWriter::object_type_ARRAY) ? (PdfWriter::CArrayObject*)pOptObj : NULL;
+	if (pOpt && (pOpt->GetCount() != pKids->GetCount() || !IsButtonField(pParent, pKid)))
+		pOpt = NULL;
+	int i = RemoveArrayItem(pKids, pKid, nKidID);
+	if (i < 0 || !pOpt || !pOpt->Get(i))
+		return false;
+	// the entry itself, or the proxy of an indirect one
+	PdfWriter::CObjectBase* pOptItem = pOpt->Get(i, false);
+	pOpt->Remove(i);
+	RELEASEOBJECT(pOptItem);
+	return true;
+}
+// pDict leaves its parent's Kids (RemoveParentKid); when its Opt entry goes too, the kids left are
+// renamed after their new indexes (V's index counts the Kids before)
+void RemoveFromParentKids(PdfWriter::CDictObject* pDict)
+{
+	PdfWriter::CObjectBase* pParent = pDict->Get("Parent");
+	if (!pParent || pParent->GetType() != PdfWriter::object_type_DICT)
+		return;
+	std::vector<PdfWriter::CObjectBase*> arrVKids;
+	PdfWriter::CObjectBase* pKids = ((PdfWriter::CDictObject*)pParent)->Get("Kids");
+	for (int i = 0; pKids && pKids->GetType() == PdfWriter::object_type_ARRAY && i < ((PdfWriter::CArrayObject*)pKids)->GetCount(); ++i)
+		arrVKids.push_back(((PdfWriter::CArrayObject*)pKids)->Get(i));
+	if (RemoveParentKid((PdfWriter::CDictObject*)pParent, pDict, 0))
+		RenameButtonKids((PdfWriter::CDictObject*)pParent, &arrVKids);
+}
+// A field whose kids are all deleted is deleted too, up the Parent chain - else its parent's Kids keeps it,
+// with no widget and the deleted kids' V. Decided by the reader's Kids: the writer's lacks the kids not converted yet
+void DeleteEmptyParents(CPdfReader* pReader, CObjectsManager* pManager, PdfWriter::CDocument* pDoc, int nID)
+{
+	PDFDoc* pPDFDocument = NULL;
+	int nStartRefID = 0;
+	int nRefNum = pReader->FindRefNum(nID, &pPDFDocument, &nStartRefID);
+	if (nRefNum < 0 || !pPDFDocument)
+		return;
+	XRef* xref = pPDFDocument->getXRef();
+
+	Object oNode, oType;
+	if (!xref->fetch(nRefNum, FetchGen(xref, nRefNum), &oNode)->isDict() || !oNode.dictLookup("Subtype", &oType)->isName("Widget"))
+	{
+		oNode.free(); oType.free();
+		return;
+	}
+	oType.free();
+
+	for (int nDepth = 0; nDepth < 32; ++nDepth)
+	{
+		Object oParentRef, oParent, oKids;
+		if (!oNode.dictLookupNF("Parent", &oParentRef)->isRef() || !oParentRef.fetch(xref, &oParent)->isDict() ||
+			!oParent.dictLookup("Kids", &oKids)->isArray())
+		{
+			oParentRef.free(); oParent.free(); oKids.free();
+			break;
+		}
+
+		bool bLive = false;
+		for (int i = 0; i < oKids.arrayGetLength() && !bLive; ++i)
+		{
+			Object oKid;
+			bLive = !oKids.arrayGetNF(i, &oKid)->isRef() || !pManager->m_setDeletedIDs.count(oKid.getRefNum() + nStartRefID);
+			oKid.free();
+		}
+		oKids.free();
+		if (bLive)
+		{
+			oParentRef.free(); oParent.free();
+			break;
+		}
+
+		int nParentID = oParentRef.getRefNum() + nStartRefID;
+		oParentRef.free();
+		pManager->m_setDeletedIDs.insert(nParentID);
+		PdfWriter::CObjectBase* pObj = pManager->GetObj(nParentID);
+		if (pObj && pObj->GetType() == PdfWriter::object_type_DICT)
+		{
+			RemoveFromParentKids((PdfWriter::CDictObject*)pObj);
+			RemoveObj(pManager, pDoc, pObj);
+		}
+
+		oNode.free();
+		oNode = oParent;
+	}
+	oNode.free();
+}
+// WriteAppend: a field whose kids all left in this update (DeleteAnnot, RemovePageWidgets: setFields) leaves
+// it, up the Parent chain: out of Fields, CO and its parent's Kids, its object freed - else Fields lists it with
+// Kids [] and its V. A field the editor gave a new widget (EditWidgetParents) has a kid again and stays
+void DeleteEmptyAppendFields(CObjectsManager* pManager, PdfWriter::CDocument* pDoc, const std::set<int>& setFields)
+{
+	PdfWriter::CDictObject* pAcroForm = pDoc->GetAcroForm();
+	PdfWriter::CArrayObject* pFields = pAcroForm ? dynamic_cast<PdfWriter::CArrayObject*>(pAcroForm->Get("Fields")) : NULL;
+	PdfWriter::CArrayObject* pCO = pAcroForm ? dynamic_cast<PdfWriter::CArrayObject*>(pAcroForm->Get("CO")) : NULL;
+	for (int nID : setFields)
+	{
+		PdfWriter::CDictObject* pField = pDoc->GetParent(nID);
+		for (int nDepth = 0; pField && nDepth < 32; ++nDepth)
+		{
+			PdfWriter::CArrayObject* pKids = dynamic_cast<PdfWriter::CArrayObject*>(pField->Get("Kids"));
+			bool bEmpty = pKids != NULL;
+			for (int i = 0; bEmpty && i < pKids->GetCount(); ++i)
+				bEmpty = !pKids->Get(i);
+			// only a field copied into the update under its number (GetWidgetParent)
+			int nFieldID = pField->GetObjId();
+			if (!bEmpty || nFieldID <= 0 || pDoc->GetParent(nFieldID) != pField)
+				break;
+
+			PdfWriter::CObjectBase* pUp = pField->Get("Parent");
+			PdfWriter::CDictObject* pUpField = pUp && pUp->GetType() == PdfWriter::object_type_DICT ? (PdfWriter::CDictObject*)pUp : NULL;
+			if (pFields)
+				RemoveArrayItem(pFields, NULL, nFieldID);
+			if (pCO)
+				RemoveArrayItem(pCO, NULL, nFieldID);
+			if (pUpField)
+				RemoveParentKid(pUpField, NULL, nFieldID);
+			pManager->m_setDeletedIDs.insert(nFieldID);
+			pDoc->RemoveObj(pField, false); // out of the parents EditWidgetParents walks
+			PdfWriter::CXref::Free(pField);
+			pField = pUpField;
+		}
+	}
+}
+// Split: a widget SplitSkipDict does not hold back - one with no P or no Type - comes in with its field's
+// Kids even when its page is left out. Removed when no page of arrPages lists it in Annots.
+// [nStartRefID, nEndRefID) - the manager IDs of the widgets checked
+void RemoveOffPageWidgets(CObjectsManager* pManager, PdfWriter::CDocument* pDoc, int nStartRefID, int nEndRefID, const std::vector<PdfWriter::CPage*>& arrPages)
+{
+	std::set<PdfWriter::CObjectBase*> setOnPage;
+	for (PdfWriter::CPage* pPage : arrPages)
+	{
+		PdfWriter::CObjectBase* pAnnotsObj = pPage ? pPage->Get("Annots") : NULL;
+		if (!pAnnotsObj || pAnnotsObj->GetType() != PdfWriter::object_type_ARRAY)
+			continue;
+		PdfWriter::CArrayObject* pAnnots = (PdfWriter::CArrayObject*)pAnnotsObj;
+		for (int i = 0; i < pAnnots->GetCount(); ++i)
+			setOnPage.insert(pAnnots->Get(i));
+	}
+
+	std::vector<int> arrOff;
+	const std::map<int, PdfWriter::CAnnotation*>& mAnnots = pDoc->GetAnnots();
+	for (std::map<int, PdfWriter::CAnnotation*>::const_iterator it = mAnnots.begin(); it != mAnnots.end(); ++it)
+	{
+		if (it->first >= nStartRefID && it->first < nEndRefID && it->second->GetAnnotationType() == PdfWriter::AnnotWidget && !setOnPage.count(it->second))
+			arrOff.push_back(it->first);
+	}
+	for (int nID : arrOff)
+	{
+		PdfWriter::CObjectBase* pObj = pManager->GetObj(nID);
+		if (!pObj || pObj->GetType() != PdfWriter::object_type_DICT)
+			continue;
+		pManager->m_setDeletedIDs.insert(nID);
+		RemoveFromParentKids((PdfWriter::CDictObject*)pObj);
+		RemoveObj(pManager, pDoc, pObj);
+	}
+}
+// Split: a field with no widget under it (its widgets split away, or deleted) leaves the part, its V with it.
+// false - pNode has none: the caller removes it
+bool PruneSplitFields(CObjectsManager* pManager, PdfWriter::CDocument* pDoc, PdfWriter::CObjectBase* pNode, std::set<PdfWriter::CObjectBase*>& setSeen, int nDepth)
+{
+	// a widget, or anything that is not a field dict, stays
+	if (!pNode || pNode->GetType() != PdfWriter::object_type_DICT || ((PdfWriter::CDictObject*)pNode)->GetDictType() != PdfWriter::dict_type_UNKNOWN)
+		return true;
+	// a loop in the field tree is left as it is
+	if (nDepth > 50 || !setSeen.insert(pNode).second)
+		return true;
+	PdfWriter::CObjectBase* pKidsObj = ((PdfWriter::CDictObject*)pNode)->Get("Kids");
+	if (!pKidsObj || pKidsObj->GetType() != PdfWriter::object_type_ARRAY)
+		return true;
+
+	PdfWriter::CArrayObject* pKids = (PdfWriter::CArrayObject*)pKidsObj;
+	bool bLive = false;
+	for (int i = 0; i < pKids->GetCount(); ++i)
+	{
+		PdfWriter::CObjectBase* pKid = pKids->Get(i);
+		if (!pKid)
+			continue; // deleted
+		if (PruneSplitFields(pManager, pDoc, pKid, setSeen, nDepth + 1))
+		{
+			bLive = true;
+			continue;
+		}
+		RemoveArrayItem(pKids, pKid, 0);
+		RemoveObj(pManager, pDoc, pKid);
+		--i;
+	}
+	return bLive;
+}
+void PruneSplitFields(CObjectsManager* pManager, PdfWriter::CDocument* pDoc)
+{
+	PdfWriter::CDictObject* pAcroForm = pDoc->GetAcroForm();
+	PdfWriter::CObjectBase* pFieldsObj = pAcroForm ? pAcroForm->Get("Fields") : NULL;
+	if (!pFieldsObj || pFieldsObj->GetType() != PdfWriter::object_type_ARRAY)
+		return;
+
+	PdfWriter::CArrayObject* pFields = (PdfWriter::CArrayObject*)pFieldsObj;
+	std::set<PdfWriter::CObjectBase*> setSeen;
+	for (int i = 0; i < pFields->GetCount(); ++i)
+	{
+		PdfWriter::CObjectBase* pField = pFields->Get(i);
+		if (!pField || PruneSplitFields(pManager, pDoc, pField, setSeen, 0))
+			continue;
+		RemoveArrayItem(pFields, pField, 0);
+		RemoveObj(pManager, pDoc, pField);
+		--i;
+	}
+}
+PdfWriter::CDictObject* GetRebuildParent(CPdfReader* pReader, CObjectsManager* pManager, PdfWriter::CDocument* pDoc, int nID);
+// A button kid that is on leaves its field: true when the field's V names the kid's state and no
+// other kid the reader lists has that state on - V is Off then. pParentID - the field's manager ID
+bool IsValueOfDeletedKid(CPdfReader* pReader, CObjectsManager* pManager, int nID, int* pParentID = NULL)
+{
+	PDFDoc* pPDFDocument = NULL;
+	int nStartRefID = 0;
+	int nRefNum = pReader->FindRefNum(nID, &pPDFDocument, &nStartRefID);
+	if (nRefNum < 0 || !pPDFDocument)
+		return false;
+	XRef* xref = pPDFDocument->getXRef();
+
+	CObjectGuard oKid, oAS, oParentRef, oParent, oV, oKids;
+	if (!xref->fetch(nRefNum, FetchGen(xref, nRefNum), oKid.get())->isDict() || !oKid->dictLookup("AS", oAS.get())->isName() || oAS->isName("Off") ||
+		!oKid->dictLookupNF("Parent", oParentRef.get())->isRef() || !oParentRef->fetch(xref, oParent.get())->isDict() ||
+		!oParent->dictLookup("V", oV.get())->isName(oAS->getName()))
+		return false;
+	if (oParent->dictLookup("Kids", oKids.get())->isArray())
+	{
+		for (int i = 0; i < oKids->arrayGetLength(); ++i)
+		{
+			CObjectGuard oRef, oOther, oOtherAS;
+			if (!oKids->arrayGetNF(i, oRef.get())->isRef() || oRef->getRefNum() == nRefNum || pManager->m_setDeletedIDs.count(oRef->getRefNum() + nStartRefID))
+				continue;
+			if (oRef->fetch(xref, oOther.get())->isDict() && oOther->dictLookup("AS", oOtherAS.get())->isName(oAS->getName()))
+				return false;
+		}
+	}
+	if (pParentID)
+		*pParentID = oParentRef->getRefNum() + nStartRefID;
+	return true;
+}
 }
 bool CPdfEditor::DeleteAnnot(int nID, Object* oAnnots)
 {
@@ -5026,21 +5818,62 @@ bool CPdfEditor::DeleteAnnot(int nID, Object* oAnnots)
 	if (!pDoc)
 		return false;
 
+	// Marked deleted when converted (any mode; in WriteAppend a merged file's annotation), and always in
+	// Split and WriteNew, which convert page by page: a later reference must not convert it again
+	bool bRebuild = m_nMode == Mode::Split || m_nMode == Mode::WriteNew;
 	PdfWriter::CObjectBase* pObj = m_mObjManager.GetObj(nID);
+	if (pObj || bRebuild)
+		m_mObjManager.m_setDeletedIDs.insert(nID);
+
 	if (pObj)
 	{
 		if (pObj->GetType() == PdfWriter::object_type_DICT)
 		{
+			PdfWriter::CObjectBase* pParentObj = ((PdfWriter::CDictObject*)pObj)->Get("Parent");
+			if (pParentObj && pParentObj->GetType() == PdfWriter::object_type_DICT && IsValueOfDeletedKid(m_pReader, &m_mObjManager, nID))
+				((PdfWriter::CDictObject*)pParentObj)->Add("V", "Off");
+			// before the Popup, whose cascade may free the annotation (Popup /Parent)
+			RemoveFromParentKids((PdfWriter::CDictObject*)pObj);
 			PdfWriter::CObjectBase* pObjR = ((PdfWriter::CDictObject*)pObj)->Get("Popup");
 			if (pObjR)
+			{
+				int nPopupID = m_mObjManager.FindObj(pObjR);
+				if (nPopupID >= 0)
+					m_mObjManager.m_setDeletedIDs.insert(nPopupID);
 				RemoveObj(&m_mObjManager, pDoc, pObjR);
+			}
 		}
 
-		RemoveObj(&m_mObjManager, pDoc, pObj);
+		// freed already by the Popup's cascade: the manager no longer lists it
+		if (m_mObjManager.GetObj(nID) == pObj)
+			RemoveObj(&m_mObjManager, pDoc, pObj);
+		DeleteEmptyParents(m_pReader, &m_mObjManager, pDoc, nID);
 		return true;
 	}
-	if (m_nMode == Mode::Split || m_nMode == Mode::WriteNew)
+	if (bRebuild)
+	{
+		// Not converted yet: its Popup is in the page's Annots too and would be converted alone
+		PDFDoc* pPDFDocument = NULL;
+		int nStartRefID = 0;
+		int nRefNum = m_pReader->FindRefNum(nID, &pPDFDocument, &nStartRefID);
+		if (nRefNum >= 0 && pPDFDocument)
+		{
+			XRef* xref = pPDFDocument->getXRef();
+			CObjectGuard oAnnot, oPopupRef;
+			if (xref->fetch(nRefNum, FetchGen(xref, nRefNum), oAnnot.get())->isDict() && oAnnot->dictLookupNF("Popup", oPopupRef.get())->isRef())
+				m_mObjManager.m_setDeletedIDs.insert(oPopupRef->getRefNum() + nStartRefID);
+		}
+		DeleteEmptyParents(m_pReader, &m_mObjManager, pDoc, nID);
+		// WriteNew converts the field from the reader with its V; a split part has it already, or not at all
+		int nParentID = 0;
+		if (IsValueOfDeletedKid(m_pReader, &m_mObjManager, nID, &nParentID))
+		{
+			PdfWriter::CObjectBase* pParent = m_nMode == Mode::WriteNew ? GetRebuildParent(m_pReader, &m_mObjManager, pDoc, nParentID) : m_mObjManager.GetObj(nParentID);
+			if (pParent && pParent->GetType() == PdfWriter::object_type_DICT)
+				((PdfWriter::CDictObject*)pParent)->Add("V", "Off");
+		}
 		return true;
+	}
 
 	PDFDoc* pPDFDocument = NULL;
 	int nPageIndex = m_pReader->GetPageIndex(m_nEditPage, &pPDFDocument);
@@ -5092,7 +5925,7 @@ bool CPdfEditor::DeleteAnnot(int nID, Object* oAnnots)
 					{
 						Object oParent, oParent2;
 						oAnnot.dictLookup("Parent", &oParent);
-						while (oParent.isDict())
+						for (int nDepth = 0; oParent.isDict() && nDepth < 50; ++nDepth) // a broken file may loop the Parent chain
 						{
 							if (oParent.dictLookup("FT", &oFT)->isName())
 							{
@@ -5118,7 +5951,7 @@ bool CPdfEditor::DeleteAnnot(int nID, Object* oAnnots)
 						{
 							Object oParent, oParent2;
 							oAnnot.dictLookup("Parent", &oParent);
-							while (oParent.isDict())
+							for (int nDepth = 0; oParent.isDict() && nDepth < 50; ++nDepth) // a broken file may loop the Parent chain
 							{
 								if (oParent.dictLookup("Ff", &oFT)->isInt())
 								{
@@ -5134,7 +5967,6 @@ bool CPdfEditor::DeleteAnnot(int nID, Object* oAnnots)
 						}
 
 						bPushButton = (bool)((nFf >> 16) & 1);
-						bool bRadiosInUnison = (bool)(nFf & (1 << 25));
 						if (!bPushButton)
 						{
 							oFT.free();
@@ -5143,7 +5975,7 @@ bool CPdfEditor::DeleteAnnot(int nID, Object* oAnnots)
 							{
 								Object oParent, oParent2;
 								oAnnot.dictLookup("Parent", &oParent);
-								while (oParent.isDict())
+								for (int nDepth = 0; oParent.isDict() && nDepth < 50; ++nDepth) // a broken file may loop the Parent chain
 								{
 									if (oParent.dictLookup("Opt", &oFT)->isArray())
 									{
@@ -5157,82 +5989,91 @@ bool CPdfEditor::DeleteAnnot(int nID, Object* oAnnots)
 								}
 								oParent.free();
 							}
-							if (bNeed && EditAnnot(m_nEditPage, nID))
+							PdfWriter::CAnnotation* pAnnot = bNeed && EditAnnot(m_nEditPage, nID) ? pDoc->GetAnnot(nID) : NULL;
+							if (pAnnot)
 							{
-								PdfWriter::CAnnotation* pAnnot = pDoc->GetAnnot(nID);
-								if (pAnnot)
+								// restored below: EditAnnot of a kid on another page makes that page current
+								PdfWriter::CPage* pPage = pDoc->GetCurPage();
+
+								PdfWriter::CObjectBase* pObj = pAnnot->Get("Parent");
+								PdfWriter::CDictObject* pParent = NULL;
+								if (pObj && pObj->GetType() == PdfWriter::object_type_DICT)
+									pParent = (PdfWriter::CDictObject*)pObj;
+								PdfWriter::CArrayObject* pOpt = NULL, *pKids = NULL;
+								// the Kids V's Opt index counts: before this kid leaves
+								std::vector<int> arrVKidIDs;
+								if (pParent)
 								{
-									pAnnot->SetHidden();
-
-									PdfWriter::CObjectBase* pObj = pAnnot->Get("Parent");
-									PdfWriter::CDictObject* pParent = NULL;
-									if (pObj && pObj->GetType() == PdfWriter::object_type_DICT)
-										pParent = (PdfWriter::CDictObject*)pObj;
-									PdfWriter::CArrayObject* pOpt = NULL, *pKids = NULL;
-									if (pParent)
+									pObj = pParent->Get("Kids");
+									if (pObj && pObj->GetType() == PdfWriter::object_type_ARRAY)
+										pKids = (PdfWriter::CArrayObject*)pObj;
+									for (int i = 0; pKids && i < pKids->GetCount(); ++i)
 									{
-										pObj = pParent->Get("Kids");
-										if (pObj && pObj->GetType() == PdfWriter::object_type_ARRAY)
-											pKids = (PdfWriter::CArrayObject*)pObj;
-										pObj = pParent->Get("Opt");
-										if (pObj && pObj->GetType() == PdfWriter::object_type_ARRAY)
-											pOpt = (PdfWriter::CArrayObject*)pObj;
+										PdfWriter::CObjectBase* pItem = pKids->Get(i);
+										arrVKidIDs.push_back(pItem ? (int)pItem->GetObjId() : 0);
 									}
-									std::map<std::wstring, std::wstring> mNameAP_N_Yes;
-									if (pKids && pOpt && pKids->GetCount() == pOpt->GetCount())
-									{
-										for (int i = 0; i < pKids->GetCount(); ++i)
-										{
-											pObj = pKids->Get(i);
-											if (pObj == pAnnot)
-											{
-												pObj = pKids->Remove(i);
-												delete pObj;
-												pObj = pOpt->Remove(i);
-												delete pObj;
-												--i;
-											}
-											else
-											{
-												pObj = pOpt->Get(i);
-												if (pObj->GetType() == PdfWriter::object_type_ARRAY && ((PdfWriter::CArrayObject*)pObj)->GetCount() > 0)
-													pObj = ((PdfWriter::CArrayObject*)pObj)->Get(0);
-												std::wstring sNameOpt;
-												if (pObj->GetType() == PdfWriter::object_type_STRING)
-												{
-													PdfWriter::CStringObject* pStr = (PdfWriter::CStringObject*)pObj;
-													sNameOpt = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)pStr->GetString(), pStr->GetLength());
-													if (mNameAP_N_Yes.find(sNameOpt) == mNameAP_N_Yes.end())
-														mNameAP_N_Yes[sNameOpt] = std::to_wstring(i);
-												}
-												pObj = pKids->Get(i);
-												Object oAnnot, oSubtype, oPageRef;
-												if (xref->fetch(pObj->GetObjId(), pObj->GetGenNo(), &oAnnot)->isDict("Annot") && oAnnot.dictLookup("Subtype", &oSubtype)->isName("Widget") &&
-													oAnnot.dictLookupNF("P", &oPageRef)->isRef())
-												{
-													int nPage = pPDFDocument->findPage(oPageRef.getRefNum(), oPageRef.getRefGen()) - 1;
-													PdfWriter::CCheckBoxWidget* pKidAnnot = NULL;
-													int nObjId = pObj->GetObjId();
-													if (nPage >= 0 && EditAnnot(nPage, nObjId))
-														pKidAnnot = dynamic_cast<PdfWriter::CCheckBoxWidget*>(pDoc->GetAnnot(nObjId));
-													if (pKidAnnot && !sNameOpt.empty())
-														pKidAnnot->RenameAP_N_Yes((bRadiosInUnison || pKidAnnot->GetWidgetType() == PdfWriter::WidgetCheckbox) ? mNameAP_N_Yes[sNameOpt] : std::to_wstring(i));
-												}
-												oAnnot.free(); oSubtype.free(); oPageRef.free();
-											}
-										}
-									}
-
-									Object oPopupRef;
-									if (oAnnot.dictLookupNF("Popup", &oPopupRef)->isRef())
-									{
-										pAnnot = pDoc->GetAnnot(oPopupRef.getRefNum());
-										if (pAnnot)
-											pAnnot->SetHidden();
-									}
-									oPopupRef.free();
+									pObj = pParent->Get("Opt");
+									if (pObj && pObj->GetType() == PdfWriter::object_type_ARRAY)
+										pOpt = (PdfWriter::CArrayObject*)pObj;
+									// only the proxy goes: pAnnot is still in the page's Annots, its own xref and the document's annotations
+									RemoveParentKid(pParent, pAnnot, 0);
 								}
+								// Fields may list widgets (CDocument::DeleteAnnot takes them out too)
+								PdfWriter::CDictObject* pAcroForm = pDoc->GetAcroForm();
+								pObj = pAcroForm ? pAcroForm->Get("Fields") : NULL;
+								if (pObj && pObj->GetType() == PdfWriter::object_type_ARRAY)
+									RemoveArrayItem((PdfWriter::CArrayObject*)pObj, NULL, nID);
+
+								// The kids left are renamed after their new Opt indexes, the field's value follows the kid that is on
+								if (pKids && pOpt && pKids->GetCount() == pOpt->GetCount())
+								{
+									std::vector<PdfWriter::CCheckBoxWidget*> arrKids;
+									for (int i = 0; i < pKids->GetCount(); ++i)
+									{
+										pObj = pKids->Get(i);
+										PdfWriter::CCheckBoxWidget* pKidAnnot = NULL;
+										Object oKid, oSubtype, oPageRef;
+										if (pObj && xref->fetch(pObj->GetObjId(), pObj->GetGenNo(), &oKid)->isDict("Annot") && oKid.dictLookup("Subtype", &oSubtype)->isName("Widget") &&
+											oKid.dictLookupNF("P", &oPageRef)->isRef())
+										{
+											int nPage = pPDFDocument->findPage(oPageRef.getRefNum(), oPageRef.getRefGen()) - 1;
+											int nObjId = pObj->GetObjId();
+											if (nPage >= 0 && EditAnnot(nPage, nObjId))
+												pKidAnnot = dynamic_cast<PdfWriter::CCheckBoxWidget*>(pDoc->GetAnnot(nObjId));
+										}
+										oKid.free(); oSubtype.free(); oPageRef.free();
+										arrKids.push_back(pKidAnnot);
+									}
+									pObj = pParent->Get("V");
+									int nV = OptIndexOfV(pObj && pObj->GetType() == PdfWriter::object_type_NAME ? ((PdfWriter::CNameObject*)pObj)->Get() : "");
+									PdfWriter::CObjectBase* pVKid = nV >= 0 && nV < (int)arrVKidIDs.size() && arrVKidIDs[nV] > 0 ? pDoc->GetAnnot(arrVKidIDs[nV]) : NULL;
+									RenameKids(pParent, pOpt, arrKids, pVKid);
+								}
+								pDoc->SetCurPage(pPage);
+
+								// Out of the page's Annots and the document's annotations, which EditWidgetParents walks.
+								// Not freed: EditAnnot gave it an xref entry in use, a free entry would duplicate it.
+								// Unreferenced, it stays in the update, like an edited page that is deleted (CDocument::DeletePage)
+								Object oPopupRef;
+								if (oAnnot.dictLookupNF("Popup", &oPopupRef)->isRef())
+								{
+									PdfWriter::CAnnotation* pPopup = pDoc->GetAnnot(oPopupRef.getRefNum());
+									if (pPopup)
+									{
+										if (pPage)
+											pPage->DeleteAnnotation(oPopupRef.getRefNum());
+										pDoc->RemoveObj(pPopup);
+									}
+									else
+										pDoc->DeleteAnnot(oPopupRef.getRefNum(), oPopupRef.getRefGen());
+								}
+								oPopupRef.free();
+								bRes = pPage && pPage->DeleteAnnotation(nID);
+								// In WriteAppend pAnnot is in its own xref, not the document's one: RemoveObj does not delete it
+								pDoc->RemoveObj(pAnnot);
 							}
+							else
+								bNeed = false; // not edited: deleted like any other widget
 						}
 					}
 					oFT.free();
@@ -5248,7 +6089,27 @@ bool CPdfEditor::DeleteAnnot(int nID, Object* oAnnots)
 				}
 			}
 			if (!bNeed)
+			{
+				// The widget's field is copied now and written without it: a copy made later (EditWidgets,
+				// EditAnnot of another kid) would still list the freed widget
+				Object oParentRef, oSubtype;
+				if (oAnnot.isDict() && oAnnot.dictLookup("Subtype", &oSubtype)->isName("Widget") && oAnnot.dictLookupNF("Parent", &oParentRef)->isRef())
+				{
+					PdfWriter::CDictObject* pParent = GetWidgetParent(pPDFDocument, pDoc, &oParentRef, 0);
+					if (pParent)
+					{
+						RemoveParentKid(pParent, NULL, nID);
+						if (IsValueOfDeletedKid(m_pReader, &m_mObjManager, nID))
+							pParent->Add("V", "Off");
+						m_setLostKidFields.insert(oParentRef.getRefNum());
+					}
+				}
+				oParentRef.free(); oSubtype.free();
 				bRes = pDoc->DeleteAnnot(oAnnotRef.getRefNum(), oAnnotRef.getRefGen());
+				// a CO entry of it is left out (EditWidgets)
+				if (bRes)
+					m_mObjManager.m_setDeletedIDs.insert(nID);
+			}
 		}
 		else if (oAnnots->arrayGet(i, &oAnnot)->isDict())
 		{
@@ -5272,6 +6133,159 @@ void CPdfEditor::CheckMode()
 {
 	if (m_nMode == Mode::Unknown)
 		IncrementalUpdates();
+}
+namespace
+{
+// Split, WriteNew: field nID as the manager converted it (with a page, or here from the reader), registered
+// with its ancestors and the fields under it - not a GetWidgetParent copy, which keeps the reader number.
+// NULL - a new field, a widget, a deleted field
+PdfWriter::CDictObject* GetRebuildParent(CPdfReader* pReader, CObjectsManager* pManager, PdfWriter::CDocument* pDoc, int nID)
+{
+	PdfWriter::CDictObject* pParent = pDoc->GetParent(nID);
+	if (pParent)
+		return pParent;
+	// Deleted with all its kids - not converted again
+	if (pManager->m_setDeletedIDs.count(nID))
+		return NULL;
+
+	PdfWriter::CObjectBase* pObj = pManager->GetObj(nID);
+	if (!pObj)
+	{
+		PDFDoc* pPDFDocument = NULL;
+		int nStartRefID = 0;
+		int nRefNum = pReader->FindRefNum(nID, &pPDFDocument, &nStartRefID);
+		if (nRefNum < 0 || !pPDFDocument)
+			return NULL; // a new field
+		XRef* xref = pPDFDocument->getXRef();
+
+		Object oRef, oField, oType;
+		oRef.initRef(nRefNum, FetchGen(xref, nRefNum));
+		// a field, not a widget: a widget is converted with its page
+		bool bField = oRef.fetch(xref, &oField)->isDict() && !oField.dictLookup("Subtype", &oType)->isName("Widget");
+		oField.free(); oType.free();
+		// registered under nID; WriteNew adds the kids of the pages converted later in SyncAcroFormFromReader
+		if (bField)
+			pObj = DictToCDictObjectUnified(&oRef, SDictConvertContext(pDoc, xref, pManager, nStartRefID));
+		oRef.free();
+	}
+	if (!pObj || pObj->GetType() != PdfWriter::object_type_DICT || ((PdfWriter::CDictObject*)pObj)->GetDictType() != PdfWriter::dict_type_UNKNOWN)
+		return NULL;
+
+	// the field, its ancestors and the fields under it
+	AddWidgetParent(pDoc, pManager, pObj);
+	return pDoc->GetParent(nID);
+}
+// The parent of a field: as the JS sends it, as converted, or as the reader has it. 0 - a root
+int GetFieldParentID(CPdfReader* pReader, CObjectsManager* pManager, const std::map<int, int>& mJSParent, int nID)
+{
+	std::map<int, int>::const_iterator it = mJSParent.find(nID);
+	if (it != mJSParent.end())
+		return it->second;
+
+	PdfWriter::CObjectBase* pObj = pManager->GetObj(nID);
+	if (pObj && pObj->GetType() == PdfWriter::object_type_DICT)
+	{
+		PdfWriter::CObjectBase* pParent = ((PdfWriter::CDictObject*)pObj)->Get("Parent");
+		int nParentID = pParent ? pManager->FindObj(pParent) : -1;
+		return nParentID > 0 ? nParentID : 0;
+	}
+
+	PDFDoc* pPDFDocument = NULL;
+	int nStartRefID = 0;
+	int nRefNum = pReader->FindRefNum(nID, &pPDFDocument, &nStartRefID);
+	if (nRefNum < 0 || !pPDFDocument)
+		return 0;
+	XRef* xref = pPDFDocument->getXRef();
+
+	int nParentID = 0;
+	Object oNode, oParentRef;
+	if (xref->fetch(nRefNum, FetchGen(xref, nRefNum), &oNode)->isDict() && oNode.dictLookupNF("Parent", &oParentRef)->isRef())
+		nParentID = oParentRef.getRefNum() + nStartRefID;
+	oNode.free(); oParentRef.free();
+	return nParentID;
+}
+// Split: the fields a widget of the part lies under, up to the root. The editor sends the changed
+// fields of all pages; a field not in this set is not in the part
+std::set<int> GetSplitLiveFields(CPdfReader* pReader, CObjectsManager* pManager, PdfWriter::CDocument* pDoc, const std::vector<CWidgetsInfo::CParent*>& arrParents)
+{
+	std::map<int, int> mJSParent;
+	for (CWidgetsInfo::CParent* pParent : arrParents)
+		mJSParent[pParent->nID] = (pParent->nFlags & (1 << 4)) ? pParent->nParentID : 0;
+
+	std::set<int> setLive;
+	const std::map<int, PdfWriter::CAnnotation*>& mAnnots = pDoc->GetAnnots();
+	for (std::map<int, PdfWriter::CAnnotation*>::const_iterator it = mAnnots.begin(); it != mAnnots.end(); ++it)
+	{
+		if (!it->second || it->second->GetAnnotationType() != PdfWriter::AnnotWidget)
+			continue;
+		PdfWriter::CWidgetAnnotation* pWidget = (PdfWriter::CWidgetAnnotation*)it->second;
+		// written by the JS, or converted with a page split out
+		int nID = pWidget->GetParentID();
+		if (nID <= 0)
+		{
+			PdfWriter::CObjectBase* pParent = pWidget->Get("Parent");
+			nID = pParent ? pManager->FindObj(pParent) : -1;
+		}
+		for (int nDepth = 0; nID > 0 && nDepth < 32 && setLive.insert(nID).second; ++nDepth)
+			nID = GetFieldParentID(pReader, pManager, mJSParent, nID);
+	}
+	return setLive;
+}
+// The pages (origin indexes) of the widget nID, or of the widgets under the field nID, deleted ones aside
+void GetWidgetPages(CPdfReader* pReader, CObjectsManager* pManager, int nID, std::set<int>& setPages)
+{
+	PDFDoc* pPDFDocument = NULL;
+	int nStartRefID = 0;
+	int nRefNum = pReader->FindRefNum(nID, &pPDFDocument, &nStartRefID);
+	if (nRefNum < 0 || !pPDFDocument)
+		return;
+	XRef* xref = pPDFDocument->getXRef();
+	int nPagesBefore = pReader->GetNumPagesBefore(pPDFDocument);
+
+	std::set<int> setSeen;
+	std::vector< std::pair<Ref, int> > arrStack;
+	Ref oRoot = { nRefNum, FetchGen(xref, nRefNum) };
+	arrStack.push_back(std::make_pair(oRoot, 0));
+	while (!arrStack.empty())
+	{
+		Ref oRef = arrStack.back().first;
+		int nDepth = arrStack.back().second;
+		arrStack.pop_back();
+
+		CObjectGuard oNode, oPageRef, oKids;
+		if (!setSeen.insert(oRef.num).second || pManager->m_setDeletedIDs.count(oRef.num + nStartRefID) || !xref->fetch(oRef.num, oRef.gen, oNode.get())->isDict())
+			continue;
+		if (oNode->dictLookupNF("P", oPageRef.get())->isRef())
+		{
+			int nPage = pPDFDocument->findPage(oPageRef->getRefNum(), oPageRef->getRefGen());
+			if (nPage > 0)
+				setPages.insert(nPagesBefore + nPage - 1);
+		}
+		if (nDepth >= 32 || !oNode->dictLookup("Kids", oKids.get())->isArray())
+			continue;
+		for (int i = 0; i < oKids->arrayGetLength(); ++i)
+		{
+			CObjectGuard oKidRef;
+			if (oKids->arrayGetNF(i, oKidRef.get())->isRef())
+				arrStack.push_back(std::make_pair(oKidRef->getRef(), nDepth + 1));
+		}
+	}
+}
+// Kids of the field nID and of the fields under it: every converted kid, in the reader's order
+void SyncFieldKidsOf(CPdfReader* pReader, CObjectsManager* pManager, int nID)
+{
+	PDFDoc* pPDFDocument = NULL;
+	int nStartRefID = 0;
+	int nRefNum = pReader->FindRefNum(nID, &pPDFDocument, &nStartRefID);
+	if (nRefNum < 0 || !pPDFDocument)
+		return;
+	XRef* xref = pPDFDocument->getXRef();
+
+	CObjectGuard oNode;
+	std::set<int> setVisited;
+	if (xref->fetch(nRefNum, FetchGen(xref, nRefNum), oNode.get())->isDict())
+		AddMissingFieldKids(oNode.get(), nID, xref, *pManager, nStartRefID, 0, setVisited);
+}
 }
 bool CPdfEditor::EditWidgets(IAdvancedCommand* pCommand)
 {
@@ -5315,6 +6329,48 @@ bool CPdfEditor::EditWidgets(IAdvancedCommand* pCommand)
 	}
 
 	const std::vector< std::pair<int, int> >& arrCO = pFieldInfo->GetCO();
+	const std::vector<CWidgetsInfo::CParent*>& arrParents = pFieldInfo->GetParents();
+	// Split and WriteNew renumber the reader: no raw reader reference (ChangeCO),
+	// no parent copied with its reader number (GetWidgetParent)
+	bool bRebuild = m_nMode == Mode::Split || m_nMode == Mode::WriteNew;
+	std::set<int> setSplitLive;
+	if (m_nMode == Mode::Split && (!arrCO.empty() || !arrParents.empty()))
+		setSplitLive = GetSplitLiveFields(m_pReader, &m_mObjManager, pDoc, arrParents);
+	// WriteNew converts the pages not edited only in Close, after this command. The pages of a CO widget
+	// and of a changed field's widgets are converted here: EditCO lists the widget in the editor's order,
+	// EditWidgetParents gets every kid in Kids (Opt pairs with it by index)
+	std::map<int, int> mFakePages; // origin index -> page index, the pages not converted yet
+	bool bFakePages = false;
+	auto EditWidgetPages = [this, pDoc, &mFakePages, &bFakePages](int nID)
+	{
+		std::set<int> setPages;
+		GetWidgetPages(m_pReader, &m_mObjManager, nID, setPages);
+		if (setPages.empty())
+			return;
+		// listed once: CPageTree::GetObj walks the tree
+		if (!bFakePages)
+		{
+			bFakePages = true;
+			PdfWriter::CPageTree* pPageTree = pDoc->GetPageTree();
+			for (int nPage = 0; nPage < (int)pPageTree->GetCount(); ++nPage)
+			{
+				PdfWriter::CFakePage* pFakePage = dynamic_cast<PdfWriter::CFakePage*>(pPageTree->GetObj(nPage));
+				if (pFakePage)
+					mFakePages.emplace(pFakePage->GetOriginIndex(), nPage);
+			}
+		}
+		for (int nOrigin : setPages)
+		{
+			std::map<int, int>::iterator it = mFakePages.find(nOrigin);
+			if (it == mFakePages.end())
+				continue;
+			int nPage = it->second;
+			mFakePages.erase(it);
+			// the converted page takes the place of the fake one, the indexes stay
+			EditPage(nPage, false, true);
+		}
+	};
+
 	for (int i = 0; i < arrCO.size(); ++i)
 	{
 		int nObjNum = arrCO[i].first;
@@ -5323,6 +6379,21 @@ bool CPdfEditor::EditWidgets(IAdvancedCommand* pCommand)
 		if (pDoc->GetAnnot(nObjNum))
 			continue;
 
+		if (bRebuild)
+		{
+			// EditCO finds a field registered as a parent, a widget among the annotations,
+			// and leaves out the rest: its gen stays -1
+			if (m_mObjManager.m_setDeletedIDs.count(nObjNum) || (m_nMode == Mode::Split && !setSplitLive.count(nObjNum)))
+				continue;
+			// a widget (a field of one widget) of a page not edited
+			if (!GetRebuildParent(m_pReader, &m_mObjManager, pDoc, nObjNum) && m_nMode == Mode::WriteNew)
+				EditWidgetPages(nObjNum);
+			continue;
+		}
+
+		// a widget deleted in this update is left out (EditCO: its gen stays -1)
+		if (m_mObjManager.m_setDeletedIDs.count(nObjNum))
+			continue;
 		PDFDoc* pPDFDocument = NULL;
 		int nStartRefID = 0;
 		int nRefID = m_pReader->FindRefNum(nObjNum, &pPDFDocument, &nStartRefID);
@@ -5333,9 +6404,44 @@ bool CPdfEditor::EditWidgets(IAdvancedCommand* pCommand)
 		pFieldInfo->ChangeCO(i, nRefID, pEntry->type == xrefEntryCompressed ? 0 : pEntry->gen);
 	}
 
-	const std::vector<CWidgetsInfo::CParent*>& arrParents = pFieldInfo->GetParents();
 	for (CWidgetsInfo::CParent* pParent : arrParents)
 	{
+		if (bRebuild)
+		{
+			// The changed field and its parent are registered here for EditWidgetParents.
+			// Split: one no widget of the part lies under is not, and EditWidgetParents skips it
+			int arrID[2] = { pParent->nID, (pParent->nFlags & (1 << 4)) ? pParent->nParentID : -1 };
+			for (int nID : arrID)
+			{
+				if (nID < 0 || (m_nMode == Mode::Split && !setSplitLive.count(nID)))
+					continue;
+				// The changed field gets its kids in the reader's order and Opt cut to them: WriteNew all of them
+				// (their pages converted here), Split the ones of the part (a field converted here, after
+				// SplitPages synced the others)
+				bool bSync = nID == pParent->nID && !m_mObjManager.m_setDeletedIDs.count(nID);
+				if (bSync && m_nMode == Mode::WriteNew)
+					EditWidgetPages(nID);
+				if (GetRebuildParent(m_pReader, &m_mObjManager, pDoc, nID))
+				{
+					if (bSync)
+						SyncFieldKidsOf(m_pReader, &m_mObjManager, nID);
+				}
+				// a new field, or a deleted one the JS has a new widget under: it keeps its name only,
+				// nothing of what was deleted (a redacted value)
+				else if (m_pReader->FindRefNum(nID, NULL, NULL) < 0 || m_mObjManager.m_setDeletedIDs.count(nID))
+				{
+					PdfWriter::CDictObject* pNew = pDoc->CreateParent(nID);
+					PDFDoc* pPDFDocument = NULL;
+					int nRefNum = m_pReader->FindRefNum(nID, &pPDFDocument, NULL);
+					CObjectGuard oField, oT;
+					if (nRefNum >= 0 && pPDFDocument && pPDFDocument->getXRef()->fetch(nRefNum, FetchGen(pPDFDocument->getXRef(), nRefNum), oField.get())->isDict() &&
+						oField->dictLookup("T", oT.get())->isString())
+						pNew->Add("T", DictToCDictObjectUnified(oT.get(), SDictConvertContext()));
+				}
+			}
+			continue;
+		}
+
 		PdfWriter::CDictObject* pDParent = pDoc->GetParent(pParent->nID);
 		if (pDParent)
 			continue;
@@ -5345,6 +6451,12 @@ bool CPdfEditor::EditWidgets(IAdvancedCommand* pCommand)
 		int nRefID = m_pReader->FindRefNum(pParent->nID, &pPDFDocument, &nStartRefID);
 		if (nRefID < 0)
 			continue;
+		// a merged file's field is converted (renumbered) with its pages, not copied under its reader number
+		if (nStartRefID)
+		{
+			GetRebuildParent(m_pReader, &m_mObjManager, pDoc, pParent->nID);
+			continue;
+		}
 
 		XRefEntry* pEntry = pPDFDocument->getXRef()->getEntry(nRefID);
 		Object oParentRef;
@@ -5352,6 +6464,48 @@ bool CPdfEditor::EditWidgets(IAdvancedCommand* pCommand)
 		GetWidgetParent(pPDFDocument, pDoc, &oParentRef, nStartRefID);
 		// TODO re-set children
 		oParentRef.free();
+	}
+	// A widget the editor adds to a field it does not send as changed names the field only by its ParentID,
+	// and EditWidgetParents links only the fields sent: such a field is linked here
+	std::set<int> setSent, setOrphan;
+	for (CWidgetsInfo::CParent* pParent : arrParents)
+		setSent.insert(pParent->nID);
+	const std::map<int, PdfWriter::CAnnotation*>& mAnnots = pDoc->GetAnnots();
+	for (std::map<int, PdfWriter::CAnnotation*>::const_iterator it = mAnnots.begin(); it != mAnnots.end(); ++it)
+	{
+		if (!it->second || it->second->GetAnnotationType() != PdfWriter::AnnotWidget)
+			continue;
+		PdfWriter::CWidgetAnnotation* pWidget = (PdfWriter::CWidgetAnnotation*)it->second;
+		int nParentID = pWidget->GetParentID();
+		if (nParentID > 0 && !pWidget->Get("Parent") && !setSent.count(nParentID) && !m_mObjManager.m_setDeletedIDs.count(nParentID))
+			setOrphan.insert(nParentID);
+	}
+	for (int nID : setOrphan)
+	{
+		PdfWriter::CDictObject* pParent = pDoc->GetParent(nID);
+		if (!pParent && bRebuild)
+			pParent = GetRebuildParent(m_pReader, &m_mObjManager, pDoc, nID);
+		else if (!pParent)
+		{
+			PDFDoc* pPDFDocument = NULL;
+			int nStartRefID = 0;
+			int nRefID = m_pReader->FindRefNum(nID, &pPDFDocument, &nStartRefID);
+			if (nRefID < 0 || !pPDFDocument)
+				continue;
+			// a merged file's field is converted (renumbered) with its pages: a copy would keep its reader numbers
+			if (nStartRefID)
+				pParent = GetRebuildParent(m_pReader, &m_mObjManager, pDoc, nID);
+			else
+			{
+				Object oParentRef;
+				oParentRef.initRef(nRefID, FetchGen(pPDFDocument->getXRef(), nRefID));
+				pParent = GetWidgetParent(pPDFDocument, pDoc, &oParentRef, nStartRefID);
+				oParentRef.free();
+			}
+		}
+		// Opt of a checkbox or radio group pairs with Kids by index: the editor sends no entry for the kid
+		if (pParent && !HasButtonOpt(pParent, NULL))
+			pDoc->SetParentKids(nID);
 	}
 	return true;
 }
@@ -5423,7 +6577,8 @@ void CPdfEditor::ClearPage()
 			if (oAnnots.arrayGet(nIndex, &oAnnot)->isDict("Annot") && oAnnot.dictLookup("Subtype", &oSubtype)->isName("Link"))
 			{
 				oAnnots.arrayGetNF(nIndex, &oAnnotRef);
-				DeleteAnnot(oAnnotRef.getRefNum(), &oAnnots);
+				// DeleteAnnot takes the manager ID, the page may come from a merged file
+				DeleteAnnot(oAnnotRef.getRefNum() + nStartRefID, &oAnnots);
 			}
 			oAnnot.free(); oSubtype.free(); oAnnotRef.free();
 		}

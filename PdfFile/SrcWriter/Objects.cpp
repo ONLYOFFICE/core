@@ -771,7 +771,8 @@ namespace PdfWriter
 			if (!pObject)
 				continue;
 
-			if (pObject->IsHidden())
+			// a proxy to a deleted object writes nothing, the key would take the next key as its value
+			if (pObject->IsHidden() || (object_type_PROXY == pObject->GetType() && !((CProxyObject*)pObject)->Get()))
 			{
 				// do nothing
 			}
@@ -1046,6 +1047,24 @@ namespace PdfWriter
 				break;
 			}
 		}
+	}
+	// The entry of pObject turns free (gen + 1) and pObject is deleted: an object copied into an incremental
+	// update, in an xref of its own, that leaves it
+	void CXref::Free(CObjectBase* pObject)
+	{
+		TXrefEntry* pEntry = pObject ? pObject->GetXrefEntry() : NULL;
+		if (!pEntry || pEntry->pObject != pObject)
+			return;
+
+		for (int i = 0; i < pEntry->pRefObj.size(); ++i)
+			pEntry->pRefObj[i]->Clear();
+		pEntry->pRefObj.clear();
+
+		pEntry->nEntryType   = FREE_ENTRY;
+		pEntry->unByteOffset = 0;
+		pEntry->unGenNo      = pEntry->unGenNo + 1 > MAX_GENERATION_NUM ? MAX_GENERATION_NUM : pEntry->unGenNo + 1;
+		pEntry->pObject      = NULL;
+		delete pObject;
 	}
     void CXref::WriteTrailer(CStream* pStream)
 	{

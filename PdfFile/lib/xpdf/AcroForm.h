@@ -48,7 +48,9 @@ private:
   AcroForm(PDFDoc *docA, Object *acroFormObjA);
   void buildAnnotPageList(Catalog *catalog);
   int lookupAnnotPage(Object *annotRef);
-  void scanField(Object *fieldRef);
+  // touchedObjs: one flag per xref object; each field object is scanned
+  // once, so a loop in the field tree cannot recurse forever
+  void scanField(Object *fieldRef, char *touchedObjs);
 
   PDFDoc *doc;
   Object acroFormObj;

@@ -532,6 +532,7 @@ namespace PdfWriter
 		void         Add(CObjectBase* pObject);
 		void         Add(CObjectBase* pObject, unsigned int unObjectGen);
 		void         Remove(CObjectBase* pObject);
+		static void  Free(CObjectBase* pObject);
 		void         WriteToStream(CStream* pStream, CEncrypt* pEncrypt, bool bStream = false);
 		void         SetPrev(CXref* pPrev)
 		{

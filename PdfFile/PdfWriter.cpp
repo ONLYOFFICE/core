@@ -57,6 +57,8 @@
 #include "../DesktopEditor/graphics/pro/Fonts.h"
 #include "../DesktopEditor/graphics/pro/Image.h"
 #include "../DesktopEditor/common/StringExt.h"
+#include "lib/goo/GString.h"
+#include "lib/xpdf/TextString.h"
 #include "../DesktopEditor/graphics/GraphicsPath.h"
 #include "../DesktopEditor/graphics/MetafileToRenderer.h"
 #include "../DesktopEditor/raster/Metafile/MetaFileCommon.h"
@@ -244,7 +246,8 @@ CPdfWriter::CPdfWriter(NSFonts::IApplicationFonts* pAppFonts, bool isPDFA, bool 
 
 	if (isPDFA)
 		m_pDocument->SetPDFAConformanceMode(true);
-	if (isPDFUA)
+	// PDF/A asked for wins: PDF/A-2 is PDF <= 1.7, PDF/UA-2 is PDF 2.0, one file can't be both
+	if (isPDFUA && !isPDFA)
 		m_pDocument->SetPDFUAConformanceMode(true);
 
 	if (!m_pDocument || (bCreate && !m_pDocument->CreateNew()))
@@ -2696,8 +2699,16 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 				CAnnotFieldInfo::CWidgetAnnotPr::CButtonWidgetPr* pPrB = oInfo.GetWidgetAnnotPr()->GetButtonWidgetPr();
 				PdfWriter::CCheckBoxWidget* pButtonWidget = (PdfWriter::CCheckBoxWidget*)pAnnot;
 
+				// the editor's on-state name: a kid's own export value, which the editor may have changed
+				// (a WriteAppend kid has the file's name already)
 				if (nFlags & (1 << 14))
-					pButtonWidget->SetAP_N_Yes(pPrB->GetAP_N_Yes());
+				{
+					std::wstring wsAP_N_Yes = pPrB->GetAP_N_Yes();
+					if (pButtonWidget->NeedAP_N_Yes() || pButtonWidget->GetAP_N_Yes() == U_TO_UTF8(wsAP_N_Yes))
+						pButtonWidget->SetAP_N_Yes(wsAP_N_Yes);
+					else
+						pButtonWidget->RenameAP_N_Yes(wsAP_N_Yes);
+				}
 
 				pButtonWidget->SetStyle(pPrB->GetStyle());
 
@@ -2887,7 +2898,9 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 			PdfWriter::CSignatureWidget* pSignatureWidget = (PdfWriter::CSignatureWidget*)pAnnot;
 		}
 
-		if (m_bSplit)
+		// Split: the editor that opens the part draws the widget (OONoAP). A checkbox or radio keeps the
+		// appearance SetAP drew: its state names pair the kid with the field's value
+		if (m_bSplit && !dynamic_cast<PdfWriter::CCheckBoxWidget*>(pWidgetAnnot))
 			pWidgetAnnot->RemoveAP();
 	}
 	else if (oInfo.IsLink())
@@ -3072,6 +3085,33 @@ HRESULT CPdfWriter::DrawImageWith1bppMask(IGrObject* pImage, NSImages::CPixJbig2
 	m_pPage->GrRestore();
 	return S_OK;
 }
+// The export value of an Opt entry (a string, or [export display]) in UTF-8, decoded as the reader
+// decodes a text string: a string flagged UTF-16 holds UTF-8 already, the bytes of any other go through TextString
+static std::string OptEntryUtf8(PdfWriter::CObjectBase* pObj)
+{
+	if (pObj && pObj->GetType() == PdfWriter::object_type_ARRAY && ((PdfWriter::CArrayObject*)pObj)->GetCount() > 0)
+		pObj = ((PdfWriter::CArrayObject*)pObj)->Get(0);
+	const BYTE* pBytes = NULL;
+	unsigned int nLen = 0;
+	if (pObj && pObj->GetType() == PdfWriter::object_type_STRING)
+	{
+		PdfWriter::CStringObject* pStr = (PdfWriter::CStringObject*)pObj;
+		if (pStr->IsUTF16())
+			return std::string((const char*)pStr->GetString(), pStr->GetLength());
+		pBytes = pStr->GetString();
+		nLen = pStr->GetLength();
+	}
+	else if (pObj && pObj->GetType() == PdfWriter::object_type_BINARY)
+	{
+		pBytes = ((PdfWriter::CBinaryObject*)pObj)->GetValue();
+		nLen = ((PdfWriter::CBinaryObject*)pObj)->GetLength();
+	}
+	if (!pBytes)
+		return "";
+	GString oBytes((const char*)pBytes, (int)nLen);
+	TextString oText(&oBytes);
+	return NSStringExt::CConverter::GetUtf8FromUTF32(oText.getUnicode(), oText.getLength());
+}
 HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWidgetsInfo* pFieldInfo, const std::wstring& wsTempDirectory)
 {
 	if (!m_pDocument || 0 == m_pDocument->GetPagesCount() || !pFieldInfo)
@@ -3086,7 +3126,12 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 		CWidgetsInfo::CParent* pParent = arrParents[j];
 		PdfWriter::CDictObject* pParentObj = m_pDocument->GetParent(pParent->nID);
 		if (!pParentObj)
+		{
+			// Split: CPdfEditor::EditWidgets registers the fields of the part, the others are not in the output
+			if (m_bSplit)
+				continue;
 			pParentObj = m_pDocument->CreateParent(pParent->nID);
+		}
 
 		std::vector<std::wstring> arrValue;
 
@@ -3123,7 +3168,8 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 		if (nFlags & (1 << 4))
 		{
 			PdfWriter::CDictObject* pParentObj2 = m_pDocument->GetParent(pParent->nParentID);
-			if (!pParentObj2)
+			// Split: a parent not in the part is not created
+			if (!pParentObj2 && !m_bSplit)
 				pParentObj2 = m_pDocument->CreateParent(pParent->nParentID);
 			if (pParentObj2)
 				pParentObj->Add("Parent", pParentObj2);
@@ -3138,7 +3184,7 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 			for (int i = 0; i < pKids->GetCount(); ++i)
 			{
 				PdfWriter::CObjectBase* pObj = pKids->Get(i);
-				if (pObj->GetType() != PdfWriter::object_type_DICT ||
+				if (!pObj || pObj->GetType() != PdfWriter::object_type_DICT ||
 					((PdfWriter::CDictObject*)pObj)->GetDictType() != PdfWriter::dict_type_ANNOTATION ||
 					((PdfWriter::CAnnotation*)pObj)->GetAnnotationType() != PdfWriter::AnnotWidget)
 					continue;
@@ -3151,8 +3197,11 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 				}
 			}
 		}
+		// Split: SplitPages cut Opt to the kids of the part, while the editor's Opt and the index in its V
+		// count every kid: the kid that is on is found by its export value in the cut Opt
+		bool bSplitKids = m_bSplit && sFT == "Btn" && !pParent->arrOpt.empty() && pKids->GetCount() != (int)pParent->arrOpt.size();
 		std::map<std::wstring, std::wstring> mNameAP_N_Yes;
-		if (nFlags & (1 << 6))
+		if ((nFlags & (1 << 6)) && !bSplitKids)
 		{
 			PdfWriter::CArrayObject* pArray = new PdfWriter::CArrayObject();
 			pParentObj->Add("Opt", pArray);
@@ -3190,15 +3239,101 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 			std::string sV = U_TO_UTF8(pParent->sV);
 			if (sFT == "Btn")
 			{
+				// "-1": the editor has no kid on
+				if (sV == "-1")
+					sV = "Off";
 				int nFf = 0;
 				if (nFlags & (1 << 7))
 					nFf = pParent->nFieldFlag;
 				bool bRadiosInUnison = (bool)(nFf & (1 << 25));
 				int nOptIndex = -1;
-				if (isdigit(sV[0]))
+				// an Opt index; a name of 10 digits or more is not one (std::stoi would throw)
+				if (isdigit((unsigned char)sV[0]) && sV.length() < 10)
 					nOptIndex = std::stoi(sV);
 
-				if (!pParent->arrOpt.empty() && nOptIndex >= 0 && nOptIndex < pParent->arrOpt.size())
+				if (bSplitKids)
+				{
+					auto OptValue = [](const std::pair<std::wstring, std::wstring>& PV)
+					{
+						const std::wstring& wsValue = PV.first.empty() ? PV.second : PV.first;
+						return U_TO_UTF8(wsValue);
+					};
+					PdfWriter::CObjectBase* pObj = pParentObj->Get("Opt");
+					PdfWriter::CArrayObject* pCut = (pObj && pObj->GetType() == PdfWriter::object_type_ARRAY) ? (PdfWriter::CArrayObject*)pObj : NULL;
+					// the kids the editor added follow the kids of the part in Kids, their entries end its Opt
+					int nAdded = pCut ? pKids->GetCount() - pCut->GetCount() : 0;
+					for (int i = (int)pParent->arrOpt.size() - nAdded; nAdded > 0 && i < (int)pParent->arrOpt.size(); ++i)
+					{
+						if (i < 0)
+							continue;
+						const std::pair<std::wstring, std::wstring>& PV = pParent->arrOpt[i];
+						if (PV.first.empty())
+							pCut->Add(new PdfWriter::CStringObject(U_TO_UTF8(PV.second).c_str(), true));
+						else
+						{
+							PdfWriter::CArrayObject* pArray2 = new PdfWriter::CArrayObject();
+							pCut->Add(pArray2);
+							pArray2->Add(new PdfWriter::CStringObject(U_TO_UTF8(PV.first).c_str(), true));
+							pArray2->Add(new PdfWriter::CStringObject(U_TO_UTF8(PV.second).c_str(), true));
+						}
+					}
+
+					// on: each kid whose cut Opt entry is the chosen export value; none in the part - Off.
+					// A radio not in unison turns on one kid: the one at the place of the chosen one among
+					// the kids of that value, the first when some of them are cut away
+					std::string sChoice;
+					int nPlace = 0, nOfValue = 0, nCutOfValue = 0;
+					if (nOptIndex >= 0 && nOptIndex < pParent->arrOpt.size())
+					{
+						sChoice = OptValue(pParent->arrOpt[nOptIndex]);
+						for (int i = 0; i < (int)pParent->arrOpt.size(); ++i)
+						{
+							if (OptValue(pParent->arrOpt[i]) != sChoice)
+								continue;
+							if (i < nOptIndex)
+								++nPlace;
+							++nOfValue;
+						}
+					}
+					for (int i = 0; pCut && !sChoice.empty() && i < pCut->GetCount(); ++i)
+					{
+						if (OptEntryUtf8(pCut->Get(i)) == sChoice)
+							++nCutOfValue;
+					}
+					if (nCutOfValue != nOfValue)
+						nPlace = 0;
+
+					// a converted kid is typed checkbox: a radio is told by Ff, the editor's or the field's
+					int nKidFf = nFf;
+					PdfWriter::CObjectBase* pFf = pParentObj->Get("Ff");
+					if (!(nFlags & (1 << 7)) && pFf && pFf->GetType() == PdfWriter::object_type_NUMBER)
+						nKidFf = ((PdfWriter::CNumberObject*)pFf)->Get();
+
+					sV = "Off";
+					int nMatch = 0;
+					std::map<std::string, std::wstring> mCutNames;
+					for (int i = 0; i < pKids->GetCount(); ++i)
+					{
+						PdfWriter::CCheckBoxWidget* pKid = dynamic_cast<PdfWriter::CCheckBoxWidget*>(pKids->Get(i));
+						std::string sValue = pCut && i < pCut->GetCount() ? OptEntryUtf8(pCut->Get(i)) : "";
+						std::wstring wsName = mCutNames.emplace(sValue, std::to_wstring(i)).first->second;
+						if (!pKid)
+							continue;
+						bool bUnison = (!(nKidFf & (1 << 15)) && pKid->GetWidgetType() != PdfWriter::WidgetRadiobutton) || (nKidFf & (1 << 25));
+						// a kid the editor added has no state name yet: named after its index, as the others
+						if (pKid->NeedAP_N_Yes())
+							pKid->SetAP_N_Yes(bUnison ? wsName : std::to_wstring(i));
+						bool bOn = !sChoice.empty() && sValue == sChoice;
+						if (bOn && !bUnison)
+							bOn = nMatch++ == nPlace;
+						pKid->Remove("V");
+						if (bOn)
+							sV = pKid->Yes();
+						else
+							pKid->Off();
+					}
+				}
+				else if (!pParent->arrOpt.empty() && nOptIndex >= 0 && nOptIndex < pParent->arrOpt.size())
 				{
 					std::pair<std::wstring, std::wstring> PV = pParent->arrOpt[nOptIndex];
 					std::wstring sOpt = PV.first.empty() ? PV.second : PV.first;
@@ -3208,7 +3343,7 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 						if (i >= pKids->GetCount())
 							break;
 						PdfWriter::CObjectBase* pObj = pKids->Get(i);
-						if (pObj->GetType() != PdfWriter::object_type_DICT ||
+						if (!pObj || pObj->GetType() != PdfWriter::object_type_DICT ||
 							((PdfWriter::CDictObject*)pObj)->GetDictType() != PdfWriter::dict_type_ANNOTATION ||
 							((PdfWriter::CAnnotation*)pObj)->GetAnnotationType() != PdfWriter::AnnotWidget)
 							continue;
@@ -3237,19 +3372,28 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 				}
 				else
 				{
+					// a value no kid has (its kid deleted, or in another split part) is Off; kept while a kid is unknown:
+					// not a button widget of the output, or with no on-state name
+					bool bOn = false, bOther = false;
 					for (int i = 0; i < pKids->GetCount(); ++i)
 					{
 						PdfWriter::CObjectBase* pObj = pKids->Get(i);
-						if (pObj->GetType() != PdfWriter::object_type_DICT ||
-							((PdfWriter::CDictObject*)pObj)->GetDictType() != PdfWriter::dict_type_ANNOTATION ||
-							((PdfWriter::CAnnotation*)pObj)->GetAnnotationType() != PdfWriter::AnnotWidget)
+						if (!pObj)
 							continue;
-						PdfWriter::EWidgetType nType = ((PdfWriter::CWidgetAnnotation*)pObj)->GetWidgetType();
-						if (nType != PdfWriter::WidgetCheckbox && nType != PdfWriter::WidgetRadiobutton)
-							continue;
-						PdfWriter::CCheckBoxWidget* pKid = dynamic_cast<PdfWriter::CCheckBoxWidget*>(pObj);
+						PdfWriter::CCheckBoxWidget* pKid = NULL;
+						if (pObj->GetType() == PdfWriter::object_type_DICT &&
+							((PdfWriter::CDictObject*)pObj)->GetDictType() == PdfWriter::dict_type_ANNOTATION &&
+							((PdfWriter::CAnnotation*)pObj)->GetAnnotationType() == PdfWriter::AnnotWidget)
+						{
+							PdfWriter::EWidgetType nType = ((PdfWriter::CWidgetAnnotation*)pObj)->GetWidgetType();
+							if (nType == PdfWriter::WidgetCheckbox || nType == PdfWriter::WidgetRadiobutton)
+								pKid = dynamic_cast<PdfWriter::CCheckBoxWidget*>(pObj);
+						}
 						if (!pKid)
+						{
+							bOther = true;
 							continue;
+						}
 						if (pKid->NeedAP_N_Yes() && i < pParent->arrOpt.size())
 						{
 							std::pair<std::wstring, std::wstring> PV = pParent->arrOpt[i];
@@ -3257,12 +3401,31 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 							pKid->SetAP_N_Yes(mNameAP_N_Yes[sOpt]);
 						}
 
+						// not sent (converted with its page): its on-state name is the one of its appearance, its AS
+						// follows V, its own entries stay. With no name known it keeps its state, V stays
+						if (pKid->NeedAP_N_Yes())
+						{
+							std::string sState = pKid->GetAPOnState();
+							if (sState.empty())
+							{
+								bOther = true;
+								continue;
+							}
+							pKid->Add("AS", sState == sV ? sState.c_str() : "Off");
+							bOn = bOn || sState == sV;
+							continue;
+						}
 						pKid->Remove("V");
 						if (pKid->GetAP_N_Yes() == sV)
+						{
 							sV = pKid->Yes();
+							bOn = true;
+						}
 						else
 							pKid->Off();
 					}
+					if (!bOn && !bOther)
+						sV = "Off";
 				}
 
 				pParentObj->Add("V", sV.c_str());
@@ -3272,7 +3435,7 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 				for (int i = 0; i < pKids->GetCount(); ++i)
 				{
 					PdfWriter::CObjectBase* pObj = pKids->Get(i);
-					if (pObj->GetType() != PdfWriter::object_type_DICT ||
+					if (!pObj || pObj->GetType() != PdfWriter::object_type_DICT ||
 						((PdfWriter::CDictObject*)pObj)->GetDictType() != PdfWriter::dict_type_ANNOTATION ||
 						((PdfWriter::CAnnotation*)pObj)->GetAnnotationType() != PdfWriter::AnnotWidget)
 						continue;
@@ -3462,6 +3625,8 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 		for (int i = 0; i < pKids->GetCount(); ++i)
 		{
 			PdfWriter::CObjectBase* pKid = pKids->Get(i);
+			if (!pKid) // a deleted kid
+				continue;
 			if (nID > 0 && pKid->GetObjId() == nID)
 			{
 				pKids->Insert(pKid, pP, true);
@@ -3499,11 +3664,15 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 
 			arrRoots.push_back(pP);
 
+			// each node once: a broken file may list a field in its own Kids or below itself
+			std::set<PdfWriter::CDictObject*> setSeen;
 			std::vector<PdfWriter::CDictObject*> arrStack(1, pP);
 			while (!arrStack.empty())
 			{
 				PdfWriter::CDictObject* pNode = arrStack.back();
 				arrStack.pop_back();
+				if (!setSeen.insert(pNode).second)
+					continue;
 
 				PdfWriter::CArrayObject* pNodeKids = dynamic_cast<PdfWriter::CArrayObject*>(pNode->Get("Kids"));
 				if (!pNodeKids)
@@ -3512,6 +3681,8 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 				for (int i = 0; i < pNodeKids->GetCount(); ++i)
 				{
 					PdfWriter::CObjectBase* pKid = pNodeKids->Get(i);
+					if (!pKid) // a deleted kid
+						continue;
 					arrReachable.push_back(pKid);
 					if (pKid->GetType() == PdfWriter::object_type_DICT)
 						arrStack.push_back((PdfWriter::CDictObject*)pKid);
@@ -3522,6 +3693,8 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 		for (int i = pFields->GetCount() - 1; i >= 0; --i)
 		{
 			PdfWriter::CObjectBase* pField = pFields->Get(i);
+			if (!pField) // a deleted field
+				continue;
 			int nID = pField->GetObjId();
 			bool bReachable = false;
 			for (PdfWriter::CObjectBase* pReachable : arrReachable)
@@ -3543,7 +3716,7 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 			for (int i = 0; i < pFields->GetCount(); ++i)
 			{
 				PdfWriter::CObjectBase* pObj = pFields->Get(i);
-				if (pObj == pP || (nID > 0 && pObj->GetObjId() == nID))
+				if (pObj && (pObj == pP || (nID > 0 && pObj->GetObjId() == nID)))
 				{
 					bFound = true;
 					break;

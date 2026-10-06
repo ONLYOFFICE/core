@@ -244,7 +244,8 @@ CPdfWriter::CPdfWriter(NSFonts::IApplicationFonts* pAppFonts, bool isPDFA, bool 
 
 	if (isPDFA)
 		m_pDocument->SetPDFAConformanceMode(true);
-	if (isPDFUA)
+	// PDF/A asked for wins: PDF/A-2 is PDF <= 1.7, PDF/UA-2 is PDF 2.0, one file can't be both
+	if (isPDFUA && !isPDFA)
 		m_pDocument->SetPDFUAConformanceMode(true);
 
 	if (!m_pDocument || (bCreate && !m_pDocument->CreateNew()))

@@ -287,10 +287,10 @@ namespace PdfWriter
 			m_pCatalog->AddMetadata(m_pXref, m_pInfo, sAltTitle);
 
 		// Write header
-		if (IsPDFUA())
-			pStream->WriteStr(c_sPdfUAHeader);
 		if (IsPDFA())
 			pStream->WriteStr(c_sPdfAHeader);
+		else if (IsPDFUA())
+			pStream->WriteStr(c_sPdfUAHeader);
 		else
 			pStream->WriteStr(c_sPdfHeader);
 		pStream->WriteStr("\015%\315\312\322\251\015");

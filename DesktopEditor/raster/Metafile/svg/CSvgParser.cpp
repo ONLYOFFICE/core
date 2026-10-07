@@ -511,11 +511,19 @@ namespace SVG
 		else if ("pattern" == sElementName)
 		{
 			pObject = CObject::Create<CPattern>(oReader, pFile);
+
+			if (NULL == pObject)
+				return ReadChildrens<CRenderedObject>(oReader, NULL, pFile);
+
 			ReadChildrens(oReader, (CGraphicsContainer*)(&((CPattern*)pObject)->GetContainer()), pFile);
 		}
 		else if ("clipPath" == sElementName)
 		{
 			pObject = CObject::Create<CClipPath>(oReader, pFile);
+
+			if (NULL == pObject)
+				return ReadChildrens<CRenderedObject>(oReader, NULL, pFile);
+
 			ReadChildrens(oReader, (CGraphicsContainer*)(&((CClipPath*)pObject)->GetContainer()), pFile);
 		}
 		else if ("marker" == sElementName)
@@ -526,6 +534,10 @@ namespace SVG
 		else if ("mask" == sElementName)
 		{
 			pObject = CObject::Create<CMask>(oReader, pFile);
+
+			if (NULL == pObject)
+				return ReadChildrens<CRenderedObject>(oReader, NULL, pFile);
+
 			ReadChildrens(oReader, (CGraphicsContainer*)(&((CMask*)pObject)->GetContainer()), pFile);
 		}
 		else if ("symbol" == sElementName)
@@ -552,9 +564,6 @@ namespace SVG
 			CSvgReader oNewReader;
 
 			const std::wstring wsSVG{ConvertForeignObjectToSvg(oReader.GetInnerXML(), dWidth)};
-
-			std::wcout << wsSVG << std::endl;
-			std::wcout << std::endl;
 
 			if (oNewReader.ReadFromString(wsSVG))
 			{

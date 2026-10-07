@@ -50,6 +50,8 @@ namespace SVG
 		if (!oSvgStyles.m_oStroke.m_oColor.Empty())
 			m_oStroke.m_oColor.SetValue(L'#' + oSvgStyles.m_oStroke.m_oColor.ToWString(), 0, false);
 
+		m_oStroke.m_oColor.SetOpacity(std::to_wstring(oSvgStyles.m_oStroke.m_oColor.GetOpacity()), 0, false);
+
 		m_oStroke.m_oWidth.SetValue(oSvgStyles.m_oStroke.m_oWidth.ToWString(), 0, false);
 
 		if (m_oStroke.m_arDash.empty() && !oSvgStyles.m_oStroke.m_arDash.empty())
@@ -488,6 +490,8 @@ namespace SVG
 		}
 		else if (NSCSS::NSProperties::EColorType::ColorUrl == pFill->GetType())
 		{
+			pRenderer->put_BrushAlpha1(255. * pFill->GetOpacity());
+
 			if (!ApplyDef(pRenderer, pFile, pFill->ToWString(), GetBounds()))
 			{
 				if (bUseDefault)

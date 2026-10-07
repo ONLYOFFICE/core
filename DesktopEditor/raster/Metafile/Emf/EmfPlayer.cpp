@@ -311,6 +311,7 @@ namespace MetaFile
 		m_ulMiterLimit  = 0;
 		m_ulFillMode    = WINDING;
 		m_ulStretchMode = 0;
+		m_ulRop2Mode    = R2_COPYPEN;
 		m_oWindow.Init();
 		m_oViewport.Init();
 		m_dPixelHeight = 1;

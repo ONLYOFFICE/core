@@ -1720,6 +1720,12 @@ namespace MetaFile
 		{
 			((MetafileType*)&oParser)->SetInterpretator(InterpretatorType::Svg);
 
+			CInterpretatorSvgBase* pParserSvgInterpretator = dynamic_cast<CInterpretatorSvgBase*>(oParser.GetInterpretator());
+			CInterpretatorSvgBase *pSvgInterpretator = dynamic_cast<CInterpretatorSvgBase*>(m_pInterpretator);
+
+			if (NULL != pParserSvgInterpretator && NULL != pSvgInterpretator)
+				pParserSvgInterpretator->SetNumberDefs(pSvgInterpretator->GetNumberDefs());
+
 			oParser.PlayFile();
 
 			TRectD oRect;
@@ -1741,11 +1747,11 @@ namespace MetaFile
 			oTransform.Dx -= m_oHeader.oFramePx.Left;
 			oTransform.Dy -= m_oHeader.oFramePx.Top;
 
-			CInterpretatorSvgBase* pParserSvgInterpretator = dynamic_cast<CInterpretatorSvgBase*>(oParser.GetInterpretator());
-			CInterpretatorSvgBase *pSvgInterpretator = dynamic_cast<CInterpretatorSvgBase*>(m_pInterpretator);
-
 			if (NULL != pParserSvgInterpretator && NULL != pSvgInterpretator)
+			{
+				pSvgInterpretator->SetNumberDefs(pParserSvgInterpretator->GetNumberDefs());
 				pSvgInterpretator->IncludeSvg(pParserSvgInterpretator->GetFile(), oRect, oTempSrcRect, &oTransform);
+			}
 		}
 	}
 

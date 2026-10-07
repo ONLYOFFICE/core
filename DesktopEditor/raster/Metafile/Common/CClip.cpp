@@ -74,7 +74,7 @@ namespace MetaFile
 	{}
 
 	CClipCommandPath::CClipCommandPath(const CClipCommandPath &oCommandPath)
-		: m_oPath(oCommandPath.m_oPath)
+		: m_oPath(oCommandPath.m_oPath), m_oTransform(oCommandPath.m_oTransform), m_unMode(oCommandPath.m_unMode)
 	{}
 
 	CClipCommandPath::~CClipCommandPath()

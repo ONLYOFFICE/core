@@ -301,6 +301,7 @@ namespace MetaFile
 		m_pBrush    = NULL;
 		m_pPen      = NULL;
 		m_pFont     = NULL;
+		m_pPalette  = NULL;
 		m_oTransform.Init();
 		m_oInverseTransform.Init();
 		m_oTextColor.Set(0, 0, 0);

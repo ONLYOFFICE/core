@@ -1299,11 +1299,15 @@ namespace MetaFile
 		
 		if (NULL != m_pPath)
 		{
-			TEmfXForm oTransform{m_pDC->GetFinalTransform(GM_ADVANCED)};
-			oTransform.Dx -= GetDCBounds().Left;
-			oTransform.Dy -= GetDCBounds().Top;
+			if (RGN_AND <= unRegionMode && unRegionMode <= RGN_COPY)
+			{
+				TEmfXForm oTransform{m_pDC->GetFinalTransform(GM_ADVANCED)};
+				oTransform.Dx -= GetDCBounds().Left;
+				oTransform.Dy -= GetDCBounds().Top;
 
-			m_pDC->GetClip()->SetPath(*m_pPath, unRegionMode, oTransform);
+				m_pDC->GetClip()->SetPath(*m_pPath, unRegionMode, oTransform);
+			}
+
 			RELEASEOBJECT(m_pPath);
 			UpdateOutputDC();
 		}

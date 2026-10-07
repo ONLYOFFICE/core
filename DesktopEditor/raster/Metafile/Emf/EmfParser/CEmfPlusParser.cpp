@@ -3341,6 +3341,9 @@ namespace MetaFile
 
 		BYTE uchCM = ExpressValue(unShFlags, 8, 11);
 
+		if (0 == uchCM)
+			uchCM = RGN_COPY;
+
 		m_pDC->GetClip()->Reset();
 		m_pDC->GetClip()->SetPath(*pPath, uchCM, GetTransform());
 		UpdateOutputDC();
@@ -3372,6 +3375,9 @@ namespace MetaFile
 	{
 		short shObjectIndex = ExpressValue(unShFlags, 0, 7);
 		short shCM = ExpressValue(unShFlags, 8, 11);
+
+		if (0 == shCM)
+			shCM = RGN_COPY;
 
 		CEmfPlusRegion *pRegion = GetRegion(shObjectIndex);
 

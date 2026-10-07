@@ -41,11 +41,7 @@ namespace SVG
 {
 	CCircle::CCircle(CSvgReader& oReader, CRenderedObject* pParent)
 		: CRenderedObject(oReader, pParent)
-	{
-		START_READ_ATTRIBUTES(oReader)
-			SetAttribute(sAttributeName, oReader);
-		END_READ_ATTRIBUTES(oReader)
-	}
+	{}
 
 	void CCircle::SetAttribute(const std::string& sName, CSvgReader& oReader)
 	{

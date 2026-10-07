@@ -1776,7 +1776,10 @@ namespace MetaFile
 				{
 					((CEmfParserBase*)&oEmfParser)->SetInterpretator(InterpretatorType::Svg);
 
-					XmlUtils::CXmlWriter *pXmlWriter = ((CWmfInterpretatorSvg*)GetInterpretator())->GetXmlWriter();
+					CWmfInterpretatorSvg *pSvgInterpretator    = (CWmfInterpretatorSvg*)GetInterpretator();
+					CEmfInterpretatorSvg *pEmfSvgInterpretator = (CEmfInterpretatorSvg*)oEmfParser.GetInterpretator();
+
+					XmlUtils::CXmlWriter *pXmlWriter = pSvgInterpretator->GetXmlWriter();
 
 					const TRectL& oEmfRect{oEmfParser.GetDCBounds()};
 					const TRectL& oCurentRect{GetDCBounds()};
@@ -1793,9 +1796,12 @@ namespace MetaFile
 						pXmlWriter->WriteNodeEnd(L"g", true, false);
 					}
 
-					((CEmfInterpretatorSvg*)oEmfParser.GetInterpretator())->SetXmlWriter(pXmlWriter);
+					pEmfSvgInterpretator->SetXmlWriter(pXmlWriter);
+					pEmfSvgInterpretator->SetNumberDefs(pSvgInterpretator->GetNumberDefs());
 
 					oEmfParser.PlayFile();
+
+					pSvgInterpretator->SetNumberDefs(pEmfSvgInterpretator->GetNumberDefs());
 
 					if (bAddGElement)
 						pXmlWriter->WriteNodeEnd(L"g", false, false);

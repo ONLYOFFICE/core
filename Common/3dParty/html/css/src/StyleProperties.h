@@ -342,12 +342,14 @@ namespace NSCSS
 		using CValueOptional<CColorValue>::operator=;
 	private:
 		CDigit m_oOpacity;
+		double m_dAlpha;
 
 		void SetEmpty(unsigned int unLevel = 0);
 		void SetRGB(unsigned char uchR, unsigned char uchG, unsigned char uchB);
 		void SetRGB(const TRGB& oRGB);
 		void SetHEX(const std::wstring& wsValue);
 		bool SetUrl(const std::wstring& wsValue);
+		void ClearValue();
 	};
 
 	typedef enum

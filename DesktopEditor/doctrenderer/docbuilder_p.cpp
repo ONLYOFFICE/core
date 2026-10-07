@@ -1812,7 +1812,7 @@ namespace NSDoctRenderer
 		}
 		else if (sParam == "--sdkjs-dir")
 		{
-			m_pInternal->m_strSdkPath = std::wstring(value);
+			m_pInternal->SetSdkPathExternal(std::wstring(value));
 		}
 	}
 	void CDocBuilder::SetPropertyW(const wchar_t* param, const wchar_t* value)

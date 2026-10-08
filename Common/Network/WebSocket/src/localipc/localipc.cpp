@@ -38,7 +38,16 @@
 #include <thread>
 #include <atomic>
 #include <vector>
+#include <list>
+#include <mutex>
+#include <memory>
+#include <chrono>
 #include <cstdint>
+
+#ifndef _WIN32
+#include <poll.h>
+#include <cerrno>
+#endif
 
 // asio is header-only; it just needs ASIO_STANDALONE + the include path (the
 // latter is provided by the libsocketio branch in websocket.pri). Guarded so
@@ -92,6 +101,109 @@ namespace NSNetwork
 			return !ec;
 		}
 
+		// How often a connection waiting for the next request checks for stop():
+		// a blocking read cannot be interrupted portably from another thread.
+		static const int kStopCheckMs = 200;
+
+		// Once a request has started arriving, the whole of it must arrive within
+		// this time, and the whole response must be taken by the peer within it
+		// too. A peer that stalls in the middle of a frame is dropped instead of
+		// holding its connection thread - and stop() - forever.
+		static const int kFrameTimeoutMs = 30000;
+
+		static std::chrono::steady_clock::time_point FrameDeadline()
+		{
+			return std::chrono::steady_clock::now() + std::chrono::milliseconds(kFrameTimeoutMs);
+		}
+
+		// asio 1.11 has no timed synchronous wait: poll the native socket.
+		// > 0 - ready (for a read: data, EOF or error - the read tells),
+		// 0 - timeout, < 0 - failure.
+		static int WaitReady(asio::ip::tcp::socket& oSocket, bool bWrite, int nTimeoutMs)
+		{
+#ifdef _WIN32
+			SOCKET hSocket = oSocket.native_handle();
+			fd_set oSet;
+			FD_ZERO(&oSet);
+			FD_SET(hSocket, &oSet);
+			timeval oTimeout;
+			oTimeout.tv_sec = nTimeoutMs / 1000;
+			oTimeout.tv_usec = (nTimeoutMs % 1000) * 1000;
+			return bWrite ? ::select(0, NULL, &oSet, NULL, &oTimeout)
+			              : ::select(0, &oSet, NULL, NULL, &oTimeout);
+#else
+			pollfd oPoll;
+			oPoll.fd = oSocket.native_handle();
+			oPoll.events = bWrite ? POLLOUT : POLLIN;
+			oPoll.revents = 0;
+			int nResult = ::poll(&oPoll, 1, nTimeoutMs);
+			if (nResult < 0 && EINTR == errno)
+				return 0;
+			return nResult;
+#endif
+		}
+
+		// Server side only: moves exactly nSize bytes over a NON-BLOCKING socket.
+		// Whatever the socket can take or give right now is always moved - a
+		// response that fits the socket buffer still reaches the peer while the
+		// server stops. Only WAITING for the peer is bounded: by oDeadline, and by
+		// bRunning in kStopCheckMs slices. False when the peer closes or fails, or
+		// a wait is given up.
+		static bool TransferExact(asio::ip::tcp::socket& oSocket, bool bWrite, char* pData, size_t nSize,
+		                          const std::atomic<bool>& bRunning,
+		                          const std::chrono::steady_clock::time_point& oDeadline)
+		{
+			size_t nDone = 0;
+			while (nDone < nSize)
+			{
+				asio::error_code ec;
+				size_t nMoved = bWrite ? oSocket.write_some(asio::buffer(pData + nDone, nSize - nDone), ec)
+				                       : oSocket.read_some(asio::buffer(pData + nDone, nSize - nDone), ec);
+				if (!ec)
+				{
+					nDone += nMoved;
+					continue;
+				}
+				if (ec != asio::error::would_block && ec != asio::error::try_again)
+					return false; // eof included: the peer closed
+
+				// the peer is not there yet: wait for it, but not past stop() or the deadline
+				while (true)
+				{
+					if (!bRunning || std::chrono::steady_clock::now() >= oDeadline)
+						return false;
+					int nReady = WaitReady(oSocket, bWrite, kStopCheckMs);
+					if (nReady < 0)
+						return false;
+					if (nReady > 0)
+						break;
+				}
+			}
+			return true;
+		}
+
+		static bool ReadFrameUntil(asio::ip::tcp::socket& oSocket, std::string& sData, const std::atomic<bool>& bRunning,
+		                           const std::chrono::steady_clock::time_point& oDeadline)
+		{
+			unsigned char aLen[4];
+			if (!TransferExact(oSocket, false, (char*)aLen, 4, bRunning, oDeadline))
+				return false;
+			uint32_t nLen = UnpackLen(aLen);
+			if (nLen > kMaxFrame) return false;
+			sData.resize(nLen);
+			return 0 == nLen || TransferExact(oSocket, false, &sData[0], nLen, bRunning, oDeadline);
+		}
+
+		static bool WriteFrameUntil(asio::ip::tcp::socket& oSocket, const std::string& sData, const std::atomic<bool>& bRunning,
+		                            const std::chrono::steady_clock::time_point& oDeadline)
+		{
+			unsigned char aLen[4];
+			PackLen((uint32_t)sData.size(), aLen);
+			if (!TransferExact(oSocket, true, (char*)aLen, 4, bRunning, oDeadline))
+				return false;
+			return sData.empty() || TransferExact(oSocket, true, const_cast<char*>(sData.data()), sData.size(), bRunning, oDeadline);
+		}
+
 		// ---- server ----------------------------------------------------------
 
 		class CLocalIpcServer : public IServer
@@ -137,33 +249,95 @@ namespace NSNetwork
 				m_oContext.stop();
 				if (m_oThread.joinable())
 					m_oThread.join();
+
+				// Nothing may run in this object or in the handler after stop(): the
+				// owner can be a plugin library that is unloaded right after it. An
+				// idle connection notices m_bRunning within kStopCheckMs, and so does
+				// one waiting for the rest of a frame; a busy one once its request is
+				// answered.
+				std::list<std::shared_ptr<TConnection> > arConnections;
+				{
+					std::lock_guard<std::mutex> oLock(m_oConnectionsMutex);
+					arConnections.swap(m_arConnections);
+				}
+				for (std::list<std::shared_ptr<TConnection> >::iterator it = arConnections.begin(); it != arConnections.end(); ++it)
+				{
+					if ((*it)->oThread.joinable())
+						(*it)->oThread.join();
+				}
 			}
 
 		private:
+			struct TConnection
+			{
+				std::thread oThread;
+				std::atomic<bool> bFinished;
+				TConnection() : bFinished(false) {}
+			};
+
 			void DoAccept()
 			{
 				auto pSocket = std::make_shared<asio::ip::tcp::socket>(m_oContext);
 				m_oAcceptor.async_accept(*pSocket, [this, pSocket](const asio::error_code& ec)
 				{
-					if (!ec)
+					if (!ec && m_bRunning)
 					{
-						// Handle this connection on its own thread (blocking IO);
+						// Handle this connection on its own thread (synchronous IO);
 						// the handler may block while marshaling to another thread.
-						std::thread([this, pSocket]() { HandleConnection(pSocket); }).detach();
+						std::lock_guard<std::mutex> oLock(m_oConnectionsMutex);
+						JoinFinished();
+
+						std::shared_ptr<TConnection> pConnection = std::make_shared<TConnection>();
+						TConnection* pState = pConnection.get(); // owned by m_arConnections until joined
+						pConnection->oThread = std::thread([this, pSocket, pState]()
+						{
+							HandleConnection(pSocket);
+							pState->bFinished = true;
+						});
+						m_arConnections.push_back(pConnection);
 					}
 					if (m_bRunning)
 						DoAccept();
 				});
 			}
 
+			// m_oConnectionsMutex is held. Closed connections are joined (instantly),
+			// so their threads do not pile up while the server runs.
+			void JoinFinished()
+			{
+				for (std::list<std::shared_ptr<TConnection> >::iterator it = m_arConnections.begin(); it != m_arConnections.end(); )
+				{
+					if ((*it)->bFinished)
+					{
+						if ((*it)->oThread.joinable())
+							(*it)->oThread.join();
+						it = m_arConnections.erase(it);
+					}
+					else
+						++it;
+				}
+			}
+
 			void HandleConnection(std::shared_ptr<asio::ip::tcp::socket> pSocket)
 			{
-				std::string sRequest;
-				while (ReadFrame(*pSocket, sRequest))
+				// Non-blocking, so that no read or write of a frame can outlast its
+				// deadline or stop() (see TransferExact).
+				asio::error_code ecMode;
+				pSocket->non_blocking(true, ecMode);
+				if (!ecMode)
 				{
-					std::string sResponse = m_pHandler ? m_pHandler->onRequest(sRequest) : std::string("{}");
-					if (!WriteFrame(*pSocket, sResponse))
-						break;
+					std::string sRequest;
+					while (m_bRunning)
+					{
+						int nReady = WaitReady(*pSocket, false, kStopCheckMs);
+						if (0 == nReady)
+							continue;
+						if (nReady < 0 || !ReadFrameUntil(*pSocket, sRequest, m_bRunning, FrameDeadline()))
+							break;
+						std::string sResponse = m_pHandler ? m_pHandler->onRequest(sRequest) : std::string("{}");
+						if (!WriteFrameUntil(*pSocket, sResponse, m_bRunning, FrameDeadline()))
+							break;
+					}
 				}
 				asio::error_code ec;
 				pSocket->shutdown(asio::ip::tcp::socket::shutdown_both, ec);
@@ -177,6 +351,9 @@ namespace NSNetwork
 			std::thread m_oThread;
 			unsigned short m_nPort;
 			std::atomic<bool> m_bRunning;
+
+			std::mutex m_oConnectionsMutex;
+			std::list<std::shared_ptr<TConnection> > m_arConnections;
 		};
 
 		// ---- client ----------------------------------------------------------

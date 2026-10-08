@@ -125,6 +125,7 @@ namespace NSDoctRenderer
 				AppendScript(builder, sFontsPath);
 				AppendScript(builder, config->m_strSdkPath + L"/word/sdk-all.js");
 				AppendScript(builder, config->m_strSdkPath + L"/common/Charts/ChartStyles.js");
+				AppendScript(builder, config->m_strSdkPath + L"/common/Drawings/Format/path-boolean-min.js");
 				sCachePath = config->m_strSdkPath + L"/word/sdk-all";
 				break;
 			}
@@ -134,6 +135,7 @@ namespace NSDoctRenderer
 				AppendScript(builder, sFontsPath);
 				AppendScript(builder, config->m_strSdkPath + L"/slide/sdk-all.js");
 				AppendScript(builder, config->m_strSdkPath + L"/common/Charts/ChartStyles.js");
+				AppendScript(builder, config->m_strSdkPath + L"/common/Drawings/Format/path-boolean-min.js");
 				sCachePath = config->m_strSdkPath + L"/slide/sdk-all";
 				break;
 			}
@@ -143,6 +145,7 @@ namespace NSDoctRenderer
 				AppendScript(builder, sFontsPath);
 				AppendScript(builder, config->m_strSdkPath + L"/cell/sdk-all.js");
 				AppendScript(builder, config->m_strSdkPath + L"/common/Charts/ChartStyles.js");
+				AppendScript(builder, config->m_strSdkPath + L"/common/Drawings/Format/path-boolean-min.js");
 				builder->WriteString("\n$.ready();", 11);
 				sCachePath = config->m_strSdkPath + L"/cell/sdk-all";
 				break;
@@ -165,6 +168,7 @@ namespace NSDoctRenderer
 				AppendScript(builder, config->m_strSdkPath + L"/pdf/src/engine/drawingfile_native.js");
 				AppendScript(builder, config->m_strSdkPath + L"/pdf/src/annotations/stamps/en-EN.json", "window[\"native_pdf_stamps\"]=", ";");
 				AppendScript(builder, config->m_strSdkPath + L"/common/Charts/ChartStyles.js");
+				AppendScript(builder, config->m_strSdkPath + L"/common/Drawings/Format/path-boolean-min.js");
 				sCachePath = config->m_strSdkPath + L"/pdf/sdk-all";
 				break;
 			}

@@ -301,6 +301,7 @@ namespace MetaFile
 		m_pBrush    = NULL;
 		m_pPen      = NULL;
 		m_pFont     = NULL;
+		m_pPalette  = NULL;
 		m_oTransform.Init();
 		m_oInverseTransform.Init();
 		m_oTextColor.Set(0, 0, 0);
@@ -311,6 +312,7 @@ namespace MetaFile
 		m_ulMiterLimit  = 0;
 		m_ulFillMode    = WINDING;
 		m_ulStretchMode = 0;
+		m_ulRop2Mode    = R2_COPYPEN;
 		m_oWindow.Init();
 		m_oViewport.Init();
 		m_dPixelHeight = 1;

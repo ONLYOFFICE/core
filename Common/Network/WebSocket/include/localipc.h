@@ -64,6 +64,9 @@ namespace NSNetwork
 			virtual bool start(unsigned short nPort) = 0;
 			// Actual bound port (useful when started with 0).
 			virtual unsigned short port() const = 0;
+			// Returns when no connection thread runs any more: one busy in
+			// onRequest() is waited for, so the handler must not need the
+			// thread calling stop() to finish its request.
 			virtual void stop() = 0;
 			virtual ~IServer() {}
 		};

@@ -1118,7 +1118,7 @@ namespace NSDoctRenderer
 			m_pInternal->m_pDrawingFile = (IOfficeDrawingFile*)data;
 			break;
 		case AdditionalParamType::SDKJS_OVERRIDE_PATH:
-			m_pInternal->m_strSdkPath = *((std::wstring*)data);
+			m_pInternal->SetSdkPathExternal(*((std::wstring*)data));
 			break;
 		default:
 			break;

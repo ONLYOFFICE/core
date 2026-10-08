@@ -68,7 +68,7 @@ class CTextCode
 public:
 	CTextCode(CXmlReader& oReader);
 
-	void Draw(IRenderer* pRenderer, unsigned int& unIndex, const std::vector<TCGTransform>& arCGTransforms, NSFonts::IFontManager* pFontManager = nullptr) const;
+	void Draw(IRenderer* pRenderer, unsigned int& unIndex, const std::vector<TCGTransform>& arCGTransforms, double dScale, NSFonts::IFontManager* pFontManager = nullptr) const;
 };
 
 class CTextObject : public IPageBlock, public CGraphicUnit

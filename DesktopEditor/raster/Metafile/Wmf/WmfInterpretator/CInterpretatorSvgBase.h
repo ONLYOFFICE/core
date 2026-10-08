@@ -135,6 +135,9 @@ namespace MetaFile
 
 		void SetShapeRendering(EShapeRendering eShapeRenderingType);
 
+		void SetNumberDefs(unsigned int unNumberDefs);
+		unsigned int GetNumberDefs() const;
+
 		std::wstring GetFile();
 		void IncludeSvg(const std::wstring& wsSvg, const TRectD& oRect, const TRectD& oClipRect, TXForm *pTransform);
 	private:

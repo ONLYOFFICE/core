@@ -70,7 +70,7 @@ namespace SVG
 	}
 
 	CGradient::CGradient(CSvgReader& oReader)
-	    : CAppliedObject(oReader), m_enGradientUnits(GradU_ObjectBoundingBox)
+	    : CAppliedObject(oReader), m_enGradientUnits(GradU_None)
 	{}
 
 	void CGradient::SetAttribute(const std::string& sName, CSvgReader& oReader)
@@ -83,6 +83,8 @@ namespace SVG
 		{
 			if (L"userSpaceOnUse" == oReader.GetText())
 				m_enGradientUnits = GradU_UserSpaceOnUse;
+			else if (L"objectBoundingBox" == oReader.GetText())
+				m_enGradientUnits = GradU_ObjectBoundingBox;
 		}
 		else
 			CAppliedObject::SetAttribute(sName, oReader);
@@ -103,15 +105,20 @@ namespace SVG
 
 	bool CGradient::Apply(IRenderer *pRenderer, const CSvgFile *pFile, const TBounds &oObjectBounds)
 	{
+		InheritRefGradient(pFile);
+
 		if (NULL == pRenderer || m_arObjects.empty())
 			return false;
+
+		LONG lAlpha{255};
+		pRenderer->get_BrushAlpha1(&lAlpha);
 
 		std::vector<LONG> arColors;
 		std::vector<double> arPositions;
 
 		for (const CStopElement* pStopElement : m_arObjects)
 		{
-			arColors.push_back(((unsigned int)(pStopElement->GetColor().ToInt() | ((unsigned char)(255. * pStopElement->GetColor().GetOpacity()) << 24))));
+			arColors.push_back(((unsigned int)(pStopElement->GetColor().ToInt() | ((unsigned char)(lAlpha * pStopElement->GetColor().GetOpacity()) << 24))));
 			arPositions.push_back(pStopElement->GetOffset().ToDouble());
 		}
 
@@ -120,52 +127,43 @@ namespace SVG
 
 		return true;
 	}
-	
-	void CGradient::ApplyTransform(IRenderer* pRenderer, const TBounds& oBounds, double& dAngle) const
-	{
-		if (NULL == pRenderer)
-			return;
-		
-		TBounds oNewBounds(oBounds);
-		Aggplus::CMatrix oMatrix = m_oTransform.GetMatrix().GetFinalValue();
-
-		dAngle = oMatrix.rotation() * 180. / M_PI;
-
-		if (GradU_ObjectBoundingBox == m_enGradientUnits)
-		{
-			oMatrix.Scale(oBounds.m_dRight - oBounds.m_dLeft, oBounds.m_dBottom - oBounds.m_dTop, Aggplus::MatrixOrderAppend);
-			oMatrix.Scale(1 / (oBounds.m_dRight - oBounds.m_dLeft), 1 / (oBounds.m_dBottom - oBounds.m_dTop));
-		}
-
-		oMatrix.TransformPoint(oNewBounds.m_dLeft,  oNewBounds.m_dTop);
-		oMatrix.TransformPoint(oNewBounds.m_dRight, oNewBounds.m_dBottom);
-
-		pRenderer->BrushBounds(oNewBounds.m_dLeft, oNewBounds.m_dTop, oNewBounds.m_dRight - oNewBounds.m_dLeft, oNewBounds.m_dBottom - oNewBounds.m_dTop);
-	}
 
 	CGradient *CGradient::GetRefGradient(const CSvgFile *pFile) const
 	{
 		if (m_wsXlinkHref.empty() || NULL == pFile)
 			return NULL;
 
-		CGradient *pGradiend = dynamic_cast<CGradient*>(pFile->GetMarkedObject(m_wsXlinkHref));
-
-		if (NULL == pGradiend)
-			return NULL;
-
-		CGradient *pRefGradient = pGradiend->GetRefGradient(pFile);
-
-		return (NULL != pRefGradient) ? pRefGradient : pGradiend;
+		return dynamic_cast<CGradient*>(pFile->GetMarkedObject(m_wsXlinkHref));
 	}
 
-	bool CGradient::ApplyRefGradient(IRenderer *pRenderer, const CSvgFile *pFile, const TBounds &oObjectBounds) const
+	void CGradient::InheritRefGradient(const CSvgFile *pFile)
 	{
 		CGradient *pRefGradient = GetRefGradient(pFile);
 
-		if (NULL == pRefGradient)
-			return false;
+		m_wsXlinkHref.clear();
 
-		return pRefGradient->Apply(pRenderer, pFile, oObjectBounds);
+		if (NULL != pRefGradient)
+		{
+			pRefGradient->InheritRefGradient(pFile);
+
+			if (m_arObjects.empty())
+			{
+				for (CStopElement* pStopElement : pRefGradient->m_arObjects)
+				{
+					pStopElement->AddRef();
+					m_arObjects.push_back(pStopElement);
+				}
+			}
+
+			if (GradU_None == m_enGradientUnits)
+				m_enGradientUnits = pRefGradient->m_enGradientUnits;
+
+			if (m_oTransform.Empty())
+				m_oTransform = pRefGradient->m_oTransform;
+		}
+
+		if (GradU_None == m_enGradientUnits)
+			m_enGradientUnits = GradU_ObjectBoundingBox;
 	}
 
 	CLinearGradient::CLinearGradient(CSvgReader& oReader)
@@ -189,9 +187,9 @@ namespace SVG
 	bool CLinearGradient::Apply(IRenderer *pRenderer, const CSvgFile *pFile, const TBounds &oObjectBounds)
 	{
 		if (!CGradient::Apply(pRenderer, pFile, oObjectBounds))
-			return ApplyRefGradient(pRenderer, pFile, oObjectBounds);
+			return false;
 
-		if (m_oX1 == m_oX2 && m_oY1 == m_oY2)
+		if (!m_oX2.Empty() && m_oX1 == m_oX2 && m_oY1 == m_oY2)
 		{
 			pRenderer->put_BrushType(c_BrushTypeSolid);
 			pRenderer->put_BrushColor1(m_arObjects.back()->GetColor().ToInt());
@@ -201,32 +199,72 @@ namespace SVG
 
 		pRenderer->put_BrushType(c_BrushTypePathGradient1);
 
-		double dAngle = 0.;
+		const bool bObjectBoundingBox{GradU_ObjectBoundingBox == m_enGradientUnits};
+		const double dBase{bObjectBoundingBox ? 1. : 0.};
 
-		TBounds oNewBounds(oObjectBounds);
+		double dX1{m_oX1.ToDouble(NSCSS::Pixel, dBase)};
+		double dY1{m_oY1.ToDouble(NSCSS::Pixel, dBase)};
+		double dX2{m_oX2.ToDouble(NSCSS::Pixel, dBase)};
+		double dY2{m_oY2.ToDouble(NSCSS::Pixel, dBase)};
 
-		if (GradU_ObjectBoundingBox == m_enGradientUnits)
+		if (m_oX2.Empty())
+			dX2 = bObjectBoundingBox ? 1. : oObjectBounds.m_dRight;
+
+		double dBandX{dX1 - (dY2 - dY1)};
+		double dBandY{dY1 + (dX2 - dX1)};
+
+		const Aggplus::CMatrix oMatrix{m_oTransform.GetMatrix().GetFinalValue()};
+
+		const auto ToUserSpace = [&](double& dX, double& dY)
 		{
-			oNewBounds.m_dLeft   += (oObjectBounds.m_dRight  - oObjectBounds.m_dLeft) * m_oX1.ToDouble(NSCSS::Pixel);
-			oNewBounds.m_dTop    += (oObjectBounds.m_dBottom - oObjectBounds.m_dTop)  * m_oY1.ToDouble(NSCSS::Pixel);
-			oNewBounds.m_dRight  *= (!m_oX2.Zero()) ? m_oX2.ToDouble(NSCSS::Pixel) : 1.;
-			oNewBounds.m_dBottom *= (!m_oY2.Zero()) ? m_oY2.ToDouble(NSCSS::Pixel) : 1.;
-		}
-		else if (GradU_UserSpaceOnUse == m_enGradientUnits)
+			oMatrix.TransformPoint(dX, dY);
+
+			if (!bObjectBoundingBox)
+				return;
+
+			dX = oObjectBounds.m_dLeft + (oObjectBounds.m_dRight  - oObjectBounds.m_dLeft) * dX;
+			dY = oObjectBounds.m_dTop  + (oObjectBounds.m_dBottom - oObjectBounds.m_dTop)  * dY;
+		};
+
+		ToUserSpace(dX1, dY1);
+		ToUserSpace(dX2, dY2);
+		ToUserSpace(dBandX, dBandY);
+
+		dBandX -= dX1;
+		dBandY -= dY1;
+
+		double dWidth {dX2 - dX1};
+		double dHeight{dY2 - dY1};
+
+		const double dBandSquared{dBandX * dBandX + dBandY * dBandY};
+
+		if (!Equals(0., dBandSquared))
 		{
-			if (!m_oX1.Empty()) oNewBounds.m_dLeft   = m_oX1.ToDouble(NSCSS::Pixel);
-			if (!m_oY1.Empty()) oNewBounds.m_dTop    = m_oY1.ToDouble(NSCSS::Pixel);
-			if (!m_oX2.Empty()) oNewBounds.m_dRight  = m_oX2.ToDouble(NSCSS::Pixel);
-			if (!m_oY2.Empty()) oNewBounds.m_dBottom = m_oY2.ToDouble(NSCSS::Pixel);
+			const double dShift{(dWidth * dBandX + dHeight * dBandY) / dBandSquared};
+
+			dWidth  -= dShift * dBandX;
+			dHeight -= dShift * dBandY;
 		}
 
-		CGradient::ApplyTransform(pRenderer, oNewBounds, dAngle);
-
-		dAngle += 180. * std::atan2(oNewBounds.m_dBottom - oNewBounds.m_dTop, oNewBounds.m_dRight - oNewBounds.m_dLeft) / M_PI;
-
-		pRenderer->put_BrushLinearAngle(dAngle);
+		pRenderer->BrushBounds(std::min(dX1, dX1 + dWidth), std::min(dY1, dY1 + dHeight), std::abs(dWidth), std::abs(dHeight));
+		pRenderer->put_BrushLinearAngle(180. * std::atan2(dHeight, dWidth) / M_PI);
 
 		return true;
+	}
+
+	void CLinearGradient::InheritRefGradient(const CSvgFile *pFile)
+	{
+		const CLinearGradient *pRefGradient = dynamic_cast<const CLinearGradient*>(GetRefGradient(pFile));
+
+		CGradient::InheritRefGradient(pFile);
+
+		if (NULL == pRefGradient)
+			return;
+
+		if (m_oX1.Empty()) m_oX1 = pRefGradient->m_oX1;
+		if (m_oY1.Empty()) m_oY1 = pRefGradient->m_oY1;
+		if (m_oX2.Empty()) m_oX2 = pRefGradient->m_oX2;
+		if (m_oY2.Empty()) m_oY2 = pRefGradient->m_oY2;
 	}
 
 	CRadialGradient::CRadialGradient(CSvgReader& oReader)
@@ -248,20 +286,20 @@ namespace SVG
 	bool CRadialGradient::Apply(IRenderer *pRenderer, const CSvgFile *pFile, const TBounds &oObjectBounds)
 	{
 		if (!CGradient::Apply(pRenderer, pFile, oObjectBounds) || m_oR.Zero())
-			return ApplyRefGradient(pRenderer, pFile, oObjectBounds);
+			return false;
 
 		double dCX = (oObjectBounds.m_dRight + oObjectBounds.m_dLeft) / 2.;
 		double dCY = (oObjectBounds.m_dBottom + oObjectBounds.m_dTop) / 2.;
-		double dR  = oObjectBounds.m_dBottom - oObjectBounds.m_dTop;
+		double dR  = (oObjectBounds.m_dBottom - oObjectBounds.m_dTop) / 2.;
 
 		if (GradU_ObjectBoundingBox == m_enGradientUnits)
 		{
 			if (!m_oCx.Empty())
-				dCX = oObjectBounds.m_dLeft + (oObjectBounds.m_dRight  - oObjectBounds.m_dLeft) * m_oCx.ToDouble(NSCSS::Pixel);
+				dCX = oObjectBounds.m_dLeft + (oObjectBounds.m_dRight  - oObjectBounds.m_dLeft) * m_oCx.ToDouble(NSCSS::Pixel, 1.);
 			if (!m_oCy.Empty())
-				dCY = oObjectBounds.m_dTop + (oObjectBounds.m_dBottom - oObjectBounds.m_dTop) * m_oCy.ToDouble(NSCSS::Pixel);
+				dCY = oObjectBounds.m_dTop + (oObjectBounds.m_dBottom - oObjectBounds.m_dTop) * m_oCy.ToDouble(NSCSS::Pixel, 1.);
 			if (!m_oR.Empty())
-				dR = (oObjectBounds.m_dBottom - oObjectBounds.m_dTop) * m_oR.ToDouble(NSCSS::Pixel);
+				dR = (oObjectBounds.m_dBottom - oObjectBounds.m_dTop) * m_oR.ToDouble(NSCSS::Pixel, 1.);
 		}
 		else if (GradU_UserSpaceOnUse == m_enGradientUnits)
 		{
@@ -274,6 +312,20 @@ namespace SVG
 		pRenderer->BrushBounds(dCX - dR, dCY - dR, 2. * dR, 2. * dR);
 
 		return true;
+	}
+
+	void CRadialGradient::InheritRefGradient(const CSvgFile *pFile)
+	{
+		const CRadialGradient *pRefGradient = dynamic_cast<const CRadialGradient*>(GetRefGradient(pFile));
+
+		CGradient::InheritRefGradient(pFile);
+
+		if (NULL == pRefGradient)
+			return;
+
+		if (m_oCx.Empty()) m_oCx = pRefGradient->m_oCx;
+		if (m_oCy.Empty()) m_oCy = pRefGradient->m_oCy;
+		if (m_oR.Empty())  m_oR  = pRefGradient->m_oR;
 	}
 
 }

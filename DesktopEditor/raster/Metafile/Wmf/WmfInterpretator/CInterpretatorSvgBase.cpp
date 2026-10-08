@@ -161,6 +161,16 @@ namespace MetaFile
 		m_eShapeRendering = eShapeRenderingType;
 	}
 
+	void CInterpretatorSvgBase::SetNumberDefs(unsigned int unNumberDefs)
+	{
+		m_unNumberDefs = unNumberDefs;
+	}
+
+	unsigned int CInterpretatorSvgBase::GetNumberDefs() const
+	{
+		return m_unNumberDefs;
+	}
+
 	std::wstring CInterpretatorSvgBase::GetFile()
 	{
 		return m_pXmlWriter->GetXmlString();

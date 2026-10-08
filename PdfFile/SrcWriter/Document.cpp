@@ -478,6 +478,8 @@ namespace PdfWriter
 	}
 	unsigned int CDocument::GetPagesCount() const
 	{
+		if (!m_pPageTree)
+			return 0;
 		return m_pPageTree->GetCount();
 	}
     void CDocument::SetDocumentID(const std::wstring& documentID)

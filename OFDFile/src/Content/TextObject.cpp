@@ -429,6 +429,10 @@ bool TCGTransform::Draw(IRenderer* pRenderer, const LONG& lUnicode, unsigned int
 	if (wsFontPath.empty())
 		return false;
 
-	return S_OK == pRenderer->CommandDrawTextExCHAR(lUnicode, (LONG)m_arGlyphs[unIndex - m_unCodePosition], dX, dY, 0, 0);
+	const HRESULT hRes{pRenderer->CommandDrawTextExCHAR(lUnicode, (LONG)m_arGlyphs[unIndex - m_unCodePosition], dX, dY, 0, 0)};
+
+	pRenderer->put_FontStringGID(FALSE);
+
+	return S_OK == hRes;
 }
 }

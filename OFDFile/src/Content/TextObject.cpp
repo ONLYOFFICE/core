@@ -176,7 +176,7 @@ HRESULT DrawGlyphWithFontUpdate(IRenderer* pRenderer, NSFonts::IFontManager* pFo
 	return res;
 }
 
-void CTextCode::Draw(IRenderer* pRenderer, unsigned int& unIndex, const std::vector<TCGTransform>& arCGTransforms, NSFonts::IFontManager* pFontManager) const
+void CTextCode::Draw(IRenderer* pRenderer, unsigned int& unIndex, const std::vector<TCGTransform>& arCGTransforms, double dScale, NSFonts::IFontManager* pFontManager) const
 {
 	if (nullptr == pRenderer || m_wsText.empty())
 		return;
@@ -185,11 +185,12 @@ void CTextCode::Draw(IRenderer* pRenderer, unsigned int& unIndex, const std::vec
 
 	for (unsigned int unGlyphIndex = 0; unGlyphIndex < m_wsText.length(); ++unGlyphIndex)
 	{
+		const double dGlyphX = dX * dScale, dGlyphY = dY * dScale;
 		bool bDrawed = false;
 
 		for (const TCGTransform& oCGTransform : arCGTransforms)
 		{
-			if (oCGTransform.Draw(pRenderer, m_wsText[unGlyphIndex], unIndex, dX, dY, pFontManager))
+			if (oCGTransform.Draw(pRenderer, m_wsText[unGlyphIndex], unIndex, dGlyphX, dGlyphY, pFontManager))
 			{
 				bDrawed = true;
 				break;
@@ -197,7 +198,7 @@ void CTextCode::Draw(IRenderer* pRenderer, unsigned int& unIndex, const std::vec
 		}
 
 		if (!bDrawed)
-			DrawGlyphWithFontUpdate(pRenderer, pFontManager, m_wsText[unGlyphIndex], [pRenderer, chChar = m_wsText[unGlyphIndex], dX, dY](){ return pRenderer->CommandDrawTextCHAR(chChar, dX, dY, 0, 0); });
+			DrawGlyphWithFontUpdate(pRenderer, pFontManager, m_wsText[unGlyphIndex], [pRenderer, chChar = m_wsText[unGlyphIndex], dGlyphX, dGlyphY](){ return pRenderer->CommandDrawTextCHAR(chChar, dGlyphX, dGlyphY, 0, 0); });
 
 		++unIndex;
 
@@ -315,6 +316,16 @@ void CTextObject::Draw(IRenderer* pRenderer, const CCommonData& oCommonData, EPa
 	TMatrix oOldTransform;
 	CGraphicUnit::Apply(pRenderer, oOldTransform);
 
+	double dM11, dM12, dM21, dM22, dDx, dDy;
+	pRenderer->GetTransform(&dM11, &dM12, &dM21, &dM22, &dDx, &dDy);
+
+	double dTextScale = std::min(std::sqrt(dM11 * dM11 + dM12 * dM12), std::sqrt(dM21 * dM21 + dM22 * dM22));
+
+	if (IsZeroValue(dTextScale))
+		dTextScale = 1.;
+	else
+		pRenderer->SetTransform(dM11 / dTextScale, dM12 / dTextScale, dM21 / dTextScale, dM22 / dTextScale, dDx, dDy);
+
 	std::vector<const CDrawParam*> arDrawParams{pPublicRes->GetDrawParams()};
 
 	if (m_bFill)
@@ -340,15 +351,15 @@ void CTextObject::Draw(IRenderer* pRenderer, const CCommonData& oCommonData, EPa
 	else
 		pRenderer->put_BrushType(c_BrushTypeNotSet);
 
-	pRenderer->put_FontSize(m_dSize * 72. / 25.4);
+	pRenderer->put_FontSize(m_dSize * dTextScale * 72. / 25.4);
 
 	unsigned int unGlyphsIndex = 0;
 
 	for (const CTextCode* pTextCode : m_arTextCodes)
 		#ifdef BUILDING_WASM_MODULE
-		pTextCode->Draw(pRenderer, unGlyphsIndex, m_arCGTransforms, pFont->GetFontManager());
+		pTextCode->Draw(pRenderer, unGlyphsIndex, m_arCGTransforms, dTextScale, pFont->GetFontManager());
 		#else
-		pTextCode->Draw(pRenderer, unGlyphsIndex, m_arCGTransforms);
+		pTextCode->Draw(pRenderer, unGlyphsIndex, m_arCGTransforms, dTextScale);
 		#endif
 
 	pRenderer->SetTransform(oOldTransform.m_dM11, oOldTransform.m_dM12, oOldTransform.m_dM21, oOldTransform.m_dM22, oOldTransform.m_dDx, oOldTransform.m_dDy);

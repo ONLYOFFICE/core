@@ -2324,6 +2324,18 @@ void RenameButtonKids(PdfWriter::CDictObject* pParent, const std::vector<PdfWrit
 		pVKid = nV < pKids->GetCount() ? pKids->Get(nV) : NULL;
 	RenameKids(pParent, pOpt, arrKids, pVKid);
 }
+// Is the field of pKid - a converted widget or field - another one than pParent, which lists it: the
+// editor moved it there (a field renamed into another field). A kid with no Parent, or with the one
+// listing it (the same object, or one under its number), is pParent's
+bool KidMovedAway(PdfWriter::CDictObject* pParent, PdfWriter::CObjectBase* pKid)
+{
+	if (!pParent || !pKid || pKid->GetType() != PdfWriter::object_type_DICT)
+		return false;
+	PdfWriter::CObjectBase* pUp = ((PdfWriter::CDictObject*)pKid)->Get("Parent");
+	if (!pUp || pUp->GetType() != PdfWriter::object_type_DICT || pUp == pParent)
+		return false;
+	return !(pParent->GetObjId() > 0 && pUp->GetObjId() == pParent->GetObjId());
+}
 // Kids of a converted field and of the fields under it: every converted kid the reader lists, in the
 // reader's order (a field converted before its kids' pages lacks them - SplitSkipDict), then the kids
 // the reader does not list (the editor's new widgets). Opt of a button group is cut to the kids kept
@@ -2356,8 +2368,11 @@ void AddMissingFieldKids(Object* pNode, int nNodeID, XRef* xref, CObjectsManager
 			continue;
 		int nKidID = oKidRef->getRefNum() + nStartRefID;
 
-		// NULL - deleted, or not in the output
+		// NULL - deleted, or not in the output; a kid the editor moved to another field (a field renamed
+		// into it, ReleaseMovedKids) is that field's now, not listed here again
 		PdfWriter::CObjectBase* pKid = mObjManager.GetObj(nKidID);
+		if (pKid && pField && pField->GetType() == PdfWriter::object_type_DICT && KidMovedAway((PdfWriter::CDictObject*)pField, pKid))
+			pKid = NULL;
 		if (pKid && std::find(arrKids.begin(), arrKids.end(), pKid) == arrKids.end())
 			arrKids.push_back(pKid);
 
@@ -6945,6 +6960,51 @@ void CPdfEditor::RedactMeta(IAdvancedCommand* pCommand, const std::vector<double
 	}
 
 	CloseWriteNew_FlushAnnotations(m_pReader, &m_mObjManager, m_pWriter->GetDocument(), m_pWriter, m_nRedactInfo, pCommand, arrRedact);
+}
+// A kid the editor moved to another field - a field renamed into it: SetParentKids gives a widget its new
+// Parent, EditWidgetParents a field - leaves the Kids of the field that still lists it, its Opt entry with it
+// (KidMovedAway; WriteNew: AddMissingFieldKids at Close does not list it there again).
+// WriteAppend: a field so left with no kid leaves the form at Close (DeleteEmptyAppendFields)
+void CPdfEditor::ReleaseMovedKids()
+{
+	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
+	const std::map<int, PdfWriter::CDictObject*>& mParents = pDoc->GetParents();
+	for (std::map<int, PdfWriter::CDictObject*>::const_iterator it = mParents.begin(); it != mParents.end(); ++it)
+	{
+		PdfWriter::CDictObject* pParent = it->second;
+		PdfWriter::CObjectBase* pKidsObj = pParent ? pParent->Get("Kids") : NULL;
+		if (!pKidsObj || pKidsObj->GetType() != PdfWriter::object_type_ARRAY)
+			continue;
+		PdfWriter::CArrayObject* pKids = (PdfWriter::CArrayObject*)pKidsObj;
+		std::vector<PdfWriter::CDictObject*> arrMoved;
+		std::vector<int> arrMovedID;
+		for (int i = 0; i < pKids->GetCount(); ++i)
+		{
+			PdfWriter::CObjectBase* pKid = pKids->Get(i);
+			if (!pKid)
+				continue; // a deleted kid
+			if (pKid->GetType() != PdfWriter::object_type_DICT)
+			{
+				// WriteAppend: a field copied under its number (GetWidgetParent) keeps its kids as raw
+				// references; a kid field the editor re-parented is a copy under its number too
+				if (pKid->GetObjId() > 0 && it->first == (int)pParent->GetObjId())
+				{
+					PdfWriter::CDictObject* pCopy = pDoc->GetParent((int)pKid->GetObjId());
+					if (pCopy && pCopy->GetObjId() == pKid->GetObjId() && KidMovedAway(pParent, pCopy))
+						arrMovedID.push_back((int)pKid->GetObjId());
+				}
+				continue;
+			}
+			if (KidMovedAway(pParent, pKid))
+				arrMoved.push_back((PdfWriter::CDictObject*)pKid);
+		}
+		for (size_t i = 0; i < arrMoved.size(); ++i)
+			RemoveParentKid(pParent, arrMoved[i], 0);
+		for (size_t i = 0; i < arrMovedID.size(); ++i)
+			RemoveParentKid(pParent, NULL, arrMovedID[i]);
+		if ((!arrMoved.empty() || !arrMovedID.empty()) && m_nMode == Mode::WriteAppend)
+			m_setLostKidFields.insert(it->first);
+	}
 }
 void CPdfEditor::FinalizeWidgetRedactStamps()
 {

@@ -1565,6 +1565,7 @@ HRESULT CPdfFile::AdvancedCommand(IAdvancedCommand* command)
 		if (m_pInternal->pEditor && m_pInternal->pEditor->EditWidgets(pCommand))
 		{
 			HRESULT hr = m_pInternal->pWriter->EditWidgetParents(m_pInternal->pAppFonts, pCommand, m_pInternal->wsTempFolder);
+			m_pInternal->pEditor->ReleaseMovedKids();
 			m_pInternal->pEditor->FinalizeWidgetRedactStamps();
 			return hr;
 		}

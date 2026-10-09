@@ -150,6 +150,7 @@ public:
 	bool EditAnnot(int nPageIndex, int nID);
 	bool DeleteAnnot(int nID, Object* oAnnots = NULL);
 	bool EditWidgets(IAdvancedCommand* pCommand);
+	void ReleaseMovedKids();
 	int  GetPagesCount();
 	void GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY);
 	int  GetRotate(int nPageIndex);

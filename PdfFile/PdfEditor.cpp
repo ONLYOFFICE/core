@@ -5682,6 +5682,8 @@ void DeleteEmptyAppendFields(CObjectsManager* pManager, PdfWriter::CDocument* pD
 
 			PdfWriter::CObjectBase* pUp = pField->Get("Parent");
 			PdfWriter::CDictObject* pUpField = pUp && pUp->GetType() == PdfWriter::object_type_DICT ? (PdfWriter::CDictObject*)pUp : NULL;
+			if (pUpField == pField) // a broken file: the field is its own Parent
+				pUpField = NULL;
 			if (pFields)
 				RemoveArrayItem(pFields, NULL, nFieldID);
 			if (pCO)

@@ -666,6 +666,22 @@ namespace PdfWriter
 	{
 		m_vExtGrStates.push_back(pState);
 	}
+	// pObj is deleted: GetExtGState, GetStrokeAlpha and GetFillAlpha no longer hand it out
+	// (an ExtGState converted from the reader is listed too, AddExtGState)
+	void CDocument::ForgetExtGState(CObjectBase* pObj)
+	{
+		std::vector<CExtGrState*>* arrLists[3] = { &m_vExtGrStates, &m_vStrokeAlpha, &m_vFillAlpha };
+		for (int i = 0; i < 3; ++i)
+		{
+			std::vector<CExtGrState*>& vList = *arrLists[i];
+			for (size_t j = vList.size(); j > 0; --j)
+			{
+				CObjectBase* pState = vList[j - 1];
+				if (pState == pObj)
+					vList.erase(vList.begin() + (j - 1));
+			}
+		}
+	}
     CExtGrState* CDocument::GetExtGState(double dAlphaStroke, double dAlphaFill, EBlendMode eMode, int nStrokeAdjustment)
 	{
 		CExtGrState* pExtGrState = FindExtGrState(dAlphaStroke, dAlphaFill, eMode, nStrokeAdjustment);
@@ -1532,6 +1548,7 @@ namespace PdfWriter
 			m_mParents.erase(it3);
 		if (m_pCurPage == pObj)
 			m_pCurPage = NULL;
+		ForgetExtGState(pObj);
 
 		m_pXref->Remove(pObj);
 		if (pRemoved)
@@ -2492,6 +2509,9 @@ namespace PdfWriter
 		}
 
 		for (size_t unIndex = 0; unIndex < arrToRemove.size(); ++unIndex)
+		{
+			ForgetExtGState(arrToRemove[unIndex].second);
 			arrToRemove[unIndex].first->Remove(arrToRemove[unIndex].second);
+		}
 	}
 }

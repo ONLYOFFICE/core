@@ -2002,6 +2002,30 @@ static bool ShouldRemoveOldAction(PdfWriter::CObjectBase* pOld)
 		return false;
 	return IsKnownActionDict((PdfWriter::CDictObject*)pOld);
 }
+// The value of a kid's field: the first V up its Parent chain. false - the kid has no field here
+// (no Parent, or one not copied into the output); sV is Off when no field of the chain has a V
+static bool GetKidFieldValue(PdfWriter::CDictObject* pKid, std::string& sV)
+{
+	PdfWriter::CObjectBase* pObj = pKid->Get("Parent");
+	if (!pObj || pObj->GetType() != PdfWriter::object_type_DICT)
+		return false;
+	sV = "Off";
+	PdfWriter::CDictObject* pField = (PdfWriter::CDictObject*)pObj;
+	for (int nDepth = 0; pField && nDepth < 32; ++nDepth)
+	{
+		PdfWriter::CObjectBase* pV = pField->Get("V");
+		if (pV)
+		{
+			if (pV->GetType() != PdfWriter::object_type_NAME)
+				return false;
+			sV = ((PdfWriter::CNameObject*)pV)->Get();
+			return true;
+		}
+		pObj = pField->Get("Parent");
+		pField = pObj && pObj->GetType() == PdfWriter::object_type_DICT ? (PdfWriter::CDictObject*)pObj : NULL;
+	}
+	return true;
+}
 }
 void CPdfWriter::UpdateWidgetActions(CAnnotFieldInfo::CWidgetAnnotPr* pPr, PdfWriter::CWidgetAnnotation* pWidgetAnnot)
 {
@@ -2707,7 +2731,15 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 					if (pButtonWidget->NeedAP_N_Yes() || pButtonWidget->GetAP_N_Yes() == U_TO_UTF8(wsAP_N_Yes))
 						pButtonWidget->SetAP_N_Yes(wsAP_N_Yes);
 					else
+					{
 						pButtonWidget->RenameAP_N_Yes(wsAP_N_Yes);
+						// A kid is on when its field's value names it. The editor sends the field when the value
+						// changes (EditWidgetParents sets every kid's AS then); a kid sent alone under a new name
+						// keeps the value it had, which names it no more
+						std::string sV;
+						if (GetKidFieldValue(pButtonWidget, sV) && sV != pButtonWidget->GetAP_N_Yes())
+							pButtonWidget->Add("AS", "Off");
+					}
 				}
 
 				pButtonWidget->SetStyle(pPrB->GetStyle());

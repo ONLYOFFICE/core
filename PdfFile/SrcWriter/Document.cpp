@@ -666,6 +666,22 @@ namespace PdfWriter
 	{
 		m_vExtGrStates.push_back(pState);
 	}
+	// pObj is deleted: GetExtGState, GetStrokeAlpha and GetFillAlpha no longer hand it out
+	// (an ExtGState converted from the reader is listed too, AddExtGState)
+	void CDocument::ForgetExtGState(CObjectBase* pObj)
+	{
+		std::vector<CExtGrState*>* arrLists[3] = { &m_vExtGrStates, &m_vStrokeAlpha, &m_vFillAlpha };
+		for (int i = 0; i < 3; ++i)
+		{
+			std::vector<CExtGrState*>& vList = *arrLists[i];
+			for (size_t j = vList.size(); j > 0; --j)
+			{
+				CObjectBase* pState = vList[j - 1];
+				if (pState == pObj)
+					vList.erase(vList.begin() + (j - 1));
+			}
+		}
+	}
     CExtGrState* CDocument::GetExtGState(double dAlphaStroke, double dAlphaFill, EBlendMode eMode, int nStrokeAdjustment)
 	{
 		CExtGrState* pExtGrState = FindExtGrState(dAlphaStroke, dAlphaFill, eMode, nStrokeAdjustment);
@@ -1505,6 +1521,11 @@ namespace PdfWriter
 		if (!pObj)
 			return;
 
+		// one list for the whole cascade: a child may be freed by a sibling's cascade before its turn
+		std::vector<CObjectBase*> arrRemoved;
+		if (bCascade && !pRemoved)
+			pRemoved = &arrRemoved;
+
 		std::vector<CObjectBase*> arrChildren;
 		if (bCascade)
 			pObj->GetChildRefs(arrChildren);
@@ -1521,8 +1542,13 @@ namespace PdfWriter
 		std::map<int, CPage*>::iterator it2 = std::find_if(m_mEditPages.begin(), m_mEditPages.end(), [pObj](const std::pair<int, CPage*>& t){ return t.second == pObj; });
 		if (it2 != m_mEditPages.end())
 			m_mEditPages.erase(it2);
+		// a removed field leaves m_mParents, which EditWidgetParents walks
+		std::map<int, CDictObject*>::iterator it3 = std::find_if(m_mParents.begin(), m_mParents.end(), [pObj](const std::pair<int, CDictObject*>& t){ return t.second == pObj; });
+		if (it3 != m_mParents.end())
+			m_mParents.erase(it3);
 		if (m_pCurPage == pObj)
 			m_pCurPage = NULL;
+		ForgetExtGState(pObj);
 
 		m_pXref->Remove(pObj);
 		if (pRemoved)
@@ -1534,6 +1560,8 @@ namespace PdfWriter
 		for (size_t i = 0; i < arrChildren.size(); ++i)
 		{
 			CObjectBase* pChild = arrChildren[i];
+			if (std::find(pRemoved->begin(), pRemoved->end(), pChild) != pRemoved->end())
+				continue; // freed already
 			TXrefEntry* pChildEntry = pChild->GetXrefEntry();
 			if (pChildEntry && pChildEntry->pRefObj.empty())
 				RemoveObj(pChild, true, pRemoved);
@@ -1786,11 +1814,11 @@ namespace PdfWriter
 		{
 			if (m_pAcroForm)
 			{
-				CArrayObject* ppFields = (CArrayObject*)m_pAcroForm->Get("Fields");
-				for (int i = 0; i < ppFields->GetCount(); ++i)
+				CArrayObject* ppFields = dynamic_cast<CArrayObject*>(m_pAcroForm->Get("Fields"));
+				for (int i = 0; ppFields && i < ppFields->GetCount(); ++i)
 				{
 					CObjectBase* pObj = ppFields->Get(i);
-					if (pObj->GetObjId() == nObjNum)
+					if (pObj && pObj->GetObjId() == nObjNum) // NULL - a deleted field
 					{
 						CObjectBase* pDelete = ppFields->Remove(i);
 						RELEASEOBJECT(pDelete);
@@ -1858,6 +1886,8 @@ namespace PdfWriter
 			for (int i = 0; i < pKids->GetCount(); ++i)
 			{
 				CObjectBase* pKid = pKids->Get(i);
+				if (!pKid) // a deleted kid
+					continue;
 				if (nID > 0 && pKid->GetObjId() == nID)
 				{
 					pKids->Insert(pKid, pWidget, true);
@@ -2240,11 +2270,11 @@ namespace PdfWriter
 
 			if (m_pAcroForm)
 			{
-				CArrayObject* ppFields = (CArrayObject*)m_pAcroForm->Get("Fields");
-				for (int i = 0; i < ppFields->GetCount(); ++i)
+				CArrayObject* ppFields = dynamic_cast<CArrayObject*>(m_pAcroForm->Get("Fields"));
+				for (int i = 0; ppFields && i < ppFields->GetCount(); ++i)
 				{
 					CObjectBase* pObj = ppFields->Get(i);
-					if (pObj->GetObjId() == pSI->pField->GetObjId())
+					if (pObj && pObj->GetObjId() == pSI->pField->GetObjId()) // NULL - a deleted field
 					{
 						CObjectBase* pDelete = ppFields->Remove(i);
 						if (pDelete->GetType() == object_type_UNKNOWN)
@@ -2479,6 +2509,9 @@ namespace PdfWriter
 		}
 
 		for (size_t unIndex = 0; unIndex < arrToRemove.size(); ++unIndex)
+		{
+			ForgetExtGState(arrToRemove[unIndex].second);
 			arrToRemove[unIndex].first->Remove(arrToRemove[unIndex].second);
+		}
 	}
 }

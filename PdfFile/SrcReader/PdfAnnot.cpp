@@ -53,6 +53,7 @@
 #include "../../DesktopEditor/graphics/pro/Fonts.h"
 
 #include <map>
+#include <set>
 
 namespace PdfReader
 {
@@ -997,14 +998,16 @@ CAnnotWidget::CAnnotWidget(PDFDoc* pdfDoc, AcroFormField* pField, int nStartRefI
 	}
 	oObj.free();
 
-	// 17 - Parent - Parent
+	// 17 - Parent - Parent (a /Parent pointing at the widget itself is no parent)
 	m_unRefNumParent = 0;
-	if (oField.dictLookupNF("Parent", &oObj)->isRef())
+	Object oSelfRef;
+	pField->getFieldRef(&oSelfRef);
+	if (oField.dictLookupNF("Parent", &oObj)->isRef() && !(oSelfRef.isRef() && oObj.getRefNum() == oSelfRef.getRefNum()))
 	{
 		m_unRefNumParent = oObj.getRefNum() + nStartRefID;
 		m_unFlags |= (1 << 17);
 	}
-	oObj.free();
+	oObj.free(); oSelfRef.free();
 
 	// 18 - Partial field name - T
 	m_sT = DictLookupString(&oField, "T", 18);
@@ -2419,9 +2422,9 @@ CAnnots::CAnnots(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontLi
 			continue;
 		}
 
-		// Parents
+		// Parents (a /Parent pointing at the widget itself is no parent)
 		Object oParentRefObj;
-		if (oField.dictLookupNF("Parent", &oParentRefObj)->isRef())
+		if (oField.dictLookupNF("Parent", &oParentRefObj)->isRef() && oParentRefObj.getRefNum() != oFieldRef.getRefNum())
 			getParents(pdfDoc, &oParentRefObj, nStartRefID);
 		oParentRefObj.free();
 		oField.free(); oFieldRef.free();
@@ -2698,6 +2701,22 @@ void CAnnots::getParents(PDFDoc* pdfDoc, Object* oFieldRef, int nStartRefID)
 		pAnnotParent->unFlags |= (1 << 4);
 		pAnnotParent->unRefNumParent = oParentRefObj.getRefNum() + nStartRefID;
 		getParents(pdfDoc, &oParentRefObj, nStartRefID);
+
+		// a broken file may loop the Parent chain back to this field: leave it a root
+		std::set<unsigned int> setChain;
+		unsigned int unRefNumUp = pAnnotParent->unRefNumParent;
+		while (unRefNumUp != pAnnotParent->unRefNum && setChain.insert(unRefNumUp).second)
+		{
+			std::vector<CAnnotParent*>::iterator it = std::find_if(m_arrParents.begin(), m_arrParents.end(), [unRefNumUp](CAnnotParent* pP) { return pP->unRefNum == unRefNumUp; });
+			if (it == m_arrParents.end() || !((*it)->unFlags & (1 << 4)))
+				break;
+			unRefNumUp = (*it)->unRefNumParent;
+		}
+		if (unRefNumUp == pAnnotParent->unRefNum)
+		{
+			pAnnotParent->unFlags &= ~(1 << 4);
+			pAnnotParent->unRefNumParent = 0;
+		}
 
 		unsigned int unRefNumParent = pAnnotParent->unRefNumParent;
 		std::vector<CAnnotParent*>::iterator it = std::find_if(m_arrParents.begin(), m_arrParents.end(), [unRefNumParent](CAnnotParent* pP) { return pP->unRefNum == unRefNumParent; });

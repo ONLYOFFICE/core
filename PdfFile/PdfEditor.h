@@ -38,6 +38,8 @@
 #include "PdfWriter.h"
 #include "PdfReader.h"
 
+#include <set>
+
 HRESULT _ChangePassword(const std::wstring& wsPath, const std::wstring& wsPassword, CPdfReader* _pReader, CPdfWriter* _pWriter);
 
 struct CObjectInfo
@@ -75,6 +77,9 @@ public:
 	std::vector<int> m_arrRedactFormFieldsID;
 	std::vector<IAdvancedCommand*> m_arrRedactFormFields;
 	std::vector<SPendingWidgetStamp> m_arrPendingWidgetStamps;
+	// Manager IDs of objects taken out of the output (deleted annotations, the fields they emptied,
+	// off-page widgets): DictToCDictObjectUnified does not convert a reference to them again
+	std::set<int> m_setDeletedIDs;
 
 private:
 	PdfWriter::CDocument* m_pDoc;
@@ -187,6 +192,8 @@ private:
 	std::vector<CRedactData> m_arrRedact;
 	std::map<std::wstring, std::wstring> m_mFonts;
 	CObjectsManager m_mObjManager;
+	// WriteAppend: the fields that lost a kid in this update; the ones left with none leave it at Close
+	std::set<int> m_setLostKidFields;
 
 	CPdfReader* m_pReader;
 	CPdfWriter* m_pWriter;

@@ -369,6 +369,9 @@ namespace PdfWriter
 	}
 	void CAnnotation::RemoveAP()
 	{
+		// AP owns m_pAppearance: forget it before Remove deletes it
+		if (m_pAppearance && Get("AP") == m_pAppearance)
+			m_pAppearance = NULL;
 		Remove("AP");
 	}
 	//----------------------------------------------------------------------------------------
@@ -1609,7 +1612,7 @@ namespace PdfWriter
 		if (Get(sV))
 			return this;
 		CDictObject* pParent = m_pParent;
-		while (pParent)
+		for (int nDepth = 0; pParent && nDepth < 50; ++nDepth) // a broken file may loop the Parent chain
 		{
 			if (pParent->Get(sV))
 				return pParent;
@@ -1627,7 +1630,7 @@ namespace PdfWriter
 		if (pRes)
 			return pRes;
 		CDictObject* pParent = m_pParent;
-		while (pParent)
+		for (int nDepth = 0; pParent && nDepth < 50; ++nDepth) // a broken file may loop the Parent chain
 		{
 			pRes = pParent->Get(sV);
 			if (pRes)
@@ -2303,20 +2306,36 @@ namespace PdfWriter
 	void CCheckBoxWidget::RenameAP_N_Yes(const std::wstring& wsAP_N_Yes)
 	{
 		std::string sValue = U_TO_UTF8(wsAP_N_Yes);
+		std::string sOld = m_sAP_N_Yes;
 		m_sAP_N_Yes = sValue;
+		// AS naming the old on state follows the rename; no AS is Off
+		CObjectBase* pAS = Get("AS");
+		std::string sAS = pAS && pAS->GetType() == object_type_NAME ? ((CNameObject*)pAS)->Get() : "Off";
 		if (m_pAP)
 		{
+			// m_pAP keys its on state by the old name, or by Yes
 			CDictObject* pDict = (CDictObject*)m_pAP->Get("N");
 			pDict->Add(m_sAP_N_Yes, m_pAP->GetYesN());
-			pDict->Remove("Yes");
+			if (m_sAP_N_Yes != "Yes")
+				pDict->Remove("Yes");
+			if (!sOld.empty() && sOld != m_sAP_N_Yes && sOld != "Off")
+				pDict->Remove(sOld);
 			pDict = (CDictObject*)m_pAP->Get("D");
 			pDict->Add(m_sAP_N_Yes, m_pAP->GetYesD());
-			pDict->Remove("Yes");
+			if (m_sAP_N_Yes != "Yes")
+				pDict->Remove("Yes");
+			if (!sOld.empty() && sOld != m_sAP_N_Yes && sOld != "Off")
+				pDict->Remove(sOld);
+			if (sAS != "Off" && sAS != m_sAP_N_Yes && (sAS == "Yes" || sAS == sOld))
+				Add("AS", m_sAP_N_Yes.c_str());
 		}
 		else
 		{
 			CObjectBase* pAPN = NULL;
 			CObjectBase* pAP = Get("AP");
+			// no appearance to rename
+			if (!pAP)
+				return;
 			if (pAP->GetType() == object_type_DICT)
 				pAPN = ((CDictObject*)pAP)->Get("N");
 			if (pAPN && pAPN->GetType() == object_type_DICT)
@@ -2330,6 +2349,8 @@ namespace PdfWriter
 						CObjectBase* pObject = it.second;
 						pDictAPN->Add(m_sAP_N_Yes, pObject->Copy());
 						pDictAPN->Remove(it.first);
+						if (it.first == sAS)
+							Add("AS", m_sAP_N_Yes.c_str());
 						break;
 					}
 				}
@@ -2357,6 +2378,27 @@ namespace PdfWriter
 	bool CCheckBoxWidget::NeedAP_N_Yes()
 	{
 		return m_sAP_N_Yes.empty();
+	}
+	// The on state of the appearance it has: the first state of AP /N but Off; "" - none
+	std::string CCheckBoxWidget::GetAPOnState()
+	{
+		CObjectBase* pAP = Get("AP");
+		CObjectBase* pAPN = pAP && pAP->GetType() == object_type_DICT ? ((CDictObject*)pAP)->Get("N") : NULL;
+		if (!pAPN || pAPN->GetType() != object_type_DICT || ((CDictObject*)pAPN)->GetStream())
+			return "";
+		for (const std::pair<const std::string, CObjectBase*>& itState : ((CDictObject*)pAPN)->GetDict())
+		{
+			if (itState.first != "Off")
+				return itState.first;
+		}
+		return "";
+	}
+	void CCheckBoxWidget::RemoveAP()
+	{
+		// AP owns m_pAP: forget it before Remove deletes it, SetAP builds a new one
+		if (m_pAP && Get("AP") == m_pAP)
+			m_pAP = NULL;
+		CAnnotation::RemoveAP();
 	}
 	void CCheckBoxWidget::SetAP(int nRotate)
 	{
@@ -2421,7 +2463,9 @@ namespace PdfWriter
 		std::string sName = m_sAP_N_Yes.empty() ? "Yes" : m_sAP_N_Yes;
 		Add("AS", sName.c_str());
 
-		if (!m_nParentID)
+		// a kid's value is its field's (a kid converted from the reader has Parent, not the editor's ParentID)
+		CObjectBase* pParent = Get("Parent");
+		if (!m_nParentID && (!pParent || pParent == this))
 			Add("V", sName.c_str());
 
 		return sName;
@@ -2430,7 +2474,8 @@ namespace PdfWriter
 	{
 		Add("AS", "Off");
 
-		if (!m_nParentID)
+		CObjectBase* pParent = Get("Parent");
+		if (!m_nParentID && (!pParent || pParent == this))
 			Add("V", "Off");
 	}
 	void CCheckBoxWidget::SwitchAP(const std::string& sV, int nI)

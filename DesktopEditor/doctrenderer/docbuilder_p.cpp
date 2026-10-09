@@ -331,6 +331,15 @@ bool CV8RealTimeWorker::OpenFile(const std::wstring& sBasePath, const std::wstri
 		}
 
 		pNative->m_strFontsDirectory = sBasePath + L"/sdkjs/common";
+		// the fonts are where AllFonts.js and font_selection.bin are (CheckFonts): moved to the app data
+		// folder when the work directory cannot be written (CDoctRendererConfig::Parse), or given by
+		// --all-fonts-path (the desktop's font cache)
+		if (config && !config->m_strAllFonts.empty())
+		{
+			std::wstring sAllFontsDir = NSFile::GetDirectoryName(config->m_strAllFonts);
+			if (NSDirectory::Exists(sAllFontsDir))
+				pNative->m_strFontsDirectory = sAllFontsDir;
+		}
 		pNative->m_strImagesDirectory = path + L"/media";
 
 		pNative->CheckFonts();

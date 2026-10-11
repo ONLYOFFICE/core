@@ -70,6 +70,15 @@ win32 {
 	CURRENT_YEAR = $$replace(CURRENT_YEAR, "\r", "")
 	CURRENT_YEAR = $$replace(CURRENT_YEAR, "\n", "")
 	CURRENT_YEAR = $$replace(CURRENT_YEAR, "\t", "")
+
+	# QMAKE_TARGET_COPYRIGHT below writes \251 (©) as an octal escape. rc.exe maps it through
+	# the code page, by default the build machine ANSI one (65001 gives U+FFFD). Pin it.
+	# Every .rc file built with base.pri is read as cp1252 now, so a hand-written .rc file
+	# with non-ASCII text (Cyrillic etc.) must be saved as UTF-8 and start with
+	#     #pragma code_page(65001)
+	# The pragma overrides /c. Keep PUBLISHER_NAME ASCII: qmake reads the environment in the
+	# ANSI code page, so other characters reach the generated .rc as '?'.
+	QMAKE_RC += /c1252
 }
 
 !win32 {

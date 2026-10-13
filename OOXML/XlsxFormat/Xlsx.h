@@ -114,6 +114,7 @@ namespace OOX
 		private:
 
 			void PrepareWorksheet(CWorksheet* pWorksheet);
+			void ImportWpsCellImages(const CPath& oRootPath);
             void init();
 
             boost::unordered_map<std::wstring, size_t>	m_mapXlsxEnumeratedGlobal;

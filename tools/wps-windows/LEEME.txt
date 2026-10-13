@@ -1,0 +1,13 @@
+ONLYOFFICE WPS para Windows de 64 bits
+
+Esta es una compilacion modificada de ONLYOFFICE 9.4. Recupera al abrir el Excel las fotografias incrustadas de WPS referenciadas mediante DISPIMG("ID",1). No necesita instalar WPS.
+
+Al terminar la instalacion se abre Aplicaciones predeterminadas de Windows. Elige ONLYOFFICE WPS para la extension .xlsx. Esta eleccion se hace una sola vez; despues basta abrir los archivos normalmente. Tambien puedes usar clic derecho en un Excel > Abrir con > Elegir otra aplicacion > ONLYOFFICE WPS > Siempre.
+
+Las fotos se importan como dibujos normales y se conservan al guardar el archivo. Guarda una copia para conservar intacto el original del proveedor.
+
+Si tienes otra version de ONLYOFFICE abierta, cierrala antes de usar esta edicion. Una actualizacion oficial puede sustituir el motor modificado: conserva este instalador para reinstalar el parche.
+
+El alcance actual cubre llamadas literales de modo 1 con imagenes internas. No implementa formulas de imagen dinamicas ni modo 2. El instalador y el conversor se prueban por separado; comprueba el resultado visual con tus archivos en el PC de destino.
+
+Codigo fuente, licencia AGPL-3.0 y cambios: consulta WPS-PATCH.txt, SOURCE-LICENSE.txt y las licencias incluidas con ONLYOFFICE.

@@ -49,6 +49,8 @@ SOURCES += main.cpp\
            common.cpp\
            xlsb2xlsx/conversion.cpp\
            xlsx2xlsb/conversion.cpp\
+           wps-cell-images/formula.cpp\
+           wps-cell-images/conversion.cpp\
 
 HEADERS += common.h
 

@@ -2035,7 +2035,8 @@ namespace OOX
 			int nCol = 0;
 			getRowCol(nRow, nCol);
 			xlsx->m_nLastReadCol = nCol > xlsx->m_nLastReadCol ? nCol : xlsx->m_nLastReadCol + 1;
-            setRowCol(xlsx->m_nLastReadRow, xlsx->m_nLastReadCol);
+            // XML row numbers are one-based; numeric cell coordinates are zero-based.
+            setRowCol(xlsx->m_nLastReadRow - 1, xlsx->m_nLastReadCol);
 		}
 		void CCell::AfterRead()
 		{

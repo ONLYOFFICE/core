@@ -13,6 +13,7 @@ import (
 
 func writeStable(t *testing.T, p, s string) {
 	t.Helper()
+	os.Chmod(p, 0600)
 	if e := os.WriteFile(p, []byte(s), 0600); e != nil {
 		t.Fatal(e)
 	}

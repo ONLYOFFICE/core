@@ -38,11 +38,13 @@ type File struct {
 	Owner      string `json:"owner_id"`
 }
 type Tracked struct {
-	Path  string `json:"path"`
-	File  File   `json:"file"`
-	Hash  string `json:"saved_hash"`
-	Key   string `json:"client_key"`
-	Error string `json:"error,omitempty"`
+	Path     string `json:"path"`
+	File     File   `json:"file"`
+	Hash     string `json:"saved_hash"`
+	Key      string `json:"client_key"`
+	Error    string `json:"error,omitempty"`
+	Size     int64  `json:"saved_size,omitempty"`
+	Modified int64  `json:"saved_modified,omitempty"`
 }
 type State struct {
 	User   string                         `json:"user_id"`
@@ -61,6 +63,7 @@ type Agent struct {
 	client                             *http.Client
 	opener                             func(string) error
 	base                               string
+	blocked                            bool
 }
 
 func randomID() string {
@@ -212,6 +215,7 @@ func (a *Agent) request(method, path string, body []byte, kind string) ([]byte, 
 	}
 	resp, e := a.client.Do(req)
 	if e != nil {
+		a.blocked = true
 		return nil, 0, errors.New("Sin conexión. Pendiente de guardar en MIDIA Cloud.")
 	}
 	defer resp.Body.Close()
@@ -220,6 +224,9 @@ func (a *Agent) request(method, path string, body []byte, kind string) ([]byte, 
 		return nil, resp.StatusCode, e
 	}
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+		if resp.StatusCode == 401 || resp.StatusCode >= 500 {
+			a.blocked = true
+		}
 		var m struct {
 			Error string `json:"error"`
 		}
@@ -256,6 +263,10 @@ func stableFile(p string) ([]byte, error) {
 	return b, nil
 }
 func (a *Agent) syncOne(t *Tracked) {
+	observed, _ := os.Stat(t.Path)
+	if observed != nil && t.Hash != "" && observed.Size() == t.Size && observed.ModTime().UnixNano() == t.Modified {
+		return
+	}
 	b, e := stableFile(t.Path)
 	if e != nil {
 		t.Error = "No se pudo leer la copia local: " + e.Error()
@@ -295,6 +306,13 @@ func (a *Agent) syncOne(t *Tracked) {
 	t.File = result.File
 	t.Hash = h
 	t.Error = ""
+	t.Size = int64(len(b))
+	t.Modified = 0
+	if observed != nil {
+		if info, e := os.Stat(t.Path); e == nil && info.Size() == observed.Size() && info.ModTime().Equal(observed.ModTime()) {
+			t.Modified = observed.ModTime().UnixNano()
+		}
+	}
 }
 func (a *Agent) sync() {
 	a.mu.Lock()
@@ -303,8 +321,12 @@ func (a *Agent) sync() {
 	if a.state.Token == "" || a.state.User == "" {
 		return
 	}
+	a.blocked = false
 	for _, t := range a.state.Tracks[a.state.User] {
 		a.syncOne(t)
+		if a.blocked {
+			break
+		}
 	}
 	if e := a.save(); e != nil {
 		a.lastError = "No se pudo guardar el estado local; tus documentos se conservan."
@@ -350,6 +372,11 @@ func (a *Agent) open(id string) (string, error) {
 		}
 		if e == nil && hash(b) == f.Hash {
 			old.File = f
+			if f.Permission == "read" {
+				os.Chmod(p, 0400)
+			} else {
+				os.Chmod(p, 0600)
+			}
 			old.Error = ""
 			a.save()
 			return p, a.opener(p)

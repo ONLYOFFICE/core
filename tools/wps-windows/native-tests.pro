@@ -16,3 +16,6 @@ GTEST = $$(WPS_GTEST_ROOT)
 INCLUDEPATH += $$GTEST $$GTEST/include
 SOURCES += $$GTEST/src/gtest-all.cc $$GTEST/src/gtest_main.cc
 DESTDIR = $$CORE/build/bin/win_64
+# PPT's unity object owns the same Elements/TextAttributesEx sources that PPTX
+# packages separately. Select that object first for this OOXML-only entry point.
+QMAKE_LFLAGS += /INCLUDE:??0CAudioElement@PPT@@QEAA@XZ

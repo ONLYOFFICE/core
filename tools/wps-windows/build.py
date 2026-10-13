@@ -10,6 +10,14 @@ QT = Path(os.environ.get('QMAKE', 'D:/Qt/5.15.2/msvc2019_64/bin/qmake.exe'))
 DLL_NAMES = ['graphics','kernel','UnicodeConverter','kernel_network','Fb2File','PdfFile','HtmlFile2','EpubFile','XpsFile','OFDFile','DjVuFile','doctrenderer','DocxRenderer','IWorkFile','HWPFile','StarMathConverter','ooxmlsignature']
 
 
+def native_cache_key():
+    records = subprocess.check_output(['git', 'ls-tree', '-r', '-z', 'HEAD'], cwd=ROOT).split(b'\0')
+    tree = b'\0'.join(record for record in records if record and not
+        record.rsplit(b'\t', 1)[1].startswith((b'.github/', b'tools/', b'OOXML/test/')))
+    return hashlib.sha256(tree + Path(__file__).read_bytes() +
+        os.environ.get('ImageVersion', '').encode()).hexdigest()
+
+
 def run(args, cwd=ROOT, capture=False):
     print('RUN', subprocess.list2cmdline([str(a) for a in args]), flush=True)
     return subprocess.run([str(a) for a in args], cwd=cwd, check=True, text=True, capture_output=capture)
@@ -61,11 +69,11 @@ def main():
     shutil.copy2(icu / 'icu/lib64/icuuc.lib', icu_lib / 'icuuc.lib')
     # Boost's official 1.72 build recipes expect the MSVC 14.2 ABI/library naming.
     boost = WORK / 'boost_1_72_0'
-    if not boost.exists():
-        archive = download('https://archives.boost.io/release/1.72.0/source/boost_1_72_0.tar.bz2', 'boost-1.72.tar.bz2')
-        with tarfile.open(archive) as t: t.extractall(WORK, filter='data')
     boost_dest = ROOT / 'Common/3dParty/boost/build/win_64'
     if not (boost_dest/'lib/libboost_regex-vc142-mt-x64-1_72.lib').exists():
+        if not boost.exists():
+            archive = download('https://archives.boost.io/release/1.72.0/source/boost_1_72_0.tar.bz2', 'boost-1.72.tar.bz2')
+            with tarfile.open(archive) as t: t.extractall(WORK, filter='data')
         run(['cmd','/c','bootstrap.bat','vc142'], boost)
         setup = WORK/'boost-env.bat'; setup.write_text('@exit /b 0\n')
         compiler = shutil.which('cl').replace('\\', '/')
@@ -78,7 +86,6 @@ def main():
         if versioned.exists(): shutil.copytree(versioned, boost_dest/'include/boost', dirs_exist_ok=True)
     if not (WORK/'jom/jom.exe').exists():
         with zipfile.ZipFile(download('https://download.qt.io/official_releases/jom/jom.zip','jom.zip')) as z: z.extractall(WORK/'jom')
-    build(ROOT/'Common/3dParty/cryptopp/project/cryptopp.pro','crypto')
     projects = [
         ('OOXML/Projects/Linux/XlsbFormatLib/XlsbFormatLib.pro','xlsb'),
         ('MsBinaryFile/Projects/VbaFormatLib/Linux/VbaFormatLib.pro','vba'),
@@ -93,8 +100,22 @@ def main():
         ('MsBinaryFile/Projects/XlsFormatLib/Linux/XlsFormatLib.pro','xls'),
         ('Common/cfcpp/cfcpp.pro','compound'),
         ('X2tConverter/build/Qt/X2tConverter.pro','converter')]
-    for project,name in projects: build(ROOT/project,name)
-    engine = ROOT/'build/bin/win_64/x2t.exe'; assert engine.exists()
+    engine = ROOT/'build/bin/win_64/x2t.exe'
+    marker = ROOT/'build/windows-native-cache.json'
+    key = native_cache_key()
+    cached = json.loads(marker.read_text()) if marker.exists() else {}
+    libraries = ['CryptoPPLib','VbaFormatLib','OdfFormatLib','DocFormatLib','PptFormatLib',
+        'RtfFormatLib','TxtXmlFormatLib','BinDocument','PPTXFormatLib','DocxFormatLib',
+        'XlsbFormatLib','XlsFormatLib','CompoundFileLib']
+    if (cached.get('key') == key and engine.exists() and
+            all((LIB/(name+'.lib')).exists() for name in libraries) and
+            hashlib.sha256(engine.read_bytes()).hexdigest() == cached.get('sha256')):
+        print('Reusing native converter: exact source, build script and runner image match', flush=True)
+    else:
+        build(ROOT/'Common/3dParty/cryptopp/project/cryptopp.pro','crypto')
+        for project,name in projects: build(ROOT/project,name)
+        assert engine.exists()
+        marker.write_text(json.dumps({'key':key,'sha256':hashlib.sha256(engine.read_bytes()).hexdigest()}))
     shutil.copy2(engine, converter/'x2t.exe')
     gtest = WORK/'googletest'
     if not gtest.exists():
@@ -120,4 +141,6 @@ def main():
     (output/'SHA256SUMS.txt').write_text(hashlib.sha256(setup.read_bytes()).hexdigest()+'  '+setup.name+'\n')
     print('Installer ready:',setup,flush=True)
 
-if __name__=='__main__': main()
+if __name__=='__main__':
+    if '--cache-key' in sys.argv: print(native_cache_key())
+    else: main()

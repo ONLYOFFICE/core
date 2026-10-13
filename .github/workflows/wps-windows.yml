@@ -81,17 +81,23 @@ jobs:
             D:/wps-cache
             D:/Qt
           key: onlyoffice-wps-win64-qt5152-boost172-icu74-v1
+      - name: Collect build evidence
+        if: always()
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force windows-evidence | Out-Null
+          foreach ($file in @('windows-build.log','D:/wps-build/native-tests.txt','D:/wps-install.log')) {
+            if (Test-Path $file) { Copy-Item $file windows-evidence/ }
+          }
+          foreach ($dir in @('D:/wps-build/verification','D:/wps-build/installed-verification')) {
+            if (Test-Path $dir) { Copy-Item -Recurse $dir windows-evidence/ }
+          }
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: windows-build-evidence
           retention-days: 7
-          path: |
-            windows-build.log
-            D:/wps-build/native-tests.txt
-            D:/wps-build/verification/**
-            D:/wps-build/installed-verification/**
-            D:/wps-install.log
+          path: windows-evidence
       - uses: actions/upload-artifact@v4
         with:
           name: ONLYOFFICE-WPS-Windows-x64

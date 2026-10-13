@@ -5,14 +5,64 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
+concurrency:
+  group: onlyoffice-wps-windows
+  cancel-in-progress: true
 jobs:
   build:
     runs-on: windows-2022
     timeout-minutes: 90
     steps:
-      - name: Check native Windows compiler
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/cache@v4
+        with:
+          path: |
+            D:/wps-cache
+            D:/Qt
+          key: onlyoffice-wps-win64-qt5152-boost172-icu74-v1
+      - name: Install qmake
+        shell: pwsh
+        run: |
+          if (!(Test-Path D:/Qt/5.15.2/msvc2019_64/bin/qmake.exe)) {
+            python -m pip install aqtinstall==3.3.0
+            python -m aqt install-qt windows desktop 5.15.2 win64_msvc2019_64 --outputdir D:/Qt --archives qtbase
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          }
+      - name: Build native converter, run tests and create installer
         shell: pwsh
         run: |
           $vs = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -property installationPath
-          & cmd /c "call `"$vs\VC\Auxiliary\Build\vcvars64.bat`" && where cl && where nmake && where python"
+          & cmd /c "call `"$vs\VC\Auxiliary\Build\vcvars64.bat`" && python tools\wps-windows\build.py > windows-build.log 2>&1"
+          $result = $LASTEXITCODE
+          Get-Content windows-build.log -Tail 90
+          exit $result
+      - name: Test installation and installed converter
+        shell: pwsh
+        run: |
+          $setup = Get-Item windows-dist/ONLYOFFICE-WPS-9.4-Windows-x64-Setup.exe
+          $process = Start-Process $setup.FullName -ArgumentList '/VERYSILENT /SUPPRESSMSGBOXES /NORESTART /DIR=D:\wps-installed /LOG=D:\wps-install.log' -Wait -PassThru
+          if ($process.ExitCode -ne 0) { throw "Installer failed: $($process.ExitCode)" }
+          python tools/wps-windows/verify.py D:/wps-installed/converter D:/wps-build/installed-verification
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $command = (Get-Item 'HKCU:\Software\Classes\MIDIA.ONLYOFFICEWPS.xlsx\shell\open\command').GetValue('')
+          if (!$command.Contains('D:\wps-installed\DesktopEditors.exe')) { throw "Incorrect XLSX handler: $command" }
+          Write-Output "Installer and registered XLSX command verified."
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: windows-build-evidence
+          retention-days: 7
+          path: |
+            windows-build.log
+            D:/wps-build/native-tests.txt
+            D:/wps-build/verification/**
+            D:/wps-build/installed-verification/**
+            D:/wps-install.log
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ONLYOFFICE-WPS-Windows-x64
+          compression-level: 0
+          retention-days: 7
+          path: windows-dist/*

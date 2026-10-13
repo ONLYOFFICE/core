@@ -1,0 +1,48 @@
+name: ONLYOFFICE MIDIA Cloud Windows
+on:
+  workflow_dispatch:
+  push:
+    branches: ['codex/office-cloud-*']
+    paths: ['app-office-cloud/**', '.github/workflows/office-cloud-windows.yml']
+permissions:
+  contents: read
+concurrency:
+  group: office-cloud-windows
+  cancel-in-progress: true
+jobs:
+  windows:
+    runs-on: windows-2022
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.25.1'
+          cache: false
+      - name: Agent tests
+        shell: pwsh
+        run: |
+          cd app-office-cloud
+          go test -race ./...
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Build and install with the verified WPS converter
+        run: python app-office-cloud/build_windows.py
+      - name: Verify registered launcher and running agent
+        shell: pwsh
+        run: |
+          $command = (Get-Item 'HKCU:\Software\Classes\MIDIA.ONLYOFFICEWPS.xlsx\shell\open\command').GetValue('')
+          if (!$command.Contains('MIDIACloud.exe') -or !$command.Contains('--office')) { throw 'Incorrect launcher' }
+          $startup = (Get-Item 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Run').GetValue('MIDIAOfficeCloud')
+          if (!$startup.Contains('MIDIACloud.exe')) { throw 'No startup registration' }
+          $status = Invoke-RestMethod 'http://127.0.0.1:43129/status' -Headers @{Origin='https://gestion.midiashops.com'}
+          if (!$status.ok -or $status.connected) { throw 'Invalid initial agent state' }
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ONLYOFFICE-WPS-Cloud-Windows-x64
+          compression-level: 0
+          retention-days: 7
+          path: |
+            office-cloud-dist/ONLYOFFICE-WPS-Cloud-9.4.0.2-Windows-x64-Setup.exe
+            office-cloud-dist/windows-cloud-verification.json

@@ -11,9 +11,9 @@ assert hashlib.sha256(engine.read_bytes()).hexdigest()==expected
 mac=app/'Contents/MacOS';main=mac/'ONLYOFFICE WPS';native=mac/'ONLYOFFICE WPS Native'
 if not native.exists():main.rename(native)
 subprocess.run(['go','build','-trimpath','-ldflags=-s -w','-o',str(mac/'MIDIACloud'),'.'],cwd=root/'app-office-cloud',check=True)
-subprocess.run(['clang','-Os',str(root/'app-office-cloud/launcher.c'),'-o',str(main)],check=True)
+subprocess.run(['clang','-mmacosx-version-min=13.0','-Os',str(root/'app-office-cloud/launcher.c'),'-o',str(main)],check=True)
 counts=prepare(app)
-p=app/'Contents/Info.plist';d=plistlib.loads(p.read_bytes());d['CFBundleVersion']='563.2';p.write_bytes(plistlib.dumps(d))
+p=app/'Contents/Info.plist';d=plistlib.loads(p.read_bytes());d['CFBundleVersion']='563.2';d['LSMinimumSystemVersion']='13.0';p.write_bytes(plistlib.dumps(d))
 shutil.copy2(root/'app-office-cloud/LEEME.md',stage/'LEEME.md')
 shutil.copy2(root/'app-office-cloud/LEEME.md',app/'Contents/Resources/MIDIA-CLOUD-LEEME.md')
 link=stage/'Applications'
@@ -22,5 +22,5 @@ for p in [mac/'MIDIACloud',main,native,app]:subprocess.run(['codesign','--force'
 subprocess.run(['codesign','--verify','--deep','--strict',str(app)],check=True)
 image=out/'ONLYOFFICE-WPS-Cloud-9.4.0.2-macos-arm64.dmg'
 subprocess.run(['hdiutil','create','-volname','ONLYOFFICE WPS + MIDIA Cloud','-srcfolder',str(stage),'-format','UDZO','-ov',str(image)],check=True)
-report={'filename':image.name,'bytes':image.stat().st_size,'sha256':hashlib.sha256(image.read_bytes()).hexdigest(),'engine_sha256':expected,'autosave_calls':counts,'signature':'ad-hoc, deep strict passed','arch':'arm64'}
+report={'filename':image.name,'bytes':image.stat().st_size,'sha256':hashlib.sha256(image.read_bytes()).hexdigest(),'engine_sha256':expected,'autosave_calls':counts,'signature':'ad-hoc, deep strict passed','arch':'arm64','minimum_macos':'13.0'}
 (out/'mac-cloud-verification.json').write_text(json.dumps(report,indent=2));print(json.dumps(report,indent=2))

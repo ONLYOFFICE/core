@@ -23,10 +23,11 @@ void RemoveWorkDir(const std::wstring& dir)
 
 void WriteFixture(const std::wstring& dir, bool existingDrawing, bool externalImage = false)
 {
+	ASSERT_FALSE(dir.empty());
 	for (auto sub : {L"/_rels", L"/xl/_rels", L"/xl/worksheets/_rels", L"/xl/media", L"/xl/drawings/_rels"})
-		NSDirectory::CreateDirectories(dir + sub);
+		ASSERT_TRUE(NSDirectory::CreateDirectories(OOX::CPath(dir + sub).GetPath()));
 	auto save = [&dir](const std::wstring& name, const std::wstring& xml) {
-		NSFile::CFileBinary::SaveToFile(dir + name, xml);
+		ASSERT_TRUE(NSFile::CFileBinary::SaveToFile(OOX::CPath(dir + name).GetPath(), xml));
 	};
 	save(L"/_rels/.rels", LR"(<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>)");
 	save(L"/xl/workbook.xml", LR"(<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="Photos" sheetId="1" r:id="rId1"/></sheets></workbook>)");
@@ -48,7 +49,7 @@ void WriteFixture(const std::wstring& dir, bool existingDrawing, bool externalIm
 	// Synthetic 2x1 PNG, unrelated to any user's workbook.
 	const unsigned char png[] = {137,80,78,71,13,10,26,10,0,0,0,13,73,72,68,82,0,0,0,2,0,0,0,1,8,2,0,0,0,123,64,232,221,0,0,0,13,73,68,65,84,120,156,99,248,207,0,4,255,1,7,0,1,255,226,35,158,89,0,0,0,0,73,69,78,68,174,66,96,130};
 	NSFile::CFileBinary image;
-	image.CreateFileW(dir + L"/xl/media/photo.png");
+	ASSERT_TRUE(image.CreateFileW(OOX::CPath(dir + L"/xl/media/photo.png").GetPath()));
 	image.WriteFile(png, sizeof(png));
 	image.CloseFile();
 }
@@ -123,6 +124,7 @@ TEST(WpsCellImages, DesktopStreamingPathFallsBackToImportBeforeSerialization)
 	OOX::Spreadsheet::CXlsx book;
 	book.m_pXlsbWriter = &writer;
 	ASSERT_TRUE(book.Read(OOX::CPath(dir)));
+	ASSERT_EQ(1u, book.m_arWorksheets.size());
 	EXPECT_EQ(&writer, book.m_pXlsbWriter);
 	EXPECT_FALSE(book.m_arWorksheets[0]->m_oSheetData->m_oXlsbPos.IsInit());
 	EXPECT_FALSE(Cell(book,L"B3")->m_oFormula.IsInit());
@@ -140,6 +142,7 @@ TEST(WpsCellImages, LeavesExternalAndMissingImagesUnchanged)
 		if (!external) NSFile::CFileBinary::Remove(dir + L"/xl/media/photo.png");
 		OOX::Spreadsheet::CXlsx book;
 		ASSERT_TRUE(book.Read(OOX::CPath(dir)));
+		ASSERT_EQ(1u, book.m_arWorksheets.size());
 		EXPECT_FALSE(book.m_arWorksheets[0]->m_oDrawing.IsInit());
 		EXPECT_TRUE(Cell(book,L"B3")->m_oFormula.IsInit());
 		EXPECT_TRUE(Cell(book,L"B3")->m_oValue.IsInit());

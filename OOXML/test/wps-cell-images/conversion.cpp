@@ -7,11 +7,20 @@
 #include "../../Binary/Presentation/BinaryFileReaderWriter.h"
 #include "../../PPTXFormat/Logic/Pic.h"
 #include "../../../DesktopEditor/common/Directory.h"
-#include "../common.h"
 #include <gtest/gtest.h>
 
 namespace
 {
+std::wstring GetWorkDir()
+{
+	return NSDirectory::CreateDirectoryWithUniqueName(NSFile::CFileBinary::GetTempPath());
+}
+
+void RemoveWorkDir(const std::wstring& dir)
+{
+	NSDirectory::DeleteDirectory(dir);
+}
+
 void WriteFixture(const std::wstring& dir, bool existingDrawing, bool externalImage = false)
 {
 	for (auto sub : {L"/_rels", L"/xl/_rels", L"/xl/worksheets/_rels", L"/xl/media", L"/xl/drawings/_rels"})
@@ -72,6 +81,10 @@ TEST(WpsCellImages, ImportsRepeatedPhotosWithoutChangingOtherCellsOrDrawings)
 		EXPECT_EQ(L"_xlfn.DISPIMG(\"MISSING\",1)", Cell(book,L"C3")->m_oFormula->m_sText);
 		EXPECT_EQ(L"SUM(A3:A3)", Cell(book,L"D3")->m_oFormula->m_sText);
 		EXPECT_EQ(L"17", Cell(book,L"A3")->m_oValue->m_sText);
+		int cellRow = 0, cellCol = 0;
+		ASSERT_TRUE(Cell(book,L"D3")->getRowCol(cellRow, cellCol));
+		EXPECT_EQ(2, cellRow);
+		EXPECT_EQ(3, cellCol);
 		const auto first = drawing->m_arrItems[existing ? 1 : 0];
 		const auto second = drawing->m_arrItems[existing ? 2 : 1];
 		EXPECT_EQ(2u, first->m_oFrom->m_oRow->GetValue());
@@ -83,14 +96,18 @@ TEST(WpsCellImages, ImportsRepeatedPhotosWithoutChangingOtherCellsOrDrawings)
 			EXPECT_EQ(42, drawing->m_arrItems[0]->m_oElement->as<PPTX::Logic::Pic>().nvPicPr.cNvPr.id);
 		const std::wstring saved = GetWorkDir();
 		OOX::CContentTypes content;
-		ASSERT_TRUE(book.Write(OOX::CPath(saved), content));
+		ASSERT_TRUE(book.WriteNative(OOX::CPath(saved), content));
 		OOX::Spreadsheet::CXlsx reopened;
 		ASSERT_TRUE(reopened.Read(OOX::CPath(saved)));
 		auto reopenedSheet = reopened.m_arWorksheets[0];
 		auto reopenedDrawing = reopenedSheet->Get<OOX::Spreadsheet::CDrawing>(OOX::RId(reopenedSheet->m_oDrawing->m_oId->GetValue()));
 		ASSERT_TRUE(reopenedDrawing.IsInit());
 		EXPECT_EQ(existing ? 3u : 2u, reopenedDrawing->m_arrItems.size());
-		EXPECT_FALSE(Cell(reopened,L"B3")->m_oFormula.IsInit());
+		// Empty photo cells may be omitted when the worksheet is written.
+		const auto photoCell = Cell(reopened,L"B3");
+		EXPECT_TRUE(!photoCell || !photoCell->m_oFormula.IsInit());
+		ASSERT_TRUE(Cell(reopened,L"D3")) << std::string(saved.begin(), saved.end());
+		ASSERT_TRUE(Cell(reopened,L"D3")->m_oFormula.IsInit()) << std::string(saved.begin(), saved.end());
 		EXPECT_EQ(L"SUM(A3:A3)", Cell(reopened,L"D3")->m_oFormula->m_sText);
 		RemoveWorkDir(saved);
 		RemoveWorkDir(dir);

@@ -157,3 +157,12 @@ func TestLoopbackOriginNonceAndNoPathAPI(t *testing.T) {
 		t.Fatal("bad ID")
 	}
 }
+
+func TestPortableCacheName(t *testing.T) {
+	if cacheName("Oferta: octubre?.xlsx") != "MIDIA-Oferta_ octubre_.xlsx" {
+		t.Fatal("Windows filename mapping")
+	}
+	if len([]rune(cacheName(strings.Repeat("照", 100)+".xlsx"))) > 80 {
+		t.Fatal("cache filename too long")
+	}
+}

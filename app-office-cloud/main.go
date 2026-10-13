@@ -115,6 +115,11 @@ func newAgent(dir, editor, recent string) (*Agent, error) {
 			return errors.New("No se encuentra ONLYOFFICE WPS.")
 		}
 		cmd := exec.Command(a.editor, p)
+		if runtime.GOOS == "darwin" {
+			// Cocoa receives document-open events through LaunchServices, not argv.
+			bundle := filepath.Dir(filepath.Dir(filepath.Dir(a.editor)))
+			cmd = exec.Command("/usr/bin/open", "-a", bundle, p)
+		}
 		cmd.Stdout = io.Discard
 		cmd.Stderr = io.Discard
 		if e := cmd.Start(); e != nil {
@@ -332,6 +337,21 @@ func (a *Agent) sync() {
 		a.lastError = "No se pudo guardar el estado local; tus documentos se conservan."
 	}
 }
+func cacheName(name string) string {
+	ext := filepath.Ext(name)
+	base := strings.TrimSuffix(name, ext)
+	base = strings.Map(func(r rune) rune {
+		if r < 32 || strings.ContainsRune(`<>:"|?*`, r) {
+			return '_'
+		}
+		return r
+	}, base)
+	runes := []rune(base)
+	if len(runes) > 64 {
+		base = string(runes[:64])
+	}
+	return "MIDIA-" + strings.TrimRight(base, " .") + ext
+}
 func (a *Agent) open(id string) (string, error) {
 	if a.state.Token == "" {
 		return "", errors.New("Inicia sesión en MIDIA Cloud.")
@@ -360,7 +380,7 @@ func (a *Agent) open(id string) (string, error) {
 		return "", errors.New("Nombre del archivo no válido.")
 	}
 	dir := filepath.Join(a.dir, "files", a.state.User, f.ID)
-	p := filepath.Join(dir, "MIDIA-"+f.Name)
+	p := filepath.Join(dir, cacheName(f.Name))
 	if a.state.Tracks[a.state.User] == nil {
 		a.state.Tracks[a.state.User] = map[string]*Tracked{}
 	}

@@ -56,7 +56,7 @@ def main():
     icu = ROOT / 'Common/3dParty/icu'
     if not (icu / 'icu/include/unicode/ucnv.h').exists():
         archive = download('https://github.com/unicode-org/icu/releases/download/release-74-2/icu4c-74_2-Win64-MSVC2019.zip', 'icu74-win64.zip')
-        with zipfile.ZipFile(archive) as z: z.extractall(icu)
+        with zipfile.ZipFile(archive) as z: z.extractall(icu / 'icu')
     icu_lib = icu / 'win_64/build'; icu_lib.mkdir(parents=True, exist_ok=True)
     shutil.copy2(icu / 'icu/lib64/icuuc.lib', icu_lib / 'icuuc.lib')
     # Boost's official 1.72 build recipes expect the MSVC 14.2 ABI/library naming.

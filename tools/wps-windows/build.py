@@ -67,9 +67,12 @@ def main():
     boost_dest = ROOT / 'Common/3dParty/boost/build/win_64'
     if not (boost_dest/'lib/libboost_regex-vc142-mt-x64-1_72.lib').exists():
         run(['cmd','/c','bootstrap.bat','vc142'], boost)
-        config = WORK/'boost-user-config.jam'; config.write_text('using msvc : 14.2 : cl.exe ;\n')
-        run([boost/'b2.exe','-j2','--user-config='+str(config),'--prefix='+str(boost_dest),
-             'toolset=msvc-14.2','address-model=64','variant=release','link=static','runtime-link=shared',
+        setup = WORK/'boost-env.bat'; setup.write_text('@exit /b 0\n')
+        compiler = shutil.which('cl').replace('\\', '/')
+        config = WORK/'boost-user-config.jam'
+        config.write_text(f'using msvc : 14.2 : "{compiler}" : <setup>"{setup.as_posix()}" <rewrite-setup-scripts>off ;\n')
+        run([boost/'b2.exe','-j2','-d0','--layout=versioned','--user-config='+str(config),'--prefix='+str(boost_dest),
+             'toolset=msvc-14.2','architecture=x86','address-model=64','threading=multi','variant=release','link=static','runtime-link=shared',
              '--with-system','--with-filesystem','--with-regex','--with-date_time','install'],boost)
         versioned = boost_dest/'include/boost-1_72/boost'
         if versioned.exists(): shutil.copytree(versioned, boost_dest/'include/boost', dirs_exist_ok=True)

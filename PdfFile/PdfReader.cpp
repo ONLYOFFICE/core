@@ -382,12 +382,10 @@ int CPdfReader::GetNumPages()
 	}
 	return nNumPages;
 }
-bool CPdfReader::IsDynamicXfa()
+namespace
 {
-	if (m_vPDFContext.size() != 1 || !m_vPDFContext.front() || !m_vPDFContext.front()->m_pDocument)
-		return false;
-
-	Catalog* pCatalog = m_vPDFContext.front()->m_pDocument->getCatalog();
+bool IsDynamicXfaCatalog(Catalog* pCatalog)
+{
 	if (!pCatalog || !pCatalog->getNeedsRendering())
 		return false;
 
@@ -400,6 +398,20 @@ bool CPdfReader::IsDynamicXfa()
 	bool bResult = oXfa.isStream() || (oXfa.isArray() && oXfa.arrayGetLength() > 0);
 	oXfa.free();
 	return bResult;
+}
+}
+bool CPdfReader::IsDynamicXfa()
+{
+	if (m_vPDFContext.size() != 1 || !m_vPDFContext.front() || !m_vPDFContext.front()->m_pDocument)
+		return false;
+
+	return IsDynamicXfaCatalog(m_vPDFContext.front()->m_pDocument->getCatalog());
+}
+bool CPdfReader::IsDynamicXfa(const std::wstring& wsSrcPath)
+{
+	std::string sPathUtf8 = U_TO_UTF8(wsSrcPath);
+	PDFDoc oDocument(const_cast<char*>(sPathUtf8.c_str()));
+	return oDocument.isOk() && IsDynamicXfaCatalog(oDocument.getCatalog());
 }
 bool CPdfReader::ValidMetaData()
 {

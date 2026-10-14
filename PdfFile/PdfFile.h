@@ -135,6 +135,7 @@ public:
 
 	virtual int GetPagesCount();
 	bool IsDynamicXfa();
+	static bool IsDynamicXfa(const std::wstring& wsSrcFile);
 	virtual void GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY);
 	virtual void DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak, COfficeDrawingPageParams* pParams = NULL);
 	virtual std::wstring GetInfo();

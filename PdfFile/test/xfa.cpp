@@ -35,6 +35,7 @@
 
 #include "gtest/gtest.h"
 #include "../PdfFile.h"
+#include "../../DesktopEditor/common/File.h"
 
 #include <cstdlib>
 #include <cstring>
@@ -44,9 +45,10 @@
 
 namespace
 {
-std::string CreatePdf(const std::string& catalog, const std::string& form)
+std::string CreatePdf(const std::string& catalog, const std::string& form,
+	const std::string& trailer = "",
+	const std::string& xfa = "<template xmlns=\"http://www.xfa.org/schema/xfa-template/3.3/\"/>")
 {
-	const std::string xfa = "<template xmlns=\"http://www.xfa.org/schema/xfa-template/3.3/\"/>";
 	const std::vector<std::string> objects = {
 		"<< /Type /Catalog /Pages 2 0 R " + catalog + " >>",
 		"<< /Type /Pages /Count 1 /Kids [3 0 R] >>",
@@ -68,10 +70,32 @@ std::string CreatePdf(const std::string& catalog, const std::string& form)
 	pdf << "xref\n0 " << objects.size() + 1 << "\n0000000000 65535 f \n";
 	for (std::streamoff offset : offsets)
 		pdf << std::setfill('0') << std::setw(10) << offset << " 00000 n \n";
-	pdf << "trailer\n<< /Size " << objects.size() + 1 << " /Root 1 0 R >>\n";
+	pdf << "trailer\n<< /Size " << objects.size() + 1 << " /Root 1 0 R " << trailer << " >>\n";
 	pdf << "startxref\n" << xref << "\n%%EOF\n";
 	return pdf.str();
 }
+
+class CTemporaryPdf
+{
+public:
+	std::wstring path;
+
+	CTemporaryPdf()
+		: path(NSFile::CFileBinary::CreateTempFileWithUniqueName(NSFile::CFileBinary::GetTempPath(), L"pdf_xfa_\u03b1_"))
+	{
+	}
+
+	~CTemporaryPdf()
+	{
+		NSFile::CFileBinary::Remove(path);
+	}
+
+	bool Write(const std::string& data)
+	{
+		NSFile::CFileBinary file;
+		return file.CreateFileW(path) && file.WriteFile(data.data(), static_cast<DWORD>(data.size()));
+	}
+};
 }
 
 class CPdfXfaTest : public testing::Test
@@ -222,4 +246,80 @@ TEST_F(CPdfXfaTest, MergedDocuments)
 	EXPECT_FALSE(pPdfFile->IsDynamicXfa());
 	ASSERT_TRUE(pPdfFile->UnmergePages());
 	EXPECT_TRUE(pPdfFile->IsDynamicXfa());
+}
+
+TEST(CPdfXfaFileTest, DynamicFormsWithoutApplicationFonts)
+{
+	CTemporaryPdf file;
+	ASSERT_TRUE(file.Write(CreatePdf("/AcroForm 4 0 R /NeedsRendering true", "/XFA 5 0 R")));
+	EXPECT_TRUE(CPdfFile::IsDynamicXfa(file.path));
+	ASSERT_TRUE(file.Write(CreatePdf("/AcroForm 4 0 R /NeedsRendering true", "/XFA [(template) 5 0 R]")));
+	EXPECT_TRUE(CPdfFile::IsDynamicXfa(file.path));
+}
+
+TEST(CPdfXfaFileTest, StaticAndOrdinaryForms)
+{
+	CTemporaryPdf file;
+	ASSERT_TRUE(file.Write(CreatePdf("/AcroForm 4 0 R", "/XFA 5 0 R")));
+	EXPECT_FALSE(CPdfFile::IsDynamicXfa(file.path));
+	ASSERT_TRUE(file.Write(CreatePdf("", "")));
+	EXPECT_FALSE(CPdfFile::IsDynamicXfa(file.path));
+}
+
+TEST(CPdfXfaFileTest, InvalidAndMissingFile)
+{
+	CTemporaryPdf file;
+	ASSERT_TRUE(file.Write("not a PDF"));
+	EXPECT_FALSE(CPdfFile::IsDynamicXfa(file.path));
+	ASSERT_TRUE(NSFile::CFileBinary::Remove(file.path));
+	EXPECT_FALSE(CPdfFile::IsDynamicXfa(file.path));
+}
+
+TEST_F(CPdfXfaTest, FileProbePreservesLoadedReader)
+{
+	ASSERT_TRUE(Load("", ""));
+	const bool needsCMap = pPdfFile->IsNeedCMap();
+	const std::wstring info = pPdfFile->GetInfo();
+	CTemporaryPdf file;
+	ASSERT_TRUE(file.Write(CreatePdf("/AcroForm 4 0 R /NeedsRendering true", "/XFA 5 0 R")));
+	EXPECT_TRUE(CPdfFile::IsDynamicXfa(file.path));
+	EXPECT_EQ(needsCMap, pPdfFile->IsNeedCMap());
+	EXPECT_EQ(info, pPdfFile->GetInfo());
+	EXPECT_EQ(1, pPdfFile->GetPagesCount());
+}
+
+TEST_F(CPdfXfaTest, FileProbeRequiresPassword)
+{
+	ASSERT_TRUE(Load("/AcroForm 4 0 R /NeedsRendering true", "/XFA 5 0 R"));
+	CTemporaryPdf file;
+	ASSERT_EQ(S_OK, pPdfFile->ChangePassword(file.path, L"xfa-test"));
+	ASSERT_TRUE(pPdfFile->LoadFromFile(file.path, L"", L"xfa-test", L"xfa-test"));
+	ASSERT_TRUE(pPdfFile->IsDynamicXfa());
+	EXPECT_FALSE(CPdfFile::IsDynamicXfa(file.path));
+	EXPECT_FALSE(pPdfFile->IsNeedCMap());
+}
+
+TEST_F(CPdfXfaTest, FileProbeAcceptsEmptyUserPassword)
+{
+	// RC4-40 with owner password "xfa-owner" and an empty user password.
+	const std::string trailer =
+		"/Encrypt << /Filter /Standard /V 1 /R 2 /Length 40 /P -3904 "
+		"/O <f4845af1ace2f2720beadc4926bb3c058ee470ff32e1f718d8d3ea7f5a36210e> "
+		"/U <9472eda889640e8cbe93f38d1eded24566cd29abe0934f8d325bee93d54a6dd5> >> "
+		"/ID [<00112233445566778899aabbccddeeff> <00112233445566778899aabbccddeeff>]";
+	const std::string encryptedXfa =
+		"\x1f\xfe\x62\x81\x63\xa8\x82\xfd\x8d\xa3\x57\xdf\x08\xe7\xa1\xf1"
+		"\x73\x57\x3c\xdf\xde\xbf\xa8\x43\x7e\xfa\xa0\x68\x9f\xa3\x5e\x0e"
+		"\x2a\x9c\x8d\xfa\xcf\x6d\x03\xde\x28\x1d\x3d\x38\x9d\xcd\x85\xba"
+		"\x83\xba\x22\x47\x4f\xd3\xdc\x0a\x1a\xd7\xca\x68\x5e\x28\x6d";
+	CTemporaryPdf file;
+	ASSERT_TRUE(file.Write(CreatePdf("/AcroForm 4 0 R /NeedsRendering true", "/XFA 5 0 R", trailer, encryptedXfa)));
+	ASSERT_TRUE(pPdfFile->LoadFromFile(file.path));
+	ASSERT_TRUE(pPdfFile->IsDynamicXfa());
+	EXPECT_FALSE(pPdfFile->CheckPerm(3));
+	EXPECT_FALSE(pPdfFile->CheckPerm(5));
+	EXPECT_TRUE(CPdfFile::IsDynamicXfa(file.path));
+	EXPECT_FALSE(pPdfFile->CheckPerm(3));
+	EXPECT_FALSE(pPdfFile->CheckPerm(5));
+	EXPECT_FALSE(pPdfFile->IsNeedCMap());
 }

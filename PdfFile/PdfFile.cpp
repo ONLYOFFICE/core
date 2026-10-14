@@ -399,6 +399,10 @@ int CPdfFile::GetPagesCount()
 	}
 	return m_pInternal->pReader->GetNumPages();
 }
+bool CPdfFile::IsDynamicXfa()
+{
+	return m_pInternal->pReader && m_pInternal->pReader->IsDynamicXfa();
+}
 void CPdfFile::GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY)
 {
 	if (!m_pInternal->pReader)

@@ -91,6 +91,8 @@ public:
 	int GetRotate(int nPageIndex);
 	int GetMaxRefID();
 	int GetNumPages();
+	bool IsDynamicXfa();
+	static bool IsDynamicXfa(const std::wstring& wsSrcPath);
 	bool ValidMetaData();
 	// Takes ownership of malloc data memory
 	bool MergePages(BYTE* pData, DWORD nLength, const wchar_t* wsPassword = NULL, int nMaxID = 0, const std::string& sPrefixForm = "");

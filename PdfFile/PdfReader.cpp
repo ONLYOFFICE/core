@@ -382,6 +382,37 @@ int CPdfReader::GetNumPages()
 	}
 	return nNumPages;
 }
+namespace
+{
+bool IsDynamicXfaCatalog(Catalog* pCatalog)
+{
+	if (!pCatalog || !pCatalog->getNeedsRendering())
+		return false;
+
+	Object* pAcroForm = pCatalog->getAcroForm();
+	if (!pAcroForm || !pAcroForm->isDict())
+		return false;
+
+	Object oXfa;
+	pAcroForm->dictLookup("XFA", &oXfa);
+	bool bResult = oXfa.isStream() || (oXfa.isArray() && oXfa.arrayGetLength() > 0);
+	oXfa.free();
+	return bResult;
+}
+}
+bool CPdfReader::IsDynamicXfa()
+{
+	if (m_vPDFContext.size() != 1 || !m_vPDFContext.front() || !m_vPDFContext.front()->m_pDocument)
+		return false;
+
+	return IsDynamicXfaCatalog(m_vPDFContext.front()->m_pDocument->getCatalog());
+}
+bool CPdfReader::IsDynamicXfa(const std::wstring& wsSrcPath)
+{
+	std::string sPathUtf8 = U_TO_UTF8(wsSrcPath);
+	PDFDoc oDocument(const_cast<char*>(sPathUtf8.c_str()));
+	return oDocument.isOk() && IsDynamicXfaCatalog(oDocument.getCatalog());
+}
 bool CPdfReader::ValidMetaData()
 {
 	if (m_vPDFContext.empty() || m_vPDFContext.size() != 1)
@@ -957,7 +988,9 @@ std::wstring CPdfReader::GetInfo()
 	markInfoObj.free();
 	catDict.free();
 
-	sRes += bTagged ? L"true}" : L"false}";
+	sRes += bTagged ? L"true" : L"false";
+	sRes += L",\"DynamicXfa\":";
+	sRes += IsDynamicXfa() ? L"true}" : L"false}";
 
 	return sRes;
 }

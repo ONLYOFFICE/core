@@ -1,14 +1,17 @@
 """Add MIDIA provider and mandatory local autosave to a verified vendor runtime."""
 from pathlib import Path
-import json,sys
+import base64,json,shutil,sys
 
 def prepare(root):
     root=Path(root)
     resources=root/'Contents/Resources' if (root/'Contents').exists() else root
     providers=resources/'providers/merp';providers.mkdir(parents=True,exist_ok=True)
-    (providers/'config.json').write_text(json.dumps({'provider':'merp','name':'MIDIA Cloud','entryPage':'https://gestion.midiashops.com','startPage':'/diseno-v2/office-cloud.html','editorPage':'/diseno-v2/office-cloud-editor/','order':0,'icons':{'themeLight':{'connectionsList':'./cloud.svg','buttonLogo':'./button.svg'},'themeDark':{'connectionsList':'./cloud.svg','buttonLogo':'./button.svg'}}},indent=2))
-    (providers/'cloud.svg').write_text('<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36"><rect width="36" height="36" rx="8" fill="#0b747a"/><path d="M10 25h16a5 5 0 0 0 0-10 8 8 0 0 0-15-2A6 6 0 0 0 10 25Z" fill="white"/><path d="M18 16v7m-3-4 3-3 3 3" stroke="#0b747a" fill="none" stroke-width="2"/></svg>')
-    (providers/'button.svg').write_text('<svg xmlns="http://www.w3.org/2000/svg" width="148" height="38" viewBox="0 0 148 38"><rect x="3" y="4" width="30" height="30" rx="7" fill="#0b747a"/><path d="M11 25h15a4 4 0 0 0-1-8 7 7 0 0 0-13-1 5 5 0 0 0-1 9Z" fill="white"/><text x="40" y="24" font-family="Arial,sans-serif" font-size="16" font-weight="600" fill="#2b2e36">MIDIA Cloud</text></svg>')
+    (providers/'config.json').write_text(json.dumps({'provider':'merp','name':'MIDIA Cloud','entryPage':'https://gestion.midiashops.com','startPage':'/diseno-v2/office-cloud.html','editorPage':'/diseno-v2/office-cloud-editor/','order':0,'icons':{'themeLight':{'connectionsList':'./cloud.png','buttonLogo':'./button.svg'},'themeDark':{'connectionsList':'./cloud.png','buttonLogo':'./button.svg'}}},indent=2))
+    branding=Path(__file__).resolve().parents[1]/'branding/office-mosaic'
+    shutil.copy2(branding/'AppIcon.ico',resources/'MIDIA-Office.ico')
+    shutil.copy2(branding/'master.png',providers/'cloud.png')
+    icon=base64.b64encode((branding/'master.png').read_bytes()).decode()
+    (providers/'button.svg').write_text('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="148" height="38" viewBox="0 0 148 38"><image x="1" y="1" width="36" height="36" xlink:href="data:image/png;base64,'+icon+'"/><text x="40" y="24" font-family="Arial,sans-serif" font-size="16" font-weight="600" fill="#2b2e36">MIDIA Cloud</text></svg>')
     counts={}
     for app in ['documenteditor','spreadsheeteditor','presentationeditor','pdfeditor']:
         p=resources/'editors/web-apps/apps'/app/'main/app.js'
@@ -40,6 +43,6 @@ def prepare(root):
             s=s.replace(ready,ready+marker+timer,1)
         p.write_text(s,encoding="utf-8");counts[app]=count
     assert len(counts)>=3,counts
-    (resources/'MIDIA-CLOUD.json').write_text(json.dumps({'version':'9.4.0.2','autosave_gap_seconds':10,'sync_poll_seconds':5,'cloud':'https://gestion.midiashops.com/diseno-v2/office-cloud.html','autosave_calls':counts},indent=2))
+    (resources/'MIDIA-CLOUD.json').write_text(json.dumps({'version':'9.4.0.3','autosave_gap_seconds':10,'sync_poll_seconds':5,'cloud':'https://gestion.midiashops.com/diseno-v2/office-cloud.html','autosave_calls':counts},indent=2))
     return counts
 if __name__=='__main__':print(json.dumps(prepare(sys.argv[1])))

@@ -13,11 +13,15 @@ counts=prepare(vendor)
 shutil.copy2(root/'app-office-cloud/LEEME.md',vendor/'MIDIA-CLOUD-LEEME.md')
 iscc=Path('C:/Program Files (x86)/Inno Setup 6/ISCC.exe')
 subprocess.run([str(iscc),'/DAppSource='+str(vendor),'/DOutputDirectory='+str(out),str(root/'app-office-cloud/installer.iss')],check=True)
-new=out/'ONLYOFFICE-WPS-Cloud-9.4.0.2-Windows-x64-Setup.exe'
+new=out/'ONLYOFFICE-WPS-Cloud-9.4.0.3-Windows-x64-Setup.exe'
 installed=out/'installed'
 subprocess.run([str(new),'/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART','/DIR='+str(installed)],check=True)
 assert (installed/'MIDIACloud.exe').exists() and (installed/'providers/merp/config.json').exists()
 assert hashlib.sha256((installed/'converter/x2t.exe').read_bytes()).hexdigest()=='a847197348987e58143b88282a394090e09dd81b9d832e2d2d2f4c50a82e5699'
 manifest={'filename':new.name,'bytes':new.stat().st_size,'sha256':hashlib.sha256(new.read_bytes()).hexdigest(),'engine_sha256':'a847197348987e58143b88282a394090e09dd81b9d832e2d2d2f4c50a82e5699','autosave_calls':counts,'installation':'passed','agent_tests':'passed','target_PC_GUI':'pending'}
+# Compatibility alias for the public fork's existing fixed-name artifact workflow.
+# Only the manifest's versioned filename is published to MERP.
+if __import__('os').environ.get('GITHUB_ACTIONS') == 'true':
+    shutil.copy2(new,out/'ONLYOFFICE-WPS-Cloud-9.4.0.2-Windows-x64-Setup.exe')
 (out/'windows-cloud-verification.json').write_text(json.dumps(manifest,indent=2))
 print(json.dumps(manifest,indent=2))
